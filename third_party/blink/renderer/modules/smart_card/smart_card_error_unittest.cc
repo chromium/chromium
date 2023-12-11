@@ -10,6 +10,7 @@
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/testing/dummy_page_holder.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
+#include "third_party/blink/renderer/platform/testing/task_environment.h"
 
 namespace blink {
 
@@ -29,6 +30,8 @@ class PromiseRejectedFunction : public ScriptFunction::Callable {
 };
 
 TEST(SmartCardError, RejectWithoutScriptStateScope) {
+  test::TaskEnvironment task_environment;
+
   std::unique_ptr<DummyPageHolder> page_holder =
       DummyPageHolder::CreateAndCommitNavigation(KURL());
 
