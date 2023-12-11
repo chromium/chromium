@@ -241,13 +241,13 @@ export class FormatCommand extends FilesCommand {
       root = directoryModel.getCurrentDirEntry();
     }
     const location = root && fileManager.volumeManager.getLocationInfo(root);
-    const writable = location && !location.isReadOnly;
+    const writable = !!location && !location.isReadOnly;
     const isRoot = location && location.isRootEntry;
 
     // Enable the command if this is a removable device (e.g. a USB drive).
     const removableRoot =
         location && isRoot && location.rootType === RootType.REMOVABLE;
-    event.canExecute = removableRoot && (isUnrecognizedVolume || writable);
+    event.canExecute = !!removableRoot && (isUnrecognizedVolume || writable);
 
     if (isSinglePartitionFormatEnabled()) {
       let isDevice = false;
@@ -303,7 +303,7 @@ export class EraseDeviceCommand extends FilesCommand {
       isDevice = !!removableRoot && root.getUiChildren().length > 0;
     }
 
-    event.canExecute = removableRoot && !writable;
+    event.canExecute = !!removableRoot && !writable;
     // Enable the command if this is a removable and device node.
     event.command.setHidden(!removableRoot || !isDevice);
   }
@@ -487,7 +487,7 @@ export class NewFolderCommand extends FilesCommand {
       }
 
       const locationInfo = fileManager.volumeManager.getLocationInfo(entry);
-      event.canExecute = locationInfo && !locationInfo.isReadOnly &&
+      event.canExecute = !!locationInfo && !locationInfo.isReadOnly &&
           hasCapability(fileManager, [entry], 'canAddChildren');
       event.command.setHidden(false);
     } else {
@@ -1029,7 +1029,7 @@ export class PasteCommand extends FilesCommand {
     const fileTransferController = fileManager.fileTransferController;
 
     event.canExecute = !!fileTransferController &&
-        fileTransferController.queryPasteCommandEnabled(
+        !!fileTransferController.queryPasteCommandEnabled(
             fileManager.directoryModel.getCurrentDirEntry());
 
     // Hide this command if only one folder is selected.
@@ -1075,7 +1075,7 @@ export class PasteIntoCurrentFolderCommand extends FilesCommand {
     const fileTransferController = fileManager.fileTransferController;
 
     event.canExecute = !!fileTransferController &&
-        fileTransferController.queryPasteCommandEnabled(
+        !!fileTransferController.queryPasteCommandEnabled(
             fileManager.directoryModel.getCurrentDirEntry());
   }
 }
@@ -1142,7 +1142,7 @@ export class PasteIntoFolderCommand extends FilesCommand {
     const directoryEntry =
         /** @type {DirectoryEntry|FakeEntry} */ (entries[0]);
     event.canExecute = !!fileTransferController &&
-        fileTransferController.queryPasteCommandEnabled(directoryEntry);
+        !!fileTransferController.queryPasteCommandEnabled(directoryEntry);
     event.command.setHidden(false);
   }
 }
@@ -1358,7 +1358,7 @@ export class RenameCommand extends FilesCommand {
           const writable = !location.isReadOnly;
           const removable = location.rootType === RootType.REMOVABLE;
           event.canExecute =
-              removable && writable && volumeInfo.diskFileSystemType && [
+              removable && writable && !!volumeInfo.diskFileSystemType && [
                 FileSystemType.EXFAT,
                 FileSystemType.VFAT,
                 FileSystemType.NTFS,
@@ -1874,7 +1874,7 @@ export class DlpRestrictionDetailsCommand extends FilesCommand {
     }
 
     const isDlpRestricted = metadata[0].isDlpRestricted;
-    event.canExecute = isDlpRestricted;
+    event.canExecute = !!isDlpRestricted;
     event.command.setHidden(!isDlpRestricted);
   }
 }
@@ -2017,7 +2017,7 @@ export class TogglePinnedCommand extends FilesCommand {
         action = saveForOfflineAction;
         command.checked = false;
       }
-      event.canExecute = action && action.canExecute();
+      event.canExecute = !!action && action.canExecute();
       command.disabled = !event.canExecute;
     }
 
@@ -2211,7 +2211,7 @@ export class ShareCommand extends FilesCommand {
         return;
       }
       const action = actionsModel.getAction(CommonActionId.SHARE);
-      event.canExecute = action && action.canExecute();
+      event.canExecute = !!action && action.canExecute();
       command.disabled = !event.canExecute;
       command.setHidden(!action);
     }
@@ -2281,7 +2281,7 @@ export class ManageInDriveCommand extends FilesCommand {
       const action = actionsModel.getAction(InternalActionId.MANAGE_IN_DRIVE);
       if (action) {
         command.setHidden(!action);
-        event.canExecute = action && action.canExecute();
+        event.canExecute = !!action && action.canExecute();
         command.disabled = !event.canExecute;
       }
     }
@@ -2576,7 +2576,7 @@ export class PinFolderCommand extends FilesCommand {
       }
       const action =
           actionsModel.getAction(InternalActionId.CREATE_FOLDER_SHORTCUT);
-      event.canExecute = action && action.canExecute();
+      event.canExecute = !!action && action.canExecute();
       command.disabled = !event.canExecute;
       command.setHidden(!action);
     }
@@ -2647,7 +2647,7 @@ export class UnpinFolderCommand extends FilesCommand {
       const action =
           actionsModel.getAction(InternalActionId.REMOVE_FOLDER_SHORTCUT);
       command.setHidden(!action);
-      event.canExecute = action && action.canExecute();
+      event.canExecute = !!action && action.canExecute();
       command.disabled = !event.canExecute;
     }
 
@@ -2856,7 +2856,7 @@ export class ConfigureCommand extends FilesCommand {
   // type.
   canExecute(event, fileManager) {
     const volumeInfo = getElementVolumeInfo(event.target, fileManager);
-    event.canExecute = volumeInfo && volumeInfo.configurable;
+    event.canExecute = !!volumeInfo && volumeInfo.configurable;
     event.command.setHidden(!event.canExecute);
   }
 }
@@ -2879,7 +2879,7 @@ export class RefreshCommand extends FilesCommand {
     const currentDirEntry = fileManager.directoryModel.getCurrentDirEntry();
     const volumeInfo = currentDirEntry &&
         fileManager.volumeManager.getVolumeInfo(currentDirEntry);
-    event.canExecute = volumeInfo && !volumeInfo.watchable;
+    event.canExecute = !!volumeInfo && !volumeInfo.watchable;
     event.command.setHidden(
         !event.canExecute ||
         fileManager.directoryModel.getFileListSelection().getCheckSelectMode());
