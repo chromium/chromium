@@ -64,6 +64,7 @@ class IncomingPasswordSharingInvitationSyncBridge
   bool SupportsGetStorageKey() const override;
   void ApplyDisableSyncChanges(std::unique_ptr<syncer::MetadataChangeList>
                                    delete_metadata_change_list) override;
+  bool IsEntityDataValid(const syncer::EntityData& entity_data) const override;
 
  private:
   // Methods used as callbacks given to DataTypeStore.

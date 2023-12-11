@@ -655,7 +655,8 @@ enum class ProcessIncomingPasswordSharingInvitationResult {
   kSharedCredentialsExistWithSameSenderAndDifferentPassword = 5,
   kSharedCredentialsExistWithDifferentSenderAndSamePassword = 6,
   kSharedCredentialsExistWithDifferentSenderAndDifferentPassword = 7,
-  kMaxValue = kSharedCredentialsExistWithDifferentSenderAndDifferentPassword,
+  kInvalidInvitation = 8,
+  kMaxValue = kInvalidInvitation,
 };
 
 #if BUILDFLAG(IS_ANDROID)

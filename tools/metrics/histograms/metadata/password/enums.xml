@@ -751,6 +751,7 @@ chromium-metrics-reviews@google.com.
   <int value="7"
       label="Credentials exist shared from different sender with different
              password"/>
+  <int value="8" label="Invalid credentials"/>
 </enum>
 
 <enum name="PasswordManager.SharedPasswordsNotificationInteractions">
