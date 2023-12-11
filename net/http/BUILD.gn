@@ -49,15 +49,24 @@ compiled_action_foreach("transport_security_state_unittest_data") {
   ]
 
   # Inputs in order expected by the command line of the tool.
-  inputs = [
+  source_independent_inputs = [
     "transport_security_state_static_unittest.pins",
     "transport_security_state_static_unittest.template",
   ]
+
+  # All possible inputs to ensure correctness when files change.
+  # TODO(crbug/1508893): Use {{source_name_part}}_pins.json.
+  inputs = [
+             "transport_security_state_static_unittest1_pins.json",
+             "transport_security_state_static_unittest2_pins.json",
+             "transport_security_state_static_unittest3_pins.json",
+           ] + source_independent_inputs
+
   outputs = [ "$target_gen_dir/{{source_name_part}}.h" ]
-  args =
-      [ rebase_path("{{source_name_part}}.json", root_build_dir) ] +
-      [ rebase_path("{{source_name_part}}_pins.json", root_build_dir) ] +
-      rebase_path(inputs, root_build_dir) + rebase_path(outputs, root_build_dir)
+  args = [ rebase_path("{{source_name_part}}.json", root_build_dir) ] +
+         [ rebase_path("{{source_name_part}}_pins.json", root_build_dir) ] +
+         rebase_path(source_independent_inputs, root_build_dir) +
+         rebase_path(outputs, root_build_dir)
 }
 
 # This has separated source_set not to let other compiles wait for the
