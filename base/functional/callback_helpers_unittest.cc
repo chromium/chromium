@@ -129,38 +129,6 @@ TEST(CallbackHelpersTest, IsBaseCallback) {
   static_assert(!base::IsBaseCallback<std::function<void()>&&>);
 }
 
-TEST(CallbackHelpersTest, IsOnceCallback) {
-  // Check that base::OnceClosures and references to them are considered
-  // base::OnceCallbacks, but base::RepeatingClosures are not.
-  static_assert(base::IsOnceCallback<base::OnceClosure>);
-  static_assert(!base::IsOnceCallback<base::RepeatingClosure>);
-  static_assert(base::IsOnceCallback<base::OnceClosure&&>);
-  static_assert(!base::IsOnceCallback<const base::RepeatingClosure&>);
-
-  // Check that base::OnceCallbacks with a given RunType and references to them
-  // are considered base::OnceCallbacks, but base::RepeatingCallbacks are not.
-  static_assert(base::IsOnceCallback<base::OnceCallback<int(int)>>);
-  static_assert(!base::IsOnceCallback<base::RepeatingCallback<int(int)>>);
-  static_assert(base::IsOnceCallback<base::OnceCallback<int(int)>&&>);
-  static_assert(
-      !base::IsOnceCallback<const base::RepeatingCallback<int(int)>&>);
-
-  // Check that POD types are not considered base::OnceCallbacks.
-  static_assert(!base::IsOnceCallback<bool>);
-  static_assert(!base::IsOnceCallback<int>);
-  static_assert(!base::IsOnceCallback<double>);
-
-  // Check that the closely related std::function is not considered a
-  // base::OnceCallback.
-  static_assert(!base::IsOnceCallback<std::function<void()>>);
-  static_assert(!base::IsOnceCallback<const std::function<void()>&>);
-  static_assert(!base::IsOnceCallback<std::function<void()>&&>);
-
-  // Check that the result of BindOnce is a OnceCallback.
-  auto cb = base::BindOnce([](int* count) { ++*count; });
-  static_assert(base::IsOnceCallback<decltype(cb)>);
-}
-
 void Increment(int* value) {
   (*value)++;
 }
