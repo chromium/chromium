@@ -153279,7 +153279,7 @@
        ]
       ],
       "clip-path-contentBox-1e.html": [
-       "aa2f961f668691cbbe3a7ef4996a0534da3bea08",
+       "5fde5ccd9a98659b0cd356a2070df7bda186fad5",
        [
         null,
         [
@@ -153295,7 +153295,7 @@
            [
             [
              0,
-             64
+             65
             ],
             [
              0,
@@ -153660,7 +153660,7 @@
        ]
       ],
       "clip-path-fillBox-1b.html": [
-       "d77fd716fd5ae18188518d08996dfff5f5650ce4",
+       "529cee6a4298299211524b669ede185856f4a7c4",
        [
         null,
         [
@@ -153680,7 +153680,7 @@
             ],
             [
              0,
-             355
+             376
             ]
            ]
           ]
@@ -153861,7 +153861,7 @@
        ]
       ],
       "clip-path-inline-007.html": [
-       "ffbc83108029e20f35dc4a40851ea1350ef4a2f4",
+       "9518b587c4f07958c3ec5915204c15495179cb0d",
        [
         null,
         [
@@ -153881,7 +153881,7 @@
             ],
             [
              0,
-             325
+             332
             ]
            ]
           ]
@@ -154029,7 +154029,7 @@
        ]
       ],
       "clip-path-marginBox-1c.html": [
-       "cfeebeedf38d793f424b55bc6d4d6b8830a8f41d",
+       "7d6780731ed7d60899e5ef18ee4152fa22eac0b0",
        [
         null,
         [
@@ -154049,7 +154049,7 @@
             ],
             [
              0,
-             287
+             424
             ]
            ]
           ]
@@ -155039,7 +155039,7 @@
        ]
       ],
       "clip-path-viewBox-1d.html": [
-       "3d5f355825b7f4601dd52ef17eb867c88b83d90d",
+       "0d58e4f331b5088acd15bd3313cc511584fc8662",
        [
         null,
         [
@@ -155059,7 +155059,7 @@
             ],
             [
              0,
-             368
+             376
             ]
            ]
           ]
@@ -157188,7 +157188,7 @@
        ]
       ],
       "mask-image-3h.html": [
-       "7d33be438144e02d2b73ab661c53dab57ac7959f",
+       "29f2c33bdf16d22e0f1cf5958ee298ab3f15867c",
        [
         null,
         [
@@ -157204,11 +157204,11 @@
            [
             [
              0,
-             10
+             37
             ],
             [
              0,
-             80
+             146
             ]
            ]
           ]
@@ -281866,7 +281866,7 @@
     "geometry": {
      "reftests": {
       "circle-001.svg": [
-       "2fbd70d5a63d12a93d843a80477101b3c50beb78",
+       "4ece9da683b8c6cac33886a451155ab6297413ad",
        [
         null,
         [
@@ -281875,11 +281875,27 @@
           "=="
          ]
         ],
-        {}
+        {
+         "fuzzy": [
+          [
+           null,
+           [
+            [
+             0,
+             1
+            ],
+            [
+             0,
+             8
+            ]
+           ]
+          ]
+         ]
+        }
        ]
       ],
       "circle-002.svg": [
-       "7f98f56ad0f70f73df86d9f8ed2e3325b1cc6df8",
+       "d9dd067b0484e5056eac72c151337cf44b349356",
        [
         null,
         [
@@ -281888,11 +281904,27 @@
           "=="
          ]
         ],
-        {}
+        {
+         "fuzzy": [
+          [
+           null,
+           [
+            [
+             0,
+             53
+            ],
+            [
+             0,
+             370
+            ]
+           ]
+          ]
+         ]
+        }
        ]
       ],
       "circle-003.svg": [
-       "74c32fb33cb94cbb8637fc2504026409eaac605a",
+       "5cd5cbf3a5c0d35345a14afaa38482dd480f73ff",
        [
         null,
         [
@@ -281901,11 +281933,27 @@
           "=="
          ]
         ],
-        {}
+        {
+         "fuzzy": [
+          [
+           null,
+           [
+            [
+             0,
+             1
+            ],
+            [
+             0,
+             2
+            ]
+           ]
+          ]
+         ]
+        }
        ]
       ],
       "circle-004.svg": [
-       "36c9e0096f0272d0762deb3305b07e2022fa66f7",
+       "1027078953d43716bb7dd230a8b1e22eb68fd77c",
        [
         null,
         [
@@ -281914,7 +281962,23 @@
           "=="
          ]
         ],
-        {}
+        {
+         "fuzzy": [
+          [
+           null,
+           [
+            [
+             0,
+             35
+            ],
+            [
+             0,
+             434
+            ]
+           ]
+          ]
+         ]
+        }
        ]
       ],
       "circle-005.svg": [
@@ -281944,7 +282008,7 @@
        ]
       ],
       "ellipse-002.svg": [
-       "081617288a1b782f36bb513329f7b988c78fac4c",
+       "86c40f389735c3fc132a206a3105e613d4e54de6",
        [
         null,
         [
@@ -281953,11 +282017,27 @@
           "=="
          ]
         ],
-        {}
+        {
+         "fuzzy": [
+          [
+           null,
+           [
+            [
+             0,
+             53
+            ],
+            [
+             0,
+             278
+            ]
+           ]
+          ]
+         ]
+        }
        ]
       ],
       "ellipse-003.svg": [
-       "6b81eadf1b7cf7b85406336b5bc7bcc576338dea",
+       "a4f0ed141c583d6f7047d3526d4aad0d68e5fdef",
        [
         null,
         [
@@ -281966,7 +282046,23 @@
           "=="
          ]
         ],
-        {}
+        {
+         "fuzzy": [
+          [
+           null,
+           [
+            [
+             0,
+             1
+            ],
+            [
+             0,
+             4
+            ]
+           ]
+          ]
+         ]
+        }
        ]
       ],
       "ellipse-004.svg": [
@@ -387234,7 +387330,7 @@
        []
       ],
       "utils.js": [
-       "56ab603fdffb962062f75bace5f1cef45bf54f6b",
+       "687f6a43982d7ba18fc172079370a3beeb74117f",
        []
       ],
       "wake-lock.https.html": [
@@ -394522,7 +394618,7 @@
      []
     ],
     "RTCDataChannel-binaryType.window-expected.txt": [
-     "6a6aa16c887e8ca1aa1d51e3007fda109468191d",
+     "400401a271ed54ce8742d1cacd93770df51ad810",
      []
     ],
     "RTCDataChannel-bufferedAmount-expected.txt": [
@@ -394534,7 +394630,7 @@
      []
     ],
     "RTCDataChannel-send-expected.txt": [
-     "da788481f7943a0a24f01ffe1189f524dda330c2",
+     "cee76c9f2efb0d3a797658a52da1478f5928e596",
      []
     ],
     "RTCDtlsTransport-state-expected.txt": [
@@ -394554,7 +394650,7 @@
      []
     ],
     "RTCPeerConnection-createDataChannel-expected.txt": [
-     "daabe0fb6790484d9be48823a43cb349a829f212",
+     "d49abcb9a55f2187c45fc38d0358cab440114a17",
      []
     ],
     "RTCPeerConnection-createOffer-expected.txt": [
@@ -437417,6 +437513,13 @@
      ],
      "animation-play-state-005.tentative.html": [
       "bb65ce3a419a559ece8897f35995c93fafbad11d",
+      [
+       null,
+       {}
+      ]
+     ],
+     "animation-restarted-after-changing-iteration-count-after-completion.html": [
+      "961104a82099a80f174fe4b75e541bcc8841d967",
       [
        null,
        {}
@@ -660825,7 +660928,7 @@
      ]
     ],
     "RTCDataChannel-binaryType.window.js": [
-     "f641f51976215f45d1177a53bdc17571ae7c707f",
+     "c93d0cb1a09d52c70248e3b28494d53371940ae3",
      [
       "webrtc/RTCDataChannel-binaryType.window.html",
       {}
@@ -660873,7 +660976,7 @@
      ]
     ],
     "RTCDataChannel-send.html": [
-     "70cdf8657fd4c5637210234131a71cf60930ff82",
+     "193f38cd780292e95daceda0aade957ac53c95cc",
      [
       null,
       {
@@ -661041,7 +661144,7 @@
      ]
     ],
     "RTCPeerConnection-createDataChannel.html": [
-     "7ad8bf7d46ecd7a3702542d8b484132afcc94d63",
+     "cddbd02c7bf22420532b5dc0d5a691660b5f44ec",
      [
       null,
       {
