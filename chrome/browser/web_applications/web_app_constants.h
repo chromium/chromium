@@ -14,7 +14,6 @@
 #include "base/containers/enum_set.h"
 #include "base/functional/callback_forward.h"
 #include "build/build_config.h"
-#include "chrome/common/pref_names.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/manifest/manifest.h"
 #include "third_party/blink/public/mojom/manifest/display_mode.mojom-forward.h"
@@ -324,73 +323,6 @@ constexpr WebAppManagementTypes kUserDrivenInstallSources = {
     WebAppManagement::kOneDriveIntegration,
 };
 
-// Data structure to store information that can be used to compute whether app
-// specific or app agnostic guardrails have been hit. These are usually integer
-// values that determine a maximum count of how many times an action on a prompt
-// can be ignored, or the max number of days to prevent a prompt from showing
-// up. Data points not initialized are defaulted to absl::nullopt, and will not
-// be taken into consideration for guardrail computation.
-struct GuardrailData {
-  absl::optional<int> app_specific_not_accept_count;
-  absl::optional<int> app_specific_mute_after_dismiss_days;
-  absl::optional<int> app_specific_mute_after_ignore_days;
-  absl::optional<int> app_agnostic_not_accept_count;
-  absl::optional<int> app_agnostic_mute_after_dismiss_days;
-  absl::optional<int> app_agnostic_mute_after_ignore_days;
-};
-
-// Data structure to store the pref keys for app specific and app agnostic
-// prefs. User actions on a prompt for a web app will lead to these pref keys
-// being updated. Once updated, the value in these pref keys will be compared
-// with the values defined in the GuardrailData struct to compute if a guardrail
-// has been hit. The fields loosely correlate with GuardrailData in the
-// following way:
-// 1. Data stored in `last_ignore_time_name` will be used with
-// `app_specific_mute_after_ignore_days` and
-// `app_agnostic_mute_after_ignore_days` to compute ignore based time
-// guardrails, for example, stop prompt after ignoring for N days.
-// 2. Data stored in `last_dismiss_time_name` will be used with
-// `app_specific_mute_after_dismiss_days` and
-// `app_agnostic_mute_after_dismiss_days` to compute dismissal based time
-// guardrails, for example, stop prompt after dismissing for N days.
-// 3. Data stored in `not_accepted_count_name` will be used with
-// `app_agnostic_not_accept_count` and `app_agnostic_not_accept_count` to
-// compute count based guardrails, for example, stop prompt showing after N
-// ignores.
-// 4. `all_blocked_name` is the time when guardrails were fully blocked, and is
-// cleared whenever a prompt is accepted by the user.
-// 5. `agnostic_pref_name` denotes the app agnostic key to store app agnostic
-// data, and is not tied to any app ID.
-struct GuardrailPrefNames {
-  std::string_view last_ignore_time_name;
-  std::string_view last_dismiss_time_name;
-  std::string_view not_accepted_count_name;
-  std::string_view all_blocked_name;
-  std::string_view agnostic_pref_name;
-};
-
-inline constexpr GuardrailData kIphGuardrails{
-    // Number of times IPH can be ignored for this app before it's muted.
-    .app_specific_not_accept_count = 3,
-    // Number of days to mute IPH after it's ignored for this app.
-    .app_specific_mute_after_ignore_days = 90,
-    // Number of times IPH can be ignored for any app before it's muted.
-    .app_agnostic_not_accept_count = 4,
-    // Number of days to mute IPH after it's ignored for any app.
-    .app_agnostic_mute_after_ignore_days = 14,
-};
-
-inline constexpr GuardrailPrefNames kIphPrefNames{
-    // Pref key to store the last time IPH was ignored, stored in both app
-    // specific and app agnostic context.
-    .last_ignore_time_name = "IPH_last_ignore_time",
-    // Pref key to store the total number of ignores on the IPH bubble, stored
-    // in both app specific and app agnostic context.
-    .not_accepted_count_name = "IPH_num_of_consecutive_ignore",
-    // Pref key under which to store app agnostic IPH values.
-    .agnostic_pref_name = ::prefs::kWebAppsAppAgnosticIphState,
-};
-
 }  // namespace web_app
 
-#endif  // CHROME_BROWSER_WEB_APPLICATIONS_WEB_APP_CONSTANTS_H_
+#endif  // CHROME_BROWSER_WEB_APPLICATIONS_WEB_APP_CONSTANTS_H
