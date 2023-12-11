@@ -3628,8 +3628,8 @@ void SkiaRenderer::PrepareRenderPassOverlay(
 
   absl::optional<gfx::Transform> quad_to_target_transform_inverse;
   // We cannot handle rotation with clip rect or mask filter.
-  if ((shared_quad_state->clip_rect ||
-       !shared_quad_state->mask_filter_info.IsEmpty())) {
+  if (!shared_quad_state->quad_to_target_transform.HasPerspective() &&
+      shared_quad_state->quad_to_target_transform.IsInvertible()) {
     quad_to_target_transform_inverse.emplace();
     // Flatten before inverting, since we're interested in how points
     // with z=0 in local space map to the clip rect, not in how the clip
