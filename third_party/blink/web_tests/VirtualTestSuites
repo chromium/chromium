@@ -2538,15 +2538,6 @@
     "expires": "Dec 31, 2023"
   },
   {
-    "prefix": "capture-blocking-details",
-    "platforms": ["Linux", "Mac", "Win"],
-    "bases": [
-      "http/tests/inspector-protocol/bfcache/report-back-forward-cache-status-details-captured.js"
-    ],
-    "args": ["--enable-features=RegisterJSSourceLocationBlockingBFCache"],
-    "expires": "Feb 1, 2024"
-  },
-  {
     "prefix": "saa-beyond-cookies-disabled",
     "platforms": ["Linux", "Mac", "Win"],
     "bases": [

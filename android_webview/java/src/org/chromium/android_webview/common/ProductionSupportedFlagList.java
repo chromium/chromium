@@ -817,6 +817,9 @@ public final class ProductionSupportedFlagList {
         Flag.baseFeature(
                 BaseFeatures.PARTITION_ALLOC_ZAPPING_BY_FREE_FLAGS,
                 "Enables Partition Allocator's FreeFlags::kZap"),
+        Flag.baseFeature(
+                BlinkFeatures.REGISTER_JS_SOURCE_LOCATION_BLOCKING_BF_CACHE,
+                "Starts capturing bfcache blocking details"),
         // Add new commandline switches and features above. The final entry should have a
         // trailing comma for cleaner diffs.
     };
