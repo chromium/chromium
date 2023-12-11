@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/views/performance_controls/high_efficiency_chip_view.h"
+#include "chrome/browser/ui/views/performance_controls/memory_saver_chip_view.h"
 #include <string>
 
 #include "base/notreached.h"
@@ -24,9 +24,9 @@
 #include "chrome/browser/ui/views/frame/toolbar_button_provider.h"
 #include "chrome/browser/ui/views/location_bar/icon_label_bubble_view.h"
 #include "chrome/browser/ui/views/page_action/page_action_icon_view.h"
-#include "chrome/browser/ui/views/performance_controls/high_efficiency_bubble_view.h"
 #include "chrome/browser/ui/views/side_panel/performance_controls/performance_side_panel_coordinator.h"
 #include "chrome/browser/ui/webui/side_panel/performance_controls/performance.mojom-shared.h"
+#include "chrome/browser/ui/views/performance_controls/memory_saver_bubble_view.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/feature_engagement/public/event_constants.h"
@@ -47,7 +47,7 @@ constexpr base::TimeDelta kChipAnimationDuration = base::Seconds(12);
 
 }  // namespace
 
-HighEfficiencyChipView::HighEfficiencyChipView(
+MemorySaverChipView::MemorySaverChipView(
     CommandUpdater* command_updater,
     Browser* browser,
     IconLabelBubbleView::Delegate* icon_label_bubble_delegate,
@@ -72,18 +72,18 @@ HighEfficiencyChipView::HighEfficiencyChipView(
   SetProperty(views::kElementIdentifierKey, kHighEfficiencyChipElementId);
 }
 
-HighEfficiencyChipView::~HighEfficiencyChipView() = default;
+MemorySaverChipView::~MemorySaverChipView() = default;
 
-void HighEfficiencyChipView::OnBubbleShown() {
+void MemorySaverChipView::OnBubbleShown() {
   PauseAnimation();
 }
 
-void HighEfficiencyChipView::OnBubbleHidden() {
+void MemorySaverChipView::OnBubbleHidden() {
   UnpauseAnimation();
   bubble_ = nullptr;
 }
 
-void HighEfficiencyChipView::UpdateImpl() {
+void MemorySaverChipView::UpdateImpl() {
   content::WebContents* const web_contents = GetWebContents();
   if (!web_contents) {
     return;
@@ -146,7 +146,7 @@ void HighEfficiencyChipView::UpdateImpl() {
   }
 }
 
-void HighEfficiencyChipView::OnExecuting(
+void MemorySaverChipView::OnExecuting(
     PageActionIconView::ExecuteSource execute_source) {
   if (base::FeatureList::IsEnabled(
           performance_manager::features::kPerformanceControlsSidePanel)) {
@@ -168,28 +168,28 @@ void HighEfficiencyChipView::OnExecuting(
   // Open the dialog bubble.
   View* anchor_view = browser_view->toolbar_button_provider()->GetAnchorView(
       PageActionIconType::kMemorySaver);
-  bubble_ = HighEfficiencyBubbleView::ShowBubble(browser_, anchor_view, this);
+  bubble_ = MemorySaverBubbleView::ShowBubble(browser_, anchor_view, this);
   if (browser_->window() != nullptr) {
     browser_->window()->NotifyFeatureEngagementEvent(
         feature_engagement::events::kHighEfficiencyDialogShown);
   }
 }
 
-const gfx::VectorIcon& HighEfficiencyChipView::GetVectorIcon() const {
+const gfx::VectorIcon& MemorySaverChipView::GetVectorIcon() const {
   return OmniboxFieldTrial::IsChromeRefreshIconsEnabled()
              ? kMemorySaverChromeRefreshIcon
              : kMemorySaverIcon;
 }
 
-views::BubbleDialogDelegate* HighEfficiencyChipView::GetBubble() const {
+views::BubbleDialogDelegate* MemorySaverChipView::GetBubble() const {
   return bubble_;
 }
 
-void HighEfficiencyChipView::OnHighEfficiencyModeChanged() {
+void MemorySaverChipView::OnHighEfficiencyModeChanged() {
   auto* manager = performance_manager::user_tuning::
       UserPerformanceTuningManager::GetInstance();
   is_high_efficiency_mode_enabled_ = manager->IsHighEfficiencyModeActive();
 }
 
-BEGIN_METADATA(HighEfficiencyChipView, PageActionIconView)
+BEGIN_METADATA(MemorySaverChipView, PageActionIconView)
 END_METADATA

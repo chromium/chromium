@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/views/performance_controls/high_efficiency_bubble_view.h"
+#include "chrome/browser/ui/views/performance_controls/memory_saver_bubble_view.h"
 
 #include "base/functional/bind.h"
 #include "build/build_config.h"
@@ -16,7 +16,7 @@
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/frame/toolbar_button_provider.h"
 #include "chrome/browser/ui/views/page_action/page_action_icon_view.h"
-#include "chrome/browser/ui/views/performance_controls/high_efficiency_resource_view.h"
+#include "chrome/browser/ui/views/performance_controls/memory_saver_resource_view.h"
 #include "chrome/grit/branded_strings.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/performance_manager/public/features.h"
@@ -32,15 +32,14 @@
 #include "ui/views/bubble/bubble_dialog_model_host.h"
 #include "ui/views/interaction/element_tracker_views.h"
 
-DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(HighEfficiencyBubbleView,
-                                      kHighEfficiencyDialogBodyElementId);
-DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(
-    HighEfficiencyBubbleView,
-    kHighEfficiencyDialogResourceViewElementId);
-DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(HighEfficiencyBubbleView,
-                                      kHighEfficiencyDialogOkButton);
-DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(HighEfficiencyBubbleView,
-                                      kHighEfficiencyDialogCancelButton);
+DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(MemorySaverBubbleView,
+                                      kMemorySaverDialogBodyElementId);
+DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(MemorySaverBubbleView,
+                                      kMemorySaverDialogResourceViewElementId);
+DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(MemorySaverBubbleView,
+                                      kMemorySaverDialogOkButton);
+DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(MemorySaverBubbleView,
+                                      kMemorySaverDialogCancelButton);
 
 namespace {
 // The lower limit of memory usage that we would display to the user in bytes.
@@ -59,7 +58,7 @@ void AddBubbleBodyText(
 
   dialog_model_builder->AddParagraph(
       label, std::u16string(),
-      HighEfficiencyBubbleView::kHighEfficiencyDialogBodyElementId);
+      MemorySaverBubbleView::kMemorySaverDialogBodyElementId);
 }
 
 void AddCancelButton(ui::DialogModel::Builder* dialog_model_builder,
@@ -81,12 +80,12 @@ void AddCancelButton(ui::DialogModel::Builder* dialog_model_builder,
       std::move(callback),
       ui::DialogModelButton::Params()
           .SetLabel(l10n_util::GetStringUTF16(button_string_id))
-          .SetId(HighEfficiencyBubbleView::kHighEfficiencyDialogCancelButton));
+          .SetId(MemorySaverBubbleView::kMemorySaverDialogCancelButton));
 }
 }  // namespace
 
 // static
-views::BubbleDialogModelHost* HighEfficiencyBubbleView::ShowBubble(
+views::BubbleDialogModelHost* MemorySaverBubbleView::ShowBubble(
     Browser* browser,
     views::View* anchor_view,
     HighEfficiencyBubbleObserver* observer) {
@@ -110,7 +109,7 @@ views::BubbleDialogModelHost* HighEfficiencyBubbleView::ShowBubble(
       .AddOkButton(base::DoNothing(),
                    ui::DialogModelButton::Params()
                        .SetLabel(l10n_util::GetStringUTF16(IDS_OK))
-                       .SetId(kHighEfficiencyDialogOkButton));
+                       .SetId(kMemorySaverDialogOkButton));
 
   content::WebContents* web_contents =
       browser->tab_strip_model()->GetActiveWebContents();
@@ -130,9 +129,9 @@ views::BubbleDialogModelHost* HighEfficiencyBubbleView::ShowBubble(
     if (memory_savings > kMemoryUsageThresholdInBytes) {
       dialog_model_builder.AddCustomField(
           std::make_unique<views::BubbleDialogModelHost::CustomView>(
-              std::make_unique<HighEfficiencyResourceView>(memory_savings),
+              std::make_unique<MemorySaverResourceView>(memory_savings),
               views::BubbleDialogModelHost::FieldType::kText),
-          kHighEfficiencyDialogResourceViewElementId);
+          kMemorySaverDialogResourceViewElementId);
     }
 
     AddBubbleBodyText(&dialog_model_builder, IDS_MEMORY_SAVER_DIALOG_BODY_V2);

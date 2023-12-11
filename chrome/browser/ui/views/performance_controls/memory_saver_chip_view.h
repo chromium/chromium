@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_UI_VIEWS_PERFORMANCE_CONTROLS_HIGH_EFFICIENCY_CHIP_VIEW_H_
-#define CHROME_BROWSER_UI_VIEWS_PERFORMANCE_CONTROLS_HIGH_EFFICIENCY_CHIP_VIEW_H_
+#ifndef CHROME_BROWSER_UI_VIEWS_PERFORMANCE_CONTROLS_MEMORY_SAVER_CHIP_VIEW_H_
+#define CHROME_BROWSER_UI_VIEWS_PERFORMANCE_CONTROLS_MEMORY_SAVER_CHIP_VIEW_H_
 
 #include <string>
 #include "base/scoped_observation.h"
@@ -18,23 +18,22 @@
 
 // Represents the high efficiency page action chip that appears on previously
 // discarded tabs.
-class HighEfficiencyChipView : public PageActionIconView,
-                               public HighEfficiencyBubbleObserver,
-                               public performance_manager::user_tuning::
-                                   UserPerformanceTuningManager::Observer {
+class MemorySaverChipView : public PageActionIconView,
+                            public HighEfficiencyBubbleObserver,
+                            public performance_manager::user_tuning::
+                                UserPerformanceTuningManager::Observer {
  public:
-  METADATA_HEADER(HighEfficiencyChipView);
+  METADATA_HEADER(MemorySaverChipView);
   // The number of times a user should see the expanded chip.
   static constexpr int kChipAnimationCount = 3;
 
-  HighEfficiencyChipView(
-      CommandUpdater* command_updater,
-      Browser* browser,
-      IconLabelBubbleView::Delegate* icon_label_bubble_delegate,
-      PageActionIconView::Delegate* page_action_icon_delegate);
-  HighEfficiencyChipView(const HighEfficiencyChipView&) = delete;
-  HighEfficiencyChipView& operator=(const HighEfficiencyChipView&) = delete;
-  ~HighEfficiencyChipView() override;
+  MemorySaverChipView(CommandUpdater* command_updater,
+                      Browser* browser,
+                      IconLabelBubbleView::Delegate* icon_label_bubble_delegate,
+                      PageActionIconView::Delegate* page_action_icon_delegate);
+  MemorySaverChipView(const MemorySaverChipView&) = delete;
+  MemorySaverChipView& operator=(const MemorySaverChipView&) = delete;
+  ~MemorySaverChipView() override;
 
   // HighEfficiencyBubbleObserver:
   void OnBubbleShown() override;
@@ -63,4 +62,4 @@ class HighEfficiencyChipView : public PageActionIconView,
   bool is_high_efficiency_mode_enabled_ = false;
 };
 
-#endif  // CHROME_BROWSER_UI_VIEWS_PERFORMANCE_CONTROLS_HIGH_EFFICIENCY_CHIP_VIEW_H_
+#endif  // CHROME_BROWSER_UI_VIEWS_PERFORMANCE_CONTROLS_MEMORY_SAVER_CHIP_VIEW_H_

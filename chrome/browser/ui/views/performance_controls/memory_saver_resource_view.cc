@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/views/performance_controls/high_efficiency_resource_view.h"
+#include "chrome/browser/ui/views/performance_controls/memory_saver_resource_view.h"
 #include <string>
 
 #include "base/numerics/math_constants.h"
@@ -23,11 +23,11 @@
 #include "ui/views/layout/layout_types.h"
 
 DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(
-    HighEfficiencyResourceView,
-    kHighEfficiencyResourceViewMemorySavingsElementId);
+    MemorySaverResourceView,
+    kMemorySaverResourceViewMemorySavingsElementId);
 DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(
-    HighEfficiencyResourceView,
-    kHighEfficiencyResourceViewMemoryLabelElementId);
+    MemorySaverResourceView,
+    kMemorySaverResourceViewMemoryLabelElementId);
 
 namespace {
 
@@ -179,7 +179,7 @@ END_METADATA
 
 }  // namespace
 
-HighEfficiencyResourceView::HighEfficiencyResourceView(
+MemorySaverResourceView::MemorySaverResourceView(
     const int memory_savings_bytes) {
   SetOrientation(views::LayoutOrientation::kVertical);
 
@@ -189,9 +189,8 @@ HighEfficiencyResourceView::HighEfficiencyResourceView(
   std::u16string formatted_savings = ui::FormatBytes(memory_savings_bytes);
   auto* memory_savings = gauge_view->AddChildView(
       std::make_unique<views::Label>(formatted_savings));
-  memory_savings->SetProperty(
-      views::kElementIdentifierKey,
-      kHighEfficiencyResourceViewMemorySavingsElementId);
+  memory_savings->SetProperty(views::kElementIdentifierKey,
+                              kMemorySaverResourceViewMemorySavingsElementId);
   memory_savings->SetFontList(
       memory_savings->font_list().DeriveWithSizeDelta(kMemoryLabelSizeDelta));
   memory_savings->SetAccessibleName(l10n_util::GetStringFUTF16(
@@ -202,5 +201,5 @@ HighEfficiencyResourceView::HighEfficiencyResourceView(
           kQuartilesLabels[GetMemorySavingsQuartile(memory_savings_bytes)]),
       views::style::CONTEXT_LABEL, views::style::STYLE_SECONDARY));
   memory_label->SetProperty(views::kElementIdentifierKey,
-                            kHighEfficiencyResourceViewMemoryLabelElementId);
+                            kMemorySaverResourceViewMemoryLabelElementId);
 }

@@ -38,7 +38,7 @@
 #include "chrome/browser/ui/views/page_action/pwa_install_view.h"
 #include "chrome/browser/ui/views/page_action/zoom_view.h"
 #include "chrome/browser/ui/views/passwords/manage_passwords_icon_views.h"
-#include "chrome/browser/ui/views/performance_controls/high_efficiency_chip_view.h"
+#include "chrome/browser/ui/views/performance_controls/memory_saver_chip_view.h"
 #include "chrome/browser/ui/views/qrcode_generator/qrcode_generator_icon_view.h"
 #include "chrome/browser/ui/views/reader_mode/reader_mode_icon_view.h"
 #include "chrome/browser/ui/views/send_tab_to_self/send_tab_to_self_icon_view.h"
@@ -136,7 +136,7 @@ void PageActionIconController::Init(const PageActionIconParams& params,
                       params.page_action_icon_delegate));
         break;
       case PageActionIconType::kMemorySaver:
-        add_page_action_icon(type, std::make_unique<HighEfficiencyChipView>(
+        add_page_action_icon(type, std::make_unique<MemorySaverChipView>(
                                        params.command_updater, params.browser,
                                        params.icon_label_bubble_delegate,
                                        params.page_action_icon_delegate));

@@ -35,16 +35,16 @@ const char kPathWithQuery[] =
     "/extensions/favicon/test_file.html?q=hello+world";
 }  // namespace
 
-class HighEfficiencyExclusionListBrowserTest : public InProcessBrowserTest {
+class MemorySaverExclusionListBrowserTest : public InProcessBrowserTest {
  public:
-  HighEfficiencyExclusionListBrowserTest()
+  MemorySaverExclusionListBrowserTest()
       : scoped_set_tick_clock_for_testing_(&test_clock_) {
     // Start with a non-null TimeTicks, as there is no discard protection for
     // a tab with a null focused timestamp.
     test_clock_.Advance(kShortDelay);
   }
 
-  ~HighEfficiencyExclusionListBrowserTest() override = default;
+  ~MemorySaverExclusionListBrowserTest() override = default;
 
   void SetUpOnMainThread() override {
     InProcessBrowserTest::SetUpOnMainThread();
@@ -99,7 +99,7 @@ class HighEfficiencyExclusionListBrowserTest : public InProcessBrowserTest {
       scoped_set_tick_clock_for_testing_;
 };
 
-IN_PROC_BROWSER_TEST_F(HighEfficiencyExclusionListBrowserTest,
+IN_PROC_BROWSER_TEST_F(MemorySaverExclusionListBrowserTest,
                        ExclusionListMatchesHost) {
   base::Value::List exclusion_list;
   exclusion_list.Append("example.com");
@@ -115,7 +115,7 @@ IN_PROC_BROWSER_TEST_F(HighEfficiencyExclusionListBrowserTest,
   EXPECT_FALSE(NavigateAndDiscardFirstTab(GetURL(kExampleURL, kPathWithQuery)));
 }
 
-IN_PROC_BROWSER_TEST_F(HighEfficiencyExclusionListBrowserTest,
+IN_PROC_BROWSER_TEST_F(MemorySaverExclusionListBrowserTest,
                        ExclusionListMatchesHostExactly) {
   base::Value::List exclusion_list;
   exclusion_list.Append(".example.com");
@@ -132,7 +132,7 @@ IN_PROC_BROWSER_TEST_F(HighEfficiencyExclusionListBrowserTest,
   EXPECT_TRUE(NavigateAndDiscardFirstTab(GURL(chrome::kChromeUISettingsURL)));
 }
 
-IN_PROC_BROWSER_TEST_F(HighEfficiencyExclusionListBrowserTest,
+IN_PROC_BROWSER_TEST_F(MemorySaverExclusionListBrowserTest,
                        ExclusionListMatchesSubdirectories) {
   base::Value::List exclusion_list;
   exclusion_list.Append("example.com/extensions/favicon");
@@ -146,7 +146,7 @@ IN_PROC_BROWSER_TEST_F(HighEfficiencyExclusionListBrowserTest,
   EXPECT_TRUE(NavigateAndDiscardFirstTab(GetURL(kWWWExampleURL)));
 }
 
-IN_PROC_BROWSER_TEST_F(HighEfficiencyExclusionListBrowserTest,
+IN_PROC_BROWSER_TEST_F(MemorySaverExclusionListBrowserTest,
                        ExclusionListMatchesSchemeWildCards) {
   base::Value::List exclude_sites_with_http_scheme;
   exclude_sites_with_http_scheme.Append("http://*");
@@ -159,7 +159,7 @@ IN_PROC_BROWSER_TEST_F(HighEfficiencyExclusionListBrowserTest,
   EXPECT_TRUE(NavigateAndDiscardFirstTab(GURL(chrome::kChromeUISettingsURL)));
 }
 
-IN_PROC_BROWSER_TEST_F(HighEfficiencyExclusionListBrowserTest,
+IN_PROC_BROWSER_TEST_F(MemorySaverExclusionListBrowserTest,
                        ExclusionListMatchesQueryParamWildCards) {
   base::Value::List wildcard_at_end_of_query;
   wildcard_at_end_of_query.Append(
@@ -172,7 +172,7 @@ IN_PROC_BROWSER_TEST_F(HighEfficiencyExclusionListBrowserTest,
   EXPECT_TRUE(NavigateAndDiscardFirstTab(GetURL(kExampleURL)));
 }
 
-IN_PROC_BROWSER_TEST_F(HighEfficiencyExclusionListBrowserTest,
+IN_PROC_BROWSER_TEST_F(MemorySaverExclusionListBrowserTest,
                        ExclusionListMatchesAllSitesWildCards) {
   base::Value::List exclude_all_sites;
   exclude_all_sites.Append("*");
@@ -185,7 +185,7 @@ IN_PROC_BROWSER_TEST_F(HighEfficiencyExclusionListBrowserTest,
   EXPECT_FALSE(NavigateAndDiscardFirstTab(GURL(chrome::kChromeUISettingsURL)));
 }
 
-IN_PROC_BROWSER_TEST_F(HighEfficiencyExclusionListBrowserTest,
+IN_PROC_BROWSER_TEST_F(MemorySaverExclusionListBrowserTest,
                        ExclusionListMatchesPort) {
   base::Value::List exclusion_list;
   exclusion_list.Append(std::string("example.com:") +

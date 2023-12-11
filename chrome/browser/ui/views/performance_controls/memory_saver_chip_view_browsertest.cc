@@ -16,8 +16,8 @@
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/page_action/page_action_icon_controller.h"
 #include "chrome/browser/ui/views/page_action/page_action_icon_view.h"
-#include "chrome/browser/ui/views/performance_controls/high_efficiency_bubble_view.h"
-#include "chrome/browser/ui/views/performance_controls/high_efficiency_chip_view.h"
+#include "chrome/browser/ui/views/performance_controls/memory_saver_bubble_view.h"
+#include "chrome/browser/ui/views/performance_controls/memory_saver_chip_view.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_view.h"
 #include "chrome/browser/ui/views/user_education/browser_feature_promo_controller.h"
 #include "chrome/common/webui_url_constants.h"
@@ -49,16 +49,16 @@ namespace {
 constexpr base::TimeDelta kShortDelay = base::Seconds(1);
 }  // namespace
 
-class HighEfficiencyChipViewBrowserTest : public InProcessBrowserTest {
+class MemorySaverChipViewBrowserTest : public InProcessBrowserTest {
  public:
-  HighEfficiencyChipViewBrowserTest()
+  MemorySaverChipViewBrowserTest()
       : scoped_set_tick_clock_for_testing_(&test_clock_) {
     // Start with a non-null TimeTicks, as there is no discard protection for
     // a tab with a null focused timestamp.
     test_clock_.Advance(kShortDelay);
   }
 
-  ~HighEfficiencyChipViewBrowserTest() override = default;
+  ~MemorySaverChipViewBrowserTest() override = default;
 
   void SetUpOnMainThread() override {
     InProcessBrowserTest::SetUpOnMainThread();
@@ -80,7 +80,7 @@ class HighEfficiencyChipViewBrowserTest : public InProcessBrowserTest {
         ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
   }
 
-  PageActionIconView* GetHighEfficiencyChipView() {
+  PageActionIconView* GetMemorySaverChipView() {
     BrowserView* browser_view =
         BrowserView::GetBrowserViewForBrowser(browser());
     return browser_view->GetLocationBarView()
@@ -98,7 +98,7 @@ class HighEfficiencyChipViewBrowserTest : public InProcessBrowserTest {
   }
 
   views::InkDropState GetInkDropState() {
-    return views::InkDrop::Get(GetHighEfficiencyChipView())
+    return views::InkDrop::Get(GetMemorySaverChipView())
         ->GetInkDrop()
         ->GetTargetInkDropState();
   }
@@ -109,9 +109,9 @@ class HighEfficiencyChipViewBrowserTest : public InProcessBrowserTest {
       scoped_set_tick_clock_for_testing_;
 };
 
-IN_PROC_BROWSER_TEST_F(HighEfficiencyChipViewBrowserTest,
+IN_PROC_BROWSER_TEST_F(MemorySaverChipViewBrowserTest,
                        ShowAndHideInkDropOnDialog) {
-  PageActionIconView* chip = GetHighEfficiencyChipView();
+  PageActionIconView* chip = GetMemorySaverChipView();
   ui::MouseEvent press(ui::ET_MOUSE_PRESSED, gfx::Point(), gfx::Point(),
                        ui::EventTimeForNow(), 0, 0);
   views::test::ButtonTestApi test_api(chip);

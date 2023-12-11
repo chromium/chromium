@@ -26,10 +26,10 @@
 #include "ui/views/widget/any_widget_observer.h"
 #include "url/gurl.h"
 
-class HighEfficiencyHelpPromoTest : public InProcessBrowserTest {
+class MemorySaverHelpPromoTest : public InProcessBrowserTest {
  public:
-  HighEfficiencyHelpPromoTest() = default;
-  ~HighEfficiencyHelpPromoTest() override = default;
+  MemorySaverHelpPromoTest() = default;
+  ~MemorySaverHelpPromoTest() override = default;
 
   void SetUp() override {
     iph_features_.InitAndEnableFeaturesWithParameters(
@@ -51,7 +51,7 @@ class HighEfficiencyHelpPromoTest : public InProcessBrowserTest {
         button, ui::test::InteractionTestUtil::InputType::kMouse);
   }
 
-  void TriggerHighEfficiencyPromo() {
+  void TriggerMemorySaverPromo() {
     auto lock =
         BrowserFeaturePromoController::BlockActiveWindowCheckForTesting();
 
@@ -60,8 +60,9 @@ class HighEfficiencyHelpPromoTest : public InProcessBrowserTest {
         user_education::HelpBubbleView::kViewClassName);
 
     int tab_count_threshold = 10;  // The threshold count is a constant.
-    for (int i = 0; i < tab_count_threshold; i++)
+    for (int i = 0; i < tab_count_threshold; i++) {
       chrome::AddTabAt(browser(), GURL(), i, true);
+    }
 
     waiter.WaitIfNeededAndGet();
 
@@ -78,8 +79,8 @@ class HighEfficiencyHelpPromoTest : public InProcessBrowserTest {
 // Check that the high efficiency mode in-product help promo is shown when
 // a tab threshold is reached and dismisses correctly when the app menu
 // button is pushed
-IN_PROC_BROWSER_TEST_F(HighEfficiencyHelpPromoTest, ShowPromoOnTabThreshold) {
-  TriggerHighEfficiencyPromo();
+IN_PROC_BROWSER_TEST_F(MemorySaverHelpPromoTest, ShowPromoOnTabThreshold) {
+  TriggerMemorySaverPromo();
   auto* app_menu_button_view =
       views::ElementTrackerViews::GetInstance()->GetFirstMatchingView(
           kToolbarAppMenuButtonElementId,
@@ -94,7 +95,7 @@ IN_PROC_BROWSER_TEST_F(HighEfficiencyHelpPromoTest, ShowPromoOnTabThreshold) {
 
 // Confirm that High Efficiency mode is enabled when the custom action
 // button for high efficiency mode is clicked
-IN_PROC_BROWSER_TEST_F(HighEfficiencyHelpPromoTest, PromoCustomActionClicked) {
+IN_PROC_BROWSER_TEST_F(MemorySaverHelpPromoTest, PromoCustomActionClicked) {
   EXPECT_TRUE(performance_manager::user_tuning::UserPerformanceTuningManager::
                   GetInstance()
                       ->IsHighEfficiencyModeDefault());
@@ -102,7 +103,7 @@ IN_PROC_BROWSER_TEST_F(HighEfficiencyHelpPromoTest, PromoCustomActionClicked) {
                    GetInstance()
                        ->IsHighEfficiencyModeActive());
 
-  TriggerHighEfficiencyPromo();
+  TriggerMemorySaverPromo();
 
   auto* const promo_controller = GetFeaturePromoController();
   auto* promo_bubble = promo_controller->promo_bubble_for_testing()
@@ -121,9 +122,8 @@ IN_PROC_BROWSER_TEST_F(HighEfficiencyHelpPromoTest, PromoCustomActionClicked) {
 
 // Check that the performance menu item is alerted when the high efficiency
 // promo is shown and the app menu button is clicked
-IN_PROC_BROWSER_TEST_F(HighEfficiencyHelpPromoTest,
-                       AlertMenuItemWhenPromoShown) {
-  TriggerHighEfficiencyPromo();
+IN_PROC_BROWSER_TEST_F(MemorySaverHelpPromoTest, AlertMenuItemWhenPromoShown) {
+  TriggerMemorySaverPromo();
 
   auto* app_menu_button_view =
       views::ElementTrackerViews::GetInstance()->GetFirstMatchingView(
