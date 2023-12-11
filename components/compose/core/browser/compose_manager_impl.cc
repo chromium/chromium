@@ -5,9 +5,11 @@
 #include "components/compose/core/browser/compose_manager_impl.h"
 
 #include <memory>
+#include <string>
 #include <utility>
 
 #include "base/feature_list.h"
+#include "base/strings/string_util.h"
 #include "components/autofill/core/browser/autofill_client.h"
 #include "components/autofill/core/browser/autofill_manager.h"
 #include "components/compose/core/browser/compose_client.h"
@@ -20,11 +22,14 @@ namespace {
 void FillTextWithAutofill(base::WeakPtr<autofill::AutofillManager> manager,
                           autofill::FieldGlobalId field,
                           const std::u16string& text) {
+  std::u16string trimmed_text;
+  base::TrimString(text, u" \t\n\r\f\v", &trimmed_text);
   // TODO(crbug.com/1331312): Replace this call by FillOrPreviewField.
   if (manager) {
     manager->driver().ApplyFieldAction(
         autofill::mojom::ActionPersistence::kFill,
-        autofill::mojom::TextReplacement::kReplaceSelection, field, text);
+        autofill::mojom::TextReplacement::kReplaceSelection, field,
+        trimmed_text);
   }
 }
 
