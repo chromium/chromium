@@ -4,6 +4,7 @@
 
 #include "chrome/browser/signin/bound_session_credentials/bound_session_cookie_controller.h"
 
+#include "base/containers/flat_set.h"
 #include "base/memory/raw_ptr.h"
 #include "base/time/time.h"
 #include "chrome/browser/signin/bound_session_credentials/bound_session_params_util.h"
@@ -51,4 +52,11 @@ chrome::mojom::BoundSessionThrottlerParamsPtr
 BoundSessionCookieController::bound_session_throttler_params() {
   return chrome::mojom::BoundSessionThrottlerParams::New(
       url().host(), url().path(), min_cookie_expiration_time());
+}
+
+base::flat_set<std::string> BoundSessionCookieController::bound_cookie_names()
+    const {
+  return base::MakeFlatSet<std::string>(
+      bound_cookies_info_, {},
+      [](const auto& bound_cookie_info) { return bound_cookie_info.first; });
 }

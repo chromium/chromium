@@ -18,7 +18,9 @@ DiceBoundSessionCookieService::DiceBoundSessionCookieService(
 
 DiceBoundSessionCookieService::~DiceBoundSessionCookieService() = default;
 
-void DiceBoundSessionCookieService::OnBoundSessionTerminated(const GURL& site) {
+void DiceBoundSessionCookieService::OnBoundSessionTerminated(
+    const GURL& site,
+    const base::flat_set<std::string>& bound_cookie_names) {
   if (!GaiaUrls::GetInstance()->gaia_url().DomainIs(site.host_piece())) {
     return;
   }

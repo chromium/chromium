@@ -7,6 +7,7 @@
 #include <memory>
 #include <utility>
 
+#include "base/containers/flat_set.h"
 #include "base/containers/span.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_forward.h"
@@ -78,14 +79,6 @@ class FakeBoundSessionCookieController : public BoundSessionCookieController {
     std::move(on_destroy_callback_).Run();
   }
 
-  base::flat_set<std::string> cookie_names() {
-    base::flat_set<std::string> cookie_names;
-    for (const auto& [cookie_name, _] : bound_cookies_info_) {
-      cookie_names.insert(cookie_name);
-    }
-    return cookie_names;
-  }
-
   const std::vector<uint8_t>& wrapped_key() { return wrapped_key_; }
 
   void HandleRequestBlockedOnCookie(
@@ -128,7 +121,11 @@ class FakeBoundSessionCookieController : public BoundSessionCookieController {
 
 class MockObserver : public BoundSessionCookieRefreshService::Observer {
  public:
-  MOCK_METHOD(void, OnBoundSessionTerminated, (const GURL& site), (override));
+  MOCK_METHOD(void,
+              OnBoundSessionTerminated,
+              (const GURL& site,
+               const base::flat_set<std::string>& bound_cookie_names),
+              (override));
 };
 }  // namespace
 
@@ -242,7 +239,7 @@ class BoundSessionCookieRefreshServiceImplTest : public testing::Test {
     EXPECT_THAT(cookie_controller()->wrapped_key(),
                 testing::ElementsAreArray(base::as_bytes(
                     base::make_span(expected_params.wrapped_key()))));
-    EXPECT_THAT(cookie_controller()->cookie_names(),
+    EXPECT_THAT(cookie_controller()->bound_cookie_names(),
                 testing::UnorderedPointwise(IsCookieCredential(),
                                             expected_params.credentials()));
   }
@@ -417,7 +414,11 @@ TEST_F(BoundSessionCookieRefreshServiceImplTest,
   EXPECT_CALL(renderer_updater, Run()).WillOnce([&] {
     VerifyNoBoundSession();
   });
-  EXPECT_CALL(*mock_observer(), OnBoundSessionTerminated(kTestGoogleURL))
+  EXPECT_CALL(
+      *mock_observer(),
+      OnBoundSessionTerminated(kTestGoogleURL,
+                               base::flat_set<std::string>(
+                                   {"__Secure-1PSIDTS", "__Secure-3PSIDTS"})))
       .Times(1);
   SimulateTerminateSession(
       SessionTerminationTrigger::kSessionTerminationHeader);
@@ -429,7 +430,11 @@ TEST_F(BoundSessionCookieRefreshServiceImplTest, TerminateSession) {
   BoundSessionCookieRefreshServiceImpl* service = GetCookieRefreshServiceImpl();
   EXPECT_TRUE(service->GetBoundSessionThrottlerParams());
 
-  EXPECT_CALL(*mock_observer(), OnBoundSessionTerminated(kTestGoogleURL))
+  EXPECT_CALL(
+      *mock_observer(),
+      OnBoundSessionTerminated(kTestGoogleURL,
+                               base::flat_set<std::string>(
+                                   {"__Secure-1PSIDTS", "__Secure-3PSIDTS"})))
       .Times(1);
   SimulateTerminateSession(
       SessionTerminationTrigger::kSessionTerminationHeader);
@@ -453,7 +458,11 @@ TEST_F(BoundSessionCookieRefreshServiceImplTest,
   EXPECT_TRUE(service->GetBoundSessionThrottlerParams());
 
   ASSERT_TRUE(cookie_controller());
-  EXPECT_CALL(*mock_observer(), OnBoundSessionTerminated(kTestGoogleURL))
+  EXPECT_CALL(
+      *mock_observer(),
+      OnBoundSessionTerminated(kTestGoogleURL,
+                               base::flat_set<std::string>(
+                                   {"__Secure-1PSIDTS", "__Secure-3PSIDTS"})))
       .Times(1);
   cookie_controller()->SimulateOnPersistentErrorEncountered();
 
@@ -477,7 +486,11 @@ TEST_F(BoundSessionCookieRefreshServiceImplTest,
       base::MakeRefCounted<net::HttpResponseHeaders>("");
   headers->AddHeader(kSessionTerminationHeader, kTestSessionId);
   BoundSessionCookieRefreshServiceImpl* service = GetCookieRefreshServiceImpl();
-  EXPECT_CALL(*mock_observer(), OnBoundSessionTerminated(kTestGoogleURL))
+  EXPECT_CALL(
+      *mock_observer(),
+      OnBoundSessionTerminated(kTestGoogleURL,
+                               base::flat_set<std::string>(
+                                   {"__Secure-1PSIDTS", "__Secure-3PSIDTS"})))
       .Times(1);
   service->MaybeTerminateSession(headers.get());
   VerifyNoBoundSession();
@@ -581,7 +594,11 @@ TEST_F(BoundSessionCookieRefreshServiceImplTest, ClearMatchingData) {
   BoundSessionCookieRefreshServiceImpl* service = GetCookieRefreshServiceImpl();
   service->RegisterNewBoundSession(CreateTestBoundSessionParams());
 
-  EXPECT_CALL(*mock_observer(), OnBoundSessionTerminated(kTestGoogleURL))
+  EXPECT_CALL(
+      *mock_observer(),
+      OnBoundSessionTerminated(kTestGoogleURL,
+                               base::flat_set<std::string>(
+                                   {"__Secure-1PSIDTS", "__Secure-3PSIDTS"})))
       .Times(1);
   ClearOriginData(content::StoragePartition::REMOVE_DATA_MASK_COOKIES,
                   url::Origin::Create(kTestGoogleURL));

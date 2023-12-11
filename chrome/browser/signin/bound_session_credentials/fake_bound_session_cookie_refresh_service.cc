@@ -44,8 +44,9 @@ bool FakeBoundSessionCookieRefreshService::IsRequestBlocked() {
 }
 
 void FakeBoundSessionCookieRefreshService::SimulateOnBoundSessionTerminated(
-    const GURL& site) {
+    const GURL& site,
+    const base::flat_set<std::string>& bound_cookie_names) {
   for (BoundSessionCookieRefreshService::Observer& observer : observers_) {
-    observer.OnBoundSessionTerminated(site);
+    observer.OnBoundSessionTerminated(site, bound_cookie_names);
   }
 }

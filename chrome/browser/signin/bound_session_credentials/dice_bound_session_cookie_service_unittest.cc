@@ -66,7 +66,7 @@ class DiceBoundSessionCookieServiceTest : public ::testing::Test {
 
 TEST_F(DiceBoundSessionCookieServiceTest, OnBoundSessionTerminated) {
   bound_session_cookie_refresh_service()->SimulateOnBoundSessionTerminated(
-      GaiaUrls::GetInstance()->google_url());
+      GaiaUrls::GetInstance()->google_url(), base::flat_set<std::string>());
   ASSERT_TRUE(url_loader_factory().IsPending(list_accounts_url()));
   // Let the request complete.
   identity_test_env().SetCookieAccounts({});
@@ -75,7 +75,7 @@ TEST_F(DiceBoundSessionCookieServiceTest, OnBoundSessionTerminated) {
 TEST_F(DiceBoundSessionCookieServiceTest,
        NoneGaiaIncludedBoundSessionTerminated) {
   bound_session_cookie_refresh_service()->SimulateOnBoundSessionTerminated(
-      GURL("wwww.youtube.com"));
+      GURL("wwww.youtube.com"), base::flat_set<std::string>());
   EXPECT_FALSE(url_loader_factory().IsPending(list_accounts_url()));
 }
 }  // namespace
