@@ -398,6 +398,30 @@
       <message name="IDS_IOS_CONSISTENCY_PROMO_SKIP" desc="Dismisses the sign-in promo on the web.">
         Skip
       </message>
+      <message name="IDS_IOS_CONTENT_NOTIFICATION_FULL_PAGE_PROMO_PRIMARY_BUTTON_TEXT" desc="Text for the Notifications promo secondary button.">
+          Turn on Notifications..
+      </message>
+      <message name="IDS_IOS_CONTENT_NOTIFICATION_FULL_PAGE_PROMO_SECONDARY_BUTTON_TEXT" desc="Text for the Notifications promo secondary button.">
+          No Thanks
+      </message>
+      <message name="IDS_IOS_CONTENT_NOTIFICATION_FULL_PAGE_PROMO_SUBTITLE" desc="Text for the Notifications promo subtitle.">
+          Receive notificarions for news, sports and more based on your interest
+      </message>
+      <message name="IDS_IOS_CONTENT_NOTIFICATION_FULL_PAGE_PROMO_TERTIARY_BUTTON_TEXT" desc="Text for the Notifications promo tertiary button.">
+          Remind Me Later
+      </message>
+      <message name="IDS_IOS_CONTENT_NOTIFICATION_FULL_PAGE_PROMO_TITLE" desc="Text for the Notifications promo title.">
+          Get content that matters to you
+      </message>
+      <message name="IDS_IOS_CONTENT_NOTIFICATIONS_PROMO_TEXT" desc="Text for the Notifications promo.">
+          Would you like notifications for news, sports, and more based on your interests?
+      </message>
+      <message name="IDS_IOS_CONTENT_NOTIFICATIONS_PROMO_PRIMARY_BUTTON" desc="Text for the Notifications promo primary button.">
+          Yes, I'm in
+      </message>
+      <message name="IDS_IOS_CONTENT_NOTIFICATIONS_PROMO_SECONDARY_BUTTON" desc="Text for the Notifications promo secondary button.">
+          No Thanks
+      </message>
       <message name="IDS_IOS_COPY_LINK_ACTION_TITLE" desc="Title of the action used to copy a link to the pasteboard. [iOS only]">
         Copy Link
       </message>
@@ -2383,15 +2407,6 @@ While in Incognito, sites can't use cookies to see your browsing activity across
       <message name="IDS_IOS_POST_RESTORE_DEFAULT_BROWSER_SUBTITLE_IPHONE" desc="The text for the subtitle of the post restore default browser promo for iPhone.">
         Your iPhone was recently restored, which might have changed your default browser.
       </message>
-      <message name="IDS_IOS_CONTENT_NOTIFICATIONS_PROMO_TEXT" desc="Text for the Notifications promo.">
-          Would you like notifications for news, sports, and more based on your interests?
-      </message>
-      <message name="IDS_IOS_CONTENT_NOTIFICATIONS_PROMO_PRIMARY_BUTTON" desc="Text for the Notifications promo primary button.">
-          Yes, I'm in
-      </message>
-      <message name="IDS_IOS_CONTENT_NOTIFICATIONS_PROMO_SECONDARY_BUTTON" desc="Text for the Notifications promo secondary button.">
-          No Thanks
-      </message>
       <message name="IDS_IOS_PRICE_NOTIFICATIONS_PRICE_TRACK_CHIP" desc="Acessibility label to describe the UI which displays a product's price in the Price Tracking Item UI.">
           Price
       </message>
@@ -3371,6 +3386,12 @@ While in Incognito, sites can't use cookies to see your browsing activity across
       </message>
       <message name="IDS_IOS_SET_UP_LIST_COLLAPSE" desc="Accessibility label for the button to expand the Set Up List.">
         Collapse list
+      </message>
+      <message name="IDS_IOS_SET_UP_LIST_CONTENT_NOTIFICATION_DESCRIPTION" desc="Description for the Set Up List item that encourages the user to enable Chrome content notifications.">
+        Keep up with news, sports, and more based on your interest
+      </message>
+      <message name="IDS_IOS_SET_UP_LIST_CONTENT_NOTIFICATION_TITLE" desc="Title for the Set Up List item that encourages the user to enable Chrome content notifications.">
+        Get Content Notifications
       </message>
       <message name="IDS_IOS_SET_UP_LIST_EXPAND" desc="Accessibility label for the button to expand the Set Up List.">
         Expand list

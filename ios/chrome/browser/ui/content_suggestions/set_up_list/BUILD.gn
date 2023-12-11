@@ -93,6 +93,7 @@ source_set("content_notification_promo_ui") {
   ]
   deps = [
     ":constants",
+    "//ios/chrome/app/strings",
     "//ios/chrome/browser/ui/content_suggestions/set_up_list/resources:content_notification_promo_banner",
     "//ios/chrome/common/ui/promo_style",
     "//ui/base",

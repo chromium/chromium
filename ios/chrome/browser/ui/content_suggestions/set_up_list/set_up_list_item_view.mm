@@ -58,6 +58,7 @@ struct ViewConfig {
   int signin_sync_description;
   int default_browser_description;
   int autofill_description;
+  int content_notification_description;
   NSString* title_font;
   NSString* description_font;
   CGFloat text_spacing;
@@ -93,6 +94,8 @@ struct ViewConfig {
           syncString,
           IDS_IOS_SET_UP_LIST_DEFAULT_BROWSER_SHORT_DESCRIPTION,
           IDS_IOS_SET_UP_LIST_AUTOFILL_SHORT_DESCRIPTION,
+          // TODO(b/310713830): add short strings when they are finalized.
+          IDS_IOS_SET_UP_LIST_CONTENT_NOTIFICATION_DESCRIPTION,
           UIFontTextStyleFootnote,
           UIFontTextStyleCaption2,
           kCompactTextSpacing,
@@ -109,6 +112,8 @@ struct ViewConfig {
           syncString,
           IDS_IOS_SET_UP_LIST_DEFAULT_BROWSER_MAGIC_STACK_DESCRIPTION,
           IDS_IOS_SET_UP_LIST_AUTOFILL_MAGIC_STACK_DESCRIPTION,
+          // TODO(b/310713830): add magic stack strings when they are finalized.
+          IDS_IOS_SET_UP_LIST_CONTENT_NOTIFICATION_DESCRIPTION,
           UIFontTextStyleSubheadline,
           UIFontTextStyleFootnote,
           kTextSpacing,
@@ -125,6 +130,7 @@ struct ViewConfig {
           syncString,
           IDS_IOS_SET_UP_LIST_DEFAULT_BROWSER_DESCRIPTION,
           IDS_IOS_SET_UP_LIST_AUTOFILL_DESCRIPTION,
+          IDS_IOS_SET_UP_LIST_CONTENT_NOTIFICATION_DESCRIPTION,
           UIFontTextStyleSubheadline,
           UIFontTextStyleFootnote,
           kTextSpacing,
@@ -337,9 +343,8 @@ struct ViewConfig {
     case SetUpListItemType::kAutofill:
       return l10n_util::GetNSString(IDS_IOS_SET_UP_LIST_AUTOFILL_TITLE);
     case SetUpListItemType::kContentNotification:
-      // TODO(b/310713830): add strings for content notifications when they are
-      // finalized.
-      return @"Get Content Notifications";
+      return l10n_util::GetNSString(
+          IDS_IOS_SET_UP_LIST_CONTENT_NOTIFICATION_TITLE);
     case SetUpListItemType::kAllSet:
       return l10n_util::GetNSString(IDS_IOS_SET_UP_LIST_ALL_SET_TITLE);
     case SetUpListItemType::kFollow:
@@ -358,9 +363,7 @@ struct ViewConfig {
     case SetUpListItemType::kAutofill:
       return l10n_util::GetNSString(_config.autofill_description);
     case SetUpListItemType::kContentNotification:
-      // TODO(b/310713830): add strings for content notifications when they are
-      // finalized.
-      return @"Keep up with news, sports, and more based on your interest";
+      return l10n_util::GetNSString(_config.content_notification_description);
     case SetUpListItemType::kAllSet:
       return l10n_util::GetNSString(IDS_IOS_SET_UP_LIST_ALL_SET_DESCRIPTION);
     case SetUpListItemType::kFollow:
