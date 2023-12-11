@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "content/browser/fenced_frame/fenced_document_data.h"
+#include "content/public/browser/document_user_data.h"
 
 namespace content {
 
@@ -27,14 +28,11 @@ void FencedDocumentData::UpdateAutomaticBeaconData(
     blink::mojom::AutomaticBeaconType event_type,
     const std::string& event_data,
     const std::vector<blink::FencedFrame::ReportingDestination>& destinations,
-    network::AttributionReportingRuntimeFeatures
-        attribution_reporting_runtime_features,
     bool once,
     bool cross_origin_exposed) {
   // For an ad component, the event data from its automatic beacon is ignored.
   automatic_beacon_info_.emplace(
       event_type, AutomaticBeaconInfo(event_data, destinations,
-                                      attribution_reporting_runtime_features,
                                       once, cross_origin_exposed));
 }
 

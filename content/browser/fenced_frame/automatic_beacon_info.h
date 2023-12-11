@@ -9,7 +9,6 @@
 #include <vector>
 
 #include "content/common/content_export.h"
-#include "services/network/public/cpp/attribution_reporting_runtime_features.h"
 #include "third_party/blink/public/common/fenced_frame/redacted_fenced_frame_config.h"
 
 namespace content {
@@ -18,8 +17,6 @@ struct CONTENT_EXPORT AutomaticBeaconInfo {
   AutomaticBeaconInfo(
       const std::string& data,
       const std::vector<blink::FencedFrame::ReportingDestination>& destinations,
-      network::AttributionReportingRuntimeFeatures
-          attribution_reporting_runtime_features,
       bool once,
       bool cross_origin_exposed);
 
@@ -33,10 +30,6 @@ struct CONTENT_EXPORT AutomaticBeaconInfo {
 
   std::string data;
   std::vector<blink::FencedFrame::ReportingDestination> destinations;
-  // Indicates whether Attribution Reporting API related runtime features are
-  // enabled and is needed for integration with Attribution Reporting API.
-  network::AttributionReportingRuntimeFeatures
-      attribution_reporting_runtime_features;
   // Indicates whether the automatic beacon will only be sent out for one event,
   // or if it will be sent out every time an event occurs.
   bool once;

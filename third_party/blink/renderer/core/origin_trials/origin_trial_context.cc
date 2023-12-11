@@ -11,12 +11,14 @@
 #include "base/metrics/histogram_macros.h"
 #include "base/time/time.h"
 #include "components/attribution_reporting/features.h"
+#include "services/network/public/cpp/attribution_reporting_runtime_features.h"
 #include "services/network/public/cpp/features.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/origin_trials/origin_trials.h"
 #include "third_party/blink/public/common/origin_trials/trial_token.h"
 #include "third_party/blink/public/common/origin_trials/trial_token_result.h"
 #include "third_party/blink/public/common/origin_trials/trial_token_validator.h"
+#include "third_party/blink/public/mojom/frame/frame.mojom-blink.h"
 #include "third_party/blink/public/mojom/origin_trial_feature/origin_trial_feature.mojom-shared.h"
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/public/platform/web_security_origin.h"
@@ -26,6 +28,7 @@
 #include "third_party/blink/renderer/bindings/core/v8/worker_or_worklet_script_controller.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
+#include "third_party/blink/renderer/core/frame/attribution_src_loader.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/frame/settings.h"
@@ -445,6 +448,23 @@ bool OriginTrialContext::InstallSettingFeature(
       if (document.GetSettings())
         document.GetSettings()->SetForceDarkModeEnabled(true);
       return true;
+    case mojom::blink::OriginTrialFeature::kAttributionReportingCrossAppWeb:
+      static_assert(
+          network::AttributionReportingRuntimeFeature::kMaxValue ==
+              network::AttributionReportingRuntimeFeature::kCrossAppWeb,
+          "Any new attribution reporting runtime features with an associated "
+          "origin trial feature need to be able to update the browser when the "
+          "OT feature is installed. If your new runtime feature also has an OT "
+          "feature, please add a switch case for the new feature.");
+      // Tell the browser about this change, but return false so the feature can
+      // still be installed using the default method.
+      document.GetFrame()
+          ->GetLocalFrameHostRemote()
+          .SetAttributionReportingRuntimeFeatures(
+              document.GetFrame()
+                  ->GetAttributionSrcLoader()
+                  ->GetRuntimeFeatures());
+      return false;
 
     default:
       return false;

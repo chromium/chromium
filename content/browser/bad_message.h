@@ -337,6 +337,7 @@ enum BadMessageReason {
   MSDH_SEND_WHEEL_BUT_CSC_FEATURE_DISABLED = 310,
   MSDH_SEND_WHEEL_INVALID_ACTION = 311,
   MSDH_GET_ZOOM_LEVEL_BUT_CSC_FEATURE_DISABLED = 312,
+  RFH_FENCED_DOCUMENT_DATA_NOT_FOUND = 313,
 
   // Please add new elements here. The naming convention is abbreviated class
   // name (e.g. RenderFrameHost becomes RFH) plus a unique description of the

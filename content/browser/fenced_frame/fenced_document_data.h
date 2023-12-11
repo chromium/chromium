@@ -10,6 +10,7 @@
 #include <vector>
 
 #include "content/browser/fenced_frame/automatic_beacon_info.h"
+#include "content/common/content_export.h"
 #include "content/public/browser/document_user_data.h"
 #include "services/network/public/cpp/attribution_reporting_runtime_features.h"
 #include "third_party/blink/public/common/fenced_frame/redacted_fenced_frame_config.h"
@@ -18,7 +19,8 @@ namespace content {
 
 // Used on the browser-side to store information related to fenced frames and
 // URN iframes created using an API like Protected Audience or Shared Storage.
-class FencedDocumentData : public DocumentUserData<FencedDocumentData> {
+class CONTENT_EXPORT FencedDocumentData
+    : public DocumentUserData<FencedDocumentData> {
  public:
   ~FencedDocumentData() override;
 
@@ -31,8 +33,6 @@ class FencedDocumentData : public DocumentUserData<FencedDocumentData> {
       blink::mojom::AutomaticBeaconType event_type,
       const std::string& event_data,
       const std::vector<blink::FencedFrame::ReportingDestination>& destinations,
-      network::AttributionReportingRuntimeFeatures
-          attribution_reporting_runtime_features,
       bool once,
       bool cross_origin_exposed);
 
@@ -41,14 +41,23 @@ class FencedDocumentData : public DocumentUserData<FencedDocumentData> {
   void MaybeResetAutomaticBeaconData(
       blink::mojom::AutomaticBeaconType event_type);
 
+  network::AttributionReportingRuntimeFeatures features() const {
+    return features_;
+  }
+
+  void SetFeatures(network::AttributionReportingRuntimeFeatures features) {
+    features_ = features;
+  }
+
  private:
   // No public constructors to force going through static methods of
   // DocumentUserData (e.g. CreateForCurrentDocument).
   explicit FencedDocumentData(RenderFrameHost* rfh);
 
   friend DocumentUserData;
-
   DOCUMENT_USER_DATA_KEY_DECL();
+
+  network::AttributionReportingRuntimeFeatures features_;
 
   // Stores data registered by the document in a fenced frame tree using
   // the `fence.setReportEventDataForAutomaticBeacons` API. Maps an event type

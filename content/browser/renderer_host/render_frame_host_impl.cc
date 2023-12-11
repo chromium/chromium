@@ -8512,6 +8512,12 @@ void RenderFrameHostImpl::SendPrivateAggregationRequestsForFencedFrameEvent(
       ->SendPrivateAggregationRequestsForEvent(event_type);
 }
 
+void RenderFrameHostImpl::SetAttributionReportingRuntimeFeatures(
+    network::AttributionReportingRuntimeFeatures features) {
+  FencedDocumentData::GetOrCreateForCurrentDocument(this)->SetFeatures(
+      features);
+}
+
 std::vector<FencedFrame*> RenderFrameHostImpl::GetFencedFrames() const {
   std::vector<FencedFrame*> result;
   for (const std::unique_ptr<FencedFrame>& fenced_frame : fenced_frames_)
@@ -8604,9 +8610,7 @@ void RenderFrameHostImpl::CreateFencedFrame(
 void RenderFrameHostImpl::SendFencedFrameReportingBeacon(
     const std::string& event_data,
     const std::string& event_type,
-    const std::vector<blink::FencedFrame::ReportingDestination>& destinations,
-    network::AttributionReportingRuntimeFeatures
-        attribution_reporting_runtime_features) {
+    const std::vector<blink::FencedFrame::ReportingDestination>& destinations) {
   if (!IsFencedFrameReportingFromRendererAllowed()) {
     return;
   }
@@ -8614,17 +8618,14 @@ void RenderFrameHostImpl::SendFencedFrameReportingBeacon(
   for (const blink::FencedFrame::ReportingDestination& destination :
        destinations) {
     SendFencedFrameReportingBeaconInternal(
-        DestinationEnumEvent(event_type, event_data), destination,
-        attribution_reporting_runtime_features);
+        DestinationEnumEvent(event_type, event_data), destination);
   }
 }
 
 // TODO(crbug.com/1400992): Move SendFencedFrameReportingBeaconToCustomURL into
 // a separate refcounted class, so that pending beacons can outlive the RFHI.
 void RenderFrameHostImpl::SendFencedFrameReportingBeaconToCustomURL(
-    const GURL& destination_url,
-    network::AttributionReportingRuntimeFeatures
-        attribution_reporting_runtime_features) {
+    const GURL& destination_url) {
   if (!base::FeatureList::IsEnabled(
           blink::features::kAdAuctionReportingWithMacroApi)) {
     mojo::ReportBadMessage(
@@ -8647,8 +8648,7 @@ void RenderFrameHostImpl::SendFencedFrameReportingBeaconToCustomURL(
 
   SendFencedFrameReportingBeaconInternal(
       DestinationURLEvent(destination_url),
-      blink::FencedFrame::ReportingDestination::kBuyer,
-      attribution_reporting_runtime_features);
+      blink::FencedFrame::ReportingDestination::kBuyer);
 }
 
 void RenderFrameHostImpl::MaybeSendFencedFrameAutomaticReportingBeacon(
@@ -8766,11 +8766,6 @@ void RenderFrameHostImpl::MaybeSendFencedFrameAutomaticReportingBeacon(
           blink::features::kFencedFramesM120FeaturesPart1)) {
     RecordAutomaticBeaconOutcome(blink::AutomaticBeaconOutcome::kSuccess);
 
-    network::AttributionReportingRuntimeFeatures
-        attribution_reporting_features =
-            info ? info->attribution_reporting_runtime_features
-                 : network::AttributionReportingRuntimeFeatures();
-
     for (const auto& destination :
          properties->fenced_frame_reporter_->ReportingDestinations()) {
       std::string data;
@@ -8784,7 +8779,7 @@ void RenderFrameHostImpl::MaybeSendFencedFrameAutomaticReportingBeacon(
       }
       initiator_rfh->SendFencedFrameReportingBeaconInternal(
           AutomaticBeaconEvent(event_type, data), destination,
-          attribution_reporting_features, navigation_request.GetNavigationId());
+          navigation_request.GetNavigationId());
     }
   } else {
     if (!info->destinations.empty()) {
@@ -8795,7 +8790,6 @@ void RenderFrameHostImpl::MaybeSendFencedFrameAutomaticReportingBeacon(
          info->destinations) {
       initiator_rfh->SendFencedFrameReportingBeaconInternal(
           AutomaticBeaconEvent(event_type, info->data), destination,
-          info->attribution_reporting_runtime_features,
           navigation_request.GetNavigationId());
     }
   }
@@ -8865,8 +8859,6 @@ bool RenderFrameHostImpl::IsFencedFrameReportingFromRendererAllowed() {
 void RenderFrameHostImpl::SendFencedFrameReportingBeaconInternal(
     const FencedFrameReporter::DestinationVariant& event_variant,
     blink::FencedFrame::ReportingDestination destination,
-    network::AttributionReportingRuntimeFeatures
-        attribution_reporting_runtime_features,
     absl::optional<int64_t> navigation_id) {
   if (absl::holds_alternative<DestinationEnumEvent>(event_variant) &&
       absl::get<DestinationEnumEvent>(event_variant).data.length() >
@@ -8883,11 +8875,25 @@ void RenderFrameHostImpl::SendFencedFrameReportingBeaconInternal(
   blink::mojom::ConsoleMessageLevel console_message_level =
       blink::mojom::ConsoleMessageLevel::kError;
 
+  FencedDocumentData* fenced_frame_data =
+      FencedDocumentData::GetForCurrentDocument(this);
+
+  // The FencedDocumentData is created on the initiative of the renderer when
+  // creating the document. It is expected to be received before receiving an
+  // IPC about the document initiating a new navigation, and before any
+  // window.fence.reportEvent call. They are using the same interface:
+  // LocalFrameHost, so they are expected to be received in order. The only
+  // other possibility is a compromised renderer:
+  if (!fenced_frame_data) {
+    bad_message::ReceivedBadMessage(
+        GetProcess(), bad_message::RFH_FENCED_DOCUMENT_DATA_NOT_FOUND);
+    return;
+  }
+
   if (!frame_tree_node_->GetFencedFrameProperties()
            ->fenced_frame_reporter_->SendReport(
-               event_variant, destination,
-               /*request_initiator_frame=*/this,
-               attribution_reporting_runtime_features, error_message,
+               event_variant, destination, /*request_initiator_frame=*/this,
+               fenced_frame_data->features(), error_message,
                console_message_level, GetFrameTreeNodeId(), navigation_id)) {
     AddMessageToConsole(console_message_level, error_message);
   }
@@ -8897,8 +8903,6 @@ void RenderFrameHostImpl::SetFencedFrameAutomaticBeaconReportEventData(
     blink::mojom::AutomaticBeaconType event_type,
     const std::string& event_data,
     const std::vector<blink::FencedFrame::ReportingDestination>& destinations,
-    network::AttributionReportingRuntimeFeatures
-        attribution_reporting_runtime_features,
     bool once,
     bool cross_origin_exposed) {
   if (!blink::features::IsFencedFramesEnabled()) {
@@ -8961,12 +8965,11 @@ void RenderFrameHostImpl::SetFencedFrameAutomaticBeaconReportEventData(
     auto* fenced_document_data =
         FencedDocumentData::GetOrCreateForCurrentDocument(this);
     fenced_document_data->UpdateAutomaticBeaconData(
-        event_type, event_data_to_use, destinations,
-        attribution_reporting_runtime_features, once, cross_origin_exposed);
+        event_type, event_data_to_use, destinations, once,
+        cross_origin_exposed);
   } else {
     owner_->SetFencedFrameAutomaticBeaconReportEventData(
-        event_type, event_data, destinations,
-        attribution_reporting_runtime_features, once, cross_origin_exposed);
+        event_type, event_data, destinations, once, cross_origin_exposed);
   }
 
   base::UmaHistogramEnumeration(blink::kAutomaticBeaconEventTypeHistogram,

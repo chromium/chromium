@@ -951,8 +951,6 @@ void FrameTreeNode::SetFencedFrameAutomaticBeaconReportEventData(
     blink::mojom::AutomaticBeaconType event_type,
     const std::string& event_data,
     const std::vector<blink::FencedFrame::ReportingDestination>& destinations,
-    network::AttributionReportingRuntimeFeatures
-        attribution_reporting_runtime_features,
     bool once,
     bool cross_origin_exposed) {
   absl::optional<FencedFrameProperties>& properties =
@@ -977,7 +975,6 @@ void FrameTreeNode::SetFencedFrameAutomaticBeaconReportEventData(
     return;
   }
   properties->UpdateAutomaticBeaconData(event_type, event_data, destinations,
-                                        attribution_reporting_runtime_features,
                                         once, cross_origin_exposed);
 }
 

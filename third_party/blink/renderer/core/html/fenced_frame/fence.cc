@@ -6,7 +6,6 @@
 
 #include "base/feature_list.h"
 #include "base/ranges/algorithm.h"
-#include "services/network/public/cpp/attribution_reporting_runtime_features.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/fenced_frame/fenced_frame_utils.h"
@@ -15,7 +14,6 @@
 #include "third_party/blink/public/mojom/frame/frame.mojom-blink.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_fence_event.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_union_fenceevent_string.h"
-#include "third_party/blink/renderer/core/frame/attribution_src_loader.h"
 #include "third_party/blink/renderer/core/frame/frame_owner.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/inspector/console_message.h"
@@ -145,16 +143,8 @@ void Fence::reportEventToDestinationEnum(ScriptState* script_state,
                           std::back_inserter(destinations),
                           ToPublicDestination);
 
-  network::AttributionReportingRuntimeFeatures
-      attribution_reporting_runtime_features;
-  if (AttributionSrcLoader* attribution_src_loader =
-          frame->GetAttributionSrcLoader()) {
-    attribution_reporting_runtime_features =
-        attribution_src_loader->GetRuntimeFeatures();
-  }
   frame->GetLocalFrameHostRemote().SendFencedFrameReportingBeacon(
-      event->getEventDataOr(String{""}), event->eventType(), destinations,
-      attribution_reporting_runtime_features);
+      event->getEventDataOr(String{""}), event->eventType(), destinations);
 }
 
 void Fence::reportEventToDestinationURL(ScriptState* script_state,
@@ -211,15 +201,8 @@ void Fence::reportEventToDestinationURL(ScriptState* script_state,
     return;
   }
 
-  network::AttributionReportingRuntimeFeatures
-      attribution_reporting_runtime_features;
-  if (AttributionSrcLoader* attribution_src_loader =
-          frame->GetAttributionSrcLoader()) {
-    attribution_reporting_runtime_features =
-        attribution_src_loader->GetRuntimeFeatures();
-  }
   frame->GetLocalFrameHostRemote().SendFencedFrameReportingBeaconToCustomURL(
-      destinationURL, attribution_reporting_runtime_features);
+      destinationURL);
 }
 
 void Fence::setReportEventDataForAutomaticBeacons(
@@ -281,21 +264,9 @@ void Fence::setReportEventDataForAutomaticBeacons(
                           std::back_inserter(destinations),
                           ToPublicDestination);
 
-  // TODO(crbug.com/1485222) The attribution reporting runtime features should
-  // be sent to the browser separately from the automatic beacon data, since
-  // it's not guaranteed that any beacon data will be set before an automatic
-  // beacon is sent out.
-  network::AttributionReportingRuntimeFeatures
-      attribution_reporting_runtime_features;
-  if (AttributionSrcLoader* attribution_src_loader =
-          frame->GetAttributionSrcLoader()) {
-    attribution_reporting_runtime_features =
-        attribution_src_loader->GetRuntimeFeatures();
-  }
   frame->GetLocalFrameHostRemote().SetFencedFrameAutomaticBeaconReportEventData(
       beacon_type.value(), event->getEventDataOr(String{""}), destinations,
-      attribution_reporting_runtime_features, event->once(),
-      event->crossOriginExposed());
+      event->once(), event->crossOriginExposed());
 }
 
 HeapVector<Member<FencedFrameConfig>> Fence::getNestedConfigs(

@@ -475,6 +475,7 @@ Called by update_bad_message_reasons.py.-->
   <int value="310" label="MSDH_SEND_WHEEL_BUT_CSC_FEATURE_DISABLED"/>
   <int value="311" label="MSDH_SEND_WHEEL_INVALID_ACTION"/>
   <int value="312" label="MSDH_GET_ZOOM_LEVEL_BUT_CSC_FEATURE_DISABLED"/>
+  <int value="313" label="RFH_FENCED_DOCUMENT_DATA_NOT_FOUND"/>
 </enum>
 
 <enum name="BadMessageReasonExtensions">

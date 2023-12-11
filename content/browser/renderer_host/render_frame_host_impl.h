@@ -2430,19 +2430,14 @@ class CONTENT_EXPORT RenderFrameHostImpl
   void SendFencedFrameReportingBeacon(
       const std::string& event_data,
       const std::string& event_type,
-      const std::vector<blink::FencedFrame::ReportingDestination>& destinations,
-      network::AttributionReportingRuntimeFeatures
-          attribution_reporting_runtime_features) override;
+      const std::vector<blink::FencedFrame::ReportingDestination>& destinations)
+      override;
   void SendFencedFrameReportingBeaconToCustomURL(
-      const GURL& destination_url,
-      network::AttributionReportingRuntimeFeatures
-          attribution_reporting_runtime_features) override;
+      const GURL& destination_url) override;
   void SetFencedFrameAutomaticBeaconReportEventData(
       blink::mojom::AutomaticBeaconType event_type,
       const std::string& event_data,
       const std::vector<blink::FencedFrame::ReportingDestination>& destinations,
-      network::AttributionReportingRuntimeFeatures
-          attribution_reporting_runtime_features,
       bool once,
       bool cross_origin_exposed) override;
   void SendLegacyTechEvent(
@@ -2450,6 +2445,8 @@ class CONTENT_EXPORT RenderFrameHostImpl
       blink::mojom::LegacyTechEventCodeLocationPtr code_location) override;
   void SendPrivateAggregationRequestsForFencedFrameEvent(
       const std::string& event_type) override;
+  void SetAttributionReportingRuntimeFeatures(
+      network::AttributionReportingRuntimeFeatures features) override;
   void CreateFencedFrame(
       mojo::PendingAssociatedReceiver<blink::mojom::FencedFrameOwnerHost>
           pending_receiver,
@@ -4045,14 +4042,9 @@ class CONTENT_EXPORT RenderFrameHostImpl
 
   // Helper function that handles creating and sending a fenced frame beacon for
   // a given destination.
-  // `attribution_reporting_runtime_features` indicates whether Attribution
-  // Reporting API related runtime features are enabled and is needed for
-  // integration with Attribution Reporting API.
   void SendFencedFrameReportingBeaconInternal(
       const FencedFrameReporter::DestinationVariant& event_variant,
       blink::FencedFrame::ReportingDestination destination,
-      network::AttributionReportingRuntimeFeatures
-          attribution_reporting_features,
       absl::optional<int64_t> navigation_id = absl::nullopt);
 
   // Indicates whether this frame has third-party storage
