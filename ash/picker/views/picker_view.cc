@@ -6,6 +6,7 @@
 
 #include <memory>
 
+#include "ash/picker/views/picker_contents_view.h"
 #include "ash/picker/views/picker_search_field_view.h"
 #include "ash/picker/views/picker_user_education_view.h"
 #include "ash/public/cpp/ash_web_view.h"
@@ -48,11 +49,6 @@ std::unique_ptr<AshWebView> CreateWebView(PickerView::Delegate& delegate) {
   view->Navigate(GURL("chrome://picker"));
   view->SetLayoutManager(std::make_unique<views::FillLayout>());
   // Fill up all remaining space with the view.
-  view->SetProperty(
-      views::kFlexBehaviorKey,
-      views::FlexSpecification(views::MinimumFlexSizeRule::kScaleToZero,
-                               views::MaximumFlexSizeRule::kUnbounded)
-          .WithWeight(1));
   return view;
 }
 
@@ -75,7 +71,14 @@ PickerView::PickerView(std::unique_ptr<Delegate> delegate,
   // Automatically focus on the search field.
   SetInitiallyFocusedView(search_field_view_);
 
-  web_view_ = AddChildView(CreateWebView(*delegate));
+  contents_view_ = AddChildView(std::make_unique<PickerContentsView>());
+  contents_view_->SetProperty(
+      views::kFlexBehaviorKey,
+      views::FlexSpecification(views::MinimumFlexSizeRule::kScaleToZero,
+                               views::MaximumFlexSizeRule::kUnbounded)
+          .WithWeight(1));
+
+  web_view_ = contents_view_->AddPage(CreateWebView(*delegate));
 
   user_education_view_ =
       AddChildView(std::make_unique<PickerUserEducationView>());
