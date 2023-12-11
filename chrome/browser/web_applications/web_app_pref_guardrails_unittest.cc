@@ -14,6 +14,7 @@
 #include "chrome/browser/web_applications/test/web_app_test.h"
 #include "chrome/browser/web_applications/web_app_constants.h"
 #include "chrome/browser/web_applications/web_app_prefs_utils.h"
+#include "chrome/common/chrome_features.h"
 #include "chrome/common/pref_names.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
 #include "components/webapps/browser/features.h"
@@ -543,5 +544,153 @@ TEST_F(WebAppPrefsMLGuardrailsMaxStorageTest, ClearAndResetGuardrails) {
   EXPECT_TRUE(agnostic_not_installed_count.has_value());
   EXPECT_EQ(agnostic_not_installed_count, 0);
 }
+
+#if !BUILDFLAG(IS_CHROMEOS)
+class WebAppPrefsLinkCapturingIPHGuardrailsTest : public WebAppTest {
+ public:
+  WebAppPrefsLinkCapturingIPHGuardrailsTest()
+      : WebAppTest(base::test::TaskEnvironment::TimeSource::MOCK_TIME) {
+    WebAppPrefsUtilsRegisterProfilePrefs(prefs_.registry());
+    base::FieldTrialParams params;
+    params["link_capturing_guardrail_storage_duration"] = "2";
+    feature_list_.InitAndEnableFeatureWithParameters(
+        features::kDesktopPWAsLinkCapturing, std::move(params));
+  }
+
+  void SetUp() override { WebAppTest::SetUp(); }
+
+  bool IsDesktopIphBlockedTimeSet() {
+    const auto& dict =
+        prefs()->GetDict(prefs::kWebAppsAppAgnosticIPHLinkCapturingState);
+    return dict.contains(kIPHLinkCapturingPrefNames.all_blocked_time_name);
+  }
+
+  absl::optional<base::Time> GetIphBlockedTime() {
+    const auto& dict =
+        prefs()->GetDict(prefs::kWebAppsAppAgnosticIPHLinkCapturingState);
+    auto* value =
+        dict.FindByDottedPath(kIPHLinkCapturingPrefNames.all_blocked_time_name);
+    EXPECT_NE(value, nullptr) << " ";
+    return base::ValueToTime(value);
+  }
+
+  void FastForwardTimeForMaxDaysToStoreGuardrails() {
+    task_environment()->FastForwardBy(
+        base::Days(features::kLinkCapturingIPHGuardrailStorageDuration.Get()));
+  }
+
+  bool IsDesktopLinkCapturingIphBlocked(const webapps::AppId& app) {
+    return guardrails().IsBlockedByGuardrails(app);
+  }
+
+  void ForceUserBlockedOnIphGuardrails() {
+    const std::vector<webapps::AppId> apps{"app1", "app2", "app3",
+                                           "app4", "app5", "app6"};
+    for (const webapps::AppId& app : apps) {
+      guardrails().RecordIgnore(app, base::Time::Now());
+      task_environment()->FastForwardBy(base::Milliseconds(1));
+    }
+    EXPECT_TRUE(IsDesktopLinkCapturingIphBlocked("app_id"));
+    task_environment()->FastForwardBy(base::Milliseconds(1));
+  }
+
+ protected:
+  WebAppPrefGuardrails guardrails() {
+    return WebAppPrefGuardrails::GetForLinkCapturingIPH(prefs());
+  }
+  sync_preferences::TestingPrefServiceSyncable* prefs() { return &prefs_; }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+  sync_preferences::TestingPrefServiceSyncable prefs_;
+};
+
+TEST_F(WebAppPrefsLinkCapturingIPHGuardrailsTest, Ignore) {
+  EXPECT_FALSE(
+      web_app::GetTimeWebAppPref(
+          prefs(), app_id, kIPHLinkCapturingPrefNames.last_ignore_time_name)
+          .has_value());
+  EXPECT_FALSE(
+      web_app::GetIntWebAppPref(
+          prefs(), app_id, kIPHLinkCapturingPrefNames.not_accepted_count_name)
+          .has_value());
+
+  guardrails().RecordIgnore(app_id, base::Time::Now());
+  EXPECT_EQ(
+      web_app::GetIntWebAppPref(
+          prefs(), app_id, kIPHLinkCapturingPrefNames.not_accepted_count_name)
+          .value_or(0),
+      1);
+  auto last_ignore_time = web_app::GetTimeWebAppPref(
+      prefs(), app_id, kIPHLinkCapturingPrefNames.last_ignore_time_name);
+  EXPECT_TRUE(last_ignore_time.has_value());
+  {
+    const auto& dict =
+        prefs()->GetDict(prefs::kWebAppsAppAgnosticIPHLinkCapturingState);
+    EXPECT_EQ(dict.FindInt(kIPHLinkCapturingPrefNames.not_accepted_count_name)
+                  .value_or(0),
+              1);
+    EXPECT_EQ(base::ValueToTime(
+                  dict.Find(kIPHLinkCapturingPrefNames.last_ignore_time_name)),
+              last_ignore_time.value());
+  }
+}
+
+TEST_F(WebAppPrefsLinkCapturingIPHGuardrailsTest, Accept) {
+  guardrails().RecordIgnore(app_id, base::Time::Now());
+  EXPECT_EQ(
+      web_app::GetIntWebAppPref(
+          prefs(), app_id, kIPHLinkCapturingPrefNames.not_accepted_count_name)
+          .value_or(0),
+      1);
+  {
+    const auto& dict =
+        prefs()->GetDict(prefs::kWebAppsAppAgnosticIPHLinkCapturingState);
+    EXPECT_EQ(dict.FindInt(kIPHLinkCapturingPrefNames.not_accepted_count_name)
+                  .value_or(0),
+              1);
+  }
+  guardrails().RecordAccept(app_id);
+  EXPECT_EQ(
+      web_app::GetIntWebAppPref(
+          prefs(), app_id, kIPHLinkCapturingPrefNames.not_accepted_count_name)
+          .value_or(0),
+      0);
+  {
+    const auto& dict =
+        prefs()->GetDict(prefs::kWebAppsAppAgnosticIPHLinkCapturingState);
+    EXPECT_EQ(dict.FindInt(kIPHLinkCapturingPrefNames.not_accepted_count_name)
+                  .value_or(0),
+              0);
+  }
+}
+
+TEST_F(WebAppPrefsLinkCapturingIPHGuardrailsTest,
+       GuardrailsBlockedAfter6Ignores) {
+  EXPECT_FALSE(IsDesktopIphBlockedTimeSet());
+
+  ForceUserBlockedOnIphGuardrails();
+  EXPECT_TRUE(IsDesktopIphBlockedTimeSet());
+  EXPECT_TRUE(GetIphBlockedTime().has_value());
+}
+
+TEST_F(WebAppPrefsLinkCapturingIPHGuardrailsTest, ClearAndResetGuardrails) {
+  ForceUserBlockedOnIphGuardrails();
+  EXPECT_TRUE(IsDesktopIphBlockedTimeSet());
+
+  FastForwardTimeForMaxDaysToStoreGuardrails();
+
+  EXPECT_FALSE(IsDesktopLinkCapturingIphBlocked("app"));
+  EXPECT_FALSE(IsDesktopIphBlockedTimeSet());
+
+  const base::Value::Dict& dict =
+      prefs()->GetDict(prefs::kWebAppsAppAgnosticIPHLinkCapturingState);
+  absl::optional<int> agnostic_not_installed_count =
+      dict.FindInt(kIPHLinkCapturingPrefNames.not_accepted_count_name);
+  EXPECT_TRUE(agnostic_not_installed_count.has_value());
+  EXPECT_EQ(*agnostic_not_installed_count, 0);
+}
+
+#endif  // !BUILDFLAG(IS_CHROMEOS)
 
 }  // namespace web_app

@@ -327,11 +327,17 @@ BASE_FEATURE(kDesktopPWAsIconHealthChecks,
              "DesktopPWAsIconHealthChecks",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+#if !BUILDFLAG(IS_CHROMEOS) || !BUILDFLAG(IS_ANDROID)
 BASE_FEATURE(kDesktopPWAsLinkCapturing,
              "DesktopPWAsLinkCapturing",
              base::FEATURE_DISABLED_BY_DEFAULT);
 const base::FeatureParam<bool> kLinksCapturedByDefault{
     &kDesktopPWAsLinkCapturing, "on_by_default", true};
+
+const base::FeatureParam<int> kLinkCapturingIPHGuardrailStorageDuration{
+    &kDesktopPWAsLinkCapturing, "link_capturing_guardrail_storage_duration",
+    kTotalDaysToStoreLinkCapturingIPHGuardrails};
+#endif  // !BUILDFLAG(IS_CHROMEOS) || !BUILDFLAG(IS_ANDROID)
 
 // Adds a user settings that allows PWAs to be opened with a tab strip.
 BASE_FEATURE(kDesktopPWAsTabStripSettings,
