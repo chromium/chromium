@@ -10,8 +10,6 @@
 #include "ash/shell.h"
 #include "ash/wm/overview/overview_controller.h"
 #include "ash/wm/resize_shadow.h"
-#include "base/debug/stack_trace.h"
-#include "base/logging.h"
 #include "chromeos/constants/chromeos_features.h"
 #include "chromeos/ui/base/window_state_type.h"
 #include "chromeos/ui/frame/frame_utils.h"
