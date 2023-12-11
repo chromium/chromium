@@ -119,6 +119,11 @@ extern const base::FeatureParam<bool> kTpcdReadHeuristicsGrants;
 COMPONENT_EXPORT(CONTENT_SETTINGS_FEATURES)
 BASE_DECLARE_FEATURE(kContentSettingsPartitioning);
 
+// Enables writing and reading metadata grants as a host-indexed data structure.
+// This is meant to optimize lookups when the list is large.
+COMPONENT_EXPORT(CONTENT_SETTINGS_FEATURES)
+BASE_DECLARE_FEATURE(kHostIndexedMetadataGrants);
+
 }  // namespace features
 }  // namespace content_settings
 
