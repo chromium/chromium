@@ -56,8 +56,10 @@ void LogEditAddressProfileDialogClosed(bool user_saved_changes) {
                             user_saved_changes);
 }
 
-void LogDeleteAddressProfileDialogClosed(bool user_accepted_delete) {
-  base::UmaHistogramBoolean("Autofill.ExtendedMenu.DeleteAddress",
+void LogDeleteAddressProfileFromExtendedMenu(bool user_accepted_delete) {
+  base::UmaHistogramBoolean("Autofill.ProfileDeleted.ExtendedMenu",
+                            user_accepted_delete);
+  base::UmaHistogramBoolean("Autofill.ProfileDeleted.Any",
                             user_accepted_delete);
 }
 

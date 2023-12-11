@@ -694,7 +694,8 @@ TEST_F(AutofillExternalDelegateUnitTest, UserCancelsDeletion) {
 
   external_delegate().DidAcceptSuggestion(suggestion,
                                           SuggestionPosition{.row = 0});
-  histogram.ExpectUniqueSample("Autofill.ExtendedMenu.DeleteAddress", 0, 1);
+  histogram.ExpectUniqueSample("Autofill.ProfileDeleted.ExtendedMenu", 0, 1);
+  histogram.ExpectUniqueSample("Autofill.ProfileDeleted.Any", 0, 1);
 }
 
 // Test that the correct Autofill profile is deleted when the user accepts the
@@ -725,7 +726,8 @@ TEST_F(AutofillExternalDelegateUnitTest, UserAcceptsDeletion) {
                                           SuggestionPosition{.row = 0});
 
   external_delegate().OnPersonalDataFinishedProfileTasks();
-  histogram.ExpectUniqueSample("Autofill.ExtendedMenu.DeleteAddress", 1, 1);
+  histogram.ExpectUniqueSample("Autofill.ProfileDeleted.ExtendedMenu", 1, 1);
+  histogram.ExpectUniqueSample("Autofill.ProfileDeleted.Any", 1, 1);
 }
 
 // Test the situation when AutofillExternalDelegate is destroyed before the

@@ -58,7 +58,7 @@ void LogEditAddressProfileDialogClosed(bool user_saved_changes);
 
 // This metric is only relevant for granular filling, i.e. when the delete
 // dialog is opened from the Autofill popup.
-void LogDeleteAddressProfileDialogClosed(bool user_accepted_delete);
+void LogDeleteAddressProfileFromExtendedMenu(bool user_accepted_delete);
 
 // Logs the `AutofillFillingMethodMetric` chosen by the user.
 void LogFillingMethodUsed(AutofillFillingMethodMetric filling_method);

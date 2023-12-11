@@ -6121,9 +6121,9 @@ Called by update_autofill_enums.py.-->
   <int value="1" label="Attempted"/>
 </enum>
 
-<enum name="BooleanAutofillExtendedMenuDeleteAddress">
+<enum name="BooleanAutofillDeleteAddress">
   <int value="0" label="Canceled"/>
-  <int value="1" label="Deleted"/>
+  <int value="1" label="Confirmed"/>
 </enum>
 
 <enum name="BooleanAutofillExtendedMenuEditAddress">

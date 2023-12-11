@@ -866,7 +866,8 @@ void AutofillExternalDelegate::OnAddressEditorClosed(
 
 void AutofillExternalDelegate::OnDeleteDialogClosed(const std::string& guid,
                                                     bool user_accepted_delete) {
-  autofill_metrics::LogDeleteAddressProfileDialogClosed(user_accepted_delete);
+  autofill_metrics::LogDeleteAddressProfileFromExtendedMenu(
+      user_accepted_delete);
   if (user_accepted_delete) {
     PersonalDataManager* pdm = manager_->client().GetPersonalDataManager();
     if (!pdm_observation_.IsObserving()) {

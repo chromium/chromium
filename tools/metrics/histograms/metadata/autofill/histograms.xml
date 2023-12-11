@@ -1683,17 +1683,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Autofill.ExtendedMenu.DeleteAddress"
-    enum="BooleanAutofillExtendedMenuDeleteAddress" expires_after="2024-10-01">
-  <owner>tchudakov@google.com</owner>
-  <owner>chrome-autofill-alerts@google.com</owner>
-  <summary>
-    This metric measures how many users Clicked on the Delete Address option in
-    the extended Autofill menu and the next action. The metric is logged when
-    the user closes the delete address profile dialog.
-  </summary>
-</histogram>
-
 <histogram name="Autofill.ExtendedMenu.EditAddress"
     enum="BooleanAutofillExtendedMenuEditAddress" expires_after="2024-10-01">
   <owner>tchudakov@google.com</owner>
@@ -3443,6 +3432,35 @@ chromium-metrics-reviews@google.com.
   <summary>
     The profile action that took place when a form was submitted.
   </summary>
+</histogram>
+
+<histogram name="Autofill.ProfileDeleted.{DeletionType}"
+    enum="BooleanAutofillDeleteAddress" expires_after="2024-10-01">
+  <owner>tchudakov@google.com</owner>
+  <owner>chrome-autofill-alerts@google.com</owner>
+  <summary>
+    Autofill.ProfileDeleted can be emitted in 3 scenarios: ExtendedMenu,
+    Settings and Popup. This metric is emitted for the {DeletionType} scenario.
+    For ExtendedMenu and Settings, it counts how many users clicked on the
+    &quot;Delete Address&quot; option in the extended autofill menu or in
+    chrome://settings and whether they canceled or confirmed the deletion. The
+    metric is logged when the user closes the delete address profile dialog. For
+    Popup, it counts how many users deleted an address using shift+delete while
+    hovering on a first-level popup. This metric is emitted only for the
+    &quot;Confirmed&quot; bucket, as the user cannot cancel it. There is also
+    the &quot;Any&quot; variant, which is also recorded in all of the 3
+    scenarios in order to keep track of the total number of deletions regardless
+    where they come from.
+  </summary>
+  <token key="DeletionType">
+    <variant name="Any"
+        summary="All deletions are also recorded in this bucket."/>
+    <variant name="ExtendedMenu"
+        summary="Delete from the extended autofill menu."/>
+    <variant name="Popup"
+        summary="Delete using shift+delete on a first-level popup."/>
+    <variant name="Settings" summary="Delete from chrome://settings."/>
+  </token>
 </histogram>
 
 <histogram name="Autofill.ProfileImport.InaccessibleFieldsRemoved.ByFieldType"
