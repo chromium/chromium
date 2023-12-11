@@ -1102,7 +1102,9 @@ void GpuChannelManager::OnContextLost(
 void GpuChannelManager::ScheduleGrContextCleanup() {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
 
-  shared_context_state_->ScheduleSkiaCleanup();
+  if (shared_context_state_) {
+    shared_context_state_->ScheduleSkiaCleanup();
+  }
 }
 
 void GpuChannelManager::StoreShader(const std::string& key,
