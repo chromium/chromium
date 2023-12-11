@@ -414,6 +414,8 @@ class Cache::BarrierCallbackForPutComplete final
     MaybeReportInstalledScripts();
     int operation_count = batch_operations_.size();
     DCHECK_GE(operation_count, 1);
+
+    mojo::internal::AutoRecordReplayAssertBufferAllocations asserts("RUN-2445-3010");
     // Make sure to bind the Cache object to keep the mojo remote alive during
     // the operation. Otherwise GC might prevent the callback from ever being
     // executed.
@@ -934,6 +936,7 @@ ScriptPromise Cache::MatchImpl(ScriptState* script_state,
     in_range_fetch_event = global_scope->HasRangeFetchEvent(request->url());
   }
 
+  mojo::internal::AutoRecordReplayAssertBufferAllocations asserts("RUN-2445-3010");
   // Make sure to bind the Cache object to keep the mojo remote alive during
   // the operation. Otherwise GC might prevent the callback from ever being
   // executed.
@@ -1027,6 +1030,7 @@ ScriptPromise Cache::MatchAllImpl(ScriptState* script_state,
     return promise;
   }
 
+  mojo::internal::AutoRecordReplayAssertBufferAllocations asserts("RUN-2445-3010");
   // Make sure to bind the Cache object to keep the mojo remote alive during
   // the operation. Otherwise GC might prevent the callback from ever being
   // executed.
@@ -1151,6 +1155,7 @@ ScriptPromise Cache::DeleteImpl(ScriptState* script_state,
     return promise;
   }
 
+  mojo::internal::AutoRecordReplayAssertBufferAllocations asserts("RUN-2445-3010");
   // Make sure to bind the Cache object to keep the mojo remote alive during
   // the operation. Otherwise GC might prevent the callback from ever being
   // executed.
@@ -1273,6 +1278,7 @@ ScriptPromise Cache::KeysImpl(ScriptState* script_state,
     return promise;
   }
 
+  mojo::internal::AutoRecordReplayAssertBufferAllocations asserts("RUN-2445-3010");
   // Make sure to bind the Cache object to keep the mojo remote alive during
   // the operation. Otherwise GC might prevent the callback from ever being
   // executed.
