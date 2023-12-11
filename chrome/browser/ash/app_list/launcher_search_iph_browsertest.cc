@@ -62,12 +62,6 @@ constexpr char kNotifyUsedEventUserActionName[] =
 constexpr char kNotifyEventUserActionName[] =
     "InProductHelp.NotifyEvent.IPH_LauncherSearchHelpUi";
 
-constexpr char kIphConfigParamNameEventUsed[] = "event_used";
-constexpr char kIphConfigParamNameEventTrigger[] = "event_trigger";
-constexpr char kIphConfigParamNameEvent1[] = "event_1";
-constexpr char kIphConfigParamNameAvailability[] = "availability";
-constexpr char kIphConfigParamNameSessionRate[] = "session_rate";
-
 class ViewWaiter : public views::ViewObserver {
  public:
   ViewWaiter(views::View* observed_view, int view_id)
@@ -290,33 +284,14 @@ class AppListIphBrowserTest : public MixinBasedInProcessBrowserTest,
 class AppListIphBrowserTestWithTestConfig : public AppListIphBrowserTest {
  public:
   void SetUpCommandLine(base::CommandLine* command_line) override {
-    base::FieldTrialParams params;
-    params[kIphConfigParamNameAvailability] = "any";
-    params[kIphConfigParamNameSessionRate] = "any";
-    params[kIphConfigParamNameEventUsed] =
-        base::StringPrintf("name:%s;comparator:any;window:365;storage:365",
-                           ash::LauncherSearchIphView::kIphEventNameChipClick);
-    // Trigger event is not used for this test config. Note that a trigger event
-    // gets incremented every time an IPH is shown.
-    params[kIphConfigParamNameEventTrigger] =
-        "name:IPH_LauncherSearchHelpUi_trigger;comparator:any;window:365;"
-        "storage:365";
-    params[kIphConfigParamNameEvent1] = base::StringPrintf(
-        "name:%s;comparator:==0;window:365;storage:365",
-        ash::LauncherSearchIphView::kIphEventNameAssistantClick);
-
-    scoped_iph_feature_list_ =
-        std::make_unique<feature_engagement::test::ScopedIphFeatureList>();
-    scoped_iph_feature_list_->InitAndEnableFeaturesWithParameters(
-        {base::test::FeatureRefAndParams(
-            feature_engagement::kIPHLauncherSearchHelpUiFeature, params)});
+    scoped_iph_feature_list_.InitAndEnableFeatures(
+        {feature_engagement::kIPHLauncherSearchHelpUiFeature});
 
     MixinBasedInProcessBrowserTest::SetUpCommandLine(command_line);
   }
 
  private:
-  std::unique_ptr<feature_engagement::test::ScopedIphFeatureList>
-      scoped_iph_feature_list_;
+  feature_engagement::test::ScopedIphFeatureList scoped_iph_feature_list_;
 };
 
 IN_PROC_BROWSER_TEST_P(AppListIphBrowserTest,
@@ -333,7 +308,7 @@ IN_PROC_BROWSER_TEST_P(AppListIphBrowserTestWithTestConfig, LauncherSearchIph) {
     EXPECT_TRUE(search_box_view()->assistant_button()->GetBackground());
   }
 
-  // IPH should be kept being shown as long as the trigger condition in the test
+  // IPH should be kept being shown as long as the trigger condition in the IPH
   // config matches.
   DismissAppList();
   OpenAppListAndWaitForIphView();
@@ -388,7 +363,7 @@ IN_PROC_BROWSER_TEST_P(AppListIphBrowserTestWithTestConfigClamshell,
   EXPECT_FALSE(IsLauncherSearchIphViewVisible());
 
   // Dismiss the app list and show it again. IPH won't be shown this time. Note
-  // that this behavior is coming from the IPH test config.
+  // that this behavior is coming from the IPH config.
   DismissAppList();
   OpenAppListForSearch();
   EXPECT_FALSE(IsLauncherSearchIphViewVisible());
@@ -401,7 +376,7 @@ IN_PROC_BROWSER_TEST_P(AppListIphBrowserTestWithTestConfigClamshell,
 IN_PROC_BROWSER_TEST_P(AppListIphBrowserTestWithTestConfig, ClickChip) {
   OpenAppListAndWaitForIphView();
 
-  // Chip click is specified as EventUsed in the test config.
+  // Chip click is specified as EventUsed in the config.
   base::UserActionTester user_action_tester;
   auto* chip = static_cast<ash::ChipView*>(search_box_view()->GetViewByID(
       ash::LauncherSearchIphView::ViewId::kChipStart));
@@ -414,6 +389,13 @@ IN_PROC_BROWSER_TEST_P(AppListIphBrowserTestWithTestConfig, ClickChip) {
   EXPECT_EQ(text, app_list_client_impl()->search_controller()->get_query());
   EXPECT_TRUE(IsSearchPageActive());
   EXPECT_FALSE(IsLauncherSearchIphViewVisible());
+
+  // IPH should be kept being shown as long as the trigger condition in the IPH
+  // config matches.
+  DismissAppList();
+  // Open Launcher again, will still show IPH.
+  OpenAppListAndWaitForIphView();
+  EXPECT_TRUE(IsLauncherSearchIphViewVisible());
 }
 
 IN_PROC_BROWSER_TEST_P(AppListIphBrowserTestWithTestConfig,
@@ -441,7 +423,7 @@ IN_PROC_BROWSER_TEST_P(AppListIphBrowserTestWithTestConfig,
   EXPECT_FALSE(IsLauncherSearchIphViewVisible());
 
   // Dismiss the app list and show it again. IPH won't be shown this time. Note
-  // that this behavior is coming from the IPH test config.
+  // that this behavior is coming from the IPH config.
   DismissAppList();
   OpenAppListForSearch();
   EXPECT_FALSE(IsLauncherSearchIphViewVisible());

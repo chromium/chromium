@@ -1994,6 +1994,31 @@ absl::optional<FeatureConfig> GetClientSideFeatureConfig(
   }
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  if (kIPHLauncherSearchHelpUiFeature.name == feature->name) {
+    // A config that allows the ChromeOS Ash Launcher search IPH to be shown.
+    absl::optional<FeatureConfig> config = FeatureConfig();
+    config->valid = true;
+    config->availability = Comparator(ANY, 0);
+    config->session_rate = Comparator(ANY, 0);
+    config->session_rate_impact.type = SessionRateImpact::Type::NONE;
+    config->blocked_by.type = BlockedBy::Type::NONE;
+    config->blocking.type = Blocking::Type::NONE;
+
+    // Can be shown any time until the `assistant_click` event is recorded.
+    config->trigger =
+        EventConfig("IPH_LauncherSearchHelpUi_trigger", Comparator(ANY, 0),
+                    kMaxStoragePeriod, kMaxStoragePeriod);
+    config->used =
+        EventConfig("IPH_LauncherSearchHelpUi_chip_click", Comparator(ANY, 0),
+                    kMaxStoragePeriod, kMaxStoragePeriod);
+    config->event_configs.insert(EventConfig(
+        "IPH_LauncherSearchHelpUi_assistant_click", Comparator(EQUAL, 0),
+        kMaxStoragePeriod, kMaxStoragePeriod));
+    return config;
+  }
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+
   if (kIPHDummyFeature.name == feature->name) {
     // Only used for tests. Various magic tricks are used below to ensure this
     // config is invalid and unusable.
