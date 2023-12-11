@@ -17904,6 +17904,16 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
+<action name="LinkCapturingIPHAppBubbleIgnored">
+  <owner>dibyapal@google.com</owner>
+  <owner>desktop-pwas-team@google.com</owner>
+  <description>
+    Recorded when the user dismisses or ignores the IPH bubble that pops up
+    whenever an app is opened via a link capturing workflow due to the app being
+    set to support links by default.
+  </description>
+</action>
+
 <action name="LinkCapturingIPHAppSettingsOpened">
   <owner>dibyapal@google.com</owner>
   <owner>desktop-pwas-team@google.com</owner>

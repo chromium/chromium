@@ -17,6 +17,7 @@
 #include "chrome/browser/web_applications/web_app_install_info.h"
 #include "chrome/browser/web_applications/web_app_uninstall_dialog_user_options.h"
 #include "third_party/skia/include/core/SkBitmap.h"
+#include "ui/base/interaction/element_identifier.h"
 #include "ui/gfx/native_widget_types.h"
 
 static_assert(BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) ||
@@ -24,6 +25,7 @@ static_assert(BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) ||
 
 class GURL;
 class Profile;
+class Browser;
 
 namespace base {
 class FilePath;
@@ -171,6 +173,11 @@ void SetAutoAcceptPWAInstallConfirmationForTesting(bool auto_accept);
 // Shows the Isolated Web App manual install wizard.
 void LaunchIsolatedWebAppInstaller(Profile* profile,
                                    const base::FilePath& bundle_path);
+
+void PostCallbackOnBrowserActivation(
+    const Browser* browser,
+    ui::ElementIdentifier id,
+    base::OnceCallback<void(bool)> view_and_element_activated_callback);
 
 }  // namespace web_app
 

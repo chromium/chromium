@@ -15,10 +15,11 @@
 #include "base/files/file_path.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
-#include "base/functional/callback_helpers.h"
 #include "base/location.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
+#include "base/metrics/user_metrics.h"
+#include "base/metrics/user_metrics_action.h"
 #include "base/one_shot_event.h"
 #include "base/strings/string_piece.h"
 #include "base/task/sequenced_task_runner.h"
@@ -27,6 +28,7 @@
 #include "chrome/browser/apps/app_service/app_launch_params.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/browser_navigator.h"
@@ -46,6 +48,8 @@
 #include "chrome/browser/web_applications/web_app_registrar.h"
 #include "chrome/browser/web_applications/web_app_ui_manager.h"
 #include "chrome/browser/web_applications/web_app_uninstall_dialog_user_options.h"
+#include "components/feature_engagement/public/feature_constants.h"
+#include "components/user_education/common/feature_promo_controller.h"
 #include "components/webapps/browser/installable/installable_metrics.h"
 #include "components/webapps/browser/uninstall_result_code.h"
 #include "components/webapps/common/web_app_id.h"
@@ -531,6 +535,32 @@ void WebAppUiManagerImpl::MaybeCreateEnableSupportedLinksInfobar(
 #endif  // !BUILDFLAG(IS_CHROMEOS)
 }
 
+void WebAppUiManagerImpl::MaybeShowIPHPromoForAppsLaunchedViaLinkCapturing(
+    content::WebContents* web_contents,
+    Profile* profile,
+    const std::string& app_id) {
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
+  WebAppProvider* provider = WebAppProvider::GetForWebApps(profile);
+  CHECK(provider);
+
+  if (!provider->registrar_unsafe().CapturesLinksInScope(app_id)) {
+    return;
+  }
+
+  const Browser* app_browser =
+      AppBrowserController::FindForWebApp(*profile, app_id);
+  if (!app_browser) {
+    return;
+  }
+
+  web_app::PostCallbackOnBrowserActivation(
+      app_browser, kToolbarAppMenuButtonElementId,
+      base::BindOnce(
+          &WebAppUiManagerImpl::ShowIPHPromoForAppsLaunchedViaLinkCapturing,
+          weak_ptr_factory_.GetWeakPtr(), app_browser));
+#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
+}
+
 void WebAppUiManagerImpl::OnBrowserAdded(Browser* browser) {
   DCHECK(started_);
   if (!IsBrowserForInstalledApp(browser)) {
@@ -690,5 +720,24 @@ void WebAppUiManagerImpl::ClearWebAppSiteDataIfNeeded(
     std::move(final_uninstall_callback).Run();
   }
 }
+
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
+void WebAppUiManagerImpl::ShowIPHPromoForAppsLaunchedViaLinkCapturing(
+    const Browser* browser,
+    bool is_activated) {
+  if (!is_activated) {
+    return;
+  }
+
+  user_education::FeaturePromoParams promo_params(
+      feature_engagement::kIPHDesktopPWAsLinkCapturingLaunch);
+  promo_params.close_callback = base::BindOnce([]() {
+    base::RecordAction(
+        base::UserMetricsAction("LinkCapturingIPHAppBubbleIgnored"));
+  });
+
+  browser->window()->MaybeShowFeaturePromo(std::move(promo_params));
+}
+#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
 
 }  // namespace web_app

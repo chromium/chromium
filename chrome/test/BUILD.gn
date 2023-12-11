@@ -3406,7 +3406,6 @@ if (!is_android) {
       sources += [
         "../browser/external_protocol/external_protocol_policy_browsertest.cc",
         "../browser/lifetime/application_lifetime_browsertest.cc",
-        "../browser/ui/views/default_intent_picker_browsertest.cc",
         "../browser/ui/views/enable_link_capturing_infobar_browsertest.cc",
       ]
       deps += [ "//chrome/browser/apps/link_capturing" ]
@@ -10448,6 +10447,7 @@ if (!is_android) {
       "//components/storage_monitor:test_support",
       "//components/supervised_user/core/browser/proto",
       "//components/sync:test_support",
+      "//components/user_education/views:views",
       "//components/user_manager",
       "//components/webapps/browser",
       "//components/webapps/common",
@@ -10775,6 +10775,11 @@ if (!is_android && !is_chromeos_device) {
       "base/interactive_ui_tests_main.cc",
     ]
 
+    if (is_mac || is_linux || is_win) {
+      sources +=
+          [ "../browser/ui/views/default_link_capturing_interactive_uitest.cc" ]
+    }
+
     configs += [ "//build/config:precompiled_headers" ]
     if ((is_linux || is_chromeos) && !is_component_build) {
       configs += [ "//build/config/gcc:rpath_for_built_shared_libraries" ]
@@ -10810,6 +10815,7 @@ if (!is_android && !is_chromeos_device) {
       "//chrome/browser/apps/app_service",
       "//chrome/browser/apps/app_service:app_registry_cache_waiter",
       "//chrome/browser/apps/link_capturing",
+      "//chrome/browser/apps/link_capturing:test_support",
       "//chrome/browser/autofill",
       "//chrome/browser/autofill:interactive_ui_tests",
       "//chrome/browser/autofill:test_support_ui",

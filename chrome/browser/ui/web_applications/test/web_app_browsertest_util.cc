@@ -16,6 +16,7 @@
 #include "base/functional/callback_helpers.h"
 #include "base/run_loop.h"
 #include "base/test/bind.h"
+#include "base/test/test_future.h"
 #include "build/build_config.h"
 #include "build/buildflag.h"
 #include "chrome/browser/apps/app_service/app_launch_params.h"
@@ -33,6 +34,7 @@
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/toolbar/app_menu_model.h"
 #include "chrome/browser/ui/web_applications/app_browser_controller.h"
+#include "chrome/browser/ui/web_applications/web_app_dialogs.h"
 #include "chrome/browser/web_applications/commands/fetch_manifest_and_install_command.h"
 #include "chrome/browser/web_applications/external_install_options.h"
 #include "chrome/browser/web_applications/mojom/user_display_mode.mojom.h"
@@ -51,6 +53,7 @@
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/security_interstitials/content/security_interstitial_tab_helper.h"
 #include "components/services/app_service/public/cpp/app_launch_util.h"
+#include "components/user_education/views/help_bubble_view.h"
 #include "components/webapps/browser/install_result_code.h"
 #include "components/webapps/browser/installable/installable_metrics.h"
 #include "components/webapps/browser/test/service_worker_registration_waiter.h"
@@ -437,6 +440,14 @@ base::FilePath CreateTestFileWithExtension(base::StringPiece extension) {
   base::FilePath new_file_path = test_file_path.AddExtensionASCII(extension);
   EXPECT_TRUE(base::ReplaceFile(test_file_path, new_file_path, nullptr));
   return new_file_path;
+}
+
+bool WaitForIPHToShowIfAny(Browser* browser) {
+  base::test::TestFuture<bool> iph_future;
+  web_app::PostCallbackOnBrowserActivation(
+      browser, user_education::HelpBubbleView::kHelpBubbleElementIdForTesting,
+      iph_future.GetCallback());
+  return iph_future.Get();
 }
 
 }  // namespace web_app

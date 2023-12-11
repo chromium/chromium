@@ -20,7 +20,11 @@
 #include "chrome/browser/ui/web_applications/app_browser_controller.h"
 #include "chrome/browser/ui/web_applications/test/web_app_browsertest_util.h"
 #include "chrome/browser/ui/web_applications/test/web_app_navigation_browsertest.h"
+#include "chrome/browser/web_applications/web_app_provider.h"
+#include "chrome/browser/web_applications/web_app_ui_manager.h"
 #include "chrome/test/base/ui_test_utils.h"
+#include "components/feature_engagement/test/scoped_iph_feature_list.h"
+#include "components/user_education/test/feature_promo_test_util.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
@@ -38,10 +42,12 @@
 #endif  // BUILDFLAG(IS_MAC)
 
 // This test only runs on Windows, Mac and Linux platforms.
-class DefaultIntentPickerBrowserTest
+// Because some tests here rely on browser activation, an
+// interactive_ui_test is preferred over a browser test.
+class DefaultLinkCapturingInteractiveUiTest
     : public web_app::WebAppNavigationBrowserTest {
  public:
-  DefaultIntentPickerBrowserTest() {
+  DefaultLinkCapturingInteractiveUiTest() {
     scoped_feature_list_.InitWithFeaturesAndParameters(
         apps::test::GetFeaturesToEnableLinkCapturingUX(), {});
   }
@@ -185,7 +191,7 @@ class DefaultIntentPickerBrowserTest
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
-IN_PROC_BROWSER_TEST_F(DefaultIntentPickerBrowserTest,
+IN_PROC_BROWSER_TEST_F(DefaultLinkCapturingInteractiveUiTest,
                        IntentPickerBubbleAcceptCorrectActions) {
   const auto [outer_app_id, inner_app_id] = InstallOuterAppAndInnerApp();
 
@@ -219,7 +225,7 @@ IN_PROC_BROWSER_TEST_F(DefaultIntentPickerBrowserTest,
       web_app::AppBrowserController::IsForWebApp(app_browser, outer_app_id));
 }
 
-IN_PROC_BROWSER_TEST_F(DefaultIntentPickerBrowserTest,
+IN_PROC_BROWSER_TEST_F(DefaultLinkCapturingInteractiveUiTest,
                        IntentPickerBubbleCancel) {
   const auto [outer_app_id, inner_app_id] = InstallOuterAppAndInnerApp();
 
@@ -234,7 +240,7 @@ IN_PROC_BROWSER_TEST_F(DefaultIntentPickerBrowserTest,
   EXPECT_EQ(1u, chrome::GetTotalBrowserCount());
 }
 
-IN_PROC_BROWSER_TEST_F(DefaultIntentPickerBrowserTest,
+IN_PROC_BROWSER_TEST_F(DefaultLinkCapturingInteractiveUiTest,
                        IntentPickerBubbleIgnored) {
   const auto [outer_app_id, inner_app_id] = InstallOuterAppAndInnerApp();
 
@@ -250,10 +256,10 @@ IN_PROC_BROWSER_TEST_F(DefaultIntentPickerBrowserTest,
 }
 
 #if BUILDFLAG(IS_MAC)
-using IntentPickerBrowserTestMac = DefaultIntentPickerBrowserTest;
+using IntentPickerInteractiveUiTest = DefaultLinkCapturingInteractiveUiTest;
 // Test that if there is a Universal Link for a site, it shows the picker icon
 // and lists the app as an option in the bubble.
-IN_PROC_BROWSER_TEST_F(IntentPickerBrowserTestMac,
+IN_PROC_BROWSER_TEST_F(IntentPickerInteractiveUiTest,
                        ShowUniversalLinkInIntentPicker) {
   const GURL url1(embedded_test_server()->GetURL("/title1.html"));
   const GURL url2(embedded_test_server()->GetURL("/title2.html"));
@@ -292,3 +298,114 @@ IN_PROC_BROWSER_TEST_F(IntentPickerBrowserTestMac,
   ASSERT_FALSE(GetIntentPickerIcon()->GetVisible());
 }
 #endif  // BUILDFLAG(IS_MAC)
+
+// Test to verify that launching an app from the intent picker chip shows the
+// IPH bubble if the feature flag is enabled.
+class WebAppLinkCapturingIPHPromoTest
+    : public DefaultLinkCapturingInteractiveUiTest,
+      public testing::WithParamInterface<bool> {
+ public:
+  WebAppLinkCapturingIPHPromoTest() {
+    feature_list_.InitAndEnableFeatures(
+        {feature_engagement::kIPHDesktopPWAsLinkCapturingLaunch});
+  }
+
+ protected:
+  GURL GetAppUrl() {
+    return embedded_test_server()->GetURL("/web_apps/nesting/index.html");
+  }
+
+  webapps::AppId InstallApp() {
+    GURL start_url = GetAppUrl();
+    webapps::AppId app_id =
+        web_app::InstallWebAppFromPageAndCloseAppBrowser(browser(), start_url);
+    return app_id;
+  }
+
+  bool LinkCapturingEnabled() { return GetParam(); }
+
+  void Navigate(Browser* browser,
+                const GURL& url,
+                LinkTarget link_target = LinkTarget::SELF) {
+    ClickLinkAndWait(browser->tab_strip_model()->GetActiveWebContents(), url,
+                     link_target, "");
+  }
+
+  void AwaitFeatureEngagementControllerReady() {
+    // Waiting for the feature engagement controller to be ready needs to happen
+    // earlier so that there's enough time for the availability_model to be ready.
+    // Doing it after launching the app is too late from a test perspective, and
+    // can lead to flakiness on slower systems. This is also the reason why the
+    // feature controller being used is tied to browser()->window() instead of
+    // app_browser->window().
+    auto* const controller =
+        static_cast<user_education::FeaturePromoControllerCommon*>(
+            browser()->window()->GetFeaturePromoController());
+    EXPECT_TRUE(user_education::test::WaitForFeatureEngagementReady(controller));
+  }
+
+ private:
+  feature_engagement::test::ScopedIphFeatureList feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_P(WebAppLinkCapturingIPHPromoTest,
+                       AppLaunchFromIntentChipShowsIPH) {
+  const webapps::AppId app_id = InstallApp();
+  AwaitFeatureEngagementControllerReady();
+
+  if (LinkCapturingEnabled()) {
+    EXPECT_EQ(
+        apps::test::EnableLinkCapturingByUser(browser()->profile(), app_id),
+        base::ok());
+  } else {
+    EXPECT_EQ(
+        apps::test::DisableLinkCapturingByUser(browser()->profile(), app_id),
+        base::ok());
+  }
+
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GetAppUrl()));
+
+  ui_test_utils::BrowserChangeObserver browser_added_waiter(
+      nullptr, ui_test_utils::BrowserChangeObserver::ChangeType::kAdded);
+
+  ASSERT_TRUE(ClickIntentPickerChip());
+  Browser* app_browser = browser_added_waiter.Wait();
+  ASSERT_TRUE(app_browser);
+  EXPECT_TRUE(web_app::AppBrowserController::IsForWebApp(app_browser, app_id));
+
+  if (LinkCapturingEnabled()) {
+    EXPECT_TRUE(web_app::WaitForIPHToShowIfAny(app_browser));
+  }
+
+  EXPECT_EQ(app_browser->window()->IsFeaturePromoActive(
+                feature_engagement::kIPHDesktopPWAsLinkCapturingLaunch),
+            LinkCapturingEnabled());
+}
+
+IN_PROC_BROWSER_TEST_P(WebAppLinkCapturingIPHPromoTest,
+                       IPHShownOnLinkClick) {
+  const webapps::AppId app_id = InstallApp();
+  AwaitFeatureEngagementControllerReady();
+  EXPECT_EQ(
+      apps::test::EnableLinkCapturingByUser(browser()->profile(), app_id),
+      base::ok());
+
+  ui_test_utils::BrowserChangeObserver browser_added_waiter(
+      nullptr, ui_test_utils::BrowserChangeObserver::ChangeType::kAdded);
+  Navigate(browser(), GetAppUrl());
+
+  Browser* app_browser = browser_added_waiter.Wait();
+  EXPECT_TRUE(web_app::AppBrowserController::IsForWebApp(app_browser, app_id));
+  EXPECT_NE(browser(), app_browser);
+  EXPECT_TRUE(web_app::WaitForIPHToShowIfAny(app_browser));
+  EXPECT_TRUE(app_browser->window()->IsFeaturePromoActive(
+                  feature_engagement::kIPHDesktopPWAsLinkCapturingLaunch));
+}
+
+INSTANTIATE_TEST_SUITE_P(All,
+                         WebAppLinkCapturingIPHPromoTest,
+                         testing::Values(true, false),
+                         [](const testing::TestParamInfo<bool>& info) {
+                           return info.param ? "LinkCapturingEnabled"
+                                             : "LinkCapturingDisabled";
+                         });
