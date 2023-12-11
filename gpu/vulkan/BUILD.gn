@@ -143,6 +143,7 @@ if (enable_vulkan) {
 
       if (is_linux || is_chromeos) {
         sources += [ "vulkan_image_linux.cc" ]
+        deps += [ "//ui/gfx/linux:drm" ]
       }
     }
 
