@@ -182,16 +182,16 @@ void CallbackConversion() {
   RepeatingClosure discarding_return = BindRepeating([] { return 0; });                  // expected-error {{no viable conversion from 'RepeatingCallback<UnboundRunType>' to 'RepeatingCallback<void ()>'}}
 }
 
-void CapturingOrStatefulLambdaOrFunctor() {
-  // Bind disallows capturing and stateful lambdas/functors.
+void CapturingLambdaOrFunctor() {
+  // Bind disallows capturing lambdas and stateful functors.
   int i = 0, j = 0;
   struct S {
     void operator()() const {}
     int x;
   };
-  BindOnce([&]() { j = i; });        // expected-error@*:* {{Capturing lambdas and stateful lambdas are intentionally not supported.}}
-  BindRepeating([&]() { j = i; });   // expected-error@*:* {{Capturing lambdas and stateful lambdas are intentionally not supported.}}
-  BindRepeating(S());                // expected-error@*:* {{Capturing lambdas and stateful lambdas are intentionally not supported.}}
+  BindOnce([&]() { j = i; });        // expected-error@*:* {{Capturing lambdas and stateful functors are intentionally not supported.}}
+  BindRepeating([&]() { j = i; });   // expected-error@*:* {{Capturing lambdas and stateful functors are intentionally not supported.}}
+  BindRepeating(S());                // expected-error@*:* {{Capturing lambdas and stateful functors are intentionally not supported.}}
 }
 
 void OnceCallbackRequiresNonConstRvalue() {
@@ -285,10 +285,10 @@ void UnsafeDangling() {
   // Pointers marked as `UnsafeDangling` may only be be received by
   // `MayBeDangling` args with matching traits.
   int i;
-  BindOnce([] (int*) {}, UnsafeDangling(&i));                      // expected-error@*:* {{base::UnsafeDangling() pointers must be received by functors with MayBeDangling<T> as parameter.}}
+  BindOnce([] (int*) {}, UnsafeDangling(&i));                      // expected-error@*:* {{base::UnsafeDangling() pointers should only be passed to parameters marked MayBeDangling<T>.}}
   BindOnce([] (MayBeDangling<int>) {},
-           UnsafeDangling<int, RawPtrTraits::kDummyForTest>(&i));  // expected-error@*:* {{MayBeDangling<T> parameter must receive the same RawPtrTraits as the one passed to the corresponding base::UnsafeDangling() call.}}
-  BindOnce([] (raw_ptr<int>) {}, UnsafeDanglingUntriaged(&i));     // expected-error@*:* {{base::Bind() target functor has a parameter of type raw_ptr<T>. raw_ptr<T> should not be used for function parameters; please use T* or T& instead.}}
+           UnsafeDangling<int, RawPtrTraits::kDummyForTest>(&i));  // expected-error@*:* {{Pointers passed to MayBeDangling<T> parameters must be created by base::UnsafeDangling() with the same RawPtrTraits.}}
+  BindOnce([] (raw_ptr<int>) {}, UnsafeDanglingUntriaged(&i));     // expected-error@*:* {{Use T* or T& instead of raw_ptr<T> for function parameters, unless you must mark the parameter as MayBeDangling<T>.}}
 }
 
 }  // namespace base

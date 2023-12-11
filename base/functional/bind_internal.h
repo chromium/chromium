@@ -1547,9 +1547,9 @@ struct ParamCanBeBound {
                      ParamStorage::kMayBeDanglingMustBeUsed>
   struct NotRawPtr {
     static constexpr bool value = [] {
-      static_assert(v, "base::Bind() target functor has a parameter of type "
-                       "raw_ptr<T>. raw_ptr<T> should not be used for function "
-                       "parameters; please use T* or T& instead.");
+      static_assert(
+          v, "Use T* or T& instead of raw_ptr<T> for function parameters, "
+             "unless you must mark the parameter as MayBeDangling<T>.");
       return v;
     }();
   };
@@ -1563,8 +1563,8 @@ struct ParamCanBeBound {
                 is_method>>
   struct MayBeDanglingPtrPassedCorrectly {
     static constexpr bool value = [] {
-      static_assert(v, "base::UnsafeDangling() pointers must be received by "
-                       "functors with MayBeDangling<T> as parameter.");
+      static_assert(v, "base::UnsafeDangling() pointers should only be passed "
+                       "to parameters marked MayBeDangling<T>.");
       return v;
     }();
   };
@@ -1574,9 +1574,8 @@ struct ParamCanBeBound {
   struct UnsafeDanglingAndMayBeDanglingHaveMatchingTraits {
     static constexpr bool value = [] {
       static_assert(
-          v,
-          "MayBeDangling<T> parameter must receive the same RawPtrTraits as "
-          "the one passed to the corresponding base::UnsafeDangling() call.");
+          v, "Pointers passed to MayBeDangling<T> parameters must be created "
+             "by base::UnsafeDangling() with the same RawPtrTraits.");
       return v;
     }();
   };
@@ -1720,9 +1719,10 @@ struct BindHelper {
           !is_instantiation<absl::FunctionRef, std::remove_cvref_t<Functor>>>
   struct NotFunctionRef {
     static constexpr bool value = [] {
-      static_assert(v, "base::Bind{Once,Repeating} require strong ownership: "
-                       "non-owning function references may not be bound as the "
-                       "functor due to potential lifetime issues.");
+      static_assert(
+          v,
+          "Functor may not be a FunctionRef, since that is a non-owning "
+          "reference that may go out of scope before the callback executes.");
       return v;
     }();
   };
@@ -1730,10 +1730,10 @@ struct BindHelper {
   template <typename Functor, bool v = MakeFunctorTraits<Functor>::is_stateless>
   struct IsStateless {
     static constexpr bool value = [] {
-      static_assert(v,
-                    "Capturing lambdas and stateful lambdas are intentionally "
-                    "not supported. Please use base::Bind{Once,Repeating} "
-                    "directly to bind arguments.");
+      static_assert(
+          v, "Capturing lambdas and stateful functors are intentionally not "
+             "supported. Use a non-capturing lambda or stateless functor (i.e. "
+             "has no non-static data members) and bind arguments directly.");
       return v;
     }();
   };

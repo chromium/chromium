@@ -20,10 +20,10 @@ void NoImplicitVoidify() {
 void CannotBindFunctionRefs() {
   // `Bind{Once,Repeating}` do not accept `FunctionRef` args due to potential
   // lifetime concerns.
-  [](absl::FunctionRef<void()> ref) { BindOnce(ref); }([] {});       // expected-error@*:* {{base::Bind{Once,Repeating} require strong ownership: non-owning function references may not be bound as the functor due to potential lifetime issues.}}
-  [](absl::FunctionRef<void()> ref) { BindRepeating(ref); }([] {});  // expected-error@*:* {{base::Bind{Once,Repeating} require strong ownership: non-owning function references may not be bound as the functor due to potential lifetime issues.}}
-  [](FunctionRef<void()> ref) { BindOnce(ref); }([] {});             // expected-error@*:* {{base::Bind{Once,Repeating} require strong ownership: non-owning function references may not be bound as the functor due to potential lifetime issues.}}
-  [](FunctionRef<void()> ref) { BindRepeating(ref); }([] {});        // expected-error@*:* {{base::Bind{Once,Repeating} require strong ownership: non-owning function references may not be bound as the functor due to potential lifetime issues.}}
+  [](absl::FunctionRef<void()> ref) { BindOnce(ref); }([] {});       // expected-error@*:* {{Functor may not be a FunctionRef, since that is a non-owning reference that may go out of scope before the callback executes.}}
+  [](absl::FunctionRef<void()> ref) { BindRepeating(ref); }([] {});  // expected-error@*:* {{Functor may not be a FunctionRef, since that is a non-owning reference that may go out of scope before the callback executes.}}
+  [](FunctionRef<void()> ref) { BindOnce(ref); }([] {});             // expected-error@*:* {{Functor may not be a FunctionRef, since that is a non-owning reference that may go out of scope before the callback executes.}}
+  [](FunctionRef<void()> ref) { BindRepeating(ref); }([] {});        // expected-error@*:* {{Functor may not be a FunctionRef, since that is a non-owning reference that may go out of scope before the callback executes.}}
 }
 
 }  // namespace base
