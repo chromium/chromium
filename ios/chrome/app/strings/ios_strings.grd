@@ -1092,6 +1092,12 @@ See your search engine’s instructions for deleting your search history, if app
       <message name="IDS_IOS_DOWNLOAD_MANAGER_DOWNLOAD" desc="Button to start downloading a file. [Length: 15em] [iOS only]">
         Download
       </message>
+      <message name="IDS_IOS_DOWNLOAD_MANAGER_DOWNLOAD_TO_FILES" desc="Button to start downloading a file to Files e.g. download to local storage. Files is a product name i.e. the Files app on iOS devices and the correct localized version of the product name should be used. [Length: 15em] [iOS only]" meaning="Button to start downloading a file to Files e.g. download to local storage. Files is a product name i.e. the Files app on iOS devices and the correct localized version of the product name should be used. [Length: 15em] [iOS only]">
+        Files
+      </message>
+      <message name="IDS_IOS_DOWNLOAD_MANAGER_DOWNLOAD_TO_DRIVE" meaning="Button to start downloading a file to Drive e.g. download to Google Drive. Google Drive is a product name and the correct localized version of the product name should be used. [Length: 15em] [iOS only]" desc="Button to start downloading a file to Drive e.g. download to Google Drive. Google Drive is a product name and the correct localized version of the product name should be used. [Length: 15em] [iOS only]">
+        Drive
+      </message>
       <message name="IDS_IOS_DOWNLOAD_MANAGER_DOWNLOAD_FILE_WITHOUT_SIZE" desc="Label asking the user whether they want to start the download for a file. [Length: 25em] [iOS only]" meaning="Label asking the user whether they want to start the download for a file. [Length: 25em] [iOS only]">
         Download file?
       </message>

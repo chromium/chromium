@@ -14,6 +14,7 @@
 #import "base/task/thread_pool.h"
 #import "ios/chrome/browser/download/model/download_directory_util.h"
 #import "ios/chrome/browser/download/model/external_app_util.h"
+#import "ios/chrome/browser/drive/model/drive_availability.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ios/web/public/download/download_task.h"
@@ -23,6 +24,15 @@
 DownloadManagerMediator::DownloadManagerMediator() : weak_ptr_factory_(this) {}
 DownloadManagerMediator::~DownloadManagerMediator() {
   SetDownloadTask(nullptr);
+}
+
+void DownloadManagerMediator::SetIsIncognito(bool is_incognito) {
+  is_incognito_ = is_incognito;
+}
+
+void DownloadManagerMediator::SetIdentityManager(
+    signin::IdentityManager* identity_manager) {
+  identity_manager_ = identity_manager;
 }
 
 void DownloadManagerMediator::SetConsumer(
@@ -71,6 +81,14 @@ void DownloadManagerMediator::OnDownloadDestroyed(web::DownloadTask* task) {
 
 void DownloadManagerMediator::UpdateConsumer() {
   DownloadManagerState state = GetDownloadManagerState();
+
+  if (base::FeatureList::IsEnabled(kIOSSaveToDrive) &&
+      [consumer_
+          respondsToSelector:@selector(setDownloadToDriveButtonVisible:)]) {
+    [consumer_
+        setDownloadToDriveButtonVisible:drive::IsSaveToDriveAvailable(
+                                            is_incognito_, identity_manager_)];
+  }
 
   if (state == kDownloadManagerStateSucceeded) {
     base::FilePath user_download_path;

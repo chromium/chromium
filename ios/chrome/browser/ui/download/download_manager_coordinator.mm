@@ -39,6 +39,7 @@
 #import "ios/chrome/browser/shared/public/commands/browser_coordinator_commands.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
+#import "ios/chrome/browser/signin/model/identity_manager_factory.h"
 #import "ios/chrome/browser/store_kit/model/store_kit_coordinator.h"
 #import "ios/chrome/browser/store_kit/model/store_kit_coordinator_delegate.h"
 #import "ios/chrome/browser/ui/download/activities/open_downloads_folder_activity.h"
@@ -96,6 +97,13 @@
   _viewController.delegate = self;
   _viewController.layoutGuideCenter = LayoutGuideCenterForBrowser(self.browser);
   _viewController.incognito = isIncognito;
+
+  if (base::FeatureList::IsEnabled(kIOSSaveToDrive)) {
+    _mediator.SetIsIncognito(isIncognito);
+    _mediator.SetIdentityManager(IdentityManagerFactory::GetForBrowserState(
+        self.browser->GetBrowserState()));
+  }
+
   _mediator.SetDownloadTask(_downloadTask);
   _mediator.SetConsumer(_viewController);
 
@@ -111,6 +119,8 @@
 }
 
 - (void)stop {
+  _mediator.SetIdentityManager(nullptr);
+
   if (_viewController) {
     [self.presenter dismissAnimated:self.animatesPresentation];
     // Prevent delegate callbacks for stopped coordinator.

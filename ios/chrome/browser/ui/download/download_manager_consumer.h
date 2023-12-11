@@ -32,6 +32,11 @@
 // Sets visible state to Install Google Drive button.
 - (void)setInstallDriveButtonVisible:(BOOL)visible animated:(BOOL)animated;
 
+// Sets the visibility of the "Drive" button (which downloads the file and then
+// uploads it to Drive). The button will only be visible if the current download
+// task has also not started.
+- (void)setDownloadToDriveButtonVisible:(BOOL)visible;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_UI_DOWNLOAD_DOWNLOAD_MANAGER_CONSUMER_H_

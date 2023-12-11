@@ -12,6 +12,10 @@
 
 @protocol DownloadManagerConsumer;
 
+namespace signin {
+class IdentityManager;
+}
+
 namespace web {
 class DownloadTask;
 }  // namespace web
@@ -26,6 +30,12 @@ class DownloadManagerMediator : public web::DownloadTaskObserver {
   DownloadManagerMediator& operator=(const DownloadManagerMediator&) = delete;
 
   ~DownloadManagerMediator() override;
+
+  // Sets whether this download manager is in an Incognito browser.
+  void SetIsIncognito(bool is_incognito);
+
+  // Sets the identity manager.
+  void SetIdentityManager(signin::IdentityManager* identity_manager);
 
   // Sets download manager consumer. Not retained by mediator.
   void SetConsumer(id<DownloadManagerConsumer> consumer);
@@ -65,8 +75,10 @@ class DownloadManagerMediator : public web::DownloadTaskObserver {
   void OnDownloadUpdated(web::DownloadTask* task) override;
   void OnDownloadDestroyed(web::DownloadTask* task) override;
 
+  raw_ptr<signin::IdentityManager> identity_manager_ = nullptr;
+  bool is_incognito_;
   base::FilePath download_path_;
-  web::DownloadTask* task_ = nullptr;
+  raw_ptr<web::DownloadTask> task_ = nullptr;
   __weak id<DownloadManagerConsumer> consumer_ = nil;
   base::WeakPtrFactory<DownloadManagerMediator> weak_ptr_factory_;
 };
