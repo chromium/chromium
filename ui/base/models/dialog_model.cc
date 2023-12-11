@@ -24,11 +24,11 @@ DialogModel::Builder::Builder(std::unique_ptr<DialogModelDelegate> delegate)
 DialogModel::Builder::Builder() : Builder(nullptr) {}
 
 DialogModel::Builder::~Builder() {
-  DCHECK(!model_) << "Model should've been built.";
+  CHECK(!model_, base::NotFatalUntil::M123) << "Model should've been built.";
 }
 
 std::unique_ptr<DialogModel> DialogModel::Builder::Build() {
-  DCHECK(model_);
+  CHECK(model_, base::NotFatalUntil::M123);
   return std::move(model_);
 }
 
@@ -76,10 +76,10 @@ DialogModel::Builder& DialogModel::Builder::AddExtraButton(
     base::RepeatingCallback<void(const Event&)> callback,
     const DialogModelButton::Params& params) {
   CHECK(params.is_visible_);
-  DCHECK(!model_->extra_button_);
-  DCHECK(!model_->extra_link_);
+  CHECK(!model_->extra_button_, base::NotFatalUntil::M123);
+  CHECK(!model_->extra_link_, base::NotFatalUntil::M123);
   // Extra buttons are required to have labels.
-  DCHECK(!params.label_.empty());
+  CHECK(!params.label_.empty(), base::NotFatalUntil::M123);
   model_->extra_button_.emplace(model_->GetPassKey(), std::move(callback),
                                 params);
   return *this;
@@ -87,8 +87,8 @@ DialogModel::Builder& DialogModel::Builder::AddExtraButton(
 
 DialogModel::Builder& DialogModel::Builder::AddExtraLink(
     DialogModelLabel::TextReplacement link) {
-  DCHECK(!model_->extra_button_);
-  DCHECK(!model_->extra_link_);
+  CHECK(!model_->extra_button_, base::NotFatalUntil::M123);
+  CHECK(!model_->extra_link_, base::NotFatalUntil::M123);
   model_->extra_link_.emplace(std::move(link));
   return *this;
 }
@@ -96,16 +96,16 @@ DialogModel::Builder& DialogModel::Builder::AddExtraLink(
 DialogModel::Builder& DialogModel::Builder::OverrideDefaultButton(
     DialogButton button) {
   // This can only be called once.
-  DCHECK(!model_->override_default_button_);
+  CHECK(!model_->override_default_button_, base::NotFatalUntil::M123);
   // Confirm the button exists.
   switch (button) {
     case DIALOG_BUTTON_NONE:
       break;
     case DIALOG_BUTTON_OK:
-      DCHECK(model_->ok_button_);
+      CHECK(model_->ok_button_, base::NotFatalUntil::M123);
       break;
     case DIALOG_BUTTON_CANCEL:
-      DCHECK(model_->cancel_button_);
+      CHECK(model_->cancel_button_, base::NotFatalUntil::M123);
       break;
   }
   model_->override_default_button_ = button;
@@ -115,9 +115,9 @@ DialogModel::Builder& DialogModel::Builder::OverrideDefaultButton(
 DialogModel::Builder& DialogModel::Builder::SetInitiallyFocusedField(
     ElementIdentifier id) {
   // This must be called with a non-null id
-  DCHECK(id);
+  CHECK(id, base::NotFatalUntil::M123);
   // This can only be called once.
-  DCHECK(!model_->initially_focused_field_);
+  CHECK(!model_->initially_focused_field_, base::NotFatalUntil::M123);
   model_->initially_focused_field_ = id;
   return *this;
 }
