@@ -26,6 +26,7 @@ import {FileTransferController} from './file_transfer_controller.js';
 import {MetadataModel} from './metadata/metadata_model.js';
 import {MetadataUpdateController} from './metadata_update_controller.js';
 import {TaskHistory} from './task_history.js';
+import {ComboButtonSelectEvent} from './ui/combobutton.js';
 import {Command} from './ui/command.js';
 import {FileManagerUI} from './ui/file_manager_ui.js';
 
@@ -78,7 +79,7 @@ export class TaskController {
     this.store_.subscribe(this);
 
     ui_.taskMenuButton.addEventListener(
-        'select', this.onTaskItemClicked_.bind(this));
+        'combobutton-select', this.onTaskItemClicked_.bind(this));
     // TODO: Move the following events to the Store.
     this.taskHistory_.addEventListener(
         TaskHistory.EventType.UPDATE, this.updateTasks_.bind(this));
@@ -132,7 +133,7 @@ export class TaskController {
    *
    * @param event Event containing task which was clicked.
    */
-  private async onTaskItemClicked_(event: Event) {
+  private async onTaskItemClicked_(event: ComboButtonSelectEvent) {
     // If the clicked target has an associated command, the click event should
     // not be handled here since it is handled as a command.
     // TODO(lucmult): Add TS definition for these events instead of using any.
@@ -140,10 +141,11 @@ export class TaskController {
       return;
     }
 
-    // 'select' event from ComboButton has the item as event.item.
-    // 'activate' event from MenuButton has the item as event.target.data.
-    const item: DropdownItem =
-        (event as any).item || (event.target as any).data;
+    const item: null|DropdownItem = event.detail;
+    if (!item) {
+      return;
+    }
+
     try {
       const tasks = await this.getFileTasks();
       switch (item.type) {
@@ -151,7 +153,7 @@ export class TaskController {
           this.ui_.taskMenuButton.showMenu(false);
           break;
         case TaskMenuItemType.RUN_TASK:
-          tasks.execute(item.task);
+          tasks.execute(item.task!);
           break;
         case TaskMenuItemType.CHANGE_DEFAULT_TASK:
           const selection = this.selectionHandler_.selection;
@@ -320,8 +322,8 @@ export class TaskController {
       }
 
       // Sort by last-executed time.
-      const aTime = this.taskHistory_.getLastExecutedTime(a.task.descriptor);
-      const bTime = this.taskHistory_.getLastExecutedTime(b.task.descriptor);
+      const aTime = this.taskHistory_.getLastExecutedTime(a.task!.descriptor);
+      const bTime = this.taskHistory_.getLastExecutedTime(b.task!.descriptor);
       if (aTime !== bTime) {
         return bTime - aTime;
       }
@@ -674,10 +676,10 @@ export interface DropdownItem {
   type: TaskMenuItemType;
   label: string;
   iconUrl?: string;
-  iconType: string;
-  task: chrome.fileManagerPrivate.FileTask;
-  isDefault: boolean;
-  isPolicyDefault: boolean;
+  iconType?: string;
+  task?: chrome.fileManagerPrivate.FileTask;
+  isDefault?: boolean;
+  isPolicyDefault?: boolean;
   isGenericFileHandler?: boolean;
   isDlpBlocked?: boolean;
 }

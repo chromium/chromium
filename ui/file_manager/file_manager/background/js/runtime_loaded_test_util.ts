@@ -435,8 +435,12 @@ test.util.sync.sendEvent =
 test.util.sync.fakeEvent =
     (contentWindow: Window, targetQuery: string, eventType: string,
      additionalProperties?: Record<string, string>): boolean => {
-      const event = new Event(eventType, additionalProperties || {});
-      if (additionalProperties) {
+      const isCustomEvent = 'detail' in (additionalProperties || {});
+
+      const event = isCustomEvent ?
+          new CustomEvent(eventType, additionalProperties || {}) :
+          new Event(eventType, additionalProperties || {});
+      if (!isCustomEvent && additionalProperties) {
         for (const name in additionalProperties) {
           if (name === 'bubbles') {
             // bubbles is a read-only which, causes an error when assigning.

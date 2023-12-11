@@ -821,7 +821,7 @@ export class FileTasks {
     if (this.defaultTask_) {
       for (let j = 0; j < items.length; j++) {
         if (descriptorEqual(
-                items[j]!.task.descriptor, this.defaultTask_.descriptor)) {
+                items[j]!.task!.descriptor, this.defaultTask_.descriptor)) {
           defaultIdx = j;
         }
       }
