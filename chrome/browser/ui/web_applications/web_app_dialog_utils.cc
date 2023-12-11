@@ -59,7 +59,7 @@ namespace cros_events = metrics::structured::events::v2::cr_os_events;
 // the url. If none exist, returns the url of the largest icon. Returns empty
 // GURL if vector is empty.
 // TODO(crbug.com/1488697): This function assumes manifest_icons is sorted,
-// which it may not be.
+// which it may not be. Icon purpose also needs to be considered.
 const GURL& GetIconUrl(const std::vector<apps::IconInfo>& manifest_icons) {
   if (manifest_icons.empty()) {
     return GURL::EmptyGURL();

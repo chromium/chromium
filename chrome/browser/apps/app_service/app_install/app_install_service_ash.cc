@@ -74,7 +74,7 @@ AppInstallResult InstallWebApp(Profile& profile, const GURL& install_url) {
 // the url. If none exist, returns the url of the largest icon. Returns empty
 // GURL if vector is empty.
 // TODO(crbug.com/1488697): This function assumes icons is sorted, which it may
-// not be.
+// not be. Icon purpose also needs to be considered.
 const GURL& GetIconUrl(const std::vector<AppInstallIcon>& icons) {
   if (icons.empty()) {
     return GURL::EmptyGURL();
