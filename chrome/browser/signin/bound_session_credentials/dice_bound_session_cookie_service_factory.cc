@@ -61,7 +61,8 @@ DiceBoundSessionCookieServiceFactory::BuildServiceInstanceForBrowserContext(
   }
 
   return std::make_unique<DiceBoundSessionCookieService>(
-      *bound_session_cookie_refresh_service, *identity_manager);
+      *bound_session_cookie_refresh_service, *identity_manager,
+      *profile->GetDefaultStoragePartition());
 }
 
 bool DiceBoundSessionCookieServiceFactory::ServiceIsCreatedWithBrowserContext()

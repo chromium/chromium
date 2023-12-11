@@ -21,32 +21,41 @@ class BoundSessionTestCookieManager : public network::TestCookieManager {
       const std::string& cookie_name,
       absl::optional<base::Time> expiry_date = absl::nullopt);
 
+  size_t GetNumberOfDeleteCookiesCallbacks();
+
+  void RunDeleteCookiesCallback();
+
+  std::vector<network::mojom::CookieDeletionFilterPtr>
+  TakeCookieDeletionFilters();
+
+  const base::flat_set<net::CanonicalCookie>& cookies() { return cookies_; }
+
+  // network::TestCookieManager:
   void SetCanonicalCookie(const net::CanonicalCookie& cookie,
                           const GURL& source_url,
                           const net::CookieOptions& cookie_options,
                           SetCanonicalCookieCallback callback) override;
-
-  const base::flat_set<net::CanonicalCookie>& cookies() { return cookies_; }
-
   void GetCookieList(
       const GURL& url,
       const net::CookieOptions& cookie_options,
       const net::CookiePartitionKeyCollection& cookie_partition_key_collection,
       GetCookieListCallback callback) override;
-
   void AddCookieChangeListener(
       const GURL& url,
       const absl::optional<std::string>& name,
       mojo::PendingRemote<network::mojom::CookieChangeListener> listener)
       override;
-
   void DispatchCookieChange(const net::CookieChangeInfo& change) override;
+  void DeleteCookies(network::mojom::CookieDeletionFilterPtr filter,
+                     DeleteCookiesCallback callback) override;
 
  private:
   base::flat_set<net::CanonicalCookie> cookies_;
   base::flat_map<std::string,
                  mojo::Remote<network::mojom::CookieChangeListener>>
       cookie_to_listener_;
+  std::vector<network::mojom::CookieDeletionFilterPtr> cookie_deletion_filters_;
+  std::vector<DeleteCookiesCallback> delete_cookies_callbacks_;
 };
 
 #endif  // CHROME_BROWSER_SIGNIN_BOUND_SESSION_CREDENTIALS_BOUND_SESSION_TEST_COOKIE_MANAGER_H_
