@@ -774,14 +774,6 @@ void SidePanelCoordinator::PopulateSidePanel(
     contextual_registry->ResetActiveEntry();
   auto* previous_entry = current_entry_.get();
   current_entry_ = entry->GetWeakPtr();
-  entry->OnEntryShown();
-  if (previous_entry) {
-    previous_entry->OnEntryHidden();
-  } else {
-    content->RequestFocus();
-  }
-  UpdateNewTabButtonState();
-  UpdateHeaderPinButtonState();
   if (browser_view_->toolbar()->pinned_toolbar_actions_container()) {
     NotifyPinnedContainerOfActiveStateChange(entry->key(), true);
     if (previous_entry) {
@@ -791,6 +783,14 @@ void SidePanelCoordinator::PopulateSidePanel(
                  browser_view_->toolbar()->side_panel_container()) {
     side_panel_container->UpdateSidePanelContainerButtonsState();
   }
+  entry->OnEntryShown();
+  if (previous_entry) {
+    previous_entry->OnEntryHidden();
+  } else {
+    content->RequestFocus();
+  }
+  UpdateNewTabButtonState();
+  UpdateHeaderPinButtonState();
 
   // Notify the observers if the side panel is opened (made visible).
   if (opening_side_panel) {
