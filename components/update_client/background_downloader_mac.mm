@@ -351,6 +351,7 @@ class BackgroundDownloaderSharedSessionImpl {
         [[NSMutableURLRequest alloc] initWithURL:NSURLWithGURL(url)];
     NSURLSessionDownloadTask* downloadTask =
         [session_ downloadTaskWithRequest:urlRequest];
+    downloadTask.priority = NSURLSessionTaskPriorityHigh;
 
     [downloadTask resume];
   }
