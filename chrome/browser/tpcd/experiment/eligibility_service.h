@@ -50,7 +50,7 @@ class EligibilityService
   // So EligibilityServiceFactory::BuildServiceInstanceFor can call the
   // constructor.
   friend class EligibilityServiceFactory;
-  friend class EligibilityServiceBrowserTest;
+  friend class EligibilityServiceBrowserTestBase;
 
   // MarkProfileEligibility should be called for all profiles to set their
   // eligibility, whether currently loaded or created later.
@@ -61,10 +61,16 @@ class EligibilityService
   void MaybeNotifyManagerTrackingProtectionOnboarded(
       privacy_sandbox::TrackingProtectionOnboarding::OnboardingStatus
           onboarding_status);
+  void MaybeNotifyManagerTrackingProtectionSilentOnboarded(
+      privacy_sandbox::TrackingProtectionOnboarding::SilentOnboardingStatus
+          onboarding_status);
 
   // privacy_sandbox::TrackingProtectionOnboarding::Observer:
   void OnTrackingProtectionOnboardingUpdated(
       privacy_sandbox::TrackingProtectionOnboarding::OnboardingStatus
+          onboarding_status) override;
+  void OnTrackingProtectionSilentOnboardingUpdated(
+      privacy_sandbox::TrackingProtectionOnboarding::SilentOnboardingStatus
           onboarding_status) override;
 
   raw_ptr<Profile> profile_;

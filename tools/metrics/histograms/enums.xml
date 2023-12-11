@@ -50431,6 +50431,12 @@ Called by update_net_error_codes.py.-->
   <int value="11" label="Signature is expired"/>
 </enum>
 
+<enum name="SilentOnboardingStartupState">
+  <int value="0" label="kIneligible"/>
+  <int value="1" label="kEligibleWaitingToOnboard"/>
+  <int value="2" label="kOnboarded"/>
+</enum>
+
 <enum name="SimpleCache.FileDescriptorLimiterOp">
   <int value="0" label="Close file"/>
   <int value="1" label="Reopen file successfully"/>
