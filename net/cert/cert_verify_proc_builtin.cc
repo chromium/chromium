@@ -282,6 +282,17 @@ class PathBuilderDelegateImpl : public bssl::SimplePathBuilderDelegate {
   void CheckPathAfterVerification(
       const bssl::CertPathBuilder& path_builder,
       bssl::CertPathBuilderResultPath* path) override {
+    net_log_->BeginEvent(NetLogEventType::CERT_VERIFY_PROC_PATH_BUILT);
+
+    CheckPathAfterVerificationImpl(path_builder, path);
+
+    net_log_->EndEvent(NetLogEventType::CERT_VERIFY_PROC_PATH_BUILT,
+                       [&] { return NetLogPathBuilderResultPath(*path); });
+  }
+
+ private:
+  void CheckPathAfterVerificationImpl(const bssl::CertPathBuilder& path_builder,
+                                      bssl::CertPathBuilderResultPath* path) {
     // If the path is already invalid, don't check revocation status. The chain
     // is expected to be valid when doing revocation checks (since for instance
     // the correct issuer for a certificate may need to be known). Also if
@@ -333,7 +344,6 @@ class PathBuilderDelegateImpl : public bssl::SimplePathBuilderDelegate {
              ->stapled_ocsp_verify_result);
   }
 
- private:
   // Selects a revocation policy based on the CertVerifier flags and the given
   // certificate chain.
   RevocationPolicy ChooseRevocationPolicy(
@@ -916,13 +926,6 @@ int CertVerifyProcBuiltin::VerifyInternal(
 
     base::UmaHistogramCounts10000("Net.CertVerifier.PathBuilderIterationCount",
                                   result.iteration_count);
-
-    // TODO(crbug.com/634484): Log these in path_builder.cc so they include
-    // correct timing information.
-    for (const auto& path : result.paths) {
-      net_log.AddEvent(NetLogEventType::CERT_VERIFY_PROC_PATH_BUILT,
-                       [&] { return NetLogPathBuilderResultPath(*path); });
-    }
 
     net_log.EndEvent(NetLogEventType::CERT_VERIFY_PROC_PATH_BUILD_ATTEMPT,
                      [&] { return NetLogPathBuilderResult(result); });

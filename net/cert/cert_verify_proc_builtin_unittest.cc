@@ -568,7 +568,13 @@ TEST_F(CertVerifyProcBuiltinTest, EVNoOCSPRevocationChecks) {
                              NetLogEventType::CERT_VERIFY_PROC_PATH_BUILT,
                              &NetLogEntry::type);
   ASSERT_NE(event, events.end());
-  EXPECT_EQ(net::NetLogEventPhase::NONE, event->phase);
+  EXPECT_EQ(net::NetLogEventPhase::BEGIN, event->phase);
+
+  event = base::ranges::find(++event, events.end(),
+                             NetLogEventType::CERT_VERIFY_PROC_PATH_BUILT,
+                             &NetLogEntry::type);
+  ASSERT_NE(event, events.end());
+  EXPECT_EQ(net::NetLogEventPhase::END, event->phase);
   EXPECT_FALSE(event->params.FindString("errors"));
 
   event = base::ranges::find(
