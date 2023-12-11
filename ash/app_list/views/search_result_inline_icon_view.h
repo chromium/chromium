@@ -41,6 +41,9 @@ class ASH_EXPORT SearchResultInlineIconView : public views::View {
   void SetIcon(const gfx::VectorIcon& icon);
   void SetText(const std::u16string& text);
 
+  // Sets the tooltip text on `icon_image_`.
+  void SetTooltipTextForImageView(const std::u16string& text);
+
  private:
   class SizedLabel;
 

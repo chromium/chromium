@@ -120,6 +120,11 @@ void SearchResultInlineIconView::SetText(const std::u16string& text) {
   SetVisible(true);
 }
 
+void SearchResultInlineIconView::SetTooltipTextForImageView(
+    const std::u16string& text) {
+  icon_image_->SetTooltipText(text);
+}
+
 void SearchResultInlineIconView::OnPaint(gfx::Canvas* canvas) {
   if (ash::features::isSearchCustomizableShortcutsInLauncherEnabled()) {
     return;
