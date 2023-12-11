@@ -5975,6 +5975,58 @@ TEST_F(FederatedAuthRequestImplTest, AutoReauthnInButtonMode) {
                            /*expected_prevent_silent_access=*/false);
 }
 
+// Test that auto re-authn in button mode does not have delay for the auto
+// reauthn UI.
+TEST_F(FederatedAuthRequestImplTest, AutoReauthnInButtonModeHasNoRequestDelay) {
+  base::test::ScopedFeatureList list;
+  list.InitAndEnableFeature(features::kFedCmButtonMode);
+
+  // Reset the delay to kDefaultTokenRequestDelay to make sure the button flow
+  // is exempted from the request delay.
+  federated_auth_request_impl_->SetTokenRequestDelayForTests(base::Seconds(3));
+
+  // Pretend the sharing permission has been granted for this account.
+  EXPECT_CALL(
+      *test_permission_delegate_,
+      HasSharingPermission(OriginFromString(kRpUrl), OriginFromString(kRpUrl),
+                           OriginFromString(kProviderUrlFull),
+                           Optional(std::string(kAccountId))))
+      .Times(2)
+      .WillRepeatedly(Return(true));
+
+  // Pretend the auto re-authn permission has been granted.
+  EXPECT_CALL(*test_auto_reauthn_permission_delegate_,
+              IsAutoReauthnSettingEnabled())
+      .WillOnce(Return(true));
+  EXPECT_CALL(*test_auto_reauthn_permission_delegate_,
+              IsAutoReauthnEmbargoed(OriginFromString(kRpUrl)))
+      .WillOnce(Return(false));
+
+  static_cast<TestRenderFrameHost*>(web_contents()->GetPrimaryMainFrame())
+      ->SimulateUserActivation();
+
+  RequestParameters parameters = kDefaultRequestParameters;
+  parameters.rp_mode = blink::mojom::RpMode::kButton;
+
+  MockConfiguration config = kConfigurationValid;
+  config.rp_mode = blink::mojom::RpMode::kButton;
+
+  RequestExpectations expectation = kExpectationSuccess;
+  expectation.is_auto_selected = true;
+
+  // Note that we do not call `WaitForCurrentAuthRequest` to fast-forward. If
+  // request delay is required, the test would fail.
+  RunAuthDontWaitForCallback(parameters, config);
+
+  CheckAuthExpectations(config, expectation);
+
+  ExpectAutoReauthnMetrics(FedCmMetrics::NumAccounts::kOne,
+                           /*expected_succeeded=*/true,
+                           /*expected_auto_reauthn_setting_blocked=*/false,
+                           /*expected_auto_reauthn_embargoed=*/false,
+                           /*expected_prevent_silent_access=*/false);
+}
+
 // Test button flow is exempted if the FedCM is disabled in  settings.
 TEST_F(FederatedAuthRequestImplTest, ButtonFlowNotAffectedBySettings) {
   test_api_permission_delegate_->permission_override_ =

@@ -2121,9 +2121,12 @@ void FederatedAuthRequestImpl::OnTokenResponseReceived(
   // takes a long time due to latency etc. In case that the fetching process is
   // fast, we still want to show the "Verify" sheet for at least
   // |token_request_delay_| seconds for better UX.
+  // Note that for auto reauthn in the button flow, we can complete without
+  // delay since we skip the UI for streamlined sign-in experience.
   token_response_time_ = base::TimeTicks::Now();
   base::TimeDelta fetch_time = token_response_time_ - select_account_time_;
   if (should_complete_request_immediately_ ||
+      identity_selection_type_ == kAutoButton ||
       fetch_time >= token_request_delay_) {
     std::move(complete_request_callback).Run();
     return;
