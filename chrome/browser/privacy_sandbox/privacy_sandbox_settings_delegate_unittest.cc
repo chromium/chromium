@@ -54,6 +54,8 @@ constexpr char kTestEmail[] = "test@test.com";
 class PrivacySandboxSettingsDelegateTest : public testing::Test {
  public:
   PrivacySandboxSettingsDelegateTest() {
+    local_state_ = std::make_unique<ScopedTestingLocalState>(
+        TestingBrowserProcess::GetGlobal());
     profile_ = IdentityTestEnvironmentProfileAdaptor::
         CreateProfileForIdentityTestEnvironment();
     adapter_ =
@@ -93,6 +95,7 @@ class PrivacySandboxSettingsDelegateTest : public testing::Test {
   signin::IdentityTestEnvironment* identity_test_env() {
     return adapter_->identity_test_env();
   }
+  ScopedTestingLocalState* local_state() { return local_state_.get(); }
   TestingProfile* profile() { return profile_.get(); }
   sync_preferences::TestingPrefServiceSyncable* prefs() {
     return profile()->GetTestingPrefService();
@@ -105,6 +108,7 @@ class PrivacySandboxSettingsDelegateTest : public testing::Test {
   content::BrowserTaskEnvironment browser_task_environment_;
   base::test::ScopedFeatureList feature_list_;
   std::unique_ptr<IdentityTestEnvironmentProfileAdaptor> adapter_;
+  std::unique_ptr<ScopedTestingLocalState> local_state_;
   std::unique_ptr<TestingProfile> profile_;
   std::unique_ptr<tpcd::experiment::MockExperimentManager> experiment_manager_;
   std::unique_ptr<PrivacySandboxSettingsDelegate> delegate_;
@@ -443,8 +447,7 @@ class CookieDeprecationExperimentEligibilityTest
       public ::testing::WithParamInterface<
           CookieDeprecationExperimentEligibilityTestCase> {
  public:
-  CookieDeprecationExperimentEligibilityTest()
-      : local_state_(TestingBrowserProcess::GetGlobal()) {
+  CookieDeprecationExperimentEligibilityTest() {
 #if BUILDFLAG(IS_ANDROID)
     auto webapp_registry = std::make_unique<MockWebappRegistry>();
     webapp_registry_ = webapp_registry.get();
@@ -468,7 +471,6 @@ class CookieDeprecationExperimentEligibilityTest
                                         account_info);
   }
 
-  ScopedTestingLocalState local_state_;
 #if BUILDFLAG(IS_ANDROID)
   raw_ptr<MockWebappRegistry> webapp_registry_;
 #endif
@@ -570,8 +572,8 @@ TEST_P(CookieDeprecationExperimentEligibilityTest, IsEligible) {
   cookie_settings()->SetDefaultCookieSetting(test_case.cookie_content_setting);
 
   if (test_case.install_date.has_value()) {
-    local_state_.Get()->SetInt64(metrics::prefs::kInstallDate,
-                                 test_case.install_date->ToTimeT());
+    local_state()->Get()->SetInt64(metrics::prefs::kInstallDate,
+                                   test_case.install_date->ToTimeT());
   }
 
 #if BUILDFLAG(IS_ANDROID)
