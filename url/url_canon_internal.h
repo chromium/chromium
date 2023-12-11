@@ -290,6 +290,12 @@ inline bool AppendUTF8EscapedChar(const char* str,
   return success;
 }
 
+// URL Standard: https://url.spec.whatwg.org/#c0-control-percent-encode-set
+template <typename CHAR>
+bool IsInC0ControlPercentEncodeSet(CHAR ch) {
+  return ch < 0x20 || ch > 0x7E;
+}
+
 // Given a '%' character at |*begin| in the string |spec|, this will decode
 // the escaped value and put it into |*unescaped_value| on success (returns
 // true). On failure, this will return false, and will not write into
