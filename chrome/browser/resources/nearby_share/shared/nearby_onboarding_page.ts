@@ -20,7 +20,7 @@ import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
 import {DeviceNameValidationResult} from 'chrome://resources/mojo/chromeos/ash/services/nearby/public/mojom/nearby_share_settings.mojom-webui.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {NearbyShareOnboardingFinalState, processOnboardingCancelledMetrics, processOnboardingInitiatedMetrics} from './nearby_metrics_logger.js';
+import {getOnboardingEntryPoint, NearbyShareOnboardingEntryPoint, NearbyShareOnboardingFinalState, processOnboardingCancelledMetrics, processOnboardingInitiatedMetrics} from './nearby_metrics_logger.js';
 import {getTemplate} from './nearby_onboarding_page.html.js';
 import {getNearbyShareSettings} from './nearby_share_settings.js';
 import {NearbySettings} from './nearby_share_settings_mixin.js';
@@ -68,12 +68,21 @@ export class NearbyOnboardingPageElement extends
         value: false,
       },
 
+      /**
+       * Onboarding page entry point
+       */
+      entryPoint_: {
+        type: NearbyShareOnboardingEntryPoint,
+        value: NearbyShareOnboardingEntryPoint.MAX,
+      },
+
     };
   }
 
   errorMessage: string;
   settings: NearbySettings|null;
   private isDarkModeActive_: boolean;
+  private entryPoint_: NearbyShareOnboardingEntryPoint;
 
   override ready(): void {
     super.ready();
@@ -90,7 +99,7 @@ export class NearbyOnboardingPageElement extends
 
   private onClose_(): void {
     processOnboardingCancelledMetrics(
-        NearbyShareOnboardingFinalState.DEVICE_NAME_PAGE);
+        this.entryPoint_, NearbyShareOnboardingFinalState.DEVICE_NAME_PAGE);
     const onboardingCancelledEvent = new CustomEvent('onboarding-cancelled', {
       bubbles: true,
       composed: true,
@@ -108,7 +117,9 @@ export class NearbyOnboardingPageElement extends
 
   private onViewEnterStart_(): void {
     this.$.deviceName.focus();
-    processOnboardingInitiatedMetrics(new URL(document.URL));
+    const url: URL = new URL(document.URL);
+    this.entryPoint_ = getOnboardingEntryPoint(url);
+    processOnboardingInitiatedMetrics(this.entryPoint_);
   }
 
 
