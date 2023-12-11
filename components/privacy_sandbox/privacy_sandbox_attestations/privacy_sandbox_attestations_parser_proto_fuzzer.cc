@@ -6,7 +6,6 @@
 
 #include <stdlib.h>
 #include <iostream>
-#include <sstream>
 #include <string>
 
 #include "components/privacy_sandbox/privacy_sandbox_attestations/proto/privacy_sandbox_attestations.pb.h"
@@ -25,8 +24,7 @@ DEFINE_BINARY_PROTO_FUZZER(
     std::cout << native_input << std::endl;
   }
 
-  std::istringstream stream(native_input);
-  privacy_sandbox::ParseAttestationsFromStream(stream);
+  privacy_sandbox::ParseAttestationsFromString(native_input);
 }
 
 }  // namespace
