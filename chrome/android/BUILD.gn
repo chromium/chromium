@@ -1076,6 +1076,8 @@ if (current_toolchain == default_toolchain) {
       "//chrome/browser/ui/android/layouts/glue:java",
       "//chrome/browser/ui/android/logo:java",
       "//chrome/browser/ui/android/logo:junit",
+      "//chrome/browser/ui/android/management:java",
+      "//chrome/browser/ui/android/management:junit",
       "//chrome/browser/ui/android/multiwindow:java",
       "//chrome/browser/ui/android/multiwindow:junit",
       "//chrome/browser/ui/android/native_page:java",

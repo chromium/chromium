@@ -48,3 +48,31 @@ android_resources("java_resources") {
     "//components/strings:components_strings_grd",
   ]
 }
+
+robolectric_library("junit") {
+  resources_package = "org.chromium.chrome.browser.management"
+  sources = [
+    "java/src/org/chromium/chrome/browser/management/ManagementViewTest.java",
+  ]
+
+  deps = [
+    ":java",
+    ":java_resources",
+    "//base:base_java_test_support",
+    "//base:base_junit_test_support",
+    "//chrome/browser/enterprise/util:java",
+    "//chrome/browser/preferences:java",
+    "//chrome/browser/profiles/android:java",
+    "//chrome/browser/ui/android/native_page:java",
+    "//components/prefs/android:java",
+    "//components/user_prefs/android:java",
+    "//content/public/android:content_full_java",
+    "//third_party/androidx:androidx_test_core_java",
+    "//third_party/androidx:androidx_test_ext_junit_java",
+    "//third_party/hamcrest:hamcrest_java",
+    "//third_party/jni_zero:jni_zero_java",
+    "//third_party/junit",
+    "//third_party/mockito:mockito_java",
+    "//ui/android:ui_java_test_support",
+  ]
+}
