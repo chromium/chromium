@@ -88,8 +88,6 @@ bool ResultShouldAllowDataUse(const AnalysisSettings& settings,
                << default_action_allow_data_use;
       return default_action_allow_data_use;
 
-    // TODO(b/301996227): Decide if fail-closed should precede over file
-    // handling.
     case BinaryUploadService::Result::FILE_TOO_LARGE:
       return !settings.block_large_files;
 
