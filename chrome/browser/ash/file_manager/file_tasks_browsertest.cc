@@ -1851,6 +1851,68 @@ IN_PROC_BROWSER_TEST_F(OneDriveTest, OfficeFallbackCancel) {
       ash::cloud_upload::kOneDriveErrorMetricName,
       ash::cloud_upload::OfficeOneDriveOpenErrors::kOffline, 1);
 }
+
+// Test to check that a second office fallback dialog will not launch when one
+// is already being shown.
+IN_PROC_BROWSER_TEST_F(OneDriveTest, CannotGetOfficeFallbackChoice) {
+  // Creates a fake ODFS with a test file.
+  SetUpTest();
+
+  // Disable the setup flow for office files because we want the office
+  // fallback dialog to run instead.
+  SetWordFileHandlerToFilesSWA(profile(), kActionIdWebDriveOfficeWord);
+
+  const TaskDescriptor open_in_office_task = CreateOpenInOfficeTask();
+  std::vector<storage::FileSystemURL> file_urls{odfs_test_file_url_};
+
+  // Watch for dialog URL chrome://office-fallback.
+  GURL expected_dialog_URL(chrome::kChromeUIOfficeFallbackURL);
+  content::TestNavigationObserver navigation_observer_dialog(
+      expected_dialog_URL);
+  navigation_observer_dialog.StartWatchingNewWebContents();
+
+  web_app_publisher_->ClearPastLaunches();
+
+  // Launches the first office fallback dialog as the system is offline. Let it
+  // hang waiting for a choice from the user.
+  ExecuteFileTask(
+      profile(), open_in_office_task, file_urls, nullptr,
+      base::BindOnce(
+          [](extensions::api::file_manager_private::TaskResult result,
+             std::string error_message) {
+            ASSERT_EQ(
+                result,
+                extensions::api::file_manager_private::TaskResult::kOpened);
+          }));
+
+  // Wait for the first office fallback dialog to open.
+  navigation_observer_dialog.Wait();
+  ASSERT_TRUE(navigation_observer_dialog.last_navigation_succeeded());
+
+  // Fails to launch a second office fallback dialog.
+  ExecuteFileTask(
+      profile(), open_in_office_task, file_urls, nullptr,
+      base::BindOnce(
+          [](extensions::api::file_manager_private::TaskResult result,
+             std::string error_message) {
+            ASSERT_EQ(
+                result,
+                extensions::api::file_manager_private::TaskResult::kFailed);
+          }));
+
+  // Both open file requests will log the CloudProvider metric.
+  histogram_.ExpectUniqueSample(
+      ash::cloud_upload::kOpenInitialCloudProviderMetric,
+      ash::cloud_upload::CloudProvider::kOneDrive, 2);
+  // Only the second open file request will complete. Expect that the second
+  // office fallback dialog couldn't be opened.
+  histogram_.ExpectUniqueSample(
+      ash::cloud_upload::kOneDriveTaskResultMetricName,
+      ash::cloud_upload::OfficeTaskResult::kCannotGetFallbackChoice, 1);
+  histogram_.ExpectUniqueSample(
+      ash::cloud_upload::kOneDriveErrorMetricName,
+      ash::cloud_upload::OfficeOneDriveOpenErrors::kOffline, 1);
+}
 #endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
 
 // Test that OpenOrMoveFiles() will open an ODFS office file when the cloud
