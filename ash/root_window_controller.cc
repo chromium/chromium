@@ -452,21 +452,23 @@ class RootWindowMenuModelAdapter : public AppMenuModelAdapter {
     const base::TimeDelta user_journey_time =
         base::TimeTicks::Now() - menu_open_time();
 
-    UMA_HISTOGRAM_TIMES("Apps.ContextMenuUserJourneyTime.Desktop",
+    UMA_HISTOGRAM_TIMES("Apps.ContextMenuUserJourneyTimeV2.Desktop",
                         user_journey_time);
-    UMA_HISTOGRAM_ENUMERATION("Apps.ContextMenuShowSource.Desktop",
+    UMA_HISTOGRAM_ENUMERATION("Apps.ContextMenuShowSourceV2.Desktop",
                               source_type(), ui::MENU_SOURCE_TYPE_LAST);
     if (is_tablet_mode()) {
-      UMA_HISTOGRAM_TIMES("Apps.ContextMenuUserJourneyTime.Desktop.TabletMode",
-                          user_journey_time);
-      UMA_HISTOGRAM_ENUMERATION("Apps.ContextMenuShowSource.Desktop.TabletMode",
-                                source_type(), ui::MENU_SOURCE_TYPE_LAST);
-    } else {
       UMA_HISTOGRAM_TIMES(
-          "Apps.ContextMenuUserJourneyTime.Desktop.ClamshellMode",
+          "Apps.ContextMenuUserJourneyTimeV2.Desktop.TabletMode",
           user_journey_time);
       UMA_HISTOGRAM_ENUMERATION(
-          "Apps.ContextMenuShowSource.Desktop.ClamshellMode", source_type(),
+          "Apps.ContextMenuShowSourceV2.Desktop.TabletMode", source_type(),
+          ui::MENU_SOURCE_TYPE_LAST);
+    } else {
+      UMA_HISTOGRAM_TIMES(
+          "Apps.ContextMenuUserJourneyTimeV2.Desktop.ClamshellMode",
+          user_journey_time);
+      UMA_HISTOGRAM_ENUMERATION(
+          "Apps.ContextMenuShowSourceV2.Desktop.ClamshellMode", source_type(),
           ui::MENU_SOURCE_TYPE_LAST);
     }
   }

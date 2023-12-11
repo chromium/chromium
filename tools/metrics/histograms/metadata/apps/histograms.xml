@@ -86,17 +86,13 @@ chromium-metrics-reviews@google.com.
 </variants>
 
 <variants name="AppUIComponent">
-  <variant name=".AppGrid" summary="App - Fullscreen Launcher"/>
   <variant name=".Desktop" summary="Desktop"/>
   <variant name=".ProductivityLauncherAppGrid"
       summary="App - Productivity Launcher"/>
   <variant name=".ProductivityLauncherRecentApp"
       summary="Recent App, Productivity Launcher"/>
-  <variant name=".SearchResult" summary="Launcher App Search Result"/>
   <variant name=".Shelf" summary="Shelf"/>
   <variant name=".ShelfButton" summary="ShelfButton"/>
-  <variant name=".SuggestedAppFullscreen"
-      summary="Suggested App, Fullscreen Launcher"/>
 </variants>
 
 <variants name="HomeLauncherVisibility">
@@ -1980,8 +1976,7 @@ chromium-metrics-reviews@google.com.
   <summary>
     The user journey time for a ContextMenu, defined as the time between
     launching a context menu and the context menu's close callback being
-    activated. Not recorded whenever the context menu is not for an app icon on
-    the shelf. {AppUIComponent}
+    activated. {AppUIComponent}
   </summary>
   <token key="AppUIComponent" variants="AppUIComponent"/>
   <token key="TabletOrClamshellMode" variants="TabletOrClamshellMode"/>
