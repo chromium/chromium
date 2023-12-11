@@ -690,7 +690,7 @@ void GaiaScreenHandler::DeclareJSCallbacks() {
   AddCallback("passwordEntered", &GaiaScreenHandler::HandlePasswordEntered);
   AddCallback("showLoadingTimeoutError",
               &GaiaScreenHandler::HandleShowLoadingTimeoutError);
-  AddCallback("getDeviceId", &GaiaScreenHandler::HandleGetDeviceId);
+  AddCallback("getDeviceIdForLogin", &GaiaScreenHandler::HandleGetDeviceId);
 }
 
 void GaiaScreenHandler::HandleAuthenticatorLoaded() {
