@@ -30,20 +30,37 @@
   if (imageSize.width == 0 || imageSize.height == 0) {
     return;
   }
-  CGFloat widthScaleFactor = CGRectGetWidth(self.frame) / imageSize.width;
-  CGFloat heightScaleFactor = CGRectGetHeight(self.frame) / imageSize.height;
+  const CGFloat imageAspectRatio = imageSize.width / imageSize.height;
   CGFloat imageViewWidth;
   CGFloat imageViewHeight;
   if (imageSize.width > imageSize.height) {
-    imageViewWidth = imageSize.width * heightScaleFactor;
-    imageViewHeight = CGRectGetHeight(self.frame);
+    // The image is landscape. Adapt the image view size based on the difference
+    // of aspect ratios.
+    const CGFloat viewAspectRatio =
+        CGRectGetWidth(self.bounds) / CGRectGetHeight(self.bounds);
+    if (imageAspectRatio > viewAspectRatio) {
+      // The image is wider than the view. Fit the height.
+      imageViewHeight = CGRectGetHeight(self.bounds);
+      imageViewWidth = CGRectGetHeight(self.bounds) * imageAspectRatio;
+    } else {
+      // The image is narrower than the view. Fit the width.
+      imageViewWidth = CGRectGetWidth(self.bounds);
+      imageViewHeight = CGRectGetWidth(self.bounds) / imageAspectRatio;
+    }
   } else {
-    imageViewWidth = CGRectGetWidth(self.frame);
-    imageViewHeight = imageSize.height * widthScaleFactor;
+    // The image is portrait. Always match the width, even if it leads to a
+    // white bar at the bottom if the view is narrower than the image.
+    // See header for the explanation.
+    imageViewWidth = CGRectGetWidth(self.bounds);
+    imageViewHeight = CGRectGetWidth(self.bounds) / imageAspectRatio;
   }
-  self.innerImageView.frame =
-      CGRectMake((self.frame.size.width - imageViewWidth) / 2.0f, 0,
-                 imageViewWidth, imageViewHeight);
+  self.innerImageView.frame = CGRectMake(
+      // Always center horizontally.
+      (CGRectGetWidth(self.bounds) - imageViewWidth) / 2.,
+      // Always align to the top.
+      0,
+      // Set the computed image view size.
+      imageViewWidth, imageViewHeight);
 }
 
 #pragma mark - Public properties
