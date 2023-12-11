@@ -347,10 +347,10 @@ class VIEWS_EXPORT BubbleFrameView : public NonClientFrameView {
   raw_ptr<BoxLayoutView> title_container_ = nullptr;
 
   // One of these fields is used as the dialog title. If SetTitleView is called
-  // the custom title view is stored in |custom_title_| and this class assumes
-  // ownership. Otherwise |default_title_| is used.
-  raw_ptr<Label, DanglingUntriaged> default_title_ = nullptr;
-  raw_ptr<View, DanglingUntriaged> custom_title_ = nullptr;
+  // the custom title view is stored in `custom_title_` and this class assumes
+  // ownership. Otherwise `default_title_` is used.
+  raw_ptr<Label> default_title_ = nullptr;
+  raw_ptr<View> custom_title_ = nullptr;
 
   raw_ptr<Label> subtitle_ = nullptr;
 
@@ -365,11 +365,10 @@ class VIEWS_EXPORT BubbleFrameView : public NonClientFrameView {
   raw_ptr<ProgressBar> progress_indicator_ = nullptr;
 
   // The optional header view.
-  raw_ptr<View, DanglingUntriaged> header_view_ = nullptr;
+  raw_ptr<View> header_view_ = nullptr;
 
   // A view to contain the footnote view, if it exists.
-  raw_ptr<FootnoteContainerView, DanglingUntriaged> footnote_container_ =
-      nullptr;
+  raw_ptr<FootnoteContainerView> footnote_container_ = nullptr;
 
   // Set preference for how the arrow will be adjusted if the window is outside
   // the available bounds.
