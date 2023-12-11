@@ -7,6 +7,7 @@
 -- Currently we only track Chrome page loads and their associated metrics.
 
 INCLUDE PERFETTO MODULE chrome.page_loads;
+INCLUDE PERFETTO MODULE chrome.startups;
 
 -- All critical user interaction events, including type and table with
 -- associated metrics.
@@ -33,4 +34,16 @@ SELECT
   'PageLoad' AS name,
   navigation_start_ts AS ts,
   IFNULL(lcp, fcp) AS dur
-FROM chrome_page_loads;
+FROM chrome_page_loads
+UNION ALL
+SELECT
+  id AS scoped_id,
+  'chrome_startups' AS type,
+  name,
+  startup_begin_ts AS ts,
+  CASE
+    WHEN first_visible_content_ts IS NOT NULL
+      THEN first_visible_content_ts - startup_begin_ts
+    ELSE 0
+  END AS dur
+FROM chrome_startups;

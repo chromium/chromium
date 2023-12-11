@@ -105,6 +105,7 @@ public class ActivityTabStartupMetricsTracker {
             long activityId, ObservableSupplier<TabModelSelector> tabModelSelectorSupplier) {
         mActivityId = activityId;
         mActivityStartTimeMs = SystemClock.uptimeMillis();
+        TraceEvent.startupActivityStart(mActivityId, mActivityStartTimeMs);
         tabModelSelectorSupplier.addObserver(this::registerObservers);
         SafeBrowsingApiBridge.setOneTimeSafetyNetApiUrlCheckObserver(
                 this::updateSafetyNetCheckTime);

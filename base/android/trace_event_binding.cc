@@ -363,10 +363,23 @@ static void JNI_TraceEvent_WebViewStartupStage2(JNIEnv* env,
                   TimeTicks() + Milliseconds(start_time_ms + duration_ms));
 }
 
-static void JNI_TraceEvent_StartupLaunchCause(
-    JNIEnv* env,
-    jlong activity_id,
-    jint cause) {
+static void JNI_TraceEvent_StartupActivityStart(JNIEnv* env,
+                                                jlong activity_id,
+                                                jlong start_time_ms) {
+  TRACE_EVENT_INSTANT(
+      "interactions", "Startup.ActivityStart",
+      TimeTicks() + Milliseconds(start_time_ms),
+      [&](perfetto::EventContext ctx) {
+        auto* start_up = ctx.event<perfetto::protos::pbzero::ChromeTrackEvent>()
+                             ->set_startup();
+        start_up->set_activity_id(activity_id);
+      });
+}
+
+static void JNI_TraceEvent_StartupLaunchCause(JNIEnv* env,
+                                              jlong activity_id,
+                                              jlong start_time_ms,
+                                              jint cause) {
 #if BUILDFLAG(ENABLE_BASE_TRACING)
   using Startup = perfetto::protos::pbzero::StartUp;
   auto launchType = Startup::OTHER;
@@ -430,7 +443,9 @@ static void JNI_TraceEvent_StartupLaunchCause(
   }
 
   TRACE_EVENT_INSTANT(
-      "interactions", "Startup.LaunchCause", [&](perfetto::EventContext ctx) {
+      "interactions", "Startup.LaunchCause",
+      TimeTicks() + Milliseconds(start_time_ms),
+      [&](perfetto::EventContext ctx) {
         auto* start_up = ctx.event<perfetto::protos::pbzero::ChromeTrackEvent>()
                              ->set_startup();
         start_up->set_activity_id(activity_id);
