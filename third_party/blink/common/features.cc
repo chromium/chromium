@@ -786,7 +786,7 @@ BASE_FEATURE(kFencedFramesM120FeaturesPart1,
 //   `reserved.top_navigation_start` and `reserved.top_navigation_commit.
 BASE_FEATURE(kFencedFramesM120FeaturesPart2,
              "FencedFramesM120FeaturesPart2",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Relax the attestation requirement of post-impression beacons from Protected
 // Audience only to either Protected Audience or Attribution Reporting.
