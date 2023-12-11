@@ -362,7 +362,10 @@ bool CSSParser::ParseSystemColor(Color& color,
     return false;
   }
 
-  color = LayoutTheme::GetTheme().SystemColor(id, color_scheme);
+  // TODO(samomekarajr): Pass the actual color provider from the Page via the
+  // Document.
+  color = LayoutTheme::GetTheme().SystemColor(id, color_scheme,
+                                              /*color_provider=*/nullptr);
   return true;
 }
 

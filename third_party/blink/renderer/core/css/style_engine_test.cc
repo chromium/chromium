@@ -2910,8 +2910,10 @@ TEST_F(StyleEngineTest, ColorSchemeBaseBackgroundChange) {
 
   color_scheme_helper.SetForcedColors(GetDocument(), ForcedColors::kActive);
   UpdateAllLifecyclePhases();
+  mojom::blink::ColorScheme color_scheme = mojom::blink::ColorScheme::kLight;
   Color system_background_color = LayoutTheme::GetTheme().SystemColor(
-      CSSValueID::kCanvas, mojom::blink::ColorScheme::kLight);
+      CSSValueID::kCanvas, color_scheme,
+      GetDocument().GetColorProviderForPainting(color_scheme));
 
   EXPECT_EQ(system_background_color,
             GetDocument().View()->BaseBackgroundColor());

@@ -51,7 +51,8 @@ Color PreviousLayerColor(const ComputedStyle& originating_style,
 
 // Returns the forced foreground color for the given |pseudo|.
 Color ForcedForegroundColor(PseudoId pseudo,
-                            mojom::blink::ColorScheme color_scheme) {
+                            mojom::blink::ColorScheme color_scheme,
+                            const ui::ColorProvider* color_provider) {
   CSSValueID keyword = CSSValueID::kHighlighttext;
   switch (pseudo) {
     case kPseudoIdTargetText:
@@ -72,12 +73,14 @@ Color ForcedForegroundColor(PseudoId pseudo,
       NOTREACHED();
       break;
   }
-  return LayoutTheme::GetTheme().SystemColor(keyword, color_scheme);
+  return LayoutTheme::GetTheme().SystemColor(keyword, color_scheme,
+                                             color_provider);
 }
 
 // Returns the forced ‘background-color’ for the given |pseudo|.
 Color ForcedBackgroundColor(PseudoId pseudo,
-                            mojom::blink::ColorScheme color_scheme) {
+                            mojom::blink::ColorScheme color_scheme,
+                            const ui::ColorProvider* color_provider) {
   CSSValueID keyword = CSSValueID::kHighlight;
   switch (pseudo) {
     case kPseudoIdTargetText:
@@ -98,7 +101,8 @@ Color ForcedBackgroundColor(PseudoId pseudo,
       NOTREACHED();
       break;
   }
-  return LayoutTheme::GetTheme().SystemColor(keyword, color_scheme);
+  return LayoutTheme::GetTheme().SystemColor(keyword, color_scheme,
+                                             color_provider);
 }
 
 // Returns the forced background color if |property| is ‘background-color’,
@@ -107,13 +111,14 @@ Color ForcedBackgroundColor(PseudoId pseudo,
 Color ForcedColor(const ComputedStyle& originating_style,
                   const ComputedStyle* pseudo_style,
                   PseudoId pseudo,
-                  const CSSProperty& property) {
+                  const CSSProperty& property,
+                  const ui::ColorProvider* color_provider) {
   mojom::blink::ColorScheme color_scheme =
       UsedColorScheme(originating_style, pseudo_style);
   if (property.IDEquals(CSSPropertyID::kBackgroundColor)) {
-    return ForcedBackgroundColor(pseudo, color_scheme);
+    return ForcedBackgroundColor(pseudo, color_scheme, color_provider);
   }
-  return ForcedForegroundColor(pseudo, color_scheme);
+  return ForcedForegroundColor(pseudo, color_scheme, color_provider);
 }
 
 // Returns the UA default ‘color’ for the given |pseudo|.
@@ -134,7 +139,8 @@ absl::optional<Color> DefaultForegroundColor(
           color_scheme);
     case kPseudoIdTargetText:
       return LayoutTheme::GetTheme().PlatformTextSearchColor(
-          false /* active match */, color_scheme);
+          false /* active match */, color_scheme,
+          document.GetColorProviderForPainting(color_scheme));
     case kPseudoIdSpellingError:
     case kPseudoIdGrammarError:
     case kPseudoIdHighlight:
@@ -287,7 +293,9 @@ Color HighlightStyleUtils::ResolveColor(
     const CSSProperty& property,
     absl::optional<Color> previous_layer_color) {
   if (UseForcedColors(document, originating_style, pseudo_style)) {
-    return ForcedColor(originating_style, pseudo_style, pseudo, property);
+    return ForcedColor(originating_style, pseudo_style, pseudo, property,
+                       document.GetColorProviderForPainting(
+                           UsedColorScheme(originating_style, pseudo_style)));
   }
   if (UseDefaultHighlightColors(pseudo_style, pseudo, property)) {
     return DefaultHighlightColor(document, originating_style, pseudo_style,

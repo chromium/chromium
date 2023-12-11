@@ -591,8 +591,11 @@ void LayoutTheme::SystemFont(CSSValueID system_font_id,
   font_description.SetGenericFamily(FontDescription::kNoFamily);
 }
 
+// TODO(crbug.com/1231644): Use color_provider to get the system colors if
+// available.
 Color LayoutTheme::SystemColor(CSSValueID css_value_id,
-                               mojom::blink::ColorScheme color_scheme) const {
+                               mojom::blink::ColorScheme color_scheme,
+                               const ui::ColorProvider* color_provider) const {
   if (!WebTestSupport::IsRunningWebTest() && InForcedColorsMode())
     return SystemColorFromNativeTheme(css_value_id, color_scheme);
   return DefaultSystemColor(css_value_id, color_scheme);
@@ -783,10 +786,12 @@ Color LayoutTheme::SystemColorFromNativeTheme(
 
 Color LayoutTheme::PlatformTextSearchHighlightColor(
     bool active_match,
-    mojom::blink::ColorScheme color_scheme) const {
+    mojom::blink::ColorScheme color_scheme,
+    const ui::ColorProvider* color_provider) const {
   if (active_match) {
     if (InForcedColorsMode())
-      return GetTheme().SystemColor(CSSValueID::kHighlight, color_scheme);
+      return GetTheme().SystemColor(CSSValueID::kHighlight, color_scheme,
+                                    color_provider);
     return Color(255, 150, 50);  // Orange.
   }
   return Color(255, 255, 0);     // Yellow.
@@ -794,9 +799,11 @@ Color LayoutTheme::PlatformTextSearchHighlightColor(
 
 Color LayoutTheme::PlatformTextSearchColor(
     bool active_match,
-    mojom::blink::ColorScheme color_scheme) const {
+    mojom::blink::ColorScheme color_scheme,
+    const ui::ColorProvider* color_provider) const {
   if (InForcedColorsMode() && active_match)
-    return GetTheme().SystemColor(CSSValueID::kHighlighttext, color_scheme);
+    return GetTheme().SystemColor(CSSValueID::kHighlighttext, color_scheme,
+                                  color_provider);
   return Color::kBlack;
 }
 

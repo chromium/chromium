@@ -478,7 +478,9 @@ void HighlightPainter::Paint(Phase phase) {
           Color color =
               LayoutTheme::GetTheme().PlatformTextSearchHighlightColor(
                   text_match_marker.IsActiveMatch(),
-                  originating_style_.UsedColorScheme());
+                  originating_style_.UsedColorScheme(),
+                  document.GetColorProviderForPainting(
+                      originating_style_.UsedColorScheme()));
           PaintRect(paint_info_.context, PhysicalOffset(box_origin_),
                     fragment_item_.LocalRect(text, paint_start_offset,
                                              paint_end_offset),
@@ -497,7 +499,9 @@ void HighlightPainter::Paint(Phase phase) {
           const Color platform_matched_color =
               LayoutTheme::GetTheme().PlatformTextSearchColor(
                   text_match_marker.IsActiveMatch(),
-                  originating_style_.UsedColorScheme());
+                  originating_style_.UsedColorScheme(),
+                  document.GetColorProviderForPainting(
+                      originating_style_.UsedColorScheme()));
           text_painter_.SetSvgState(
               *To<LayoutSVGInlineText>(fragment_item_->GetLayoutObject()),
               originating_style_, platform_matched_color);
