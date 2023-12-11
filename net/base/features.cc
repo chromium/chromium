@@ -79,10 +79,6 @@ BASE_FEATURE(kEnableIPv6ReachabilityOverride,
              "EnableIPv6ReachabilityOverride",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-BASE_FEATURE(kSHA1ServerSignature,
-             "SHA1ServerSignature",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 BASE_FEATURE(kEnableTLS13EarlyData,
              "EnableTLS13EarlyData",
              base::FEATURE_DISABLED_BY_DEFAULT);

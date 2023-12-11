@@ -549,63 +549,6 @@ TEST_F(SSLConnectJobTest, DirectSSLError) {
               test::IsError(ERR_BAD_SSL_CLIENT_AUTH_CERT));
 }
 
-// Test that the sha1 server handshakes fallback is triggered on applicable
-// error codes.
-TEST_F(SSLConnectJobTest, SHA1ServerHandshakeFallback) {
-  for (bool feature_enabled : {true, false}) {
-    SCOPED_TRACE(feature_enabled);
-    base::test::ScopedFeatureList feature_list;
-    if (feature_enabled) {
-      feature_list.InitAndEnableFeature(features::kSHA1ServerSignature);
-    } else {
-      feature_list.InitAndDisableFeature(features::kSHA1ServerSignature);
-    }
-    for (Error error :
-         {ERR_CONNECTION_CLOSED, ERR_CONNECTION_RESET, ERR_SSL_PROTOCOL_ERROR,
-          ERR_SSL_VERSION_OR_CIPHER_MISMATCH}) {
-      SCOPED_TRACE(error);
-
-      for (bool second_attempt_ok : {true, false}) {
-        SCOPED_TRACE(second_attempt_ok);
-
-        StaticSocketDataProvider data;
-        socket_factory_.AddSocketDataProvider(&data);
-        SSLSocketDataProvider ssl(ASYNC, error);
-        socket_factory_.AddSSLSocketDataProvider(&ssl);
-        ssl.expected_disable_sha1_server_signatures = true;
-
-        Error error2 = second_attempt_ok ? OK : error;
-        StaticSocketDataProvider data2;
-        socket_factory_.AddSocketDataProvider(&data2);
-        SSLSocketDataProvider ssl2(ASYNC, error2);
-        socket_factory_.AddSSLSocketDataProvider(&ssl2);
-        if (feature_enabled) {
-          ssl2.expected_disable_sha1_server_signatures = false;
-        } else {
-          ssl2.expected_disable_sha1_server_signatures = true;
-        }
-
-        TestConnectJobDelegate test_delegate;
-        std::unique_ptr<ConnectJob> ssl_connect_job =
-            CreateConnectJob(&test_delegate);
-
-        test_delegate.StartJobExpectingResult(ssl_connect_job.get(), error2,
-                                              /*expect_sync_result=*/false);
-        ConnectionAttempts connection_attempts =
-            ssl_connect_job->GetConnectionAttempts();
-        if (second_attempt_ok) {
-          ASSERT_EQ(1u, connection_attempts.size());
-          EXPECT_THAT(connection_attempts[0].result, test::IsError(error));
-        } else {
-          ASSERT_EQ(2u, connection_attempts.size());
-          EXPECT_THAT(connection_attempts[0].result, test::IsError(error));
-          EXPECT_THAT(connection_attempts[1].result, test::IsError(error));
-        }
-      }
-    }
-  }
-}
-
 TEST_F(SSLConnectJobTest, LegacyCryptoFallbackHistograms) {
   base::FilePath certs_dir = GetTestCertsDirectory();
 

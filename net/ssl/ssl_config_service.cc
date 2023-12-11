@@ -28,8 +28,7 @@ bool SSLContextConfig::EncryptedClientHelloEnabled() const {
 }
 
 bool SSLContextConfig::InsecureHashesInTLSHandshakesEnabled() const {
-  return insecure_hash_override.value_or(
-      base::FeatureList::IsEnabled(features::kSHA1ServerSignature));
+  return insecure_hash_override.value_or(false);
 }
 
 bool SSLContextConfig::PostQuantumKeyAgreementEnabled() const {
