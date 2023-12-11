@@ -62,9 +62,13 @@ export class FileHandlerPageElement extends HTMLElement {
     try {
       const dialogArgs = await this.proxy.handler.getDialogArgs();
       assert(dialogArgs.args);
-      assert(dialogArgs.args.localTasks);
+      assert(dialogArgs.args.dialogSpecificArgs);
+      assert(dialogArgs.args.dialogSpecificArgs.fileHandlerDialogArgs);
+
+      const localTasks =
+          dialogArgs.args.dialogSpecificArgs.fileHandlerDialogArgs?.localTasks;
       // Adjust the dialog's size if there are no local tasks to display.
-      if (dialogArgs.args.localTasks.length == 0) {
+      if (localTasks.length == 0) {
         this.$('#dialog').style.height = '315px';
       }
 
@@ -92,7 +96,6 @@ export class FileHandlerPageElement extends HTMLElement {
       officeCard.id = 'onedrive';
       this.addCloudProviderCard(officeCard);
 
-      const localTasks = dialogArgs.args.localTasks;
       if (localTasks.length == 0) {
         return;
       }
@@ -109,14 +112,14 @@ export class FileHandlerPageElement extends HTMLElement {
         localHandlerCard.setParameters(task.position, task.title);
         localHandlerCard.setIconUrl(task.iconUrl);
         localHandlerCard.id = this.toStringId(task.position);
-        if (i == dialogArgs.args.localTasks.length - 1) {
+        if (i == localTasks.length - 1) {
           // Round bottom for last card.
           localHandlerCard.$('#container')!.classList.add('round-bottom');
         }
         this.addLocalHandlerCard(localHandlerCard);
       }
       // Set local tasks to indicate completion (used in tests).
-      this.localTasks = dialogArgs.args.localTasks;
+      this.localTasks = localTasks;
     } catch (e) {
       // TODO(b:243095484) Define expected behavior.
       console.error(

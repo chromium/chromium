@@ -411,10 +411,15 @@ static constexpr const char* const kChromeUrls[] = {
     "chrome://assistant-optin/",
     "chrome://bluetooth-pairing",
     "chrome://certificate-manager/",
+
     // Crashes because message handler is not registered outside of the dialog
     // for confirm password change UI.
     // "chrome://confirm-password-change",
+
+    // TODO(b/300875336): Navigating to chrome://cloud-upload causes an
+    // assertion failure because there are no dialog args.
     "chrome://cloud-upload",
+
     "chrome://connectivity-diagnostics",
     "chrome://crostini-installer",
     "chrome://crostini-upgrader",

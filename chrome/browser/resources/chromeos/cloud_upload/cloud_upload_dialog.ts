@@ -124,8 +124,10 @@ export class CloudUploadElement extends HTMLElement {
     try {
       const dialogArgs = await this.proxy.handler.getDialogArgs();
       assert(dialogArgs.args);
+      assert(dialogArgs.args.dialogSpecificArgs.oneDriveSetupDialogArgs);
       this.setOfficeAsDefaultHandler =
-          dialogArgs.args.setOfficeAsDefaultHandler;
+          dialogArgs.args.dialogSpecificArgs.oneDriveSetupDialogArgs
+              .setOfficeAsDefaultHandler;
       this.fileNames = dialogArgs.args.fileNames;
     } catch (e) {
       // TODO(b/243095484) Define expected behavior.

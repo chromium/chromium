@@ -377,6 +377,15 @@ void RecordMicrosoft365Availability(const char* metric, Profile* profile) {
       decltype(ms365_state)::All().ToEnumBitmask() + 1);
 }
 
+mojom::OperationType UploadTypeToOperationType(UploadType upload_type) {
+  switch (upload_type) {
+    case UploadType::kMove:
+      return mojom::OperationType::kMove;
+    case UploadType::kCopy:
+      return mojom::OperationType::kCopy;
+  }
+}
+
 }  // namespace
 
 // static
@@ -428,12 +437,12 @@ bool CloudOpenTask::ExecuteInternal() {
   if (!HaveExplicitFileHandlers(profile_, file_urls_)) {
     RecordMicrosoft365Availability(kFirstTimeMicrosoft365AvailabilityMetric,
                                    profile_);
-    return InitAndShowDialog(mojom::DialogPage::kFileHandlerDialog);
+    return InitAndShowDialog(DialogPage::kFileHandlerDialog);
   }
 
   if (ShouldFixUpOffice(profile_, cloud_provider_)) {
     // TODO(cassycc): Use page specifically for fix up.
-    return InitAndShowDialog(mojom::DialogPage::kOneDriveSetup);
+    return InitAndShowDialog(DialogPage::kOneDriveSetup);
   }
   OpenOrMoveFiles();
   return true;
@@ -602,10 +611,9 @@ bool CloudOpenTask::ShouldShowConfirmationDialog() {
 void CloudOpenTask::ConfirmMoveOrStartUpload() {
   bool show_confirmation_dialog = ShouldShowConfirmationDialog();
   if (show_confirmation_dialog) {
-    mojom::DialogPage dialog_page =
-        cloud_provider_ == CloudProvider::kGoogleDrive
-            ? mojom::DialogPage::kMoveConfirmationGoogleDrive
-            : mojom::DialogPage::kMoveConfirmationOneDrive;
+    DialogPage dialog_page = cloud_provider_ == CloudProvider::kGoogleDrive
+                                 ? DialogPage::kMoveConfirmationGoogleDrive
+                                 : DialogPage::kMoveConfirmationOneDrive;
     InitAndShowDialog(dialog_page);
   } else {
     StartUpload();
@@ -891,7 +899,7 @@ void CloudOpenTask::RecordUploadLatencyUMA() {
 // Create the arguments necessary for showing the dialog. We first need to
 // collect local file tasks, if we are trying to show the kFileHandlerDialog
 // page.
-bool CloudOpenTask::InitAndShowDialog(mojom::DialogPage dialog_page) {
+bool CloudOpenTask::InitAndShowDialog(DialogPage dialog_page) {
   // Allow no more than one upload dialog at a time. In the case of multiple
   // upload requests, they should either be handled simultaneously or queued.
   if (SystemWebDialogDelegate::HasInstance(
@@ -902,36 +910,64 @@ bool CloudOpenTask::InitAndShowDialog(mojom::DialogPage dialog_page) {
   mojom::DialogArgsPtr args = CreateDialogArgs(dialog_page);
 
   // Display local file handlers (tasks) only for the file handler dialog.
-  if (dialog_page == mojom::DialogPage::kFileHandlerDialog) {
+  if (dialog_page == DialogPage::kFileHandlerDialog) {
     // Callback to show the dialog after the tasks have been found.
     fm_tasks::FindTasksCallback find_all_types_of_tasks_callback =
         base::BindOnce(IgnoreResult(&CloudOpenTask::ShowDialog), this,
-                       std::move(args), dialog_page);
+                       std::move(args));
     // Find the file tasks that can open the `file_urls_` and then run
     // `ShowDialog`.
     FindTasksForDialog(std::move(find_all_types_of_tasks_callback));
   } else {
-    ShowDialog(std::move(args), dialog_page, nullptr);
+    ShowDialog(std::move(args), nullptr);
   }
   return true;
 }
 
-mojom::DialogArgsPtr CloudOpenTask::CreateDialogArgs(
-    mojom::DialogPage dialog_page) {
+mojom::DialogArgsPtr CloudOpenTask::CreateDialogArgs(DialogPage dialog_page) {
   mojom::DialogArgsPtr args = mojom::DialogArgs::New();
   for (const auto& file_url : file_urls_) {
     args->file_names.push_back(file_url.path().BaseName().value());
   }
-  args->dialog_page = dialog_page;
-  args->set_office_as_default_handler =
-      !HaveExplicitFileHandlers(profile_, file_urls_);
-  const UploadType upload_type = GetUploadType(profile_, file_urls_[0]);
-  switch (upload_type) {
-    case UploadType::kMove:
-      args->operation_type = mojom::OperationType::kMove;
+  switch (dialog_page) {
+    case DialogPage::kFileHandlerDialog:
+      args->dialog_specific_args =
+          mojom::DialogSpecificArgs::NewFileHandlerDialogArgs(
+              mojom::FileHandlerDialogArgs::New());
       break;
-    case UploadType::kCopy:
-      args->operation_type = mojom::OperationType::kCopy;
+    case DialogPage::kOneDriveSetup: {
+      auto one_drive_setup_dialog_args = mojom::OneDriveSetupDialogArgs::New();
+      one_drive_setup_dialog_args->set_office_as_default_handler =
+          !HaveExplicitFileHandlers(profile_, file_urls_);
+      args->dialog_specific_args =
+          mojom::DialogSpecificArgs::NewOneDriveSetupDialogArgs(
+              std::move(one_drive_setup_dialog_args));
+      break;
+    }
+    case DialogPage::kMoveConfirmationOneDrive: {
+      auto move_confirmation_one_drive_dialog_args =
+          mojom::MoveConfirmationOneDriveDialogArgs::New();
+      move_confirmation_one_drive_dialog_args->operation_type =
+          UploadTypeToOperationType(GetUploadType(profile_, file_urls_[0]));
+      args->dialog_specific_args =
+          mojom::DialogSpecificArgs::NewMoveConfirmationOneDriveDialogArgs(
+              std::move(move_confirmation_one_drive_dialog_args));
+      break;
+    }
+    case DialogPage::kMoveConfirmationGoogleDrive: {
+      auto move_confirmation_google_drive_dialog_args =
+          mojom::MoveConfirmationGoogleDriveDialogArgs::New();
+      move_confirmation_google_drive_dialog_args->operation_type =
+          UploadTypeToOperationType(GetUploadType(profile_, file_urls_[0]));
+      args->dialog_specific_args =
+          mojom::DialogSpecificArgs::NewMoveConfirmationGoogleDriveDialogArgs(
+              std::move(move_confirmation_google_drive_dialog_args));
+      break;
+    }
+    case DialogPage::kConnectToOneDrive:
+      args->dialog_specific_args =
+          mojom::DialogSpecificArgs::NewConnectToOneDriveDialogArgs(
+              mojom::ConnectToOneDriveDialogArgs::New());
       break;
   }
   return args;
@@ -944,7 +980,6 @@ mojom::DialogArgsPtr CloudOpenTask::CreateDialogArgs(
 // launches a new Files app window, which we listen for in OnBrowserAdded().
 void CloudOpenTask::ShowDialog(
     mojom::DialogArgsPtr args,
-    const mojom::DialogPage dialog_page,
     std::unique_ptr<fm_tasks::ResultingTasks> resulting_tasks) {
   if (resulting_tasks) {
     SetTaskArgs(args, std::move(resulting_tasks));
@@ -959,7 +994,7 @@ void CloudOpenTask::ShowDialog(
   // `SystemWebDialogDelegate::OnDialogClosed`.
   CloudUploadDialog* dialog = new CloudUploadDialog(
       std::move(args), base::BindOnce(&CloudOpenTask::OnDialogComplete, this),
-      dialog_page, office_move_confirmation_shown);
+      office_move_confirmation_shown);
 
   if (!modal_parent_) {
     BrowserList::AddObserver(this);
@@ -975,11 +1010,16 @@ void CloudOpenTask::ShowDialog(
   }
 }
 
-// Stores constructed tasks into `args->tasks` and `local_tasks_`.
+// Stores constructed tasks into
+// `args->dialog_specific_args->file_handler_dialog_args->local_tasks` and
+// `local_tasks_`.
 void CloudOpenTask::SetTaskArgs(
     mojom::DialogArgsPtr& args,
     std::unique_ptr<fm_tasks::ResultingTasks> resulting_tasks) {
   int nextPosition = 0;
+
+  auto& file_handler_dialog_args =
+      args->dialog_specific_args->get_file_handler_dialog_args();
   for (fm_tasks::FullTaskDescriptor& task : resulting_tasks->tasks) {
     // Ignore Google Docs and MS Office tasks as they are already
     // set up to show in the dialog.
@@ -996,7 +1036,7 @@ void CloudOpenTask::SetTaskArgs(
     dialog_task->icon_url = task.icon_url.spec();
     dialog_task->app_id = task.task_descriptor.app_id;
 
-    args->local_tasks.push_back(std::move(dialog_task));
+    file_handler_dialog_args->local_tasks.push_back(std::move(dialog_task));
     local_tasks_.push_back(std::move(task.task_descriptor));
   }
 }
@@ -1093,7 +1133,7 @@ void CloudOpenTask::OnDialogComplete(const std::string& user_response) {
                               OfficeSetupFileHandler::kMicrosoft365);
     cloud_provider_ = CloudProvider::kOneDrive;
     cloud_open_metrics_->set_cloud_provider(cloud_provider_);
-    InitAndShowDialog(mojom::DialogPage::kOneDriveSetup);
+    InitAndShowDialog(DialogPage::kOneDriveSetup);
   } else if (user_response == kUserActionCancel) {
     cloud_open_metrics_->LogTaskResult(OfficeTaskResult::kCancelledAtSetup);
     // Do nothing.
@@ -1211,10 +1251,10 @@ void CloudOpenTask::SetTasksForTest(
 }
 
 void CloudUploadDialog::OnDialogShown(content::WebUI* webui) {
-  DCHECK(dialog_args_);
+  CHECK(dialog_args_);
   SystemWebDialogDelegate::OnDialogShown(webui);
   static_cast<CloudUploadUI*>(webui->GetController())
-      ->SetDialogArgs(std::move(dialog_args_));
+      ->SetDialogArgs(dialog_args_.Clone());
 }
 
 void CloudUploadDialog::OnDialogClosed(const std::string& json_retval) {
@@ -1230,14 +1270,11 @@ void CloudUploadDialog::OnDialogClosed(const std::string& json_retval) {
 
 CloudUploadDialog::CloudUploadDialog(mojom::DialogArgsPtr args,
                                      UploadRequestCallback callback,
-                                     const mojom::DialogPage dialog_page,
                                      bool office_move_confirmation_shown)
     : SystemWebDialogDelegate(GURL(chrome::kChromeUICloudUploadURL),
                               std::u16string() /* title */),
       dialog_args_(std::move(args)),
       callback_(std::move(callback)),
-      dialog_page_(dialog_page),
-      num_local_tasks_(dialog_args_->local_tasks.size()),
       office_move_confirmation_shown_(office_move_confirmation_shown) {}
 
 CloudUploadDialog::~CloudUploadDialog() = default;
@@ -1249,7 +1286,8 @@ ui::ModalType CloudUploadDialog::GetDialogModalType() const {
 bool CloudUploadDialog::ShouldCloseDialogOnEscape() const {
   // The One Drive setup dialog handles escape in the webui as it needs to
   // display a confirmation dialog on cancellation.
-  return dialog_page_ != mojom::DialogPage::kOneDriveSetup;
+  CHECK(dialog_args_);
+  return !dialog_args_->dialog_specific_args->is_one_drive_setup_dialog_args();
 }
 
 bool CloudUploadDialog::ShouldShowCloseButton() const {
@@ -1274,33 +1312,33 @@ constexpr int kDialogHeightForConnectToOneDrive = 556;
 }  // namespace
 
 void CloudUploadDialog::GetDialogSize(gfx::Size* size) const {
-  switch (dialog_page_) {
-    case mojom::DialogPage::kFileHandlerDialog: {
-      size->set_width(kDialogWidthForFileHandlerDialog);
-      size->set_height(num_local_tasks_ == 0
-                           ? kDialogHeightForFileHandlerDialogNoLocalApp
-                           : kDialogHeightForFileHandlerDialog);
-      return;
+  const auto& dialog_specific_args = dialog_args_->dialog_specific_args;
+  if (dialog_specific_args->is_file_handler_dialog_args()) {
+    const bool has_local_tasks =
+        !dialog_specific_args->get_file_handler_dialog_args()
+             ->local_tasks.empty();
+    size->set_width(kDialogWidthForFileHandlerDialog);
+    size->set_height(has_local_tasks
+                         ? kDialogHeightForFileHandlerDialog
+                         : kDialogHeightForFileHandlerDialogNoLocalApp);
+  } else if (dialog_specific_args->is_one_drive_setup_dialog_args()) {
+    size->set_width(kDialogWidthForOneDriveSetup);
+    size->set_height(kDialogHeightForOneDriveSetup);
+  } else if (dialog_specific_args
+                 ->is_move_confirmation_google_drive_dialog_args() ||
+             dialog_specific_args
+                 ->is_move_confirmation_one_drive_dialog_args()) {
+    size->set_width(kDialogWidthForMoveConfirmation);
+    if (office_move_confirmation_shown_) {
+      size->set_height(kDialogHeightForMoveConfirmationWithCheckbox);
+    } else {
+      size->set_height(kDialogHeightForMoveConfirmationWithoutCheckbox);
     }
-    case mojom::DialogPage::kOneDriveSetup: {
-      size->set_width(kDialogWidthForOneDriveSetup);
-      size->set_height(kDialogHeightForOneDriveSetup);
-      return;
-    }
-    case mojom::DialogPage::kMoveConfirmationGoogleDrive:
-    case mojom::DialogPage::kMoveConfirmationOneDrive: {
-      size->set_width(kDialogWidthForMoveConfirmation);
-      if (office_move_confirmation_shown_) {
-        size->set_height(kDialogHeightForMoveConfirmationWithCheckbox);
-      } else {
-        size->set_height(kDialogHeightForMoveConfirmationWithoutCheckbox);
-      }
-      return;
-    }
-    case mojom::DialogPage::kConnectToOneDrive: {
-      size->set_width(kDialogWidthForConnectToOneDrive);
-      size->set_height(kDialogHeightForConnectToOneDrive);
-    }
+  } else if (dialog_specific_args->is_connect_to_one_drive_dialog_args()) {
+    size->set_width(kDialogWidthForConnectToOneDrive);
+    size->set_height(kDialogHeightForConnectToOneDrive);
+  } else {
+    NOTREACHED();
   }
 }
 
@@ -1314,14 +1352,16 @@ bool ShowConnectOneDriveDialog(gfx::NativeWindow modal_parent) {
   }
 
   mojom::DialogArgsPtr args = mojom::DialogArgs::New();
-  args->dialog_page = mojom::DialogPage::kConnectToOneDrive;
+  args->dialog_specific_args =
+      mojom::DialogSpecificArgs::NewConnectToOneDriveDialogArgs(
+          mojom::ConnectToOneDriveDialogArgs::New());
 
   // This CloudUploadDialog pointer is managed by an instance of
   // `views::WebDialogView` and deleted in
   // `SystemWebDialogDelegate::OnDialogClosed`.
-  CloudUploadDialog* dialog = new CloudUploadDialog(
-      std::move(args), base::DoNothing(), mojom::DialogPage::kConnectToOneDrive,
-      /*office_move_confirmation_shown=*/false);
+  CloudUploadDialog* dialog =
+      new CloudUploadDialog(std::move(args), base::DoNothing(),
+                            /*office_move_confirmation_shown=*/false);
 
   dialog->ShowSystemDialog(modal_parent);
   return true;
@@ -1329,23 +1369,27 @@ bool ShowConnectOneDriveDialog(gfx::NativeWindow modal_parent) {
 
 void LaunchMicrosoft365Setup(Profile* profile, gfx::NativeWindow modal_parent) {
   mojom::DialogArgsPtr args = mojom::DialogArgs::New();
-  args->dialog_page = mojom::DialogPage::kOneDriveSetup;
 
+  auto one_drive_setup_dialog_args = mojom::OneDriveSetupDialogArgs::New();
   // If `set_office_as_default_handler` is false, it indicates that we already
   // ran the Office setup and set file handler preferences for all handled
   // Office file types, or that the user has pre-existing preferences for these
   // file types.
-  args->set_office_as_default_handler =
+  one_drive_setup_dialog_args->set_office_as_default_handler =
       !HaveExplicitFileHandlers(profile, fm_tasks::WordGroupExtensions()) ||
       !HaveExplicitFileHandlers(profile, fm_tasks::ExcelGroupExtensions()) ||
       !HaveExplicitFileHandlers(profile, fm_tasks::PowerPointGroupExtensions());
 
+  args->dialog_specific_args =
+      mojom::DialogSpecificArgs::NewOneDriveSetupDialogArgs(
+          std::move(one_drive_setup_dialog_args));
+
   // This CloudUploadDialog pointer is managed by an instance of
   // `views::WebDialogView` and deleted in
   // `SystemWebDialogDelegate::OnDialogClosed`.
-  CloudUploadDialog* dialog = new CloudUploadDialog(
-      std::move(args), base::DoNothing(), mojom::DialogPage::kOneDriveSetup,
-      /*office_move_confirmation_shown=*/false);
+  CloudUploadDialog* dialog =
+      new CloudUploadDialog(std::move(args), base::DoNothing(),
+                            /*office_move_confirmation_shown=*/false);
 
   dialog->ShowSystemDialog(modal_parent);
 }

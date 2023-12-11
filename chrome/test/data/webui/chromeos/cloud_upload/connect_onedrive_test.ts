@@ -4,7 +4,6 @@
 
 import 'chrome://cloud-upload/connect_onedrive.js';
 
-import {DialogPage, OperationType} from 'chrome://cloud-upload/cloud_upload.mojom-webui.js';
 import {CloudUploadBrowserProxy} from 'chrome://cloud-upload/cloud_upload_browser_proxy.js';
 import {ConnectOneDriveElement} from 'chrome://cloud-upload/connect_onedrive.js';
 import {assert} from 'chrome://resources/js/assert.js';
@@ -57,8 +56,9 @@ suite('<connect-onedrive>', () => {
       officeWebAppInstalled: true,
       installOfficeWebAppResult: true,
       odfsMounted: true,
-      dialogPage: DialogPage.kConnectToOneDrive,
-      operationType: OperationType.kMove,
+      dialogSpecificArgs: {
+        connectToOneDriveDialogArgs: {},
+      },
     });
 
     const svgSuccess = connectOneDriveApp.$('#success')!;
@@ -85,8 +85,9 @@ suite('<connect-onedrive>', () => {
       officeWebAppInstalled: true,
       installOfficeWebAppResult: true,
       odfsMounted: true,
-      dialogPage: DialogPage.kConnectToOneDrive,
-      operationType: OperationType.kMove,
+      dialogSpecificArgs: {
+        connectToOneDriveDialogArgs: {},
+      },
     });
 
     testProxy.handler.setResultFor('signInToOneDrive', {success: false});

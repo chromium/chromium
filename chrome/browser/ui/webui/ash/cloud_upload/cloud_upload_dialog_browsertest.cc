@@ -1270,11 +1270,10 @@ IN_PROC_BROWSER_TEST_F(FixUpFlowBrowserTest,
                         std::make_unique<CloudOpenMetrics>(
                             CloudProvider::kOneDrive, /*file_count=*/1)));
   mojom::DialogArgsPtr args =
-      cloud_open_task->CreateDialogArgs(mojom::DialogPage::kOneDriveSetup);
+      cloud_open_task->CreateDialogArgs(DialogPage::kOneDriveSetup);
   // Self-deleted on close.
   CloudUploadDialog* dialog =
-      new CloudUploadDialog(std::move(args), base::DoNothing(),
-                            mojom::DialogPage::kOneDriveSetup, false);
+      new CloudUploadDialog(std::move(args), base::DoNothing(), false);
 
   // Watch for OneDrive Setup dialog URL chrome://cloud-upload.
   content::TestNavigationObserver navigation_observer_dialog(
@@ -1346,11 +1345,10 @@ IN_PROC_BROWSER_TEST_F(FixUpFlowBrowserTest,
                         std::make_unique<CloudOpenMetrics>(
                             CloudProvider::kOneDrive, /*file_count=*/1)));
   mojom::DialogArgsPtr args =
-      cloud_open_task->CreateDialogArgs(mojom::DialogPage::kOneDriveSetup);
+      cloud_open_task->CreateDialogArgs(DialogPage::kOneDriveSetup);
   // Self-deleted on close.
   CloudUploadDialog* dialog =
-      new CloudUploadDialog(std::move(args), base::DoNothing(),
-                            mojom::DialogPage::kOneDriveSetup, false);
+      new CloudUploadDialog(std::move(args), base::DoNothing(), false);
 
   // Watch for OneDrive Setup dialog URL chrome://cloud-upload.
   content::TestNavigationObserver navigation_observer_dialog(

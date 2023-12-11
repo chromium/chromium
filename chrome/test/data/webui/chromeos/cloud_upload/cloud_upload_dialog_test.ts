@@ -4,7 +4,7 @@
 
 import 'chrome://cloud-upload/cloud_upload_dialog.js';
 
-import {DialogPage, OperationType, UserAction} from 'chrome://cloud-upload/cloud_upload.mojom-webui.js';
+import {UserAction} from 'chrome://cloud-upload/cloud_upload.mojom-webui.js';
 import {CloudUploadBrowserProxy} from 'chrome://cloud-upload/cloud_upload_browser_proxy.js';
 import {CloudUploadElement} from 'chrome://cloud-upload/cloud_upload_dialog.js';
 import {OfficePwaInstallPageElement} from 'chrome://cloud-upload/office_pwa_install_page.js';
@@ -190,8 +190,11 @@ suite('<cloud-upload>', () => {
       officeWebAppInstalled,
       installOfficeWebAppResult: true,
       odfsMounted,
-      dialogPage: DialogPage.kOneDriveSetup,
-      operationType: OperationType.kMove,
+      dialogSpecificArgs: {
+        oneDriveSetupDialogArgs: {
+          setOfficeAsDefaultHandler: true,
+        },
+      },
     });
 
     // Go to the OneDrive upload page.
@@ -214,8 +217,11 @@ suite('<cloud-upload>', () => {
       officeWebAppInstalled,
       installOfficeWebAppResult: true,
       odfsMounted,
-      dialogPage: DialogPage.kOneDriveSetup,
-      operationType: OperationType.kMove,
+      dialogSpecificArgs: {
+        oneDriveSetupDialogArgs: {
+          setOfficeAsDefaultHandler: true,
+        },
+      },
     });
 
     // Go to the OneDrive upload page.
@@ -238,8 +244,11 @@ suite('<cloud-upload>', () => {
       officeWebAppInstalled,
       installOfficeWebAppResult: true,
       odfsMounted,
-      dialogPage: DialogPage.kOneDriveSetup,
-      operationType: OperationType.kMove,
+      dialogSpecificArgs: {
+        oneDriveSetupDialogArgs: {
+          setOfficeAsDefaultHandler: true,
+        },
+      },
     });
 
     await doWelcomePage(officeWebAppInstalled, odfsMounted);
@@ -259,8 +268,11 @@ suite('<cloud-upload>', () => {
       officeWebAppInstalled,
       installOfficeWebAppResult: true,
       odfsMounted,
-      dialogPage: DialogPage.kOneDriveSetup,
-      operationType: OperationType.kMove,
+      dialogSpecificArgs: {
+        oneDriveSetupDialogArgs: {
+          setOfficeAsDefaultHandler: true,
+        },
+      },
     });
 
     await doWelcomePage(officeWebAppInstalled, odfsMounted);
@@ -284,8 +296,11 @@ suite('<cloud-upload>', () => {
           officeWebAppInstalled,
           installOfficeWebAppResult: true,
           odfsMounted,
-          dialogPage: DialogPage.kOneDriveSetup,
-          operationType: OperationType.kMove,
+          dialogSpecificArgs: {
+            oneDriveSetupDialogArgs: {
+              setOfficeAsDefaultHandler: true,
+            },
+          },
         });
 
         await doWelcomePage(officeWebAppInstalled, odfsMounted);
@@ -310,9 +325,11 @@ suite('<cloud-upload>', () => {
           officeWebAppInstalled,
           installOfficeWebAppResult: true,
           odfsMounted,
-          dialogPage: DialogPage.kOneDriveSetup,
-          setOfficeAsDefaultHandler: true,
-          operationType: OperationType.kMove,
+          dialogSpecificArgs: {
+            oneDriveSetupDialogArgs: {
+              setOfficeAsDefaultHandler: true,
+            },
+          },
         });
 
         await doWelcomePage(officeWebAppInstalled, odfsMounted);
@@ -337,9 +354,11 @@ suite('<cloud-upload>', () => {
           officeWebAppInstalled,
           installOfficeWebAppResult: true,
           odfsMounted,
-          dialogPage: DialogPage.kOneDriveSetup,
-          setOfficeAsDefaultHandler: false,
-          operationType: OperationType.kMove,
+          dialogSpecificArgs: {
+            oneDriveSetupDialogArgs: {
+              setOfficeAsDefaultHandler: false,
+            },
+          },
         });
 
         checkIsOfficeSetupCompletePage();
@@ -357,8 +376,11 @@ suite('<cloud-upload>', () => {
       officeWebAppInstalled,
       installOfficeWebAppResult: true,
       odfsMounted,
-      dialogPage: DialogPage.kOneDriveSetup,
-      operationType: OperationType.kMove,
+      dialogSpecificArgs: {
+        oneDriveSetupDialogArgs: {
+          setOfficeAsDefaultHandler: true,
+        },
+      },
     });
     await doWelcomePage(officeWebAppInstalled, odfsMounted);
 
@@ -391,8 +413,11 @@ suite('<cloud-upload>', () => {
           officeWebAppInstalled,
           installOfficeWebAppResult: true,
           odfsMounted,
-          dialogPage: DialogPage.kOneDriveSetup,
-          operationType: OperationType.kMove,
+          dialogSpecificArgs: {
+            oneDriveSetupDialogArgs: {
+              setOfficeAsDefaultHandler: true,
+            },
+          },
         });
 
         // Go to the specified page.
@@ -441,9 +466,11 @@ suite('<cloud-upload>', () => {
           officeWebAppInstalled,
           installOfficeWebAppResult: true,
           odfsMounted,
-          dialogPage: DialogPage.kOneDriveSetup,
-          setOfficeAsDefaultHandler: true,
-          operationType: OperationType.kMove,
+          dialogSpecificArgs: {
+            oneDriveSetupDialogArgs: {
+              setOfficeAsDefaultHandler: true,
+            },
+          },
         });
         // Go to the OneDrive upload page.
         await doWelcomePage(officeWebAppInstalled, odfsMounted);
@@ -472,9 +499,11 @@ suite('<cloud-upload>', () => {
           officeWebAppInstalled,
           installOfficeWebAppResult: true,
           odfsMounted,
-          dialogPage: DialogPage.kOneDriveSetup,
-          setOfficeAsDefaultHandler: false,
-          operationType: OperationType.kMove,
+          dialogSpecificArgs: {
+            oneDriveSetupDialogArgs: {
+              setOfficeAsDefaultHandler: false,
+            },
+          },
         });
         // Go to the OneDrive upload page.
         await doWelcomePage(officeWebAppInstalled, odfsMounted);
