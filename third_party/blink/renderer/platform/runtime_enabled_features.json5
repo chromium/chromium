@@ -2294,6 +2294,8 @@
     {
       name: "MachineLearningNeuralNetwork",
       status: {
+        "ChromeOS_Ash": "experimental",
+        "ChromeOS_Lacros": "experimental",
         "Win": "experimental",
         "Mac": "experimental",
         "Linux": "experimental",
