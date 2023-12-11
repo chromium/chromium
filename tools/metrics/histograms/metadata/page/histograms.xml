@@ -191,11 +191,11 @@ chromium-metrics-reviews@google.com.
     <variant name="CookieControls"/>
     <variant name="FileSystemAccess"/>
     <variant name="Find"/>
-    <variant name="HighEfficiency"/>
     <variant name="IntentPicker"/>
     <variant name="LocalCardMigration"/>
     <variant name="ManagePasswords"/>
     <variant name="MandatoryReauth"/>
+    <variant name="MemorySaver"/>
     <variant name="PaymentsOfferNotification"/>
     <variant name="PriceInsights"/>
     <variant name="PriceTracking"/>

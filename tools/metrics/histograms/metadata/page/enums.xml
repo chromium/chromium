@@ -150,7 +150,7 @@ chromium-metrics-reviews@google.com.
   <int value="2" label="Cookie Controls"/>
   <int value="3" label="File System Access"/>
   <int value="4" label="Find"/>
-  <int value="5" label="High Efficiency"/>
+  <int value="5" label="Memory Saver"/>
   <int value="6" label="Intent Picker"/>
   <int value="7" label="Local Card Migration"/>
   <int value="8" label="Manage Passwords"/>

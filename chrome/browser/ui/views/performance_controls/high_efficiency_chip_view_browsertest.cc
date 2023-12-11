@@ -85,7 +85,7 @@ class HighEfficiencyChipViewBrowserTest : public InProcessBrowserTest {
         BrowserView::GetBrowserViewForBrowser(browser());
     return browser_view->GetLocationBarView()
         ->page_action_icon_controller()
-        ->GetIconView(PageActionIconType::kHighEfficiency);
+        ->GetIconView(PageActionIconType::kMemorySaver);
   }
 
   void DiscardTabAt(int tab_index) {

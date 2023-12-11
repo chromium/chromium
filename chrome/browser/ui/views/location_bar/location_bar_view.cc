@@ -355,7 +355,7 @@ void LocationBarView::Init() {
     params.types_enabled.push_back(PageActionIconType::kCookieControls);
     params.types_enabled.push_back(
         PageActionIconType::kPaymentsOfferNotification);
-    params.types_enabled.push_back(PageActionIconType::kHighEfficiency);
+    params.types_enabled.push_back(PageActionIconType::kMemorySaver);
   }
   // Add icons only when feature is not enabled. Otherwise icons will
   // be added to the ToolbarPageActionIconContainerView.

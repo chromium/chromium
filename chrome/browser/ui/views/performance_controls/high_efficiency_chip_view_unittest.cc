@@ -124,7 +124,7 @@ class HighEfficiencyChipViewTest : public TestWithBrowserView {
     return browser_view()
         ->GetLocationBarView()
         ->page_action_icon_controller()
-        ->GetIconView(PageActionIconType::kHighEfficiency);
+        ->GetIconView(PageActionIconType::kMemorySaver);
   }
 
   base::HistogramTester histogram_tester_;

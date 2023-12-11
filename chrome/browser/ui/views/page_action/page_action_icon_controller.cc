@@ -135,7 +135,7 @@ void PageActionIconController::Init(const PageActionIconParams& params,
                       params.browser, params.icon_label_bubble_delegate,
                       params.page_action_icon_delegate));
         break;
-      case PageActionIconType::kHighEfficiency:
+      case PageActionIconType::kMemorySaver:
         add_page_action_icon(type, std::make_unique<HighEfficiencyChipView>(
                                        params.command_updater, params.browser,
                                        params.icon_label_bubble_delegate,

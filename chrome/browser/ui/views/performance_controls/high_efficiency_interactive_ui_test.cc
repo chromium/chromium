@@ -344,7 +344,7 @@ class HighEfficiencyChipInteractiveTest : public HighEfficiencyInteractiveTest {
     return BrowserView::GetBrowserViewForBrowser(browser())
         ->GetLocationBarView()
         ->page_action_icon_controller()
-        ->GetIconView(PageActionIconType::kHighEfficiency);
+        ->GetIconView(PageActionIconType::kMemorySaver);
   }
 
   auto CheckChipIsExpandedState() {

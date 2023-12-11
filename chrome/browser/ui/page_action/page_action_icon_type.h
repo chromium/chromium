@@ -6,16 +6,17 @@
 #define CHROME_BROWSER_UI_PAGE_ACTION_PAGE_ACTION_ICON_TYPE_H_
 
 // Used for histograms, do not reorder. When adding to this enum, please also
-// modify the corresponding references in tools/metrics/histograms/enums.xml
-// and tools/metrics/histograms/metadata/page/histograms.xml and add a static
-// assert below.
+// modify the corresponding references in
+// tools/metrics/histograms/page/enums.xml and
+// tools/metrics/histograms/metadata/page/histograms.xml and add a static assert
+// below.
 enum class PageActionIconType {
   kBookmarkStar = 0,
   kClickToCall,
   kCookieControls,
   kFileSystemAccess,
   kFind,
-  kHighEfficiency,
+  kMemorySaver,
   kIntentPicker,
   kLocalCardMigration,
   kManagePasswords,
@@ -46,7 +47,7 @@ static_assert(static_cast<int>(PageActionIconType::kClickToCall) == 1);
 static_assert(static_cast<int>(PageActionIconType::kCookieControls) == 2);
 static_assert(static_cast<int>(PageActionIconType::kFileSystemAccess) == 3);
 static_assert(static_cast<int>(PageActionIconType::kFind) == 4);
-static_assert(static_cast<int>(PageActionIconType::kHighEfficiency) == 5);
+static_assert(static_cast<int>(PageActionIconType::kMemorySaver) == 5);
 static_assert(static_cast<int>(PageActionIconType::kIntentPicker) == 6);
 static_assert(static_cast<int>(PageActionIconType::kLocalCardMigration) == 7);
 static_assert(static_cast<int>(PageActionIconType::kManagePasswords) == 8);

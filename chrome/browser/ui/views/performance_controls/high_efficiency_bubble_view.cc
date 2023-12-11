@@ -182,7 +182,7 @@ views::BubbleDialogModelHost* HighEfficiencyBubbleView::ShowBubble(
   bubble->SetHighlightedButton(
       BrowserView::GetBrowserViewForBrowser(browser)
           ->toolbar_button_provider()
-          ->GetPageActionIconView(PageActionIconType::kHighEfficiency));
+          ->GetPageActionIconView(PageActionIconType::kMemorySaver));
 
   views::Widget* const widget =
       views::BubbleDialogDelegate::CreateBubble(std::move(bubble_unique));

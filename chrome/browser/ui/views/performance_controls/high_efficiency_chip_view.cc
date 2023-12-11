@@ -56,7 +56,7 @@ HighEfficiencyChipView::HighEfficiencyChipView(
                          0,
                          icon_label_bubble_delegate,
                          page_action_icon_delegate,
-                         "HighEfficiency"),
+                         "MemorySaver"),
       browser_(browser),
       chip_accessible_label_(
           l10n_util::GetStringUTF16(IDS_MEMORY_SAVER_CHIP_ACCNAME)) {
@@ -167,7 +167,7 @@ void HighEfficiencyChipView::OnExecuting(
 
   // Open the dialog bubble.
   View* anchor_view = browser_view->toolbar_button_provider()->GetAnchorView(
-      PageActionIconType::kHighEfficiency);
+      PageActionIconType::kMemorySaver);
   bubble_ = HighEfficiencyBubbleView::ShowBubble(browser_, anchor_view, this);
   if (browser_->window() != nullptr) {
     browser_->window()->NotifyFeatureEngagementEvent(
