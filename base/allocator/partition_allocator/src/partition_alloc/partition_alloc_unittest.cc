@@ -3656,6 +3656,8 @@ TEST_P(PartitionAllocTest, ZapOnFree) {
   EXPECT_TRUE(ptr);
   memset(ptr, 'A', 1);
   allocator.root()->Free<FreeFlags::kZap>(ptr);
+  // Accessing memory after free requires a retag.
+  ptr = TagPtr(ptr);
   EXPECT_NE('A', *static_cast<unsigned char*>(ptr));
 
   constexpr size_t size = 1024;
@@ -3663,6 +3665,8 @@ TEST_P(PartitionAllocTest, ZapOnFree) {
   EXPECT_TRUE(ptr);
   memset(ptr, 'A', size);
   allocator.root()->Free<FreeFlags::kZap>(ptr);
+  // Accessing memory after free requires a retag.
+  ptr = TagPtr(ptr);
   EXPECT_NE('A', *static_cast<unsigned char*>(ptr));
   EXPECT_EQ(kFreedByte,
             *(static_cast<unsigned char*>(ptr) + 2 * sizeof(void*)));
