@@ -5,13 +5,13 @@
 #ifndef COMPONENTS_ARC_COMMON_INTENT_HELPER_ARC_INTENT_HELPER_MOJO_DELEGATE_H_
 #define COMPONENTS_ARC_COMMON_INTENT_HELPER_ARC_INTENT_HELPER_MOJO_DELEGATE_H_
 
+#include <optional>
 #include <string>
 #include <vector>
 
 #include "base/containers/flat_map.h"
 #include "base/functional/callback.h"
 #include "components/arc/common/intent_helper/activity_icon_loader.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/resource/resource_scale_factor.h"
 #include "ui/gfx/image/image_skia.h"
 
@@ -37,21 +37,21 @@ class ArcIntentHelperMojoDelegate {
   // See //ash/components/arc/mojom/intent_helper.mojom for more details.
   struct IntentInfo {
     IntentInfo(std::string action,
-               absl::optional<std::vector<std::string>> categories,
-               absl::optional<std::string> data,
-               absl::optional<std::string> type,
+               std::optional<std::vector<std::string>> categories,
+               std::optional<std::string> data,
+               std::optional<std::string> type,
                bool ui_bypassed,
-               absl::optional<base::flat_map<std::string, std::string>> extras);
+               std::optional<base::flat_map<std::string, std::string>> extras);
     IntentInfo(const IntentInfo& other);
     IntentInfo& operator=(const IntentInfo&) = delete;
     ~IntentInfo();
 
     std::string action;
-    absl::optional<std::vector<std::string>> categories;
-    absl::optional<std::string> data;
-    absl::optional<std::string> type;
+    std::optional<std::vector<std::string>> categories;
+    std::optional<std::string> data;
+    std::optional<std::string> type;
     bool ui_bypassed;
-    absl::optional<base::flat_map<std::string, std::string>> extras;
+    std::optional<base::flat_map<std::string, std::string>> extras;
   };
 
   // Describes an action given by the android text selection delegate (e.g. open
@@ -89,7 +89,7 @@ class ArcIntentHelperMojoDelegate {
                       std::string package_name,
                       std::string activity_name,
                       bool is_preferred,
-                      absl::optional<std::string> fallback_url);
+                      std::optional<std::string> fallback_url);
     IntentHandlerInfo(const IntentHandlerInfo& other);
     IntentHandlerInfo& operator=(const IntentHandlerInfo&) = default;
     ~IntentHandlerInfo();
@@ -104,7 +104,7 @@ class ArcIntentHelperMojoDelegate {
     bool is_preferred;
     // RequestUrlHandlerList may fill |fallback_url| when it is called with an
     // intent: URL.
-    absl::optional<std::string> fallback_url;
+    std::optional<std::string> fallback_url;
   };
 
   using RequestUrlHandlerListCallback =

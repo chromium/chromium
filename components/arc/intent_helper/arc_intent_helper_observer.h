@@ -5,10 +5,10 @@
 #ifndef COMPONENTS_ARC_INTENT_HELPER_ARC_INTENT_HELPER_OBSERVER_H_
 #define COMPONENTS_ARC_INTENT_HELPER_ARC_INTENT_HELPER_OBSERVER_H_
 
+#include <optional>
 #include <string>
 
 #include "ash/components/arc/mojom/intent_helper.mojom-forward.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace arc {
 
@@ -23,7 +23,7 @@ class ArcIntentHelperObserver {
   // for all packages. Otherwise, |package_name| contains the name of the
   // package whose filters were changed.
   virtual void OnIntentFiltersUpdated(
-      const absl::optional<std::string>& package_name) {}
+      const std::optional<std::string>& package_name) {}
 
   // Called when the supported links setting ("Open Supported Links" under
   // "Open by default" in ARC Settings) is changed for one or more packages.
