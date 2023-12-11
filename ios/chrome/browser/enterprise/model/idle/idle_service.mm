@@ -94,6 +94,9 @@ void IdleService::OnApplicationWillEnterBackground() {
   // Relying on `OnApplicationWillEnterForeground` to reset the callback
   // is not reliable. The old tasks remain leading to unpredictable scheduling
   // behaviour.
+  for (auto& observer : observer_list_) {
+    observer.OnApplicationWillEnterBackground();
+  }
   cancelable_actions_callback_.Cancel();
 }
 
@@ -131,18 +134,22 @@ void IdleService::CheckIfIdle() {
   PostCheckIdleTask(GetPossibleTimeToIdle());
 }
 
+void IdleService::RunActionsForStateForTesting(LastState last_state) {
+  CHECK_IS_TEST();
+  RunActionsForState(last_state);
+}
+
 void IdleService::RunActionsForState(LastState last_state) {
   DCHECK(base::FeatureList::IsEnabled(kIdleTimeout));
   if (last_state == LastState::kIdleOnBackground) {
     // TODO: check if data will be cleared.
     for (auto& observer : observer_list_) {
       // Show loading UI on re-foreground right away if data will be clared.
-      observer.OnClearDataOnStartup();
+      observer.OnIdleTimeoutOnStartup();
     }
     RunActions();
-  } else if (observer_list_.empty()) {
-    RunActions();
   } else {
+    idle_timeout_dialog_pending_ = !observer_list_.empty();
     for (auto& observer : observer_list_) {
       // Confirm that the user is not active by showing dialog before running
       // actions.
@@ -150,8 +157,6 @@ void IdleService::RunActionsForState(LastState last_state) {
     }
   }
 
-  browser_state_->GetPrefs()->SetTime(
-      enterprise_idle::prefs::kLastIdleTimestamp, base::Time::Now());
   PostCheckIdleTask(GetTimeout());
 }
 
@@ -171,7 +176,28 @@ base::Time IdleService::GetLastActiveTime() {
 }
 
 void IdleService::OnActionsCompleted() {
-  // TODO: Implement this method to show snackbar.
+  idle_timeout_snackbar_pending_ = true;
+  browser_state_->GetPrefs()->SetTime(
+      enterprise_idle::prefs::kLastIdleTimestamp, base::Time::Now());
+  for (auto& observer : observer_list_) {
+    observer.OnIdleTimeoutActionsCompleted();
+  }
+}
+
+void IdleService::OnIdleTimeoutDialogPresented() {
+  idle_timeout_dialog_pending_ = false;
+}
+
+bool IdleService::ShouldIdleTimeoutDialogBePresented() {
+  return idle_timeout_dialog_pending_;
+}
+
+void IdleService::OnIdleTimeoutSnackbarPresented() {
+  idle_timeout_snackbar_pending_ = false;
+}
+
+bool IdleService::ShouldIdleTimeoutSnackbarBePresented() {
+  return idle_timeout_snackbar_pending_;
 }
 
 void IdleService::SetActionRunnerForTesting(
@@ -181,6 +207,7 @@ void IdleService::SetActionRunnerForTesting(
 }
 
 ActionRunner* IdleService::GetActionRunnerForTesting() {
+  CHECK_IS_TEST();
   return action_runner_.get();
 }
 

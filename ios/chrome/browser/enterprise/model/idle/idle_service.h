@@ -27,8 +27,9 @@ class IdleService : public KeyedService {
   class Observer : public base::CheckedObserver {
    public:
     virtual void OnIdleTimeoutInForeground() = 0;
-    virtual void OnClearDataOnStartup() = 0;
+    virtual void OnIdleTimeoutOnStartup() = 0;
     virtual void OnIdleTimeoutActionsCompleted() = 0;
+    virtual void OnApplicationWillEnterBackground() = 0;
   };
 
   explicit IdleService(ChromeBrowserState* browser_state);
@@ -52,9 +53,26 @@ class IdleService : public KeyedService {
   // This ensure that actions do not run when the app is backgrounded or when
   // the screen is locked.
   void OnApplicationWillEnterBackground();
+  // Runs actions on timeout after it has been confirmed that the user is idle.
+  void RunActions();
+  // Shows the snackbar after actions have completed.
+  void OnActionsCompleted();
+
+  // Called when a timeout confirmation dialog has been dismissed or expired to
+  // unset `idle_timeout_notification_pending_` which prevent other observers
+  // from trying to reshow the dialog.
+  void OnIdleTimeoutDialogPresented();
+  bool ShouldIdleTimeoutDialogBePresented();
+  // Called when the snackbar has been displayed to unset
+  // `idle_timeout_notification_pending_` which ensures that the snackbar does
+  // not show more than once on start-up.
+  void OnIdleTimeoutSnackbarPresented();
+  bool ShouldIdleTimeoutSnackbarBePresented();
 
   void SetActionRunnerForTesting(std::unique_ptr<ActionRunner> action_runner);
   ActionRunner* GetActionRunnerForTesting();
+  // Test wrapper for `RunActionsForState`.
+  void RunActionsForStateForTesting(LastState last_state);
 
   void Shutdown() override;
 
@@ -73,15 +91,14 @@ class IdleService : public KeyedService {
   // Runs the actions based on `IdleTimeoutActions` and update the UI based on
   // the last state the browser was  idle in.
   void RunActionsForState(LastState last_state);
-  void RunActions();
-  // Shows the snackbar after actions have completed.
-  void OnActionsCompleted();
   // Calculates the time to when the browser might become idle.
   base::TimeDelta GetPossibleTimeToIdle();
 
   void SetLastActiveTime();
   base::Time GetLastActiveTime();
 
+  bool idle_timeout_dialog_pending_{false};
+  bool idle_timeout_snackbar_pending_{false};
   ChromeBrowserState* browser_state_;
   std::unique_ptr<ActionRunner> action_runner_;
   PrefChangeRegistrar pref_change_registrar_;

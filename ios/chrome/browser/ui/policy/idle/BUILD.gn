@@ -1,0 +1,65 @@
+# Copyright 2023 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("idle_timeout_policy_scene_agent") {
+  sources = [
+    "idle_timeout_confirmation_coordinator_delegate.h",
+    "idle_timeout_policy_scene_agent.h",
+    "idle_timeout_policy_scene_agent.mm",
+  ]
+
+  deps = [
+    "//base",
+    "//components/enterprise/idle",
+    "//components/policy/core/common:common_constants",
+    "//components/prefs",
+    "//ios/chrome/app/application_delegate:app_state_header",
+    "//ios/chrome/app/strings",
+    "//ios/chrome/browser/enterprise/model/idle",
+    "//ios/chrome/browser/shared/coordinator/scene:observing_scene_agent",
+    "//ios/chrome/browser/shared/coordinator/scene:scene_state_header",
+    "//ios/chrome/browser/shared/model/application_context",
+    "//ios/chrome/browser/shared/model/browser",
+    "//ios/chrome/browser/shared/model/browser_state",
+    "//ios/chrome/browser/ui/scoped_ui_blocker",
+    "//ios/third_party/material_components_ios",
+    "//ui/base",
+  ]
+  frameworks = [ "UIKit.framework" ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+
+  sources = [ "idle_timeout_policy_scene_agent_unittest.mm" ]
+
+  deps = [
+    ":idle_timeout_policy_scene_agent",
+    "//base/test:test_support",
+    "//components/enterprise/idle",
+    "//components/prefs",
+    "//ios/chrome/app:app_internal",
+    "//ios/chrome/app/application_delegate:app_state_header",
+    "//ios/chrome/app/application_delegate:application_delegate_internal",
+    "//ios/chrome/app/application_delegate:test_support",
+    "//ios/chrome/browser/enterprise/model/idle",
+    "//ios/chrome/browser/shared/coordinator/scene",
+    "//ios/chrome/browser/shared/coordinator/scene/test",
+    "//ios/chrome/browser/shared/model/application_context",
+    "//ios/chrome/browser/shared/model/browser/test:test_support",
+    "//ios/chrome/browser/shared/model/browser_state:test_support",
+    "//ios/chrome/browser/shared/model/prefs:pref_names",
+    "//ios/chrome/browser/signin/model",
+    "//ios/chrome/browser/signin/model:fake_system_identity",
+    "//ios/chrome/browser/signin/model:fake_system_identity_manager",
+    "//ios/chrome/browser/signin/model:test_support",
+    "//ios/chrome/browser/ui/policy/idle:idle_timeout_policy_scene_agent",
+    "//ios/chrome/browser/ui/whats_new:constants",
+    "//ios/chrome/browser/ui/whats_new:util",
+    "//ios/chrome/test:test_support",
+    "//ios/web/public/test",
+    "//testing/gtest",
+    "//third_party/ocmock",
+  ]
+}

@@ -13,6 +13,8 @@ source_set("idle") {
     "idle_service.mm",
     "idle_service_factory.h",
     "idle_service_factory.mm",
+    "idle_service_observer_bridge.h",
+    "idle_service_observer_bridge.mm",
   ]
   deps = [
     "//base",
@@ -23,8 +25,8 @@ source_set("idle") {
     "//components/pref_registry",
     "//components/prefs",
     "//ios/chrome/browser/browsing_data/model",
-    "//ios/chrome/browser/discover_feed/model:model",
     "//ios/chrome/browser/discover_feed/model:discover_feed_factory",
+    "//ios/chrome/browser/discover_feed/model:model",
     "//ios/chrome/browser/shared/model/application_context",
     "//ios/chrome/browser/shared/model/browser",
     "//ios/chrome/browser/shared/model/browser_state",

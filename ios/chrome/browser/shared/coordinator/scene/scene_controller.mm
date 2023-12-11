@@ -19,6 +19,7 @@
 #import "base/time/time.h"
 #import "components/autofill/core/browser/data_model/credit_card.h"
 #import "components/breadcrumbs/core/breadcrumbs_status.h"
+#import "components/enterprise/idle/idle_features.h"
 #import "components/feature_engagement/public/event_constants.h"
 #import "components/feature_engagement/public/tracker.h"
 #import "components/infobars/core/infobar_manager.h"
@@ -50,6 +51,8 @@
 #import "ios/chrome/browser/crash_report/model/crash_report_helper.h"
 #import "ios/chrome/browser/default_browser/model/promo_source.h"
 #import "ios/chrome/browser/default_browser/model/utils.h"
+#import "ios/chrome/browser/enterprise/model/idle/idle_service.h"
+#import "ios/chrome/browser/enterprise/model/idle/idle_service_factory.h"
 #import "ios/chrome/browser/feature_engagement/model/tracker_factory.h"
 #import "ios/chrome/browser/first_run/model/first_run.h"
 #import "ios/chrome/browser/geolocation/model/geolocation_logger.h"
@@ -137,6 +140,7 @@
 #import "ios/chrome/browser/ui/main/ui_blocker_scene_agent.h"
 #import "ios/chrome/browser/ui/main/wrangled_browser.h"
 #import "ios/chrome/browser/ui/ntp/new_tab_page_feature.h"
+#import "ios/chrome/browser/ui/policy/idle/idle_timeout_policy_scene_agent.h"
 #import "ios/chrome/browser/ui/policy/signin_policy_scene_agent.h"
 #import "ios/chrome/browser/ui/policy/user_policy_scene_agent.h"
 #import "ios/chrome/browser/ui/policy/user_policy_util.h"
@@ -955,6 +959,22 @@ void InjectNTP(Browser* browser) {
                                     mainBrowser:mainBrowser
                                   policyService:userPolicyService
                               userPolicyManager:userPolicyManager]];
+  }
+
+  if (base::FeatureList::IsEnabled(enterprise_idle::kIdleTimeout)) {
+    enterprise_idle::IdleService* idleService =
+        enterprise_idle::IdleServiceFactory::GetForBrowserState(
+            mainBrowser->GetBrowserState());
+    id<SnackbarCommands> snackbarCommandsHandler =
+        static_cast<id<SnackbarCommands>>(mainCommandDispatcher);
+
+    [sceneState
+        addAgent:[[IdleTimeoutPolicySceneAgent alloc]
+                        initWithSceneUIProvider:self
+                     applicationCommandsHandler:applicationCommandsHandler
+                        snackbarCommandsHandler:snackbarCommandsHandler
+                                    idleService:idleService
+                                    mainBrowser:mainBrowser]];
   }
 
   // Now that the main browser's command dispatcher is created and the newly

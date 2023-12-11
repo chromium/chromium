@@ -43,8 +43,9 @@ class IdleTimeoutServiceTest : public PlatformTest {
     MockObserver() {}
     ~MockObserver() override {}
     MOCK_METHOD(void, OnIdleTimeoutInForeground, (), (override));
-    MOCK_METHOD(void, OnClearDataOnStartup, (), (override));
+    MOCK_METHOD(void, OnIdleTimeoutOnStartup, (), (override));
     MOCK_METHOD(void, OnIdleTimeoutActionsCompleted, (), (override));
+    MOCK_METHOD(void, OnApplicationWillEnterBackground, (), (override));
   };
 
   IdleTimeoutServiceTest() = default;
@@ -69,6 +70,7 @@ class IdleTimeoutServiceTest : public PlatformTest {
         base::WrapUnique(new MockActionRunner()));
     action_runner_ = static_cast<MockActionRunner*>(
         idle_service_->GetActionRunnerForTesting());
+    idle_service_->AddObserver(&mock_observer_);
   }
 
   void SetUp() override {
@@ -79,6 +81,7 @@ class IdleTimeoutServiceTest : public PlatformTest {
   }
 
   void TearDown() override {
+    idle_service_->RemoveObserver(&mock_observer_);
     idle_service_->Shutdown();
     idle_service_.reset();
     browser_state_.reset();
@@ -90,7 +93,7 @@ class IdleTimeoutServiceTest : public PlatformTest {
   web::WebTaskEnvironment task_environment_{
       web::WebTaskEnvironment::Options::DEFAULT,
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
-
+  MockObserver mock_observer_;
   MockActionRunner* action_runner_;
   std::unique_ptr<base::test::ScopedFeatureList> scoped_feature_list_;
   std::unique_ptr<TestChromeBrowserState> browser_state_;
@@ -104,8 +107,8 @@ TEST_F(IdleTimeoutServiceTest, IdleTimeoutPrefsSet_OnPolicySet) {
   EXPECT_CALL(*action_runner_, Run(_)).Times(0);
   idle_service_->OnApplicationWillEnterForeground();
   task_environment_.FastForwardBy(base::Seconds(30));
-  // Shorten timeout and expect immediate call to run actions after pref change.
-  EXPECT_CALL(*action_runner_, Run(_)).Times(1);
+  // Shorten timeout and expect immediate call to observers after pref change.
+  EXPECT_CALL(mock_observer_, OnIdleTimeoutInForeground()).Times(1);
   SetIdleTimeoutPolicy(base::Minutes(1));
   task_environment_.FastForwardBy(base::Seconds(30));
 }
@@ -117,14 +120,15 @@ TEST_F(IdleTimeoutServiceTest, IdleTimeoutPrefsSet_OnPolicyChange) {
   EXPECT_CALL(*action_runner_, Run(_)).Times(0);
   idle_service_->OnApplicationWillEnterForeground();
 
-  // Shorten timeout and expect immediate call to run actions after pref change.
+  // Shorten timeout and expect immediate call to observers after pref change.
   task_environment_.FastForwardBy(base::Minutes(2));
-  EXPECT_CALL(*action_runner_, Run(_));
+  EXPECT_CALL(mock_observer_, OnIdleTimeoutInForeground());
   SetIdleTimeoutPolicy(base::Minutes(1));
 
   task_environment_.FastForwardBy(base::Seconds(30));
-  // Increase the timeout again and make sure actions do not run except on time.
-  EXPECT_CALL(*action_runner_, Run(_)).Times(1);
+  // Increase the timeout again and make sure observers are not called except on
+  // idle.
+  EXPECT_CALL(mock_observer_, OnIdleTimeoutInForeground()).Times(1);
   SetIdleTimeoutPolicy(base::Minutes(2));
   task_environment_.FastForwardBy(base::Minutes(1));
 }
@@ -135,10 +139,10 @@ TEST_F(IdleTimeoutServiceTest, NoActionsRunOnStartup_FirstRunWithPolicySet) {
   InitIdleService();
   // No call expected when foregrounded.
   EXPECT_CALL(*action_runner_, Run(_)).Times(0);
+  EXPECT_CALL(mock_observer_, OnIdleTimeoutOnStartup()).Times(0);
   idle_service_->OnApplicationWillEnterForeground();
-  EXPECT_CALL(*action_runner_, Run(_)).Times(2);
+  EXPECT_CALL(mock_observer_, OnIdleTimeoutInForeground()).Times(2);
   task_environment_.FastForwardBy(base::Minutes(2));
-  EXPECT_EQ(GetLastIdleTime(), base::Time::Now());
 }
 
 // Start-up Case: current time < last active time + idle threshold.
@@ -147,9 +151,11 @@ TEST_F(IdleTimeoutServiceTest, NoActionsRunOnStartup_NoBackgroundTimeout) {
   SetLastActiveTime(base::Time::Now() - base::Seconds(30));
   SetIdleTimeoutPolicy(base::Minutes(1));
   InitIdleService();
+
+  EXPECT_CALL(mock_observer_, OnIdleTimeoutOnStartup()).Times(0);
   EXPECT_CALL(*action_runner_, Run(_)).Times(0);
   idle_service_->OnApplicationWillEnterForeground();
-  EXPECT_CALL(*action_runner_, Run(_)).Times(2);
+  EXPECT_CALL(mock_observer_, OnIdleTimeoutInForeground()).Times(2);
   task_environment_.FastForwardBy(base::Minutes(2));
 }
 
@@ -159,9 +165,11 @@ TEST_F(IdleTimeoutServiceTest, ActionsRunOnStartup_PostBackgroundTimeout) {
   SetLastActiveTime(base::Time::Now() - base::Seconds(90));
   SetIdleTimeoutPolicy(base::Minutes(1));
   InitIdleService();
+
+  EXPECT_CALL(mock_observer_, OnIdleTimeoutOnStartup());
   EXPECT_CALL(*action_runner_, Run(_)).Times(1);
   idle_service_->OnApplicationWillEnterForeground();
-  EXPECT_CALL(*action_runner_, Run(_)).Times(2);
+  EXPECT_CALL(mock_observer_, OnIdleTimeoutInForeground()).Times(2);
   task_environment_.FastForwardBy(base::Minutes(2));
 }
 
@@ -177,7 +185,9 @@ TEST_F(
   // Simulate user activity.
   SetLastActiveTime(base::Time::Now());
 
+  // Observers triggered on background (to dismiss any dialog).
   EXPECT_CALL(*action_runner_, Run(_)).Times(0);
+  EXPECT_CALL(mock_observer_, OnApplicationWillEnterBackground()).Times(1);
   idle_service_->OnApplicationWillEnterBackground();
   task_environment_.FastForwardBy(base::Seconds(30));
 
@@ -186,9 +196,10 @@ TEST_F(
   idle_service_->OnApplicationWillEnterForeground();
 
   // Ensure that idle state is detected after that.
+  EXPECT_CALL(mock_observer_, OnIdleTimeoutInForeground()).Times(1);
   EXPECT_CALL(*action_runner_, Run(_)).Times(1);
   task_environment_.FastForwardBy(base::Minutes(1));
-  EXPECT_EQ(GetLastIdleTime(), base::Time::Now());
+  idle_service_->RunActions();
 }
 
 // Backgrund then reforeground case:
@@ -198,11 +209,23 @@ TEST_F(IdleTimeoutServiceTest,
   SetIdleTimeoutPolicy(base::Minutes(1));
   InitIdleService();
   idle_service_->OnApplicationWillEnterForeground();
+
+  // run actions and invoke the `OnActionsCompleted` callback to set the last
+  // idle time.
+  EXPECT_CALL(mock_observer_, OnIdleTimeoutInForeground()).Times(2);
   EXPECT_CALL(*action_runner_, Run(_)).Times(2);
-  task_environment_.FastForwardBy(base::Minutes(2));
-  EXPECT_EQ(GetLastIdleTime(), base::Time::Now());
+  EXPECT_CALL(mock_observer_, OnIdleTimeoutActionsCompleted()).Times(2);
+  task_environment_.FastForwardBy(base::Minutes(1));
+  idle_service_->RunActions();
+  idle_service_->OnActionsCompleted();
+  task_environment_.FastForwardBy(base::Minutes(1));
+  idle_service_->RunActions();
+  idle_service_->OnActionsCompleted();
 
   EXPECT_CALL(*action_runner_, Run(_)).Times(0);
+  EXPECT_CALL(mock_observer_, OnIdleTimeoutInForeground()).Times(0);
+
+  EXPECT_CALL(mock_observer_, OnApplicationWillEnterBackground());
   idle_service_->OnApplicationWillEnterBackground();
   task_environment_.FastForwardBy(base::Minutes(1));
 
@@ -212,7 +235,7 @@ TEST_F(IdleTimeoutServiceTest,
   idle_service_->OnApplicationWillEnterForeground();
 
   // Ensure that idle state is detected after that.
-  EXPECT_CALL(*action_runner_, Run(_)).Times(1);
+  EXPECT_CALL(mock_observer_, OnIdleTimeoutInForeground()).Times(1);
   task_environment_.FastForwardBy(base::Minutes(1));
 }
 
@@ -227,18 +250,19 @@ TEST_F(IdleTimeoutServiceTest,
   // Simulate user activity.
   SetLastActiveTime(base::Time::Now());
 
+  EXPECT_CALL(mock_observer_, OnApplicationWillEnterBackground()).Times(1);
   EXPECT_CALL(*action_runner_, Run(_)).Times(0);
   idle_service_->OnApplicationWillEnterBackground();
   task_environment_.FastForwardBy(base::Seconds(80));
 
+  // Actions should run on startup (behind loading screen).
   EXPECT_CALL(*action_runner_, Run(_)).Times(1);
+  EXPECT_CALL(mock_observer_, OnIdleTimeoutOnStartup()).Times(1);
   idle_service_->OnApplicationWillEnterForeground();
-  EXPECT_EQ(GetLastIdleTime(), base::Time::Now());
 
   // Ensure that idle state is detected after that.
-  EXPECT_CALL(*action_runner_, Run(_)).Times(1);
+  EXPECT_CALL(mock_observer_, OnIdleTimeoutInForeground()).Times(1);
   task_environment_.FastForwardBy(base::Minutes(1));
-  EXPECT_EQ(GetLastIdleTime(), base::Time::Now());
 }
 
 // Foreground case: idle check should be scheduled for the right time when it
@@ -254,12 +278,12 @@ TEST_F(IdleTimeoutServiceTest, ActionsRunAtCorrectTimesWhileForegrounded) {
 
   // At t=3, actions will not run because idle time has not reached 3.
   // Should check again and run at t=3:40.
+  EXPECT_CALL(mock_observer_, OnIdleTimeoutInForeground()).Times(0);
   EXPECT_CALL(*action_runner_, Run(_)).Times(0);
   task_environment_.FastForwardBy(base::Minutes(3) - base::Seconds(40));
 
-  EXPECT_CALL(*action_runner_, Run(_)).Times(1);
+  EXPECT_CALL(mock_observer_, OnIdleTimeoutInForeground()).Times(1);
   task_environment_.FastForwardBy(base::Seconds(40));
-  EXPECT_EQ(GetLastIdleTime(), base::Time::Now());
 }
 
 // If there are observers for the service, the service should call
@@ -269,8 +293,6 @@ TEST_F(IdleTimeoutServiceTest,
        ActionsDoNotRunWhenObserverDoesNotInvokeCallback) {
   SetIdleTimeoutPolicy(base::Minutes(3));
   InitIdleService();
-  MockObserver mock_observer;
-  idle_service_->AddObserver(&mock_observer);
   idle_service_->OnApplicationWillEnterForeground();
   task_environment_.FastForwardBy(base::Seconds(40));
   // Simulate user activity at t=40s.
@@ -284,12 +306,9 @@ TEST_F(IdleTimeoutServiceTest,
   // Not running the callback passed to `OnIdleTimeoutInForeground` means no
   // actions should run.
   testing::InSequence in_sequence;
-  EXPECT_CALL(mock_observer, OnIdleTimeoutInForeground());
+  EXPECT_CALL(mock_observer_, OnIdleTimeoutInForeground());
   EXPECT_CALL(*action_runner_, Run(_)).Times(0);
   task_environment_.FastForwardBy(base::Seconds(40));
-  EXPECT_EQ(GetLastIdleTime(), base::Time::Now());
-  // Remove observer before it is destroyed.
-  idle_service_->RemoveObserver(&mock_observer);
 }
 
 }  // namespace enterprise_idle
