@@ -44,6 +44,9 @@
 #include "ui/gfx/geometry/transform.h"
 
 #if BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
+#include "base/containers/contains.h"
+#include "base/debug/alias.h"
+#include "base/debug/dump_without_crashing.h"
 #include "base/metrics/metrics_hashes.h"
 #include "components/language/core/common/language_util.h"  // nogncheck
 #include "third_party/blink/public/common/browser_interface_broker_proxy.h"
@@ -179,6 +182,11 @@ void PdfOcrService::ReceiveOcrResultsForImage(
   base::UmaHistogramEnumeration("Accessibility.PdfOcr.PDFImages",
                                 PdfOcrRequestStatus::kPerformed);
 
+  if (cancel_next_ocr_result_) {
+    cancel_next_ocr_result_ = false;
+    return;
+  }
+
   const bool is_last_on_page = request.is_last_on_page;
   batch_requests_.push_back(std::move(request));
   batch_tree_updates_.push_back(tree_update);
@@ -198,6 +206,23 @@ void PdfOcrService::ReceiveOcrResultsForImage(
     OcrNextImage();
   }
 }
+
+void PdfOcrService::CancelPendingRequests() {
+  if (!is_ocr_in_progress_) {
+    return;
+  }
+
+  batch_requests_.clear();
+  while (!all_requests_.empty()) {
+    all_requests_.pop();
+  }
+
+  cancel_next_ocr_result_ = true;
+  is_ocr_in_progress_ = false;
+  remaining_page_count_ = 0;
+  canceled_once_ = true;
+}
+
 #endif  // BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
 
 namespace {
@@ -1739,6 +1764,7 @@ void PdfAccessibilityTree::DoSetAccessibilityDocInfo(
   page_count_ = doc_info.page_count;
 #if BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
   if (ocr_service_) {
+    ocr_service_->CancelPendingRequests();
     ocr_service_->SetPageCount(page_count_);
   }
 #endif  // BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
@@ -2350,7 +2376,55 @@ void PdfAccessibilityTree::OnOcrDataReceived(
   }
 
   // `nodes_` will be empty once they are unserialized to `tree_`.
-  bool did_unserialize_once = nodes_.empty();
+  bool unserialized_node_exist = !nodes_.empty();
+
+  // Ensure parent and image nodes are still available.
+  {
+    // TODO(crbug.com/1508404): Remove after crash root cause is ensured.
+    bool some_found = false;
+    bool some_not_found = false;
+    bool found_in_tree_while_unserialized_nodes_exist = false;
+
+    for (const PdfOcrRequest& ocr_request : ocr_requests) {
+      ui::AXNode* parent_node = tree_.GetFromId(ocr_request.parent_node_id);
+      bool found_in_tree =
+          parent_node && base::Contains(parent_node->data().child_ids,
+                                        ocr_request.image_node_id);
+
+      found_in_tree_while_unserialized_nodes_exist |=
+          found_in_tree && unserialized_node_exist;
+
+      bool found_in_nodes = false;
+      if (unserialized_node_exist) {
+        const auto parent_node_iter = ranges::find_if(
+            nodes_,
+            [&ocr_request](const std::unique_ptr<ui::AXNodeData>& node) {
+              return node->id == ocr_request.parent_node_id;
+            });
+        found_in_nodes = (parent_node_iter != ranges::end(nodes_)) &&
+                         base::Contains((*parent_node_iter)->child_ids,
+                                        ocr_request.image_node_id);
+      }
+
+      bool found = found_in_tree | found_in_nodes;
+      some_found |= found;
+      some_not_found |= !found;
+    }
+
+    if (some_not_found) {
+      // TODO(crbug.com/1508404): Remove after crash root cause is ensured.
+      bool ocr_cancled = ocr_service_->IsOnceCanceled();
+      base::debug::Alias(&ocr_cancled);
+      base::debug::Alias(&some_found);
+      base::debug::Alias(&some_not_found);
+      base::debug::Alias(&found_in_tree_while_unserialized_nodes_exist);
+
+      DEBUG_ALIAS_FOR_CSTR(tree_dump, tree_.ToString().data(), 65535);
+
+      base::debug::DumpWithoutCrashing();
+      return;
+    }
+  }
 
   CHECK(doc_node_);
   CHECK_GT(ocr_requests.size(), 0u);
@@ -2391,7 +2465,7 @@ void PdfAccessibilityTree::OnOcrDataReceived(
     CHECK(!image_bounds.IsEmpty());
 
 #if DCHECK_IS_ON()
-    if (!did_unserialize_once) {
+    if (unserialized_node_exist) {
       DCHECK(ranges::find_if(
                  nodes_,
                  [&ocr_request](const std::unique_ptr<ui::AXNodeData>& node) {
@@ -2437,7 +2511,7 @@ void PdfAccessibilityTree::OnOcrDataReceived(
     }
     RecordMostDetectedLanguageInOcrData(detected_language_count_map);
 
-    if (!did_unserialize_once) {
+    if (unserialized_node_exist) {
       // `nodes_` have not been unserialized yet, so update `nodes_` directly
       // and return. `nodes_` will be unserialized in `UnserializeNodes()`
       // later.
@@ -2451,8 +2525,8 @@ void PdfAccessibilityTree::OnOcrDataReceived(
           });
       // If tree gets updated while OCR was running, the image node or parent
       // node do not exist anymore and the result cannot be applied.
-      // TODO(crbug.com/1508404): Try canceling pending OCR requests if tree is
-      // updated.
+      // TODO(crbug.com/1508404): Convert this and the 3 cases below into CHECK
+      // once debugging the crash root cause is finalized.
       if (num_erased != 1) {
         VLOG(1) << "Ignoring OCR results as image node is removed.";
         continue;
@@ -2500,7 +2574,7 @@ void PdfAccessibilityTree::OnOcrDataReceived(
     }
   }
 
-  if (did_unserialize_once) {
+  if (!unserialized_node_exist) {
     // PDF accessibility tree is available now, so it may be necessary to add a
     // postamble page after the last OCRed page.
     AddPostamblePageIfNeeded(ocr_requests.back().page_node_id);

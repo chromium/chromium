@@ -121,11 +121,14 @@ class PdfAccessibilityTree : public content::PluginAXTreeSource,
     void OcrPage(base::queue<PdfOcrRequest> page_requests);
     bool AreAllPagesOcred() const;
     bool AreAllPagesInBatchOcred() const;
+    void CancelPendingRequests();
     void SetScreenAIAnnotatorForTesting(
         mojo::PendingRemote<screen_ai::mojom::ScreenAIAnnotator>
             screen_ai_annotator);
     void ResetRemainingPageCountForTesting();
     uint32_t pages_per_batch_for_testing() const { return pages_per_batch_; }
+
+    bool IsOnceCanceled() const { return canceled_once_; }
 
    private:
     static uint32_t ComputePagesPerBatch(uint32_t page_count);
@@ -146,6 +149,15 @@ class PdfAccessibilityTree : public content::PluginAXTreeSource,
     // `ReceiveOcrResultsForImage` should do it instead. This avoids the
     // possibility of processing requests in the wrong order.
     bool is_ocr_in_progress_ = false;
+
+    // True if a pending ocr request should be canceled and not sent to update
+    // the tree.
+    bool cancel_next_ocr_result_ = false;
+
+    // TODO(crbug.com/1508404): Remove after crash root cause is ensured. Only
+    // used for debug dump.
+    bool canceled_once_ = false;
+
     // A PDF is made up of a number of pages, and each page might have one or
     // more inaccessible images that need to be OCRed. This queue could contain
     // the OCR requests for all the images on several pages, so the requests
