@@ -6,7 +6,6 @@
 
 #include "gpu/GLES2/gl2extchromium.h"
 #include "gpu/command_buffer/client/client_shared_image.h"
-#include "gpu/command_buffer/client/gpu_memory_buffer_manager.h"
 #include "gpu/command_buffer/client/shared_image_interface.h"
 #include "gpu/command_buffer/common/shared_image_usage.h"
 #include "third_party/blink/public/platform/platform.h"
@@ -29,21 +28,10 @@ GpuMemoryBufferImageCopy::~GpuMemoryBufferImageCopy() {
 }
 
 bool GpuMemoryBufferImageCopy::EnsureDestImage(const gfx::Size& size) {
-  // Create a new memorybuffer if the size has changed, or we don't have one.
-  if (dest_image_size_ != size || !gpu_memory_buffer_) {
+  // Create a new SharedImage if the size has changed, or we don't have one.
+  if (dest_image_size_ != size || !dest_shared_image_) {
     // Cleanup old copy image before allocating a new one.
     CleanupDestImage();
-
-    gpu::GpuMemoryBufferManager* gpu_memory_buffer_manager =
-        Platform::Current()->GetGpuMemoryBufferManager();
-    if (!gpu_memory_buffer_manager)
-      return false;
-
-    gpu_memory_buffer_ = gpu_memory_buffer_manager->CreateGpuMemoryBuffer(
-        size, gfx::BufferFormat::RGBA_8888, gfx::BufferUsage::SCANOUT,
-        gpu::kNullSurfaceHandle, nullptr);
-    if (!gpu_memory_buffer_)
-      return false;
 
     dest_image_size_ = size;
 
@@ -51,7 +39,7 @@ bool GpuMemoryBufferImageCopy::EnsureDestImage(const gfx::Size& size) {
         viz::SinglePlaneFormat::kRGBA_8888, size, gfx::ColorSpace(),
         kTopLeft_GrSurfaceOrigin, kPremul_SkAlphaType,
         gpu::SHARED_IMAGE_USAGE_GLES2, "GpuMemoryBufferImageCopy",
-        gpu_memory_buffer_->CloneHandle());
+        gpu::kNullSurfaceHandle, gfx::BufferUsage::SCANOUT);
     CHECK(dest_shared_image_);
     gl_->WaitSyncTokenCHROMIUM(sii_->GenUnverifiedSyncToken().GetConstData());
   }
@@ -116,14 +104,13 @@ GpuMemoryBufferImageCopy::CopyImage(Image* image) {
 
   static_image->UpdateSyncToken(sync_token);
 
-  return std::make_pair(gpu_memory_buffer_ ? gpu_memory_buffer_->CloneHandle()
-                                           : gfx::GpuMemoryBufferHandle(),
+  return std::make_pair(dest_shared_image_
+                            ? dest_shared_image_->CloneGpuMemoryBufferHandle()
+                            : gfx::GpuMemoryBufferHandle(),
                         sync_token);
 }
 
 void GpuMemoryBufferImageCopy::CleanupDestImage() {
-  gpu_memory_buffer_.reset();
-
   if (!dest_shared_image_) {
     return;
   }

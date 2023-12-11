@@ -31,7 +31,6 @@ class PLATFORM_EXPORT GpuMemoryBufferImageCopy {
 
   const raw_ptr<gpu::gles2::GLES2Interface, ExperimentalRenderer> gl_;
   const raw_ptr<gpu::SharedImageInterface, ExperimentalRenderer> sii_;
-  std::unique_ptr<gfx::GpuMemoryBuffer> gpu_memory_buffer_;
   gfx::Size dest_image_size_;
   scoped_refptr<gpu::ClientSharedImage> dest_shared_image_;
 
