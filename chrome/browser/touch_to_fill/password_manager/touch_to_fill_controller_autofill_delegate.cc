@@ -274,8 +274,8 @@ void TouchToFillControllerAutofillDelegate::FillCredential(
         credential.username());
   }
 
-  base::UmaHistogramEnumeration("PasswordManager.TouchToFill.Outcome",
-                                TouchToFillOutcome::kCredentialFilled);
+  CleanUpFillerAndReportOutcome(TouchToFillOutcome::kCredentialFilled,
+                                /*show_virtual_keyboard=*/false);
   std::move(action_complete_).Run();
 }
 
