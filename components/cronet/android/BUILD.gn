@@ -523,7 +523,6 @@ android_library("httpengine_native_provider_java") {
 
   deps = [
     ":cronet_api_java",
-    "//base:base_java",
     "//build/android:build_java",
     "//third_party/androidx:androidx_annotation_annotation_java",
     "//third_party/androidx:androidx_core_core_java",

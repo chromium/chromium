@@ -8,10 +8,10 @@ import static org.chromium.net.impl.HttpEngineNativeProvider.EXT_API_LEVEL;
 import static org.chromium.net.impl.HttpEngineNativeProvider.EXT_VERSION;
 
 import android.net.http.HttpEngine;
+import android.util.Log;
 
 import androidx.annotation.RequiresExtension;
 
-import org.chromium.base.Log;
 import org.chromium.net.CronetEngine;
 import org.chromium.net.ExperimentalCronetEngine;
 import org.chromium.net.ICronetEngineBuilder;
