@@ -536,9 +536,6 @@ SettingsUI::SettingsUI(content::WebUI* web_ui)
       "isDiscardExceptionsImprovementsEnabled",
       base::FeatureList::IsEnabled(
           performance_manager::features::kDiscardExceptionsImprovements));
-  html_source->AddBoolean("isPerformanceSettingsPreloadingSubpageEnabled",
-                          base::FeatureList::IsEnabled(
-                              features::kPerformanceSettingsPreloadingSubpage));
   html_source->AddBoolean(
       "isPerformanceSettingsPreloadingSubpageV2Enabled",
       features::kPerformanceSettingsPreloadingSubpageV2.Get());

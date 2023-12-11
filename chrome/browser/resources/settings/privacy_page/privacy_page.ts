@@ -302,12 +302,6 @@ export class SettingsPrivacyPageElement extends SettingsPrivacyPageElementBase {
         },
       },
 
-      showPreloadingSubpage_: {
-        type: Boolean,
-        value: () => !loadTimeData.getBoolean(
-            'isPerformanceSettingsPreloadingSubpageEnabled'),
-      },
-
       showDedicatedCpssSetting_: {
         type: Boolean,
         value() {
@@ -344,7 +338,6 @@ export class SettingsPrivacyPageElement extends SettingsPrivacyPageElementBase {
   private safetyCheckNotificationPermissionsEnabled_: boolean;
   private enablePermissionStorageAccessApi_: boolean;
   private enableSafetyHub_: boolean;
-  private showPreloadingSubpage_: boolean;
   private focusConfig_: FocusConfig;
   private searchFilter_: string;
   private notificationPermissionsReviewHeader_: string;
