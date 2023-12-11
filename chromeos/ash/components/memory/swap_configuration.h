@@ -95,9 +95,10 @@ struct ZramWritebackParams {
 };
 
 // Configure swap will configure any swap related experiments that this user may
-// be opted into. This method should be called at most once. It should be called
-// after the user logs in, since that is the only time when we know if arc is
-// enabled or not.
+// be opted into. This method should be called after the user logs in, since
+// that is the earliest time when we know if arc is enabled or not. It can be
+// called additional times if `arc_enabled` changes during a session. This is
+// expected to be rare, and will mildly pollute UMA data.
 COMPONENT_EXPORT(ASH_MEMORY) void ConfigureSwap(bool arc_enabled);
 
 }  // namespace ash
