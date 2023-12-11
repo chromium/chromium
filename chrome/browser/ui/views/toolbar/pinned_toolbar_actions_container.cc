@@ -186,6 +186,30 @@ void PinnedToolbarActionsContainer::PinnedActionToolbarButton::SetPinned(
   ActionItemChanged();
 }
 
+bool PinnedToolbarActionsContainer::PinnedActionToolbarButton::OnKeyPressed(
+    const ui::KeyEvent& event) {
+  constexpr int kModifiedFlag =
+#if BUILDFLAG(IS_MAC)
+      ui::EF_COMMAND_DOWN;
+#else
+      ui::EF_CONTROL_DOWN;
+#endif
+  if (event.type() == ui::ET_KEY_PRESSED && (event.flags() & kModifiedFlag)) {
+    const bool is_right = event.key_code() == ui::VKEY_RIGHT;
+    const bool is_left = event.key_code() == ui::VKEY_LEFT;
+    if (is_right || is_left) {
+      const bool is_rtl = base::i18n::IsRTL();
+      const bool is_next = (is_right && !is_rtl) || (is_left && is_rtl);
+      if (pinned_ && browser_->profile()->IsRegularProfile()) {
+        container_->MovePinnedActionBy(action_item_->GetActionId().value(),
+                                       is_next ? 1 : -1);
+        return true;
+      }
+    }
+  }
+  return ToolbarButton::OnKeyPressed(event);
+}
+
 gfx::Size PinnedToolbarActionsContainer::PinnedActionToolbarButton::
     CalculatePreferredSize() const {
   // This makes sure the buttons are at least the toolbar button sized width.
@@ -420,6 +444,22 @@ void PinnedToolbarActionsContainer::UpdateDividerFlexSpecification() {
     toolbar_divider_->ClearProperty(views::kFlexBehaviorKey);
   }
   InvalidateLayout();
+}
+
+void PinnedToolbarActionsContainer::MovePinnedActionBy(actions::ActionId id,
+                                                       int delta) {
+  DCHECK(IsActionPinned(id));
+  const auto& pinned_action_ids = model_->pinned_action_ids();
+
+  auto iter = base::ranges::find(pinned_action_ids, id);
+  CHECK(iter != pinned_action_ids.end());
+
+  int current_index = std::distance(pinned_action_ids.begin(), iter);
+  int target_index = current_index + delta;
+
+  if (target_index >= 0 && target_index < int(pinned_action_ids.size())) {
+    model_->MovePinnedAction(id, target_index);
+  }
 }
 
 void PinnedToolbarActionsContainer::UpdateAllIcons() {

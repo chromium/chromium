@@ -52,6 +52,9 @@ class PinnedToolbarActionsContainer
     bool IsActive();
     bool IsInvokingAction();
 
+    // View:
+    bool OnKeyPressed(const ui::KeyEvent& event) override;
+
     // Button:
     gfx::Size CalculatePreferredSize() const override;
     void GetAccessibleNodeData(ui::AXNodeData* node_data) override;
@@ -86,6 +89,7 @@ class PinnedToolbarActionsContainer
 
   void UpdateActionState(actions::ActionId id, bool is_active);
   void UpdateDividerFlexSpecification();
+  void MovePinnedActionBy(actions::ActionId action_id, int delta);
 
   // ToolbarIconContainerView:
   void UpdateAllIcons() override;
