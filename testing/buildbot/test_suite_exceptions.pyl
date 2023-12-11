@@ -1383,6 +1383,9 @@
           'shards': 3,
         },
       },
+      'linux-lacros-tester-rel': {
+        'ci_only': True, # https://crbug.com/1509554
+      },
     },
   },
   'check_static_initializers': {
