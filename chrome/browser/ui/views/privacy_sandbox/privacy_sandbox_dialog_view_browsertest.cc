@@ -39,10 +39,10 @@ class PrivacySandboxDialogViewBrowserTest : public DialogBrowserTest {
     PrivacySandboxService::PromptType prompt_type =
         PrivacySandboxService::PromptType::kNone;
     if (name == "Consent") {
-      prompt_type = PrivacySandboxService::PromptType::kConsent;
+      prompt_type = PrivacySandboxService::PromptType::kM1Consent;
     }
     if (name == "Notice") {
-      prompt_type = PrivacySandboxService::PromptType::kNotice;
+      prompt_type = PrivacySandboxService::PromptType::kM1NoticeROW;
     }
     if (name == "RestrictedNotice") {
       prompt_type = PrivacySandboxService::PromptType::kM1NoticeRestricted;
@@ -57,7 +57,14 @@ class PrivacySandboxDialogViewBrowserTest : public DialogBrowserTest {
         views::test::AnyWidgetTestPasskey{},
         PrivacySandboxDialogView::kViewClassName);
     ShowPrivacySandboxDialog(browser(), prompt_type);
-    waiter.WaitIfNeededAndGet();
+
+    auto* dialog_widget = static_cast<PrivacySandboxDialogView*>(
+        waiter.WaitIfNeededAndGet()->widget_delegate()->GetContentsView());
+
+    // Ensure dialog is fully scrolled, this is needed in order for the "*Shown"
+    // action to be fired.
+    auto scroll = content::EvalJs(dialog_widget->GetWebContentsForTesting(),
+                                  "scrollTo(0, 1500)");
 
     base::RunLoop().RunUntilIdle();
   }

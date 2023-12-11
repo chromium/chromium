@@ -207,8 +207,6 @@ void PrivacySandboxDialogUI::Initialize(
     base::OnceClosure open_measurement_settings_callback,
     PrivacySandboxService::PromptType prompt_type) {
   base::Value::Dict update;
-  update.Set("isConsent",
-             prompt_type == PrivacySandboxService::PromptType::kConsent);
   content::WebUIDataSource::Update(
       profile, chrome::kChromeUIPrivacySandboxDialogHost, std::move(update));
   auto handler = std::make_unique<PrivacySandboxDialogHandler>(
