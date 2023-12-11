@@ -5,7 +5,6 @@
 
 #include "chromeos/ash/components/chaps_util/key_helper.h"
 #include "chromeos/ash/components/chaps_util/pkcs12_reader.h"
-#include "crypto/nss_util.h"
 #include "net/cert/x509_util_nss.h"
 #include "third_party/boringssl/src/include/openssl/bn.h"
 #include "third_party/boringssl/src/include/openssl/mem.h"
@@ -28,11 +27,6 @@ std::vector<uint8_t> Pkcs12Reader::BignumToBytes(const BIGNUM* bignum) const {
   BN_bn2bin(bignum, result.data());
 
   return result;
-}
-
-Pkcs12Reader::Pkcs12Reader() {
-  // Make sure that NSS is initialized.
-  crypto::EnsureNSSInit();
 }
 
 Pkcs12ReaderStatusCode Pkcs12Reader::GetPkcs12KeyAndCerts(
@@ -232,46 +226,40 @@ Pkcs12ReaderStatusCode Pkcs12Reader::DoesKeyForCertExist(
   return Pkcs12ReaderStatusCode::kKeyDataMissed;
 }
 
+Pkcs12ReaderStatusCode Pkcs12Reader::GetRsaModulus(
+    const bssl::UniquePtr<EVP_PKEY>& pkey,
+    std::vector<uint8_t>& modulus) const {
+  if (!pkey) {
+    return Pkcs12ReaderStatusCode::kPkcs12PKeyMissed;
+  }
+  const RSA* rsa_key = EVP_PKEY_get0_RSA(pkey.get());
+  if (!rsa_key) {
+    return Pkcs12ReaderStatusCode::kRsaKeyExtractionFailed;
+  }
+  modulus = BignumToBytes(RSA_get0_n(rsa_key));
+  if (modulus.empty()) {
+    return Pkcs12ReaderStatusCode::kPkcs12RsaModulusEmpty;
+  }
+  return Pkcs12ReaderStatusCode::kSuccess;
+}
+
 Pkcs12ReaderStatusCode Pkcs12Reader::EnrichKeyData(KeyData& key_data) const {
   if (!key_data.key) {
     return Pkcs12ReaderStatusCode::kKeyDataMissed;
   }
 
-  if (IsKeyRsaType(key_data.key)) {
-    const RSA* rsa_key = EVP_PKEY_get0_RSA(key_data.key.get());
-    if (!rsa_key) {
-      return Pkcs12ReaderStatusCode::kRsaKeyExtractionFailed;
-    }
-
-    std::vector<uint8_t> rsa_key_modulus_bytes =
-        BignumToBytes(RSA_get0_n(rsa_key));
-    if (rsa_key_modulus_bytes.empty()) {
-      return Pkcs12ReaderStatusCode::kPkcs12RsaModulusEmpty;
+  if (EVP_PKEY_base_id(key_data.key.get()) == EVP_PKEY_RSA) {
+    Pkcs12ReaderStatusCode get_modulus_result =
+        GetRsaModulus(key_data.key, key_data.rsa_key_modulus_bytes);
+    if (get_modulus_result != Pkcs12ReaderStatusCode::kSuccess) {
+      return get_modulus_result;
     }
 
     crypto::ScopedSECItem cka_id_item =
-        MakeIdFromPubKeyNss(rsa_key_modulus_bytes);
+        MakeIdFromPubKeyNss(key_data.rsa_key_modulus_bytes);
     key_data.cka_id_value = SECItemToBytes(cka_id_item);
     if (key_data.cka_id_value.empty()) {
-      return Pkcs12ReaderStatusCode::kRsaCkaIdExtractionFailed;
-    }
-
-    return Pkcs12ReaderStatusCode::kSuccess;
-  }
-
-  if (IsKeyEcType(key_data.key)) {
-    const EC_KEY* ec_key = EVP_PKEY_get0_EC_KEY(key_data.key.get());
-    if (!ec_key) {
-      return Pkcs12ReaderStatusCode::kEcKeyExtractionFailed;
-    }
-    std::vector<uint8_t> ec_key_public_bytes = GetEcPublicKeyBytes(ec_key);
-    if (ec_key_public_bytes.empty()) {
-      return Pkcs12ReaderStatusCode::kEcKeyBytesEmpty;
-    }
-
-    key_data.cka_id_value = MakePkcs11IdForEcKey(ec_key_public_bytes);
-    if (key_data.cka_id_value.empty()) {
-      return Pkcs12ReaderStatusCode::kEcCkaIdExtractionFailed;
+      return Pkcs12ReaderStatusCode::kPkcs12CkaIdExtractionFailed;
     }
     return Pkcs12ReaderStatusCode::kSuccess;
   }
@@ -290,26 +278,25 @@ Pkcs12ReaderStatusCode Pkcs12Reader::CheckRelation(const KeyData& key_data,
   if (!cert) {
     return Pkcs12ReaderStatusCode::kCertificateDataMissed;
   }
-  bssl::UniquePtr<EVP_PKEY> evp_pub_key(X509_get_pubkey(cert));
-  if (!evp_pub_key) {
-    return Pkcs12ReaderStatusCode::kPKeyExtractionFailed;
-  }
 
-  if (!(IsKeyRsaType(key_data.key) || IsKeyEcType(key_data.key))) {
-    return Pkcs12ReaderStatusCode::kPkcs12NotSupportedKeyType;
-  }
-
-  int result = EVP_PKEY_cmp(key_data.key.get(), evp_pub_key.get());
-  if (result == 1) {
+  // Check for RSA key.
+  if (!key_data.rsa_key_modulus_bytes.empty()) {
+    EVP_PKEY* pub_key_ptr = X509_get_pubkey(cert);
+    bssl::UniquePtr<EVP_PKEY> pub_key(pub_key_ptr);
+    std::vector<uint8_t> public_modulus_bytes;
+    Pkcs12ReaderStatusCode get_modulus_result =
+        GetRsaModulus(pub_key, public_modulus_bytes);
+    if (get_modulus_result != Pkcs12ReaderStatusCode::kSuccess) {
+      return get_modulus_result;
+    }
+    if (key_data.rsa_key_modulus_bytes != public_modulus_bytes) {
+      return Pkcs12ReaderStatusCode::kPkcs12NoValidCertificatesFound;
+    }
     is_related = true;
     return Pkcs12ReaderStatusCode::kSuccess;
   }
 
-  if (result < 0) {
-    return Pkcs12ReaderStatusCode::kPkeyComparisonFailure;
-  }
-
-  return Pkcs12ReaderStatusCode::kPkcs12NoValidCertificatesFound;
+  return Pkcs12ReaderStatusCode::kPkcs12NotSupportedKeyType;
 }
 
 Pkcs12ReaderStatusCode Pkcs12Reader::GetCertFromDerData(

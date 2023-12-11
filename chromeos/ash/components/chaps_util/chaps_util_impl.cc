@@ -207,7 +207,8 @@ std::string MakePkcs12ImportErrorMessage(Pkcs12ReaderStatusCode error_code) {
 Pkcs12ReaderStatusCode ImportRsaKey(ChapsSlotSession* chaps_session,
                                     const KeyData& key_data,
                                     bool is_software_backed,
-                                    const Pkcs12Reader* pkcs12_reader) {
+                                    const Pkcs12Reader* pkcs12_reader,
+                                    CK_OBJECT_HANDLE& out_key_handle) {
   if (!key_data.key) {
     LOG(ERROR) << MakePkcs12KeyImportErrorMessage(
         Pkcs12ReaderStatusCode::kKeyDataMissed);
@@ -216,9 +217,9 @@ Pkcs12ReaderStatusCode ImportRsaKey(ChapsSlotSession* chaps_session,
 
   // All the data variables must stay alive until `attrs` is sent to Chaps.
   const RSA* rsa_key = EVP_PKEY_get0_RSA(key_data.key.get());
+  const std::vector<uint8_t>& public_modulus_bytes =
+      key_data.rsa_key_modulus_bytes;
   const std::vector<uint8_t>& cka_id = key_data.cka_id_value;
-  std::vector<uint8_t> public_modulus_bytes =
-      pkcs12_reader->BignumToBytes(RSA_get0_n(rsa_key));
   std::vector<uint8_t> public_exponent_bytes =
       pkcs12_reader->BignumToBytes(RSA_get0_e(rsa_key));
   std::vector<uint8_t> private_exponent_bytes =
@@ -247,18 +248,17 @@ Pkcs12ReaderStatusCode ImportRsaKey(ChapsSlotSession* chaps_session,
   CK_OBJECT_CLASS key_class = CKO_PRIVATE_KEY;
   CK_KEY_TYPE key_type = CKK_RSA;
   CK_BBOOL force_software_attribute = is_software_backed ? CK_TRUE : CK_FALSE;
-  CK_OBJECT_HANDLE out_key_handle;
   CK_ATTRIBUTE attrs[] = {
       {CKA_CLASS, &key_class, sizeof(key_class)},
       {CKA_KEY_TYPE, &key_type, sizeof(key_type)},
-      {CKA_TOKEN, &true_value, sizeof(true_value)},
-      {CKA_SENSITIVE, &true_value, sizeof(true_value)},
-      {kForceSoftwareAttribute, &force_software_attribute, sizeof(true_value)},
-      {CKA_PRIVATE, &true_value, sizeof(true_value)},
-      {CKA_UNWRAP, &true_value, sizeof(true_value)},
-      {CKA_DECRYPT, &true_value, sizeof(true_value)},
-      {CKA_SIGN, &true_value, sizeof(true_value)},
-      {CKA_SIGN_RECOVER, &true_value, sizeof(true_value)},
+      {CKA_TOKEN, &true_value, sizeof(CK_BBOOL)},
+      {CKA_SENSITIVE, &true_value, sizeof(CK_BBOOL)},
+      {kForceSoftwareAttribute, &force_software_attribute, sizeof(CK_BBOOL)},
+      {CKA_PRIVATE, &true_value, sizeof(CK_BBOOL)},
+      {CKA_UNWRAP, &true_value, sizeof(CK_BBOOL)},
+      {CKA_DECRYPT, &true_value, sizeof(CK_BBOOL)},
+      {CKA_SIGN, &true_value, sizeof(CK_BBOOL)},
+      {CKA_SIGN_RECOVER, &true_value, sizeof(CK_BBOOL)},
       {CKA_MODULUS, const_cast<uint8_t*>(public_modulus_bytes.data()),
        public_modulus_bytes.size()},
       {CKA_ID, const_cast<uint8_t*>(cka_id.data()), cka_id.size()},
@@ -271,79 +271,6 @@ Pkcs12ReaderStatusCode ImportRsaKey(ChapsSlotSession* chaps_session,
       {CKA_EXPONENT_1, exponent_1.data(), exponent_1.size()},
       {CKA_EXPONENT_2, exponent_2.data(), exponent_2.size()},
       {CKA_COEFFICIENT, coefficient.data(), coefficient.size()}};
-
-  if (!PerformWithRetries(
-          chaps_session, "CreateObject",
-          base::BindRepeating(&ChapsSlotSession::CreateObject,
-                              base::Unretained(chaps_session), attrs,
-                              /*ulCount=*/std::size(attrs), &out_key_handle))) {
-    LOG(ERROR) << MakePkcs12KeyImportErrorMessage(
-        Pkcs12ReaderStatusCode::kCreateKeyFailed);
-    return Pkcs12ReaderStatusCode::kCreateKeyFailed;
-  }
-  return Pkcs12ReaderStatusCode::kSuccess;
-}
-
-Pkcs12ReaderStatusCode ImportEcKey(ChapsSlotSession* chaps_session,
-                                   const KeyData& key_data,
-                                   bool is_software_backed,
-                                   const Pkcs12Reader* pkcs12_reader) {
-  if (!key_data.key) {
-    LOG(ERROR) << MakePkcs12KeyImportErrorMessage(
-        Pkcs12ReaderStatusCode::kKeyDataMissed);
-    return Pkcs12ReaderStatusCode::kKeyDataMissed;
-  }
-
-  // All the data variables must stay alive until `attrs` is sent to Chaps.
-  const EC_KEY* ec_key = EVP_PKEY_get0_EC_KEY(key_data.key.get());
-  if (!ec_key) {
-    return Pkcs12ReaderStatusCode::kEcKeyExtractionFailed;
-  }
-  const std::vector<uint8_t>& private_value = GetEcPrivateKeyBytes(ec_key);
-  const std::vector<uint8_t>& cka_id = key_data.cka_id_value;
-  const std::vector<uint8_t>& pub_key = GetEcPublicKeyBytes(ec_key);
-
-  if (private_value.empty() || cka_id.empty() || pub_key.empty()) {
-    LOG(ERROR) << MakePkcs12KeyImportErrorMessage(
-        Pkcs12ReaderStatusCode::kKeyAttrDataMissing);
-    return Pkcs12ReaderStatusCode::kKeyAttrDataMissing;
-  }
-
-  bssl::ScopedCBB cbb;
-  uint8_t* ec_params_der = nullptr;
-  const EC_GROUP* group = EC_KEY_get0_group(ec_key);
-  size_t ec_params_der_len = 0;
-  if (!CBB_init(cbb.get(), 0) || !EC_KEY_marshal_curve_name(cbb.get(), group) ||
-      !CBB_finish(cbb.get(), &ec_params_der, &ec_params_der_len)) {
-    LOG(ERROR) << MakePkcs12KeyImportErrorMessage(
-        Pkcs12ReaderStatusCode::kCreateKeyFailed);
-    return Pkcs12ReaderStatusCode::kCreateKeyFailed;
-  }
-  bssl::UniquePtr<uint8_t> der_deleter(ec_params_der);
-
-  CK_BBOOL true_value = CK_TRUE;
-  CK_OBJECT_CLASS key_class = CKO_PRIVATE_KEY;
-  CK_KEY_TYPE key_type = CKK_EC;
-  CK_BBOOL force_software_attribute = is_software_backed ? CK_TRUE : CK_FALSE;
-  CK_OBJECT_HANDLE out_key_handle;
-
-  CK_ATTRIBUTE attrs[] = {
-      {CKA_CLASS, &key_class, sizeof(key_class)},
-      {CKA_KEY_TYPE, &key_type, sizeof(key_type)},
-      {CKA_TOKEN, &true_value, sizeof(true_value)},
-      {CKA_SENSITIVE, &true_value, sizeof(true_value)},
-      {kForceSoftwareAttribute, &force_software_attribute,
-       sizeof(force_software_attribute)},
-      {CKA_SIGN, &true_value, sizeof(true_value)},
-      {CKA_SIGN_RECOVER, &true_value, sizeof(true_value)},
-      {CKA_DERIVE, &true_value, sizeof(true_value)},
-      {CKA_ID, const_cast<uint8_t*>(cka_id.data()), cka_id.size()},
-      {CKA_VALUE, const_cast<uint8_t*>(private_value.data()),
-       private_value.size()},
-      {CKA_EC_POINT, const_cast<uint8_t*>(pub_key.data()), pub_key.size()},
-      {CKA_PRIVATE, &true_value, sizeof(true_value)},
-      {CKA_EC_PARAMS, ec_params_der, ec_params_der_len},
-  };
 
   if (!PerformWithRetries(
           chaps_session, "CreateObject",
@@ -550,13 +477,11 @@ bool ChapsUtilImpl::ImportPkcs12CertificateImpl(
       pkcs12_reader.GetPkcs12KeyAndCerts(pkcs12_data, password, key_data.key,
                                          certs);
   if (get_key_and_cert_status != Pkcs12ReaderStatusCode::kSuccess) {
-    uint32_t error = ERR_get_error();
-    char ebuf[255];
-    LOG(ERROR) << "PKCS#12 import failed with error "
-               << ERR_error_string_n(error, ebuf, sizeof(ebuf));
     LOG(ERROR) << MakePkcs12ImportErrorMessage(get_key_and_cert_status);
     return false;
   }
+
+  CK_OBJECT_HANDLE key_handle;
 
   Pkcs12ReaderStatusCode enrich_key_data_result =
       pkcs12_reader.EnrichKeyData(key_data);
@@ -585,18 +510,8 @@ bool ChapsUtilImpl::ImportPkcs12CertificateImpl(
 
   if (!is_key_installed) {
     Pkcs12ReaderStatusCode import_key_status =
-        Pkcs12ReaderStatusCode::kKeyAttrDataMissing;
-    if (IsKeyRsaType(key_data.key)) {
-      import_key_status = ImportRsaKey(chaps_session.get(), key_data,
-                                       is_software_backed, &pkcs12_reader);
-    } else if (IsKeyEcType(key_data.key)) {
-      import_key_status = ImportEcKey(chaps_session.get(), key_data,
-                                      is_software_backed, &pkcs12_reader);
-    } else {
-      LOG(ERROR) << "Not supported key type";
-      return false;
-    }
-
+        ImportRsaKey(chaps_session.get(), key_data, is_software_backed,
+                     &pkcs12_reader, key_handle);
     if (import_key_status != Pkcs12ReaderStatusCode::kSuccess) {
       LOG(ERROR) << MakePkcs12ImportErrorMessage(import_key_status);
       return false;

@@ -17,8 +17,6 @@ constexpr char kPkcs12CertImportFailed[] =
     "Chaps util cert import failed with ";
 constexpr int kMaxAttemptUniqueNicknameCreation = 100;
 constexpr const char kDefaultNickname[] = "Unknown org";
-constexpr const char kPrivateKeyInstalledMsg[] =
-    "Private key is already installed in slot";
 
 // Custom CERTCertificateList object allows to avoid calls to PORT_FreeArena()
 // after every usage of CERTCertificateList.
@@ -214,7 +212,7 @@ Pkcs12ReaderStatusCode CanFindInstalledKey(PK11SlotInfo* slot,
   Pkcs12ReaderStatusCode res = pkcs12_reader.DoesKeyForCertExist(
       slot, Pkcs12ReaderCertSearchType::kPlainType, scoped_cert);
   if (res == Pkcs12ReaderStatusCode::kSuccess) {
-    LOG(WARNING) << kPrivateKeyInstalledMsg;
+    LOG(WARNING) << "Private key is already installed in slot";
     is_key_installed = true;
     return Pkcs12ReaderStatusCode::kSuccess;
   }
@@ -228,7 +226,7 @@ Pkcs12ReaderStatusCode CanFindInstalledKey(PK11SlotInfo* slot,
   res = pkcs12_reader.DoesKeyForCertExist(
       slot, Pkcs12ReaderCertSearchType::kDerType, scoped_cert);
   if (res == Pkcs12ReaderStatusCode::kSuccess) {
-    LOG(WARNING) << kPrivateKeyInstalledMsg;
+    LOG(WARNING) << "Private key is already installed in slot";
     is_key_installed = true;
     return Pkcs12ReaderStatusCode::kSuccess;
   }

@@ -43,20 +43,22 @@ enum class Pkcs12ReaderStatusCode {
   kPkcs12LabelCreationFailed = 19,
   kPkcs12FindCertsWithSubjectFailed = 20,
   kPkcs12NoValidCertificatesFound = 21,
-  kPkcs12NoNicknamesWasExtracted = 22,
-  kPkcs12ReachedMaxAttemptForUniqueness = 23,
-  kPkcs12MissedNickname = 24,
-  kMissedSlotInfo = 25,
-  kPkcs12NotSupportedKeyType = 26,
-  kPkcs12CNExtractionFailed = 27,
-  kEcKeyExtractionFailed = 28,
-  kRsaCkaIdExtractionFailed = 29,
-  kPKeyExtractionFailed = 30,
-  kRsaKeyExtractionFailed = 31,
-  kPkcs12RsaModulusEmpty = 32,
-  kEcKeyBytesEmpty = 33,
-  kEcCkaIdExtractionFailed = 34,
-  kPkeyComparisonFailure = 35,
+  kPkcs12ErrorDuringExistingCertConversion = 22,
+  kPkcs12NoNicknamesWasExtracted = 23,
+  kPkcs12CanNotExtractDefaultLabelFromCert = 24,
+  kPkcs12CanNotDecodeRawCert = 25,
+  kPkcs12ReachedMaxAttemptForUniqueness = 26,
+  kPkcs12MissedNickname = 27,
+  kMissedSlotInfo = 28,
+  kPkcs12NotSupportedKeyType = 29,
+  kPkcs12CNExtractionFailed = 30,
+  kPkcs12EcKeyExtractionFailed = 31,
+  kPkcs12CkaIdExtractionFailed = 32,
+  kPublicKeyExtractionFailed = 33,
+  kRsaKeyExtractionFailed = 34,
+  kRsaModulusExtractionFailed = 35,
+  kPkcs12RsaModulusEmpty = 36,
+  kPkcs12PKeyMissed = 37,
 };
 
 enum class Pkcs12ReaderCertSearchType {
@@ -77,6 +79,9 @@ struct COMPONENT_EXPORT(CHAPS_UTIL) KeyData {
   KeyData& operator=(KeyData&&) = default;
   ~KeyData();
   bssl::UniquePtr<EVP_PKEY> key;
+  std::vector<uint8_t> rsa_key_modulus_bytes;
+  std::vector<uint8_t> ec_key_public_bytes;
+  std::vector<uint8_t> common_name;
   std::vector<uint8_t> cka_id_value;
 };
 
@@ -84,7 +89,7 @@ struct COMPONENT_EXPORT(CHAPS_UTIL) KeyData {
 // for storing keys and certificates in Chaps.
 class COMPONENT_EXPORT(CHAPS_UTIL) Pkcs12Reader {
  public:
-  Pkcs12Reader();
+  Pkcs12Reader() = default;
 
   virtual ~Pkcs12Reader() = default;
 
@@ -173,7 +178,15 @@ class COMPONENT_EXPORT(CHAPS_UTIL) Pkcs12Reader {
       const unsigned char* der_cert_data,
       int der_cert_len,
       bssl::UniquePtr<X509>& x509) const;
+
+ private:
+  // Calculate (`modulus`) for RSA key extracted from (`pkey`).
+  // Returns status code.
+  virtual Pkcs12ReaderStatusCode GetRsaModulus(
+      const bssl::UniquePtr<EVP_PKEY>& pkey,
+      std::vector<uint8_t>& modulus) const;
 };
+
 }  // namespace chromeos
 
 #endif  // CHROMEOS_ASH_COMPONENTS_CHAPS_UTIL_PKCS12_READER_H_
