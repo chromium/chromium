@@ -45632,19 +45632,6 @@ Called by update_net_error_codes.py.-->
   <int value="2" label="Privacy Sandbox Notice"/>
 </enum>
 
-<enum name="PrivateNetworkAccessCheckResult">
-  <int value="0" label="AllowedMissingClientSecurityState"/>
-  <int value="1" label="AllowedNoLessPublic"/>
-  <int value="2" label="AllowedByPolicyAllow"/>
-  <int value="3" label="AllowedByPolicyWarn"/>
-  <int value="4" label="BlockedByLoadOption"/>
-  <int value="5" label="BlockedByPolicyBlock"/>
-  <int value="6" label="AllowedByTargetIpAddressSpace"/>
-  <int value="7" label="BlockedByTargetIpAddressSpace"/>
-  <int value="8" label="BlockedByPolicyPreflightWarn"/>
-  <int value="9" label="BlockedByPolicyPreflightBlock"/>
-</enum>
-
 <enum name="ProbeResult">
   <int value="0" label="No internet"/>
   <int value="1" label="Server error"/>

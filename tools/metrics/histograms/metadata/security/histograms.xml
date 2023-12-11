@@ -427,10 +427,12 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Security.PrivateNetworkAccess.CheckResult"
-    enum="PrivateNetworkAccessCheckResult" expires_after="2023-12-24">
+    enum="PrivateNetworkAccessCheckResult" expires_after="2024-06-24">
   <owner>titouan@chromium.org</owner>
   <owner>clamy@chromium.org</owner>
   <owner>mkwst@chromium.org</owner>
+  <owner>lyf@chromium.org</owner>
+  <owner>src/chrome/browser/private_network_access/OWNERS</owner>
   <summary>
     Result of the Private Network Access Check on a new connection. Recorded
     once per call to network::URLLoader::OnConnected(), which may be more than

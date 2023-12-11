@@ -16,6 +16,9 @@ namespace network {
 
 // These values are persisted to logs. Entries should not be renumbered and
 // numeric values should never be reused.
+//
+// Please keep in sync with "PrivateNetworkAccessCheckResult" in
+// src/tools/metrics/histograms/metadata/security/enums.xml.
 enum class PrivateNetworkAccessCheckResult {
   // Request is allowed because it is missing a client security state.
   kAllowedMissingClientSecurityState = 0,
