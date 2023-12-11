@@ -762,7 +762,7 @@ void AddPerformanceStrings(content::WebUIDataSource* html_source) {
 
   html_source->AddBoolean(
       "highEfficiencyShowRecommendedBadge",
-      performance_manager::features::kHighEfficiencyShowRecommendedBadge.Get());
+      performance_manager::features::kMemorySaverShowRecommendedBadge.Get());
 
   html_source->AddString(
       "tabDiscardTimerFiveMinutes",

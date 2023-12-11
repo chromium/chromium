@@ -49,7 +49,7 @@ PerformanceControlsHatsServiceFactory::BuildServiceInstanceForBrowserContext(
                kPerformanceControlsBatteryPerformanceSurvey) &&
        !base::FeatureList::IsEnabled(
            performance_manager::features::
-               kPerformanceControlsHighEfficiencyOptOutSurvey) &&
+               kPerformanceControlsMemorySaverOptOutSurvey) &&
        !base::FeatureList::IsEnabled(
            performance_manager::features::
                kPerformanceControlsBatterySaverOptOutSurvey))) {

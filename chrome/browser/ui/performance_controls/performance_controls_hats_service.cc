@@ -21,7 +21,7 @@ PerformanceControlsHatsService::PerformanceControlsHatsService(Profile* profile)
     : profile_(profile) {
   if (base::FeatureList::IsEnabled(
           performance_manager::features::
-              kPerformanceControlsHighEfficiencyOptOutSurvey)) {
+              kPerformanceControlsMemorySaverOptOutSurvey)) {
     performance_manager::user_tuning::UserPerformanceTuningManager::
         GetInstance()
             ->AddObserver(this);

@@ -74,9 +74,9 @@ class UserPerformanceTuningManagerTest
     std::vector<base::test::FeatureRef> enabled_features;
     std::vector<base::test::FeatureRef> disabled_features;
     if (is_multistate_enabled) {
-      enabled_features.push_back(features::kHighEfficiencyMultistateMode);
+      enabled_features.push_back(features::kMemorySaverMultistateMode);
     } else {
-      disabled_features.push_back(features::kHighEfficiencyMultistateMode);
+      disabled_features.push_back(features::kMemorySaverMultistateMode);
     }
     feature_list_.InitWithFeatures(enabled_features, disabled_features);
   }

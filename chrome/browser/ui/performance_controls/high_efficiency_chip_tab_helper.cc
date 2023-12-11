@@ -71,14 +71,14 @@ bool HighEfficiencyChipTabHelper::ComputeShouldHighlightMemorySavings() {
   bool const savings_over_threshold =
       static_cast<int>(high_efficiency::GetDiscardedMemorySavingsInBytes(
           &GetWebContents())) >
-      performance_manager::features::kExpandedHighEfficiencyChipThresholdBytes
+      performance_manager::features::kExpandedMemorySaverChipThresholdBytes
           .Get();
 
   base::Time const last_expanded_timestamp =
       pref_service_->GetTime(prefs::kLastHighEfficiencyChipExpandedTimestamp);
   bool const expanded_chip_not_shown_recently =
       (base::Time::Now() - last_expanded_timestamp) >
-      performance_manager::features::kExpandedHighEfficiencyChipFrequency.Get();
+      performance_manager::features::kExpandedMemorySaverChipFrequency.Get();
 
   auto* pre_discard_resource_usage =
       performance_manager::user_tuning::UserPerformanceTuningManager::
@@ -88,7 +88,7 @@ bool HighEfficiencyChipTabHelper::ComputeShouldHighlightMemorySavings() {
       (base::LiveTicks::Now() -
        pre_discard_resource_usage->discard_liveticks()) >
           performance_manager::features::
-              kExpandedHighEfficiencyChipDiscardedDuration.Get();
+              kExpandedMemorySaverChipDiscardedDuration.Get();
 
   if (savings_over_threshold && expanded_chip_not_shown_recently &&
       tab_discard_time_over_threshold) {

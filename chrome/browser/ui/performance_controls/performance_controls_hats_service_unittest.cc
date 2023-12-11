@@ -135,7 +135,7 @@ class PerformanceControlsHatsServiceHighEfficiencyOptOutTest
   const std::vector<base::test::FeatureRefAndParams> GetFeatures() override {
     return {
         {performance_manager::features::
-             kPerformanceControlsHighEfficiencyOptOutSurvey,
+             kPerformanceControlsMemorySaverOptOutSurvey,
          {}},
     };
   }

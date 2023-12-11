@@ -619,7 +619,7 @@ IN_PROC_BROWSER_TEST_F(SettingsPerformancePageTest, ExceptionList) {
 class SettingsPerformancePageMultistateTest : public SettingsBrowserTest {
  private:
   base::test::ScopedFeatureList scoped_feature_list_{
-      performance_manager::features::kHighEfficiencyMultistateMode};
+      performance_manager::features::kMemorySaverMultistateMode};
 };
 
 IN_PROC_BROWSER_TEST_F(SettingsPerformancePageMultistateTest, Controls) {

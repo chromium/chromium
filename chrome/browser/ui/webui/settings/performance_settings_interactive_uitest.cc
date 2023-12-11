@@ -249,7 +249,7 @@ class PerformanceSettingsMultiStateModeInteractiveTest
  public:
   void SetUp() override {
     scoped_feature_list_.InitAndEnableFeature(
-        performance_manager::features::kHighEfficiencyMultistateMode);
+        performance_manager::features::kMemorySaverMultistateMode);
 
     InteractiveBrowserTest::SetUp();
   }

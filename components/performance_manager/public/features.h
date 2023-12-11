@@ -52,7 +52,7 @@ BASE_DECLARE_FEATURE(kBatterySaverModeAvailable);
 // Flag to control a baseline HaTS survey for Chrome performance.
 BASE_DECLARE_FEATURE(kPerformanceControlsPerformanceSurvey);
 BASE_DECLARE_FEATURE(kPerformanceControlsBatteryPerformanceSurvey);
-BASE_DECLARE_FEATURE(kPerformanceControlsHighEfficiencyOptOutSurvey);
+BASE_DECLARE_FEATURE(kPerformanceControlsMemorySaverOptOutSurvey);
 BASE_DECLARE_FEATURE(kPerformanceControlsBatterySaverOptOutSurvey);
 
 // Defines the time delta to look back when checking if a device has used
@@ -62,11 +62,11 @@ extern const base::FeatureParam<base::TimeDelta>
 
 // Round 2 Performance Controls features
 
-// This enables the UI for the multi-state version of high efficiency mode.
-BASE_DECLARE_FEATURE(kHighEfficiencyMultistateMode);
+// This enables the UI for the multi-state version of memory saver mode.
+BASE_DECLARE_FEATURE(kMemorySaverMultistateMode);
 // When true, a recommended badge will be shown next to the heuristic memory
 // saver option.
-extern const base::FeatureParam<bool> kHighEfficiencyShowRecommendedBadge;
+extern const base::FeatureParam<bool> kMemorySaverShowRecommendedBadge;
 
 // This shows more information about discarded tabs in the tab strip and
 // hovercards.
@@ -81,21 +81,21 @@ BASE_DECLARE_FEATURE(kMemorySavingsReportingImprovements);
 
 // The minimum time between instances where the chip is shown in expanded mode.
 extern const base::FeatureParam<base::TimeDelta>
-    kExpandedHighEfficiencyChipFrequency;
+    kExpandedMemorySaverChipFrequency;
 
 // The minimum discard savings that a tab must have for the chip to be expanded.
-extern const base::FeatureParam<int> kExpandedHighEfficiencyChipThresholdBytes;
+extern const base::FeatureParam<int> kExpandedMemorySaverChipThresholdBytes;
 
 // The minimum time a tab must be discarded before the chip can be shown
 // expanded.
 extern const base::FeatureParam<base::TimeDelta>
-    kExpandedHighEfficiencyChipDiscardedDuration;
+    kExpandedMemorySaverChipDiscardedDuration;
 
 // Percentiles of PMF across all tabs on all browsers.
-extern const base::FeatureParam<int> kHighEfficiencyChartPmf25PercentileBytes;
-extern const base::FeatureParam<int> kHighEfficiencyChartPmf50PercentileBytes;
-extern const base::FeatureParam<int> kHighEfficiencyChartPmf75PercentileBytes;
-extern const base::FeatureParam<int> kHighEfficiencyChartPmf99PercentileBytes;
+extern const base::FeatureParam<int> kMemorySaverChartPmf25PercentileBytes;
+extern const base::FeatureParam<int> kMemorySaverChartPmf50PercentileBytes;
+extern const base::FeatureParam<int> kMemorySaverChartPmf75PercentileBytes;
+extern const base::FeatureParam<int> kMemorySaverChartPmf99PercentileBytes;
 
 // Final opacity of the favicon after the discard animation completes
 extern const base::FeatureParam<double> kDiscardedTabTreatmentOpacity;

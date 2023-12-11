@@ -276,7 +276,7 @@ void UserPerformanceTuningManager::Start() {
 void UserPerformanceTuningManager::UpdateHighEfficiencyModeState() {
   HighEfficiencyModeState state =
       prefs::GetCurrentHighEfficiencyModeState(pref_change_registrar_.prefs());
-  if (!base::FeatureList::IsEnabled(features::kHighEfficiencyMultistateMode)) {
+  if (!base::FeatureList::IsEnabled(features::kMemorySaverMultistateMode)) {
     if (state != HighEfficiencyModeState::kDisabled) {
       // The user has enabled high efficiency mode, but without the multistate
       // UI they didn't choose a policy. The feature controls which policy to

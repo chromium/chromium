@@ -680,7 +680,7 @@ void TabHelpers::AttachTabHelpers(WebContents* web_contents) {
               kPerformanceControlsBatteryPerformanceSurvey) ||
       base::FeatureList::IsEnabled(
           performance_manager::features::
-              kPerformanceControlsHighEfficiencyOptOutSurvey) ||
+              kPerformanceControlsMemorySaverOptOutSurvey) ||
       base::FeatureList::IsEnabled(
           performance_manager::features::
               kPerformanceControlsBatterySaverOptOutSurvey)) {

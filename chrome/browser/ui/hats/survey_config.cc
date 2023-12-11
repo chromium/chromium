@@ -421,7 +421,7 @@ std::vector<hats::SurveyConfig> GetAllSurveyConfigs() {
       std::vector<std::string>{});
   survey_configs.emplace_back(
       &performance_manager::features::
-          kPerformanceControlsHighEfficiencyOptOutSurvey,
+          kPerformanceControlsMemorySaverOptOutSurvey,
       kHatsSurveyTriggerPerformanceControlsHighEfficiencyOptOut);
   survey_configs.emplace_back(
       &performance_manager::features::

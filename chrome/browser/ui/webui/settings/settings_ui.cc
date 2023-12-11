@@ -531,7 +531,7 @@ SettingsUI::SettingsUI(content::WebUI* web_ui)
   html_source->AddBoolean(
       "isHighEfficiencyMultistateModeEnabled",
       base::FeatureList::IsEnabled(
-          performance_manager::features::kHighEfficiencyMultistateMode));
+          performance_manager::features::kMemorySaverMultistateMode));
   html_source->AddBoolean(
       "isDiscardExceptionsImprovementsEnabled",
       base::FeatureList::IsEnabled(

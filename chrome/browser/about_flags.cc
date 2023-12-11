@@ -10061,7 +10061,7 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kHighEfficiencyMultistateModeAvailableDescription,
      kOsDesktop,
      FEATURE_WITH_PARAMS_VALUE_TYPE(
-         performance_manager::features::kHighEfficiencyMultistateMode,
+         performance_manager::features::kMemorySaverMultistateMode,
          kHighEfficiencyMultistateModeVariations,
          "HighEfficiencyMultistateMode")},
 

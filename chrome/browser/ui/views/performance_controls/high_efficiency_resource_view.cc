@@ -63,20 +63,20 @@ constexpr int kQuartilesLabels[] = {
 // highest quartile (75-99 percentile) returns 3.
 int GetMemorySavingsQuartile(const int memory_savings_bytes) {
   if (memory_savings_bytes <
-      performance_manager::features::kHighEfficiencyChartPmf25PercentileBytes
+      performance_manager::features::kMemorySaverChartPmf25PercentileBytes
           .Get()) {
     return MemorySavingsQuartile::kLow;
   } else if (memory_savings_bytes <
              performance_manager::features::
-                 kHighEfficiencyChartPmf50PercentileBytes.Get()) {
+                 kMemorySaverChartPmf50PercentileBytes.Get()) {
     return MemorySavingsQuartile::kMedium;
   } else if (memory_savings_bytes <
              performance_manager::features::
-                 kHighEfficiencyChartPmf75PercentileBytes.Get()) {
+                 kMemorySaverChartPmf75PercentileBytes.Get()) {
     return MemorySavingsQuartile::kHigh;
   } else if (memory_savings_bytes <
              performance_manager::features::
-                 kHighEfficiencyChartPmf99PercentileBytes.Get()) {
+                 kMemorySaverChartPmf99PercentileBytes.Get()) {
     return MemorySavingsQuartile::kVeryHigh;
   } else {
     return MemorySavingsQuartile::kHuge;
