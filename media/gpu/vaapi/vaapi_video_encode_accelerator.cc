@@ -186,18 +186,6 @@ bool VaapiVideoEncodeAccelerator::Initialize(
         }
       }
     }
-
-    if (!IsConfiguredForTesting()) {
-      VAProfile va_profile = VAProfileVP9Profile0;
-      if (VaapiWrapper::GetDefaultVaEntryPoint(
-              VaapiWrapper::kEncodeConstantQuantizationParameter, va_profile) !=
-          VAEntrypointEncSliceLP) {
-        MEDIA_LOG(ERROR, media_log.get())
-            << "Currently spatial layer encoding is only supported by "
-               "VAEntrypointEncSliceLP";
-        return false;
-      }
-    }
   }
 
   const VideoCodec codec = VideoCodecProfileToVideoCodec(config.output_profile);
