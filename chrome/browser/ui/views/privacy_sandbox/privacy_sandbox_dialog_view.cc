@@ -27,8 +27,10 @@
 
 namespace {
 
+constexpr int kDialogWidth = 512;
 constexpr int kM1DialogWidth = 600;
-constexpr int kDefaultDialogHeight = 494;
+constexpr int kDefaultConsentDialogHeight = 569;
+constexpr int kDefaultNoticeDialogHeight = 494;
 constexpr int kMinRequiredDialogHeight = 100;
 constexpr int kMinRequiredDialogWidth = 400;
 
@@ -37,6 +39,9 @@ GURL GetDialogURL(PrivacySandboxService::PromptType prompt_type) {
   GURL combined_dialog_url =
       base_url.Resolve(chrome::kChromeUIPrivacySandboxDialogCombinedPath);
   switch (prompt_type) {
+    case PrivacySandboxService::PromptType::kConsent:
+    case PrivacySandboxService::PromptType::kNotice:
+      return base_url;
     case PrivacySandboxService::PromptType::kM1Consent:
       return combined_dialog_url;
     case PrivacySandboxService::PromptType::kM1NoticeROW:
@@ -53,6 +58,9 @@ GURL GetDialogURL(PrivacySandboxService::PromptType prompt_type) {
 
 int GetDialogWidth(PrivacySandboxService::PromptType prompt_type) {
   switch (prompt_type) {
+    case PrivacySandboxService::PromptType::kConsent:
+    case PrivacySandboxService::PromptType::kNotice:
+      return kDialogWidth;
     case PrivacySandboxService::PromptType::kM1Consent:
     case PrivacySandboxService::PromptType::kM1NoticeROW:
     case PrivacySandboxService::PromptType::kM1NoticeEEA:
@@ -153,8 +161,10 @@ PrivacySandboxDialogView::PrivacySandboxDialogView(
                             .width();
   const int width = views::LayoutProvider::Get()->GetSnappedDialogWidth(
       GetDialogWidth(prompt_type));
-  web_view_->SetPreferredSize(
-      gfx::Size(std::min(width, max_width), kDefaultDialogHeight));
+  const int height = prompt_type == PrivacySandboxService::PromptType::kConsent
+                         ? kDefaultConsentDialogHeight
+                         : kDefaultNoticeDialogHeight;
+  web_view_->SetPreferredSize(gfx::Size(std::min(width, max_width), height));
 
   PrivacySandboxDialogUI* web_ui = web_view_->GetWebContents()
                                        ->GetWebUI()
@@ -212,11 +222,6 @@ void PrivacySandboxDialogView::OpenPrivacySandboxSettings() {
 void PrivacySandboxDialogView::OpenPrivacySandboxAdMeasurementSettings() {
   CHECK(browser_);
   chrome::ShowPrivacySandboxAdMeasurementSettings(browser_);
-}
-
-content::WebContents* PrivacySandboxDialogView::GetWebContentsForTesting() {
-  CHECK(web_view_);
-  return web_view_->GetWebContents();
 }
 
 BEGIN_METADATA(PrivacySandboxDialogView, views::View)

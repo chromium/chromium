@@ -40,10 +40,12 @@ class PrivacySandboxService : public KeyedService {
   // GENERATED_JAVA_ENUM_PACKAGE: org.chromium.chrome.browser.privacy_sandbox
   enum class PromptType {
     kNone = 0,
-    kM1Consent = 1,
-    kM1NoticeROW = 2,
-    kM1NoticeEEA = 3,
-    kM1NoticeRestricted = 4,
+    kNotice = 1,
+    kConsent = 2,
+    kM1Consent = 3,
+    kM1NoticeROW = 4,
+    kM1NoticeEEA = 5,
+    kM1NoticeRestricted = 6,
     kMaxValue = kM1NoticeRestricted,
   };
 

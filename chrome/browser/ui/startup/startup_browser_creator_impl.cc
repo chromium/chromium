@@ -401,12 +401,14 @@ StartupBrowserCreatorImpl::DetermineURLsAndLaunch(
   bool privacy_sandbox_dialog_required = false;
   if (privacy_sandbox_service) {
     switch (privacy_sandbox_service->GetRequiredPromptType()) {
+      case PrivacySandboxService::PromptType::kConsent:
       case PrivacySandboxService::PromptType::kM1Consent:
       case PrivacySandboxService::PromptType::kM1NoticeEEA:
       case PrivacySandboxService::PromptType::kM1NoticeROW:
       case PrivacySandboxService::PromptType::kM1NoticeRestricted:
         privacy_sandbox_dialog_required = true;
         break;
+      case PrivacySandboxService::PromptType::kNotice:
       case PrivacySandboxService::PromptType::kNone:
         break;
     }
