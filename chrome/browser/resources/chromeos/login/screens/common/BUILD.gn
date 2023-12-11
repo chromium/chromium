@@ -55,6 +55,7 @@ js_type_check("closure_compile_local") {
     ":os_trial",
     ":parental_handoff",
     ":placeholder",
+    ":quick_start",
     ":recommend_apps",
     ":remote_activity_notification",
     ":saml_confirm_password",
@@ -463,6 +464,20 @@ js_library("parental_handoff") {
     "../../components/behaviors:oobe_i18n_behavior",
     "../../components/buttons:oobe_next_button",
     "../../components/dialogs:oobe_adaptive_dialog",
+    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
+  ]
+  extra_deps = [ ":web_components" ]
+}
+
+js_library("quick_start") {
+  sources = [ "$root_gen_dir/chrome/browser/resources/chromeos/login/screens/common/quick_start.js" ]
+  deps = [
+    "../../components:oobe_types",
+    "../../components:qr_code_canvas",
+    "../../components/behaviors:login_screen_behavior",
+    "../../components/behaviors:multi_step_behavior",
+    "../../components/behaviors:oobe_i18n_behavior",
+    "../../components/dialogs:oobe_loading_dialog",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
   ]
   extra_deps = [ ":web_components" ]

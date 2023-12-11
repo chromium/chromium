@@ -106,7 +106,6 @@ oobe_screens_js_files = [
   "screens/oobe/hid_detection.js",
   "screens/oobe/oobe_network.js",
   "screens/oobe/packaged_license.js",
-  "screens/oobe/quick_start.js",
   "screens/oobe/update.js",
   "screens/oobe/welcome.js",
   "screens/oobe/welcome_dialog.js",
@@ -152,6 +151,7 @@ common_screens_js_files = [
   "screens/common/os_install.js",
   "screens/common/os_trial.js",
   "screens/common/parental_handoff.js",
+  "screens/common/quick_start.js",
   "screens/common/remote_activity_notification.js",
 
   # Template used by the `tools/oobe/generate_screen_template.py` script.

@@ -26,7 +26,6 @@ js_type_check("closure_compile") {
     ":hid_detection",
     ":oobe_network",
     ":packaged_license",
-    ":quick_start",
     ":update",
     ":welcome",
     ":welcome_dialog",
@@ -137,20 +136,6 @@ js_library("hid_detection") {
     "../../components/dialogs:oobe_adaptive_dialog",
     "../../components/dialogs:oobe_modal_dialog",
     "//third_party/polymer/v3_0/components-chromium/iron-a11y-announcer:iron-a11y-announcer",
-    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
-  ]
-  extra_deps = [ ":web_components" ]
-}
-
-js_library("quick_start") {
-  sources = [ "$root_gen_dir/chrome/browser/resources/chromeos/login/screens/oobe/quick_start.js" ]
-  deps = [
-    "../../components:oobe_types",
-    "../../components:qr_code_canvas",
-    "../../components/behaviors:login_screen_behavior",
-    "../../components/behaviors:multi_step_behavior",
-    "../../components/behaviors:oobe_i18n_behavior",
-    "../../components/dialogs:oobe_loading_dialog",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
   ]
   extra_deps = [ ":web_components" ]
