@@ -721,13 +721,6 @@ field **VPN** must be set to an object of type [VPN](#VPN-type).
       deprecated *ServerCARef*) must be set.
     * *EAP* is only valid if **IKEVersion** is 2.
 
-* **ClientCertProvisioningProfileId**
-    * (required if **ClientCertType** is *ProvisioningProfileId*, otherwise
-      ignored) - **string**
-    * Id of the client certificate to be used. On Chrome OS, this corresponds
-      to the "cert_profile_id" field in the RequiredClientCertificateForUser or
-      RequiredClientCertificateForDevice policy.
-
 * **ClientCertPKCS11Id**
     * (required if **ClientCertType** is *PKCS11Id*, otherwise ignored) -
     * PKCS#11 identifier in the format slot:key_id.
@@ -736,6 +729,13 @@ field **VPN** must be set to an object of type [VPN](#VPN-type).
     * (required if **ClientCertType** is *Pattern*, otherwise ignored) -
       [CertificatePattern](#CertificatePattern-type)
     * Pattern describing the client certificate.
+
+* **ClientCertProvisioningProfileId**
+    * (required if **ClientCertType** is *ProvisioningProfileId*, otherwise
+      ignored) - **string**
+    * Id of the client certificate to be used. On Chrome OS, this corresponds
+      to the "cert_profile_id" field in the RequiredClientCertificateForUser or
+      RequiredClientCertificateForDevice policy.
 
 * **ClientCertRef**
     * (required if **ClientCertType** is *Ref*, otherwise ignored) - **string**
@@ -747,8 +747,8 @@ field **VPN** must be set to an object of type [VPN](#VPN-type).
     * Allowed values are
       * *PKCS11Id*
       * *Pattern*
-      * *Ref*
       * *ProvisioningProfileId*
+      * *Ref*
     * *Ref*, *Pattern* and *ProvisioningProfileId* indicate that the associated
       property should be used to identify the client certificate.
     * *PKCS11Id* is used when representing a certificate in a local store and is
@@ -920,6 +920,13 @@ L2TP over IPsec with pre-shared key:
       [CertificatePattern](#CertificatePattern-type)
     * Pattern to use to find the client certificate.
 
+* **ClientCertProvisioningProfileId**
+    * (required if **ClientCertType** is *ProvisioningProfileId*, otherwise
+      ignored) - **string**
+    * Id of the client certificate to be used. On Chrome OS, this corresponds
+      to the "cert_profile_id" field in the RequiredClientCertificateForUser or
+      RequiredClientCertificateForDevice policy.
+
 * **ClientCertRef**
     * (required if **ClientCertType** is *Ref*, otherwise ignored) - **string**
     * Reference to client certificate stored in certificate section.
@@ -929,10 +936,11 @@ L2TP over IPsec with pre-shared key:
     * Allowed values are
       * *PKCS11Id*
       * *Pattern*
+      * *ProvisioningProfileId*
       * *Ref*
       * *None*
-    * *Ref* and *Pattern* indicate that the associated property should be used
-      to identify the client certificate.
+    * *Ref*, *Pattern* and *ProvisioningProfileId* indicate that the associated
+      property should be used to identify the client certificate.
     * *PKCS11Id* is used when representing a certificate in a local store and is
       only valid when describing a local configuration.
     * *None* indicates that the server is configured to not require client
@@ -1379,6 +1387,13 @@ type exists to configure the authentication.
       [CertificatePattern](#CertificatePattern-type)
     * Pattern to use to find the client certificate.
 
+* **ClientCertProvisioningProfileId**
+    * (required if **ClientCertType** is *ProvisioningProfileId*, otherwise
+      ignored) - **string**
+    * Id of the client certificate to be used. On Chrome OS, this corresponds
+      to the "cert_profile_id" field in the RequiredClientCertificateForUser or
+      RequiredClientCertificateForDevice policy.
+
 * **ClientCertRef**
     * (required if **ClientCertType** is *Ref*, otherwise ignored) - **string**
     * Reference to client certificate stored in certificate section.
@@ -1389,10 +1404,11 @@ type exists to configure the authentication.
         * *KeyPairAlias* (Android only)
         * *PKCS11Id*
         * *Pattern*
+        * *ProvisioningProfileId*
         * *Ref*
         * *None*
-    * *KeyPairAlias*, *Ref* and *Pattern* indicate that the associated property
-      should be used to identify the client certificate.
+    * *KeyPairAlias*, *Pattern*, *ProvisioningProfileId* and *Ref* indicate that
+      the associated property should be used to identify the client certificate.
     * *PKCS11Id* is used when representing a certificate in a local store and is
       only valid when describing a local configuration.
     * *None* indicates that the server is configured to not require client
