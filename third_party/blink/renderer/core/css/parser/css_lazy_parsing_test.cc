@@ -71,7 +71,7 @@ TEST_F(CSSLazyParsingTest, ChangeDocuments) {
 
   auto* context = MakeGarbageCollected<CSSParserContext>(
       kHTMLStandardMode, SecureContextMode::kInsecureContext,
-      CSSParserContext::kLiveProfile, &dummy_holder->GetDocument());
+      &dummy_holder->GetDocument());
   cached_contents_ = MakeGarbageCollected<StyleSheetContents>(context);
   {
     auto* sheet = MakeGarbageCollected<CSSStyleSheet>(

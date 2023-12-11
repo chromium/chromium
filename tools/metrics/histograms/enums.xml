@@ -21401,8 +21401,8 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="3968" label="ClientHintsUAReduced"/>
   <int value="3969" label="SpeculationRulesPrerender"/>
   <int value="3970" label="OBSOLETE_ExecCommandWithTrustedTypes"/>
-  <int value="3971" label="CSSSelectorPseudoHasInSnapshotProfile"/>
-  <int value="3972" label="CSSSelectorPseudoHasInLiveProfile"/>
+  <int value="3971" label="OBSOLETE_CSSSelectorPseudoHasInSnapshotProfile"/>
+  <int value="3972" label="OBSOLETE_CSSSelectorPseudoHasInLiveProfile"/>
   <int value="3973" label="NavigatorPdfViewerEnabled"/>
   <int value="3974" label="CanvasRenderingContext2DContextLostEvent"/>
   <int value="3975" label="CanvasRenderingContext2DContextRestoredEvent"/>

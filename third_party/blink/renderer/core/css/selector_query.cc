@@ -509,8 +509,7 @@ SelectorQuery* SelectorQueryCache::Add(const AtomicString& selectors,
   HeapVector<CSSSelector> arena;
   base::span<CSSSelector> selector_vector = CSSParser::ParseSelector(
       MakeGarbageCollected<CSSParserContext>(
-          document, document.BaseURL(), true /* origin_clean */, Referrer(),
-          WTF::TextEncoding(), CSSParserContext::kSnapshotProfile),
+          document, document.BaseURL(), true /* origin_clean */, Referrer()),
       CSSNestingType::kNone, /*parent_rule_for_nesting=*/nullptr, nullptr,
       selectors, arena);
 

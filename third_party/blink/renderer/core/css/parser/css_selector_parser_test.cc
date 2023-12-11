@@ -738,8 +738,7 @@ static bool IsCounted(const char* selector,
   Document* doc = &dummy_holder->GetDocument();
   Page::InsertOrdinaryPageForTesting(&dummy_holder->GetPage());
   auto* context = MakeGarbageCollected<CSSParserContext>(
-      mode, SecureContextMode::kSecureContext, CSSParserContext::kLiveProfile,
-      doc);
+      mode, SecureContextMode::kSecureContext, doc);
   auto* sheet = MakeGarbageCollected<StyleSheetContents>(context);
 
   DCHECK(!doc->IsUseCounted(feature));

@@ -317,8 +317,7 @@ TEST(CSSPropertyParserTest, ClipPathEllipse) {
   Document* doc = &dummy_holder->GetDocument();
   Page::InsertOrdinaryPageForTesting(&dummy_holder->GetPage());
   auto* context = MakeGarbageCollected<CSSParserContext>(
-      kHTMLStandardMode, SecureContextMode::kSecureContext,
-      CSSParserContext::kLiveProfile, doc);
+      kHTMLStandardMode, SecureContextMode::kSecureContext, doc);
 
   CSSParser::ParseSingleValue(CSSPropertyID::kClipPath,
                               "ellipse(1px 2px at invalid)", context);

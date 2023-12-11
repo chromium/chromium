@@ -3279,8 +3279,8 @@ enum WebFeature {
   kClientHintsUAReduced = 3968, //Removed in M116.
   kSpeculationRulesPrerender = 3969,
   kOBSOLETE_ExecCommandWithTrustedTypes = 3970,
-  kCSSSelectorPseudoHasInSnapshotProfile = 3971,
-  kCSSSelectorPseudoHasInLiveProfile = 3972,
+  kOBSOLETE_CSSSelectorPseudoHasInSnapshotProfile = 3971,
+  kOBSOLETE_CSSSelectorPseudoHasInLiveProfile = 3972,
   kNavigatorPdfViewerEnabled = 3973,
   kCanvasRenderingContext2DContextLostEvent = 3974,
   kCanvasRenderingContext2DContextRestoredEvent = 3975,

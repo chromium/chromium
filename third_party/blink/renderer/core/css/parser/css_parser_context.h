@@ -31,9 +31,6 @@ enum class SecureContextMode;
 class CORE_EXPORT CSSParserContext final
     : public GarbageCollected<CSSParserContext> {
  public:
-  // https://drafts.csswg.org/selectors/#profiles
-  enum SelectorProfile : uint8_t { kLiveProfile, kSnapshotProfile };
-
   // All three of these constructors copy the context and override the current
   // Document handle used for UseCounter.
   CSSParserContext(const CSSParserContext*, const CSSStyleSheet*);
@@ -57,7 +54,6 @@ class CORE_EXPORT CSSParserContext final
                    const Document* use_counter_document);
   CSSParserContext(CSSParserMode,
                    SecureContextMode,
-                   SelectorProfile = kLiveProfile,
                    const Document* use_counter_document = nullptr);
   explicit CSSParserContext(const Document&);
   CSSParserContext(const Document&, const KURL& base_url_override);
@@ -66,7 +62,6 @@ class CORE_EXPORT CSSParserContext final
                    bool origin_clean,
                    const Referrer& referrer,
                    const WTF::TextEncoding& charset = WTF::TextEncoding(),
-                   SelectorProfile = kLiveProfile,
                    ResourceFetchRestriction resource_fetch_restriction =
                        ResourceFetchRestriction::kNone);
 
@@ -77,7 +72,6 @@ class CORE_EXPORT CSSParserContext final
                    bool origin_clean,
                    const WTF::TextEncoding& charset,
                    CSSParserMode,
-                   SelectorProfile,
                    const Referrer& referrer,
                    bool is_html_document,
                    bool use_legacy_background_size_shorthand_behavior,
@@ -100,7 +94,6 @@ class CORE_EXPORT CSSParserContext final
   enum ResourceFetchRestriction ResourceFetchRestriction() const {
     return resource_fetch_restriction_;
   }
-  bool IsLiveProfile() const { return profile_ == kLiveProfile; }
 
   bool IsOriginClean() const;
   bool IsSecureContext() const;
@@ -179,7 +172,6 @@ class CORE_EXPORT CSSParserContext final
   const bool origin_clean_;
 
   CSSParserMode mode_;
-  SelectorProfile profile_ = kLiveProfile;
   Referrer referrer_;
 
   // Whether the associated stylesheet's ResourceRequest is an ad resource. If

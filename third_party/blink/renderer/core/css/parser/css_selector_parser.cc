@@ -2224,13 +2224,6 @@ static void RecordUsageAndDeprecationsOneSelector(
       break;
     case CSSSelector::kPseudoHas:
       feature = WebFeature::kCSSSelectorPseudoHas;
-      // TODO(foolip): Remove these counters when the above unified counter is
-      // on its way to stable. (Overlap collection for at least one release.)
-      if (context->IsLiveProfile()) {
-        context->Count(WebFeature::kCSSSelectorPseudoHasInLiveProfile);
-      } else {
-        context->Count(WebFeature::kCSSSelectorPseudoHasInSnapshotProfile);
-      }
       break;
     default:
       break;
