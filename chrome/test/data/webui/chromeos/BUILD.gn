@@ -164,7 +164,6 @@ group("closure_compile") {
     "arc_account_picker:closure_compile",
     "ash_common:closure_compile",
     "gaia_action_buttons:closure_compile",
-    "shimless_rma:closure_compile",
   ]
 }
 

@@ -6,13 +6,13 @@ import './base_page.js';
 import './repair_component_chip.js';
 import './shimless_rma_shared_css.js';
 
-import {I18nBehavior, I18nBehaviorInterface} from 'chrome://resources/ash/common/i18n_behavior.js';
 import {assert} from 'chrome://resources/ash/common/assert.js';
+import {I18nBehavior, I18nBehaviorInterface} from 'chrome://resources/ash/common/i18n_behavior.js';
 import {afterNextRender, html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {ComponentTypeToId} from './data.js';
 import {getShimlessRmaService} from './mojo_interface_provider.js';
-import {Component, ComponentRepairStatus, ComponentType, ShimlessRmaServiceInterface, StateResult} from './shimless_rma_types.js';
+import {Component, ComponentRepairStatus, ComponentType, ShimlessRmaServiceInterface, StateResult} from './shimless_rma.mojom-webui.js';
 import {enableNextButton, executeThenTransitionState, focusPageTitle} from './shimless_rma_util.js';
 
 /**

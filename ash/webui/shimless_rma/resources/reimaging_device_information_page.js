@@ -15,7 +15,7 @@ import {CrContainerShadowMixin} from 'chrome://resources/cr_elements/cr_containe
 import {afterNextRender, html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {getShimlessRmaService} from './mojo_interface_provider.js';
-import {FeatureLevel, ShimlessRmaServiceInterface, StateResult} from './shimless_rma_types.js';
+import {FeatureLevel, ShimlessRmaServiceInterface, StateResult} from './shimless_rma.mojom-webui.js';
 import {disableNextButton, enableNextButton, focusPageTitle, isComplianceCheckEnabled, isSkuDescriptionEnabled} from './shimless_rma_util.js';
 
 /**

@@ -19,12 +19,12 @@ import {I18nBehavior, I18nBehaviorInterface} from 'chrome://resources/ash/common
 import {NetworkListenerBehavior, NetworkListenerBehaviorInterface} from 'chrome://resources/ash/common/network/network_listener_behavior.js';
 import {OncMojo} from 'chrome://resources/ash/common/network/onc_mojo.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
-import {FilterType, NetworkStateProperties, NO_LIMIT, StartConnectResult} from 'chrome://resources/mojo/chromeos/services/network_config/public/mojom/cros_network_config.mojom-webui.js';
+import {CrosNetworkConfigInterface as NetworkConfigServiceInterface, FilterType, NetworkStateProperties, NO_LIMIT, StartConnectResult} from 'chrome://resources/mojo/chromeos/services/network_config/public/mojom/cros_network_config.mojom-webui.js';
 import {ConnectionStateType, NetworkType} from 'chrome://resources/mojo/chromeos/services/network_config/public/mojom/network_types.mojom-webui.js';
 import {html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {getNetworkConfigService, getShimlessRmaService} from './mojo_interface_provider.js';
-import {NetworkConfigServiceInterface, ShimlessRmaServiceInterface, StateResult} from './shimless_rma_types.js';
+import {ShimlessRmaServiceInterface, StateResult} from './shimless_rma.mojom-webui.js';
 import {enableNextButton, focusPageTitle} from './shimless_rma_util.js';
 
 /**

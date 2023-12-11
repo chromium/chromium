@@ -2,14 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import 'chrome://resources/mojo/mojo/public/js/mojo_bindings_lite.js';
-import './file_path.mojom-lite.js';
-
 import {assert} from 'chrome://resources/ash/common/assert.js';
 import {FakeMethodResolver} from 'chrome://resources/ash/common/fake_method_resolver.js';
 import {FakeObservables} from 'chrome://resources/ash/common/fake_observables.js';
+import {FilePath} from 'chrome://resources/mojo/mojo/public/mojom/base/file_path.mojom-webui.js';
 
-import {CalibrationComponentStatus, CalibrationObserverRemote, CalibrationOverallStatus, CalibrationSetupInstruction, CalibrationStatus, Component, ComponentType, ErrorObserverRemote, ExternalDiskStateObserverRemote, FeatureLevel, FinalizationError, FinalizationObserverRemote, FinalizationStatus, HardwareVerificationStatusObserverRemote, HardwareWriteProtectionStateObserverRemote, OsUpdateObserverRemote, OsUpdateOperation, PowerCableStateObserverRemote, ProvisioningError, ProvisioningObserverRemote, ProvisioningStatus, QrCode, RmadErrorCode, Shimless3pDiagnosticsAppInfo, ShimlessRmaServiceInterface, Show3pDiagnosticsAppResult, ShutdownMethod, State, StateResult, UpdateErrorCode, UpdateRoFirmwareObserverRemote, UpdateRoFirmwareStatus, WriteProtectDisableCompleteAction} from './shimless_rma_types.js';
+import {CalibrationComponentStatus, CalibrationObserverRemote, CalibrationOverallStatus, CalibrationSetupInstruction, CalibrationStatus, Component, ComponentType, ErrorObserverRemote, ExternalDiskStateObserverRemote, FeatureLevel, FinalizationError, FinalizationObserverRemote, FinalizationStatus, HardwareVerificationStatusObserverRemote, HardwareWriteProtectionStateObserverRemote, OsUpdateObserverRemote, OsUpdateOperation, PowerCableStateObserverRemote, ProvisioningError, ProvisioningObserverRemote, ProvisioningStatus, QrCode, RmadErrorCode, Shimless3pDiagnosticsAppInfo, ShimlessRmaServiceInterface, Show3pDiagnosticsAppResult, ShutdownMethod, State, StateResult, UpdateErrorCode, UpdateRoFirmwareObserverRemote, UpdateRoFirmwareStatus, WriteProtectDisableCompleteAction} from './shimless_rma.mojom-webui.js';
 
 /** @implements {ShimlessRmaServiceInterface} */
 export class FakeShimlessRmaService {
@@ -756,14 +754,14 @@ export class FakeShimlessRmaService {
   }
 
   /**
-   * @return {!Promise<{savePath: !mojoBase.mojom.FilePath, error:
+   * @return {!Promise<{savePath: !FilePath, error:
    *     !RmadErrorCode}>}
    */
   saveLog() {
     return this.methods_.resolveMethod('saveLog');
   }
 
-  /** @param {!mojoBase.mojom.FilePath} savePath */
+  /** @param {!FilePath} savePath */
   setSaveLogResult(savePath) {
     this.methods_.setResult(
         'saveLog', {savePath: savePath, error: RmadErrorCode.kOk});
@@ -829,13 +827,13 @@ export class FakeShimlessRmaService {
   }
 
   /**
-   * @return {!Promise<{appPath: mojoBase.mojom.FilePath}>}
+   * @return {!Promise<{appPath: FilePath}>}
    */
   getInstallable3pDiagnosticsAppPath() {
     return this.methods_.resolveMethod('getInstallable3pDiagnosticsAppPath');
   }
 
-  /** @param {mojoBase.mojom.FilePath} appPath */
+  /** @param {FilePath} appPath */
   setInstallable3pDiagnosticsAppPath(appPath) {
     this.methods_.setResult('getInstallable3pDiagnosticsAppPath', {appPath});
   }

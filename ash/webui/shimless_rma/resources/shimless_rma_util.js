@@ -6,7 +6,7 @@ import {assert} from 'chrome://resources/ash/common/assert.js';
 import {loadTimeData} from 'chrome://resources/ash/common/load_time_data.m.js';
 import {afterNextRender} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {StateResult} from './shimless_rma_types.js';
+import {StateResult} from './shimless_rma.mojom-webui.js';
 
 /**
  * @param {!HTMLElement} element

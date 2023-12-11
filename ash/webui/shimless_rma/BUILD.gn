@@ -32,7 +32,3 @@ static_library("shimless_rma") {
     "//ui/web_dialogs",
   ]
 }
-
-group("closure_compile") {
-  deps = [ "resources:closure_compile_module" ]
-}

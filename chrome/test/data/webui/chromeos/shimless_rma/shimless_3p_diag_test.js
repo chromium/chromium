@@ -7,7 +7,7 @@ import {FakeShimlessRmaService} from 'chrome://shimless-rma/fake_shimless_rma_se
 import {setShimlessRmaServiceForTesting} from 'chrome://shimless-rma/mojo_interface_provider.js';
 import {Shimless3pDiagnostics} from 'chrome://shimless-rma/shimless_3p_diagnostics.js';
 import {ShimlessRma} from 'chrome://shimless-rma/shimless_rma.js';
-import {Shimless3pDiagnosticsAppInfo, Show3pDiagnosticsAppResult} from 'chrome://shimless-rma/shimless_rma_types.js';
+import {Shimless3pDiagnosticsAppInfo, Show3pDiagnosticsAppResult} from 'chrome://shimless-rma/shimless_rma.mojom-webui.js';
 import {assertDeepEquals, assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chromeos/chai_assert.js';
 import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
 

@@ -31,11 +31,18 @@ import 'chrome://resources/cr_elements/cr_button/cr_button.js';
 
 import {assert} from 'chrome://resources/ash/common/assert.js';
 import {I18nBehavior, I18nBehaviorInterface} from 'chrome://resources/ash/common/i18n_behavior.js';
+import {FilePath} from 'chrome://resources/mojo/mojo/public/mojom/base/file_path.mojom-webui.js';
 import {html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {getShimlessRmaService} from './mojo_interface_provider.js';
 import {Shimless3pDiagnostics} from './shimless_3p_diagnostics.js';
-import {ErrorObserverInterface, ErrorObserverReceiver, ExternalDiskStateObserverInterface, ExternalDiskStateObserverReceiver, RmadErrorCode, SaveLogResponse, ShimlessRmaServiceInterface, State, StateResult} from './shimless_rma_types.js';
+import {ErrorObserverInterface, ErrorObserverReceiver, ExternalDiskStateObserverInterface, ExternalDiskStateObserverReceiver, RmadErrorCode, ShimlessRmaServiceInterface, State, StateResult} from './shimless_rma.mojom-webui.js';
+
+
+/**
+ * @typedef {{savePath: FilePath, error: RmadErrorCode}}
+ */
+export let SaveLogResponse;
 
 /**
  * Enum for the state of USB used for saving logs. The states are transitioned

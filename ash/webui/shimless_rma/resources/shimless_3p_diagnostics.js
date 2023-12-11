@@ -12,7 +12,7 @@ import {loadTimeData} from 'chrome://resources/ash/common/load_time_data.m.js';
 import {html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {getShimlessRmaService} from './mojo_interface_provider.js';
-import {Shimless3pDiagnosticsAppInfo, ShimlessRmaServiceInterface, Show3pDiagnosticsAppResult} from './shimless_rma_types.js';
+import {Shimless3pDiagnosticsAppInfo, ShimlessRmaServiceInterface, Show3pDiagnosticsAppResult} from './shimless_rma.mojom-webui.js';
 import {disableAllButtons, enableAllButtons} from './shimless_rma_util.js';
 
 /**

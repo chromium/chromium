@@ -12,7 +12,7 @@ import {I18nBehavior, I18nBehaviorInterface} from 'chrome://resources/ash/common
 import {afterNextRender, html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {getShimlessRmaService} from './mojo_interface_provider.js';
-import {QrCode, RmadErrorCode, ShimlessRmaServiceInterface, StateResult} from './shimless_rma_types.js';
+import {QrCode, RmadErrorCode, ShimlessRmaServiceInterface, StateResult} from './shimless_rma.mojom-webui.js';
 import {dispatchNextButtonClick, enableNextButton} from './shimless_rma_util.js';
 
 // The number of characters in an RSU code.

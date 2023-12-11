@@ -10,7 +10,7 @@ import {I18nBehavior, I18nBehaviorInterface} from 'chrome://resources/ash/common
 import {html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {getShimlessRmaService} from './mojo_interface_provider.js';
-import {FinalizationError, FinalizationObserverInterface, FinalizationObserverReceiver, FinalizationStatus, RmadErrorCode, ShimlessRmaServiceInterface, StateResult} from './shimless_rma_types.js';
+import {FinalizationError, FinalizationObserverInterface, FinalizationObserverReceiver, FinalizationStatus, RmadErrorCode, ShimlessRmaServiceInterface, StateResult} from './shimless_rma.mojom-webui.js';
 import {executeThenTransitionState, focusPageTitle} from './shimless_rma_util.js';
 
 /** @type {!Object<!FinalizationStatus, string>} */
