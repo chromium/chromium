@@ -7,7 +7,6 @@
 #include <utility>
 #include <vector>
 
-#include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/logging.h"
@@ -19,7 +18,6 @@
 #include "build/build_config.h"
 #include "components/bookmarks/browser/bookmark_node.h"
 #include "components/sync/base/data_type_histogram.h"
-#include "components/sync/base/features.h"
 #include "components/sync/base/model_type.h"
 #include "components/sync/base/time.h"
 #include "components/sync/engine/commit_queue.h"
@@ -242,8 +240,7 @@ void BookmarkModelTypeProcessor::OnUpdateReceived(
 
   // Issue error and stop sync if bookmarks count exceeds limit.
   if (bookmark_tracker_->TrackedBookmarksCount() >
-          max_bookmarks_till_sync_enabled_ &&
-      base::FeatureList::IsEnabled(syncer::kSyncEnforceBookmarksCountLimit)) {
+      max_bookmarks_till_sync_enabled_) {
     // Local changes continue to be tracked in order to allow users to delete
     // bookmarks and recover upon restart.
     DisconnectSync();
@@ -355,9 +352,7 @@ void BookmarkModelTypeProcessor::ModelReadyToSync(
       schedule_save_closure_.Run();
     }
   } else if (model_metadata
-                 .last_initial_merge_remote_updates_exceeded_limit() &&
-             base::FeatureList::IsEnabled(
-                 syncer::kSyncEnforceBookmarksCountLimit)) {
+                 .last_initial_merge_remote_updates_exceeded_limit()) {
     // Report error if remote updates fetched last time during initial merge
     // exceeded limit. Note that here we are only setting
     // `last_initial_merge_remote_updates_exceeded_limit_`, the actual error
@@ -371,10 +366,6 @@ void BookmarkModelTypeProcessor::ModelReadyToSync(
     if (bookmark_tracker_) {
       StartTrackingMetadata();
     } else if (!metadata_str.empty()) {
-      // Even if the field `last_initial_merge_remote_updates_exceeded_limit` is
-      // set and the feature toggle `kSyncEnforceBookmarksCountLimit` not
-      // enabled, making the metadata_str non-empty, scheduling a save shouldn't
-      // cause any problem.
       DLOG(WARNING)
           << "Persisted bookmark sync metadata invalidated when loading.";
       // Schedule a save to make sure the corrupt metadata is deleted from disk
@@ -475,8 +466,7 @@ void BookmarkModelTypeProcessor::ConnectIfReady() {
   const size_t count = bookmark_tracker_
                            ? bookmark_tracker_->TrackedBookmarksCount()
                            : CountSyncableBookmarksFromModel(bookmark_model_);
-  if (count > max_bookmarks_till_sync_enabled_ &&
-      base::FeatureList::IsEnabled(syncer::kSyncEnforceBookmarksCountLimit)) {
+  if (count > max_bookmarks_till_sync_enabled_) {
     // For the case where a tracker already exists, local changes will continue
     // to be tracked in order order to allow users to delete bookmarks and
     // recover upon restart.
@@ -556,10 +546,8 @@ void BookmarkModelTypeProcessor::NudgeForCommitIfNeeded() {
   // Issue error and stop sync if the number of local bookmarks exceed limit.
   // If `error_handler_` is not set, the check is ignored because this gets
   // re-evaluated in ConnectIfReady().
-  if (error_handler_ &&
-      bookmark_tracker_->TrackedBookmarksCount() >
-          max_bookmarks_till_sync_enabled_ &&
-      base::FeatureList::IsEnabled(syncer::kSyncEnforceBookmarksCountLimit)) {
+  if (error_handler_ && bookmark_tracker_->TrackedBookmarksCount() >
+                            max_bookmarks_till_sync_enabled_) {
     // Local changes continue to be tracked in order to allow users to delete
     // bookmarks and recover upon restart.
     DisconnectSync();
@@ -607,8 +595,7 @@ void BookmarkModelTypeProcessor::OnInitialUpdateReceived(
   // Report error if count of remote updates is more than the limit.
   // Note that we are not having this check for incremental updates as it is
   // very unlikely that there will be many updates downloaded.
-  if (updates.size() > max_initial_updates_count &&
-      base::FeatureList::IsEnabled(syncer::kSyncEnforceBookmarksCountLimit)) {
+  if (updates.size() > max_initial_updates_count) {
     DisconnectSync();
     last_initial_merge_remote_updates_exceeded_limit_ = true;
     error_handler_.Run(

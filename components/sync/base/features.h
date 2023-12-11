@@ -99,9 +99,6 @@ inline constexpr base::FeatureParam<bool>
         &kSyncEnableContactInfoDataTypeForDasherUsers,
         "enable_for_google_accounts", false};
 
-// If enabled, issues error and disables bookmarks sync when limit is crossed.
-BASE_DECLARE_FEATURE(kSyncEnforceBookmarksCountLimit);
-
 // Enables a separate account-scoped storage for preferences, for syncing users.
 // (Note that opposed to other "account storage" features, this one does not
 // have any effect for signed-in non-syncing users!)

@@ -1053,8 +1053,6 @@ TEST_F(BookmarkModelTypeProcessorTest, ShouldReuploadLegacyBookmarksOnStart) {
 
 TEST_F(BookmarkModelTypeProcessorTest,
        ShouldReportErrorIfIncrementalLocalCreationCrossesMaxCountLimit) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(syncer::kSyncEnforceBookmarksCountLimit);
   // Set a limit of 3 bookmarks, i.e. limit it to the 3 permanent nodes.
   processor()->SetMaxBookmarksTillSyncEnabledForTest(3);
 
@@ -1086,8 +1084,6 @@ TEST_F(BookmarkModelTypeProcessorTest,
 TEST_F(
     BookmarkModelTypeProcessorTest,
     ShouldReportErrorIfBookmarksCountExceedsLimitOnStartupWhenMetadataMatchesModel) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(syncer::kSyncEnforceBookmarksCountLimit);
   // Set a limit of 3 bookmarks, i.e. limit it to the 3 permanent nodes.
   processor()->SetMaxBookmarksTillSyncEnabledForTest(3);
 
@@ -1138,8 +1134,6 @@ TEST_F(
 TEST_F(
     BookmarkModelTypeProcessorTest,
     ShouldReportErrorIfBookmarksCountExceedsLimitOnStartupWhenMetadataDoesNotMatchModel) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(syncer::kSyncEnforceBookmarksCountLimit);
   // Set a limit of 3 bookmarks, i.e. limit it to the 3 permanent nodes.
   processor()->SetMaxBookmarksTillSyncEnabledForTest(3);
 
@@ -1178,8 +1172,6 @@ TEST_F(
   // Ensure that bookmarks model works normally even after sync reports error
   // when max count limit is crossed.
 
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(syncer::kSyncEnforceBookmarksCountLimit);
   // Set a limit of 3 bookmarks, i.e. limit it to the 3 permanent nodes.
   processor()->SetMaxBookmarksTillSyncEnabledForTest(3);
 
@@ -1236,8 +1228,6 @@ TEST_F(
 
 TEST_F(BookmarkModelTypeProcessorTest,
        ShouldReportErrorIfBookmarksCountExceedsLimitAfterInitialUpdate) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(syncer::kSyncEnforceBookmarksCountLimit);
   // Set a limit of 4 bookmarks: 3 permanent nodes and 1 additional node which
   // is different from the remote.
   processor()->SetMaxBookmarksTillSyncEnabledForTest(4);
@@ -1298,8 +1288,6 @@ TEST_F(BookmarkModelTypeProcessorTest,
 
 TEST_F(BookmarkModelTypeProcessorTest,
        ShouldReportErrorIfBookmarksCountExceedsLimitAfterIncrementalUpdate) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(syncer::kSyncEnforceBookmarksCountLimit);
   // Set a limit of 3 bookmarks, i.e. limit it to the 3 permanent nodes.
   processor()->SetMaxBookmarksTillSyncEnabledForTest(3);
 
@@ -1349,8 +1337,6 @@ TEST_F(BookmarkModelTypeProcessorTest,
 
 TEST_F(BookmarkModelTypeProcessorTest,
        ShouldReportErrorIfInitialUpdatesCrossMaxCountLimit) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(syncer::kSyncEnforceBookmarksCountLimit);
   // Set a limit of 3 bookmarks, i.e. limit it to the 3 permanent nodes.
   processor()->SetMaxBookmarksTillSyncEnabledForTest(3);
 
@@ -1409,8 +1395,6 @@ TEST_F(BookmarkModelTypeProcessorTest,
 
 TEST_F(BookmarkModelTypeProcessorTest,
        ShouldSaveRemoteUpdatesCountExceedingLimitResultDuringInitialMerge) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(syncer::kSyncEnforceBookmarksCountLimit);
   // Set a limit of 3 bookmarks, i.e. limit it to the 3 permanent nodes.
   processor()->SetMaxBookmarksTillSyncEnabledForTest(3);
 
@@ -1463,8 +1447,6 @@ TEST_F(BookmarkModelTypeProcessorTest,
 
 TEST_F(BookmarkModelTypeProcessorTest,
        ShouldReportErrorIfRemoteBookmarksCountExceededLimitOnLastTry) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(syncer::kSyncEnforceBookmarksCountLimit);
   // Set a limit of 3 bookmarks, i.e. limit it to the 3 permanent nodes.
   processor()->SetMaxBookmarksTillSyncEnabledForTest(3);
 
@@ -1540,8 +1522,6 @@ TEST_F(BookmarkModelTypeProcessorTest,
 
 TEST_F(BookmarkModelTypeProcessorTest,
        ShouldPersistRemoteBookmarksCountExceedingLimitAcrossBrowserRestarts) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(syncer::kSyncEnforceBookmarksCountLimit);
   // Set a limit of 3 bookmarks, i.e. limit it to the 3 permanent nodes.
   processor()->SetMaxBookmarksTillSyncEnabledForTest(3);
 
