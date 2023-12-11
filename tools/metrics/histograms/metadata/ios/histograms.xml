@@ -3138,6 +3138,17 @@ chromium-metrics-reviews@google.com.
   <summary>Number of open tabs indexed during initial indexation.</summary>
 </histogram>
 
+<histogram name="IOS.Spotlight.OpenTabsReindexRestarted" units="units"
+    expires_after="2024-06-01">
+  <owner>stkhapugin@chromium.org</owner>
+  <owner>ameurhosni@google.com</owner>
+  <summary>
+    How many times full open tabs reindex had to restart due to a model mutation
+    that happened during reindexing. Logged for each interruption (so for 3
+    interruptions it will log values 1, 2, and 3).
+  </summary>
+</histogram>
+
 <histogram name="IOS.Spotlight.Origin" enum="IOSSpotlightOrigin"
     expires_after="2024-06-01">
   <owner>olivierrobin@chromium.org</owner>

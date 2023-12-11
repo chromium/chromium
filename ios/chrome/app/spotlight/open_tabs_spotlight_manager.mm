@@ -6,8 +6,10 @@
 
 #import <CoreSpotlight/CoreSpotlight.h>
 #import <memory>
+#import <queue>
 
 #import "base/apple/foundation_util.h"
+#import "base/memory/weak_ptr.h"
 #import "base/metrics/histogram_macros.h"
 #import "base/strings/sys_string_conversions.h"
 #import "base/timer/elapsed_timer.h"
@@ -24,6 +26,14 @@
 #import "ios/web/public/web_state_observer_bridge.h"
 
 using web::WebState;
+
+namespace {
+
+// At initial indexing, the # of web states to index per batch before releasing
+// the main queue.
+const int kBatchSize = 100;
+
+}  // namespace
 
 @interface OpenTabsSpotlightManager () <BrowserListObserver,
                                         WebStateListObserving,
@@ -52,6 +62,16 @@ using web::WebState;
   // Used to keep track of closing tabs.
   std::map<WebStateList*, std::unique_ptr<WebStateListObserverBridge>>
       _webStateListObserverBridges;
+
+  // At full reindex of a WebStateList, this queue is used for WebStates that
+  // require indexing.
+  std::queue<base::WeakPtr<WebState>> _indexingQueue;
+
+  // Timer that's counts how long it takes to index all tabs.
+  std::unique_ptr<base::ElapsedTimer> _initialIndexTimer;
+
+  // Tracks the number of times reindexing had to restart because of the model
+  int _reindexInterruptionCount;
 }
 
 #pragma mark - public
@@ -86,11 +106,13 @@ using web::WebState;
 
   if (self) {
     _browserList = browserList;
+    _indexingQueue = std::queue<base::WeakPtr<WebState>>();
     _browserListObserverBridge =
         std::make_unique<BrowserListObserverBridge>(self);
-    _browserList->AddObserver(_browserListObserverBridge.get());
     _webStateObserverBridge =
         std::make_unique<web::WebStateObserverBridge>(self);
+    _browserList->AddObserver(_browserListObserverBridge.get());
+    [self startObservingAllWebStates];
   }
   return self;
 }
@@ -101,6 +123,12 @@ using web::WebState;
                                            browserListNotAvailableError]];
     return;
   }
+
+  // If there is an ongoing indexing, recreate the queue to clear it.
+  _indexingQueue = std::queue<base::WeakPtr<WebState>>();
+
+  [self stopObservingAllWebStates];
+
   __weak OpenTabsSpotlightManager* weakSelf = self;
 
   [self.spotlightInterface
@@ -124,6 +152,13 @@ using web::WebState;
 
 - (void)browserList:(const BrowserList*)browserList
        browserAdded:(Browser*)browser {
+  // If the initial indexing is still in progress, cancel it and restart.
+  if (!_indexingQueue.empty()) {
+    [self logReindexInterruption];
+    [self clearAndReindexOpenTabs];
+    return;
+  }
+
   WebStateList* webStateList = browser->GetWebStateList();
   [self addAllURLsFromWebStateList:webStateList];
 
@@ -154,6 +189,13 @@ using web::WebState;
 - (void)didChangeWebStateList:(WebStateList*)webStateList
                        change:(const WebStateListChange&)change
                        status:(const WebStateListStatus&)status {
+  // If the initial indexing is still in progress, cancel it and restart.
+  if (!_indexingQueue.empty()) {
+    [self logReindexInterruption];
+    [self clearAndReindexOpenTabs];
+    return;
+  }
+
   if (change.type() == WebStateListChange::Type::kInsert) {
     const WebStateListChangeInsert& insertChange =
         change.As<WebStateListChangeInsert>();
@@ -233,10 +275,55 @@ using web::WebState;
   if (self.isShuttingDown) {
     return;
   }
+
+  BOOL wasQueueEmpty = _indexingQueue.empty();
+
   for (int i = 0; i < webStateList->count(); i++) {
     web::WebState* webState = webStateList->GetWebStateAt(i);
-    [self updateLatestCommittedURLForWebState:webState];
+    _indexingQueue.push(webState->GetWeakPtr());
   }
+
+  // When the queue wasn't empty, the indexing is already in progress.
+  if (!wasQueueEmpty) {
+    return;
+  }
+
+  __weak OpenTabsSpotlightManager* weakSelf = self;
+  dispatch_async(dispatch_get_main_queue(), ^{
+    [weakSelf indexNextBatchFromQueue];
+  });
+}
+
+- (void)indexNextBatchFromQueue {
+  if (self.isShuttingDown) {
+    if (!_indexingQueue.empty()) {
+      [self logReindexInterruption];
+    }
+    return;
+  }
+
+  for (int i = 0; i < kBatchSize; i++) {
+    if (_indexingQueue.empty()) {
+      if (_initialIndexTimer) {
+        UMA_HISTOGRAM_TIMES("IOS.Spotlight.OpenTabsIndexingDuration",
+                            _initialIndexTimer->Elapsed());
+        _initialIndexTimer.reset();
+      }
+
+      return;
+    }
+
+    base::WeakPtr<WebState> webState = _indexingQueue.front();
+    _indexingQueue.pop();
+    if (webState) {
+      [self updateLatestCommittedURLForWebState:webState.get()];
+    }
+  }
+
+  __weak OpenTabsSpotlightManager* weakSelf = self;
+  dispatch_async(dispatch_get_main_queue(), ^{
+    [weakSelf indexNextBatchFromQueue];
+  });
 }
 
 /// Iterates through all webstates in `webStateList` add removes them from the
@@ -257,15 +344,23 @@ using web::WebState;
   if (self.isShuttingDown) {
     return;
   }
-  const base::ElapsedTimer timer;
+
+  if (!_indexingQueue.empty()) {
+    // Indexing is already happening, nothing to do.
+    return;
+  }
+
+  _initialIndexTimer = std::make_unique<base::ElapsedTimer>();
+
+  // Start observing only the web state lists. Individual webstates will be
+  // observed as they are batch-indexed.
+  [self startObservingAllWebStateLists];
 
   for (Browser* browser : self.browserList->AllRegularBrowsers()) {
     WebStateList* webStateList = browser->GetWebStateList();
     [self addAllURLsFromWebStateList:webStateList];
   }
 
-  UMA_HISTOGRAM_TIMES("IOS.Spotlight.OpenTabsIndexingDuration",
-                      timer.Elapsed());
   UMA_HISTOGRAM_COUNTS_1000("IOS.Spotlight.OpenTabsInitialIndexSize",
                             _knownURLCounts.size());
 }
@@ -326,13 +421,35 @@ using web::WebState;
   }
 }
 
+#pragma mark - observation helpers
+
 /// Stops observing all objects and resets bridges and the browser list.
 - (void)shutdownAllObservation {
   if (!_browserList) {
     return;
   }
 
-  // Stop observing all webstates.
+  [self stopObservingAllWebStates];
+
+  // Stop observing brower list.
+  _browserList->RemoveObserver(_browserListObserverBridge.get());
+  _browserListObserverBridge.reset();
+
+  // Finally, reset the browser list to make repeated calls safe.
+  _browserList = nil;
+}
+
+- (void)logReindexInterruption {
+  _reindexInterruptionCount++;
+  UMA_HISTOGRAM_COUNTS_1000("IOS.Spotlight.OpenTabsReindexRestarted",
+                            _reindexInterruptionCount);
+}
+
+- (void)stopObservingAllWebStates {
+  if (!_browserList) {
+    return;
+  }
+
   for (Browser* browser : _browserList->AllRegularBrowsers()) {
     WebStateList* webStateList = browser->GetWebStateList();
     if (!webStateList) {
@@ -343,7 +460,7 @@ using web::WebState;
       webState->RemoveObserver(_webStateObserverBridge.get());
     }
   }
-  _webStateObserverBridge.reset();
+  _webStateObserverBridge = std::make_unique<web::WebStateObserverBridge>(self);
 
   // Stop observing all web state lists
   for (auto it = _webStateListObserverBridges.begin();
@@ -351,13 +468,35 @@ using web::WebState;
     it->first->RemoveObserver(it->second.get());
   }
   _webStateListObserverBridges.clear();
+}
 
-  // Stop observing brower list.
-  _browserList->RemoveObserver(_browserListObserverBridge.get());
-  _browserListObserverBridge.reset();
+- (void)startObservingAllWebStateLists {
+  if (!_browserList) {
+    return;
+  }
 
-  // Finally, reset the browser list to make repeated calls safe.
-  _browserList = nil;
+  for (Browser* browser : _browserList->AllRegularBrowsers()) {
+    WebStateList* webStateList = browser->GetWebStateList();
+    _webStateListObserverBridges[webStateList] =
+        std::make_unique<WebStateListObserverBridge>(self);
+    webStateList->AddObserver(_webStateListObserverBridges[webStateList].get());
+  }
+}
+
+- (void)startObservingAllWebStates {
+  if (!_browserList) {
+    return;
+  }
+
+  [self startObservingAllWebStateLists];
+
+  for (Browser* browser : _browserList->AllRegularBrowsers()) {
+    WebStateList* webStateList = browser->GetWebStateList();
+    for (int i = 0; i < webStateList->count(); i++) {
+      web::WebState* webState = webStateList->GetWebStateAt(i);
+      webState->AddObserver(_webStateObserverBridge.get());
+    }
+  }
 }
 
 @end
