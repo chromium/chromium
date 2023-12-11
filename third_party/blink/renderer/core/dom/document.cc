@@ -2871,6 +2871,7 @@ void Document::UpdateUseShadowTreesIfNeeded() {
 }
 
 void Document::ScheduleSVGResourceInvalidation(LocalSVGResource& resource) {
+  DCHECK(InStyleRecalc() || GetStyleEngine().InDetachLayoutTree());
   svg_resources_needing_invalidation_.insert(&resource);
 }
 
