@@ -70,7 +70,9 @@ class Volume {
   static std::unique_ptr<Volume> CreateForDrive(base::FilePath drive_path);
 
   static std::unique_ptr<Volume> CreateForDownloads(
-      base::FilePath downloads_path);
+      base::FilePath downloads_path,
+      base::FilePath optional_fusebox_path = {},
+      const char* optional_fusebox_volume_label = nullptr);
 
   static std::unique_ptr<Volume> CreateForRemovable(
       const ash::disks::DiskMountManager::MountPoint& mount_point,

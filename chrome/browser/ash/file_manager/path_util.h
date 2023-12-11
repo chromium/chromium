@@ -66,6 +66,7 @@ extern const char kFuseBoxMountNamePrefix[];
 // e.g. $PATH-like environment variables are colon separated.
 extern const char kFuseBoxSubdirPrefixADP[];
 extern const char kFuseBoxSubdirPrefixFSP[];
+extern const char kFuseBoxSubdirPrefixLOC[];
 extern const char kFuseBoxSubdirPrefixMTP[];
 extern const char kFuseBoxSubdirPrefixTMP[];
 

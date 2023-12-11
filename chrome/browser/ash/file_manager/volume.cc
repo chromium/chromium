@@ -133,7 +133,9 @@ std::unique_ptr<Volume> Volume::CreateForDrive(base::FilePath drive_path) {
 
 // static
 std::unique_ptr<Volume> Volume::CreateForDownloads(
-    base::FilePath downloads_path) {
+    base::FilePath downloads_path,
+    base::FilePath optional_fusebox_path,
+    const char* optional_fusebox_volume_label) {
   std::unique_ptr<Volume> volume(new Volume());
   volume->type_ = VOLUME_TYPE_DOWNLOADS_DIRECTORY;
   // Keep source_path empty.
@@ -142,6 +144,27 @@ std::unique_ptr<Volume> Volume::CreateForDownloads(
   volume->volume_id_ = GenerateVolumeId(*volume);
   volume->volume_label_ = GetStringUTF8(IDS_FILE_BROWSER_MY_FILES_ROOT_LABEL);
   volume->watchable_ = true;
+
+  if (!optional_fusebox_path.empty()) {
+    // Leaving the type_ as VOLUME_TYPE_DOWNLOADS_DIRECTORY means that, for
+    // some unknown reason, it doesn't show up in the CrOS Files app. Use a
+    // different but arbitrary type instead.
+    //
+    // It doesn't need to be well polished. It's just for debugging FuseBox. We
+    // wouldn't normally need a FuseBox wrapper (exposing to the kernel-level
+    // file system) for something like Downloads that's typically on local disk
+    // (and hence already on the kernel-level file system).
+    volume->type_ = VOLUME_TYPE_MTP;
+
+    volume->file_system_type_ = util::kFuseBox;
+    volume->mount_path_ = std::move(optional_fusebox_path);
+    volume->volume_id_ =
+        base::StrCat({util::kFuseBox, std::move(volume->volume_id_)});
+    if (optional_fusebox_volume_label) {
+      volume->volume_label_ = optional_fusebox_volume_label;
+    }
+  }
+
   return volume;
 }
 
