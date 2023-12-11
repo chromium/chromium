@@ -98,8 +98,7 @@ bool MakoRewriteView::HandleKeyboardEvent(
     return true;
   }
 
-  return unhandled_keyboard_event_handler_.HandleKeyboardEvent(
-      event, GetFocusManager());
+  return WebUIBubbleDialogView::HandleKeyboardEvent(source, event);
 }
 
 BEGIN_METADATA(MakoRewriteView, WebUIBubbleDialogView)

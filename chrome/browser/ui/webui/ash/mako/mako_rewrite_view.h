@@ -30,7 +30,6 @@ class MakoRewriteView : public WebUIBubbleDialogView {
       const content::NativeWebKeyboardEvent& event) override;
 
  private:
-  views::UnhandledKeyboardEventHandler unhandled_keyboard_event_handler_;
   gfx::Rect caret_bounds_;
 };
 
