@@ -319,16 +319,3 @@ TEST_F(FullscreenModelTest, ScrolledToTopAndBottom) {
   EXPECT_FALSE(model().is_scrolled_to_top());
   EXPECT_TRUE(model().is_scrolled_to_bottom());
 }
-
-// Tests that when the toolbar height is frozen, setting the height doesn't
-// change the returned height until the toolbar is unfrozen.
-TEST_F(FullscreenModelTest, FreezeToolbarHeight) {
-  model().SetFreezeToolbarHeight(true);
-  EXPECT_EQ(model().GetExpandedTopToolbarHeight(), 0);
-
-  model().SetExpandedTopToolbarHeight(100);
-  EXPECT_EQ(model().GetExpandedTopToolbarHeight(), 0);
-
-  model().SetFreezeToolbarHeight(false);
-  EXPECT_EQ(model().GetExpandedTopToolbarHeight(), 100);
-}

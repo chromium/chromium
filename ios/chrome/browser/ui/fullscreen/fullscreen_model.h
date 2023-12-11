@@ -182,9 +182,6 @@ class FullscreenModel : public ChromeBroadcastObserverInterface {
   void SetWebViewSafeAreaInsets(UIEdgeInsets safe_area_insets);
   UIEdgeInsets GetWebViewSafeAreaInsets() const;
 
-  void SetFreezeToolbarHeight(bool freeze_toolbar_height);
-  bool GetFreezeToolbarHeight() const;
-
   // Setter for whether force fullscreen mode is active. The mode is used when
   // the bottom toolbar is collapsed above the keyboard.
   void SetForceFullscreenMode(bool force_fullscreen_mode);
@@ -273,7 +270,6 @@ class FullscreenModel : public ChromeBroadcastObserverInterface {
   UIEdgeInsets safe_area_insets_ = UIEdgeInsetsZero;
   // The number of FullscreenModelObserver callbacks currently being executed.
   size_t observer_callback_count_ = 0;
-  bool freeze_toolbar_height_ = false;
 };
 
 #endif  // IOS_CHROME_BROWSER_UI_FULLSCREEN_FULLSCREEN_MODEL_H_

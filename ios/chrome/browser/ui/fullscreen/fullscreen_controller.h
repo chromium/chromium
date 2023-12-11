@@ -91,8 +91,6 @@ class FullscreenController : public base::SupportsUserData::Data {
   virtual void EnterForceFullscreenMode() = 0;
   virtual void ExitForceFullscreenMode() = 0;
 
-  virtual void FreezeToolbarHeight(bool freeze_toolbar_height) = 0;
-
   // Force horizontal content resize, when content isn't tracking resize by
   // itself.
   virtual void ResizeHorizontalViewport() = 0;
