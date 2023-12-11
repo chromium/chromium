@@ -279,35 +279,6 @@ suite('NewTabPageModulesModulesV2Test', () => {
     );
   });
 
-  test('module use events trigger onModulesUsed handler function', async () => {
-    const fooDescriptor = new ModuleDescriptor('foo', initNullModule);
-    handler.setResultFor('getModulesIdNames', {
-      data: [
-        {id: fooDescriptor.id, name: fooDescriptor.id},
-      ],
-    });
-
-    const modulesElement = await createModulesElement(
-        [
-          {
-            descriptor: fooDescriptor,
-            elements: [createElement()],
-          },
-        ],
-        true, SAMPLE_SCREEN_WIDTH);
-    assertEquals(1, handler.getCallCount('getModulesIdNames'));
-
-    const moduleWrapper =
-        modulesElement.shadowRoot!.querySelector('ntp-module-wrapper');
-    assertTrue(!!moduleWrapper);
-    const moduleEl = moduleWrapper.shadowRoot!.querySelector('#moduleElement');
-    assertTrue(!!moduleEl);
-    moduleEl.dispatchEvent(
-        new Event('menu-button-click', {bubbles: true, composed: true}));
-    moduleEl.dispatchEvent(new Event('usage', {bubbles: true, composed: true}));
-    assertEquals(2, handler.getCallCount('onModulesUsed'));
-  });
-
   test('modules maxium instance count works correctly', async () => {
     const SAMPLE_MAX_MODULE_INSTANCE_COUNT = 2;
     loadTimeData.overrideValues({
@@ -360,7 +331,9 @@ suite('NewTabPageModulesModulesV2Test', () => {
             `modules can be disabled and restored via ${undoStrategy}`,
             async () => {
               // Arrange.
-              const fooDescriptor = new ModuleDescriptor('foo', initNullModule);
+              const moduleId = 'foo';
+              const fooDescriptor =
+                  new ModuleDescriptor(moduleId, initNullModule);
               handler.setResultFor('getModulesIdNames', {
                 data: [
                   {id: fooDescriptor.id, name: fooDescriptor.id},
@@ -400,7 +373,7 @@ suite('NewTabPageModulesModulesV2Test', () => {
                   ['foo', true], handler.getArgs('setModuleDisabled')[0]);
 
               // Act.
-              callbackRouterRemote.setDisabledModules(false, ['foo']);
+              callbackRouterRemote.setDisabledModules(false, [moduleId]);
               await callbackRouterRemote.$.flushForTesting();
 
               // Assert.
@@ -409,11 +382,11 @@ suite('NewTabPageModulesModulesV2Test', () => {
               assertEquals(
                   'Foo', modulesElement.$.undoToastMessage.textContent!.trim());
               assertEquals(
-                  1, metrics.count('NewTabPage.Modules.Disabled', 'foo'));
+                  1, metrics.count('NewTabPage.Modules.Disabled', moduleId));
               assertEquals(
                   1,
                   metrics.count(
-                      'NewTabPage.Modules.Disabled.ModuleRequest', 'foo'));
+                      'NewTabPage.Modules.Disabled.ModuleRequest', moduleId));
               assertFalse(restoreCalled);
 
               // Act.
@@ -442,15 +415,18 @@ suite('NewTabPageModulesModulesV2Test', () => {
               assertFalse(modulesElement.$.undoToast.open);
               assertTrue(restoreCalled);
               assertEquals(
-                  1, metrics.count('NewTabPage.Modules.Enabled', 'foo'));
+                  1, metrics.count('NewTabPage.Modules.Enabled', moduleId));
               assertEquals(
-                  1, metrics.count('NewTabPage.Modules.Enabled.Toast', 'foo'));
+                  1,
+                  metrics.count('NewTabPage.Modules.Enabled.Toast', moduleId));
             });
 
         test(
             `modules can be dismissed and restored via ${undoStrategy}`,
             async () => {
-              const fooDescriptor = new ModuleDescriptor('foo', initNullModule);
+              const moduleId = 'foo';
+              const fooDescriptor =
+                  new ModuleDescriptor(moduleId, initNullModule);
               handler.setResultFor('getModulesIdNames', {
                 data: [
                   {id: fooDescriptor.id, name: fooDescriptor.id},
@@ -488,11 +464,8 @@ suite('NewTabPageModulesModulesV2Test', () => {
                       .length);
               assertTrue(modulesElement.$.undoToast.open);
               assertFalse(restoreCalled);
-              assertEquals(
-                  1, metrics.count('NewTabPage.Modules.Dismissed'),
-                  'Dismiss metric value');
-              assertEquals(
-                  1, metrics.count('NewTabPage.Modules.Dismissed.foo'));
+              assertEquals(1, handler.getCallCount('onDismissModule'));
+              assertEquals(moduleId, handler.getArgs('onDismissModule')[0]);
 
               await waitAfterNextRender(modulesElement);
               if (undoStrategy === UndoStrategy.BUTTON_ACTIVATION) {

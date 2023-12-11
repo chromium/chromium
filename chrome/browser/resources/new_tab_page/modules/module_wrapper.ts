@@ -7,6 +7,7 @@ import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {microTask, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {recordLoadDuration, recordOccurence, recordPerdecage} from '../metrics_utils.js';
+import {NewTabPageProxy} from '../new_tab_page_proxy.js';
 import {WindowProxy} from '../window_proxy.js';
 
 import {ModuleDescriptor} from './module_descriptor.js';
@@ -59,9 +60,27 @@ export class ModuleWrapperElement extends PolymerElement {
 
     // Log at most one usage per module per NTP page load. This is possible,
     // if a user opens a link in a new tab.
-    this.module.element.addEventListener('usage', () => {
+    this.$.moduleElement.addEventListener('usage', (e: Event) => {
+      e.stopPropagation();
+
+      if (this.modulesRedesignedEnabled_) {
+        NewTabPageProxy.getInstance().handler.onModuleUsed(
+            this.module.descriptor.id);
+      }
+
       recordOccurence('NewTabPage.Modules.Usage');
       recordOccurence(`NewTabPage.Modules.Usage.${this.module.descriptor.id}`);
+    }, {once: true});
+
+    // Dispatch at most one interaction event for a module's `More Actions` menu
+    // button clicks.
+    this.$.moduleElement.addEventListener('menu-button-click', (e: Event) => {
+      e.stopPropagation();
+
+      if (this.modulesRedesignedEnabled_) {
+        NewTabPageProxy.getInstance().handler.onModuleUsed(
+            this.module.descriptor.id);
+      }
     }, {once: true});
 
     // Log module's id when module's info button is clicked.
