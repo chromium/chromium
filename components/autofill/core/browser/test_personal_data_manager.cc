@@ -312,6 +312,13 @@ void TestPersonalDataManager::SetPaymentMethodsMandatoryReauthEnabled(
   PersonalDataManager::SetPaymentMethodsMandatoryReauthEnabled(enabled);
 }
 
+bool TestPersonalDataManager::IsPaymentCvcStorageEnabled() {
+  if (payments_cvc_storage_enabled_.has_value()) {
+    return payments_cvc_storage_enabled_.value();
+  }
+  return PersonalDataManager::IsPaymentCvcStorageEnabled();
+}
+
 void TestPersonalDataManager::AddServerCvc(int64_t instrument_id,
                                            const std::u16string& cvc) {
   auto card_iterator =
