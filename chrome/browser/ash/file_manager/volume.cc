@@ -181,11 +181,9 @@ std::unique_ptr<Volume> Volume::CreateForRemovable(
 // static
 std::unique_ptr<Volume> Volume::CreateForProvidedFileSystem(
     const ash::file_system_provider::ProvidedFileSystemInfo& file_system_info,
-    MountContext mount_context) {
+    MountContext mount_context,
+    base::FilePath optional_fusebox_path) {
   std::unique_ptr<Volume> volume(new Volume());
-
-  volume->file_system_id_ = file_system_info.file_system_id();
-  volume->provider_id_ = file_system_info.provider_id();
 
   switch (file_system_info.source()) {
     case extensions::SOURCE_FILE:
@@ -211,51 +209,25 @@ std::unique_ptr<Volume> Volume::CreateForProvidedFileSystem(
   volume->icon_set_ = file_system_info.icon_set();
 
   volume->volume_id_ = GenerateVolumeId(*volume);
-  return volume;
-}
 
-// static
-std::unique_ptr<Volume> Volume::CreateForFuseBoxProvidedFileSystem(
-    base::FilePath mount_path,
-    const ash::file_system_provider::ProvidedFileSystemInfo& file_system_info,
-    MountContext mount_context) {
-  std::unique_ptr<Volume> volume(new Volume());
+  if (!optional_fusebox_path.empty()) {
+    volume->file_system_type_ = util::kFuseBox;
+    if (ash::features::IsFileManagerFuseBoxDebugEnabled()) {
+      volume->volume_label_.insert(0, "fusebox ");
+    }
+    volume->mount_path_ = std::move(optional_fusebox_path);
+    // Even though the underlying FSP may support watchers, fusebox needs
+    // to implement watchers in order to match the capability of the FSP.
+    // TODO(crbug.com/1353673): Add watcher support to fusebox.
+    volume->watchable_ = false;
+    // "fusebox" prefix the original FSP volume id.
+    volume->volume_id_ =
+        base::StrCat({util::kFuseBox, GenerateVolumeId(*volume)});
 
-  switch (file_system_info.source()) {
-    case extensions::SOURCE_FILE:
-      volume->source_ = SOURCE_FILE;
-      break;
-    case extensions::SOURCE_DEVICE:
-      volume->source_ = SOURCE_DEVICE;
-      break;
-    case extensions::SOURCE_NETWORK:
-      volume->source_ = SOURCE_NETWORK;
-      break;
+  } else {
+    volume->file_system_id_ = file_system_info.file_system_id();
+    volume->provider_id_ = file_system_info.provider_id();
   }
-
-  volume->volume_label_ = file_system_info.display_name();
-  if (ash::features::IsFileManagerFuseBoxDebugEnabled()) {
-    volume->volume_label_.insert(0, "fusebox ");
-  }
-
-  volume->type_ = VOLUME_TYPE_PROVIDED;
-  volume->file_system_type_ = util::kFuseBox;
-  volume->mount_path_ = std::move(mount_path);
-  volume->mount_context_ = mount_context;
-
-  volume->is_parent_ = true;
-  volume->is_read_only_ = !file_system_info.writable();
-  volume->configurable_ = file_system_info.configurable();
-  volume->icon_set_ = file_system_info.icon_set();
-
-  // "fusebox" prefix the original FSP volume id.
-  volume->volume_id_ =
-      base::StrCat({util::kFuseBox, GenerateVolumeId(*volume)});
-
-  // Even though the underlying FSP may support watchers, fusebox needs
-  // to implement watchers in order to match the capability of the FSP.
-  // TODO(crbug.com/1353673): Add watcher support to fusebox.
-  volume->watchable_ = false;
 
   return volume;
 }
@@ -263,7 +235,8 @@ std::unique_ptr<Volume> Volume::CreateForFuseBoxProvidedFileSystem(
 // static
 std::unique_ptr<Volume> Volume::CreateForMTP(base::FilePath mount_path,
                                              std::string label,
-                                             bool read_only) {
+                                             bool read_only,
+                                             bool use_fusebox) {
   std::unique_ptr<Volume> volume(new Volume());
   volume->type_ = VOLUME_TYPE_MTP;
   volume->mount_path_ = mount_path;
@@ -279,34 +252,14 @@ std::unique_ptr<Volume> Volume::CreateForMTP(base::FilePath mount_path,
   // seem to work (perhaps something missing in mtpd).
   volume->watchable_ = false;
 
-  return volume;
-}
-
-// static
-std::unique_ptr<Volume> Volume::CreateForFuseBoxMTP(base::FilePath mount_path,
-                                                    std::string label,
-                                                    bool read_only) {
-  std::unique_ptr<Volume> volume(new Volume());
-  volume->type_ = VOLUME_TYPE_MTP;
-  volume->file_system_type_ = util::kFuseBox;
-  volume->device_type_ = ash::DeviceType::kMobile;
-  volume->source_path_ = mount_path;
-  volume->source_ = SOURCE_DEVICE;
-  volume->mount_path_ = std::move(mount_path);
-  volume->is_parent_ = true;
-  volume->is_read_only_ = read_only;
-  // "fusebox" prefix the original MTP volume id.
-  volume->volume_id_ =
-      base::StrCat({util::kFuseBox, kMtpVolumeIdPrefix, label});
-  volume->volume_label_ = std::move(label);
-  if (ash::features::IsFileManagerFuseBoxDebugEnabled()) {
-    volume->volume_label_.insert(0, "fusebox ");
+  if (use_fusebox) {
+    volume->file_system_type_ = util::kFuseBox;
+    volume->volume_id_ =
+        base::StrCat({util::kFuseBox, std::move(volume->volume_id_)});
+    if (ash::features::IsFileManagerFuseBoxDebugEnabled()) {
+      volume->volume_label_.insert(0, "fusebox ");
+    }
   }
-
-  // MTP does have watcher support via WatcherManager but it doesn't
-  // seem to work. Therefore the fusebox version also doesn't allow
-  // watching.
-  volume->watchable_ = false;
 
   return volume;
 }
@@ -404,6 +357,7 @@ std::unique_ptr<Volume> Volume::CreateForDocumentsProvider(
                      icon_url);
     volume->icon_set_ = icon_set;
   }
+
   if (!optional_fusebox_subdir.empty()) {
     volume->file_system_type_ = util::kFuseBox;
     volume->volume_id_.insert(0, util::kFuseBox);
@@ -413,6 +367,7 @@ std::unique_ptr<Volume> Volume::CreateForDocumentsProvider(
       volume->volume_label_.insert(0, "fusebox ");
     }
   }
+
   return volume;
 }
 

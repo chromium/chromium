@@ -865,11 +865,9 @@ void VolumeManager::OnProvidedFileSystemMount(
   fusebox_daemon_->AttachStorage(subdir, url, !file_system_info.writable());
 
   // Create a Volume for the fusebox FSP storage device.
-  const base::FilePath mount_path =
-      base::FilePath(util::kFuseBoxMediaPath).Append(subdir);
-  std::unique_ptr<Volume> fusebox_volume =
-      Volume::CreateForFuseBoxProvidedFileSystem(mount_path, file_system_info,
-                                                 volume_context);
+  std::unique_ptr<Volume> fusebox_volume = Volume::CreateForProvidedFileSystem(
+      file_system_info, volume_context,
+      base::FilePath(util::kFuseBoxMediaPath).Append(subdir));
 
   // Register the fusebox FSP storage device with chrome::storage.
   const std::string fusebox_fsid = base::StrCat(
@@ -918,11 +916,9 @@ void VolumeManager::OnProvidedFileSystemUnmount(
   const std::string subdir = FuseBoxSubdirFSP(file_system_info);
 
   // Unmount the fusebox FSP storage device in files app.
-  const base::FilePath mount_path =
-      base::FilePath(util::kFuseBoxMediaPath).Append(subdir);
-  std::unique_ptr<Volume> fusebox_volume =
-      Volume::CreateForFuseBoxProvidedFileSystem(mount_path, file_system_info,
-                                                 MOUNT_CONTEXT_UNKNOWN);
+  std::unique_ptr<Volume> fusebox_volume = Volume::CreateForProvidedFileSystem(
+      file_system_info, MOUNT_CONTEXT_UNKNOWN,
+      base::FilePath(util::kFuseBoxMediaPath).Append(subdir));
   DoUnmountEvent(*fusebox_volume, mount_error);
 
   // Remove the fusebox FSP storage device from chrome::storage.
@@ -1124,10 +1120,9 @@ void VolumeManager::DoAttachMtpStorage(
   fusebox_daemon_->AttachStorage(subdir, url, read_only);
 
   // Create a Volume for the fusebox MTP storage device.
-  const base::FilePath mount_path =
-      base::FilePath(util::kFuseBoxMediaPath).Append(subdir);
-  std::unique_ptr<Volume> fusebox_volume =
-      Volume::CreateForFuseBoxMTP(mount_path, label, read_only);
+  std::unique_ptr<Volume> fusebox_volume = Volume::CreateForMTP(
+      base::FilePath(util::kFuseBoxMediaPath).Append(subdir), label, read_only,
+      /*use_fusebox=*/true);
 
   // Register the fusebox MTP storage device with chrome::storage.
   const std::string fusebox_fsid =
