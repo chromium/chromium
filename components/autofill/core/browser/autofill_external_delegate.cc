@@ -187,6 +187,8 @@ bool AutofillExternalDelegate::IsAutofillAndFirstLayerSuggestionId(
       // that a merchant has saved. This indicates there could be Autofill
       // suggestions related to standalone CVC fields.
     case PopupItemId::kVirtualCreditCardEntry:
+    case PopupItemId::kAddressEntryNotSelectable:
+    case PopupItemId::kPaymentsEntryNotSelectable:
       return true;
     case PopupItemId::kAccountStoragePasswordEntry:
     case PopupItemId::kAccountStorageUsernameEntry:
@@ -214,8 +216,6 @@ bool AutofillExternalDelegate::IsAutofillAndFirstLayerSuggestionId(
     case PopupItemId::kPasswordEntry:
     case PopupItemId::kScanCreditCard:
     case PopupItemId::kSeePromoCodeDetails:
-    case PopupItemId::kAddressEntryNotSelectable:
-    case PopupItemId::kPaymentsEntryNotSelectable:
     case PopupItemId::kSeparator:
     case PopupItemId::kShowAccountCards:
     case PopupItemId::kTitle:

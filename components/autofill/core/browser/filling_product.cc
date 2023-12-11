@@ -22,17 +22,18 @@ FillingProduct GetFillingProductFromPopupItemId(PopupItemId popup_item_id) {
     case PopupItemId::kDevtoolsTestAddresses:
     case PopupItemId::kDevtoolsTestAddressEntry:
     case PopupItemId::kAddressEntryNotSelectable:
-      return FillingProduct::kAddressAutofill;
+      return FillingProduct::kAddress;
     case PopupItemId::kCreditCardEntry:
-    case PopupItemId::kInsecureContextPaymentDisabledMessage:
     case PopupItemId::kScanCreditCard:
     case PopupItemId::kVirtualCreditCardEntry:
     case PopupItemId::kCreditCardFieldByFieldFilling:
-    case PopupItemId::kIbanEntry:
+    case PopupItemId::kPaymentsEntryNotSelectable:
+      return FillingProduct::kCreditCard;
     case PopupItemId::kMerchantPromoCodeEntry:
     case PopupItemId::kSeePromoCodeDetails:
-    case PopupItemId::kPaymentsEntryNotSelectable:
-      return FillingProduct::kPaymentsAutofill;
+      return FillingProduct::kMerchantPromoCode;
+    case PopupItemId::kIbanEntry:
+      return FillingProduct::kIban;
     case PopupItemId::kAutocompleteEntry:
     case PopupItemId::kDatalistEntry:
       return FillingProduct::kAutocomplete;
@@ -60,7 +61,8 @@ FillingProduct GetFillingProductFromPopupItemId(PopupItemId popup_item_id) {
     case PopupItemId::kSeparator:
     case PopupItemId::kClearForm:
     case PopupItemId::kMixedFormMessage:
-      NOTREACHED_NORETURN();
+    case PopupItemId::kInsecureContextPaymentDisabledMessage:
+      return FillingProduct::kNone;
   }
 }
 

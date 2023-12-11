@@ -11,14 +11,16 @@ namespace autofill {
 
 // Denotes the entity that is responsible for an Autofill behavior.
 enum class FillingProduct {
-  // kNone means that Autofill is not the entity causing a certain behavior.
-  kNone = 0,
-  kAddressAutofill = 1,
-  kPaymentsAutofill = 2,
-  kAutocomplete = 3,
-  kPasswordManager = 4,
-  kCompose = 5,
-  kPlusAddresses = 6,
+  // kNone is used for the suggestions that do not identify any Autofill entity.
+  kNone,
+  kAddress,
+  kCreditCard,
+  kMerchantPromoCode,
+  kIban,
+  kAutocomplete,
+  kPasswordManager,
+  kCompose,
+  kPlusAddresses,
   kMaxValue = kPlusAddresses
 };
 

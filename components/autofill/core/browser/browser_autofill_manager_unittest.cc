@@ -32,6 +32,7 @@
 #include "build/chromeos_buildflags.h"
 #include "components/autofill/core/browser/autocomplete_history_manager.h"
 #include "components/autofill/core/browser/autofill_compose_delegate.h"
+#include "components/autofill/core/browser/autofill_experiments.h"
 #include "components/autofill/core/browser/autofill_form_test_utils.h"
 #include "components/autofill/core/browser/autofill_suggestion_generator.h"
 #include "components/autofill/core/browser/autofill_test_utils.h"
@@ -395,6 +396,20 @@ class MockPlusAddressService : public plus_addresses::PlusAddressService {
               SupportsPlusAddresses,
               (url::Origin, bool is_off_the_record),
               (override));
+};
+
+class MockCreditCardAccessManager : public CreditCardAccessManager {
+ public:
+  MockCreditCardAccessManager(AutofillDriver* driver,
+                              AutofillClient* client,
+                              PersonalDataManager* personal_data_manager,
+                              autofill_metrics::CreditCardFormEventLogger*
+                                  credit_card_form_event_logger)
+      : CreditCardAccessManager(driver,
+                                client,
+                                personal_data_manager,
+                                credit_card_form_event_logger) {}
+  MOCK_METHOD(void, PrepareToFetchCreditCard, (), (override));
 };
 
 class MockAutofillClient : public TestAutofillClient {
@@ -1109,6 +1124,12 @@ class BrowserAutofillManagerTest : public testing::Test {
         .SetExternalDelegate(std::make_unique<TestAutofillExternalDelegate>(
             browser_autofill_manager_.get(),
             /*call_parent_methods=*/false));
+    test_api(*browser_autofill_manager_)
+        .set_credit_card_access_manager(
+            std::make_unique<NiceMock<MockCreditCardAccessManager>>(
+                autofill_driver_.get(), &autofill_client_, &personal_data(),
+                test_api(*browser_autofill_manager_)
+                    .credit_card_form_event_logger()));
   }
 
   // Matches a AskForValuesToFillFieldLogEvent by equality of fields.
@@ -1278,6 +1299,11 @@ class BrowserAutofillManagerTest : public testing::Test {
 
   TestPersonalDataManager& personal_data() {
     return *autofill_client_.GetPersonalDataManager();
+  }
+
+  MockCreditCardAccessManager& cc_access_manager() {
+    return static_cast<MockCreditCardAccessManager&>(
+        browser_autofill_manager_->GetCreditCardAccessManager());
   }
 
  protected:
@@ -3098,7 +3124,7 @@ TEST_F(BrowserAutofillManagerTest, UndoResetsCachedAutofillState) {
   test_api(*browser_autofill_manager_)
       .AddFormFillEntry(base::make_span(&field_ptr, 1u),
                         base::make_span(&autofill_field_ptr, 1u),
-                        FillingProduct::kAddressAutofill, /*is_refill=*/false);
+                        FillingProduct::kAddress, /*is_refill=*/false);
   form.fields.front().is_autofilled = true;
   FormsSeen({form});
 
@@ -9378,6 +9404,42 @@ TEST_F(BrowserAutofillManagerTest,
   const std::string histograms = histogram_tester.GetAllHistogramsRecorded();
   EXPECT_THAT(histograms, Not(AnyOf(HasSubstr("Autocomplete.Events2"),
                                     HasSubstr("Autofill.FormEvents.Address"))));
+}
+
+TEST_F(BrowserAutofillManagerTest,
+       DidShowSuggestions_CreditCard_PreflightFetchingCall) {
+  FormData form =
+      CreateTestCreditCardFormData(/*is_https=*/true, /*use_month_type=*/false);
+  FormsSeen({form});
+
+  EXPECT_CALL(cc_access_manager(), PrepareToFetchCreditCard)
+      .Times(IsCreditCardFidoAuthenticationEnabled() ? 1 : 0);
+  browser_autofill_manager_->DidShowSuggestions(
+      std::vector<PopupItemId>({PopupItemId::kCreditCardEntry}), form,
+      form.fields[0]);
+}
+
+TEST_F(BrowserAutofillManagerTest,
+       DidShowSuggestions_CreditCardManualFallback_PreflightFetchingCall) {
+  FormData form = CreateTestAddressFormData();
+  FormsSeen({form});
+
+  EXPECT_CALL(cc_access_manager(), PrepareToFetchCreditCard)
+      .Times(IsCreditCardFidoAuthenticationEnabled() ? 1 : 0);
+  browser_autofill_manager_->DidShowSuggestions(
+      std::vector<PopupItemId>({PopupItemId::kPaymentsEntryNotSelectable}),
+      form, form.fields[0]);
+}
+
+TEST_F(BrowserAutofillManagerTest,
+       DidShowSuggestions_AddessSuggestion_NoPreflightFetchingCall) {
+  FormData form = CreateTestAddressFormData();
+  FormsSeen({form});
+
+  EXPECT_CALL(cc_access_manager(), PrepareToFetchCreditCard).Times(0);
+  browser_autofill_manager_->DidShowSuggestions(
+      std::vector<PopupItemId>({PopupItemId::kAddressEntry}), form,
+      form.fields[0]);
 }
 
 TEST_F(BrowserAutofillManagerTest, PageLanguageGetsCorrectlySet) {

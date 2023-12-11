@@ -117,7 +117,7 @@ class CreditCardAccessManager
   bool ShouldClearPreviewedForm();
 
   // Makes a call to Google Payments to retrieve authentication details.
-  void PrepareToFetchCreditCard();
+  virtual void PrepareToFetchCreditCard();
 
   // `on_credit_card_fetched` is run once `card` is fetched.
   virtual void FetchCreditCard(

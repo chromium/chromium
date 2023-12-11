@@ -1447,10 +1447,9 @@ void BrowserAutofillManager::UndoAutofill(
     return;
   }
 
-  if (operation.get_filling_product() == FillingProduct::kAddressAutofill) {
+  if (operation.get_filling_product() == FillingProduct::kAddress) {
     address_form_event_logger_->OnDidUndoAutofill();
-  } else if (operation.get_filling_product() ==
-             FillingProduct::kPaymentsAutofill) {
+  } else if (operation.get_filling_product() == FillingProduct::kCreditCard) {
     credit_card_form_event_logger_->OnDidUndoAutofill();
   }
   // History is not cleared on previews as it might be used for future previews
@@ -1586,8 +1585,15 @@ void BrowserAutofillManager::DidShowSuggestions(
     return;
   }
 
+  if (base::Contains(shown_suggestions_types, FillingProduct::kCreditCard,
+                     GetFillingProductFromPopupItemId) &&
+      IsCreditCardFidoAuthenticationEnabled()) {
+    credit_card_access_manager_->PrepareToFetchCreditCard();
+  }
+
   FormStructure* form_structure = nullptr;
   AutofillField* autofill_field = nullptr;
+  // TODO(crbug.com/1493361): Adapt for the unclassified forms.
   if (!GetCachedFormAndField(form, field, &form_structure, &autofill_field))
     return;
 
@@ -1597,6 +1603,8 @@ void BrowserAutofillManager::DidShowSuggestions(
       client().GetSecurityLevelForUmaHistograms(), profile_form_bitmask);
 
   if (!did_show_suggestions_) {
+    // TODO(crbug.com/1493361): Take suggestions for unclassified forms into
+    // account.
     did_show_suggestions_ = true;
     AutofillMetrics::LogUserHappinessMetric(
         AutofillMetrics::SUGGESTIONS_SHOWN_ONCE, autofill_field->Type().group(),
@@ -1612,11 +1620,6 @@ void BrowserAutofillManager::DidShowSuggestions(
   } else if (autofill_field->ShouldSuppressSuggestionsAndFillingByDefault()) {
     // Suggestions were triggered on an ac=unrecognized address field.
     autocomplete_unrecognized_fallback_logger_->OnDidShowSuggestions();
-  }
-
-  if (autofill_field->Type().group() == FieldTypeGroup::kCreditCard &&
-      IsCreditCardFidoAuthenticationEnabled()) {
-    credit_card_access_manager_->PrepareToFetchCreditCard();
   }
 }
 
@@ -2536,8 +2539,7 @@ void BrowserAutofillManager::FillOrPreviewDataModelForm(
   if (action_persistence == mojom::ActionPersistence::kFill) {
     form_autofill_history_.AddFormFillEntry(
         safe_newly_filled_fields.old_values, safe_newly_filled_fields.cached,
-        is_credit_card ? FillingProduct::kPaymentsAutofill
-                       : FillingProduct::kAddressAutofill,
+        is_credit_card ? FillingProduct::kCreditCard : FillingProduct::kAddress,
         is_refill);
   }
 
