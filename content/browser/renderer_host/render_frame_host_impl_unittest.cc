@@ -706,10 +706,19 @@ TEST_F(RenderFrameHostImplTest, CalculateStorageKey) {
                 grandchild_frame->GetLastCommittedOrigin(), nullptr));
 }
 
+// TODO(https://crbug.com/1510555): Flaky on Linux.
+#if BUILDFLAG(IS_LINUX)
+#define MAYBE_CalculateStorageKeyFirstPartyOverride \
+  DISABLED_CalculateStorageKeyFirstPartyOverride
+#else
+#define MAYBE_CalculateStorageKeyFirstPartyOverride \
+  CalculateStorageKeyFirstPartyOverride
+#endif
+
 // TODO(https://crbug.com/1425337): Eventually, this test will be moved to
 // chrome/browser/ so that we no longer need to override the
 // ContentBrowserClient, and we can test using real extension URLs.
-TEST_F(RenderFrameHostImplTest, CalculateStorageKeyFirstPartyOverride) {
+TEST_F(RenderFrameHostImplTest, MAYBE_CalculateStorageKeyFirstPartyOverride) {
   // Enable third-party storage partitioning.
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitAndEnableFeature(
