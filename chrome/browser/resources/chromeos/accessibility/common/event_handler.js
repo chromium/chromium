@@ -4,7 +4,6 @@
 
 const AutomationEvent = chrome.automation.AutomationEvent;
 const AutomationNode = chrome.automation.AutomationNode;
-const EventType = chrome.automation.EventType;
 
 /**
  * This class wraps AutomationNode event listeners, adding some convenience
@@ -13,7 +12,8 @@ const EventType = chrome.automation.EventType;
 export class EventHandler {
   /**
    * @param {!AutomationNode | !Array<!AutomationNode>} nodes
-   * @param {!EventType | !Array<!EventType>} types
+   * @param {!chrome.automation.EventType |
+   *     !Array<!chrome.automation.EventType>} types
    * @param {?function(!AutomationEvent)} callback
    * @param {{capture: (boolean|undefined), exactMatch: (boolean|undefined),
    *     listenOnce: (boolean|undefined), predicate:
@@ -31,7 +31,7 @@ export class EventHandler {
     /** @private {!Array<!AutomationNode>} */
     this.nodes_ = nodes instanceof Array ? nodes : [nodes];
 
-    /** @private {!Array<!EventType>} */
+    /** @private {!Array<!chrome.automation.EventType>} */
     this.types_ = types instanceof Array ? types : [types];
 
     /** @private {?function(!AutomationEvent)} */

@@ -2,13 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-const connectToWebCam = async () => {
+const connectToWebCam: () => Promise<void> = async () => {
   const constraints = {video: true};
   const stream = await navigator.mediaDevices.getUserMedia(constraints);
-  const videoElement = document.getElementById('cameraStream');
+  const videoElement =
+      document.getElementById('cameraStream') as HTMLMediaElement;
   videoElement.srcObject = stream;
   // Send the stream to the background page.
-  chrome.runtime.sendMessage({type: 'cameraStream', stream});
+  chrome.runtime.sendMessage(undefined, {type: 'cameraStream', stream});
 };
 
 const button = document.createElement('button');

@@ -23,10 +23,13 @@ tsc_out_dir = "$target_gen_dir/tsc"
 common_tsc_out_dir = "$target_gen_dir/../common/tsc"
 
 # TS files to build.
-ts_modules = []
+ts_modules = [
+  "facegaze/facegaze.ts",
+  "facegaze/camera_stream.ts",
+]
 
 # TS files needed from ../common/.
-common_ts_modules = []
+common_ts_modules = [ "instance_checker.ts" ]
 
 # JS files needed by the TS compiler.
 js_deps = []
@@ -35,8 +38,15 @@ js_deps = []
 ts_library("ts_build") {
   root_dir = "../"
   out_dir = tsc_out_dir
-  deps = [ "../common:ts_build" ]
-  definitions = []
+  definitions = [
+    "../definitions/accessibility_private_mv2.d.ts",
+    "../definitions/automation.d.ts",
+    "../definitions/extensions.d.ts",
+    "../definitions/extension_types.d.ts",
+    "../definitions/runtime.d.ts",
+    "../definitions/tabs.d.ts",
+    "//tools/typescript/definitions/windows.d.ts",
+  ]
 
   in_files = []
   foreach(_js_file, js_deps) {
@@ -61,6 +71,10 @@ group("build") {
 run_jsbundler("accessibility_common_copied_files") {
   mode = "copy"
   dest_dir = accessibility_common_dir
+  deps = [
+    ":ts_build",
+    "../common:ts_build",
+  ]
   sources = [
     "accessibility_common_loader.js",
     "autoclick/autoclick.js",
@@ -97,8 +111,6 @@ run_jsbundler("accessibility_common_copied_files") {
     "dictation/parse/speech_parser.js",
     "dictation/ui_controller.js",
     "facegaze/camera_stream.html",
-    "facegaze/camera_stream.js",
-    "facegaze/facegaze.js",
     "magnifier/magnifier.js",
   ]
 
