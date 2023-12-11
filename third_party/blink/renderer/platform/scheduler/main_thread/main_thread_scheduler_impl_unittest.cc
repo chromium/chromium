@@ -768,7 +768,7 @@ class MainThreadSchedulerImplTest : public testing::Test {
   }
 
   RAILMode GetRAILMode() {
-    return scheduler_->main_thread_only().current_policy.rail_mode();
+    return scheduler_->main_thread_only().current_policy.rail_mode;
   }
 
   bool BlockingInputExpectedSoon() {
