@@ -34,6 +34,7 @@
     /* The max-width is needed to stop the button from overlapping with
      the choice list in case of large text.  */
     max-width: 115px;
+    padding: 6px 16px 6px 12px;
     pointer-events: all;
   }
 
@@ -245,6 +246,14 @@
     width: fit-content;
   }
 
+  .cr-icon {
+    --cr-icon-color: currentColor;
+    --cr-icon-image: url(images/arrow_downward.svg);
+    --cr-icon-ripple-size: 18px;
+    --cr-icon-size: 18px;
+    margin: 0;
+  }
+
   @keyframes fade-in-animation {
     0% {
       opacity: 0;
@@ -445,7 +454,11 @@
 <div class="button-container">
   <cr-button class="action-button" id="actionButton"
       on-click="onActionButtonClicked_" disabled="[[isActionButtonDisabled_]]">
-    [[actionButtonText_]]
+      <div class="cr-icon" title=""
+          hidden="[[!needsScrollToTheBottom_(hasUserScrolledToTheBottom_)]]"
+          slot="prefix-icon">
+      </div>
+      [[actionButtonText_]]
   </cr-button>
 </div>
 

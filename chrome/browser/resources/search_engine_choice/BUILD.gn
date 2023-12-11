@@ -10,7 +10,10 @@ assert(enable_search_engine_choice)
 build_webui("build") {
   grd_prefix = "search_engine_choice"
 
-  static_files = [ "search_engine_choice.html" ]
+  static_files = [
+    "search_engine_choice.html",
+    "images/arrow_downward.svg",
+  ]
 
   web_component_files = [ "app.ts" ]
 
