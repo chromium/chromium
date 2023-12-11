@@ -10,6 +10,7 @@
 #include "base/containers/contains.h"
 #include "base/feature_list.h"
 #include "base/values.h"
+#include "build/blink_buildflags.h"
 #include "build/build_config.h"
 #include "components/content_settings/core/browser/content_settings_utils.h"
 #include "components/content_settings/core/browser/website_settings_registry.h"
@@ -108,7 +109,11 @@ void ContentSettingsRegistry::Init() {
            /*valid_settings=*/{CONTENT_SETTING_ALLOW, CONTENT_SETTING_BLOCK},
            WebsiteSettingsInfo::TOP_ORIGIN_WITH_RESOURCE_EXCEPTIONS_SCOPE,
            WebsiteSettingsRegistry::DESKTOP |
-               WebsiteSettingsRegistry::PLATFORM_ANDROID,
+               WebsiteSettingsRegistry::PLATFORM_ANDROID
+#if BUILDFLAG(IS_IOS) && BUILDFLAG(USE_BLINK)
+               | WebsiteSettingsRegistry::PLATFORM_IOS
+#endif
+           ,
            ContentSettingsInfo::INHERIT_IN_INCOGNITO,
            ContentSettingsInfo::EXCEPTIONS_ON_SECURE_AND_INSECURE_ORIGINS);
 
@@ -593,7 +598,11 @@ void ContentSettingsRegistry::Init() {
            /*allowlisted_primary_schemes=*/{},
            /*valid_settings=*/{CONTENT_SETTING_ALLOW, CONTENT_SETTING_BLOCK},
            WebsiteSettingsInfo::TOP_ORIGIN_ONLY_SCOPE,
-           WebsiteSettingsRegistry::PLATFORM_ANDROID,
+           WebsiteSettingsRegistry::PLATFORM_ANDROID
+#if BUILDFLAG(IS_IOS) && BUILDFLAG(USE_BLINK)
+               | WebsiteSettingsRegistry::PLATFORM_IOS
+#endif
+           ,
            ContentSettingsInfo::INHERIT_IN_INCOGNITO,
            ContentSettingsInfo::EXCEPTIONS_ON_SECURE_AND_INSECURE_ORIGINS);
 
