@@ -739,8 +739,8 @@ bool HttpNetworkTransaction::IsSecureRequest() const {
 }
 
 bool HttpNetworkTransaction::UsingHttpProxyWithoutTunnel() const {
-  return proxy_info_.is_http_like() &&
-         !(request_->url.SchemeIs("https") || request_->url.SchemeIsWSOrWSS());
+  return proxy_info_.proxy_chain().is_get_to_proxy_allowed() &&
+         request_->url.SchemeIs("http");
 }
 
 void HttpNetworkTransaction::DoCallback(int rv) {

@@ -20,8 +20,8 @@
 namespace net {
 
 HttpBasicStream::HttpBasicStream(std::unique_ptr<ClientSocketHandle> connection,
-                                 bool using_proxy)
-    : state_(std::move(connection), using_proxy) {}
+                                 bool is_for_get_to_http_proxy)
+    : state_(std::move(connection), is_for_get_to_http_proxy) {}
 
 HttpBasicStream::~HttpBasicStream() = default;
 
@@ -101,7 +101,7 @@ std::unique_ptr<HttpStream> HttpBasicStream::RenewStreamForAuth() {
   // than leaving it until the destructor is called.
   state_.DeleteParser();
   return std::make_unique<HttpBasicStream>(state_.ReleaseConnection(),
-                                           state_.using_proxy());
+                                           state_.is_for_get_to_http_proxy());
 }
 
 bool HttpBasicStream::IsResponseBodyComplete() const {

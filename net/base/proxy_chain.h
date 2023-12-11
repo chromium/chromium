@@ -115,6 +115,13 @@ class NET_EXPORT ProxyChain {
                                           : false;
   }
 
+  // Determines if HTTP GETs to the last proxy in the chain are allowed,
+  // instead of establishing a tunnel with CONNECT. This is currently not
+  // supported for multi-proxy chains.
+  bool is_get_to_proxy_allowed() const {
+    return is_single_proxy() && GetProxyServer(0).is_http_like();
+  }
+
   // Returns true if a proxy server list is available.
   bool IsValid() const { return proxy_server_list_.has_value(); }
 

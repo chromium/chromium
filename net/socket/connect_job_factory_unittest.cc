@@ -531,6 +531,7 @@ TEST_F(ConnectJobFactoryTest, CreateNestedHttpsProxyConnectJob) {
   // We should to send a CONNECT to `kProxyServer2` for `kEndpoint`.
   EXPECT_EQ(proxy_server2_http_params.endpoint(),
             HostPortPair::FromSchemeHostPort(kEndpoint));
+  EXPECT_TRUE(proxy_server2_http_params.tunnel());
 
   const SSLSocketParams& proxy_server2_ssl_params =
       *proxy_server2_http_params.ssl_params();

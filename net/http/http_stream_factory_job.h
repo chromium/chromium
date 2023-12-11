@@ -331,6 +331,10 @@ class HttpStreamFactory::Job
   // This must only be called when we are using an SSLSocket.
   void GetSSLInfo(SSLInfo* ssl_info);
 
+  // Returns true if the resulting stream will use an HTTP GET to the final
+  // proxy in the chain, instead of a CONNECT to the endpoint.
+  bool UsingHttpProxyWithoutTunnel() const;
+
   // Called in Job constructor: should Job be forced to use QUIC.
   static bool ShouldForceQuic(HttpNetworkSession* session,
                               const url::SchemeHostPort& destination,

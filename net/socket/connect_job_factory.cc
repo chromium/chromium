@@ -262,7 +262,8 @@ std::unique_ptr<ConnectJob> ConnectJobFactory::CreateConnectJob(
         bool should_tunnel;
         if (proxy_index + 1 == proxy_chain.length()) {
           connect_host_port_pair = ToHostPortPair(endpoint);
-          should_tunnel = force_tunnel || UsingSsl(endpoint);
+          should_tunnel = force_tunnel || UsingSsl(endpoint) ||
+                          !proxy_chain.is_get_to_proxy_allowed();
         } else {
           const auto& next_proxy_server =
               proxy_chain.GetProxyServer(proxy_index + 1);
