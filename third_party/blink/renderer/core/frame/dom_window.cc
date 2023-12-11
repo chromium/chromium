@@ -728,9 +728,11 @@ void DOMWindow::ReportCoopAccess(const char* property_name) {
     // TODO(arthursonzogni): Reconsider this decision later, developers might be
     // interested.
     if (monitor->endpoint_defined) {
-      monitor->reporter->QueueAccessReport(
-          monitor->report_type, property_name, std::move(source_location),
-          std::move(monitor->reported_window_url));
+      if (monitor->reporter.is_bound()) {
+        monitor->reporter->QueueAccessReport(
+            monitor->report_type, property_name, std::move(source_location),
+            std::move(monitor->reported_window_url));
+      }
       // Send a coop-access-violation report.
       if (network::IsAccessFromCoopPage(monitor->report_type)) {
         ReportingContext::From(accessing_main_frame.DomWindow())
