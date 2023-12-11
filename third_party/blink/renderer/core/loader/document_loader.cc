@@ -343,9 +343,6 @@ struct SameSizeAsDocumentLoader
 ASSERT_SIZE(DocumentLoader, SameSizeAsDocumentLoader);
 
 void WarnIfSandboxIneffective(LocalDOMWindow* window) {
-  if (!RuntimeEnabledFeatures::WarnSandboxIneffectiveEnabled())
-    return;
-
   if (window->document()->IsInitialEmptyDocument())
     return;
 

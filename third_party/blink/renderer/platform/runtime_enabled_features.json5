@@ -4018,12 +4018,6 @@
       base_feature: "none",
     },
     {
-      // A kill switch. Please consider removing this after M112.
-      name: "WarnSandboxIneffective",
-      status: "stable",
-      copied_from_base_feature_if: "overridden",
-    },
-    {
       name: "WebAnimationsSVG",
       status: "experimental",
       base_feature: "none",

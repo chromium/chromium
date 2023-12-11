@@ -7089,12 +7089,6 @@ IN_PROC_BROWSER_TEST_F(NavigationBrowserTest,
 class NavigationBrowserTestWarnSandboxIneffective
     : public NavigationBrowserTest {
  public:
-  void SetUpCommandLine(base::CommandLine* command_line) override {
-    NavigationBrowserTest::SetUpCommandLine(command_line);
-    command_line->AppendSwitchASCII(switches::kEnableBlinkFeatures,
-                                    "WarnSandboxIneffective");
-  }
-
   static constexpr char kSandboxEscapeWarningMessage[] =
       "An iframe which has both allow-scripts and allow-same-origin for its "
       "sandbox attribute can escape its sandboxing.";
