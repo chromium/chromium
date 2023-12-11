@@ -93,7 +93,8 @@ enum class RenderTextAPI {
   kSetDisplayRect,
   kGetSubstringBounds,
   kGetCursorSpan,
-  kMaxValue = kGetCursorSpan
+  kSetTruncateLength,
+  kMaxValue = kSetTruncateLength
 };
 
 gfx::DirectionalityMode ConsumeDirectionalityMode(FuzzedDataProvider* fdp) {
@@ -421,6 +422,9 @@ extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
 
         render_text->GetCursorSpan(
             ConsumeRange(&fdp, render_text->text().length()));
+        break;
+      case RenderTextAPI::kSetTruncateLength:
+        render_text->set_truncate_length(fdp.ConsumeIntegral<uint32_t>());
         break;
     }
   }
