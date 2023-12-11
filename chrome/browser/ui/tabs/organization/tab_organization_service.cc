@@ -79,12 +79,14 @@ TabOrganizationSession* TabOrganizationService::GetSessionForBrowser(
 }
 
 TabOrganizationSession* TabOrganizationService::CreateSessionForBrowser(
-    const Browser* browser) {
+    const Browser* browser,
+    const content::WebContents* base_session_webcontents) {
   CHECK(!base::Contains(browser_session_map_, browser));
 
   std::pair<BrowserSessionMap::iterator, bool> pair =
       browser_session_map_.emplace(
-          browser, TabOrganizationSession::CreateSessionForBrowser(browser));
+          browser, TabOrganizationSession::CreateSessionForBrowser(
+                       browser, base_session_webcontents));
 
   for (TabOrganizationObserver& observer : observers_) {
     observer.OnSessionCreated(browser, pair.first->second.get());
@@ -94,12 +96,13 @@ TabOrganizationSession* TabOrganizationService::CreateSessionForBrowser(
 }
 
 TabOrganizationSession* TabOrganizationService::ResetSessionForBrowser(
-    const Browser* browser) {
+    const Browser* browser,
+    const content::WebContents* base_session_webcontents) {
   if (base::Contains(browser_session_map_, browser)) {
     browser_session_map_.erase(browser);
   }
 
-  return CreateSessionForBrowser(browser);
+  return CreateSessionForBrowser(browser, base_session_webcontents);
 }
 
 void TabOrganizationService::StartRequest(const Browser* browser) {

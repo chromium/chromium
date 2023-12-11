@@ -263,3 +263,17 @@ TEST_F(TabOrganizationServiceTest, SecondRequestAfterStartingDoesntCrash) {
 
   service()->StartRequest(browser1);
 }
+
+// Session Creation Tests
+TEST_F(TabOrganizationServiceTest, CreateSessionForBrowserOnTab) {
+  Browser* browser1 = AddBrowser();
+
+  content::WebContents* base_tab = AddValidTabToBrowser(browser1, 0);
+  for (int i = 0; i < 4; i++) {
+    AddValidTabToBrowser(browser1, 0);
+  }
+
+  std::unique_ptr<TabOrganizationSession> session =
+      TabOrganizationSession::CreateSessionForBrowser(browser1, base_tab);
+  EXPECT_NE(session->request()->base_tab_id(), absl::nullopt);
+}

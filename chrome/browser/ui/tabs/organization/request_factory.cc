@@ -132,6 +132,10 @@ void PerformTabOrganizationExecution(
     tab->set_url(tab_data->original_url().spec());
   }
 
+  if (request->base_tab_id().has_value()) {
+    tab_organization_request.set_active_tab_id(request->base_tab_id().value());
+  }
+
   OptimizationGuideKeyedService* optimization_guide_keyed_service =
       OptimizationGuideKeyedServiceFactory::GetForProfile(profile);
   optimization_guide_keyed_service->ExecuteModel(

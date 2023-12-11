@@ -1576,7 +1576,7 @@ void TabStripModel::ExecuteContextMenuCommand(int context_index,
           chrome::FindBrowserWithTab(GetWebContentsAt(context_index));
       TabOrganizationService* const service =
           TabOrganizationServiceFactory::GetForProfile(profile_);
-      service->StartRequest(browser);
+      service->ResetSessionForBrowser(browser, GetWebContentsAt(context_index));
       break;
     }
 

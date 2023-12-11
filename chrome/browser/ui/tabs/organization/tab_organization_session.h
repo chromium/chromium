@@ -15,6 +15,9 @@
 #include "third_party/abseil-cpp/absl/types/variant.h"
 
 class Browser;
+namespace Content {
+class WebContents;
+}
 
 class TabOrganizationSession : public TabOrganization::Observer {
  public:
@@ -45,7 +48,8 @@ class TabOrganizationSession : public TabOrganization::Observer {
   std::u16string feedback_id() const { return feedback_id_; }
 
   static std::unique_ptr<TabOrganizationSession> CreateSessionForBrowser(
-      const Browser* browser);
+      const Browser* browser,
+      const content::WebContents* base_session_webcontents = nullptr);
 
   const TabOrganization* GetNextTabOrganization() const;
   TabOrganization* GetNextTabOrganization();
