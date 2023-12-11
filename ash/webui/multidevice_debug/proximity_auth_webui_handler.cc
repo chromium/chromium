@@ -142,7 +142,9 @@ std::string GenerateFeaturesString(const multidevice::RemoteDeviceRef& device) {
 ProximityAuthWebUIHandler::ProximityAuthWebUIHandler(
     device_sync::DeviceSyncClient* device_sync_client)
     : device_sync_client_(device_sync_client),
-      web_contents_initialized_(false) {}
+      web_contents_initialized_(false) {
+  CHECK(device_sync_client_);
+}
 
 ProximityAuthWebUIHandler::~ProximityAuthWebUIHandler() {
   multidevice::LogBuffer::GetInstance()->RemoveObserver(this);
