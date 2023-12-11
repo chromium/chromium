@@ -16,7 +16,7 @@ class SearchEngineChoiceJsBrowserTest : public WebUIMochaBrowserTest {
     set_test_loader_host(chrome::kChromeUISearchEngineChoiceHost);
     scoped_feature_list_.InitAndEnableFeatureWithParameters(
         switches::kSearchEngineChoice,
-        {{switches::kWithForcedScrollEnabled.name, "false"}});
+        {{switches::kWithForcedScrollEnabled.name, "true"}});
   }
 
   void SetUpCommandLine(base::CommandLine* command_line) override {
