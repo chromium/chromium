@@ -79,6 +79,7 @@ def update_required(
 
 def _run_flash_command(system_image_dir: str, target_id: Optional[str]):
     """Helper function for running `ffx target flash`."""
+    logging.info('Flashing %s to %s', system_image_dir, target_id)
     manifest = os.path.join(system_image_dir, 'flash-manifest.manifest')
     configs = [
         'fastboot.usb.disabled=true',
@@ -96,10 +97,13 @@ def _run_flash_command(system_image_dir: str, target_id: Optional[str]):
     # This prevents multiple fastboot binaries from flashing concurrently,
     # which should increase the odds of flashing success.
     with lock(_FF_LOCK, timeout=_FF_LOCK_ACQ_TIMEOUT):
-        common.run_ffx_command(cmd=('target', 'flash', manifest,
-                                    '--no-bootloader-reboot'),
-                               target_id=target_id,
-                               configs=configs)
+        logging.info(
+            'Flash result %s',
+            common.run_ffx_command(cmd=('target', 'flash', manifest,
+                                        '--no-bootloader-reboot'),
+                                   target_id=target_id,
+                                   capture_output=True,
+                                   configs=configs).stdout)
 
 
 def flash(system_image_dir: str,
@@ -133,21 +137,22 @@ def update(system_image_dir: str,
     needs_update, actual_image_dir = update_required(os_check,
                                                      system_image_dir, target,
                                                      serial_num)
-
-    system_image_dir = actual_image_dir
-    if needs_update:
-        flash(system_image_dir, target, serial_num)
-        # Always reboot the device since the ffx may ignore the device state
-        # after the flash. See
-        # https://cs.opensource.google/fuchsia/fuchsia/+/main:src/developer/ffx/lib/fastboot/src/common/fastboot.rs;drc=cfba0bdd4f8857adb6409f8ae9e35af52c0da93e;l=454
-        # TODO(crbug.com/1490434): May consider is_in_fuchsia and
-        # test_connection before the reboot.
-        try:
-            boot_device(target, BootMode.REGULAR, serial_num, must_boot=True)
-        except:  # pylint: disable=bare-except
-            # If unfortunately, the reboot failed, it's still worth continuing
-            # the test rather than failing here.
-            pass
+    logging.info('update_required %s, actual_image_dir %s', needs_update,
+                 actual_image_dir)
+    if not needs_update:
+        return
+    flash(actual_image_dir, target, serial_num)
+    # Always reboot the device since the ffx may ignore the device state
+    # after the flash. See
+    # https://cs.opensource.google/fuchsia/fuchsia/+/main:src/developer/ffx/lib/fastboot/src/common/fastboot.rs;drc=cfba0bdd4f8857adb6409f8ae9e35af52c0da93e;l=454
+    # TODO(crbug.com/1490434): May consider is_in_fuchsia and
+    # test_connection before the reboot.
+    try:
+        boot_device(target, BootMode.REGULAR, serial_num, must_boot=True)
+    except:  # pylint: disable=bare-except
+        # If unfortunately, the reboot failed, it's still worth continuing
+        # the test rather than failing here.
+        pass
 
 
 def register_update_args(arg_parser: argparse.ArgumentParser,

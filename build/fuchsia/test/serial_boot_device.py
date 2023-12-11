@@ -222,8 +222,10 @@ def main(action: str) -> int:
         handlers.append(
             logging.FileHandler('/home/swarming/dmc.%s.log' % node_id))
     logging.basicConfig(format='%(levelname)s %(asctime)s %(message)s',
-                        handlers=handlers)
-    logging.info('running command %s', sys.argv)
+                        handlers=handlers,
+                        level=logging.INFO)
+    logging.info('Running command %s against %s %s', sys.argv, node_id,
+                 serial_num)
 
     if action == 'health-check':
         _shutdown_if_serial_is_unavailable(node_id)
