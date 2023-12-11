@@ -78,6 +78,9 @@ public final class StatusMediatorUnitTest {
     private static final String TAG = "StatusMediatorUnitTest";
     private static final String TEST_SEARCH_URL = "https://www.test.com";
 
+    public static final int CURRENT_TAB_ID = 5;
+    public static final int NEW_TAB_ID = 1;
+
     public @Rule TestRule mProcessor = new Features.JUnitProcessor();
     public @Rule MockitoRule mMockitoRule = MockitoJUnit.rule();
     public @Rule JniMocker mJniMocker = new JniMocker();
@@ -609,16 +612,13 @@ public final class StatusMediatorUnitTest {
 
     @Test
     @SmallTest
-    public void iphCookieControls_animateOnPageStoppedLoading() {
+    public void iphCookieControls_animateOnBreakageConfidenceLevelChanged() {
         setupCookieControlsTest();
 
         Assert.assertNotEquals(COOKIE_CONTROLS_ICON, getIconIdentifierForTesting());
 
         mMediator.onBreakageConfidenceLevelChanged(CookieControlsBreakageConfidenceLevel.HIGH);
 
-        Assert.assertNotEquals(COOKIE_CONTROLS_ICON, getIconIdentifierForTesting());
-
-        mMediator.onPageLoadStopped();
         Assert.assertEquals(COOKIE_CONTROLS_ICON, getIconIdentifierForTesting());
 
         mModel.get(StatusProperties.STATUS_ICON_RESOURCE).getAnimationFinishedCallback().run();
@@ -629,8 +629,37 @@ public final class StatusMediatorUnitTest {
 
         // CookieControlsIcon should not be set when no HIGH BreakageConfidenceLevel were
         // explicitly reported.
-        mMediator.onPageLoadStopped();
+        mMediator.onBreakageConfidenceLevelChanged(CookieControlsBreakageConfidenceLevel.MEDIUM);
         Assert.assertNotEquals(COOKIE_CONTROLS_ICON, getIconIdentifierForTesting());
+    }
+
+    @Test
+    @SmallTest
+    public void iphCookieControls_showIPHOnlyWhenNotIn3pcd() {
+        setupCookieControlsTest();
+        mMediator.onStatusChanged(
+                CookieControlsStatus.ENABLED,
+                /* enforcement= */ 0,
+                CookieBlocking3pcdStatus.NOT_IN3PCD,
+                /* expiration= */ 0);
+
+        mMediator.onBreakageConfidenceLevelChanged(CookieControlsBreakageConfidenceLevel.HIGH);
+
+        Assert.assertEquals(COOKIE_CONTROLS_ICON, getIconIdentifierForTesting());
+        mModel.get(StatusProperties.STATUS_ICON_RESOURCE).getAnimationFinishedCallback().run();
+        // Not in 3PCD, IPH is shown.
+        verify(mPageInfoIPHController, times(1)).showCookieControlsIPH(anyInt(), anyInt());
+
+        mMediator.onStatusChanged(
+                CookieControlsStatus.ENABLED,
+                /* enforcement= */ 0,
+                CookieBlocking3pcdStatus.LIMITED,
+                /* expiration= */ 0);
+
+        mMediator.onBreakageConfidenceLevelChanged(CookieControlsBreakageConfidenceLevel.HIGH);
+        Assert.assertEquals(COOKIE_CONTROLS_ICON, getIconIdentifierForTesting());
+        // Limited 3PCD, IPH is NOT shown.
+        verify(mPageInfoIPHController, times(1)).showCookieControlsIPH(anyInt(), anyInt());
     }
 
     @Test
@@ -767,16 +796,62 @@ public final class StatusMediatorUnitTest {
 
     @Test
     @SmallTest
-    public void onUrlChanged_whenExistingCookieControlsBridge_shouldUpdateWebContents() {
+    public void onUrlChanged_whenTabChanges_shouldUpdateWebContents() {
         mMediator.setCookieControlsBridge(mCookieControlsBridge);
         doReturn(mWebContents).when(mTab).getWebContents();
         doReturn(mTab).when(mLocationBarDataProvider).getTab();
 
         verify(mCookieControlsBridge, times(0)).updateWebContents(any(), any());
 
-        mMediator.onUrlChanged();
+        doReturn(CURRENT_TAB_ID).when(mTab).getId();
 
+        mMediator.onUrlChanged();
         verify(mCookieControlsBridge, times(1)).updateWebContents(any(), any());
+
+        mMediator.onUrlChanged();
+        verify(mCookieControlsBridge, times(1)).updateWebContents(any(), any());
+
+        doReturn(NEW_TAB_ID).when(mTab).getId();
+        mMediator.onUrlChanged();
+        verify(mCookieControlsBridge, times(2)).updateWebContents(any(), any());
+    }
+
+    @Test
+    @SmallTest
+    public void onUrlChanged_whenTabNotChanging_shouldNotUpdateWebContents() {
+        mMediator.setCookieControlsBridge(mCookieControlsBridge);
+        doReturn(mWebContents).when(mTab).getWebContents();
+        doReturn(mTab).when(mLocationBarDataProvider).getTab();
+
+        doReturn(CURRENT_TAB_ID).when(mTab).getId();
+
+        mMediator.onUrlChanged();
+        verify(mCookieControlsBridge, times(1)).updateWebContents(any(), any());
+
+        mMediator.onUrlChanged();
+        verify(mCookieControlsBridge, times(1)).updateWebContents(any(), any());
+    }
+
+    @Test
+    @SmallTest
+    public void onUrlChanged_whenTabCrashing_shouldUpdateWebContents() {
+        mMediator.setCookieControlsBridge(mCookieControlsBridge);
+        doReturn(mWebContents).when(mTab).getWebContents();
+        doReturn(mTab).when(mLocationBarDataProvider).getTab();
+
+        doReturn(CURRENT_TAB_ID).when(mTab).getId();
+
+        mMediator.onUrlChanged();
+        verify(mCookieControlsBridge, times(1)).updateWebContents(any(), any());
+
+        // Tab crashed, need to update the web contents at next url change.
+        mMediator.onTabCrashed();
+        mMediator.onUrlChanged();
+        verify(mCookieControlsBridge, times(2)).updateWebContents(any(), any());
+
+        // Subsequent url changes on the same tab should not trigger any web contents update.
+        mMediator.onUrlChanged();
+        verify(mCookieControlsBridge, times(2)).updateWebContents(any(), any());
     }
 
     @Test
