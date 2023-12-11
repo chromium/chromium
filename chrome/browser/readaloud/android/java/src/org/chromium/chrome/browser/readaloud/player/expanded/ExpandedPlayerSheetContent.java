@@ -18,6 +18,7 @@ import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.Log;
+import org.chromium.chrome.browser.readaloud.player.Colors;
 import org.chromium.chrome.browser.readaloud.player.InteractionHandler;
 import org.chromium.chrome.browser.readaloud.player.PlayerProperties;
 import org.chromium.chrome.browser.readaloud.player.R;
@@ -85,6 +86,10 @@ public class ExpandedPlayerSheetContent implements BottomSheetContent {
         mNormalLayout = (LinearLayout) mContentView.findViewById(R.id.normal_layout);
         mErrorLayout = (LinearLayout) mContentView.findViewById(R.id.error_layout);
         mSeekBar = (SeekBar) mContentView.findViewById(R.id.readaloud_expanded_player_seek_bar);
+
+        // Apply dynamic colors.
+        Colors.setBottomSheetContentBackground(mContentView);
+        Colors.setProgressBarColor(mSeekBar);
     }
 
     public void onPlaybackStateChanged(@PlaybackListener.State int state) {

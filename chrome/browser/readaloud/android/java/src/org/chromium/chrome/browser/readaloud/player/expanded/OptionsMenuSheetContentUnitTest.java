@@ -12,10 +12,8 @@ import static org.mockito.Mockito.eq;
 import static org.mockito.Mockito.verify;
 
 import android.app.Activity;
-import android.content.Context;
 
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.test.core.app.ApplicationProvider;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -46,21 +44,19 @@ public class OptionsMenuSheetContentUnitTest {
     @Mock private InteractionHandler mHandler;
 
     private Activity mActivity;
-    private Context mContext;
     private Menu mMenu;
     private OptionsMenuSheetContent mContent;
 
     @Before
     public void setUp() {
         MockitoAnnotations.initMocks(this);
-        mContext = ApplicationProvider.getApplicationContext();
         mActivity = Robolectric.buildActivity(AppCompatActivity.class).setup().get();
         // Need to set theme before inflating layout.
         mActivity.setTheme(R.style.Theme_BrowserUI_DayNight);
         mMenu = (Menu) mActivity.getLayoutInflater().inflate(R.layout.readaloud_menu, null);
         mContent =
                 new OptionsMenuSheetContent(
-                        mContext, mBottomSheetContent, mBottomSheetController, mMenu, mModel);
+                        mActivity, mBottomSheetContent, mBottomSheetController, mMenu, mModel);
     }
 
     @Test

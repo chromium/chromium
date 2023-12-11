@@ -92,7 +92,7 @@ public class ExpandedPlayerSheetContentUnitTest {
         mErrorLayout = (LinearLayout) mContentView.findViewById(R.id.error_layout);
         mContent =
                 new ExpandedPlayerSheetContent(
-                        mContext, mBottomSheetController, mContentView, mModel);
+                        mActivity, mBottomSheetController, mContentView, mModel);
         mContent.setOptionsMenuSheetContent(mOptionsMenu);
         mContent.setSpeedMenuSheetContent(mSpeedMenu);
         // PlayerMediator is responsible for setting initial speed.

@@ -208,6 +208,7 @@ robolectric_library("junit") {
 
 android_library("player_java") {
   sources = [
+    "java/src/org/chromium/chrome/browser/readaloud/player/Colors.java",
     "java/src/org/chromium/chrome/browser/readaloud/player/InteractionHandler.java",
     "java/src/org/chromium/chrome/browser/readaloud/player/PlayerCoordinator.java",
     "java/src/org/chromium/chrome/browser/readaloud/player/PlayerMediator.java",

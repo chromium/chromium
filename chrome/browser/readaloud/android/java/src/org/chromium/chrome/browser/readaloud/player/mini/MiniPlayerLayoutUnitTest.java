@@ -323,6 +323,15 @@ public class MiniPlayerLayoutUnitTest {
         assertNotNull(delegate);
     }
 
+    @Test
+    @Config(qualifiers = "night")
+    public void testDarkModeBackgroundColor() {
+        View spyBackdrop = replaceWithSpy(R.id.backdrop);
+        mLayout.onFinishInflate();
+        verify(spyBackdrop).setBackgroundColor(eq(0xff343435));
+        verify(mMediator).onBackgroundColorUpdated(eq(0xff343435));
+    }
+
     private View replaceWithSpy(int childId) {
         View original = mLayout.findViewById(childId);
         ViewGroup parent = (ViewGroup) original.getParent();
