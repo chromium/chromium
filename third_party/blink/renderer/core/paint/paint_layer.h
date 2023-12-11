@@ -243,12 +243,7 @@ class CORE_EXPORT PaintLayer : public GarbageCollected<PaintLayer>,
   // of this layer. Normally the parent layer is the containing layer, except
   // for out of flow positioned, floating and multicol spanner layers whose
   // containing layer might be an ancestor of the parent layer.
-  // If |ancestor| is specified, |*skippedAncestor| will be set to true if
-  // |ancestor| is found in the ancestry chain between this layer and the
-  // containing block layer; if not found, it will be set to false. Either both
-  // |ancestor| and |skippedAncestor| should be nullptr, or none of them should.
-  PaintLayer* ContainingLayer(const PaintLayer* ancestor = nullptr,
-                              bool* skipped_ancestor = nullptr) const;
+  PaintLayer* ContainingLayer() const;
 
   // The hitTest() method looks for mouse events by walking layers that
   // intersect the point from front to back.
