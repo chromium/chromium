@@ -96,7 +96,10 @@ void GeometryCache::OnGeometryChanged(const gfx::Rect& geometry) {
   geometry_ = geometry;
 
   if (Ready() && (!was_ready || geometry_changed)) {
-    bounds_changed_callback_.Run(old_geometry, geometry_);
+    auto parent_offset =
+        parent_ ? parent_->GetBoundsPx().OffsetFromOrigin() : gfx::Vector2d();
+    bounds_changed_callback_.Run(old_geometry + parent_offset,
+                                 geometry_ + parent_offset);
   }
 }
 
