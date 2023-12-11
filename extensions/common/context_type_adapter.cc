@@ -34,9 +34,9 @@ mojom::ContextType FeatureContextToMojomContext(
     case Feature::USER_SCRIPT_CONTEXT:
       return mojom::ContextType::kUserScript;
     case Feature::UNSPECIFIED_CONTEXT:
-      // We never expect to receive an unspecified context. We separate this
-      // NOTREACHED_NORETURN() (and don't just `break;`) to get separate reports
-      // if we do ever hit this.
+      // We never expect to receive an unspecified context from an IPC message.
+      // We separate this NOTREACHED_NORETURN() (and don't just `break;`) to get
+      // separate reports if we do ever hit this.
       NOTREACHED_NORETURN();
   }
 
@@ -66,6 +66,9 @@ Feature::Context MojomContextToFeatureContext(
       return Feature::OFFSCREEN_EXTENSION_CONTEXT;
     case mojom::ContextType::kUserScript:
       return Feature::USER_SCRIPT_CONTEXT;
+    case mojom::ContextType::kUnspecified:
+      // We never expect to receive an unspecified context from an IPC message.
+      NOTREACHED_NORETURN();
   }
 }
 
