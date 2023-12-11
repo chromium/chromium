@@ -517,11 +517,8 @@ bool SVGSVGElement::LayoutObjectIsNeeded(const DisplayStyle& style) const {
 void SVGSVGElement::AttachLayoutTree(AttachContext& context) {
   SVGGraphicsElement::AttachLayoutTree(context);
 
-  if (GetLayoutObject()) {
-    time_container_->DidAttachLayoutObject();
-    if (GetLayoutObject()->IsSVGRoot()) {
-      To<LayoutSVGRoot>(GetLayoutObject())->IntrinsicSizingInfoChanged();
-    }
+  if (GetLayoutObject() && GetLayoutObject()->IsSVGRoot()) {
+    To<LayoutSVGRoot>(GetLayoutObject())->IntrinsicSizingInfoChanged();
   }
 }
 
