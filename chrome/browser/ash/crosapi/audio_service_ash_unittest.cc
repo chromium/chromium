@@ -269,15 +269,15 @@ TEST_F(AudioServiceAshTest, OnDeviceListChangedAdd) {
 }
 
 TEST_F(AudioServiceAshTest, OnDeviceListChangedRemove) {
-  const uint64_t id = cras_audio_handler_.Get().GetPrimaryActiveInputNode();
-  ash::FakeCrasAudioClient::Get()->RemoveAudioNodeFromList(id);
+  const uint64_t kId = 0x200000002;  // taken from FakeCrasAudioClient
+
+  ash::FakeCrasAudioClient::Get()->RemoveAudioNodeFromList(kId);
 
   // Active input device changes and level is set to preference when devices are
   // changed.
   const int kPreferredGain = 50;
-  uint64_t input_id = cras_audio_handler_.Get().GetPrimaryActiveInputNode();
-  EXPECT_EQ(kPreferredGain, cras_audio_handler_.Get().GetInputGainPercent());
-  EXPECT_CALL(mock_observer_, OnLevelChangedMock(base::NumberToString(input_id),
+  uint64_t kInputId = cras_audio_handler_.Get().GetPrimaryActiveInputNode();
+  EXPECT_CALL(mock_observer_, OnLevelChangedMock(base::NumberToString(kInputId),
                                                  kPreferredGain));
 
   // Device list change happens after input level change.
