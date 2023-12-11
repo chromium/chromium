@@ -219,6 +219,7 @@ cr-radio-group {
   box-sizing: border-box;
   padding-bottom: var(--cr-section-vertical-padding);
   padding-top: var(--cr-section-vertical-padding);
+  padding-inline-end: 20px;
 }
 
 /* We use an explicit tag to remove the top border, rather than a
