@@ -31,6 +31,7 @@ import androidx.test.filters.MediumTest;
 import androidx.test.platform.app.InstrumentationRegistry;
 import androidx.test.runner.lifecycle.Stage;
 
+import org.chromium.base.BuildInfo;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
@@ -771,6 +772,7 @@ public class SyncConsentFragmentTest {
                                             accountInfo.getEmail());
                         });
         onView(withId(R.id.signin_details_description)).perform(ViewUtils.clickOnClickableSpan(0));
+        simulateDeviceLockReadyOnAutomotive();
         // Wait for the sync consent to be set.
         CriteriaHelper.pollUiThread(
                 () -> {
@@ -987,6 +989,7 @@ public class SyncConsentFragmentTest {
                                             accountInfo.getEmail());
                         });
         onView(withId(R.id.positive_button)).perform(click());
+        simulateDeviceLockReadyOnAutomotive();
         // Wait for sync opt-in process to finish.
         CriteriaHelper.pollUiThread(
                 () -> {
@@ -1023,6 +1026,7 @@ public class SyncConsentFragmentTest {
                                             accountInfo.getEmail());
                         });
         onView(withId(R.id.positive_button)).perform(click());
+        simulateDeviceLockReadyOnAutomotive();
         // Wait for sync opt-in process to finish.
         CriteriaHelper.pollUiThread(
                 () -> {
@@ -1250,7 +1254,7 @@ public class SyncConsentFragmentTest {
         onView(withId(R.id.device_lock_title)).check(matches(isDisplayed()));
         onView(withText(R.string.signin_accept_button)).check(doesNotExist());
 
-        simulateDeviceLockReady();
+        simulateDeviceLockReadyOnAutomotive();
 
         // Wait for the sync consent to be set and the activity has finished.
         CriteriaHelper.pollUiThread(
@@ -1338,7 +1342,7 @@ public class SyncConsentFragmentTest {
         }
         onView(withId(R.id.signin_details_description)).perform(ViewUtils.clickOnClickableSpan(0));
 
-        simulateDeviceLockReady();
+        simulateDeviceLockReadyOnAutomotive();
 
         // Wait for sync opt-in process to finish.
         CriteriaHelper.pollUiThread(
@@ -1412,7 +1416,9 @@ public class SyncConsentFragmentTest {
         ApplicationTestUtils.waitForActivityState(mSyncConsentActivity, Stage.DESTROYED);
     }
 
-    private void simulateDeviceLockReady() {
+    private void simulateDeviceLockReadyOnAutomotive() {
+        if (!BuildInfo.getInstance().isAutomotive) return;
+
         SyncConsentFragment syncConsentFragment =
                 (SyncConsentFragment)
                         mSyncConsentActivity
