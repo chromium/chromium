@@ -16,6 +16,7 @@
 #include "chrome/common/extensions/api/tabs.h"
 #include "components/tab_groups/tab_group_id.h"
 #include "extensions/common/features/feature.h"
+#include "extensions/common/mojom/context_type.mojom-forward.h"
 #include "ui/base/window_open_disposition.h"
 
 class Browser;
@@ -86,7 +87,7 @@ class ExtensionTabUtil {
   static int GetWindowIdOfTab(const content::WebContents* web_contents);
   static base::Value::List CreateTabList(const Browser* browser,
                                          const Extension* extension,
-                                         Feature::Context context);
+                                         mojom::ContextType context);
 
   static Browser* GetBrowserFromWindowID(
       const ChromeExtensionFunctionDetails& details,
@@ -134,7 +135,7 @@ class ExtensionTabUtil {
       const Browser& browser,
       const Extension* extension,
       PopulateTabBehavior populate_tab_behavior,
-      Feature::Context context);
+      mojom::ContextType context);
 
   // Creates a tab MutedInfo object (see chrome/common/extensions/api/tabs.json)
   // with information about the mute state of a browser tab.
@@ -144,12 +145,12 @@ class ExtensionTabUtil {
   // extension and web contents. This is the preferred way to get
   // ScrubTabBehavior.
   static ScrubTabBehavior GetScrubTabBehavior(const Extension* extension,
-                                              Feature::Context context,
+                                              mojom::ContextType context,
                                               content::WebContents* contents);
   // Only use this if there is no access to a specific WebContents, such as when
   // the tab has been closed and there is no active WebContents anymore.
   static ScrubTabBehavior GetScrubTabBehavior(const Extension* extension,
-                                              Feature::Context context,
+                                              mojom::ContextType context,
                                               const GURL& url);
 
   // Removes any privacy-sensitive fields from a Tab object if appropriate,

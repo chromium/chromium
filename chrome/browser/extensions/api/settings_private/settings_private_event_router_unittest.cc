@@ -16,6 +16,7 @@
 #include "extensions/browser/event_router_factory.h"
 #include "extensions/browser/process_map.h"
 #include "extensions/browser/process_map_factory.h"
+#include "extensions/common/mojom/context_type.mojom.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace extensions {
@@ -24,10 +25,10 @@ namespace {
 // A fake that pretends that all contexts are WebUI.
 class ProcessMapFake : public ProcessMap {
  public:
-  Feature::Context GetMostLikelyContextType(const Extension* extension,
-                                            int process_id,
-                                            const GURL* url) const override {
-    return Feature::WEBUI_CONTEXT;
+  mojom::ContextType GetMostLikelyContextType(const Extension* extension,
+                                              int process_id,
+                                              const GURL* url) const override {
+    return mojom::ContextType::kWebUi;
   }
 };
 

@@ -13,6 +13,7 @@
 #include "components/keyed_service/core/keyed_service.h"
 #include "content/public/browser/site_instance.h"
 #include "extensions/common/features/feature.h"
+#include "extensions/common/mojom/context_type.mojom-forward.h"
 
 namespace content {
 class BrowserContext;
@@ -101,10 +102,10 @@ class ProcessMap : public KeyedService {
 
   // Returns true if the given `process_id` is considered a privileged context
   // for the given `extension`. That is, if it would *probably* correspond to a
-  // Feature::BLESSED_EXTENSION_CONTEXT.
+  // mojom::ContextType::kPrivilegedExtension.
   // NOTE: There are circumstances in which a context from a privileged
   // extension *process* may not correspond to a privileged extension *context*
-  // (Feature::BLESSED_EXTENSION_CONTEXT).
+  // (mojom::ContextType::kPrivilegedExtension).
   // These include, for instance, sandboxed extension frames or offscreen
   // documents, which run in the same process, but are not considered
   // privileged contexts.
@@ -145,7 +146,7 @@ class ProcessMap : public KeyedService {
   // context type).
   bool CanProcessHostContextType(const Extension* extension,
                                  const content::RenderProcessHost& process,
-                                 Feature::Context context_type);
+                                 mojom::ContextType context_type);
 
   // Gets the most likely context type for the process with ID |process_id|
   // which hosts Extension |extension|, if any (may be nullptr). Context types
@@ -188,9 +189,10 @@ class ProcessMap : public KeyedService {
   //     moment, and once OOP iframes exist then there won't even be such a
   //     thing as an unblessed_extension context.
   //   - For anything else, web_page.
-  virtual Feature::Context GetMostLikelyContextType(const Extension* extension,
-                                                    int process_id,
-                                                    const GURL* url) const;
+  virtual mojom::ContextType GetMostLikelyContextType(
+      const Extension* extension,
+      int process_id,
+      const GURL* url) const;
 
   void set_is_lock_screen_context(bool is_lock_screen_context) {
     is_lock_screen_context_ = is_lock_screen_context;

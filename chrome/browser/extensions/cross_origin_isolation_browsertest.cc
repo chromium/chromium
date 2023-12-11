@@ -17,6 +17,7 @@
 #include "extensions/browser/process_manager.h"
 #include "extensions/browser/process_map.h"
 #include "extensions/common/features/feature.h"
+#include "extensions/common/mojom/context_type.mojom.h"
 #include "extensions/test/extension_test_message_listener.h"
 #include "extensions/test/result_catcher.h"
 #include "extensions/test/test_extension_dir.h"
@@ -335,11 +336,11 @@ IN_PROC_BROWSER_TEST_F(CrossOriginIsolationTest, WebAccessibleFrame) {
 
     GURL* url = nullptr;
     EXPECT_EQ(
-        Feature::BLESSED_EXTENSION_CONTEXT,
+        mojom::ContextType::kPrivilegedExtension,
         process_map->GetMostLikelyContextType(
             coi_extension,
             coi_background_render_frame_host->GetProcess()->GetID(), url));
-    EXPECT_EQ(Feature::BLESSED_EXTENSION_CONTEXT,
+    EXPECT_EQ(mojom::ContextType::kPrivilegedExtension,
               process_map->GetMostLikelyContextType(
                   coi_extension, extension_iframe->GetProcess()->GetID(), url));
   }
@@ -444,10 +445,10 @@ IN_PROC_BROWSER_TEST_F(CrossOriginIsolationTest, ServiceWorker) {
                                     service_worker_process->GetID()));
 
   GURL* url = nullptr;
-  EXPECT_EQ(Feature::BLESSED_EXTENSION_CONTEXT,
+  EXPECT_EQ(mojom::ContextType::kPrivilegedExtension,
             process_map->GetMostLikelyContextType(
                 coi_extension, extension_tab->GetProcess()->GetID(), url));
-  EXPECT_EQ(Feature::BLESSED_EXTENSION_CONTEXT,
+  EXPECT_EQ(mojom::ContextType::kPrivilegedExtension,
             process_map->GetMostLikelyContextType(
                 coi_extension, service_worker_process->GetID(), url));
 }

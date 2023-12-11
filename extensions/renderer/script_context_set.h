@@ -15,6 +15,7 @@
 #include "base/memory/weak_ptr.h"
 #include "extensions/common/extension_id.h"
 #include "extensions/common/features/feature.h"
+#include "extensions/common/mojom/context_type.mojom-forward.h"
 #include "extensions/common/mojom/view_type.mojom.h"
 #include "extensions/renderer/renderer_extension_registry.h"
 #include "extensions/renderer/script_context_set_iterable.h"
@@ -120,8 +121,8 @@ class ScriptContextSet : public ScriptContextSetIterable {
                                                  int32_t world_id,
                                                  bool use_effective_url);
 
-  // Returns the Feature::Context type of context for a JavaScript context.
-  Feature::Context ClassifyJavaScriptContext(
+  // Returns the mojom::ContextType type of context for a JavaScript context.
+  mojom::ContextType ClassifyJavaScriptContext(
       const Extension* extension,
       int32_t world_id,
       const GURL& url,

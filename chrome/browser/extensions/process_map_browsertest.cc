@@ -22,6 +22,7 @@
 #include "extensions/browser/guest_view/web_view/web_view_guest.h"
 #include "extensions/browser/process_map.h"
 #include "extensions/common/constants.h"
+#include "extensions/common/mojom/context_type.mojom.h"
 #include "extensions/test/extension_test_message_listener.h"
 #include "extensions/test/test_extension_dir.h"
 #include "net/dns/mock_host_resolver.h"
@@ -386,20 +387,20 @@ class ProcessMapBrowserTest : public ExtensionBrowserTest {
   void RunCanProcessHostContextTypeChecks(
       const Extension* extension,
       const content::RenderProcessHost& process,
-      const std::vector<Feature::Context>& allowed_contexts,
+      const std::vector<mojom::ContextType>& allowed_contexts,
       base::StringPiece debug_string) {
-    std::vector<Feature::Context> all_types = {
-        Feature::UNSPECIFIED_CONTEXT,
-        Feature::BLESSED_EXTENSION_CONTEXT,
-        Feature::UNBLESSED_EXTENSION_CONTEXT,
-        Feature::CONTENT_SCRIPT_CONTEXT,
-        Feature::WEB_PAGE_CONTEXT,
-        Feature::BLESSED_WEB_PAGE_CONTEXT,
-        Feature::WEBUI_CONTEXT,
-        Feature::WEBUI_UNTRUSTED_CONTEXT,
-        Feature::LOCK_SCREEN_EXTENSION_CONTEXT,
-        Feature::OFFSCREEN_EXTENSION_CONTEXT,
-        Feature::USER_SCRIPT_CONTEXT,
+    std::vector<mojom::ContextType> all_types = {
+        mojom::ContextType::kUnspecified,
+        mojom::ContextType::kPrivilegedExtension,
+        mojom::ContextType::kUnprivilegedExtension,
+        mojom::ContextType::kContentScript,
+        mojom::ContextType::kWebPage,
+        mojom::ContextType::kPrivilegedWebPage,
+        mojom::ContextType::kWebUi,
+        mojom::ContextType::kUntrustedWebUi,
+        mojom::ContextType::kLockscreenExtension,
+        mojom::ContextType::kOffscreenExtension,
+        mojom::ContextType::kUserScript,
     };
 
     for (auto context_type : all_types) {
@@ -453,11 +454,11 @@ IN_PROC_BROWSER_TEST_F(ProcessMapBrowserTest, CanHostContextType_WebPages) {
   content::RenderProcessHost& web_page_process = GetActiveMainFrameProcess();
 
   RunCanProcessHostContextTypeChecks(extension, web_page_process,
-                                     {Feature::CONTENT_SCRIPT_CONTEXT},
+                                     {mojom::ContextType::kContentScript},
                                      "web page with extension passed");
   RunCanProcessHostContextTypeChecks(
       nullptr, web_page_process,
-      {Feature::WEB_PAGE_CONTEXT, Feature::WEBUI_UNTRUSTED_CONTEXT},
+      {mojom::ContextType::kWebPage, mojom::ContextType::kUntrustedWebUi},
       "web page without extension passed");
 }
 
@@ -484,10 +485,10 @@ IN_PROC_BROWSER_TEST_F(ProcessMapBrowserTest, CanHostContextType_WebUiPages) {
   content::RenderProcessHost& webui_process = GetActiveMainFrameProcess();
 
   RunCanProcessHostContextTypeChecks(extension, webui_process,
-                                     {Feature::CONTENT_SCRIPT_CONTEXT},
+                                     {mojom::ContextType::kContentScript},
                                      "webui page with extension passed");
   RunCanProcessHostContextTypeChecks(nullptr, webui_process,
-                                     {Feature::WEBUI_CONTEXT},
+                                     {mojom::ContextType::kWebUi},
                                      "webui page without extension passed");
 }
 
@@ -537,13 +538,13 @@ IN_PROC_BROWSER_TEST_F(ProcessMapBrowserTest,
 
   content::RenderProcessHost& extension1_process = GetActiveMainFrameProcess();
 
-  RunCanProcessHostContextTypeChecks(
-      extension1, extension1_process,
-      {Feature::CONTENT_SCRIPT_CONTEXT, Feature::BLESSED_EXTENSION_CONTEXT,
-       Feature::OFFSCREEN_EXTENSION_CONTEXT},
-      "extension1 page with extension1 passed");
+  RunCanProcessHostContextTypeChecks(extension1, extension1_process,
+                                     {mojom::ContextType::kContentScript,
+                                      mojom::ContextType::kPrivilegedExtension,
+                                      mojom::ContextType::kOffscreenExtension},
+                                     "extension1 page with extension1 passed");
   RunCanProcessHostContextTypeChecks(extension2, extension1_process,
-                                     {Feature::CONTENT_SCRIPT_CONTEXT},
+                                     {mojom::ContextType::kContentScript},
                                      "extension1 page with extension2 passed");
   RunCanProcessHostContextTypeChecks(
       nullptr, extension1_process, {},
@@ -555,13 +556,13 @@ IN_PROC_BROWSER_TEST_F(ProcessMapBrowserTest,
 
   content::RenderProcessHost& extension2_process = GetActiveMainFrameProcess();
 
-  RunCanProcessHostContextTypeChecks(
-      extension2, extension2_process,
-      {Feature::CONTENT_SCRIPT_CONTEXT, Feature::BLESSED_EXTENSION_CONTEXT,
-       Feature::OFFSCREEN_EXTENSION_CONTEXT},
-      "extension2 page with extension2 passed");
+  RunCanProcessHostContextTypeChecks(extension2, extension2_process,
+                                     {mojom::ContextType::kContentScript,
+                                      mojom::ContextType::kPrivilegedExtension,
+                                      mojom::ContextType::kOffscreenExtension},
+                                     "extension2 page with extension2 passed");
   RunCanProcessHostContextTypeChecks(extension1, extension2_process,
-                                     {Feature::CONTENT_SCRIPT_CONTEXT},
+                                     {mojom::ContextType::kContentScript},
                                      "extension2 page with extension1 passed");
   RunCanProcessHostContextTypeChecks(
       nullptr, extension2_process, {},
@@ -597,11 +598,11 @@ IN_PROC_BROWSER_TEST_F(ProcessMapBrowserTest,
   content::RenderProcessHost& page_process = GetActiveMainFrameProcess();
 
   RunCanProcessHostContextTypeChecks(extension, page_process,
-                                     {Feature::CONTENT_SCRIPT_CONTEXT},
+                                     {mojom::ContextType::kContentScript},
                                      "web page with extension passed");
   RunCanProcessHostContextTypeChecks(
       nullptr, page_process,
-      {Feature::WEB_PAGE_CONTEXT, Feature::WEBUI_UNTRUSTED_CONTEXT},
+      {mojom::ContextType::kWebPage, mojom::ContextType::kUntrustedWebUi},
       "web page without extension passed");
 }
 
@@ -797,8 +798,9 @@ IN_PROC_BROWSER_TEST_F(ProcessMapBrowserTest,
 
   RunCanProcessHostContextTypeChecks(
       extension, main_frame_process,
-      {Feature::CONTENT_SCRIPT_CONTEXT, Feature::BLESSED_EXTENSION_CONTEXT,
-       Feature::OFFSCREEN_EXTENSION_CONTEXT},
+      {mojom::ContextType::kContentScript,
+       mojom::ContextType::kPrivilegedExtension,
+       mojom::ContextType::kOffscreenExtension},
       "main frame process with extension passed");
   RunCanProcessHostContextTypeChecks(
       nullptr, main_frame_process, {},
@@ -806,8 +808,9 @@ IN_PROC_BROWSER_TEST_F(ProcessMapBrowserTest,
 
   RunCanProcessHostContextTypeChecks(
       extension, sandboxed_frame_process,
-      {Feature::CONTENT_SCRIPT_CONTEXT, Feature::BLESSED_EXTENSION_CONTEXT,
-       Feature::OFFSCREEN_EXTENSION_CONTEXT},
+      {mojom::ContextType::kContentScript,
+       mojom::ContextType::kPrivilegedExtension,
+       mojom::ContextType::kOffscreenExtension},
       "sandboxed frame process with extension passed");
   RunCanProcessHostContextTypeChecks(
       nullptr, sandboxed_frame_process, {},
@@ -848,22 +851,24 @@ IN_PROC_BROWSER_TEST_F(ProcessMapBrowserTest, CanHostContextType_WebViews) {
   // webviews).
   RunCanProcessHostContextTypeChecks(
       extension, *embedder->GetPrimaryMainFrame()->GetProcess(),
-      {Feature::CONTENT_SCRIPT_CONTEXT, Feature::BLESSED_EXTENSION_CONTEXT,
-       Feature::OFFSCREEN_EXTENSION_CONTEXT},
+      {mojom::ContextType::kContentScript,
+       mojom::ContextType::kPrivilegedExtension,
+       mojom::ContextType::kOffscreenExtension},
       "embedder process");
 
   // The webview can only host content scripts, user scripts, and
   // unblessed extension contexts (accessible resources).
   RunCanProcessHostContextTypeChecks(
       extension, *webview->GetPrimaryMainFrame()->GetProcess(),
-      {Feature::CONTENT_SCRIPT_CONTEXT, Feature::UNBLESSED_EXTENSION_CONTEXT},
+      {mojom::ContextType::kContentScript,
+       mojom::ContextType::kUnprivilegedExtension},
       "webview process with extension passed");
 
   // If the extension isn't associated with the call, the webview could only
   // possibly contain web pages and untrusted web ui.
   RunCanProcessHostContextTypeChecks(
       nullptr, *webview->GetPrimaryMainFrame()->GetProcess(),
-      {Feature::WEB_PAGE_CONTEXT, Feature::WEBUI_UNTRUSTED_CONTEXT},
+      {mojom::ContextType::kWebPage, mojom::ContextType::kUntrustedWebUi},
       "webview process without extension passed");
 }
 
@@ -892,11 +897,11 @@ IN_PROC_BROWSER_TEST_F(ProcessMapBrowserTest, CanHostContextType_UserScripts) {
 
   RunCanProcessHostContextTypeChecks(
       extension, web_page_process,
-      {Feature::CONTENT_SCRIPT_CONTEXT, Feature::USER_SCRIPT_CONTEXT},
+      {mojom::ContextType::kContentScript, mojom::ContextType::kUserScript},
       "page with injected user script with extension passed");
   RunCanProcessHostContextTypeChecks(
       nullptr, web_page_process,
-      {Feature::WEB_PAGE_CONTEXT, Feature::WEBUI_UNTRUSTED_CONTEXT},
+      {mojom::ContextType::kWebPage, mojom::ContextType::kUntrustedWebUi},
       "page with injected user script without extension passed");
 }
 

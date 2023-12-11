@@ -6,6 +6,7 @@
 
 #include "base/values.h"
 #include "extensions/common/manifest.h"
+#include "extensions/common/mojom/context_type.mojom.h"
 
 namespace extensions {
 
@@ -17,7 +18,7 @@ ManifestFeature::~ManifestFeature() {
 
 Feature::Availability ManifestFeature::IsAvailableToContextImpl(
     const Extension* extension,
-    Feature::Context context,
+    mojom::ContextType context,
     const GURL& url,
     Feature::Platform platform,
     int context_id,

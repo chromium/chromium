@@ -23,6 +23,7 @@
 #include "extensions/common/extension_api.h"
 #include "extensions/common/extension_urls.h"
 #include "extensions/common/manifest_handlers/sandboxed_page_info.h"
+#include "extensions/common/mojom/context_type.mojom.h"
 #include "extensions/common/permissions/permissions_data.h"
 #include "extensions/renderer/dispatcher.h"
 #include "extensions/renderer/isolated_world_manager.h"
@@ -54,29 +55,29 @@ GURL GetEffectiveDocumentURL(
       allow_inaccessible_parents);
 }
 
-std::string GetContextTypeDescriptionString(Feature::Context context_type) {
+std::string GetContextTypeDescriptionString(mojom::ContextType context_type) {
   switch (context_type) {
-    case Feature::UNSPECIFIED_CONTEXT:
+    case mojom::ContextType::kUnspecified:
       return "UNSPECIFIED";
-    case Feature::BLESSED_EXTENSION_CONTEXT:
+    case mojom::ContextType::kPrivilegedExtension:
       return "BLESSED_EXTENSION";
-    case Feature::UNBLESSED_EXTENSION_CONTEXT:
+    case mojom::ContextType::kUnprivilegedExtension:
       return "UNBLESSED_EXTENSION";
-    case Feature::CONTENT_SCRIPT_CONTEXT:
+    case mojom::ContextType::kContentScript:
       return "CONTENT_SCRIPT";
-    case Feature::WEB_PAGE_CONTEXT:
+    case mojom::ContextType::kWebPage:
       return "WEB_PAGE";
-    case Feature::BLESSED_WEB_PAGE_CONTEXT:
+    case mojom::ContextType::kPrivilegedWebPage:
       return "BLESSED_WEB_PAGE";
-    case Feature::WEBUI_CONTEXT:
+    case mojom::ContextType::kWebUi:
       return "WEBUI";
-    case Feature::WEBUI_UNTRUSTED_CONTEXT:
+    case mojom::ContextType::kUntrustedWebUi:
       return "WEBUI_UNTRUSTED";
-    case Feature::LOCK_SCREEN_EXTENSION_CONTEXT:
+    case mojom::ContextType::kLockscreenExtension:
       return "LOCK_SCREEN_EXTENSION";
-    case Feature::OFFSCREEN_EXTENSION_CONTEXT:
+    case mojom::ContextType::kOffscreenExtension:
       return "OFFSCREEN_EXTENSION_CONTEXT";
-    case Feature::USER_SCRIPT_CONTEXT:
+    case mojom::ContextType::kUserScript:
       return "USER_SCRIPT_CONTEXT";
   }
   NOTREACHED();
@@ -127,9 +128,9 @@ ScriptContext::ScopedFrameDocumentLoader::~ScopedFrameDocumentLoader() {
 ScriptContext::ScriptContext(const v8::Local<v8::Context>& v8_context,
                              blink::WebLocalFrame* web_frame,
                              const Extension* extension,
-                             Feature::Context context_type,
+                             mojom::ContextType context_type,
                              const Extension* effective_extension,
-                             Feature::Context effective_context_type)
+                             mojom::ContextType effective_context_type)
     : is_valid_(true),
       v8_context_(v8_context->GetIsolate(), v8_context),
       web_frame_(web_frame),
@@ -276,7 +277,7 @@ Feature::Availability ScriptContext::GetAvailability(
 
   // Special case #2: If it's a user script world, there are specific knobs for
   // enabling or disabling APIs.
-  if (context_type_ == Feature::USER_SCRIPT_CONTEXT) {
+  if (context_type_ == mojom::ContextType::kUserScript) {
     CHECK(extension());
 
     static const constexpr char* kMessagingApis[] = {
@@ -422,7 +423,7 @@ bool ScriptContext::HasAPIPermission(mojom::APIPermissionID permission) const {
     return effective_extension_->permissions_data()->HasAPIPermission(
         permission);
   }
-  if (context_type() == Feature::WEB_PAGE_CONTEXT) {
+  if (context_type() == mojom::ContextType::kWebPage) {
     // Only web page contexts may be granted content capabilities. Other
     // contexts are either privileged WebUI or extensions with their own set of
     // permissions.

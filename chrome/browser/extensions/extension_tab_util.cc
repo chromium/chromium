@@ -65,6 +65,7 @@
 #include "extensions/common/manifest_constants.h"
 #include "extensions/common/manifest_handlers/incognito_info.h"
 #include "extensions/common/manifest_handlers/options_page_info.h"
+#include "extensions/common/mojom/context_type.mojom.h"
 #include "extensions/common/permissions/api_permission.h"
 #include "extensions/common/permissions/permissions_data.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -135,14 +136,14 @@ bool IsFileUrl(const GURL& url) {
 
 ExtensionTabUtil::ScrubTabBehaviorType GetScrubTabBehaviorImpl(
     const Extension* extension,
-    Feature::Context context,
+    mojom::ContextType context,
     const GURL& url,
     int tab_id) {
-  if (context == Feature::Context::WEBUI_CONTEXT) {
+  if (context == mojom::ContextType::kWebUi) {
     return ExtensionTabUtil::kDontScrubTab;
   }
 
-  if (context == Feature::Context::WEBUI_UNTRUSTED_CONTEXT) {
+  if (context == mojom::ContextType::kUntrustedWebUi) {
     return ExtensionTabUtil::kScrubTabFully;
   }
 
@@ -526,7 +527,7 @@ api::tabs::Tab ExtensionTabUtil::CreateTabObject(
 
 base::Value::List ExtensionTabUtil::CreateTabList(const Browser* browser,
                                                   const Extension* extension,
-                                                  Feature::Context context) {
+                                                  mojom::ContextType context) {
   base::Value::List tab_list;
   TabStripModel* tab_strip = browser->tab_strip_model();
   for (int i = 0; i < tab_strip->count(); ++i) {
@@ -546,7 +547,7 @@ base::Value::Dict ExtensionTabUtil::CreateWindowValueForExtension(
     const Browser& browser,
     const Extension* extension,
     PopulateTabBehavior populate_tab_behavior,
-    Feature::Context context) {
+    mojom::ContextType context) {
   base::Value::Dict dict;
 
   dict.Set(tabs_constants::kIdKey, browser.session_id().id());
@@ -616,7 +617,7 @@ api::tabs::MutedInfo ExtensionTabUtil::CreateMutedInfo(
 // static
 ExtensionTabUtil::ScrubTabBehavior ExtensionTabUtil::GetScrubTabBehavior(
     const Extension* extension,
-    Feature::Context context,
+    mojom::ContextType context,
     content::WebContents* contents) {
   int tab_id = GetTabId(contents);
   ScrubTabBehavior behavior;
@@ -635,7 +636,7 @@ ExtensionTabUtil::ScrubTabBehavior ExtensionTabUtil::GetScrubTabBehavior(
 // static
 ExtensionTabUtil::ScrubTabBehavior ExtensionTabUtil::GetScrubTabBehavior(
     const Extension* extension,
-    Feature::Context context,
+    mojom::ContextType context,
     const GURL& url) {
   ScrubTabBehaviorType type =
       GetScrubTabBehaviorImpl(extension, context, url, api::tabs::TAB_ID_NONE);

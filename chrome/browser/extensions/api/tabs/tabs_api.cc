@@ -108,6 +108,7 @@
 #include "extensions/common/manifest_constants.h"
 #include "extensions/common/manifest_handlers/default_locale_handler.h"
 #include "extensions/common/message_bundle.h"
+#include "extensions/common/mojom/context_type.mojom.h"
 #include "extensions/common/mojom/host_id.mojom.h"
 #include "extensions/common/permissions/permissions_data.h"
 #include "extensions/common/user_script.h"
@@ -303,7 +304,7 @@ bool ExtensionHasLockedFullscreenPermission(const Extension* extension) {
 
 api::tabs::Tab CreateTabObjectHelper(WebContents* contents,
                                      const Extension* extension,
-                                     Feature::Context context,
+                                     mojom::ContextType context,
                                      TabStripModel* tab_strip,
                                      int tab_index) {
   ExtensionTabUtil::ScrubTabBehavior scrub_tab_behavior =
@@ -603,8 +604,8 @@ ExtensionFunction::ResponseAction WindowsCreateFunction::Run() {
   TabStripModel* source_tab_strip = nullptr;
   int tab_index = -1;
 
-  DCHECK(extension() || source_context_type() == Feature::WEBUI_CONTEXT ||
-         source_context_type() == Feature::WEBUI_UNTRUSTED_CONTEXT);
+  DCHECK(extension() || source_context_type() == mojom::ContextType::kWebUi ||
+         source_context_type() == mojom::ContextType::kUntrustedWebUi);
   absl::optional<windows::Create::Params::CreateData>& create_data =
       params->create_data;
 

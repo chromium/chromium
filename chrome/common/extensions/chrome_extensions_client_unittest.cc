@@ -15,6 +15,7 @@
 #include "extensions/common/file_util.h"
 #include "extensions/common/manifest.h"
 #include "extensions/common/manifest_handler.h"
+#include "extensions/common/mojom/context_type.mojom.h"
 #include "extensions/test/test_context_data.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -39,7 +40,7 @@ base::span<const char* const> GetFeatureList() {
 
 bool FeatureDelegatedCheck(const std::string& api_full_name,
                            const Extension* extension,
-                           Feature::Context context,
+                           mojom::ContextType context,
                            const GURL& url,
                            Feature::Platform platform,
                            int context_id,
@@ -70,7 +71,7 @@ TEST_F(ChromeExtensionsClientTest, FeatureDelegatedAvailabilityCheckMap) {
     bool allowed_result =
         map.at("AllowedFeature")
             .Run("AllowedFeature", /*extension=*/nullptr,
-                 Feature::Context::UNSPECIFIED_CONTEXT, GURL(),
+                 mojom::ContextType::kUnspecified, GURL(),
                  Feature::Platform::UNSPECIFIED_PLATFORM, /*context_id*/ 0,
                  /*check_developer_mode=*/false, TestContextData());
     EXPECT_TRUE(allowed_result);
@@ -79,7 +80,7 @@ TEST_F(ChromeExtensionsClientTest, FeatureDelegatedAvailabilityCheckMap) {
     bool disallowed_result =
         map.at("DisallowedFeature")
             .Run("DisallowedFeature", /*extension=*/nullptr,
-                 Feature::Context::UNSPECIFIED_CONTEXT, GURL(),
+                 mojom::ContextType::kUnspecified, GURL(),
                  Feature::Platform::UNSPECIFIED_PLATFORM, /*context_id*/ 0,
                  /*check_developer_mode=*/false, TestContextData());
     EXPECT_FALSE(disallowed_result);

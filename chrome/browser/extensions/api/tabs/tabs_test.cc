@@ -61,6 +61,7 @@
 #include "extensions/common/error_utils.h"
 #include "extensions/common/extension_builder.h"
 #include "extensions/common/manifest_constants.h"
+#include "extensions/common/mojom/context_type.mojom.h"
 #include "extensions/test/extension_test_message_listener.h"
 #include "extensions/test/result_catcher.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
@@ -1096,7 +1097,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionWindowCreateTest, ValidateCreateWindowBounds) {
 IN_PROC_BROWSER_TEST_F(ExtensionWindowCreateTest, CreatePopupWindowFromWebUI) {
   scoped_refptr<WindowsCreateFunction> function(new WindowsCreateFunction());
   function->SetBrowserContextForTesting(browser()->profile());
-  function->set_source_context_type(Feature::Context::WEBUI_UNTRUSTED_CONTEXT);
+  function->set_source_context_type(mojom::ContextType::kUntrustedWebUi);
 
   const base::Value::Dict result =
       utils::ToDict(utils::RunFunctionAndReturnSingleResult(

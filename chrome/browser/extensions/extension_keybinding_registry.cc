@@ -20,6 +20,7 @@
 #include "extensions/common/command.h"
 #include "extensions/common/extension_set.h"
 #include "extensions/common/manifest_constants.h"
+#include "extensions/common/mojom/context_type.mojom.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "chrome/browser/ui/ash/media_client_impl.h"
@@ -164,8 +165,8 @@ void ExtensionKeybindingRegistry::CommandExecuted(
       // The action APIs (browserAction, pageAction, action) are only available
       // to blessed extension contexts. As such, we deterministically know that
       // the right context type here is blessed.
-      constexpr Feature::Context context_type =
-          Feature::BLESSED_EXTENSION_CONTEXT;
+      constexpr mojom::ContextType context_type =
+          mojom::ContextType::kPrivilegedExtension;
       ExtensionTabUtil::ScrubTabBehavior scrub_tab_behavior =
           ExtensionTabUtil::GetScrubTabBehavior(extension, context_type,
                                                 web_contents);

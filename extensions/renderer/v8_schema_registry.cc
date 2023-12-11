@@ -15,6 +15,7 @@
 #include "base/values.h"
 #include "content/public/renderer/v8_value_converter.h"
 #include "extensions/common/extension_api.h"
+#include "extensions/common/mojom/context_type.mojom.h"
 #include "extensions/renderer/object_backed_native_handler.h"
 #include "extensions/renderer/script_context.h"
 #include "extensions/renderer/static_v8_external_one_byte_string_resource.h"
@@ -112,9 +113,9 @@ std::unique_ptr<NativeHandler> V8SchemaRegistry::AsNativeHandler(
       new ScriptContext(GetOrCreateContext(isolate),
                         nullptr,  // no frame
                         nullptr,  // no extension
-                        Feature::UNSPECIFIED_CONTEXT,
+                        mojom::ContextType::kUnspecified,
                         nullptr,  // no effective extension
-                        Feature::UNSPECIFIED_CONTEXT));
+                        mojom::ContextType::kUnspecified));
   return std::unique_ptr<NativeHandler>(
       new SchemaRegistryNativeHandler(this, std::move(context)));
 }

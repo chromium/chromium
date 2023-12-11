@@ -25,6 +25,7 @@
 #include "extensions/common/features/feature.h"
 #include "extensions/common/features/feature_provider.h"
 #include "extensions/common/features/simple_feature.h"
+#include "extensions/common/mojom/context_type.mojom.h"
 #include "extensions/common/permissions/permission_set.h"
 #include "extensions/common/permissions/permissions_data.h"
 #include "url/gurl.h"
@@ -162,7 +163,7 @@ void ExtensionAPI::RegisterDependencyProvider(const std::string& name,
 bool ExtensionAPI::IsAnyFeatureAvailableToContext(
     const Feature& api,
     const Extension* extension,
-    Feature::Context context,
+    mojom::ContextType context,
     const GURL& url,
     CheckAliasStatus check_alias,
     int context_id,
@@ -207,7 +208,7 @@ bool ExtensionAPI::IsAnyFeatureAvailableToContext(
 Feature::Availability ExtensionAPI::IsAvailable(
     const std::string& full_name,
     const Extension* extension,
-    Feature::Context context,
+    mojom::ContextType context,
     const GURL& url,
     CheckAliasStatus check_alias,
     int context_id,
@@ -296,7 +297,7 @@ Feature::Availability ExtensionAPI::IsAliasAvailable(
     const std::string& full_name,
     const Feature& feature,
     const Extension* extension,
-    Feature::Context context,
+    mojom::ContextType context,
     const GURL& url,
     int context_id,
     const ContextData& context_data) {

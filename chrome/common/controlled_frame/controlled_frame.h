@@ -10,6 +10,7 @@
 
 #include "extensions/common/context_data.h"
 #include "extensions/common/features/feature.h"
+#include "extensions/common/mojom/context_type.mojom-forward.h"
 
 class GURL;
 
@@ -17,7 +18,7 @@ namespace controlled_frame {
 
 bool AvailabilityCheck(const std::string& api_full_name,
                        const extensions::Extension* extension,
-                       extensions::Feature::Context context,
+                       extensions::mojom::ContextType context,
                        const GURL& url,
                        extensions::Feature::Platform platform,
                        int context_id,

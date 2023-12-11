@@ -31,6 +31,7 @@
 #include "extensions/browser/service_worker/worker_id.h"
 #include "extensions/common/constants.h"
 #include "extensions/common/features/feature.h"
+#include "extensions/common/mojom/context_type.mojom-forward.h"
 #include "extensions/common/mojom/event_dispatcher.mojom.h"
 #include "extensions/common/mojom/event_router.mojom.h"
 #include "ipc/ipc_sender.h"
@@ -568,7 +569,7 @@ struct Event {
   // given context and extension, and false otherwise.
   using WillDispatchCallback = base::RepeatingCallback<bool(
       content::BrowserContext*,
-      Feature::Context,
+      mojom::ContextType,
       const Extension*,
       const base::Value::Dict*,
       std::optional<base::Value::List>& event_args_out,
@@ -595,7 +596,7 @@ struct Event {
   const raw_ptr<content::BrowserContext> restrict_to_browser_context;
 
   // If present, then the event will only be sent to this context type.
-  const absl::optional<Feature::Context> restrict_to_context_type;
+  const absl::optional<mojom::ContextType> restrict_to_context_type;
 
   // If not empty, the event is only sent to extensions with host permissions
   // for this url.
@@ -644,14 +645,14 @@ struct Event {
         base::StringPiece event_name,
         base::Value::List event_args,
         content::BrowserContext* restrict_to_browser_context,
-        absl::optional<Feature::Context> restrict_to_context_type =
+        absl::optional<mojom::ContextType> restrict_to_context_type =
             absl::nullopt);
 
   Event(events::HistogramValue histogram_value,
         base::StringPiece event_name,
         base::Value::List event_args,
         content::BrowserContext* restrict_to_browser_context,
-        absl::optional<Feature::Context> restrict_to_context_type,
+        absl::optional<mojom::ContextType> restrict_to_context_type,
         const GURL& event_url,
         EventRouter::UserGestureState user_gesture,
         mojom::EventFilteringInfoPtr info,

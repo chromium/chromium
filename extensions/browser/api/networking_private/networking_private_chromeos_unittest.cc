@@ -30,6 +30,7 @@
 #include "components/user_manager/user_manager.h"
 #include "extensions/browser/api/networking_private/networking_private_api.h"
 #include "extensions/browser/api_unittest.h"
+#include "extensions/common/mojom/context_type.mojom.h"
 #include "third_party/cros_system_api/dbus/shill/dbus-constants.h"
 
 namespace extensions {
@@ -386,7 +387,7 @@ TEST_F(NetworkingPrivateApiTest, SetSharedNetworkProperties) {
 TEST_F(NetworkingPrivateApiTest, SetPrivateNetworkPropertiesWebUI) {
   scoped_refptr<NetworkingPrivateSetPropertiesFunction> set_properties =
       new NetworkingPrivateSetPropertiesFunction();
-  set_properties->set_source_context_type(Feature::WEBUI_CONTEXT);
+  set_properties->set_source_context_type(mojom::ContextType::kWebUi);
 
   RunFunction(
       set_properties.get(),
@@ -493,7 +494,7 @@ TEST_F(NetworkingPrivateApiTest, SetNetworkRestrictedProperties) {
 TEST_F(NetworkingPrivateApiTest, SetNetworkRestrictedPropertiesFromWebUI) {
   scoped_refptr<NetworkingPrivateSetPropertiesFunction> set_properties =
       new NetworkingPrivateSetPropertiesFunction();
-  set_properties->set_source_context_type(Feature::WEBUI_CONTEXT);
+  set_properties->set_source_context_type(mojom::ContextType::kWebUi);
   set_properties->set_source_url(GURL("chrome://os-settings/networkDetail"));
 
   const char kCombinedSettings[] =
@@ -542,7 +543,7 @@ TEST_F(NetworkingPrivateApiTest, CreateSharedNetwork) {
 TEST_F(NetworkingPrivateApiTest, CreateSharedNetworkWebUI) {
   scoped_refptr<NetworkingPrivateCreateNetworkFunction> create_network =
       new NetworkingPrivateCreateNetworkFunction();
-  create_network->set_source_context_type(Feature::WEBUI_CONTEXT);
+  create_network->set_source_context_type(mojom::ContextType::kWebUi);
 
   const char kNetworkConfig[] =
       R"({
@@ -689,7 +690,7 @@ TEST_F(NetworkingPrivateApiTest, CreateL2TPVpnFromWebUi) {
 
   scoped_refptr<NetworkingPrivateCreateNetworkFunction> create_network =
       new NetworkingPrivateCreateNetworkFunction();
-  create_network->set_source_context_type(Feature::WEBUI_CONTEXT);
+  create_network->set_source_context_type(mojom::ContextType::kWebUi);
   create_network->set_source_url(GURL("chrome://os-settings/networkDetail"));
   std::optional<base::Value> result = RunFunctionAndReturnValue(
       create_network.get(),
@@ -721,7 +722,7 @@ TEST_F(NetworkingPrivateApiTest, CreateL2TPVpnFromWebUi) {
   // VPN properties should be settable from Web UI.
   scoped_refptr<NetworkingPrivateSetPropertiesFunction> set_properties =
       new NetworkingPrivateSetPropertiesFunction();
-  set_properties->set_source_context_type(Feature::WEBUI_CONTEXT);
+  set_properties->set_source_context_type(mojom::ContextType::kWebUi);
   set_properties->set_source_url(GURL("chrome://os-settings/networkDetail"));
   result = RunFunctionAndReturnValue(
       set_properties.get(),
@@ -748,7 +749,7 @@ TEST_F(NetworkingPrivateApiTest, CreateOpenVpnFromWebUiAndSetProperties) {
          })";
   scoped_refptr<NetworkingPrivateCreateNetworkFunction> create_network =
       new NetworkingPrivateCreateNetworkFunction();
-  create_network->set_source_context_type(Feature::WEBUI_CONTEXT);
+  create_network->set_source_context_type(mojom::ContextType::kWebUi);
   create_network->set_source_url(GURL("chrome://os-settings/networkDetail"));
   std::optional<base::Value> result = RunFunctionAndReturnValue(
       create_network.get(), base::StringPrintf("[false, %s]", kOpenVpnConfig));
@@ -780,7 +781,7 @@ TEST_F(NetworkingPrivateApiTest, CreateOpenVpnFromWebUiAndSetProperties) {
   // VPN properties should be settable from Web UI.
   scoped_refptr<NetworkingPrivateSetPropertiesFunction> set_properties =
       new NetworkingPrivateSetPropertiesFunction();
-  set_properties->set_source_context_type(Feature::WEBUI_CONTEXT);
+  set_properties->set_source_context_type(mojom::ContextType::kWebUi);
   set_properties->set_source_url(GURL("chrome://os-settings/networkDetail"));
   result = RunFunctionAndReturnValue(
       set_properties.get(),
@@ -898,7 +899,7 @@ TEST_F(NetworkingPrivateApiTest,
 
   scoped_refptr<NetworkingPrivateCreateNetworkFunction> create_network =
       new NetworkingPrivateCreateNetworkFunction();
-  create_network->set_source_context_type(Feature::WEBUI_CONTEXT);
+  create_network->set_source_context_type(mojom::ContextType::kWebUi);
   create_network->set_source_url(GURL("chrome://os-settings/networkDetail"));
   std::optional<base::Value> result = RunFunctionAndReturnValue(
       create_network.get(), base::StringPrintf("[false, %s]", kNetworkConfig));
@@ -1122,7 +1123,7 @@ TEST_F(NetworkingPrivateApiTest, GetCellularPropertiesFromWebUi) {
 
   scoped_refptr<NetworkingPrivateGetPropertiesFunction> get_properties =
       new NetworkingPrivateGetPropertiesFunction();
-  get_properties->set_source_context_type(Feature::WEBUI_CONTEXT);
+  get_properties->set_source_context_type(mojom::ContextType::kWebUi);
   get_properties->set_source_url(GURL("chrome://os-settings/networkDetail"));
 
   std::optional<base::Value> result = RunFunctionAndReturnValue(
@@ -1196,7 +1197,7 @@ TEST_F(NetworkingPrivateApiTest, ForgetPrivateNetwork) {
 TEST_F(NetworkingPrivateApiTest, ForgetPrivateNetworkWebUI) {
   scoped_refptr<NetworkingPrivateForgetNetworkFunction> forget_network =
       new NetworkingPrivateForgetNetworkFunction();
-  forget_network->set_source_context_type(Feature::WEBUI_CONTEXT);
+  forget_network->set_source_context_type(mojom::ContextType::kWebUi);
 
   RunFunction(forget_network.get(),
               base::StringPrintf(R"(["%s"])", kPrivateWifiGuid));
@@ -1225,7 +1226,7 @@ TEST_F(NetworkingPrivateApiTest, ForgetUserPolicyNetwork) {
 TEST_F(NetworkingPrivateApiTest, ForgetUserPolicyNetworkWebUI) {
   scoped_refptr<NetworkingPrivateForgetNetworkFunction> forget_network =
       new NetworkingPrivateForgetNetworkFunction();
-  forget_network->set_source_context_type(Feature::WEBUI_CONTEXT);
+  forget_network->set_source_context_type(mojom::ContextType::kWebUi);
 
   EXPECT_EQ(networking_private::kErrorPolicyControlled,
             RunFunctionAndReturnError(
@@ -1257,7 +1258,7 @@ TEST_F(NetworkingPrivateApiTest, ForgetDevicePolicyNetworkWebUI) {
 
   scoped_refptr<NetworkingPrivateForgetNetworkFunction> forget_network =
       new NetworkingPrivateForgetNetworkFunction();
-  forget_network->set_source_context_type(Feature::WEBUI_CONTEXT);
+  forget_network->set_source_context_type(mojom::ContextType::kWebUi);
   RunFunction(forget_network.get(),
               base::StringPrintf(R"(["%s"])", kManagedDeviceWifiGuid));
 
@@ -1290,7 +1291,7 @@ TEST_F(NetworkingPrivateApiTest, ForgetNetworkInMultipleProfilesWebUI) {
 
   scoped_refptr<NetworkingPrivateForgetNetworkFunction> forget_network =
       new NetworkingPrivateForgetNetworkFunction();
-  forget_network->set_source_context_type(Feature::WEBUI_CONTEXT);
+  forget_network->set_source_context_type(mojom::ContextType::kWebUi);
 
   RunFunction(forget_network.get(),
               base::StringPrintf(R"(["%s"])", kSharedWifiGuid));

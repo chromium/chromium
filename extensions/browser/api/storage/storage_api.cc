@@ -26,6 +26,7 @@
 #include "extensions/common/api/storage.h"
 #include "extensions/common/features/feature.h"
 #include "extensions/common/features/feature_channel.h"
+#include "extensions/common/mojom/context_type.mojom.h"
 
 using value_store::ValueStore;
 
@@ -256,7 +257,7 @@ bool SettingsFunction::IsAccessToStorageAllowed() {
 
   // Only a blessed extension context is considered trusted.
   if (access_level == api::storage::AccessLevel::kTrustedContexts) {
-    return source_context_type() == Feature::BLESSED_EXTENSION_CONTEXT;
+    return source_context_type() == mojom::ContextType::kPrivilegedExtension;
   }
 
   // All contexts are allowed.
@@ -535,8 +536,9 @@ StorageStorageAreaSetAccessLevelFunction::RunWithStorage(ValueStore* storage) {
 
 ExtensionFunction::ResponseValue
 StorageStorageAreaSetAccessLevelFunction::RunInSession() {
-  if (source_context_type() != Feature::BLESSED_EXTENSION_CONTEXT)
+  if (source_context_type() != mojom::ContextType::kPrivilegedExtension) {
     return Error("Context cannot set the storage access level");
+  }
 
   std::optional<api::storage::StorageArea::SetAccessLevel::Params> params =
       api::storage::StorageArea::SetAccessLevel::Params::Create(args());

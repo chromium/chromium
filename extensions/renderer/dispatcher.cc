@@ -53,6 +53,7 @@
 #include "extensions/common/manifest_constants.h"
 #include "extensions/common/manifest_handlers/background_info.h"
 #include "extensions/common/manifest_handlers/options_page_info.h"
+#include "extensions/common/mojom/context_type.mojom.h"
 #include "extensions/common/mojom/host_id.mojom.h"
 #include "extensions/common/permissions/permission_set.h"
 #include "extensions/common/permissions/permissions_data.h"
@@ -391,8 +392,9 @@ void Dispatcher::DidCreateScriptContext(
 
   // Initialize origin permissions for content scripts, which can't be
   // initialized in |ActivateExtension|.
-  if (context->context_type() == Feature::CONTENT_SCRIPT_CONTEXT)
+  if (context->context_type() == mojom::ContextType::kContentScript) {
     InitOriginPermissions(context->extension());
+  }
 
   context->SetModuleSystem(
       std::make_unique<ModuleSystem>(context, &source_map_));
@@ -416,44 +418,44 @@ void Dispatcher::DidCreateScriptContext(
 
   const base::TimeDelta elapsed = base::TimeTicks::Now() - start_time;
   switch (context->context_type()) {
-    case Feature::UNSPECIFIED_CONTEXT:
+    case mojom::ContextType::kUnspecified:
       UMA_HISTOGRAM_TIMES("Extensions.DidCreateScriptContext_Unspecified",
                           elapsed);
       break;
-    case Feature::BLESSED_EXTENSION_CONTEXT:
+    case mojom::ContextType::kPrivilegedExtension:
       // For service workers this is handled in
       // WillEvaluateServiceWorkerOnWorkerThread().
       DCHECK(!context->IsForServiceWorker());
       UMA_HISTOGRAM_TIMES("Extensions.DidCreateScriptContext_Blessed", elapsed);
       break;
-    case Feature::UNBLESSED_EXTENSION_CONTEXT:
+    case mojom::ContextType::kUnprivilegedExtension:
       UMA_HISTOGRAM_TIMES("Extensions.DidCreateScriptContext_Unblessed",
                           elapsed);
       break;
-    case Feature::CONTENT_SCRIPT_CONTEXT:
+    case mojom::ContextType::kContentScript:
       UMA_HISTOGRAM_TIMES("Extensions.DidCreateScriptContext_ContentScript",
                           elapsed);
       break;
-    case Feature::WEB_PAGE_CONTEXT:
+    case mojom::ContextType::kWebPage:
       UMA_HISTOGRAM_TIMES("Extensions.DidCreateScriptContext_WebPage", elapsed);
       break;
-    case Feature::BLESSED_WEB_PAGE_CONTEXT:
+    case mojom::ContextType::kPrivilegedWebPage:
       UMA_HISTOGRAM_TIMES("Extensions.DidCreateScriptContext_BlessedWebPage",
                           elapsed);
       break;
-    case Feature::WEBUI_CONTEXT:
+    case mojom::ContextType::kWebUi:
       UMA_HISTOGRAM_TIMES("Extensions.DidCreateScriptContext_WebUI", elapsed);
       break;
-    case Feature::WEBUI_UNTRUSTED_CONTEXT:
+    case mojom::ContextType::kUntrustedWebUi:
       // Extension APIs in untrusted WebUIs are temporary so don't bother
       // recording metrics for them.
       break;
-    case Feature::LOCK_SCREEN_EXTENSION_CONTEXT:
+    case mojom::ContextType::kLockscreenExtension:
       UMA_HISTOGRAM_TIMES(
           "Extensions.DidCreateScriptContext_LockScreenExtension", elapsed);
       break;
-    case Feature::OFFSCREEN_EXTENSION_CONTEXT:
-    case Feature::USER_SCRIPT_CONTEXT:
+    case mojom::ContextType::kOffscreenExtension:
+    case mojom::ContextType::kUserScript:
       // We don't really care about offscreen extension context or user script
       // context initialization time at the moment. Offscreen extension context
       // initialization is a strict subset (and very similar to) blessed
@@ -549,8 +551,8 @@ void Dispatcher::WillEvaluateServiceWorkerOnWorkerThread(
   // by extensions minimal bindings, just as we might want to give them to
   // service workers that aren't registered by extensions.
   ScriptContext* context = new ScriptContext(
-      v8_context, nullptr, extension, Feature::BLESSED_EXTENSION_CONTEXT,
-      extension, Feature::BLESSED_EXTENSION_CONTEXT);
+      v8_context, nullptr, extension, mojom::ContextType::kPrivilegedExtension,
+      extension, mojom::ContextType::kPrivilegedExtension);
   context->set_url(script_url);
   context->set_service_worker_scope(service_worker_scope);
   context->set_service_worker_version_id(service_worker_version_id);
@@ -1604,7 +1606,7 @@ void Dispatcher::RequireGuestViewModules(ScriptContext* context) {
   // to use GuestViews, but we don't define the error-providing elements in this
   // case.
   const bool is_platform_app =
-      context->context_type() == Feature::BLESSED_EXTENSION_CONTEXT &&
+      context->context_type() == mojom::ContextType::kPrivilegedExtension &&
       !context->IsForServiceWorker() && context->extension() &&
       context->extension()->is_platform_app();
   const bool app_view_permission_exists = is_platform_app;

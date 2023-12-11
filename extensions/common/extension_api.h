@@ -18,6 +18,7 @@
 #include "extensions/common/context_data.h"
 #include "extensions/common/features/feature.h"
 #include "extensions/common/features/feature_provider.h"
+#include "extensions/common/mojom/context_type.mojom-forward.h"
 #include "extensions/common/url_pattern_set.h"
 
 class GURL;
@@ -105,7 +106,7 @@ class ExtensionAPI {
   // FindFeature function and let callers compose if they want.
   Feature::Availability IsAvailable(const std::string& api_full_name,
                                     const Extension* extension,
-                                    Feature::Context context,
+                                    mojom::ContextType context,
                                     const GURL& url,
                                     CheckAliasStatus check_alias,
                                     int context_id,
@@ -119,7 +120,7 @@ class ExtensionAPI {
   //
   bool IsAnyFeatureAvailableToContext(const Feature& api,
                                       const Extension* extension,
-                                      Feature::Context context,
+                                      mojom::ContextType context,
                                       const GURL& url,
                                       CheckAliasStatus check_alias,
                                       int context_id,
@@ -165,7 +166,7 @@ class ExtensionAPI {
   Feature::Availability IsAliasAvailable(const std::string& full_name,
                                          const Feature& feature,
                                          const Extension* extension,
-                                         Feature::Context context,
+                                         mojom::ContextType context,
                                          const GURL& url,
                                          int context_id,
                                          const ContextData& context_data);

@@ -44,6 +44,7 @@
 #include "extensions/common/features/feature_provider.h"
 #include "extensions/common/manifest_handlers/background_info.h"
 #include "extensions/common/manifest_handlers/incognito_info.h"
+#include "extensions/common/mojom/context_type.mojom.h"
 #include "extensions/common/mojom/event_dispatcher.mojom.h"
 #include "extensions/common/permissions/permissions_data.h"
 #include "ipc/ipc_channel_proxy.h"
@@ -1100,7 +1101,7 @@ void EventRouter::DispatchEventToProcess(
       service_worker_version_id == blink::mojom::kInvalidServiceWorkerVersionId
           ? &listener_url
           : nullptr;
-  Feature::Context target_context =
+  mojom::ContextType target_context =
       process_map->GetMostLikelyContextType(extension, process->GetID(), url);
 
   // Don't dispach an event when target context doesn't match the restricted
@@ -1122,7 +1123,7 @@ void EventRouter::DispatchEventToProcess(
           util::GetBrowserContextId(browser_context_),
           BrowserProcessContextData(process));
   bool feature_available_to_context = availability.is_available();
-  if (target_context == Feature::WEB_PAGE_CONTEXT) {
+  if (target_context == mojom::ContextType::kWebPage) {
     // |url| can only be null for service workers, so should never be null here.
     CHECK(url);
     bool is_new_webstore_origin =
@@ -1561,7 +1562,7 @@ Event::Event(events::HistogramValue histogram_value,
              base::StringPiece event_name,
              base::Value::List event_args,
              content::BrowserContext* restrict_to_browser_context,
-             absl::optional<Feature::Context> restrict_to_context_type)
+             absl::optional<mojom::ContextType> restrict_to_context_type)
     : Event(histogram_value,
             event_name,
             std::move(event_args),
@@ -1575,7 +1576,7 @@ Event::Event(events::HistogramValue histogram_value,
              base::StringPiece event_name,
              base::Value::List event_args,
              content::BrowserContext* restrict_to_browser_context,
-             absl::optional<Feature::Context> restrict_to_context_type,
+             absl::optional<mojom::ContextType> restrict_to_context_type,
              const GURL& event_url,
              EventRouter::UserGestureState user_gesture,
              mojom::EventFilteringInfoPtr info,

@@ -43,6 +43,7 @@
 #include "extensions/browser/extension_function_registry.h"
 #include "extensions/browser/extension_system.h"
 #include "extensions/common/error_utils.h"
+#include "extensions/common/mojom/context_type.mojom.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace extensions {
@@ -85,7 +86,7 @@ api::tabs::Tab CreateTabModelHelper(
     bool pinned,
     bool active,
     const Extension* extension,
-    Feature::Context context) {
+    mojom::ContextType context) {
   api::tabs::Tab tab_struct;
 
   const GURL& url = current_navigation.virtual_url();

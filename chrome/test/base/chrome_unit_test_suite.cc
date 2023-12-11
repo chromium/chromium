@@ -51,6 +51,7 @@
 #include "chrome/common/initialize_extensions_client.h"
 #include "extensions/common/extension_paths.h"
 #include "extensions/common/extensions_client.h"
+#include "extensions/common/mojom/context_type.mojom.h"
 
 namespace extensions {
 class ContextData;
@@ -113,7 +114,7 @@ class ChromeUnitTestSuiteInitializer : public testing::EmptyTestEventListener {
 bool ControlledFrameTestAvailabilityCheck(
     const std::string& api_full_name,
     const extensions::Extension* extension,
-    extensions::Feature::Context context,
+    extensions::mojom::ContextType context,
     const GURL& url,
     extensions::Feature::Platform platform,
     int context_id,

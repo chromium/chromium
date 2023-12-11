@@ -44,6 +44,7 @@
 #include "extensions/common/feature_switch.h"
 #include "extensions/common/image_util.h"
 #include "extensions/common/manifest_constants.h"
+#include "extensions/common/mojom/context_type.mojom.h"
 #include "extensions/common/mojom/view_type.mojom.h"
 #include "ui/gfx/image/image.h"
 #include "ui/gfx/image/image_skia.h"
@@ -244,8 +245,8 @@ void ExtensionActionAPI::DispatchExtensionActionClicked(
     // The action APIs (browserAction, pageAction, action) are only available
     // to blessed extension contexts. As such, we deterministically know that
     // the right context type here is blessed.
-    constexpr Feature::Context context_type =
-        Feature::BLESSED_EXTENSION_CONTEXT;
+    constexpr mojom::ContextType context_type =
+        mojom::ContextType::kPrivilegedExtension;
     ExtensionTabUtil::ScrubTabBehavior scrub_tab_behavior =
         ExtensionTabUtil::GetScrubTabBehavior(extension, context_type,
                                               web_contents);

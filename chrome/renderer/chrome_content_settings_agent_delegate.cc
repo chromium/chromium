@@ -18,6 +18,7 @@
 #if BUILDFLAG(ENABLE_EXTENSIONS)
 #include "extensions/common/constants.h"
 #include "extensions/common/extension.h"
+#include "extensions/common/mojom/context_type.mojom.h"
 #include "extensions/common/permissions/api_permission.h"
 #include "extensions/common/permissions/permissions_data.h"
 #include "extensions/renderer/dispatcher.h"
@@ -101,7 +102,7 @@ ChromeContentSettingsAgentDelegate::AllowWriteToClipboard() {
       extension_dispatcher_->script_context_set().GetCurrent();
   if (current_context) {
     if (current_context->effective_context_type() ==
-            extensions::Feature::BLESSED_EXTENSION_CONTEXT &&
+            extensions::mojom::ContextType::kPrivilegedExtension &&
         !current_context->IsForServiceWorker()) {
       return true;
     }

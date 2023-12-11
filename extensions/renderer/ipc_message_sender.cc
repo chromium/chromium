@@ -17,6 +17,7 @@
 #include "extensions/common/extension_messages.h"
 #include "extensions/common/features/feature.h"
 #include "extensions/common/mojom/automation_registry.mojom.h"
+#include "extensions/common/mojom/context_type.mojom.h"
 #include "extensions/common/mojom/event_router.mojom.h"
 #include "extensions/common/mojom/frame.mojom.h"
 #include "extensions/common/mojom/message_port.mojom-shared.h"
@@ -188,26 +189,26 @@ class MainThreadIPCMessageSender : public IPCMessageSender {
 #endif
         if (extension && !extension->is_hosted_app()) {
           switch (script_context->context_type()) {
-            case Feature::BLESSED_EXTENSION_CONTEXT:
-            case Feature::UNBLESSED_EXTENSION_CONTEXT:
-            case Feature::LOCK_SCREEN_EXTENSION_CONTEXT:
-            case Feature::OFFSCREEN_EXTENSION_CONTEXT:
+            case mojom::ContextType::kPrivilegedExtension:
+            case mojom::ContextType::kUnprivilegedExtension:
+            case mojom::ContextType::kLockscreenExtension:
+            case mojom::ContextType::kOffscreenExtension:
               info->source_endpoint =
                   MessagingEndpoint::ForExtension(extension->id());
               break;
-            case Feature::CONTENT_SCRIPT_CONTEXT:
+            case mojom::ContextType::kContentScript:
               info->source_endpoint =
                   MessagingEndpoint::ForContentScript(extension->id());
               break;
-            case Feature::USER_SCRIPT_CONTEXT:
+            case mojom::ContextType::kUserScript:
               info->source_endpoint =
                   MessagingEndpoint::ForUserScript(extension->id());
               break;
-            case Feature::UNSPECIFIED_CONTEXT:
-            case Feature::WEB_PAGE_CONTEXT:
-            case Feature::BLESSED_WEB_PAGE_CONTEXT:
-            case Feature::WEBUI_CONTEXT:
-            case Feature::WEBUI_UNTRUSTED_CONTEXT:
+            case mojom::ContextType::kUnspecified:
+            case mojom::ContextType::kWebPage:
+            case mojom::ContextType::kPrivilegedWebPage:
+            case mojom::ContextType::kWebUi:
+            case mojom::ContextType::kUntrustedWebUi:
               NOTREACHED_NORETURN() << "Unexpected Context Encountered: "
                                     << script_context->GetDebugString();
           }
@@ -235,7 +236,7 @@ class MainThreadIPCMessageSender : public IPCMessageSender {
       case MessageTarget::TAB: {
         DCHECK(extension);
         DCHECK_NE(script_context->context_type(),
-                  Feature::CONTENT_SCRIPT_CONTEXT);
+                  mojom::ContextType::kContentScript);
 #if BUILDFLAG(ENABLE_EXTENSIONS_LEGACY_IPC)
         ExtensionMsg_TabTargetConnectionInfo info;
         info.tab_id = *target.tab_id;

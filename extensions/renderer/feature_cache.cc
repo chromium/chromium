@@ -12,6 +12,7 @@
 #include "extensions/common/extension.h"
 #include "extensions/common/extension_api.h"
 #include "extensions/common/features/feature_provider.h"
+#include "extensions/common/mojom/context_type.mojom.h"
 #include "extensions/renderer/dispatcher.h"
 
 namespace extensions {
@@ -25,18 +26,18 @@ FeatureCache::FeatureCache() = default;
 FeatureCache::~FeatureCache() = default;
 
 FeatureCache::FeatureNameVector FeatureCache::GetAvailableFeatures(
-    Feature::Context context_type,
+    mojom::ContextType context_type,
     const Extension* extension,
     const GURL& url,
     const ContextData& context_data) {
   bool is_webui_or_untrusted_webui =
-      context_type == Feature::WEBUI_CONTEXT ||
-      context_type == Feature::WEBUI_UNTRUSTED_CONTEXT;
+      context_type == mojom::ContextType::kWebUi ||
+      context_type == mojom::ContextType::kUntrustedWebUi;
   DCHECK_NE(is_webui_or_untrusted_webui, !!extension)
       << "WebUI contexts shouldn't have extensions.";
-  DCHECK_NE(Feature::WEB_PAGE_CONTEXT, context_type)
+  DCHECK_NE(mojom::ContextType::kWebPage, context_type)
       << "FeatureCache shouldn't be used for web contexts.";
-  DCHECK_NE(Feature::UNSPECIFIED_CONTEXT, context_type)
+  DCHECK_NE(mojom::ContextType::kUnspecified, context_type)
       << "FeatureCache shouldn't be used for unspecified contexts.";
 
   const ExtensionFeatureData& features = GetFeaturesFromCache(
@@ -63,7 +64,7 @@ FeatureCache::FeatureNameVector FeatureCache::GetAvailableFeatures(
 
 FeatureCache::FeatureNameVector
 FeatureCache::GetDeveloperModeRestrictedFeatures(
-    Feature::Context context_type,
+    mojom::ContextType context_type,
     const Extension* extension,
     const GURL& url,
     const ContextData& context_data) {
@@ -93,13 +94,13 @@ void FeatureCache::InvalidateAllExtensions() {
 }
 
 const FeatureCache::ExtensionFeatureData& FeatureCache::GetFeaturesFromCache(
-    Feature::Context context_type,
+    mojom::ContextType context_type,
     const Extension* extension,
     const GURL& origin,
     int context_id,
     const ContextData& context_data) {
-  if (context_type == Feature::WEBUI_CONTEXT ||
-      context_type == Feature::WEBUI_UNTRUSTED_CONTEXT) {
+  if (context_type == mojom::ContextType::kWebUi ||
+      context_type == mojom::ContextType::kUntrustedWebUi) {
     if (auto* data = base::FindOrNull(webui_cache_, origin)) {
       return *data;
     }
@@ -121,7 +122,7 @@ const FeatureCache::ExtensionFeatureData& FeatureCache::GetFeaturesFromCache(
 }
 
 FeatureCache::ExtensionFeatureData FeatureCache::CreateCacheEntry(
-    Feature::Context context_type,
+    mojom::ContextType context_type,
     const Extension* extension,
     const GURL& origin,
     int context_id,
@@ -136,8 +137,8 @@ FeatureCache::ExtensionFeatureData FeatureCache::CreateCacheEntry(
   // okay. If this changes, we'll have to get more creative about our WebUI
   // caching.
   const bool should_use_url =
-      (context_type == Feature::WEBUI_CONTEXT ||
-       context_type == Feature::WEBUI_UNTRUSTED_CONTEXT);
+      (context_type == mojom::ContextType::kWebUi ||
+       context_type == mojom::ContextType::kUntrustedWebUi);
   const GURL& url_to_use = should_use_url ? origin : empty_url;
   for (const auto& [name, feature] : api_feature_provider->GetAllFeatures()) {
     // Exclude internal APIs.

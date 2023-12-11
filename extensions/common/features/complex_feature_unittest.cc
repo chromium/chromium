@@ -12,6 +12,7 @@
 #include "extensions/common/features/feature.h"
 #include "extensions/common/features/simple_feature.h"
 #include "extensions/common/manifest.h"
+#include "extensions/common/mojom/context_type.mojom.h"
 #include "extensions/test/test_context_data.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -161,8 +162,8 @@ TEST(ComplexFeatureTest, RequiresDelegatedAvailabilityCheck) {
   uint32_t success_call_count = 2;
   auto delegated_availability_check =
       [&](const std::string& api_full_name, const Extension* extension,
-          Feature::Context context, const GURL& url, Feature::Platform platform,
-          int context_id, bool check_developer_mode,
+          mojom::ContextType context, const GURL& url,
+          Feature::Platform platform, int context_id, bool check_developer_mode,
           const ContextData& context_data) {
         ++delegated_availability_check_call_count;
         return delegated_availability_check_call_count == success_call_count;
@@ -177,7 +178,7 @@ TEST(ComplexFeatureTest, RequiresDelegatedAvailabilityCheck) {
     {
       // Feature which doesn't set |requires_delegated_availability_check|.
       auto simple_feature = std::make_unique<SimpleFeature>();
-      simple_feature->set_contexts({Feature::BLESSED_EXTENSION_CONTEXT});
+      simple_feature->set_contexts({mojom::ContextType::kPrivilegedExtension});
       features.push_back(simple_feature.release());
     }
     // Two features which set |requires_delegated_availability_check| to true.
@@ -207,7 +208,7 @@ TEST(ComplexFeatureTest, RequiresDelegatedAvailabilityCheck) {
     EXPECT_EQ(Feature::IS_AVAILABLE,
               complex_feature
                   .IsAvailableToContext(
-                      /*extension=*/nullptr, Feature::UNSPECIFIED_CONTEXT,
+                      /*extension=*/nullptr, mojom::ContextType::kUnspecified,
                       GURL(), kUnspecifiedContextId, TestContextData())
                   .result());
     EXPECT_EQ(2u, delegated_availability_check_call_count);

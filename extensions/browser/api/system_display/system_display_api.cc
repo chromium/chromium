@@ -15,6 +15,7 @@
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "extensions/browser/api/system_display/display_info_provider.h"
+#include "extensions/common/mojom/context_type.mojom.h"
 #include "extensions/common/permissions/permissions_data.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
@@ -173,7 +174,7 @@ bool ShouldRestrictEdidInformation(const ExtensionFunction& function) {
              KioskModeInfo::IsKioskEnabled(function.extension()));
   }
 
-  return function.source_context_type() != Feature::WEBUI_CONTEXT;
+  return function.source_context_type() != mojom::ContextType::kWebUi;
 }
 #endif
 
@@ -199,8 +200,9 @@ bool SystemDisplayCrOSRestrictedFunction::PreRunValidation(std::string* error) {
   if (!ShouldRestrictToKioskAndWebUI())
     return true;
 
-  if (source_context_type() == Feature::WEBUI_CONTEXT)
+  if (source_context_type() == mojom::ContextType::kWebUi) {
     return true;
+  }
   if (KioskModeInfo::IsKioskEnabled(extension()))
     return true;
   *error = kKioskOnlyError;

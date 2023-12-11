@@ -13,6 +13,7 @@
 #include "extensions/common/extension.h"
 #include "extensions/common/extension_builder.h"
 #include "extensions/common/extension_messages.h"
+#include "extensions/common/mojom/context_type.mojom.h"
 #include "extensions/common/mojom/message_port.mojom-shared.h"
 #include "extensions/renderer/api/messaging/message_target.h"
 #include "extensions/renderer/api/messaging/native_renderer_messaging_service.h"
@@ -73,8 +74,8 @@ class RuntimeHooksDelegateTest : public NativeExtensionBindingsSystemUnittest {
     v8::HandleScope handle_scope(isolate());
     v8::Local<v8::Context> context = MainContext();
 
-    script_context_ = CreateScriptContext(context, extension_.get(),
-                                          Feature::BLESSED_EXTENSION_CONTEXT);
+    script_context_ = CreateScriptContext(
+        context, extension_.get(), mojom::ContextType::kPrivilegedExtension);
     script_context_->set_url(extension_->url());
     bindings_system()->UpdateBindingsForContext(script_context_);
   }
@@ -132,7 +133,7 @@ TEST_F(RuntimeHooksDelegateTest, RuntimeId) {
     // an associated connectable extension, so pretend to be example.com.
     v8::Local<v8::Context> web_context = AddContext();
     ScriptContext* script_context =
-        CreateScriptContext(web_context, nullptr, Feature::WEB_PAGE_CONTEXT);
+        CreateScriptContext(web_context, nullptr, mojom::ContextType::kWebPage);
     script_context->set_url(GURL("http://example.com"));
     bindings_system()->UpdateBindingsForContext(script_context);
     v8::Local<v8::Value> id = get_id(web_context);

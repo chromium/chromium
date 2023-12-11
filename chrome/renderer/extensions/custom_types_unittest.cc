@@ -8,6 +8,7 @@
 #include "extensions/common/extension_builder.h"
 #include "extensions/common/extension_id.h"
 #include "extensions/common/features/simple_feature.h"
+#include "extensions/common/mojom/context_type.mojom.h"
 #include "extensions/common/mojom/frame.mojom.h"
 #include "extensions/common/switches.h"
 #include "extensions/renderer/bindings/api_binding_test_util.h"
@@ -52,7 +53,7 @@ class CustomTypesTest : public NativeExtensionBindingsSystemUnittest {
     v8::Local<v8::Context> context = MainContext();
 
     ScriptContext* script_context = CreateScriptContext(
-        context, extension.get(), Feature::BLESSED_EXTENSION_CONTEXT);
+        context, extension.get(), mojom::ContextType::kPrivilegedExtension);
     script_context->set_url(extension->url());
 
     bindings_system()->UpdateBindingsForContext(script_context);
@@ -114,7 +115,7 @@ TEST_F(CustomTypesTest, ContentSettingsPromisesForManifestV3) {
   v8::Local<v8::Context> context = MainContext();
 
   ScriptContext* script_context = CreateScriptContext(
-      context, extension.get(), Feature::BLESSED_EXTENSION_CONTEXT);
+      context, extension.get(), mojom::ContextType::kPrivilegedExtension);
   script_context->set_url(extension->url());
 
   bindings_system()->UpdateBindingsForContext(script_context);
@@ -186,7 +187,7 @@ TEST_F(CustomTypesTest, ContentSettingsInvalidInvocationForManifestV2) {
   v8::Local<v8::Context> context = MainContext();
 
   ScriptContext* script_context = CreateScriptContext(
-      context, extension.get(), Feature::BLESSED_EXTENSION_CONTEXT);
+      context, extension.get(), mojom::ContextType::kPrivilegedExtension);
   script_context->set_url(extension->url());
 
   bindings_system()->UpdateBindingsForContext(script_context);
@@ -242,7 +243,7 @@ TEST_F(CustomTypesTest, ChromeSettingPromisesForManifestV3) {
   v8::Local<v8::Context> context = MainContext();
 
   ScriptContext* script_context = CreateScriptContext(
-      context, extension.get(), Feature::BLESSED_EXTENSION_CONTEXT);
+      context, extension.get(), mojom::ContextType::kPrivilegedExtension);
   script_context->set_url(extension->url());
 
   bindings_system()->UpdateBindingsForContext(script_context);
@@ -313,7 +314,7 @@ TEST_F(CustomTypesTest, ChromeSettingInvalidInvocationForManifestV2) {
   v8::Local<v8::Context> context = MainContext();
 
   ScriptContext* script_context = CreateScriptContext(
-      context, extension.get(), Feature::BLESSED_EXTENSION_CONTEXT);
+      context, extension.get(), mojom::ContextType::kPrivilegedExtension);
   script_context->set_url(extension->url());
 
   bindings_system()->UpdateBindingsForContext(script_context);

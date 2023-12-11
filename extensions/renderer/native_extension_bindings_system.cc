@@ -17,7 +17,6 @@
 #include "content/public/common/content_switches.h"
 #include "content/public/renderer/render_thread.h"
 #include "extensions/common/constants.h"
-#include "extensions/common/context_type_adapter.h"
 #include "extensions/common/extension_api.h"
 #include "extensions/common/extension_messages.h"
 #include "extensions/common/features/feature.h"
@@ -25,6 +24,7 @@
 #include "extensions/common/manifest_constants.h"
 #include "extensions/common/manifest_handlers/content_capabilities_handler.h"
 #include "extensions/common/manifest_handlers/externally_connectable.h"
+#include "extensions/common/mojom/context_type.mojom.h"
 #include "extensions/common/mojom/event_dispatcher.mojom.h"
 #include "extensions/common/mojom/frame.mojom.h"
 #include "extensions/renderer/api/declarative_content_hooks_delegate.h"
@@ -218,18 +218,18 @@ bool ArePromisesAllowed(v8::Local<v8::Context> context) {
     return true;
   }
   switch (script_context->context_type()) {
-    case Feature::WEBUI_CONTEXT:
-    case Feature::WEBUI_UNTRUSTED_CONTEXT:
-    case Feature::WEB_PAGE_CONTEXT:
+    case mojom::ContextType::kWebUi:
+    case mojom::ContextType::kUntrustedWebUi:
+    case mojom::ContextType::kWebPage:
       return true;
-    case Feature::UNSPECIFIED_CONTEXT:
-    case Feature::BLESSED_WEB_PAGE_CONTEXT:
-    case Feature::BLESSED_EXTENSION_CONTEXT:
-    case Feature::LOCK_SCREEN_EXTENSION_CONTEXT:
-    case Feature::OFFSCREEN_EXTENSION_CONTEXT:
-    case Feature::UNBLESSED_EXTENSION_CONTEXT:
-    case Feature::USER_SCRIPT_CONTEXT:
-    case Feature::CONTENT_SCRIPT_CONTEXT:
+    case mojom::ContextType::kUnspecified:
+    case mojom::ContextType::kPrivilegedWebPage:
+    case mojom::ContextType::kPrivilegedExtension:
+    case mojom::ContextType::kLockscreenExtension:
+    case mojom::ContextType::kOffscreenExtension:
+    case mojom::ContextType::kUnprivilegedExtension:
+    case mojom::ContextType::kUserScript:
+    case mojom::ContextType::kContentScript:
       return false;
   }
 }
@@ -503,9 +503,10 @@ void NativeExtensionBindingsSystem::DidCreateScriptContext(
 
   // Set the scripting params object for if we are running in a content script
   // context. This effectively checks that we are running in an isolated world
-  // since main world script contexts have a different Feature::Context type.
-  if (context->context_type() == Feature::CONTENT_SCRIPT_CONTEXT)
+  // since main world script contexts have a different mojom::ContextType type.
+  if (context->context_type() == mojom::ContextType::kContentScript) {
     SetScriptingParams(context);
+  }
 }
 
 void NativeExtensionBindingsSystem::WillReleaseScriptContext(
@@ -550,19 +551,19 @@ void NativeExtensionBindingsSystem::UpdateBindingsForContext(
 
   bool is_webpage = false;
   switch (context->context_type()) {
-    case Feature::UNSPECIFIED_CONTEXT:
-    case Feature::WEB_PAGE_CONTEXT:
-    case Feature::BLESSED_WEB_PAGE_CONTEXT:
+    case mojom::ContextType::kUnspecified:
+    case mojom::ContextType::kWebPage:
+    case mojom::ContextType::kPrivilegedWebPage:
       is_webpage = true;
       break;
-    case Feature::BLESSED_EXTENSION_CONTEXT:
-    case Feature::LOCK_SCREEN_EXTENSION_CONTEXT:
-    case Feature::OFFSCREEN_EXTENSION_CONTEXT:
-    case Feature::UNBLESSED_EXTENSION_CONTEXT:
-    case Feature::USER_SCRIPT_CONTEXT:
-    case Feature::CONTENT_SCRIPT_CONTEXT:
-    case Feature::WEBUI_CONTEXT:
-    case Feature::WEBUI_UNTRUSTED_CONTEXT:
+    case mojom::ContextType::kPrivilegedExtension:
+    case mojom::ContextType::kLockscreenExtension:
+    case mojom::ContextType::kOffscreenExtension:
+    case mojom::ContextType::kUnprivilegedExtension:
+    case mojom::ContextType::kUserScript:
+    case mojom::ContextType::kContentScript:
+    case mojom::ContextType::kWebUi:
+    case mojom::ContextType::kUntrustedWebUi:
       is_webpage = false;
   }
 
@@ -871,7 +872,7 @@ void NativeExtensionBindingsSystem::SendRequest(
     std::unique_ptr<APIRequestHandler::Request> request,
     v8::Local<v8::Context> context) {
   ScriptContext* script_context = GetScriptContextFromV8ContextChecked(context);
-  CHECK_NE(Feature::UNSPECIFIED_CONTEXT, script_context->context_type())
+  CHECK_NE(mojom::ContextType::kUnspecified, script_context->context_type())
       << "Attempting to send a request from an unspecified context type. "
       << "Request: " << request->method_name
       << ", Context: " << script_context->GetDebugString();
@@ -890,8 +891,7 @@ void NativeExtensionBindingsSystem::SendRequest(
   params->arguments = std::move(request->arguments_list);
   params->extension_id = script_context->GetExtensionID();
   params->source_url = url;
-  params->context_type =
-      FeatureContextToMojomContext(script_context->context_type());
+  params->context_type = script_context->context_type();
   params->request_id = request->request_id;
   params->has_callback = request->has_async_response_handler;
   params->user_gesture = request->has_user_gesture;
@@ -899,7 +899,7 @@ void NativeExtensionBindingsSystem::SendRequest(
   params->worker_thread_id = kMainThreadId;
   params->service_worker_version_id =
       blink::mojom::kInvalidServiceWorkerVersionId;
-  CHECK_NE(Feature::UNSPECIFIED_CONTEXT, script_context->context_type())
+  CHECK_NE(mojom::ContextType::kUnspecified, script_context->context_type())
       << script_context->GetDebugString();
 
   ipc_message_sender_->SendRequestIPC(script_context, std::move(params));
@@ -991,9 +991,9 @@ void NativeExtensionBindingsSystem::GetJSBindingUtil(
 
 void NativeExtensionBindingsSystem::UpdateContentCapabilities(
     ScriptContext* context) {
-  Feature::Context context_type = context->context_type();
-  if (context_type != Feature::WEB_PAGE_CONTEXT &&
-      context_type != Feature::BLESSED_WEB_PAGE_CONTEXT) {
+  mojom::ContextType context_type = context->context_type();
+  if (context_type != mojom::ContextType::kWebPage &&
+      context_type != mojom::ContextType::kPrivilegedWebPage) {
     return;
   }
 

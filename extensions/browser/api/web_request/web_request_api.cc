@@ -55,6 +55,7 @@
 #include "extensions/common/extension_features.h"
 #include "extensions/common/features/feature.h"
 #include "extensions/common/features/feature_provider.h"
+#include "extensions/common/mojom/context_type.mojom.h"
 #include "extensions/common/permissions/permissions_data.h"
 #include "extensions/common/url_pattern.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
@@ -391,7 +392,7 @@ bool WebRequestAPI::MaybeProxyURLLoaderFactory(
         auto* feature = FeatureProvider::GetAPIFeature("webRequestInternal");
         if (feature
                 ->IsAvailableToContext(
-                    nullptr, Feature::WEBUI_CONTEXT, embedder_url,
+                    nullptr, mojom::ContextType::kWebUi, embedder_url,
                     util::GetBrowserContextId(browser_context),
                     BrowserFrameContextData(frame))
                 .is_available()) {
@@ -591,14 +592,14 @@ bool WebRequestAPI::IsAvailableToWebViewEmbedderFrame(
   if (!ProcessMap::Get(browser_context)
            ->CanProcessHostContextType(/*extension=*/nullptr,
                                        *embedder_frame->GetProcess(),
-                                       Feature::WEB_PAGE_CONTEXT)) {
+                                       mojom::ContextType::kWebPage)) {
     return false;
   }
 
   Feature::Availability availability =
       ExtensionAPI::GetSharedInstance()->IsAvailable(
           "webRequestInternal", /*extension=*/nullptr,
-          Feature::WEB_PAGE_CONTEXT, embedder_frame->GetLastCommittedURL(),
+          mojom::ContextType::kWebPage, embedder_frame->GetLastCommittedURL(),
           CheckAliasStatus::ALLOWED, util::GetBrowserContextId(browser_context),
           BrowserFrameContextData(embedder_frame));
   return availability.is_available();

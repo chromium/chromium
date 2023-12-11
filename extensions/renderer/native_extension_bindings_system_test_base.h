@@ -15,6 +15,7 @@
 #include "extensions/common/extension.h"
 #include "extensions/common/extension_id.h"
 #include "extensions/common/features/feature.h"
+#include "extensions/common/mojom/context_type.mojom-forward.h"
 #include "extensions/common/mojom/frame.mojom-forward.h"
 #include "extensions/common/mojom/message_port.mojom-shared.h"
 #include "extensions/renderer/api/messaging/message_target.h"
@@ -143,7 +144,7 @@ class NativeExtensionBindingsSystemUnittest
 
   ScriptContext* CreateScriptContext(v8::Local<v8::Context> v8_context,
                                      const Extension* extension,
-                                     Feature::Context context_type);
+                                     mojom::ContextType context_type);
 
   void RegisterExtension(scoped_refptr<const Extension> extension);
 

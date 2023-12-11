@@ -17,6 +17,7 @@
 #include "base/unguessable_token.h"
 #include "extensions/common/features/feature.h"
 #include "extensions/common/mojom/api_permission_id.mojom-shared.h"
+#include "extensions/common/mojom/context_type.mojom-forward.h"
 #include "extensions/common/permissions/api_permission_set.h"
 #include "extensions/common/script_constants.h"
 #include "extensions/renderer/module_system.h"
@@ -56,9 +57,9 @@ class ScriptContext {
   ScriptContext(const v8::Local<v8::Context>& context,
                 blink::WebLocalFrame* frame,
                 const Extension* extension,
-                Feature::Context context_type,
+                mojom::ContextType context_type,
                 const Extension* effective_extension,
-                Feature::Context effective_context_type);
+                mojom::ContextType effective_context_type);
 
   ScriptContext(const ScriptContext&) = delete;
   ScriptContext& operator=(const ScriptContext&) = delete;
@@ -98,9 +99,9 @@ class ScriptContext {
 
   blink::WebLocalFrame* web_frame() const { return web_frame_; }
 
-  Feature::Context context_type() const { return context_type_; }
+  mojom::ContextType context_type() const { return context_type_; }
 
-  Feature::Context effective_context_type() const {
+  mojom::ContextType effective_context_type() const {
     return effective_context_type_;
   }
 
@@ -298,7 +299,7 @@ class ScriptContext {
   scoped_refptr<const Extension> extension_;
 
   // The type of context.
-  Feature::Context context_type_;
+  mojom::ContextType context_type_;
 
   // The effective extension associated with this context, or NULL if there is
   // none. This is different from the above extension if this context is in an
@@ -306,7 +307,7 @@ class ScriptContext {
   scoped_refptr<const Extension> effective_extension_;
 
   // The type of context.
-  Feature::Context effective_context_type_;
+  mojom::ContextType effective_context_type_;
 
   // A globally-unique ID for the script context.
   base::UnguessableToken context_id_;
