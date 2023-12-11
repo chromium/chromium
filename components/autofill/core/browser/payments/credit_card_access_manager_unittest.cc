@@ -1238,6 +1238,114 @@ TEST_F(CreditCardAccessManagerTest, FetchServerCardFIDOSuccess) {
       CreditCardFormEventLogger::UnmaskAuthFlowEvent::kPromptCompleted, 1);
 }
 
+// Ensures that CVC filling gets logged after FIDO success if the card has CVC.
+TEST_F(CreditCardAccessManagerTest, LogCvcFillingFIDOSuccess) {
+  base::HistogramTester histogram_tester;
+
+  CreditCard server_card = test::WithCvc(test::GetMaskedServerCard());
+  personal_data().AddServerCreditCard(server_card);
+  CreditCard* card =
+      personal_data().GetCreditCardByInstrumentId(server_card.instrument_id());
+  GetFIDOAuthenticator()->SetUserVerifiable(true);
+  SetCreditCardFIDOAuthEnabled(true);
+  payments_network_interface().AddFidoEligibleCard(
+      card->server_id(), kCredentialId, kGooglePaymentsRpid);
+
+  credit_card_access_manager().PrepareToFetchCreditCard();
+  WaitForCallbacks();
+
+  credit_card_access_manager().FetchCreditCard(
+      card, base::BindOnce(&TestAccessor::OnCreditCardFetched,
+                           accessor_->GetWeakPtr()));
+  WaitForCallbacks();
+
+  // FIDO Success.
+  TestCreditCardFidoAuthenticator::GetAssertion(GetFIDOAuthenticator(),
+                                                /*did_succeed=*/true);
+  EXPECT_TRUE(GetRealPanForFIDOAuth(AutofillClient::PaymentsRpcResult::kSuccess,
+                                    kTestNumber));
+
+  histogram_tester.ExpectUniqueSample(
+      "Autofill.CvcStorage.CvcFilling.ServerCard",
+      autofill_metrics::CvcFillingFlowType::kFido, 1);
+}
+
+// Ensures that CVC filling doesn't get logged after FIDO success if the card
+// doesn't have CVC.
+TEST_F(CreditCardAccessManagerTest, DoNotLogCvcFillingFIDOSuccess) {
+  base::HistogramTester histogram_tester;
+
+  CreditCard server_card = test::GetMaskedServerCard();
+  server_card.set_cvc(u"");
+  personal_data().AddServerCreditCard(server_card);
+  CreditCard* card =
+      personal_data().GetCreditCardByInstrumentId(server_card.instrument_id());
+  GetFIDOAuthenticator()->SetUserVerifiable(true);
+  SetCreditCardFIDOAuthEnabled(true);
+  payments_network_interface().AddFidoEligibleCard(
+      card->server_id(), kCredentialId, kGooglePaymentsRpid);
+
+  credit_card_access_manager().PrepareToFetchCreditCard();
+  WaitForCallbacks();
+
+  credit_card_access_manager().FetchCreditCard(
+      card, base::BindOnce(&TestAccessor::OnCreditCardFetched,
+                           accessor_->GetWeakPtr()));
+  WaitForCallbacks();
+
+  // FIDO Success.
+  TestCreditCardFidoAuthenticator::GetAssertion(GetFIDOAuthenticator(),
+                                                /*did_succeed=*/true);
+  EXPECT_TRUE(GetRealPanForFIDOAuth(AutofillClient::PaymentsRpcResult::kSuccess,
+                                    kTestNumber));
+
+  histogram_tester.ExpectUniqueSample(
+      "Autofill.CvcStorage.CvcFilling.ServerCard",
+      autofill_metrics::CvcFillingFlowType::kFido, 0);
+}
+
+// Ensures that CVC filling gets logged if a card with CVC is retrieved with
+// non-interactive authentication.
+TEST_F(CreditCardAccessManagerTest,
+       LogCvcFillingWithoutInteractiveAuthentication) {
+  base::HistogramTester histogram_tester;
+  CreditCard local_card = test::WithCvc(test::GetCreditCard());
+  personal_data().AddCreditCard(local_card);
+  CreditCard* card = personal_data().GetCreditCardByGUID(local_card.guid());
+
+  credit_card_access_manager().PrepareToFetchCreditCard();
+  WaitForCallbacks();
+
+  credit_card_access_manager().FetchCreditCard(
+      card, base::BindOnce(&TestAccessor::OnCreditCardFetched,
+                           accessor_->GetWeakPtr()));
+
+  histogram_tester.ExpectUniqueSample(
+      "Autofill.CvcStorage.CvcFilling.LocalCard",
+      autofill_metrics::CvcFillingFlowType::kNoInteractiveAuthentication, 1);
+}
+
+// Ensures that CVC filling doesn't get logged if a card without CVC is
+// retrieved with non-interactive authentication
+TEST_F(CreditCardAccessManagerTest,
+       DoNotLogCvcFillingWithoutInteractiveAuthentication) {
+  base::HistogramTester histogram_tester;
+  CreditCard local_card = test::GetCreditCard();
+  personal_data().AddCreditCard(local_card);
+  CreditCard* card = personal_data().GetCreditCardByGUID(local_card.guid());
+
+  credit_card_access_manager().PrepareToFetchCreditCard();
+  WaitForCallbacks();
+
+  credit_card_access_manager().FetchCreditCard(
+      card, base::BindOnce(&TestAccessor::OnCreditCardFetched,
+                           accessor_->GetWeakPtr()));
+
+  histogram_tester.ExpectUniqueSample(
+      "Autofill.CvcStorage.CvcFilling.LocalCard",
+      autofill_metrics::CvcFillingFlowType::kNoInteractiveAuthentication, 0);
+}
+
 // Ensures that accessor retrieve empty CVC upon a successful
 // WebAuthn verification and response from payments using masked server card
 // without CVC.
