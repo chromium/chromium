@@ -143,6 +143,12 @@ public class AccountTrackerService implements AccountsChangeObserver {
 
     @MainThread
     void invalidateAccountsSeedingStatus() {
+        // Seeding happens synchronously when the feature is enabled, there is no status to
+        // invalidate.
+        if (SigninFeatureMap.isEnabled(SigninFeatures.SEED_ACCOUNTS_REVAMP)) {
+            throw new IllegalStateException(
+                    "This method should never be called when SeedAccountsRevamp is enabled");
+        }
         // If mAccountsSeedingStatus is IN_PROGRESS do nothing. The old invalidated seeding status
         // will be overwritten by the new seeding process.
         if (mAccountsSeedingStatus != AccountsSeedingStatus.IN_PROGRESS) {
