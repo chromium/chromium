@@ -37,6 +37,13 @@ class OcclusionTrackWindowDelegate : public test::TestWindowDelegate {
 
  private:
   // test::TestWindowDelegate:
+  void OnWindowDestroyed(Window* window) override {
+    if (window == window_) {
+      window_ = nullptr;
+    }
+    test::TestWindowDelegate::OnWindowDestroyed(window);
+  }
+
   void OnWindowOcclusionChanged(
       Window::OcclusionState old_occlusion_state,
       Window::OcclusionState new_occlusion_state) override {
@@ -45,7 +52,7 @@ class OcclusionTrackWindowDelegate : public test::TestWindowDelegate {
     last_occluded_region_ = window_->occluded_region_in_root();
   }
 
-  raw_ptr<Window, DanglingUntriaged> window_ = nullptr;
+  raw_ptr<Window> window_ = nullptr;
   int occlusion_change_count_ = 0;
   Window::OcclusionState last_occlusion_state_ =
       Window::OcclusionState::UNKNOWN;
