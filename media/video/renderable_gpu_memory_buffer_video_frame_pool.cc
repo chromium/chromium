@@ -190,7 +190,9 @@ bool FrameResources::Initialize() {
     return false;
   }
 
+#if BUILDFLAG(IS_MAC)
   gpu_memory_buffer_->SetColorSpace(color_space_);
+#endif
 
   constexpr uint32_t kSharedImageUsage =
 #if BUILDFLAG(IS_MAC)

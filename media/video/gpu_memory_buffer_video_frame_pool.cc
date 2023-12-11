@@ -931,8 +931,10 @@ void GpuMemoryBufferVideoFramePool::PoolImpl::OnCopiesDone(
     for (const auto& plane_resource : frame_resources->plane_resources) {
       if (plane_resource.gpu_memory_buffer) {
         plane_resource.gpu_memory_buffer->Unmap();
+#if BUILDFLAG(IS_MAC)
         plane_resource.gpu_memory_buffer->SetColorSpace(
             video_frame->ColorSpace());
+#endif
       }
     }
   }

@@ -73,9 +73,6 @@ int FakeChromeOSIntelCompressedGpuMemoryBuffer::stride(size_t plane) const {
   return handle_.native_pixmap_handle.planes[plane].stride;
 }
 
-void FakeChromeOSIntelCompressedGpuMemoryBuffer::SetColorSpace(
-    const gfx::ColorSpace& color_space) {}
-
 gfx::GpuMemoryBufferId FakeChromeOSIntelCompressedGpuMemoryBuffer::GetId()
     const {
   return handle_.id;

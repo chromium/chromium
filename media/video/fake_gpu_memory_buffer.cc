@@ -120,8 +120,6 @@ int FakeGpuMemoryBuffer::stride(size_t plane) const {
   return VideoFrame::PlaneSize(video_pixel_format_, plane, size_).width();
 }
 
-void FakeGpuMemoryBuffer::SetColorSpace(const gfx::ColorSpace& color_space) {}
-
 gfx::GpuMemoryBufferId FakeGpuMemoryBuffer::GetId() const {
   return handle_.id;
 }

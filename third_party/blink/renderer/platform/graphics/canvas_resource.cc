@@ -463,7 +463,9 @@ CanvasResourceRasterSharedImage::CanvasResourceRasterSharedImage(
     if (!gpu_memory_buffer_)
       return;
 
+#if BUILDFLAG(IS_MAC)
     gpu_memory_buffer_->SetColorSpace(GetColorSpace());
+#endif
   }
 
   auto* shared_image_interface =

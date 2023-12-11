@@ -1978,7 +1978,9 @@ scoped_refptr<DrawingBuffer::ColorBuffer> DrawingBuffer::CreateColorBuffer(
                 color_buffer_format_),
             buffer_usage, gpu::kNullSurfaceHandle, nullptr);
         if (gpu_memory_buffer) {
+#if BUILDFLAG(IS_MAC)
           gpu_memory_buffer->SetColorSpace(color_space_);
+#endif
           auto client_shared_image = sii->CreateSharedImage(
               color_buffer_format_, size, color_space_, origin,
               back_buffer_alpha_type, usage | additional_usage_flags,

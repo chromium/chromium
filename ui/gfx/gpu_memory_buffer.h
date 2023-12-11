@@ -118,9 +118,12 @@ class GFX_EXPORT GpuMemoryBuffer {
   // plane K is stored at index K-1 of the |stride| array.
   virtual int stride(size_t plane) const = 0;
 
+#if BUILDFLAG(IS_APPLE)
   // Set the color space in which this buffer should be interpreted when used
   // as an overlay. Note that this will not impact texturing from the buffer.
-  virtual void SetColorSpace(const ColorSpace& color_space);
+  // Used only for GMBs backed by an IOSurface.
+  virtual void SetColorSpace(const ColorSpace& color_space) {}
+#endif
 
   // Returns a unique identifier associated with buffer.
   virtual GpuMemoryBufferId GetId() const = 0;
