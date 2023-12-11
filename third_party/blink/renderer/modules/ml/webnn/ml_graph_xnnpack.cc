@@ -1428,18 +1428,19 @@ xnn_status DefineXnnNodeForReshape(
       GetOperatorOutputValueId(reshape, operand_value_id_map);
   // Set the new shape of XNNPACK reshape Node to the output shape that is
   // already calculated by `MLGraphBuilder::reshape()`.
-  Vector<size_t> new_shape;
-  for (auto& d : reshape->Outputs()[0]->Dimensions()) {
-    new_shape.push_back(base::checked_cast<size_t>(d));
+  const auto& output_dimensions = reshape->Outputs()[0]->Dimensions();
+  const auto output_rank = output_dimensions.size();
+  size_t new_shape[output_rank];
+  for (wtf_size_t i = 0; i < output_rank; ++i) {
+    new_shape[i] = base::checked_cast<size_t>(output_dimensions[i]);
   }
   const uint32_t flags = 0;
   // XNNPACK will memcpy the content of `new_shape` vector to its internal
   // structure, so it is safe to release `new_shape` vector after this call.
   // Please refer to the implementation at:
   // https://source.chromium.org/chromium/chromium/src/+/main:third_party/xnnpack/src/src/subgraph/static-reshape.c;l=246
-  XNN_CHECK_STATUS_AND_SET_ERROR_MESSAGE(
-      xnn_define_static_reshape(subgraph, new_shape.size(), new_shape.data(),
-                                input_id, output_id, flags));
+  XNN_CHECK_STATUS_AND_SET_ERROR_MESSAGE(xnn_define_static_reshape(
+      subgraph, output_rank, new_shape, input_id, output_id, flags));
   return xnn_status_success;
 }
 
