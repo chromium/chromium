@@ -780,6 +780,8 @@ public final class ProductionSupportedFlagList {
         Flag.baseFeature("V8MemoryReducer"),
         Flag.baseFeature("V8MinorMS"),
         Flag.baseFeature("WebAssemblyMoreAggressiveCodeCaching"),
+        Flag.baseFeature("WebAssemblyTurboshaft"),
+        Flag.baseFeature("WebAssemblyTurboshaftInstructionSelection"),
         Flag.baseFeature(
                 AwFeatures.WEBVIEW_INJECT_PLATFORM_JS_APIS,
                 "Inject platform-specific JavaScript APIs."),
