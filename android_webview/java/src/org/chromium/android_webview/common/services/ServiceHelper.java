@@ -9,7 +9,6 @@ import android.content.Intent;
 import android.content.ReceiverCallNotAllowedException;
 import android.content.ServiceConnection;
 
-
 /** Helper methods for working with Services in WebView. */
 public class ServiceHelper {
     private static final String TAG = "ServiceHelper";
@@ -26,9 +25,14 @@ public class ServiceHelper {
     public static boolean bindService(
             Context context, Intent intent, ServiceConnection serviceConnection, int flags) {
         try {
-            return context.bindService(intent, serviceConnection, flags);
+            boolean bindSuccess = context.bindService(intent, serviceConnection, flags);
+            if (!bindSuccess) {
+                context.unbindService(serviceConnection);
+            }
+            return bindSuccess;
         } catch (ReceiverCallNotAllowedException e) {
             // If we're running in a BroadcastReceiver Context then we cannot bind to Services.
+            context.unbindService(serviceConnection);
             return false;
         }
     }

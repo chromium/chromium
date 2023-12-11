@@ -281,6 +281,10 @@ public class VariationsSeedLoader {
                         getServerIntent(),
                         Context.BIND_AUTO_CREATE)) {
                     Log.e(TAG, "Failed to bind to WebView service");
+                    // If we don't close the file descriptor here, it will be leaked since this
+                    // service only wants to close it once the service has been connected.
+                    // Problematic if we can't connect to the service in the first place.
+                    VariationsUtils.closeSafely(mNewSeedFd);
                 }
                 // Connect to nonembedded metrics Service at the same time we connect to variation
                 // service.
