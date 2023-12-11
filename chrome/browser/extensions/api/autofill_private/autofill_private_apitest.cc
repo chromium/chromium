@@ -132,6 +132,49 @@ IN_PROC_BROWSER_TEST_F(AutofillPrivateApiTest, AddCreditCard_NoCvc) {
       0, user_action_tester.GetActionCount("AutofillCreditCardsAddedWithCvc"));
 }
 
+IN_PROC_BROWSER_TEST_F(AutofillPrivateApiTest,
+                       UpdateCreditCard_NoExistingCvc_NoNewCvcAdded) {
+  base::UserActionTester user_action_tester;
+  EXPECT_TRUE(RunAutofillSubtest("addAndUpdateCreditCard")) << message_;
+  EXPECT_EQ(1, user_action_tester.GetActionCount(
+                   "AutofillCreditCardsEditedAndCvcWasLeftBlank"));
+}
+
+IN_PROC_BROWSER_TEST_F(AutofillPrivateApiTest,
+                       UpdateCreditCard_NoExistingCvc_NewCvcAdded) {
+  base::UserActionTester user_action_tester;
+  EXPECT_TRUE(RunAutofillSubtest("addAndUpdateCreditCard_AddCvc")) << message_;
+  EXPECT_EQ(1, user_action_tester.GetActionCount(
+                   "AutofillCreditCardsEditedAndCvcWasAdded"));
+}
+
+IN_PROC_BROWSER_TEST_F(AutofillPrivateApiTest,
+                       UpdateCreditCard_ExistingCvc_Removed) {
+  base::UserActionTester user_action_tester;
+  EXPECT_TRUE(RunAutofillSubtest("addAndUpdateCreditCard_RemoveCvc"))
+      << message_;
+  EXPECT_EQ(1, user_action_tester.GetActionCount(
+                   "AutofillCreditCardsEditedAndCvcWasRemoved"));
+}
+
+IN_PROC_BROWSER_TEST_F(AutofillPrivateApiTest,
+                       UpdateCreditCard_ExistingCvc_Updated) {
+  base::UserActionTester user_action_tester;
+  EXPECT_TRUE(RunAutofillSubtest("addAndUpdateCreditCard_UpdateCvc"))
+      << message_;
+  EXPECT_EQ(1, user_action_tester.GetActionCount(
+                   "AutofillCreditCardsEditedAndCvcWasUpdated"));
+}
+
+IN_PROC_BROWSER_TEST_F(AutofillPrivateApiTest,
+                       UpdateCreditCard_ExistingCvc_Unchanged) {
+  base::UserActionTester user_action_tester;
+  EXPECT_TRUE(RunAutofillSubtest("addAndUpdateCreditCard_UnchangedCvc"))
+      << message_;
+  EXPECT_EQ(1, user_action_tester.GetActionCount(
+                   "AutofillCreditCardsEditedAndCvcWasUnchanged"));
+}
+
 IN_PROC_BROWSER_TEST_F(AutofillPrivateApiTest, AddNewIban_NoNickname) {
   base::UserActionTester user_action_tester;
   EXPECT_TRUE(RunAutofillSubtest("addNewIbanNoNickname")) << message_;

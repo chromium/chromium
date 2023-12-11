@@ -106,6 +106,62 @@ function updateExistingIban(updatedNickname) {
   }));
 };
 
+function updateCreditCardForCvc(updatedCvcValue) {
+  // Reset onPersonalDataChanged.
+  chrome.autofillPrivate.onPersonalDataChanged.removeListener(failOnceCalled);
+
+  var UPDATED_CARD_NAME = 'UpdatedCardName';
+  var UPDATED_EXP_YEAR = '2888';
+  var UPDATED_NICKNAME = 'New nickname';
+
+  function filterCardProperties(cards) {
+    return cards.map(cards => {
+      var filteredCards = {};
+      ['guid', 'name', 'cardNumber', 'expirationMonth', 'expirationYear',
+       'nickname', 'cvc']
+          .forEach(property => {
+            filteredCards[property] = cards[property];
+          });
+      return filteredCards;
+    });
+  }
+
+  chrome.autofillPrivate.getCreditCardList(
+      chrome.test.callbackPass(function(cardList) {
+        // The card from the addNewCreditCard function should still be there.
+        chrome.test.assertEq(1, cardList.length);
+        var cardGuid = cardList[0].guid;
+
+        // Set up the callback that verifies that the card was correctly
+        // updated.
+        chrome.test.listenOnce(
+            chrome.autofillPrivate.onPersonalDataChanged,
+            chrome.test.callbackPass(function(addressList, cardList) {
+              chrome.test.assertEq(
+                  [{
+                    guid: cardGuid,
+                    name: UPDATED_CARD_NAME,
+                    cardNumber: MASKED_NUMBER,
+                    expirationMonth: EXP_MONTH,
+                    expirationYear: UPDATED_EXP_YEAR,
+                    nickname: UPDATED_NICKNAME,
+                    cvc: updatedCvcValue ? MASKED_CVC : undefined,
+                  }],
+                  filterCardProperties(cardList));
+            }));
+
+        // Update the card by saving a card with the same guid and using some
+        // different information.
+        chrome.autofillPrivate.saveCreditCard({
+          guid: cardGuid,
+          name: UPDATED_CARD_NAME,
+          expirationYear: UPDATED_EXP_YEAR,
+          nickname: UPDATED_NICKNAME,
+          cvc: updatedCvcValue
+        });
+      }));
+};
+
 var availableTests = [
   function getCountryList() {
     var handler = function(countries) {
@@ -419,7 +475,7 @@ var availableTests = [
         cardNumber: NUMBER,
         expirationMonth: EXP_MONTH,
         expirationYear: EXP_YEAR,
-        cvc: CVC
+        cvc: undefined
       });
     }));
   },
@@ -463,7 +519,7 @@ var availableTests = [
                       expirationMonth: EXP_MONTH,
                       expirationYear: UPDATED_EXP_YEAR,
                       nickname: UPDATED_NICKNAME,
-                      cvc: MASKED_CVC
+                      cvc: undefined
                     }],
                     filterCardProperties(cardList));
               }));
@@ -477,6 +533,18 @@ var availableTests = [
             nickname: UPDATED_NICKNAME
           });
         }));
+  },
+
+  function updateExistingCreditCard_CvcRemoved() {
+    updateCreditCardForCvc(/*updatedCvcValue=*/ '');
+  },
+
+  function updateExistingCreditCard_CvcUpdated() {
+    updateCreditCardForCvc(/*updatedCvcValue=*/ '123');
+  },
+
+  function updateExistingCreditCard_UnchangedCvc() {
+    updateCreditCardForCvc(/*updatedCvcValue=*/ CVC);
   },
 
   function addNewIbanNoNickname() {
@@ -635,9 +703,17 @@ var availableTests = [
 var TESTS_FOR_CONFIG = {
   'addAndUpdateAddress': ['addNewAddress', 'updateExistingAddress'],
   'addAndUpdateCreditCard': [
-    'addNewCreditCard', 'noChangesToExistingCreditCard',
+    'addNewCreditCardWithoutCvc', 'noChangesToExistingCreditCard',
     'updateExistingCreditCard'
   ],
+  'addAndUpdateCreditCard_AddCvc':
+      ['addNewCreditCardWithoutCvc', 'updateExistingCreditCard_CvcUpdated'],
+  'addAndUpdateCreditCard_RemoveCvc':
+      ['addNewCreditCard', 'updateExistingCreditCard_CvcRemoved'],
+  'addAndUpdateCreditCard_UpdateCvc':
+      ['addNewCreditCard', 'updateExistingCreditCard_CvcUpdated'],
+  'addAndUpdateCreditCard_UnchangedCvc':
+      ['addNewCreditCard', 'updateExistingCreditCard_UnchangedCvc'],
   'addNewIbanNoNickname': ['addNewIbanNoNickname'],
   'addNewIbanWithNickname': ['addNewIbanWithNickname'],
   'noChangesToExistingIban':
