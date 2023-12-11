@@ -11,6 +11,8 @@
 #import "base/metrics/histogram_macros.h"
 #import "base/strings/sys_string_conversions.h"
 #import "base/timer/timer.h"
+#import "components/security_interstitials/core/insecure_form_util.h"
+#import "ios/components/security_interstitials/https_only_mode/feature.h"
 #import "ios/net/http_response_headers_util.h"
 #import "ios/net/protocol_handler_util.h"
 #import "ios/net/url_scheme_util.h"
@@ -1576,6 +1578,28 @@ void LogPresentingErrorPageFailedWithError(NSError* error) {
     [self.navigationStates removeNavigation:navigation];
 }
 
+// Returns the warning type to be shown for <form> posts, or kNone if no warning
+// should be shown.
+- (web::FormWarningType)formWarningType:(WKNavigationAction*)action {
+  if (action.navigationType == WKNavigationTypeFormResubmitted) {
+    return web::FormWarningType::kRepost;
+  }
+  if (base::FeatureList::IsEnabled(security_interstitials::features::
+                                       kInsecureFormSubmissionInterstitial) &&
+      action.navigationType == WKNavigationTypeFormSubmitted) {
+    if (action.sourceFrame) {
+      GURL source_url = web::GURLOriginWithWKSecurityOrigin(
+          action.sourceFrame.securityOrigin);
+      GURL form_action_url = net::GURLWithNSURL(action.request.URL);
+      if (security_interstitials::IsInsecureFormActionOnSecureSource(
+              source_url, form_action_url)) {
+        return web::FormWarningType::kInsecureForm;
+      }
+    }
+  }
+  return web::FormWarningType::kNone;
+}
+
 // This method should be called on deciding policy for navigation action. It
 // Answers the `decisionHandler` with a final decision caculated with passed
 // `policyDecision`. The passed `policyDecision` should be determined by some
@@ -1589,11 +1613,11 @@ void LogPresentingErrorPageFailedWithError(NSError* error) {
      forceBlockUniversalLinks:(BOOL)forceBlockUniversalLinks {
   if (policyDecision.ShouldAllowNavigation()) {
     if ([[action.request HTTPMethod] isEqualToString:@"POST"]) {
+      web::FormWarningType warning_type = [self formWarningType:action];
       // Display the confirmation dialog if a form repost is detected.
-      if (action.navigationType == WKNavigationTypeFormResubmitted) {
+      if (warning_type != web::FormWarningType::kNone) {
         self.webStateImpl->ShowRepostFormWarningDialog(
-            web::FormWarningType::kRepost,
-            base::BindOnce(^(bool shouldContinue) {
+            warning_type, base::BindOnce(^(bool shouldContinue) {
               if (self.beingDestroyed) {
                 decisionHandler(WKNavigationActionPolicyCancel);
               } else if (shouldContinue) {

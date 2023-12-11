@@ -15,6 +15,7 @@
 #import "ios/chrome/browser/overlays/model/public/overlay_request_queue.h"
 #import "ios/chrome/browser/overlays/model/public/overlay_response.h"
 #import "ios/chrome/browser/overlays/model/public/web_content_area/http_auth_overlay.h"
+#import "ios/chrome/browser/overlays/model/public/web_content_area/insecure_form_overlay.h"
 #import "ios/chrome/browser/permissions/model/permissions_tab_helper.h"
 #import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/snapshots/model/snapshot_tab_helper.h"
@@ -48,6 +49,19 @@ void OnHTTPAuthOverlayFinished(web::WebStateDelegate::AuthCallback callback,
     }
   }
   std::move(callback).Run(nil, nil);
+}
+
+void OnInsecureFormWarningResponse(base::OnceCallback<void(bool)> callback,
+                                   OverlayResponse* response) {
+  if (response) {
+    InsecureFormDialogResponse* info =
+        response->GetInfo<InsecureFormDialogResponse>();
+    if (info) {
+      std::move(callback).Run(info->allow_send());
+      return;
+    }
+  }
+  std::move(callback).Run(false);
 }
 
 // Returns true if a supervised user attempts to access the microphone or camera
@@ -260,17 +274,35 @@ void WebStateDelegateBrowserAgent::ShowRepostFormWarningDialog(
     web::WebState* source,
     web::FormWarningType warning_type,
     base::OnceCallback<void(bool)> callback) {
-  CHECK_EQ(warning_type, web::FormWarningType::kRepost);
+  CHECK_NE(warning_type, web::FormWarningType::kNone);
   if (!container_view_provider_) {
     // There's no way to show the dialog so treat it as if the user said no.
     std::move(callback).Run(false);
     return;
   }
-  // TODO(crbug.com/1266052) : Clean up this API.
-  RepostFormTabHelper::FromWebState(source)->PresentDialog(
-      [container_view_provider_ dialogLocation], std::move(callback));
 
-  // TODO(crbug.com/1501150): Handle FormWarningType::kInsecureForm.
+  switch (warning_type) {
+    case web::FormWarningType::kRepost:
+      // TODO(crbug.com/1266052) : Clean up this API.
+      RepostFormTabHelper::FromWebState(source)->PresentDialog(
+          [container_view_provider_ dialogLocation], std::move(callback));
+      return;
+
+    case web::FormWarningType::kInsecureForm: {
+      // Show the insecure form warning overlay.
+      std::unique_ptr<OverlayRequest> request =
+          OverlayRequest::CreateWithConfig<InsecureFormOverlayRequestConfig>();
+      request->GetCallbackManager()->AddCompletionCallback(
+          base::BindOnce(&OnInsecureFormWarningResponse, std::move(callback)));
+      OverlayRequestQueue::FromWebState(source,
+                                        OverlayModality::kWebContentArea)
+          ->AddRequest(std::move(request));
+      return;
+    }
+
+    case web::FormWarningType::kNone:
+      NOTREACHED();
+  }
 }
 
 web::JavaScriptDialogPresenter*

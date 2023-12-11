@@ -18,7 +18,6 @@ source_set("model") {
   deps = [
     "//base",
     "//base:i18n",
-    "//components/autofill/ios/form_util",
     "//components/captive_portal/core",
     "//components/safe_browsing/core/browser:safe_browsing_metrics_collector",
     "//components/security_interstitials/core",
@@ -62,4 +61,70 @@ source_set("unit_tests") {
     "//services/network:test_support",
     "//third_party/ocmock",
   ]
+}
+
+source_set("eg_test_support+eg2") {
+  configs += [ "//build/config/ios:xctest_config" ]
+  testonly = true
+
+  sources = [
+    "insecure_form_warning_app_interface.h",
+    "insecure_form_warning_app_interface_stub.mm",
+  ]
+
+  deps = [
+    "//components/security_interstitials/core:insecure_form_util",
+    "//ios/chrome/test/earl_grey:eg_test_support+eg2",
+    "//ios/testing/earl_grey:eg_test_support+eg2",
+  ]
+}
+
+source_set("eg_app_support+eg2") {
+  configs += [ "//build/config/ios:xctest_config" ]
+  testonly = true
+
+  sources = [
+    "insecure_form_warning_app_interface.h",
+    "insecure_form_warning_app_interface.mm",
+  ]
+
+  deps = [
+    "//base",
+    "//components/content_settings/core/browser",
+    "//components/security_interstitials/core:insecure_form_util",
+    "//ios/chrome/browser/shared/model/browser_state",
+    "//ios/chrome/test/app:test_support",
+    "//ios/testing/earl_grey:eg_app_support+eg2",
+    "//ios/third_party/earl_grey2:app_framework+link",
+    "//ios/web/public",
+    "//net",
+  ]
+}
+
+source_set("eg2_tests") {
+  configs += [ "//build/config/ios:xctest_config" ]
+  testonly = true
+
+  sources = [ "insecure_form_warning_egtest.mm" ]
+
+  deps = [
+    ":eg_test_support+eg2",
+    "//components/security_interstitials/core",
+    "//components/strings",
+    "//ios/chrome/browser/overlays/model/public/web_content_area:constants",
+    "//ios/chrome/test:eg_test_support+eg2",
+    "//ios/chrome/test/earl_grey:eg_test_support+eg2",
+    "//ios/components/security_interstitials/https_only_mode:feature",
+    "//ios/net:test_support",
+    "//ios/testing:embedded_test_server_support",
+    "//ios/testing/earl_grey:eg_test_support+eg2",
+    "//ios/web/common:features",
+    "//ios/web/public/test:element_selector",
+    "//ios/web/public/test/http_server",
+    "//net:test_support",
+    "//ui/base",
+    "//url",
+  ]
+
+  frameworks = [ "UIKit.framework" ]
 }

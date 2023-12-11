@@ -1,10 +1,12 @@
 include_rules = [
+  "+components/security_interstitials/core/insecure_form_util.h",
   "+components/leveldb_proto/public",
   "+components/security_state",
   "+components/sessions/core/session_id.h",
   "+components/shared_highlighting/core/common",
   "+components/url_formatter",
   "+crypto",
+  "+ios/components/security_interstitials/https_only_mode/feature.h",
   "+ios/net",
   "+ios/web",
   "+mojo/public",

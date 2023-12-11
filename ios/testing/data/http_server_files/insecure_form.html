@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<!-- Copyright 2023 The Chromium Authors
+ Use of this source code is governed by a BSD-style license that can be
+ found in the LICENSE file. -->
+<html>
+<body>
+<!-- The action URL of this form is given as the query string in the page's URL,
+ e.g.: http://127.0.0.1:port/insecure_form.html?http://target_url
+-->
+<form method=POST action="">
+  <input type="text" name="username" id="username" value="testuser"><br>
+  <input type="password" name="password" id="password" value="testpassword"><br>
+  <input type="submit" value="submit" id="submit">
+</form>
+<script>
+  window.onload = function() {
+    // Extract the form's action URL from the query string.
+    document.forms[0].action = window.location.search.substring(1);
+    document.body.appendChild(document.createTextNode("Insecure form ready to submit"));
+  }
+</script>
+</body>
+</html>
+

@@ -10,6 +10,8 @@ source_set("web_content_area") {
     "app_launcher_overlay.mm",
     "http_auth_overlay.h",
     "http_auth_overlay.mm",
+    "insecure_form_overlay.h",
+    "insecure_form_overlay.mm",
     "java_script_alert_dialog_overlay.h",
     "java_script_alert_dialog_overlay.mm",
     "java_script_confirm_dialog_overlay.h",
@@ -49,6 +51,7 @@ source_set("unit_tests") {
   sources = [
     "app_launcher_overlay_unittest.mm",
     "http_auth_overlay_unittest.mm",
+    "insecure_form_overlay_unittest.mm",
     "java_script_alert_dialog_overlay_unittest.mm",
     "java_script_confirm_dialog_overlay_unittest.mm",
     "java_script_dialog_overlay_utils_unittest.mm",
