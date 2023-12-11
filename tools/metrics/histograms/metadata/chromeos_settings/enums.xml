@@ -30,6 +30,7 @@ chromium-metrics-reviews@google.com.
   <int value="0" label="Resolution"/>
   <int value="1" label="RefreshRate"/>
   <int value="2" label="Scaling"/>
+  <int value="3" label="Orientation"/>
 </enum>
 
 </enums>

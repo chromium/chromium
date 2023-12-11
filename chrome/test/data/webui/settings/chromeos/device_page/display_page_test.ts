@@ -235,6 +235,24 @@ suite('<settings-display>', () => {
         1,
         externalDisplayHistogram.get(
             displaySettingsProviderMojom.DisplaySettingsType.kScaling));
+
+    // Mock user changing orientation.
+    const orientationSelect = displayPage.shadowRoot!.getElementById(
+                                  'orientationSelect') as HTMLSelectElement;
+    assertTrue(!!orientationSelect);
+    orientationSelect.value = '90';
+    orientationSelect.dispatchEvent(new CustomEvent('change'));
+
+    fakeSystemDisplay.onDisplayChanged.callListeners();
+    await fakeSystemDisplay.getInfoCalled.promise;
+    await fakeSystemDisplay.getLayoutCalled.promise;
+    flush();
+
+    // Verify histogram count for orientation change.
+    assertEquals(
+        1,
+        externalDisplayHistogram.get(
+            displaySettingsProviderMojom.DisplaySettingsType.kOrientation));
   });
 
   test('display tests', async function() {

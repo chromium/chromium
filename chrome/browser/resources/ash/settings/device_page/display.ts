@@ -1242,6 +1242,9 @@ export class SettingsDisplayElement extends SettingsDisplayElementBase {
     getDisplayApi()
         .setDisplayProperties(this.selectedDisplay.id, properties)
         .then(() => this.setPropertiesCallback_());
+    this.displaySettingsProvider.recordChangingDisplaySettings(
+        DisplaySettingsType.kOrientation,
+        {isInternalDisplay: this.selectedDisplay.isInternal});
   }
 
   private onMirroredClick_(event: Event): void {

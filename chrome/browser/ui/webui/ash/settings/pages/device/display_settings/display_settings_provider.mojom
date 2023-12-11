@@ -11,6 +11,7 @@ enum DisplaySettingsType {
   kResolution = 0,
   kRefreshRate,
   kScaling,
+  kOrientation,
   // TODO(zhangwenyu): handle more display settings.
 };
 
