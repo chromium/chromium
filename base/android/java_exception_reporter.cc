@@ -22,7 +22,7 @@ namespace android {
 
 namespace {
 
-void (*g_java_exception_callback)(const char*);
+JavaExceptionCallback g_java_exception_callback;
 
 using JavaExceptionFilter =
     base::RepeatingCallback<bool(const JavaRef<jthrowable>&)>;
@@ -57,9 +57,13 @@ void SetJavaExceptionFilter(JavaExceptionFilter java_exception_filter) {
   g_java_exception_filter.Get() = std::move(java_exception_filter);
 }
 
-void SetJavaExceptionCallback(void (*callback)(const char*)) {
-  DCHECK(!g_java_exception_callback);
+void SetJavaExceptionCallback(JavaExceptionCallback callback) {
+  DCHECK(!g_java_exception_callback || !callback);
   g_java_exception_callback = callback;
+}
+
+JavaExceptionCallback GetJavaExceptionCallback() {
+  return g_java_exception_callback;
 }
 
 void SetJavaException(const char* exception) {

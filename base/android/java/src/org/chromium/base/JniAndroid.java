@@ -11,6 +11,7 @@ public final class JniAndroid {
     private JniAndroid() {}
 
     private static final String TAG = "JniAndroid";
+    static boolean sSimulateOomInSanitizedStacktraceForTesting;
 
     /**
      * Returns a sanitized stacktrace (per {@link PiiElider#sanitizeStacktrace(String)}) for the
@@ -21,6 +22,9 @@ public final class JniAndroid {
      */
     @CalledByNative
     private static String sanitizedStacktraceForUnhandledException(Throwable throwable) {
+        if (sSimulateOomInSanitizedStacktraceForTesting) {
+            return null;
+        }
         try {
             return PiiElider.sanitizeStacktrace(Log.getStackTraceString(throwable));
         } catch (OutOfMemoryError oomError) {

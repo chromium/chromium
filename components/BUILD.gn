@@ -595,7 +595,7 @@ test("components_unittests") {
 
   if (is_android) {
     deps += [
-      "//base:base_java_unittest_support",
+      "//base:base_unittest_support_java",
       "//components/android_autofill/browser:unit_tests",
       "//components/browser_ui/accessibility/android:unit_tests",
       "//components/browser_ui/site_settings/android:unit_tests",

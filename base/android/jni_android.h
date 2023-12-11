@@ -30,6 +30,13 @@ struct RegistrationMethod {
   bool (*func)(JNIEnv* env);
 };
 
+BASE_EXPORT extern const char kUnableToGetStackTraceMessage[];
+BASE_EXPORT extern const char kReetrantOutOfMemoryMessage[];
+BASE_EXPORT extern const char kReetrantExceptionMessage[];
+BASE_EXPORT extern const char kUncaughtExceptionMessage[];
+BASE_EXPORT extern const char kUncaughtExceptionHandlerFailedMessage[];
+BASE_EXPORT extern const char kOomInGetJavaExceptionInfoMessage[];
+
 // Attaches the current thread to the VM (if necessary) and return the JNIEnv*.
 BASE_EXPORT JNIEnv* AttachCurrentThread();
 

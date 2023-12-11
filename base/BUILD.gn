@@ -3733,7 +3733,8 @@ test("base_unittests") {
       "test/launcher/test_results_tracker_unittest.cc",
     ]
     deps += [
-      ":base_java_unittest_support",
+      ":base_unittest_support_java",
+      ":base_unittest_support_jni",
       "//base/test:test_support_java",
       "//third_party/jni_zero",
     ]
@@ -4876,17 +4877,26 @@ if (is_android) {
     ]
   }
 
-  android_library("base_java_unittest_support") {
+  generate_jni("base_unittest_support_jni") {
+    testonly = true
+    sources =
+        [ "test/android/java/src/org/chromium/base/JniAndroidTestUtils.java" ]
+  }
+
+  # Used by gtests and not by robolectric / instrumentation tests.
+  android_library("base_unittest_support_java") {
     testonly = true
 
     deps = [
       ":base_java",
       "//third_party/jni_zero:jni_zero_java",
     ]
+    srcjar_deps = [ ":base_unittest_support_jni" ]
 
     sources = [
       "test/android/java/src/org/chromium/base/ContentUriTestUtils.java",
       "test/android/java/src/org/chromium/base/JavaHandlerThreadHelpers.java",
+      "test/android/java/src/org/chromium/base/JniAndroidTestUtils.java",
     ]
   }
 }  # is_android

@@ -3264,7 +3264,7 @@ test("content_unittests") {
     deps += [
       ":content_unittests_java",
       ":content_unittests_jni_headers",
-      "//base:base_java_unittest_support",
+      "//base:base_unittest_support_java",
       "//build/config/freetype",
       "//cc/slim",
       "//components/download/internal/common:internal_java",

@@ -465,6 +465,7 @@ if (is_android) {
     ]
   }
 
+  # Used by all base test targets: gtests, robolectric, and instrumentation tests.
   android_library("test_support_java") {
     testonly = true
 
