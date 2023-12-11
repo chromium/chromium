@@ -14,7 +14,11 @@ function main() {
   local script_dir=$(dirname "$0")
   local vpython_path="/opt/vpython"
   local python_path="/opt/python3/bin"
-  PATH="${vpython_path}:${python_path}:${PATH}"
+  local cipd_path="/opt/infra-tools"
+  PATH="${vpython_path}:${python_path}:${cipd_path}:${PATH}"
+
+  # Ensure that the ~/Library/Developer/CoreSimulator directory is created.
+  xcrun simctl list > /dev/null
 
   ${script_dir}/run_fuzz_test.py --os="${ios_version}" \
     --device="${device_type}" ${test_path}
