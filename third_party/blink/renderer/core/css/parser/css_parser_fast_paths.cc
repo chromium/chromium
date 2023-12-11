@@ -1212,9 +1212,8 @@ bool CSSParserFastPaths::IsValidKeywordPropertyAndValue(
     case CSSPropertyID::kClear:
       return value_id == CSSValueID::kNone || value_id == CSSValueID::kLeft ||
              value_id == CSSValueID::kRight || value_id == CSSValueID::kBoth ||
-             (RuntimeEnabledFeatures::CSSLogicalEnabled() &&
-              (value_id == CSSValueID::kInlineStart ||
-               value_id == CSSValueID::kInlineEnd));
+             value_id == CSSValueID::kInlineStart ||
+             value_id == CSSValueID::kInlineEnd;
     case CSSPropertyID::kClipRule:
     case CSSPropertyID::kFillRule:
       return value_id == CSSValueID::kNonzero ||
@@ -1242,9 +1241,8 @@ bool CSSParserFastPaths::IsValidKeywordPropertyAndValue(
       return value_id == CSSValueID::kShow || value_id == CSSValueID::kHide;
     case CSSPropertyID::kFloat:
       return value_id == CSSValueID::kLeft || value_id == CSSValueID::kRight ||
-             (RuntimeEnabledFeatures::CSSLogicalEnabled() &&
-              (value_id == CSSValueID::kInlineStart ||
-               value_id == CSSValueID::kInlineEnd)) ||
+             value_id == CSSValueID::kInlineStart ||
+             value_id == CSSValueID::kInlineEnd ||
              value_id == CSSValueID::kNone;
     case CSSPropertyID::kForcedColorAdjust:
       return value_id == CSSValueID::kNone || value_id == CSSValueID::kAuto ||
@@ -1328,10 +1326,8 @@ bool CSSParserFastPaths::IsValidKeywordPropertyAndValue(
       return value_id == CSSValueID::kNone || value_id == CSSValueID::kBoth ||
              value_id == CSSValueID::kHorizontal ||
              value_id == CSSValueID::kVertical ||
-             (RuntimeEnabledFeatures::CSSLogicalEnabled() &&
-              (value_id == CSSValueID::kBlock ||
-               value_id == CSSValueID::kInline)) ||
-             value_id == CSSValueID::kAuto;
+             value_id == CSSValueID::kBlock ||
+             value_id == CSSValueID::kInline || value_id == CSSValueID::kAuto;
     case CSSPropertyID::kScrollBehavior:
       return value_id == CSSValueID::kAuto || value_id == CSSValueID::kSmooth;
     case CSSPropertyID::kShapeRendering:

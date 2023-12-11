@@ -941,11 +941,6 @@
       status: "stable"
     },
     {
-      name: "CSSLogical",
-      status: "stable",
-      base_feature: "none",
-    },
-    {
       name: "CSSLogicalOverflow",
       status: "test",
       base_feature: "none",
