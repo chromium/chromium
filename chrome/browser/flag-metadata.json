@@ -6512,7 +6512,7 @@
   {
     "name": "price-tracking-icon-colors",
     "owners": [ "mdjones@chromium.org", "chrome-shopping-eng@google.com" ],
-    "expiry_milestone": 120
+    "expiry_milestone": 122
   },
   {
     "name": "print-management-jelly",
