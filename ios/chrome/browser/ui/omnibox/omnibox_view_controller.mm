@@ -748,8 +748,8 @@ const CGFloat kClearButtonImageSize = 17.0f;
 
 #pragma mark - UIScribbleInteractionDelegate
 
-- (void)scribbleInteractionWillBeginWriting:(UIScribbleInteraction*)interaction
-    API_AVAILABLE(ios(14.0)) {
+- (void)scribbleInteractionWillBeginWriting:
+    (UIScribbleInteraction*)interaction {
   if (self.textField.isPreEditing) {
     [self.textField exitPreEditState];
     [self.textField setText:[[NSAttributedString alloc] initWithString:@""]
@@ -759,8 +759,8 @@ const CGFloat kClearButtonImageSize = 17.0f;
   [self.textField clearAutocompleteText];
 }
 
-- (void)scribbleInteractionDidFinishWriting:(UIScribbleInteraction*)interaction
-    API_AVAILABLE(ios(14.0)) {
+- (void)scribbleInteractionDidFinishWriting:
+    (UIScribbleInteraction*)interaction {
   [self cleanupOmniboxAfterScribble];
 
   // Dismiss any inline autocomplete. The user expectation is to not have it.
