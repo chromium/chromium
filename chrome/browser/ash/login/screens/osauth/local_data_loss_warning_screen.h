@@ -26,6 +26,7 @@ class LocalDataLossWarningScreen : public BaseOSAuthSetupScreen {
     kRemoveUser,
     kBack,
     kCryptohomeError,
+    kCancel,
   };
 
   static std::string GetResultString(Result result);

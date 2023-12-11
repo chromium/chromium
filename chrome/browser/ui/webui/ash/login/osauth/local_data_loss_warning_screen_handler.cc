@@ -17,9 +17,13 @@ LocalDataLossWarningScreenHandler::LocalDataLossWarningScreenHandler()
 LocalDataLossWarningScreenHandler::~LocalDataLossWarningScreenHandler() =
     default;
 
-void LocalDataLossWarningScreenHandler::Show(const std::string& email) {
+void LocalDataLossWarningScreenHandler::Show(bool is_owner,
+                                             const std::string& email,
+                                             bool can_go_back) {
   base::Value::Dict dict;
+  dict.Set("isOwner", is_owner);
   dict.Set("email", email);
+  dict.Set("canGoBack", can_go_back);
   ShowInWebUI(std::move(dict));
 }
 
@@ -35,6 +39,7 @@ void LocalDataLossWarningScreenHandler::DeclareLocalizedValues(
                IDS_LOGIN_PASSWORD_CHANGED_DATA_LOSS_WARNING_TITLE);
   builder->Add("dataLossWarningSubtitle",
                IDS_LOGIN_PASSWORD_CHANGED_DATA_LOSS_WARNING_SUBTITLE);
+  builder->Add("cancelButtonLabel", IDS_LOCK_SCREEN_CANCEL_BUTTON);
 }
 
 }  // namespace ash

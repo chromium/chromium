@@ -9,6 +9,7 @@
 #include "chrome/browser/ui/webui/ash/login/osauth/local_data_loss_warning_screen_handler.h"
 #include "chromeos/ash/components/dbus/session_manager/session_manager_client.h"
 #include "chromeos/ash/components/login/auth/public/user_context.h"
+#include "components/crash/core/app/crashpad.h"
 #include "components/device_event_log/device_event_log.h"
 #include "components/user_manager/user_manager.h"
 
@@ -18,6 +19,19 @@ namespace {
 constexpr const char kUserActionContinueAnyway[] = "recreateUser";
 constexpr const char kUserActionPowerwash[] = "powerwash";
 constexpr const char kUserActionBack[] = "back";
+constexpr const char kUserActionCancel[] = "cancel";
+
+bool isOwner(const AccountId& account_id) {
+  auto* user = user_manager::UserManager::Get()->FindUser(account_id);
+
+  if (!user) {
+    LOG(ERROR) << "Could not find user for owner check";
+    crash_reporter::DumpWithoutCrashing();
+    return false;
+  }
+
+  return user_manager::UserManager::Get()->IsOwnerUser(user);
+}
 
 }  // namespace
 
@@ -30,6 +44,8 @@ std::string LocalDataLossWarningScreen::GetResultString(Result result) {
       return "Back";
     case Result::kCryptohomeError:
       return "CryptohomeError";
+    case Result::kCancel:
+      return "Cancel";
   }
 }
 
@@ -45,7 +61,8 @@ LocalDataLossWarningScreen::LocalDataLossWarningScreen(
 LocalDataLossWarningScreen::~LocalDataLossWarningScreen() = default;
 
 void LocalDataLossWarningScreen::ShowImpl() {
-  view_->Show(context()->user_context->GetAccountId().GetUserEmail());
+  view_->Show(isOwner(context()->user_context->GetAccountId()),
+              context()->user_context->GetAccountId().GetUserEmail(), true);
 }
 
 void LocalDataLossWarningScreen::OnUserAction(const base::Value::List& args) {
@@ -57,9 +74,7 @@ void LocalDataLossWarningScreen::OnUserAction(const base::Value::List& args) {
                        weak_factory_.GetWeakPtr()));
     return;
   } else if (action_id == kUserActionPowerwash) {
-    if (auto* user_manager = user_manager::UserManager::Get();
-        !user_manager->IsOwnerUser(
-            user_manager->FindUser(context()->user_context->GetAccountId()))) {
+    if (isOwner(context()->user_context->GetAccountId())) {
       LOG(ERROR) << "Non owner user requesting powerwash, ignoring";
       return;
     }
@@ -67,6 +82,9 @@ void LocalDataLossWarningScreen::OnUserAction(const base::Value::List& args) {
     return;
   } else if (action_id == kUserActionBack) {
     exit_callback_.Run(Result::kBack);
+    return;
+  } else if (action_id == kUserActionCancel) {
+    exit_callback_.Run(Result::kCancel);
     return;
   }
   BaseOSAuthSetupScreen::OnUserAction(args);

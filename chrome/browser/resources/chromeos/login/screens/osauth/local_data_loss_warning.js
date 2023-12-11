@@ -58,6 +58,10 @@ class LocalDataLossWarning extends LocalDataLossWarningBase {
       isOwner: {
         type: Boolean,
       },
+
+      canGoBack: {
+        type: Boolean,
+      },
     };
   }
 
@@ -85,6 +89,7 @@ class LocalDataLossWarning extends LocalDataLossWarningBase {
   onBeforeShow(data) {
     this.isOwner = data['isOwner'];
     this.email = data['email'];
+    this.canGoBack = data['canGoBack'];
   }
 
   /**
@@ -121,6 +126,13 @@ class LocalDataLossWarning extends LocalDataLossWarningBase {
       return;
     }
     this.userActed('back');
+  }
+
+  onCancelClicked_() {
+    if (this.disabled) {
+      return;
+    }
+    this.userActed('cancel');
   }
 }
 
