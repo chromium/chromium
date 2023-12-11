@@ -57,7 +57,7 @@ void PerformanceSidePanelCoordinator::CreateAndRegisterEntry(
   global_registry->Register(std::make_unique<SidePanelEntry>(
       SidePanelEntry::Id::kPerformance,
       l10n_util::GetStringUTF16(IDS_SHOW_PERFORMANCE),
-      ui::ImageModel::FromVectorIcon(kHighEfficiencyIcon, ui::kColorIcon,
+      ui::ImageModel::FromVectorIcon(kMemorySaverIcon, ui::kColorIcon,
                                      icon_size),
       base::BindRepeating(
           &PerformanceSidePanelCoordinator::CreatePerformanceWebUIView,

@@ -178,8 +178,8 @@ void HighEfficiencyChipView::OnExecuting(
 
 const gfx::VectorIcon& HighEfficiencyChipView::GetVectorIcon() const {
   return OmniboxFieldTrial::IsChromeRefreshIconsEnabled()
-             ? kHighEfficiencyChromeRefreshIcon
-             : kHighEfficiencyIcon;
+             ? kMemorySaverChromeRefreshIcon
+             : kMemorySaverIcon;
 }
 
 views::BubbleDialogDelegate* HighEfficiencyChipView::GetBubble() const {
