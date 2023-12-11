@@ -117,6 +117,9 @@ void BrowserShortcutShelfItemController::ItemSelected(
   auto items =
       GetAppMenuItems(event ? event->flags() : ui::EF_NONE, filter_predicate);
 
+  // In case of a keyboard event, we were called by a hotkey. In that case we
+  // activate the next item in line if an item of our list is already active.
+  //
   // Here we check the implicit assumption that the type of the event that gets
   // passed in is never ui::ET_KEY_PRESSED. One may find it strange as usually
   // ui::ET_KEY_RELEASED comes in pair with ui::ET_KEY_PRESSED, i.e, if we need
@@ -144,11 +147,16 @@ void BrowserShortcutShelfItemController::ItemSelected(
   // CL in 2013.
   // https://chromiumcodereview.appspot.com/14551002/patch/41001/42001
   //
+  // That said, there also exist other UX where the original KeyEvent instance
+  // gets passed down intact. And in those UX, we should still expect a
+  // ET_KEY_PRESSED type. This type of UX can happen when the user keeps
+  // pressing the Tab key to move to the next icon, and then presses the Enter
+  // key to launch the app. It can also happen in a ChromeVox session, in which
+  // the Space key can be used to activate the app. More can be found in this
+  // bug. http://b/315364997.
+  //
   // A bug is filed to track future works for fixing this confusing naming
   // disparity. https://crbug.com/1473895
-  DCHECK(!(event && event->type() == ui::ET_KEY_PRESSED));
-  // In case of a keyboard event, we were called by a hotkey. In that case we
-  // activate the next item in line if an item of our list is already active.
   if (event && event->type() == ui::ET_KEY_RELEASED) {
     std::move(callback).Run(ActivateOrAdvanceToNextBrowser(), std::move(items));
     return;
