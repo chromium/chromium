@@ -78,6 +78,7 @@
       "is_chromeos_device": true,
       "is_official_build": true,
       "is_skylab": true,
+      "symbol_level": 0,
       "use_remoteexec": true
     }
   },

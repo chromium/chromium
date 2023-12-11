@@ -779,7 +779,7 @@
     ],
     'chromeos_jacuzzi_include_unwind_tables_official_dchecks_skylab_reclient': [
       'chromeos_device_reclient', 'jacuzzi', 'include_unwind_tables', 'official', 'dcheck_always_on', 'is_skylab',
-      'also_build_lacros_chrome_for_architecture_arm64',
+      'also_build_lacros_chrome_for_architecture_arm64', 'no_symbols',
     ],
     'chromeos_jacuzzi_include_unwind_tables_official_reclient': [
       'chromeos_device_reclient', 'jacuzzi', 'include_unwind_tables', 'official',
@@ -790,7 +790,7 @@
     ],
     'chromeos_jacuzzi_include_unwind_tables_official_skylab_reclient': [
       'chromeos_device_reclient', 'jacuzzi', 'include_unwind_tables', 'official', 'is_skylab',
-      'also_build_lacros_chrome_for_architecture_arm64',
+      'also_build_lacros_chrome_for_architecture_arm64', 'no_symbols',
     ],
 
     'chromeos_kevin_include_unwind_tables_official_reclient': [
