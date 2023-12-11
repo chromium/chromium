@@ -22,11 +22,9 @@
 #include "components/performance_manager/public/resource_attribution/resource_types.h"
 #include "components/performance_manager/resource_attribution/query_params.h"
 
-namespace performance_manager::resource_attribution {
+namespace performance_manager::resource_attribution::internal {
 
 namespace {
-
-using QueryParams = internal::QueryParams;
 
 // A global singleton that holds the TaskRunner the QueryScheduler runs on. In
 // production this is the PM graph sequence, but in unit tests it can be the
@@ -281,7 +279,7 @@ void QueryScheduler::RemoveMemoryQuery() {
 }
 
 void QueryScheduler::OnResultsReceived(
-    const internal::ContextCollection& contexts,
+    const ContextCollection& contexts,
     base::OnceCallback<void(const QueryResultMap&)> callback,
     const std::vector<SingleQueryResultMap>& results) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -296,4 +294,4 @@ void QueryScheduler::OnResultsReceived(
   std::move(callback).Run(merged_results);
 }
 
-}  // namespace performance_manager::resource_attribution
+}  // namespace performance_manager::resource_attribution::internal

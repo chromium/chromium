@@ -13,16 +13,22 @@
 #include "base/observer_list_threadsafe.h"
 #include "base/sequence_checker.h"
 #include "base/task/sequenced_task_runner.h"
+#include "base/time/time.h"
 #include "base/types/pass_key.h"
 #include "components/performance_manager/public/resource_attribution/query_results.h"
 #include "components/performance_manager/public/resource_attribution/resource_contexts.h"
 #include "components/performance_manager/public/resource_attribution/resource_types.h"
 #include "components/performance_manager/public/resource_attribution/type_helpers.h"
 
+namespace base {
+class RepeatingTimer;
+}
+
 namespace performance_manager::resource_attribution {
 
 namespace internal {
 struct QueryParams;
+class QueryScheduler;
 }
 
 class QueryBuilder;
@@ -37,9 +43,6 @@ class QueryResultObserver {
 
 // Repeatedly makes resource attribution queries on a schedule as long as it's
 // in scope.
-// TODO(crbug.com/1471683): Unfinished. This registers on create and delete,
-// which may have important side effects, but doesn't make scheduled queries
-// yet. Use QueryOnce for now.
 class ScopedResourceUsageQuery {
  public:
   ~ScopedResourceUsageQuery();
@@ -61,8 +64,10 @@ class ScopedResourceUsageQuery {
   // Starts sending scheduled queries. They will repeat as long as the
   // ScopedResourceUsageQuery object exists. This must be called on the sequence
   // the object was created on.
-  // TODO(crbug.com/1471683): Implement this.
-  void Start();
+  // TODO(crbug.com/1471683): Repeating queries will be sent on a timer with
+  // `delay` between queries. Replace this with the full scheduling hints
+  // described at https://bit.ly/resource-attribution-api#heading=h.upcqivkhbs4t
+  void Start(base::TimeDelta delay);
 
   // Sends an immediate query, in addition to the schedule of repeated queries
   // triggered by Start(). This must be called on the sequence the
@@ -86,6 +91,10 @@ class ScopedResourceUsageQuery {
 
   FRIEND_TEST_ALL_PREFIXES(ResourceAttrQueriesPMTest, ScopedQueryIsMovable);
 
+  // Sends the scheduler a request for query results.
+  static void SendRequestToScheduler(internal::QueryParams* params,
+                                     scoped_refptr<ObserverList> observer_list);
+
   // Notifies `observer_list` that `results` were received.
   static void NotifyObservers(scoped_refptr<ObserverList> observer_list,
                               const QueryResultMap& results);
@@ -98,6 +107,12 @@ class ScopedResourceUsageQuery {
 
   scoped_refptr<ObserverList> observer_list_ =
       base::MakeRefCounted<ObserverList>();
+
+  // Timer used for repeating queries. This is in a pointer because
+  // RepeatingTimer isn't movable.
+  // TODO(crbug.com/1471683): Manage timing centrally in QueryScheduler.
+  std::unique_ptr<base::RepeatingTimer> timer_
+      GUARDED_BY_CONTEXT(sequence_checker_);
 };
 
 // Creates a query to request resource usage measurements on a schedule.
