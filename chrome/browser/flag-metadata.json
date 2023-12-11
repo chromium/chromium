@@ -2992,12 +2992,12 @@
   {
     "name": "enable-lacros-in-chrome-kiosk",
     "owners": ["bfranz@chromium.org", "chromeos-kiosk-eng@google.com"],
-    "expiry_milestone": 130
+    "expiry_milestone": 140
   },
   {
     "name": "enable-lacros-in-web-kiosk",
     "owners": ["bfranz@chromium.org", "chromeos-kiosk-eng@google.com"],
-    "expiry_milestone": 130
+    "expiry_milestone": 140
   },
   {
     "name": "enable-lens-image-format-optimizations",
@@ -5048,7 +5048,7 @@
     // Once Lacros is launched, this flag can be removed. Until then, this
     // absolutely must not expire. We do not yet have a launch milestone.
     // TODO(https://crbug.com/1148474).
-    "expiry_milestone": 130
+    "expiry_milestone": 140
   },
   {
     "name": "lacros-availability-policy",
@@ -5057,13 +5057,13 @@
     // this flag can be removed. Until then, this absolutely must not expire.
     // We do not yet have a launch milestone.
     // TODO(https://crbug.com/1148474, https://crbug.com/1286340).
-    "expiry_milestone": 130
+    "expiry_milestone": 140
   },
   {
     "name": "lacros-color-management",
     "owners": [ "mrfemi@chromium.org", "chromeos-gfx-compositor@google.com" ],
     // This flag is used for chrome color management
-    "expiry_milestone": 120
+    "expiry_milestone": 140
   },
   {
     "name": "lacros-data-backward-migration-policy",
@@ -5072,12 +5072,12 @@
     // this flag can be removed. Backward migration itself will be removed
     // when Ash is no longer a browser.
     // TODO(https://crbug.com/1148474).
-    "expiry_milestone": 130
+    "expiry_milestone": 140
   },
   {
     "name": "lacros-merge-icu-data-file",
     "owners": [ "andreaorru@chromium.org", "hidehiko@chromium.org", "lacros-team@google.com" ],
-    "expiry_milestone": 130
+    "expiry_milestone": 140
   },
   {
     "name": "lacros-only",
@@ -5085,7 +5085,7 @@
     // Once Lacros is launched, this flag can be removed. Until then, this
     // absolutely must not expire. We do not yet have a launch milestone.
     // TODO(https://crbug.com/1148474).
-    "expiry_milestone": 130
+    "expiry_milestone": 140
   },
   {
     "name": "lacros-profile-migration-force-off",
@@ -5093,22 +5093,22 @@
     // Once Lacros is launched, this flag can be removed. Until then, this
     // absolutely must not expire. We do not yet have a launch milestone.
     // TODO(https://crbug.com/1148474).
-    "expiry_milestone": 130
+    "expiry_milestone": 140
   },
   {
     "name": "lacros-selection",
     "owners": [ "kimjae@chromium.org", "erikchen@chromium.org", "lacros-team@google.com" ],
-    "expiry_milestone": 130
+    "expiry_milestone": 140
   },
   {
     "name": "lacros-selection-ignore",
     "owners": [ "asumaneev@chromium.org", "lacros-team@google.com" ],
-    "expiry_milestone": 130
+    "expiry_milestone": 140
   },
   {
     "name": "lacros-shared-components-dir",
     "owners": [ "andreaorru@chromium.org", "hidehiko@chromium.org", "lacros-team@google.com" ],
-    "expiry_milestone": 130
+    "expiry_milestone": 140
   },
   {
     "name": "lacros-stability",
@@ -5116,7 +5116,7 @@
     // Once Lacros is launched, this flag can be removed. Until then, this
     // absolutely must not expire. We do not yet have a launch milestone.
     // TODO(https://crbug.com/1148474).
-    "expiry_milestone": 130
+    "expiry_milestone": 140
   },
   {
     "name": "lacros-trigger-profile-backward-migration",
@@ -5132,7 +5132,7 @@
     // Once Lacros is launched, this flag can be removed. Until then, this
     // absolutely must not expire. We do not yet have a launch milestone.
     // TODO(https://crbug.com/1148474).
-    "expiry_milestone": 130
+    "expiry_milestone": 140
   },
   {
     "name": "language-packs-in-settings",
