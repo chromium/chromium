@@ -30,6 +30,7 @@
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/style/shadow_data.h"
 #include "third_party/blink/renderer/platform/geometry/length.h"
+#include "third_party/blink/renderer/platform/geometry/length_point.h"
 #include "third_party/blink/renderer/platform/graphics/box_reflection.h"
 #include "third_party/blink/renderer/platform/graphics/color.h"
 #include "third_party/blink/renderer/platform/graphics/filters/fe_component_transfer.h"
@@ -312,10 +313,27 @@ struct DowncastTraits<BasicComponentTransferFilterOperation> {
 
 class CORE_EXPORT BlurFilterOperation : public FilterOperation {
  public:
-  explicit BlurFilterOperation(const Length& std_deviation)
-      : FilterOperation(OperationType::kBlur), std_deviation_(std_deviation) {}
+  explicit BlurFilterOperation(const Length& std_deviation_x,
+                               const Length& std_deviation_y)
+      : FilterOperation(OperationType::kBlur),
+        std_deviation_(std_deviation_x, std_deviation_y) {}
 
-  const Length& StdDeviation() const { return std_deviation_; }
+  explicit BlurFilterOperation(const Length& std_deviation)
+      : BlurFilterOperation(std_deviation, std_deviation) {}
+
+  const Length& StdDeviation() const {
+    // CSS only supports isotropic blurs (with matching X and Y), so this
+    // accessor should be safe in CSS-specific code. Canvas filters allow
+    // anisotropic blurs (to match SVG) and so this accessor should not be used
+    // in canvas-filter code.
+    DCHECK_EQ(std_deviation_.X(), std_deviation_.Y())
+        << "use StdDeviationXY() instead";
+    return std_deviation_.X();
+  }
+  const LengthPoint& StdDeviationXY() const {
+    // This accessor is always safe to use.
+    return std_deviation_;
+  }
 
   bool AffectsOpacity() const override { return true; }
   bool MovesPixels() const override { return true; }
@@ -331,7 +349,7 @@ class CORE_EXPORT BlurFilterOperation : public FilterOperation {
   }
 
  private:
-  Length std_deviation_;
+  LengthPoint std_deviation_;
 };
 
 template <>

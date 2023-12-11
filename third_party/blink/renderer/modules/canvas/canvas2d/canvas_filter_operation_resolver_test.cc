@@ -133,6 +133,61 @@ INSTANTIATE_TEST_SUITE_P(
       return info.param.testcase_name;
     });
 
+INSTANTIATE_TEST_SUITE_P(
+    BlurFilterTests,
+    FilterTest,
+    ValuesIn<FilterTestParams>({
+        {.testcase_name = "SingleValue",
+         .filter = R"js(({
+                     "name": "gaussianBlur",
+                     "stdDeviation": 42,
+                    }))js",
+         .expected_ops = {GarbageCollectedIs<BlurFilterOperation>(
+             Length::Fixed(42))}},
+        {.testcase_name = "XYValues",
+         .filter = R"js(({
+                     "name": "gaussianBlur",
+                     "stdDeviation": [123, 456],
+                    }))js",
+         .expected_ops = {GarbageCollectedIs<BlurFilterOperation>(
+             Length::Fixed(123),
+             Length::Fixed(456))}},
+        {.testcase_name = "NegativeValue",
+         .filter = R"js(({
+                     "name": "gaussianBlur",
+                     "stdDeviation": [-1234],
+                    }))js",
+         .expected_ops = {GarbageCollectedIs<BlurFilterOperation>(
+             Length::Fixed(0))}},
+        {.testcase_name = "NegativeValueX",
+         .filter = R"js(({
+                     "name": "gaussianBlur",
+                     "stdDeviation": [-123, 456],
+                    }))js",
+         .expected_ops = {GarbageCollectedIs<BlurFilterOperation>(
+             Length::Fixed(0),
+             Length::Fixed(456))}},
+        {.testcase_name = "NegativeValueY",
+         .filter = R"js(({
+                     "name": "gaussianBlur",
+                     "stdDeviation": [123, -456],
+                    }))js",
+         .expected_ops = {GarbageCollectedIs<BlurFilterOperation>(
+             Length::Fixed(123),
+             Length::Fixed(0))}},
+        {.testcase_name = "NegativeValueXY",
+         .filter = R"js(({
+                     "name": "gaussianBlur",
+                     "stdDeviation": [-123, -456],
+                    }))js",
+         .expected_ops = {GarbageCollectedIs<BlurFilterOperation>(
+             Length::Fixed(0),
+             Length::Fixed(0))}},
+    }),
+    [](const TestParamInfo<FilterTestParams>& info) {
+      return info.param.testcase_name;
+    });
+
 using FilterArrayTest = TestWithParam<FilterTestParams>;
 
 TEST_P(FilterArrayTest, CreatesFilterOperationsFromObjectArray) {
@@ -358,9 +413,9 @@ INSTANTIATE_TEST_SUITE_P(
             Values(ToExceptionCode(ESErrorType::kTypeError))));
 
 INSTANTIATE_TEST_SUITE_P(
-    DropShadowValidStdDeviationTests,
+    ValidStdDeviationTests,
     FilterApiTest,
-    Combine(Values("dropShadow"),
+    Combine(Values("dropShadow", "gaussianBlur"),
             Values("stdDeviation"),
             Values("10",
                    "-1",
@@ -377,9 +432,9 @@ INSTANTIATE_TEST_SUITE_P(
             Values(ToExceptionCode(DOMExceptionCode::kNoError))));
 
 INSTANTIATE_TEST_SUITE_P(
-    DropShadowInvalidStdDeviationTests,
+    InvalidStdDeviationTests,
     FilterApiTest,
-    Combine(Values("dropShadow"),
+    Combine(Values("dropShadow", "gaussianBlur"),
             Values("stdDeviation"),
             Values("NaN",
                    "Infinity",
