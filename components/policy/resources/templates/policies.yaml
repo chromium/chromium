@@ -1189,6 +1189,7 @@ policies:
   1188: WallpaperSearchAllowed
   1189: ListenToThisPageEnabled
   1190: AlwaysOnVpnPreConnectUrlAllowlist
+  1191: CACertificates
 atomic_groups:
   1: Homepage
   2: RemoteAccess

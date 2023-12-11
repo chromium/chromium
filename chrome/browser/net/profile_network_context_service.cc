@@ -6,6 +6,7 @@
 
 #include <string>
 
+#include "base/base64.h"
 #include "base/check_op.h"
 #include "base/command_line.h"
 #include "base/feature_list.h"
@@ -36,6 +37,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ssl/sct_reporting_service.h"
 #include "chrome/browser/ssl/sct_reporting_service_factory.h"
+#include "chrome/common/buildflags.h"
 #include "chrome/common/chrome_constants.h"
 #include "chrome/common/chrome_content_client.h"
 #include "chrome/common/chrome_features.h"
@@ -76,6 +78,7 @@
 #include "services/cert_verifier/public/mojom/cert_verifier_service_factory.mojom.h"
 #include "services/network/public/cpp/cors/origin_access_list.h"
 #include "services/network/public/cpp/features.h"
+#include "services/network/public/mojom/cert_verifier_service.mojom.h"
 #include "services/network/public/mojom/first_party_sets_access_delegate.mojom.h"
 #include "services/network/public/mojom/network_context.mojom.h"
 #include "services/network/public/mojom/network_service.mojom.h"
@@ -295,6 +298,16 @@ ProfileNetworkContextService::ProfileNetworkContextService(Profile* profile)
       certificate_transparency::prefs::kCTExcludedLegacySPKIs,
       base::BindRepeating(&ProfileNetworkContextService::ScheduleUpdateCTPolicy,
                           base::Unretained(this)));
+#if BUILDFLAG(CHROME_CERTIFICATE_POLICIES_SUPPORTED)
+  // When any of the following Certificate preferences change, we schedule an
+  // update to aggregate the actual update using a |cert_policy_update_timer_|.
+  pref_change_registrar_.Add(
+      prefs::kCACertificates,
+      base::BindRepeating(
+          &ProfileNetworkContextService::ScheduleUpdateCertificatePolicy,
+          base::Unretained(this)));
+
+#endif
 
   pref_change_registrar_.Add(
       prefs::kGloballyScopeHTTPAuthCacheEnabled,
@@ -365,6 +378,9 @@ void ProfileNetworkContextService::RegisterProfilePrefs(
   registry->RegisterBooleanPref(prefs::kGloballyScopeHTTPAuthCacheEnabled,
                                 false);
   registry->RegisterListPref(prefs::kHSTSPolicyBypassList);
+#if BUILDFLAG(CHROME_CERTIFICATE_POLICIES_SUPPORTED)
+  registry->RegisterListPref(prefs::kCACertificates);
+#endif
 }
 
 // static
@@ -513,6 +529,56 @@ void ProfileNetworkContextService::ScheduleUpdateCTPolicy() {
   ct_policy_update_timer_.Start(FROM_HERE, base::Seconds(0), this,
                                 &ProfileNetworkContextService::UpdateCTPolicy);
 }
+
+#if BUILDFLAG(CHROME_CERTIFICATE_POLICIES_SUPPORTED)
+cert_verifier::mojom::AdditionalCertificatesPtr
+ProfileNetworkContextService::GetCertificatePolicy() {
+  net::CertificateList additional_untrusted_anchors;
+  net::CertificateList additional_trust_anchors;
+  auto* prefs = profile_->GetPrefs();
+
+  for (const base::Value& cert_b64 : prefs->GetList(prefs::kCACertificates)) {
+    std::string decoded;
+    if (!base::Base64Decode(cert_b64.GetString(), &decoded)) {
+      continue;
+    }
+
+    scoped_refptr<net::X509Certificate> x509_root =
+        net::X509Certificate::CreateFromBytes(
+            base::as_bytes(base::make_span(decoded)));
+
+    if (x509_root) {
+      // TODO(crbug.com/1477317): anchors added in this way don't have expiry or
+      // anchor constraints enforced. Figure out if we want these enforced or
+      // not. Note how we do this may impact ChromeOS as ChromeOS's current
+      // added anchors also don't have expiry or anchor constraints enforced.
+      additional_trust_anchors.push_back(std::move(x509_root));
+    }
+  }
+
+  return cert_verifier::mojom::AdditionalCertificates::New(
+      std::move(additional_untrusted_anchors),
+      std::move(additional_trust_anchors));
+}
+
+void ProfileNetworkContextService::UpdateCertificatePolicy() {
+  std::vector<cert_verifier::mojom::CertVerifierServiceUpdater*> updaters;
+  profile_->ForEachLoadedStoragePartition(
+      [&](content::StoragePartition* storage_partition) {
+        updaters.push_back(storage_partition->GetCertVerifierServiceUpdater());
+      });
+
+  for (auto* updater : updaters) {
+    updater->UpdateAdditionalCertificates(GetCertificatePolicy());
+  }
+}
+
+void ProfileNetworkContextService::ScheduleUpdateCertificatePolicy() {
+  cert_policy_update_timer_.Start(
+      FROM_HERE, base::Seconds(0), this,
+      &ProfileNetworkContextService::UpdateCertificatePolicy);
+}
+#endif
 
 bool ProfileNetworkContextService::ShouldSplitAuthCacheByNetworkIsolationKey()
     const {
@@ -957,6 +1023,17 @@ void ProfileNetworkContextService::ConfigureNetworkContextParamsInternal(
     PopulateInitialAdditionalCerts(relative_partition_path,
                                    cert_verifier_creation_params);
   }
+#endif
+
+#if BUILDFLAG(CHROME_CERTIFICATE_POLICIES_SUPPORTED)
+  // TODO(crbug.com/1477317): check to see if IsManaged() ensures the pref isn't
+  // set in user profiles, or if that does something else. If that's true, add
+  // an isManaged() check here.
+  // TODO(crbug.com/1477317): when adding ChromeOS support for these policies
+  // figure out how to integrate in the ChromeOS enterprise policy support with
+  // these policies.
+  cert_verifier_creation_params->initial_additional_certificates =
+      GetCertificatePolicy();
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS)

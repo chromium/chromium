@@ -3984,6 +3984,13 @@ inline constexpr char kReadAloudHighlightingEnabled[] =
 inline constexpr char kListenToThisPageEnabled[] =
     "readaloud.listen_to_this_page_enabled";
 #endif  // BUILDFLAG(IS_ANDROID)
+
+#if BUILDFLAG(CHROME_CERTIFICATE_POLICIES_SUPPORTED)
+// A list of base64 encoded certificates that are to be trusted as root certs.
+// Only specifiable as an enterprise policy.
+inline constexpr char kCACertificates[] = "certificates.ca_certificates";
+#endif  // BUILDFLAG(CHROME_CERTIFICATE_POLICIES_SUPPORTED)
+
 }  // namespace prefs
 
 #endif  // CHROME_COMMON_PREF_NAMES_H_

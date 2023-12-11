@@ -29,7 +29,9 @@ struct CertVerifierConfig {
 };
 
 struct AdditionalCertificates {
-  // TODO(crbug.com/1477317): store these as bytestrings
+  // TODO(crbug.com/1477317): store these as bytestrings to avoid the extra
+  // overhead of parsing these with X509Certificate on both sides of the
+  // mojo interface.
 
   // List of untrusted certificates, which will be used during path building.
   array<network.mojom.X509Certificate> all_certificates;

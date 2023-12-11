@@ -2070,6 +2070,12 @@ const PolicyToPreferenceMapEntry kSimplePolicyMap[] = {
     optimization_guide::model_execution::prefs::kWallpaperSearchEnterprisePolicyAllowed,
     base::Value::Type::INTEGER},
 #endif
+
+#if BUILDFLAG(CHROME_CERTIFICATE_POLICIES_SUPPORTED)
+  { key::kCACertificates,
+    prefs::kCACertificates,
+    base::Value::Type::LIST },
+#endif // BUILDFLAG(CHROME_CERTIFICATE_POLICIES_SUPPORTED)
 };
 // clang-format on
 
