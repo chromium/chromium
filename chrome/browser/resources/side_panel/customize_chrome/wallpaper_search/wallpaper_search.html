@@ -1,4 +1,4 @@
-<style include="sp-shared-style cr-hidden-style">
+<style include="sp-shared-style cr-hidden-style cr-icons">
   sp-heading {
     margin: 0 0 8px;
   }
@@ -145,8 +145,9 @@
   }
 
   #descriptorMenuD {
-    display: flex;
-    justify-content: space-between;
+    --cr-column-width: 1fr;
+    --cr-grid-gap: 6.5px;
+    --cr-grid-width: 100%;
     margin-top: 8px;
     width: 100%;
   }
@@ -192,6 +193,16 @@
     display: flex;
     justify-content: flex-end;
     margin-top: 16px;
+  }
+
+  #imageIcon {
+    --cr-icon-color: currentColor;
+    --cr-icon-image: url(icons/generated_image.svg);
+    --cr-icon-size: 20px;
+    height: 20px;
+    margin-inline-end: 0;
+    margin-inline-start: 0;
+    width: 20px;
   }
 
   .sp-hr {
@@ -284,7 +295,8 @@
     </cr-button>
   </div>
   <div class="content" id="wallpaperSearch" hidden$="[[errorState_]]">
-    <customize-chrome-combobox id="descriptorComboboxA" label="Descriptor A"
+    <customize-chrome-combobox id="descriptorComboboxA"
+        label="$i18n{wallpaperSearchSubjectLabel}"
         value="{{selectedDescriptorA_}}">
       <template is="dom-repeat" items="[[descriptors_.descriptorA]]">
         <div class="category" role="group">
@@ -308,7 +320,8 @@
     </customize-chrome-combobox>
     <div id="optionalDetails">
       <div id="optionalDetailsLabel">$i18n{optionalDetailsLabel}</div>
-      <customize-chrome-combobox id="descriptorComboboxB" label="Descriptor B"
+      <customize-chrome-combobox id="descriptorComboboxB"
+          label="$i18n{wallpaperSearchStyleLabel}"
           value="{{selectedDescriptorB_}}">
         <template is="dom-repeat" items="[[descriptors_.descriptorB]]">
           <div class="dropdown-item" role="option" value="[[item.label]]">
@@ -321,7 +334,8 @@
           </div>
         </template>
       </customize-chrome-combobox>
-      <customize-chrome-combobox id="descriptorComboboxC" label="Descriptor C"
+      <customize-chrome-combobox id="descriptorComboboxC"
+          label="$i18n{wallpaperSearchMoodLabel}"
           value="{{selectedDescriptorC_}}" right-align-dropbox>
         <template is="dom-repeat" items="[[descriptors_.descriptorC]]">
           <div class="dropdown-item" role="option" value="[[item]]">
@@ -330,9 +344,11 @@
           </div>
         </template>
       </customize-chrome-combobox>
-      <div id="descriptorMenuD">
+      <cr-grid columns="6" id="descriptorMenuD">
         <template is="dom-repeat" items="[[descriptorD_]]">
-          <cr-button class="default-color" on-click="onDefaultColorClick_">
+          <cr-button class="default-color" on-click="onDefaultColorClick_"
+              aria-current$="[[getColorCheckedStatus_(item, selectedDefaultColor_)]]"
+              title$="[[getColorLabel_(item)]]">
             <customize-chrome-check-mark-wrapper class="color-check-mark"
                 checked="[[isColorSelected_(item, selectedDefaultColor_)]]"
                 checkmark-border-hidden>
@@ -341,7 +357,9 @@
             </customize-chrome-check-mark-wrapper>
           </cr-button>
         </template>
-        <cr-button id="customColorContainer" on-click="onCustomColorClick_">
+        <cr-button id="customColorContainer" on-click="onCustomColorClick_"
+            aria-current$="[[getCustomColorCheckedStatus_(selectedHue_)]]"
+            title="$i18n{colorPickerLabel}">
           <customize-chrome-check-mark-wrapper class="color-check-mark"
               checked="[[selectedHue_]]" checkmark-border-hidden>
             <div class="descriptor-d"
@@ -351,7 +369,7 @@
           </customize-chrome-check-mark-wrapper>
         </cr-button>
       </div>
-    </div>
+    </cr-grid>
     <cr-theme-hue-slider-dialog id="hueSlider"
         on-selected-hue-changed="onSelectedHueChanged_">
     </cr-theme-hue-slider-dialog>
@@ -360,6 +378,7 @@
           id="submitButton"
           on-click="onSearchClick_"
           class="action-button">
+        <div id="imageIcon" class="cr-icon" slot="prefix-icon"></div>
         [[submitBtnText_]]
       </cr-button>
     </div>
@@ -406,7 +425,11 @@
       </template>
     </cr-grid>
     <div id="footer">
-      <div id="disclaimer">$i18n{experimentalFeatureDisclaimer}</div>
+      <div id="disclaimer">
+        $i18n{experimentalFeatureDisclaimer}
+        <a href="#" aria-label="$i18n{learnMoreAboutFeatureA11yLabel}"
+            on-click="onLearnMoreClick_">$i18n{learnMore}</a>
+      </div>
       <div hidden$="[[!loading_]]">
         <cr-loading-gradient>
           <svg height="16" width="44" xmlns="http://www.w3.org/2000/svg">
@@ -425,8 +448,9 @@
     </div>
   </div>
 </div>
-<hr class="sp-cards-separator">
-<div class="sp-card" id="historyCard">
+<hr class="sp-cards-separator" hidden$="[[!shouldShowHistory_(history_)]]">
+<div class="sp-card" id="historyCard"
+    hidden$="[[!shouldShowHistory_(history_)]]">
   <sp-heading hide-back-button>
     <h2 slot="heading">$i18n{wallpaperSearchHistoryHeader}</h2>
   </sp-heading>

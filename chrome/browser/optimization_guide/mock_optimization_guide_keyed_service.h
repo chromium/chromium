@@ -59,6 +59,9 @@ class MockOptimizationGuideKeyedService : public OptimizationGuideKeyedService {
               ShouldFeatureBeCurrentlyEnabledForUser,
               (optimization_guide::proto::ModelExecutionFeature),
               (const));
+  MOCK_METHOD(void,
+              UploadModelQualityLogs,
+              (std::unique_ptr<optimization_guide::ModelQualityLogEntry>));
 };
 
 #endif  // CHROME_BROWSER_OPTIMIZATION_GUIDE_MOCK_OPTIMIZATION_GUIDE_KEYED_SERVICE_H_

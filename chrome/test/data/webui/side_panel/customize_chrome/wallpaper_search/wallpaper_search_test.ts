@@ -79,6 +79,17 @@ suite('WallpaperSearchTest', () => {
       const event = await eventPromise;
       assertTrue(!!event);
     });
+
+    test('clicking learn more calls handler', async () => {
+      createWallpaperSearchElement();
+      const learnMoreLink =
+          wallpaperSearchElement.shadowRoot!.querySelector<HTMLAnchorElement>(
+              '#disclaimer a')!;
+      const clickEvent = new Event('click', {cancelable: true});
+      learnMoreLink.dispatchEvent(clickEvent);
+      await handler.whenCalled('openHelpArticle');
+      assertTrue(clickEvent.defaultPrevented);
+    });
   });
 
   suite('Descriptors', () => {
@@ -199,6 +210,10 @@ suite('WallpaperSearchTest', () => {
       assertEquals(
           checkedMarkedColors[0],
           $$(wallpaperSearchElement, '.default-color .color-check-mark'));
+      assertEquals(checkedMarkedColors[0]!.parentElement!.title, 'Red');
+      assertEquals(
+          checkedMarkedColors[0]!.parentElement!.getAttribute('aria-current'),
+          'true');
 
       wallpaperSearchElement.$.hueSlider.dispatchEvent(
           new Event('selected-hue-changed'));
@@ -209,6 +224,11 @@ suite('WallpaperSearchTest', () => {
       assertEquals(
           checkedMarkedColors[0],
           $$(wallpaperSearchElement, '#customColorContainer [checked]'));
+      assertEquals(
+          checkedMarkedColors[0]!.parentElement!.title, 'Custom color');
+      assertEquals(
+          checkedMarkedColors[0]!.parentElement!.getAttribute('aria-current'),
+          'true');
     });
   });
 
@@ -254,7 +274,7 @@ suite('WallpaperSearchTest', () => {
       assertEquals('bar', handler.getArgs('getWallpaperSearchResults')[0][0]);
       assertEquals('foo', handler.getArgs('getWallpaperSearchResults')[0][1]);
       assertEquals('baz', handler.getArgs('getWallpaperSearchResults')[0][2]);
-      const skColor = hexColorToSkColor(DESCRIPTOR_D_VALUE[0]!);
+      const skColor = hexColorToSkColor(DESCRIPTOR_D_VALUE[0]!.hex);
       assertNotEquals(skColor, {value: 0});
       assertDeepEquals(
           {color: skColor}, handler.getArgs('getWallpaperSearchResults')[0][3]);
@@ -501,14 +521,13 @@ suite('WallpaperSearchTest', () => {
       await flushTasks();
 
       // Check submit button text without results.
-      assertEquals(wallpaperSearchElement.$.submitButton.innerText, 'Search');
+      assertEquals(wallpaperSearchElement.$.submitButton.innerText, 'Create');
 
       wallpaperSearchElement.$.submitButton.click();
       await waitAfterNextRender(wallpaperSearchElement);
 
       // Check submit button text with results.
-      assertEquals(
-          wallpaperSearchElement.$.submitButton.innerText, 'Search Again');
+      assertEquals(wallpaperSearchElement.$.submitButton.innerText, 'Recreate');
     });
 
     test('current theme is checked', async () => {
@@ -642,8 +661,19 @@ suite('WallpaperSearchTest', () => {
   });
 
   suite('History', () => {
+    test('hide history card if history is empty', async () => {
+      createWallpaperSearchElement();
+
+      wallpaperSearchCallbackRouterRemote.setHistory([]);
+      await wallpaperSearchCallbackRouterRemote.$.flushForTesting();
+
+      assertTrue(!!wallpaperSearchElement.$.historyCard.hidden);
+    });
+
     test('show history in history card', async () => {
       createWallpaperSearchElement();
+
+      assertTrue(!!wallpaperSearchElement.$.historyCard.hidden);
 
       wallpaperSearchCallbackRouterRemote.setHistory([
         {image: '123', id: {high: BigInt(10), low: BigInt(1)}},
@@ -655,14 +685,77 @@ suite('WallpaperSearchTest', () => {
           wallpaperSearchElement.$.historyCard.querySelectorAll('.tile.result');
       const historyEmptyTiles =
           wallpaperSearchElement.$.historyCard.querySelectorAll('.tile.empty');
+      assertFalse(!!wallpaperSearchElement.$.historyCard.hidden);
       assertEquals(historyTiles.length, 2);
       assertEquals(historyEmptyTiles.length, 4);
       assertEquals(
           (historyTiles[0]! as HTMLElement).getAttribute('aria-label'),
-          'Recent theme 1');
+          'Recent AI theme 1');
       assertEquals(
           (historyTiles[1]! as HTMLElement).getAttribute('aria-label'),
-          'Recent theme 2');
+          'Recent AI theme 2');
+    });
+
+    test('set history image on click', async () => {
+      createWallpaperSearchElement();
+
+      wallpaperSearchCallbackRouterRemote.setHistory([
+        {image: '123', id: {high: BigInt(10), low: BigInt(1)}},
+        {image: '456', id: {high: BigInt(8), low: BigInt(2)}},
+      ]);
+      await wallpaperSearchCallbackRouterRemote.$.flushForTesting();
+
+      const historyTile =
+          $$(wallpaperSearchElement, '#historyCard .tile.result');
+      assertTrue(!!historyTile);
+      (historyTile as HTMLElement).click();
+
+      assertEquals(1, handler.getCallCount('setBackgroundToHistoryImage'));
+      assertEquals(
+          BigInt(10), handler.getArgs('setBackgroundToHistoryImage')[0].high);
+      assertEquals(
+          BigInt(1), handler.getArgs('setBackgroundToHistoryImage')[0].low);
+    });
+
+    test('current history theme is checked', async () => {
+      createWallpaperSearchElement();
+
+      wallpaperSearchCallbackRouterRemote.setHistory([
+        {image: '123', id: {high: BigInt(10), low: BigInt(1)}},
+        {image: '456', id: {high: BigInt(8), low: BigInt(2)}},
+      ]);
+      await wallpaperSearchCallbackRouterRemote.$.flushForTesting();
+
+      // Set a default theme.
+      let theme = createTheme();
+      callbackRouterRemote.setTheme(theme);
+      await callbackRouterRemote.$.flushForTesting();
+      await waitAfterNextRender(wallpaperSearchElement);
+
+      // There should be no checked tiles.
+      assertFalse(!!$$(wallpaperSearchElement, '.tile [checked]'));
+
+      // Set theme to the first tile.
+      theme = createTheme();
+      theme.backgroundImage = createBackgroundImage('');
+      theme.backgroundImage.localBackgroundId = {
+        high: BigInt(10),
+        low: BigInt(1),
+      };
+      callbackRouterRemote.setTheme(theme);
+      await callbackRouterRemote.$.flushForTesting();
+      await waitAfterNextRender(wallpaperSearchElement);
+
+      // The first result should be checked and be the only one checked.
+      const firstResult = $$(wallpaperSearchElement, '.tile .image-check-mark');
+      const checkedResults =
+          wallpaperSearchElement.shadowRoot!.querySelectorAll(
+              '.tile [checked]');
+      assertEquals(checkedResults.length, 1);
+      assertEquals(checkedResults[0], firstResult);
+      assertEquals(
+          checkedResults[0]!.parentElement!.getAttribute('aria-current'),
+          'true');
     });
   });
 
@@ -726,7 +819,7 @@ suite('WallpaperSearchTest', () => {
         assertEquals(
             $$<HTMLElement>(
                 wallpaperSearchElement, '#errorDescription')!.textContent,
-            'Try again or select from one of the previous results below.');
+            'Try again or select from one of the previously generated themes below.');
         assertStyle(
             $$(wallpaperSearchElement, '#wallpaperSearch')!, 'display', 'none');
       });
@@ -784,7 +877,7 @@ suite('WallpaperSearchTest', () => {
             $$<HTMLElement>(
                 wallpaperSearchElement, '#errorDescription')!.textContent,
             'Check your internet and try again. ' +
-                'You can still select from one of the previous results below.');
+                'You can still select from one of the previously generated themes below.');
       });
     });
 
@@ -893,72 +986,10 @@ suite('WallpaperSearchTest', () => {
         assertEquals(
             $$<HTMLElement>(
                 wallpaperSearchElement, '#errorDescription')!.textContent,
-            'Try again or select from one of the previous results below.');
+            'Try again or select from one of the previously generated themes below.');
         assertStyle(
             $$(wallpaperSearchElement, '#wallpaperSearch')!, 'display', 'none');
       });
-    });
-
-    test('set history image on click', async () => {
-      createWallpaperSearchElement();
-
-      wallpaperSearchCallbackRouterRemote.setHistory([
-        {image: '123', id: {high: BigInt(10), low: BigInt(1)}},
-        {image: '456', id: {high: BigInt(8), low: BigInt(2)}},
-      ]);
-      await wallpaperSearchCallbackRouterRemote.$.flushForTesting();
-
-      const historyTile =
-          $$(wallpaperSearchElement, '#historyCard .tile.result');
-      assertTrue(!!historyTile);
-      (historyTile as HTMLElement).click();
-
-      assertEquals(1, handler.getCallCount('setBackgroundToHistoryImage'));
-      assertEquals(
-          BigInt(10), handler.getArgs('setBackgroundToHistoryImage')[0].high);
-      assertEquals(
-          BigInt(1), handler.getArgs('setBackgroundToHistoryImage')[0].low);
-    });
-
-    test('current history theme is checked', async () => {
-      createWallpaperSearchElement();
-
-      wallpaperSearchCallbackRouterRemote.setHistory([
-        {image: '123', id: {high: BigInt(10), low: BigInt(1)}},
-        {image: '456', id: {high: BigInt(8), low: BigInt(2)}},
-      ]);
-      await wallpaperSearchCallbackRouterRemote.$.flushForTesting();
-
-      // Set a default theme.
-      let theme = createTheme();
-      callbackRouterRemote.setTheme(theme);
-      await callbackRouterRemote.$.flushForTesting();
-      await waitAfterNextRender(wallpaperSearchElement);
-
-      // There should be no checked tiles.
-      assertFalse(!!$$(wallpaperSearchElement, '.tile [checked]'));
-
-      // Set theme to the first tile.
-      theme = createTheme();
-      theme.backgroundImage = createBackgroundImage('');
-      theme.backgroundImage.localBackgroundId = {
-        high: BigInt(10),
-        low: BigInt(1),
-      };
-      callbackRouterRemote.setTheme(theme);
-      await callbackRouterRemote.$.flushForTesting();
-      await waitAfterNextRender(wallpaperSearchElement);
-
-      // The first result should be checked and be the only one checked.
-      const firstResult = $$(wallpaperSearchElement, '.tile .image-check-mark');
-      const checkedResults =
-          wallpaperSearchElement.shadowRoot!.querySelectorAll(
-              '.tile [checked]');
-      assertEquals(checkedResults.length, 1);
-      assertEquals(checkedResults[0], firstResult);
-      assertEquals(
-          checkedResults[0]!.parentElement!.getAttribute('aria-current'),
-          'true');
     });
   });
 

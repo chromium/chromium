@@ -11,6 +11,7 @@ import 'chrome://resources/cr_elements/cr_feedback_buttons/cr_feedback_buttons.j
 import 'chrome://resources/cr_elements/cr_grid/cr_grid.js';
 import 'chrome://resources/cr_elements/cr_action_menu/cr_action_menu.js';
 import 'chrome://resources/cr_elements/cr_hidden_style.css.js';
+import 'chrome://resources/cr_elements/cr_icons.css.js';
 import 'chrome://resources/cr_elements/cr_input/cr_input.js';
 import 'chrome://resources/cr_elements/cr_loading_gradient/cr_loading_gradient.js';
 import 'chrome://resources/cr_elements/icons.html.js';
@@ -38,8 +39,33 @@ import {CustomizeChromeCombobox} from './combobox/customize_chrome_combobox.js';
 import {getTemplate} from './wallpaper_search.html.js';
 import {WallpaperSearchProxy} from './wallpaper_search_proxy.js';
 
-export const DESCRIPTOR_D_VALUE =
-    ['#ef4837', '#0984e3', '#f9cc18', '#23cc6a', '#474747'];
+export const DESCRIPTOR_D_VALUE: ColorDescriptor[] = [
+  {
+    hex: '#ef4837',
+    name: 'colorRed',
+  },
+  {
+    hex: '#0984e3',
+    name: 'colorBlue',
+  },
+  {
+    hex: '#f9cc18',
+    name: 'colorYellow',
+  },
+  {
+    hex: '#23cc6a',
+    name: 'colorGreen',
+  },
+  {
+    hex: '#474747',
+    name: 'colorBlack',
+  },
+];
+
+interface ColorDescriptor {
+  hex: string;
+  name: string;
+}
 
 /* Saved descriptors for a set of results. */
 interface ResultsDescriptors {
@@ -97,7 +123,7 @@ export class WallpaperSearchElement extends WallpaperSearchElementBase {
       },
       descriptorD_: {
         type: Array,
-        value: DESCRIPTOR_D_VALUE,
+        value: DESCRIPTOR_D_VALUE.map((value) => value.hex),
       },
       errorState_: {
         type: Object,
@@ -141,7 +167,7 @@ export class WallpaperSearchElement extends WallpaperSearchElementBase {
   private errorCallback_: (() => void)|undefined;
   private errorState_: ErrorState|null = null;
   private expandedCategories_: {[categoryIndex: number]: boolean} = {};
-  private history_: WallpaperSearchResult[];
+  private history_: WallpaperSearchResult[] = [];
   private loading_: boolean;
   private results_: WallpaperSearchResult[] = [];
   private resultsDescriptors_: ResultsDescriptors = {};
@@ -226,7 +252,7 @@ export class WallpaperSearchElement extends WallpaperSearchElementBase {
       case WallpaperSearchStatus.kError:
         return {
           title: this.i18n('genericErrorTitle'),
-          description: this.history_ ?
+          description: this.shouldShowHistory_() ?
               this.i18n('genericErrorDescriptionWithHistory') :
               this.i18n('genericErrorDescription'),
           callToAction: this.i18n('tryAgain'),
@@ -240,7 +266,7 @@ export class WallpaperSearchElement extends WallpaperSearchElementBase {
       case WallpaperSearchStatus.kOffline:
         return {
           title: this.i18n('offlineTitle'),
-          description: this.history_ ?
+          description: this.shouldShowHistory_() ?
               this.i18n('offlineDescriptionWithHistory') :
               this.i18n('offlineDescription'),
           callToAction: this.i18n('ok'),
@@ -326,6 +352,20 @@ export class WallpaperSearchElement extends WallpaperSearchElementBase {
   private getCategoryIcon_(categoryIndex: number): string {
     return this.expandedCategories_[categoryIndex] ? 'cr:expand-less' :
                                                      'cr:expand-more';
+  }
+
+  private getColorCheckedStatus_(defaultColor: string): string {
+    return this.isColorSelected_(defaultColor) ? 'true' : 'false';
+  }
+
+  private getColorLabel_(defaultColor: string): string {
+    const descriptor =
+        DESCRIPTOR_D_VALUE.find((color) => color.hex === defaultColor);
+    return descriptor ? loadTimeData.getString(descriptor.name) : '';
+  }
+
+  private getCustomColorCheckedStatus_(): string {
+    return this.selectedHue_ !== undefined ? 'true' : 'false';
   }
 
   private getHistoryTileTitle_(index: number): string {
@@ -422,6 +462,11 @@ export class WallpaperSearchElement extends WallpaperSearchElementBase {
     this.wallpaperSearchHandler_.setBackgroundToHistoryImage(e.model.item.id);
   }
 
+  private onLearnMoreClick_(e: Event) {
+    e.preventDefault();
+    this.wallpaperSearchHandler_.openHelpArticle();
+  }
+
   private async onSelectedHueChanged_() {
     this.selectedDefaultColor_ = undefined;
     this.selectedHue_ = this.$.hueSlider.selectedHue;
@@ -485,6 +530,10 @@ export class WallpaperSearchElement extends WallpaperSearchElementBase {
 
   private shouldShowGrid_(): boolean {
     return this.results_.length > 0 || this.emptyResultContainers_.length > 0;
+  }
+
+  private shouldShowHistory_(): boolean {
+    return this.history_.length > 0;
   }
 }
 

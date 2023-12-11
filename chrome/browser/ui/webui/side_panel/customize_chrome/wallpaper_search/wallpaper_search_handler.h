@@ -80,6 +80,7 @@ class WallpaperSearchHandler
   void UpdateHistory() override;
   void SetUserFeedback(side_panel::customize_chrome::mojom::UserFeedback
                            selected_option) override;
+  void OpenHelpArticle() override;
 #if BUILDFLAG(IS_CHROMEOS)
   void SkipShowFeedbackPageForTesting(bool should_skip_check) {
     skip_show_feedback_page_for_testing_ = should_skip_check;

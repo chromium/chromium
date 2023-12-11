@@ -7687,8 +7687,8 @@ Keep your key file in a safe place. You will need it to create new versions of y
       <message name="IDS_NTP_CUSTOMIZE_YOUR_UPLOADED_IMAGE_LABEL" desc="The label for the 'Your uploaded image' button in the customization menu on the New Tab Page side panel.">
         Your uploaded image
       </message>
-      <message name="IDS_NTP_CUSTOMIZE_YOUR_SEARCHED_IMAGE_LABEL" desc="The label for the 'Your searched image' button in the customization menu on the New Tab Page side panel." translateable="false">
-        Your searched image
+      <message name="IDS_NTP_CUSTOMIZE_YOUR_SEARCHED_IMAGE_LABEL" desc="The label for the 'Your searched image' button in the customization menu on the New Tab Page side panel.">
+        AI created theme
       </message>
       <message name="IDS_NTP_CUSTOMIZE_UPLOAD_FROM_DEVICE_LABEL" desc="The label for the 'Upload from device' tile in the customization menu on the New Tab Page">
         Upload from device
@@ -7873,32 +7873,32 @@ Keep your key file in a safe place. You will need it to create new versions of y
       <message name="IDS_NTP_WEBSTORE_TOAST_BUTTON_TEXT" desc="The text displayed in the New Tab Page webstore themes toast button">
         Find themes
       </message>
-      <message name="IDS_NTP_WALLPAPER_SEARCH_FEEDBACK_PLACEHOLDER" translateable="false" desc="Placeholder text for Wallpaper Search feedback dialog." >
-        Send feedback for Wallpaper Search
+      <message name="IDS_NTP_WALLPAPER_SEARCH_FEEDBACK_PLACEHOLDER" desc="Placeholder text for Wallpaper Search feedback dialog." >
+        Send feedback for Create theme with AI
       </message>
       <message name="IDS_NTP_WALLPAPER_SEARCH_GENERIC_ERROR_DESCRIPTION" desc="The description of the generic error displayed when wallpaper search fails.">
         Please try again later.
       </message>
-      <message name="IDS_NTP_WALLPAPER_SEARCH_GENERIC_ERROR_DESCRIPTION_WITH_HISTORY" translateable="false" desc="The description of the generic error displayed when wallpaper search fails and there are previous results.">
-        Try again or select from one of the previous results below.
+      <message name="IDS_NTP_WALLPAPER_SEARCH_GENERIC_ERROR_DESCRIPTION_WITH_HISTORY" desc="The description of the generic error displayed when wallpaper search fails and there are previous results.">
+        Try again or select from one of the previously generated themes below.
       </message>
       <message name="IDS_NTP_WALLPAPER_SEARCH_GENERIC_ERROR_TITLE" desc="The title of the generic error displayed when wallpaper search fails.">
         Something went wrong.
       </message>
-      <message name="IDS_NTP_WALLPAPER_SEARCH_HEADER" translateable="false" desc="Header for the wallpaper search page of Customize Chrome Side Panel." >
-        Wallpaper Search
+      <message name="IDS_NTP_WALLPAPER_SEARCH_HEADER" desc="Header for the wallpaper search page of Customize Chrome Side Panel." >
+        Create theme with AI
       </message>
-      <message name="IDS_NTP_WALLPAPER_SEARCH_HISTORY_HEADER" translateable="false" desc="Header for the wallpaper search section for showing past themes." >
-        Your recent themes
+      <message name="IDS_NTP_WALLPAPER_SEARCH_HISTORY_HEADER" desc="Header for the wallpaper search section for showing past themes." >
+        Your recent AI themes
       </message>
-      <message name="IDS_NTP_WALLPAPER_SEARCH_HISTORY_TILE_TITLE" translateable="false" desc="Title for each tile button in the wallpaper search section for showing past themes.">
-        Recent theme <ph name="TILE_INDEX">$1<ex>2</ex></ph>
+      <message name="IDS_NTP_WALLPAPER_SEARCH_HISTORY_TILE_TITLE" desc="Title for each tile button in the wallpaper search section for showing past themes.">
+        Recent AI theme <ph name="TILE_INDEX">$1<ex>2</ex></ph>
       </message>
       <message name="IDS_NTP_WALLPAPER_SEARCH_OFFLINE_DESCRIPTION" desc="The description of the message displayed by wallpaper search when the browser is offline.">
         Check your internet and try again.
       </message>
-      <message name="IDS_NTP_WALLPAPER_SEARCH_OFFLINE_DESCRIPTION_WITH_HISTORY" translateable="false" desc="The description of the message displayed by wallpaper search when the browser is offline and there are previous results.">
-        Check your internet and try again. You can still select from one of the previous results below.
+      <message name="IDS_NTP_WALLPAPER_SEARCH_OFFLINE_DESCRIPTION_WITH_HISTORY" desc="The description of the message displayed by wallpaper search when the browser is offline and there are previous results.">
+        Check your internet and try again. You can still select from one of the previously generated themes below.
       </message>
       <message name="IDS_NTP_WALLPAPER_SEARCH_OFFLINE_TITLE" desc="The title of the message displayed by wallpaper search when the browser is offline.">
         Looks like you're offline.
@@ -7906,32 +7906,59 @@ Keep your key file in a safe place. You will need it to create new versions of y
       <message name="IDS_NTP_WALLPAPER_SEARCH_OPTIONAL_DETAILS_LABEL" desc="The label for optional details.">
         Add optional details
       </message>
+      <message name="IDS_NTP_WALLPAPER_SEARCH_COLOR_RED_LABEL" desc="The label for selecting the red color in the wallpaper search prompt">
+        Red
+      </message>
+      <message name="IDS_NTP_WALLPAPER_SEARCH_COLOR_BLUE_LABEL" desc="The label for selecting the blue color in the wallpaper search prompt">
+        Blue
+      </message>
+      <message name="IDS_NTP_WALLPAPER_SEARCH_COLOR_YELLOW_LABEL" desc="The label for selecting the yellow color in the wallpaper search prompt">
+        Yellow
+      </message>
+      <message name="IDS_NTP_WALLPAPER_SEARCH_COLOR_GREEN_LABEL" desc="The label for selecting the green color in the wallpaper search prompt">
+        Green
+      </message>
+      <message name="IDS_NTP_WALLPAPER_SEARCH_COLOR_BLACK_LABEL" desc="The label for selecting the black color in the wallpaper search prompt">
+        Black
+      </message>
       <message name="IDS_NTP_WALLPAPER_SEARCH_REQUEST_THROTTLED_DESCRIPTION" desc="The description of the message displayed when a wallpaper search request is throttled.">
         Please try again tomorrow.
       </message>
       <message name="IDS_NTP_WALLPAPER_SEARCH_REQUEST_THROTTLED_TITLE" desc="The title of the message displayed when a wallpaper search request is throttled.">
         You've reached your limit for today.
       </message>
-      <message name="IDS_NTP_WALLPAPER_SEARCH_SUBMIT_AGAIN_BTN_TEXT" translateable="false" desc="Button text for submitting the form to get wallpaper search results when the user has already done it before." >
-        Search Again
+      <message name="IDS_NTP_WALLPAPER_SEARCH_SUBMIT_AGAIN_BTN_TEXT" desc="Button text for submitting the form to get wallpaper search results when the user has already done it before." >
+        Recreate
       </message>
-      <message name="IDS_NTP_WALLPAPER_SEARCH_SUBMIT_BTN_TEXT" translateable="false" desc="Button text for submitting the form to get wallpaper search results." >
-        Search
+      <message name="IDS_NTP_WALLPAPER_SEARCH_SUBMIT_BTN_TEXT" desc="Button text for submitting the form to get wallpaper search results." >
+        Create
       </message>
       <message name="IDS_NTP_WALLPAPER_SEARCH_TRY_AGAIN_CTA" desc="Call to action displayed when wallpaper search fails that asks user to try again.">
         Try again
       </message>
-      <message name="IDS_NTP_WALLPAPER_SEARCH_RESULT_LABEL" desc="Accessibility label for a wallpaper search result, with only descriptor A." translateable="false">
+      <message name="IDS_NTP_WALLPAPER_SEARCH_RESULT_LABEL" desc="Accessibility label for a wallpaper search result, with only descriptor A.">
         Image <ph name="INDEX">$1<ex>2</ex></ph> of <ph name="A">$2</ph>
       </message>
-      <message name="IDS_NTP_WALLPAPER_SEARCH_RESULT_LABEL_WITH_DESCRIPTOR_B" desc="Accessibility label for a wallpaper search result, with descriptors A and B." translateable="false">
-        Image <ph name="INDEX">$1<ex>2</ex></ph> of <ph name="A">$2</ph>, <ph name="B">$3</ph>
+      <message name="IDS_NTP_WALLPAPER_SEARCH_RESULT_LABEL_WITH_DESCRIPTOR_B" desc="Accessibility label for a wallpaper search result, with descriptors A and B.">
+        Image <ph name="INDEX">$1<ex>2</ex></ph> of <ph name="A">$2</ph>, in <ph name="B">$3</ph> style
       </message>
-      <message name="IDS_NTP_WALLPAPER_SEARCH_RESULT_LABEL_WITH_DESCRIPTOR_C" desc="Accessibility label for a wallpaper search result, with descriptors A and C." translateable="false">
-        Image <ph name="INDEX">$1<ex>2</ex></ph> of <ph name="A">$2</ph>, <ph name="C">$3</ph>.
+      <message name="IDS_NTP_WALLPAPER_SEARCH_RESULT_LABEL_WITH_DESCRIPTOR_C" desc="Accessibility label for a wallpaper search result, with descriptors A and C.">
+        Image <ph name="INDEX">$1<ex>2</ex></ph> of <ph name="A">$2</ph>, with <ph name="C">$3</ph> mood.
       </message>
-      <message name="IDS_NTP_WALLPAPER_SEARCH_RESULT_LABEL_WITH_DESCRIPTORS_B_AND_C" desc="Accessibility label for a wallpaper search result, with descriptors A, B, and C." translateable="false">
-        Image <ph name="INDEX">$1<ex>2</ex></ph> of <ph name="A">$2</ph>, <ph name="B">$3</ph>, <ph name="C">$4</ph>.
+      <message name="IDS_NTP_WALLPAPER_SEARCH_RESULT_LABEL_WITH_DESCRIPTORS_B_AND_C" desc="Accessibility label for a wallpaper search result, with descriptors A, B, and C.">
+        Image <ph name="INDEX">$1<ex>2</ex></ph> of <ph name="A">$2</ph>, in <ph name="B">$3</ph> style, with <ph name="C">$4</ph> mood.
+      </message>
+      <message name="IDS_NTP_WALLPAPER_SEARCH_SUBJECT_LABEL" desc="Label for the Create theme with AI dropdown for selecting subject of the image.">
+        Subject
+      </message>
+      <message name="IDS_NTP_WALLPAPER_SEARCH_MOOD_LABEL" desc="Label for the Create theme with AI dropdown for selecting mood of the image.">
+        Mood
+      </message>
+      <message name="IDS_NTP_WALLPAPER_SEARCH_STYLE_LABEL" desc="Label for the Create theme with AI dropdown for selecting style of the image.">
+        Style
+      </message>
+      <message name="IDS_LEARN_MORE_ABOUT_FEATURE_A11Y_LABEL" desc="Accessibility label for a link labeled 'Learn more' that links to a help article about creating themes with AI.">
+        Learn more about creating themes with AI.
       </message>
 
       <!-- NTP Modules -->
@@ -16603,8 +16630,8 @@ Please help our engineers fix this problem. Tell us what happened right before y
     <message name="IDS_THUMBS_UP" desc="Accessibility label for a thumbs up icon that a user can click to provide positive feedback about a feature." translateable="false">
       Thumbs up
     </message>
-    <message name="IDS_EXPERIMENTAL_FEATURE_DISCLAIMER" desc="Text used for experimental features." translateable="false">
-      This feature is experimental.
+    <message name="IDS_EXPERIMENTAL_FEATURE_DISCLAIMER" desc="Text used for experimental features.">
+      This is an experimental AI feature.
     </message>
   </messages>
 </release>

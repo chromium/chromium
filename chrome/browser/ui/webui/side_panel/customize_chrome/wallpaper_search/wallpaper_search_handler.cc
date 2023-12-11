@@ -24,6 +24,8 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/search/background/wallpaper_search/wallpaper_search_background_manager.h"
 #include "chrome/browser/ui/browser_finder.h"
+#include "chrome/browser/ui/browser_navigator.h"
+#include "chrome/browser/ui/browser_navigator_params.h"
 #include "chrome/browser/ui/chrome_pages.h"
 #include "chrome/browser/ui/webui/cr_components/theme_color_picker/customize_chrome_colors.h"
 #include "chrome/common/pref_names.h"
@@ -142,6 +144,15 @@ WallpaperSearchHandler::~WallpaperSearchHandler() {
           std::get<0>(wallpaper_search_results_[*backround_id]);
       if (image_quality) {
         image_quality->set_selected(true);
+      }
+    }
+    // Upload all the log entries once you set the final request.
+    auto* optimization_guide_keyed_service =
+        OptimizationGuideKeyedServiceFactory::GetForProfile(profile_);
+    if (optimization_guide_keyed_service) {
+      for (auto& entry : log_entries_) {
+        optimization_guide_keyed_service->UploadModelQualityLogs(
+            std::move(entry));
       }
     }
   }
@@ -329,6 +340,16 @@ void WallpaperSearchHandler::SetUserFeedback(UserFeedback selected_option) {
       quality->set_user_feedback(user_feedback);
     }
   }
+}
+
+void WallpaperSearchHandler::OpenHelpArticle() {
+  NavigateParams navigate_params(
+      profile_,
+      GURL("https://support.google.com/chrome?p=create_themes_with_ai"),
+      ui::PAGE_TRANSITION_LINK);
+  navigate_params.window_action = NavigateParams::WindowAction::SHOW_WINDOW;
+  navigate_params.disposition = WindowOpenDisposition::NEW_FOREGROUND_TAB;
+  Navigate(&navigate_params);
 }
 
 void WallpaperSearchHandler::ShowFeedbackPage() {
