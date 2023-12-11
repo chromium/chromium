@@ -73,6 +73,7 @@
 #include "third_party/blink/renderer/core/inspector/inspector_css_agent.h"
 #include "third_party/blink/renderer/core/inspector/inspector_network_agent.h"
 #include "third_party/blink/renderer/core/inspector/inspector_resource_container.h"
+#include "third_party/blink/renderer/core/inspector/inspector_style_resolver.h"
 #include "third_party/blink/renderer/core/inspector/protocol/css.h"
 #include "third_party/blink/renderer/core/svg/svg_style_element.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
@@ -2361,6 +2362,19 @@ static bool CanBind(const String& origin) {
 std::unique_ptr<protocol::CSS::CSSRule>
 InspectorStyleSheet::BuildObjectForRuleWithoutAncestorData(CSSStyleRule* rule,
                                                            Element* element) {
+  if (element) {
+    // Before validating the style's registered properties values against the
+    // element, check if the style actually applies to the element.
+    InspectorStyleResolver resolver(element, kPseudoIdNone, g_null_atom);
+    RuleIndexList* matched_rules = resolver.MatchedRules();
+    if (!matched_rules ||
+        std::find_if(matched_rules->begin(), matched_rules->end(),
+                     [rule](auto matched_rule) {
+                       return matched_rule.first == rule;
+                     }) == matched_rules->end()) {
+      element = nullptr;
+    }
+  }
   std::unique_ptr<protocol::CSS::CSSRule> result =
       protocol::CSS::CSSRule::create()
           .setSelectorList(BuildObjectForSelectorList(rule))

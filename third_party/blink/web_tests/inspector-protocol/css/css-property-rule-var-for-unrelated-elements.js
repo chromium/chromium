@@ -3,12 +3,6 @@
       `
   <style>
   div {
-    --in: 2px;
-    --len: calc(var(--in) * 4);
-    --color-in: purple;
-    --color: var(--in);
-    width: var(--len);
-    animation: --animation 0s linear;
   }
 
   @property --len {
@@ -16,24 +10,12 @@
     initial-value: 4px;
     inherits: false;
   }
-  @property --color {
-    syntax: "<color>";
-    initial-value: red;
-    inherits: false;
-  }
-  @keyframes --animation {
-    from {
-      --color: var(--color-in);
-    }
-    to {
-      --color: blue;
-    }
-  }
   </style>
 
   <div>div</div>
+  <p>p</div>
   `,
-      'Test that values of registered properties are validated correctly in the presence of var()');
+      'Test that values of registered properties are not validated against unrelated elements');
 
   await dp.DOM.enable();
   await dp.CSS.enable();
@@ -41,6 +23,8 @@
   const {result: {root}} = await dp.DOM.getDocument();
   const {result: {nodeId}} =
       await dp.DOM.querySelector({nodeId: root.nodeId, selector: 'div'});
+  const {result: {nodeId: unrelatedNodeId}} =
+      await dp.DOM.querySelector({nodeId: root.nodeId, selector: 'p'});
 
   const {result: {computedStyle}} =
       await dp.CSS.getComputedStyleForNode({nodeId});
@@ -53,20 +37,13 @@
 
   const rules =
       matchedCSSRules.filter(({rule}) => rule.selectorList.text === 'div');
-  testRunner.log('Validated declarations:');
-  testRunner.log(rules.map(({rule}) => rule.style.cssProperties)
-                     .flat()
-                     .filter(({name}) => name.startsWith('--'))
-                     .flat());
-  testRunner.log('Keyframes:');
-  testRunner.log(cssKeyframesRules);
 
   const {styleSheetId, range} = rules[1].rule.style;
   testRunner.log('Editing a rule:');
   {
-    const edits = [{styleSheetId, range, text: '--v: 5px; --len: var(--v);'}];
-    const {result: {styles: [{cssProperties}]}} =
-        await dp.CSS.setStyleTexts({edits, nodeForPropertySyntaxValidation: nodeId});
+  const edits = [{styleSheetId, range, text: '--v: 5px; --len: var(--v);'}];
+    const {result: {styles: [{cssProperties}]}} = await dp.CSS.setStyleTexts(
+        {edits, nodeForPropertySyntaxValidation: unrelatedNodeId});
     testRunner.log(cssProperties);
   }
 
@@ -79,11 +56,10 @@
       styleSheetId,
       location,
       ruleText: 'div { --v: 5px; --len: var(--v); }',
-      nodeForPropertySyntaxValidation: nodeId,
+      nodeForPropertySyntaxValidation: unrelatedNodeId,
     });
     testRunner.log(cssProperties);
   }
-
 
   testRunner.completeTest();
 });

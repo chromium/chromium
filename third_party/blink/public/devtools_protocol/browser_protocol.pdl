@@ -1988,6 +1988,10 @@ experimental domain CSS
       string ruleText
       # Text position of a new rule in the target style sheet.
       SourceRange location
+      # NodeId for the DOM node in whose context custom property declarations for registered properties should be
+      # validated. If omitted, declarations in the new rule text can only be validated statically, which may produce
+      # incorrect results if the declaration contains a var() for example.
+      experimental optional DOM.NodeId nodeForPropertySyntaxValidation
     returns
       # The newly created rule.
       CSSRule rule
@@ -2231,6 +2235,10 @@ experimental domain CSS
   command setStyleTexts
     parameters
       array of StyleDeclarationEdit edits
+      # NodeId for the DOM node in whose context custom property declarations for registered properties should be
+      # validated. If omitted, declarations in the new rule text can only be validated statically, which may produce
+      # incorrect results if the declaration contains a var() for example.
+      experimental optional DOM.NodeId nodeForPropertySyntaxValidation
     returns
       # The resulting styles after modification.
       array of CSSStyle styles

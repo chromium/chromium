@@ -27,6 +27,7 @@
 
 #include <utility>
 
+#include "third_party/blink/public/common/metrics/document_update_reason.h"
 #include "third_party/blink/renderer/core/animation/css/css_animation_data.h"
 #include "third_party/blink/renderer/core/css/cascade_layer.h"
 #include "third_party/blink/renderer/core/css/cascade_layer_map.h"
@@ -1978,6 +1979,7 @@ protocol::Response InspectorCSSAgent::MultipleStyleTextsActions(
 
 protocol::Response InspectorCSSAgent::setStyleTexts(
     std::unique_ptr<protocol::Array<protocol::CSS::StyleDeclarationEdit>> edits,
+    protocol::Maybe<int> node_for_property_syntax_validation,
     std::unique_ptr<protocol::Array<protocol::CSS::CSSStyle>>* result) {
   FrontendOperationScope scope;
   HeapVector<Member<StyleSheetAction>> actions;
@@ -1987,6 +1989,14 @@ protocol::Response InspectorCSSAgent::setStyleTexts(
     return response;
 
   DummyExceptionStateForTesting exception_state;
+
+  Element* element = nullptr;
+  if (node_for_property_syntax_validation.has_value()) {
+    response = dom_agent_->AssertElement(
+        node_for_property_syntax_validation.value(), element);
+    if (!response.IsSuccess())
+      return response;
+  }
 
   int n = actions.size();
   auto serialized_styles =
@@ -2005,10 +2015,15 @@ protocol::Response InspectorCSSAgent::setStyleTexts(
           String::Format("Failed applying edit #%d: ", i).Utf8() +
           InspectorDOMAgent::ToResponse(exception_state).Message());
     }
-    serialized_styles->emplace_back(
-        // TODO (crbug/1498877) We also need to re-validate registered
-        // properties on edits
-        action->TakeSerializedStyle(nullptr));
+  }
+
+  if (element) {
+    element->GetDocument().UpdateStyleAndLayoutForNode(
+        element, DocumentUpdateReason::kInspector);
+  }
+  for (int i = 0; i < n; ++i) {
+    Member<StyleSheetAction> action = actions.at(i);
+    serialized_styles->emplace_back(action->TakeSerializedStyle(element));
   }
 
   for (int i = 0; i < n; ++i) {
@@ -2204,6 +2219,7 @@ protocol::Response InspectorCSSAgent::addRule(
     const String& style_sheet_id,
     const String& rule_text,
     std::unique_ptr<protocol::CSS::SourceRange> location,
+    protocol::Maybe<int> node_for_property_syntax_validation,
     std::unique_ptr<protocol::CSS::CSSRule>* result) {
   FrontendOperationScope scope;
   InspectorStyleSheet* inspector_style_sheet = nullptr;
@@ -2211,6 +2227,15 @@ protocol::Response InspectorCSSAgent::addRule(
       AssertInspectorStyleSheetForId(style_sheet_id, inspector_style_sheet);
   if (!response.IsSuccess())
     return response;
+
+  Element* element = nullptr;
+  if (node_for_property_syntax_validation.has_value()) {
+    response = dom_agent_->AssertElement(
+        node_for_property_syntax_validation.value(), element);
+    if (!response.IsSuccess())
+      return response;
+  }
+
   SourceRange rule_location;
   response = JsonRangeToSourceRange(inspector_style_sheet, location.get(),
                                     &rule_location);
@@ -2225,9 +2250,11 @@ protocol::Response InspectorCSSAgent::addRule(
     return InspectorDOMAgent::ToResponse(exception_state);
 
   CSSStyleRule* rule = action->TakeRule();
-  // TODO (crbug/1498877) We also need to re-validate registered
-  // properties on edits
-  *result = BuildObjectForRule(rule, nullptr);
+  if (element) {
+    element->GetDocument().UpdateStyleAndLayoutForNode(
+        element, DocumentUpdateReason::kInspector);
+  }
+  *result = BuildObjectForRule(rule, element);
   return protocol::Response::Success();
 }
 
