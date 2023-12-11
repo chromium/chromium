@@ -156,6 +156,57 @@ function crostiniTestGenPreamble() {
   GEN('fake_crostini_features.SetAll(true);');
 }
 
+var OSSettingsCrostiniPageBruschettaSubpageTest =
+    class extends OSSettingsBrowserTest {
+  /** @override */
+  get browsePreload() {
+    return 'chrome://os-settings/test_loader.html?module=settings/chromeos/crostini_page/bruschetta_subpage_test.js';
+  }
+
+  /** @override */
+  testGenPreamble() {
+    return crostiniTestGenPreamble();
+  }
+};
+
+TEST_F('OSSettingsCrostiniPageBruschettaSubpageTest', 'AllJsTests', () => {
+  mocha.run();
+});
+
+var OSSettingsCrostiniPageCrostiniArcAdbTest =
+    class extends OSSettingsBrowserTest {
+  /** @override */
+  get browsePreload() {
+    return 'chrome://os-settings/test_loader.html?module=settings/chromeos/crostini_page/crostini_arc_adb_test.js';
+  }
+
+  /** @override */
+  testGenPreamble() {
+    return crostiniTestGenPreamble();
+  }
+};
+
+TEST_F('OSSettingsCrostiniPageCrostiniArcAdbTest', 'AllJsTests', () => {
+  mocha.run();
+});
+
+var OSSettingsCrostiniPageCrostiniExportImportTest =
+    class extends OSSettingsBrowserTest {
+  /** @override */
+  get browsePreload() {
+    return 'chrome://os-settings/test_loader.html?module=settings/chromeos/crostini_page/crostini_export_import_test.js';
+  }
+
+  /** @override */
+  testGenPreamble() {
+    return crostiniTestGenPreamble();
+  }
+};
+
+TEST_F('OSSettingsCrostiniPageCrostiniExportImportTest', 'AllJsTests', () => {
+  mocha.run();
+});
+
 var OSSettingsCrostiniPageTest = class extends OSSettingsBrowserTest {
   /** @override */
   get browsePreload() {
@@ -169,6 +220,23 @@ var OSSettingsCrostiniPageTest = class extends OSSettingsBrowserTest {
 };
 
 TEST_F('OSSettingsCrostiniPageTest', 'AllJsTests', () => {
+  mocha.run();
+});
+
+var OSSettingsCrostiniPageCrostiniPortForwardingTest =
+    class extends OSSettingsBrowserTest {
+  /** @override */
+  get browsePreload() {
+    return 'chrome://os-settings/test_loader.html?module=settings/chromeos/crostini_page/crostini_port_forwarding_test.js';
+  }
+
+  /** @override */
+  testGenPreamble() {
+    return crostiniTestGenPreamble();
+  }
+};
+
+TEST_F('OSSettingsCrostiniPageCrostiniPortForwardingTest', 'AllJsTests', () => {
   mocha.run();
 });
 
@@ -186,6 +254,23 @@ var OSSettingsCrostiniPageCrostiniSettingsCardTest =
 };
 
 TEST_F('OSSettingsCrostiniPageCrostiniSettingsCardTest', 'AllJsTests', () => {
+  mocha.run();
+});
+
+var OSSettingsCrostiniPageCrostiniSubpageTest =
+    class extends OSSettingsBrowserTest {
+  /** @override */
+  get browsePreload() {
+    return 'chrome://os-settings/test_loader.html?module=settings/chromeos/crostini_page/crostini_subpage_test.js';
+  }
+
+  /** @override */
+  testGenPreamble() {
+    return crostiniTestGenPreamble();
+  }
+};
+
+TEST_F('OSSettingsCrostiniPageCrostiniSubpageTest', 'AllJsTests', () => {
   mocha.run();
 });
 
