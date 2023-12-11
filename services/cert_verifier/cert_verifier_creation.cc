@@ -10,8 +10,15 @@
 #include "net/base/features.h"
 #include "net/cert/cert_verify_proc.h"
 #include "net/cert/crl_set.h"
+#include "net/cert/ct_verifier.h"
+#include "net/cert/do_nothing_ct_verifier.h"
 #include "net/cert/multi_threaded_cert_verifier.h"
 #include "net/net_buildflags.h"
+#include "services/network/public/cpp/network_service_buildflags.h"
+
+#if BUILDFLAG(IS_CT_SUPPORTED)
+#include "net/cert/multi_log_ct_verifier.h"
+#endif
 
 #if BUILDFLAG(IS_FUCHSIA)
 #include "net/cert/cert_verify_proc_builtin.h"
@@ -75,20 +82,30 @@ class CertVerifyProcFactoryImpl : public net::CertVerifyProcFactory {
       scoped_refptr<net::CertNetFetcher> cert_net_fetcher,
       const net::CertVerifyProc::ImplParams& impl_params,
       const net::CertVerifyProc::InstanceParams& instance_params) override {
+    std::unique_ptr<net::CTVerifier> ct_verifier;
+#if BUILDFLAG(IS_CT_SUPPORTED)
+    if (!impl_params.ct_logs.empty()) {
+      ct_verifier =
+          std::make_unique<net::MultiLogCTVerifier>(impl_params.ct_logs);
+    }
+#endif
+    if (!ct_verifier) {
+      ct_verifier = std::make_unique<net::DoNothingCTVerifier>();
+    }
 #if BUILDFLAG(CHROME_ROOT_STORE_ONLY)
     return CreateNewCertVerifyProc(
-        cert_net_fetcher, impl_params.crl_set,
+        cert_net_fetcher, impl_params.crl_set, std::move(ct_verifier),
         base::OptionalToPtr(impl_params.root_store_data), instance_params);
 #else
 #if BUILDFLAG(CHROME_ROOT_STORE_OPTIONAL)
     if (impl_params.use_chrome_root_store) {
       return CreateNewCertVerifyProc(
-          cert_net_fetcher, impl_params.crl_set,
+          cert_net_fetcher, impl_params.crl_set, std::move(ct_verifier),
           base::OptionalToPtr(impl_params.root_store_data), instance_params);
     }
 #endif
     return CreateOldCertVerifyProc(cert_net_fetcher, impl_params.crl_set,
-                                   instance_params);
+                                   std::move(ct_verifier), instance_params);
 #endif
   }
 
@@ -103,10 +120,11 @@ class CertVerifyProcFactoryImpl : public net::CertVerifyProcFactory {
   scoped_refptr<net::CertVerifyProc> CreateOldCertVerifyProc(
       scoped_refptr<net::CertNetFetcher> cert_net_fetcher,
       scoped_refptr<net::CRLSet> crl_set,
+      std::unique_ptr<net::CTVerifier> ct_verifier,
       const net::CertVerifyProc::InstanceParams& instance_params) {
 #if BUILDFLAG(IS_FUCHSIA)
     return net::CreateCertVerifyProcBuiltin(
-        std::move(cert_net_fetcher), std::move(crl_set),
+        std::move(cert_net_fetcher), std::move(crl_set), std::move(ct_verifier),
         net::CreateSslSystemTrustStore(), instance_params);
 #else
     return net::CertVerifyProc::CreateSystemVerifyProc(
@@ -121,6 +139,7 @@ class CertVerifyProcFactoryImpl : public net::CertVerifyProcFactory {
   scoped_refptr<net::CertVerifyProc> CreateNewCertVerifyProc(
       scoped_refptr<net::CertNetFetcher> cert_net_fetcher,
       scoped_refptr<net::CRLSet> crl_set,
+      std::unique_ptr<net::CTVerifier> ct_verifier,
       const net::ChromeRootStoreData* root_store_data,
       const net::CertVerifyProc::InstanceParams& instance_params) {
     std::unique_ptr<net::TrustStoreChrome> chrome_root =
@@ -156,8 +175,8 @@ class CertVerifyProcFactoryImpl : public net::CertVerifyProcFactory {
     net::InitializeTrustStoreAndroid();
 #endif
     return net::CreateCertVerifyProcBuiltin(
-        std::move(cert_net_fetcher), std::move(crl_set), std::move(trust_store),
-        instance_params);
+        std::move(cert_net_fetcher), std::move(crl_set), std::move(ct_verifier),
+        std::move(trust_store), instance_params);
   }
 #endif  // BUILDFLAG(CHROME_ROOT_STORE_SUPPORTED)
 

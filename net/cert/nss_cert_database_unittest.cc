@@ -32,6 +32,8 @@
 #include "net/cert/cert_verify_proc.h"
 #include "net/cert/cert_verify_result.h"
 #include "net/cert/crl_set.h"
+#include "net/cert/ct_verifier.h"
+#include "net/cert/do_nothing_ct_verifier.h"
 #include "net/cert/mock_cert_verifier.h"
 #include "net/cert/x509_certificate.h"
 #include "net/cert/x509_util_nss.h"
@@ -849,7 +851,9 @@ TEST_F(CertDatabaseNSSTest, ImportServerCert) {
   ASSERT_TRUE(x509_found_server_cert);
   scoped_refptr<CertVerifyProc> verify_proc(
       CertVerifyProc::CreateBuiltinWithChromeRootStore(
-          /*cert_net_fetcher=*/nullptr, crl_set_, /*root_store_data=*/nullptr,
+          /*cert_net_fetcher=*/nullptr, crl_set_,
+          std::make_unique<DoNothingCTVerifier>(),
+          /*root_store_data=*/nullptr,
           /*instance_params=*/{}));
   int flags = 0;
   CertVerifyResult verify_result;
@@ -888,7 +892,8 @@ TEST_F(CertDatabaseNSSTest, ImportServerCert_SelfSigned) {
   ASSERT_TRUE(x509_puny_cert);
   scoped_refptr<CertVerifyProc> verify_proc(
       CertVerifyProc::CreateBuiltinWithChromeRootStore(
-          /*cert_net_fetcher=*/nullptr, crl_set_, /*root_store_data=*/nullptr,
+          /*cert_net_fetcher=*/nullptr, crl_set_,
+          std::make_unique<DoNothingCTVerifier>(), /*root_store_data=*/nullptr,
           /*instance_params=*/{}));
   int flags = 0;
   CertVerifyResult verify_result;
@@ -928,7 +933,8 @@ TEST_F(CertDatabaseNSSTest, ImportServerCert_SelfSigned_Trusted) {
   ASSERT_TRUE(x509_puny_cert);
   scoped_refptr<CertVerifyProc> verify_proc(
       CertVerifyProc::CreateBuiltinWithChromeRootStore(
-          /*cert_net_fetcher=*/nullptr, crl_set_, /*root_store_data=*/nullptr,
+          /*cert_net_fetcher=*/nullptr, crl_set_,
+          std::make_unique<DoNothingCTVerifier>(), /*root_store_data=*/nullptr,
           /*instance_params=*/{}));
   int flags = 0;
   CertVerifyResult verify_result;
@@ -978,7 +984,8 @@ TEST_F(CertDatabaseNSSTest, ImportCaAndServerCert) {
   ASSERT_TRUE(x509_server_cert);
   scoped_refptr<CertVerifyProc> verify_proc(
       CertVerifyProc::CreateBuiltinWithChromeRootStore(
-          /*cert_net_fetcher=*/nullptr, crl_set_, /*root_store_data=*/nullptr,
+          /*cert_net_fetcher=*/nullptr, crl_set_,
+          std::make_unique<DoNothingCTVerifier>(), /*root_store_data=*/nullptr,
           /*instance_params=*/{}));
   int flags = 0;
   CertVerifyResult verify_result;
@@ -1022,7 +1029,8 @@ TEST_F(CertDatabaseNSSTest, ImportCaAndServerCert_DistrustServer) {
   ASSERT_TRUE(x509_server_cert);
   scoped_refptr<CertVerifyProc> verify_proc(
       CertVerifyProc::CreateBuiltinWithChromeRootStore(
-          /*cert_net_fetcher=*/nullptr, crl_set_, /*root_store_data=*/nullptr,
+          /*cert_net_fetcher=*/nullptr, crl_set_,
+          std::make_unique<DoNothingCTVerifier>(), /*root_store_data=*/nullptr,
           /*instance_params=*/{}));
   int flags = 0;
   CertVerifyResult verify_result;
@@ -1082,7 +1090,8 @@ TEST_F(CertDatabaseNSSTest, TrustIntermediateCa) {
   // Server cert should verify.
   scoped_refptr<CertVerifyProc> verify_proc(
       CertVerifyProc::CreateBuiltinWithChromeRootStore(
-          /*cert_net_fetcher=*/nullptr, crl_set_, /*root_store_data=*/nullptr,
+          /*cert_net_fetcher=*/nullptr, crl_set_,
+          std::make_unique<DoNothingCTVerifier>(), /*root_store_data=*/nullptr,
           /*instance_params=*/{}));
   int flags = 0;
   CertVerifyResult verify_result;
@@ -1149,7 +1158,8 @@ TEST_F(CertDatabaseNSSTest, TrustIntermediateCa2) {
   // Server cert should verify.
   scoped_refptr<CertVerifyProc> verify_proc(
       CertVerifyProc::CreateBuiltinWithChromeRootStore(
-          /*cert_net_fetcher=*/nullptr, crl_set_, /*root_store_data=*/nullptr,
+          /*cert_net_fetcher=*/nullptr, crl_set_,
+          std::make_unique<DoNothingCTVerifier>(), /*root_store_data=*/nullptr,
           /*instance_params=*/{}));
   int flags = 0;
   CertVerifyResult verify_result;
@@ -1214,7 +1224,8 @@ TEST_F(CertDatabaseNSSTest, TrustIntermediateCa3) {
   // Server cert should verify.
   scoped_refptr<CertVerifyProc> verify_proc(
       CertVerifyProc::CreateBuiltinWithChromeRootStore(
-          /*cert_net_fetcher=*/nullptr, crl_set_, /*root_store_data=*/nullptr,
+          /*cert_net_fetcher=*/nullptr, crl_set_,
+          std::make_unique<DoNothingCTVerifier>(), /*root_store_data=*/nullptr,
           /*instance_params=*/{}));
   int flags = 0;
   CertVerifyResult verify_result;
@@ -1279,7 +1290,8 @@ TEST_F(CertDatabaseNSSTest, TrustIntermediateCa4) {
   // Server cert should not verify.
   scoped_refptr<CertVerifyProc> verify_proc(
       CertVerifyProc::CreateBuiltinWithChromeRootStore(
-          /*cert_net_fetcher=*/nullptr, crl_set_, /*root_store_data=*/nullptr,
+          /*cert_net_fetcher=*/nullptr, crl_set_,
+          std::make_unique<DoNothingCTVerifier>(), /*root_store_data=*/nullptr,
           /*instance_params=*/{}));
   int flags = 0;
   CertVerifyResult verify_result;

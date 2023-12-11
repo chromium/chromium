@@ -85,6 +85,25 @@ class MockCertVerifier : public CertVerifier {
   base::ObserverList<Observer> observers_;
 };
 
+// A MockCertVerifier that also records the RequestParams received for each
+// verification attempt.
+class ParamRecordingMockCertVerifier : public MockCertVerifier {
+ public:
+  ParamRecordingMockCertVerifier();
+  ~ParamRecordingMockCertVerifier() override;
+
+  int Verify(const RequestParams& params,
+             CertVerifyResult* verify_result,
+             CompletionOnceCallback callback,
+             std::unique_ptr<Request>* out_req,
+             const NetLogWithSource& net_log) override;
+
+  const std::vector<RequestParams>& GetVerifyParams() const { return params_; }
+
+ private:
+  std::vector<RequestParams> params_;
+};
+
 class CertVerifierObserverCounter : public CertVerifier::Observer {
  public:
   explicit CertVerifierObserverCounter(CertVerifier* verifier);

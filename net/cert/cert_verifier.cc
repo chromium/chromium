@@ -15,6 +15,7 @@
 #include "net/cert/cert_verify_proc.h"
 #include "net/cert/coalescing_cert_verifier.h"
 #include "net/cert/crl_set.h"
+#include "net/cert/do_nothing_ct_verifier.h"
 #include "net/cert/multi_threaded_cert_verifier.h"
 #include "net/net_buildflags.h"
 #include "third_party/boringssl/src/include/openssl/pool.h"
@@ -34,16 +35,19 @@ class DefaultCertVerifyProcFactory : public net::CertVerifyProcFactory {
     if (impl_params.use_chrome_root_store) {
       return CertVerifyProc::CreateBuiltinWithChromeRootStore(
           std::move(cert_net_fetcher), impl_params.crl_set,
+          std::make_unique<net::DoNothingCTVerifier>(),
           base::OptionalToPtr(impl_params.root_store_data), instance_params);
     }
 #endif
 #if BUILDFLAG(CHROME_ROOT_STORE_ONLY)
     return CertVerifyProc::CreateBuiltinWithChromeRootStore(
         std::move(cert_net_fetcher), impl_params.crl_set,
+        std::make_unique<net::DoNothingCTVerifier>(),
         base::OptionalToPtr(impl_params.root_store_data), instance_params);
 #elif BUILDFLAG(IS_FUCHSIA)
     return CertVerifyProc::CreateBuiltinVerifyProc(
-        std::move(cert_net_fetcher), impl_params.crl_set, instance_params);
+        std::move(cert_net_fetcher), impl_params.crl_set,
+        std::make_unique<net::DoNothingCTVerifier>(), instance_params);
 #else
     return CertVerifyProc::CreateSystemVerifyProc(std::move(cert_net_fetcher),
                                                   impl_params.crl_set);

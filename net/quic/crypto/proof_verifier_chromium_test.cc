@@ -16,7 +16,6 @@
 #include "net/base/features.h"
 #include "net/base/net_errors.h"
 #include "net/base/network_anonymization_key.h"
-#include "net/cert/cert_and_ct_verifier.h"
 #include "net/cert/cert_status_flags.h"
 #include "net/cert/cert_verifier.h"
 #include "net/cert/ct_log_verifier.h"
@@ -26,13 +25,13 @@
 #include "net/cert/mock_cert_verifier.h"
 #include "net/cert/multi_log_ct_verifier.h"
 #include "net/cert/sct_auditing_delegate.h"
+#include "net/cert/sct_status_flags.h"
 #include "net/cert/x509_util.h"
 #include "net/http/transport_security_state.h"
 #include "net/http/transport_security_state_test_util.h"
 #include "net/quic/crypto/proof_source_chromium.h"
 #include "net/quic/quic_context.h"
 #include "net/test/cert_test_util.h"
-#include "net/test/ct_test_util.h"
 #include "net/test/test_data_directory.h"
 #include "net/third_party/quiche/src/quiche/quic/core/crypto/proof_verifier.h"
 #include "net/third_party/quiche/src/quiche/quic/core/quic_error_codes.h"
@@ -132,8 +131,6 @@ const char kTestEmptyOCSPResponse[] = "";
 const char kTestEmptySCT[] = "";
 const char kTestEmptySignature[] = "";
 
-const char kLogDescription[] = "somelog";
-
 // This test exercises code that does not depend on the QUIC version in use
 // but that still requires a version so we just use the first one.
 const quic::QuicTransportVersion kTestTransportVersion =
@@ -206,34 +203,6 @@ class ProofVerifierChromiumTest : public ::testing::Test {
     return signature;
   }
 
-  void GetSCTTestCertificates(std::vector<std::string>* certs) {
-    std::string der_test_cert(ct::GetDerEncodedX509Cert());
-    scoped_refptr<X509Certificate> test_cert = X509Certificate::CreateFromBytes(
-        base::as_bytes(base::make_span(der_test_cert)));
-    ASSERT_TRUE(test_cert.get());
-
-    certs->clear();
-    certs->emplace_back(
-        x509_util::CryptoBufferAsStringPiece(test_cert->cert_buffer()));
-  }
-
-  void CheckSCT(bool sct_expected_ok) {
-    ProofVerifyDetailsChromium* proof_details =
-        reinterpret_cast<ProofVerifyDetailsChromium*>(details_.get());
-    const CertVerifyResult& cert_verify_result =
-        proof_details->cert_verify_result;
-    if (sct_expected_ok) {
-      EXPECT_TRUE(ct::CheckForSingleVerifiedSCTInResult(cert_verify_result.scts,
-                                                        kLogDescription));
-      EXPECT_TRUE(ct::CheckForSCTOrigin(
-          cert_verify_result.scts,
-          ct::SignedCertificateTimestamp::SCT_FROM_TLS_EXTENSION));
-    } else {
-      ASSERT_EQ(1U, cert_verify_result.scts.size());
-      EXPECT_EQ(ct::SCT_STATUS_LOG_UNKNOWN, cert_verify_result.scts[0].status);
-    }
-  }
-
  protected:
   TransportSecurityState transport_security_state_;
   MockCTPolicyEnforcer ct_policy_enforcer_;
@@ -304,94 +273,35 @@ TEST_F(ProofVerifierChromiumTest, FailsIfCertFails) {
   ASSERT_EQ(quic::QUIC_FAILURE, status);
 }
 
-class DoNothingLogNotifier : public MultiLogCTVerifier::CTLogProvider {
- public:
-  DoNothingLogNotifier() = default;
-  ~DoNothingLogNotifier() = default;
-};
-
-// Valid SCT and cert
-TEST_F(ProofVerifierChromiumTest, ValidSCTList) {
-  // Use different certificates for SCT tests.
-  ASSERT_NO_FATAL_FAILURE(GetSCTTestCertificates(&certs_));
-
-  std::string der_test_cert(ct::GetDerEncodedX509Cert());
-  scoped_refptr<X509Certificate> test_cert = X509Certificate::CreateFromBytes(
-      base::as_bytes(base::make_span(der_test_cert)));
-  ASSERT_TRUE(test_cert);
+// Confirms that the parameters get passed through to the
+// CertVerifier::RequestParams as expected.
+TEST_F(ProofVerifierChromiumTest, PassesCertVerifierRequestParams) {
   CertVerifyResult dummy_result;
-  dummy_result.verified_cert = test_cert;
+  dummy_result.verified_cert = test_cert_;
   dummy_result.is_issued_by_known_root = true;
-  auto dummy_verifier = std::make_unique<MockCertVerifier>();
-  dummy_verifier->AddResultForCert(test_cert.get(), dummy_result, OK);
 
-  // Combine the mocked cert verify result with the results of the
-  // MultiLogCTVerifier.
-  std::vector<scoped_refptr<const CTLogVerifier>> log_verifiers;
-  scoped_refptr<const CTLogVerifier> log(
-      CTLogVerifier::Create(ct::GetTestPublicKey(), kLogDescription));
-  ASSERT_TRUE(log);
-  log_verifiers.push_back(log);
-  DoNothingLogNotifier notifier;
-  auto ct_verifier = std::make_unique<MultiLogCTVerifier>(&notifier);
-  ct_verifier->SetLogs(log_verifiers);
+  ParamRecordingMockCertVerifier dummy_verifier;
+  dummy_verifier.AddResultForCert(test_cert_.get(), dummy_result, OK);
 
-  CertAndCTVerifier cert_verifier(std::move(dummy_verifier),
-                                  std::move(ct_verifier));
-
-  ProofVerifierChromium proof_verifier(&cert_verifier, &ct_policy_enforcer_,
+  ProofVerifierChromium proof_verifier(&dummy_verifier, &ct_policy_enforcer_,
                                        &transport_security_state_, nullptr, {},
                                        NetworkAnonymizationKey());
 
-  auto callback = std::make_unique<DummyProofVerifierCallback>();
-  quic::QuicAsyncStatus status = proof_verifier.VerifyCertChain(
-      kTestHostname, kTestPort, certs_, kTestEmptyOCSPResponse,
-      ct::GetSCTListForTesting(), verify_context_.get(), &error_details_,
-      &details_, &tls_alert_, std::move(callback));
-  ASSERT_EQ(quic::QUIC_SUCCESS, status);
-  CheckSCT(/*sct_expected_ok=*/true);
-}
-
-// Invalid SCT, but valid cert
-TEST_F(ProofVerifierChromiumTest, InvalidSCTList) {
-  // Use different certificates for SCT tests.
-  ASSERT_NO_FATAL_FAILURE(GetSCTTestCertificates(&certs_));
-
-  std::string der_test_cert(ct::GetDerEncodedX509Cert());
-  scoped_refptr<X509Certificate> test_cert = X509Certificate::CreateFromBytes(
-      base::as_bytes(base::make_span(der_test_cert)));
-  ASSERT_TRUE(test_cert);
-  CertVerifyResult dummy_result;
-  dummy_result.verified_cert = test_cert;
-  dummy_result.is_issued_by_known_root = true;
-  auto dummy_verifier = std::make_unique<MockCertVerifier>();
-  dummy_verifier->AddResultForCert(test_cert.get(), dummy_result, OK);
-
-  // Combine the mocked cert verify result with the results of the
-  // MultiLogCTVerifier.
-  std::vector<scoped_refptr<const CTLogVerifier>> log_verifiers;
-  scoped_refptr<const CTLogVerifier> log(
-      CTLogVerifier::Create(ct::GetTestPublicKey(), kLogDescription));
-  ASSERT_TRUE(log);
-  log_verifiers.push_back(log);
-  DoNothingLogNotifier notifier;
-  auto ct_verifier = std::make_unique<MultiLogCTVerifier>(&notifier);
-  ct_verifier->SetLogs(log_verifiers);
-
-  CertAndCTVerifier cert_verifier(std::move(dummy_verifier),
-                                  std::move(ct_verifier));
-
-  ProofVerifierChromium proof_verifier(&cert_verifier, &ct_policy_enforcer_,
-                                       &transport_security_state_, nullptr, {},
-                                       NetworkAnonymizationKey());
+  const std::string kTestOcspResponse = "ocsp";
+  const std::string kTestSctList = "sct list";
 
   auto callback = std::make_unique<DummyProofVerifierCallback>();
   quic::QuicAsyncStatus status = proof_verifier.VerifyCertChain(
-      kTestHostname, kTestPort, certs_, kTestEmptyOCSPResponse,
-      ct::GetSCTListWithInvalidSCT(), verify_context_.get(), &error_details_,
-      &details_, &tls_alert_, std::move(callback));
+      kTestHostname, kTestPort, certs_, kTestOcspResponse, kTestSctList,
+      verify_context_.get(), &error_details_, &details_, &tls_alert_,
+      std::move(callback));
   ASSERT_EQ(quic::QUIC_SUCCESS, status);
-  CheckSCT(/*sct_expected_ok=*/false);
+  ASSERT_EQ(dummy_verifier.GetVerifyParams().size(), 1u);
+  const auto& params = dummy_verifier.GetVerifyParams().front();
+  EXPECT_TRUE(params.certificate()->EqualsIncludingChain(test_cert_.get()));
+  EXPECT_EQ(params.hostname(), kTestHostname);
+  EXPECT_EQ(params.ocsp_response(), kTestOcspResponse);
+  EXPECT_EQ(params.sct_list(), kTestSctList);
 }
 
 // Tests that the quic::ProofVerifier doesn't verify certificates if the config
