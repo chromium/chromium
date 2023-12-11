@@ -52,6 +52,10 @@ void PermissionPromptAndroid::Accept() {
   delegate_->Accept();
 }
 
+void PermissionPromptAndroid::AcceptThisTime() {
+  delegate_->AcceptThisTime();
+}
+
 void PermissionPromptAndroid::Deny() {
   delegate_->Deny();
 }

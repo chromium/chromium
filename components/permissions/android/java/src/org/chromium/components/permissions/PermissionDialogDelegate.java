@@ -37,11 +37,17 @@ public class PermissionDialogDelegate {
     /** Text shown in the dialog. */
     private String mMessageText;
 
-    /** Text shown on the primary button, e.g. "Allow". */
-    private String mPrimaryButtonText;
+    /** Text to display on the persistent grant button, e.g. "Allow". */
+    private String mPositiveButtonText;
 
-    /** Text shown on the secondary button, e.g. "Block". */
-    private String mSecondaryButtonText;
+    /** Text The text to display on the persistent deny button, e.g. "Block". */
+    private String mNegativeButtonText;
+
+    /**
+     * Text to display on the ephemeral grant button, e.g. "Allow this time". May be an empty string
+     * in which case the button should not be shown.
+     */
+    private String mPositiveEphemeralButtonText;
 
     /** The {@link ContentSettingsType}s requested in this dialog.  */
     private int[] mContentSettingsTypes;
@@ -54,6 +60,10 @@ public class PermissionDialogDelegate {
         return mContentSettingsTypes.clone();
     }
 
+    public boolean isOneTime() {
+        return !mPositiveEphemeralButtonText.isEmpty();
+    }
+
     public int getDrawableId() {
         return mDrawableId;
     }
@@ -62,12 +72,16 @@ public class PermissionDialogDelegate {
         return mMessageText;
     }
 
-    public String getPrimaryButtonText() {
-        return mPrimaryButtonText;
+    public String getPositiveButtonText() {
+        return mPositiveButtonText;
     }
 
-    public String getSecondaryButtonText() {
-        return mSecondaryButtonText;
+    public String getNegativeButtonText() {
+        return mNegativeButtonText;
+    }
+
+    public String getPositiveEphemeralButtonText() {
+        return mPositiveEphemeralButtonText;
     }
 
     public void onAccept() {
@@ -129,8 +143,10 @@ public class PermissionDialogDelegate {
      * @param contentSettingsTypes The content settings types requested by this dialog.
      * @param iconId The id of the icon to display in the dialog.
      * @param message The message to display in the dialog.
-     * @param primaryTextButton The text to display on the primary button.
-     * @param secondaryTextButton The text to display on the primary button.
+     * @param positiveButtonText The text to display on the persistent grant button.
+     * @param negativeButtonText The text to display on the persistent deny button.
+     * @param positiveEphemeralButtonText The text to display on the ephemeral grant button. May be
+     *     empty in which case only persistent grant and deny buttons are shown.
      */
     @CalledByNative
     private static PermissionDialogDelegate create(
@@ -139,16 +155,18 @@ public class PermissionDialogDelegate {
             int[] contentSettingsTypes,
             int iconId,
             String message,
-            String primaryButtonText,
-            String secondaryButtonText) {
+            String positiveButtonText,
+            String negativeButtonText,
+            String positiveEphemeralButtonText) {
         return new PermissionDialogDelegate(
                 nativeDelegatePtr,
                 window,
                 contentSettingsTypes,
                 iconId,
                 message,
-                primaryButtonText,
-                secondaryButtonText);
+                positiveButtonText,
+                negativeButtonText,
+                positiveEphemeralButtonText);
     }
 
     /** Upon construction, this class takes ownership of the passed in native delegate. */
@@ -158,20 +176,24 @@ public class PermissionDialogDelegate {
             int[] contentSettingsTypes,
             int iconId,
             String message,
-            String primaryButtonText,
-            String secondaryButtonText) {
+            String positiveButtonText,
+            String negativeButtonText,
+            String positiveEphemeralButtonText) {
         mNativeDelegatePtr = nativeDelegatePtr;
         mWindow = window;
         mContentSettingsTypes = contentSettingsTypes;
         mDrawableId = iconId;
         mMessageText = message;
-        mPrimaryButtonText = primaryButtonText;
-        mSecondaryButtonText = secondaryButtonText;
+        mPositiveButtonText = positiveButtonText;
+        mNegativeButtonText = negativeButtonText;
+        mPositiveEphemeralButtonText = positiveEphemeralButtonText;
     }
 
     @NativeMethods
     interface Natives {
         void accept(long nativePermissionDialogDelegate, PermissionDialogDelegate caller);
+
+        void acceptThisTime(long nativePermissionDialogDelegate, PermissionDialogDelegate caller);
 
         void cancel(long nativePermissionDialogDelegate, PermissionDialogDelegate caller);
 

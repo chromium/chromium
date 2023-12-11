@@ -9,6 +9,8 @@
 #include "components/permissions/android/jni_headers/PermissionDialogController_jni.h"
 #include "components/permissions/android/jni_headers/PermissionDialogDelegate_jni.h"
 #include "components/permissions/android/permission_prompt/permission_prompt_android.h"
+#include "components/permissions/features.h"
+#include "components/permissions/permission_util.h"
 #include "components/permissions/permissions_client.h"
 #include "components/strings/grit/components_strings.h"
 #include "content/public/browser/web_contents.h"
@@ -32,12 +34,32 @@ void PermissionDialogJavaDelegate::CreateJavaDelegate(
   // Create our Java counterpart, which manages the lifetime of
   // PermissionDialogDelegate.
   JNIEnv* env = base::android::AttachCurrentThread();
-  base::android::ScopedJavaLocalRef<jstring> primaryButtonText =
-      ConvertUTF16ToJavaString(env,
-                               l10n_util::GetStringUTF16(IDS_PERMISSION_ALLOW));
-  base::android::ScopedJavaLocalRef<jstring> secondaryButtonText =
-      ConvertUTF16ToJavaString(env,
-                               l10n_util::GetStringUTF16(IDS_PERMISSION_DENY));
+
+  bool isOneTime = PermissionUtil::CanPermissionBeAllowedOnce(
+      permission_prompt_->GetContentSettingType(0));
+
+  base::android::ScopedJavaLocalRef<jstring> positiveButtonText;
+  base::android::ScopedJavaLocalRef<jstring> negativeButtonText;
+  base::android::ScopedJavaLocalRef<jstring> positiveEphemeralButtonText;
+
+  if (isOneTime) {
+    positiveButtonText = ConvertUTF16ToJavaString(
+        env, l10n_util::GetStringUTF16(IDS_PERMISSION_ALLOW_EVERY_VISIT));
+    negativeButtonText = ConvertUTF16ToJavaString(
+        env, l10n_util::GetStringUTF16(
+                 permissions::feature_params::kUseStrongerPromptLanguage.Get()
+                     ? IDS_PERMISSION_NEVER_ALLOW
+                     : IDS_PERMISSION_DONT_ALLOW));
+    positiveEphemeralButtonText = ConvertUTF16ToJavaString(
+        env, l10n_util::GetStringUTF16(IDS_PERMISSION_ALLOW_THIS_TIME));
+  } else {
+    positiveButtonText = ConvertUTF16ToJavaString(
+        env, l10n_util::GetStringUTF16(IDS_PERMISSION_ALLOW));
+    negativeButtonText = ConvertUTF16ToJavaString(
+        env, l10n_util::GetStringUTF16(IDS_PERMISSION_DENY));
+    positiveEphemeralButtonText =
+        ConvertUTF16ToJavaString(env, base::StringPiece16());
+  }
 
   std::vector<int> content_settings_types;
   for (size_t i = 0; i < permission_prompt_->PermissionCount(); ++i) {
@@ -52,7 +74,7 @@ void PermissionDialogJavaDelegate::CreateJavaDelegate(
       PermissionsClient::Get()->MapToJavaDrawableId(
           permission_prompt_->GetIconId()),
       ConvertUTF16ToJavaString(env, permission_prompt_->GetMessageText()),
-      primaryButtonText, secondaryButtonText));
+      positiveButtonText, negativeButtonText, positiveEphemeralButtonText));
 }
 
 void PermissionDialogJavaDelegate::CreateDialog(
@@ -117,7 +139,7 @@ void PermissionDialogJavaDelegate::DismissDialog() {
 void PermissionDialogDelegate::Create(
     content::WebContents* web_contents,
     PermissionPromptAndroid* permission_prompt) {
-  DCHECK(web_contents);
+  CHECK(web_contents);
   // If we don't have a window, just act as though the prompt was dismissed.
   if (!web_contents->GetTopLevelNativeWindow()) {
     permission_prompt->Closing();
@@ -140,19 +162,26 @@ PermissionDialogDelegate* PermissionDialogDelegate::CreateForTesting(
 
 void PermissionDialogDelegate::Accept(JNIEnv* env,
                                       const JavaParamRef<jobject>& obj) {
-  DCHECK(permission_prompt_);
+  CHECK(permission_prompt_);
   permission_prompt_->Accept();
+}
+
+void PermissionDialogDelegate::AcceptThisTime(
+    JNIEnv* env,
+    const JavaParamRef<jobject>& obj) {
+  CHECK(permission_prompt_);
+  permission_prompt_->AcceptThisTime();
 }
 
 void PermissionDialogDelegate::Cancel(JNIEnv* env,
                                       const JavaParamRef<jobject>& obj) {
-  DCHECK(permission_prompt_);
+  CHECK(permission_prompt_);
   permission_prompt_->Deny();
 }
 
 void PermissionDialogDelegate::Dismissed(JNIEnv* env,
                                          const JavaParamRef<jobject>& obj) {
-  DCHECK(permission_prompt_);
+  CHECK(permission_prompt_);
   permission_prompt_->Closing();
 }
 
@@ -168,7 +197,7 @@ PermissionDialogDelegate::PermissionDialogDelegate(
     : content::WebContentsObserver(web_contents),
       permission_prompt_(permission_prompt),
       java_delegate_(std::move(java_delegate)) {
-  DCHECK(java_delegate_);
+  CHECK(java_delegate_);
 
   // Create our Java counterpart, which manages our lifetime.
   java_delegate_->CreateJavaDelegate(web_contents, this);
