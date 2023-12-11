@@ -189,10 +189,11 @@ export const MultiStepBehavior = {
 
 /** @interface */
 export class MultiStepBehaviorInterface {
+  /** @return {Object} */
+  get UI_STEPS() {}
   setUIStep(step) {}
   /** @return {string} */
   defaultUIStep() {}
-
   /** @return {string} */
   get uiStep() {}
 }

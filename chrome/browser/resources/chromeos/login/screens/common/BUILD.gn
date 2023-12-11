@@ -65,7 +65,6 @@ js_type_check("closure_compile_local") {
     ":theme_selection",
     ":touchpad_scroll",
     ":tpm_error",
-    ":user_creation",
   ]
 }
 
@@ -652,22 +651,6 @@ js_library("tpm_error") {
     "../../components/buttons:oobe_text_button",
     "../../components/dialogs:oobe_adaptive_dialog",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
-  ]
-  extra_deps = [ ":web_components" ]
-}
-
-js_library("user_creation") {
-  sources = [ "$root_gen_dir/chrome/browser/resources/chromeos/login/screens/common/user_creation.js" ]
-  deps = [
-    "../../components/behaviors:login_screen_behavior",
-    "../../components/behaviors:multi_step_behavior",
-    "../../components/behaviors:oobe_i18n_behavior",
-    "//ash/webui/common/resources:cr.m",
-    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
-  ]
-  externs_list = [
-    "//third_party/cros-components/externs/cros_lottie_renderer_externs.js",
-    "//ui/webui/resources/cr_elements/cr_toggle/cr_toggle_externs.js",
   ]
   extra_deps = [ ":web_components" ]
 }

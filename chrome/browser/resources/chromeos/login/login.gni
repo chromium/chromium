@@ -165,7 +165,7 @@ common_screens_js_files = [
   "screens/common/touchpad_scroll.js",
   "screens/common/tpm_error.js",
   "screens/common/user_allowlist_check_screen.js",
-  "screens/common/user_creation.js",
+  "screens/common/user_creation.ts",
   "screens/common/wrong_hwid.ts",
 ]
 

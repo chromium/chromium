@@ -2,6 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+// Some of the properties and class names doesn't follow naming convention.
+// Disable naming-convention checks.
+/* eslint-disable @typescript-eslint/naming-convention */
+
 import '//resources/cr_elements/chromeos/cros_color_overrides.css.js';
 import '//resources/cr_elements/cr_radio_button/cr_card_radio_button.js';
 import '//resources/cr_elements/cr_radio_group/cr_radio_group.js';
@@ -16,8 +20,9 @@ import '../../components/common_styles/cr_card_radio_group_styles.css.js';
 import '../../components/common_styles/oobe_dialog_host_styles.css.js';
 import '../../components/dialogs/oobe_adaptive_dialog.js';
 
-import {html, mixinBehaviors, PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
+import {loadTimeData} from '//resources/js/load_time_data.js';
+import {PolymerElementProperties} from '//resources/polymer/v3_0/polymer/interfaces.js';
+import {mixinBehaviors, PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {LoginScreenBehavior, LoginScreenBehaviorInterface} from '../../components/behaviors/login_screen_behavior.js';
 import {MultiStepBehavior, MultiStepBehaviorInterface} from '../../components/behaviors/multi_step_behavior.js';
@@ -28,83 +33,79 @@ import {Oobe} from '../../cr_ui.js';
 
 import {getTemplate} from './user_creation.html.js';
 
+export interface UserCreation {
+  $: {
+    learnMoreDialog: OobeModalDialog,
+    learnMoreLink: HTMLAnchorElement,
+  };
+}
 
-/**
- * @constructor
- * @extends {PolymerElement}
- * @implements {OobeI18nBehaviorInterface}
- * @implements {LoginScreenBehaviorInterface}
- * @implements {MultiStepBehaviorInterface}
- */
-const UserCreationScreenElementBase = mixinBehaviors(
-    [OobeI18nBehavior, LoginScreenBehavior, MultiStepBehavior], PolymerElement);
+export const UserCreationScreenElementBase =
+    mixinBehaviors(
+        [OobeI18nBehavior, LoginScreenBehavior, MultiStepBehavior],
+        PolymerElement) as {
+      new (): PolymerElement & OobeI18nBehaviorInterface &
+          LoginScreenBehaviorInterface & MultiStepBehaviorInterface,
+    };
 
 /**
  * UI mode for the dialog.
- * @enum {string}
  */
-const UserCreationUIState = {
-  CREATE: 'create',
-  ENROLL_TRIAGE: 'enroll-triage',
-  CHILD_SETUP: 'child-setup',
-};
+enum UserCreationUIState {
+  CREATE = 'create',
+  ENROLL_TRIAGE = 'enroll-triage',
+  CHILD_SETUP = 'child-setup',
+}
 
 /**
  * User type for setting up the device.
- * @enum {string}
  */
-const UserCreationUserType = {
-  SELF: 'self',
-  CHILD: 'child',
-  ENROLL: 'enroll',
-};
+enum UserCreationUserType {
+  SELF = 'self',
+  CHILD = 'child',
+  ENROLL = 'enroll',
+}
 
 /**
  * Enroll triage method for setting up the device.
- * @enum {string}
  */
-const EnrollTriageMethod = {
-  ENROLL: 'enroll',
-  SIGNIN: 'signin',
-};
+enum EnrollTriageMethod {
+  ENROLL = 'enroll',
+  SIGNIN = 'signin',
+}
 
 /**
  * Available user actions.
- * @enum {string}
  */
-const UserAction = {
-  SIGNIN: 'signin',
-  SIGNIN_TRIAGE: 'signin-triage',
-  SIGNIN_SCHOOL: 'signin-school',
-  ADD_CHILD: 'add-child',
-  ENROLL: 'enroll',
-  TRIAGE: 'triage',
-  CHILD_SETUP: 'child-setup',
-  CANCEL: 'cancel',
-};
+enum UserAction {
+  SIGNIN = 'signin',
+  SIGNIN_TRIAGE = 'signin-triage',
+  SIGNIN_SCHOOL = 'signin-school',
+  ADD_CHILD = 'add-child',
+  ENROLL = 'enroll',
+  TRIAGE = 'triage',
+  CHILD_SETUP = 'child-setup',
+  CANCEL = 'cancel',
+}
 
 /**
  * Enroll triage method for setting up the device.
- * @enum {string}
  */
-const ChildSetupMethod = {
-  CHILD_ACCOUNT: 'child-account',
-  SCHOOL_ACCOUNT: 'school-account',
-};
+enum ChildSetupMethod {
+  CHILD_ACCOUNT = 'child-account',
+  SCHOOL_ACCOUNT = 'school-account',
+}
 
-/**
- * @polymer
- */
-class UserCreation extends UserCreationScreenElementBase {
+export class UserCreation extends UserCreationScreenElementBase {
   static get is() {
-    return 'user-creation-element';
+    return 'user-creation-element' as const;
   }
 
-  static get template() {
+  static get template(): HTMLTemplateElement {
     return getTemplate();
   }
 
-  static get properties() {
+  static get properties(): PolymerElementProperties {
     return {
       /**
        * The currently selected user type.
@@ -131,18 +132,15 @@ class UserCreation extends UserCreationScreenElementBase {
       /**
        * Is the back button visible on the first step of the screen. Back button
        * is visible iff we are in the add person flow.
-       * @private
        */
       isBackButtonVisible_: {
         type: Boolean,
       },
 
-      /** @private */
       titleKey_: {
         type: String,
       },
 
-      /** @private */
       subtitleKey_: {
         type: String,
       },
@@ -155,17 +153,25 @@ class UserCreation extends UserCreationScreenElementBase {
         value() {
           return loadTimeData.getBoolean('isOobeSoftwareUpdateEnabled');
         },
+        readOnly: true,
       },
 
       /**
        * Indicates if all OOBE screens have been loaded, so that it's safe to
        * enable the Next and Back buttons.
        */
-      isOobeLoaded_: {
-        type: Boolean,
-      },
+      isOobeLoaded_: Boolean,
     };
   }
+
+  selectedUserType: string;
+  selectedEnrollTriageMethod: string;
+  selectedChildSetupMethod: string;
+  isBackButtonVisible_: boolean;
+  titleKey_: string;
+  subtitleKey_: string;
+  isOobeLoaded_: boolean;
+  private readonly isOobeSoftwareUpdateEnabled_: boolean;
 
   constructor() {
     super();
@@ -183,8 +189,7 @@ class UserCreation extends UserCreationScreenElementBase {
     this.isBackButtonVisible_ = false;
   }
 
-  /** @override */
-  get EXTERNAL_API() {
+  override get EXTERNAL_API(): string[] {
     return [
       'setIsBackButtonVisible',
       'setTriageStep',
@@ -192,16 +197,15 @@ class UserCreation extends UserCreationScreenElementBase {
     ];
   }
 
-  /** @override */
-  defaultUIStep() {
+  override defaultUIStep() {
     return UserCreationUIState.CREATE;
   }
 
-  get UI_STEPS() {
+  override get UI_STEPS() {
     return UserCreationUIState;
   }
 
-  onBeforeShow() {
+  onBeforeShow(): void {
     if (this.isOobeSoftwareUpdateEnabled_) {
       this.restoreOobeUIState();
       this.selectedUserType = '';
@@ -228,9 +232,9 @@ class UserCreation extends UserCreationScreenElementBase {
     }
   }
 
-  /** @override */
-  ready() {
+  override ready(): void {
     super.ready();
+    this.initializeLoginScreen('UserCreationScreen');
 
     if (loadTimeData.getBoolean('isOobeLazyLoadingEnabled')) {
       // The UserCreation screen is a priority screen, so it becomes visible
@@ -244,11 +248,9 @@ class UserCreation extends UserCreationScreenElementBase {
     } else {
       this.isOobeLoaded_ = true;
     }
-
-    this.initializeLoginScreen('UserCreationScreen');
   }
 
-  getOobeUIInitialState() {
+  override getOobeUIInitialState(): OOBE_UI_STATE {
     return OOBE_UI_STATE.USER_CREATION;
   }
 
@@ -256,7 +258,7 @@ class UserCreation extends UserCreationScreenElementBase {
   // ex: click for child -> choose google account -> AddChild Screen is shown
   // clicking back will display user creation screen with child setup step
   // and we need to restore the oobe ui state.
-  restoreOobeUIState() {
+  restoreOobeUIState(): void {
     if (this.uiStep === UserCreationUIState.ENROLL_TRIAGE) {
       Oobe.getInstance().setOobeUIState(OOBE_UI_STATE.ENROLL_TRIAGE);
     }
@@ -268,17 +270,17 @@ class UserCreation extends UserCreationScreenElementBase {
     }
   }
 
-  setIsBackButtonVisible(isVisible) {
+  setIsBackButtonVisible(isVisible: boolean): void {
     this.isBackButtonVisible_ = isVisible;
   }
 
-  cancel() {
+  cancel(): void {
     if (this.isBackButtonVisible_) {
       this.onBackClicked_();
     }
   }
 
-  onBackClicked_() {
+  private onBackClicked_(): void {
     if (this.uiStep === UserCreationUIState.ENROLL_TRIAGE ||
         this.uiStep === UserCreationUIState.CHILD_SETUP) {
       this.setUIStep(UserCreationUIState.CREATE);
@@ -289,11 +291,12 @@ class UserCreation extends UserCreationScreenElementBase {
     }
   }
 
-  isNextButtonEnabled_(selection, isOobeLoaded) {
-    return selection && isOobeLoaded;
+  private isNextButtonEnabled_(selection: string, isOobeLoaded: boolean):
+      boolean {
+    return selection !== '' && isOobeLoaded;
   }
 
-  onNextClicked_() {
+  private onNextClicked_(): void {
     if (this.uiStep === UserCreationUIState.CREATE) {
       if (this.selectedUserType === UserCreationUserType.SELF) {
         this.userActed(UserAction.SIGNIN);
@@ -309,25 +312,25 @@ class UserCreation extends UserCreationScreenElementBase {
     }
   }
 
-  onLearnMoreClicked_() {
+  private onLearnMoreClicked_(): void {
     this.$.learnMoreDialog.showDialog();
   }
 
-  focusLearnMoreLink_() {
+  private focusLearnMoreLink_(): void {
     this.$.learnMoreLink.focus();
   }
 
-  setTriageStep() {
+  setTriageStep(): void {
     Oobe.getInstance().setOobeUIState(OOBE_UI_STATE.ENROLL_TRIAGE);
     this.setUIStep(UserCreationUIState.ENROLL_TRIAGE);
   }
 
-  setChildSetupStep() {
+  setChildSetupStep(): void {
     this.setUIStep(UserCreationUIState.CHILD_SETUP);
     Oobe.getInstance().setOobeUIState(OOBE_UI_STATE.SETUP_CHILD);
   }
 
-  onTriageNextClicked_() {
+  private onTriageNextClicked_(): void {
     if (this.selectedEnrollTriageMethod === EnrollTriageMethod.ENROLL) {
       this.userActed(UserAction.ENROLL);
     } else if (this.selectedEnrollTriageMethod === EnrollTriageMethod.SIGNIN) {
@@ -335,7 +338,7 @@ class UserCreation extends UserCreationScreenElementBase {
     }
   }
 
-  onChildSetupNextClicked_() {
+  private onChildSetupNextClicked_(): void {
     if (this.selectedChildSetupMethod === ChildSetupMethod.CHILD_ACCOUNT) {
       this.userActed(UserAction.ADD_CHILD);
     } else if (
@@ -344,32 +347,39 @@ class UserCreation extends UserCreationScreenElementBase {
     }
   }
 
-  getPersonalCardLabel_(locale) {
+  private getPersonalCardLabel_(locale: string): string {
     if (this.isOobeSoftwareUpdateEnabled_) {
       return this.i18nDynamic(locale, 'userCreationPersonalButtonTitle');
     }
     return this.i18nDynamic(locale, 'createForSelfLabel');
   }
 
-  getPersonalCardText_(locale) {
+  private getPersonalCardText_(locale: string): string {
     if (this.isOobeSoftwareUpdateEnabled_) {
       return this.i18nDynamic(locale, 'userCreationPersonalButtonDescription');
     }
     return this.i18nDynamic(locale, 'createForSelfDescription');
   }
 
-  getChildCardLabel_(locale) {
+  private getChildCardLabel_(locale: string): string {
     if (this.isOobeSoftwareUpdateEnabled_) {
       return this.i18nDynamic(locale, 'userCreationChildButtonTitle');
     }
     return this.i18nDynamic(locale, 'createForChildLabel');
   }
 
-  getChildCardText_(locale) {
+  private getChildCardText_(locale: string): string {
     if (this.isOobeSoftwareUpdateEnabled_) {
       return this.i18nDynamic(locale, 'userCreationChildButtonDescription');
     }
     return this.i18nDynamic(locale, 'createForChildDescription');
   }
 }
+
+declare global {
+  interface HTMLElementTagNameMap {
+    [UserCreation.is]: UserCreation;
+  }
+}
+
 customElements.define(UserCreation.is, UserCreation);
