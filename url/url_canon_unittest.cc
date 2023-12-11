@@ -93,6 +93,36 @@ void SetupReplComp(
   }
 }
 
+bool CanonicalizeSpecialPath(const char* spec,
+                             const Component& path,
+                             CanonOutput* output,
+                             Component* out_path) {
+  return CanonicalizePath(spec, path, CanonMode::kSpecialURL, output, out_path);
+}
+
+bool CanonicalizeSpecialPath(const char16_t* spec,
+                             const Component& path,
+                             CanonOutput* output,
+                             Component* out_path) {
+  return CanonicalizePath(spec, path, CanonMode::kSpecialURL, output, out_path);
+}
+
+bool CanonicalizeNonSpecialPath(const char* spec,
+                                const Component& path,
+                                CanonOutput* output,
+                                Component* out_path) {
+  return CanonicalizePath(spec, path, CanonMode::kNonSpecialURL, output,
+                          out_path);
+}
+
+bool CanonicalizeNonSpecialPath(const char16_t* spec,
+                                const Component& path,
+                                CanonOutput* output,
+                                Component* out_path) {
+  return CanonicalizePath(spec, path, CanonMode::kNonSpecialURL, output,
+                          out_path);
+}
+
 }  // namespace
 
 TEST(URLCanonTest, DoAppendUTF8) {
@@ -1374,8 +1404,6 @@ DualComponentCase kCommonPathCases[] = {
      true},
     // Funny characters that are unescaped should be escaped
     {"/foo\tbar", L"/foo\tbar", "/foo%09bar", Component(0, 10), true},
-    // Backslashes should get converted to forward slashes
-    {"\\foo\\bar", L"\\foo\\bar", "/foo/bar", Component(0, 8), true},
     // Hashes found in paths (possibly only when the caller explicitly sets
     // the path on an already-parsed URL) should be escaped.
     {"/foo#bar", L"/foo#bar", "/foo%23bar", Component(0, 10), true},
@@ -1464,9 +1492,10 @@ void DoPathTest(const DualComponentCase* path_cases,
   }
 }
 
-TEST(URLCanonTest, Path) {
-  DoPathTest(kCommonPathCases, std::size(kCommonPathCases), CanonicalizePath,
-             CanonicalizePath);
+TEST(URLCanonTest, SpecialPath) {
+  // Common test cases
+  DoPathTest(kCommonPathCases, std::size(kCommonPathCases),
+             CanonicalizeSpecialPath, CanonicalizeSpecialPath);
 
   // Manual test: embedded NULLs should be escaped and the URL should be marked
   // as valid.
@@ -1476,10 +1505,42 @@ TEST(URLCanonTest, Path) {
 
   std::string out_str;
   StdStringCanonOutput output(&out_str);
-  bool success = CanonicalizePath(path_with_null, in_comp, &output, &out_comp);
+  bool success =
+      CanonicalizeSpecialPath(path_with_null, in_comp, &output, &out_comp);
   output.Complete();
   EXPECT_TRUE(success);
   EXPECT_EQ("/ab%00c", out_str);
+
+  // Test cases specific on special URLs.
+  DualComponentCase special_path_cases[] = {
+      // Canonical path for empty path is a slash.
+      {"", L"", "/", Component(0, 1), true},
+      // Backslashes should be used as path separators.
+      {"\\a\\b", L"\\a\\b", "/a/b", Component(0, 4), true},
+      {"/a\\..\\b", L"/a\\..\\b", "/b", Component(0, 2), true},
+      {"/a\\.\\b", L"/a\\.\\b", "/a/b", Component(0, 4), true},
+  };
+
+  DoPathTest(special_path_cases, std::size(special_path_cases),
+             CanonicalizeSpecialPath, CanonicalizePath);
+}
+
+TEST(URLCanonTest, NonSpecialPath) {
+  // Common test cases
+  DoPathTest(kCommonPathCases, std::size(kCommonPathCases),
+             CanonicalizeNonSpecialPath, CanonicalizeNonSpecialPath);
+
+  // Test cases specific on non-special URLs.
+  DualComponentCase non_special_path_cases[] = {
+      // Empty.
+      {"", L"", "", Component(0, 0), true},
+      // Backslashes.
+      {"/a\\..\\b", L"/a\\..\\b", "/a\\..\\b", Component(0, 7), true},
+      {"/a\\./b", L"/a\\./b", "/a\\./b", Component(0, 6), true},
+  };
+
+  DoPathTest(non_special_path_cases, std::size(non_special_path_cases),
+             CanonicalizeNonSpecialPath, CanonicalizeNonSpecialPath);
 }
 
 TEST(URLCanonTest, PartialPath) {

@@ -589,6 +589,23 @@ int DefaultPortForScheme(const char* scheme, int scheme_len);
 COMPONENT_EXPORT(URL)
 bool CanonicalizePath(const char* spec,
                       const Component& path,
+                      CanonMode canon_mode,
+                      CanonOutput* output,
+                      Component* out_path);
+COMPONENT_EXPORT(URL)
+bool CanonicalizePath(const char16_t* spec,
+                      const Component& path,
+                      CanonMode canon_mode,
+                      CanonOutput* output,
+                      Component* out_path);
+
+// Deprecated. Please pass CanonMode explicitly.
+//
+// These functions are also used in net/third_party code. So removing these
+// functions requires several steps.
+COMPONENT_EXPORT(URL)
+bool CanonicalizePath(const char* spec,
+                      const Component& path,
                       CanonOutput* output,
                       Component* out_path);
 COMPONENT_EXPORT(URL)

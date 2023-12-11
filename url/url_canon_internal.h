@@ -421,10 +421,12 @@ bool SetupUTF16OverrideComponents(const char* base,
 bool CanonicalizePartialPathInternal(const char* spec,
                                      const Component& path,
                                      size_t path_begin_in_output,
+                                     CanonMode canon_mode,
                                      CanonOutput* output);
 bool CanonicalizePartialPathInternal(const char16_t* spec,
                                      const Component& path,
                                      size_t path_begin_in_output,
+                                     CanonMode canon_mode,
                                      CanonOutput* output);
 
 // Find the position of a bona fide Windows drive letter in the given path. If

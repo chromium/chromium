@@ -306,13 +306,14 @@ int CopyBaseDriveSpecIfNecessary(const char* base_url,
 
 // A subroutine of DoResolveRelativeURL, this resolves the URL knowning that
 // the input is a relative path or less (query or ref).
-template<typename CHAR>
+template <typename CHAR>
 bool DoResolveRelativePath(const char* base_url,
                            const Parsed& base_parsed,
                            bool base_is_file,
                            const CHAR* relative_url,
                            const Component& relative_component,
                            CharsetConverter* query_converter,
+                           CanonMode canon_mode,
                            CanonOutput* output,
                            Parsed* out_parsed) {
   bool success = true;
@@ -365,7 +366,7 @@ bool DoResolveRelativePath(const char* base_url,
       CopyToLastSlash(base_url, base_path_begin, base_parsed.path.end(),
                       output);
       success &= CanonicalizePartialPathInternal(relative_url, path, path_begin,
-                                                 output);
+                                                 canon_mode, output);
       out_parsed->path = MakeRange(path_begin, output->length());
 
       // Copy the rest of the stuff after the path from the relative path.
@@ -564,9 +565,11 @@ bool DoResolveRelativeURL(const char* base_url,
   }
 
   // When we get here, we know that the relative URL is on the same host.
-  return DoResolveRelativePath(base_url, base_parsed, base_is_file,
-                               relative_url, relative_component,
-                               query_converter, output, out_parsed);
+  return DoResolveRelativePath(
+      base_url, base_parsed, base_is_file, relative_url, relative_component,
+      query_converter,
+      // TODO(crbug.com/1416006): Support Non-special URLs
+      CanonMode::kSpecialURL, output, out_parsed);
 }
 
 }  // namespace
