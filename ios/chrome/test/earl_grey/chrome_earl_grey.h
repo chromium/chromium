@@ -658,7 +658,7 @@ id<GREYAction> grey_longPressWithDuration(base::TimeDelta duration);
 
 // Returns cookies as key value pairs, where key is a cookie name and value is a
 // cookie value.
-// A GREYAssert is induced if cookies can not be returned.
+// If cookies can not be returned, returns nil and induces a GREYAssert.
 - (NSDictionary*)cookies;
 
 #pragma mark - Accessibility Utilities (EG2)
