@@ -21,3 +21,4 @@ Android.WebView.SitesVisitedWeekly
 Android.WebView.SafeMode.ActionName
 Android.WebView.SafeMode.SafeModeEnabled
 Android.WebView.SafeMode.ReceivedFix
+Autofill.WebView.Enabled
