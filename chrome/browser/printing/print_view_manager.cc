@@ -247,24 +247,13 @@ void PrintViewManager::PrintPreviewDone() {
 void PrintViewManager::RejectPrintPreviewRequestIfRestricted(
     content::GlobalRenderFrameHostId rfh_id,
     base::OnceCallback<void(bool should_proceed)> callback) {
-#if BUILDFLAG(IS_CHROMEOS) && BUILDFLAG(ENABLE_PRINT_CONTENT_ANALYSIS)
-  // Don't print DLP restricted content on Chrome OS, and use
-  // `OnDlpPrintingRestrictionsChecked` as a wrapper callback to proceed with
-  // scanning if needed afterwards.
-  policy::DlpContentManager::Get()->CheckPrintingRestriction(
-      web_contents(), rfh_id,
-      base::BindOnce(&PrintViewManager::OnDlpPrintingRestrictionsChecked,
-                     weak_factory_.GetWeakPtr(), rfh_id, std::move(callback)));
-#elif BUILDFLAG(IS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS)
   // Don't print DLP restricted content on Chrome OS, and use `callback`
   // directly since scanning isn't an option.
   policy::DlpContentManager::Get()->CheckPrintingRestriction(
       web_contents(), rfh_id, std::move(callback));
-#elif BUILDFLAG(ENABLE_PRINT_CONTENT_ANALYSIS)
-  RejectPrintPreviewRequestIfRestrictedByContentAnalysis(rfh_id,
-                                                         std::move(callback));
 #else
-  std::move(callback).Run(true);
+  std::move(callback).Run(/*should_proceed=*/true);
 #endif
 }
 
@@ -276,42 +265,6 @@ void PrintViewManager::OnPrintPreviewRequestRejected(
   PrintPreviewDone();
   PrintPreviewRejectedForTesting();
 }
-
-#if BUILDFLAG(ENABLE_PRINT_CONTENT_ANALYSIS)
-#if BUILDFLAG(IS_CHROMEOS)
-void PrintViewManager::OnDlpPrintingRestrictionsChecked(
-    content::GlobalRenderFrameHostId rfh_id,
-    base::OnceCallback<void(bool should_proceed)> callback,
-    bool should_proceed) {
-  if (!should_proceed) {
-    std::move(callback).Run(/*should_proceed=*/false);
-    return;
-  }
-
-  RejectPrintPreviewRequestIfRestrictedByContentAnalysis(rfh_id,
-                                                         std::move(callback));
-}
-#endif  // BUILDFLAG(IS_CHROMEOS)
-
-void PrintViewManager::RejectPrintPreviewRequestIfRestrictedByContentAnalysis(
-    content::GlobalRenderFrameHostId rfh_id,
-    base::OnceCallback<void(bool should_proceed)> callback) {
-  absl::optional<enterprise_connectors::ContentAnalysisDelegate::Data>
-      scanning_data = enterprise_data_protection::GetPrintAnalysisData(
-          web_contents(),
-          enterprise_data_protection::PrintScanningContext::kBeforePreview);
-  content::RenderFrameHost* rfh = content::RenderFrameHost::FromID(rfh_id);
-  if (rfh && scanning_data) {
-    GetPrintRenderFrame(rfh)->SnapshotForContentAnalysis(base::BindOnce(
-        &PrintViewManager::OnGotSnapshotCallback, weak_factory_.GetWeakPtr(),
-        std::move(callback), std::move(*scanning_data), rfh_id));
-    return;
-  }
-
-  std::move(callback).Run(/*should_proceed=*/true);
-}
-
-#endif  // BUILDFLAG(ENABLE_PRINT_CONTENT_ANALYSIS)
 
 void PrintViewManager::RenderFrameDeleted(
     content::RenderFrameHost* render_frame_host) {

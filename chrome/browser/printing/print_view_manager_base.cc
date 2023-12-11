@@ -165,19 +165,6 @@ std::string PrintMsgPrintParamsErrorDetails(const mojom::PrintParams& params) {
 }
 #endif  // BUILDFLAG(ENABLE_PRINT_PREVIEW)
 
-#if BUILDFLAG(ENABLE_PRINT_CONTENT_ANALYSIS)
-bool ContentAnalysisAfterDialog(
-    const enterprise_connectors::ContentAnalysisDelegate::Data& scanning_data) {
-  bool cloud_analysis_after_dialog =
-      scanning_data.settings.cloud_or_local_settings.is_cloud_analysis() &&
-      base::FeatureList::IsEnabled(
-          printing::features::kEnableCloudScanAfterPreview);
-  // Local content analysis is always after the dialog.
-  return cloud_analysis_after_dialog ||
-         scanning_data.settings.cloud_or_local_settings.is_local_analysis();
-}
-#endif
-
 }  // namespace
 
 PrintViewManagerBase::PrintViewManagerBase(content::WebContents* web_contents)
@@ -215,7 +202,11 @@ bool PrintViewManagerBase::PrintNow(content::RenderFrameHost* rfh) {
     return false;
   }
 
-  CompletePrintNow(rfh);
+  GetPrintRenderFrame(rfh)->PrintRequestedPages();
+
+  for (auto& observer : GetTestObservers()) {
+    observer.OnPrintNow(rfh);
+  }
   return true;
 }
 
@@ -829,19 +820,6 @@ void PrintViewManagerBase::ScriptedPrint(mojom::ScriptedPrintParamsPtr params,
           web_contents(), enterprise_data_protection::PrintScanningContext::
                               kBeforeSystemDialog);
   if (scanning_data) {
-    if (!ContentAnalysisAfterDialog(*scanning_data)) {
-      auto scanning_done_callback = base::BindOnce(
-          &PrintViewManagerBase::CompleteScriptedPrintAfterContentAnalysis,
-          weak_ptr_factory_.GetWeakPtr(), std::move(params),
-          std::move(callback));
-      set_analyzing_content(/*analyzing=*/true);
-      GetPrintRenderFrame(render_frame_host)
-          ->SnapshotForContentAnalysis(base::BindOnce(
-              &PrintViewManagerBase::OnGotSnapshotCallback,
-              weak_ptr_factory_.GetWeakPtr(), std::move(scanning_done_callback),
-              std::move(*scanning_data), render_frame_host->GetGlobalId()));
-      return;
-    }
     content_analysis_before_printing_document_ = base::BindOnce(
         &PrintViewManagerBase::ContentAnalysisBeforePrintingDocument,
         weak_ptr_factory_.GetWeakPtr(), std::move(*scanning_data));
@@ -1177,9 +1155,9 @@ bool PrintViewManagerBase::OpportunisticallyCreatePrintJob(int cookie) {
   }
 
 #if BUILDFLAG(ENABLE_PRINT_CONTENT_ANALYSIS)
-  // Don't start printing if the print job was created only for snapshotting,
-  // or if content analysis is going to take place right before starting
-  // `print_job_`.
+  // Don't start printing if enterprise checks are being performed to check if
+  // printing is allowed, or if content analysis is going to take place right
+  // before starting `print_job_`.
   if (analyzing_content_ || content_analysis_before_printing_document_) {
     return true;
   }
@@ -1298,14 +1276,6 @@ void PrintViewManagerBase::ReleasePrinterQuery() {
       queue_->PopPrinterQuery(current_cookie);
 }
 
-void PrintViewManagerBase::CompletePrintNow(content::RenderFrameHost* rfh) {
-  GetPrintRenderFrame(rfh)->PrintRequestedPages();
-
-  for (auto& observer : GetTestObservers()) {
-    observer.OnPrintNow(rfh);
-  }
-}
-
 void PrintViewManagerBase::CompleteScriptedPrint(
     content::RenderFrameHost* rfh,
     mojom::ScriptedPrintParamsPtr params,
@@ -1333,28 +1303,6 @@ void PrintViewManagerBase::CompleteScriptedPrint(
 }
 
 #if BUILDFLAG(ENABLE_PRINT_CONTENT_ANALYSIS)
-void PrintViewManagerBase::CompletePrintNowAfterContentAnalysis(bool allowed) {
-  if (!allowed || !printing_rfh_ || IsCrashed() ||
-      !printing_rfh_->IsRenderFrameLive()) {
-    return;
-  }
-
-  CompletePrintNow(printing_rfh_);
-}
-
-void PrintViewManagerBase::CompleteScriptedPrintAfterContentAnalysis(
-    mojom::ScriptedPrintParamsPtr params,
-    ScriptedPrintCallback callback,
-    bool allowed) {
-  set_analyzing_content(/*analyzing=*/false);
-  if (!allowed || !printing_rfh_ || IsCrashed() ||
-      !printing_rfh_->IsRenderFrameLive()) {
-    std::move(callback).Run(nullptr);
-    return;
-  }
-  CompleteScriptedPrint(printing_rfh_, std::move(params), std::move(callback));
-}
-
 void PrintViewManagerBase::CompletePrintDocumentAfterContentAnalysis(
     scoped_refptr<base::RefCountedMemory> print_data,
     const gfx::Size& page_size,
@@ -1369,66 +1317,6 @@ void PrintViewManagerBase::CompletePrintDocumentAfterContentAnalysis(
   }
   print_job_->StartPrinting();
   PrintDocument(print_data, page_size, content_area, offsets);
-}
-
-void PrintViewManagerBase::OnGotSnapshotCallback(
-    base::OnceCallback<void(bool should_proceed)> callback,
-    enterprise_connectors::ContentAnalysisDelegate::Data data,
-    content::GlobalRenderFrameHostId rfh_id,
-    mojom::DidPrintDocumentParamsPtr params) {
-  auto* rfh = content::RenderFrameHost::FromID(rfh_id);
-  if (!params || !rfh || !PrintJobHasDocument(params->document_cookie) ||
-      !params->content->metafile_data_region.IsValid()) {
-    TerminatePrintJob(/*cancel=*/true);
-    std::move(callback).Run(/*allowed=*/true);
-    return;
-  }
-
-  if (IsOopifEnabled() && print_job_->document()->settings().is_modifiable()) {
-    auto* client = PrintCompositeClient::FromWebContents(web_contents());
-    client->DoCompositeDocumentToPdf(
-        params->document_cookie, rfh, *params->content, ui::AXTreeUpdate(),
-        base::BindOnce(&PrintViewManagerBase::OnCompositedForContentAnalysis,
-                       weak_ptr_factory_.GetWeakPtr(), std::move(callback),
-                       std::move(data), rfh_id));
-    return;
-  }
-  OnCompositedForContentAnalysis(
-      std::move(callback), std::move(data), rfh_id,
-      mojom::PrintCompositor::Status::kSuccess,
-      std::move(params->content->metafile_data_region));
-}
-
-void PrintViewManagerBase::OnCompositedForContentAnalysis(
-    base::OnceCallback<void(bool should_proceed)> callback,
-    enterprise_connectors::ContentAnalysisDelegate::Data data,
-    content::GlobalRenderFrameHostId rfh_id,
-    mojom::PrintCompositor::Status status,
-    base::ReadOnlySharedMemoryRegion page_region) {
-  auto* rfh = content::RenderFrameHost::FromID(rfh_id);
-  if (!rfh || status != mojom::PrintCompositor::Status::kSuccess ||
-      !page_region.IsValid()) {
-    TerminatePrintJob(/*cancel=*/true);
-    std::move(callback).Run(true);
-    return;
-  }
-
-  // Reset the print job and `rfh` so the snapshotting doesn't affect the actual
-  // printing later.
-  TerminatePrintJob(/*cancel=*/true);
-  SetPrintingRFH(rfh);
-  data.page = std::move(page_region);
-
-  enterprise_connectors::ContentAnalysisDelegate::CreateForWebContents(
-      web_contents()->GetOutermostWebContents(), std::move(data),
-      base::BindOnce(
-          [](base::OnceCallback<void(bool should_proceed)> callback,
-             const enterprise_connectors::ContentAnalysisDelegate::Data& data,
-             enterprise_connectors::ContentAnalysisDelegate::Result& result) {
-            std::move(callback).Run(result.page_result);
-          },
-          std::move(callback)),
-      safe_browsing::DeepScanAccessPoint::PRINT);
 }
 
 void PrintViewManagerBase::ContentAnalysisBeforePrintingDocument(

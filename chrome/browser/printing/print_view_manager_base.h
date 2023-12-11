@@ -203,24 +203,6 @@ class PrintViewManagerBase : public PrintManager, public PrintJob::Observer {
                                      ScriptedPrintCallback callback);
 
 #if BUILDFLAG(ENABLE_PRINT_CONTENT_ANALYSIS)
-  // Helper method for scanning a page by sending requests and launching the
-  // scanning dialog as required. This helper is shared between system print
-  // scans and print preview scans. This method is virtual for testing purposes.
-  virtual void OnGotSnapshotCallback(
-      base::OnceCallback<void(bool should_proceed)> callback,
-      enterprise_connectors::ContentAnalysisDelegate::Data data,
-      content::GlobalRenderFrameHostId rfh_id,
-      mojom::DidPrintDocumentParamsPtr params);
-
-  // Helper method called after the snapshotted page has been composited into a
-  // scannable PDF document. This method is virtual for testing purposes.
-  virtual void OnCompositedForContentAnalysis(
-      base::OnceCallback<void(bool should_proceed)> callback,
-      enterprise_connectors::ContentAnalysisDelegate::Data data,
-      content::GlobalRenderFrameHostId rfh_id,
-      mojom::PrintCompositor::Status status,
-      base::ReadOnlySharedMemoryRegion page_region);
-
   // Helper method bound to `content_analysis_before_printing_document_` when
   // content analysis should happen right before the document is to be printed.
   // This method is virtual for testing purposes.
@@ -359,23 +341,7 @@ class PrintViewManagerBase : public PrintManager, public PrintJob::Observer {
   // Release the PrinterQuery associated with our `cookie_`.
   void ReleasePrinterQuery();
 
-  // Prints the document by calling the `PrintRequestedPages()` renderer API and
-  // notifies observers. This should only be called by `PrintNow()` or
-  // `CompletePrintNowAfterContentAnalysis()`.
-  void CompletePrintNow(content::RenderFrameHost* rfh);
-
 #if BUILDFLAG(ENABLE_PRINT_CONTENT_ANALYSIS)
-  // Helper for content analysis code that calls `CompletePrintNow()` if
-  // `allowed` is true and printing is still possible.
-  void CompletePrintNowAfterContentAnalysis(bool allowed);
-
-  // Helper for content analysis code that calls `CompleteScriptedPrint()` if
-  // `allowed` is true and printing is still possible.
-  void CompleteScriptedPrintAfterContentAnalysis(
-      mojom::ScriptedPrintParamsPtr params,
-      ScriptedPrintCallback callback,
-      bool allowed);
-
   // Helper method called after a verdict has been obtained from scanning
   // to-be-printed content, right before the actual `print_job_` starts.
   // Printing will proceed only if `allowed` is set to true, otherwise the print

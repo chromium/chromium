@@ -101,11 +101,5 @@ const base::FeatureParam<bool> kEnableOopPrintDriversSingleProcess{
 #endif
 #endif  // BUILDFLAG(ENABLE_OOP_PRINTING)
 
-#if BUILDFLAG(ENABLE_PRINT_CONTENT_ANALYSIS)
-BASE_FEATURE(kEnableCloudScanAfterPreview,
-             "EnableCloudScanAfterPreview",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-#endif  // BUILDFLAG(ENABLE_PRINT_CONTENT_ANALYSIS)
-
 }  // namespace features
 }  // namespace printing

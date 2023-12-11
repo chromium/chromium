@@ -268,10 +268,6 @@ class PrintRenderFrameHelper
   void PrintingDone(bool success) override;
   void ConnectToPdfRenderer() override;
   void PrintNodeUnderContextMenu() override;
-#if BUILDFLAG(ENABLE_PRINT_CONTENT_ANALYSIS)
-  void SnapshotForContentAnalysis(
-      SnapshotForContentAnalysisCallback callback) override;
-#endif  // BUILDFLAG(ENABLE_PRINT_CONTENT_ANALYSIS)
 
   // Update |ignore_css_margins_| based on settings.
   void UpdateFrameMarginsCssInfo(const base::Value::Dict& settings);
