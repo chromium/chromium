@@ -52671,17 +52671,6 @@ Called by update_scheduler_enums.py.-->
   <int value="13" label="Disable virtual keyboard"/>
 </enum>
 
-<enum name="WelcomeSignInPromptOutcome">
-  <int value="0" label="User navigated away from page"/>
-  <int value="1" label="User clicked the 'Get Started' button"/>
-  <int value="2" label="[Deprecated] User completed sign-in flow"/>
-  <int value="3"
-      label="[Deprecated] User attempted sign-in flow, then navigated away"/>
-  <int value="4"
-      label="[Deprecated] User attempted sign-in flow, then clicked No Thanks"/>
-  <int value="5" label="User clicked the 'Sign in' button"/>
-</enum>
-
 <enum name="WellKnownChangePasswordResult">
   <int value="0" label="Fallback to Origin"/>
   <int value="1" label="Fallback to Url Override"/>

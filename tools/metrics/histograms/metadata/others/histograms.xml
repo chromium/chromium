@@ -11715,17 +11715,6 @@ regressions. -->
   </summary>
 </histogram>
 
-<histogram name="Welcome.SignInPromptResult" enum="WelcomeSignInPromptOutcome"
-    expires_after="2021-08-29">
-  <owner>tmartino@chromium.org</owner>
-  <owner>msarda@chromium.org</owner>
-  <owner>droger@chromium.org</owner>
-  <owner>chrome-signin-team@google.com</owner>
-  <summary>
-    Records the result of promoting sign-in via the Welcome page.
-  </summary>
-</histogram>
-
 <histogram name="Welcome.Win10.DefaultPromptResult" enum="BooleanDefault"
     expires_after="M85">
   <owner>tmartino@chromium.org</owner>
