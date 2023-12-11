@@ -41,7 +41,7 @@ class CustomExtensionProvider : public ObservableProvider,
       const ContentSettingsPattern& secondary_pattern,
       ContentSettingsType content_type,
       base::Value&& value,
-      const ContentSettingConstraints& constraint = {},
+      const ContentSettingConstraints& constraints = {},
       const content_settings::PartitionKey& partition_key =
           content_settings::PartitionKey::WipGetDefault()) override;
 

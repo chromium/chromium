@@ -49,7 +49,7 @@ class DefaultProvider : public ObservableProvider {
                          const ContentSettingsPattern& secondary_pattern,
                          ContentSettingsType content_type,
                          base::Value&& value,
-                         const ContentSettingConstraints& constraint = {},
+                         const ContentSettingConstraints& constraints = {},
                          const PartitionKey& partition_key =
                              PartitionKey::WipGetDefault()) override;
 

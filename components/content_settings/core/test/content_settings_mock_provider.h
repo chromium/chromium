@@ -34,9 +34,9 @@ class MockProvider : public ObservableProvider {
                          const ContentSettingsPattern& embedding_url_pattern,
                          ContentSettingsType content_type,
                          base::Value&& value,
-                         const ContentSettingConstraints& constraint = {},
+                         const ContentSettingConstraints& constraints = {},
                          const PartitionKey& partition_key =
-                             PartitionKey::WipGetDefault()) override;
+                             PartitionKey::GetDefaultForTesting()) override;
 
   void ClearAllContentSettingsRules(
       ContentSettingsType content_type,
