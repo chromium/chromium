@@ -1,0 +1,19 @@
+EDITING DELEGATE: webViewDidChangeSelection:WebViewDidChangeSelectionNotification
+layer at (0,0)
+  LayoutView at (0,0) size 800x600
+layer at (0,0)
+  LayoutNGBlockFlow {HTML} at (0,0) size 800x600
+    LayoutNGBlockFlow {BODY} at (8,8) size 784x584
+      LayoutNGBlockFlow {P} at (0,0) size 784x36
+        LayoutText {#text} at (0,0) size 752x35
+          text run at (0,0) width 752: "This tests that the caret and the focus halo are not displayed when the WebView is not focused (using the pixel output"
+          text run at (0,18) width 160: "from DumpRenderTree)."
+      LayoutNGBlockFlow {DIV} at (0,52) size 784x18
+        LayoutText {#text} at (0,0) size 67x17
+          text run at (0,0) width 67: "This is an "
+        LayoutInline {SPAN} at (66,0) size 51x17
+          LayoutText {#text} at (66,0) size 51x17
+            text run at (66,0) width 51: "editable"
+        LayoutText {#text} at (116,0) size 414x17
+          text run at (116,0) width 414: " region. No caret or focus ring should appear in the pixel results."
+caret: position 11 of child 0 {#text} of child 3 {DIV} of body
