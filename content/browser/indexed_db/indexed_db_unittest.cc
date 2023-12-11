@@ -64,20 +64,22 @@ base::FilePath CreateAndReturnTempDir(base::ScopedTempDir* temp_dir) {
 class LevelDBLock {
  public:
   LevelDBLock() = default;
-  LevelDBLock(leveldb::Env* env, leveldb::FileLock* lock)
-      : env_(env), lock_(lock) {}
+  LevelDBLock(leveldb::Env* env, std::unique_ptr<leveldb::FileLock> lock)
+      : env_(env), lock_(std::move(lock)) {}
 
   LevelDBLock(const LevelDBLock&) = delete;
   LevelDBLock& operator=(const LevelDBLock&) = delete;
 
   ~LevelDBLock() {
-    if (env_)
-      env_->UnlockFile(lock_);
+    if (env_) {
+      // The call to UnlockFile assumes ownership of the lock.
+      env_->UnlockFile(lock_.release());
+    }
   }
 
  private:
   raw_ptr<leveldb::Env> env_ = nullptr;
-  raw_ptr<leveldb::FileLock, DanglingUntriaged> lock_ = nullptr;
+  std::unique_ptr<leveldb::FileLock> lock_;
 };
 
 std::unique_ptr<LevelDBLock> LockForTesting(const base::FilePath& file_name) {
@@ -88,7 +90,8 @@ std::unique_ptr<LevelDBLock> LockForTesting(const base::FilePath& file_name) {
   if (!status.ok())
     return nullptr;
   DCHECK(lock);
-  return std::make_unique<LevelDBLock>(env, lock);
+  return std::make_unique<LevelDBLock>(
+      env, std::unique_ptr<leveldb::FileLock>(lock));
 }
 
 }  // namespace
