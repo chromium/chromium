@@ -12041,31 +12041,30 @@
             ],
             "experiments": [
                 {
-                    "name": "Enabled_Both",
+                    "name": "Enabled_NoSyncRequirement_IgnoreWhenDebouncing_V2",
                     "params": {
                         "DocumentProviderBackoffOn401": "true",
                         "DocumentProviderIgnoreWhenDebouncing": "true"
                     },
                     "enable_features": [
-                        "OmniboxDocumentProviderNoSetting",
                         "OmniboxDocumentProviderNoSyncRequirement"
                     ]
                 },
                 {
-                    "name": "Enabled_NoSetting",
+                    "name": "Enabled_IgnoreWhenDebouncing_V2",
                     "params": {
                         "DocumentProviderBackoffOn401": "true",
                         "DocumentProviderIgnoreWhenDebouncing": "true"
                     },
-                    "enable_features": [
-                        "OmniboxDocumentProviderNoSetting"
+                    "disable_features": [
+                        "OmniboxDocumentProviderNoSyncRequirement"
                     ]
                 },
                 {
-                    "name": "Enabled_NoSyncRequirement",
+                    "name": "Enabled_NoSyncRequirement_V2",
                     "params": {
                         "DocumentProviderBackoffOn401": "true",
-                        "DocumentProviderIgnoreWhenDebouncing": "true"
+                        "DocumentProviderIgnoreWhenDebouncing": "false"
                     },
                     "enable_features": [
                         "OmniboxDocumentProviderNoSyncRequirement"
