@@ -21,6 +21,7 @@
 #import "components/autofill/ios/browser/credit_card_save_manager_test_observer_bridge.h"
 #import "components/autofill/ios/browser/ios_test_event_waiter.h"
 #import "components/keyed_service/core/service_access_type.h"
+#import "components/password_manager/core/browser/password_manager_util.h"
 #import "components/password_manager/core/browser/password_store/password_store_consumer.h"
 #import "components/password_manager/core/browser/password_store/password_store_interface.h"
 #import "ios/chrome/browser/autofill/model/personal_data_manager_factory.h"
@@ -128,7 +129,7 @@ void SaveExamplePasswordForm() {
   example.username_value = kExampleUsername;
   example.password_value = kExamplePassword;
   example.url = GURL("https://example.com/");
-  example.signon_realm = example.url.spec();
+  example.signon_realm = password_manager_util::GetSignonRealm(example.url);
   SaveToPasswordStore(example);
 }
 
@@ -138,7 +139,7 @@ void SaveLocalPasswordForm(const GURL& url) {
   localForm.username_value = kExampleUsername;
   localForm.password_value = kExamplePassword;
   localForm.url = url;
-  localForm.signon_realm = localForm.url.spec();
+  localForm.signon_realm = password_manager_util::GetSignonRealm(localForm.url);
   SaveToPasswordStore(localForm);
 }
 

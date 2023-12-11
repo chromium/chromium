@@ -305,6 +305,10 @@ class PasswordCounterDelegateBridge
   return _lastSeenParams.field_type == autofill::kPasswordFieldType;
 }
 
+- (const autofill::FormActivityParams&)lastSeenParams {
+  return _lastSeenParams;
+}
+
 #pragma mark - KeyboardNotification
 
 - (void)keyboardWillShow:(NSNotification*)notification {

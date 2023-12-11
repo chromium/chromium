@@ -17,6 +17,7 @@
 #import "base/time/time.h"
 #import "components/autofill/core/browser/personal_data_manager.h"
 #import "components/autofill/core/common/autofill_features.h"
+#import "components/autofill/ios/form_util/form_activity_params.h"
 #import "components/feature_engagement/public/feature_constants.h"
 #import "components/keyed_service/core/service_access_type.h"
 #import "components/password_manager/core/browser/manage_passwords_referrer.h"
@@ -253,13 +254,19 @@ const CGFloat kIPHVerticalOffset = -5;
   WebStateList* webStateList = self.browser->GetWebStateList();
   DCHECK(webStateList->GetActiveWebState());
   const GURL& URL = webStateList->GetActiveWebState()->GetLastCommittedURL();
+  autofill::FormActivityParams lastSeenParams =
+      self.formInputAccessoryMediator.lastSeenParams;
+
   ManualFillPasswordCoordinator* passwordCoordinator =
       [[ManualFillPasswordCoordinator alloc]
           initWithBaseViewController:self.baseViewController
                              browser:self.browser
                                  URL:URL
                     injectionHandler:self.injectionHandler
-              invokedOnPasswordField:invokedOnPasswordField];
+              invokedOnPasswordField:invokedOnPasswordField
+                              formID:lastSeenParams.unique_form_id
+                             frameID:lastSeenParams.frame_id];
+
   passwordCoordinator.delegate = self;
   if (ui::GetDeviceFormFactor() == ui::DEVICE_FORM_FACTOR_TABLET) {
     [passwordCoordinator presentFromButton:button];

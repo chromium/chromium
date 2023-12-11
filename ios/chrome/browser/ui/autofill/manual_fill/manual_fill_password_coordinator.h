@@ -5,9 +5,15 @@
 #ifndef IOS_CHROME_BROWSER_UI_AUTOFILL_MANUAL_FILL_MANUAL_FILL_PASSWORD_COORDINATOR_H_
 #define IOS_CHROME_BROWSER_UI_AUTOFILL_MANUAL_FILL_MANUAL_FILL_PASSWORD_COORDINATOR_H_
 
+#import <string>
+
 #import "ios/chrome/browser/ui/autofill/manual_fill/fallback_coordinator.h"
 
 class GURL;
+
+namespace autofill {
+class FormRendererId;
+}
 
 // Delegate for the coordinator actions.
 @protocol PasswordCoordinatorDelegate <FallbackCoordinatorDelegate>
@@ -36,13 +42,16 @@ class GURL;
 @property(nonatomic, weak) id<PasswordCoordinatorDelegate> delegate;
 
 // Creates a coordinator that uses a `viewController`, `browser`,
-// `URL` and an `injectionHandler`.
-- (instancetype)initWithBaseViewController:(UIViewController*)viewController
-                                   browser:(Browser*)browser
-                                       URL:(const GURL&)URL
-                          injectionHandler:
-                              (ManualFillInjectionHandler*)injectionHandler
-                    invokedOnPasswordField:(BOOL)invokedOnPasswordField
+// `URL`, an `injectionHandler` and relevant information related to the current
+// form.
+- (instancetype)
+    initWithBaseViewController:(UIViewController*)viewController
+                       browser:(Browser*)browser
+                           URL:(const GURL&)URL
+              injectionHandler:(ManualFillInjectionHandler*)injectionHandler
+        invokedOnPasswordField:(BOOL)invokedOnPasswordField
+                        formID:(const autofill::FormRendererId)formID
+                       frameID:(const std::string&)frameID
     NS_DESIGNATED_INITIALIZER;
 
 // Unavailable, use

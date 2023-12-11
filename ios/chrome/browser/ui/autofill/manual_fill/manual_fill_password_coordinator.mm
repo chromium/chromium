@@ -42,12 +42,14 @@
 // extends FallbackCoordinatorDelegate)
 @dynamic delegate;
 
-- (instancetype)initWithBaseViewController:(UIViewController*)viewController
-                                   browser:(Browser*)browser
-                                       URL:(const GURL&)URL
-                          injectionHandler:
-                              (ManualFillInjectionHandler*)injectionHandler
-                    invokedOnPasswordField:(BOOL)invokedOnPasswordField {
+- (instancetype)
+    initWithBaseViewController:(UIViewController*)viewController
+                       browser:(Browser*)browser
+                           URL:(const GURL&)URL
+              injectionHandler:(ManualFillInjectionHandler*)injectionHandler
+        invokedOnPasswordField:(BOOL)invokedOnPasswordField
+                        formID:(const autofill::FormRendererId)formID
+                       frameID:(const std::string&)frameID {
   self = [super initWithBaseViewController:viewController
                                    browser:browser
                           injectionHandler:injectionHandler];
@@ -55,12 +57,6 @@
     _passwordViewController =
         [[PasswordViewController alloc] initWithSearchController:nil];
 
-    auto profilePasswordStore =
-        IOSChromeProfilePasswordStoreFactory::GetForBrowserState(
-            browser->GetBrowserState(), ServiceAccessType::EXPLICIT_ACCESS);
-    auto accountPasswordStore =
-        IOSChromeAccountPasswordStoreFactory::GetForBrowserState(
-            browser->GetBrowserState(), ServiceAccessType::EXPLICIT_ACCESS);
     FaviconLoader* faviconLoader =
         IOSChromeFaviconLoaderFactory::GetForBrowserState(
             browser->GetBrowserState());
@@ -68,15 +64,12 @@
         SyncServiceFactory::GetForBrowserState(self.browser->GetBrowserState());
 
     _passwordMediator = [[ManualFillPasswordMediator alloc]
-        initWithProfilePasswordStore:profilePasswordStore
-                accountPasswordStore:accountPasswordStore
-                       faviconLoader:faviconLoader
-                            webState:browser->GetWebStateList()
-                                         ->GetActiveWebState()
-                         syncService:syncService
-                                 URL:URL
-              invokedOnPasswordField:invokedOnPasswordField];
-    [_passwordMediator fetchPasswords];
+         initWithFaviconLoader:faviconLoader
+                      webState:browser->GetWebStateList()->GetActiveWebState()
+                   syncService:syncService
+                           URL:URL
+        invokedOnPasswordField:invokedOnPasswordField];
+    [_passwordMediator fetchPasswordsForForm:formID frame:frameID];
     _passwordMediator.actionSectionEnabled = YES;
     _passwordMediator.consumer = _passwordViewController;
     _passwordMediator.navigator = self;
@@ -91,6 +84,10 @@
   [super stop];
   [self.activeChildCoordinator stop];
   [self.childCoordinators removeAllObjects];
+
+  [_passwordMediator disconnect];
+  _passwordMediator.consumer = nil;
+  _passwordMediator = nil;
 }
 
 - (void)presentFromButton:(UIButton*)button {

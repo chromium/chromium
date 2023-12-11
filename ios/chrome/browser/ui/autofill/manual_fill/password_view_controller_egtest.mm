@@ -7,6 +7,7 @@
 #import "base/strings/utf_string_conversions.h"
 #import "base/test/ios/wait_util.h"
 #import "components/password_manager/core/browser/password_ui_utils.h"
+#import "components/password_manager/core/common/password_manager_features.h"
 #import "components/strings/grit/components_strings.h"
 #import "components/sync/base/features.h"
 #import "ios/chrome/browser/signin/model/fake_system_identity.h"
@@ -127,6 +128,18 @@ void CheckPasswordManagerUIDismissesAfterFailedAuthentication(
       assertWithMatcher:grey_nil()];
 }
 
+// Checks that the password manual filling option is as expected and visible.
+void CheckPasswordFillingOptionIsVisible(NSString* site) {
+  [[EarlGrey selectElementWithMatcher:grey_text(site)]
+      assertWithMatcher:grey_sufficientlyVisible()];
+
+  [[EarlGrey selectElementWithMatcher:UsernameButtonMatcher()]
+      assertWithMatcher:grey_sufficientlyVisible()];
+
+  [[EarlGrey selectElementWithMatcher:ManualFallbackPasswordButtonMatcher()]
+      assertWithMatcher:grey_sufficientlyVisible()];
+}
+
 }  // namespace
 
 // Integration Tests for Mannual Fallback Passwords View Controller.
@@ -143,8 +156,7 @@ void CheckPasswordManagerUIDismissesAfterFailedAuthentication(
   [super setUp];
   GREYAssertTrue(self.testServer->Start(), @"Test server failed to start.");
   self.URL = self.testServer->GetURL(kFormHTMLFile);
-  [ChromeEarlGrey loadURL:self.URL];
-  [ChromeEarlGrey waitForWebStateContainingText:"hello!"];
+  [self loadLoginPage];
   [AutofillAppInterface saveExamplePasswordForm];
 
   // Mock successful reauth for opening the Password Manager.
@@ -174,11 +186,23 @@ void CheckPasswordManagerUIDismissesAfterFailedAuthentication(
     config.features_enabled.push_back(
         syncer::kReplaceSyncPromosWithSignInPromos);
   }
+  if ([self isRunningTest:@selector
+            (testPasswordControllerSupportsIFrameMessaging)] ||
+      [self isRunningTest:@selector
+            (testPasswordControllerPresentsUnsecureAlert)]) {
+    config.features_disabled.push_back(
+        password_manager::features::kIOSPasswordBottomSheet);
+  }
 
   config.features_enabled.push_back(
       password_manager::features::kIOSPasswordAuthOnEntryV2);
 
   return config;
+}
+
+- (void)loadLoginPage {
+  [ChromeEarlGrey loadURL:self.URL];
+  [ChromeEarlGrey waitForWebStateContainingText:"hello!"];
 }
 
 // Tests that the passwords view controller appears on screen.
@@ -282,9 +306,7 @@ void CheckPasswordManagerUIDismissesAfterFailedAuthentication(
 - (void)testManagePasswordsActionOpensPasswordSettingsInIncognito {
   // Open a tab in incognito.
   [ChromeEarlGrey openNewIncognitoTab];
-  self.URL = self.testServer->GetURL(kFormHTMLFile);
-  [ChromeEarlGrey loadURL:self.URL];
-  [ChromeEarlGrey waitForWebStateContainingText:"hello!"];
+  [self loadLoginPage];
 
   // Bring up the keyboard.
   [[EarlGrey selectElementWithMatcher:chrome_test_util::WebViewMatcher()]
@@ -310,9 +332,7 @@ void CheckPasswordManagerUIDismissesAfterFailedAuthentication(
 - (void)testManageSettingsActionOpensPasswordSettingsInIncognito {
   // Open a tab in incognito.
   [ChromeEarlGrey openNewIncognitoTab];
-  self.URL = self.testServer->GetURL(kFormHTMLFile);
-  [ChromeEarlGrey loadURL:self.URL];
-  [ChromeEarlGrey waitForWebStateContainingText:"hello!"];
+  [self loadLoginPage];
 
   // Bring up the keyboard.
   [[EarlGrey selectElementWithMatcher:chrome_test_util::WebViewMatcher()]
@@ -549,10 +569,12 @@ void CheckPasswordManagerUIDismissesAfterFailedAuthentication(
   [[EarlGrey selectElementWithMatcher:ConfirmUsingOtherPasswordButton()]
       performAction:grey_tap()];
 
-  // Verify the use other passwords opened.
+  // Verify the use other passwords opened and that the saved password is
+  // visible.
   [[EarlGrey
       selectElementWithMatcher:ManualFallbackOtherPasswordsDismissMatcher()]
       assertWithMatcher:grey_sufficientlyVisible()];
+  CheckPasswordFillingOptionIsVisible(/*site=*/@"example.com");
 
   // Tap the password search.
   [[EarlGrey selectElementWithMatcher:ManualFallbackPasswordSearchBarMatcher()]
@@ -689,10 +711,10 @@ void CheckPasswordManagerUIDismissesAfterFailedAuthentication(
 // Tests that content is injected in iframe messaging.
 - (void)testPasswordControllerSupportsIFrameMessaging {
   const GURL URL = self.testServer->GetURL(kIFrameHTMLFile);
-  [ChromeEarlGrey loadURL:URL];
-  [ChromeEarlGrey waitForWebStateContainingText:"iFrame"];
   NSString* URLString = base::SysUTF8ToNSString(URL.spec());
   [AutofillAppInterface savePasswordFormForURLSpec:URLString];
+  [ChromeEarlGrey loadURL:URL];
+  [ChromeEarlGrey waitForWebStateContainingText:"iFrame"];
 
   // Bring up the keyboard.
   [[EarlGrey selectElementWithMatcher:chrome_test_util::WebViewMatcher()]
@@ -709,6 +731,8 @@ void CheckPasswordManagerUIDismissesAfterFailedAuthentication(
   // Verify the password controller table view is visible.
   [[EarlGrey selectElementWithMatcher:ManualFallbackPasswordTableViewMatcher()]
       assertWithMatcher:grey_sufficientlyVisible()];
+  CheckPasswordFillingOptionIsVisible(
+      /*site=*/base::SysUTF8ToNSString(self.URL.host()));
 
   // Select a username.
   [[EarlGrey selectElementWithMatcher:UsernameButtonMatcher()]
@@ -725,10 +749,11 @@ void CheckPasswordManagerUIDismissesAfterFailedAuthentication(
 // Tests that an alert is shown when trying to fill a password in an unsecure
 // field.
 - (void)testPasswordControllerPresentsUnsecureAlert {
-  const GURL URL = self.testServer->GetURL(kFormHTMLFile);
   // Only Objc objects can cross the EDO portal.
-  NSString* URLString = base::SysUTF8ToNSString(URL.spec());
+  NSString* URLString = base::SysUTF8ToNSString(self.URL.spec());
   [AutofillAppInterface savePasswordFormForURLSpec:URLString];
+
+  [self loadLoginPage];
 
   // Bring up the keyboard.
   [[EarlGrey selectElementWithMatcher:chrome_test_util::WebViewMatcher()]
@@ -745,6 +770,8 @@ void CheckPasswordManagerUIDismissesAfterFailedAuthentication(
   // Verify the password controller table view is visible.
   [[EarlGrey selectElementWithMatcher:ManualFallbackPasswordTableViewMatcher()]
       assertWithMatcher:grey_sufficientlyVisible()];
+  CheckPasswordFillingOptionIsVisible(
+      /*site=*/base::SysUTF8ToNSString(self.URL.host()));
 
   // Select a password.
   [[EarlGrey selectElementWithMatcher:ManualFallbackPasswordButtonMatcher()]
@@ -784,9 +811,7 @@ void CheckPasswordManagerUIDismissesAfterFailedAuthentication(
   [ChromeEarlGrey waitForSyncEngineInitialized:YES
                                    syncTimeout:base::Seconds(10)];
 
-  const GURL URL = self.testServer->GetURL(kFormHTMLFile);
-  [ChromeEarlGrey loadURL:URL];
-  [ChromeEarlGrey waitForWebStateContainingText:"hello!"];
+  [self loadLoginPage];
 
   // Bring up the keyboard.
   [[EarlGrey selectElementWithMatcher:chrome_test_util::WebViewMatcher()]
@@ -821,9 +846,7 @@ void CheckPasswordManagerUIDismissesAfterFailedAuthentication(
   [ChromeEarlGrey waitForSyncEngineInitialized:YES
                                    syncTimeout:base::Seconds(10)];
 
-  const GURL URL = self.testServer->GetURL(kFormHTMLFile);
-  [ChromeEarlGrey loadURL:URL];
-  [ChromeEarlGrey waitForWebStateContainingText:"hello!"];
+  [self loadLoginPage];
 
   // Bring up the keyboard.
   [[EarlGrey selectElementWithMatcher:chrome_test_util::WebViewMatcher()]
@@ -862,9 +885,7 @@ void CheckPasswordManagerUIDismissesAfterFailedAuthentication(
   [[EarlGrey selectElementWithMatcher:SettingsDoneButton()]
       performAction:grey_tap()];
 
-  const GURL URL = self.testServer->GetURL(kFormHTMLFile);
-  [ChromeEarlGrey loadURL:URL];
-  [ChromeEarlGrey waitForWebStateContainingText:"hello!"];
+  [self loadLoginPage];
 
   // Bring up the keyboard.
   [[EarlGrey selectElementWithMatcher:chrome_test_util::WebViewMatcher()]
@@ -905,9 +926,7 @@ void CheckPasswordManagerUIDismissesAfterFailedAuthentication(
   [[EarlGrey selectElementWithMatcher:SettingsDoneButton()]
       performAction:grey_tap()];
 
-  const GURL URL = self.testServer->GetURL(kFormHTMLFile);
-  [ChromeEarlGrey loadURL:URL];
-  [ChromeEarlGrey waitForWebStateContainingText:"hello!"];
+  [self loadLoginPage];
 
   // Bring up the keyboard.
   [[EarlGrey selectElementWithMatcher:chrome_test_util::WebViewMatcher()]
