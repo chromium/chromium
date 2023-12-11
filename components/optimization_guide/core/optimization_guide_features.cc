@@ -48,10 +48,6 @@ constexpr auto enabled_by_default_mobile_only =
     base::FEATURE_DISABLED_BY_DEFAULT;
 #endif
 
-using RequestContextSet = base::EnumSet<proto::RequestContext,
-                                        proto::RequestContext_MIN,
-                                        proto::RequestContext_MAX>;
-
 // Returns whether |locale| is a supported locale for |feature|.
 //
 // This matches |locale| with the "supported_locales" feature param value in
@@ -122,25 +118,6 @@ bool IsSupportedCountryForFeature(const std::string& country_code,
         return base::EqualsCaseInsensitiveASCII(supported_country_code,
                                                 country_code);
       });
-}
-
-RequestContextSet GetAllowedContexts() {
-  RequestContextSet allowed_contexts;
-
-  if (!base::FeatureList::IsEnabled(kOptimizationGuidePersonalizedFetching)) {
-    return allowed_contexts;
-  }
-
-  std::string param = base::GetFieldTrialParamValueByFeature(
-      kOptimizationGuidePersonalizedFetching, "allowed_contexts");
-  for (const auto& context_str : base::SplitString(
-           param, ",", base::TRIM_WHITESPACE, base::SPLIT_WANT_NONEMPTY)) {
-    proto::RequestContext context;
-    if (proto::RequestContext_Parse(context_str, &context)) {
-      allowed_contexts.Put(context);
-    }
-  }
-  return allowed_contexts;
 }
 
 }  // namespace
@@ -602,14 +579,30 @@ bool ShouldPersistHintsToDisk() {
                                            "persist_hints_to_disk", true);
 }
 
-bool IsAllowedContextForPersonalizedMetadata(
-    proto::RequestContext request_context) {
-  const RequestContextSet allowed_contexts = GetAllowedContexts();
-  return allowed_contexts.Has(request_context);
-}
-
 bool ShouldEnablePersonalizedMetadata(proto::RequestContext request_context) {
-  static const RequestContextSet allowed_contexts = GetAllowedContexts();
+  if (!base::FeatureList::IsEnabled(kOptimizationGuidePersonalizedFetching)) {
+    return false;
+  }
+  using RequestContextSet =
+      base::EnumSet<proto::RequestContext, proto::RequestContext_MIN,
+                    proto::RequestContext_MAX>;
+
+  static const RequestContextSet allowed_contexts = []() -> RequestContextSet {
+    DCHECK(
+        base::FeatureList::IsEnabled(kOptimizationGuidePersonalizedFetching));
+    std::string param = base::GetFieldTrialParamValueByFeature(
+        kOptimizationGuidePersonalizedFetching, "allowed_contexts");
+    RequestContextSet allowed_contexts;
+    for (const auto& context_str : base::SplitString(
+             param, ",", base::TRIM_WHITESPACE, base::SPLIT_WANT_NONEMPTY)) {
+      proto::RequestContext context;
+      if (proto::RequestContext_Parse(context_str, &context)) {
+        allowed_contexts.Put(context);
+      }
+    }
+    return allowed_contexts;
+  }();
+
   return allowed_contexts.Has(request_context);
 }
 

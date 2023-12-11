@@ -291,11 +291,6 @@ bool ShouldOverrideOptimizationTargetDecisionForMetricsPurposes(
 COMPONENT_EXPORT(OPTIMIZATION_GUIDE_FEATURES)
 bool ShouldEnablePersonalizedMetadata(proto::RequestContext request_context);
 
-// Returns true if the allowed contexts contains |request_context|
-COMPONENT_EXPORT(OPTIMIZATION_GUIDE_FEATURES)
-bool IsAllowedContextForPersonalizedMetadata(
-    proto::RequestContext request_context);
-
 // Returns the minimum random delay before starting to fetch for prediction
 // models and host model features.
 COMPONENT_EXPORT(OPTIMIZATION_GUIDE_FEATURES)
