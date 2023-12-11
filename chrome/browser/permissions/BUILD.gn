@@ -21,6 +21,13 @@ source_set("permissions") {
     "notifications_engagement_service_factory.h",
     "notifications_permission_revocation_config.cc",
     "notifications_permission_revocation_config.h",
+    "one_time_permissions_tracker.cc",
+    "one_time_permissions_tracker.h",
+    "one_time_permissions_tracker_factory.cc",
+    "one_time_permissions_tracker_factory.h",
+    "one_time_permissions_tracker_helper.cc",
+    "one_time_permissions_tracker_helper.h",
+    "one_time_permissions_tracker_observer.h",
     "origin_keyed_permission_action_service_factory.cc",
     "origin_keyed_permission_action_service_factory.h",
     "permission_actions_history_factory.cc",
@@ -110,16 +117,6 @@ source_set("permissions") {
       "//components/messages/android",
       "//components/messages/android:feature_flags",
       "//ui/android",
-    ]
-  } else {
-    sources += [
-      "one_time_permissions_tracker.cc",
-      "one_time_permissions_tracker.h",
-      "one_time_permissions_tracker_factory.cc",
-      "one_time_permissions_tracker_factory.h",
-      "one_time_permissions_tracker_helper.cc",
-      "one_time_permissions_tracker_helper.h",
-      "one_time_permissions_tracker_observer.h",
     ]
   }
 

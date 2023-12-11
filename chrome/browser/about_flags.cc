@@ -8444,7 +8444,7 @@ const FeatureEntry kFeatureEntries[] = {
          features::kEnableMachineLearningModelLoaderWebPlatformApi)},
 
     {"one-time-permission", flag_descriptions::kOneTimePermissionName,
-     flag_descriptions::kOneTimePermissionDescription, kOsDesktop,
+     flag_descriptions::kOneTimePermissionDescription, kOsAll,
      FEATURE_VALUE_TYPE(permissions::features::kOneTimePermission)},
 
     {"improved-semantics-activity-indicators",

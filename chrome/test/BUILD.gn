@@ -6149,6 +6149,7 @@ test("unit_tests") {
     "../browser/content_settings/host_content_settings_map_unittest.cc",
     "../browser/content_settings/mock_settings_observer.cc",
     "../browser/content_settings/mock_settings_observer.h",
+    "../browser/content_settings/one_time_permission_provider_unittest.cc",
     "../browser/content_settings/page_specific_content_settings_unittest.cc",
     "../browser/content_settings/sound_content_setting_observer_unittest.cc",
     "../browser/custom_handlers/chrome_protocol_handler_registry_unittest.cc",
@@ -6507,7 +6508,6 @@ test("unit_tests") {
       # The test is disabled for Android. The respective functionality is currently not being used on
       # Android. We should enable this test when Android becomes supported.
       "../browser/content_extraction/inner_text_unittest.cc",
-      "../browser/content_settings/one_time_permission_provider_unittest.cc",
       "../browser/metrics/power/battery_discharge_reporter_unittest.cc",
       "../browser/performance_manager/metrics/metrics_provider_desktop_unittest.cc",
       "../browser/picture_in_picture/auto_pip_setting_helper_unittest.cc",

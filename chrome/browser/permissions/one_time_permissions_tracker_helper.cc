@@ -22,9 +22,11 @@ void OneTimePermissionsTrackerHelper::WebContentsDestroyed() {
     }
   }
 
+#if !BUILDFLAG(IS_ANDROID)
   resource_coordinator::TabLifecycleUnitExternal::FromWebContents(
       web_contents())
       ->RemoveTabLifecycleObserver(this);
+#endif  // !BUILDFLAG(IS_ANDROID)
   MediaCaptureDevicesDispatcher::GetInstance()
       ->GetMediaStreamCaptureIndicator()
       ->RemoveObserver(this);
@@ -98,8 +100,10 @@ OneTimePermissionsTrackerHelper::OneTimePermissionsTrackerHelper(
     : content::WebContentsObserver(web_contents),
       content::WebContentsUserData<OneTimePermissionsTrackerHelper>(
           *web_contents) {
+#if !BUILDFLAG(IS_ANDROID)
   resource_coordinator::TabLifecycleUnitExternal::FromWebContents(web_contents)
       ->AddTabLifecycleObserver(this);
+#endif  // !BUILDFLAG(IS_ANDROID)
   MediaCaptureDevicesDispatcher::GetInstance()
       ->GetMediaStreamCaptureIndicator()
       ->AddObserver(this);

@@ -64,9 +64,8 @@ HostContentSettingsMapFactory::HostContentSettingsMapFactory()
 #endif
 #if BUILDFLAG(IS_ANDROID)
   DependsOn(TemplateURLServiceFactory::GetInstance());
-#else
-  DependsOn(OneTimePermissionsTrackerFactory::GetInstance());
 #endif
+  DependsOn(OneTimePermissionsTrackerFactory::GetInstance());
 #if BUILDFLAG(ENABLE_EXTENSIONS)
   DependsOn(extensions::ContentSettingsService::GetFactoryInstance());
 #endif
@@ -181,7 +180,7 @@ scoped_refptr<RefcountedKeyedService>
         HostContentSettingsMap::INSTALLED_WEBAPP_PROVIDER,
         std::move(webapp_provider));
   }
-#else
+#endif  // defined (OS_ANDROID)
   if (base::FeatureList::IsEnabled(permissions::features::kOneTimePermission)) {
     auto one_time_permission_provider =
         std::make_unique<OneTimePermissionProvider>(
@@ -191,6 +190,5 @@ scoped_refptr<RefcountedKeyedService>
         HostContentSettingsMap::ONE_TIME_PERMISSION_PROVIDER,
         std::move(one_time_permission_provider));
   }
-#endif  // defined (OS_ANDROID)
   return settings_map;
 }

@@ -24,6 +24,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/synchronization/waitable_event.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/simple_test_clock.h"
 #include "base/time/clock.h"
 #include "build/build_config.h"
@@ -129,6 +130,9 @@ class TestGeolocationPermissionContextDelegate
 class GeolocationPermissionContextTests
     : public content::RenderViewHostTestHarness,
       public permissions::Observer {
+ public:
+  GeolocationPermissionContextTests();
+
  protected:
   // RenderViewHostTestHarness:
   void SetUp() override;
@@ -178,6 +182,7 @@ class GeolocationPermissionContextTests
   bool HasActivePrompt(content::WebContents* web_contents);
   void AcceptPrompt();
   void AcceptPrompt(content::WebContents* web_contents);
+  void AcceptPromptThisTime();
   void DenyPrompt();
   void ClosePrompt();
   std::u16string GetPromptText();
@@ -205,7 +210,13 @@ class GeolocationPermissionContextTests
   int num_permission_updates_ = 0;
   raw_ptr<ContentSettingsPattern> expected_primary_pattern_ = nullptr;
   raw_ptr<ContentSettingsPattern> expected_secondary_pattern_ = nullptr;
+
+  base::test::ScopedFeatureList feature_list_;
 };
+
+GeolocationPermissionContextTests::GeolocationPermissionContextTests() {
+  feature_list_.InitAndEnableFeature(permissions::features::kOneTimePermission);
+}
 
 PermissionRequestID GeolocationPermissionContextTests::RequestID(
     int request_id) {
@@ -307,10 +318,11 @@ void GeolocationPermissionContextTests::CheckTabContentsState(
   auto* content_settings =
       content_settings::PageSpecificContentSettings::GetForFrame(
           web_contents()->GetPrimaryMainFrame());
-
-  expected_content_setting == CONTENT_SETTING_BLOCK
-      ? content_settings->IsContentBlocked(ContentSettingsType::GEOLOCATION)
-      : content_settings->IsContentAllowed(ContentSettingsType::GEOLOCATION);
+  EXPECT_TRUE(
+      expected_content_setting == CONTENT_SETTING_BLOCK
+          ? content_settings->IsContentBlocked(ContentSettingsType::GEOLOCATION)
+          : content_settings->IsContentAllowed(
+                ContentSettingsType::GEOLOCATION));
 }
 
 std::unique_ptr<content::BrowserContext>
@@ -476,6 +488,13 @@ void GeolocationPermissionContextTests::AcceptPrompt(
   base::RunLoop().RunUntilIdle();
 }
 
+void GeolocationPermissionContextTests::AcceptPromptThisTime() {
+  PermissionRequestManager* manager =
+      PermissionRequestManager::FromWebContents(web_contents());
+  manager->AcceptThisTime();
+  base::RunLoop().RunUntilIdle();
+}
+
 void GeolocationPermissionContextTests::DenyPrompt() {
   PermissionRequestManager* manager =
       PermissionRequestManager::FromWebContents(web_contents());
@@ -556,7 +575,7 @@ TEST_F(GeolocationPermissionContextTests, GeolocationEnabledDisabled) {
   EXPECT_FALSE(HasActivePrompt());
 }
 
-TEST_F(GeolocationPermissionContextTests, AndroidEnabledCanPrompt) {
+TEST_F(GeolocationPermissionContextTests, AndroidEnabledCanPromptAndAccept) {
   GURL requesting_frame("https://www.example.com/geolocation");
   NavigateAndCommit(requesting_frame);
   RequestManagerDocumentLoadCompleted();
@@ -567,7 +586,32 @@ TEST_F(GeolocationPermissionContextTests, AndroidEnabledCanPrompt) {
   EXPECT_FALSE(HasActivePrompt());
   RequestGeolocationPermission(RequestID(0), requesting_frame, true);
   ASSERT_TRUE(HasActivePrompt());
+  base::HistogramTester histograms;
   AcceptPrompt();
+  histograms.ExpectUniqueSample("Permissions.Action.Geolocation",
+                                static_cast<int>(PermissionAction::GRANTED), 1);
+  CheckTabContentsState(requesting_frame, CONTENT_SETTING_ALLOW);
+  CheckPermissionMessageSent(0, true);
+}
+
+TEST_F(GeolocationPermissionContextTests,
+       AndroidEnabledCanPromptAndAcceptThisTime) {
+  GURL requesting_frame("https://www.example.com/geolocation");
+  NavigateAndCommit(requesting_frame);
+  RequestManagerDocumentLoadCompleted();
+  MockLocationSettings::SetLocationStatus(
+      /*has_android_coarse_location_permission=*/false,
+      /*has_android_fine_location_permission=*/false,
+      /*is_system_location_setting_enabled=*/true);
+  EXPECT_FALSE(HasActivePrompt());
+  RequestGeolocationPermission(RequestID(0), requesting_frame, true);
+  ASSERT_TRUE(HasActivePrompt());
+  base::HistogramTester histograms;
+  AcceptPromptThisTime();
+
+  histograms.ExpectUniqueSample(
+      "Permissions.Action.Geolocation",
+      static_cast<int>(PermissionAction::GRANTED_ONCE), 1);
   CheckTabContentsState(requesting_frame, CONTENT_SETTING_ALLOW);
   CheckPermissionMessageSent(0, true);
 }
@@ -877,7 +921,7 @@ TEST_F(GeolocationPermissionContextTests, LSDBackOffAcceptLSDResetsBackOff) {
   EXPECT_TRUE(RequestPermissionIsLSDShown(requesting_frame));
 }
 
-#endif
+#endif  // BUILDFLAG(IS_ANDROID)
 
 TEST_F(GeolocationPermissionContextTests, HashIsIgnored) {
   GURL url_a("https://www.example.com/geolocation#a");

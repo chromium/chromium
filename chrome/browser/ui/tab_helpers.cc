@@ -519,6 +519,9 @@ void TabHelpers::AttachTabHelpers(WebContents* web_contents) {
   v8_compile_hints::V8CompileHintsTabHelper::MaybeCreateForWebContents(
       web_contents);
   vr::VrTabHelper::CreateForWebContents(web_contents);
+  if (base::FeatureList::IsEnabled(permissions::features::kOneTimePermission)) {
+    OneTimePermissionsTrackerHelper::CreateForWebContents(web_contents);
+  }
 
   // NO! Do not just add your tab helper here. This is a large alphabetized
   // block; please insert your tab helper above in alphabetical order.
@@ -563,9 +566,6 @@ void TabHelpers::AttachTabHelpers(WebContents* web_contents) {
       web_contents,
       std::make_unique<JavaScriptTabModalDialogManagerDelegateDesktop>(
           web_contents));
-  if (base::FeatureList::IsEnabled(permissions::features::kOneTimePermission)) {
-    OneTimePermissionsTrackerHelper::CreateForWebContents(web_contents);
-  }
   ManagePasswordsUIController::CreateForWebContents(web_contents);
   if (PrivacySandboxPromptHelper::ProfileRequiresPrompt(profile)) {
     PrivacySandboxPromptHelper::CreateForWebContents(web_contents);
