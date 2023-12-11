@@ -1,4 +1,4 @@
-<style include="cr-hidden-style md-select">
+<style include="cr-hidden-style md-select animations">
   :host {
     --gap-between-sections_: 16px;
     --padding_: 20px;
@@ -69,6 +69,23 @@
     gap: 7px;
     overflow: auto;
     padding: 0 20px;
+  }
+
+  :host([enable-animations]) #consentHeading h1,
+  :host([enable-animations]) #consentContainer {
+    --compose-slide-in-distance: -8px;
+    animation: slide-in 250ms var(--compose-standard-easing) both,
+        fade-in 100ms linear 50ms both;
+  }
+
+  :host([enable-animations]) #closeButtonConsent,
+  :host([enable-animations]) #consentFooter {
+    animation: fade-in 100ms linear 100ms both;
+  }
+
+  :host([enable-animations]) #consentIconContainer {
+    animation: scale-in 250ms var(--compose-standard-easing) both;
+    transform-origin: top left;
   }
 
   #heading {

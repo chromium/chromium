@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import './animations.css.js';
 import './icons.html.js';
 import './strings.m.js';
 import './textarea.js';
@@ -83,7 +84,7 @@ export class ComposeAppElement extends ComposeAppElementBase {
         type: String,
         observer: 'onEditedInputChanged_',
       },
-      enableAnimations_: {
+      enableAnimations: {
         type: Boolean,
         value: loadTimeData.getBoolean('enableAnimations'),
         reflectToAttribute: true,
@@ -193,7 +194,7 @@ export class ComposeAppElement extends ComposeAppElementBase {
   }
 
   private apiProxy_: ComposeApiProxy = ComposeApiProxyImpl.getInstance();
-  private enableAnimations_: boolean;
+  enableAnimations: boolean;
   private eventTracker_: EventTracker = new EventTracker();
   private router_: ComposeDialogCallbackRouter = this.apiProxy_.getRouter();
   private showMainAppDialog_: boolean;

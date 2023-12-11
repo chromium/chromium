@@ -12,6 +12,7 @@ build_webui("build") {
     "textarea.ts",
   ]
   non_web_component_files = [ "compose_api_proxy.ts" ]
+  css_files = [ "animations.css" ]
   icons_html_files = [ "icons.html" ]
   ts_composite = true
   ts_deps = [
