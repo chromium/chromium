@@ -8,7 +8,6 @@ import android.util.SparseArray;
 
 import androidx.annotation.Nullable;
 
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.keyboard_accessory.data.CachedProviderAdapter;
 import org.chromium.chrome.browser.keyboard_accessory.data.ConditionalProviderAdapter;
 import org.chromium.chrome.browser.keyboard_accessory.data.KeyboardAccessoryData;
@@ -171,19 +170,15 @@ class ManualFillingState {
     }
 
     /**
-     * Wraps the given provider for sheet data in a {@link CachedProviderAdapter} and stores it.
+     * Wraps the given provider for sheet data in a {@link ConditionalProviderAdapter} and stores
+     * it.
+     *
      * @param provider A {@link PropertyProvider} providing sheet data.
      */
     void wrapSheetDataProvider(
             @AccessoryTabType int tabType, PropertyProvider<AccessorySheetData> provider) {
-        if (ChromeFeatureList.isEnabled(ChromeFeatureList.AUTOFILL_KEYBOARD_ACCESSORY)) {
-            // Don't use caching when the new keyboard accessory is enabled.
-            getStateFor(tabType).mDataProvider =
-                    new ConditionalProviderAdapter<>(provider, () -> mWebContentsShowing);
-            return;
-        }
         getStateFor(tabType).mDataProvider =
-                new CachedProviderAdapter<>(provider, null, this::onAdapterReceivedNewData);
+                new ConditionalProviderAdapter<>(provider, () -> mWebContentsShowing);
     }
 
     /**
@@ -195,18 +190,6 @@ class ManualFillingState {
     }
 
     /**
-     *  @deprecated Storing a sheet per WebContents is too expensive. Reuse the already constructed,
-     *              browser-scoped sheets in the {@link ManualFillingMediator} instead!
-     */
-    @Deprecated
-    void setAccessorySheet(
-            @AccessoryTabType int tabType, @Nullable AccessorySheetTabCoordinator sheet) {
-        assert !ChromeFeatureList.isEnabled(ChromeFeatureList.AUTOFILL_KEYBOARD_ACCESSORY)
-                : "Storing sheets in a WebContents-scoped cache is too expensive!";
-        getStateFor(tabType).mSheet = sheet;
-    }
-
-    /**
      * Makes a tab available to the state. If there is already a tab of the same state, this fails.
      * @param tab The @{@link KeyboardAccessoryData.Tab} to track.
      * @return True iff the tab was added. False if the a tab of that type was already added.
@@ -215,18 +198,6 @@ class ManualFillingState {
         if (mAvailableTabs.get(tab.getRecordingType(), null) != null) return false;
         mAvailableTabs.put(tab.getRecordingType(), tab);
         return true;
-    }
-
-    /**
-     *  @deprecated Storing a sheet per WebContents is too expensive. Reuse the already constructed,
-     *              browser-scoped sheets in the {@link ManualFillingMediator} instead!
-     */
-    @Deprecated
-    @Nullable
-    AccessorySheetTabCoordinator getAccessorySheet(@AccessoryTabType int tabType) {
-        assert !ChromeFeatureList.isEnabled(ChromeFeatureList.AUTOFILL_KEYBOARD_ACCESSORY)
-                : "Storing sheets in a WebContents-scoped cache is too expensive!";
-        return getStateFor(tabType).mSheet;
     }
 
     private void onAdapterReceivedNewData(CachedProviderAdapter adapter) {

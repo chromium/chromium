@@ -61,14 +61,6 @@ public class KeyboardAccessoryTabLayoutCoordinator {
          * @param activeTab The index of the active tab.
          */
         void onActiveTabChanged(Integer activeTab);
-
-        /**
-         * Called when an active tab is selected again. This only triggers if the selected tab is
-         * the {@link KeyboardAccessoryTabLayoutProperties#ACTIVE_TAB} in the tab layout model.
-         * Therefore, whenever {@link TabLayout.OnTabSelectedListener#onTabReselected} is called,
-         * either this function or {@link #onActiveTabChanged(Integer)} is called. Never both.
-         */
-        void onActiveTabReselected();
     }
 
     /**

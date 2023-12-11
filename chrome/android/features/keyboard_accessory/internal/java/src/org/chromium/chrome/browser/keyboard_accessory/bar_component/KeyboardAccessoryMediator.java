@@ -20,9 +20,7 @@ import androidx.annotation.Px;
 import androidx.annotation.StringRes;
 
 import org.chromium.base.TraceEvent;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.keyboard_accessory.AccessoryAction;
-import org.chromium.chrome.browser.keyboard_accessory.AccessorySheetTrigger;
 import org.chromium.chrome.browser.keyboard_accessory.ManualFillingMetricsRecorder;
 import org.chromium.chrome.browser.keyboard_accessory.R;
 import org.chromium.chrome.browser.keyboard_accessory.bar_component.KeyboardAccessoryCoordinator.BarVisibilityDelegate;
@@ -80,9 +78,7 @@ class KeyboardAccessoryMediator
         mModel.set(OBFUSCATED_CHILD_AT_CALLBACK, this::onSuggestionObfuscatedAt);
         mModel.set(SHEET_OPENER_ITEM, new SheetOpenerBarItem(sheetOpenerCallbacks));
         mModel.set(ANIMATION_LISTENER, mBarVisibilityDelegate::onBarFadeInAnimationEnd);
-        if (ChromeFeatureList.isEnabled(ChromeFeatureList.AUTOFILL_KEYBOARD_ACCESSORY)) {
-            mModel.get(BAR_ITEMS).add(mModel.get(SHEET_OPENER_ITEM));
-        }
+        mModel.get(BAR_ITEMS).add(mModel.get(SHEET_OPENER_ITEM));
         mModel.addObserver(this);
     }
 
@@ -100,9 +96,7 @@ class KeyboardAccessoryMediator
                     : "Autofill suggestions observer received wrong data: " + typeId;
             List<BarItem> retainedItems = collectItemsToRetain(AccessoryAction.AUTOFILL_SUGGESTION);
             retainedItems.addAll(toBarItems(suggestions, delegate));
-            if (ChromeFeatureList.isEnabled(ChromeFeatureList.AUTOFILL_KEYBOARD_ACCESSORY)) {
-                retainedItems.add(retainedItems.size(), mModel.get(SHEET_OPENER_ITEM));
-            }
+            retainedItems.add(retainedItems.size(), mModel.get(SHEET_OPENER_ITEM));
             mModel.get(BAR_ITEMS).set(retainedItems);
             mModel.set(HAS_SUGGESTIONS, barHasSuggestions());
         };
@@ -128,9 +122,7 @@ class KeyboardAccessoryMediator
         retainedItems.addAll(
                 typeId == AccessoryAction.CREDMAN_CONDITIONAL_UI_REENTRY ? retainedItems.size() : 0,
                 toBarItems(actions));
-        if (ChromeFeatureList.isEnabled(ChromeFeatureList.AUTOFILL_KEYBOARD_ACCESSORY)) {
-            retainedItems.add(retainedItems.size(), mModel.get(SHEET_OPENER_ITEM));
-        }
+        retainedItems.add(retainedItems.size(), mModel.get(SHEET_OPENER_ITEM));
         mModel.get(BAR_ITEMS).set(retainedItems);
         mModel.set(HAS_SUGGESTIONS, barHasSuggestions());
         TraceEvent.end("KeyboardAccessoryMediator#onItemAvailable");
@@ -287,26 +279,9 @@ class KeyboardAccessoryMediator
     @Override
     public void onActiveTabChanged(Integer activeTab) {
         if (activeTab == null) {
-            if (ChromeFeatureList.isEnabled(ChromeFeatureList.AUTOFILL_KEYBOARD_ACCESSORY)) return;
-            mSheetVisibilityDelegate.onCloseAccessorySheet();
             return;
         }
         mSheetVisibilityDelegate.onChangeAccessorySheet(activeTab);
-    }
-
-    @Override
-    public void onActiveTabReselected() {
-        closeSheet();
-    }
-
-    private void closeSheet() {
-        assert !ChromeFeatureList.isEnabled(ChromeFeatureList.AUTOFILL_KEYBOARD_ACCESSORY)
-                : "The bar cannot close the sheet when AUTOFILL_KEYBOARD_ACCESSORY is enabled. It"
-                        + " must be closed by the sheet.";
-        assert mTabSwitcher.getActiveTab() != null;
-        ManualFillingMetricsRecorder.recordSheetTrigger(
-                mTabSwitcher.getActiveTab().getRecordingType(), AccessorySheetTrigger.MANUAL_CLOSE);
-        mSheetVisibilityDelegate.onCloseAccessorySheet();
     }
 
     private void onSuggestionObfuscatedAt(Integer indexOfLast) {
@@ -325,10 +300,7 @@ class KeyboardAccessoryMediator
      * @return True if the bar contains any suggestions next to the tabs.
      */
     private boolean hasSuggestions() {
-        if (ChromeFeatureList.isEnabled(ChromeFeatureList.AUTOFILL_KEYBOARD_ACCESSORY)) {
-            return mModel.get(BAR_ITEMS).size() > 1; // Ignore tab switcher item.
-        }
-        return mModel.get(BAR_ITEMS).size() > 0;
+        return mModel.get(BAR_ITEMS).size() > 1; // Ignore tab switcher item.
     }
 
     void setBottomOffset(@Px int bottomOffset) {

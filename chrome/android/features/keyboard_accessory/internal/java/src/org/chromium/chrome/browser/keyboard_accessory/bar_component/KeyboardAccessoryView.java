@@ -22,7 +22,6 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import org.chromium.base.TraceEvent;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.keyboard_accessory.R;
 
 /**
@@ -214,10 +213,6 @@ class KeyboardAccessoryView extends LinearLayout {
 
         int pad =
                 getResources().getDimensionPixelSize(R.dimen.keyboard_accessory_horizontal_padding);
-        // Create margins between every element.
-        if (!ChromeFeatureList.isEnabled(ChromeFeatureList.AUTOFILL_KEYBOARD_ACCESSORY)) {
-            recyclerView.addItemDecoration(new HorizontalDividerItemDecoration(pad));
-        }
 
         // Remove all animations - the accessory shouldn't be visibly built anyway.
         recyclerView.setItemAnimator(null);

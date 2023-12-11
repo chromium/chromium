@@ -147,8 +147,6 @@ class KeyboardAccessoryTabLayoutMediator
     public void onTabReselected(TabLayout.Tab tab) {
         if (mModel.get(ACTIVE_TAB) == null) {
             mModel.set(ACTIVE_TAB, validateActiveTab(tab.getPosition()));
-        } else if (mAccessoryTabObserver != null) {
-            mAccessoryTabObserver.onActiveTabReselected();
         }
     }
 
