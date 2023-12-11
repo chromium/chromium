@@ -353,16 +353,11 @@ class CrossThreadOnceFunction<R(Args...)> {
   base::OnceCallback<R(Args...)> callback_;
 };
 
-// Note: now there is WTF::BindOnce()and WTF::BindRepeating(). See the comment
+// Note: now there is WTF::BindOnce() and WTF::BindRepeating(). See the comment
 // block above for the correct usage of those.
-template <
-    typename FunctionType,
-    typename... BoundParameters,
-    typename UnboundRunType =
-        base::internal::MakeUnboundRunType<FunctionType, BoundParameters...>>
-base::OnceCallback<UnboundRunType> BindOnce(
-    FunctionType&& function,
-    BoundParameters&&... bound_parameters) {
+template <typename FunctionType, typename... BoundParameters>
+// `auto` here deduces to an appropriate `base::OnceCallback<>`.
+auto BindOnce(FunctionType&& function, BoundParameters&&... bound_parameters) {
   static_assert(internal::CheckGCedTypeRestrictions<
                     std::index_sequence_for<BoundParameters...>,
                     std::decay_t<BoundParameters>...>::ok,
@@ -370,22 +365,17 @@ base::OnceCallback<UnboundRunType> BindOnce(
   auto cb = base::BindOnce(std::forward<FunctionType>(function),
                            std::forward<BoundParameters>(bound_parameters)...);
 #if DCHECK_IS_ON()
-  using WrapperType =
-      ThreadCheckingCallbackWrapper<base::OnceCallback<UnboundRunType>>;
+  using WrapperType = ThreadCheckingCallbackWrapper<decltype(cb)>;
   cb = base::BindOnce(&WrapperType::Run,
                       std::make_unique<WrapperType>(std::move(cb)));
 #endif
   return cb;
 }
 
-template <
-    typename FunctionType,
-    typename... BoundParameters,
-    typename UnboundRunType =
-        base::internal::MakeUnboundRunType<FunctionType, BoundParameters...>>
-base::RepeatingCallback<UnboundRunType> BindRepeating(
-    FunctionType function,
-    BoundParameters&&... bound_parameters) {
+template <typename FunctionType, typename... BoundParameters>
+// `auto` here deduces to an appropriate `base::RepeatingCallback<>`.
+auto BindRepeating(FunctionType function,
+                   BoundParameters&&... bound_parameters) {
   static_assert(internal::CheckGCedTypeRestrictions<
                     std::index_sequence_for<BoundParameters...>,
                     std::decay_t<BoundParameters>...>::ok,
@@ -393,8 +383,7 @@ base::RepeatingCallback<UnboundRunType> BindRepeating(
   auto cb = base::BindRepeating(
       function, std::forward<BoundParameters>(bound_parameters)...);
 #if DCHECK_IS_ON()
-  using WrapperType =
-      ThreadCheckingCallbackWrapper<base::RepeatingCallback<UnboundRunType>>;
+  using WrapperType = ThreadCheckingCallbackWrapper<decltype(cb)>;
   cb = base::BindRepeating(&WrapperType::Run,
                            std::make_unique<WrapperType>(std::move(cb)));
 #endif

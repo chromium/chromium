@@ -973,7 +973,6 @@ struct Invoker<StorageType, R(UnboundArgs...)> {
 };
 
 // Extracts necessary type info from Functor and BoundArgs.
-// Used to implement MakeUnboundRunType, BindOnce and BindRepeating.
 template <typename Functor, typename... BoundArgs>
 struct BindTypeHelper {
   static constexpr size_t num_bounds = sizeof...(BoundArgs);
@@ -1295,12 +1294,6 @@ using MakeBindStateType =
     MakeBindStateTypeImpl<MakeFunctorTraits<Functor>::is_method,
                           Functor,
                           BoundArgs...>;
-
-// Returns a RunType of bound functor.
-// E.g. MakeUnboundRunType<R(A, B, C), A, B> is evaluated to R(C).
-template <typename Functor, typename... BoundArgs>
-using MakeUnboundRunType =
-    typename BindTypeHelper<Functor, BoundArgs...>::UnboundRunType;
 
 // The implementation of TransformToUnwrappedType below.
 template <bool is_once, typename T>
@@ -1752,7 +1745,7 @@ struct BindHelper {
         MakeUnwrappedTypeList<kIsOnce, FunctorTraits::is_method, Args&&...>;
     using BoundParamsList = typename Helper::BoundParamsList;
     using BindStateType = MakeBindStateType<Functor, Args...>;
-    using UnboundRunType = MakeUnboundRunType<Functor, Args...>;
+    using UnboundRunType = Helper::UnboundRunType;
     using CallbackType = CallbackT<UnboundRunType>;
     if constexpr (std::conjunction_v<
                       NotFunctionRef<Functor>, IsStateless<Functor>,
