@@ -754,6 +754,10 @@ public final class ProductionSupportedFlagList {
                 ContentFeatures.BACK_FORWARD_CACHE_MEDIA_SESSION_SERVICE,
                 "Enables media session usage when bfcache is enabled"),
         Flag.baseFeature(
+                ContentFeatures.SELECTION_MENU_ITEM_MODIFICATION,
+                "Enables text selection menu item modification based on "
+                        + "embedder implementation."),
+        Flag.baseFeature(
                 AwFeatures.WEBVIEW_SUPERVISED_USER_SITE_DETECTION,
                 "Enable detection of the loading of mature sites on "
                         + "WebViews running on supervised user accounts"),

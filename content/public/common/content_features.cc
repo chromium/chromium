@@ -1293,6 +1293,13 @@ BASE_FEATURE(kRequestDesktopSiteZoom,
              "RequestDesktopSiteZoom",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Apply text selection menu order correction logic for Android.
+// TODO(https://crbug.com/1506484) This is a kill switch landed in M122.
+// Please remove after M124.
+BASE_FEATURE(kSelectionMenuItemModification,
+             "SelectionMenuItemModification",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
 // Send background signal to GPU stack for synchronous compositor.
 BASE_FEATURE(kSynchronousCompositorBackgroundSignal,
              "SynchronousCompositorBackgroundSignal",

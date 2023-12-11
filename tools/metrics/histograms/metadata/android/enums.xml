@@ -387,6 +387,11 @@ chromium-metrics-reviews@google.com.
   <int value="5" label="UNKNOWN_ERROR"/>
 </enum>
 
+<enum name="AndroidWebViewTextSelectionMenuOrdering">
+  <int value="0" label="Default"/>
+  <int value="1" label="Samsung"/>
+</enum>
+
 <enum name="AndroidXWebkitApiCall">
   <int value="0" label="ADD_WEB_MESSAGE_LISTENER">
     WebViewCompat#addWebMessageListener(WebView,String,List(String),WebMessageListener)
