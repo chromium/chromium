@@ -49,7 +49,7 @@ using has_unique_object_representations = std::is_arithmetic<T>;
 // and will not contribute a stable digest.
 template <
     typename T,
-    typename std::enable_if_t<std::is_same<T, base::remove_cvref_t<T>>::value &&
+    typename std::enable_if_t<std::is_same<T, std::remove_cvref_t<T>>::value &&
                               std::is_trivially_copyable<T>::value &&
                               has_unique_object_representations<T>::value &&
                               sizeof(T) <= sizeof(int64_t)>* = nullptr>

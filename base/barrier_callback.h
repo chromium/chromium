@@ -41,7 +41,7 @@ class BarrierCallbackInfo {
     --num_callbacks_left_;
 
     if (num_callbacks_left_ == 0) {
-      std::vector<base::remove_cvref_t<T>> results = std::move(results_);
+      std::vector<std::remove_cvref_t<T>> results = std::move(results_);
       lock.Release();
       std::move(done_callback_).Run(std::move(results));
     }
@@ -50,7 +50,7 @@ class BarrierCallbackInfo {
  private:
   Lock mutex_;
   size_t num_callbacks_left_ GUARDED_BY(mutex_);
-  std::vector<base::remove_cvref_t<T>> results_ GUARDED_BY(mutex_);
+  std::vector<std::remove_cvref_t<T>> results_ GUARDED_BY(mutex_);
   OnceCallback<void(DoneArg)> done_callback_;
 };
 
@@ -94,7 +94,7 @@ void ShouldNeverRun(T t) {
 // See also
 // https://chromium.googlesource.com/chromium/src/+/HEAD/docs/callback.md
 template <typename T,
-          typename RawArg = base::remove_cvref_t<T>,
+          typename RawArg = std::remove_cvref_t<T>,
           typename DoneArg = std::vector<RawArg>,
           template <typename>
           class CallbackType>

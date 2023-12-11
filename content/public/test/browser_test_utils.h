@@ -619,7 +619,7 @@ struct JsLiteralHelper<url::Origin> {
 template <typename... Args>
 base::Value ListValueOf(Args&&... args) {
   base::Value::List values;
-  (values.Append(JsLiteralHelper<base::remove_cvref_t<Args>>::Convert(
+  (values.Append(JsLiteralHelper<std::remove_cvref_t<Args>>::Convert(
        std::forward<Args>(args))),
    ...);
   return base::Value(std::move(values));

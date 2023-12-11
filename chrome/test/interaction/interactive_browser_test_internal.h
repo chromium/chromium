@@ -117,7 +117,7 @@ struct JsValueExtractor<std::string> {
 //
 template <typename T>
 struct JsResultChecker {
-  using V = base::remove_cvref_t<T>;
+  using V = std::remove_cvref_t<T>;
   using M = testing::Matcher<V>;
   static ui::InteractionSequence::StepBuilder CheckJsResult(
       ui::ElementIdentifier webcontents_id,
@@ -165,7 +165,7 @@ struct JsResultChecker<const char*> : public JsResultChecker<std::string> {};
 //
 template <template <typename...> typename M, typename T>
 struct JsResultChecker<M<T>> {
-  using E = JsValueExtractor<base::remove_cvref_t<T>>;
+  using E = JsValueExtractor<std::remove_cvref_t<T>>;
 
   static ui::InteractionSequence::StepBuilder CheckJsResult(
       ui::ElementIdentifier webcontents_id,
