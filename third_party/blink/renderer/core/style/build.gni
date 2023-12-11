@@ -135,6 +135,7 @@ blink_core_sources_style = [
 blink_core_tests_style = [
   "applied_text_decoration_test.cc",
   "computed_style_test.cc",
+  "filter_operation_test.cc",
   "filter_operations_test.cc",
   "inset_area_test.cc",
   "scoped_css_name_test.cc",
