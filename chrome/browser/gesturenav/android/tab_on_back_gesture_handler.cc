@@ -21,13 +21,12 @@ void TabOnBackGestureHandler::OnBackStarted(JNIEnv* env,
                                             float progress,
                                             int edge,
                                             bool forward) {
-  DCHECK(!is_in_progress_);
+  CHECK(!is_in_progress_);
   is_in_progress_ = true;
   content::WebContents* web_contents = tab_android_->web_contents();
-  DCHECK(web_contents);
-  ui::BackGestureEvent backEvent(
-      gfx::PointF(x, y), progress,
-      static_cast<ui::BackGestureEventSwipeEdge>(edge));
+  CHECK(web_contents);
+  ui::BackGestureEvent backEvent(gfx::PointF(x, y), progress);
+  started_edge_ = static_cast<ui::BackGestureEventSwipeEdge>(edge);
 }
 
 void TabOnBackGestureHandler::OnBackProgressed(JNIEnv* env,
@@ -35,19 +34,18 @@ void TabOnBackGestureHandler::OnBackProgressed(JNIEnv* env,
                                                float y,
                                                float progress,
                                                int edge) {
-  DCHECK(is_in_progress_);
-  ui::BackGestureEvent backEvent(
-      gfx::PointF(x, y), progress,
-      static_cast<ui::BackGestureEventSwipeEdge>(edge));
+  CHECK(is_in_progress_);
+  CHECK_EQ(started_edge_, static_cast<ui::BackGestureEventSwipeEdge>(edge));
+  ui::BackGestureEvent backEvent(gfx::PointF(x, y), progress);
 }
 
 void TabOnBackGestureHandler::OnBackCancelled(JNIEnv* env) {
-  DCHECK(is_in_progress_);
+  CHECK(is_in_progress_);
   is_in_progress_ = false;
 }
 
 void TabOnBackGestureHandler::OnBackInvoked(JNIEnv* env) {
-  DCHECK(is_in_progress_);
+  CHECK(is_in_progress_);
   is_in_progress_ = false;
 }
 
