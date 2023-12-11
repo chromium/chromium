@@ -1010,7 +1010,7 @@ bool FocusController::IsDocumentFocused(const Document& document) const {
   if (IsA<HTMLFrameOwnerElement>(focused_frame_->Owner())) {
     auto* fenced_frame = DynamicTo<HTMLFencedFrameElement>(
         To<HTMLFrameOwnerElement>(focused_frame_->Owner()));
-    if (fenced_frame == document.ActiveElement()) {
+    if (fenced_frame && fenced_frame == document.ActiveElement()) {
       return fenced_frame->GetDocument().GetFrame()->Tree().IsDescendantOf(
           document.GetFrame());
     }
