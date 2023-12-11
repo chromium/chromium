@@ -1,0 +1,34 @@
+[
+    {
+      "os": [
+        "chromeos_ash",
+        "chromeos_lacros"
+      ],
+      "policy_pref_mapping_tests": [
+        {
+          "policies": {},
+          "prefs": {
+            "policy.alwayson_vpn_pre_connect_url_allowlist": {
+              "default_value": []
+            }
+          }
+        },
+        {
+          "policies": {
+            "AlwaysOnVpnPreConnectUrlAllowlist": [
+              "google.com",
+              "example.com"
+            ]
+          },
+          "prefs": {
+            "policy.alwayson_vpn_pre_connect_url_allowlist": {
+              "value": [
+                "google.com",
+                "example.com"
+              ]
+            }
+          }
+        }
+      ]
+    }
+  ]

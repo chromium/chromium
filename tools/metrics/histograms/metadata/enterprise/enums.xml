@@ -1993,6 +1993,7 @@ chromium-metrics-reviews@google.com.
   <int value="1187" label="ComposeAllowed"/>
   <int value="1188" label="WallpaperSearchAllowed"/>
   <int value="1189" label="ListenToThisPageEnabled"/>
+  <int value="1190" label="AlwaysOnVpnPreConnectUrlAllowlist"/>
 </enum>
 
 <enum name="EnterprisePoliciesSources">

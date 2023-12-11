@@ -307,6 +307,9 @@ void URLBlocklistManager::RegisterProfilePrefs(
     user_prefs::PrefRegistrySyncable* registry) {
   registry->RegisterListPref(policy_prefs::kUrlBlocklist);
   registry->RegisterListPref(policy_prefs::kUrlAllowlist);
+#if BUILDFLAG(IS_CHROMEOS)
+  registry->RegisterListPref(policy_prefs::kAlwaysOnVpnPreConnectUrlAllowlist);
+#endif
   registry->RegisterIntegerPref(
       policy_prefs::kSafeSitesFilterBehavior,
       static_cast<int>(SafeSitesFilterBehavior::kSafeSitesFilterDisabled));

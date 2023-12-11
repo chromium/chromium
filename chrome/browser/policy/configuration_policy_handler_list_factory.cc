@@ -976,6 +976,10 @@ const PolicyToPreferenceMapEntry kSimplePolicyMap[] = {
   { key::kQuickOfficeForceFileDownloadEnabled,
     quickoffice::kQuickOfficeForceFileDownloadEnabled,
     base::Value::Type::BOOLEAN },
+  { key::kAlwaysOnVpnPreConnectUrlAllowlist,
+    policy_prefs::kAlwaysOnVpnPreConnectUrlAllowlist,
+    base::Value::Type::LIST
+  },
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
