@@ -24,7 +24,6 @@
 #include "net/cert/cert_verify_proc.h"
 #include "net/cert/cert_verify_proc_builtin.h"
 #include "net/cert/crl_set.h"
-#include "net/cert/do_nothing_ct_verifier.h"
 #include "net/cert/internal/system_trust_store.h"
 #include "net/cert/x509_certificate.h"
 #include "net/cert_net/cert_net_fetcher_url_request.h"
@@ -139,7 +138,6 @@ std::unique_ptr<CertVerifyImpl> CreateCertVerifyImplFromName(
         "CertVerifyProcBuiltin",
         net::CreateCertVerifyProcBuiltin(
             std::move(cert_net_fetcher), net::CRLSet::BuiltinCRLSet(),
-            std::make_unique<net::DoNothingCTVerifier>(),
             net::CreateSslSystemTrustStoreChromeRoot(
                 std::make_unique<net::TrustStoreChrome>()),
             {}));

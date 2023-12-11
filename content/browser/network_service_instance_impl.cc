@@ -808,8 +808,9 @@ namespace {
 cert_verifier::mojom::CertVerifierServiceFactory*
     g_cert_verifier_service_factory_for_testing = nullptr;
 
-std::unique_ptr<cert_verifier::CertVerifierServiceFactoryImpl>&
-GetCertVerifierServiceFactoryImplStorage() {
+void RunInProcessCertVerifierServiceFactory(
+    mojo::PendingReceiver<cert_verifier::mojom::CertVerifierServiceFactory>
+        receiver) {
 #if BUILDFLAG(IS_CHROMEOS)
   // See the comment in GetCertVerifierServiceFactory() for the thread-affinity
   // of the CertVerifierService.
@@ -822,13 +823,7 @@ GetCertVerifierServiceFactoryImplStorage() {
   static base::SequenceLocalStorageSlot<
       std::unique_ptr<cert_verifier::CertVerifierServiceFactoryImpl>>
       service_factory_slot;
-  return service_factory_slot.GetOrCreateValue();
-}
-
-void RunInProcessCertVerifierServiceFactory(
-    mojo::PendingReceiver<cert_verifier::mojom::CertVerifierServiceFactory>
-        receiver) {
-  GetCertVerifierServiceFactoryImplStorage() =
+  service_factory_slot.GetOrCreateValue() =
       std::make_unique<cert_verifier::CertVerifierServiceFactoryImpl>(
           std::move(receiver));
 }
@@ -885,22 +880,6 @@ GetCertVerifierServiceFactoryRemoteForTesting() {
 
   return GetCertVerifierServiceFactoryRemoteStorage();
 }
-
-cert_verifier::CertVerifierServiceFactoryImpl*
-GetCertVerifierServiceFactoryForTesting() {
-  // The same comment about CHECK(!g_cert_verifier_service_factory_for_testing)
-  // from GetCertVerifierServiceFactoryRemoteForTesting() applies here, but
-  // since this method could be called on the IO thread, it is not CHECKed here.
-
-  // TODO(https://crbug.com/1085233): This depends on the cert verifier service
-  // and the network service both being in the same process as the unit test.
-  // The network service is taken care of by `UnitTestTestSuite` calling
-  // `ForceCreateNetworkServiceDirectlyForTesting()`, but if the cert verifier
-  // service is moved to a separate process as well, something similar will
-  // need to be done for that to be testable.
-  return GetCertVerifierServiceFactoryImplStorage().get();
-}
-
 network::mojom::CertVerifierServiceRemoteParamsPtr GetCertVerifierParams(
     cert_verifier::mojom::CertVerifierCreationParamsPtr
         cert_verifier_creation_params) {

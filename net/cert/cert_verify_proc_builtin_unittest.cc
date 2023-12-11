@@ -5,7 +5,6 @@
 #include "net/cert/cert_verify_proc_builtin.h"
 
 #include "base/memory/raw_ptr.h"
-#include "base/memory/scoped_refptr.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/ranges/algorithm.h"
 #include "base/run_loop.h"
@@ -20,10 +19,8 @@
 #include "net/base/test_completion_callback.h"
 #include "net/cert/cert_verify_proc.h"
 #include "net/cert/crl_set.h"
-#include "net/cert/do_nothing_ct_verifier.h"
 #include "net/cert/ev_root_ca_metadata.h"
 #include "net/cert/internal/system_trust_store.h"
-#include "net/cert/sct_status_flags.h"
 #include "net/cert/time_conversions.h"
 #include "net/cert_net/cert_net_fetcher_url_request.h"
 #include "net/http/transport_security_state.h"
@@ -47,8 +44,6 @@
 
 using net::test::IsError;
 using net::test::IsOk;
-
-using testing::_;
 
 namespace net {
 
@@ -103,16 +98,16 @@ static std::string MakeRandomPath(base::StringPiece suffix) {
 int VerifyOnWorkerThread(const scoped_refptr<CertVerifyProc>& verify_proc,
                          scoped_refptr<X509Certificate> cert,
                          const std::string& hostname,
-                         const std::string& ocsp_response,
-                         const std::string& sct_list,
                          int flags,
                          CertVerifyResult* verify_result,
                          NetLogSource* out_source) {
   base::ScopedAllowBaseSyncPrimitivesForTesting scoped_allow_blocking;
   NetLogWithSource net_log(NetLogWithSource::Make(
       net::NetLog::Get(), net::NetLogSourceType::CERT_VERIFIER_TASK));
-  int error = verify_proc->Verify(cert.get(), hostname, ocsp_response, sct_list,
-                                  flags, verify_result, net_log);
+  int error = verify_proc->Verify(cert.get(), hostname,
+                                  /*ocsp_response=*/std::string(),
+                                  /*sct_list=*/std::string(), flags,
+                                  verify_result, net_log);
   *out_source = net_log.source();
   return error;
 }
@@ -162,16 +157,6 @@ class BlockingTrustStore : public bssl::TrustStore {
   bssl::TrustStoreInMemory backing_trust_store_;
 };
 
-class MockCTVerifier : public CTVerifier {
- public:
-  MOCK_CONST_METHOD5(Verify,
-                     void(X509Certificate*,
-                          base::StringPiece,
-                          base::StringPiece,
-                          SignedCertificateTimestampAndStatusList*,
-                          const NetLogWithSource&));
-};
-
 }  // namespace
 
 class CertVerifyProcBuiltinTest : public ::testing::Test {
@@ -193,34 +178,13 @@ class CertVerifyProcBuiltinTest : public ::testing::Test {
     mock_system_trust_store_ = mock_system_trust_store.get();
     CertVerifyProc::InstanceParams instance_params;
     instance_params.additional_trust_anchors = additional_trust_anchors;
-    auto mock_ct_verifier = std::make_unique<MockCTVerifier>();
-    mock_ct_verifier_ = mock_ct_verifier.get();
     verify_proc_ = CreateCertVerifyProcBuiltin(
         cert_net_fetcher_, CRLSet::EmptyCRLSetForTesting(),
-        std::move(mock_ct_verifier), std::move(mock_system_trust_store),
-        instance_params);
+        std::move(mock_system_trust_store), instance_params);
   }
 
   void Verify(scoped_refptr<X509Certificate> cert,
               const std::string& hostname,
-              int flags,
-              CertVerifyResult* verify_result,
-              NetLogSource* out_source,
-              CompletionOnceCallback callback) {
-    base::ThreadPool::PostTaskAndReplyWithResult(
-        FROM_HERE,
-        {base::MayBlock(), base::TaskShutdownBehavior::CONTINUE_ON_SHUTDOWN},
-        base::BindOnce(
-            &VerifyOnWorkerThread, verify_proc_, std::move(cert), hostname,
-            /*ocsp_response=*/std::string(),
-            /*sct_list=*/std::string(), flags, verify_result, out_source),
-        std::move(callback));
-  }
-
-  void Verify(scoped_refptr<X509Certificate> cert,
-              const std::string& hostname,
-              const std::string& ocsp_response,
-              const std::string& sct_list,
               int flags,
               CertVerifyResult* verify_result,
               NetLogSource* out_source,
@@ -229,8 +193,7 @@ class CertVerifyProcBuiltinTest : public ::testing::Test {
         FROM_HERE,
         {base::MayBlock(), base::TaskShutdownBehavior::CONTINUE_ON_SHUTDOWN},
         base::BindOnce(&VerifyOnWorkerThread, verify_proc_, std::move(cert),
-                       hostname, ocsp_response, sct_list, flags, verify_result,
-                       out_source),
+                       hostname, flags, verify_result, out_source),
         std::move(callback));
   }
 
@@ -264,8 +227,6 @@ class CertVerifyProcBuiltinTest : public ::testing::Test {
 
   net::URLRequestContext* context() { return context_.get(); }
 
-  MockCTVerifier* mock_ct_verifier() { return mock_ct_verifier_; }
-
  private:
   base::test::TaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME,
@@ -275,10 +236,9 @@ class CertVerifyProcBuiltinTest : public ::testing::Test {
   CertVerifier::Config config_;
   std::unique_ptr<net::URLRequestContext> context_;
 
-  // Must outlive `mock_ct_verifier_` and `mock_system_trust_store_`.
+  // Must outlive `mock_system_trust_store_`.
   scoped_refptr<CertVerifyProc> verify_proc_;
 
-  raw_ptr<MockCTVerifier> mock_ct_verifier_ = nullptr;
   raw_ptr<MockSystemTrustStore> mock_system_trust_store_ = nullptr;
   scoped_refptr<CertNetFetcherURLRequest> cert_net_fetcher_;
 };
@@ -340,63 +300,6 @@ TEST_F(CertVerifyProcBuiltinTest, SimpleSuccess) {
   EXPECT_THAT(histogram_tester.GetAllSamples(
                   "Net.CertVerifier.PathBuilderIterationCount"),
               testing::ElementsAre(base::Bucket(/*min=*/2, /*count=*/1)));
-}
-
-TEST_F(CertVerifyProcBuiltinTest, CallsCtVerifierAndReturnsSctStatus) {
-  auto [leaf, intermediate, root] = CertBuilder::CreateSimpleChain3();
-  InitializeVerifyProc(
-      /*additional_trust_anchors=*/{root->GetX509Certificate()});
-
-  const std::string kOcspResponse = "OCSP response";
-  const std::string kSctList = "SCT list";
-  const std::string kLogId = "CT log id";
-  const ct::SCTVerifyStatus kSctVerifyStatus = ct::SCT_STATUS_LOG_UNKNOWN;
-
-  SignedCertificateTimestampAndStatus sct_and_status;
-  sct_and_status.sct = base::MakeRefCounted<ct::SignedCertificateTimestamp>();
-  sct_and_status.sct->log_id = kLogId;
-  sct_and_status.status = kSctVerifyStatus;
-  SignedCertificateTimestampAndStatusList sct_and_status_list;
-  sct_and_status_list.push_back(sct_and_status);
-  EXPECT_CALL(*mock_ct_verifier(), Verify(_, kOcspResponse, kSctList, _, _))
-      .WillOnce(testing::SetArgPointee<3>(sct_and_status_list));
-
-  scoped_refptr<X509Certificate> chain = leaf->GetX509CertificateChain();
-  ASSERT_TRUE(chain.get());
-
-  base::HistogramTester histogram_tester;
-  CertVerifyResult verify_result;
-  NetLogSource verify_net_log_source;
-  TestCompletionCallback callback;
-  Verify(chain.get(), "www.example.com", kOcspResponse, kSctList, /*flags=*/0,
-         &verify_result, &verify_net_log_source, callback.callback());
-
-  int error = callback.WaitForResult();
-  EXPECT_THAT(error, IsOk());
-  ASSERT_EQ(verify_result.scts.size(), 1u);
-  EXPECT_EQ(verify_result.scts.front().status, kSctVerifyStatus);
-  EXPECT_EQ(verify_result.scts.front().sct->log_id, kLogId);
-}
-
-TEST_F(CertVerifyProcBuiltinTest, DoesNotCallsCtVerifierOnFailedPaths) {
-  // Chain where the root is not trusted.
-  auto [leaf, intermediate, root] = CertBuilder::CreateSimpleChain3();
-
-  EXPECT_CALL(*mock_ct_verifier(), Verify(_, _, _, _, _)).Times(0);
-
-  scoped_refptr<X509Certificate> chain = leaf->GetX509CertificateChain();
-  ASSERT_TRUE(chain.get());
-
-  base::HistogramTester histogram_tester;
-  CertVerifyResult verify_result;
-  NetLogSource verify_net_log_source;
-  TestCompletionCallback callback;
-  Verify(chain.get(), "www.example.com", /*flags=*/0, &verify_result,
-         &verify_net_log_source, callback.callback());
-
-  int error = callback.WaitForResult();
-  EXPECT_THAT(error, IsError(ERR_CERT_AUTHORITY_INVALID));
-  EXPECT_EQ(verify_result.scts.size(), 0u);
 }
 
 TEST_F(CertVerifyProcBuiltinTest, CRLNotCheckedForKnownRoots) {

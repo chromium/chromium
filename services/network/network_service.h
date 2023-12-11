@@ -78,6 +78,7 @@ class URLRequestContext;
 
 namespace network {
 
+class CtLogListDistributor;
 class DnsConfigChangeManager;
 class HttpAuthCacheCopier;
 class NetLogProxySink;
@@ -281,6 +282,12 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) NetworkService
     return cookie_crypto_delegate_.get();
   }
 
+#if BUILDFLAG(IS_CT_SUPPORTED)
+  CtLogListDistributor* ct_log_list_distributor() {
+    return ct_log_list_distributor_.get();
+  }
+#endif  // BUILDFLAG(IS_CT_SUPPORTED)
+
   FirstPartySetsManager* first_party_sets_manager() const {
     return first_party_sets_manager_.get();
   }
@@ -477,6 +484,8 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) NetworkService
   std::unique_ptr<SCTAuditingCache> sct_auditing_cache_;
 
   std::vector<mojom::CTLogInfoPtr> log_list_;
+
+  std::unique_ptr<CtLogListDistributor> ct_log_list_distributor_;
 
   base::Time ct_log_list_update_time_;
 

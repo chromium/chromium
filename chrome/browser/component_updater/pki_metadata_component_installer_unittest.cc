@@ -15,15 +15,14 @@
 #include "chrome/browser/browser_features.h"
 #include "chrome/browser/net/key_pinning.pb.h"
 #include "components/certificate_transparency/certificate_transparency_config.pb.h"
+#include "components/certificate_transparency/ct_known_logs.h"
 #include "components/component_updater/component_installer.h"
 #include "components/component_updater/mock_component_updater_service.h"
 #include "content/public/browser/network_service_instance.h"
 #include "content/public/test/browser_task_environment.h"
 #include "net/base/features.h"
-#include "net/cert/cert_verify_proc.h"
 #include "net/http/transport_security_state.h"
 #include "net/net_buildflags.h"
-#include "services/cert_verifier/cert_verifier_service_factory.h"
 #include "services/network/network_service.h"
 #include "services/network/public/mojom/ct_log_info.mojom.h"
 #include "services/network/sct_auditing/sct_auditing_cache.h"
@@ -47,7 +46,7 @@ const char kLogSPKIBase64[] =
     "Iyrq1REXsoc/O0HVCXQXKP1/g6mduco4wA57lH1BSJrSet5Rc8NyR5g7zR8FPzXvav+eErLwd"
     "RsVdo4HNxlBlrc50CqkbsNFg2hdU1uCbbzRHKAF5Ih/NGdFkQZ9N+pPbTcpA8z5mWyjo6cCAw"
     "EAAQ==";
-const char kLogIdBase64[] = "KHWaS8pa+aGJCk5BUfi+NfHcNTRSlVLLQ8/A3d3QN3w=";
+const char kLogIdBase64[] = "ASNFZ4mrze8QERITFBUWFxgZGhscHR4f";
 constexpr uint64_t kLogMMDSeconds = 42;
 const char kLogURL[] = "https://futuregadgetlab.jp";
 const char kLogName[] = "FutureGadgetLog2022";
@@ -450,25 +449,14 @@ TEST_F(PKIMetadataComponentInstallerTest, InstallComponentUpdatesCTConfig) {
   EXPECT_FALSE(cache->IsPopularSCT(std::vector<const uint8_t>{1, 2, 3, 4}));
 
   EXPECT_TRUE(network_service->is_ct_enforcement_enabled_for_testing());
-
-  cert_verifier::CertVerifierServiceFactoryImpl* cert_verifier_service_factory =
-      content::GetCertVerifierServiceFactoryForTesting();
-  ASSERT_TRUE(cert_verifier_service_factory);
-  const net::CertVerifyProc::ImplParams& impl_params =
-      cert_verifier_service_factory->get_impl_params();
-  ASSERT_EQ(impl_params.ct_logs.size(), 2u);
-  EXPECT_EQ(impl_params.ct_logs[0]->key_id(), expected_log_id);
-  EXPECT_EQ(impl_params.ct_logs[0]->description(), kLogName);
-  EXPECT_EQ(impl_params.ct_logs[1]->key_id(), expected_log_id);
-  EXPECT_EQ(impl_params.ct_logs[1]->description(), kGoogleLogName);
 }
 
 // Tests that installing the PKI Metadata component bails out if the CT proto is
 // invalid.
 TEST_F(PKIMetadataComponentInstallerTest, InstallComponentInvalidCTProto) {
-  // Initialize the network service and cert verifier service factory.
+  // Initialize the network service.
   content::GetNetworkService();
-  content::GetCertVerifierServiceFactory();
+  task_environment_.RunUntilIdle();
 
   // Write an invalid ct_config.pb.
   ASSERT_TRUE(component_install_dir_.CreateUniqueTempDir());
@@ -490,22 +478,14 @@ TEST_F(PKIMetadataComponentInstallerTest, InstallComponentInvalidCTProto) {
       network_service->log_list();
   EXPECT_EQ(logs.size(), 0u);
   EXPECT_TRUE(network_service->is_ct_enforcement_enabled_for_testing());
-
-  cert_verifier::CertVerifierServiceFactoryImpl* cert_verifier_service_factory =
-      content::GetCertVerifierServiceFactoryForTesting();
-  ASSERT_TRUE(cert_verifier_service_factory);
-  const net::CertVerifyProc::ImplParams& impl_params =
-      cert_verifier_service_factory->get_impl_params();
-  EXPECT_EQ(impl_params.ct_logs.size(), 0u);
 }
 
 // Tests that installing the PKI Metadata component does not update the CT log
 // list if its compatibility version exceeds the value supported.
 TEST_F(PKIMetadataComponentInstallerTest,
        InstallComponentIncompatibleCTVersion) {
-  // Initialize the network service and cert verifier service factory.
+  // Initialize the network service.
   content::GetNetworkService();
-  content::GetCertVerifierServiceFactory();
   task_environment_.RunUntilIdle();
 
   // Change the version to an unsupported values.
@@ -527,23 +507,14 @@ TEST_F(PKIMetadataComponentInstallerTest,
       network_service->log_list();
   EXPECT_EQ(logs.size(), 0u);
   EXPECT_TRUE(network_service->is_ct_enforcement_enabled_for_testing());
-
-  cert_verifier::CertVerifierServiceFactoryImpl* cert_verifier_service_factory =
-      content::GetCertVerifierServiceFactoryForTesting();
-  ASSERT_TRUE(cert_verifier_service_factory);
-  const net::CertVerifyProc::ImplParams& impl_params =
-      cert_verifier_service_factory->get_impl_params();
-  EXPECT_EQ(impl_params.ct_logs.size(), 0u);
 }
 
 // Tests that calling |ReconfigureAfterNetworkRestart| is a no-op if the
 // component has not been installed.
 TEST_F(PKIMetadataComponentInstallerTest, ReconfigureWhenNotInstalled) {
-  // Initialize the network service and cert verifier service factory.
+  // Initialize the network service.
   content::GetNetworkService();
-  content::GetCertVerifierServiceFactory();
   task_environment_.RunUntilIdle();
-
   PKIMetadataComponentInstallerService::GetInstance()
       ->ReconfigureAfterNetworkRestart();
 
@@ -554,13 +525,6 @@ TEST_F(PKIMetadataComponentInstallerTest, ReconfigureWhenNotInstalled) {
   const std::vector<network::mojom::CTLogInfoPtr>& logs =
       network_service->log_list();
   EXPECT_EQ(logs.size(), 0u);
-
-  cert_verifier::CertVerifierServiceFactoryImpl* cert_verifier_service_factory =
-      content::GetCertVerifierServiceFactoryForTesting();
-  ASSERT_TRUE(cert_verifier_service_factory);
-  const net::CertVerifyProc::ImplParams& impl_params =
-      cert_verifier_service_factory->get_impl_params();
-  EXPECT_EQ(impl_params.ct_logs.size(), 0u);
 }
 #endif  // BUILDFLAG(IS_CT_SUPPORTED)
 

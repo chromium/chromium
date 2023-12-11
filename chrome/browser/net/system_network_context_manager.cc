@@ -719,17 +719,13 @@ void SystemNetworkContextManager::OnNetworkServiceCreated(
   gssapi_library_loader_observer_.Install(network_service);
 #endif  // BUILDFLAG(IS_LINUX)
 
-  // Configure the static Certificate Transparency logs. This must be done
-  // before the PKIMetadataComponentInstallerService
-  // ReconfigureAfterNetworkRestart call below.
+  // Configure the Certificate Transparency logs.
   if (IsCertificateTransparencyEnabled()) {
     std::vector<std::string> operated_by_google_logs =
         certificate_transparency::GetLogsOperatedByGoogle();
     std::vector<std::pair<std::string, base::Time>> disqualified_logs =
         certificate_transparency::GetDisqualifiedLogs();
     std::vector<network::mojom::CTLogInfoPtr> log_list_mojo;
-    std::vector<network::mojom::CTLogInfoPtr>
-        log_list_mojo_clone_network_service;
     for (const auto& ct_log : certificate_transparency::GetKnownLogs()) {
       network::mojom::CTLogInfoPtr log_info = network::mojom::CTLogInfo::New();
       log_info->public_key = std::string(ct_log.log_key, ct_log.log_key_length);
@@ -759,13 +755,10 @@ void SystemNetworkContextManager::OnNetworkServiceCreated(
         log_info->previous_operators.push_back(std::move(previous_operator));
       }
 
-      log_list_mojo_clone_network_service.push_back(log_info.Clone());
       log_list_mojo.push_back(std::move(log_info));
     }
-    content::GetCertVerifierServiceFactory()->UpdateCtLogList(
-        std::move(log_list_mojo), base::DoNothing());
     network_service->UpdateCtLogList(
-        std::move(log_list_mojo_clone_network_service),
+        std::move(log_list_mojo),
         certificate_transparency::GetLogListTimestamp(), base::DoNothing());
   }
 

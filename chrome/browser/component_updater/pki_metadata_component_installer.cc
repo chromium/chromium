@@ -224,9 +224,6 @@ void PKIMetadataComponentInstallerService::UpdateNetworkServiceCTListOnUI(
       content::GetNetworkService();
 
   if (proto->disable_ct_enforcement()) {
-    // TODO(https://crbug.com/848277): when CT enforcement is moved to the cert
-    // verifier service, the killswitch also needs to be moved to the cert
-    // verifier service.
     network_service->SetCtEnforcementEnabled(
         false,
         base::BindOnce(
@@ -240,11 +237,7 @@ void PKIMetadataComponentInstallerService::UpdateNetworkServiceCTListOnUI(
     return;
   }
 
-  // TODO(https://crbug.com/848277): Log info needs to be sent to both network
-  // service and cert verifier service. Finish refactoring so that it is only
-  // sent to cert verifier service.
   std::vector<network::mojom::CTLogInfoPtr> log_list_mojo;
-  std::vector<network::mojom::CTLogInfoPtr> log_list_mojo_clone_network_service;
 
   // The log list shipped via component updater is a single message of CTLogList
   // type, as defined in
@@ -312,14 +305,13 @@ void PKIMetadataComponentInstallerService::UpdateNetworkServiceCTListOnUI(
     }
 
     log_ptr->mmd = base::Seconds(log.mmd_secs());
-    log_list_mojo_clone_network_service.push_back(log_ptr.Clone());
     log_list_mojo.push_back(std::move(log_ptr));
   }
 
-  // We need to wait for both CT log list updates and the popular SCT list
+  // We need to wait for both the CT log list update and the popular SCT list
   // update.
   base::RepeatingClosure done_callback = BarrierClosure(
-      /*num_closures=*/3,
+      /*num_closures=*/2,
       base::BindOnce(
           &PKIMetadataComponentInstallerService::NotifyCTLogListConfigured,
           weak_factory_.GetWeakPtr()));
@@ -327,11 +319,8 @@ void PKIMetadataComponentInstallerService::UpdateNetworkServiceCTListOnUI(
       base::Time::UnixEpoch() +
       base::Seconds(proto->log_list().timestamp().seconds()) +
       base::Nanoseconds(proto->log_list().timestamp().nanos());
-  content::GetCertVerifierServiceFactory()->UpdateCtLogList(
-      std::move(log_list_mojo), done_callback);
-  network_service->UpdateCtLogList(
-      std::move(log_list_mojo_clone_network_service), update_time,
-      done_callback);
+  network_service->UpdateCtLogList(std::move(log_list_mojo), update_time,
+                                   done_callback);
 
   // Send the updated popular SCTs list to the network service, if available.
   std::vector<std::vector<uint8_t>> popular_scts =

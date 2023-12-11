@@ -21,7 +21,6 @@ source_set("lib") {
     "//net",
     "//net/cert:root_store_proto_lite",
     "//services/cert_verifier/cert_net_url_loader",
-    "//services/network/public/cpp:buildflags",
     "//services/network/public/mojom",
   ]
 

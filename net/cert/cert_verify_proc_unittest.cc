@@ -34,7 +34,6 @@
 #include "net/cert/cert_verify_proc_builtin.h"
 #include "net/cert/cert_verify_result.h"
 #include "net/cert/crl_set.h"
-#include "net/cert/do_nothing_ct_verifier.h"
 #include "net/cert/ev_root_ca_metadata.h"
 #include "net/cert/internal/system_trust_store.h"
 #include "net/cert/test_root_certs.h"
@@ -218,14 +217,12 @@ scoped_refptr<CertVerifyProc> CreateCertVerifyProc(
     case CERT_VERIFY_PROC_BUILTIN:
       return CreateCertVerifyProcBuiltin(
           std::move(cert_net_fetcher), std::move(crl_set),
-          std::make_unique<DoNothingCTVerifier>(), CreateSslSystemTrustStore(),
-          instance_params);
+          CreateSslSystemTrustStore(), instance_params);
 #endif
 #if BUILDFLAG(CHROME_ROOT_STORE_SUPPORTED)
     case CERT_VERIFY_PROC_BUILTIN_CHROME_ROOTS:
       return CreateCertVerifyProcBuiltin(
           std::move(cert_net_fetcher), std::move(crl_set),
-          std::make_unique<DoNothingCTVerifier>(),
           CreateSslSystemTrustStoreChromeRoot(
               std::make_unique<net::TrustStoreChrome>()),
           instance_params);

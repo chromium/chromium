@@ -28,10 +28,6 @@
 #include "services/cert_verifier/public/mojom/cert_verifier_service_factory.mojom.h"
 #include "services/network/public/mojom/url_loader_factory.mojom.h"
 
-#if BUILDFLAG(IS_CT_SUPPORTED)
-#include "services/network/public/mojom/ct_log_info.mojom.h"
-#endif
-
 #if BUILDFLAG(CHROME_ROOT_STORE_SUPPORTED)
 #include "mojo/public/cpp/base/big_buffer.h"
 #include "net/cert/internal/trust_store_chrome.h"
@@ -181,29 +177,6 @@ void CertVerifierServiceFactoryImpl::UpdateCRLSet(
                      weak_factory_.GetWeakPtr())
           .Then(std::move(callback)));
 }
-
-#if BUILDFLAG(IS_CT_SUPPORTED)
-void CertVerifierServiceFactoryImpl::UpdateCtLogList(
-    std::vector<network::mojom::CTLogInfoPtr> log_list,
-    UpdateCtLogListCallback callback) {
-  std::vector<scoped_refptr<const net::CTLogVerifier>> ct_logs;
-  for (auto& log : log_list) {
-    scoped_refptr<const net::CTLogVerifier> log_verifier =
-        net::CTLogVerifier::Create(log->public_key, log->name);
-    if (!log_verifier) {
-      // TODO(crbug.com/1211056): Signal bad configuration (such as bad key).
-      continue;
-    }
-    ct_logs.push_back(std::move(log_verifier));
-  }
-
-  proc_params_.ct_logs = std::move(ct_logs);
-
-  UpdateVerifierServices();
-
-  std::move(callback).Run();
-}
-#endif
 
 void CertVerifierServiceFactoryImpl::OnCRLSetParsed(
     scoped_refptr<net::CRLSet> parsed_crl_set) {

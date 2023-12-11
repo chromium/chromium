@@ -116,6 +116,7 @@
 #endif
 
 #if BUILDFLAG(IS_CT_SUPPORTED)
+#include "services/network/ct_log_list_distributor.h"
 #include "services/network/sct_auditing/sct_auditing_cache.h"
 #endif
 
@@ -546,6 +547,10 @@ void NetworkService::Initialize(mojom::NetworkServiceParamsPtr params,
 
   http_auth_cache_copier_ = std::make_unique<HttpAuthCacheCopier>();
 
+#if BUILDFLAG(IS_CT_SUPPORTED)
+  ct_log_list_distributor_ = std::make_unique<CtLogListDistributor>();
+#endif
+
   doh_probe_activator_ = std::make_unique<DelayedDohProbeActivator>(this);
 
   trust_token_key_commitments_ = std::make_unique<TrustTokenKeyCommitments>();
@@ -963,6 +968,7 @@ void NetworkService::UpdateCtLogList(std::vector<mojom::CTLogInfoPtr> log_list,
   log_list_ = std::move(log_list);
   ct_log_list_update_time_ = update_time;
 
+  ct_log_list_distributor_->OnNewCtConfig(log_list_);
   for (auto* context : network_contexts_) {
     context->OnCTLogListUpdated(log_list_, update_time);
   }

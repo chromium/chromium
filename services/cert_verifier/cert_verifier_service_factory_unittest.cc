@@ -18,8 +18,6 @@
 #include "base/test/bind.h"
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
-#include "crypto/ec_private_key.h"
-#include "crypto/sha2.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/remote.h"
@@ -40,10 +38,6 @@
 #include "services/network/public/mojom/url_loader_factory.mojom.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "testing/platform_test.h"
-
-#if BUILDFLAG(IS_CT_SUPPORTED)
-#include "services/network/public/mojom/ct_log_info.mojom.h"
-#endif
 
 #if BUILDFLAG(CHROME_ROOT_STORE_SUPPORTED)
 #include "mojo/public/cpp/base/big_buffer.h"
@@ -539,96 +533,6 @@ TEST(CertVerifierServiceFactoryTest, RootStoreInfoWithCompiledRootStore) {
 }
 
 #endif  // BUILDFLAG(CHROME_ROOT_STORE_SUPPORTED)
-
-#if BUILDFLAG(IS_CT_SUPPORTED)
-TEST(CertVerifierServiceFactoryTest, UpdateCtLogList) {
-  base::test::TaskEnvironment task_environment;
-  mojo::Remote<mojom::CertVerifierServiceFactory> cv_service_factory_remote;
-  CertVerifierServiceFactoryImpl cv_service_factory_impl(
-      cv_service_factory_remote.BindNewPipeAndPassReceiver());
-
-  // Should start with empty log list.
-  EXPECT_EQ(cv_service_factory_impl.get_impl_params().ct_logs.size(), 0u);
-
-  auto log1_private_key = crypto::ECPrivateKey::Create();
-  std::vector<uint8_t> log1_spki;
-  ASSERT_TRUE(log1_private_key->ExportPublicKey(&log1_spki));
-  auto log2_private_key = crypto::ECPrivateKey::Create();
-  std::vector<uint8_t> log2_spki;
-  ASSERT_TRUE(log2_private_key->ExportPublicKey(&log2_spki));
-  {
-    std::vector<network::mojom::CTLogInfoPtr> log_list_mojo;
-    {
-      network::mojom::CTLogInfoPtr log_info = network::mojom::CTLogInfo::New();
-      log_info->public_key = std::string(log1_spki.begin(), log1_spki.end());
-      log_info->id = crypto::SHA256HashString(log_info->public_key);
-      log_info->name = "log name";
-      log_info->current_operator = "log operator";
-      log_info->operated_by_google = false;
-      log_list_mojo.push_back(std::move(log_info));
-    }
-    {
-      network::mojom::CTLogInfoPtr log_info = network::mojom::CTLogInfo::New();
-      log_info->public_key = std::string(log2_spki.begin(), log2_spki.end());
-      log_info->id = crypto::SHA256HashString(log_info->public_key);
-      log_info->name = "log2 name";
-      log_info->current_operator = "log2 operator";
-      log_info->operated_by_google = true;
-      log_list_mojo.push_back(std::move(log_info));
-    }
-
-    {
-      base::RunLoop run_loop;
-      cv_service_factory_remote->UpdateCtLogList(std::move(log_list_mojo),
-                                                 run_loop.QuitClosure());
-      run_loop.Run();
-    }
-  }
-
-  ASSERT_EQ(cv_service_factory_impl.get_impl_params().ct_logs.size(), 2u);
-  EXPECT_EQ(cv_service_factory_impl.get_impl_params().ct_logs[0]->key_id(),
-            crypto::SHA256HashString(
-                std::string(log1_spki.begin(), log1_spki.end())));
-  EXPECT_EQ(cv_service_factory_impl.get_impl_params().ct_logs[1]->key_id(),
-            crypto::SHA256HashString(
-                std::string(log2_spki.begin(), log2_spki.end())));
-
-  {
-    std::vector<network::mojom::CTLogInfoPtr> log_list_mojo;
-    {
-      network::mojom::CTLogInfoPtr log_info = network::mojom::CTLogInfo::New();
-      log_info->public_key = std::string(log1_spki.begin(), log1_spki.end());
-      log_info->id = crypto::SHA256HashString(log_info->public_key);
-      log_info->name = "log name";
-      log_info->current_operator = "log operator";
-      log_info->operated_by_google = false;
-      log_list_mojo.push_back(std::move(log_info));
-    }
-    {
-      network::mojom::CTLogInfoPtr log_info = network::mojom::CTLogInfo::New();
-      log_info->public_key = "bad public key";
-      log_info->id = crypto::SHA256HashString(log_info->public_key);
-      log_info->name = "log2 name";
-      log_info->current_operator = "log2 operator";
-      log_info->operated_by_google = true;
-      log_list_mojo.push_back(std::move(log_info));
-    }
-
-    {
-      base::RunLoop run_loop;
-      cv_service_factory_remote->UpdateCtLogList(std::move(log_list_mojo),
-                                                 run_loop.QuitClosure());
-      run_loop.Run();
-    }
-  }
-
-  // The log with the bad key should have been ignored.
-  ASSERT_EQ(cv_service_factory_impl.get_impl_params().ct_logs.size(), 1u);
-  EXPECT_EQ(cv_service_factory_impl.get_impl_params().ct_logs[0]->key_id(),
-            crypto::SHA256HashString(
-                std::string(log1_spki.begin(), log1_spki.end())));
-}
-#endif
 
 class CertVerifierServiceFactoryBuiltinVerifierTest : public ::testing::Test {
  public:

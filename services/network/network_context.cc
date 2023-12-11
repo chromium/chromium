@@ -151,6 +151,10 @@
 #include "components/certificate_transparency/chrome_ct_policy_enforcer.h"
 #include "components/certificate_transparency/chrome_require_ct_delegate.h"
 #include "components/certificate_transparency/ct_known_logs.h"
+#include "net/cert/cert_and_ct_verifier.h"
+#include "net/cert/ct_log_verifier.h"
+#include "net/cert/multi_log_ct_verifier.h"
+#include "services/network/ct_log_list_distributor.h"
 #include "services/network/sct_auditing/sct_auditing_cache.h"
 #include "services/network/sct_auditing/sct_auditing_handler.h"
 #endif  // BUILDFLAG(IS_CT_SUPPORTED)
@@ -2405,6 +2409,24 @@ URLRequestContextOwner NetworkContext::MakeURLRequestContext(
         base::BindRepeating(
             &NetworkContext::CreateURLLoaderFactoryForCertNetFetcher,
             base::Unretained(this)));
+
+#if BUILDFLAG(IS_CT_SUPPORTED)
+    std::vector<scoped_refptr<const net::CTLogVerifier>> ct_logs;
+    for (const auto& log : network_service_->log_list()) {
+      scoped_refptr<const net::CTLogVerifier> log_verifier =
+          net::CTLogVerifier::Create(log->public_key, log->name);
+      if (!log_verifier) {
+        // TODO: Signal bad configuration (such as bad key).
+        continue;
+      }
+      ct_logs.push_back(std::move(log_verifier));
+    }
+    auto ct_verifier = std::make_unique<net::MultiLogCTVerifier>(
+        network_service_->ct_log_list_distributor());
+    ct_verifier->SetLogs(ct_logs);
+    cert_verifier = std::make_unique<net::CertAndCTVerifier>(
+        std::move(cert_verifier), std::move(ct_verifier));
+#endif  // BUILDFLAG(IS_CT_SUPPORTED)
 
     // Whether the cert verifier is remote or in-process, we should wrap it in
     // caching and coalescing layers to avoid extra verifications and IPCs.

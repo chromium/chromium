@@ -6,6 +6,8 @@
 
 #include <vector>
 
+#include "base/functional/bind.h"
+#include "base/functional/callback.h"
 #include "base/logging.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/values.h"
@@ -50,23 +52,40 @@ void AddSCTAndLogStatus(scoped_refptr<ct::SignedCertificateTimestamp> sct,
   sct_list->push_back(SignedCertificateTimestampAndStatus(sct, status));
 }
 
-std::map<std::string, scoped_refptr<const CTLogVerifier>> CreateLogsMap(
-    const std::vector<scoped_refptr<const CTLogVerifier>>& log_verifiers) {
-  std::map<std::string, scoped_refptr<const CTLogVerifier>> logs;
-  for (const auto& log_verifier : log_verifiers) {
-    std::string key_id = log_verifier->key_id();
-    logs[key_id] = log_verifier;
-  }
-  return logs;
-}
-
 }  // namespace
 
-MultiLogCTVerifier::MultiLogCTVerifier(
-    const std::vector<scoped_refptr<const CTLogVerifier>>& log_verifiers)
-    : logs_(CreateLogsMap(log_verifiers)) {}
+base::CallbackListSubscription
+MultiLogCTVerifier::CTLogProvider::RegisterLogsListCallback(
+    LogListCallbackList::CallbackType callback) {
+  return callback_list_.Add(std::move(callback));
+}
+
+void MultiLogCTVerifier::CTLogProvider::NotifyCallbacks(
+    const std::vector<scoped_refptr<const net::CTLogVerifier>>& log_verifiers) {
+  callback_list_.Notify(log_verifiers);
+}
+
+MultiLogCTVerifier::CTLogProvider::CTLogProvider() = default;
+MultiLogCTVerifier::CTLogProvider::~CTLogProvider() = default;
+
+MultiLogCTVerifier::MultiLogCTVerifier(CTLogProvider* notifier) {
+  // base::Unretained is safe since we are using a CallbackListSubscription that
+  // won't outlive |this|.
+  log_provider_subscription_ =
+      notifier->RegisterLogsListCallback(base::BindRepeating(
+          &MultiLogCTVerifier::SetLogs, base::Unretained(this)));
+}
 
 MultiLogCTVerifier::~MultiLogCTVerifier() = default;
+
+void MultiLogCTVerifier::SetLogs(
+    const std::vector<scoped_refptr<const CTLogVerifier>>& log_verifiers) {
+  logs_.clear();
+  for (const auto& log_verifier : log_verifiers) {
+    std::string key_id = log_verifier->key_id();
+    logs_[key_id] = log_verifier;
+  }
+}
 
 void MultiLogCTVerifier::Verify(
     X509Certificate* cert,

@@ -22,7 +22,6 @@
 #include "net/cert/cert_verifier.h"
 #include "net/cert/cert_verify_proc.h"
 #include "net/cert/cert_verify_result.h"
-#include "net/cert/ct_verifier.h"
 #include "net/cert/ev_root_ca_metadata.h"
 #include "net/cert/internal/cert_issuer_source_aia.h"
 #include "net/cert/internal/revocation_checker.h"
@@ -243,7 +242,6 @@ class PathBuilderDelegateDataImpl : public bssl::CertPathBuilderDelegateData {
   }
 
   bssl::OCSPVerifyResult stapled_ocsp_verify_result;
-  SignedCertificateTimestampAndStatusList scts;
 };
 
 // TODO(eroman): The path building code in this file enforces its idea of weak
@@ -257,27 +255,23 @@ class PathBuilderDelegateImpl : public bssl::SimplePathBuilderDelegate {
   // SHA1 certificates.
   PathBuilderDelegateImpl(
       const CRLSet* crl_set,
-      CTVerifier* ct_verifier,
       CertNetFetcher* net_fetcher,
       VerificationType verification_type,
       bssl::SimplePathBuilderDelegate::DigestPolicy digest_policy,
       int flags,
       const CertVerifyProcTrustStore* trust_store,
       base::StringPiece stapled_leaf_ocsp_response,
-      base::StringPiece sct_list_from_tls_extension,
       const EVRootCAMetadata* ev_metadata,
       bool* checked_revocation_for_some_path,
       base::TimeTicks deadline,
       const NetLogWithSource& net_log)
       : bssl::SimplePathBuilderDelegate(1024, digest_policy),
         crl_set_(crl_set),
-        ct_verifier_(ct_verifier),
         net_fetcher_(net_fetcher),
         verification_type_(verification_type),
         flags_(flags),
         trust_store_(trust_store),
         stapled_leaf_ocsp_response_(stapled_leaf_ocsp_response),
-        sct_list_from_tls_extension_(sct_list_from_tls_extension),
         ev_metadata_(ev_metadata),
         checked_revocation_for_some_path_(checked_revocation_for_some_path),
         deadline_(deadline),
@@ -348,20 +342,6 @@ class PathBuilderDelegateImpl : public bssl::SimplePathBuilderDelegate {
         net_fetcher_, &path->errors,
         &PathBuilderDelegateDataImpl::GetOrCreate(path)
              ->stapled_ocsp_verify_result);
-
-    // TODO(https://crbug.com/1211074): making a temporary X509Certificate just
-    // to pass into CTVerifier is silly, refactor so that it takes
-    // CRYPTO_BUFFER/etc.
-    std::vector<bssl::UniquePtr<CRYPTO_BUFFER>> intermediates;
-    if (path->certs.size() > 1) {
-      intermediates.push_back(bssl::UpRef(path->certs[1]->cert_buffer()));
-    }
-    auto cert_for_ct_verify = X509Certificate::CreateFromBuffer(
-        bssl::UpRef(path->certs[0]->cert_buffer()), std::move(intermediates));
-    ct_verifier_->Verify(cert_for_ct_verify.get(), stapled_leaf_ocsp_response_,
-                         sct_list_from_tls_extension_,
-                         &PathBuilderDelegateDataImpl::GetOrCreate(path)->scts,
-                         *net_log_);
   }
 
   // Selects a revocation policy based on the CertVerifier flags and the given
@@ -449,13 +429,11 @@ class PathBuilderDelegateImpl : public bssl::SimplePathBuilderDelegate {
   }
 
   raw_ptr<const CRLSet> crl_set_;
-  raw_ptr<CTVerifier> ct_verifier_;
   raw_ptr<CertNetFetcher> net_fetcher_;
   const VerificationType verification_type_;
   const int flags_;
   raw_ptr<const CertVerifyProcTrustStore> trust_store_;
   const base::StringPiece stapled_leaf_ocsp_response_;
-  const base::StringPiece sct_list_from_tls_extension_;
   raw_ptr<const EVRootCAMetadata> ev_metadata_;
   raw_ptr<bool> checked_revocation_for_some_path_;
   base::TimeTicks deadline_;
@@ -474,7 +452,6 @@ class CertVerifyProcBuiltin : public CertVerifyProc {
  public:
   CertVerifyProcBuiltin(scoped_refptr<CertNetFetcher> net_fetcher,
                         scoped_refptr<CRLSet> crl_set,
-                        std::unique_ptr<CTVerifier> ct_verifier,
                         std::unique_ptr<SystemTrustStore> system_trust_store,
                         const CertVerifyProc::InstanceParams& instance_params);
 
@@ -491,7 +468,6 @@ class CertVerifyProcBuiltin : public CertVerifyProc {
                      const NetLogWithSource& net_log) override;
 
   const scoped_refptr<CertNetFetcher> net_fetcher_;
-  const std::unique_ptr<CTVerifier> ct_verifier_;
   const std::unique_ptr<SystemTrustStore> system_trust_store_;
   bssl::TrustStoreInMemory additional_trust_store_;
 };
@@ -499,12 +475,10 @@ class CertVerifyProcBuiltin : public CertVerifyProc {
 CertVerifyProcBuiltin::CertVerifyProcBuiltin(
     scoped_refptr<CertNetFetcher> net_fetcher,
     scoped_refptr<CRLSet> crl_set,
-    std::unique_ptr<CTVerifier> ct_verifier,
     std::unique_ptr<SystemTrustStore> system_trust_store,
     const CertVerifyProc::InstanceParams& instance_params)
     : CertVerifyProc(std::move(crl_set)),
       net_fetcher_(std::move(net_fetcher)),
-      ct_verifier_(std::move(ct_verifier)),
       system_trust_store_(std::move(system_trust_store)) {
   DCHECK(system_trust_store_);
 
@@ -687,10 +661,8 @@ bssl::CertPathBuilder::Result TryBuildPath(
     VerificationType verification_type,
     bssl::SimplePathBuilderDelegate::DigestPolicy digest_policy,
     int flags,
-    base::StringPiece ocsp_response,
-    base::StringPiece sct_list,
+    const std::string& ocsp_response,
     const CRLSet* crl_set,
-    CTVerifier* ct_verifier,
     CertNetFetcher* net_fetcher,
     const EVRootCAMetadata* ev_metadata,
     bool* checked_revocation,
@@ -707,9 +679,9 @@ bssl::CertPathBuilder::Result TryBuildPath(
   }
 
   PathBuilderDelegateImpl path_builder_delegate(
-      crl_set, ct_verifier, net_fetcher, verification_type, digest_policy,
-      flags, trust_store, ocsp_response, sct_list, ev_metadata,
-      checked_revocation, deadline, net_log);
+      crl_set, net_fetcher, verification_type, digest_policy, flags,
+      trust_store, ocsp_response, ev_metadata, checked_revocation, deadline,
+      net_log);
 
   absl::optional<CertIssuerSourceAia> aia_cert_issuer_source;
 
@@ -819,10 +791,8 @@ int AssignVerifyResult(X509Certificate* input_cert,
 
   const PathBuilderDelegateDataImpl* delegate_data =
       PathBuilderDelegateDataImpl::Get(partial_path);
-  if (delegate_data) {
+  if (delegate_data)
     verify_result->ocsp_result = delegate_data->stapled_ocsp_verify_result;
-    verify_result->scts = std::move(delegate_data->scts);
-  }
 
   return IsCertStatusError(verify_result->cert_status)
              ? MapCertStatusToNetError(verify_result->cert_status)
@@ -951,9 +921,8 @@ int CertVerifyProcBuiltin::VerifyInternal(
     result = TryBuildPath(
         target, &intermediates, &trust_store, der_verification_time, deadline,
         cur_attempt.verification_type, cur_attempt.digest_policy, flags,
-        ocsp_response, sct_list, crl_set(), ct_verifier_.get(),
-        net_fetcher_.get(), ev_metadata, &checked_revocation_for_some_path,
-        net_log);
+        ocsp_response, crl_set(), net_fetcher_.get(), ev_metadata,
+        &checked_revocation_for_some_path, net_log);
 
     base::UmaHistogramCounts10000("Net.CertVerifier.PathBuilderIterationCount",
                                   result.iteration_count);
@@ -1005,12 +974,11 @@ int CertVerifyProcBuiltin::VerifyInternal(
 scoped_refptr<CertVerifyProc> CreateCertVerifyProcBuiltin(
     scoped_refptr<CertNetFetcher> net_fetcher,
     scoped_refptr<CRLSet> crl_set,
-    std::unique_ptr<CTVerifier> ct_verifier,
     std::unique_ptr<SystemTrustStore> system_trust_store,
     const CertVerifyProc::InstanceParams& instance_params) {
   return base::MakeRefCounted<CertVerifyProcBuiltin>(
-      std::move(net_fetcher), std::move(crl_set), std::move(ct_verifier),
-      std::move(system_trust_store), instance_params);
+      std::move(net_fetcher), std::move(crl_set), std::move(system_trust_store),
+      instance_params);
 }
 
 base::TimeDelta GetCertVerifyProcBuiltinTimeLimitForTesting() {
