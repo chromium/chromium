@@ -30,18 +30,8 @@
 # WARNING: This may cause unexpected disablement and is strongly discouraged.
 # You should specify the tests one-by-one in most cases, instead of this.
 tast_disabled_tests_from_chrome_all = [
-  # b/308463545: Fails on chromeos-jacuzzi-chrome-skylab due to low disk space.
-  "crostini.ResizeInstallation.stable@jacuzzi",
-
   # https://crbug.com/1379756
   "inputs.VirtualKeyboardHandwriting.floating",
-
-  # crbug.com/1263233
-  "security.SharedFilesystemState",
-
-  # https://crbug.com/1276549: Flaky.
-  "ui.ChromeCrashReporterMetrics.success_breakpad",
-  "ui.ChromeCrashReporterMetrics.miss_breakpad",
 
   # b/296821415. Failing in the Chrome builder but not elsewhere;i
   # still investigating.
@@ -55,10 +45,6 @@ tast_disabled_tests_from_chrome_all = [
   "security.SELinuxFilesARC",
   "security.NetworkListenersARC",
   "security.SELinuxProcessesARC",
-
-  # https://crbug.com/1282481
-  "quicksettings.OpenSettings.qs_revamp_disabled",
-  "quicksettings.OpenSettings.qs_revamp_enabled",
 
   # http://b/212644512
   "security.SELinuxFilesDataDir",
