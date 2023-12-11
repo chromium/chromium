@@ -121,6 +121,10 @@ int PrimaryActionStringIdFromSuggestion(FormSuggestion* suggestion) {
   // the bottom sheet is dismissed. Default is true.
   bool _needsRefocus;
 
+  // Whether the user has chosen to use one of the proposed suggestions to fill
+  // the fields. Default is false.
+  bool _suggestionSelected;
+
   // FaviconLoader is a keyed service that uses LargeIconService to retrieve
   // favicon images.
   raw_ptr<FaviconLoader> _faviconLoader;
@@ -154,6 +158,7 @@ int PrimaryActionStringIdFromSuggestion(FormSuggestion* suggestion) {
                       sharedURLLoaderFactory {
   if (self = [super init]) {
     _needsRefocus = true;
+    _suggestionSelected = false;
     _faviconLoader = faviconLoader;
     _prefService = prefService;
     _reauthenticationModule = reauthModule;
@@ -322,9 +327,11 @@ int PrimaryActionStringIdFromSuggestion(FormSuggestion* suggestion) {
 
 - (void)dismiss {
   if (_needsRefocus && _webStateList) {
-    [self logExitReason:kDismissal];
-    [self incrementDismissCount];
-    [self markSharedPasswordNotificationsDisplayed];
+    if (!_suggestionSelected) {
+      [self logExitReason:kDismissal];
+      [self incrementDismissCount];
+      [self markSharedPasswordNotificationsDisplayed];
+    }
 
     web::WebState* activeWebState = _webStateList->GetActiveWebState();
     if (!activeWebState) {
@@ -344,6 +351,10 @@ int PrimaryActionStringIdFromSuggestion(FormSuggestion* suggestion) {
 
 - (void)disableRefocus {
   _needsRefocus = false;
+}
+
+- (void)willSelectSuggestion {
+  _suggestionSelected = true;
 }
 
 - (NSString*)usernameAtRow:(NSInteger)row {

@@ -24,6 +24,9 @@
 // Disables future refocus requests.
 - (void)disableRefocus;
 
+// Notifies that a suggestion will be selected.
+- (void)willSelectSuggestion;
+
 // Returns the username at a given row with the appended suffix removed.
 - (NSString*)usernameAtRow:(NSInteger)row;
 
