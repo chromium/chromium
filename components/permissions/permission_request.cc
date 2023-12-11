@@ -215,6 +215,9 @@ std::u16string PermissionRequest::GetMessageTextFragment() const {
     case RequestType::kCameraStream:
       message_id = IDS_MEDIA_CAPTURE_VIDEO_ONLY_PERMISSION_FRAGMENT;
       break;
+    case RequestType::kCapturedSurfaceControl:
+      message_id = IDS_CAPTURED_SURFACE_CONTROL_PERMISSION_FRAGMENT;
+      break;
     case RequestType::kClipboard:
       message_id = IDS_CLIPBOARD_PERMISSION_FRAGMENT;
       break;

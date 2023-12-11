@@ -174,6 +174,8 @@ chromium-metrics-reviews@google.com.
   <int value="29" label="PERMISSION_U2F_API_REQUEST__REMOVED_IN_M117"/>
   <int value="30" label="PERMISSION_TOP_LEVEL_STORAGE_ACCESS"/>
   <int value="31" label="PERMISSION_MIDI"/>
+  <int value="32" label="PERMISSION_FILE_SYSTEM_ACCESS"/>
+  <int value="33" label="CAPTURED_SURFACE_CONTROL"/>
 </enum>
 
 <enum name="PermissionSourceUI">

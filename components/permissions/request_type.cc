@@ -87,6 +87,8 @@ const gfx::VectorIcon& GetIconIdDesktop(RequestType type) {
     case RequestType::kCameraStream:
       return cr23 ? vector_icons::kVideocamChromeRefreshIcon
                   : vector_icons::kVideocamIcon;
+    case RequestType::kCapturedSurfaceControl:
+      return vector_icons::kTouchpadMouseIcon;
     case RequestType::kClipboard:
       return cr23 ? vector_icons::kContentPasteChromeRefreshIcon
                   : vector_icons::kContentPasteIcon;
@@ -158,6 +160,11 @@ const gfx::VectorIcon& GetBlockedIconIdDesktop(RequestType type) {
     case RequestType::kCameraStream:
       return cr23 ? vector_icons::kVideocamOffChromeRefreshIcon
                   : vector_icons::kVideocamOffIcon;
+    case RequestType::kCapturedSurfaceControl:
+      // TODO(crbug.com/1466247): Either add an Off version of this icon,
+      // or drop a NOTRECHED here with an explanation that this cannot
+      // be blocked.
+      return vector_icons::kTouchpadMouseIcon;
     case RequestType::kClipboard:
       return cr23 ? vector_icons::kContentPasteOffChromeRefreshIcon
                   : vector_icons::kContentPasteOffIcon;
@@ -198,6 +205,8 @@ absl::optional<RequestType> ContentSettingsTypeToRequestTypeIfExists(
 #if !BUILDFLAG(IS_ANDROID)
     case ContentSettingsType::CAMERA_PAN_TILT_ZOOM:
       return RequestType::kCameraPanTiltZoom;
+    case ContentSettingsType::CAPTURED_SURFACE_CONTROL:
+      return RequestType::kCapturedSurfaceControl;
 #endif
     case ContentSettingsType::MEDIASTREAM_CAMERA:
       return RequestType::kCameraStream;
@@ -271,6 +280,10 @@ absl::optional<ContentSettingsType> RequestTypeToContentSettingsType(
 #endif
     case RequestType::kCameraStream:
       return ContentSettingsType::MEDIASTREAM_CAMERA;
+#if !BUILDFLAG(IS_ANDROID)
+    case RequestType::kCapturedSurfaceControl:
+      return ContentSettingsType::CAPTURED_SURFACE_CONTROL;
+#endif
     case RequestType::kClipboard:
       return ContentSettingsType::CLIPBOARD_READ_WRITE;
 #if !BUILDFLAG(IS_ANDROID)
@@ -359,6 +372,10 @@ const char* PermissionKeyForRequestType(permissions::RequestType request_type) {
 #endif
     case permissions::RequestType::kCameraStream:
       return "camera_stream";
+#if !BUILDFLAG(IS_ANDROID)
+    case permissions::RequestType::kCapturedSurfaceControl:
+      return "captured_surface_control";
+#endif
     case permissions::RequestType::kClipboard:
       return "clipboard";
     case permissions::RequestType::kDiskQuota:

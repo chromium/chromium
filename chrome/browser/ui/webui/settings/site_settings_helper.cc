@@ -137,6 +137,7 @@ const ContentSettingsTypeNameEntry kContentSettingsTypeGroupNames[] = {
     {ContentSettingsType::ANTI_ABUSE, "anti-abuse"},
     {ContentSettingsType::STORAGE_ACCESS, "storage-access"},
     {ContentSettingsType::AUTO_PICTURE_IN_PICTURE, "auto-picture-in-picture"},
+    {ContentSettingsType::CAPTURED_SURFACE_CONTROL, "captured-surface-control"},
 
     // Add new content settings here if a corresponding Javascript string
     // representation for it is not required, for example if the content setting

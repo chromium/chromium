@@ -125,6 +125,8 @@ String PermissionNameToString(PermissionName name) {
       return "display_capture";
     case PermissionName::TOP_LEVEL_STORAGE_ACCESS:
       return "top-level-storage-access";
+    case PermissionName::CAPTURED_SURFACE_CONTROL:
+      return "captured-surface-control";
   }
   NOTREACHED();
   return "unknown";
@@ -378,6 +380,14 @@ PermissionDescriptorPtr ParsePermissionDescriptor(
   }
   if (name == V8PermissionName::Enum::kDisplayCapture) {
     return CreatePermissionDescriptor(PermissionName::DISPLAY_CAPTURE);
+  }
+  if (name == V8PermissionName::Enum::kCapturedSurfaceControl) {
+    if (!RuntimeEnabledFeatures::CapturedSurfaceControlEnabled()) {
+      exception_state.ThrowTypeError(
+          "The Captured Surface Control API is not enabled.");
+      return nullptr;
+    }
+    return CreatePermissionDescriptor(PermissionName::CAPTURED_SURFACE_CONTROL);
   }
   return nullptr;
 }

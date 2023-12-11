@@ -371,6 +371,10 @@ enum class ContentSettingsType : int32_t {
   // shown to the user, for a given origin.
   FILE_SYSTEM_ACCESS_RESTORE_PERMISSION,
 
+  // Whether an application capturing another tab, may scroll and zoom
+  // the captured tab.
+  CAPTURED_SURFACE_CONTROL,
+
   NUM_TYPES,
 };
 

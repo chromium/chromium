@@ -129,6 +129,8 @@ RequestTypeForUma GetUmaValueForRequestType(RequestType request_type) {
 #if !BUILDFLAG(IS_ANDROID)
     case RequestType::kFileSystemAccess:
       return RequestTypeForUma::PERMISSION_FILE_SYSTEM_ACCESS;
+    case RequestType::kCapturedSurfaceControl:
+      return RequestTypeForUma::CAPTURED_SURFACE_CONTROL;
 #endif
   }
 }
@@ -185,6 +187,8 @@ std::string GetPermissionRequestString(RequestTypeForUma type) {
       return "AccessibilityEvents";
     case RequestTypeForUma::PERMISSION_FILE_SYSTEM_ACCESS:
       return "FileSystemAccess";
+    case RequestTypeForUma::CAPTURED_SURFACE_CONTROL:
+      return "CapturedSurfaceControl";
 
     case RequestTypeForUma::UNKNOWN:
     case RequestTypeForUma::PERMISSION_FLASH:
@@ -1218,6 +1222,10 @@ void PermissionUmaUtil::RecordPermissionAction(
       break;
     case ContentSettingsType::ACCESSIBILITY_EVENTS:
       base::UmaHistogramEnumeration("Permissions.Action.AccessibilityEvents",
+                                    action, PermissionAction::NUM);
+      break;
+    case ContentSettingsType::CAPTURED_SURFACE_CONTROL:
+      base::UmaHistogramEnumeration("Permissions.Action.CapturedSurfaceControl",
                                     action, PermissionAction::NUM);
       break;
     // The user is not prompted for these permissions, thus there is no

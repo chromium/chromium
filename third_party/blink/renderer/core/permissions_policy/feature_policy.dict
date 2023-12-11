@@ -6,6 +6,7 @@
 "ambient-light-sensor"
 "autoplay"
 "camera"
+"captured-surface-control"
 "clipboard-read"
 "clipboard-write"
 "cross-origin-isolated"

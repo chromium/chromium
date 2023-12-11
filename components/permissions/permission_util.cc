@@ -185,6 +185,9 @@ bool PermissionUtil::GetPermissionType(ContentSettingsType type,
     case ContentSettingsType::DISPLAY_CAPTURE:
       *out = PermissionType::DISPLAY_CAPTURE;
       break;
+    case ContentSettingsType::CAPTURED_SURFACE_CONTROL:
+      *out = PermissionType::CAPTURED_SURFACE_CONTROL;
+      break;
     default:
       return false;
   }
@@ -318,6 +321,8 @@ ContentSettingsType PermissionUtil::PermissionTypeToContentSettingTypeSafe(
       return ContentSettingsType::LOCAL_FONTS;
     case PermissionType::DISPLAY_CAPTURE:
       return ContentSettingsType::DISPLAY_CAPTURE;
+    case PermissionType::CAPTURED_SURFACE_CONTROL:
+      return ContentSettingsType::CAPTURED_SURFACE_CONTROL;
     case PermissionType::NUM:
       break;
   }

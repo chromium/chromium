@@ -97,6 +97,11 @@
       permissions_policy_name: "camera",
     },
     {
+      name: "CapturedSurfaceControl",
+      permissions_policy_name: "captured-surface-control",
+      depends_on: ["CapturedSurfaceControl"],
+    },
+    {
       name: "ClientHintDPR",
       permissions_policy_name: "ch-dpr",
     },

@@ -150,6 +150,9 @@ This will otherwise be blocked by your privacy settings. This will allow the con
   <message name="IDS_MULTI_DOWNLOAD_PERMISSION_FRAGMENT" desc="Permission request shown if multiple downloads are attempted without user interaction and there are multiple permissions requested. Follows a prompt: 'This site would like to:'">
     Download multiple files
   </message>
+  <message name="IDS_CAPTURED_SURFACE_CONTROL_PERMISSION_FRAGMENT" desc="Permission fragment shown in the permissions bubble when a web page requests to scroll and zoom a captured tab.">
+    Scroll and zoom the contents of your shared tab
+  </message>
   <message name="IDS_PERMISSION_ALLOW" desc="Label on button to allow a permissions request.">
     Allow
   </message>

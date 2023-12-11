@@ -84,6 +84,8 @@ std::string GetPermissionString(PermissionType permission) {
       return "DisplayCapture";
     case PermissionType::TOP_LEVEL_STORAGE_ACCESS:
       return "TopLevelStorageAccess";
+    case PermissionType::CAPTURED_SURFACE_CONTROL:
+      return "CapturedSurfaceControl";
     case PermissionType::NUM:
       NOTREACHED();
       return std::string();
@@ -129,6 +131,8 @@ PermissionTypeToPermissionsPolicyFeature(PermissionType permission) {
       return mojom::PermissionsPolicyFeature::kLocalFonts;
     case PermissionType::DISPLAY_CAPTURE:
       return mojom::PermissionsPolicyFeature::kDisplayCapture;
+    case PermissionType::CAPTURED_SURFACE_CONTROL:
+      return mojom::PermissionsPolicyFeature::kCapturedSurfaceControl;
 
     case PermissionType::PERIODIC_BACKGROUND_SYNC:
     case PermissionType::DURABLE_STORAGE:
@@ -262,6 +266,8 @@ absl::optional<PermissionType> PermissionDescriptorInfoToPermissionType(
       return PermissionType::DISPLAY_CAPTURE;
     case PermissionName::TOP_LEVEL_STORAGE_ACCESS:
       return PermissionType::TOP_LEVEL_STORAGE_ACCESS;
+    case PermissionName::CAPTURED_SURFACE_CONTROL:
+      return PermissionType::CAPTURED_SURFACE_CONTROL;
 
       NOTREACHED();
       return absl::nullopt;

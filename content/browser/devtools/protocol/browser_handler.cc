@@ -185,6 +185,8 @@ Response PermissionDescriptorToPermissionType(
     *permission_type = PermissionType::STORAGE_ACCESS_GRANT;
   } else if (name == "top-level-storage-access") {
     *permission_type = PermissionType::TOP_LEVEL_STORAGE_ACCESS;
+  } else if (name == "captured-surface-control") {
+    *permission_type = PermissionType::CAPTURED_SURFACE_CONTROL;
   } else {
     return Response::InvalidParams("Invalid PermissionDescriptor name: " +
                                    name);
@@ -255,6 +257,9 @@ Response FromProtocolPermissionType(
   } else if (type ==
              protocol::Browser::PermissionTypeEnum::TopLevelStorageAccess) {
     *out_type = PermissionType::TOP_LEVEL_STORAGE_ACCESS;
+  } else if (type ==
+             protocol::Browser::PermissionTypeEnum::CapturedSurfaceControl) {
+    *out_type = PermissionType::CAPTURED_SURFACE_CONTROL;
   } else {
     return Response::InvalidParams("Unknown permission type: " + type);
   }

@@ -2968,6 +2968,8 @@ chromium-metrics-reviews@google.com.
   <suffix name="AR" label="AR permission"/>
   <suffix name="AudioAndVideoCapture" label="Mic+Camera permission"/>
   <suffix name="AudioCapture" label="Microphone permission"/>
+  <suffix name="CapturedSurfaceControl"
+      label="Captured Surface Control permission"/>
   <suffix name="Geolocation" label="Geolocation permission"/>
   <suffix name="Midi" label="Midi permission"/>
   <suffix name="MidiSysEx" label="Midi SysEx permission"/>

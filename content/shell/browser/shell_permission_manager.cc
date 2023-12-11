@@ -68,6 +68,7 @@ bool IsAllowlistedPermissionType(PermissionType permission) {
     case PermissionType::WINDOW_MANAGEMENT:
     case PermissionType::LOCAL_FONTS:
     case PermissionType::DISPLAY_CAPTURE:
+    case PermissionType::CAPTURED_SURFACE_CONTROL:
       return false;
   }
 
