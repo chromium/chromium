@@ -27,8 +27,11 @@ config("default_coverage") {
     }
 
     cflags = [
+      # LINT.IfChange
       "-fprofile-instr-generate",
       "-fcoverage-mapping",
+      "-mllvm",
+      "-runtime-counter-relocation=true",
 
       # Following experimental flags removes unused header functions from the
       # coverage mapping data embedded in the test binaries, and the reduction
@@ -36,6 +39,11 @@ config("default_coverage") {
       # MacOS. Please refer to crbug.com/796290 for more details.
       "-mllvm",
       "-limited-coverage-experimental=true",
+
+      # LINT.ThenChange(
+      #     /build/config/siso/clang_code_coverage_wrapper.star,
+      #     /build/toolchain/clang_code_coverage_wrapper.py,
+      # )
     ]
 
     # Rust coverage is gated on using the Chromium-built Rust toolchain as it
@@ -43,7 +51,10 @@ config("default_coverage") {
     # tools that will be used to process the coverage output. This is because
     # the coverage file format is not stable.
     if (use_chromium_rust_toolchain) {
-      rustflags += [ "-Cinstrument-coverage" ]
+      rustflags += [
+        "-Cinstrument-coverage",
+        "-Cllvm-args=-runtime-counter-relocation",
+      ]
     }
 
     if (is_linux || is_chromeos) {
