@@ -14,6 +14,7 @@ import {createDOMError} from '../../common/js/dom_utils.js';
 import {getFileErrorString, str, strf} from '../../common/js/translations.js';
 import {FileErrorToDomError} from '../../common/js/util.js';
 import {FileSystemType, FileSystemTypeVolumeNameLengthLimit} from '../../common/js/volume_manager_types.js';
+import type {FilesAppDirEntry, FilesAppEntry} from '../../externs/files_app_entry_interfaces.js';
 import type {VolumeInfo} from '../../externs/volume_info.js';
 
 /**
@@ -29,7 +30,7 @@ import type {VolumeInfo} from '../../externs/volume_info.js';
  * @return Fulfills on success, throws error message otherwise.
  */
 export async function validateEntryName(
-    entry: Entry, name: string, areHiddenFilesVisible: boolean,
+    entry: Entry|FilesAppEntry, name: string, areHiddenFilesVisible: boolean,
     volumeInfo: null|VolumeInfo, isRemovableRoot: boolean) {
   if (isRemovableRoot) {
     const diskFileSystemType = volumeInfo && volumeInfo.diskFileSystemType;
@@ -95,7 +96,8 @@ export function validateExternalDriveName(
  * @return Fulfills on success, throws error message otherwise.
  */
 export async function validateFileName(
-    parentEntry: DirectoryEntry, name: string, areHiddenFilesVisible: boolean) {
+    parentEntry: FilesAppDirEntry|DirectoryEntry, name: string,
+    areHiddenFilesVisible: boolean) {
   const testResult = /[\/\\\<\>\:\?\*\"\|]/.exec(name);
   if (testResult) {
     throw Error(strf('ERROR_INVALID_CHARACTER', testResult[0]));
@@ -128,8 +130,8 @@ export async function validateFileName(
  * @return Resolves the renamed entry if successful, else throws error message.
  */
 export async function renameEntry(
-    entry: Entry, newName: string, volumeInfo: null|VolumeInfo,
-    isRemovableRoot: boolean): Promise<Entry> {
+    entry: Entry|FilesAppEntry, newName: string, volumeInfo: null|VolumeInfo,
+    isRemovableRoot: boolean): Promise<Entry|FilesAppEntry> {
   if (isRemovableRoot) {
     chrome.fileManagerPrivate.renameVolume(volumeInfo!.volumeId, newName);
     return entry;
@@ -144,7 +146,7 @@ export async function renameEntry(
  * @return Resolves the renamed entry if successful, else throws error message.
  */
 export async function renameFile(
-    entry: Entry, newName: string): Promise<Entry> {
+    entry: Entry|FilesAppEntry, newName: string): Promise<Entry|FilesAppEntry> {
   try {
     // Before moving, we need to check if there is an existing entry at
     // parent/newName, since moveTo will overwrite it.
@@ -176,7 +178,7 @@ export async function renameFile(
  * Converts DOMError response from renameEntry() to error message.
  */
 function getRenameErrorMessage(
-    error: DOMError, entry: Entry, newName: string): Error {
+    error: DOMError, entry: Entry|FilesAppEntry, newName: string): Error {
   if (error &&
       (error.name == FileErrorToDomError.PATH_EXISTS_ERR ||
        error.name == FileErrorToDomError.TYPE_MISMATCH_ERR)) {

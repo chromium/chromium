@@ -1087,7 +1087,8 @@ export class DirectoryModel extends FilesEventTarget<DirectoryModelEventMap> {
    * @param newEntry The new entry.
    * @return Resolves on completion.
    */
-  onRenameEntry(oldEntry: Entry, newEntry: Entry|FilesAppEntry): Promise<void> {
+  onRenameEntry(oldEntry: Entry|FilesAppEntry, newEntry: Entry|FilesAppEntry):
+      Promise<void> {
     return new Promise(resolve => {
       this.currentDirContents_.prefetchMetadata([newEntry], true, () => {
         // If the current directory is the old entry, then quietly change to the

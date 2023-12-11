@@ -663,7 +663,8 @@ async function readChildEntriesForDirectoryEntry(
  * because the newly renamed entry might not be in the store yet after renaming.
  */
 export async function*
-    readSubDirectoriesForRenamedEntry(newEntry: Entry): ActionsProducerGen {
+    readSubDirectoriesForRenamedEntry(newEntry: Entry|FilesAppEntry):
+        ActionsProducerGen {
   const parentDirectory = await getParentEntry(newEntry);
   // Read the children of the parent first to make sure the newly added entry
   // appears in the store.

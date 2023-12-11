@@ -915,7 +915,7 @@ export class FileTable extends Table {
    * @param item Table item.
    * @param entry File entry.
    */
-  updateFileMetadata(item: HTMLElement, entry: Entry) {
+  updateFileMetadata(item: HTMLElement, entry: Entry|FilesAppEntry) {
     this.updateDate_(item.querySelector<HTMLElement>('.date')!, entry);
     this.updateSize_(item.querySelector<HTMLElement>('.size')!, entry);
   }
