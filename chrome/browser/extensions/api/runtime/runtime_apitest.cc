@@ -231,15 +231,13 @@ IN_PROC_BROWSER_TEST_F(ExtensionApiTest, ExtensionTerminatedForRapidReloads) {
     unload_observer.WaitForExtensionUnloaded();
     base::RunLoop().RunUntilIdle();
 
-    if (registry->GetExtensionById(extension_id,
-                                   ExtensionRegistry::TERMINATED)) {
+    if (registry->terminated_extensions().GetByID(extension_id)) {
       break;
     } else {
       EXPECT_TRUE(ready_listener_reload.WaitUntilSatisfied());
     }
   }
-  ASSERT_TRUE(
-      registry->GetExtensionById(extension_id, ExtensionRegistry::TERMINATED));
+  ASSERT_TRUE(registry->terminated_extensions().GetByID(extension_id));
 }
 
 // Tests chrome.runtime.reload

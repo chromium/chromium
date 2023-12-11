@@ -513,8 +513,7 @@ void OpenApplicationWithReenablePrompt(Profile* profile,
       extensions::ExtensionSystem::Get(profile)->extension_service();
   ExtensionRegistry* registry = ExtensionRegistry::Get(profile);
   if (!service->IsExtensionEnabled(extension->id()) ||
-      registry->GetExtensionById(extension->id(),
-                                 ExtensionRegistry::TERMINATED)) {
+      registry->terminated_extensions().GetByID(extension->id())) {
     // Self deleting.
     auto* flow = new EnableViaDialogFlow(
         service, registry, profile, extension->id(),

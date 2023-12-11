@@ -183,8 +183,7 @@ TEST_F(ExtensionRegistryTest, GetExtensionById) {
       registry.GetExtensionById(enabled->id(), ExtensionRegistry::EVERYTHING));
   EXPECT_TRUE(registry.enabled_extensions().GetByID(enabled->id()));
   EXPECT_FALSE(registry.disabled_extensions().GetByID(enabled->id()));
-  EXPECT_FALSE(
-      registry.GetExtensionById(enabled->id(), ExtensionRegistry::TERMINATED));
+  EXPECT_FALSE(registry.terminated_extensions().GetByID(enabled->id()));
   EXPECT_FALSE(
       registry.GetExtensionById(enabled->id(), ExtensionRegistry::BLOCKLISTED));
 
@@ -193,8 +192,7 @@ TEST_F(ExtensionRegistryTest, GetExtensionById) {
       registry.GetExtensionById(disabled->id(), ExtensionRegistry::EVERYTHING));
   EXPECT_FALSE(registry.enabled_extensions().GetByID(disabled->id()));
   EXPECT_TRUE(registry.disabled_extensions().GetByID(disabled->id()));
-  EXPECT_FALSE(
-      registry.GetExtensionById(disabled->id(), ExtensionRegistry::TERMINATED));
+  EXPECT_FALSE(registry.terminated_extensions().GetByID(disabled->id()));
   EXPECT_FALSE(registry.GetExtensionById(disabled->id(),
                                          ExtensionRegistry::BLOCKLISTED));
 
@@ -203,8 +201,7 @@ TEST_F(ExtensionRegistryTest, GetExtensionById) {
                                         ExtensionRegistry::EVERYTHING));
   EXPECT_FALSE(registry.enabled_extensions().GetByID(terminated->id()));
   EXPECT_FALSE(registry.disabled_extensions().GetByID(terminated->id()));
-  EXPECT_TRUE(registry.GetExtensionById(terminated->id(),
-                                        ExtensionRegistry::TERMINATED));
+  EXPECT_TRUE(registry.terminated_extensions().GetByID(terminated->id()));
   EXPECT_FALSE(registry.GetExtensionById(terminated->id(),
                                          ExtensionRegistry::BLOCKLISTED));
 
@@ -213,8 +210,7 @@ TEST_F(ExtensionRegistryTest, GetExtensionById) {
                                         ExtensionRegistry::EVERYTHING));
   EXPECT_FALSE(registry.enabled_extensions().GetByID(blocklisted->id()));
   EXPECT_FALSE(registry.disabled_extensions().GetByID(blocklisted->id()));
-  EXPECT_FALSE(registry.GetExtensionById(blocklisted->id(),
-                                         ExtensionRegistry::TERMINATED));
+  EXPECT_FALSE(registry.terminated_extensions().GetByID(blocklisted->id()));
   EXPECT_TRUE(registry.GetExtensionById(blocklisted->id(),
                                         ExtensionRegistry::BLOCKLISTED));
 
