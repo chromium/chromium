@@ -9969,6 +9969,17 @@ experimental domain Storage
       string key
       array of string values
 
+  experimental type AttributionReportingFilterConfig extends object
+    properties
+      array of AttributionReportingFilterDataEntry filterValues
+      # duration in seconds
+      optional integer lookbackWindow
+
+  experimental type AttributionReportingFilterPair extends object
+    properties
+      array of AttributionReportingFilterConfig filters
+      array of AttributionReportingFilterConfig notFilters
+
   experimental type AttributionReportingAggregationKeysEntry extends object
     properties
       string key
@@ -10027,12 +10038,98 @@ experimental domain Storage
       reportingOriginsPerSiteLimitReached
       exceedsMaxChannelCapacity
 
-  # TODO(crbug.com/1458532): Add other Attribution Reporting events, e.g.
-  # trigger registration.
   experimental event attributionReportingSourceRegistered
     parameters
       AttributionReportingSourceRegistration registration
       AttributionReportingSourceRegistrationResult result
+
+  experimental type AttributionReportingSourceRegistrationTimeConfig extends string
+    enum
+      include
+      exclude
+
+  experimental type AttributionReportingAggregatableValueEntry extends object
+    properties
+      string key
+      # number instead of integer because not all uint32 can be represented by
+      # int
+      number value
+
+  experimental type AttributionReportingEventTriggerData extends object
+    properties
+      UnsignedInt64AsBase10 data
+      SignedInt64AsBase10 priority
+      optional UnsignedInt64AsBase10 dedupKey
+      AttributionReportingFilterPair filters
+
+  experimental type AttributionReportingAggregatableTriggerData extends object
+    properties
+      UnsignedInt128AsBase16 keyPiece
+      array of string sourceKeys
+      AttributionReportingFilterPair filters
+
+  experimental type AttributionReportingAggregatableDedupKey extends object
+    properties
+      optional UnsignedInt64AsBase10 dedupKey
+      AttributionReportingFilterPair filters
+
+  experimental type AttributionReportingTriggerRegistration extends object
+    properties
+      AttributionReportingFilterPair filters
+      optional UnsignedInt64AsBase10 debugKey
+      array of AttributionReportingAggregatableDedupKey aggregatableDedupKeys
+      array of AttributionReportingEventTriggerData eventTriggerData
+      array of AttributionReportingAggregatableTriggerData aggregatableTriggerData
+      array of AttributionReportingAggregatableValueEntry aggregatableValues
+      boolean debugReporting
+      optional string aggregationCoordinatorOrigin
+      AttributionReportingSourceRegistrationTimeConfig sourceRegistrationTimeConfig
+      optional string triggerContextId
+
+  experimental type AttributionReportingEventLevelResult extends string
+    enum
+      success
+      successDroppedLowerPriority
+      internalError
+      noCapacityForAttributionDestination
+      noMatchingSources
+      deduplicated
+      excessiveAttributions
+      priorityTooLow
+      neverAttributedSource
+      excessiveReportingOrigins
+      noMatchingSourceFilterData
+      prohibitedByBrowserPolicy
+      noMatchingConfigurations
+      excessiveReports
+      falselyAttributedSource
+      reportWindowPassed
+      notRegistered
+      reportWindowNotStarted
+      noMatchingTriggerData
+
+  experimental type AttributionReportingAggregatableResult extends string
+    enum
+      success
+      internalError
+      noCapacityForAttributionDestination
+      noMatchingSources
+      excessiveAttributions
+      excessiveReportingOrigins
+      noHistograms
+      insufficientBudget
+      noMatchingSourceFilterData
+      notRegistered
+      prohibitedByBrowserPolicy
+      deduplicated
+      reportWindowPassed
+      excessiveReports
+
+  experimental event attributionReportingTriggerRegistered
+    parameters
+      AttributionReportingTriggerRegistration registration
+      AttributionReportingEventLevelResult eventLevel
+      AttributionReportingAggregatableResult aggregatable
 
 # The SystemInfo domain defines methods and events for querying low-level system information.
 experimental domain SystemInfo

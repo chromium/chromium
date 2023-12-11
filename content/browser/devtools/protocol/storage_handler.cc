@@ -19,8 +19,12 @@
 #include "base/strings/string_split.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
+#include "components/attribution_reporting/aggregatable_dedup_key.h"
+#include "components/attribution_reporting/aggregatable_trigger_data.h"
+#include "components/attribution_reporting/aggregatable_values.h"
 #include "components/attribution_reporting/aggregation_keys.h"
 #include "components/attribution_reporting/destination_set.h"
+#include "components/attribution_reporting/event_trigger_data.h"
 #include "components/attribution_reporting/filters.h"
 #include "components/attribution_reporting/parsing_utils.h"
 #include "components/attribution_reporting/source_registration.h"
@@ -31,9 +35,13 @@
 #include "components/services/storage/privileged/mojom/indexed_db_control.mojom.h"
 #include "components/services/storage/public/cpp/buckets/bucket_locator.h"
 #include "components/services/storage/public/mojom/cache_storage_control.mojom.h"
+#include "content/browser/attribution_reporting/aggregatable_result.mojom.h"
 #include "content/browser/attribution_reporting/attribution_manager.h"
 #include "content/browser/attribution_reporting/attribution_observer.h"
+#include "content/browser/attribution_reporting/attribution_trigger.h"
 #include "content/browser/attribution_reporting/common_source_info.h"
+#include "content/browser/attribution_reporting/create_report_result.h"
+#include "content/browser/attribution_reporting/event_level_result.mojom.h"
 #include "content/browser/attribution_reporting/storable_source.h"
 #include "content/browser/attribution_reporting/store_source_result.mojom.h"
 #include "content/browser/devtools/protocol/browser_handler.h"
@@ -1672,6 +1680,8 @@ void StorageHandler::ResetAttributionReporting() {
 
 namespace {
 
+using ::attribution_reporting::mojom::AggregatableResult;
+using ::attribution_reporting::mojom::EventLevelResult;
 using ::attribution_reporting::mojom::StoreSourceResult;
 
 Storage::AttributionReportingSourceRegistrationResult
@@ -1715,6 +1725,107 @@ ToSourceRegistrationResult(StoreSourceResult result) {
   }
 }
 
+Storage::AttributionReportingEventLevelResult ToEventLevelResult(
+    EventLevelResult result) {
+  switch (result) {
+    case EventLevelResult::kSuccess:
+      return Storage::AttributionReportingEventLevelResultEnum::Success;
+    case EventLevelResult::kSuccessDroppedLowerPriority:
+      return Storage::AttributionReportingEventLevelResultEnum::
+          SuccessDroppedLowerPriority;
+    case EventLevelResult::kInternalError:
+      return Storage::AttributionReportingEventLevelResultEnum::InternalError;
+    case EventLevelResult::kNoCapacityForConversionDestination:
+      return Storage::AttributionReportingEventLevelResultEnum::
+          NoCapacityForAttributionDestination;
+    case EventLevelResult::kNoMatchingImpressions:
+      return Storage::AttributionReportingEventLevelResultEnum::
+          NoMatchingSources;
+    case EventLevelResult::kDeduplicated:
+      return Storage::AttributionReportingEventLevelResultEnum::Deduplicated;
+    case EventLevelResult::kExcessiveAttributions:
+      return Storage::AttributionReportingEventLevelResultEnum::
+          ExcessiveAttributions;
+    case EventLevelResult::kPriorityTooLow:
+      return Storage::AttributionReportingEventLevelResultEnum::PriorityTooLow;
+    case EventLevelResult::kNeverAttributedSource:
+      return Storage::AttributionReportingEventLevelResultEnum::
+          NeverAttributedSource;
+    case EventLevelResult::kExcessiveReportingOrigins:
+      return Storage::AttributionReportingEventLevelResultEnum::
+          ExcessiveReportingOrigins;
+    case EventLevelResult::kNoMatchingSourceFilterData:
+      return Storage::AttributionReportingEventLevelResultEnum::
+          NoMatchingSourceFilterData;
+    case EventLevelResult::kProhibitedByBrowserPolicy:
+      return Storage::AttributionReportingEventLevelResultEnum::
+          ProhibitedByBrowserPolicy;
+    case EventLevelResult::kNoMatchingConfigurations:
+      return Storage::AttributionReportingEventLevelResultEnum::
+          NoMatchingConfigurations;
+    case EventLevelResult::kExcessiveReports:
+      return Storage::AttributionReportingEventLevelResultEnum::
+          ExcessiveReports;
+    case EventLevelResult::kFalselyAttributedSource:
+      return Storage::AttributionReportingEventLevelResultEnum::
+          FalselyAttributedSource;
+    case EventLevelResult::kReportWindowPassed:
+      return Storage::AttributionReportingEventLevelResultEnum::
+          ReportWindowPassed;
+    case EventLevelResult::kNotRegistered:
+      return Storage::AttributionReportingEventLevelResultEnum::NotRegistered;
+    case EventLevelResult::kReportWindowNotStarted:
+      return Storage::AttributionReportingEventLevelResultEnum::
+          ReportWindowNotStarted;
+    case EventLevelResult::kNoMatchingTriggerData:
+      return Storage::AttributionReportingEventLevelResultEnum::
+          NoMatchingTriggerData;
+  }
+}
+
+Storage::AttributionReportingAggregatableResult ToAggregatableResult(
+    AggregatableResult result) {
+  switch (result) {
+    case AggregatableResult::kSuccess:
+      return Storage::AttributionReportingAggregatableResultEnum::Success;
+    case AggregatableResult::kInternalError:
+      return Storage::AttributionReportingAggregatableResultEnum::InternalError;
+    case AggregatableResult::kNoCapacityForConversionDestination:
+      return Storage::AttributionReportingAggregatableResultEnum::
+          NoCapacityForAttributionDestination;
+    case AggregatableResult::kNoMatchingImpressions:
+      return Storage::AttributionReportingAggregatableResultEnum::
+          NoMatchingSources;
+    case AggregatableResult::kExcessiveAttributions:
+      return Storage::AttributionReportingAggregatableResultEnum::
+          ExcessiveAttributions;
+    case AggregatableResult::kExcessiveReportingOrigins:
+      return Storage::AttributionReportingAggregatableResultEnum::
+          ExcessiveReportingOrigins;
+    case AggregatableResult::kNoHistograms:
+      return Storage::AttributionReportingAggregatableResultEnum::NoHistograms;
+    case AggregatableResult::kInsufficientBudget:
+      return Storage::AttributionReportingAggregatableResultEnum::
+          InsufficientBudget;
+    case AggregatableResult::kNoMatchingSourceFilterData:
+      return Storage::AttributionReportingAggregatableResultEnum::
+          NoMatchingSourceFilterData;
+    case AggregatableResult::kNotRegistered:
+      return Storage::AttributionReportingAggregatableResultEnum::NotRegistered;
+    case AggregatableResult::kProhibitedByBrowserPolicy:
+      return Storage::AttributionReportingAggregatableResultEnum::
+          ProhibitedByBrowserPolicy;
+    case AggregatableResult::kDeduplicated:
+      return Storage::AttributionReportingAggregatableResultEnum::Deduplicated;
+    case AggregatableResult::kReportWindowPassed:
+      return Storage::AttributionReportingAggregatableResultEnum::
+          ReportWindowPassed;
+    case AggregatableResult::kExcessiveReports:
+      return Storage::AttributionReportingAggregatableResultEnum::
+          ExcessiveReports;
+  }
+}
+
 std::unique_ptr<Array<Storage::AttributionReportingFilterDataEntry>>
 ToFilterDataEntries(const attribution_reporting::FilterData& filter_data) {
   auto out =
@@ -1728,6 +1839,45 @@ ToFilterDataEntries(const attribution_reporting::FilterData& filter_data) {
   }
 
   return out;
+}
+
+std::unique_ptr<Array<Storage::AttributionReportingFilterConfig>>
+ToFilterConfigs(
+    const std::vector<attribution_reporting::FilterConfig>& filter_configs) {
+  auto out =
+      std::make_unique<Array<Storage::AttributionReportingFilterConfig>>();
+
+  for (const auto& config : filter_configs) {
+    auto filter_data =
+        std::make_unique<Array<Storage::AttributionReportingFilterDataEntry>>();
+    for (const auto& [key, values] : config.filter_values()) {
+      filter_data->emplace_back(
+          Storage::AttributionReportingFilterDataEntry::Create()
+              .SetKey(key)
+              .SetValues(std::make_unique<Array<String>>(values))
+              .Build());
+    }
+
+    auto config_entry = Storage::AttributionReportingFilterConfig::Create()
+                            .SetFilterValues(std::move(filter_data))
+                            .Build();
+    if (auto lookback_window = config.lookback_window();
+        lookback_window.has_value()) {
+      config_entry->SetLookbackWindow(lookback_window->InSeconds());
+    }
+
+    out->emplace_back(std::move(config_entry));
+  }
+
+  return out;
+}
+
+std::unique_ptr<Storage::AttributionReportingFilterPair> ToFilterPair(
+    const attribution_reporting::FilterPair& filters) {
+  return Storage::AttributionReportingFilterPair::Create()
+      .SetFilters(ToFilterConfigs(filters.positive))
+      .SetNotFilters(ToFilterConfigs(filters.negative))
+      .Build();
 }
 
 std::unique_ptr<Array<Storage::AttributionReportingAggregationKeysEntry>>
@@ -1788,6 +1938,98 @@ Storage::AttributionReportingTriggerDataMatching ToTriggerDataMatching(
   }
 }
 
+std::unique_ptr<Array<Storage::AttributionReportingAggregatableDedupKey>>
+ToAggregatableDedupKeys(
+    const std::vector<attribution_reporting::AggregatableDedupKey>&
+        dedup_keys) {
+  auto out = std::make_unique<
+      Array<Storage::AttributionReportingAggregatableDedupKey>>();
+  for (const auto& dedup_key : dedup_keys) {
+    auto dedup_key_entry =
+        Storage::AttributionReportingAggregatableDedupKey::Create()
+            .SetFilters(ToFilterPair(dedup_key.filters))
+            .Build();
+    if (dedup_key.dedup_key.has_value()) {
+      dedup_key_entry->SetDedupKey(base::NumberToString(*dedup_key.dedup_key));
+    }
+    out->push_back(std::move(dedup_key_entry));
+  }
+
+  return out;
+}
+
+std::unique_ptr<Array<Storage::AttributionReportingEventTriggerData>>
+ToEventTriggerData(const std::vector<attribution_reporting::EventTriggerData>&
+                       event_triggers) {
+  auto out =
+      std::make_unique<Array<Storage::AttributionReportingEventTriggerData>>();
+  for (const auto& event_trigger : event_triggers) {
+    auto event_trigger_entry =
+        Storage::AttributionReportingEventTriggerData::Create()
+            .SetData(base::NumberToString(event_trigger.data))
+            .SetPriority(base::NumberToString(event_trigger.priority))
+            .SetFilters(ToFilterPair(event_trigger.filters))
+            .Build();
+    if (event_trigger.dedup_key.has_value()) {
+      event_trigger_entry->SetDedupKey(
+          base::NumberToString(*event_trigger.dedup_key));
+    }
+    out->push_back(std::move(event_trigger_entry));
+  }
+
+  return out;
+}
+
+std::unique_ptr<Array<Storage::AttributionReportingAggregatableTriggerData>>
+ToAggregatableTriggerData(
+    const std::vector<attribution_reporting::AggregatableTriggerData>&
+        aggregatable_triggers) {
+  auto out = std::make_unique<
+      Array<Storage::AttributionReportingAggregatableTriggerData>>();
+  for (const auto& aggregatable_trigger : aggregatable_triggers) {
+    out->emplace_back(
+        Storage::AttributionReportingAggregatableTriggerData::Create()
+            .SetKeyPiece(attribution_reporting::HexEncodeAggregationKey(
+                aggregatable_trigger.key_piece()))
+            .SetSourceKeys(std::make_unique<Array<String>>(
+                aggregatable_trigger.source_keys()))
+            .SetFilters(ToFilterPair(aggregatable_trigger.filters()))
+            .Build());
+  }
+
+  return out;
+}
+
+std::unique_ptr<Array<Storage::AttributionReportingAggregatableValueEntry>>
+ToAggregatableValueEntries(
+    const attribution_reporting::AggregatableValues& values) {
+  auto out = std::make_unique<
+      Array<Storage::AttributionReportingAggregatableValueEntry>>();
+  for (const auto& [key, value] : values.values()) {
+    out->emplace_back(
+        Storage::AttributionReportingAggregatableValueEntry::Create()
+            .SetKey(key)
+            .SetValue(value)
+            .Build());
+  }
+
+  return out;
+}
+
+Storage::AttributionReportingSourceRegistrationTimeConfig
+ToSourceRegistrationTimeConfig(
+    attribution_reporting::mojom::SourceRegistrationTimeConfig
+        source_registration_time_config) {
+  switch (source_registration_time_config) {
+    case attribution_reporting::mojom::SourceRegistrationTimeConfig::kInclude:
+      return Storage::AttributionReportingSourceRegistrationTimeConfigEnum::
+          Include;
+    case attribution_reporting::mojom::SourceRegistrationTimeConfig::kExclude:
+      return Storage::AttributionReportingSourceRegistrationTimeConfigEnum::
+          Exclude;
+  }
+}
+
 }  // namespace
 
 void StorageHandler::OnSourceHandled(
@@ -1837,6 +2079,48 @@ void StorageHandler::OnSourceHandled(
 
   frontend_->AttributionReportingSourceRegistered(
       std::move(out_source), ToSourceRegistrationResult(result));
+}
+
+void StorageHandler::OnTriggerHandled(
+    const AttributionTrigger& trigger,
+    absl::optional<uint64_t> cleared_debug_key,
+    const CreateReportResult& result) {
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+
+  const auto& registration = trigger.registration();
+
+  auto out_trigger =
+      Storage::AttributionReportingTriggerRegistration::Create()
+          .SetFilters(ToFilterPair(registration.filters))
+          .SetAggregatableDedupKeys(
+              ToAggregatableDedupKeys(registration.aggregatable_dedup_keys))
+          .SetEventTriggerData(ToEventTriggerData(registration.event_triggers))
+          .SetAggregatableTriggerData(
+              ToAggregatableTriggerData(registration.aggregatable_trigger_data))
+          .SetAggregatableValues(
+              ToAggregatableValueEntries(registration.aggregatable_values))
+          .SetDebugReporting(registration.debug_reporting)
+          .SetSourceRegistrationTimeConfig(ToSourceRegistrationTimeConfig(
+              registration.aggregatable_trigger_config
+                  .source_registration_time_config()))
+          .Build();
+
+  if (registration.debug_key.has_value()) {
+    out_trigger->SetDebugKey(base::NumberToString(*registration.debug_key));
+  }
+  if (registration.aggregation_coordinator_origin.has_value()) {
+    out_trigger->SetAggregationCoordinatorOrigin(
+        registration.aggregation_coordinator_origin->Serialize());
+  }
+  if (registration.aggregatable_trigger_config.trigger_context_id()
+          .has_value()) {
+    out_trigger->SetTriggerContextId(
+        *registration.aggregatable_trigger_config.trigger_context_id());
+  }
+
+  frontend_->AttributionReportingTriggerRegistered(
+      std::move(out_trigger), ToEventLevelResult(result.event_level_status()),
+      ToAggregatableResult(result.aggregatable_status()));
 }
 
 Response StorageHandler::SetAttributionReportingTracking(bool enable) {
