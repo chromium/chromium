@@ -191,7 +191,8 @@ class CONTENT_EXPORT AttributionStorageSql : public AttributionStorage {
   [[nodiscard]] bool DeleteExpiredSources()
       VALID_CONTEXT_REQUIRED(sequence_checker_);
 
-  bool HasCapacityForStoringSource(const std::string& serialized_origin)
+  bool HasCapacityForStoringSource(const std::string& serialized_origin,
+                                   base::Time now)
       VALID_CONTEXT_REQUIRED(sequence_checker_);
 
   // Returns the number of sources in storage.

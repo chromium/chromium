@@ -5579,6 +5579,7 @@ data/attribution_reporting/interop/same_reporting_origin.json
 data/attribution_reporting/interop/source_deactivation.json
 data/attribution_reporting/interop/source_priority.json
 data/attribution_reporting/interop/source_storage_limit.json
+data/attribution_reporting/interop/source_storage_limit_expiry.json
 data/attribution_reporting/interop/success_debug_aggregatable.json
 data/attribution_reporting/interop/success_debug_event_level.json
 data/attribution_reporting/interop/top_level_filter_data.json
@@ -7111,8 +7112,8 @@ data/service_worker/install_event_caches_script.js
 data/service_worker/install_event_caches_script_with_hint.js
 data/service_worker/long_lived_import.js
 data/service_worker/long_lived_import.js.mock-http-headers
-data/service_worker/message_port_close_event.js
 data/service_worker/maybe_offline_support.js
+data/service_worker/message_port_close_event.js
 data/service_worker/navigation_preload_worker.js
 data/service_worker/navigation_preload_worker.js.mock-http-headers
 data/service_worker/non_function_fetch_event.js

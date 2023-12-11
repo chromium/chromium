@@ -526,7 +526,7 @@ StoreSourceResult AttributionStorageSql::StoreSource(
 
   const std::string serialized_source_origin =
       common_info.source_origin().Serialize();
-  if (!HasCapacityForStoringSource(serialized_source_origin)) {
+  if (!HasCapacityForStoringSource(serialized_source_origin, source_time)) {
     if (int64_t file_size = StorageFileSizeKB(path_to_database_);
         file_size > -1) {
       base::UmaHistogramCounts10M(
@@ -1984,11 +1984,13 @@ void AttributionStorageSql::ClearAllDataAllTime(bool delete_rate_limit_data) {
 }
 
 bool AttributionStorageSql::HasCapacityForStoringSource(
-    const std::string& serialized_origin) {
+    const std::string& serialized_origin,
+    const base::Time now) {
   sql::Statement statement(db_.GetCachedStatement(
       SQL_FROM_HERE,
       attribution_queries::kCountActiveSourcesFromSourceOriginSql));
   statement.BindString(0, serialized_origin);
+  statement.BindTime(1, now);
   if (!statement.Step()) {
     return false;
   }

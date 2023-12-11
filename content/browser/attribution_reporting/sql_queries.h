@@ -61,7 +61,8 @@ inline constexpr const char kDeleteVestigialConversionSql[] =
 inline constexpr const char kCountActiveSourcesFromSourceOriginSql[] =
     "SELECT COUNT(*)FROM sources "
     "WHERE source_origin=? "
-    "AND(event_level_active=1 OR aggregatable_active=1)";
+    "AND(event_level_active=1 OR aggregatable_active=1)"
+    "AND expiry_time>?";
 
 inline constexpr const char kCountSourcesSql[] = "SELECT COUNT(*)FROM sources";
 

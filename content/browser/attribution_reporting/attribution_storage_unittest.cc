@@ -759,6 +759,46 @@ TEST_F(AttributionStorageTest, MaxImpressionsPerOrigin_PerOriginNotSite) {
                           SourceEventIdIs(7u), SourceEventIdIs(11u)));
 }
 
+// Regression test for https://crbug.com/1510433 in which expired sources
+// were erroneously counted during calculation of the sources-per-source-origin
+// limit check.
+TEST_F(AttributionStorageTest, MaxImpressionsPerOrigin_ExpiredSourcesIgnored) {
+  delegate()->set_max_sources_per_origin(1);
+
+  // Effectively prevent expired sources from being deleted/deactivated.
+  delegate()->set_delete_expired_sources_frequency(base::TimeDelta::Max());
+
+  const auto kSourceOrigin = *SuitableOrigin::Deserialize("https://a.example");
+  constexpr base::TimeDelta kExpiry = base::Days(1);
+
+  ASSERT_EQ(StorableSource::Result::kSuccess,
+            storage()
+                ->StoreSource(SourceBuilder()
+                                  .SetSourceOrigin(kSourceOrigin)
+                                  .SetSourceEventId(111)
+                                  .SetExpiry(kExpiry)
+                                  .Build())
+                .status());
+
+  ASSERT_THAT(storage()->GetActiveSources(),
+              ElementsAre(SourceEventIdIs(111u)));
+
+  task_environment_.FastForwardBy(kExpiry);
+
+  // This source *should* be stored successfully, as the previous source has
+  // expired at this point.
+  ASSERT_EQ(StorableSource::Result::kSuccess,
+            storage()
+                ->StoreSource(SourceBuilder()
+                                  .SetSourceOrigin(kSourceOrigin)
+                                  .SetSourceEventId(222)
+                                  .Build())
+                .status());
+
+  EXPECT_THAT(storage()->GetActiveSources(),
+              ElementsAre(SourceEventIdIs(222u)));
+}
+
 TEST_F(AttributionStorageTest, MaxEventLevelReportsPerDestination) {
   SourceBuilder source_builder = TestAggregatableSourceProvider().GetBuilder();
 
