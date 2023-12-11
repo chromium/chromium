@@ -17,7 +17,7 @@
 //   headers and bodies.
 //
 // If you want to change this protocol definition or you have questions
-// regarding its format please contact chrome-anti-phishing@googlegroups.com.
+// regarding its format please contact safebrowsing@chromium.org.
 
 syntax = "proto2";
 

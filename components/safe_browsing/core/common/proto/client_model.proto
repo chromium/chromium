@@ -10,7 +10,7 @@
 // sync with the server-side copy.  Otherwise, the client may not be able to
 // parse the server generated model anymore.  If you want to change this
 // protocol definition or you have questions regarding its format please contact
-// chrome-anti-phishing@googlegroups.com.
+// safebrowsing@chromium.org.
 
 syntax = "proto2";
 
