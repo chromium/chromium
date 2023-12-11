@@ -1869,6 +1869,19 @@ TEST_F(AutofillExternalDelegateUnitTest, ScanCreditCardPromptMetricsTest) {
   }
 }
 
+TEST_F(AutofillExternalDelegateUnitTest, AutocompleteShown_MetricsEmitted) {
+  base::HistogramTester histogram;
+  IssueOnQuery();
+  external_delegate().OnSuggestionsReturned(
+      queried_form_triggering_field_id_,
+      {test::CreateAutofillSuggestion(PopupItemId::kAutocompleteEntry,
+                                      u"autocomplete")});
+  external_delegate().OnPopupShown();
+  histogram.ExpectBucketCount("Autocomplete.Events2",
+                              AutofillMetrics::AUTOCOMPLETE_SUGGESTIONS_SHOWN,
+                              1);
+}
+
 MATCHER_P(CreditCardMatches, card, "") {
   return !arg.Compare(card);
 }

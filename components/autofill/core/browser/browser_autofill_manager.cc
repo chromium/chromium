@@ -1583,13 +1583,6 @@ void BrowserAutofillManager::DidShowSuggestions(
       shown_suggestions_types,
       AutofillExternalDelegate::IsAutofillAndFirstLayerSuggestionId);
   if (!has_autofill_suggestions) {
-    bool has_autocomplete_suggestions = base::ranges::any_of(
-        shown_suggestions_types, [&](PopupItemId popup_item_id) {
-          return popup_item_id == PopupItemId::kAutocompleteEntry;
-        });
-    if (has_autocomplete_suggestions) {
-      AutofillMetrics::OnAutocompleteSuggestionsShown();
-    }
     return;
   }
 

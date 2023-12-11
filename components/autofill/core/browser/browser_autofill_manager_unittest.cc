@@ -8750,7 +8750,7 @@ TEST_F(BrowserAutofillManagerTest,
 }
 
 TEST_F(BrowserAutofillManagerTest,
-       DidShowSuggestions_LogAutocompleteShownMetric) {
+       DidShowSuggestions_LogAutocomplete_NoHappinessMetricsEmitted) {
   FormData form;
   form.name = u"NothingSpecial";
   form.fields = {CreateTestFormField("Something", "something", "",
@@ -8761,31 +8761,12 @@ TEST_F(BrowserAutofillManagerTest,
   browser_autofill_manager_->DidShowSuggestions(
       std::vector<PopupItemId>({PopupItemId::kAutocompleteEntry}), form,
       form.fields.back());
-  histogram_tester.ExpectBucketCount(
-      "Autocomplete.Events2", AutofillMetrics::AUTOCOMPLETE_SUGGESTIONS_SHOWN,
-      1);
-
   // No Autofill logs.
   const std::string histograms = histogram_tester.GetAllHistogramsRecorded();
   EXPECT_THAT(histograms,
               Not(AnyOf(HasSubstr("Autofill.UserHappiness"),
                         HasSubstr("Autofill.FormEvents.Address"),
                         HasSubstr("Autofill.FormEvents.CreditCard"))));
-}
-
-TEST_F(BrowserAutofillManagerTest,
-       DidShowSuggestions_NoAutocompleteEntry_DontLogAutocompleteShownMetric) {
-  FormData form = test::GetFormData(
-      {.fields = {{.label = u"Something", .name = u"something"}}});
-
-  FormsSeen({form});
-  base::HistogramTester histogram_tester;
-  browser_autofill_manager_->DidShowSuggestions(
-      std::vector<PopupItemId>({PopupItemId::kPasswordEntry}), form,
-      form.fields.back());
-
-  EXPECT_THAT(histogram_tester.GetAllHistogramsRecorded(),
-              Not(HasSubstr("Autocomplete.Events")));
 }
 
 TEST_F(BrowserAutofillManagerTest,

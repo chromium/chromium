@@ -316,9 +316,9 @@ void AutofillExternalDelegate::OnSuggestionsReturned(
                                             query_field_.text_direction,
                                             suggestions, trigger_source_);
 
-    shown_suggestions_types_.clear();
+    shown_suggestion_types_.clear();
     for (const Suggestion& suggestion : input_suggestions) {
-      shown_suggestions_types_.push_back(suggestion.popup_item_id);
+      shown_suggestion_types_.push_back(suggestion.popup_item_id);
     }
     manager_->client().ShowAutofillPopup(open_args, GetWeakPtr());
   }
@@ -360,14 +360,24 @@ void AutofillExternalDelegate::OnPopupShown() {
   // Popups are expected to be Autofill or Autocomplete.
   DCHECK_NE(GetPopupType(), PopupType::kPasswords);
 
-  bool has_autofill_suggestions = base::ranges::any_of(
-      shown_suggestions_types_, IsAutofillAndFirstLayerSuggestionId);
+  const bool has_autofill_suggestions = base::ranges::any_of(
+      shown_suggestion_types_, IsAutofillAndFirstLayerSuggestionId);
+  if (has_autofill_suggestions) {
+    OnAutofillAvailabilityEvent(
+        mojom::AutofillSuggestionAvailability::kAutofillAvailable);
+  } else {
+    // We send autocomplete availability event even though there might be no
+    // autocomplete suggestions shown.
+    // TODO(b/315748930): Provide AX event only for autocomplete entries.
+    OnAutofillAvailabilityEvent(
+        mojom::AutofillSuggestionAvailability::kAutocompleteAvailable);
+    if (base::Contains(shown_suggestion_types_,
+                       PopupItemId::kAutocompleteEntry)) {
+      AutofillMetrics::OnAutocompleteSuggestionsShown();
+    }
+  }
 
-  OnAutofillAvailabilityEvent(
-      has_autofill_suggestions
-          ? mojom::AutofillSuggestionAvailability::kAutofillAvailable
-          : mojom::AutofillSuggestionAvailability::kAutocompleteAvailable);
-  manager_->DidShowSuggestions(shown_suggestions_types_, query_form_,
+  manager_->DidShowSuggestions(shown_suggestion_types_, query_form_,
                                query_field_);
 
   if (should_show_scan_credit_card_) {

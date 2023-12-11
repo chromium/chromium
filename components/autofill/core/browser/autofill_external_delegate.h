@@ -250,7 +250,7 @@ class AutofillExternalDelegate : public AutofillPopupDelegate,
 
   bool should_show_cards_from_account_option_ = false;
 
-  std::vector<PopupItemId> shown_suggestions_types_;
+  std::vector<PopupItemId> shown_suggestion_types_;
 
   // The current data list values.
   std::vector<SelectOption> datalist_;
