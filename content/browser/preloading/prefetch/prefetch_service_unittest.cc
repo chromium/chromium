@@ -1011,8 +1011,7 @@ class PrefetchServiceTest : public RenderViewHostTestHarness {
     EXPECT_EQ(request->request.url, url);
     EXPECT_EQ(request->request.method, "GET");
     EXPECT_TRUE(request->request.enable_load_timing);
-    EXPECT_EQ(request->request.load_flags,
-              net::LOAD_DISABLE_CACHE | net::LOAD_PREFETCH);
+    EXPECT_EQ(request->request.load_flags, net::LOAD_PREFETCH);
     EXPECT_EQ(request->request.credentials_mode,
               network::mojom::CredentialsMode::kInclude);
 
