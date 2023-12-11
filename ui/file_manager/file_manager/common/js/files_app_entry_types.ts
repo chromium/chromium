@@ -59,7 +59,7 @@ export class StaticReader implements DirectoryReader {
     // files to return, so we clear the entries_ attribute for next call.
     this.entries_ = [];
     // Triggers callback asynchronously.
-    setTimeout(success, 0, entries);
+    setTimeout(() => success(entries as Entry[]), 0);
   }
 }
 
@@ -178,7 +178,7 @@ export class EntryList extends FilesAppDirEntry {
 
   override getMetadata(success: MetadataCallback, _error?: FileErrorCallback) {
     // Defaults modificationTime to current time just to have a valid value.
-    setTimeout(success, 0, {modificationTime: new Date(), size: 0});
+    setTimeout(() => success({modificationTime: new Date(), size: 0}), 0);
   }
 
   // eslint-disable-next-line @typescript-eslint/naming-convention
@@ -194,7 +194,7 @@ export class EntryList extends FilesAppDirEntry {
       success?: (arg: DirectoryEntry|FilesAppDirEntry) => void,
       _error?: (e: Error) => void) {
     if (success) {
-      setTimeout(success, 0, this);
+      setTimeout(() => success(this), 0);
     }
   }
 
@@ -388,7 +388,9 @@ export class VolumeEntry extends FilesAppDirEntry {
       error?: FileErrorCallback) {
     if (!this.rootEntry_) {
       if (error) {
-        setTimeout(error, 0, new Error('Root entry not resolved yet'));
+        setTimeout(
+            () => error(new Error('Root entry not resolved yet') as FileError),
+            0);
       }
       return;
     }
@@ -405,7 +407,9 @@ export class VolumeEntry extends FilesAppDirEntry {
       error?: FileErrorCallback) {
     if (!this.rootEntry_) {
       if (error) {
-        setTimeout(error, 0, new Error('Root entry not resolved yet'));
+        setTimeout(
+            () => error(new Error('Root entry not resolved yet') as FileError),
+            0);
       }
       return;
     }
@@ -443,7 +447,7 @@ export class VolumeEntry extends FilesAppDirEntry {
       success?: (entry: DirectoryEntry|FilesAppDirEntry) => void,
       _error?: ErrorCallback) {
     if (success) {
-      setTimeout(success, 0, this);
+      setTimeout(() => success(this), 0);
     }
   }
 
@@ -613,7 +617,7 @@ export class FakeEntryImpl extends FakeEntry {
       success?: (entry: (DirectoryEntry|FilesAppDirEntry)) => void,
       _error?: ErrorCallback) {
     if (success) {
-      setTimeout(success, 0, this);
+      setTimeout(() => success(this), 0);
     }
   }
 
@@ -647,7 +651,7 @@ export class FakeEntryImpl extends FakeEntry {
   }
 
   override getMetadata(success: MetadataCallback, _error?: FileErrorCallback) {
-    setTimeout(success, 0, {modificationTime: new Date(), size: 0});
+    setTimeout(() => success({modificationTime: new Date(), size: 0}), 0);
   }
 
   override get isNativeType() {

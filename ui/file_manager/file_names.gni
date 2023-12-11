@@ -423,6 +423,7 @@ ts_test_files = [
   "file_manager/common/js/entry_utils_unittest.ts",
   "file_manager/common/js/file_type_unittest.ts",
   "file_manager/common/js/file_types_base_unittest.ts",
+  "file_manager/common/js/files_app_entry_types_unittest.ts",
   "file_manager/common/js/filtered_volume_manager_unittest.ts",
   "file_manager/common/js/lru_cache_unittest.ts",
   "file_manager/common/js/recent_date_bucket_unittest.ts",
@@ -621,7 +622,6 @@ generated_js_files = [
 # Test files:
 unittest_files = [
   # Common:
-  "file_manager/common/js/files_app_entry_types_unittest.js",
   "file_manager/common/js/test_error_reporting.js",
 
   # Background:
