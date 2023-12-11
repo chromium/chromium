@@ -356,6 +356,7 @@
   X("input,rail")                                                             \
   X("input,input.scrolling")                                                  \
   X("input,views")                                                            \
+  X("interactions,startup")                                                   \
   X("ipc,security")                                                           \
   X("ipc,toplevel")                                                           \
   X("Java,devtools," TRACE_DISABLED_BY_DEFAULT("devtools.timeline"))          \
