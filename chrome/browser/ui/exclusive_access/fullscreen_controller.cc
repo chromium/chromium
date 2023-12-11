@@ -369,7 +369,7 @@ void FullscreenController::WindowFullscreenStateChanged() {
   }
 }
 
-void FullscreenController::FullscreenTransititionCompleted() {
+void FullscreenController::FullscreenTransitionCompleted() {
   if (fullscreen_transition_complete_callback_)
     std::move(fullscreen_transition_complete_callback_).Run();
 #if DCHECK_IS_ON()
@@ -404,6 +404,7 @@ bool FullscreenController::HandleUserPressedEscape() {
     return false;
 
   ExitExclusiveAccessIfNecessary();
+  base::RecordAction(base::UserMetricsAction("ExitFullscreen_Esc"));
   return true;
 }
 

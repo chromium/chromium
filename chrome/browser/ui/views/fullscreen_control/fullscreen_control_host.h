@@ -76,6 +76,7 @@ class FullscreenControlHost : public ui::EventObserver {
   bool IsExitUiNeeded();
   bool IsMouseLocked();
   float CalculateCursorBufferHeight() const;
+  void OnExitFullscreenPopupClicked();
 
   InputEntryMethod input_entry_method_ = InputEntryMethod::NOT_ACTIVE;
 

@@ -9225,9 +9225,28 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
+<action name="EnterFullscreen_Accelerator">
+  <owner>muyaoxu@google.com</owner>
+  <owner>openscreen-eng@google.com</owner>
+  <description>
+    User entered browser/API fullscreen mode using the keyboard shortcut.
+  </description>
+</action>
+
+<action name="EnterFullscreen_API">
+  <owner>muyaoxu@google.com</owner>
+  <owner>openscreen-eng@google.com</owner>
+  <description>
+    User entered the fullscreen mode using the Fullscreen API.
+  </description>
+</action>
+
 <action name="EnterFullScreenWithWrenchMenu">
-  <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
-  <description>Please enter the description of this user action.</description>
+  <owner>muyaoxu@google.com</owner>
+  <owner>openscreen-eng@google.com</owner>
+  <description>
+    User entered browser fullscreen mode using the three dot chrome menu.
+  </description>
 </action>
 
 <action name="EphemeralTab.NavigateLink">
@@ -9256,6 +9275,47 @@ should be able to be added at any place in this file.
 <action name="Exit">
   <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
   <description>Please enter the description of this user action.</description>
+</action>
+
+<action name="ExitFullscreen_Accelerator">
+  <owner>muyaoxu@google.com</owner>
+  <owner>openscreen-eng@google.com</owner>
+  <description>
+    User exited browser/API fullscreen mode using the keyboard shortcut.
+  </description>
+</action>
+
+<action name="ExitFullscreen_API">
+  <owner>muyaoxu@google.com</owner>
+  <owner>openscreen-eng@google.com</owner>
+  <description>
+    User exited the fullscreen mode using the Fullscreen API.
+  </description>
+</action>
+
+<action name="ExitFullscreen_ContextMenu">
+  <owner>muyaoxu@google.com</owner>
+  <owner>openscreen-eng@google.com</owner>
+  <description>
+    User exited browser fullscreen mode from the Context menu.
+  </description>
+</action>
+
+<action name="ExitFullscreen_Esc">
+  <owner>muyaoxu@google.com</owner>
+  <owner>openscreen-eng@google.com</owner>
+  <description>
+    User exited API fullscreen mode using the Esc key, including long-press Esc.
+  </description>
+</action>
+
+<action name="ExitFullscreen_PopupCloseButton">
+  <owner>muyaoxu@google.com</owner>
+  <owner>openscreen-eng@google.com</owner>
+  <description>
+    User exited browser/API fullscreen mode by clicking on the pop up close
+    button on the top of the screen.
+  </description>
 </action>
 
 <action name="ExploreSites.ContextMenu">
