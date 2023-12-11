@@ -137,12 +137,14 @@ def _convert_specs(specs):
     """
     converted_specs = []
     for name, spec in specs.items():
-        scoreless_spec = structs.to_proto_properties(spec)
-        scoreless_spec.pop("score")
+        thresholds_spec = structs.to_proto_properties(spec)
+        thresholds_spec.pop("score")
+        thresholds_spec.pop("period_days")
         converted_specs.append(struct(
             name = name,
             score = spec.score,
-            thresholds = scoreless_spec,
+            period_days = spec.period_days,
+            thresholds = thresholds_spec,
         ))
 
     return converted_specs
