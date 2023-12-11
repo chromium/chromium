@@ -11,7 +11,6 @@ import android.graphics.Rect;
 import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.os.Build.VERSION;
-import android.os.SystemClock;
 import android.util.AttributeSet;
 import android.view.InputDevice;
 import android.view.MotionEvent;
@@ -29,7 +28,6 @@ import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 import androidx.appcompat.widget.TooltipCompat;
 
-import org.chromium.base.Callback;
 import org.chromium.base.ObserverList;
 import org.chromium.base.TraceEvent;
 import org.chromium.base.lifetime.DestroyChecker;
@@ -73,7 +71,6 @@ import java.util.function.BooleanSupplier;
  */
 public abstract class ToolbarLayout extends FrameLayout
         implements Destroyable, TintObserver, ThemeColorObserver {
-    private Callback<Runnable> mInvalidator;
     private @Nullable ToolbarColorObserver mToolbarColorObserver;
 
     protected final ObserverList<UrlExpansionObserver> mUrlExpansionObservers =
@@ -90,9 +87,6 @@ public abstract class ToolbarLayout extends FrameLayout
 
     private boolean mNativeLibraryReady;
     private boolean mUrlHasFocus;
-
-    private long mFirstDrawTimeMs;
-
     private boolean mFindInPageToolbarShowing;
 
     private ThemeColorProvider mThemeColorProvider;
@@ -431,12 +425,6 @@ public abstract class ToolbarLayout extends FrameLayout
         return mNativeLibraryReady;
     }
 
-    @Override
-    protected void onDraw(Canvas canvas) {
-        super.onDraw(canvas);
-        recordFirstDrawTime();
-    }
-
     /** Add the toolbar's progress bar to the view hierarchy. */
     void addProgressBarToHierarchy() {
         ViewGroup controlContainer = (ViewGroup) getRootView().findViewById(R.id.control_container);
@@ -451,25 +439,6 @@ public abstract class ToolbarLayout extends FrameLayout
      */
     public ToolbarDataProvider getToolbarDataProvider() {
         return mToolbarDataProvider;
-    }
-
-    /**
-     * Sets the {@link Invalidator} that will be called when the toolbar attempts to invalidate the
-     * drawing surface.  This will give the object that registers as the host for the
-     * {@link Invalidator} a chance to defer the actual invalidate to sync drawing.
-     * @param invalidator An {@link Invalidator} instance.
-     */
-    void setInvalidatorCallback(Callback<Runnable> invalidator) {
-        mInvalidator = invalidator;
-    }
-
-    /**
-     * Triggers a paint but allows the {@link Invalidator} set by
-     * {@link #setPaintInvalidator(Invalidator)} to decide when to actually invalidate.
-     * @param client A {@link Invalidator.Client} instance that wants to be invalidated.
-     */
-    protected void triggerPaintInvalidate(Runnable clientInvalidator) {
-        mInvalidator.onResult(clientInvalidator);
     }
 
     /**
@@ -655,12 +624,6 @@ public abstract class ToolbarLayout extends FrameLayout
             boolean isRealSearchBoxFocused) {}
 
     /**
-     * Force to hide toolbar shadow.
-     * @param forceHideShadow Whether toolbar shadow should be hidden.
-     */
-    void setForceHideShadow(boolean forceHideShadow) {}
-
-    /**
      * Gives inheriting classes the chance to observe tab count changes.
      *
      * @param tabCountSupplier The observable supplier subclasses can observe.
@@ -719,18 +682,6 @@ public abstract class ToolbarLayout extends FrameLayout
      */
     void onUrlFocusChange(boolean hasFocus) {
         mUrlHasFocus = hasFocus;
-    }
-
-    /** Keeps track of the first time the toolbar is drawn. */
-    private void recordFirstDrawTime() {
-        if (mFirstDrawTimeMs == 0) mFirstDrawTimeMs = SystemClock.elapsedRealtime();
-    }
-
-    /**
-     * Returns the elapsed realtime in ms of the time at which first draw for the toolbar occurred.
-     */
-    long getFirstDrawTime() {
-        return mFirstDrawTimeMs;
     }
 
     /** Notified when a navigation to a different page has occurred. */

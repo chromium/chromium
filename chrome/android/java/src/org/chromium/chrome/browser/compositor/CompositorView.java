@@ -477,7 +477,6 @@ public class CompositorView extends FrameLayout
         mHaveSwappedFramesSinceSurfaceCreated = false;
         updateNeedsDidSwapBuffersCallback();
         CompositorViewJni.get().surfaceCreated(mNativeCompositorView, CompositorView.this);
-        mRenderHost.onSurfaceCreated();
     }
 
     @Override

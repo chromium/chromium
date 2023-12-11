@@ -52,7 +52,6 @@ import org.chromium.chrome.browser.browser_controls.BrowserControlsSizer;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
 import org.chromium.chrome.browser.browser_controls.BrowserStateBrowserControlsVisibilityDelegate;
 import org.chromium.chrome.browser.compositor.CompositorViewHolder;
-import org.chromium.chrome.browser.compositor.Invalidator;
 import org.chromium.chrome.browser.compositor.bottombar.OverlayPanelManager.OverlayPanelManagerObserver;
 import org.chromium.chrome.browser.compositor.bottombar.ephemeraltab.EphemeralTabCoordinator;
 import org.chromium.chrome.browser.compositor.layouts.LayoutManagerImpl;
@@ -744,7 +743,6 @@ public class ToolbarManager
                         toolbarLayout,
                         buttonDataProviders,
                         browsingModeThemeColorProvider,
-                        mCompositorViewHolder.getInvalidator(),
                         identityDiscController,
                         isTabToGtsAnimationEnabled,
                         mIsStartSurfaceEnabled,
@@ -1341,7 +1339,6 @@ public class ToolbarManager
             ToolbarLayout toolbarLayout,
             List<ButtonDataProvider> buttonDataProviders,
             ThemeColorProvider browsingModeThemeColorProvider,
-            Invalidator invalidator,
             IdentityDiscController identityDiscController,
             boolean isTabToGtsAnimationEnabled,
             boolean isStartSurfaceEnabled,
@@ -1368,13 +1365,6 @@ public class ToolbarManager
                         mTabModelSelectorSupplier,
                         mHomepageEnabledSupplier,
                         identityDiscController,
-                        (client) -> {
-                            if (invalidator != null) {
-                                invalidator.invalidate(client);
-                            } else {
-                                client.run();
-                            }
-                        },
                         () ->
                                 identityDiscController.getForStartSurface(
                                         mStartSurfaceState,
@@ -2154,14 +2144,6 @@ public class ToolbarManager
     public void setToolbarShadowVisibility(int visibility) {
         View toolbarShadow = mControlContainer.findViewById(R.id.toolbar_hairline);
         if (toolbarShadow != null) toolbarShadow.setVisibility(visibility);
-    }
-
-    /**
-     * Force to hide toolbar shadow.
-     * @param forceHideShadow Whether toolbar shadow should be hidden.
-     */
-    public void setForceHideShadow(boolean forceHideShadow) {
-        mToolbar.setForceHideShadow(forceHideShadow);
     }
 
     /**

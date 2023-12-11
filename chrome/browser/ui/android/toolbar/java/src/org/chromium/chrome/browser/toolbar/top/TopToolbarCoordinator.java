@@ -141,9 +141,6 @@ public class TopToolbarCoordinator implements Toolbar {
      * @param tabModelSelectorSupplier Supplier of the {@link TabModelSelector}.
      * @param homepageEnabledSupplier Supplier of whether Home button is enabled.
      * @param identityDiscController The controller of the identity disc button.
-     * @param invalidatorCallback Callback that will be invoked when the toolbar attempts to
-     *        invalidate the drawing surface. This will give the object that registers as the host
-     *        for the {@link Invalidator} a chance to defer the actual invalidate to sync drawing.
      * @param identityDiscButtonSupplier Supplier of Identity Disc button.
      * @param resourceManagerSupplier A supplier of a resource manager for native textures.
      * @param isIncognitoModeEnabledSupplier A supplier for whether browsing is currently incognito.
@@ -186,7 +183,6 @@ public class TopToolbarCoordinator implements Toolbar {
             ObservableSupplier<TabModelSelector> tabModelSelectorSupplier,
             ObservableSupplier<Boolean> homepageEnabledSupplier,
             ButtonDataProvider identityDiscController,
-            Callback<Runnable> invalidatorCallback,
             Supplier<ButtonData> identityDiscButtonSupplier,
             Supplier<ResourceManager> resourceManagerSupplier,
             BooleanSupplier isIncognitoModeEnabledSupplier,
@@ -269,7 +265,6 @@ public class TopToolbarCoordinator implements Toolbar {
         mAppMenuButtonHelperSupplier = appMenuButtonHelperSupplier;
         new OneShotCallback<>(mAppMenuButtonHelperSupplier, this::setAppMenuButtonHelper);
         homepageEnabledSupplier.addObserver((show) -> mToolbarLayout.onHomeButtonUpdate(show));
-        mToolbarLayout.setInvalidatorCallback(invalidatorCallback);
     }
 
     /**
@@ -498,16 +493,6 @@ public class TopToolbarCoordinator implements Toolbar {
     @Override
     public void getPositionRelativeToContainer(View containerView, int[] position) {
         mToolbarLayout.getPositionRelativeToContainer(containerView, position);
-    }
-
-    /**
-     * Sets the {@link Invalidator} that will be called when the toolbar attempts to invalidate the
-     * drawing surface.  This will give the object that registers as the host for the
-     * {@link Invalidator} a chance to defer the actual invalidate to sync drawing.
-     * @param invalidator An {@link Invalidator} instance.
-     */
-    public void setInvalidatorCallback(Callback<Runnable> callback) {
-        mToolbarLayout.setInvalidatorCallback(callback);
     }
 
     /**
@@ -743,26 +728,9 @@ public class TopToolbarCoordinator implements Toolbar {
         mToolbarLayout.onUrlFocusChange(hasFocus);
     }
 
-    /**
-     * Returns the elapsed realtime in ms of the time at which first draw for the toolbar occurred.
-     */
-    public long getFirstDrawTime() {
-        return mToolbarLayout.getFirstDrawTime();
-    }
-
     /** Notified when a navigation to a different page has occurred. */
     public void onNavigatedToDifferentPage() {
         mToolbarLayout.onNavigatedToDifferentPage();
-    }
-
-    /**
-     * Force to hide toolbar shadow.
-     * @param forceHideShadow Whether toolbar shadow should be hidden.
-     *
-     * TODO(crbug.com/1202994): change to token-based access
-     */
-    public void setForceHideShadow(boolean forceHideShadow) {
-        mToolbarLayout.setForceHideShadow(forceHideShadow);
     }
 
     /** Finish any toolbar animations. */

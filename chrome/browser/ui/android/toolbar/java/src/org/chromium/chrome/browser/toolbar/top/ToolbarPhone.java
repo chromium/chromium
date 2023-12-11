@@ -152,8 +152,6 @@ public class ToolbarPhone extends ToolbarLayout
     @ViewDebug.ExportedProperty(category = "chrome")
     protected int mTabSwitcherState;
 
-    private boolean mForceHideShadow;
-
     // This determines whether or not the toolbar draws as expected (false) or whether it always
     // draws as if it's showing the non-tabswitcher, non-animating toolbar. This is used in grabbing
     // a bitmap to use as a texture representation of this view.
@@ -1996,8 +1994,7 @@ public class ToolbarPhone extends ToolbarLayout
         if (mTextureCaptureMode) {
             if (!hideShadowForIncognitoNtp()
                     && !hideShadowForInterstitial()
-                    && !hideShadowForRegularNtpTextureCapture()
-                    && !mForceHideShadow) {
+                    && !hideShadowForRegularNtpTextureCapture()) {
                 mToolbarShadow.setVisibility(VISIBLE);
             }
             mPreTextureCaptureAlpha = getAlpha();
@@ -2654,12 +2651,6 @@ public class ToolbarPhone extends ToolbarLayout
         return !isLocationBarShownInNtp() || mUrlExpansionFraction > 0;
     }
 
-    @Override
-    void setForceHideShadow(boolean forceHideShadow) {
-        mForceHideShadow = forceHideShadow;
-        updateShadowVisibility();
-    }
-
     /** Update the visibility of the toolbar shadow. */
     private void updateShadowVisibility() {
         boolean shouldDrawShadow = shouldDrawShadow();
@@ -2677,7 +2668,6 @@ public class ToolbarPhone extends ToolbarLayout
         // TODO(twellington): Move this shadow state information to ToolbarDataProvider and show
         // shadow when incognito NTP is scrolled.
         return mTabSwitcherState == STATIC_TAB
-                && !mForceHideShadow
                 && !hideShadowForIncognitoNtp()
                 && !hideShadowForInterstitial()
                 && getVisibility() == View.VISIBLE

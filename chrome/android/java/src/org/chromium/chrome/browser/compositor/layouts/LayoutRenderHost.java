@@ -30,9 +30,6 @@ public interface LayoutRenderHost {
      */
     default void didSwapBuffers(boolean swappedCurrentSize, int framesUntilHideBackground) {}
 
-    /** Indicates that the rendering surface has just been created. */
-    void onSurfaceCreated();
-
     /** Indicates that the rendering surface has been resized. */
     void onSurfaceResized(int width, int height);
 
