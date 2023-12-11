@@ -6,5 +6,5 @@ found in the LICENSE file.
 -->
 
 <resources>
-  <dimen name="search_engine_favicon_size">28dp</dimen>
+  <dimen name="search_engine_favicon_size">32dp</dimen>
 </resources>
