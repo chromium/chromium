@@ -6,11 +6,8 @@
 
 #include <inttypes.h>
 
-#include <algorithm>
 #include <sstream>
-#include <utility>
 
-#include "base/notreached.h"
 #include "base/strings/stringprintf.h"
 
 namespace display {
@@ -34,29 +31,6 @@ std::string ModeListString(
     first = false;
   }
   return stream.str();
-}
-
-std::string DisplayConnectionTypeString(DisplayConnectionType type) {
-  switch (type) {
-    case DISPLAY_CONNECTION_TYPE_NONE:
-      return "none";
-    case DISPLAY_CONNECTION_TYPE_UNKNOWN:
-      return "unknown";
-    case DISPLAY_CONNECTION_TYPE_INTERNAL:
-      return "internal";
-    case DISPLAY_CONNECTION_TYPE_VGA:
-      return "vga";
-    case DISPLAY_CONNECTION_TYPE_HDMI:
-      return "hdmi";
-    case DISPLAY_CONNECTION_TYPE_DVI:
-      return "dvi";
-    case DISPLAY_CONNECTION_TYPE_DISPLAYPORT:
-      return "dp";
-    case DISPLAY_CONNECTION_TYPE_NETWORK:
-      return "network";
-  }
-  NOTREACHED();
-  return "";
 }
 
 }  // namespace

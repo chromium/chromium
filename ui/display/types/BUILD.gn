@@ -9,6 +9,7 @@ component("types") {
     "display_color_management.h",
     "display_configuration_params.cc",
     "display_configuration_params.h",
+    "display_constants.cc",
     "display_constants.h",
     "display_mode.cc",
     "display_mode.h",
