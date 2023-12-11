@@ -4075,6 +4075,7 @@ source_set("ash") {
     "//chromeos/ash/components/dbus/biod:biod_proto",
     "//chromeos/ash/components/dbus/cdm_factory_daemon",
     "//chromeos/ash/components/dbus/cec_service",
+    "//chromeos/ash/components/dbus/chaps",
     "//chromeos/ash/components/dbus/cryptohome:attestation_proto",
     "//chromeos/ash/components/dbus/cups_proxy",
     "//chromeos/ash/components/dbus/dlcservice:dlcservice_proto",

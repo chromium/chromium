@@ -12,6 +12,7 @@ component("constants") {
     "chromeos_features.h",
     "devicetype.cc",
     "devicetype.h",
+    "pkcs11_definitions.h",
   ]
   deps = [
     "//base",

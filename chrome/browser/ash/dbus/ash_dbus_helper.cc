@@ -30,6 +30,7 @@
 #include "chromeos/ash/components/dbus/biod/biod_client.h"
 #include "chromeos/ash/components/dbus/cdm_factory_daemon/cdm_factory_daemon_client.h"
 #include "chromeos/ash/components/dbus/cec_service/cec_service_client.h"
+#include "chromeos/ash/components/dbus/chaps/chaps_client.h"
 #include "chromeos/ash/components/dbus/chunneld/chunneld_client.h"
 #include "chromeos/ash/components/dbus/cicerone/cicerone_client.h"
 #include "chromeos/ash/components/dbus/concierge/concierge_client.h"
@@ -158,6 +159,7 @@ void InitializeDBus() {
   InitializeDBusClient<BiodClient>(bus);  // For device::Fingerprint.
   InitializeDBusClient<CdmFactoryDaemonClient>(bus);
   InitializeDBusClient<CecServiceClient>(bus);
+  InitializeDBusClient<ChapsClient>(bus);
   InitializeDBusClient<ChunneldClient>(bus);
   InitializeDBusClient<CiceroneClient>(bus);
   // ConciergeClient depends on CiceroneClient.
