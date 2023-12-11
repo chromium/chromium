@@ -43,17 +43,6 @@ namespace {
 constexpr base::TimeDelta kSyncOperationTimeout = base::Seconds(10);
 }
 
-// TODO(crbug.com/1403825): Fails on device.
-// Note: Defined here instead of with the test case because it's needed in
-// appConfigurationForTestCase.
-#if TARGET_IPHONE_SIMULATOR
-#define MAYBE_testInterruptDuringSignOutConfirmation \
-  testInterruptDuringSignOutConfirmation
-#else
-#define MAYBE_testInterruptDuringSignOutConfirmation \
-  DISABLED_testInterruptDuringSignOutConfirmation
-#endif
-
 // Integration tests using the Account Settings screen.
 @interface AccountsTableTestCase : WebHttpServerChromeTestCase
 @end
@@ -93,8 +82,7 @@ constexpr base::TimeDelta kSyncOperationTimeout = base::Seconds(10);
       [self isRunningTest:@selector(testSignOutCancelled)] ||
       [self isRunningTest:@selector
             (testRemoveSecondaryAccountWhileSignOutConfirmation)] ||
-      [self isRunningTest:@selector
-            (MAYBE_testInterruptDuringSignOutConfirmation)] ||
+      [self isRunningTest:@selector(testInterruptDuringSignOutConfirmation)] ||
       [self isRunningTest:@selector(testDismissSignOutConfirmationTwice)] ||
       // Data (of a managed account) is not cleared on signout anymore.
       [self isRunningTest:@selector
@@ -501,9 +489,7 @@ constexpr base::TimeDelta kSyncOperationTimeout = base::Seconds(10);
 
 // Tests to open the sign-out confirmation dialog, and then open an external
 // URL.
-// Note: The MAYBE_ macro is defined at the top of the file because it's needed
-// in appConfigurationForTestCase.
-- (void)MAYBE_testInterruptDuringSignOutConfirmation {
+- (void)testInterruptDuringSignOutConfirmation {
   FakeSystemIdentity* fakeIdentity = [FakeSystemIdentity fakeIdentity1];
 
   [SigninEarlGreyUI signinWithFakeIdentity:fakeIdentity];
