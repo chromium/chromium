@@ -1313,7 +1313,8 @@ void ReadAnythingAppController::OnSelectionChange(ui::AXNodeID anchor_node_id,
   // be before the anchor node and set to a non-text node, which can cause
   // page_handler_->OnSelectionChange to be incorrectly triggered, resulting in
   // a failing DCHECK. Therefore, return early if this happens.
-  if (!focus_node->IsText() || !anchor_node->IsText()) {
+  // This check does not apply to pdfs.
+  if (!model_.is_pdf() && (!focus_node->IsText() || !anchor_node->IsText())) {
     return;
   }
 

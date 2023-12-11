@@ -724,8 +724,11 @@ void ReadAnythingAppModel::ProcessGeneratedEvents(
   for (const auto& event : event_generator) {
     switch (event.event_params.event) {
       case ui::AXEventGenerator::Event::DOCUMENT_SELECTION_CHANGED:
+        // For selections in PDFs coming from the main pane or from the side
+        // panel, event_from is set to kNone so skip this check.
         if (event.event_params.event_from == ax::mojom::EventFrom::kUser ||
-            event.event_params.event_from == ax::mojom::EventFrom::kAction) {
+            event.event_params.event_from == ax::mojom::EventFrom::kAction ||
+            is_pdf_) {
           requires_post_process_selection_ = true;
           selection_from_action_ =
               event.event_params.event_from == ax::mojom::EventFrom::kAction;
