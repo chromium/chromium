@@ -38,7 +38,7 @@ chromium-metrics-reviews@google.com.
     Recorded when an extended account info is updated and the account info has
     Capabilities.
 
-    Android only.
+    Recorded for Android and iOS.
   </summary>
 </histogram>
 
@@ -89,7 +89,7 @@ chromium-metrics-reviews@google.com.
     Recorded when the following conditions hold: an Activity is resumed, and the
     user is signed in and not syncing.
 
-    Android only.
+    Recorded for Android and iOS.
   </summary>
 </histogram>
 
@@ -117,8 +117,8 @@ chromium-metrics-reviews@google.com.
     Activity is resumed, the user is signed in and not syncing, and the primary
     account info has Capabilities.
 
-    Android only. Signin.SyncOptIn.PreSyncConfirmationLatency is the desktop
-    counterpart.
+    Recorded for Android and iOS. Signin.SyncOptIn.PreSyncConfirmationLatency is
+    the desktop counterpart.
   </summary>
 </histogram>
 
