@@ -79,7 +79,7 @@ Para cambiar este ajuste, <ph name="BEGIN_LINK" />borra los datos de Chrome de t
 <translation id="1348596747084433075">https://www.amazon.com/Wife-Gifts/s?k=for+Wife+Gifts</translation>
 <translation id="1358214951266274152">Ir al enlace que has copiado</translation>
 <translation id="1360432990279830238">¿Cerrar sesión y detener sincronización?</translation>
-<translation id="1363028406613469049">Pista</translation>
+<translation id="1363028406613469049">Seguir</translation>
 <translation id="1365106417372288489">Tu iPhone se ha restaurado recientemente, lo que puede que haya cambiado tu navegador predeterminado.</translation>
 <translation id="136942498637440594">Puedes buscar imágenes y lo que ves.</translation>
 <translation id="1375321115329958930">Contraseñas guardadas</translation>
@@ -837,6 +837,7 @@ Consulta las instrucciones del buscador para eliminar tu historial de búsqueda 
 <translation id="5457226814769348910">Abrir versión sin conexión</translation>
 <translation id="5475069061743940393">Seguimiento de envíos</translation>
 <translation id="5478327362747197944">Crea eventos del calendario directamente haciendo clic en una fecha en una página web.</translation>
+<translation id="5482922178977937393">¿Quieres recibir notificaciones de noticias, deportes y más según tus intereses?</translation>
 <translation id="5489208564673669003">Para gestionar las cookies de todos los sitios, ve a <ph name="BEGIN_LINK" />Configuración de cookies<ph name="END_LINK" />.</translation>
 <translation id="5490005495580364134">Bloquear todas las cookies (no recomendado)</translation>
 <translation id="5497202150450073388">Intento de entrega. Se volverá a intentar.</translation>
@@ -912,7 +913,6 @@ Handoff también debe estar habilitado en la sección General de Configuración,
 <translation id="5857770089550859117">Se requiere una frase de contraseña para iniciar la sincronización.</translation>
 <translation id="5859715514067755465">Avanzar</translation>
 <translation id="5860033963881614850">Desactivada</translation>
-<translation id="5869029295770560994">Entendido</translation>
 <translation id="5871497086027727873">1 elemento eliminado</translation>
 <translation id="5896576662943111387">Diseñado para iOS</translation>
 <translation id="5897749768294722429">Para volver rápidamente a los sitios que has visitado, sincroniza tus pestañas y tu historial.</translation>
@@ -929,7 +929,6 @@ Handoff también debe estar habilitado en la sección General de Configuración,
 <translation id="595769230373966252">Buscar con <ph name="SEARCH_PROVIDER" /></translation>
 <translation id="5962718611393537961">Toca para ocultar</translation>
 <translation id="5963939892571022323">No se puede crear un enlace al texto destacado.</translation>
-<translation id="5965679971710331625">Has iniciado sesión</translation>
 <translation id="5971872012779224351">{count,plural, =1{1 marcador eliminado}other{{count} marcadores eliminados}}</translation>
 <translation id="5979837087407522202">Buscar contraseñas</translation>
 <translation id="5981230843984570095">Cerrar todas las inactivas</translation>
@@ -1478,6 +1477,7 @@ Tus datos se han cifrado con tu frase de contraseña el <ph name="TIME" />. Intr
 <translation id="8766790350274092814">Se eliminarán las contraseñas de <ph name="WEBSITE" /> y <ph name="SECOND_WEBSITE" />. Tus cuentas no se eliminarán.</translation>
 <translation id="8775144690796719618">La URL no es válida</translation>
 <translation id="8780076847684176174">{count,plural, =1{Revisar la pestaña...}other{Revisar todas las pestañas...}}</translation>
+<translation id="8782570580170191813">Monitorizar paquetes siempre</translation>
 <translation id="8787968206789828143">Buscar en Web</translation>
 <translation id="8792626944327216835">micrófono</translation>
 <translation id="8803639129939845298">Es seguro</translation>

@@ -55,6 +55,7 @@ Pethau i'w hystyried:
 <translation id="2574249610672786438">I weld eich tabiau o ble bynnag rydych yn defnyddio Chrome, mewngofnodwch ar eich holl ddyfeisiau</translation>
 <translation id="2576431527583832481">Gwnaeth Chrome wella! Mae fersiwn newydd ar gael.</translation>
 <translation id="257708665678654955">Ydych chi am i Google Chrome gynnig cyfieithu tudalennau <ph name="LANGUAGE_NAME" /> o'r wefan hon y tro nesaf?</translation>
+<translation id="2650286135394207535">Gadewch i Chrome eich helpu i olrhain eich pecynnau</translation>
 <translation id="2671426118752779020">Gallwch ddefnyddio'r cyfrineiriau a gadwyd gennych i Reolwr Cyfrineiriau Google mewn apiau eraill ar eich iPhone.</translation>
 <translation id="2689064829982324496">I allgofnodi o'ch Cyfrif Google ar bob gwefan, <ph name="BEGIN_LINK" />allgofnodwch o Chrome<ph name="END_LINK" />.</translation>
 <translation id="2695886661449553974">Ni allai Chrome wirio am ddiweddariadau. Rhowch gynnig arall arni'n nes ymlaen.</translation>
@@ -69,7 +70,6 @@ Pethau i'w hystyried:
 <translation id="309672519329227863">Cyrchwch eich cyfrineiriau Chrome a rhagor ar draws apiau eraill.</translation>
 <translation id="3167189358072330585">Nid yw'ch cyfrif yn gweithio ar Google Chrome. Cysylltwch â'ch gweinyddwr parth neu defnyddiwch Gyfrif Google rheolaidd i fewngofnodi.</translation>
 <translation id="3173834708294760622">Tudalen Google Chrome</translation>
-<translation id="3196546062792660320">Mae Chrome yn arbed amser i chi drwy ddod â'ch cyfrifon i'r we. Gallwch ychwanegu neu dynnu cyfrifon yn y Gosodiadau.</translation>
 <translation id="322254490661677575">I ddefnyddio a chadw data Chrome yn eich Cyfrif Google, rhowch eich cyfrinymadrodd.</translation>
 <translation id="3282568296779691940">Mewngofnodi i Chrome</translation>
 <translation id="3345341804167540816">Gallwch Ddefnyddio Chrome Ymhobman</translation>
@@ -169,7 +169,6 @@ Dim ond rhywun sydd â'ch cyfrinymadrodd all ddarllen eich data sydd wedi'u hamg
 <translation id="7124339256045485976">Cadwch Chrome yn gyfoes</translation>
 <translation id="7161390184744336561">Mae Google Chrome yn hen</translation>
 <translation id="7165736900384873061">Dechreuwch ddefnyddio sganiwr codau QR Google Chrome</translation>
-<translation id="7173660919484573146">Mae Chrome yn defnyddio Face ID i sicrhau mynediad awdurdodedig at eich cyfrineiriau.</translation>
 <translation id="7187993566681480880">Yn eich cadw'n ddiogel ar Chrome a gellir ei ddefnyddio i wella'ch diogelwch mewn apiau Google eraill pan fyddwch wedi'ch mewngofnodi.</translation>
 <translation id="7200524487407690471">Mae Chrome yn cynnal Gwiriad Diogelwch yn awtomatig bob dydd i'ch cadw'n ddiogel rhag toriadau data, gwefannau anniogel a rhagor. Gallwch ddysgu rhagor am Wiriad Diogelwch yn y Gosodiadau.</translation>
 <translation id="72119412072970160">Gallwch ddefnyddio'r cyfrineiriau a gadwyd gennych i Reolwr Cyfrineiriau Google mewn apiau eraill ar eich iPad.</translation>

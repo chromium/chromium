@@ -31,7 +31,6 @@
 <translation id="1018656279737460067">বাতিল কৰা হ’ল</translation>
 <translation id="1022522674678746124">PowerPoint</translation>
 <translation id="1022669824195822609">আপোনাৰ ডিভাইচটো <ph name="DOMAIN" />এ পৰিচালনা কৰে। প্ৰশাসকে এই ডিভাইচটোত থকা যিকোনো প্ৰ’ফাইলত ডেটা এক্সেছ কৰিব পাৰে।</translation>
-<translation id="1024734233509995696">এই টেবটোৱে আপোনাৰ কেমেৰা অথবা মাইক্ৰ’ফ’ন ব্যৱহাৰ কৰি আছে</translation>
 <translation id="1026655690966755180">প’ৰ্ট যোগ কৰক</translation>
 <translation id="1026822031284433028">প্ৰতিচ্ছবি ল’ড কৰক</translation>
 <translation id="1026959648338730078">Windows Hello অথবা বাহ্যিক সুৰক্ষা সম্পৰ্কীয় চাবি</translation>
@@ -1785,7 +1784,6 @@
 <translation id="2335111415680198280">{0,plural, =1{#খন ৱিণ্ড' বন্ধ কৰক}one{#খন ৱিণ্ড' বন্ধ কৰক}other{#খন ৱিণ্ড' বন্ধ কৰক}}</translation>
 <translation id="2336228925368920074">সকলো টেব বুকমার্ক কৰক...</translation>
 <translation id="2336381494582898602">পাৱাৰৱাশ্ব</translation>
-<translation id="2337236196941929873">Chromeএ যিবোৰ পৃষ্ঠালৈ আপুনি যাব পাৰে বুলি ভাবে সেইবোৰ আগতীয়াকৈ ল’ড কৰে। এয়া কৰিবলৈ Chromeএ কুকি ব্যৱহাৰ কৰিব পাৰে যদিহে আপুনি কুকিৰ অনুমতি দিয়ে, আৰু ছাইটবোৰৰ পৰা আপোনাৰ পৰিচয় লুকুৱাবলৈ পৃষ্ঠাবোৰ এনক্ৰিপ্ট কৰিব পাৰে আৰু সেইবোৰ Googleৰ জৰিয়তে প্ৰেৰণ কৰিব পাৰে।</translation>
 <translation id="2340239562261172947"><ph name="FILE_NAME" />ক সুৰক্ষিতভাৱে ডাউনল’ড কৰিব নোৱাৰি</translation>
 <translation id="2342180549977909852">এই ডিভাইচটো আনলক কৰিবলৈ আপোনাৰ শিশুৱে পাছৱৰ্ডৰ সলনি এটা নম্বৰ (পিন) ব্যৱহাৰ কৰিব পাৰে। পাছত পিন ছেট কৰিবলৈ ছেটিঙলৈ যাওক।</translation>
 <translation id="2342740338116612727">বুকমাৰ্ক যোগ কৰা হ’ল</translation>
@@ -3531,6 +3529,7 @@
 <translation id="372722114124766626">মাত্ৰ এবাৰ</translation>
 <translation id="3727332897090187514">কোনো টোকা যোগ দিয়া হোৱা নাই</translation>
 <translation id="3727473233247516571">বেক-ফৰৱাৰ্ড কেশ্বৰ ছাবফ্ৰে’ম: <ph name="BACK_FORWARD_CACHE_PAGE_URL" /></translation>
+<translation id="3727850735097852673">macOS কীচেইনৰ জৰিয়তে Google Password Manager ব্যৱহাৰ কৰিবলৈ, Chrome পুনৰ লঞ্চ কৰক আৰু কীচেইন এক্সেছ কৰাৰ অনুমতি দিয়ক। পুনৰ লঞ্চ কৰাৰ পাছত আপোনাৰ টেবসমূহ পুনৰ খোল খাব।</translation>
 <translation id="3728188878314831180">আপোনাৰ ফ’নটোৰ পৰা জাননীসমূহ প্ৰতিফলিত কৰক</translation>
 <translation id="3728681439294129328">নেটৱৰ্ক ঠিকনাটো কনফিগাৰ কৰক</translation>
 <translation id="3729506734996624908">অনুমোদিত ছাইটসমূহ</translation>
@@ -5921,7 +5920,6 @@
 <translation id="5636012309446422"><ph name="PRIMARY_EMAIL" />ৰ পৰা <ph name="DEVICE" /> আঁতৰাবনে?</translation>
 <translation id="5636996382092289526">আপুনি <ph name="NETWORK_ID" /> ব্যৱহাৰ কৰিবলৈ প্ৰথমে <ph name="LINK_START" />নেটৱর্কৰ ছাইন ইন কৰা পৃষ্ঠালৈ যাব লগীয়া হ'ব পাৰে<ph name="LINK_END" />, যি পৃষ্ঠা কেই ছেকেণ্ডমানৰ ভিতৰত স্বয়ংক্ৰিয়ভাৱে খোল খাব। এনে নহ'লে নেটৱর্ক ব্যৱহাৰ কৰিব পৰা নাযায়।</translation>
 <translation id="5637476008227280525">ম'বাইল ডেটা সক্ষম</translation>
-<translation id="563811590465749036">macOS কীচেইনৰ জৰিয়তে Google Password Manager ব্যৱহাৰ কৰিবলৈ, Chrome পুনৰ লঞ্চ কৰক আৰু কীচেইন এক্সেছ কৰাৰ অনুমতি দিয়ক। পুনৰ লঞ্চ কৰাৰ পাছত আপোনাৰ টেবসমূহ পুনৰ খোল খাব</translation>
 <translation id="563821631542362636">ছাইটত ডেটা ছেভ কৰিবলৈ অনুমতি দিয়ক</translation>
 <translation id="5638309510554459422"><ph name="BEGIN_LINK" />Chrome Web Store<ph name="END_LINK" />ত এক্সটেনশ্বন আৰু থীমসমূহ পাওক</translation>
 <translation id="5639549361331209298">এই পৃষ্ঠাটো পুনৰ ল'ড কৰি অধিৰক বিকল্পৰ বাবে টিপি ধৰি ৰাখক</translation>
@@ -6153,7 +6151,6 @@
 <translation id="583431638776747">ছাইটটো উপলব্ধ নহয়</translation>
 <translation id="5834581999798853053">আনুমানিক <ph name="TIME" /> মিনিট বাকী আছে</translation>
 <translation id="5835360478055379192">{NUM_EXTENSION,plural, =1{<ph name="EXTENSION1" />এ HID ডিভাইচসমূহ এক্সেছ কৰি আছে}=2{HID ডিভাইচসমূহ এক্সেছ কৰি থকা এক্সটেনশ্বনসমূহ: <ph name="EXTENSION1" />, <ph name="EXTENSION2" />}one{HID ডিভাইচসমূহ এক্সেছ কৰি থকা এক্সটেনশ্বনসমূহ: <ph name="EXTENSION1" />, <ph name="EXTENSION2" /> আৰু আন {3} টা}other{HID ডিভাইচসমূহ এক্সেছ কৰি থকা এক্সটেনশ্বনসমূহ: <ph name="EXTENSION1" />, <ph name="EXTENSION2" /> আৰু আন {3} টা}}</translation>
-<translation id="5835486486592033703"><ph name="WINDOW_TITLE" /> - কেমেৰা বা মাইক্ৰফ’নৰ জৰিয়তে ৰেকর্ডিং</translation>
 <translation id="583673505367439042">ছাইটে আপোনাৰ ডিভাইচত ফাইল আৰু ফ’ল্ডাৰ সম্পাদনা কৰিবলৈ বিচাৰিব পাৰে</translation>
 <translation id="5836999627049108525">অনুবাদ কৰিব লগা ভাষা</translation>
 <translation id="583756221537636748">কেছ</translation>

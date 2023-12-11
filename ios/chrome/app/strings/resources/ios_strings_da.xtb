@@ -837,6 +837,7 @@ Se din søgemaskines vejledning i, hvordan du sletter din søgehistorik, hvis de
 <translation id="5457226814769348910">Åbn offlineversion</translation>
 <translation id="5475069061743940393">Pakkesporing</translation>
 <translation id="5478327362747197944">Opret kalenderbegivenheder direkte ved at klikke på en dato på en webside.</translation>
+<translation id="5482922178977937393">Vil du have notifikationer om nyheder, sport m.m. baseret på dine interesser?</translation>
 <translation id="5489208564673669003">Gå til <ph name="BEGIN_LINK" />indstillingerne for cookies<ph name="END_LINK" /> for at administrere cookies for alle websites.</translation>
 <translation id="5490005495580364134">Bloker alle cookies (anbefales ikke)</translation>
 <translation id="5497202150450073388">Levering er forsøgt. Prøver igen</translation>
@@ -912,7 +913,6 @@ Handoff skal være aktiveret i afsnittet Generelt i Indstillinger, og dine enhed
 <translation id="5857770089550859117">Angiv adgangssætningen for at påbegynde synkroniseringen.</translation>
 <translation id="5859715514067755465">Frem</translation>
 <translation id="5860033963881614850">Fra</translation>
-<translation id="5869029295770560994">OK</translation>
 <translation id="5871497086027727873">1 bogmærke blev flyttet</translation>
 <translation id="5896576662943111387">Designet til iOS</translation>
 <translation id="5897749768294722429">Synkroniser dine faner og din historik for hurtigt at vende tilbage til de websites, du har besøgt.</translation>
@@ -929,7 +929,6 @@ Handoff skal være aktiveret i afsnittet Generelt i Indstillinger, og dine enhed
 <translation id="595769230373966252">Søg med <ph name="SEARCH_PROVIDER" /></translation>
 <translation id="5962718611393537961">Tryk for at skjule</translation>
 <translation id="5963939892571022323">Der kan ikke oprettes et link til fremhævningen.</translation>
-<translation id="5965679971710331625">Du er logget ind</translation>
 <translation id="5971872012779224351">{count,plural, =1{1 bogmærke er slettet}one{{count} bogmærke er slettet}other{{count} bogmærker er slettet}}</translation>
 <translation id="5979837087407522202">Søg i adgangskoder</translation>
 <translation id="5981230843984570095">Luk alle inaktive faner</translation>
@@ -1478,6 +1477,7 @@ Dine data blev krypteret med din adgangssætning <ph name="TIME" />. Angiv adgan
 <translation id="8766790350274092814">Adgangskoderne til <ph name="WEBSITE" /> og <ph name="SECOND_WEBSITE" /> slettes. Dine konti slettes ikke.</translation>
 <translation id="8775144690796719618">Ugyldig webadresse</translation>
 <translation id="8780076847684176174">{count,plural, =1{Se fanen…}one{Se alle faner…}other{Se alle faner…}}</translation>
+<translation id="8782570580170191813">Spor altid pakker</translation>
 <translation id="8787968206789828143">Søg på nettet</translation>
 <translation id="8792626944327216835">mikrofon</translation>
 <translation id="8803639129939845298">Sikker</translation>

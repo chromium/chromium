@@ -87,6 +87,7 @@
 <translation id="11635448457105324">'पते मैनेज करें' बटन, Chrome की सेटिंग में पते जोड़ने और उन्हें मैनेज करने के लिए इसे चालू करें</translation>
 <translation id="1165039591588034296">गड़बड़ी</translation>
 <translation id="1165174597379888365">पेज को देखा जा चुका है</translation>
+<translation id="1165813024716836071">{COUNT,plural, =0{कोई साइट कुकी का इस्तेमाल नहीं करती}=1{1 साइट कुकी का इस्तेमाल करती है (आपको आपके Google खाते में साइन आउट नहीं किया जाएगा)}one{# साइट कुकी का इस्तेमाल करती है (आपको आपके Google खाते में साइन आउट नहीं किया जाएगा)}other{# साइटें कुकी का इस्तेमाल करती हैं (आपको आपके Google खाते में साइन आउट नहीं किया जाएगा)}}</translation>
 <translation id="1165852471352757509">टीवी डॉक्यूमेंट्री और नॉनफ़िक्शन</translation>
 <translation id="1174644974616730562">चाइनीज़ #1 साइज़ का लिफ़ाफ़ा</translation>
 <translation id="1174723505405632867">क्या आप <ph name="EMBEDDED_URL" /> काे <ph name="TOP_LEVEL_URL" /> पर कुकी और साइट के डेटा का इस्तेमाल करने की अनुमति देना चाहते हैं?
@@ -540,7 +541,7 @@
 <translation id="2025186561304664664">प्रॉक्‍सी अपने-आप कॉन्‍फ़‍िगर पर सेट है.</translation>
 <translation id="2025891858974379949">असुरक्षित कॉन्टेंट</translation>
 <translation id="2027465737841872819">प्लास्टिक</translation>
-<translation id="2032962459168915086"><ph name="BEGIN_LINK" />प्रॉक्सी और फायरवॉल की जाँच करें<ph name="END_LINK" /></translation>
+<translation id="2032962459168915086"><ph name="BEGIN_LINK" />प्रॉक्सी और फ़ायरवॉल की जांच करें<ph name="END_LINK" /></translation>
 <translation id="2033900728810589426">शॉर्टकट और <ph name="DEFAULT_SEARCH_PROVIDER_KEYWORD_POLICY_NAME" /> की ओर से तय किया गया, खोज की सेवा देने वाली डिफ़ॉल्ट कंपनी का कीवर्ड, एक जैसे नहीं हो सकते: <ph name="SHORTCUT_NAME" /></translation>
 <translation id="2034971124472263449">फिर भी सेव करें</translation>
 <translation id="2035400064145347639">यात्रा गाइड और यात्रा की जानकारी</translation>
@@ -1375,7 +1376,7 @@
 <translation id="3715016660240337709">{0,plural, =1{फ़ाइल को अपलोड करने से रोका गया}one{<ph name="FILE_COUNT" /> फ़ाइल को अपलोड करने से रोका गया}other{<ph name="FILE_COUNT" /> फ़ाइलों को अपलोड करने से रोका गया}}</translation>
 <translation id="3715545959749027023">जब Chrome सुरक्षा से जुड़ी गतिविधियों को फ़्लैग करता है, तो इन गतिविधियों से जुड़ा ज़रूरी डेटा आपके एडमिन को भेजा जाता है. इसमें कई तरह की जानकारी शामिल हो सकती है. जैसे, Chrome पर आपके विज़िट किए गए पेजों के यूआरएल, फ़ाइलों के नाम या मेटाडेटा, ब्राउज़र या टैब के बंद होने की जानकारी. साथ ही, इसमें वह उपयोगकर्ता नाम शामिल हो सकता है जिसका इस्तेमाल आपके डिवाइस, वेब पर आधारित ऐप्लिकेशन, और Chrome में साइन इन करने के लिए किया जाता है.</translation>
 <translation id="3715597595485130451">वाई-फ़ाई से कनेक्ट करें</translation>
-<translation id="3717027428350673159"><ph name="BEGIN_LINK" />प्रॉक्सी, फायरवॉल और डीएनएस कॉन्फ़िगरेशन की जाँच करें<ph name="END_LINK" /></translation>
+<translation id="3717027428350673159"><ph name="BEGIN_LINK" />प्रॉक्सी, फ़ायरवॉल और डीएनएस कॉन्फ़िगरेशन की जाँच करें<ph name="END_LINK" /></translation>
 <translation id="3723663469265383848">अपडेट के दौरान, डिवाइस को 10 मिनट तक इस्तेमाल नहीं किया जा सकेगा.</translation>
 <translation id="372429172604983730">जिन ऐप्लिकेशन की वजह से यह गड़बड़ी हो सकती है उनमें एंटीवायरस, फ़ायरवॉल और वेब-फ़िल्टरिंग या प्रॉक्सी सॉफ़्टवेयर शामिल हैं.</translation>
 <translation id="3727101516080730231"><ph name="CREATE_GOOGLE_SLIDE_FOCUSED_FRIENDLY_MATCH_TEXT" />, Slides में जल्दी से Google प्रज़ेंटेशन बनाने के लिए, पहले Tab दबाएं और फिर Enter दबाएं</translation>
@@ -1597,7 +1598,7 @@
 <translation id="4202218894997543208">वे विषय जिन्हें आपने ब्लॉक किया है</translation>
 <translation id="4202554117186904723">पांचवां रोल</translation>
 <translation id="4203769790323223880">कैमरा ऐक्सेस करने की अनुमति नहीं है</translation>
-<translation id="4203896806696719780"><ph name="BEGIN_LINK" />फायरवॉल और एंटीवायरस कॉन्फ़िगरेशन की जाँच करें<ph name="END_LINK" /></translation>
+<translation id="4203896806696719780"><ph name="BEGIN_LINK" />फ़ायरवॉल और एंटीवायरस कॉन्फ़िगरेशन की जाँच करें<ph name="END_LINK" /></translation>
 <translation id="4209092469652827314">बड़ा</translation>
 <translation id="4210602799576081649">पुष्टि करने वाले कोड की समयसीमा खत्म हो गई, नए कोड के लिए अनुरोध करें</translation>
 <translation id="421066178035138955">वर्चुअल रिएलिटी वाले डिवाइस और डेटा इस्तेमाल करें</translation>
@@ -3413,7 +3414,7 @@
 <translation id="7754587126786572336">अपडेट शुरू होते ही, आपके Chrome टैब और ऐप्लिकेशन बंद हो जाएंगे</translation>
 <translation id="7755287808199759310">आपका अभिभावक इसे आपके लिए अनवरोधित कर सकता है</translation>
 <translation id="7755624218968747854">प्राइमरी रोल</translation>
-<translation id="7758069387465995638">हो सकता है कि फायरवॉल या एंटीवायरस ने कनेक्शन को रोक दिया हो.</translation>
+<translation id="7758069387465995638">हो सकता है कि फ़ायरवॉल या एंटीवायरस ने कनेक्शन को रोक दिया हो.</translation>
 <translation id="7759809451544302770">वैकल्पिक</translation>
 <translation id="7760497246331667482">रैगे और कैरेबियन म्यूज़िक</translation>
 <translation id="776110834126722255">समर्थन नहीं है या रोक दिया गया है</translation>
@@ -3987,6 +3988,7 @@
 <translation id="8919895429178014996">सभी आइटम छिपाएं</translation>
 <translation id="8922013791253848639">इस साइट पर विज्ञापनों की हमेशा अनुमति दें</translation>
 <translation id="892588693504540538">सबसे ऊपर दाईं ओर पंच</translation>
+<translation id="8926389886865778422">दोबारा न पूछें</translation>
 <translation id="8930330541574156305">रीयल एस्टेट</translation>
 <translation id="8932102934695377596">आपकी घड़ी पीछे है</translation>
 <translation id="893332455753468063">नाम जोड़ें</translation>

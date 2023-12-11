@@ -31,7 +31,6 @@
 <translation id="1018656279737460067">已取消</translation>
 <translation id="1022522674678746124">PowerPoint</translation>
 <translation id="1022669824195822609">您的裝置由 <ph name="DOMAIN" /> 管理。管理員可以存取此裝置上任何設定檔中的資料。</translation>
-<translation id="1024734233509995696">此分頁正在使用相機或麥克風</translation>
 <translation id="1026655690966755180">新增連接埠</translation>
 <translation id="1026822031284433028">載入圖片</translation>
 <translation id="1026959648338730078">Windows Hello 或外置安全密鑰</translation>
@@ -1787,7 +1786,6 @@
 <translation id="2335111415680198280">{0,plural, =1{關閉 # 個視窗}other{關閉 # 個視窗}}</translation>
 <translation id="2336228925368920074">將所有分頁加入書籤…</translation>
 <translation id="2336381494582898602">執行 Powerwash</translation>
-<translation id="2337236196941929873">預先載入 Chrome 認為您可能會瀏覽的頁面。為此，Chrome 可能會使用 Cookie (如果您允許的話)，亦可能加密網頁並透過 Google 傳送，以便向網站隱藏您的身分。</translation>
 <translation id="2340239562261172947">無法安全下載「<ph name="FILE_NAME" />」</translation>
 <translation id="2342180549977909852">子女可使用數字 (PIN) 代替密碼來為此裝置解鎖。如要稍後設定 PIN，請前往「設定」。</translation>
 <translation id="2342740338116612727">加咗書籤</translation>
@@ -1880,7 +1878,7 @@
 <translation id="2412753904894530585">Kerberos</translation>
 <translation id="2414159296888870200">繼續瀏覽「<ph name="MODULE_TITLE" />」</translation>
 <translation id="2414886740292270097">灰暗</translation>
-<translation id="2415117815770324983">刪除 Cookie 後，大多數網站都會將你登出，但 Google 帳戶會保持登入狀態。</translation>
+<translation id="2415117815770324983">刪除 Cookie 後，大多數網站都會將你登出；但 Google 帳戶會保持登入狀態。</translation>
 <translation id="2416435988630956212">鍵盤功能鍵</translation>
 <translation id="2418307627282545839">讓畫面保持鮮明光亮</translation>
 <translation id="2419131370336513030">查看已安裝的應用程式</translation>
@@ -2643,6 +2641,7 @@
 <translation id="2990313168615879645">新增 Google 帳戶</translation>
 <translation id="2990375978470734995">請重新連接外部配件，此變更才會生效。</translation>
 <translation id="2990583317361835189">不允許網站使用動作感應器</translation>
+<translation id="2991182900092497283">請提供貼上這項資料的原因：</translation>
 <translation id="2992931425024192067">顯示所有通知內容</translation>
 <translation id="2993517869960930405">應用程式資料</translation>
 <translation id="2996108796702395498">你嘅裝置序號係 <ph name="SERIAL_NUMBER" />。呢個數字可以用嚟啟用服務。</translation>
@@ -3156,6 +3155,7 @@
 <translation id="3432762828853624962">Shared Workers</translation>
 <translation id="3433507769937235446">離開時鎖定</translation>
 <translation id="3433621910545056227">糟糕！系統無法鎖定裝置安裝時的屬性。</translation>
+<translation id="3434025015623587566">Google 密碼管理工具需要更多存取權</translation>
 <translation id="3434107140712555581"><ph name="BATTERY_PERCENTAGE" />%</translation>
 <translation id="3434272557872943250">如果您為子女開啟其他「網絡及應用程式活動記錄」設定，此資料可能會儲存在他們的 Google 帳戶中。您可以前往 families.google.com 詳細瞭解這些設定及其調整方式</translation>
 <translation id="3434475275396485144">此設定由手機的管理員管理</translation>
@@ -3368,6 +3368,7 @@
 <translation id="3605156246402033687">{COUNT,plural, =1{{COUNT} 個帳戶正在使用同一個密碼}other{{COUNT} 個帳戶正在使用同一個密碼}}</translation>
 <translation id="3605780360466892872">小員工</translation>
 <translation id="3607671391978830431">供子女使用</translation>
+<translation id="3608460311600621471">請提供列印這項資料的原因：</translation>
 <translation id="3608730769702025110">第 3 步 (共 4 步)：查看個人識別資料</translation>
 <translation id="3609277884604412258">快速搜尋</translation>
 <translation id="3610241585790874201">無法將資料儲存至裝置</translation>
@@ -3533,6 +3534,7 @@
 <translation id="372722114124766626">只限一次</translation>
 <translation id="3727332897090187514">沒有新增筆記</translation>
 <translation id="3727473233247516571">向前/返回快取中的子頁框：<ph name="BACK_FORWARD_CACHE_PAGE_URL" /></translation>
+<translation id="3727850735097852673">如要透過「MacOS 鑰匙圈」使用「Google 密碼管理工具」，請重新啟動 Chrome 並允許存取「鑰匙圈」。重新啟動後，分頁將會重新開啟。</translation>
 <translation id="3728188878314831180">鏡射手機的通知</translation>
 <translation id="3728681439294129328">設定網絡地址</translation>
 <translation id="3729506734996624908">允許的網站</translation>
@@ -4044,7 +4046,7 @@
 <translation id="4110485659976215879">取消忽略警告</translation>
 <translation id="4110490973560452005">下載完成 ：<ph name="FILE_NAME" />。按住 Shift+F6 鍵即可切換至下載內容列的位置。</translation>
 <translation id="4112194537011183136"><ph name="DEVICE_NAME" /> (離線)</translation>
-<translation id="4113483184628671608">加密造訪網站的名稱</translation>
+<translation id="4113483184628671608">加密瀏覽網站的名稱</translation>
 <translation id="4113743276555482284">檔案密碼</translation>
 <translation id="4114524937989710624">畫面會顯示建議的檔案，以便您繼續執行最近在「Google 雲端硬碟」中的活動。
         <ph name="BREAK" />
@@ -5774,7 +5776,7 @@
 <translation id="5517304475148761050">此應用程式需要存取「Play 商店」才能執行</translation>
 <translation id="5517412723934627386"><ph name="NETWORK_TYPE" /> - <ph name="NETWORK_DISPLAY_NAME" /></translation>
 <translation id="5518949581554491184">透過 Android 手機設定</translation>
-<translation id="5519053700692355541">你可以使用右上方的 Chrome 選單開啟大部分的側邊面板功能</translation>
+<translation id="5519053700692355541">你可以透過右上方嘅 Chrome 選單開啟大部份側面板功能</translation>
 <translation id="5519195206574732858">LTE</translation>
 <translation id="5519900055135507385">透過安全度高的密碼提高此帳戶的安全性。密碼將會儲存至 <ph name="EMAIL" /> 的「<ph name="GOOGLE_PASSWORD_MANAGER" />」中。</translation>
 <translation id="5521078259930077036">這是您想要的首頁嗎？</translation>
@@ -5918,7 +5920,6 @@
 <translation id="5636012309446422">要從 <ph name="PRIMARY_EMAIL" /> 移除 <ph name="DEVICE" /> 嗎？</translation>
 <translation id="5636996382092289526">如要使用 <ph name="NETWORK_ID" />，您必須先<ph name="LINK_START" />前往網絡的登入頁面<ph name="LINK_END" /> (該頁面將在數秒內自動開啟)；如果沒有，表示您無法使用該網絡。</translation>
 <translation id="5637476008227280525">啟用流動數據</translation>
-<translation id="563811590465749036">如要透過「MacOS 鑰匙圈」使用「Google 密碼管理工具」，請重新啟動 Chrome 並允許存取「鑰匙圈」。重新啟動後，分頁將會重新開啟</translation>
 <translation id="563821631542362636">允許網站儲存資料</translation>
 <translation id="5638309510554459422">在「<ph name="BEGIN_LINK" />Chrome 網上應用程式商店<ph name="END_LINK" />」中尋找擴充程式和主題背景</translation>
 <translation id="5639549361331209298">重新載入這個網頁 (按住即可查看更多選項)</translation>
@@ -6150,7 +6151,6 @@
 <translation id="583431638776747">找不到網站</translation>
 <translation id="5834581999798853053">還有大約 <ph name="TIME" /> 分鐘</translation>
 <translation id="5835360478055379192">{NUM_EXTENSION,plural, =1{「<ph name="EXTENSION1" />」正在存取 HID 裝置}=2{正在存取裝置的擴充程式：「<ph name="EXTENSION1" />」、「<ph name="EXTENSION2" />」}other{正在存取裝置的擴充程式：「<ph name="EXTENSION1" />」、「<ph name="EXTENSION2" />」和另外 {3} 個}}</translation>
-<translation id="5835486486592033703"><ph name="WINDOW_TITLE" /> - 相機或麥克風錄製中</translation>
 <translation id="583673505367439042">網站可要求編輯裝置中的檔案和資料夾</translation>
 <translation id="5836999627049108525">要翻譯的語言</translation>
 <translation id="583756221537636748">充電盒</translation>
@@ -6662,6 +6662,7 @@
 <translation id="6238982280403036866">已允許使用 JavaScript</translation>
 <translation id="6239558157302047471">重新載入頁框(&amp;F)</translation>
 <translation id="6240821072888636753">每次都詢問</translation>
+<translation id="6240964651812394252">如要在作業系統上使用 Google 密碼管理工具，請重新啟動 Chrome，並允許存取電腦的密碼管理工具。分頁會在重新啟動之後再次開啟。</translation>
 <translation id="6241530762627360640">存取與系統配對的藍牙裝置資料，並搜尋附近的藍牙裝置。</translation>
 <translation id="6241844896329831164">無需存取權</translation>
 <translation id="6242574558232861452">正在檢查是否符合您機構的安全性政策。</translation>
@@ -6735,7 +6736,7 @@
 <translation id="6294759976468837022">自動掃瞄速度</translation>
 <translation id="6295158916970320988">所有網站</translation>
 <translation id="6295855836753816081">正在儲存...</translation>
-<translation id="6298456705131259420">這裡列出的網站會受到影響。在網域名稱前方插入「[*.]」，可將整個網域設為例外。舉例來說，如果新增「[*.]google.com」，mail.google.com 也就能使用第三方 Cookie，因為該網域屬於 google.com。</translation>
+<translation id="6298456705131259420">這裡列出的網站會受到影響。在網域名稱前方插入「[*.]」，可將整個網域設定為例外情況。例如，如果新增「[*.]google.com」，mail.google.com 亦可使用第三方 Cookie，因為該網域屬於 google.com。</translation>
 <translation id="6298962879096096191">使用 Google Play 安裝 Android 應用程式</translation>
 <translation id="6300177430812514606">不允許完成傳送或接收資料</translation>
 <translation id="6300654006256345126">編輯密碼</translation>
@@ -7157,7 +7158,7 @@
 <translation id="6651762277693024112">在您每次瀏覽此網站時自動執行</translation>
 <translation id="665355505818177700">只有 x86_64 平台支援 Chrome <ph name="MS_AD_NAME" /> 整合，採用 ARM 或 x86 平台的 Chromebook 不支援此功能。</translation>
 <translation id="6654509035557065241">偏好網絡</translation>
-<translation id="6654987855337442937">如果使用安全網域名稱系統 (DNS)，就能防止可存取你網際網路流量的人查看你造訪的網站</translation>
+<translation id="6654987855337442937">使用安全的網域名稱系統 (DNS)，就能防止可存取你互聯網流量的人查看你瀏覽的網站</translation>
 <translation id="6655190889273724601">開發人員模式</translation>
 <translation id="6655458902729017087">隱藏帳戶</translation>
 <translation id="6657180931610302174">要新增使用者名稱嗎？</translation>
@@ -9555,7 +9556,7 @@
 <translation id="8528074251912154910">新增語言</translation>
 <translation id="8528479410903501741">儲存 IBAN</translation>
 <translation id="8528962588711550376">正在登入。</translation>
-<translation id="8529578450330869579">如果使用安全網域名稱系統 (DNS)，就能防止可存取你網際網路流量的人查看你造訪的網站。DNS 會使用位於 <ph name="DNS_SERVER_TEMPLATE_WITH_IDENTIFIER" /> 的代管服務供應商</translation>
+<translation id="8529578450330869579">使用安全的網域名稱系統 (DNS)，就能防止可存取你互聯網流量的人查看你瀏覽的網站。這會使用位於 <ph name="DNS_SERVER_TEMPLATE_WITH_IDENTIFIER" /> 的受管服務供應商</translation>
 <translation id="8529925957403338845">即時網絡共享連線失敗</translation>
 <translation id="8531701051932785007">「強化安全瀏覽」功能已關閉</translation>
 <translation id="8533670235862049797">「安全瀏覽」功能已開啟</translation>

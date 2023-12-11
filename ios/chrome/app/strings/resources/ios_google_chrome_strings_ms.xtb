@@ -70,7 +70,6 @@ Perkara yang perlu dipertimbangkan:
 <translation id="309672519329227863">Akses kata laluan Chrome anda dan pelbagai lagi merentas apl lain.</translation>
 <translation id="3167189358072330585">Akaun anda tidak berfungsi pada Google Chrome. Sila hubungi pentadbir domain anda atau gunakan Akaun Google biasa untuk log masuk.</translation>
 <translation id="3173834708294760622">Halaman Google Chrome</translation>
-<translation id="3196546062792660320">Chrome menjimatkan masa anda dengan membawa akaun anda ke web. Anda boleh menambahkan atau mengalih keluar akaun dalam Tetapan.</translation>
 <translation id="322254490661677575">Untuk menggunakan dan menyimpan data Chrome dalam Google Account anda, masukkan ungkapan laluan anda.</translation>
 <translation id="3282568296779691940">Log masuk ke Chrome</translation>
 <translation id="3345341804167540816">Gunakan Chrome Everywhere</translation>
@@ -170,7 +169,6 @@ Orang yang mengetahui ungkapan laluan anda sahaja yang dapat membaca data tersul
 <translation id="7124339256045485976">Pastikan Chrome terkini</translation>
 <translation id="7161390184744336561">Google Chrome sudah lapuk</translation>
 <translation id="7165736900384873061">Mula menggunakan pengimbas QR Google Chrome</translation>
-<translation id="7173660919484573146">Chrome menggunakan ID Wajah untuk memastikan akses yang dibenarkan kepada kata laluan anda.</translation>
 <translation id="7187993566681480880">Memastikan anda selamat pada Chrome dan mungkin digunakan untuk meningkatkan keselamatan anda dalam apl Google yang lain apabila anda log masuk.</translation>
 <translation id="7200524487407690471">Chrome menjalankan Pemeriksaan Keselamatan secara automatik setiap hari untuk memastikan anda selamat daripada pelanggaran data, laman web yang tidak selamat dan pelbagai lagi. Anda boleh mendapatkan maklumat lanjut tentang Pemeriksaan Keselamatan dalam Tetapan.</translation>
 <translation id="72119412072970160">Anda boleh menggunakan kata laluan yang anda simpan pada Pengurus Kata Laluan Google dalam apl lain pada iPad anda.</translation>
@@ -190,6 +188,7 @@ Orang yang mengetahui ungkapan laluan anda sahaja yang dapat membaca data tersul
 <translation id="7698568245838009292">Chrome Ingin Mengakses Kamera Anda</translation>
 <translation id="7754633291442704733">Organisasi <ph name="DOMAIN" /> anda akan mempunyai akses kepada data Chrome, penanda halaman, sejarah, kata laluan dan tetapan lain yang anda simpan dalam akaun ini. Apabila anda log keluar, data anda akan dikosongkan daripada peranti ini.  Namun begitu, data anda akan terus disimpan dalam Google Account terurus anda dan akan tersedia di organisasi anda. Organisasi anda juga boleh menetapkan dasar pengguna khusus untuk akaun tersebut yang boleh mengubah gelagat Chrome.</translation>
 <translation id="7780154209050837198">Untuk memanfaatkan Chrome sepenuhnya, log masuk ke Chrome dengan Google Account anda.</translation>
+<translation id="7792140019572081272">Chrome memastikan data sensitif anda selamat dengan Face ID.</translation>
 <translation id="7855730255114109580">Google Chrome adalah yang terkini</translation>
 <translation id="7897703007638178753">Lihat Tab Terbaharu Chrome</translation>
 <translation id="7925119591961387184">Pilih "Chrome".</translation>

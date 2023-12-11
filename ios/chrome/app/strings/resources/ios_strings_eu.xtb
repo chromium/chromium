@@ -913,7 +913,6 @@ Behar izanez gero, joan bilatzailearen argibideetara bilaketa-historia ezabatzea
 <translation id="5857770089550859117">Pasaesaldia behar da sinkronizatzen hasteko.</translation>
 <translation id="5859715514067755465">Aurrera</translation>
 <translation id="5860033963881614850">Desaktibatuta</translation>
-<translation id="5869029295770560994">Ados, ulertu dut</translation>
 <translation id="5871497086027727873">Elementu bat mugitu da</translation>
 <translation id="5896576662943111387">iOS-erako egina</translation>
 <translation id="5897749768294722429">Bisitatu dituzun webguneetara bizkor itzultzeko, sinkronizatu fitxak eta historia.</translation>
@@ -930,7 +929,6 @@ Behar izanez gero, joan bilatzailearen argibideetara bilaketa-historia ezabatzea
 <translation id="595769230373966252">Bilatu honen bidez: <ph name="SEARCH_PROVIDER" /></translation>
 <translation id="5962718611393537961">Sakatu tolesteko</translation>
 <translation id="5963939892571022323">Ezin da sortu nabarmendutako testurako estekarik.</translation>
-<translation id="5965679971710331625">Hasi duzu saioa</translation>
 <translation id="5971872012779224351">{count,plural, =1{1 laster-marka ezabatu da}other{{count} laster-marka ezabatu dira}}</translation>
 <translation id="5979837087407522202">Bilatu pasahitzak</translation>
 <translation id="5981230843984570095">Itxi inaktibo dauden guztiak</translation>
@@ -1479,6 +1477,7 @@ Datuak pasaesaldiarekin enkriptatu ziren data honetan: <ph name="TIME" />. Chrom
 <translation id="8766790350274092814"><ph name="WEBSITE" /> eta <ph name="SECOND_WEBSITE" /> webguneetako pasahitzak ezabatuko dira. Zure kontuak ez dira ezabatuko.</translation>
 <translation id="8775144690796719618">URLak ez du balio</translation>
 <translation id="8780076847684176174">{count,plural, =1{Berrikusi fitxa…}other{Berrikusi fitxa guztiak…}}</translation>
+<translation id="8782570580170191813">Egin beti paketeen jarraipena</translation>
 <translation id="8787968206789828143">Bilatu sarean</translation>
 <translation id="8792626944327216835">mikrofonoa</translation>
 <translation id="8803639129939845298">Segurua da</translation>

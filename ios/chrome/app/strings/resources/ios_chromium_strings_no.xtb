@@ -15,6 +15,7 @@
 <translation id="1507010443238049608">Bidra til å gjøre Chromium bedre og raskere</translation>
 <translation id="1513122820609681462">Angi Chromium som standardnettleser</translation>
 <translation id="1531155317299575425">Viser vinduer som ber deg logge på Chromium.</translation>
+<translation id="159029779861043703">Chromium beskytter de sensitive dataene dine med Face ID.</translation>
 <translation id="1591119736686995611">Åpner Chromium-fanerutenettet.</translation>
 <translation id="1611584326765829247">La Chromium hjelpe deg med å spore pakkene dine</translation>
 <translation id="1617663976202781617">Data fra Chromium-synkronisering</translation>
@@ -54,7 +55,6 @@
 <translation id="2784449251446768092">Administrer Chromium-innstillingene</translation>
 <translation id="2798503587425057129">Åpner Chromium-leselisten.</translation>
 <translation id="2843571538056574338">Bruk Chromium til autofyll</translation>
-<translation id="2915596697727466327">Chromium bruker Face ID til å sikre at bare godkjente personer får tilgang til passordene dine.</translation>
 <translation id="2918709798697875261">Organisasjonen din krever at du forblir logget av Chromium.</translation>
 <translation id="2942241131342758843">Bruk Chromium som standard til å åpne linker, søke i moduler og fylle ut passord i andre apper automatisk</translation>
 <translation id="2977470724722393594">Chromium er oppdatert</translation>
@@ -176,7 +176,6 @@ Bare personer som har passordfrasen din, kan lese de krypterte dataene. Passordf
 <translation id="7165402419892018581">Velg Chromium for autofyll</translation>
 <translation id="7175400662502680481">Passordet ditt har vært avdekket i et databrudd. Passordlagring anbefaler at du endrer det nå.</translation>
 <translation id="7192111075364461693">Chromium-varsler er nå slått av i enhetsinnstillingene.</translation>
-<translation id="7208566199746267865">Med Chromium kan du spare tid, siden du får tilgang til kontoene dine på nettet. Du kan legge til eller fjerne kontoer i Innstillinger.</translation>
 <translation id="725427773388857052">Chromium kan beskytte deg mot databrudd, utrygge nettsteder med mer.</translation>
 <translation id="7269362888766543920">Noen tillegg fører til at Chromium krasjer. Prøv å avinstallere dem.</translation>
 <translation id="7285031092584344905">Få tilgang til Chromium-passord med mer i andre apper.</translation>

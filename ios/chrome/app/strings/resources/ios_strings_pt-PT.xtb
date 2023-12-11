@@ -913,7 +913,6 @@ A Entrega também tem de estar ativada na secção Geral das Definições e os s
 <translation id="5857770089550859117">A frase de acesso é necessária para iniciar a sincronização.</translation>
 <translation id="5859715514067755465">Avançar</translation>
 <translation id="5860033963881614850">Desativado</translation>
-<translation id="5869029295770560994">OK</translation>
 <translation id="5871497086027727873">1 item movido</translation>
 <translation id="5896576662943111387">Concebido para o iOS</translation>
 <translation id="5897749768294722429">Para voltar rapidamente aos sites que visitou, sincronize os separadores e o histórico.</translation>
@@ -930,7 +929,6 @@ A Entrega também tem de estar ativada na secção Geral das Definições e os s
 <translation id="595769230373966252">Pesquisar com o <ph name="SEARCH_PROVIDER" /></translation>
 <translation id="5962718611393537961">Toque para reduzir</translation>
 <translation id="5963939892571022323">Não é possível criar um link para o realce.</translation>
-<translation id="5965679971710331625">Tem sessão iniciada</translation>
 <translation id="5971872012779224351">{count,plural, =1{1 marcador eliminado}other{{count} marcadores eliminados}}</translation>
 <translation id="5979837087407522202">Pesquisar palavras-passe</translation>
 <translation id="5981230843984570095">Fechar todos os inativos</translation>

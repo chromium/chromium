@@ -31,7 +31,6 @@
 <translation id="1018656279737460067">Отказано</translation>
 <translation id="1022522674678746124">PowerPoint</translation>
 <translation id="1022669824195822609">Уређајем управља <ph name="DOMAIN" />. Администратори могу да приступају подацима свих профила на овом уређају.</translation>
-<translation id="1024734233509995696">Ова картица користи камеру или микрофон</translation>
 <translation id="1026655690966755180">Додајте порт</translation>
 <translation id="1026822031284433028">Учитај слику</translation>
 <translation id="1026959648338730078">Windows Hello или спољни безбедносни кључ</translation>
@@ -1770,7 +1769,6 @@
 <translation id="2335111415680198280">{0,plural, =1{Затвори # прозор}one{Затвори # прозор}few{Затвори # прозора}other{Затвори # прозора}}</translation>
 <translation id="2336228925368920074">Обележи све картице...</translation>
 <translation id="2336381494582898602">Powerwash</translation>
-<translation id="2337236196941929873">Предучитава странице за које Chrome сматра да ћете их можда посетити. Да би то урадио, Chrome може да користи колачиће, ако их дозволите, и да шифрује и шаље странице преко Google-а да би сакрио ваш идентитет од сајтова.</translation>
 <translation id="2340239562261172947"><ph name="FILE_NAME" /> не може безбедно да се преузме</translation>
 <translation id="2342180549977909852">Ваше дете може да користи број (PIN) уместо лозинке за откључавање овог уређаја. Да бисте PIN подесили касније, идите у Подешавања.</translation>
 <translation id="2342740338116612727">Обележивачи су додати</translation>
@@ -3516,6 +3514,7 @@
 <translation id="372722114124766626">Само једном</translation>
 <translation id="3727332897090187514">Ниједна напомена није додата</translation>
 <translation id="3727473233247516571">Цео кеширани подоквир: <ph name="BACK_FORWARD_CACHE_PAGE_URL" /></translation>
+<translation id="3727850735097852673">Да бисте користили Google менаџер лозинки са macOS Keychain-ом, поново покрените Chrome и дозволите приступ Keychain-у. Картице ће се поново отворити после поновног покретања.</translation>
 <translation id="3728188878314831180">да преслика обавештења са вашег телефона</translation>
 <translation id="3728681439294129328">Конфигуриши мрежну адресу</translation>
 <translation id="3729506734996624908">Дозвољени сајтови</translation>
@@ -5906,7 +5905,6 @@
 <translation id="5636012309446422">Желите да уклоните уређај <ph name="DEVICE" /> са <ph name="PRIMARY_EMAIL" />?</translation>
 <translation id="5636996382092289526">Да бисте користили <ph name="NETWORK_ID" />, можда ћете прво морати да <ph name="LINK_START" />посетите страницу за пријављивање на мрежу<ph name="LINK_END" />, која ће се аутоматски отворити за неколико секунди. Ако се то не деси, мрежа не може да се користи.</translation>
 <translation id="5637476008227280525">Омогући мобилне податке</translation>
-<translation id="563811590465749036">Да бисте користили Google менаџер лозинки са macOS Keychain-ом, поново покрените Chrome и дозволите приступ Keychain-у. Картице ће се поново отворити после поновног покретања</translation>
 <translation id="563821631542362636">Дозволи сајту да чува податке</translation>
 <translation id="5638309510554459422">Пронађите додатке и теме у <ph name="BEGIN_LINK" />Chrome веб-продавници<ph name="END_LINK" /></translation>
 <translation id="5639549361331209298">Поново учитајте ову страницу, задржите да бисте видели више опција</translation>
@@ -6138,7 +6136,6 @@
 <translation id="583431638776747">Сајт није био доступан</translation>
 <translation id="5834581999798853053">Остало је око <ph name="TIME" /> минута</translation>
 <translation id="5835360478055379192">{NUM_EXTENSION,plural, =1{<ph name="EXTENSION1" /> приступа уређајима са интерфејсом}=2{Додаци који приступају уређајима: <ph name="EXTENSION1" />, <ph name="EXTENSION2" />}one{Додаци који приступају уређајима: <ph name="EXTENSION1" />, <ph name="EXTENSION2" /> и још {3}}few{Додаци који приступају уређајима: <ph name="EXTENSION1" />, <ph name="EXTENSION2" /> и још {3}}other{Додаци који приступају уређајима: <ph name="EXTENSION1" />, <ph name="EXTENSION2" /> и још {3}}}</translation>
-<translation id="5835486486592033703"><ph name="WINDOW_TITLE" /> – Камера или микрофон снимају</translation>
 <translation id="583673505367439042">Сајтови могу да траже да мењају фајлове и фолдере на уређају</translation>
 <translation id="5836999627049108525">Језик са ког желите да преводите</translation>
 <translation id="583756221537636748">Футрола</translation>

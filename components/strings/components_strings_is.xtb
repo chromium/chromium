@@ -87,6 +87,7 @@
 <translation id="11635448457105324">Hnappurinn „Stjórna heimilisföngum“, virkjaðu til að bæta við og stjórna vefslóðum í stillingum Chrome</translation>
 <translation id="1165039591588034296">Villa</translation>
 <translation id="1165174597379888365">Síða var opnuð</translation>
+<translation id="1165813024716836071">{COUNT,plural, =0{Ekkert}=1{Af 1 vefsvæði (þú verður áfram skráð(ur) inn á Google-reikninginn þinn)}one{Af # vefsvæði (þú verður áfram skráð(ur) inn á Google-reikninginn þinn)}other{Af # vefsvæðum (þú verður áfram skráð(ur) inn á Google-reikninginn þinn)}}</translation>
 <translation id="1165852471352757509">Heimildarmyndir og sannsögulegar frásagnir</translation>
 <translation id="1174644974616730562">Umslag: kínverskt #1</translation>
 <translation id="1174723505405632867">Viltu leyfa <ph name="EMBEDDED_URL" /> að nota fótspor og vefsvæðisgögn á <ph name="TOP_LEVEL_URL" />?
@@ -3986,6 +3987,7 @@ Ef þú gerir það ekki loka persónuverndarstillingar þínar á þennan aðga
 <translation id="8919895429178014996">Fela öll atriði</translation>
 <translation id="8922013791253848639">Leyfa alltaf auglýsingar á þessu vefsvæði</translation>
 <translation id="892588693504540538">Gatað efst til hægri</translation>
+<translation id="8926389886865778422">Ekki spyrja aftur</translation>
 <translation id="8930330541574156305">Fasteignir</translation>
 <translation id="8932102934695377596">Klukkan er á eftir</translation>
 <translation id="893332455753468063">Bæta við nafni</translation>

@@ -913,7 +913,6 @@ Einnig þarf að vera kveikt á Handoff í hlutanum General í Settings og tæki
 <translation id="5857770089550859117">Aðgangsorð er nauðsynlegt til að hefja samstillingu.</translation>
 <translation id="5859715514067755465">Áfram</translation>
 <translation id="5860033963881614850">Slökkt</translation>
-<translation id="5869029295770560994">Ég skil</translation>
 <translation id="5871497086027727873">Eitt atriði fært</translation>
 <translation id="5896576662943111387">Sniðinn fyrir iOS</translation>
 <translation id="5897749768294722429">Samstilltu flipa og feril til að opna vefsvæði sem þú hefur skoðað áður á skjótan hátt.</translation>
@@ -930,7 +929,6 @@ Einnig þarf að vera kveikt á Handoff í hlutanum General í Settings og tæki
 <translation id="595769230373966252">Leita með <ph name="SEARCH_PROVIDER" /></translation>
 <translation id="5962718611393537961">Ýttu til að draga saman</translation>
 <translation id="5963939892571022323">Ekki er hægt að búa til tengil í merkta textann.</translation>
-<translation id="5965679971710331625">Þú ert skráð(ur) inn</translation>
 <translation id="5971872012779224351">{count,plural, =1{1 bókamerki eytt}one{{count} bókamerki eytt}other{{count} bókamerkjum eytt}}</translation>
 <translation id="5979837087407522202">Leita að aðgangsorðum</translation>
 <translation id="5981230843984570095">Loka öllum óvirkum</translation>
@@ -1479,6 +1477,7 @@ Gögnin þín voru dulkóðuð með aðgangsorði <ph name="TIME" />. Sláðu þ
 <translation id="8766790350274092814">Aðgangsorðum fyrir <ph name="WEBSITE" /> og<ph name="SECOND_WEBSITE" /> verður eytt. Reikningunum þínum verður ekki eytt.</translation>
 <translation id="8775144690796719618">Ógild vefslóð</translation>
 <translation id="8780076847684176174">{count,plural, =1{Yfirfara flipa...}one{Yfirfara alla flipa...}other{Yfirfara alla flipa...}}</translation>
+<translation id="8782570580170191813">Alltaf rekja pakka</translation>
 <translation id="8787968206789828143">Leita á netinu</translation>
 <translation id="8792626944327216835">hljóðnema</translation>
 <translation id="8803639129939845298">Öruggt</translation>

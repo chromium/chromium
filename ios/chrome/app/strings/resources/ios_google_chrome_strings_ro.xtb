@@ -55,6 +55,7 @@ De reținut:
 <translation id="2574249610672786438">Conectează-te pe toate dispozitivele ca să vezi toate filele tale deschise în Chrome</translation>
 <translation id="2576431527583832481">Chrome a devenit și mai bun! Este disponibilă o nouă versiune.</translation>
 <translation id="257708665678654955">Dorești ca data viitoare Google Chrome să propună traducerea paginilor în limba <ph name="LANGUAGE_NAME" /> de pe acest site?</translation>
+<translation id="2650286135394207535">Permite ca Chrome să te ajute să urmărești colete</translation>
 <translation id="2671426118752779020">Poți folosi parolele salvate în Managerul de parole Google în alte aplicații de pe iPhone.</translation>
 <translation id="2689064829982324496">Pentru a te deconecta de la Contul Google pe toate site-urile, <ph name="BEGIN_LINK" />deconectează-te de la Chrome<ph name="END_LINK" />.</translation>
 <translation id="2695886661449553974">Chrome nu a putut căuta actualizări. Încearcă din nou mai târziu.</translation>
@@ -69,7 +70,6 @@ De reținut:
 <translation id="309672519329227863">Accesează parolele Chrome și multe altele în alte aplicații.</translation>
 <translation id="3167189358072330585">Contul nu funcționează pe Google Chrome. Contactează administratorul domeniului sau folosește un Cont Google obișnuit pentru a te conecta.</translation>
 <translation id="3173834708294760622">Pagină Google Chrome</translation>
-<translation id="3196546062792660320">Folosind Chrome, economisești timp, deoarece te conectează la conturi și pe web. Poți să adaugi sau să elimini conturi din Setări.</translation>
 <translation id="322254490661677575">Pentru a folosi și a salva datele Chrome în Contul Google, introdu expresia de acces.</translation>
 <translation id="3282568296779691940">Conectează-te la Chrome</translation>
 <translation id="3345341804167540816">Folosește Chrome oriunde</translation>
@@ -169,7 +169,6 @@ Numai un utilizator care deține expresia ta de acces îți poate citi datele cr
 <translation id="7124339256045485976">Menține browserul Chrome actualizat</translation>
 <translation id="7161390184744336561">Google Chrome este învechit</translation>
 <translation id="7165736900384873061">Începe să folosești scanerul QR din Google Chrome</translation>
-<translation id="7173660919484573146">Chrome folosește Face ID pentru a asigura accesul autorizat la parolele tale.</translation>
 <translation id="7187993566681480880">Te protejează în Chrome și poate fi folosită pentru a spori securitatea în alte aplicații Google dacă te-ai conectat.</translation>
 <translation id="7200524487407690471">Chrome rulează automat Verificarea de siguranță în fiecare zi pentru a te proteja împotriva încălcării securității datelor, a site-urilor nesigure și nu numai. Poți afla mai multe despre Verificarea de siguranță în Setări.</translation>
 <translation id="72119412072970160">Poți folosi parolele salvate în Managerul de parole Google în alte aplicații de pe iPad.</translation>

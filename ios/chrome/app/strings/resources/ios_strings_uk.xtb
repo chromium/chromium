@@ -913,7 +913,6 @@
 <translation id="5857770089550859117">Введіть парольну фразу, щоб почати синхронізацію.</translation>
 <translation id="5859715514067755465">Уперед</translation>
 <translation id="5860033963881614850">Вимк.</translation>
-<translation id="5869029295770560994">OK</translation>
 <translation id="5871497086027727873">Переміщено 1 елемент</translation>
 <translation id="5896576662943111387">Створено для iOS</translation>
 <translation id="5897749768294722429">Щоб швидко відкривати відвідані сайти, увімкніть синхронізацію вкладок і історії.</translation>
@@ -930,7 +929,6 @@
 <translation id="595769230373966252">Пошук через сервіс <ph name="SEARCH_PROVIDER" /></translation>
 <translation id="5962718611393537961">Торкніться, щоб згорнути</translation>
 <translation id="5963939892571022323">Не вдається створити посилання на виділений текст.</translation>
-<translation id="5965679971710331625">Ви ввійшли в обліковий запис</translation>
 <translation id="5971872012779224351">{count,plural, =1{Видалено 1 закладку}one{Видалено {count} закладку}few{Видалено {count} закладки}many{Видалено {count} закладок}other{Видалено {count} закладки}}</translation>
 <translation id="5979837087407522202">Пошук паролів</translation>
 <translation id="5981230843984570095">Закрити всі неактивні</translation>
@@ -1479,6 +1477,7 @@
 <translation id="8766790350274092814">Паролі для веб-сайтів <ph name="WEBSITE" /> і <ph name="SECOND_WEBSITE" /> буде видалено. Ваші облікові записи не буде видалено.</translation>
 <translation id="8775144690796719618">Недійсна URL-адреса</translation>
 <translation id="8780076847684176174">{count,plural, =1{Переглянути вкладку…}one{Переглянути всі вкладки…}few{Переглянути всі вкладки…}many{Переглянути всі вкладки…}other{Переглянути всі вкладки…}}</translation>
+<translation id="8782570580170191813">Завжди відстежувати відправлення</translation>
 <translation id="8787968206789828143">Шукати в Інтернеті</translation>
 <translation id="8792626944327216835">мікрофон</translation>
 <translation id="8803639129939845298">Безпечно</translation>

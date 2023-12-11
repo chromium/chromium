@@ -16,6 +16,7 @@
 <translation id="1513122820609681462">Chromium-u defolt brauzer təyin edin</translation>
 <translation id="1531155317299575425">Chromium'a giriş tələblərini göstərir.</translation>
 <translation id="1591119736686995611">Chromium tab toru açılır.</translation>
+<translation id="1611584326765829247">Chromium-a bağlamaları izləmək imkanı verin</translation>
 <translation id="1617663976202781617">Chromium sinxronizasiyası datası</translation>
 <translation id="1647558790457890304">Chromium ayarları</translation>
 <translation id="164952285225495380">Bu bağlama Chromium-da izlənib.</translation>
@@ -53,7 +54,6 @@
 <translation id="2784449251446768092">Chromium ayarlarını idarə edin</translation>
 <translation id="2798503587425057129">Chromium oxu siyahısını açır.</translation>
 <translation id="2843571538056574338">Avtodoldurma üçün Chromium istifadə edin</translation>
-<translation id="2915596697727466327">Chromium parollara icazəli girişdən əmin olmaq üçün Üz ID-sindən istifadə edir.</translation>
 <translation id="2918709798697875261">Təşkilatınız Chromium'dan çıxmış vəziyyətdə qalmağınızı tələb edir.</translation>
 <translation id="2942241131342758843">Defolt olaraq keçidləri açmaq, vidcetlərdən axtarış etmək və digər tətbiqlərdə parolları avtomatik doldurmaq üçün Chromium istifadə edin</translation>
 <translation id="2977470724722393594">Chromium güncəldir</translation>
@@ -175,7 +175,6 @@ Yalnız parol ifadəsini bilən şəxs şifrələnmiş datanı oxuya bilər. Goo
 <translation id="7165402419892018581">Avtodoldurma üçün Chromium'u seçin</translation>
 <translation id="7175400662502680481">Parolunuz data pozulması zamanı ələ keçirilib. Parol Meneceri onu indi dəyişmənizi tövsiyə edir.</translation>
 <translation id="7192111075364461693">Hazırda Chromium bildirişləri cihaz ayarlarında deaktivdir.</translation>
-<translation id="7208566199746267865">Chromium hesablarınızı vebə gətirməklə vaxtınıza qənaət edir. Hesabları Ayarlar bölməsindən əlavə edə və ya silə bilərsiniz.</translation>
 <translation id="725427773388857052">Chromium sizi data pozuntuları, güvənli olmayan vebsaytlar və digər güvənlik məsələlərindən qoruya bilər.</translation>
 <translation id="7269362888766543920">Bəzi addonlar Chromium'da xətaya səbəb oldu. Lütfən, onları sistemdən silməyə cəhd edin.</translation>
 <translation id="7285031092584344905">Digər tətbiqlərdə Chromium parolu və s. məlumatlara daxil olun.</translation>

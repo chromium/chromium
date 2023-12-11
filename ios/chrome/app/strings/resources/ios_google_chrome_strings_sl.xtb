@@ -55,6 +55,7 @@ Kaj je treba upoštevati:
 <translation id="2574249610672786438">Če si želite ogledati zavihke iz naprav, v katerih uporabljate Chrome, se prijavite v vseh napravah</translation>
 <translation id="2576431527583832481">Chrome je izboljšan! Na voljo je nova različica.</translation>
 <translation id="257708665678654955">Želite, da Google Chrome naslednjič ponudi prevod strani v jeziku <ph name="LANGUAGE_NAME" /> s tega spletnega mesta?</translation>
+<translation id="2650286135394207535">Naj vam Chrome pomaga slediti paketom</translation>
 <translation id="2671426118752779020">Gesla, ki ste jih shranili v Googlovem upravitelju gesel, lahko uporabite v drugih aplikacijah v iPhonu.</translation>
 <translation id="2689064829982324496">Če se želite odjaviti iz računa Google na vseh spletnih mestih, <ph name="BEGIN_LINK" />se odjavite iz Chroma<ph name="END_LINK" />.</translation>
 <translation id="2695886661449553974">Chrome ni mogel preveriti, ali so na voljo posodobitve. Poskusite pozneje.</translation>
@@ -69,7 +70,6 @@ Kaj je treba upoštevati:
 <translation id="309672519329227863">Dostopajte do gesel v Chromu in drugega v drugih aplikacijah.</translation>
 <translation id="3167189358072330585">Vaš račun ne deluje v Google Chromu. Obrnite se na skrbnika domene ali za prijavo uporabite običajen Google Račun.</translation>
 <translation id="3173834708294760622">Stran Google Chroma</translation>
-<translation id="3196546062792660320">Chrome poskrbi, da so vaši računi v spletu, in vam tako prihrani čas. Račune lahko dodajate ali odstranjujete v nastavitvah.</translation>
 <translation id="322254490661677575">Če želite v računu Google uporabljati in shranjevati podatke iz Chroma, vnesite geslo.</translation>
 <translation id="3282568296779691940">Prijava v Chrome</translation>
 <translation id="3345341804167540816">Use Chrome Everywhere</translation>
@@ -169,7 +169,6 @@ Vaše šifrirane podatke lahko bere samo oseba, ki ima vaše geslo. Geslo ni pos
 <translation id="7124339256045485976">Posodobitev Chroma</translation>
 <translation id="7161390184744336561">Google Chrome je zastarel</translation>
 <translation id="7165736900384873061">Začetek uporabe bralnika kod QR Google Chroma</translation>
-<translation id="7173660919484573146">Chrome uporablja funkcijo Face ID za zagotavljanje pooblaščenega dostopa do vaših gesel.</translation>
 <translation id="7187993566681480880">Skrbi za vašo varnost v Chromu in ga je mogoče uporabiti za okrepitev varnosti v drugih Googlovih aplikacijah, ko ste prijavljeni.</translation>
 <translation id="7200524487407690471">Chrome vsak dan samodejno zažene varnostno preverjanje, da vas varuje pred podatkovnimi kršitvami, spletnimi mesti, ki niso varna, in drugim. Več o varnostnem preverjanju lahko preberete v nastavitvah.</translation>
 <translation id="72119412072970160">Gesla, ki ste jih shranili v Googlovem upravitelju gesel, lahko uporabite v drugih aplikacijah v iPadu.</translation>
@@ -189,6 +188,7 @@ Vaše šifrirane podatke lahko bere samo oseba, ki ima vaše geslo. Geslo ni pos
 <translation id="7698568245838009292">Chrome želi dostopati do fotoaparata</translation>
 <translation id="7754633291442704733">Vaša organizacija <ph name="DOMAIN" /> bo imela dostop do podatkov Chroma, zaznamkov, zgodovine, gesel in drugih nastavitev, ki jih shranite v tem računu. Ko se odjavite, bodo podatki izbrisani iz te naprave.  Vaši podatki bodo kljub temu še naprej shranjeni v upravljanem računu Google in bodo na voljo vaši organizaciji. Vaša organizacija lahko nastavi tudi uporabniške pravilnike, specifične za ta račun, to pa lahko spremeni način delovanja Chroma.</translation>
 <translation id="7780154209050837198">Če želite kar najbolje izkoristiti Chrome, se prijavite vanj z računom Google.</translation>
+<translation id="7792140019572081272">Chrome zagotavlja varnost občutljivih podatkov s funkcijo Face ID.</translation>
 <translation id="7855730255114109580">Google Chrome je posodobljen</translation>
 <translation id="7897703007638178753">Ogled nedavnih zavihkov v Chromu</translation>
 <translation id="7925119591961387184">Izberite »Chrome«.</translation>

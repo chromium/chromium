@@ -31,7 +31,6 @@
 <translation id="1018656279737460067">Cancelado</translation>
 <translation id="1022522674678746124">PowerPoint</translation>
 <translation id="1022669824195822609">Seu dispositivo é gerenciado por <ph name="DOMAIN" />. Os administradores podem acessar os dados de qualquer perfil neste dispositivo.</translation>
-<translation id="1024734233509995696">Esta guia está usando sua câmera ou microfone</translation>
 <translation id="1026655690966755180">Adicionar porta</translation>
 <translation id="1026822031284433028">Carregar Imagem</translation>
 <translation id="1026959648338730078">Windows Hello ou chave de segurança externa</translation>
@@ -1788,7 +1787,6 @@ Para gerenciar as configurações dessa conta, instale o app Family Link no seu 
 <translation id="2335111415680198280">{0,plural, =1{Fechar # janela}one{Fechar # janela}other{Fechar # janelas}}</translation>
 <translation id="2336228925368920074">Adicionar todas as guias aos favoritos...</translation>
 <translation id="2336381494582898602">Powerwash</translation>
-<translation id="2337236196941929873">Pré-carrega as páginas que o Chrome acredita que você vai acessar. Para fazer isso, o navegador pode usar cookies, se você os permitir, além de criptografar e enviar páginas pelo Google para ocultar sua identidade dos sites.</translation>
 <translation id="2340239562261172947">Não é possível fazer o download de <ph name="FILE_NAME" /> por motivos de segurança</translation>
 <translation id="2342180549977909852">A criança pode usar um número (PIN) em vez de uma senha para desbloquear este dispositivo. Para definir um PIN mais tarde, acesse Configurações.</translation>
 <translation id="2342740338116612727">Favoritos adicionados</translation>
@@ -3534,6 +3532,7 @@ Para gerenciar as configurações dessa conta, instale o app Family Link no seu 
 <translation id="372722114124766626">Apenas uma vez</translation>
 <translation id="3727332897090187514">Nenhuma observação foi adicionada</translation>
 <translation id="3727473233247516571">Subframe salvo em cache de avanço e retorno: <ph name="BACK_FORWARD_CACHE_PAGE_URL" /></translation>
+<translation id="3727850735097852673">Para usar o Gerenciador de senhas do Google com o Acesso às Chaves do macOS, reinicie o Chrome e permita o acesso. Suas guias serão reabertas após a reinicialização.</translation>
 <translation id="3728188878314831180">espelhar notificações do smartphone;</translation>
 <translation id="3728681439294129328">Configurar endereço de rede</translation>
 <translation id="3729506734996624908">Sites permitidos</translation>
@@ -5926,7 +5925,6 @@ Não exponha nenhuma informação confidencial.</translation>
 <translation id="5636012309446422">Remover o dispositivo <ph name="DEVICE" /> de <ph name="PRIMARY_EMAIL" />?</translation>
 <translation id="5636996382092289526">Para usar <ph name="NETWORK_ID" />, talvez seja necessário primeiro <ph name="LINK_START" />visitar a página de login da rede<ph name="LINK_END" />, que abrirá automaticamente em alguns segundos. Se isso não acontecer, significa que a rede não pode ser usada.</translation>
 <translation id="5637476008227280525">Ativar dados móveis</translation>
-<translation id="563811590465749036">Para usar o Gerenciador de senhas do Google com o Acesso às Chaves do macOS, reinicie o Chrome e permita o acesso. Suas guias serão reabertas após a reinicialização</translation>
 <translation id="563821631542362636">Permitir que o site salve dados</translation>
 <translation id="5638309510554459422">Encontre extensões e temas na <ph name="BEGIN_LINK" />Chrome Web Store<ph name="END_LINK" /></translation>
 <translation id="5639549361331209298">Recarrega esta página; pressione para ver mais opções</translation>
@@ -6158,7 +6156,6 @@ Não exponha nenhuma informação confidencial.</translation>
 <translation id="583431638776747">O site não está disponível</translation>
 <translation id="5834581999798853053">Cerca de <ph name="TIME" /> minutos restantes</translation>
 <translation id="5835360478055379192">{NUM_EXTENSION,plural, =1{A extensão <ph name="EXTENSION1" /> está acessando 1 dispositivo HID}=2{Extensões acessando dispositivos: <ph name="EXTENSION1" />, <ph name="EXTENSION2" />}one{Extensões acessando dispositivos: <ph name="EXTENSION1" />, <ph name="EXTENSION2" /> e mais {3}}other{Extensões acessando dispositivos: <ph name="EXTENSION1" />, <ph name="EXTENSION2" /> e mais {3}}}</translation>
-<translation id="5835486486592033703"><ph name="WINDOW_TITLE" /> - Gravação de câmera ou microfone</translation>
 <translation id="583673505367439042">Os sites podem pedir para editar arquivos e pastas no dispositivo</translation>
 <translation id="5836999627049108525">Idioma a ser traduzido</translation>
 <translation id="583756221537636748">Estojo</translation>

@@ -913,7 +913,6 @@ Handoff must also be enabled in the General section of Settings, and your device
 <translation id="5857770089550859117">Passphrase required to start sync.</translation>
 <translation id="5859715514067755465">Forward</translation>
 <translation id="5860033963881614850">Off</translation>
-<translation id="5869029295770560994">OK, got it</translation>
 <translation id="5871497086027727873">1 item moved</translation>
 <translation id="5896576662943111387">Built for iOS</translation>
 <translation id="5897749768294722429">To quickly get back to sites you've visited, sync your tabs and history.</translation>
@@ -930,7 +929,6 @@ Handoff must also be enabled in the General section of Settings, and your device
 <translation id="595769230373966252">Search with <ph name="SEARCH_PROVIDER" /></translation>
 <translation id="5962718611393537961">Tap to collapse</translation>
 <translation id="5963939892571022323">A link to the highlight cannot be created.</translation>
-<translation id="5965679971710331625">You're signed in</translation>
 <translation id="5971872012779224351">{count,plural, =1{1 bookmark deleted}other{{count} bookmarks deleted}}</translation>
 <translation id="5979837087407522202">Search passwords</translation>
 <translation id="5981230843984570095">Close all inactive</translation>
@@ -1479,6 +1477,7 @@ Your data was encrypted with your passphrase on <ph name="TIME" />. Enter it to 
 <translation id="8766790350274092814">Passwords for <ph name="WEBSITE" /> and <ph name="SECOND_WEBSITE" /> will be deleted. Your accounts won't be deleted.</translation>
 <translation id="8775144690796719618">Invalid URL</translation>
 <translation id="8780076847684176174">{count,plural, =1{Review the tab...}other{Review all tabs...}}</translation>
+<translation id="8782570580170191813">Always track packages</translation>
 <translation id="8787968206789828143">Search on web</translation>
 <translation id="8792626944327216835">microphone</translation>
 <translation id="8803639129939845298">Secure</translation>

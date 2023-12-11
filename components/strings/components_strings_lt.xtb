@@ -87,6 +87,7 @@
 <translation id="11635448457105324">Mygtukas „Tvarkyti adresus“; suaktyvinkite, kad pridėtumėte ir tvarkytumėte adresus „Chrome“ nustatymuose</translation>
 <translation id="1165039591588034296">Klaida</translation>
 <translation id="1165174597379888365">Puslapyje apsilankyta</translation>
+<translation id="1165813024716836071">{COUNT,plural, =0{Nėra}=1{Iš vienos svetainės (liksite prisijungę prie „Google“ paskyros)}one{Iš # svetainės (liksite prisijungę prie „Google“ paskyros)}few{Iš # svetainių (liksite prisijungę prie „Google“ paskyros)}many{Iš # svetainės (liksite prisijungę prie „Google“ paskyros)}other{Iš # svetainių (liksite prisijungę prie „Google“ paskyros)}}</translation>
 <translation id="1165852471352757509">TV dokumentika ir negrožinė kūryba</translation>
 <translation id="1174644974616730562">Nr. 1 kinietiškas vokas</translation>
 <translation id="1174723505405632867">Ar norite leisti <ph name="EMBEDDED_URL" /> naudoti slapukus ir svetainės duomenis <ph name="TOP_LEVEL_URL" />?
@@ -3988,6 +3989,7 @@ Papildoma išsami informacija:
 <translation id="8919895429178014996">Slėpti visus elementus</translation>
 <translation id="8922013791253848639">Visada leisti skelbimus šioje svetainėje</translation>
 <translation id="892588693504540538">Skylė viršuje dešinėje</translation>
+<translation id="8926389886865778422">Neklauskite dar kartą</translation>
 <translation id="8930330541574156305">Nekilnojamasis turtas</translation>
 <translation id="8932102934695377596">Jūsų laikrodis atsilieka</translation>
 <translation id="893332455753468063">Vardo ir pavardės pridėjimas</translation>

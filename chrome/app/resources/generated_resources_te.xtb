@@ -31,7 +31,6 @@
 <translation id="1018656279737460067">రద్దయింది</translation>
 <translation id="1022522674678746124">PowerPoint</translation>
 <translation id="1022669824195822609">మీ పరికరం <ph name="DOMAIN" /> ద్వారా మేనేజ్ చేయబడుతుంది. ఈ పరికరంలో ఏ ప్రొఫైల్‌లోని డేటాను అయినా అడ్మినిస్ట్రేటర్‌లు యాక్సెస్ చేయగలరు.</translation>
-<translation id="1024734233509995696">ఈ ట్యాబ్ మీ కెమెరా లేదా మైక్రోఫోన్‌ను ఉపయోగిస్తోంది</translation>
 <translation id="1026655690966755180">పోర్ట్‌ను జోడించండి</translation>
 <translation id="1026822031284433028">చిత్రాన్ని లోడ్ చేయండి</translation>
 <translation id="1026959648338730078">Windows Hello లేదా బాహ్య సెక్యూరిటీ కీ</translation>
@@ -1785,7 +1784,6 @@
 <translation id="2335111415680198280">{0,plural, =1{# విండోను మూసివేయి}other{# విండోలను మూసివేయి}}</translation>
 <translation id="2336228925368920074">అన్ని ట్యాబ్‌లను బుక్‌మార్క్ చేయండి...</translation>
 <translation id="2336381494582898602">పవర్‌వాష్ చేయి</translation>
-<translation id="2337236196941929873">మీరు సందర్శించవచ్చని Chrome భావించే పేజీలను ప్రీలోడ్ చేస్తుంది. ఇది చేయడానికి, మీరు కుక్కీలను అనుమతిస్తే, అలాగే సైట్‌ల నుండి మీ గుర్తింపును దాచడానికి Google ద్వారా పేజీలను ఎన్‌క్రిప్ట్ చేసి పంపితే, Chrome కుక్కీలను ఉపయోగించవచ్చు.</translation>
 <translation id="2340239562261172947"><ph name="FILE_NAME" />ను సురక్షితంగా డౌన్‌లోడ్ చేయడం సాధ్యం కాదు</translation>
 <translation id="2342180549977909852">ఈ పరికరాన్ని అన్‌లాక్ చేయడానికి మీ చిన్నారి పాస్‌వర్డ్‌కు బదులుగా నంబర్ (PIN)ను ఉపయోగించవచ్చు. PINను సెట్ చేయడానికి, సెట్టింగ్‌లకు వెళ్లండి.</translation>
 <translation id="2342740338116612727">బుక్‌మార్క్‌లు జోడించబడ్డాయి</translation>
@@ -3531,6 +3529,7 @@
 <translation id="372722114124766626">ఒకసారి మాత్రమే</translation>
 <translation id="3727332897090187514">గమనిక ఏదీ జోడించబడలేదు</translation>
 <translation id="3727473233247516571">వెనుకకు-ముందుకు కాష్ సబ్‌ఫ్రేమ్: <ph name="BACK_FORWARD_CACHE_PAGE_URL" /></translation>
+<translation id="3727850735097852673">MacOS కీచెయిన్‌తో Google Password Managerను ఉపయోగించడానికి, Chromeను రీ-లాంచ్ చేసి, కీచెయిన్ యాక్సెస్‌ను అనుమతించండి. మీ ట్యాబ్‌లు రీ-లాంచ్ చేసిన తర్వాత మళ్లీ తెరవబడతాయి.</translation>
 <translation id="3728188878314831180">మీ ఫోన్ నుండి మిర్రర్ నోటిఫికేషన్‌లు</translation>
 <translation id="3728681439294129328">నెట్‌వర్క్ అడ్రస్‌ను కాన్ఫిగర్ చేయడం</translation>
 <translation id="3729506734996624908">అనుమతించబడిన సైట్‌లు</translation>
@@ -5922,7 +5921,6 @@
 <translation id="5636012309446422"><ph name="PRIMARY_EMAIL" /> నుండి <ph name="DEVICE" />‌ను తీసివేయాలా?</translation>
 <translation id="5636996382092289526">మీరు <ph name="NETWORK_ID" />ను ఉపయోగించడానికి మొదట కొన్నిసెకన్లలో ఆటోమేటిక్‌గా తెరవబడే <ph name="LINK_START" />నెట్‌వర్క్ సైన్ ఇన్ పేజీని సందర్శించాలి<ph name="LINK_END" />. ఇది జరగకపోతే, నెట్‌వర్క్‌ను ఉపయోగించలేరు.</translation>
 <translation id="5637476008227280525">మొబైల్ డేటాను ప్రారంభించండి</translation>
-<translation id="563811590465749036">MacOS కీచెయిన్‌తో Google Password Managerను ఉపయోగించడానికి, Chromeను రీ-లాంచ్ చేసి, కీచెయిన్ యాక్సెస్‌ను అనుమతించండి. మీ ట్యాబ్‌లు రీ-లాంచ్ చేసిన తర్వాత మళ్లీ తెరవబడతాయి</translation>
 <translation id="563821631542362636">డేటాను సేవ్ చేయడానికి సైట్‌ను అనుమతించండి</translation>
 <translation id="5638309510554459422"><ph name="BEGIN_LINK" />Chrome వెబ్ స్టోర్‌లో<ph name="END_LINK" /> ఎక్స్‌టెన్ష‌న్‌లు మరియు థీమ్‌లను కనుగొనండి</translation>
 <translation id="5639549361331209298">ఈ పేజీని మళ్లీ లోడ్ చేయండి, మరిన్ని ఎంపికలను చూడటానికి దీనిపై కర్సర్ ఉంచండి</translation>
@@ -6154,7 +6152,6 @@
 <translation id="583431638776747">సైట్ అందుబాటులో లేదు</translation>
 <translation id="5834581999798853053">సుమారు <ph name="TIME" /> నిమిషాలు మిగిలి ఉన్నాయి</translation>
 <translation id="5835360478055379192">{NUM_EXTENSION,plural, =1{<ph name="EXTENSION1" /> HID పరికరాలను యాక్సెస్ చేస్తోంది}=2{పరికరాలను యాక్సెస్ చేసే ఎక్స్‌టెన్షన్‌లు: <ph name="EXTENSION1" />, <ph name="EXTENSION2" />}other{పరికరాలను యాక్సెస్ చేసే ఎక్స్‌టెన్షన్‌లు: <ph name="EXTENSION1" />, <ph name="EXTENSION2" /> + మరో {3}}}</translation>
-<translation id="5835486486592033703"><ph name="WINDOW_TITLE" /> - కెమెరా లేదా మైక్రోఫోన్ రికార్డ్ చేస్తోంది</translation>
 <translation id="583673505367439042">మీ పరికరంలో ఫైళ్లు, అలాగే ఫోల్డర్‌లను ఎడిట్ చేయడానికి సైట్‌లు అడగవచ్చు</translation>
 <translation id="5836999627049108525">ఈ భాష నుండి అనువదించాలి</translation>
 <translation id="583756221537636748">కేస్</translation>

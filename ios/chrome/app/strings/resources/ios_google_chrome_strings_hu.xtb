@@ -55,6 +55,7 @@ Megjegyzések:
 <translation id="2574249610672786438">Jelentkezzen be minden eszközén, hogy bárhol hozzáférhessen a lapjaihoz, ahol a Chrome-ot használja.</translation>
 <translation id="2576431527583832481">A Chrome most még jobb lett! Új verzió áll rendelkezésre.</translation>
 <translation id="257708665678654955">Szeretné, hogy a Google Chrome a jövőben felajánlja e webhely <ph name="LANGUAGE_NAME" /> nyelvű oldalainak fordítását?</translation>
+<translation id="2650286135394207535">A Chrome segíthet a csomagok nyomon követésében</translation>
 <translation id="2671426118752779020">A Google Jelszókezelőbe mentett jelszavakat használhatja más alkalmazásokban iPhone eszközén.</translation>
 <translation id="2689064829982324496">Ha az összes webhelyen ki szeretne jelentkezni Google-fiókjából, <ph name="BEGIN_LINK" />jelentkezzen ki a Chrome-ból<ph name="END_LINK" />.</translation>
 <translation id="2695886661449553974">A Chrome nem tudott frissítéseket keresni. Próbálja újra később.</translation>
@@ -69,7 +70,6 @@ Megjegyzések:
 <translation id="309672519329227863">Hozzáférhet Chrome-jelszavaihoz és egyebekhez más alkalmazásokban.</translation>
 <translation id="3167189358072330585">Fiókja nem működik a Google Chrome-on. Lépjen kapcsolatba domainrendszergazdájával, vagy használjon normál Google-fiókot a bejelentkezéshez.</translation>
 <translation id="3173834708294760622">A Google Chrome oldala</translation>
-<translation id="3196546062792660320">A Chrome időt takarít meg Önnek azzal, hogy a fiókjait az internetre viszi. A beállításokban tud fiókokat hozzáadni vagy eltávolítani.</translation>
 <translation id="322254490661677575">Ha Chrome-adatokat szeretne használni és tárolni Google-fiókjában, adja meg az összetett jelszavát.</translation>
 <translation id="3282568296779691940">Bejelentkezés a Chrome-ba</translation>
 <translation id="3345341804167540816">A Chrome használata mindenhol</translation>
@@ -169,7 +169,6 @@ Csak az Ön összetett jelszava ismeretében tudja bárki is megtekinteni a titk
 <translation id="7124339256045485976">Chrome böngészője legyen mindig naprakész</translation>
 <translation id="7161390184744336561">A Google Chrome elavult</translation>
 <translation id="7165736900384873061">A Google Chrome QR-olvasójának használata</translation>
-<translation id="7173660919484573146">A Chrome a Face ID segítségével ellenőrzi a jogosultságot a jelszavakhoz való hozzáféréshez.</translation>
 <translation id="7187993566681480880">Gondoskodik a biztonságáról a Chrome-ban, és használható a biztonság növelésére más Google-alkalmazásokban olyankor, amikor Ön be van jelentkezve.</translation>
 <translation id="7200524487407690471">A Chrome automatikusan futtat egy biztonsági ellenőrzést mindennap, hogy megvédje Önt az adatvédelmi incidensektől, a nem biztonságos webhelyektől és még sok mástól. A biztonsági ellenőrzésről a Beállításokban találhat további információt.</translation>
 <translation id="72119412072970160">A Google Jelszókezelőbe mentett jelszavakat használhatja más alkalmazásokban iPad eszközén.</translation>
@@ -189,6 +188,7 @@ Csak az Ön összetett jelszava ismeretében tudja bárki is megtekinteni a titk
 <translation id="7698568245838009292">A Chrome hozzá szeretne férni a kamerához</translation>
 <translation id="7754633291442704733">Szervezete (<ph name="DOMAIN" />) hozzáfér majd az Ön Chrome-adataihoz, -könyvjelzőihez, -előzményeihez, -jelszavaihoz és az ebben a fiókban tárolt egyéb beállításaihoz. Kijelentkezéskor az adatai törlődnek erről az eszközről.  Az adatok azonban továbbra is megmaradnak a felügyelt Google-fiókban, és hozzáférhetők lesznek szervezete számára. Szervezete felhasználói házirendeket is beállíthat erre a fiókra vonatkozóan, amelyek módosíthatják a Chrome viselkedését.</translation>
 <translation id="7780154209050837198">Annak érdekében, hogy a legtöbbet hozhassa ki a Chrome-ból, jelentkezzen be Google-fiókjával a Chrome-ba.</translation>
+<translation id="7792140019572081272">A Chrome biztonságban tartja az Ön bizalmas adatait a Face ID segítségével.</translation>
 <translation id="7855730255114109580">A Google Chrome naprakész</translation>
 <translation id="7897703007638178753">Legutóbbi Chrome-lapok megtekintése</translation>
 <translation id="7925119591961387184">Válassza a „Chrome” lehetőséget.</translation>

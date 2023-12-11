@@ -72,6 +72,7 @@ Sayt va ilovalarga berilgan ruxsatlar bu hisobga tatbiq etilishi mumkin. Google 
 <translation id="2329088755516916767">Yoniqligida, Chromium kezish va qidiruvni tezlashtirish uchun sahifalarni oldindan yuklaydi.</translation>
 <translation id="2343156876103232566">Bu yerdan Android telefoningizga raqam yuborish uchun ikkala qurilmada Chromium hisobingizga kiring.</translation>
 <translation id="2359808026110333948">Davom etish</translation>
+<translation id="2359920621792549529">Brauzerning ishlashi haqida axborotni faqat shu qurilmadan tozalash va Google hisobingizda saqlash uchun <ph name="BEGIN_LINK" />Chromium hisobingizdan chiqing<ph name="END_LINK" />.</translation>
 <translation id="2384373936468275798">ChromiumOS maʼlumotlaringizni sinxronlay olmadi, chunki hisobingiz haqidagi ma’lumotlar eskirgan.</translation>
 <translation id="2398377054246527950">{NUM_DEVICES,plural, =0{1 ta HID qurilmasi kamida bitta Chromium kengaytmasi tomonidan ochilmoqda}=1{1 ta HID qurilmasi kamida bitta Chromium kengaytmasi tomonidan ochilmoqda}other{# ta HID qurilmasi kamida bitta Chromium kengaytmasi tomonidan ochilmoqda}}</translation>
 <translation id="2401032172288869980">Chromium bu saytda kamera va mikrofondan foydalanishiga ruxsat kerak</translation>

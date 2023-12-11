@@ -496,6 +496,7 @@ Se eventuelt instruksjonene fra den aktuelle søkemotoren om hvordan du sletter 
 <translation id="355101282835380364">Lagre i kontoen…</translation>
 <translation id="3551320343578183772">Lukk fanen</translation>
 <translation id="3565207542107370586">Slett nettlesingsdata…</translation>
+<translation id="3570693105179140209">Dobbelttrykk for å se flere passord.</translation>
 <translation id="3575234738189584619">Søk med Lens</translation>
 <translation id="3581564640715911333">Tilby å oversette sider på andre språk</translation>
 <translation id="3587885837929752825">Organisasjonen din begrenser hva du kan lagre i Google-kontoen din.</translation>
@@ -661,6 +662,7 @@ Se eventuelt instruksjonene fra den aktuelle søkemotoren om hvordan du sletter 
 <translation id="452750746583162491">Gjennomgå de synkroniserte dataene dine</translation>
 <translation id="4527660062930312477">Kontoen din administreres</translation>
 <translation id="4536418791685807335">Prøv å logge på igjen.</translation>
+<translation id="4539187448429948815">{count,plural, =1{{count} lagret forslag til autofullføring er tilgjengelig over tastaturet.}other{{count} lagrede forslag til autofullføring er tilgjengelige over tastaturet.}}</translation>
 <translation id="4540780316273593836">Noe gikk galt</translation>
 <translation id="4550040941166547650">Bare på denne enheten</translation>
 <translation id="457292989631956153">{COUNT,plural, =1{Vil du lukke {COUNT} inaktiv fane?}other{Vil du lukke {COUNT} inaktive faner?}}</translation>
@@ -913,7 +915,6 @@ Handoff må også være aktivert i Generelt-delen av Innstillinger, og enhetene 
 <translation id="5857770089550859117">Det kreves en passordfrase for å starte synkroniseringen.</translation>
 <translation id="5859715514067755465">Fremover</translation>
 <translation id="5860033963881614850">Av</translation>
-<translation id="5869029295770560994">Greit</translation>
 <translation id="5871497086027727873">1 element er flyttet</translation>
 <translation id="5896576662943111387">Bygget for iOS</translation>
 <translation id="5897749768294722429">For å komme raskt tilbake til nettsteder du har besøkt, synkroniser fanene og loggen.</translation>
@@ -930,7 +931,6 @@ Handoff må også være aktivert i Generelt-delen av Innstillinger, og enhetene 
 <translation id="595769230373966252">Søk med <ph name="SEARCH_PROVIDER" /></translation>
 <translation id="5962718611393537961">Trykk for å skjule</translation>
 <translation id="5963939892571022323">Kan ikke opprette noen link til den markerte teksten.</translation>
-<translation id="5965679971710331625">Du er pålogget</translation>
 <translation id="5971872012779224351">{count,plural, =1{1 bokmerke er slettet}other{{count} bokmerker er slettet}}</translation>
 <translation id="5979837087407522202">Søk etter passord</translation>
 <translation id="5981230843984570095">Lukk alle inaktive</translation>

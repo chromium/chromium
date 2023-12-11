@@ -913,7 +913,6 @@
 <translation id="5857770089550859117">יש להזין את ביטוי הסיסמה כדי להפעיל את הסינכרון.</translation>
 <translation id="5859715514067755465">קדימה</translation>
 <translation id="5860033963881614850">כבוי</translation>
-<translation id="5869029295770560994">בסדר, הבנתי</translation>
 <translation id="5871497086027727873">פריט אחד הועבר</translation>
 <translation id="5896576662943111387">‏מותאם ל-iOS</translation>
 <translation id="5897749768294722429">אחרי סנכרון הכרטיסיות וההיסטוריה אפשר יהיה לחזור במהירות לאתרים שביקרת בהם.</translation>
@@ -930,7 +929,6 @@
 <translation id="595769230373966252">חיפוש ב-<ph name="SEARCH_PROVIDER" /></translation>
 <translation id="5962718611393537961">יש להקיש כדי לכווץ</translation>
 <translation id="5963939892571022323">לא ניתן ליצור קישור לטקסט המודגש.</translation>
-<translation id="5965679971710331625">התחברת לחשבון</translation>
 <translation id="5971872012779224351">{count,plural, =1{סימנייה אחת נמחקה}one{{count} סימניות נמחקו}two{{count} סימניות נמחקו}other{{count} סימניות נמחקו}}</translation>
 <translation id="5979837087407522202">חיפוש בסיסמאות</translation>
 <translation id="5981230843984570095">סגירת כל הכרטיסיות הלא פעילות</translation>
@@ -1479,6 +1477,7 @@
 <translation id="8766790350274092814">הסיסמאות של <ph name="WEBSITE" /> ושל <ph name="SECOND_WEBSITE" /> יימחקו. החשבונות שלך לא יימחקו.</translation>
 <translation id="8775144690796719618">כתובת אתר לא חוקית</translation>
 <translation id="8780076847684176174">{count,plural, =1{לבדיקת הכרטיסייה…}one{לבדיקת כל הכרטיסיות…}two{לבדיקת כל הכרטיסיות…}other{לבדיקת כל הכרטיסיות…}}</translation>
+<translation id="8782570580170191813">יש לעקוב תמיד אחר חבילות</translation>
 <translation id="8787968206789828143">חיפוש באינטרנט</translation>
 <translation id="8792626944327216835">מיקרופון</translation>
 <translation id="8803639129939845298">מאובטח</translation>

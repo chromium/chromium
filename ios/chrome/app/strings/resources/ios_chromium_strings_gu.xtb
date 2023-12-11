@@ -16,6 +16,7 @@
 <translation id="1513122820609681462">Chromiumને ડિફૉલ્ટ બ્રાઉઝર તરીકે સેટ કરો</translation>
 <translation id="1531155317299575425">Chromiumમાં સાઇન ઇન કરવા માટેના સંકેતો બતાવો.</translation>
 <translation id="1591119736686995611">Chromium ટૅબ ગ્રિડ ખોલે છે.</translation>
+<translation id="1611584326765829247">તમારા પૅકેજને ટ્રૅક કરવામાં Chromiumને તમારી સહાય કરવા દો</translation>
 <translation id="1617663976202781617">Chromium સિંકમાંનો ડેટા</translation>
 <translation id="1647558790457890304">Chromiumના સેટિંગ</translation>
 <translation id="164952285225495380">આ પૅકેજને Chromium પર પહેલેથી જ ટ્રૅક કરવામાં આવ્યું છે.</translation>
@@ -53,7 +54,6 @@
 <translation id="2784449251446768092">Chromiumના સેટિંગ મેનેજ કરો</translation>
 <translation id="2798503587425057129">Chromium વાંચન સૂચિ ખોલે છે.</translation>
 <translation id="2843571538056574338">ઑટોમૅટિક રીતે ભરવાની સુવિધા માટે Chromiumનો ઉપયોગ કરો</translation>
-<translation id="2915596697727466327">તમારા પાસવર્ડની અધિકૃત ઍક્સેસની ખાતરી કરવા માટે, Chromium ચહેરાના IDનો ઉપયોગ કરે છે.</translation>
 <translation id="2918709798697875261">તમારી સંસ્થા માટે જરૂરી છે કે તમે Chromiumમાં સાઇન આઉટ કરીને રાખો.</translation>
 <translation id="2942241131342758843">લિંક ખોલવા, વિજેટથી શોધવા અને અન્ય ઍપમાં પાસવર્ડ ઑટોમૅટિક રીતે ભરવાની સુવિધા માટે ડિફૉલ્ટ તરીકે Chromiumનો ઉપયોગ કરો</translation>
 <translation id="2977470724722393594">Chromium અપ ટૂ ડેટ છે</translation>
@@ -175,7 +175,6 @@
 <translation id="7165402419892018581">ઑટોમૅટિક રીતે ભરવાની સુવિધા માટે Chromium પસંદ કરો</translation>
 <translation id="7175400662502680481">ડેટા ઉલ્લંઘનમાં તમારો પાસવર્ડ જાહેર થઈ ગયો હતો. પાસવર્ડ મેનેજર હમણાં જ તેને બદલવાનો સુઝાવ આપે છે.</translation>
 <translation id="7192111075364461693">તમારા ડિવાઇસ સેટિંગમાં Chromiumના નોટિફિકેશન હાલમાં બંધ કરવામાં આવ્યા છે.</translation>
-<translation id="7208566199746267865">વેબ પર તમારા એકાઉન્ટ લાવીને Chromium તમારો સમય બચાવે છે. તમે સેટિંગમાં એકાઉન્ટ ઉમેરી અથવા કાઢી નાખી શકો છો.</translation>
 <translation id="725427773388857052">ડેટા ઉલ્લંઘનો, અસુરક્ષિત વેબસાઇટ જેવી બીજી ઘણી બાબતોથી તમને સુરક્ષિત રાખવામાં Chromium તમારી સહાય કરી શકે છે.</translation>
 <translation id="7269362888766543920">કેટલાક એડ-ઓનને કારણે Chromium ક્રૅશ થાય છે. કૃપા કરીને તેમને અનઇન્સ્ટૉલ કરવાનો પ્રયાસ કરો.</translation>
 <translation id="7285031092584344905">અન્ય ઍપ માટેના Chromiumના તમારા પાસવર્ડ જેવી બીજી ઘણી બાબતોને ઍક્સેસ કરો.</translation>

@@ -625,6 +625,7 @@ Hier sind ein paar Dinge, die du tun kannst, um loszulegen.</translation>
 <translation id="3593646411856133110">Nach oben wischen und halten, um geöffnete Apps zu sehen</translation>
 <translation id="3595596368722241419">Akku voll</translation>
 <translation id="3596012367874587041">App-Einstellungen</translation>
+<translation id="3598452309062311481">Suchtaste + H</translation>
 <translation id="3600061223661453002">Aus</translation>
 <translation id="3604801046548457007">Desktop <ph name="DESK_TITILE" /> erstellt</translation>
 <translation id="3606978283550408104">Verbindung zur Braillezeile hergestellt</translation>
@@ -776,6 +777,7 @@ Einige Funktionen sind eingeschränkt, um die Akkulaufzeit zu verlängern.</tran
 <translation id="4190780880566297084">Anzeige der letzten Fotos, Medien und Apps auf deinem Smartphone nicht einrichten</translation>
 <translation id="4192112279662688596">oder</translation>
 <translation id="4193857202545160520">Klicks und Tastenkombinationen anzeigen</translation>
+<translation id="4193969623755915875">Öffne „Hilfe“ mit „<ph name="NEW_SHORTCUT" />“ in der App „Entdecken“.</translation>
 <translation id="4195579532193195633">Aktuelle Version: <ph name="VERSION_NAME" /> (<ph name="OFFICIAL_STATUS" />) <ph name="CHANNEL_NAME" /> <ph name="PROCESSOR_VARIATION" /></translation>
 <translation id="4195814663415092787">Zuletzt angesehene Seiten öffnen</translation>
 <translation id="4195877955194704651">Schaltfläche für automatische Klicks</translation>
@@ -958,6 +960,7 @@ Einige Funktionen sind eingeschränkt, um die Akkulaufzeit zu verlängern.</tran
 <translation id="4889868803215848840">Du kannst Feedback geben, damit wir Vorschläge verbessern können:</translation>
 <translation id="4890187583552566966">Google Assistant wurde von deinem Administrator deaktiviert.</translation>
 <translation id="4890408602550914571">Achte darauf, dass sich dein Smartphone in der Nähe befindet und Bluetooth aktiviert ist.</translation>
+<translation id="4892981359753171125">Steuerung mit dem Gesicht</translation>
 <translation id="4895488851634969361">Akku ist vollständig geladen.</translation>
 <translation id="490375751687810070">Vertikal</translation>
 <translation id="490788395437447240">Akku: <ph name="BATTERY_PERCENTAGE" /> %</translation>

@@ -496,6 +496,7 @@ Ako je primjenjivo, pogledajte uputstva pretraživača da saznate kako izbrisati
 <translation id="355101282835380364">Pohranjivanje na račun…</translation>
 <translation id="3551320343578183772">Zatvori karticu</translation>
 <translation id="3565207542107370586">Brisanje podataka pregledanja…</translation>
+<translation id="3570693105179140209">Dodirnite dvaput za više zaporki.</translation>
 <translation id="3575234738189584619">Pretraživanje pomoću Objektiva</translation>
 <translation id="3581564640715911333">Ponudi prevođenje stranica na drugim jezicima</translation>
 <translation id="3587885837929752825">Organizacija ograničava šta možete pohranjivati na Google računu.</translation>
@@ -661,6 +662,7 @@ Ako je primjenjivo, pogledajte uputstva pretraživača da saznate kako izbrisati
 <translation id="452750746583162491">Pregledajte sinhronizirane podatke</translation>
 <translation id="4527660062930312477">Vašim računom se upravlja</translation>
 <translation id="4536418791685807335">Pokušajte se ponovo prijaviti.</translation>
+<translation id="4539187448429948815">{count,plural, =1{Iznad tipkovnice dostupan je {count} spremljeni prijedlog samodovršavanja.}one{Iznad tipkovnice dostupan je {count} spremljeni prijedlog samodovršavanja.}few{Iznad tipkovnice dostupna su {count} spremljena prijedloga samodovršavanja.}other{Iznad tipkovnice dostupno je {count} spremljenih prijedloga samodovršavanja.}}</translation>
 <translation id="4540780316273593836">Nešto nije uredu</translation>
 <translation id="4550040941166547650">Samo na ovom uređaju</translation>
 <translation id="457292989631956153">{COUNT,plural, =1{Zatvoriti {COUNT} neaktivnu karticu?}one{Zatvoriti {COUNT} neaktivnu karticu?}few{Zatvoriti {COUNT} neaktivne kartice?}other{Zatvoriti {COUNT} neaktivnih kartica?}}</translation>
@@ -913,7 +915,6 @@ Također, Handoff mora biti omogućen u odjeljku Opće u Postavkama, a vaši ure
 <translation id="5857770089550859117">Potreban je pristupni izraz za pokretanje sinhronizacije.</translation>
 <translation id="5859715514067755465">Naprijed</translation>
 <translation id="5860033963881614850">Isklj.</translation>
-<translation id="5869029295770560994">Uredu, razumijem</translation>
 <translation id="5871497086027727873">Premještena je jedna stavka</translation>
 <translation id="5896576662943111387">Kreirano za iOS</translation>
 <translation id="5897749768294722429">Da se brzo vratite na web lokacije koje ste posjetili, sinhronizirajte kartice i historiju.</translation>
@@ -930,7 +931,6 @@ Također, Handoff mora biti omogućen u odjeljku Opće u Postavkama, a vaši ure
 <translation id="595769230373966252">Pretražite putem pružaoca <ph name="SEARCH_PROVIDER" /></translation>
 <translation id="5962718611393537961">Dodirnite da suzite</translation>
 <translation id="5963939892571022323">Nije moguće kreirati link za istaknuti tekst.</translation>
-<translation id="5965679971710331625">Prijavljeni ste</translation>
 <translation id="5971872012779224351">{count,plural, =1{Izbrisana je 1 oznaka}one{Izbrisana je {count} oznaka}few{Izbrisane su {count} oznake}other{Izbrisano je {count} oznaka}}</translation>
 <translation id="5979837087407522202">Pretražite lozinke</translation>
 <translation id="5981230843984570095">Zatvori sve neaktivne</translation>

@@ -913,7 +913,6 @@ Handoff täytyy ottaa käyttöön myös Asetusten Yleiset-osiossa. Lisäksi mole
 <translation id="5857770089550859117">Synkronointi edellyttää tunnuslausetta.</translation>
 <translation id="5859715514067755465">Eteenpäin</translation>
 <translation id="5860033963881614850">Pois päältä</translation>
-<translation id="5869029295770560994">Selvä</translation>
 <translation id="5871497086027727873">1 kohde siirretty</translation>
 <translation id="5896576662943111387">Suunniteltu iOS:lle</translation>
 <translation id="5897749768294722429">Synkronoimalla välilehdet ja historian voit palata nopeasti sivustoille, joilla olet käynyt.</translation>
@@ -930,7 +929,6 @@ Handoff täytyy ottaa käyttöön myös Asetusten Yleiset-osiossa. Lisäksi mole
 <translation id="595769230373966252">Hae tällä: <ph name="SEARCH_PROVIDER" /></translation>
 <translation id="5962718611393537961">Tiivistä napauttamalla.</translation>
 <translation id="5963939892571022323">Korostukseen ei voi luoda linkkiä.</translation>
-<translation id="5965679971710331625">Olet kirjautunut sisään</translation>
 <translation id="5971872012779224351">{count,plural, =1{1 kirjanmerkki poistettu}other{{count} kirjanmerkkiä poistettu}}</translation>
 <translation id="5979837087407522202">Hae salasanoista</translation>
 <translation id="5981230843984570095">Sulje kaikki ei-aktiiviset</translation>
@@ -1479,6 +1477,7 @@ Datasi salataan tunnuslauseella <ph name="TIME" />. Lisää se, niin voit käytt
 <translation id="8766790350274092814">Näiden salasanat poistetaan: <ph name="WEBSITE" /> ja <ph name="SECOND_WEBSITE" />. Tilejäsi ei poisteta.</translation>
 <translation id="8775144690796719618">Virheellinen URL-osoite</translation>
 <translation id="8780076847684176174">{count,plural, =1{Tarkista välilehti…}other{Tarkista kaikki välilehdet…}}</translation>
+<translation id="8782570580170191813">Seuraa paketteja aina</translation>
 <translation id="8787968206789828143">Hae verkosta</translation>
 <translation id="8792626944327216835">mikrofoni</translation>
 <translation id="8803639129939845298">Turvallinen</translation>

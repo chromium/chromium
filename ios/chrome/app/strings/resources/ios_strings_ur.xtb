@@ -496,6 +496,7 @@
 <translation id="355101282835380364">اکاؤنٹ میں محفوظ کریں…</translation>
 <translation id="3551320343578183772">ٹیب بند کریں</translation>
 <translation id="3565207542107370586">براؤزنگ ڈیٹا صاف کریں…</translation>
+<translation id="3570693105179140209">مزید پاس ورڈز کے لیے دو بار تھپتھپائیں۔</translation>
 <translation id="3575234738189584619">لینز کا استعمال کرتے ہوئے تلاش کریں</translation>
 <translation id="3581564640715911333">صفحات کو دیگر زبانوں میں ترجمہ کرنے کی پیشکش کریں</translation>
 <translation id="3587885837929752825">‏آپ کی تنظیم یہ محدود کرتی ہے کہ آپ اپنے Google اکاؤنٹ میں کیا محفوظ کر سکتے ہیں۔</translation>
@@ -661,6 +662,7 @@
 <translation id="452750746583162491">اپنے مطابقت پذیر ڈیٹا کا جائزہ لیں</translation>
 <translation id="4527660062930312477">آپ کا اکاؤنٹ نظم کردہ ہے</translation>
 <translation id="4536418791685807335">دوبارہ سائن ان کرنے کی کوشش کریں۔</translation>
+<translation id="4539187448429948815">{count,plural, =1{{count} محفوظ شدہ خودکار تکمیل کی تجویز آپ کے کی بورڈ کے اوپر دستیاب ہے۔}other{{count} محفوظ شدہ خودکار تکمیل کی تجاویز آپ کے کی بورڈ کے اوپر دستیاب ہیں۔}}</translation>
 <translation id="4540780316273593836">کچھ غلط ہو گیا</translation>
 <translation id="4550040941166547650">صرف اس آلہ پر</translation>
 <translation id="457292989631956153">{COUNT,plural, =1{{COUNT} غیر فعال ٹیب بند کریں؟}other{{COUNT} غیر فعال ٹیبز بند کریں؟}}</translation>
@@ -913,7 +915,6 @@ Handoff ترتیبات کے عام سیکشن میں بھی فعال ہونی ض
 <translation id="5857770089550859117">مطابقت پذیری شروع کرنے کیلئے پاس فریز درکار ہے۔</translation>
 <translation id="5859715514067755465">فارورڈ کریں</translation>
 <translation id="5860033963881614850">آف</translation>
-<translation id="5869029295770560994">ٹھیک ہے، سمجھ آ گئی</translation>
 <translation id="5871497086027727873">1 آئٹم منتقل کیا گیا</translation>
 <translation id="5896576662943111387">‏iOS کیلئے بنایا گیا</translation>
 <translation id="5897749768294722429">تیزی سے اپنی ملاحظہ کردہ سائٹس پر واپس جانے کے لیے اپنے ٹیبز اور سرگزشت کو مطابقت پذیر کریں۔</translation>
@@ -930,7 +931,6 @@ Handoff ترتیبات کے عام سیکشن میں بھی فعال ہونی ض
 <translation id="595769230373966252"><ph name="SEARCH_PROVIDER" /> کے ساتھ تلاش کریں</translation>
 <translation id="5962718611393537961">سکیڑنے کیلئے تھپتھپائیں</translation>
 <translation id="5963939892571022323">نمایاں کرنے کا لنک تخلیق نہیں کیا جا سکا۔</translation>
-<translation id="5965679971710331625">آپ سائن ان ہیں</translation>
 <translation id="5971872012779224351">{count,plural, =1{1 بُک مارک حذف کیا گیا}other{{count} بُک مارکس حذف کئے گئے}}</translation>
 <translation id="5979837087407522202">پاس ورڈز تلاش کریں</translation>
 <translation id="5981230843984570095">سبھی غیر فعال بند کریں</translation>
@@ -1479,6 +1479,7 @@ Handoff ترتیبات کے عام سیکشن میں بھی فعال ہونی ض
 <translation id="8766790350274092814"><ph name="WEBSITE" /> اور <ph name="SECOND_WEBSITE" /> کے پاسورڈز حذف ہو جائيں گے۔ آپ کے اکاؤنٹس حذف نہیں ہوں گے۔</translation>
 <translation id="8775144690796719618">‏غلط URL</translation>
 <translation id="8780076847684176174">{count,plural, =1{ٹیب کا جائزہ لیں...}other{تمام ٹیبز کا جائزہ لیں...}}</translation>
+<translation id="8782570580170191813">پیکیجز کو ہمیشہ ٹریک کریں</translation>
 <translation id="8787968206789828143">ویب پر تلاش کریں</translation>
 <translation id="8792626944327216835">مائیکروفون</translation>
 <translation id="8803639129939845298">محفوظ</translation>

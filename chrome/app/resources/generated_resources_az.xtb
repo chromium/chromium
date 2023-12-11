@@ -31,7 +31,6 @@
 <translation id="1018656279737460067">Ləğv edilib</translation>
 <translation id="1022522674678746124">PowerPoint</translation>
 <translation id="1022669824195822609">Cihazınız <ph name="DOMAIN" /> tərəfindən idarə olunur. Administratorlar bu cihazda istənilən profildəki dataya giriş edə bilərlər.</translation>
-<translation id="1024734233509995696">Bu tab kamera və ya mikrofon istifadə edir</translation>
 <translation id="1026655690966755180">Port əlavə edin</translation>
 <translation id="1026822031284433028">Şəkli Yükləyin</translation>
 <translation id="1026959648338730078">Windows Hello və ya xarici təhlükəsizlik açarı</translation>
@@ -1771,7 +1770,6 @@ Cihazda Family Link tətbiqini quraşdırmaqla bu hesabın ayarlarını idarə e
 <translation id="2335111415680198280">{0,plural, =1{# pəncərəni qapadın}other{# pəncərəni qapadın}}</translation>
 <translation id="2336228925368920074">Bütün Panelləri Əlfəcinləyin...</translation>
 <translation id="2336381494582898602">Sıfırlama</translation>
-<translation id="2337236196941929873">Chrome'un ziyarət edə biləcəyinizi düşündüyü səhifələri əvvəlcədən yükləyir. Bunu etmək üçün Chrome, kukilərə icazə verdiyiniz təqdirdə kukilərdən istifadə edə bilər və kimliyinizi saytlardan gizlətmək üçün səhifələri şifrələyib Google vasitəsilə göndərə bilər.</translation>
 <translation id="2340239562261172947"><ph name="FILE_NAME" /> faylını təhlükəsiz şəkildə endirmək mümkün deyil</translation>
 <translation id="2342180549977909852">Övladınız bu cihazı kiliddən çıxarmaq üçün parol əvəzinə nömrədən (PİN) istifadə edə bilər. Sonra PİN ayarlamaq üçün Ayarlara keçin.</translation>
 <translation id="2342740338116612727">Əlfəcinlər əlavə edildi</translation>
@@ -1864,6 +1862,7 @@ Cihazda Family Link tətbiqini quraşdırmaqla bu hesabın ayarlarını idarə e
 <translation id="2412753904894530585">Kerberos</translation>
 <translation id="2414159296888870200"><ph name="MODULE_TITLE" /> üçün baxmağa davam edin</translation>
 <translation id="2414886740292270097">Qara</translation>
+<translation id="2415117815770324983">Əksər saytlardan çıxacaqsınız. Google Hesabına daxil olmuş kimi qalacaqsınız.</translation>
 <translation id="2416435988630956212">Klaviaturanın funksiya düymələri</translation>
 <translation id="2418307627282545839">İşıqlandırın və havalandırın</translation>
 <translation id="2419131370336513030">Quraşdırılmış tətbiqlərə baxın</translation>
@@ -2384,6 +2383,7 @@ Cihazda Family Link tətbiqini quraşdırmaqla bu hesabın ayarlarını idarə e
 <translation id="2799223571221894425">Yenidən başladın</translation>
 <translation id="2800309299477632167">Fərdi klaviatura xəritəsi</translation>
 <translation id="2800760947029405028">Təsvir yükləyin</translation>
+<translation id="2801134910297796778"><ph name="EMAIL" /> hesabına daxil olub</translation>
 <translation id="2801954693771979815">Ekran ölçüsü</translation>
 <translation id="2802557211515765772">İdarə edilən printer yoxdur.</translation>
 <translation id="2803313416453193357">Qovluğu açın</translation>
@@ -3515,6 +3515,7 @@ Cihazda Family Link tətbiqini quraşdırmaqla bu hesabın ayarlarını idarə e
 <translation id="372722114124766626">Sadəcə bir dəfə</translation>
 <translation id="3727332897090187514">Qeyd əlavə edilməyib</translation>
 <translation id="3727473233247516571">Geri/İrəli Keşlənmiş Alt-çərçivə: <ph name="BACK_FORWARD_CACHE_PAGE_URL" /></translation>
+<translation id="3727850735097852673">MacOS Keychain ilə Google Parol Meneceri istifadəsi üçün Chrome-u yenidən başladın və Keychain-ə giriş imkanı verin. Yenidən başladıldıqdan sonra tablar təkrar açılacaq.</translation>
 <translation id="3728188878314831180">Telefondan bildirişləri əks etdirin</translation>
 <translation id="3728681439294129328">Şəbəkə ünvanını konfiqurasiya edin</translation>
 <translation id="3729506734996624908">İcazəli saytlar</translation>
@@ -4028,6 +4029,7 @@ Bura quraşdırılmış proqram təminatı, fayllar, brauzer və cihazın əməl
 <translation id="4110485659976215879">Xəbərdarlığı bərpa edin</translation>
 <translation id="4110490973560452005">Endirmə tamamlandı: <ph name="FILE_NAME" />. Endirmələr panelinə keçmək üçün Shift+F6 düymələrinə basın.</translation>
 <translation id="4112194537011183136"><ph name="DEVICE_NAME" /> (oflayn)</translation>
+<translation id="4113483184628671608">Daxil olduğunuz sayt adlarını şifrələyin</translation>
 <translation id="4113743276555482284">Fayl parolu</translation>
 <translation id="4114524937989710624">Google Diskdəki ən son fəaliyyətinizə asanlıqla qayıtmağınıza kömək etmək üçün təklif olunan faylları görürsünüz.
         <ph name="BREAK" />
@@ -5756,6 +5758,7 @@ Artıq veb-sayt və tətbiqlərə verdiyiniz icazələr bu hesaba tətbiq oluna 
 <translation id="5517304475148761050">Bu tətbiq Play Marketə giriş tələb edir</translation>
 <translation id="5517412723934627386"><ph name="NETWORK_TYPE" /> - <ph name="NETWORK_DISPLAY_NAME" /></translation>
 <translation id="5518949581554491184">Android telefonu ilə ayarlayın</translation>
+<translation id="5519053700692355541">Yuxarı sağ tərəfdə Chrome menyusu vasitəsilə əksər yan panel funksiyalarını aça bilərsiniz</translation>
 <translation id="5519195206574732858">LTE</translation>
 <translation id="5519900055135507385">Güclü parol ilə bu hesabın təhlükəsizliyini artırın. <ph name="EMAIL" /> üçün <ph name="GOOGLE_PASSWORD_MANAGER" /> bölməsində saxlanacaq.</translation>
 <translation id="5521078259930077036">Gözlədiyiniz ana səhifə budur?</translation>
@@ -5901,7 +5904,6 @@ Artıq veb-sayt və tətbiqlərə verdiyiniz icazələr bu hesaba tətbiq oluna 
 <translation id="5636012309446422"><ph name="DEVICE" /> <ph name="PRIMARY_EMAIL" /> hesabından silinsin?</translation>
 <translation id="5636996382092289526"><ph name="NETWORK_ID" /> istifadə etmək üçün ilk öncə <ph name="LINK_START" />şəbəkənin hesaba giriş səhifəsinə daxil olun<ph name="LINK_END" />.</translation>
 <translation id="5637476008227280525">Mobil datanı aktiv edin</translation>
-<translation id="563811590465749036">MacOS Keychain ilə Google Parol Meneceri istifadəsi üçün Chrome-u yenidən başladın və Keychain-ə giriş imkanı verin. Yenidən başladıldıqdan sonra tablar təkrar açılacaq</translation>
 <translation id="563821631542362636">Sayta datanı yadda saxlamaq icazəsi verin</translation>
 <translation id="5638309510554459422">Artırma və temalara <ph name="BEGIN_LINK" />Chrome Veb Mağazada<ph name="END_LINK" /> baxın</translation>
 <translation id="5639549361331209298">Bu səhifəni yenidən yükləyin, daha çox seçim üçün basıb saxlayın</translation>
@@ -6133,7 +6135,6 @@ Artıq veb-sayt və tətbiqlərə verdiyiniz icazələr bu hesaba tətbiq oluna 
 <translation id="583431638776747">Sayt əlçatan deyildi</translation>
 <translation id="5834581999798853053">Təxminən <ph name="TIME" /> dəqiqə qaldı</translation>
 <translation id="5835360478055379192">{NUM_EXTENSION,plural, =1{<ph name="EXTENSION1" /> HID cihazlarına daxil olur}=2{Cihazlara daxil olan artırmalar: <ph name="EXTENSION1" />, <ph name="EXTENSION2" />}other{Cihazlara daxil olan artırmalar: <ph name="EXTENSION1" />, <ph name="EXTENSION2" /> +{3}}}</translation>
-<translation id="5835486486592033703"><ph name="WINDOW_TITLE" /> - Kamera və ya mikrofon qeydə alması</translation>
 <translation id="583673505367439042">Saytlar cihazınızdakı faylları və qovluqları redaktə etmək üçün icazə istəyə bilər</translation>
 <translation id="5836999627049108525">Bu Dildən Tərcümə edin:</translation>
 <translation id="583756221537636748">Qutu</translation>
@@ -6716,6 +6717,7 @@ Artıq veb-sayt və tətbiqlərə verdiyiniz icazələr bu hesaba tətbiq oluna 
 <translation id="6294759976468837022">Avtomatik skanlama sürəti</translation>
 <translation id="6295158916970320988">Bütün saytlar</translation>
 <translation id="6295855836753816081">Yadda saxlanılır...</translation>
+<translation id="6298456705131259420">Burada qeyd edilən saytlara təsir edir. Domen adından əvvəl "[*.]" yerləşdirmək bütün domen üçün istisna yaradır. Məsələn, "[*.]google.com" əlavə edəndə üçüncü tərəf kukiləri mail.google.com üçün də aktiv ola bilər (google.com domeninin hissəsi olduğu üçün).</translation>
 <translation id="6298962879096096191">Android tətbiqlərini quraşdırmaq üçün Google Play istifadə edin</translation>
 <translation id="6300177430812514606">Verilənlərin qəbul edilməsini və ya qəbulunu tamamlamaq icazəsi verilməyib</translation>
 <translation id="6300654006256345126">Parolu redaktə edin</translation>
@@ -7137,6 +7139,7 @@ Daha # oğurlanmış parolunuz var. Google Parol Meneceri bu parolları indi yox
 <translation id="6651762277693024112">Bu sayta hər dəfə daxil olduqda avtomatik işləyir</translation>
 <translation id="665355505818177700">Chrome <ph name="MS_AD_NAME" /> inteqrasiyası yalnız x86_64 platformalarında dəstəklənir. ARM və ya x86 platforması üzərində hazırlanmış Chromebook'lar bu funksionallığı dəstəkləmir.</translation>
 <translation id="6654509035557065241">Şəbəkə tərcih edin</translation>
+<translation id="6654987855337442937">İnternet trafikinə girişi olan şəxslərin daxil olduğunuz saytları görməməsi üçün təhlükəsiz Domen Adı Sistemindən (DNS) istifadə edin</translation>
 <translation id="6655190889273724601">Developer rejimi</translation>
 <translation id="6655458902729017087">Hesabları Gizlədin</translation>
 <translation id="6657180931610302174">İstifadəçi adı əlavə edilsin?</translation>
@@ -9533,6 +9536,7 @@ Açar faylınızı güvənli yerdə saxlayın.</translation>
 <translation id="8528074251912154910">Dillər əlavə edin</translation>
 <translation id="8528479410903501741">IBAN'ı yadda saxlayın</translation>
 <translation id="8528962588711550376">Hesaba giriş.</translation>
+<translation id="8529578450330869579">İnternet trafikinə girişi olan şəxslərin daxil olduğunuz saytları görməməsi üçün təhlükəsiz Domen Adı Sistemindən (DNS) istifadə edin. Bu, <ph name="DNS_SERVER_TEMPLATE_WITH_IDENTIFIER" /> ünvanında idarə olunan xidmət təminatçısından istifadə edir</translation>
 <translation id="8529925957403338845">Cəld modem əlaqəsi kəsildi</translation>
 <translation id="8531701051932785007">Qabaqcıl Güvənli Baxış deaktivdir</translation>
 <translation id="8533670235862049797">Təhlükəsiz Baxış aktivdir</translation>

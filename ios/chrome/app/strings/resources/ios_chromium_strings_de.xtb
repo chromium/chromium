@@ -15,7 +15,9 @@
 <translation id="1507010443238049608">Ich möchte dabei helfen, die Funktionen und die Leistung von Chromium zu verbessern</translation>
 <translation id="1513122820609681462">Chromium als Standardbrowser festlegen</translation>
 <translation id="1531155317299575425">Aufforderungen für die Anmeldung in Chromium werden angezeigt.</translation>
+<translation id="159029779861043703">Chromium trägt mit Face ID dazu bei, deine sensiblen Daten zu schützen.</translation>
 <translation id="1591119736686995611">Öffnet das Chromium-Tabraster.</translation>
+<translation id="1611584326765829247">Pakete mit Chromium verfolgen</translation>
 <translation id="1617663976202781617">Daten aus der Chromium-Synchronisierung</translation>
 <translation id="1647558790457890304">Chromium-Einstellungen</translation>
 <translation id="164952285225495380">Dieses Paket wird bereits in Chromium verfolgt.</translation>
@@ -52,7 +54,6 @@
 <translation id="2784449251446768092">Chromium-Einstellungen verwalten</translation>
 <translation id="2798503587425057129">Öffnet die Chromium-Leseliste.</translation>
 <translation id="2843571538056574338">Chromium für die Funktion „Autofill“ verwenden</translation>
-<translation id="2915596697727466327">Chromium verwendet Face ID, um den autorisierten Zugriff auf deine Passwörter zu gewährleisten.</translation>
 <translation id="2918709798697875261">Deine Organisation verlangt, dass du aus Chromium abgemeldet bleibst.</translation>
 <translation id="2942241131342758843">Standardmäßig Chromium verwenden, um Links zu öffnen, über Widgets zu suchen und Passwörter in anderen Apps automatisch ausfüllen zu lassen</translation>
 <translation id="2977470724722393594">Chromium ist auf dem neuesten Stand</translation>
@@ -174,7 +175,6 @@ Nur Personen, die deine Passphrase kennen, können deine verschlüsselten Daten 
 <translation id="7165402419892018581">Chromium für Autofill auswählen</translation>
 <translation id="7175400662502680481">Dein Passwort wurde durch eine Datenpanne preisgegeben. Der Passwortmanager empfiehlt, dieses Passwort jetzt zu ändern.</translation>
 <translation id="7192111075364461693">Chromium-Benachrichtigungen sind in den Geräteeinstellungen momentan deaktiviert.</translation>
-<translation id="7208566199746267865">Mit Chromium sparst du Zeit, da du deine Konten im Web verwenden kannst. In den Einstellungen hast du die Möglichkeit, Konten hinzuzufügen oder zu entfernen.</translation>
 <translation id="725427773388857052">Chromium kann helfen, dich vor Bedrohungen wie Datenpannen und schädlichen Erweiterungen zu schützen</translation>
 <translation id="7269362888766543920">Einige Add-ons führen zum Ausfall von Chromium. Bitte deinstalliere diese Add-ons.</translation>
 <translation id="7285031092584344905">Du kannst in anderen Apps auf Chromium-Passwörter und mehr zugreifen.</translation>

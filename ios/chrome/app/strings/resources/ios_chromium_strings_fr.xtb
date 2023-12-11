@@ -15,7 +15,9 @@
 <translation id="1507010443238049608">Contribuer à l'amélioration des fonctionnalités et des performances de Chromium</translation>
 <translation id="1513122820609681462">Définir Chromium comme navigateur par défaut</translation>
 <translation id="1531155317299575425">Permet d'afficher des invites de connexion à Chromium.</translation>
+<translation id="159029779861043703">Chromium protège vos données sensibles avec Face ID.</translation>
 <translation id="1591119736686995611">Ouvre la grille d'onglets de Chromium.</translation>
+<translation id="1611584326765829247">Laisser Chromium vous aider à suivre vos colis</translation>
 <translation id="1617663976202781617">Données issues de la synchronisation Chromium</translation>
 <translation id="1647558790457890304">Paramètres Chromium</translation>
 <translation id="164952285225495380">Ce colis a déjà fait l'objet d'un suivi dans Chromium.</translation>
@@ -53,7 +55,6 @@
 <translation id="2784449251446768092">Gérer les paramètres Chromium</translation>
 <translation id="2798503587425057129">Ouvre la liste de lecture Chromium.</translation>
 <translation id="2843571538056574338">Utiliser Chromium pour la saisie automatique</translation>
-<translation id="2915596697727466327">Chromium utilise Face ID pour autoriser l'accès à vos mots de passe.</translation>
 <translation id="2918709798697875261">Votre organisation vous demande de rester déconnecté de Chromium.</translation>
 <translation id="2942241131342758843">Utilisez Chromium par défaut pour ouvrir les liens, faire des recherches depuis les widgets et saisir automatiquement les mots de passe dans d'autres applis</translation>
 <translation id="2977470724722393594">Chromium est à jour</translation>
@@ -174,7 +175,6 @@ Seule une personne connaissant votre phrase secrète peut lire vos données chif
 <translation id="7165402419892018581">Sélectionner Chromium pour la saisie automatique</translation>
 <translation id="7175400662502680481">Votre mot de passe a été compromis lors d'une violation des données. Le Gestionnaire de mots de passe vous recommande de le modifier immédiatement.</translation>
 <translation id="7192111075364461693">Les notifications Chromium sont actuellement désactivées dans les paramètres de votre appareil.</translation>
-<translation id="7208566199746267865">Chromium vous permet de gagner du temps en connectant vos comptes au Web. Vous pouvez ajouter ou supprimer des comptes dans la section "Paramètres".</translation>
 <translation id="725427773388857052">Chromium peut vous aider à vous protéger, entre autres, contre les violations de données et les sites Web dangereux.</translation>
 <translation id="7269362888766543920">Certains modules complémentaires entraînent le plantage de Chromium. Veuillez essayer de les désinstaller.</translation>
 <translation id="7285031092584344905">Accéder à vos mots de passe Chromium et plus dans d'autres applis.</translation>

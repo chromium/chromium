@@ -625,6 +625,7 @@ Pour commencer, voici des exemples de ce que vous pouvez me demander.</translati
 <translation id="3593646411856133110">Balayez l'écran vers le haut et appuyez de manière prolongée pour afficher les applications ouvertes</translation>
 <translation id="3595596368722241419">Batterie pleine</translation>
 <translation id="3596012367874587041">Paramètres de l'appli</translation>
+<translation id="3598452309062311481">recherche+h</translation>
 <translation id="3600061223661453002">Désactivé</translation>
 <translation id="3604801046548457007">Bureau <ph name="DESK_TITILE" /> créé</translation>
 <translation id="3606978283550408104">La plage braille est connectée.</translation>
@@ -776,6 +777,7 @@ Certaines fonctionnalités sont limitées afin d'augmenter l'autonomie de la bat
 <translation id="4190780880566297084">Ignorer la configuration concernant l'affichage des photos, applis et contenus multimédias récents de votre téléphone</translation>
 <translation id="4192112279662688596">ou</translation>
 <translation id="4193857202545160520">Afficher les clics et les touches</translation>
+<translation id="4193969623755915875">Ouvrez "Aide" dans l'appli Explorer avec <ph name="NEW_SHORTCUT" />.</translation>
 <translation id="4195579532193195633">Version actuelle : <ph name="VERSION_NAME" /> (<ph name="OFFICIAL_STATUS" />) <ph name="CHANNEL_NAME" /> <ph name="PROCESSOR_VARIATION" /></translation>
 <translation id="4195814663415092787">Reprendre où vous avez arrêté</translation>
 <translation id="4195877955194704651">Bouton de clics automatiques</translation>
@@ -958,6 +960,7 @@ Certaines fonctionnalités sont limitées afin d'augmenter l'autonomie de la bat
 <translation id="4889868803215848840">Ajoutez des commentaires pour améliorer les suggestions (facultatif) :</translation>
 <translation id="4890187583552566966">L'administrateur a désactivé l'Assistant Google.</translation>
 <translation id="4890408602550914571">Vérifiez que votre téléphone est à proximité et que le Bluetooth est activé.</translation>
+<translation id="4892981359753171125">Contrôle du visage</translation>
 <translation id="4895488851634969361">La batterie est pleine.</translation>
 <translation id="490375751687810070">Vertical</translation>
 <translation id="490788395437447240">Niveau de la batterie : <ph name="BATTERY_PERCENTAGE" /> %</translation>

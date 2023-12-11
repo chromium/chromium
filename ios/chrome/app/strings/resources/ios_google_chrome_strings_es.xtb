@@ -55,6 +55,7 @@ Notas importantes:
 <translation id="2574249610672786438">Inicia sesión en todos tus dispositivos para ver tus pestañas dondequiera que uses Chrome</translation>
 <translation id="2576431527583832481">Chrome sigue mejorando. Hay una nueva versión disponible.</translation>
 <translation id="257708665678654955">¿Quieres que Google Chrome te ofrezca la posibilidad de traducir las páginas en <ph name="LANGUAGE_NAME" /> de este sitio web la próxima vez?</translation>
+<translation id="2650286135394207535">Permitir que Chrome te ayude a monitorizar tus paquetes</translation>
 <translation id="2671426118752779020">Puedes usar las contraseñas que has guardado en el Gestor de contraseñas de Google en otras aplicaciones de tu iPhone.</translation>
 <translation id="2689064829982324496">Para cerrar sesión con tu cuenta de Google en todos los sitios web, <ph name="BEGIN_LINK" />cierra sesión en Chrome<ph name="END_LINK" />.</translation>
 <translation id="2695886661449553974">Chrome no ha podido comprobar si hay actualizaciones. Prueba de nuevo más tarde.</translation>
@@ -69,7 +70,6 @@ Notas importantes:
 <translation id="309672519329227863">Accede a tus contraseñas de Chrome y más en otras aplicaciones.</translation>
 <translation id="3167189358072330585">Tu cuenta no funciona en Google Chrome. Ponte en contacto con el administrador del dominio o utiliza una cuenta de Google normal para iniciar sesión.</translation>
 <translation id="3173834708294760622">Página de Google Chrome</translation>
-<translation id="3196546062792660320">Chrome te permite llevar tus cuentas a la Web para ahorrar tiempo. Puedes añadirlas o quitarlas en los ajustes.</translation>
 <translation id="322254490661677575">Para usar y guardar los datos de Chrome en tu cuenta de Google, debes introducir tu frase de contraseña.</translation>
 <translation id="3282568296779691940">Iniciar sesión en Chrome</translation>
 <translation id="3345341804167540816">Usar Chrome en todas partes</translation>
@@ -169,7 +169,6 @@ Solo las personas que tengan tu frase de contraseña podrán leer tus datos cifr
 <translation id="7124339256045485976">Mantén Chrome actualizado</translation>
 <translation id="7161390184744336561">Google Chrome no está actualizado</translation>
 <translation id="7165736900384873061">Empezar a usar el escáner de QR de Google Chrome</translation>
-<translation id="7173660919484573146">Chrome usa Face ID para garantizar el acceso autorizado a tus contraseñas.</translation>
 <translation id="7187993566681480880">Te protege en Chrome y puede usarse para mejorar tu seguridad en otras aplicaciones de Google cuando has iniciado sesión.</translation>
 <translation id="7200524487407690471">Chrome realiza automáticamente una comprobación de seguridad todos los días para protegerte frente a brechas de seguridad de datos, sitios web no seguros y más. Puedes consultar más información sobre la comprobación de seguridad en Configuración.</translation>
 <translation id="72119412072970160">Puedes usar las contraseñas que has guardado en el Gestor de contraseñas de Google en otras aplicaciones de tu iPad.</translation>
@@ -189,6 +188,7 @@ Solo las personas que tengan tu frase de contraseña podrán leer tus datos cifr
 <translation id="7698568245838009292">Chrome quiere acceder a la cámara</translation>
 <translation id="7754633291442704733">Tu organización <ph name="DOMAIN" /> tendrá acceso a tus datos, tus marcadores, tu historial, tus contraseñas y otros ajustes de Chrome que almacenes en esta cuenta. Si cierras sesión, tus datos se borrarán de este dispositivo.  Sin embargo, tus datos permanecerán almacenados en tu cuenta de Google gestionada y estarán disponibles para tu organización. Tu organización también puede establecer políticas de usuarios específicas de esa cuenta que pueden cambiar el comportamiento de Chrome.</translation>
 <translation id="7780154209050837198">Para sacarle el máximo partido a Chrome, inicia sesión en Chrome con tu cuenta de Google.</translation>
+<translation id="7792140019572081272">Chrome protege tus datos sensibles con Face ID.</translation>
 <translation id="7855730255114109580">Google Chrome está actualizado</translation>
 <translation id="7897703007638178753">Ver las pestañas recientes de Chrome</translation>
 <translation id="7925119591961387184">Selecciona Chrome.</translation>

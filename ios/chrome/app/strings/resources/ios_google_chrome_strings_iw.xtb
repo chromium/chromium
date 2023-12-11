@@ -55,6 +55,7 @@
 <translation id="2574249610672786438">‏כדי לראות את הכרטיסיות שלך מכל מקום שבו פתחת את Chrome יש להיכנס לחשבון בכל המכשירים</translation>
 <translation id="2576431527583832481">‏‫Chrome ממשיך להשתפר! קיימת גירסה חדשה.</translation>
 <translation id="257708665678654955">‏האם ברצונך ש-Google Chrome יציע בפעם הבאה לתרגם דפים ב-<ph name="LANGUAGE_NAME" /> מאתר זה?</translation>
+<translation id="2650286135394207535">‏Chrome יכול לעזור לך לעקוב אחר החבילות שלך</translation>
 <translation id="2671426118752779020">‏יש לך אפשרות להשתמש בסיסמאות ששמרת במנהל הסיסמאות של Google באפליקציות אחרות ב-iPhone.</translation>
 <translation id="2689064829982324496">‏כדי לצאת מחשבון Google שלך בכל האתרים, עליך <ph name="BEGIN_LINK" />לצאת מ-Chrome<ph name="END_LINK" />.</translation>
 <translation id="2695886661449553974">‏Chrome לא הצליח לחפש עדכונים. אפשר לנסות שוב מאוחר יותר.</translation>
@@ -69,7 +70,6 @@
 <translation id="309672519329227863">‏גישה לסיסמאות ולעוד אפשרויות ב-Chrome מאפליקציות נוספות.</translation>
 <translation id="3167189358072330585">‏החשבון שלך לא פועל ב-Google Chrome. יש לפנות אל מנהל הדומיין או להשתמש בחשבון Google רגיל כדי להיכנס לחשבון.</translation>
 <translation id="3173834708294760622">‏דף Google Chrome</translation>
-<translation id="3196546062792660320">‏Chromium מאפשר גישה לחשבונות באינטרנט וכך חוסך לך זמן. ניתן להוסיף או להסיר חשבונות בקטע 'הגדרות'.</translation>
 <translation id="322254490661677575">‏כדי להשתמש בנתוני Chrome ולשמור אותם בחשבון Google, עליך להזין את ביטוי הסיסמה שלך.</translation>
 <translation id="3282568296779691940">‏כניסה ל-Chrome</translation>
 <translation id="3345341804167540816">‏להשתמש ב-Chrome בכל מקום</translation>
@@ -169,7 +169,6 @@
 <translation id="7124339256045485976">‏Chrome יתעדכן באופן קבוע</translation>
 <translation id="7161390184744336561">‏Google Chrome אינו מעודכן</translation>
 <translation id="7165736900384873061">‏התחלת השימוש בסורק ה-QR של Google Chrome</translation>
-<translation id="7173660919484573146">‏Chrome משתמש ב-Face ID כדי להבטיח גישה מאושרת לסיסמאות שלך.</translation>
 <translation id="7187993566681480880">‏מגינה עליך ב-Chrome ועשויה לשפר את האבטחה שלך באפליקציות אחרות של Google. ההגנה הזו פעילה רק אם נכנסים לחשבון.</translation>
 <translation id="7200524487407690471">‏Chrome מפעיל בדיקת אבטחה באופן אוטומטי מדי יום כדי להגן עליך מפני פרצות באבטחת מידע, אתרים לא בטוחים ועוד. מידע נוסף על בדיקת האבטחה זמין בהגדרות.</translation>
 <translation id="72119412072970160">‏יש לך אפשרות להשתמש בסיסמאות ששמרת במנהל הסיסמאות של Google באפליקציות אחרות ב-iPad.</translation>
@@ -189,6 +188,7 @@
 <translation id="7698568245838009292">‏ל-Chrome דרושה גישה למצלמה</translation>
 <translation id="7754633291442704733">‏לדומיין <ph name="DOMAIN" /> של הארגון תהיה גישה לנתונים, לסימניות, להיסטוריה, לסיסמאות ולהגדרות אחרות ששמרת בחשבון הזה ב-Chrome. לאחר היציאה מהחשבון, הנתונים יימחקו מהמכשיר הזה.  עם זאת, הנתונים יישארו בחשבון Google המנוהל שלך ויהיו זמינים לארגון שלך. בנוסף, לארגון יש אפשרות להגדיר מדיניות משתמש ספציפית לחשבון, שיכולה לשנות את אופן הפעולה של Chrome.</translation>
 <translation id="7780154209050837198">‏אפשר להיכנס ל-Chrome באמצעות חשבון Google כדי להפיק את המרב מ-Chrome.</translation>
+<translation id="7792140019572081272">‏Chrome שומר על האבטחה של מידע אישי רגיש באמצעות Face ID.</translation>
 <translation id="7855730255114109580">‏Google Chrome מעודכן</translation>
 <translation id="7897703007638178753">‏הצגת הכרטיסיות האחרונות ב-Chrome</translation>
 <translation id="7925119591961387184">‏בוחרים באפשרות Chrome.</translation>

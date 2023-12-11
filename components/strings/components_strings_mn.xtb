@@ -87,6 +87,7 @@
 <translation id="11635448457105324">Хаягууд удирдах товчлуур, Chrome-н тохиргоонд хаягууд нэмэх болон удирдахын тулд идэвхжүүлнэ үү</translation>
 <translation id="1165039591588034296">Алдаа</translation>
 <translation id="1165174597379888365">Хуудсанд зочилдог</translation>
+<translation id="1165813024716836071">{COUNT,plural, =0{Байхгүй}=1{1 сайтаас (та Google Бүртгэлдээ нэвтэрсэн хэвээр үлдэнэ)}other{# сайтаас (та Google Бүртгэлдээ нэвтэрсэн хэвээр үлдэнэ)}}</translation>
 <translation id="1165852471352757509">ТВ-ийн баримтат кино, бодит явдал</translation>
 <translation id="1174644974616730562">Хятад дугтуй #1</translation>
 <translation id="1174723505405632867">Та <ph name="EMBEDDED_URL" />-д <ph name="TOP_LEVEL_URL" /> дээрх күүки болон сайтын өгөгдлийг ашиглахыг зөвшөөрөх үү?
@@ -3986,6 +3987,7 @@
 <translation id="8919895429178014996">Бүх зүйлийг нуух</translation>
 <translation id="8922013791253848639">Энэ сайтад зарыг үргэлж зөвшөөрөх</translation>
 <translation id="892588693504540538">Баруун дээд буланд нэг нүх цоолох</translation>
+<translation id="8926389886865778422">Дахин битгий асуу</translation>
 <translation id="8930330541574156305">Үл хөдлөх хөрөнгө</translation>
 <translation id="8932102934695377596">Таны цаг хоцорч байна</translation>
 <translation id="893332455753468063">Нэр нэмэх</translation>

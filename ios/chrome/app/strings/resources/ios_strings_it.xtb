@@ -913,7 +913,6 @@ La funzione Handoff deve anche essere attivata nella sezione Generali di Imposta
 <translation id="5857770089550859117">Per avviare la sincronizzazione è obbligatoria la passphrase.</translation>
 <translation id="5859715514067755465">Avanti</translation>
 <translation id="5860033963881614850">Off</translation>
-<translation id="5869029295770560994">OK</translation>
 <translation id="5871497086027727873">1 elemento spostato</translation>
 <translation id="5896576662943111387">Realizzato per iOS</translation>
 <translation id="5897749768294722429">Per tornare rapidamente ai siti che hai visitato, sincronizza le tue schede e la cronologia.</translation>
@@ -930,7 +929,6 @@ La funzione Handoff deve anche essere attivata nella sezione Generali di Imposta
 <translation id="595769230373966252">Cerca con <ph name="SEARCH_PROVIDER" /></translation>
 <translation id="5962718611393537961">Tocca per comprimere</translation>
 <translation id="5963939892571022323">Non è possibile creare un link al testo evidenziato.</translation>
-<translation id="5965679971710331625">Hai eseguito l'accesso</translation>
 <translation id="5971872012779224351">{count,plural, =1{1 preferito eliminato}other{{count} preferiti eliminati}}</translation>
 <translation id="5979837087407522202">Cerca password</translation>
 <translation id="5981230843984570095">Chiudi tutte le schede non attive</translation>

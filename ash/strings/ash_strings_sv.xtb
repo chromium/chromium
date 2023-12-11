@@ -625,6 +625,7 @@ Det här är några saker du kan testa för att komma igång.</translation>
 <translation id="3593646411856133110">Svep uppåt och tryck länge för att visa öppna appar</translation>
 <translation id="3595596368722241419">Batteriet är fulladdat</translation>
 <translation id="3596012367874587041">Appinställningar</translation>
+<translation id="3598452309062311481">sök + h</translation>
 <translation id="3600061223661453002">Av</translation>
 <translation id="3604801046548457007">Skrivbordet <ph name="DESK_TITILE" /> har skapats</translation>
 <translation id="3606978283550408104">Punktskriftsskärm ansluten.</translation>
@@ -776,6 +777,7 @@ Vissa funktioner är begränsade för att förlänga batteritiden.</translation>
 <translation id="4190780880566297084">Ignorera att ställa in visning av de senaste bilderna, mediefilerna och apparna på telefonen</translation>
 <translation id="4192112279662688596">Eller</translation>
 <translation id="4193857202545160520">Visa klick och tangenter</translation>
+<translation id="4193969623755915875">Öppna hjälpavsnittet i appen Utforska med <ph name="NEW_SHORTCUT" />.</translation>
 <translation id="4195579532193195633">Aktuell version <ph name="VERSION_NAME" /> (<ph name="OFFICIAL_STATUS" />) <ph name="CHANNEL_NAME" /> <ph name="PROCESSOR_VARIATION" /></translation>
 <translation id="4195814663415092787">Fortsätt där du slutade</translation>
 <translation id="4195877955194704651">Knapp för Automatiska klick</translation>
@@ -958,6 +960,7 @@ Vissa funktioner är begränsade för att förlänga batteritiden.</translation>
 <translation id="4889868803215848840">Ange feedback för att förbättra förslagen (valfritt):</translation>
 <translation id="4890187583552566966">Administratören har inaktiverat Google Assistent.</translation>
 <translation id="4890408602550914571">Kontrollera att telefonen finns i närheten och att Bluetooth är aktiverat på den.</translation>
+<translation id="4892981359753171125">Ansiktsstyrning</translation>
 <translation id="4895488851634969361">Batteriet är fullt.</translation>
 <translation id="490375751687810070">Vertikal</translation>
 <translation id="490788395437447240"><ph name="BATTERY_PERCENTAGE" /> % batterinivå</translation>

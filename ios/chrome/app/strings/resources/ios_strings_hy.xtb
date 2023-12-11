@@ -837,6 +837,7 @@
 <translation id="5457226814769348910">Բացել օֆլայն տարբերակը</translation>
 <translation id="5475069061743940393">Հետևեք ձեր առաքանուն</translation>
 <translation id="5478327362747197944">Ստեղծեք Օրացույցի միջոցառումներ՝ անմիջապես սեղմելով ամսաթվի վրա վեբ էջում։</translation>
+<translation id="5482922178977937393">Ուզո՞ւմ եք ծանուցումներ ստանալ նորությունների, սպորտի և այլ կատեգորիաների մասին՝ ձեր հետաքրքրությունների հիման վրա։</translation>
 <translation id="5489208564673669003">Բոլոր կայքերի քուքիները կարող եք կառավարել <ph name="BEGIN_LINK" />Քուքիների կարգավորումներ<ph name="END_LINK" /> բաժնում։</translation>
 <translation id="5490005495580364134">Արգելափակել բոլոր քուքիները (խորհուրդ չի տրվում)</translation>
 <translation id="5497202150450073388">Առաքման փորձ է արվել։ Փորձը կկրկնվի</translation>
@@ -912,7 +913,6 @@ Handoff-ը պետք է միացված լինի նաև Կարգավորումնե
 <translation id="5857770089550859117">Համաժամացումը սկսելու համար անհրաժեշտ է անցաբառ:</translation>
 <translation id="5859715514067755465">Առաջ</translation>
 <translation id="5860033963881614850">Անջատ.</translation>
-<translation id="5869029295770560994">Լավ, հասկացա</translation>
 <translation id="5871497086027727873">Տեղափոխվել է 1 տարր</translation>
 <translation id="5896576662943111387">Հատուկ iOS-ի համար</translation>
 <translation id="5897749768294722429">Համաժամացրեք ձեր ներդիրները և պատմությունը, որպեսզի արագ վերադառնաք ձեր այցելած կայքեր։</translation>
@@ -929,7 +929,6 @@ Handoff-ը պետք է միացված լինի նաև Կարգավորումնե
 <translation id="595769230373966252">Որոնել <ph name="SEARCH_PROVIDER" />-ում</translation>
 <translation id="5962718611393537961">Հպեք՝ կոծկելու համար</translation>
 <translation id="5963939892571022323">Չհաջողվեց ստեղծել ընդգծված տեքստի հղումը։</translation>
-<translation id="5965679971710331625">Դուք մուտք եք գործել</translation>
 <translation id="5971872012779224351">{count,plural, =1{1 էջանիշ ջնջվեց}one{{count} էջանիշ ջնջվեց}other{{count} էջանիշ ջնջվեց}}</translation>
 <translation id="5979837087407522202">Գաղտնաբառերի որոնում</translation>
 <translation id="5981230843984570095">Փակել բոլոր ոչ ակտիվ ներդիրները</translation>
@@ -1478,6 +1477,7 @@ Handoff-ը պետք է միացված լինի նաև Կարգավորումնե
 <translation id="8766790350274092814">Կջնջվեն <ph name="WEBSITE" /> և <ph name="SECOND_WEBSITE" /> հաշիվների գաղտնաբառերը։ Ձեր հաշիվները չեն ջնջվի։</translation>
 <translation id="8775144690796719618">URL-ն անվավեր է</translation>
 <translation id="8780076847684176174">{count,plural, =1{Դիտել ներդիրը...}one{Դիտել ներդիրը...}other{Դիտել բոլոր ներդիրները...}}</translation>
+<translation id="8782570580170191813">Միշտ հետագծել առաքանիները</translation>
 <translation id="8787968206789828143">Որոնում համացանցում</translation>
 <translation id="8792626944327216835">խոսափող</translation>
 <translation id="8803639129939845298">Անվտանգ է</translation>

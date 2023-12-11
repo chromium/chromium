@@ -625,6 +625,7 @@ Quyidagi narsalardan boshlashingiz mumkin.</translation>
 <translation id="3593646411856133110">Ochiq ilovalarni chiqarish uchun tepaga suring va ushlab turing.</translation>
 <translation id="3595596368722241419">Batareya to‘ldi</translation>
 <translation id="3596012367874587041">Ilova sozlamalari</translation>
+<translation id="3598452309062311481">Qidiruv + h</translation>
 <translation id="3600061223661453002">Oʻchiq</translation>
 <translation id="3604801046548457007"><ph name="DESK_TITILE" /> ish stoli yaratildi</translation>
 <translation id="3606978283550408104">Brayl displeyi ulandi.</translation>
@@ -776,6 +777,7 @@ Quvvatni tejash uchun ayrim funksiyalar ishlashi cheklandi.</translation>
 <translation id="4190780880566297084">Telefondagi oxirgi suratlar, bildirishnomalar va ilovalarni koʻrishni sozlash oynasini yopish</translation>
 <translation id="4192112279662688596">Yoki</translation>
 <translation id="4193857202545160520">Kliklar va tugmalar chiqsin</translation>
+<translation id="4193969623755915875">Explore ilovasida <ph name="NEW_SHORTCUT" /> bilan “Yordam” sahifasini oching.</translation>
 <translation id="4195579532193195633">Joriy versiya: <ph name="VERSION_NAME" /> (<ph name="OFFICIAL_STATUS" />) <ph name="CHANNEL_NAME" /> <ph name="PROCESSOR_VARIATION" /></translation>
 <translation id="4195814663415092787">Avval ochilgan ichki oynalar</translation>
 <translation id="4195877955194704651">Avtomatik bosish menyusi</translation>
@@ -958,6 +960,7 @@ Quvvatni tejash uchun ayrim funksiyalar ishlashi cheklandi.</translation>
 <translation id="4889868803215848840">Takliflarni yaxshilash uchun ixtiyoriy fikr-mulohazangizni taqdim eting:</translation>
 <translation id="4890187583552566966">Google Assistent administrator tomonidan o‘chirib qo‘yilgan.</translation>
 <translation id="4890408602550914571">Telefoningiz yoningizda va undagi Bluetooth yoniqligini tekshiring.</translation>
+<translation id="4892981359753171125">Yuz nazorati</translation>
 <translation id="4895488851634969361">Batareya to‘ldi.</translation>
 <translation id="490375751687810070">Vertikal</translation>
 <translation id="490788395437447240">Batareya quvvati: <ph name="BATTERY_PERCENTAGE" />%</translation>
@@ -1134,6 +1137,7 @@ Quvvatni tejash uchun ayrim funksiyalar ishlashi cheklandi.</translation>
 <translation id="5577281275355252094">Phone Hub ishlatish uchun telefoningizda Bluetooth yoniq turishi kerak</translation>
 <translation id="5578188167649348993">xotira</translation>
 <translation id="5580000943347215299">Kutubxona</translation>
+<translation id="5587506661873751671">Yuklab olinmoqda: <ph name="DOWNLOAD_PERCENT" />%</translation>
 <translation id="558849140439112033">Rasmga olinadigan hududni tanlash uchun suring</translation>
 <translation id="5590609058453685222">Sukut bildirgisi yoniq. Ovozsiz rejimda gapirsangiz ham bildirishnoma olasiz.</translation>
 <translation id="5596627076506792578">Boshqa sozlamalar</translation>
@@ -1793,6 +1797,7 @@ Qurilmani oʻchirish uchun uning quvvat tugmasini biroz bosib turing.</translati
 <translation id="830868413617744215">Beta</translation>
 <translation id="8314772463905284467">Caps Lock yoniq</translation>
 <translation id="8315514906653279104">Yoqilmoqda…</translation>
+<translation id="8331351032546853669">Yuklab olinishi kutilmoqda</translation>
 <translation id="8341451174107936385"><ph name="UNLOCK_MORE_FEATURES" />  <ph name="GET_STARTED" /></translation>
 <translation id="8345019317483336363"><ph name="WINDOW_TITLE" /> oynasi tanlandi</translation>
 <translation id="8349826889576450703">launcher</translation>

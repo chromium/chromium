@@ -31,7 +31,6 @@
 <translation id="1018656279737460067">Dibatalkan</translation>
 <translation id="1022522674678746124">PowerPoint</translation>
 <translation id="1022669824195822609">Peranti anda diurus oleh <ph name="DOMAIN" />. Pentadbir dapat mengakses data dalam mana-mana profil pada peranti ini.</translation>
-<translation id="1024734233509995696">Tab ini menggunakan kamera atau mikrofon anda</translation>
 <translation id="1026655690966755180">Tambahkan Port</translation>
 <translation id="1026822031284433028">Muatkan Imej</translation>
 <translation id="1026959648338730078">Windows Hello atau kunci keselamatan luaran</translation>
@@ -1787,7 +1786,6 @@ Anda boleh mengurus tetapan akaun ini dengan memasang apl Family Link pada peran
 <translation id="2335111415680198280">{0,plural, =1{Tutup # tetingkap}other{Tutup # tetingkap}}</translation>
 <translation id="2336228925368920074">Tanda Halaman Semua Tab...</translation>
 <translation id="2336381494582898602">Powerwash</translation>
-<translation id="2337236196941929873">Mempramuat halaman yang diramal oleh Chrome akan anda lawati. Untuk berbuat demikian, Chrome mungkin menggunakan kuki, jika anda membenarkan kuki dan mungkin menyulitkan dan menghantar halaman melalui Google untuk menyembunyikan identiti anda daripada laman.</translation>
 <translation id="2340239562261172947"><ph name="FILE_NAME" /> tidak dapat dimuat turun dengan selamat</translation>
 <translation id="2342180549977909852">Anak anda boleh menggunakan nombor (PIN) dan bukannya kata laluan untuk membuka kunci peranti ini. Untuk menetapkan PIN kemudian, pergi ke Tetapan.</translation>
 <translation id="2342740338116612727">Penanda halaman ditambahkan</translation>
@@ -2643,6 +2641,7 @@ Anda boleh mengurus tetapan akaun ini dengan memasang apl Family Link pada peran
 <translation id="2990313168615879645">Tambahkan Akaun Google</translation>
 <translation id="2990375978470734995">Untuk menguatkuasakan perubahan ini, sambung semula aksesori luaran anda.</translation>
 <translation id="2990583317361835189">Jangan benarkan laman menggunakan penderia gerakan</translation>
+<translation id="2991182900092497283">Sila masukkan sebab untuk menampal data ini:</translation>
 <translation id="2992931425024192067">Tunjukkan semua kandungan pemberitahuan</translation>
 <translation id="2993517869960930405">Maklumat Apl</translation>
 <translation id="2996108796702395498">Nombor siri peranti anda ialah <ph name="SERIAL_NUMBER" />. Nombor ini boleh digunakan untuk mengaktifkan perkhidmatan.</translation>
@@ -3156,6 +3155,7 @@ Anda boleh mengurus tetapan akaun ini dengan memasang apl Family Link pada peran
 <translation id="3432762828853624962">Pekerja Kongsi</translation>
 <translation id="3433507769937235446">Kunci apabila jauh</translation>
 <translation id="3433621910545056227">Op! Sistem gagal mewujudkan kunci atribut masa pemasangan peranti.</translation>
+<translation id="3434025015623587566">Google Password Manager memerlukan lebih banyak akses</translation>
 <translation id="3434107140712555581"><ph name="BATTERY_PERCENTAGE" />%</translation>
 <translation id="3434272557872943250">Jika tetapan Aktiviti Web &amp; Apl tambahan dihidupkan untuk anak anda, data ini mungkin disimpan pada Akaun Googlenya. Ketahui lebih lanjut tentang tetapan ini dan cara melaraskan tetapan ini melalui families.google.com.</translation>
 <translation id="3434475275396485144">Tetapan ini diurus oleh pentadbir telefon anda</translation>
@@ -3368,6 +3368,7 @@ Anda boleh mengurus tetapan akaun ini dengan memasang apl Family Link pada peran
 <translation id="3605156246402033687">{COUNT,plural, =1{{COUNT} akaun menggunakan kata laluan yang sama}other{{COUNT} akaun menggunakan kata laluan yang sama}}</translation>
 <translation id="3605780360466892872">Buttondown</translation>
 <translation id="3607671391978830431">Untuk anak</translation>
+<translation id="3608460311600621471">Sila masukkan sebab untuk mencetak data ini:</translation>
 <translation id="3608730769702025110">Langkah 3 daripada 4: Semak maklumat peribadi yang boleh dikenal pasti</translation>
 <translation id="3609277884604412258">Carian pantas</translation>
 <translation id="3610241585790874201">Tidak dibenarkan menyimpan data pada peranti anda</translation>
@@ -3533,6 +3534,7 @@ Anda boleh mengurus tetapan akaun ini dengan memasang apl Family Link pada peran
 <translation id="372722114124766626">Hanya Sekali</translation>
 <translation id="3727332897090187514">Tiada nota ditambahkan</translation>
 <translation id="3727473233247516571">Subbingkai Dicache Kembali/Maju: <ph name="BACK_FORWARD_CACHE_PAGE_URL" /></translation>
+<translation id="3727850735097852673">Untuk menggunakan Google Password Manager dengan macOS Keychain, lancarkan semula Chrome dan benarkan akses Keychain. Tab anda akan dibuka semula selepas pelancaran semula.</translation>
 <translation id="3728188878314831180">Cerminkan pemberitahuan daripada telefon anda</translation>
 <translation id="3728681439294129328">Konfigurasikan alamat rangkaian</translation>
 <translation id="3729506734996624908">Tapak yang dibenarkan</translation>
@@ -5924,7 +5926,6 @@ Kebenaran yang telah anda berikan kepada laman web dan apl mungkin dikenakan pad
 <translation id="5636012309446422">Alih keluar <ph name="DEVICE" /> daripada <ph name="PRIMARY_EMAIL" />?</translation>
 <translation id="5636996382092289526">Untuk menggunakan <ph name="NETWORK_ID" /> anda mungkin perlu <ph name="LINK_START" />melawat halaman log masuk rangkaian<ph name="LINK_END" /> terlebih dahulu, yang akan terbuka secara automatik dalam beberapa saat. Jika ini tidak berlaku, rangkaian tersebut tidak boleh digunakan.</translation>
 <translation id="5637476008227280525">Data mudah alih didayakan</translation>
-<translation id="563811590465749036">Untuk menggunakan Google Password Manager dengan macOS Keychain, lancarkan semula Chrome dan benarkan akses Keychain. Tab anda akan dibuka semula selepas pelancaran semula</translation>
 <translation id="563821631542362636">Membenarkan laman menyimpan data</translation>
 <translation id="5638309510554459422">Cari sambungan dan tema di <ph name="BEGIN_LINK" />Gedung Web Chrome<ph name="END_LINK" /></translation>
 <translation id="5639549361331209298">Muat semula halaman ini, tahan untuk melihat lagi pilihan</translation>
@@ -6156,7 +6157,6 @@ Kebenaran yang telah anda berikan kepada laman web dan apl mungkin dikenakan pad
 <translation id="583431638776747">Laman tidak tersedia</translation>
 <translation id="5834581999798853053">Tinggal kira-kira <ph name="TIME" /> minit</translation>
 <translation id="5835360478055379192">{NUM_EXTENSION,plural, =1{<ph name="EXTENSION1" /> sedang mengakses peranti HID}=2{Sambungan yang mengakses peranti: <ph name="EXTENSION1" />, <ph name="EXTENSION2" />}other{Sambungan yang mengakses peranti: <ph name="EXTENSION1" />, <ph name="EXTENSION2" /> +{3} lagi}}</translation>
-<translation id="5835486486592033703"><ph name="WINDOW_TITLE" /> - Kamera atau mikrofon sedang merakam</translation>
 <translation id="583673505367439042">Laman boleh meminta untuk mengedit fail dan folder pada peranti anda</translation>
 <translation id="5836999627049108525">Bahasa Sumber</translation>
 <translation id="583756221537636748">Sarung</translation>
@@ -6668,6 +6668,7 @@ Kebenaran yang telah anda berikan kepada laman web dan apl mungkin dikenakan pad
 <translation id="6238982280403036866">Dibenarkan untuk menggunakan JavaScript</translation>
 <translation id="6239558157302047471">Muat semula &amp;bingkai</translation>
 <translation id="6240821072888636753">Tanya setiap kali</translation>
+<translation id="6240964651812394252">Untuk menggunakan Google Password Manager dengan sistem pengendalian anda, lancarkan semula Chrome dan benarkan akses kepada pengurus kata laluan komputer anda. Tab anda akan dibuka semula selepas pelancaran semula.</translation>
 <translation id="6241530762627360640">Akses maklumat mengenai peranti Bluetooth yang dipasangkan dengan sistem anda dan temui peranti Bluetooth berhampiran.</translation>
 <translation id="6241844896329831164">Akses tidak diperlukan</translation>
 <translation id="6242574558232861452">Membuat semakan berdasarkan dasar keselamatan organisasi anda.</translation>

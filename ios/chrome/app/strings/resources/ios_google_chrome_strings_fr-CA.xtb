@@ -55,6 +55,7 @@
 <translation id="2574249610672786438">Pour voir vos onglets partout où vous utilisez Chrome, connectez-vous sur tous vos appareils</translation>
 <translation id="2576431527583832481">Une nouvelle version améliorée de Google Chrome est maintenant offerte.</translation>
 <translation id="257708665678654955">Souhaitez-vous que Google Chrome vous propose de traduire les pages de ce site rédigées en <ph name="LANGUAGE_NAME" /> lors de votre prochaine visite?</translation>
+<translation id="2650286135394207535">Laisser Chrome vous aider à suivre vos colis</translation>
 <translation id="2671426118752779020">Vous pouvez utiliser les mots de passe que vous avez enregistrés dans le gestionnaire de mots de passe Google pour d'autres applications sur votre iPhone.</translation>
 <translation id="2689064829982324496">Pour vous déconnecter de votre compte Google sur tous les sites Web, <ph name="BEGIN_LINK" />déconnectez-vous de Chrome<ph name="END_LINK" />.</translation>
 <translation id="2695886661449553974">Chrome n'a pas pu vérifier s'il y a des mises à jour. Réessayez plus tard.</translation>
@@ -69,7 +70,6 @@
 <translation id="309672519329227863">Accédez à vos mots de passe Chrome et plus encore dans d'autres applications.</translation>
 <translation id="3167189358072330585">Votre compte n'est pas compatible avec Google Chrome. Veuillez communiquer avec l'administrateur de votre domaine ou utiliser un compte Google ordinaire pour vous connecter.</translation>
 <translation id="3173834708294760622">Page Google Chrome</translation>
-<translation id="3196546062792660320">Chrome vous fait gagner du temps en mettant vos comptes sur le Web. Vous pouvez ajouter ou supprimer des comptes dans Paramètres.</translation>
 <translation id="322254490661677575">Pour utiliser et enregistrer des données Chrome dans votre compte Google, saisissez votre phrase de passe.</translation>
 <translation id="3282568296779691940">Connexion à Chrome</translation>
 <translation id="3345341804167540816">Utiliser Chrome sur toutes les plateformes</translation>
@@ -169,7 +169,6 @@ Seule une personne connaissant votre phrase de passe peut lire vos données chif
 <translation id="7124339256045485976">Pour garder Chrome à jour</translation>
 <translation id="7161390184744336561">Google Chrome n'est pas à jour</translation>
 <translation id="7165736900384873061">Commencer à utiliser le lecteur de code QR Google Chrome</translation>
-<translation id="7173660919484573146">Chrome utilise Face ID pour assurer un accès autorisé à vos mots de passe.</translation>
 <translation id="7187993566681480880">Il vous protège dans Chrome et peut être utilisé pour améliorer votre sécurité dans d'autres applications Google lorsque vous êtes connecté à votre compte.</translation>
 <translation id="7200524487407690471">Chrome exécute automatiquement la Vérification de sécurité tous les jours pour vous protéger, entre autres, contre les violations de données et les sites Web non sécuritaires. Vous trouverez plus d'information sur la Vérification de sécurité dans Paramètres.</translation>
 <translation id="72119412072970160">Vous pouvez utiliser les mots de passe que vous avez enregistrés dans le gestionnaire de mots de passe Google pour d'autres applications sur votre iPad.</translation>
@@ -189,6 +188,7 @@ Seule une personne connaissant votre phrase de passe peut lire vos données chif
 <translation id="7698568245838009292">Chrome souhaite accéder à l'appareil photo</translation>
 <translation id="7754633291442704733">Votre organisation <ph name="DOMAIN" /> aura accès à vos données, favoris, historique, mots de passe et autres paramètres Chrome que vous stockez dans ce compte. Lorsque vous vous déconnectez, vos données sont effacées de cet appareil.  Cependant, vos données restent stockées dans votre compte Google géré et sont disponibles pour votre organisation. Votre organisation peut également définir des politiques relatives aux utilisateurs propres à ce compte, lesquelles peuvent modifier le comportement de Chrome.</translation>
 <translation id="7780154209050837198">Connectez-vous à Chrome avec votre compte Google pour en tirer le meilleur parti.</translation>
+<translation id="7792140019572081272">Chrome protège vos données confidentielles avec Face ID.</translation>
 <translation id="7855730255114109580">Google Chrome est à jour</translation>
 <translation id="7897703007638178753">Voir les onglets récents de Chrome</translation>
 <translation id="7925119591961387184">Sélectionnez « Chrome ».</translation>

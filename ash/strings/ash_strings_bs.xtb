@@ -625,7 +625,7 @@ Možete isprobati ovih nekoliko stvari da započnete.</translation>
 <translation id="3593646411856133110">Prevucite prema gore i zadržite da vidite otvorene aplikacije</translation>
 <translation id="3595596368722241419">Baterija je puna</translation>
 <translation id="3596012367874587041">Postavke aplikacije</translation>
-<translation id="3598452309062311481">Pretraživanje + h</translation>
+<translation id="3598452309062311481">tipka za pretraživanje i H</translation>
 <translation id="3600061223661453002">Isključeno</translation>
 <translation id="3604801046548457007">Radna površina <ph name="DESK_TITILE" /> je kreirana</translation>
 <translation id="3606978283550408104">Brailleov ekran je povezan.</translation>
@@ -777,7 +777,7 @@ Neke funkcije su ograničene radi povećanja vijeka trajanja baterije.</translat
 <translation id="4190780880566297084">Odbacivanje postavljanja pregledanja nedavnih fotografija, medijskih fajlova i aplikacija telefona</translation>
 <translation id="4192112279662688596">Ili</translation>
 <translation id="4193857202545160520">Prikaži klikove i tipke</translation>
-<translation id="4193969623755915875">Otvorite Pomoć u aplikaciji Istražite pomoću prečaca <ph name="NEW_SHORTCUT" />.</translation>
+<translation id="4193969623755915875">Otvorite "Pomoć" u aplikaciji Istražite pomoću prečice "<ph name="NEW_SHORTCUT" />".</translation>
 <translation id="4195579532193195633">Trenutna verzija <ph name="VERSION_NAME" /> (<ph name="OFFICIAL_STATUS" />) <ph name="CHANNEL_NAME" /> <ph name="PROCESSOR_VARIATION" /></translation>
 <translation id="4195814663415092787">Nastavite gdje ste stali</translation>
 <translation id="4195877955194704651">Automatski klikovi na dugme</translation>
@@ -960,7 +960,7 @@ Neke funkcije su ograničene radi povećanja vijeka trajanja baterije.</translat
 <translation id="4889868803215848840">Pružite neobavezne povratne informacije da poboljšate prijedloge:</translation>
 <translation id="4890187583552566966">Administrator je onemogućio Google Asistenta.</translation>
 <translation id="4890408602550914571">Provjerite nalazi li se telefon u blizini i je li Bluetooth uključen.</translation>
-<translation id="4892981359753171125">Upravljanje licem</translation>
+<translation id="4892981359753171125">Upravljanje FaceGazeom</translation>
 <translation id="4895488851634969361">Baterija je napunjena.</translation>
 <translation id="490375751687810070">Vertikalno</translation>
 <translation id="490788395437447240"><ph name="BATTERY_PERCENTAGE" />% baterije</translation>

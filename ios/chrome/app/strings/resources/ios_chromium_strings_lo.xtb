@@ -15,6 +15,7 @@
 <translation id="1507010443238049608">ຊ່ວຍປັບປຸງຄຸນສົມບັດ ແລະ ປະສິດທິພາບຂອງ Chromium</translation>
 <translation id="1513122820609681462">ຕັ້ງຄ່າ Chromium ເປັນໂປຣແກຣມທ່ອງເວັບເລີ່ມຕົ້ນ</translation>
 <translation id="1531155317299575425">ສະແດງຂໍ້ຄວາມເພື່ອເຂົ້າສູ່ລະບົບຫາ Chromium.</translation>
+<translation id="159029779861043703">Chromium ຮັກສາຂໍ້ມູນລະອຽດອ່ອນຂອງທ່ານໃຫ້ປອດໄພດ້ວຍ Face ID.</translation>
 <translation id="1591119736686995611">ເປີດໂຄງຮ່າງຕາຕະລາງຂອງແຖບ Chromium.</translation>
 <translation id="1611584326765829247">ໃຫ້ Chromium ຊ່ວຍທ່ານຕິດຕາມແພັກ​ເກດຂອງທ່ານ</translation>
 <translation id="1617663976202781617">ຂໍ້ມູນຈາກການຊິ້ງຂໍ້ມູນຂອງ Chromium</translation>
@@ -54,7 +55,6 @@
 <translation id="2784449251446768092">ຈັດການການຕັ້ງຄ່າ Chromium</translation>
 <translation id="2798503587425057129">ເປີດລາຍຊື່ການອ່ານ Chromium.</translation>
 <translation id="2843571538056574338">ໃຊ້ Chromium ສຳລັບການຕື່ມຂໍ້ມູນອັດຕະໂນມັດ</translation>
-<translation id="2915596697727466327">Chromium ໃຊ້ Face ID ເພື່ອຮັບປະກັນການເຂົ້າເຖິງລະຫັດຜ່ານຂອງທ່ານແບບໄດ້ຮັບອະນຸຍາດ.</translation>
 <translation id="2918709798697875261">ອົງການຂອງທ່ານກຳນົດໃຫ້ທ່ານສືບຕໍ່ອອກຈາກລະບົບ Chromium.</translation>
 <translation id="2942241131342758843">ໃຊ້ Chromium ເປັນຄ່າເລີ່ມຕົ້ນເພື່ອເປີດລິ້ງ, ຊອກຫາຈາກວິດເຈັດ ແລະ ການຕື່ມຂໍ້ມູນລະຫັດຜ່ານອັດຕະໂນມັດໃນແອັບອື່ນໆ</translation>
 <translation id="2977470724722393594">Chromium ແມ່ນເວີຊັນໃໝ່ຫຼ້າສຸດແລ້ວ</translation>
@@ -175,7 +175,6 @@
 <translation id="7165402419892018581">ເລືອກ Chromium ສຳລັບການຕື່ມຂໍ້ມູນອັດຕະໂນມັດ</translation>
 <translation id="7175400662502680481">ລະຫັດຜ່ານຂອງທ່ານຖືກເປີດເຜີຍໃນການຮົ່ວໄຫຼຂໍ້ມູນ. ຕົວຈັດການລະຫັດຜ່ານແນະນຳໃຫ້ປ່ຽນມັນດຽວນີ້.</translation>
 <translation id="7192111075364461693">ຕອນນີ້ການແຈ້ງເຕືອນ Chromium ປິດຢູ່ໃນການຕັ້ງຄ່າອຸປະກອນຂອງທ່ານ.</translation>
-<translation id="7208566199746267865">Chromium ຊ່ວຍທ່ານປະຢັດເວລາໂດຍການນຳເອົາບັນຊີຂອງທ່ານໄປສູ່ເວັບ. ທ່ານສາມາດເພີ່ມ ຫຼື ລຶບບັນຊີຕ່າງໆອອກໄດ້ໃນການຕັ້ງຄ່າ.</translation>
 <translation id="725427773388857052">Chromium ສາມາດຊ່ວຍຮັກສາທ່ານໃຫ້ປອດໄພຈາກການລະເມີດຂໍ້ມູນ, ເວັບໄຊທີ່ບໍ່ປອດໄພ ແລະ ອື່ນໆອີກ.</translation>
 <translation id="7269362888766543920">ບາງສ່ວນເພີ່ມເຮັດໃຫ້ Chromium ຂັດຂ້ອງ. ກະລຸນາລອງຖອນການຕິດຕັ້ງພວກມັນ.</translation>
 <translation id="7285031092584344905">ເຂົ້າເຖິງລະຫັດຜ່ານ Chromium ຂອງທ່ານ ແລະ ອື່ນໆທົ່ວແອັບຕ່າງໆ.</translation>

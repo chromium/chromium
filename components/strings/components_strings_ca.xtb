@@ -87,6 +87,7 @@
 <translation id="11635448457105324">Botó Gestiona les adreces: activa'l per afegir i gestionar adreces a la configuració de Chrome</translation>
 <translation id="1165039591588034296">Error</translation>
 <translation id="1165174597379888365">Es visita una pàgina</translation>
+<translation id="1165813024716836071">{COUNT,plural, =0{Cap}=1{D'1 lloc web (continuaràs tenint la sessió iniciada al teu Compte de Google)}other{De # llocs web (continuaràs tenint la sessió iniciada al teu Compte de Google)}}</translation>
 <translation id="1165852471352757509">Televisió documental i de no-ficció</translation>
 <translation id="1174644974616730562">Sobre xinès número 1</translation>
 <translation id="1174723505405632867">Vols permetre que <ph name="EMBEDDED_URL" /> utilitzi les galetes i les dades del lloc web a <ph name="TOP_LEVEL_URL" />?
@@ -3986,6 +3987,7 @@ Detalls addicionals:
 <translation id="8919895429178014996">Amaga tots els elements</translation>
 <translation id="8922013791253848639">Permet sempre els anuncis en aquest lloc web</translation>
 <translation id="892588693504540538">Encunyació a la part superior dreta</translation>
+<translation id="8926389886865778422">No m'ho tornis a preguntar</translation>
 <translation id="8930330541574156305">Béns immobles</translation>
 <translation id="8932102934695377596">El rellotge està endarrerit</translation>
 <translation id="893332455753468063">Afegeix un nom</translation>

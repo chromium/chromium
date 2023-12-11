@@ -1114,6 +1114,7 @@ Ist die Richtlinie deaktiviert, schließt <ph name="PRODUCT_NAME" /> den Tab nac
 
       Die Managed Configuration API ist eine Schlüssel/Wert-Konfiguration, die sich über den JavaScript-Aufruf „navigator.managed.getManagedConfiguration()“ abrufen lässt. Diese API ist nur für Ursprünge verfügbar, die zu Webanwendungen gehören, deren Installation über <ph name="WEB_APP_INSTALL_FORCE_LIST_POLICY_NAME" /> erzwungen wurde.
      </translation>
+<translation id="1918690415433353669">Tab-Organisation zulassen, ohne die Tabdetails zu protokollieren</translation>
 <translation id="1919802376548418720">Mit der KDC-Richtlinie können Anmeldedaten delegiert werden.</translation>
 <translation id="1920046221095339924">Verwaltete Sitzung auf Gerät zulassen</translation>
 <translation id="1920772397574801429">Wenn die Richtlinie konfiguriert ist, werden die Typen von Konten festgelegt, die von der Android-Authentifizierungs-App angegeben werden, die die Authentifizierung durch <ph name="HTTP_NEGOTIATE" /> unterstützt, z. B. die Kerberos-Authentifizierung. Diese Informationen sollten vom Anbieter der Authentifizierungs-App bereitgestellt werden. Weitere Informationen findest du in den Chromium-Projekten unter https://goo.gl/hajyfN.
@@ -1686,6 +1687,7 @@ HINWEIS: Während der Browser ausgeführt wird, werden Änderungen an dieser Ric
 Ist die Richtlinie deaktiviert, können Nutzer von <ph name="PRODUCT_NAME" />-Varianten „NewBaseUrlInheritanceBehavior“ nicht aktivieren, falls Kompatibilitätsprobleme vorliegen. Wenn die Richtlinie aktiviert oder nicht konfiguriert ist, kann „NewBaseUrlInheritanceBehavior“ aktiviert werden.</translation>
 <translation id="2362469626417133796">Zeitfenster für Neustart</translation>
 <translation id="2362539163677485510">Das Registrierungstoken der Cloud-Richtlinie</translation>
+<translation id="2362947328909044249">Tab-Organisation zulassen</translation>
 <translation id="2363928351203698966">Wenn die Richtlinie auf einen gültigen Wert festgelegt ist, nutzt <ph name="PRODUCT_NAME" /> keine SSL- oder TLS-Versionen, die niedriger als die vorgegebene Version sind. Nicht erkannte Werte werden ignoriert.
 
       Wenn diese Richtlinie nicht konfiguriert ist, zeigt <ph name="PRODUCT_NAME" /> einen Fehler für TLS 1.0 und TLS 1.1 an, den der Nutzer jedoch umgehen kann.
@@ -2019,6 +2021,7 @@ Das System fragt AAAA-Einträge nur dann ab, wenn es für einen globalen IPv6-Ho
 <translation id="2650049181907741121">Auszuführende Aktion beim Zuklappen des Geräts</translation>
 <translation id="2656559539624760733">Chrome Root Store nicht verwenden.</translation>
 <translation id="2658653824183107970">Alte <ph name="CORS" />-Implementierung statt des neuen <ph name="CORS" /> verwenden</translation>
+<translation id="2659064869547694451">„Compose“ zulassen</translation>
 <translation id="2660846099862559570">Nie Proxy verwenden</translation>
 <translation id="2661628029848851543">Jegliche Nutzung von verwalteten Konten ist zulässig</translation>
 <translation id="2664391398878045611">Die Seite „Neuer Tab“ zeigt die Information im mittleren Slot nicht an – selbst wenn sie verfügbar ist</translation>
@@ -2263,6 +2266,7 @@ Diese Richtlinie kann nur als Cloud-Nutzerrichtlinie konfiguriert werden.</trans
 <translation id="2896434627453256512">Wenn die Richtlinie konfiguriert ist, wird die Funktion für das ghost-Dialogfeld aktiviert.
       Ist sie auf „True“ gesetzt, werden nach einem Absturz oder Neustart je nach der Einstellung zur App-Wiederherstellung ARC-ghost-Dialogfelder vor ARC-Starts erstellt.
       Wenn diese Richtlinie auf „False“ gesetzt ist, wird kein ghost-Dialogfeld vor ARC-Starts erstellt. ARC-Apps werden nach ARC-Starts wiederhergestellt.</translation>
+<translation id="2897716186959852329">Funktion „Laut vorlesen“ nie zulassen</translation>
 <translation id="2899002520262095963">Android-Apps können die über diese Richtlinie festgelegten Netzwerkkonfigurationen und CA-Zertifikate verwenden, haben jedoch keinen Zugriff auf bestimmte Konfigurationsoptionen.</translation>
 <translation id="2899213072616346687">Schränkt den Druckmodus mit Hintergrundgrafiken ein. Wenn die Richtlinie nicht konfiguriert ist, gelten keine Einschränkungen.</translation>
 <translation id="2899640611559504158">Befehlszeilenzugriff auf virtuellen Maschinen deaktivieren</translation>
@@ -2789,6 +2793,7 @@ Ist diese Richtlinie deaktiviert, werden heruntergeladene Dateien nicht von Safe
 Diese Einschränkungen gelten für Downloads, die durch Websiteinhalte ausgelöst werden, sowie für die Menüoption „Link herunterladen“. Diese Einschränkungen gelten aber weder für das Herunterladen und Speichern der gerade angezeigten Seite noch für das Speichern als PDF-Datei in den Druckoptionen.
 
 Unter <ph name="MS_WIN_NAME" /> steht diese Richtlinie nur bei Instanzen zur Verfügung, die Teil einer <ph name="MS_AD_NAME" />-Domain oder von <ph name="MS_AAD_NAME" /> sind oder die in<ph name="CHROME_BROWSER_CLOUD_MANAGEMENT_NAME" /> angemeldet sind.</translation>
+<translation id="3300322252167923819">Tab-Organisation zulassen</translation>
 <translation id="3300784749135986828">Aktiviere oder deaktiviere die Funktion <ph name="USER_AGENT_REDUCTION_FEATURE_NAME" />.</translation>
 <translation id="3301698868852716692">Erweiterung „Insights“ aktivieren</translation>
 <translation id="3302829897293005699">Wenn die Richtlinie aktiviert oder nicht konfiguriert ist, werden über registrierte Geräte Informationen zur aktiven Kiosksitzung gemeldet, z. B. die Anwendungs-ID und -version.
@@ -3388,6 +3393,7 @@ Diese Richtlinie ist eine vorübergehende Problemumgehung, die in einem zukünft
 <translation id="3799417300383048419">Profildaten auf dem Laufwerk beibehalten, wenn die Nutzersitzung endet</translation>
 <translation id="3799436555130241393"><ph name="PRODUCT_OS_NAME" />-Dateisynchronisierung</translation>
 <translation id="3803171355925844705">Keiner Website das Laden von gemischten Inhalten erlauben</translation>
+<translation id="3806742563417418191">Hintergrundsuche zulassen</translation>
 <translation id="3808945828600697669">Liste der deaktivierten Plug-ins angeben</translation>
 <translation id="3810642039169532482">Hiermit wird die Bedienungshilfe "Spracheingabe" auf dem Anmeldebildschirm aktiviert.
 
@@ -3399,6 +3405,7 @@ Diese Richtlinie ist eine vorübergehende Problemumgehung, die in einem zukünft
 
           Wird sie nicht konfiguriert, ist die Bedienungshilfe "Spracheingabe" auf dem Anmeldebildschirm anfangs deaktiviert, kann jedoch vom Nutzer jederzeit aktiviert werden.</translation>
 <translation id="3811562426301733860">Werbung auf allen Websites zulassen</translation>
+<translation id="3816281648615435872">Tab-Organisation deaktivieren</translation>
 <translation id="3816312845600780067">Tastenkombination zur Umgehung der automatischen Anmeldung aktivieren</translation>
 <translation id="3817323252437541502">Erweiterte Sicherheitsfunktionen für Teilnehmer des erweiterten Sicherheitsprogramms aktivieren</translation>
 <translation id="3821861026311587684">Abmeldung des Nutzers erzwingen, wenn sein Konto nicht mehr authentifiziert ist</translation>
@@ -3939,6 +3946,7 @@ Ist die Richtlinie deaktiviert, wird stattdessen eine Fehlermeldung angezeigt.</
 <translation id="428948795004445932">Häufigkeit, mit der Netzwerkdaten analysiert und erhoben werden. Die geringste zulässige Häufigkeit beträgt 1 Minute.
 
       Wenn die Richtlinie nicht konfiguriert ist, beträgt die Häufigkeit standardmäßig 10 Minuten.</translation>
+<translation id="4289628882370719584">Mit der Funktion zum Organisieren von Tabs können Nutzer ihre Tabs organisieren.</translation>
 <translation id="4290231183305601970">Text, der dem Nutzer im Chrome Webstore angezeigt wird, wenn die Installation blockiert ist.</translation>
 <translation id="4293187705196369087">Ermöglicht die Aktivierung oder Deaktivierung einer Benachrichtigung, wenn nur noch wenig Speicherplatz verfügbar ist. Dies gilt für alle Nutzer auf diesem Gerät.
 
@@ -4228,6 +4236,7 @@ Diese Richtlinie ist nicht wirksam, wenn sie aktiviert ist, leer gelassen oder n
 <translation id="453031441196755904">Diese Richtlinie ist veraltet.</translation>
 <translation id="4531706050939927436">Die Installation von Android-Apps kann von der Google Admin-Konsole aus über Google Play erzwungen werden. Android-Apps nutzen diese Richtlinie nicht.</translation>
 <translation id="4534500438517478692">Name der Android-Einschränkung:</translation>
+<translation id="4537645230504195464">„Compose“ ohne Protokollierung zulassen</translation>
 <translation id="4541530620466526913">Lokale Gerätekonten</translation>
 <translation id="4542255783284620926">Hinzufügen eines verwalteten Kontos als sekundäres Konto unter Chrome OS (bei laufender Sitzung) blockieren</translation>
 <translation id="4543502256674577024">Einstellungen für die Geräteaktualisierung</translation>
@@ -4416,6 +4425,7 @@ Nach der Ersteinrichtung können Nutzer die Standortdienste von Google flexibel 
 <translation id="4674871290487541952">Unsichere Algorithmen in Integritätsprüfungen bei Erweiterungsupdates und -installationen erlauben</translation>
 <translation id="4680961954980851756">Autofill zulassen</translation>
 <translation id="4685721728282448265">CECPQ2-Post-Quanten-Algorithmus für Schlüsselvereinbarungen in TLS aktiviert</translation>
+<translation id="4688118315245991650">„Compose“ deaktivieren</translation>
 <translation id="468822697351680932">SiteList-Richtlinie in Internet Explorer als Quelle für Regeln verwenden</translation>
 <translation id="4693190628432874457">Melden des Standorts auf Geräten aktivieren</translation>
 <translation id="4693779768620889402">Erweiterungsbasierte Ziele</translation>
@@ -5099,6 +5109,7 @@ Ist die Richtlinie deaktiviert, können der Browser‑ und der Downloadverlauf n
 <translation id="5340008866815063393">Erfassen von Richtliniendaten aktivieren</translation>
 <translation id="5345910753471481870">Schaltfläche „Google Lens“ nicht im Suchfeld auf der Seite „Neuer Tab“ anzeigen.</translation>
 <translation id="5346587320074666194">Den Zugriff auf Sensoren für diese Websites sperren</translation>
+<translation id="5347809796754019202">„Compose“ zulassen</translation>
 <translation id="534836255587440809">„Automatischer Klick“ auf dem Anmeldebildschirm deaktivieren</translation>
 <translation id="5348658899015174540">Die <ph name="GET_DISPLAY_MEDIA_SET_NAME" /> API erlaubt Web-Apps, mehrere Oberflächen gleichzeitig aufzunehmen.
       Diese Richtlinie macht das Attribut <ph name="AUTO_SELECT_ALL_SCREENS_NAME" /> für Web-Apps an definierten Ursprüngen verfügbar.
@@ -5627,6 +5638,7 @@ Wenn die Richtlinie deaktiviert ist, ist auch der <ph name="SAFE_BROWSING_NAME" 
 <translation id="5775235485119094648">Lädt den Akku auf, solange er sich in einem festen Bereich befindet.</translation>
 <translation id="5776485039795852974">Nachfragen, wenn eine Website Desktop-Benachrichtigungen anzeigen will</translation>
 <translation id="5783009211970309878">Kopf- und Fußzeilen drucken</translation>
+<translation id="5786938041290515154">Hintergrundsuche ohne Protokollierung zulassen</translation>
 <translation id="5790763087505467169">Benachrichtigungen zum automatischen Start bei verwalteten Gastsitzungen reduzieren</translation>
 <translation id="5800329278018669527">Eingabeaufforderung zur Netzwerkkonfiguration im Offlinemodus deaktivieren</translation>
 <translation id="5802931736499687181">Verschlüsselte Pipeline für die Berichterstellung deaktivieren</translation>
@@ -5818,6 +5830,7 @@ Wenn der Wert für <ph name="CHROMEOS_VERSION_PROPERTY_NAME" /> bei keinem Eintr
 <translation id="596523880465577341">Diese Richtlinie ist veraltet und wird nicht mehr unterstützt. Bitte verwende stattdessen die Richtlinie „<ph name="EXTENSION_INSTALL_ALLOWLIST_POLICY_NAME" />“.</translation>
 <translation id="5966615072639944554">Erweiterungen, die die Remote Attestation API zur Bestätigung der Nutzeridentität verwenden dürfen</translation>
 <translation id="596732417280023843">Name des Zertifikatsprofils.</translation>
+<translation id="597036930083735628">Hintergrundsuche deaktivieren</translation>
 <translation id="5972538402066550344">Steuerelemente für detailliertes Reporting zulassen</translation>
 <translation id="5975765799383881158">Wenn die Richtlinie aktiviert oder nicht konfiguriert ist, können Nutzer über das Menü &gt; „Hilfe“ &gt; „Problem melden“ oder die entsprechende Tastenkombination Feedback an Google senden.
 
@@ -6811,6 +6824,7 @@ Ist diese Richtlinie auf „true“ gesetzt, wird WebSQL im Zusammenhang mit Dri
       Bei Auswahl von „Enabled“ können Websites „SharedArrayBuffers“ ohne Einschränkungen verwenden.
 
       Wenn du die Richtlinie auf „Disabled“ setzt oder nicht konfigurierst, können Websites „SharedArrayBuffers“ nur in einem ursprungsübergreifend isolierten Kontext verwenden.</translation>
+<translation id="6734397897213913438">Funktion „Laut vorlesen“ immer zulassen</translation>
 <translation id="6735701345096330595">Aktivierung von Sprachen für die Rechtschreibprüfung erzwingen</translation>
 <translation id="6736283207617136584">Melden des Updatestatus für das Betriebssystem auf Geräten aktivieren</translation>
 <translation id="6739541168983991680"><ph name="CLOUD_UPLOAD_NAME" />-Ablauf für <ph name="MICROSOFT_ONE_DRIVE_NAME" /> und <ph name="MICROSOFT_365_NAME" /> automatisieren</translation>
@@ -7648,6 +7662,7 @@ Ist die Richtlinie nicht konfiguriert, entspricht dies der Einstellung „<ph na
 <translation id="7443356543619955157">Wenn die Richtlinie konfiguriert ist, ermöglicht sie, Netzwerkkonfigurationen für alle Nutzer eines <ph name="PRODUCT_OS_NAME" />-Geräts zu übernehmen. Die Netzwerkkonfiguration ist ein String im JSON-Format, der der Definition des ONC-Formats (Open Network Configuration) entspricht.</translation>
 <translation id="7446978687387327623">Weitergeleitete Safe Browsing-Echtzeitprüfungen zulassen</translation>
 <translation id="7448430478749155471">Hiermit wird die Funktion "Vorlesen" auf dem Anmeldebildschirm aktiviert</translation>
+<translation id="7455912144588577399">Wenn die Richtlinie auf „true“ gesetzt ist, können Nutzer sich kompatible Webseiten per Sprachausgabe laut vorlesen lassen. Dies ist durch serverseitige Inhaltsanalyse und Audiosynthese möglich. Ist sie auf „false“ gesetzt, so ist diese Funktion deaktiviert. Wenn die Richtlinie auf die Standardeinstellung gesetzt oder nicht konfiguriert ist, ist die Funktion „Laut vorlesen“ aktiviert.</translation>
 <translation id="7456922722153109956">Diese Richtlinie legt die Sichtbarkeit der Information im mittleren Slot auf der Seite „Neuer Tab“ fest.
 
       Ist die Richtlinie aktiviert, zeigt die Seite „Neuer Tab“ die Information im mittleren Slot an, sofern verfügbar.
@@ -9153,6 +9168,7 @@ Wenn die Richtlinie nicht konfiguriert ist, werden bei der ersten Ausführung ke
 <translation id="8714556680280715750">Eine URL, über die Nutzer mehr erfahren können. Sofern nicht konfiguriert, gibt es im Installationsprogramm keine URL „Weitere Informationen“. Falls vorhanden, muss das HTTPS-Schema verwendet werden.</translation>
 <translation id="8715885991031124968">JavaScript-Dialogfelder zulassen, die von einem anderen Quell-Subframe ausgelöst wurden</translation>
 <translation id="8720547069538712402">Zulassen, dass Nutzer die Rechtschreibprüfung aktivieren oder deaktivieren</translation>
+<translation id="8721685661759544418">Funktion „Laut vorlesen“ (Textanalyse und Sprachsynthese) für Webseiten aktivieren</translation>
 <translation id="8726080977639508431">Diese Richtlinie legt fest, wie <ph name="PRODUCT_NAME" /> Richtlinien zu Websitelisten/Greylists für die Funktion zur Unterstützung älterer Browser interpretiert. Die folgenden Richtlinien sind betroffen: <ph name="URL_LIST_POLICY_NAME" />, <ph name="URL_GREYLIST_POLICY_NAME" />, <ph name="USE_IE_SITELIST_POLICY_NAME" />, <ph name="EXTERNAL_SITELIST_POLICY_NAME" /> und <ph name="EXTERNAL_GREYLIST_POLICY_NAME" />.
 
       Wenn die Richtlinie auf „Default“ (0) gesetzt oder nicht konfiguriert ist, ist der URL-Abgleich weniger streng. Bei Regeln, die „/“ nicht enthalten, wird nach einem Teilstring im Hostnamen der URL gesucht. Bei der Zuordnung der Pfadkomponente einer URL wird die Groß- und Kleinschreibung beachtet.

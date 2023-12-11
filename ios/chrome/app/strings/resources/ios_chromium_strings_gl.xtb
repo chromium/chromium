@@ -16,6 +16,7 @@
 <translation id="1513122820609681462">Define Chromium como o navegador predeterminado</translation>
 <translation id="1531155317299575425">Mostra solicitudes para iniciar sesión en Chromium.</translation>
 <translation id="1591119736686995611">Abre a grade de pestanas de Chromium.</translation>
+<translation id="1611584326765829247">Permitir que Chromium che axude a facer un seguimento dos teus paquetes</translation>
 <translation id="1617663976202781617">Datos da sincronización de Chromium</translation>
 <translation id="1647558790457890304">Configuración de Chromium</translation>
 <translation id="164952285225495380">Xa se fixo o seguimento deste paquete en Chromium.</translation>
@@ -53,7 +54,6 @@
 <translation id="2784449251446768092">Xestiona a configuración de Chromium</translation>
 <translation id="2798503587425057129">Abre a lista de lectura de Chromium.</translation>
 <translation id="2843571538056574338">Utiliza a opción de autocompletar de Chromium</translation>
-<translation id="2915596697727466327">Chromium utiliza Face ID para garantir o acceso autorizado aos contrasinais.</translation>
 <translation id="2918709798697875261">A túa organización require que manteñas a sesión pechada en Chromium.</translation>
 <translation id="2942241131342758843">Usa Chromium de forma predeterminada para abrir ligazóns, realizar buscas desde widgets e autocompletar contrasinais noutras aplicacións</translation>
 <translation id="2977470724722393594">Chromium está actualizado</translation>
@@ -175,7 +175,6 @@ Só poderá ler os teus datos encriptados quen teña a túa frase de acceso (Goo
 <translation id="7165402419892018581">Escolle Chromium para autocompletar</translation>
 <translation id="7175400662502680481">O teu contrasinal púxose en risco debido a unha violación da seguranza dos datos. O xestor de contrasinais recomenda que o cambies de inmediato.</translation>
 <translation id="7192111075364461693">As notificacións de Chromium están desactivadas actualmente na configuración do dispositivo.</translation>
-<translation id="7208566199746267865">Chromium fai que aforres tempo ao pasar as túas contas á web. Podes engadir ou eliminar contas en Configuración.</translation>
 <translation id="725427773388857052">Chromium pode protexerte contra violacións da seguranza dos datos, sitios web que non son seguros e moito máis.</translation>
 <translation id="7269362888766543920">Algúns complementos fan que Chromium falle. Proba a desinstalalos.</translation>
 <translation id="7285031092584344905">Accede aos teus contrasinais de Chromium e moito máis noutras aplicacións.</translation>

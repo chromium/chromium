@@ -282,7 +282,7 @@ Tampoco pueden usar cookies para ver la actividad de navegación en diferentes s
 <translation id="2469960372084740698">¿Quieres desactivar la Navegación segura?</translation>
 <translation id="2473876017985765807">Ya guardaste una contraseña para <ph name="WEBSITE" /></translation>
 <translation id="2476359652512522418">Sin seleccionar</translation>
-<translation id="2479148705183875116">Ir a Configuración</translation>
+<translation id="2479148705183875116">Configurar</translation>
 <translation id="2482878487686419369">Notificaciones</translation>
 <translation id="2484459871750294497">¿Cómo habilito esta función?</translation>
 <translation id="2496626742194544812">Ir a la primera pestaña</translation>
@@ -837,6 +837,7 @@ Consulta las instrucciones de tu motor de búsqueda para borrar el historial de 
 <translation id="5457226814769348910">Versión sin conexión</translation>
 <translation id="5475069061743940393">Seguimiento de paquetes</translation>
 <translation id="5478327362747197944">Crea eventos de calendario directamente haciendo clic en una fecha en una página web.</translation>
+<translation id="5482922178977937393">¿Te gustaría recibir notificaciones sobre noticias, deportes y mucho más en función de tus intereses?</translation>
 <translation id="5489208564673669003">Para administrar las cookies de todos los sitios, visita la <ph name="BEGIN_LINK" />Configuración de cookies<ph name="END_LINK" />.</translation>
 <translation id="5490005495580364134">Bloquear todas las cookies (no se recomienda)</translation>
 <translation id="5497202150450073388">Se intentó realizar la entrega. Se volverá a intentar.</translation>
@@ -912,7 +913,6 @@ Handoff también debe estar habilitado en la sección General de la configuraci�
 <translation id="5857770089550859117">Se requiere la frase de contraseña para comenzar la sincronización.</translation>
 <translation id="5859715514067755465">Adelantar</translation>
 <translation id="5860033963881614850">Desactivado</translation>
-<translation id="5869029295770560994">Entendido</translation>
 <translation id="5871497086027727873">1 artículo movido</translation>
 <translation id="5896576662943111387">Diseñado para iOS</translation>
 <translation id="5897749768294722429">Para volver rápidamente a los sitios que visitaste, sincroniza las pestañas y el historial.</translation>
@@ -929,7 +929,6 @@ Handoff también debe estar habilitado en la sección General de la configuraci�
 <translation id="595769230373966252">Buscar con <ph name="SEARCH_PROVIDER" /></translation>
 <translation id="5962718611393537961">Presiona para contraer</translation>
 <translation id="5963939892571022323">No se puede crear un vínculo al texto destacado.</translation>
-<translation id="5965679971710331625">Accediste</translation>
 <translation id="5971872012779224351">{count,plural, =1{Se borró 1 favorito}other{Se borraron {count} favoritos}}</translation>
 <translation id="5979837087407522202">Buscar contraseñas</translation>
 <translation id="5981230843984570095">Cerrar todas las pestañas inactivas</translation>
@@ -1478,6 +1477,7 @@ Tus datos se encriptaron con tu frase de contraseña el <ph name="TIME" />. Ingr
 <translation id="8766790350274092814">Se borrarán las contraseñas de <ph name="WEBSITE" /> y <ph name="SECOND_WEBSITE" />. No se borrarán tus cuentas.</translation>
 <translation id="8775144690796719618">URL no válida</translation>
 <translation id="8780076847684176174">{count,plural, =1{Revisar la pestaña…}other{Revisar todas las pestañas…}}</translation>
+<translation id="8782570580170191813">Siempre realizar seguimiento de paquetes</translation>
 <translation id="8787968206789828143">Buscar en la Web</translation>
 <translation id="8792626944327216835">micrófono</translation>
 <translation id="8803639129939845298">Seguro</translation>

@@ -626,6 +626,7 @@
 <translation id="3593646411856133110">يُرجى التمرير السريع إلى الأعلى للاطّلاع على التطبيقات المفتوحة.</translation>
 <translation id="3595596368722241419">البطارية ممتلئة</translation>
 <translation id="3596012367874587041">إعدادات التطبيق</translation>
+<translation id="3598452309062311481">‏مفتاح البحث + h</translation>
 <translation id="3600061223661453002">غير مفعَّلة</translation>
 <translation id="3604801046548457007">تم إنشاء سطح المكتب <ph name="DESK_TITILE" />.</translation>
 <translation id="3606978283550408104">تم توصيل شاشة برايل.</translation>
@@ -778,6 +779,7 @@
 <translation id="4190780880566297084">عدم إعداد ميزة عرض الصور والوسائط والتطبيقات الحديثة في هاتفك</translation>
 <translation id="4192112279662688596">أو</translation>
 <translation id="4193857202545160520">إظهار اختصارات لوحة المفاتيح والنقرات</translation>
+<translation id="4193969623755915875">افتح قسم "المساعدة" في تطبيق "استكشاف" من خلال الاختصار "<ph name="NEW_SHORTCUT" />".</translation>
 <translation id="4195579532193195633">‏الإصدار الحالي ‎<ph name="VERSION_NAME" /> ‏(حالته: <ph name="OFFICIAL_STATUS" />) اسم قناته <ph name="CHANNEL_NAME" /> بنيته <ph name="PROCESSOR_VARIATION" /></translation>
 <translation id="4195814663415092787">المتابعة من حيث توقفت</translation>
 <translation id="4195877955194704651">زر النقرات التلقائية</translation>
@@ -960,6 +962,7 @@
 <translation id="4889868803215848840">يُرجى تقديم ملاحظات اختيارية لتحسين الاقتراحات:</translation>
 <translation id="4890187583552566966">‏تم إيقاف مساعد Google من قِبل المشرف.</translation>
 <translation id="4890408602550914571">يُرجى التأكُّد من أنّ هاتفك قريب وأنّ البلوتوث مفعَّل عليه.</translation>
+<translation id="4892981359753171125">‏التحكّم في ميزة FaceGaze</translation>
 <translation id="4895488851634969361">البطارية مملوءة.</translation>
 <translation id="490375751687810070">عمودي</translation>
 <translation id="490788395437447240">مستوى شحن البطارية: <ph name="BATTERY_PERCENTAGE" />%</translation>

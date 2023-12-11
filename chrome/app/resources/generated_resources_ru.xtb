@@ -31,7 +31,6 @@
 <translation id="1018656279737460067">Отменено</translation>
 <translation id="1022522674678746124">PowerPoint</translation>
 <translation id="1022669824195822609">Ваше устройство находится под управлением домена <ph name="DOMAIN" />. Администраторы имеют доступ к данным всех профилей на этом устройстве.</translation>
-<translation id="1024734233509995696">На этой вкладке используется камера или микрофон</translation>
 <translation id="1026655690966755180">Добавить порт</translation>
 <translation id="1026822031284433028">Загрузить изображение</translation>
 <translation id="1026959648338730078">Windows Hello или внешний электронный ключ</translation>
@@ -1774,7 +1773,6 @@
 <translation id="2335111415680198280">{0,plural, =1{Закрыть # окно}one{Закрыть # окно}few{Закрыть # окна}many{Закрыть # окон}other{Закрыть # окна}}</translation>
 <translation id="2336228925368920074">Добавить все вкладки в закладки…</translation>
 <translation id="2336381494582898602">Powerwash</translation>
-<translation id="2337236196941929873">Страницы, которые вы можете посетить, будут загружаться заранее. Для этого Chrome может использовать файлы cookie (если вы их разрешили), а также шифровать и отправлять страницы через Google, чтобы скрывать ваши идентификационные данные от сайтов.</translation>
 <translation id="2340239562261172947">Невозможно безопасно скачать файл "<ph name="FILE_NAME" />".</translation>
 <translation id="2342180549977909852">Ребенок может использовать PIN-код вместо пароля для разблокировки устройства. Установите его сейчас или позже в "Настройках".</translation>
 <translation id="2342740338116612727">Закладки добавлены</translation>
@@ -1867,6 +1865,7 @@
 <translation id="2412753904894530585">Kerberos</translation>
 <translation id="2414159296888870200">Продолжить просмотр: <ph name="MODULE_TITLE" /></translation>
 <translation id="2414886740292270097">Темная</translation>
+<translation id="2415117815770324983">Вы автоматически выйдете из аккаунтов на большинстве сайтов, но останетесь в аккаунте Google</translation>
 <translation id="2416435988630956212">Функциональные клавиши клавиатуры</translation>
 <translation id="2418307627282545839">Делает изображение на экране ярче.</translation>
 <translation id="2419131370336513030">Показать установленные приложения</translation>
@@ -2387,6 +2386,7 @@
 <translation id="2799223571221894425">Перезапустить</translation>
 <translation id="2800309299477632167">Пользовательская раскладка</translation>
 <translation id="2800760947029405028">Загрузить изображение</translation>
+<translation id="2801134910297796778">Вы вошли как <ph name="EMAIL" /></translation>
 <translation id="2801954693771979815">Масштаб изображения на экране</translation>
 <translation id="2802557211515765772">Нет управляемых принтеров.</translation>
 <translation id="2803313416453193357">Открыть папку.</translation>
@@ -3518,6 +3518,7 @@
 <translation id="372722114124766626">Один раз</translation>
 <translation id="3727332897090187514">Добавьте примечание</translation>
 <translation id="3727473233247516571">Субфрейм возвратного кеша: <ph name="BACK_FORWARD_CACHE_PAGE_URL" /></translation>
+<translation id="3727850735097852673">Чтобы использовать Google Менеджер паролей со Связкой ключей macOS, перезапустите Chrome и предоставьте доступ к Связке ключей. После перезапуска вкладки будут снова открыты.</translation>
 <translation id="3728188878314831180">Дублировать уведомления с вашего телефона</translation>
 <translation id="3728681439294129328">Настроить сетевой адрес</translation>
 <translation id="3729506734996624908">Разрешенные сайты</translation>
@@ -4033,6 +4034,7 @@
 <translation id="4110485659976215879">Восстановить предупреждение</translation>
 <translation id="4110490973560452005">Скачивание завершено: <ph name="FILE_NAME" />. Чтобы перейти к панели загрузок, нажмите Shift + F6.</translation>
 <translation id="4112194537011183136"><ph name="DEVICE_NAME" /> (офлайн)</translation>
+<translation id="4113483184628671608">Шифровать названия посещаемых сайтов</translation>
 <translation id="4113743276555482284">Пароль файла</translation>
 <translation id="4114524937989710624">Эти рекомендованные файлы помогут вам вернуться к действиям, которые вы недавно выполняли на Google Диске.
         <ph name="BREAK" />
@@ -5761,6 +5763,7 @@
 <translation id="5517304475148761050">Этому приложению необходим доступ к Play Маркету</translation>
 <translation id="5517412723934627386"><ph name="NETWORK_TYPE" /> – <ph name="NETWORK_DISPLAY_NAME" /></translation>
 <translation id="5518949581554491184">Настроить с помощью телефона Android</translation>
+<translation id="5519053700692355541">Большинство функций, расположенных на боковой панели, также доступы в меню Google Chrome в правом верхнем углу окна</translation>
 <translation id="5519195206574732858">LTE</translation>
 <translation id="5519900055135507385">Защитите свои данные с помощью надежного пароля. Он будет сохранен для аккаунта <ph name="EMAIL" /> здесь: <ph name="GOOGLE_PASSWORD_MANAGER" />.</translation>
 <translation id="5521078259930077036">Другая главная страница?</translation>
@@ -5906,7 +5909,6 @@
 <translation id="5636012309446422">Удалить устройство "<ph name="DEVICE" />" из аккаунта <ph name="PRIMARY_EMAIL" />?</translation>
 <translation id="5636996382092289526">Чтобы подключиться к сети "<ph name="NETWORK_ID" />", <ph name="LINK_START" />перейдите на страницу входа<ph name="LINK_END" /> – она автоматически откроется через несколько секунд. Если этого не произойдет, значит использование сети невозможно.</translation>
 <translation id="5637476008227280525">Включить мобильные данные</translation>
-<translation id="563811590465749036">Чтобы использовать Google Менеджер паролей со Связкой ключей macOS, перезапустите Chrome и предоставьте доступ к Связке ключей. После перезапуска вкладки будут снова открыты.</translation>
 <translation id="563821631542362636">Разрешить сайту сохранять данные</translation>
 <translation id="5638309510554459422">Найдите полезные расширения и приложения в <ph name="BEGIN_LINK" />Интернет-магазине Chrome<ph name="END_LINK" /></translation>
 <translation id="5639549361331209298">Обновить страницу (удерживайте, чтобы отобразить дополнительные параметры)</translation>
@@ -6138,7 +6140,6 @@
 <translation id="583431638776747">Сайт недоступен</translation>
 <translation id="5834581999798853053">Осталось <ph name="TIME" /> мин.</translation>
 <translation id="5835360478055379192">{NUM_EXTENSION,plural, =1{У расширения "<ph name="EXTENSION1" />" есть доступ к HID-устройствам.}=2{Расширения с доступом к устройствам: <ph name="EXTENSION1" />, <ph name="EXTENSION2" />.}one{Расширения с доступом к устройствам: <ph name="EXTENSION1" />, <ph name="EXTENSION2" /> и ещё {3}.}few{Расширения с доступом к устройствам: <ph name="EXTENSION1" />, <ph name="EXTENSION2" /> и ещё {3}.}many{Расширения с доступом к устройствам: <ph name="EXTENSION1" />, <ph name="EXTENSION2" /> и ещё {3}.}other{Расширения с доступом к устройствам: <ph name="EXTENSION1" />, <ph name="EXTENSION2" /> и ещё {3}.}}</translation>
-<translation id="5835486486592033703"><ph name="WINDOW_TITLE" />: идет запись с камеры или микрофона</translation>
 <translation id="583673505367439042">Разрешить сайтам отправлять запрос на редактирование файлов или папок на устройстве</translation>
 <translation id="5836999627049108525">Исходный язык</translation>
 <translation id="583756221537636748">Чехол</translation>
@@ -6723,6 +6724,7 @@
 <translation id="6294759976468837022">Скорость автосканирования</translation>
 <translation id="6295158916970320988">Все сайты</translation>
 <translation id="6295855836753816081">Сохранение...</translation>
+<translation id="6298456705131259420">Настройки распространяются на перечисленные здесь сайты. Чтобы создать исключение для целого домена, введите "[*.]" перед его именем. Например, если вы добавите "[*.]google.com", сторонние файлы cookie будут также разрешены для сайта mail.google.com, так как он относится к домену google.com.</translation>
 <translation id="6298962879096096191">Использование Google Play для установки приложений Android</translation>
 <translation id="6300177430812514606">Запретить сайтам завершать отправку и получение данных</translation>
 <translation id="6300654006256345126">Изменить пароль</translation>
@@ -7150,6 +7152,7 @@
 <translation id="6651762277693024112">Разрешать доступ автоматически каждый раз при посещении этого сайта</translation>
 <translation id="665355505818177700">Интеграция Chrome <ph name="MS_AD_NAME" /> доступна только на платформах x86-64. Устройства Chromebook, разработанные на базе ARM или платформе x86, не поддерживают эту функцию.</translation>
 <translation id="6654509035557065241">Выбрать предпочитаемую сеть</translation>
+<translation id="6654987855337442937">Указывайте защищенные DNS-серверы, чтобы те, у кого есть доступ к вашему интернет-трафику, не видели, какие сайты вы посещаете.</translation>
 <translation id="6655190889273724601">Режим разработчика</translation>
 <translation id="6655458902729017087">Скрыть аккаунты</translation>
 <translation id="6657180931610302174">Добавить имя пользователя?</translation>
@@ -9547,6 +9550,7 @@
 <translation id="8528074251912154910">Добавить языки</translation>
 <translation id="8528479410903501741">Сохранить код IBAN</translation>
 <translation id="8528962588711550376">Выполняется вход.</translation>
+<translation id="8529578450330869579">Указывайте защищенные DNS-серверы, чтобы те, у кого есть доступ к вашему интернет-трафику, не видели, какие сайты вы посещаете. Будет использоваться управляемый поставщик услуг: <ph name="DNS_SERVER_TEMPLATE_WITH_IDENTIFIER" />.</translation>
 <translation id="8529925957403338845">Нет подключения к мгновенной точке доступа</translation>
 <translation id="8531701051932785007">Улучшенный Безопасный просмотр отключен</translation>
 <translation id="8533670235862049797">Включен</translation>

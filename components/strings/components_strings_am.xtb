@@ -87,6 +87,7 @@
 <translation id="11635448457105324">የአድራሻዎች አዝራርን ያስተዳድሩ፣ በChrome ቅንብሮች ውስጥ አድራሻዎችን ለማከል እና ለማስተዳደር ያግብሩ</translation>
 <translation id="1165039591588034296">ስህተት</translation>
 <translation id="1165174597379888365">ገፅ ተጎብኝቷል</translation>
+<translation id="1165813024716836071">{COUNT,plural, =0{ምንም}=1{ከ1 ጣቢያ (ወደ Google መለያዎ እንደገቡ ይቆያሉ)}one{ከ # ጣቢያዎች (ወደ Google መለያዎ እንደገቡ ይቆያሉ)}other{ከ # ጣቢያዎች (ወደ Google መለያዎ እንደገቡ ይቆያሉ)}}</translation>
 <translation id="1165852471352757509">የቲቪ ዘጋቢ ፊልም እና ልብ ወለድ ያልሆኑ</translation>
 <translation id="1174644974616730562">#1 የቻይና ፖስታ</translation>
 <translation id="1174723505405632867"><ph name="EMBEDDED_URL" /> ኩኪዎችን እና የጣቢያ ውሂብን በ<ph name="TOP_LEVEL_URL" /> ላይ መጠቀም እንዲችል መፍቀድ ይፈልጋሉ?
@@ -3986,6 +3987,7 @@
 <translation id="8919895429178014996">ሁሉንም ንጥሎች ደብቅ</translation>
 <translation id="8922013791253848639">ሁልጊዜ በዚህ ጣቢያ ላይ ማስታወቂያዎችን አሳይ</translation>
 <translation id="892588693504540538">ከላይ ቀኝ በኩል ብሳ</translation>
+<translation id="8926389886865778422">ደግመው አይጠይቁ</translation>
 <translation id="8930330541574156305">ሪል እስቴት</translation>
 <translation id="8932102934695377596">የእርስዎ ሰዓት ወደ ኋላ ቀርቷል</translation>
 <translation id="893332455753468063">ስም ያክሉ</translation>

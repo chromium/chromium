@@ -913,7 +913,6 @@ Handoff треба да се омогући у одељку General (Опште)
 <translation id="5857770089550859117">За почетак синхронизације потребна је приступна фраза.</translation>
 <translation id="5859715514067755465">Напред</translation>
 <translation id="5860033963881614850">Искључено</translation>
-<translation id="5869029295770560994">Важи</translation>
 <translation id="5871497086027727873">1 ставка је премештена</translation>
 <translation id="5896576662943111387">Направљено за iOS</translation>
 <translation id="5897749768294722429">Да бисте се брзо вратили на сајтове које сте посетили, синхронизујте картице и историју.</translation>
@@ -930,7 +929,6 @@ Handoff треба да се омогући у одељку General (Опште)
 <translation id="595769230373966252">Претражите помоћу: <ph name="SEARCH_PROVIDER" /></translation>
 <translation id="5962718611393537961">Додирните да бисте скупили</translation>
 <translation id="5963939892571022323">A link to the highlight can not be created (Прављење линка до истакнутог текста није успело).</translation>
-<translation id="5965679971710331625">Пријављени сте</translation>
 <translation id="5971872012779224351">{count,plural, =1{1 обележивач је избрисан}one{{count} обележивач је избрисан}few{{count} обележивача су избрисана}other{{count} обележивача је избрисано}}</translation>
 <translation id="5979837087407522202">Претражите лозинке</translation>
 <translation id="5981230843984570095">Затвори све неактивне</translation>

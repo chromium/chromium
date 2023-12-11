@@ -16,6 +16,7 @@
 <translation id="1513122820609681462">Angiv Chromium som standardbrowser</translation>
 <translation id="1531155317299575425">Viser anmodninger om at logge ind i Chromium.</translation>
 <translation id="1591119736686995611">Åbner fanegitteret i Chromium.</translation>
+<translation id="1611584326765829247">Få hjælp af Chromium til at spore dine pakker</translation>
 <translation id="1617663976202781617">Data fra Chromium Sync</translation>
 <translation id="1647558790457890304">Chromium-indstillinger</translation>
 <translation id="164952285225495380">Denne pakke er allerede blevet sporet i Chromium.</translation>
@@ -53,7 +54,6 @@
 <translation id="2784449251446768092">Administrer indstillinger for Chromium</translation>
 <translation id="2798503587425057129">Åbner Chromium-læselisten.</translation>
 <translation id="2843571538056574338">Brug Chromium til Autofyld</translation>
-<translation id="2915596697727466327">Chromium bruger Face ID til at sikre autoriseret adgang til dine adgangskoder.</translation>
 <translation id="2918709798697875261">Din organisation kræver, at du forbliver logget ud af Chromium.</translation>
 <translation id="2942241131342758843">Brug som standard Chromium til at åbne links, søge efter widgets og udfylde adgangskoder automatisk i andre apps</translation>
 <translation id="2977470724722393594">Chromium er opdateret</translation>
@@ -175,7 +175,6 @@ Kun personer med din adgangssætning kan læse dine krypterede data. Adgangssæt
 <translation id="7165402419892018581">Vælg Chromium for Autofyld</translation>
 <translation id="7175400662502680481">Din adgangskode er blevet offentliggjort i forbindelse med et brud på datasikkerheden. Adgangskodeadministrator anbefaler, at du ændrer det nu.</translation>
 <translation id="7192111075364461693">Chromium-notifikationer er i øjeblikket deaktiveret i enhedsindstillingerne.</translation>
-<translation id="7208566199746267865">Med Chromium sparer du tid ved at gøre alle dine konti tilgængelige online. Du kan tilføje eller fjerne konti under Indstillinger.</translation>
 <translation id="725427773388857052">Chromium kan hjælpe med at beskytte dig mod brud på datasikkerheden, usikre websites og meget mere.</translation>
 <translation id="7269362888766543920">Nogle tilføjelser får Chromium til at gå ned. Prøv at afinstallere dem.</translation>
 <translation id="7285031092584344905">Få adgang til dine Chromium-adgangskoder og meget mere i andre apps.</translation>

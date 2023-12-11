@@ -70,7 +70,6 @@ Aspetos a considerar:
 <translation id="309672519329227863">Aceda às suas palavras-passe do Chrome e muito mais noutras apps.</translation>
 <translation id="3167189358072330585">A sua conta não funciona no Google Chrome. Contacte o gestor do domínio ou utilize uma Conta Google normal para iniciar sessão.</translation>
 <translation id="3173834708294760622">Página do Google Chrome</translation>
-<translation id="3196546062792660320">O Chrome poupa o seu tempo ao trazer as suas contas para a Web. Pode adicionar ou remover contas nas Definições.</translation>
 <translation id="322254490661677575">Para usar e guardar dados do Chrome na sua Conta Google, introduza a frase de acesso.</translation>
 <translation id="3282568296779691940">Iniciar sessão no Chrome</translation>
 <translation id="3345341804167540816">Usar o Chrome em todas as plataformas</translation>
@@ -170,7 +169,6 @@ Só alguém com a sua frase de acesso pode ler os dados encriptados. A Google n�
 <translation id="7124339256045485976">Mantenha o Chrome atualizado.</translation>
 <translation id="7161390184744336561">O Google Chrome está desatualizado.</translation>
 <translation id="7165736900384873061">Começar a utilizar o leitor de QR do Google Chrome</translation>
-<translation id="7173660919484573146">O Chrome utiliza o Face ID para assegurar o acesso autorizado às suas palavras-passe.</translation>
 <translation id="7187993566681480880">Mantém a sua segurança no Chrome e pode ser utilizada para melhorar a sua segurança noutras apps Google quando tem sessão iniciada.</translation>
 <translation id="7200524487407690471">O Chrome executa automaticamente a verificação de segurança todos os dias para lhe oferecer proteção contra violações de dados, Websites inseguros e muito mais. Pode encontrar mais informações sobre a verificação de segurança nas Definições.</translation>
 <translation id="72119412072970160">Pode utilizar as palavras-passe que guardou no Gestor de palavras-passe da Google noutras apps no seu iPad.</translation>
@@ -190,6 +188,7 @@ Só alguém com a sua frase de acesso pode ler os dados encriptados. A Google n�
 <translation id="7698568245838009292">O Chrome quer aceder à câmara</translation>
 <translation id="7754633291442704733">A sua organização <ph name="DOMAIN" /> vai ter acesso aos seus dados do Chrome, marcadores, histórico, palavras-passe e outras definições que armazenar nesta conta. Quando terminar sessão, os dados são limpos deste dispositivo.  No entanto, os dados permanecem armazenados na sua Conta Google gerida e ficam disponíveis para a sua organização. A sua organização também pode definir Políticas do Utilizador específicas para essa conta que podem alterar o comportamento do Chrome.</translation>
 <translation id="7780154209050837198">Para tirar o máximo partido do Chrome, inicie sessão no mesmo com a sua Conta Google.</translation>
+<translation id="7792140019572081272">O Chrome mantém os seus dados confidenciais seguros com o Face ID.</translation>
 <translation id="7855730255114109580">O Google Chrome está atualizado</translation>
 <translation id="7897703007638178753">Veja os separadores recentes do Chrome</translation>
 <translation id="7925119591961387184">Selecione "Chrome".</translation>

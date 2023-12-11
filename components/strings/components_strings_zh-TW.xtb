@@ -1218,6 +1218,7 @@
 <translation id="3432601291244612633">關閉頁面</translation>
 <translation id="3433111389595862568">協作和會議通訊軟體</translation>
 <translation id="3433144818443565002">語音及視訊通訊</translation>
+<translation id="3434025015623587566">Google 密碼管理工具需要更多存取權</translation>
 <translation id="343474037147570563">你上傳或附加的檔案會傳送到 Google Cloud 或第三方進行分析。舉例來說，Google Cloud 或第三方可能會掃描檔案，檢查是否含有敏感資料或惡意軟體，也可能會依據公司政策儲存這些檔案，並通知系統管理員查看。</translation>
 <translation id="3435557549311968410">連續 (短邊)</translation>
 <translation id="3435738964857648380">安全性</translation>
@@ -1967,6 +1968,7 @@
 <translation id="4918221908152712722">安裝「<ph name="APP_NAME" />」(無須下載)</translation>
 <translation id="4920457992177678649">度假民宿與短期住宿</translation>
 <translation id="4920710383559189047">套筒</translation>
+<translation id="4922104989726031751">如要在作業系統上使用 Google 密碼管理工具，請重新啟動 Chromium，並允許存取電腦的密碼管理工具。分頁會在重新啟動之後再次開啟。</translation>
 <translation id="4923459931733593730">付款</translation>
 <translation id="4926049483395192435">必須指定。</translation>
 <translation id="4926159001844873046"><ph name="SITE" /> 顯示</translation>
@@ -2607,6 +2609,7 @@
 <translation id="6234122620015464377">完成每份文件後裁切</translation>
 <translation id="6236290670123303279">管理設定</translation>
 <translation id="6240447795304464094">Google Pay 標誌</translation>
+<translation id="6240964651812394252">如要在作業系統上使用 Google 密碼管理工具，請重新啟動 Chrome，並允許存取電腦的密碼管理工具。分頁會在重新啟動之後再次開啟。</translation>
 <translation id="6241121617266208201">隱藏建議項目</translation>
 <translation id="624499991300733384">列印合成器服務</translation>
 <translation id="6251906504834538140">{0,plural, =1{禁止移動這個檔案}other{禁止移動這 <ph name="FILE_COUNT" /> 個檔案}}</translation>
@@ -2617,6 +2620,7 @@
 <translation id="6263376278284652872"><ph name="DOMAIN" /> 書籤</translation>
 <translation id="6264376385120300461">仍要下載</translation>
 <translation id="6264485186158353794">返回安全網頁</translation>
+<translation id="6264636978858465832">密碼管理工具需要更多存取權</translation>
 <translation id="6265794661083428563">複製 <ph name="POLICY_NAME" /> 政策的值</translation>
 <translation id="6266934640124581640">淺藍綠色</translation>
 <translation id="6270066318535733958">泛舟遊艇</translation>
@@ -3986,6 +3990,7 @@
 <translation id="8919895429178014996">隱藏所有項目</translation>
 <translation id="8922013791253848639">一律允許在這個網站中顯示廣告</translation>
 <translation id="892588693504540538">打孔 (右上方)</translation>
+<translation id="8926389886865778422">不再詢問這個問題</translation>
 <translation id="8930330541574156305">房地產</translation>
 <translation id="8932102934695377596">你的時鐘時間過慢</translation>
 <translation id="893332455753468063">新增名稱</translation>

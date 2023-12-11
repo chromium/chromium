@@ -625,6 +625,7 @@ Pääset alkuun esimerkiksi näillä tavoilla.</translation>
 <translation id="3593646411856133110">Näet avoimet sovellukset pyyhkäisemällä ylös ja painamalla pitkään</translation>
 <translation id="3595596368722241419">Akku täynnä</translation>
 <translation id="3596012367874587041">Sovellusasetukset</translation>
+<translation id="3598452309062311481">haku + h</translation>
 <translation id="3600061223661453002">Pois</translation>
 <translation id="3604801046548457007">Työpöytä <ph name="DESK_TITILE" /> luotu</translation>
 <translation id="3606978283550408104">Pistekirjoitusnäyttö on yhdistetty.</translation>
@@ -776,6 +777,7 @@ Joitakin ominaisuuksia on rajoitettu akunkeston parantamiseksi.</translation>
 <translation id="4190780880566297084">Hylkää puhelimen viimeaikaisten kuvien, median ja sovellusten katselun käyttöönotto</translation>
 <translation id="4192112279662688596">tai</translation>
 <translation id="4193857202545160520">Näytä klikkaukset ja pikanäppäimet</translation>
+<translation id="4193969623755915875">Avaa Ohje Explore-sovelluksessa painamalla "<ph name="NEW_SHORTCUT" />".</translation>
 <translation id="4195579532193195633">Nykyinen versio <ph name="VERSION_NAME" /> (<ph name="OFFICIAL_STATUS" />) <ph name="CHANNEL_NAME" /> <ph name="PROCESSOR_VARIATION" /></translation>
 <translation id="4195814663415092787">Jatka siitä, mihin jäit</translation>
 <translation id="4195877955194704651">Automaattinen klikkaus ‑painike</translation>
@@ -958,6 +960,7 @@ Joitakin ominaisuuksia on rajoitettu akunkeston parantamiseksi.</translation>
 <translation id="4889868803215848840">Anna valinnaista palautetta ehdotusten parantamiseksi:</translation>
 <translation id="4890187583552566966">Järjestelmänvalvoja on poistanut Google Assistantin käytöstä.</translation>
 <translation id="4890408602550914571">Varmista, että puhelin on lähellä ja sen Bluetooth on päällä.</translation>
+<translation id="4892981359753171125">Kasvoilla ohjaaminen</translation>
 <translation id="4895488851634969361">Akku on täynnä.</translation>
 <translation id="490375751687810070">Pystysuora</translation>
 <translation id="490788395437447240">Akku: <ph name="BATTERY_PERCENTAGE" /> %</translation>

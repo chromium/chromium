@@ -837,6 +837,7 @@ Chỉ những người có cụm mật khẩu mới đọc được dữ liệu 
 <translation id="5457226814769348910">Mở phiên bản ngoại tuyến</translation>
 <translation id="5475069061743940393">Theo dõi gói hàng</translation>
 <translation id="5478327362747197944">Tạo trực tiếp Sự kiện trên lịch bằng cách nhấp vào một ngày trên trang web.</translation>
+<translation id="5482922178977937393">Bạn có muốn nhận thông báo về tin tức, thể thao và nhiều nội dung khác dựa trên mối quan tâm của mình không?</translation>
 <translation id="5489208564673669003">Để quản lý cookie cho tất cả trang web, hãy xem phần <ph name="BEGIN_LINK" />Cài đặt cookie<ph name="END_LINK" />.</translation>
 <translation id="5490005495580364134">Chặn tất cả cookie (Không khuyến nghị)</translation>
 <translation id="5497202150450073388">Đã cố gắng giao. Sẽ thử giao lại</translation>
@@ -912,7 +913,6 @@ Chỉ những người có cụm mật khẩu mới đọc được dữ liệu 
 <translation id="5857770089550859117">Yêu cầu cụm mật khẩu để bắt đầu đồng bộ hóa.</translation>
 <translation id="5859715514067755465">Tiếp theo</translation>
 <translation id="5860033963881614850">Tắt</translation>
-<translation id="5869029295770560994">OK</translation>
 <translation id="5871497086027727873">1 dấu trang đã được di chuyển</translation>
 <translation id="5896576662943111387">Thiết kế cho iOS</translation>
 <translation id="5897749768294722429">Để nhanh chóng quay lại các trang web bạn đã truy cập, hãy đồng bộ hoá các thẻ và nhật ký.</translation>
@@ -929,7 +929,6 @@ Chỉ những người có cụm mật khẩu mới đọc được dữ liệu 
 <translation id="595769230373966252">Tìm kiếm bằng <ph name="SEARCH_PROVIDER" /></translation>
 <translation id="5962718611393537961">Nhấn để thu gọn</translation>
 <translation id="5963939892571022323">Không thể tạo một đường liên kết đến văn bản được làm nổi bật.</translation>
-<translation id="5965679971710331625">Bạn đã đăng nhập</translation>
 <translation id="5971872012779224351">{count,plural, =1{Đã xoá 1 dấu trang}other{Đã xoá {count} dấu trang}}</translation>
 <translation id="5979837087407522202">Tìm mật khẩu</translation>
 <translation id="5981230843984570095">Đóng tất cả các thẻ không hoạt động</translation>
@@ -1478,6 +1477,7 @@ Dữ liệu của bạn đã được mã hoá bằng cụm mật khẩu vào <p
 <translation id="8766790350274092814">Mật khẩu của <ph name="WEBSITE" /> và <ph name="SECOND_WEBSITE" /> sẽ bị xoá. Các tài khoản của bạn sẽ không bị xoá.</translation>
 <translation id="8775144690796719618">URL không hợp lệ</translation>
 <translation id="8780076847684176174">{count,plural, =1{Xem thẻ...}other{Xem tất cả các thẻ...}}</translation>
+<translation id="8782570580170191813">Luôn theo dõi gói hàng</translation>
 <translation id="8787968206789828143">Tìm trên web</translation>
 <translation id="8792626944327216835">micrô</translation>
 <translation id="8803639129939845298">Bảo mật</translation>

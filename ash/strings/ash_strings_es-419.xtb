@@ -625,6 +625,7 @@ Estas son algunas de las cosas que puedes probar para comenzar.</translation>
 <translation id="3593646411856133110">Desliza hacia arriba y mantén presionado para ver las apps abiertas</translation>
 <translation id="3595596368722241419">Batería completa</translation>
 <translation id="3596012367874587041">Configuración de la app</translation>
+<translation id="3598452309062311481">búsqueda + h</translation>
 <translation id="3600061223661453002">No</translation>
 <translation id="3604801046548457007">Se creó el escritorio <ph name="DESK_TITILE" /></translation>
 <translation id="3606978283550408104">Dispositivo braille conectado</translation>
@@ -777,6 +778,7 @@ Algunas funciones están limitadas para aumentar la duración de la batería.</t
 <translation id="4190780880566297084">Descartar la configuración de la visualización de las fotos, el contenido multimedia y las apps recientes de tu teléfono</translation>
 <translation id="4192112279662688596">O bien</translation>
 <translation id="4193857202545160520">Mostrar los clics y las claves</translation>
+<translation id="4193969623755915875">Abre "Ayuda" en la app Explorar con "<ph name="NEW_SHORTCUT" />".</translation>
 <translation id="4195579532193195633">Versión actual <ph name="VERSION_NAME" /> (<ph name="OFFICIAL_STATUS" />) <ph name="CHANNEL_NAME" /> <ph name="PROCESSOR_VARIATION" /></translation>
 <translation id="4195814663415092787">Continuar la sesión desde donde la dejaste</translation>
 <translation id="4195877955194704651">Botón de clic automáticos</translation>
@@ -959,6 +961,7 @@ Algunas funciones están limitadas para aumentar la duración de la batería.</t
 <translation id="4889868803215848840">Envía comentarios opcionales para mejorar las sugerencias:</translation>
 <translation id="4890187583552566966">Tu administrador inhabilitó el Asistente de Google.</translation>
 <translation id="4890408602550914571">Asegúrate de que el teléfono esté cerca y tenga la conexión Bluetooth activada.</translation>
+<translation id="4892981359753171125">Control facial</translation>
 <translation id="4895488851634969361">La batería está completa.</translation>
 <translation id="490375751687810070">Vertical</translation>
 <translation id="490788395437447240">Batería: <ph name="BATTERY_PERCENTAGE" />%</translation>

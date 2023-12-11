@@ -625,6 +625,7 @@ Pro začátek můžete vyzkoušet třeba tohle.</translation>
 <translation id="3593646411856133110">Přejetím nahoru a podržením zobrazíte otevřené aplikace</translation>
 <translation id="3595596368722241419">Baterie je nabitá</translation>
 <translation id="3596012367874587041">Nastavení aplikace</translation>
+<translation id="3598452309062311481">hledat + h</translation>
 <translation id="3600061223661453002">Vypnuto</translation>
 <translation id="3604801046548457007">Byla vytvořena plocha <ph name="DESK_TITILE" /></translation>
 <translation id="3606978283550408104">Je připojen hmatový displej.</translation>
@@ -776,6 +777,7 @@ Některé funkce jsou za účelem prodloužení výdrže baterie omezeny.</trans
 <translation id="4190780880566297084">Zavřít nastavení zobrazování nedávných fotek, médií a aplikací z telefonu</translation>
 <translation id="4192112279662688596">nebo</translation>
 <translation id="4193857202545160520">Zobrazit kliknutí a klíče</translation>
+<translation id="4193969623755915875">Nápovědu v aplikaci Explore otevřete zkratkou <ph name="NEW_SHORTCUT" />.</translation>
 <translation id="4195579532193195633">Aktuální verze <ph name="VERSION_NAME" /> (<ph name="OFFICIAL_STATUS" />) <ph name="CHANNEL_NAME" /> <ph name="PROCESSOR_VARIATION" /></translation>
 <translation id="4195814663415092787">Pokračovat tam, kde jste přestali</translation>
 <translation id="4195877955194704651">Tlačítko automatických kliknutí</translation>
@@ -958,6 +960,7 @@ Některé funkce jsou za účelem prodloužení výdrže baterie omezeny.</trans
 <translation id="4889868803215848840">Poskytněte dobrovolnou zpětnou vazbu za účelem vylepšení návrhů:</translation>
 <translation id="4890187583552566966">Váš administrátor Asistenta Google zakázal.</translation>
 <translation id="4890408602550914571">Zkontrolujte, zda je telefon poblíž a je na něm zapnuté rozhraní Bluetooth.</translation>
+<translation id="4892981359753171125">Ovládání obličejem</translation>
 <translation id="4895488851634969361">Baterie je plně nabita.</translation>
 <translation id="490375751687810070">Na výšku</translation>
 <translation id="490788395437447240"><ph name="BATTERY_PERCENTAGE" /> % baterie</translation>

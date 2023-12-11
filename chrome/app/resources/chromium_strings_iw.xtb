@@ -72,6 +72,7 @@
 <translation id="2329088755516916767">‏כשההגדרה מופעלת, Chromium טוען מראש דפים וכך ניתן לגלוש ולחפש מהר יותר.</translation>
 <translation id="2343156876103232566">‏כדי לשלוח מספר מכאן לטלפון Android, יש להיכנס ל-Chromium בשני המכשירים.</translation>
 <translation id="2359808026110333948">המשך</translation>
+<translation id="2359920621792549529">‏כדי לנקות את נתוני הגלישה מהמכשיר הזה בלבד ועדיין לשמור אותם בחשבון Google שלך, <ph name="BEGIN_LINK" />עליך לצאת מהחשבון ב-Chromium<ph name="END_LINK" />.</translation>
 <translation id="2384373936468275798">‏לא בוצע סנכרון של הנתונים שלך ב-ChromiumOS כי פרטי הכניסה לחשבון לא מעודכנים.</translation>
 <translation id="2398377054246527950">{NUM_DEVICES,plural, =0{‏תוסף אחד לפחות ל-Chromium ניגש למכשיר ממשק אנושי (HID) אחד}=1{‏תוסף אחד לפחות ל-Chromium ניגש למכשיר ממשק אנושי (HID) אחד}one{‏תוסף אחד לפחות ל-Chromium ניגש ל-# מכשירי ממשק אנושי (HID)}two{‏תוסף אחד לפחות ל-Chromium ניגש ל-# מכשירי ממשק אנושי (HID)}other{‏תוסף אחד לפחות ל-Chromium ניגש ל-# מכשירי ממשק אנושי (HID)}}</translation>
 <translation id="2401032172288869980">‏נדרשות הרשאות גישה למצלמה ולמיקרופון ב-Chromium עבור האתר הזה</translation>

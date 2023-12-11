@@ -15,6 +15,7 @@
 <translation id="1507010443238049608">Pomozite nam da poboljšamo Chromium-ove funkcije i učinak</translation>
 <translation id="1513122820609681462">Postavi Chromium kao podrazumevani pregledač</translation>
 <translation id="1531155317299575425">Prikazuje upite za prijavljivanje u Chromium.</translation>
+<translation id="159029779861043703">Chromium štiti osetljive podatke pomoću Face ID-a.</translation>
 <translation id="1591119736686995611">Otvara mrežu Chromium kartica.</translation>
 <translation id="1611584326765829247">Dozvolite Chromium-u da vam pomogne da pratite pakete</translation>
 <translation id="1617663976202781617">Podaci iz Chromium sinhronizacije</translation>
@@ -54,7 +55,6 @@
 <translation id="2784449251446768092">Upravljajte podešavanjima Chromium-a</translation>
 <translation id="2798503587425057129">Otvara Chromium listu za čitanje.</translation>
 <translation id="2843571538056574338">Koristite Chromium za automatsko popunjavanje</translation>
-<translation id="2915596697727466327">Chromium koristi Face ID da bi lozinkama mogle da pristupaju samo ovlašćene osobe.</translation>
 <translation id="2918709798697875261">Organizacija zahteva da ostanete odjavljeni sa Chromium-a.</translation>
 <translation id="2942241131342758843">Podrazumevano koristite Chromium da biste otvarali linkove, pretraživali iz vidžeta i automatski popunjavali lozinke u drugim aplikacijama</translation>
 <translation id="2977470724722393594">Chromium je ažuriran</translation>
@@ -176,7 +176,6 @@ Samo neko ko ima pristupnu frazu može da čita šifrovane podatke. Pristupna fr
 <translation id="7165402419892018581">Odaberite Chromium za automatsko popunjavanje</translation>
 <translation id="7175400662502680481">Vaša lozinka je otkrivena pri upadu u podatke. Menadžer lozinki preporučuje da je odmah promenite.</translation>
 <translation id="7192111075364461693">Chromium obaveštenja su trenutno isključena u podešavanjima uređaja.</translation>
-<translation id="7208566199746267865">Chromium vam štedi vreme tako što postavlja naloge na veb. Možete da dodajete ili uklanjate naloge u podešavanjima.</translation>
 <translation id="725427773388857052">Chromium može da vas štiti od upada u podatke, nebezbednih veb-sajtova i drugih stvari.</translation>
 <translation id="7269362888766543920">Neki programski dodaci izazivaju otkazivanje Chromium-a. Probajte da ih deinstalirate.</translation>
 <translation id="7285031092584344905">Pristupajte Chromium lozinkama i ostalim funkcijama u drugim aplikacijama.</translation>

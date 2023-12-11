@@ -913,7 +913,6 @@ Handoff باید در بخش عمومی تنظیمات نیز فعال شود و
 <translation id="5857770089550859117">برای شروع همگام‌سازی به گذرعبارت نیاز است.</translation>
 <translation id="5859715514067755465">بازارسال</translation>
 <translation id="5860033963881614850">خاموش</translation>
-<translation id="5869029295770560994">بله متوجه شدم</translation>
 <translation id="5871497086027727873">۱ مورد منتقل شد</translation>
 <translation id="5896576662943111387">‏ساخته‌شده برای iOS</translation>
 <translation id="5897749768294722429">برای برگشتن سریع به سایت‌هایی که بازدید کرده‌اید، برگه‌ها و سابقه را همگام‌سازی کنید.</translation>
@@ -930,7 +929,6 @@ Handoff باید در بخش عمومی تنظیمات نیز فعال شود و
 <translation id="595769230373966252">جستجو با <ph name="SEARCH_PROVIDER" /></translation>
 <translation id="5962718611393537961">برای کوچک کردن ضربه بزنید</translation>
 <translation id="5963939892571022323">نمی‌توان پیوندی به مورد برجسته ایجاد کرد.</translation>
-<translation id="5965679971710331625">در سیستم هستید</translation>
 <translation id="5971872012779224351">{count,plural, =1{یک نشانک حذف شد}one{{count} نشانک حذف شد}other{{count} نشانک حذف شد}}</translation>
 <translation id="5979837087407522202">جستجوی گذرواژه‌ها</translation>
 <translation id="5981230843984570095">بستن همه برگه‌های غیرفعال</translation>
@@ -1479,6 +1477,7 @@ Handoff باید در بخش عمومی تنظیمات نیز فعال شود و
 <translation id="8766790350274092814">گذرواژه‌های <ph name="WEBSITE" /> و <ph name="SECOND_WEBSITE" /> حذف خواهد شد. حساب‌هایتان حذف نخواهد شد.</translation>
 <translation id="8775144690796719618">نشانی وب نامعتبر</translation>
 <translation id="8780076847684176174">{count,plural, =1{مرور برگه…}one{مرور برگه…}other{مرور همه برگه‌ها…}}</translation>
+<translation id="8782570580170191813">همیشه بسته‌ها ردیابی شود</translation>
 <translation id="8787968206789828143">جستجو در وب</translation>
 <translation id="8792626944327216835">میکروفون</translation>
 <translation id="8803639129939845298">ایمن</translation>

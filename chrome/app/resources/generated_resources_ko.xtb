@@ -31,7 +31,6 @@
 <translation id="1018656279737460067">취소됨</translation>
 <translation id="1022522674678746124">PowerPoint</translation>
 <translation id="1022669824195822609"><ph name="DOMAIN" />에서 관리하는 기기입니다. 관리자는 기기에 등록된 모든 프로필의 데이터에 액세스할 수 있습니다.</translation>
-<translation id="1024734233509995696">이 탭은 카메라 또는 마이크를 사용 중입니다</translation>
 <translation id="1026655690966755180">포트 추가</translation>
 <translation id="1026822031284433028">이미지 로드</translation>
 <translation id="1026959648338730078">Windows Hello 또는 외부 보안 키</translation>
@@ -1789,7 +1788,6 @@
 <translation id="2335111415680198280">{0,plural, =1{창 #개 닫기}other{창 #개 닫기}}</translation>
 <translation id="2336228925368920074">모든 탭 북마크...</translation>
 <translation id="2336381494582898602">파워워시</translation>
-<translation id="2337236196941929873">Chrome에서 사용자가 방문할 가능성이 크다고 생각하는 페이지를 미리 로드합니다. 이를 위해 사용자가 허용한 경우 Chrome에서 쿠키를 사용할 수 있으며, 사이트로부터 사용자의 신원을 보호하기 위해 Google을 통해 페이지를 암호화하여 전송할 수 있습니다.</translation>
 <translation id="2340239562261172947"><ph name="FILE_NAME" /> 파일은 안전하게 다운로드할 수 없습니다.</translation>
 <translation id="2342180549977909852">자녀가 비밀번호 대신 번호(PIN)를 사용해 이 기기를 잠금 해제할 수 있습니다. 나중에 PIN을 설정하려면 설정으로 이동하세요</translation>
 <translation id="2342740338116612727">북마크 추가됨</translation>
@@ -1882,6 +1880,7 @@
 <translation id="2412753904894530585">Kerberos</translation>
 <translation id="2414159296888870200"><ph name="MODULE_TITLE" /> 둘러보기 재개</translation>
 <translation id="2414886740292270097">어둡게</translation>
+<translation id="2415117815770324983">대부분의 사이트에서 로그아웃됩니다. Google 계정에 로그인된 상태가 유지됩니다.</translation>
 <translation id="2416435988630956212">키보드 기능 키</translation>
 <translation id="2418307627282545839">밝고 가벼운 느낌을 줍니다.</translation>
 <translation id="2419131370336513030">설치된 앱 보기</translation>
@@ -2402,6 +2401,7 @@
 <translation id="2799223571221894425">다시 시작</translation>
 <translation id="2800309299477632167">맞춤 키맵</translation>
 <translation id="2800760947029405028">이미지 업로드</translation>
+<translation id="2801134910297796778"><ph name="EMAIL" />에 로그인</translation>
 <translation id="2801954693771979815">화면 크기</translation>
 <translation id="2802557211515765772">관리되는 프린터가 없습니다.</translation>
 <translation id="2803313416453193357">폴더 열기</translation>
@@ -3533,6 +3533,7 @@
 <translation id="372722114124766626">한 번만</translation>
 <translation id="3727332897090187514">추가된 메모 없음</translation>
 <translation id="3727473233247516571">뒤로-앞으로 캐시 서브프레임: <ph name="BACK_FORWARD_CACHE_PAGE_URL" /></translation>
+<translation id="3727850735097852673">Google 비밀번호 관리자를 MacOS 키체인과 함께 사용하려면 Chrome을 다시 실행한 다음 키체인 액세스를 허용하세요. 탭을 다시 실행하면 탭이 다시 열립니다.</translation>
 <translation id="3728188878314831180">휴대전화 알림 미러링</translation>
 <translation id="3728681439294129328">네트워크 주소 구성</translation>
 <translation id="3729506734996624908">허용된 사이트</translation>
@@ -4046,6 +4047,7 @@
 <translation id="4110485659976215879">경고 다시 열기</translation>
 <translation id="4110490973560452005">다운로드 완료: <ph name="FILE_NAME" />. 다운로드바 영역으로 이동하려면 Shift+F6를 누르세요.</translation>
 <translation id="4112194537011183136"><ph name="DEVICE_NAME" />(오프라인)</translation>
+<translation id="4113483184628671608">방문하는 사이트 이름 암호화</translation>
 <translation id="4113743276555482284">파일 비밀번호</translation>
 <translation id="4114524937989710624">Google Drive에서 최근 활동으로 쉽게 돌아갈 수 있도록 표시된 추천 파일입니다.
         <ph name="BREAK" />
@@ -5775,6 +5777,7 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="5517304475148761050">Play 스토어 액세스가 필요한 앱입니다</translation>
 <translation id="5517412723934627386"><ph name="NETWORK_TYPE" /> - <ph name="NETWORK_DISPLAY_NAME" /></translation>
 <translation id="5518949581554491184">Android 휴대전화로 설정</translation>
+<translation id="5519053700692355541">오른쪽 상단의 Chrome 메뉴를 통해 대부분의 측면 패널 기능을 열 수 있습니다.</translation>
 <translation id="5519195206574732858">LTE</translation>
 <translation id="5519900055135507385">안전한 비밀번호로 이 계정의 보안을 유지하세요. 비밀번호는 <ph name="EMAIL" />의 <ph name="GOOGLE_PASSWORD_MANAGER" />에 저장됩니다.</translation>
 <translation id="5521078259930077036">설정한 홈페이지가 맞습니까?</translation>
@@ -5920,7 +5923,6 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="5636012309446422"><ph name="PRIMARY_EMAIL" />에서 <ph name="DEVICE" /> 기기를 삭제하시겠습니까?</translation>
 <translation id="5636996382092289526"><ph name="NETWORK_ID" />을(를) 사용하려면 먼저 몇 초 뒤에 자동으로 열리는 <ph name="LINK_START" />네트워크 로그인 페이지로 이동<ph name="LINK_END" />해야 합니다. 네트워크 로그인 페이지가 자동으로 열리지 않으면 네트워크를 사용할 수 없습니다.</translation>
 <translation id="5637476008227280525">모바일 데이터 사용</translation>
-<translation id="563811590465749036">Google 비밀번호 관리자를 MacOS 키체인과 함께 사용하려면 Chrome을 다시 실행한 다음 키체인 액세스를 허용하세요. 탭을 다시 실행하면 탭이 다시 열립니다.</translation>
 <translation id="563821631542362636">사이트에서 데이터를 저장하도록 허용</translation>
 <translation id="5638309510554459422"><ph name="BEGIN_LINK" />Chrome 웹 스토어<ph name="END_LINK" />에서 확장 프로그램과 테마를 찾아보세요</translation>
 <translation id="5639549361331209298">옵션을 더 보려면 이 페이지를 새로고친 다음 누르기</translation>
@@ -6152,7 +6154,6 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="583431638776747">사이트를 사용할 수 없음</translation>
 <translation id="5834581999798853053">약 <ph name="TIME" />분 남음</translation>
 <translation id="5835360478055379192">{NUM_EXTENSION,plural, =1{<ph name="EXTENSION1" />에서 HID 기기에 액세스하는 중}=2{<ph name="EXTENSION1" /> 및 <ph name="EXTENSION2" /> 확장 프로그램에서 기기에 액세스하는 중}other{<ph name="EXTENSION1" />, <ph name="EXTENSION2" /> 외 {3}개의 확장 프로그램에서 기기에 액세스하는 중}}</translation>
-<translation id="5835486486592033703"><ph name="WINDOW_TITLE" /> - 카메라 또는 마이크 녹음</translation>
 <translation id="583673505367439042">사이트에서 기기의 파일 및 폴더 수정을 요청할 수 있음</translation>
 <translation id="5836999627049108525">출발 언어</translation>
 <translation id="583756221537636748">케이스</translation>
@@ -6737,6 +6738,7 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="6294759976468837022">자동 스캔 속도</translation>
 <translation id="6295158916970320988">모든 사이트</translation>
 <translation id="6295855836753816081">저장 중...</translation>
+<translation id="6298456705131259420">여기에 표시된 사이트에 영향을 미칩니다. 도메인 이름 앞에 '[*.]'를 삽입하면 전체 도메인에 예외가 적용됩니다. 예를 들어 '[*.]google.com'을 추가하면 mail.google.com이 google.com의 일부이므로 서드 파티 쿠키도 활성화될 수 있습니다.</translation>
 <translation id="6298962879096096191">Google Play를 사용하여 Android 앱을 설치합니다.</translation>
 <translation id="6300177430812514606">데이터 전송 또는 수신 완료가 허용되지 않음</translation>
 <translation id="6300654006256345126">비밀번호 수정</translation>
@@ -7158,6 +7160,7 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="6651762277693024112">이 사이트를 방문할 때마다 자동으로 실행됩니다.</translation>
 <translation id="665355505818177700">Chrome <ph name="MS_AD_NAME" /> 통합은 x86_64 플랫폼에서만 지원됩니다. ARM 또는 x86 플랫폼에서 구축된 Chromebook은 이 기능을 지원하지 않습니다.</translation>
 <translation id="6654509035557065241">선호 네트워크 설정</translation>
+<translation id="6654987855337442937">보안 DNS(도메인 이름 시스템)를 사용하여 내 인터넷 트래픽에 액세스할 수 있는 사용자가 내가 방문하는 사이트를 볼 수 없도록 합니다.</translation>
 <translation id="6655190889273724601">개발자 모드</translation>
 <translation id="6655458902729017087">계정 숨기기</translation>
 <translation id="6657180931610302174">사용자 이름을 추가하시겠습니까?</translation>
@@ -9556,6 +9559,7 @@ https://support.google.com/chromebook/?p=sm</translation>
 <translation id="8528074251912154910">언어 추가</translation>
 <translation id="8528479410903501741">IBAN 저장</translation>
 <translation id="8528962588711550376">로그인 중입니다.</translation>
+<translation id="8529578450330869579">보안 DNS(도메인 이름 시스템)를 사용하여 내 인터넷 트래픽에 액세스할 수 있는 사용자가 내가 방문하는 사이트를 볼 수 없도록 합니다. DNS는 <ph name="DNS_SERVER_TEMPLATE_WITH_IDENTIFIER" />에서 관리형 서비스 제공업체를 사용합니다.</translation>
 <translation id="8529925957403338845">인스턴트 테더링 연결 실패</translation>
 <translation id="8531701051932785007">향상된 세이프 브라우징 사용 안함</translation>
 <translation id="8533670235862049797">세이프 브라우징 사용 설정됨</translation>

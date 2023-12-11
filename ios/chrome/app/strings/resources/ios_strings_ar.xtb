@@ -915,7 +915,6 @@
 <translation id="5857770089550859117">عبارة المرور مطلوبة لبدء المزامنة.</translation>
 <translation id="5859715514067755465">التالي</translation>
 <translation id="5860033963881614850">غير مفعّلة</translation>
-<translation id="5869029295770560994">حسنًا</translation>
 <translation id="5871497086027727873">تم نقل عنصر واحد</translation>
 <translation id="5896576662943111387">‏مُخصّص لنظام التشغيل iOS</translation>
 <translation id="5897749768294722429">يجب مزامنة علامات التبويب والسجلّ للانتقال بسرعة إلى المواقع الإلكترونية التي زرتها.</translation>
@@ -932,7 +931,6 @@
 <translation id="595769230373966252">البحث باستخدام "<ph name="SEARCH_PROVIDER" />"</translation>
 <translation id="5962718611393537961">النقر للتصغير</translation>
 <translation id="5963939892571022323">يتعذَّر إنشاء رابط يؤدي إلى النصوص التي تم تمييزها.</translation>
-<translation id="5965679971710331625">تم تسجيل الدخول</translation>
 <translation id="5971872012779224351">{count,plural, =1{تم حذف إشارة مرجعية واحدة.}zero{تم حذف {count} إشارة مرجعية.}two{تم حذف إشارتَين مرجعيتَين ({count}).}few{تم حذف {count} إشارات مرجعية.}many{تم حذف {count} إشارة مرجعية.}other{تم حذف {count} إشارة مرجعية.}}</translation>
 <translation id="5979837087407522202">البحث عن كلمات المرور</translation>
 <translation id="5981230843984570095">إغلاق جميع علامات التبويب غير النشطة</translation>
@@ -1481,6 +1479,7 @@
 <translation id="8766790350274092814">سيتم حذف كلمات المرور المحفوظة في <ph name="WEBSITE" /> و<ph name="SECOND_WEBSITE" />. لن يتم حذف حساباتك.</translation>
 <translation id="8775144690796719618">‏عنوان URL غير صالح</translation>
 <translation id="8780076847684176174">{count,plural, =1{مراجعة علامة التبويب…}zero{مراجعة جميع علامات التبويب…}two{مراجعة جميع علامات التبويب…}few{مراجعة جميع علامات التبويب…}many{مراجعة جميع علامات التبويب…}other{مراجعة جميع علامات التبويب…}}</translation>
+<translation id="8782570580170191813">تتبُّع الطرود دائمًا</translation>
 <translation id="8787968206789828143">البحث على الويب</translation>
 <translation id="8792626944327216835">الميكروفون</translation>
 <translation id="8803639129939845298">آمن</translation>

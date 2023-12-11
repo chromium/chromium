@@ -625,6 +625,7 @@
 <translation id="3593646411856133110">Σύρετε προς τα επάνω και κρατήστε το δάχτυλό σας για να δείτε τις ανοικτές εφαρμογές.</translation>
 <translation id="3595596368722241419">Μπαταρία πλήρης</translation>
 <translation id="3596012367874587041">Ρυθμίσεις εφαρμογής</translation>
+<translation id="3598452309062311481">Αναζήτηση + h</translation>
 <translation id="3600061223661453002">Ανενεργή</translation>
 <translation id="3604801046548457007">Δημιουργήθηκε επιφάνεια εργασίας <ph name="DESK_TITILE" /></translation>
 <translation id="3606978283550408104">Συνδέθηκε η οθόνη Braille.</translation>
@@ -776,6 +777,7 @@
 <translation id="4190780880566297084">Παράβλεψη ρύθμισης προβολής των πρόσφατων φωτογραφιών, μέσων και εφαρμογών του τηλεφώνου σας</translation>
 <translation id="4192112279662688596">Ή</translation>
 <translation id="4193857202545160520">Εμφάνιση κλικ και πλήκτρων</translation>
+<translation id="4193969623755915875">Ανοίξτε τη Βοήθεια στην εφαρμογή Εξερεύνηση με τη συντόμευση <ph name="NEW_SHORTCUT" />.</translation>
 <translation id="4195579532193195633">Τρέχουσα έκδοση <ph name="VERSION_NAME" /> (<ph name="OFFICIAL_STATUS" />) <ph name="CHANNEL_NAME" /> <ph name="PROCESSOR_VARIATION" /></translation>
 <translation id="4195814663415092787">Συνέχεια από εκεί που σταματήσατε</translation>
 <translation id="4195877955194704651">Κουμπί αυτόματων κλικ</translation>
@@ -958,6 +960,7 @@
 <translation id="4889868803215848840">Καταχωρίστε προαιρετικά σχόλια για βελτίωση των προτάσεων:</translation>
 <translation id="4890187583552566966">Ο Βοηθός Google είναι απενεργοποιημένος από τον διαχειριστή σας.</translation>
 <translation id="4890408602550914571">Βεβαιωθείτε ότι το τηλέφωνο βρίσκεται κοντά σας και ότι το Bluetooth είναι ενεργοποιημένο.</translation>
+<translation id="4892981359753171125">Έλεγχος προσώπου</translation>
 <translation id="4895488851634969361">Η μπαταρία είναι πλήρης.</translation>
 <translation id="490375751687810070">Κατακόρυφη περιστροφή</translation>
 <translation id="490788395437447240">Μπαταρία <ph name="BATTERY_PERCENTAGE" />%</translation>

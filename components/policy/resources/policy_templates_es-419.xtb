@@ -288,6 +288,7 @@ Si habilitas la política, los usuarios podrán usar el hardware de los disposit
 <translation id="1209096923317019235">Asignar apps como controladores predeterminados para las extensiones de archivo especificadas</translation>
 <translation id="120937472976628837">Envía información de los ventiladores</translation>
 <translation id="1212233008927724662">Inhabilitar la carga diferida de la WebUI de acceso</translation>
+<translation id="1214639335214075459">Habilitar la decodificación de video acelerada por hardware mediante GPU</translation>
 <translation id="1216919699175573511">Habilitar compatibilidad con intercambios HTTP firmados (SXG)</translation>
 <translation id="1219027971768347970">Utilizar la configuración predeterminada para la zona de pruebas de audio</translation>
 <translation id="1221359380862872747">Cargar las URL especificadas en el inicio de sesión del demo</translation>
@@ -1139,6 +1140,7 @@ Si la inhabilitas, <ph name="PRODUCT_NAME" /> cerrará la pestaña y, luego, cam
 <translation id="1916266055944569995">Si configuras la política, se definirá el valor que muestra la API Managed Configuration para un origen determinado.
 
       La API Managed Configuration es una configuración de pares clave-valor a la cual se puede acceder mediante la llamada de JavaScript navigator.managed.getManagedConfiguration(). Esta API solo está disponible para los orígenes que corresponden a las aplicaciones web que se instalaron de manera automática mediante <ph name="WEB_APP_INSTALL_FORCE_LIST_POLICY_NAME" />.</translation>
+<translation id="1918690415433353669">Permitir la organización de pestañas, sin registrar los detalles de la pestaña</translation>
 <translation id="1919802376548418720">Usa la política de KDC para delegar credenciales.</translation>
 <translation id="1920046221095339924">Permitir las sesiones administradas en el dispositivo</translation>
 <translation id="1920772397574801429">Si estableces esta política, se especificará el tipo de cuentas que proporciona la app de autenticación de Android compatible con la autenticación <ph name="HTTP_NEGOTIATE" /> (como la autenticación Kerberos). El proveedor de la app de autenticación debe brindar esta información. Para saber más sobre este procedimiento, consulta The Chromium Projects (https://goo.gl/hajyfN)
@@ -1725,6 +1727,7 @@ política mientras se esté ejecutando el navegador.</translation>
 Si inhabilitas la política, no se permitirá que los usuarios ni las variaciones de <ph name="PRODUCT_NAME" /> habiliten NewBaseUrlInheritanceBehavior en caso de que se detecten problemas de compatibilidad. Si habilitas la política o no la estableces, se permitirá habilitar NewBaseUrlInheritanceBehavior.</translation>
 <translation id="2362469626417133796">Lapso para el reinicio</translation>
 <translation id="2362539163677485510">El token de inscripción de la política de nube</translation>
+<translation id="2362947328909044249">Permitir la organización de pestañas</translation>
 <translation id="2363928351203698966">Si estableces la política en un valor válido, <ph name="PRODUCT_NAME" /> no usará versiones de SSL/TLS anteriores a las especificadas. Se ignorarán los valores que no se reconozcan.
 
       Si no estableces esta política, <ph name="PRODUCT_NAME" /> mostrará un mensaje de error para TLS 1.0 y TLS 1.1, pero el usuario podrá omitirlo.
@@ -2084,6 +2087,7 @@ El sistema solo consulta registros AAAA cuando el dispositivo es accesible para 
 <translation id="2650049181907741121">Medida que se debe tomar cuando el usuario cierra la tapa</translation>
 <translation id="2656559539624760733">No utilizar Chrome Root Store</translation>
 <translation id="2658653824183107970">Utiliza la implementación heredada de <ph name="CORS" /> en lugar de la nueva implementación de <ph name="CORS" /></translation>
+<translation id="2659064869547694451">Permitir la redacción</translation>
 <translation id="2660846099862559570">Nunca usar un proxy</translation>
 <translation id="2661628029848851543">Se permiten todos los usos de cuentas administradas</translation>
 <translation id="2664391398878045611">La página Nueva pestaña no mostrará la notificación del espacio del medio aunque esté disponible</translation>
@@ -2861,6 +2865,7 @@ Si inhabilitas la política, no se enviarán los archivos descargados para que l
 Estas restricciones se aplican a las descargas que se inician desde el contenido de páginas web o mediante la opción de Descarga de vínculo del menú. No se aplican a las acciones de descargar o guardar la página que se muestra actualmente ni a la de guardar como PDF desde las opciones de impresión.
 
 En <ph name="MS_WIN_NAME" />, esta política solo está disponible en instancias que están vinculadas a un dominio de <ph name="MS_AD_NAME" />, vinculadas a <ph name="MS_AAD_NAME" /> o inscritas en <ph name="CHROME_BROWSER_CLOUD_MANAGEMENT_NAME" />.</translation>
+<translation id="3300322252167923819">Permitir la organización de pestañas</translation>
 <translation id="3300784749135986828">Habilitar o inhabilitar la función <ph name="USER_AGENT_REDUCTION_FEATURE_NAME" /></translation>
 <translation id="3301698868852716692">Habilitar la extensión de estadísticas</translation>
 <translation id="3302829897293005699">Si habilitas la política o no la estableces, los dispositivos inscritos informarán sobre la sesión de kiosco activa, como el ID de aplicación y la versión.
@@ -3493,6 +3498,7 @@ Esta política es una solución temporal y se quitará en algunos momentos impor
 
           Si no la estableces, el dictado estará inicialmente inhabilitado en la pantalla de acceso, pero el usuario podrá habilitarlo en cualquier momento.</translation>
 <translation id="3811562426301733860">Permitir anuncios en todos los sitios</translation>
+<translation id="3816281648615435872">Inhabilitar la organización de pestañas</translation>
 <translation id="3816312845600780067">Habilitar combinación de teclas para acceso directo de rescate para el acceso automático</translation>
 <translation id="3817323252437541502">Habilitar protecciones adicionales para los usuarios inscritos en el Programa de Protección Avanzada</translation>
 <translation id="3821861026311587684">Forzar el cierre de sesión del usuario cuando su cuenta pierde la autenticación</translation>
@@ -4006,6 +4012,24 @@ Nota: Si bloqueas las URLs internas chrome://* y chrome-untrusted://*, es posibl
 
       Si no la estableces, es posible que la resolución de DNS del sistema se ejecute en el servicio de red, fuera del servicio de red, o bien parcialmente dentro y parcialmente fuera, según la configuración del sistema y las marcas de función.</translation>
 <translation id="4239720644496144453">Las apps de Android no usan caché. Si varios usuarios instalan la misma app de Android, se descargará una para cada usuario.</translation>
+<translation id="4242583077375244471">Si habilitas esta política, <ph name="PRODUCT_NAME" />
+verificará los certificados del servidor mediante el verificador de certificados integrado
+con Chrome Root Store como fuente de confianza pública.
+
+Si la inhabilitas, <ph name="PRODUCT_NAME" />
+usará el verificador de certificados del sistema y los certificados raíz del sistema.
+
+Si no la estableces, se podrán usar
+las raíces provistas por el sistema o Chrome Root Store.
+
+Se quitó esta política en la versión 113 de <ph name="PRODUCT_NAME" />
+para <ph name="MS_WIN_NAME" /> y <ph name="MAC_OS_NAME" />,
+la versión 120 de <ph name="PRODUCT_OS_NAME" />,
+la versión 120 de <ph name="PRODUCT_NAME" /> para
+<ph name="LINUX_OS_NAME" />
+y la versión 121 de <ph name="PRODUCT_NAME" />
+para <ph name="ANDROID_NAME" /> cuando se quitó la compatibilidad para usar las
+raíces y el verificador de certificados proporcionados por la plataforma.</translation>
 <translation id="424318624725112807">Habilitar la función para resaltar el signo de intercalación en la pantalla de acceso</translation>
 <translation id="4245159233848584683">Si habilitas la política o no la estableces, en caso de que una cuenta local de un dispositivo sin conexión se haya configurado para el acceso automático sin tiempos de espera, <ph name="PRODUCT_OS_NAME" /> mostrará una solicitud de configuración de red.
 
@@ -4043,6 +4067,7 @@ Si inhabilitas la política, se mostrará un mensaje de error en lugar de la sol
 <translation id="428948795004445932">Es la tasa a la que se toman muestras de los datos de red y se los recopila. El mínimo permitido es 1 minuto.
 
       Si no estableces la política, se aplicará la tasa predeterminada de 10 minutos.</translation>
+<translation id="4289628882370719584">La función de organización de pestañas permite a los usuarios organizar las pestañas.</translation>
 <translation id="4290231183305601970">El texto que verá el usuario en Chrome Web Store si se bloquea la instalación.</translation>
 <translation id="4293187705196369087">Permite habilitar o inhabilitar una notificación cuando hay poco espacio disponible en el disco. Esto se aplica a todos los usuarios del dispositivo.
 
@@ -4351,6 +4376,7 @@ No tiene efecto si la habilitas, la dejas vacía o no la configuras.</translatio
 <translation id="453031441196755904">Esta política es obsoleta.</translation>
 <translation id="4531706050939927436">Con Google Play, se puede forzar la instalación de apps de Android desde la Consola del administrador de Google. Estas apps no usan esta política.</translation>
 <translation id="4534500438517478692">Nombre de restricción de Android:</translation>
+<translation id="4537645230504195464">Permitir la redacción sin realizar un registro</translation>
 <translation id="4541530620466526913">Cuentas locales del dispositivo</translation>
 <translation id="4542255783284620926">Bloquear la adición de una cuenta administrada como cuenta secundaria en ChromeOS (cuando se ha iniciado sesión)</translation>
 <translation id="4543502256674577024">Configuración de actualización del dispositivo</translation>
@@ -4561,6 +4587,7 @@ Después de la configuración inicial, los usuarios podrán activar o desactivar
 <translation id="4674871290487541952">Permitir los algoritmos no seguros en las verificaciones de integridad de las instalaciones y actualizaciones de extensiones</translation>
 <translation id="4680961954980851756">Habilitar Autocompletar</translation>
 <translation id="4685721728282448265">Se habilitó el establecimiento de claves poscuántico CECPQ2 para TLS</translation>
+<translation id="4688118315245991650">Inhabilitar la redacción</translation>
 <translation id="468822697351680932">Usar la política SiteList de Internet Explorer como fuente de reglas</translation>
 <translation id="4693190628432874457">Habilitar los informes de ubicación del dispositivo</translation>
 <translation id="4693779768620889402">Destinos basados en extensiones</translation>
@@ -4775,6 +4802,11 @@ Si la estableces como falsa, se usará el comportamiento predeterminado.</transl
 <translation id="4918261735182294270">Permitir que los usuarios puedan habilitar <ph name="CHROME_SYNC_NAME" /></translation>
 <translation id="491889618361437456">Habilitar la integración de <ph name="GOOGLE_CALENDAR_NAME" /></translation>
 <translation id="4919122295221518724">Habilita un tratamiento más estricto para contenido mixto</translation>
+<translation id="4921553515199936667">Si no estableces esta política o la estableces como verdadera, la decodificación de video se acelerará por hardware, cuando esté disponible.
+
+Si estableces esta política como falsa, la decodificación de video nunca se acelerará por hardware.
+
+No se recomienda inhabilitar la decodificación de video acelerada por hardware, ya que esto generaría una mayor carga de CPU, lo que, a su vez, afectaría el rendimiento del dispositivo y el consumo de batería.</translation>
 <translation id="4922136799178503494">Bloquear el sistema de archivos compartidos en red</translation>
 <translation id="4923806312383904642">Permitir que WebDriver anule las políticas incompatibles</translation>
 <translation id="4924377847308623325">Impedir tipos de consultas de DNS adicionales</translation>
@@ -5257,6 +5289,7 @@ Si inhabilitas la política, no podrán borrarse los historiales de navegación 
 <translation id="5340008866815063393">Habilitar la generación de informes con los datos sobre la política</translation>
 <translation id="5345910753471481870">No mostrar el botón de Google Lens en el cuadro de búsqueda de la página Nueva pestaña</translation>
 <translation id="5346587320074666194">Bloquea el acceso a los sensores en estos sitios</translation>
+<translation id="5347809796754019202">Permitir la redacción</translation>
 <translation id="534836255587440809">Inhabilitar el clic automático en la pantalla de acceso</translation>
 <translation id="5348658899015174540">La API de <ph name="GET_DISPLAY_MEDIA_SET_NAME" /> permite a las aplicaciones web capturar varias superficies al mismo tiempo.
       Esta política desbloquea la propiedad <ph name="AUTO_SELECT_ALL_SCREENS_NAME" /> para las aplicaciones web en orígenes definidos.
@@ -6504,6 +6537,7 @@ en la pantalla de <ph name="LOG_IN" />.</translation>
       Para obtener información detallada sobre los patrones de <ph name="URL_LABEL" /> válidos, consulta https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns. <ph name="WILDCARD_VALUE" /> no es un valor aceptado para esta política.</translation>
 <translation id="6353890097388312479">Si estableces la política en All (0) o no la estableces, los usuarios podrán editar la configuración de confianza para todos los certificados de CA, importar certificados mediante el administrador de certificados y quitar los certificados importados por el usuario. Si la estableces en UserOnly (1), los usuarios podrán administrar solo los certificados importados por el usuario, pero no podrán cambiar la configuración de confianza de los certificados integrados. Si la estableces en None (2), los usuarios podrán ver los certificados de CA, pero no los podrán administrar.</translation>
 <translation id="6358320368815225772">Inhabilitar la certificación remota para el dispositivo</translation>
+<translation id="6362589180545896213">Inhabilitar la decodificación de video acelerada por hardware mediante GPU</translation>
 <translation id="6362856770865555544">Si la habilitas o no la estableces, se activará la optimización de WPAD (detección automática de proxy web) en <ph name="PRODUCT_NAME" />.
 
       Si la habilitas, se desactivará la optimización de WPAD. Esto hará que <ph name="PRODUCT_NAME" /> espere más tiempo en los servidores de WPAD basados en DNS.

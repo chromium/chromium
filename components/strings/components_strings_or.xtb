@@ -87,6 +87,7 @@
 <translation id="11635448457105324">'ଠିକଣାଗୁଡ଼ିକୁ ପରିଚାଳନା କରନ୍ତୁ' ବଟନ, Chrome ସେଟିଂସରେ ଠିକଣାଗୁଡ଼ିକୁ ଯୋଗ କରି ପରିଚାଳନା କରିବା ପାଇଁ ଏହାକୁ ସକ୍ରିୟ କରନ୍ତୁ</translation>
 <translation id="1165039591588034296">ତ୍ରୁଟି</translation>
 <translation id="1165174597379888365">ପୃଷ୍ଠା ଭିଜିଟ୍ କରାଯାଇଛି</translation>
+<translation id="1165813024716836071">{COUNT,plural, =0{କିଛି ନାହିଁ}=1{1 ସାଇଟରୁ (ଆପଣ ଆପଣଙ୍କ Google ଆକାଉଣ୍ଟରେ ସାଇନ ଇନ ହୋଇ ରହିବେ)}other{# ସାଇଟରୁ (ଆପଣ ଆପଣଙ୍କ Google ଆକାଉଣ୍ଟରେ ସାଇନ ଇନ ହୋଇ ରହିବେ)}}</translation>
 <translation id="1165852471352757509">ଟିଭି ଡକ୍ୟୁମେଣ୍ଟାରୀ ଏବଂ ନନଫିକ୍ସନ</translation>
 <translation id="1174644974616730562">ଏନଭେଲପ ଚାଇନିଜ #1</translation>
 <translation id="1174723505405632867">ଆପଣ <ph name="EMBEDDED_URL" />କୁ <ph name="TOP_LEVEL_URL" />ରେ କୁକୀ ଏବଂ ସାଇଟ ଡାଟା ବ୍ୟବହାର କରିବାକୁ ଅନୁମତି ଦେବା ପାଇଁ ଚାହାଁନ୍ତି କି?
@@ -3983,6 +3984,7 @@
 <translation id="8919895429178014996">ସମସ୍ତ ଆଇଟମ ଲୁଚାନ୍ତୁ</translation>
 <translation id="8922013791253848639">ଏହି ସାଇଟ୍‌ରେ ସର୍ବଦା ବିଜ୍ଞାପନକୁ ଅନୁମତି ଦିଅନ୍ତୁ</translation>
 <translation id="892588693504540538">ଉପର ଡାହାଣ ପଟରେ ପଞ୍ଚ୍</translation>
+<translation id="8926389886865778422">ପୁର୍ନବାର ପଚାରନ୍ତୁ ନାହିଁ</translation>
 <translation id="8930330541574156305">ରିଅଲ ଇଷ୍ଟେଟ</translation>
 <translation id="8932102934695377596">ଆପଣଙ୍କର ଘଣ୍ଟାର ସମୟ ପଛରେ ଅଛି</translation>
 <translation id="893332455753468063">ନାମ ଯୋଗ କରନ୍ତୁ</translation>

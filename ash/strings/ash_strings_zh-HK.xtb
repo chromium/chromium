@@ -960,7 +960,7 @@
 <translation id="4889868803215848840">您可選擇提供意見，協助我們改善建議：</translation>
 <translation id="4890187583552566966">您的管理員已停用「Google 助理」。</translation>
 <translation id="4890408602550914571">請確認您的手機在附近，且已開啟藍牙。</translation>
-<translation id="4892981359753171125">臉部控制</translation>
+<translation id="4892981359753171125">面部控制</translation>
 <translation id="4895488851634969361">電池電量已滿。</translation>
 <translation id="490375751687810070">垂直</translation>
 <translation id="490788395437447240">電量：<ph name="BATTERY_PERCENTAGE" />%</translation>
@@ -1136,6 +1136,7 @@
 <translation id="5577281275355252094">請確認手機已啟用藍牙功能，以便使用 Phone Hub</translation>
 <translation id="5578188167649348993">記憶體</translation>
 <translation id="5580000943347215299">媒體庫</translation>
+<translation id="5587506661873751671">目前下載進度：<ph name="DOWNLOAD_PERCENT" />%</translation>
 <translation id="558849140439112033">拖曳以選取要擷取的範圍</translation>
 <translation id="5590609058453685222">「略過自動提醒」功能已開啟。如果在靜音狀態下說話，系統會傳送通知給您。</translation>
 <translation id="5596627076506792578">更多選項</translation>
@@ -1794,6 +1795,7 @@
 <translation id="830868413617744215">測試版</translation>
 <translation id="8314772463905284467">啟用咗 Caps Lock 鍵</translation>
 <translation id="8315514906653279104">正在開啟…</translation>
+<translation id="8331351032546853669">等候下載</translation>
 <translation id="8341451174107936385"><ph name="UNLOCK_MORE_FEATURES" /> <ph name="GET_STARTED" /></translation>
 <translation id="8345019317483336363">揀咗「<ph name="WINDOW_TITLE" />」視窗</translation>
 <translation id="8349826889576450703">啟動器</translation>

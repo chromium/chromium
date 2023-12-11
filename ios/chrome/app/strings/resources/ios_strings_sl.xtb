@@ -496,6 +496,7 @@ Oglejte si navodila iskalnika za brisanje zgodovine iskanja, če je na voljo.</t
 <translation id="355101282835380364">Shrani v računu …</translation>
 <translation id="3551320343578183772">Zapri zavihek</translation>
 <translation id="3565207542107370586">Izbris podatkov brskanja …</translation>
+<translation id="3570693105179140209">Za več gesel se dvakrat dotaknite.</translation>
 <translation id="3575234738189584619">Iskanje z Googlom Lens</translation>
 <translation id="3581564640715911333">Ponudi prevajanje strani v drugih jezikih</translation>
 <translation id="3587885837929752825">Vaša organizacija omejuje, kaj je mogoče shraniti v računu Google.</translation>
@@ -661,6 +662,7 @@ Oglejte si navodila iskalnika za brisanje zgodovine iskanja, če je na voljo.</t
 <translation id="452750746583162491">Pregled sinhroniziranih podatkov</translation>
 <translation id="4527660062930312477">Vaš račun je upravljan</translation>
 <translation id="4536418791685807335">Try signing in again.</translation>
+<translation id="4539187448429948815">{count,plural, =1{Nad tipkovnico je na voljo {count} shranjen predlog za samodokončanje.}one{Nad tipkovnico je na voljo {count} shranjen predlog za samodokončanje.}two{Nad tipkovnico sta na voljo {count} shranjena predloga za samodokončanje.}few{Nad tipkovnico so na voljo {count} shranjeni predlogi za samodokončanje.}other{Nad tipkovnico je na voljo {count} shranjenih predlogov za samodokončanje.}}</translation>
 <translation id="4540780316273593836">Prišlo je do napake</translation>
 <translation id="4550040941166547650">Samo v tej napravi</translation>
 <translation id="457292989631956153">{COUNT,plural, =1{Želite zapreti {COUNT} neaktiven zavihek?}one{Želite zapreti {COUNT} neaktiven zavihek?}two{Želite zapreti {COUNT} neaktivna zavihka?}few{Želite zapreti {COUNT} neaktivne zavihke?}other{Želite zapreti {COUNT} neaktivnih zavihkov?}}</translation>
@@ -913,7 +915,6 @@ Handoff must also be enabled in the General section of Settings, and your device
 <translation id="5857770089550859117">Passphrase required to start sync.</translation>
 <translation id="5859715514067755465">Naprej</translation>
 <translation id="5860033963881614850">Izklopljeno</translation>
-<translation id="5869029295770560994">V redu, razumem</translation>
 <translation id="5871497086027727873">1 element premaknjen</translation>
 <translation id="5896576662943111387">Ustvarjeno za iOS</translation>
 <translation id="5897749768294722429">Če se želite hitro vrniti na že obiskana spletna mesta, sinhronizirajte zavihke in zgodovino.</translation>
@@ -930,7 +931,6 @@ Handoff must also be enabled in the General section of Settings, and your device
 <translation id="595769230373966252">Iskanje z iskalnikom <ph name="SEARCH_PROVIDER" /></translation>
 <translation id="5962718611393537961">Dotik za strnitev</translation>
 <translation id="5963939892571022323">Povezave do označitve ni bilo mogoče ustvariti.</translation>
-<translation id="5965679971710331625">Prijavljeni ste</translation>
 <translation id="5971872012779224351">{count,plural, =1{1 zaznamek je izbrisan}one{{count} zaznamek je izbrisan}two{{count} zaznamka sta izbrisana}few{{count} zaznamki so izbrisani}other{{count} zaznamkov je izbrisanih}}</translation>
 <translation id="5979837087407522202">Iskanje gesel</translation>
 <translation id="5981230843984570095">Zapri vse neaktivne</translation>
@@ -1479,6 +1479,7 @@ Podatki so bili šifrirani z geslom dne <ph name="TIME" />. Vnesite ga, če žel
 <translation id="8766790350274092814">Gesli za <ph name="WEBSITE" /> in <ph name="SECOND_WEBSITE" /> bosta izbrisani. Vaši računi ne bodo izbrisani.</translation>
 <translation id="8775144690796719618">Neveljaven URL</translation>
 <translation id="8780076847684176174">{count,plural, =1{Preglejte zavihek …}one{Preglejte vse zavihke …}two{Preglejte vse zavihke …}few{Preglejte vse zavihke …}other{Preglejte vse zavihke …}}</translation>
+<translation id="8782570580170191813">Vedno sledi paketom</translation>
 <translation id="8787968206789828143">Iskanje v spletu</translation>
 <translation id="8792626944327216835">mikrofon</translation>
 <translation id="8803639129939845298">Varno</translation>

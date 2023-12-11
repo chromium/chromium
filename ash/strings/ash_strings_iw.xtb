@@ -625,6 +625,7 @@
 <translation id="3593646411856133110">כדי להציג את האפליקציות הפתוחות, מחליקים כלפי מעלה ולוחצים לחיצה ארוכה</translation>
 <translation id="3595596368722241419">סוללה מלאה</translation>
 <translation id="3596012367874587041">הגדרות האפליקציה</translation>
+<translation id="3598452309062311481">‏מקש החיפוש + h</translation>
 <translation id="3600061223661453002">כבוי</translation>
 <translation id="3604801046548457007">שולחן העבודה <ph name="DESK_TITILE" /> נוצר</translation>
 <translation id="3606978283550408104">צג ברייל מחובר</translation>
@@ -776,6 +777,7 @@
 <translation id="4190780880566297084">ביטול ההגדרה של הצגת התמונות, המדיה והאפליקציות שבטלפון מהזמן האחרון</translation>
 <translation id="4192112279662688596">או</translation>
 <translation id="4193857202545160520">הצגת קליקים ושימוש במקשים</translation>
+<translation id="4193969623755915875">‏פתיחה של 'עזרה' באפליקציה 'מה חדש ב-Chromebook' באמצעות <ph name="NEW_SHORTCUT" />.</translation>
 <translation id="4195579532193195633">הגרסה הנוכחית <ph name="VERSION_NAME" /> (<ph name="OFFICIAL_STATUS" />) <ph name="CHANNEL_NAME" /> <ph name="PROCESSOR_VARIATION" /></translation>
 <translation id="4195814663415092787">אני רוצה להמשיך מהמקום שבו הפסקתי</translation>
 <translation id="4195877955194704651">לחצן קליקים אוטומטיים</translation>
@@ -958,6 +960,7 @@
 <translation id="4889868803215848840">אפשר להוסיף משוב לשיפור ההצעות:</translation>
 <translation id="4890187583552566966">‏Google Assistant הושבתה על-ידי מנהל המערכת.</translation>
 <translation id="4890408602550914571">‏יש לוודא שהטלפון נמצא בקרבת מקום ושה-Bluetooth מופעל.</translation>
+<translation id="4892981359753171125">שליטה באמצעות תנועות הפנים</translation>
 <translation id="4895488851634969361">הסוללה טעונה במלואה.</translation>
 <translation id="490375751687810070">אנכי</translation>
 <translation id="490788395437447240">%<ph name="BATTERY_PERCENTAGE" /> סוללה</translation>
@@ -1134,6 +1137,7 @@
 <translation id="5577281275355252094">‏יש לבדוק שה-Bluetooth פועל בטלפון כדי להשתמש ב-Phone Hub</translation>
 <translation id="5578188167649348993">זיכרון</translation>
 <translation id="5580000943347215299">ספרייה</translation>
+<translation id="5587506661873751671">ההורדה מתבצעת <ph name="DOWNLOAD_PERCENT" />%</translation>
 <translation id="558849140439112033">יש לגרור כדי לבחור אזור לצילום</translation>
 <translation id="5590609058453685222">התזכורת שהמיקרופון מושתק פועלת. תתקבל הודעה במקרים של דיבור כשההשתקה פועלת.</translation>
 <translation id="5596627076506792578">אפשרויות נוספות</translation>
@@ -1795,6 +1799,7 @@
 <translation id="830868413617744215">ביטא</translation>
 <translation id="8314772463905284467">‏Caps Lock מופעל</translation>
 <translation id="8315514906653279104">מתבצעת הפעלה…</translation>
+<translation id="8331351032546853669">ההורדה בהמתנה</translation>
 <translation id="8341451174107936385"><ph name="UNLOCK_MORE_FEATURES" />  <ph name="GET_STARTED" /></translation>
 <translation id="8345019317483336363">נבחר החלון <ph name="WINDOW_TITLE" /></translation>
 <translation id="8349826889576450703">מרכז האפליקציות</translation>

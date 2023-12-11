@@ -87,6 +87,7 @@
 <translation id="11635448457105324">"Даректерди башкаруу" баскычы. Chrome параметрлеринен даректерди кошуу жана башкаруу үчүн иштетиңиз</translation>
 <translation id="1165039591588034296">Ката</translation>
 <translation id="1165174597379888365">Баракка баш багылды</translation>
+<translation id="1165813024716836071">{COUNT,plural, =0{Жок}=1{1 сайттан (Google аккаунтуңузга кирген бойдон каласыз)}other{# сайттан (Google аккаунтуңузга кирген бойдон каласыз)}}</translation>
 <translation id="1165852471352757509">Документалдуу жана илимий телефильм</translation>
 <translation id="1174644974616730562">Конверт Кытайча #1</translation>
 <translation id="1174723505405632867"><ph name="EMBEDDED_URL" /> сайтына cookie файлдарын жана сайттын маалыматын <ph name="TOP_LEVEL_URL" /> доменинде колдонууга уруксат бересизби?
@@ -3985,6 +3986,7 @@
 <translation id="8919895429178014996">Бардык элементтерди жашыруу</translation>
 <translation id="8922013791253848639">Бул сайттагы жарнамалар дайыма көрүнсүн</translation>
 <translation id="892588693504540538">Жогорку оң жагын тешүү</translation>
+<translation id="8926389886865778422">Экинчи суралбасын</translation>
 <translation id="8930330541574156305">Кыймылсыз мүлк</translation>
 <translation id="8932102934695377596">Саатыңыз артта</translation>
 <translation id="893332455753468063">Атын кошуу</translation>

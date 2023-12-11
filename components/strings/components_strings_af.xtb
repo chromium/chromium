@@ -87,6 +87,7 @@
 <translation id="11635448457105324">Knoppie om adresse te bestuur; aktiveer om adresse in Chrome-instellings by te voeg en te bestuur</translation>
 <translation id="1165039591588034296">Fout</translation>
 <translation id="1165174597379888365">Bladsy is besoek</translation>
+<translation id="1165813024716836071">{COUNT,plural, =0{Geen}=1{Van 1 werf af (jy sal by jou Google-rekening aangemeld bly)}other{Van # werwe af (jy sal by jou Google-rekening aangemeld bly)}}</translation>
 <translation id="1165852471352757509">TV-dokumentêr en -niefiksie</translation>
 <translation id="1174644974616730562">Koevert Chinees #1</translation>
 <translation id="1174723505405632867">Wil jy <ph name="EMBEDDED_URL" /> toelaat om webkoekies en werfdata te gebruik op <ph name="TOP_LEVEL_URL" />?
@@ -3986,6 +3987,7 @@ Bykomende besonderhede:
 <translation id="8919895429178014996">Versteek alle items</translation>
 <translation id="8922013791253848639">Laat advertensies altyd op hierdie werf toe</translation>
 <translation id="892588693504540538">Pons regs bo</translation>
+<translation id="8926389886865778422">Moenie weer vra nie</translation>
 <translation id="8930330541574156305">Eiendom</translation>
 <translation id="8932102934695377596">Jou horlosie is agter</translation>
 <translation id="893332455753468063">Voeg naam by</translation>

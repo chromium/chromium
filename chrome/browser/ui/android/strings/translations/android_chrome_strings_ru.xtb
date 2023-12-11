@@ -32,7 +32,7 @@
 <translation id="1150263420752757504">Приложение "<ph name="APP_NAME" />" откроется в Chrome. Продолжая, вы принимаете <ph name="BEGIN_LINK1" />Условия использования Google<ph name="END_LINK1" /> и <ph name="BEGIN_LINK2" />Дополнительные условия использования Chrome и Chrome OS<ph name="END_LINK2" />.</translation>
 <translation id="115483310321669804">Использовать пароль <ph name="PASSWORD" /></translation>
 <translation id="1173894706177603556">Переименовать</translation>
-<translation id="1174479719160874822">Chrome будет запрашивать мобильный сайт при обнаружении узкого экрана</translation>
+<translation id="1174479719160874822">Если экран узкий, Chrome будет запрашивать мобильный сайт.</translation>
 <translation id="1177863135347784049">Персонализированные</translation>
 <translation id="1181037720776840403">Удалить</translation>
 <translation id="1181366777303791449"><ph name="MAIN_FRAME_ETLD_PLUS_ONE" /></translation>

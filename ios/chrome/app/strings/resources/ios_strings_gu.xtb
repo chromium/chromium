@@ -837,6 +837,7 @@
 <translation id="5457226814769348910">ઑફલાઇન વર્ઝન ખોલો</translation>
 <translation id="5475069061743940393">પૅકેજ ટ્રૅકિંગ</translation>
 <translation id="5478327362747197944">કોઈ વેબપેજમાં કોઈ તારીખ પર ક્લિક કરીને સીધા Calendar ઇવેન્ટ બનાવો.</translation>
+<translation id="5482922178977937393">શું તમે તમારી રુચિઓના આધારે ન્યૂઝ, રમતગમત અને વધુ માટે નોટિફિકેશન મેળવવા માગો છો?</translation>
 <translation id="5489208564673669003">બધી સાઇટ માટે કુકી મેનેજ કરવા, <ph name="BEGIN_LINK" />કુકી સેટિંગ જુઓ<ph name="END_LINK" />.</translation>
 <translation id="5490005495580364134">બધી કુકીને બ્લૉક કરો (સુઝાવ આપતા નથી)</translation>
 <translation id="5497202150450073388">ડિલિવરી કરવાનો પ્રયાસ કર્યો. ફરી પ્રયાસ કરીશું</translation>
@@ -912,7 +913,6 @@
 <translation id="5857770089550859117">સમન્વયનને પ્રારંભ કરવા માટે પાસફ્રેઝ આવશ્યક.</translation>
 <translation id="5859715514067755465">આગળ જાઓ</translation>
 <translation id="5860033963881614850">બંધ</translation>
-<translation id="5869029295770560994">બરાબર, સમજાઈ ગયું</translation>
 <translation id="5871497086027727873">1 આઇટમ ખસેડી</translation>
 <translation id="5896576662943111387">iOS માટે બનાવવામાં આવેલું</translation>
 <translation id="5897749768294722429">તમે મુલાકાત લીધેલી સાઇટ પર ઝડપથી પાછા જવા માટે, તમારા ટૅબ અને ઇતિહાસ સિંક કરો.</translation>
@@ -929,7 +929,6 @@
 <translation id="595769230373966252"><ph name="SEARCH_PROVIDER" /> વડે શોધો</translation>
 <translation id="5962718611393537961">સંકુચિત કરવા માટે ટૅપ કરો</translation>
 <translation id="5963939892571022323">હાઇલાઇટ કરેલી ટેક્સ્ટની લિંક બનાવી શકાતી નથી.</translation>
-<translation id="5965679971710331625">તમે સાઇન ઇન છો</translation>
 <translation id="5971872012779224351">{count,plural, =1{1 બુકમાર્ક ડિલીટ કર્યું}one{{count} બુકમાર્ક ડિલીટ કર્યું}other{{count} બુકમાર્ક ડિલીટ કર્યા}}</translation>
 <translation id="5979837087407522202">પાસવર્ડ શોધો</translation>
 <translation id="5981230843984570095">તમામ નિષ્ક્રિય ટૅબ બંધ કરો</translation>
@@ -1478,6 +1477,7 @@
 <translation id="8766790350274092814"><ph name="WEBSITE" /> અને <ph name="SECOND_WEBSITE" /> માટેના પાસવર્ડ ડિલીટ કરવામાં આવશે. તમારા એકાઉન્ટ ડિલીટ થશે નહીં.</translation>
 <translation id="8775144690796719618">અમાન્ય URL</translation>
 <translation id="8780076847684176174">{count,plural, =1{ટૅબનો રિવ્યૂ કરો...}one{તમામ ટૅબનો રિવ્યૂ કરો...}other{તમામ ટૅબનો રિવ્યૂ કરો...}}</translation>
+<translation id="8782570580170191813">પૅકેજને હંમેશાં ટ્રૅક કરો</translation>
 <translation id="8787968206789828143">વેબ પર શોધો</translation>
 <translation id="8792626944327216835">માઇક્રોફોન</translation>
 <translation id="8803639129939845298">સુરક્ષિત</translation>

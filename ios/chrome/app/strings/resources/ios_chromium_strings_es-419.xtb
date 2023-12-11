@@ -16,6 +16,7 @@
 <translation id="1513122820609681462">Establecer Chromium como navegador predeterminado</translation>
 <translation id="1531155317299575425">Muestra mensajes para acceder a Chromium.</translation>
 <translation id="1591119736686995611">Abre la cuadrícula de pestañas de Chromium.</translation>
+<translation id="1611584326765829247">Permite que Chromium te ayude a realizar el seguimiento de tus paquetes</translation>
 <translation id="1617663976202781617">Datos de la sincronización de Chromium</translation>
 <translation id="1647558790457890304">Configuración de Chromium</translation>
 <translation id="164952285225495380">Ya se realizó un seguimiento de este paquete en Chromium.</translation>
@@ -53,7 +54,6 @@
 <translation id="2784449251446768092">Administrar la configuración de Chromium</translation>
 <translation id="2798503587425057129">Abre la Lista de lectura de Chromium.</translation>
 <translation id="2843571538056574338">Usa Autocompletar en Chromium</translation>
-<translation id="2915596697727466327">Chromium usa Face ID para garantizar el acceso autorizado a tus contraseñas.</translation>
 <translation id="2918709798697875261">Tu organización requiere que no accedas a tu cuenta en Chromium.</translation>
 <translation id="2942241131342758843">Usa Chromium como tu navegador predeterminado para abrir vínculos, realizar búsquedas desde widgets y autocompletar contraseñas en otras apps</translation>
 <translation id="2977470724722393594">Chromium está actualizado.</translation>
@@ -175,7 +175,6 @@ Solo alguien con tu frase de contraseña puede leer los datos encriptados. Googl
 <translation id="7165402419892018581">Elige Chromium para Autocompletar</translation>
 <translation id="7175400662502680481">Tu contraseña quedó expuesta en una violación de la seguridad de los datos. El Administrador de contraseñas te recomienda cambiarla ahora.</translation>
 <translation id="7192111075364461693">Las notificaciones de Chromium están desactivadas en la configuración del dispositivo por el momento.</translation>
-<translation id="7208566199746267865">Chromium lleva tus cuentas a la Web para ahorrarte tiempo. Puedes agregar o quitar cuentas en la configuración.</translation>
 <translation id="725427773388857052">Chromium puede protegerte ante violaciones de la seguridad de los datos, sitios web inseguros y mucho más.</translation>
 <translation id="7269362888766543920">Algunos complementos causan fallos en Chromium. Intenta desinstalarlos.</translation>
 <translation id="7285031092584344905">Accede a tus contraseñas de Chromium y más en otras apps.</translation>

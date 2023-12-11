@@ -31,7 +31,6 @@
 <translation id="1018656279737460067">বাতিল হয়েছে</translation>
 <translation id="1022522674678746124">PowerPoint</translation>
 <translation id="1022669824195822609"><ph name="DOMAIN" /> আপনার ডিভাইস ম্যানেজ করে। এই ডিভাইসের যেকোনও প্রোফাইলের ডেটা অ্যাডমিনিস্ট্রেটর অ্যাক্সেস করতে পারবেন।</translation>
-<translation id="1024734233509995696">এই ট্যাব আপনার ক্যামেরা বা মাইক্রোফোন ব্যবহার করছে</translation>
 <translation id="1026655690966755180">পোর্ট যোগ করুন</translation>
 <translation id="1026822031284433028">ছবি লোড করুন</translation>
 <translation id="1026959648338730078">Windows Hello বা অতিরিক্ত নিরাপত্তা 'কী'</translation>
@@ -1788,7 +1787,6 @@
 <translation id="2335111415680198280">{0,plural, =1{#টি উইন্ডো বন্ধ করুন}one{#টি উইন্ডো বন্ধ করুন}other{#টি উইন্ডো বন্ধ করুন}}</translation>
 <translation id="2336228925368920074">সকল ট্যাব বুকমার্ক করুন...</translation>
 <translation id="2336381494582898602">পাওয়ারওয়াশ</translation>
-<translation id="2337236196941929873">সেইসব পৃষ্ঠা প্রিলোড হয় যেগুলি আপনি দেখতে পারেন বলে Chrome মনে করে। এজন্য Chrome কুকি ব্যবহার করতে পারে, আপনি কুকি ব্যবহারের অনুমতি দিলে সাইটে আপনার পরিচয় গোপন রেখে Google-এর মাধ্যমে এনক্রিপ্ট করে পেজ পাঠাতে পারে।</translation>
 <translation id="2340239562261172947"><ph name="FILE_NAME" /> ফাইলটি নিরাপদে ডাউনলোড করা যাচ্ছে না</translation>
 <translation id="2342180549977909852">এই ডিভাইস আনলক করতে আপনার সন্তান পাসওয়ার্ডের পরিবর্তে একটি নম্বর (পিন) ব্যবহার করতে পারবে। পরে একটি পিন সেট করতে, 'সেটিংস'-এ যান।</translation>
 <translation id="2342740338116612727">বুকমার্ক যোগ করা হয়েছে</translation>
@@ -3534,6 +3532,7 @@
 <translation id="372722114124766626">মাত্র একবার</translation>
 <translation id="3727332897090187514">কোনও নোট যোগ করা হয়নি</translation>
 <translation id="3727473233247516571">ব্যাক-ফরোয়ার্ড ক্যাশেতে স্টোর করা সাবফ্রেম: <ph name="BACK_FORWARD_CACHE_PAGE_URL" /></translation>
+<translation id="3727850735097852673">MacOS Keychain-এর মাধ্যমে Password Manager ব্যবহার করতে, Chrome আবার লঞ্চ করুন ও Keychain অ্যাক্সেস করার অনুমতি দিন। আবার চালু করার পরে আপনার ট্যাব আবার খোলা হবে।</translation>
 <translation id="3728188878314831180">আপনার ফোনের মিরর বিজ্ঞপ্তি</translation>
 <translation id="3728681439294129328">নেটওয়ার্ক অ্যাড্রেস কনফিগার করুন</translation>
 <translation id="3729506734996624908">অনুমোদিত সাইট</translation>
@@ -5927,7 +5926,6 @@
 <translation id="5636012309446422"><ph name="PRIMARY_EMAIL" /> থেকে <ph name="DEVICE" /> সরাবেন?</translation>
 <translation id="5636996382092289526"><ph name="NETWORK_ID" /> ব্যবহার করতে গেলে আপনাকে প্রথমে <ph name="LINK_START" />নেটওয়ার্কের সাইন-ইন পৃষ্ঠায় যেতে হবে<ph name="LINK_END" />, যা কয়েক সেকেন্ডের মধ্যে অটোমেটিকভাবে খুলবে৷ যদি এমন না হয়, তাহলে নেটওয়ার্কটি ব্যবহার করা যেতে পারে৷</translation>
 <translation id="5637476008227280525">মোবাইল ডেটা সক্ষম করুন</translation>
-<translation id="563811590465749036">macOS Keychain-এর মাধ্যমে Google Password Manager ব্যবহার করতে, Chrome আবার চালু করুন ও Keychain অ্যাক্সেস করার অনুমতি দিন। আবার চালু করার পরে আপনার ট্যাব আবার খোলা হবে</translation>
 <translation id="563821631542362636">ডেটা সেভ করতে সাইটকে অনুমতি দিন</translation>
 <translation id="5638309510554459422"><ph name="BEGIN_LINK" />Chrome ওয়েব স্টোর<ph name="END_LINK" />-এ এক্সটেনশন এবং থিম খুঁজুন</translation>
 <translation id="5639549361331209298">এই পৃষ্ঠাটি রিলোড করুন, আরও বিকল্প দেখতে ধরে থাকুন</translation>
@@ -6159,7 +6157,6 @@
 <translation id="583431638776747">সাইট উপলভ্য নেই</translation>
 <translation id="5834581999798853053">প্রায় <ph name="TIME" /> মিনিট বাকি</translation>
 <translation id="5835360478055379192">{NUM_EXTENSION,plural, =1{<ph name="EXTENSION1" />, HID ডিভাইস অ্যাক্সেস করছে}=2{যেসব এক্সটেনশন ডিভাইস অ্যাক্সেস করছে: <ph name="EXTENSION1" />, <ph name="EXTENSION2" />}one{যেসব এক্সটেনশন ডিভাইস অ্যাক্সেস করছে: <ph name="EXTENSION1" />, <ph name="EXTENSION2" /> এবং আরও {3}টি}other{যেসব এক্সটেনশন ডিভাইস অ্যাক্সেস করছে: <ph name="EXTENSION1" />, <ph name="EXTENSION2" /> এবং আরও {3}টি}}</translation>
-<translation id="5835486486592033703"><ph name="WINDOW_TITLE" /> - ক্যামেরা বা মাইক্রোফোন রেকর্ডিং</translation>
 <translation id="583673505367439042">সাইট আপনার ডিভাইসের ফাইল ও ফোল্ডার এডিট করার অনুমতি চাইতে পারে</translation>
 <translation id="5836999627049108525">যে ভাষা থেকে অনুবাদ করতে হবে</translation>
 <translation id="583756221537636748">কেস</translation>

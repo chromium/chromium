@@ -87,6 +87,7 @@
 <translation id="11635448457105324">Tombol Kelola alamat, aktifkan untuk menambahkan dan mengelola alamat di setelan Chrome</translation>
 <translation id="1165039591588034296">Kesalahan</translation>
 <translation id="1165174597379888365">Halaman dikunjungi</translation>
+<translation id="1165813024716836071">{COUNT,plural, =0{Tidak ada}=1{Dari 1 situs (Anda akan tetap login ke Akun Google Anda)}other{Dari # situs (Anda akan tetap login ke Akun Google Anda)}}</translation>
 <translation id="1165852471352757509">Program TV dokumenter &amp; nonfiksi</translation>
 <translation id="1174644974616730562">Envelope Chinese #1</translation>
 <translation id="1174723505405632867">Anda ingin mengizinkan <ph name="EMBEDDED_URL" /> menggunakan cookie dan data situs di <ph name="TOP_LEVEL_URL" />?
@@ -3982,6 +3983,7 @@ disusupi oleh penyerang. Hanya buka <ph name="BEGIN_LINK" />situs yang tidak ama
 <translation id="8919895429178014996">Sembunyikan semua item</translation>
 <translation id="8922013791253848639">Selalu izinkan iklan di situs ini</translation>
 <translation id="892588693504540538">Lubang di kanan atas</translation>
+<translation id="8926389886865778422">Jangan tanya lagi</translation>
 <translation id="8930330541574156305">Properti real estat</translation>
 <translation id="8932102934695377596">Setelan waktu Anda terlalu lambat</translation>
 <translation id="893332455753468063">Tambahkan Nama</translation>

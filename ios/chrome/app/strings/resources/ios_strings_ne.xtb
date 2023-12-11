@@ -837,6 +837,7 @@
 <translation id="5457226814769348910">अफलाइन संस्करण खोल्नुहोस्</translation>
 <translation id="5475069061743940393">प्याकेज ट्रयाकिङ</translation>
 <translation id="5478327362747197944">सीधै वेब पेजमा मितिमा क्लिक गरेर पात्रोमा सेट गरिने कार्यक्रमहरू बनाउनुहोस्।</translation>
+<translation id="5482922178977937393">तपाईं आफ्ना रूचिका आधारमा समाचार, खेलकुद र अन्य कुरासम्बन्धी सूचनाहरू प्राप्त गर्न चाहनुहुन्छ?</translation>
 <translation id="5489208564673669003">सबै साइटका कुकीहरू व्यवस्थापन गर्न, <ph name="BEGIN_LINK" />कुकीसम्बन्धी सेटिङ<ph name="END_LINK" />मा जानुहोस्।</translation>
 <translation id="5490005495580364134">सबै कुकीलाई रोक लगाइयोस् (सिफारिस गरिँदैन)</translation>
 <translation id="5497202150450073388">डेलिभर गर्ने प्रयास गरिएको छ। फेरि प्रयास गरिने छ</translation>
@@ -912,7 +913,6 @@
 <translation id="5857770089550859117">सिंक सुरु गर्न पासफ्रेज आवश्यक छ।</translation>
 <translation id="5859715514067755465">फर्वार्ड गर्नुहोस्</translation>
 <translation id="5860033963881614850">बन्द</translation>
-<translation id="5869029295770560994">ठिक छ, बुझेँ</translation>
 <translation id="5871497086027727873">1 वस्तु सारियो</translation>
 <translation id="5896576662943111387">iOS का लागि बनाइएको</translation>
 <translation id="5897749768294722429">आफूले खोलेका साइटहरू छिटोछरितो रूपमा फेरि खोल्न आफ्ना ट्याब र हिस्ट्री सिंक गर्नुहोस्।</translation>
@@ -929,7 +929,6 @@
 <translation id="595769230373966252"><ph name="SEARCH_PROVIDER" /> मार्फत खोज्नुहोस्</translation>
 <translation id="5962718611393537961">संक्षिप्त गर्न ट्याप गर्नुहोस्</translation>
 <translation id="5963939892571022323">हाइलाइट गरिएको पाठको लिंक सिर्जना गर्न सकिएन।</translation>
-<translation id="5965679971710331625">तपाईं साइन इन हुनुभएको छ</translation>
 <translation id="5971872012779224351">{count,plural, =1{एउटा बुकमार्क मेटाइएको छ}other{{count} वटा बुकमार्क मेटाइएका छन्}}</translation>
 <translation id="5979837087407522202">पासवर्डहरू खोज्नुहोस्</translation>
 <translation id="5981230843984570095">निष्क्रिय रहेका सबै ट्याब बन्द गर्नुहोस्</translation>
@@ -1478,6 +1477,7 @@
 <translation id="8766790350274092814"><ph name="WEBSITE" /> र <ph name="SECOND_WEBSITE" /> का पासवर्डहरू मेटिने छन्। तपाईंका खाताहरू मेटिने छैनन्।</translation>
 <translation id="8775144690796719618">अमान्य URL</translation>
 <translation id="8780076847684176174">{count,plural, =1{यो ट्याबको समीक्षा गर्नुहोस्...}other{सबै ट्याबको समीक्षा गर्नुहोस्...}}</translation>
+<translation id="8782570580170191813">प्याकेजहरू सधैँ ट्र्याक गर्नुहोस्</translation>
 <translation id="8787968206789828143">वेबमा खोज्नुहोस्</translation>
 <translation id="8792626944327216835">माइक्रोफोन</translation>
 <translation id="8803639129939845298">सुरक्षित छ</translation>

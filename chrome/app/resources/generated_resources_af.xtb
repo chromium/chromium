@@ -31,7 +31,6 @@
 <translation id="1018656279737460067">Gekanselleer</translation>
 <translation id="1022522674678746124">PowerPoint</translation>
 <translation id="1022669824195822609">Jou toestel word bestuur deur <ph name="DOMAIN" />. Administrateurs het toegang tot die data in enige profiel op hierdie toestel.</translation>
-<translation id="1024734233509995696">Hierdie oortjie gebruik tans jou kamera of mikrofoon</translation>
 <translation id="1026655690966755180">Voeg poort by</translation>
 <translation id="1026822031284433028">Laai prent</translation>
 <translation id="1026959648338730078">Windows Hello of eksterne sekuriteitsleutel</translation>
@@ -1787,7 +1786,6 @@ Jy kan hierdie rekening se instellings bestuur deur die Family Link-program op j
 <translation id="2335111415680198280">{0,plural, =1{Maak # venster toe}other{Maak # vensters toe}}</translation>
 <translation id="2336228925368920074">Boekmerk alle oortjies …</translation>
 <translation id="2336381494582898602">Kragwas</translation>
-<translation id="2337236196941929873">Laai bladsye vooraf wat Chrome dink jy dalk sal besoek. Om dit te doen, kan Chrome webkoekies gebruik – as jy webkoekies toelaat – en kan bladsye enkripteer en deur Google stuur om jou identiteit vir werwe te versteek.</translation>
 <translation id="2340239562261172947"><ph name="FILE_NAME" /> kan nie veilig afgelaai word nie</translation>
 <translation id="2342180549977909852">Jou kind kan 'n nommer (PIN) pleks van 'n wagwoord gebruik om hierdie toestel te ontsluit. Gaan na Instellings om later 'n PIN te stel.</translation>
 <translation id="2342740338116612727">Boekmerke is bygevoeg</translation>
@@ -1880,6 +1878,7 @@ Jy kan hierdie rekening se instellings bestuur deur die Family Link-program op j
 <translation id="2412753904894530585">Kerberos</translation>
 <translation id="2414159296888870200">Hervat blaai vir <ph name="MODULE_TITLE" /></translation>
 <translation id="2414886740292270097">Donker</translation>
+<translation id="2415117815770324983">Meld jou by die meeste werwe af. Jy sal by jou Google-rekening aangemeld bly.</translation>
 <translation id="2416435988630956212">Sleutelbordfunksiesleutels</translation>
 <translation id="2418307627282545839">Hou dinge helder en lig</translation>
 <translation id="2419131370336513030">Bekyk geïnstalleerde programme</translation>
@@ -2400,6 +2399,7 @@ Jy kan hierdie rekening se instellings bestuur deur die Family Link-program op j
 <translation id="2799223571221894425">Begin weer</translation>
 <translation id="2800309299477632167">Gepasmaakte sleutelbinding</translation>
 <translation id="2800760947029405028">Laai 'n prent op</translation>
+<translation id="2801134910297796778">Aangemeld by <ph name="EMAIL" /></translation>
 <translation id="2801954693771979815">Skermgrootte</translation>
 <translation id="2802557211515765772">Daar is geen bestuurde drukkers nie.</translation>
 <translation id="2803313416453193357">Maak vouer oop</translation>
@@ -3531,6 +3531,7 @@ Jy kan hierdie rekening se instellings bestuur deur die Family Link-program op j
 <translation id="372722114124766626">Net een keer</translation>
 <translation id="3727332897090187514">Geen nota is bygevoeg nie</translation>
 <translation id="3727473233247516571">Terug-vorentoe-kasgeheue-subraam: <ph name="BACK_FORWARD_CACHE_PAGE_URL" /></translation>
+<translation id="3727850735097852673">Herbegin Chrome en laat Keychain toegang toe om Google Wagwoordbestuurder met macOS Keychain te gebruik. Jou oortjies sal weer oopmaak nadat jy herbegin het.</translation>
 <translation id="3728188878314831180">Weerspieël kennisgewings van jou foon af</translation>
 <translation id="3728681439294129328">Stel netwerkadres op</translation>
 <translation id="3729506734996624908">Toegelate werwe</translation>
@@ -4046,6 +4047,7 @@ Dit kan inligting oor geïnstalleerde sagteware, lêers, jou blaaier en die toes
 <translation id="4110485659976215879">Laai waarskuwing terug</translation>
 <translation id="4110490973560452005">Aflaai is voltooi: <ph name="FILE_NAME" />. Druk Shift+F6 om na die aflaaibalk te gaan.</translation>
 <translation id="4112194537011183136"><ph name="DEVICE_NAME" /> (vanlyn)</translation>
+<translation id="4113483184628671608">Enkripteer die name van werwe wat jy besoek</translation>
 <translation id="4113743276555482284">Lêerwagwoord</translation>
 <translation id="4114524937989710624">Jy sien tans voorgestelde lêers om jou te help om maklik terug te kom by jou mees onlangse aktiwiteit in Google Drive.
         <ph name="BREAK" />
@@ -5775,6 +5777,7 @@ Toestemmings wat jy reeds aan webwerwe en apps gegee het, kan op hierdie rekenin
 <translation id="5517304475148761050">Hierdie program moet toegang tot die Play Winkel hê</translation>
 <translation id="5517412723934627386"><ph name="NETWORK_TYPE" /> – <ph name="NETWORK_DISPLAY_NAME" /></translation>
 <translation id="5518949581554491184">Stel op met Android-foon</translation>
+<translation id="5519053700692355541">Jy kan nou meeste van die kantpaneelkenmerke deur die Chrome-kieslys bo regs oopmaak</translation>
 <translation id="5519195206574732858">LTE</translation>
 <translation id="5519900055135507385">Hou hierdie rekening veiliger met ’n sterk wagwoord. Dit sal in <ph name="GOOGLE_PASSWORD_MANAGER" /> gestoor word vir <ph name="EMAIL" /></translation>
 <translation id="5521078259930077036">Is dit die tuisblad wat jy verwag het?</translation>
@@ -5921,7 +5924,6 @@ Maak seker jy wys nie enige sensitiewe inligting nie.</translation>
 <translation id="5636012309446422">Verwyder <ph name="DEVICE" /> van <ph name="PRIMARY_EMAIL" />?</translation>
 <translation id="5636996382092289526">Om <ph name="NETWORK_ID" /> te gebruik, moet jy dalk eers <ph name="LINK_START" />die netwerk se aanmeldbladsy besoek <ph name="LINK_END" />, wat binne 'n paar sekondes outomaties sal oopmaak. As dit nie gebeur nie, kan die netwerk nie gebruik word nie.</translation>
 <translation id="5637476008227280525">Aktiveer mobiele data</translation>
-<translation id="563811590465749036">Herbegin Chrome en laat Keychain toegang toe om Google Wagwoordbestuurder met macOS Keychain te gebruik. Jou oortjies sal weer oopmaak nadat jy herbegin het</translation>
 <translation id="563821631542362636">Laat werf toe om data te stoor</translation>
 <translation id="5638309510554459422">Kry uitbreidings en temas in die <ph name="BEGIN_LINK" />Chrome Webwinkel<ph name="END_LINK" /></translation>
 <translation id="5639549361331209298">Herlaai hierdie bladsy, hou om meer opsies te sien</translation>
@@ -6153,7 +6155,6 @@ Maak seker jy wys nie enige sensitiewe inligting nie.</translation>
 <translation id="583431638776747">Werf was nie beskikbaar nie</translation>
 <translation id="5834581999798853053">Ongeveer <ph name="TIME" /> minute oor</translation>
 <translation id="5835360478055379192">{NUM_EXTENSION,plural, =1{<ph name="EXTENSION1" /> het tans toegang tot MKT-toestelle}=2{Uitbreidings met toegang tot toestelle: <ph name="EXTENSION1" />, <ph name="EXTENSION2" />}other{Uitbreidings met toegang tot toestelle: <ph name="EXTENSION1" />, <ph name="EXTENSION2" /> + nog {3}}}</translation>
-<translation id="5835486486592033703"><ph name="WINDOW_TITLE" /> – Kamera- of mikrofoonopname</translation>
 <translation id="583673505367439042">Werwe kan vra om lêers of vouers op jou toestel te wysig</translation>
 <translation id="5836999627049108525">Taal waaruit vertaal moet word</translation>
 <translation id="583756221537636748">Houer</translation>
@@ -6738,6 +6739,7 @@ Maak seker jy wys nie enige sensitiewe inligting nie.</translation>
 <translation id="6294759976468837022">Outoskanderingspoed</translation>
 <translation id="6295158916970320988">Alle werwe</translation>
 <translation id="6295855836753816081">Stoor tans …</translation>
+<translation id="6298456705131259420">Beïnvloed die werwe wat hier gelys word Die invoeging van “[*.]“ voor ’n domeinnaam skep ’n uitsondering vir die hele domein. Byvoorbeeld, deur “[*.]google.com” by te voeg, kan derdepartywebkoekies ook aktief wees vir mail.google.com omdat dit deel is van google.com.</translation>
 <translation id="6298962879096096191">Gebruik Google Play om Android-programme te installeer</translation>
 <translation id="6300177430812514606">Mag nie data klaar stuur of ontvang nie</translation>
 <translation id="6300654006256345126">Wysig wagwoord</translation>
@@ -7159,6 +7161,7 @@ Jy het nog # gekompromitteerde wagwoorde. Google Wagwoordbestuurder beveel aan d
 <translation id="6651762277693024112">Loop outomaties elke keer wat jy hierdie werf besoek</translation>
 <translation id="665355505818177700">Chrome <ph name="MS_AD_NAME" /> se integrasie word net op x86_64-platforms gesteun. Chromebooks wat bo-op 'n ARM of x86-platform gebou is, steun nie hierdie funksionaliteit nie.</translation>
 <translation id="6654509035557065241">Verkies netwerk</translation>
+<translation id="6654987855337442937">Gebruik veilige domeinnaamstelsel (DNS) om te verhoed dat mense met toegang tot jou internetverkeer kan sien watter werwe jy besoek</translation>
 <translation id="6655190889273724601">Ontwikkelaarmodus</translation>
 <translation id="6655458902729017087">Versteek rekeninge</translation>
 <translation id="6657180931610302174">Voeg gebruikernaam by?</translation>
@@ -9555,6 +9558,7 @@ Hou jou sleutellêer op 'n veilige plek. Jy gaan dit nodig hê om nuwe weergawes
 <translation id="8528074251912154910">Voeg tale by</translation>
 <translation id="8528479410903501741">Stoor IBAN</translation>
 <translation id="8528962588711550376">Meld tans aan.</translation>
+<translation id="8529578450330869579">Gebruik veilige domeinnaamstelsel (DNS) om te verhoed dat mense met toegang tot jou internetverkeer kan sien watter werwe jy besoek. Dit gebruik ’n bestuurde diensverskaffer by <ph name="DNS_SERVER_TEMPLATE_WITH_IDENTIFIER" /></translation>
 <translation id="8529925957403338845">Kitsverbinding kon nie koppel nie</translation>
 <translation id="8531701051932785007">Verbeterde Veiligblaai is af</translation>
 <translation id="8533670235862049797">Veiligblaai is aan</translation>

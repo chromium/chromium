@@ -31,7 +31,6 @@
 <translation id="1018656279737460067">لغو شده</translation>
 <translation id="1022522674678746124">PowerPoint</translation>
 <translation id="1022669824195822609">دستگاه شما تحت‌مدیریت <ph name="DOMAIN" /> قرار دارد. سرپرستان می‌توانند به داده‌های موجود در همه نمایه‌های این دستگاه دسترسی داشته باشند.</translation>
-<translation id="1024734233509995696">این برگه از دوربین یا میکروفون شما استفاده می‌کند</translation>
 <translation id="1026655690966755180">افزودن درگاه</translation>
 <translation id="1026822031284433028">بارگیری تصویر</translation>
 <translation id="1026959648338730078">‏Windows Hello یا کلید امنیتی خارجی</translation>
@@ -102,7 +101,7 @@
 <translation id="107278043869924952">استفاده از پین همراه با گذرواژه</translation>
 <translation id="107450319332239199">مشکلی پیش آمد. پنجره را به‌صورت دستی باز کنید.</translation>
 <translation id="1075920807995555452">‏ابزارها، ویرایشگرها، و محیط‌های توسعه نرم‌افزار یکپارچه (IDEs) موجود در محیط مدیریت‌شده توسط سازمانتان را در <ph name="DEVICE_TYPE" /> اجرا کنید. <ph name="LINK_BEGIN" />بیشتر بدانید<ph name="LINK_END" /></translation>
-<translation id="1076176485976385390">پیمایش کردن صفحه‌ها با نشانگر نوشتار</translation>
+<translation id="1076176485976385390">پیمایش کردن صفحه‌ها با مکان‌نمای نوشتار</translation>
 <translation id="1076382954055048850">نمایش جلسه‌های دیگر پخش محتوا</translation>
 <translation id="1076698951459398590">فعال کردن زمینه</translation>
 <translation id="1076766328672150609">فرزندتان می‌تواند برای باز کردن قفل دستگاه از پین استفاده کند.</translation>
@@ -1784,7 +1783,6 @@
 <translation id="2335111415680198280">{0,plural, =1{بستن # پنجره}one{بستن # پنجره}other{بستن # پنجره}}</translation>
 <translation id="2336228925368920074">نشانک‌گذاری همه برگه‌ها...</translation>
 <translation id="2336381494582898602">Powerwash</translation>
-<translation id="2337236196941929873">‏صفحه‌هایی که Chrome فکر می‌کند شاید بازدید کنید پیش‌بارگیری می‌شود. برای انجام این کار، Chrome از کوکی‌ها (درصورتی که کوکی‌ها را مجاز کرده باشید) استفاده می‌کند و صفحه‌ها را رمزگذاری و ازطریق Google ارسال می‌کند تا هویت شما در سایت‌ها فاش نشود.</translation>
 <translation id="2340239562261172947">نمی‌توان <ph name="FILE_NAME" /> را به‌طور ایمن بارگیری کرد</translation>
 <translation id="2342180549977909852">فرزندتان می‌تواند برای باز کردن قفل این دستگاه، به‌جای گذرواژه از شماره (پین) استفاده کند. برای تنظیم پین در فرصتی دیگر، به «تنظیمات» بروید.</translation>
 <translation id="2342740338116612727">نشانک‌ها اضافه شد</translation>
@@ -1877,6 +1875,7 @@
 <translation id="2412753904894530585">Kerberos</translation>
 <translation id="2414159296888870200">ازسر گرفتن مرور <ph name="MODULE_TITLE" /></translation>
 <translation id="2414886740292270097">تاریک</translation>
+<translation id="2415117815770324983">‏شما را از سیستم اکثر سایت‌ها خارج می‌کند. از سیستم «حساب Google» خود خارج نمی‌شوید.</translation>
 <translation id="2416435988630956212">کلیدهای عملکرد صفحه‌کلید</translation>
 <translation id="2418307627282545839">روشن و دلباز</translation>
 <translation id="2419131370336513030">مشاهده برنامه‌های نصب‌شده</translation>
@@ -2031,7 +2030,7 @@
 <translation id="251722524540674480">نام کاربری‌تان را تأیید کنید</translation>
 <translation id="2517472476991765520">اسکن</translation>
 <translation id="2518024842978892609">استفاده از گواهی‌های کلاینت شما</translation>
-<translation id="2519250377986324805">دیدن سازوکار</translation>
+<translation id="2519250377986324805">دیدن روش کار</translation>
 <translation id="2519517390894391510">نام نمایه گواهینامه</translation>
 <translation id="2520644704042891903">در انتظار برای سوکت موجود...</translation>
 <translation id="2521427645491031107">همگام‌سازی برنامه‌ها در «تنظیمات» دستگاه تنظیم می‌شود</translation>
@@ -2397,6 +2396,7 @@
 <translation id="2799223571221894425">راه‌اندازی مجدد</translation>
 <translation id="2800309299477632167">نقشه‌کلید سفارشی</translation>
 <translation id="2800760947029405028">بارگذاری تصویر</translation>
+<translation id="2801134910297796778">به سیستم <ph name="EMAIL" /> وارد شده‌اید</translation>
 <translation id="2801954693771979815">اندازه صفحه‌نمایش</translation>
 <translation id="2802557211515765772">چاپگر مدیریت‌شده‌ای وجود ندارد.</translation>
 <translation id="2803313416453193357">بازکردن پوشه</translation>
@@ -3528,6 +3528,7 @@
 <translation id="372722114124766626">فقط یک‌بار</translation>
 <translation id="3727332897090187514">یادداشتی اضافه نشده است</translation>
 <translation id="3727473233247516571">قاب فرعی حافظه پنهان عقب-جلو: <ph name="BACK_FORWARD_CACHE_PAGE_URL" /></translation>
+<translation id="3727850735097852673">‏برای استفاده از «مدیر گذرواژه Google» با macOS Keychain، برنامه Chrome را مجدداً راه‌اندازی کنید و دسترسی به Keychain را مجاز کنید. پس‌از راه‌اندازی مجدد، برگه‌هایتان دوباره باز می‌شوند.</translation>
 <translation id="3728188878314831180">بازتاب اعلان‌ها از تلفنتان</translation>
 <translation id="3728681439294129328">پیکربندی نشانی شبکه</translation>
 <translation id="3729506734996624908">سایت‌های مجاز</translation>
@@ -4043,6 +4044,7 @@
 <translation id="4110485659976215879">بازیابی هشدار</translation>
 <translation id="4110490973560452005">‏بارگیری کامل شد: <ph name="FILE_NAME" />. برای چرخش در قسمت نوار بارگیری‌ها، Shift+F6 را فشار دهید.</translation>
 <translation id="4112194537011183136"><ph name="DEVICE_NAME" /> (آفلاین)</translation>
+<translation id="4113483184628671608">رمزگذاری نام سایت‌هایی که بازدید می‌کنید</translation>
 <translation id="4113743276555482284">گذرواژه فایل</translation>
 <translation id="4114524937989710624">‏درحال دیدن فایل‌های پیشنهادی هستید تا به‌کمک آن‌ها بتوانید خیلی راحت به جدیدترین فعالیتتان در Google Drive برگردید.
         <ph name="BREAK" />
@@ -5153,7 +5155,7 @@
 <translation id="5016491575926936899">می‌توانید از رایانه پیامک ارسال کنید، اتصال اینترنت را به‌اشتراک بگذارید، به اعلان‌های مکالمه پاسخ دهید، و قفل <ph name="DEVICE_TYPE" /> را با تلفنتان باز کنید.<ph name="FOOTNOTE_POINTER" /> <ph name="LINK_BEGIN" />بیشتر بدانید<ph name="LINK_END" /></translation>
 <translation id="5016983299133677671">گذرواژه جدیدی را امتحان کنید</translation>
 <translation id="5017529052065664584">۱۵ دقیقه اخیر</translation>
-<translation id="5017643436812738274">‏با نشانگر نوشتار می‌توانید صفحه‌ها را پیمایش کنید. برای خاموش شدن، Ctrl+Search+7 را فشار دهید.</translation>
+<translation id="5017643436812738274">‏با مکان‌نما نوشتار می‌توانید صفحه‌ها را پیمایش کنید. برای خاموش شدن، Ctrl+Search+7 را فشار دهید.</translation>
 <translation id="5018207570537526145">باز کردن وب‌سایت افزونه</translation>
 <translation id="5018526990965779848">‏داده‌های استفاده و عیب‌یابی را ارسال کنید. با ارسال خودکار داده‌های تشخیص عیب و داده‌های استفاده از دستگاه و برنامه به Google، به بهبود تجربه استفاده از Android کمک کنید. این داده‌ها به بهبود پایداری سیستم و برنامه و موارد دیگر کمک خواهد کرد. بعضی داده‌های انبوهشی نیز به برنامه‌ها و شرکای Google (مانند «برنامه‌نویس‌های Android») کمک می‌کند. اگر تنظیم «فعالیت‌ها در وب و برنامه» تکمیلی روشن باشد، ممکن است این داده‌ها در «حساب Google» شما ذخیره شود.</translation>
 <translation id="5020008942039547742">پنجره دیگری را انتخاب کنید</translation>
@@ -5258,7 +5260,7 @@
 <translation id="5097649414558628673">ابزار: <ph name="PRINT_NAME" /></translation>
 <translation id="5097874180538493929">کلیک کردن خودکار هنگام متوقف شدن نشانگر</translation>
 <translation id="5100775515702043594">سرپرست شما <ph name="EXTENSION_NAME" /> را سنجاق کرده است</translation>
-<translation id="5101839224773798795">کلیک خودکار با توقف مرورگر</translation>
+<translation id="5101839224773798795">کلیک خودکار با توقف مکان‌نما</translation>
 <translation id="5103311607312269661">افزایش روشنایی نمایشگر</translation>
 <translation id="5106350808162641062">برداشتن</translation>
 <translation id="510695978163689362">‏<ph name="USER_EMAIL" /> تحت نظارت Family Link است. برای دسترسی به منابع مدرسه با نظارت والدین، می‌توانید حساب‌های محل تحصیل اضافه کنید.</translation>
@@ -5772,6 +5774,7 @@
 <translation id="5517304475148761050">‏این برنامه باید به «فروشگاه Play» دسترسی پیدا کند</translation>
 <translation id="5517412723934627386"><ph name="NETWORK_TYPE" /> - <ph name="NETWORK_DISPLAY_NAME" /></translation>
 <translation id="5518949581554491184">‏راه‌اندازی با تلفن Android</translation>
+<translation id="5519053700692355541">‏می‌توانید اکثر ویژگی‌های پانل کناری را ازطریق منو Chrome در بالا سمت چپ باز کنید</translation>
 <translation id="5519195206574732858">LTE</translation>
 <translation id="5519900055135507385">با گذروا‌ژه‌ای قوی، ایمنی این حساب را بیشتر حفظ کنید. این گذرواژه در <ph name="GOOGLE_PASSWORD_MANAGER" /> برای <ph name="EMAIL" /> ذخیره خواهد شد.</translation>
 <translation id="5521078259930077036">آیا این همان صفحه اصلی مورد انتظار شماست؟</translation>
@@ -5917,7 +5920,6 @@
 <translation id="5636012309446422"><ph name="DEVICE" /> از <ph name="PRIMARY_EMAIL" /> برداشته شود؟</translation>
 <translation id="5636996382092289526">برای استفاده از <ph name="NETWORK_ID" /> ابتدا باید به <ph name="LINK_START" />صفحه ورود به سیستم شبکه بروید<ph name="LINK_END" />، که تا چند ثانیه دیگر به‌طور خودکار باز می‌شود. اگر این اتفاق نیافتد، نمی‌توان از شبکه استفاده کرد.</translation>
 <translation id="5637476008227280525">فعال کردن داده تلفن همراه</translation>
-<translation id="563811590465749036">‏برای استفاده از «مدیر گذرواژه Google» در macOS Keychain، برنامه Chrome را مجدداً راه‌اندازی کنید و دسترسی به Keychain را مجاز کنید. پس‌از راه‌اندازی مجدد، برگه‌هایتان دوباره باز می‌شود</translation>
 <translation id="563821631542362636">اجازه دادن به سایت برای ذخیره داده‌ها</translation>
 <translation id="5638309510554459422">‏افزونه‌ها و طرح‌های زمینه را در <ph name="BEGIN_LINK" />نت‌بازار Chrome<ph name="END_LINK" /> پیدا کنید</translation>
 <translation id="5639549361331209298">بار کردن مجدد این صفحه، آن را نگهدارید تا گزینه‌های بیشتری را ببینید</translation>
@@ -6149,7 +6151,6 @@
 <translation id="583431638776747">سایت دردسترس نبود</translation>
 <translation id="5834581999798853053">حدود <ph name="TIME" /> دقیقه باقی مانده است</translation>
 <translation id="5835360478055379192">{NUM_EXTENSION,plural, =1{<ph name="EXTENSION1" /> به «دستگاه‌های میانای انسانی» دسترسی دارد}=2{افزونه‌هایی که به دستگاه‌ها دسترسی دارند: <ph name="EXTENSION1" />، <ph name="EXTENSION2" />}one{افزونه‌هایی که به دستگاه‌ها دسترسی دارند: <ph name="EXTENSION1" />، <ph name="EXTENSION2" /> +{3} افزونه دیگر}other{افزونه‌هایی که به دستگاه‌ها دسترسی دارند: <ph name="EXTENSION1" />، <ph name="EXTENSION2" /> +{3} افزونه دیگر}}</translation>
-<translation id="5835486486592033703"><ph name="WINDOW_TITLE" /> - دوربین یا میکروفون درحال ضبط کردن است</translation>
 <translation id="583673505367439042">سایت‌ها می‌توانند برای ویرایش فایل‌ها و پوشه‌های موجود در دستگاهتان درخواست دهند</translation>
 <translation id="5836999627049108525">زبانی که می‌خواهید از آن ترجمه کنید</translation>
 <translation id="583756221537636748">قاب</translation>
@@ -6734,6 +6735,7 @@
 <translation id="6294759976468837022">سرعت اسکن خودکار</translation>
 <translation id="6295158916970320988">همه سایت‌ها</translation>
 <translation id="6295855836753816081">در حال ذخیره کردن...</translation>
+<translation id="6298456705131259420">‏بر سایت‌هایی فهرست‌شده در اینجا تأثیر می‌گذارد. با درج «[.*]» قبل‌از نام دامنه، یک استثنا برای کل دامنه ایجاد می‌شود. برای مثال، افزودن «‎[*.]google.com» بدین معنی است که کوکی‌های شخص ثالث می‌توانند برای mail.google.com هم فعال باشند، زیرا این زیردامنه بخشی از google.com است.</translation>
 <translation id="6298962879096096191">‏برای نصب برنامه‌های Android از Google Play‌ استفاده کنید</translation>
 <translation id="6300177430812514606">اجازه ندارد ارسال و دریافت داده را به‌پایان برساند</translation>
 <translation id="6300654006256345126">ویرایش گذرواژه</translation>
@@ -7157,6 +7159,7 @@
 <translation id="6651762277693024112">هر بار که از این سایت بازدید می‌کنید به‌طور خودکار اجرا می‌شود</translation>
 <translation id="665355505818177700">‏یکپارچه‌سازی <ph name="MS_AD_NAME" /> Chrome فقط در پلتفورم‌های x86_64 پشتیبانی می‌شود. دستگاه‌های Chromebook ساخته‌شده در بالای پلتفورم ARM یا x86 این عملکرد را پشتیبانی نمی‌کنند.</translation>
 <translation id="6654509035557065241">شبکه انتخابی</translation>
+<translation id="6654987855337442937">‏از «سیستم نامگذاری دامنه» (DNS) استفاده کنید تا افرادی که به ترافیک اینترنتی شما دسترسی دارند نتوانند سایت‌هایی را که بازدید می‌کنید ببینند</translation>
 <translation id="6655190889273724601">حالت برنامه‌نویس</translation>
 <translation id="6655458902729017087">پنهان‌سازی حساب‌ها</translation>
 <translation id="6657180931610302174">نام کاربری اضافه شود؟</translation>
@@ -9554,6 +9557,7 @@
 <translation id="8528074251912154910">افزودن زبان</translation>
 <translation id="8528479410903501741">‏ذخیره IBAN</translation>
 <translation id="8528962588711550376">ورود به برنامه.</translation>
+<translation id="8529578450330869579">‏از «سیستم نامگذاری دامنه» (DNS) استفاده کنید تا افرادی که به ترافیک اینترنتی شما دسترسی دارند نتوانند سایت‌هایی را که بازدید می‌کنید ببینند. این ویژگی از رساننده خدمات تحت مدیریت <ph name="DNS_SERVER_TEMPLATE_WITH_IDENTIFIER" /> استفاده می‌کند</translation>
 <translation id="8529925957403338845">اشتراک‌گذاری اینترنت فوری برقرار نشد</translation>
 <translation id="8531701051932785007">«مرور ایمن پیشرفته» خاموش است</translation>
 <translation id="8533670235862049797">«مرور ایمن» روشن است</translation>

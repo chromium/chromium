@@ -55,6 +55,7 @@ Mambo ya kuzingatia:
 <translation id="2574249610672786438">Ili uone vichupo vyako kwenye kifaa chochote unakotumia Chrome, ingia katika akaunti ukitumia vifaa vyako vyote</translation>
 <translation id="2576431527583832481">Chrome imekuwa bora! Toleo jipya linapatikana.</translation>
 <translation id="257708665678654955">Ungependa Google Chrome ijitolee kutafsiri kurasa za <ph name="LANGUAGE_NAME" /> kutoka tovuti hii wakati ujao?</translation>
+<translation id="2650286135394207535">Ruhusu Chrome ikusaidie kufuatilia vifurushi vyako</translation>
 <translation id="2671426118752779020">Unaweza kutumia manenosiri uliyohifadhi kwenye Kidhibiti cha Manenosiri cha Google katika programu zingine kwenye iPhone yako.</translation>
 <translation id="2689064829982324496">Ili uondoke kwenye akaunti yako ya Google katika tovuti zote, <ph name="BEGIN_LINK" />ondoka kwenye akaunti yako katika kivinjari cha Chrome<ph name="END_LINK" />.</translation>
 <translation id="2695886661449553974">Chrome imeshindwa kukagua kama kuna masasisho. Jaribu tena baadaye.</translation>
@@ -69,7 +70,6 @@ Mambo ya kuzingatia:
 <translation id="309672519329227863">Fikia manenosiri yako ya Chrome na zaidi kwenye programu zingine.</translation>
 <translation id="3167189358072330585">Akaunti yako haifanyi kazi kwenye Google Chrome. Tafadhali wasiliana na msimamizi wako wa kikoa au utumie Akaunti yako ya kawaida ya Google kuingia.</translation>
 <translation id="3173834708294760622">Ukurasa wa Google Chrome</translation>
-<translation id="3196546062792660320">Chrome inakuokolea wakati kwa kuleta akaunti zako kwenye wavuti. Unaweza kuongeza au kuondoa akaunti katika Mipangilio.</translation>
 <translation id="322254490661677575">Ili utumie na uhifadhi data ya Chrome kwenye Akaunti yako ya Google, weka kauli yako ya siri.</translation>
 <translation id="3282568296779691940">Ingia katika Chrome</translation>
 <translation id="3345341804167540816">Tumia Chrome Kila Mahali</translation>
@@ -169,7 +169,6 @@ Mtu aliye na kauli yako ya siri pekee ndiye anaweza kusoma data yako iliyosimbwa
 <translation id="7124339256045485976">Hakikisha Chrome imesasishwa kila wakati</translation>
 <translation id="7161390184744336561">Toleo la Google Chrome limepitwa na wakati</translation>
 <translation id="7165736900384873061">Anza kutumia kichanganuzi cha QR cha Google Chrome</translation>
-<translation id="7173660919484573146">Chrome hutumia Kitambulisho cha Uso ili kuhakikisha ufikiaji ulioidhinishwa wa manenosiri yako.</translation>
 <translation id="7187993566681480880">Hulinda usalama wako kwenye Chrome na inaweza kutumiwa kuboresha usalama wako kwenye programu nyingine za Google ukiwa umeingia katika akaunti.</translation>
 <translation id="7200524487407690471">Chrome hutekeleza kiotomatiki Ukaguzi wa Usalama kila siku ili kukulinda dhidi ya ufichuzi haramu wa data, tovuti zisizo salama na mengine. Unaweza kupata maelezo zaidi kuhusu Ukaguzi wa Usalama kwenye Mipangilio.</translation>
 <translation id="72119412072970160">Unaweza kutumia manenosiri uliyohifadhi kwenye Kidhibiti cha Manenosiri cha Google katika programu zingine kwenye iPad yako.</translation>

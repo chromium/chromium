@@ -913,7 +913,6 @@ Trebuie să activezi Handoff în secțiunea General din Setări, iar dispozitive
 <translation id="5857770089550859117">Pentru a începe sincronizarea este necesară expresia de acces.</translation>
 <translation id="5859715514067755465">Înainte</translation>
 <translation id="5860033963881614850">Dezactivat</translation>
-<translation id="5869029295770560994">OK, am înțeles</translation>
 <translation id="5871497086027727873">Un element mutat</translation>
 <translation id="5896576662943111387">Creat pentru iOS</translation>
 <translation id="5897749768294722429">Pentru a reveni rapid la site-urile pe care le-ai accesat, sincronizează filele și istoricul.</translation>
@@ -930,7 +929,6 @@ Trebuie să activezi Handoff în secțiunea General din Setări, iar dispozitive
 <translation id="595769230373966252">Caută cu <ph name="SEARCH_PROVIDER" /></translation>
 <translation id="5962718611393537961">Atinge pentru a restrânge</translation>
 <translation id="5963939892571022323">Nu se poate crea un link spre evidențiere.</translation>
-<translation id="5965679971710331625">Te-ai conectat</translation>
 <translation id="5971872012779224351">{count,plural, =1{Un marcaj șters}few{{count} marcaje șterse}other{{count} de marcaje șterse}}</translation>
 <translation id="5979837087407522202">Caută parole</translation>
 <translation id="5981230843984570095">Închide toate elementele inactive</translation>
@@ -1479,6 +1477,7 @@ Datele au fost criptate cu expresia de acces pentru <ph name="TIME" />. Introdu-
 <translation id="8766790350274092814">Parolele pentru <ph name="WEBSITE" /> și <ph name="SECOND_WEBSITE" /> se vor șterge. Conturile tale nu se vor șterge.</translation>
 <translation id="8775144690796719618">Adresă URL nevalidă</translation>
 <translation id="8780076847684176174">{count,plural, =1{Examinează fila...}few{Examinează toate filele...}other{Examinează toate filele...}}</translation>
+<translation id="8782570580170191813">Urmărește întotdeauna coletele</translation>
 <translation id="8787968206789828143">Caută pe web</translation>
 <translation id="8792626944327216835">Microfon</translation>
 <translation id="8803639129939845298">Securizat</translation>

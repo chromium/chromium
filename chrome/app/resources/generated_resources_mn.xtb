@@ -31,7 +31,6 @@
 <translation id="1018656279737460067">Цуцлагдсан байна</translation>
 <translation id="1022522674678746124">PowerPoint</translation>
 <translation id="1022669824195822609">Таны төхөөрөмжийг <ph name="DOMAIN" />-с удирддаг. Администратор энэ төхөөрөмж дээрх дурын профайлын өгөгдөлд хандах боломжтой.</translation>
-<translation id="1024734233509995696">Энэ таб таны камер эсвэл микрофоныг ашиглаж байна</translation>
 <translation id="1026655690966755180">Порт нэмэх</translation>
 <translation id="1026822031284433028">Зураг ачаалах</translation>
 <translation id="1026959648338730078">Windows Hello эсвэл гадны аюулгүй байдлын түлхүүр</translation>
@@ -1783,7 +1782,6 @@
 <translation id="2335111415680198280">{0,plural, =1{# цонхыг хаах}other{# цонхыг хаах}}</translation>
 <translation id="2336228925368920074">Бүх цонхны хавчуурга үүсгэ...</translation>
 <translation id="2336381494582898602">Үйлдвэрийн тохиргоонд нь буцааж оруулах</translation>
-<translation id="2337236196941929873">Chrome-н таныг зочилж магадгүй гэж бодсон хуудаснуудыг урьдчилан ачаална. Үүнийг хийхийн тулд Chrome таныг күүкиг зөвшөөрсөн тохиолдолд ашиглаж магадгүй бөгөөд таны таниулбарыг сайтуудаас нуухын тулд хуудаснуудыг шифрлэж, Google-р илгээж болзошгүй.</translation>
 <translation id="2340239562261172947"><ph name="FILE_NAME" />-г аюулгүй татах боломжгүй</translation>
 <translation id="2342180549977909852">Таны хүүхэд энэ төхөөрөмжийн түгжээг тайлахын тулд нууц үгний оронд дугаар (ПИН) ашиглах боломжтой. Дараа нь ПИН тохируулахын тулд Тохиргоо руу очно уу.</translation>
 <translation id="2342740338116612727">Хавчуурга нэмсэн</translation>
@@ -1876,6 +1874,7 @@
 <translation id="2412753904894530585">Kerberos</translation>
 <translation id="2414159296888870200"><ph name="MODULE_TITLE" />-г үргэлжлүүлэн үзнэ үү</translation>
 <translation id="2414886740292270097">Хар</translation>
+<translation id="2415117815770324983">Таныг ихэнх сайтаас гаргана. Та Google Бүртгэлдээ нэвтэрсэн хэвээр үлдэнэ.</translation>
 <translation id="2416435988630956212">Гарын функцийн түлхүүр</translation>
 <translation id="2418307627282545839">Зүйлсийг гэрэлтэй бөгөөд зөөлөн байлгаарай</translation>
 <translation id="2419131370336513030">Суулгасан аппуудыг харах</translation>
@@ -2396,6 +2395,7 @@
 <translation id="2799223571221894425">Дахин эхлүүлэх</translation>
 <translation id="2800309299477632167">Гарын хэвшмэл товчлуурын байрлал</translation>
 <translation id="2800760947029405028">Зураг байршуулах</translation>
+<translation id="2801134910297796778"><ph name="EMAIL" />-д нэвтэрсэн</translation>
 <translation id="2801954693771979815">Дэлгэцийн хэмжээ</translation>
 <translation id="2802557211515765772">Удирддаг хэвлэгч байхгүй байна.</translation>
 <translation id="2803313416453193357">Хавтсыг нээ</translation>
@@ -3527,6 +3527,7 @@
 <translation id="372722114124766626">Нэг удаа</translation>
 <translation id="3727332897090187514">Тэмдэглэл нэмээгүй</translation>
 <translation id="3727473233247516571">Back/Forward Cache хийсэн дэд хүрээ: <ph name="BACK_FORWARD_CACHE_PAGE_URL" /></translation>
+<translation id="3727850735097852673">Google Password Manager-г macOS Keychain-тэй ашиглахын тулд Chrome-г дахин ачаалж, Keychain-н хандалтыг зөвшөөрнө үү. Дахин ачаалсны дараа таны табуудыг дахин нээнэ.</translation>
 <translation id="3728188878314831180">Утаснаасаа мэдэгдэл тусгах</translation>
 <translation id="3728681439294129328">Сүлжээний хаягийг тохируулах</translation>
 <translation id="3729506734996624908">Зөвшөөрөгдсөн сайт</translation>
@@ -4041,6 +4042,7 @@
 <translation id="4110485659976215879">Сануулгыг сэргээх</translation>
 <translation id="4110490973560452005">Татаж дууссан: <ph name="FILE_NAME" />. Татаж авсан файл хадгалах эсвэл нээх хэсэгт гүйлгэхийн тулд Shift+F6-г дарна уу.</translation>
 <translation id="4112194537011183136"><ph name="DEVICE_NAME" /> (офлайн)</translation>
+<translation id="4113483184628671608">Та зочилдог сайтуудынхаа нэрийг шифрлэнэ үү</translation>
 <translation id="4113743276555482284">Файлын нууц үг</translation>
 <translation id="4114524937989710624">Та Google Драйвт хамгийн саяхны үйл ажиллагаа руугаа хялбархан буцахад тань туслах санал болгосон файлуудыг харж байна.
         <ph name="BREAK" />
@@ -5770,6 +5772,7 @@
 <translation id="5517304475148761050">Энэ аппад Play Store-д хандах хандалт шаардлагатай</translation>
 <translation id="5517412723934627386"><ph name="NETWORK_TYPE" /> - <ph name="NETWORK_DISPLAY_NAME" /></translation>
 <translation id="5518949581554491184">Android утсаар тохируулах</translation>
+<translation id="5519053700692355541">Та баруун дээд талд байх Chrome цэсээр дамжуулан хажуугийн самбарын ихэнх онцлогийг нээх боломжтой</translation>
 <translation id="5519195206574732858">LTE</translation>
 <translation id="5519900055135507385">Энэ бүртгэлийг сайн нууц үгээр илүү аюулгүй байлгана уу. Үүнийг <ph name="EMAIL" />-д зориулж <ph name="GOOGLE_PASSWORD_MANAGER" />-д хадгална.</translation>
 <translation id="5521078259930077036">Энэ таны хүссэн нүүр хуудас мөн үү?</translation>
@@ -5916,7 +5919,6 @@
 <translation id="5636012309446422"><ph name="DEVICE" />-г <ph name="PRIMARY_EMAIL" />-с хасах уу?</translation>
 <translation id="5636996382092289526"><ph name="NETWORK_ID" />-ыг ашиглахын тулд та эхлээд <ph name="LINK_START" /> сүлжээний нэвтрэх хуудас <ph name="LINK_END" />  руу орох хэрэгтэй бөгөөд  энэ нь хэдхэн секундын дотор автоматаар нээгдэнэ. Хэрвээ энэ ажиллахгүй байвал сүлжээг ашиглах боломжгүй.</translation>
 <translation id="5637476008227280525">Мобайл датаг идэвхжүүлэх</translation>
-<translation id="563811590465749036">Google Password Manager-г macOS Keychain-тэй ашиглахын тулд Chrome-г дахин ачаалж, Keychain-н хандалтыг зөвшөөрнө үү. Дахин ачаалсны дараа таны табууд дахин нээгдэнэ</translation>
 <translation id="563821631542362636">Өгөгдөл хадгалахыг сайтад зөвшөөрөх</translation>
 <translation id="5638309510554459422"><ph name="BEGIN_LINK" />Chrome Веб Дэлгүүрээс<ph name="END_LINK" /> өргөтгөл, загвар олох</translation>
 <translation id="5639549361331209298">Энэ хуудсыг дахин ачаална уу. Түр хүлээн нэмэлт сонголтуудыг харна уу.</translation>
@@ -6148,7 +6150,6 @@
 <translation id="583431638776747">Сайт боломжгүй байсан</translation>
 <translation id="5834581999798853053"><ph name="TIME" /> үлдсэн минутын тухай</translation>
 <translation id="5835360478055379192">{NUM_EXTENSION,plural, =1{<ph name="EXTENSION1" /> HID төхөөрөмжүүдэд хандаж байна}=2{Өргөтгөлүүд дараах төхөөрөмжүүдэд хандаж байна: <ph name="EXTENSION1" />, <ph name="EXTENSION2" />}other{Өргөтгөлүүд дараах төхөөрөмжүүдэд хандаж байна: <ph name="EXTENSION1" />, <ph name="EXTENSION2" /> болон өөр +{3}}}</translation>
-<translation id="5835486486592033703"><ph name="WINDOW_TITLE" /> - Камер, эсвэл микрофоны бичлэг</translation>
 <translation id="583673505367439042">Сайтууд таны төхөөрөмж дээрх файлууд эсвэл фолдеруудыг засахыг хүсэх боломжтой</translation>
 <translation id="5836999627049108525">Орчуулах хэл</translation>
 <translation id="583756221537636748">Гэр</translation>
@@ -6732,6 +6733,7 @@
 <translation id="6294759976468837022">Автомат сканы хурд</translation>
 <translation id="6295158916970320988">Бүх сайт</translation>
 <translation id="6295855836753816081">Хадгалж байна...</translation>
+<translation id="6298456705131259420">Энд жагсаасан сайтуудад нөлөөлнө. “[*.]”-г домэйн нэрийн өмнө оруулах нь нийт домэйнд онцгой тохиолдол үүсгэнэ. Жишээлбэл “[*.]google.com”-г нэмэх нь мөн гуравдагч талын күүкинүүдийг mail.google.com-д идэвхжүүлэх боломжтой гэсэн үг юм. Учир нь энэ нь google.com-н нэг хэсэг юм.</translation>
 <translation id="6298962879096096191">Андройд апп суулгахын тулд Google Play-г ашиглана уу</translation>
 <translation id="6300177430812514606">Өгөгдөл илгээж эсвэл хүлээн авч дуусгахыг зөвшөөрөөгүй</translation>
 <translation id="6300654006256345126">Нууц үг засах</translation>
@@ -7153,6 +7155,7 @@
 <translation id="6651762277693024112">Таныг энэ сайтад зочлох бүрд автоматаар ажиллана</translation>
 <translation id="665355505818177700">Chrome <ph name="MS_AD_NAME" /> интеграцийг зөвхөн x86_64 платформд дэмждэг. ARM эсвэл x86 платформ дээр суурилсан Chromebook энэ функцийг дэмждэггүй.</translation>
 <translation id="6654509035557065241">Сүлжээ сонгох</translation>
+<translation id="6654987855337442937">Таны интернэтийн урсгалд хандах эрхтэй хүмүүсийг таны зочилдог сайтуудыг харахаас сэргийлэхийн тулд аюулгүй Домэйн нэрийн систем (DNS) ашиглана уу</translation>
 <translation id="6655190889273724601">Хөгжүүлэгч горим</translation>
 <translation id="6655458902729017087">Дансуудыг нуу</translation>
 <translation id="6657180931610302174">Хэрэглэгчийн нэр нэмэх үү?</translation>
@@ -9547,6 +9550,7 @@
 <translation id="8528074251912154910">Хэл нэмэх</translation>
 <translation id="8528479410903501741">Олон улсын банк акаунтны дугаарыг хадгалах</translation>
 <translation id="8528962588711550376">Нэвтэрч байна</translation>
+<translation id="8529578450330869579">Таны интернэтийн урсгалд хандах эрхтэй хүмүүсийг таны зочилдог сайтуудыг харахаас сэргийлэхийн тулд аюулгүй Домэйн нэрийн систем (DNS) ашиглана уу. Энэ нь <ph name="DNS_SERVER_TEMPLATE_WITH_IDENTIFIER" /> дээр удирддаг үйлчилгээ үзүүлэгчийг ашиглана</translation>
 <translation id="8529925957403338845">Шуурхай модем болгох холболт амжилтгүй боллоо</translation>
 <translation id="8531701051932785007">Сайжруулсан аюулгүй хөтөч унтраалттай байна</translation>
 <translation id="8533670235862049797">Аюулгүй үзэх үйлчилгээ асаалттай байна</translation>

@@ -55,6 +55,7 @@
 <translation id="2574249610672786438">Kad matytumėte skirtukus iš visų įrenginių, kuriuose naudojate „Chrome“, prisijunkite visuose įrenginiuose</translation>
 <translation id="2576431527583832481">„Chrome“ patobulėjo! Galima nauja versija.</translation>
 <translation id="257708665678654955">Ar norėtumėte, kad kitą kartą „Google Chrome“ būtų siūloma išversti šios svetainės puslapius <ph name="LANGUAGE_NAME" /> k.?</translation>
+<translation id="2650286135394207535">Leiskite „Chrome“ padėti stebėti jūsų siuntinius</translation>
 <translation id="2671426118752779020">Galite naudoti „Google“ slaptažodžių tvarkytuvėje išsaugotus slaptažodžius kitose „iPhone“ programose.</translation>
 <translation id="2689064829982324496">Jei norite atsijungti nuo „Google“ paskyros visose svetainėse, <ph name="BEGIN_LINK" />atsijunkite nuo „Chrome“<ph name="END_LINK" />.</translation>
 <translation id="2695886661449553974">„Chrome“ nepavyko patikrinti, ar yra naujinių. Bandykite dar kartą vėliau.</translation>
@@ -69,7 +70,6 @@
 <translation id="309672519329227863">Pasiekite „Chrome“ slaptažodžius ir kitas funkcijas kitose programose.</translation>
 <translation id="3167189358072330585">Paskyra neveikia sistemoje „Google Chrome“. Susisiekite su domeno administratoriumi arba prisijungdami naudokite įprastą „Google“ paskyrą.</translation>
 <translation id="3173834708294760622">„Google Chrome“ puslapis</translation>
-<translation id="3196546062792660320">„Chrome“ taupo laiką naudodama paskyras žiniatinklyje. Paskyras galite pridėti arba pašalinti nustatymuose.</translation>
 <translation id="322254490661677575">Jei norite naudoti ir išsaugoti „Chrome“ duomenis „Google“ paskyroje, įveskite slaptafrazę.</translation>
 <translation id="3282568296779691940">Prisijungti prie „Chrome“</translation>
 <translation id="3345341804167540816">Naudokite „Chrome“ visur</translation>
@@ -169,7 +169,6 @@ Tik jūsų slaptafrazę turintis asmuo galės perskaityti šifruotus duomenis. S
 <translation id="7124339256045485976">Atnaujinkite „Chrome“</translation>
 <translation id="7161390184744336561">„Google Chrome“ versija yra pasenusi</translation>
 <translation id="7165736900384873061">Prad. naudoti „Google Chrome“ QR skait.</translation>
-<translation id="7173660919484573146">„Chrome“ naudoja „Face ID“, kad užtikrintų teisėtą prieigą prie slaptažodžių.</translation>
 <translation id="7187993566681480880">Apsaugo jus naršyklėje „Chrome“ ir gali būti naudojama apsaugai kitose „Google“ programose pagerinti, kai esate prisijungę.</translation>
 <translation id="7200524487407690471">„Chrome“ kasdien automatiškai vykdo saugos patikrą, kad būtumėte apsaugoti nuo duomenų saugos pažeidimų, nesaugių svetainių ir kt. Daugiau apie saugos patikrą rasite skiltyje „Nustatymai“.</translation>
 <translation id="72119412072970160">Galite naudoti „Google“ slaptažodžių tvarkytuvėje išsaugotus slaptažodžius kitose „iPad“ programose.</translation>

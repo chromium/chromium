@@ -87,6 +87,7 @@
 <translation id="11635448457105324">Bouton "Gérer les adresses" à activer pour ajouter et gérer des adresses dans les paramètres Chrome</translation>
 <translation id="1165039591588034296">Erreur</translation>
 <translation id="1165174597379888365">Page consultée</translation>
+<translation id="1165813024716836071">{COUNT,plural, =0{Aucun}=1{De 1 site (vous resterez connecté à votre compte Google)}one{De # site (vous resterez connecté à votre compte Google)}other{De # sites (vous resterez connecté à votre compte Google)}}</translation>
 <translation id="1165852471352757509">Documentaires et reportages TV</translation>
 <translation id="1174644974616730562">Enveloppe chinoise n°1</translation>
 <translation id="1174723505405632867">Souhaitez-vous autoriser le site <ph name="EMBEDDED_URL" /> à utiliser les cookies et les données de site sur <ph name="TOP_LEVEL_URL" /> ?
@@ -116,6 +117,7 @@ Par défaut, ce type d'accès est bloqué par vos paramètres de confidentialit�
 <translation id="1206967143813997005">Signature initiale incorrecte</translation>
 <translation id="1209206284964581585">Masquer pour le moment</translation>
 <translation id="121201262018556460">Vous avez tenté d'accéder à <ph name="DOMAIN" />, mais le serveur a présenté un certificat contenant une clé faible. Il est possible qu'un pirate ait compromis la clé privée. Il est donc possible que le serveur auquel vous avez accédé ne soit pas celui que vous croyez, et que vous soyez en train de communiquer avec un pirate informatique.</translation>
+<translation id="1212527389003717329">Le téléchargement a commencé. Pour le voir, appuyez de manière prolongée sur |<ph name="ACCELERATOR" />|.</translation>
 <translation id="1219129156119358924">Sécurité du système</translation>
 <translation id="1222060260947439312">Bac de droite</translation>
 <translation id="1224330468394120478">A3x6</translation>
@@ -286,6 +288,7 @@ Par défaut, ce type d'accès est bloqué par vos paramètres de confidentialit�
 <translation id="1521655867290435174">Google Sheets</translation>
 <translation id="1524669537550112617">Locations meublées</translation>
 <translation id="1527263332363067270">En attente de connexion…</translation>
+<translation id="1528311629279578926">La connexion est bloquée, car elle a été lancée par une page publique pour se connecter à des appareils ou des serveurs de votre réseau privé. Actualisez cette page pour autoriser la connexion.</translation>
 <translation id="1529789484829130889">Bac 8</translation>
 <translation id="1530707389502320859">Le site auquel vous tentez d'accéder semble faux. Les pirates tentent parfois d'imiter des sites Web en modifiant légèrement l'URL utilisée.</translation>
 <translation id="1532118530259321453">Cette page indique</translation>
@@ -1161,6 +1164,7 @@ Par défaut, ce type d'accès est bloqué par vos paramètres de confidentialit�
 <translation id="3325027355611702542">Camping-cars et véhicules aménagés</translation>
 <translation id="3329013043687509092">Saturation</translation>
 <translation id="3333762389743153920">Non éligible pour la carte virtuelle</translation>
+<translation id="3336044043987989409">Appuyez sur le bouton d'actualisation pour autoriser la connexion aux appareils ou aux serveurs de votre réseau privé.</translation>
 <translation id="3338095232262050444">Sécurisé</translation>
 <translation id="333839153442689579">Entraînement fractionné haute intensité</translation>
 <translation id="3339440062908617027">Course et randonnée</translation>
@@ -3984,6 +3988,7 @@ Informations supplémentaires :
 <translation id="8919895429178014996">Masquer tous les éléments</translation>
 <translation id="8922013791253848639">Toujours autoriser les annonces sur ce site</translation>
 <translation id="892588693504540538">Perforation en haut à droite</translation>
+<translation id="8926389886865778422">Ne plus afficher ce message</translation>
 <translation id="8930330541574156305">Immobilier</translation>
 <translation id="8932102934695377596">Votre horloge est en retard</translation>
 <translation id="893332455753468063">Ajouter un nom</translation>

@@ -625,6 +625,7 @@
 <translation id="3593646411856133110">Повлечете нагоре и задржете за да ги видите отворените апликации</translation>
 <translation id="3595596368722241419">Батеријата е полна</translation>
 <translation id="3596012367874587041">Поставки за апликацијата</translation>
+<translation id="3598452309062311481">Search+H</translation>
 <translation id="3600061223661453002">Исклучи</translation>
 <translation id="3604801046548457007">Работниот простор <ph name="DESK_TITILE" /> е создаден</translation>
 <translation id="3606978283550408104">Поврзан екран за брајово писмо.</translation>
@@ -777,6 +778,7 @@
 <translation id="4190780880566297084">Отфрлете го поставувањето прегледување на неодамнешните фотографии, аудиовизуелни содржини и апликации на телефонот</translation>
 <translation id="4192112279662688596">или</translation>
 <translation id="4193857202545160520">Прикажи кликнувања и копчиња</translation>
+<translation id="4193969623755915875">Отворете „Помош“ во апликацијата Explore со „<ph name="NEW_SHORTCUT" />“.</translation>
 <translation id="4195579532193195633">Тековна верзија: <ph name="VERSION_NAME" /> (<ph name="OFFICIAL_STATUS" />) <ph name="CHANNEL_NAME" /> <ph name="PROCESSOR_VARIATION" /></translation>
 <translation id="4195814663415092787">Продолжете каде што сте застанале</translation>
 <translation id="4195877955194704651">Копче за автоматско кликнување</translation>
@@ -959,6 +961,7 @@
 <translation id="4889868803215848840">Дајте незадолжителни повратни информации за да ги подобриме предлозите:</translation>
 <translation id="4890187583552566966">„Помошникот на Google“ е оневозможен од вашиот администратор.</translation>
 <translation id="4890408602550914571">Проверете дали телефонот е во близина и со вклучен Bluetooth.</translation>
+<translation id="4892981359753171125">Контрола на лик</translation>
 <translation id="4895488851634969361">Батеријата е полна.</translation>
 <translation id="490375751687810070">Вертикално</translation>
 <translation id="490788395437447240"><ph name="BATTERY_PERCENTAGE" /> % батерија</translation>

@@ -87,6 +87,7 @@
 <translation id="11635448457105324">Butonul Gestionează adresele, activează pentru a adăuga și a gestiona adresele din setările Chrome</translation>
 <translation id="1165039591588034296">Eroare</translation>
 <translation id="1165174597379888365">Este accesată o pagină</translation>
+<translation id="1165813024716836071">{COUNT,plural, =0{Niciunul}=1{De pe un site (vei rămâne conectat(ă) la Contul Google)}few{De pe # site-uri (vei rămâne conectat(ă) la Contul Google)}other{De pe # de site-uri (vei rămâne conectat(ă) la Contul Google)}}</translation>
 <translation id="1165852471352757509">Documentare și emisiuni TV de nonficțiune</translation>
 <translation id="1174644974616730562">Plic chinezesc 1</translation>
 <translation id="1174723505405632867">Permiți ca <ph name="EMBEDDED_URL" /> să folosească date privind site-urile și cookie-uri pe <ph name="TOP_LEVEL_URL" />?
@@ -3987,6 +3988,7 @@ Detalii suplimentare:
 <translation id="8919895429178014996">Ascunde toate elementele</translation>
 <translation id="8922013791253848639">Permite întotdeauna anunțurile pe acest site</translation>
 <translation id="892588693504540538">Perforare în dreapta sus</translation>
+<translation id="8926389886865778422">Nu mai întreba</translation>
 <translation id="8930330541574156305">Imobiliare</translation>
 <translation id="8932102934695377596">Ora este setată în trecut</translation>
 <translation id="893332455753468063">Adaugă un nume</translation>

@@ -913,7 +913,6 @@ Handoff també ha d'estar activat a la secció General de Configuració, i els v
 <translation id="5857770089550859117">Cal una frase de contrasenya per iniciar la sincronització.</translation>
 <translation id="5859715514067755465">Endavant</translation>
 <translation id="5860033963881614850">Desactivat</translation>
-<translation id="5869029295770560994">D'acord</translation>
 <translation id="5871497086027727873">1 element desplaçat</translation>
 <translation id="5896576662943111387">Dissenyat per a iOS</translation>
 <translation id="5897749768294722429">Per tornar ràpidament als llocs web que has visitat, sincronitza les pestanyes i l'historial.</translation>
@@ -930,7 +929,6 @@ Handoff també ha d'estar activat a la secció General de Configuració, i els v
 <translation id="595769230373966252">Cerca amb <ph name="SEARCH_PROVIDER" /></translation>
 <translation id="5962718611393537961">Toca per replegar</translation>
 <translation id="5963939892571022323">No es pot crear un enllaç al text marcat.</translation>
-<translation id="5965679971710331625">Tens la sessió iniciada</translation>
 <translation id="5971872012779224351">{count,plural, =1{S'ha suprimit 1 adreça d'interès}other{S'han suprimit {count} adreces d'interès}}</translation>
 <translation id="5979837087407522202">Cerca contrasenyes</translation>
 <translation id="5981230843984570095">Tanca totes les inactives</translation>
@@ -1479,6 +1477,7 @@ Les dades s'han encriptat amb la teva frase de contrasenya el dia <ph name="TIME
 <translation id="8766790350274092814">Les contrasenyes de <ph name="WEBSITE" /> i <ph name="SECOND_WEBSITE" /> se suprimiran. Els teus comptes no se suprimiran.</translation>
 <translation id="8775144690796719618">URL no vàlid</translation>
 <translation id="8780076847684176174">{count,plural, =1{Revisa la pestanya...}other{Revisa totes les pestanyes...}}</translation>
+<translation id="8782570580170191813">Fes sempre un seguiment dels paquets</translation>
 <translation id="8787968206789828143">Cerca al web</translation>
 <translation id="8792626944327216835">micròfon</translation>
 <translation id="8803639129939845298">Segur</translation>

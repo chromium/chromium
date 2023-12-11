@@ -913,7 +913,6 @@
 <translation id="5857770089550859117">За старт на синхронизирането е необходим пропуск.</translation>
 <translation id="5859715514067755465">Напред</translation>
 <translation id="5860033963881614850">Изключено</translation>
-<translation id="5869029295770560994">Добре, разбрах</translation>
 <translation id="5871497086027727873">Преместихте 1 елемент</translation>
 <translation id="5896576662943111387">Браузър, създаден за iOS</translation>
 <translation id="5897749768294722429">За да се връщате бързо към посетените от вас сайтове, синхронизирайте разделите и историята си.</translation>
@@ -930,7 +929,6 @@
 <translation id="595769230373966252">Търсене с(ъс) <ph name="SEARCH_PROVIDER" /></translation>
 <translation id="5962718611393537961">Докоснете за свиване</translation>
 <translation id="5963939892571022323">Не може да се създаде връзка към откроения текст.</translation>
-<translation id="5965679971710331625">Влезли сте в профил</translation>
 <translation id="5971872012779224351">{count,plural, =1{Изтрихте 1 отметка}other{Изтрихте {count} отметки}}</translation>
 <translation id="5979837087407522202">Търсене в паролите</translation>
 <translation id="5981230843984570095">Затваряне на всички неактивни</translation>
@@ -1479,6 +1477,7 @@
 <translation id="8766790350274092814">Паролите за <ph name="WEBSITE" /> и <ph name="SECOND_WEBSITE" /> ще бъдат изтрити. Профилите ви няма да бъдат изтрити.</translation>
 <translation id="8775144690796719618">Невалиден URL адрес</translation>
 <translation id="8780076847684176174">{count,plural, =1{Преглед на раздела...}other{Преглед на всички раздели...}}</translation>
+<translation id="8782570580170191813">Пратките да се проследяват винаги</translation>
 <translation id="8787968206789828143">Търсене в мрежата</translation>
 <translation id="8792626944327216835">микрофон</translation>
 <translation id="8803639129939845298">Сигурно</translation>

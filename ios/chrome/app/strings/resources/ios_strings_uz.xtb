@@ -837,6 +837,7 @@ Imkon boʻlsa, qidiruv tarixini qanday tozalash haqidagi qidiruv tizimi koʻrsat
 <translation id="5457226814769348910">Oflayn versiyasini ochish</translation>
 <translation id="5475069061743940393">Joʻnatmalarni kuzatish</translation>
 <translation id="5478327362747197944">Taqvim tadbirlarini bevosita veb-sahifadagi sana ustiga bosish orqali yarating.</translation>
+<translation id="5482922178977937393">Qiziqishingizga asoslangan yangiliklar, sport va boshqalar haqida bildirishnoma olishni xohlaysizmi?</translation>
 <translation id="5489208564673669003">Barcha saytlar uchun cookie fayllarni boshqarish uchun <ph name="BEGIN_LINK" />Cookie sozlamalari<ph name="END_LINK" /> sahifasini oching.</translation>
 <translation id="5490005495580364134">Barcha cookie fayllarni taqiqlash (tavsiya etilmaydi)</translation>
 <translation id="5497202150450073388">Yetkazib berishga harakat qilindi. Qayta uriniladi</translation>
@@ -912,7 +913,6 @@ Handoff funksiyasini faqatgina Chrome sozlamalarida emas, balki qurilma sozlamal
 <translation id="5857770089550859117">Sinxronizatsiyani boshlash uchun kodli ibora zarur.</translation>
 <translation id="5859715514067755465">Oldinga oʻtkazish</translation>
 <translation id="5860033963881614850">O‘chiq</translation>
-<translation id="5869029295770560994">OK</translation>
 <translation id="5871497086027727873">1 ta xatcho‘p ko‘chirildi</translation>
 <translation id="5896576662943111387">iOS uchun ishlab chiqilgan</translation>
 <translation id="5897749768294722429">Ochilgan sahifani davom ettirish uchun varaqlar va tarixni sinxronlang.</translation>
@@ -929,7 +929,6 @@ Handoff funksiyasini faqatgina Chrome sozlamalarida emas, balki qurilma sozlamal
 <translation id="595769230373966252"><ph name="SEARCH_PROVIDER" /> bilan qidirish</translation>
 <translation id="5962718611393537961">Bosib yig‘ish</translation>
 <translation id="5963939892571022323">Belgilangan matnga havola yaratilmadi.</translation>
-<translation id="5965679971710331625">Siz o‘z hisobingizga kirgansiz</translation>
 <translation id="5971872012779224351">{count,plural, =1{1 ta bukmark oʻchirildi}other{{count} ta bukmark oʻchirildi}}</translation>
 <translation id="5979837087407522202">Parollar ichidan qidirish</translation>
 <translation id="5981230843984570095">Barcha nofaol varaqlarni yopish</translation>
@@ -1478,6 +1477,7 @@ Maʼlumotlaringiz <ph name="TIME" /> sanasida kodli ibora bilan shifrlangan. Chr
 <translation id="8766790350274092814"><ph name="WEBSITE" /> va <ph name="SECOND_WEBSITE" /> parollari oʻchiriladi. Hisoblaringiz oʻchirilmaydi.</translation>
 <translation id="8775144690796719618">URL manzil yaroqsiz</translation>
 <translation id="8780076847684176174">{count,plural, =1{Varaqni tekshirish...}other{Barcha varaqlarni tekshirish...}}</translation>
+<translation id="8782570580170191813">Paketlarni doim kuzatish</translation>
 <translation id="8787968206789828143">Internetda qidirish</translation>
 <translation id="8792626944327216835">mikrofon</translation>
 <translation id="8803639129939845298">Xavfsiz</translation>

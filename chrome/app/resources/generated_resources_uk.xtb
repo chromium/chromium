@@ -31,7 +31,6 @@
 <translation id="1018656279737460067">Скасовано</translation>
 <translation id="1022522674678746124">PowerPoint</translation>
 <translation id="1022669824195822609">Вашим пристроєм керує домен <ph name="DOMAIN" />. Адміністратори мають доступ до даних у всіх профілях на цьому пристрої.</translation>
-<translation id="1024734233509995696">Ця вкладка використовує вашу камеру чи мікрофон</translation>
 <translation id="1026655690966755180">Додати порт</translation>
 <translation id="1026822031284433028">Завантажити зображення</translation>
 <translation id="1026959648338730078">Windows Hello або зовнішній ключ безпеки</translation>
@@ -1790,7 +1789,6 @@
 <translation id="2335111415680198280">{0,plural, =1{Закрити # вікно}one{Закрити # вікно}few{Закрити # вікна}many{Закрити # вікон}other{Закрити # вікна}}</translation>
 <translation id="2336228925368920074">Додати всі вкладки в закладки…</translation>
 <translation id="2336381494582898602">Відновлення заводських налаштувань</translation>
-<translation id="2337236196941929873">Попередньо завантажувати сторінки, які ви, можливо, відвідаєте. Для цього Chrome може використовувати файли cookie (якщо ви дозволили їх) і надсилати сторінки через Google, щоб не повідомляти ваші ідентифікаційні дані сайтам.</translation>
 <translation id="2340239562261172947">Не вдається безпечно завантажити файл "<ph name="FILE_NAME" />"</translation>
 <translation id="2342180549977909852">Для розблокування пристрою дитина може використовувати замість пароля число (PIN-код). PIN-код можна задати й пізніше в налаштуваннях.</translation>
 <translation id="2342740338116612727">Закладки додано</translation>
@@ -1883,6 +1881,7 @@
 <translation id="2412753904894530585">Kerberos</translation>
 <translation id="2414159296888870200">Відновити пошук за запитом "<ph name="MODULE_TITLE" />"</translation>
 <translation id="2414886740292270097">Темна</translation>
+<translation id="2415117815770324983">Ви автоматично вийдете з облікових записів на більшості сайтів, але не з облікового запису Google.</translation>
 <translation id="2416435988630956212">Функціональні клавіші клавіатури</translation>
 <translation id="2418307627282545839">Зберігає яскраві та прозорі кольори</translation>
 <translation id="2419131370336513030">Переглянути встановлені додатки</translation>
@@ -2403,6 +2402,7 @@
 <translation id="2799223571221894425">Перезапустити</translation>
 <translation id="2800309299477632167">Власна карта клавіш</translation>
 <translation id="2800760947029405028">Завантажити зображення</translation>
+<translation id="2801134910297796778">Ви ввійшли в обліковий запис <ph name="EMAIL" /></translation>
 <translation id="2801954693771979815">Розмір екрана</translation>
 <translation id="2802557211515765772">Немає керованих принтерів.</translation>
 <translation id="2803313416453193357">Відкрити папку</translation>
@@ -3534,6 +3534,7 @@
 <translation id="372722114124766626">Лише один раз</translation>
 <translation id="3727332897090187514">Немає нотаток</translation>
 <translation id="3727473233247516571">Додатковий фрейм зворотного кешу: <ph name="BACK_FORWARD_CACHE_PAGE_URL" /></translation>
+<translation id="3727850735097852673">Щоб використовувати Google Менеджер паролів із додатком Ключар у macOS, перезапустіть Chrome і надайте доступ до цього додатка. Після перезапуску поточні вкладки відкриються знову.</translation>
 <translation id="3728188878314831180">Дублювати сповіщення з телефона</translation>
 <translation id="3728681439294129328">Налаштувати адресу мережі</translation>
 <translation id="3729506734996624908">Дозволені сайти</translation>
@@ -4049,6 +4050,7 @@
 <translation id="4110485659976215879">Відновити попередження</translation>
 <translation id="4110490973560452005">Завантажено: <ph name="FILE_NAME" />. Натисніть Shift+F6, щоб перейти на панель завантажень.</translation>
 <translation id="4112194537011183136"><ph name="DEVICE_NAME" /> (офлайн)</translation>
+<translation id="4113483184628671608">Шифрувати назви сайтів, які ви відвідуєте</translation>
 <translation id="4113743276555482284">Пароль файлу</translation>
 <translation id="4114524937989710624">Ви бачите пропозиції файлів, які допоможуть вам легко повернутися до останніх дій на Google Диску.
         <ph name="BREAK" />
@@ -5778,6 +5780,7 @@
 <translation id="5517304475148761050">Цьому додатку потрібен доступ до Play Маркету</translation>
 <translation id="5517412723934627386"><ph name="NETWORK_TYPE" /> – <ph name="NETWORK_DISPLAY_NAME" /></translation>
 <translation id="5518949581554491184">Налаштувати за допомогою телефона Android</translation>
+<translation id="5519053700692355541">Більшість функцій бічної панелі можна відкрити через меню Chrome угорі праворуч</translation>
 <translation id="5519195206574732858">LTE</translation>
 <translation id="5519900055135507385">Захистіть цей обліковий запис за допомогою надійного пароля. Його буде збережено в сервісі <ph name="GOOGLE_PASSWORD_MANAGER" /> для адреси <ph name="EMAIL" />.</translation>
 <translation id="5521078259930077036">Це домашня сторінка, яку ви очікували?</translation>
@@ -5921,7 +5924,6 @@
 <translation id="5636012309446422">Вилучити пристрій "<ph name="DEVICE" />" з облікового запису <ph name="PRIMARY_EMAIL" />?</translation>
 <translation id="5636996382092289526">Щоб користуватися цією мережею (<ph name="NETWORK_ID" />), можливо, спершу потрібно буде <ph name="LINK_START" />перейти на сторінку входу мережі<ph name="LINK_END" />, яка автоматично відкриється за декілька секунд. Якщо цього не станеться, мережею користуватися не можна.</translation>
 <translation id="5637476008227280525">Увімкнути мобільний трафік</translation>
-<translation id="563811590465749036">Щоб використовувати Google Менеджер паролів із додатком Ключар у macOS, перезапустіть Chrome і надайте доступ до цього додатка. Після перезапуску поточні вкладки відкриються знову.</translation>
 <translation id="563821631542362636">Дозволити сайту зберігати дані</translation>
 <translation id="5638309510554459422">Шукайте розширення й теми у <ph name="BEGIN_LINK" />Веб-магазині Chrome <ph name="END_LINK" /></translation>
 <translation id="5639549361331209298">Перезавантажити цю сторінку. Утримуйте, щоб побачити інші варіанти</translation>
@@ -6153,7 +6155,6 @@
 <translation id="583431638776747">Сайт недоступний</translation>
 <translation id="5834581999798853053">Залишилося приблизно <ph name="TIME" /> хв.</translation>
 <translation id="5835360478055379192">{NUM_EXTENSION,plural, =1{Розширення <ph name="EXTENSION1" /> має доступ до пристроїв HID}=2{Доступ до пристроїв мають такі розширення: <ph name="EXTENSION1" />, <ph name="EXTENSION2" />}one{Доступ до пристроїв мають такі розширення: <ph name="EXTENSION1" />, <ph name="EXTENSION2" /> і ще {3}}few{Доступ до пристроїв мають такі розширення: <ph name="EXTENSION1" />, <ph name="EXTENSION2" /> і ще {3}}many{Доступ до пристроїв мають такі розширення: <ph name="EXTENSION1" />, <ph name="EXTENSION2" /> і ще {3}}other{Доступ до пристроїв мають такі розширення: <ph name="EXTENSION1" />, <ph name="EXTENSION2" /> і ще {3}}}</translation>
-<translation id="5835486486592033703"><ph name="WINDOW_TITLE" /> – запис на камері або мікрофоні ввімкнено</translation>
 <translation id="583673505367439042">Сайти можуть просити дозвіл змінювати файли та папки на пристрої</translation>
 <translation id="5836999627049108525">Вихідна мова</translation>
 <translation id="583756221537636748">Чохол</translation>
@@ -6737,6 +6738,7 @@
 <translation id="6294759976468837022">Швидкість автоматичного сканування</translation>
 <translation id="6295158916970320988">Усі сайти</translation>
 <translation id="6295855836753816081">Зберігання…</translation>
+<translation id="6298456705131259420">Впливає на перелічені тут сайти. Якщо вставити "[*.]" перед доменним ім’ям, буде додано виняток для всього домену. Наприклад, якщо ввести "[*.]google.com", сторонні файли cookie також буде ввімкнено для сторінки mail.google.com, оскільки вона є частиною домену google.com.</translation>
 <translation id="6298962879096096191">Установлювати додатки Android із Google Play</translation>
 <translation id="6300177430812514606">Заборонено завершувати надсилання чи отримання даних</translation>
 <translation id="6300654006256345126">Змінити пароль</translation>
@@ -7164,6 +7166,7 @@
 <translation id="6651762277693024112">Запускається автоматично щоразу, коли ви відвідуєте цей сайт</translation>
 <translation id="665355505818177700">Інтеграція Chrome <ph name="MS_AD_NAME" /> підтримується лише на платформах x86_64. Комп’ютери Chromebook на платформі ARM або x86 не підтримують цю функцію.</translation>
 <translation id="6654509035557065241">Основна мережа</translation>
+<translation id="6654987855337442937">Оберіть надійну систему доменних імен (DNS), щоб користувачі з доступом до вашого інтернет-трафіку не бачили, які сайти ви відвідуєте</translation>
 <translation id="6655190889273724601">Режим розробника</translation>
 <translation id="6655458902729017087">Сховати облікові записи</translation>
 <translation id="6657180931610302174">Додати ім’я користувача?</translation>
@@ -9561,6 +9564,7 @@
 <translation id="8528074251912154910">Додати мови</translation>
 <translation id="8528479410903501741">Зберегти номер IBAN</translation>
 <translation id="8528962588711550376">Виконується вхід.</translation>
+<translation id="8529578450330869579">Оберіть надійну систему доменних імен (DNS), щоб користувачі з доступом до вашого інтернет-трафіку не бачили, які сайти ви відвідуєте. Для цього використовується керований постачальник послуг (<ph name="DNS_SERVER_TEMPLATE_WITH_IDENTIFIER" />).</translation>
 <translation id="8529925957403338845">Не вдалося під’єднатися в миттєвому режимі модема</translation>
 <translation id="8531701051932785007">Безпечний перегляд із розширеним захистом вимкнено</translation>
 <translation id="8533670235862049797">Безпечний перегляд увімкнено</translation>

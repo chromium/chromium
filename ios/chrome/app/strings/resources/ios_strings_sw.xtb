@@ -913,7 +913,6 @@ Lazima Handoff iwashwe pia katika sehemu ya Jumla ya Mipangilio, na lazima vifaa
 <translation id="5857770089550859117">Kauli ya siri inahitajika ili kuanza kusawazisha.</translation>
 <translation id="5859715514067755465">Sogeza Mbele</translation>
 <translation id="5860033963881614850">Kimezimwa</translation>
-<translation id="5869029295770560994">Sawa, Nimeelewa</translation>
 <translation id="5871497086027727873">Kipengee 1 kimesogezwa</translation>
 <translation id="5896576662943111387">Imeundwa kwa ajili ya iOS</translation>
 <translation id="5897749768294722429">Ili urudi kwa haraka kwenye tovuti ulizotembelea, sawazisha vichupo na historia yako.</translation>
@@ -930,7 +929,6 @@ Lazima Handoff iwashwe pia katika sehemu ya Jumla ya Mipangilio, na lazima vifaa
 <translation id="595769230373966252">Tafuta ukitumia <ph name="SEARCH_PROVIDER" /></translation>
 <translation id="5962718611393537961">Gusa ili ukunje</translation>
 <translation id="5963939892571022323">Imeshindwa kuweka kiungo cha maandishi yaliyoangaziwa.</translation>
-<translation id="5965679971710331625">Umeingia katika akaunti</translation>
 <translation id="5971872012779224351">{count,plural, =1{Alamisho 1 imefutwa}other{Alamisho {count} zimefutwa}}</translation>
 <translation id="5979837087407522202">Tafuta Manenosiri</translation>
 <translation id="5981230843984570095">Kufunga Vichupo Visivyotumika</translation>
@@ -1479,6 +1477,7 @@ Data yako ilisimbwa kwa njia fiche kwa kutumia kauli ya siri <ph name="TIME" />.
 <translation id="8766790350274092814">Manenosiri ya <ph name="WEBSITE" /> na <ph name="SECOND_WEBSITE" /> yatafutwa. Akaunti zako hazitafutwa.</translation>
 <translation id="8775144690796719618">URL si sahihi</translation>
 <translation id="8780076847684176174">{count,plural, =1{Kagua kichupo...}other{Kagua vichupo vyote...}}</translation>
+<translation id="8782570580170191813">Fuatilia Vifurushi Kila Wakati</translation>
 <translation id="8787968206789828143">Tafuta kwenye tovuti</translation>
 <translation id="8792626944327216835">maikrofoni</translation>
 <translation id="8803639129939845298">Salama</translation>

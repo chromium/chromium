@@ -87,6 +87,7 @@
 <translation id="11635448457105324">"Ünvanları idarə edin" düyməsi, aktivləşdirərək Chrome ayarlarında ünvan əlavə və idarə edin</translation>
 <translation id="1165039591588034296">Xəta</translation>
 <translation id="1165174597379888365">Səhifə ziyarət edilib</translation>
+<translation id="1165813024716836071">{COUNT,plural, =0{Yoxdur}=1{1 saytdan (Google Hesabına daxil olmuş kimi qalacaqsınız)}other{# saytdan (Google Hesabına daxil olmuş kimi qalacaqsınız)}}</translation>
 <translation id="1165852471352757509">Sənədli film</translation>
 <translation id="1174644974616730562">Zərf Çin #1</translation>
 <translation id="1174723505405632867"><ph name="EMBEDDED_URL" /> saytına <ph name="TOP_LEVEL_URL" /> ünvanında kukilər və sayt datasını istifadə etmək icazəsi verilsin?
@@ -3982,6 +3983,7 @@
 <translation id="8919895429178014996">Bütün elementləri gizlədin</translation>
 <translation id="8922013791253848639">Həmişə bu saytdakı reklamlara icazə verin</translation>
 <translation id="892588693504540538">Yuxarı sağdan deşik açın</translation>
+<translation id="8926389886865778422">Daha soruşmayın</translation>
 <translation id="8930330541574156305">Daşınmaz əmlak</translation>
 <translation id="8932102934695377596">Saatınız geridədir</translation>
 <translation id="893332455753468063">Ad əlavə edin</translation>

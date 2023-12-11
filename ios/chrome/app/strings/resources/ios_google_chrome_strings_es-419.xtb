@@ -55,6 +55,7 @@ Aspectos que debes tener en cuenta:
 <translation id="2574249610672786438">Para ver tus pestañas donde sea que uses Chrome, accede a tu cuenta en todos los dispositivos</translation>
 <translation id="2576431527583832481">¡Chrome mejoró! Hay una nueva versión disponible.</translation>
 <translation id="257708665678654955">¿Quieres que Google Chrome te ofrezca traducir las páginas de este sitio que estén en <ph name="LANGUAGE_NAME" /> la próxima vez?</translation>
+<translation id="2650286135394207535">Permite que Chrome te ayude a realizar el seguimiento de tus paquetes</translation>
 <translation id="2671426118752779020">Puedes usar las contraseñas que guardaste en el Administrador de contraseñas de Google en otras apps de tu iPhone.</translation>
 <translation id="2689064829982324496">Para salir de tu Cuenta de Google en todos los sitios web, debes <ph name="BEGIN_LINK" />salir de Chrome<ph name="END_LINK" />.</translation>
 <translation id="2695886661449553974">Chrome no pudo buscar actualizaciones. Vuelve a intentarlo más tarde.</translation>
@@ -69,7 +70,6 @@ Aspectos que debes tener en cuenta:
 <translation id="309672519329227863">Accede a tus contraseñas de Chrome y más en otras apps.</translation>
 <translation id="3167189358072330585">Tu cuenta no funciona en Google Chrome. Comunícate con tu administrador de dominio o utiliza una cuenta común de Google para acceder.</translation>
 <translation id="3173834708294760622">Página de Google Chrome</translation>
-<translation id="3196546062792660320">Chrome lleva tus cuentas a la Web para ahorrarte tiempo. Puedes agregar o quitar cuentas en la configuración.</translation>
 <translation id="322254490661677575">Para usar y guardar datos de Chrome en tu Cuenta de Google, ingresa tu frase de contraseña.</translation>
 <translation id="3282568296779691940">Acceder a Chrome</translation>
 <translation id="3345341804167540816">Usar Chrome en todas partes</translation>
@@ -169,7 +169,6 @@ Solo alguien con tu frase de contraseña puede leer los datos encriptados. Googl
 <translation id="7124339256045485976">Mantén Chrome actualizado</translation>
 <translation id="7161390184744336561">Google Chrome está desactualizado</translation>
 <translation id="7165736900384873061">Usar el escáner QR en Google Chrome</translation>
-<translation id="7173660919484573146">Chrome usa Face ID para garantizar el acceso autorizado a tus contraseñas.</translation>
 <translation id="7187993566681480880">Te protege en Chrome y puede usarse para mejorar tu seguridad en otras apps de Google cuando accedes a tu cuenta.</translation>
 <translation id="7200524487407690471">Chrome ejecuta automáticamente la Verificación de seguridad todos los días para protegerte ante violaciones de la seguridad de los datos, sitios web inseguros y mucho más. Puedes encontrar más información sobre la Verificación de seguridad en Configuración.</translation>
 <translation id="72119412072970160">Puedes usar las contraseñas que guardaste en el Administrador de contraseñas de Google en otras apps de tu iPad.</translation>

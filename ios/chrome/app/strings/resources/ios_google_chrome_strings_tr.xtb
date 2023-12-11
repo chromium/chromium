@@ -55,6 +55,7 @@ Dikkate alınması gereken noktalar:
 <translation id="2574249610672786438">Chrome kullandığınız her yerde sekmelerinizi görmek için tüm cihazlarınızda oturum açın.</translation>
 <translation id="2576431527583832481">Chrome daha da iyi hale geldi! Yeni bir sürüm var.</translation>
 <translation id="257708665678654955">Google Chrome'un bir dahaki sefere bu siteden <ph name="LANGUAGE_NAME" /> dilindeki sayfaları çevirmeyi önermesini ister misiniz?</translation>
+<translation id="2650286135394207535">Chrome'un, kargolarınızı takip etmenize yardımcı olmasına izin verin</translation>
 <translation id="2671426118752779020">Google Şifre Yöneticisi'ne kaydettiğiniz şifreleri iPhone'unuzdaki diğer uygulamalarda kullanabilirsiniz.</translation>
 <translation id="2689064829982324496">Tüm web sitelerinde Google Hesabınızın oturumunu kapatmak için <ph name="BEGIN_LINK" />Chrome oturumunu kapatın<ph name="END_LINK" />.</translation>
 <translation id="2695886661449553974">Chrome, güncellemeleri denetleyemedi. Daha sonra tekrar deneyin.</translation>
@@ -69,7 +70,6 @@ Dikkate alınması gereken noktalar:
 <translation id="309672519329227863">Diğer uygulamalardan Chrome şifrelerinize ve daha fazlasına erişin.</translation>
 <translation id="3167189358072330585">Hesabınız Google Chrome'da kullanılamıyor. Lütfen alan adı yöneticinizle iletişim kurun veya oturum açmak için normal bir Google Hesabı kullanın.</translation>
 <translation id="3173834708294760622">Google Chrome Sayfası</translation>
-<translation id="3196546062792660320">Chrome, hesaplarınızı web'e getirerek size zaman kazandırır. Hesapları Ayarlar'dan ekleyebilir veya kaldırabilirsiniz.</translation>
 <translation id="322254490661677575">Chrome verilerini kullanmak ve Google Hesabınıza kaydetmek için parolanızı girin.</translation>
 <translation id="3282568296779691940">Chrome'da oturum aç</translation>
 <translation id="3345341804167540816">Chrome'u Her Yerde Kullanın</translation>
@@ -169,7 +169,6 @@ Sadece parolanıza sahip olan kişiler şifrelenmiş verilerinizi okuyabilir. Pa
 <translation id="7124339256045485976">Chrome'u güncel tutun</translation>
 <translation id="7161390184744336561">Google Chrome güncel değil</translation>
 <translation id="7165736900384873061">Google Chrome QR tarayıcısını kullanmaya başlayın</translation>
-<translation id="7173660919484573146">Chrome, şifrelerinize yetkili erişim sağlanması için Face ID kullanır.</translation>
 <translation id="7187993566681480880">Chrome'da güvende kalmanızı sağlar ve oturum açtığınızda diğer Google uygulamalarındaki güvenliğinizi artırmak için kullanılabilir.</translation>
 <translation id="7200524487407690471">Chrome; veri ihlalleri, güvenli olmayan web siteleri ve diğer risklere karşı güvenliğinizi sağlamak için Güvenlik Kontrolü'nü her gün otomatik olarak çalıştırır. Güvenlik Kontrolü hakkında daha fazla bilgiyi Ayarlar'da bulabilirsiniz.</translation>
 <translation id="72119412072970160">Google Şifre Yöneticisi'ne kaydettiğiniz şifreleri iPad'inizdeki diğer uygulamalarda kullanabilirsiniz.</translation>

@@ -87,6 +87,7 @@
 <translation id="11635448457105324">Butoni "Menaxho adresat". Aktivizoje për të shtuar dhe menaxhuar adresat te cilësimet e Chrome</translation>
 <translation id="1165039591588034296">Gabim</translation>
 <translation id="1165174597379888365">Faqja është vizituar</translation>
+<translation id="1165813024716836071">{COUNT,plural, =0{Asnjë}=1{Nga 1 sajt (do të qëndrosh i identifikuar në "Llogarinë tënde të Google)}other{Nga # sajte (do të qëndrosh i identifikuar në "Llogarinë tënde të Google)}}</translation>
 <translation id="1165852471352757509">Dokumentarët televizivë dhe publicistika</translation>
 <translation id="1174644974616730562">Zarf kinez nr. 1</translation>
 <translation id="1174723505405632867">Dëshiron ta lejosh <ph name="EMBEDDED_URL" /> të përdorë kukit dhe të dhënat e sajtit në <ph name="TOP_LEVEL_URL" />?
@@ -116,6 +117,7 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="1206967143813997005">Nënshkrimi fillestar i gabuar</translation>
 <translation id="1209206284964581585">Fshih për momentin</translation>
 <translation id="121201262018556460">Tentove të hapje <ph name="DOMAIN" />, por serveri paraqiti një certifikatë që përmban një çelës të dobët. Një sulmues mund ta ketë prishur çelësin privat dhe serveri mund të mos jetë ai që prisje (mund të jesh duke komunikuar me një sulmues).</translation>
+<translation id="1212527389003717329">Shkarkimi filloi. Për ta parë atë, shtyp dhe mbaj shtypur |<ph name="ACCELERATOR" />|.</translation>
 <translation id="1219129156119358924">Siguria e sistemit</translation>
 <translation id="1222060260947439312">Tabakaja e djathtë</translation>
 <translation id="1224330468394120478">A3x6</translation>
@@ -286,6 +288,7 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="1521655867290435174">Fletët e Google</translation>
 <translation id="1524669537550112617">Ambiente të mobiluara me qira</translation>
 <translation id="1527263332363067270">Në pritje të lidhjes...</translation>
+<translation id="1528311629279578926">Lidhja është bllokuar sepse ajo është nisur nga një faqe publike për t'u lidhur me pajisjet ose serverët në rrjetin tënd privat. Ringarkoje këtë faqe për të lejuar lidhjen.</translation>
 <translation id="1529789484829130889">Tabakaja 8</translation>
 <translation id="1530707389502320859">Sajti ku sapo u përpoqe të hyje duket i rremë. Sulmuesit ndonjëherë i imitojnë sajtet duke bërë tek URL-ja ndryshime të vogla që janë të vështira për t'u shikuar.</translation>
 <translation id="1532118530259321453">Kjo faqe thotë</translation>
@@ -1161,6 +1164,7 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="3325027355611702542">Kamperë dhe rulota</translation>
 <translation id="3329013043687509092">Ngopje</translation>
 <translation id="3333762389743153920">Nuk është e përshtatshme për kartë virtuale</translation>
+<translation id="3336044043987989409">Shtyp butonin e ringarkimit për të lejuar lidhjen me pajisjet ose serverët në rrjetin tënd privat.</translation>
 <translation id="3338095232262050444">E sigurt</translation>
 <translation id="333839153442689579">Stërvitje me intervale me intensitet të lartë</translation>
 <translation id="3339440062908617027">Vrapimi dhe ecja</translation>
@@ -3982,6 +3986,7 @@ Detaje shtesë:
 <translation id="8919895429178014996">Fshih të gjithë artikujt</translation>
 <translation id="8922013791253848639">Lejo gjithmonë reklamat në këtë sajt</translation>
 <translation id="892588693504540538">Shpim lart djathtas</translation>
+<translation id="8926389886865778422">Mos pyet përsëri</translation>
 <translation id="8930330541574156305">Pasuritë e patundshme</translation>
 <translation id="8932102934695377596">Ora ka mbetur prapa</translation>
 <translation id="893332455753468063">Shto emër</translation>

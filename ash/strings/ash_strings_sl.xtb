@@ -625,6 +625,7 @@ Tu je nekaj stvari, ki jih lahko poskusite za začetek.</translation>
 <translation id="3593646411856133110">Povlecite navzgor in pridržite, če si želite ogledati odprte aplikacije</translation>
 <translation id="3595596368722241419">Baterija je polna</translation>
 <translation id="3596012367874587041">Nastavitve aplikacije</translation>
+<translation id="3598452309062311481">tipka za iskanje + h</translation>
 <translation id="3600061223661453002">Izklop</translation>
 <translation id="3604801046548457007">Namizje <ph name="DESK_TITILE" /> je bilo ustvarjeno</translation>
 <translation id="3606978283550408104">Povezava z braillovo vrstico je vzpostavljena.</translation>
@@ -776,6 +777,7 @@ Nekatere funkcije so omejene za podaljšanje časa delovanja baterije.</translat
 <translation id="4190780880566297084">Opustitev nastavitve ogleda nedavnih fotografij, predstavnosti in aplikacij telefona</translation>
 <translation id="4192112279662688596">ali</translation>
 <translation id="4193857202545160520">Prikaži klike in tipke</translation>
+<translation id="4193969623755915875">Odpiranje menija »Pomoč« v aplikaciji Raziskovanje z bližnjico »<ph name="NEW_SHORTCUT" />«</translation>
 <translation id="4195579532193195633">Trenutna različica <ph name="VERSION_NAME" /> (<ph name="OFFICIAL_STATUS" />) <ph name="CHANNEL_NAME" /> <ph name="PROCESSOR_VARIATION" /></translation>
 <translation id="4195814663415092787">Nadaljuj prejšnjo sejo</translation>
 <translation id="4195877955194704651">Gumb za samodejne klike</translation>
@@ -958,6 +960,7 @@ Nekatere funkcije so omejene za podaljšanje časa delovanja baterije.</translat
 <translation id="4889868803215848840">Navedite izbirne povratne informacije za izboljšanje predlogov:</translation>
 <translation id="4890187583552566966">Skrbnik je onemogočil Pomočnika Google.</translation>
 <translation id="4890408602550914571">Preverite, ali imate telefon v bližini in ima vklopljeno povezavo Bluetooth.</translation>
+<translation id="4892981359753171125">Upravljanje obraza</translation>
 <translation id="4895488851634969361">Akumulator je poln.</translation>
 <translation id="490375751687810070">Navpično</translation>
 <translation id="490788395437447240"><ph name="BATTERY_PERCENTAGE" /> % energije akumulatorja</translation>
@@ -1922,7 +1925,7 @@ Nova namestitev</translation>
 <translation id="888982883502837004">Posodobitve vdelane programske opreme so na voljo za vašo napravo. Kliknite, če si želite ogledati in posodobiti.</translation>
 <translation id="8896630965521842259">Predloga <ph name="DESK_TEMPLATE_NAME" /> bo trajno izbrisana.</translation>
 <translation id="889790758758811533">Še <ph name="PERCENTAGE" /> % baterije (približno <ph name="TIME_LEFT" />). Napravo priklopite na napajanje.</translation>
-<translation id="8897940060812808966">Naprava <ph name="PERIPHERAL_NAME" /> je povezana in pripravljena za uporabo. Tablični računalnik za risanje lahko prilagodite v nastavitvah.</translation>
+<translation id="8897940060812808966">Naprava <ph name="PERIPHERAL_NAME" /> je povezana in pripravljena za uporabo. Grafično tablico lahko prilagodite v nastavitvah.</translation>
 <translation id="88986195241502842">Page Down</translation>
 <translation id="8905919797434099235">(Brez naslova)</translation>
 <translation id="890616557918890486">Spremeni vir</translation>

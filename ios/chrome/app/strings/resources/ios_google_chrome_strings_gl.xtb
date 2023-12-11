@@ -55,6 +55,7 @@ Cuestións que debes ter en conta:
 <translation id="2574249610672786438">Para ver as túas pestanas desde calquera dispositivo no que utilices Chrome, inicia sesión en todos eles</translation>
 <translation id="2576431527583832481">Chrome introduciu melloras. Hai dispoñible unha nova versión.</translation>
 <translation id="257708665678654955">Queres que a próxima vez Google Chrome che ofreza a posibilidade de traducir as páxinas en <ph name="LANGUAGE_NAME" /> deste sitio?</translation>
+<translation id="2650286135394207535">Permitir que Chrome che axude a facer un seguimento dos teus paquetes</translation>
 <translation id="2671426118752779020">Podes utilizar os contrasinais que gardaches no xestor de contrasinais de Google noutras aplicacións do teu iPhone.</translation>
 <translation id="2689064829982324496">Para pechar sesión na túa Conta de Google en todos os sitios web, <ph name="BEGIN_LINK" />pecha sesión en Chrome<ph name="END_LINK" />.</translation>
 <translation id="2695886661449553974">Chrome non puido buscar actualizacións. Téntao máis tarde.</translation>
@@ -69,7 +70,6 @@ Cuestións que debes ter en conta:
 <translation id="309672519329227863">Accede aos teus contrasinais de Chrome e moito máis noutras aplicacións.</translation>
 <translation id="3167189358072330585">A túa conta non funciona en Google Chrome. Ponte en contacto co teu administrador de dominio ou utiliza unha conta normal de Google para iniciar sesión.</translation>
 <translation id="3173834708294760622">Páxina de Google Chrome</translation>
-<translation id="3196546062792660320">Chrome fai que aforres tempo ao pasar as túas contas á web. Podes engadir ou eliminar contas en Configuración.</translation>
 <translation id="322254490661677575">Para usar e gardar os datos de Chrome na túa Conta de Google, introduce a túa frase de acceso.</translation>
 <translation id="3282568296779691940">Iniciar sesión en Chrome</translation>
 <translation id="3345341804167540816">Usar Chrome en todas partes</translation>
@@ -169,7 +169,6 @@ Só poderá ler os teus datos encriptados quen teña a túa frase de acceso (Goo
 <translation id="7124339256045485976">Mantén Chrome actualizado</translation>
 <translation id="7161390184744336561">A versión de Google Chrome está desactualizada</translation>
 <translation id="7165736900384873061">Comeza a usar o escáner de códigos QR de Google Chrome</translation>
-<translation id="7173660919484573146">Chrome utiliza Face ID para garantir o acceso autorizado aos contrasinais.</translation>
 <translation id="7187993566681480880">Protéxete en Chrome e pode utilizarse para mellorar a túa seguranza noutras aplicacións de Google cando teñas a sesión iniciada.</translation>
 <translation id="7200524487407690471">Chrome executa automaticamente Comprobación de seguranza todos os días para protexerte das violacións da seguranza dos datos e dos sitios web pouco seguros, entre outras cousas. Podes consultar máis información sobre esta función en Configuración.</translation>
 <translation id="72119412072970160">Podes utilizar os contrasinais que gardaches no xestor de contrasinais de Google noutras aplicacións do teu iPad.</translation>

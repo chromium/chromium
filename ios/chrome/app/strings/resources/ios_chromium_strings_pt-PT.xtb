@@ -15,6 +15,7 @@
 <translation id="1507010443238049608">Ajudar a melhorar as funcionalidades e o desempenho do Chromium</translation>
 <translation id="1513122820609681462">Defina o Chromium como o navegador predefinido</translation>
 <translation id="1531155317299575425">Mostra pedidos para iniciar sessão no Chromium.</translation>
+<translation id="159029779861043703">O Chromium mantém os seus dados confidenciais seguros com o Face ID.</translation>
 <translation id="1591119736686995611">Abre a grelha de separadores do Chromium.</translation>
 <translation id="1611584326765829247">Permita que o Chromium ajude a acompanhar as suas embalagens</translation>
 <translation id="1617663976202781617">Dados da sincronização do Chromium</translation>
@@ -54,7 +55,6 @@
 <translation id="2784449251446768092">Faça a gestão das definições do Chromium</translation>
 <translation id="2798503587425057129">Abre a Lista de leitura do Chromium.</translation>
 <translation id="2843571538056574338">Use o Chromium para o preenchimento automático</translation>
-<translation id="2915596697727466327">O Chromium utiliza o Face ID para assegurar o acesso autorizado às suas palavras-passe.</translation>
 <translation id="2918709798697875261">A sua entidade requer que se mantenha sem sessão iniciada no Chromium.</translation>
 <translation id="2942241131342758843">Utilize o Chromium por predefinição para abrir links, pesquisar a partir de widgets e preencher automaticamente palavras-passe noutras apps</translation>
 <translation id="2977470724722393594">O Chromium está atualizado</translation>
@@ -176,7 +176,6 @@ Só alguém com a sua frase de acesso pode ler os dados encriptados. A Google n�
 <translation id="7165402419892018581">Escolha o Chromium para o preenchimento automático</translation>
 <translation id="7175400662502680481">A sua palavra-passe foi exposta numa violação de dados. O Gestor de palavras-passe recomenda que a altere agora.</translation>
 <translation id="7192111075364461693">As notificações do Chromium estão atualmente desativadas nas Definições do dispositivo.</translation>
-<translation id="7208566199746267865">O Chromium poupa o seu tempo ao trazer as suas contas para a Web. Pode adicionar ou remover contas nas Definições.</translation>
 <translation id="725427773388857052">O Chromium pode ajudar a proteger contra violações de dados, Websites inseguros e muito mais.</translation>
 <translation id="7269362888766543920">Alguns suplementos provocam falhas no sistema do Chromium. Tente desinstalá-los.</translation>
 <translation id="7285031092584344905">Aceda às suas palavras-passe do Chromium e muito mais noutras apps.</translation>

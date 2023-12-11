@@ -15,7 +15,9 @@
 <translation id="1507010443238049608">‏עזרה בשיפור התכונות והביצועים של Chromium</translation>
 <translation id="1513122820609681462">‏הגדרת Chromium כדפדפן ברירת המחדל</translation>
 <translation id="1531155317299575425">‏יוצגו הודעות לצורך כניסה אל Chromium.</translation>
+<translation id="159029779861043703">‏Chromium שומר על האבטחה של מידע אישי רגיש באמצעות Face ID.</translation>
 <translation id="1591119736686995611">‏תיפתח תצוגת הכרטיסיות ב-Chromium.</translation>
+<translation id="1611584326765829247">‏Chromium יכול לעזור לך לעקוב אחר החבילות שלך</translation>
 <translation id="1617663976202781617">‏נתונים מסנכרון Chromium</translation>
 <translation id="1647558790457890304">‏ההגדרות של Chromium</translation>
 <translation id="164952285225495380">‏החבילה הזו כבר נוספה למעקב ב-Chromium.</translation>
@@ -53,7 +55,6 @@
 <translation id="2784449251446768092">‏ניהול של הגדרות Chromium</translation>
 <translation id="2798503587425057129">‏פתיחה של רשימת הקריאה ב-Chromium.</translation>
 <translation id="2843571538056574338">‏שימוש ב-Chromium למילוי אוטומטי</translation>
-<translation id="2915596697727466327">‏Chromium משתמש ב-Face ID כדי להבטיח גישה מאושרת לסיסמאות שלך.</translation>
 <translation id="2918709798697875261">‏לפי דרישת הארגון שלך, אין אפשרות להתחבר לחשבון ב-Chromium.</translation>
 <translation id="2942241131342758843">‏כדאי להגדיר את Chromium כדפדפן ברירת המחדל כדי לפתוח קישורים, לחפש מווידג'טים ולבצע מילוי אוטומטי של סיסמאות באפליקציות אחרות</translation>
 <translation id="2977470724722393594">‏Chromium‏ מעודכן</translation>
@@ -175,7 +176,6 @@
 <translation id="7165402419892018581">‏בחירת Chromium למילוי אוטומטי</translation>
 <translation id="7175400662502680481">הסיסמה שלך נחשפה בעקבות פרצה באבטחת מידע. לפי מנהל הסיסמאות, מומלץ לשנות אותה עכשיו.</translation>
 <translation id="7192111075364461693">‏ההתראות מ-Chromium מושבתות עכשיו בהגדרות המכשיר.</translation>
-<translation id="7208566199746267865">‏Chromium מאפשר גישה לחשבונות באינטרנט וכך חוסך לך זמן. ניתן להוסיף או להסיר חשבונות בקטע 'הגדרות'.</translation>
 <translation id="725427773388857052">‏Chromium יכול להגן עליך מפני פרצות באבטחת מידע, אתרים לא בטוחים וסכנות נוספות</translation>
 <translation id="7269362888766543920">‏תוספים מסוימים גורמים ל-Chromium לקרוס. כדאי להסיר אותם.</translation>
 <translation id="7285031092584344905">‏גישה לסיסמאות ולעוד אפשרויות ב-Chromium מאפליקציות נוספות.</translation>

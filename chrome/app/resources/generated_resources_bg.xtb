@@ -31,7 +31,6 @@
 <translation id="1018656279737460067">Отказано</translation>
 <translation id="1022522674678746124">PowerPoint</translation>
 <translation id="1022669824195822609">Устройството ви се управлява от <ph name="DOMAIN" />. Администраторите имат достъп до данните в потребителските профили на това устройство.</translation>
-<translation id="1024734233509995696">Този раздел използва камерата или микрофона ви</translation>
 <translation id="1026655690966755180">Добавяне на порт</translation>
 <translation id="1026822031284433028">Зареждане на изображението</translation>
 <translation id="1026959648338730078">Windows Hello или външен ключ за сигурност</translation>
@@ -1783,7 +1782,6 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="2335111415680198280">{0,plural, =1{Затваряне на 1 прозорец}other{Затваряне на # прозореца}}</translation>
 <translation id="2336228925368920074">Запазване на отметки към всички раздели...</translation>
 <translation id="2336381494582898602">Powerwash</translation>
-<translation id="2337236196941929873">Зарежда предварително страниците, които Chrome смята, че може да посетите. За целта браузърът може да използва „бисквитки“, ако сте ги разрешили, и да шифрова и изпраща страниците чрез Google, за да скрива самоличността ви от сайтовете.</translation>
 <translation id="2340239562261172947"><ph name="FILE_NAME" /> не може да се изтегли по сигурен начин</translation>
 <translation id="2342180549977909852">Детето ви може да отключва това устройство с число (ПИН код) вместо с парола. За да зададете ПИН по-късно, отворете настройките.</translation>
 <translation id="2342740338116612727">Отметките бяха добавени</translation>
@@ -1876,6 +1874,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="2412753904894530585">Kerberos</translation>
 <translation id="2414159296888870200">Възобновяване на сърфирането за „<ph name="MODULE_TITLE" />“</translation>
 <translation id="2414886740292270097">Тъмно</translation>
+<translation id="2415117815770324983">Ще излезете от повечето сайтове, но не и от профила си в Google.</translation>
 <translation id="2416435988630956212">Функционални клавиши на клавиатурата</translation>
 <translation id="2418307627282545839">Всичко изглежда ярко и ефирно</translation>
 <translation id="2419131370336513030">Преглед на инсталираните приложения</translation>
@@ -2396,6 +2395,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="2799223571221894425">Стартиране отново</translation>
 <translation id="2800309299477632167">Персонализирана клавиатурна подредба</translation>
 <translation id="2800760947029405028">Качване на изображение</translation>
+<translation id="2801134910297796778">Влезли сте в профила <ph name="EMAIL" /></translation>
 <translation id="2801954693771979815">Размер на елементите на екрана</translation>
 <translation id="2802557211515765772">Няма управлявани принтери.</translation>
 <translation id="2803313416453193357">Отваряне на папката</translation>
@@ -3527,6 +3527,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="372722114124766626">Само веднъж</translation>
 <translation id="3727332897090187514">Няма добавена бележка</translation>
 <translation id="3727473233247516571">Подрамка, съхранена в кеша за назад/напред: <ph name="BACK_FORWARD_CACHE_PAGE_URL" /></translation>
+<translation id="3727850735097852673">За да използвате Google Мениджър на пароли с Keychain на macOS, стартирайте Chrome отново и разрешете достъпа до Keychain. След повторното стартиране разделите ви ще се отворят отново.</translation>
 <translation id="3728188878314831180">Дублиране на известията от телефона ви</translation>
 <translation id="3728681439294129328">Конфигуриране на мрежовия адрес</translation>
 <translation id="3729506734996624908">Разрешени сайтове</translation>
@@ -4043,6 +4044,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="4110485659976215879">Възстановяване на предупреждението</translation>
 <translation id="4110490973560452005">Изтеглянето завърши: <ph name="FILE_NAME" />. Натиснете Shift + F6, за да преминете към лентата на изтеглянето.</translation>
 <translation id="4112194537011183136"><ph name="DEVICE_NAME" /> (офлайн)</translation>
+<translation id="4113483184628671608">Шифроване на имената на сайтовете, които посещавате</translation>
 <translation id="4113743276555482284">Парола за файла</translation>
 <translation id="4114524937989710624">Показват се предложени файлове, с чиято помощ лесно да се върнете към скорошната си активност в Google Диск.
         <ph name="BREAK" />
@@ -5772,6 +5774,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="5517304475148761050">Това приложение изисква достъп до Google Play Магазин</translation>
 <translation id="5517412723934627386"><ph name="NETWORK_TYPE" /> – <ph name="NETWORK_DISPLAY_NAME" /></translation>
 <translation id="5518949581554491184">Настройване посредством телефон с Android</translation>
+<translation id="5519053700692355541">Можете да отворите повечето функции на страничния панел от менюто на Chrome горе вдясно</translation>
 <translation id="5519195206574732858">LTE</translation>
 <translation id="5519900055135507385">Повишете сигурността на този профил с помощта на надеждна парола. Тя ще бъде запазена в <ph name="GOOGLE_PASSWORD_MANAGER" /> за <ph name="EMAIL" />.</translation>
 <translation id="5521078259930077036">Това ли е очакваната от вас начална страница?</translation>
@@ -5918,7 +5921,6 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="5636012309446422">Искате ли да премахнете <ph name="DEVICE" /> от <ph name="PRIMARY_EMAIL" />?</translation>
 <translation id="5636996382092289526">За да използвате „<ph name="NETWORK_ID" />“, може да се наложи първо <ph name="LINK_START" />да посетите страницата за вход в мрежата<ph name="LINK_END" />, която ще се отвори автоматично след няколко секунди. Ако това не се случи, мрежата не може да се ползва.</translation>
 <translation id="5637476008227280525">Активиране на мобилните данни</translation>
-<translation id="563811590465749036">За да използвате Google Мениджър на пароли с Keychain на macOS, стартирайте Chrome отново и разрешете достъпа до Keychain. След повторното стартиране разделите ви ще се отворят отново</translation>
 <translation id="563821631542362636">Разрешаване на сайта да запазва данни</translation>
 <translation id="5638309510554459422">Намерете разширения и теми в <ph name="BEGIN_LINK" />уеб магазина на Chrome<ph name="END_LINK" /></translation>
 <translation id="5639549361331209298">Презареждане на тази страница – задръжте, за да видите още опции</translation>
@@ -6150,7 +6152,6 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="583431638776747">Сайтът не бе налице</translation>
 <translation id="5834581999798853053">Остават около <ph name="TIME" /> минути</translation>
 <translation id="5835360478055379192">{NUM_EXTENSION,plural, =1{<ph name="EXTENSION1" /> осъществява достъп до HID устройства}=2{Разширения, които осъществяват достъп до устройства: <ph name="EXTENSION1" /> и <ph name="EXTENSION2" />}other{Разширения, които осъществяват достъп до устройства: <ph name="EXTENSION1" />, <ph name="EXTENSION2" /> и още {3}}}</translation>
-<translation id="5835486486592033703"><ph name="WINDOW_TITLE" /> – записва се чрез камерата или микрофона</translation>
 <translation id="583673505367439042">Сайтовете могат да извеждат запитвания за редактиране на файловете и папките на устройството ви</translation>
 <translation id="5836999627049108525">Изходен език</translation>
 <translation id="583756221537636748">Кутия</translation>
@@ -6735,6 +6736,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="6294759976468837022">Скорост на автоматичното сканиране</translation>
 <translation id="6295158916970320988">Всички сайтове</translation>
 <translation id="6295855836753816081">Запазва се...</translation>
+<translation id="6298456705131259420">Засяга посочените тук сайтове. Вмъкването на „[*.]“ пред името на даден домейн създава изключение за целия домейн. Например добавянето на [*.]google.com означава, че „бисквитките“ на трети страни могат да са активни и за mail.google.com, тъй като е част от google.com.</translation>
 <translation id="6298962879096096191">Използване на Google Play за инсталиране на приложения за Android</translation>
 <translation id="6300177430812514606">Сайтове без разрешение за завършване на изпращането или получаването на данни</translation>
 <translation id="6300654006256345126">Редактиране на паролата</translation>
@@ -7156,6 +7158,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="6651762277693024112">Изпълнява се автоматично всеки път, когато посещавате този сайт</translation>
 <translation id="665355505818177700">Интегрирането на Chrome и <ph name="MS_AD_NAME" /> е възможно само на платформи x86_64. Устройствата Chromebook, базирани на платформа ARM или x86, не поддържат тази функционалност.</translation>
 <translation id="6654509035557065241">Задаване на предпочитана мрежа</translation>
+<translation id="6654987855337442937">Използвайте сигурна система за имена на домейни (DNS), за да попречите на хората с достъп до трафика ви в интернет да виждат кои сайтове посещавате</translation>
 <translation id="6655190889273724601">Режим за програмисти</translation>
 <translation id="6655458902729017087">Скриване на профилите</translation>
 <translation id="6657180931610302174">Искате ли да добавите потребителско име?</translation>
@@ -9554,6 +9557,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="8528074251912154910">Добавяне на езици</translation>
 <translation id="8528479410903501741">Запазване на IBAN</translation>
 <translation id="8528962588711550376">Влиза се.</translation>
+<translation id="8529578450330869579">Използвайте сигурна система за имена на домейни (DNS), за да попречите на хората с достъп до трафика ви в интернет да виждат кои сайтове посещавате. За целта се използва доставчик на управлявани услуги на адрес <ph name="DNS_SERVER_TEMPLATE_WITH_IDENTIFIER" /></translation>
 <translation id="8529925957403338845">Връзката чрез незабавен тетъринг не бе успешна</translation>
 <translation id="8531701051932785007">Функцията за подобрена защита от Безопасно сърфиране е изключена</translation>
 <translation id="8533670235862049797">Безопасно сърфиране е включено</translation>

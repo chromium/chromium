@@ -16,6 +16,7 @@
 <translation id="1513122820609681462">Setează Chromium ca browser prestabilit</translation>
 <translation id="1531155317299575425">Afișează solicitări pentru conectarea la Chromium.</translation>
 <translation id="1591119736686995611">Deschide grila cu file Chromium.</translation>
+<translation id="1611584326765829247">Permite ca Chromium să te ajute să urmărești colete</translation>
 <translation id="1617663976202781617">Date din sincronizarea Chromium</translation>
 <translation id="1647558790457890304">Setări Chromium</translation>
 <translation id="164952285225495380">Coletul este deja urmărit în Chromium.</translation>
@@ -53,7 +54,6 @@
 <translation id="2784449251446768092">Gestionează setările Chromium</translation>
 <translation id="2798503587425057129">Deschide Lista de lecturi Chromium.</translation>
 <translation id="2843571538056574338">Folosește Chromium pentru completare automată</translation>
-<translation id="2915596697727466327">Chromium folosește Face ID pentru a asigura accesul autorizat la parolele tale.</translation>
 <translation id="2918709798697875261">Organizația îți solicită să nu te conectezi la Chromium.</translation>
 <translation id="2942241131342758843">Folosește Chromium în mod prestabilit ca să deschizi linkuri, să cauți din widgeturi și să completezi automat parolele în alte aplicații</translation>
 <translation id="2977470724722393594">Chromium este actualizat</translation>
@@ -175,7 +175,6 @@ Numai un utilizator care deține expresia ta de acces îți poate citi datele cr
 <translation id="7165402419892018581">Alege Chromium pentru completarea automată</translation>
 <translation id="7175400662502680481">Parola a fost expusă în urma încălcării securității datelor. Managerul de parole îți recomandă să schimbi parola acum.</translation>
 <translation id="7192111075364461693">Notificările din Chromium sunt momentan dezactivate în setările dispozitivului.</translation>
-<translation id="7208566199746267865">Folosind Chromium, economisești timp, deoarece te conectează la conturi și pe web. Poți să adaugi sau să elimini conturi din Setări.</translation>
 <translation id="725427773388857052">Chromium te protejează împotriva încălcării securității datelor, a site-urilor nesigure și nu numai.</translation>
 <translation id="7269362888766543920">Unele suplimente blochează Chromium. Încearcă să le dezinstalezi.</translation>
 <translation id="7285031092584344905">Accesează parolele Chromium și multe altele în alte aplicații.</translation>

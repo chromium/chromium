@@ -31,7 +31,6 @@
 <translation id="1018656279737460067">キャンセルされました</translation>
 <translation id="1022522674678746124">PowerPoint</translation>
 <translation id="1022669824195822609">このデバイスは <ph name="DOMAIN" /> によって管理されています。管理者はこのデバイスの任意のプロファイルのデータにアクセスできます。</translation>
-<translation id="1024734233509995696">このタブはカメラまたはマイクを使用しています</translation>
 <translation id="1026655690966755180">ポートを追加</translation>
 <translation id="1026822031284433028">画像を読み込む</translation>
 <translation id="1026959648338730078">Windows Hello または外部セキュリティ キー</translation>
@@ -1767,7 +1766,6 @@
 <translation id="2335111415680198280">{0,plural, =1{# 個のウィンドウを閉じる}other{# 個のウィンドウを閉じる}}</translation>
 <translation id="2336228925368920074">すべてのタブをブックマークに追加...</translation>
 <translation id="2336381494582898602">Powerwash</translation>
-<translation id="2337236196941929873">Chrome でアクセスが想定されるページをプリロードします。Cookie が許可されている場合は、プリロードの際に Cookie を使用します。また、サイトでアクセス元が特定されないように、Google 経由でページを暗号化して送信する場合があります。</translation>
 <translation id="2340239562261172947"><ph name="FILE_NAME" /> は安全にダウンロードできません</translation>
 <translation id="2342180549977909852">お子様はパスワードではなく数字（PIN）を使用してデバイスのロックを解除することができます。後で PIN を設定する場合は、[設定] に移動してください。</translation>
 <translation id="2342740338116612727">ブックマークを追加しました</translation>
@@ -3511,6 +3509,7 @@
 <translation id="372722114124766626">今回のみ</translation>
 <translation id="3727332897090187514">メモは追加されていません</translation>
 <translation id="3727473233247516571">バックフォワード キャッシュのサブフレーム: <ph name="BACK_FORWARD_CACHE_PAGE_URL" /></translation>
+<translation id="3727850735097852673">macOS キーチェーンで Google パスワード マネージャーを使用するには、Chrome を再起動してキーチェーンへのアクセスを許可してください。再起動すると、タブが再度開きます。</translation>
 <translation id="3728188878314831180">スマートフォンから通知をミラーリング</translation>
 <translation id="3728681439294129328">ネットワーク アドレスの設定</translation>
 <translation id="3729506734996624908">許可したサイト</translation>
@@ -5898,7 +5897,6 @@
 <translation id="5636012309446422"><ph name="PRIMARY_EMAIL" /> から <ph name="DEVICE" /> を削除しますか？</translation>
 <translation id="5636996382092289526"><ph name="NETWORK_ID" /> を使用するには、最初に<ph name="LINK_START" />ネットワークのログイン ページにアクセス<ph name="LINK_END" />する必要がある場合があります。その場合は、数秒でログイン ページが自動的に開きます。ログイン ページが自動的に開かない場合、そのネットワークは使用できません。</translation>
 <translation id="5637476008227280525">モバイルデータの有効化</translation>
-<translation id="563811590465749036">macOS キーチェーンで Google パスワード マネージャーを使用するには、Chrome を再起動してキーチェーンへのアクセスを許可してください。再起動すると、タブが再度開きます</translation>
 <translation id="563821631542362636">サイトによるデータの保存を許可する</translation>
 <translation id="5638309510554459422"><ph name="BEGIN_LINK" />Chrome ウェブストア<ph name="END_LINK" />で拡張機能やテーマを探すことができます</translation>
 <translation id="5639549361331209298">このページを再読み込みするには、詳細オプションが表示されるまで押し続けます</translation>
@@ -6130,7 +6128,6 @@
 <translation id="583431638776747">サイトを利用できませんでした</translation>
 <translation id="5834581999798853053">あと約 <ph name="TIME" /> 分</translation>
 <translation id="5835360478055379192">{NUM_EXTENSION,plural, =1{<ph name="EXTENSION1" /> が HID デバイスにアクセスしています}=2{<ph name="EXTENSION1" />、<ph name="EXTENSION2" /> の拡張機能がデバイスにアクセスしています}other{<ph name="EXTENSION1" />、<ph name="EXTENSION2" />、その他 {3} 個の拡張機能がデバイスにアクセスしています}}</translation>
-<translation id="5835486486592033703"><ph name="WINDOW_TITLE" /> - カメラまたはマイクで記録中です</translation>
 <translation id="583673505367439042">サイトがデバイスのファイルやフォルダの編集を要求できるようにする</translation>
 <translation id="5836999627049108525">翻訳元の言語</translation>
 <translation id="583756221537636748">ケース</translation>

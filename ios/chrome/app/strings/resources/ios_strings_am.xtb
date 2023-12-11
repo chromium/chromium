@@ -913,7 +913,6 @@ Handoff እንዲሁም በSettings ውስጥ ባለው የGeneral ክፍል ላ
 <translation id="5857770089550859117">ስምረትን ለመጀመር የይለፍ ሐረግ ያስፈልጋል።</translation>
 <translation id="5859715514067755465">ወደፊት</translation>
 <translation id="5860033963881614850">አጥፋ</translation>
-<translation id="5869029295770560994">እሺ፣ ገባኝ</translation>
 <translation id="5871497086027727873">1 ንጥል ተንቀሳቅሷል</translation>
 <translation id="5896576662943111387">ለiOS የተገነባ</translation>
 <translation id="5897749768294722429">ወደጎበኟቸው ጣቢያዎች በቶሎ ለመመለስ የእርስዎን ትሮች እና ታሪክ ያስምሩ።</translation>
@@ -930,7 +929,6 @@ Handoff እንዲሁም በSettings ውስጥ ባለው የGeneral ክፍል ላ
 <translation id="595769230373966252">በ<ph name="SEARCH_PROVIDER" /> ፈልግ</translation>
 <translation id="5962718611393537961">ለመሰብሰብ መታ ያድርጉ</translation>
 <translation id="5963939892571022323">ወደ ድምቀቱ የሚወስድ አገናኝ ሊፈጠር አይችልም።</translation>
-<translation id="5965679971710331625">ወደ መለያ ገብተዋል</translation>
 <translation id="5971872012779224351">{count,plural, =1{1 ዕልባት ተሰርዟል}one{{count} ዕልባት ተሰርዘዋል}other{{count} ዕልባቶች ተሰርዘዋል}}</translation>
 <translation id="5979837087407522202">የይለፍ ቃላትን ይፈልጉ</translation>
 <translation id="5981230843984570095">ገቢር ያልሆኑትን ሁሉ ዝጋ</translation>
@@ -1479,6 +1477,7 @@ Handoff እንዲሁም በSettings ውስጥ ባለው የGeneral ክፍል ላ
 <translation id="8766790350274092814">የ<ph name="WEBSITE" /> እና <ph name="SECOND_WEBSITE" /> የይለፍ ቃላት ይሰረዛሉ። መለያዎችዎ አይሰረዙም።</translation>
 <translation id="8775144690796719618">ልክ ያልሆነ ዩአርኤል</translation>
 <translation id="8780076847684176174">{count,plural, =1{ትሩን ይገምግሙ...}one{ሁሉንም ትር ይገምግሙ...}other{ሁሉንም ትሮች ይገምግሙ...}}</translation>
+<translation id="8782570580170191813">ሁልጊዜ ፓኬጆችን ይከታተሉ</translation>
 <translation id="8787968206789828143">በድር ላይ ይፈልጉ</translation>
 <translation id="8792626944327216835">ማይክሮፎን</translation>
 <translation id="8803639129939845298">ደህንነቱ የተጠበቀ ነው</translation>

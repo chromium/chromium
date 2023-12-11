@@ -16,6 +16,7 @@
 <translation id="1513122820609681462">Chromium을 기본 브라우저로 설정</translation>
 <translation id="1531155317299575425">Chromium에 로그인하기 위한 메시지를 표시합니다.</translation>
 <translation id="1591119736686995611">Chromium 탭 그리드를 엽니다.</translation>
+<translation id="1611584326765829247">Chromium의 도움을 받아 배송 현황을 추적하세요</translation>
 <translation id="1617663976202781617">Chromium 동기화 데이터</translation>
 <translation id="1647558790457890304">Chromium 설정</translation>
 <translation id="164952285225495380">이 택배는 이미 Chromium에서 추적되었습니다.</translation>
@@ -53,7 +54,6 @@
 <translation id="2784449251446768092">Chromium 설정 관리</translation>
 <translation id="2798503587425057129">Chromium 읽기 목록을 엽니다.</translation>
 <translation id="2843571538056574338">자동 완성에 Chromium 사용</translation>
-<translation id="2915596697727466327">Chromium은 얼굴 ID를 사용하여 승인된 사용자만 비밀번호에 액세스할 수 있도록 합니다.</translation>
 <translation id="2918709798697875261">조직에서 Chromium 로그아웃 상태를 유지할 것을 요청합니다.</translation>
 <translation id="2942241131342758843">Chromium을 다른 앱에서 링크를 열고, 위젯에서 검색하고, 비밀번호를 자동 완성할 기본값으로 사용합니다.</translation>
 <translation id="2977470724722393594">Chromium이 최신 버전임</translation>
@@ -175,7 +175,6 @@
 <translation id="7165402419892018581">자동 완성에 사용할 Chromium 선택</translation>
 <translation id="7175400662502680481">정보 유출로 인해 비밀번호가 노출되었습니다. 비밀번호 관리자에서 지금 바로 비밀번호를 변경하시기 바랍니다.</translation>
 <translation id="7192111075364461693">현재 기기 설정에서 Chromium 알림이 사용 중지되어 있습니다.</translation>
-<translation id="7208566199746267865">Chromium에서는 계정 로그인 정보가 자동으로 채워지기 때문에 시간을 절약할 수 있습니다. 설정에서 계정을 추가하거나 삭제할 수 있습니다.</translation>
 <translation id="725427773388857052">Chromium에서는 정보 유출, 안전하지 않은 웹사이트 등으로부터 사용자를 보호합니다</translation>
 <translation id="7269362888766543920">일부 부가기능으로 인해 Chromium이 비정상 종료됩니다. 해당 부가기능을 제거하세요.</translation>
 <translation id="7285031092584344905">다른 앱에서 Chromium 비밀번호 등 다양한 항목에 액세스합니다.</translation>

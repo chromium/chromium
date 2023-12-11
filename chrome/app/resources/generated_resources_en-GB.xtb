@@ -31,7 +31,6 @@
 <translation id="1018656279737460067">Cancelled</translation>
 <translation id="1022522674678746124">PowerPoint</translation>
 <translation id="1022669824195822609">Your device is managed by <ph name="DOMAIN" />. Administrators can access the data in any profile on this device.</translation>
-<translation id="1024734233509995696">This tab is using your camera or microphone</translation>
 <translation id="1026655690966755180">Add port</translation>
 <translation id="1026822031284433028">Load Image</translation>
 <translation id="1026959648338730078">Windows Hello or external security key</translation>
@@ -1787,7 +1786,6 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="2335111415680198280">{0,plural, =1{Close # window}other{Close # windows}}</translation>
 <translation id="2336228925368920074">Bookmark All Tabs...</translation>
 <translation id="2336381494582898602">Powerwash</translation>
-<translation id="2337236196941929873">Preloads pages that Chrome thinks you might visit. To do this, Chrome may use cookies, if you allow cookies, and may encrypt and send pages through Google to hide your identity from sites.</translation>
 <translation id="2340239562261172947"><ph name="FILE_NAME" /> can't be downloaded securely</translation>
 <translation id="2342180549977909852">Your child can use a number (PIN) instead of a password to unlock this device. To set a PIN later, go to Settings.</translation>
 <translation id="2342740338116612727">Bookmarks added</translation>
@@ -1880,6 +1878,7 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="2412753904894530585">Kerberos</translation>
 <translation id="2414159296888870200">Resume browsing for <ph name="MODULE_TITLE" /></translation>
 <translation id="2414886740292270097">Dark</translation>
+<translation id="2415117815770324983">Signs you out of most sites. You'll stay signed in to your Google Account.</translation>
 <translation id="2416435988630956212">Keyboard function keys</translation>
 <translation id="2418307627282545839">Keep things bright and airy</translation>
 <translation id="2419131370336513030">View installed apps</translation>
@@ -2400,6 +2399,7 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="2799223571221894425">Relaunch</translation>
 <translation id="2800309299477632167">Custom keymap</translation>
 <translation id="2800760947029405028">Upload an image</translation>
+<translation id="2801134910297796778">Signed in to <ph name="EMAIL" /></translation>
 <translation id="2801954693771979815">Screen size</translation>
 <translation id="2802557211515765772">There are no managed printers.</translation>
 <translation id="2803313416453193357">Open folder</translation>
@@ -3531,6 +3531,7 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="372722114124766626">Just Once</translation>
 <translation id="3727332897090187514">No note added</translation>
 <translation id="3727473233247516571">Back-forward cached subframe: <ph name="BACK_FORWARD_CACHE_PAGE_URL" /></translation>
+<translation id="3727850735097852673">To use Google Password Manager with macOS Keychain, relaunch Chrome and allow Keychain access. Your tabs will reopen after relaunching.</translation>
 <translation id="3728188878314831180">Mirror notifications from your phone</translation>
 <translation id="3728681439294129328">Configure network address</translation>
 <translation id="3729506734996624908">Allowed sites</translation>
@@ -4046,6 +4047,7 @@ This can include information about installed software, files, your browser and t
 <translation id="4110485659976215879">Restore warning</translation>
 <translation id="4110490973560452005">Download complete: <ph name="FILE_NAME" />. Press Shift+F6 to cycle to the downloads bar area.</translation>
 <translation id="4112194537011183136"><ph name="DEVICE_NAME" /> (offline)</translation>
+<translation id="4113483184628671608">Encrypt the names of sites that you visit</translation>
 <translation id="4113743276555482284">File password</translation>
 <translation id="4114524937989710624">You’re seeing suggested files to help you easily get back to your most recent activity in Google Drive.
         <ph name="BREAK" />
@@ -5775,6 +5777,7 @@ Permissions that you've already given to websites and apps may apply to this acc
 <translation id="5517304475148761050">This app requires access to the Play Store</translation>
 <translation id="5517412723934627386"><ph name="NETWORK_TYPE" /> – <ph name="NETWORK_DISPLAY_NAME" /></translation>
 <translation id="5518949581554491184">Set up with Android phone</translation>
+<translation id="5519053700692355541">You can open most side panel features through the Chrome menu at the top right</translation>
 <translation id="5519195206574732858">LTE</translation>
 <translation id="5519900055135507385">Keep this account more secure with a strong password. It will be saved to <ph name="GOOGLE_PASSWORD_MANAGER" /> for <ph name="EMAIL" />.</translation>
 <translation id="5521078259930077036">Is this the home page that you were expecting?</translation>
@@ -5920,7 +5923,6 @@ Permissions that you've already given to websites and apps may apply to this acc
 <translation id="5636012309446422">Remove <ph name="DEVICE" /> from <ph name="PRIMARY_EMAIL" />?</translation>
 <translation id="5636996382092289526">To use <ph name="NETWORK_ID" /> you may first need to <ph name="LINK_START" />visit the network's sign-in page<ph name="LINK_END" />, which will open automatically in a few seconds. If it doesn't happen, the network can't be used.</translation>
 <translation id="5637476008227280525">Mobile data enable</translation>
-<translation id="563811590465749036">To use Google Password Manager with macOS Keychain, relaunch Chrome and allow Keychain access. Your tabs will reopen after relaunching</translation>
 <translation id="563821631542362636">Allow site to save data</translation>
 <translation id="5638309510554459422">Find extensions and themes in the <ph name="BEGIN_LINK" />Chrome Web Store<ph name="END_LINK" /></translation>
 <translation id="5639549361331209298">Reload this page, hold to see more options</translation>
@@ -6152,7 +6154,6 @@ Permissions that you've already given to websites and apps may apply to this acc
 <translation id="583431638776747">Site wasn’t available</translation>
 <translation id="5834581999798853053">About <ph name="TIME" /> minutes left</translation>
 <translation id="5835360478055379192">{NUM_EXTENSION,plural, =1{<ph name="EXTENSION1" /> is accessing HID devices}=2{Extensions accessing devices: <ph name="EXTENSION1" />, <ph name="EXTENSION2" />}other{Extensions accessing devices: <ph name="EXTENSION1" />, <ph name="EXTENSION2" /> +{3} more}}</translation>
-<translation id="5835486486592033703"><ph name="WINDOW_TITLE" /> – Camera or microphone recording</translation>
 <translation id="583673505367439042">Sites can ask to edit files and folders on your device</translation>
 <translation id="5836999627049108525">Language to translate from</translation>
 <translation id="583756221537636748">Case</translation>
@@ -6737,6 +6738,7 @@ Permissions that you've already given to websites and apps may apply to this acc
 <translation id="6294759976468837022">Auto-scan speed</translation>
 <translation id="6295158916970320988">All sites</translation>
 <translation id="6295855836753816081">Saving...</translation>
+<translation id="6298456705131259420">Affects the sites listed here. Inserting “[*.]” before a domain name creates an exception for the entire domain. For example, adding “[*.]google.co.uk” means that third-party cookies can also be active for mail.google.co.uk, because it’s part of google.co.uk.</translation>
 <translation id="6298962879096096191">Use Google Play to install Android apps</translation>
 <translation id="6300177430812514606">Not allowed to finish sending or receiving data</translation>
 <translation id="6300654006256345126">Edit password</translation>
@@ -7158,6 +7160,7 @@ You have # more compromised passwords. Google Password Manager recommends checki
 <translation id="6651762277693024112">Runs automatically every time that you visit this site</translation>
 <translation id="665355505818177700">Chrome <ph name="MS_AD_NAME" /> integration is only supported on x86_64 platforms. Chromebooks built on top of an ARM or x86 platform do not support this functionality.</translation>
 <translation id="6654509035557065241">Prefer network</translation>
+<translation id="6654987855337442937">Use a secure Domain Name System (DNS) to prevent people with access to your Internet traffic from seeing which sites you visit</translation>
 <translation id="6655190889273724601">Developer mode</translation>
 <translation id="6655458902729017087">Hide Accounts</translation>
 <translation id="6657180931610302174">Add username?</translation>
@@ -9556,6 +9559,7 @@ Keep your key file in a safe place. You will need it to create new versions of y
 <translation id="8528074251912154910">Add languages</translation>
 <translation id="8528479410903501741">Save IBAN</translation>
 <translation id="8528962588711550376">Signing in.</translation>
+<translation id="8529578450330869579">Use a secure Domain Name System (DNS) to prevent people with access to your Internet traffic from seeing which sites you visit. This uses a managed service provider at <ph name="DNS_SERVER_TEMPLATE_WITH_IDENTIFIER" /></translation>
 <translation id="8529925957403338845">Instant Tethering connection failed</translation>
 <translation id="8531701051932785007">Enhanced Safe Browsing is off</translation>
 <translation id="8533670235862049797">Safe Browsing is on</translation>

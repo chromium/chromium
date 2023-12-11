@@ -837,6 +837,7 @@ Shiko udhëzimet e motorit të kërkimit për fshirjen e historikut të kërkimi
 <translation id="5457226814769348910">Hap versionin offline</translation>
 <translation id="5475069061743940393">Gjurmimi i pakos</translation>
 <translation id="5478327362747197944">Krijo drejtpërdrejt ngjarje të "Kalendarit" duke klikuar në një datë në një faqe uebi.</translation>
+<translation id="5482922178977937393">Dëshiron të marrësh njoftime për lajmet, sportet etj. bazuar në interesat e tu?</translation>
 <translation id="5489208564673669003">Për të menaxhuar kukit për të gjitha sajtet, shiko <ph name="BEGIN_LINK" />Cilësimet e kukive<ph name="END_LINK" />.</translation>
 <translation id="5490005495580364134">Blloko të gjitha kukit (nuk rekomandohet)</translation>
 <translation id="5497202150450073388">Dërgesa u provua. Do të riprovohet</translation>
@@ -912,7 +913,6 @@ Handoff duhet gjithashtu të jetë i aktivizuar në seksionin "Të përgjithshme
 <translation id="5857770089550859117">Kërkohet shprehja e kalimit për të nisur sinkronizimin.</translation>
 <translation id="5859715514067755465">Shko përpara</translation>
 <translation id="5860033963881614850">Çaktivizuar</translation>
-<translation id="5869029295770560994">Në rregull, kuptova</translation>
 <translation id="5871497086027727873">1 element u lëviz</translation>
 <translation id="5896576662943111387">Krijuar për iOS</translation>
 <translation id="5897749768294722429">Për t'u kthyer me shpejtësi te sajtet që ke vizituar, sinkronizo skedat dhe historikun.</translation>
@@ -929,7 +929,6 @@ Handoff duhet gjithashtu të jetë i aktivizuar në seksionin "Të përgjithshme
 <translation id="595769230373966252">Kërko me <ph name="SEARCH_PROVIDER" /></translation>
 <translation id="5962718611393537961">Trokit për të palosur</translation>
 <translation id="5963939892571022323">Nuk mund të krijohet një lidhje për te teksti i theksuar.</translation>
-<translation id="5965679971710331625">Je i identifikuar</translation>
 <translation id="5971872012779224351">{count,plural, =1{1 faqeshënues u fshi}other{{count} faqeshënues u fshinë}}</translation>
 <translation id="5979837087407522202">Kërko për fjalëkalime</translation>
 <translation id="5981230843984570095">Mbyll të gjitha skedat joaktive</translation>
@@ -1478,6 +1477,7 @@ Të dhënat e tua janë enkriptuar me frazën tënde të kalimit më <ph name="T
 <translation id="8766790350274092814">Fjalëkalimet për <ph name="WEBSITE" /> dhe <ph name="SECOND_WEBSITE" /> do të fshihen. Llogaritë e tua nuk do të fshihen.</translation>
 <translation id="8775144690796719618">URL-ja është e pavlefshme</translation>
 <translation id="8780076847684176174">{count,plural, =1{Rishiko skedën...}other{Rishiko të gjitha skedat...}}</translation>
+<translation id="8782570580170191813">Gjurmo gjithmonë pakot</translation>
 <translation id="8787968206789828143">Kërko në ueb</translation>
 <translation id="8792626944327216835">mikrofoni</translation>
 <translation id="8803639129939845298">E sigurt</translation>

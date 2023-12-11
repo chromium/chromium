@@ -16,6 +16,7 @@
 <translation id="1513122820609681462">Chromium'u varsayılan tarayıcı olarak ayarla</translation>
 <translation id="1531155317299575425">Chromium'da oturum açmak için istekleri gösterir.</translation>
 <translation id="1591119736686995611">Chromium Sekme Izgarasını Açar.</translation>
+<translation id="1611584326765829247">Chromium'un, kargolarınızı takip etmenize yardımcı olmasına izin verin</translation>
 <translation id="1617663976202781617">Chromium senkronizasyonundan veriler</translation>
 <translation id="1647558790457890304">Chromium Ayarları</translation>
 <translation id="164952285225495380">Bu kargo halihazırda Chromium'da takip ediliyor.</translation>
@@ -53,7 +54,6 @@
 <translation id="2784449251446768092">Chromium ayarlarını yönet</translation>
 <translation id="2798503587425057129">Chromium Okuma Listesi'ni açar.</translation>
 <translation id="2843571538056574338">Otomatik doldurma için Chromium'u kullanın</translation>
-<translation id="2915596697727466327">Chromium, şifrelerinize yetkili erişim sağlanması için Face ID kullanır.</translation>
 <translation id="2918709798697875261">Kuruluşunuz, Chromium'da oturum kapatmış olarak kalmanızı zorunlu tutuyor.</translation>
 <translation id="2942241131342758843">Bağlantıları açmak, widget'lardan arama yapmak ve diğer uygulamalarda şifreleri otomatik doldurmak için varsayılan olarak Chromium'u kullanın</translation>
 <translation id="2977470724722393594">Chromium güncel durumda</translation>
@@ -175,7 +175,6 @@ Sadece parolanıza sahip olan kişiler şifrelenmiş verilerinizi okuyabilir. Pa
 <translation id="7165402419892018581">Otomatik doldurma için Chromium'u seçin</translation>
 <translation id="7175400662502680481">Şifreniz bir veri ihlali nedeniyle açığa çıktı. Şifre Yöneticisi bu şifreyi hemen değiştirmenizi öneriyor.</translation>
 <translation id="7192111075364461693">Chromium bildirimleri cihaz ayarlarınızda devre dışı bırakılmış.</translation>
-<translation id="7208566199746267865">Chromium, hesaplarınızı web'e getirerek size zaman kazandırır. Hesapları Ayarlar'dan ekleyebilir veya kaldırabilirsiniz.</translation>
 <translation id="725427773388857052">Chromium; veri ihlallerine, güvenli olmayan web sitelerine ve diğer tehditlere karşı güvende kalmanıza yardımcı olabilir.</translation>
 <translation id="7269362888766543920">Bazı eklentiler Chromium'un kilitlenmesine neden oluyor. Lütfen bunların yüklemesini kaldırmayı deneyin.</translation>
 <translation id="7285031092584344905">Diğer uygulamalardan Chromium şifrelerinize ve daha fazlasına erişin.</translation>

@@ -55,6 +55,7 @@ Wichtige Hinweise:
 <translation id="2574249610672786438">Melde dich auf allen deinen Geräten an, um deine Tabs überall dort aufzurufen, wo du Chrome verwendest</translation>
 <translation id="2576431527583832481">Chrome ist jetzt noch besser! Es ist eine neue Version verfügbar.</translation>
 <translation id="257708665678654955">Soll Google Chrome beim nächsten Mal eine Übersetzung von Seiten dieser Website anbieten, die auf <ph name="LANGUAGE_NAME" /> sind?</translation>
+<translation id="2650286135394207535">Pakete mit Chrome verfolgen</translation>
 <translation id="2671426118752779020">Du kannst die im Google Passwortmanager gespeicherten Passwörter in anderen Apps auf deinem iPhone verwenden.</translation>
 <translation id="2689064829982324496">Du kannst dich auf allen Websites aus deinem Google-Konto abmelden, indem du dich <ph name="BEGIN_LINK" />von Chrome abmeldest<ph name="END_LINK" />.</translation>
 <translation id="2695886661449553974">Chrome konnte nicht nach Updates suchen. Versuche es später noch einmal.</translation>
@@ -69,7 +70,6 @@ Wichtige Hinweise:
 <translation id="309672519329227863">In anderen Apps auf Chrome-Passwörter und mehr zugreifen.</translation>
 <translation id="3167189358072330585">Dieses Konto funktioniert in Google Chrome nicht. Wende dich an deinen Domainadministrator oder melde dich mit einem Google-Standardkonto an.</translation>
 <translation id="3173834708294760622">Google Chrome-Seite</translation>
-<translation id="3196546062792660320">Mit Chrome sparst du Zeit, da du deine Konten im Web verwenden kannst. In den Einstellungen hast du die Möglichkeit, Konten hinzuzufügen oder zu entfernen.</translation>
 <translation id="322254490661677575">Gib deine Passphrase ein, um Chrome-Daten in deinem Google-Konto zu verwenden und zu speichern.</translation>
 <translation id="3282568296779691940">In Chrome anmelden</translation>
 <translation id="3345341804167540816">Chrome überall nutzen</translation>
@@ -169,7 +169,6 @@ Nur Personen, die deine Passphrase kennen, können deine verschlüsselten Daten 
 <translation id="7124339256045485976">Chrome auf dem neuesten Stand halten</translation>
 <translation id="7161390184744336561">Google Chrome ist veraltet</translation>
 <translation id="7165736900384873061">Google Chrome QR-Scanner nutzen</translation>
-<translation id="7173660919484573146">Chrome verwendet Face ID, um den autorisierten Zugriff auf deine Passwörter zu gewährleisten.</translation>
 <translation id="7187993566681480880">Schützt dich in Chrome und erhöht möglicherweise die Sicherheit in anderen Google-Apps, wenn du angemeldet bist.</translation>
 <translation id="7200524487407690471">Chrome führt jeden Tag automatisch einen Sicherheitscheck durch, um dich unter anderem vor Datenpannen und unsicheren Websites zu schützen. Weitere Informationen zum Sicherheitscheck findest du in den Einstellungen.</translation>
 <translation id="72119412072970160">Du kannst die im Google Passwortmanager gespeicherten Passwörter in anderen Apps auf deinem iPad verwenden.</translation>
@@ -189,6 +188,7 @@ Nur Personen, die deine Passphrase kennen, können deine verschlüsselten Daten 
 <translation id="7698568245838009292">Chrome möchte auf deine Kamera zugreifen</translation>
 <translation id="7754633291442704733">Deine Organisation <ph name="DOMAIN" /> hat Zugriff auf deine Daten, Lesezeichen, Passwörter und deinen Verlauf in Chrome sowie auf andere Einstellungen, die du in diesem Konto speicherst. Wenn du dich abmeldest, werden deine Daten von diesem Gerät gelöscht.  Die Daten bleiben jedoch in deinem verwalteten Google-Konto gespeichert und können von deiner Organisation abgerufen werden. Deine Organisation kann auch spezifische Nutzerrichtlinien für dieses Konto festlegen, die das Verhalten von Chrome verändern können.</translation>
 <translation id="7780154209050837198">Wenn du Chrome optimal nutzen möchtest, meldest du dich mit deinem Google-Konto in Chrome an.</translation>
+<translation id="7792140019572081272">Chrome trägt mit Face ID dazu bei, deine sensiblen Daten zu schützen.</translation>
 <translation id="7855730255114109580">Google Chrome ist auf dem neuesten Stand.</translation>
 <translation id="7897703007638178753">Zuletzt geöffnete Chrome-Tabs ansehen</translation>
 <translation id="7925119591961387184">Wähle „Chrome“ aus.</translation>

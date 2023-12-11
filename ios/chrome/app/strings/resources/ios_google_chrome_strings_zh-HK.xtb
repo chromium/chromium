@@ -70,7 +70,6 @@
 <translation id="309672519329227863">在其他應用程式中使用你的 Chrome 密碼和其他資料。</translation>
 <translation id="3167189358072330585">您的帳戶不適用於 Google Chrome。請聯絡網域管理員，或使用一般的 Google 帳戶登入。</translation>
 <translation id="3173834708294760622">Google Chrome 頁面</translation>
-<translation id="3196546062792660320">Chrome 允許您將帳戶同步至網路上，以節省時間。您可以在設定中新增或移除帳戶。</translation>
 <translation id="322254490661677575">如要將 Chrome 的資料儲存至 Google 帳戶及使用這類資料，請輸入密碼短語。</translation>
 <translation id="3282568296779691940">登入 Chrome</translation>
 <translation id="3345341804167540816">隨時隨地使用 Chrome</translation>
@@ -170,7 +169,6 @@
 <translation id="7124339256045485976">取得 Chrome 最新更新</translation>
 <translation id="7161390184744336561">Google Chrome 版本過舊</translation>
 <translation id="7165736900384873061">開始使用 Google Chrome 二維條碼掃描器</translation>
-<translation id="7173660919484573146">Chrome 透過 Face ID 確保只有獲授權人士才可存取您的密碼。</translation>
 <translation id="7187993566681480880">確保您登入使用 Chrome 的安全，並可提升您在其他 Google 應用程式的安全性。</translation>
 <translation id="7200524487407690471">Chrome 每日會自動執行「安全檢查」功能，避免資料外洩或不安全網站等。你可在「設定」中進一步瞭解「安全檢查」功能。</translation>
 <translation id="72119412072970160">您可在 iPad 上的其他應用程式使用您儲存到「Google 密碼管理工具」的密碼。</translation>
@@ -190,6 +188,7 @@
 <translation id="7698568245838009292">Chrome 要求存取相機</translation>
 <translation id="7754633291442704733">您的機構 <ph name="DOMAIN" /> 將可存取您儲存在此帳戶中的 Chrome 資料、書籤、記錄、密碼和其他設定。登出帳戶後，系統會清除此裝置中的資料。不過，您的資料仍會儲存在受管 Google 帳戶中，並可供機構使用。您的機構亦可為該帳戶設定特定使用者政策，以變更 Chrome 的行為。</translation>
 <translation id="7780154209050837198">如要充分運用 Chrome 的所有功能，請透過 Google 帳戶登入 Chrome。</translation>
+<translation id="7792140019572081272">Chrome 會使用 Face ID 保護你的敏感資料安全。</translation>
 <translation id="7855730255114109580">Google Chrome 已是最新版本</translation>
 <translation id="7897703007638178753">查看 Chrome 最近開啟的分頁</translation>
 <translation id="7925119591961387184">選取 [Chrome]。</translation>

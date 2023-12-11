@@ -835,6 +835,7 @@
 <translation id="5457226814769348910">打开离线版</translation>
 <translation id="5475069061743940393">包裹跟踪</translation>
 <translation id="5478327362747197944">点击网页上的日期即可直接创建日历活动。</translation>
+<translation id="5482922178977937393">是否愿意接收系统根据您的兴趣推送的新闻、体育等方面的通知？</translation>
 <translation id="5489208564673669003">若要管理所有网站的 Cookie，请查看 <ph name="BEGIN_LINK" />Cookie 设置<ph name="END_LINK" />。</translation>
 <translation id="5490005495580364134">阻止所有 Cookie（不建议）</translation>
 <translation id="5497202150450073388">递送尝试失败。将重试</translation>
@@ -910,7 +911,6 @@
 <translation id="5857770089550859117">必须输入密码才能开始同步。</translation>
 <translation id="5859715514067755465">前进</translation>
 <translation id="5860033963881614850">关闭</translation>
-<translation id="5869029295770560994">知道了</translation>
 <translation id="5871497086027727873">移动了1项</translation>
 <translation id="5896576662943111387">专为 iOS 打造</translation>
 <translation id="5897749768294722429">如果想快速重新访问浏览过的网站，请同步您的标签页和历史记录。</translation>
@@ -927,7 +927,6 @@
 <translation id="595769230373966252">使用 <ph name="SEARCH_PROVIDER" /> 进行搜索</translation>
 <translation id="5962718611393537961">点按即可收起</translation>
 <translation id="5963939892571022323">无法创建指向突出显示的内容的链接。</translation>
-<translation id="5965679971710331625">您已登录</translation>
 <translation id="5971872012779224351">{count,plural, =1{已删除 1 个书签}other{已删除 {count} 个书签}}</translation>
 <translation id="5979837087407522202">搜索密码</translation>
 <translation id="5981230843984570095">关闭所有闲置标签页</translation>

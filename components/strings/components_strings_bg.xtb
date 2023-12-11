@@ -87,6 +87,7 @@
 <translation id="11635448457105324">Бутон „Управление на адресите“. Активирайте, за да добавяте адреси и да ги управлявате от настройките на Chrome</translation>
 <translation id="1165039591588034296">Грешка</translation>
 <translation id="1165174597379888365">Страницата е посетена</translation>
+<translation id="1165813024716836071">{COUNT,plural, =0{Няма}=1{От 1 сайт (ще останете в профила си в Google)}other{От # сайта (ще останете в профила си в Google)}}</translation>
 <translation id="1165852471352757509">Телевизионни документални и научно-популярни предавания</translation>
 <translation id="1174644974616730562">Плик, китайски №1</translation>
 <translation id="1174723505405632867">Искате ли да разрешите на <ph name="EMBEDDED_URL" /> да използва „бисквитки“ и данни за сайтове на <ph name="TOP_LEVEL_URL" />?
@@ -3986,6 +3987,7 @@
 <translation id="8919895429178014996">Скриване на всички елементи</translation>
 <translation id="8922013791253848639">Рекламите на този сайт да са разрешени винаги</translation>
 <translation id="892588693504540538">Перфориране горе вдясно</translation>
+<translation id="8926389886865778422">Без повторно питане</translation>
 <translation id="8930330541574156305">Недвижими имоти</translation>
 <translation id="8932102934695377596">Часовникът ви е назад</translation>
 <translation id="893332455753468063">Добавяне на име</translation>

@@ -349,6 +349,7 @@ Jeśli się nie zgodzisz, zostaną one zablokowane ze względu na Twoje ustawien
 <translation id="1633941398432788136">Planowanie imprez</translation>
 <translation id="1634828734222219955">Suma</translation>
 <translation id="163669211644121865">Pomoc i planowanie dotyczące rozliczeń podatkowych</translation>
+<translation id="163826442096818926">Skróć</translation>
 <translation id="1639239467298939599">Wczytuję</translation>
 <translation id="1640180200866533862">Zasady dotyczące użytkowników</translation>
 <translation id="1640244768702815859">Otwórz <ph name="BEGIN_LINK" />stronę główną witryny<ph name="END_LINK" />.</translation>
@@ -724,6 +725,7 @@ Jeśli się nie zgodzisz, zostaną one zablokowane ze względu na Twoje ustawien
 <translation id="238459632961158867">Strona</translation>
 <translation id="2385809941344967209">Aktualizuj Chrome z poziomu ustawień przeglądarki</translation>
 <translation id="2386255080630008482">Certyfikat serwera został unieważniony.</translation>
+<translation id="239203817277685015">Rozwiń twórczo</translation>
 <translation id="239293030466334554">Kabriolety</translation>
 <translation id="2392959068659972793">Pokaż zasady bez ustawionej wartości</translation>
 <translation id="239429038616798445">Ta metoda wysyłki jest niedostępna. Wybierz inną.</translation>
@@ -971,6 +973,7 @@ Jeśli się nie zgodzisz, zostaną one zablokowane ze względu na Twoje ustawien
 <translation id="2938225289965773019">Otwieranie linków protokołu <ph name="PROTOCOL" /></translation>
 <translation id="2941878205777356567">Koperta 9 x 12 cali</translation>
 <translation id="2941952326391522266">Ten serwer nie mógł udowodnić, że należy do <ph name="DOMAIN" />. Jego certyfikat pochodzi z <ph name="DOMAIN2" />. Może to być spowodowane błędną konfiguracją lub przechwyceniem połączenia przez atakującego.</translation>
+<translation id="2942492342931589800">Zwykły</translation>
 <translation id="2942515540157583425">Praca w IT i działach technicznych</translation>
 <translation id="2943895734390379394">Czas przesłania:</translation>
 <translation id="2945026002409061480">Społeczności online</translation>
@@ -1219,6 +1222,7 @@ Uruchamianie aplikacji może potrwać dłużej niż zwykle.</translation>
 <translation id="3432601291244612633">Zamknij stronę</translation>
 <translation id="3433111389595862568">Oprogramowanie do współpracy i rozmów wideo</translation>
 <translation id="3433144818443565002">Czaty głosowe i wideo</translation>
+<translation id="3434025015623587566">Menedżer haseł Google potrzebuje szerszych uprawnień dostępu</translation>
 <translation id="343474037147570563">Przesyłane lub dołączone pliki są wysyłane do Google Cloud lub innych firm w celu przeanalizowania. Na przykład mogą zostać przeskanowane pod kątem danych wrażliwych lub złośliwego oprogramowania, a także mogą być przechowywane zgodnie z zasadami firmy i widoczne dla administratora.</translation>
 <translation id="3435557549311968410">Ciągły (krótki)</translation>
 <translation id="3435738964857648380">Bezpieczeństwo</translation>
@@ -1231,6 +1235,7 @@ Uruchamianie aplikacji może potrwać dłużej niż zwykle.</translation>
 <translation id="3447661539832366887">Właściciel tego urządzenia wyłączył grę z dinozaurem.</translation>
 <translation id="3447884698081792621">Pokaż certyfikat (wydany przez: <ph name="ISSUER" />)</translation>
 <translation id="3450323514459570273">Może prosić o uprawnienia do przeprogramowywania urządzeń MIDI i sterowania nimi</translation>
+<translation id="3452151267620065789">Postęp zapisany</translation>
 <translation id="3452404311384756672">Okres pobierania:</translation>
 <translation id="3453962258458347894">Liczba ponownych prób</translation>
 <translation id="3461266716147554923"><ph name="URL" /> chce mieć dostęp do tekstu i obrazów skopiowanych do schowka</translation>
@@ -1314,6 +1319,7 @@ Uruchamianie aplikacji może potrwać dłużej niż zwykle.</translation>
 <translation id="361438452008624280">Pozycja listy „<ph name="LANGUAGE_ID" />”: nieznany lub nieobsługiwany język.</translation>
 <translation id="3614934205542186002"><ph name="RUN_CHROME_SAFETY_CHECK_FOCUSED_FRIENDLY_MATCH_TEXT" />; aby uruchomić kontrolę zabezpieczeń w ustawieniach Chrome, naciśnij Tab, a potem Enter</translation>
 <translation id="3615309852743236517">Manicure i pedicure</translation>
+<translation id="3617072447978270288">Wygeneruj ponownie</translation>
 <translation id="3620239073311576716">Uniformy i odzież robocza</translation>
 <translation id="36224234498066874">Wyczyść dane przeglądania...</translation>
 <translation id="362276910939193118">Wyświetl całą historię</translation>
@@ -1336,6 +1342,7 @@ Uruchamianie aplikacji może potrwać dłużej niż zwykle.</translation>
 <translation id="3650594806107685466">Ze względów bezpieczeństwa wpisz kod CVC znajdujący się <ph name="SIDE_OF_CARD" /></translation>
 <translation id="3650917416636556301">Wędrówki i campingi</translation>
 <translation id="3653033846669030038">Wesołe miasteczka</translation>
+<translation id="3654980960391973513">Wygeneruj</translation>
 <translation id="3655241534245626312">Otwórz ustawienia uprawnień</translation>
 <translation id="3655670868607891010">Jeśli często widzisz ten komunikat, przeczytaj <ph name="HELP_LINK" />.</translation>
 <translation id="365641980390710834">Odzież codzienna</translation>
@@ -1968,6 +1975,7 @@ Uruchamianie aplikacji może potrwać dłużej niż zwykle.</translation>
 <translation id="4918221908152712722">Zainstaluj aplikację <ph name="APP_NAME" /> (nie wymaga pobrania)</translation>
 <translation id="4920457992177678649">Kwatery wakacyjne i wynajem krótkoterminowy</translation>
 <translation id="4920710383559189047">Etui</translation>
+<translation id="4922104989726031751">Aby używać Menedżera haseł w swoim systemie operacyjnym, uruchom ponownie Chromium i zezwól na dostęp do menedżera haseł na komputerze. Po ponownym uruchomieniu karty zostaną otwarte.</translation>
 <translation id="4923459931733593730">Płatność</translation>
 <translation id="4926049483395192435">Musi być określona.</translation>
 <translation id="4926159001844873046">Komunikat ze strony <ph name="SITE" /></translation>
@@ -2571,6 +2579,7 @@ Uruchamianie aplikacji może potrwać dłużej niż zwykle.</translation>
 <translation id="6157754950574419155">Usuń wszystkie z historii</translation>
 <translation id="6157877588268064908">Aby zobaczyć metody wysyłki oraz wymagania, wybierz adres</translation>
 <translation id="6159554577634054750">Zwalczanie szkodników</translation>
+<translation id="6159908896951210943">Formalny</translation>
 <translation id="6160391204859821737">Włączanie funkcji ochrony prywatności w reklamach</translation>
 <translation id="6165508094623778733">Dowiedz się więcej</translation>
 <translation id="6167577165590485365">Ostatnia próba pobrania:</translation>
@@ -2608,6 +2617,7 @@ Uruchamianie aplikacji może potrwać dłużej niż zwykle.</translation>
 <translation id="6234122620015464377">Przycięcie po każdym dokumencie</translation>
 <translation id="6236290670123303279">Zarządzaj ustawieniami</translation>
 <translation id="6240447795304464094">Logo Google Pay</translation>
+<translation id="6240964651812394252">Aby używać Menedżera haseł Google w swoim systemie operacyjnym, uruchom ponownie Chrome i zezwól na dostęp do menedżera haseł na komputerze. Po ponownym uruchomieniu karty zostaną otwarte.</translation>
 <translation id="6241121617266208201">Ukryj sugestie</translation>
 <translation id="624499991300733384">Usługa Print Compositor</translation>
 <translation id="6251906504834538140">{0,plural, =1{Przenoszenie pliku zostało zablokowane}few{Przenoszenie <ph name="FILE_COUNT" /> plików zostało zablokowane}many{Przenoszenie <ph name="FILE_COUNT" /> plików zostało zablokowane}other{Przenoszenie <ph name="FILE_COUNT" /> pliku zostało zablokowane}}</translation>
@@ -2618,6 +2628,7 @@ Uruchamianie aplikacji może potrwać dłużej niż zwykle.</translation>
 <translation id="6263376278284652872">Zakładki <ph name="DOMAIN" /></translation>
 <translation id="6264376385120300461">Pobierz mimo to</translation>
 <translation id="6264485186158353794">Wróć do bezpieczeństwa</translation>
+<translation id="6264636978858465832">Menedżer haseł potrzebuje szerszych uprawnień dostępu</translation>
 <translation id="6265794661083428563">Skopiuj wartość zasad: <ph name="POLICY_NAME" /></translation>
 <translation id="6266934640124581640">Jasny morski</translation>
 <translation id="6270066318535733958">Wioślarstwo</translation>
@@ -3216,6 +3227,7 @@ Dodatkowe informacje:
 <translation id="7422347648202898039">Etykiety (bezpieczeństwo)</translation>
 <translation id="7423283032694727565">Przycisk Zarządzaj plikami cookie; aktywuj, aby zarządzać opcjami plików cookie w ustawieniach Chrome</translation>
 <translation id="7424421098814895617">Wybrano opcję usunięcia adresu</translation>
+<translation id="7425037327577270384">Pomóż mi w pisaniu</translation>
 <translation id="7427366580982928791">Bezpieczeństwo dzieci w internecie</translation>
 <translation id="7429429656042611765">Executive</translation>
 <translation id="7432774160230062882">Potwierdź swoją tożsamość, aby przeglądarka Chromium mogła uzupełnić dane do płatności.</translation>
@@ -3282,6 +3294,7 @@ Dodatkowe informacje:
 <translation id="7529884293139707752">Edukacja domowa</translation>
 <translation id="7534987659046836932">Koperta C7</translation>
 <translation id="7535087603100972091">Wartość</translation>
+<translation id="753556296624075801">Technologia Google</translation>
 <translation id="7537536606612762813">Obowiązkowa</translation>
 <translation id="7542995811387359312">Automatyczne wypełnianie danych karty kredytowej jest wyłączone, ponieważ ten formularz nie korzysta z bezpiecznego połączenia.</translation>
 <translation id="7543525346216957623">Poproś rodzica</translation>
@@ -3465,6 +3478,7 @@ Dodatkowe informacje:
 <translation id="7871445724586827387">Zmień hasło do konta Google</translation>
 <translation id="7877007680666472091">identyfikatory treści chronionych</translation>
 <translation id="7878562273885520351">Ktoś mógł poznać Twoje hasło</translation>
+<translation id="7878966190323222027">Aby kontynuować, otwórz ponownie</translation>
 <translation id="7880146494886811634">Zapisz adres</translation>
 <translation id="7882421473871500483">Brązowy</translation>
 <translation id="7882995332186050355">Samochody ciężarowe i przyczepy</translation>
@@ -3987,12 +4001,14 @@ Dodatkowe informacje:
 <translation id="8919895429178014996">Ukryj wszystkie elementy</translation>
 <translation id="8922013791253848639">Zawsze zezwalaj na wyświetlanie reklam na tej stronie</translation>
 <translation id="892588693504540538">Otwór w prawym górnym rogu</translation>
+<translation id="8926389886865778422">Nie pytaj ponownie</translation>
 <translation id="8930330541574156305">Nieruchomości</translation>
 <translation id="8932102934695377596">Twój zegar się spóźnia</translation>
 <translation id="893332455753468063">Dodaj imię i nazwisko lub nazwę firmy</translation>
 <translation id="8942355029279167844">Administrator zezwolił aplikacji <ph name="APP_NAME" /> na zbieranie danych diagnostycznych, z których korzystamy, by ulepszać działanie usługi. Więcej informacji znajdziesz na <ph name="BEGIN_LINK" />https://www.parallels.com/pcep<ph name="END_LINK" />.</translation>
 <translation id="8943282376843390568">Limonkowy</translation>
 <translation id="8944485226638699751">Z ograniczeniami</translation>
+<translation id="8949410982325929394">Ton</translation>
 <translation id="8949493680961858543">A1x4</translation>
 <translation id="8951415078585015151">Prawo i administracja</translation>
 <translation id="8954252855949068147">Ubrania</translation>

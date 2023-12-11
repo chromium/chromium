@@ -913,7 +913,6 @@ Be to, reikia įgalinti „Handoff“ nustatymų skiltyje „Bendrieji“, o įr
 <translation id="5857770089550859117">Norint pradėti sinchronizuoti reikalinga slaptafrazė.</translation>
 <translation id="5859715514067755465">Pirmyn</translation>
 <translation id="5860033963881614850">Išjungta</translation>
-<translation id="5869029295770560994">Gerai, supratau</translation>
 <translation id="5871497086027727873">Perkelta elementų: 1</translation>
 <translation id="5896576662943111387">Sukurta „iOS“</translation>
 <translation id="5897749768294722429">Jei norite greitai grįžti į svetaines, kuriose lankėtės, sinchronizuokite skirtukus ir istoriją.</translation>
@@ -930,7 +929,6 @@ Be to, reikia įgalinti „Handoff“ nustatymų skiltyje „Bendrieji“, o įr
 <translation id="595769230373966252">Ieškoti naudojant „<ph name="SEARCH_PROVIDER" />“</translation>
 <translation id="5962718611393537961">Palieskite ir sutraukite</translation>
 <translation id="5963939892571022323">Nepavyko sukurti nuorodos į paryškintą tekstą.</translation>
-<translation id="5965679971710331625">Esate prisijungę</translation>
 <translation id="5971872012779224351">{count,plural, =1{Ištrinta 1 žymė}one{Ištrinta {count} žymė}few{Ištrintos {count} žymės}many{Ištrinta {count} žymės}other{Ištrinta {count} žymių}}</translation>
 <translation id="5979837087407522202">Ieškoti slaptažodžių</translation>
 <translation id="5981230843984570095">Uždaryti visus neaktyvius</translation>
@@ -1479,6 +1477,7 @@ Duomenys užšifruoti naudojant slaptafrazę <ph name="TIME" />. Įveskite ją, 
 <translation id="8766790350274092814"><ph name="WEBSITE" /> ir <ph name="SECOND_WEBSITE" /> slaptažodžiai bus ištrinti. Jūsų paskyros nebus ištrintos.</translation>
 <translation id="8775144690796719618">Netinkamas URL</translation>
 <translation id="8780076847684176174">{count,plural, =1{Peržiūrėti skirtuką...}one{Peržiūrėti visus skirtukus...}few{Peržiūrėti visus skirtukus...}many{Peržiūrėti visus skirtukus...}other{Peržiūrėti visus skirtukus...}}</translation>
+<translation id="8782570580170191813">Visada stebėti siuntinius</translation>
 <translation id="8787968206789828143">Paieškos žiniatinklyje</translation>
 <translation id="8792626944327216835">mikrofonas</translation>
 <translation id="8803639129939845298">Saugūs</translation>

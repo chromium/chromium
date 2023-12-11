@@ -496,6 +496,7 @@ Potražite upute za svoju tražilicu da biste saznali kako izbrisati svoju povij
 <translation id="355101282835380364">Spremi na račun…</translation>
 <translation id="3551320343578183772">Zatvori karticu</translation>
 <translation id="3565207542107370586">Brisanje podataka o pregledavanju…</translation>
+<translation id="3570693105179140209">Dodirnite dvaput za više zaporki.</translation>
 <translation id="3575234738189584619">Pretraživanje pomoću Objektiva</translation>
 <translation id="3581564640715911333">Ponudi prevođenje stranica na druge jezike</translation>
 <translation id="3587885837929752825">Vaša organizacija ograničava sadržaj koji možete spremati na svoj Google račun.</translation>
@@ -661,6 +662,7 @@ Potražite upute za svoju tražilicu da biste saznali kako izbrisati svoju povij
 <translation id="452750746583162491">Pregledajte svoje sinkronizirane podatke</translation>
 <translation id="4527660062930312477">Računom se upravlja</translation>
 <translation id="4536418791685807335">Pokušajte se ponovo prijaviti.</translation>
+<translation id="4539187448429948815">{count,plural, =1{Iznad tipkovnice dostupan je {count} spremljeni prijedlog samodovršavanja.}one{Iznad tipkovnice dostupan je {count} spremljeni prijedlog samodovršavanja.}few{Iznad tipkovnice dostupna su {count} spremljena prijedloga samodovršavanja.}other{Iznad tipkovnice dostupno je {count} spremljenih prijedloga samodovršavanja.}}</translation>
 <translation id="4540780316273593836">Nešto nije u redu</translation>
 <translation id="4550040941166547650">Samo na ovom uređaju</translation>
 <translation id="457292989631956153">{COUNT,plural, =1{Želite li zatvoriti {COUNT} neaktivnu karticu?}one{Želite li zatvoriti {COUNT} neaktivnu karticu?}few{Želite li zatvoriti {COUNT} neaktivne kartice?}other{Želite li zatvoriti {COUNT} neaktivnih kartica?}}</translation>
@@ -913,7 +915,6 @@ Handoff mora biti omogućen i u odjeljku Općenito u Postavkama, a vaši uređaj
 <translation id="5857770089550859117">Za pokretanje sinkronizacije potrebna je zaporka.</translation>
 <translation id="5859715514067755465">Unaprijed</translation>
 <translation id="5860033963881614850">Isključeno</translation>
-<translation id="5869029295770560994">U redu, shvaćam</translation>
 <translation id="5871497086027727873">Premještena je 1 stavka</translation>
 <translation id="5896576662943111387">Razvijeno za iOS</translation>
 <translation id="5897749768294722429">Da biste se brzo vratili na web-lokacije koje ste posjetili, sinkronizirajte kartice i povijest.</translation>
@@ -930,7 +931,6 @@ Handoff mora biti omogućen i u odjeljku Općenito u Postavkama, a vaši uređaj
 <translation id="595769230373966252">Pretraživanje pomoću usluge <ph name="SEARCH_PROVIDER" /></translation>
 <translation id="5962718611393537961">Dodirnite da biste saželi</translation>
 <translation id="5963939892571022323">Izrada veze na istaknuti tekst nije uspjela.</translation>
-<translation id="5965679971710331625">Prijavili ste se</translation>
 <translation id="5971872012779224351">{count,plural, =1{Izbrisana je jedna oznaka}one{Izbrisana je {count} oznaka}few{Izbrisane su {count} oznake}other{Izbrisano je {count} oznaka}}</translation>
 <translation id="5979837087407522202">Pretraživanje zaporki</translation>
 <translation id="5981230843984570095">Zatvori sve neaktivno</translation>

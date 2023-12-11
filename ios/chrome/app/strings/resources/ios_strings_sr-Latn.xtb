@@ -913,7 +913,6 @@ Handoff treba da se omogući u odeljku General (Opšte) u meniju Settings (Pode
 <translation id="5857770089550859117">Za početak sinhronizacije potrebna je pristupna fraza.</translation>
 <translation id="5859715514067755465">Napred</translation>
 <translation id="5860033963881614850">Isključeno</translation>
-<translation id="5869029295770560994">Važi</translation>
 <translation id="5871497086027727873">1 stavka je premeštena</translation>
 <translation id="5896576662943111387">Napravljeno za iOS</translation>
 <translation id="5897749768294722429">Da biste se brzo vratili na sajtove koje ste posetili, sinhronizujte kartice i istoriju.</translation>
@@ -930,7 +929,6 @@ Handoff treba da se omogući u odeljku General (Opšte) u meniju Settings (Pode
 <translation id="595769230373966252">Pretražite pomoću: <ph name="SEARCH_PROVIDER" /></translation>
 <translation id="5962718611393537961">Dodirnite da biste skupili</translation>
 <translation id="5963939892571022323">A link to the highlight can not be created (Pravljenje linka do istaknutog teksta nije uspelo).</translation>
-<translation id="5965679971710331625">Prijavljeni ste</translation>
 <translation id="5971872012779224351">{count,plural, =1{1 obeleživač je izbrisan}one{{count} obeleživač je izbrisan}few{{count} obeleživača su izbrisana}other{{count} obeleživača je izbrisano}}</translation>
 <translation id="5979837087407522202">Pretražite lozinke</translation>
 <translation id="5981230843984570095">Zatvori sve neaktivne</translation>

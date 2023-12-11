@@ -349,6 +349,7 @@
 <translation id="1633941398432788136">การวางแผนงานอีเวนต์</translation>
 <translation id="1634828734222219955">รวม</translation>
 <translation id="163669211644121865">การจัดเตรียมเอกสารและวางแผนภาษี</translation>
+<translation id="163826442096818926">ย่อ</translation>
 <translation id="1639239467298939599">กำลังโหลด</translation>
 <translation id="1640180200866533862">นโยบายผู้ใช้</translation>
 <translation id="1640244768702815859">ลอง<ph name="BEGIN_LINK" />ไปที่หน้าแรกของเว็บไซต์<ph name="END_LINK" /></translation>
@@ -724,6 +725,7 @@
 <translation id="238459632961158867">เว็บไซต์</translation>
 <translation id="2385809941344967209">อัปเดต Chrome จากการตั้งค่า Chrome</translation>
 <translation id="2386255080630008482">ใบรับรองของเซิร์ฟเวอร์ถูกเพิกถอนแล้ว</translation>
+<translation id="239203817277685015">ลงรายละเอียด</translation>
 <translation id="239293030466334554">เปิดประทุน</translation>
 <translation id="2392959068659972793">แสดงนโยบายที่ไม่ได้ตั้งค่าเอาไว้</translation>
 <translation id="239429038616798445">วิธีการจัดส่งสินค้านี้ไม่พร้อมให้บริการ โปรดลองใช้วิธีการอื่น</translation>
@@ -971,6 +973,7 @@
 <translation id="2938225289965773019">เปิดลิงก์ <ph name="PROTOCOL" /></translation>
 <translation id="2941878205777356567">Envelope 9 x 12 นิ้ว</translation>
 <translation id="2941952326391522266">เซิร์ฟเวอร์นี้ไม่สามารถพิสูจน์ได้ว่าเป็น <ph name="DOMAIN" /> เพราะใบรับรองความปลอดภัยมาจาก <ph name="DOMAIN2" /> โดยอาจเกิดจากการกำหนดค่าผิดหรือผู้บุกรุกที่ขัดขวางการเชื่อมต่อของคุณ</translation>
+<translation id="2942492342931589800">สบายๆ</translation>
 <translation id="2942515540157583425">งานด้านไอทีและเทคนิค</translation>
 <translation id="2943895734390379394">เวลาที่อัปโหลด:</translation>
 <translation id="2945026002409061480">ชุมชนออนไลน์</translation>
@@ -1231,6 +1234,7 @@
 <translation id="3447661539832366887">เจ้าของอุปกรณ์นี้ปิดเกมไดโนเสาร์</translation>
 <translation id="3447884698081792621">แสดงใบรับรอง (ออกโดย <ph name="ISSUER" />)</translation>
 <translation id="3450323514459570273">ขอควบคุมและตั้งโปรแกรมอุปกรณ์ MIDI ใหม่ได้</translation>
+<translation id="3452151267620065789">บันทึกความคืบหน้าแล้ว</translation>
 <translation id="3452404311384756672">ช่วงการดึงข้อมูล:</translation>
 <translation id="3453962258458347894">จำนวนการลองใหม่</translation>
 <translation id="3461266716147554923"><ph name="URL" /> ต้องการดูข้อความและรูปภาพที่คัดลอกไปยังคลิปบอร์ด</translation>
@@ -1313,6 +1317,7 @@
 <translation id="361438452008624280">ข้อมูลในรายการ "<ph name="LANGUAGE_ID" />": ภาษาที่ไม่รู้จักหรือไม่รองรับ</translation>
 <translation id="3614934205542186002"><ph name="RUN_CHROME_SAFETY_CHECK_FOCUSED_FRIENDLY_MATCH_TEXT" /> กด Tab ตามด้วย Enter เพื่อเรียกใช้การตรวจสอบความปลอดภัยในการตั้งค่า Chrome</translation>
 <translation id="3615309852743236517">การทำเล็บมือและเล็บเท้า</translation>
+<translation id="3617072447978270288">สร้างใหม่</translation>
 <translation id="3620239073311576716">เครื่องแบบและชุดทำงาน</translation>
 <translation id="36224234498066874">ล้างข้อมูลการท่องเว็บ</translation>
 <translation id="362276910939193118">แสดงประวัติการเข้าชมทั้งหมด</translation>
@@ -1335,6 +1340,7 @@
 <translation id="3650594806107685466">ป้อน CVC ที่<ph name="SIDE_OF_CARD" />เพื่อช่วยรักษาบัตรให้ปลอดภัยอยู่เสมอ</translation>
 <translation id="3650917416636556301">การเดินเขาและแคมปิ้ง</translation>
 <translation id="3653033846669030038">สวนสนุก</translation>
+<translation id="3654980960391973513">สร้าง</translation>
 <translation id="3655241534245626312">ไปที่การตั้งค่าสิทธิ์</translation>
 <translation id="3655670868607891010">หากคุณเห็นข้อความนี้บ่อยๆ ให้ลองไปที่ <ph name="HELP_LINK" /></translation>
 <translation id="365641980390710834">เครื่องแต่งกายในวันหยุด</translation>
@@ -2570,6 +2576,7 @@
 <translation id="6157754950574419155">นำทั้งหมดออกจากประวัติการเข้าชม</translation>
 <translation id="6157877588268064908">หากต้องการดูวิธีการจัดส่งสินค้าและข้อกำหนด โปรดเลือกที่อยู่</translation>
 <translation id="6159554577634054750">ผลิตภัณฑ์กำจัดแมลง</translation>
+<translation id="6159908896951210943">ทางการ</translation>
 <translation id="6160391204859821737">เปิดฟีเจอร์ความเป็นส่วนตัวเกี่ยวกับโฆษณา</translation>
 <translation id="6165508094623778733">ดูข้อมูลเพิ่มเติม</translation>
 <translation id="6167577165590485365">การพยายามดึงข้อมูลครั้งล่าสุด:</translation>
@@ -3215,6 +3222,7 @@
 <translation id="7422347648202898039">ป้าย (ความปลอดภัย)</translation>
 <translation id="7423283032694727565">ปุ่มจัดการคุกกี้ เปิดใช้งานเพื่อจัดการค่ากำหนดของคุกกี้ในการตั้งค่า Chrome</translation>
 <translation id="7424421098814895617">เลือกตัวเลือกลบที่อยู่แล้ว</translation>
+<translation id="7425037327577270384">ช่วยฉันเขียน</translation>
 <translation id="7427366580982928791">ความปลอดภัยด้านอินเทอร์เน็ตสำหรับเด็ก</translation>
 <translation id="7429429656042611765">Executive</translation>
 <translation id="7432774160230062882">ยืนยันว่าเป็นคุณเพื่อให้ Chromium กรอกข้อมูลการชำระเงินของคุณได้</translation>
@@ -3281,6 +3289,7 @@
 <translation id="7529884293139707752">การเรียนแบบโฮมสคูล</translation>
 <translation id="7534987659046836932">Envelope C7</translation>
 <translation id="7535087603100972091">ราคา</translation>
+<translation id="753556296624075801">ขับเคลื่อนโดย Google</translation>
 <translation id="7537536606612762813">จำเป็น</translation>
 <translation id="7542995811387359312">การป้อนหมายเลขบัตรเครดิตอัตโนมัติถูกปิดใช้งานเนื่องจากฟอร์มนี้ไม่ได้ใช้การเชื่อมต่อที่ปลอดภัย</translation>
 <translation id="7543525346216957623">ถามผู้ปกครอง</translation>
@@ -3464,6 +3473,7 @@
 <translation id="7871445724586827387">เปลี่ยนรหัสผ่านของบัญชี Google</translation>
 <translation id="7877007680666472091">รหัสเนื้อหาที่มีการคุ้มครอง</translation>
 <translation id="7878562273885520351">รหัสผ่านของคุณอาจถูกขโมยได้</translation>
+<translation id="7878966190323222027">เปิดอีกครั้งเพื่อดำเนินการต่อ</translation>
 <translation id="7880146494886811634">บันทึกที่อยู่</translation>
 <translation id="7882421473871500483">น้ำตาล</translation>
 <translation id="7882995332186050355">รถบรรทุกและรถพ่วง</translation>
@@ -3987,12 +3997,14 @@
 <translation id="8919895429178014996">ซ่อนรายการทั้งหมด</translation>
 <translation id="8922013791253848639">อนุญาตโฆษณาในไซต์นี้เสมอ</translation>
 <translation id="892588693504540538">เจาะรูด้านขวาบน</translation>
+<translation id="8926389886865778422">ไม่ต้องถามอีก</translation>
 <translation id="8930330541574156305">อสังหาริมทรัพย์</translation>
 <translation id="8932102934695377596">นาฬิกาช้าเกินไป</translation>
 <translation id="893332455753468063">เพิ่มชื่อ</translation>
 <translation id="8942355029279167844">ผู้ดูแลระบบของคุณอนุญาตให้ <ph name="APP_NAME" /> รวบรวมข้อมูลการวิเคราะห์เพื่อปรับปรุงประสบการณ์การใช้ผลิตภัณฑ์ ดูข้อมูลเพิ่มเติมได้ที่ <ph name="BEGIN_LINK" />https://www.parallels.com/pcep<ph name="END_LINK" /></translation>
 <translation id="8943282376843390568">เหลืองมะนาว</translation>
 <translation id="8944485226638699751">จำกัด</translation>
+<translation id="8949410982325929394">ระดับเสียง</translation>
 <translation id="8949493680961858543">A1x4</translation>
 <translation id="8951415078585015151">กฎหมายและการปกครอง</translation>
 <translation id="8954252855949068147">เครื่องแต่งกาย</translation>

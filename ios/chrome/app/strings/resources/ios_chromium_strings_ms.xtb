@@ -15,6 +15,7 @@
 <translation id="1507010443238049608">Bantu Tingkatkan Ciri dan Prestasi Chromium</translation>
 <translation id="1513122820609681462">Tetapkan Chromium Sebagai Penyemak Imbas Lalai</translation>
 <translation id="1531155317299575425">Memaparkan gesaan untuk log masuk ke Chromium.</translation>
+<translation id="159029779861043703">Chromium memastikan data sensitif anda selamat dengan Face ID.</translation>
 <translation id="1591119736686995611">Membuka Tab Grid Chromium.</translation>
 <translation id="1611584326765829247">Benarkan Chromium membantu anda menjejaki bungkusan anda</translation>
 <translation id="1617663976202781617">Data daripada penyegerakan Chromium</translation>
@@ -54,7 +55,6 @@
 <translation id="2784449251446768092">Urus Tetapan Chromium</translation>
 <translation id="2798503587425057129">Membuka Senarai Bacaan Chromium.</translation>
 <translation id="2843571538056574338">Gunakan Chromium untuk Autolengkap</translation>
-<translation id="2915596697727466327">Chromium menggunakan ID Wajah untuk memastikan akses yang dibenarkan kepada kata laluan anda.</translation>
 <translation id="2918709798697875261">Organisasi anda menghendaki anda kekal dilog keluar daripada Chromium.</translation>
 <translation id="2942241131342758843">Gunakan Chromium secara lalai untuk membuka pautan, mencari daripada widget dan melengkapkan kata laluan secara automatik dalam apl lain</translation>
 <translation id="2977470724722393594">Chromium telah dikemas kini</translation>
@@ -176,7 +176,6 @@ Orang yang mengetahui ungkapan laluan anda sahaja yang dapat membaca data tersul
 <translation id="7165402419892018581">Pilih Chromium untuk AutoLengkap</translation>
 <translation id="7175400662502680481">Kata laluan anda terdedah dalam suatu pelanggaran data. Pengurus Kata Laluan mengesyorkan agar anda menukarnya sekarang.</translation>
 <translation id="7192111075364461693">Pemberitahuan Chromium dimatikan dalam tetapan peranti anda pada masa ini.</translation>
-<translation id="7208566199746267865">Chromium menjimatkan masa dengan membawa akaun anda ke web. Anda boleh menambahkan atau mengalih keluar akaun dalam Tetapan.</translation>
 <translation id="725427773388857052">Chrome dapat membantu untuk memastikan anda selamat daripada pelanggaran data, laman web yang tidak selamat dan pelbagai lagi.</translation>
 <translation id="7269362888766543920">Beberapa alat tambah menyebabkan Chromium ranap. Sila cuba menyahpasang alat tambah tersebut.</translation>
 <translation id="7285031092584344905">Akses kata laluan Chromium anda dan pelbagai lagi merentas apl lain.</translation>

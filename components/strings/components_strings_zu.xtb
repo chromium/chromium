@@ -87,6 +87,7 @@
 <translation id="11635448457105324">Phatha inkinobho yamakheli, yenza kusebenze ukuze wengeze futhi uphathe amakheli kumasethingi we-Chrome</translation>
 <translation id="1165039591588034296">Iphutha</translation>
 <translation id="1165174597379888365">Ikhasi livakashelwe</translation>
+<translation id="1165813024716836071">{COUNT,plural, =0{Lutho}=1{Kusuka kusayithi elingu-1 (uzohlala ungene ngemvume ku-Google Account yakho)}one{Kusuka kumasayithi angu-# (uzohlala ungene ngemvume ku-Google Account yakho)}other{Kusuka kumasayithi angu-# (uzohlala ungene ngemvume ku-Google Account yakho)}}</translation>
 <translation id="1165852471352757509">Idokhumentari ye-TV nokungekona kwenganekwane</translation>
 <translation id="1174644974616730562">Imvilophu ye-Chinese #1</translation>
 <translation id="1174723505405632867">Ingabe uyafuna ukuvumela i-<ph name="EMBEDDED_URL" /> ukuthi isebenzise amakhukhi nedatha yesayithi ku-<ph name="TOP_LEVEL_URL" />?
@@ -3983,6 +3984,7 @@ Imininingwane engeziwe:
 <translation id="8919895429178014996">Fihla zonke izinto</translation>
 <translation id="8922013791253848639">Njalo vumela izikhangiso kuleli sayithi</translation>
 <translation id="892588693504540538">Ukushaya phezulu kwesokudla</translation>
+<translation id="8926389886865778422">Ungaphindi ubuze futhi</translation>
 <translation id="8930330541574156305">Izindlu ezidayiswayo</translation>
 <translation id="8932102934695377596">Iwashi lakho lisemuva</translation>
 <translation id="893332455753468063">Engeza igama</translation>

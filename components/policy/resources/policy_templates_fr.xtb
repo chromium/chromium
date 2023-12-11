@@ -277,6 +277,7 @@ Si vous activez cette règle, les utilisateurs peuvent utiliser le matériel sur
 <translation id="1209096923317019235">Affecte les applis en tant que gestionnaires par défaut pour les extensions de fichier spécifiées</translation>
 <translation id="120937472976628837">Transmettre des infos sur le ventilateur</translation>
 <translation id="1212233008927724662">Désactiver le chargement différé du WebUI de connexion.</translation>
+<translation id="1214639335214075459">Activer le décodage vidéo matériel GPU</translation>
 <translation id="1216919699175573511">Activer la compatibilité avec la fonctionnalité Signed HTTP Exchange (SXG)</translation>
 <translation id="1219027971768347970">Utiliser la configuration par défaut pour le bac à sable du processus audio</translation>
 <translation id="1221359380862872747">Charger les URL spécifiées lors de la connexion à la démonstration</translation>
@@ -1118,6 +1119,7 @@ Si cette règle est désactivée, <ph name="PRODUCT_NAME" /> ferme l'onglet apr�
 
       L'API Managed Configuration est une configuration de type clé-valeur accessible via un appel JavaScript navigator.managed.getManagedConfiguration(). Cette API est uniquement disponible pour les origines qui correspondent aux appls Web installées d'office via <ph name="WEB_APP_INSTALL_FORCE_LIST_POLICY_NAME" />.
      </translation>
+<translation id="1918690415433353669">Autoriser l'organisation des onglets sans journaliser leurs détails</translation>
 <translation id="1919802376548418720">Utiliser la règle KDC pour déléguer les identifiants.</translation>
 <translation id="1920046221095339924">Autoriser une session gérée sur l'appareil</translation>
 <translation id="1920772397574801429">Permet de spécifier le type des comptes fournis par l'application d'authentification Android qui accepte la méthode d'authentification <ph name="HTTP_NEGOTIATE" /> (l'authentification Kerberos, par exemple). Ces informations doivent être disponibles auprès du fournisseur de l'application en question. Pour en savoir plus, consultez le site https://goo.gl/hajyfN (sur les projets Chromium).
@@ -1692,6 +1694,7 @@ REMARQUE : Seuls les nouveaux processus du moteur de rendu refléteront les mod
 Si la règle est désactivée, elle empêche les utilisateurs ou les variantes de <ph name="PRODUCT_NAME" /> d'activer NewBaseUrlInheritanceBehavior si des problèmes de compatibilité sont détectés. Si la règle est activée ou n'est pas configurée, NewBaseUrlInheritanceBehavior peut être activée.</translation>
 <translation id="2362469626417133796">Fenêtre de redémarrage</translation>
 <translation id="2362539163677485510">Jeton d'enregistrement des règles relatives au cloud</translation>
+<translation id="2362947328909044249">Autoriser l'organisation des onglets</translation>
 <translation id="2363928351203698966">Si cette règle est définie sur une valeur valide, <ph name="PRODUCT_NAME" /> n'utilise pas de versions SSL/TLS antérieures à celle spécifiée. Les valeurs non reconnues sont ignorées.
 
       Si cette règle n'est pas configurée, un message d'erreur concernant TLS 1.0 et TLS 1.1 s'affiche dans <ph name="PRODUCT_NAME" />. Toutefois, l'utilisateur peut passer outre.
@@ -2025,6 +2028,7 @@ Le système n'interroge les enregistrements AAAA que si un hôte IPv6 global pe
 <translation id="2650049181907741121">Action à effectuer lorsque l'utilisateur ferme le couvercle</translation>
 <translation id="2656559539624760733">Ne pas utiliser pas le Chrome Root Store.</translation>
 <translation id="2658653824183107970">Utiliser l'ancienne mise en œuvre de <ph name="CORS" /> plutôt que la nouvelle mise en œuvre de <ph name="CORS" /></translation>
+<translation id="2659064869547694451">Autoriser Compose</translation>
 <translation id="2660846099862559570">Ne jamais utiliser de proxy</translation>
 <translation id="2661628029848851543">L'utilisation des comptes gérés n'est pas limitée</translation>
 <translation id="2664391398878045611">La page "Nouvel onglet" n'affichera pas l'annonce d'espace intermédiaire, même si elle est disponible</translation>
@@ -2797,6 +2801,7 @@ Si cette règle est désactivée, la fonctionnalité de navigation sécurisée n
 Ces restrictions s'appliquent aux téléchargements déclenchés à partir du contenu d'une page Web et avec l'option de menu "Télécharger le lien". Elles ne s'appliquent pas à l'enregistrement ou au téléchargement de la page actuellement affichée ni à l'enregistrement au format PDF depuis les options d'impression.
 
 Sous <ph name="MS_WIN_NAME" />, cette règle n'est disponible que sur les instances associées à un domaine <ph name="MS_AD_NAME" />, à <ph name="MS_AAD_NAME" /> ou qui bénéficient de la <ph name="CHROME_BROWSER_CLOUD_MANAGEMENT_NAME" />.</translation>
+<translation id="3300322252167923819">Autoriser l'organisation des onglets</translation>
 <translation id="3300784749135986828">Activer ou désactiver <ph name="USER_AGENT_REDUCTION_FEATURE_NAME" />.</translation>
 <translation id="3301698868852716692">Activer l'extension des insights</translation>
 <translation id="3302829897293005699">Si cette règle est activée ou qu'elle n'est pas configurée, les appareils enregistrés communiquent des informations sur la session kiosque active telles que l'ID et la version de l'application.
@@ -3403,6 +3408,7 @@ Cette règle est une mesure temporaire et sera supprimée dans une future versio
 
           Si cette règle n'est pas configurée, la dictée est initialement désactivée sur l'écran de connexion, mais les utilisateurs peuvent l'activer à tout moment.</translation>
 <translation id="3811562426301733860">Autoriser les annonces sur tous les sites</translation>
+<translation id="3816281648615435872">Désactiver l'organisation des onglets</translation>
 <translation id="3816312845600780067">Activer le raccourci clavier permettant d'ignorer le processus de connexion automatique</translation>
 <translation id="3817323252437541502">Activer les protections supplémentaires pour les utilisateurs inscrits au Programme Protection Avancée</translation>
 <translation id="3821861026311587684">Forcer la déconnexion de l'utilisateur lorsque son compte n'est plus authentifié</translation>
@@ -3897,6 +3903,13 @@ Remarque : Bloquer des URL internes chrome://* et chrome-untrusted://* peut ent
 
       Si cette règle n'est pas définie, la résolution DNS du système peut s'exécuter dans le service réseau, en dehors du service réseau, ou partiellement à l'intérieur et à l'extérieur du service réseau, en fonction de la configuration du système et des flags de fonctionnalité.</translation>
 <translation id="4239720644496144453">Le cache n'est pas utilisé pour les applications Android. Si plusieurs utilisateurs installent la même application Android, celle-ci sera à nouveau téléchargée pour chacun d'eux.</translation>
+<translation id="4242583077375244471">Si cette règle est activée, <ph name="PRODUCT_NAME" /> vérifie les certificats des serveurs à l'aide de l'outil de vérification intégré et utilise le Chrome Root Store comme source de confiance publique.
+
+Si cette règle est désactivée, <ph name="PRODUCT_NAME" /> utilise l'outil de vérification des certificats du système et les certificats racines du système.
+
+Si cette règle n'est pas configurée, le Chrome Root Store ou les certificats racines du système peuvent être utilisés indifféremment.
+
+Cette règle a été supprimée de la version 113 de <ph name="PRODUCT_NAME" /> pour <ph name="MS_WIN_NAME" /> et <ph name="MAC_OS_NAME" />, de la version 120 de <ph name="PRODUCT_OS_NAME" /> et de la version 120 de <ph name="PRODUCT_NAME" /> pour <ph name="LINUX_OS_NAME" />, et de la version 121 de <ph name="PRODUCT_NAME" /> pour <ph name="ANDROID_NAME" /> lorsque la prise en charge de l'outil de vérification des certificats racines fournis par la plate-forme a été supprimée.</translation>
 <translation id="424318624725112807">Activer la mise en surbrillance du curseur de saisie sur l'écran de connexion</translation>
 <translation id="4245159233848584683">Si cette règle est activée ou n'est pas configurée lorsqu'un appareil est hors connexion, et que la connexion automatique sans délai à un compte local de l'appareil est autorisée, <ph name="PRODUCT_OS_NAME" /> affiche une invite de configuration du réseau.
 
@@ -3934,6 +3947,7 @@ Si cette règle est désactivée, un message d'erreur s'affiche à la place.</tr
 <translation id="428948795004445932">Fréquence à laquelle les données du réseau sont échantillonnées et collectées. La valeur minimale autorisée est de 1 minute.
 
       Si la règle n'est pas configurée, la fréquence par défaut (10 minutes) est appliquée.</translation>
+<translation id="4289628882370719584">La fonctionnalité Organisation des onglets permet aux utilisateurs d'organiser les onglets.</translation>
 <translation id="4290231183305601970">Texte visible par l'utilisateur sur le Chrome Web Store si l'installation est bloquée.</translation>
 <translation id="4293187705196369087">Cette règle permet d'activer ou de désactiver une notification lorsque l'espace disque est faible. Elle s'applique à l'ensemble des utilisateurs de l'appareil.
 
@@ -4226,6 +4240,7 @@ Elle n'a aucun effet si elle est activée, laissée vide ou n'est pas définie.<
 <translation id="453031441196755904">Cette règle est obsolète.</translation>
 <translation id="4531706050939927436">L'installation des applications Android peut être forcée depuis la Console d'administration Google via Google Play. Elles n'utilisent pas cette règle.</translation>
 <translation id="4534500438517478692">Nom de la restriction Android :</translation>
+<translation id="4537645230504195464">Autoriser Compose, sans journalisation</translation>
 <translation id="4541530620466526913">Comptes locaux de l'appareil</translation>
 <translation id="4542255783284620926">Bloquer l'ajout d'un compte géré en tant que compte secondaire sur Chrome OS (session ouverte)</translation>
 <translation id="4543502256674577024">Paramètres de mise à jour de l'appareil</translation>
@@ -4424,6 +4439,7 @@ Les utilisateurs peuvent activer ou désactiver les services de localisation Goo
 <translation id="4674871290487541952">Autoriser les algorithmes non sécurisés dans les vérifications de l'intégrité des mises à jour et des installations d'extension</translation>
 <translation id="4680961954980851756">Activer la saisie automatique</translation>
 <translation id="4685721728282448265">Algorithme clé-contrat post-quantique CECPQ2 activé pour TLS</translation>
+<translation id="4688118315245991650">Désactiver Compose</translation>
 <translation id="468822697351680932">Utiliser la règle SiteList d'Internet Explorer comme source des règles</translation>
 <translation id="4693190628432874457">Activer la mise à jour de la position de l'appareil</translation>
 <translation id="4693779768620889402">Destinations basées sur des extensions</translation>
@@ -4636,6 +4652,11 @@ Si cette règle est définie sur "False", c'est le comportement par défaut qui 
 <translation id="4918261735182294270">Laisser aux utilisateurs le choix d'activer ou de désactiver <ph name="CHROME_SYNC_NAME" /></translation>
 <translation id="491889618361437456">Activer l'intégration de <ph name="GOOGLE_CALENDAR_NAME" /></translation>
 <translation id="4919122295221518724">Appliquer un traitement plus strict au contenu mixte</translation>
+<translation id="4921553515199936667">Si cette règle est définie sur "True" ou n'est pas configurée, le décodage vidéo est accéléré par le matériel lorsqu'il est disponible.
+
+Si cette règle est définie sur "False", le décodage vidéo ne sera jamais accéléré par le matériel.
+
+La désactivation du décodage vidéo avec accélération matérielle n'est pas recommandée, car la charge du processeur sera plus élevée, ce qui aura un impact négatif sur les performances de l'appareil et l'utilisation de la batterie.</translation>
 <translation id="4922136799178503494">Bloquer les partages de fichiers en réseau</translation>
 <translation id="4923806312383904642">Autoriser WebDriver à ignorer les règles incompatibles</translation>
 <translation id="4924377847308623325">Bloque les autres types de requêtes DNS</translation>
@@ -5100,6 +5121,7 @@ Si cette règle est désactivée, ces deux historiques ne peuvent pas être supp
 <translation id="5340008866815063393">Activer les rapports sur les données des règles</translation>
 <translation id="5345910753471481870">Ne pas afficher le bouton Google Lens dans le champ de recherche de la page "Nouvel onglet".</translation>
 <translation id="5346587320074666194">Bloquer l'accès aux capteurs sur ces sites</translation>
+<translation id="5347809796754019202">Autoriser Compose</translation>
 <translation id="534836255587440809">Désactiver les clics automatiques sur l'écran de connexion</translation>
 <translation id="5348658899015174540">L'API <ph name="GET_DISPLAY_MEDIA_SET_NAME" /> permet aux applications Web de capturer plusieurs surfaces à la fois.
       Cette règle déverrouille la propriété <ph name="AUTO_SELECT_ALL_SCREENS_NAME" /> pour les applications Web à des origines définies.
@@ -6299,6 +6321,7 @@ AVERTISSEMENT : Faites attention quand vous modifiez ce paramètre, car cela po
       Pour en savoir plus sur les formats <ph name="URL_LABEL" /> valides, veuillez consulter https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns. La valeur <ph name="WILDCARD_VALUE" /> n'est pas acceptée pour cette règle.</translation>
 <translation id="6353890097388312479">Si la règle est définie sur "All (0)" (Tous (0)) ou qu'elle n'est pas configurée, les utilisateurs peuvent modifier les paramètres de confiance de tous les certificats CA, importer des certificats et supprimer ceux qu'ils ont importés via le gestionnaire de certificats. Si elle est définie sur "UserOnly (1)" (UtilisateurUniquement (1)), les utilisateurs ne peuvent gérer que les certificats qu'ils ont importés, et ils ne sont pas autorisés à modifier les paramètres de confiance des certificats intégrés. Si cette règle est définie sur "None (2)" (Aucun (2)), les utilisateurs peuvent uniquement consulter les certificats CA (sans pouvoir les gérer).</translation>
 <translation id="6358320368815225772">Désactiver l'attestation à distance pour l'appareil</translation>
+<translation id="6362589180545896213">Désactiver le décodage vidéo matériel GPU</translation>
 <translation id="6362856770865555544">Si cette règle est activée ou qu'elle n'est pas configurée, l'optimisation WPAD (Web Proxy Auto-Discovery, découverte automatique du proxy) est activée dans <ph name="PRODUCT_NAME" />.
 
       Si cette règle est désactivée, l'optimisation WPAD l'est également, et le temps de réponse des serveurs WPAD basés sur le DNS est alors plus long dans <ph name="PRODUCT_NAME" />.

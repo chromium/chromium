@@ -16,6 +16,7 @@
 <translation id="1513122820609681462">Chromium iestatīšana par noklusējuma pārlūku</translation>
 <translation id="1531155317299575425">Tiek rādīti aicinājumi pierakstīties pārlūkā Chromium.</translation>
 <translation id="1591119736686995611">Pārlūkā Chromium atver ciļņu režģi.</translation>
+<translation id="1611584326765829247">Izmantojiet pārlūku Chromium sūtījumu izsekošanai</translation>
 <translation id="1617663976202781617">Chromium sinhronizācijas dati</translation>
 <translation id="1647558790457890304">Chromium iestatījumi</translation>
 <translation id="164952285225495380">Šis sūtījums jau tiek izsekots pārlūkā Chromium.</translation>
@@ -53,7 +54,6 @@
 <translation id="2784449251446768092">Chromium iestatījumu pārvaldība</translation>
 <translation id="2798503587425057129">Tiek atvērts Chromium lasīšanas saraksts.</translation>
 <translation id="2843571538056574338">Izmantojiet pārlūku Chromium automātiskajai aizpildei</translation>
-<translation id="2915596697727466327">Chromium izmanto Face ID, lai jūsu parolēm varētu piekļūt tikai pilnvarotas personas.</translation>
 <translation id="2918709798697875261">Saskaņā ar jūsu organizācijas politiku ir atspējota pierakstīšanās pārlūkā Chromium.</translation>
 <translation id="2942241131342758843">Lai atvērtu saites, veiktu meklēšanu logrīkos un automātiski aizpildītu paroles citās lietotnēs, izmantojiet pārlūku Chromium kā noklusējuma pārlūku</translation>
 <translation id="2977470724722393594">Chromium ir atjaunināts</translation>
@@ -175,7 +175,6 @@ Jūsu šifrētos datus var lasīt tikai personas, kurām ir jūsu ieejas frāze.
 <translation id="7165402419892018581">Izvēlieties Chromium automātiskajai aizpildei</translation>
 <translation id="7175400662502680481">Jūsu parole tika atklāta datu aizsardzības pārkāpuma dēļ. Paroļu pārvaldnieks iesaka to nekavējoties nomainīt.</translation>
 <translation id="7192111075364461693">Chromium paziņojumi pašlaik ir izslēgti jūsu ierīces iestatījumos.</translation>
-<translation id="7208566199746267865">Chromium ietaupa jūsu laiku, pievienojot jūsu kontus tīmeklim. Kontus varat pievienot vai noņemt sadaļā Iestatījumi.</translation>
 <translation id="725427773388857052">Chromium var palīdzēt aizsargāt jūs pret datu pārkāpumiem, nedrošām vietnēm un citiem apdraudējumiem.</translation>
 <translation id="7269362888766543920">Daži papildinājumi var izraisīt pārlūka Chromium avarēšanu. Lūdzu, atinstalējiet tos.</translation>
 <translation id="7285031092584344905">Piekļūstiet savām Chromium parolēm un citiem datiem dažādās lietotnēs.</translation>

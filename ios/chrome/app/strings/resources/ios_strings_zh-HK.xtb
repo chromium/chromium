@@ -913,7 +913,6 @@
 <translation id="5857770089550859117">必須輸入密碼短語，才能開始同步資料。</translation>
 <translation id="5859715514067755465">繼續</translation>
 <translation id="5860033963881614850">關閉</translation>
-<translation id="5869029295770560994">好，我知道了</translation>
 <translation id="5871497086027727873">已移動 1 個項目</translation>
 <translation id="5896576662943111387">專為 iOS 設計</translation>
 <translation id="5897749768294722429">如要快速重溫你瀏覽過的網站，可同步分頁和記錄。</translation>
@@ -930,7 +929,6 @@
 <translation id="595769230373966252">使用 <ph name="SEARCH_PROVIDER" /> 搜尋</translation>
 <translation id="5962718611393537961">輕按即可收合</translation>
 <translation id="5963939892571022323">無法建立突顯文字的連結。</translation>
-<translation id="5965679971710331625">您已登入</translation>
 <translation id="5971872012779224351">{count,plural, =1{已刪除 1 個書籤}other{已刪除 {count} 個書籤}}</translation>
 <translation id="5979837087407522202">搜尋密碼</translation>
 <translation id="5981230843984570095">關閉所有閒置分頁</translation>

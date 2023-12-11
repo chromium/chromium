@@ -70,7 +70,6 @@ Du bør tenke på følgende:
 <translation id="309672519329227863">Få tilgang til Chrome-passord med mer i andre apper.</translation>
 <translation id="3167189358072330585">Kontoen din fungerer ikke i Google Chrome. Kontakt domeneadministratoren din, eller logg på med en vanlig Google-konto.</translation>
 <translation id="3173834708294760622">Google Chrome-side</translation>
-<translation id="3196546062792660320">Chrome sparer tid for deg ved å legge kontoene dine på nettet. Du kan legge til eller fjerne kontoer i Innstillinger.</translation>
 <translation id="322254490661677575">For å bruke og lagre Chrome-data i Google-kontoen din, skriv inn passordfrasen din.</translation>
 <translation id="3282568296779691940">Logg på Chrome</translation>
 <translation id="3345341804167540816">Bruk Chrome overalt</translation>
@@ -170,7 +169,6 @@ Bare personer som har passordfrasen din, kan lese de krypterte dataene. Passordf
 <translation id="7124339256045485976">Hold Chrome oppdatert</translation>
 <translation id="7161390184744336561">Google Chrome er utdatert</translation>
 <translation id="7165736900384873061">Begynn å bruke Google Chrome QR-skanneren</translation>
-<translation id="7173660919484573146">Chrome bruker Face ID til å sikre at bare godkjente personer får tilgang til passordene dine.</translation>
 <translation id="7187993566681480880">Holder deg trygg i Chrome og kan brukes til å øke sikkerheten din i andre Google-apper når du er pålogget.</translation>
 <translation id="7200524487407690471">Chrome kjører sikkerhetssjekken automatisk hver dag for å beskytte deg mot databrudd, utrygge nettsteder med mer. Du kan finne ut mer om sikkerhetssjekken i innstillingene.</translation>
 <translation id="72119412072970160">Du kan bruke passordene du har lagret i Google Passordlagring, i andre apper på iPaden din.</translation>
@@ -190,6 +188,7 @@ Bare personer som har passordfrasen din, kan lese de krypterte dataene. Passordf
 <translation id="7698568245838009292">Chrome vil ha tilgang til kameraet</translation>
 <translation id="7754633291442704733">Organisasjonen din, <ph name="DOMAIN" />, får tilgang til data, bokmerker, logg, passord og andre innstillinger for Chrome som du lagrer i denne kontoen. Når du logger av, slettes dataene dine fra denne enheten.  Dataene forblir imidlertid lagret i den administrerte Google-kontoen og er tilgjengelige for organisasjonen din. Organisasjonen din kan også angi spesifikke brukerinnstillinger for den aktuelle kontoen. Disse kan endre virkemåten til Chrome.</translation>
 <translation id="7780154209050837198">For å få mest mulig ut av Chrome, logg på Chrome med Google-kontoen din.</translation>
+<translation id="7792140019572081272">Chrome beskytter de sensitive dataene dine med Face ID.</translation>
 <translation id="7855730255114109580">Google Chrome er oppdatert</translation>
 <translation id="7897703007638178753">Se nylige faner fra Chrome</translation>
 <translation id="7925119591961387184">Velg «Chrome».</translation>

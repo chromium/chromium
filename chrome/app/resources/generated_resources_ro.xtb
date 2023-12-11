@@ -31,7 +31,6 @@
 <translation id="1018656279737460067">Anulat</translation>
 <translation id="1022522674678746124">PowerPoint</translation>
 <translation id="1022669824195822609">Dispozitivul este gestionat de <ph name="DOMAIN" />. Administratorii pot accesa datele din orice profil de pe acest dispozitiv.</translation>
-<translation id="1024734233509995696">Această filă folosește camera foto sau microfonul</translation>
 <translation id="1026655690966755180">Adaugă un port</translation>
 <translation id="1026822031284433028">Încarcă imaginea</translation>
 <translation id="1026959648338730078">Windows Hello sau cheie de securitate externă</translation>
@@ -1773,7 +1772,6 @@ Poți gestiona setările contului dacă instalezi aplicația Family Link pe disp
 <translation id="2335111415680198280">{0,plural, =1{Închide # fereastră}few{Închide # ferestre}other{Închide # de ferestre}}</translation>
 <translation id="2336228925368920074">Marchează toate filele...</translation>
 <translation id="2336381494582898602">Powerwash</translation>
-<translation id="2337236196941929873">Preîncarcă paginile pe care Chrome consideră că le-ai putea accesa. Pentru a face acest lucru, Chrome poate folosi cookie-uri, dacă le permiți, și poate cripta și trimite pagini prin Google pentru a-ți ascunde identitatea de site-uri.</translation>
 <translation id="2340239562261172947"><ph name="FILE_NAME" /> nu se poate descărca în siguranță</translation>
 <translation id="2342180549977909852">Copilul tău poate folosi un număr (PIN) în locul unei parole pentru a debloca dispozitivul. Pentru a seta codul PIN mai târziu, accesează Setări.</translation>
 <translation id="2342740338116612727">Au fost adăugate marcaje</translation>
@@ -1866,6 +1864,7 @@ Poți gestiona setările contului dacă instalezi aplicația Family Link pe disp
 <translation id="2412753904894530585">Kerberos</translation>
 <translation id="2414159296888870200">Reia navigarea pentru <ph name="MODULE_TITLE" /></translation>
 <translation id="2414886740292270097">Întunecat</translation>
+<translation id="2415117815770324983">Te deconectează de pe majoritatea site-urilor. Vei rămâne conectat(ă) la Contul Google.</translation>
 <translation id="2416435988630956212">Tastele pentru funcții de la tastatură</translation>
 <translation id="2418307627282545839">Menține conținutul luminos și spațios</translation>
 <translation id="2419131370336513030">Vezi aplicațiile instalate</translation>
@@ -2386,6 +2385,7 @@ Poți gestiona setările contului dacă instalezi aplicația Family Link pe disp
 <translation id="2799223571221894425">Repornește</translation>
 <translation id="2800309299477632167">Hartă taste personalizată</translation>
 <translation id="2800760947029405028">Încarcă o imagine</translation>
+<translation id="2801134910297796778">Te-ai conectat la <ph name="EMAIL" /></translation>
 <translation id="2801954693771979815">Dimensiunea ecranului</translation>
 <translation id="2802557211515765772">Nu sunt disponibile imprimante gestionate.</translation>
 <translation id="2803313416453193357">Deschideți dosarul</translation>
@@ -3517,6 +3517,7 @@ Mesaj de la server: <ph name="SERVER_MSG" /></translation>
 <translation id="372722114124766626">Doar o singură dată</translation>
 <translation id="3727332897090187514">Nicio notă adăugată</translation>
 <translation id="3727473233247516571">Subcadru din memoria cache înainte-înapoi: <ph name="BACK_FORWARD_CACHE_PAGE_URL" /></translation>
+<translation id="3727850735097852673">Pentru a folosi Managerul de parole Google cu macOS Keychain, relansează Chrome și permite accesul Keychain. Filele se vor redeschide după relansare.</translation>
 <translation id="3728188878314831180">Oglindește notificările de pe telefon</translation>
 <translation id="3728681439294129328">Configurează adresa rețelei</translation>
 <translation id="3729506734996624908">Site-uri permise</translation>
@@ -4032,6 +4033,7 @@ Aici pot fi incluse informații despre software-ul instalat, fișiere, browser �
 <translation id="4110485659976215879">Restabilește avertismentul</translation>
 <translation id="4110490973560452005">Descărcare finalizată: <ph name="FILE_NAME" />. Apasă Shift+F6 ca să revii la zona barei de descărcări.</translation>
 <translation id="4112194537011183136"><ph name="DEVICE_NAME" /> (offline)</translation>
+<translation id="4113483184628671608">Criptează numele site-urilor pe care le accesezi</translation>
 <translation id="4113743276555482284">Parola fișierului</translation>
 <translation id="4114524937989710624">Vezi fișierele sugerate ca să poți reveni ușor la cea mai recentă activitate din Google Drive.
         <ph name="BREAK" />
@@ -5760,6 +5762,7 @@ Permisiunile pe care le-ai acordat deja site-urilor și aplicațiilor se pot apl
 <translation id="5517304475148761050">Aplicația necesită acces la Magazinul Play</translation>
 <translation id="5517412723934627386"><ph name="NETWORK_TYPE" /> – <ph name="NETWORK_DISPLAY_NAME" /></translation>
 <translation id="5518949581554491184">Configurează cu un telefon Android</translation>
+<translation id="5519053700692355541">Poți deschide majoritatea funcțiilor panoului lateral din meniul Chrome din dreapta sus</translation>
 <translation id="5519195206574732858">LTE</translation>
 <translation id="5519900055135507385">Protejează-ți mai bine contul cu o parolă puternică. Ea se va salva în <ph name="GOOGLE_PASSWORD_MANAGER" /> pentru <ph name="EMAIL" />.</translation>
 <translation id="5521078259930077036">Aceasta este pagina de pornire la care vă așteptați?</translation>
@@ -5905,7 +5908,6 @@ Permisiunile pe care le-ai acordat deja site-urilor și aplicațiilor se pot apl
 <translation id="5636012309446422">Elimini <ph name="DEVICE" /> din <ph name="PRIMARY_EMAIL" />?</translation>
 <translation id="5636996382092289526">Pentru a utiliza <ph name="NETWORK_ID" /> ar putea fi necesar să <ph name="LINK_START" />accesați mai întâi pagina de conectare a rețelei<ph name="LINK_END" />, care se va deschide automat în câteva secunde. Dacă acest lucru nu se întâmplă, rețeaua nu poate fi utilizată.</translation>
 <translation id="5637476008227280525">Activează datele mobile</translation>
-<translation id="563811590465749036">Pentru a folosi Managerul de parole Google cu macOS Keychain, relansează Chrome și permite accesul pentru Keychain. Filele se vor redeschide după relansare</translation>
 <translation id="563821631542362636">Permite site-ului să salveze date</translation>
 <translation id="5638309510554459422">Găsește extensii și teme în <ph name="BEGIN_LINK" />Magazinul web Chrome<ph name="END_LINK" /></translation>
 <translation id="5639549361331209298">Reîncărcați această pagină. Țineți apăsat pentru a vedea mai multe opțiuni</translation>
@@ -6137,7 +6139,6 @@ Permisiunile pe care le-ai acordat deja site-urilor și aplicațiilor se pot apl
 <translation id="583431638776747">Site-ul nu este disponibil</translation>
 <translation id="5834581999798853053">Au mai rămas aproape <ph name="TIME" /> min.</translation>
 <translation id="5835360478055379192">{NUM_EXTENSION,plural, =1{<ph name="EXTENSION1" /> accesează dispozitive HID}=2{Extensii care accesează dispozitive: <ph name="EXTENSION1" />, <ph name="EXTENSION2" />}few{Extensii care accesează dispozitive: <ph name="EXTENSION1" />, <ph name="EXTENSION2" /> și încă {3}}other{Extensii care accesează dispozitive: <ph name="EXTENSION1" />, <ph name="EXTENSION2" /> și încă {3}}}</translation>
-<translation id="5835486486592033703"><ph name="WINDOW_TITLE" /> – camera foto sau microfonul înregistrează</translation>
 <translation id="583673505367439042">Site-urile pot solicita permisiunea de a modifica fișiere și dosare de pe dispozitiv</translation>
 <translation id="5836999627049108525">Limba din care se traduce</translation>
 <translation id="583756221537636748">Caz</translation>
@@ -6722,6 +6723,7 @@ Permisiunile pe care le-ai acordat deja site-urilor și aplicațiilor se pot apl
 <translation id="6294759976468837022">Viteza de scanare automată</translation>
 <translation id="6295158916970320988">Toate site-urile</translation>
 <translation id="6295855836753816081">Se salvează...</translation>
+<translation id="6298456705131259420">Afectează site-urile enumerate aici. Dacă inserezi „[*.]” înainte de numele unui domeniu, vei crea o excepție pentru întregul domeniu. De exemplu, dacă adaugi „[*.]google.com”, înseamnă că toate cookie-urile terță parte pot fi active și pentru mail.google.com, deoarece face parte din google.com.</translation>
 <translation id="6298962879096096191">Folosește Google Play pentru a instala aplicații Android</translation>
 <translation id="6300177430812514606">Nu au permisiunea de a finaliza trimiterea sau primirea datelor</translation>
 <translation id="6300654006256345126">Editează parola</translation>
@@ -7145,6 +7147,7 @@ Mai ai # de parole compromise. Managerul de parole Google recomandă să verific
 <translation id="6651762277693024112">Rulează automat de fiecare dată când accesezi acest site</translation>
 <translation id="665355505818177700">Integrarea <ph name="MS_AD_NAME" /> Chrome este acceptată numai pe platformele x86_64. Dispozitivele Chromebook construite pe o platformă ARM sau x86 nu acceptă această funcție.</translation>
 <translation id="6654509035557065241">Prefer această rețea</translation>
+<translation id="6654987855337442937">Folosește Sistemul denumirilor de domenii (DNS) securizat pentru a împiedica persoanele care au acces la traficul tău de internet să vadă ce site-uri accesezi</translation>
 <translation id="6655190889273724601">Mod pentru dezvoltatori</translation>
 <translation id="6655458902729017087">Ascundeți conturile</translation>
 <translation id="6657180931610302174">Adaugi un nume de utilizator?</translation>
@@ -9543,6 +9546,7 @@ Păstrează fișierul cu cheia într-un loc sigur. Acesta va fi necesar la crear
 <translation id="8528074251912154910">Adaugă limbi</translation>
 <translation id="8528479410903501741">Salvează codul IBAN</translation>
 <translation id="8528962588711550376">Se conectează.</translation>
+<translation id="8529578450330869579">Folosește Sistemul denumirilor de domenii (DNS) securizat pentru a împiedica persoanele care au acces la traficul tău de internet să vadă ce site-uri accesezi. DNS folosește un furnizor de servicii gestionat la <ph name="DNS_SERVER_TEMPLATE_WITH_IDENTIFIER" /></translation>
 <translation id="8529925957403338845">Nu s-a conectat prin Tethering instantaneu</translation>
 <translation id="8531701051932785007">Navigarea sigură îmbunătățită este dezactivată</translation>
 <translation id="8533670235862049797">Navigarea sigură este activată</translation>

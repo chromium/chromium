@@ -837,6 +837,7 @@
 <translation id="5457226814769348910">ऑफलाइन आवृत्ती उघडा</translation>
 <translation id="5475069061743940393">पॅकेज ट्रॅकिंग</translation>
 <translation id="5478327362747197944">वेब पेजवरील तारखेवर क्लिक करून थेट कॅलेंडर इव्हेंट तयार करा.</translation>
+<translation id="5482922178977937393">तुम्हाला तुमच्या स्वारस्यांवर आधारित बातम्या, क्रीडा आणि आणखी बऱ्याच गोष्टींसाठी सूचना मिळवायच्या आहेत का?</translation>
 <translation id="5489208564673669003">सर्व साइटसाठी कुकी व्यवस्थापित करण्यासाठी <ph name="BEGIN_LINK" />कुकी सेटिंग्ज<ph name="END_LINK" /> पहा.</translation>
 <translation id="5490005495580364134">सर्व कुकी ब्लॉक करा (शिफारस केली जात नाही)</translation>
 <translation id="5497202150450073388">डिलिव्हर करण्याचा प्रयत्न केला. पुन्हा प्रयत्न केला जाईल</translation>
@@ -912,7 +913,6 @@
 <translation id="5857770089550859117">सिंक सुरू करण्यासाठी सांकेतिक पासफ्रेझ आवश्यक आहे.</translation>
 <translation id="5859715514067755465">फॉरवर्ड करा</translation>
 <translation id="5860033963881614850">बंद</translation>
-<translation id="5869029295770560994">ठीक आहे, समजले</translation>
 <translation id="5871497086027727873">1 आयटम हलविला</translation>
 <translation id="5896576662943111387">iOS साठी तयार केलेला</translation>
 <translation id="5897749768294722429">तुम्ही भेट दिलेल्या साइटवर झटपट परत जाण्यासाठी, तुमचे टॅब आणि इतिहास सिंक करा.</translation>
@@ -929,7 +929,6 @@
 <translation id="595769230373966252"><ph name="SEARCH_PROVIDER" /> वापरून शोधा</translation>
 <translation id="5962718611393537961">संकुचित करण्‍यासाठी टॅप करा</translation>
 <translation id="5963939892571022323">हायलाइट करण्यासाठीची लिंक तयार करू शकत नाही.</translation>
-<translation id="5965679971710331625">तुम्ही साइन इन केले आहे</translation>
 <translation id="5971872012779224351">{count,plural, =1{१ बुकमार्क हटवला}other{{count} बुकमार्क हटवले}}</translation>
 <translation id="5979837087407522202">पासवर्ड शोधा</translation>
 <translation id="5981230843984570095">सर्व इनॅक्टिव्ह टॅब बंद करा</translation>
@@ -1479,6 +1478,7 @@
 <translation id="8766790350274092814"><ph name="WEBSITE" /> आणि <ph name="SECOND_WEBSITE" /> चे पासवर्ड हटवले जातील. तुमची खाती हटवली जाणार नाहीत.</translation>
 <translation id="8775144690796719618">चुकीची URL</translation>
 <translation id="8780076847684176174">{count,plural, =1{टॅबचे पुनरावलोकन करा...}other{सर्व टॅबचे पुनरावलोकन करा...}}</translation>
+<translation id="8782570580170191813">नेहमी पॅकेज ट्रॅक करा</translation>
 <translation id="8787968206789828143">वेबवर शोधा</translation>
 <translation id="8792626944327216835">मायक्रोफोन</translation>
 <translation id="8803639129939845298">सुरक्षित</translation>

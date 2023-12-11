@@ -496,6 +496,7 @@ Jeśli chcesz usunąć historię wyszukiwania, zapoznaj się z instrukcjami wys
 <translation id="355101282835380364">Zapisz na koncie…</translation>
 <translation id="3551320343578183772">Zamknij kartę</translation>
 <translation id="3565207542107370586">Wyczyść dane przeglądania…</translation>
+<translation id="3570693105179140209">Kliknij dwukrotnie, aby wyświetlić więcej haseł.</translation>
 <translation id="3575234738189584619">Szukaj za pomocą Obiektywu</translation>
 <translation id="3581564640715911333">Proponuj tłumaczenie stron w innych językach</translation>
 <translation id="3587885837929752825">Twoja organizacja nie zezwala na zapisywanie niektórych typów danych na koncie Google.</translation>
@@ -661,6 +662,7 @@ Jeśli chcesz usunąć historię wyszukiwania, zapoznaj się z instrukcjami wys
 <translation id="452750746583162491">Przejrzyj synchronizowane dane</translation>
 <translation id="4527660062930312477">Konto jest zarządzane</translation>
 <translation id="4536418791685807335">Spróbuj zalogować się jeszcze raz.</translation>
+<translation id="4539187448429948815">{count,plural, =1{{count} zapisana sugestia autouzupełniania dostępna nad klawiaturą.}few{{count} zapisane sugestie autouzupełniania dostępne nad klawiaturą.}many{{count} zapisanych sugestii autouzupełniania dostępnych nad klawiaturą.}other{{count} zapisanej sugestii autouzupełniania dostępne nad klawiaturą.}}</translation>
 <translation id="4540780316273593836">Coś poszło nie tak</translation>
 <translation id="4550040941166547650">Tylko na tym urządzeniu</translation>
 <translation id="457292989631956153">{COUNT,plural, =1{Zamknąć {COUNT} nieaktywną kartę?}few{Zamknąć {COUNT} nieaktywne karty?}many{Zamknąć {COUNT} nieaktywnych kart?}other{Zamknąć {COUNT} nieaktywnej karty?}}</translation>
@@ -913,7 +915,6 @@ Funkcja Handoff musi być też włączona w sekcji Ogólne w Ustawieniach, a urz
 <translation id="5857770089550859117">Wpisz hasło, by rozpocząć synchronizację.</translation>
 <translation id="5859715514067755465">Dalej</translation>
 <translation id="5860033963881614850">Wyłączone</translation>
-<translation id="5869029295770560994">OK</translation>
 <translation id="5871497086027727873">Przeniosłeś 1 element</translation>
 <translation id="5896576662943111387">Stworzona dla iOS</translation>
 <translation id="5897749768294722429">Aby szybko wracać do odwiedzonych stron, włącz synchronizację kart i historii.</translation>
@@ -930,7 +931,6 @@ Funkcja Handoff musi być też włączona w sekcji Ogólne w Ustawieniach, a urz
 <translation id="595769230373966252">Szukaj w <ph name="SEARCH_PROVIDER" /></translation>
 <translation id="5962718611393537961">Kliknij, by zwinąć</translation>
 <translation id="5963939892571022323">Nie udało się utworzyć linku do podświetlenia.</translation>
-<translation id="5965679971710331625">Jesteś zalogowany</translation>
 <translation id="5971872012779224351">{count,plural, =1{Usunięto 1 zakładkę}few{Usunięto {count} zakładki}many{Usunięto {count} zakładek}other{Usunięto {count} zakładki}}</translation>
 <translation id="5979837087407522202">Szukaj haseł</translation>
 <translation id="5981230843984570095">Zamknij wszystkie nieaktywne</translation>

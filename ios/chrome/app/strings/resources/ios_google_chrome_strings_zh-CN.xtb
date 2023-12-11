@@ -70,7 +70,6 @@
 <translation id="309672519329227863">获取您在其他应用内保存的 Chrome 登录密码等信息。</translation>
 <translation id="3167189358072330585">无法在 Google Chrome 上登录您的账号。请与您的网域管理员联系，或使用普通的 Google 账号登录。</translation>
 <translation id="3173834708294760622">Google Chrome 网页</translation>
-<translation id="3196546062792660320">为节省您的时间，Chrome 已将您的 Google 账号同步到网络上。您可在“设置”中添加或移除账号。</translation>
 <translation id="322254490661677575">如要将 Chrome 数据保存在您的 Google 账号中并使用这些数据，请输入您的口令。</translation>
 <translation id="3282568296779691940">登录 Chrome</translation>
 <translation id="3345341804167540816">随时随地使用 Chrome</translation>
@@ -170,7 +169,6 @@
 <translation id="7124339256045485976">让 Chrome 保持最新状态</translation>
 <translation id="7161390184744336561">Google Chrome 版本太旧</translation>
 <translation id="7165736900384873061">开始使用 Google Chrome QR 码扫描器</translation>
-<translation id="7173660919484573146">Chrome 会使用面容 ID 来确保对您密码的访问均已获授权。</translation>
 <translation id="7187993566681480880">保护您在 Chrome 中免受安全威胁，登录状态下还可让您更安全地使用其他 Google 应用。</translation>
 <translation id="7200524487407690471">Chrome 每天都会自动运行安全检查，以保护您免受数据泄露、不安全网站等问题的影响。您可在“设置”中详细了解安全检查。</translation>
 <translation id="72119412072970160">您可在 iPad 上的其他应用内使用已保存至 Google 密码管理器的密码。</translation>
@@ -190,6 +188,7 @@
 <translation id="7698568245838009292">Chrome 想要访问相机</translation>
 <translation id="7754633291442704733">贵组织 (<ph name="DOMAIN" />) 将能够访问您在此账号中存储的 Chrome 数据、书签、历史记录、密码和其他设置。当您退出账号时，系统将从这部设备上清除您的数据。不过，您的数据仍会存储在您名下受管理的 Google 账号中，且可供贵组织访问。贵组织也可专门针对上述账号设置用户规范，这可能会改变 Chrome 的行为。</translation>
 <translation id="7780154209050837198">若要充分利用 Chrome，请使用您的 Google 账号登录 Chrome。</translation>
+<translation id="7792140019572081272">Chrome 可利用面容 ID 确保您的敏感数据安全。</translation>
 <translation id="7855730255114109580">Google Chrome 已是最新版本</translation>
 <translation id="7897703007638178753">查看最近使用 Chrome 打开的标签页</translation>
 <translation id="7925119591961387184">选择“Chrome”。</translation>

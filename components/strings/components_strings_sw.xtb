@@ -87,6 +87,7 @@
 <translation id="11635448457105324">Kitufe cha 'Dhibiti anwani', washa ili uweke na udhibiti anwani katika mipangilio ya Chrome</translation>
 <translation id="1165039591588034296">Hitilafu</translation>
 <translation id="1165174597379888365">Ukurasa unatembelewa</translation>
+<translation id="1165813024716836071">{COUNT,plural, =0{Hamna}=1{Kwenye tovuti 1 (utasalia katika Akaunti yako ya Google)}other{Kwenye tovuti # (utasalia katika Akaunti yako ya Google)}}</translation>
 <translation id="1165852471352757509">Makala ya televisheni ya maisha halisi na maudhui yasiyo ya kubuni</translation>
 <translation id="1174644974616730562">Bahasha ya muundo wa Kichina ya ukubwa wa #1</translation>
 <translation id="1174723505405632867">Ungependa kuruhusu <ph name="EMBEDDED_URL" /> itumie data ya tovuti na vidakuzi kwenye <ph name="TOP_LEVEL_URL" />?
@@ -3983,6 +3984,7 @@ Usipoiruhusu, itazuiwa na mipangilio yako ya faragha. Hali hii itaruhusu maudhui
 <translation id="8919895429178014996">Ficha vipengee vyote</translation>
 <translation id="8922013791253848639">Ruhusu matangazo kwenye tovuti hii wakati wote</translation>
 <translation id="892588693504540538">Toboa juu kulia</translation>
+<translation id="8926389886865778422">Nisiulizwe tena</translation>
 <translation id="8930330541574156305">Mali isiyohamishika</translation>
 <translation id="8932102934695377596">Saa yako iko nyuma</translation>
 <translation id="893332455753468063">Ongeza Jina</translation>

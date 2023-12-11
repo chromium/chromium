@@ -913,7 +913,6 @@ Handoff Ayarların Ümumi bölməsindən də aktiv edilə bilər və cihazların
 <translation id="5857770089550859117">Sinxronizasiyanı başlamaq üçün parol söz tələb olunur.</translation>
 <translation id="5859715514067755465">Yönləndirin</translation>
 <translation id="5860033963881614850">Deaktiv</translation>
-<translation id="5869029295770560994">Ok, Anladım</translation>
 <translation id="5871497086027727873">1 element köçürüldü</translation>
 <translation id="5896576662943111387">iOS üçün hazırlanıb</translation>
 <translation id="5897749768294722429">Daxil olduğunuz saytlara tez qayıtmaq üçün tab və tarixçəni sinxronlaşdırın.</translation>
@@ -930,7 +929,6 @@ Handoff Ayarların Ümumi bölməsindən də aktiv edilə bilər və cihazların
 <translation id="595769230373966252"><ph name="SEARCH_PROVIDER" /> ilə axtarın</translation>
 <translation id="5962718611393537961">Yığcamlaşdırmaq üçün klikləyin</translation>
 <translation id="5963939892571022323">Vurğulamaya keçid yaratmaq olmur.</translation>
-<translation id="5965679971710331625">Hesaba daxil olmusunuz</translation>
 <translation id="5971872012779224351">{count,plural, =1{1 əlfəcin silindi}other{{count} əlfəcin silindi}}</translation>
 <translation id="5979837087407522202">Parolları Axtarın</translation>
 <translation id="5981230843984570095">Fəaliyyətsiz tabları bağlayın</translation>
@@ -1479,6 +1477,7 @@ Data <ph name="TIME" /> tarixində parol ifadəsi ilə şifrələnib. Google Hes
 <translation id="8766790350274092814"><ph name="WEBSITE" /> və <ph name="SECOND_WEBSITE" /> üçün parollar silinəcək. Hesablarınız silinməyəcək.</translation>
 <translation id="8775144690796719618">Yanlış URL</translation>
 <translation id="8780076847684176174">{count,plural, =1{Tabı nəzərdən keçirin...}other{Tabları nəzərdən keçirin...}}</translation>
+<translation id="8782570580170191813">Bağlamalar həmişə izlənsin</translation>
 <translation id="8787968206789828143">Vebdə axtarış</translation>
 <translation id="8792626944327216835">mikrofon</translation>
 <translation id="8803639129939845298">Güvənli</translation>

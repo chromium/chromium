@@ -16,6 +16,7 @@
 <translation id="1513122820609681462">‏ضبط Chromium كمتصفِّح تلقائي</translation>
 <translation id="1531155317299575425">‏عرض رسائل مطالبة تسجيل الدخول إلى Chromium</translation>
 <translation id="1591119736686995611">‏فتح شبكة علامات تبويب Chromium</translation>
+<translation id="1611584326765829247">‏السماح لمتصفّح Chromium بمساعدتك في تتبُّع الطرود</translation>
 <translation id="1617663976202781617">‏البيانات من مزامنة Chromium</translation>
 <translation id="1647558790457890304">‏إعدادات Chromium</translation>
 <translation id="164952285225495380">‏سبق أن تم تتبُّع هذا الطرد على Chromium.</translation>
@@ -53,7 +54,6 @@
 <translation id="2784449251446768092">‏إدارة إعدادات Chromium</translation>
 <translation id="2798503587425057129">‏فتح قائمة القراءة في Chromium</translation>
 <translation id="2843571538056574338">‏استخدام Chromium للملء التلقائي</translation>
-<translation id="2915596697727466327">‏يستخدم Chromium تقنية "التعرُّف على الوجه" لضمان الدخول المصرَّح به إلى كلمات المرور.</translation>
 <translation id="2918709798697875261">‏تطلُب مؤسستك منك البقاء في وضع تسجيل الخروج من Chromium.</translation>
 <translation id="2942241131342758843">‏يمكنك استخدام Chromium كمتصفّح تلقائي لفتح الروابط والبحث من خلال الأدوات وملء كلمات المرور تلقائيًا في التطبيقات الأخرى.</translation>
 <translation id="2977470724722393594">‏Chromium محدّث</translation>
@@ -175,7 +175,6 @@
 <translation id="7165402419892018581">‏اختيار Chromium للاستفادة من ميزة "الملء التلقائي"</translation>
 <translation id="7175400662502680481">‏تم الكشف عن كلمة المرور الخاصة بك في عملية اختراق بيانات، لذلك ينصح "مدير كلمات المرور" من Google بتغييرها الآن.</translation>
 <translation id="7192111075364461693">‏إنّ إشعارات Chromium غير مفعَّلة حاليًا في إعدادات جهازك.</translation>
-<translation id="7208566199746267865">‏يوفر Chromium وقتك من خلال تجميع حساباتك على الويب. يمكنك إضافة حسابات أو إزالتها في الإعدادات.</translation>
 <translation id="725427773388857052">‏يستطيع Chromium مساعدتك في الحفاظ على أمان معلوماتك من عمليات اختراق البيانات والمواقع الإلكترونية غير الآمنة وغيرها من المشاكل.</translation>
 <translation id="7269362888766543920">‏تتسبب بعض الإضافات في تعطل Chromium. يُرجى إلغاء تثبتها.</translation>
 <translation id="7285031092584344905">‏يمكنك الوصول إلى كلمات مرورك على Chromium وغيرها من البيانات في التطبيقات الأخرى.</translation>

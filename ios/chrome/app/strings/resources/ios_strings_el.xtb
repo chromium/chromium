@@ -913,7 +913,6 @@
 <translation id="5857770089550859117">Απαιτείται φράση πρόσβασης για έναρξη του συγχρονισμού.</translation>
 <translation id="5859715514067755465">Μετάβαση προς τα εμπρός</translation>
 <translation id="5860033963881614850">Απενεργοποιημένη</translation>
-<translation id="5869029295770560994">OK, το κατάλαβα!</translation>
 <translation id="5871497086027727873">Μετακινήθηκε 1 στοιχείο</translation>
 <translation id="5896576662943111387">Δημιουργήθηκε για iOS</translation>
 <translation id="5897749768294722429">Για γρήγορη επιστροφή σε ιστοτόπους που έχετε επισκεφτεί, συγχρονίστε τις καρτέλες και το ιστορικό.</translation>
@@ -930,7 +929,6 @@
 <translation id="595769230373966252">Αναζήτηση με <ph name="SEARCH_PROVIDER" /></translation>
 <translation id="5962718611393537961">Πατήστε για σύμπτυξη</translation>
 <translation id="5963939892571022323">Δεν είναι δυνατή η δημιουργία συνδέσμου προς την επισήμανση.</translation>
-<translation id="5965679971710331625">Είστε συνδεδεμένοι</translation>
 <translation id="5971872012779224351">{count,plural, =1{1 σελιδοδείκτης διαγράφηκε}other{{count} σελιδοδείκτες διαγράφηκαν}}</translation>
 <translation id="5979837087407522202">Αναζήτηση κωδικών πρόσβασης</translation>
 <translation id="5981230843984570095">Κλείσιμο όλων των ανενεργών</translation>
@@ -1480,6 +1478,7 @@
 <translation id="8766790350274092814">Οι κωδικοί πρόσβασης για τους ιστοτόπους <ph name="WEBSITE" /> και <ph name="SECOND_WEBSITE" /> θα διαγραφούν. Οι λογαριασμοί σας δεν θα διαγραφούν.</translation>
 <translation id="8775144690796719618">Μη έγκυρη διεύθ. URL</translation>
 <translation id="8780076847684176174">{count,plural, =1{Έλεγχος καρτέλας…}other{Έλεγχος όλων των καρτελών…}}</translation>
+<translation id="8782570580170191813">Να παρακολουθούνται πάντα τα πακέτα</translation>
 <translation id="8787968206789828143">Αναζήτηση στον ιστό</translation>
 <translation id="8792626944327216835">μικρόφωνο</translation>
 <translation id="8803639129939845298">Ασφαλές</translation>

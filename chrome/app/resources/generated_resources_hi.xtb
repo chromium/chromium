@@ -31,7 +31,6 @@
 <translation id="1018656279737460067">रद्द</translation>
 <translation id="1022522674678746124">PowerPoint</translation>
 <translation id="1022669824195822609">आपके डिवाइस को <ph name="DOMAIN" /> मैनेज करता है. एडमिन इस डिवाइस पर मौजूद किसी भी प्रोफ़ाइल का डेटा ऐक्सेस कर सकते हैं.</translation>
-<translation id="1024734233509995696">यह टैब आपके कैमरे या माइक्रोफ़ोन का इस्तेमाल कर रहा है</translation>
 <translation id="1026655690966755180">पोर्ट जोड़ें</translation>
 <translation id="1026822031284433028">इमेज लोड करें</translation>
 <translation id="1026959648338730078">Windows Hello या बाहरी सुरक्षा कुंजी</translation>
@@ -1788,7 +1787,6 @@
 <translation id="2335111415680198280">{0,plural, =1{# विंडो बंद करें}one{# विंडो बंद करें}other{# विंडो बंद करें}}</translation>
 <translation id="2336228925368920074">सभी टैब बुकमार्क करें...</translation>
 <translation id="2336381494582898602">पॉवरवॉश</translation>
-<translation id="2337236196941929873">Chrome उन पेजों को पहले से लोड कर देता है जिनके बारे में उसे लगता है कि आप उन पर जा सकते हैं. अगर आप कुकी के लिए अनुमति देते हैं, तो Chrome ऐसा करने के लिए कुकी इस्तेमाल कर सकता है. साथ ही, साइटों से आपकी पहचान छिपाने के लिए, Chrome, पेजों को एनक्रिप्ट (सुरक्षित) करके Google के ज़रिए भेज सकता है.</translation>
 <translation id="2340239562261172947"><ph name="FILE_NAME" /> सुरक्षित तरीके से डाउनलोड नहीं की जा सकती</translation>
 <translation id="2342180549977909852">इस डिवाइस को अनलॉक करने के लिए, आपका बच्चा पासवर्ड के बजाय नंबर (पिन) का इस्तेमाल कर सकता है. बाद में अपना पिन सेट करने के लिए, सेटिंग पर जाएं.</translation>
 <translation id="2342740338116612727">बुकमार्क जोड़े गए</translation>
@@ -1881,6 +1879,7 @@
 <translation id="2412753904894530585">केर्बेरोस</translation>
 <translation id="2414159296888870200"><ph name="MODULE_TITLE" /> के लिए ब्राउज़ करना फिर से शुरू करें</translation>
 <translation id="2414886740292270097">गहरा</translation>
+<translation id="2415117815770324983">आपको ज़्यादातर साइटों से साइन आउट कर देता है. आपको आपके Google खाते से साइन आउट नहीं किया जाएगा.</translation>
 <translation id="2416435988630956212">कीबोर्ड के फ़ंक्शन बटन</translation>
 <translation id="2418307627282545839">ब्राइट और आंखों को सुकून देने वाली डिसप्ले थीम</translation>
 <translation id="2419131370336513030">इंस्टॉल किए गए ऐप्लिकेशन देखें</translation>
@@ -2401,6 +2400,7 @@
 <translation id="2799223571221894425">फिर से लॉन्‍च करें</translation>
 <translation id="2800309299477632167">कस्टम कीमैप</translation>
 <translation id="2800760947029405028">एक इमेज अपलोड करें</translation>
+<translation id="2801134910297796778">आपने <ph name="EMAIL" /> में साइन इन किया है</translation>
 <translation id="2801954693771979815">स्क्रीन का साइ़ज़</translation>
 <translation id="2802557211515765772">मैनेज किया गया कोई भी प्रिंटर नहीं है.</translation>
 <translation id="2803313416453193357">फ़ोल्डर खोलें</translation>
@@ -3532,6 +3532,7 @@
 <translation id="372722114124766626">बस एक बार</translation>
 <translation id="3727332897090187514">कोई नोट नहीं जोड़ा गया है</translation>
 <translation id="3727473233247516571">बैक/फ़ॉरवर्ड कैश मेमोरी का सबफ़्रेम: <ph name="BACK_FORWARD_CACHE_PAGE_URL" /></translation>
+<translation id="3727850735097852673">macOS Keychain के साथ Google Password Manager का इस्तेमाल करने के लिए, Chrome को फिर से लॉन्च करें और Keychain को ऐक्सेस करने की अनुमति दें. फिर से लॉन्च करने पर, आपके टैब दोबारा खुल जाएंगे.</translation>
 <translation id="3728188878314831180">फ़ोन और Chromebook पर एक-साथ मिलने वाली सूचनाओं को अपने फ़ोन से Chromebook पर शेयर करें</translation>
 <translation id="3728681439294129328">नेटवर्क का आईपी पता कॉन्फ़िगर करें</translation>
 <translation id="3729506734996624908">मंज़ूर की गई साइटें</translation>
@@ -4046,6 +4047,7 @@
 <translation id="4110485659976215879">चेतावनी दिखाना फिर से चालू करें</translation>
 <translation id="4110490973560452005">डाउनलोड पूरा हो गया: <ph name="FILE_NAME" />. डाउनलोड बार वाले हिस्से पर जाने के लिए Shift+F6 दबाएं.</translation>
 <translation id="4112194537011183136"><ph name="DEVICE_NAME" /> (ऑफ़लाइन)</translation>
+<translation id="4113483184628671608">विज़िट की जाने वाली साइटों के नाम एन्क्रिप्ट (सुरक्षित) करें</translation>
 <translation id="4113743276555482284">फ़ाइल का पासवर्ड</translation>
 <translation id="4114524937989710624">आपको फ़ाइलों के सुझाव दिखाए जा रहे हैं, ताकि आप उन फ़ाइलों को आसानी से ढूंढ सकें जिन्हें आपने हाल ही में Google Drive पर इस्तेमाल किया था.
         <ph name="BREAK" />
@@ -5775,6 +5777,7 @@
 <translation id="5517304475148761050">इस ऐप्लिकेशन काे 'Play Store' के ऐक्सेस की ज़रूरत है</translation>
 <translation id="5517412723934627386"><ph name="NETWORK_TYPE" /> - <ph name="NETWORK_DISPLAY_NAME" /></translation>
 <translation id="5518949581554491184">Android फ़ोन के साथ सेट अप करें</translation>
+<translation id="5519053700692355541">साइड पैनल की ज़्यादातर सुविधाएं खोलने के लिए, सबसे ऊपर दाईं ओर मौजूद Chrome मेन्यू का इस्तेमाल करें</translation>
 <translation id="5519195206574732858">LTE</translation>
 <translation id="5519900055135507385">इस खाते को मज़बूत पासवर्ड से सुरक्षित रखें. <ph name="EMAIL" /> के लिए, इस पासवर्ड को <ph name="GOOGLE_PASSWORD_MANAGER" /> में सेव किया जाएगा.</translation>
 <translation id="5521078259930077036">क्या यह वही होम पेज है जिसे आप देखना चाह रहे थे?</translation>
@@ -5920,7 +5923,6 @@
 <translation id="5636012309446422">क्या <ph name="PRIMARY_EMAIL" /> से <ph name="DEVICE" /> को हटाना है?</translation>
 <translation id="5636996382092289526"><ph name="NETWORK_ID" /> का इस्तेमाल करने के लिए आपको सबसे पहले <ph name="LINK_START" />नेटवर्क के साइन इन पेज पर जाना<ph name="LINK_END" /> होगा, जो कुछ ही सेकंड में अपने आप खुल जाएगा. अगर ऐसा नहीं होता है, तो नेटवर्क का इस्तेमाल नहीं किया जा सकेगा.</translation>
 <translation id="5637476008227280525">मोबाइल डेटा चालू करें</translation>
-<translation id="563811590465749036">macOS पर Keychain Access के साथ Google Password Manager का इस्तेमाल करने के लिए, Chrome को फिर से लॉन्च करें और Keychain Access को अनुमति दें. फिर से लॉन्च करने पर, आपके टैब दोबारा खुल जाएंगे</translation>
 <translation id="563821631542362636">साइट को डेटा सेव करने की अनुमति दें</translation>
 <translation id="5638309510554459422"><ph name="BEGIN_LINK" />Chrome वेब स्टोर<ph name="END_LINK" /> में एक्सटेंशन और थीम ढूंढें</translation>
 <translation id="5639549361331209298">यह पेज फिर लोड करें, ज़्यादा विकल्प देखने के लिए रोककर रखें</translation>
@@ -6152,7 +6154,6 @@
 <translation id="583431638776747">साइट को ऐक्सेस नहीं किया जा सका</translation>
 <translation id="5834581999798853053">करीब <ph name="TIME" /> मिनट शेष हैं</translation>
 <translation id="5835360478055379192">{NUM_EXTENSION,plural, =1{<ph name="EXTENSION1" />, एचआईडी डिवाइसों को ऐक्सेस कर रहा है}=2{डिवाइसों को ऐक्सेस करने वाले एक्सटेंशन: <ph name="EXTENSION1" />, <ph name="EXTENSION2" />}one{डिवाइसों को ऐक्सेस करने वाले एक्सटेंशन: <ph name="EXTENSION1" />, <ph name="EXTENSION2" /> + {3} और}other{डिवाइसों को ऐक्सेस करने वाले एक्सटेंशन: <ph name="EXTENSION1" />, <ph name="EXTENSION2" /> + {3} और}}</translation>
-<translation id="5835486486592033703"><ph name="WINDOW_TITLE" /> - कैमरा या माइक्रोफ़ोन रिकॉर्डिंग</translation>
 <translation id="583673505367439042">साइटें आपके डिवाइस पर फ़ाइलों या फ़ोल्डर में बदलाव करने की अनुमति मांग सकती हैं</translation>
 <translation id="5836999627049108525">वह भाषा जिससे अनुवाद करना है</translation>
 <translation id="583756221537636748">केस</translation>
@@ -6737,6 +6738,7 @@
 <translation id="6294759976468837022">अपने-आप स्कैन होने की रफ़्तार</translation>
 <translation id="6295158916970320988">सभी साइटें</translation>
 <translation id="6295855836753816081">सहेज रहा है...</translation>
+<translation id="6298456705131259420">यहां दी गई साइटों पर असर पड़ता है. किसी डोमेन नेम से पहले “[*.]” जोड़ने से, पूरे डोमेन के लिए अपवाद बन जाता है. उदाहरण के लिए, “[*.]google.com” जोड़ने का मतलब है कि तीसरे पक्ष की कुकी, mail.google.com के लिए भी चालू हो सकती हैं, क्योंकि यह google.com का हिस्सा है.</translation>
 <translation id="6298962879096096191">Android ऐप्लिकेशन इंस्टॉल करने के लिए Google Play का उपयोग करें</translation>
 <translation id="6300177430812514606">डेटा भेजने या पाने की अनुमति नहीं है</translation>
 <translation id="6300654006256345126">पासवर्ड बदलें</translation>
@@ -7160,6 +7162,7 @@
 <translation id="6651762277693024112">इस साइट को हर बार विज़िट करने पर अपने-आप काम करता है</translation>
 <translation id="665355505818177700">Chrome <ph name="MS_AD_NAME" /> एकीकरण सिर्फ़ x86_64 प्लैटफ़ॉर्म पर काम करता है. किसी ARM या x86 प्लैटफ़ॉर्म पर बने Chromebook इस काम की क्षमता की सुविधा नहीं देते हैं.</translation>
 <translation id="6654509035557065241">नेटवर्क चुनें</translation>
+<translation id="6654987855337442937">आपके इंटरनेट ट्रैफ़िक का ऐक्सेस रखने वाले लोगों को, आपकी विज़िट की जाने वाली साइटों की जानकारी देखने से रोकने के लिए, सुरक्षित डोमेन नेम सिस्टम (डीएनएस) का इस्तेमाल करें</translation>
 <translation id="6655190889273724601">डेवलपर मोड</translation>
 <translation id="6655458902729017087">खाते छिपाएं</translation>
 <translation id="6657180931610302174">उपयोगकर्ता नाम जोड़ना है?</translation>
@@ -9556,6 +9559,7 @@
 <translation id="8528074251912154910">भाषाएं जोड़ें</translation>
 <translation id="8528479410903501741">IBAN सेव करें</translation>
 <translation id="8528962588711550376">प्रवेश कर रहा है.</translation>
+<translation id="8529578450330869579">आपके इंटरनेट ट्रैफ़िक का ऐक्सेस रखने वाले लोगों को, आपकी विज़िट की जाने वाली साइटों की जानकारी देखने से रोकने के लिए, सुरक्षित डोमेन नेम सिस्टम (डीएनएस) का इस्तेमाल करें. यह <ph name="DNS_SERVER_TEMPLATE_WITH_IDENTIFIER" /> पर मौजूद, मैनेज की जा रही सेवा देने वाली कंपनी का इस्तेमाल करता है</translation>
 <translation id="8529925957403338845">इंस्टैंट टेदरिंग कनेक्शन नहीं किया जा सका</translation>
 <translation id="8531701051932785007">बेहतर सुरक्षित ब्राउज़िंग की सुविधा बंद है</translation>
 <translation id="8533670235862049797">सुरक्षित ब्राउज़िंग की सुविधा चालू है</translation>

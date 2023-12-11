@@ -496,6 +496,7 @@
 <translation id="355101282835380364">บันทึกในบัญชี…</translation>
 <translation id="3551320343578183772">ปิดแท็บ</translation>
 <translation id="3565207542107370586">ล้างข้อมูลการท่องเว็บ…</translation>
+<translation id="3570693105179140209">แตะสองครั้งเพื่อดูรหัสผ่านเพิ่มเติม</translation>
 <translation id="3575234738189584619">ค้นหาด้วย Lens</translation>
 <translation id="3581564640715911333">เสนอที่จะแปลหน้าเว็บในภาษาอื่นๆ</translation>
 <translation id="3587885837929752825">องค์กรของคุณจํากัดสิ่งที่คุณสามารถบันทึกในบัญชี Google</translation>
@@ -661,6 +662,7 @@
 <translation id="452750746583162491">ตรวจสอบข้อมูลที่ซิงค์</translation>
 <translation id="4527660062930312477">บัญชีของคุณได้รับการจัดการ</translation>
 <translation id="4536418791685807335">ลองลงชื่อเข้าใช้อีกครั้ง</translation>
+<translation id="4539187448429948815">{count,plural, =1{คำแนะนำที่เติมข้อความอัตโนมัติที่บันทึกไว้ {count} รายการพร้อมให้ใช้งานอยู่เหนือแป้นพิมพ์}other{คำแนะนำที่เติมข้อความอัตโนมัติที่บันทึกไว้ {count} รายการพร้อมให้ใช้งานอยู่เหนือแป้นพิมพ์}}</translation>
 <translation id="4540780316273593836">เกิดข้อผิดพลาด</translation>
 <translation id="4550040941166547650">เฉพาะในอุปกรณ์นี้</translation>
 <translation id="457292989631956153">{COUNT,plural, =1{ปิดแท็บที่ไม่ได้ใช้งาน {COUNT} แท็บใช่ไหม}other{ปิดแท็บที่ไม่ได้ใช้งาน {COUNT} แท็บใช่ไหม}}</translation>
@@ -913,7 +915,6 @@
 <translation id="5857770089550859117">ต้องระบุรหัสผ่านเพื่อเริ่มการซิงค์</translation>
 <translation id="5859715514067755465">ไปข้างหน้า</translation>
 <translation id="5860033963881614850">ปิด</translation>
-<translation id="5869029295770560994">รับทราบ</translation>
 <translation id="5871497086027727873">ย้ายแล้ว 1 รายการ</translation>
 <translation id="5896576662943111387">สร้างขึ้นเพื่อ iOS</translation>
 <translation id="5897749768294722429">ซิงค์แท็บและประวัติการเข้าชมเพื่อดูเว็บไซต์ที่เคยเข้าชมอีกครั้งได้อย่างรวดเร็ว</translation>
@@ -930,7 +931,6 @@
 <translation id="595769230373966252">ค้นหาด้วย <ph name="SEARCH_PROVIDER" /></translation>
 <translation id="5962718611393537961">แตะเพื่อยุบ</translation>
 <translation id="5963939892571022323">สร้างลิงก์ไปยังไฮไลต์ไม่ได้</translation>
-<translation id="5965679971710331625">คุณลงชื่อเข้าใช้แล้ว</translation>
 <translation id="5971872012779224351">{count,plural, =1{ลบบุ๊กมาร์ก 1 รายการแล้ว}other{ลบบุ๊กมาร์ก {count} รายการแล้ว}}</translation>
 <translation id="5979837087407522202">ค้นหารหัสผ่าน</translation>
 <translation id="5981230843984570095">ปิดแท็บที่ไม่ได้ใช้งานทั้งหมด</translation>

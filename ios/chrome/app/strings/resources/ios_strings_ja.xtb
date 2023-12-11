@@ -913,7 +913,6 @@
 <translation id="5857770089550859117">同期を開始するにはパスフレーズが必要です。</translation>
 <translation id="5859715514067755465">進む</translation>
 <translation id="5860033963881614850">OFF</translation>
-<translation id="5869029295770560994">OK</translation>
 <translation id="5871497086027727873">1件の項目を移動しました</translation>
 <translation id="5896576662943111387">iOS にぴったり</translation>
 <translation id="5897749768294722429">過去にアクセスしたサイトにすばやく戻るには、タブと履歴を同期します。</translation>
@@ -930,7 +929,6 @@
 <translation id="595769230373966252"><ph name="SEARCH_PROVIDER" /> で検索</translation>
 <translation id="5962718611393537961">タップして折りたたむ</translation>
 <translation id="5963939892571022323">選択箇所へのリンクを作成できません。</translation>
-<translation id="5965679971710331625">ログイン中のアカウント</translation>
 <translation id="5971872012779224351">{count,plural, =1{1 個のブックマークが削除されました}other{{count} 個のブックマークが削除されました}}</translation>
 <translation id="5979837087407522202">パスワードを検索</translation>
 <translation id="5981230843984570095">アクティブでないタブをすべて閉じる</translation>

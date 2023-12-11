@@ -913,7 +913,6 @@ Funkciu Handoff musíte povoliť v nastaveniach v časti Všeobecné a vaše zar
 <translation id="5857770089550859117">Spustenie synchronizácie vyžaduje prístupovú frázu.</translation>
 <translation id="5859715514067755465">Dopredu</translation>
 <translation id="5860033963881614850">Vypnuté</translation>
-<translation id="5869029295770560994">Dobre</translation>
 <translation id="5871497086027727873">1 položka bola presunutá</translation>
 <translation id="5896576662943111387">Vyrobené pre iOS</translation>
 <translation id="5897749768294722429">Ak sa chcete rýchlo vrátiť na navštívené weby, synchronizujte si karty aj históriu.</translation>
@@ -930,7 +929,6 @@ Funkciu Handoff musíte povoliť v nastaveniach v časti Všeobecné a vaše zar
 <translation id="595769230373966252">Hľadať prostredníctvom poskytovateľa <ph name="SEARCH_PROVIDER" /></translation>
 <translation id="5962718611393537961">Klepnutím zbaliť</translation>
 <translation id="5963939892571022323">Odkaz na zvýraznenie sa nedá vytvoriť.</translation>
-<translation id="5965679971710331625">Ste prihlásený/-á</translation>
 <translation id="5971872012779224351">{count,plural, =1{Bola odstránená 1 záložka}few{Boli odstránené {count} záložky}many{{count} bookmarks deleted}other{Bolo odstránených {count} záložiek}}</translation>
 <translation id="5979837087407522202">Vyhľadajte heslá</translation>
 <translation id="5981230843984570095">Zavrieť všetky neaktívne</translation>
@@ -1479,6 +1477,7 @@ Vaše údaje boli zašifrované pomocou prístupovej frázy <ph name="TIME" />. 
 <translation id="8766790350274092814">Heslá pre <ph name="WEBSITE" /> a <ph name="SECOND_WEBSITE" /> budú odstránené. Vaše účty odstránené nebudú.</translation>
 <translation id="8775144690796719618">Neplatná webová adresa</translation>
 <translation id="8780076847684176174">{count,plural, =1{Skontrolovať kartu…}few{Skontrolovať všetky karty…}many{Skontrolovať všetky karty…}other{Skontrolovať všetky karty…}}</translation>
+<translation id="8782570580170191813">Vždy sledovať zásielky</translation>
 <translation id="8787968206789828143">Hľadať na internete</translation>
 <translation id="8792626944327216835">mikrofón</translation>
 <translation id="8803639129939845298">Zabezpečené</translation>

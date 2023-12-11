@@ -87,6 +87,7 @@
 <translation id="11635448457105324">Manzillarni boshqarish tugmasi, Chrome sozlamalari orqali manzillarni kiritish va boshqarish uchun faollashtiring</translation>
 <translation id="1165039591588034296">Xatolik</translation>
 <translation id="1165174597379888365">Sahifa ochilishi</translation>
+<translation id="1165813024716836071">{COUNT,plural, =0{Hech qanday}=1{1 ta saytdan (Google hisobingizga kirgan holda qolasiz)}other{# ta saytdan (Google hisobingizga kirgan holda qolasiz)}}</translation>
 <translation id="1165852471352757509">Hujjatli va badiiy TV filmlar</translation>
 <translation id="1174644974616730562">Envelope Chinese #1</translation>
 <translation id="1174723505405632867"><ph name="EMBEDDED_URL" /> sayti <ph name="TOP_LEVEL_URL" /> cookie-fayllari va sayt maʼlumotlaridan foydalanishiga ruxsat berilsinmi?
@@ -116,6 +117,7 @@ Aks holda bu maxfiylik sozlamalaringiz tomonidan bloklanadi. Bunda siz ochgan sa
 <translation id="1206967143813997005">Boshlang‘ich imzo tasdiqlanmadi</translation>
 <translation id="1209206284964581585">Berkitish</translation>
 <translation id="121201262018556460">Siz <ph name="DOMAIN" /> saytiga o‘tmoqchi bo‘ldingiz, lekin server taqdim qilgan sertifikat zaif kalitga ega. Bu server bergan havfsizlik hisob ma’lumotlari ishonchsiz va server o‘zini boshqa server deb ko‘rsatayotgan bo‘lishi mumkin (bu firibgarlar sayti bo‘lishi mumkin).</translation>
+<translation id="1212527389003717329">Yuklab olish boshlandi. Koʻrish uchun |<ph name="ACCELERATOR" />| tugmasini bosib turing.</translation>
 <translation id="1219129156119358924">Tizim xavfsizligi</translation>
 <translation id="1222060260947439312">Oʻng tarnov</translation>
 <translation id="1224330468394120478">A3x6</translation>
@@ -286,6 +288,7 @@ Aks holda bu maxfiylik sozlamalaringiz tomonidan bloklanadi. Bunda siz ochgan sa
 <translation id="1521655867290435174">Google Sheets</translation>
 <translation id="1524669537550112617">Mebel ijarasi</translation>
 <translation id="1527263332363067270">Aloqa kutilmoqda…</translation>
+<translation id="1528311629279578926">Ulanish bloklangan, chunki xususiy tarmoqdagi qurilma yoki serverlarga ulanish uchun ochiq sahifa tomonidan boshlangan. Ulanishga ruxsat berish uchun bu sahifani qayta yuklang.</translation>
 <translation id="1529789484829130889">Tarnov 8</translation>
 <translation id="1530707389502320859">Hozirgina ochilgan sayt soxta shekilli. Odatda shubhali kimsalar URL manzilda kichik oʻzgarishlar kiritib, saytlarga soxta nusxalar yasaydi.</translation>
 <translation id="1532118530259321453">Amalni tasdiqlang</translation>
@@ -1158,6 +1161,7 @@ Aks holda bu maxfiylik sozlamalaringiz tomonidan bloklanadi. Bunda siz ochgan sa
 <translation id="3325027355611702542">Avtofurgonlar</translation>
 <translation id="3329013043687509092">To‘liqlik</translation>
 <translation id="3333762389743153920">Virtual karta uchun mos kelmaydi</translation>
+<translation id="3336044043987989409">Xususiy tarmoqdagi qurilma yoki serverlarga ulanishga ruxsat berish uchun qayta yuklash tugmasini bosing.</translation>
 <translation id="3338095232262050444">Xavfsiz</translation>
 <translation id="333839153442689579">Qisqa vaqt oralatib shug‘ullanish</translation>
 <translation id="3339440062908617027">Yugurish va piyoda yurish</translation>
@@ -1212,6 +1216,7 @@ Aks holda bu maxfiylik sozlamalaringiz tomonidan bloklanadi. Bunda siz ochgan sa
 <translation id="3432601291244612633">Sahifani yopish</translation>
 <translation id="3433111389595862568">Hamkorlik va konferensiya uchun dasturlar</translation>
 <translation id="3433144818443565002">Ovozli va video chat</translation>
+<translation id="3434025015623587566">Google Parollar menejeriga qoʻshimcha ruxsat kerak</translation>
 <translation id="343474037147570563">Siz yuklaydigan fayllar tekshiruv uchun Google Cloud yoki boshqa tashqi xizmatlarga yuboriladi. Masalan, fayllar tarkibida maxfiy yoki zararli axborotlar mavjudligini aniqlash uchun tekshirilishi mumkin. Ular sizning administratoringiz uchun ham ochiq boʻlishi va kompaniya qoidalari asosida saqlanishi mumkin.</translation>
 <translation id="3435557549311968410">Uzluksiz (qisqa)</translation>
 <translation id="3435738964857648380">Xavfsizlik</translation>
@@ -1959,6 +1964,7 @@ Aks holda bu maxfiylik sozlamalaringiz tomonidan bloklanadi. Bunda siz ochgan sa
 <translation id="4918221908152712722">Oʻrnatish: <ph name="APP_NAME" /> (yuklab olinmaydi)</translation>
 <translation id="4920457992177678649">Mavsumiy va qisqa-muddatli ijara</translation>
 <translation id="4920710383559189047">Gilza</translation>
+<translation id="4922104989726031751">Parollar menejeridan operatsion tizimda foydalanish uchun Chromiumni qaytadan oching va kompyuterdagi parollar menejeridan foydalanishga ruxsat bering. Qayta ishga tushirilgandan keyin varaqlar qayta ochiladi.</translation>
 <translation id="4923459931733593730">To‘lov</translation>
 <translation id="4926049483395192435">Qiymatini belgilang.</translation>
 <translation id="4926159001844873046"><ph name="SITE" /> saytidagi amalni tasdiqlang</translation>
@@ -2598,6 +2604,7 @@ Aks holda bu maxfiylik sozlamalaringiz tomonidan bloklanadi. Bunda siz ochgan sa
 <translation id="6234122620015464377">Har bir hujjat chekkasini qirqish</translation>
 <translation id="6236290670123303279">Sozlamalarni boshqarish</translation>
 <translation id="6240447795304464094">Google Pay logotipi</translation>
+<translation id="6240964651812394252">Parollar menejeridan operatsion tizimda foydalanish uchun Chromeni qaytadan oching va kompyuterdagi parollar menejeridan foydalanishga ruxsat bering. Qayta ishga tushirilgandan keyin varaqlar qayta ochiladi.</translation>
 <translation id="6241121617266208201">Tavsiyalarni berkitish</translation>
 <translation id="624499991300733384">Bosmani nashrlash xizmati</translation>
 <translation id="6251906504834538140">{0,plural, =1{Faylni koʻchirish taqiqlangan}other{<ph name="FILE_COUNT" /> ta faylni koʻchirish taqiqlangan}}</translation>
@@ -2608,6 +2615,7 @@ Aks holda bu maxfiylik sozlamalaringiz tomonidan bloklanadi. Bunda siz ochgan sa
 <translation id="6263376278284652872"><ph name="DOMAIN" /> xatcho‘plari</translation>
 <translation id="6264376385120300461">Baribir yuklab olish</translation>
 <translation id="6264485186158353794">Xavfsizlik sahifasiga qaytish</translation>
+<translation id="6264636978858465832">Parollar menejeriga qoʻshimcha ruxsat kerak</translation>
 <translation id="6265794661083428563"><ph name="POLICY_NAME" /> siyosati qiymatidan nusxa olish</translation>
 <translation id="6266934640124581640">Och moviy</translation>
 <translation id="6270066318535733958">Qayiqda suzish</translation>
@@ -3977,6 +3985,7 @@ Batafsil axborot:
 <translation id="8919895429178014996">Barchasini berkitish</translation>
 <translation id="8922013791253848639">Bu saytda har doim reklama ko‘rsatilsin</translation>
 <translation id="892588693504540538">Yuqori oʻngdan teshik ochish</translation>
+<translation id="8926389886865778422">Qayta so‘ralmasin</translation>
 <translation id="8930330541574156305">Koʻchmas mulk</translation>
 <translation id="8932102934695377596">Soatingiz orqada</translation>
 <translation id="893332455753468063">Ism qo‘shing</translation>

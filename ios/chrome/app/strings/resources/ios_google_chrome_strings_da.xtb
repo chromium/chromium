@@ -55,6 +55,7 @@ Vær opmærksom på følgende:
 <translation id="2574249610672786438">Log ind på alle de enheder, hvor du bruger Chrome, for at se dine faner på dem</translation>
 <translation id="2576431527583832481">Chrome er lige blevet bedre! Der er en ny tilgængelig version.</translation>
 <translation id="257708665678654955">Skal Google Chrome tilbyde at oversætte sider på <ph name="LANGUAGE_NAME" /> fra dette website næste gang?</translation>
+<translation id="2650286135394207535">Få hjælp af Chrome til at spore dine pakker</translation>
 <translation id="2671426118752779020">Du kan bruge de adgangskoder, du har gemt i Google Adgangskodeadministrator, i andre apps på din iPhone.</translation>
 <translation id="2689064829982324496">Hvis du vil logge ud af din Google-konto på alle websites, skal du <ph name="BEGIN_LINK" />logge ud af Chrome<ph name="END_LINK" />.</translation>
 <translation id="2695886661449553974">Chrome kunne ikke søge efter opdateringer. Prøv igen senere.</translation>
@@ -69,7 +70,6 @@ Vær opmærksom på følgende:
 <translation id="309672519329227863">Få adgang til dine Chrome-adgangskoder og meget mere i andre apps.</translation>
 <translation id="3167189358072330585">Din konto fungerer ikke sammen med Google Chrome. Kontakt din domæneadministrator, eller brug en almindelig Google-konto til at logge ind.</translation>
 <translation id="3173834708294760622">Google Chrome-side</translation>
-<translation id="3196546062792660320">Med Chrome sparer du tid ved at gøre alle dine konti tilgængelige online. Du kan tilføje eller fjerne konti under Indstillinger.</translation>
 <translation id="322254490661677575">Angiv din adgangssætning for at bruge og gemme Chrome-data på din Google-konto.</translation>
 <translation id="3282568296779691940">Log ind i Chrome</translation>
 <translation id="3345341804167540816">Brug Chrome overalt</translation>
@@ -169,7 +169,6 @@ Kun personer med din adgangssætning kan læse dine krypterede data. Adgangssæt
 <translation id="7124339256045485976">Sørger for, at Chrome er opdateret</translation>
 <translation id="7161390184744336561">Google Chrome er forældet</translation>
 <translation id="7165736900384873061">Begynd at bruge QR-scanneren fra Google Chrome.</translation>
-<translation id="7173660919484573146">Chrome bruger Face ID til at sikre autoriseret adgang til dine adgangskoder.</translation>
 <translation id="7187993566681480880">Beskytter dig i Chrome og kan bruges til at forbedre din sikkerhed i andre Google-apps, når du er logget ind.</translation>
 <translation id="7200524487407690471">Chrome kører automatisk et sikkerhedstjek hver dag for at beskytte dig mod brud på datasikkerheden, usikre websites og meget mere. Du kan få flere oplysninger om Sikkerhedstjek i Indstillinger.</translation>
 <translation id="72119412072970160">Du kan bruge de adgangskoder, du har gemt i Google Adgangskodeadministrator, i andre apps på din iPad.</translation>

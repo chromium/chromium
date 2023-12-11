@@ -31,7 +31,6 @@
 <translation id="1018656279737460067">បានបោះបង់</translation>
 <translation id="1022522674678746124">PowerPoint</translation>
 <translation id="1022669824195822609">ឧបករណ៍​របស់អ្នកស្ថិតក្រោមការគ្រប់គ្រង​របស់ <ph name="DOMAIN" />។ អ្នកគ្រប់គ្រងអាចចូលប្រើប្រាស់ទិន្នន័យនៅក្នុងកម្រងព័ត៌មានណាមួយលើឧបករណ៍នេះ។</translation>
-<translation id="1024734233509995696">ផ្ទាំងនេះ​កំពុងប្រើ​កាមេរ៉ា ឬមីក្រូហ្វូន​របស់អ្នក</translation>
 <translation id="1026655690966755180">បញ្ចូលច្រក</translation>
 <translation id="1026822031284433028">ដំណើរការរូបភាព</translation>
 <translation id="1026959648338730078">Windows Hello ឬ​សោសុវត្ថិភាព​​ខាងក្រៅ</translation>
@@ -1787,7 +1786,6 @@
 <translation id="2335111415680198280">{0,plural, =1{បិទវិនដូ #}other{បិទវិនដូ #}}</translation>
 <translation id="2336228925368920074">ចំណាំផ្ទាំងទាំងអស់...</translation>
 <translation id="2336381494582898602">Powerwash</translation>
-<translation id="2337236196941929873">ផ្ទុកជាមុនចំពោះទំព័រដែល Chrome គិតថាអ្នកអាចនឹងចូលមើល។ ដើម្បីធ្វើដូច្នេះបាន Chrome អាចប្រើខូគី ប្រសិនបើអ្នកអនុញ្ញាតឱ្យប្រើខូគី ហើយអាចអ៊ីនគ្រីប និងផ្ញើទំព័រតាមរយៈ Google ដើម្បីលាក់អត្តសញ្ញាណរបស់អ្នកពីគេហទំព័រនានា។</translation>
 <translation id="2340239562261172947">មិនអាច​ទាញយក <ph name="FILE_NAME" /> ដោយសុវត្ថិភាពបានទេ</translation>
 <translation id="2342180549977909852">កូនរបស់អ្នកអាចប្រើលេខ (កូដ PIN) ជំនួសឱ្យ​ពាក្យសម្ងាត់ ដើម្បី​ដោះសោឧបករណ៍​នេះ។ ដើម្បីរៀបចំកូដ PIN ​នៅពេលក្រោយ​ សូម​ចូលទៅកាន់ការកំណត់។</translation>
 <translation id="2342740338116612727">បានបញ្ចូល​ចំណាំ</translation>
@@ -3533,6 +3531,7 @@
 <translation id="372722114124766626">តែ​ម្ដង</translation>
 <translation id="3727332897090187514">មិន​បាន​បញ្ចូល​ចំណាំ</translation>
 <translation id="3727473233247516571">ស៊ុមរងនៃ​ឃ្លាំងបម្រុងទុក​ទំព័រក្នុងសភាពដើម​ទាំងស្រុង៖ <ph name="BACK_FORWARD_CACHE_PAGE_URL" /></translation>
+<translation id="3727850735097852673">ដើម្បីប្រើ​កម្មវិធី​គ្រប់គ្រង​ពាក្យសម្ងាត់​ជាមួយ macOS Keychain សូម​ចាប់ផ្តើម Chrome ឡើងវិញ និង​អនុញ្ញាត​សិទ្ធិចូលប្រើ Keychain។ ផ្ទាំង​របស់អ្នក​នឹងបើក​ឡើងវិញ បន្ទាប់ពី​ចាប់ផ្តើម​ឡើងវិញ។</translation>
 <translation id="3728188878314831180">បញ្ចាំងការជូនដំណឹង​ពីទូរសព្ទរបស់អ្នក</translation>
 <translation id="3728681439294129328">កំណត់រចនាសម្ព័ន្ធ​អាសយដ្ឋាន​បណ្ដាញ</translation>
 <translation id="3729506734996624908">គេហទំព័រ​​​ដែល​​បាន​​អនុញ្ញាត</translation>
@@ -5925,7 +5924,6 @@
 <translation id="5636012309446422">ដក <ph name="DEVICE" /> ចេញពី <ph name="PRIMARY_EMAIL" /> ឬ?</translation>
 <translation id="5636996382092289526">ដើម្បីប្រើ <ph name="NETWORK_ID" /> ដំបូងអ្នកត្រូវ <ph name="LINK_START" />ទៅកាន់ទំព័រចូលរបស់បណ្តាញ<ph name="LINK_END" /> ដែលនឹងបើកដោយស្វ័យប្រវត្តិនៅក្នុងប៉ុន្មានវិនាទីទៀត។ ប្រសិនបើវាមិនកើតឡើង បណ្តាញមិនអាចប្រើបានទេ។</translation>
 <translation id="5637476008227280525">បើក​ទិន្នន័យ​ចល័ត</translation>
-<translation id="563811590465749036">ដើម្បីប្រើ​កម្មវិធី​គ្រប់គ្រង​ពាក្យសម្ងាត់​ជាមួយ macOS Keychain សូម​ចាប់ផ្តើម Chrome ឡើងវិញ និង​អនុញ្ញាត​សិទ្ធិចូលប្រើ Keychain។ ផ្ទាំង​របស់អ្នក​នឹងបើក​ឡើងវិញ បន្ទាប់ពី​ចាប់ផ្តើម​ឡើងវិញ</translation>
 <translation id="563821631542362636">អនុញ្ញាតឱ្យ​គេហទំព័រ​រក្សាទុក​ទិន្នន័យ</translation>
 <translation id="5638309510554459422">ស្វែងរក​កម្មវិធី​បន្ថែម និងរចនាប័ទ្ម​នៅក្នុង <ph name="BEGIN_LINK" />Chrome Web Store<ph name="END_LINK" /></translation>
 <translation id="5639549361331209298">ដំណើរការទំព័រនេះឡើងវិញ កាន់ឲ្យជាប់ដើម្បីមើលជម្រើសច្រើនទៀត</translation>
@@ -6157,7 +6155,6 @@
 <translation id="583431638776747">មិនអាចប្រើ​គេហទំព័រ​បានទេ</translation>
 <translation id="5834581999798853053">នៅសល់ <ph name="TIME" /> ប្រហែលនាទីទៀត</translation>
 <translation id="5835360478055379192">{NUM_EXTENSION,plural, =1{<ph name="EXTENSION1" /> កំពុងចូលប្រើ​ឧបករណ៍ HID}=2{កម្មវិធី​បន្ថែម​ដែលកំពុងចូលប្រើ​ឧបករណ៍៖ <ph name="EXTENSION1" />, <ph name="EXTENSION2" />}other{កម្មវិធី​បន្ថែម​ដែលកំពុងចូលប្រើ​ឧបករណ៍៖ <ph name="EXTENSION1" />, <ph name="EXTENSION2" /> +{3} ទៀត}}</translation>
-<translation id="5835486486592033703"><ph name="WINDOW_TITLE" /> - កាមេរ៉ា ឬ​មីក្រូហ្វូន​កំពុង​ថត​</translation>
 <translation id="583673505367439042">គេហទំព័រ​អាចស្នើសុំកែឯកសារ និងថត​នៅក្នុងឧបករណ៍​របស់អ្នក</translation>
 <translation id="5836999627049108525">ភាសា​ត្រូវ​បកប្រែពី</translation>
 <translation id="583756221537636748">ករណី</translation>

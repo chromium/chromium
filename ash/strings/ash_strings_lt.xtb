@@ -625,6 +625,7 @@ Jei norite pradėti, pabandykite atlikti nurodytus veiksmus.</translation>
 <translation id="3593646411856133110">Perbraukite aukštyn ir laikykite, kad peržiūrėtumėte atidarytas programas</translation>
 <translation id="3595596368722241419">Akumuliatorius įkrautas</translation>
 <translation id="3596012367874587041">Programos nustatymai</translation>
+<translation id="3598452309062311481">paieškos klavišą + h</translation>
 <translation id="3600061223661453002">Išjungta</translation>
 <translation id="3604801046548457007">Sukurtas darbalaukis „<ph name="DESK_TITILE" />“</translation>
 <translation id="3606978283550408104">Brailio ekranas prijungtas.</translation>
@@ -776,6 +777,7 @@ Kai kurios funkcijos ribojamos, kad būtų galima pailginti akumuliatoriaus veik
 <translation id="4190780880566297084">Atsisakyti nustatyti naujausių telefono nuotraukų, medijos ir programų peržiūrą</translation>
 <translation id="4192112279662688596">Arba</translation>
 <translation id="4193857202545160520">Rodyti paspaudimus ir klavišus</translation>
+<translation id="4193969623755915875">Atidarykite pagalbos skiltį programoje „Explore“ naudodami <ph name="NEW_SHORTCUT" />.</translation>
 <translation id="4195579532193195633">Dabartinė versija: <ph name="VERSION_NAME" /> (<ph name="OFFICIAL_STATUS" />) <ph name="CHANNEL_NAME" /> <ph name="PROCESSOR_VARIATION" /></translation>
 <translation id="4195814663415092787">Tęskite ten, kur baigėte</translation>
 <translation id="4195877955194704651">Automatinis paspaudimų mygtukas</translation>
@@ -958,6 +960,7 @@ Kai kurios funkcijos ribojamos, kad būtų galima pailginti akumuliatoriaus veik
 <translation id="4889868803215848840">Galite pateikti atsiliepimą, kad padėtumėte pagerinti pasiūlymus:</translation>
 <translation id="4890187583552566966">„Google“ padėjėją išjungė administratorius.</translation>
 <translation id="4890408602550914571">Įsitikinkite, kad telefonas netoliese ir jame įjungtas „Bluetooth“ ryšys.</translation>
+<translation id="4892981359753171125">Valdymas pagal veidą</translation>
 <translation id="4895488851634969361">Akumuliatorius visiškai įkrautas.</translation>
 <translation id="490375751687810070">Vertikaliai</translation>
 <translation id="490788395437447240">Akumuliatoriaus įkrovos lygis: <ph name="BATTERY_PERCENTAGE" /> proc.</translation>
