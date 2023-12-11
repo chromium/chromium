@@ -97,21 +97,26 @@ void LogStoredIbanMetrics(const std::vector<std::unique_ptr<Iban>>& local_ibans,
                           const base::TimeDelta& disused_data_threshold);
 
 // Logs the number of strikes that an IBAN had when save was accepted.
-void LogStrikesPresentWhenIbanSaved(const int num_strikes);
+void LogStrikesPresentWhenIbanSaved(const int num_strikes, bool is_upload_save);
 
 // Logs whenever IBAN save is not offered due to max strikes.
 void LogIbanSaveNotOfferedDueToMaxStrikesMetric(
     AutofillMetrics::SaveTypeMetric metric);
 
 // Logs when IBAN save bubble is offered to users.
-void LogSaveIbanBubbleOfferMetric(SaveIbanPromptOffer metric, bool is_reshow);
+void LogSaveIbanBubbleOfferMetric(SaveIbanPromptOffer metric,
+                                  bool is_reshow,
+                                  bool is_upload_save);
 
 // Logs when the user makes a decision on the IBAN save bubble.
-void LogSaveIbanBubbleResultMetric(SaveIbanBubbleResult metric, bool is_reshow);
+void LogSaveIbanBubbleResultMetric(SaveIbanBubbleResult metric,
+                                   bool is_reshow,
+                                   bool is_upload_save);
 
 // Logs when the user accepts the bubble to save an IBAN.
 // `save_with_nickname` donates the user has input a nickname.
-void LogSaveIbanBubbleResultSavedWithNicknameMetric(bool save_with_nickname);
+void LogSaveIbanBubbleResultSavedWithNicknameMetric(bool save_with_nickname,
+                                                    bool is_upload_save);
 
 // Logs metrics related to IBAN individual suggestions being shown or selected.
 void LogIndividualIbanSuggestionsEvent(IbanSuggestionsEvent event);

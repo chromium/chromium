@@ -209,7 +209,8 @@ void IbanSaveManager::OnUserDidDecideOnLocalSave(
   switch (user_decision) {
     case AutofillClient::SaveIbanOfferUserDecision::kAccepted:
       autofill_metrics::LogStrikesPresentWhenIbanSaved(
-          iban_save_strike_database_->GetStrikes(partial_iban_hash));
+          iban_save_strike_database_->GetStrikes(partial_iban_hash),
+          /*is_upload_save=*/false);
       // Clear all IbanSave strikes for this IBAN, so that if it's later removed
       // the strike count starts over with respect to re-saving it.
       GetIbanSaveStrikeDatabase()->ClearStrikes(partial_iban_hash);

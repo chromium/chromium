@@ -438,6 +438,7 @@ chromium-metrics-reviews@google.com.
 
 <variants name="IbanTypeToBeSaved">
   <variant name=".Local" summary="Local IBAN save"/>
+  <variant name=".Upload" summary="Server IBAN save"/>
 </variants>
 
 <histogram name="Autocomplete.DaysSinceLastUse" units="days"

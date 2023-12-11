@@ -193,7 +193,7 @@ void IbanBubbleControllerImpl::OnAcceptButton(const std::u16string& nickname) {
       // UpdatePageActionIcon() is called.
       should_show_iban_saved_label_animation_ = true;
       autofill_metrics::LogSaveIbanBubbleResultSavedWithNicknameMetric(
-          !nickname.empty());
+          !nickname.empty(), /*is_upload_save=*/false);
       iban_.set_nickname(nickname);
       std::move(save_iban_prompt_callback_)
           .Run(AutofillClient::SaveIbanOfferUserDecision::kAccepted, nickname);
@@ -265,7 +265,8 @@ void IbanBubbleControllerImpl::OnBubbleClosed(
         NOTREACHED();
         break;
     }
-    autofill_metrics::LogSaveIbanBubbleResultMetric(metric, is_reshow_);
+    autofill_metrics::LogSaveIbanBubbleResultMetric(metric, is_reshow_,
+                                                    /*is_upload_save=*/false);
   }
 
   // Handles `current_bubble_type_` change according to its current type and the
@@ -364,7 +365,8 @@ void IbanBubbleControllerImpl::DoShowBubble() {
   switch (current_bubble_type_) {
     case IbanBubbleType::kLocalSave:
       autofill_metrics::LogSaveIbanBubbleOfferMetric(
-          autofill_metrics::SaveIbanPromptOffer::kShown, is_reshow_);
+          autofill_metrics::SaveIbanPromptOffer::kShown, is_reshow_,
+          /*is_upload_save=*/false);
       break;
     case IbanBubbleType::kUploadSave:
       // TODO(b/296651786): Extend SaveIbanPromptOffer UMA to include Upload
@@ -407,7 +409,7 @@ void IbanBubbleControllerImpl::ShowIconOnly() {
     case IbanBubbleType::kLocalSave:
       autofill_metrics::LogSaveIbanBubbleOfferMetric(
           autofill_metrics::SaveIbanPromptOffer::kNotShownMaxStrikesReached,
-          is_reshow_);
+          is_reshow_, /*is_upload_save=*/false);
       break;
     case IbanBubbleType::kUploadSave:
     case IbanBubbleType::kManageSavedIban:
