@@ -697,6 +697,7 @@ std::optional<ODFSFileSystemAndPath> AndroidOneDriveUrlToODFS(
   std::optional<ProvidedFileSystemInfo> odfs_file_system_info =
       GetODFSInfo(profile);
   if (!odfs_file_system_info.has_value()) {
+    LOG(ERROR) << "ODFS not found";
     return std::nullopt;
   }
   base::FilePath odfs_path = odfs_file_system_info->mount_path();

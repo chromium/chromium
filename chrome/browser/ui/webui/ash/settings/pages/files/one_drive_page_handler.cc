@@ -87,7 +87,7 @@ void OneDrivePageHandler::ConnectToOneDrive(
   std::optional<file_system_provider::ProvidedFileSystemInfo>
       odfs_file_system_info = cloud_upload::GetODFSInfo(profile_);
   if (odfs_file_system_info.has_value()) {
-    // ODFS is already mounted.
+    LOG(ERROR) << "ODFS already mounted";
     std::move(callback).Run(false);
     return;
   }
@@ -107,7 +107,7 @@ void OneDrivePageHandler::DisconnectFromOneDrive(
   std::optional<file_system_provider::ProvidedFileSystemInfo> file_system =
       cloud_upload::GetODFSInfo(profile_);
   if (!file_system) {
-    // ODFS is not mounted.
+    LOG(ERROR) << "ODFS not found";
     std::move(callback).Run(false);
     return;
   }
@@ -121,7 +121,7 @@ void OneDrivePageHandler::OpenOneDriveFolder(
   std::optional<file_system_provider::ProvidedFileSystemInfo> file_system =
       cloud_upload::GetODFSInfo(profile_);
   if (!file_system) {
-    // ODFS is not mounted.
+    LOG(ERROR) << "ODFS not found";
     std::move(callback).Run(false);
     return;
   }

@@ -134,6 +134,7 @@ void OneDriveUploadHandler::GetODFSMetadataAndStartIOTask() {
   file_system_provider::ProvidedFileSystemInterface* file_system =
       GetODFS(profile_);
   if (!file_system) {
+    LOG(ERROR) << "ODFS not found";
     // TODO(b/293363474): Remove when the underlying cause is diagnosed.
     base::debug::DumpWithoutCrashing(FROM_HERE);
     OnFailedUpload(OfficeFilesUploadResult::kFileSystemNotFound);
@@ -230,6 +231,7 @@ void OneDriveUploadHandler::OnMountResponse(base::File::Error result) {
 FileSystemURL OneDriveUploadHandler::GetDestinationFolderUrl() {
   auto odfs_info = GetODFSInfo(profile_);
   if (!odfs_info) {
+    LOG(ERROR) << "ODFS not found";
     // TODO(b/293363474): Remove when the underlying cause is diagnosed.
     base::debug::DumpWithoutCrashing(FROM_HERE);
     OnFailedUpload(OfficeFilesUploadResult::kFileSystemNotFound);
@@ -351,6 +353,7 @@ void OneDriveUploadHandler::ShowAccessDeniedError() {
   file_system_provider::ProvidedFileSystemInterface* file_system =
       GetODFS(profile_);
   if (!file_system) {
+    LOG(ERROR) << "ODFS not found";
     OnFailedUpload(OfficeFilesUploadResult::kCloudAccessDenied);
     return;
   }
