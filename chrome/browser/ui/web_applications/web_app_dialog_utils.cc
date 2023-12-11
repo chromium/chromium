@@ -55,18 +55,42 @@ namespace cros_events = metrics::structured::events::v2::cr_os_events;
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
+// Gets the first icon larger than `kIconSize` from `manifest_icons` and returns
+// the url. If none exist, returns the url of the largest icon. Returns empty
+// GURL if vector is empty.
+// TODO(crbug.com/1488697): This function assumes manifest_icons is sorted,
+// which it may not be.
+const GURL& GetIconUrl(const std::vector<apps::IconInfo>& manifest_icons) {
+  if (manifest_icons.empty()) {
+    return GURL::EmptyGURL();
+  }
+
+  const GURL* icon_url = &GURL::EmptyGURL();
+  for (const auto& icon_info : manifest_icons) {
+    icon_url = &icon_info.url;
+    if (icon_info.square_size_px > ash::app_install::kIconSize) {
+      break;
+    }
+  }
+
+  return *icon_url;
+}
+
 void OnManifestFetchedShowCrosDialog(
     base::WeakPtr<ash::app_install::AppInstallDialog> dialog_handle,
     content::WebContents* initiator_web_contents,
     std::unique_ptr<WebAppInstallInfo> web_app_info,
     WebAppInstallationAcceptanceCallback web_app_acceptance_callback) {
   web_app_info->user_display_mode = mojom::UserDisplayMode::kStandalone;
-  ash::app_install::ChromeOsAppInstallDialogParams params(
-      *web_app_info,
-      webapps::AppBannerManager::FromWebContents(initiator_web_contents)
-          ->screenshots());
+
+  ash::app_install::mojom::DialogArgsPtr args =
+      ash::app_install::mojom::DialogArgs::New();
+  args->url = web_app_info->start_url.GetWithEmptyPath();
+  args->name = base::UTF16ToUTF8(web_app_info->title);
+  args->description = base::UTF16ToUTF8(web_app_info->description);
+  args->icon_url = GetIconUrl(web_app_info->manifest_icons);
   dialog_handle->Show(
-      initiator_web_contents->GetNativeView(), std::move(params),
+      initiator_web_contents->GetNativeView(), std::move(args),
       base::BindOnce(
           [](std::unique_ptr<WebAppInstallInfo> web_app_info,
              WebAppInstallationAcceptanceCallback web_app_acceptance_callback,

@@ -13,7 +13,7 @@ struct DialogArgs {
 
   string description;
 
-  url.mojom.Url iconUrl;
+  url.mojom.Url icon_url;
 
   // TODO(crbug.com/1488697): Add screenshots.
 };

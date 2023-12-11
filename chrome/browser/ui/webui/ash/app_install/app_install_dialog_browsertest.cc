@@ -99,10 +99,7 @@ IN_PROC_BROWSER_TEST_F(AppInstallDialogBrowserTest, FailedInstall) {
 
   dialog_handle->Show(
       browser()->window()->GetNativeWindow(),
-      ChromeOsAppInstallDialogParams(
-          *web_app::WebAppInstallInfo::CreateWithStartUrlForTesting(
-              GURL("https://example.com/")),
-          std::vector<webapps::Screenshot>()),
+      ash::app_install::mojom::DialogArgs::New(),
       base::BindOnce(
           [](base::WeakPtr<AppInstallDialog> dialog_handle,
              bool dialog_accepted) { dialog_handle->SetInstallSuccess(false); },

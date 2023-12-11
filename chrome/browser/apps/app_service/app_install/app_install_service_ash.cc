@@ -16,8 +16,12 @@
 #include "chrome/browser/ash/crosapi/crosapi_manager.h"
 #include "chrome/browser/ash/crosapi/web_app_service_ash.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/ui/webui/ash/app_install/app_install.mojom.h"
+// TODO(crbug.com/1488697): Remove circular dependency.
+#include "chrome/browser/ui/webui/ash/app_install/app_install_dialog.h"  // nogncheck
 #include "chrome/browser/web_applications/web_app_command_scheduler.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
+#include "chromeos/constants/chromeos_features.h"
 #include "chromeos/crosapi/mojom/web_app_service.mojom.h"
 #include "components/services/app_service/public/cpp/package_id.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
@@ -64,6 +68,27 @@ AppInstallResult InstallWebApp(Profile& profile, const GURL& install_url) {
   web_app_provider_bridge->ScheduleNavigateAndTriggerInstallDialog(
       install_url, origin_url, is_renderer_initiated);
   return AppInstallResult::kUnknown;
+}
+
+// Gets the first icon larger than `kIconSize` from `icons` and returns
+// the url. If none exist, returns the url of the largest icon. Returns empty
+// GURL if vector is empty.
+// TODO(crbug.com/1488697): This function assumes icons is sorted, which it may
+// not be.
+const GURL& GetIconUrl(const std::vector<AppInstallIcon>& icons) {
+  if (icons.empty()) {
+    return GURL::EmptyGURL();
+  }
+
+  const GURL* icon_url = &GURL::EmptyGURL();
+  for (const auto& icon : icons) {
+    icon_url = &icon.url;
+    if (icon.width_in_pixels > ash::app_install::kIconSize) {
+      break;
+    }
+  }
+
+  return *icon_url;
 }
 
 }  // namespace
@@ -113,7 +138,28 @@ void AppInstallServiceAsh::InstallFromFetchedData(
       case AppType::kWeb:
         if (const auto* web_app_data =
                 absl::get_if<WebAppInstallData>(&data->app_type_data)) {
-          // TODO(crbug.com/1488697): Show an install dialog.
+          if (base::FeatureList::IsEnabled(
+                  chromeos::features::kCrosWebAppInstallDialog)) {
+            ash::app_install::mojom::DialogArgsPtr args =
+                ash::app_install::mojom::DialogArgs::New();
+            args->url = web_app_data->document_url;
+            args->name = data->name;
+            args->description = data->description;
+            args->icon_url = GetIconUrl(data->icons);
+
+            base::WeakPtr<ash::app_install::AppInstallDialog> dialog =
+                ash::app_install::AppInstallDialog::CreateDialog();
+            // TODO(crbug.com/1488697): Install the app.
+            dialog->Show(
+                nullptr, std::move(args),
+                base::BindOnce(
+                    [](base::WeakPtr<ash::app_install::AppInstallDialog> dialog,
+                       bool dialog_accepted) {
+                      dialog->SetInstallSuccess(true);
+                    },
+                    dialog));
+            return AppInstallResult::kUnknown;
+          }
           // TODO(b/303350800): Delegate to a generic AppPublisher method
           // instead of harboring app type specific logic here.
           return InstallWebApp(*profile_, web_app_data->document_url);
