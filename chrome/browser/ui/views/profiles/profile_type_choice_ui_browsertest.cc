@@ -102,7 +102,7 @@ class ProfileTypeChoiceUIPixelTest
 
     auto* test_info = testing::UnitTest::GetInstance()->current_test_info();
     const std::string screenshot_name =
-        base::StrCat({test_info->test_case_name(), "_", test_info->name()});
+        base::StrCat({test_info->test_suite_name(), "_", test_info->name()});
 
     return VerifyPixelUi(widget, "ProfileTypeChoiceUIPixelTest",
                          screenshot_name) != ui::test::ActionResult::kFailed;

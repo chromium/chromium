@@ -386,7 +386,7 @@ bool InfoBarUiTest::VerifyUi() {
   return TestInfoBar::VerifyUi() &&
          (VerifyPixelUi(BrowserView::GetBrowserViewForBrowser(browser())
                             ->infobar_container(),
-                        test_info->test_case_name(),
+                        test_info->test_suite_name(),
                         test_info->name()) != ui::test::ActionResult::kFailed);
 }
 

@@ -30,12 +30,12 @@ void BrowserUiTestBase::Invoke() {
 
   std::set<std::string> ui_cases;
   const testing::UnitTest* unit_test = testing::UnitTest::GetInstance();
-  for (int i = 0; i < unit_test->total_test_case_count(); ++i) {
-    const testing::TestCase* test_case = unit_test->GetTestCase(i);
-    for (int j = 0; j < test_case->total_test_count(); ++j) {
-      const char* name = test_case->GetTestInfo(j)->name();
+  for (int i = 0; i < unit_test->total_test_suite_count(); ++i) {
+    const testing::TestSuite* test_suite = unit_test->GetTestSuite(i);
+    for (int j = 0; j < test_suite->total_test_count(); ++j) {
+      const char* name = test_suite->GetTestInfo(j)->name();
       if (strstr(name, kUiPattern)) {
-        ui_cases.insert(base::StrCat({test_case->name(), ".", name}));
+        ui_cases.insert(base::StrCat({test_suite->name(), ".", name}));
       }
     }
   }

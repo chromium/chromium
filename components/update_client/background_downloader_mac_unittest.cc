@@ -149,7 +149,7 @@ class BackgroundDownloaderTest : public testing::Test {
     const testing::TestInfo* const test_info =
         testing::UnitTest::GetInstance()->current_test_info();
     const std::string path =
-        base::StrCat({test_info->test_case_name(), "/", file});
+        base::StrCat({test_info->test_suite_name(), "/", file});
     GURL::Replacements replacements;
     replacements.SetPathStr(path);
     return test_server_->base_url().ReplaceComponents(replacements);
@@ -462,7 +462,7 @@ class BackgroundDownloaderCrashingClientTest : public testing::Test {
     const testing::TestInfo* const test_info =
         testing::UnitTest::GetInstance()->current_test_info();
     GURL::Replacements replacements;
-    replacements.SetPathStr(test_info->test_case_name());
+    replacements.SetPathStr(test_info->test_suite_name());
     return test_server_->base_url().ReplaceComponents(replacements);
   }
 

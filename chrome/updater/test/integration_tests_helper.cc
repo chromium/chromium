@@ -48,7 +48,6 @@ namespace {
 
 using ::testing::EmptyTestEventListener;
 using ::testing::Test;
-using ::testing::TestCase;
 using ::testing::TestEventListeners;
 using ::testing::TestInfo;
 using ::testing::TestPartResult;

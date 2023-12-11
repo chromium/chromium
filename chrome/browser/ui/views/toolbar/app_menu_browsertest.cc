@@ -136,7 +136,7 @@ bool AppMenuBrowserTest::VerifyUi() {
   const auto* const test_info =
       testing::UnitTest::GetInstance()->current_test_info();
   return VerifyPixelUi(menu_item->GetSubmenu()->GetScrollViewContainer(),
-                       test_info->test_case_name(),
+                       test_info->test_suite_name(),
                        test_info->name()) != ui::test::ActionResult::kFailed;
 }
 

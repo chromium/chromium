@@ -250,8 +250,9 @@ class SandboxWinTest : public ::testing::Test {
                         &command_line);
     }
 
-    std::string appcontainer_id =
-        testing::UnitTest::GetInstance()->current_test_info()->test_case_name();
+    std::string appcontainer_id = testing::UnitTest::GetInstance()
+                                      ->current_test_info()
+                                      ->test_suite_name();
     appcontainer_id += ".";
     appcontainer_id +=
         testing::UnitTest::GetInstance()->current_test_info()->name();

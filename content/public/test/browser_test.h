@@ -82,7 +82,7 @@
       ::testing::internal::MakeAndRegisterTestInfo(                           \
           #test_case_name, #test_name, "", "",                                \
           ::testing::internal::CodeLocation(__FILE__, __LINE__), (parent_id), \
-          parent_class::SetUpTestCase, parent_class::TearDownTestCase,        \
+          parent_class::SetUpTestSuite, parent_class::TearDownTestSuite,      \
           new ::testing::internal::TestFactoryImpl<GTEST_TEST_CLASS_NAME_(    \
               test_case_name, test_name)>);                                   \
   void GTEST_TEST_CLASS_NAME_(test_case_name, test_name)::RunTestOnMainThread()
@@ -109,7 +109,7 @@
     static int AddToRegistry() {                                               \
       ::testing::UnitTest::GetInstance()                                       \
           ->parameterized_test_registry()                                      \
-          .GetTestCasePatternHolder<test_case_name>(                           \
+          .GetTestSuitePatternHolder<test_case_name>(                          \
               #test_case_name,                                                 \
               ::testing::internal::CodeLocation(__FILE__, __LINE__))           \
           ->AddTestPattern(                                                    \

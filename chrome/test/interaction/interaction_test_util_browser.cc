@@ -61,7 +61,7 @@ class PixelTestUi : public TestBrowserUi {
     auto* const test_info =
         testing::UnitTest::GetInstance()->current_test_info();
     const std::string test_name =
-        base::StrCat({test_info->test_case_name(), "_", test_info->name()});
+        base::StrCat({test_info->test_suite_name(), "_", test_info->name()});
     const std::string screenshot_name =
         screenshot_name_.empty()
             ? baseline_

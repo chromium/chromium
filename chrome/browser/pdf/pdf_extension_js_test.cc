@@ -123,7 +123,7 @@ class PDFExtensionJSTest : public base::test::WithFeatureOverride,
       const auto* test_info =
           ::testing::UnitTest::GetInstance()->current_test_info();
       const std::string full_test_name = base::StrCat(
-          {test_info->test_suite_name(), test_info->test_case_name()});
+          {test_info->test_suite_name(), test_info->name()});
       coverage_handler_->CollectCoverage(full_test_name);
     }
 
