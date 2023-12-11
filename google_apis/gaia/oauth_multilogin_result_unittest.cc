@@ -60,7 +60,6 @@ TEST(OAuthMultiloginResultTest, TryParseCookiesFromValue) {
               "isHttpOnly":false,
               "priority":"HIGH",
               "maxAge":63070000,
-              "sameParty": "0"
             },
             {
               "name":"HSID",
@@ -80,7 +79,6 @@ TEST(OAuthMultiloginResultTest, TryParseCookiesFromValue) {
               "isHttpOnly": true,
               "maxAge": 63072000,
               "priority": "HIGH",
-              "sameParty": "1"
             }
           ]
         }
@@ -407,7 +405,6 @@ TEST(OAuthMultiloginResultTest, ParseRealResponseFromGaia_2021_10) {
       "isHttpOnly": true,
       "maxAge": 63072000,
       "priority": "HIGH",
-      "sameParty": "1"
     },
     {
       "name": "__Secure-3PSID",
@@ -469,7 +466,6 @@ TEST(OAuthMultiloginResultTest, ParseRealResponseFromGaia_2021_10) {
       "isHttpOnly": false,
       "maxAge": 63072000,
       "priority": "HIGH",
-      "sameParty": "1"
     },
     {
       "name": "__Secure-3PAPISID",
@@ -501,7 +497,6 @@ TEST(OAuthMultiloginResultTest, ParseRealResponseFromGaia_2021_10) {
       "isHttpOnly": true,
       "maxAge": 63072000,
       "priority": "HIGH",
-      "sameParty": "1"
     },
     {
       "name": "__Secure-3PSID",
@@ -563,7 +558,6 @@ TEST(OAuthMultiloginResultTest, ParseRealResponseFromGaia_2021_10) {
       "isHttpOnly": false,
       "maxAge": 63072000,
       "priority": "HIGH",
-      "sameParty": "1"
     },
     {
       "name": "__Secure-3PAPISID",
@@ -595,7 +589,6 @@ TEST(OAuthMultiloginResultTest, ParseRealResponseFromGaia_2021_10) {
       "isHttpOnly": true,
       "maxAge": 63072000,
       "priority": "HIGH",
-      "sameParty": "1"
     },
     {
       "name": "__Secure-3PSID",
@@ -627,7 +620,6 @@ TEST(OAuthMultiloginResultTest, ParseRealResponseFromGaia_2021_10) {
       "isHttpOnly": true,
       "maxAge": 63072000,
       "priority": "HIGH",
-      "sameParty": "1"
     },
     {
       "name": "__Host-3PLSID",
@@ -689,7 +681,6 @@ TEST(OAuthMultiloginResultTest, ParseRealResponseFromGaia_2021_10) {
       "isHttpOnly": false,
       "maxAge": 63072000,
       "priority": "HIGH",
-      "sameParty": "1"
     },
     {
       "name": "__Secure-3PAPISID",
