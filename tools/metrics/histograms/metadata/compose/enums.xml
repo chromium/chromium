@@ -79,6 +79,7 @@ chromium-metrics-reviews@google.com.
       label="Blocked by Optimization Guide Result for main frame URL"/>
   <int value="8"
       label="Blocked for user was not allowed by optimization guide"/>
+  <int value="9" label="Feature not eligible, remotely disabled"/>
 </enum>
 
 </enums>

@@ -118,7 +118,14 @@ base::expected<void, compose::ComposeShowStatus> ComposeEnabling::IsEnabled(
   }
 
   if (profile == nullptr || identity_manager == nullptr) {
+    DVLOG(2) << "feature not reachable, a required pointer is nullptr";
     return base::unexpected(compose::ComposeShowStatus::kGenericBlocked);
+  }
+
+  // Check if the compose feature is still eligible.
+  if (!base::FeatureList::IsEnabled(compose::features::kComposeEligible)) {
+    DVLOG(2) << "feature not eligible";
+    return base::unexpected(compose::ComposeShowStatus::kNotComposeEligible);
   }
 
   // Check that the feature flag is enabled.
@@ -132,7 +139,7 @@ base::expected<void, compose::ComposeShowStatus> ComposeEnabling::IsEnabled(
       unified_consent::UrlKeyedDataCollectionConsentHelper::
           NewAnonymizedDataCollectionConsentHelper(profile->GetPrefs());
   if (helper != nullptr && !helper->IsEnabled()) {
-    DVLOG(2) << "MSBB not enabled " << __func__;
+    DVLOG(2) << "MSBB not enabled";
     return base::unexpected(compose::ComposeShowStatus::kDisabledMsbb);
   }
 
@@ -142,7 +149,7 @@ base::expected<void, compose::ComposeShowStatus> ComposeEnabling::IsEnabled(
   if (core_account_info.IsEmpty() ||
       identity_manager->HasAccountWithRefreshTokenInPersistentErrorState(
           core_account_info.account_id)) {
-    DVLOG(2) << "user not signed in " << __func__;
+    DVLOG(2) << "user not signed in";
     return base::unexpected(compose::ComposeShowStatus::kSignedOut);
   }
 
@@ -151,7 +158,7 @@ base::expected<void, compose::ComposeShowStatus> ComposeEnabling::IsEnabled(
       !opt_guide_->ShouldFeatureBeCurrentlyEnabledForUser(
           optimization_guide::proto::ModelExecutionFeature::
               MODEL_EXECUTION_FEATURE_COMPOSE)) {
-    DVLOG(2) << "Feature not available for this user " << __func__;
+    DVLOG(2) << "Feature not available for this user";
     return base::unexpected(
         compose::ComposeShowStatus::kUserNotAllowedByOptimizationGuide);
   }

@@ -271,6 +271,26 @@ TEST_F(ComposeEnablingTest, SignedInErrorTest) {
   CheckIsEnabledError(compose_enabling, compose::ComposeShowStatus::kSignedOut);
 }
 
+TEST_F(ComposeEnablingTest, ComposeEligibleTest) {
+  scoped_feature_list_.Reset();
+  // Turn on the enable switch and off the eligible switch.
+  scoped_feature_list_.InitWithFeatures(
+      {compose::features::kEnableCompose,
+       compose::features::kEnableComposeNudge},
+      {compose::features::kComposeEligible});
+  ComposeEnabling compose_enabling(&mock_translate_language_provider_,
+                                   GetProfile());
+  compose_enabling.SkipUserEnabledCheckForTesting(true);
+  // Sign in, with sync turned on.
+  SignIn(signin::ConsentLevel::kSync);
+  // Turn on MSBB.
+  SetMsbbState(true);
+
+  // The ComposeEligible switch should win, and disable the feature.
+  CheckIsEnabledError(compose_enabling,
+                      compose::ComposeShowStatus::kNotComposeEligible);
+}
+
 TEST_F(ComposeEnablingTest, EverythingEnabledTest) {
   ComposeEnabling compose_enabling(&mock_translate_language_provider_,
                                    GetProfile());
