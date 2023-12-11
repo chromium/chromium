@@ -70,7 +70,6 @@ class PriceInsightsIconView : public PageActionIconView {
   void HidePageActionLabel();
 
   const raw_ptr<Profile> profile_;
-  raw_ptr<const gfx::VectorIcon> icon_;
 
   // Animates out the price tracking icon label after a fixed period of time.
   // This keeps the label visible for long enough to give users an opportunity

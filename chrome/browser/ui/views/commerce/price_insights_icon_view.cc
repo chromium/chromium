@@ -34,10 +34,7 @@ PriceInsightsIconView::PriceInsightsIconView(
                          icon_label_bubble_delegate,
                          page_action_icon_delegate,
                          "PriceInsights"),
-      profile_(profile),
-      icon_(OmniboxFieldTrial::IsChromeRefreshIconsEnabled()
-                ? &vector_icons::kShoppingBagRefreshIcon
-                : &vector_icons::kShoppingBagIcon) {
+      profile_(profile) {
   SetUpForInOutAnimation();
   SetProperty(views::kElementIdentifierKey, kPriceInsightsChipElementId);
   SetAccessibilityProperties(
