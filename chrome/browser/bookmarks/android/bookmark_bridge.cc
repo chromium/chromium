@@ -116,8 +116,8 @@ void HandleImageUrlResponse(
     base::android::ScopedJavaGlobalRef<jobject> callback,
     const GURL& image_url) {
   JNIEnv* env = base::android::AttachCurrentThread();
-  RunObjectCallbackAndroid(callback,
-                           url::GURLAndroid::FromNativeGURL(env, image_url));
+  base::android::RunObjectCallbackAndroid(
+      callback, url::GURLAndroid::FromNativeGURL(env, image_url));
 }
 
 }  // namespace
@@ -212,7 +212,7 @@ void BookmarkBridge::GetImageUrlForBookmark(
     const JavaParamRef<jobject>& j_callback) {
   ScopedJavaGlobalRef<jobject> callback(j_callback);
   if (!image_service_) {
-    RunObjectCallbackAndroid(callback, nullptr);
+    base::android::RunObjectCallbackAndroid(callback, nullptr);
     return;
   }
 

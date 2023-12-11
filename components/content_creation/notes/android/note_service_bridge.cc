@@ -23,7 +23,7 @@ const char kNoteServiceBridgeKey[] = "note_service_bridge";
 void RunGetTemplatesCallback(const JavaRef<jobject>& j_callback,
                              std::vector<NoteTemplate> templates) {
   JNIEnv* env = AttachCurrentThread();
-  RunObjectCallbackAndroid(
+  base::android::RunObjectCallbackAndroid(
       j_callback,
       NoteTemplateConversionBridge::CreateJavaNoteTemplates(env, templates));
 }

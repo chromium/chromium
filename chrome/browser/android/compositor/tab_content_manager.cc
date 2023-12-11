@@ -262,7 +262,7 @@ void TabContentManager::CaptureThumbnail(
   // the capture will stall forever.
   if (!rwhv || !thumbnail_cache_->IsInVisibleIds(tab_id)) {
     if (j_callback) {
-      RunObjectCallbackAndroid(j_callback, nullptr);
+      base::android::RunObjectCallbackAndroid(j_callback, nullptr);
     }
     return;
   }
@@ -339,7 +339,7 @@ void TabContentManager::WaitForJpegTabThumbnail(
         base::android::ScopedJavaGlobalRef<jobject>(j_callback)));
   } else {
     // Thumbnail is not currently being captured. Run the callback.
-    RunBooleanCallbackAndroid(j_callback, true);
+    base::android::RunBooleanCallbackAndroid(j_callback, true);
   }
 }
 
@@ -416,7 +416,7 @@ void TabContentManager::SendThumbnailToJava(
         bitmap, skia::ImageOperations::RESIZE_BETTER, width, height,
         dest_subset));
   }
-  RunObjectCallbackAndroid(j_callback, j_bitmap);
+  base::android::RunObjectCallbackAndroid(j_callback, j_bitmap);
 }
 
 void TabContentManager::SetCaptureMinRequestTimeForTesting(JNIEnv* env,

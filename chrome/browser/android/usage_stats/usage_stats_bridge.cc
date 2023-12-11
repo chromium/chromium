@@ -260,7 +260,7 @@ void UsageStatsBridge::OnGetAllSuspensionsDone(
       isSuccess(error) ? ToJavaArrayOfStrings(env, suspensions)
                        : ToJavaArrayOfStrings(env, std::vector<std::string>());
 
-  RunObjectCallbackAndroid(callback, j_suspensions);
+  base::android::RunObjectCallbackAndroid(callback, j_suspensions);
 }
 
 void UsageStatsBridge::OnGetAllTokenMappingsDone(
@@ -297,7 +297,7 @@ void UsageStatsBridge::OnGetAllTokenMappingsDone(
 
 void UsageStatsBridge::OnUpdateDone(ScopedJavaGlobalRef<jobject> callback,
                                     UsageStatsDatabase::Error error) {
-  RunBooleanCallbackAndroid(callback, isSuccess(error));
+  base::android::RunBooleanCallbackAndroid(callback, isSuccess(error));
 }
 
 // static

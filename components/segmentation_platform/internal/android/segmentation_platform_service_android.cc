@@ -34,7 +34,7 @@ const char kSegmentationPlatformServiceBridgeKey[] =
 void RunGetSelectedSegmentCallback(const JavaRef<jobject>& j_callback,
                                    const SegmentSelectionResult& result) {
   JNIEnv* env = AttachCurrentThread();
-  RunObjectCallbackAndroid(
+  base::android::RunObjectCallbackAndroid(
       j_callback,
       SegmentationPlatformConversionBridge::CreateJavaSegmentSelectionResult(
           env, result));
@@ -43,7 +43,7 @@ void RunGetSelectedSegmentCallback(const JavaRef<jobject>& j_callback,
 void RunGetClassificationResultCallback(const JavaRef<jobject>& j_callback,
                                         const ClassificationResult& result) {
   JNIEnv* env = AttachCurrentThread();
-  RunObjectCallbackAndroid(
+  base::android::RunObjectCallbackAndroid(
       j_callback,
       SegmentationPlatformConversionBridge::CreateJavaClassificationResult(
           env, result));
