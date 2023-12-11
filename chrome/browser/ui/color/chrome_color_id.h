@@ -731,6 +731,7 @@
   E_CPONLY(kColorComposeDialogError) \
   E_CPONLY(kColorComposeDialogForegroundSubtle) \
   E_CPONLY(kColorComposeDialogLink) \
+  E_CPONLY(kColorComposeDialogLogo) \
   E_CPONLY(kColorComposeDialogResultBackground) \
   E_CPONLY(kColorComposeDialogResultForeground) \
   E_CPONLY(kColorComposeDialogResultIcon) \

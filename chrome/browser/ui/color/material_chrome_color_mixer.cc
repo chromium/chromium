@@ -134,6 +134,7 @@ void AddMaterialChromeColorMixer(ui::ColorProvider* provider,
   mixer[kColorComposeDialogError] = {ui::kColorSysError};
   mixer[kColorComposeDialogForegroundSubtle] = {ui::kColorSysOnSurfaceSubtle};
   mixer[kColorComposeDialogLink] = {ui::kColorSysPrimary};
+  mixer[kColorComposeDialogLogo] = {ui::kColorSysOnTonalContainer};
   mixer[kColorComposeDialogScrollbarThumb] = {ui::kColorSysPrimary};
   mixer[kColorComposeDialogResultBackground] = {ui::kColorSysSurface5};
   mixer[kColorComposeDialogResultForeground] = {ui::kColorSysOnSurface};
