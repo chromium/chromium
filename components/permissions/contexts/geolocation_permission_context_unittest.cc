@@ -195,7 +195,7 @@ class GeolocationPermissionContextTests
       mock_permission_prompt_factories_;
 
 #if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_CHROMEOS)
-  std::unique_ptr<device::FakeGeolocationManager> fake_geolocation_manager_;
+  raw_ptr<device::FakeGeolocationManager> fake_geolocation_manager_;
 #endif
 
   // A map between renderer child id and a pair represending the bridge id and
@@ -349,12 +349,15 @@ void GeolocationPermissionContextTests::SetUp() {
                                                         GRANTED);
   MockLocationSettings::ClearHasShownLocationSettingsDialog();
 #elif BUILDFLAG(IS_MAC) || BUILDFLAG(IS_CHROMEOS)
-  fake_geolocation_manager_ =
+  auto fake_geolocation_manager =
       std::make_unique<device::FakeGeolocationManager>();
-  fake_geolocation_manager_->SetSystemPermission(
+  fake_geolocation_manager_ = fake_geolocation_manager.get();
+  fake_geolocation_manager->SetSystemPermission(
       device::LocationSystemPermissionStatus::kAllowed);
+  device::FakeGeolocationManager::SetInstance(
+      std::move(fake_geolocation_manager));
   auto context = std::make_unique<GeolocationPermissionContextSystem>(
-      browser_context(), std::move(delegate), fake_geolocation_manager_.get());
+      browser_context(), std::move(delegate));
 #else
   auto context = std::make_unique<GeolocationPermissionContext>(
       browser_context(), std::move(delegate));

@@ -28,10 +28,8 @@ class GeolocationPermissionContextSystem
     : public GeolocationPermissionContext,
       public device::GeolocationManager::PermissionObserver {
  public:
-  GeolocationPermissionContextSystem(
-      content::BrowserContext* browser_context,
-      std::unique_ptr<Delegate> delegate,
-      device::GeolocationManager* geolocation_manager);
+  GeolocationPermissionContextSystem(content::BrowserContext* browser_context,
+                                     std::unique_ptr<Delegate> delegate);
   ~GeolocationPermissionContextSystem() override;
 
   GeolocationPermissionContextSystem(
@@ -52,9 +50,6 @@ class GeolocationPermissionContextSystem
 
   LocationSystemPermissionStatus system_permission_ =
       LocationSystemPermissionStatus::kNotDetermined;
-
-  scoped_refptr<device::GeolocationManager::PermissionObserverList>
-      system_permission_observers_;
 
   // Must be the last member, to ensure that it will be destroyed first, which
   // will invalidate weak pointers.
