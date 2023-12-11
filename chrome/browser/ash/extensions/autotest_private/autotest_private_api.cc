@@ -3828,7 +3828,8 @@ ExtensionFunction::ResponseAction
 AutotestPrivateIsTabletModeEnabledFunction::Run() {
   DVLOG(1) << "AutotestPrivateIsTabletModeEnabledFunction";
 
-  return RespondNow(WithArguments(ash::TabletMode::Get()->InTabletMode()));
+  return RespondNow(
+      WithArguments(display::Screen::GetScreen()->InTabletMode()));
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -3845,17 +3846,18 @@ AutotestPrivateSetTabletModeEnabledFunction::Run() {
   std::optional<api::autotest_private::SetTabletModeEnabled::Params> params =
       api::autotest_private::SetTabletModeEnabled::Params::Create(args());
   EXTENSION_FUNCTION_VALIDATE(params);
-  auto* tablet_mode = ash::TabletMode::Get();
-  if (tablet_mode->InTabletMode() == params->enabled) {
-    return RespondNow(WithArguments(ash::TabletMode::Get()->InTabletMode()));
+  if (display::Screen::GetScreen()->InTabletMode() == params->enabled) {
+    return RespondNow(
+        WithArguments(display::Screen::GetScreen()->InTabletMode()));
   }
 
   ash::TabletMode::Waiter waiter(params->enabled);
-  if (!tablet_mode->ForceUiTabletModeState(params->enabled)) {
+  if (!ash::TabletMode::Get()->ForceUiTabletModeState(params->enabled)) {
     return RespondNow(Error("failed to switch the tablet mode state"));
   }
   waiter.Wait();
-  return RespondNow(WithArguments(ash::TabletMode::Get()->InTabletMode()));
+  return RespondNow(
+      WithArguments(display::Screen::GetScreen()->InTabletMode()));
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -5030,7 +5032,7 @@ AutotestPrivateWaitForLauncherStateFunction::Run() {
   // Exceptionally, allow waiting for kClosed state in clamshell mode, so tests
   // can wait for fullscreen launcher state change to finish when exiting tablet
   // mode.
-  if (!ash::TabletMode::Get()->InTabletMode() &&
+  if (!display::Screen::GetScreen()->InTabletMode() &&
       target_state != ash::AppListViewState::kClosed) {
     return RespondNow(Error("Not supported for bubble launcher"));
   }

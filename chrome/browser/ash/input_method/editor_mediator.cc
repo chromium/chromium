@@ -7,9 +7,7 @@
 #include <string_view>
 
 #include "ash/constants/ash_pref_names.h"
-#include "ash/public/cpp/tablet_mode.h"
 #include "ash/shell.h"
-#include "ash/wm/tablet_mode/tablet_mode_controller.h"
 #include "base/check_op.h"
 #include "base/containers/contains.h"
 #include "base/containers/fixed_flat_set.h"
@@ -22,6 +20,8 @@
 #include "chrome/browser/ui/webui/ash/mako/mako_bubble_coordinator.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/ime/ash/ime_bridge.h"
+#include "ui/display/screen.h"
+#include "ui/display/tablet_state.h"
 
 namespace ash::input_method {
 
@@ -32,8 +32,8 @@ EditorMediator::EditorMediator(Profile* profile, std::string_view country_code)
       consent_store_(
           std::make_unique<EditorConsentStore>(profile->GetPrefs(),
                                                editor_switch_.get())) {
-  tablet_mode_observation_.Observe(TabletMode::Get());
-  editor_switch_->OnTabletModeUpdated(ash::TabletMode::IsInTabletMode());
+  editor_switch_->OnTabletModeUpdated(
+      display::Screen::GetScreen()->InTabletMode());
 }
 
 EditorMediator::~EditorMediator() = default;
@@ -120,19 +120,21 @@ void EditorMediator::OnActivateIme(std::string_view engine_id) {
   editor_switch_->OnActivateIme(engine_id);
 }
 
-void EditorMediator::OnTabletModeStarting() {
-  editor_switch_->OnTabletModeUpdated(/*tablet_mode_enabled=*/true);
-  if (mako_bubble_coordinator_.IsShowingUI()) {
-    mako_bubble_coordinator_.CloseUI();
+void EditorMediator::OnDisplayTabletStateChanged(display::TabletState state) {
+  switch (state) {
+    case display::TabletState::kInClamshellMode:
+      editor_switch_->OnTabletModeUpdated(/*tablet_mode_enabled=*/false);
+      break;
+    case display::TabletState::kEnteringTabletMode:
+      editor_switch_->OnTabletModeUpdated(/*tablet_mode_enabled=*/true);
+      if (mako_bubble_coordinator_.IsShowingUI()) {
+        mako_bubble_coordinator_.CloseUI();
+      }
+      break;
+    case display::TabletState::kInTabletMode:
+    case display::TabletState::kExitingTabletMode:
+      break;
   }
-}
-
-void EditorMediator::OnTabletModeEnded() {
-  editor_switch_->OnTabletModeUpdated(/*tablet_mode_enabled=*/false);
-}
-
-void EditorMediator::OnTabletControllerDestroyed() {
-  tablet_mode_observation_.Reset();
 }
 
 void EditorMediator::OnSurroundingTextChanged(const std::u16string& text,

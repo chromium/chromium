@@ -14,7 +14,6 @@
 #include <vector>
 
 #include "ash/components/arc/session/arc_service_manager.h"
-#include "ash/public/cpp/tablet_mode_observer.h"
 #include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
 #include "chrome/browser/ash/drive/drive_integration_service.h"
@@ -40,6 +39,7 @@
 #include "extensions/browser/extension_registry_observer.h"
 #include "services/network/public/cpp/network_connection_tracker.h"
 #include "storage/browser/file_system/file_system_operation.h"
+#include "ui/display/display_observer.h"
 #include "url/gurl.h"
 #include "url/origin.h"
 
@@ -49,6 +49,10 @@ class Profile;
 using OutputsType =
     extensions::api::file_manager_private::ProgressStatus::OutputsType;
 using file_manager::util::EntryDefinition;
+
+namespace display {
+enum class TabletState;
+}  // namespace display
 
 namespace ash::file_system_provider {
 
@@ -68,7 +72,7 @@ class EventRouter
       arc::ArcIntentHelperObserver,
       drive::DriveIntegrationService::Observer,
       guest_os::GuestOsSharePath::Observer,
-      ash::TabletModeObserver,
+      display::DisplayObserver,
       file_manager::io_task::IOTaskController::Observer,
       guest_os::GuestOsMountProviderRegistry::Observer,
       chromeos::DlpClient::Observer,
@@ -176,9 +180,8 @@ class EventRouter
   void OnGuestRegistered(const guest_os::GuestId& guest) override;
   void OnGuestUnregistered(const guest_os::GuestId& guest) override;
 
-  // ash:TabletModeObserver overrides.
-  void OnTabletModeStarted() override;
-  void OnTabletModeEnded() override;
+  // display::DisplayObserver overrides.
+  void OnDisplayTabletStateChanged(display::TabletState state) override;
 
   // Notifies FilesApp that file drop to Plugin VM was not in a shared directory
   // and failed FilesApp will show the "Move to Windows files" dialog.
@@ -342,6 +345,8 @@ class EventRouter
   base::ScopedObservation<apps::AppRegistryCache,
                           apps::AppRegistryCache::Observer>
       app_registry_cache_observer_{this};
+
+  display::ScopedDisplayObserver display_observer_{this};
 
   // Note: This should remain the last member so it'll be destroyed and
   // invalidate the weak pointers before any other members are destroyed.

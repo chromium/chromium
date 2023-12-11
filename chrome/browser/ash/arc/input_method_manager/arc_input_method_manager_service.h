@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_ASH_ARC_INPUT_METHOD_MANAGER_ARC_INPUT_METHOD_MANAGER_SERVICE_H_
 
 #include <memory>
+#include <optional>
 #include <set>
 #include <string>
 #include <vector>

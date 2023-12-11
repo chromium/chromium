@@ -4,9 +4,15 @@
 
 #include "chrome/browser/ash/login/login_auth_recorder.h"
 
-#include "ash/public/cpp/tablet_mode.h"
+#include <string>
+
+#include "base/check_op.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/notreached.h"
+#include "base/strings/strcat.h"
 #include "components/session_manager/core/session_manager.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
+#include "ui/display/screen.h"
 
 namespace ash {
 namespace {
@@ -152,20 +158,20 @@ void LoginAuthRecorder::RecordAuthMethod(AuthMethod method) {
       is_locked ? "Ash.Login.Lock.AuthMethod." : "Ash.Login.Login.AuthMethod.";
 
   // Record usage of the authentication method in login/lock screen.
-  const bool is_tablet_mode = TabletMode::Get()->InTabletMode();
-  std::string used_metric_name;
-  if (is_tablet_mode) {
-    base::UmaHistogramEnumeration(prefix + "Used.TabletMode", method);
-  } else {
-    base::UmaHistogramEnumeration(prefix + "Used.ClamShellMode", method);
-  }
+  base::UmaHistogramEnumeration(
+      base::StrCat(
+          {prefix, "Used.",
+           (display::Screen::GetScreen()->InTabletMode() ? "TabletMode"
+                                                         : "ClamShellMode")}),
+      method);
 
   if (last_auth_method_ != method) {
     // Record switching between unlock methods.
     const std::optional<AuthMethodSwitchType> switch_type =
         FindSwitchType(last_auth_method_, method);
     if (switch_type) {
-      base::UmaHistogramEnumeration(prefix + "Switched", *switch_type);
+      base::UmaHistogramEnumeration(base::StrCat({prefix, "Switched"}),
+                                    *switch_type);
     }
 
     last_auth_method_ = method;

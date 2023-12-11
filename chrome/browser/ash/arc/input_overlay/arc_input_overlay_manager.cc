@@ -36,6 +36,8 @@
 #include "ui/base/ime/text_input_client.h"
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/display/manager/display_manager.h"
+#include "ui/display/screen.h"
+#include "ui/display/tablet_state.h"
 #include "ui/views/view_utils.h"
 #include "ui/views/widget/widget.h"
 #include "ui/wm/core/window_util.h"
@@ -162,14 +164,6 @@ ArcInputOverlayManager::ArcInputOverlayManager(
     env_observation_.Observe(aura::Env::GetInstance());
   }
   if (ash::Shell::HasInstance()) {
-    if (ash::Shell::Get()->tablet_mode_controller()) {
-      ash::Shell::Get()->tablet_mode_controller()->AddObserver(this);
-    }
-
-    if (ash::Shell::Get()->display_manager()) {
-      ash::Shell::Get()->display_manager()->AddObserver(this);
-    }
-
     if (ash::Shell::GetPrimaryRootWindow()) {
       aura::client::GetFocusClient(ash::Shell::GetPrimaryRootWindow())
           ->AddObserver(this);
@@ -290,14 +284,6 @@ void ArcInputOverlayManager::Shutdown() {
       aura::client::GetFocusClient(ash::Shell::GetPrimaryRootWindow())
           ->RemoveObserver(this);
     }
-
-    if (ash::Shell::Get()->tablet_mode_controller()) {
-      ash::Shell::Get()->tablet_mode_controller()->RemoveObserver(this);
-    }
-
-    if (ash::Shell::Get()->display_manager()) {
-      ash::Shell::Get()->display_manager()->RemoveObserver(this);
-    }
   }
   if (aura::Env::HasInstance()) {
     env_observation_.Reset();
@@ -306,7 +292,7 @@ void ArcInputOverlayManager::Shutdown() {
 
 void ArcInputOverlayManager::OnWindowFocused(aura::Window* gained_focus,
                                              aura::Window* lost_focus) {
-  if (ash::Shell::Get()->tablet_mode_controller()->InTabletMode()) {
+  if (display::Screen::GetScreen()->InTabletMode()) {
     return;
   }
 
@@ -332,14 +318,6 @@ void ArcInputOverlayManager::OnWindowFocused(aura::Window* gained_focus,
   RegisterWindow(gained_anchor_window);
 }
 
-void ArcInputOverlayManager::OnTabletModeStarting() {
-  UnRegisterWindow(registered_top_level_window_);
-}
-
-void ArcInputOverlayManager::OnTabletModeEnded() {
-  RegisterFocusedWindow();
-}
-
 void ArcInputOverlayManager::OnDisplayMetricsChanged(
     const display::Display& display,
     uint32_t metrics) {
@@ -353,6 +331,21 @@ void ArcInputOverlayManager::OnDisplayMetricsChanged(
   }
 
   it->second->UpdatePositionsForRegister();
+}
+
+void ArcInputOverlayManager::OnDisplayTabletStateChanged(
+    display::TabletState state) {
+  switch (state) {
+    case display::TabletState::kInClamshellMode:
+      RegisterFocusedWindow();
+      break;
+    case display::TabletState::kEnteringTabletMode:
+      UnRegisterWindow(registered_top_level_window_);
+      break;
+    case display::TabletState::kInTabletMode:
+    case display::TabletState::kExitingTabletMode:
+      break;
+  }
 }
 
 void ArcInputOverlayManager::RemoveWindowObservation(aura::Window* window) {
@@ -671,8 +664,7 @@ void ArcInputOverlayManager::UnRegisterWindow(aura::Window* window) {
 void ArcInputOverlayManager::RegisterFocusedWindow() {
   auto* focused_window = ash::window_util::GetFocusedWindow();
   // Don't register window if it is in tablet mode.
-  if (ash::Shell::Get()->tablet_mode_controller()->InTabletMode() ||
-      !focused_window) {
+  if (display::Screen::GetScreen()->InTabletMode() || !focused_window) {
     return;
   }
 

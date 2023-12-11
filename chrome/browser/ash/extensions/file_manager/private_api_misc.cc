@@ -15,7 +15,6 @@
 #include "ash/constants/ash_pref_names.h"
 #include "ash/public/cpp/multi_user_window_manager.h"
 #include "ash/public/cpp/new_window_delegate.h"
-#include "ash/public/cpp/tablet_mode.h"
 #include "ash/webui/settings/public/constants/routes_util.h"
 #include "base/command_line.h"
 #include "base/files/file.h"
@@ -81,6 +80,7 @@
 #include "storage/common/file_system/file_system_types.h"
 #include "storage/common/file_system/file_system_util.h"
 #include "ui/base/webui/web_ui_util.h"
+#include "ui/display/screen.h"
 #include "ui/shell_dialogs/select_file_dialog.h"
 #include "url/gurl.h"
 
@@ -1078,9 +1078,8 @@ void FileManagerPrivateInternalGetRecentFilesFunction::
 
 ExtensionFunction::ResponseAction
 FileManagerPrivateIsTabletModeEnabledFunction::Run() {
-  ash::TabletMode* tablet_mode = ash::TabletMode::Get();
   return RespondNow(
-      WithArguments(tablet_mode ? tablet_mode->InTabletMode() : false));
+      WithArguments(display::Screen::GetScreen()->InTabletMode()));
 }
 
 ExtensionFunction::ResponseAction FileManagerPrivateOpenURLFunction::Run() {

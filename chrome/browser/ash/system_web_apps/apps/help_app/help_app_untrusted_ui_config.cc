@@ -8,7 +8,6 @@
 
 #include "ash/constants/ash_features.h"
 #include "ash/public/cpp/assistant/assistant_state.h"
-#include "ash/public/cpp/tablet_mode.h"
 #include "ash/rgb_keyboard/rgb_keyboard_manager.h"
 #include "ash/shell.h"
 #include "ash/webui/help_app_ui/help_app_untrusted_ui.h"
@@ -41,6 +40,7 @@
 #include "content/public/browser/web_ui_controller.h"
 #include "content/public/browser/web_ui_data_source.h"
 #include "ui/chromeos/devicetype_utils.h"
+#include "ui/display/screen.h"
 #include "ui/events/devices/device_data_manager.h"
 
 namespace ash {
@@ -142,7 +142,8 @@ void PopulateLoadTimeData(content::WebUI* web_ui,
   source->AddBoolean(
       "multiDeviceFeaturesAllowed",
       multidevice_setup::AreAnyMultiDeviceFeaturesAllowed(pref_service));
-  source->AddBoolean("tabletMode", TabletMode::Get()->InTabletMode());
+  source->AddBoolean("tabletMode",
+                     display::Screen::GetScreen()->InTabletMode());
   // Whether or not RGB Keyboard is supported and configurable from the
   // Personalization Hub.
   RgbKeyboardManager* rgb_keyboard_manager =

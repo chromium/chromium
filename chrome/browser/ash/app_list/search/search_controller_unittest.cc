@@ -31,6 +31,7 @@
 #include "components/prefs/scoped_user_pref_update.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gmock/include/gmock/gmock.h"
+#include "ui/display/test/test_screen.h"
 
 namespace app_list::test {
 
@@ -149,6 +150,8 @@ class SearchControllerTest : public testing::Test {
 
  protected:
   content::BrowserTaskEnvironment task_environment_;
+  display::test::TestScreen test_screen_{/*create_dispay=*/true,
+                                         /*register_screen=*/true};
   TestingProfile profile_;
   FakeAppListModelUpdater model_updater_{&profile_, /*order_delegate=*/nullptr};
   std::unique_ptr<SearchController> search_controller_;

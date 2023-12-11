@@ -6,7 +6,6 @@
 
 #include <utility>
 
-#include "ash/public/cpp/tablet_mode.h"
 #include "base/notreached.h"
 #include "base/trace_event/trace_event.h"
 #include "build/chromeos_buildflags.h"
@@ -20,6 +19,7 @@
 #include "chrome/browser/ui/ash/app_icon_color_cache.h"
 #include "extensions/browser/app_sorting.h"
 #include "extensions/browser/extension_system.h"
+#include "ui/display/screen.h"
 #include "ui/gfx/color_utils.h"
 #include "ui/gfx/image/image_skia_operations.h"
 
@@ -133,7 +133,7 @@ app_list::AppContextMenu* ChromeAppListItem::GetAppContextMenu() {
 void ChromeAppListItem::MaybeDismissAppList() {
   // Launching apps can take some time. It looks nicer to dismiss the app list.
   // Do not close app list for home launcher.
-  if (!ash::TabletMode::Get() || !ash::TabletMode::Get()->InTabletMode()) {
+  if (!display::Screen::GetScreen()->InTabletMode()) {
     GetController()->DismissView();
   }
 }

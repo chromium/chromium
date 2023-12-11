@@ -11,7 +11,6 @@
 #include "ash/constants/notifier_catalogs.h"
 #include "ash/public/cpp/keyboard/keyboard_controller.h"
 #include "ash/public/cpp/system/toast_manager.h"
-#include "ash/public/cpp/tablet_mode.h"
 #include "base/check.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/strings/utf_string_conversions.h"
@@ -21,6 +20,8 @@
 #include "ui/aura/client/aura_constants.h"
 #include "ui/base/ime/ash/input_method_util.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/display/screen.h"
+#include "ui/display/tablet_state.h"
 
 namespace {
 // These values are persisted to logs. Entries should not be renumbered and
@@ -52,18 +53,23 @@ CrostiniUnsupportedActionNotifier::CrostiniUnsupportedActionNotifier()
 CrostiniUnsupportedActionNotifier::CrostiniUnsupportedActionNotifier(
     std::unique_ptr<Delegate> delegate)
     : delegate_(std::move(delegate)) {
-  delegate_->AddTabletModeObserver(this);
+  delegate_->AddDisplayObserver(this);
   delegate_->AddFocusObserver(this);
   delegate_->AddKeyboardControllerObserver(this);
 }
 
 CrostiniUnsupportedActionNotifier::~CrostiniUnsupportedActionNotifier() {
-  delegate_->RemoveTabletModeObserver(this);
+  delegate_->RemoveDisplayObserver(this);
   delegate_->RemoveFocusObserver(this);
   delegate_->RemoveKeyboardControllerObserver(this);
 }
 
-void CrostiniUnsupportedActionNotifier::OnTabletModeStarted() {
+void CrostiniUnsupportedActionNotifier::OnDisplayTabletStateChanged(
+    display::TabletState state) {
+  if (state != display::TabletState::kInTabletMode) {
+    return;
+  }
+
   ShowVirtualKeyboardUnsupportedNotifictionIfNeeded();
 }
 
@@ -112,7 +118,7 @@ CrostiniUnsupportedActionNotifier::Delegate::Delegate() = default;
 CrostiniUnsupportedActionNotifier::Delegate::~Delegate() = default;
 
 bool CrostiniUnsupportedActionNotifier::Delegate::IsInTabletMode() {
-  return ash::TabletMode::Get()->InTabletMode();
+  return display::Screen::GetScreen()->InTabletMode();
 }
 
 bool CrostiniUnsupportedActionNotifier::Delegate::IsFocusedWindowCrostini() {
@@ -158,24 +164,21 @@ void CrostiniUnsupportedActionNotifier::Delegate::RemoveFocusObserver(
   }
 }
 
-void CrostiniUnsupportedActionNotifier::Delegate::AddTabletModeObserver(
-    TabletModeObserver* observer) {
-  auto* client = ash::TabletMode::Get();
-  DCHECK(client);
-  client->AddObserver(observer);
+void CrostiniUnsupportedActionNotifier::Delegate::AddDisplayObserver(
+    display::DisplayObserver* observer) {
+  display::Screen::GetScreen()->AddObserver(observer);
 }
 
-void CrostiniUnsupportedActionNotifier::Delegate::RemoveTabletModeObserver(
-    TabletModeObserver* observer) {
-  auto* client = ash::TabletMode::Get();
-  DCHECK(client);
-  client->RemoveObserver(observer);
+void CrostiniUnsupportedActionNotifier::Delegate::RemoveDisplayObserver(
+    display::DisplayObserver* observer) {
+  display::Screen::GetScreen()->RemoveObserver(observer);
 }
 
 void CrostiniUnsupportedActionNotifier::Delegate::AddKeyboardControllerObserver(
     ash::KeyboardControllerObserver* observer) {
   ash::KeyboardController::Get()->AddObserver(observer);
 }
+
 void CrostiniUnsupportedActionNotifier::Delegate::
     RemoveKeyboardControllerObserver(
         ash::KeyboardControllerObserver* observer) {

@@ -7,8 +7,6 @@
 
 #include "ash/components/arc/mojom/app.mojom.h"
 #include "ash/constants/ash_features.h"
-#include "ash/public/cpp/tablet_mode_observer.h"
-#include "ash/wm/tablet_mode/tablet_mode_controller.h"
 #include "base/memory/raw_ptr.h"
 #include "base/scoped_multi_source_observation.h"
 #include "base/scoped_observation.h"
@@ -36,6 +34,10 @@ namespace content {
 class BrowserContext;
 }  // namespace content
 
+namespace display {
+enum class TabletState;
+}  // namespace display
+
 namespace ui {
 class InputMethod;
 }  // namespace ui
@@ -48,7 +50,6 @@ class ArcInputOverlayManager : public KeyedService,
                                public aura::EnvObserver,
                                public aura::WindowObserver,
                                public aura::client::FocusChangeObserver,
-                               public ash::TabletModeObserver,
                                public display::DisplayObserver {
  public:
   // Returns singleton instance for the given BrowserContext,
@@ -84,13 +85,10 @@ class ArcInputOverlayManager : public KeyedService,
   void OnWindowFocused(aura::Window* gained_focus,
                        aura::Window* lost_focus) override;
 
-  // ash::TabletModeObserver:
-  void OnTabletModeStarting() override;
-  void OnTabletModeEnded() override;
-
   // display::DisplayObserver:
   void OnDisplayMetricsChanged(const display::Display& display,
                                uint32_t metrics) override;
+  void OnDisplayTabletStateChanged(display::TabletState state) override;
 
  private:
   friend class ArcInputOverlayManagerTest;
@@ -165,6 +163,8 @@ class ArcInputOverlayManager : public KeyedService,
       window_observations_{this};
   base::flat_map<aura::Window*, std::unique_ptr<TouchInjector>>
       input_overlay_enabled_windows_;
+  display::ScopedDisplayObserver display_observer_{this};
+
   // To avoid UAF issue reported in crbug.com/1363030. Save the windows which
   // prepare or start loading the GIO default key mapping data. Once window is
   // destroying or the GIO data reading is finished, window is removed from this

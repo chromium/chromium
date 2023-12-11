@@ -9,11 +9,15 @@
 #include "ui/display/display.h"
 #include "ui/gfx/native_widget_types.h"
 
-namespace display {
-namespace test {
+#if BUILDFLAG(IS_CHROMEOS)
+#include "ui/display/display_list.h"
+#include "ui/display/display_observer.h"
+#endif  // BUILDFLAG(IS_CHROMEOS)
+
+namespace display::test {
 namespace {
 TestScreen* test_screen = nullptr;
-}
+}  // namespace
 
 // static
 constexpr gfx::Rect TestScreen::kDefaultScreenBounds;
@@ -76,9 +80,16 @@ TabletState TestScreen::GetTabletState() const {
 }
 
 void TestScreen::OverrideTabletStateForTesting(TabletState state) {
+  if (state_ == state) {
+    return;
+  }
+
   state_ = state;
+
+  for (DisplayObserver& observer : *display_list().observers()) {
+    observer.OnDisplayTabletStateChanged(state);
+  }
 }
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
-}  // namespace test
-}  // namespace display
+}  // namespace display::test
