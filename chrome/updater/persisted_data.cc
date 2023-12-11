@@ -366,9 +366,13 @@ void PersistedData::RegisterApp(const RegistrationRequest& rq) {
   }
   if (rq.dla) {
     SetDateLastActive(rq.app_id, rq.dla.value());
+  } else if (GetDateLastActive(rq.app_id) == update_client::kDateUnknown) {
+    SetDateLastActive(rq.app_id, update_client::kDateFirstTime);
   }
   if (rq.dlrc) {
     SetDateLastRollCall(rq.app_id, rq.dlrc.value());
+  } else if (GetDateLastRollCall(rq.app_id) == update_client::kDateUnknown) {
+    SetDateLastRollCall(rq.app_id, update_client::kDateFirstTime);
   }
   if (!rq.cohort.empty()) {
     SetCohort(rq.app_id, rq.cohort);

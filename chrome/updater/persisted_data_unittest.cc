@@ -223,6 +223,38 @@ TEST(PersistedDataTest, RemoveAppId) {
   EXPECT_TRUE(metadata->GetAppIds().empty());
 }
 
+TEST(PersistedDataTest, RegisterApp_SetFirstActive) {
+  auto pref = std::make_unique<TestingPrefServiceSimple>();
+  update_client::RegisterPrefs(pref->registry());
+  auto metadata =
+      base::MakeRefCounted<PersistedData>(GetTestScope(), pref.get(), nullptr);
+
+  RegistrationRequest data;
+  data.app_id = "someappid";
+  data.brand_code = "somebrand";
+  data.ap = "arandom-ap=likethis";
+  data.version = base::Version("1.0");
+  data.existence_checker_path =
+      base::FilePath(FILE_PATH_LITERAL("some/file/path"));
+  metadata->RegisterApp(data);
+  EXPECT_EQ(metadata->GetDateLastActive("someappid"), -1);
+  EXPECT_EQ(metadata->GetDateLastRollCall("someappid"), -1);
+
+  data.version = base::Version("2.0");
+  data.dla = 1221;
+  data.dlrc = 1221;
+  metadata->RegisterApp(data);
+  EXPECT_EQ(metadata->GetDateLastActive("someappid"), 1221);
+  EXPECT_EQ(metadata->GetDateLastRollCall("someappid"), 1221);
+
+  data.version = base::Version("3.0");
+  data.dla = std::nullopt;
+  data.dlrc = std::nullopt;
+  metadata->RegisterApp(data);
+  EXPECT_EQ(metadata->GetDateLastActive("someappid"), 1221);
+  EXPECT_EQ(metadata->GetDateLastRollCall("someappid"), 1221);
+}
+
 #if BUILDFLAG(IS_WIN)
 TEST(PersistedDataTest, LastOSVersion) {
   auto pref = std::make_unique<TestingPrefServiceSimple>();
