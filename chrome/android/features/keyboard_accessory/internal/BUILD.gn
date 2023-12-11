@@ -124,8 +124,6 @@ android_library("internal_java") {
     "java/src/org/chromium/chrome/browser/keyboard_accessory/tab_layout_component/KeyboardAccessoryTabLayoutCoordinator.java",
     "java/src/org/chromium/chrome/browser/keyboard_accessory/tab_layout_component/KeyboardAccessoryTabLayoutMediator.java",
     "java/src/org/chromium/chrome/browser/keyboard_accessory/tab_layout_component/KeyboardAccessoryTabLayoutProperties.java",
-    "java/src/org/chromium/chrome/browser/keyboard_accessory/tab_layout_component/KeyboardAccessoryTabLayoutView.java",
-    "java/src/org/chromium/chrome/browser/keyboard_accessory/tab_layout_component/KeyboardAccessoryTabLayoutViewBinder.java",
     "java/src/org/chromium/chrome/browser/keyboard_accessory/utils/InsecureFillingDialogUtils.java",
   ]
 
@@ -139,7 +137,6 @@ android_resources("java_resources") {
     "java/res/layout/address_accessory_sheet.xml",
     "java/res/layout/all_passwords_bottom_sheet.xml",
     "java/res/layout/credit_card_accessory_sheet.xml",
-    "java/res/layout/keyboard_accessory.xml",
     "java/res/layout/keyboard_accessory_action_modern.xml",
     "java/res/layout/keyboard_accessory_buttons.xml",
     "java/res/layout/keyboard_accessory_modern.xml",
@@ -153,7 +150,6 @@ android_resources("java_resources") {
     "java/res/layout/keyboard_accessory_sheet_tab_promo_code_info.xml",
     "java/res/layout/keyboard_accessory_sheet_tab_title.xml",
     "java/res/layout/keyboard_accessory_suggestion.xml",
-    "java/res/layout/keyboard_accessory_tabs.xml",
     "java/res/layout/password_accessory_passkey_chip.xml",
     "java/res/layout/password_accessory_sheet.xml",
     "java/res/layout/password_accessory_sheet_label.xml",

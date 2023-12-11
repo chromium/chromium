@@ -13,7 +13,6 @@ import androidx.annotation.VisibleForTesting;
 import androidx.viewpager.widget.ViewPager;
 
 import org.chromium.base.TraceEvent;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.keyboard_accessory.AccessoryTabType;
 import org.chromium.chrome.browser.keyboard_accessory.R;
 import org.chromium.chrome.browser.keyboard_accessory.bar_component.KeyboardAccessoryModernViewBinder.BarItemViewHolder;
@@ -143,9 +142,6 @@ public class KeyboardAccessoryCoordinator {
                         sheetVisibilityDelegate,
                         mTabLayout.getTabSwitchingDelegate(),
                         mTabLayout.getSheetOpenerCallbacks());
-        if (!ChromeFeatureList.isEnabled(ChromeFeatureList.AUTOFILL_KEYBOARD_ACCESSORY)) {
-            viewProvider.whenLoaded(barView -> mTabLayout.assignNewView(barView.getTabLayout()));
-        }
         viewProvider.whenLoaded(view -> mView = view);
 
         mTabLayout.setTabObserver(mMediator);

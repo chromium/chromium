@@ -11,7 +11,6 @@ import androidx.annotation.VisibleForTesting;
 import org.chromium.base.ObserverList;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.chrome.browser.back_press.BackPressManager;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.keyboard_accessory.bar_component.KeyboardAccessoryCoordinator;
 import org.chromium.chrome.browser.keyboard_accessory.data.KeyboardAccessoryData;
 import org.chromium.chrome.browser.keyboard_accessory.data.PropertyProvider;
@@ -48,10 +47,8 @@ class ManualFillingCoordinator implements ManualFillingComponent {
             AsyncViewStub sheetStub,
             AsyncViewStub barStub) {
         if (barStub == null || sheetStub == null) return; // The manual filling isn't needed.
-        barStub.setLayoutResource(
-                ChromeFeatureList.isEnabled(ChromeFeatureList.AUTOFILL_KEYBOARD_ACCESSORY)
-                        ? R.layout.keyboard_accessory_modern
-                        : R.layout.keyboard_accessory);
+        // TODO(crbug.com/1448820): Initialize in the xml resources file.
+        barStub.setLayoutResource(R.layout.keyboard_accessory_modern);
         sheetStub.setLayoutResource(R.layout.keyboard_accessory_sheet);
         barStub.setShouldInflateOnBackgroundThread(true);
         sheetStub.setShouldInflateOnBackgroundThread(true);

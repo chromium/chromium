@@ -2799,7 +2799,6 @@ if (current_toolchain == default_toolchain) {
     deps = [
       ":chrome_unit_test_java",
       "//build/config/android/test/resource_overlay:unit_device_javatests",
-      "//chrome/android/features/keyboard_accessory:unit_device_javatests",
       "//chrome/android/features/tab_ui:unit_device_javatests",
       "//chrome/browser/android/intents:unit_device_javatests",
       "//chrome/browser/back_press/android:unit_device_javatests",

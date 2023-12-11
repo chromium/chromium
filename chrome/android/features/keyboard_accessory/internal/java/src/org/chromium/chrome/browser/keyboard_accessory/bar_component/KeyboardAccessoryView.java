@@ -21,8 +21,6 @@ import androidx.core.view.ViewCompat;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.google.android.material.tabs.TabLayout;
-
 import org.chromium.base.TraceEvent;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.keyboard_accessory.R;
@@ -36,7 +34,6 @@ class KeyboardAccessoryView extends LinearLayout {
     protected static final int HIDING_ANIMATION_DELAY_MS = 50; // Shortens animation duration.
 
     protected RecyclerView mBarItemsView;
-    protected TabLayout mTabLayout;
     private ViewPropertyAnimator mRunningAnimation;
     private boolean mShouldSkipClosingAnimation;
     private boolean mDisableAnimations;
@@ -105,13 +102,6 @@ class KeyboardAccessoryView extends LinearLayout {
         setClickable(false); // Disables the "Double-tap to activate" Talkback reading.
         setSoundEffectsEnabled(false);
         TraceEvent.end("KeyboardAccessoryView#onFinishInflate");
-    }
-
-    TabLayout getTabLayout() {
-        if (mTabLayout == null) {
-            mTabLayout = findViewById(R.id.tabs);
-        }
-        return mTabLayout;
     }
 
     void setVisible(boolean visible) {

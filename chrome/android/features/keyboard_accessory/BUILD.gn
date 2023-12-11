@@ -26,29 +26,6 @@ group("jni_headers") {
   ]
 }
 
-android_library("unit_device_javatests") {
-  testonly = true
-  resources_package = "org.chromium.chrome.browser.keyboard_accessory"
-
-  sources = [ "javatests/src/org/chromium/chrome/browser/keyboard_accessory/tab_layout_component/KeyboardAccessoryTabLayoutViewTest.java" ]
-  deps = [
-    ":test_resources",
-    "internal:internal_java",
-    "public:public_java",
-    "//base:base_java",
-    "//base:base_java_test_support",
-    "//components/autofill/android:main_autofill_java",
-    "//third_party/android_deps:espresso_java",
-    "//third_party/android_deps:material_design_java",
-    "//third_party/androidx:androidx_test_runner_java",
-    "//third_party/hamcrest:hamcrest_java",
-    "//third_party/hamcrest:hamcrest_library_java",
-    "//third_party/junit:junit",
-    "//ui/android:ui_java_test_support",
-    "//ui/android:ui_no_recycler_view_java",
-  ]
-}
-
 android_library("test_java") {
   testonly = true
 

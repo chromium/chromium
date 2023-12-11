@@ -51,8 +51,6 @@ public class KeyboardAccessoryTabLayoutControllerTest {
     @Mock
     private KeyboardAccessoryTabLayoutCoordinator.AccessoryTabObserver mMockAccessoryTabObserver;
 
-    @Mock private KeyboardAccessoryTabLayoutView mMockView;
-
     private final KeyboardAccessoryData.Tab mTestTab =
             new KeyboardAccessoryData.Tab("Passwords", null, null, 0, 0, null);
 
@@ -68,7 +66,6 @@ public class KeyboardAccessoryTabLayoutControllerTest {
         mCoordinator = new KeyboardAccessoryTabLayoutCoordinator();
         mMediator = mCoordinator.getMediatorForTesting();
         mModel = mCoordinator.getModelForTesting();
-        mCoordinator.assignNewView(mMockView);
         mCoordinator.setTabObserver(mMockAccessoryTabObserver);
     }
 

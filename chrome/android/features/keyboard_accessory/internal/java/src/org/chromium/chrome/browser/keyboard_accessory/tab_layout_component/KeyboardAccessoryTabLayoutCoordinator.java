@@ -113,25 +113,6 @@ public class KeyboardAccessoryTabLayoutCoordinator {
     }
 
     /**
-     * Creates the {@link KeyboardAccessoryTabLayoutViewBinder} that is linked to the
-     * {@link ListModelChangeProcessor} that connects the given
-     * {@link KeyboardAccessoryTabLayoutView} to the given tab list.
-     * @param model the {@link PropertyModel} with {@link KeyboardAccessoryTabLayoutProperties}.
-     * @param inflatedView the {@link KeyboardAccessoryTabLayoutView}.
-     * @return Returns a fully initialized and wired {@link KeyboardAccessoryTabLayoutView}.
-     */
-    static KeyboardAccessoryTabLayoutViewBinder createTabViewBinder(
-            PropertyModel model, KeyboardAccessoryTabLayoutView inflatedView) {
-        KeyboardAccessoryTabLayoutViewBinder tabViewBinder =
-                new KeyboardAccessoryTabLayoutViewBinder();
-        model.get(TABS)
-                .addObserver(
-                        new ListModelChangeProcessor<>(
-                                model.get(TABS), inflatedView, tabViewBinder));
-        return tabViewBinder;
-    }
-
-    /**
      * Creates the {@link KeyboardAccessoryButtonGroupViewBinder} that is linked to the
      * {@link ListModelChangeProcessor} that connects the given
      * {@link KeyboardAccessoryButtonGroupView} to the given tab list.
@@ -153,18 +134,6 @@ public class KeyboardAccessoryTabLayoutCoordinator {
     /** Creates a new Tab Layout component that isn't assigned to any view yet. */
     public KeyboardAccessoryTabLayoutCoordinator() {
         mMediator = new KeyboardAccessoryTabLayoutMediator(mModel);
-    }
-
-    /**
-     * Binds the given view to its model using the {@link KeyboardAccessoryTabLayoutViewBinder}.
-     * @param tabLayout A {@link TabLayout}.
-     */
-    public void assignNewView(TabLayout tabLayout) {
-        mMediator.addPageChangeListener(new TabLayout.TabLayoutOnPageChangeListener(tabLayout));
-        PropertyModelChangeProcessor.create(
-                mModel,
-                (KeyboardAccessoryTabLayoutView) tabLayout,
-                KeyboardAccessoryTabLayoutViewBinder::bind);
     }
 
     public SheetOpenerCallbacks getSheetOpenerCallbacks() {
