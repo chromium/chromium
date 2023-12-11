@@ -31,6 +31,7 @@ import org.junit.runner.RunWith;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.CriteriaHelper;
+import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Restriction;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
@@ -73,6 +74,7 @@ public class TabGridIncognitoReauthPromoTest {
 
     @Test
     @MediumTest
+    @DisabledTest(message = "https://crbug.com/1510419")
     public void testIncognitoReauthPromoShown() {
         final ChromeTabbedActivity cta = mActivityTestRule.getActivity();
 
@@ -86,6 +88,7 @@ public class TabGridIncognitoReauthPromoTest {
 
     @Test
     @MediumTest
+    @DisabledTest(message = "https://crbug.com/1510419")
     public void testSnackBarShown_WhenClickingReviewActionProvider() {
         final ChromeTabbedActivity cta = mActivityTestRule.getActivity();
 
@@ -133,6 +136,7 @@ public class TabGridIncognitoReauthPromoTest {
 
     @Test
     @MediumTest
+    @DisabledTest(message = "https://crbug.com/1510419")
     public void testIncognitoReauthPromo_NoThanks_HidesTheCard() {
         final ChromeTabbedActivity cta = mActivityTestRule.getActivity();
 
