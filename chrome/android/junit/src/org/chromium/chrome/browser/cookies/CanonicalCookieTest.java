@@ -60,7 +60,6 @@ public class CanonicalCookieTest {
         Assert.assertEquals(lhs.isHttpOnly(), rhs.isHttpOnly());
         Assert.assertEquals(lhs.getSameSite(), rhs.getSameSite());
         Assert.assertEquals(lhs.getPriority(), rhs.getPriority());
-        Assert.assertEquals(lhs.isSameParty(), rhs.isSameParty());
         Assert.assertEquals(lhs.sourceScheme(), rhs.sourceScheme());
         Assert.assertEquals(lhs.sourcePort(), rhs.sourcePort());
     }
@@ -98,7 +97,6 @@ public class CanonicalCookieTest {
                         /* httpOnly= */ true,
                         /* sameSite= */ 0,
                         /* priority= */ 0,
-                        /* sameParty= */ false,
                         /* partitionKey= */ "",
                         /* sourceScheme= */ 1,
                         /* sourcePort= */ 72));
@@ -116,7 +114,6 @@ public class CanonicalCookieTest {
                         /* httpOnly= */ false,
                         /* sameSite= */ 1,
                         /* priority= */ 1,
-                        /* sameParty= */ true,
                         /* partitionKey= */ "",
                         /* sourceScheme= */ 2,
                         /* sourcePort= */ 445));
@@ -134,7 +131,6 @@ public class CanonicalCookieTest {
                         /* httpOnly= */ false,
                         /* sameSite= */ 2,
                         /* priority= */ 2,
-                        /* sameParty= */ false,
                         /* partitionKey= */ "https://toplevelsite.com",
                         /* sourceScheme= */ 2,
                         /* sourcePort= */ -1));
