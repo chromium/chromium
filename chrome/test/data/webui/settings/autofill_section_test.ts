@@ -9,6 +9,7 @@ import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {AutofillManagerImpl, CountryDetailManagerImpl, CrInputElement, CrTextareaElement} from 'chrome://settings/lazy_load.js';
 import {assertEquals, assertFalse, assertGT, assertTrue} from 'chrome://webui-test/chai_assert.js';
+import {fakeMetricsPrivate, MetricsTracker} from 'chrome://webui-test/metrics_test_support.js';
 import {eventToPromise, whenAttributeIs, isVisible} from 'chrome://webui-test/test_util.js';
 import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
 
@@ -230,12 +231,15 @@ suite('AutofillSectionFocusTest', function() {
 });
 
 suite('AutofillSectionAddressTests', function() {
+  let metricsTracker: MetricsTracker;
+
   suiteSetup(function() {
     CountryDetailManagerImpl.setInstance(new CountryDetailManagerTestImpl());
   });
 
   setup(function() {
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
+    metricsTracker = fakeMetricsPrivate();
   });
 
   test('verifyNoAddresses', async function() {
@@ -418,6 +422,13 @@ suite('AutofillSectionAddressTests', function() {
     await eventToPromise('close', removeAddressDialog);
 
     assertTrue(removeAddressDialog.wasConfirmed());
+    assertEquals(
+        1, metricsTracker.count('Autofill.ProfileDeleted.Settings', true));
+    assertEquals(
+        0, metricsTracker.count('Autofill.ProfileDeleted.Settings', false));
+    assertEquals(1, metricsTracker.count('Autofill.ProfileDeleted.Any', true));
+    assertEquals(0, metricsTracker.count('Autofill.ProfileDeleted.Any', false));
+
     const expected = new AutofillManagerExpectations();
     expected.requestedAddresses = 1;
     expected.listeningAddresses = 1;
@@ -438,6 +449,13 @@ suite('AutofillSectionAddressTests', function() {
     // Wait for the dialog to close.
     await eventToPromise('close', removeAddressDialog);
     assertFalse(removeAddressDialog.wasConfirmed());
+    assertEquals(
+        0, metricsTracker.count('Autofill.ProfileDeleted.Settings', true));
+    assertEquals(
+        1, metricsTracker.count('Autofill.ProfileDeleted.Settings', false));
+    assertEquals(0, metricsTracker.count('Autofill.ProfileDeleted.Any', true));
+    assertEquals(1, metricsTracker.count('Autofill.ProfileDeleted.Any', false));
+
     const expected = new AutofillManagerExpectations();
     expected.requestedAddresses = 1;
     expected.listeningAddresses = 1;
