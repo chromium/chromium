@@ -106,7 +106,7 @@ class PerformanceSettingsInteractiveTest : public InteractiveBrowserTest {
       const base::HistogramTester& histogram_tester) {
     return Do(base::BindLambdaForTesting([=, &histogram_tester]() {
       histogram_tester.ExpectBucketCount(
-          "PerformanceControls.HighEfficiency.SettingsChangeMode2",
+          "PerformanceControls.MemorySaver.SettingsChangeMode",
           static_cast<int>(state), expected_count);
     }));
   }

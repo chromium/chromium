@@ -24029,18 +24029,6 @@ Called by update_permissions_policy_enum.py.-->
   <int value="8" label="Unknown Pointer"/>
 </enum>
 
-<enum name="HighEfficiencyBubbleActionType">
-  <int value="0" label="Open settings"/>
-  <int value="1" label="Dismiss dialog"/>
-  <int value="2" label="Add exception"/>
-</enum>
-
-<enum name="HighEfficiencyChipState">
-  <int value="0" label="Collapsed chip"/>
-  <int value="1" label="Expanded educational chip"/>
-  <int value="2" label="Expanded chip with savings"/>
-</enum>
-
 <enum name="HighEfficiencyModeExceptionListAction">
   <int value="0" label="Add"/>
   <int value="1" label="Edit"/>
@@ -39235,6 +39223,18 @@ Called by update_use_counter_css.py.-->
   <int value="4" label="Local display capture"/>
   <int value="5" label="Remote media stream"/>
   <int value="6" label="None"/>
+</enum>
+
+<enum name="MemorySaverBubbleActionType">
+  <int value="0" label="Open settings"/>
+  <int value="1" label="Dismiss dialog"/>
+  <int value="2" label="Add exception"/>
+</enum>
+
+<enum name="MemorySaverChipState">
+  <int value="0" label="Collapsed chip"/>
+  <int value="1" label="Expanded educational chip"/>
+  <int value="2" label="Expanded chip with savings"/>
 </enum>
 
 <enum name="MenuSourceType">

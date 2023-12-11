@@ -172,7 +172,7 @@ TEST_F(HighEfficiencyChipViewTest, ShouldLogMetricsForCollapsedChip) {
   SetTabDiscardState(0, true);
 
   histogram_tester_.ExpectUniqueSample(
-      "PerformanceControls.HighEfficiency.ChipState",
+      "PerformanceControls.MemorySaver.ChipState",
       HighEfficiencyChipState::kCollapsed, 1);
 }
 
@@ -182,7 +182,7 @@ TEST_F(HighEfficiencyChipViewTest,
   SetTabDiscardState(0, true);
 
   histogram_tester_.ExpectUniqueSample(
-      "PerformanceControls.HighEfficiency.ChipState",
+      "PerformanceControls.MemorySaver.ChipState",
       HighEfficiencyChipState::kExpandedEducation, 1);
 }
 
@@ -351,7 +351,7 @@ TEST_F(HighEfficiencyChipViewMemorySavingsImprovementsTest,
   SetTabDiscardState(0, true);
 
   histogram_tester_.ExpectUniqueSample(
-      "PerformanceControls.HighEfficiency.ChipState",
+      "PerformanceControls.MemorySaver.ChipState",
       HighEfficiencyChipState::kExpandedWithSavings, 1);
 }
 

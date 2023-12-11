@@ -160,7 +160,7 @@ TEST_F(HighEfficiencyBubbleViewTest, ShouldLogMetricsOnDialogDismiss) {
   ClickPageActionChip();
 
   histogram_tester_.ExpectUniqueSample(
-      "PerformanceControls.HighEfficiency.BubbleAction",
+      "PerformanceControls.MemorySaver.BubbleAction",
       HighEfficiencyBubbleActionType::kDismiss, 1);
 }
 

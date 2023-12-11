@@ -52,20 +52,20 @@ each histogram. Maybe add here or add a new performance controls one
   </summary>
 </histogram>
 
-<histogram name="PerformanceControls.HighEfficiency.BubbleAction"
-    enum="HighEfficiencyBubbleActionType" expires_after="2024-05-19">
+<histogram name="PerformanceControls.MemorySaver.BubbleAction"
+    enum="MemorySaverBubbleActionType" expires_after="2024-05-19">
   <owner>agale@chromium.org</owner>
   <owner>chrome-performance-ui-sea@google.com</owner>
   <summary>
-    Logged on each high efficiency mode dialog close indicating whether the user
+    Logged on each memory saver mode dialog close indicating whether the user
     opened the settings page or dismissed the dialog. This will be used to
     measure the efficacy of the dialog message and the number of users that
     interact with the high efficiency page action chip.
   </summary>
 </histogram>
 
-<histogram name="PerformanceControls.HighEfficiency.ChipState"
-    enum="HighEfficiencyChipState" expires_after="2024-05-19">
+<histogram name="PerformanceControls.MemorySaver.ChipState"
+    enum="MemorySaverChipState" expires_after="2024-05-19">
   <owner>agale@chromium.org</owner>
   <owner>chrome-performance-ui-sea@google.com</owner>
   <summary>
@@ -76,39 +76,38 @@ each histogram. Maybe add here or add a new performance controls one
   </summary>
 </histogram>
 
-<histogram name="PerformanceControls.HighEfficiency.IPHEnableMode"
+<histogram name="PerformanceControls.MemorySaver.IPHEnableMode"
     units="BooleanEnableMode" expires_after="2024-05-26">
   <owner>agale@chromium.org</owner>
   <owner>chrome-performance-ui-sea@google.com</owner>
   <summary>
-    Logged each time the user enables high efficiency mode through the link on
-    the high efficiency mode IPH. This will be combined with an existing
-    histogram measuring the number of times the IPH is open to measure how the
-    user responds to it.
+    Logged each time the user enables memory saver mode through the link on the
+    memory saver mode IPH. This will be combined with an existing histogram
+    measuring the number of times the IPH is open to measure how the user
+    responds to it.
   </summary>
 </histogram>
 
-<histogram
-    name="PerformanceControls.HighEfficiency.SettingsChangeExceptionList"
+<histogram name="PerformanceControls.MemorySaver.SettingsChangeExceptionList"
     enum="HighEfficiencyModeExceptionListAction" expires_after="2024-05-19">
   <owner>charlesmeng@chromium.org</owner>
   <owner>chrome-performance-ui-sea@google.com</owner>
   <summary>
     Logs whether the user did an add, edit, or remove operation to the tab
-    discard exception list for high efficiency mode. This will be used to better
+    discard exception list for memory saver mode. This will be used to better
     understand how users interact with the list, and to see if we need to
     improve our heuristics for tab discarding.
   </summary>
 </histogram>
 
-<histogram name="PerformanceControls.HighEfficiency.SettingsChangeMode2"
+<histogram name="PerformanceControls.MemorySaver.SettingsChangeMode"
     enum="HighEfficiencyModeState" expires_after="2024-05-19">
   <owner>charlesmeng@chromium.org</owner>
   <owner>chrome-performance-ui-sea@google.com</owner>
   <summary>
-    Logs the state of the high efficiency mode pref when the user makes a change
-    to it through the settings page. This will be used to measure the
-    discoverability and usefulness of high efficiency mode.
+    Logs the state of the memory saver mode pref when the user makes a change to
+    it through the settings page. This will be used to measure the
+    discoverability and usefulness of memory saver mode.
   </summary>
 </histogram>
 

@@ -57,14 +57,14 @@ export class PerformanceMetricsProxyImpl implements PerformanceMetricsProxy {
 
   recordHighEfficiencyModeChanged(state: HighEfficiencyModeState): void {
     chrome.metricsPrivate.recordEnumerationValue(
-        'PerformanceControls.HighEfficiency.SettingsChangeMode2', state,
+        'PerformanceControls.MemorySaver.SettingsChangeMode', state,
         HighEfficiencyModeState.COUNT);
   }
 
   recordExceptionListAction(action: HighEfficiencyModeExceptionListAction) {
     chrome.metricsPrivate.recordEnumerationValue(
-        'PerformanceControls.HighEfficiency.SettingsChangeExceptionList',
-        action, HighEfficiencyModeExceptionListAction.COUNT);
+        'PerformanceControls.MemorySaver.SettingsChangeExceptionList', action,
+        HighEfficiencyModeExceptionListAction.COUNT);
   }
 
   static getInstance(): PerformanceMetricsProxy {
