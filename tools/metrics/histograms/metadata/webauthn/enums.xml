@@ -251,6 +251,15 @@ chromium-metrics-reviews@google.com.
   <int value="12" label="Successful get() from iCloud Keychain"/>
 </enum>
 
+<enum name="WindowsKeyCredentialManagerSupportResults">
+  <int value="0" label="KeyCredentialManager Available"/>
+  <int value="1" label="KeyCredentialManager Not Available"/>
+  <int value="2" label="ActivationFactory Not Available"/>
+  <int value="3" label="IsSupportedAsync Call Failed"/>
+  <int value="4" label="PostAsyncHandlers Call Failed"/>
+  <int value="5" label="Async Operation Failed"/>
+</enum>
+
 </enums>
 
 </histogram-configuration>
