@@ -61,7 +61,7 @@ std::string ExtractTag() {
   PathString path;
   return (::GetModuleFileName(nullptr, path.get(), path.capacity()) > 0 &&
           ::GetLastError() == ERROR_SUCCESS)
-             ? tagging::ExeReadTag(base::FilePath(path.get()))
+             ? tagging::BinaryReadTagString(base::FilePath(path.get()))
              : std::string();
 }
 

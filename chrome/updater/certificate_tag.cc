@@ -6,15 +6,230 @@
 
 #include <cstdint>
 #include <cstring>
+#include <memory>
 #include <optional>
+#include <string>
 #include <utility>
 #include <vector>
 
+#include "base/check.h"
+#include "base/check_op.h"
+#include "base/containers/span.h"
 #include "base/notreached.h"
 #include "third_party/boringssl/src/include/openssl/bytestring.h"
 #include "third_party/boringssl/src/include/openssl/crypto.h"
 
 namespace updater::tagging {
+
+namespace {
+// PEBinary represents a Windows PE binary and provides functions to extract and
+// set data outside of the signed area (called a "tag"). This allows a binary to
+// contain arbitrary data without invalidating any Authenticode signature.
+class PEBinary : public BinaryInterface {
+ public:
+  PEBinary(const PEBinary&);
+  PEBinary();
+  ~PEBinary() override;
+
+  // Parse a signed, Windows PE binary. Note that the returned structure
+  // contains pointers into the given data.
+  static std::unique_ptr<BinaryInterface> Parse(
+      base::span<const uint8_t> binary);
+
+  // Returns the embedded tag, if any.
+  std::optional<std::vector<const uint8_t>> tag() const override;
+
+  // SetTag returns an updated version of the PE binary image that contains the
+  // given tag, or |nullopt| on error. If the binary already contains a tag then
+  // it will be replaced.
+  std::optional<std::vector<uint8_t>> SetTag(
+      base::span<const uint8_t> tag) override;
+
+ private:
+  // ParseTag attempts to parse out the tag. It returns false on parse error or
+  // true on success. If successful, it sets |tag_|.
+  bool ParseTag();
+
+  // binary_ contains the whole input binary.
+  base::span<const uint8_t> binary_;
+
+  // content_info_ contains the |WIN_CERTIFICATE| structure.
+  base::span<const uint8_t> content_info_;
+
+  // tag_ contains the embedded tag, or |nullopt| if there isn't one.
+  std::optional<std::vector<const uint8_t>> tag_;
+
+  // attr_cert_offset_ is the offset in the file where the |WIN_CERTIFICATE|
+  // structure appears. (This is the last structure in the file.)
+  size_t attr_cert_offset_ = 0;
+
+  // certs_size_offset_ is the offset in the file where the u32le size of the
+  // |WIN_CERTIFICATE| structure is embedded in an |IMAGE_DATA_DIRECTORY|.
+  size_t certs_size_offset_ = 0;
+};
+
+#pragma pack(push)
+#pragma pack(1)
+
+// SectorFormat represents parameters of an MSI file sector.
+struct SectorFormat {
+  // the size of a sector in bytes; 512 for dll v3 and 4096 for v4.
+  uint64_t size = 0;
+
+  // the number of int32s in a sector.
+  int ints = 0;
+};
+
+// MSIDirEntry represents a parsed MSI directory entry for a stream.
+struct MSIDirEntry {
+  MSIDirEntry(const MSIDirEntry&);
+  MSIDirEntry();
+  ~MSIDirEntry();
+  char name[64] = {};
+  uint16_t num_name_bytes = 0;
+  uint8_t object_type = 0;
+  uint8_t color_flag = 0;
+  uint32_t left = 0;
+  uint32_t right = 0;
+  uint32_t child = 0;
+  uint8_t clsid[16] = {};
+  uint32_t state_flags = 0;
+  uint64_t create_time = 0;
+  uint64_t modify_time = 0;
+  uint32_t stream_first_sector = 0;
+  uint64_t stream_size = 0;
+};
+
+// MSIHeader represents a parsed MSI header.
+struct MSIHeader {
+  MSIHeader(const MSIHeader&);
+  MSIHeader();
+  ~MSIHeader();
+  uint8_t magic[8] = {};
+  uint8_t clsid[16] = {};
+  uint16_t minor_version = 0;
+  uint16_t dll_version = 0;
+  uint16_t byte_order = 0;
+  uint16_t sector_shift = 0;
+  uint16_t mini_sector_shift = 0;
+  uint8_t reserved[6] = {};
+  uint32_t num_dir_sectors = 0;
+  uint32_t num_fat_sectors = 0;
+  uint32_t first_dir_sector = 0;
+  uint32_t transaction_signature_number = 0;
+  uint32_t mini_stream_cutoff_size = 0;
+  uint32_t first_mini_fat_sector = 0;
+  uint32_t num_mini_fat_sectors = 0;
+  uint32_t first_difat_sector = 0;
+  uint32_t num_difat_sectors = 0;
+};
+
+struct SignedDataDir {
+  MSIDirEntry sig_dir_entry;
+  uint64_t offset = 0;
+  bool found = false;
+};
+#pragma pack(pop)
+
+// MSIBinary represents a Windows MSI binary and provides functions to extract
+// and set a "tag" outside of the signed area. This allows the MSI to contain
+// arbitrary data without invalidating any Authenticode signature.
+class MSIBinary : public BinaryInterface {
+ public:
+  MSIBinary(const MSIBinary&);
+  MSIBinary();
+  ~MSIBinary() override;
+
+  // Parses the MSI header, the directory entry for the SignedData, and the
+  // SignedData itself. If successful, returns a `BinaryInterface` to the
+  // `MSIBinary` object.
+  static std::unique_ptr<BinaryInterface> Parse(
+      base::span<const uint8_t> file_contents);
+
+  // Returns the embedded tag, if any.
+  std::optional<std::vector<const uint8_t>> tag() const override;
+
+  // Returns a complete MSI binary image based on bin, but where the superfluous
+  // certificate contains the given tag data.
+  std::optional<std::vector<uint8_t>> SetTag(
+      base::span<const uint8_t> tag) override;
+
+ private:
+  // Builds an MSI binary based on the current `MSIBinary`, but with the given
+  // SignedData.
+  std::vector<uint8_t> BuildBinary(const std::vector<uint8_t>& signed_data);
+
+  // Populates the superfluous-cert `tag_` if found. Returns `true` if the
+  // parsing did not produce any errors, even if a tag was not found.
+  bool ParseTag();
+
+  // Reads the stream starting at the given start sector.
+  std::vector<uint8_t> ReadStream(const std::string& name,
+                                  uint32_t start,
+                                  uint64_t stream_size,
+                                  bool force_fat,
+                                  bool free_data);
+
+  // Parse-time functionality is broken out into Populate*() methods for
+  // clarity.
+
+  void PopulateFatEntries();
+
+  // Copy the difat entries and make a list of difat sectors, if any.
+  // The first 109 difat entries must exist and are read from the MSI header,
+  // the rest come from optional additional sectors.
+  void PopulateDifatEntries();
+
+  // Returns the directory entry for the signedData stream, if it exists in the
+  // given sector.
+  SignedDataDir SignedDataDirFromSector(uint64_t dir_sector);
+
+  bool PopulateSignatureDirEntry();
+  void PopulateSignedData();
+
+  // Returns the index of the first free entry at the end of a vector of fat
+  // entries. It returns one past the end of list if there are no free entries
+  // at the end.
+  static uint64_t FirstFreeFatEntry(const std::vector<uint32_t>& entries);
+  uint64_t FirstFreeFatEntry();
+
+  // Ensures there are at least n free entries at the end of the FAT list,
+  // and returns the first free entry.
+  uint64_t EnsureFreeFatEntries(uint64_t n);
+
+  // The header (512 bytes).
+  std::vector<uint8_t> header_bytes_;
+
+  // The parsed msi header.
+  MSIHeader header_;
+
+  // sector parameters.
+  SectorFormat sector_format_;
+
+  // The file contents with no header.
+  std::vector<uint8_t> contents_;
+
+  // The offset of the signedData stream directory in `contents_`.
+  uint64_t sig_dir_offset_ = 0;
+
+  // The parsed contents of the signedData stream directory.
+  MSIDirEntry sig_dir_entry_;
+
+  // The PKCS#7, SignedData in asn1 DER form.
+  std::vector<uint8_t> signed_data_bytes_;
+
+  // A copy of the FAT entries in one list.
+  std::vector<uint32_t> fat_entries_;
+
+  // A copy of the DIFAT entries in one list.
+  std::vector<uint32_t> difat_entries_;
+
+  // A list of the dedicated DIFAT sectors, if any, for convenience.
+  std::vector<uint32_t> difat_sectors_;
+
+  // The parsed tag, if any.
+  std::optional<std::vector<const uint8_t>> tag_;
+};
 
 // CBS is a structure from BoringSSL used for parsing binary and ASN.1-based
 // formats. This implementation detail is not exposed in the interface of this
@@ -30,8 +245,8 @@ static base::span<const uint8_t> SpanFromCBS(const CBS* cbs) {
   return base::span<const uint8_t>(CBS_data(cbs), CBS_len(cbs));
 }
 
-Binary::Binary(const Binary&) = default;
-Binary::~Binary() = default;
+PEBinary::PEBinary(const PEBinary&) = default;
+PEBinary::~PEBinary() = default;
 
 // kTagOID contains the DER-serialised form of the extension OID that we stuff
 // the tag into: 1.3.6.1.4.1.11129.2.1.9999.
@@ -47,7 +262,8 @@ static constexpr uint16_t kAttributeCertificateRevision = 0x200;
 static constexpr uint16_t kAttributeCertificateTypePKCS7SignedData = 2;
 
 // static
-std::optional<Binary> Binary::Parse(base::span<const uint8_t> binary) {
+std::unique_ptr<BinaryInterface> PEBinary::Parse(
+    base::span<const uint8_t> binary) {
   // Parse establishes some offsets into |binary| for structures that |GetTag|
   // and |SetTag| will both need.
 
@@ -89,7 +305,7 @@ std::optional<Binary> Binary::Parse(base::span<const uint8_t> binary) {
       !CBS_get_bytes(&bin_for_header, &optional_header,
                      size_of_optional_header) ||
       !CBS_get_u16le(&optional_header, &optional_header_magic)) {
-    return std::nullopt;
+    return {};
   }
 
   size_t address_size = 0, extra_header_bytes = 0;
@@ -103,7 +319,7 @@ std::optional<Binary> Binary::Parse(base::span<const uint8_t> binary) {
       extra_header_bytes = 4;
       break;
     default:
-      return std::nullopt;
+      return {};
   }
 
   // Skip the Windows-specific header section up until the number of data
@@ -125,14 +341,14 @@ std::optional<Binary> Binary::Parse(base::span<const uint8_t> binary) {
       !CBS_get_u32le(&optional_header, &cert_entry_size) ||
       size_t{cert_entry_virtual_addr} + cert_entry_size < cert_entry_size ||
       size_t{cert_entry_virtual_addr} + cert_entry_size != CBS_len(&bin)) {
-    return std::nullopt;
+    return {};
   }
 
   CBS bin_for_certs = bin;
   CBS certs;
   if (!CBS_skip(&bin_for_certs, cert_entry_virtual_addr) ||
       !CBS_get_bytes(&bin_for_certs, &certs, cert_entry_size)) {
-    return std::nullopt;
+    return {};
   }
 
   // See the WIN_CERTIFICATE structure from
@@ -147,11 +363,11 @@ std::optional<Binary> Binary::Parse(base::span<const uint8_t> binary) {
       !CBS_get_u16le(&certs, &certs_type) ||
       certs_type != kAttributeCertificateTypePKCS7SignedData ||
       !CBS_get_asn1_element(&certs, &signed_data, CBS_ASN1_SEQUENCE)) {
-    return std::nullopt;
+    return {};
   }
 
-  Binary ret;
-  ret.certs_size_offset_ =
+  auto ret = std::make_unique<PEBinary>();
+  ret->certs_size_offset_ =
       pe_offset + 4 + kFileHeaderSize + size_of_optional_header -
       8 * (num_directory_entries - kCertificateTableIndex) + 4;
 
@@ -159,25 +375,25 @@ std::optional<Binary> Binary::Parse(base::span<const uint8_t> binary) {
   // from that location and checking that the value is as expected.
   uint32_t cert_entry_size_duplicate = 0;
   CBS bin_for_check = bin;
-  if (!CBS_skip(&bin_for_check, ret.certs_size_offset_) ||
+  if (!CBS_skip(&bin_for_check, ret->certs_size_offset_) ||
       !CBS_get_u32le(&bin_for_check, &cert_entry_size_duplicate) ||
       cert_entry_size_duplicate != cert_entry_size) {
     NOTREACHED();
-    return std::nullopt;
+    return {};
   }
 
-  ret.binary_ = binary;
-  ret.content_info_ = SpanFromCBS(&signed_data);
-  ret.attr_cert_offset_ = cert_entry_virtual_addr;
+  ret->binary_ = binary;
+  ret->content_info_ = SpanFromCBS(&signed_data);
+  ret->attr_cert_offset_ = cert_entry_virtual_addr;
 
-  if (!ret.ParseTag()) {
-    return std::nullopt;
+  if (!ret->ParseTag()) {
+    return {};
   }
 
   return ret;
 }
 
-const std::optional<base::span<const uint8_t>>& Binary::tag() const {
+std::optional<std::vector<const uint8_t>> PEBinary::tag() const {
   return tag_;
 }
 
@@ -407,7 +623,7 @@ std::optional<std::vector<uint8_t>> SetTagImpl(
       0x87, 0x17, 0x28, 0xbf, 0x85, 0x6a, 0x17, 0x4f, 0x93, 0xf4,
   };
 
-  // Create a dummy certificate with an extension containing the tag. See
+  // Create a mock certificate with an extension containing the tag. See
   // https://tools.ietf.org/html/rfc5280#section-4.1 for the structure that's
   // being created here.
   CBB cert, tbs_cert, version, spki, sigalg, sigalg_oid, validity, not_before,
@@ -487,8 +703,8 @@ std::optional<std::vector<uint8_t>> SetTagImpl(
   return ret;
 }
 
-std::optional<std::vector<uint8_t>> Binary::SetTag(
-    base::span<const uint8_t> tag) const {
+std::optional<std::vector<uint8_t>> PEBinary::SetTag(
+    base::span<const uint8_t> tag) {
   std::optional<std::vector<uint8_t>> ret = SetTagImpl(content_info_, tag);
   if (!ret) {
     return std::nullopt;
@@ -515,12 +731,377 @@ std::optional<std::vector<uint8_t>> Binary::SetTag(
   return ret;
 }
 
-Binary::Binary() = default;
+PEBinary::PEBinary() = default;
 
-bool Binary::ParseTag() {
+bool PEBinary::ParseTag() {
   const auto [success, tag] = ParseTagImpl(content_info_);
-  tag_ = std::move(tag);
+  if (tag) {
+    tag_ = std::vector<const uint8_t>(tag->begin(), tag->end());
+  }
   return success;
+}
+
+// Compound file binary format constants.
+constexpr int kNumHeaderContentBytes = 76;
+constexpr int kNumHeaderTotalBytes = 512;
+constexpr int kNumDifatHeaderEntries = 109;
+constexpr int kNumDirEntryBytes = 128;
+constexpr int kMiniStreamCutoffSize = 4096;
+
+// An unallocated sector (used in the FAT or DIFAT).
+constexpr uint32_t kFatFreeSector = 0xFFFFFFFF;
+
+// End of a linked chain (in the FAT); or end of DIFAT sector chain.
+constexpr uint32_t kFatEndOfChain = 0xFFFFFFFE;
+
+constexpr uint8_t kMsiHeaderSignature[] = {0xd0, 0xcf, 0x11, 0xe0,
+                                           0xa1, 0xb1, 0x1a, 0xe1};
+constexpr uint8_t kMsiHeaderClsid[16] = {};
+
+// UTF-16 for "\05DigitalSignature".
+constexpr uint8_t kSignatureName[] = {
+    0x05, 0x00, 0x44, 0x00, 0x69, 0x00, 0x67, 0x00, 0x69, 0x00, 0x74, 0x00,
+    0x61, 0x00, 0x6c, 0x00, 0x53, 0x00, 0x69, 0x00, 0x67, 0x00, 0x6e, 0x00,
+    0x61, 0x00, 0x74, 0x00, 0x75, 0x00, 0x72, 0x00, 0x65, 0x00, 0x00, 0x00};
+
+std::optional<SectorFormat> NewSectorFormat(uint16_t sector_shift) {
+  const uint64_t sector_size = 1 << sector_shift;
+  if (sector_size != 4096 && sector_size != 512) {
+    // Unexpected msi sector shift.
+    return {};
+  }
+  return SectorFormat{sector_size, static_cast<int>(sector_size / 4)};
+}
+
+// Returns whether the index corresponds to the last entry in a sector.
+//
+// The last entry in each difat sector is a pointer to the next difat sector, or
+// is an end-of-chain marker.
+// This does not apply to the last entry stored in the MSI header.
+bool IsLastInSector(const SectorFormat& format, int index) {
+  return index > kNumDifatHeaderEntries &&
+         (index - kNumDifatHeaderEntries + 1) % format.ints == 0;
+}
+
+MSIDirEntry::MSIDirEntry(const MSIDirEntry&) = default;
+MSIDirEntry::MSIDirEntry() = default;
+MSIDirEntry::~MSIDirEntry() = default;
+
+MSIHeader::MSIHeader(const MSIHeader&) = default;
+MSIHeader::MSIHeader() = default;
+MSIHeader::~MSIHeader() = default;
+
+std::vector<uint8_t> MSIBinary::ReadStream(const std::string& name,
+                                           uint32_t start,
+                                           uint64_t stream_size,
+                                           bool force_fat,
+                                           bool free_data) {
+  // TODO(crbug.com/1422360): handle the mini FAT format.
+  CHECK(force_fat || stream_size >= kMiniStreamCutoffSize);
+
+  uint32_t sector = start;
+  uint64_t size = stream_size;
+  std::vector<uint8_t> stream;
+  while (size > 0) {
+    if (sector == kFatEndOfChain || sector == kFatFreeSector) {
+      // Ran out of sectors in copying stream.
+      return {};
+    }
+    uint64_t n = size;
+    if (n > sector_format_.size) {
+      n = sector_format_.size;
+    }
+    const uint64_t offset = sector_format_.size * sector;
+    stream.insert(stream.end(), contents_.begin() + offset,
+                  contents_.begin() + offset + n);
+    size -= n;
+
+    // Zero out the existing stream bytes, if requested.
+    // For example, new signedData will be written at the end of the file, which
+    // may be where the existing stream is, but this works regardless. The
+    // stream bytes could be left as unused junk, but unused bytes in an MSI
+    // file are typically zeroed. Set the data in the sector to zero.
+    if (free_data) {
+      for (uint64_t i = 0; i < n; ++i) {
+        contents_[offset + i] = 0;
+      }
+    }
+
+    // Find the next sector, then free the FAT entry of the current sector.
+    uint32_t old = sector;
+    sector = fat_entries_[sector];
+    if (free_data) {
+      fat_entries_[old] = kFatFreeSector;
+    }
+  }
+  return stream;
+}
+
+void MSIBinary::PopulateFatEntries() {
+  std::vector<uint32_t> fat_entries;
+  for (size_t i = 0; i < difat_entries_.size(); ++i) {
+    const uint32_t sector = difat_entries_[i];
+
+    // The last entry in a difat sector is a chaining entry.
+    if (sector == kFatFreeSector || sector == kFatEndOfChain ||
+        IsLastInSector(sector_format_, i)) {
+      continue;
+    }
+    const uint64_t offset = sector * sector_format_.size;
+    for (int j = 0; j < sector_format_.ints; ++j) {
+      fat_entries.push_back(
+          *reinterpret_cast<uint32_t*>(&contents_[offset + j * 4]));
+    }
+  }
+  fat_entries_ = fat_entries;
+}
+
+void MSIBinary::PopulateDifatEntries() {
+  std::vector<uint32_t> difat_entries(kNumDifatHeaderEntries);
+  difat_entries.reserve(kNumDifatHeaderEntries +
+                        header_.num_difat_sectors * sector_format_.ints);
+  for (int i = 0; i < kNumDifatHeaderEntries; ++i) {
+    difat_entries[i] = *reinterpret_cast<uint32_t*>(
+        &header_bytes_[kNumHeaderContentBytes + i * 4]);
+  }
+
+  // TODO(crbug.com/1422360): handle additional difat sectors.
+  CHECK(!header_.num_difat_sectors);
+  difat_entries_ = difat_entries;
+}
+
+SignedDataDir MSIBinary::SignedDataDirFromSector(uint64_t dir_sector) {
+  MSIDirEntry sig_dir_entry;
+  for (uint64_t i = 0; i < sector_format_.size / kNumDirEntryBytes; ++i) {
+    const uint64_t offset =
+        dir_sector * sector_format_.size + i * kNumDirEntryBytes;
+    std::memcpy(&sig_dir_entry, &contents_[offset], sizeof(MSIDirEntry));
+    if (std::equal(sig_dir_entry.name,
+                   sig_dir_entry.name + sig_dir_entry.num_name_bytes,
+                   std::begin(kSignatureName))) {
+      return {sig_dir_entry, offset, true};
+    }
+  }
+  return {};
+}
+
+bool MSIBinary::PopulateSignatureDirEntry() {
+  uint64_t dir_sector = header_.first_dir_sector;
+  while (true) {
+    const auto [sig_dir_entry, offset, found] =
+        SignedDataDirFromSector(dir_sector);
+    if (found) {
+      sig_dir_entry_ = sig_dir_entry;
+      sig_dir_offset_ = offset;
+      return true;
+    }
+
+    // Did not find the entry, go to the next directory sector.
+    dir_sector = fat_entries_[dir_sector];
+    if (dir_sector == kFatEndOfChain) {
+      // Did not find signature stream in MSI file.
+      return false;
+    }
+  }
+}
+
+void MSIBinary::PopulateSignedData() {
+  signed_data_bytes_ = ReadStream(
+      "signedData", sig_dir_entry_.stream_first_sector,
+      header_.dll_version != 3 ? sig_dir_entry_.stream_size
+                               : sig_dir_entry_.stream_size & 0x7FFFFFFF,
+      false, true);
+}
+
+// static
+uint64_t MSIBinary::FirstFreeFatEntry(const std::vector<uint32_t>& entries) {
+  uint64_t first_free_index = entries.size();
+  while (entries[first_free_index - 1] == kFatFreeSector) {
+    first_free_index--;
+  }
+  return first_free_index;
+}
+
+uint64_t MSIBinary::FirstFreeFatEntry() {
+  return FirstFreeFatEntry(fat_entries_);
+}
+
+uint64_t MSIBinary::EnsureFreeFatEntries(uint64_t n) {
+  uint64_t size_fat = fat_entries_.size();
+  uint64_t first_free_index = FirstFreeFatEntry();
+
+  // TODO(crbug.com/1422360): handle adding additional FAT sectors.
+  CHECK_GE(size_fat - first_free_index, n);
+
+  return first_free_index;
+}
+
+MSIBinary::MSIBinary(const MSIBinary&) = default;
+MSIBinary::MSIBinary() = default;
+MSIBinary::~MSIBinary() = default;
+
+// static
+std::unique_ptr<BinaryInterface> MSIBinary::Parse(
+    base::span<const uint8_t> file_contents) {
+  if (file_contents.size() < kNumHeaderTotalBytes) {
+    // MSI file is too short to contain header.
+    return {};
+  }
+  auto msi_binary = std::make_unique<MSIBinary>();
+
+  // Parse the header.
+  msi_binary->header_bytes_ = std::vector<uint8_t>(
+      file_contents.begin(), file_contents.begin() + kNumHeaderTotalBytes);
+  std::memcpy(&msi_binary->header_, &msi_binary->header_bytes_[0],
+              sizeof(MSIHeader));
+  if (std::memcmp(msi_binary->header_.magic, kMsiHeaderSignature,
+                  sizeof(kMsiHeaderSignature)) != 0 ||
+      std::memcmp(msi_binary->header_.clsid, kMsiHeaderClsid,
+                  sizeof(kMsiHeaderClsid)) != 0) {
+    // Not an msi file.
+    return {};
+  }
+  const auto sector_format = NewSectorFormat(msi_binary->header_.sector_shift);
+  if (!sector_format) {
+    return {};
+  }
+  msi_binary->sector_format_ = *sector_format;
+  if (file_contents.size() < msi_binary->sector_format_.size) {
+    // MSI file is too short to contain a full header sector.
+    return {};
+  }
+  msi_binary->contents_ = std::vector<uint8_t>(
+      file_contents.begin() + msi_binary->sector_format_.size,
+      file_contents.end());
+
+  // The difat entries must be populated before the fat entries.
+  msi_binary->PopulateDifatEntries();
+  msi_binary->PopulateFatEntries();
+
+  // The signature dir entry must be populated before the signed data.
+  if (!msi_binary->PopulateSignatureDirEntry()) {
+    return {};
+  }
+  msi_binary->PopulateSignedData();
+
+  if (!msi_binary->ParseTag()) {
+    return {};
+  }
+
+  return msi_binary;
+}
+
+std::vector<uint8_t> MSIBinary::BuildBinary(
+    const std::vector<uint8_t>& signed_data) {
+  if (signed_data.size() < kMiniStreamCutoffSize) {
+    // Writing SignedData less than 4096 bytes is not supported.
+    return {};
+  }
+
+  // Ensure enough free FAT entries for the signedData.
+  const uint64_t num_signed_data_sectors =
+      (signed_data.size() - 1) / sector_format_.size + 1;
+  const uint64_t first_signed_data_sector =
+      EnsureFreeFatEntries(num_signed_data_sectors);
+
+  // Allocate sectors for the signedData, in a copy of the FAT entries.
+  std::vector<uint32_t> new_fat_entries = fat_entries_;
+  for (uint64_t i = 0; i < num_signed_data_sectors - 1; ++i) {
+    new_fat_entries[first_signed_data_sector + i] =
+        first_signed_data_sector + i + 1;
+  }
+  new_fat_entries[first_signed_data_sector + num_signed_data_sectors - 1] =
+      kFatEndOfChain;
+
+  // Update the signedData stream's directory entry location and size, in copy
+  // of dir entry.
+  MSIDirEntry new_sig_dir_entry = sig_dir_entry_;
+  new_sig_dir_entry.stream_first_sector = first_signed_data_sector;
+  new_sig_dir_entry.stream_size = signed_data.size();
+
+  // Write out the...
+  // ...header,
+  std::vector<uint8_t> header_sector_bytes(sector_format_.size);
+  std::memcpy(&header_sector_bytes[0], &header_, sizeof(MSIHeader));
+  for (int i = 0; i < kNumDifatHeaderEntries; ++i) {
+    std::memcpy(&header_sector_bytes[kNumHeaderContentBytes + i * 4],
+                &difat_entries_[i], sizeof(uint32_t));
+  }
+
+  // ...content,
+  // Make a copy of the content bytes, since new data will be overlaid on it.
+  std::vector<uint8_t> new_contents(sector_format_.size *
+                                    FirstFreeFatEntry(new_fat_entries));
+  std::memcpy(&new_contents[0], &contents_[0], contents_.size());
+
+  // ...signedData directory entry from local modified copy,
+  std::memcpy(&new_contents[sig_dir_offset_], &new_sig_dir_entry,
+              sizeof(MSIDirEntry));
+
+  // TODO(crbug.com/1422360): handle additional difat sectors.
+  CHECK(!difat_sectors_.size());
+
+  // ...fat entries from local modified copy,
+  int index = 0;
+  for (size_t i = 0; i < difat_entries_.size(); ++i) {
+    if (difat_entries_[i] != kFatFreeSector &&
+        difat_entries_[i] != kFatEndOfChain &&
+        !IsLastInSector(sector_format_, i)) {
+      const uint64_t offset = difat_entries_[i] * sector_format_.size;
+      for (int j = 0; j < sector_format_.ints; ++j) {
+        std::memcpy(&new_contents[offset + j * 4], &new_fat_entries[index + j],
+                    sizeof(uint32_t));
+      }
+      index += sector_format_.ints;
+    }
+  }
+
+  // ...signedData
+  // `new_contents` is zero-initialized, so no need to add padding to end of
+  // sector. The sectors allocated for signedData are guaranteed contiguous.
+  std::memcpy(&new_contents[first_signed_data_sector * sector_format_.size],
+              &signed_data[0], signed_data.size());
+
+  // ...finally, build and return the new binary.
+  std::vector<uint8_t> binary(header_sector_bytes.size() + new_contents.size());
+  std::memcpy(&binary[0], &header_sector_bytes[0], header_sector_bytes.size());
+  std::memcpy(&binary[header_sector_bytes.size()], &new_contents[0],
+              new_contents.size());
+  return binary;
+}
+
+std::optional<std::vector<uint8_t>> MSIBinary::SetTag(
+    base::span<const uint8_t> tag) {
+  std::optional<std::vector<uint8_t>> signed_data =
+      SetTagImpl(signed_data_bytes_, tag);
+  if (!signed_data) {
+    return {};
+  }
+
+  return BuildBinary(*signed_data);
+}
+
+bool MSIBinary::ParseTag() {
+  const auto [success, tag] = ParseTagImpl(signed_data_bytes_);
+  if (tag) {
+    tag_ = std::vector<const uint8_t>(tag->begin(), tag->end());
+  }
+  return success;
+}
+
+std::optional<std::vector<const uint8_t>> MSIBinary::tag() const {
+  return tag_;
+}
+
+}  // namespace
+
+std::unique_ptr<BinaryInterface> CreatePEBinary(
+    base::span<const uint8_t> contents) {
+  return PEBinary::Parse(contents);
+}
+std::unique_ptr<BinaryInterface> CreateMSIBinary(
+    base::span<const uint8_t> contents) {
+  return MSIBinary::Parse(contents);
 }
 
 }  // namespace updater::tagging

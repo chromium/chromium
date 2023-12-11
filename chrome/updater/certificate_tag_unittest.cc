@@ -3,6 +3,8 @@
 // found in the LICENSE file.
 
 #include <cstdint>
+#include <cstring>
+#include <memory>
 #include <optional>
 #include <vector>
 
@@ -24,35 +26,35 @@ TEST(CertificateTag, RoundTrip) {
   const base::span<const uint8_t> exe_span(
       reinterpret_cast<const uint8_t*>(exe.data()), exe.size());
 
-  std::optional<Binary> bin(Binary::Parse(exe_span));
+  std::unique_ptr<BinaryInterface> bin(CreatePEBinary(exe_span));
   ASSERT_TRUE(bin);
 
   // Binary should be untagged on disk.
-  std::optional<base::span<const uint8_t>> orig_tag(bin->tag());
+  std::optional<std::vector<const uint8_t>> orig_tag(bin->tag());
   EXPECT_FALSE(orig_tag);
 
   constexpr uint8_t kTag[] = {1, 2, 3, 4, 5};
   std::optional<std::vector<uint8_t>> updated_exe(bin->SetTag(kTag));
   ASSERT_TRUE(updated_exe);
 
-  std::optional<Binary> bin2(Binary::Parse(*updated_exe));
+  std::unique_ptr<BinaryInterface> bin2(CreatePEBinary(*updated_exe));
   ASSERT_TRUE(bin2);
-  std::optional<base::span<const uint8_t>> parsed_tag(bin2->tag());
+  std::optional<std::vector<const uint8_t>> parsed_tag(bin2->tag());
   ASSERT_TRUE(parsed_tag);
-  EXPECT_TRUE(parsed_tag->size() == sizeof(kTag) &&
-              memcmp(kTag, parsed_tag->data(), sizeof(kTag)) == 0);
+  ASSERT_EQ(parsed_tag->size(), sizeof(kTag));
+  EXPECT_TRUE(memcmp(kTag, parsed_tag->data(), sizeof(kTag)) == 0);
 
   // Update an existing tag.
   constexpr uint8_t kTag2[] = {1, 2, 3, 4, 6};
   std::optional<std::vector<uint8_t>> updated_again_exe(bin2->SetTag(kTag2));
   ASSERT_TRUE(updated_again_exe);
 
-  std::optional<Binary> bin3(Binary::Parse(*updated_again_exe));
+  std::unique_ptr<BinaryInterface> bin3(CreatePEBinary(*updated_again_exe));
   ASSERT_TRUE(bin3);
-  std::optional<base::span<const uint8_t>> parsed_tag2(bin3->tag());
+  std::optional<std::vector<const uint8_t>> parsed_tag2(bin3->tag());
   ASSERT_TRUE(parsed_tag2);
-  EXPECT_TRUE(parsed_tag2->size() == sizeof(kTag2) &&
-              memcmp(kTag2, parsed_tag2->data(), sizeof(kTag2)) == 0);
+  ASSERT_EQ(parsed_tag2->size(), sizeof(kTag2));
+  EXPECT_TRUE(memcmp(kTag2, parsed_tag2->data(), sizeof(kTag2)) == 0);
 
   // Updating an existing tag with a tag of the same size should not have grown
   // the binary, i.e. the old tag should have been erased first.
