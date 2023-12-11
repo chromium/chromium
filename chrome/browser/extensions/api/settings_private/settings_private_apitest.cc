@@ -146,7 +146,8 @@ IN_PROC_BROWSER_TEST_P(SettingsPrivateApiTest, GetPartiallyManagedPref) {
   provider->SetWebsiteSetting(
       ContentSettingsPattern::Wildcard(), ContentSettingsPattern::Wildcard(),
       ContentSettingsType::COOKIES,
-      base::Value(ContentSetting::CONTENT_SETTING_ALLOW));
+      base::Value(ContentSetting::CONTENT_SETTING_ALLOW), /*constraints=*/{},
+      content_settings::PartitionKey::GetDefaultForTesting());
   content_settings::TestUtils::OverrideProvider(
       HostContentSettingsMapFactory::GetForProfile(profile()),
       std::move(provider), HostContentSettingsMap::POLICY_PROVIDER);
@@ -166,7 +167,8 @@ IN_PROC_BROWSER_TEST_P(SettingsPrivateApiTest, GetManagedByParentPref) {
   provider->SetWebsiteSetting(
       ContentSettingsPattern::Wildcard(), ContentSettingsPattern::Wildcard(),
       ContentSettingsType::COOKIES,
-      base::Value(ContentSetting::CONTENT_SETTING_BLOCK));
+      base::Value(ContentSetting::CONTENT_SETTING_BLOCK), /*constraints=*/{},
+      content_settings::PartitionKey::GetDefaultForTesting());
   content_settings::TestUtils::OverrideProvider(
       HostContentSettingsMapFactory::GetForProfile(profile()),
       std::move(provider), HostContentSettingsMap::SUPERVISED_PROVIDER);

@@ -53,7 +53,9 @@ void ApplySetting(content_settings::CookieSettings* cookie_settings,
           ContentSettingsPattern::Wildcard(),
           ContentSettingsPattern::FromURL(url), ContentSettingsType::COOKIES,
           base::Value(cookies_enabled ? ContentSetting::CONTENT_SETTING_ALLOW
-                                      : ContentSetting::CONTENT_SETTING_BLOCK));
+                                      : ContentSetting::CONTENT_SETTING_BLOCK),
+          /*constraints=*/{},
+          content_settings::PartitionKey::GetDefaultForTesting());
       content_settings::TestUtils::OverrideProvider(
           hcsm, std::move(provider), HostContentSettingsMap::POLICY_PROVIDER);
       return;
@@ -72,7 +74,9 @@ void ApplySetting(content_settings::CookieSettings* cookie_settings,
           ContentSettingsPattern::Wildcard(),
           ContentSettingsPattern::FromURL(url), ContentSettingsType::COOKIES,
           base::Value(cookies_enabled ? ContentSetting::CONTENT_SETTING_ALLOW
-                                      : ContentSetting::CONTENT_SETTING_BLOCK));
+                                      : ContentSetting::CONTENT_SETTING_BLOCK),
+          /*constraints=*/{},
+          content_settings::PartitionKey::GetDefaultForTesting());
       content_settings::TestUtils::OverrideProvider(
           hcsm, std::move(provider),
           HostContentSettingsMap::CUSTOM_EXTENSION_PROVIDER);

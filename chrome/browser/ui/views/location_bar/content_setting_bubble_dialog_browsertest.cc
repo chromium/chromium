@@ -253,7 +253,9 @@ void ContentSettingBubbleDialogTest::OverrideContentSettingsProvider(
   for (ContentSettingsType type : types) {
     provider->SetWebsiteSetting(
         ContentSettingsPattern::Wildcard(), ContentSettingsPattern::Wildcard(),
-        type, base::Value(ContentSetting::CONTENT_SETTING_BLOCK));
+        type, base::Value(ContentSetting::CONTENT_SETTING_BLOCK),
+        /*constraints=*/{},
+        content_settings::PartitionKey::GetDefaultForTesting());
   }
   content_settings::TestUtils::OverrideProvider(map, std::move(provider),
                                                 GetParam());
