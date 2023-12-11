@@ -1090,6 +1090,10 @@ const CSSValue* StyleCascade::ResolvePendingSubstitution(
   builder.Append(value.CustomCSSText());
   builder.Append(")");
 
+  // TODO(crbug.com/1423568): Remove once bug has been tracked down.
+  SCOPED_CRASH_KEY_STRING1024("css_substitution_error", "properties",
+                              builder.ToString().Utf8());
+
   DUMP_WILL_BE_NOTREACHED_NORETURN() << builder.ToString();
   return cssvalue::CSSUnsetValue::Create();
 }

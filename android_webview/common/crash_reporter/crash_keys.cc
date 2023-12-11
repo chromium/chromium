@@ -146,6 +146,10 @@ const char* const kWebViewCrashKeyAllowList[] = {
     "num-experiments",
     "variations-seed-version",
 
+    // TODO(crbug.com/1423568): Temporary for debugging CSS custom variables
+    // crash.
+    "css_substitution_error-properties",
+
     // sandbox/linux
     "seccomp-sigsys",
 
