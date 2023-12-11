@@ -52,14 +52,6 @@ class AutocompleteRowWithDeleteButtonTest : public ChromeViewsTestBase {
     ChromeViewsTestBase::TearDown();
   }
 
-  void SimulateKeyPress(int windows_key_code) {
-    content::NativeWebKeyboardEvent event(
-        blink::WebKeyboardEvent::Type::kRawKeyDown,
-        blink::WebInputEvent::kNoModifiers, ui::EventTimeForNow());
-    event.windows_key_code = windows_key_code;
-    view().HandleKeyPressEvent(event);
-  }
-
   void ShowSuggestion(Suggestion suggestion) {
     // Show the button.
     controller().set_suggestions({std::move(suggestion)});
@@ -133,11 +125,6 @@ TEST_F(AutocompleteRowWithDeleteButtonTest,
        AutocompleteDeleteButtonSetsAccessibility) {
   ShowAutocompleteSuggestion();
   views::ImageButton* button = view().GetButtonForTest();
-  // We only set the accessible name once the user navigates to the button.
-  // TODO(crbug.com/1417187): Delete this once we find out why calling
-  // NotifyAccessibilityEvent in the content is including the button's
-  // accessible name attribute value.
-  SimulateKeyPress(ui::VKEY_RIGHT);
   ui::AXNodeData node_data;
   button->GetAccessibleNodeData(&node_data);
 
