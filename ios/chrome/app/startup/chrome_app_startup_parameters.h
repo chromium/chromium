@@ -88,7 +88,7 @@ enum MobileSessionCallerApp {
 //   the only required parameter is `url` containing the url to open inclusive
 //   of protocol.
 //   For application members of the Chrome Application Group,
-//   "app-group-command" command can be used. In that case, the paramaters are
+//   "app-group-command" command can be used. In that case, the parameters are
 //   sent via the shared NSUserDefault dictionary.
 //
 // Note the protocol isn't hardcoded so we accept anything. Moreover, in iOS 6
@@ -96,8 +96,8 @@ enum MobileSessionCallerApp {
 // to be registered for that protocol.
 // If the string for the parsed URL is malformed (according to RFC 2396),
 // returns nil.
-+ (instancetype)newChromeAppStartupParametersWithURL:(NSURL*)url
-                               fromSourceApplication:(NSString*)appId;
++ (instancetype)startupParametersWithURL:(NSURL*)URL
+                       sourceApplication:(NSString*)appID;
 
 // Returns the MobileSessionCallerApp for the given bundle ID.
 - (MobileSessionCallerApp)callerApp;
@@ -111,13 +111,13 @@ enum MobileSessionCallerApp {
 
 @interface ChromeAppStartupParameters (Testing)
 
-+ (instancetype)newAppStartupParametersForCommand:(NSString*)command
-                                 withExternalText:(NSString*)externalText
-                                 withExternalData:(NSData*)externalData
-                                        withIndex:(NSNumber*)index
-                                          withURL:(NSURL*)url
-                            fromSourceApplication:(NSString*)appId
-                      fromSecureSourceApplication:(NSString*)secureSourceApp;
++ (instancetype)startupParametersForCommand:(NSString*)command
+                           withExternalText:(NSString*)externalText
+                               externalData:(NSData*)externalData
+                                      index:(NSNumber*)index
+                                        URL:(NSURL*)URL
+                          sourceApplication:(NSString*)appID
+                    secureSourceApplication:(NSString*)secureAppID;
 
 @end
 

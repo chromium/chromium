@@ -171,9 +171,9 @@ TEST_F(URLOpenerTest, HandleOpenURL) {
           URLOpenerParams* urlOpenerParams = [[URLOpenerParams alloc]
               initWithUIOpenURLContext:(id)context];  //< Unsafe cast intended.
 
-          ChromeAppStartupParameters* params = [ChromeAppStartupParameters
-              newChromeAppStartupParametersWithURL:testUrl
-                             fromSourceApplication:nil];
+          ChromeAppStartupParameters* params =
+              [ChromeAppStartupParameters startupParametersWithURL:testUrl
+                                                 sourceApplication:nil];
 
           // Action.
           BOOL result = [URLOpener openURL:urlOpenerParams

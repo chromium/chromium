@@ -42,9 +42,9 @@ const char* const kUMAShowDefaultPromoFromAppsHistogram =
   NSURL* URL = options.URL;
   NSString* sourceApplication = options.sourceApplication;
 
-  ChromeAppStartupParameters* params = [ChromeAppStartupParameters
-      newChromeAppStartupParametersWithURL:URL
-                     fromSourceApplication:sourceApplication];
+  ChromeAppStartupParameters* params =
+      [ChromeAppStartupParameters startupParametersWithURL:URL
+                                         sourceApplication:sourceApplication];
 
   if (IsIncognitoModeDisabled(prefService)) {
     params.applicationMode = ApplicationModeForTabOpening::NORMAL;
