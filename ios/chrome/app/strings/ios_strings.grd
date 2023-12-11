@@ -1092,6 +1092,12 @@ See your search engine’s instructions for deleting your search history, if app
       <message name="IDS_IOS_DOWNLOAD_MANAGER_DOWNLOAD" desc="Button to start downloading a file. [Length: 15em] [iOS only]">
         Download
       </message>
+      <message name="IDS_IOS_DOWNLOAD_MANAGER_DOWNLOAD_FILE_WITHOUT_SIZE" desc="Label asking the user whether they want to start the download for a file. [Length: 25em] [iOS only]" meaning="Label asking the user whether they want to start the download for a file. [Length: 25em] [iOS only]">
+        Download file?
+      </message>
+      <message name="IDS_IOS_DOWNLOAD_MANAGER_DOWNLOAD_FILE_WITH_SIZE" desc="Label asking the user whether they want to start the download for a file. It includes the size of the file to be downloaded. [Length: 25em] [iOS only]" meaning="Label asking the user whether they want to start the download for a file. It includes the size of the file to be downloaded. [Length: 25em] [iOS only]">
+        Download file? (<ph name="FILE_SIZE">$1<ex>456KB</ex></ph>)
+      </message>
       <message name="IDS_IOS_DOWNLOAD_MANAGER_DOWNLOADING" desc="Accessibility label for the file icon while the file is being downloaded. [iOS only]">
         Downloading
       </message>

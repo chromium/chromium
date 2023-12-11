@@ -59,6 +59,7 @@ extern NSString* const kMoveFolderSymbol;
 extern NSString* const kTopOmniboxOptionSymbol;
 extern NSString* const kBottomOmniboxOptionSymbol;
 extern NSString* const kDangerousOmniboxSymbol;
+extern NSString* const kArrowDownSymbol;
 
 // Custom symbol names which can be configured with a color palette. iOS 15+
 // only.
