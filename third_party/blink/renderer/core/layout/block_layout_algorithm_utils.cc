@@ -144,6 +144,11 @@ LayoutUnit CalculateOutOfFlowStaticInlineLevelOffset(
 
 BlockContentAlignment ComputeContentAlignmentForBlock(
     const ComputedStyle& style) {
+  // ruby-text uses BlockLayoutAlgorithm, but they are not a block container
+  // officially.
+  if (!style.IsDisplayBlockContainer()) {
+    return BlockContentAlignment::kStart;
+  }
   return ComputeContentAlignment(style, /* is_table_cell */ false);
 }
 
