@@ -2904,24 +2904,10 @@ export class SetWallpaperCommand extends FilesCommand {
           });
         })
         .then((/** @type {!ArrayBuffer} */ arrayBuffer) => {
-          return new Promise((resolve, reject) => {
-            // @ts-ignore: error TS2339: Property 'wallpaper' does not exist on
-            // type 'typeof chrome'.
-            chrome.wallpaper.setWallpaper(
-                {
-                  data: arrayBuffer,
-                  // @ts-ignore: error TS2339: Property 'wallpaper' does not
-                  // exist on type 'typeof chrome'.
-                  layout: chrome.wallpaper.WallpaperLayout.CENTER_CROPPED,
-                  filename: 'wallpaper',
-                },
-                () => {
-                  if (chrome.runtime.lastError) {
-                    reject(chrome.runtime.lastError);
-                  } else {
-                    resolve(null);
-                  }
-                });
+          return chrome.wallpaper.setWallpaper({
+            data: arrayBuffer,
+            layout: chrome.wallpaper.WallpaperLayout.CENTER_CROPPED,
+            filename: 'wallpaper',
           });
         })
         .catch(() => {
