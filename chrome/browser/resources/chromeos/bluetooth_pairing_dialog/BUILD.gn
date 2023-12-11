@@ -3,109 +3,26 @@
 # found in the LICENSE file.
 
 import("//chrome/common/features.gni")
-import("//third_party/closure_compiler/compile_js.gni")
-import("//tools/grit/grit_rule.gni")
-import("//tools/grit/preprocess_if_expr.gni")
-import("//tools/polymer/html_to_js.gni")
-import("//ui/webui/resources/tools/generate_grd.gni")
-import("//ui/webui/resources/tools/optimize_webui.gni")
+import("//ui/webui/resources/tools/build_webui.gni")
 
-preprocess_folder = "preprocessed"
-preprocess_gen_manifest = "preprocessed_gen_manifest.json"
-
-if (optimize_webui) {
-  build_manifest = "build_manifest.json"
-
-  optimize_webui("build") {
-    host = "bluetooth-pairing"
-    js_module_in_files = [ "bluetooth_pairing_dialog.js" ]
-    input = rebase_path("$target_gen_dir/$preprocess_folder", root_build_dir)
-    out_manifest = "$target_gen_dir/$build_manifest"
-
-    deps = [
-      ":preprocess_generated",
-      "//ash/webui/common/resources:css_wrapper_files",
-      "//ash/webui/common/resources:html_wrapper_files",
-      "//ash/webui/common/resources:preprocess",
-      "//ui/webui/resources/cr_components/color_change_listener:build_ts",
-      "//ui/webui/resources/cr_components/localized_link:build_ts",
-      "//ui/webui/resources/cr_elements:build_ts",
-      "//ui/webui/resources/js:build_ts",
-      "//ui/webui/resources/mojo:build_ts",
-    ]
-
-    excludes = [
-      "chrome://resources/mojo/mojo/public/mojom/base/string16.mojom-webui.js",
-      "chrome://resources/mojo/chromeos/ash/services/bluetooth_config/public/mojom/cros_bluetooth_config.mojom-webui.js",
-      "chrome://resources/ash/common/bluetooth/cros_bluetooth_config.js",
-    ]
-  }
-}
-
-generate_grd("build_grd") {
-  input_files = [ "bluetooth_pairing_dialog_container.html" ]
-  input_files_base_dir = rebase_path(".", "//")
-  if (optimize_webui) {
-    deps = [ ":build" ]
-    resource_path_rewrites =
-        [ "bluetooth_pairing_dialog.rollup.js|bluetooth_pairing_dialog.js" ]
-    manifest_files = [ "$target_gen_dir/$build_manifest" ]
-  } else {
-    deps = [ ":preprocess_generated" ]
-    manifest_files = [ "$target_gen_dir/$preprocess_gen_manifest" ]
-  }
+build_webui("build") {
   grd_prefix = "bluetooth_pairing_dialog"
-  out_grd = "$target_gen_dir/${grd_prefix}_resources.grd"
-}
 
-preprocess_if_expr("preprocess_generated") {
-  deps = [ ":web_components" ]
-  in_folder = target_gen_dir
-  out_folder = "$target_gen_dir/$preprocess_folder"
-  out_manifest = "$target_gen_dir/$preprocess_gen_manifest"
-  in_files = [ "bluetooth_pairing_dialog.js" ]
-}
+  static_files = [ "bluetooth_pairing_dialog_container.html" ]
 
-js_type_check("closure_compile") {
-  is_polymer3 = true
-  closure_flags = default_closure_args + mojom_js_args
-  deps = [ ":bluetooth_pairing_dialog" ]
-}
+  # Files holding a Polymer element definition AND have an equivalent .html file.
+  web_component_files = [ "bluetooth_pairing_dialog.ts" ]
 
-js_library("bluetooth_pairing_dialog") {
-  deps = [
-    "//ash/webui/common/resources:cr.m",
-    "//ash/webui/common/resources:i18n_behavior",
-    "//ash/webui/common/resources/bluetooth:bluetooth_pairing_ui",
+  ts_definitions = [
+    "//tools/typescript/definitions/bluetooth.d.ts",
+    "//tools/typescript/definitions/bluetooth_private.d.ts",
+    "//tools/typescript/definitions/chrome_send.d.ts",
   ]
-  externs_list = chrome_extension_public_externs + [
-                   "$externs_path/bluetooth.js",
-                   "$externs_path/bluetooth_private.js",
-                   "$externs_path/chrome_send.js",
-                 ]
-  extra_sources = [
-    "$interfaces_path/bluetooth_interface.js",
-    "$interfaces_path/bluetooth_private_interface.js",
+
+  ts_deps = [
+    "//ash/webui/common/resources:build_ts",
+    "//third_party/polymer/v3_0:library",
+    "//ui/webui/resources/cr_components/color_change_listener:build_ts",
+    "//ui/webui/resources/cr_elements:build_ts",
   ]
-}
-
-html_to_js("web_components") {
-  js_files = [ "bluetooth_pairing_dialog.js" ]
-}
-
-grit("resources") {
-  defines = chrome_grit_defines
-
-  # These arguments are needed since the grd is generated at build time.
-  enable_input_discovery_for_gn_analyze = false
-  source = "$target_gen_dir/bluetooth_pairing_dialog_resources.grd"
-  deps = [ ":build_grd" ]
-
-  outputs = [
-    "grit/bluetooth_pairing_dialog_resources.h",
-    "grit/bluetooth_pairing_dialog_resources_map.cc",
-    "grit/bluetooth_pairing_dialog_resources_map.h",
-    "bluetooth_pairing_dialog_resources.pak",
-  ]
-  output_dir = "$root_gen_dir/chrome"
 }
