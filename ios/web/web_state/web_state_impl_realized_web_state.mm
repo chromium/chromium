@@ -776,11 +776,8 @@ const GURL& WebStateImpl::RealizedWebState::GetLastCommittedURL() const {
 std::optional<GURL>
 WebStateImpl::RealizedWebState::GetLastCommittedURLIfTrusted() const {
   NavigationItemImpl* item = navigation_manager_->GetLastCommittedItemImpl();
-  if (!item) {
-    return GURL();
-  }
 
-  if (item->IsUntrusted()) {
+  if (!item || item->IsUntrusted()) {
     return std::nullopt;
   }
 
