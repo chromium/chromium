@@ -11378,16 +11378,6 @@ regressions. -->
   </summary>
 </histogram>
 
-<histogram name="WebController.ExternalURLRequestBlocking"
-    enum="IOSExternalURLRequestStatus" expires_after="2021-08-09">
-  <owner>mrefaat@chromium.org</owner>
-  <summary>
-    [iOS] Measures the proportion of external URL requests that originate from a
-    subframe without any user interaction (e.g. an advertisement contains an
-    iframe directed at the App Store).
-  </summary>
-</histogram>
-
 <histogram name="WebDatabase.AutofillWebDataBackendImpl.OperationResult"
     enum="AutofillWebDataBackendImplOperationResult" expires_after="2024-06-02">
   <owner>battre@chromium.org</owner>

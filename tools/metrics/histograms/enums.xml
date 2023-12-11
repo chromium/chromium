@@ -25838,12 +25838,6 @@ Called by update_permissions_policy_enum.py.-->
   <int value="4" label="External Action"/>
 </enum>
 
-<enum name="IOSExternalURLRequestStatus">
-  <int value="0" label="MainFrameAllowed"/>
-  <int value="1" label="SubframeAllowed"/>
-  <int value="2" label="SubframeBlocked"/>
-</enum>
-
 <enum name="IOSLensSupportStatus">
   <summary>Whether lens is supported and if not the reason why.</summary>
   <int value="0" label="Lens Search Supported"/>
