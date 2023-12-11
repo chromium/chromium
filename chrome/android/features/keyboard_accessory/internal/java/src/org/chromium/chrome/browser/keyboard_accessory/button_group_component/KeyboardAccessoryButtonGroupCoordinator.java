@@ -2,12 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-package org.chromium.chrome.browser.keyboard_accessory.tab_layout_component;
+package org.chromium.chrome.browser.keyboard_accessory.button_group_component;
 
-import static org.chromium.chrome.browser.keyboard_accessory.tab_layout_component.KeyboardAccessoryTabLayoutProperties.ACTIVE_TAB;
-import static org.chromium.chrome.browser.keyboard_accessory.tab_layout_component.KeyboardAccessoryTabLayoutProperties.BUTTON_SELECTION_CALLBACKS;
-import static org.chromium.chrome.browser.keyboard_accessory.tab_layout_component.KeyboardAccessoryTabLayoutProperties.TABS;
-import static org.chromium.chrome.browser.keyboard_accessory.tab_layout_component.KeyboardAccessoryTabLayoutProperties.TAB_SELECTION_CALLBACKS;
+import static org.chromium.chrome.browser.keyboard_accessory.button_group_component.KeyboardAccessoryButtonGroupProperties.ACTIVE_TAB;
+import static org.chromium.chrome.browser.keyboard_accessory.button_group_component.KeyboardAccessoryButtonGroupProperties.BUTTON_SELECTION_CALLBACKS;
+import static org.chromium.chrome.browser.keyboard_accessory.button_group_component.KeyboardAccessoryButtonGroupProperties.TABS;
+import static org.chromium.chrome.browser.keyboard_accessory.button_group_component.KeyboardAccessoryButtonGroupProperties.TAB_SELECTION_CALLBACKS;
 
 import android.view.View;
 
@@ -27,14 +27,14 @@ import java.util.HashMap;
  * This component reflects the state of selected tabs in the keyboard accessory. It can be assigned
  * to multiple {@link TabLayout}s and will keep them in sync.
  */
-public class KeyboardAccessoryTabLayoutCoordinator {
+public class KeyboardAccessoryButtonGroupCoordinator {
     private final PropertyModel mModel =
             new PropertyModel.Builder(
                             TABS, ACTIVE_TAB, TAB_SELECTION_CALLBACKS, BUTTON_SELECTION_CALLBACKS)
                     .with(TABS, new ListModel<>())
                     .with(ACTIVE_TAB, null)
                     .build();
-    private final KeyboardAccessoryTabLayoutMediator mMediator;
+    private final KeyboardAccessoryButtonGroupMediator mMediator;
 
     private final HashMap<View, TemporarySheetOpenerBindings> mBindings = new HashMap<>();
 
@@ -108,7 +108,7 @@ public class KeyboardAccessoryTabLayoutCoordinator {
      * Creates the {@link KeyboardAccessoryButtonGroupViewBinder} that is linked to the
      * {@link ListModelChangeProcessor} that connects the given
      * {@link KeyboardAccessoryButtonGroupView} to the given tab list.
-     * @param model the {@link PropertyModel} with {@link KeyboardAccessoryTabLayoutProperties}.
+     * @param model the {@link PropertyModel} with {@link KeyboardAccessoryButtonGroupProperties}.
      * @param inflatedView the {@link KeyboardAccessoryButtonGroupView}.
      * @return Returns a fully initialized and wired {@link KeyboardAccessoryButtonGroupViewBinder}.
      */
@@ -124,8 +124,8 @@ public class KeyboardAccessoryTabLayoutCoordinator {
     }
 
     /** Creates a new Tab Layout component that isn't assigned to any view yet. */
-    public KeyboardAccessoryTabLayoutCoordinator() {
-        mMediator = new KeyboardAccessoryTabLayoutMediator(mModel);
+    public KeyboardAccessoryButtonGroupCoordinator() {
+        mMediator = new KeyboardAccessoryButtonGroupMediator(mModel);
     }
 
     public SheetOpenerCallbacks getSheetOpenerCallbacks() {
@@ -162,7 +162,7 @@ public class KeyboardAccessoryTabLayoutCoordinator {
         return mModel;
     }
 
-    KeyboardAccessoryTabLayoutMediator getMediatorForTesting() {
+    KeyboardAccessoryButtonGroupMediator getMediatorForTesting() {
         return mMediator;
     }
 }

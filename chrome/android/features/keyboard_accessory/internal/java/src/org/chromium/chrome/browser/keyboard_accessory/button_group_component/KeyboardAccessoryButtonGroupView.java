@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-package org.chromium.chrome.browser.keyboard_accessory.tab_layout_component;
+package org.chromium.chrome.browser.keyboard_accessory.button_group_component;
 
 import android.content.Context;
 import android.graphics.PorterDuff;

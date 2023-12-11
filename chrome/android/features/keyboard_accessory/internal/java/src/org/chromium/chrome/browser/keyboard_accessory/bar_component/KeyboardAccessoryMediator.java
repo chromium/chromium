@@ -28,11 +28,11 @@ import org.chromium.chrome.browser.keyboard_accessory.bar_component.KeyboardAcce
 import org.chromium.chrome.browser.keyboard_accessory.bar_component.KeyboardAccessoryProperties.AutofillBarItem;
 import org.chromium.chrome.browser.keyboard_accessory.bar_component.KeyboardAccessoryProperties.BarItem;
 import org.chromium.chrome.browser.keyboard_accessory.bar_component.KeyboardAccessoryProperties.SheetOpenerBarItem;
+import org.chromium.chrome.browser.keyboard_accessory.button_group_component.KeyboardAccessoryButtonGroupCoordinator;
 import org.chromium.chrome.browser.keyboard_accessory.data.KeyboardAccessoryData;
 import org.chromium.chrome.browser.keyboard_accessory.data.KeyboardAccessoryData.Action;
 import org.chromium.chrome.browser.keyboard_accessory.data.Provider;
 import org.chromium.chrome.browser.keyboard_accessory.sheet_component.AccessorySheetCoordinator;
-import org.chromium.chrome.browser.keyboard_accessory.tab_layout_component.KeyboardAccessoryTabLayoutCoordinator;
 import org.chromium.components.autofill.AutofillDelegate;
 import org.chromium.components.autofill.AutofillSuggestion;
 import org.chromium.components.autofill.PopupItemId;
@@ -48,16 +48,16 @@ import java.util.function.Predicate;
 import java.util.stream.StreamSupport;
 
 /**
- * This is the second part of the controller of the keyboard accessory component.
- * It is responsible for updating the model based on backend calls and notify the backend if the
- * model changes. From the backend, it receives all actions that the accessory can perform (most
- * prominently generating passwords) and lets the model know of these actions and which callback to
- * trigger when selecting them.
+ * This is the second part of the controller of the keyboard accessory component. It is responsible
+ * for updating the model based on backend calls and notify the backend if the model changes. From
+ * the backend, it receives all actions that the accessory can perform (most prominently generating
+ * passwords) and lets the model know of these actions and which callback to trigger when selecting
+ * them.
  */
 class KeyboardAccessoryMediator
         implements PropertyObservable.PropertyObserver<PropertyKey>,
                 Provider.Observer<Action[]>,
-                KeyboardAccessoryTabLayoutCoordinator.AccessoryTabObserver {
+                KeyboardAccessoryButtonGroupCoordinator.AccessoryTabObserver {
     private final PropertyModel mModel;
     private final BarVisibilityDelegate mBarVisibilityDelegate;
     private final AccessorySheetCoordinator.SheetVisibilityDelegate mSheetVisibilityDelegate;
@@ -68,7 +68,7 @@ class KeyboardAccessoryMediator
             BarVisibilityDelegate barVisibilityDelegate,
             AccessorySheetCoordinator.SheetVisibilityDelegate sheetVisibilityDelegate,
             TabSwitchingDelegate tabSwitcher,
-            KeyboardAccessoryTabLayoutCoordinator.SheetOpenerCallbacks sheetOpenerCallbacks) {
+            KeyboardAccessoryButtonGroupCoordinator.SheetOpenerCallbacks sheetOpenerCallbacks) {
         mModel = model;
         mBarVisibilityDelegate = barVisibilityDelegate;
         mSheetVisibilityDelegate = sheetVisibilityDelegate;

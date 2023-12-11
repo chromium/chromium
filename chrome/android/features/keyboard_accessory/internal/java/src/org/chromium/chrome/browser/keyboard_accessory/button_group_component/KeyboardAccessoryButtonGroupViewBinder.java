@@ -2,12 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-package org.chromium.chrome.browser.keyboard_accessory.tab_layout_component;
+package org.chromium.chrome.browser.keyboard_accessory.button_group_component;
 
-import static org.chromium.chrome.browser.keyboard_accessory.tab_layout_component.KeyboardAccessoryTabLayoutProperties.ACTIVE_TAB;
-import static org.chromium.chrome.browser.keyboard_accessory.tab_layout_component.KeyboardAccessoryTabLayoutProperties.BUTTON_SELECTION_CALLBACKS;
-import static org.chromium.chrome.browser.keyboard_accessory.tab_layout_component.KeyboardAccessoryTabLayoutProperties.TABS;
-import static org.chromium.chrome.browser.keyboard_accessory.tab_layout_component.KeyboardAccessoryTabLayoutProperties.TAB_SELECTION_CALLBACKS;
+import static org.chromium.chrome.browser.keyboard_accessory.button_group_component.KeyboardAccessoryButtonGroupProperties.ACTIVE_TAB;
+import static org.chromium.chrome.browser.keyboard_accessory.button_group_component.KeyboardAccessoryButtonGroupProperties.BUTTON_SELECTION_CALLBACKS;
+import static org.chromium.chrome.browser.keyboard_accessory.button_group_component.KeyboardAccessoryButtonGroupProperties.TABS;
+import static org.chromium.chrome.browser.keyboard_accessory.button_group_component.KeyboardAccessoryButtonGroupProperties.TAB_SELECTION_CALLBACKS;
 
 import org.chromium.chrome.browser.keyboard_accessory.data.KeyboardAccessoryData;
 import org.chromium.ui.modelutil.ListModel;
@@ -78,7 +78,7 @@ public class KeyboardAccessoryButtonGroupViewBinder
             PropertyModel model, KeyboardAccessoryButtonGroupView view, PropertyKey propertyKey) {
         if (propertyKey == TABS) {
             KeyboardAccessoryButtonGroupViewBinder viewBinder =
-                    KeyboardAccessoryTabLayoutCoordinator.createButtonGroupViewBinder(model, view);
+                    KeyboardAccessoryButtonGroupCoordinator.createButtonGroupViewBinder(model, view);
             viewBinder.updateAllButtons(view, model.get(TABS));
             viewBinder.registerTabIconObservers(view, model.get(TABS));
         } else if (propertyKey == BUTTON_SELECTION_CALLBACKS) {

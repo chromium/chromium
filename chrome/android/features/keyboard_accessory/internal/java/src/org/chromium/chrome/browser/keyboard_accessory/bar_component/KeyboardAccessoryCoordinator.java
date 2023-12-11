@@ -17,10 +17,10 @@ import org.chromium.chrome.browser.keyboard_accessory.AccessoryTabType;
 import org.chromium.chrome.browser.keyboard_accessory.R;
 import org.chromium.chrome.browser.keyboard_accessory.bar_component.KeyboardAccessoryModernViewBinder.BarItemViewHolder;
 import org.chromium.chrome.browser.keyboard_accessory.bar_component.KeyboardAccessoryProperties.BarItem;
+import org.chromium.chrome.browser.keyboard_accessory.button_group_component.KeyboardAccessoryButtonGroupCoordinator;
 import org.chromium.chrome.browser.keyboard_accessory.data.KeyboardAccessoryData;
 import org.chromium.chrome.browser.keyboard_accessory.data.Provider;
 import org.chromium.chrome.browser.keyboard_accessory.sheet_component.AccessorySheetCoordinator;
-import org.chromium.chrome.browser.keyboard_accessory.tab_layout_component.KeyboardAccessoryTabLayoutCoordinator;
 import org.chromium.components.autofill.AutofillDelegate;
 import org.chromium.components.autofill.AutofillSuggestion;
 import org.chromium.ui.AsyncViewProvider;
@@ -38,7 +38,7 @@ import org.chromium.ui.modelutil.RecyclerViewAdapter;
  */
 public class KeyboardAccessoryCoordinator {
     private final KeyboardAccessoryMediator mMediator;
-    private final KeyboardAccessoryTabLayoutCoordinator mTabLayout;
+    private final KeyboardAccessoryButtonGroupCoordinator mButtonGroup;
     private final PropertyModel mModel;
     private KeyboardAccessoryView mView;
 
@@ -117,7 +117,7 @@ public class KeyboardAccessoryCoordinator {
             AccessorySheetCoordinator.SheetVisibilityDelegate sheetVisibilityDelegate,
             AsyncViewStub barStub) {
         this(
-                new KeyboardAccessoryTabLayoutCoordinator(),
+                new KeyboardAccessoryButtonGroupCoordinator(),
                 barVisibilityDelegate,
                 sheetVisibilityDelegate,
                 AsyncViewProvider.of(barStub, R.id.keyboard_accessory));
@@ -125,26 +125,27 @@ public class KeyboardAccessoryCoordinator {
 
     /**
      * Constructor that allows to mock the {@link AsyncViewProvider}.
+     *
      * @param viewProvider A provider for the accessory.
      */
     @VisibleForTesting
     public KeyboardAccessoryCoordinator(
-            KeyboardAccessoryTabLayoutCoordinator tabLayout,
+            KeyboardAccessoryButtonGroupCoordinator buttonGroup,
             BarVisibilityDelegate barVisibilityDelegate,
             AccessorySheetCoordinator.SheetVisibilityDelegate sheetVisibilityDelegate,
             ViewProvider<KeyboardAccessoryView> viewProvider) {
-        mTabLayout = tabLayout;
+        mButtonGroup = buttonGroup;
         mModel = KeyboardAccessoryProperties.defaultModelBuilder().build();
         mMediator =
                 new KeyboardAccessoryMediator(
                         mModel,
                         barVisibilityDelegate,
                         sheetVisibilityDelegate,
-                        mTabLayout.getTabSwitchingDelegate(),
-                        mTabLayout.getSheetOpenerCallbacks());
+                        mButtonGroup.getTabSwitchingDelegate(),
+                        mButtonGroup.getSheetOpenerCallbacks());
         viewProvider.whenLoaded(view -> mView = view);
 
-        mTabLayout.setTabObserver(mMediator);
+        mButtonGroup.setTabObserver(mMediator);
         LazyConstructionPropertyMcp.create(
                 mModel, VISIBLE, viewProvider, KeyboardAccessoryModernViewBinder::bind);
         KeyboardAccessoryMetricsRecorder.registerKeyboardAccessoryModelMetricsObserver(mModel);
@@ -168,15 +169,15 @@ public class KeyboardAccessoryCoordinator {
     }
 
     public void closeActiveTab() {
-        mTabLayout.getTabSwitchingDelegate().closeActiveTab();
+        mButtonGroup.getTabSwitchingDelegate().closeActiveTab();
     }
 
     public void setTabs(KeyboardAccessoryData.Tab[] tabs) {
-        mTabLayout.getTabSwitchingDelegate().setTabs(tabs);
+        mButtonGroup.getTabSwitchingDelegate().setTabs(tabs);
     }
 
     public void setActiveTab(@AccessoryTabType int tabType) {
-        mTabLayout.getTabSwitchingDelegate().setActiveTab(tabType);
+        mButtonGroup.getTabSwitchingDelegate().setActiveTab(tabType);
     }
 
     /**
@@ -266,7 +267,7 @@ public class KeyboardAccessoryCoordinator {
     }
 
     public ViewPager.OnPageChangeListener getOnPageChangeListener() {
-        return mTabLayout.getStablePageChangeListener();
+        return mButtonGroup.getStablePageChangeListener();
     }
 
     public KeyboardAccessoryMediator getMediatorForTesting() {

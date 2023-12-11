@@ -16,7 +16,7 @@ for autofill- and password-related tasks.
 
 The ManualFillingCoordinator in this package uses the `bar_component.*` to
 display a bar above an open keyboard. This bar shows suggestions and holds a
-number of fallback icons in a `tab_layout_component.*` which allows to open an
+number of fallback icons in a `button_group_component.*` which allows to open an
 accessory sheet with fallback data and options.
 The sheet is located in the `sheet_component.*` and shows one of the fallback
 sheets as defined in `sheet_tabs.*`.

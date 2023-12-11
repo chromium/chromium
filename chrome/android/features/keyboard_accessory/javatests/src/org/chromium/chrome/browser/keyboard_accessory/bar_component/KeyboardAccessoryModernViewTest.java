@@ -74,9 +74,9 @@ import org.chromium.chrome.browser.keyboard_accessory.R;
 import org.chromium.chrome.browser.keyboard_accessory.bar_component.KeyboardAccessoryProperties.AutofillBarItem;
 import org.chromium.chrome.browser.keyboard_accessory.bar_component.KeyboardAccessoryProperties.BarItem;
 import org.chromium.chrome.browser.keyboard_accessory.bar_component.KeyboardAccessoryProperties.SheetOpenerBarItem;
+import org.chromium.chrome.browser.keyboard_accessory.button_group_component.KeyboardAccessoryButtonGroupCoordinator;
+import org.chromium.chrome.browser.keyboard_accessory.button_group_component.KeyboardAccessoryButtonGroupView;
 import org.chromium.chrome.browser.keyboard_accessory.data.KeyboardAccessoryData.Action;
-import org.chromium.chrome.browser.keyboard_accessory.tab_layout_component.KeyboardAccessoryButtonGroupView;
-import org.chromium.chrome.browser.keyboard_accessory.tab_layout_component.KeyboardAccessoryTabLayoutCoordinator;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.chrome.test.util.browser.Features.EnableFeatures;
@@ -218,7 +218,7 @@ public class KeyboardAccessoryModernViewTest {
                                     .with(
                                             SHEET_OPENER_ITEM,
                                             new SheetOpenerBarItem(
-                                                    new KeyboardAccessoryTabLayoutCoordinator
+                                                    new KeyboardAccessoryButtonGroupCoordinator
                                                             .SheetOpenerCallbacks() {
                                                         @Override
                                                         public void onViewBound(View buttons) {}
@@ -792,7 +792,7 @@ public class KeyboardAccessoryModernViewTest {
 
     private SheetOpenerBarItem createSheetOpener() {
         return new SheetOpenerBarItem(
-                new KeyboardAccessoryTabLayoutCoordinator.SheetOpenerCallbacks() {
+                new KeyboardAccessoryButtonGroupCoordinator.SheetOpenerCallbacks() {
                     @Override
                     public void onViewBound(View buttons) {
                         if (((KeyboardAccessoryButtonGroupView) buttons).getButtons().size() > 0) {

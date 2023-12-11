@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-package org.chromium.chrome.browser.keyboard_accessory.tab_layout_component;
+package org.chromium.chrome.browser.keyboard_accessory.button_group_component;
 
 import com.google.android.material.tabs.TabLayout;
 
@@ -15,7 +15,7 @@ import org.chromium.ui.modelutil.PropertyModel.WritableObjectPropertyKey;
  * These properties are used to describe a model for the tab layout component as used in the
  * keyboard accessory. The properties are describing all known tabs.
  */
-class KeyboardAccessoryTabLayoutProperties {
+class KeyboardAccessoryButtonGroupProperties {
     static final ReadableObjectPropertyKey<ListModel<KeyboardAccessoryData.Tab>> TABS =
             new ReadableObjectPropertyKey<>("tabs");
     static final WritableObjectPropertyKey<Integer> ACTIVE_TAB =
@@ -28,5 +28,5 @@ class KeyboardAccessoryTabLayoutProperties {
             BUTTON_SELECTION_CALLBACKS =
                     new WritableObjectPropertyKey<>("button_selection_callback");
 
-    private KeyboardAccessoryTabLayoutProperties() {}
+    private KeyboardAccessoryButtonGroupProperties() {}
 }

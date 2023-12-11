@@ -45,11 +45,11 @@ import org.chromium.chrome.browser.keyboard_accessory.ManualFillingMetricsRecord
 import org.chromium.chrome.browser.keyboard_accessory.R;
 import org.chromium.chrome.browser.keyboard_accessory.bar_component.KeyboardAccessoryProperties.AutofillBarItem;
 import org.chromium.chrome.browser.keyboard_accessory.bar_component.KeyboardAccessoryProperties.BarItem;
+import org.chromium.chrome.browser.keyboard_accessory.button_group_component.KeyboardAccessoryButtonGroupCoordinator;
 import org.chromium.chrome.browser.keyboard_accessory.data.KeyboardAccessoryData;
 import org.chromium.chrome.browser.keyboard_accessory.data.KeyboardAccessoryData.Action;
 import org.chromium.chrome.browser.keyboard_accessory.data.PropertyProvider;
 import org.chromium.chrome.browser.keyboard_accessory.sheet_component.AccessorySheetCoordinator;
-import org.chromium.chrome.browser.keyboard_accessory.tab_layout_component.KeyboardAccessoryTabLayoutCoordinator;
 import org.chromium.components.autofill.AutofillDelegate;
 import org.chromium.components.autofill.AutofillSuggestion;
 import org.chromium.components.autofill.PopupItemId;
@@ -71,7 +71,7 @@ public class KeyboardAccessoryControllerTest {
     @Mock private KeyboardAccessoryCoordinator.BarVisibilityDelegate mMockBarVisibilityDelegate;
     @Mock private AccessorySheetCoordinator.SheetVisibilityDelegate mMockSheetVisibilityDelegate;
     @Mock private KeyboardAccessoryModernView mMockView;
-    @Mock private KeyboardAccessoryTabLayoutCoordinator mMockTabLayout;
+    @Mock private KeyboardAccessoryButtonGroupCoordinator mMockButtonGroup;
     @Mock private KeyboardAccessoryCoordinator.TabSwitchingDelegate mMockTabSwitchingDelegate;
     @Mock private AutofillDelegate mMockAutofillDelegate;
 
@@ -86,10 +86,10 @@ public class KeyboardAccessoryControllerTest {
     public void setUp() {
         UmaRecorderHolder.resetForTesting();
         MockitoAnnotations.initMocks(this);
-        when(mMockTabLayout.getTabSwitchingDelegate()).thenReturn(mMockTabSwitchingDelegate);
+        when(mMockButtonGroup.getTabSwitchingDelegate()).thenReturn(mMockTabSwitchingDelegate);
         mCoordinator =
                 new KeyboardAccessoryCoordinator(
-                        mMockTabLayout,
+                        mMockButtonGroup,
                         mMockBarVisibilityDelegate,
                         mMockSheetVisibilityDelegate,
                         new FakeViewProvider<>(mMockView));

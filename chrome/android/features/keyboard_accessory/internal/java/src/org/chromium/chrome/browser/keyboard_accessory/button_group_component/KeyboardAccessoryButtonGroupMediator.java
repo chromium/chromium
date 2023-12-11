@@ -2,12 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-package org.chromium.chrome.browser.keyboard_accessory.tab_layout_component;
+package org.chromium.chrome.browser.keyboard_accessory.button_group_component;
 
-import static org.chromium.chrome.browser.keyboard_accessory.tab_layout_component.KeyboardAccessoryTabLayoutProperties.ACTIVE_TAB;
-import static org.chromium.chrome.browser.keyboard_accessory.tab_layout_component.KeyboardAccessoryTabLayoutProperties.BUTTON_SELECTION_CALLBACKS;
-import static org.chromium.chrome.browser.keyboard_accessory.tab_layout_component.KeyboardAccessoryTabLayoutProperties.TABS;
-import static org.chromium.chrome.browser.keyboard_accessory.tab_layout_component.KeyboardAccessoryTabLayoutProperties.TAB_SELECTION_CALLBACKS;
+import static org.chromium.chrome.browser.keyboard_accessory.button_group_component.KeyboardAccessoryButtonGroupProperties.ACTIVE_TAB;
+import static org.chromium.chrome.browser.keyboard_accessory.button_group_component.KeyboardAccessoryButtonGroupProperties.BUTTON_SELECTION_CALLBACKS;
+import static org.chromium.chrome.browser.keyboard_accessory.button_group_component.KeyboardAccessoryButtonGroupProperties.TABS;
+import static org.chromium.chrome.browser.keyboard_accessory.button_group_component.KeyboardAccessoryButtonGroupProperties.TAB_SELECTION_CALLBACKS;
 
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
@@ -18,7 +18,7 @@ import com.google.android.material.tabs.TabLayout;
 import org.chromium.chrome.browser.keyboard_accessory.AccessoryTabType;
 import org.chromium.chrome.browser.keyboard_accessory.bar_component.KeyboardAccessoryCoordinator;
 import org.chromium.chrome.browser.keyboard_accessory.data.KeyboardAccessoryData;
-import org.chromium.chrome.browser.keyboard_accessory.tab_layout_component.KeyboardAccessoryTabLayoutCoordinator.AccessoryTabObserver;
+import org.chromium.chrome.browser.keyboard_accessory.button_group_component.KeyboardAccessoryButtonGroupCoordinator.AccessoryTabObserver;
 import org.chromium.ui.modelutil.ListModel;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
@@ -31,7 +31,7 @@ import java.util.Set;
  * This mediator observes and changes a {@link PropertyModel} that contains the visual appearance of
  * a {@link TabLayout}. It manages {@link ViewPager.OnPageChangeListener}s.
  */
-class KeyboardAccessoryTabLayoutMediator
+class KeyboardAccessoryButtonGroupMediator
         implements TabLayout.OnTabSelectedListener,
                 KeyboardAccessoryButtonGroupView.KeyboardAccessoryButtonGroupListener,
                 PropertyObservable.PropertyObserver<PropertyKey>,
@@ -40,7 +40,7 @@ class KeyboardAccessoryTabLayoutMediator
     private @Nullable AccessoryTabObserver mAccessoryTabObserver;
     private Set<ViewPager.OnPageChangeListener> mPageChangeListeners = new HashSet<>();
 
-    KeyboardAccessoryTabLayoutMediator(PropertyModel model) {
+    KeyboardAccessoryButtonGroupMediator(PropertyModel model) {
         mModel = model;
         mModel.addObserver(this);
         mModel.set(BUTTON_SELECTION_CALLBACKS, this);

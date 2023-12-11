@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-package org.chromium.chrome.browser.keyboard_accessory.tab_layout_component;
+package org.chromium.chrome.browser.keyboard_accessory.button_group_component;
 
 import static androidx.test.espresso.matcher.ViewMatchers.assertThat;
 
@@ -13,8 +13,8 @@ import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
 
-import static org.chromium.chrome.browser.keyboard_accessory.tab_layout_component.KeyboardAccessoryTabLayoutProperties.ACTIVE_TAB;
-import static org.chromium.chrome.browser.keyboard_accessory.tab_layout_component.KeyboardAccessoryTabLayoutProperties.TABS;
+import static org.chromium.chrome.browser.keyboard_accessory.button_group_component.KeyboardAccessoryButtonGroupProperties.ACTIVE_TAB;
+import static org.chromium.chrome.browser.keyboard_accessory.button_group_component.KeyboardAccessoryButtonGroupProperties.TABS;
 
 import com.google.android.material.tabs.TabLayout;
 
@@ -42,28 +42,28 @@ import org.chromium.ui.modelutil.PropertyObservable.PropertyObserver;
 @Config(
         manifest = Config.NONE,
         shadows = {CustomShadowAsyncTask.class})
-public class KeyboardAccessoryTabLayoutControllerTest {
+public class KeyboardAccessoryButtonGroupControllerTest {
     @Rule public TestRule mFeaturesProcessorRule = new Features.JUnitProcessor();
 
     @Mock private PropertyObserver<PropertyKey> mMockPropertyObserver;
     @Mock private ListObservable.ListObserver<Void> mMockTabListObserver;
 
     @Mock
-    private KeyboardAccessoryTabLayoutCoordinator.AccessoryTabObserver mMockAccessoryTabObserver;
+    private KeyboardAccessoryButtonGroupCoordinator.AccessoryTabObserver mMockAccessoryTabObserver;
 
     private final KeyboardAccessoryData.Tab mTestTab =
             new KeyboardAccessoryData.Tab("Passwords", null, null, 0, 0, null);
 
-    private KeyboardAccessoryTabLayoutCoordinator mCoordinator;
+    private KeyboardAccessoryButtonGroupCoordinator mCoordinator;
     private PropertyModel mModel;
-    private KeyboardAccessoryTabLayoutMediator mMediator;
+    private KeyboardAccessoryButtonGroupMediator mMediator;
 
     @Before
     public void setUp() {
         UmaRecorderHolder.resetForTesting();
         MockitoAnnotations.initMocks(this);
 
-        mCoordinator = new KeyboardAccessoryTabLayoutCoordinator();
+        mCoordinator = new KeyboardAccessoryButtonGroupCoordinator();
         mMediator = mCoordinator.getMediatorForTesting();
         mModel = mCoordinator.getModelForTesting();
         mCoordinator.setTabObserver(mMockAccessoryTabObserver);

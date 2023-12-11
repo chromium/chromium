@@ -89,6 +89,11 @@ android_library("internal_java") {
     "java/src/org/chromium/chrome/browser/keyboard_accessory/bar_component/KeyboardAccessoryProperties.java",
     "java/src/org/chromium/chrome/browser/keyboard_accessory/bar_component/KeyboardAccessoryRecyclerViewMcp.java",
     "java/src/org/chromium/chrome/browser/keyboard_accessory/bar_component/KeyboardAccessoryView.java",
+    "java/src/org/chromium/chrome/browser/keyboard_accessory/button_group_component/KeyboardAccessoryButtonGroupCoordinator.java",
+    "java/src/org/chromium/chrome/browser/keyboard_accessory/button_group_component/KeyboardAccessoryButtonGroupMediator.java",
+    "java/src/org/chromium/chrome/browser/keyboard_accessory/button_group_component/KeyboardAccessoryButtonGroupProperties.java",
+    "java/src/org/chromium/chrome/browser/keyboard_accessory/button_group_component/KeyboardAccessoryButtonGroupView.java",
+    "java/src/org/chromium/chrome/browser/keyboard_accessory/button_group_component/KeyboardAccessoryButtonGroupViewBinder.java",
     "java/src/org/chromium/chrome/browser/keyboard_accessory/data/CachedProviderAdapter.java",
     "java/src/org/chromium/chrome/browser/keyboard_accessory/data/ConditionalProviderAdapter.java",
     "java/src/org/chromium/chrome/browser/keyboard_accessory/helper/FaviconHelper.java",
@@ -119,11 +124,6 @@ android_library("internal_java") {
     "java/src/org/chromium/chrome/browser/keyboard_accessory/sheet_tabs/PasswordAccessorySheetModernViewBinder.java",
     "java/src/org/chromium/chrome/browser/keyboard_accessory/sheet_tabs/PasswordAccessorySheetViewBinder.java",
     "java/src/org/chromium/chrome/browser/keyboard_accessory/sheet_tabs/PromoCodeAccessoryInfoView.java",
-    "java/src/org/chromium/chrome/browser/keyboard_accessory/tab_layout_component/KeyboardAccessoryButtonGroupView.java",
-    "java/src/org/chromium/chrome/browser/keyboard_accessory/tab_layout_component/KeyboardAccessoryButtonGroupViewBinder.java",
-    "java/src/org/chromium/chrome/browser/keyboard_accessory/tab_layout_component/KeyboardAccessoryTabLayoutCoordinator.java",
-    "java/src/org/chromium/chrome/browser/keyboard_accessory/tab_layout_component/KeyboardAccessoryTabLayoutMediator.java",
-    "java/src/org/chromium/chrome/browser/keyboard_accessory/tab_layout_component/KeyboardAccessoryTabLayoutProperties.java",
     "java/src/org/chromium/chrome/browser/keyboard_accessory/utils/InsecureFillingDialogUtils.java",
   ]
 
