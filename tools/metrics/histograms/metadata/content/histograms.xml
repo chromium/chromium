@@ -77,6 +77,16 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="ContentNotifications.Promo.SetUpList.Action"
+    enum="ContentNotificationSetUpListPromoAction" expires_after="2024-04-28">
+  <owner>tinazwang@chromium.org</owner>
+  <owner>chrome-sherlock@google.com</owner>
+  <summary>
+    The action taken by the user in response to the Set Up List Content
+    Notification promo.
+  </summary>
+</histogram>
+
 <histogram
     name="ContentSettings.ActiveExpiry.{ProviderType}.ContentSettingsType"
     enum="PermissionType" expires_after="2024-07-10">

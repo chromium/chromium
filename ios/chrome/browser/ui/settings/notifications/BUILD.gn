@@ -16,6 +16,7 @@ source_set("notifications") {
     "//base",
     "//components/prefs",
     "//ios/chrome/app/strings",
+    "//ios/chrome/browser/push_notification/model:alert_presenter",
     "//ios/chrome/browser/push_notification/model:browser_state_service",
     "//ios/chrome/browser/push_notification/model:browser_state_service_factory",
     "//ios/chrome/browser/push_notification/model:push_notification_client",
@@ -39,7 +40,6 @@ source_set("notifications") {
 
 source_set("notifications_ui") {
   sources = [
-    "notifications_alert_presenter.h",
     "notifications_consumer.h",
     "notifications_navigation_commands.h",
     "notifications_view_controller.h",

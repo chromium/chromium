@@ -5,11 +5,37 @@
 #import "ios/chrome/browser/ui/content_suggestions/set_up_list/set_up_list_content_notification_promo_coordinator.h"
 
 #import "base/ios/block_types.h"
+#import "base/metrics/histogram_functions.h"
+#import "base/metrics/user_metrics.h"
+#import "base/metrics/user_metrics_action.h"
+#import "base/strings/sys_string_conversions.h"
 #import "ios/chrome/browser/ntp/model/set_up_list_item_type.h"
 #import "ios/chrome/browser/ntp/model/set_up_list_prefs.h"
+#import "ios/chrome/browser/push_notification/model/notifications_alert_presenter.h"
+#import "ios/chrome/browser/push_notification/model/push_notification_client_id.h"
+#import "ios/chrome/browser/push_notification/model/push_notification_service.h"
+#import "ios/chrome/browser/push_notification/model/push_notification_util.h"
+#import "ios/chrome/browser/shared/coordinator/alert/alert_coordinator.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
+#import "ios/chrome/browser/shared/model/browser/browser.h"
+#import "ios/chrome/browser/signin/model/authentication_service.h"
+#import "ios/chrome/browser/signin/model/authentication_service_factory.h"
 #import "ios/chrome/browser/ui/content_suggestions/set_up_list/set_up_list_content_notification_promo_coordinator_delegate.h"
 #import "ios/chrome/browser/ui/content_suggestions/set_up_list/set_up_list_content_notification_promo_view_controller.h"
+#import "ios/chrome/grit/ios_strings.h"
+#import "ui/base/l10n/l10n_util_mac.h"
+
+using base::RecordAction;
+using base::UmaHistogramEnumeration;
+using base::UserMetricsAction;
+
+@interface SetUpListContentNotificationPromoCoordinator () <
+    NotificationsAlertPresenter>
+
+// Alert Coordinator used to display the notifications system prompt.
+@property(nonatomic, strong) AlertCoordinator* alertCoordinator;
+
+@end
 
 @implementation SetUpListContentNotificationPromoCoordinator {
   // The view controller that displays the content notification promo.
@@ -45,6 +71,7 @@
 }
 
 - (void)stop {
+  [self dimissAlertCoordinator];
   _viewController.presentationController.delegate = nil;
 
   ProceduralBlock completion = nil;
@@ -63,15 +90,93 @@
 #pragma mark - PromoStyleViewControllerDelegate
 
 - (void)didTapPrimaryActionButton {
-  // TODO(b/311068390): implementing.
+  RecordAction(
+      UserMetricsAction("ContentNotifications.Promo.SetUpList.Accepted"));
+  [self logHistogramForAction:ContentNotificationSetUpListPromoAction::kAccept];
+
+  AuthenticationService* authService =
+      AuthenticationServiceFactory::GetForBrowserState(
+          self.browser->GetBrowserState());
+  id<SystemIdentity> identity =
+      authService->GetPrimaryIdentity(signin::ConsentLevel::kSignin);
+  PushNotificationService* service =
+      GetApplicationContext()->GetPushNotificationService();
+  service->SetPreference(identity.gaiaID, PushNotificationClientId::kContent,
+                         true);
+
+  __weak SetUpListContentNotificationPromoCoordinator* weakSelf = self;
+  [PushNotificationUtil requestPushNotificationPermission:^(
+                            BOOL granted, BOOL promptShown, NSError* error) {
+    if (!error && !promptShown && !granted) {
+      // This callback can be executed on a background thread, make sure the UI
+      // is displayed on the main thread.
+      dispatch_async(dispatch_get_main_queue(), ^{
+        [weakSelf presentPushNotificationPermissionAlert];
+      });
+    }
+  }];
+
+  _markItemComplete = YES;
+  [self.delegate setUpListContentNotificationPromoDidFinish];
 }
 
 - (void)didTapSecondaryActionButton {
-  // TODO(b/311068390): implementing.
+  RecordAction(
+      UserMetricsAction("ContentNotifications.Promo.SetUpList.Canceled"));
+  [self logHistogramForAction:ContentNotificationSetUpListPromoAction::kCancel];
+  _markItemComplete = YES;
+  [self.delegate setUpListContentNotificationPromoDidFinish];
 }
 
 - (void)didTapTertiaryActionButton {
-  // TODO(b/311068390): implementing.
+  RecordAction(
+      UserMetricsAction("ContentNotifications.Promo.SetUpList.Uncompleted"));
+  [self logHistogramForAction:ContentNotificationSetUpListPromoAction::
+                                  kRemindMeLater];
+
+  [self.delegate setUpListContentNotificationPromoDidFinish];
+}
+
+#pragma mark - NotificationsAlertPresenter
+
+- (void)presentPushNotificationPermissionAlert {
+  NSString* settingURL = UIApplicationOpenSettingsURLString;
+  if (@available(iOS 15.4, *)) {
+    settingURL = UIApplicationOpenNotificationSettingsURLString;
+  }
+  // TODO(b/304781544): Update the alert strings.
+  NSString* alertTitle =
+      l10n_util::GetNSString(IDS_IOS_PRICE_NOTIFICATIONS_SETTINGS_ALERT_TITLE);
+  NSString* alertMessage = l10n_util::GetNSString(
+      IDS_IOS_PRICE_NOTIFICATIONS_SETTINGS_ALERT_MESSAGE);
+  NSString* cancelTitle = l10n_util::GetNSString(
+      IDS_IOS_PRICE_NOTIFICATIONS_PRICE_TRACK_PERMISSION_REDIRECT_ALERT_CANCEL);
+  NSString* settingsTitle = l10n_util::GetNSString(
+      IDS_IOS_PRICE_NOTIFICATIONS_PRICE_TRACK_PERMISSION_REDIRECT_ALERT_REDIRECT);
+
+  __weak SetUpListContentNotificationPromoCoordinator* weakSelf = self;
+  [self.alertCoordinator stop];
+  self.alertCoordinator =
+      [[AlertCoordinator alloc] initWithBaseViewController:_viewController
+                                                   browser:self.browser
+                                                     title:alertTitle
+                                                   message:alertMessage];
+  [self.alertCoordinator addItemWithTitle:cancelTitle
+                                   action:^{
+                                     [weakSelf dimissAlertCoordinator];
+                                   }
+                                    style:UIAlertActionStyleCancel];
+  [self.alertCoordinator
+      addItemWithTitle:settingsTitle
+                action:^{
+                  [[UIApplication sharedApplication]
+                                openURL:[NSURL URLWithString:settingURL]
+                                options:{}
+                      completionHandler:nil];
+                  [weakSelf dimissAlertCoordinator];
+                }
+                 style:UIAlertActionStyleDefault];
+  [self.alertCoordinator start];
 }
 
 #pragma mark - UIAdaptivePresentationControllerDelegate
@@ -79,6 +184,20 @@
 - (void)presentationControllerDidDismiss:
     (UIPresentationController*)presentationController {
   [self.delegate setUpListContentNotificationPromoDidFinish];
+}
+
+#pragma mark - Metrics Helpers
+
+- (void)logHistogramForAction:(ContentNotificationSetUpListPromoAction)action {
+  UmaHistogramEnumeration("ContentNotifications.Promo.SetUpList.Action",
+                          action);
+}
+
+#pragma mark - Private
+
+- (void)dimissAlertCoordinator {
+  [self.alertCoordinator stop];
+  self.alertCoordinator = nil;
 }
 
 @end

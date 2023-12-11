@@ -69,11 +69,20 @@ source_set("content_notification_promo") {
   deps = [
     ":content_notification_promo_ui",
     "//base",
+    "//ios/chrome/app/strings:ios_strings_grit",
     "//ios/chrome/browser/ntp/model:set_up_list_item_type",
     "//ios/chrome/browser/ntp/model:set_up_list_prefs",
+    "//ios/chrome/browser/push_notification/model:alert_presenter",
+    "//ios/chrome/browser/push_notification/model:push_notification_client",
+    "//ios/chrome/browser/push_notification/model:push_notification_service",
+    "//ios/chrome/browser/shared/coordinator/alert",
     "//ios/chrome/browser/shared/coordinator/chrome_coordinator",
     "//ios/chrome/browser/shared/model/application_context",
+    "//ios/chrome/browser/shared/model/browser",
+    "//ios/chrome/browser/signin/model",
+    "//ios/chrome/browser/ui/settings/notifications:notifications_ui",
     "//ios/chrome/common/ui/promo_style",
+    "//ui/base",
   ]
 }
 

@@ -7056,6 +7056,32 @@ should be able to be added at any place in this file.
   <description>Please enter the description of this user action.</description>
 </action>
 
+<action name="ContentNotifications.Promo.SetUpList.Accepted">
+  <owner>tinazwang@chromium.org</owner>
+  <owner>chrome-sherlock@google.com</owner>
+  <description>
+    The user accepted a Set Up List content notification promo modal, and was
+    asked if they want to enable Chrome notifications.
+  </description>
+</action>
+
+<action name="ContentNotifications.Promo.SetUpList.Canceled">
+  <owner>tinazwang@chromium.org</owner>
+  <owner>chrome-sherlock@google.com</owner>
+  <description>
+    The user denied the SetUpList content notification promo and it dismissed.
+  </description>
+</action>
+
+<action name="ContentNotifications.Promo.SetUpList.Uncompleted">
+  <owner>tinazwang@chromium.org</owner>
+  <owner>chrome-sherlock@google.com</owner>
+  <description>
+    The user tapped 'Remind Me Later' in the SetUpList content notification
+    promo and it dismissed.
+  </description>
+</action>
+
 <action name="ContentSettings.Geolocation.BlockedIconShown">
   <owner>corising@chromium.org</owner>
   <owner>chrome-desktop-ui-sea@google.com</owner>

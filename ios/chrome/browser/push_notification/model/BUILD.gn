@@ -80,6 +80,10 @@ source_set("push_notification_client") {
   deps = [ "//base" ]
 }
 
+source_set("alert_presenter") {
+  sources = [ "notifications_alert_presenter.h" ]
+}
+
 source_set("unit_tests") {
   testonly = true
   sources = [

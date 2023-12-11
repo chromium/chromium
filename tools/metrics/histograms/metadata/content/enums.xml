@@ -41,6 +41,12 @@ chromium-metrics-reviews@google.com.
   <int value="6" label="Profile"/>
 </enum>
 
+<enum name="ContentNotificationSetUpListPromoAction">
+  <int value="0" label="Accept"/>
+  <int value="1" label="Cancel"/>
+  <int value="2" label="Remind Me Later"/>
+</enum>
+
 <enum name="ContentSettingBubbleAction">
   <int value="1" label="kOpened"/>
   <int value="2" label="kPermissionAllowed"/>
