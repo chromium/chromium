@@ -108,10 +108,6 @@ void FlushCookieStoreOnIOThread(
 // Saves the current launch details to user defaults.
 - (void)saveLaunchDetailsToDefaults;
 
-// This flag is set when the first scene has activated since the startup, and
-// never reset.
-@property(nonatomic, assign) BOOL firstSceneHasActivated;
-
 // Redefined as readwrite.
 @property(nonatomic, assign) BOOL firstSceneHasInitializedUI;
 
