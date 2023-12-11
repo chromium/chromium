@@ -91,9 +91,14 @@ BASE_FEATURE(kContentSettingsPartitioning,
              "ContentSettingsPartitioning",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+const char kMetadataGrantsThresholdName[] = "MetadataGrantsThreshold";
+
 BASE_FEATURE(kHostIndexedMetadataGrants,
              "HostIndexedMetadataGrants",
              base::FEATURE_DISABLED_BY_DEFAULT);
+
+const base::FeatureParam<int> kMetadataGrantsThreshold{
+    &kHostIndexedMetadataGrants, kMetadataGrantsThresholdName, 1};
 
 }  // namespace features
 }  // namespace content_settings

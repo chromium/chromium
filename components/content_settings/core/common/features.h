@@ -124,6 +124,11 @@ BASE_DECLARE_FEATURE(kContentSettingsPartitioning);
 COMPONENT_EXPORT(CONTENT_SETTINGS_FEATURES)
 BASE_DECLARE_FEATURE(kHostIndexedMetadataGrants);
 
+// The threshold for the amount of metadata grants needed to trigger usage of
+// the optimized data structure.
+COMPONENT_EXPORT(CONTENT_SETTINGS_FEATURES)
+extern const base::FeatureParam<int> kMetadataGrantsThreshold;
+
 }  // namespace features
 }  // namespace content_settings
 
