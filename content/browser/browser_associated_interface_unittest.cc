@@ -150,9 +150,9 @@ class TestClientRunner {
       proxy.channel()->Send(message.release());
     }
 
-    driver->RequestQuit(base::RunLoop::QuitCurrentWhenIdleClosureDeprecated());
-
-    base::RunLoop(base::RunLoop::Type::kNestableTasksAllowed).Run();
+    base::RunLoop loop(base::RunLoop::Type::kNestableTasksAllowed);
+    driver->RequestQuit(loop.QuitWhenIdleClosure());
+    loop.Run();
 
     proxy.ShutDown();
     io_thread.Stop();

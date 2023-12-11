@@ -203,10 +203,11 @@ IN_PROC_BROWSER_TEST_F(BrowserFocusTest, MAYBE_ClickingMovesFocus) {
 #if BUILDFLAG(IS_POSIX)
   // It seems we have to wait a little bit for the widgets to spin up before
   // we can start clicking on them.
+  base::RunLoop loop(base::RunLoop::Type::kNestableTasksAllowed);
   base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
-      FROM_HERE, base::RunLoop::QuitCurrentWhenIdleClosureDeprecated(),
+      FROM_HERE, loop.QuitWhenIdleClosure(),
       base::Milliseconds(kActionDelayMs));
-  content::RunMessageLoop();
+  loop.Run();
 #endif  // BUILDFLAG(IS_POSIX)
 
   ASSERT_TRUE(IsViewFocused(VIEW_ID_OMNIBOX));

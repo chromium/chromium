@@ -93,15 +93,14 @@ const uint8_t kEncryptedMediaInitData[] = {
 };
 
 static void EosOnReadDone(bool* got_eos_buffer,
+                          base::OnceClosure quit_closure,
                           DemuxerStream::Status status,
                           DemuxerStream::DecoderBufferVector buffers) {
   // TODO(crbug.com/1347395): add multi read unit tests in next CL.
   DCHECK_EQ(buffers.size(), 1u)
       << "FFmpegDemuxerTest only reads a single-buffer.";
   scoped_refptr<DecoderBuffer> buffer = std::move(buffers[0]);
-  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
-      FROM_HERE, base::RunLoop::QuitCurrentWhenIdleClosureDeprecated());
-
+  std::move(quit_closure).Run();
   EXPECT_EQ(status, DemuxerStream::kOk);
   if (buffer->end_of_stream()) {
     *got_eos_buffer = true;
@@ -326,8 +325,10 @@ class FFmpegDemuxerTest : public testing::Test {
     bool got_eos_buffer = false;
     const int kMaxBuffers = 170;
     for (int i = 0; !got_eos_buffer && i < kMaxBuffers; i++) {
-      stream->Read(1, base::BindOnce(&EosOnReadDone, &got_eos_buffer));
-      base::RunLoop().Run();
+      base::RunLoop loop;
+      stream->Read(1, base::BindOnce(&EosOnReadDone, &got_eos_buffer,
+                                     loop.QuitWhenIdleClosure()));
+      loop.Run();
     }
 
     EXPECT_TRUE(got_eos_buffer);
@@ -1251,14 +1252,14 @@ INSTANTIATE_TEST_SUITE_P(All,
 
 #if BUILDFLAG(USE_PROPRIETARY_CODECS)
 static void ValidateAnnexB(DemuxerStream* stream,
+                           base::OnceClosure quit_closure,
                            DemuxerStream::Status status,
                            DemuxerStream::DecoderBufferVector buffers) {
   EXPECT_EQ(status, DemuxerStream::kOk);
   EXPECT_EQ(buffers.size(), 1u);
   scoped_refptr<DecoderBuffer> buffer = std::move(buffers[0]);
   if (buffer->end_of_stream()) {
-    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
-        FROM_HERE, base::RunLoop::QuitCurrentWhenIdleClosureDeprecated());
+    std::move(quit_closure).Run();
     return;
   }
 
@@ -1274,12 +1275,11 @@ static void ValidateAnnexB(DemuxerStream* stream,
 
   if (!is_valid) {
     LOG(ERROR) << "Buffer contains invalid Annex B data.";
-    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
-        FROM_HERE, base::RunLoop::QuitCurrentWhenIdleClosureDeprecated());
+    std::move(quit_closure).Run();
     return;
   }
-
-  stream->Read(1, base::BindOnce(&ValidateAnnexB, stream));
+  stream->Read(
+      1, base::BindOnce(&ValidateAnnexB, stream, std::move(quit_closure)));
 }
 
 TEST_F(FFmpegDemuxerTest, IsValidAnnexB) {
@@ -1296,8 +1296,10 @@ TEST_F(FFmpegDemuxerTest, IsValidAnnexB) {
     ASSERT_TRUE(stream);
     stream->EnableBitstreamConverter();
 
-    stream->Read(1, base::BindOnce(&ValidateAnnexB, stream));
-    base::RunLoop().Run();
+    base::RunLoop loop;
+    stream->Read(
+        1, base::BindOnce(&ValidateAnnexB, stream, loop.QuitWhenIdleClosure()));
+    loop.Run();
 
     demuxer_->Stop();
     demuxer_.reset();

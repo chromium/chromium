@@ -52,21 +52,22 @@ class RedirectTest : public InProcessBrowserTest {
     // asynchronously from the callback the history system uses to notify us
     // that it's done: OnRedirectQueryComplete.
     std::vector<GURL> rv;
+    base::RunLoop loop(base::RunLoop::Type::kNestableTasksAllowed);
     history_service->QueryRedirectsFrom(
         url,
         base::BindOnce(&RedirectTest::OnRedirectQueryComplete,
-                       base::Unretained(this), &rv),
+                       base::Unretained(this), &rv, loop.QuitWhenIdleClosure()),
         &tracker_);
-    content::RunMessageLoop();
+    loop.Run();
     return rv;
   }
 
  protected:
   void OnRedirectQueryComplete(std::vector<GURL>* rv,
+                               base::OnceClosure quit_closure,
                                history::RedirectList redirects) {
     rv->insert(rv->end(), redirects.begin(), redirects.end());
-    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
-        FROM_HERE, base::RunLoop::QuitCurrentWhenIdleClosureDeprecated());
+    std::move(quit_closure).Run();
   }
 
   // Tracker for asynchronous history queries.

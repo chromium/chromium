@@ -185,10 +185,6 @@ using extensions::Extension;
 using net::URLRequestMockHTTPJob;
 using net::test_server::EmbeddedTestServer;
 
-// TODO(crbug.com/971199): tests should be fixed to use base::RunLoop::Run()
-// and base::RunLoop::Quit() instead of content::RunMessageLoop() and the
-// deprecated base::RunLoop::QuitCurrentWhenIdleDeprecated().
-
 namespace {
 
 class InnerWebContentsAttachedWaiter : public content::WebContentsObserver {
@@ -231,8 +227,7 @@ class DownloadTestContentBrowserClient : public content::ContentBrowserClient {
 class CreatedObserver : public content::DownloadManager::Observer {
  public:
   explicit CreatedObserver(content::DownloadManager* manager)
-      : manager_(manager),
-        waiting_(false) {
+      : manager_(manager) {
     manager->AddObserver(this);
   }
 
@@ -250,7 +245,7 @@ class CreatedObserver : public content::DownloadManager::Observer {
     if (!downloads.empty())
       return;
     waiting_ = true;
-    content::RunMessageLoop();
+    run_loop_.Run();
     waiting_ = false;
   }
 
@@ -259,11 +254,12 @@ class CreatedObserver : public content::DownloadManager::Observer {
                          download::DownloadItem* item) override {
     DCHECK_EQ(manager_, manager);
     if (waiting_)
-      base::RunLoop::QuitCurrentWhenIdleDeprecated();
+      run_loop_.QuitWhenIdle();
   }
 
   raw_ptr<content::DownloadManager> manager_;
-  bool waiting_;
+  bool waiting_ = false;
+  base::RunLoop run_loop_{base::RunLoop::Type::kNestableTasksAllowed};
 };
 
 class OnCanDownloadDecidedObserver {
@@ -325,7 +321,7 @@ class PercentWaiter : public download::DownloadItem::Observer {
       return item_->PercentComplete() == 100;
     }
     waiting_ = true;
-    content::RunMessageLoop();
+    run_loop_.Run();
     waiting_ = false;
     return !error_;
   }
@@ -339,10 +335,10 @@ class PercentWaiter : public download::DownloadItem::Observer {
           (item_->PercentComplete() != 100)))) {
       error_ = true;
       if (waiting_)
-        base::RunLoop::QuitCurrentWhenIdleDeprecated();
+        run_loop_.QuitWhenIdle();
     }
     if (item_->GetState() == DownloadItem::COMPLETE && waiting_)
-      base::RunLoop::QuitCurrentWhenIdleDeprecated();
+      run_loop_.QuitWhenIdle();
   }
 
   void OnDownloadDestroyed(download::DownloadItem* item) override {
@@ -355,6 +351,7 @@ class PercentWaiter : public download::DownloadItem::Observer {
   bool waiting_ = false;
   bool error_ = false;
   int prev_percent_ = -1;
+  base::RunLoop run_loop_{base::RunLoop::Type::kNestableTasksAllowed};
 };
 
 // IDs and paths of CRX files used in tests.
@@ -384,15 +381,16 @@ class DownloadsHistoryDataCollector {
         ->QueryDownloads(base::BindLambdaForTesting(
             [&](std::vector<history::DownloadRow> rows) {
               results = std::move(rows);
-              base::RunLoop::QuitCurrentWhenIdleDeprecated();
+              run_loop_.QuitWhenIdle();
             }));
 
-    content::RunMessageLoop();
+    run_loop_.Run();
     return results;
   }
 
  private:
   raw_ptr<Profile> profile_;
+  base::RunLoop run_loop_{base::RunLoop::Type::kNestableTasksAllowed};
 };
 
 bool WasAutoOpened(DownloadItem* item) {
@@ -540,7 +538,7 @@ class HistoryObserver : public DownloadHistory::Observer {
                         const history::DownloadRow& info) override {
     seen_stored_ = true;
     if (waiting_)
-      base::RunLoop::QuitCurrentWhenIdleDeprecated();
+      run_loop_.QuitWhenIdle();
   }
 
   void OnDownloadHistoryDestroyed() override {
@@ -553,7 +551,7 @@ class HistoryObserver : public DownloadHistory::Observer {
     if (seen_stored_)
       return;
     waiting_ = true;
-    content::RunMessageLoop();
+    run_loop_.Run();
     waiting_ = false;
   }
 
@@ -561,6 +559,7 @@ class HistoryObserver : public DownloadHistory::Observer {
   raw_ptr<Profile> profile_;
   bool waiting_ = false;
   bool seen_stored_ = false;
+  base::RunLoop run_loop_{base::RunLoop::Type::kNestableTasksAllowed};
 };
 
 class DownloadReferrerPolicyTest
@@ -5089,11 +5088,11 @@ IN_PROC_BROWSER_TEST_F(DownloadTest, PRE_DownloadTest_History) {
   HistoryObserver observer(browser()->profile());
   DownloadAndWait(browser(), download_url);
   observer.WaitForStored();
+  base::RunLoop run_loop;
   HistoryServiceFactory::GetForProfile(browser()->profile(),
                                        ServiceAccessType::IMPLICIT_ACCESS)
-      ->FlushForTest(
-          base::BindOnce(&base::RunLoop::QuitCurrentWhenIdleDeprecated));
-  content::RunMessageLoop();
+      ->FlushForTest(run_loop.QuitWhenIdleClosure());
+  run_loop.Run();
 }
 
 IN_PROC_BROWSER_TEST_F(DownloadTest, DownloadTest_History) {

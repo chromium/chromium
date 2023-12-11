@@ -1038,9 +1038,10 @@ class BeforeUnloadAtQuitWithTwoWindows : public InProcessBrowserTest {
 
     // Run the application event loop to completion, which will cycle the
     // native MessagePump on all platforms.
+    base::RunLoop loop;
     base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
-        FROM_HERE, base::RunLoop::QuitCurrentWhenIdleClosureDeprecated());
-    base::RunLoop().Run();
+        FROM_HERE, loop.QuitWhenIdleClosure());
+    loop.Run();
 
     // Take care of any remaining Cocoa work.
     CycleRunLoops();

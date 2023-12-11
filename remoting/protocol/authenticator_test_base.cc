@@ -31,11 +31,11 @@ namespace remoting::protocol {
 
 namespace {
 
-ACTION_P(QuitThreadOnCounter, counter) {
+ACTION_P2(QuitThreadOnCounter, quit_closure, counter) {
   --(*counter);
   EXPECT_GE(*counter, 0);
   if (*counter == 0) {
-    base::RunLoop::QuitCurrentWhenIdleDeprecated();
+    std::move(quit_closure).Run();
   }
 }
 
@@ -133,23 +133,26 @@ void AuthenticatorTestBase::RunChannelAuth(bool expected_fail) {
   // Expect two callbacks to be called - the client callback and the host
   // callback.
   int callback_counter = 2;
-
+  base::RunLoop loop;
   EXPECT_CALL(client_callback_, OnDone(net::OK))
-      .WillOnce(QuitThreadOnCounter(&callback_counter));
+      .WillOnce(
+          QuitThreadOnCounter(loop.QuitWhenIdleClosure(), &callback_counter));
   if (expected_fail) {
     EXPECT_CALL(host_callback_, OnDone(net::ERR_FAILED))
-        .WillOnce(QuitThreadOnCounter(&callback_counter));
+        .WillOnce(
+            QuitThreadOnCounter(loop.QuitWhenIdleClosure(), &callback_counter));
   } else {
     EXPECT_CALL(host_callback_, OnDone(net::OK))
-        .WillOnce(QuitThreadOnCounter(&callback_counter));
+        .WillOnce(
+            QuitThreadOnCounter(loop.QuitWhenIdleClosure(), &callback_counter));
   }
 
   // Ensure that .Run() does not run unbounded if the callbacks are never
   // called.
   base::OneShotTimer shutdown_timer;
   shutdown_timer.Start(FROM_HERE, TestTimeouts::action_timeout(),
-                       base::RunLoop::QuitCurrentWhenIdleClosureDeprecated());
-  base::RunLoop().Run();
+                       loop.QuitWhenIdleClosure());
+  loop.Run();
   shutdown_timer.Stop();
 
   testing::Mock::VerifyAndClearExpectations(&client_callback_);
