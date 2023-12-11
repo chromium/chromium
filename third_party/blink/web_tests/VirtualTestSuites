@@ -159,7 +159,8 @@
               "wpt_internal/display-lock"],
     "args": ["--disable-features=IntersectionOptimization",
              "--disable-threaded-compositing", "--disable-threaded-animation"],
-    "expires": "Oct 1, 2023"
+    "owners": ["wangxianzhu@chromium.org"],
+    "expires": "Apr 1, 2024"
   },
   {
     "prefix": "attribution-reporting-debug-mode",
