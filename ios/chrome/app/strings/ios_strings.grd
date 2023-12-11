@@ -5664,6 +5664,12 @@ Your data was encrypted with your passphrase on <ph name="TIME">$2<ex>Sept 1, 20
       <message name="IDS_IOS_WIDGET_PROMO_INSTRUCTIONS_STEP_4" desc="Fourth step of the instructions for the Password Manager widget's installation.">
         Select Password Manager, then tap Add Widget
       </message>
+      <message name="IDS_IOS_UNITS_MEASUREMENTS_ACCESSIBILITY_HINT_UNIT_TYPE_SELECTOR" desc="Accessibility Hint for the unit conversion title button that displays a menu of unit types. This is spoken by VoiceOver.   [Length:Unlimited] [iOS only]">
+          Unit type selector
+      </message>
+      <message name="IDS_IOS_UNITS_MEASUREMENTS_ACCESSIBILITY_HINT_UNIT_SELECTOR" desc="Accessibility Hint for the unit conversion source and target unit buttons that display a menu of units. This is spoken by VoiceOver.   [Length:Unlimited] [iOS only]">
+          Unit selector
+      </message>
       <message name="IDS_UNITS_MEASUREMENTS_AREA" desc="Title of the button that allows the user to use and convert area type units" meaning="Button menu entry that allows the user to change the unit category to Area.">
         Area
       </message>

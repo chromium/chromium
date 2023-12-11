@@ -350,6 +350,8 @@ ios::provider::UnitType TypeByUnit(NSUnit* unit) {
 
   UIMenu* menu = [UIMenu menuWithChildren:menuItemsArray];
   unitTypeTitleButton.menu = menu;
+  unitTypeTitleButton.accessibilityHint = l10n_util::GetNSString(
+      IDS_IOS_UNITS_MEASUREMENTS_ACCESSIBILITY_HINT_UNIT_TYPE_SELECTOR);
   unitTypeTitleButton.showsMenuAsPrimaryAction = YES;
   [unitTypeTitleButton sizeToFit];
   return unitTypeTitleButton;
@@ -484,6 +486,8 @@ ios::provider::UnitType TypeByUnit(NSUnit* unit) {
     UnitTypeCell* cell =
         [tableView dequeueReusableCellWithIdentifier:kUnitTypeCellIdentifier];
     cell.unitMenuButton.menu = [self unitsMenuAtSection:indexPath.section];
+    cell.unitMenuButton.accessibilityHint = l10n_util::GetNSString(
+        IDS_IOS_UNITS_MEASUREMENTS_ACCESSIBILITY_HINT_UNIT_SELECTOR);
     cell.unitMenuButton.showsMenuAsPrimaryAction = YES;
     NSString* unitMenuButtonTitle;
     if (indexPath.section == kSourceSection) {
