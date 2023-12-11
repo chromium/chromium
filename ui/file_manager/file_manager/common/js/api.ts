@@ -119,7 +119,7 @@ export async function getDlpBlockedComponents(sourceUrl: string) {
  * Retrieves Data Leak Prevention (DLP) restriction details.
  */
 export async function getDlpRestrictionDetails(sourceUrl: string) {
-  return promisify<chrome.fileManagerPrivate.DlpRestrictionDetails>(
+  return promisify<chrome.fileManagerPrivate.DlpRestrictionDetails[]>(
       chrome.fileManagerPrivate.getDlpRestrictionDetails, sourceUrl);
 }
 
