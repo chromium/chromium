@@ -38,6 +38,9 @@ const CGFloat kRowHeight = 48;
 // Default number of lines displayed for download label.
 const NSInteger kNumberOfLines = 1;
 
+// Additional margin for status label while Incognito warning is showing.
+const CGFloat kIncognitoWarningMargin = 16;
+
 // Returns formatted size string.
 NSString* GetSizeString(long long size_in_bytes) {
   return [NSByteCountFormatter
@@ -62,6 +65,7 @@ NSString* GetSizeString(long long size_in_bytes) {
   float _progress;
   DownloadManagerState _state;
   BOOL _installDriveButtonVisible;
+  BOOL _incognitoDownloadsWarningVisible;
   BOOL _addedConstraints;  // YES if NSLayoutConstraits were added.
 }
 
@@ -99,6 +103,7 @@ NSString* GetSizeString(long long size_in_bytes) {
 // Leading and trailing constraints for download and install drive controls.
 @property(nonatomic) NSLayoutConstraint* downloadControlsRowLeadingConstraint;
 @property(nonatomic) NSLayoutConstraint* downloadControlsRowTrailingConstraint;
+@property(nonatomic) NSLayoutConstraint* downloadControlsRowHeightConstraint;
 @property(nonatomic)
     NSLayoutConstraint* installDriveControlsRowLeadingConstraint;
 @property(nonatomic)
@@ -126,6 +131,8 @@ NSString* GetSizeString(long long size_in_bytes) {
     _downloadControlsRowLeadingConstraint;
 @synthesize downloadControlsRowTrailingConstraint =
     _downloadControlsRowTrailingConstraint;
+@synthesize downloadControlsRowHeightConstraint =
+    _downloadControlsRowHeightConstraint;
 @synthesize installDriveControlsRowLeadingConstraint =
     _installDriveControlsRowLeadingConstraint;
 @synthesize installDriveControlsRowTrailingConstraint =
@@ -191,8 +198,8 @@ NSString* GetSizeString(long long size_in_bytes) {
     self.downloadControlsRowTrailingConstraint,
     [downloadRow.topAnchor constraintEqualToAnchor:view.topAnchor
                                           constant:kTopShadowHeight],
-    [downloadRow.heightAnchor constraintEqualToConstant:kRowHeight],
   ]];
+  [self updateDownloadControlsRowHeightConstraint];
 
   // install drive controls row constraints.
   UIView* horizontalLine = self.horizontalLine;
@@ -374,6 +381,7 @@ NSString* GetSizeString(long long size_in_bytes) {
     [self updateActionButton];
     [self updateProgressView];
     [self updateStatusLabelTrailingConstraint];
+    [self updateDownloadControlsRowHeightConstraint];
   }
 }
 
@@ -695,6 +703,32 @@ NSString* GetSizeString(long long size_in_bytes) {
   self.statusLabelTrailingConstraint.active = YES;
 }
 
+// Updates the height anchor for self.view.downloadControlsRow to fit the text
+// when Incognito warning is visible and resets the height anchor when the
+// Incognito warning is no longer visible.
+- (void)updateDownloadControlsRowHeightConstraint {
+  if (!self.viewLoaded || !self.view.superview) {
+    // Constraints can not be set if UI elements do not have a common view.
+    // This method will be called again when self.view is added to superview.
+    return;
+  }
+
+  self.downloadControlsRowHeightConstraint.active = NO;
+
+  if (_incognitoDownloadsWarningVisible) {
+    self.downloadControlsRowHeightConstraint =
+        [self.downloadControlsRow.heightAnchor
+            constraintEqualToAnchor:self.statusLabel.heightAnchor
+                           constant:kIncognitoWarningMargin];
+  } else {
+    self.downloadControlsRowHeightConstraint =
+        [self.downloadControlsRow.heightAnchor
+            constraintEqualToConstant:kRowHeight];
+  }
+
+  self.downloadControlsRowHeightConstraint.active = YES;
+}
+
 // Updates state symbol depending on the current download state.
 - (void)updateStateSymbol {
   [self.stateSymbol setState:_state];
@@ -703,11 +737,13 @@ NSString* GetSizeString(long long size_in_bytes) {
 // Updates status label text depending on `state`.
 - (void)updateStatusLabel {
   NSString* statusText = nil;
+  _incognitoDownloadsWarningVisible = NO;
   self.statusLabel.numberOfLines = kNumberOfLines;
   switch (_state) {
     case kDownloadManagerStateNotStarted:
       if (base::FeatureList::IsEnabled(kIOSIncognitoDownloadsWarning) &&
           self.incognito) {
+        _incognitoDownloadsWarningVisible = YES;
         statusText =
             l10n_util::GetNSString(IDS_IOS_DOWNLOAD_INCOGNITO_WARNING_MESSAGE);
         // Set to '0' to ensure the entire incognito warning is visible.
