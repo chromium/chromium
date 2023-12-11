@@ -354,6 +354,42 @@ class InProcessBrowserTest : public content::BrowserTestBase {
   // Returns the test data path used by the embedded test server.
   base::FilePath GetChromeTestDataDir() const;
 
+  // Returns the HTTPS embedded test server.
+  // By default, the HTTPS test server is configured to have a valid
+  // certificate for the set of hostnames:
+  //   - [*.]example.com
+  //   - [*.]foo.com
+  //   - [*.]bar.com
+  //   - [*.]a.com
+  //   - [*.]b.com
+  //   - [*.]c.com
+  //
+  // After starting the server, you can get a working HTTPS URL for any of
+  // those hostnames. For example:
+  //
+  //   ```
+  //   ASSERT_TRUE(embedded_https_test_server().Start());
+  //   embedded_https_test_server().GetURL("foo.com", "/simple.html");
+  //   ```
+  //
+  // Tests can override the set of valid hostnames by calling
+  // `net::EmbeddedTestServer::SetCertHostnames()` before starting the test
+  // server, and a valid test certificate will be automatically generated for
+  // the hostnames passed in. For example:
+  //
+  //   ```
+  //   embedded_https_test_server().SetCertHostnames(
+  //       {"example.com", "example.org"});
+  //   ASSERT_TRUE(embedded_https_test_server().Start());
+  //   embedded_https_test_server().GetURL("example.org", "/simple.html");
+  //   ```
+  const net::EmbeddedTestServer& embedded_https_test_server() const {
+    return *embedded_https_test_server_;
+  }
+  net::EmbeddedTestServer& embedded_https_test_server() {
+    return *embedded_https_test_server_;
+  }
+
   void set_exit_when_last_browser_closes(bool value) {
     exit_when_last_browser_closes_ = value;
   }
@@ -472,6 +508,9 @@ class InProcessBrowserTest : public content::BrowserTestBase {
 
   // Used to set up test factories for each browser context.
   base::CallbackListSubscription create_services_subscription_;
+
+  // Embedded HTTPS test server, cheap to create, started on demand.
+  std::unique_ptr<net::EmbeddedTestServer> embedded_https_test_server_;
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   // ChromeOS does not create a browser by default when the full restore feature

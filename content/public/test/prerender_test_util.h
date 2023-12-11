@@ -122,6 +122,8 @@ class PrerenderTestHelper {
   // creates test server after SetUp).
   void RegisterServerRequestMonitor(
       net::test_server::EmbeddedTestServer* http_server);
+  void RegisterServerRequestMonitor(
+      net::test_server::EmbeddedTestServer& test_server);
 
   // Attempts to lookup the host for the given |gurl|. Returns
   // RenderFrameHost::kNoFrameTreeNodeId upon failure.

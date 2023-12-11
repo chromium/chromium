@@ -447,6 +447,15 @@ class EmbeddedTestServer {
   bool ResetSSLConfig(ServerCertificate cert,
                       const SSLServerConfig& ssl_config);
 
+  // Configures the test server to generate a certificate that covers the
+  // specified hostnames. This implicitly also includes 127.0.0.1 in the
+  // certificate. It is invalid to call after the server is started. If called
+  // multiple times, the last call will have effect.
+  // Convenience method for configuring an HTTPS test server when a test needs
+  // to support a set of hostnames over HTTPS, rather than explicitly setting
+  /// up a full config using SetSSLConfig().
+  void SetCertHostnames(std::vector<std::string> hostnames);
+
   // Returns the certificate that the server is using.
   // If using a generated ServerCertificate type, this must not be called before
   // InitializeAndListen() has been called.

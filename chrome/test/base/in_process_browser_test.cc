@@ -395,7 +395,6 @@ void InProcessBrowserTest::WaitUntilAtLeastOneAshBrowserWindowOpen() {
 
 void InProcessBrowserTest::Initialize() {
   g_current_test = this;
-  CreateTestServer(GetChromeTestDataDir());
   base::FilePath src_dir;
   CHECK(base::PathService::Get(base::DIR_SRC_TEST_DATA_ROOT, &src_dir));
 
@@ -408,6 +407,22 @@ void InProcessBrowserTest::Initialize() {
 #if BUILDFLAG(IS_MAC)
   bundle_swizzler_ = std::make_unique<ScopedBundleSwizzlerMac>();
 #endif
+
+  // The HTTPS test server must be setup here as different browser test suites
+  // have different bundle behavior on macOS, and the HTTPS test server
+  // constructor reads in the local test root cert. It might be possible
+  // to move this to BrowserTestBase in the future.
+  embedded_https_test_server_ = std::make_unique<net::EmbeddedTestServer>(
+      net::EmbeddedTestServer::TYPE_HTTPS);
+  // Default hostnames for the HTTPS test server. Test fixtures can call this
+  // with different hostnames (before starting the server) to override.
+  embedded_https_test_server_->SetCertHostnames(
+      {"example.com", "*.example.com", "foo.com", "*.foo.com", "bar.com",
+       "*.bar.com", "a.com", "*.a.com", "b.com", "*.b.com", "c.com",
+       "*.c.com"});
+
+  embedded_test_server()->AddDefaultHandlers(GetChromeTestDataDir());
+  embedded_https_test_server().AddDefaultHandlers(GetChromeTestDataDir());
 
   // Force all buttons not overflow to prevent test flakiness.
   ToolbarControllerUtil::SetPreventOverflowForTesting(true);
@@ -631,6 +646,10 @@ void InProcessBrowserTest::TearDown() {
 #if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
   OSCryptMocker::TearDown();
 #endif
+
+  if (embedded_https_test_server().Started()) {
+    ASSERT_TRUE(embedded_https_test_server().ShutdownAndWaitUntilComplete());
+  }
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   ash::device_sync::DeviceSyncImpl::Factory::SetCustomFactory(nullptr);

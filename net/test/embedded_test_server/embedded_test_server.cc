@@ -761,6 +761,13 @@ void EmbeddedTestServer::SetSSLConfig(
   SetSSLConfigInternal(CERT_AUTO, &cert_config, SSLServerConfig());
 }
 
+void EmbeddedTestServer::SetCertHostnames(std::vector<std::string> hostnames) {
+  ServerCertificateConfig cert_config;
+  cert_config.dns_names = std::move(hostnames);
+  cert_config.ip_addresses = {net::IPAddress::IPv4Localhost()};
+  SetSSLConfig(cert_config);
+}
+
 bool EmbeddedTestServer::ResetSSLConfigOnIOThread(
     ServerCertificate cert,
     const SSLServerConfig& ssl_config) {
