@@ -43,6 +43,28 @@
 namespace content {
 namespace service_worker_controllee_request_handler_unittest {
 
+namespace {
+
+class DeleteAndStartOverWaiter : public ServiceWorkerContextCoreObserver {
+ public:
+  explicit DeleteAndStartOverWaiter(
+      ServiceWorkerContextWrapper& service_worker_context_wrapper)
+      : service_worker_context_wrapper_(service_worker_context_wrapper) {
+    service_worker_context_wrapper_->AddObserver(this);
+  }
+  void OnDeleteAndStartOver() override { run_loop_.Quit(); }
+  void Wait() {
+    run_loop_.Run();
+    service_worker_context_wrapper_->RemoveObserver(this);
+  }
+
+ private:
+  raw_ref<ServiceWorkerContextWrapper> service_worker_context_wrapper_;
+  base::RunLoop run_loop_;
+};
+
+}  // namespace
+
 class ServiceWorkerControlleeRequestHandlerTest : public testing::Test {
  public:
   class ServiceWorkerRequestTestResources {
@@ -519,8 +541,10 @@ TEST_F(ServiceWorkerControlleeRequestHandlerTest, NullContext) {
           base::DoNothing()));
 
   // Destroy the context and make a new one.
+  DeleteAndStartOverWaiter delete_and_start_over_waiter(
+      *helper_->context_wrapper());
   helper_->context_wrapper()->DeleteAndStartOver();
-  base::RunLoop().RunUntilIdle();
+  delete_and_start_over_waiter.Wait();
 
   // Conduct a main resource load. The loader won't be created because the
   // interceptor's context is now null.
