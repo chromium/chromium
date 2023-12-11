@@ -15,6 +15,7 @@
 #include "base/task/thread_pool.h"
 #include "base/time/time.h"
 #include "base/values.h"
+#include "chrome/browser/content_extraction/inner_text.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
@@ -265,7 +266,7 @@ void ComposeSession::MakeRequest(
   // Increase compose count regradless of status of request.
   compose_count_ += 1;
 
-  if (skip_inner_text_ || inner_text_.has_value()) {
+  if (skip_inner_text_ || got_inner_text_) {
     RequestWithSession(std::move(request), is_input_edited);
   } else {
     // Prepare the compose call, which will be invoked when inner text
@@ -554,14 +555,14 @@ void ComposeSession::SaveMostRecentOkStateToUndoStack() {
       most_recent_ok_state_->TakeMojoState()));
 }
 
-void ComposeSession::AddPageContentToSession(const std::string& inner_text) {
+void ComposeSession::AddPageContentToSession(std::string inner_text) {
   if (!session_) {
     return;
   }
   optimization_guide::proto::ComposePageMetadata page_metadata;
   page_metadata.set_page_url(web_contents_->GetLastCommittedURL().spec());
   page_metadata.set_page_title(base::UTF16ToUTF8(web_contents_->GetTitle()));
-  page_metadata.set_page_inner_text(inner_text);
+  page_metadata.set_page_inner_text(std::move(inner_text));
 
   optimization_guide::proto::ComposeRequest request;
   *request.mutable_page_metadata() = std::move(page_metadata);
@@ -570,25 +571,44 @@ void ComposeSession::AddPageContentToSession(const std::string& inner_text) {
 }
 
 void ComposeSession::UpdateInnerTextAndContinueComposeIfNecessary(
-    const std::string& inner_text) {
-  inner_text_ = inner_text;
-  AddPageContentToSession(inner_text);
+    int request_id,
+    std::unique_ptr<content_extraction::InnerTextResult> result) {
+  if (request_id != current_inner_text_request_id_) {
+    // If this condition is hit, it means there are multiple requests for
+    // inner-text in flight. Early out so that we always use the most recent
+    // request.
+    return;
+  }
+  got_inner_text_ = true;
+  std::string inner_text;
+  if (result) {
+    const compose::Config& config = compose::GetComposeConfig();
+    inner_text = std::move(result->inner_text);
+    compose::LogComposeDialogInnerTextSize(inner_text.size());
+    if (inner_text.size() > config.inner_text_max_bytes) {
+      compose::LogComposeDialogInnerTextShortenedBy(
+          inner_text.size() - config.inner_text_max_bytes);
+      inner_text.erase(config.inner_text_max_bytes);
+    }
+  }
+  AddPageContentToSession(std::move(inner_text));
   if (!continue_compose_.is_null()) {
     std::move(continue_compose_).Run();
   }
 }
 
 void ComposeSession::RefreshInnerText() {
-  inner_text_ = std::nullopt;
+  got_inner_text_ = false;
   if (skip_inner_text_) {
     return;
   }
 
-  inner_text_extractor_.Extract(
-      web_contents_,
+  ++current_inner_text_request_id_;
+  content_extraction::GetInnerText(
+      *web_contents_->GetPrimaryMainFrame(), /*node_id*/ absl::nullopt,
       base::BindOnce(
           &ComposeSession::UpdateInnerTextAndContinueComposeIfNecessary,
-          weak_ptr_factory_.GetWeakPtr()));
+          weak_ptr_factory_.GetWeakPtr(), current_inner_text_request_id_));
 }
 
 void ComposeSession::HandleEndOfConsentSession() {

@@ -11,7 +11,6 @@
 
 #include "base/check_op.h"
 #include "base/timer/elapsed_timer.h"
-#include "chrome/browser/compose/inner_text_extractor.h"
 #include "chrome/common/compose/compose.mojom.h"
 #include "components/autofill/core/common/unique_ids.h"
 #include "components/compose/core/browser/compose_metrics.h"
@@ -25,6 +24,10 @@
 namespace content {
 class WebContents;
 }  // namespace content
+
+namespace content_extraction {
+struct InnerTextResult;
+}  // namespace content_extraction
 
 // The state of a compose session. This currently includes the model quality log
 // entry, and the mojo based compose state.
@@ -166,7 +169,7 @@ class ComposeSession : public compose::mojom::ComposeSessionPageHandler {
       optimization_guide::OptimizationGuideModelStreamingExecutionResult result,
       std::unique_ptr<optimization_guide::ModelQualityLogEntry> log_entry);
   // Adds page content to the session context.
-  void AddPageContentToSession(const std::string& inner_text);
+  void AddPageContentToSession(std::string inner_text);
 
   // Makes compose or rewrite request.
   void MakeRequest(optimization_guide::proto::ComposeRequest request,
@@ -178,8 +181,11 @@ class ComposeSession : public compose::mojom::ComposeSessionPageHandler {
       const optimization_guide::proto::ComposeRequest& request,
       bool is_input_edited);
 
+  // This function is bound to the callback for requesting inner-text.
+  // `request_id` is used to identify the request.
   void UpdateInnerTextAndContinueComposeIfNecessary(
-      const std::string& inner_text);
+      int request_id,
+      std::unique_ptr<content_extraction::InnerTextResult> result);
 
   void SetQualityLogEntryUponError(
       std::unique_ptr<optimization_guide::ModelQualityLogEntry>,
@@ -237,6 +243,9 @@ class ComposeSession : public compose::mojom::ComposeSessionPageHandler {
   // requests.
   int request_id_ = 0;
 
+  // Increasing counter used to identify most recent request for inner-text.
+  int current_inner_text_request_id_ = 0;
+
   bool skip_inner_text_ = false;
 
   // Logging counters.
@@ -246,8 +255,8 @@ class ComposeSession : public compose::mojom::ComposeSessionPageHandler {
 
   bool consent_given_in_session_ = false;
 
-  InnerTextExtractor inner_text_extractor_;
-  std::optional<std::string> inner_text_;
+  // If true, the inner-text was received.
+  bool got_inner_text_ = false;
 
   base::OnceClosure continue_compose_;
 
