@@ -4,9 +4,8 @@
 
 /**
  * Asserts that promise gets rejected.
- * @param {Promise<*>} promise
  */
-export async function assertRejected(promise) {
+export async function assertRejected(promise: Promise<any>) {
   let triggeredError = false;
   try {
     await promise;
@@ -19,34 +18,15 @@ export async function assertRejected(promise) {
   }
 }
 
-/**
- * Invokes a callback function depending on the result of promise.
- *
- * @param {Promise<void>} promise Promise.
- * @param {function(boolean):void} callback Callback function. True is passed if
- *     the test failed.
- */
-export function reportPromise(promise, callback) {
-  promise.then(
-      () => {
-        callback(/* error */ false);
-      },
-      (error) => {
-        console.error(/** @type {!Error} */ (error).stack || error);
-        callback(/* error */ true);
-      });
-}
-
 /** Logs after the testFunction has run >3x (100ms each sleep). */
 const LOG_INTERVAL = 300;
 
 /**
  * Waits until testFunction becomes true.
- * @param {function(): boolean} testFunction A function which is tested.
- * @return {!Promise<void>} A promise which is fulfilled when the testFunction
- *     becomes true.
+ * @param testFunction A function which is tested.
+ * @return A promise which is fulfilled when the testFunction becomes true.
  */
-export async function waitUntil(testFunction) {
+export async function waitUntil(testFunction: () => boolean): Promise<void> {
   const stack = new Error().stack;
   let logTime = Date.now() + LOG_INTERVAL;
   let logged = false;

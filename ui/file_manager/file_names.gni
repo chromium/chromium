@@ -428,6 +428,7 @@ ts_test_files = [
   "file_manager/common/js/lru_cache_unittest.ts",
   "file_manager/common/js/recent_date_bucket_unittest.ts",
   "file_manager/common/js/storage_unittest.ts",
+  "file_manager/common/js/test_error_reporting.ts",
   "file_manager/common/js/translations_unittest.ts",
   "file_manager/common/js/unittest_util.ts",
   "file_manager/common/js/util_unittest.ts",
@@ -621,11 +622,6 @@ generated_js_files = [
 
 # Test files:
 unittest_files = [
-  # Common:
-  "file_manager/common/js/test_error_reporting.js",
-
-  # Background:
-
   # Foreground:
   "file_manager/foreground/js/file_manager_commands_unittest.js",
   "file_manager/foreground/js/ui/file_manager_dialog_base_unittest.js",

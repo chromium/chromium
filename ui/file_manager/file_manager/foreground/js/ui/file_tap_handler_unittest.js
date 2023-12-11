@@ -4,8 +4,6 @@
 
 import {assertEquals} from 'chrome://webui-test/chromeos/chai_assert.js';
 
-import {reportPromise} from '../../../common/js/test_error_reporting.js';
-
 import {FileTapHandler} from './file_tap_handler.js';
 
 /** @type {!FileTapHandler} handler the handler. */
@@ -112,8 +110,7 @@ export function testTapMoveTolerance() {
   assertEquals(0, events.length);
 }
 
-// @ts-ignore: error TS7006: Parameter 'callback' implicitly has an 'any' type.
-export function testLongTap(callback) {
+export async function testLongTap() {
   const touch0 = createTouch(0, 300, 400);
   const touch1 = createTouch(0, 300, 400);  // no movement.
 
@@ -126,41 +123,37 @@ export function testLongTap(callback) {
       }),
       0, handleTap);
   assertEquals(0, events.length);
-  reportPromise(
-      new Promise(resolve => {
-        // Wait for the long press threshold (500ms). No movement.
-        setTimeout(resolve, 550);
-      }).then(() => {
-        // A long press should be emitted if there was no movement.
-        assertEquals(1, events.length);
-        // @ts-ignore: error TS2339: Property 'eventType' does not exist on type
-        // 'Object'.
-        assertEquals(FileTapHandler.TapEvent.LONG_PRESS, events[0].eventType);
-        // @ts-ignore: error TS2339: Property 'index' does not exist on type
-        // 'Object'.
-        assertEquals(0, events[0].index);
-        handler.handleTouchEvents(
-            new TouchEvent('touchend', {
-              cancelable: true,
-              changedTouches: [touch1],
-              targetTouches: [],
-              touches: [],
-            }),
-            1, handleTap);
-        // A long tap should be emitted if there was no movement.
-        assertEquals(2, events.length);
-        // @ts-ignore: error TS2339: Property 'eventType' does not exist on type
-        // 'Object'.
-        assertEquals(FileTapHandler.TapEvent.LONG_TAP, events[1].eventType);
-        // @ts-ignore: error TS2339: Property 'index' does not exist on type
-        // 'Object'.
-        assertEquals(0, events[1].index);
+  await new Promise(resolve => {
+    // Wait for the long press threshold (500ms). No movement.
+    setTimeout(resolve, 550);
+  });
+  // A long press should be emitted if there was no movement.
+  assertEquals(1, events.length);
+  // @ts-ignore: error TS2339: Property 'eventType' does not exist on type
+  // 'Object'.
+  assertEquals(FileTapHandler.TapEvent.LONG_PRESS, events[0].eventType);
+  // @ts-ignore: error TS2339: Property 'index' does not exist on type
+  // 'Object'.
+  assertEquals(0, events[0].index);
+  handler.handleTouchEvents(
+      new TouchEvent('touchend', {
+        cancelable: true,
+        changedTouches: [touch1],
+        targetTouches: [],
+        touches: [],
       }),
-      callback);
+      1, handleTap);
+  // A long tap should be emitted if there was no movement.
+  assertEquals(2, events.length);
+  // @ts-ignore: error TS2339: Property 'eventType' does not exist on type
+  // 'Object'.
+  assertEquals(FileTapHandler.TapEvent.LONG_TAP, events[1].eventType);
+  // @ts-ignore: error TS2339: Property 'index' does not exist on type
+  // 'Object'.
+  assertEquals(0, events[1].index);
 }
 
-// @ts-ignore: error TS7006: Parameter 'callback' implicitly has an 'any' type.
-export function testLongTapMoveTolerance(callback) {
+export async function testLongTapMoveTolerance() {
   const touch0 = createTouch(0, 300, 400);
   const touch1 = createTouch(0, 303, 404);  // moved slightly
 
@@ -173,29 +166,24 @@ export function testLongTapMoveTolerance(callback) {
       }),
       0, handleTap);
   assertEquals(0, events.length);
-  reportPromise(
-      new Promise(resolve => {
-        setTimeout(resolve, 250);
-      })
-          .then(() => {
-            handler.handleTouchEvents(
-                new TouchEvent('touchmove', {
-                  cancelable: true,
-                  changedTouches: [touch1],
-                  targetTouches: [touch1],
-                  touches: [touch1],
-                }),
-                0, handleTap);
-            return new Promise(resolve => {
-              // Exceeds the threshold (500ms) when added with the one above.
-              setTimeout(resolve, 300);
-            });
-          })
-          .then(() => {
-            // No tap event should be emitted for a long tap with movement.
-            assertEquals(0, events.length);
-          }),
-      callback);
+  await new Promise(resolve => {
+    setTimeout(resolve, 250);
+  });
+  handler.handleTouchEvents(
+      new TouchEvent('touchmove', {
+        cancelable: true,
+        changedTouches: [touch1],
+        targetTouches: [touch1],
+        touches: [touch1],
+      }),
+      0, handleTap);
+  await new Promise(resolve => {
+    // Exceeds the threshold (500ms) when added with the one above.
+    setTimeout(resolve, 300);
+  });
+
+  // No tap event should be emitted for a long tap with movement.
+  assertEquals(0, events.length);
 }
 
 export function testTwoFingerTap() {
