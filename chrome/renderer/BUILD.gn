@@ -447,7 +447,10 @@ static_library("renderer") {
       "net/page_auto_fetcher_helper_android.h",
       "sandbox_status_extension_android.cc",
       "sandbox_status_extension_android.h",
+      "wallet/boarding_pass_extractor.cc",
+      "wallet/boarding_pass_extractor.h",
     ]
+    deps += [ "//chrome/common/wallet:mojo_bindings" ]
   }
 
   if (is_chromeos_ash) {

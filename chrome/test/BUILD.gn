@@ -7552,6 +7552,7 @@ test("unit_tests") {
       "//chrome/browser/touch_to_fill/password_manager/password_generation/android:unit_tests",
       "//chrome/browser/translate/android:unit_tests",
       "//chrome/browser/ui/android/hats/test:test_support",
+      "//chrome/common/wallet:mojo_bindings",
       "//chrome/services/media_gallery_util:unit_tests",
       "//components/back_forward_cache",
       "//components/bookmarks/common/android:android",

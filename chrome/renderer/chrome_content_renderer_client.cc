@@ -171,6 +171,7 @@
 
 #if BUILDFLAG(IS_ANDROID)
 #include "chrome/renderer/sandbox_status_extension_android.h"
+#include "chrome/renderer/wallet/boarding_pass_extractor.h"
 #else
 #include "chrome/renderer/searchbox/searchbox.h"
 #include "chrome/renderer/searchbox/searchbox_extension.h"
@@ -775,6 +776,13 @@ void ChromeContentRendererClient::RenderFrameCreated(
   if (render_frame->IsMainFrame()) {
     new commerce::CommerceWebExtractor(render_frame, registry);
   }
+
+#if BUILDFLAG(IS_ANDROID)
+  if (base::FeatureList::IsEnabled(features::kBoardingPassDetector) &&
+      render_frame->IsMainFrame()) {
+    new wallet::BoardingPassExtractor(render_frame, registry);
+  }
+#endif
 }
 
 void ChromeContentRendererClient::WebViewCreated(
