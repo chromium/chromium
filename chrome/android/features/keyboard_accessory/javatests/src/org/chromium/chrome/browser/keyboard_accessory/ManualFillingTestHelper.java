@@ -17,7 +17,6 @@ import static org.chromium.chrome.browser.keyboard_accessory.bar_component.Keybo
 import static org.chromium.chrome.browser.keyboard_accessory.bar_component.KeyboardAccessoryTestHelper.accessoryStartedShowing;
 import static org.chromium.chrome.browser.keyboard_accessory.bar_component.KeyboardAccessoryTestHelper.accessoryViewFullyHidden;
 import static org.chromium.chrome.browser.keyboard_accessory.bar_component.KeyboardAccessoryTestHelper.accessoryViewFullyShown;
-import static org.chromium.chrome.browser.keyboard_accessory.tab_layout_component.KeyboardAccessoryTabTestHelper.isKeyboardAccessoryTabLayout;
 import static org.chromium.ui.base.LocalizationUtils.setRtlForTesting;
 import static org.chromium.ui.test.util.ViewUtils.VIEW_GONE;
 import static org.chromium.ui.test.util.ViewUtils.VIEW_INVISIBLE;
@@ -188,7 +187,7 @@ public class ManualFillingTestHelper {
         ViewGroup recyclerView = getAccessoryBarView();
         assert recyclerView != null;
         View view = recyclerView.getChildAt(0);
-        return isKeyboardAccessoryTabLayout().matches(view) ? null : view;
+        return isAssignableFrom(KeyboardAccessoryButtonGroupView.class).matches(view) ? null : view;
     }
 
     public void focusPasswordField() throws TimeoutException {
@@ -517,7 +516,8 @@ public class ManualFillingTestHelper {
         return new ViewAction() {
             @Override
             public Matcher<View> getConstraints() {
-                return allOf(isDisplayed(), isKeyboardAccessoryTabLayout());
+                return allOf(
+                        isDisplayed(), isAssignableFrom(KeyboardAccessoryButtonGroupView.class));
             }
 
             @Override
