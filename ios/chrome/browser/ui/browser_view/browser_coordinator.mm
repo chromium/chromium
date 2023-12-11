@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #import "ios/chrome/browser/ui/browser_view/browser_coordinator.h"
+#import "ios/chrome/browser/ui/browser_view/browser_coordinator+Testing.h"
 
 #import <StoreKit/StoreKit.h>
 
@@ -129,7 +130,6 @@
 #import "ios/chrome/browser/ui/bookmarks/bookmarks_coordinator.h"
 #import "ios/chrome/browser/ui/browser_container/browser_container_coordinator.h"
 #import "ios/chrome/browser/ui/browser_container/browser_container_view_controller.h"
-#import "ios/chrome/browser/ui/browser_view/browser_coordinator+private.h"
 #import "ios/chrome/browser/ui/browser_view/browser_view_controller+private.h"
 #import "ios/chrome/browser/ui/browser_view/browser_view_controller.h"
 #import "ios/chrome/browser/ui/browser_view/key_commands_provider.h"
@@ -190,6 +190,7 @@
 #import "ios/chrome/browser/ui/recent_tabs/recent_tabs_coordinator_delegate.h"
 #import "ios/chrome/browser/ui/sad_tab/sad_tab_coordinator.h"
 #import "ios/chrome/browser/ui/safe_browsing/safe_browsing_coordinator.h"
+#import "ios/chrome/browser/ui/save_to_photos/save_to_photos_coordinator.h"
 #import "ios/chrome/browser/ui/send_tab_to_self/send_tab_to_self_coordinator.h"
 #import "ios/chrome/browser/ui/settings/autofill/autofill_add_credit_card_coordinator.h"
 #import "ios/chrome/browser/ui/settings/autofill/autofill_add_credit_card_coordinator_delegate.h"
@@ -396,6 +397,9 @@ enum class ToolbarKind {
 @property(nonatomic, strong)
     DefaultBrowserPromoNonModalCoordinator* nonModalPromoCoordinator;
 
+// Coordinator for new tab pages.
+@property(nonatomic, strong) NewTabPageCoordinator* NTPCoordinator;
+
 // Coordinator for Page Info UI.
 @property(nonatomic, strong) ChromeCoordinator* pageInfoCoordinator;
 
@@ -464,6 +468,9 @@ enum class ToolbarKind {
 
 // Coordinator for Safe Browsing.
 @property(nonatomic, strong) SafeBrowsingCoordinator* safeBrowsingCoordinator;
+
+// Coordinator for displaying the Save to Photos UI.
+@property(nonatomic, strong) SaveToPhotosCoordinator* saveToPhotosCoordinator;
 
 // Coordinator for sharing scenarios.
 @property(nonatomic, strong) SharingCoordinator* sharingCoordinator;

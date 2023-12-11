@@ -8,7 +8,7 @@ source_set("elements") {
     "crossfade_label.mm",
     "extended_touch_target_button.h",
     "extended_touch_target_button.mm",
-    "fade_truncating_label+private.h",
+    "fade_truncating_label+Testing.h",
     "fade_truncating_label.h",
     "fade_truncating_label.mm",
     "gray_highlight_button.h",

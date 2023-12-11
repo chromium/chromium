@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #import "ios/chrome/browser/ui/bubble/bubble_view_controller_presenter.h"
+#import "ios/chrome/browser/ui/bubble/bubble_view_controller_presenter+Testing.h"
 
 #import "base/check.h"
 #import "base/ios/block_types.h"
@@ -11,7 +12,6 @@
 #import "ios/chrome/browser/ui/bubble/bubble_util.h"
 #import "ios/chrome/browser/ui/bubble/bubble_view.h"
 #import "ios/chrome/browser/ui/bubble/bubble_view_controller.h"
-#import "ios/chrome/browser/ui/bubble/bubble_view_controller_presenter+private.h"
 
 namespace {
 
@@ -34,6 +34,23 @@ const CGFloat kVoiceOverAnnouncementDelay = 1;
 @interface BubbleViewControllerPresenter () <UIGestureRecognizerDelegate,
                                              BubbleViewDelegate>
 
+// The underlying BubbleViewController managed by this object.
+// `bubbleViewController` manages the BubbleView instance.
+@property(nonatomic, strong) BubbleViewController* bubbleViewController;
+// The timer used to dismiss the bubble after a certain length of time. The
+// bubble is dismissed automatically if the user does not dismiss it manually.
+// If the user dismisses it manually, this timer is invalidated. The timer
+// maintains a strong reference to the presenter, so it must be retained weakly
+// to prevent a retain cycle. The run loop retains a strong reference to the
+// timer so it is not deallocated until it is invalidated.
+@property(nonatomic, strong) NSTimer* bubbleDismissalTimer;
+// The timer used to reset the user's engagement. The user is considered
+// engaged with the bubble while it is visible and for a certain duration after
+// it disappears. The timer maintains a strong reference to the presenter, so it
+// must be retained weakly to prevent a retain cycle. The run loop retains a
+// strong reference to the timer so it is not deallocated until it is
+// invalidated.
+@property(nonatomic, strong) NSTimer* engagementTimer;
 // The `parentView` of the underlying BubbleView, passed in
 // -presentInViewController:view:anchorPoint.
 @property(nonatomic, strong) UIView* parentView;

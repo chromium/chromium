@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #import "ios/chrome/browser/ui/context_menu/context_menu_configuration_provider.h"
+#import "ios/chrome/browser/ui/context_menu/context_menu_configuration_provider+Testing.h"
 
 #import "base/ios/ios_util.h"
 #import "base/metrics/histogram_functions.h"
@@ -35,7 +36,6 @@
 #import "ios/chrome/browser/shared/ui/util/image/image_saver.h"
 #import "ios/chrome/browser/shared/ui/util/pasteboard_util.h"
 #import "ios/chrome/browser/shared/ui/util/url_with_title.h"
-#import "ios/chrome/browser/ui/context_menu/context_menu_configuration_provider+private.h"
 #import "ios/chrome/browser/ui/context_menu/context_menu_utils.h"
 #import "ios/chrome/browser/ui/incognito_reauth/incognito_reauth_commands.h"
 #import "ios/chrome/browser/ui/incognito_reauth/incognito_reauth_scene_agent.h"

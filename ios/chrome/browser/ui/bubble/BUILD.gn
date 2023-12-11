@@ -7,7 +7,7 @@ source_set("bubble") {
     "bubble_presenter.h",
     "bubble_presenter.mm",
     "bubble_presenter_delegate.h",
-    "bubble_view_controller_presenter+private.h",
+    "bubble_view_controller_presenter+Testing.h",
     "bubble_view_controller_presenter.h",
     "bubble_view_controller_presenter.mm",
   ]

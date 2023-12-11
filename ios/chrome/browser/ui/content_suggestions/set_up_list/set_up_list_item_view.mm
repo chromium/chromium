@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #import "ios/chrome/browser/ui/content_suggestions/set_up_list/set_up_list_item_view.h"
+#import "ios/chrome/browser/ui/content_suggestions/set_up_list/set_up_list_item_view+Testing.h"
 
 #import "base/feature_list.h"
 #import "base/notreached.h"
@@ -17,7 +18,6 @@
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
 #import "ios/chrome/browser/ui/content_suggestions/set_up_list/constants.h"
 #import "ios/chrome/browser/ui/content_suggestions/set_up_list/set_up_list_item_icon.h"
-#import "ios/chrome/browser/ui/content_suggestions/set_up_list/set_up_list_item_view+private.h"
 #import "ios/chrome/browser/ui/content_suggestions/set_up_list/set_up_list_item_view_data.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"
@@ -161,12 +161,6 @@ struct ViewConfig {
 
 #pragma mark - Public methods
 
-- (void)handleTap:(UITapGestureRecognizer*)sender {
-  if (sender.state == UIGestureRecognizerStateEnded && !self.complete) {
-    [self.tapDelegate didTapSetUpListItemView:self];
-  }
-}
-
 - (void)markCompleteWithCompletion:(ProceduralBlock)completion {
   if (_complete) {
     return;
@@ -208,6 +202,12 @@ struct ViewConfig {
 }
 
 #pragma mark - Private methods
+
+- (void)handleTap:(UITapGestureRecognizer*)sender {
+  if (sender.state == UIGestureRecognizerStateEnded && !self.complete) {
+    [self.tapDelegate didTapSetUpListItemView:self];
+  }
+}
 
 - (void)createSubviews {
   // Return if the subviews have already been created and added.

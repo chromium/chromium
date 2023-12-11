@@ -6,7 +6,7 @@
 
 #import "base/ios/block_types.h"
 #import "base/test/ios/wait_util.h"
-#import "ios/chrome/app/application_delegate/app_state+private.h"
+#import "ios/chrome/app/application_delegate/app_state+Testing.h"
 #import "ios/chrome/app/application_delegate/startup_information.h"
 #import "ios/chrome/app/safe_mode_app_state_agent+private.h"
 #import "ios/chrome/browser/shared/coordinator/scene/connection_information.h"

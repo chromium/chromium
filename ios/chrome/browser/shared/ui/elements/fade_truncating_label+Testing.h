@@ -2,11 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef IOS_CHROME_BROWSER_SHARED_UI_ELEMENTS_FADE_TRUNCATING_LABEL_PRIVATE_H_
-#define IOS_CHROME_BROWSER_SHARED_UI_ELEMENTS_FADE_TRUNCATING_LABEL_PRIVATE_H_
+#ifndef IOS_CHROME_BROWSER_SHARED_UI_ELEMENTS_FADE_TRUNCATING_LABEL_TESTING_H_
+#define IOS_CHROME_BROWSER_SHARED_UI_ELEMENTS_FADE_TRUNCATING_LABEL_TESTING_H_
 
-// Extension exposing private methods of FadeTruncatingLabel for testing.
-@interface FadeTruncatingLabel ()
+#import "ios/chrome/browser/shared/ui/elements/fade_truncating_label.h"
+
+// Testing category exposing a private method of FadeTruncatingLabel for tests.
+@interface FadeTruncatingLabel (Testing)
 
 /// Draws `attributedString` in `requestedRect`.
 /// `applyGradient`: Whether gradient should be applied when drawing the text.
@@ -22,4 +24,4 @@
 
 @end
 
-#endif  // IOS_CHROME_BROWSER_SHARED_UI_ELEMENTS_FADE_TRUNCATING_LABEL_PRIVATE_H_
+#endif  // IOS_CHROME_BROWSER_SHARED_UI_ELEMENTS_FADE_TRUNCATING_LABEL_TESTING_H_

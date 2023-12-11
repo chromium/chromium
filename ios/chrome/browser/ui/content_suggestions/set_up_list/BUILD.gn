@@ -6,7 +6,7 @@ source_set("set_up_list") {
   sources = [
     "set_up_list_item_icon.h",
     "set_up_list_item_icon.mm",
-    "set_up_list_item_view+private.h",
+    "set_up_list_item_view+Testing.h",
     "set_up_list_item_view.h",
     "set_up_list_item_view.mm",
     "set_up_list_item_view_data.h",

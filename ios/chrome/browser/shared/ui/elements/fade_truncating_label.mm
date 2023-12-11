@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #import "ios/chrome/browser/shared/ui/elements/fade_truncating_label.h"
+#import "ios/chrome/browser/shared/ui/elements/fade_truncating_label+Testing.h"
 
 #import <CoreText/CoreText.h>
 #import <algorithm>
@@ -10,7 +11,6 @@
 #import "base/notreached.h"
 #import "base/numerics/safe_conversions.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
-#import "ios/chrome/browser/shared/ui/elements/fade_truncating_label+private.h"
 #import "ios/chrome/browser/shared/ui/util/attributed_string_util.h"
 
 namespace {

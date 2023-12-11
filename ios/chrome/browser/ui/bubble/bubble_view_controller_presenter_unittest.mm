@@ -2,6 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#import "ios/chrome/browser/ui/bubble/bubble_view_controller_presenter.h"
+#import "ios/chrome/browser/ui/bubble/bubble_view_controller_presenter+Testing.h"
+
 #import <UIKit/UIKit.h>
 
 #import <optional>
@@ -11,8 +14,6 @@
 #import "ios/chrome/browser/ui/bubble/bubble_unittest_util.h"
 #import "ios/chrome/browser/ui/bubble/bubble_view.h"
 #import "ios/chrome/browser/ui/bubble/bubble_view_controller.h"
-#import "ios/chrome/browser/ui/bubble/bubble_view_controller_presenter+private.h"
-#import "ios/chrome/browser/ui/bubble/bubble_view_controller_presenter.h"
 #import "testing/gtest/include/gtest/gtest.h"
 #import "testing/platform_test.h"
 

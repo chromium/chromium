@@ -4,7 +4,7 @@
 
 source_set("context_menu") {
   sources = [
-    "context_menu_configuration_provider+private.h",
+    "context_menu_configuration_provider+Testing.h",
     "context_menu_configuration_provider.h",
     "context_menu_configuration_provider.mm",
   ]

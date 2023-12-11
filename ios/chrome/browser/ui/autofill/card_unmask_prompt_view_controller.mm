@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #import "ios/chrome/browser/ui/autofill/card_unmask_prompt_view_controller.h"
+#import "ios/chrome/browser/ui/autofill/card_unmask_prompt_view_controller+Testing.h"
 
 #import "base/apple/foundation_util.h"
 #import "base/strings/sys_string_conversions.h"
@@ -15,7 +16,6 @@
 #import "ios/chrome/browser/shared/ui/table_view/table_view_utils.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
 #import "ios/chrome/browser/ui/autofill/card_unmask_prompt_view_bridge.h"
-#import "ios/chrome/browser/ui/autofill/card_unmask_prompt_view_controller+private.h"
 #import "ios/chrome/browser/ui/autofill/cells/cvc_header_item.h"
 #import "ios/chrome/browser/ui/autofill/cells/expiration_date_edit_item.h"
 #import "ios/chrome/browser/ui/autofill/cells/expiration_date_edit_item_delegate.h"

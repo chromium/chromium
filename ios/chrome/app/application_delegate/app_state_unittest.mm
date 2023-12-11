@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #import "ios/chrome/app/application_delegate/app_state.h"
+#import "ios/chrome/app/application_delegate/app_state+Testing.h"
 
 #import <memory>
 
@@ -12,7 +13,6 @@
 #import "base/ios/ios_util.h"
 #import "base/test/task_environment.h"
 #import "ios/chrome/app/app_startup_parameters.h"
-#import "ios/chrome/app/application_delegate/app_state+private.h"
 #import "ios/chrome/app/application_delegate/app_state_observer.h"
 #import "ios/chrome/app/application_delegate/fake_startup_information.h"
 #import "ios/chrome/app/application_delegate/memory_warning_helper.h"

@@ -4,7 +4,7 @@
 
 source_set("browser_view") {
   sources = [
-    "browser_coordinator+private.h",
+    "browser_coordinator+Testing.h",
     "browser_coordinator.h",
     "browser_coordinator.mm",
     "browser_view_controller+private.h",

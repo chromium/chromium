@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #import "ios/chrome/app/application_delegate/app_state.h"
+#import "ios/chrome/app/application_delegate/app_state+Testing.h"
 
 #import <utility>
 
@@ -21,7 +22,6 @@
 #import "components/feature_engagement/public/tracker.h"
 #import "components/metrics/metrics_service.h"
 #import "components/previous_session_info/previous_session_info.h"
-#import "ios/chrome/app/application_delegate/app_state+private.h"
 #import "ios/chrome/app/application_delegate/memory_warning_helper.h"
 #import "ios/chrome/app/application_delegate/metrics_mediator.h"
 #import "ios/chrome/app/application_delegate/startup_information.h"

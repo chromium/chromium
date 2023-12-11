@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #import "ios/chrome/browser/ui/context_menu/context_menu_configuration_provider.h"
+#import "ios/chrome/browser/ui/context_menu/context_menu_configuration_provider+Testing.h"
 
 #import "base/test/scoped_feature_list.h"
 #import "base/test/task_environment.h"
@@ -22,7 +23,6 @@
 #import "ios/chrome/browser/signin/model/fake_system_identity_manager.h"
 #import "ios/chrome/browser/signin/model/identity_manager_factory.h"
 #import "ios/chrome/browser/signin/model/identity_test_environment_browser_state_adaptor.h"
-#import "ios/chrome/browser/ui/context_menu/context_menu_configuration_provider+private.h"
 #import "ios/chrome/browser/ui/menu/browser_action_factory.h"
 #import "ios/chrome/browser/ui/menu/menu_histograms.h"
 #import "ios/web/public/test/fakes/fake_web_state.h"
