@@ -9,6 +9,7 @@
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/testing/dummy_page_holder.h"
 #include "third_party/blink/renderer/core/testing/null_execution_context.h"
+#include "third_party/blink/renderer/platform/testing/task_environment.h"
 
 namespace blink {
 namespace {
@@ -30,6 +31,8 @@ class InspectorMediaContextImplTest : public ::testing::Test {
     }
     return to_add;
   }
+
+  test::TaskEnvironment task_environment_;
 
   Persistent<MediaInspectorContextImpl> impl;
   std::unique_ptr<DummyPageHolder> dummy_page_holder_;
