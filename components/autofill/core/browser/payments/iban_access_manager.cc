@@ -4,10 +4,13 @@
 
 #include "components/autofill/core/browser/payments/iban_access_manager.h"
 
+#include "components/autofill/core/browser/payments/autofill_error_dialog_context.h"
 #include "components/autofill/core/browser/payments/payments_network_interface.h"
 #include "components/autofill/core/browser/payments/payments_util.h"
 #include "components/autofill/core/browser/personal_data_manager.h"
 #include "components/autofill/core/browser/ui/suggestion.h"
+#include "components/strings/grit/components_strings.h"
+#include "ui/base/l10n/l10n_util.h"
 
 namespace autofill {
 
@@ -41,6 +44,11 @@ void IbanAccessManager::FetchValue(const Suggestion& suggestion,
     return;
   }
 
+  client_->ShowAutofillProgressDialog(
+      AutofillProgressDialogType::kServerIbanUnmaskProgressDialog,
+      base::BindOnce(&IbanAccessManager::OnServerIbanUnmaskCancelled,
+                     weak_ptr_factory_.GetWeakPtr()));
+
   // Construct `UnmaskIbanRequestDetails` and send `UnmaskIban` to fetch the
   // full value of the server IBAN.
   payments::PaymentsNetworkInterface::UnmaskIbanRequestDetails request_details;
@@ -60,10 +68,21 @@ void IbanAccessManager::OnUnmaskResponseReceived(
     base::WeakPtr<Accessor> accessor,
     AutofillClient::PaymentsRpcResult result,
     const std::u16string& value) {
+  client_->CloseAutofillProgressDialog(
+      /*show_confirmation_before_closing=*/false);
   if (accessor && result == AutofillClient::PaymentsRpcResult::kSuccess &&
       !value.empty()) {
     accessor->OnIbanFetched(value);
+    return;
   }
+  AutofillErrorDialogContext error_context;
+  error_context.type =
+      AutofillErrorDialogType::kMaskedServerIbanUnmaskingTemporaryError;
+  client_->ShowAutofillErrorDialog(error_context);
+}
+
+void IbanAccessManager::OnServerIbanUnmaskCancelled() {
+  // TODO(b/296651899): Log the cancel metrics.
 }
 
 }  // namespace autofill

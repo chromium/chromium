@@ -32,8 +32,11 @@ enum class AutofillErrorDialogType {
   // Error shown when the card cannot be verified because Google Payments
   // servers can't be reached.
   kMaskedServerCardRiskBasedUnmaskingNetworkError = 5,
+  // Error shown when the server returns a temporary error for unmasking a
+  // server IBAN.
+  kMaskedServerIbanUnmaskingTemporaryError = 6,
   // kMaxValue is required for logging histograms.
-  kMaxValue = kMaskedServerCardRiskBasedUnmaskingNetworkError,
+  kMaxValue = kMaskedServerIbanUnmaskingTemporaryError,
 };
 
 // The context for the autofill error dialog.

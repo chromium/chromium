@@ -181,6 +181,8 @@ chromium-metrics-reviews@google.com.
       summary="Progress dialog while authenticating with FIDO on Android"/>
   <variant name="ServerCardUnmask"
       summary="Progress dialog for the credit card risk-based unmask flow"/>
+  <variant name="ServerIbanUnmask"
+      summary="Progress dialog for the server IBAN unmask flow"/>
   <variant name="VirtualCardUnmask"
       summary="Progress dialog for the VCN Card Unmask Flow"/>
 </variants>

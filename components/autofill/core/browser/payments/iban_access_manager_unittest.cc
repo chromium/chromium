@@ -211,4 +211,47 @@ TEST_F(IbanAccessManagerTest, NoAccessor_NotTriggerUnmaskIbanRequest) {
   EXPECT_FALSE(GetFetchedIban());
 }
 
+// Verify that there will be no progress dialog when unmasking a local IBAN.
+TEST_F(IbanAccessManagerTest, FetchValue_LocalIbanNoProgressDialog) {
+  Suggestion suggestion(PopupItemId::kIbanEntry);
+  suggestion.payload = Suggestion::ValueToFill(kFullIbanValue);
+
+  iban_access_manager_->FetchValue(suggestion, accessor_->GetWeakPtr());
+
+  EXPECT_FALSE(autofill_client_.autofill_progress_dialog_shown());
+}
+
+// Verify that there will be a progress dialog when unmasking a server IBAN.
+TEST_F(IbanAccessManagerTest, FetchValue_ServerIban_ProgressDialog_Success) {
+  SetUpUnmaskIbanCall(/*is_successful=*/true, /*value=*/kFullIbanValue);
+
+  Iban server_iban = test::GetServerIban();
+  server_iban.set_identifier(Iban::InstrumentId(kInstrumentId));
+  personal_data().AddServerIban(server_iban);
+  Suggestion suggestion(PopupItemId::kIbanEntry);
+  suggestion.payload = Suggestion::InstrumentId(kInstrumentId);
+
+  iban_access_manager_->FetchValue(suggestion, accessor_->GetWeakPtr());
+
+  EXPECT_TRUE(autofill_client_.autofill_progress_dialog_shown());
+  EXPECT_FALSE(autofill_client_.autofill_error_dialog_shown());
+}
+
+// Verify that there will be a progress dialog when unmasking a server IBAN,
+// followed by an error dialog if it fails to be unmasked.
+TEST_F(IbanAccessManagerTest, FetchValue_ServerIban_ProgressDialog_Failure) {
+  SetUpUnmaskIbanCall(/*is_successful=*/false, /*value=*/kFullIbanValue);
+
+  Iban server_iban = test::GetServerIban();
+  server_iban.set_identifier(Iban::InstrumentId(kInstrumentId));
+  personal_data().AddServerIban(server_iban);
+  Suggestion suggestion(PopupItemId::kIbanEntry);
+  suggestion.payload = Suggestion::InstrumentId(kInstrumentId);
+
+  iban_access_manager_->FetchValue(suggestion, accessor_->GetWeakPtr());
+
+  EXPECT_TRUE(autofill_client_.autofill_progress_dialog_shown());
+  EXPECT_TRUE(autofill_client_.autofill_error_dialog_shown());
+}
+
 }  // namespace autofill

@@ -49,6 +49,8 @@ class IbanAccessManager {
                                 AutofillClient::PaymentsRpcResult result,
                                 const std::u16string& value);
 
+  void OnServerIbanUnmaskCancelled();
+
   // The associated autofill client.
   const raw_ptr<AutofillClient> client_;
 

@@ -82,7 +82,11 @@ std::u16string AutofillProgressDialogControllerImpl::GetLoadingTitle() const {
     case AutofillProgressDialogType::kServerCardUnmaskProgressDialog:
       return l10n_util::GetStringUTF16(
           IDS_AUTOFILL_CARD_UNMASK_PROGRESS_DIALOG_TITLE);
+    case AutofillProgressDialogType::kServerIbanUnmaskProgressDialog:
+      return l10n_util::GetStringUTF16(
+          IDS_AUTOFILL_IBAN_UNMASK_PROGRESS_DIALOG_TITLE);
     case AutofillProgressDialogType::kUnspecified:
+      // TODO(crbug.com/1510471): Replace all below with `NOTREACHED_NORETURN`.
       NOTREACHED();
       return std::u16string();
   }
@@ -96,6 +100,7 @@ std::u16string AutofillProgressDialogControllerImpl::GetConfirmationTitle()
     case AutofillProgressDialogType::kServerCardUnmaskProgressDialog:
       return l10n_util::GetStringUTF16(
           IDS_AUTOFILL_CARD_UNMASK_CONFIRMATION_DIALOG_TITLE);
+    case AutofillProgressDialogType::kServerIbanUnmaskProgressDialog:
     case AutofillProgressDialogType::kUnspecified:
       NOTREACHED();
       return std::u16string();
@@ -109,6 +114,9 @@ std::u16string AutofillProgressDialogControllerImpl::GetCancelButtonLabel()
       return l10n_util::GetStringUTF16(IDS_CANCEL);
     case AutofillProgressDialogType::kVirtualCardUnmaskProgressDialog:
     case AutofillProgressDialogType::kServerCardUnmaskProgressDialog:
+    // TODO(b/296651406): Rename IDS_AUTOFILL_CARD_UNMASK_CANCEL_BUTTON_LABEL to
+    // IDS_AUTOFILL_PAYMENT_METHOD_UNMASK_CANCEL_BUTTON_LABEL
+    case AutofillProgressDialogType::kServerIbanUnmaskProgressDialog:
       return l10n_util::GetStringUTF16(
           IDS_AUTOFILL_CARD_UNMASK_CANCEL_BUTTON_LABEL);
     case AutofillProgressDialogType::kUnspecified:
@@ -127,6 +135,9 @@ std::u16string AutofillProgressDialogControllerImpl::GetLoadingMessage() const {
     case AutofillProgressDialogType::kServerCardUnmaskProgressDialog:
       return l10n_util::GetStringUTF16(
           IDS_AUTOFILL_MASKED_SERVER_CARD_RISK_BASED_UNMASK_PROGRESS_BAR_MESSAGE);
+    case AutofillProgressDialogType::kServerIbanUnmaskProgressDialog:
+      return l10n_util::GetStringUTF16(
+          IDS_AUTOFILL_IBAN_UNMASK_PROGRESS_BAR_MESSAGE);
     case AutofillProgressDialogType::kUnspecified:
       NOTREACHED();
       return std::u16string();
@@ -142,6 +153,7 @@ std::u16string AutofillProgressDialogControllerImpl::GetConfirmationMessage()
     case AutofillProgressDialogType::kServerCardUnmaskProgressDialog:
       return l10n_util::GetStringUTF16(
           IDS_AUTOFILL_CARD_UNMASK_CONFIRMATION_MESSAGE);
+    case AutofillProgressDialogType::kServerIbanUnmaskProgressDialog:
     case AutofillProgressDialogType::kUnspecified:
       NOTREACHED();
       return std::u16string();
