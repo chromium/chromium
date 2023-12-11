@@ -257,6 +257,8 @@ CameraAppUI::CameraAppUI(content::WebUI* web_ui,
   allowlist->RegisterAutoGrantedPermission(
       host_origin, ContentSettingsType::MEDIASTREAM_CAMERA);
   allowlist->RegisterAutoGrantedPermission(
+      host_origin, ContentSettingsType::CAMERA_PAN_TILT_ZOOM);
+  allowlist->RegisterAutoGrantedPermission(
       host_origin, ContentSettingsType::FILE_SYSTEM_READ_GUARD);
   allowlist->RegisterAutoGrantedPermission(
       host_origin, ContentSettingsType::FILE_SYSTEM_WRITE_GUARD);
