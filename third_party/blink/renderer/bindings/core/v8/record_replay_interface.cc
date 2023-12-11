@@ -22,6 +22,7 @@
 #include "third_party/blink/renderer/bindings/core/v8/v8_node.h"
 #include "third_party/blink/renderer/core/css/css_style_declaration.h"
 #include "third_party/blink/renderer/core/dom/dom_node_ids.h"
+#include "third_party/blink/renderer/core/dom/events/custom_event.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/frame/settings.h"
 #include "third_party/blink/renderer/core/inspector/inspected_frames.h"
@@ -5525,15 +5526,145 @@ static void GetCurrentError(const v8::FunctionCallbackInfo<v8::Value>& args) {
   args.GetReturnValue().Set(rv);
 }
 
-void RecordReplayEventListener::Invoke(ExecutionContext* context, Event* event) {
-  // TODO only register the observer if the event matches this structure:
-  // type = WebChannelMessageToChrome"
-  // detail (stringified): {
-  //   id: "record-replay-token",
-  //   message: { type: "connect" },
-  // }
+bool GetStringProperty(v8::Local<v8::Context> context, v8::Local<v8::Object> obj, const char* name, v8::Local<v8::String>* out) {
+  v8::Isolate* isolate = context->GetIsolate();
+  v8::Local<v8::String> v8Name = ToV8String(isolate, name);
+  v8::Local<v8::Value> v8Value = obj->Get(context, v8Name).ToLocalChecked();
 
-  local_frame_->RegisterRecordReplayAuthTokenObserver();
+  return v8Value->ToString(context).ToLocal(out);
+}
+
+bool GetObjectProperty(v8::Local<v8::Context> context, v8::Local<v8::Object> obj, const char* name, v8::Local<v8::Object>* out) {
+  v8::Isolate* isolate = context->GetIsolate();
+  v8::Local<v8::String> v8Name = ToV8String(isolate, name);
+  v8::Local<v8::Value> v8Value = obj->Get(context, v8Name).ToLocalChecked();
+
+  return v8Value->ToObject(context).ToLocal(out);
+}
+
+bool StringEquals(v8::Isolate* isolate, v8::Local<v8::String> str1, const char* str2) {
+  return str1->StringEquals(ToV8String(isolate, str2));
+}
+
+void RecordReplayEventListener::Invoke(ExecutionContext* context, Event* event) {
+  v8::Isolate* isolate = context->GetIsolate();
+  v8::Local<v8::Context> v8_context = isolate->GetCurrentContext();
+  ScriptState* scriptState = ScriptState::Current(isolate);
+  CustomEvent* customEvent = To<CustomEvent>(event);
+
+  if (!customEvent) {
+    return;
+  }
+
+  v8::Local<v8::Value> detail = customEvent->detail(scriptState).V8Value();
+  v8::Local<v8::String> detail_json;
+  if (!detail->ToString(v8_context).ToLocal(&detail_json)) {
+    LOG(ERROR) << "[RUN-2863] RecordReplayEventListener: detail is not a string";
+    return;
+  }
+
+  // for debugging:
+  // LOG(ERROR) << "RecordReplayEventListener: detail = " << V8ToString(isolate, detail_json);
+
+  // detail is a JSON stringified object with one of the following forms:
+
+  // { "id": "record-replay-token", "message": { "type": "connect" } }      => register auth token observer
+  // { "id": "record-replay-token", "message": { "type": "login" } }        => open external browser to login
+  // { "id": "record-replay-token", "message": { "token": <string|null> } } => set access token if string.  clear if null (or undefined?)
+  // { "id": "record-replay", "message": { "user": <string|null> } }        => set user if string.  clear if null (or undefined?)
+
+  v8::Local<v8::Object> detail_obj;
+  if (!v8::JSON::Parse(v8_context, detail_json).ToLocalChecked()->ToObject(v8_context).ToLocal(&detail_obj)) {
+    LOG(ERROR) << "[RUN-2863] RecordReplayEventListener: detail is not a JSON object";
+    return;
+  }
+
+  // always pull out the id and message properties, and early out if id isn't a string or message isn't an object
+  v8::Local<v8::String> id_str;
+  if (!GetStringProperty(v8_context, detail_obj, "id", &id_str)) {
+    LOG(ERROR) << "[RUN-2863] RecordReplayEventListener: id is not an string";
+    return;
+  }
+
+  v8::Local<v8::Object> message_obj;
+  if (!GetObjectProperty(v8_context, detail_obj, "message", &message_obj)) {
+    LOG(ERROR) << "[RUN-2863] RecordReplayEventListener: message is not an object";
+    return;
+  }
+
+
+  if (StringEquals(isolate, id_str, "record-replay-token")) {
+    HandleRecordReplayTokenMessage(v8_context, message_obj);
+  } else if (StringEquals(isolate, id_str, "record-replay")) {
+    HandleRecordReplayMessage(v8_context, message_obj);
+  } else {
+    LOG(ERROR) << "[RUN-2863] Unknown event id: " << V8ToString(isolate, id_str);
+  }
+}
+
+void RecordReplayEventListener::HandleRecordReplayTokenMessage(v8::Local<v8::Context> context, v8::Local<v8::Object> message) {
+  v8::Isolate* isolate = context->GetIsolate();
+
+  // cases here:
+  // { "id": "record-replay-token", "message": { "type": "connect" } }      => register auth token observer
+  // { "id": "record-replay-token", "message": { "type": "login" } }        => open external browser to login
+  // { "id": "record-replay-token", "message": { "token": <string|null> } } => set access token if string.  clear if null (or undefined?)
+
+  // first check if there's a type property to handle the first two cases above.
+  v8::Local<v8::Value> message_type = message->Get(context, ToV8String(isolate, "type")).ToLocalChecked();
+  if (message_type->IsString()) {
+    // message is either `{ type: "connect" }` or `{ type: "login" }`, with neither payload carrying additional info.
+    if (StringEquals(isolate, message_type.As<v8::String>(), "connect")) {
+      LOG(ERROR) << "[RUN-2863] RecordReplayEventListener: connect message received";
+      local_frame_->RegisterRecordReplayAuthTokenObserver();
+      return;
+    }
+
+    if (StringEquals(isolate, message_type.As<v8::String>(), "login")) {
+      LOG(ERROR) << "[RUN-2863] RecordReplayEventListener: login message received";
+      // [RUN-2863] TODO open external browser to login
+      return;
+    }
+
+    LOG(ERROR) << "[RUN-2863] RecordReplayEventListener: unknown record-replay-token message type: " << V8ToString(isolate, message_type);
+  }
+
+  // if we're here, we should only be in the `{ token: ... }` case from the list above.
+  v8::Local<v8::Value> message_token = message->Get(context, ToV8String(isolate, "token")).ToLocalChecked();
+  if (message_token->IsString()) {
+    LOG(ERROR) << "[RUN-2863] RecordReplayEventListener: set access token message received, token = " << V8ToString(isolate, message_token);
+    // [RUN-2863] TODO set the access token in browser prefs.
+    return;
+  }
+
+  if (message_token->IsNull()) {
+    LOG(ERROR) << "[RUN-2863] RecordReplayEventListener: clear access token message received";
+    // [RUN-2863] TODO clear the access token in browser prefs.
+    return;
+  }
+
+  LOG(ERROR) << "[RUN-2863] RecordReplayEventListener: unknown record-replay-token message";
+}
+
+void RecordReplayEventListener::HandleRecordReplayMessage(v8::Local<v8::Context> context, v8::Local<v8::Object> message) {
+  v8::Isolate* isolate = context->GetIsolate();
+
+  // the only message handled here is `{ user: <string|null> }`
+  v8::Local<v8::Value> message_user = message->Get(context, ToV8String(isolate, "user")).ToLocalChecked();
+  if (message_user->IsString()) {
+    LOG(ERROR) << "[RUN-2863] RecordReplayEventListener: set user message received, user = " << V8ToString(isolate, message_user);
+    // [RUN-2863] TODO set the user in browser prefs.
+    return;
+  }
+
+  if (message_user->IsNullOrUndefined()) {
+    LOG(ERROR) << "[RUN-2863] RecordReplayEventListener: clear user message received";
+    // [RUN-2863] TODO clear the user in browser prefs.
+    return;
+  }
+
+  LOG(ERROR) << "[RUN-2863] Unknown record-replay message type";
+  return;
 }
 
 void RecordReplayEventListener::Trace(Visitor* visitor) const {

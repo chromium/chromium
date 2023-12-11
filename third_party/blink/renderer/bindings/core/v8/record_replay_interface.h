@@ -52,6 +52,9 @@ class RecordReplayEventListener : public NativeEventListener {
 
  private:
   Member<LocalFrame> local_frame_;
+
+  void HandleRecordReplayTokenMessage(v8::Local<v8::Context> context, v8::Local<v8::Object> message);
+  void HandleRecordReplayMessage(v8::Local<v8::Context> context, v8::Local<v8::Object> message);
 };
 
 } // namespace blink
