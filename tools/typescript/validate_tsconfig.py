@@ -47,6 +47,7 @@ _allowed_compiler_options = [
     'strictPropertyInitialization',
     'typeRoots',
     'types',
+    'useDefineForClassFields',
 ]
 
 

@@ -17,6 +17,7 @@
     "experimentalDecorators": true,
     "noEmitHelpers": true,
     "skipLibCheck": true,
-    "noFallthroughCasesInSwitch": false
+    "noFallthroughCasesInSwitch": false,
+    "useDefineForClassFields": false
   }
 }

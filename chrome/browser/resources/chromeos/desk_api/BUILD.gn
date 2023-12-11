@@ -45,6 +45,12 @@ ts_library("build_ts") {
     ":copy_definition",
     ":copy_src",
   ]
+
+  # Using custom config to turn off useDefineForClassFields TS compiler flag
+  # which is necessary for the js_binary() call below to work. An alternative
+  # workaround would be to set TS compiler's `target` flag to 'es2021' or
+  # earlier.
+  tsconfig_base = "tsconfig_base.json"
   root_dir = "$target_gen_dir"
   out_dir = "$target_gen_dir/tsc"
   in_files = ts_files

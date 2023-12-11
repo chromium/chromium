@@ -36,6 +36,7 @@ ts_library("cros_components__ts_library") {
   root_dir = "src/"
   out_dir =
       "$root_gen_dir/ui/webui/resources/tsc/cros_components/to_be_rewritten"
+  tsconfig_base = "tsconfig_base.json"
 
   in_files = _cros_components_ts_files
 
