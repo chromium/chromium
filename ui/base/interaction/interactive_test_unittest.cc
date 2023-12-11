@@ -15,6 +15,7 @@
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/bind.h"
 #include "base/test/task_environment.h"
+#include "base/time/time.h"
 #include "build/build_config.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -878,8 +879,7 @@ TEST_F(InteractiveTestTest, SimulatorNotSupportedContinuesOnUnsupported) {
       kTestContext1,
       SetOnIncompatibleAction(OnIncompatibleAction::kIgnoreAndContinue,
                               kSetOnIncompatibleActionMessage),
-      PressButton(kTestId1),
-      Do(base::BindLambdaForTesting([&result]() { result = true; })));
+      PressButton(kTestId1), Do([&result]() { result = true; }));
   EXPECT_TRUE(result);
 }
 
@@ -915,8 +915,7 @@ TEST_F(InteractiveTestTest, SimulatorNotSupportedHaltAndSucceedOnUnsupported) {
       kTestContext1,
       SetOnIncompatibleAction(OnIncompatibleAction::kHaltTest,
                               kSetOnIncompatibleActionMessage),
-      PressButton(kTestId1),
-      Do(base::BindLambdaForTesting([&result]() { result = true; })));
+      PressButton(kTestId1), Do([&result]() { result = true; }));
   EXPECT_FALSE(result);
 }
 
@@ -1307,12 +1306,12 @@ TEST_F(InteractiveTestTest, Log) {
   } unnamed_struct, *unnamed_struct_ptr = nullptr;
 
   RunTestSequenceInContext(
-      e1.context(), Do(base::BindLambdaForTesting([&]() {
+      e1.context(), Do([&]() {
         y = 2;
         deferred_string1 = u"The quick brown fox";
         deferred_string2 = "Lorem ipsum";
         unnamed_struct_ptr = &unnamed_struct;
-      })),
+      }),
       Log(
           "Log() output follows:\nliteral int: ", x,
           "\ndeferred int: ", std::ref(y), "\nconstexpr string: ", kSomeString,

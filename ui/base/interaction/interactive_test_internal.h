@@ -5,6 +5,7 @@
 #ifndef UI_BASE_INTERACTION_INTERACTIVE_TEST_INTERNAL_H_
 #define UI_BASE_INTERACTION_INTERACTIVE_TEST_INTERNAL_H_
 
+#include <concepts>
 #include <functional>
 #include <memory>
 #include <string>
@@ -499,7 +500,7 @@ using NthArgumentOf = std::tuple_element_t<
 template <typename F, typename S>
 struct HasSignatureHelper {
   static constexpr bool value =
-      std::is_same_v<typename MaybeBindTypeHelper<F>::Signature, S>;
+      std::same_as<typename MaybeBindTypeHelper<F>::Signature, S>;
 };
 
 // DoNothing() can match any signature that returns void.
@@ -508,13 +509,10 @@ struct HasSignatureHelper<decltype(base::DoNothing()), void(Args...)> {
   static constexpr bool value = true;
 };
 
-template <typename F, typename S>
-constexpr bool HasSignature = HasSignatureHelper<F, S>::value;
-
 // Requires that `F` resolves to some kind of callable object with call
 // signature `S`; causes a compile failure on mismatch.
 template <typename F, typename S>
-using RequireSignature = std::enable_if_t<HasSignature<F, S>>;
+concept HasSignature = HasSignatureHelper<F, S>::value;
 
 template <typename F, typename S>
 struct HasCompatibleSignatureHelper;
@@ -526,7 +524,7 @@ struct HasCompatibleSignatureHelper<F, R()> {
   static constexpr bool value = HasSignature<F, R()>;
 };
 
-// Implementation for `HasCompatibleSignature` and `RequireCompatibleSignature`.
+// Implementation for `HasCompatibleSignature`.
 //
 // This removes arguments one by one from the left of the target signature `S`
 // to see if `F` has that signature. The recursion stops when one matches, or
@@ -538,17 +536,12 @@ struct HasCompatibleSignatureHelper<F, R(A, Args...)> {
       HasCompatibleSignatureHelper<F, R(Args...)>::value;
 };
 
-template <typename F, typename S>
-constexpr bool HasCompatibleSignature =
-    HasCompatibleSignatureHelper<F, S>::value;
-
 // Requires that `F` resolves to some kind of callable object whose signature
 // can be rectified to `S`; see `base::RectifyCallback` for more information.
 // (Basically, `F` can omit arguments from the left of `S`; these arguments
 // will be ignored.)
 template <typename F, typename S>
-using RequireCompatibleSignature =
-    std::enable_if_t<HasCompatibleSignature<F, S>>;
+concept HasCompatibleSignature = HasCompatibleSignatureHelper<F, S>::value;
 
 // Utility struct to detect specializations of std::reference_wrapper.
 template <typename T>
@@ -605,9 +598,7 @@ using MatcherTypeFor = MatcherTypeHelper<std::remove_cvref_t<T>>::ActualType;
 // string-like types (const char*, constexpr char16_t[], etc.) in favor of
 // `std::string` and `std::u16string`.
 template <typename T>
-constexpr bool IsValidMatcherType = std::is_same_v<T, MatcherTypeFor<T>>;
-template <typename T>
-using RequireValidMatcherType = std::enable_if_t<IsValidMatcherType<T>>;
+concept IsValidMatcherType = std::same_as<T, MatcherTypeFor<T>>;
 
 template <typename T>
 class IsMatcherHelper {
@@ -636,6 +627,20 @@ class IsMatcherHelper<testing::PolymorphicMatcher<T>> {
 
 template <typename T>
 constexpr bool IsMatcher = IsMatcherHelper<T>::value;
+
+// Accepts any function-like object that is compatible with
+// `InteractionSequence::StepCallback`.
+template <typename F>
+concept IsStepCallback = internal::
+    HasCompatibleSignature<F, void(InteractionSequence*, TrackedElement*)>;
+
+// Accepts any function-like object that can be used with `Check()` and
+// `CheckResult()`.
+template <typename F, typename R>
+concept IsCheckCallback =
+    internal::HasCompatibleSignature<F,
+                                     R(const InteractionSequence*,
+                                       const TrackedElement*)>;
 
 // Converts an ElementSpecifier to an element ID or name and sets it onto
 // `builder`.
