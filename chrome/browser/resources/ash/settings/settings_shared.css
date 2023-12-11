@@ -360,6 +360,7 @@ cr-dialog > [slot='title'] {
   font: var(--cros-title-1-font);
 }
 
+controlled-button,
 cr-button {
   font: var(--cros-button-2-font);
 }
