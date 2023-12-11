@@ -624,6 +624,7 @@
 <translation id="3593646411856133110">Прекарайте пръст нагоре и задръжте, за да видите отворените приложения</translation>
 <translation id="3595596368722241419">Батерията е заредена</translation>
 <translation id="3596012367874587041">Настройки за приложението</translation>
+<translation id="3598452309062311481">клавиша „търсене“ + h</translation>
 <translation id="3600061223661453002">Изкл.</translation>
 <translation id="3604801046548457007">Работен кът <ph name="DESK_TITILE" /> е създаден</translation>
 <translation id="3606978283550408104">Брайловият дисплей е свързан.</translation>
@@ -775,6 +776,7 @@
 <translation id="4190780880566297084">Отхвърляне на настройването на прегледа на скорошните снимки, мултимедийни файлове и приложения на телефона ви</translation>
 <translation id="4192112279662688596">или</translation>
 <translation id="4193857202545160520">Показване на кликванията и клавишите</translation>
+<translation id="4193969623755915875">Отворете „Помощ“ в приложението Explore посредством <ph name="NEW_SHORTCUT" />.</translation>
 <translation id="4195579532193195633">Текуща версия: <ph name="VERSION_NAME" /> (<ph name="OFFICIAL_STATUS" />) <ph name="CHANNEL_NAME" /> <ph name="PROCESSOR_VARIATION" /></translation>
 <translation id="4195814663415092787">Продължаване оттам, откъдето сте прекъснали</translation>
 <translation id="4195877955194704651">Бутон за менюто за автоматични кликвания</translation>
@@ -957,6 +959,7 @@
 <translation id="4889868803215848840">Оставете незадължителни отзиви, за да подобрите предложенията:</translation>
 <translation id="4890187583552566966">Администраторът ви е деактивирал Google Асистент.</translation>
 <translation id="4890408602550914571">Уверете се, че телефонът ви е наблизо и че сте включили Bluetooth.</translation>
+<translation id="4892981359753171125">Контролиране с лице</translation>
 <translation id="4895488851634969361">Батерията е пълна.</translation>
 <translation id="490375751687810070">Вертикално</translation>
 <translation id="490788395437447240"><ph name="BATTERY_PERCENTAGE" />% батерия</translation>

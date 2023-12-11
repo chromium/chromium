@@ -624,6 +624,7 @@ Başlamak için şunları deneyebilirsin.</translation>
 <translation id="3593646411856133110">Açık uygulamaları görmek için yukarı kaydırıp basılı tutun</translation>
 <translation id="3595596368722241419">Pil tam dolu</translation>
 <translation id="3596012367874587041">Uygulama ayarları</translation>
+<translation id="3598452309062311481">arama + h</translation>
 <translation id="3600061223661453002">Kapalı</translation>
 <translation id="3604801046548457007">Masa <ph name="DESK_TITILE" /> oluşturuldu</translation>
 <translation id="3606978283550408104">Braille ekranı bağlandı.</translation>
@@ -775,6 +776,7 @@ Pil ömrünü uzatmak için bazı özellik sınırlandırıldı.</translation>
 <translation id="4190780880566297084">Telefonunuzdaki son fotoğrafları, medya içeriklerini ve uygulamaları görme seçeneğini ayarlamayı kapatın</translation>
 <translation id="4192112279662688596">Veya</translation>
 <translation id="4193857202545160520">Tıklamaları ve tuşları göster</translation>
+<translation id="4193969623755915875">"<ph name="NEW_SHORTCUT" />" kısayolunu kullanarak Keşfet uygulamasında "Yardım"ı açın.</translation>
 <translation id="4195579532193195633">Mevcut sürüm <ph name="VERSION_NAME" /> (<ph name="OFFICIAL_STATUS" />) <ph name="CHANNEL_NAME" /> <ph name="PROCESSOR_VARIATION" /></translation>
 <translation id="4195814663415092787">Kaldığım yerden devam et</translation>
 <translation id="4195877955194704651">Otomatik tıklamalar düğmesi</translation>
@@ -957,6 +959,7 @@ Pil ömrünü uzatmak için bazı özellik sınırlandırıldı.</translation>
 <translation id="4889868803215848840">Önerileri iyileştirmek için isteğe bağlı geri bildirim sağlayın:</translation>
 <translation id="4890187583552566966">Google Asistan, yöneticiniz tarafından devre dışı bırakıldı.</translation>
 <translation id="4890408602550914571">Telefonunuzun yakında olduğundan ve Bluetooth'un açık olduğundan emin olun.</translation>
+<translation id="4892981359753171125">Yüz kontrolü</translation>
 <translation id="4895488851634969361">Pil dolu.</translation>
 <translation id="490375751687810070">Dikey</translation>
 <translation id="490788395437447240">%<ph name="BATTERY_PERCENTAGE" /> pil</translation>

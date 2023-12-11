@@ -1482,6 +1482,7 @@
 <translation id="8766790350274092814">Паролите за <ph name="WEBSITE" /> и <ph name="SECOND_WEBSITE" /> ще бъдат изтрити. Профилите ви няма да бъдат изтрити.</translation>
 <translation id="8775144690796719618">Невалиден URL адрес</translation>
 <translation id="8780076847684176174">{count,plural, =1{Преглед на раздела...}other{Преглед на всички раздели...}}</translation>
+<translation id="8782570580170191813">Пратките да се проследяват винаги</translation>
 <translation id="8787968206789828143">Търсене в мрежата</translation>
 <translation id="8792626944327216835">микрофон</translation>
 <translation id="8803639129939845298">Сигурно</translation>

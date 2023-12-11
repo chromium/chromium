@@ -1884,6 +1884,7 @@
 <translation id="2412753904894530585">केर्बेरोस</translation>
 <translation id="2414159296888870200"><ph name="MODULE_TITLE" /> के लिए ब्राउज़ करना फिर से शुरू करें</translation>
 <translation id="2414886740292270097">गहरा</translation>
+<translation id="2415117815770324983">आपको ज़्यादातर साइटों से साइन आउट कर देता है. आपको आपके Google खाते से साइन आउट नहीं किया जाएगा.</translation>
 <translation id="2416435988630956212">कीबोर्ड के फ़ंक्शन बटन</translation>
 <translation id="2418307627282545839">ब्राइट और आंखों को सुकून देने वाली डिसप्ले थीम</translation>
 <translation id="2419131370336513030">इंस्टॉल किए गए ऐप्लिकेशन देखें</translation>
@@ -2404,6 +2405,7 @@
 <translation id="2799223571221894425">फिर से लॉन्‍च करें</translation>
 <translation id="2800309299477632167">कस्टम कीमैप</translation>
 <translation id="2800760947029405028">एक इमेज अपलोड करें</translation>
+<translation id="2801134910297796778">आपने <ph name="EMAIL" /> में साइन इन किया है</translation>
 <translation id="2801954693771979815">स्क्रीन का साइ़ज़</translation>
 <translation id="2802557211515765772">मैनेज किया गया कोई भी प्रिंटर नहीं है.</translation>
 <translation id="2803313416453193357">फ़ोल्डर खोलें</translation>
@@ -4051,6 +4053,7 @@
 <translation id="4110485659976215879">चेतावनी दिखाना फिर से चालू करें</translation>
 <translation id="4110490973560452005">डाउनलोड पूरा हो गया: <ph name="FILE_NAME" />. डाउनलोड बार वाले हिस्से पर जाने के लिए Shift+F6 दबाएं.</translation>
 <translation id="4112194537011183136"><ph name="DEVICE_NAME" /> (ऑफ़लाइन)</translation>
+<translation id="4113483184628671608">विज़िट की जाने वाली साइटों के नाम एन्क्रिप्ट (सुरक्षित) करें</translation>
 <translation id="4113743276555482284">फ़ाइल का पासवर्ड</translation>
 <translation id="4114524937989710624">आपको फ़ाइलों के सुझाव दिखाए जा रहे हैं, ताकि आप उन फ़ाइलों को आसानी से ढूंढ सकें जिन्हें आपने हाल ही में Google Drive पर इस्तेमाल किया था.
         <ph name="BREAK" />
@@ -5782,6 +5785,7 @@
 <translation id="5517304475148761050">इस ऐप्लिकेशन काे 'Play Store' के ऐक्सेस की ज़रूरत है</translation>
 <translation id="5517412723934627386"><ph name="NETWORK_TYPE" /> - <ph name="NETWORK_DISPLAY_NAME" /></translation>
 <translation id="5518949581554491184">Android फ़ोन के साथ सेट अप करें</translation>
+<translation id="5519053700692355541">साइड पैनल की ज़्यादातर सुविधाएं खोलने के लिए, सबसे ऊपर दाईं ओर मौजूद Chrome मेन्यू का इस्तेमाल करें</translation>
 <translation id="5519195206574732858">LTE</translation>
 <translation id="5519900055135507385">इस खाते को मज़बूत पासवर्ड से सुरक्षित रखें. <ph name="EMAIL" /> के लिए, इस पासवर्ड को <ph name="GOOGLE_PASSWORD_MANAGER" /> में सेव किया जाएगा.</translation>
 <translation id="5521078259930077036">क्या यह वही होम पेज है जिसे आप देखना चाह रहे थे?</translation>
@@ -6747,6 +6751,7 @@
 <translation id="6294759976468837022">अपने-आप स्कैन होने की रफ़्तार</translation>
 <translation id="6295158916970320988">सभी साइटें</translation>
 <translation id="6295855836753816081">सहेज रहा है...</translation>
+<translation id="6298456705131259420">यहां दी गई साइटों पर असर पड़ता है. किसी डोमेन नेम से पहले “[*.]” जोड़ने से, पूरे डोमेन के लिए अपवाद बन जाता है. उदाहरण के लिए, “[*.]google.com” जोड़ने का मतलब है कि तीसरे पक्ष की कुकी, mail.google.com के लिए भी चालू हो सकती हैं, क्योंकि यह google.com का हिस्सा है.</translation>
 <translation id="6298962879096096191">Android ऐप्लिकेशन इंस्टॉल करने के लिए Google Play का उपयोग करें</translation>
 <translation id="6300177430812514606">डेटा भेजने या पाने की अनुमति नहीं है</translation>
 <translation id="6300654006256345126">पासवर्ड बदलें</translation>
@@ -7172,6 +7177,7 @@
 <translation id="6651762277693024112">इस साइट को हर बार विज़िट करने पर अपने-आप काम करता है</translation>
 <translation id="665355505818177700">Chrome <ph name="MS_AD_NAME" /> एकीकरण सिर्फ़ x86_64 प्लैटफ़ॉर्म पर काम करता है. किसी ARM या x86 प्लैटफ़ॉर्म पर बने Chromebook इस काम की क्षमता की सुविधा नहीं देते हैं.</translation>
 <translation id="6654509035557065241">नेटवर्क चुनें</translation>
+<translation id="6654987855337442937">आपके इंटरनेट ट्रैफ़िक का ऐक्सेस रखने वाले लोगों को, आपकी विज़िट की जाने वाली साइटों की जानकारी देखने से रोकने के लिए, सुरक्षित डोमेन नेम सिस्टम (डीएनएस) का इस्तेमाल करें</translation>
 <translation id="6655190889273724601">डेवलपर मोड</translation>
 <translation id="6655458902729017087">खाते छिपाएं</translation>
 <translation id="6657180931610302174">उपयोगकर्ता नाम जोड़ना है?</translation>
@@ -9570,6 +9576,7 @@
 <translation id="8528074251912154910">भाषाएं जोड़ें</translation>
 <translation id="8528479410903501741">IBAN सेव करें</translation>
 <translation id="8528962588711550376">प्रवेश कर रहा है.</translation>
+<translation id="8529578450330869579">आपके इंटरनेट ट्रैफ़िक का ऐक्सेस रखने वाले लोगों को, आपकी विज़िट की जाने वाली साइटों की जानकारी देखने से रोकने के लिए, सुरक्षित डोमेन नेम सिस्टम (डीएनएस) का इस्तेमाल करें. यह <ph name="DNS_SERVER_TEMPLATE_WITH_IDENTIFIER" /> पर मौजूद, मैनेज की जा रही सेवा देने वाली कंपनी का इस्तेमाल करता है</translation>
 <translation id="8529925957403338845">इंस्टैंट टेदरिंग कनेक्शन नहीं किया जा सका</translation>
 <translation id="8531701051932785007">बेहतर सुरक्षित ब्राउज़िंग की सुविधा बंद है</translation>
 <translation id="8533670235862049797">सुरक्षित ब्राउज़िंग की सुविधा चालू है</translation>

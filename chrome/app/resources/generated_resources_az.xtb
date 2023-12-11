@@ -1867,6 +1867,7 @@ Cihazda Family Link tətbiqini quraşdırmaqla bu hesabın ayarlarını idarə e
 <translation id="2412753904894530585">Kerberos</translation>
 <translation id="2414159296888870200"><ph name="MODULE_TITLE" /> üçün baxmağa davam edin</translation>
 <translation id="2414886740292270097">Qara</translation>
+<translation id="2415117815770324983">Əksər saytlardan çıxacaqsınız. Google Hesabına daxil olmuş kimi qalacaqsınız.</translation>
 <translation id="2416435988630956212">Klaviaturanın funksiya düymələri</translation>
 <translation id="2418307627282545839">İşıqlandırın və havalandırın</translation>
 <translation id="2419131370336513030">Quraşdırılmış tətbiqlərə baxın</translation>
@@ -2387,6 +2388,7 @@ Cihazda Family Link tətbiqini quraşdırmaqla bu hesabın ayarlarını idarə e
 <translation id="2799223571221894425">Yenidən başladın</translation>
 <translation id="2800309299477632167">Fərdi klaviatura xəritəsi</translation>
 <translation id="2800760947029405028">Təsvir yükləyin</translation>
+<translation id="2801134910297796778"><ph name="EMAIL" /> hesabına daxil olub</translation>
 <translation id="2801954693771979815">Ekran ölçüsü</translation>
 <translation id="2802557211515765772">İdarə edilən printer yoxdur.</translation>
 <translation id="2803313416453193357">Qovluğu açın</translation>
@@ -4033,6 +4035,7 @@ Bura quraşdırılmış proqram təminatı, fayllar, brauzer və cihazın əməl
 <translation id="4110485659976215879">Xəbərdarlığı bərpa edin</translation>
 <translation id="4110490973560452005">Endirmə tamamlandı: <ph name="FILE_NAME" />. Endirmələr panelinə keçmək üçün Shift+F6 düymələrinə basın.</translation>
 <translation id="4112194537011183136"><ph name="DEVICE_NAME" /> (oflayn)</translation>
+<translation id="4113483184628671608">Daxil olduğunuz sayt adlarını şifrələyin</translation>
 <translation id="4113743276555482284">Fayl parolu</translation>
 <translation id="4114524937989710624">Google Diskdəki ən son fəaliyyətinizə asanlıqla qayıtmağınıza kömək etmək üçün təklif olunan faylları görürsünüz.
         <ph name="BREAK" />
@@ -5763,6 +5766,7 @@ Artıq veb-sayt və tətbiqlərə verdiyiniz icazələr bu hesaba tətbiq oluna 
 <translation id="5517304475148761050">Bu tətbiq Play Marketə giriş tələb edir</translation>
 <translation id="5517412723934627386"><ph name="NETWORK_TYPE" /> - <ph name="NETWORK_DISPLAY_NAME" /></translation>
 <translation id="5518949581554491184">Android telefonu ilə ayarlayın</translation>
+<translation id="5519053700692355541">Yuxarı sağ tərəfdə Chrome menyusu vasitəsilə əksər yan panel funksiyalarını aça bilərsiniz</translation>
 <translation id="5519195206574732858">LTE</translation>
 <translation id="5519900055135507385">Güclü parol ilə bu hesabın təhlükəsizliyini artırın. <ph name="EMAIL" /> üçün <ph name="GOOGLE_PASSWORD_MANAGER" /> bölməsində saxlanacaq.</translation>
 <translation id="5521078259930077036">Gözlədiyiniz ana səhifə budur?</translation>
@@ -6726,6 +6730,7 @@ Artıq veb-sayt və tətbiqlərə verdiyiniz icazələr bu hesaba tətbiq oluna 
 <translation id="6294759976468837022">Avtomatik skanlama sürəti</translation>
 <translation id="6295158916970320988">Bütün saytlar</translation>
 <translation id="6295855836753816081">Yadda saxlanılır...</translation>
+<translation id="6298456705131259420">Burada qeyd edilən saytlara təsir edir. Domen adından əvvəl "[*.]" yerləşdirmək bütün domen üçün istisna yaradır. Məsələn, "[*.]google.com" əlavə edəndə üçüncü tərəf kukiləri mail.google.com üçün də aktiv ola bilər (google.com domeninin hissəsi olduğu üçün).</translation>
 <translation id="6298962879096096191">Android tətbiqlərini quraşdırmaq üçün Google Play istifadə edin</translation>
 <translation id="6300177430812514606">Verilənlərin qəbul edilməsini və ya qəbulunu tamamlamaq icazəsi verilməyib</translation>
 <translation id="6300654006256345126">Parolu redaktə edin</translation>
@@ -7149,6 +7154,7 @@ Daha # oğurlanmış parolunuz var. Google Parol Meneceri bu parolları indi yox
 <translation id="6651762277693024112">Bu sayta hər dəfə daxil olduqda avtomatik işləyir</translation>
 <translation id="665355505818177700">Chrome <ph name="MS_AD_NAME" /> inteqrasiyası yalnız x86_64 platformalarında dəstəklənir. ARM və ya x86 platforması üzərində hazırlanmış Chromebook'lar bu funksionallığı dəstəkləmir.</translation>
 <translation id="6654509035557065241">Şəbəkə tərcih edin</translation>
+<translation id="6654987855337442937">İnternet trafikinə girişi olan şəxslərin daxil olduğunuz saytları görməməsi üçün təhlükəsiz Domen Adı Sistemindən (DNS) istifadə edin</translation>
 <translation id="6655190889273724601">Developer rejimi</translation>
 <translation id="6655458902729017087">Hesabları Gizlədin</translation>
 <translation id="6657180931610302174">İstifadəçi adı əlavə edilsin?</translation>
@@ -9547,6 +9553,7 @@ Açar faylınızı güvənli yerdə saxlayın.</translation>
 <translation id="8528074251912154910">Dillər əlavə edin</translation>
 <translation id="8528479410903501741">IBAN'ı yadda saxlayın</translation>
 <translation id="8528962588711550376">Hesaba giriş.</translation>
+<translation id="8529578450330869579">İnternet trafikinə girişi olan şəxslərin daxil olduğunuz saytları görməməsi üçün təhlükəsiz Domen Adı Sistemindən (DNS) istifadə edin. Bu, <ph name="DNS_SERVER_TEMPLATE_WITH_IDENTIFIER" /> ünvanında idarə olunan xidmət təminatçısından istifadə edir</translation>
 <translation id="8529925957403338845">Cəld modem əlaqəsi kəsildi</translation>
 <translation id="8531701051932785007">Qabaqcıl Güvənli Baxış deaktivdir</translation>
 <translation id="8533670235862049797">Təhlükəsiz Baxış aktivdir</translation>

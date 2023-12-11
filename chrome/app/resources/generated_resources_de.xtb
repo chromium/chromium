@@ -1865,6 +1865,7 @@ Wenn du die Family Link App auf deinem Gerät installierst, kannst du die Einste
 <translation id="2412753904894530585">Kerberos</translation>
 <translation id="2414159296888870200">Suche nach <ph name="MODULE_TITLE" /> fortsetzen</translation>
 <translation id="2414886740292270097">Dunkel</translation>
+<translation id="2415117815770324983">Du wirst von den meisten Websites abgemeldet. Du bleibst aber weiterhin in deinem Google-Konto angemeldet.</translation>
 <translation id="2416435988630956212">Funktionstasten der Tastatur</translation>
 <translation id="2418307627282545839">Hell und freundlich</translation>
 <translation id="2419131370336513030">Installierte Apps anzeigen</translation>
@@ -2385,6 +2386,7 @@ Diese Aktion wirkt sich nicht auf Lesezeichen, Passwörter und den Verlauf aus.<
 <translation id="2799223571221894425">Neu starten</translation>
 <translation id="2800309299477632167">Benutzerdefinierte Tastaturbelegung</translation>
 <translation id="2800760947029405028">Bild hochladen</translation>
+<translation id="2801134910297796778">Angemeldet als <ph name="EMAIL" /></translation>
 <translation id="2801954693771979815">Bildschirmgröße</translation>
 <translation id="2802557211515765772">Es gibt keine verwalteten Drucker.</translation>
 <translation id="2803313416453193357">Ordner öffnen</translation>
@@ -4033,6 +4035,7 @@ Dazu gehören beispielsweise installierte Software, Dateien, dein Browser und da
 <translation id="4110485659976215879">Warnung wiederherstellen</translation>
 <translation id="4110490973560452005">Download abgeschlossen: <ph name="FILE_NAME" />. Drücke Umschalttaste + F6, um zum Bereich mit der Downloadleiste zu wechseln.</translation>
 <translation id="4112194537011183136"><ph name="DEVICE_NAME" /> (offline)</translation>
+<translation id="4113483184628671608">Namen von Websites, die du besuchst, verschlüsseln</translation>
 <translation id="4113743276555482284">Dateipasswort</translation>
 <translation id="4114524937989710624">Dir werden Dateivorschläge angezeigt, damit du bei Google Drive einfacher dort weitermachen kannst, wo du zuletzt aufgehört hast.
         <ph name="BREAK" />
@@ -5763,6 +5766,7 @@ Berechtigungen, die du Websites und Apps bereits gewährt hast, gelten mögliche
 <translation id="5517304475148761050">Diese App benötigt Zugriff auf den Google Play Store</translation>
 <translation id="5517412723934627386"><ph name="NETWORK_TYPE" /> – <ph name="NETWORK_DISPLAY_NAME" /></translation>
 <translation id="5518949581554491184">Mit Android-Smartphone einrichten</translation>
+<translation id="5519053700692355541">Die meisten Funktionen der Seitenleiste kannst du über das Chrome-Menü oben rechts öffnen</translation>
 <translation id="5519195206574732858">LTE</translation>
 <translation id="5519900055135507385">Mit einem starken Passwort ist dieses Konto besser geschützt. Das Passwort wird für <ph name="EMAIL" /> im <ph name="GOOGLE_PASSWORD_MANAGER" /> gespeichert.</translation>
 <translation id="5521078259930077036">Ist das deine erwartete Startseite?</translation>
@@ -6725,6 +6729,7 @@ Berechtigungen, die du Websites und Apps bereits gewährt hast, gelten mögliche
 <translation id="6294759976468837022">Geschwindigkeit des automatischen Scans</translation>
 <translation id="6295158916970320988">Alle Websites</translation>
 <translation id="6295855836753816081">Wird gespeichert...</translation>
+<translation id="6298456705131259420">Dies betrifft die hier aufgeführten Websites. Wenn du „[*.]“ vor einem Domainnamen einfügst, wird eine Ausnahme für die gesamte Domain erstellt. Wenn du beispielsweise „[*.]google.com“ hinzufügst, können Drittanbieter-Cookies auch für „mail.google.com“ aktiv sein, da diese Subdomain zu „google.com“ gehört.</translation>
 <translation id="6298962879096096191">Google Play verwenden, um Android-Apps zu installieren</translation>
 <translation id="6300177430812514606">Dürfen den Datenversand und ‑empfang nicht abschließen</translation>
 <translation id="6300654006256345126">Passwort ändern</translation>
@@ -7148,6 +7153,7 @@ Du hast # weitere gehackte Passwörter. Der Google Passwortmanager empfiehlt, d
 <translation id="6651762277693024112">Wird bei jedem Besuch dieser Website automatisch ausgeführt</translation>
 <translation id="665355505818177700">Die <ph name="MS_AD_NAME" />-Integration von Chrome wird nur auf x86_64-Plattformen unterstützt. Chromebooks, die auf einer ARM- oder x86-Plattform basieren, unterstützen diese Funktion nicht.</translation>
 <translation id="6654509035557065241">Netzwerk als bevorzugt festlegen</translation>
+<translation id="6654987855337442937">Verwende das sichere Domain Name System (DNS), um zu verhindern, dass Personen mit Zugriff auf deinen Internetverkehr sehen, welche Websites du besuchst</translation>
 <translation id="6655190889273724601">Entwicklermodus</translation>
 <translation id="6655458902729017087">Konten ausblenden</translation>
 <translation id="6657180931610302174">Nutzername hinzufügen?</translation>
@@ -9548,6 +9554,7 @@ Speichere deine Schlüsseldatei an einem sicheren Ort. Du benötigst die Datei, 
 <translation id="8528074251912154910">Sprachen hinzufügen</translation>
 <translation id="8528479410903501741">IBAN speichern</translation>
 <translation id="8528962588711550376">Anmeldung läuft...</translation>
+<translation id="8529578450330869579">Verwende das sichere Domain Name System (DNS), um zu verhindern, dass Personen mit Zugriff auf deinen Internetverkehr sehen, welche Websites du besuchst. Dazu wird für <ph name="DNS_SERVER_TEMPLATE_WITH_IDENTIFIER" /> ein Anbieter verwalteter Dienste verwendet.</translation>
 <translation id="8529925957403338845">Fehler bei Instant Tethering-Verbindung</translation>
 <translation id="8531701051932785007">Erweitertes Safe Browsing ist deaktiviert</translation>
 <translation id="8533670235862049797">Safe Browsing ist aktiviert</translation>

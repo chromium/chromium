@@ -87,6 +87,7 @@
 <translation id="11635448457105324">Gumb za upravljanje naslovov, aktivirajte, če želite dodati in upravljati naslove v Chromovih nastavitvah</translation>
 <translation id="1165039591588034296">Napaka</translation>
 <translation id="1165174597379888365">Stran je obiskana</translation>
+<translation id="1165813024716836071">{COUNT,plural, =0{Nobeno}=1{1 spletno mesto (ostali boste prijavljeni v račun Google)}one{# spletno mesto (ostali boste prijavljeni v račun Google)}two{# spletni mesti (ostali boste prijavljeni v račun Google)}few{# spletna mesta (ostali boste prijavljeni v račun Google)}other{# spletnih mest (ostali boste prijavljeni v račun Google)}}</translation>
 <translation id="1165852471352757509">Televizijski dokumentarni filmi in neigrane oddaje</translation>
 <translation id="1174644974616730562">Kitajska kuverta št. 1</translation>
 <translation id="1174723505405632867">Ali želite za <ph name="EMBEDDED_URL" /> omogočiti uporabo piškotkov in podatkov spletnih mest na <ph name="TOP_LEVEL_URL" />?

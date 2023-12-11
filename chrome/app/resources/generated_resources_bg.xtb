@@ -1879,6 +1879,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="2412753904894530585">Kerberos</translation>
 <translation id="2414159296888870200">Възобновяване на сърфирането за „<ph name="MODULE_TITLE" />“</translation>
 <translation id="2414886740292270097">Тъмно</translation>
+<translation id="2415117815770324983">Ще излезете от повечето сайтове, но не и от профила си в Google.</translation>
 <translation id="2416435988630956212">Функционални клавиши на клавиатурата</translation>
 <translation id="2418307627282545839">Всичко изглежда ярко и ефирно</translation>
 <translation id="2419131370336513030">Преглед на инсталираните приложения</translation>
@@ -2399,6 +2400,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="2799223571221894425">Стартиране отново</translation>
 <translation id="2800309299477632167">Персонализирана клавиатурна подредба</translation>
 <translation id="2800760947029405028">Качване на изображение</translation>
+<translation id="2801134910297796778">Влезли сте в профила <ph name="EMAIL" /></translation>
 <translation id="2801954693771979815">Размер на елементите на екрана</translation>
 <translation id="2802557211515765772">Няма управлявани принтери.</translation>
 <translation id="2803313416453193357">Отваряне на папката</translation>
@@ -4048,6 +4050,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="4110485659976215879">Възстановяване на предупреждението</translation>
 <translation id="4110490973560452005">Изтеглянето завърши: <ph name="FILE_NAME" />. Натиснете Shift + F6, за да преминете към лентата на изтеглянето.</translation>
 <translation id="4112194537011183136"><ph name="DEVICE_NAME" /> (офлайн)</translation>
+<translation id="4113483184628671608">Шифроване на имената на сайтовете, които посещавате</translation>
 <translation id="4113743276555482284">Парола за файла</translation>
 <translation id="4114524937989710624">Показват се предложени файлове, с чиято помощ лесно да се върнете към скорошната си активност в Google Диск.
         <ph name="BREAK" />
@@ -5779,6 +5782,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="5517304475148761050">Това приложение изисква достъп до Google Play Магазин</translation>
 <translation id="5517412723934627386"><ph name="NETWORK_TYPE" /> – <ph name="NETWORK_DISPLAY_NAME" /></translation>
 <translation id="5518949581554491184">Настройване посредством телефон с Android</translation>
+<translation id="5519053700692355541">Можете да отворите повечето функции на страничния панел от менюто на Chrome горе вдясно</translation>
 <translation id="5519195206574732858">LTE</translation>
 <translation id="5519900055135507385">Повишете сигурността на този профил с помощта на надеждна парола. Тя ще бъде запазена в <ph name="GOOGLE_PASSWORD_MANAGER" /> за <ph name="EMAIL" />.</translation>
 <translation id="5521078259930077036">Това ли е очакваната от вас начална страница?</translation>
@@ -6745,6 +6749,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="6294759976468837022">Скорост на автоматичното сканиране</translation>
 <translation id="6295158916970320988">Всички сайтове</translation>
 <translation id="6295855836753816081">Запазва се...</translation>
+<translation id="6298456705131259420">Засяга посочените тук сайтове. Вмъкването на „[*.]“ пред името на даден домейн създава изключение за целия домейн. Например добавянето на [*.]google.com означава, че „бисквитките“ на трети страни могат да са активни и за mail.google.com, тъй като е част от google.com.</translation>
 <translation id="6298962879096096191">Използване на Google Play за инсталиране на приложения за Android</translation>
 <translation id="6300177430812514606">Сайтове без разрешение за завършване на изпращането или получаването на данни</translation>
 <translation id="6300654006256345126">Редактиране на паролата</translation>
@@ -7168,6 +7173,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="6651762277693024112">Изпълнява се автоматично всеки път, когато посещавате този сайт</translation>
 <translation id="665355505818177700">Интегрирането на Chrome и <ph name="MS_AD_NAME" /> е възможно само на платформи x86_64. Устройствата Chromebook, базирани на платформа ARM или x86, не поддържат тази функционалност.</translation>
 <translation id="6654509035557065241">Задаване на предпочитана мрежа</translation>
+<translation id="6654987855337442937">Използвайте сигурна система за имена на домейни (DNS), за да попречите на хората с достъп до трафика ви в интернет да виждат кои сайтове посещавате</translation>
 <translation id="6655190889273724601">Режим за програмисти</translation>
 <translation id="6655458902729017087">Скриване на профилите</translation>
 <translation id="6657180931610302174">Искате ли да добавите потребителско име?</translation>
@@ -9568,6 +9574,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="8528074251912154910">Добавяне на езици</translation>
 <translation id="8528479410903501741">Запазване на IBAN</translation>
 <translation id="8528962588711550376">Влиза се.</translation>
+<translation id="8529578450330869579">Използвайте сигурна система за имена на домейни (DNS), за да попречите на хората с достъп до трафика ви в интернет да виждат кои сайтове посещавате. За целта се използва доставчик на управлявани услуги на адрес <ph name="DNS_SERVER_TEMPLATE_WITH_IDENTIFIER" /></translation>
 <translation id="8529925957403338845">Връзката чрез незабавен тетъринг не бе успешна</translation>
 <translation id="8531701051932785007">Функцията за подобрена защита от Безопасно сърфиране е изключена</translation>
 <translation id="8533670235862049797">Безопасно сърфиране е включено</translation>

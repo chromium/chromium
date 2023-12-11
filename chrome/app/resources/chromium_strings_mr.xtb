@@ -73,6 +73,7 @@
 <translation id="2329088755516916767">सुरू असताना, Chromium हे पेज प्रीलोड करते, ज्यामुळे ब्राउझ करणे आणि शोधणे आणखी जलद होते.</translation>
 <translation id="2343156876103232566">येथून तुमच्या Android फोनवर नंबर पाठवण्यासाठी, दोन्ही डिव्हाइसवर Chromium मध्ये साइन इन करा.</translation>
 <translation id="2359808026110333948">सुरू ठेवा</translation>
+<translation id="2359920621792549529">तुमच्या Google खाते मध्ये ब्राउझिंग डेटा राखून ठेवून, तो फक्त या डिव्हाइसवरून साफ करण्यासाठी, <ph name="BEGIN_LINK" />Chromium मधून साइन आउट करणे<ph name="END_LINK" /> हे करा.</translation>
 <translation id="2384373936468275798">तुमच्या खात्याचे साइन-इन तपशील कालबाह्य झाल्यामुळे, ChromiumOS ला तुमचा डेटा सिंक करता आला नाही.</translation>
 <translation id="2398377054246527950">{NUM_DEVICES,plural, =0{1 HID device was being accessed by one or more Chromium extensions}=1{१ HID डिव्हाइस हे एक किंवा त्याहून अधिक Chromium एक्स्टेंशनद्वारे अ‍ॅक्सेस केले जात आहे}other{# HID डिव्हाइस ही एक किंवा त्याहून अधिक Chromium एक्स्टेंशनद्वारे अ‍ॅक्सेस केली जात आहेत}}</translation>
 <translation id="2401032172288869980">Chromium ला या साइटसाठी कॅमेरा आणि मायक्रोफोनची परवानगी आवश्यक आहे</translation>

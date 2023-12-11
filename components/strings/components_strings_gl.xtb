@@ -87,6 +87,7 @@
 <translation id="11635448457105324">Botón para xestionar enderezos. Actívao para engadir e xestionar enderezos na configuración de Chrome</translation>
 <translation id="1165039591588034296">Erro</translation>
 <translation id="1165174597379888365">Visítase unha páxina</translation>
+<translation id="1165813024716836071">{COUNT,plural, =0{Ningún}=1{De 1 sitio (seguirás tendo a sesión iniciada na túa Conta de Google)}other{De # sitios (seguirás tendo a sesión iniciada na túa Conta de Google)}}</translation>
 <translation id="1165852471352757509">Documentais e programas de telerrealidade</translation>
 <translation id="1174644974616730562">Sobre chinés n.º 1</translation>
 <translation id="1174723505405632867">Queres permitir que <ph name="EMBEDDED_URL" /> utilice as cookies e os datos dos sitios en <ph name="TOP_LEVEL_URL" />?
@@ -116,6 +117,7 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="1206967143813997005">A sinatura inicial é incorrecta</translation>
 <translation id="1209206284964581585">Ocultar por agora</translation>
 <translation id="121201262018556460">Tentaches acceder a <ph name="DOMAIN" />, pero o servidor presentou un certificado que contén unha clave non segura. É posible que un atacante descifrase a túa clave privada e quizais o servidor non sexa o que esperas. É probable que te comuniques cun atacante.</translation>
+<translation id="1212527389003717329">Iniciouse a descarga. Para vela, mantén premida a tecla |<ph name="ACCELERATOR" />|.</translation>
 <translation id="1219129156119358924">Seguranza do sistema</translation>
 <translation id="1222060260947439312">Bandexa dereita</translation>
 <translation id="1224330468394120478">A3x6</translation>
@@ -286,6 +288,7 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="1521655867290435174">Follas de cálculo de Google</translation>
 <translation id="1524669537550112617">Alugueiro de mobiliario</translation>
 <translation id="1527263332363067270">Agardando pola conexión…</translation>
+<translation id="1528311629279578926">Bloqueouse a conexión porque a iniciou unha páxina pública para conectarse a dispositivos ou servidores da túa rede privada. Volve cargar esta páxina para permitir a conexión.</translation>
 <translation id="1529789484829130889">Bandexa 8</translation>
 <translation id="1530707389502320859">O sitio que acabas de tentar visitar parece falso. Ás veces, os atacantes crean copias de sitios introducindo nos URL cambios pequenos e difíciles de ver.</translation>
 <translation id="1532118530259321453">Esta páxina di</translation>
@@ -1160,6 +1163,7 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="3325027355611702542">Campistas e caravanas</translation>
 <translation id="3329013043687509092">Saturación</translation>
 <translation id="3333762389743153920">Non apta para asociarlle unha tarxeta virtual</translation>
+<translation id="3336044043987989409">Preme o botón de volver cargar para permitir a conexión con dispositivos ou servidores da túa rede privada.</translation>
 <translation id="3338095232262050444">Seguro</translation>
 <translation id="333839153442689579">Adestramento HIIT (intervalos de alta intensidade)</translation>
 <translation id="3339440062908617027">Correr e camiñar</translation>

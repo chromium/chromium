@@ -624,6 +624,7 @@
 <translation id="3593646411856133110">Нээлттэй аппуудыг харахын тулд дээш шудраад удаан дарна уу</translation>
 <translation id="3595596368722241419">Цэнэг дүүрсэн.</translation>
 <translation id="3596012367874587041">Aппын тохиргоо</translation>
+<translation id="3598452309062311481">search+h</translation>
 <translation id="3600061223661453002">Унтраах</translation>
 <translation id="3604801046548457007"><ph name="DESK_TITILE" /> дэлгэц үүсгэлээ</translation>
 <translation id="3606978283550408104">Брайль дэлгэц холбогдсон.</translation>
@@ -776,6 +777,7 @@
 <translation id="4190780880566297084">Утасныхаа саяхны зураг, медиа болон аппуудыг харахыг тохируулахыг үл хэрэгсэх</translation>
 <translation id="4192112279662688596">Эсвэл</translation>
 <translation id="4193857202545160520">Товшилт болон товчнуудыг харуулах</translation>
+<translation id="4193969623755915875">"<ph name="NEW_SHORTCUT" />"-р Судлах аппад "Тусламж"-ийг нээнэ үү.</translation>
 <translation id="4195579532193195633">Одоогийн хувилбар <ph name="VERSION_NAME" /> (<ph name="OFFICIAL_STATUS" />) <ph name="CHANNEL_NAME" /> <ph name="PROCESSOR_VARIATION" /></translation>
 <translation id="4195814663415092787">Орхисон хэсгээсээ үргэлжлүүлэх</translation>
 <translation id="4195877955194704651">Автомат даралтын товчлуур</translation>
@@ -958,6 +960,7 @@
 <translation id="4889868803215848840">Зөвлөмжүүдийг сайжруулахын тулд нэмэлт санал хүсэлт өгнө үү:</translation>
 <translation id="4890187583552566966">Таны админ Google Туслахыг идэвхгүй болгосон.</translation>
 <translation id="4890408602550914571">Таны утас ойролцоо бөгөөд Bluetooth-г нь асаасан эсэхийг шалгана уу.</translation>
+<translation id="4892981359753171125">Царайн тохиргоо</translation>
 <translation id="4895488851634969361">Цэнэг дүүрсэн байна.</translation>
 <translation id="490375751687810070">Босоо</translation>
 <translation id="490788395437447240">Батарей <ph name="BATTERY_PERCENTAGE" />%</translation>

@@ -1883,7 +1883,7 @@
 <translation id="2412753904894530585">Kerberos</translation>
 <translation id="2414159296888870200">繼續瀏覽「<ph name="MODULE_TITLE" />」</translation>
 <translation id="2414886740292270097">灰暗</translation>
-<translation id="2415117815770324983">刪除 Cookie 後，大多數網站都會將你登出，但 Google 帳戶會保持登入狀態。</translation>
+<translation id="2415117815770324983">刪除 Cookie 後，大多數網站都會將你登出；但 Google 帳戶會保持登入狀態。</translation>
 <translation id="2416435988630956212">鍵盤功能鍵</translation>
 <translation id="2418307627282545839">讓畫面保持鮮明光亮</translation>
 <translation id="2419131370336513030">查看已安裝的應用程式</translation>
@@ -4049,7 +4049,7 @@
 <translation id="4110485659976215879">取消忽略警告</translation>
 <translation id="4110490973560452005">下載完成 ：<ph name="FILE_NAME" />。按住 Shift+F6 鍵即可切換至下載內容列的位置。</translation>
 <translation id="4112194537011183136"><ph name="DEVICE_NAME" /> (離線)</translation>
-<translation id="4113483184628671608">加密造訪網站的名稱</translation>
+<translation id="4113483184628671608">加密瀏覽網站的名稱</translation>
 <translation id="4113743276555482284">檔案密碼</translation>
 <translation id="4114524937989710624">畫面會顯示建議的檔案，以便您繼續執行最近在「Google 雲端硬碟」中的活動。
         <ph name="BREAK" />
@@ -5781,7 +5781,7 @@
 <translation id="5517304475148761050">此應用程式需要存取「Play 商店」才能執行</translation>
 <translation id="5517412723934627386"><ph name="NETWORK_TYPE" /> - <ph name="NETWORK_DISPLAY_NAME" /></translation>
 <translation id="5518949581554491184">透過 Android 手機設定</translation>
-<translation id="5519053700692355541">你可以使用右上方的 Chrome 選單開啟大部分的側邊面板功能</translation>
+<translation id="5519053700692355541">你可以透過右上方嘅 Chrome 選單開啟大部份側面板功能</translation>
 <translation id="5519195206574732858">LTE</translation>
 <translation id="5519900055135507385">透過安全度高的密碼提高此帳戶的安全性。密碼將會儲存至 <ph name="EMAIL" /> 的「<ph name="GOOGLE_PASSWORD_MANAGER" />」中。</translation>
 <translation id="5521078259930077036">這是您想要的首頁嗎？</translation>
@@ -6745,7 +6745,7 @@
 <translation id="6294759976468837022">自動掃瞄速度</translation>
 <translation id="6295158916970320988">所有網站</translation>
 <translation id="6295855836753816081">正在儲存...</translation>
-<translation id="6298456705131259420">這裡列出的網站會受到影響。在網域名稱前方插入「[*.]」，可將整個網域設為例外。舉例來說，如果新增「[*.]google.com」，mail.google.com 也就能使用第三方 Cookie，因為該網域屬於 google.com。</translation>
+<translation id="6298456705131259420">這裡列出的網站會受到影響。在網域名稱前方插入「[*.]」，可將整個網域設定為例外情況。例如，如果新增「[*.]google.com」，mail.google.com 亦可使用第三方 Cookie，因為該網域屬於 google.com。</translation>
 <translation id="6298962879096096191">使用 Google Play 安裝 Android 應用程式</translation>
 <translation id="6300177430812514606">不允許完成傳送或接收資料</translation>
 <translation id="6300654006256345126">編輯密碼</translation>
@@ -7169,7 +7169,7 @@
 <translation id="6651762277693024112">在您每次瀏覽此網站時自動執行</translation>
 <translation id="665355505818177700">只有 x86_64 平台支援 Chrome <ph name="MS_AD_NAME" /> 整合，採用 ARM 或 x86 平台的 Chromebook 不支援此功能。</translation>
 <translation id="6654509035557065241">偏好網絡</translation>
-<translation id="6654987855337442937">如果使用安全網域名稱系統 (DNS)，就能防止可存取你網際網路流量的人查看你造訪的網站</translation>
+<translation id="6654987855337442937">使用安全的網域名稱系統 (DNS)，就能防止可存取你互聯網流量的人查看你瀏覽的網站</translation>
 <translation id="6655190889273724601">開發人員模式</translation>
 <translation id="6655458902729017087">隱藏帳戶</translation>
 <translation id="6657180931610302174">要新增使用者名稱嗎？</translation>
@@ -9569,7 +9569,7 @@
 <translation id="8528074251912154910">新增語言</translation>
 <translation id="8528479410903501741">儲存 IBAN</translation>
 <translation id="8528962588711550376">正在登入。</translation>
-<translation id="8529578450330869579">如果使用安全網域名稱系統 (DNS)，就能防止可存取你網際網路流量的人查看你造訪的網站。DNS 會使用位於 <ph name="DNS_SERVER_TEMPLATE_WITH_IDENTIFIER" /> 的代管服務供應商</translation>
+<translation id="8529578450330869579">使用安全的網域名稱系統 (DNS)，就能防止可存取你互聯網流量的人查看你瀏覽的網站。這會使用位於 <ph name="DNS_SERVER_TEMPLATE_WITH_IDENTIFIER" /> 的受管服務供應商</translation>
 <translation id="8529925957403338845">即時網絡共享連線失敗</translation>
 <translation id="8531701051932785007">「強化安全瀏覽」功能已關閉</translation>
 <translation id="8533670235862049797">「安全瀏覽」功能已開啟</translation>

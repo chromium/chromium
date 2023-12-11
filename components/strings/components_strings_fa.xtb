@@ -87,6 +87,7 @@
 <translation id="11635448457105324">‏دکمه مدیریت نشانی‌ها؛ برای افزودن و مدیریت نشانی‌ها در تنظیمات Chrome، آن را فعال کنید</translation>
 <translation id="1165039591588034296">خطا</translation>
 <translation id="1165174597379888365">صفحه بازدید شده است</translation>
+<translation id="1165813024716836071">{COUNT,plural, =0{هیچ‌کدام}=1{‏از ۱ سایت (از سیستم «حساب Google» خود خارج نمی‌شوید)}one{‏از # سایت (از سیستم «حساب Google» خود خارج نمی‌شوید)}other{‏از # سایت (از سیستم «حساب Google» خود خارج نمی‌شوید)}}</translation>
 <translation id="1165852471352757509">مستند تلویزیونی و غیرتخیلی</translation>
 <translation id="1174644974616730562">پاکت چینی شماره ۱</translation>
 <translation id="1174723505405632867">می‌خواهید به <ph name="EMBEDDED_URL" /> اجازه دهید از کوکی‌ها و داده‌های سایت در <ph name="TOP_LEVEL_URL" /> استفاده کند؟
@@ -1932,7 +1933,7 @@
 <translation id="485902285759009870">درحال تأیید کد…</translation>
 <translation id="4864406669374375262">رشته نسخه در بریده‌دان کپی شد</translation>
 <translation id="486459320933704969">ولی یا سرپرست باید بازدید شما از این وب‌سایت را تأیید کند</translation>
-<translation id="4866506163384898554">برای نمایش نشانگر، |<ph name="ACCELERATOR1" />| + |<ph name="ACCELERATOR2" />| را فشار دهید</translation>
+<translation id="4866506163384898554">برای نمایش مکان‌نما، |<ph name="ACCELERATOR1" />| + |<ph name="ACCELERATOR2" />| را فشار دهید</translation>
 <translation id="4873616204573862158">عینک</translation>
 <translation id="4876188919622883022">نمای ساده‌شده</translation>
 <translation id="4876305945144899064">بدون نام کاربری</translation>

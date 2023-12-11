@@ -87,6 +87,7 @@
 <translation id="11635448457105324">주소 관리 버튼, Chrome 설정에서 주소를 추가 및 관리하려면 활성화하세요.</translation>
 <translation id="1165039591588034296">오류</translation>
 <translation id="1165174597379888365">페이지를 방문함</translation>
+<translation id="1165813024716836071">{COUNT,plural, =0{없음}=1{사이트 1개(Google 계정에 로그인된 상태가 유지됨)}other{사이트 #개(Google 계정에 로그인된 상태가 유지됨)}}</translation>
 <translation id="1165852471352757509">TV 다큐멘터리 및 논픽션</translation>
 <translation id="1174644974616730562">봉투 Chinese #1</translation>
 <translation id="1174723505405632867"><ph name="EMBEDDED_URL" />에서 <ph name="TOP_LEVEL_URL" />의 쿠키와 사이트 데이터를 사용하도록 허용할까요?

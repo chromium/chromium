@@ -87,6 +87,7 @@
 <translation id="11635448457105324">Ylläpidä osoitteita ‑painike, aktivoi lisätäksesi ja muuttaaksesi osoitteita Chromen asetuksista</translation>
 <translation id="1165039591588034296">Virhe</translation>
 <translation id="1165174597379888365">Sivulla on käyty</translation>
+<translation id="1165813024716836071">{COUNT,plural, =0{Ei yhtään}=1{1 sivustolta (pysyt kirjautuneena Google-tilillesi)}other{# sivustolta (pysyt kirjautuneena Google-tilillesi)}}</translation>
 <translation id="1165852471352757509">TV-dokumentit ja tiedesarjat</translation>
 <translation id="1174644974616730562">Kirjekuori kiinalainen #1</translation>
 <translation id="1174723505405632867">Haluatko, että <ph name="EMBEDDED_URL" /> saa käyttää evästeitä ja sivustodataa (<ph name="TOP_LEVEL_URL" />)?

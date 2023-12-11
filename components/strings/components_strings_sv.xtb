@@ -87,6 +87,7 @@
 <translation id="11635448457105324">Knappen Hantera adresser: aktivera om du vill lägga till och hantera adresser i inställningarna för Chrome</translation>
 <translation id="1165039591588034296">Fel</translation>
 <translation id="1165174597379888365">En sida besöks</translation>
+<translation id="1165813024716836071">{COUNT,plural, =0{Inga}=1{Från 1 webbplats (du förblir inloggad på Google-kontot)}other{Från # webbplatser (du förblir inloggad på Google-kontot)}}</translation>
 <translation id="1165852471352757509">Dokumentär och fakta på tv</translation>
 <translation id="1174644974616730562">Kinesiskt nr 1-kuvert</translation>
 <translation id="1174723505405632867">Vill du tillåta att <ph name="EMBEDDED_URL" /> använder cookies och webbplatsdata på <ph name="TOP_LEVEL_URL" />?

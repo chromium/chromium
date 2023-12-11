@@ -838,6 +838,7 @@ Consultez les instructions de votre moteur de recherche pour supprimer votre his
 <translation id="5457226814769348910">Ouvrir la version hors ligne</translation>
 <translation id="5475069061743940393">Suivi de livraison</translation>
 <translation id="5478327362747197944">Créez des événements d'agenda directement en cliquant sur une date dans une page Web.</translation>
+<translation id="5482922178977937393">Souhaitez-vous recevoir des notifications sur les actualités, les sports et bien plus encore en fonction de vos centres d'intérêt?</translation>
 <translation id="5489208564673669003">Pour gérer les témoins pour tous les sites, reportez-vous à <ph name="BEGIN_LINK" />Paramètres des témoins<ph name="END_LINK" />.</translation>
 <translation id="5490005495580364134">Bloquer tous les témoins (non recommandé)</translation>
 <translation id="5497202150450073388">Tentative de livraison effectuée. Nouvel essai à venir</translation>
@@ -1481,6 +1482,7 @@ Vos données ont été chiffrées avec votre phrase de passe sur <ph name="TIME"
 <translation id="8766790350274092814">Les mots de passe de <ph name="WEBSITE" /> et <ph name="SECOND_WEBSITE" /> seront supprimés. Vos comptes ne seront pas supprimés.</translation>
 <translation id="8775144690796719618">URL non valide</translation>
 <translation id="8780076847684176174">{count,plural, =1{Vérifier l'onglet…}one{Vérifier l'onglet…}other{Vérifier tous les onglets…}}</translation>
+<translation id="8782570580170191813">Toujours suivre les colis</translation>
 <translation id="8787968206789828143">Recherchez sur le Web</translation>
 <translation id="8792626944327216835">Microphone</translation>
 <translation id="8803639129939845298">Sécuritaire</translation>

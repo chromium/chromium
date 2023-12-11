@@ -1882,6 +1882,7 @@
 <translation id="2412753904894530585">Kerberos</translation>
 <translation id="2414159296888870200">המשך הגלישה אל <ph name="MODULE_TITLE" /></translation>
 <translation id="2414886740292270097">כהה</translation>
+<translation id="2415117815770324983">‏תתבצע יציאה מרוב האתרים. החיבור לחשבון Google שלך ימשיך.</translation>
 <translation id="2416435988630956212">מקשי פונקציה במקלדת</translation>
 <translation id="2418307627282545839">נהנים מאווירה מוארת וזורמת</translation>
 <translation id="2419131370336513030">צפייה באפליקציות המותקנות</translation>
@@ -2403,6 +2404,7 @@
 <translation id="2799223571221894425">הפעלה מחדש</translation>
 <translation id="2800309299477632167">מיפוי מקשים בהתאמה אישית</translation>
 <translation id="2800760947029405028">העלאת תמונה</translation>
+<translation id="2801134910297796778">נכנסת לחשבון <ph name="EMAIL" /></translation>
 <translation id="2801954693771979815">גודל תצוגה במסך</translation>
 <translation id="2802557211515765772">אין מדפסות מנוהלות.</translation>
 <translation id="2803313416453193357">פתיחת התיקייה</translation>
@@ -4051,6 +4053,7 @@
 <translation id="4110485659976215879">שחזור האזהרה</translation>
 <translation id="4110490973560452005">‏ההורדה הושלמה: <ph name="FILE_NAME" />. אפשר להקיש על Shift+F6 כדי לעבור לאזור סרגל ההורדות.</translation>
 <translation id="4112194537011183136"><ph name="DEVICE_NAME" /> (אופליין)</translation>
+<translation id="4113483184628671608">הצפנה של שמות האתרים שבהם מבקרים</translation>
 <translation id="4113743276555482284">סיסמה לקובץ</translation>
 <translation id="4114524937989710624">‏מוצגות לך הצעות לקבצים כדי לעזור לך לחזור לפעילות האחרונה שלך ב-Google Drive.
         <ph name="BREAK" />
@@ -5783,6 +5786,7 @@
 <translation id="5517304475148761050">‏האפליקציה הזו צריכה גישה אל חנות Play</translation>
 <translation id="5517412723934627386"><ph name="NETWORK_TYPE" /> – <ph name="NETWORK_DISPLAY_NAME" /></translation>
 <translation id="5518949581554491184">‏הגדרה באמצעות טלפון Android</translation>
+<translation id="5519053700692355541">‏ניתן לפתוח את רוב התכונות של החלונית הצדדית דרך תפריט Chrome שבפינה השמאלית העליונה</translation>
 <translation id="5519195206574732858">LTE</translation>
 <translation id="5519900055135507385">החשבון הזה יהיה מאובטח יותר באמצעות סיסמה חזקה. היא תישמר ב<ph name="GOOGLE_PASSWORD_MANAGER" /> בחשבון <ph name="EMAIL" />.</translation>
 <translation id="5521078259930077036">האם זהו דף הבית שציפית לראות?</translation>
@@ -6748,6 +6752,7 @@
 <translation id="6294759976468837022">מהירות הסריקה האוטומטית</translation>
 <translation id="6295158916970320988">כל האתרים</translation>
 <translation id="6295855836753816081">בתהליך שמירה...</translation>
+<translation id="6298456705131259420">‏האפשרות משפיעה על האתרים שמופיעים כאן. הוספת '[.*]' לפני שם דומיין מחריגה את כל הדומיין. לדוגמה, אם מוסיפים את '‎[*.]google.com', יכול להיות שקובצי Cookie של צד שלישי יהיו פעילים גם בכתובת mail.google.com, כי היא שייכת ל-google.com.</translation>
 <translation id="6298962879096096191">‏התקנת אפליקציות ל-Android באמצעות Google Play</translation>
 <translation id="6300177430812514606">לא מורשים לסיים שליחה או קבלה של נתונים</translation>
 <translation id="6300654006256345126">עריכת הסיסמה</translation>
@@ -7175,6 +7180,7 @@
 <translation id="6651762277693024112">התוסף פועל באופן אוטומטי בכל פעם שמבקרים באתר הזה</translation>
 <translation id="665355505818177700">‏שילוב של Chrome עם <ph name="MS_AD_NAME" /> נתמך רק בפלטפורמות x86_64. מחשבי Chromebook שמבוססים על פלטפורמת ARM או x86 לא תומכים בפונקציונליות הזו.</translation>
 <translation id="6654509035557065241">העדפת רשת זו</translation>
+<translation id="6654987855337442937">‏בעזרת DNS מאובטח, אנשים שיש להם גישה לתנועה שלך באינטרנט לא יוכלו לראות את האתרים שביקרת בהם</translation>
 <translation id="6655190889273724601">מצב פיתוח</translation>
 <translation id="6655458902729017087">הסתרת חשבונות</translation>
 <translation id="6657180931610302174">להוסיף שם משתמש?</translation>
@@ -9576,6 +9582,7 @@
 <translation id="8528074251912154910">הוספת שפות</translation>
 <translation id="8528479410903501741">‏שמירת מספר IBAN</translation>
 <translation id="8528962588711550376">תהליך הכניסה מתבצע.</translation>
+<translation id="8529578450330869579">‏בעזרת DNS מאובטח, אנשים שיש להם גישה לתנועה שלך באינטרנט לא יוכלו לראות את האתרים שביקרת בהם. ההגדרה הזו פועלת באמצעות ספק שירות מנוהל בכתובת <ph name="DNS_SERVER_TEMPLATE_WITH_IDENTIFIER" /></translation>
 <translation id="8529925957403338845">יצירת החיבור לשיתוף אינטרנט מיידי בין ניידים נכשלה</translation>
 <translation id="8531701051932785007">הגרסה המשופרת של הגלישה הבטוחה מושבתת</translation>
 <translation id="8533670235862049797">הגלישה הבטוחה מופעלת</translation>

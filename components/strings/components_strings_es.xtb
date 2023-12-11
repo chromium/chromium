@@ -87,6 +87,7 @@
 <translation id="11635448457105324">Botón Gestionar direcciones: actívalo para añadir y gestionar direcciones en la configuración de Chrome</translation>
 <translation id="1165039591588034296">Error</translation>
 <translation id="1165174597379888365">Se visita una página</translation>
+<translation id="1165813024716836071">{COUNT,plural, =0{Ninguno}=1{Desde 1 sitio (la sesión de tu cuenta de Google seguirá abierta)}other{Desde # sitios (la sesión de tu cuenta de Google seguirá abierta)}}</translation>
 <translation id="1165852471352757509">Documentales y no ficción de televisión</translation>
 <translation id="1174644974616730562">Sobre chino n.º 1</translation>
 <translation id="1174723505405632867">¿Permitir que <ph name="EMBEDDED_URL" /> use cookies y datos de sitios en <ph name="TOP_LEVEL_URL" />?
@@ -116,6 +117,7 @@ De lo contrario, lo impedirá tu configuración de privacidad. Permitirá que el
 <translation id="1206967143813997005">Firma inicial no válida</translation>
 <translation id="1209206284964581585">Ocultar por ahora</translation>
 <translation id="121201262018556460">Has intentado acceder a <ph name="DOMAIN" />, pero el servidor ha presentado un certificado que contiene una clave no segura. Es posible que alguien haya descifrado la clave privada y que hayas accedido a la página de esa persona en lugar de establecer conexión con el servidor.</translation>
+<translation id="1212527389003717329">Descarga iniciada. Para verla, mantén pulsado |<ph name="ACCELERATOR" />|.</translation>
 <translation id="1219129156119358924">Seguridad del sistema</translation>
 <translation id="1222060260947439312">Bandeja derecha</translation>
 <translation id="1224330468394120478">A3x6</translation>
@@ -286,6 +288,7 @@ De lo contrario, lo impedirá tu configuración de privacidad. Permitirá que el
 <translation id="1521655867290435174">Hojas de cálculo de Google</translation>
 <translation id="1524669537550112617">Alquiler de viviendas amuebladas</translation>
 <translation id="1527263332363067270">Esperando conexión…</translation>
+<translation id="1528311629279578926">La conexión está bloqueada porque la ha iniciado una página pública para conectarse a dispositivos o servidores de tu red privada. Vuelve a cargar esta página para permitir la conexión.</translation>
 <translation id="1529789484829130889">Bandeja 8</translation>
 <translation id="1530707389502320859">El sitio web al que estás intentando acceder parece falso. Los atacantes suelen imitar los sitios haciendo pequeños cambios en la URL que son difíciles de ver.</translation>
 <translation id="1532118530259321453">Esta página dice</translation>
@@ -1160,6 +1163,7 @@ De lo contrario, lo impedirá tu configuración de privacidad. Permitirá que el
 <translation id="3325027355611702542">Cámperes y autocaravanas</translation>
 <translation id="3329013043687509092">Saturación</translation>
 <translation id="3333762389743153920">No cumple los requisitos para una tarjeta virtual</translation>
+<translation id="3336044043987989409">Pulsa el botón de volver a cargar para permitir la conexión a dispositivos o servidores de tu red privada.</translation>
 <translation id="3338095232262050444">Es seguro</translation>
 <translation id="333839153442689579">Entrenamiento de intervalos de alta intensidad</translation>
 <translation id="3339440062908617027">Correr y pasear</translation>

@@ -1884,6 +1884,7 @@ Ungaphatha izilungiselelo zale akhawunti ngokufaka uhlelo lokusebenza lwe-Family
 <translation id="2412753904894530585">I-Kerberos</translation>
 <translation id="2414159296888870200">Qhubeka nokubhrawuza <ph name="MODULE_TITLE" /></translation>
 <translation id="2414886740292270097">Mnyama</translation>
+<translation id="2415117815770324983">Ikukhipha kumasayithi amaningi. Uzohlala ungene ngemvume ku-Google Account yakho.</translation>
 <translation id="2416435988630956212">Okhiye bokusebenza kwekhibhodi</translation>
 <translation id="2418307627282545839">Gcina izinto zigqamile futhi zinomoya</translation>
 <translation id="2419131370336513030">Buka izinhlelo zokusebenza ezifakiwe</translation>
@@ -2404,6 +2405,7 @@ Ungaphatha izilungiselelo zale akhawunti ngokufaka uhlelo lokusebenza lwe-Family
 <translation id="2799223571221894425">Qalisa kabusha</translation>
 <translation id="2800309299477632167">Umephu wokhiye wangokwezifiso</translation>
 <translation id="2800760947029405028">Layisha isithombe</translation>
+<translation id="2801134910297796778">Ungene ngemvume ku-<ph name="EMAIL" /></translation>
 <translation id="2801954693771979815">Usayizi wesikrini</translation>
 <translation id="2802557211515765772">Awekho amaphrinta aphethwe.</translation>
 <translation id="2803313416453193357">Vula ifolda</translation>
@@ -4051,6 +4053,7 @@ Lokhu kungafaka ulwazi mayelana nesofthiwe efakiwe, amafayela, ibhrawuza yakho, 
 <translation id="4110485659976215879">Buyisela isexwayiso</translation>
 <translation id="4110490973560452005">Ukulanda kuqedile: <ph name="FILE_NAME" />. Cindezela ku-Shift+F6 ukuze wenze umjikelezo indawo yebha yokulandwa.</translation>
 <translation id="4112194537011183136"><ph name="DEVICE_NAME" /> (akuxhunyiwe ku-inthanethi)</translation>
+<translation id="4113483184628671608">Bethela amagama amasayithi owavakashelayo</translation>
 <translation id="4113743276555482284">Iphasiwedi yefayela</translation>
 <translation id="4114524937989710624">Ubona amafayela aphakanyisiwe ukuze akusize ubuyele kalula kumsebenzi wakho wakamuva kakhulu ku-Google Drive.
         <ph name="BREAK" />
@@ -5782,6 +5785,7 @@ Izimvume ozinikezile kakade amawebhusayithi nama-app zingase zisebenze kule akha
 <translation id="5517304475148761050">Lolu hlelo lokusebenza ludinga ukufinyelela ku-Google Play Isitolo</translation>
 <translation id="5517412723934627386">I-<ph name="NETWORK_TYPE" /> - <ph name="NETWORK_DISPLAY_NAME" /></translation>
 <translation id="5518949581554491184">Setha ngefoni ye-Android</translation>
+<translation id="5519053700692355541">Ungakwazi ukuvula izakhi zephaneli eseceleni eziningi ngemenyu ye-Chrome phezulu ngakwesokudla</translation>
 <translation id="5519195206574732858">I-LTE</translation>
 <translation id="5519900055135507385">Gcina le akhawunti ivikeleke kakhulu ngephasiwedi eqinile. Izolondolozwa ku-<ph name="GOOGLE_PASSWORD_MANAGER" /> ye-<ph name="EMAIL" />.</translation>
 <translation id="5521078259930077036">Ingabe leli yikhasi lasekhaya obukade ulilindele?</translation>
@@ -6748,6 +6752,7 @@ I-<ph name="DOMAIN" /> idinga ukuba ugcine ikhadi lakho elimsathi lifakiwe.</tra
 <translation id="6294759976468837022">Isivinini sokuskena okuzenzakalelayo</translation>
 <translation id="6295158916970320988">Wonke amasayithi</translation>
 <translation id="6295855836753816081">Iyalondoloza...</translation>
+<translation id="6298456705131259420">Ithinta amasayithi afakwe ohlwini lapha. Ukufaka okuthi “[*.]” ngaphambi kwegama lesizinda kudala ukwehluka kuso sonke isizinda. Isibonelo, ukungeza okuthi “[*.]google.com” kusho ukuthi amakhukhi enkampani yangaphandle angaphinda asebenze kokuthi mail.google.com, ngoba ayingxenye ye-google.com.</translation>
 <translation id="6298962879096096191">Sebenzisa i-Google Play ukuze ufake izinhlelo zokusebenza ze-Android</translation>
 <translation id="6300177430812514606">Ayivumelekile ukuqeda ukuthumela noma ukwamukela idatha</translation>
 <translation id="6300654006256345126">Hlela Iphasiwedi</translation>
@@ -7173,6 +7178,7 @@ Unamaphasiwedi onakalisiwe angu-# ngokwengeziwe. Umphathi Wephasiwedi Ye-Google 
 <translation id="6651762277693024112">Isebenza ngokuzenzekelayo njalo uma uvakashela leli sayithi</translation>
 <translation id="665355505818177700">Ukuqiniswa kwe-Chrome <ph name="MS_AD_NAME" /> kusekelwa kuphela kuzingxenyekazi ze-x86_64. Ama-Chromebooks akhelwe phezu kwe-ARM noma ingxenyekazi ye-x86 awasekeli lo msebenzi.</translation>
 <translation id="6654509035557065241">Ncamela inethiwekhi</translation>
+<translation id="6654987855337442937">Sebenzisa Isistimu Yokwetha Isizinda (DNS) evikelekile ukuze uvimbele abantu abanokufinyelela kuthrafikhi ye-inthanethi yakho ukuba babone ukuthi imaphi amasayithi owavakashelayo</translation>
 <translation id="6655190889273724601">Imodi yonjiniyela</translation>
 <translation id="6655458902729017087">Fihla ama-akhawunti</translation>
 <translation id="6657180931610302174">Faka igama lomsebenzisi?</translation>
@@ -9570,6 +9576,7 @@ Gcina ifayela lakho elingukhiye endaweni evikelekile. Uzolidinga ukuze udale izi
 <translation id="8528074251912154910">Engeza izilimi</translation>
 <translation id="8528479410903501741">Londoloza i-IBAN</translation>
 <translation id="8528962588711550376">Ingena ngemvume.</translation>
+<translation id="8529578450330869579">Sebenzisa Isistimu Yokwetha Isizinda (DNS) evikelekile ukuze uvimbele abantu abanokufinyelela kuthrafikhi ye-inthanethi yakho ukuba babone ukuthi imaphi amasayithi owavakashelayo. Lokhu kusebenzisa umhlinzeki wesevisi olawulwayo ku-<ph name="DNS_SERVER_TEMPLATE_WITH_IDENTIFIER" /></translation>
 <translation id="8529925957403338845">Ukuxhumeka okusheshayo kokusebenzisa ifoni njengemodemu kuhlulekile</translation>
 <translation id="8531701051932785007">Ukuphequlula Ngokuphepha Okugqamile kuvaliwe</translation>
 <translation id="8533670235862049797">Ukuphequlula Ngokuphepha kuvuliwe</translation>

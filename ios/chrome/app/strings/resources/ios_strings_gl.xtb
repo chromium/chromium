@@ -838,6 +838,7 @@ En caso aplicable, consulta as instrucións do teu motor de busca para eliminar 
 <translation id="5457226814769348910">Abrir versión sen conexión</translation>
 <translation id="5475069061743940393">Seguimento de paquetes</translation>
 <translation id="5478327362747197944">Fai clic nunha data dunha páxina web para crear directamente eventos no calendario.</translation>
+<translation id="5482922178977937393">Queres recibir notificacións de noticias, deportes e máis temas en función dos teus intereses?</translation>
 <translation id="5489208564673669003">Se queres xestionar as cookies para todos os sitios, vai a <ph name="BEGIN_LINK" />Configuración das cookies<ph name="END_LINK" />.</translation>
 <translation id="5490005495580364134">Bloquear todas as cookies (non recomendado)</translation>
 <translation id="5497202150450073388">Tentouse realizar a entrega. Tentarase de novo</translation>
@@ -1481,6 +1482,7 @@ Os teus datos encriptáronse coa túa frase de acceso o <ph name="TIME" />. Intr
 <translation id="8766790350274092814">Eliminaranse os contrasinais de <ph name="WEBSITE" /> e <ph name="SECOND_WEBSITE" />. Non se eliminarán as túas contas.</translation>
 <translation id="8775144690796719618">URL non válido</translation>
 <translation id="8780076847684176174">{count,plural, =1{Revisar a pestana...}other{Revisar as pestanas...}}</translation>
+<translation id="8782570580170191813">Facer sempre un seguimento dos paquetes</translation>
 <translation id="8787968206789828143">Busca na Web</translation>
 <translation id="8792626944327216835">micrófono</translation>
 <translation id="8803639129939845298">Seguro</translation>

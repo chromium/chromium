@@ -1883,6 +1883,7 @@ Du kan hantera inställningarna för det här kontot genom att installera Family
 <translation id="2412753904894530585">Kerberos</translation>
 <translation id="2414159296888870200">Fortsätt att söka efter <ph name="MODULE_TITLE" /></translation>
 <translation id="2414886740292270097">Mörk</translation>
+<translation id="2415117815770324983">Du loggas ut från de flesta webbplatser. Du förblir inloggad på Google-kontot.</translation>
 <translation id="2416435988630956212">Funktionstangenter på tangentbordet</translation>
 <translation id="2418307627282545839">Låt det vara ljust och fräscht</translation>
 <translation id="2419131370336513030">Visa installerade appar</translation>
@@ -2403,6 +2404,7 @@ Du kan hantera inställningarna för det här kontot genom att installera Family
 <translation id="2799223571221894425">Starta om</translation>
 <translation id="2800309299477632167">Anpassad tangentuppsättning</translation>
 <translation id="2800760947029405028">Ladda upp en bild</translation>
+<translation id="2801134910297796778">Inloggad på <ph name="EMAIL" /></translation>
 <translation id="2801954693771979815">Skärmstorlek</translation>
 <translation id="2802557211515765772">Det finns inga hanterade skrivare.</translation>
 <translation id="2803313416453193357">Öppna mappen</translation>
@@ -4051,6 +4053,7 @@ Detta kan omfatta information om installerad programvara, filer, webbläsaren oc
 <translation id="4110485659976215879">Återställ varning</translation>
 <translation id="4110490973560452005">Nedladdningen är klar: <ph name="FILE_NAME" />. Stega till nedladdningsfältet med Skift+F6.</translation>
 <translation id="4112194537011183136"><ph name="DEVICE_NAME" /> (offline)</translation>
+<translation id="4113483184628671608">Kryptera namnen på webbplatser du besöker</translation>
 <translation id="4113743276555482284">Filens lösenord</translation>
 <translation id="4114524937989710624">Förslag på filer visas så att du enkelt ska kunna fortsätta med det du gjorde senast på Google Drive.
         <ph name="BREAK" />
@@ -5782,6 +5785,7 @@ Behörigheter som du redan har gett webbplatser och appar kan gälla för det h�
 <translation id="5517304475148761050">Den här appen kräver åtkomst till Play Butik</translation>
 <translation id="5517412723934627386"><ph name="NETWORK_TYPE" /> – <ph name="NETWORK_DISPLAY_NAME" /></translation>
 <translation id="5518949581554491184">Konfigurera med en Android-telefon</translation>
+<translation id="5519053700692355541">Du kan öppna de flesta sidopanelsfunktionerna via Chrome-menyn uppe till höger</translation>
 <translation id="5519195206574732858">LTE</translation>
 <translation id="5519900055135507385">Skydda kontot med ett starkt lösenord. Det sparas i <ph name="GOOGLE_PASSWORD_MANAGER" /> för <ph name="EMAIL" />.</translation>
 <translation id="5521078259930077036">Är det här den startsida du väntade dig?</translation>
@@ -6747,6 +6751,7 @@ Behörigheter som du redan har gett webbplatser och appar kan gälla för det h�
 <translation id="6294759976468837022">Hastighet för automatisk genomsökning</translation>
 <translation id="6295158916970320988">Alla webbplatser</translation>
 <translation id="6295855836753816081">Sparar ...</translation>
+<translation id="6298456705131259420">Påverkar webbplatserna som anges här. Om du infogar ”[*.]” före ett domännamn skapas ett undantag för hela domänen. Om du till exempel lägger till “[*.]google.com” innebär det att tredjepartscookies också kan vara aktiva för mail.google.com, eftersom det är en del av google.com.</translation>
 <translation id="6298962879096096191">Installera appar med hjälp av Google Play</translation>
 <translation id="6300177430812514606">Får inte fortsätta att skicka och ta emot data</translation>
 <translation id="6300654006256345126">Redigera lösenord</translation>
@@ -7170,6 +7175,7 @@ Det finns # utsatta lösenord till. Du rekommenderas av Google Lösenordshanteri
 <translation id="6651762277693024112">Körs automatiskt varje gång du besöker den här webbplatsen</translation>
 <translation id="665355505818177700">Integrering med <ph name="MS_AD_NAME" /> i Chrome stöds bara på x86_64-plattformar. Chromebook-enheter som bygger på ARM- eller x86-plattformen saknar stöd för denna funktion.</translation>
 <translation id="6654509035557065241">Föredraget nätverk</translation>
+<translation id="6654987855337442937">Använd det säkra domännamnssystemet (DNS) för att förhindra att personer som har åtkomst till din internettrafik ser vilka webbplatser du besöker</translation>
 <translation id="6655190889273724601">Programmerarläge</translation>
 <translation id="6655458902729017087">Dölj konton</translation>
 <translation id="6657180931610302174">Lägg till användarnamn</translation>
@@ -9570,6 +9576,7 @@ Spara nyckelfilen på ett säkert ställe. Den behövs om du ska skapa nya versi
 <translation id="8528074251912154910">Lägg till språk</translation>
 <translation id="8528479410903501741">Spara IBAN</translation>
 <translation id="8528962588711550376">Inloggning sker</translation>
+<translation id="8529578450330869579">Använd det säkra domännamnssystemet (DNS) för att förhindra att personer som har tillgång till din internettrafik ser vilka webbplatser du besöker. Detta använder en hanterad tjänsteleverantör på <ph name="DNS_SERVER_TEMPLATE_WITH_IDENTIFIER" /></translation>
 <translation id="8529925957403338845">Direktinternetdelning misslyckades</translation>
 <translation id="8531701051932785007">Förbättrad säker webbsökning har inaktiverats</translation>
 <translation id="8533670235862049797">Säker webbsökning är aktiverat</translation>

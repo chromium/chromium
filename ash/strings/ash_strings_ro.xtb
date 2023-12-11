@@ -624,6 +624,7 @@ Iată câteva lucruri pe care le poți încerca pentru început.</translation>
 <translation id="3593646411856133110">Glisează în sus și menține pentru a vedea aplicațiile deschise</translation>
 <translation id="3595596368722241419">Baterie încărcată</translation>
 <translation id="3596012367874587041">Setările aplicației</translation>
+<translation id="3598452309062311481">tasta de căutare + h</translation>
 <translation id="3600061223661453002">Dezactivat</translation>
 <translation id="3604801046548457007">A fost creat desktopul <ph name="DESK_TITILE" /></translation>
 <translation id="3606978283550408104">Afișajul Braille este conectat.</translation>
@@ -775,6 +776,7 @@ Unele funcții sunt limitate pentru a crește autonomia.</translation>
 <translation id="4190780880566297084">Renunță la configurarea afișării fotografiilor, a elementelor media și a aplicațiilor recente ale telefonului</translation>
 <translation id="4192112279662688596">Sau</translation>
 <translation id="4193857202545160520">Afișează clicurile și tastele</translation>
+<translation id="4193969623755915875">Deschide Ajutor în aplicația Explorare cu <ph name="NEW_SHORTCUT" />.</translation>
 <translation id="4195579532193195633">Versiunea actuală <ph name="VERSION_NAME" /> (<ph name="OFFICIAL_STATUS" />) <ph name="CHANNEL_NAME" /> <ph name="PROCESSOR_VARIATION" /></translation>
 <translation id="4195814663415092787">Continuați de unde ați rămas</translation>
 <translation id="4195877955194704651">Butonul Clicuri automate</translation>
@@ -957,6 +959,7 @@ Unele funcții sunt limitate pentru a crește autonomia.</translation>
 <translation id="4889868803215848840">Trimite feedback opțional pentru a îmbunătăți sugestiile:</translation>
 <translation id="4890187583552566966">Asistentul Google este dezactivat de administrator.</translation>
 <translation id="4890408602550914571">Asigură-te că telefonul este în apropiere, cu funcția Bluetooth activată.</translation>
+<translation id="4892981359753171125">Control cu mișcări ale feței</translation>
 <translation id="4895488851634969361">Bateria este încărcată complet.</translation>
 <translation id="490375751687810070">Vertical</translation>
 <translation id="490788395437447240">Nivelul bateriei: <ph name="BATTERY_PERCENTAGE" /> %</translation>

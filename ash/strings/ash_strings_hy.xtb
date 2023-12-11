@@ -624,6 +624,7 @@
 <translation id="3593646411856133110">Մատը սահեցրեք վեր և պահեք՝ բացված հավելվածները տեսնելու համար</translation>
 <translation id="3595596368722241419">Մարտկոցը լրիվ լիցքավորված է</translation>
 <translation id="3596012367874587041">Հավելվածի կարգավորումներ</translation>
+<translation id="3598452309062311481">search+h</translation>
 <translation id="3600061223661453002">Անջատել</translation>
 <translation id="3604801046548457007">Աշխատասեղան <ph name="DESK_TITILE" />-ը ստեղծվել է</translation>
 <translation id="3606978283550408104">Բրայլյան էկրանը կապակցված է:</translation>
@@ -775,6 +776,7 @@
 <translation id="4190780880566297084">Բաց թողնել հեռախոսի վերջին լուսանկարների, մեդիաֆայլերի և հավելվածների դիտման կարգավորումը</translation>
 <translation id="4192112279662688596">Կամ</translation>
 <translation id="4193857202545160520">Ցույց տալ մկնիկի սեղմումները և ստեղնային դյուրանցումները</translation>
+<translation id="4193969623755915875">«Հնարավորություններ» հավելվածում բացեք Օգնությունը «<ph name="NEW_SHORTCUT" />» դյուրանցման միջոցով։</translation>
 <translation id="4195579532193195633">Ընթացիկ տարբերակ <ph name="VERSION_NAME" /> (<ph name="OFFICIAL_STATUS" />) <ph name="CHANNEL_NAME" /> <ph name="PROCESSOR_VARIATION" /></translation>
 <translation id="4195814663415092787">Շարունակել աշխատանքը նույն տեղից</translation>
 <translation id="4195877955194704651">Ավտոմատ սեղմում</translation>
@@ -957,6 +959,7 @@
 <translation id="4889868803215848840">Կարծիք հայտնեք, որպեսզի մենք կարողանանք բարելավել առաջարկները։</translation>
 <translation id="4890187583552566966">Google Օգնականն անջատված է ձեր ադմինիստրատորի կողմից։</translation>
 <translation id="4890408602550914571">Համոզվեք, որ ձեր հեռախոսը մոտակայքում է, ապակողպված է, և որ Bluetooth-ը միացված է։</translation>
+<translation id="4892981359753171125">Դեմքի հետագծում</translation>
 <translation id="4895488851634969361">Մարտկոցը լիցքավորված է:</translation>
 <translation id="490375751687810070">Ուղղաձիգ</translation>
 <translation id="490788395437447240">Մարտկոցի լիցքը՝ <ph name="BATTERY_PERCENTAGE" /></translation>

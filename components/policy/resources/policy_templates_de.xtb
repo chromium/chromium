@@ -1116,6 +1116,7 @@ Ist die Richtlinie deaktiviert, schließt <ph name="PRODUCT_NAME" /> den Tab nac
 
       Die Managed Configuration API ist eine Schlüssel/Wert-Konfiguration, die sich über den JavaScript-Aufruf „navigator.managed.getManagedConfiguration()“ abrufen lässt. Diese API ist nur für Ursprünge verfügbar, die zu Webanwendungen gehören, deren Installation über <ph name="WEB_APP_INSTALL_FORCE_LIST_POLICY_NAME" /> erzwungen wurde.
      </translation>
+<translation id="1918690415433353669">Tab-Organisation zulassen, ohne die Tabdetails zu protokollieren</translation>
 <translation id="1919802376548418720">Mit der KDC-Richtlinie können Anmeldedaten delegiert werden.</translation>
 <translation id="1920046221095339924">Verwaltete Sitzung auf Gerät zulassen</translation>
 <translation id="1920772397574801429">Wenn die Richtlinie konfiguriert ist, werden die Typen von Konten festgelegt, die von der Android-Authentifizierungs-App angegeben werden, die die Authentifizierung durch <ph name="HTTP_NEGOTIATE" /> unterstützt, z. B. die Kerberos-Authentifizierung. Diese Informationen sollten vom Anbieter der Authentifizierungs-App bereitgestellt werden. Weitere Informationen findest du in den Chromium-Projekten unter https://goo.gl/hajyfN.
@@ -1688,6 +1689,7 @@ HINWEIS: Während der Browser ausgeführt wird, werden Änderungen an dieser Ric
 Ist die Richtlinie deaktiviert, können Nutzer von <ph name="PRODUCT_NAME" />-Varianten „NewBaseUrlInheritanceBehavior“ nicht aktivieren, falls Kompatibilitätsprobleme vorliegen. Wenn die Richtlinie aktiviert oder nicht konfiguriert ist, kann „NewBaseUrlInheritanceBehavior“ aktiviert werden.</translation>
 <translation id="2362469626417133796">Zeitfenster für Neustart</translation>
 <translation id="2362539163677485510">Das Registrierungstoken der Cloud-Richtlinie</translation>
+<translation id="2362947328909044249">Tab-Organisation zulassen</translation>
 <translation id="2363928351203698966">Wenn die Richtlinie auf einen gültigen Wert festgelegt ist, nutzt <ph name="PRODUCT_NAME" /> keine SSL- oder TLS-Versionen, die niedriger als die vorgegebene Version sind. Nicht erkannte Werte werden ignoriert.
 
       Wenn diese Richtlinie nicht konfiguriert ist, zeigt <ph name="PRODUCT_NAME" /> einen Fehler für TLS 1.0 und TLS 1.1 an, den der Nutzer jedoch umgehen kann.
@@ -2022,6 +2024,7 @@ Das System fragt AAAA-Einträge nur dann ab, wenn es für einen globalen IPv6-Ho
 <translation id="2650049181907741121">Auszuführende Aktion beim Zuklappen des Geräts</translation>
 <translation id="2656559539624760733">Chrome Root Store nicht verwenden.</translation>
 <translation id="2658653824183107970">Alte <ph name="CORS" />-Implementierung statt des neuen <ph name="CORS" /> verwenden</translation>
+<translation id="2659064869547694451">„Compose“ zulassen</translation>
 <translation id="2660846099862559570">Nie Proxy verwenden</translation>
 <translation id="2661628029848851543">Jegliche Nutzung von verwalteten Konten ist zulässig</translation>
 <translation id="2664391398878045611">Die Seite „Neuer Tab“ zeigt die Information im mittleren Slot nicht an – selbst wenn sie verfügbar ist</translation>
@@ -2792,6 +2795,7 @@ Ist diese Richtlinie deaktiviert, werden heruntergeladene Dateien nicht von Safe
 Diese Einschränkungen gelten für Downloads, die durch Websiteinhalte ausgelöst werden, sowie für die Menüoption „Link herunterladen“. Diese Einschränkungen gelten aber weder für das Herunterladen und Speichern der gerade angezeigten Seite noch für das Speichern als PDF-Datei in den Druckoptionen.
 
 Unter <ph name="MS_WIN_NAME" /> steht diese Richtlinie nur bei Instanzen zur Verfügung, die Teil einer <ph name="MS_AD_NAME" />-Domain oder von <ph name="MS_AAD_NAME" /> sind oder die in<ph name="CHROME_BROWSER_CLOUD_MANAGEMENT_NAME" /> angemeldet sind.</translation>
+<translation id="3300322252167923819">Tab-Organisation zulassen</translation>
 <translation id="3300784749135986828">Aktiviere oder deaktiviere die Funktion <ph name="USER_AGENT_REDUCTION_FEATURE_NAME" />.</translation>
 <translation id="3301698868852716692">Erweiterung „Insights“ aktivieren</translation>
 <translation id="3302829897293005699">Wenn die Richtlinie aktiviert oder nicht konfiguriert ist, werden über registrierte Geräte Informationen zur aktiven Kiosksitzung gemeldet, z. B. die Anwendungs-ID und -version.
@@ -3402,6 +3406,7 @@ Diese Richtlinie ist eine vorübergehende Problemumgehung, die in einem zukünft
 
           Wird sie nicht konfiguriert, ist die Bedienungshilfe "Spracheingabe" auf dem Anmeldebildschirm anfangs deaktiviert, kann jedoch vom Nutzer jederzeit aktiviert werden.</translation>
 <translation id="3811562426301733860">Werbung auf allen Websites zulassen</translation>
+<translation id="3816281648615435872">Tab-Organisation deaktivieren</translation>
 <translation id="3816312845600780067">Tastenkombination zur Umgehung der automatischen Anmeldung aktivieren</translation>
 <translation id="3817323252437541502">Erweiterte Sicherheitsfunktionen für Teilnehmer des erweiterten Sicherheitsprogramms aktivieren</translation>
 <translation id="3821861026311587684">Abmeldung des Nutzers erzwingen, wenn sein Konto nicht mehr authentifiziert ist</translation>
@@ -3942,6 +3947,7 @@ Ist die Richtlinie deaktiviert, wird stattdessen eine Fehlermeldung angezeigt.</
 <translation id="428948795004445932">Häufigkeit, mit der Netzwerkdaten analysiert und erhoben werden. Die geringste zulässige Häufigkeit beträgt 1 Minute.
 
       Wenn die Richtlinie nicht konfiguriert ist, beträgt die Häufigkeit standardmäßig 10 Minuten.</translation>
+<translation id="4289628882370719584">Mit der Funktion zum Organisieren von Tabs können Nutzer ihre Tabs organisieren.</translation>
 <translation id="4290231183305601970">Text, der dem Nutzer im Chrome Webstore angezeigt wird, wenn die Installation blockiert ist.</translation>
 <translation id="4293187705196369087">Ermöglicht die Aktivierung oder Deaktivierung einer Benachrichtigung, wenn nur noch wenig Speicherplatz verfügbar ist. Dies gilt für alle Nutzer auf diesem Gerät.
 
@@ -4231,6 +4237,7 @@ Diese Richtlinie ist nicht wirksam, wenn sie aktiviert ist, leer gelassen oder n
 <translation id="453031441196755904">Diese Richtlinie ist veraltet.</translation>
 <translation id="4531706050939927436">Die Installation von Android-Apps kann von der Google Admin-Konsole aus über Google Play erzwungen werden. Android-Apps nutzen diese Richtlinie nicht.</translation>
 <translation id="4534500438517478692">Name der Android-Einschränkung:</translation>
+<translation id="4537645230504195464">„Compose“ ohne Protokollierung zulassen</translation>
 <translation id="4541530620466526913">Lokale Gerätekonten</translation>
 <translation id="4542255783284620926">Hinzufügen eines verwalteten Kontos als sekundäres Konto unter Chrome OS (bei laufender Sitzung) blockieren</translation>
 <translation id="4543502256674577024">Einstellungen für die Geräteaktualisierung</translation>
@@ -4419,6 +4426,7 @@ Nach der Ersteinrichtung können Nutzer die Standortdienste von Google flexibel 
 <translation id="4674871290487541952">Unsichere Algorithmen in Integritätsprüfungen bei Erweiterungsupdates und -installationen erlauben</translation>
 <translation id="4680961954980851756">Autofill zulassen</translation>
 <translation id="4685721728282448265">CECPQ2-Post-Quanten-Algorithmus für Schlüsselvereinbarungen in TLS aktiviert</translation>
+<translation id="4688118315245991650">„Compose“ deaktivieren</translation>
 <translation id="468822697351680932">SiteList-Richtlinie in Internet Explorer als Quelle für Regeln verwenden</translation>
 <translation id="4693190628432874457">Melden des Standorts auf Geräten aktivieren</translation>
 <translation id="4693779768620889402">Erweiterungsbasierte Ziele</translation>
@@ -5102,6 +5110,7 @@ Ist die Richtlinie deaktiviert, können der Browser‑ und der Downloadverlauf n
 <translation id="5340008866815063393">Erfassen von Richtliniendaten aktivieren</translation>
 <translation id="5345910753471481870">Schaltfläche „Google Lens“ nicht im Suchfeld auf der Seite „Neuer Tab“ anzeigen.</translation>
 <translation id="5346587320074666194">Den Zugriff auf Sensoren für diese Websites sperren</translation>
+<translation id="5347809796754019202">„Compose“ zulassen</translation>
 <translation id="534836255587440809">„Automatischer Klick“ auf dem Anmeldebildschirm deaktivieren</translation>
 <translation id="5348658899015174540">Die <ph name="GET_DISPLAY_MEDIA_SET_NAME" /> API erlaubt Web-Apps, mehrere Oberflächen gleichzeitig aufzunehmen.
       Diese Richtlinie macht das Attribut <ph name="AUTO_SELECT_ALL_SCREENS_NAME" /> für Web-Apps an definierten Ursprüngen verfügbar.

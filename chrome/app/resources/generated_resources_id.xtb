@@ -1883,6 +1883,7 @@ Anda dapat mengelola setelan akun ini dengan menginstal aplikasi Family Link di 
 <translation id="2412753904894530585">Kerberos</translation>
 <translation id="2414159296888870200">Lanjutkan menjelajah untuk <ph name="MODULE_TITLE" /></translation>
 <translation id="2414886740292270097">Gelap</translation>
+<translation id="2415117815770324983">Anda akan logout dari sebagian besar situs. Anda akan tetap login ke Akun Google Anda.</translation>
 <translation id="2416435988630956212">Tombol fungsi keyboard</translation>
 <translation id="2418307627282545839">Membuat semuanya tetap terang dan nyaman dilihat</translation>
 <translation id="2419131370336513030">Lihat aplikasi terinstal</translation>
@@ -2403,6 +2404,7 @@ Anda dapat mengelola setelan akun ini dengan menginstal aplikasi Family Link di 
 <translation id="2799223571221894425">Luncurkan Ulang</translation>
 <translation id="2800309299477632167">Konfigurasi tombol khusus</translation>
 <translation id="2800760947029405028">Upload gambar</translation>
+<translation id="2801134910297796778">Login ke <ph name="EMAIL" /></translation>
 <translation id="2801954693771979815">Ukuran layar</translation>
 <translation id="2802557211515765772">Tidak ada printer terkelola.</translation>
 <translation id="2803313416453193357">Buka folder</translation>
@@ -4051,6 +4053,7 @@ Informasi ini dapat mencakup informasi tentang software yang diinstal, file, bro
 <translation id="4110485659976215879">Pulihkan peringatan</translation>
 <translation id="4110490973560452005">Download selesai: <ph name="FILE_NAME" />. Tekan Shift+F6 untuk masuk ke area kotak download</translation>
 <translation id="4112194537011183136"><ph name="DEVICE_NAME" /> (offline)</translation>
+<translation id="4113483184628671608">Enkripsi nama situs yang Anda kunjungi</translation>
 <translation id="4113743276555482284">Sandi file</translation>
 <translation id="4114524937989710624">Anda melihat saran file untuk membantu Anda kembali ke aktivitas terbaru Anda di Google Drive dengan mudah.
         <ph name="BREAK" />
@@ -5782,6 +5785,7 @@ Izin yang telah Anda berikan ke situs dan aplikasi dapat berlaku untuk akun ini.
 <translation id="5517304475148761050">Aplikasi ini memerlukan akses ke Play Store</translation>
 <translation id="5517412723934627386"><ph name="NETWORK_TYPE" /> - <ph name="NETWORK_DISPLAY_NAME" /></translation>
 <translation id="5518949581554491184">Siapkan dengan ponsel Android</translation>
+<translation id="5519053700692355541">Anda dapat membuka sebagian besar fitur panel samping melalui menu Chrome di kanan atas</translation>
 <translation id="5519195206574732858">LTE</translation>
 <translation id="5519900055135507385">Tingkatkan keamanan akun ini dengan sandi kuat. Sandi akan disimpan ke <ph name="GOOGLE_PASSWORD_MANAGER" /> untuk <ph name="EMAIL" />.</translation>
 <translation id="5521078259930077036">Apakah ini beranda yang Anda harapkan?</translation>
@@ -6747,6 +6751,7 @@ Izin yang telah Anda berikan ke situs dan aplikasi dapat berlaku untuk akun ini.
 <translation id="6294759976468837022">Kecepatan pemindaian otomatis</translation>
 <translation id="6295158916970320988">Semua situs</translation>
 <translation id="6295855836753816081">Menyimpan...</translation>
+<translation id="6298456705131259420">Memengaruhi situs yang tercantum di sini. Menyisipkan “[*.]” sebelum nama domain akan membuat pengecualian untuk seluruh domain. Misalnya, menambahkan “[*.]google.com” berarti cookie pihak ketiga juga dapat aktif untuk mail.google.com, karena merupakan bagian dari google.com.</translation>
 <translation id="6298962879096096191">Menggunakan Google Play untuk menginstal aplikasi Android</translation>
 <translation id="6300177430812514606">Tidak diizinkan menyelesaikan pengiriman atau penerimaan data</translation>
 <translation id="6300654006256345126">Edit Sandi</translation>
@@ -7170,6 +7175,7 @@ Anda memiliki # sandi lainnya yang telah dibobol. Pengelola Sandi Google merekom
 <translation id="6651762277693024112">Berjalan secara otomatis setiap kali Anda mengunjungi situs ini</translation>
 <translation id="665355505818177700">Integrasi <ph name="MS_AD_NAME" /> Chrome hanya didukung di platform x86_64. Chromebook yang dibuat di platform ARM atau x86 tidak mendukung fungsi ini.</translation>
 <translation id="6654509035557065241">Jadikan jaringan pilihan</translation>
+<translation id="6654987855337442937">Gunakan Domain Name System (DNS) aman untuk mencegah orang yang memiliki akses ke traffic internet Anda melihat situs yang Anda kunjungi</translation>
 <translation id="6655190889273724601">Mode developer</translation>
 <translation id="6655458902729017087">Sembunyikan Akun</translation>
 <translation id="6657180931610302174">Tambahkan nama pengguna?</translation>
@@ -9569,6 +9575,7 @@ Simpan file kunci Anda di tempat yang aman. Anda akan membutuhkannya untuk membu
 <translation id="8528074251912154910">Tambahkan bahasa</translation>
 <translation id="8528479410903501741">Simpan IBAN</translation>
 <translation id="8528962588711550376">Login.</translation>
+<translation id="8529578450330869579">Gunakan Domain Name System (DNS) aman untuk mencegah orang yang memiliki akses ke traffic internet Anda melihat situs yang Anda kunjungi. Opsi ini menggunakan penyedia layanan terkelola di <ph name="DNS_SERVER_TEMPLATE_WITH_IDENTIFIER" /></translation>
 <translation id="8529925957403338845">Koneksi Tethering Instan gagal</translation>
 <translation id="8531701051932785007">Safe Browsing yang Disempurnakan nonaktif</translation>
 <translation id="8533670235862049797">Safe Browsing aktif</translation>

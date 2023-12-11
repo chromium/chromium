@@ -1868,6 +1868,7 @@
 <translation id="2412753904894530585">Kerberos</translation>
 <translation id="2414159296888870200"><ph name="MODULE_TITLE" />-ის დათვალიერების გაგრძელება</translation>
 <translation id="2414886740292270097">მუქი</translation>
+<translation id="2415117815770324983">თქვენ გამოხვალთ სისტემიდან საიტების უმეტესობაზე. თქვენს Google ანგარიშში შესული დარჩებით.</translation>
 <translation id="2416435988630956212">კლავიატურის ფუნქციური კლავიშები</translation>
 <translation id="2418307627282545839">ყველაფერი კარგად განათებული და მსუბუქი იქნება</translation>
 <translation id="2419131370336513030">დაინსტალირებული აპების ნახვა</translation>
@@ -2388,6 +2389,7 @@
 <translation id="2799223571221894425">ხელახლა გაშვება</translation>
 <translation id="2800309299477632167">კლავიშთა მორგებული განლაგება</translation>
 <translation id="2800760947029405028">სურათის ატვირთვა</translation>
+<translation id="2801134910297796778">შესული ხართ <ph name="EMAIL" />-ში</translation>
 <translation id="2801954693771979815">ეკრანის ზომა</translation>
 <translation id="2802557211515765772">მართული პრინტერები არ არის.</translation>
 <translation id="2803313416453193357">გახსენით საქაღალდე</translation>
@@ -4036,6 +4038,7 @@
 <translation id="4110485659976215879">გაფრთხილების აღდგენა</translation>
 <translation id="4110490973560452005">ჩამოტვირთვა დასრულდა: <ph name="FILE_NAME" />. ჩამოტვირთვების ზოლის არეზე გადასასვლელად დააჭირეთ კლავიშთა კომბინაციას: Shift+F6.</translation>
 <translation id="4112194537011183136"><ph name="DEVICE_NAME" /> (ხაზგარეშე)</translation>
+<translation id="4113483184628671608">თქვენ მიერ მონახული საიტების სახელების დაშიფვრა</translation>
 <translation id="4113743276555482284">ფაილის პაროლი</translation>
 <translation id="4114524937989710624">თქვენ ხედავთ შემოთავაზებულ ფაილებს, რომლებიც დაგეხმარებათ, მარტივად დაუბრუნდეთ თქვენს ყველაზე ბოლოდროინდელ აქტივობას Google Drive-ში.
         <ph name="BREAK" />
@@ -5766,6 +5769,7 @@
 <translation id="5517304475148761050">ეს აპი საჭიროებს წვდომას Play Store-ზე</translation>
 <translation id="5517412723934627386"><ph name="NETWORK_TYPE" /> — <ph name="NETWORK_DISPLAY_NAME" /></translation>
 <translation id="5518949581554491184">Android ტელეფონის დაყენება</translation>
+<translation id="5519053700692355541">გვერდითი პანელის ფუნქციათა უმეტესობის გახსნა ზედა მარჯვენა ნაწილში არსებული Chrome-ის მენიუდან შეგიძლიათ</translation>
 <translation id="5519195206574732858">LTE</translation>
 <translation id="5519900055135507385">მეტად დაიცავით ეს ანგარიში ძლიერი პაროლის მეშვეობით. მას შეინახავს <ph name="GOOGLE_PASSWORD_MANAGER" /> <ph name="EMAIL" />-ისთვის.</translation>
 <translation id="5521078259930077036">არის ეს ის საწყისი გვერდი, რომელსაც მოელოდით?</translation>
@@ -6731,6 +6735,7 @@
 <translation id="6294759976468837022">ავტომატური სკანირების სიჩქარე</translation>
 <translation id="6295158916970320988">ყველა საიტი</translation>
 <translation id="6295855836753816081">მიმდინარეობს შენახვა…</translation>
+<translation id="6298456705131259420">აისახება აქ ჩამოთვლილ საიტებზე. დომენის სახელამდე „[*.]“-ის ჩასმა შექმნის გამონაკლისს მთლიანად დომენისთვის. მაგალითად, „[*.]google.com“-ის დამატება ნიშნავს, რომ მესამე მხარის ქუქი-ჩანაწერები შეიძლება გააქტიურდეს mail.google.com-ისთვისაც, რადგან ის google.com-ის ნაწილია.</translation>
 <translation id="6298962879096096191">Android-ის აპების ინსტალაციისთვის Google Play-ს გამოყენება</translation>
 <translation id="6300177430812514606">მონაცემთა გაგზავნის/მიღების დასრულება დაუშვებელია</translation>
 <translation id="6300654006256345126">პაროლის რედაქტირება</translation>
@@ -7154,6 +7159,7 @@
 <translation id="6651762277693024112">ავტომატურად გაეშვება თქვენ მიერ ამ საიტის ყოველი მონახულებისას</translation>
 <translation id="665355505818177700">Chrome <ph name="MS_AD_NAME" /> ინტეგრაცია მხარდაჭერილია მხოლოდ x86_64 პლატფორმებზე. იმ Chromebook მოწყობილობების მიერ, რომლებიც შექმნილია ARM-ის ბაზაზე ან x86 პლატფორმაზე, ეს ფუნქცია მხარდაჭერილი არ არის.</translation>
 <translation id="6654509035557065241">ქსელისთვის უპირატესობის მინიჭება</translation>
+<translation id="6654987855337442937">გამოიყენეთ დომენურ სახელთა დაცული სისტემა (DNS), რომ აღუკვეთოთ თქვენ მიერ მონახულებული საიტების შესახებ ინფორმაციის ნახვა მათ, ვისაც წვდომა აქვს თქვენს ინტერნეტ-ტრაფიკზე</translation>
 <translation id="6655190889273724601">შემმუშავებლის რეჟიმი</translation>
 <translation id="6655458902729017087">ანგარიშების დამალვა</translation>
 <translation id="6657180931610302174">გსურთ, დაამატოთ მომხმარებლის სახელი?</translation>
@@ -9551,6 +9557,7 @@
 <translation id="8528074251912154910">ენების დამატება</translation>
 <translation id="8528479410903501741">IBAN-ის შენახვა</translation>
 <translation id="8528962588711550376">შესვლა.</translation>
+<translation id="8529578450330869579">გამოიყენეთ დომენურ სახელთა დაცული სისტემა (DNS), რომ აღუკვეთოთ თქვენ მიერ მონახულებული საიტების შესახებ ინფორმაციის ნახვა მათ, ვისაც წვდომა აქვს თქვენს ინტერნეტ-ტრაფიკზე. აღნიშნული იყენებს სერვისის მართულ პროვაიდერს <ph name="DNS_SERVER_TEMPLATE_WITH_IDENTIFIER" />-ზე</translation>
 <translation id="8529925957403338845">მყისიერი ტეტერინგის კავშირი ვერ დამყარდა</translation>
 <translation id="8531701051932785007">გაძლიერებული Safe Browsing გამორთულია</translation>
 <translation id="8533670235862049797">Safe Browsing ჩართულია</translation>

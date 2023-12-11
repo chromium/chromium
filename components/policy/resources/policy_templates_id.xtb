@@ -1141,6 +1141,7 @@ Jika kebijakan disetel ke Nonaktif, <ph name="PRODUCT_NAME" /> akan menutup tab 
 
       Managed Configuration API adalah konfigurasi nilai kunci yang dapat diakses melalui panggilan JavaScript navigator.managed.getManagedConfiguration(). API ini hanya tersedia untuk sumber yang sesuai dengan aplikasi web yang diinstal otomatis melalui <ph name="WEB_APP_INSTALL_FORCE_LIST_POLICY_NAME" />.
      </translation>
+<translation id="1918690415433353669">Izinkan Pengaturan Tab, tanpa melakukan logging detail tab</translation>
 <translation id="1919802376548418720">Gunakan kebijakan KDC untuk mendelegasikan kredensial.</translation>
 <translation id="1920046221095339924">Mengizinkan sesi yang dikelola di perangkat</translation>
 <translation id="1920772397574801429">Menyetel kebijakan akan menentukan jenis akun yang disediakan oleh aplikasi autentikasi Android yang mendukung autentikasi <ph name="HTTP_NEGOTIATE" /> (seperti autentikasi Kerberos). Informasi ini seharusnya tersedia dari penyedia aplikasi autentikasi. Untuk detailnya, lihat Project Chromium (https://goo.gl/hajyfN)
@@ -1727,6 +1728,7 @@ kebijakan ini saat browser berjalan.</translation>
 Jika disetel ke nonaktif, kebijakan ini akan mencegah pengguna atau variasi <ph name="PRODUCT_NAME" /> mengaktifkan NewBaseUrlInheritanceBehavior, jika ditemukan masalah kompatibilitas. Jika disetel ke aktif atau tidak disetel, kebijakan ini akan mengaktifkan NewBaseUrlInheritanceBehavior.</translation>
 <translation id="2362469626417133796">Interval waktu peluncuran kembali</translation>
 <translation id="2362539163677485510">Token pendaftaran kebijakan cloud</translation>
+<translation id="2362947328909044249">Mengizinkan pengaturan tab</translation>
 <translation id="2363928351203698966">Jika kebijakan disetel ke nilai yang valid, <ph name="PRODUCT_NAME" /> tidak akan menggunakan versi SSL/TLS lebih rendah dari versi yang ditentukan. Nilai yang tidak dikenal akan diabaikan.
 
       Jika kebijakan tidak disetel, <ph name="PRODUCT_NAME" /> akan menampilkan error untuk TLS 1.0 dan TLS 1.1, tetapi pengguna dapat mengabaikannya.
@@ -2089,6 +2091,7 @@ Sistem hanya akan mengkueri data AAAA ketika perangkat dapat menjangkau host IPv
 <translation id="2650049181907741121">Tindakan yang akan diambil saat pengguna menutup penutupnya</translation>
 <translation id="2656559539624760733">Jangan gunakan Chrome Root Store.</translation>
 <translation id="2658653824183107970">Menggunakan implementasi <ph name="CORS" /> lama, bukan <ph name="CORS" /> baru.</translation>
+<translation id="2659064869547694451">Izinkan Penulisan</translation>
 <translation id="2660846099862559570">Jangan pernah gunakan proxy</translation>
 <translation id="2661628029848851543">Semua penggunaan akun terkelola diizinkan</translation>
 <translation id="2664391398878045611">Halaman Tab Baru tidak akan menampilkan pengumuman slot tengah meskipun jika tersedia</translation>
@@ -2868,6 +2871,7 @@ Jika kebijakan disetel ke Nonaktif, file yang didownload tidak akan dikirim untu
 Batasan ini berlaku untuk download yang dipicu dari konten halaman web, serta dari opsi menu link Download. Batasan ini tidak berlaku untuk penyimpanan atau download halaman yang sedang ditampilkan, atau untuk penyimpanan sebagai PDF dari opsi pencetakan.
 
 Di <ph name="MS_WIN_NAME" />, kebijakan ini hanya tersedia pada instance yang dihubungkan ke domain <ph name="MS_AD_NAME" />, dihubungkan ke <ph name="MS_AAD_NAME" />, atau didaftarkan di <ph name="CHROME_BROWSER_CLOUD_MANAGEMENT_NAME" />.</translation>
+<translation id="3300322252167923819">Izinkan Pengaturan Tab</translation>
 <translation id="3300784749135986828">Mengaktifkan atau menonaktifkan <ph name="USER_AGENT_REDUCTION_FEATURE_NAME" />.</translation>
 <translation id="3301698868852716692">Aktifkan ekstensi insight</translation>
 <translation id="3302829897293005699">Jika kebijakan disetel ke Aktif atau tidak disetel, perangkat yang terdaftar akan melaporkan informasi sesi kios yang aktif seperti ID dan versi aplikasi.
@@ -3502,6 +3506,7 @@ Kebijakan ini adalah solusi sementara dan akan dihapus dalam beberapa milestone 
 
           Jika kebijakan ini tidak ditetapkan, dikte mula-mula akan dinonaktifkan di layar login, tetapi dapat diaktifkan oleh pengguna kapan saja.</translation>
 <translation id="3811562426301733860">Izinkan iklan di semua situs</translation>
+<translation id="3816281648615435872">Nonaktifkan Pengaturan Tab</translation>
 <translation id="3816312845600780067">Aktifkan pintasan keyboard penyelamatan untuk masuk otomatis</translation>
 <translation id="3817323252437541502">Mengaktifkan perlindungan tambahan untuk pengguna yang terdaftar di Program Perlindungan Lanjutan</translation>
 <translation id="3821861026311587684">Memaksa pengguna logout saat akun mereka menjadi tidak terautentikasi</translation>
@@ -4071,6 +4076,7 @@ Jika kebijakan disetel ke Nonaktif, pesan error akan ditampilkan.</translation>
 <translation id="428948795004445932">Interval pada saat data jaringan diambil sampelnya dan dikumpulkan. Batas minimum yang diizinkan adalah 1 menit.
 
       Jika tidak disetel, interval default 10 menit akan berlaku.</translation>
+<translation id="4289628882370719584">Fitur pengaturan tab memungkinkan pengguna mengatur tab.</translation>
 <translation id="4290231183305601970">Teks yang akan ditampilkan kepada pengguna di Chrome Web Store jika penginstalan diblokir.</translation>
 <translation id="4293187705196369087">Mengizinkan pengaktifan atau penonaktifan notifikasi saat ruang penyimpanan hampir penuh. Ini berlaku untuk semua pengguna di perangkat.
 
@@ -4379,6 +4385,7 @@ Kebijakan ini tidak berpengaruh jika disetel ke aktif, dibiarkan kosong, atau ti
 <translation id="453031441196755904">Kebijakan ini tidak digunakan lagi.</translation>
 <translation id="4531706050939927436">Aplikasi Android dapat diinstal otomatis dari konsol Google Admin menggunakan Google Play. Aplikasi Android tidak menggunakan kebijakan ini.</translation>
 <translation id="4534500438517478692">Nama pembatasan Android:</translation>
+<translation id="4537645230504195464">Izinkan Penulisan, tanpa logging</translation>
 <translation id="4541530620466526913">Akun lokal perangkat</translation>
 <translation id="4542255783284620926">Blokir penambahan akun terkelola sebagai Akun Sekunder di ChromeOS (dalam sesi)</translation>
 <translation id="4543502256674577024">Setelan update perangkat</translation>
@@ -4587,6 +4594,7 @@ Setelah penyiapan awal, pengguna dapat mengaktifkan atau menonaktifkan layanan l
 <translation id="4674871290487541952">Mengizinkan algoritme tidak aman dalam pemeriksaan integritas selama penginstalan dan update ekstensi</translation>
 <translation id="4680961954980851756">Aktifkan IsiOtomatis</translation>
 <translation id="4685721728282448265">Perjanjian kunci pasca-kuantum CECPQ2 diaktifkan untuk TLS</translation>
+<translation id="4688118315245991650">Nonaktifkan Penulisan</translation>
 <translation id="468822697351680932">Gunakan kebijakan SiteList Internet Explorer sebagai sumber aturan</translation>
 <translation id="4693190628432874457">Aktifkan pelaporan lokasi perangkat</translation>
 <translation id="4693779768620889402">Tujuan berbasis ekstensi</translation>
@@ -5291,6 +5299,7 @@ Jika kebijakan disetel ke Nonaktif, histori browser dan histori download tidak d
 <translation id="5340008866815063393">Aktifkan pelaporan data kebijakan</translation>
 <translation id="5345910753471481870">Jangan tampilkan tombol Google Lens di kotak penelusuran pada halaman Tab Baru.</translation>
 <translation id="5346587320074666194">Memblokir akses ke sensor di situs ini</translation>
+<translation id="5347809796754019202">Mengizinkan penulisan</translation>
 <translation id="534836255587440809">Nonaktifkan klik otomatis di layar login</translation>
 <translation id="5348658899015174540"><ph name="GET_DISPLAY_MEDIA_SET_NAME" /> API memungkinkan aplikasi web merekam beberapa platform sekaligus.
       Kebijakan ini membuka properti <ph name="AUTO_SELECT_ALL_SCREENS_NAME" /> untuk aplikasi web di origin yang ditentukan.

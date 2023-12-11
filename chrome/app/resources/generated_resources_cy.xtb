@@ -1886,6 +1886,7 @@ Mae Voice Match yn helpu Google Assistant i adnabod llais <ph name="SUPERVISED_U
 <translation id="2412753904894530585">Kerberos</translation>
 <translation id="2414159296888870200">Parhau i bori ar gyfer <ph name="MODULE_TITLE" /></translation>
 <translation id="2414886740292270097">Tywyll</translation>
+<translation id="2415117815770324983">Yn eich allgofnodi o'r rhan fwyaf o wefannau. Byddwch yn parhau wedi'ch mewngofnodi i'ch Cyfrif Google.</translation>
 <translation id="2416435988630956212">Bysellau swyddogaeth bysellfwrdd</translation>
 <translation id="2418307627282545839">Cadwch bethau'n llachar ac yn awyrog</translation>
 <translation id="2419131370336513030">Gweld apiau sydd wedi'u gosod</translation>
@@ -2406,6 +2407,7 @@ Mae Voice Match yn helpu Google Assistant i adnabod llais <ph name="SUPERVISED_U
 <translation id="2799223571221894425">Ail-lansio</translation>
 <translation id="2800309299477632167">Map bysellau personol</translation>
 <translation id="2800760947029405028">Uwchlwytho llun</translation>
+<translation id="2801134910297796778">Wedi mewngofnodi i <ph name="EMAIL" /></translation>
 <translation id="2801954693771979815">Maint y sgrîn</translation>
 <translation id="2802557211515765772">Nid oes unrhyw argraffwyr a reolir.</translation>
 <translation id="2803313416453193357">Agor y ffolder</translation>
@@ -4054,6 +4056,7 @@ Gall hyn gynnwys gwybodaeth am feddalwedd sydd wedi'i gosod, ffeiliau, eich porw
 <translation id="4110485659976215879">Adfer y rhybudd</translation>
 <translation id="4110490973560452005">Lawrlwytho wedi'i gwblhau: <ph name="FILE_NAME" /> Pwyswch Shift+F6 i fynd drwy'r dudalen i'r bar lawrlwytho.</translation>
 <translation id="4112194537011183136"><ph name="DEVICE_NAME" /> (all-lein)</translation>
+<translation id="4113483184628671608">Amgryptio enwau'r gwefannau rydych yn ymweld â nhw</translation>
 <translation id="4113743276555482284">Cyfrinair ffeil</translation>
 <translation id="4114524937989710624">Rydych yn gweld ffeiliau a awgrymir i'ch helpu i ddychwelyd yn hawdd i'ch gweithgarwch diweddaraf yn Google Drive.
         <ph name="BREAK" />
@@ -5785,6 +5788,7 @@ Mae'n bosib y bydd caniatadau rydych eisoes wedi'u rhoi i wefannau ac apiau yn b
 <translation id="5517304475148761050">Mae'r ap hwn yn gofyn am fynediad at y Play Store</translation>
 <translation id="5517412723934627386"><ph name="NETWORK_TYPE" /> - <ph name="NETWORK_DISPLAY_NAME" /></translation>
 <translation id="5518949581554491184">Gosod gyda ffôn Android</translation>
+<translation id="5519053700692355541">Gallwch agor y rhan fwyaf o nodweddion panel ochr trwy'r ddewislen Chrome ar yr ochr dde ar frig y dudalen</translation>
 <translation id="5519195206574732858">LTE</translation>
 <translation id="5519900055135507385">Cadwch y cyfrif hwn yn fwy diogel gyda chyfrinair cryf. Bydd yn cael ei gadw i <ph name="GOOGLE_PASSWORD_MANAGER" /> ar gyfer <ph name="EMAIL" />.</translation>
 <translation id="5521078259930077036">Ai hon yw'r dudalen hafan yr oeddech yn ei disgwyl?</translation>
@@ -6750,6 +6754,7 @@ Mae <ph name="DOMAIN" /> yn gofyn i chi gadw'ch cerdyn smart wedi'i fewnosod.</t
 <translation id="6294759976468837022">Cyflymder awtosganio</translation>
 <translation id="6295158916970320988">Pob gwefan</translation>
 <translation id="6295855836753816081">Wrthi'n cadw...</translation>
+<translation id="6298456705131259420">Yn effeithio ar y gwefannau a restrir yma. Mae mewnosod “[*.]” cyn enw parth yn creu eithriad ar gyfer y parth cyfan. Er enghraifft, bydd ychwanegu "[*.]google.com" yn golygu y bydd cwcis trydydd parti yn gallu bod yn weithredol ar gyfer mail.google.com, oherwydd ei fod yn rhan o google.com.</translation>
 <translation id="6298962879096096191">Defnyddio Google Play i osod apiau Android</translation>
 <translation id="6300177430812514606">Ni chaniateir gorffen anfon na derbyn data</translation>
 <translation id="6300654006256345126">Golygu Cyfrinair</translation>
@@ -7181,6 +7186,7 @@ Mae gennych # cyfrinair arall sydd wedi'u darganfod. Mae Rheolwr Cyfrineiriau Go
 <translation id="6651762277693024112">Yn rhedeg yn awtomatig bob tro y byddwch yn ymweld â'r wefan hon</translation>
 <translation id="665355505818177700">Dim ond ar blatfformau x86_64 y cefnogir integreiddio Chrome <ph name="MS_AD_NAME" />. Nid yw Chromebooks sydd wedi'u datblygu ar ben platfform ARM neu x86 yn cefnogi'r swyddogaeth hon.</translation>
 <translation id="6654509035557065241">Gwneud hwn y rhwydwaith diofyn</translation>
+<translation id="6654987855337442937">Defnyddiwch System Enw Parth (DNS) ddiogel i atal pobl sydd â mynediad i'ch traffig rhyngrwyd rhag gweld pa wefannau rydych yn ymweld â nhw</translation>
 <translation id="6655190889273724601">Modd datblygwr</translation>
 <translation id="6655458902729017087">Cuddio Cyfrifon</translation>
 <translation id="6657180931610302174">Ychwanegu enw defnyddiwr?</translation>
@@ -9579,6 +9585,7 @@ Cadwch eich ffeil allwedd mewn man diogel. Bydd ei hangen arnoch i greu fersiyna
 <translation id="8528074251912154910">Ychwanegu ieithoedd</translation>
 <translation id="8528479410903501741">Cadw IBAN</translation>
 <translation id="8528962588711550376">Wrthi'n mewngofnodi.</translation>
+<translation id="8529578450330869579">Defnyddiwch System Enw Parth (DNS) ddiogel i atal pobl sydd â mynediad at eich traffig rhyngrwyd rhag gweld pa wefannau rydych yn ymweld â nhw. Mae hwn yn defnyddio darparwr gwasanaeth a reolir yn <ph name="DNS_SERVER_TEMPLATE_WITH_IDENTIFIER" /></translation>
 <translation id="8529925957403338845">Gwnaeth Rhannu Cysylltiad Sydyn fethu</translation>
 <translation id="8531701051932785007">Mae Gwell Pori'n Ddiogel wedi'i ddiffodd</translation>
 <translation id="8533670235862049797">Mae Pori'n Ddiogel ymlaen</translation>

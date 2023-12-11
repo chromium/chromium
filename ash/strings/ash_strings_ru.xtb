@@ -624,6 +624,7 @@
 <translation id="3593646411856133110">Чтобы увидеть открытые приложения, проведите по экрану вверх и удерживайте палец.</translation>
 <translation id="3595596368722241419">Аккумулятор заряжен</translation>
 <translation id="3596012367874587041">Настройки приложений</translation>
+<translation id="3598452309062311481">Поиск + H</translation>
 <translation id="3600061223661453002">Отключено</translation>
 <translation id="3604801046548457007">Создан рабочий стол "<ph name="DESK_TITILE" />".</translation>
 <translation id="3606978283550408104">Брайлевский дисплей подключен</translation>
@@ -775,6 +776,7 @@
 <translation id="4190780880566297084">Не настраивать просмотр недавних фотографий, медиафайлов и приложений с телефона</translation>
 <translation id="4192112279662688596">или</translation>
 <translation id="4193857202545160520">Показывать щелчки мышью и нажатия клавиш</translation>
+<translation id="4193969623755915875">Чтобы открыть Справку в приложении "Возможности", нажмите <ph name="NEW_SHORTCUT" />.</translation>
 <translation id="4195579532193195633">Текущая версия <ph name="VERSION_NAME" /> (<ph name="OFFICIAL_STATUS" />) <ph name="CHANNEL_NAME" /> <ph name="PROCESSOR_VARIATION" /></translation>
 <translation id="4195814663415092787">Ранее открытые вкладки</translation>
 <translation id="4195877955194704651">Меню "Автоматическое нажатие"</translation>
@@ -957,6 +959,7 @@
 <translation id="4889868803215848840">Оставьте отзыв и помогите нам улучшить подсказки:</translation>
 <translation id="4890187583552566966">Администратор отключил Google Ассистента</translation>
 <translation id="4890408602550914571">Убедитесь, что телефон находится рядом и на нем включена передача данных по Bluetooth.</translation>
+<translation id="4892981359753171125">Отслеживание лица</translation>
 <translation id="4895488851634969361">Батарея полностью заряжена.</translation>
 <translation id="490375751687810070">Вертикально</translation>
 <translation id="490788395437447240">Батарея заряжена на <ph name="BATTERY_PERCENTAGE" /> %</translation>

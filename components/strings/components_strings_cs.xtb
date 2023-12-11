@@ -87,6 +87,7 @@
 <translation id="11635448457105324">Tlačítko Spravovat adresy, aktivací můžete přidávat a spravovat adresy v nastavení Chromu</translation>
 <translation id="1165039591588034296">Chyba</translation>
 <translation id="1165174597379888365">Návštěva stránky</translation>
+<translation id="1165813024716836071">{COUNT,plural, =0{Žádné}=1{Z 1 webu (zůstanete přihlášeni ke svému účtu Google)}few{Ze # webů (zůstanete přihlášeni ke svému účtu Google)}many{Z # webu (zůstanete přihlášeni ke svému účtu Google)}other{Z # webů (zůstanete přihlášeni ke svému účtu Google)}}</translation>
 <translation id="1165852471352757509">Televizní dokumentární filmy a vzdělávací pořady</translation>
 <translation id="1174644974616730562">Obálka čínská č. 1</translation>
 <translation id="1174723505405632867">Chcete webu <ph name="EMBEDDED_URL" /> povolit používat soubory cookie a data webů v doméně <ph name="TOP_LEVEL_URL" />?

@@ -1883,6 +1883,7 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="2412753904894530585">Kerberos</translation>
 <translation id="2414159296888870200">Resume browsing for <ph name="MODULE_TITLE" /></translation>
 <translation id="2414886740292270097">Dark</translation>
+<translation id="2415117815770324983">Signs you out of most sites. You'll stay signed in to your Google Account.</translation>
 <translation id="2416435988630956212">Keyboard function keys</translation>
 <translation id="2418307627282545839">Keep things bright and airy</translation>
 <translation id="2419131370336513030">View installed apps</translation>
@@ -2403,6 +2404,7 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="2799223571221894425">Relaunch</translation>
 <translation id="2800309299477632167">Custom keymap</translation>
 <translation id="2800760947029405028">Upload an image</translation>
+<translation id="2801134910297796778">Signed in to <ph name="EMAIL" /></translation>
 <translation id="2801954693771979815">Screen size</translation>
 <translation id="2802557211515765772">There are no managed printers.</translation>
 <translation id="2803313416453193357">Open folder</translation>
@@ -4051,6 +4053,7 @@ This can include information about installed software, files, your browser and t
 <translation id="4110485659976215879">Restore warning</translation>
 <translation id="4110490973560452005">Download complete: <ph name="FILE_NAME" />. Press Shift+F6 to cycle to the downloads bar area.</translation>
 <translation id="4112194537011183136"><ph name="DEVICE_NAME" /> (offline)</translation>
+<translation id="4113483184628671608">Encrypt the names of sites that you visit</translation>
 <translation id="4113743276555482284">File password</translation>
 <translation id="4114524937989710624">You’re seeing suggested files to help you easily get back to your most recent activity in Google Drive.
         <ph name="BREAK" />
@@ -5782,6 +5785,7 @@ Permissions that you've already given to websites and apps may apply to this acc
 <translation id="5517304475148761050">This app requires access to the Play Store</translation>
 <translation id="5517412723934627386"><ph name="NETWORK_TYPE" /> – <ph name="NETWORK_DISPLAY_NAME" /></translation>
 <translation id="5518949581554491184">Set up with Android phone</translation>
+<translation id="5519053700692355541">You can open most side panel features through the Chrome menu at the top right</translation>
 <translation id="5519195206574732858">LTE</translation>
 <translation id="5519900055135507385">Keep this account more secure with a strong password. It will be saved to <ph name="GOOGLE_PASSWORD_MANAGER" /> for <ph name="EMAIL" />.</translation>
 <translation id="5521078259930077036">Is this the home page that you were expecting?</translation>
@@ -6747,6 +6751,7 @@ Permissions that you've already given to websites and apps may apply to this acc
 <translation id="6294759976468837022">Auto-scan speed</translation>
 <translation id="6295158916970320988">All sites</translation>
 <translation id="6295855836753816081">Saving...</translation>
+<translation id="6298456705131259420">Affects the sites listed here. Inserting “[*.]” before a domain name creates an exception for the entire domain. For example, adding “[*.]google.co.uk” means that third-party cookies can also be active for mail.google.co.uk, because it’s part of google.co.uk.</translation>
 <translation id="6298962879096096191">Use Google Play to install Android apps</translation>
 <translation id="6300177430812514606">Not allowed to finish sending or receiving data</translation>
 <translation id="6300654006256345126">Edit password</translation>
@@ -7170,6 +7175,7 @@ You have # more compromised passwords. Google Password Manager recommends checki
 <translation id="6651762277693024112">Runs automatically every time that you visit this site</translation>
 <translation id="665355505818177700">Chrome <ph name="MS_AD_NAME" /> integration is only supported on x86_64 platforms. Chromebooks built on top of an ARM or x86 platform do not support this functionality.</translation>
 <translation id="6654509035557065241">Prefer network</translation>
+<translation id="6654987855337442937">Use a secure Domain Name System (DNS) to prevent people with access to your Internet traffic from seeing which sites you visit</translation>
 <translation id="6655190889273724601">Developer mode</translation>
 <translation id="6655458902729017087">Hide Accounts</translation>
 <translation id="6657180931610302174">Add username?</translation>
@@ -9570,6 +9576,7 @@ Keep your key file in a safe place. You will need it to create new versions of y
 <translation id="8528074251912154910">Add languages</translation>
 <translation id="8528479410903501741">Save IBAN</translation>
 <translation id="8528962588711550376">Signing in.</translation>
+<translation id="8529578450330869579">Use a secure Domain Name System (DNS) to prevent people with access to your Internet traffic from seeing which sites you visit. This uses a managed service provider at <ph name="DNS_SERVER_TEMPLATE_WITH_IDENTIFIER" /></translation>
 <translation id="8529925957403338845">Instant Tethering connection failed</translation>
 <translation id="8531701051932785007">Enhanced Safe Browsing is off</translation>
 <translation id="8533670235862049797">Safe Browsing is on</translation>

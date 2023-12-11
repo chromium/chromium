@@ -1872,6 +1872,7 @@
 <translation id="2412753904894530585">Kerberos</translation>
 <translation id="2414159296888870200">استئناف البحث عن "<ph name="MODULE_TITLE" />"</translation>
 <translation id="2414886740292270097">داكن</translation>
+<translation id="2415117815770324983">‏يؤدي هذا الخيار إلى تسجيل خروجك من معظم المواقع الإلكترونية. ولن يتم تسجيل الخروج من حسابك على Google.</translation>
 <translation id="2416435988630956212">مفاتيح الوظائف على لوحة المفاتيح</translation>
 <translation id="2418307627282545839">يُضفي هذا الوضع مظهرًا مضيئًا وتباينًا أقل على شاشة جهازك.</translation>
 <translation id="2419131370336513030">عرض التطبيقات المثبّتة</translation>
@@ -2392,6 +2393,7 @@
 <translation id="2799223571221894425">إعادة تشغيل</translation>
 <translation id="2800309299477632167">خريطة المفاتيح المخصَّصة</translation>
 <translation id="2800760947029405028">تحميل صورة</translation>
+<translation id="2801134910297796778">تم تسجيل دخول <ph name="EMAIL" />.</translation>
 <translation id="2801954693771979815">حجم الشاشة</translation>
 <translation id="2802557211515765772">ما مِن طابعات مُدارة.</translation>
 <translation id="2803313416453193357">فتح المجلد</translation>
@@ -4038,6 +4040,7 @@
 <translation id="4110485659976215879">استعادة التحذير</translation>
 <translation id="4110490973560452005">‏اكتمل التنزيل: <ph name="FILE_NAME" />. يمكنك الضغط على Shift+F6 للانتقال إلى منطقة شريط عمليات التنزيل.</translation>
 <translation id="4112194537011183136"><ph name="DEVICE_NAME" /> (غير متصل بالإنترنت)</translation>
+<translation id="4113483184628671608">تشفير أسماء المواقع الإلكترونية التي تتم زيارتها</translation>
 <translation id="4113743276555482284">كلمة مرور الملف</translation>
 <translation id="4114524937989710624">‏تظهر لك ملفات مُقترحة لمساعدتك في الرجوع بسهولة إلى آخر نشاط أجريته في Google Drive.
         <ph name="BREAK" />
@@ -5768,6 +5771,7 @@
 <translation id="5517304475148761050">‏يتطلّب هذا التطبيق الوصول إلى "متجر Play"</translation>
 <translation id="5517412723934627386">نوع الشبكة <ph name="NETWORK_TYPE" /> - الاسم المعروض للشبكة <ph name="NETWORK_DISPLAY_NAME" /></translation>
 <translation id="5518949581554491184">‏بدء الإعداد باستخدام هاتف Android</translation>
+<translation id="5519053700692355541">‏يمكنك فتح معظم ميزات اللوحة الجانبية من خلال قائمة Chrome أعلى يسار الصفحة.</translation>
 <translation id="5519195206574732858">LTE</translation>
 <translation id="5519900055135507385">يمكنك الحفاظ على أمان هذا الحساب باستخدام كلمة مرور قوية. سيتم حفظ كلمة المرور في "<ph name="GOOGLE_PASSWORD_MANAGER" />" للحساب <ph name="EMAIL" />.</translation>
 <translation id="5521078259930077036">هل هذه هي الصفحة الرئيسية التي كنت تتوقع ظهورها؟</translation>
@@ -6733,6 +6737,7 @@
 <translation id="6294759976468837022">سرعة الفحص التلقائي</translation>
 <translation id="6295158916970320988">جميع المواقع الإلكترونية</translation>
 <translation id="6295855836753816081">جارٍ الحفظ...</translation>
+<translation id="6298456705131259420">‏يؤثر هذا الإعداد في المواقع الإلكترونية المدرَجة هنا. ويؤدي إدراج "[*.‎]" قبل اسم النطاق إلى إنشاء استثناء للنطاق بالكامل. مثلاً، تعني إضافة "‎[*.]google.com" أنّه يمكن لملفات تعريف الارتباط التابعة لجهات خارجية أن تكون نشطة أيضًا للموقع الإلكتروني mail.google.com لأنّه يُعدّ جزءًا من النطاق google.com.</translation>
 <translation id="6298962879096096191">‏استخدام Google Play لتثبيت تطبيقات Android</translation>
 <translation id="6300177430812514606">المواقع الإلكترونية التي لا يُسمح لها بإنهاء إرسال البيانات أو استلامها</translation>
 <translation id="6300654006256345126">تعديل كلمة المرور</translation>
@@ -7164,6 +7169,7 @@
 <translation id="6651762277693024112">تشغيل الإضافة تلقائيًا في كل مرة تزور فيها هذا الموقع الإلكتروني</translation>
 <translation id="665355505818177700">‏يتم دعم دمج Chrome <ph name="MS_AD_NAME" /> على الأنظمة الأساسية x86_64 فقط. ولا تدعم أجهزة Chromebook التي تم إنشاؤها في أعلى ARM أو النظام الأساسي x86 هذه الوظيفة.</translation>
 <translation id="6654509035557065241">اختيار الشبكة كمفضَّلة</translation>
+<translation id="6654987855337442937">‏يمكنك استخدام نظام أسماء النطاقات (DNS) الآمن لمنع الأشخاص الذين لديهم إمكانية الاطّلاع على نشاطك على الإنترنت من معرفة المواقع الإلكترونية التي تزورها.</translation>
 <translation id="6655190889273724601">وضع مطوّر البرامج</translation>
 <translation id="6655458902729017087">إخفاء الحسابات</translation>
 <translation id="6657180931610302174">هل تريد إضافة اسم مستخدِم؟</translation>
@@ -9565,6 +9571,7 @@
 <translation id="8528074251912154910">إضافة اللغات</translation>
 <translation id="8528479410903501741">‏حفظ رقم الحساب بصيغة IBAN</translation>
 <translation id="8528962588711550376">جارٍ تسجيل الدخول.</translation>
+<translation id="8529578450330869579">‏يمكنك استخدام نظام أسماء النطاقات (DNS) الآمن لمنع الأشخاص الذين لديهم إمكانية الاطّلاع على نشاطك على الإنترنت من معرفة المواقع الإلكترونية التي تزورها. ويعتمد هذا النظام على مقدِّم خدمة مُدار ومسجّل على الرابط <ph name="DNS_SERVER_TEMPLATE_WITH_IDENTIFIER" />.</translation>
 <translation id="8529925957403338845">فشل اتصال التوصيل الفوري</translation>
 <translation id="8531701051932785007">ميزة "الحماية المُحسَّنة للتصفّح الآمن" غير مفعَّلة</translation>
 <translation id="8533670235862049797">التصفُّح الآمن مفعّل.</translation>

@@ -838,6 +838,7 @@
 <translation id="5457226814769348910">Адкрыць пазасеткавую версію</translation>
 <translation id="5475069061743940393">Адсочванне</translation>
 <translation id="5478327362747197944">Стварайце падзеі ў календары, націскаючы на даты на вэб-старонках.</translation>
+<translation id="5482922178977937393">Хочаце атрымліваць апавяшчэнні з улікам вашых інтарэсаў (напрыклад, пра навіны або спорт)?</translation>
 <translation id="5489208564673669003">Каб кіраваць файламі cookie для ўсіх сайтаў, перайдзіце ў <ph name="BEGIN_LINK" />Налады файлаў cookie<ph name="END_LINK" />.</translation>
 <translation id="5490005495580364134">Блакіраваць усе файлы cookie (не рэкамендуецца)</translation>
 <translation id="5497202150450073388">Спроба дастаўкі</translation>
@@ -1481,6 +1482,7 @@
 <translation id="8766790350274092814">Паролі для вэб-сайтаў <ph name="WEBSITE" /> і <ph name="SECOND_WEBSITE" /> будуць выдалены. Вашы ўліковыя запісы захаваюцца.</translation>
 <translation id="8775144690796719618">Няправільны URL-адрас</translation>
 <translation id="8780076847684176174">{count,plural, =1{Паглядзець укладку...}one{Паглядзець усе ўкладкі...}few{Паглядзець усе ўкладкі...}many{Паглядзець усе ўкладкі...}other{Паглядзець усе ўкладкі...}}</translation>
+<translation id="8782570580170191813">Заўсёды адсочваць пасылкі</translation>
 <translation id="8787968206789828143">Пошук у інтэрнэце</translation>
 <translation id="8792626944327216835">мікрафон</translation>
 <translation id="8803639129939845298">Бяспечны сайт</translation>

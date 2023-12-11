@@ -1870,6 +1870,7 @@
 <translation id="2412753904894530585">Kerberos</translation>
 <translation id="2414159296888870200"><ph name="MODULE_TITLE" /> کیلئے براؤزنگ دوبارہ شروع کریں</translation>
 <translation id="2414886740292270097">گہری</translation>
+<translation id="2415117815770324983">‏ایسا کرنے پر آپ اکثر سائٹس سے سائن آؤٹ ہو جاتے ہیں۔ آپ اپنے Google اکاؤنٹ میں سائن ان رہیں گے۔</translation>
 <translation id="2416435988630956212">کی بورڈ کی فنکشن کلیدیں</translation>
 <translation id="2418307627282545839">چیزوں کو روشن اور ہوا دار رکھیں</translation>
 <translation id="2419131370336513030">انسٹال کردہ ایپس دیکھیں</translation>
@@ -2390,6 +2391,7 @@
 <translation id="2799223571221894425">دوبارہ شروع کریں</translation>
 <translation id="2800309299477632167">حسب ضرورت کلیدی نقشہ</translation>
 <translation id="2800760947029405028">ایک تصویر اپ لوڈ کریں</translation>
+<translation id="2801134910297796778"><ph name="EMAIL" /> میں سائن ان کیا</translation>
 <translation id="2801954693771979815">اسکرین کا سائز</translation>
 <translation id="2802557211515765772">کوئی نظم کردہ پرنٹر نہیں ہے۔</translation>
 <translation id="2803313416453193357">فولڈر کھولیں</translation>
@@ -4038,6 +4040,7 @@
 <translation id="4110485659976215879">وارننگ بحال کریں</translation>
 <translation id="4110490973560452005">‏ڈاؤن لوڈ مکمل ہو گیا: <ph name="FILE_NAME" />۔ ڈاؤن لوڈز بار ایریا پر جانے کے لیے Shift+F6 دبائيں۔</translation>
 <translation id="4112194537011183136"><ph name="DEVICE_NAME" /> (آف لائن)</translation>
+<translation id="4113483184628671608">ان سائٹس کے نام مرموز کریں جنہیں آپ ملاحظہ کرتے ہیں</translation>
 <translation id="4113743276555482284">فائل کا پاس ورڈ</translation>
 <translation id="4114524937989710624">‏آپ Google Drive میں اپنی حالیہ ترین سرگرمی پر آسانی سے واپس جانے میں آپ کی مدد کیلئے تجویز کردہ فائلز کو دیکھ رہے ہیں۔
         <ph name="BREAK" />
@@ -5767,6 +5770,7 @@
 <translation id="5517304475148761050">‏اس ایپ کو Play اسٹور تک رسائی درکار ہے</translation>
 <translation id="5517412723934627386"><ph name="NETWORK_TYPE" /> - <ph name="NETWORK_DISPLAY_NAME" /></translation>
 <translation id="5518949581554491184">‏Android فون کے ساتھ سیٹ اپ کریں</translation>
+<translation id="5519053700692355541">‏آپ سب سے اوپر بائیں جانب Chrome مینیو کے ذریعے سائیڈ پینل کی زیادہ تر خصوصیات کھول سکتے ہیں</translation>
 <translation id="5519195206574732858">LTE</translation>
 <translation id="5519900055135507385">اس اکاؤنٹ کو کسی مضبوط پاس ورڈ کے ذریعے مزید محفوظ رکھیں۔ اسے <ph name="EMAIL" /> کے لیے <ph name="GOOGLE_PASSWORD_MANAGER" /> میں محفوظ کیا جائے گا۔</translation>
 <translation id="5521078259930077036">کیا یہی وہ ہوم صفحہ ہے جس کی آپ توقع کر رہے تھے؟</translation>
@@ -6732,6 +6736,7 @@
 <translation id="6294759976468837022">خودکار اسکین کی رفتار</translation>
 <translation id="6295158916970320988">سبھی سائٹس</translation>
 <translation id="6295855836753816081">محفوظ کیا جا رہا ہے…</translation>
+<translation id="6298456705131259420">‏یہاں درج سائٹس متاثر ہوتی ہیں۔ کسی ڈومین کے نام سے پہلے ”[‎*.‎]“ داخل کرنے سے پورے ڈومین کیلئے ایک استثناء تخلیق ہو جاتا ہے۔ مثال کے طور پر، ”‎[*.]google.com“ کو شامل کرنے کا مطلب ہے کہ فریق ثالث کوکیز mail.google.com کیلئے بھی فعال ہو سکتی ہیں، کیونکہ یہ google.com کا حصہ ہے۔</translation>
 <translation id="6298962879096096191">‏Android ایپس کو انسٹال کرنے کیلئے Google Play استعمال کریں</translation>
 <translation id="6300177430812514606">ڈیٹا بھیجنے یا موصول کرنے کو مکمل کرنے کی اجازت نہیں ہے</translation>
 <translation id="6300654006256345126">پاس ورڈ میں ترمیم کریں</translation>
@@ -7155,6 +7160,7 @@
 <translation id="6651762277693024112">جب بھی آپ اس سائٹ کا ملاحظہ کرتے ہیں یہ خودکار طور پر چلتا ہے</translation>
 <translation id="665355505818177700">‏Chrome <ph name="MS_AD_NAME" /> انضمام صرف x86_64‎‎ پلیٹ فارمز پر تعاون یافتہ ہے۔ ARM یا x86 پلیٹ فارم پر تیار کردہ Chromebooks اس فعالیت کو سپورٹ نہیں کرتے ہیں۔</translation>
 <translation id="6654509035557065241">نیٹ ورک کو ترجیح دیں</translation>
+<translation id="6654987855337442937">‏اپنے انٹرنیٹ ٹریفک تک رسائی والے لوگوں کو اپنی ملاحظہ کردہ سائٹس دیکھنے سے روکنے کیلئے محفوظ ڈومین ناموں کا نظام (DNS) استعمال کریں</translation>
 <translation id="6655190889273724601">ڈویلپر وضع</translation>
 <translation id="6655458902729017087">اکاؤنٹس چھپائیں</translation>
 <translation id="6657180931610302174">صارف نام شامل کریں؟</translation>
@@ -9553,6 +9559,7 @@
 <translation id="8528074251912154910">زبانیں شامل کریں</translation>
 <translation id="8528479410903501741">‏IBAN محفوظ کریں</translation>
 <translation id="8528962588711550376">سائن ان کیا جا رہا ہے۔</translation>
+<translation id="8529578450330869579">‏اپنے انٹرنیٹ ٹریفک تک رسائی والے لوگوں کو اپنی ملاحظہ کردہ سائٹس دیکھنے سے روکنے کیلئے محفوظ ڈومین ناموں کا نظام (DNS) استعمال کریں۔ یہ <ph name="DNS_SERVER_TEMPLATE_WITH_IDENTIFIER" /> پر نظم کردہ سروس فراہم کنندہ کا استعمال کرتا ہے</translation>
 <translation id="8529925957403338845">فوری ٹیدرنگ کا کنکشن ناکام ہو گیا</translation>
 <translation id="8531701051932785007">بہتر کردہ محفوظ براؤزنگ آف ہے</translation>
 <translation id="8533670235862049797">محفوظ براؤزنگ آن ہے</translation>

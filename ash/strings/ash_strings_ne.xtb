@@ -624,6 +624,7 @@
 <translation id="3593646411856133110">खुला रहेका एपहरू हेर्न माथितिर स्वाइप गरी थिचिरहनुहोस्</translation>
 <translation id="3595596368722241419">ब्यटरी पूर्ण</translation>
 <translation id="3596012367874587041">एपका सेटिङ</translation>
+<translation id="3598452309062311481">search+h</translation>
 <translation id="3600061223661453002">अफ गर्नुहोस्</translation>
 <translation id="3604801046548457007">डेस्क <ph name="DESK_TITILE" /> सिर्जना गरियो</translation>
 <translation id="3606978283550408104">ब्रेल प्रदर्शन जडित छ।</translation>
@@ -775,6 +776,7 @@
 <translation id="4190780880566297084">आफ्नो फोनमा भएका हालसालैका फोटो, मिडिया तथा एपहरू हेर्ने सुविधा सेटअप गर्ने प्रक्रिया खारेज गर्नुहोस्</translation>
 <translation id="4192112279662688596">वा</translation>
 <translation id="4193857202545160520">क्लिक र किबोर्डका सर्टकटहरू देखाइऊन्</translation>
+<translation id="4193969623755915875">"<ph name="NEW_SHORTCUT" />" प्रयोग गरेर एक्स्प्लोर एपमा "मद्दत" पेज खोल्नुहोस्।</translation>
 <translation id="4195579532193195633">हालको संस्करण <ph name="VERSION_NAME" /> (<ph name="OFFICIAL_STATUS" />) <ph name="CHANNEL_NAME" /> <ph name="PROCESSOR_VARIATION" /></translation>
 <translation id="4195814663415092787">तपाइँले छोड्नुभएको स्थान देखि जारी राख्नुहोस्</translation>
 <translation id="4195877955194704651">स्वतः क्लिक गर्ने बटन</translation>
@@ -957,6 +959,7 @@
 <translation id="4889868803215848840">सुझावको गुणस्तर सुधार गर्ने प्रयोजनका लागि प्रतिक्रिया दिनुहोस् (ऐच्छिक):</translation>
 <translation id="4890187583552566966">तपाईंको प्रशासकले Google सहायकलाई असक्षम पार्नुभएको छ।</translation>
 <translation id="4890408602550914571">तपाईंको फोन नजिकै छ त्यसको ब्लुटुथ अन छ भन्ने कुरा सुनिश्चित गर्नुहोस्।</translation>
+<translation id="4892981359753171125">फेस कन्ट्रोल</translation>
 <translation id="4895488851634969361">ब्याटरी पूर्ण भयो।</translation>
 <translation id="490375751687810070">ठाडो</translation>
 <translation id="490788395437447240">ब्याट्री <ph name="BATTERY_PERCENTAGE" />% छ</translation>

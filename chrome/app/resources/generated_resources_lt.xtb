@@ -1886,6 +1886,7 @@ Jei nenorite, dabar atsijunkite, kad šios paskyros pakeitimai būtų matomi ši
 <translation id="2412753904894530585">Kerberos</translation>
 <translation id="2414159296888870200">Tęsti naršymą pagal „<ph name="MODULE_TITLE" />“</translation>
 <translation id="2414886740292270097">Tamsi</translation>
+<translation id="2415117815770324983">Būsite atjungti nuo daugelio svetainių. Liksite prisijungę prie „Google“ paskyros.</translation>
 <translation id="2416435988630956212">Klaviatūros funkcijų klavišai</translation>
 <translation id="2418307627282545839">Ryškus ir nuotaikingas režimas</translation>
 <translation id="2419131370336513030">Žr. įdiegtas programas</translation>
@@ -2406,6 +2407,7 @@ Jei nenorite, dabar atsijunkite, kad šios paskyros pakeitimai būtų matomi ši
 <translation id="2799223571221894425">Paleisti iš naujo</translation>
 <translation id="2800309299477632167">Tinkintas klavišų išdėstymas</translation>
 <translation id="2800760947029405028">Įkelti vaizdą</translation>
+<translation id="2801134910297796778">Prisijungta prie „<ph name="EMAIL" />“</translation>
 <translation id="2801954693771979815">Ekrano dydis</translation>
 <translation id="2802557211515765772">Tvarkomų spausdintuvų nėra.</translation>
 <translation id="2803313416453193357">Atidaryti aplanką</translation>
@@ -4054,6 +4056,7 @@ Tai gali būti informacija apie įdiegtą programinę įrangą, failus, naršykl
 <translation id="4110485659976215879">Atkurti perspėjimą</translation>
 <translation id="4110490973560452005">Atsisiuntimas baigtas: <ph name="FILE_NAME" />. Kad perjungtumėte į atsisiuntimų juostą, paspauskite „Shift“ + F6.</translation>
 <translation id="4112194537011183136">„<ph name="DEVICE_NAME" />“ (neprisijungta)</translation>
+<translation id="4113483184628671608">Šifruokite lankomų svetainių pavadinimus</translation>
 <translation id="4113743276555482284">Failo slaptažodis</translation>
 <translation id="4114524937989710624">Rodomi siūlomi failai, skirti padėti jums lengvai grįžti prie pastarosios veiklos „Google“ diske.
         <ph name="BREAK" />
@@ -5785,6 +5788,7 @@ Leidimai, kuriuos jau esate suteikę svetainėms ir programoms, gali būti taiko
 <translation id="5517304475148761050">Šiai programai būtina prieiga prie „Play“ parduotuvės</translation>
 <translation id="5517412723934627386"><ph name="NETWORK_TYPE" /> – „<ph name="NETWORK_DISPLAY_NAME" />“</translation>
 <translation id="5518949581554491184">Nustatyti naudojant „Android“ telefoną</translation>
+<translation id="5519053700692355541">Daugumą šoninio skydelio funkcijų galite atidaryti naudodami „Chrome“ meniu viršuje dešinėje</translation>
 <translation id="5519195206574732858">LTE</translation>
 <translation id="5519900055135507385">Apsaugokite šią paskyrą naudodami sudėtingą slaptažodį. Jį išsaugos <ph name="GOOGLE_PASSWORD_MANAGER" /> kaip priskirtą el. pašto adresui <ph name="EMAIL" />.</translation>
 <translation id="5521078259930077036">Ar tai pagrindinis puslapis, kurį tikėjotės išvysti?</translation>
@@ -6751,6 +6755,7 @@ Leidimai, kuriuos jau esate suteikę svetainėms ir programoms, gali būti taiko
 <translation id="6294759976468837022">Automatinio nuskaitymo sparta</translation>
 <translation id="6295158916970320988">Visos svetainės</translation>
 <translation id="6295855836753816081">Išsaugoma...</translation>
+<translation id="6298456705131259420">Turi įtakos čia išvardytoms svetainėms. Įterpus „[*.]“ prieš domeno pavadinimą sukuriama išimtis visam domenui. Pavyzdžiui, pridėjus „[*.]google.com“, trečiųjų šalių slapukai taip pat gali būti aktyvūs adresu mail.google.com, nes jis yra google.com dalis.</translation>
 <translation id="6298962879096096191">Naudoti „Google Play“ diegiant „Android“ programas</translation>
 <translation id="6300177430812514606">Neleidžiama baigti siųsti ar gauti duomenų</translation>
 <translation id="6300654006256345126">Redaguoti slaptažodį</translation>
@@ -7180,6 +7185,7 @@ Turite dar # pažeistų slaptažodžių. „Google“ slaptažodžių tvarkyklė
 <translation id="6651762277693024112">Paleidžiama automatiškai kaskart apsilankius šioje svetainėje</translation>
 <translation id="665355505818177700">„Chrome“ <ph name="MS_AD_NAME" /> integravimas palaikomas tik x86_64 platformose. „Chromebook“, kurie sukurti veikti su ARM arba x86 platforma, šios funkcijos nepalaiko.</translation>
 <translation id="6654509035557065241">Rinktis tinklą</translation>
+<translation id="6654987855337442937">Naudokite saugią domenų pavadinimų sistemą (angl. „Domain Name System“, DNS), kad neleistumėte interneto srautą galintiems pasiekti žmonėms matyti svetainių, kuriose lankotės</translation>
 <translation id="6655190889273724601">Kūrėjo režimas</translation>
 <translation id="6655458902729017087">Slėpti paskyras</translation>
 <translation id="6657180931610302174">Pridėti naudotojo vardą?</translation>
@@ -9580,6 +9586,7 @@ Rakto failą laikykite saugioje vietoje. Jo reikės, kai norėsite sukurti nauja
 <translation id="8528074251912154910">Pridėti kalbų</translation>
 <translation id="8528479410903501741">Išsaugoti IBAN</translation>
 <translation id="8528962588711550376">Prisijungiama.</translation>
+<translation id="8529578450330869579">Naudokite saugią domenų pavadinimų sistemą (angl. „Domain Name System“, DNS), kad neleistumėte interneto srautą galintiems pasiekti žmonėms matyti svetainių, kuriose lankotės. Tam naudojamas valdomas paslaugos teikėjas adresu <ph name="DNS_SERVER_TEMPLATE_WITH_IDENTIFIER" /></translation>
 <translation id="8529925957403338845">Nepavyko užmegzti momentinio įrenginio kaip modemo naudojimo ryšio</translation>
 <translation id="8531701051932785007">Sustiprintas saugus naršymas išjungtas</translation>
 <translation id="8533670235862049797">Saugus naršymas įjungtas</translation>

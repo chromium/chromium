@@ -624,6 +624,7 @@ Tālāk ir norādīti daži ieteikumi darba sākšanai.</translation>
 <translation id="3593646411856133110">Velciet augšup un turiet, lai skatītu atvērtās lietotnes.</translation>
 <translation id="3595596368722241419">Akumulators pilns</translation>
 <translation id="3596012367874587041">Lietotnes iestatījumi</translation>
+<translation id="3598452309062311481">Meklēšana+h</translation>
 <translation id="3600061223661453002">Izslēgta</translation>
 <translation id="3604801046548457007">Darbvirsma <ph name="DESK_TITILE" /> ir izveidota</translation>
 <translation id="3606978283550408104">Savienojums ar Braila displeju ir izveidots.</translation>
@@ -775,6 +776,7 @@ Dažas funkcijas ir ierobežotas, lai palielinātu akumulatora darbības ilgumu.
 <translation id="4190780880566297084">Nerādīt iespēju iestatīt tālruņa jaunāko fotoattēlu, multivides satura un lietotņu skatīšanu</translation>
 <translation id="4192112279662688596">vai</translation>
 <translation id="4193857202545160520">Rādīt klikšķus un taustiņus</translation>
+<translation id="4193969623755915875">Lai lietotnē Izpēte atvērtu sadaļu Palīdzība, izmantojiet šādus īsinājumtaustiņus: <ph name="NEW_SHORTCUT" />.</translation>
 <translation id="4195579532193195633">Pašreizējā versija: <ph name="VERSION_NAME" /> (<ph name="OFFICIAL_STATUS" />), <ph name="CHANNEL_NAME" />, <ph name="PROCESSOR_VARIATION" /></translation>
 <translation id="4195814663415092787">Atsākt darbu no vietas, kur to beidzu</translation>
 <translation id="4195877955194704651">Poga Automātiskie klikšķi</translation>
@@ -957,6 +959,7 @@ Dažas funkcijas ir ierobežotas, lai palielinātu akumulatora darbības ilgumu.
 <translation id="4889868803215848840">Neobligāti — sniedziet atsauksmes, lai uzlabotu ieteikumus:</translation>
 <translation id="4890187583552566966">Jūsu administrators ir atspējojis Google asistentu.</translation>
 <translation id="4890408602550914571">Tālrunim ir jāatrodas tuvumā, un tajā ir jābūt ieslēgtam Bluetooth savienojumam.</translation>
+<translation id="4892981359753171125">Sejas vadība</translation>
 <translation id="4895488851634969361">Akumulators ir pilnībā uzlādēts.</translation>
 <translation id="490375751687810070">Vertikāli</translation>
 <translation id="490788395437447240">Akumulators: <ph name="BATTERY_PERCENTAGE" />%</translation>

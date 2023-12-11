@@ -624,6 +624,7 @@
 <translation id="3593646411856133110">Felfelé csúsztatva és nyomva tartva megjelenik a többi alkalmazás</translation>
 <translation id="3595596368722241419">Akkumulátor feltöltve</translation>
 <translation id="3596012367874587041">Alkalmazásbeállítások</translation>
+<translation id="3598452309062311481">keresés + h</translation>
 <translation id="3600061223661453002">Ki</translation>
 <translation id="3604801046548457007">Létrehozta a(z) „<ph name="DESK_TITILE" />” asztalt</translation>
 <translation id="3606978283550408104">Braille-kijelző csatlakoztatva.</translation>
@@ -776,6 +777,7 @@ Az akkumulátor-élettartam növelése érdekében egyes funkciók korlátozotta
 <translation id="4190780880566297084">A telefonján lévő legutóbbi fotók, médiatartalmak és alkalmazások megtekintésére vonatkozó beállítás elvetése</translation>
 <translation id="4192112279662688596">vagy</translation>
 <translation id="4193857202545160520">Kattintások és billentyűparancsok megjelenítése</translation>
+<translation id="4193969623755915875">A „Súgó” megnyitása a Felfedezés alkalmazásban a következővel: „<ph name="NEW_SHORTCUT" />”.</translation>
 <translation id="4195579532193195633">Jelenlegi verzió <ph name="VERSION_NAME" /> (<ph name="OFFICIAL_STATUS" />) <ph name="CHANNEL_NAME" /> <ph name="PROCESSOR_VARIATION" /></translation>
 <translation id="4195814663415092787">Folytatás ott, ahol abbahagyta</translation>
 <translation id="4195877955194704651">Automatikus kattintás az adott gombon</translation>
@@ -958,6 +960,7 @@ Az akkumulátor-élettartam növelése érdekében egyes funkciók korlátozotta
 <translation id="4889868803215848840">Lehetősége van visszajelzést küldeni a javaslatok javításához:</translation>
 <translation id="4890187583552566966">A rendszergazda letiltotta a Google Segédet.</translation>
 <translation id="4890408602550914571">Gondoskodjon arról, hogy telefonja a közelben legyen, bekapcsolt Bluetooth funkcióval.</translation>
+<translation id="4892981359753171125">Arcvezérlés</translation>
 <translation id="4895488851634969361">Az akkumulátor feltöltve.</translation>
 <translation id="490375751687810070">Függőleges</translation>
 <translation id="490788395437447240"><ph name="BATTERY_PERCENTAGE" />%-os töltöttség</translation>

@@ -624,6 +624,7 @@
 <translation id="3593646411856133110">위로 스와이프한 후 눌러 열려 있는 앱 보기</translation>
 <translation id="3595596368722241419">배터리 충전 완료</translation>
 <translation id="3596012367874587041">앱 설정</translation>
+<translation id="3598452309062311481">검색 + h</translation>
 <translation id="3600061223661453002">사용 설정</translation>
 <translation id="3604801046548457007"><ph name="DESK_TITILE" /> 데스크가 생성되었습니다.</translation>
 <translation id="3606978283550408104">점자 디스플레이가 연결되었습니다.</translation>
@@ -775,6 +776,7 @@
 <translation id="4190780880566297084">휴대전화의 최근 사진, 미디어, 앱 보기 설정 닫기</translation>
 <translation id="4192112279662688596">또는</translation>
 <translation id="4193857202545160520">클릭수 및 단축키 표시</translation>
+<translation id="4193969623755915875">탐색 앱에서 "<ph name="NEW_SHORTCUT" />"로 '도움말'을 엽니다.</translation>
 <translation id="4195579532193195633">현재 버전 <ph name="VERSION_NAME" />(<ph name="OFFICIAL_STATUS" />) <ph name="CHANNEL_NAME" /> <ph name="PROCESSOR_VARIATION" /></translation>
 <translation id="4195814663415092787">중단한 위치에서 계속하기</translation>
 <translation id="4195877955194704651">자동 클릭 버튼</translation>
@@ -957,6 +959,7 @@
 <translation id="4889868803215848840">의견을 보내주시면 제안 기능이 개선됩니다.</translation>
 <translation id="4890187583552566966">관리자가 Google 어시스턴트를 사용 중지했습니다.</translation>
 <translation id="4890408602550914571">휴대전화가 근처에 있고 블루투스가 켜져 있는지 확인하세요.</translation>
+<translation id="4892981359753171125">얼굴 제어</translation>
 <translation id="4895488851634969361">배터리 충전이 완료되었습니다.</translation>
 <translation id="490375751687810070">세로</translation>
 <translation id="490788395437447240">배터리 <ph name="BATTERY_PERCENTAGE" />%</translation>

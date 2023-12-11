@@ -87,6 +87,7 @@
 <translation id="11635448457105324">Кнопка "Управление адресами". Нажмите ее, чтобы добавить и изменить адреса в настройках Chrome.</translation>
 <translation id="1165039591588034296">Ошибка</translation>
 <translation id="1165174597379888365">Посещена страница</translation>
+<translation id="1165813024716836071">{COUNT,plural, =0{Нет сайтов}=1{С 1 сайта (вы останетесь в аккаунте Google)}one{С # сайта (вы останетесь в аккаунте Google)}few{С # сайтов (вы останетесь в аккаунте Google)}many{С # сайтов (вы останетесь в аккаунте Google)}other{С # сайта (вы останетесь в аккаунте Google)}}</translation>
 <translation id="1165852471352757509">Документальные телефильмы</translation>
 <translation id="1174644974616730562">Конверт Chinese 1</translation>
 <translation id="1174723505405632867">Разрешить сайту <ph name="EMBEDDED_URL" /> использовать файлы cookie и данные сайта <ph name="TOP_LEVEL_URL" />?

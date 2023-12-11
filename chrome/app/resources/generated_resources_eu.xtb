@@ -1868,6 +1868,7 @@ Voice Match-ekin, Google-ren Laguntzailea zerbitzuak <ph name="SUPERVISED_USER_N
 <translation id="2412753904894530585">Kerberos</translation>
 <translation id="2414159296888870200">Berrekin <ph name="MODULE_TITLE" /> arakatzeari</translation>
 <translation id="2414886740292270097">Iluna</translation>
+<translation id="2415117815770324983">Webgune gehienetako saioa amaitzen du. Google-ko kontuko saioa ez da amaituko.</translation>
 <translation id="2416435988630956212">Teklatuko funtzio-teklak</translation>
 <translation id="2418307627282545839">Mantendu gauzak argi eta zabala dirudien gune batean</translation>
 <translation id="2419131370336513030">Ikusi instalatutako aplikazioak</translation>
@@ -2388,6 +2389,7 @@ Voice Match-ekin, Google-ren Laguntzailea zerbitzuak <ph name="SUPERVISED_USER_N
 <translation id="2799223571221894425">Abiarazi berriro</translation>
 <translation id="2800309299477632167">Teklatu-mapa pertsonalizatua</translation>
 <translation id="2800760947029405028">Kargatu irudi bat</translation>
+<translation id="2801134910297796778"><ph name="EMAIL" /> gisa hasi duzu saioa</translation>
 <translation id="2801954693771979815">Pantailaren tamaina</translation>
 <translation id="2802557211515765772">Ez dago kudeatutako inprimagailurik.</translation>
 <translation id="2803313416453193357">Ireki karpeta</translation>
@@ -4036,6 +4038,7 @@ Besteak beste, instalatutako softwareari, fitxategiei, arakatzaileari eta sistem
 <translation id="4110485659976215879">Leheneratu abisua</translation>
 <translation id="4110490973560452005">Deskargatu da: <ph name="FILE_NAME" />. Sakatu Maius + F6 deskargen barraren eremura iritsi arte.</translation>
 <translation id="4112194537011183136"><ph name="DEVICE_NAME" /> (deskonektatuta)</translation>
+<translation id="4113483184628671608">Enkriptatu bisitatzen dituzun webguneen izenak</translation>
 <translation id="4113743276555482284">Fitxategiaren pasahitza</translation>
 <translation id="4114524937989710624">Google Drive-n egindako azkenaldiko jardueretara erraz itzul zaitezen ari zara ikusten iradokitako fitxategiak.
         <ph name="BREAK" />
@@ -5766,6 +5769,7 @@ Baliteke webguneei eta aplikazioei emandako baimenak kontu honi aplikatzea. Goog
 <translation id="5517304475148761050">Aplikazioak Play Store erabiltzeko baimena behar du</translation>
 <translation id="5517412723934627386"><ph name="NETWORK_DISPLAY_NAME" /> (<ph name="NETWORK_TYPE" />)</translation>
 <translation id="5518949581554491184">Konfiguratu Android-eko telefono batekin</translation>
+<translation id="5519053700692355541">Goiko eskuineko Chrome-ko menuaren bidez ireki ditzakezu alboko paneleko eginbide gehienak</translation>
 <translation id="5519195206574732858">LTE</translation>
 <translation id="5519900055135507385">Eduki kontua babestuago pasahitz konplexu baten bidez. <ph name="EMAIL" /> kontuari dagokion <ph name="GOOGLE_PASSWORD_MANAGER" /> zerbitzuan gordeko da.</translation>
 <translation id="5521078259930077036">Hau al da espero zenuen orri nagusia?</translation>
@@ -6728,6 +6732,7 @@ Txartel adimenduna sartuta edukitzea eskatzen du <ph name="DOMAIN" /> domeinuak.
 <translation id="6294759976468837022">Pantailan automatikoki mugitzeko abiadura</translation>
 <translation id="6295158916970320988">Webgune guztiak</translation>
 <translation id="6295855836753816081">Gordetzen…</translation>
+<translation id="6298456705131259420">Hemen zerrendatuta agertzen diren webguneei eragiten die. Domeinu-izen baten aurretik "[*.]" txertatuz gero, domeinu osorako salbuespen bat sortuko da. Adibidez, "[*.]google.com" gehituz gero, mail.google.com helbidean ere egongo dira aktibo hirugarrenen cookieak, google.com helbidearen parte baita.</translation>
 <translation id="6298962879096096191">Erabili Google Play Android-erako aplikazioak instalatzeko</translation>
 <translation id="6300177430812514606">Ezin dute amaitu datuak bidaltzen edo jasotzen</translation>
 <translation id="6300654006256345126">Editatu pasahitza</translation>
@@ -7151,6 +7156,7 @@ Arriskuan dauden # pasahitz gehiago dauzkazu. Google-ren Pasahitz-kudeatzailea z
 <translation id="6651762277693024112">Automatikoki exekutatzen da webgune honetan sartzen zaren bakoitzean</translation>
 <translation id="665355505818177700">x86_64 plataformetan soilik onartzen da Chrome <ph name="MS_AD_NAME" /> integrazioa. ARM eta x86 plataformak erabiltzen dituzten Chromebook gailuek ez dute onartzen funtzio hori.</translation>
 <translation id="6654509035557065241">Sare hobetsia</translation>
+<translation id="6654987855337442937">Erabili domeinu-izenen sistema (DNS) seguru bat, zure Interneteko trafikorako sarbidea duten pertsonei bisitatzen dituzun webguneak ikustea galarazteko</translation>
 <translation id="6655190889273724601">Garatzaile modua</translation>
 <translation id="6655458902729017087">Ezkutatu kontuak</translation>
 <translation id="6657180931610302174">Erabiltzaile-izena gehitu nahi duzu?</translation>
@@ -9548,6 +9554,7 @@ Gorde gakoen fitxategia leku seguru batean. Zure luzapenaren bertsio berriak sor
 <translation id="8528074251912154910">Gehitu hizkuntzak</translation>
 <translation id="8528479410903501741">Gorde IBANa</translation>
 <translation id="8528962588711550376">Saioa hasten.</translation>
+<translation id="8529578450330869579">Erabili domeinu-izenen sistema (DNS) seguru bat, zure Interneteko trafikorako sarbidea duten pertsonei bisitatzen dituzun webguneak ikustea galarazteko. <ph name="DNS_SERVER_TEMPLATE_WITH_IDENTIFIER" /> helbideko zerbitzu-hornitzaile kudeatu bat erabiltzen du.</translation>
 <translation id="8529925957403338845">Ezin izan da konektatu konexioa bizkor partekatzeko eginbidearekin</translation>
 <translation id="8531701051932785007">Arakatze seguru hobetua desaktibatuta dago</translation>
 <translation id="8533670235862049797">Arakatze segurua aktibatuta dago</translation>

@@ -1885,6 +1885,7 @@
 <translation id="2412753904894530585">Kerberos</translation>
 <translation id="2414159296888870200"><ph name="MODULE_TITLE" /> 둘러보기 재개</translation>
 <translation id="2414886740292270097">어둡게</translation>
+<translation id="2415117815770324983">대부분의 사이트에서 로그아웃됩니다. Google 계정에 로그인된 상태가 유지됩니다.</translation>
 <translation id="2416435988630956212">키보드 기능 키</translation>
 <translation id="2418307627282545839">밝고 가벼운 느낌을 줍니다.</translation>
 <translation id="2419131370336513030">설치된 앱 보기</translation>
@@ -2405,6 +2406,7 @@
 <translation id="2799223571221894425">다시 시작</translation>
 <translation id="2800309299477632167">맞춤 키맵</translation>
 <translation id="2800760947029405028">이미지 업로드</translation>
+<translation id="2801134910297796778"><ph name="EMAIL" />에 로그인</translation>
 <translation id="2801954693771979815">화면 크기</translation>
 <translation id="2802557211515765772">관리되는 프린터가 없습니다.</translation>
 <translation id="2803313416453193357">폴더 열기</translation>
@@ -4051,6 +4053,7 @@
 <translation id="4110485659976215879">경고 다시 열기</translation>
 <translation id="4110490973560452005">다운로드 완료: <ph name="FILE_NAME" />. 다운로드바 영역으로 이동하려면 Shift+F6를 누르세요.</translation>
 <translation id="4112194537011183136"><ph name="DEVICE_NAME" />(오프라인)</translation>
+<translation id="4113483184628671608">방문하는 사이트 이름 암호화</translation>
 <translation id="4113743276555482284">파일 비밀번호</translation>
 <translation id="4114524937989710624">Google Drive에서 최근 활동으로 쉽게 돌아갈 수 있도록 표시된 추천 파일입니다.
         <ph name="BREAK" />
@@ -5782,6 +5785,7 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="5517304475148761050">Play 스토어 액세스가 필요한 앱입니다</translation>
 <translation id="5517412723934627386"><ph name="NETWORK_TYPE" /> - <ph name="NETWORK_DISPLAY_NAME" /></translation>
 <translation id="5518949581554491184">Android 휴대전화로 설정</translation>
+<translation id="5519053700692355541">오른쪽 상단의 Chrome 메뉴를 통해 대부분의 측면 패널 기능을 열 수 있습니다.</translation>
 <translation id="5519195206574732858">LTE</translation>
 <translation id="5519900055135507385">안전한 비밀번호로 이 계정의 보안을 유지하세요. 비밀번호는 <ph name="EMAIL" />의 <ph name="GOOGLE_PASSWORD_MANAGER" />에 저장됩니다.</translation>
 <translation id="5521078259930077036">설정한 홈페이지가 맞습니까?</translation>
@@ -6747,6 +6751,7 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="6294759976468837022">자동 스캔 속도</translation>
 <translation id="6295158916970320988">모든 사이트</translation>
 <translation id="6295855836753816081">저장 중...</translation>
+<translation id="6298456705131259420">여기에 표시된 사이트에 영향을 미칩니다. 도메인 이름 앞에 '[*.]'를 삽입하면 전체 도메인에 예외가 적용됩니다. 예를 들어 '[*.]google.com'을 추가하면 mail.google.com이 google.com의 일부이므로 서드 파티 쿠키도 활성화될 수 있습니다.</translation>
 <translation id="6298962879096096191">Google Play를 사용하여 Android 앱을 설치합니다.</translation>
 <translation id="6300177430812514606">데이터 전송 또는 수신 완료가 허용되지 않음</translation>
 <translation id="6300654006256345126">비밀번호 수정</translation>
@@ -7170,6 +7175,7 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="6651762277693024112">이 사이트를 방문할 때마다 자동으로 실행됩니다.</translation>
 <translation id="665355505818177700">Chrome <ph name="MS_AD_NAME" /> 통합은 x86_64 플랫폼에서만 지원됩니다. ARM 또는 x86 플랫폼에서 구축된 Chromebook은 이 기능을 지원하지 않습니다.</translation>
 <translation id="6654509035557065241">선호 네트워크 설정</translation>
+<translation id="6654987855337442937">보안 DNS(도메인 이름 시스템)를 사용하여 내 인터넷 트래픽에 액세스할 수 있는 사용자가 내가 방문하는 사이트를 볼 수 없도록 합니다.</translation>
 <translation id="6655190889273724601">개발자 모드</translation>
 <translation id="6655458902729017087">계정 숨기기</translation>
 <translation id="6657180931610302174">사용자 이름을 추가하시겠습니까?</translation>
@@ -9570,6 +9576,7 @@ https://support.google.com/chromebook/?p=sm</translation>
 <translation id="8528074251912154910">언어 추가</translation>
 <translation id="8528479410903501741">IBAN 저장</translation>
 <translation id="8528962588711550376">로그인 중입니다.</translation>
+<translation id="8529578450330869579">보안 DNS(도메인 이름 시스템)를 사용하여 내 인터넷 트래픽에 액세스할 수 있는 사용자가 내가 방문하는 사이트를 볼 수 없도록 합니다. DNS는 <ph name="DNS_SERVER_TEMPLATE_WITH_IDENTIFIER" />에서 관리형 서비스 제공업체를 사용합니다.</translation>
 <translation id="8529925957403338845">인스턴트 테더링 연결 실패</translation>
 <translation id="8531701051932785007">향상된 세이프 브라우징 사용 안함</translation>
 <translation id="8533670235862049797">세이프 브라우징 사용 설정됨</translation>

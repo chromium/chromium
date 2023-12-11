@@ -1870,6 +1870,7 @@ Chcete-li spravovat nastavení tohoto účtu, nainstalujte si do zařízení apl
 <translation id="2412753904894530585">Kerberos</translation>
 <translation id="2414159296888870200">Vrátit se k procházení položek <ph name="MODULE_TITLE" /></translation>
 <translation id="2414886740292270097">Tmavé</translation>
+<translation id="2415117815770324983">Budete odhlášeni z většiny webů. Zůstanete přihlášeni ke svému účtu Google.</translation>
 <translation id="2416435988630956212">Funkční klávesy</translation>
 <translation id="2418307627282545839">Ať je vše světlé a vzdušné</translation>
 <translation id="2419131370336513030">Zobrazit nainstalované aplikace</translation>
@@ -2390,6 +2391,7 @@ Chcete-li spravovat nastavení tohoto účtu, nainstalujte si do zařízení apl
 <translation id="2799223571221894425">Restartovat</translation>
 <translation id="2800309299477632167">Vlastní mapa kláves</translation>
 <translation id="2800760947029405028">Nahrát obrázek</translation>
+<translation id="2801134910297796778">Jste přihlášeni k účtu <ph name="EMAIL" /></translation>
 <translation id="2801954693771979815">Velikost obrazovky</translation>
 <translation id="2802557211515765772">Nejsou k dispozici žádné spravované tiskárny.</translation>
 <translation id="2803313416453193357">Otevřít složku</translation>
@@ -4037,6 +4039,7 @@ To může zahrnovat informace o nainstalovaném softwaru, souborech, prohlíže
 <translation id="4110485659976215879">Obnovit upozornění</translation>
 <translation id="4110490973560452005">Stažení bylo dokončeno: <ph name="FILE_NAME" />. Stisknutím kombinace kláves Shift+F6 přejdete na lištu se staženými soubory.</translation>
 <translation id="4112194537011183136"><ph name="DEVICE_NAME" /> (offline)</translation>
+<translation id="4113483184628671608">Šifrovat názvy navštívených webů</translation>
 <translation id="4113743276555482284">Heslo souboru</translation>
 <translation id="4114524937989710624">Zobrazují se vám navrhované soubory, abyste se mohli snadno vrátit k nedávné aktivitě na Disku Google.
         <ph name="BREAK" />
@@ -5767,6 +5770,7 @@ Na tento účet se mohou vztahovat oprávnění, která jste již udělili webů
 <translation id="5517304475148761050">Tato aplikace vyžaduje přístup do Obchodu Play</translation>
 <translation id="5517412723934627386"><ph name="NETWORK_TYPE" /> – <ph name="NETWORK_DISPLAY_NAME" /></translation>
 <translation id="5518949581554491184">Nastavit pomocí telefonu Android</translation>
+<translation id="5519053700692355541">Většinu funkcí bočního panelu lze otevřít prostřednictvím nabídky Chrome vpravo nahoře</translation>
 <translation id="5519195206574732858">LTE</translation>
 <translation id="5519900055135507385">Udržujte tento účet bezpečnější pomocí silného hesla. Uloží se do správce hesel <ph name="GOOGLE_PASSWORD_MANAGER" /> pro <ph name="EMAIL" /></translation>
 <translation id="5521078259930077036">Je toto domovská stránka, kterou jste očekávali?</translation>
@@ -6729,6 +6733,7 @@ Na tento účet se mohou vztahovat oprávnění, která jste již udělili webů
 <translation id="6294759976468837022">Rychlost automatického prohledávání</translation>
 <translation id="6295158916970320988">Všechny weby</translation>
 <translation id="6295855836753816081">Ukládání...</translation>
+<translation id="6298456705131259420">Má vliv na zde uvedené weby. Vložením řetězce „[*.]“ před název domény vytvoříte výjimku pro celou doménu. Pokud například přidáte web [*.]google.com, soubory cookie třetích stran budou moci být aktivní i pro web mail.google.com, protože se jedná o součást webu google.com.</translation>
 <translation id="6298962879096096191">Používat Google Play k instalaci aplikací pro Android</translation>
 <translation id="6300177430812514606">Zákaz dokončovat odeslání a příjem dat</translation>
 <translation id="6300654006256345126">Upravit heslo</translation>
@@ -7156,6 +7161,7 @@ Máte # dalších prolomených hesel. Správce hesel Google doporučuje ihned ta
 <translation id="6651762277693024112">Spustí se automaticky při každé návštěvě tohoto webu</translation>
 <translation id="665355505818177700">Integrace Chromu se službou <ph name="MS_AD_NAME" /> je podporována pouze na platformách x86_64. Chromebooky založené na platformě ARM nebo x86 ji nepodporují.</translation>
 <translation id="6654509035557065241">Preferovat síť</translation>
+<translation id="6654987855337442937">Použitím zabezpečeného systému názvů domén (DNS) můžete zajistit, aby lidé s přístupem k vašemu internetovému provozu neviděli, které weby navštěvujete</translation>
 <translation id="6655190889273724601">Režim pro vývojáře</translation>
 <translation id="6655458902729017087">Skrýt účty</translation>
 <translation id="6657180931610302174">Přidat uživatelské jméno?</translation>
@@ -9555,6 +9561,7 @@ Svůj soubor klíče uchovávejte na bezpečném místě. Budete jej potřebovat
 <translation id="8528074251912154910">Přidat jazyky</translation>
 <translation id="8528479410903501741">Uložit číslo IBAN</translation>
 <translation id="8528962588711550376">Přihlašování.</translation>
+<translation id="8529578450330869579">Použitím zabezpečeného systému názvů domén (DNS) můžete zajistit, aby lidé s přístupem k vašemu internetovému provozu neviděli, které weby navštěvujete. Využívá poskytovatele spravovaných služeb v doméně <ph name="DNS_SERVER_TEMPLATE_WITH_IDENTIFIER" />.</translation>
 <translation id="8529925957403338845">Připojení pomocí dynamického tetheringu se nezdařilo</translation>
 <translation id="8531701051932785007">Vylepšené Bezpečné prohlížení je vypnuté</translation>
 <translation id="8533670235862049797">Bezpečné prohlížení je zapnuté</translation>

@@ -1886,6 +1886,7 @@
 <translation id="2412753904894530585">Kerberos</translation>
 <translation id="2414159296888870200">Відновити пошук за запитом "<ph name="MODULE_TITLE" />"</translation>
 <translation id="2414886740292270097">Темна</translation>
+<translation id="2415117815770324983">Ви автоматично вийдете з облікових записів на більшості сайтів, але не з облікового запису Google.</translation>
 <translation id="2416435988630956212">Функціональні клавіші клавіатури</translation>
 <translation id="2418307627282545839">Зберігає яскраві та прозорі кольори</translation>
 <translation id="2419131370336513030">Переглянути встановлені додатки</translation>
@@ -2406,6 +2407,7 @@
 <translation id="2799223571221894425">Перезапустити</translation>
 <translation id="2800309299477632167">Власна карта клавіш</translation>
 <translation id="2800760947029405028">Завантажити зображення</translation>
+<translation id="2801134910297796778">Ви ввійшли в обліковий запис <ph name="EMAIL" /></translation>
 <translation id="2801954693771979815">Розмір екрана</translation>
 <translation id="2802557211515765772">Немає керованих принтерів.</translation>
 <translation id="2803313416453193357">Відкрити папку</translation>
@@ -4054,6 +4056,7 @@
 <translation id="4110485659976215879">Відновити попередження</translation>
 <translation id="4110490973560452005">Завантажено: <ph name="FILE_NAME" />. Натисніть Shift+F6, щоб перейти на панель завантажень.</translation>
 <translation id="4112194537011183136"><ph name="DEVICE_NAME" /> (офлайн)</translation>
+<translation id="4113483184628671608">Шифрувати назви сайтів, які ви відвідуєте</translation>
 <translation id="4113743276555482284">Пароль файлу</translation>
 <translation id="4114524937989710624">Ви бачите пропозиції файлів, які допоможуть вам легко повернутися до останніх дій на Google Диску.
         <ph name="BREAK" />
@@ -5785,6 +5788,7 @@
 <translation id="5517304475148761050">Цьому додатку потрібен доступ до Play Маркету</translation>
 <translation id="5517412723934627386"><ph name="NETWORK_TYPE" /> – <ph name="NETWORK_DISPLAY_NAME" /></translation>
 <translation id="5518949581554491184">Налаштувати за допомогою телефона Android</translation>
+<translation id="5519053700692355541">Більшість функцій бічної панелі можна відкрити через меню Chrome угорі праворуч</translation>
 <translation id="5519195206574732858">LTE</translation>
 <translation id="5519900055135507385">Захистіть цей обліковий запис за допомогою надійного пароля. Його буде збережено в сервісі <ph name="GOOGLE_PASSWORD_MANAGER" /> для адреси <ph name="EMAIL" />.</translation>
 <translation id="5521078259930077036">Це домашня сторінка, яку ви очікували?</translation>
@@ -6747,6 +6751,7 @@
 <translation id="6294759976468837022">Швидкість автоматичного сканування</translation>
 <translation id="6295158916970320988">Усі сайти</translation>
 <translation id="6295855836753816081">Зберігання…</translation>
+<translation id="6298456705131259420">Впливає на перелічені тут сайти. Якщо вставити "[*.]" перед доменним ім’ям, буде додано виняток для всього домену. Наприклад, якщо ввести "[*.]google.com", сторонні файли cookie також буде ввімкнено для сторінки mail.google.com, оскільки вона є частиною домену google.com.</translation>
 <translation id="6298962879096096191">Установлювати додатки Android із Google Play</translation>
 <translation id="6300177430812514606">Заборонено завершувати надсилання чи отримання даних</translation>
 <translation id="6300654006256345126">Змінити пароль</translation>
@@ -7176,6 +7181,7 @@
 <translation id="6651762277693024112">Запускається автоматично щоразу, коли ви відвідуєте цей сайт</translation>
 <translation id="665355505818177700">Інтеграція Chrome <ph name="MS_AD_NAME" /> підтримується лише на платформах x86_64. Комп’ютери Chromebook на платформі ARM або x86 не підтримують цю функцію.</translation>
 <translation id="6654509035557065241">Основна мережа</translation>
+<translation id="6654987855337442937">Оберіть надійну систему доменних імен (DNS), щоб користувачі з доступом до вашого інтернет-трафіку не бачили, які сайти ви відвідуєте</translation>
 <translation id="6655190889273724601">Режим розробника</translation>
 <translation id="6655458902729017087">Сховати облікові записи</translation>
 <translation id="6657180931610302174">Додати ім’я користувача?</translation>
@@ -9575,6 +9581,7 @@
 <translation id="8528074251912154910">Додати мови</translation>
 <translation id="8528479410903501741">Зберегти номер IBAN</translation>
 <translation id="8528962588711550376">Виконується вхід.</translation>
+<translation id="8529578450330869579">Оберіть надійну систему доменних імен (DNS), щоб користувачі з доступом до вашого інтернет-трафіку не бачили, які сайти ви відвідуєте. Для цього використовується керований постачальник послуг (<ph name="DNS_SERVER_TEMPLATE_WITH_IDENTIFIER" />).</translation>
 <translation id="8529925957403338845">Не вдалося під’єднатися в миттєвому режимі модема</translation>
 <translation id="8531701051932785007">Безпечний перегляд із розширеним захистом вимкнено</translation>
 <translation id="8533670235862049797">Безпечний перегляд увімкнено</translation>

@@ -624,6 +624,7 @@
 <translation id="3593646411856133110">Щоб переглянути відкриті додатки, проведіть пальцем угору й утримуйте</translation>
 <translation id="3595596368722241419">Акумулятор заряджено</translation>
 <translation id="3596012367874587041">Налаштування додатків</translation>
+<translation id="3598452309062311481">клавіша пошуку + h</translation>
 <translation id="3600061223661453002">Вимкнути</translation>
 <translation id="3604801046548457007">Створено робочий стіл "<ph name="DESK_TITILE" />"</translation>
 <translation id="3606978283550408104">Брайлівський дисплей під’єднано.</translation>
@@ -775,6 +776,7 @@
 <translation id="4190780880566297084">Відхилити налаштування перегляду нещодавніх фотографій, медіафайлів і додатків на телефоні</translation>
 <translation id="4192112279662688596">Або</translation>
 <translation id="4193857202545160520">Показувати комбінації клавіш і кліки</translation>
+<translation id="4193969623755915875">Щоб відкрити довідку, натисніть <ph name="NEW_SHORTCUT" /> у додатку Можливості.</translation>
 <translation id="4195579532193195633">Поточна версія <ph name="VERSION_NAME" /> (<ph name="OFFICIAL_STATUS" />) <ph name="CHANNEL_NAME" /> <ph name="PROCESSOR_VARIATION" /></translation>
 <translation id="4195814663415092787">Продовжити з місця зупинки</translation>
 <translation id="4195877955194704651">Кнопка автоматичного натискання</translation>
@@ -957,6 +959,7 @@
 <translation id="4889868803215848840">За бажання надайте відгук, щоб покращити підказки:</translation>
 <translation id="4890187583552566966">Ваш адміністратор вимкнув Google Асистент.</translation>
 <translation id="4890408602550914571">Переконайтеся, що ваш телефон поблизу, а Bluetooth увімкнено.</translation>
+<translation id="4892981359753171125">Визначення обличчя</translation>
 <translation id="4895488851634969361">Акумулятор заряджений.</translation>
 <translation id="490375751687810070">Вертикально</translation>
 <translation id="490788395437447240">Заряд акумулятора – <ph name="BATTERY_PERCENTAGE" />%</translation>
