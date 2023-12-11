@@ -95,7 +95,7 @@ chromium-metrics-reviews@google.com.
   <variant name="Biometric" summary="biometric auth"/>
   <variant name="ScreenLock" summary="screen lock"/>
   <variant name="UnknownMethod" summary="an unknown auth type"/>
-  <variant name="Unsupported" summary="an unsupported auth type"/>
+  <variant name="UnsupportedMethod" summary="an unsupported auth type"/>
 </variants>
 
 <variants name="Autofill.MandatoryReauth.ChangingStatus">
