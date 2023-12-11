@@ -259,7 +259,8 @@ const char kFooterDummyLinkTarget[] = "about:blank";
 
   controller->OnUnmaskPromptAccepted(
       base::SysNSStringToUTF16(CVC), base::SysNSStringToUTF16(month),
-      base::SysNSStringToUTF16(year), /*enable_fido_auth=*/false);
+      base::SysNSStringToUTF16(year), /*enable_fido_auth=*/false,
+      /*was_checkbox_visible=*/false);
 }
 
 #pragma mark - Private

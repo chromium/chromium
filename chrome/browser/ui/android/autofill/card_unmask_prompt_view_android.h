@@ -40,7 +40,8 @@ class CardUnmaskPromptViewAndroid : public CardUnmaskPromptView {
                    const base::android::JavaParamRef<jstring>& cvc,
                    const base::android::JavaParamRef<jstring>& month,
                    const base::android::JavaParamRef<jstring>& year,
-                   jboolean enable_fido_auth);
+                   jboolean enable_fido_auth,
+                   jboolean was_checkbox_visible);
   void OnNewCardLinkClicked(JNIEnv* env,
                             const base::android::JavaParamRef<jobject>& obj);
   int GetExpectedCvcLength(JNIEnv* env,

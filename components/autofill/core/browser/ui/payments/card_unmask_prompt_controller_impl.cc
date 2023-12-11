@@ -149,7 +149,8 @@ void CardUnmaskPromptControllerImpl::OnUnmaskPromptAccepted(
     const std::u16string& cvc,
     const std::u16string& exp_month,
     const std::u16string& exp_year,
-    bool enable_fido_auth) {
+    bool enable_fido_auth,
+    bool was_checkbox_visible) {
   verify_timestamp_ = AutofillClock::Now();
   unmasking_number_of_attempts_++;
   unmasking_result_ = AutofillClient::PaymentsRpcResult::kNone;
@@ -167,8 +168,10 @@ void CardUnmaskPromptControllerImpl::OnUnmaskPromptAccepted(
   // always be shown. Remember the last choice the user made on this device.
 #if BUILDFLAG(IS_ANDROID)
   pending_details_.enable_fido_auth = enable_fido_auth;
-  pref_service_->SetBoolean(
-      prefs::kAutofillCreditCardFidoAuthOfferCheckboxState, enable_fido_auth);
+  if (was_checkbox_visible) {
+    pref_service_->SetBoolean(
+        prefs::kAutofillCreditCardFidoAuthOfferCheckboxState, enable_fido_auth);
+  }
 #endif
 
   // There is a chance the delegate has disappeared (i.e. tab closed) before the

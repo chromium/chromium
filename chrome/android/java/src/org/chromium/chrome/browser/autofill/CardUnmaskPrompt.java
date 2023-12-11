@@ -124,12 +124,19 @@ public class CardUnmaskPrompt
 
         /**
          * Called when the user has entered a value and pressed "verify".
+         *
          * @param cvc The value the user entered (a CVC), or an empty string if the user canceled.
          * @param month The value the user selected for expiration month, if any.
          * @param year The value the user selected for expiration month, if any.
          * @param enableFidoAuth The value the user selected for the use lockscreen checkbox.
+         * @param wasCheckboxVisible If the FIDO auth checkbox was shown to the user.
          */
-        void onUserInput(String cvc, String month, String year, boolean enableFidoAuth);
+        void onUserInput(
+                String cvc,
+                String month,
+                String year,
+                boolean enableFidoAuth,
+                boolean wasCheckboxVisible);
 
         /**
          * Called when the "New card?" link has been clicked.
@@ -623,7 +630,8 @@ public class CardUnmaskPrompt
                     mCardUnmaskInput.getText().toString(),
                     mMonthInput.getText().toString(),
                     Integer.toString(AutofillUiUtils.getFourDigitYear(mYearInput)),
-                    mUseScreenlockCheckbox.isChecked());
+                    mUseScreenlockCheckbox.isChecked(),
+                    mUseScreenlockCheckbox.getVisibility() == View.VISIBLE);
         } else if (buttonType == ModalDialogProperties.ButtonType.NEGATIVE) {
             mModalDialogManager.dismissDialog(model, DialogDismissalCause.NEGATIVE_BUTTON_CLICKED);
         }

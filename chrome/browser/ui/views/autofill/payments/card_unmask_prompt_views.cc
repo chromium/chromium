@@ -245,7 +245,8 @@ bool CardUnmaskPromptViews::Accept() {
       year_input_->GetVisible()
           ? year_input_->GetTextForRow(year_input_->GetSelectedIndex().value())
           : std::u16string(),
-      /*enable_fido_auth=*/false);
+      /*enable_fido_auth=*/false,
+      /*was_checkbox_visible=*/false);
   return false;
 }
 

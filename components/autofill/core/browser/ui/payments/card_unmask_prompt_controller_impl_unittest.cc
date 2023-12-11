@@ -147,14 +147,15 @@ class CardUnmaskPromptControllerImplGenericTest {
   }
 
   void ShowPromptAndSimulateResponse(bool enable_fido_auth,
-                                     bool should_unmask_virtual_card = false) {
+                                     bool should_unmask_virtual_card = false,
+                                     bool was_checkbox_visible = true) {
     ShowPrompt(should_unmask_virtual_card
                    ? absl::optional<autofill::CardUnmaskChallengeOption>(
                          test::GetCardUnmaskChallengeOptions(
                              {CardUnmaskChallengeOptionType::kCvc})[0])
                    : absl::nullopt);
     controller_->OnUnmaskPromptAccepted(u"444", u"01", u"2050",
-                                        enable_fido_auth);
+                                        enable_fido_auth, was_checkbox_visible);
   }
 
  protected:
@@ -205,6 +206,25 @@ TEST_F(CardUnmaskPromptControllerImplTest,
       prefs::kAutofillCreditCardFidoAuthOfferCheckboxState));
 
   ShowPromptAndSimulateResponse(/*enable_fido_auth=*/false);
+  EXPECT_FALSE(pref_service_->GetBoolean(
+      prefs::kAutofillCreditCardFidoAuthOfferCheckboxState));
+}
+
+TEST_F(CardUnmaskPromptControllerImplTest,
+       FidoAuthOfferCheckboxStateUnchangedWhenInvisible) {
+  pref_service_->SetBoolean(
+      prefs::kAutofillCreditCardFidoAuthOfferCheckboxState, true);
+  ShowPromptAndSimulateResponse(/*enable_fido_auth=*/false,
+                                /*should_unmask_virtual_card=*/false,
+                                /*was_checkbox_visible=*/false);
+  EXPECT_TRUE(pref_service_->GetBoolean(
+      prefs::kAutofillCreditCardFidoAuthOfferCheckboxState));
+
+  pref_service_->SetBoolean(
+      prefs::kAutofillCreditCardFidoAuthOfferCheckboxState, false);
+  ShowPromptAndSimulateResponse(/*enable_fido_auth=*/true,
+                                /*should_unmask_virtual_card=*/false,
+                                /*was_checkbox_visible=*/false);
   EXPECT_FALSE(pref_service_->GetBoolean(
       prefs::kAutofillCreditCardFidoAuthOfferCheckboxState));
 }
@@ -676,7 +696,8 @@ TEST_P(LoggingValidationTestForNickname, LogUnmaskedCardAfterFailure) {
       AutofillClient::PaymentsRpcResult::kTryAgainFailure);
   controller_->OnUnmaskPromptAccepted(u"444", u"01", u"2050",
 
-                                      /*enable_fido_auth=*/false);
+                                      /*enable_fido_auth=*/false,
+                                      /*was_checkbox_visible=*/true);
   base::HistogramTester histogram_tester;
 
   controller_->OnVerificationResult(
@@ -789,7 +810,8 @@ TEST_P(LoggingValidationTestForNickname, LogDurationUnmaskedCardAfterFailure) {
   controller_->OnVerificationResult(
       AutofillClient::PaymentsRpcResult::kTryAgainFailure);
   controller_->OnUnmaskPromptAccepted(u"444", u"01", u"2050",
-                                      /*enable_fido_auth=*/false);
+                                      /*enable_fido_auth=*/false,
+                                      /*was_checkbox_visible=*/true);
   base::HistogramTester histogram_tester;
 
   controller_->OnVerificationResult(
@@ -858,9 +880,9 @@ TEST_P(CvcInputValidationTest, CvcInputValidation) {
   if (!cvc_case.valid)
     return;
 
-  controller_->OnUnmaskPromptAccepted(ASCIIToUTF16(cvc_case.input), u"1",
-                                      u"2050",
-                                      /*enable_fido_auth=*/false);
+  controller_->OnUnmaskPromptAccepted(
+      ASCIIToUTF16(cvc_case.input), u"1", u"2050",
+      /*enable_fido_auth=*/false, /*was_checkbox_visible=*/true);
   EXPECT_EQ(ASCIIToUTF16(cvc_case.canonicalized_input),
             delegate_->details().cvc);
 }
@@ -902,9 +924,9 @@ TEST_P(CvcInputAmexValidationTest, CvcInputValidation) {
   if (!cvc_case_amex.valid)
     return;
 
-  controller_->OnUnmaskPromptAccepted(ASCIIToUTF16(cvc_case_amex.input),
-                                      std::u16string(), std::u16string(),
-                                      /*enable_fido_auth=*/false);
+  controller_->OnUnmaskPromptAccepted(
+      ASCIIToUTF16(cvc_case_amex.input), std::u16string(), std::u16string(),
+      /*enable_fido_auth=*/false, /*was_checkbox_visible=*/true);
   EXPECT_EQ(ASCIIToUTF16(cvc_case_amex.canonicalized_input),
             delegate_->details().cvc);
 }

@@ -50,7 +50,8 @@ class MockCardUnmaskPromptController
               (const std::u16string& cvc,
                const std::u16string& exp_month,
                const std::u16string& exp_year,
-               bool enable_fido_auth),
+               bool enable_fido_auth,
+               bool was_checkbox_visible),
               (override));
 
   MOCK_METHOD(bool, ShouldRequestExpirationDate, (), (const, override));
@@ -252,11 +253,11 @@ class CardUnmaskPromptViewControllerTest
 
     // ViewController should notify its Controller when the CVC form is
     // submitted.
-    EXPECT_CALL(
-        *card_unmask_prompt_controller_,
-        OnUnmaskPromptAccepted(Eq(base::SysNSStringToUTF16(CVC)),
-                               Eq(base::SysNSStringToUTF16(month)),
-                               Eq(base::SysNSStringToUTF16(year)), Eq(false)));
+    EXPECT_CALL(*card_unmask_prompt_controller_,
+                OnUnmaskPromptAccepted(Eq(base::SysNSStringToUTF16(CVC)),
+                                       Eq(base::SysNSStringToUTF16(month)),
+                                       Eq(base::SysNSStringToUTF16(year)),
+                                       Eq(false), Eq(false)));
 
     [prompt_controller onVerifyTapped];
   }

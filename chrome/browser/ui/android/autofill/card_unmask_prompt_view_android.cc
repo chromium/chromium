@@ -71,11 +71,13 @@ void CardUnmaskPromptViewAndroid::OnUserInput(
     const JavaParamRef<jstring>& cvc,
     const JavaParamRef<jstring>& month,
     const JavaParamRef<jstring>& year,
-    jboolean enable_fido_auth) {
+    jboolean enable_fido_auth,
+    jboolean was_checkbox_visible) {
   controller_->OnUnmaskPromptAccepted(
       base::android::ConvertJavaStringToUTF16(env, cvc),
       base::android::ConvertJavaStringToUTF16(env, month),
-      base::android::ConvertJavaStringToUTF16(env, year), enable_fido_auth);
+      base::android::ConvertJavaStringToUTF16(env, year), enable_fido_auth,
+      was_checkbox_visible);
 }
 
 void CardUnmaskPromptViewAndroid::OnNewCardLinkClicked(
