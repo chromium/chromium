@@ -1945,11 +1945,14 @@ void AXObjectCacheImpl::RemoveAXObjectsInLayoutSubtree(
 }
 
 void AXObjectCacheImpl::RemoveAXObjectsInLayoutSubtree(Node* subtree_root) {
-  if (subtree_root->GetLayoutObject()) {
-    RemoveAXObjectsInLayoutSubtree(subtree_root->GetLayoutObject());
-  } else {
-    Remove(subtree_root, /*notify_parent*/ true);
-  }
+  // Remove the root immediately in order to avoid DCHECK(!has_ax_object_)
+  // in LayoutObject::Destroy() when removing a subtrree from
+  // DetachLayoutSubtree().
+  Remove(subtree_root);
+
+  // Remove the rest when safe (when flat tree traversal is allowed, and
+  // slot assignments are complete).
+  RemoveSubtreeWhenSafe(subtree_root, /*remove_root*/ false);
 }
 
 void AXObjectCacheImpl::ProcessSubtreeRemovals() {
@@ -1964,6 +1967,9 @@ void AXObjectCacheImpl::ProcessSubtreeRemoval(Node* node, bool remove_root) {
     RemoveSubtreeWithFlatTraversal(node, /* remove root */ true,
                                    /* notify_parent */ true);
   } else {
+    if (IsA<ShadowRoot>(node)) {
+      node = &To<ShadowRoot>(node)->host();
+    }
     for (Node* child_node = LayoutTreeBuilderTraversal::FirstChild(*node);
          child_node;
          child_node = LayoutTreeBuilderTraversal::NextSibling(*child_node)) {
