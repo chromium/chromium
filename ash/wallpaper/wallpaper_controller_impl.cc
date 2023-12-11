@@ -1152,6 +1152,18 @@ void WallpaperControllerImpl::SetSeaPenWallpaperFromFile(
                      file_path, std::move(callback)));
 }
 
+void WallpaperControllerImpl::DeleteRecentSeaPenImage(
+    const AccountId& account_id,
+    const base::FilePath& file_path,
+    DeleteRecentSeaPenImageCallback callback) {
+  DCHECK(Shell::Get()->session_controller()->IsActiveUserSessionStarted());
+  if (!CanSetUserWallpaper(account_id)) {
+    std::move(callback).Run(/*success=*/false);
+    return;
+  }
+  wallpaper_file_manager_->RemoveImageFromDisk(std::move(callback), file_path);
+}
+
 void WallpaperControllerImpl::ConfirmPreviewWallpaper() {
   if (!confirm_preview_wallpaper_callback_) {
     DCHECK(!reload_preview_wallpaper_callback_);

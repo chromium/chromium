@@ -52,10 +52,26 @@ export async function searchSeaPenThumbnails(
 }
 
 export async function selectSeaPenWallpaper(
-    thumbnail: SeaPenThumbnail,
-    provider: SeaPenProviderInterface): Promise<void> {
+    thumbnail: SeaPenThumbnail, provider: SeaPenProviderInterface,
+    store: PersonalizationStore): Promise<void> {
   // TODO(b/305965517) show loading state.
-  await provider.selectSeaPenThumbnail(thumbnail.id);
+  const {success} = await provider.selectSeaPenThumbnail(thumbnail.id);
+  // Re-fetches the recent Sea Pen image if setting sea pen wallpaper
+  // successfully, which means the file has been downloaded successfully.
+  if (success) {
+    await fetchRecentSeaPenData(provider, store);
+  }
+}
+
+export async function deleteRecentSeaPenImage(
+    image: FilePath, provider: SeaPenProviderInterface,
+    store: PersonalizationStore): Promise<void> {
+  const {success} = await provider.deleteRecentSeaPenImage(image);
+  // Re-fetches the recent Sea Pen images if recent Sea Pen image is removed
+  // successfully.
+  if (success) {
+    fetchRecentSeaPenData(provider, store);
+  }
 }
 
 export async function getRecentSeaPenImages(
@@ -70,7 +86,6 @@ export async function getRecentSeaPenImages(
 
   store.dispatch(seaPenAction.setRecentSeaPenImagesAction(images));
 }
-
 
 /**
  * Gets list of recent Sea Pen images, then fetches image data for each recent

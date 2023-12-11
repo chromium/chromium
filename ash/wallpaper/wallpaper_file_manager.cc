@@ -134,6 +134,13 @@ bool DeleteWallpaperPath(WallpaperType type,
   return base::DeletePathRecursively(wallpaper_dir);
 }
 
+bool DeleteFileFromDisk(const base::FilePath& file_path) {
+  if (base::PathExists(file_path) && file_path.Extension() == ".jpg") {
+    return base::DeleteFile(file_path);
+  }
+  return false;
+}
+
 base::FilePath GetCustomWallpaperDir(const base::FilePath& wallpaper_dir,
                                      const std::string& sub_dir,
                                      const std::string& wallpaper_files_id) {
@@ -298,6 +305,15 @@ void WallpaperFileManager::SaveWallpaperToDisk(
       FROM_HERE,
       base::BindOnce(&SaveWallpaperPerType, type, wallpaper_dir,
                      wallpaper_files_id, file_name, layout, deep_copy),
+      std::move(callback));
+}
+
+void WallpaperFileManager::RemoveImageFromDisk(
+    RemoveImageFromDiskCallback callback,
+    const base::FilePath& file_path) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  blocking_task_runner_->PostTaskAndReplyWithResult(
+      FROM_HERE, base::BindOnce(&DeleteFileFromDisk, file_path),
       std::move(callback));
 }
 

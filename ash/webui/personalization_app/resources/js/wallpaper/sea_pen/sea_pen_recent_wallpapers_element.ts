@@ -25,7 +25,7 @@ import {isFilePath, isImageAMatchForKey, isImageEqualToSelected} from '../utils.
 import {WallpaperGridItemSelectedEvent} from '../wallpaper_grid_item_element.js';
 
 import {RecentSeaPenData} from './constants.js';
-import {fetchRecentSeaPenData, selectRecentSeaPenImage} from './sea_pen_controller.js';
+import {deleteRecentSeaPenImage, fetchRecentSeaPenData, selectRecentSeaPenImage} from './sea_pen_controller.js';
 import {getSeaPenProvider} from './sea_pen_interface_provider.js';
 import {getTemplate} from './sea_pen_recent_wallpapers_element.html.js';
 
@@ -228,8 +228,14 @@ export class SeaPenRecentWallpapersElement extends WithPersonalizationStore {
     // TODO(b/304581483): make "More like this" button functional.
   }
 
-  private onClickDeleteWallpaper_() {
-    // TODO(b/304592162): delete the selected wallpaper.
+  private onClickDeleteWallpaper_(event: Event&{model: {image: FilePath}}) {
+    // TODO (b/315069374): confirm if currently set Sea Pen wallpaper can be
+    // removed.
+    assert(
+        isFilePath(event.model.image), 'selected Sea Pen image is a file path');
+    deleteRecentSeaPenImage(
+        event.model.image, getSeaPenProvider(), this.getStore());
+    this.closeAllActionMenus_();
   }
 
   private onClickWallpaperInfo_(e: Event) {
@@ -237,8 +243,8 @@ export class SeaPenRecentWallpapersElement extends WithPersonalizationStore {
     const id = eventTarget.dataset['id'];
     if (id !== undefined) {
       this.currentShowWallpaperInfoDialog_ = parseInt(id, 10);
-      this.closeAllActionMenus_();
     }
+    this.closeAllActionMenus_();
   }
 
   private closeAllActionMenus_() {

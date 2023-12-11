@@ -13,6 +13,7 @@
 #include "ash/public/cpp/wallpaper/wallpaper_types.h"
 #include "ash/wallpaper/wallpaper_drag_drop_delegate.h"
 #include "base/containers/adapters.h"
+#include "base/files/file_util.h"
 #include "base/notreached.h"
 #include "base/ranges/algorithm.h"
 #include "base/task/sequenced_task_runner.h"
@@ -231,6 +232,18 @@ void TestWallpaperController::SetSeaPenWallpaperFromFile(
   wallpaper_info_ = ash::WallpaperInfo();
   wallpaper_info_->type = ash::WallpaperType::kSeaPen;
   std::move(callback).Run(/*success=*/true);
+}
+
+void TestWallpaperController::DeleteRecentSeaPenImage(
+    const AccountId& account_id,
+    const base::FilePath& sea_pen_file_path,
+    DeleteRecentSeaPenImageCallback callback) {
+  if (base::PathExists(sea_pen_file_path) &&
+      base::DeleteFile(sea_pen_file_path)) {
+    std::move(callback).Run(/*success=*/true);
+    return;
+  }
+  std::move(callback).Run(/*success=*/false);
 }
 
 void TestWallpaperController::ConfirmPreviewWallpaper() {

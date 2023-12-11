@@ -67,6 +67,10 @@ class PersonalizationAppSeaPenProviderImpl
       const base::FilePath& path,
       GetRecentSeaPenImageThumbnailCallback callback) override;
 
+  void DeleteRecentSeaPenImage(
+      const base::FilePath& path,
+      DeleteRecentSeaPenImageCallback callback) override;
+
  private:
   wallpaper_handlers::SeaPenFetcher* GetOrCreateSeaPenFetcher();
 

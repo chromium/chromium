@@ -42,6 +42,9 @@ class ASH_PUBLIC_EXPORT WallpaperController {
   // successfully.
   using SetWallpaperCallback = base::OnceCallback<void(bool success)>;
 
+  using DeleteRecentSeaPenImageCallback =
+      base::OnceCallback<void(bool success)>;
+
   using DailyGooglePhotosIdCache = base::HashingLRUCacheSet<uint32_t>;
 
   using LoadPreviewImageCallback =
@@ -241,6 +244,12 @@ class ASH_PUBLIC_EXPORT WallpaperController {
   virtual void SetSeaPenWallpaperFromFile(const AccountId& account_id,
                                           const base::FilePath& file_path,
                                           SetWallpaperCallback callback) = 0;
+
+  // Removes the selected Sea Pen image from Sea Pen directory.
+  virtual void DeleteRecentSeaPenImage(
+      const AccountId& account_id,
+      const base::FilePath& file_path,
+      DeleteRecentSeaPenImageCallback callback) = 0;
 
   // Confirms the wallpaper being previewed to be set as the actual user
   // wallpaper. Must be called in preview mode.

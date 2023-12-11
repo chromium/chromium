@@ -412,6 +412,74 @@ suite('SeaPenRecentWallpapersElementTest', function() {
             'no Wallpaper Info dialog after close button clicked');
       });
 
+  test('deletes a recent Sea Pen image', async () => {
+    personalizationStore.setReducersEnabled(true);
+    personalizationStore.data.wallpaper.seaPen.recentImages =
+        seaPenProvider.recentImages;
+    personalizationStore.data.wallpaper.seaPen.recentImageData =
+        seaPenProvider.recentImageData;
+    personalizationStore.data.wallpaper.seaPen.loading = {
+      recentImages: false,
+      recentImageData: {
+        '/sea_pen/111.jpg': false,
+        '/sea_pen/222.jpg': false,
+        '/sea_pen/333.jpg': false,
+      },
+      thumbnails: false,
+    };
+
+    // Initialize |seaPenRecentWallpapersElement|.
+    seaPenRecentWallpapersElement = initElement(SeaPenRecentWallpapersElement);
+    await waitAfterNextRender(seaPenRecentWallpapersElement);
+
+    // 3 Sea Pen wallpaper thumbnails should display.
+    let recentImages = getDisplayedRecentImages();
+    assertEquals(3, recentImages.length);
+
+    // The menu button for each Sea Pen wallpaper should display.
+    const menuIconButtons =
+        seaPenRecentWallpapersElement.shadowRoot!.querySelectorAll(
+            'div:not([hidden]) .menu-icon-container .menu-icon-button');
+    assertEquals(
+        3, menuIconButtons!.length, 'should be 3 menu icon buttons available.');
+
+    // Click on the menu icon button on the 1st image to open its menu
+    // options.
+    (menuIconButtons[0] as HTMLElement)!.click();
+
+    // There is an action menu tied to the menu icon button of each image.
+    // Only the action menu corresponding to the clicked-on menu icon button
+    // should open.
+    const actionMenus =
+        seaPenRecentWallpapersElement.shadowRoot!.querySelectorAll(
+            'div:not([hidden]) .action-menu-container');
+    assertEquals(3, actionMenus!.length, 'should be 3 action menus available.');
+
+    // Menu dialog for the first image should be opened.
+    const actionMenu = actionMenus[0] as HTMLElement;
+    const menuDialog =
+        actionMenu.shadowRoot!.querySelector('dialog') as HTMLDialogElement;
+    assertTrue(!!menuDialog!.open, `menu dialog 0 should be opened.`);
+
+    // Wallpaper Info menu option is available. Click on this option.
+    const deleteWallpaperOption =
+        actionMenu.querySelector('.delete-wallpaper-option') as HTMLElement;
+    assertTrue(
+        !!deleteWallpaperOption, 'delete wallpaper option should display.');
+    deleteWallpaperOption!.click();
+
+    await waitAfterNextRender(seaPenRecentWallpapersElement);
+
+    // Only two Sea Pen wallpaper thumbnails should display after one is
+    // deleted.
+    recentImages = getDisplayedRecentImages();
+    assertEquals(2, recentImages.length, 'only 2 images should display.');
+    assertDeepEquals(
+        {url: 'data:image/jpeg;base64,image222data'}, recentImages![0]!.src);
+    assertDeepEquals(
+        {url: 'data:image/jpeg;base64,image333data'}, recentImages![1]!.src);
+  });
+
   test('clicks on a recent wallpaper to set wallpaper', async () => {
     personalizationStore.data.wallpaper.seaPen.recentImages =
         seaPenProvider.recentImages;

@@ -77,6 +77,10 @@ class ASH_EXPORT WallpaperFileManager {
                            SaveWallpaperCallback callback = base::DoNothing(),
                            const std::string& wallpaper_files_id = "");
 
+  using RemoveImageFromDiskCallback = base::OnceCallback<void(bool success)>;
+  void RemoveImageFromDisk(RemoveImageFromDiskCallback callback,
+                           const base::FilePath& file_path);
+
  private:
   void LoadFromDisk(LoadWallpaperCallback callback,
                     const base::FilePath& file_path);

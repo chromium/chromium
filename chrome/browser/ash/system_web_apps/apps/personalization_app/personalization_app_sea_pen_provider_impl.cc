@@ -132,6 +132,21 @@ void PersonalizationAppSeaPenProviderImpl::GetRecentSeaPenImageThumbnail(
       path);
 }
 
+void PersonalizationAppSeaPenProviderImpl::DeleteRecentSeaPenImage(
+    const base::FilePath& path,
+    DeleteRecentSeaPenImageCallback callback) {
+  if (recent_sea_pen_images_.count(path) == 0) {
+    sea_pen_receiver_.ReportBadMessage("Invalid Sea Pen image received");
+    return;
+  }
+
+  auto* wallpaper_controller = ash::WallpaperController::Get();
+  DCHECK(wallpaper_controller);
+
+  wallpaper_controller->DeleteRecentSeaPenImage(GetAccountId(profile_), path,
+                                                std::move(callback));
+}
+
 wallpaper_handlers::SeaPenFetcher*
 PersonalizationAppSeaPenProviderImpl::GetOrCreateSeaPenFetcher() {
   if (!sea_pen_fetcher_) {

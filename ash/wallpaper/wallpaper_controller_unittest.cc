@@ -2433,6 +2433,23 @@ TEST_P(WallpaperControllerTest, SetDefaultWallpaperCallbackTiming) {
   EXPECT_EQ(1, observer.wallpaper_changed_count());
 }
 
+TEST_P(WallpaperControllerTest, DeleteRecentSeaPenImage) {
+  SimulateUserLogin(kAccountId1);
+  TestWallpaperControllerObserver observer(controller_);
+
+  base::ScopedTempDir scoped_temp_dir;
+  ASSERT_TRUE(scoped_temp_dir.CreateUniqueTempDir());
+  base::FilePath file_path = scoped_temp_dir.GetPath().Append("111.jpg");
+  ASSERT_TRUE(base::WriteFile(file_path, "test data"));
+
+  base::test::TestFuture<bool> delete_sea_pen_image_future;
+  controller_->DeleteRecentSeaPenImage(
+      kAccountId1, file_path, delete_sea_pen_image_future.GetCallback());
+
+  EXPECT_TRUE(delete_sea_pen_image_future.Get());
+  EXPECT_FALSE(base::PathExists(file_path));
+}
+
 TEST_P(WallpaperControllerTest, IgnoreWallpaperRequestInKioskMode) {
   gfx::ImageSkia image = CreateImage(640, 480, kWallpaperColor);
   SimulateUserLogin("kiosk", user_manager::USER_TYPE_KIOSK_APP);

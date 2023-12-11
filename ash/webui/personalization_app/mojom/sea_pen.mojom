@@ -166,4 +166,7 @@ interface SeaPenProvider {
     // `url` will be empty on failure.
     GetRecentSeaPenImageThumbnail(mojo_base.mojom.FilePath path) =>
         (url.mojom.Url url);
+
+    // Deletes the selected Sea Pen image from Sea Pen directory.
+    DeleteRecentSeaPenImage(mojo_base.mojom.FilePath path) => (bool success);
 };

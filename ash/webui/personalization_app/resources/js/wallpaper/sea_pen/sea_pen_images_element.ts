@@ -82,7 +82,8 @@ export class SeaPenImagesElement extends WithPersonalizationStore {
 
   private onThumbnailSelected_(event: Event&{model: {item: SeaPenThumbnail}}) {
     this.pendingSelected_ = event.model.item;
-    selectSeaPenWallpaper(event.model.item, getSeaPenProvider());
+    selectSeaPenWallpaper(
+        event.model.item, getSeaPenProvider(), this.getStore());
   }
 
   private getAriaIndex_(i: number): number {
