@@ -30,6 +30,7 @@ import android.widget.TextView;
 import androidx.annotation.IntDef;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.annotation.VisibleForTesting;
 import androidx.core.text.BidiFormatter;
 import androidx.core.text.TextDirectionHeuristicsCompat;
 import androidx.core.view.inputmethod.EditorInfoCompat;
@@ -104,8 +105,11 @@ public abstract class UrlBar extends AutocompleteEditText {
     private boolean mAllowFocus = true;
 
     private boolean mPendingScroll;
-    private int mPreviousWidth;
 
+    // Captures the current intended text scroll type.
+    // This may not be effective if mPendingScroll is true.
+    @ScrollType private int mCurrentScrollType;
+    // Captures previously calculated text scroll type.
     @ScrollType private int mPreviousScrollType;
     private String mPreviousScrollText;
     private int mPreviousScrollViewWidth;
@@ -135,8 +139,6 @@ public abstract class UrlBar extends AutocompleteEditText {
     // passed to the previous call to scrollToTLD. Remove after crash is fixed.
     Editable mScrollToTLDPrevUrl;
     int mScrollToTLDPrevEndIndex;
-
-    @ScrollType private int mScrollType;
 
     /** What scrolling action should be taken after the URL bar text changes. * */
     @IntDef({ScrollType.NO_SCROLL, ScrollType.SCROLL_TO_TLD, ScrollType.SCROLL_TO_BEGINNING})
@@ -293,7 +295,8 @@ public abstract class UrlBar extends AutocompleteEditText {
     }
 
     @Override
-    protected void onFocusChanged(boolean focused, int direction, Rect previouslyFocusedRect) {
+    @VisibleForTesting(otherwise = VisibleForTesting.PROTECTED)
+    public void onFocusChanged(boolean focused, int direction, Rect previouslyFocusedRect) {
         mFocused = focused;
         super.onFocusChanged(focused, direction, previouslyFocusedRect);
 
@@ -439,7 +442,7 @@ public abstract class UrlBar extends AutocompleteEditText {
             }
 
             // Ensure the display text is visible after updating the URL direction.
-            scrollDisplayText();
+            scrollDisplayText(mCurrentScrollType);
         }
     }
 
@@ -619,8 +622,7 @@ public abstract class UrlBar extends AutocompleteEditText {
         } else {
             mOriginEndIndex = 0;
         }
-        mScrollType = scrollType;
-        scrollDisplayText();
+        scrollDisplayText(scrollType);
     }
 
     /**
@@ -647,19 +649,6 @@ public abstract class UrlBar extends AutocompleteEditText {
         return getMeasuredWidth() - (getPaddingLeft() + getPaddingRight());
     }
 
-    /**
-     * Scrolls the omnibox text to a position determined by the current scroll type.
-     *
-     * @see #setScrollState(int, int)
-     */
-    private void scrollDisplayText() {
-        if (isLayoutRequested()) {
-            mPendingScroll = mScrollType != ScrollType.NO_SCROLL;
-            return;
-        }
-        scrollDisplayTextInternal(mScrollType);
-    }
-
     private boolean isVisibleTextTheSame(Editable text) {
         if (text == null) {
             return false;
@@ -679,8 +668,17 @@ public abstract class UrlBar extends AutocompleteEditText {
      *     bring the TLD into view. SCROLL_TO_BEGINNING: Scrolls text that's too long to fit in the
      *     omnibox to the beginning so we can see the first character.
      */
-    private void scrollDisplayTextInternal(@ScrollType int scrollType) {
-        mPendingScroll = false;
+    @VisibleForTesting
+    public void scrollDisplayText(@ScrollType int scrollType) {
+        // It's possible that text layout is not available right now. This could happen when the
+        // call is made before the text could be measured. Fall back to safe defaults, even if not
+        // correct for RTL layouts - this should be very rare (~10 cases per day worldwide).
+        // The layout will likely be available after the view measures itself again.
+        // Postpone scroll until we view and text layout are known.
+        // Request scroll update in case scroll type or view dimensions have changed.
+        mCurrentScrollType = scrollType;
+        mPendingScroll = isLayoutRequested() || (getLayout() == null);
+        if (mPendingScroll) return;
 
         if (mFocused) return;
 
@@ -703,6 +701,7 @@ public abstract class UrlBar extends AutocompleteEditText {
                 && currentIsRtl == mPreviousScrollWasRtl
                 && isVisibleTextTheSame(text)) {
             scrollTo(mPreviousScrollResultXPosition, getScrollY());
+
             return;
         }
 
@@ -730,8 +729,9 @@ public abstract class UrlBar extends AutocompleteEditText {
     }
 
     /** Scrolls the omnibox text to show the very beginning of the text entered. */
-    private void scrollToBeginning() {
-        // Clearly the visible text hint as this path is not used for normal browser navigation.
+    @VisibleForTesting
+    /* package */ void scrollToBeginning() {
+        // Clear the visible text hint as this path is not used for normal browser navigation.
         // If that changes in the future, update this to actually calculate the visible text hints.
         mVisibleTextPrefixHint = null;
 
@@ -828,7 +828,8 @@ public abstract class UrlBar extends AutocompleteEditText {
     }
 
     /** Scrolls the omnibox text to bring the TLD into view. */
-    private void scrollToTLD() {
+    @VisibleForTesting
+    /* package */ void scrollToTLD() {
         Editable url = getText();
         int measuredWidth = getVisibleMeasuredViewportWidth();
         int urlTextLength = url.length();
@@ -950,15 +951,19 @@ public abstract class UrlBar extends AutocompleteEditText {
     }
 
     @Override
-    protected void onLayout(boolean changed, int left, int top, int right, int bottom) {
-        super.onLayout(changed, left, top, right, bottom);
+    public void layout(int left, int top, int right, int bottom) {
+        super.layout(left, top, right, bottom);
 
-        if (mPendingScroll) {
-            scrollDisplayTextInternal(mScrollType);
-        } else if (mPreviousWidth != (right - left)) {
-            scrollDisplayTextInternal(mScrollType);
+        // Note: this must happen after the *entire* layout cycle completes.
+        // Running this during onLayout guarantees that isLayoutRequested will remain true,
+        // and the text layout will remain unresolved, suppressing resolution of display text
+        // scroll position.
+        if (mPendingScroll || mPreviousScrollViewWidth != getVisibleMeasuredViewportWidth()) {
+            scrollDisplayText(mCurrentScrollType);
+            // sanity check: be sure we don't re-request layout as a result of something that
+            // happens in scrollDisplayText().
+            assert !isLayoutRequested();
         }
-        mPreviousWidth = right - left;
     }
 
     @Override
@@ -1134,5 +1139,10 @@ public abstract class UrlBar extends AutocompleteEditText {
                 Paint paint) {
             canvas.drawText(ELLIPSIS, x, y, paint);
         }
+    }
+
+    @VisibleForTesting
+    /* package */ boolean hasPendingDisplayTextScrollForTesting() {
+        return mPendingScroll;
     }
 }
