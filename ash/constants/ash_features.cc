@@ -2308,7 +2308,7 @@ BASE_FEATURE(kProjectorAccountSwitchNotification,
              base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Controls whether to show promise icons during app installations.
-BASE_FEATURE(kPromiseIcons, "PromiseIcons", base::FEATURE_ENABLED_BY_DEFAULT);
+BASE_FEATURE(kPromiseIcons, "PromiseIcons", base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Controls whether to show promise icons during web app installations.
 BASE_FEATURE(kPromiseIconsForWebApps,
