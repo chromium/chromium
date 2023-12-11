@@ -26,9 +26,22 @@ class DiceBoundSessionCookieServiceTest : public ::testing::Test {
         std::make_unique<DiceBoundSessionCookieService>(
             bound_session_cookie_refresh_service_,
             *identity_test_env_.identity_manager());
+    // Ensure any pending list accounts request is completed.
+    identity_test_env().SetCookieAccounts({});
+    CHECK(!url_loader_factory().IsPending(list_accounts_url()));
+
+    // Erase response so that the expected list accounts request remains
+    // pending.
+    url_loader_factory().EraseResponse(GURL(list_accounts_url()));
   }
 
   ~DiceBoundSessionCookieServiceTest() override = default;
+
+  std::string list_accounts_url() {
+    return GaiaUrls::GetInstance()
+        ->ListAccountsURLWithSource(GaiaConstants::kChromeSource)
+        .spec();
+  }
 
   FakeBoundSessionCookieRefreshService* bound_session_cookie_refresh_service() {
     return &bound_session_cookie_refresh_service_;
@@ -52,21 +65,17 @@ class DiceBoundSessionCookieServiceTest : public ::testing::Test {
 };
 
 TEST_F(DiceBoundSessionCookieServiceTest, OnBoundSessionTerminated) {
-  // Ensure any pending list accounts request is completed.
-  identity_test_env().SetCookieAccounts({});
-  const std::string list_accounts_url =
-      GaiaUrls::GetInstance()
-          ->ListAccountsURLWithSource(GaiaConstants::kChromeSource)
-          .spec();
-  ASSERT_FALSE(url_loader_factory().IsPending(list_accounts_url));
-
-  // Erase response so that the expected list accounts request remains pending.
-  url_loader_factory().EraseResponse(GURL(list_accounts_url));
-  ASSERT_FALSE(url_loader_factory().IsPending(list_accounts_url));
-
-  bound_session_cookie_refresh_service()->SimulateOnBoundSessionTerminated();
-  ASSERT_TRUE(url_loader_factory().IsPending(list_accounts_url));
+  bound_session_cookie_refresh_service()->SimulateOnBoundSessionTerminated(
+      GaiaUrls::GetInstance()->google_url());
+  ASSERT_TRUE(url_loader_factory().IsPending(list_accounts_url()));
   // Let the request complete.
   identity_test_env().SetCookieAccounts({});
+}
+
+TEST_F(DiceBoundSessionCookieServiceTest,
+       NoneGaiaIncludedBoundSessionTerminated) {
+  bound_session_cookie_refresh_service()->SimulateOnBoundSessionTerminated(
+      GURL("wwww.youtube.com"));
+  EXPECT_FALSE(url_loader_factory().IsPending(list_accounts_url()));
 }
 }  // namespace

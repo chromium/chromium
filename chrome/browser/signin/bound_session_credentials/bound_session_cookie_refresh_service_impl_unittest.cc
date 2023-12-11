@@ -128,7 +128,7 @@ class FakeBoundSessionCookieController : public BoundSessionCookieController {
 
 class MockObserver : public BoundSessionCookieRefreshService::Observer {
  public:
-  MOCK_METHOD(void, OnBoundSessionTerminated, (), (override));
+  MOCK_METHOD(void, OnBoundSessionTerminated, (const GURL& site), (override));
 };
 }  // namespace
 
@@ -417,7 +417,8 @@ TEST_F(BoundSessionCookieRefreshServiceImplTest,
   EXPECT_CALL(renderer_updater, Run()).WillOnce([&] {
     VerifyNoBoundSession();
   });
-  EXPECT_CALL(*mock_observer(), OnBoundSessionTerminated()).Times(1);
+  EXPECT_CALL(*mock_observer(), OnBoundSessionTerminated(kTestGoogleURL))
+      .Times(1);
   SimulateTerminateSession(
       SessionTerminationTrigger::kSessionTerminationHeader);
   testing::Mock::VerifyAndClearExpectations(&renderer_updater);
@@ -428,7 +429,8 @@ TEST_F(BoundSessionCookieRefreshServiceImplTest, TerminateSession) {
   BoundSessionCookieRefreshServiceImpl* service = GetCookieRefreshServiceImpl();
   EXPECT_TRUE(service->GetBoundSessionThrottlerParams());
 
-  EXPECT_CALL(*mock_observer(), OnBoundSessionTerminated()).Times(1);
+  EXPECT_CALL(*mock_observer(), OnBoundSessionTerminated(kTestGoogleURL))
+      .Times(1);
   SimulateTerminateSession(
       SessionTerminationTrigger::kSessionTerminationHeader);
   VerifyNoBoundSession();
@@ -451,7 +453,8 @@ TEST_F(BoundSessionCookieRefreshServiceImplTest,
   EXPECT_TRUE(service->GetBoundSessionThrottlerParams());
 
   ASSERT_TRUE(cookie_controller());
-  EXPECT_CALL(*mock_observer(), OnBoundSessionTerminated()).Times(1);
+  EXPECT_CALL(*mock_observer(), OnBoundSessionTerminated(kTestGoogleURL))
+      .Times(1);
   cookie_controller()->SimulateOnPersistentErrorEncountered();
 
   VerifyNoBoundSession();
@@ -474,7 +477,8 @@ TEST_F(BoundSessionCookieRefreshServiceImplTest,
       base::MakeRefCounted<net::HttpResponseHeaders>("");
   headers->AddHeader(kSessionTerminationHeader, kTestSessionId);
   BoundSessionCookieRefreshServiceImpl* service = GetCookieRefreshServiceImpl();
-  EXPECT_CALL(*mock_observer(), OnBoundSessionTerminated()).Times(1);
+  EXPECT_CALL(*mock_observer(), OnBoundSessionTerminated(kTestGoogleURL))
+      .Times(1);
   service->MaybeTerminateSession(headers.get());
   VerifyNoBoundSession();
   VerifySessionTerminationTriggerRecorded(
@@ -577,7 +581,8 @@ TEST_F(BoundSessionCookieRefreshServiceImplTest, ClearMatchingData) {
   BoundSessionCookieRefreshServiceImpl* service = GetCookieRefreshServiceImpl();
   service->RegisterNewBoundSession(CreateTestBoundSessionParams());
 
-  EXPECT_CALL(*mock_observer(), OnBoundSessionTerminated()).Times(1);
+  EXPECT_CALL(*mock_observer(), OnBoundSessionTerminated(kTestGoogleURL))
+      .Times(1);
   ClearOriginData(content::StoragePartition::REMOVE_DATA_MASK_COOKIES,
                   url::Origin::Create(kTestGoogleURL));
   VerifyNoBoundSession();

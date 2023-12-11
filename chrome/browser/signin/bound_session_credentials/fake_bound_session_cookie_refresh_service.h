@@ -20,7 +20,7 @@ class FakeBoundSessionCookieRefreshService
 
   void SimulateUnblockRequest();
   bool IsRequestBlocked();
-  void SimulateOnBoundSessionTerminated();
+  void SimulateOnBoundSessionTerminated(const GURL& site);
 
   // BoundSessionCookieRefreshService:
   void Initialize() override {}

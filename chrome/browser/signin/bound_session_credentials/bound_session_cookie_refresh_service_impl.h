@@ -132,7 +132,7 @@ class BoundSessionCookieRefreshServiceImpl
   // storage and updates all renderers.
   void TerminateSession(SessionTerminationTrigger trigger);
   void RecordSessionTerminationTrigger(SessionTerminationTrigger trigger);
-  void NotifyBoundSessionTerminated();
+  void NotifyBoundSessionTerminated(const GURL& site);
 
   const raw_ref<unexportable_keys::UnexportableKeyService> key_service_;
   // Never null. Stored as `std::unique_ptr` for polymorphism.
