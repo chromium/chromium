@@ -81,7 +81,6 @@
 #import "ios/chrome/browser/signin/model/signin_error_controller_factory.h"
 #import "ios/chrome/browser/signin/model/trusted_vault_client_backend_factory.h"
 #import "ios/chrome/browser/supervised_user/model/child_account_service_factory.h"
-#import "ios/chrome/browser/supervised_user/model/kids_chrome_management_client_factory.h"
 #import "ios/chrome/browser/supervised_user/model/list_family_members_service_factory.h"
 #import "ios/chrome/browser/supervised_user/model/supervised_user_metrics_service_factory.h"
 #import "ios/chrome/browser/supervised_user/model/supervised_user_service_factory.h"
@@ -171,7 +170,6 @@ void EnsureBrowserStateKeyedServiceFactoriesBuilt() {
   IOSProfileSessionDurationsServiceFactory::GetInstance();
   IOSTrustedVaultServiceFactory::GetInstance();
   IOSUserEventServiceFactory::GetInstance();
-  KidsChromeManagementClientFactory::GetInstance();
   LanguageModelManagerFactory::GetInstance();
   MailtoHandlerServiceFactory::GetInstance();
   ManagedBookmarkServiceFactory::GetInstance();

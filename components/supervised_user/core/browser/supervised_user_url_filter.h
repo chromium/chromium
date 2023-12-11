@@ -17,9 +17,11 @@
 #include "base/sequence_checker.h"
 #include "build/chromeos_buildflags.h"
 #include "components/safe_search_api/url_checker.h"
+#include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/supervised_user/core/browser/supervised_user_error_page.h"
 #include "components/supervised_user/core/common/supervised_user_constants.h"
 #include "components/supervised_user/core/common/supervised_user_utils.h"
+#include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "ui/base/page_transition_types.h"
 
 class GURL;
@@ -27,8 +29,6 @@ class GURL;
 namespace base {
 class TaskRunner;
 }
-
-class KidsChromeManagementClient;
 
 // Callback type for additional url validations.
 typedef base::RepeatingCallback<bool(const GURL&)> ValidateURLSupportCallback;
@@ -228,7 +228,8 @@ class SupervisedUserURLFilter {
 
   // Initializes the experimental asynchronous checker.
   void InitAsyncURLChecker(
-      KidsChromeManagementClient* kids_chrome_management_client);
+      signin::IdentityManager* identity_manager,
+      scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory);
 
   // Clears any asynchronous checker.
   void ClearAsyncURLChecker();

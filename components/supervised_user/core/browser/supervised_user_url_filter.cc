@@ -13,17 +13,19 @@
 #include "base/containers/contains.h"
 #include "base/containers/fixed_flat_set.h"
 #include "base/functional/bind.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/notreached.h"
 #include "base/strings/string_util.h"
 #include "base/task/thread_pool.h"
-#include "components/supervised_user/core/browser/kids_chrome_management_client.h"
+#include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/supervised_user/core/browser/kids_management_url_checker_client.h"
 #include "components/supervised_user/core/common/supervised_user_constants.h"
 #include "components/supervised_user/core/common/supervised_user_utils.h"
 #include "components/url_matcher/url_util.h"
 #include "net/base/registry_controlled_domains/registry_controlled_domain.h"
+#include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "url/gurl.h"
 #include "url/url_constants.h"
 
@@ -674,13 +676,14 @@ void SupervisedUserURLFilter::SetManualURLs(std::map<GURL, bool> url_map) {
 }
 
 void SupervisedUserURLFilter::InitAsyncURLChecker(
-    KidsChromeManagementClient* kids_chrome_management_client) {
+    signin::IdentityManager* identity_manager,
+    scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory) {
   DCHECK(service_delegate_);
   std::string country = service_delegate_->GetCountryCode();
 
   std::unique_ptr<safe_search_api::URLCheckerClient> url_checker_client =
       std::make_unique<KidsManagementURLCheckerClient>(
-          kids_chrome_management_client, country);
+          identity_manager, url_loader_factory, country);
   async_url_checker_ = std::make_unique<safe_search_api::URLChecker>(
       std::move(url_checker_client));
 }

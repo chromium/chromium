@@ -426,10 +426,7 @@ IN_PROC_BROWSER_TEST_F(ProfileKeyedServiceBrowserTest,
     "InvalidationService",
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
     "KAnonymityServiceFactory",
-#endif
-#if BUILDFLAG(ENABLE_SUPERVISED_USERS)
-    "KidsChromeManagementClient",
-#endif  // BUILDFLAG(ENABLE_SUPERVISED_USERS)
+#endif // BUILDFLAG(GOOGLE_CHROME_BRANDING)
     "LanguageSettingsPrivateDelegate",
     "LazyBackgroundTaskQueue",
 #if BUILDFLAG(ENABLE_SUPERVISED_USERS)

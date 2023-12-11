@@ -395,7 +395,6 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &segmentation_platform::features::kContextualPageActionShareModel,
     &send_tab_to_self::kSendTabToSelfV2,
     &share::kScreenshotsForAndroidV2,
-    &supervised_user::kEnableProtoApiForClassifyUrl,
     &supervised_user::kKidFriendlyContentFeed,
     &switches::kForceStartupSigninPromo,
     &switches::kForceDisableExtendedSyncPromos,

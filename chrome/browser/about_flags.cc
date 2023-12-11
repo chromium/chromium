@@ -7989,14 +7989,6 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(ash::features::kPrivacyIndicators)},
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
-#if BUILDFLAG(ENABLE_SUPERVISED_USERS)
-    {"enable-proto-api-for-classify-url",
-     flag_descriptions::kEnableProtoApiForClassifyUrlName,
-     flag_descriptions::kEnableProtoApiForClassifyUrlDescription,
-     kOsAndroid | (kOsDesktop & ~kOsFuchsia),
-     FEATURE_VALUE_TYPE(supervised_user::kEnableProtoApiForClassifyUrl)},
-#endif  // BUILDFLAG(ENABLE_SUPERVISED_USERS)
-
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
     {"enable-network-service-sandbox",
      flag_descriptions::kEnableNetworkServiceSandboxName,

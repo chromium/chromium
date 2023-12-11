@@ -19,10 +19,8 @@
 #include "components/safe_search_api/url_checker_client.h"
 #include "components/signin/public/base/consent_level.h"
 #include "components/signin/public/identity_manager/identity_test_environment.h"
-#include "components/supervised_user/core/browser/kids_chrome_management_client.h"
 #include "components/supervised_user/core/browser/proto/kidschromemanagement_messages.pb.h"
 #include "components/supervised_user/core/common/features.h"
-#include "components/supervised_user/test_support/kids_chrome_management_test_utils.h"
 #include "net/http/http_status_code.h"
 #include "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
 #include "services/network/test/test_url_loader_factory.h"
@@ -33,7 +31,6 @@
 
 namespace {
 
-using UseProtoFetcher = bool;
 using kids_chrome_management::ClassifyUrlResponse;
 using testing::_;
 
@@ -55,52 +52,27 @@ std::string ConvertToString(
   }
 }
 
-class KidsManagementURLCheckerClientTest
-    : public ::testing::Test,
-      public ::testing::WithParamInterface<UseProtoFetcher> {
+class KidsManagementURLCheckerClientTest : public ::testing::Test {
  public:
   KidsManagementURLCheckerClientTest() {
-    if (UseProtoFetcher()) {
-      proto_api_feature_list_.InitAndEnableFeature(
-          supervised_user::kEnableProtoApiForClassifyUrl);
-    } else {
-      proto_api_feature_list_.InitAndDisableFeature(
-          supervised_user::kEnableProtoApiForClassifyUrl);
-    }
-
     shadow_call_feature_list_.InitWithFeatures(
         /*enabled_features=*/{supervised_user::kShadowKidsApiWithSafeSites},
         /*disabled_features=*/{});
   }
 
   ~KidsManagementURLCheckerClientTest() override {
-    if (UseProtoFetcher()) {
       // Since scoped_feature_list_::Init* / scoped_feature_list_.Reset are
       // stack-based clean-up in the same life-cycle moment.
       shadow_call_feature_list_.Reset();
-      proto_api_feature_list_.Reset();
-    }
   }
 
   void SetUp() override {
-    test_kids_chrome_management_client_ =
-        std::make_unique<kids_management::KidsChromeManagementClientForTesting>(
-            base::MakeRefCounted<network::WeakWrapperSharedURLLoaderFactory>(
-                &test_url_loader_factory_),
-            identity_test_env_.identity_manager());
     url_classifier_ = std::make_unique<KidsManagementURLCheckerClient>(
-        test_kids_chrome_management_client_.get(), "us");
+        identity_test_env_.identity_manager(),
+        test_url_loader_factory_.GetSafeWeakWrapper(), "us");
   }
 
  protected:
-  // TODO(b/276898959): Remove after migration.
-  void SetUpLegacyClientResponse(
-      safe_search_api::ClientClassification client_classification,
-      KidsChromeManagementClient::ErrorCode error_code) {
-    test_kids_chrome_management_client_->SetResponseWithError(
-        kids_management::BuildResponseProto(client_classification), error_code);
-  }
-
   void MakePrimaryAccountAvailable() {
     this->identity_test_env_.MakePrimaryAccountAvailable(
         "homer@gmail.com", signin::ConsentLevel::kSignin);
@@ -151,8 +123,6 @@ class KidsManagementURLCheckerClientTest
   // Starts a URL check, but doesn't wait for ClassifyURL() to finish.
   void CheckUrlWithoutResponse(base::StringPiece url) { StartCheckUrl(url); }
 
-  bool UseProtoFetcher() const { return GetParam(); }
-
   MOCK_METHOD2(OnCheckDone,
                void(const GURL& url,
                     safe_search_api::ClientClassification classification));
@@ -174,21 +144,11 @@ class KidsManagementURLCheckerClientTest
 
  private:
   signin::IdentityTestEnvironment identity_test_env_;
-  std::unique_ptr<kids_management::KidsChromeManagementClientForTesting>
-      test_kids_chrome_management_client_;
   std::unique_ptr<KidsManagementURLCheckerClient> url_classifier_;
-
-  base::test::ScopedFeatureList proto_api_feature_list_;
   base::test::ScopedFeatureList shadow_call_feature_list_;
 };
 
-TEST_P(KidsManagementURLCheckerClientTest, UrlAllowed) {
-  if (!UseProtoFetcher()) {
-    // TODO(b/276898959): Remove branch after migration.
-    SetUpLegacyClientResponse(safe_search_api::ClientClassification::kAllowed,
-                              KidsChromeManagementClient::ErrorCode::kSuccess);
-  }
-
+TEST_F(KidsManagementURLCheckerClientTest, UrlAllowed) {
   MakePrimaryAccountAvailable();
 
   EXPECT_CALL(*this,
@@ -199,22 +159,11 @@ TEST_P(KidsManagementURLCheckerClientTest, UrlAllowed) {
   // Simulate opposite response from shadow call to prove that it is
   // ineffective.
   SimulateSafeSitesResponse(safe_search_api::ClientClassification::kRestricted);
-
-  if (UseProtoFetcher()) {
-    SimulateKidsApiResponse(
-        kids_chrome_management::ClassifyUrlResponse::ALLOWED);
-  }
+  SimulateKidsApiResponse(kids_chrome_management::ClassifyUrlResponse::ALLOWED);
 }
 
-TEST_P(KidsManagementURLCheckerClientTest, HistogramsAreEmitted) {
+TEST_F(KidsManagementURLCheckerClientTest, HistogramsAreEmitted) {
   base::HistogramTester histogram_tester;
-
-  if (!UseProtoFetcher()) {
-    // TODO(b/276898959): Remove branch after migration.
-    SetUpLegacyClientResponse(safe_search_api::ClientClassification::kAllowed,
-                              KidsChromeManagementClient::ErrorCode::kSuccess);
-  }
-
   MakePrimaryAccountAvailable();
 
   EXPECT_CALL(*this,
@@ -225,32 +174,16 @@ TEST_P(KidsManagementURLCheckerClientTest, HistogramsAreEmitted) {
   // Simulate opposite response from shadow call to prove that it is
   // ineffective.
   SimulateSafeSitesResponse(safe_search_api::ClientClassification::kRestricted);
+  SimulateKidsApiResponse(kids_chrome_management::ClassifyUrlResponse::ALLOWED);
 
-  if (UseProtoFetcher()) {
-    SimulateKidsApiResponse(
-        kids_chrome_management::ClassifyUrlResponse::ALLOWED);
-  }
-
-  // The actual latency of mocked fetch is variable, so only expect that some
-  // value was recorded.
-  if (UseProtoFetcher()) {
-    // Non-proto test is mocking the whole client thus bypassing the http stack.
-    histogram_tester.ExpectTotalCount(
-        "FamilyLinkUser.ClassifyUrlRequest.Latency",
-        /*expected_count(grew by)*/ 1);
-  }
+  // Non-proto test is mocking the whole client thus bypassing the http stack.
+  histogram_tester.ExpectTotalCount("FamilyLinkUser.ClassifyUrlRequest.Latency",
+                                    /*expected_count(grew by)*/ 1);
   histogram_tester.ExpectTotalCount("Enterprise.SafeSites.Latency",
                                     /*expected_count(grew by)*/ 1);
 }
 
-TEST_P(KidsManagementURLCheckerClientTest, UrlRestricted) {
-  if (!UseProtoFetcher()) {
-    // TODO(b/276898959): Remove branch after migration.
-    SetUpLegacyClientResponse(
-        safe_search_api::ClientClassification::kRestricted,
-        KidsChromeManagementClient::ErrorCode::kSuccess);
-  }
-
+TEST_F(KidsManagementURLCheckerClientTest, UrlRestricted) {
   MakePrimaryAccountAvailable();
 
   EXPECT_CALL(*this,
@@ -261,24 +194,11 @@ TEST_P(KidsManagementURLCheckerClientTest, UrlRestricted) {
   // Simulate opposite response from shadow call to prove that it is
   // ineffective.
   SimulateSafeSitesResponse(safe_search_api::ClientClassification::kAllowed);
-
-  if (UseProtoFetcher()) {
-    SimulateKidsApiResponse(
-        kids_chrome_management::ClassifyUrlResponse::RESTRICTED);
-  }
+  SimulateKidsApiResponse(
+      kids_chrome_management::ClassifyUrlResponse::RESTRICTED);
 }
 
-TEST_P(KidsManagementURLCheckerClientTest, AccessTokenError) {
-  if (!UseProtoFetcher()) {
-    SetUpLegacyClientResponse(
-        safe_search_api::ClientClassification::kUnknown,
-        KidsChromeManagementClient::ErrorCode::kTokenError);
-  }
-
-  // UseProtoFetcher() == true requires no access token at all to prove this
-  // test, since the token's fetch mode is kImmediate, so url check will fail
-  // for that reason when the token is not available.
-
+TEST_F(KidsManagementURLCheckerClientTest, AccessTokenError) {
   EXPECT_CALL(*this,
               OnCheckDone(GURL("http://example.com"),
                           safe_search_api::ClientClassification::kUnknown));
@@ -289,13 +209,7 @@ TEST_P(KidsManagementURLCheckerClientTest, AccessTokenError) {
   SimulateSafeSitesResponse(safe_search_api::ClientClassification::kAllowed);
 }
 
-TEST_P(KidsManagementURLCheckerClientTest, NetworkError) {
-  if (!UseProtoFetcher()) {
-    SetUpLegacyClientResponse(
-        safe_search_api::ClientClassification::kUnknown,
-        KidsChromeManagementClient::ErrorCode::kNetworkError);
-  }
-
+TEST_F(KidsManagementURLCheckerClientTest, NetworkError) {
   MakePrimaryAccountAvailable();
 
   EXPECT_CALL(*this,
@@ -306,19 +220,10 @@ TEST_P(KidsManagementURLCheckerClientTest, NetworkError) {
   // Simulate opposite response from shadow call to prove that it is
   // ineffective.
   SimulateSafeSitesResponse(safe_search_api::ClientClassification::kAllowed);
-
-  if (UseProtoFetcher()) {
-    SimulateNetworkError(net::ERR_UNEXPECTED);
-  }
+  SimulateNetworkError(net::ERR_UNEXPECTED);
 }
 
-TEST_P(KidsManagementURLCheckerClientTest, HttpError) {
-  if (!UseProtoFetcher()) {
-    SetUpLegacyClientResponse(
-        safe_search_api::ClientClassification::kUnknown,
-        KidsChromeManagementClient::ErrorCode::kNetworkError);
-  }
-
+TEST_F(KidsManagementURLCheckerClientTest, HttpError) {
   MakePrimaryAccountAvailable();
 
   EXPECT_CALL(*this,
@@ -329,19 +234,10 @@ TEST_P(KidsManagementURLCheckerClientTest, HttpError) {
   // Simulate opposite response from shadow call to prove that it is
   // ineffective.
   SimulateSafeSitesResponse(safe_search_api::ClientClassification::kAllowed);
-
-  if (UseProtoFetcher()) {
-    SimulateHttpError(net::HTTP_BAD_GATEWAY);
-  }
+  SimulateHttpError(net::HTTP_BAD_GATEWAY);
 }
 
-TEST_P(KidsManagementURLCheckerClientTest, ServiceError) {
-  if (!UseProtoFetcher()) {
-    SetUpLegacyClientResponse(
-        safe_search_api::ClientClassification::kUnknown,
-        KidsChromeManagementClient::ErrorCode::kNetworkError);
-  }
-
+TEST_F(KidsManagementURLCheckerClientTest, ServiceError) {
   MakePrimaryAccountAvailable();
 
   EXPECT_CALL(*this,
@@ -352,13 +248,10 @@ TEST_P(KidsManagementURLCheckerClientTest, ServiceError) {
   // Simulate opposite response from shadow call to prove that it is
   // ineffective.
   SimulateSafeSitesResponse(safe_search_api::ClientClassification::kAllowed);
-
-  if (UseProtoFetcher()) {
-    SimulateMalformedResponse();
-  }
+  SimulateMalformedResponse();
 }
 
-TEST_P(KidsManagementURLCheckerClientTest,
+TEST_F(KidsManagementURLCheckerClientTest,
        PendingRequestsAreCanceledWhenClientIsDestroyed) {
   EXPECT_CALL(*this, OnCheckDone(_, _)).Times(0);
 
@@ -368,17 +261,4 @@ TEST_P(KidsManagementURLCheckerClientTest,
   // Now run the callback.
   task_environment_.RunUntilIdle();
 }
-
-// Instead of /0, /1... print human-readable description of the test.
-std::string PrettyPrintTestCaseName(
-    const ::testing::TestParamInfo<UseProtoFetcher>& info) {
-  return info.param ? "ProtoFetcher" : "JsonFetcher";
-}
-
-// TODO(b/276898959): Remove ::testing::Bool() == false once migrated.
-INSTANTIATE_TEST_SUITE_P(All,
-                         KidsManagementURLCheckerClientTest,
-                         ::testing::Bool(),
-                         &PrettyPrintTestCaseName);
-
 }  // namespace

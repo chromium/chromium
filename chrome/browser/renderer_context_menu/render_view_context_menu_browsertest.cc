@@ -705,10 +705,8 @@ class ContextMenuWithoutFilteringForSupervisedUsersBrowserTest
     : public ContextMenuForSupervisedUsersBrowserTest {
  public:
   ContextMenuWithoutFilteringForSupervisedUsersBrowserTest() {
-    scoped_feature_list_.InitWithFeatures(
-        /*enabled_features=*/{supervised_user::kEnableProtoApiForClassifyUrl},
-        /*disabled_features=*/{
-            supervised_user::kFilterWebsitesForSupervisedUsersOnDesktopAndIOS});
+    scoped_feature_list_.InitAndDisableFeature(
+        supervised_user::kFilterWebsitesForSupervisedUsersOnDesktopAndIOS);
   }
 
  private:
@@ -841,17 +839,9 @@ IN_PROC_BROWSER_TEST_F(
 
 class ContextMenuWithFilteringForSupervisedUsersBrowserTest
     : public ContextMenuForSupervisedUsersBrowserTest {
- public:
-  ContextMenuWithFilteringForSupervisedUsersBrowserTest() {
-    scoped_feature_list_.InitWithFeatures(
-        /*enabled_features=*/
-        {supervised_user::kEnableProtoApiForClassifyUrl,
-         supervised_user::kFilterWebsitesForSupervisedUsersOnDesktopAndIOS},
-        /*disabled_features=*/{});
-  }
-
  private:
-  base::test::ScopedFeatureList scoped_feature_list_;
+  base::test::ScopedFeatureList scoped_feature_list_{
+      supervised_user::kFilterWebsitesForSupervisedUsersOnDesktopAndIOS};
 };
 
 IN_PROC_BROWSER_TEST_F(

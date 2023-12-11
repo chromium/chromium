@@ -26,7 +26,6 @@
 #include "components/signin/public/identity_manager/account_capabilities_test_mutator.h"
 #include "components/signin/public/identity_manager/account_info.h"
 #include "components/signin/public/identity_manager/identity_test_environment.h"
-#include "components/supervised_user/core/browser/kids_chrome_management_client.h"
 #include "components/supervised_user/core/browser/supervised_user_preferences.h"
 #include "components/supervised_user/core/browser/supervised_user_settings_service.h"
 #include "components/supervised_user/core/common/features.h"
@@ -51,11 +50,7 @@ const char kExampleUrl1[] = "http://www.example1.com/123";
 
 class SupervisedUserServiceTestBase : public ::testing::Test {
  public:
-  explicit SupervisedUserServiceTestBase(bool is_supervised)
-      : kids_chrome_management_client_(
-            base::MakeRefCounted<network::WeakWrapperSharedURLLoaderFactory>(
-                &test_url_loader_factory_),
-            identity_test_env_.identity_manager()) {
+  explicit SupervisedUserServiceTestBase(bool is_supervised) {
     settings_service_.Init(syncable_pref_service_.user_prefs_store());
     supervised_user::RegisterProfilePrefs(syncable_pref_service_.registry());
     if (is_supervised) {
@@ -66,8 +61,9 @@ class SupervisedUserServiceTestBase : public ::testing::Test {
     }
 
     service_ = std::make_unique<SupervisedUserService>(
-        identity_test_env_.identity_manager(), &kids_chrome_management_client_,
-        syncable_pref_service_, settings_service_, &sync_service_,
+        identity_test_env_.identity_manager(),
+        test_url_loader_factory_.GetSafeWeakWrapper(), syncable_pref_service_,
+        settings_service_, &sync_service_,
         /*check_webstore_url_callback=*/
         base::BindRepeating([](const GURL& url) { return false; }),
         std::make_unique<FakeURLFilterDelegate>(),
@@ -90,7 +86,6 @@ class SupervisedUserServiceTestBase : public ::testing::Test {
   syncer::MockSyncService sync_service_;
   sync_preferences::TestingPrefServiceSyncable syncable_pref_service_;
   SupervisedUserSettingsService settings_service_;
-  KidsChromeManagementClient kids_chrome_management_client_;
 
   std::unique_ptr<SupervisedUserService> service_;
 };

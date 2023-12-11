@@ -20,6 +20,7 @@
 #include "components/supervised_user/core/browser/remote_web_approvals_manager.h"
 #include "components/supervised_user/core/browser/supervised_user_url_filter.h"
 #include "components/supervised_user/core/common/supervised_users.h"
+#include "services/network/public/cpp/shared_url_loader_factory.h"
 
 class PrefService;
 class SupervisedUserServiceObserver;
@@ -134,7 +135,7 @@ class SupervisedUserService : public KeyedService,
   // Public to allow visibility to iOS factory.
   SupervisedUserService(
       signin::IdentityManager* identity_manager,
-      KidsChromeManagementClient* kids_chrome_management_client,
+      scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
       PrefService& user_prefs,
       supervised_user::SupervisedUserSettingsService& settings_service,
       syncer::SyncService* sync_service,
@@ -192,7 +193,7 @@ class SupervisedUserService : public KeyedService,
 
   raw_ptr<signin::IdentityManager> identity_manager_;
 
-  raw_ptr<KidsChromeManagementClient> kids_chrome_management_client_;
+  scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory_;
 
   bool active_ = false;
 

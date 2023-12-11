@@ -291,7 +291,6 @@ Refer to README.md for content description and update process.
  <item id="rlz" added_in_milestone="98" content_hash_code="0839c21d" os_list="android" file_path="chrome/browser/android/rlz/rlz_ping_handler.cc" />
  <item id="download_manager_service_retry" added_in_milestone="98" content_hash_code="01044c58" os_list="android" file_path="chrome/browser/download/android/download_manager_service.cc" />
  <item id="download_bitmap" added_in_milestone="98" content_hash_code="0632ef37" os_list="android" file_path="chrome/browser/share/bitmap_download_request.cc" />
- <item id="kids_chrome_management_client_classify_url" added_in_milestone="98" content_hash_code="003a8b30" os_list="android,chromeos,linux,windows" file_path="components/supervised_user/core/browser/kids_chrome_management_client.cc" />
  <item id="supervised_user_classify_url" added_in_milestone="98" content_hash_code="05877932" os_list="android,chromeos,linux,windows" file_path="components/supervised_user/core/browser/fetcher_config.cc" />
  <item id="supervised_user_list_family_members" added_in_milestone="98" content_hash_code="00627698" os_list="android,chromeos,linux,windows" file_path="components/supervised_user/core/browser/fetcher_config.cc" />
  <item id="cached_image_fetcher" added_in_milestone="98" content_hash_code="06334a2d" os_list="android" file_path="components/image_fetcher/image_fetcher_bridge.cc" />

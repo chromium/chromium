@@ -56,8 +56,6 @@ static const char* kInterstitialFirstTimeBanner =
   AppLaunchConfiguration config;
   config.features_enabled.push_back(
       supervised_user::kFilterWebsitesForSupervisedUsersOnDesktopAndIOS);
-  config.features_enabled.push_back(
-      supervised_user::kEnableProtoApiForClassifyUrl);
   return config;
 }
 

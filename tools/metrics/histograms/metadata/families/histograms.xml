@@ -242,16 +242,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="FamilyLinkUser.ClassifyUrlRequest.AuthError"
-    enum="GoogleServiceAuthError" expires_after="2024-05-05">
-  <owner>tju@google.com</owner>
-  <owner>chrome-kids-eng@google.com</owner>
-  <summary>
-    The detailed reason of GoogleServiceAuthError in calls to Kids Management
-    API::ClassifyURL.
-  </summary>
-</histogram>
-
 <histogram name="FamilyLinkUser.ClassifyUrlRequest.HttpStatusOrNetError"
     enum="CombinedHttpResponseAndNetErrorCode" expires_after="2024-04-28">
   <owner>tju@google.com</owner>
@@ -273,16 +263,6 @@ chromium-metrics-reviews@google.com.
 
     Googlers only: See go/chrome-kids-backend-monitoring for backend-related
     metrics.
-  </summary>
-</histogram>
-
-<histogram name="FamilyLinkUser.ClassifyUrlRequest.ParsingResult"
-    enum="KidsChromeManagementClientParsingError" expires_after="2024-05-05">
-  <owner>tju@google.com</owner>
-  <owner>chrome-kids-eng@google.com</owner>
-  <summary>
-    Indicates success of a JSON response parsing from Kids Management
-    API::ClassifyURL, or a stage at which it failed.
   </summary>
 </histogram>
 

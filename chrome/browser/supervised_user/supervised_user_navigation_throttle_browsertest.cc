@@ -287,60 +287,32 @@ void SupervisedUserNavigationThrottleTestBase::SetUpOnMainThread() {
 }
 
 class SupervisedUserNavigationThrottleTest
-    : public SupervisedUserNavigationThrottleTestBase,
-      public testing::WithParamInterface<
-          supervised_user::testing::EnableProtoApiForClassifyUrlTestCase> {
+    : public SupervisedUserNavigationThrottleTestBase {
  protected:
-  static supervised_user::testing::EnableProtoApiForClassifyUrlTestCase
-  GetEnableProtoApiTestParam() {
-    return GetParam();
-  }
-
   SupervisedUserNavigationThrottleTest()
       : SupervisedUserNavigationThrottleTestBase(
             supervised_user::SupervisionMixin::SignInMode::kSupervised) {}
   ~SupervisedUserNavigationThrottleTest() override = default;
-
- private:
-  std::unique_ptr<base::test::ScopedFeatureList> enable_proto_api_feature_{
-      GetEnableProtoApiTestParam().MakeFeatureList()};
 };
 
 class SupervisedUserNavigationThrottleWithPrerenderingTest
     : public SupervisedUserNavigationThrottleTestBase,
-      public testing::WithParamInterface<std::tuple<
-          std::string,
-          supervised_user::testing::EnableProtoApiForClassifyUrlTestCase>> {
+      public testing::WithParamInterface<std::string> {
  protected:
   SupervisedUserNavigationThrottleWithPrerenderingTest()
       : SupervisedUserNavigationThrottleTestBase(
             supervised_user::SupervisionMixin::SignInMode::kSupervised) {}
   ~SupervisedUserNavigationThrottleWithPrerenderingTest() override = default;
 
-  static std::string GetTargetHint() { return std::get<0>(GetParam()); }
-  static supervised_user::testing::EnableProtoApiForClassifyUrlTestCase
-  GetEnableProtoApiTestParam() {
-    return std::get<1>(GetParam());
-  }
-
- private:
-  std::unique_ptr<base::test::ScopedFeatureList> enable_proto_api_feature_{
-      GetEnableProtoApiTestParam().MakeFeatureList()};
+  static std::string GetTargetHint() { return GetParam(); }
 };
 
-INSTANTIATE_TEST_SUITE_P(
-    ,
-    SupervisedUserNavigationThrottleWithPrerenderingTest,
-    testing::Combine(testing::Values("_self", "_blank"),
-                     supervised_user::testing::
-                         EnableProtoApiForClassifyUrlTestCase::Values()),
-    [](const testing::TestParamInfo<std::tuple<
-           std::string,
-           supervised_user::testing::EnableProtoApiForClassifyUrlTestCase>>&
-           info) {
-      return std::get<0>(info.param) +
-             static_cast<std::string>(std::get<1>(info.param));
-    });
+INSTANTIATE_TEST_SUITE_P(,
+                         SupervisedUserNavigationThrottleWithPrerenderingTest,
+                         testing::Values("_self", "_blank"),
+                         [](const testing::TestParamInfo<std::string>& info) {
+                           return info.param;
+                         });
 
 // Tests that prerendering fails in supervised user mode.
 #if BUILDFLAG(IS_CHROMEOS)
@@ -384,7 +356,7 @@ IN_PROC_BROWSER_TEST_P(SupervisedUserNavigationThrottleWithPrerenderingTest,
 
 // Tests that navigating to a blocked page simply fails if there is no
 // SupervisedUserNavigationObserver.
-IN_PROC_BROWSER_TEST_P(SupervisedUserNavigationThrottleTest,
+IN_PROC_BROWSER_TEST_F(SupervisedUserNavigationThrottleTest,
                        NoNavigationObserverBlock) {
   Profile* profile = browser()->profile();
   supervised_user::SupervisedUserSettingsService*
@@ -409,7 +381,7 @@ IN_PROC_BROWSER_TEST_P(SupervisedUserNavigationThrottleTest,
   EXPECT_FALSE(observer.last_navigation_succeeded());
 }
 
-IN_PROC_BROWSER_TEST_P(SupervisedUserNavigationThrottleTest,
+IN_PROC_BROWSER_TEST_F(SupervisedUserNavigationThrottleTest,
                        BlockMainFrameWithInterstitial) {
   BlockHost(kExampleHost2);
 
@@ -426,7 +398,7 @@ IN_PROC_BROWSER_TEST_P(SupervisedUserNavigationThrottleTest,
   EXPECT_TRUE(IsInterstitialBeingShownInMainFrame(browser()));
 }
 
-IN_PROC_BROWSER_TEST_P(SupervisedUserNavigationThrottleTest,
+IN_PROC_BROWSER_TEST_F(SupervisedUserNavigationThrottleTest,
                        DontBlockSubFrame) {
   BlockHost(kExampleHost2);
   BlockHost(kIframeHost2);
@@ -448,7 +420,7 @@ IN_PROC_BROWSER_TEST_P(SupervisedUserNavigationThrottleTest,
   EXPECT_TRUE(content::EvalJs(tab, "loaded2()").ExtractBool());
 }
 
-IN_PROC_BROWSER_TEST_P(SupervisedUserNavigationThrottleTest,
+IN_PROC_BROWSER_TEST_F(SupervisedUserNavigationThrottleTest,
                        AllowFamiliesDotGoogleDotComAccess) {
   // Simulate families.google.com being set in the blocklist.
   BlockHost(kFamiliesHost);
@@ -471,20 +443,10 @@ IN_PROC_BROWSER_TEST_P(SupervisedUserNavigationThrottleTest,
   EXPECT_FALSE(IsInterstitialBeingShownInMainFrame(browser()));
 }
 
-INSTANTIATE_TEST_SUITE_P(
-    ,
-    SupervisedUserNavigationThrottleTest,
-    supervised_user::testing::EnableProtoApiForClassifyUrlTestCase::Values(),
-    [](const testing::TestParamInfo<
-        supervised_user::testing::EnableProtoApiForClassifyUrlTestCase>& info) {
-      return static_cast<std::string>(info.param);
-    });
-
 class SupervisedUserIframeFilterTest
     : public SupervisedUserNavigationThrottleTestBase,
-      public testing::WithParamInterface<std::tuple<
-          supervised_user::testing::LocalWebApprovalsTestCase,
-          supervised_user::testing::EnableProtoApiForClassifyUrlTestCase>> {
+      public testing::WithParamInterface<
+          supervised_user::testing::LocalWebApprovalsTestCase> {
  protected:
   SupervisedUserIframeFilterTest()
       : SupervisedUserNavigationThrottleTestBase(
@@ -517,11 +479,7 @@ class SupervisedUserIframeFilterTest
  private:
   static supervised_user::testing::LocalWebApprovalsTestCase
   GetLocalWebApprovalsSupportTestParam() {
-    return std::get<0>(GetParam());
-  }
-  static supervised_user::testing::EnableProtoApiForClassifyUrlTestCase
-  GetEnableProtoApiTestParam() {
-    return std::get<1>(GetParam());
+    return GetParam();
   }
 
  private:
@@ -537,8 +495,6 @@ class SupervisedUserIframeFilterTest
   std::unique_ptr<base::test::ScopedFeatureList>
       local_web_approvals_test_support_{
           GetLocalWebApprovalsSupportTestParam().MakeFeatureList()};
-  std::unique_ptr<base::test::ScopedFeatureList> enable_proto_api_feature_{
-      GetEnableProtoApiTestParam().MakeFeatureList()};
 };
 
 void SupervisedUserIframeFilterTest::SetUpOnMainThread() {
@@ -703,16 +659,10 @@ bool SupervisedUserIframeFilterTest::IsLocalWebApprovalsEnabled() const {
 INSTANTIATE_TEST_SUITE_P(
     LocalWebApprovalsEnabled,
     SupervisedUserIframeFilterTest,
-    testing::Combine(
-        supervised_user::testing::LocalWebApprovalsTestCase::Values(),
-        supervised_user::testing::EnableProtoApiForClassifyUrlTestCase::
-            Values()),
-    [](const testing::TestParamInfo<std::tuple<
-           supervised_user::testing::LocalWebApprovalsTestCase,
-           supervised_user::testing::EnableProtoApiForClassifyUrlTestCase>>&
-           info) {
-      return static_cast<std::string>(std::get<0>(info.param)) +
-             static_cast<std::string>(std::get<1>(info.param));
+    supervised_user::testing::LocalWebApprovalsTestCase::Values(),
+    [](const testing::TestParamInfo<
+        supervised_user::testing::LocalWebApprovalsTestCase>& info) {
+      return static_cast<std::string>(info.param);
     });
 
 IN_PROC_BROWSER_TEST_P(SupervisedUserIframeFilterTest, BlockSubFrame) {
@@ -1013,16 +963,10 @@ void SupervisedUserNarrowWidthIframeFilterTest::SetUp() {
 INSTANTIATE_TEST_SUITE_P(
     LocalWebApprovalsEnabledNarrowWidth,
     SupervisedUserNarrowWidthIframeFilterTest,
-    testing::Combine(
-        supervised_user::testing::LocalWebApprovalsTestCase::OnlySupported(),
-        supervised_user::testing::EnableProtoApiForClassifyUrlTestCase::
-            Values()),
-    [](const testing::TestParamInfo<std::tuple<
-           supervised_user::testing::LocalWebApprovalsTestCase,
-           supervised_user::testing::EnableProtoApiForClassifyUrlTestCase>>&
-           info) {
-      return static_cast<std::string>(std::get<0>(info.param)) +
-             static_cast<std::string>(std::get<1>(info.param));
+    supervised_user::testing::LocalWebApprovalsTestCase::OnlySupported(),
+    [](const testing::TestParamInfo<
+        supervised_user::testing::LocalWebApprovalsTestCase>& info) {
+      return static_cast<std::string>(info.param);
     });
 
 IN_PROC_BROWSER_TEST_P(SupervisedUserNarrowWidthIframeFilterTest,
@@ -1104,16 +1048,10 @@ using ChromeOSLocalWebApprovalsTest = SupervisedUserIframeFilterTest;
 INSTANTIATE_TEST_SUITE_P(
     ,
     ChromeOSLocalWebApprovalsTest,
-    testing::Combine(
-        supervised_user::testing::LocalWebApprovalsTestCase::OnlySupported(),
-        supervised_user::testing::EnableProtoApiForClassifyUrlTestCase::
-            Values()),
-    [](const testing::TestParamInfo<std::tuple<
-           supervised_user::testing::LocalWebApprovalsTestCase,
-           supervised_user::testing::EnableProtoApiForClassifyUrlTestCase>>&
-           info) {
-      return static_cast<std::string>(std::get<0>(info.param)) +
-             static_cast<std::string>(std::get<1>(info.param));
+    supervised_user::testing::LocalWebApprovalsTestCase::OnlySupported(),
+    [](const testing::TestParamInfo<
+        supervised_user::testing::LocalWebApprovalsTestCase>& info) {
+      return static_cast<std::string>(info.param);
     });
 
 IN_PROC_BROWSER_TEST_P(ChromeOSLocalWebApprovalsTest,
@@ -1258,15 +1196,8 @@ IN_PROC_BROWSER_TEST_F(SupervisedUserNavigationThrottleNotSupervisedTest,
 }
 
 class SupervisedUserNavigationThrottleFencedFramesTest
-    : public SupervisedUserNavigationThrottleTestBase,
-      public testing::WithParamInterface<
-          supervised_user::testing::EnableProtoApiForClassifyUrlTestCase> {
+    : public SupervisedUserNavigationThrottleTestBase {
  public:
-  static supervised_user::testing::EnableProtoApiForClassifyUrlTestCase
-  GetEnableProtoApiTestParam() {
-    return GetParam();
-  }
-
   SupervisedUserNavigationThrottleFencedFramesTest()
       : SupervisedUserNavigationThrottleTestBase(
             supervised_user::SupervisionMixin::SignInMode::kSupervised) {}
@@ -1283,11 +1214,9 @@ class SupervisedUserNavigationThrottleFencedFramesTest
 
  private:
   content::test::FencedFrameTestHelper fenced_frame_helper_;
-  std::unique_ptr<base::test::ScopedFeatureList> enable_proto_api_feature_{
-      GetEnableProtoApiTestParam().MakeFeatureList()};
 };
 
-IN_PROC_BROWSER_TEST_P(SupervisedUserNavigationThrottleFencedFramesTest,
+IN_PROC_BROWSER_TEST_F(SupervisedUserNavigationThrottleFencedFramesTest,
                        BlockFencedFrame) {
   BlockHost(kIframeHost2);
   const GURL kInitialUrl = embedded_test_server()->GetURL(
@@ -1322,13 +1251,3 @@ IN_PROC_BROWSER_TEST_P(SupervisedUserNavigationThrottleFencedFramesTest,
           net::Error::ERR_FAILED);
   EXPECT_TRUE(rfh_host2);
 }
-
-INSTANTIATE_TEST_SUITE_P(
-    ,
-    SupervisedUserNavigationThrottleFencedFramesTest,
-
-    supervised_user::testing::EnableProtoApiForClassifyUrlTestCase::Values(),
-    [](const testing::TestParamInfo<
-        supervised_user::testing::EnableProtoApiForClassifyUrlTestCase>& info) {
-      return static_cast<std::string>(info.param);
-    });

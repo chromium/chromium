@@ -343,7 +343,6 @@ after discussions on the right group.
   <group name="Child-protection and Safe Browsing Features" hidden="true">
     <sender name="Safe Browsing">
       <annotation id="client_download_request"/>
-      <annotation id="kids_chrome_management_client_classify_url"/>
       <annotation id="supervised_user_classify_url"/>
       <annotation id="supervised_user_list_family_members"/>
       <annotation id="password_protection_request"/>

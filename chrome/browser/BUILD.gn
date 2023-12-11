@@ -7788,8 +7788,6 @@ static_library("browser") {
       "supervised_user/child_accounts/list_family_members_service_factory.h",
       "supervised_user/chrome_supervised_user_web_content_handler_base.cc",
       "supervised_user/chrome_supervised_user_web_content_handler_base.h",
-      "supervised_user/kids_chrome_management/kids_chrome_management_client_factory.cc",
-      "supervised_user/kids_chrome_management/kids_chrome_management_client_factory.h",
       "supervised_user/supervised_user_browser_utils.cc",
       "supervised_user/supervised_user_browser_utils.h",
       "supervised_user/supervised_user_google_auth_navigation_throttle.cc",

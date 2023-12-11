@@ -17,7 +17,6 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/types/strong_alias.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
-#include "chrome/browser/supervised_user/kids_chrome_management/kids_chrome_management_client_factory.h"
 #include "chrome/browser/supervised_user/supervised_user_service_factory.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/common/chrome_features.h"
@@ -26,7 +25,6 @@
 #include "chrome/test/supervised_user/supervision_mixin.h"
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
 #include "components/supervised_user/core/browser/fetcher_config.h"
-#include "components/supervised_user/core/browser/kids_chrome_management_client.h"
 #include "components/supervised_user/core/browser/proto/kidschromemanagement_messages.pb.h"
 #include "components/supervised_user/core/browser/supervised_user_preferences.h"
 #include "components/supervised_user/core/common/features.h"
@@ -60,11 +58,9 @@ MATCHER_P(EqualsProto,
   return expected_serialized == actual_serialized;
 }
 
-// Declare strong types for two flags.
-using UseProtoFetcher = base::StrongAlias<class UseProtoFetcherTag, bool>;
+// Declare strong types for flags.
 using FilterWebsites = base::StrongAlias<class FilterWebsitesTag, bool>;
-using ParamsTuple =
-    std::tuple<SupervisionMixin::SignInMode, UseProtoFetcher, FilterWebsites>;
+using ParamsTuple = std::tuple<SupervisionMixin::SignInMode, FilterWebsites>;
 
 // Wrapper class for ParamsTuple; introducing fluent aliases for test
 // parameters.
@@ -77,16 +73,12 @@ class TestCase {
   SupervisionMixin::SignInMode GetSignInMode() const {
     return std::get<0>(test_case_base_);
   }
-  bool ProtoFetcherEnabled() const {
-    return std::get<1>(test_case_base_).value();
-  }
   bool FilterWebsitesEnabled() const {
-    return std::get<2>(test_case_base_).value();
+    return std::get<1>(test_case_base_).value();
   }
 
  private:
-  std::tuple<SupervisionMixin::SignInMode, UseProtoFetcher, FilterWebsites>
-      test_case_base_;
+  std::tuple<SupervisionMixin::SignInMode, FilterWebsites> test_case_base_;
 };
 
 // The region code for variations service (any should work).
@@ -105,39 +97,6 @@ class SupervisedUserRegionalURLFilterTest
   ~SupervisedUserRegionalURLFilterTest() override { feature_list_.Reset(); }
 
  protected:
-  class MockKidsChromeManagementClient : public KidsChromeManagementClient {
-   public:
-    explicit MockKidsChromeManagementClient(Profile* profile)
-        : KidsChromeManagementClient(
-              profile->GetDefaultStoragePartition()
-                  ->GetURLLoaderFactoryForBrowserProcess(),
-              IdentityManagerFactory::GetForProfile(profile)) {
-      // Without forwarding the call to the real implementation, the browser
-      // hangs and the test times out.
-      ON_CALL(*this, ClassifyURL)
-          .WillByDefault(
-              [this](std::unique_ptr<ClassifyUrlRequest> request_proto,
-                     ::KidsChromeManagementClient::KidsChromeManagementCallback
-                         callback) {
-                KidsChromeManagementClient::ClassifyURL(
-                    std::move(request_proto), std::move(callback));
-              });
-    }
-
-    MOCK_METHOD(
-        void,
-        ClassifyURL,
-        (std::unique_ptr<ClassifyUrlRequest> request_proto,
-         ::KidsChromeManagementClient::KidsChromeManagementCallback callback),
-        (override));
-
-    static std::unique_ptr<KeyedService> MakeUnique(
-        content::BrowserContext* context) {
-      return std::make_unique<NiceMock<MockKidsChromeManagementClient>>(
-          static_cast<Profile*>(context));
-    }
-  };
-
   MOCK_METHOD(void,
               ClassifyUrlRequestMonitor,
               (base::StringPiece, base::StringPiece));
@@ -146,10 +105,6 @@ class SupervisedUserRegionalURLFilterTest
 
   std::vector<base::test::FeatureRef> GetEnabledFeatures() const {
     std::vector<base::test::FeatureRef> features;
-
-    if (GetTestCase().ProtoFetcherEnabled()) {
-      features.push_back(kEnableProtoApiForClassifyUrl);
-    }
     if (GetTestCase().FilterWebsitesEnabled()) {
       features.push_back(kFilterWebsitesForSupervisedUsersOnDesktopAndIOS);
     }
@@ -161,9 +116,6 @@ class SupervisedUserRegionalURLFilterTest
     std::vector<base::test::FeatureRef> features;
 
     features.push_back(features::kHttpsUpgrades);
-    if (!GetTestCase().ProtoFetcherEnabled()) {
-      features.push_back(kEnableProtoApiForClassifyUrl);
-    }
     if (!GetTestCase().FilterWebsitesEnabled()) {
       features.push_back(kFilterWebsitesForSupervisedUsersOnDesktopAndIOS);
     }
@@ -173,12 +125,6 @@ class SupervisedUserRegionalURLFilterTest
 
   void SetUpInProcessBrowserTestFixture() override {
     MixinBasedInProcessBrowserTest::SetUpInProcessBrowserTestFixture();
-    create_services_subscription_ =
-        BrowserContextDependencyManager::GetInstance()
-            ->RegisterCreateServicesCallbackForTesting(
-                base::BindRepeating(&SupervisedUserRegionalURLFilterTest::
-                                        OnWillCreateBrowserContextServices,
-                                    base::Unretained(this)));
     request_monitor_subscription_ =
         kids_management_api_mock().Subscribe(base::BindRepeating(
             &SupervisedUserRegionalURLFilterTest::ClassifyUrlRequestMonitor,
@@ -193,17 +139,6 @@ class SupervisedUserRegionalURLFilterTest
     command_line->AppendSwitch("disable-field-trial-config");
   }
 
-  void OnWillCreateBrowserContextServices(content::BrowserContext* context) {
-    KidsChromeManagementClientFactory::GetInstance()->SetTestingFactoryAndUse(
-        Profile::FromBrowserContext(context),
-        base::BindRepeating(&MockKidsChromeManagementClient::MakeUnique));
-  }
-
-  MockKidsChromeManagementClient* GetKidsChromeManagementClient() {
-    return static_cast<MockKidsChromeManagementClient*>(
-        KidsChromeManagementClientFactory::GetForProfile(browser()->profile()));
-  }
-
  protected:
   supervised_user::KidsManagementApiServerMock& kids_management_api_mock() {
     return supervision_mixin_.api_mock_setup_mixin().api_mock();
@@ -216,7 +151,6 @@ class SupervisedUserRegionalURLFilterTest
 
  private:
   base::test::ScopedFeatureList feature_list_;
-  base::CallbackListSubscription create_services_subscription_;
   base::CallbackListSubscription request_monitor_subscription_;
   supervised_user::SupervisionMixin supervision_mixin_{
       mixin_host_,
@@ -246,25 +180,18 @@ IN_PROC_BROWSER_TEST_P(SupervisedUserRegionalURLFilterTest, RegionIsAdded) {
   expected.set_url(url_to_classify);
 
   int number_of_expected_calls = IsUrlFilteringEnabled() ? 1 : 0;
-  if (supervised_user::IsProtoApiForClassifyUrlEnabled()) {
-    if (number_of_expected_calls > 0) {
-      kids_management_api_mock().AllowSubsequentClassifyUrl();
-      EXPECT_CALL(kids_management_api_mock().classify_url_mock(), ClassifyUrl)
-          .Times(number_of_expected_calls);
-    }
-    // Ignore all extra calls to other methods
-    EXPECT_CALL(*this, ClassifyUrlRequestMonitor(_, _))
-        .Times(::testing::AnyNumber());
-    // Last expectation takes precedence.
-    EXPECT_CALL(*this,
-                ClassifyUrlRequestMonitor(kClassifyUrlConfig.service_path,
-                                          expected.SerializeAsString()))
-        .Times(number_of_expected_calls);
-  } else {
-    EXPECT_CALL(*GetKidsChromeManagementClient(),
-                ClassifyURL(Pointee(EqualsProto(expected)), /*callback=*/_))
+  if (number_of_expected_calls > 0) {
+    kids_management_api_mock().AllowSubsequentClassifyUrl();
+    EXPECT_CALL(kids_management_api_mock().classify_url_mock(), ClassifyUrl)
         .Times(number_of_expected_calls);
   }
+  // Ignore all extra calls to other methods
+  EXPECT_CALL(*this, ClassifyUrlRequestMonitor(_, _))
+      .Times(::testing::AnyNumber());
+  // Last expectation takes precedence.
+  EXPECT_CALL(*this, ClassifyUrlRequestMonitor(kClassifyUrlConfig.service_path,
+                                               expected.SerializeAsString()))
+      .Times(number_of_expected_calls);
 
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GURL(url_to_classify)));
 }
@@ -275,8 +202,6 @@ std::string PrettyPrintTestCaseName(
     const ::testing::TestParamInfo<ParamsTuple>& info) {
   std::stringstream ss;
   ss << TestCase(info.param).GetSignInMode() << "Account";
-  ss << (TestCase(info.param).ProtoFetcherEnabled() ? "WithProtoFetcher"
-                                                    : "WithoutProtoFetcher");
   ss << (TestCase(info.param).FilterWebsitesEnabled()
              ? "WithFilterWebsites"
              : "WithoutFilterWebsites");
@@ -294,7 +219,6 @@ INSTANTIATE_TEST_SUITE_P(
 #endif
             SupervisionMixin::SignInMode::kRegular,
             SupervisionMixin::SignInMode::kSupervised),
-        testing::Values(UseProtoFetcher(true), UseProtoFetcher(false)),
         testing::Values(FilterWebsites(true), FilterWebsites(false))),
     &PrettyPrintTestCaseName);
 }  // namespace

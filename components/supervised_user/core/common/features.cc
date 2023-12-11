@@ -33,11 +33,6 @@ BASE_FEATURE(kLocalWebApprovals,
              base::FEATURE_DISABLED_BY_DEFAULT);
 #endif
 
-// Proto fetcher experiments.
-BASE_FEATURE(kEnableProtoApiForClassifyUrl,
-             "EnableProtoApiForClassifyUrl",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 // Request priority experiment for ClassifyUrl (for critical path of rendering).
 BASE_FEATURE(kHighestRequestPriorityForClassifyUrl,
              "HighestRequestPriorityForClassifyUrl",
@@ -62,10 +57,6 @@ bool IsLocalWebApprovalsEnabled() {
 #else
   return base::FeatureList::IsEnabled(kLocalWebApprovals);
 #endif
-}
-
-bool IsProtoApiForClassifyUrlEnabled() {
-  return base::FeatureList::IsEnabled(kEnableProtoApiForClassifyUrl);
 }
 
 // The following flags control whether supervision features are enabled on

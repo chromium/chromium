@@ -13,36 +13,6 @@
 namespace supervised_user::testing {
 
 // static
-::testing::internal::ParamGenerator<EnableProtoApiForClassifyUrlTestCase>
-EnableProtoApiForClassifyUrlTestCase::Values() {
-  return ::testing::Values(EnableProtoApiForClassifyUrlTestCase(true),
-                           EnableProtoApiForClassifyUrlTestCase(false));
-}
-
-EnableProtoApiForClassifyUrlTestCase::EnableProtoApiForClassifyUrlTestCase(
-    bool is_proto_api_enabled)
-    : is_proto_api_enabled_(is_proto_api_enabled) {}
-
-std::unique_ptr<base::test::ScopedFeatureList>
-EnableProtoApiForClassifyUrlTestCase::MakeFeatureList() {
-  auto feature_list = std::make_unique<base::test::ScopedFeatureList>();
-  if (is_proto_api_enabled_) {
-    feature_list->InitAndEnableFeature(kEnableProtoApiForClassifyUrl);
-  } else {
-    feature_list->InitAndDisableFeature(kEnableProtoApiForClassifyUrl);
-  }
-  return feature_list;
-}
-
-std::string EnableProtoApiForClassifyUrlTestCase::ToString() const {
-  if (is_proto_api_enabled_) {
-    return "ProtoApiForClassifyUrlEnabled";
-  } else {
-    return "ProtoApiForClassifyUrlDisabled";
-  }
-}
-
-// static
 ::testing::internal::ParamGenerator<LocalWebApprovalsTestCase>
 LocalWebApprovalsTestCase::Values() {
   return ::testing::Values(LocalWebApprovalsTestCase(true),

@@ -265,7 +265,6 @@ public abstract class ChromeFeatureList {
     public static final String EARLY_INITIALIZE_STARTUP_METRICS = "EarlyInitializeStartupMetrics";
     public static final String ENABLE_BOOKMARK_FOLDERS_FOR_ACCOUNT_STORAGE =
             "EnableBookmarkFoldersForAccountStorage";
-    public static final String ENABLE_PROTO_API_FOR_CLASSIFY_URL = "EnableProtoApiForClassifyUrl";
     public static final String EXPERIMENTS_FOR_AGSA = "ExperimentsForAgsa";
     public static final String FEATURE_NOTIFICATION_GUIDE = "FeatureNotificationGuide";
     public static final String FEED_BACK_TO_TOP = "FeedBackToTop";

@@ -20,7 +20,6 @@
 #include "build/build_config.h"
 #include "components/prefs/pref_service.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
-#include "components/supervised_user/core/browser/kids_chrome_management_client.h"
 #include "components/supervised_user/core/browser/supervised_user_preferences.h"
 #include "components/supervised_user/core/browser/supervised_user_service_observer.h"
 #include "components/supervised_user/core/browser/supervised_user_settings_service.h"
@@ -138,7 +137,7 @@ void SupervisedUserService::RemoveObserver(
 
 SupervisedUserService::SupervisedUserService(
     signin::IdentityManager* identity_manager,
-    KidsChromeManagementClient* kids_chrome_management_client,
+    scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
     PrefService& user_prefs,
     SupervisedUserSettingsService& settings_service,
     syncer::SyncService* sync_service,
@@ -149,7 +148,7 @@ SupervisedUserService::SupervisedUserService(
       settings_service_(settings_service),
       sync_service_(sync_service),
       identity_manager_(identity_manager),
-      kids_chrome_management_client_(kids_chrome_management_client),
+      url_loader_factory_(url_loader_factory),
       delegate_(nullptr),
       can_show_first_time_interstitial_banner_(
           can_show_first_time_interstitial_banner) {
@@ -308,7 +307,7 @@ void SupervisedUserService::UpdateAsyncUrlChecker() {
 
   if (use_online_check != url_filter_->HasAsyncURLChecker()) {
     if (use_online_check) {
-      url_filter_->InitAsyncURLChecker(kids_chrome_management_client_);
+      url_filter_->InitAsyncURLChecker(identity_manager_, url_loader_factory_);
     } else {
       url_filter_->ClearAsyncURLChecker();
     }

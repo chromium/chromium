@@ -94,8 +94,6 @@ static_library("browser") {
   sources = [
     "child_account_service.cc",
     "child_account_service.h",
-    "kids_chrome_management_client.cc",
-    "kids_chrome_management_client.h",
     "kids_management_url_checker_client.cc",
     "kids_management_url_checker_client.h",
     "parental_control_metrics.cc",
@@ -173,7 +171,6 @@ source_set("unit_tests") {
   sources = [
     "api_access_token_fetcher_unittest.cc",
     "child_account_service_unittest.cc",
-    "kids_chrome_management_client_unittest.cc",
     "kids_management_url_checker_client_unittest.cc",
     "list_family_members_service_unittest.cc",
     "parental_control_metrics_unittest.cc",

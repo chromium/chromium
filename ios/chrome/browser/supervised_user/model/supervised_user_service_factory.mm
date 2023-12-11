@@ -14,7 +14,6 @@
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/signin/model/identity_manager_factory.h"
-#import "ios/chrome/browser/supervised_user/model/kids_chrome_management_client_factory.h"
 #import "ios/chrome/browser/supervised_user/model/supervised_user_settings_service_factory.h"
 #import "ios/chrome/browser/sync/model/sync_service_factory.h"
 #import "url/gurl.h"
@@ -74,7 +73,6 @@ SupervisedUserServiceFactory::SupervisedUserServiceFactory()
           "SupervisedUserService",
           BrowserStateDependencyManager::GetInstance()) {
   DependsOn(IdentityManagerFactory::GetInstance());
-  DependsOn(KidsChromeManagementClientFactory::GetInstance());
   DependsOn(SyncServiceFactory::GetInstance());
   DependsOn(SupervisedUserSettingsServiceFactory::GetInstance());
 }
@@ -96,8 +94,8 @@ SupervisedUserServiceFactory::BuildServiceInstanceFor(
 
   return std::make_unique<supervised_user::SupervisedUserService>(
       IdentityManagerFactory::GetForBrowserState(browser_state),
-      KidsChromeManagementClientFactory::GetForBrowserState(browser_state),
-      *user_prefs, *settings_service, sync_service,
+      browser_state->GetSharedURLLoaderFactory(), *user_prefs,
+      *settings_service, sync_service,
       // iOS does not support extensions, check_webstore_url_callback returns
       // false.
       base::BindRepeating([](const GURL& url) { return false; }),

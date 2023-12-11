@@ -17,7 +17,6 @@
 #include "components/prefs/testing_pref_service.h"
 #include "components/signin/public/identity_manager/identity_test_environment.h"
 #include "components/supervised_user/core/browser/child_account_service.h"
-#include "components/supervised_user/core/browser/kids_chrome_management_client.h"
 #include "components/supervised_user/core/browser/supervised_user_preferences.h"
 #include "components/supervised_user/core/browser/supervised_user_service.h"
 #include "components/supervised_user/core/browser/supervised_user_settings_service.h"
@@ -36,20 +35,13 @@ class ParentalControlMetricsTest : public testing::Test {
   void SetUp() override {
     supervised_user::RegisterProfilePrefs(pref_service_.registry());
 
-    // Prepare args for the AsyncURLChecker.
-    kids_chrome_management_client_ =
-        std::make_unique<KidsChromeManagementClient>(
-            base::MakeRefCounted<network::WeakWrapperSharedURLLoaderFactory>(
-                &test_url_loader_factory_),
-            identity_test_env_.identity_manager());
-
     settings_service_.Init(pref_service_.user_prefs_store());
 
     supervised_user::EnableParentalControls(pref_service_);
     supervised_user_service_ =
         std::make_unique<supervised_user::SupervisedUserService>(
             identity_test_env_.identity_manager(),
-            kids_chrome_management_client_.get(), pref_service_,
+            test_url_loader_factory_.GetSafeWeakWrapper(), pref_service_,
             settings_service_, &sync_service_,
             /*check_webstore_url_callback=*/
             base::BindRepeating([](const GURL& url) { return false; }),
@@ -81,7 +73,6 @@ class ParentalControlMetricsTest : public testing::Test {
 
   network::TestURLLoaderFactory test_url_loader_factory_;
   signin::IdentityTestEnvironment identity_test_env_;
-  std::unique_ptr<KidsChromeManagementClient> kids_chrome_management_client_;
   supervised_user::SupervisedUserURLFilter filter_ =
       supervised_user::SupervisedUserURLFilter(
           base::BindRepeating([](const GURL& url) { return false; }),

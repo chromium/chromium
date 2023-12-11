@@ -9,7 +9,6 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_key.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
-#include "chrome/browser/supervised_user/kids_chrome_management/kids_chrome_management_client_factory.h"
 #include "chrome/browser/supervised_user/supervised_user_browser_utils.h"
 #include "chrome/browser/supervised_user/supervised_user_settings_service_factory.h"
 #include "chrome/browser/sync/sync_service_factory.h"
@@ -18,6 +17,7 @@
 #include "components/sync/service/sync_service.h"
 #include "components/variations/service/variations_service.h"
 #include "content/public/browser/browser_context.h"
+#include "content/public/browser/storage_partition.h"
 #include "extensions/buildflags/buildflags.h"
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
@@ -72,7 +72,8 @@ SupervisedUserServiceFactory* SupervisedUserServiceFactory::GetInstance() {
 KeyedService* SupervisedUserServiceFactory::BuildInstanceFor(Profile* profile) {
   return new supervised_user::SupervisedUserService(
       IdentityManagerFactory::GetForProfile(profile),
-      KidsChromeManagementClientFactory::GetInstance()->GetForProfile(profile),
+      profile->GetDefaultStoragePartition()
+          ->GetURLLoaderFactoryForBrowserProcess(),
       *profile->GetPrefs(),
       *SupervisedUserSettingsServiceFactory::GetInstance()->GetForKey(
           profile->GetProfileKey()),
@@ -91,7 +92,6 @@ SupervisedUserServiceFactory::SupervisedUserServiceFactory()
       extensions::ExtensionsBrowserClient::Get()->GetExtensionSystemFactory());
 #endif
   DependsOn(IdentityManagerFactory::GetInstance());
-  DependsOn(KidsChromeManagementClientFactory::GetInstance());
   DependsOn(SyncServiceFactory::GetInstance());
   DependsOn(SupervisedUserSettingsServiceFactory::GetInstance());
 }
