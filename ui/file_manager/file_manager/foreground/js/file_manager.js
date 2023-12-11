@@ -21,6 +21,7 @@ import {CrButtonElement} from 'chrome://resources/cr_elements/cr_button/cr_butto
 import {FileManagerBase} from '../../background/js/file_manager_base.js';
 import {getBulkPinProgress, getDialogCaller, getDlpBlockedComponents, getDriveConnectionState, getPreferences} from '../../common/js/api.js';
 import {ArrayDataModel} from '../../common/js/array_data_model.js';
+import {crInjectTypeAndInit} from '../../common/js/cr_ui.js';
 import {isFolderDialogType} from '../../common/js/dialog_type.js';
 import {getKeyModifiers, queryDecoratedElement, queryRequiredElement} from '../../common/js/dom_utils.js';
 import {EntryList, FakeEntryImpl} from '../../common/js/files_app_entry_types.js';
@@ -902,7 +903,8 @@ export class FileManager extends EventTarget {
     // '[Symbol.iterator]()' method that returns an iterator.
     for (const crButton of this.dialogDom_.querySelectorAll(
              'cr-button[command]')) {
-      CommandButton.decorate(/** @type {CrButtonElement} */ (crButton));
+      crInjectTypeAndInit(
+          /** @type {CrButtonElement} */ (crButton), CommandButton);
     }
 
     // @ts-ignore: error TS2488: Type 'NodeListOf<Element>' must have a

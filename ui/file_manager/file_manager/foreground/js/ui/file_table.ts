@@ -6,6 +6,7 @@ import {dispatchSimpleEvent} from 'chrome://resources/ash/common/cr_deprecated.j
 import {assert} from 'chrome://resources/js/assert.js';
 
 import {RateLimiter} from '../../../common/js/async_util.js';
+import {crInjectTypeAndInit} from '../../../common/js/cr_ui.js';
 import {maybeShowTooltip} from '../../../common/js/dom_utils.js';
 import {entriesToURLs, isTeamDriveRoot} from '../../../common/js/entry_utils.js';
 import {getType, isAudio, isEncrypted, isImage, isRaw, isVideo} from '../../../common/js/file_type.js';
@@ -378,12 +379,6 @@ export class FileTable extends Table {
   private onThumbnailLoadedBound_: null|EventListener = null;
   a11y: A11yAnnounce|null = null;
 
-  constructor() {
-    super();
-
-    throw new Error('Designed to decorate elements');
-  }
-
   /**
    * Decorates the element.
    * @param self Table to decorate.
@@ -394,13 +389,13 @@ export class FileTable extends Table {
    * @param fullPage True if it's full page File Manager, False if a
    *    file open/save dialog.
    */
-  static override decorate(
-      el: Element, metadataModel: MetadataModel, volumeManager: VolumeManager,
-      a11y: A11yAnnounce, fullPage: boolean) {
-    Table.decorate(el);
+  static decorate(
+      el: HTMLElement, metadataModel: MetadataModel,
+      volumeManager: VolumeManager, a11y: A11yAnnounce, fullPage: boolean) {
+    crInjectTypeAndInit(el, Table);
     Object.setPrototypeOf(el, FileTable.prototype);
     const self = el as FileTable;
-    FileTableList.decorate(self.list);
+    crInjectTypeAndInit(self.list, FileTableList);
     const list = self.list as FileTableList;
     list.setOnMergeItems(self.updateHighPriorityRange_.bind(self));
     self.metadataModel_ = metadataModel;

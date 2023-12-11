@@ -4,8 +4,6 @@
 
 import {EventTracker} from 'chrome://resources/js/event_tracker.js';
 
-import {decorate} from '../../../common/js/cr_ui.js';
-
 import {Menu} from './menu.js';
 import {MenuItem, MenuItemActivationEvent} from './menu_item.js';
 
@@ -54,19 +52,8 @@ export class MultiMenu extends Menu {
 
   private showingEvents_: EventTracker|null = null;
 
-  /**
-   * Initializes the multi menu.
-   * @param element Element to be decorated.
-   * @return Decorated element.
-   */
-  static override decorate(element: HTMLElement): MultiMenu {
-    // Decorate the menu as a single level menu.
-    decorate(element, MultiMenu);
-    return element as MultiMenu;
-  }
-
-  override decorate() {
-    super.decorate();
+  override initialize() {
+    super.initialize();
     // Event tracker for the sub-menu specific listeners.
     this.showingEvents_ = new EventTracker();
     this.currentMenu = this;

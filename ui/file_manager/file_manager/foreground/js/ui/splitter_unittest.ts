@@ -6,7 +6,7 @@ import {getRequiredElement} from 'chrome://resources/ash/common/util.js';
 import {getTrustedHTML} from 'chrome://resources/js/static_types.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chromeos/chai_assert.js';
 
-import {decorate} from '../../../common/js/cr_ui.js';
+import {crInjectTypeAndInit} from '../../../common/js/cr_ui.js';
 
 import {Splitter} from './splitter.js';
 
@@ -21,7 +21,7 @@ export function setUp() {
 
 export function testSplitterIgnoresRightMouse() {
   const splitter = getRequiredElement('splitter');
-  decorate(splitter, Splitter);
+  crInjectTypeAndInit(splitter, Splitter);
 
   const downRight = new MouseEvent('mousedown', {button: 1, cancelable: true});
   assertTrue(splitter.dispatchEvent(downRight));
@@ -34,7 +34,7 @@ export function testSplitterIgnoresRightMouse() {
 
 export function testSplitterResizePreviousElement() {
   const splitter = getRequiredElement('splitter') as Splitter;
-  decorate(splitter, Splitter);
+  crInjectTypeAndInit(splitter, Splitter);
 
   splitter.resizeNextElement = false;
 
@@ -64,7 +64,7 @@ export function testSplitterResizePreviousElement() {
 
 export function testSplitterResizeNextElement() {
   const splitter = getRequiredElement('splitter') as Splitter;
-  decorate(splitter, Splitter);
+  crInjectTypeAndInit(splitter, Splitter);
   splitter.resizeNextElement = true;
   const nextElement = document.getElementById('next')!;
   nextElement.style.width = '0px';

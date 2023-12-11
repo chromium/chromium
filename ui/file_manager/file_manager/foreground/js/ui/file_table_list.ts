@@ -40,19 +40,10 @@ export class FileTableList extends TableList {
   private onMergeItems_: null|OnMergeItemsCallback = null;
   shouldStartDragSelection: null|((e: MouseEvent) => boolean) = null;
 
-  constructor() {
-    // To silence closure compiler.
-    super();
-
-    throw new Error('Designed to decorate elements');
-  }
-
-  static override decorate(element: HTMLElement) {
-    Object.setPrototypeOf(element, FileTableList.prototype);
-    const self = element as FileTableList;
-    self.setAttribute('aria-multiselectable', 'true');
-    self.setAttribute('aria-describedby', 'more-actions-info');
-    self.onMergeItems_ = null;
+  override initialize() {
+    this.setAttribute('aria-multiselectable', 'true');
+    this.setAttribute('aria-describedby', 'more-actions-info');
+    this.onMergeItems_ = null;
   }
 
   override get table(): FileTable {

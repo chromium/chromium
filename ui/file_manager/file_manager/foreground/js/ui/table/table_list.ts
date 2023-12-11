@@ -6,7 +6,7 @@
  * @fileoverview This extends List for use in the table.
  */
 
-import {decorate, jsSetter} from '../../../../common/js/cr_ui.js';
+import {jsSetter} from '../../../../common/js/cr_ui.js';
 import {List} from '../list.js';
 import {ListItem} from '../list_item.js';
 
@@ -17,17 +17,11 @@ import {Table} from './table.js';
  * Creates a new table list element.
  */
 export class TableList extends List {
-  private table_: Table|null;
+  private table_: Table|null = null;
 
-  constructor() {
-    super();
-
-    throw new Error('It should use the decorate method');
-  }
-
-  static override decorate(el: HTMLElement) {
-    decorate(el, TableList);
-    el.className = 'list';
+  override initialize() {
+    super.initialize();
+    this.className = 'list';
   }
 
   /**

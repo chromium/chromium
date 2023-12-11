@@ -5,7 +5,7 @@
 import {loadTimeData} from 'chrome://resources/ash/common/load_time_data.m.js';
 import {assert} from 'chrome://resources/js/assert.js';
 
-import {boolAttrSetter, decorate} from '../../../common/js/cr_ui.js';
+import {boolAttrSetter, crInjectTypeAndInit} from '../../../common/js/cr_ui.js';
 
 import {Command} from './command.js';
 
@@ -18,20 +18,16 @@ export type MenuItemActivationEvent = Event&{
  */
 export function createMenuItem(): MenuItem {
   const el = document.createElement('cr-menu-item');
-  return decorate(el as MenuItem, MenuItem);
+  return crInjectTypeAndInit(el, MenuItem);
 }
 
 export class MenuItem extends HTMLElement {
   private command_: Command|null = null;
 
-  static decorate(el: HTMLElement, ..._args: any[]) {
-    decorate(el, MenuItem);
-  }
-
   /**
    * Initializes the menu item.
    */
-  decorate() {
+  initialize() {
     this.command_ = null;
     const commandId = this.getAttribute('command');
     if (commandId) {
@@ -63,7 +59,7 @@ export class MenuItem extends HTMLElement {
    */
   static createSeparator(): MenuItem {
     const el = document.createElement('hr');
-    return decorate(el, MenuItem) as unknown as MenuItem;
+    return crInjectTypeAndInit(el, MenuItem) as MenuItem;
   }
 
   /**
@@ -86,7 +82,7 @@ export class MenuItem extends HTMLElement {
     if (typeof command === 'string' && command[0] === '#') {
       command = this.ownerDocument.body.querySelector<Command>(command)!;
       assert(command);
-      decorate(command, Command);
+      crInjectTypeAndInit(command, Command);
     }
 
     command = command as Command;

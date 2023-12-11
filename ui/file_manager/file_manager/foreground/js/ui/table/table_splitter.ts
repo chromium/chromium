@@ -21,7 +21,7 @@ import {Table} from './table.js';
 export function createTableSplitter(table: Table): TableSplitter {
   const el = document.createElement('div') as TableSplitter;
   Object.setPrototypeOf(el, TableSplitter.prototype);
-  el.decorate(table);
+  el.initialize(table);
   return el as TableSplitter;
 }
 /**
@@ -35,8 +35,8 @@ export class TableSplitter extends Splitter {
   /**
    * Initializes the element.
    */
-  override decorate(table: Table) {
-    super.decorate();
+  override initialize(table: Table) {
+    super.initialize();
     this.table_ = table;
 
     const icon = document.createElement('cr-icon-button');

@@ -9,7 +9,7 @@
 import {assert} from 'chrome://resources/ash/common/assert.js';
 import {CrButtonElement} from 'chrome://resources/cr_elements/cr_button/cr_button.js';
 
-import {decorate} from '../../../common/js/cr_ui.js';
+import {crInjectTypeAndInit} from '../../../common/js/cr_ui.js';
 
 import {Command} from './command.js';
 
@@ -27,20 +27,7 @@ export class CommandButton extends CrButtonElement {
     this.command_ = null;
   }
 
-  /**
-   * Decorates the given element.
-   * @param {!HTMLElement} element Item to be decorated.
-   * @return {!CommandButton} Decorated item.
-   */
-  static decorate(element) {
-    decorate(element, CommandButton);
-    return /** @type {!CommandButton} */ (element);
-  }
-
-  /**
-   * Initializes the menu item.
-   */
-  decorate() {
+  initialize() {
     let commandId;
     if ((commandId = this.getAttribute('command'))) {
       this.setCommand(commandId);
@@ -91,7 +78,7 @@ export class CommandButton extends CrButtonElement {
       assert(command[0] == '#');
       command = /** @type {!Command} */
           (this.ownerDocument.body.querySelector(command));
-      decorate(command, Command);
+      crInjectTypeAndInit(command, Command);
     }
 
     this.command_ = command;

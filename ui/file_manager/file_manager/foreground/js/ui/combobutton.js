@@ -2,21 +2,19 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {decorate} from '../../../common/js/cr_ui.js';
+import {crInjectTypeAndInit} from '../../../common/js/cr_ui.js';
 
 import {FilesMenuItem} from './files_menu.js';
 import {MenuItem} from './menu_item.js';
 import {MultiMenuButton} from './multi_menu_button.js';
 
-
 /**
  * @fileoverview This implements a combobutton control.
  */
+
 /**
  * Creates a new combo button element.
  */
-// @ts-ignore: error TS2415: Class 'ComboButton' incorrectly extends base class
-// 'MultiMenuButton'.
 export class ComboButton extends MultiMenuButton {
   constructor() {
     super();
@@ -60,7 +58,7 @@ export class ComboButton extends MultiMenuButton {
     // @ts-ignore: error TS2339: Property 'menu' does not exist on type
     // 'ComboButton'.
     if (this.menu.classList.contains('files-menu')) {
-      decorate(menuitem, FilesMenuItem);
+      crInjectTypeAndInit(menuitem, FilesMenuItem);
       /** @type {!FilesMenuItem} */ (menuitem).toggleManagedIcon(
           /*visible=*/ item.isPolicyDefault);
       if (item.isDefault) {
@@ -137,14 +135,9 @@ export class ComboButton extends MultiMenuButton {
   }
 
   /**
-   * decorate expects a static |decorate| method.
-   *
-   * @param {!Element} el Element to be decorated.
-   * @return {!ComboButton} Decorated element.
-   * @public
    * @override
    */
-  static decorate(el) {
+  initialize() {
     // Add the ComboButton methods to the element we're
     // decorating, leaving it's prototype chain intact.
     // Don't copy 'constructor' or property get/setters.
@@ -154,21 +147,21 @@ export class ComboButton extends MultiMenuButton {
         // @ts-ignore: error TS7053: Element implicitly has an 'any' type
         // because expression of type 'string' can't be used to index type
         // 'ComboButton'.
-        el[name] = ComboButton.prototype[name];
+        // this[name] = ComboButton.prototype[name];
       }
     });
     Object.getOwnPropertyNames(MultiMenuButton.prototype).forEach(name => {
       if (name !== 'constructor' &&
-          !Object.getOwnPropertyDescriptor(el, name)) {
+          !Object.getOwnPropertyDescriptor(this, name)) {
         // @ts-ignore: error TS7053: Element implicitly has an 'any' type
         // because expression of type 'string' can't be used to index type
         // 'MultiMenuButton'.
-        el[name] = MultiMenuButton.prototype[name];
+        // this[name] = MultiMenuButton.prototype[name];
       }
     });
     // Set up the 'menu, defaultItem, multiple and disabled'
     // properties & setter/getters.
-    Object.defineProperty(el, 'menu', {
+    Object.defineProperty(this, 'menu', {
       get() {
         return this.menu_;
       },
@@ -178,7 +171,7 @@ export class ComboButton extends MultiMenuButton {
       enumerable: true,
       configurable: true,
     });
-    Object.defineProperty(el, 'defaultItem', {
+    Object.defineProperty(this, 'defaultItem', {
       get() {
         return this.defaultItem_;
       },
@@ -190,28 +183,14 @@ export class ComboButton extends MultiMenuButton {
     });
     // @ts-ignore: error TS2339: Property 'addBooleanProperty_' does not exist
     // on type 'Element'.
-    el.addBooleanProperty_('multiple');
+    this.addBooleanProperty_('multiple');
     // @ts-ignore: error TS2339: Property 'addBooleanProperty_' does not exist
     // on type 'Element'.
-    el.addBooleanProperty_('disabled');
-    el = /** @type {!ComboButton} */ (el);
-    // @ts-ignore: error TS2339: Property 'decorate' does not exist on type
-    // 'Element'.
-    el.decorate();
-    // @ts-ignore: error TS2740: Type 'Element' is missing the following
-    // properties from type 'ComboButton': defaultItem_, trigger_, actionNode_,
-    // disabled, and 151 more.
-    return el;
-  }
+    this.addBooleanProperty_('disabled');
 
-  /**
-   * Initializes the element.
-   * @override
-   */
-  decorate() {
     // @ts-ignore: error TS2339: Property 'decorate' does not exist on type
     // 'MultiMenuButton'.
-    MultiMenuButton.prototype.decorate.call(this);
+    super.initialize();
 
     this.classList.add('combobutton');
 

@@ -4,8 +4,6 @@
 
 import {assertInstanceof} from 'chrome://resources/ash/common/assert.js';
 
-import {decorate} from '../../../common/js/cr_ui.js';
-
 import {Menu} from './menu.js';
 import {MenuItem} from './menu_item.js';
 
@@ -44,20 +42,9 @@ export class FilesMenuItem extends MenuItem {
   }
 
   /**
-   * Decorates the element.
-   * @param {!HTMLElement} element Element to be decorated.
-   * @return {!FilesMenuItem} Decorated element.
    * @override
    */
-  static decorate(element) {
-    decorate(element, FilesMenuItem);
-    return /** @type {!FilesMenuItem} */ (element);
-  }
-
-  /**
-   * @override
-   */
-  decorate() {
+  initialize() {
     this.animating_ = false;
 
     // Custom menu item can have sophisticated content (elements).

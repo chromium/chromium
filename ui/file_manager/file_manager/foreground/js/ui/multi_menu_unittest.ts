@@ -6,7 +6,7 @@ import {assert} from 'chrome://resources/js/assert.js';
 import {getTrustedHTML} from 'chrome://resources/js/static_types.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chromeos/chai_assert.js';
 
-import {decorate} from '../../../common/js/cr_ui.js';
+import {crInjectTypeAndInit} from '../../../common/js/cr_ui.js';
 import {queryDecoratedElement} from '../../../common/js/dom_utils.js';
 
 import {Command} from './command.js';
@@ -72,7 +72,7 @@ export function setUp() {
 
   // Initialize cr.ui.Command with the <command>s.
   for (const command of document.querySelectorAll<HTMLElement>('command')) {
-    decorate(command, Command);
+    crInjectTypeAndInit(command, Command);
   }
   menubutton = queryDecoratedElement('#test-menu-button', MultiMenuButton);
   topMenu = queryDecoratedElement('#menu', Menu);

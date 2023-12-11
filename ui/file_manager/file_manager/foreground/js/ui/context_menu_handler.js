@@ -7,7 +7,7 @@ import {dispatchPropertyChange} from 'chrome://resources/ash/common/cr_deprecate
 import {NativeEventTarget as EventTarget} from 'chrome://resources/ash/common/event_target.js';
 import {EventTracker} from 'chrome://resources/ash/common/event_tracker.js';
 
-import {decorate} from '../../../common/js/cr_ui.js';
+import {crInjectTypeAndInit} from '../../../common/js/cr_ui.js';
 
 import {Menu} from './menu.js';
 import {MenuItem} from './menu_item.js';
@@ -331,7 +331,7 @@ class ContextMenuHandler extends EventTarget {
 
         if (typeof menu === 'string' && menu[0] === '#') {
           menu = this.ownerDocument.getElementById(menu.slice(1));
-          decorate(menu, Menu);
+          crInjectTypeAndInit(menu, Menu);
         }
 
         if (menu === oldContextMenu) {

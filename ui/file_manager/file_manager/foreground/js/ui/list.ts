@@ -7,7 +7,7 @@ import {assert} from 'chrome://resources/js/assert.js';
 
 import {ArrayDataModel} from '../../../common/js/array_data_model.js';
 import type {ChangeEvent, PermutationEvent} from '../../../common/js/array_data_model.js';
-import {boolAttrSetter, decorate, PropertyChangeEvent} from '../../../common/js/cr_ui.js';
+import {boolAttrSetter, crInjectTypeAndInit, PropertyChangeEvent} from '../../../common/js/cr_ui.js';
 import {isNullOrUndefined} from '../../../common/js/util.js';
 
 import {createListItem, ListItem} from './list_item.js';
@@ -52,7 +52,8 @@ function getComputedStyle(el: HTMLElement) {
 
 export function createList(): List {
   const el = document.createElement('list') as List;
-  return decorate(el, List);
+  crInjectTypeAndInit(el, List);
+  return el;
 }
 
 /**
@@ -321,14 +322,10 @@ export class List extends HTMLUListElement {
     }
   }
 
-  static decorate(el: HTMLElement, ..._args: any[]) {
-    decorate(el, List);
-  }
-
   /**
    * Initializes the element.
    */
-  decorate() {
+  initialize() {
     // Add fillers.
     this.beforeFiller_ = this.ownerDocument.createElement('div');
     this.afterFiller_ = this.ownerDocument.createElement('div');

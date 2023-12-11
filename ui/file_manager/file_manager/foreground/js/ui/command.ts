@@ -19,7 +19,7 @@ import {dispatchPropertyChange} from 'chrome://resources/ash/common/cr_deprecate
 import {KeyboardShortcutList} from 'chrome://resources/ash/common/keyboard_shortcut_list_js.js';
 import {assert} from 'chrome://resources/js/assert.js';
 
-import {boolAttrSetter, convertToKebabCase, decorate, domAttrSetter} from '../../../common/js/cr_ui.js';
+import {boolAttrSetter, convertToKebabCase, domAttrSetter} from '../../../common/js/cr_ui.js';
 
 import {MenuItem} from './menu_item.js';
 
@@ -30,14 +30,10 @@ export class Command extends HTMLElement {
   private shortcut_: string|null = null;
   private keyboardShortcuts_: KeyboardShortcutList|null = null;
 
-  static decorate(el: HTMLElement) {
-    decorate(el, Command);
-  }
-
   /**
    * Initializes the command.
    */
-  decorate() {
+  initialize() {
     assert(this.ownerDocument);
     CommandManager.init(this.ownerDocument);
 

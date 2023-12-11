@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import {crInjectTypeAndInit} from '../../../common/js/cr_ui.js';
 import {queryDecoratedElement, queryRequiredElement} from '../../../common/js/dom_utils.js';
 import {ActionsModel, CommonActionId, InternalActionId} from '../actions_model.js';
 
@@ -42,10 +43,8 @@ export class ActionsSubmenu {
    * @private
    */
   addMenuItem_(options) {
-    // @ts-ignore: error TS2339: Property 'addMenuItem' does not exist on type
-    // 'Menu'.
     const menuItem = this.menu_.addMenuItem(options);
-    FilesMenuItem.decorate(menuItem);
+    crInjectTypeAndInit(menuItem, FilesMenuItem);
     menuItem.parentNode?.insertBefore(menuItem, this.separator_);
     this.items_.push(menuItem);
     return menuItem;

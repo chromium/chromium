@@ -6,7 +6,7 @@ import {EventTracker} from 'chrome://resources/ash/common/event_tracker.js';
 import {CrButtonElement} from 'chrome://resources/cr_elements/cr_button/cr_button.js';
 import {assert} from 'chrome://resources/js/assert.js';
 
-import {decorate} from '../../../common/js/cr_ui.js';
+import {crInjectTypeAndInit} from '../../../common/js/cr_ui.js';
 
 import {Menu} from './menu.js';
 import {MenuItem, MenuItemActivationEvent} from './menu_item.js';
@@ -44,19 +44,9 @@ export class MultiMenuButton extends CrButtonElement {
   private observedElement_: HTMLElement|null = null;
 
   /**
-   * Decorates the element.
-   * @param element Element to be decorated.
-   * @return Decorated element.
-   */
-  static decorate(element: HTMLElement): MultiMenuButton {
-    decorate(element, MultiMenuButton);
-    return element as MultiMenuButton;
-  }
-
-  /**
    * Initializes the menu button.
    */
-  decorate() {
+  initialize() {
     this.setAttribute('aria-expanded', 'false');
 
     // Listen to the touch events on the document so that we can handle it
@@ -95,7 +85,7 @@ export class MultiMenuButton extends CrButtonElement {
     if (typeof menu === 'string' && menu[0] === '#') {
       menu = this.ownerDocument.body.querySelector<MultiMenu>(menu)!;
       assert(menu);
-      decorate(menu, MultiMenu);
+      crInjectTypeAndInit(menu, MultiMenu);
     }
 
     this.menu_ = menu as MultiMenu;

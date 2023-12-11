@@ -6,7 +6,7 @@ import '../../elements/icons.html.js';
 
 import {assertInstanceof} from 'chrome://resources/js/assert.js';
 
-import {decorate} from '../../../common/js/cr_ui.js';
+import {crInjectTypeAndInit} from '../../../common/js/cr_ui.js';
 import {queryDecoratedElement, queryRequiredElement} from '../../../common/js/dom_utils.js';
 import {isDlpEnabled, isNewDirectoryTreeEnabled} from '../../../common/js/flags.js';
 import {str, strf} from '../../../common/js/translations.js';
@@ -636,7 +636,7 @@ export class FileManagerUI {
 
     for (const filesMenuItem of filesMenuItems) {
       assertInstanceof(filesMenuItem, MenuItem);
-      decorate(filesMenuItem, FilesMenuItem);
+      crInjectTypeAndInit(filesMenuItem, FilesMenuItem);
     }
   }
 

@@ -11,7 +11,7 @@ import type {XfTree} from '../../widgets/xf_tree.js';
 import type {XfTreeItem} from '../../widgets/xf_tree_item.js';
 import {isTree, isTreeItem} from '../../widgets/xf_tree_util.js';
 
-import {DecoratableElement} from './cr_ui.js';
+import {crInjectTypeAndInit, type DecoratableElement} from './cr_ui.js';
 
 /**
  * Function to be used as event listener for `mouseenter`, it sets the `title`
@@ -117,23 +117,11 @@ export function queryRequiredElement(
  * @param query Query for the element.
  * @param type Type used to decorate.
  */
-export function queryDecoratedElement<T>(
-    query: string, type: DecoratableElement<T>): T {
+export function queryDecoratedElement<T extends DecoratableElement>(
+    query: string, type: {new (...args: any): T}): T {
   const element = queryRequiredElement(query);
-  legacyDecorate(element, type);
+  crInjectTypeAndInit(element, type);
   return element as any as T;
-}
-
-/**
- * Decorates elements as an instance of a class.
- * @param constr The constructor/class to decorate with. The `constr` needs to
- *     have a `decorate` method.
- */
-export function legacyDecorate<T>(
-    element: HTMLElement, constr: DecoratableElement<T>) {
-  if (!(element instanceof constr)) {
-    constr.decorate(element);
-  }
 }
 
 /**

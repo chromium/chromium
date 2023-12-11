@@ -4,11 +4,10 @@
 
 import {assertEquals} from 'chrome://webui-test/chromeos/chai_assert.js';
 
-import {decorate} from '../../../common/js/cr_ui.js';
+import {crInjectTypeAndInit} from '../../../common/js/cr_ui.js';
 
 import {contextMenuHandler} from './context_menu_handler.js';
 import {Menu} from './menu.js';
-
 
 export function testShowAndHideEvents() {
   // Keep original Date.now not to affect other code.
@@ -26,7 +25,7 @@ export function testShowAndHideEvents() {
 
   // Create context menu.
   const menu = document.createElement('div');
-  decorate(menu, Menu);
+  crInjectTypeAndInit(menu, Menu);
   document.body.appendChild(menu);
 
   const menuItem = document.createElement('div');

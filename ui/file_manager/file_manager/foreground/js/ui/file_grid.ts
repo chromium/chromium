@@ -8,7 +8,7 @@ import {isRTL} from 'chrome://resources/ash/common/util.js';
 import {assert} from 'chrome://resources/js/assert.js';
 
 import {RateLimiter} from '../../../common/js/async_util.js';
-import {decorate} from '../../../common/js/cr_ui.js';
+import {crInjectTypeAndInit} from '../../../common/js/cr_ui.js';
 import {maybeShowTooltip} from '../../../common/js/dom_utils.js';
 import {entriesToURLs} from '../../../common/js/entry_utils.js';
 import {getIcon, getType, isEncrypted} from '../../../common/js/file_type.js';
@@ -75,11 +75,12 @@ export class FileGrid extends Grid {
   /**
    * Decorates an HTML element to be a FileGrid.
    */
-  static override decorate(
+  static decorate(
       element: HTMLElement, metadataModel: MetadataModel,
       volumeManager: VolumeManager, a11y: A11yAnnounce) {
     const self = element as FileGrid;
-    decorate(self, FileGrid);
+    Object.setPrototypeOf(self, FileGrid.prototype);
+    self.initialize();
     self.setAttribute('aria-multiselectable', 'true');
     self.setAttribute('aria-describedby', 'more-actions-info');
     self.metadataModel_ = metadataModel;
@@ -101,7 +102,7 @@ export class FileGrid extends Grid {
     self.itemConstructor = function(entry: Entry) {
       const item = self.ownerDocument.createElement('li') as FileGridItem;
       self.decorateThumbnail_(item, entry);
-      decorate(item, FileGridItem);
+      crInjectTypeAndInit(item, FileGridItem);
       return item;
     };
 
@@ -1081,8 +1082,8 @@ class FileGridItem extends ListItem {
     // no-op setter. List calls this setter but Files app doesn't need it.
   }
 
-  override decorate() {
-    super.decorate();
+  override initialize() {
+    super.initialize();
     // Override the default role 'listitem' to 'option' to match the parent's
     // role (listbox).
     this.setAttribute('role', 'option');

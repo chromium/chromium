@@ -4,6 +4,7 @@
 
 import {assert} from 'chrome://resources/js/assert.js';
 
+import {crInjectTypeAndInit} from '../../common/js/cr_ui.js';
 import {recordEnum} from '../../common/js/metrics.js';
 import type {HideEvent, ShowEvent} from '../../definitions/context_menu_handler_events.js';
 import type {CommandHandlerDeps} from '../../externs/command_handler_deps.js';
@@ -183,9 +184,7 @@ export class CommandHandler {
         this.fileManager_.document.querySelectorAll<Command>('command');
 
     for (const command of commands) {
-      if (Command.decorate) {
-        Command.decorate(command);
-      }
+      crInjectTypeAndInit(command, Command);
       this.commands_[command.id] = command;
     }
 
