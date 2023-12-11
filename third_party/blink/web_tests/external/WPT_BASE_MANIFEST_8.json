@@ -43426,12 +43426,16 @@
        ]
       ],
       "float-nowrap-4.html": [
-       "bf11e6e31c416e85580bc4792b2b3503dd87f99b",
+       "c7b5f8801c9fd26ef204cfd171d7592c9943fd00",
        [
         null,
         [
          [
           "/css/CSS2/floats/float-nowrap-4-ref.html",
+          "=="
+         ],
+         [
+          "/css/CSS2/floats/float-nowrap-4-ref2.html",
           "=="
          ]
         ],
@@ -43497,6 +43501,23 @@
         [
          [
           "/css/CSS2/floats/float-nowrap-3-ref.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "float-nowrap-hyphen-rewind-1.html": [
+       "9c629ef2872838bad74623f8ed8750e180a5a3c2",
+       [
+        null,
+        [
+         [
+          "/css/CSS2/floats/float-nowrap-hyphen-rewind-1-ref.html",
+          "=="
+         ],
+         [
+          "/css/CSS2/floats/float-nowrap-hyphen-rewind-1-ref2.html",
           "=="
          ]
         ],
@@ -281323,6 +281344,19 @@
        ]
       ]
      },
+     "use-animate-display-none-symbol-2.html": [
+      "db06b641d9a60b094aee40a3930fd7229fcdb0d5",
+      [
+       null,
+       [
+        [
+         "/svg/struct/reftests/reference/green-100x100.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
      "use-animate-display-none-symbol.html": [
       "6ae10ca8739dbedcc148bf7b398437131519d62b",
       [
@@ -297561,8 +297595,20 @@
        "a8c7b060819839dd1e7107a327dfbf32fb1ea794",
        []
       ],
+      "float-nowrap-4-ref2.html": [
+       "f86afdbce800094ec5907273df236780022a2ba7",
+       []
+      ],
       "float-nowrap-5-ref.html": [
        "7f400841037cfb79bafa2c41d3834cdd942445f4",
+       []
+      ],
+      "float-nowrap-hyphen-rewind-1-ref.html": [
+       "c1924998a122890ffd5110aee8ed176042faf3f7",
+       []
+      ],
+      "float-nowrap-hyphen-rewind-1-ref2.html": [
+       "bdc489737f165a60d325585e6fe30ec0c272b330",
        []
       ],
       "float-root-ref.html": [
@@ -325209,6 +325255,10 @@
       []
      ],
      "parsing": {
+      "margin-rules-001-expected.txt": [
+       "4c2e729165b140449f86d915939aeeb4e813ea12",
+       []
+      ],
       "page-orientation-invalid.tentative-expected.txt": [
        "75e557371401720c2aad9c322a0c840d3b0c4b87",
        []
@@ -350075,7 +350125,7 @@
       []
      ],
      "navigate-ancestor-helper.js": [
-      "6178ea78da49831fcf0c681ecd967839f680948a",
+      "ade17c69f2cce20c85758b8f392f61c3f4e9d2bb",
       []
      ],
      "navigate-ancestor-test-runner.https.html": [
@@ -425181,7 +425231,7 @@
      ]
     ],
     "compute_pressure_rate_obfuscation_mitigation_triggered.tentative.https.window.js": [
-     "8f0d5e14eb4a7f715092c38504b4d226adf37c07",
+     "0ae20fdee6eb02090f3bc48d4b38af558103330e",
      [
       "compute-pressure/compute_pressure_rate_obfuscation_mitigation_triggered.tentative.https.window.html",
       {
@@ -435918,6 +435968,15 @@
        {}
       ]
      ],
+     "multicol": {
+      "align-content-multicol.html": [
+       "d14815930a9372b3a5acec86d0c703fd1e6216b7",
+       [
+        null,
+        {}
+       ]
+      ]
+     },
      "parsing": {
       "align-content-computed.html": [
        "8b5465c6b275118ec067cb6ef7b3026aca825e65",
@@ -452420,6 +452479,20 @@
       ]
      ],
      "parsing": {
+      "margin-rules-001.html": [
+       "b73d1bc56fcd7ec66ed5944f4be79eaa63491d19",
+       [
+        null,
+        {}
+       ]
+      ],
+      "nested-rules-001.html": [
+       "23c8eb0894c6a9d28f60e2afd4e4de5c4d0765b2",
+       [
+        null,
+        {}
+       ]
+      ],
       "page-computed.html": [
        "0accba057487570e6a1a1e990c66cd72d0c17155",
        [
@@ -528356,7 +528429,7 @@
      },
      "the-window-object": {
       "BarProp.window.js": [
-       "27a357cab591c92bab589924f78841ca89e69a71",
+       "266779ee0b6131322be62d97b956f63a97770470",
        [
         "html/browsers/the-window-object/BarProp.window.html",
         {}
