@@ -12,6 +12,7 @@
 #include "third_party/blink/renderer/core/scroll/scroll_types.h"
 #include "third_party/blink/renderer/core/scroll/scrollbar.h"
 #include "third_party/blink/renderer/core/scroll/scrollbar_test_suite.h"
+#include "third_party/blink/renderer/core/testing/scoped_mock_overlay_scrollbars.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/native_theme/native_theme_features.h"
 
@@ -107,6 +108,7 @@ class OverlayScrollbarThemeFluentTest : public ScrollbarThemeFluentTest {
 
  private:
   base::test::ScopedFeatureList feature_list_;
+  ScopedMockOverlayScrollbars mock_overlay_scrollbar_;
 };
 
 // Test that the scrollbar's thickness scales appropriately with the thumb's
@@ -180,25 +182,26 @@ TEST_P(ScrollbarThemeFluentTest, HorizontalScrollbarPartsSizes) {
 TEST_P(OverlayScrollbarThemeFluentTest, OverlaySetsCorrectTrackAndInsetSize) {
   // Some OSes keep fluent scrollbars disabled even if the feature flag is set
   // to enable them.
-  if (ui::IsFluentScrollbarEnabled()) {
-    EXPECT_TRUE(theme_->UsesOverlayScrollbars());
-    Scrollbar* horizontal_scrollbar = Scrollbar::CreateForTesting(
-        mock_scrollable_area(), kHorizontalScrollbar, &(theme_->GetInstance()));
-    int scrollbar_thickness = ScrollbarThickness();
-    horizontal_scrollbar->SetFrameRect(gfx::Rect(
-        0, kOffsetFromViewport, kScrollbarLength, scrollbar_thickness));
-
-    // Check that ThumbOffset() calculation is correct.
-    EXPECT_EQ(ThumbThickness() + 2 * ThumbOffset(), scrollbar_thickness);
-
-    const gfx::Rect track_rect = theme_->TrackRect(*horizontal_scrollbar);
-    EXPECT_EQ(track_rect,
-              gfx::Rect(theme_->ButtonLength(*horizontal_scrollbar),
-                        kOffsetFromViewport, TrackLength(*horizontal_scrollbar),
-                        scrollbar_thickness));
-  } else {
+  if (!ui::IsFluentScrollbarEnabled()) {
     EXPECT_FALSE(theme_->UsesOverlayScrollbars());
+    return;
   }
+
+  EXPECT_TRUE(theme_->UsesOverlayScrollbars());
+  Scrollbar* horizontal_scrollbar = Scrollbar::CreateForTesting(
+      mock_scrollable_area(), kHorizontalScrollbar, &(theme_->GetInstance()));
+  int scrollbar_thickness = ScrollbarThickness();
+  horizontal_scrollbar->SetFrameRect(
+      gfx::Rect(0, kOffsetFromViewport, kScrollbarLength, scrollbar_thickness));
+
+  // Check that ThumbOffset() calculation is correct.
+  EXPECT_EQ(ThumbThickness() + 2 * ThumbOffset(), scrollbar_thickness);
+
+  const gfx::Rect track_rect = theme_->TrackRect(*horizontal_scrollbar);
+  EXPECT_EQ(track_rect,
+            gfx::Rect(theme_->ButtonLength(*horizontal_scrollbar),
+                      kOffsetFromViewport, TrackLength(*horizontal_scrollbar),
+                      scrollbar_thickness));
 }
 
 // Same as ScrollbarThemeFluentTest.ScrollbarThicknessScalesProperly, but for
