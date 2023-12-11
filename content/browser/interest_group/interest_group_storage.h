@@ -8,6 +8,7 @@
 #include <vector>
 
 #include "base/containers/flat_map.h"
+#include "base/containers/flat_set.h"
 #include "base/files/file_path.h"
 #include "base/sequence_checker.h"
 #include "base/thread_annotations.h"
@@ -21,6 +22,7 @@
 #include "content/services/auction_worklet/public/mojom/bidder_worklet.mojom-forward.h"
 #include "sql/database.h"
 #include "sql/statement.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 #include "url/origin.h"
 
@@ -77,6 +79,10 @@ class CONTENT_EXPORT InterestGroupStorage {
       const std::set<std::string>& interest_groups_to_keep,
       const url::Origin& main_frame_origin);
 
+  // Gets lockout and cooldowns for sending forDebuggingOnly reports.
+  absl::optional<DebugReportLockoutAndCooldowns>
+  GetDebugReportLockoutAndCooldowns(base::flat_set<url::Origin> origins);
+
   // Updates the interest group `name` of `owner` with the populated fields of
   // `update`.
   //
@@ -97,6 +103,13 @@ class CONTENT_EXPORT InterestGroupStorage {
   // piece of opaque data to identify the winning ad.
   void RecordInterestGroupWin(const blink::InterestGroupKey& group_key,
                               const std::string& ad_json);
+  // Adds an entry to debugging only report lockout if the table is empty.
+  void RecordDebugReportLockout(base::Time last_report_sent_date);
+  // Adds an entry to debugging only report cooldown for `origin` if it does
+  // not exist, otherwise replaces the existing entry.
+  void RecordDebugReportCooldown(const url::Origin& origin,
+                                 base::Time cooldown_start,
+                                 DebugReportCooldownType cooldown_type);
   // Records K-anonymity.
   void UpdateKAnonymity(const StorageInterestGroup::KAnonymityData& data);
 

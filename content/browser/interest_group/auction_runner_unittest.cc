@@ -45,6 +45,7 @@
 #include "content/browser/interest_group/debuggable_auction_worklet.h"
 #include "content/browser/interest_group/debuggable_auction_worklet_tracker.h"
 #include "content/browser/interest_group/interest_group_auction.h"
+#include "content/browser/interest_group/interest_group_features.h"
 #include "content/browser/interest_group/interest_group_k_anonymity_manager.h"
 #include "content/browser/interest_group/interest_group_manager_impl.h"
 #include "content/browser/interest_group/interest_group_storage.h"
@@ -1761,6 +1762,8 @@ class AuctionRunnerTest : public RenderViewHostTestHarness,
     histogram_tester_ = std::make_unique<base::HistogramTester>();
     ukm_recorder_ = std::make_unique<ukm::TestAutoSetUkmRecorder>();
 
+    base::Time now = base::Time::Now();
+    interest_group_manager_->RecordDebugReportLockout(now);
     // Add previous wins and bids to the interest group manager.
     for (auto& bidder : bidders) {
       for (int i = 0; i < bidder.bidding_browser_signals->join_count; i++) {
@@ -1782,6 +1785,9 @@ class AuctionRunnerTest : public RenderViewHostTestHarness,
         // match those in `prev_wins`.
         task_environment()->FastForwardBy(base::Seconds(1));
       }
+      interest_group_manager_->RecordDebugReportCooldown(
+          bidder.interest_group.owner, now,
+          DebugReportCooldownType::kShortCooldown);
 
       for (const auto& kanon_data : bidder.bidding_ads_kanon) {
         interest_group_manager_->UpdateKAnonymity(kanon_data);
@@ -18867,6 +18873,66 @@ INSTANTIATE_TEST_SUITE_P(
     /* no label */,
     AuctionRunnerBiddingAndScoringDebugReportingAPIEnabledTest,
     ::testing::Bool());
+
+class AuctionRunnerSampleDebugReportsEnabledTest : public AuctionRunnerTest {
+ public:
+  AuctionRunnerSampleDebugReportsEnabledTest() {
+    feature_list_.InitWithFeatures(
+        /*enabled_features=*/{blink::features::
+                                  kBiddingAndScoringDebugReportingAPI,
+                              features::kFledgeSampleDebugReports},
+        /*disabled_features=*/{});
+  }
+
+ protected:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+TEST_F(AuctionRunnerSampleDebugReportsEnabledTest, ForDebuggingOnlyReporting) {
+  auction_worklet::AddJavascriptResponse(
+      &url_loader_factory_, kBidder1Url,
+      MakeBidScript(kSeller, "1", "https://ad1.com/", /*num_ad_components=*/2,
+                    kBidder1, kBidder1Name,
+                    /*has_signals=*/false, "k1", "a",
+                    /*report_post_auction_signals=*/false,
+                    kBidder1DebugLossReportUrl, kBidder1DebugWinReportUrl));
+  auction_worklet::AddJavascriptResponse(
+      &url_loader_factory_, kBidder2Url,
+      MakeBidScript(kSeller, "2", "https://ad2.com/", /*num_ad_components=*/2,
+                    kBidder2, kBidder2Name,
+                    /*has_signals=*/false, "l2", "b",
+                    /*report_post_auction_signals=*/false,
+                    kBidder2DebugLossReportUrl, kBidder2DebugWinReportUrl));
+  auction_worklet::AddJavascriptResponse(
+      &url_loader_factory_, kSellerUrl,
+      MakeAuctionScript(/*report_post_auction_signals=*/false,
+                        GURL("https://adstuff.publisher1.com/auction.js"),
+                        kSellerDebugLossReportBaseUrl,
+                        kSellerDebugWinReportBaseUrl));
+
+  RunStandardAuction(/*request_trusted_bidding_signals=*/false);
+  EXPECT_THAT(result_.errors, testing::UnorderedElementsAre());
+
+  // Bidder 2 won the auction.
+  EXPECT_EQ(kBidder2Key, result_.winning_group_id);
+  EXPECT_EQ(GURL("https://ad2.com/"), result_.ad_descriptor->url);
+
+  EXPECT_EQ(2u, result_.debug_loss_report_urls.size());
+  // Sellers can get highest scoring other bid, but losing bidders can not.
+  EXPECT_THAT(
+      result_.debug_loss_report_urls,
+      testing::UnorderedElementsAre(kBidder1DebugLossReportUrl,
+                                    "https://seller-debug-loss-reporting.com/1"
+
+                                    ));
+
+  EXPECT_EQ(2u, result_.debug_win_report_urls.size());
+  // Winning bidders can get highest scoring other bid.
+  EXPECT_THAT(result_.debug_win_report_urls,
+              testing::UnorderedElementsAre(
+                  kBidder2DebugWinReportUrl,
+                  "https://seller-debug-win-reporting.com/2"));
+}
 
 // Disable private aggregation API.
 class AuctionRunnerPrivateAggregationAPIDisabledTest

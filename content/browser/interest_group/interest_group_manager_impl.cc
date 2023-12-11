@@ -10,6 +10,7 @@
 #include <vector>
 
 #include "base/containers/flat_map.h"
+#include "base/containers/flat_set.h"
 #include "base/containers/span.h"
 #include "base/files/file_path.h"
 #include "base/functional/callback.h"
@@ -26,6 +27,7 @@
 #include "content/browser/devtools/devtools_instrumentation.h"
 #include "content/browser/devtools/network_service_devtools_observer.h"
 #include "content/browser/interest_group/interest_group_caching_storage.h"
+#include "content/browser/interest_group/interest_group_features.h"
 #include "content/browser/interest_group/interest_group_storage.h"
 #include "content/browser/interest_group/interest_group_update.h"
 #include "content/browser/renderer_host/frame_tree_node.h"
@@ -34,10 +36,11 @@
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "services/network/public/mojom/client_security_state.mojom.h"
 #include "services/network/public/mojom/url_response_head.mojom.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/interest_group/interest_group.h"
-
 #include "url/gurl.h"
+#include "url/origin.h"
 
 namespace content {
 
@@ -338,6 +341,19 @@ void InterestGroupManagerImpl::RecordInterestGroupWin(
   caching_storage_.RecordInterestGroupWin(group_key, ad_json);
 }
 
+void InterestGroupManagerImpl::RecordDebugReportLockout(
+    base::Time last_report_sent_date) {
+  caching_storage_.RecordDebugReportLockout(last_report_sent_date);
+}
+
+void InterestGroupManagerImpl::RecordDebugReportCooldown(
+    const url::Origin& origin,
+    base::Time cooldown_start,
+    DebugReportCooldownType cooldown_type) {
+  caching_storage_.RecordDebugReportCooldown(origin, cooldown_start,
+                                             cooldown_type);
+}
+
 void InterestGroupManagerImpl::RegisterAdKeysAsJoined(
     base::flat_set<std::string> keys) {
   k_anonymity_manager_->RegisterAdKeysAsJoined(std::move(keys));
@@ -626,6 +642,14 @@ void InterestGroupManagerImpl::GetKAnonymityDataForUpdate(
     base::OnceCallback<void(
         const std::vector<StorageInterestGroup::KAnonymityData>&)> callback) {
   caching_storage_.GetKAnonymityDataForUpdate(group_key, std::move(callback));
+}
+
+void InterestGroupManagerImpl::GetDebugReportLockoutAndCooldowns(
+    base::flat_set<url::Origin> origins,
+    base::OnceCallback<void(absl::optional<DebugReportLockoutAndCooldowns>)>
+        callback) {
+  caching_storage_.GetDebugReportLockoutAndCooldowns(std::move(origins),
+                                                     std::move(callback));
 }
 
 void InterestGroupManagerImpl::UpdateInterestGroup(

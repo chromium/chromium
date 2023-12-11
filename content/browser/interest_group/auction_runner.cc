@@ -18,6 +18,7 @@
 #include "content/browser/interest_group/auction_metrics_recorder.h"
 #include "content/browser/interest_group/auction_nonce_manager.h"
 #include "content/browser/interest_group/interest_group_auction_reporter.h"
+#include "content/browser/interest_group/interest_group_features.h"
 #include "content/browser/interest_group/interest_group_manager_impl.h"
 #include "content/browser/renderer_host/frame_tree_node.h"
 #include "content/public/browser/browser_context.h"
@@ -503,6 +504,7 @@ void AuctionRunner::StartAuction() {
     // Entire auction is running server-side, so skip interest group loading.
     state_ = State::kBiddingAndScoringPhase;
     auction_.StartBiddingAndScoringPhase(
+        /*debug_report_lockout_and_cooldowns=*/absl::nullopt,
         /*on_seller_receiver_callback=*/base::OnceClosure(),
         base::BindOnce(&AuctionRunner::OnBidsGeneratedAndScored,
                        base::Unretained(this), base::TimeTicks::Now()));
@@ -518,8 +520,29 @@ void AuctionRunner::OnLoadInterestGroupsComplete(bool success) {
     return;
   }
 
+  if (base::FeatureList::IsEnabled(features::kFledgeSampleDebugReports)) {
+    // All sellers and buyers in the auction.
+    base::flat_set<url::Origin> origins = auction_.GetSellersAndBuyers();
+    // Use a weak pointer here so that
+    // &AuctionRunner::OnLoadDebugReportLockoutAndCooldownsComplete is cancelled
+    // when |weak_ptr_factory_| is destroyed.
+    interest_group_manager_->GetDebugReportLockoutAndCooldowns(
+        std::move(origins),
+        base::BindOnce(
+            &AuctionRunner::OnLoadDebugReportLockoutAndCooldownsComplete,
+            weak_ptr_factory_.GetWeakPtr()));
+  } else {
+    OnLoadDebugReportLockoutAndCooldownsComplete(
+        /*debug_report_lockout_and_cooldowns=*/absl::nullopt);
+  }
+}
+
+void AuctionRunner::OnLoadDebugReportLockoutAndCooldownsComplete(
+    absl::optional<DebugReportLockoutAndCooldowns>
+        debug_report_lockout_and_cooldowns) {
   state_ = State::kBiddingAndScoringPhase;
   auction_.StartBiddingAndScoringPhase(
+      std::move(debug_report_lockout_and_cooldowns),
       /*on_seller_receiver_callback=*/base::OnceClosure(),
       base::BindOnce(&AuctionRunner::OnBidsGeneratedAndScored,
                      base::Unretained(this), base::TimeTicks::Now()));

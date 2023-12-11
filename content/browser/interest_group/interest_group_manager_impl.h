@@ -11,6 +11,7 @@
 #include <vector>
 
 #include "base/containers/flat_map.h"
+#include "base/containers/flat_set.h"
 #include "base/containers/span.h"
 #include "base/functional/callback_forward.h"
 #include "base/memory/scoped_refptr.h"
@@ -51,6 +52,7 @@ class FilePath;
 namespace content {
 
 class InterestGroupStorage;
+struct DebugReportLockoutAndCooldowns;
 
 // InterestGroupManager is a per-StoragePartition class that owns shared
 // state needed to run FLEDGE auctions. It lives on the UI thread.
@@ -229,6 +231,13 @@ class CONTENT_EXPORT InterestGroupManagerImpl : public InterestGroupManager {
   // piece of opaque data to identify the winning ad.
   void RecordInterestGroupWin(const blink::InterestGroupKey& group_key,
                               const std::string& ad_json);
+  // Adds an entry to the lockout of debugging only report.
+  void RecordDebugReportLockout(base::Time last_report_sent_date);
+  // Adds an entry to the cooldown of debugging only report for `origin` if it
+  // does not exist, otherwise replaces the existing entry.
+  void RecordDebugReportCooldown(const url::Origin& origin,
+                                 base::Time cooldown_start,
+                                 DebugReportCooldownType cooldown_type);
 
   // Reports the ad keys to the k-anonymity service. Should be called when
   // FLEDGE selects an ad.
@@ -359,6 +368,12 @@ class CONTENT_EXPORT InterestGroupManagerImpl : public InterestGroupManager {
       const blink::InterestGroupKey& group_key,
       base::OnceCallback<void(
           const std::vector<StorageInterestGroup::KAnonymityData>&)> callback);
+
+  // Gets lockout and cooldown for sending forDebuggingOnly reports.
+  void GetDebugReportLockoutAndCooldowns(
+      base::flat_set<url::Origin> origins,
+      base::OnceCallback<void(absl::optional<DebugReportLockoutAndCooldowns>)>
+          callback);
 
   // Gets the last time that the key was reported to the k-anonymity server.
   void GetLastKAnonymityReported(

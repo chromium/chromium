@@ -236,6 +236,22 @@ void InterestGroupCachingStorage::RecordInterestGroupWin(
       .WithArgs(group_key, std::move(ad_json));
 }
 
+void InterestGroupCachingStorage::RecordDebugReportLockout(
+    base::Time last_report_sent_date) {
+  interest_group_storage_
+      .AsyncCall(&InterestGroupStorage::RecordDebugReportLockout)
+      .WithArgs(last_report_sent_date);
+}
+
+void InterestGroupCachingStorage::RecordDebugReportCooldown(
+    const url::Origin& origin,
+    base::Time cooldown_start,
+    DebugReportCooldownType cooldown_type) {
+  interest_group_storage_
+      .AsyncCall(&InterestGroupStorage::RecordDebugReportCooldown)
+      .WithArgs(origin, cooldown_start, cooldown_type);
+}
+
 void InterestGroupCachingStorage::UpdateKAnonymity(
     const StorageInterestGroup::KAnonymityData& data) {
   // We do not know the affected owners without looking them up from the
@@ -300,6 +316,16 @@ void InterestGroupCachingStorage::GetKAnonymityDataForUpdate(
   interest_group_storage_
       .AsyncCall(&InterestGroupStorage::GetKAnonymityDataForUpdate)
       .WithArgs(group_key)
+      .Then(std::move(callback));
+}
+
+void InterestGroupCachingStorage::GetDebugReportLockoutAndCooldowns(
+    base::flat_set<url::Origin> origins,
+    base::OnceCallback<void(absl::optional<DebugReportLockoutAndCooldowns>)>
+        callback) {
+  return interest_group_storage_
+      .AsyncCall(&InterestGroupStorage::GetDebugReportLockoutAndCooldowns)
+      .WithArgs(std::move(origins))
       .Then(std::move(callback));
 }
 

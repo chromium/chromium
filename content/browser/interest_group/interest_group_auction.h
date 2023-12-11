@@ -521,6 +521,8 @@ class CONTENT_EXPORT InterestGroupAuction
   // either the auction has failed to produce a winner, or the auction has a
   // winner. `success` is true only when there is a winner.
   void StartBiddingAndScoringPhase(
+      absl::optional<DebugReportLockoutAndCooldowns>
+          debug_report_lockout_and_cooldowns,
       base::OnceClosure on_seller_receiver_callback,
       AuctionPhaseCompletionCallback bidding_and_scoring_phase_callback);
 
@@ -711,6 +713,10 @@ class CONTENT_EXPORT InterestGroupAuction
   // information.
   void ReportBiddingLatency(const blink::InterestGroup& interest_group,
                             base::TimeDelta bidding_latency);
+
+  // Returns all sellers and interest group buyers for the entire auction,
+  // including both top-level and component auctions.
+  base::flat_set<url::Origin> GetSellersAndBuyers();
 
   // Retrieves the keys that need to be joined as a result of the auction. A
   // failed auction may result in keys that still need to be joined, for
@@ -1297,6 +1303,10 @@ class CONTENT_EXPORT InterestGroupAuction
   size_t pending_component_seller_worklet_requests_ = 0;
 
   bool any_bid_made_ = false;
+
+  // Lockout and cooldowns for sending forDebuggingOnly reports.
+  absl::optional<DebugReportLockoutAndCooldowns>
+      debug_report_lockout_and_cooldowns_;
 
   // State of all buyers participating in the auction. Excludes buyers that
   // don't own any interest groups the user belongs to.

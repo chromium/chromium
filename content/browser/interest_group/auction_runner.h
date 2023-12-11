@@ -12,6 +12,7 @@
 
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/weak_ptr.h"
 #include "content/browser/interest_group/auction_metrics_recorder.h"
 #include "content/browser/interest_group/auction_nonce_manager.h"
 #include "content/browser/interest_group/auction_worklet_manager.h"
@@ -39,6 +40,7 @@ class InterestGroupAuctionReporter;
 class BrowserContext;
 class InterestGroupManagerImpl;
 class PrivateAggregationManager;
+struct DebugReportLockoutAndCooldowns;
 
 // An AuctionRunner loads and runs the bidder and seller worklets, along with
 // their reporting phases and produces the result via a callback. Most of the
@@ -231,8 +233,16 @@ class CONTENT_EXPORT AuctionRunner : public blink::mojom::AbortableAdAuction {
 
   // Invoked asynchronously by `auction_` once all interest groups have loaded.
   // Fails the auction if `success` is false. Otherwise, starts the bidding and
-  // scoring phase.
+  // scoring phase if flag kEnableSamplingDebugReports is disabled, or starts
+  // loading cooldown for sending forDebuggingOnly reports if enabled.
   void OnLoadInterestGroupsComplete(bool success);
+
+  // Invoked asynchronously by `interest_group_manager_` once the state of the
+  // cooldown for sending forDebuggingOnly reports have loaded. Only invoked
+  // when flag kEnableSamplingDebugReports is enabled.
+  void OnLoadDebugReportLockoutAndCooldownsComplete(
+      absl::optional<DebugReportLockoutAndCooldowns>
+          debug_report_lockout_and_cooldowns);
 
   // Invoked asynchronously by `auction_` once the bidding and scoring phase is
   // complete. Either fails the auction (in which case it records the interest
@@ -306,6 +316,8 @@ class CONTENT_EXPORT AuctionRunner : public blink::mojom::AbortableAdAuction {
 
   InterestGroupAuction auction_;
   State state_ = State::kLoadingGroupsPhase;
+
+  base::WeakPtrFactory<AuctionRunner> weak_ptr_factory_{this};
 };
 
 }  // namespace content

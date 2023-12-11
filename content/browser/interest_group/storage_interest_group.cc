@@ -21,4 +21,16 @@ std::ostream& operator<<(std::ostream& out,
              << ", last_updated=`" << kanon.last_updated << "`]";
 }
 
+DebugReportLockoutAndCooldowns::DebugReportLockoutAndCooldowns() = default;
+DebugReportLockoutAndCooldowns::DebugReportLockoutAndCooldowns(
+    absl::optional<base::Time> last_report_sent_time,
+    std::map<url::Origin, DebugReportCooldown> debug_report_cooldown_map)
+    : last_report_sent_time(last_report_sent_time),
+      debug_report_cooldown_map(std::move(debug_report_cooldown_map)) {}
+DebugReportLockoutAndCooldowns::DebugReportLockoutAndCooldowns(
+    DebugReportLockoutAndCooldowns&) = default;
+DebugReportLockoutAndCooldowns::DebugReportLockoutAndCooldowns(
+    DebugReportLockoutAndCooldowns&&) = default;
+DebugReportLockoutAndCooldowns::~DebugReportLockoutAndCooldowns() = default;
+
 }  // namespace content

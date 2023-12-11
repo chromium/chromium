@@ -2171,6 +2171,8 @@ void InterestGroupAuction::StartLoadInterestGroupsPhase(
 }
 
 void InterestGroupAuction::StartBiddingAndScoringPhase(
+    absl::optional<DebugReportLockoutAndCooldowns>
+        debug_report_lockout_and_cooldowns,
     base::OnceClosure on_seller_receiver_callback,
     AuctionPhaseCompletionCallback bidding_and_scoring_phase_callback) {
   DCHECK(bidding_and_scoring_phase_callback);
@@ -2187,6 +2189,11 @@ void InterestGroupAuction::StartBiddingAndScoringPhase(
 
   TRACE_EVENT_NESTABLE_ASYNC_BEGIN0("fledge", "bidding_and_scoring_phase",
                                     *trace_id_);
+
+  if (debug_report_lockout_and_cooldowns.has_value()) {
+    debug_report_lockout_and_cooldowns_ =
+        std::move(debug_report_lockout_and_cooldowns);
+  }
 
   on_seller_receiver_callback_ = std::move(on_seller_receiver_callback);
   bidding_and_scoring_phase_callback_ =
@@ -2248,7 +2255,7 @@ void InterestGroupAuction::StartBiddingAndScoringPhase(
                     &InterestGroupAuction::OnComponentSellerWorkletReceived,
                     base::Unretained(this));
       component_auction->StartBiddingAndScoringPhase(
-          std::move(component_on_seller_receiver_callback),
+          absl::nullopt, std::move(component_on_seller_receiver_callback),
           base::BindOnce(&InterestGroupAuction::OnComponentAuctionComplete,
                          base::Unretained(this), component_auction));
     }
@@ -3202,6 +3209,24 @@ void InterestGroupAuction::ReportBiddingLatency(
                                blink::AuctionConfig::NonSharedParams::
                                    BuyerReportType::kTotalGenerateBidLatency,
                                bidding_latency.InMilliseconds());
+}
+
+base::flat_set<url::Origin> InterestGroupAuction::GetSellersAndBuyers() {
+  std::vector<url::Origin> origins;
+  origins.push_back(config_->seller);
+  for (const auto& buyer_helper : buyer_helpers_) {
+    origins.push_back(buyer_helper->owner());
+  }
+
+  for (const auto& component_auction_info : component_auctions_) {
+    InterestGroupAuction* component_auction =
+        component_auction_info.second.get();
+    origins.push_back(component_auction->config_->seller);
+    for (const auto& buyer_helper : component_auction->buyer_helpers_) {
+      origins.push_back(buyer_helper->owner());
+    }
+  }
+  return base::flat_set<url::Origin>(std::move(origins));
 }
 
 base::flat_set<std::string> InterestGroupAuction::GetKAnonKeysToJoin() const {

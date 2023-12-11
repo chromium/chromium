@@ -23,6 +23,7 @@
 #include "base/test/simple_test_clock.h"
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
+#include "content/browser/interest_group/interest_group_features.h"
 #include "content/browser/interest_group/interest_group_update.h"
 #include "content/browser/interest_group/storage_interest_group.h"
 #include "content/services/auction_worklet/public/mojom/bidder_worklet.mojom.h"
@@ -735,6 +736,109 @@ TEST_F(InterestGroupStorageTest, RecordsWins) {
 
   origins = storage->GetAllInterestGroupOwners();
   EXPECT_EQ(0u, origins.size());
+}
+
+TEST_F(InterestGroupStorageTest, RecordsDebugReportLockoutAndCooldown) {
+  const url::Origin test_origin =
+      url::Origin::Create(GURL("https://owner.example.com"));
+  const url::Origin test_origin2 =
+      url::Origin::Create(GURL("https://seller.example.com"));
+  std::vector<url::Origin> origins{test_origin, test_origin2};
+  std::unique_ptr<InterestGroupStorage> storage = CreateStorage();
+
+  absl::optional<DebugReportLockoutAndCooldowns> cooldowns =
+      storage->GetDebugReportLockoutAndCooldowns(origins);
+  ASSERT_TRUE(cooldowns.has_value());
+  EXPECT_FALSE(cooldowns->last_report_sent_time.has_value());
+  EXPECT_TRUE(cooldowns->debug_report_cooldown_map.empty());
+
+  base::Time time = base::Time::Now();
+  base::Time expected_time = base::Time::FromDeltaSinceWindowsEpoch(
+      time.ToDeltaSinceWindowsEpoch().CeilToMultiple(base::Hours(1)));
+  storage->RecordDebugReportLockout(time);
+  cooldowns = storage->GetDebugReportLockoutAndCooldowns(origins);
+  ASSERT_TRUE(cooldowns.has_value());
+  ASSERT_TRUE(cooldowns->last_report_sent_time.has_value());
+  EXPECT_EQ(expected_time, *cooldowns->last_report_sent_time);
+  EXPECT_TRUE(cooldowns->debug_report_cooldown_map.empty());
+
+  storage->RecordDebugReportCooldown(test_origin, time,
+                                     DebugReportCooldownType::kShortCooldown);
+  cooldowns = storage->GetDebugReportLockoutAndCooldowns(origins);
+  std::map<url::Origin, DebugReportCooldown> expected_cooldown_map;
+  expected_cooldown_map[test_origin] = DebugReportCooldown(
+      expected_time, DebugReportCooldownType::kShortCooldown);
+  ASSERT_TRUE(cooldowns.has_value());
+  ASSERT_TRUE(cooldowns->last_report_sent_time.has_value());
+  EXPECT_EQ(expected_time, *cooldowns->last_report_sent_time);
+  EXPECT_EQ(expected_cooldown_map, cooldowns->debug_report_cooldown_map);
+  expected_cooldown_map.clear();
+
+  // Ensure we get to a different hour, to get a different time.
+  task_environment().FastForwardBy(base::Minutes(90));
+  base::Time time2 = base::Time::Now();
+  base::Time expected_time2 = base::Time::FromDeltaSinceWindowsEpoch(
+      time2.ToDeltaSinceWindowsEpoch().CeilToMultiple(base::Hours(1)));
+  storage->RecordDebugReportLockout(time2);
+  storage->RecordDebugReportCooldown(
+      test_origin, time2, DebugReportCooldownType::kRestrictedCooldown);
+  storage->RecordDebugReportCooldown(test_origin2, time2,
+                                     DebugReportCooldownType::kShortCooldown);
+  cooldowns = storage->GetDebugReportLockoutAndCooldowns(origins);
+  expected_cooldown_map[test_origin] = DebugReportCooldown(
+      expected_time2, DebugReportCooldownType::kRestrictedCooldown);
+  expected_cooldown_map[test_origin2] = DebugReportCooldown(
+      expected_time2, DebugReportCooldownType::kShortCooldown);
+  ASSERT_TRUE(cooldowns.has_value());
+  ASSERT_TRUE(cooldowns->last_report_sent_time.has_value());
+  EXPECT_EQ(expected_time2, *cooldowns->last_report_sent_time);
+  EXPECT_EQ(expected_cooldown_map, cooldowns->debug_report_cooldown_map);
+}
+
+TEST_F(InterestGroupStorageTest, DeleteExpiredDebugReportCooldown) {
+  const url::Origin test_origin =
+      url::Origin::Create(GURL("https://owner.example.com"));
+  const url::Origin test_origin2 =
+      url::Origin::Create(GURL("https://seller.example.com"));
+  std::vector<url::Origin> origins{test_origin, test_origin2};
+  std::unique_ptr<InterestGroupStorage> storage = CreateStorage();
+
+  base::Time time = base::Time::Now();
+  base::Time expected_time = base::Time::FromDeltaSinceWindowsEpoch(
+      time.ToDeltaSinceWindowsEpoch().CeilToMultiple(base::Hours(1)));
+  storage->RecordDebugReportCooldown(test_origin, time,
+                                     DebugReportCooldownType::kShortCooldown);
+  storage->RecordDebugReportCooldown(test_origin2, time,
+                                     DebugReportCooldownType::kShortCooldown);
+  absl::optional<DebugReportLockoutAndCooldowns> cooldowns =
+      storage->GetDebugReportLockoutAndCooldowns(origins);
+  std::map<url::Origin, DebugReportCooldown> expected_cooldown_map;
+  expected_cooldown_map[test_origin] = DebugReportCooldown(
+      expected_time, DebugReportCooldownType::kShortCooldown);
+  expected_cooldown_map[test_origin2] = DebugReportCooldown(
+      expected_time, DebugReportCooldownType::kShortCooldown);
+  ASSERT_TRUE(cooldowns.has_value());
+  EXPECT_EQ(expected_cooldown_map, cooldowns->debug_report_cooldown_map);
+
+  // Fast-forward past kFledgeDebugReportShortCooldown so that the cooldown will
+  // expire. Fast-forward extra time to make sure the cooldown expires,
+  // because the starting_time is ceiled to its nearest hour.
+  task_environment().FastForwardBy(
+      features::kFledgeDebugReportShortCooldown.Get() + expected_time - time);
+  // If maintenance has not been triggered yet, the cooldown table will not be
+  // updated.
+  cooldowns = storage->GetDebugReportLockoutAndCooldowns(origins);
+  ASSERT_TRUE(cooldowns.has_value());
+  EXPECT_EQ(expected_cooldown_map, cooldowns->debug_report_cooldown_map);
+  // Trigger scheduling of the next maintenance.
+  storage->GetAllInterestGroupOwners();
+  // Allow enough idle time to trigger maintenance.
+  task_environment().FastForwardBy(InterestGroupStorage::kIdlePeriod +
+                                   base::Seconds(1));
+
+  cooldowns = storage->GetDebugReportLockoutAndCooldowns(origins);
+  ASSERT_TRUE(cooldowns.has_value());
+  EXPECT_TRUE(cooldowns->debug_report_cooldown_map.empty());
 }
 
 TEST_F(InterestGroupStorageTest, UpdatesAdKAnonymity) {

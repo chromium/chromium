@@ -15,6 +15,7 @@
 #include <vector>
 
 #include "base/containers/flat_map.h"
+#include "base/containers/flat_set.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/format_macros.h"
@@ -27,9 +28,11 @@
 #include "base/strings/escape.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_piece.h"
+#include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/time/time.h"
 #include "content/browser/interest_group/interest_group_ad.pb.h"
+#include "content/browser/interest_group/interest_group_features.h"
 #include "content/browser/interest_group/interest_group_k_anonymity_manager.h"
 #include "content/browser/interest_group/interest_group_update.h"
 #include "content/browser/interest_group/storage_interest_group.h"
@@ -80,6 +83,8 @@ const base::FilePath::CharType kDatabasePath[] =
 // Version 18 - 2023/09 - crrev.com/c/4902233
 // Version 19 - 2023/10 - crrev.com/c/4891458
 // Version 20 - 2023/11 - crrev.com/c/5050989
+// Version 21 - 2023/11 - crrev.com/c/5063314
+// Version 22 - 2023/12 - crrev.com/c/5063589
 //
 // Version 1 adds a table for interest groups.
 // Version 2 adds a column for rate limiting interest group updates.
@@ -98,7 +103,7 @@ const base::FilePath::CharType kDatabasePath[] =
 // Version 15 adds an additional bid key field.
 // Version 16 changes the ads and ad component columns of the interest group
 // table to protobuf format.
-// Version 17 adds interest group name and owner columns to the  k-anonymity
+// Version 17 adds interest group name and owner columns to the k-anonymity
 // table.
 // Version 18 adds a new index on IG type (regular vs negative) to support
 // split caps on max interest groups per owner.
@@ -108,11 +113,14 @@ const base::FilePath::CharType kDatabasePath[] =
 // cooldown_debugging_only_report tables.
 // Version 21 adds the trusted_bidding_signals_slot_size_mode column to the
 // interest group table.
-const int kCurrentVersionNumber = 21;
+// Version 22 adds id column to the debug report lockout table, and changes
+// starting and duration columns to starting_time and type columns to the debug
+// report cooldown table.
+const int kCurrentVersionNumber = 22;
 
-// Earliest version of the code which can use a |kCurrentVersionNumber|
-// database without failing.
-const int kCompatibleVersionNumber = 19;
+// Earliest version of the code which can use a |kCurrentVersionNumber| database
+// without failing.
+const int kCompatibleVersionNumber = 22;
 
 // Latest version of the database that cannot be upgraded to
 // |kCurrentVersionNumber| without razing the database.
@@ -153,6 +161,16 @@ absl::optional<GURL> DeserializeURL(const std::string& serialized_url) {
     return absl::nullopt;
   }
   return result;
+}
+
+absl::optional<base::TimeDelta> ConvertCooldownTypeToDuration(int type) {
+  switch (type) {
+    case DebugReportCooldownType::kShortCooldown:
+      return features::kFledgeDebugReportShortCooldown.Get();
+    case DebugReportCooldownType::kRestrictedCooldown:
+      return features::kFledgeDebugReportRestrictedCooldown.Get();
+  }
+  return absl::nullopt;
 }
 
 blink::InterestGroup::Ad FromInterestGroupAdValue(const base::Value::Dict& dict,
@@ -762,7 +780,7 @@ bool InsertKAnonForJoinedInterestGroup(sql::Database& db,
 
 // Initializes the tables, returning true on success.
 // The tables cannot exist when calling this function.
-bool CreateV21Schema(sql::Database& db) {
+bool CreateV22Schema(sql::Database& db) {
   DCHECK(!db.DoesTableExist("interest_groups"));
   static const char kInterestGroupTableSql[] =
       // clang-format off
@@ -888,22 +906,65 @@ bool CreateV21Schema(sql::Database& db) {
   }
 
   DCHECK(!db.DoesTableExist("lockout_debugging_only_report"));
+  static const char kLockoutDebugReportTableSql[] =
+      // clang-format off
+      "CREATE TABLE lockout_debugging_only_report("
+        "id INTEGER NOT NULL,"
+        "last_report_sent_time INTEGER NOT NULL,"
+      "PRIMARY KEY(id))";
+  // clang-format on
+  if (!db.Execute(kLockoutDebugReportTableSql)) {
+    return false;
+  }
+
+  DCHECK(!db.DoesTableExist("cooldown_debugging_only_report"));
+  // The type field stores an enum mapped to the real TimeDelta cooldown
+  // duration defined by finch, so that we can easily control duration periods
+  // through finch without needing to update the database.
+  static const char kCooldownDebugReportTableSql[] =
+      // clang-format off
+      "CREATE TABLE cooldown_debugging_only_report("
+        "origin TEXT NOT NULL,"
+        "starting_time INTEGER NOT NULL,"
+        "type INTEGER NOT NULL,"
+      "PRIMARY KEY(origin))";
+  // clang-format on
+  if (!db.Execute(kCooldownDebugReportTableSql)) {
+    return false;
+  }
+
+  return true;
+}
+
+bool UpgradeV21SchemaToV22(sql::Database& db, sql::MetaTable& meta_table) {
+  // The two changed tables had no data, so no need to copy data over.
+  static const char kDropLockoutTableTableSql[] =
+      "DROP TABLE lockout_debugging_only_report";
+  if (!db.Execute(kDropLockoutTableTableSql)) {
+    return false;
+  }
   static const char kLockoutDebuggingOnlyReportTableSql[] =
       // clang-format off
       "CREATE TABLE lockout_debugging_only_report("
-        "date_of_last_report_sent INTEGER NOT NULL)";
+        "id INTEGER NOT NULL,"
+        "last_report_sent_time INTEGER NOT NULL,"
+      "PRIMARY KEY(id))";
   // clang-format on
   if (!db.Execute(kLockoutDebuggingOnlyReportTableSql)) {
     return false;
   }
 
-  DCHECK(!db.DoesTableExist("cooldown_debugging_only_report"));
+  static const char kDropCooldownTableSql[] =
+      "DROP TABLE cooldown_debugging_only_report";
+  if (!db.Execute(kDropCooldownTableSql)) {
+    return false;
+  }
   static const char kCooldownDebuggingOnlyReportTableSql[] =
       // clang-format off
       "CREATE TABLE cooldown_debugging_only_report("
         "origin TEXT NOT NULL,"
-        "starting_date INTEGER NOT NULL,"
-        "duration INTEGER NOT NULL,"
+        "starting_time INTEGER NOT NULL,"
+        "type INTEGER NOT NULL,"
       "PRIMARY KEY(origin))";
   // clang-format on
   if (!db.Execute(kCooldownDebuggingOnlyReportTableSql)) {
@@ -2740,6 +2801,50 @@ bool DoRecordInterestGroupWin(sql::Database& db,
   return win_hist.Run();
 }
 
+bool DoRecordDebugReportLockout(sql::Database& db,
+                                base::Time last_debug_report_sent_date) {
+  sql::Statement debug_lockout(db.GetCachedStatement(
+      SQL_FROM_HERE,
+      "INSERT OR REPLACE "
+      "INTO lockout_debugging_only_report(id, last_report_sent_time) "
+      "VALUES(1, ?)"));
+  if (!debug_lockout.is_valid()) {
+    return false;
+  }
+
+  debug_lockout.Reset(true);
+  // Ceil to nearest hour to be stored in DB.
+  debug_lockout.BindInt64(0,
+                          last_debug_report_sent_date.ToDeltaSinceWindowsEpoch()
+                              .CeilToMultiple(base::Hours(1))
+                              .InMicroseconds());
+  return debug_lockout.Run();
+}
+
+bool DoRecordDebugReportCooldown(sql::Database& db,
+                                 const url::Origin& origin,
+                                 base::Time cooldown_start,
+                                 DebugReportCooldownType cooldown_type) {
+  sql::Statement debug_cooldown(db.GetCachedStatement(
+      SQL_FROM_HERE,
+      "INSERT OR REPLACE "
+      "INTO cooldown_debugging_only_report(origin, starting_time, type) "
+      "VALUES(?, ?, ?)"));
+  if (!debug_cooldown.is_valid()) {
+    return false;
+  }
+
+  debug_cooldown.Reset(true);
+  debug_cooldown.BindString(0, Serialize(origin));
+  // Ceil to nearest hour to be stored in DB.
+  debug_cooldown.BindInt64(1, cooldown_start.ToDeltaSinceWindowsEpoch()
+                                  .CeilToMultiple(base::Hours(1))
+                                  .InMicroseconds());
+  debug_cooldown.BindInt(2, cooldown_type);
+
+  return debug_cooldown.Run();
+}
+
 bool DoUpdateKAnonymity(sql::Database& db,
                         const StorageInterestGroup::KAnonymityData& data,
                         base::Time now) {
@@ -3067,6 +3172,62 @@ bool GetBidCount(sql::Database& db,
     output->bid_count = bid_count.ColumnInt64(0);
   }
   return bid_count.Succeeded();
+}
+
+void DoGetDebugReportLockout(
+    sql::Database& db,
+    DebugReportLockoutAndCooldowns& debug_report_lockout_and_cooldowns) {
+  sql::Statement sent_date(
+      db.GetCachedStatement(SQL_FROM_HERE,
+                            "SELECT last_report_sent_time "
+                            "FROM lockout_debugging_only_report"));
+  if (!sent_date.is_valid()) {
+    DLOG(ERROR) << "GetLastDebugReportSentDate SQL statement did not compile: "
+                << db.GetErrorMessage();
+    return;
+  }
+  if (sent_date.Step()) {
+    debug_report_lockout_and_cooldowns.last_report_sent_time =
+        sent_date.ColumnTime(0);
+  }
+}
+
+absl::optional<DebugReportCooldown> DoGetDebugReportCooldownForOrigin(
+    sql::Database& db,
+    const url::Origin& origin) {
+  sql::Statement cooldown_debugging_only_report(
+      db.GetCachedStatement(SQL_FROM_HERE,
+                            "SELECT starting_time, type "
+                            "FROM cooldown_debugging_only_report "
+                            "WHERE origin = ?"));
+  if (!cooldown_debugging_only_report.is_valid()) {
+    DLOG(ERROR) << "GetDebugReportCooldown SQL statement did not compile: "
+                << db.GetErrorMessage();
+    return absl::nullopt;
+  }
+  cooldown_debugging_only_report.BindString(0, Serialize(origin));
+  if (!cooldown_debugging_only_report.Step() ||
+      !cooldown_debugging_only_report.Succeeded()) {
+    return absl::nullopt;
+  }
+
+  return DebugReportCooldown(cooldown_debugging_only_report.ColumnTime(0),
+                             static_cast<DebugReportCooldownType>(
+                                 cooldown_debugging_only_report.ColumnInt(1)));
+}
+
+void DoGetDebugReportCooldowns(
+    sql::Database& db,
+    const base::flat_set<url::Origin>& origins,
+    DebugReportLockoutAndCooldowns& debug_report_lockout_and_cooldowns) {
+  for (const url::Origin& origin : origins) {
+    absl::optional<DebugReportCooldown> cooldown =
+        DoGetDebugReportCooldownForOrigin(db, origin);
+    if (cooldown.has_value()) {
+      debug_report_lockout_and_cooldowns.debug_report_cooldown_map[origin] =
+          *cooldown;
+    }
+  }
 }
 
 absl::optional<std::vector<std::string>> DoGetInterestGroupNamesForOwner(
@@ -3695,6 +3856,44 @@ bool ClearExpiredKAnon(sql::Database& db, base::Time cutoff) {
   return expired_k_anon.Run();
 }
 
+bool DeleteExpiredDebugReportCooldown(sql::Database& db, base::Time now) {
+  // clang-format off
+  sql::Statement delete_cooldown(
+      db.GetCachedStatement(SQL_FROM_HERE,
+                            "DELETE FROM cooldown_debugging_only_report "
+                            "WHERE (type==? AND starting_time<?) OR "
+                                  "(type==? AND starting_time<?)"));
+  // clang-format on
+  if (!delete_cooldown.is_valid()) {
+    DLOG(ERROR)
+        << "DeleteExpiredDebugReportCooldown SQL statement did not compile.";
+    return false;
+  }
+
+  delete_cooldown.Reset(true);
+  absl::optional<base::TimeDelta> short_duration =
+      ConvertCooldownTypeToDuration(
+          static_cast<int>(DebugReportCooldownType::kShortCooldown));
+  absl::optional<base::TimeDelta> restricted_duration =
+      ConvertCooldownTypeToDuration(
+          static_cast<int>(DebugReportCooldownType::kRestrictedCooldown));
+  CHECK(short_duration.has_value());
+  CHECK(restricted_duration.has_value());
+
+  delete_cooldown.BindInt(
+      0, static_cast<int>(DebugReportCooldownType::kShortCooldown));
+  delete_cooldown.BindTime(1, now - *short_duration);
+  delete_cooldown.BindInt(
+      2, static_cast<int>(DebugReportCooldownType::kRestrictedCooldown));
+  delete_cooldown.BindTime(3, now - *restricted_duration);
+
+  if (!delete_cooldown.Run()) {
+    DLOG(ERROR) << "Could not delete old debug report cooldown.";
+    return false;
+  }
+  return true;
+}
+
 bool DoPerformDatabaseMaintenance(sql::Database& db,
                                   base::Time now,
                                   size_t max_owners,
@@ -3728,6 +3927,9 @@ bool DoPerformDatabaseMaintenance(sql::Database& db,
   }
   if (!ClearExpiredKAnon(
           db, now - InterestGroupStorage::kAdditionalKAnonStoragePeriod)) {
+    return false;
+  }
+  if (!DeleteExpiredDebugReportCooldown(db, now)) {
     return false;
   }
   return transaction.Commit();
@@ -3863,7 +4065,7 @@ bool InterestGroupStorage::InitializeSchema() {
   }
 
   if (new_db) {
-    return CreateV21Schema(*db_);
+    return CreateV22Schema(*db_);
   }
 
   const int db_version = meta_table.GetVersionNumber();
@@ -3954,12 +4156,14 @@ bool InterestGroupStorage::InitializeSchema() {
         if (!UpgradeV19SchemaToV20(*db_, meta_table)) {
           return false;
         }
-        if (!meta_table.SetVersionNumber(kCurrentVersionNumber)) {
-          return false;
-        }
         ABSL_FALLTHROUGH_INTENDED;
       case 20:
         if (!UpgradeV20SchemaToV21(*db_, meta_table)) {
+          return false;
+        }
+        ABSL_FALLTHROUGH_INTENDED;
+      case 21:
+        if (!UpgradeV21SchemaToV22(*db_, meta_table)) {
           return false;
         }
         if (!meta_table.SetVersionNumber(kCurrentVersionNumber)) {
@@ -4040,6 +4244,20 @@ std::vector<std::string> InterestGroupStorage::ClearOriginJoinedInterestGroups(
   return std::move(left_interest_groups.value());
 }
 
+absl::optional<DebugReportLockoutAndCooldowns>
+InterestGroupStorage::GetDebugReportLockoutAndCooldowns(
+    base::flat_set<url::Origin> origins) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (!EnsureDBInitialized()) {
+    return absl::nullopt;
+  }
+  DebugReportLockoutAndCooldowns debug_report_lockout_and_cooldowns;
+  DoGetDebugReportLockout(*db_, debug_report_lockout_and_cooldowns);
+  DoGetDebugReportCooldowns(*db_, std::move(origins),
+                            debug_report_lockout_and_cooldowns);
+  return debug_report_lockout_and_cooldowns;
+}
+
 bool InterestGroupStorage::UpdateInterestGroup(
     const blink::InterestGroupKey& group_key,
     InterestGroupUpdate update) {
@@ -4096,6 +4314,34 @@ void InterestGroupStorage::RecordInterestGroupWin(
 
   if (!DoRecordInterestGroupWin(*db_, group_key, ad_json, base::Time::Now())) {
     DLOG(ERROR) << "Could not record bid for interest group: "
+                << db_->GetErrorMessage();
+  }
+}
+
+void InterestGroupStorage::RecordDebugReportLockout(
+    base::Time last_report_sent_date) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (!EnsureDBInitialized()) {
+    return;
+  }
+
+  if (!DoRecordDebugReportLockout(*db_, last_report_sent_date)) {
+    DLOG(ERROR) << "Could not record last debugging only report sent date: "
+                << db_->GetErrorMessage();
+  }
+}
+
+void InterestGroupStorage::RecordDebugReportCooldown(
+    const url::Origin& origin,
+    base::Time cooldown_start,
+    DebugReportCooldownType cooldown_type) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (!EnsureDBInitialized()) {
+    return;
+  }
+  if (!DoRecordDebugReportCooldown(*db_, origin, cooldown_start,
+                                   cooldown_type)) {
+    DLOG(ERROR) << "Could not record debugging only report cooldown: "
                 << db_->GetErrorMessage();
   }
 }
