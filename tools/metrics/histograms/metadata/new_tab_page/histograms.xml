@@ -939,9 +939,9 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="NewTabPage.LogoDownloadOutcome"
-    enum="NewTabPageLogoDownloadOutcome" expires_after="2024-01-14">
+    enum="NewTabPageLogoDownloadOutcome" expires_after="2025-01-14">
   <owner>tiborg@chromium.org</owner>
-  <owner>danpeng@google.com</owner>
+  <owner>romanarora@chromium.org</owner>
   <owner>chrome-desktop-ntp@google.com</owner>
   <summary>
     Outcome of downloading search provider's logos. It measures whether
@@ -950,7 +950,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="NewTabPage.LogoDownloadTime" units="ms"
-    expires_after="2024-01-31">
+    expires_after="2025-01-31">
   <owner>tiborg@chromium.org</owner>
   <owner>romanarora@chromium.org</owner>
   <owner>chrome-desktop-ntp@google.com</owner>
@@ -963,9 +963,9 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="NewTabPage.LogoImageDownloaded" enum="BooleanFromHTTPCache"
-    expires_after="2024-01-14">
+    expires_after="2025-01-14">
   <owner>tiborg@chromium.org</owner>
-  <owner>danpeng@google.com</owner>
+  <owner>romanarora@chromium.org</owner>
   <owner>chrome-desktop-ntp@google.com</owner>
   <summary>
     A logo image (static or CTA) was downloaded. Recorded only when the image
@@ -974,9 +974,9 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="NewTabPage.LogoShown" enum="NewTabPageLogoShown"
-    expires_after="2024-01-14">
+    expires_after="2025-01-14">
   <owner>tiborg@chromium.org</owner>
-  <owner>danpeng@google.com</owner>
+  <owner>romanarora@chromium.org</owner>
   <owner>chrome-desktop-ntp@google.com</owner>
   <summary>
     The number of static logos and animated logos shown to users. Note that the
@@ -986,9 +986,9 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="NewTabPage.LogoShownTime2" units="ms"
-    expires_after="2024-01-14">
+    expires_after="2025-01-14">
   <owner>tiborg@chromium.org</owner>
-  <owner>danpeng@google.com</owner>
+  <owner>romanarora@chromium.org</owner>
   <owner>chrome-desktop-ntp@google.com</owner>
   <summary>
     The amount of time between opening an NTP and the logo appearing. Only
