@@ -42,8 +42,10 @@ content::WebContents* GetWebContentsFromDialog() {
 class AppInstallDialogBrowserTest : public InProcessBrowserTest {
  public:
   AppInstallDialogBrowserTest() {
-    feature_list_.InitAndEnableFeature(
-        chromeos::features::kCrosWebAppInstallDialog);
+    feature_list_.InitWithFeatures(
+        {chromeos::features::kCrosWebAppInstallDialog,
+         chromeos::features::kCrosOmniboxInstallDialog},
+        {});
   }
 
  private:

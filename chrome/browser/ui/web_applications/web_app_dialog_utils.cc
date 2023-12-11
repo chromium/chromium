@@ -231,7 +231,7 @@ void CreateWebAppFromCurrentWebContents(Browser* browser,
   // Lacros.
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   if (base::FeatureList::IsEnabled(
-          chromeos::features::kCrosWebAppInstallDialog)) {
+          chromeos::features::kCrosOmniboxInstallDialog)) {
     base::WeakPtr<ash::app_install::AppInstallDialog> dialog_handle =
         ash::app_install::AppInstallDialog::CreateDialog();
     provider->scheduler().FetchManifestAndInstall(
@@ -283,7 +283,7 @@ bool CreateWebAppFromManifest(content::WebContents* web_contents,
   // Lacros.
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   if (base::FeatureList::IsEnabled(
-          chromeos::features::kCrosWebAppInstallDialog)) {
+          chromeos::features::kCrosOmniboxInstallDialog)) {
     base::WeakPtr<ash::app_install::AppInstallDialog> dialog_handle =
         ash::app_install::AppInstallDialog::CreateDialog();
     provider->scheduler().FetchManifestAndInstall(

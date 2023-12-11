@@ -4243,6 +4243,9 @@ extern const char kAppToAppLinkCapturingWorkspaceAppsDescription[];
 extern const char kCrosAppsBackgroundEventHandlingName[];
 extern const char kCrosAppsBackgroundEventHandlingDescription[];
 
+extern const char kCrosOmniboxInstallDialogName[];
+extern const char kCrosOmniboxInstallDialogDescription[];
+
 extern const char kCrosWebAppInstallDialogName[];
 extern const char kCrosWebAppInstallDialogDescription[];
 

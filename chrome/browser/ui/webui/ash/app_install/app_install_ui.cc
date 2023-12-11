@@ -85,8 +85,10 @@ WEB_UI_CONTROLLER_TYPE_IMPL(AppInstallDialogUI)
 
 bool AppInstallDialogUIConfig::IsWebUIEnabled(
     content::BrowserContext* browser_context) {
-  return base::FeatureList::IsEnabled(
-      chromeos::features::kCrosWebAppInstallDialog);
+  return (base::FeatureList::IsEnabled(
+              chromeos::features::kCrosWebAppInstallDialog) ||
+          base::FeatureList::IsEnabled(
+              chromeos::features::kCrosOmniboxInstallDialog));
 }
 
 AppInstallDialogUIConfig::AppInstallDialogUIConfig()

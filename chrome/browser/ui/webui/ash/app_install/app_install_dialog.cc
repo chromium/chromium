@@ -55,7 +55,9 @@ ChromeOsAppInstallDialogParams::ChromeOsAppInstallDialogParams(
 // static
 base::WeakPtr<AppInstallDialog> AppInstallDialog::CreateDialog() {
   CHECK(base::FeatureList::IsEnabled(
-      chromeos::features::kCrosWebAppInstallDialog));
+            chromeos::features::kCrosWebAppInstallDialog) ||
+        base::FeatureList::IsEnabled(
+            chromeos::features::kCrosOmniboxInstallDialog));
 
   return (new AppInstallDialog())->GetWeakPtr();
 }

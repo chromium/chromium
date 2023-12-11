@@ -7387,6 +7387,11 @@ const char kCrosAppsBackgroundEventHandlingName[] =
 const char kCrosAppsBackgroundEventHandlingDescription[] =
     "Enable key events for CrOS Apps running in background.";
 
+const char kCrosOmniboxInstallDialogName[] = "Web app omnibox install dialog";
+const char kCrosOmniboxInstallDialogDescription[] =
+    "Enables a more detailed, OS-level dialog for web app installs via the "
+    "omnibox";
+
 const char kCrosWebAppInstallDialogName[] = "Web app install dialog";
 const char kCrosWebAppInstallDialogDescription[] =
     "Enables a more detailed, OS-level dialog for web app installs";

@@ -1645,7 +1645,9 @@ void PopulateChromeWebUIFrameBinders(
   }
 
   if (base::FeatureList::IsEnabled(
-          chromeos::features::kCrosWebAppInstallDialog)) {
+          chromeos::features::kCrosWebAppInstallDialog) ||
+      base::FeatureList::IsEnabled(
+          chromeos::features::kCrosOmniboxInstallDialog)) {
     RegisterWebUIControllerInterfaceBinder<
         ash::app_install::mojom::PageHandlerFactory,
         ash::app_install::AppInstallDialogUI>(map);
