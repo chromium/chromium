@@ -423,11 +423,9 @@ export class NewFolderCommand extends FilesCommand {
 
                 this.busy_ = false;
 
-                fileManager.ui.alertDialog.show(
-                    strf(
-                        'ERROR_CREATING_FOLDER', newName,
-                        getFileErrorString(error.name)),
-                    null, null);
+                fileManager.ui.alertDialog.show(strf(
+                    'ERROR_CREATING_FOLDER', newName,
+                    getFileErrorString(error.name)));
               });
     });
   }
@@ -789,9 +787,7 @@ export class DeleteCommand extends FilesCommand {
         strf('CONFIRM_DELETE_ONE', entries[0].name) :
         strf('CONFIRM_DELETE_SOME', entries.length);
     dialog.setOkLabel(str('DELETE_BUTTON_LABEL'));
-    // @ts-ignore: error TS2345: Argument of type 'null' is not assignable to
-    // parameter of type 'Function | undefined'.
-    dialog.show(deleteMessage, deleteAction, cancelAction, null);
+    dialog.show(deleteMessage, deleteAction, cancelAction);
   }
 
   /**
