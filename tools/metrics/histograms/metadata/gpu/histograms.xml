@@ -1285,6 +1285,17 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="GPU.ShaderLoadPrefixOK" enum="BooleanMatched"
+    expires_after="2024-12-01">
+  <owner>vikassoni@chromium.org</owner>
+  <owner>chrome-gpu-metrics@google.com</owner>
+  <summary>
+    Whether or not the shader prefix loaded from disk matched the expected
+    prefix for the data and system configuration. False indicates either disk
+    corruption or a system configuration change, and should be rare.
+  </summary>
+</histogram>
+
 <histogram name="GPU.SharedImage.BackingType" enum="SharedImageBackingType"
     expires_after="2024-06-01">
   <owner>kylechar@chromium.org</owner>
