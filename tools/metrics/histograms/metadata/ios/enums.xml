@@ -216,6 +216,10 @@ chromium-metrics-reviews@google.com.
   <int value="41" label="OpenURL"/>
   <int value="42" label="AddToReadingList"/>
   <int value="43" label="SearchWith"/>
+  <int value="44" label="Autofill (menu)"/>
+  <int value="45" label="Autofill passwords"/>
+  <int value="46" label="Autofill contacts"/>
+  <int value="47" label="Autofill others"/>
 </enum>
 
 <enum name="IOSEditMenuError">
