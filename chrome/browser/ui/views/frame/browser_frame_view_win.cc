@@ -16,6 +16,7 @@
 #include "chrome/app/chrome_dll_resource.h"
 #include "chrome/browser/themes/theme_properties.h"
 #include "chrome/browser/ui/color/chrome_color_id.h"
+#include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/view_ids.h"
 #include "chrome/browser/ui/views/frame/browser_caption_button_container_win.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
@@ -26,6 +27,8 @@
 #include "chrome/browser/ui/views/tabs/tab_strip.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_view.h"
 #include "chrome/browser/ui/web_applications/app_browser_controller.h"
+#include "chrome/browser/web_applications/web_app_icon_manager.h"
+#include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/browser/win/titlebar_config.h"
 #include "content/public/browser/web_contents.h"
 #include "skia/ext/image_operations.h"
@@ -147,7 +150,12 @@ gfx::Rect BrowserFrameViewWin::GetBoundsForWebAppFrameToolbar(
   }
   if (browser_view()->IsWindowControlsOverlayEnabled()) {
     x = 0;
+  } else if (window_icon_) {
+    // Add extra padding to the left of the toolbar to account for the window
+    // icon.
+    x += window_icon_->size().width() + kIconTitleSpacing;
   }
+
   int trailing_x = width() - CaptionButtonsRegionWidth();
   return gfx::Rect(x, WindowTopY(), std::max(0, trailing_x - x),
                    caption_button_container_->size().height());
@@ -417,6 +425,12 @@ bool BrowserFrameViewWin::ShouldTabIconViewAnimate() const {
   if (!ShouldShowWindowIcon(TitlebarType::kCustom)) {
     return false;
   }
+
+  // Web apps use their app icon and shouldn't show a throbber.
+  if (browser_view()->GetIsWebAppType()) {
+    return false;
+  }
+
   content::WebContents* current_tab = browser_view()->GetActiveWebContents();
   return current_tab && current_tab->IsLoading();
 }
@@ -626,7 +640,7 @@ bool BrowserFrameViewWin::ShouldShowWindowIcon(TitlebarType type) const {
       ShouldBrowserCustomDrawTitlebar(browser_view())) {
     return false;
   }
-  if (frame()->IsFullscreen() || browser_view()->GetIsWebAppType()) {
+  if (frame()->IsFullscreen()) {
     return false;
   }
   return browser_view()->ShouldShowWindowIcon();
