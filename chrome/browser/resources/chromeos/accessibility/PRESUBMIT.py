@@ -19,6 +19,8 @@ def _CheckNoJsChanges(input_api, output_api):
     if (
         path.endswith("js")
         and not path.endswith("test.js")
+        and path.find("_test") == -1
+        and path.find("common/testing/") == -1
         and not filename[0] == "."
     ):
       results.append(

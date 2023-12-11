@@ -71,6 +71,17 @@ class MockAccessibilityPrivate {
       COPY: 'copy',
     };
 
+    this.SelectToSpeakPanelAction = {
+      PREVIOUS_PARAGRAPH: 'previousParagraph',
+      PREVIOUS_SENTENCE: 'previousSentence',
+      PAUSE: 'pause',
+      RESUME: 'resume',
+      NEXT_SENTENCE: 'nextSentence',
+      NEXT_PARAGRAPH: 'nextParagraph',
+      EXIT: 'exit',
+      CHANGE_SPEED: 'changeSpeed',
+    };
+
     this.SyntheticKeyboardEventType = {KEYDOWN: 'keydown', KEYUP: 'keyup'};
 
     this.ToastType = {

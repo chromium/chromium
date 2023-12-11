@@ -15,7 +15,7 @@ import {MetricsUtils} from './metrics_utils.js';
 import {PrefsManager} from './prefs_manager.js';
 import {SelectToSpeakConstants} from './select_to_speak_constants.js';
 import {TtsManager} from './tts_manager.js';
-import {SelectToSpeakUiListener, UiManager} from './ui_manager.js';
+import {UiManager} from './ui_manager.js';
 
 const AutomationNode = chrome.automation.AutomationNode;
 const AutomationEvent = chrome.automation.AutomationEvent;

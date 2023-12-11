@@ -25,7 +25,13 @@ common_tsc_out_dir = "$target_gen_dir/../common/tsc"
 ts_modules = []
 
 # TS files needed from ../common/.
-common_ts_modules = [ "flags.ts" ]
+common_ts_modules = [
+  "flags.ts",
+  "automation_util.ts",
+  "instance_checker.ts",
+  "tree_walker.ts",
+  "string_util.ts",
+]
 
 # These files all use older Closure provide/require support for dependency management and will be transitioned to ES6 modules (see below).
 chromevox_modules = [
@@ -39,7 +45,6 @@ tsc_common_out_dir = "$target_gen_dir/../common/tsc"
 # ES6 modules.
 chromevox_es6_modules = [
   "../common/automation_predicate.js",
-  "../common/automation_util.js",
   "../common/async_util.js",
   "../common/browser_util.js",
   "../common/constants.js",
@@ -47,12 +52,9 @@ chromevox_es6_modules = [
   "../common/cursors/range.js",
   "../common/cursors/recovery_strategy.js",
   "../common/event_generator.js",
-  "$tsc_common_out_dir/instance_checker.js",
   "../common/key_code.js",
   "../common/local_storage.js",
   "../common/rect_util.js",
-  "$tsc_common_out_dir/string_util.js",
-  "../common/tree_walker.js",
   "background/abstract_earcons.js",
   "background/abstract_tts.js",
   "background/automation_object_constructor_installer.js",

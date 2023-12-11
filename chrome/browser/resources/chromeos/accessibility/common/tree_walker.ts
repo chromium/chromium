@@ -9,8 +9,7 @@
 import {AutomationPredicate} from './automation_predicate.js';
 import {constants} from './constants.js';
 
-const AutomationNode = chrome.automation.AutomationNode;
-const Dir = constants.Dir;
+type AutomationNode = chrome.automation.AutomationNode;
 
 /**
  * Defined phases of traversal from the initial node passed to an
@@ -28,14 +27,13 @@ export const AutomationTreeWalkerPhase = {
   OTHER: 'other',
 };
 
-/**
- * @typedef {{leaf: (AutomationPredicate.Unary|undefined),
- *            root: (AutomationPredicate.Unary|undefined),
- *            visit: (AutomationPredicate.Unary|undefined),
- *            skipInitialAncestry: (boolean|undefined),
- *            skipInitialSubtree: (boolean|undefined)}}
- */
-export let AutomationTreeWalkerRestriction;
+export interface AutomationTreeWalkerRestriction {
+  leaf?: AutomationPredicate.Unary;
+  root?: AutomationPredicate.Unary;
+  visit?: AutomationPredicate.Unary;
+  skipInitialAncestry?: boolean;
+  skipInitialSubtree?: boolean;
+}
 
 /**
  * An AutomationTreeWalker provides an incremental pre order traversal of the
@@ -64,28 +62,33 @@ export let AutomationTreeWalkerRestriction;
  * particular predicate, it will default to these "identity" predicates.
  */
 export class AutomationTreeWalker {
-  /**
-   * @param {!AutomationNode} node
-   * @param {!Dir} dir
-   * @param {AutomationTreeWalkerRestriction=}
-   *        opt_restrictions
-   */
-  constructor(node, dir, opt_restrictions) {
-    /** @private {?AutomationNode} */
+  // TODO(b/314204374): Convert from null to undefined.
+  private node_: chrome.automation.AutomationNode|null;
+  private phase_: string;
+  private dir_: constants.Dir;
+  private initialNode_: chrome.automation.AutomationNode;
+  // TODO(b/314204374): Convert from null to undefined.
+  private backwardAncestor_: chrome.automation.AutomationNode|null;
+  private visitPred_: (node: any) => any;
+  private skipInitialAncestry_: boolean;
+  private skipInitialSubtree_: boolean;
+  private leafPred_: any;
+  private rootPred_: any;
+
+  constructor(
+      node: AutomationNode, dir: constants.Dir,
+      optRestrictions?: AutomationTreeWalkerRestriction) {
     this.node_ = node;
-    /** @private {!AutomationTreeWalkerPhase} */
     this.phase_ = AutomationTreeWalkerPhase.INITIAL;
-    /** @private {!Dir} */
     this.dir_ = dir;
-    /** @private {!AutomationNode} */
     this.initialNode_ = node;
+
     /**
      * Deepest common ancestor of initialNode and node. Valid only when moving
      * backward.
-     * @private {?AutomationNode}
      */
     this.backwardAncestor_ = node.parent || null;
-    const restrictions = opt_restrictions || {};
+    const restrictions: AutomationTreeWalkerRestriction = optRestrictions || {};
 
     this.visitPred_ = function(node) {
       if (this.skipInitialAncestry_ &&
@@ -117,41 +120,33 @@ export class AutomationTreeWalker {
     this.skipInitialSubtree_ = restrictions.skipInitialSubtree || false;
   }
 
-  /**
-   * @param {!AutomationNode} node
-   * @return {boolean}
-   * @private
-   */
-  static falsePredicate_(node) {
+  private static falsePredicate_(_node: AutomationNode): boolean {
     return false;
   }
 
-  /** @type {AutomationNode} */
-  get node() {
+  get node(): chrome.automation.AutomationNode|null {
     return this.node_;
   }
 
-  /** @type {AutomationTreeWalkerPhase} */
-  get phase() {
+  get phase(): string {
     return this.phase_;
   }
 
   /**
    * Moves this walker to the next node.
-   * @return {!AutomationTreeWalker} The called AutomationTreeWalker, for
-   *                                 chaining.
+   * @return The called AutomationTreeWalker, for chaining.
    */
-  next() {
+  next(): AutomationTreeWalker {
     if (!this.node_) {
       return this;
     }
 
     do {
-      if (this.rootPred_(this.node_) && this.dir_ === Dir.BACKWARD) {
+      if (this.rootPred_(this.node_) && this.dir_ === constants.Dir.BACKWARD) {
         this.node_ = null;
         return this;
       }
-      if (this.dir_ === Dir.FORWARD) {
+      if (this.dir_ === constants.Dir.FORWARD) {
         this.forward_(this.node_);
       } else {
         this.backward_(this.node_);
@@ -160,11 +155,7 @@ export class AutomationTreeWalker {
     return this;
   }
 
-  /**
-   * @param {!AutomationNode} node
-   * @private
-   */
-  forward_(node) {
+  private forward_(node: AutomationNode): void {
     if (!this.leafPred_(node) && node.firstChild) {
       if (this.phase_ === AutomationTreeWalkerPhase.INITIAL) {
         this.phase_ = AutomationTreeWalkerPhase.DESCENDANT;
@@ -177,7 +168,7 @@ export class AutomationTreeWalker {
       }
     }
 
-    let searchNode = node;
+    let searchNode: chrome.automation.AutomationNode|undefined = node;
     while (searchNode) {
       // We have crossed out of the initial node's subtree for either a
       // sibling or parent move.
@@ -207,11 +198,7 @@ export class AutomationTreeWalker {
     this.node_ = null;
   }
 
-  /**
-   * @param {!AutomationNode} node
-   * @private
-   */
-  backward_(node) {
+  private backward_(node: AutomationNode): void {
     if (node.previousSibling) {
       this.phase_ = AutomationTreeWalkerPhase.OTHER;
       node = node.previousSibling;

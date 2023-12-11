@@ -32,10 +32,15 @@ ts_modules = [
   "select_to_speak_constants.ts",
   "tts_manager.ts",
   "input_handler.ts",
+  "ui_manager.ts",
 ]
 
 # Add TS files needed from ../common/ here.
-common_ts_modules = [ "instance_checker.ts" ]
+common_ts_modules = [
+  "instance_checker.ts",
+  "automation_util.ts",
+  "tree_walker.ts",
+]
 
 # JS files required for ts build.
 js_deps = [ "select_to_speak.js" ]
@@ -89,7 +94,6 @@ run_jsbundler("select_to_speak_copied_files") {
     "sts-icon-128.png",
     "sts-icon-16.png",
     "sts-icon-48.png",
-    "ui_manager.js",
     "unchecked.png",
   ]
 

@@ -4,7 +4,6 @@
 
 import {AutomationPredicate} from '../common/automation_predicate.js';
 import {RectUtil} from '../common/rect_util.js';
-import {AutomationTreeWalkerRestriction} from '../common/tree_walker.js';
 
 import {SACache} from './cache.js';
 import {SAChildNode, SARootNode} from './nodes/switch_access_node.js';
