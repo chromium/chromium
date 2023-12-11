@@ -20,9 +20,10 @@ namespace blink {
 
 namespace {
 
-inline InsetModifiedContainingBlock::InsetBias GetStaticPositionInsetBias(
+using InsetBias = InsetModifiedContainingBlock::InsetBias;
+
+inline InsetBias GetStaticPositionInsetBias(
     LogicalStaticPosition::InlineEdge inline_edge) {
-  using InsetBias = InsetModifiedContainingBlock::InsetBias;
   switch (inline_edge) {
     case LogicalStaticPosition::InlineEdge::kInlineStart:
       return InsetBias::kStart;
@@ -33,9 +34,8 @@ inline InsetModifiedContainingBlock::InsetBias GetStaticPositionInsetBias(
   }
 }
 
-inline InsetModifiedContainingBlock::InsetBias GetStaticPositionInsetBias(
+inline InsetBias GetStaticPositionInsetBias(
     LogicalStaticPosition::BlockEdge block_edge) {
-  using InsetBias = InsetModifiedContainingBlock::InsetBias;
   switch (block_edge) {
     case LogicalStaticPosition::BlockEdge::kBlockStart:
       return InsetBias::kStart;
@@ -53,24 +53,24 @@ void ComputeUnclampedIMCBInOneAxis(
     const absl::optional<LayoutUnit>& inset_start,
     const absl::optional<LayoutUnit>& inset_end,
     const LayoutUnit static_position_offset,
-    InsetModifiedContainingBlock::InsetBias static_position_inset_bias,
+    InsetBias static_position_inset_bias,
     bool start_side_matches_containing_block,
     LayoutUnit* imcb_start_out,
     LayoutUnit* imcb_end_out,
-    InsetModifiedContainingBlock::InsetBias* imcb_inset_bias_out) {
+    InsetBias* imcb_inset_bias_out) {
   DCHECK_NE(available_size, kIndefiniteSize);
   if (!inset_start && !inset_end) {
     // If both our insets are auto, the available-space is defined by the
     // static-position.
     switch (static_position_inset_bias) {
-      case InsetModifiedContainingBlock::InsetBias::kStart:
+      case InsetBias::kStart:
         // The available-space for the start static-position "grows" towards the
         // end edge.
         // |      *----------->|
         *imcb_start_out = static_position_offset;
         *imcb_end_out = LayoutUnit();
         break;
-      case InsetModifiedContainingBlock::InsetBias::kEqual: {
+      case InsetBias::kEqual: {
         // The available-space for the center static-position "grows" towards
         // both edges (equally), and stops when it hits the first one.
         // |<-----*----->      |
@@ -81,7 +81,7 @@ void ComputeUnclampedIMCBInOneAxis(
             available_size - static_position_offset - half_imcb_size;
         break;
       }
-      case InsetModifiedContainingBlock::InsetBias::kEnd:
+      case InsetBias::kEnd:
         // The available-space for the end static-position "grows" towards the
         // start edge.
         // |<-----*            |
@@ -98,16 +98,13 @@ void ComputeUnclampedIMCBInOneAxis(
     if (!inset_start.has_value() || !inset_end.has_value()) {
       // In the case that only one inset is auto, that is the weaker inset;
       *imcb_inset_bias_out =
-          inset_start.has_value()
-              ? InsetModifiedContainingBlock::InsetBias::kStart
-              : InsetModifiedContainingBlock::InsetBias::kEnd;
+          inset_start.has_value() ? InsetBias::kStart : InsetBias::kEnd;
     } else {
       // Otherwise the weaker inset is the inset of the end edge (where end is
       // interpreted relative to the writing mode of the containing block).
-      *imcb_inset_bias_out =
-          start_side_matches_containing_block
-              ? InsetModifiedContainingBlock::InsetBias::kStart
-              : InsetModifiedContainingBlock::InsetBias::kEnd;
+      *imcb_inset_bias_out = start_side_matches_containing_block
+                                 ? InsetBias::kStart
+                                 : InsetBias::kEnd;
     }
   }
 }
@@ -116,8 +113,8 @@ InsetModifiedContainingBlock ComputeUnclampedIMCB(
     const LogicalSize& available_size,
     const LogicalOofInsets& insets,
     const LogicalStaticPosition& static_position,
-    const WritingDirectionMode& container_writing_direction,
-    const WritingDirectionMode& self_writing_direction) {
+    WritingDirectionMode container_writing_direction,
+    WritingDirectionMode self_writing_direction) {
   InsetModifiedContainingBlock imcb;
   imcb.available_size = available_size;
 
@@ -201,21 +198,20 @@ void ComputeMargins(const LayoutUnit margin_percentage_resolution_size,
   *margin_end_out = margin_end.value_or(LayoutUnit());
 }
 
-void ResizeIMCBInOneAxis(
-    LayoutUnit& inset_start,
-    LayoutUnit& inset_end,
-    const InsetModifiedContainingBlock::InsetBias& inset_bias,
-    const LayoutUnit& amount) {
+void ResizeIMCBInOneAxis(const InsetBias inset_bias,
+                         const LayoutUnit amount,
+                         LayoutUnit* inset_start,
+                         LayoutUnit* inset_end) {
   switch (inset_bias) {
-    case InsetModifiedContainingBlock::InsetBias::kStart:
-      inset_end += amount;
+    case InsetBias::kStart:
+      *inset_end += amount;
       break;
-    case InsetModifiedContainingBlock::InsetBias::kEnd:
-      inset_start += amount;
+    case InsetBias::kEnd:
+      *inset_start += amount;
       break;
-    case InsetModifiedContainingBlock::InsetBias::kEqual:
-      inset_start += amount / 2;
-      inset_end += amount / 2;
+    case InsetBias::kEqual:
+      *inset_start += amount / 2;
+      *inset_end += amount / 2;
       break;
   }
 }
@@ -223,26 +219,23 @@ void ResizeIMCBInOneAxis(
 // Align the margin box within the inset-modified containing block as defined by
 // its self-alignment properties.
 // https://drafts.csswg.org/css-position-3/#abspos-layout
-void ComputeInsets(
-    const LayoutUnit available_size,
-    const LayoutUnit passed_imcb_start,
-    const LayoutUnit passed_imcb_end,
-    const InsetModifiedContainingBlock::InsetBias& imcb_inset_bias,
-    const LayoutUnit margin_start,
-    const LayoutUnit margin_end,
-    const LayoutUnit size,
-    LayoutUnit* inset_start_out,
-    LayoutUnit* inset_end_out) {
+void ComputeInsets(const LayoutUnit available_size,
+                   LayoutUnit imcb_start,
+                   LayoutUnit imcb_end,
+                   const InsetBias imcb_inset_bias,
+                   const LayoutUnit margin_start,
+                   const LayoutUnit margin_end,
+                   const LayoutUnit size,
+                   LayoutUnit* inset_start_out,
+                   LayoutUnit* inset_end_out) {
   DCHECK_NE(available_size, kIndefiniteSize);
-  LayoutUnit imcb_start = passed_imcb_start;
-  LayoutUnit imcb_end = passed_imcb_end;
   const LayoutUnit free_space =
       available_size - imcb_start - imcb_end - margin_start - margin_end - size;
 
   // Move the weaker inset edge to consume all the free space, so that:
   // `imcb_start` + `margin_start` + `size` + `margin_end` + `imcb_end` =
   // `available_size`
-  ResizeIMCBInOneAxis(imcb_start, imcb_end, imcb_inset_bias, free_space);
+  ResizeIMCBInOneAxis(imcb_inset_bias, free_space, &imcb_start, &imcb_end);
 
   *inset_start_out = imcb_start + margin_start;
   *inset_end_out = imcb_end + margin_end;
@@ -251,7 +244,7 @@ void ComputeInsets(
 bool IsInsetAutoForAxis(const Length& side1,
                         const Length& side2,
                         const ComputedStyle& style,
-                        const WritingDirectionMode& container_writing_direction,
+                        WritingDirectionMode container_writing_direction,
                         const AnchorEvaluatorImpl* anchor_evaluator) {
   if (!side1.IsAuto() && !side2.IsAuto()) {
     return false;
@@ -273,7 +266,7 @@ bool IsInsetAutoForAxis(const Length& side1,
 
 bool CanComputeBlockSizeWithoutLayout(
     const BlockNode& node,
-    const WritingDirectionMode& container_writing_direction,
+    WritingDirectionMode container_writing_direction,
     const AnchorEvaluatorImpl* anchor_evaluator) {
   // Tables (even with an explicit size) apply a min-content constraint.
   if (node.IsTable()) {
@@ -304,8 +297,8 @@ bool CanComputeBlockSizeWithoutLayout(
 LogicalOofInsets ComputeOutOfFlowInsets(
     const ComputedStyle& style,
     const LogicalSize& available_logical_size,
-    const WritingDirectionMode& container_writing_direction,
-    const WritingDirectionMode& self_writing_direction,
+    WritingDirectionMode container_writing_direction,
+    WritingDirectionMode self_writing_direction,
     AnchorEvaluatorImpl* anchor_evaluator) {
   InsetArea inset_area;
   if (!style.GetInsetArea().IsNone() && anchor_evaluator->HasDefaultAnchor()) {
@@ -371,31 +364,31 @@ InsetModifiedContainingBlock ComputeInsetModifiedContainingBlock(
     const LogicalSize& available_size,
     const LogicalOofInsets& insets,
     const LogicalStaticPosition& static_position,
-    const WritingDirectionMode& container_writing_direction,
-    const WritingDirectionMode& self_writing_direction) {
+    WritingDirectionMode container_writing_direction,
+    WritingDirectionMode self_writing_direction) {
   InsetModifiedContainingBlock imcb =
       ComputeUnclampedIMCB(available_size, insets, static_position,
                            container_writing_direction, self_writing_direction);
   // Clamp any negative size to 0.
   if (imcb.InlineSize() < LayoutUnit()) {
-    ResizeIMCBInOneAxis(imcb.inline_start, imcb.inline_end,
-                        imcb.inline_inset_bias, imcb.InlineSize());
+    ResizeIMCBInOneAxis(imcb.inline_inset_bias, imcb.InlineSize(),
+                        &imcb.inline_start, &imcb.inline_end);
   }
   if (imcb.BlockSize() < LayoutUnit()) {
-    ResizeIMCBInOneAxis(imcb.block_start, imcb.block_end, imcb.block_inset_bias,
-                        imcb.BlockSize());
+    ResizeIMCBInOneAxis(imcb.block_inset_bias, imcb.BlockSize(),
+                        &imcb.block_start, &imcb.block_end);
   }
   if (node.IsTable()) {
     // Tables should not be larger than the container.
     if (imcb.InlineSize() > available_size.inline_size) {
-      ResizeIMCBInOneAxis(imcb.inline_start, imcb.inline_end,
-                          imcb.inline_inset_bias,
-                          imcb.InlineSize() - available_size.inline_size);
+      ResizeIMCBInOneAxis(imcb.inline_inset_bias,
+                          imcb.InlineSize() - available_size.inline_size,
+                          &imcb.inline_start, &imcb.inline_end);
     }
     if (imcb.BlockSize() > available_size.block_size) {
-      ResizeIMCBInOneAxis(imcb.block_start, imcb.block_end,
-                          imcb.block_inset_bias,
-                          imcb.BlockSize() - available_size.block_size);
+      ResizeIMCBInOneAxis(imcb.block_inset_bias,
+                          imcb.BlockSize() - available_size.block_size,
+                          &imcb.block_start, &imcb.block_end);
     }
   }
   return imcb;
@@ -405,8 +398,8 @@ InsetModifiedContainingBlock ComputeIMCBForPositionFallback(
     const LogicalSize& available_size,
     const LogicalOofInsets& insets,
     const LogicalStaticPosition& static_position,
-    const WritingDirectionMode& container_writing_direction,
-    const WritingDirectionMode& self_writing_direction) {
+    WritingDirectionMode container_writing_direction,
+    WritingDirectionMode self_writing_direction) {
   return ComputeUnclampedIMCB(available_size, insets, static_position,
                               container_writing_direction,
                               self_writing_direction);
@@ -419,7 +412,7 @@ bool ComputeOofInlineDimensions(
     const InsetModifiedContainingBlock& imcb,
     const BoxStrut& border_padding,
     const absl::optional<LogicalSize>& replaced_size,
-    const WritingDirectionMode container_writing_direction,
+    WritingDirectionMode container_writing_direction,
     const AnchorEvaluatorImpl* anchor_evaluator,
     LogicalOofDimensions* dimensions) {
   DCHECK(dimensions);
@@ -547,7 +540,7 @@ const LayoutResult* ComputeOofBlockDimensions(
     const InsetModifiedContainingBlock& imcb,
     const BoxStrut& border_padding,
     const absl::optional<LogicalSize>& replaced_size,
-    const WritingDirectionMode container_writing_direction,
+    WritingDirectionMode container_writing_direction,
     const AnchorEvaluatorImpl* anchor_evaluator,
     LogicalOofDimensions* dimensions) {
   DCHECK(dimensions);

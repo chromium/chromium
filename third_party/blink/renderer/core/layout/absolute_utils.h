@@ -50,8 +50,8 @@ struct CORE_EXPORT LogicalOofInsets {
 CORE_EXPORT LogicalOofInsets
 ComputeOutOfFlowInsets(const ComputedStyle& style,
                        const LogicalSize& available_size,
-                       const WritingDirectionMode& container_writing_direction,
-                       const WritingDirectionMode& self_writing_direction,
+                       WritingDirectionMode container_writing_direction,
+                       WritingDirectionMode self_writing_direction,
                        AnchorEvaluatorImpl* anchor_evaluator);
 
 struct CORE_EXPORT InsetModifiedContainingBlock {
@@ -95,19 +95,19 @@ CORE_EXPORT InsetModifiedContainingBlock ComputeInsetModifiedContainingBlock(
     const LogicalSize& available_size,
     const LogicalOofInsets&,
     const LogicalStaticPosition&,
-    const WritingDirectionMode& container_writing_direction,
-    const WritingDirectionMode& self_writing_direction);
+    WritingDirectionMode container_writing_direction,
+    WritingDirectionMode self_writing_direction);
 
 // Similar to `ComputeInsetModifiedContainingBlock`, but returns the
 // scroll-adjusted IMCB at the initial scroll position, which is for the
 // position fallback algorithm only.
 // https://www.w3.org/TR/css-anchor-position-1/#fallback-apply
-CORE_EXPORT InsetModifiedContainingBlock ComputeIMCBForPositionFallback(
-    const LogicalSize& available_size,
-    const LogicalOofInsets&,
-    const LogicalStaticPosition&,
-    const WritingDirectionMode& container_writing_direction,
-    const WritingDirectionMode& self_writing_direction);
+CORE_EXPORT InsetModifiedContainingBlock
+ComputeIMCBForPositionFallback(const LogicalSize& available_size,
+                               const LogicalOofInsets&,
+                               const LogicalStaticPosition&,
+                               WritingDirectionMode container_writing_direction,
+                               WritingDirectionMode self_writing_direction);
 
 // The following routines implement the absolute size resolution algorithm.
 // https://www.w3.org/TR/css-position-3/#abs-non-replaced-width
@@ -129,7 +129,7 @@ CORE_EXPORT bool ComputeOofInlineDimensions(
     const InsetModifiedContainingBlock&,
     const BoxStrut& border_padding,
     const absl::optional<LogicalSize>& replaced_size,
-    const WritingDirectionMode container_writing_direction,
+    WritingDirectionMode container_writing_direction,
     const AnchorEvaluatorImpl* anchor_evaluator,
     LogicalOofDimensions* dimensions);
 
@@ -142,7 +142,7 @@ CORE_EXPORT const LayoutResult* ComputeOofBlockDimensions(
     const InsetModifiedContainingBlock&,
     const BoxStrut& border_padding,
     const absl::optional<LogicalSize>& replaced_size,
-    const WritingDirectionMode container_writing_direction,
+    WritingDirectionMode container_writing_direction,
     const AnchorEvaluatorImpl* anchor_evaluator,
     LogicalOofDimensions* dimensions);
 
