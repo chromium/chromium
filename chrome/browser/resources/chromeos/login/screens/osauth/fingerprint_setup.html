@@ -20,10 +20,10 @@ found in the LICENSE file.
   <h1 slot="title" hidden="[[!isChildAccount_]]" aria-live="polite">
     [[i18nDynamic(locale, 'setupFingerprintScreenTitleForChild')]]
   </h1>
-  <p slot="subtitle" hidden="[[isChildAccount_]]">
+  <p slot="subtitle" hidden="[[isChildAccount_]]" aria-live="polite">
     [[i18nDynamic(locale, 'setupFingerprintScreenDescription')]]
   </p>
-  <p slot="subtitle" hidden="[[!isChildAccount_]]">
+  <p slot="subtitle" hidden="[[!isChildAccount_]]" aria-live="polite">
     [[i18nDynamic(locale, 'setupFingerprintScreenDescriptionForChild')]]
   </p>
   <iron-icon slot="icon" icon="oobe-32:fingerprint"></iron-icon>

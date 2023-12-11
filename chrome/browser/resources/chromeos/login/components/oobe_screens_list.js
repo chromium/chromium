@@ -89,13 +89,13 @@ export class OobeScreensList extends OobeScreensListBase {
   onClick_(e) {
     const clickedScreen = e.model.screen;
     const previousSelectedState = clickedScreen.selected;
-    const curentSelectedState = !previousSelectedState;
+    const currentSelectedState = !previousSelectedState;
     const path =
         `screensList_.${this.screensList_.indexOf(clickedScreen)}.selected`;
-    this.set(path, curentSelectedState);
-    e.currentTarget.setAttribute('checked', curentSelectedState);
+    this.set(path, currentSelectedState);
+    e.currentTarget.setAttribute('checked', currentSelectedState);
 
-    if (curentSelectedState) {
+    if (currentSelectedState) {
       this.selectedScreensCount++;
       this.screensSelected.push(clickedScreen.screenID);
     } else {
@@ -133,6 +133,26 @@ export class OobeScreensList extends OobeScreensListBase {
 
   getScreenID(screen_id) {
     return 'cr-button-' + screen_id;
+  }
+
+  focus() {
+    const screens = this.shadowRoot.querySelectorAll('.screen-item');
+    if (screens.length < 1) {
+      return;
+    }
+
+    // Focus the first enabled screen in the list
+    for (let i = 0; i < screens.length; ++i) {
+      const screen = screens[i];
+      if (!this.isScreenDisabled(
+              screen.hasAttribute('is_revisitable'),
+              screen.hasAttribute('is_completed'))) {
+        screen.focus();
+        return;
+      }
+    }
+
+    return;
   }
 
   getAriaLabelToggleButtons_(

@@ -1925,6 +1925,7 @@ const createAssistantZippy = (type, isMinor, isNativeIcons) => {
       const panel = /** @type {!HTMLElement} */ (document.createElement('div'));
       panel.className = 'debug-tool-panel';
       panel.id = id;
+      panel.setAttribute('aria-hidden', true);
 
       parent.appendChild(this.titleDiv);
       parent.appendChild(panel);
@@ -2430,6 +2431,7 @@ const createAssistantZippy = (type, isMinor, isNativeIcons) => {
             /** @type {!HTMLElement} */ (document.createElement('div'));
         overlay.id = 'debuggerOverlay';
         overlay.className = 'debugger-overlay';
+        overlay.setAttribute('aria-label', 'OOBE debug overlay');
         overlay.setAttribute('hidden', true);
         this.debuggerOverlay_ = overlay;
       }
