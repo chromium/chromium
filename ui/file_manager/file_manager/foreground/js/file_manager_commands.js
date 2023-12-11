@@ -767,10 +767,8 @@ export class DeleteCommand extends FilesCommand {
     // filesystems version of trash).
     if (deleteIsForever(entries, fileManager.volumeManager)) {
       const title = entries.length === 1 ?
-          // @ts-ignore: error TS2555: Expected at least 2 arguments, but got 1.
-          strf('CONFIRM_PERMANENTLY_DELETE_ONE_TITLE') :
-          // @ts-ignore: error TS2555: Expected at least 2 arguments, but got 1.
-          strf('CONFIRM_PERMANENTLY_DELETE_SOME_TITLE');
+          str('CONFIRM_PERMANENTLY_DELETE_ONE_TITLE') :
+          str('CONFIRM_PERMANENTLY_DELETE_SOME_TITLE');
 
       const message = entries.length === 1 ?
           // @ts-ignore: error TS2532: Object is possibly 'undefined'.
@@ -2410,8 +2408,7 @@ export class GuestOsShareCommand extends FilesCommand {
     // Non-Drive volume roots are always '/'.
     if (entry.fullPath == '/') {
       fileManager.ui.confirmDialog.showHtml(
-          // @ts-ignore: error TS2555: Expected at least 2 arguments, but got 1.
-          strf(`SHARE_ROOT_FOLDER_WITH_${this.typeForStrings_}_TITLE`),
+          str(`SHARE_ROOT_FOLDER_WITH_${this.typeForStrings_}_TITLE`),
           strf(
               `SHARE_ROOT_FOLDER_WITH_${this.typeForStrings_}`,
               info.volumeInfo.label),
@@ -2425,10 +2422,8 @@ export class GuestOsShareCommand extends FilesCommand {
       // Computers Grand Root.  Do not show for roots of a single Shared
       // Drive or Computer.
       fileManager.ui.confirmDialog.showHtml(
-          // @ts-ignore: error TS2555: Expected at least 2 arguments, but got 1.
-          strf(`SHARE_ROOT_FOLDER_WITH_${this.typeForStrings_}_TITLE`),
-          // @ts-ignore: error TS2555: Expected at least 2 arguments, but got 1.
-          strf(`SHARE_ROOT_FOLDER_WITH_${this.typeForStrings_}_DRIVE`), share,
+          str(`SHARE_ROOT_FOLDER_WITH_${this.typeForStrings_}_TITLE`),
+          str(`SHARE_ROOT_FOLDER_WITH_${this.typeForStrings_}_DRIVE`), share,
           () => {});
     } else {
       // This is not a root, share it without confirmation dialog.
