@@ -66,18 +66,12 @@ SerializedVar::Inner::~Inner() {
 
 PP_Var SerializedVar::Inner::GetVar() {
   DCHECK(serialization_rules_.get());
-
-#if defined(NACL_WIN64)
-  NOTREACHED();
-  return PP_MakeUndefined();
-#else
   if (raw_var_data_.get()) {
     var_ = raw_var_data_->CreatePPVar(instance_);
     raw_var_data_.reset(nullptr);
   }
 
   return var_;
-#endif
 }
 
 void SerializedVar::Inner::SetVar(PP_Var var) {

@@ -9,12 +9,10 @@
 
 class ChromeCrashReporterClient : public crash_reporter::CrashReporterClient {
  public:
-#if !defined(NACL_WIN64)
   // Instantiates a process wide instance of the ChromeCrashReporterClient
   // class and initializes crash reporting for the process. The instance is
   // leaked.
   static void InitializeCrashReportingForProcess();
-#endif  // !defined(NACL_WIN64)
 
   ChromeCrashReporterClient();
 
