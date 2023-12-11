@@ -268,8 +268,14 @@ public class TouchToFillCreditCardViewTest {
                 });
         BottomSheetTestSupport.waitForOpen(mBottomSheetController);
 
-        // The sheet should be expanded to half height.
-        pollUiThread(() -> getBottomSheetState() == BottomSheetController.SheetState.HALF);
+        // The sheet should be expanded to half height if possible, the half height state is
+        // disabled on small screens.
+        @BottomSheetController.SheetState
+        int desiredState =
+                mBottomSheetController.isSmallScreen()
+                        ? BottomSheetController.SheetState.FULL
+                        : BottomSheetController.SheetState.HALF;
+        pollUiThread(() -> getBottomSheetState() == desiredState);
     }
 
     @Test
@@ -287,9 +293,10 @@ public class TouchToFillCreditCardViewTest {
                 });
         BottomSheetTestSupport.waitForOpen(mBottomSheetController);
 
-        // The sheet should be expanded to the half height and scrolling suppressed.
+        // The sheet should be expanded to the half height and scrolling suppressed, unless
+        // the half height state is disabled due to the device having too small a screen.
         RecyclerView recyclerView = mTouchToFillCreditCardView.getSheetItemListView();
-        assertTrue(recyclerView.isLayoutSuppressed());
+        assertEquals(!mBottomSheetController.isSmallScreen(), recyclerView.isLayoutSuppressed());
 
         // Expand the sheet to the full height and scrolling .
         runOnUiThreadBlocking(

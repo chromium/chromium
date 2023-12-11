@@ -176,4 +176,10 @@ public interface BottomSheetController {
      *         sheet is open or holds sheet content.
      */
     BackPressHandler getBottomSheetBackPressHandler();
+
+    /**
+     * @return Whether the bottom sheet is being shown on a small screen. This disables the half
+     *     sheet state.
+     */
+    boolean isSmallScreen();
 }
