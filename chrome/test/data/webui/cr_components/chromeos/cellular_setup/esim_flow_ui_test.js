@@ -571,18 +571,21 @@ suite(`CrComponentsEsimFlowUiTest${suiteSuffix}`, function() {
         'Skip profile list manually, after profile selection',
         async function() {
           await setupWithProfiles(1);
+          await flushAsync();
 
           const getProfilesList = () =>
-              profileDiscoveryPage.shadowRoot.querySelector('iron-list');
+              profileDiscoveryPage.shadowRoot.querySelector('#profileList');
 
           assertTrue(!!getProfilesList());
           assertEquals(getProfilesList().items.length, 1);
           assertFalse(!!getProfilesList().selectedItem);
 
           // Select a profile.
-          getProfilesList()
-              .querySelector('profile-discovery-list-item')
-              .click();
+          const discoveryListItem =
+              profileDiscoveryPage.shadowRoot.querySelectorAll(
+                  'profile-discovery-list-item');
+          assertTrue(!!discoveryListItem);
+          discoveryListItem[0].click();
 
           await flushAsync();
           assertTrue(!!getProfilesList().selectedItem);
