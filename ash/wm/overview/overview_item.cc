@@ -1227,19 +1227,30 @@ void OverviewItem::SetItemBounds(const gfx::RectF& target_bounds,
   // Determine the amount of clipping we should put on the window. Note that the
   // clipping goes after setting a transform, as layer transform affects layer
   // clip.
-  using ClippingType = ScopedOverviewTransformWindow::ClippingType;
-  ScopedOverviewTransformWindow::ClippingData clipping_data{
-      ClippingType::kCustom, gfx::SizeF()};
+  gfx::Rect clip_rect;
   if (unclipped_size_) {
-    clipping_data.second = GetTargetBoundsWithInsets().size();
-  } else if (is_first_update) {
-    clipping_data.first = ClippingType::kEnter;
+    gfx::SizeF clip_size(GetTargetBoundsWithInsets().size());
+
+    // Transform affects the clip rect, so take that into account.
+    const gfx::Vector2dF scale = transform.To2dScale();
+    clip_size.Scale(1 / scale.x(), 1 / scale.y());
+    gfx::RectF clip_rect_f(clip_size);
+    clip_rect = gfx::ToRoundedRect(clip_rect_f);
+  } else {
+    clip_rect = gfx::Rect(window->bounds().size());
+    // We add 1 to the `top_inset`, because in some cases, the header is not
+    // clipped fully due to what seems to be a rounding error.
+    // TODO(afakhry|sammiequon): Investigate a proper fix for this.
+    const int top_inset = transform_window_.GetTopInset();
+    if (top_inset > 0 && !clip_rect.IsEmpty()) {
+      clip_rect.Inset(gfx::Insets::TLBR(top_inset + 1, 0, 0, 0));
+    }
   }
 
   if (is_first_update &&
       animation_type == OVERVIEW_ANIMATION_SPAWN_ITEM_IN_OVERVIEW) {
     PerformItemSpawnedAnimation(window, transform);
-    transform_window_.SetClipping(clipping_data);
+    transform_window_.SetClipping(clip_rect);
     return;
   }
 
@@ -1254,7 +1265,7 @@ void OverviewItem::SetItemBounds(const gfx::RectF& target_bounds,
                        weak_ptr_factory_.GetWeakPtr())});
   }
   SetTransform(window, transform);
-  transform_window_.SetClipping(clipping_data);
+  transform_window_.SetClipping(clip_rect);
 }
 
 void OverviewItem::UpdateHeaderLayout(OverviewAnimationType animation_type) {
