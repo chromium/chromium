@@ -291,3 +291,15 @@ export async function getDriveConnectionState() {
 export async function grantAccess(entries: string[]) {
   return promisify<void>(chrome.fileManagerPrivate.grantAccess, entries);
 }
+
+export async function getContentMimeType(fileEntry: FileEntry) {
+  return promisify<string>(
+      chrome.fileManagerPrivate.getContentMimeType, fileEntry);
+}
+
+export async function getContentMetadata(
+    fileEntry: FileEntry, mimeType: string, includeImages: boolean) {
+  return promisify<chrome.fileManagerPrivate.MediaMetadata>(
+      chrome.fileManagerPrivate.getContentMetadata, fileEntry, mimeType,
+      includeImages);
+}
