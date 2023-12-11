@@ -52,11 +52,11 @@ enum MemorySavingsQuartile {
 // the quartile represented by `MemorySavingsQuartile`. The last "quartile"
 // instead represents the 99th percentile (or a full chart).
 constexpr int kQuartilesLabels[] = {
-    IDS_HIGH_EFFICIENCY_DIALOG_SMALL_SAVINGS_LABEL,
-    IDS_HIGH_EFFICIENCY_DIALOG_MEDIUM_SAVINGS_LABEL,
-    IDS_HIGH_EFFICIENCY_DIALOG_MEDIUM_SAVINGS_LABEL,
-    IDS_HIGH_EFFICIENCY_DIALOG_LARGE_SAVINGS_LABEL,
-    IDS_HIGH_EFFICIENCY_DIALOG_VERY_LARGE_SAVINGS_LABEL};
+    IDS_MEMORY_SAVER_DIALOG_SMALL_SAVINGS_LABEL,
+    IDS_MEMORY_SAVER_DIALOG_MEDIUM_SAVINGS_LABEL,
+    IDS_MEMORY_SAVER_DIALOG_MEDIUM_SAVINGS_LABEL,
+    IDS_MEMORY_SAVER_DIALOG_LARGE_SAVINGS_LABEL,
+    IDS_MEMORY_SAVER_DIALOG_VERY_LARGE_SAVINGS_LABEL};
 
 // Returns which of the four quartiles of memory savings this number falls into.
 // The lowest memory usage quartile (0-24th percentile) returns 0 and the
@@ -195,7 +195,7 @@ HighEfficiencyResourceView::HighEfficiencyResourceView(
   memory_savings->SetFontList(
       memory_savings->font_list().DeriveWithSizeDelta(kMemoryLabelSizeDelta));
   memory_savings->SetAccessibleName(l10n_util::GetStringFUTF16(
-      IDS_HIGH_EFFICIENCY_DIALOG_SAVINGS_ACCNAME, {formatted_savings}));
+      IDS_MEMORY_SAVER_DIALOG_SAVINGS_ACCNAME, {formatted_savings}));
 
   auto* memory_label = AddChildView(std::make_unique<views::Label>(
       l10n_util::GetStringUTF16(

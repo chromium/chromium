@@ -326,7 +326,7 @@ TEST_F(HighEfficiencyBubbleViewMemorySavingsImprovementsTest,
       std::string::npos);
 
   EXPECT_NE(label->GetText().find(
-                l10n_util::GetStringUTF16(IDS_HIGH_EFFICIENCY_DIALOG_BODY_V2)),
+                l10n_util::GetStringUTF16(IDS_MEMORY_SAVER_DIALOG_BODY_V2)),
             std::string::npos);
 }
 
@@ -350,9 +350,9 @@ INSTANTIATE_TEST_SUITE_P(
     All,
     HighEfficiencyBubbleViewMemorySavingsImprovementsTest,
     ::testing::Values(
-        std::tuple{50 * 1024, IDS_HIGH_EFFICIENCY_DIALOG_SMALL_SAVINGS_LABEL},
-        std::tuple{100 * 1024, IDS_HIGH_EFFICIENCY_DIALOG_MEDIUM_SAVINGS_LABEL},
-        std::tuple{150 * 1024, IDS_HIGH_EFFICIENCY_DIALOG_MEDIUM_SAVINGS_LABEL},
-        std::tuple{600 * 1024, IDS_HIGH_EFFICIENCY_DIALOG_LARGE_SAVINGS_LABEL},
+        std::tuple{50 * 1024, IDS_MEMORY_SAVER_DIALOG_SMALL_SAVINGS_LABEL},
+        std::tuple{100 * 1024, IDS_MEMORY_SAVER_DIALOG_MEDIUM_SAVINGS_LABEL},
+        std::tuple{150 * 1024, IDS_MEMORY_SAVER_DIALOG_MEDIUM_SAVINGS_LABEL},
+        std::tuple{600 * 1024, IDS_MEMORY_SAVER_DIALOG_LARGE_SAVINGS_LABEL},
         std::tuple{900 * 1024,
-                   IDS_HIGH_EFFICIENCY_DIALOG_VERY_LARGE_SAVINGS_LABEL}));
+                   IDS_MEMORY_SAVER_DIALOG_VERY_LARGE_SAVINGS_LABEL}));

@@ -660,8 +660,8 @@ void MaybeRegisterChromeFeaturePromos(
   registry.RegisterFeature(std::move(
       FeaturePromoSpecification::CreateForCustomAction(
           feature_engagement::kIPHHighEfficiencyModeFeature,
-          kToolbarAppMenuButtonElementId, IDS_HIGH_EFFICIENCY_MODE_PROMO_TEXT,
-          IDS_HIGH_EFFICIENCY_MODE_PROMO_ACTION_TEXT,
+          kToolbarAppMenuButtonElementId, IDS_MEMORY_SAVER_MODE_PROMO_TEXT,
+          IDS_MEMORY_SAVER_MODE_PROMO_ACTION_TEXT,
           base::BindRepeating(
               [](ui::ElementContext context,
                  user_education::FeaturePromoHandle promo_handle) {
@@ -672,7 +672,7 @@ void MaybeRegisterChromeFeaturePromos(
               }))
           .SetCustomActionIsDefault(true)
           .SetCustomActionDismissText(IDS_NO_THANKS)
-          .SetBubbleTitleText(IDS_HIGH_EFFICIENCY_MODE_PROMO_TITLE)
+          .SetBubbleTitleText(IDS_MEMORY_SAVER_MODE_PROMO_TITLE)
           .SetHighlightedMenuItem(ToolsMenuModel::kPerformanceMenuItem)));
 
   // kIPHPriceTrackingInSidePanelFeature;

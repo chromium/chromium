@@ -577,7 +577,7 @@ IN_PROC_BROWSER_TEST_F(HighEfficiencyChipInteractiveTest,
           HighEfficiencyBubbleView::kHighEfficiencyDialogCancelButton,
           &views::LabelButton::GetText,
           l10n_util::GetStringUTF16(
-              IDS_HIGH_EFFICIENCY_DIALOG_BUTTON_ADD_TO_EXCLUSION_LIST)),
+              IDS_MEMORY_SAVER_DIALOG_BUTTON_ADD_TO_EXCLUSION_LIST)),
       // Clicking the dialog's cancel button should add the site to the
       // exception list
       PressButton(HighEfficiencyBubbleView::kHighEfficiencyDialogCancelButton),
@@ -603,7 +603,7 @@ IN_PROC_BROWSER_TEST_F(HighEfficiencyChipInteractiveTest,
       CheckViewProperty(
           HighEfficiencyBubbleView::kHighEfficiencyDialogCancelButton,
           &views::LabelButton::GetText,
-          l10n_util::GetStringUTF16(IDS_HIGH_EFFICIENCY_DIALOG_BODY_LINK_TEXT)),
+          l10n_util::GetStringUTF16(IDS_MEMORY_SAVER_DIALOG_BODY_LINK_TEXT)),
       PressButton(HighEfficiencyBubbleView::kHighEfficiencyDialogCancelButton),
       WaitForHide(HighEfficiencyBubbleView::kHighEfficiencyDialogBodyElementId),
       Check(base::BindLambdaForTesting(
@@ -634,7 +634,7 @@ IN_PROC_BROWSER_TEST_F(HighEfficiencyChipInteractiveTest,
       CheckViewProperty(
           HighEfficiencyBubbleView::kHighEfficiencyDialogCancelButton,
           &views::LabelButton::GetText,
-          l10n_util::GetStringUTF16(IDS_HIGH_EFFICIENCY_DIALOG_BODY_LINK_TEXT)),
+          l10n_util::GetStringUTF16(IDS_MEMORY_SAVER_DIALOG_BODY_LINK_TEXT)),
       PressButton(kHighEfficiencyChipElementId),
       WaitForHide(HighEfficiencyBubbleView::kHighEfficiencyDialogBodyElementId),
       // Second tab's cancel button should allow users to exclude the site
@@ -646,7 +646,7 @@ IN_PROC_BROWSER_TEST_F(HighEfficiencyChipInteractiveTest,
           HighEfficiencyBubbleView::kHighEfficiencyDialogCancelButton,
           &views::LabelButton::GetText,
           l10n_util::GetStringUTF16(
-              IDS_HIGH_EFFICIENCY_DIALOG_BUTTON_ADD_TO_EXCLUSION_LIST)),
+              IDS_MEMORY_SAVER_DIALOG_BUTTON_ADD_TO_EXCLUSION_LIST)),
       PressButton(kHighEfficiencyChipElementId),
       WaitForHide(HighEfficiencyBubbleView::kHighEfficiencyDialogBodyElementId),
       // Ensure that the first tab's cancel button continues to allow users
@@ -657,8 +657,7 @@ IN_PROC_BROWSER_TEST_F(HighEfficiencyChipInteractiveTest,
       CheckViewProperty(
           HighEfficiencyBubbleView::kHighEfficiencyDialogCancelButton,
           &views::LabelButton::GetText,
-          l10n_util::GetStringUTF16(
-              IDS_HIGH_EFFICIENCY_DIALOG_BODY_LINK_TEXT)));
+          l10n_util::GetStringUTF16(IDS_MEMORY_SAVER_DIALOG_BODY_LINK_TEXT)));
 }
 
 struct FaviconScreenShotTestConfig {

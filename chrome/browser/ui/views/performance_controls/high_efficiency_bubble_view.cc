@@ -68,11 +68,11 @@ void AddCancelButton(ui::DialogModel::Builder* dialog_model_builder,
   int button_string_id;
   base::OnceClosure callback;
   if (is_site_excluded) {
-    button_string_id = IDS_HIGH_EFFICIENCY_DIALOG_BODY_LINK_TEXT;
+    button_string_id = IDS_MEMORY_SAVER_DIALOG_BODY_LINK_TEXT;
     callback = base::BindOnce(&HighEfficiencyBubbleDelegate::OnSettingsClicked,
                               base::Unretained(bubble_delegate));
   } else {
-    button_string_id = IDS_HIGH_EFFICIENCY_DIALOG_BUTTON_ADD_TO_EXCLUSION_LIST;
+    button_string_id = IDS_MEMORY_SAVER_DIALOG_BUTTON_ADD_TO_EXCLUSION_LIST;
     callback = base::BindOnce(
         &HighEfficiencyBubbleDelegate::OnAddSiteToExceptionsListClicked,
         base::Unretained(bubble_delegate));
@@ -102,8 +102,8 @@ views::BubbleDialogModelHost* HighEfficiencyBubbleView::ShowBubble(
   dialog_model_builder
       .SetTitle(
           show_memory_savings_chart
-              ? l10n_util::GetStringUTF16(IDS_HIGH_EFFICIENCY_DIALOG_TITLE_V2)
-              : l10n_util::GetStringUTF16(IDS_HIGH_EFFICIENCY_DIALOG_TITLE))
+              ? l10n_util::GetStringUTF16(IDS_MEMORY_SAVER_DIALOG_TITLE_V2)
+              : l10n_util::GetStringUTF16(IDS_MEMORY_SAVER_DIALOG_TITLE))
       .SetDialogDestroyingCallback(
           base::BindOnce(&HighEfficiencyBubbleDelegate::OnDialogDestroy,
                          base::Unretained(bubble_delegate)))
@@ -135,34 +135,33 @@ views::BubbleDialogModelHost* HighEfficiencyBubbleView::ShowBubble(
           kHighEfficiencyDialogResourceViewElementId);
     }
 
-    AddBubbleBodyText(&dialog_model_builder,
-                      IDS_HIGH_EFFICIENCY_DIALOG_BODY_V2);
+    AddBubbleBodyText(&dialog_model_builder, IDS_MEMORY_SAVER_DIALOG_BODY_V2);
   } else if (is_guest || is_forced_incognito) {
     // Show bubble without Performance Settings Page Link since guest users or
     // forced incognito users are not allowed to navigate to the performance
     // settings page
     if (memory_savings > kMemoryUsageThresholdInBytes) {
       AddBubbleBodyText(&dialog_model_builder,
-                        IDS_HIGH_EFFICIENCY_DIALOG_BODY_WITH_SAVINGS,
+                        IDS_MEMORY_SAVER_DIALOG_BODY_WITH_SAVINGS,
                         {memory_savings_text});
     } else {
       AddBubbleBodyText(&dialog_model_builder,
-                        IDS_HIGH_EFFICIENCY_DIALOG_BODY_WITHOUT_LINK);
+                        IDS_MEMORY_SAVER_DIALOG_BODY_WITHOUT_LINK);
     }
   } else {
     ui::DialogModelLabel::TextReplacement settings_link =
         ui::DialogModelLabel::CreateLink(
-            IDS_HIGH_EFFICIENCY_DIALOG_BODY_LINK_TEXT,
+            IDS_MEMORY_SAVER_DIALOG_BODY_LINK_TEXT,
             base::BindRepeating(
                 &HighEfficiencyBubbleDelegate::OnSettingsClicked,
                 base::Unretained(bubble_delegate)));
 
     if (memory_savings > kMemoryUsageThresholdInBytes) {
       AddBubbleBodyText(&dialog_model_builder,
-                        IDS_HIGH_EFFICIENCY_DIALOG_BODY_WITH_SAVINGS_AND_LINK,
+                        IDS_MEMORY_SAVER_DIALOG_BODY_WITH_SAVINGS_AND_LINK,
                         {memory_savings_text, settings_link});
     } else {
-      AddBubbleBodyText(&dialog_model_builder, IDS_HIGH_EFFICIENCY_DIALOG_BODY,
+      AddBubbleBodyText(&dialog_model_builder, IDS_MEMORY_SAVER_DIALOG_BODY,
                         {settings_link});
     }
   }

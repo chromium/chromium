@@ -9465,22 +9465,22 @@ Keep your key file in a safe place. You will need it to create new versions of y
         Settings
       </message>
       <if expr="use_titlecase">
-        <message name="IDS_HIGH_EFFICIENCY_MODE_PROMO_TEXT" desc="The text shown for the high efficiency mode in-product promo bubble">
+        <message name="IDS_MEMORY_SAVER_MODE_PROMO_TEXT" desc="The text shown for the high efficiency mode in-product promo bubble">
           Memory Saver frees up memory from inactive tabs so it can be used by active tabs and other apps.
         </message>
       </if>
       <if expr="not use_titlecase">
-        <message name="IDS_HIGH_EFFICIENCY_MODE_PROMO_TEXT" desc="The text shown for the high efficiency mode in-product promo bubble">
+        <message name="IDS_MEMORY_SAVER_MODE_PROMO_TEXT" desc="The text shown for the high efficiency mode in-product promo bubble">
           Memory Saver frees up memory from inactive tabs so it can be used by active tabs and other apps
         </message>
       </if>
       <if expr="use_titlecase">
-        <message name="IDS_HIGH_EFFICIENCY_MODE_PROMO_ACTION_TEXT" desc="In Title Case: The custom action button text for the high efficiency mode in-product promo bubble">
+        <message name="IDS_MEMORY_SAVER_MODE_PROMO_ACTION_TEXT" desc="In Title Case: The custom action button text for the high efficiency mode in-product promo bubble">
           Turn On
         </message>
       </if>
       <if expr="not use_titlecase">
-        <message name="IDS_HIGH_EFFICIENCY_MODE_PROMO_ACTION_TEXT" desc="The custom action button text for the high efficiency mode in-product promo bubble">
+        <message name="IDS_MEMORY_SAVER_MODE_PROMO_ACTION_TEXT" desc="The custom action button text for the high efficiency mode in-product promo bubble">
           Turn on
         </message>
       </if>
@@ -16319,97 +16319,97 @@ Please help our engineers fix this problem. Tell us what happened right before y
     <!-- High Efficiency Chip strings -->
     <if expr="not is_android">
       <if expr="use_titlecase">
-        <message name="IDS_HIGH_EFFICIENCY_CHIP_LABEL" desc="In Title Case: Label for a page action chip that highlights that the Memory Saver setting is enabled">
+        <message name="IDS_MEMORY_SAVER_CHIP_LABEL" desc="In Title Case: Label for a page action chip that highlights that the Memory Saver setting is enabled">
           Tab Active Again
         </message>
       </if>
       <if expr="not use_titlecase">
-        <message name="IDS_HIGH_EFFICIENCY_CHIP_LABEL" desc="Label for a page action chip that highlights that the Memory Saver setting is enabled">
+        <message name="IDS_MEMORY_SAVER_CHIP_LABEL" desc="Label for a page action chip that highlights that the Memory Saver setting is enabled">
           Tab active again
         </message>
       </if>
-      <message name="IDS_HIGH_EFFICIENCY_CHIP_ACCNAME" desc="Tooltip text for a page action chip that highlights that the Memory Saver setting is enabled">
+      <message name="IDS_MEMORY_SAVER_CHIP_ACCNAME" desc="Tooltip text for a page action chip that highlights that the Memory Saver setting is enabled">
         Tab active again
       </message>
-      <message name="IDS_HIGH_EFFICIENCY_CHIP_WITH_SAVINGS_ACCNAME" desc="Accessible label for the memory savings shown on the Memory Saver dialog to provide context to the raw number.">
+      <message name="IDS_MEMORY_SAVER_CHIP_WITH_SAVINGS_ACCNAME" desc="Accessible label for the memory savings shown on the Memory Saver dialog to provide context to the raw number.">
         Memory savings summary, <ph name="MEMORY_VALUE">$1<ex>175MB</ex></ph> freed up
       </message>
       <if expr="use_titlecase">
-        <message name="IDS_HIGH_EFFICIENCY_CHIP_SAVINGS_LABEL" desc="In Title Case: Label for a page action chip that highlights the savings from Memory Saver mode">
+        <message name="IDS_MEMORY_SAVER_CHIP_SAVINGS_LABEL" desc="In Title Case: Label for a page action chip that highlights the savings from Memory Saver mode">
           <ph name="MEMORY_SAVINGS">$1<ex>300 MB</ex></ph> Freed Up
         </message>
       </if>
       <if expr="not use_titlecase">
-        <message name="IDS_HIGH_EFFICIENCY_CHIP_SAVINGS_LABEL" desc="Label for a page action chip that highlights the savings from Memory Saver mode">
+        <message name="IDS_MEMORY_SAVER_CHIP_SAVINGS_LABEL" desc="Label for a page action chip that highlights the savings from Memory Saver mode">
           <ph name="MEMORY_SAVINGS">$1<ex>300 MB</ex></ph> freed up
         </message>
       </if>
-      <message name="IDS_HIGH_EFFICIENCY_DIALOG_TITLE_V2" desc="Title text for a dialog with information about Memory Saver mode.">
+      <message name="IDS_MEMORY_SAVER_DIALOG_TITLE_V2" desc="Title text for a dialog with information about Memory Saver mode.">
         Memory Saver
       </message>
-      <message name="IDS_HIGH_EFFICIENCY_DIALOG_BODY" desc="Body text for a dialog describing that Memory Saver mode will use less memory from inactive tabs and that this is a setting the user can control.">
+      <message name="IDS_MEMORY_SAVER_DIALOG_BODY" desc="Body text for a dialog describing that Memory Saver mode will use less memory from inactive tabs and that this is a setting the user can control.">
         While this tab was inactive, Memory Saver freed up memory for other tasks. You can change this anytime in <ph name="SETTINGS_LINK">$1<ex>Settings</ex></ph>.
       </message>
-      <message name="IDS_HIGH_EFFICIENCY_DIALOG_BODY_WITHOUT_LINK" desc="Body text for a dialog describing that Memory Saver mode will use less memory.">
+      <message name="IDS_MEMORY_SAVER_DIALOG_BODY_WITHOUT_LINK" desc="Body text for a dialog describing that Memory Saver mode will use less memory.">
         While this tab was inactive, Memory Saver freed up memory for other tasks.
       </message>
-      <message name="IDS_HIGH_EFFICIENCY_DIALOG_BODY_LINK_TEXT" desc="The link text for the body text for the Memory Saver dialog.">
+      <message name="IDS_MEMORY_SAVER_DIALOG_BODY_LINK_TEXT" desc="The link text for the body text for the Memory Saver dialog.">
         Settings
       </message>
-      <message name="IDS_HIGH_EFFICIENCY_DIALOG_BODY_WITH_SAVINGS_AND_LINK" desc="Body text for a dialog describing how much less memory was used due to Memory Saver mode and that this is a setting the user can control.">
+      <message name="IDS_MEMORY_SAVER_DIALOG_BODY_WITH_SAVINGS_AND_LINK" desc="Body text for a dialog describing how much less memory was used due to Memory Saver mode and that this is a setting the user can control.">
         While this tab was inactive, Memory Saver freed up <ph name="MEMORY_VALUE">$1<ex>175MB</ex></ph> of memory for other tasks. You can change this anytime in <ph name="SETTINGS_LINK">$2<ex>Settings</ex></ph>.
       </message>
-      <message name="IDS_HIGH_EFFICIENCY_DIALOG_BODY_WITH_SAVINGS" desc="Body text for a dialog describing how much less memory was used due to Memory Saver mode.">
+      <message name="IDS_MEMORY_SAVER_DIALOG_BODY_WITH_SAVINGS" desc="Body text for a dialog describing how much less memory was used due to Memory Saver mode.">
         While this tab was inactive, Memory Saver freed up <ph name="MEMORY_VALUE">$1<ex>175MB</ex></ph> of memory for other tasks.
       </message>
-      <message name="IDS_HIGH_EFFICIENCY_DIALOG_SAVINGS_ACCNAME" desc="Accessible label for the memory savings shown on the Memory Saver dialog to provide context to the raw number.">
+      <message name="IDS_MEMORY_SAVER_DIALOG_SAVINGS_ACCNAME" desc="Accessible label for the memory savings shown on the Memory Saver dialog to provide context to the raw number.">
         <ph name="MEMORY_VALUE">$1<ex>175MB</ex></ph> of memory saved
       </message>
       <if expr="use_titlecase">
-        <message name="IDS_HIGH_EFFICIENCY_DIALOG_BUTTON_ADD_TO_EXCLUSION_LIST" desc="In Title Case: Label for a button on the page action chip that adds the current active site to the exclusion list when clicked">
+        <message name="IDS_MEMORY_SAVER_DIALOG_BUTTON_ADD_TO_EXCLUSION_LIST" desc="In Title Case: Label for a button on the page action chip that adds the current active site to the exclusion list when clicked">
           Exclude Site
         </message>
       </if>
       <if expr="not use_titlecase">
-        <message name="IDS_HIGH_EFFICIENCY_DIALOG_BUTTON_ADD_TO_EXCLUSION_LIST" desc="Label for a button on a dialog that adds the current active site to the exclusion list when clicked">
+        <message name="IDS_MEMORY_SAVER_DIALOG_BUTTON_ADD_TO_EXCLUSION_LIST" desc="Label for a button on a dialog that adds the current active site to the exclusion list when clicked">
           Exclude site
         </message>
       </if>
       <if expr="use_titlecase">
-        <message name="IDS_HIGH_EFFICIENCY_DIALOG_SAVINGS_LABEL" desc="In Title Case: Label below a chart showing the memory savings from Memory Saver mode.">
+        <message name="IDS_MEMORY_SAVER_DIALOG_SAVINGS_LABEL" desc="In Title Case: Label below a chart showing the memory savings from Memory Saver mode.">
           Memory Saved
         </message>
       </if>
       <if expr="not use_titlecase">
-        <message name="IDS_HIGH_EFFICIENCY_DIALOG_SAVINGS_LABEL" desc="Label below a chart showing the memory savings from Memory Saver mode.">
+        <message name="IDS_MEMORY_SAVER_DIALOG_SAVINGS_LABEL" desc="Label below a chart showing the memory savings from Memory Saver mode.">
           Memory saved
         </message>
       </if>
       <if expr="use_titlecase">
-        <message name="IDS_HIGH_EFFICIENCY_DIALOG_SMALL_SAVINGS_LABEL" desc="In Title Case: Label below a chart showing the small memory savings from Memory Saver mode.">
+        <message name="IDS_MEMORY_SAVER_DIALOG_SMALL_SAVINGS_LABEL" desc="In Title Case: Label below a chart showing the small memory savings from Memory Saver mode.">
           Small Savings
         </message>
-        <message name="IDS_HIGH_EFFICIENCY_DIALOG_MEDIUM_SAVINGS_LABEL" desc="In Title Case: Label below a chart showing the medium memory savings from Memory Saver mode.">
+        <message name="IDS_MEMORY_SAVER_DIALOG_MEDIUM_SAVINGS_LABEL" desc="In Title Case: Label below a chart showing the medium memory savings from Memory Saver mode.">
           Medium Savings
         </message>
-        <message name="IDS_HIGH_EFFICIENCY_DIALOG_LARGE_SAVINGS_LABEL" desc="In Title Case: Label below a chart showing the large memory savings from Memory Saver mode.">
+        <message name="IDS_MEMORY_SAVER_DIALOG_LARGE_SAVINGS_LABEL" desc="In Title Case: Label below a chart showing the large memory savings from Memory Saver mode.">
           Large Savings
         </message>
-        <message name="IDS_HIGH_EFFICIENCY_DIALOG_VERY_LARGE_SAVINGS_LABEL" desc="In Title Case: Label below a chart showing the very large memory savings from Memory Saver mode.">
+        <message name="IDS_MEMORY_SAVER_DIALOG_VERY_LARGE_SAVINGS_LABEL" desc="In Title Case: Label below a chart showing the very large memory savings from Memory Saver mode.">
           Huge Savings
         </message>
       </if>
       <if expr="not use_titlecase">
-        <message name="IDS_HIGH_EFFICIENCY_DIALOG_SMALL_SAVINGS_LABEL" desc="Label below a chart showing the small memory savings from Memory Saver mode.">
+        <message name="IDS_MEMORY_SAVER_DIALOG_SMALL_SAVINGS_LABEL" desc="Label below a chart showing the small memory savings from Memory Saver mode.">
           Small savings
         </message>
-        <message name="IDS_HIGH_EFFICIENCY_DIALOG_MEDIUM_SAVINGS_LABEL" desc="Label below a chart showing the medium memory savings from Memory Saver mode.">
+        <message name="IDS_MEMORY_SAVER_DIALOG_MEDIUM_SAVINGS_LABEL" desc="Label below a chart showing the medium memory savings from Memory Saver mode.">
           Medium savings
         </message>
-        <message name="IDS_HIGH_EFFICIENCY_DIALOG_LARGE_SAVINGS_LABEL" desc="Label below a chart showing the large memory savings from Memory Saver mode.">
+        <message name="IDS_MEMORY_SAVER_DIALOG_LARGE_SAVINGS_LABEL" desc="Label below a chart showing the large memory savings from Memory Saver mode.">
           Large savings
         </message>
-        <message name="IDS_HIGH_EFFICIENCY_DIALOG_VERY_LARGE_SAVINGS_LABEL" desc="Label below a chart showing the very large memory savings from Memory Saver mode.">
+        <message name="IDS_MEMORY_SAVER_DIALOG_VERY_LARGE_SAVINGS_LABEL" desc="Label below a chart showing the very large memory savings from Memory Saver mode.">
           Huge savings
         </message>
       </if>

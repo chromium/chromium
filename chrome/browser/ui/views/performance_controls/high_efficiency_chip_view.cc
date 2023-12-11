@@ -59,7 +59,7 @@ HighEfficiencyChipView::HighEfficiencyChipView(
                          "HighEfficiency"),
       browser_(browser),
       chip_accessible_label_(
-          l10n_util::GetStringUTF16(IDS_HIGH_EFFICIENCY_CHIP_ACCNAME)) {
+          l10n_util::GetStringUTF16(IDS_MEMORY_SAVER_CHIP_ACCNAME)) {
   DCHECK(browser_);
 
   auto* manager = performance_manager::user_tuning::
@@ -102,7 +102,7 @@ void HighEfficiencyChipView::UpdateImpl() {
     switch (chip_state) {
       case high_efficiency::ChipState::EXPANDED_EDUCATION: {
         SetVisible(true);
-        AnimateIn(IDS_HIGH_EFFICIENCY_CHIP_LABEL);
+        AnimateIn(IDS_MEMORY_SAVER_CHIP_LABEL);
         RecordHighEfficiencyChipState(
             HighEfficiencyChipState::kExpandedEducation);
         break;
@@ -112,12 +112,11 @@ void HighEfficiencyChipView::UpdateImpl() {
         int const memory_savings =
             high_efficiency::GetDiscardedMemorySavingsInBytes(web_contents);
         std::u16string memory_savings_string = ui::FormatBytes(memory_savings);
-        SetLabel(
-            l10n_util::GetStringFUTF16(IDS_HIGH_EFFICIENCY_CHIP_SAVINGS_LABEL,
-                                       {memory_savings_string}),
-            l10n_util::GetStringFUTF16(
-                IDS_HIGH_EFFICIENCY_CHIP_WITH_SAVINGS_ACCNAME,
-                {memory_savings_string}));
+        SetLabel(l10n_util::GetStringFUTF16(IDS_MEMORY_SAVER_CHIP_SAVINGS_LABEL,
+                                            {memory_savings_string}),
+                 l10n_util::GetStringFUTF16(
+                     IDS_MEMORY_SAVER_CHIP_WITH_SAVINGS_ACCNAME,
+                     {memory_savings_string}));
         AnimateIn(std::nullopt);
         RecordHighEfficiencyChipState(
             HighEfficiencyChipState::kExpandedWithSavings);
