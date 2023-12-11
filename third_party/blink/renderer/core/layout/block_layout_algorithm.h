@@ -153,8 +153,6 @@ class CORE_EXPORT BlockLayoutAlgorithm
       const InflowChildData& child_data,
       const LayoutResult&) const;
 
-  void AlignContent(LayoutUnit content_block_size);
-
   // Try to reuse part of cached fragments. When reusing is possible, this
   // function adds part of cached fragments to |container_builder_|, update
   // |break_token_| to continue layout from the last reused fragment, and

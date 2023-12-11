@@ -9,6 +9,8 @@
 
 namespace blink {
 
+class BlockBreakToken;
+class BoxFragmentBuilder;
 class ComputedStyle;
 class ExclusionSpace;
 struct BfcOffset;
@@ -41,6 +43,11 @@ BlockContentAlignment ComputeContentAlignmentForBlock(
     const ComputedStyle& style);
 BlockContentAlignment ComputeContentAlignmentForTableCell(
     const ComputedStyle& style);
+
+void AlignBlockContent(const ComputedStyle& style,
+                       const BlockBreakToken* break_token,
+                       LayoutUnit content_block_size,
+                       BoxFragmentBuilder& builder);
 
 }  // namespace blink
 
