@@ -78,13 +78,6 @@ size_t NetworkServiceProxyAllowList::EstimateMemoryUsage() const {
 bool NetworkServiceProxyAllowList::Matches(
     const GURL& request_url,
     const net::NetworkAnonymizationKey& network_anonymization_key) {
-  // TODO(https://crbug.com/1474932): Support proxying HTTP URLs by using
-  // CONNECT requests (i.e. tunnelling) instead of using the old-style proxy GET
-  // requests from the last proxy in the chain.
-  if (request_url.SchemeIs(url::kHttpScheme)) {
-    return false;
-  }
-
   absl::optional<net::SchemefulSite> top_frame_site =
       network_anonymization_key.GetTopFrameSite();
   switch (proxy_bypass_policy_) {

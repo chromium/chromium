@@ -70,7 +70,7 @@ TEST_F(NetworkServiceProxyAllowListTest, AllowlistIsPopulatedWhenMDLUsed) {
   EXPECT_TRUE(allow_list.IsPopulated());
 }
 
-TEST_F(NetworkServiceProxyAllowListTest, ShouldntMatchHttp) {
+TEST_F(NetworkServiceProxyAllowListTest, ShouldMatchHttp) {
   NetworkServiceProxyAllowList allow_list_no_bypass(
       network::mojom::IpProtectionProxyBypassPolicy::kNone);
   NetworkServiceProxyAllowList allow_list_first_party_bypass(
@@ -83,11 +83,11 @@ TEST_F(NetworkServiceProxyAllowListTest, ShouldntMatchHttp) {
   allow_list_no_bypass.UseMaskedDomainList(mdl);
   allow_list_first_party_bypass.UseMaskedDomainList(mdl);
 
-  EXPECT_FALSE(allow_list_no_bypass.Matches(
+  EXPECT_TRUE(allow_list_no_bypass.Matches(
       GURL("http://example.com"),
       net::NetworkAnonymizationKey::CreateCrossSite(
           net::SchemefulSite(GURL("http://top.com")))));
-  EXPECT_FALSE(allow_list_first_party_bypass.Matches(
+  EXPECT_TRUE(allow_list_first_party_bypass.Matches(
       GURL("http://example.com"),
       net::NetworkAnonymizationKey::CreateCrossSite(
           net::SchemefulSite(GURL("http://top.com")))));
