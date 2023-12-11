@@ -424,12 +424,6 @@ bool AppListControllerImpl::IsVisible() {
   return IsVisible(std::nullopt);
 }
 
-bool AppListControllerImpl::IsImageSearchToggleable() {
-  // Hide the image search from the category filter menu if the privacy notice
-  // hasn't been accepted or timeout yet.
-  return !SearchNotifierController::ShouldShowPrivacyNotice();
-}
-
 void AppListControllerImpl::OnActiveUserPrefServiceChanged(
     PrefService* pref_service) {
   if (IsKioskSession())

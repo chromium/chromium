@@ -1024,6 +1024,11 @@ IN_PROC_BROWSER_TEST_P(SpokenFeedbackAppListSearchTest, SearchCategoryFilter) {
   sm_.ExpectSpeech("Your installed apps");
 
   sm_.Call([this]() { SendKeyPress(ui::VKEY_DOWN); });
+  sm_.ExpectSpeech("Images");
+  sm_.ExpectSpeech("Checked");
+  sm_.ExpectSpeech("Image search by content and image previews");
+
+  sm_.Call([this]() { SendKeyPress(ui::VKEY_DOWN); });
   sm_.ExpectSpeech("Websites");
   sm_.ExpectSpeech("Checked");
   sm_.ExpectSpeech("Websites including pages you've visited and open pages");

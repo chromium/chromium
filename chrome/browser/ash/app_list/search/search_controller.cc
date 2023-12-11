@@ -94,15 +94,6 @@ SearchController::GetToggleableCategories() const {
       continue;
     }
 
-    // Image search results only become available after the user acknowledges a
-    // privacy notice - the user will be able to toggle the feature only after
-    // image search results become available.
-    if (provider->control_category() ==
-            ash::AppListSearchControlCategory::kImages &&
-        !ash::AppListController::Get()->IsImageSearchToggleable()) {
-      continue;
-    }
-
     category_set.insert(provider->control_category());
   }
   return std::vector<ash::AppListSearchControlCategory>(category_set.begin(),
