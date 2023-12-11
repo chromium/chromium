@@ -87,6 +87,14 @@ bool DeskAnimationBase::CanEndOverview() const {
 void DeskAnimationBase::OnStartingDeskScreenshotTaken(int ending_desk_index) {
   DCHECK(!desk_switch_animators_.empty());
 
+  // If an animator fails, for any reason, we abort the whole project and
+  // activate the target desk without any animation.
+  if (AnimatorFailed()) {
+    // This will effectively delete `this`.
+    ActivateTargetDeskWithoutAnimation();
+    return;
+  }
+
   // Once all starting desk screenshots on all roots are taken and placed on
   // the screens, do the actual desk activation logic.
   for (const auto& animator : desk_switch_animators_) {
@@ -113,6 +121,14 @@ void DeskAnimationBase::OnStartingDeskScreenshotTaken(int ending_desk_index) {
 
 void DeskAnimationBase::OnEndingDeskScreenshotTaken() {
   DCHECK(!desk_switch_animators_.empty());
+
+  // If an animator fails, for any reason, we abort the whole project and
+  // activate the target desk without any animation.
+  if (AnimatorFailed()) {
+    // This will effectively delete `this`.
+    ActivateTargetDeskWithoutAnimation();
+    return;
+  }
 
   // Once all ending desk screenshots on all roots are taken, start the
   // animation on all roots at the same time, so that they look synchrnoized.
@@ -190,6 +206,37 @@ void DeskAnimationBase::ActivateDeskDuringAnimation(
       Shell::Get()->overview_controller()->InOverviewSession();
   controller_->ActivateDeskInternal(desk, update_window_activation);
   is_overview_toggle_allowed_ = false;
+}
+
+void DeskAnimationBase::ActivateTargetDeskWithoutAnimation() {
+  auto* overview_controller = Shell::Get()->overview_controller();
+  if (overview_controller->InOverviewSession()) {
+    // Setting this is required. The overview controller will ask the desk
+    // controller if exiting overview is allowed, and since we are technically
+    // still in an animation, the desk controller will ask the animation (which
+    // is us) if overview can be toggled.
+    is_overview_toggle_allowed_ = true;
+    overview_controller->EndOverview(OverviewEndAction::kDeskActivation,
+                                     OverviewEnterExitType::kImmediateExit);
+  }
+
+  const auto& desks = controller_->desks();
+  if (ending_desk_index_ < static_cast<int>(desks.size())) {
+    controller_->ActivateDeskInternal(desks[ending_desk_index_].get(), true);
+  }
+
+  controller_->OnAnimationFinished(this);
+  // `this` is now deleted.
+}
+
+bool DeskAnimationBase::AnimatorFailed() const {
+  for (const auto& animator : desk_switch_animators_) {
+    if (animator->screenshot_failed()) {
+      return true;
+    }
+  }
+
+  return false;
 }
 
 }  // namespace ash
