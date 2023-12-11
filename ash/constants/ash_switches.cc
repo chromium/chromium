@@ -333,6 +333,17 @@ const char kCryptohomeUseAuthSession[] = "cryptohome-use-authsession";
 const char kCryptohomeUseOldEncryptionForTesting[] =
     "cryptohome-use-old-encryption-for-testing";
 
+// Normally the cryptohome without any any authentication factors
+// is considered corrupted. Special mechanism would detect such situation
+// during user creation and remove such users. If such user is an owner
+// the power wash should be triggered instead. However, if such event happens
+// in tests, all logs would be lost, and it would be difficult to investigate
+// exact reason behind the Owner user being misconfigured.
+// This flag prevents triggering powerwash in such cases, simple user removal
+// would be triggered instead.
+const char kCryptohomeIgnoreCleanupOwnershipForTesting[] =
+    "cryptohome-ignore-cleanup-ownership-for-testing";
+
 // Indicates that the wallpaper images specified by
 // kAshDefaultWallpaper{Large,Small} are OEM-specific (i.e. they are not
 // downloadable from Google).
