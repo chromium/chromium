@@ -57,6 +57,10 @@
 #   README.chromium. It defaults to true if the crate is not in the 'test'
 #   group.
 #
+# bin_targets: A list of binary target names to cover.  This list is empty by
+#   default, which means that the default generated `BUILD.gn` will only cover
+#   the library target (if any) of the package.
+#
 # Additional, less commonly needed options can also be discovered by reading
 # the doc comments in `//tools/crates/gnrt/lib/config.rs` (e.g. `CrateConfig`'s
 # fields correspond to per-crate options like `extra_input_roots`).
@@ -94,6 +98,7 @@ remove_build_rs = true
 
 [crate.cxxbridge-cmd]
 shipped = false
+bin_targets = ["cxxbridge"]
 
 [crate.hex]
 group = 'test'

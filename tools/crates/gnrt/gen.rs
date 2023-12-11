@@ -118,17 +118,14 @@ fn generate_for_std(
 
     // Filter out any crates' dependencies removed by config file.
     for dep in dependencies.iter_mut() {
-        let all: Option<&Vec<String>> = Some(&config.all_config.remove_deps);
-        let per: Option<&Vec<String>> =
-            config.per_crate_config.get(&dep.package_name).map(|config| &config.remove_deps);
-
-        let combined: Vec<&String> = all.into_iter().chain(per).flatten().collect();
+        let combined: HashSet<&str> =
+            config.get_combined_set(&dep.package_name, |crate_cfg| &crate_cfg.remove_deps);
         if combined.is_empty() {
             continue;
         }
 
         for kind in [&mut dep.dependencies, &mut dep.build_dependencies] {
-            kind.retain(|dep_of_dep| !combined.iter().any(|r| **r == dep_of_dep.package_name));
+            kind.retain(|dep_of_dep| !combined.contains(dep_of_dep.package_name.as_str()));
         }
     }
 
