@@ -587,7 +587,7 @@ class WebAppPrefsLinkCapturingIPHGuardrailsTest : public WebAppTest {
     const std::vector<webapps::AppId> apps{"app1", "app2", "app3",
                                            "app4", "app5", "app6"};
     for (const webapps::AppId& app : apps) {
-      guardrails().RecordIgnore(app, base::Time::Now());
+      guardrails().RecordDismiss(app, base::Time::Now());
       task_environment()->FastForwardBy(base::Milliseconds(1));
     }
     EXPECT_TRUE(IsDesktopLinkCapturingIphBlocked("app_id"));
@@ -596,7 +596,7 @@ class WebAppPrefsLinkCapturingIPHGuardrailsTest : public WebAppTest {
 
  protected:
   WebAppPrefGuardrails guardrails() {
-    return WebAppPrefGuardrails::GetForLinkCapturingIPH(prefs());
+    return WebAppPrefGuardrails::GetForLinkCapturingIph(prefs());
   }
   sync_preferences::TestingPrefServiceSyncable* prefs() { return &prefs_; }
 
@@ -605,25 +605,9 @@ class WebAppPrefsLinkCapturingIPHGuardrailsTest : public WebAppTest {
   sync_preferences::TestingPrefServiceSyncable prefs_;
 };
 
-TEST_F(WebAppPrefsLinkCapturingIPHGuardrailsTest, Ignore) {
-  EXPECT_FALSE(
-      web_app::GetTimeWebAppPref(
-          prefs(), app_id, kIPHLinkCapturingPrefNames.last_ignore_time_name)
-          .has_value());
-  EXPECT_FALSE(
-      web_app::GetIntWebAppPref(
-          prefs(), app_id, kIPHLinkCapturingPrefNames.not_accepted_count_name)
-          .has_value());
-
-  guardrails().RecordIgnore(app_id, base::Time::Now());
-  EXPECT_EQ(
-      web_app::GetIntWebAppPref(
-          prefs(), app_id, kIPHLinkCapturingPrefNames.not_accepted_count_name)
-          .value_or(0),
-      1);
-  auto last_ignore_time = web_app::GetTimeWebAppPref(
-      prefs(), app_id, kIPHLinkCapturingPrefNames.last_ignore_time_name);
-  EXPECT_TRUE(last_ignore_time.has_value());
+TEST_F(WebAppPrefsLinkCapturingIPHGuardrailsTest, Dismiss) {
+  base::Time dismiss_time = base::Time::Now();
+  guardrails().RecordDismiss(app_id, dismiss_time);
   {
     const auto& dict =
         prefs()->GetDict(prefs::kWebAppsAppAgnosticIPHLinkCapturingState);
@@ -631,18 +615,13 @@ TEST_F(WebAppPrefsLinkCapturingIPHGuardrailsTest, Ignore) {
                   .value_or(0),
               1);
     EXPECT_EQ(base::ValueToTime(
-                  dict.Find(kIPHLinkCapturingPrefNames.last_ignore_time_name)),
-              last_ignore_time.value());
+                  dict.Find(kIPHLinkCapturingPrefNames.last_dismiss_time_name)),
+              dismiss_time);
   }
 }
 
 TEST_F(WebAppPrefsLinkCapturingIPHGuardrailsTest, Accept) {
-  guardrails().RecordIgnore(app_id, base::Time::Now());
-  EXPECT_EQ(
-      web_app::GetIntWebAppPref(
-          prefs(), app_id, kIPHLinkCapturingPrefNames.not_accepted_count_name)
-          .value_or(0),
-      1);
+  guardrails().RecordDismiss(app_id, base::Time::Now());
   {
     const auto& dict =
         prefs()->GetDict(prefs::kWebAppsAppAgnosticIPHLinkCapturingState);
@@ -651,11 +630,6 @@ TEST_F(WebAppPrefsLinkCapturingIPHGuardrailsTest, Accept) {
               1);
   }
   guardrails().RecordAccept(app_id);
-  EXPECT_EQ(
-      web_app::GetIntWebAppPref(
-          prefs(), app_id, kIPHLinkCapturingPrefNames.not_accepted_count_name)
-          .value_or(0),
-      0);
   {
     const auto& dict =
         prefs()->GetDict(prefs::kWebAppsAppAgnosticIPHLinkCapturingState);
@@ -666,7 +640,7 @@ TEST_F(WebAppPrefsLinkCapturingIPHGuardrailsTest, Accept) {
 }
 
 TEST_F(WebAppPrefsLinkCapturingIPHGuardrailsTest,
-       GuardrailsBlockedAfter6Ignores) {
+       GuardrailsBlockedAfter6Dismisses) {
   EXPECT_FALSE(IsDesktopIphBlockedTimeSet());
 
   ForceUserBlockedOnIphGuardrails();

@@ -44,12 +44,14 @@
 #include "chrome/browser/web_applications/web_app_callback_app_identity.h"
 #include "chrome/browser/web_applications/web_app_command_scheduler.h"
 #include "chrome/browser/web_applications/web_app_icon_manager.h"
+#include "chrome/browser/web_applications/web_app_pref_guardrails.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/browser/web_applications/web_app_registrar.h"
 #include "chrome/browser/web_applications/web_app_ui_manager.h"
 #include "chrome/browser/web_applications/web_app_uninstall_dialog_user_options.h"
 #include "components/feature_engagement/public/feature_constants.h"
 #include "components/user_education/common/feature_promo_controller.h"
+#include "components/user_education/common/feature_promo_data.h"
 #include "components/webapps/browser/installable/installable_metrics.h"
 #include "components/webapps/browser/uninstall_result_code.h"
 #include "components/webapps/common/web_app_id.h"
@@ -553,11 +555,17 @@ void WebAppUiManagerImpl::MaybeShowIPHPromoForAppsLaunchedViaLinkCapturing(
     return;
   }
 
+  if (WebAppPrefGuardrails::GetForLinkCapturingIph(
+          app_browser->profile()->GetPrefs())
+          .IsBlockedByGuardrails(app_id)) {
+    return;
+  }
+
   web_app::PostCallbackOnBrowserActivation(
       app_browser, kToolbarAppMenuButtonElementId,
       base::BindOnce(
           &WebAppUiManagerImpl::ShowIPHPromoForAppsLaunchedViaLinkCapturing,
-          weak_ptr_factory_.GetWeakPtr(), app_browser));
+          weak_ptr_factory_.GetWeakPtr(), app_browser, app_id));
 #endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
 }
 
@@ -724,6 +732,7 @@ void WebAppUiManagerImpl::ClearWebAppSiteDataIfNeeded(
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
 void WebAppUiManagerImpl::ShowIPHPromoForAppsLaunchedViaLinkCapturing(
     const Browser* browser,
+    const webapps::AppId& app_id,
     bool is_activated) {
   if (!is_activated) {
     return;
@@ -731,13 +740,55 @@ void WebAppUiManagerImpl::ShowIPHPromoForAppsLaunchedViaLinkCapturing(
 
   user_education::FeaturePromoParams promo_params(
       feature_engagement::kIPHDesktopPWAsLinkCapturingLaunch);
-  promo_params.close_callback = base::BindOnce([]() {
-    base::RecordAction(
-        base::UserMetricsAction("LinkCapturingIPHAppBubbleIgnored"));
-  });
+  promo_params.close_callback =
+      base::BindOnce(&WebAppUiManagerImpl::OnIPHPromoResponseForLinkCapturing,
+                     weak_ptr_factory_.GetWeakPtr(), browser, app_id);
 
-  browser->window()->MaybeShowFeaturePromo(std::move(promo_params));
+  user_education::FeaturePromoResult promo_result =
+      browser->window()->MaybeShowFeaturePromo(std::move(promo_params));
+  if (promo_result) {
+    base::RecordAction(
+        base::UserMetricsAction("LinkCapturingIPHAppBubbleShown"));
+  }
 }
+
+void WebAppUiManagerImpl::OnIPHPromoResponseForLinkCapturing(
+    const Browser* browser,
+    const webapps::AppId& app_id) {
+  if (!browser) {
+    return;
+  }
+
+  const auto* const feature_promo_controller =
+      browser->window()->GetFeaturePromoController();
+  if (!feature_promo_controller) {
+    return;
+  }
+
+  user_education::FeaturePromoClosedReason close_reason;
+  feature_promo_controller->HasPromoBeenDismissed(
+      feature_engagement::kIPHDesktopPWAsLinkCapturingLaunch, &close_reason);
+  switch (close_reason) {
+    case user_education::FeaturePromoClosedReason::kAction:
+      base::RecordAction(
+          base::UserMetricsAction("LinkCapturingIPHAppBubbleAccepted"));
+      WebAppPrefGuardrails::GetForLinkCapturingIph(
+          browser->profile()->GetPrefs())
+          .RecordAccept(app_id);
+      break;
+    case user_education::FeaturePromoClosedReason::kDismiss:
+    case user_education::FeaturePromoClosedReason::kCancel:
+      base::RecordAction(
+          base::UserMetricsAction("LinkCapturingIPHAppBubbleNotAccepted"));
+      WebAppPrefGuardrails::GetForLinkCapturingIph(
+          browser->profile()->GetPrefs())
+          .RecordDismiss(app_id, base::Time::Now());
+      break;
+    default:
+      break;
+  }
+}
+
 #endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
 
 }  // namespace web_app

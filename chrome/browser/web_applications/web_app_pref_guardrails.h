@@ -22,7 +22,7 @@ class PrefService;
 namespace web_app {
 
 struct GuardrailData {
-  int app_specific_not_accept_count;
+  absl::optional<int> app_specific_not_accept_count;
   absl::optional<int> app_specific_mute_after_dismiss_days;
   absl::optional<int> app_specific_mute_after_ignore_days;
   int global_not_accept_count;
@@ -57,7 +57,7 @@ class WebAppPrefGuardrails {
 
   // Returns an instance of the WebAppPrefGuardrails built to handle when the
   // IPH bubble for apps launched via link capturing should be shown.
-  static WebAppPrefGuardrails GetForLinkCapturingIPH(PrefService* pref_service);
+  static WebAppPrefGuardrails GetForLinkCapturingIph(PrefService* pref_service);
 
   ~WebAppPrefGuardrails();
   WebAppPrefGuardrails(const WebAppPrefGuardrails& other) = delete;
@@ -80,9 +80,6 @@ class WebAppPrefGuardrails {
                        const GuardrailData& guardrail_data,
                        const GuardrailPrefNames& guardrail_pref_names,
                        absl::optional<int> max_days_to_store_guardrails);
-
-  bool HasIgnoreGuardrails();
-  bool HasDismissGuardrails();
 
   // If guardrails are blocked, returns a string result of why it was blocked.
   absl::optional<std::string> IsAppBlocked(const webapps::AppId& app_id);
@@ -168,22 +165,16 @@ inline constexpr GuardrailPrefNames kMlPromoPrefNames{
 
 // -----------------------IPH Link Capturing guardrails-------------------
 inline constexpr GuardrailData kIPHLinkCapturingGuardrails{
-    // Number of times IPH bubble can show up for an app launched via link
-    // capturing before it's muted.
-    .app_specific_not_accept_count = 2,
-    // Number of days to mute IPH for link captured app launches after it's
-    // ignored for this app.
-    .app_specific_mute_after_ignore_days = 7,
     // Number of times IPH bubble can show up for any apps launched via link
     // capturing before it's muted.
     .global_not_accept_count = 6,
     // Number of days to mute IPH for link captured app launches after it's
-    // ignored for any app.
-    .global_mute_after_ignore_days = 1,
+    // dismissed for any app.
+    .global_mute_after_dismiss_days = 1,
 };
 
 inline constexpr GuardrailPrefNames kIPHLinkCapturingPrefNames{
-    .last_ignore_time_name = "IPH_link_capturing_last_time_ignored",
+    .last_dismiss_time_name = "IPH_link_capturing_last_time_dismissed",
     .not_accepted_count_name =
         "IPH_link_capturing_consecutive_not_accepted_num",
     .all_blocked_time_name = "IPH_link_capturing_blocked_date",

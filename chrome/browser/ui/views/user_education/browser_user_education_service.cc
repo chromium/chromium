@@ -6,7 +6,6 @@
 #include <vector>
 
 #include "base/functional/bind.h"
-#include "base/metrics/user_metrics.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/profiles/profile.h"
@@ -31,6 +30,7 @@
 #include "chrome/browser/ui/webui/side_panel/customize_chrome/customize_chrome_ui.h"
 #include "chrome/browser/user_education/user_education_service.h"
 #include "chrome/browser/user_education/user_education_service_factory.h"
+#include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/browser/web_applications/web_app_tab_helper.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/grit/branded_strings.h"
@@ -714,8 +714,6 @@ void MaybeRegisterChromeFeaturePromos(
                     params.disposition =
                         WindowOpenDisposition::NEW_FOREGROUND_TAB;
                     Navigate(&params);
-                    base::RecordAction(base::UserMetricsAction(
-                        "LinkCapturingIPHAppSettingsOpened"));
                   }
                 }
               }))

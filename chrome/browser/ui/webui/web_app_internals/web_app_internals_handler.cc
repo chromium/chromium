@@ -67,6 +67,7 @@ constexpr char kUserUninstalledPreinstalledWebAppPrefs[] =
 constexpr char kWebAppPreferences[] = "WebAppPreferences";
 constexpr char kWebAppIphPreferences[] = "WebAppIphPreferences";
 constexpr char kWebAppMlPreferences[] = "WebAppMlPreferences";
+constexpr char kWebAppIphLcPreferences[] = "WebAppIPHLinkCapturingPreferences";
 constexpr char kShouldGarbageCollectStoragePartitions[] =
     "ShouldGarbageCollectStoragePartitions";
 constexpr char kErrorLoadedPolicyAppsMigrated[] =
@@ -102,6 +103,7 @@ base::Value::Dict BuildIndexJson() {
   index.Append(kWebAppPreferences);
   index.Append(kWebAppIphPreferences);
   index.Append(kWebAppMlPreferences);
+  index.Append(kWebAppIphLcPreferences);
   index.Append(kShouldGarbageCollectStoragePartitions);
   index.Append(kErrorLoadedPolicyAppsMigrated);
   index.Append(kLockManager);
@@ -232,6 +234,15 @@ base::Value::Dict BuildWebAppMlPrefsJson(Profile* profile) {
   root.Set(
       kWebAppMlPreferences,
       profile->GetPrefs()->GetDict(prefs::kWebAppsAppAgnosticMlState).Clone());
+  return root;
+}
+
+base::Value::Dict BuildWebAppLinkCapturingIphPrefsJson(Profile* profile) {
+  base::Value::Dict root;
+  root.Set(kWebAppIphLcPreferences,
+           profile->GetPrefs()
+               ->GetDict(prefs::kWebAppsAppAgnosticIPHLinkCapturingState)
+               .Clone());
   return root;
 }
 
@@ -455,6 +466,7 @@ void WebAppInternalsHandler::BuildDebugInfo(
   root.Append(BuildWebAppsPrefsJson(profile));
   root.Append(BuildWebAppIphPrefsJson(profile));
   root.Append(BuildWebAppMlPrefsJson(profile));
+  root.Append(BuildWebAppLinkCapturingIphPrefsJson(profile));
   root.Append(BuildShouldGarbageCollectStoragePartitionsPrefsJson(profile));
   root.Append(BuildErrorLoadedPolicyAppMigratedPrefsJson(profile));
   root.Append(BuildLockManagerJson(*provider));
