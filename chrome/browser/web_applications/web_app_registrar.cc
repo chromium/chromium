@@ -435,7 +435,13 @@ absl::optional<webapps::AppId> WebAppRegistrar::FindAppWithUrlInScope(
       best_app_is_shortcut = app_is_shortcut;
     }
   }
-
+#if BUILDFLAG(IS_CHROMEOS)
+  // With project shortstand, shortcuts are no longer considered apps,
+  // so we should ignore results within the scope of shortcuts.
+  if (chromeos::features::IsCrosShortstandEnabled() && best_app_is_shortcut) {
+    return absl::nullopt;
+  }
+#endif  // BUILDFLAG(IS_CHROMEOS)
   return best_app_id;
 }
 
