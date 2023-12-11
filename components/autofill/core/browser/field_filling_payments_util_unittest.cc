@@ -16,6 +16,7 @@
 #include "base/path_service.h"
 #include "base/ranges/algorithm.h"
 #include "base/stl_util.h"
+#include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
@@ -46,6 +47,15 @@ const std::u16string kMidlineEllipsis3Dots =
     CreditCard::GetMidlineEllipsisDots(3);
 const std::u16string kMidlineEllipsis4Dots =
     CreditCard::GetMidlineEllipsisDots(4);
+
+// The following strings do not contain space padding and are more appropriate
+// for input fields which have a strict `max_length` set.
+const std::u16string kMidlineEllipsis2DotsWithoutPadding =
+    CreditCard::GetMidlineEllipsisPlainDots(/*num_dots=*/2);
+const std::u16string kMidlineEllipsis3DotsWithoutPadding =
+    CreditCard::GetMidlineEllipsisPlainDots(/*num_dots=*/3);
+const std::u16string kMidlineEllipsis4DotsWithoutPadding =
+    CreditCard::GetMidlineEllipsisPlainDots(/*num_dots=*/4);
 
 constexpr char kAppLocale[] = "en-US";
 
@@ -264,7 +274,7 @@ TEST_P(CreditCardVerificationCodeTest,
   std::optional<std::u16string> value_to_fill = GetValueForCreditCard(
       credit_card, /*cvc=*/u"", kAppLocale, persistence(), field);
   if (persistence() == mojom::ActionPersistence::kPreview) {
-    EXPECT_EQ(kMidlineEllipsis4Dots, value_to_fill);
+    EXPECT_EQ(kMidlineEllipsis4DotsWithoutPadding, value_to_fill);
   } else {
     EXPECT_EQ(kCvc, value_to_fill);
   }
@@ -289,12 +299,12 @@ TEST_P(CreditCardVerificationCodeTest, FillFormField_StandaloneCVCField) {
   AutofillField field;
   field.SetTypeTo(AutofillType(CREDIT_CARD_STANDALONE_VERIFICATION_CODE));
 
-  CreditCard credit_card = test::WithCvc(test::GetMaskedServerCard());
+  CreditCard credit_card = test::WithCvc(test::GetVirtualCard());
   std::optional<std::u16string> value_to_fill = GetValueForCreditCard(
       credit_card, /*cvc=*/u"", kAppLocale, persistence(), field);
   switch (persistence()) {
     case mojom::ActionPersistence::kPreview:
-      EXPECT_EQ(kMidlineEllipsis3Dots, value_to_fill);
+      EXPECT_EQ(kMidlineEllipsis3DotsWithoutPadding, value_to_fill);
       return;
     case mojom::ActionPersistence::kFill:
       EXPECT_EQ(credit_card.cvc(), value_to_fill);
@@ -320,7 +330,7 @@ TEST_P(CreditCardVerificationCodeTest,
       credit_card, kCvc, kAppLocale, persistence(), field);
   switch (persistence()) {
     case mojom::ActionPersistence::kPreview:
-      EXPECT_EQ(kMidlineEllipsis4Dots, value_to_fill);
+      EXPECT_EQ(kMidlineEllipsis4DotsWithoutPadding, value_to_fill);
       return;
     case mojom::ActionPersistence::kFill:
       EXPECT_EQ(kCvc, value_to_fill);
@@ -1160,14 +1170,14 @@ TEST_F(FieldFillingPaymentsUtilTest, PreviewVirtualMonth) {
   std::optional<std::u16string> value_to_fill =
       GetValueForCreditCard(credit_card, /*cvc=*/u"", kAppLocale,
                             mojom::ActionPersistence::kPreview, field);
-  EXPECT_EQ(kMidlineEllipsis2Dots, value_to_fill);
+  EXPECT_EQ(kMidlineEllipsis2DotsWithoutPadding, value_to_fill);
 
   // A month with one digit should still return two dots.
   credit_card.SetExpirationDateFromString(u"03/2019");
   value_to_fill =
       GetValueForCreditCard(credit_card, /*cvc=*/u"", kAppLocale,
                             mojom::ActionPersistence::kPreview, field);
-  EXPECT_EQ(kMidlineEllipsis2Dots, value_to_fill);
+  EXPECT_EQ(kMidlineEllipsis2DotsWithoutPadding, value_to_fill);
 }
 
 // Test that month should be empty for Preview if the form control type of the
@@ -1194,14 +1204,14 @@ TEST_F(FieldFillingPaymentsUtilTest, PreviewVirtualYear) {
   std::optional<std::u16string> value_to_fill =
       GetValueForCreditCard(credit_card, /*cvc=*/u"", kAppLocale,
                             mojom::ActionPersistence::kPreview, field);
-  EXPECT_EQ(kMidlineEllipsis4Dots, value_to_fill);
+  EXPECT_EQ(kMidlineEllipsis4DotsWithoutPadding, value_to_fill);
 
   field.set_heuristic_type(GetActiveHeuristicSource(),
                            CREDIT_CARD_EXP_2_DIGIT_YEAR);
   value_to_fill =
       GetValueForCreditCard(credit_card, /*cvc=*/u"", kAppLocale,
                             mojom::ActionPersistence::kPreview, field);
-  EXPECT_EQ(kMidlineEllipsis2Dots, value_to_fill);
+  EXPECT_EQ(kMidlineEllipsis2DotsWithoutPadding, value_to_fill);
 }
 
 // Test that 4 digit year should be empty for Preview if the form control type
@@ -1247,7 +1257,7 @@ TEST_F(FieldFillingPaymentsUtilTest, PreviewVirtualShortenedYear) {
   std::optional<std::u16string> value_to_fill =
       GetValueForCreditCard(credit_card, /*cvc=*/u"", kAppLocale,
                             mojom::ActionPersistence::kPreview, field);
-  EXPECT_EQ(kMidlineEllipsis2Dots, value_to_fill);
+  EXPECT_EQ(kMidlineEllipsis2DotsWithoutPadding, value_to_fill);
 }
 
 TEST_F(FieldFillingPaymentsUtilTest, PreviewVirtualDate) {
@@ -1266,7 +1276,8 @@ TEST_F(FieldFillingPaymentsUtilTest, PreviewVirtualDate) {
                             mojom::ActionPersistence::kPreview, field);
   std::u16string slash = u"/";
   std::u16string expected =
-      kMidlineEllipsis2Dots + slash + kMidlineEllipsis4Dots;
+      base::StrCat({kMidlineEllipsis2DotsWithoutPadding, slash,
+                    kMidlineEllipsis4DotsWithoutPadding});
   EXPECT_EQ(expected, value_to_fill);
 
   // A date that has a year containing two digits should return two dots for
@@ -1277,7 +1288,8 @@ TEST_F(FieldFillingPaymentsUtilTest, PreviewVirtualDate) {
   value_to_fill =
       GetValueForCreditCard(credit_card, /*cvc=*/u"", kAppLocale,
                             mojom::ActionPersistence::kPreview, field);
-  expected = kMidlineEllipsis2Dots + slash + kMidlineEllipsis2Dots;
+  expected = base::StrCat({kMidlineEllipsis2DotsWithoutPadding, slash,
+                           kMidlineEllipsis2DotsWithoutPadding});
   EXPECT_EQ(expected, value_to_fill);
 }
 
@@ -1295,7 +1307,7 @@ TEST_F(FieldFillingPaymentsUtilTest, PreviewVirtualShortenedDate) {
       GetValueForCreditCard(credit_card, /*cvc=*/u"", kAppLocale,
                             mojom::ActionPersistence::kPreview, field);
   // Expected: MMYY = ••••. Unlikely case
-  std::u16string expected = kMidlineEllipsis4Dots;
+  std::u16string expected = kMidlineEllipsis4DotsWithoutPadding;
   EXPECT_EQ(expected, value_to_fill);
 
   field.max_length = 5;
@@ -1304,7 +1316,8 @@ TEST_F(FieldFillingPaymentsUtilTest, PreviewVirtualShortenedDate) {
       GetValueForCreditCard(credit_card, /*cvc=*/u"", kAppLocale,
                             mojom::ActionPersistence::kPreview, field);
   // Expected: MM/YY = ••/••.
-  expected = kMidlineEllipsis2Dots + slash + kMidlineEllipsis2Dots;
+  expected = base::StrCat({kMidlineEllipsis2DotsWithoutPadding, slash,
+                           kMidlineEllipsis2DotsWithoutPadding});
   EXPECT_EQ(expected, value_to_fill);
 
   field.max_length = 6;
@@ -1312,7 +1325,8 @@ TEST_F(FieldFillingPaymentsUtilTest, PreviewVirtualShortenedDate) {
       GetValueForCreditCard(credit_card, /*cvc=*/u"", kAppLocale,
                             mojom::ActionPersistence::kPreview, field);
   // Expected: MMYYYY = ••••••.
-  expected = kMidlineEllipsis2Dots + std::u16string() + kMidlineEllipsis4Dots;
+  expected = base::StrCat({kMidlineEllipsis2DotsWithoutPadding,
+                           kMidlineEllipsis4DotsWithoutPadding});
   EXPECT_EQ(expected, value_to_fill);
 
   field.max_length = 7;
@@ -1320,7 +1334,8 @@ TEST_F(FieldFillingPaymentsUtilTest, PreviewVirtualShortenedDate) {
       GetValueForCreditCard(credit_card, /*cvc=*/u"", kAppLocale,
                             mojom::ActionPersistence::kPreview, field);
   // Expected: MM/YYYY = ••/••••.
-  expected = kMidlineEllipsis2Dots + slash + kMidlineEllipsis4Dots;
+  expected = base::StrCat({kMidlineEllipsis2DotsWithoutPadding, slash,
+                           kMidlineEllipsis4DotsWithoutPadding});
   EXPECT_EQ(expected, value_to_fill);
 }
 
@@ -1335,7 +1350,7 @@ TEST_F(FieldFillingPaymentsUtilTest, PreviewVirtualCVC) {
   std::optional<std::u16string> value_to_fill =
       GetValueForCreditCard(credit_card, /*cvc=*/u"", kAppLocale,
                             mojom::ActionPersistence::kPreview, field);
-  EXPECT_EQ(kMidlineEllipsis3Dots, value_to_fill);
+  EXPECT_EQ(kMidlineEllipsis3DotsWithoutPadding, value_to_fill);
 }
 
 TEST_F(FieldFillingPaymentsUtilTest, PreviewVirtualCVCAmericanExpress) {
@@ -1349,7 +1364,7 @@ TEST_F(FieldFillingPaymentsUtilTest, PreviewVirtualCVCAmericanExpress) {
   std::optional<std::u16string> value_to_fill =
       GetValueForCreditCard(credit_card, /*cvc=*/u"", kAppLocale,
                             mojom::ActionPersistence::kPreview, field);
-  EXPECT_EQ(kMidlineEllipsis4Dots, value_to_fill);
+  EXPECT_EQ(kMidlineEllipsis4DotsWithoutPadding, value_to_fill);
 }
 
 TEST_F(FieldFillingPaymentsUtilTest, PreviewVirtualCardNumber) {

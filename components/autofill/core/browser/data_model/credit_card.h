@@ -20,6 +20,13 @@
 
 namespace autofill {
 
+// Unicode characters used in card number obfuscation:
+//  - \u2022 - Bullet.
+//  - \u2006 - SIX-PER-EM SPACE (small space between bullets).
+//  - \u2060 - WORD-JOINER (makes obfuscated string indivisible).
+inline constexpr char16_t kMidlineEllipsisDot[] = u"\u2022\u2060\u2006\u2060";
+inline constexpr char16_t kMidlineEllipsisPlainDot = u'\u2022';
+
 struct AutofillMetadata;
 
 namespace internal {
@@ -164,8 +171,10 @@ class CreditCard : public AutofillDataModel {
   // because they are not required.
   static bool IsNicknameValid(const std::u16string& nickname);
 
-  // Returns string of dots for hidden card information.
+  // The first function returns dots that are each padded by whitespace while
+  // the latter returns just a sequence of dots.
   static std::u16string GetMidlineEllipsisDots(size_t num_dots);
+  static std::u16string GetMidlineEllipsisPlainDots(size_t num_dots);
 
   // Returns whether the card is a local card.
   static bool IsLocalCard(const CreditCard* card);

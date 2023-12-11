@@ -4585,11 +4585,14 @@ TEST_F(BrowserAutofillManagerTest, PreviewCreditCardForm_VirtualCard) {
       u"Virtual card Mastercard  " +
       virtual_card.ObfuscatedNumberWithVisibleLastFourDigits();
   // Virtual card expiration month using obfuscated dots: ••
-  std::u16string expected_exp_month = CreditCard::GetMidlineEllipsisDots(2);
+  std::u16string expected_exp_month =
+      CreditCard::GetMidlineEllipsisPlainDots(/*num_dots=*/2);
   // Virtual card expiration year using obfuscated dots: ••••
-  std::u16string expected_exp_year = CreditCard::GetMidlineEllipsisDots(4);
+  std::u16string expected_exp_year =
+      CreditCard::GetMidlineEllipsisPlainDots(/*num_dots=*/4);
   // Virtual card cvc using obfuscated dots: •••
-  std::u16string expected_cvc = CreditCard::GetMidlineEllipsisDots(3);
+  std::u16string expected_cvc =
+      CreditCard::GetMidlineEllipsisPlainDots(/*num_dots=*/3);
 
   EXPECT_EQ(response_data.fields[0].value, expected_cardholder_name);
   EXPECT_EQ(response_data.fields[1].value, expected_card_number);

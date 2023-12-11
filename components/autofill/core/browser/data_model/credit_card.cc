@@ -47,13 +47,6 @@ using base::ASCIIToUTF16;
 
 namespace autofill {
 
-// Unicode characters used in card number obfuscation:
-//  - \u2022 - Bullet.
-//  - \u2006 - SIX-PER-EM SPACE (small space between bullets).
-//  - \u2060 - WORD-JOINER (makes obfuscated string indivisible).
-constexpr char16_t kMidlineEllipsisDot[] = u"\u2022\u2060\u2006\u2060";
-constexpr char16_t kMidlineEllipsisPlainDot = u'\u2022';
-
 namespace {
 
 const char16_t kCreditCardObfuscationSymbol = '*';
@@ -541,6 +534,11 @@ std::u16string CreditCard::GetMidlineEllipsisDots(size_t num_dots) {
     dots.append(kMidlineEllipsisDot);
   }
   return dots;
+}
+
+// static
+std::u16string CreditCard::GetMidlineEllipsisPlainDots(size_t num_dots) {
+  return std::u16string(num_dots, kMidlineEllipsisPlainDot);
 }
 
 // static
