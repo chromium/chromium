@@ -10,6 +10,7 @@ module ash.settings.mojom;
 enum DisplaySettingsType {
   kResolution = 0,
   kRefreshRate,
+  kScaling,
   // TODO(zhangwenyu): handle more display settings.
 };
 

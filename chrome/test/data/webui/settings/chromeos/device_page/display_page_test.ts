@@ -4,7 +4,7 @@
 
 import 'chrome://os-settings/lazy_load.js';
 
-import {DevicePageBrowserProxyImpl, displaySettingsProviderMojom, Router, routes, setDisplayApiForTesting, setDisplaySettingsProviderForTesting, SettingsDisplayElement} from 'chrome://os-settings/os_settings.js';
+import {DevicePageBrowserProxyImpl, displaySettingsProviderMojom, Router, routes, setDisplayApiForTesting, setDisplaySettingsProviderForTesting, SettingsDisplayElement, SettingsSliderElement} from 'chrome://os-settings/os_settings.js';
 import {strictQuery} from 'chrome://resources/ash/common/typescript_utils/strict_query.js';
 import {getDeepActiveElement} from 'chrome://resources/ash/common/util.js';
 import {assert} from 'chrome://resources/js/assert.js';
@@ -213,6 +213,28 @@ suite('<settings-display>', () => {
         1,
         externalDisplayHistogram.get(
             displaySettingsProviderMojom.DisplaySettingsType.kRefreshRate));
+
+    // Mock user changing scaling.
+    const displaySizeSlider = displayPage.shadowRoot!.getElementById(
+                                  'displaySizeSlider') as SettingsSliderElement;
+    assertTrue(!!displaySizeSlider);
+    displaySizeSlider.pref = {
+      key: 'prefs.cros.device_display_resolution',
+      type: chrome.settingsPrivate.PrefType.NUMBER,
+      value: 1.2,
+    };
+    displaySizeSlider.dispatchEvent(new CustomEvent('change'));
+
+    fakeSystemDisplay.onDisplayChanged.callListeners();
+    await fakeSystemDisplay.getInfoCalled.promise;
+    await fakeSystemDisplay.getLayoutCalled.promise;
+    flush();
+
+    // Verify histogram count for scaling change.
+    assertEquals(
+        1,
+        externalDisplayHistogram.get(
+            displaySettingsProviderMojom.DisplaySettingsType.kScaling));
   });
 
   test('display tests', async function() {

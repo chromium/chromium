@@ -29,6 +29,7 @@ chromium-metrics-reviews@google.com.
 <enum name="DisplaySettingsType">
   <int value="0" label="Resolution"/>
   <int value="1" label="RefreshRate"/>
+  <int value="2" label="Scaling"/>
 </enum>
 
 </enums>
