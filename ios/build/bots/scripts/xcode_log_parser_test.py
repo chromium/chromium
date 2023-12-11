@@ -103,6 +103,46 @@ XCRESULT_ROOT = """
   }
 }"""
 
+XCRESULT_MISSING_ACTIONRESULT_METRICS = b"""
+{
+  "_type" : {
+    "_name" : "ActionsInvocationRecord"
+  },
+  "actions" : {
+    "_values" : [
+      {
+        "actionResult" : {
+          "metrics" : {
+            "_type" : {
+              "_name" : "ResultMetrics"
+            },
+            "errorCount" : {
+              "_type" : {
+                "_name" : "Int"
+              },
+              "_value" : "1"
+            }
+          }
+        }
+      }
+    ]
+  },
+  "metrics" : {
+    "errorCount" : {
+      "_type" : {
+        "_name" : "Int"
+      },
+      "_value" : "1"
+    },
+    "testsCount" : {
+      "_type" : {
+        "_name" : "Int"
+      },
+      "_value" : "30"
+    }
+  }
+}"""
+
 REF_ID = b"""
   {
     "actions": {
@@ -716,6 +756,21 @@ class XcodeLogParserTest(test_runner_test.TestCase):
     self.assertTrue(results.crashed)
     self.assertEqual(results.crash_message, '0 tests executed!')
     self.assertEqual(len(results.all_test_names()), 0)
+
+  @mock.patch('xcode_log_parser.XcodeLogParser._list_of_failed_tests')
+  @mock.patch('xcode_log_parser.XcodeLogParser._get_test_statuses')
+  @mock.patch('file_util.zip_and_remove_folder')
+  @mock.patch('xcode_log_parser.XcodeLogParser.copy_artifacts')
+  @mock.patch('xcode_log_parser.XcodeLogParser.export_diagnostic_data')
+  @mock.patch('os.path.exists', autospec=True)
+  @mock.patch('xcode_log_parser.XcodeLogParser._xcresulttool_get')
+  def testFallbackOnRootMetrics(self, mock_root, mock_exist_file, *args):
+    mock_root.return_value = XCRESULT_MISSING_ACTIONRESULT_METRICS
+    mock_exist_file.return_value = True
+    results = xcode_log_parser.XcodeLogParser().collect_test_results(
+        OUTPUT_PATH, [])
+    self.assertTrue(results.crashed != True)
+    self.assertNotEqual(results.crash_message, '0 tests executed!')
 
   @mock.patch('os.path.exists', autospec=True)
   def testCollectTestsDidNotRun(self, mock_exist_file):
