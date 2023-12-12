@@ -579,6 +579,7 @@ TEST_F(IbanSaveManagerTest,
 }
 
 TEST_F(IbanSaveManagerTest, UploadSaveIban_Accept_SuccessShouldClearStrikes) {
+  base::HistogramTester histogram_tester;
   SetUpGetIbanUploadDetailsResponse(/*is_successful=*/true);
   SetUpUploadIbanResponse(/*is_successful=*/true);
   Iban iban;
@@ -600,6 +601,9 @@ TEST_F(IbanSaveManagerTest, UploadSaveIban_Accept_SuccessShouldClearStrikes) {
 
   // Verify the IBAN's strikes have been cleared.
   EXPECT_EQ(0, iban_save_strike_database.GetStrikes(partial_iban_hash));
+  histogram_tester.ExpectBucketCount(
+      "Autofill.StrikeDatabase.StrikesPresentWhenIbanSaved.Upload",
+      /*sample=*/1, /*expected_count=*/1);
 }
 
 TEST_F(IbanSaveManagerTest, UploadSaveIban_Accept_FailureShouldAddStrike) {

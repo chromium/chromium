@@ -306,6 +306,9 @@ void IbanSaveManager::OnDidUploadIban(
   if (result == AutofillClient::PaymentsRpcResult::kSuccess) {
     // Clear all IbanSave strikes for this IBAN, so that if it's later removed
     // the strike count starts over with respect to re-saving it.
+    autofill_metrics::LogStrikesPresentWhenIbanSaved(
+        iban_save_strike_database_->GetStrikes(partial_iban_hash),
+        /*is_upload_save=*/true);
     GetIbanSaveStrikeDatabase()->ClearStrikes(partial_iban_hash);
   } else if (show_save_prompt) {
     // If the upload failed and the bubble was actually shown (NOT just the
