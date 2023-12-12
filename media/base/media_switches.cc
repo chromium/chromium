@@ -145,11 +145,6 @@ const char kDisableAcceleratedMjpegDecode[] =
 // automated testing.
 const char kMuteAudio[] = "mute-audio";
 
-// Allows clients to override the threshold for when the media renderer will
-// declare the underflow state for the video stream when audio is present.
-// TODO(dalecurtis): Remove once experiments for http://crbug.com/470940 finish.
-const char kVideoUnderflowThresholdMs[] = "video-underflow-threshold-ms";
-
 // Disables the new rendering algorithm for webrtc, which is designed to improve
 // the rendering smoothness.
 const char kDisableRTCSmoothnessAlgorithm[] =
