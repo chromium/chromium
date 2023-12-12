@@ -15,7 +15,8 @@ import {IronListElement} from 'chrome://resources/polymer/v3_0/iron-list/iron-li
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {PerformanceBrowserProxy, PerformanceBrowserProxyImpl} from '../performance_browser_proxy.js';
-import {HighEfficiencyModeExceptionListAction, PerformanceMetricsProxy, PerformanceMetricsProxyImpl} from '../performance_metrics_proxy.js';
+import {MemorySaverModeExceptionListAction, PerformanceMetricsProxy, PerformanceMetricsProxyImpl} from '../performance_metrics_proxy.js';
+
 import {getTemplate} from './exception_current_sites_list.html.js';
 import {TAB_DISCARD_EXCEPTIONS_PREF} from './exception_validation_mixin.js';
 
@@ -188,7 +189,7 @@ export class ExceptionCurrentSitesListElement extends
       this.appendPrefListItem(TAB_DISCARD_EXCEPTIONS_PREF, rule);
     });
     this.metricsProxy_.recordExceptionListAction(
-        HighEfficiencyModeExceptionListAction.ADD_FROM_CURRENT);
+        MemorySaverModeExceptionListAction.ADD_FROM_CURRENT);
   }
 }
 

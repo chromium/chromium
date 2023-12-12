@@ -15,7 +15,7 @@ export class TestPerformanceBrowserProxy extends TestBrowserProxy implements
       'getCurrentOpenSites',
       'getDeviceHasBattery',
       'openBatterySaverFeedbackDialog',
-      'openHighEfficiencyFeedbackDialog',
+      'openMemorySaverFeedbackDialog',
       'openSpeedFeedbackDialog',
       'validateTabDiscardExceptionRule',
     ]);
@@ -39,8 +39,8 @@ export class TestPerformanceBrowserProxy extends TestBrowserProxy implements
     this.methodCalled('openBatterySaverFeedbackDialog');
   }
 
-  openHighEfficiencyFeedbackDialog() {
-    this.methodCalled('openHighEfficiencyFeedbackDialog');
+  openMemorySaverFeedbackDialog() {
+    this.methodCalled('openMemorySaverFeedbackDialog');
   }
 
   openSpeedFeedbackDialog() {

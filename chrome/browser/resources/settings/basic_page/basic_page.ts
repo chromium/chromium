@@ -376,9 +376,9 @@ export class SettingsBasicPageElement extends SettingsBasicPageElementBase {
         this.showPage_(visibility);
   }
 
-  private onSendHighEfficiencyFeedbackClick_(e: Event) {
+  private onMemorySaverFeedbackClick_(e: Event) {
     e.stopPropagation();
-    this.performanceBrowserProxy_.openHighEfficiencyFeedbackDialog();
+    this.performanceBrowserProxy_.openMemorySaverFeedbackDialog();
   }
 
   private onSendBatterySaverFeedbackClick_(e: Event) {

@@ -5,7 +5,7 @@
 import 'chrome://settings/settings.js';
 
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-import {ExceptionAddDialogElement, ExceptionAddDialogTabs, ExceptionEditDialogElement, ExceptionTabbedAddDialogElement, HighEfficiencyModeExceptionListAction, MAX_TAB_DISCARD_EXCEPTION_RULE_LENGTH, PerformanceBrowserProxyImpl, PerformanceMetricsProxyImpl, SettingsCheckboxListEntryElement, TAB_DISCARD_EXCEPTIONS_OVERFLOW_SIZE, TAB_DISCARD_EXCEPTIONS_PREF} from 'chrome://settings/settings.js';
+import {ExceptionAddDialogElement, ExceptionAddDialogTabs, ExceptionEditDialogElement, ExceptionTabbedAddDialogElement, MAX_TAB_DISCARD_EXCEPTION_RULE_LENGTH, MemorySaverModeExceptionListAction, PerformanceBrowserProxyImpl, PerformanceMetricsProxyImpl, SettingsCheckboxListEntryElement, TAB_DISCARD_EXCEPTIONS_OVERFLOW_SIZE, TAB_DISCARD_EXCEPTIONS_PREF} from 'chrome://settings/settings.js';
 import {assertDeepEquals, assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {eventToPromise} from 'chrome://webui-test/test_util.js';
 
@@ -180,7 +180,7 @@ suite('TabDiscardExceptionsDialog', function() {
     assertSubmit([EXISTING_RULE, VALID_RULE]);
     const action =
         await performanceMetricsProxy.whenCalled('recordExceptionListAction');
-    assertEquals(HighEfficiencyModeExceptionListAction.ADD_MANUAL, action);
+    assertEquals(MemorySaverModeExceptionListAction.ADD_MANUAL, action);
   });
 
   test('testExceptionAddDialogSubmitExisting', async function() {
@@ -195,7 +195,7 @@ suite('TabDiscardExceptionsDialog', function() {
     assertSubmit([EXISTING_RULE, VALID_RULE]);
     const action =
         await performanceMetricsProxy.whenCalled('recordExceptionListAction');
-    assertEquals(HighEfficiencyModeExceptionListAction.ADD_MANUAL, action);
+    assertEquals(MemorySaverModeExceptionListAction.ADD_MANUAL, action);
   });
 
   test('testExceptionTabbedAddDialogSubmitExisting', async function() {
@@ -210,7 +210,7 @@ suite('TabDiscardExceptionsDialog', function() {
     assertSubmit([VALID_RULE]);
     const action =
         await performanceMetricsProxy.whenCalled('recordExceptionListAction');
-    assertEquals(HighEfficiencyModeExceptionListAction.EDIT, action);
+    assertEquals(MemorySaverModeExceptionListAction.EDIT, action);
   });
 
   test('testExceptionEditDialogSubmitExisting', async function() {

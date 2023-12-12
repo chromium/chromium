@@ -28,8 +28,8 @@ import {PaperTooltipElement} from 'chrome://resources/polymer/v3_0/paper-tooltip
 import {DomRepeat, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {TooltipMixin, TooltipMixinInterface} from '../../tooltip_mixin.js';
+import {MemorySaverModeExceptionListAction, PerformanceMetricsProxy, PerformanceMetricsProxyImpl} from '../performance_metrics_proxy.js';
 
-import {HighEfficiencyModeExceptionListAction, PerformanceMetricsProxy, PerformanceMetricsProxyImpl} from '../performance_metrics_proxy.js';
 import {ExceptionEntry} from './exception_entry.js';
 import {getTemplate} from './exception_list.html.js';
 import {TAB_DISCARD_EXCEPTIONS_MANAGED_PREF, TAB_DISCARD_EXCEPTIONS_PREF} from './exception_validation_mixin.js';
@@ -115,7 +115,7 @@ export class ExceptionListElement extends
   static get observers() {
     return [
       `onPrefsChanged_(prefs.${TAB_DISCARD_EXCEPTIONS_PREF}.value.*,` +
-          `prefs.${TAB_DISCARD_EXCEPTIONS_MANAGED_PREF}.value.*)`,
+          `prefs.${TAB_DISCARD_EXCEPTIONS_PREF}.value.*)`,
     ];
   }
 
@@ -175,7 +175,7 @@ export class ExceptionListElement extends
   private onDeleteClick_() {
     this.deletePrefListItem(TAB_DISCARD_EXCEPTIONS_PREF, this.selectedRule_);
     this.metricsProxy_.recordExceptionListAction(
-        HighEfficiencyModeExceptionListAction.REMOVE);
+        MemorySaverModeExceptionListAction.REMOVE);
     this.$.menu.get().close();
   }
 

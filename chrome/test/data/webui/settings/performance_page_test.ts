@@ -8,7 +8,7 @@ import 'chrome://settings/settings.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {CrIconButtonElement, IronCollapseElement, SettingsRadioGroupElement} from 'chrome://settings/lazy_load.js';
-import {ExceptionAddDialogElement, ExceptionEditDialogElement, ExceptionEntryElement, ExceptionListElement, ExceptionTabbedAddDialogElement, HIGH_EFFICIENCY_MODE_PREF, HighEfficiencyModeExceptionListAction, HighEfficiencyModeState, PerformanceBrowserProxyImpl, PerformanceMetricsProxyImpl, SettingsCheckboxListEntryElement, SettingsDropdownMenuElement, SettingsPerformancePageElement, TAB_DISCARD_EXCEPTIONS_MANAGED_PREF, TAB_DISCARD_EXCEPTIONS_OVERFLOW_SIZE, TAB_DISCARD_EXCEPTIONS_PREF} from 'chrome://settings/settings.js';
+import {ExceptionAddDialogElement, ExceptionEditDialogElement, ExceptionEntryElement, ExceptionListElement, ExceptionTabbedAddDialogElement, MEMORY_SAVER_MODE_PREF, MemorySaverModeExceptionListAction, MemorySaverModeState, PerformanceBrowserProxyImpl, PerformanceMetricsProxyImpl, SettingsCheckboxListEntryElement, SettingsDropdownMenuElement, SettingsPerformancePageElement, TAB_DISCARD_EXCEPTIONS_MANAGED_PREF, TAB_DISCARD_EXCEPTIONS_OVERFLOW_SIZE, TAB_DISCARD_EXCEPTIONS_PREF} from 'chrome://settings/settings.js';
 import {assertDeepEquals, assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
 import {eventToPromise} from 'chrome://webui-test/test_util.js';
@@ -20,7 +20,7 @@ const highEfficiencyModeDummyPrefs = {
   high_efficiency_mode: {
     state: {
       type: chrome.settingsPrivate.PrefType.NUMBER,
-      value: HighEfficiencyModeState.DISABLED,
+      value: MemorySaverModeState.DISABLED,
     },
     time_before_discard_in_minutes: {
       type: chrome.settingsPrivate.PrefType.NUMBER,
@@ -71,38 +71,38 @@ suite('PerformancePage', function() {
     flush();
   });
 
-  test('testHighEfficiencyModeEnabled', function() {
+  test('testMemorySaverModeEnabled', function() {
     performancePage.setPrefValue(
-        HIGH_EFFICIENCY_MODE_PREF, HighEfficiencyModeState.ENABLED_ON_TIMER);
+        MEMORY_SAVER_MODE_PREF, MemorySaverModeState.ENABLED_ON_TIMER);
     assertTrue(performancePage.$.toggleButton.checked);
   });
 
-  test('testHighEfficiencyModeDisabled', function() {
+  test('testMemorySaverModeDisabled', function() {
     performancePage.setPrefValue(
-        HIGH_EFFICIENCY_MODE_PREF, HighEfficiencyModeState.DISABLED);
+        MEMORY_SAVER_MODE_PREF, MemorySaverModeState.DISABLED);
     assertFalse(performancePage.$.toggleButton.checked);
   });
 
-  test('testHighEfficiencyModeChangeState', async function() {
+  test('testMemorySaverModeChangeState', async function() {
     performancePage.setPrefValue(
-        HIGH_EFFICIENCY_MODE_PREF, HighEfficiencyModeState.DISABLED);
+        MEMORY_SAVER_MODE_PREF, MemorySaverModeState.DISABLED);
 
     performancePage.$.toggleButton.click();
     let state = await performanceMetricsProxy.whenCalled(
-        'recordHighEfficiencyModeChanged');
-    assertEquals(state, HighEfficiencyModeState.ENABLED_ON_TIMER);
+        'recordMemorySaverModeChanged');
+    assertEquals(state, MemorySaverModeState.ENABLED_ON_TIMER);
     assertEquals(
-        performancePage.getPref(HIGH_EFFICIENCY_MODE_PREF).value,
-        HighEfficiencyModeState.ENABLED_ON_TIMER);
+        performancePage.getPref(MEMORY_SAVER_MODE_PREF).value,
+        MemorySaverModeState.ENABLED_ON_TIMER);
 
     performanceMetricsProxy.reset();
     performancePage.$.toggleButton.click();
     state = await performanceMetricsProxy.whenCalled(
-        'recordHighEfficiencyModeChanged');
-    assertEquals(state, HighEfficiencyModeState.DISABLED);
+        'recordMemorySaverModeChanged');
+    assertEquals(state, MemorySaverModeState.DISABLED);
     assertEquals(
-        performancePage.getPref(HIGH_EFFICIENCY_MODE_PREF).value,
-        HighEfficiencyModeState.DISABLED);
+        performancePage.getPref(MEMORY_SAVER_MODE_PREF).value,
+        MemorySaverModeState.DISABLED);
   });
 });
 
@@ -120,7 +120,7 @@ suite('PerformancePageMultistate', function() {
   /**
    * Used to get elements form the performance page that may or may not exist,
    * such as those inside a dom-if.
-   * TODO(charlesmeng): remove once kHighEfficiencyMultistateMode flag is
+   * TODO(charlesmeng): remove once kMemorySaverMultistateMode flag is
    * cleaned up, since elements can then be selected with $ interface
    */
   function getPerformancePageElement<T extends HTMLElement = HTMLElement>(
@@ -152,36 +152,36 @@ suite('PerformancePageMultistate', function() {
     discardTimeDropdown = getPerformancePageElement('discardTimeDropdown');
   });
 
-  test('testHighEfficiencyModeDisabled', function() {
+  test('testMemorySaverModeDisabled', function() {
     performancePage.setPrefValue(
-        HIGH_EFFICIENCY_MODE_PREF, HighEfficiencyModeState.DISABLED);
+        MEMORY_SAVER_MODE_PREF, MemorySaverModeState.DISABLED);
     assertFalse(performancePage.$.toggleButton.checked);
     assertFalse(radioGroupCollapse.opened);
     assertTrue(discardTimeDropdown.disabled);
   });
 
-  test('testHighEfficiencyModeEnabled', function() {
+  test('testMemorySaverModeEnabled', function() {
     performancePage.setPrefValue(
-        HIGH_EFFICIENCY_MODE_PREF, HighEfficiencyModeState.ENABLED);
+        MEMORY_SAVER_MODE_PREF, MemorySaverModeState.ENABLED);
     assertTrue(performancePage.$.toggleButton.checked);
     assertTrue(radioGroupCollapse.opened);
-    assertEquals(String(HighEfficiencyModeState.ENABLED), radioGroup.selected);
+    assertEquals(String(MemorySaverModeState.ENABLED), radioGroup.selected);
     assertTrue(discardTimeDropdown.disabled);
   });
 
-  test('testHighEfficiencyModeEnabledOnTimer', function() {
+  test('testMemorySaverModeEnabledOnTimer', function() {
     performancePage.setPrefValue(
-        HIGH_EFFICIENCY_MODE_PREF, HighEfficiencyModeState.ENABLED_ON_TIMER);
+        MEMORY_SAVER_MODE_PREF, MemorySaverModeState.ENABLED_ON_TIMER);
     assertTrue(performancePage.$.toggleButton.checked);
     assertTrue(radioGroupCollapse.opened);
     assertEquals(
-        String(HighEfficiencyModeState.ENABLED_ON_TIMER), radioGroup.selected);
+        String(MemorySaverModeState.ENABLED_ON_TIMER), radioGroup.selected);
     assertFalse(discardTimeDropdown.disabled);
   });
 
-  test('testHighEfficiencyModeDiscardTime', async function() {
+  test('testMemorySaverModeDiscardTime', async function() {
     performancePage.setPrefValue(
-        HIGH_EFFICIENCY_MODE_PREF, HighEfficiencyModeState.ENABLED_ON_TIMER);
+        MEMORY_SAVER_MODE_PREF, MemorySaverModeState.ENABLED_ON_TIMER);
     performancePage.setPrefValue(DISCARD_TIME_PREF, 120);
     // Need to wait for dropdown menu to update its selection using a microtask
     await flushTasks();
@@ -200,35 +200,35 @@ suite('PerformancePageMultistate', function() {
         performancePage.getPref(DISCARD_TIME_PREF).value);
   });
 
-  test('testHighEfficiencyModeChangeState', async function() {
+  test('testMemorySaverModeChangeState', async function() {
     performancePage.setPrefValue(
-        HIGH_EFFICIENCY_MODE_PREF, HighEfficiencyModeState.DISABLED);
+        MEMORY_SAVER_MODE_PREF, MemorySaverModeState.DISABLED);
 
     performancePage.$.toggleButton.click();
     let state = await performanceMetricsProxy.whenCalled(
-        'recordHighEfficiencyModeChanged');
-    assertEquals(state, HighEfficiencyModeState.ENABLED);
+        'recordMemorySaverModeChanged');
+    assertEquals(state, MemorySaverModeState.ENABLED);
     assertEquals(
-        performancePage.getPref(HIGH_EFFICIENCY_MODE_PREF).value,
-        HighEfficiencyModeState.ENABLED);
+        performancePage.getPref(MEMORY_SAVER_MODE_PREF).value,
+        MemorySaverModeState.ENABLED);
 
     performanceMetricsProxy.reset();
     enabledOnTimerButton.click();
     state = await performanceMetricsProxy.whenCalled(
-        'recordHighEfficiencyModeChanged');
-    assertEquals(state, HighEfficiencyModeState.ENABLED_ON_TIMER);
+        'recordMemorySaverModeChanged');
+    assertEquals(state, MemorySaverModeState.ENABLED_ON_TIMER);
     assertEquals(
-        performancePage.getPref(HIGH_EFFICIENCY_MODE_PREF).value,
-        HighEfficiencyModeState.ENABLED_ON_TIMER);
+        performancePage.getPref(MEMORY_SAVER_MODE_PREF).value,
+        MemorySaverModeState.ENABLED_ON_TIMER);
 
     performanceMetricsProxy.reset();
     performancePage.$.toggleButton.click();
     state = await performanceMetricsProxy.whenCalled(
-        'recordHighEfficiencyModeChanged');
-    assertEquals(state, HighEfficiencyModeState.DISABLED);
+        'recordMemorySaverModeChanged');
+    assertEquals(state, MemorySaverModeState.DISABLED);
     assertEquals(
-        performancePage.getPref(HIGH_EFFICIENCY_MODE_PREF).value,
-        HighEfficiencyModeState.DISABLED);
+        performancePage.getPref(MEMORY_SAVER_MODE_PREF).value,
+        MemorySaverModeState.DISABLED);
   });
 });
 
@@ -363,7 +363,7 @@ suite('TabDiscardExceptionList', function() {
     flush();
     assertExceptionListEquals(['bar']);
     assertEquals(
-        HighEfficiencyModeExceptionListAction.REMOVE,
+        MemorySaverModeExceptionListAction.REMOVE,
         await performanceMetricsProxy.whenCalled('recordExceptionListAction'));
 
     clickMoreActionsButton(getExceptionListEntry(0));
@@ -445,7 +445,7 @@ suite('TabDiscardExceptionList', function() {
     assertEquals('', addDialog.$.input.$.input.value);
     await inputDialog(addDialog, 'bar');
     assertEquals(
-        HighEfficiencyModeExceptionListAction.ADD_MANUAL,
+        MemorySaverModeExceptionListAction.ADD_MANUAL,
         await performanceMetricsProxy.whenCalled('recordExceptionListAction'));
     assertExceptionListEquals(['foo', 'bar']);
   });
@@ -464,7 +464,7 @@ suite('TabDiscardExceptionList', function() {
     assertEquals(entry.entry.site, editDialog.$.input.$.input.value);
     await inputDialog(editDialog, 'baz');
     assertEquals(
-        HighEfficiencyModeExceptionListAction.EDIT,
+        MemorySaverModeExceptionListAction.EDIT,
         await performanceMetricsProxy.whenCalled('recordExceptionListAction'));
     assertExceptionListEquals(['foo', 'baz']);
   });

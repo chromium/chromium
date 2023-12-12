@@ -529,7 +529,7 @@ SettingsUI::SettingsUI(content::WebUI* web_ui)
   // Performance
   AddSettingsPageUIHandler(std::make_unique<PerformanceHandler>());
   html_source->AddBoolean(
-      "isHighEfficiencyMultistateModeEnabled",
+      "isMemorySaverMultistateModeEnabled",
       base::FeatureList::IsEnabled(
           performance_manager::features::kMemorySaverMultistateMode));
   html_source->AddBoolean(

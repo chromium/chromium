@@ -24034,13 +24034,6 @@ Called by update_permissions_policy_enum.py.-->
   <int value="8" label="Unknown Pointer"/>
 </enum>
 
-<enum name="HighEfficiencyModeExceptionListAction">
-  <int value="0" label="Add"/>
-  <int value="1" label="Edit"/>
-  <int value="2" label="Remove"/>
-  <int value="3" label="Add from current"/>
-</enum>
-
 <enum name="HighEfficiencyModeState">
   <int value="0" label="Disabled"/>
   <int value="1" label="Enabled"/>
@@ -39238,6 +39231,13 @@ Called by update_use_counter_css.py.-->
   <int value="0" label="Collapsed chip"/>
   <int value="1" label="Expanded educational chip"/>
   <int value="2" label="Expanded chip with savings"/>
+</enum>
+
+<enum name="MemorySaverModeExceptionListAction">
+  <int value="0" label="Add"/>
+  <int value="1" label="Edit"/>
+  <int value="2" label="Remove"/>
+  <int value="3" label="Add from current"/>
 </enum>
 
 <enum name="MenuSourceType">

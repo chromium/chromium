@@ -712,19 +712,19 @@ void AddPerformanceStrings(content::WebUIDataSource* html_source) {
       {"performancePageTitle", IDS_SETTINGS_PERFORMANCE_PAGE_TITLE},
       {"memoryPageTitle", IDS_SETTINGS_MEMORY_PAGE_TITLE},
       {"speedPageTitle", IDS_SETTINGS_SPEED_PAGE_TITLE},
-      {"highEfficiencyModeLabel",
+      {"memorySaverModeLabel",
        IDS_SETTINGS_PERFORMANCE_HIGH_EFFICIENCY_MODE_SETTING},
-      {"highEfficiencyModeDescription",
+      {"memorySaverModeDescription",
        IDS_SETTINGS_PERFORMANCE_HIGH_EFFICIENCY_MODE_SETTING_DESCRIPTION},
-      {"highEfficiencyModeHeuristicsLabel",
+      {"memorySaverModeHeuristicsLabel",
        IDS_SETTINGS_PERFORMANCE_HIGH_EFFICIENCY_MODE_HEURISTICS_LABEL},
-      {"highEfficiencyModeRecommendedBadge",
+      {"memorySaverModeRecommendedBadge",
        IDS_SETTINGS_PERFORMANCE_HIGH_EFFICIENCY_MODE_RECOMMENDED_BADGE},
-      {"highEfficiencyModeOnTimerLabel",
+      {"memorySaverModeOnTimerLabel",
        IDS_SETTINGS_PERFORMANCE_HIGH_EFFICIENCY_MODE_ON_TIMER_LABEL},
-      {"highEfficiencyModeRadioGroupAriaLabel",
+      {"memorySaverModeRadioGroupAriaLabel",
        IDS_SETTINGS_PERFORMANCE_HIGH_EFFICIENCY_MODE_RADIO_GROUP_ARIA_LABEL},
-      {"highEfficiencyChooseDiscardTimeAriaLabel",
+      {"memorySaverChooseDiscardTimeAriaLabel",
        IDS_SETTINGS_PERFORMANCE_HIGH_EFFICIENCY_MODE_CHOOSE_DISCARD_TIME_ARIA_LABEL},
       {"batteryPageTitle", IDS_SETTINGS_BATTERY_PAGE_TITLE},
       {"batterySaverModeLabel",
@@ -761,7 +761,7 @@ void AddPerformanceStrings(content::WebUIDataSource* html_source) {
   html_source->AddLocalizedStrings(kLocalizedStrings);
 
   html_source->AddBoolean(
-      "highEfficiencyShowRecommendedBadge",
+      "memorySaverShowRecommendedBadge",
       performance_manager::features::kMemorySaverShowRecommendedBadge.Get());
 
   html_source->AddString(
@@ -814,7 +814,7 @@ void AddPerformanceStrings(content::WebUIDataSource* html_source) {
           IDS_SETTINGS_PERFORMANCE_TAB_DISCARDING_EXCEPTIONS_ADD_DIALOG_HELP,
           chrome::kHighEfficiencyModeTabDiscardingHelpUrl));
 
-  html_source->AddString("highEfficiencyLearnMoreUrl",
+  html_source->AddString("memorySaverLearnMoreUrl",
                          chrome::kHighEfficiencyModeLearnMoreUrl);
   html_source->AddString("batterySaverLearnMoreUrl",
                          chrome::kBatterySaverModeLearnMoreUrl);

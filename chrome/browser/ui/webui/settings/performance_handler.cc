@@ -35,9 +35,9 @@ void PerformanceHandler::RegisterMessages() {
           &PerformanceHandler::HandleOpenBatterySaverFeedbackDialog,
           base::Unretained(this)));
   web_ui()->RegisterMessageCallback(
-      "openHighEfficiencyFeedbackDialog",
+      "openMemorySaverFeedbackDialog",
       base::BindRepeating(
-          &PerformanceHandler::HandleOpenHighEfficiencyFeedbackDialog,
+          &PerformanceHandler::HandleOpenMemorySaverFeedbackDialog,
           base::Unretained(this)));
   web_ui()->RegisterMessageCallback(
       "openSpeedFeedbackDialog",
@@ -127,7 +127,7 @@ void PerformanceHandler::HandleOpenBatterySaverFeedbackDialog(
   HandleOpenFeedbackDialog("performance_battery");
 }
 
-void PerformanceHandler::HandleOpenHighEfficiencyFeedbackDialog(
+void PerformanceHandler::HandleOpenMemorySaverFeedbackDialog(
     const base::Value::List& args) {
   HandleOpenFeedbackDialog("performance_tabs");
 }
