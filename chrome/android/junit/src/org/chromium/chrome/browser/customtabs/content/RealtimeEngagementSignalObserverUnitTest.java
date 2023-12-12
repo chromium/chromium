@@ -20,10 +20,9 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-import static org.chromium.cc.mojom.RootScrollOffsetUpdateFrequency.NONE;
 import static org.chromium.cc.mojom.RootScrollOffsetUpdateFrequency.ON_SCROLL_END;
+import static org.chromium.chrome.browser.customtabs.content.RealtimeEngagementSignalObserver.DEFAULT_AFTER_SCROLL_END_THRESHOLD_MS;
 import static org.chromium.chrome.browser.customtabs.content.RealtimeEngagementSignalObserver.REAL_VALUES;
-import static org.chromium.chrome.browser.customtabs.content.RealtimeEngagementSignalObserver.TIME_CAN_UPDATE_AFTER_END;
 
 import android.graphics.Point;
 import android.os.Bundle;
@@ -57,7 +56,6 @@ import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabHidingType;
 import org.chromium.chrome.browser.tab.TabObserver;
 import org.chromium.chrome.test.util.browser.Features;
-import org.chromium.chrome.test.util.browser.Features.DisableFeatures;
 import org.chromium.chrome.test.util.browser.Features.EnableFeatures;
 import org.chromium.content.browser.GestureListenerManagerImpl;
 import org.chromium.content.browser.RenderCoordinatesImpl;
@@ -73,10 +71,7 @@ import java.util.List;
 /** Unit test for {@link RealtimeEngagementSignalObserver}. */
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(shadows = {ShadowSystemClock.class})
-@EnableFeatures({
-    ChromeFeatureList.CCT_REAL_TIME_ENGAGEMENT_SIGNALS,
-    ChromeFeatureList.CCT_REAL_TIME_ENGAGEMENT_SIGNALS_ALTERNATIVE_IMPL
-})
+@EnableFeatures({ChromeFeatureList.CCT_REAL_TIME_ENGAGEMENT_SIGNALS})
 public class RealtimeEngagementSignalObserverUnitTest {
     @Rule
     public final CustomTabActivityContentTestEnvironment env =
@@ -124,16 +119,8 @@ public class RealtimeEngagementSignalObserverUnitTest {
     }
 
     @Test
-    @DisableFeatures({ChromeFeatureList.CCT_REAL_TIME_ENGAGEMENT_SIGNALS_ALTERNATIVE_IMPL})
-    public void addsListenersForSignalsIfFeatureIsEnabled() {
-        initializeTabForTest();
-
-        verify(mGestureListenerManagerImpl).addListener(any(GestureStateListener.class), eq(NONE));
-    }
-
-    @Test
     public void addsListenersForSignalsIfFeatureIsEnabled_alternativeImpl() {
-        setFeatureParams(null, 100);
+        setFeatureParams(null);
         initializeTabForTest();
 
         verify(mGestureListenerManagerImpl)
@@ -559,7 +546,7 @@ public class RealtimeEngagementSignalObserverUnitTest {
 
     @Test
     public void sendsFalseForScrollDirectionIfSendingFakeValues() {
-        setFeatureParams(false, null);
+        setFeatureParams(false);
         initializeTabForTest();
         GestureStateListener listener = captureGestureStateListener();
 
@@ -583,7 +570,7 @@ public class RealtimeEngagementSignalObserverUnitTest {
 
     @Test
     public void sendsZeroForMaxScrollSignalsIfSendingFakeValues() {
-        setFeatureParams(false, null);
+        setFeatureParams(false);
         initializeTabForTest();
         GestureStateListener listener = captureGestureStateListener();
 
@@ -625,7 +612,6 @@ public class RealtimeEngagementSignalObserverUnitTest {
     }
 
     @Test
-    @EnableFeatures({ChromeFeatureList.CCT_REAL_TIME_ENGAGEMENT_SIGNALS_ALTERNATIVE_IMPL})
     public void sendsSignalWithAlternativeImpl_updateBeforeEnd() {
         initializeTabForTest();
         GestureStateListener listener = captureGestureStateListener(ON_SCROLL_END);
@@ -643,9 +629,8 @@ public class RealtimeEngagementSignalObserverUnitTest {
     }
 
     @Test
-    @EnableFeatures({ChromeFeatureList.CCT_REAL_TIME_ENGAGEMENT_SIGNALS_ALTERNATIVE_IMPL})
     public void sendsSignalWithAlternativeImpl_updateAfterEnd() {
-        setFeatureParams(null, 25);
+        setFeatureParams(null);
         initializeTabForTest();
         GestureStateListener listener = captureGestureStateListener(ON_SCROLL_END);
 
@@ -668,28 +653,8 @@ public class RealtimeEngagementSignalObserverUnitTest {
     }
 
     @Test
-    @DisableFeatures({ChromeFeatureList.CCT_REAL_TIME_ENGAGEMENT_SIGNALS_ALTERNATIVE_IMPL})
-    public void doesNotSendSignalUpdateAfterEndWithAlternativeImplDisabled() {
-        initializeTabForTest();
-        GestureStateListener listener = captureGestureStateListener(NONE);
-
-        // Start by scrolling down.
-        listener.onScrollStarted(0, SCROLL_EXTENT, false);
-        // End scrolling.
-        listener.onScrollEnded(0, SCROLL_EXTENT);
-        // Send the signal for 24% 10ms after the scroll ended.
-        advanceTime(10);
-        when(mRenderCoordinatesImpl.getScrollYPixInt()).thenReturn(24);
-        listener.onScrollOffsetOrExtentChanged(24, SCROLL_EXTENT);
-        // We shouldn't make any call.
-        verify(mEngagementSignalsCallback, never())
-                .onGreatestScrollPercentageIncreased(anyInt(), any(Bundle.class));
-    }
-
-    @Test
-    @EnableFeatures({ChromeFeatureList.CCT_REAL_TIME_ENGAGEMENT_SIGNALS_ALTERNATIVE_IMPL})
     public void doesNotSendLowerPercentWithAlternativeImpl() {
-        setFeatureParams(null, 20);
+        setFeatureParams(null);
         initializeTabForTest();
         GestureStateListener listener = captureGestureStateListener(ON_SCROLL_END);
 
@@ -716,9 +681,8 @@ public class RealtimeEngagementSignalObserverUnitTest {
     }
 
     @Test
-    @EnableFeatures({ChromeFeatureList.CCT_REAL_TIME_ENGAGEMENT_SIGNALS_ALTERNATIVE_IMPL})
     public void doNotSendSignalWithAlternativeImplAfterThreshold() {
-        setFeatureParams(null, 10);
+        setFeatureParams(null);
         initializeTabForTest();
         GestureStateListener listener = captureGestureStateListener(ON_SCROLL_END);
 
@@ -726,8 +690,8 @@ public class RealtimeEngagementSignalObserverUnitTest {
         listener.onScrollStarted(59, SCROLL_EXTENT, false);
         // End scrolling.
         listener.onScrollEnded(59, SCROLL_EXTENT);
-        // Send the signal for 59% 18ms after the scroll ended.
-        advanceTime(18);
+        // Send the signal for 59% 18ms outside the threshold.
+        advanceTime(DEFAULT_AFTER_SCROLL_END_THRESHOLD_MS + 18);
         when(mRenderCoordinatesImpl.getScrollYPixInt()).thenReturn(59);
         listener.onScrollOffsetOrExtentChanged(59, SCROLL_EXTENT);
         // We shouldn't make a call since the call was outside the threshold.
@@ -736,9 +700,8 @@ public class RealtimeEngagementSignalObserverUnitTest {
     }
 
     @Test
-    @EnableFeatures({ChromeFeatureList.CCT_REAL_TIME_ENGAGEMENT_SIGNALS_ALTERNATIVE_IMPL})
     public void doNotSendSignalWithAlternativeImplIfScrollStartReceived() {
-        setFeatureParams(null, 25);
+        setFeatureParams(null);
         initializeTabForTest();
         GestureStateListener listener = captureGestureStateListener(ON_SCROLL_END);
 
@@ -758,7 +721,6 @@ public class RealtimeEngagementSignalObserverUnitTest {
     }
 
     @Test
-    @EnableFeatures({ChromeFeatureList.CCT_REAL_TIME_ENGAGEMENT_SIGNALS_ALTERNATIVE_IMPL})
     public void sendOnSessionEnded_HadInteraction() {
         initializeTabForTest();
         doReturn(false).when(mTabInteractionRecorder).didGetUserInteraction();
@@ -778,7 +740,6 @@ public class RealtimeEngagementSignalObserverUnitTest {
     }
 
     @Test
-    @EnableFeatures({ChromeFeatureList.CCT_REAL_TIME_ENGAGEMENT_SIGNALS_ALTERNATIVE_IMPL})
     public void sendOnSessionEnded_HadNoInteraction() {
         initializeTabForTest();
         doReturn(false).when(mTabInteractionRecorder).didGetUserInteraction();
@@ -796,7 +757,6 @@ public class RealtimeEngagementSignalObserverUnitTest {
     }
 
     @Test
-    @EnableFeatures({ChromeFeatureList.CCT_REAL_TIME_ENGAGEMENT_SIGNALS_ALTERNATIVE_IMPL})
     public void doNotSendOnSessionEndedWhenSuspended() {
         initializeTabForTest();
         mEngagementSignalObserver.suppressNextSessionEndedCall();
@@ -818,7 +778,6 @@ public class RealtimeEngagementSignalObserverUnitTest {
     }
 
     @Test
-    @EnableFeatures({ChromeFeatureList.CCT_REAL_TIME_ENGAGEMENT_SIGNALS_ALTERNATIVE_IMPL})
     public void pauseAndUnpauseSignalsOnPageWithTextFragment() {
         initializeTabForTest();
         GestureStateListener listener = captureGestureStateListener(ON_SCROLL_END);
@@ -858,7 +817,6 @@ public class RealtimeEngagementSignalObserverUnitTest {
     }
 
     @Test
-    @EnableFeatures({ChromeFeatureList.CCT_REAL_TIME_ENGAGEMENT_SIGNALS_ALTERNATIVE_IMPL})
     public void doesNotSendSignalsBeforeDownScroll() {
         initializeTabForTest();
         GestureStateListener listener = captureGestureStateListener(ON_SCROLL_END);
@@ -885,7 +843,6 @@ public class RealtimeEngagementSignalObserverUnitTest {
     }
 
     @Test
-    @EnableFeatures({ChromeFeatureList.CCT_REAL_TIME_ENGAGEMENT_SIGNALS_ALTERNATIVE_IMPL})
     public void doesNotSendSignalsBeforeDownScroll_AfterNavigation() {
         initializeTabForTest();
         GestureStateListener listener = captureGestureStateListener(ON_SCROLL_END);
@@ -919,24 +876,6 @@ public class RealtimeEngagementSignalObserverUnitTest {
     }
 
     @Test
-    @DisableFeatures({ChromeFeatureList.CCT_REAL_TIME_ENGAGEMENT_SIGNALS_ALTERNATIVE_IMPL})
-    public void sendInitialOffsetUpdate_AltImplDisabled() {
-        initializeTabForTest(/* hadScrollDown= */ true);
-        // When the alternative impl flag is enabled, the listener should be added with `NONE`.
-        var listener = captureGestureStateListener(NONE);
-
-        // Simulate renderer sending the offset update.
-        when(mRenderCoordinatesImpl.getScrollYPixInt()).thenReturn(42);
-        listener.onScrollOffsetOrExtentChanged(42, SCROLL_EXTENT);
-
-        // We should get a notification since we initialized the observer class with true for
-        // hadScrollDown.
-        verify(mEngagementSignalsCallback)
-                .onGreatestScrollPercentageIncreased(eq(40), any(Bundle.class));
-    }
-
-    @Test
-    @EnableFeatures({ChromeFeatureList.CCT_REAL_TIME_ENGAGEMENT_SIGNALS_ALTERNATIVE_IMPL})
     public void sendInitialOffsetUpdate_AltImplEnabled() {
         initializeTabForTest(/* hadScrollDown= */ true);
         // When the alternative impl flag is enabled, the listener should be added with
@@ -959,27 +898,16 @@ public class RealtimeEngagementSignalObserverUnitTest {
 
     /**
      * @param realValues CCT_REAL_TIME_ENGAGEMENT_SIGNALS real_values.
-     * @param threshold CCT_REAL_TIME_ENGAGEMENT_SIGNALS_ALTERNATIVE_IMPL time_can_update_after_end.
      */
-    private void setFeatureParams(Boolean realValues, Integer threshold) {
-        if (realValues == null && threshold == null) return;
+    private void setFeatureParams(Boolean realValues) {
+        if (realValues == null) return;
 
         TestValues testValues = new TestValues();
         testValues.addFeatureFlagOverride(ChromeFeatureList.CCT_REAL_TIME_ENGAGEMENT_SIGNALS, true);
-        testValues.addFeatureFlagOverride(
-                ChromeFeatureList.CCT_REAL_TIME_ENGAGEMENT_SIGNALS_ALTERNATIVE_IMPL, true);
-        if (realValues != null) {
-            testValues.addFieldTrialParamOverride(
-                    ChromeFeatureList.CCT_REAL_TIME_ENGAGEMENT_SIGNALS,
-                    REAL_VALUES,
-                    realValues.toString());
-        }
-        if (threshold != null) {
-            testValues.addFieldTrialParamOverride(
-                    ChromeFeatureList.CCT_REAL_TIME_ENGAGEMENT_SIGNALS_ALTERNATIVE_IMPL,
-                    TIME_CAN_UPDATE_AFTER_END,
-                    Integer.toString(threshold));
-        }
+        testValues.addFieldTrialParamOverride(
+                ChromeFeatureList.CCT_REAL_TIME_ENGAGEMENT_SIGNALS,
+                REAL_VALUES,
+                realValues.toString());
         FeatureList.setTestValues(testValues);
     }
 

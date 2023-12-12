@@ -4,10 +4,8 @@
 
 package org.chromium.chrome.browser.customtabs.content;
 
-import static org.chromium.cc.mojom.RootScrollOffsetUpdateFrequency.NONE;
 import static org.chromium.cc.mojom.RootScrollOffsetUpdateFrequency.ON_SCROLL_END;
 
-import android.graphics.Point;
 import android.os.Bundle;
 import android.os.SystemClock;
 
@@ -21,8 +19,6 @@ import org.chromium.base.MathUtils;
 import org.chromium.base.ResettersForTesting;
 import org.chromium.base.UserData;
 import org.chromium.base.metrics.RecordHistogram;
-import org.chromium.cc.mojom.RootScrollOffsetUpdateFrequency;
-import org.chromium.cc.mojom.RootScrollOffsetUpdateFrequency.EnumType;
 import org.chromium.chrome.browser.customtabs.CustomTabsConnection;
 import org.chromium.chrome.browser.customtabs.content.TabObserverRegistrar.CustomTabTabObserver;
 import org.chromium.chrome.browser.customtabs.features.TabInteractionRecorder;
@@ -62,13 +58,9 @@ class RealtimeEngagementSignalObserver extends CustomTabTabObserver {
     @VisibleForTesting protected static final String REAL_VALUES = "real_values";
     private static final int STUB_PERCENT = 0;
 
-    // Feature param for the time after the scroll-end a scroll update is allowed.
-    @VisibleForTesting
-    protected static final String TIME_CAN_UPDATE_AFTER_END = "time_can_update_after_end";
-
     // This value was chosen based on experiment data. 300ms covers about 98% of the scrolls while
     // trying to increase coverage further would require an unreasonably high threshold.
-    private static final int DEFAULT_AFTER_SCROLL_END_THRESHOLD_MS = 300;
+    @VisibleForTesting static final int DEFAULT_AFTER_SCROLL_END_THRESHOLD_MS = 300;
 
     private static final String TIME_SCROLL_UPDATE_RECEIVED_AFTER_SCROLL_END =
             "CustomTabs.TimeScrollUpdateReceivedAfterScrollEnd";
@@ -84,8 +76,7 @@ class RealtimeEngagementSignalObserver extends CustomTabTabObserver {
     @Nullable private GestureStateListener mGestureStateListener;
     @Nullable private WebContentsObserver mEngagementSignalWebContentsObserver;
     @Nullable private ScrollState mScrollState;
-    private @RootScrollOffsetUpdateFrequency.EnumType int mScrollOffsetUpdateFrequency;
-    private int mAfterScrollEndThresholdMs;
+
     // Tracks the user interaction state across multiple tabs and WebContents.
     private boolean mDidGetUserInteraction;
     // Prevents sending Engagement Signals temporarily.
@@ -114,16 +105,6 @@ class RealtimeEngagementSignalObserver extends CustomTabTabObserver {
         mTabObserverRegistrar = tabObserverRegistrar;
         mCallback = callback;
 
-        mScrollOffsetUpdateFrequency =
-                ChromeFeatureList.isEnabled(
-                                ChromeFeatureList.CCT_REAL_TIME_ENGAGEMENT_SIGNALS_ALTERNATIVE_IMPL)
-                        ? ON_SCROLL_END
-                        : NONE;
-        mAfterScrollEndThresholdMs =
-                ChromeFeatureList.getFieldTrialParamByFeatureAsInt(
-                        ChromeFeatureList.CCT_REAL_TIME_ENGAGEMENT_SIGNALS_ALTERNATIVE_IMPL,
-                        TIME_CAN_UPDATE_AFTER_END,
-                        DEFAULT_AFTER_SCROLL_END_THRESHOLD_MS);
         mShouldSendRealValues = shouldSendRealValues();
 
         mPendingInitialUpdate = hadScrollDown;
@@ -229,7 +210,6 @@ class RealtimeEngagementSignalObserver extends CustomTabTabObserver {
 
         mWebContents = tab.getWebContents();
         mScrollState = ScrollState.from(tab);
-        mScrollState.setParams(mScrollOffsetUpdateFrequency, mAfterScrollEndThresholdMs);
 
         mGestureStateListener =
                 new GestureStateListener() {
@@ -245,26 +225,8 @@ class RealtimeEngagementSignalObserver extends CustomTabTabObserver {
                     }
 
                     @Override
-                    public void onScrollUpdateGestureConsumed(@Nullable Point rootScrollOffset) {
-                        if (mScrollOffsetUpdateFrequency == ON_SCROLL_END) return;
-
-                        if (rootScrollOffset != null) {
-                            RenderCoordinates renderCoordinates =
-                                    RenderCoordinates.fromWebContents(tab.getWebContents());
-                            // We don't care about the return value of #onScrollUpdate here because
-                            // this method will always be called before #onScrollEnded.
-                            mScrollState.onScrollUpdate(
-                                    rootScrollOffset.y,
-                                    renderCoordinates.getMaxVerticalScrollPixInt(),
-                                    false);
-                        }
-                    }
-
-                    @Override
                     public void onScrollOffsetOrExtentChanged(
                             int scrollOffsetY, int scrollExtentY) {
-                        if (mScrollOffsetUpdateFrequency == NONE && !mPendingInitialUpdate) return;
-
                         assert tab != null;
                         RenderCoordinates renderCoordinates =
                                 RenderCoordinates.fromWebContents(tab.getWebContents());
@@ -330,7 +292,7 @@ class RealtimeEngagementSignalObserver extends CustomTabTabObserver {
         GestureListenerManager gestureListenerManager =
                 GestureListenerManager.fromWebContents(mWebContents);
         if (!gestureListenerManager.hasListener(mGestureStateListener)) {
-            gestureListenerManager.addListener(mGestureStateListener, mScrollOffsetUpdateFrequency);
+            gestureListenerManager.addListener(mGestureStateListener, ON_SCROLL_END);
         }
         mWebContents.addObserver(mEngagementSignalWebContentsObserver);
     }
@@ -428,21 +390,8 @@ class RealtimeEngagementSignalObserver extends CustomTabTabObserver {
         boolean mIsDirectionUp;
         int mMaxScrollPercentage;
         int mMaxReportedScrollPercentage;
-        @RootScrollOffsetUpdateFrequency.EnumType int mScrollOffsetUpdateFrequency = NONE;
-        int mAfterScrollEndThresholdMs = DEFAULT_AFTER_SCROLL_END_THRESHOLD_MS;
         Long mTimeLastOnScrollEnded;
         boolean mHadFirstDownScroll;
-
-        /**
-         * @param frequency The {@link RootScrollOffsetUpdateFrequency.EnumType}, can be |NONE| or
-         *                  |ON_SCROLL_END|.
-         * @param afterScrollEndThreshold The after scroll-end threshold in ms, ignored if the
-         *                                frequency isn't |ON_SCROLL_END|.
-         */
-        void setParams(@EnumType int frequency, int afterScrollEndThreshold) {
-            mScrollOffsetUpdateFrequency = frequency;
-            mAfterScrollEndThresholdMs = afterScrollEndThreshold;
-        }
 
         /**
          * @param isDirectionUp Whether the scroll direction is up.
@@ -516,7 +465,7 @@ class RealtimeEngagementSignalObserver extends CustomTabTabObserver {
                 mMaxReportedScrollPercentage = maxScrollPercentageFivesMultiple;
                 reportedPercentage = mMaxReportedScrollPercentage;
             }
-            if (mScrollOffsetUpdateFrequency == ON_SCROLL_END && allowUpdateAfter) {
+            if (allowUpdateAfter) {
                 mTimeLastOnScrollEnded = SystemClock.elapsedRealtime();
             }
             mIsScrollActive = false;
@@ -543,7 +492,7 @@ class RealtimeEngagementSignalObserver extends CustomTabTabObserver {
         private boolean isValidUpdateAfterScrollEnd() {
             return !mIsScrollActive
                     && mTimeLastOnScrollEnded != null
-                    && timeSinceLastOnScrollEndedMillis() <= mAfterScrollEndThresholdMs;
+                    && timeSinceLastOnScrollEndedMillis() <= DEFAULT_AFTER_SCROLL_END_THRESHOLD_MS;
         }
 
         private long timeSinceLastOnScrollEndedMillis() {

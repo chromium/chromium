@@ -3979,11 +3979,6 @@ const char kCCTRealTimeEngagementSignalsName[] =
 const char kCCTRealTimeEngagementSignalsDescription[] =
     "Enables sending real-time engagement signals (e.g. scroll) through "
     "CustomTabsCallback.";
-const char kCCTRealTimeEngagementSignalsAlternativeImplName[] =
-    "Enable alternative implementation for CCT real-time engagement signals.";
-const char kCCTRealTimeEngagementSignalsAlternativeImplDescription[] =
-    "Enables an alternative implementation for sending real-time engagement "
-    "signals (e.g. scroll) through CustomTabsCallback.";
 
 const char kCCTTextFragmentLookupApiEnabledName[] =
     "Enable CCT API to lookup text fragments";

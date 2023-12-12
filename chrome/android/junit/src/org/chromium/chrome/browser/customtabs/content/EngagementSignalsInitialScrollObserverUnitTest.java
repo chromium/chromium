@@ -40,10 +40,7 @@ import org.chromium.url.JUnitTestGURLs;
 /** Unit tests for {@link EngagementSignalsInitialScrollObserver}. */
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
-@EnableFeatures({
-    ChromeFeatureList.CCT_REAL_TIME_ENGAGEMENT_SIGNALS,
-    ChromeFeatureList.CCT_REAL_TIME_ENGAGEMENT_SIGNALS_ALTERNATIVE_IMPL
-})
+@EnableFeatures({ChromeFeatureList.CCT_REAL_TIME_ENGAGEMENT_SIGNALS})
 public class EngagementSignalsInitialScrollObserverUnitTest {
     private static final int SCROLL_EXTENT = 100;
 
