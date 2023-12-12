@@ -60,8 +60,7 @@ aggregate_vector_icons("views_vector_icons") {
 generate_histograms_variants_allowlist("bubble_histograms_variant") {
   namespace = "views_metrics"
   input_xml_file = "//tools/metrics/histograms/metadata/views/histograms.xml"
-  header_filename = "bubble_histograms_variant.h"
-  source_filename = "bubble_histograms_variant.cc"
+  output_file = "bubble_histograms_variant.h"
   allow_list_name = "BubbleName"
 }
 
