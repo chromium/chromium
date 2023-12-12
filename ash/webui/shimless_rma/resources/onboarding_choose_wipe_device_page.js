@@ -56,7 +56,7 @@ export class OnboardingChooseWipeDevicePage extends
        * Used to refer to the enum values in HTML file.
        * @protected {?WipeDeviceOption}
        */
-      wipeDeviceOption_: {
+      wipeDeviceOption: {
         type: Object,
         value: WipeDeviceOption,
       },
@@ -65,7 +65,7 @@ export class OnboardingChooseWipeDevicePage extends
       allButtonsDisabled: Boolean,
 
       /** @protected */
-      selectedWipeDeviceOption_: {
+      selectedWipeDeviceOption: {
         type: String,
         value: '',
       },
@@ -75,7 +75,7 @@ export class OnboardingChooseWipeDevicePage extends
   constructor() {
     super();
     /** @private {ShimlessRmaServiceInterface} */
-    this.shimlessRmaService_ = getShimlessRmaService();
+    this.shimlessRmaService = getShimlessRmaService();
   }
 
   /** @override */
@@ -90,8 +90,8 @@ export class OnboardingChooseWipeDevicePage extends
    * @param {!CustomEvent<{value: string}>} event
    * @protected
    */
-  onOptionChanged_(event) {
-    this.selectedWipeDeviceOption_ =
+  onOptionChanged(event) {
+    this.selectedWipeDeviceOption =
         /** @type {!WipeDeviceOption} */ (event.detail.value);
 
     // Enable the next button when an option is chosen.
@@ -100,9 +100,9 @@ export class OnboardingChooseWipeDevicePage extends
 
   /** @return {!Promise<!{stateResult: !StateResult}>} */
   onNextButtonClick() {
-    assert(!!this.selectedWipeDeviceOption_);
-    return this.shimlessRmaService_.setWipeDevice(
-        this.selectedWipeDeviceOption_ === WipeDeviceOption.WIPE_DEVICE);
+    assert(!!this.selectedWipeDeviceOption);
+    return this.shimlessRmaService.setWipeDevice(
+        this.selectedWipeDeviceOption === WipeDeviceOption.WIPE_DEVICE);
   }
 }
 

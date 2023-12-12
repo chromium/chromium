@@ -69,24 +69,24 @@ export class ReimagingCalibrationSetupPage extends
   static get properties() {
     return {
       /** @protected {?CalibrationSetupInstruction} */
-      calibrationSetupInstruction_: {
+      calibrationSetupInstruction: {
         type: Object,
       },
 
       /** @protected {string} */
-      imgSrc_: {
+      imgSrc: {
         type: String,
         value: '',
       },
 
       /** @protected {string} */
-      imgAlt_: {
+      imgAlt: {
         type: String,
         value: '',
       },
 
       /** @protected {string} */
-      calibrationInstructionsText_: {
+      calibrationInstructionsText: {
         type: String,
       },
     };
@@ -95,20 +95,19 @@ export class ReimagingCalibrationSetupPage extends
   constructor() {
     super();
     /** @private {ShimlessRmaServiceInterface} */
-    this.shimlessRmaService_ = getShimlessRmaService();
+    this.shimlessRmaService = getShimlessRmaService();
   }
 
   static get observers() {
-    return ['onStatusChanged_(calibrationSetupInstruction_)'];
+    return ['onStatusChanged(calibrationSetupInstruction)'];
   }
 
   /** @override */
   ready() {
     super.ready();
-    this.shimlessRmaService_.getCalibrationSetupInstructions().then(
-        (result) => {
-          this.calibrationSetupInstruction_ = result.instructions;
-        });
+    this.shimlessRmaService.getCalibrationSetupInstructions().then((result) => {
+      this.calibrationSetupInstruction = result.instructions;
+    });
     enableNextButton(this);
 
     focusPageTitle(this);
@@ -116,37 +115,37 @@ export class ReimagingCalibrationSetupPage extends
 
   /** @return {!Promise<{stateResult: !StateResult}>} */
   onNextButtonClick() {
-    return this.shimlessRmaService_.runCalibrationStep();
+    return this.shimlessRmaService.runCalibrationStep();
   }
 
   /**
-   * Groups state changes related to the |calibrationSetupInstruction_|
+   * Groups state changes related to the |calibrationSetupInstruction|
    * updating.
    * @protected
    */
-  onStatusChanged_() {
-    this.setCalibrationInstructionsText_();
-    this.setImgSrcAndAlt_();
+  onStatusChanged() {
+    this.setCalibrationInstructionsText();
+    this.setImgSrcAndAlt();
   }
 
   /**
    * @protected
    */
-  setCalibrationInstructionsText_() {
-    assert(this.calibrationSetupInstruction_);
-    this.calibrationInstructionsText_ = this.i18n(
-        INSRUCTION_MESSAGE_KEY_MAP[this.calibrationSetupInstruction_]);
+  setCalibrationInstructionsText() {
+    assert(this.calibrationSetupInstruction);
+    this.calibrationInstructionsText =
+        this.i18n(INSRUCTION_MESSAGE_KEY_MAP[this.calibrationSetupInstruction]);
   }
 
   /**
    * @protected
    */
-  setImgSrcAndAlt_() {
-    assert(this.calibrationSetupInstruction_);
-    this.imgSrc_ = `illustrations/${
-        CALIBRATION_IMG_MAP[this.calibrationSetupInstruction_]}.svg`;
-    this.imgAlt_ =
-        this.i18n(CALIBRATION_ALT_MAP[this.calibrationSetupInstruction_]);
+  setImgSrcAndAlt() {
+    assert(this.calibrationSetupInstruction);
+    this.imgSrc = `illustrations/${
+        CALIBRATION_IMG_MAP[this.calibrationSetupInstruction]}.svg`;
+    this.imgAlt =
+        this.i18n(CALIBRATION_ALT_MAP[this.calibrationSetupInstruction]);
   }
 }
 

@@ -15,11 +15,11 @@
     <div class="instructions">[[i18n('restockInstructionsText')]]</div>
     <div id="navigationButtonWrapper">
       <cr-button id="continue" class="action-button"
-          on-click="onRestockContinueButtonClicked_"
+          on-click="onRestockContinueButtonClicked"
           disabled="[[allButtonsDisabled]]">
         [[i18n('restockContinueButtonText')]]
       </cr-button>
-      <cr-button id="shutdown" on-click="onShutdownButtonClicked_"
+      <cr-button id="shutdown" on-click="onShutdownButtonClicked"
           disabled="[[allButtonsDisabled]]">
         [[i18n('restockShutdownButtonText')]]
       </cr-button>

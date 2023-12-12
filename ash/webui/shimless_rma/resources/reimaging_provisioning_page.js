@@ -57,12 +57,12 @@ export class ReimagingProvisioningPage extends ReimagingProvisioningPageBase {
       allButtonsDisabled: Boolean,
 
       /** @protected {!ProvisioningStatus} */
-      status_: {
+      status: {
         type: Object,
       },
 
       /** @protected {boolean} */
-      shouldShowSpinner_: {
+      shouldShowSpinner: {
         type: Boolean,
         value: true,
       },
@@ -72,16 +72,16 @@ export class ReimagingProvisioningPage extends ReimagingProvisioningPageBase {
   constructor() {
     super();
     /** @private {ShimlessRmaServiceInterface} */
-    this.shimlessRmaService_ = getShimlessRmaService();
+    this.shimlessRmaService = getShimlessRmaService();
     /** @private {ProvisioningObserverReceiver} */
-    this.provisioningObserverReceiver_ = new ProvisioningObserverReceiver(
+    this.provisioningObserverReceiver = new ProvisioningObserverReceiver(
         /**
          * @type {!ProvisioningObserverInterface}
          */
         (this));
 
-    this.shimlessRmaService_.observeProvisioningProgress(
-        this.provisioningObserverReceiver_.$.bindNewPipeAndPassRemote());
+    this.shimlessRmaService.observeProvisioningProgress(
+        this.provisioningObserverReceiver.$.bindNewPipeAndPassRemote());
   }
 
   /** @override */
@@ -114,18 +114,18 @@ export class ReimagingProvisioningPage extends ReimagingProvisioningPageBase {
       }));
     }
 
-    this.status_ = status;
+    this.status = status;
 
     // Transition to next state when provisioning is complete.
-    if (this.status_ === ProvisioningStatus.kComplete) {
-      this.shouldShowSpinner_ = false;
+    if (this.status === ProvisioningStatus.kComplete) {
+      this.shouldShowSpinner = false;
       executeThenTransitionState(
-          this, () => this.shimlessRmaService_.provisioningComplete());
+          this, () => this.shimlessRmaService.provisioningComplete());
       return;
     }
 
-    this.shouldShowSpinner_ =
-        isWpError || this.status_ === ProvisioningStatus.kInProgress;
+    this.shouldShowSpinner =
+        isWpError || this.status === ProvisioningStatus.kInProgress;
 
     if (isWpError) {
       const dialog = /** @type {!CrDialogElement} */ (
@@ -135,13 +135,13 @@ export class ReimagingProvisioningPage extends ReimagingProvisioningPageBase {
   }
 
   /** @protected */
-  onTryAgainButtonClick_() {
+  onTryAgainButtonClick() {
     const dialog = /** @type {!CrDialogElement} */ (
         this.shadowRoot.querySelector('#wpEnabledDialog'));
     dialog.close();
 
     executeThenTransitionState(
-        this, () => this.shimlessRmaService_.retryProvisioning());
+        this, () => this.shimlessRmaService.retryProvisioning());
   }
 }
 

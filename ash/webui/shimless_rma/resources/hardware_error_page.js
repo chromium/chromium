@@ -56,7 +56,7 @@ export class HardwareErrorPage extends HardwareErrorPageBase {
   constructor() {
     super();
     /** @private {ShimlessRmaServiceInterface} */
-    this.shimlessRmaService_ = getShimlessRmaService();
+    this.shimlessRmaService = getShimlessRmaService();
   }
 
   /** @override */
@@ -67,8 +67,8 @@ export class HardwareErrorPage extends HardwareErrorPageBase {
   }
 
   /** @protected */
-  onShutDownButtonClicked_() {
-    this.shimlessRmaService_.shutDownAfterHardwareError();
+  onShutDownButtonClicked() {
+    this.shimlessRmaService.shutDownAfterHardwareError();
     disableAllButtons(this, /* showBusyStateOverlay= */ true);
   }
 
@@ -76,7 +76,7 @@ export class HardwareErrorPage extends HardwareErrorPageBase {
    * @return {string}
    * @protected
    */
-  getErrorCodeString_() {
+  getErrorCodeString() {
     return this.i18n('hardwareErrorCode', this.errorCode);
   }
 }

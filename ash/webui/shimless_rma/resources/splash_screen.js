@@ -50,7 +50,7 @@ export class SplashScreen extends SplashScreenBase {
    * @returns {string}
    * @protected
    */
-  getSplashInstructionsText_() {
+  getSplashInstructionsText() {
     return this.i18n('shimlessSplashRemembering');
   }
 }

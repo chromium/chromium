@@ -47,7 +47,7 @@ export class ReimagingCalibrationRunPage extends
       /**
        * @protected
        */
-      calibrationComplete_: {
+      calibrationComplete: {
         type: Boolean,
         value: false,
       },
@@ -57,13 +57,13 @@ export class ReimagingCalibrationRunPage extends
   constructor() {
     super();
     /** @private {ShimlessRmaServiceInterface} */
-    this.shimlessRmaService_ = getShimlessRmaService();
+    this.shimlessRmaService = getShimlessRmaService();
     /** @private {!CalibrationObserverReceiver} */
-    this.calibrationObserverReceiver_ = new CalibrationObserverReceiver(
+    this.calibrationObserverReceiver = new CalibrationObserverReceiver(
         /** @type {!CalibrationObserverInterface} */ (this));
 
-    this.shimlessRmaService_.observeCalibrationProgress(
-        this.calibrationObserverReceiver_.$.bindNewPipeAndPassRemote());
+    this.shimlessRmaService.observeCalibrationProgress(
+        this.calibrationObserverReceiver.$.bindNewPipeAndPassRemote());
   }
 
   /** @override */
@@ -75,8 +75,8 @@ export class ReimagingCalibrationRunPage extends
 
   /** @return {!Promise<!{stateResult: !StateResult}>} */
   onNextButtonClick() {
-    if (this.calibrationComplete_) {
-      return this.shimlessRmaService_.calibrationComplete();
+    if (this.calibrationComplete) {
+      return this.shimlessRmaService.calibrationComplete();
     }
     return Promise.reject(new Error('Calibration is not complete.'));
   }
@@ -94,14 +94,14 @@ export class ReimagingCalibrationRunPage extends
   onCalibrationStepComplete(status) {
     switch (status) {
       case CalibrationOverallStatus.kCalibrationOverallComplete:
-        this.calibrationComplete_ = true;
+        this.calibrationComplete = true;
         enableNextButton(this);
         break;
       case CalibrationOverallStatus.kCalibrationOverallCurrentRoundComplete:
       case CalibrationOverallStatus.kCalibrationOverallCurrentRoundFailed:
       case CalibrationOverallStatus.kCalibrationOverallInitializationFailed:
         executeThenTransitionState(
-            this, () => this.shimlessRmaService_.continueCalibration());
+            this, () => this.shimlessRmaService.continueCalibration());
         break;
     }
   }
@@ -110,10 +110,10 @@ export class ReimagingCalibrationRunPage extends
    * @return {string}
    * @protected
    */
-  getCalibrationTitleString_() {
+  getCalibrationTitleString() {
     return this.i18n(
-        this.calibrationComplete_ ? 'runCalibrationCompleteTitleText' :
-                                    'runCalibrationTitleText');
+        this.calibrationComplete ? 'runCalibrationCompleteTitleText' :
+                                   'runCalibrationTitleText');
   }
 }
 

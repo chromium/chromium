@@ -50,7 +50,7 @@ export class OnboardingChooseWpDisableMethodPage extends
       allButtonsDisabled: Boolean,
 
       /** @private */
-      hwwpMethod_: {
+      hwwpMethod: {
         type: String,
         value: '',
       },
@@ -60,7 +60,7 @@ export class OnboardingChooseWpDisableMethodPage extends
   constructor() {
     super();
     /** @private {ShimlessRmaServiceInterface} */
-    this.shimlessRmaService_ = getShimlessRmaService();
+    this.shimlessRmaService = getShimlessRmaService();
   }
 
   /** @override */
@@ -74,9 +74,9 @@ export class OnboardingChooseWpDisableMethodPage extends
    * @param {!CustomEvent<{value: string}>} event
    * @protected
    */
-  onHwwpDisableMethodSelectionChanged_(event) {
-    this.hwwpMethod_ = event.detail.value;
-    const disabled = !this.hwwpMethod_;
+  onHwwpDisableMethodSelectionChanged(event) {
+    this.hwwpMethod = event.detail.value;
+    const disabled = !this.hwwpMethod;
     if (disabled) {
       disableNextButton(this);
     } else {
@@ -86,10 +86,10 @@ export class OnboardingChooseWpDisableMethodPage extends
 
   /** @return {!Promise<!{stateResult: !StateResult}>} */
   onNextButtonClick() {
-    if (this.hwwpMethod_ === 'hwwpDisableMethodManual') {
-      return this.shimlessRmaService_.chooseManuallyDisableWriteProtect();
-    } else if (this.hwwpMethod_ === 'hwwpDisableMethodRsu') {
-      return this.shimlessRmaService_.chooseRsuDisableWriteProtect();
+    if (this.hwwpMethod === 'hwwpDisableMethodManual') {
+      return this.shimlessRmaService.chooseManuallyDisableWriteProtect();
+    } else if (this.hwwpMethod === 'hwwpDisableMethodRsu') {
+      return this.shimlessRmaService.chooseRsuDisableWriteProtect();
     } else {
       return Promise.reject(new Error('No disable method selected'));
     }

@@ -72,14 +72,14 @@ export class RepairComponentChip extends RepairComponentChipBase {
         type: Boolean,
         value: false,
         observer:
-            RepairComponentChip.prototype.onIsFirstClickableComponentChanged_,
+            RepairComponentChip.prototype.onIsFirstClickableComponentChanged,
       },
 
     };
   }
 
   /** @protected */
-  onComponentButtonClicked_() {
+  onComponentButtonClicked() {
     this.checked = !this.checked;
 
     // Notify the page that the component chip was clicked, so that the page can
@@ -92,7 +92,7 @@ export class RepairComponentChip extends RepairComponentChipBase {
   }
 
   /** @private */
-  onIsFirstClickableComponentChanged_() {
+  onIsFirstClickableComponentChanged() {
     // Tab should go to the first non-disabled component in the list,
     // not individual component.
     modifyTabbableElement(
@@ -105,7 +105,7 @@ export class RepairComponentChip extends RepairComponentChipBase {
    * @return {string}
    * @protected
    */
-  isAriaPressed_() {
+  isAriaPressed() {
     return this.checked.toString();
   }
 }

@@ -35,7 +35,7 @@ let networkConfigService = null;
  * Sets up a FakeShimlessRmaService to be used at runtime.
  * TODO(gavindodd): Remove once mojo bindings are implemented.
  */
-function setupFakeShimlessRmaService_() {
+function setupFakeShimlessRmaService() {
   // Create provider.
   const service = new FakeShimlessRmaService();
 
@@ -106,7 +106,7 @@ export function setShimlessRmaServiceForTesting(testService) {
 export function getShimlessRmaService() {
   if (!shimlessRmaService) {
     if (useFakeService) {
-      setupFakeShimlessRmaService_();
+      setupFakeShimlessRmaService();
     } else {
       shimlessRmaService = ShimlessRmaService.getRemote();
     }

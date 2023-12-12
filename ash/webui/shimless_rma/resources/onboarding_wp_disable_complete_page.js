@@ -51,9 +51,9 @@ export class OnboardingWpDisableCompletePage extends
   static get properties() {
     return {
       /** @protected */
-      actionString_: {
+      actionString: {
         type: String,
-        computed: 'getActionString_(action_)',
+        computed: 'getActionString(action)',
       },
     };
   }
@@ -69,14 +69,14 @@ export class OnboardingWpDisableCompletePage extends
   constructor() {
     super();
     /** @private {ShimlessRmaServiceInterface} */
-    this.shimlessRmaService_ = getShimlessRmaService();
+    this.shimlessRmaService = getShimlessRmaService();
     /** @private {WriteProtectDisableCompleteAction} */
-    this.action_ = WriteProtectDisableCompleteAction.kUnknown;
+    this.action = WriteProtectDisableCompleteAction.kUnknown;
 
-    this.shimlessRmaService_.getWriteProtectDisableCompleteAction().then(
+    this.shimlessRmaService.getWriteProtectDisableCompleteAction().then(
         (res) => {
           if (res) {
-            this.action_ = res.action;
+            this.action = res.action;
           }
         });
   }
@@ -85,25 +85,25 @@ export class OnboardingWpDisableCompletePage extends
    * @return {string}
    * @protected
    */
-  getActionString_() {
-    return (this.action_ === WriteProtectDisableCompleteAction.kUnknown ||
-            this.action_ === WriteProtectDisableCompleteAction.kCompleteNoOp) ?
+  getActionString() {
+    return (this.action === WriteProtectDisableCompleteAction.kUnknown ||
+            this.action === WriteProtectDisableCompleteAction.kCompleteNoOp) ?
         '' :
-        this.i18n(disableActionTextKeys[this.action_]);
+        this.i18n(disableActionTextKeys[this.action]);
   }
 
   /** @return {!Promise<!{stateResult: !StateResult}>} */
   onNextButtonClick() {
-    return this.shimlessRmaService_.confirmManualWpDisableComplete();
+    return this.shimlessRmaService.confirmManualWpDisableComplete();
   }
 
   /**
    * @return {string}
    * @protected
    */
-  getVerificationIcon_() {
-    return (this.action_ === WriteProtectDisableCompleteAction.kUnknown ||
-            this.action_ === WriteProtectDisableCompleteAction.kCompleteNoOp) ?
+  getVerificationIcon() {
+    return (this.action === WriteProtectDisableCompleteAction.kUnknown ||
+            this.action === WriteProtectDisableCompleteAction.kCompleteNoOp) ?
         '' :
         'shimless-icon:check';
   }

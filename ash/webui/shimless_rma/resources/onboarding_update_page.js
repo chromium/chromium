@@ -68,27 +68,27 @@ export class OnboardingUpdatePageElement extends
       allButtonsDisabled: Boolean,
 
       /** @protected */
-      currentVersionText_: {
+      currentVersionText: {
         type: String,
         value: '',
       },
 
       /** @protected */
-      updateVersionButtonLabel_: {
+      updateVersionButtonLabel: {
         type: String,
         value: '',
       },
 
       /** @protected */
-      updateInProgress_: {
+      updateInProgress: {
         type: Boolean,
         value: false,
         observer:
-            OnboardingUpdatePageElement.prototype.onUpdateInProgressChange_,
+            OnboardingUpdatePageElement.prototype.onUpdateInProgressChange,
       },
 
       /** @protected */
-      verificationFailedMessage_: {
+      verificationFailedMessage: {
         type: String,
         value: '',
       },
@@ -98,14 +98,14 @@ export class OnboardingUpdatePageElement extends
        * separated by new lines.
        * @protected
        */
-      unqualifiedComponentsText_: {
+      unqualifiedComponentsText: {
         type: String,
         value: '',
       },
 
 
       /** @protected */
-      osUpdateEncounteredError_: {
+      osUpdateEncounteredError: {
         type: Boolean,
         value: false,
       },
@@ -119,31 +119,31 @@ export class OnboardingUpdatePageElement extends
     }
 
     /** @private {ShimlessRmaServiceInterface} */
-    this.shimlessRmaService_ = getShimlessRmaService();
+    this.shimlessRmaService = getShimlessRmaService();
     /** @protected {string} */
-    this.currentVersion_ = '';
+    this.currentVersion = '';
     /** @protected {?OsUpdateObserverReceiver} */
-    this.osUpdateObserverReceiver_ = new OsUpdateObserverReceiver(
-      /**
-       * @type {!OsUpdateObserverInterface}
-       */
-      (this));
+    this.osUpdateObserverReceiver = new OsUpdateObserverReceiver(
+        /**
+         * @type {!OsUpdateObserverInterface}
+         */
+        (this));
 
-    this.shimlessRmaService_.observeOsUpdateProgress(
-        this.osUpdateObserverReceiver_.$.bindNewPipeAndPassRemote());
+    this.shimlessRmaService.observeOsUpdateProgress(
+        this.osUpdateObserverReceiver.$.bindNewPipeAndPassRemote());
 
     // We assume it's compliant until updated in onHardwareVerificationResult().
-    this.isCompliant_ = true;
+    this.isCompliant = true;
     /** @protected {?HardwareVerificationStatusObserverReceiver} */
-    this.hwVerificationObserverReceiver_ =
+    this.hwVerificationObserverReceiver =
         new HardwareVerificationStatusObserverReceiver(
             /**
              * @type {!HardwareVerificationStatusObserverInterface}
              */
             (this));
 
-    this.shimlessRmaService_.observeHardwareVerificationStatus(
-        this.hwVerificationObserverReceiver_.$.bindNewPipeAndPassRemote());
+    this.shimlessRmaService.observeHardwareVerificationStatus(
+        this.hwVerificationObserverReceiver.$.bindNewPipeAndPassRemote());
   }
 
   /** @override */
@@ -152,8 +152,8 @@ export class OnboardingUpdatePageElement extends
     if (!loadTimeData.getBoolean('osUpdateEnabled')) {
       return;
     }
-    this.getCurrentVersionText_();
-    this.getUpdateVersionNumber_();
+    this.getCurrentVersionText();
+    this.getUpdateVersionNumber();
     enableNextButton(this);
 
     focusPageTitle(this);
@@ -162,67 +162,67 @@ export class OnboardingUpdatePageElement extends
   /**
    * @private
    */
-  getCurrentVersionText_() {
+  getCurrentVersionText() {
     if (!loadTimeData.getBoolean('osUpdateEnabled')) {
       return;
     }
-    this.shimlessRmaService_.getCurrentOsVersion().then((res) => {
+    this.shimlessRmaService.getCurrentOsVersion().then((res) => {
       if (res.version != null) {
-        this.currentVersion_ = res.version;
+        this.currentVersion = res.version;
       } else {
-        this.currentVersion_ = '0.0.0.0';
+        this.currentVersion = '0.0.0.0';
       }
-      this.currentVersionText_ =
-          this.i18n('currentVersionOutOfDateText', this.currentVersion_);
+      this.currentVersionText =
+          this.i18n('currentVersionOutOfDateText', this.currentVersion);
     });
   }
 
   /** @private */
-  getUpdateVersionNumber_() {
+  getUpdateVersionNumber() {
     if (!loadTimeData.getBoolean('osUpdateEnabled')) {
       return;
     }
-    this.shimlessRmaService_.checkForOsUpdates().then((res) => {
+    this.shimlessRmaService.checkForOsUpdates().then((res) => {
       assert(res.updateAvailable);
-      this.updateVersionButtonLabel_ =
+      this.updateVersionButtonLabel =
           this.i18n('updateVersionRestartLabel', res.version);
     });
   }
 
   /** @private */
-  updateOs_() {
-    this.updateInProgress_ = true;
-    this.shimlessRmaService_.updateOs().then((res) => {
+  updateOs() {
+    this.updateInProgress = true;
+    this.shimlessRmaService.updateOs().then((res) => {
       if (!res.updateStarted) {
-        this.updateInProgress_ = false;
+        this.updateInProgress = false;
       }
     });
   }
 
   /** @protected */
-  onUpdateButtonClicked_() {
+  onUpdateButtonClicked() {
     if (!loadTimeData.getBoolean('osUpdateEnabled')) {
       return;
     }
 
-    this.updateOs_();
+    this.updateOs();
   }
 
   /** @protected */
-  onRetryUpdateButtonClicked_() {
+  onRetryUpdateButtonClicked() {
     if (!loadTimeData.getBoolean('osUpdateEnabled')) {
       return;
     }
 
-    assert(this.osUpdateEncounteredError_);
-    this.osUpdateEncounteredError_ = false;
+    assert(this.osUpdateEncounteredError);
+    this.osUpdateEncounteredError = false;
 
-    this.updateOs_();
+    this.updateOs();
   }
 
   /** @return {!Promise<{stateResult: !StateResult}>} */
   onNextButtonClick() {
-    return this.shimlessRmaService_.updateOsSkipped();
+    return this.shimlessRmaService.updateOsSkipped();
   }
 
   /**
@@ -236,7 +236,7 @@ export class OnboardingUpdatePageElement extends
       return;
     }
     // Ignore progress when not updating, it is just the update available check.
-    if (!this.updateInProgress_) {
+    if (!this.updateInProgress) {
       return;
     }
 
@@ -244,10 +244,10 @@ export class OnboardingUpdatePageElement extends
         operation === OsUpdateOperation.kReportingErrorEvent ||
         operation === OsUpdateOperation.kNeedPermissionToUpdate ||
         operation === OsUpdateOperation.kDisabled) {
-      this.updateInProgress_ = false;
+      this.updateInProgress = false;
 
       if (error !== UpdateErrorCode.kSuccess) {
-        this.osUpdateEncounteredError_ = true;
+        this.osUpdateEncounteredError = true;
       }
     }
   }
@@ -262,20 +262,20 @@ export class OnboardingUpdatePageElement extends
     if (!loadTimeData.getBoolean('osUpdateEnabled')) {
       return;
     }
-    this.isCompliant_ = isCompliant;
+    this.isCompliant = isCompliant;
 
-    if (!this.isCompliant_) {
-      this.unqualifiedComponentsText_ = errorMessage;
-      this.setVerificationFailedMessage_();
+    if (!this.isCompliant) {
+      this.unqualifiedComponentsText = errorMessage;
+      this.setVerificationFailedMessage();
     }
   }
 
   /** @private */
-  setVerificationFailedMessage_() {
+  setVerificationFailedMessage() {
     if (!loadTimeData.getBoolean('osUpdateEnabled')) {
       return;
     }
-    this.verificationFailedMessage_ = this.i18nAdvanced(
+    this.verificationFailedMessage = this.i18nAdvanced(
         'osUpdateUnqualifiedComponentsTopText', {attrs: ['id']});
 
     // The #unqualifiedComponentsLink identifier is sourced from the string
@@ -291,7 +291,7 @@ export class OnboardingUpdatePageElement extends
   }
 
   /** @private */
-  closeDialog_() {
+  closeDialog() {
     if (!loadTimeData.getBoolean('osUpdateEnabled')) {
       return;
     }
@@ -299,11 +299,11 @@ export class OnboardingUpdatePageElement extends
   }
 
   /** @private */
-  onUpdateInProgressChange_() {
+  onUpdateInProgressChange() {
     if (!loadTimeData.getBoolean('osUpdateEnabled')) {
       return;
     }
-    if (this.updateInProgress_) {
+    if (this.updateInProgress) {
       disableAllButtons(this, /*showBusyStateOverlay=*/ false);
     } else {
       enableAllButtons(this);
@@ -314,8 +314,8 @@ export class OnboardingUpdatePageElement extends
    * @return {boolean}
    * @protected
    */
-  shouldShowUpdateInstructions_() {
-    return !this.updateInProgress_ && !this.osUpdateEncounteredError_;
+  shouldShowUpdateInstructions() {
+    return !this.updateInProgress && !this.osUpdateEncounteredError;
   }
 }
 

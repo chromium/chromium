@@ -83,7 +83,7 @@
     z-index: 1;
   }
 
-  :host([show-busy-state-overlay_]) #busyStateOverlay {
+  :host([show-busy-state-overlay]) #busyStateOverlay {
     display: block;
   }
 
@@ -153,14 +153,14 @@
   <div id="busyStateOverlay"></div>
   <div id="header">
     <cr-button
-      id="back" on-click="onBackButtonClicked_"
-      disabled="[[isButtonDisabled_(currentPage_.buttonBack, allButtonsDisabled_)]]"
-      hidden$="[[isButtonHidden_(currentPage_.buttonBack)]]">
+      id="back" on-click="onBackButtonClicked"
+      disabled="[[isButtonDisabled(currentPage.buttonBack, allButtonsDisabled)]]"
+      hidden$="[[isButtonHidden(currentPage.buttonBack)]]">
       <paper-spinner-lite id="backButtonSpinner" class="busy-icon"
-          hidden$="[[!backButtonClicked_]]" active>
+          hidden$="[[!backButtonClicked]]" active>
       </paper-spinner-lite>
       <iron-icon id="backButtonCaret" icon="cr:chevron-left"
-          class="button-icon" hidden$="[[backButtonClicked_]]">
+          class="button-icon" hidden$="[[backButtonClicked]]">
       </iron-icon>
       <span id="backButtonLabel">
         [[i18n('backButtonLabel')]]
@@ -170,28 +170,28 @@
   <div id="contentContainer"></div>
   <div id="footer">
     <cr-button
-      id="exit" class="pill" on-click="onExitButtonClicked_"
-      disabled="[[isButtonDisabled_(currentPage_.buttonExit, allButtonsDisabled_)]]"
-      hidden$="[[isButtonHidden_(currentPage_.buttonExit)]]">
+      id="exit" class="pill" on-click="onExitButtonClicked"
+      disabled="[[isButtonDisabled(currentPage.buttonExit, allButtonsDisabled)]]"
+      hidden$="[[isButtonHidden(currentPage.buttonExit)]]">
       <span id="exitButtonLabel">
-        [[getExitButtonLabel_(currentPage_.buttonExitLabelKey)]]
+        [[getExitButtonLabel(currentPage.buttonExitLabelKey)]]
       </span>
       <paper-spinner-lite id="exitButtonSpinner" class="busy-icon"
-          hidden$="[[!confirmExitButtonClicked_]]" active>
+          hidden$="[[!confirmExitButtonClicked]]" active>
       </paper-spinner-lite>
     </cr-button>
     <cr-button
-      id="next" class="action-button" on-click="onNextButtonClicked_"
-      disabled="[[isButtonDisabled_(currentPage_.buttonNext, allButtonsDisabled_)]]"
-      hidden$="[[isButtonHidden_(currentPage_.buttonNext)]]">
+      id="next" class="action-button" on-click="onNextButtonClicked"
+      disabled="[[isButtonDisabled(currentPage.buttonNext, allButtonsDisabled)]]"
+      hidden$="[[isButtonHidden(currentPage.buttonNext)]]">
       <span id="nextButtonLabel">
-        [[getNextButtonLabel_(currentPage_.buttonNextLabelKey)]]
+        [[getNextButtonLabel(currentPage.buttonNextLabelKey)]]
       </span>
       <paper-spinner-lite id="nextButtonSpinner" class="busy-icon"
-          hidden$="[[!nextButtonClicked_]]" active>
+          hidden$="[[!nextButtonClicked]]" active>
       </paper-spinner-lite>
       <iron-icon id="nextButtonCaret" icon="cr:chevron-right"
-          class="button-icon" hidden$="[[nextButtonClicked_]]">
+          class="button-icon" hidden$="[[nextButtonClicked]]">
       </iron-icon>
     </cr-button>
   </div>
@@ -205,58 +205,58 @@
   </div>
   <div class="dialog-footer" slot="button-container">
     <cr-button id="cancelExitDialogButton" class="pill"
-        on-click="closeDialog_">
+        on-click="closeDialog">
       [[i18n('exitDialogCancelButtonLabel')]]
     </cr-button>
     <cr-button id="confirmExitDialogButton" class="action-button"
-        on-click="onConfirmExitButtonClicked_">
+        on-click="onConfirmExitButtonClicked">
       [[i18n('exitButtonLabel')]]
     </cr-button>
   </div>
 </cr-dialog>
-<cr-dialog id="logsDialog" close-text="close" on-cancel="closeLogsDialog_">
+<cr-dialog id="logsDialog" close-text="close" on-cancel="closeLogsDialog">
   <div slot="title">
     [[i18n('rmaLogsTitleText')]]
   </div>
   <div slot="body">
-    <div id="logText">[[log_]]</div>
+    <div id="logText">[[log]]</div>
   </div>
   <div id="saveLogButtonContainer" class="dialog-footer" slot="button-container"
-      hidden="[[!shouldShowSaveToUsbButton_(usbLogState_)]]">
-    <cr-button id="closeLogDialogButton" on-click="closeLogsDialog_">
+      hidden="[[!shouldShowSaveToUsbButton(usbLogState)]]">
+    <cr-button id="closeLogDialogButton" on-click="closeLogsDialog">
       [[i18n('rmaLogsCancelButtonText')]]
     </cr-button>
     <cr-button id="saveLogDialogButton" class="text-button action-button"
-        on-click="onSaveLogClick_">
+        on-click="onSaveLogClick">
       [[i18n('rmaLogsSaveToUsbButtonText')]]
     </cr-button>
   </div>
   <div id="logSaveAttemptButtonContainer" class="dialog-footer"
         slot="button-container"
-        hidden="[[!shouldShowLogSaveAttemptContainer_(usbLogState_)]]">
+        hidden="[[!shouldShowLogSaveAttemptContainer(usbLogState)]]">
     <div id="logSavedIconText">
       <iron-icon id="verificationIcon" class="small-icon logs-dialog-icon"
-          icon="[[getSaveLogResultIcon_(usbLogState_)]]">
+          icon="[[getSaveLogResultIcon(usbLogState)]]">
       </iron-icon>
       <span id="logSavedStatusText" class="logs-dialog-footer-text">
-        [[logSavedStatusText_]]
+        [[logSavedStatusText]]
       </span>
     </div>
     <div>
       <cr-button id="logRetryDialogButton" class="text-button action-button"
-          on-click="retrySaveLogs_"
-          hidden="[[!shouldShowRetryButton_(usbLogState_)]]">
+          on-click="retrySaveLogs"
+          hidden="[[!shouldShowRetryButton(usbLogState)]]">
           [[i18n('retryButtonLabel')]]
       </cr-button>
       <cr-button id="logSaveDoneDialogButton" class="text-button action-button"
-          on-click="closeLogsDialog_">
+          on-click="closeLogsDialog">
         [[i18n('doneButtonLabel')]]
       </cr-button>
     </div>
   </div>
   <div id="logConnectUsbMessageContainer" class="dialog-footer"
         slot="button-container"
-        hidden="[[!shouldShowLogUsbMessageContainer_(usbLogState_)]]">
+        hidden="[[!shouldShowLogUsbMessageContainer(usbLogState)]]">
     <div id="logSavedIconText">
       <iron-icon id="connectUsbIcon" class="small-icon logs-dialog-icon"
           icon="shimless-icon:warning"></iron-icon>
@@ -264,7 +264,7 @@
         [[i18n('rmaLogsMissingUsbMessageText')]]
       </span>
       <cr-button id="closeLogDialogButton" class="action-button"
-          on-click="closeLogsDialog_">
+          on-click="closeLogsDialog">
         [[i18n('rmaLogsCancelButtonText')]]
       </cr-button>
     </div>

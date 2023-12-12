@@ -50,7 +50,7 @@ export class CriticalErrorPage extends CriticalErrorPageBase {
   constructor() {
     super();
     /** @private {ShimlessRmaServiceInterface} */
-    this.shimlessRmaService_ = getShimlessRmaService();
+    this.shimlessRmaService = getShimlessRmaService();
   }
 
   /** @override */
@@ -61,14 +61,14 @@ export class CriticalErrorPage extends CriticalErrorPageBase {
   }
 
   /** @protected */
-  onExitToLoginButtonClicked_() {
-    this.shimlessRmaService_.criticalErrorExitToLogin();
+  onExitToLoginButtonClicked() {
+    this.shimlessRmaService.criticalErrorExitToLogin();
     disableAllButtons(this, /* showBusyStateOverlay= */ true);
   }
 
   /** @protected */
-  onRebootButtonClicked_() {
-    this.shimlessRmaService_.criticalErrorReboot();
+  onRebootButtonClicked() {
+    this.shimlessRmaService.criticalErrorReboot();
     disableAllButtons(this, /* showBusyStateOverlay= */ true);
   }
 }

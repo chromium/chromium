@@ -28,11 +28,11 @@ const fakeDramPartNumber = 'dram# 0123';
  * @suppress {visibility}
  */
 function suppressedComponentOnSelectedChange_(component) {
-  component.onSelectedRegionChange_('ignored');
-  component.onSelectedCustomLabelChange_('ignored');
-  component.onSelectedSkuChange_('ignored');
-  component.onIsChassisBrandedChange_('ignored');
-  component.onDoesMeetRequirementsChange_('ignored');
+  component.onSelectedRegionChange('ignored');
+  component.onSelectedCustomLabelChange('ignored');
+  component.onSelectedSkuChange('ignored');
+  component.onIsChassisBrandedChange('ignored');
+  component.onDoesMeetRequirementsChange('ignored');
 }
 
 /**

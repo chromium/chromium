@@ -41,21 +41,21 @@ export class WrapupWaitForManualWpEnablePage extends
   constructor() {
     super();
     /** @private {ShimlessRmaServiceInterface} */
-    this.shimlessRmaService_ = getShimlessRmaService();
+    this.shimlessRmaService = getShimlessRmaService();
     /**
      * Receiver responsible for observing hardware write protection state.
      * @private {
      *  ?HardwareWriteProtectionStateObserverReceiver}
      */
-    this.hardwareWriteProtectionStateObserverReceiver_ =
+    this.hardwareWriteProtectionStateObserverReceiver =
         new HardwareWriteProtectionStateObserverReceiver(
             /**
              * @type {!HardwareWriteProtectionStateObserverInterface}
              */
             (this));
 
-    this.shimlessRmaService_.observeHardwareWriteProtectionState(
-        this.hardwareWriteProtectionStateObserverReceiver_.$
+    this.shimlessRmaService.observeHardwareWriteProtectionState(
+        this.hardwareWriteProtectionStateObserverReceiver.$
             .bindNewPipeAndPassRemote());
   }
 
@@ -72,7 +72,7 @@ export class WrapupWaitForManualWpEnablePage extends
   onHardwareWriteProtectionStateChanged(enabled) {
     if (enabled) {
       executeThenTransitionState(
-          this, () => this.shimlessRmaService_.writeProtectManuallyEnabled());
+          this, () => this.shimlessRmaService.writeProtectManuallyEnabled());
     }
   }
 }

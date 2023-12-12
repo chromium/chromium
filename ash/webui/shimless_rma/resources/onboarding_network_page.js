@@ -67,7 +67,7 @@ export class OnboardingNetworkPage extends OnboardingNetworkPageBase {
        * @protected
        * @type {!Array<NetworkStateProperties>}
        */
-      networks_: {
+      networks: {
         type: Array,
         value: [],
       },
@@ -76,7 +76,7 @@ export class OnboardingNetworkPage extends OnboardingNetworkPageBase {
        * Tracks whether network has configuration to be connected
        * @protected
        */
-      enableConnect_: {
+      enableConnect: {
         type: Boolean,
       },
 
@@ -85,7 +85,7 @@ export class OnboardingNetworkPage extends OnboardingNetworkPageBase {
        * or updated by network-config.
        * @protected
        */
-      networkType_: {
+      networkType: {
         type: String,
         value: '',
       },
@@ -99,7 +99,7 @@ export class OnboardingNetworkPage extends OnboardingNetworkPageBase {
        * network-config.
        * @protected
        */
-      networkName_: {
+      networkName: {
         type: String,
         value: '',
       },
@@ -109,7 +109,7 @@ export class OnboardingNetworkPage extends OnboardingNetworkPageBase {
        * empty when configuring a new network.
        * @protected
        */
-      guid_: {
+      guid: {
         type: String,
         value: '',
       },
@@ -118,7 +118,7 @@ export class OnboardingNetworkPage extends OnboardingNetworkPageBase {
        * Tracks whether network shows connect button or disconnect button.
        * @protected
        */
-      networkShowConnect_: {
+      networkShowConnect: {
         type: Boolean,
       },
 
@@ -126,7 +126,7 @@ export class OnboardingNetworkPage extends OnboardingNetworkPageBase {
        * Set by network-config when a configuration error occurs.
        * @private
        */
-      error_: {
+      error: {
         type: String,
         value: '',
       },
@@ -135,10 +135,10 @@ export class OnboardingNetworkPage extends OnboardingNetworkPageBase {
        * Set to true to when connected to at least one active network.
        * @protected
        */
-      isOnline_: {
+      isOnline: {
         type: Boolean,
         value: false,
-        observer: OnboardingNetworkPage.prototype.onIsOnlineChange_,
+        observer: OnboardingNetworkPage.prototype.onIsOnlineChange,
       },
     };
   }
@@ -146,9 +146,9 @@ export class OnboardingNetworkPage extends OnboardingNetworkPageBase {
   constructor() {
     super();
     /** @private {ShimlessRmaServiceInterface} */
-    this.shimlessRmaService_ = getShimlessRmaService();
+    this.shimlessRmaService = getShimlessRmaService();
     /** @private {?NetworkConfigServiceInterface} */
-    this.networkConfig_ = getNetworkConfigService();
+    this.networkConfig = getNetworkConfigService();
   }
 
   /** @override */
@@ -157,7 +157,7 @@ export class OnboardingNetworkPage extends OnboardingNetworkPageBase {
 
     // Before displaying the available networks, track the pre-existing
     // configured networks.
-    this.shimlessRmaService_.trackConfiguredNetworks();
+    this.shimlessRmaService.trackConfiguredNetworks();
     this.refreshNetworks();
     enableNextButton(this);
 
@@ -176,14 +176,14 @@ export class OnboardingNetworkPage extends OnboardingNetworkPageBase {
       limit: NO_LIMIT,
     };
 
-    this.networkConfig_.getNetworkStateList(networkFilter).then(res => {
+    this.networkConfig.getNetworkStateList(networkFilter).then(res => {
       // Filter again since networkFilter above doesn't take two network types.
-      this.networks_ = res.result.filter(
+      this.networks = res.result.filter(
           (network) => [NetworkType.kWiFi,
                         NetworkType.kEthernet,
       ].includes(network.type));
 
-      this.isOnline_ = this.networks_.some(function(network) {
+      this.isOnline = this.networks.some(function(network) {
         return OncMojo.connectionStateIsConnected(network.connectionState);
       });
     });
@@ -195,20 +195,20 @@ export class OnboardingNetworkPage extends OnboardingNetworkPageBase {
    *     event
    * @protected
    */
-  onNetworkSelected_(event) {
+  onNetworkSelected(event) {
     const networkState = event.detail;
     const type = networkState.type;
     const displayName = OncMojo.getNetworkStateDisplayNameUnsafe(networkState);
 
-    this.networkShowConnect_ =
+    this.networkShowConnect =
         (networkState.connectionState === ConnectionStateType.kNotConnected);
 
-    if (!this.canAttemptConnection_(networkState)) {
-      this.showConfig_(type, networkState.guid, displayName);
+    if (!this.canAttemptConnection(networkState)) {
+      this.showConfig(type, networkState.guid, displayName);
       return;
     }
 
-    this.networkConfig_.startConnect(networkState.guid).then(response => {
+    this.networkConfig.startConnect(networkState.guid).then(response => {
       this.refreshNetworks();
       if (response.result === StartConnectResult.kUnknown) {
         console.error(
@@ -226,7 +226,7 @@ export class OnboardingNetworkPage extends OnboardingNetworkPageBase {
    * @param {!OncMojo.NetworkStateProperties} state The network state.
    * @private
    */
-  canAttemptConnection_(state) {
+  canAttemptConnection(state) {
     if (state.connectionState !== ConnectionStateType.kNotConnected) {
       return false;
     }
@@ -245,12 +245,12 @@ export class OnboardingNetworkPage extends OnboardingNetworkPageBase {
    * @param {string} name
    * @private
    */
-  showConfig_(type, guid, name) {
+  showConfig(type, guid, name) {
     assert(type !== NetworkType.kCellular && type !== NetworkType.kTether);
 
-    this.networkType_ = OncMojo.getNetworkTypeString(type);
-    this.networkName_ = name || '';
-    this.guid_ = guid || '';
+    this.networkType = OncMojo.getNetworkTypeString(type);
+    this.networkName = name || '';
+    this.guid = guid || '';
 
     const networkConfig =
         /** @type {!NetworkConfigElement} */ (
@@ -265,7 +265,7 @@ export class OnboardingNetworkPage extends OnboardingNetworkPageBase {
   }
 
   /** @protected */
-  closeConfig_() {
+  closeConfig() {
     const dialog = /** @type {!CrDialogElement} */ (
         this.shadowRoot.querySelector('#dialog'));
     if (dialog.open) {
@@ -273,13 +273,13 @@ export class OnboardingNetworkPage extends OnboardingNetworkPageBase {
     }
 
     // Reset the network state properties.
-    this.networkType_ = '';
-    this.networkName_ = '';
-    this.guid_ = '';
+    this.networkType = '';
+    this.networkName = '';
+    this.guid = '';
   }
 
   /** @protected */
-  connectNetwork_() {
+  connectNetwork() {
     const networkConfig =
         /** @type {!NetworkConfigElement} */ (
             this.shadowRoot.querySelector('#networkConfig'));
@@ -287,22 +287,22 @@ export class OnboardingNetworkPage extends OnboardingNetworkPageBase {
   }
 
   /** @protected */
-  disconnectNetwork_() {
-    this.networkConfig_.startDisconnect(this.guid_).then(response => {
+  disconnectNetwork() {
+    this.networkConfig.startDisconnect(this.guid).then(response => {
       if (!response.success) {
-        console.error('Disconnect failed for: ' + this.guid_);
+        console.error('Disconnect failed for: ' + this.guid);
       }
     });
-    this.closeConfig_();
+    this.closeConfig();
   }
 
   /**
    * @return {string}
    * @private
    */
-  getError_() {
-    if (this.i18nExists(this.error_)) {
-      return this.i18n(this.error_);
+  getError() {
+    if (this.i18nExists(this.error)) {
+      return this.i18n(this.error);
     }
     return this.i18n('networkErrorUnknown');
   }
@@ -310,13 +310,13 @@ export class OnboardingNetworkPage extends OnboardingNetworkPageBase {
   /**
    * @protected
    */
-  onPropertiesSet_() {
+  onPropertiesSet() {
     this.refreshNetworks();
   }
 
   /** @private */
-  onConfigClose_() {
-    this.closeConfig_();
+  onConfigClose() {
+    this.closeConfig();
     this.refreshNetworks();
   }
 
@@ -324,27 +324,27 @@ export class OnboardingNetworkPage extends OnboardingNetworkPageBase {
    * @return {string}
    * @protected
    */
-  getDialogTitle_() {
-    if (this.networkName_ && !this.networkShowConnect_) {
-      return loadTimeData.getStringF('internetConfigName', this.networkName_);
+  getDialogTitle() {
+    if (this.networkName && !this.networkShowConnect) {
+      return loadTimeData.getStringF('internetConfigName', this.networkName);
     }
-    const type = this.i18n('OncType' + this.networkType_);
+    const type = this.i18n('OncType' + this.networkType);
     return this.i18n('internetJoinType', type);
   }
 
   /** @return {!Promise<{stateResult: !StateResult}>} */
   onNextButtonClick() {
-    return this.shimlessRmaService_.networkSelectionComplete();
+    return this.shimlessRmaService.networkSelectionComplete();
   }
 
   /** @private */
-  onIsOnlineChange_() {
+  onIsOnlineChange() {
     this.dispatchEvent(new CustomEvent(
         'set-next-button-label',
         {
           bubbles: true,
           composed: true,
-          detail: this.isOnline_ ? 'nextButtonLabel' : 'skipButtonLabel',
+          detail: this.isOnline ? 'nextButtonLabel' : 'skipButtonLabel',
         },
         ));
   }

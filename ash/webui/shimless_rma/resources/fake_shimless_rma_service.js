@@ -12,74 +12,74 @@ import {CalibrationComponentStatus, CalibrationObserverRemote, CalibrationOveral
 /** @implements {ShimlessRmaServiceInterface} */
 export class FakeShimlessRmaService {
   constructor() {
-    this.methods_ = new FakeMethodResolver();
-    this.observables_ = new FakeObservables();
+    this.methods = new FakeMethodResolver();
+    this.observables = new FakeObservables();
 
     /**
      * The list of states for this RMA flow.
      * @private {!Array<!StateResult>}
      */
-    this.states_ = [];
+    this.states = [];
 
     /**
-     * The index into states_ for the current fake state.
+     * The index into states for the current fake state.
      * @private {number}
      */
-    this.stateIndex_ = 0;
+    this.stateIndex = 0;
 
     /**
      * The list of components.
      * @private {!Array<!Component>}
      */
-    this.components_ = [];
+    this.components = [];
 
     /**
      * Control automatically triggering a HWWP disable observation.
      * @private {boolean}
      */
-    this.automaticallyTriggerDisableWriteProtectionObservation_ = false;
+    this.automaticallyTriggerDisableWriteProtectionObservation = false;
 
     /**
      * Control automatically triggering update RO firmware observations.
      * @private {boolean}
      */
-    this.automaticallyTriggerUpdateRoFirmwareObservation_ = false;
+    this.automaticallyTriggerUpdateRoFirmwareObservation = false;
 
     /**
      * Control automatically triggering provisioning observations.
      * @private {boolean}
      */
-    this.automaticallyTriggerProvisioningObservation_ = false;
+    this.automaticallyTriggerProvisioningObservation = false;
 
     /**
      * Control automatically triggering calibration observations.
      * @private {boolean}
      */
-    this.automaticallyTriggerCalibrationObservation_ = false;
+    this.automaticallyTriggerCalibrationObservation = false;
 
     /**
      * Control automatically triggering OS update observations.
      * @private {boolean}
      */
-    this.automaticallyTriggerOsUpdateObservation_ = false;
+    this.automaticallyTriggerOsUpdateObservation = false;
 
     /**
      * Control automatically triggering a hardware verification observation.
      * @private {boolean}
      */
-    this.automaticallyTriggerHardwareVerificationStatusObservation_ = false;
+    this.automaticallyTriggerHardwareVerificationStatusObservation = false;
 
     /**
      * Control automatically triggering a finalization observation.
      * @private {boolean}
      */
-    this.automaticallyTriggerFinalizationObservation_ = false;
+    this.automaticallyTriggerFinalizationObservation = false;
 
     /**
      * Control automatically triggering power cable state observations.
      * @private {boolean}
      */
-    this.automaticallyTriggerPowerCableStateObservation_ = false;
+    this.automaticallyTriggerPowerCableStateObservation = false;
 
     /**
      * Both abortRma and forward state transitions can have significant delays
@@ -87,32 +87,32 @@ export class FakeShimlessRmaService {
      * Defaults to no delay for unit tests.
      * @private {number}
      */
-    this.resolveMethodDelayMs_ = 0;
+    this.resolveMethodDelayMs = 0;
 
     /**
      * The result of calling trackConfiguredNetworks.
      * @private {boolean}
      */
-    this.trackConfiguredNetworksCalled_ = false;
+    this.trackConfiguredNetworksCalled = false;
 
     /**
      * The approval of last call to completeLast3pDiagnosticsInstallation.
      * @private {?boolean}
      */
-    this.lastCompleteLast3pDiagnosticsInstallationApproval_ = null;
+    this.lastCompleteLast3pDiagnosticsInstallationApproval = null;
 
     /**
      * Has show3pDiagnosticsApp been called.
      * @private {boolean}
      */
-    this.wasShow3pDiagnosticsAppCalled_ = false;
+    this.wasShow3pDiagnosticsAppCalled = false;
 
     this.reset();
   }
 
   /** @param {number} delayMs */
   setAsyncOperationDelayMs(delayMs) {
-    this.resolveMethodDelayMs_ = delayMs;
+    this.resolveMethodDelayMs = delayMs;
   }
 
   /**
@@ -126,8 +126,8 @@ export class FakeShimlessRmaService {
    * @param {!Array<!StateResult>} states
    */
   setStates(states) {
-    this.states_ = states;
-    this.stateIndex_ = 0;
+    this.states = states;
+    this.stateIndex = 0;
   }
 
   /**
@@ -136,19 +136,19 @@ export class FakeShimlessRmaService {
   getCurrentState() {
     // As next state functions and transitionPreviousState can modify the result
     // of this function the result must be set at the time of the call.
-    if (this.states_.length === 0) {
-      this.setFakeCurrentState_(
+    if (this.states.length === 0) {
+      this.setFakeCurrentState(
           State.kUnknown, false, false, RmadErrorCode.kRmaNotRequired);
     } else {
-      // It should not be possible for stateIndex_ to be out of range unless
+      // It should not be possible for stateIndex to be out of range unless
       // there is a bug in the fake.
-      assert(this.stateIndex_ < this.states_.length);
-      const state = this.states_[this.stateIndex_];
-      this.setFakeCurrentState_(
+      assert(this.stateIndex < this.states.length);
+      const state = this.states[this.stateIndex];
+      this.setFakeCurrentState(
           state.state, state.canExit, state.canGoBack, state.error);
     }
-    return this.methods_.resolveMethodWithDelay(
-        'getCurrentState', this.resolveMethodDelayMs_);
+    return this.methods.resolveMethodWithDelay(
+        'getCurrentState', this.resolveMethodDelayMs);
   }
 
   /**
@@ -157,33 +157,33 @@ export class FakeShimlessRmaService {
   transitionPreviousState() {
     // As next state methods and transitionPreviousState can modify the result
     // of this function the result must be set at the time of the call.
-    if (this.states_.length === 0) {
-      this.setFakePrevState_(
+    if (this.states.length === 0) {
+      this.setFakePrevState(
           State.kUnknown, false, false, RmadErrorCode.kRmaNotRequired);
-    } else if (this.stateIndex_ === 0) {
-      // It should not be possible for stateIndex_ to be out of range unless
+    } else if (this.stateIndex === 0) {
+      // It should not be possible for stateIndex to be out of range unless
       // there is a bug in the fake.
-      assert(this.stateIndex_ < this.states_.length);
-      const state = this.states_[this.stateIndex_];
-      this.setFakePrevState_(
+      assert(this.stateIndex < this.states.length);
+      const state = this.states[this.stateIndex];
+      this.setFakePrevState(
           state.state, state.canExit, state.canGoBack,
           RmadErrorCode.kTransitionFailed);
     } else {
-      this.stateIndex_--;
-      const state = this.states_[this.stateIndex_];
-      this.setFakePrevState_(
+      this.stateIndex--;
+      const state = this.states[this.stateIndex];
+      this.setFakePrevState(
           state.state, state.canExit, state.canGoBack, state.error);
     }
-    return this.methods_.resolveMethodWithDelay(
-        'transitionPreviousState', this.resolveMethodDelayMs_);
+    return this.methods.resolveMethodWithDelay(
+        'transitionPreviousState', this.resolveMethodDelayMs);
   }
 
   /**
    * @return {!Promise<!{error: !RmadErrorCode}>}
    */
   abortRma() {
-    return this.methods_.resolveMethodWithDelay(
-        'abortRma', this.resolveMethodDelayMs_);
+    return this.methods.resolveMethodWithDelay(
+        'abortRma', this.resolveMethodDelayMs);
   }
 
   /**
@@ -191,30 +191,30 @@ export class FakeShimlessRmaService {
    * @param {!RmadErrorCode} error
    */
   setAbortRmaResult(error) {
-    this.methods_.setResult('abortRma', {error: error});
+    this.methods.setResult('abortRma', {error: error});
   }
 
   /**
    * @return {!Promise<!{stateResult: !StateResult}>}
    */
   beginFinalization() {
-    return this.getNextStateForMethod_(
+    return this.getNextStateForMethod(
         'beginFinalization', State.kWelcomeScreen);
   }
 
   trackConfiguredNetworks() {
-    this.trackConfiguredNetworksCalled_ = true;
+    this.trackConfiguredNetworksCalled = true;
   }
 
   getTrackConfiguredNetworks() {
-    return this.trackConfiguredNetworksCalled_;
+    return this.trackConfiguredNetworksCalled;
   }
 
   /**
    * @return {!Promise<!{stateResult: !StateResult}>}
    */
   networkSelectionComplete() {
-    return this.getNextStateForMethod_(
+    return this.getNextStateForMethod(
         'networkSelectionComplete', State.kConfigureNetwork);
   }
 
@@ -222,26 +222,26 @@ export class FakeShimlessRmaService {
    * @return {!Promise<!{version: string}>}
    */
   getCurrentOsVersion() {
-    return this.methods_.resolveMethod('getCurrentOsVersion');
+    return this.methods.resolveMethod('getCurrentOsVersion');
   }
 
   /**
    * @param {null|string} version
    */
   setGetCurrentOsVersionResult(version) {
-    this.methods_.setResult('getCurrentOsVersion', {version: version});
+    this.methods.setResult('getCurrentOsVersion', {version: version});
   }
 
   /**
    * @return {!Promise<!{updateAvailable: boolean, version: string}>}
    */
   checkForOsUpdates() {
-    return this.methods_.resolveMethod('checkForOsUpdates');
+    return this.methods.resolveMethod('checkForOsUpdates');
   }
 
   /** @param {string} version */
   setCheckForOsUpdatesResult(version) {
-    this.methods_.setResult(
+    this.methods.setResult(
         'checkForOsUpdates', {updateAvailable: true, version});
   }
 
@@ -249,7 +249,7 @@ export class FakeShimlessRmaService {
    * @return {!Promise<!{updateStarted: boolean}>}
    */
   updateOs() {
-    if (this.automaticallyTriggerOsUpdateObservation_) {
+    if (this.automaticallyTriggerOsUpdateObservation) {
       this.triggerOsUpdateObserver(
           OsUpdateOperation.kCheckingForUpdate, 0.1, UpdateErrorCode.kSuccess,
           500);
@@ -266,36 +266,35 @@ export class FakeShimlessRmaService {
           OsUpdateOperation.kUpdatedNeedReboot, 1.0, UpdateErrorCode.kSuccess,
           3000);
     }
-    return this.methods_.resolveMethod('updateOs');
+    return this.methods.resolveMethod('updateOs');
   }
 
   /**
    * @param {boolean} started
    */
   setUpdateOsResult(started) {
-    this.methods_.setResult('updateOs', {updateStarted: started});
+    this.methods.setResult('updateOs', {updateStarted: started});
   }
 
   /**
    * @return {!Promise<!{stateResult: !StateResult}>}
    */
   updateOsSkipped() {
-    return this.getNextStateForMethod_('updateOsSkipped', State.kUpdateOs);
+    return this.getNextStateForMethod('updateOsSkipped', State.kUpdateOs);
   }
 
   /**
    * @return {!Promise<!{stateResult: !StateResult}>}
    */
   setSameOwner() {
-    return this.getNextStateForMethod_(
-        'setSameOwner', State.kChooseDestination);
+    return this.getNextStateForMethod('setSameOwner', State.kChooseDestination);
   }
 
   /**
    * @return {!Promise<!{stateResult: !StateResult}>}
    */
   setDifferentOwner() {
-    return this.getNextStateForMethod_(
+    return this.getNextStateForMethod(
         'setDifferentOwner', State.kChooseDestination);
   }
 
@@ -304,22 +303,21 @@ export class FakeShimlessRmaService {
    * @return {!Promise<!{stateResult: !StateResult}>}
    */
   setWipeDevice(shouldWipeDevice) {
-    return this.getNextStateForMethod_(
-        'setWipeDevice', State.kChooseWipeDevice);
+    return this.getNextStateForMethod('setWipeDevice', State.kChooseWipeDevice);
   }
 
   /**
    * @return {!Promise<!{available: boolean}>}
    */
   manualDisableWriteProtectAvailable() {
-    return this.methods_.resolveMethod('manualDisableWriteProtectAvailable');
+    return this.methods.resolveMethod('manualDisableWriteProtectAvailable');
   }
 
   /**
    * @param {boolean} available
    */
   setManualDisableWriteProtectAvailableResult(available) {
-    this.methods_.setResult(
+    this.methods.setResult(
         'manualDisableWriteProtectAvailable', {available: available});
   }
 
@@ -327,7 +325,7 @@ export class FakeShimlessRmaService {
    * @return {!Promise<!{stateResult: !StateResult}>}
    */
   chooseManuallyDisableWriteProtect() {
-    return this.getNextStateForMethod_(
+    return this.getNextStateForMethod(
         'chooseManuallyDisableWriteProtect',
         State.kChooseWriteProtectDisableMethod);
   }
@@ -336,7 +334,7 @@ export class FakeShimlessRmaService {
    * @return {!Promise<!{stateResult: !StateResult}>}
    */
   chooseRsuDisableWriteProtect() {
-    return this.getNextStateForMethod_(
+    return this.getNextStateForMethod(
         'chooseRsuDisableWriteProtect', State.kChooseWriteProtectDisableMethod);
   }
 
@@ -344,14 +342,14 @@ export class FakeShimlessRmaService {
    * @return {!Promise<!{challenge: string}>}
    */
   getRsuDisableWriteProtectChallenge() {
-    return this.methods_.resolveMethod('getRsuDisableWriteProtectChallenge');
+    return this.methods.resolveMethod('getRsuDisableWriteProtectChallenge');
   }
 
   /**
    * @param {string} challenge
    */
   setGetRsuDisableWriteProtectChallengeResult(challenge) {
-    this.methods_.setResult(
+    this.methods.setResult(
         'getRsuDisableWriteProtectChallenge', {challenge: challenge});
   }
 
@@ -359,21 +357,21 @@ export class FakeShimlessRmaService {
    * @return {!Promise<!{hwid: string}>}
    */
   getRsuDisableWriteProtectHwid() {
-    return this.methods_.resolveMethod('getRsuDisableWriteProtectHwid');
+    return this.methods.resolveMethod('getRsuDisableWriteProtectHwid');
   }
 
   /**
    * @param {string} hwid
    */
   setGetRsuDisableWriteProtectHwidResult(hwid) {
-    this.methods_.setResult('getRsuDisableWriteProtectHwid', {hwid: hwid});
+    this.methods.setResult('getRsuDisableWriteProtectHwid', {hwid: hwid});
   }
 
   /**
    * @return {!Promise<!{qrCodeData: !Array<number>}>}
    */
   getRsuDisableWriteProtectChallengeQrCode() {
-    return this.methods_.resolveMethod(
+    return this.methods.resolveMethod(
         'getRsuDisableWriteProtectChallengeQrCode');
   }
 
@@ -381,7 +379,7 @@ export class FakeShimlessRmaService {
    * @param {!Array<number>} qrCodeData
    */
   setGetRsuDisableWriteProtectChallengeQrCodeResponse(qrCodeData) {
-    this.methods_.setResult(
+    this.methods.setResult(
         'getRsuDisableWriteProtectChallengeQrCode', {qrCodeData: qrCodeData});
   }
 
@@ -390,7 +388,7 @@ export class FakeShimlessRmaService {
    * @return {!Promise<!{stateResult: !StateResult}>}
    */
   setRsuDisableWriteProtectCode(code) {
-    return this.getNextStateForMethod_(
+    return this.getNextStateForMethod(
         'setRsuDisableWriteProtectCode', State.kEnterRSUWPDisableCode);
   }
 
@@ -398,18 +396,18 @@ export class FakeShimlessRmaService {
    * @return {!Promise<!{stateResult: !StateResult}>}
    */
   writeProtectManuallyDisabled() {
-    return this.getNextStateForMethod_(
+    return this.getNextStateForMethod(
         'writeProtectManuallyDisabled', State.kWaitForManualWPDisable);
   }
 
   /** @return {!Promise<!{action: !WriteProtectDisableCompleteAction}>} */
   getWriteProtectDisableCompleteAction() {
-    return this.methods_.resolveMethod('getWriteProtectDisableCompleteAction');
+    return this.methods.resolveMethod('getWriteProtectDisableCompleteAction');
   }
 
   /** @param {!WriteProtectDisableCompleteAction} action */
   setGetWriteProtectDisableCompleteAction(action) {
-    this.methods_.setResult(
+    this.methods.setResult(
         'getWriteProtectDisableCompleteAction', {action: action});
   }
 
@@ -417,7 +415,7 @@ export class FakeShimlessRmaService {
    * @return {!Promise<!{stateResult: !StateResult}>}
    */
   confirmManualWpDisableComplete() {
-    return this.getNextStateForMethod_(
+    return this.getNextStateForMethod(
         'confirmManualWpDisableComplete', State.kWPDisableComplete);
   }
 
@@ -425,15 +423,15 @@ export class FakeShimlessRmaService {
    * @return {!Promise<!{components: !Array<!Component>}>}
    */
   getComponentList() {
-    this.methods_.setResult('getComponentList', {components: this.components_});
-    return this.methods_.resolveMethod('getComponentList');
+    this.methods.setResult('getComponentList', {components: this.components});
+    return this.methods.resolveMethod('getComponentList');
   }
 
   /**
    * @param {!Array<!Component>} components
    */
   setGetComponentListResult(components) {
-    this.components_ = components;
+    this.components = components;
   }
 
   /**
@@ -441,7 +439,7 @@ export class FakeShimlessRmaService {
    * @return {!Promise<!{stateResult: !StateResult}>}
    */
   setComponentList(components) {
-    return this.getNextStateForMethod_(
+    return this.getNextStateForMethod(
         'setComponentList', State.kSelectComponents);
   }
 
@@ -449,7 +447,7 @@ export class FakeShimlessRmaService {
    * @return {!Promise<!{stateResult: !StateResult}>}
    */
   reworkMainboard() {
-    return this.getNextStateForMethod_(
+    return this.getNextStateForMethod(
         'reworkMainboard', State.kSelectComponents);
   }
 
@@ -457,7 +455,7 @@ export class FakeShimlessRmaService {
    * @return {!Promise<!{stateResult: !StateResult}>}
    */
   roFirmwareUpdateComplete() {
-    return this.getNextStateForMethod_(
+    return this.getNextStateForMethod(
         'roFirmwareUpdateComplete', State.kUpdateRoFirmware);
   }
 
@@ -466,14 +464,14 @@ export class FakeShimlessRmaService {
    *
    */
   shutdownForRestock() {
-    return this.getNextStateForMethod_('shutdownForRestock', State.kRestock);
+    return this.getNextStateForMethod('shutdownForRestock', State.kRestock);
   }
 
   /**
    * @return {!Promise<!{stateResult: !StateResult}>}
    */
   continueFinalizationAfterRestock() {
-    return this.getNextStateForMethod_(
+    return this.getNextStateForMethod(
         'continueFinalizationAfterRestock', State.kRestock);
   }
 
@@ -481,56 +479,56 @@ export class FakeShimlessRmaService {
    * @return {!Promise<!{regions: !Array<string>}>}
    */
   getRegionList() {
-    return this.methods_.resolveMethod('getRegionList');
+    return this.methods.resolveMethod('getRegionList');
   }
 
   /**
    * @param {!Array<string>} regions
    */
   setGetRegionListResult(regions) {
-    this.methods_.setResult('getRegionList', {regions: regions});
+    this.methods.setResult('getRegionList', {regions: regions});
   }
 
   /**
    * @return {!Promise<!{skus: !Array<bigint>}>}
    */
   getSkuList() {
-    return this.methods_.resolveMethod('getSkuList');
+    return this.methods.resolveMethod('getSkuList');
   }
 
   /**
    * @param {!Array<bigint>} skus
    */
   setGetSkuListResult(skus) {
-    this.methods_.setResult('getSkuList', {skus: skus});
+    this.methods.setResult('getSkuList', {skus: skus});
   }
 
   /**
    * @return {!Promise<!{customLabels: !Array<string>}>}
    */
   getCustomLabelList() {
-    return this.methods_.resolveMethod('getCustomLabelList');
+    return this.methods.resolveMethod('getCustomLabelList');
   }
 
   /**
    * @param {!Array<string>} customLabels
    */
   setGetCustomLabelListResult(customLabels) {
-    this.methods_.setResult('getCustomLabelList', {customLabels: customLabels});
+    this.methods.setResult('getCustomLabelList', {customLabels: customLabels});
   }
 
   /**
    * @return {!Promise<!{skuDescriptions: !Array<string>}>}
    */
   getSkuDescriptionList() {
-    return this.methods_.resolveMethod('getSkuDescriptionList');
+    return this.methods.resolveMethod('getSkuDescriptionList');
   }
 
   /**
    * @param {!Array<string>} skuDescriptions
    */
   setGetSkuDescriptionListResult(skuDescriptions) {
-    this.methods_.setResult(
+    this.methods.setResult(
         'getSkuDescriptionList', {skuDescriptions: skuDescriptions});
   }
 
@@ -538,14 +536,14 @@ export class FakeShimlessRmaService {
    * @return {!Promise<!{serialNumber: string}>}
    */
   getOriginalSerialNumber() {
-    return this.methods_.resolveMethod('getOriginalSerialNumber');
+    return this.methods.resolveMethod('getOriginalSerialNumber');
   }
 
   /**
    * @param {string} serialNumber
    */
   setGetOriginalSerialNumberResult(serialNumber) {
-    this.methods_.setResult(
+    this.methods.setResult(
         'getOriginalSerialNumber', {serialNumber: serialNumber});
   }
 
@@ -553,42 +551,42 @@ export class FakeShimlessRmaService {
    * @return {!Promise<!{regionIndex: number}>}
    */
   getOriginalRegion() {
-    return this.methods_.resolveMethod('getOriginalRegion');
+    return this.methods.resolveMethod('getOriginalRegion');
   }
 
   /**
    * @param {number} regionIndex
    */
   setGetOriginalRegionResult(regionIndex) {
-    this.methods_.setResult('getOriginalRegion', {regionIndex: regionIndex});
+    this.methods.setResult('getOriginalRegion', {regionIndex: regionIndex});
   }
 
   /**
    * @return {!Promise<!{skuIndex: number}>}
    */
   getOriginalSku() {
-    return this.methods_.resolveMethod('getOriginalSku');
+    return this.methods.resolveMethod('getOriginalSku');
   }
 
   /**
    * @param {number} skuIndex
    */
   setGetOriginalSkuResult(skuIndex) {
-    this.methods_.setResult('getOriginalSku', {skuIndex: skuIndex});
+    this.methods.setResult('getOriginalSku', {skuIndex: skuIndex});
   }
 
   /**
    * @return {!Promise<!{customLabelIndex: number}>}
    */
   getOriginalCustomLabel() {
-    return this.methods_.resolveMethod('getOriginalCustomLabel');
+    return this.methods.resolveMethod('getOriginalCustomLabel');
   }
 
   /**
    * @param {number} customLabelIndex
    */
   setGetOriginalCustomLabelResult(customLabelIndex) {
-    this.methods_.setResult(
+    this.methods.setResult(
         'getOriginalCustomLabel', {customLabelIndex: customLabelIndex});
   }
 
@@ -596,14 +594,14 @@ export class FakeShimlessRmaService {
    * @return {!Promise<!{dramPartNumber: string}>}
    */
   getOriginalDramPartNumber() {
-    return this.methods_.resolveMethod('getOriginalDramPartNumber');
+    return this.methods.resolveMethod('getOriginalDramPartNumber');
   }
 
   /**
    * @param {string} dramPartNumber
    */
   setGetOriginalDramPartNumberResult(dramPartNumber) {
-    this.methods_.setResult(
+    this.methods.setResult(
         'getOriginalDramPartNumber', {dramPartNumber: dramPartNumber});
   }
 
@@ -611,14 +609,14 @@ export class FakeShimlessRmaService {
    * @return {!Promise<!{originalFeatureLevel: FeatureLevel}>}
    */
   getOriginalFeatureLevel() {
-    return this.methods_.resolveMethod('getOriginalFeatureLevel');
+    return this.methods.resolveMethod('getOriginalFeatureLevel');
   }
 
   /**
    * @param {FeatureLevel} featureLevel
    */
   setGetOriginalFeatureLevelResult(featureLevel) {
-    this.methods_.setResult(
+    this.methods.setResult(
         'getOriginalFeatureLevel', {originalFeatureLevel: featureLevel});
   }
 
@@ -636,7 +634,7 @@ export class FakeShimlessRmaService {
       serialNumber, regionIndex, skuIndex, customLabelIndex, dramPartNumber,
       isChassisBranded, hwComplianceVersion) {
     // TODO(gavindodd): Validate range of region and sku.
-    return this.getNextStateForMethod_(
+    return this.getNextStateForMethod(
         'setDeviceInformation', State.kUpdateDeviceInformation);
   }
 
@@ -644,14 +642,14 @@ export class FakeShimlessRmaService {
    * @return {!Promise<!{components: !Array<!CalibrationComponentStatus>}>}
    */
   getCalibrationComponentList() {
-    return this.methods_.resolveMethod('getCalibrationComponentList');
+    return this.methods.resolveMethod('getCalibrationComponentList');
   }
 
   /**
    * @param {!Array<!CalibrationComponentStatus>} components
    */
   setGetCalibrationComponentListResult(components) {
-    this.methods_.setResult(
+    this.methods.setResult(
         'getCalibrationComponentList', {components: components});
   }
 
@@ -659,14 +657,14 @@ export class FakeShimlessRmaService {
    * @return {!Promise<!{instructions: CalibrationSetupInstruction}>}
    */
   getCalibrationSetupInstructions() {
-    return this.methods_.resolveMethod('getCalibrationSetupInstructions');
+    return this.methods.resolveMethod('getCalibrationSetupInstructions');
   }
 
   /**
    * @param {CalibrationSetupInstruction} instructions
    */
   setGetCalibrationSetupInstructionsResult(instructions) {
-    this.methods_.setResult(
+    this.methods.setResult(
         'getCalibrationSetupInstructions', {instructions: instructions});
   }
 
@@ -677,7 +675,7 @@ export class FakeShimlessRmaService {
    * @return {!Promise<!{stateResult: !StateResult}>}
    */
   startCalibration(unused) {
-    return this.getNextStateForMethod_(
+    return this.getNextStateForMethod(
         'startCalibration', State.kCheckCalibration);
   }
 
@@ -685,7 +683,7 @@ export class FakeShimlessRmaService {
    * @return {!Promise<!{stateResult: !StateResult}>}
    */
   runCalibrationStep() {
-    return this.getNextStateForMethod_(
+    return this.getNextStateForMethod(
         'runCalibrationStep', State.kSetupCalibration);
   }
 
@@ -693,7 +691,7 @@ export class FakeShimlessRmaService {
    * @return {!Promise<!{stateResult: !StateResult}>}
    */
   continueCalibration() {
-    return this.getNextStateForMethod_(
+    return this.getNextStateForMethod(
         'continueCalibration', State.kRunCalibration);
   }
 
@@ -701,7 +699,7 @@ export class FakeShimlessRmaService {
    * @return {!Promise<!{stateResult: !StateResult}>}
    */
   calibrationComplete() {
-    return this.getNextStateForMethod_(
+    return this.getNextStateForMethod(
         'calibrationComplete', State.kRunCalibration);
   }
 
@@ -709,7 +707,7 @@ export class FakeShimlessRmaService {
    * @return {!Promise<!{stateResult: !StateResult}>}
    */
   retryProvisioning() {
-    return this.getNextStateForMethod_(
+    return this.getNextStateForMethod(
         'retryProvisioning', State.kProvisionDevice);
   }
 
@@ -717,7 +715,7 @@ export class FakeShimlessRmaService {
    * @return {!Promise<!{stateResult: !StateResult}>}
    */
   provisioningComplete() {
-    return this.getNextStateForMethod_(
+    return this.getNextStateForMethod(
         'provisioningComplete', State.kProvisionDevice);
   }
 
@@ -725,32 +723,32 @@ export class FakeShimlessRmaService {
    * @return {!Promise<!{stateResult: !StateResult}>}
    */
   finalizationComplete() {
-    return this.getNextStateForMethod_('finalizationComplete', State.kFinalize);
+    return this.getNextStateForMethod('finalizationComplete', State.kFinalize);
   }
 
   /**
    * @return {!Promise<!{stateResult: !StateResult}>}
    */
   retryFinalization() {
-    return this.getNextStateForMethod_('retryFinalization', State.kFinalize);
+    return this.getNextStateForMethod('retryFinalization', State.kFinalize);
   }
 
   /**
    * @return {!Promise<!{stateResult: !StateResult}>}
    */
   writeProtectManuallyEnabled() {
-    return this.getNextStateForMethod_(
+    return this.getNextStateForMethod(
         'writeProtectManuallyEnabled', State.kWaitForManualWPEnable);
   }
 
   /** @return {!Promise<{log: string, error: !RmadErrorCode}>} */
   getLog() {
-    return this.methods_.resolveMethod('getLog');
+    return this.methods.resolveMethod('getLog');
   }
 
   /** @param {string} log */
   setGetLogResult(log) {
-    this.methods_.setResult('getLog', {log: log, error: RmadErrorCode.kOk});
+    this.methods.setResult('getLog', {log: log, error: RmadErrorCode.kOk});
   }
 
   /**
@@ -758,23 +756,23 @@ export class FakeShimlessRmaService {
    *     !RmadErrorCode}>}
    */
   saveLog() {
-    return this.methods_.resolveMethod('saveLog');
+    return this.methods.resolveMethod('saveLog');
   }
 
   /** @param {!FilePath} savePath */
   setSaveLogResult(savePath) {
-    this.methods_.setResult(
+    this.methods.setResult(
         'saveLog', {savePath: savePath, error: RmadErrorCode.kOk});
   }
 
   /** @return {!Promise<{powerwashRequired: boolean, error: !RmadErrorCode}>} */
   getPowerwashRequired() {
-    return this.methods_.resolveMethod('getPowerwashRequired');
+    return this.methods.resolveMethod('getPowerwashRequired');
   }
 
   /** @param {boolean} powerwashRequired */
   setGetPowerwashRequiredResult(powerwashRequired) {
-    this.methods_.setResult(
+    this.methods.setResult(
         'getPowerwashRequired',
         {powerwashRequired: powerwashRequired, error: RmadErrorCode.kOk});
   }
@@ -790,23 +788,23 @@ export class FakeShimlessRmaService {
    * @return {!Promise<!{stateResult: !StateResult}>}
    */
   endRma(unused) {
-    return this.getNextStateForMethod_('endRma', State.kRepairComplete);
+    return this.getNextStateForMethod('endRma', State.kRepairComplete);
   }
 
   /**
    * @return {!Promise<!{error: !RmadErrorCode}>}
    */
   criticalErrorExitToLogin() {
-    return this.methods_.resolveMethodWithDelay(
-        'criticalErrorExitToLogin', this.resolveMethodDelayMs_);
+    return this.methods.resolveMethodWithDelay(
+        'criticalErrorExitToLogin', this.resolveMethodDelayMs);
   }
 
   /**
    * @return {!Promise<!{error: !RmadErrorCode}>}
    */
   criticalErrorReboot() {
-    return this.methods_.resolveMethodWithDelay(
-        'criticalErrorReboot', this.resolveMethodDelayMs_);
+    return this.methods.resolveMethodWithDelay(
+        'criticalErrorReboot', this.resolveMethodDelayMs);
   }
 
   shutDownAfterHardwareError() {
@@ -817,37 +815,37 @@ export class FakeShimlessRmaService {
    * @return {!Promise<!{provider: ?string}>}
    */
   get3pDiagnosticsProvider() {
-    return this.methods_.resolveMethodWithDelay(
-        'get3pDiagnosticsProvider', this.resolveMethodDelayMs_);
+    return this.methods.resolveMethodWithDelay(
+        'get3pDiagnosticsProvider', this.resolveMethodDelayMs);
   }
 
   /** @param {?string} provider */
   setGet3pDiagnosticsProviderResult(provider) {
-    this.methods_.setResult('get3pDiagnosticsProvider', {provider});
+    this.methods.setResult('get3pDiagnosticsProvider', {provider});
   }
 
   /**
    * @return {!Promise<{appPath: FilePath}>}
    */
   getInstallable3pDiagnosticsAppPath() {
-    return this.methods_.resolveMethod('getInstallable3pDiagnosticsAppPath');
+    return this.methods.resolveMethod('getInstallable3pDiagnosticsAppPath');
   }
 
   /** @param {FilePath} appPath */
   setInstallable3pDiagnosticsAppPath(appPath) {
-    this.methods_.setResult('getInstallable3pDiagnosticsAppPath', {appPath});
+    this.methods.setResult('getInstallable3pDiagnosticsAppPath', {appPath});
   }
 
   /**
    * @return {!Promise<{appInfo: Shimless3pDiagnosticsAppInfo}>}
    */
   installLastFound3pDiagnosticsApp() {
-    return this.methods_.resolveMethod('installLastFound3pDiagnosticsApp');
+    return this.methods.resolveMethod('installLastFound3pDiagnosticsApp');
   }
 
   /** @param {Shimless3pDiagnosticsAppInfo} appInfo */
   setInstallLastFound3pDiagnosticsApp(appInfo) {
-    this.methods_.setResult('installLastFound3pDiagnosticsApp', {appInfo});
+    this.methods.setResult('installLastFound3pDiagnosticsApp', {appInfo});
   }
 
   /**
@@ -855,31 +853,26 @@ export class FakeShimlessRmaService {
    * @return {!Promise}
    */
   completeLast3pDiagnosticsInstallation(isApproved) {
-    this.lastCompleteLast3pDiagnosticsInstallationApproval_ = isApproved;
+    this.lastCompleteLast3pDiagnosticsInstallationApproval = isApproved;
     return Promise.resolve();
   }
 
   /** @return {?boolean} */
   getLastCompleteLast3pDiagnosticsInstallationApproval() {
-    return this.lastCompleteLast3pDiagnosticsInstallationApproval_;
+    return this.lastCompleteLast3pDiagnosticsInstallationApproval;
   }
 
   /**
    * @return {!Promise<{result: !Show3pDiagnosticsAppResult}>}
    */
   show3pDiagnosticsApp() {
-    this.wasShow3pDiagnosticsAppCalled_ = true;
-    return this.methods_.resolveMethod('show3pDiagnosticsApp');
+    this.wasShow3pDiagnosticsAppCalled = true;
+    return this.methods.resolveMethod('show3pDiagnosticsApp');
   }
 
   /** @param {!Show3pDiagnosticsAppResult} result */
   setShow3pDiagnosticsAppResult(result) {
-    this.methods_.setResult('show3pDiagnosticsApp', {result});
-  }
-
-  /** @return {boolean} */
-  wasShow3pDiagnosticsAppCalled() {
-    return this.wasShow3pDiagnosticsAppCalled_;
+    this.methods.setResult('show3pDiagnosticsApp', {result});
   }
 
   /**
@@ -887,7 +880,7 @@ export class FakeShimlessRmaService {
    * @param {!ErrorObserverRemote} remote
    */
   observeError(remote) {
-    this.observables_.observe('ErrorObserver_onError', (error) => {
+    this.observables.observe('ErrorObserver_onError', (error) => {
       remote.onError(
           /** @type {!RmadErrorCode} */ (error));
     });
@@ -898,7 +891,7 @@ export class FakeShimlessRmaService {
    * @param {!OsUpdateObserverRemote} remote
    */
   observeOsUpdateProgress(remote) {
-    this.observables_.observe(
+    this.observables.observe(
         'OsUpdateObserver_onOsUpdateProgressUpdated',
         (operation, progress, errorCode) => {
           remote.onOsUpdateProgressUpdated(
@@ -913,13 +906,13 @@ export class FakeShimlessRmaService {
    * @param {!UpdateRoFirmwareObserverRemote} remote
    */
   observeRoFirmwareUpdateProgress(remote) {
-    this.observables_.observe(
+    this.observables.observe(
         'UpdateRoFirmwareObserver_onUpdateRoFirmwareStatusChanged',
         (status) => {
           remote.onUpdateRoFirmwareStatusChanged(
               /** @type {!UpdateRoFirmwareStatus} */ (status));
         });
-    if (this.automaticallyTriggerUpdateRoFirmwareObservation_) {
+    if (this.automaticallyTriggerUpdateRoFirmwareObservation) {
       this.triggerUpdateRoFirmwareObserver(UpdateRoFirmwareStatus.kWaitUsb, 0);
       this.triggerUpdateRoFirmwareObserver(
           UpdateRoFirmwareStatus.kUpdating, 1000);
@@ -934,7 +927,7 @@ export class FakeShimlessRmaService {
    * Trigger update ro firmware observations when an observer is added.
    */
   automaticallyTriggerUpdateRoFirmwareObservation() {
-    this.automaticallyTriggerUpdateRoFirmwareObservation_ = true;
+    this.automaticallyTriggerUpdateRoFirmwareObservation = true;
   }
 
   /**
@@ -942,17 +935,17 @@ export class FakeShimlessRmaService {
    * @param {!CalibrationObserverRemote} remote
    */
   observeCalibrationProgress(remote) {
-    this.observables_.observe(
+    this.observables.observe(
         'CalibrationObserver_onCalibrationUpdated', (componentStatus) => {
           remote.onCalibrationUpdated(
               /** @type {!CalibrationComponentStatus} */ (componentStatus));
         });
-    this.observables_.observe(
+    this.observables.observe(
         'CalibrationObserver_onCalibrationStepComplete', (status) => {
           remote.onCalibrationStepComplete(
               /** @type {!CalibrationOverallStatus} */ (status));
         });
-    if (this.automaticallyTriggerCalibrationObservation_) {
+    if (this.automaticallyTriggerCalibrationObservation) {
       this.triggerCalibrationObserver(
           {
             component: ComponentType.kBaseAccelerometer,
@@ -1026,7 +1019,7 @@ export class FakeShimlessRmaService {
    * @param {!ProvisioningObserverRemote} remote
    */
   observeProvisioningProgress(remote) {
-    this.observables_.observe(
+    this.observables.observe(
         'ProvisioningObserver_onProvisioningUpdated',
         (status, progress, error) => {
           remote.onProvisioningUpdated(
@@ -1034,7 +1027,7 @@ export class FakeShimlessRmaService {
               /** @type {number} */ (progress),
               /** @type {!ProvisioningError} */ (error));
         });
-    if (this.automaticallyTriggerProvisioningObservation_) {
+    if (this.automaticallyTriggerProvisioningObservation) {
       // Fake progress over 4 seconds.
       this.triggerProvisioningObserver(
           ProvisioningStatus.kInProgress, 0.25, ProvisioningError.kUnknown,
@@ -1054,21 +1047,21 @@ export class FakeShimlessRmaService {
    * Trigger provisioning observations when an observer is added.
    */
   automaticallyTriggerProvisioningObservation() {
-    this.automaticallyTriggerProvisioningObservation_ = true;
+    this.automaticallyTriggerProvisioningObservation = true;
   }
 
   /**
    * Trigger calibration observations when an observer is added.
    */
   automaticallyTriggerCalibrationObservation() {
-    this.automaticallyTriggerCalibrationObservation_ = true;
+    this.automaticallyTriggerCalibrationObservation = true;
   }
 
   /**
    * Trigger OS update observations when an OS update is started.
    */
   automaticallyTriggerOsUpdateObservation() {
-    this.automaticallyTriggerOsUpdateObservation_ = true;
+    this.automaticallyTriggerOsUpdateObservation = true;
   }
 
   /**
@@ -1076,17 +1069,17 @@ export class FakeShimlessRmaService {
    * @param {!HardwareWriteProtectionStateObserverRemote} remote
    */
   observeHardwareWriteProtectionState(remote) {
-    this.observables_.observe(
+    this.observables.observe(
         'HardwareWriteProtectionStateObserver_onHardwareWriteProtectionStateChanged',
         (enabled) => {
           remote.onHardwareWriteProtectionStateChanged(
               /** @type {boolean} */ (enabled));
         });
-    if (this.states_ &&
-        this.automaticallyTriggerDisableWriteProtectionObservation_) {
-      assert(this.stateIndex_ < this.states_.length);
+    if (this.states &&
+        this.automaticallyTriggerDisableWriteProtectionObservation) {
+      assert(this.stateIndex < this.states.length);
       this.triggerHardwareWriteProtectionObserver(
-          this.states_[this.stateIndex_].state === State.kWaitForManualWPEnable,
+          this.states[this.stateIndex].state === State.kWaitForManualWPEnable,
           3000);
     }
   }
@@ -1095,7 +1088,7 @@ export class FakeShimlessRmaService {
    * Trigger a disable write protection observation when an observer is added.
    */
   automaticallyTriggerDisableWriteProtectionObservation() {
-    this.automaticallyTriggerDisableWriteProtectionObservation_ = true;
+    this.automaticallyTriggerDisableWriteProtectionObservation = true;
   }
 
   /**
@@ -1103,11 +1096,11 @@ export class FakeShimlessRmaService {
    * @param {!PowerCableStateObserverRemote} remote
    */
   observePowerCableState(remote) {
-    this.observables_.observe(
+    this.observables.observe(
         'PowerCableStateObserver_onPowerCableStateChanged', (pluggedIn) => {
           remote.onPowerCableStateChanged(/** @type {boolean} */ (pluggedIn));
         });
-    if (this.automaticallyTriggerPowerCableStateObservation_) {
+    if (this.automaticallyTriggerPowerCableStateObservation) {
       this.triggerPowerCableObserver(false, 1000);
       this.triggerPowerCableObserver(true, 10000);
       this.triggerPowerCableObserver(false, 15000);
@@ -1118,7 +1111,7 @@ export class FakeShimlessRmaService {
    * Trigger a disable power cable state observations when an observer is added.
    */
   automaticallyTriggerPowerCableStateObservation() {
-    this.automaticallyTriggerPowerCableStateObservation_ = true;
+    this.automaticallyTriggerPowerCableStateObservation = true;
   }
 
   /**
@@ -1126,7 +1119,7 @@ export class FakeShimlessRmaService {
    * @param {!ExternalDiskStateObserverRemote} remote
    */
   observeExternalDiskState(remote) {
-    this.observables_.observe(
+    this.observables.observe(
         'ExternalDiskStateObserver_onExternalDiskStateChanged', (detected) => {
           remote.onExternalDiskStateChanged(/** @type {boolean} */ (detected));
         });
@@ -1140,14 +1133,14 @@ export class FakeShimlessRmaService {
    * @param {!HardwareVerificationStatusObserverRemote} remote
    */
   observeHardwareVerificationStatus(remote) {
-    this.observables_.observe(
+    this.observables.observe(
         'HardwareVerificationStatusObserver_onHardwareVerificationResult',
         (is_compliant, error_message) => {
           remote.onHardwareVerificationResult(
               /** @type {boolean} */ (is_compliant),
               /** @type {string} */ (error_message));
         });
-    if (this.automaticallyTriggerHardwareVerificationStatusObservation_) {
+    if (this.automaticallyTriggerHardwareVerificationStatusObservation) {
       this.triggerHardwareVerificationStatusObserver(true, '', 3000);
     }
   }
@@ -1157,7 +1150,7 @@ export class FakeShimlessRmaService {
    * Trigger a hardware verification observation when an observer is added.
    */
   automaticallyTriggerHardwareVerificationStatusObservation() {
-    this.automaticallyTriggerHardwareVerificationStatusObservation_ = true;
+    this.automaticallyTriggerHardwareVerificationStatusObservation = true;
   }
 
   /**
@@ -1165,7 +1158,7 @@ export class FakeShimlessRmaService {
    * @param {!FinalizationObserverRemote} remote
    */
   observeFinalizationStatus(remote) {
-    this.observables_.observe(
+    this.observables.observe(
         'FinalizationObserver_onFinalizationUpdated',
         (status, progress, error) => {
           remote.onFinalizationUpdated(
@@ -1173,7 +1166,7 @@ export class FakeShimlessRmaService {
               /** @type {number} */ (progress),
               /** @type {!FinalizationError} */ (error));
         });
-    if (this.automaticallyTriggerFinalizationObservation_) {
+    if (this.automaticallyTriggerFinalizationObservation) {
       this.triggerFinalizationObserver(
           FinalizationStatus.kInProgress, 0.25, FinalizationError.kUnknown,
           1000);
@@ -1189,7 +1182,7 @@ export class FakeShimlessRmaService {
    * Trigger a finalization progress observation when an observer is added.
    */
   automaticallyTriggerFinalizationObservation() {
-    this.automaticallyTriggerFinalizationObservation_ = true;
+    this.automaticallyTriggerFinalizationObservation = true;
   }
 
   /**
@@ -1325,8 +1318,8 @@ export class FakeShimlessRmaService {
    */
   triggerObserverAfterMs(method, result, delayMs) {
     const setDataTriggerAndResolve = function(service, resolve) {
-      service.observables_.setObservableData(method, [result]);
-      service.observables_.trigger(method);
+      service.observables.setObservableData(method, [result]);
+      service.observables.trigger(method);
       resolve();
     };
 
@@ -1345,20 +1338,20 @@ export class FakeShimlessRmaService {
    * Disables all observers and resets provider to its initial state.
    */
   reset() {
-    this.registerMethods_();
-    this.registerObservables_();
+    this.registerMethods();
+    this.registerObservables();
 
-    this.states_ = [];
-    this.stateIndex_ = 0;
+    this.states = [];
+    this.stateIndex = 0;
 
     // This state data is more complicated so the behavior of the get/set
     // methods is a little different than other fakes in that they don't return
     // undefined by default.
-    this.components_ = [];
+    this.components = [];
     this.setGetLogResult('');
     this.setSaveLogResult({'path': ''});
 
-    this.lastCompleteLast3pDiagnosticsInstallationApproval_ = null;
+    this.lastCompleteLast3pDiagnosticsInstallationApproval = null;
     this.setGet3pDiagnosticsProviderResult(null);
   }
 
@@ -1366,121 +1359,121 @@ export class FakeShimlessRmaService {
    * Setup method resolvers.
    * @private
    */
-  registerMethods_() {
-    this.methods_ = new FakeMethodResolver();
+  registerMethods() {
+    this.methods = new FakeMethodResolver();
 
-    this.methods_.register('getCurrentState');
-    this.methods_.register('transitionPreviousState');
+    this.methods.register('getCurrentState');
+    this.methods.register('transitionPreviousState');
 
-    this.methods_.register('abortRma');
+    this.methods.register('abortRma');
 
-    this.methods_.register('canExit');
-    this.methods_.register('canGoBack');
+    this.methods.register('canExit');
+    this.methods.register('canGoBack');
 
-    this.methods_.register('beginFinalization');
+    this.methods.register('beginFinalization');
 
-    this.methods_.register('trackConfiguredNetworks');
-    this.methods_.register('networkSelectionComplete');
+    this.methods.register('trackConfiguredNetworks');
+    this.methods.register('networkSelectionComplete');
 
-    this.methods_.register('getCurrentOsVersion');
-    this.methods_.register('checkForOsUpdates');
-    this.methods_.register('updateOs');
-    this.methods_.register('updateOsSkipped');
+    this.methods.register('getCurrentOsVersion');
+    this.methods.register('checkForOsUpdates');
+    this.methods.register('updateOs');
+    this.methods.register('updateOsSkipped');
 
-    this.methods_.register('setSameOwner');
-    this.methods_.register('setDifferentOwner');
-    this.methods_.register('setWipeDevice');
+    this.methods.register('setSameOwner');
+    this.methods.register('setDifferentOwner');
+    this.methods.register('setWipeDevice');
 
-    this.methods_.register('chooseManuallyDisableWriteProtect');
-    this.methods_.register('chooseRsuDisableWriteProtect');
-    this.methods_.register('getRsuDisableWriteProtectChallenge');
-    this.methods_.register('getRsuDisableWriteProtectHwid');
-    this.methods_.register('getRsuDisableWriteProtectChallengeQrCode');
-    this.methods_.register('setRsuDisableWriteProtectCode');
+    this.methods.register('chooseManuallyDisableWriteProtect');
+    this.methods.register('chooseRsuDisableWriteProtect');
+    this.methods.register('getRsuDisableWriteProtectChallenge');
+    this.methods.register('getRsuDisableWriteProtectHwid');
+    this.methods.register('getRsuDisableWriteProtectChallengeQrCode');
+    this.methods.register('setRsuDisableWriteProtectCode');
 
-    this.methods_.register('writeProtectManuallyDisabled');
+    this.methods.register('writeProtectManuallyDisabled');
 
-    this.methods_.register('getWriteProtectDisableCompleteAction');
-    this.methods_.register('confirmManualWpDisableComplete');
+    this.methods.register('getWriteProtectDisableCompleteAction');
+    this.methods.register('confirmManualWpDisableComplete');
 
-    this.methods_.register('shutdownForRestock');
-    this.methods_.register('continueFinalizationAfterRestock');
+    this.methods.register('shutdownForRestock');
+    this.methods.register('continueFinalizationAfterRestock');
 
-    this.methods_.register('getComponentList');
-    this.methods_.register('setComponentList');
-    this.methods_.register('reworkMainboard');
+    this.methods.register('getComponentList');
+    this.methods.register('setComponentList');
+    this.methods.register('reworkMainboard');
 
-    this.methods_.register('roFirmwareUpdateComplete');
+    this.methods.register('roFirmwareUpdateComplete');
 
-    this.methods_.register('getRegionList');
-    this.methods_.register('getSkuList');
-    this.methods_.register('getCustomLabelList');
-    this.methods_.register('getSkuDescriptionList');
-    this.methods_.register('getOriginalSerialNumber');
-    this.methods_.register('getOriginalRegion');
-    this.methods_.register('getOriginalSku');
-    this.methods_.register('getOriginalCustomLabel');
-    this.methods_.register('getOriginalDramPartNumber');
-    this.methods_.register('getOriginalFeatureLevel');
-    this.methods_.register('setDeviceInformation');
+    this.methods.register('getRegionList');
+    this.methods.register('getSkuList');
+    this.methods.register('getCustomLabelList');
+    this.methods.register('getSkuDescriptionList');
+    this.methods.register('getOriginalSerialNumber');
+    this.methods.register('getOriginalRegion');
+    this.methods.register('getOriginalSku');
+    this.methods.register('getOriginalCustomLabel');
+    this.methods.register('getOriginalDramPartNumber');
+    this.methods.register('getOriginalFeatureLevel');
+    this.methods.register('setDeviceInformation');
 
-    this.methods_.register('getCalibrationComponentList');
-    this.methods_.register('getCalibrationSetupInstructions');
-    this.methods_.register('startCalibration');
-    this.methods_.register('runCalibrationStep');
-    this.methods_.register('continueCalibration');
-    this.methods_.register('calibrationComplete');
+    this.methods.register('getCalibrationComponentList');
+    this.methods.register('getCalibrationSetupInstructions');
+    this.methods.register('startCalibration');
+    this.methods.register('runCalibrationStep');
+    this.methods.register('continueCalibration');
+    this.methods.register('calibrationComplete');
 
-    this.methods_.register('retryProvisioning');
-    this.methods_.register('provisioningComplete');
+    this.methods.register('retryProvisioning');
+    this.methods.register('provisioningComplete');
 
-    this.methods_.register('retryFinalization');
-    this.methods_.register('finalizationComplete');
+    this.methods.register('retryFinalization');
+    this.methods.register('finalizationComplete');
 
-    this.methods_.register('writeProtectManuallyEnabled');
+    this.methods.register('writeProtectManuallyEnabled');
 
-    this.methods_.register('getLog');
-    this.methods_.register('saveLog');
-    this.methods_.register('getPowerwashRequired');
-    this.methods_.register('endRma');
+    this.methods.register('getLog');
+    this.methods.register('saveLog');
+    this.methods.register('getPowerwashRequired');
+    this.methods.register('endRma');
 
     // Critical error handling
-    this.methods_.register('criticalErrorExitToLogin');
-    this.methods_.register('criticalErrorReboot');
+    this.methods.register('criticalErrorExitToLogin');
+    this.methods.register('criticalErrorReboot');
 
-    this.methods_.register('shutDownAfterHardwareError');
+    this.methods.register('shutDownAfterHardwareError');
 
-    this.methods_.register('get3pDiagnosticsProvider');
-    this.methods_.register('getInstallable3pDiagnosticsAppPath');
-    this.methods_.register('installLastFound3pDiagnosticsApp');
-    this.methods_.register('show3pDiagnosticsApp');
+    this.methods.register('get3pDiagnosticsProvider');
+    this.methods.register('getInstallable3pDiagnosticsAppPath');
+    this.methods.register('installLastFound3pDiagnosticsApp');
+    this.methods.register('show3pDiagnosticsApp');
   }
 
   /**
    * Setup observables.
    * @private
    */
-  registerObservables_() {
-    if (this.observables_) {
-      this.observables_.stopAllTriggerIntervals();
+  registerObservables() {
+    if (this.observables) {
+      this.observables.stopAllTriggerIntervals();
     }
-    this.observables_ = new FakeObservables();
-    this.observables_.register('ErrorObserver_onError');
-    this.observables_.register('OsUpdateObserver_onOsUpdateProgressUpdated');
-    this.observables_.register(
+    this.observables = new FakeObservables();
+    this.observables.register('ErrorObserver_onError');
+    this.observables.register('OsUpdateObserver_onOsUpdateProgressUpdated');
+    this.observables.register(
         'UpdateRoFirmwareObserver_onUpdateRoFirmwareStatusChanged');
-    this.observables_.register('CalibrationObserver_onCalibrationUpdated');
-    this.observables_.register('CalibrationObserver_onCalibrationStepComplete');
-    this.observables_.register('ProvisioningObserver_onProvisioningUpdated');
-    this.observables_.register(
+    this.observables.register('CalibrationObserver_onCalibrationUpdated');
+    this.observables.register('CalibrationObserver_onCalibrationStepComplete');
+    this.observables.register('ProvisioningObserver_onProvisioningUpdated');
+    this.observables.register(
         'HardwareWriteProtectionStateObserver_onHardwareWriteProtectionStateChanged');
-    this.observables_.register(
+    this.observables.register(
         'PowerCableStateObserver_onPowerCableStateChanged');
-    this.observables_.register(
+    this.observables.register(
         'ExternalDiskStateObserver_onExternalDiskStateChanged');
-    this.observables_.register(
+    this.observables.register(
         'HardwareVerificationStatusObserver_onHardwareVerificationResult');
-    this.observables_.register('FinalizationObserver_onFinalizationUpdated');
+    this.observables.register('FinalizationObserver_onFinalizationUpdated');
   }
 
   /**
@@ -1489,38 +1482,38 @@ export class FakeShimlessRmaService {
    * @return {!Promise<!{stateResult: !StateResult}>}
    * @private
    */
-  getNextStateForMethod_(method, expectedState) {
-    if (this.states_.length === 0) {
-      this.setFakeStateForMethod_(
+  getNextStateForMethod(method, expectedState) {
+    if (this.states.length === 0) {
+      this.setFakeStateForMethod(
           method, State.kUnknown, false, false, RmadErrorCode.kRmaNotRequired);
-    } else if (this.stateIndex_ >= this.states_.length - 1) {
-      // It should not be possible for stateIndex_ to be out of range unless
+    } else if (this.stateIndex >= this.states.length - 1) {
+      // It should not be possible for stateIndex to be out of range unless
       // there is a bug in the fake.
-      assert(this.stateIndex_ < this.states_.length);
-      const state = this.states_[this.stateIndex_];
-      this.setFakeStateForMethod_(
+      assert(this.stateIndex < this.states.length);
+      const state = this.states[this.stateIndex];
+      this.setFakeStateForMethod(
           method, state.state, state.canExit, state.canGoBack,
           RmadErrorCode.kTransitionFailed);
-    } else if (this.states_[this.stateIndex_].state !== expectedState) {
+    } else if (this.states[this.stateIndex].state !== expectedState) {
       // Error: Called in wrong state.
-      const state = this.states_[this.stateIndex_];
-      this.setFakeStateForMethod_(
+      const state = this.states[this.stateIndex];
+      this.setFakeStateForMethod(
           method, state.state, state.canExit, state.canGoBack,
           RmadErrorCode.kRequestInvalid);
     } else {
       // Success.
-      this.stateIndex_++;
+      this.stateIndex++;
       if (method === 'chooseManuallyDisableWriteProtect') {
         // A special case so that choosing manual WP disable sends you to the
         // appropriate page in the fake app.
-        this.stateIndex_++;
+        this.stateIndex++;
       }
-      const state = this.states_[this.stateIndex_];
-      this.setFakeStateForMethod_(
+      const state = this.states[this.stateIndex];
+      this.setFakeStateForMethod(
           method, state.state, state.canExit, state.canGoBack, state.error);
     }
-    return this.methods_.resolveMethodWithDelay(
-        method, this.resolveMethodDelayMs_);
+    return this.methods.resolveMethodWithDelay(
+        method, this.resolveMethodDelayMs);
   }
 
   /**
@@ -1531,8 +1524,8 @@ export class FakeShimlessRmaService {
    * @param {!RmadErrorCode} error
    * @private
    */
-  setFakeCurrentState_(state, canExit, canGoBack, error) {
-    this.setFakeStateForMethod_(
+  setFakeCurrentState(state, canExit, canGoBack, error) {
+    this.setFakeStateForMethod(
         'getCurrentState', state, canExit, canGoBack, error);
   }
 
@@ -1545,8 +1538,8 @@ export class FakeShimlessRmaService {
    * @param {!RmadErrorCode} error
    * @private
    */
-  setFakePrevState_(state, canExit, canGoBack, error) {
-    this.setFakeStateForMethod_(
+  setFakePrevState(state, canExit, canGoBack, error) {
+    this.setFakeStateForMethod(
         'transitionPreviousState', state, canExit, canGoBack, error);
   }
 
@@ -1560,15 +1553,14 @@ export class FakeShimlessRmaService {
    * @param {!RmadErrorCode} error
    * @private
    */
-  setFakeStateForMethod_(method, state, canExit, canGoBack, error) {
-    this.methods_.setResult(
-        method, /** @type {{stateResult: !StateResult}} */ ({
-          stateResult: {
-            state: state,
-            canExit: canExit,
-            canGoBack: canGoBack,
-            error: error,
-          },
-        }));
+  setFakeStateForMethod(method, state, canExit, canGoBack, error) {
+    this.methods.setResult(method, /** @type {{stateResult: !StateResult}} */ ({
+                             stateResult: {
+                               state: state,
+                               canExit: canExit,
+                               canGoBack: canGoBack,
+                               error: error,
+                             },
+                           }));
   }
 }

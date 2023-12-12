@@ -65,20 +65,20 @@ export class OnboardingSelectComponentsPageElement extends
       allButtonsDisabled: Boolean,
 
       /** @protected {!Array<!ComponentCheckbox>} */
-      componentCheckboxes_: {
+      componentCheckboxes: {
         type: Array,
         value: () => [],
       },
 
       /** @private {string} */
-      reworkFlowLinkText_: {type: String, value: ''},
+      reworkFlowLinkText: {type: String, value: ''},
 
       /**
-       * The index into componentCheckboxes_ for keyboard navigation between
+       * The index into componentCheckboxes for keyboard navigation between
        * components.
        * @private
        */
-      focusedComponentIndex_: {
+      focusedComponentIndex: {
         type: Number,
         value: -1,
       },
@@ -86,31 +86,31 @@ export class OnboardingSelectComponentsPageElement extends
   }
 
   static get observers() {
-    return ['updateIsFirstClickableComponent_(componentCheckboxes_.*)'];
+    return ['updateIsFirstClickableComponent(componentCheckboxes.*)'];
   }
 
   constructor() {
     super();
     /** @private {ShimlessRmaServiceInterface} */
-    this.shimlessRmaService_ = getShimlessRmaService();
+    this.shimlessRmaService = getShimlessRmaService();
 
     /**
-     * The componentClickedCallback_ callback is used to capture events when
+     * The componentClickedCallback callback is used to capture events when
      * components are clicked, so that the page can put the focus on the
      * component that was clicked.
      * @private {?Function}
      */
-    this.componentClicked_ = (event) => {
-      const componentIndex = this.componentCheckboxes_.findIndex(
+    this.componentClicked = (event) => {
+      const componentIndex = this.componentCheckboxes.findIndex(
           component => component.uniqueId === event.detail);
 
       if (componentIndex === -1 ||
-          this.componentCheckboxes_[componentIndex].disabled) {
+          this.componentCheckboxes[componentIndex].disabled) {
         return;
       }
 
-      this.focusedComponentIndex_ = componentIndex;
-      this.focusOnCurrentComponent_();
+      this.focusedComponentIndex = componentIndex;
+      this.focusOnCurrentComponent();
     };
 
     /**
@@ -124,7 +124,7 @@ export class OnboardingSelectComponentsPageElement extends
       }
 
       // If there are no selectable components, do nothing.
-      if (this.focusedComponentIndex_ === -1) {
+      if (this.focusedComponentIndex === -1) {
         return;
       }
 
@@ -143,17 +143,17 @@ export class OnboardingSelectComponentsPageElement extends
           step = NUM_COLUMNS;
         }
 
-        let newIndex = this.focusedComponentIndex_ + step;
+        let newIndex = this.focusedComponentIndex + step;
         // Keep skipping disabled components until we encounter one that is
         // not disabled.
-        while (newIndex < this.componentCheckboxes_.length &&
-               this.componentCheckboxes_[newIndex].disabled) {
+        while (newIndex < this.componentCheckboxes.length &&
+               this.componentCheckboxes[newIndex].disabled) {
           newIndex += step;
         }
         // Check that we haven't ended up outside of the array before
         // applying the changes.
-        if (newIndex < this.componentCheckboxes_.length) {
-          this.focusedComponentIndex_ = newIndex;
+        if (newIndex < this.componentCheckboxes.length) {
+          this.focusedComponentIndex = newIndex;
         }
       }
 
@@ -165,24 +165,24 @@ export class OnboardingSelectComponentsPageElement extends
           step = NUM_COLUMNS;
         }
 
-        let newIndex = this.focusedComponentIndex_ - step;
-        while (newIndex >= 0 && this.componentCheckboxes_[newIndex].disabled) {
+        let newIndex = this.focusedComponentIndex - step;
+        while (newIndex >= 0 && this.componentCheckboxes[newIndex].disabled) {
           newIndex -= step;
         }
         if (newIndex >= 0) {
-          this.focusedComponentIndex_ = newIndex;
+          this.focusedComponentIndex = newIndex;
         }
       }
 
-      this.focusOnCurrentComponent_();
+      this.focusOnCurrentComponent();
     };
   }
 
   /** @override */
   ready() {
     super.ready();
-    this.setReworkFlowLink_();
-    this.getComponents_();
+    this.setReworkFlowLink();
+    this.getComponents();
     enableNextButton(this);
 
     // Hide the gradient when the list is scrolled to the end.
@@ -201,15 +201,15 @@ export class OnboardingSelectComponentsPageElement extends
   }
 
   /** @private */
-  getComponents_() {
-    this.shimlessRmaService_.getComponentList().then((result) => {
+  getComponents() {
+    this.shimlessRmaService.getComponentList().then((result) => {
       if (!result || !result.hasOwnProperty('components')) {
         // TODO(gavindodd): Set an error state?
         console.error('Could not get components!');
         return;
       }
 
-      this.componentCheckboxes_ = result.components.map((item, index) => {
+      this.componentCheckboxes = result.components.map((item, index) => {
         assert(item.component);
         return {
           component: item.component,
@@ -223,8 +223,8 @@ export class OnboardingSelectComponentsPageElement extends
       });
 
       // Focus on the first clickable component at the beginning.
-      this.focusedComponentIndex_ =
-          this.componentCheckboxes_.findIndex(component => !component.disabled);
+      this.focusedComponentIndex =
+          this.componentCheckboxes.findIndex(component => !component.disabled);
     });
   }
 
@@ -233,7 +233,7 @@ export class OnboardingSelectComponentsPageElement extends
     super.connectedCallback();
     window.addEventListener('keydown', this.handleKeyDownEvent);
     window.addEventListener(
-        'click-repair-component-button', this.componentClicked_);
+        'click-repair-component-button', this.componentClicked);
   }
 
   /** @override */
@@ -241,17 +241,17 @@ export class OnboardingSelectComponentsPageElement extends
     super.disconnectedCallback();
     window.removeEventListener('keydown', this.handleKeyDownEvent);
     window.removeEventListener(
-        'click-repair-component-button', this.componentClicked_);
+        'click-repair-component-button', this.componentClicked);
   }
 
   /**
-   * Make the page focus on the component at focusedComponentIndex_.
+   * Make the page focus on the component at focusedComponentIndex.
    * @private
    */
-  focusOnCurrentComponent_() {
-    if (this.focusedComponentIndex_ != -1) {
+  focusOnCurrentComponent() {
+    if (this.focusedComponentIndex != -1) {
       const componentChip = this.shadowRoot.querySelector(`[unique-id="${
-          this.componentCheckboxes_[this.focusedComponentIndex_].uniqueId}"]`);
+          this.componentCheckboxes[this.focusedComponentIndex].uniqueId}"]`);
       componentChip.shadowRoot.querySelector('#componentButton').focus();
     }
   }
@@ -260,8 +260,8 @@ export class OnboardingSelectComponentsPageElement extends
    * @return {!Array<!Component>}
    * @private
    */
-  getComponentRepairStateList_() {
-    return this.componentCheckboxes_.map(item => {
+  getComponentRepairStateList() {
+    return this.componentCheckboxes.map(item => {
       /** @type {!ComponentRepairStatus} */
       let state = ComponentRepairStatus.kOriginal;
       if (item.disabled) {
@@ -278,21 +278,21 @@ export class OnboardingSelectComponentsPageElement extends
   }
 
   /** @protected */
-  onReworkFlowLinkClicked_(e) {
+  onReworkFlowLinkClicked(e) {
     e.preventDefault();
     executeThenTransitionState(
-        this, () => this.shimlessRmaService_.reworkMainboard());
+        this, () => this.shimlessRmaService.reworkMainboard());
   }
 
   /** @return {!Promise<!{stateResult: !StateResult}>} */
   onNextButtonClick() {
-    return this.shimlessRmaService_.setComponentList(
-        this.getComponentRepairStateList_());
+    return this.shimlessRmaService.setComponentList(
+        this.getComponentRepairStateList());
   }
 
   /** @protected */
-  setReworkFlowLink_() {
-    this.reworkFlowLinkText_ =
+  setReworkFlowLink() {
+    this.reworkFlowLinkText =
         this.i18nAdvanced('reworkFlowLinkText', {attrs: ['id']});
     const linkElement = this.shadowRoot.querySelector('#reworkFlowLink');
     linkElement.setAttribute('href', '#');
@@ -301,7 +301,7 @@ export class OnboardingSelectComponentsPageElement extends
         return;
       }
 
-      this.onReworkFlowLinkClicked_(e);
+      this.onReworkFlowLinkClicked(e);
     });
   }
 
@@ -310,15 +310,15 @@ export class OnboardingSelectComponentsPageElement extends
    * @return {boolean}
    * @protected
    */
-  isComponentDisabled_(componentDisabled) {
+  isComponentDisabled(componentDisabled) {
     return this.allButtonsDisabled || componentDisabled;
   }
 
   /** @private */
-  updateIsFirstClickableComponent_() {
+  updateIsFirstClickableComponent() {
     const firstClickableComponent =
-        this.componentCheckboxes_.find(component => !component.disabled);
-    this.componentCheckboxes_.forEach(component => {
+        this.componentCheckboxes.find(component => !component.disabled);
+    this.componentCheckboxes.forEach(component => {
       component.isFirstClickableComponent =
           (component === firstClickableComponent) ? true : false;
     });

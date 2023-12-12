@@ -265,7 +265,7 @@ suite('wrapupRepairCompletePageTest', function() {
     };
     await flushTasks();
 
-    component.batteryTimeoutInMs_ = 0;
+    component.batteryTimeoutInMs = 0;
 
     const cutButton = component.shadowRoot.querySelector('#batteryCutButton');
     cutButton.disabled = false;
@@ -294,7 +294,7 @@ suite('wrapupRepairCompletePageTest', function() {
     service.triggerPowerCableObserver(true, 0);
     await flushTasks();
 
-    assertEquals(-1, component.batteryTimeoutID_);
+    assertEquals(-1, component.batteryTimeoutID);
   });
 
   test('ShutdownButtonInBatteryCutoffDialogTriggersBatteryCutoff', async () => {
@@ -411,7 +411,7 @@ suite('wrapupRepairCompletePageTest', function() {
     await clickButton('#batteryCutButton');
 
     await clickButton('#closeBatteryCutoffDialogButton');
-    assertEquals(-1, component.batteryTimeoutID_);
+    assertEquals(-1, component.batteryTimeoutID);
   });
 
   test('AllButtonsDisabled', async () => {

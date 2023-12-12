@@ -54,7 +54,7 @@ export class WrapupRestockPage extends WrapupRestockPageBase {
   constructor() {
     super();
     /** @private {ShimlessRmaServiceInterface} */
-    this.shimlessRmaService_ = getShimlessRmaService();
+    this.shimlessRmaService = getShimlessRmaService();
   }
 
   /** @override */
@@ -65,16 +65,15 @@ export class WrapupRestockPage extends WrapupRestockPageBase {
   }
 
   /** @protected */
-  onShutdownButtonClicked_() {
+  onShutdownButtonClicked() {
     executeThenTransitionState(
-        this, () => this.shimlessRmaService_.shutdownForRestock());
+        this, () => this.shimlessRmaService.shutdownForRestock());
   }
 
   /** @protected */
-  onRestockContinueButtonClicked_() {
+  onRestockContinueButtonClicked() {
     executeThenTransitionState(
-        this,
-        () => this.shimlessRmaService_.continueFinalizationAfterRestock());
+        this, () => this.shimlessRmaService.continueFinalizationAfterRestock());
   }
 }
 

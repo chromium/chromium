@@ -73,37 +73,37 @@ export class UpdateRoFirmwarePage extends UpdateRoFirmwarePageBase {
   static get properties() {
     return {
       /** @protected {?UpdateRoFirmwareStatus} */
-      status_: {
+      status: {
         type: Object,
         value: null,
       },
 
       /** @protected {string} */
-      statusString_: {
+      statusString: {
         type: String,
       },
 
       /** @protected {boolean} */
-      shouldShowSpinner_: {
+      shouldShowSpinner: {
         type: Boolean,
         value: false,
       },
 
       /** @protected {boolean} */
-      shouldShowWarning_: {
+      shouldShowWarning: {
         type: Boolean,
         value: false,
         reflectToAttribute: true,
       },
 
       /** @protected {string} */
-      imgSrc_: {
+      imgSrc: {
         type: String,
         value: '',
       },
 
       /** @protected {string} */
-      imgAlt_: {
+      imgAlt: {
         type: String,
         value: '',
       },
@@ -113,24 +113,24 @@ export class UpdateRoFirmwarePage extends UpdateRoFirmwarePageBase {
   constructor() {
     super();
     /** @private {ShimlessRmaServiceInterface} */
-    this.shimlessRmaService_ = getShimlessRmaService();
+    this.shimlessRmaService = getShimlessRmaService();
     /** @private {UpdateRoFirmwareObserverReceiver} */
-    this.updateRoFirmwareObserverReceiver_ =
+    this.updateRoFirmwareObserverReceiver =
         new UpdateRoFirmwareObserverReceiver(
             /**
              * @type {!UpdateRoFirmwareObserverInterface}
              */
             (this));
 
-    this.shimlessRmaService_.observeRoFirmwareUpdateProgress(
-        this.updateRoFirmwareObserverReceiver_.$.bindNewPipeAndPassRemote());
+    this.shimlessRmaService.observeRoFirmwareUpdateProgress(
+        this.updateRoFirmwareObserverReceiver.$.bindNewPipeAndPassRemote());
 
     /** @private {!ExternalDiskStateObserverReceiver} */
-    this.externalDiskStateReceiver_ = new ExternalDiskStateObserverReceiver(
+    this.externalDiskStateReceiver = new ExternalDiskStateObserverReceiver(
         /** @type {!ExternalDiskStateObserverInterface} */ (this));
 
-    this.shimlessRmaService_.observeExternalDiskState(
-        this.externalDiskStateReceiver_.$.bindNewPipeAndPassRemote());
+    this.shimlessRmaService.observeExternalDiskState(
+        this.externalDiskStateReceiver.$.bindNewPipeAndPassRemote());
   }
 
   /** @override */
@@ -141,7 +141,7 @@ export class UpdateRoFirmwarePage extends UpdateRoFirmwarePageBase {
   }
 
   static get observers() {
-    return ['onStatusChanged_(status_)'];
+    return ['onStatusChanged(status)'];
   }
 
   /**
@@ -150,10 +150,10 @@ export class UpdateRoFirmwarePage extends UpdateRoFirmwarePageBase {
    * @protected
    */
   onUpdateRoFirmwareStatusChanged(status) {
-    this.status_ = status;
-    this.shouldShowSpinner_ = this.status_ === UpdateRoFirmwareStatus.kUpdating;
-    this.shouldShowWarning_ =
-        this.status_ === UpdateRoFirmwareStatus.kFileNotFound;
+    this.status = status;
+    this.shouldShowSpinner = this.status === UpdateRoFirmwareStatus.kUpdating;
+    this.shouldShowWarning =
+        this.status === UpdateRoFirmwareStatus.kFileNotFound;
   }
 
   /**
@@ -161,46 +161,46 @@ export class UpdateRoFirmwarePage extends UpdateRoFirmwarePageBase {
    * @param {boolean} detected
    */
   onExternalDiskStateChanged(detected) {
-    if (!detected && this.status_ === UpdateRoFirmwareStatus.kComplete) {
+    if (!detected && this.status === UpdateRoFirmwareStatus.kComplete) {
       executeThenTransitionState(
-          this, () => this.shimlessRmaService_.roFirmwareUpdateComplete());
+          this, () => this.shimlessRmaService.roFirmwareUpdateComplete());
     }
   }
 
   /**
-   * Groups state changes related to the |status_| updating.
+   * Groups state changes related to the |status| updating.
    * @protected
    */
-  onStatusChanged_() {
-    this.setStatusString_();
-    this.setImgSrcAndAlt_();
+  onStatusChanged() {
+    this.setStatusString();
+    this.setImgSrcAndAlt();
   }
 
   /**
    * @protected
    */
-  setStatusString_() {
-    this.statusString_ =
-        !this.status_ ? '' : this.i18n(STATUS_TEXT_KEY_MAP[this.status_]);
+  setStatusString() {
+    this.statusString =
+        !this.status ? '' : this.i18n(STATUS_TEXT_KEY_MAP[this.status]);
   }
 
   /**
    * @protected
    */
-  setImgSrcAndAlt_() {
-    this.imgSrc_ = `illustrations/${
-    !this.status_ ? 'downloading' : STATUS_IMG_MAP[this.status_]}.svg`;
-    this.imgAlt_ = this.i18n(
-        !this.status_ ? 'downloadingAltText' : STATUS_ALT_MAP[this.status_]);
+  setImgSrcAndAlt() {
+    this.imgSrc = `illustrations/${
+    !this.status ? 'downloading' : STATUS_IMG_MAP[this.status]}.svg`;
+    this.imgAlt = this.i18n(
+        !this.status ? 'downloadingAltText' : STATUS_ALT_MAP[this.status]);
   }
 
   /**
    * @return {string}
    * @protected
    */
-  getTitleText_() {
+  getTitleText() {
     return this.i18n(
-        this.status_ === UpdateRoFirmwareStatus.kComplete ?
+        this.status === UpdateRoFirmwareStatus.kComplete ?
             'firmwareUpdateInstallCompleteTitleText' :
             'firmwareUpdateInstallImageTitleText');
   }

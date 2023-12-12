@@ -49,7 +49,7 @@ export class OnboardingChooseDestinationPageElement extends
       allButtonsDisabled: Boolean,
 
       /** @protected */
-      destinationOwner_: {
+      destinationOwner: {
         type: String,
         value: '',
       },
@@ -59,7 +59,7 @@ export class OnboardingChooseDestinationPageElement extends
   constructor() {
     super();
     /** @private {ShimlessRmaServiceInterface} */
-    this.shimlessRmaService_ = getShimlessRmaService();
+    this.shimlessRmaService = getShimlessRmaService();
   }
 
   /** @override */
@@ -73,9 +73,9 @@ export class OnboardingChooseDestinationPageElement extends
    * @param {!CustomEvent<{value: string}>} event
    * @protected
    */
-  onDestinationSelectionChanged_(event) {
-    this.destinationOwner_ = event.detail.value;
-    const disabled = !this.destinationOwner_;
+  onDestinationSelectionChanged(event) {
+    this.destinationOwner = event.detail.value;
+    const disabled = !this.destinationOwner;
     if (disabled) {
       disableNextButton(this);
     } else {
@@ -85,12 +85,12 @@ export class OnboardingChooseDestinationPageElement extends
 
   /** @return {!Promise<!{stateResult: !StateResult}>} */
   onNextButtonClick() {
-    if (this.destinationOwner_ === 'originalOwner') {
-      return this.shimlessRmaService_.setSameOwner();
+    if (this.destinationOwner === 'originalOwner') {
+      return this.shimlessRmaService.setSameOwner();
     } else if (
-        this.destinationOwner_ === 'newOwner' ||
-        this.destinationOwner_ === 'notSureOwner') {
-      return this.shimlessRmaService_.setDifferentOwner();
+        this.destinationOwner === 'newOwner' ||
+        this.destinationOwner === 'notSureOwner') {
+      return this.shimlessRmaService.setDifferentOwner();
     } else {
       return Promise.reject(new Error('No destination selected'));
     }

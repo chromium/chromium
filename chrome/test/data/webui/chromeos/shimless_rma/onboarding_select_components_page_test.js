@@ -88,12 +88,12 @@ suite('onboardingSelectComponentsPageTest', function() {
   }
 
   /**
-   * Get getComponentRepairStateList_ private member for testing.
+   * Get getComponentRepairStateList private member for testing.
    * @suppress {visibility} // access private member
    * @return {!Array<!Component>}
    */
   function getComponentRepairStateList() {
-    return component.getComponentRepairStateList_();
+    return component.getComponentRepairStateList();
   }
 
   test('SelectComponentsPageInitializes', async () => {

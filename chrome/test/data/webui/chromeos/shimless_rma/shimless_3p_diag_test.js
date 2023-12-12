@@ -332,7 +332,7 @@ suite('shimless3pDiagTest', function() {
       await pressKey(key, altKey, shiftKey);
       await flushTasks();
       assertTrue(hasDisabledAllButtons);
-      assertTrue(service.wasShow3pDiagnosticsAppCalled());
+      assertTrue(service.wasShow3pDiagnosticsAppCalled);
       assertFalse(isAllButtonsDisabled);
     });
   }
@@ -406,7 +406,7 @@ suite('shimless3pDiagTest', function() {
 
       await dialogAction();
       assertFalse(isDialogOpen('#shimless3pDiagFindInstallableDialog'));
-      assertTrue(service.wasShow3pDiagnosticsAppCalled());
+      assertTrue(service.wasShow3pDiagnosticsAppCalled);
       assertFalse(isAllButtonsDisabled);
     });
   }
@@ -503,7 +503,7 @@ suite('shimless3pDiagTest', function() {
           false,
           service.getLastCompleteLast3pDiagnosticsInstallationApproval());
       assertFalse(isDialogOpen('#shimless3pDiagReviewPermissionDialog'));
-      assertFalse(service.wasShow3pDiagnosticsAppCalled());
+      assertFalse(service.wasShow3pDiagnosticsAppCalled);
       assertFalse(isAllButtonsDisabled);
     });
   }
@@ -547,7 +547,7 @@ suite('shimless3pDiagTest', function() {
       assertEquals(
           true, service.getLastCompleteLast3pDiagnosticsInstallationApproval());
       assertFalse(isDialogOpen('#shimless3pDiagReviewPermissionDialog'));
-      assertTrue(service.wasShow3pDiagnosticsAppCalled());
+      assertTrue(service.wasShow3pDiagnosticsAppCalled);
       assertFalse(isAllButtonsDisabled);
     });
   }
@@ -576,7 +576,7 @@ suite('shimless3pDiagTest', function() {
     await flushTasks();
     assertEquals(
         true, service.getLastCompleteLast3pDiagnosticsInstallationApproval());
-    assertTrue(service.wasShow3pDiagnosticsAppCalled());
+    assertTrue(service.wasShow3pDiagnosticsAppCalled);
     assertFalse(isAllButtonsDisabled);
   });
 });

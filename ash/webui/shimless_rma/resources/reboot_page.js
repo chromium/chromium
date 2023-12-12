@@ -62,7 +62,7 @@ export class RebootPage extends RebootPageBase {
    * @return {string}
    * @protected
    */
-  getPageTitle_() {
+  getPageTitle() {
     return this.errorCode === RmadErrorCode.kExpectReboot ?
         this.i18n('rebootPageTitle') :
         this.i18n('shutdownPageTitle');
@@ -72,7 +72,7 @@ export class RebootPage extends RebootPageBase {
    * @return {string}
    * @protected
    */
-  getPageInstructions_() {
+  getPageInstructions() {
     return this.errorCode === RmadErrorCode.kExpectReboot ?
         this.i18n('rebootPageMessage', DELAY_DURATION) :
         this.i18n('shutdownPageMessage', DELAY_DURATION);

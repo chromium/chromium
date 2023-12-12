@@ -3,15 +3,15 @@
 
 <base-page>
   <div slot="left-pane">
-    <h1 tabindex="-1">[[getCalibrationTitleString_(calibrationComplete_)]]</h1>
+    <h1 tabindex="-1">[[getCalibrationTitleString(calibrationComplete)]]</h1>
   </div>
   <div slot="right-pane">
     <div class="illustration-wrapper" aria-hidden="true">
-      <paper-spinner-lite active hidden$="[[calibrationComplete_]]"
+      <paper-spinner-lite active hidden$="[[calibrationComplete]]"
           class="large-spinner">
       </paper-spinner-lite>
       <img class="illustration" src="illustrations/success.svg"
-          hidden$="[[!calibrationComplete_]]" alt="[[i18n('successAltText')]]">
+          hidden$="[[!calibrationComplete]]" alt="[[i18n('successAltText')]]">
     </div>
   </div>
 </base-page>

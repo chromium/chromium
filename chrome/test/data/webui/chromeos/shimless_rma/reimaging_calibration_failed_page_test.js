@@ -76,12 +76,12 @@ suite('reimagingCalibrationFailedPageTest', function() {
   }
 
   /**
-   * Get getComponentsList_ private member for testing.
+   * Get getComponentsList private member for testing.
    * @suppress {visibility} // access private member
    * @return {!Array<!CalibrationComponentStatus>}
    */
   function getComponentsList() {
-    return component.getComponentsList_();
+    return component.getComponentsList();
   }
 
 

@@ -41,7 +41,7 @@ export class OnboardingWaitForManualWpDisablePage extends
   static get properties() {
     return {
       /** @protected */
-      hwwpEnabled_: {
+      hwwpEnabled: {
         type: Boolean,
         value: true,
       },
@@ -54,15 +54,15 @@ export class OnboardingWaitForManualWpDisablePage extends
   constructor() {
     super();
     /** @private {ShimlessRmaServiceInterface} */
-    this.shimlessRmaService_ = getShimlessRmaService();
+    this.shimlessRmaService = getShimlessRmaService();
     /** @private {?HardwareWriteProtectionStateObserverReceiver} */
-    this.hardwareWriteProtectionStateObserverReceiver_ =
+    this.hardwareWriteProtectionStateObserverReceiver =
         new HardwareWriteProtectionStateObserverReceiver(
             /** @type {!HardwareWriteProtectionStateObserverInterface} */
             (this));
 
-    this.shimlessRmaService_.observeHardwareWriteProtectionState(
-        this.hardwareWriteProtectionStateObserverReceiver_.$
+    this.shimlessRmaService.observeHardwareWriteProtectionState(
+        this.hardwareWriteProtectionStateObserverReceiver.$
             .bindNewPipeAndPassRemote());
   }
 
@@ -78,10 +78,10 @@ export class OnboardingWaitForManualWpDisablePage extends
    * @public
    */
   onHardwareWriteProtectionStateChanged(enabled) {
-    this.hwwpEnabled_ = enabled;
+    this.hwwpEnabled = enabled;
 
     if(!this.hidden) {
-      if (!this.hwwpEnabled_) {
+      if (!this.hwwpEnabled) {
         disableAllButtons(this, /*showBusyStateOverlay=*/ false);
         // TODO(swifton): Hide the cancel button.
       }
@@ -92,17 +92,17 @@ export class OnboardingWaitForManualWpDisablePage extends
    * @return {string}
    * @protected
    */
-  getPageTitle_() {
-    return this.hwwpEnabled_ ? this.i18n('manuallyDisableWpTitleText') :
-                               this.i18n('manuallyDisableWpTitleTextReboot');
+  getPageTitle() {
+    return this.hwwpEnabled ? this.i18n('manuallyDisableWpTitleText') :
+                              this.i18n('manuallyDisableWpTitleTextReboot');
   }
 
   /**
    * @return {string}
    * @protected
    */
-  getInstructions_() {
-    return this.hwwpEnabled_ ?
+  getInstructions() {
+    return this.hwwpEnabled ?
         this.i18n('manuallyDisableWpInstructionsText') :
         this.i18n('manuallyDisableWpInstructionsTextReboot');
   }

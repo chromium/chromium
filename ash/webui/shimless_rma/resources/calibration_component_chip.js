@@ -57,7 +57,7 @@ export class CalibrationComponentChipElement extends PolymerElement {
         type: Boolean,
         value: false,
         observer: CalibrationComponentChipElement.prototype
-                      .onIsFirstClickableComponentChanged_,
+                      .onIsFirstClickableComponentChanged,
       },
 
       /** @type {number} */
@@ -70,7 +70,7 @@ export class CalibrationComponentChipElement extends PolymerElement {
   }
 
   /** @protected */
-  onComponentButtonClicked_() {
+  onComponentButtonClicked() {
     this.checked = !this.checked;
 
     // Notify the page that the component chip was clicked, so that the page can
@@ -83,7 +83,7 @@ export class CalibrationComponentChipElement extends PolymerElement {
   }
 
   click() {
-    this.onComponentButtonClicked_();
+    this.onComponentButtonClicked();
   }
 
   /**
@@ -92,12 +92,12 @@ export class CalibrationComponentChipElement extends PolymerElement {
    * @return {boolean}
    * @protected
    */
-  shouldShowCheckIcon_() {
+  shouldShowCheckIcon() {
     return this.checked || this.disabled;
   }
 
   /** @private */
-  onIsFirstClickableComponentChanged_() {
+  onIsFirstClickableComponentChanged() {
     // Tab should go to the first non-disabled component in the list,
     // not individual component.
     modifyTabbableElement(
@@ -110,7 +110,7 @@ export class CalibrationComponentChipElement extends PolymerElement {
    * @return {string}
    * @protected
    */
-  isAriaPressed_() {
+  isAriaPressed() {
     return this.checked.toString();
   }
 }

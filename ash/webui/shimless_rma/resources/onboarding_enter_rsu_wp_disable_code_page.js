@@ -58,70 +58,70 @@ export class OnboardingEnterRsuWpDisableCodePage extends
       errorCode: {
         type: Object,
         observer:
-            OnboardingEnterRsuWpDisableCodePage.prototype.onErrorCodeChanged_,
+            OnboardingEnterRsuWpDisableCodePage.prototype.onErrorCodeChanged,
       },
 
       /** @protected */
-      canvasSize_: {
+      canvasSize: {
         type: Number,
         value: 0,
       },
 
       /** @protected {string} */
-      rsuChallenge_: {
+      rsuChallenge: {
         type: String,
         value: '',
       },
 
       /** @protected */
-      rsuHwid_: {
+      rsuHwid: {
         type: String,
         value: '',
       },
 
       /** @protected */
-      rsuCode_: {
+      rsuCode: {
         type: String,
         value: '',
         observer:
-            OnboardingEnterRsuWpDisableCodePage.prototype.onRsuCodeChanged_,
+            OnboardingEnterRsuWpDisableCodePage.prototype.onRsuCodeChanged,
       },
 
       /** @protected */
-      rsuCodeExpectedLength_: {
+      rsuCodeExpectedLength: {
         type: Number,
         value: RSU_CODE_EXPECTED_LENGTH,
         readOnly: true,
       },
 
       /** @protected */
-      rsuInstructionsText_: {
+      rsuInstructionsText: {
         type: String,
         value: '',
       },
 
       /** @protected */
-      qrCodeUrl_: {
+      qrCodeUrl: {
         type: String,
         value: '',
       },
 
       /** @protected */
-      rsuChallengeLinkText_: {
+      rsuChallengeLinkText: {
         type: String,
         value: '',
-        computed: 'computeRsuChallengeLinkText_(rsuHwid_, rsuChallenge_)',
+        computed: 'computeRsuChallengeLinkText(rsuHwid, rsuChallenge)',
       },
 
       /** @protected */
-      rsuCodeValidationRegex_: {
+      rsuCodeValidationRegex: {
         type: String,
         value: '.{1,8}',
         readOnly: true,
       },
 
       /** @protected {boolean} */
-      rsuCodeInvalid_: {
+      rsuCodeInvalid: {
         type: Boolean,
         value: false,
         reflectToAttribute: true,
@@ -132,14 +132,14 @@ export class OnboardingEnterRsuWpDisableCodePage extends
   constructor() {
     super();
     /** @private {ShimlessRmaServiceInterface} */
-    this.shimlessRmaService_ = getShimlessRmaService();
+    this.shimlessRmaService = getShimlessRmaService();
   }
 
   /** @override */
   ready() {
     super.ready();
-    this.getRsuChallengeAndHwid_();
-    this.setRsuInstructionsText_();
+    this.getRsuChallengeAndHwid();
+    this.setRsuInstructionsText();
     enableNextButton(this);
 
     afterNextRender(this, () => {
@@ -149,51 +149,50 @@ export class OnboardingEnterRsuWpDisableCodePage extends
   }
 
   /** @private */
-  getRsuChallengeAndHwid_() {
-    this.shimlessRmaService_.getRsuDisableWriteProtectChallenge().then(
-        (result) => this.rsuChallenge_ = result.challenge);
-    this.shimlessRmaService_.getRsuDisableWriteProtectHwid().then(
-        (result) => {
-          this.rsuHwid_ = result.hwid;
-        });
-    this.shimlessRmaService_.getRsuDisableWriteProtectChallengeQrCode().then(
-        this.updateQrCode_.bind(this));
+  getRsuChallengeAndHwid() {
+    this.shimlessRmaService.getRsuDisableWriteProtectChallenge().then(
+        (result) => this.rsuChallenge = result.challenge);
+    this.shimlessRmaService.getRsuDisableWriteProtectHwid().then((result) => {
+      this.rsuHwid = result.hwid;
+    });
+    this.shimlessRmaService.getRsuDisableWriteProtectChallengeQrCode().then(
+        this.updateQrCode.bind(this));
   }
 
   /**
    * @param {{qrCodeData: !Array<number>}} response
    * @private
    */
-  updateQrCode_(response) {
+  updateQrCode(response) {
     const blob =
         new Blob([Uint8Array.from(response.qrCodeData)], {'type': 'image/png'});
-    this.qrCodeUrl_ = URL.createObjectURL(blob);
+    this.qrCodeUrl = URL.createObjectURL(blob);
   }
 
   /**
    * @return {boolean}
    * @private
    */
-  rsuCodeIsPlausible_() {
-    return !!this.rsuCode_ && this.rsuCode_.length === RSU_CODE_EXPECTED_LENGTH;
+  rsuCodeIsPlausible() {
+    return !!this.rsuCode && this.rsuCode.length === RSU_CODE_EXPECTED_LENGTH;
   }
 
   /**
    * @param {!Event} event
    * @protected
    */
-  onRsuCodeChanged_(event) {
+  onRsuCodeChanged(event) {
     // Set to false whenever the user changes the code to remove the red invalid
     // warning.
-    this.rsuCodeInvalid_ = false;
-    this.rsuCode_ = this.rsuCode_.toUpperCase();
+    this.rsuCodeInvalid = false;
+    this.rsuCode = this.rsuCode.toUpperCase();
   }
 
   /**
    * @param {!Event} event
    * @protected
    */
-  onKeyDown_(event) {
+  onKeyDown(event) {
     if (event.key === 'Enter') {
       dispatchNextButtonClick(this);
     }
@@ -201,18 +200,17 @@ export class OnboardingEnterRsuWpDisableCodePage extends
 
   /** @return {!Promise<!{stateResult: !StateResult}>} */
   onNextButtonClick() {
-    if (this.rsuCode_.length !== this.rsuCodeExpectedLength_) {
-      this.rsuCodeInvalid_ = true;
+    if (this.rsuCode.length !== this.rsuCodeExpectedLength) {
+      this.rsuCodeInvalid = true;
       return Promise.reject(new Error('No RSU code set'));
     }
 
-    return this.shimlessRmaService_.setRsuDisableWriteProtectCode(
-        this.rsuCode_);
+    return this.shimlessRmaService.setRsuDisableWriteProtectCode(this.rsuCode);
   }
 
   /** @private */
-  setRsuInstructionsText_() {
-    this.rsuInstructionsText_ =
+  setRsuInstructionsText() {
+    this.rsuInstructionsText =
         this.i18nAdvanced('rsuCodeInstructionsText', {attrs: ['id']});
     const linkElement = this.shadowRoot.querySelector('#rsuCodeDialogLink');
     linkElement.setAttribute('href', '#');
@@ -229,21 +227,21 @@ export class OnboardingEnterRsuWpDisableCodePage extends
    * @return {string}
    * @private
    */
-  computeRsuChallengeLinkText_() {
+  computeRsuChallengeLinkText() {
     const unlockPageUrl =
         'https://chromeos.google.com/partner/console/cr50reset?challenge=';
-    return unlockPageUrl + this.rsuChallenge_ + '&hwid=' + this.rsuHwid_;
+    return unlockPageUrl + this.rsuChallenge + '&hwid=' + this.rsuHwid;
   }
 
   /** @private */
-  closeDialog_() {
+  closeDialog() {
     this.shadowRoot.querySelector('#rsuChallengeDialog').close();
   }
 
   /** @private */
-  onErrorCodeChanged_() {
+  onErrorCodeChanged() {
     if (this.errorCode === RmadErrorCode.kWriteProtectDisableRsuCodeInvalid) {
-      this.rsuCodeInvalid_ = true;
+      this.rsuCodeInvalid = true;
     }
   }
 
@@ -251,17 +249,17 @@ export class OnboardingEnterRsuWpDisableCodePage extends
    * @return {string}
    * @protected
    */
-  getRsuCodeLabelText_() {
-    return this.rsuCodeInvalid_ ? this.i18n('rsuCodeErrorLabelText') :
-                                  this.i18n('rsuCodeLabelText');
+  getRsuCodeLabelText() {
+    return this.rsuCodeInvalid ? this.i18n('rsuCodeErrorLabelText') :
+                                 this.i18n('rsuCodeLabelText');
   }
 
   /**
    * @return {string}
    * @protected
    */
-  getRsuAriaDescription_() {
-    return `${this.getRsuCodeLabelText_()} ${
+  getRsuAriaDescription() {
+    return `${this.getRsuCodeLabelText()} ${
         this.i18n('rsuCodeInstructionsAriaText')}`;
   }
 }

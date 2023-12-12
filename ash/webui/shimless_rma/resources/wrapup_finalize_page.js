@@ -58,7 +58,7 @@ export class WrapupFinalizePage extends WrapupFinalizePageBase {
       allButtonsDisabled: Boolean,
 
       /** @protected */
-      finalizationMessage_: {
+      finalizationMessage: {
         type: String,
         value: '',
       },
@@ -68,16 +68,16 @@ export class WrapupFinalizePage extends WrapupFinalizePageBase {
   constructor() {
     super();
     /** @private {ShimlessRmaServiceInterface} */
-    this.shimlessRmaService_ = getShimlessRmaService();
+    this.shimlessRmaService = getShimlessRmaService();
     /**
      * Receiver responsible for observing finalization progress and state.
      * @private {?FinalizationObserverReceiver}
      */
-    this.finalizationObserverReceiver_ = new FinalizationObserverReceiver(
+    this.finalizationObserverReceiver = new FinalizationObserverReceiver(
         /** @type {!FinalizationObserverInterface} */ (this));
 
-    this.shimlessRmaService_.observeFinalizationStatus(
-        this.finalizationObserverReceiver_.$.bindNewPipeAndPassRemote());
+    this.shimlessRmaService.observeFinalizationStatus(
+        this.finalizationObserverReceiver.$.bindNewPipeAndPassRemote());
   }
 
   /** @override */
@@ -104,11 +104,11 @@ export class WrapupFinalizePage extends WrapupFinalizePageBase {
         },
       }));
     } else {
-      this.finalizationMessage_ = this.i18n(finalizationStatusTextKeys[status]);
+      this.finalizationMessage = this.i18n(finalizationStatusTextKeys[status]);
 
       if (status === FinalizationStatus.kComplete) {
         executeThenTransitionState(
-            this, () => this.shimlessRmaService_.finalizationComplete());
+            this, () => this.shimlessRmaService.finalizationComplete());
         return;
       }
     }
