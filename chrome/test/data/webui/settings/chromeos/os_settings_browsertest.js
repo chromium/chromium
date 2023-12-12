@@ -207,6 +207,25 @@ TEST_F('OSSettingsCrostiniPageCrostiniExportImportTest', 'AllJsTests', () => {
   mocha.run();
 });
 
+var OSSettingsCrostiniPageCrostiniExtraContainersSubpageTest =
+    class extends OSSettingsBrowserTest {
+  /** @override */
+  get browsePreload() {
+    return 'chrome://os-settings/test_loader.html?module=settings/chromeos/crostini_page/crostini_extra_containers_subpage_test.js';
+  }
+
+  /** @override */
+  testGenPreamble() {
+    return crostiniTestGenPreamble();
+  }
+};
+
+TEST_F(
+    'OSSettingsCrostiniPageCrostiniExtraContainersSubpageTest', 'AllJsTests',
+    () => {
+      mocha.run();
+    });
+
 var OSSettingsCrostiniPageTest = class extends OSSettingsBrowserTest {
   /** @override */
   get browsePreload() {
@@ -257,6 +276,24 @@ TEST_F('OSSettingsCrostiniPageCrostiniSettingsCardTest', 'AllJsTests', () => {
   mocha.run();
 });
 
+var OSSettingsCrostiniPageCrostiniSharedUsbDevicesTest =
+    class extends OSSettingsBrowserTest {
+  /** @override */
+  get browsePreload() {
+    return 'chrome://os-settings/test_loader.html?module=settings/chromeos/crostini_page/crostini_shared_usb_devices_test.js';
+  }
+
+  /** @override */
+  testGenPreamble() {
+    return crostiniTestGenPreamble();
+  }
+};
+
+TEST_F(
+    'OSSettingsCrostiniPageCrostiniSharedUsbDevicesTest', 'AllJsTests', () => {
+      mocha.run();
+    });
+
 var OSSettingsCrostiniPageCrostiniSubpageTest =
     class extends OSSettingsBrowserTest {
   /** @override */
@@ -274,11 +311,11 @@ TEST_F('OSSettingsCrostiniPageCrostiniSubpageTest', 'AllJsTests', () => {
   mocha.run();
 });
 
-var OSSettingsCrostiniPageCrostiniExtraContainersSubpageTest =
+var OSSettingsCrostiniPageGuestOsSharedPathsForCrostiniTest =
     class extends OSSettingsBrowserTest {
   /** @override */
   get browsePreload() {
-    return 'chrome://os-settings/test_loader.html?module=settings/chromeos/crostini_page/crostini_extra_containers_subpage_test.js';
+    return 'chrome://os-settings/test_loader.html?module=settings/chromeos/crostini_page/guest_os_shared_paths_for_crostini_test.js';
   }
 
   /** @override */
@@ -288,7 +325,7 @@ var OSSettingsCrostiniPageCrostiniExtraContainersSubpageTest =
 };
 
 TEST_F(
-    'OSSettingsCrostiniPageCrostiniExtraContainersSubpageTest', 'AllJsTests',
+    'OSSettingsCrostiniPageGuestOsSharedPathsForCrostiniTest', 'AllJsTests',
     () => {
       mocha.run();
     });

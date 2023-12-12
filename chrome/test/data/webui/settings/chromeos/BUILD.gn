@@ -72,7 +72,9 @@ build_webui_tests("build") {
     "crostini_page/crostini_page_test.ts",
     "crostini_page/crostini_port_forwarding_test.ts",
     "crostini_page/crostini_settings_card_test.ts",
+    "crostini_page/crostini_shared_usb_devices_test.ts",
     "crostini_page/crostini_subpage_test.ts",
+    "crostini_page/guest_os_shared_paths_for_crostini_test.ts",
     "crostini_page/test_crostini_browser_proxy.ts",
 
     "date_time_page/date_time_settings_card_test.ts",
