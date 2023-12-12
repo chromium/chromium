@@ -16,6 +16,9 @@
 #include "base/traits_bag.h"
 #include "build/buildflag.h"
 #include "build/chromeos_buildflags.h"
+#include "chrome/browser/apps/app_service/app_service_proxy.h"
+#include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
+#include "chrome/browser/apps/app_service/app_service_test.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
 #include "chrome/browser/web_applications/app_service/web_apps_with_shortcuts_test.h"
 #include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
@@ -102,6 +105,8 @@ class WebAppPublisherHelperTest : public testing::Test,
     profile_ = builder.Build();
 
     provider_ = WebAppProvider::GetForWebApps(profile());
+    apps::WaitForAppServiceProxyReady(
+        apps::AppServiceProxyFactory::GetForProfile(profile()));
 
     publisher_ = std::make_unique<WebAppPublisherHelper>(profile(), provider_,
                                                          &no_op_delegate_);
