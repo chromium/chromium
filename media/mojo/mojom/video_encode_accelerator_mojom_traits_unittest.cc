@@ -186,6 +186,7 @@ TEST(VideoEncodeAcceleratorConfigStructTraitTest, RoundTrip) {
       ::media::VideoEncodeAccelerator::Config::StorageType::kGpuMemoryBuffer;
   input_config.content_type =
       ::media::VideoEncodeAccelerator::Config::ContentType::kCamera;
+  input_config.drop_frame_thresh_percentage = 30;
   input_config.spatial_layers = input_spatial_layers;
   input_config.inter_layer_pred = ::media::SVCInterLayerPredMode::kOnKeyPic;
 

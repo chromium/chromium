@@ -133,6 +133,8 @@ struct MEDIA_EXPORT BitstreamBufferMetadata final {
                           base::TimeDelta timestamp);
   ~BitstreamBufferMetadata();
 
+  // If |payload_size_bytes| is zero, it indicates the frame corresponded to
+  // |timestamp| is dropped.
   size_t payload_size_bytes;
   bool key_frame;
   base::TimeDelta timestamp;
@@ -288,6 +290,19 @@ class MEDIA_EXPORT VideoEncodeAccelerator {
     // bright colors. With this content hint the encoder may choose to optimize
     // for the given use case.
     ContentType content_type = ContentType::kCamera;
+
+    // |drop_frame_thresh_percentage| is described as a percentage of the target
+    // data buffer. When the data buffer falls below this percentage of
+    // fullness, a dropped frame is indicated. The default value is zero, which
+    // means a VideoEncodeAccelerator doesn't allow to drop a frame.
+    // Two caveats:
+    // (1) VideoToolboxVideoEncodeAccelerator (macOS) doesn't provide a way to
+    // disallow drop a frame. That's said, the VideoEncodeAccelerator may drop
+    // a frame even if |drop_frame_thresh_percentage| is set to zero.
+    // (2) A VideoENcodeAccelerator doesn't necessarily support a frame drop.
+    // Therefore a frame may not be dropped even if
+    // |drop_frame_thresh_percentage| is set to a positive value.
+    uint8_t drop_frame_thresh_percentage = 0;
 
     // The configuration for spatial layers. This is not empty if and only if
     // either spatial or temporal layer encoding is configured. When this is not
