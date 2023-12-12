@@ -3875,10 +3875,6 @@
       status: "stable",
     },
     {
-      name: "URLCanParse",
-      status: "stable",
-    },
-    {
       name: "URLPatternCompareComponent",
       status: "experimental",
       base_feature: "none",
