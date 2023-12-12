@@ -16,8 +16,6 @@ static_library("installer_policies_no_content_deps") {
   sources = [
     "autofill_states_component_installer.cc",
     "autofill_states_component_installer.h",
-    "client_side_phishing_component_installer_policy.cc",
-    "client_side_phishing_component_installer_policy.h",
     "masked_domain_list_component_installer_policy.cc",
     "masked_domain_list_component_installer_policy.h",
     "origin_trials_component_installer.cc",
