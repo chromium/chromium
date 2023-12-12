@@ -1513,7 +1513,10 @@
       "--disable-threaded-compositing", "--disable-threaded-animation"],
     "expires": "Jul 1, 2024"
   },
-  {
+    {
+      "owners": [
+        "haoliuk@chromium.org"
+      ],
     "prefix": "expose-lcp-render-time",
     "platforms": [
       "Linux",
@@ -1530,7 +1533,7 @@
     "args": [
       "--enable-blink-features=ExposeRenderTimeNonTaoDelayedImage",
       "--disable-threaded-compositing", "--disable-threaded-animation"],
-    "expires": "Jul 1, 2023"
+    "expires": "Jul 1, 2024"
   },
   {
     "prefix": "parakeet",
@@ -2322,6 +2325,9 @@
     "expires": "Dec 1, 2023"
   },
   {
+    "owners": [
+      "haoliuk@chromium.org"
+    ],
     "prefix": "soft-navigation-fp-fcp",
     "platforms": ["Linux"],
     "bases": [
@@ -2329,7 +2335,7 @@
     ],
     "args": ["--enable-blink-features=SoftNavigationHeuristicsExposeFPAndFCP",
              "--disable-threaded-compositing", "--disable-threaded-animation"],
-    "expires": "Dec 31, 2023"
+    "expires": "Jul 1, 2024"
   },
   {
     "prefix": "produce-compile-hints",
