@@ -107,10 +107,11 @@ message ComposeRequest {
     // A previously received ComposeResponse response_text, which will be
     // rewritten.
     string previous_response = 1;
-    // Rewrite with either tone or length specified.
+    // Rewrite with one of the below modifiers.
     oneof modifier {
       ComposeTone tone = 2;
       ComposeLength length = 3;
+      bool regenerate = 4;
     }
   }
   oneof request_params {
