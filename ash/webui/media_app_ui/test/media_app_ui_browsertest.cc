@@ -11,6 +11,7 @@
 #include "ash/webui/web_applications/test/sandboxed_web_ui_test_base.h"
 #include "base/files/file_path.h"
 #include "content/public/test/browser_test.h"
+#include "content/public/test/browser_test_utils.h"
 
 namespace {
 
@@ -54,6 +55,13 @@ MediaAppUiBrowserTest::~MediaAppUiBrowserTest() = default;
 std::string MediaAppUiBrowserTest::AppJsTestLibrary() {
   return SandboxedWebUiAppTestBase::LoadJsTestLibrary(
       base::FilePath(kTestLibraryPath));
+}
+
+// static
+void MediaAppUiBrowserTest::PrepareAppForTest(content::WebContents* web_ui) {
+  EXPECT_TRUE(WaitForLoadStop(web_ui));
+  EXPECT_EQ(nullptr, MediaAppUiBrowserTest::EvalJsInAppFrame(
+                         web_ui, MediaAppUiBrowserTest::AppJsTestLibrary()));
 }
 
 IN_PROC_BROWSER_TEST_F(MediaAppUiBrowserTest, GuestCanLoad) {

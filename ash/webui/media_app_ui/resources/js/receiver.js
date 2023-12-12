@@ -8,7 +8,7 @@ import {COLOR_PROVIDER_CHANGED, ColorChangeUpdater} from '//resources/cr_compone
 
 import {assertCast, MessagePipe} from './message_pipe.js';
 import {EditInPhotosMessage, FileContext, IsFileArcWritableMessage, IsFileArcWritableResponse, IsFileBrowserWritableMessage, IsFileBrowserWritableResponse, LoadFilesMessage, Message, OpenAllowedFileMessage, OpenAllowedFileResponse, OpenFilesWithPickerMessage, OverwriteFileMessage, OverwriteViaFilePickerResponse, RenameFileResponse, RenameResult, RequestSaveFileMessage, RequestSaveFileResponse, SaveAsMessage, SaveAsResponse} from './message_types.js';
-import {ocrCallbackRouter} from './mojo_api_bootstrap_untrusted.js';
+import {connectToOcrHandler, ocrCallbackRouter} from './mojo_api_bootstrap_untrusted.js';
 import {loadPiex} from './piex_module_loader.js';
 
 /** A pipe through which we can send messages to the parent frame. */
@@ -320,6 +320,8 @@ parentMessagePipe.registerHandler(Message.LOAD_EXTRA_FILES, async (message) => {
 // parent frame (privileged context).
 parentMessagePipe.sendMessage(Message.IFRAME_READY);
 
+let ocrUntrustedPageHandler;
+
 ocrCallbackRouter.setViewport.addListener(
     (viewportBox) => {
       const app = getApp();
@@ -369,6 +371,9 @@ const DELEGATE = {
    */
   notifyCurrentFile(name, type) {
     parentMessagePipe.sendMessage(Message.NOTIFY_CURRENT_FILE, {name, type});
+    if (type === 'application/pdf') {
+      ocrUntrustedPageHandler = connectToOcrHandler();
+    }
   },
   /**
    * @param {!Blob} file

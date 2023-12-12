@@ -70,6 +70,21 @@ const createAudioChild = async (blobSrc, file) => {
 };
 
 /** @type {ModuleHandler} */
+const createPdfChild = async (blobSrc, file) => {
+  const container =
+      /** @type {!HTMLDivElement} */ (document.createElement('div'));
+
+  if (file.size === 0) {
+    console.warn('Assuming zero-byte test file: not loading PDF.');
+    return container;
+  }
+
+  const canvas = /** @type {HTMLCanvasElement} */
+      (container.appendChild(document.createElement('canvas')));
+  return container;
+};
+
+/** @type {ModuleHandler} */
 const createErrorChild = async (_, file) => {
   console.warn(`Mock handling of ${file.name} resulted in error.`);
   // In the real app, a loaderror element is loaded infront of a placeholder
@@ -86,6 +101,12 @@ const createErrorChild = async (_, file) => {
 class BacklightApp extends HTMLElement {
   constructor() {
     super();
+    const shadowRoot = this.attachShadow({mode: 'open'});
+    /** @type {?BacklightAppBar} */
+    this.appBar = /** @type {BacklightAppBar} */
+        (document.createElement('backlight-app-bar'));
+
+    shadowRoot.appendChild(this.appBar);
     /** @type {?HTMLElement} */
     this.currentHandler = /** @type {HTMLElement} */ (
         document.createElement('backlight-media-handler'));
@@ -154,7 +175,8 @@ class BacklightApp extends HTMLElement {
     await this.preprocessFile(file);
     const mimeType = file.mimeType || await this.sniffedMimeType(file);
     let factory;
-    switch (mimeType.split('/')[0]) {
+    const [type, subtype] = mimeType.split('/');
+    switch (type) {
       case 'video':
         factory = createVideoChild;
         break;
@@ -164,6 +186,12 @@ class BacklightApp extends HTMLElement {
       case 'audio':
         factory = createAudioChild;
         break;
+      case 'application':
+        if (subtype === 'pdf') {
+          factory = createPdfChild;
+          break;
+        }
+        // Fallthrough.
       default:
         factory = createErrorChild;
     }
@@ -173,6 +201,7 @@ class BacklightApp extends HTMLElement {
     this.replaceChild(child, this.currentMedia);
     this.currentMedia = child;
     this.delegate.notifyCurrentFile(file.name, mimeType);
+    this.appBar.setFilename(file.name);
   }
 
   updateHandler() {
@@ -231,6 +260,25 @@ class BacklightApp extends HTMLElement {
 }
 
 window.customElements.define('backlight-app', BacklightApp);
+
+// Element mimicking the app bar which contains the current file's name.
+class BacklightAppBar extends HTMLElement {
+  constructor() {
+    super();
+    const shadowRoot = this.attachShadow({mode: 'open'});
+    /** @type {?HTMLElement} */
+    this.child = /** @type {HTMLElement} */ (document.createElement('div'));
+    this.child.classList.add('app-bar-filename');
+
+    shadowRoot.appendChild(this.child);
+  }
+
+  /** @param {!string} filename */
+  setFilename(filename) {
+    this.child.setAttribute('filename', filename);
+  }
+}
+window.customElements.define('backlight-app-bar', BacklightAppBar);
 
 // Element mimicking the image/video handler which is the parent of the
 // `carousel-overlay`.
