@@ -50,6 +50,7 @@ static_library("browser_sync") {
     "//components/url_formatter",
     "//components/version_info",
     "//components/version_info:generate_version_info",
+    "//components/webauthn/core/browser",
     "//ui/base",
   ]
 

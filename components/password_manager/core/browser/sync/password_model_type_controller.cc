@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/password_manager/core/browser/sync/credential_model_type_controller.h"
+#include "components/password_manager/core/browser/sync/password_model_type_controller.h"
 
 #include <utility>
 
@@ -25,8 +25,7 @@
 
 namespace password_manager {
 
-CredentialModelTypeController::CredentialModelTypeController(
-    syncer::ModelType model_type,
+PasswordModelTypeController::PasswordModelTypeController(
     std::unique_ptr<syncer::ModelTypeControllerDelegate>
         delegate_for_full_sync_mode,
     std::unique_ptr<syncer::ModelTypeControllerDelegate>
@@ -34,70 +33,57 @@ CredentialModelTypeController::CredentialModelTypeController(
     PrefService* pref_service,
     signin::IdentityManager* identity_manager,
     syncer::SyncService* sync_service)
-    : ModelTypeController(model_type,
+    : ModelTypeController(syncer::PASSWORDS,
                           std::move(delegate_for_full_sync_mode),
                           std::move(delegate_for_transport_mode)),
       pref_service_(pref_service),
-#if BUILDFLAG(IS_ANDROID)
-      local_upm_pref_(type() == syncer::PASSWORDS
-                          ? std::make_unique<IntegerPrefMember>()
-                          : nullptr),
-#endif
       identity_manager_(identity_manager),
       sync_service_(sync_service) {
-  CHECK(model_type == syncer::PASSWORDS ||
-        model_type == syncer::WEBAUTHN_CREDENTIAL);
   identity_manager_observation_.Observe(identity_manager_);
 #if BUILDFLAG(IS_ANDROID)
-  if (local_upm_pref_) {
-    // Unretained() is safe because this object outlives `local_upm_pref_`.
-    local_upm_pref_->Init(
-        prefs::kPasswordsUseUPMLocalAndSeparateStores, pref_service_,
-        base::BindRepeating(
-            &CredentialModelTypeController::OnLocalUpmPrefChanged,
-            base::Unretained(this)));
-  }
+  // Unretained() is safe because this object outlives `local_upm_pref_`.
+  local_upm_pref_.Init(
+      prefs::kPasswordsUseUPMLocalAndSeparateStores, pref_service_,
+      base::BindRepeating(&PasswordModelTypeController::OnLocalUpmPrefChanged,
+                          base::Unretained(this)));
 #endif
 }
 
-CredentialModelTypeController::~CredentialModelTypeController() = default;
+PasswordModelTypeController::~PasswordModelTypeController() = default;
 
-void CredentialModelTypeController::LoadModels(
+void PasswordModelTypeController::LoadModels(
     const syncer::ConfigureContext& configure_context,
     const ModelLoadCallback& model_load_callback) {
   DCHECK(CalledOnValidThread());
   syncer::ConfigureContext overridden_context = configure_context;
 #if BUILDFLAG(IS_ANDROID)
-  if (local_upm_pref_) {
-    switch (GetLocalUpmPrefValue()) {
-      case prefs::UseUpmLocalAndSeparateStoresState::kOff:
-        break;
-      case prefs::UseUpmLocalAndSeparateStoresState::kOn:
-        overridden_context.sync_mode = syncer::SyncMode::kTransportOnly;
-        break;
-      case prefs::UseUpmLocalAndSeparateStoresState::kOffAndMigrationPending:
-        // Disallowed by GetPreconditionState().
-        NOTREACHED_NORETURN();
-    }
+  switch (GetLocalUpmPrefValue()) {
+    case prefs::UseUpmLocalAndSeparateStoresState::kOff:
+      break;
+    case prefs::UseUpmLocalAndSeparateStoresState::kOn:
+      overridden_context.sync_mode = syncer::SyncMode::kTransportOnly;
+      break;
+    case prefs::UseUpmLocalAndSeparateStoresState::kOffAndMigrationPending:
+      // Disallowed by GetPreconditionState().
+      NOTREACHED_NORETURN();
   }
 #endif
   ModelTypeController::LoadModels(overridden_context, model_load_callback);
 }
 
-void CredentialModelTypeController::Stop(syncer::SyncStopMetadataFate fate,
-                                         StopCallback callback) {
+void PasswordModelTypeController::Stop(syncer::SyncStopMetadataFate fate,
+                                       StopCallback callback) {
   DCHECK(CalledOnValidThread());
   ModelTypeController::Stop(fate, std::move(callback));
 }
 
 syncer::DataTypeController::PreconditionState
-CredentialModelTypeController::GetPreconditionState() const {
+PasswordModelTypeController::GetPreconditionState() const {
 #if BUILDFLAG(IS_ANDROID)
   // If the local UPM migration is pending, wait until it succeeds/fails, so
   // LoadModels() knows whether to override SyncMode to kTransportOnly or not.
-  return local_upm_pref_ && GetLocalUpmPrefValue() ==
-                                prefs::UseUpmLocalAndSeparateStoresState::
-                                    kOffAndMigrationPending
+  return GetLocalUpmPrefValue() == prefs::UseUpmLocalAndSeparateStoresState::
+                                       kOffAndMigrationPending
              ? PreconditionState::kMustStopAndKeepData
              : PreconditionState::kPreconditionsMet;
 #else
@@ -105,7 +91,7 @@ CredentialModelTypeController::GetPreconditionState() const {
 #endif
 }
 
-bool CredentialModelTypeController::ShouldRunInTransportOnlyMode() const {
+bool PasswordModelTypeController::ShouldRunInTransportOnlyMode() const {
 #if !BUILDFLAG(IS_IOS)
   // Outside iOS, passphrase errors aren't reported in the UI, so it doesn't
   // make sense to enable this datatype.
@@ -116,7 +102,7 @@ bool CredentialModelTypeController::ShouldRunInTransportOnlyMode() const {
   return true;
 }
 
-void CredentialModelTypeController::OnAccountsInCookieUpdated(
+void PasswordModelTypeController::OnAccountsInCookieUpdated(
     const signin::AccountsInCookieJarInfo& accounts_in_cookie_jar_info,
     const GoogleServiceAuthError& error) {
 #if !BUILDFLAG(IS_IOS) && !BUILDFLAG(IS_ANDROID)
@@ -141,7 +127,7 @@ void CredentialModelTypeController::OnAccountsInCookieUpdated(
 #endif  // !BUILDFLAG(IS_IOS) && !BUILDFLAG(IS_ANDROID)
 }
 
-void CredentialModelTypeController::OnAccountsCookieDeletedByUserAction() {
+void PasswordModelTypeController::OnAccountsCookieDeletedByUserAction() {
 #if !BUILDFLAG(IS_IOS) && !BUILDFLAG(IS_ANDROID)
   features_util::KeepAccountStorageSettingsOnlyForUsers(pref_service_, {});
 #endif  // !BUILDFLAG(IS_IOS) && !BUILDFLAG(IS_ANDROID)
@@ -149,10 +135,9 @@ void CredentialModelTypeController::OnAccountsCookieDeletedByUserAction() {
 
 #if BUILDFLAG(IS_ANDROID)
 prefs::UseUpmLocalAndSeparateStoresState
-CredentialModelTypeController::GetLocalUpmPrefValue() const {
-  CHECK(local_upm_pref_);
+PasswordModelTypeController::GetLocalUpmPrefValue() const {
   auto value = static_cast<prefs::UseUpmLocalAndSeparateStoresState>(
-      local_upm_pref_->GetValue());
+      local_upm_pref_.GetValue());
   switch (value) {
     case prefs::UseUpmLocalAndSeparateStoresState::kOff:
     case prefs::UseUpmLocalAndSeparateStoresState::kOn:
@@ -162,7 +147,7 @@ CredentialModelTypeController::GetLocalUpmPrefValue() const {
   NOTREACHED_NORETURN();
 }
 
-void CredentialModelTypeController::OnLocalUpmPrefChanged() {
+void PasswordModelTypeController::OnLocalUpmPrefChanged() {
   // No-ops are fine.
   sync_service_->DataTypePreconditionChanged(type());
 }

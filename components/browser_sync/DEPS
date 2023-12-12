@@ -26,6 +26,7 @@ include_rules = [
   "+components/undo",
   "+components/url_formatter",
   "+components/version_info",
+  "+components/webauthn/core/browser/passkey_model_type_controller.h",
   "+components/webdata/common",
   "+components/webdata_services",
   "+services/network/test",

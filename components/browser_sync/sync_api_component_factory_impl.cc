@@ -34,7 +34,7 @@
 #include "components/password_manager/core/browser/sharing/outgoing_password_sharing_invitation_model_type_controller.h"
 #include "components/password_manager/core/browser/sharing/password_receiver_service.h"
 #include "components/password_manager/core/browser/sharing/password_sender_service.h"
-#include "components/password_manager/core/browser/sync/credential_model_type_controller.h"
+#include "components/password_manager/core/browser/sync/password_model_type_controller.h"
 #include "components/power_bookmarks/core/power_bookmark_features.h"
 #include "components/power_bookmarks/core/power_bookmark_service.h"
 #include "components/prefs/pref_service.h"
@@ -62,6 +62,7 @@
 #include "components/sync_sessions/session_model_type_controller.h"
 #include "components/sync_sessions/session_sync_service.h"
 #include "components/sync_user_events/user_event_model_type_controller.h"
+#include "components/webauthn/core/browser/passkey_model_type_controller.h"
 
 #if BUILDFLAG(ENABLE_SUPERVISED_USERS)
 #include "components/supervised_user/core/browser/supervised_user_settings_model_type_controller.h"
@@ -386,8 +387,7 @@ SyncApiComponentFactoryImpl::CreateCommonDataTypeControllers(
     if (profile_password_store_) {
       // |profile_password_store_| can be null in tests.
       controllers.push_back(
-          std::make_unique<password_manager::CredentialModelTypeController>(
-              syncer::PASSWORDS,
+          std::make_unique<password_manager::PasswordModelTypeController>(
               profile_password_store_->CreateSyncControllerDelegate(),
               account_password_store_
                   ? account_password_store_->CreateSyncControllerDelegate()
@@ -522,14 +522,12 @@ SyncApiComponentFactoryImpl::CreateCommonDataTypeControllers(
   if (base::FeatureList::IsEnabled(syncer::kSyncWebauthnCredentials) &&
       !disabled_types.Has(syncer::WEBAUTHN_CREDENTIAL)) {
     controllers.push_back(
-        std::make_unique<password_manager::CredentialModelTypeController>(
-            syncer::WEBAUTHN_CREDENTIAL,
+        std::make_unique<webauthn::PasskeyModelTypeController>(
+            sync_service,
             /*delegate_for_full_sync_mode=*/
             CreateForwardingControllerDelegate(syncer::WEBAUTHN_CREDENTIAL),
             /*delegate_for_transport_mode=*/
-            CreateForwardingControllerDelegate(syncer::WEBAUTHN_CREDENTIAL),
-            sync_client_->GetPrefService(), sync_client_->GetIdentityManager(),
-            sync_service));
+            CreateForwardingControllerDelegate(syncer::WEBAUTHN_CREDENTIAL)));
   }
 #endif
 

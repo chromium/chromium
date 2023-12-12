@@ -7,8 +7,8 @@ import("//testing/libfuzzer/fuzzer_test.gni")
 
 source_set("sync") {
   sources = [
-    "credential_model_type_controller.cc",
-    "credential_model_type_controller.h",
+    "password_model_type_controller.cc",
+    "password_model_type_controller.h",
     "password_proto_utils.cc",
     "password_proto_utils.h",
     "password_store_sync.cc",

@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_PASSWORD_MANAGER_CORE_BROWSER_SYNC_CREDENTIAL_MODEL_TYPE_CONTROLLER_H_
-#define COMPONENTS_PASSWORD_MANAGER_CORE_BROWSER_SYNC_CREDENTIAL_MODEL_TYPE_CONTROLLER_H_
+#ifndef COMPONENTS_PASSWORD_MANAGER_CORE_BROWSER_SYNC_PASSWORD_MODEL_TYPE_CONTROLLER_H_
+#define COMPONENTS_PASSWORD_MANAGER_CORE_BROWSER_SYNC_PASSWORD_MODEL_TYPE_CONTROLLER_H_
 
 #include <memory>
 
@@ -28,14 +28,13 @@ namespace prefs {
 enum class UseUpmLocalAndSeparateStoresState;
 }
 
-// A class that manages the startup and shutdown of password & passkey sync.
-class CredentialModelTypeController : public syncer::ModelTypeController,
-                                      public signin::IdentityManager::Observer {
+// A class that manages the startup and shutdown of password sync.
+class PasswordModelTypeController : public syncer::ModelTypeController,
+                                    public signin::IdentityManager::Observer {
  public:
   // Note: Android might always be configured in transport mode if
   // UnifiedPasswordManagerLocalPasswordsAndroid* flags are in place.
-  CredentialModelTypeController(
-      syncer::ModelType model_type,
+  PasswordModelTypeController(
       std::unique_ptr<syncer::ModelTypeControllerDelegate>
           delegate_for_full_sync_mode,
       std::unique_ptr<syncer::ModelTypeControllerDelegate>
@@ -44,11 +43,11 @@ class CredentialModelTypeController : public syncer::ModelTypeController,
       signin::IdentityManager* identity_manager,
       syncer::SyncService* sync_service);
 
-  CredentialModelTypeController(const CredentialModelTypeController&) = delete;
-  CredentialModelTypeController& operator=(
-      const CredentialModelTypeController&) = delete;
+  PasswordModelTypeController(const PasswordModelTypeController&) = delete;
+  PasswordModelTypeController& operator=(const PasswordModelTypeController&) =
+      delete;
 
-  ~CredentialModelTypeController() override;
+  ~PasswordModelTypeController() override;
 
   // DataTypeController overrides.
   void LoadModels(const syncer::ConfigureContext& configure_context,
@@ -72,8 +71,7 @@ class CredentialModelTypeController : public syncer::ModelTypeController,
 
   const raw_ptr<PrefService> pref_service_;
 #if BUILDFLAG(IS_ANDROID)
-  // Only set for PASSWORDS.
-  const std::unique_ptr<IntegerPrefMember> local_upm_pref_;
+  IntegerPrefMember local_upm_pref_;
 #endif
   const raw_ptr<signin::IdentityManager> identity_manager_;
   const raw_ptr<syncer::SyncService> sync_service_;
@@ -82,9 +80,9 @@ class CredentialModelTypeController : public syncer::ModelTypeController,
                           signin::IdentityManager::Observer>
       identity_manager_observation_{this};
 
-  base::WeakPtrFactory<CredentialModelTypeController> weak_ptr_factory_{this};
+  base::WeakPtrFactory<PasswordModelTypeController> weak_ptr_factory_{this};
 };
 
 }  // namespace password_manager
 
-#endif  // COMPONENTS_PASSWORD_MANAGER_CORE_BROWSER_SYNC_CREDENTIAL_MODEL_TYPE_CONTROLLER_H_
+#endif  // COMPONENTS_PASSWORD_MANAGER_CORE_BROWSER_SYNC_PASSWORD_MODEL_TYPE_CONTROLLER_H_
