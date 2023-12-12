@@ -83,9 +83,19 @@ ChromeCTPolicyEnforcer::ChromeCTPolicyEnforcer(
     base::Time log_list_date,
     std::vector<std::pair<std::string, base::Time>> disqualified_logs,
     std::map<std::string, OperatorHistoryEntry> log_operator_history)
+    : ChromeCTPolicyEnforcer(log_list_date,
+                             std::move(disqualified_logs),
+                             std::move(log_operator_history),
+                             base::DefaultClock::GetInstance()) {}
+
+ChromeCTPolicyEnforcer::ChromeCTPolicyEnforcer(
+    base::Time log_list_date,
+    std::vector<std::pair<std::string, base::Time>> disqualified_logs,
+    std::map<std::string, OperatorHistoryEntry> log_operator_history,
+    const base::Clock* clock)
     : disqualified_logs_(std::move(disqualified_logs)),
       log_operator_history_(std::move(log_operator_history)),
-      clock_(base::DefaultClock::GetInstance()),
+      clock_(clock),
       log_list_date_(log_list_date) {}
 
 ChromeCTPolicyEnforcer::~ChromeCTPolicyEnforcer() {}
@@ -122,22 +132,12 @@ void ChromeCTPolicyEnforcer::UpdateCTLogList(
   log_list_date_ = update_time;
   disqualified_logs_ = std::move(disqualified_logs);
   log_operator_history_ = std::move(log_operator_history);
-
-  if (disqualified_log_for_testing_.has_value()) {
-    disqualified_log_for_testing_ = std::nullopt;
-  }
 }
 
 bool ChromeCTPolicyEnforcer::IsLogDisqualified(
     std::string_view log_id,
     base::Time* disqualification_date) const {
   CHECK_EQ(log_id.size(), crypto::kSHA256Length);
-
-  if (disqualified_log_for_testing_.has_value() &&
-      log_id == disqualified_log_for_testing_.value().first) {
-    *disqualification_date = disqualified_log_for_testing_.value().second;
-    return *disqualification_date < base::Time::Now();
-  }
 
   auto p = std::lower_bound(
       std::begin(disqualified_logs_), std::end(disqualified_logs_), log_id,

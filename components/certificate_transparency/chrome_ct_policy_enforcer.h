@@ -54,6 +54,11 @@ class COMPONENT_EXPORT(CERTIFICATE_TRANSPARENCY) ChromeCTPolicyEnforcer
       base::Time log_list_date,
       std::vector<std::pair<std::string, base::Time>> disqualified_logs,
       std::map<std::string, OperatorHistoryEntry> log_operator_history);
+  ChromeCTPolicyEnforcer(
+      base::Time log_list_date,
+      std::vector<std::pair<std::string, base::Time>> disqualified_logs,
+      std::map<std::string, OperatorHistoryEntry> log_operator_history,
+      const base::Clock* clock);
 
   ~ChromeCTPolicyEnforcer() override;
 
@@ -68,8 +73,6 @@ class COMPONENT_EXPORT(CERTIFICATE_TRANSPARENCY) ChromeCTPolicyEnforcer
       base::Time update_time,
       std::vector<std::pair<std::string, base::Time>> disqualified_logs,
       std::map<std::string, OperatorHistoryEntry> log_operator_history);
-
-  void SetClockForTesting(const base::Clock* clock) { clock_ = clock; }
 
   // TODO(https://crbug.com/999240): These are exposed to allow end-to-end
   // testing by higher layers (i.e. that the ChromeCTPolicyEnforcer is
@@ -88,16 +91,6 @@ class COMPONENT_EXPORT(CERTIFICATE_TRANSPARENCY) ChromeCTPolicyEnforcer
 
   void SetCTLogListAlwaysTimelyForTesting(bool always_timely) {
     ct_log_list_always_timely_for_testing_ = always_timely;
-  }
-
-  void SetOperatorHistoryForTesting(
-      std::map<std::string, OperatorHistoryEntry> log_operator_history) {
-    log_operator_history_ = std::move(log_operator_history);
-  }
-
-  void SetDisqualifiedLogForTesting(
-      const std::pair<std::string, base::Time>& disqualified_log) {
-    disqualified_log_for_testing_ = disqualified_log;
   }
 
  private:
@@ -128,7 +121,7 @@ class COMPONENT_EXPORT(CERTIFICATE_TRANSPARENCY) ChromeCTPolicyEnforcer
 
   std::map<std::string, OperatorHistoryEntry> log_operator_history_;
 
-  raw_ptr<const base::Clock> clock_;
+  const raw_ptr<const base::Clock> clock_;
 
   // The time at which |disqualified_logs_| and |log_operator_history_| were
   // generated.
@@ -137,12 +130,6 @@ class COMPONENT_EXPORT(CERTIFICATE_TRANSPARENCY) ChromeCTPolicyEnforcer
   // If set, the CT log list will be considered timely regardless of its last
   // update time.
   bool ct_log_list_always_timely_for_testing_ = false;
-
-  // If set, this log ID will be considered a disqualified log, effective at the
-  // specified time.
-  // Calling UpdateCTLogList clears this value if set.
-  std::optional<std::pair<std::string, base::Time>>
-      disqualified_log_for_testing_;
 };
 
 }  // namespace certificate_transparency
