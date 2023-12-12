@@ -167,7 +167,7 @@ id<GREYMatcher> mostlyNotVisible() {
   if ([self isRunningTest:@selector(testLargeFakeboxFocus)]) {
     config.features_enabled.push_back(kIOSLargeFakebox);
   }
-  if ([self isRunningTest:@selector(testMinimumHeight)]) {
+  if ([self isRunningTest:@selector(DISABLED_testMinimumHeight)]) {
     config.features_enabled.push_back(kMagicStack);
   }
   return config;
@@ -999,7 +999,8 @@ id<GREYMatcher> mostlyNotVisible() {
       performAction:grey_tap()];
 }
 
-- (void)testMinimumHeight {
+// TODO(crbug.com/1510926): This test is flaky.
+- (void)DISABLED_testMinimumHeight {
   [ChromeEarlGreyAppInterface
       setBoolValue:NO
        forUserPref:base::SysUTF8ToNSString(prefs::kArticlesForYouEnabled)];
