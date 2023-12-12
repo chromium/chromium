@@ -241,6 +241,11 @@ public class BaseCustomTabRootUiCoordinator extends RootUiCoordinator {
         }
         mTabController = tabController;
         mMinimizeDelegateSupplier = minimizeDelegateSupplier;
+        // TODO(https://crbug.com/1509163): move this RootUiCoordinator once this flag is removed.
+        if (ChromeFeatureList.sCctTabModalDialog.isEnabled()) {
+            getAppBrowserControlsVisibilityDelegate()
+                    .addDelegate(browserControlsManager.getBrowserVisibilityDelegate());
+        }
     }
 
     @Override

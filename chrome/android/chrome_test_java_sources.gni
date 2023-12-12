@@ -151,6 +151,7 @@ chrome_test_java_sources = [
   "javatests/src/org/chromium/chrome/browser/customtabs/CustomTabDeferredStartupTest.java",
   "javatests/src/org/chromium/chrome/browser/customtabs/CustomTabExternalNavigationTest.java",
   "javatests/src/org/chromium/chrome/browser/customtabs/CustomTabFromChromeExternalNavigationTest.java",
+  "javatests/src/org/chromium/chrome/browser/customtabs/CustomTabModalDialogTest.java",
   "javatests/src/org/chromium/chrome/browser/customtabs/CustomTabPostMessageTest.java",
   "javatests/src/org/chromium/chrome/browser/customtabs/CustomTabPrivacySandboxDialogTest.java",
   "javatests/src/org/chromium/chrome/browser/customtabs/CustomTabTabPersistenceIntegrationTest.java",

@@ -68,6 +68,7 @@ BASE_DECLARE_FEATURE(kCCTResizableSideSheet);
 BASE_DECLARE_FEATURE(kCCTResizableSideSheetForThirdParties);
 BASE_DECLARE_FEATURE(kCCTResourcePrefetch);
 BASE_DECLARE_FEATURE(kCCTRetainingStateInMemory);
+BASE_DECLARE_FEATURE(kCCTTabModalDialog);
 BASE_DECLARE_FEATURE(kCCTTextFragmentLookupApiEnabled);
 BASE_DECLARE_FEATURE(kCCTToolbarCustomizations);
 BASE_DECLARE_FEATURE(kDontAutoHideBrowserControls);

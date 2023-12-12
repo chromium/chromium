@@ -201,6 +201,7 @@ public abstract class ChromeFeatureList {
     public static final String CCT_RESIZABLE_SIDE_SHEET_FOR_THIRD_PARTIES =
             "CCTResizableSideSheetForThirdParties";
     public static final String CCT_RESOURCE_PREFETCH = "CCTResourcePrefetch";
+    public static final String CCT_TAB_MODAL_DIALOG = "CCTTabModalDialog";
     public static final String CCT_TEXT_FRAGMENT_LOOKUP_API_ENABLED =
             "CCTTextFragmentLookupApiEnabled";
     public static final String CCT_TOOLBAR_CUSTOMIZATIONS = "CCTToolbarCustomizations";
@@ -538,6 +539,7 @@ public abstract class ChromeFeatureList {
             new CachedFlag(CCT_RESIZABLE_SIDE_SHEET, true);
     public static final CachedFlag sCctResizableSideSheetForThirdParties =
             new CachedFlag(CCT_RESIZABLE_SIDE_SHEET_FOR_THIRD_PARTIES, true);
+    public static final CachedFlag sCctTabModalDialog = new CachedFlag(CCT_TAB_MODAL_DIALOG, true);
     public static final CachedFlag sCctToolbarCustomizations =
             new CachedFlag(CCT_TOOLBAR_CUSTOMIZATIONS, true);
     public static final CachedFlag sCloseTabSaveTabList =
@@ -665,6 +667,7 @@ public abstract class ChromeFeatureList {
                     sCctResizableForThirdParties,
                     sCctResizableSideSheet,
                     sCctResizableSideSheetForThirdParties,
+                    sCctTabModalDialog,
                     sCctToolbarCustomizations,
                     sCloseTabSaveTabList,
                     sCollectAndroidFrameTimelineMetrics,
