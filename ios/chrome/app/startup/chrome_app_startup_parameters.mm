@@ -371,6 +371,8 @@ TabOpeningPostOpeningAction XCallbackPoaToPostOpeningAction(
     return startupParameters;
   } else if (IsExternalActionSchemeHandlingEnabled() &&
              [self isChromeExternalActionURL:completeURL]) {
+    base::RecordAction(
+        base::UserMetricsAction("MobileExternalActionURLOpened"));
     UMA_HISTOGRAM_ENUMERATION(kUMAMobileSessionStartActionHistogram,
                               START_EXTERNAL_ACTION,
                               MOBILE_SESSION_START_ACTION_COUNT);
@@ -494,12 +496,16 @@ TabOpeningPostOpeningAction XCallbackPoaToPostOpeningAction(
   }
 
   if ([path isEqualToString:kExternalActionOpenNTP]) {
+    base::RecordAction(
+        base::UserMetricsAction("MobileExternalActionURLOpenedWithOpenNTP"));
     action = IOSExternalAction::ACTION_OPEN_NTP;
     params =
         [self newExternalActionAppStartupParameters:appId
                                         completeURL:completeURL
                                         externalURL:GURL(kChromeUINewTabURL)];
   } else if ([path isEqualToString:kExternalActionDefaultBrowserSettings]) {
+    base::RecordAction(base::UserMetricsAction(
+        "MobileExternalActionURLOpenedWithDefaultBrowserSettings"));
     action = IOSExternalAction::ACTION_DEFAULT_BROWSER_SETTINGS;
     params = [self newExternalActionAppStartupParameters:appId
                                              completeURL:completeURL
