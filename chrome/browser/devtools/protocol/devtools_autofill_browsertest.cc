@@ -47,12 +47,12 @@ auto FilledFieldHasAttributeWithValue(const std::string& attribute,
 auto FilledFieldHasAttributeWithValue16(const std::string& attribute,
                                         const std::u16string& expected_value) {
   return FilledFieldHasAttributeWithValue(attribute,
-                                          base::UTF16ToASCII(expected_value));
+                                          base::UTF16ToUTF8(expected_value));
 }
 
 std::string GetProfileInfoFromAddressField(const AutofillProfile profile,
                                            const base::Value& address_field) {
-  return base::UTF16ToASCII(profile.GetRawInfo(TypeNameToFieldType(
+  return base::UTF16ToUTF8(profile.GetRawInfo(TypeNameToFieldType(
       *address_field.GetDict().FindStringByDottedPath("name"))));
 }
 

@@ -264,9 +264,9 @@ void AutofillHandler::OnFillOrPreviewDataModelForm(
             autofill_field->Type().GetStorableType();
     filled_fields_to_be_sent_to_devtools->push_back(
         protocol::Autofill::FilledField::Create()
-            .SetId(base::UTF16ToASCII(autofill_field->id_attribute))
-            .SetName(base::UTF16ToASCII(autofill_field->name_attribute))
-            .SetValue(base::UTF16ToASCII(field->value))
+            .SetId(base::UTF16ToUTF8(autofill_field->id_attribute))
+            .SetName(base::UTF16ToUTF8(autofill_field->name_attribute))
+            .SetValue(base::UTF16ToUTF8(field->value))
             .SetHtmlType(std::string(
                 autofill::FormControlTypeToString(field->form_control_type)))
             .SetAutofillType(
@@ -286,7 +286,7 @@ void AutofillHandler::OnFillOrPreviewDataModelForm(
   // Devtools is already in english, so we can default the local to en-US.
   const std::string locale = "en-US";
   autofill::GetAddressComponents(
-      base::UTF16ToASCII(profile_used_to_fill_form->GetInfo(
+      base::UTF16ToUTF8(profile_used_to_fill_form->GetInfo(
           autofill::ServerFieldType::ADDRESS_HOME_COUNTRY, locale)),
       locale,
       /*include_literals=*/false, &components, nullptr);
@@ -311,7 +311,7 @@ void AutofillHandler::OnFillOrPreviewDataModelForm(
       profile_values->push_back(
           protocol::Autofill::AddressField::Create()
               .SetName(FieldTypeToString(component.field))
-              .SetValue(base::UTF16ToASCII(
+              .SetValue(base::UTF16ToUTF8(
                   profile_used_to_fill_form->GetInfo(component.field, locale)))
               .Build());
     }
