@@ -12,8 +12,8 @@
 #define VERSION_MAJOR 3
 #define VERSION_MINOR 8
 #define VERSION_PATCH 0
-#define VERSION_EXTRA "rc1"
+#define VERSION_EXTRA "2-gd456a6bf9c"
 #define VERSION_PACKED \
   ((VERSION_MAJOR << 16) | (VERSION_MINOR << 8) | (VERSION_PATCH))
-#define VERSION_STRING_NOSP "3.8.0-rc1"
-#define VERSION_STRING " 3.8.0-rc1"
+#define VERSION_STRING_NOSP "3.8.0-2-gd456a6bf9c"
+#define VERSION_STRING " 3.8.0-2-gd456a6bf9c"
