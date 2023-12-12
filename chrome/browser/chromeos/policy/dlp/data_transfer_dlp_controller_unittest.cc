@@ -14,6 +14,7 @@
 #include "base/test/mock_callback.h"
 #include "base/types/optional_util.h"
 #include "build/chromeos_buildflags.h"
+#include "chrome/browser/chromeos/policy/dlp/dlp_files_controller.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_rules_manager.h"
 #include "chrome/browser/chromeos/policy/dlp/test/mock_dlp_rules_manager.h"
 #include "chrome/browser/enterprise/data_controls/dlp_reporting_manager.h"
@@ -40,10 +41,6 @@
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
 #include "chromeos/lacros/lacros_service.h"
 #endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
-
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-#include "chrome/browser/ash/policy/dlp/dlp_files_controller_ash.h"
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 namespace policy {
 
@@ -336,13 +333,10 @@ TEST_F(DataTransferDlpControllerTest, PasteIfAllowed_CancelDst) {
   EXPECT_TRUE(events_.empty());
 }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-
-class MockFilesController : public policy::DlpFilesControllerAsh {
+class MockFilesController : public policy::DlpFilesController {
  public:
-  explicit MockFilesController(const policy::DlpRulesManager& rules_manager,
-                               Profile* profile)
-      : DlpFilesControllerAsh(rules_manager, profile) {}
+  explicit MockFilesController(const policy::DlpRulesManager& rules_manager)
+      : DlpFilesController(rules_manager) {}
   ~MockFilesController() override = default;
 
   MOCK_METHOD(void,
@@ -350,6 +344,23 @@ class MockFilesController : public policy::DlpFilesControllerAsh {
               (const std::vector<base::FilePath>& files,
                const ui::DataTransferEndpoint* data_dst,
                CheckIfDlpAllowedCallback result_callback),
+              (override));
+
+  MOCK_METHOD(absl::optional<data_controls::Component>,
+              MapFilePathToPolicyComponent,
+              (Profile * profile, const base::FilePath& file_path),
+              (override));
+
+  MOCK_METHOD(bool,
+              IsInLocalFileSystem,
+              (const base::FilePath& file_path),
+              (override));
+
+  MOCK_METHOD(void,
+              ShowDlpBlockedFiles,
+              (absl::optional<uint64_t> task_id,
+               std::vector<base::FilePath> blocked_files,
+               dlp::FileAction action),
               (override));
 };
 
@@ -363,7 +374,7 @@ TEST_F(DataTransferDlpControllerTest, DropFile_Blocked) {
                          extension_misc::kFilesManagerAppId}))));
   ui::DataTransferEndpoint data_dst((GURL(kExample1Url)));
 
-  MockFilesController files_controller(*rules_manager_, testing_profile_.get());
+  MockFilesController files_controller(*rules_manager_);
   std::vector<ui::FileInfo> file_names;
   ASSERT_TRUE(drag_data.GetFilenames(&file_names));
 
@@ -373,15 +384,9 @@ TEST_F(DataTransferDlpControllerTest, DropFile_Blocked) {
                                     std::vector<base::FilePath>{path},
                                     &data_dst, base::test::IsNotNullCallback()))
       .WillOnce(base::test::RunOnceCallback<2>(false));
-  EXPECT_CALL(*dlp_controller_, NotifyBlockedDrop);
 
   ::testing::StrictMock<base::MockOnceClosure> drop_callback;
   dlp_controller_->DropIfAllowed(&drag_data, &data_dst, drop_callback.Get());
-
-  histogram_tester_.ExpectUniqueSample(
-      data_controls::GetDlpHistogramPrefix() +
-          data_controls::dlp::kDragDropBlockedUMA,
-      true, 1);
 }
 
 TEST_F(DataTransferDlpControllerTest, DropFile_Allowed) {
@@ -394,14 +399,12 @@ TEST_F(DataTransferDlpControllerTest, DropFile_Allowed) {
                          extension_misc::kFilesManagerAppId}))));
   ui::DataTransferEndpoint data_dst((GURL(kExample1Url)));
 
-  MockFilesController files_controller(*rules_manager_, testing_profile_.get());
+  MockFilesController files_controller(*rules_manager_);
   std::vector<ui::FileInfo> file_names;
   ASSERT_TRUE(drag_data.GetFilenames(&file_names));
 
   EXPECT_CALL(*rules_manager_, GetDlpFilesController)
       .WillOnce(testing::Return(&files_controller));
-  EXPECT_CALL(*rules_manager_, IsRestrictedDestination)
-      .WillOnce(testing::Return(DlpRulesManager::Level::kAllow));
   EXPECT_CALL(files_controller, CheckIfPasteOrDropIsAllowed(
                                     std::vector<base::FilePath>{path},
                                     &data_dst, base::test::IsNotNullCallback()))
@@ -410,11 +413,6 @@ TEST_F(DataTransferDlpControllerTest, DropFile_Allowed) {
   ::testing::StrictMock<base::MockOnceClosure> drop_callback;
   EXPECT_CALL(drop_callback, Run);
   dlp_controller_->DropIfAllowed(&drag_data, &data_dst, drop_callback.Get());
-
-  histogram_tester_.ExpectUniqueSample(
-      data_controls::GetDlpHistogramPrefix() +
-          data_controls::dlp::kDragDropBlockedUMA,
-      false, 1);
 }
 
 TEST_F(DataTransferDlpControllerTest, PasteFile_Blocked) {
@@ -423,7 +421,7 @@ TEST_F(DataTransferDlpControllerTest, PasteFile_Blocked) {
   auto path = base::FilePath("file1.txt");
   ui::DataTransferEndpoint data_dst((GURL(kExample1Url)));
 
-  MockFilesController files_controller(*rules_manager_, testing_profile_.get());
+  MockFilesController files_controller(*rules_manager_);
 
   EXPECT_CALL(*rules_manager_, GetDlpFilesController)
       .WillOnce(testing::Return(&files_controller));
@@ -450,7 +448,7 @@ TEST_F(DataTransferDlpControllerTest, PasteFile_Allowed) {
   auto path = base::FilePath("file1.txt");
   ui::DataTransferEndpoint data_dst((GURL(kExample1Url)));
 
-  MockFilesController files_controller(*rules_manager_, testing_profile_.get());
+  MockFilesController files_controller(*rules_manager_);
 
   EXPECT_CALL(*rules_manager_, GetDlpFilesController)
       .WillOnce(testing::Return(&files_controller));
@@ -470,8 +468,6 @@ TEST_F(DataTransferDlpControllerTest, PasteFile_Allowed) {
                                   web_contents->GetPrimaryMainFrame(),
                                   paste_callback.Get());
 }
-
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 // Create a version of the test class for parameterized testing.
 class DlpControllerTest : public DataTransferDlpControllerTest {

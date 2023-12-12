@@ -341,15 +341,17 @@ void DataTransferDlpController::DropIfAllowed(
       drag_data->GetFilenames(&dropped_files);
       files_controller->CheckIfPasteOrDropIsAllowed(
           GetFilePathsFromFileInfos(dropped_files), data_dst.as_ptr(),
-          base::BindOnce(&DataTransferDlpController::ContinueDropIfAllowed,
-                         weak_ptr_factory_.GetWeakPtr(),
-                         *drag_data->GetSource(), data_dst,
-                         std::move(drop_cb)));
+          base::BindOnce(
+              [](base::OnceClosure drop_cb, bool is_allowed) {
+                if (is_allowed) {
+                  std::move(drop_cb).Run();
+                }
+              },
+              std::move(drop_cb)));
       return;
     }
   }
-  ContinueDropIfAllowed(*drag_data->GetSource(), data_dst, std::move(drop_cb),
-                        /*is_allowed=*/true);
+  ContinueDropIfAllowed(*drag_data->GetSource(), data_dst, std::move(drop_cb));
 }
 
 DataTransferDlpController::DataTransferDlpController(
@@ -554,24 +556,16 @@ void DataTransferDlpController::MaybeReportEvent(
 void DataTransferDlpController::ContinueDropIfAllowed(
     base::optional_ref<const ui::DataTransferEndpoint> data_src,
     base::optional_ref<const ui::DataTransferEndpoint> data_dst,
-    base::OnceClosure drop_cb,
-    bool is_allowed) {
-  DlpRulesManager::Level level;
-  if (!is_allowed) {
-    level = DlpRulesManager::Level::kBlock;
-    // TODO(b/269609831): Return here once the correct UI is implemented in
-    // DlpFilesController.
-  } else {
-    std::string src_pattern;
-    std::string dst_pattern;
-    DlpRulesManager::RuleMetadata rule_metadata;
-    level = IsDataTransferAllowed(*dlp_rules_manager_, data_src, data_dst,
-                                  absl::nullopt, &src_pattern, &dst_pattern,
-                                  &rule_metadata);
+    base::OnceClosure drop_cb) {
+  std::string src_pattern;
+  std::string dst_pattern;
+  DlpRulesManager::RuleMetadata rule_metadata;
+  DlpRulesManager::Level level = IsDataTransferAllowed(
+      *dlp_rules_manager_, data_src, data_dst, absl::nullopt, &src_pattern,
+      &dst_pattern, &rule_metadata);
 
-    MaybeReportEvent(data_src, data_dst, src_pattern, dst_pattern, level,
-                     /*is_clipboard_event=*/false, rule_metadata);
-  }
+  MaybeReportEvent(data_src, data_dst, src_pattern, dst_pattern, level,
+                   /*is_clipboard_event=*/false, rule_metadata);
 
   switch (level) {
     case DlpRulesManager::Level::kBlock:

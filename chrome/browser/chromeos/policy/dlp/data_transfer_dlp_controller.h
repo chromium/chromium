@@ -129,8 +129,7 @@ class DataTransferDlpController : public ui::DataTransferPolicyController {
   void ContinueDropIfAllowed(
       base::optional_ref<const ui::DataTransferEndpoint> data_src,
       base::optional_ref<const ui::DataTransferEndpoint> data_dst,
-      base::OnceClosure drop_cb,
-      bool is_allowed);
+      base::OnceClosure drop_cb);
 
   // Performs clipbpoard restriction related checks.
   void ContinuePasteIfClipboardRestrictionsAllow(
