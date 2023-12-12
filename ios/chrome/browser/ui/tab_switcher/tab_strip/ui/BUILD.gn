@@ -7,13 +7,16 @@ import("//build/config/ios/swift_source_set.gni")
 swift_source_set("swift") {
   bridge_header = "tab_strip_ui_swift_bridge.h"
   sources = [
+    "tab_strip_constants.swift",
     "tab_strip_consumer.swift",
     "tab_strip_layout.swift",
+    "tab_strip_new_tab_button.swift",
     "tab_strip_view_controller.swift",
     "tab_strip_view_controller_delegate.swift",
   ]
   deps = [
     ":ui",
+    "//ios/chrome/browser/shared/ui/symbols",
     "//ios/chrome/browser/ui/menu",
     "//ios/chrome/browser/ui/tab_switcher",
   ]

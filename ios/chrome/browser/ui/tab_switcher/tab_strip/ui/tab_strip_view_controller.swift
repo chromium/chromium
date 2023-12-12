@@ -6,8 +6,8 @@ import UIKit
 
 /// View Controller displaying the TabStrip.
 @objcMembers
-class TabStripViewController: UIViewController, TabStripCellDelegate, TabStripConsumer,
-  UICollectionViewDelegate
+class TabStripViewController: UIViewController, TabStripCellDelegate,
+  TabStripConsumer, UICollectionViewDelegate
 {
 
   // The enum used by the data source to manage the sections.
@@ -21,6 +21,9 @@ class TabStripViewController: UIViewController, TabStripCellDelegate, TabStripCo
   // The DataSource for this collection view.
   private var diffableDataSource: UICollectionViewDiffableDataSource<Section, TabSwitcherItem>?
   private var tabCellRegistration: UICollectionView.CellRegistration<TabStripCell, TabSwitcherItem>?
+
+  // The New tab button.
+  private let newTabButton: TabStripNewTabButton = TabStripNewTabButton(frame: .zero)
 
   weak var mutator: TabStripMutator?
   weak var delegate: TabStripViewControllerDelegate?
@@ -51,12 +54,20 @@ class TabStripViewController: UIViewController, TabStripCellDelegate, TabStripCo
     super.viewDidLoad()
     collectionView.translatesAutoresizingMaskIntoConstraints = false
     self.view.addSubview(collectionView)
+    self.view.addSubview(newTabButton)
+    newTabButton.addTarget(self, action: #selector(newTabButtonTapped), for: .touchUpInside)
+
     NSLayoutConstraint.activate([
       self.view.leadingAnchor.constraint(equalTo: collectionView.leadingAnchor),
-      self.view.trailingAnchor.constraint(equalTo: collectionView.trailingAnchor),
       self.view.topAnchor.constraint(equalTo: collectionView.topAnchor),
       self.view.bottomAnchor.constraint(equalTo: collectionView.bottomAnchor),
+      self.view.trailingAnchor.constraint(equalTo: newTabButton.trailingAnchor),
+
+      newTabButton.heightAnchor.constraint(equalTo: collectionView.heightAnchor),
+      newTabButton.widthAnchor.constraint(equalTo: newTabButton.heightAnchor),
+      newTabButton.leadingAnchor.constraint(equalTo: collectionView.trailingAnchor),
     ])
+
   }
 
   // MARK: - TabStripConsumer
@@ -237,6 +248,11 @@ class TabStripViewController: UIViewController, TabStripCellDelegate, TabStripCo
     let closeActions = UIMenu(options: .displayInline, children: [close, closeOthers])
 
     return UIMenu(children: [share, closeActions])
+  }
+
+  /// Called when the `newTabButton` has been tapped.
+  @objc func newTabButtonTapped() {
+    mutator?.addNewItem()
   }
 
 }
