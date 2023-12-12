@@ -324,8 +324,7 @@ IN_PROC_BROWSER_TEST_F(ChromePrivateNetworkAccessOriginTrialTest,
 }
 
 IN_PROC_BROWSER_TEST_F(ChromePrivateNetworkAccessOriginTrialTest,
-                       // TODO(crbug.com/1508819): Re-enable this test
-                       DISABLED_RequestDevicesWithTrialTokenOnRequestHeader) {
+                       RequestDevicesWithTrialTokenOnRequestHeader) {
   content::URLLoaderInterceptor interceptor(base::BindLambdaForTesting(
       [&](content::URLLoaderInterceptor::RequestParams* params) {
         if (params->url_request.url.DeprecatedGetOriginAsURL() ==
@@ -371,8 +370,7 @@ IN_PROC_BROWSER_TEST_F(ChromePrivateNetworkAccessOriginTrialTest,
 }
 
 IN_PROC_BROWSER_TEST_F(ChromePrivateNetworkAccessOriginTrialTest,
-                       // TODO(crbug.com/1508819): Re-enable this test
-                       DISABLED_RequestDevicesWithTrialTokenOnMetaTag) {
+                       RequestDevicesWithTrialTokenOnMetaTag) {
   content::URLLoaderInterceptor interceptor(base::BindLambdaForTesting(
       [&](content::URLLoaderInterceptor::RequestParams* params) {
         if (params->url_request.url.DeprecatedGetOriginAsURL() ==
