@@ -765,9 +765,6 @@ LogicalSize ComputeReplacedSizeInternal(
                 space.AvailableSize().block_size != kIndefiniteSize)) {
       Length block_length_to_resolve = block_length;
       if (block_length_to_resolve.IsAuto()) {
-        // TODO(dgrogan): This code block (and its corresponding inline version
-        // below) didn't make any tests pass when written so it may be
-        // unnecessary or untested. Check again when launching ReplacedNG.
         DCHECK(space.IsBlockAutoBehaviorStretch());
         block_length_to_resolve = Length::FillAvailable();
       }

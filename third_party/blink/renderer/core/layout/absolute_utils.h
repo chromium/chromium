@@ -47,6 +47,12 @@ struct CORE_EXPORT LogicalOofInsets {
   absl::optional<LayoutUnit> block_end;
 };
 
+bool IsInsetAutoForAxis(const Length& side1,
+                        const Length& side2,
+                        const ComputedStyle& style,
+                        WritingDirectionMode container_writing_direction,
+                        const AnchorEvaluatorImpl*);
+
 CORE_EXPORT LogicalOofInsets
 ComputeOutOfFlowInsets(const ComputedStyle& style,
                        const LogicalSize& available_size,
@@ -71,6 +77,12 @@ struct CORE_EXPORT InsetModifiedContainingBlock {
   enum class InsetBias { kStart, kEnd, kEqual };
   InsetBias inline_inset_bias = InsetBias::kStart;
   InsetBias block_inset_bias = InsetBias::kStart;
+
+  // If safe alignment is specified (e.g. "align-self: safe end") and the
+  // object overflows its containing block it'll become start aligned instead.
+  // This field indicates the "start" edge of the containing block.
+  absl::optional<InsetBias> safe_inline_inset_bias;
+  absl::optional<InsetBias> safe_block_inset_bias;
 
   LayoutUnit InlineEndOffset() const {
     return available_size.inline_size - inline_end;
@@ -106,6 +118,7 @@ CORE_EXPORT InsetModifiedContainingBlock
 ComputeIMCBForPositionFallback(const LogicalSize& available_size,
                                const LogicalOofInsets&,
                                const LogicalStaticPosition&,
+                               const ComputedStyle&,
                                WritingDirectionMode container_writing_direction,
                                WritingDirectionMode self_writing_direction);
 

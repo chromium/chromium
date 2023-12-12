@@ -1970,7 +1970,7 @@ OutOfFlowLayoutPart::TryCalculateOffset(
 
   absl::optional<LogicalSize> replaced_size;
   if (node_info.node.IsReplaced()) {
-    // Create a new space with the IMCB size.
+    // Create a new space with the IMCB size, and stretch constraints.
     ConstraintSpaceBuilder builder(candidate_style.GetWritingMode(),
                                    candidate_style.GetWritingDirection(),
                                    /* is_new_fc */ true);
@@ -1979,6 +1979,37 @@ OutOfFlowLayoutPart::TryCalculateOffset(
         node_info.constraint_space.PercentageResolutionSize());
     builder.SetReplacedPercentageResolutionSize(
         node_info.constraint_space.PercentageResolutionSize());
+
+    if (RuntimeEnabledFeatures::LayoutAlignForPositionedEnabled()) {
+      const bool is_parallel =
+          IsParallelWritingMode(container_writing_direction.GetWritingMode(),
+                                candidate_writing_direction.GetWritingMode());
+      const ItemPosition inline_position =
+          (is_parallel ? candidate_style.JustifySelf()
+                       : candidate_style.AlignSelf())
+              .GetPosition();
+      const bool is_inline_stretch =
+          !IsInsetAutoForAxis(candidate_style.LogicalInlineStart(),
+                              candidate_style.LogicalInlineEnd(),
+                              candidate_style, container_writing_direction,
+                              anchor_evaluator) &&
+          inline_position == ItemPosition::kStretch;
+      if (is_inline_stretch) {
+        builder.SetInlineAutoBehavior(AutoSizeBehavior::kStretchExplicit);
+      }
+      const ItemPosition block_position =
+          (is_parallel ? candidate_style.AlignSelf()
+                       : candidate_style.JustifySelf())
+              .GetPosition();
+      const bool is_block_stretch =
+          !IsInsetAutoForAxis(candidate_style.LogicalTop(),
+                              candidate_style.LogicalBottom(), candidate_style,
+                              container_writing_direction, anchor_evaluator) &&
+          block_position == ItemPosition::kStretch;
+      if (is_block_stretch) {
+        builder.SetBlockAutoBehavior(AutoSizeBehavior::kStretchExplicit);
+      }
+    }
 
     replaced_size = ComputeReplacedSize(
         node_info.node, builder.ToConstraintSpace(), border_padding,
@@ -2006,7 +2037,7 @@ OutOfFlowLayoutPart::TryCalculateOffset(
   if (try_fit_available_space) {
     imcb_for_position_fallback = ComputeIMCBForPositionFallback(
         node_info.constraint_space.AvailableSize(), insets,
-        node_info.static_position, container_writing_direction,
+        node_info.static_position, candidate_style, container_writing_direction,
         candidate_writing_direction);
     if (!CalculateNonOverflowingRangeInOneAxis(
             insets.inline_start, insets.inline_end,
