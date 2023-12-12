@@ -204,10 +204,9 @@ class PopupRowView : public views::View, public views::ViewObserver {
   // Which (if any) cell of this row is currently selected.
   std::optional<CellType> selected_cell_;
 
-  // The cell wrapping the content area of the row.
+  // The view wrapping the content area of the row.
   raw_ptr<PopupRowContentView> content_view_ = nullptr;
-  // The cell wrapping the control area of the row.
-  // TODO(crbug.com/1411172): Add keyboard event handling.
+  // The view wrapping the control area of the row.
   raw_ptr<ExpandChildSuggestionsView> expand_child_suggestions_view_ = nullptr;
 
   // Overriding event handles for the content and control views.
