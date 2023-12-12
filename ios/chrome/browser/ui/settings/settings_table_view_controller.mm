@@ -1385,7 +1385,8 @@ UIImage* GetBrandedGoogleServicesSymbol() {
           [[AutofillProfileTableViewController alloc] initWithBrowser:_browser];
       break;
     case SettingsItemTypeNotifications:
-      DCHECK(IsPriceNotificationsEnabled());
+      DCHECK(IsPriceNotificationsEnabled() ||
+             IsContentPushNotificationsEnabled());
       [self showNotifications];
       break;
     case SettingsItemTypeVoiceSearch:
