@@ -518,7 +518,6 @@ CORE_EXPORT LogicalSize ComputeReplacedSize(
     const BlockNode&,
     const ConstraintSpace&,
     const BoxStrut& border_padding,
-    absl::optional<LogicalSize> override_available_size = absl::nullopt,
     ReplacedSizeMode = ReplacedSizeMode::kNormal,
     const Length::AnchorEvaluator* anchor_evaluator = nullptr);
 

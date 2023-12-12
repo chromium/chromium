@@ -722,17 +722,9 @@ LogicalSize ComputeReplacedSizeInternal(
     const BlockNode& node,
     const ConstraintSpace& space,
     const BoxStrut& border_padding,
-    absl::optional<LogicalSize> override_available_size,
     ReplacedSizeMode mode,
     const Length::AnchorEvaluator* anchor_evaluator) {
   DCHECK(node.IsReplaced());
-
-  LayoutUnit override_available_inline_size = kIndefiniteSize;
-  LayoutUnit override_available_block_size = kIndefiniteSize;
-  if (override_available_size) {
-    override_available_inline_size = override_available_size->inline_size;
-    override_available_block_size = override_available_size->block_size;
-  }
 
   const ComputedStyle& style = node.Style();
   const EBoxSizing box_sizing = style.BoxSizingForAspectRatio();
@@ -751,19 +743,19 @@ LogicalSize ComputeReplacedSizeInternal(
     // For the history on this behavior. Fortunately if this is the case we can
     // just use the given available size to resolve these sizes against.
     const LayoutUnit min_max_percentage_resolution_size =
-        node.GetDocument().InQuirksMode()
+        node.GetDocument().InQuirksMode() && !node.IsOutOfFlowPositioned()
             ? space.AvailableSize().block_size
             : space.ReplacedPercentageResolutionBlockSize();
 
     block_min_max_sizes = {
         ResolveMinBlockLength(
             space, style, border_padding, style.LogicalMinHeight(),
-            override_available_block_size, &min_max_percentage_resolution_size,
-            anchor_evaluator),
+            /* override_available_size */ kIndefiniteSize,
+            &min_max_percentage_resolution_size, anchor_evaluator),
         ResolveMaxBlockLength(
             space, style, border_padding, style.LogicalMaxHeight(),
-            override_available_block_size, &min_max_percentage_resolution_size,
-            anchor_evaluator)};
+            /* override_available_size */ kIndefiniteSize,
+            &min_max_percentage_resolution_size, anchor_evaluator)};
 
     if (space.IsFixedBlockSize()) {
       replaced_block = space.AvailableSize().block_size;
@@ -786,7 +778,8 @@ LogicalSize ComputeReplacedSizeInternal(
                                    &main_percentage_resolution_size)) {
         replaced_block = ResolveMainBlockLength(
             space, style, border_padding, block_length_to_resolve,
-            /* intrinsic_size */ kIndefiniteSize, override_available_block_size,
+            /* intrinsic_size */ kIndefiniteSize,
+            /* override_available_size */ kIndefiniteSize,
             &main_percentage_resolution_size, anchor_evaluator);
         DCHECK_GE(*replaced_block, LayoutUnit());
         replaced_block =
@@ -817,8 +810,8 @@ LogicalSize ComputeReplacedSizeInternal(
             NOTREACHED();
             return MinMaxSizesResult();
           },
-          Length::FillAvailable(), override_available_inline_size,
-          anchor_evaluator);
+          Length::FillAvailable(),
+          /* override_available_size */ kIndefiniteSize, anchor_evaluator);
     }
 
     // If stretch-fit applies we must have an aspect-ratio.
@@ -843,9 +836,9 @@ LogicalSize ComputeReplacedSizeInternal(
                                        *replaced_block);
     } else if (natural_size) {
       DCHECK_NE(mode, ReplacedSizeMode::kIgnoreInlineLengths);
-      size = ComputeReplacedSize(
-                 node, space, border_padding, override_available_size,
-                 ReplacedSizeMode::kIgnoreInlineLengths, anchor_evaluator)
+      size = ComputeReplacedSize(node, space, border_padding,
+                                 ReplacedSizeMode::kIgnoreInlineLengths,
+                                 anchor_evaluator)
                  .inline_size;
     } else {
       // We don't have a natural size - default to stretching.
@@ -867,11 +860,11 @@ LogicalSize ComputeReplacedSizeInternal(
     inline_min_max_sizes = {
         ResolveMinInlineLength(space, style, border_padding, MinMaxSizesFunc,
                                style.LogicalMinWidth(),
-                               override_available_inline_size,
+                               /* override_available_size */ kIndefiniteSize,
                                anchor_evaluator),
         ResolveMaxInlineLength(space, style, border_padding, MinMaxSizesFunc,
                                style.LogicalMaxWidth(),
-                               override_available_inline_size,
+                               /* override_available_size */ kIndefiniteSize,
                                anchor_evaluator)};
 
     if (space.IsFixedInlineSize()) {
@@ -889,8 +882,8 @@ LogicalSize ComputeReplacedSizeInternal(
       if (!InlineLengthUnresolvable(space, inline_length_to_resolve)) {
         replaced_inline = ResolveMainInlineLength(
             space, style, border_padding, MinMaxSizesFunc,
-            inline_length_to_resolve, override_available_inline_size,
-            anchor_evaluator);
+            inline_length_to_resolve,
+            /* override_available_size */ kIndefiniteSize, anchor_evaluator);
         DCHECK_GE(*replaced_inline, LayoutUnit());
         replaced_inline =
             inline_min_max_sizes.ClampSizeToMinAndMax(*replaced_inline);
@@ -998,15 +991,13 @@ LogicalSize ComputeReplacedSize(
     const BlockNode& node,
     const ConstraintSpace& space,
     const BoxStrut& border_padding,
-    absl::optional<LogicalSize> override_available_size,
     ReplacedSizeMode mode,
     const Length::AnchorEvaluator* anchor_evaluator) {
   DCHECK(node.IsReplaced());
 
   const auto* svg_root = DynamicTo<LayoutSVGRoot>(node.GetLayoutBox());
   if (!svg_root || !svg_root->IsDocumentElement()) {
-    return ComputeReplacedSizeInternal(node, space, border_padding,
-                                       override_available_size, mode,
+    return ComputeReplacedSizeInternal(node, space, border_padding, mode,
                                        anchor_evaluator);
   }
 
@@ -1028,8 +1019,7 @@ LogicalSize ComputeReplacedSize(
   }
 
   LogicalSize size = ComputeReplacedSizeInternal(node, space, border_padding,
-                                                 override_available_size, mode,
-                                                 anchor_evaluator);
+                                                 mode, anchor_evaluator);
 
   if (node.Style().LogicalWidth().IsPercentOrCalc()) {
     double factor = svg_root->LogicalSizeScaleFactorForPercentageLengths();

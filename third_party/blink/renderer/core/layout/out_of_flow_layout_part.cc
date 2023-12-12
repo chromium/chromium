@@ -1970,8 +1970,18 @@ OutOfFlowLayoutPart::TryCalculateOffset(
 
   absl::optional<LogicalSize> replaced_size;
   if (node_info.node.IsReplaced()) {
+    // Create a new space with the IMCB size.
+    ConstraintSpaceBuilder builder(candidate_style.GetWritingMode(),
+                                   candidate_style.GetWritingDirection(),
+                                   /* is_new_fc */ true);
+    builder.SetAvailableSize(imcb.Size());
+    builder.SetPercentageResolutionSize(
+        node_info.constraint_space.PercentageResolutionSize());
+    builder.SetReplacedPercentageResolutionSize(
+        node_info.constraint_space.PercentageResolutionSize());
+
     replaced_size = ComputeReplacedSize(
-        node_info.node, node_info.constraint_space, border_padding, imcb.Size(),
+        node_info.node, builder.ToConstraintSpace(), border_padding,
         ReplacedSizeMode::kNormal, anchor_evaluator);
   }
 
