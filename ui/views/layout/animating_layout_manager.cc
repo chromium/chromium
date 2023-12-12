@@ -1135,14 +1135,22 @@ gfx::Size AnimatingLayoutManager::DefaultFlexRuleImpl(
   // Does the preferred size fit in the bounds? If so, return the preferred
   // size. Note that the *target* size might not fit in the bounds, but we'll
   // recalculate that the next time we lay out.
-  if (CanFitInBounds(preferred_size, size_bounds))
+  //
+  // The one exception is if the current preferred size is empty. If that's the
+  // case, then this check becomes trivial and the layout can get stuck at zero
+  // size (which is bad). See crbug.com/1506607 for an example of an empty
+  // layout causing issues.
+  if (!preferred_size.IsEmpty() &&
+      CanFitInBounds(preferred_size, size_bounds)) {
     return preferred_size;
+  }
 
   // Special case - if we're being asked for a zero-size layout we'll return the
   // minimum size of the layout. This is because we're being probed for how
   // small we can get, not being asked for an actual size.
-  if (GetMainAxis(animating_layout->orientation(), size_bounds) <= 0)
+  if (GetMainAxis(animating_layout->orientation(), size_bounds) <= 0) {
     return animating_layout->GetMinimumSize(view);
+  }
 
   // We know our current size does not fit into the bounds being given to us.
   // This is going to force a snap to a new size, which will be the ideal size
@@ -1153,8 +1161,9 @@ gfx::Size AnimatingLayoutManager::DefaultFlexRuleImpl(
   // Easiest case is that the target layout's preferred size *does* fit, in
   // which case we can use that.
   const gfx::Size target_preferred = target_layout->GetPreferredSize(view);
-  if (CanFitInBounds(target_preferred, size_bounds))
+  if (CanFitInBounds(target_preferred, size_bounds)) {
     return target_preferred;
+  }
 
   // We know that at least one of the width and height are constrained, so we
   // need to ask the target layout how large it wants to be in the space
