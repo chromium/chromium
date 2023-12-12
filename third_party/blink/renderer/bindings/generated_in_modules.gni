@@ -728,6 +728,8 @@ generated_dictionary_sources_in_modules = [
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_midi_options.h",
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_midi_permission_descriptor.cc",
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_midi_permission_descriptor.h",
+  "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_ml_arg_min_max_options.cc",
+  "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_ml_arg_min_max_options.h",
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_ml_batch_normalization_options.cc",
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_ml_batch_normalization_options.h",
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_ml_clamp_options.cc",

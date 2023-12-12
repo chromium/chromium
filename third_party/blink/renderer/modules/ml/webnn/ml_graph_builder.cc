@@ -10,6 +10,7 @@
 #include "components/ml/webnn/features.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_ml_arg_min_max_options.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ml_batch_normalization_options.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ml_clamp_options.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ml_conv_2d_options.h"
@@ -427,6 +428,36 @@ constexpr bool IsLogicalBinaryOperator(MLOperator::OperatorKind kind) {
          kind == MLOperator::OperatorKind::kLesser;
 }
 
+MLOperand* BuildArgMinMax(MLGraphBuilder* builder,
+                          MLOperator::OperatorKind kind,
+                          const MLOperand* input,
+                          const MLArgMinMaxOptions* options,
+                          ExceptionState& exception_state) {
+  const auto input_rank = input->Dimensions().size();
+  const auto axes = options->getAxesOr(CreateAllAxes(input_rank));
+  const auto validated_output = webnn::ValidateArgMinMaxAndInferOutput(
+      ConvertToComponentOperand(input), axes, options->keepDimensions());
+  if (!validated_output.has_value()) {
+    exception_state.ThrowDOMException(
+        DOMExceptionCode::kDataError,
+        WTF::String::FromUTF8(validated_output.error()));
+    return nullptr;
+  }
+
+  auto* arg_min_max = MakeGarbageCollected<MLOperator>(builder, kind, options);
+  auto output = MLOperand::ValidateAndCreateOutput(
+      builder, ComponentOperandTypeToBlink(validated_output->data_type),
+      Vector<uint32_t>(validated_output->dimensions), arg_min_max);
+  if (!output.has_value()) {
+    exception_state.ThrowDOMException(DOMExceptionCode::kDataError,
+                                      output.error());
+    return nullptr;
+  }
+  arg_min_max->Connect({input}, {output.value()});
+
+  return output.value();
+}
+
 MLOperand* BuildElementWiseBinary(MLGraphBuilder* builder,
                                   MLOperator::OperatorKind kind,
                                   const MLOperand* a,
@@ -615,6 +646,20 @@ MLOperand* MLGraphBuilder::constant(const MLOperandDescriptor* desc,
     return nullptr;
   }
   return constant_operand.value();
+}
+
+MLOperand* MLGraphBuilder::argMin(const MLOperand* input,
+                                  const MLArgMinMaxOptions* options,
+                                  ExceptionState& exception_state) {
+  return BuildArgMinMax(this, MLOperator::OperatorKind::kArgMin, input, options,
+                        exception_state);
+}
+
+MLOperand* MLGraphBuilder::argMax(const MLOperand* input,
+                                  const MLArgMinMaxOptions* options,
+                                  ExceptionState& exception_state) {
+  return BuildArgMinMax(this, MLOperator::OperatorKind::kArgMax, input, options,
+                        exception_state);
 }
 
 MLOperand* MLGraphBuilder::batchNormalization(

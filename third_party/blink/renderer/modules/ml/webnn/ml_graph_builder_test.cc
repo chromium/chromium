@@ -269,6 +269,144 @@ TEST_F(MLGraphBuilderTest, ConstantTest) {
   }
 }
 
+MLOperand* BuildArgMinMax(V8TestingScope& scope,
+                          MLGraphBuilder* builder,
+                          ArgMinMaxKind kind,
+                          const MLOperand* input,
+                          const MLArgMinMaxOptions* options) {
+  MLOperand* output = nullptr;
+  switch (kind) {
+    case ArgMinMaxKind::kArgMin:
+      output = builder->argMin(input, options, scope.GetExceptionState());
+      break;
+    case ArgMinMaxKind::kArgMax:
+      output = builder->argMax(input, options, scope.GetExceptionState());
+      break;
+  }
+  return output;
+}
+
+void CheckArgMinMaxOutput(const MLOperand* input,
+                          const MLOperand* output,
+                          ArgMinMaxKind kind) {
+  EXPECT_NE(output, nullptr);
+  EXPECT_EQ(output->Kind(), MLOperand::OperandKind::kOutput);
+  EXPECT_EQ(output->DataType(), V8MLOperandDataType::Enum::kInt64);
+  auto* arg_max_min = output->Operator();
+  EXPECT_NE(arg_max_min, nullptr);
+  switch (kind) {
+    case ArgMinMaxKind::kArgMin:
+      EXPECT_EQ(arg_max_min->Kind(), MLOperator::OperatorKind::kArgMin);
+      break;
+    case ArgMinMaxKind::kArgMax:
+      EXPECT_EQ(arg_max_min->Kind(), MLOperator::OperatorKind::kArgMax);
+      break;
+  }
+  EXPECT_EQ(arg_max_min->IsConnected(), true);
+  EXPECT_NE(arg_max_min->Options(), nullptr);
+}
+
+String ArgMinMaxKindToString(ArgMinMaxKind kind) {
+  switch (kind) {
+    case ArgMinMaxKind::kArgMin:
+      return "argMin";
+    case ArgMinMaxKind::kArgMax:
+      return "argMax";
+  }
+}
+
+TEST_F(MLGraphBuilderTest, ArgMinMaxTest) {
+  V8TestingScope scope;
+  auto* builder =
+      CreateMLGraphBuilder(scope.GetExecutionContext(), scope.GetScriptState(),
+                           scope.GetExceptionState());
+  const auto ArgMinMaxKinds = {ArgMinMaxKind::kArgMin, ArgMinMaxKind::kArgMax};
+  for (const auto kind : ArgMinMaxKinds) {
+    SCOPED_TRACE(testing::Message()
+                 << "Testing for: " << ArgMinMaxKindToString(kind));
+    {
+      // Test argMinMax with default options.
+      auto* input = BuildInput(builder, "input", {1, 2, 3, 4},
+                               V8MLOperandDataType::Enum::kFloat32,
+                               scope.GetExceptionState());
+      auto* options = MLArgMinMaxOptions::Create();
+      EXPECT_FALSE(options->hasAxes());
+      EXPECT_TRUE(options->hasKeepDimensions());
+      EXPECT_EQ(options->keepDimensions(), false);
+      EXPECT_TRUE(options->hasSelectLastIndex());
+      EXPECT_EQ(options->selectLastIndex(), false);
+      auto* output = BuildArgMinMax(scope, builder, kind, input, options);
+      CheckArgMinMaxOutput(input, output, kind);
+      EXPECT_EQ(output->Dimensions(), Vector<uint32_t>({}));
+    }
+    {
+      // Test argMinMax with axes = {1}.
+      auto* input = BuildInput(builder, "input", {1, 2, 3, 4},
+                               V8MLOperandDataType::Enum::kFloat32,
+                               scope.GetExceptionState());
+      auto* options = MLArgMinMaxOptions::Create();
+      options->setAxes({1});
+      auto* output = BuildArgMinMax(scope, builder, kind, input, options);
+      CheckArgMinMaxOutput(input, output, kind);
+      EXPECT_EQ(output->Dimensions(), Vector<uint32_t>({1, 3, 4}));
+    }
+    {
+      // Test argMinMax with axes = {1, 3} and keepDimensions = true.
+      auto* input = BuildInput(builder, "input", {1, 2, 3, 4},
+                               V8MLOperandDataType::Enum::kFloat32,
+                               scope.GetExceptionState());
+      auto* options = MLArgMinMaxOptions::Create();
+      options->setAxes({1, 3});
+      options->setKeepDimensions(true);
+      auto* output = BuildArgMinMax(scope, builder, kind, input, options);
+      CheckArgMinMaxOutput(input, output, kind);
+      EXPECT_EQ(output->Dimensions(), Vector<uint32_t>({1, 1, 3, 1}));
+    }
+    {
+      // Test argMinMax with axes = {1} and selectLastIndex = true.
+      auto* input = BuildInput(builder, "input", {1, 2, 3, 4},
+                               V8MLOperandDataType::Enum::kFloat32,
+                               scope.GetExceptionState());
+      auto* options = MLArgMinMaxOptions::Create();
+      options->setAxes({1});
+      options->setSelectLastIndex(true);
+      auto* output = BuildArgMinMax(scope, builder, kind, input, options);
+      CheckArgMinMaxOutput(input, output, kind);
+      EXPECT_EQ(output->Dimensions(), Vector<uint32_t>({1, 3, 4}));
+    }
+    {
+      // Test throwing exception if the value in axes is greater than or equal
+      // to input rank.
+      auto* input = BuildInput(builder, "input", {1, 2, 3, 4},
+                               V8MLOperandDataType::Enum::kFloat32,
+                               scope.GetExceptionState());
+      auto* options = MLArgMinMaxOptions::Create();
+      options->setAxes({4});
+      auto* output = BuildArgMinMax(scope, builder, kind, input, options);
+      EXPECT_EQ(output, nullptr);
+      EXPECT_EQ(scope.GetExceptionState().CodeAs<DOMExceptionCode>(),
+                DOMExceptionCode::kDataError);
+      EXPECT_EQ(scope.GetExceptionState().Message(),
+                "The values in axes must be in the range [0, 4).");
+    }
+    {
+      // Test throwing exception if two or more values are same in the axes
+      // sequence.
+      auto* input = BuildInput(builder, "input", {1, 2, 3, 4},
+                               V8MLOperandDataType::Enum::kFloat32,
+                               scope.GetExceptionState());
+      auto* options = MLArgMinMaxOptions::Create();
+      options->setAxes({1, 1});
+      auto* output = BuildArgMinMax(scope, builder, kind, input, options);
+      EXPECT_EQ(output, nullptr);
+      EXPECT_EQ(scope.GetExceptionState().CodeAs<DOMExceptionCode>(),
+                DOMExceptionCode::kDataError);
+      EXPECT_EQ(scope.GetExceptionState().Message(),
+                "Two or more values are same in the axes sequence.");
+    }
+  }
+}
+
 MLOperand* BuildBatchNormalization(V8TestingScope& scope,
                                    MLGraphBuilder* builder,
                                    const MLOperand* input,

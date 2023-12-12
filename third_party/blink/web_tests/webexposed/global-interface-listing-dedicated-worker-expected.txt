@@ -1177,6 +1177,8 @@ Starting worker: resources/global-interface-listing-worker.js
 [Worker]     attribute @@toStringTag
 [Worker]     method abs
 [Worker]     method add
+[Worker]     method argMax
+[Worker]     method argMin
 [Worker]     method averagePool2d
 [Worker]     method batchNormalization
 [Worker]     method buildSync

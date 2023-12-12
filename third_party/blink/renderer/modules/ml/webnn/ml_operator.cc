@@ -12,6 +12,10 @@ namespace blink {
 // static
 String MLOperator::OperatorKindToString(MLOperator::OperatorKind kind) {
   switch (kind) {
+    case MLOperator::OperatorKind::kArgMin:
+      return "argMin";
+    case MLOperator::OperatorKind::kArgMax:
+      return "argMax";
     case MLOperator::OperatorKind::kBatchNormalization:
       return "batchNormalization";
     case MLOperator::OperatorKind::kCast:

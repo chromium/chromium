@@ -5,6 +5,7 @@
 #include "third_party/blink/renderer/modules/ml/webnn/ml_graph_type_converter.h"
 
 #include "base/ranges/algorithm.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_ml_arg_min_max_options.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ml_batch_normalization_options.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ml_clamp_options.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ml_conv_2d_options.h"
@@ -237,6 +238,30 @@ base::expected<ActivationPtr, String> CreateActivation(
       return base::unexpected(MLOperator::OperatorKindToString(operator_kind) +
                               " is not converted to mojo as activation.");
   }
+}
+
+base::expected<OperationPtr, String> CreateArgMinMaxOperation(
+    const OperandToIdMap& operand_to_id_map,
+    const MLOperator* arg_min_max,
+    blink_mojom::ArgMinMax::Kind kind) {
+  auto arg_min_max_mojo = blink_mojom::ArgMinMax::New();
+  arg_min_max_mojo->kind = kind;
+  arg_min_max_mojo->input_operand_id =
+      GetOperatorInputId(arg_min_max, operand_to_id_map);
+  arg_min_max_mojo->output_operand_id =
+      GetOperatorOutputId(arg_min_max, operand_to_id_map);
+
+  const auto* options =
+      static_cast<const blink::MLArgMinMaxOptions*>(arg_min_max->Options());
+  CHECK(options);
+  const auto input_rank = arg_min_max->Inputs()[0]->Dimensions().size();
+  const auto axes = options->axes();
+  CHECK_LE(axes.size(), input_rank);
+  arg_min_max_mojo->axes = axes;
+  arg_min_max_mojo->keep_dimensions = options->keepDimensions();
+  arg_min_max_mojo->select_last_index = options->selectLastIndex();
+
+  return blink_mojom::Operation::NewArgMinMax(std::move(arg_min_max_mojo));
 }
 
 base::expected<OperationPtr, String> CreateBatchNormalizationOperation(
@@ -979,6 +1004,12 @@ base::expected<OperationPtr, String> ConvertToMojoOperation(
     const OperandToIdMap& operand_to_id_map,
     const MLOperator* op) {
   switch (op->Kind()) {
+    case MLOperator::OperatorKind::kArgMin:
+      return CreateArgMinMaxOperation(operand_to_id_map, op,
+                                      blink_mojom::ArgMinMax::Kind::kMin);
+    case MLOperator::OperatorKind::kArgMax:
+      return CreateArgMinMaxOperation(operand_to_id_map, op,
+                                      blink_mojom::ArgMinMax::Kind::kMax);
     case MLOperator::OperatorKind::kBatchNormalization:
       return CreateBatchNormalizationOperation(operand_to_id_map, op);
     case MLOperator::OperatorKind::kClamp:

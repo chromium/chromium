@@ -6,6 +6,7 @@
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_ML_WEBNN_ML_GRAPH_BUILDER_TEST_H_
 
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_ml_arg_min_max_options.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ml_batch_normalization_options.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ml_clamp_options.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ml_conv_2d_options.h"
@@ -38,6 +39,14 @@ class V8TestingScope;
 // The utility methods for graph builder test.
 NotShared<DOMArrayBufferView> CreateArrayBufferViewForOperand(
     const MLOperand* operand);
+
+enum class ArgMinMaxKind { kArgMin, kArgMax };
+
+MLOperand* BuildArgMinMax(
+    V8TestingScope& scope,
+    MLGraphBuilder* builder,
+    const MLOperand* input,
+    const MLArgMinMaxOptions* options = MLArgMinMaxOptions::Create());
 
 MLOperand* BuildBatchNormalization(V8TestingScope& scope,
                                    MLGraphBuilder* builder,

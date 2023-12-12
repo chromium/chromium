@@ -5622,6 +5622,8 @@ interface MLGraphBuilder
     attribute @@toStringTag
     method abs
     method add
+    method argMax
+    method argMin
     method averagePool2d
     method batchNormalization
     method build

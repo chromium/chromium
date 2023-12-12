@@ -14,6 +14,12 @@ enum MLConvTranspose2dFilterOperandLayout { "iohw", "hwoi", "ohwi" };
 
 enum MLAutoPad { "explicit", "same-upper", "same-lower" };
 
+dictionary MLArgMinMaxOptions {
+  sequence<[EnforceRange] unsigned long> axes;
+  boolean keepDimensions = false;
+  boolean selectLastIndex = false;
+};
+
 // A spec file was issued for WG discussion:
 // https://github.com/webmachinelearning/webnn/issues/481.
 // TODO(crbug.com/1502361): Revisit whether the scale and bias operands
@@ -155,6 +161,9 @@ dictionary MLSplitOptions {
   [RaisesException] MLOperand input(DOMString name, MLOperandDescriptor desc);
 
   [RaisesException] MLOperand constant(MLOperandDescriptor desc, MLBufferView bufferView);
+
+  [RaisesException] MLOperand argMin(MLOperand input, optional MLArgMinMaxOptions options = {});
+  [RaisesException] MLOperand argMax(MLOperand input, optional MLArgMinMaxOptions options = {});
 
   [RaisesException] MLOperand batchNormalization(MLOperand input, MLOperand mean, MLOperand variance, optional MLBatchNormalizationOptions options = {});
 

@@ -24,6 +24,7 @@ namespace blink {
 
 class ExceptionState;
 class MLActivation;
+class MLArgMinMaxOptions;
 class MLBatchNormalizationOptions;
 class MLContext;
 class MLClampOptions;
@@ -80,6 +81,13 @@ class MODULES_EXPORT MLGraphBuilder final : public ScriptWrappable {
                       ExceptionState& exception_state);
 
   // The order of operations declaration is the same as spec.
+  MLOperand* argMin(const MLOperand* input,
+                    const MLArgMinMaxOptions* options,
+                    ExceptionState& exception_state);
+  MLOperand* argMax(const MLOperand* input,
+                    const MLArgMinMaxOptions* options,
+                    ExceptionState& exception_state);
+
   MLOperand* batchNormalization(const MLOperand* input,
                                 const MLOperand* mean,
                                 const MLOperand* variance,
