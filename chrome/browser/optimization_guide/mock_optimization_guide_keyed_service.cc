@@ -49,9 +49,10 @@ void MockOptimizationGuideKeyedService::ResetForTesting() {
   }
 }
 
-MockOptimizationGuideKeyedService::MockOptimizationGuideKeyedService(
-    content::BrowserContext* browser_context)
-    : OptimizationGuideKeyedService(browser_context) {}
+MockOptimizationGuideKeyedService::MockOptimizationGuideKeyedService()
+    : OptimizationGuideKeyedService(nullptr) {}
 
 MockOptimizationGuideKeyedService::~MockOptimizationGuideKeyedService() =
     default;
+
+void MockOptimizationGuideKeyedService::Shutdown() {}

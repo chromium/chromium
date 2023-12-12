@@ -9,8 +9,11 @@
 #include "base/logging.h"
 #include "base/run_loop.h"
 #include "base/strings/escape.h"
+#include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/run_until.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/time/time.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/browser_process.h"
@@ -26,6 +29,7 @@
 #include "components/optimization_guide/core/command_line_top_host_provider.h"
 #include "components/optimization_guide/core/model_execution/model_execution_features.h"
 #include "components/optimization_guide/core/model_execution/model_execution_features_controller.h"
+#include "components/optimization_guide/core/model_execution/on_device_model_component.h"
 #include "components/optimization_guide/core/optimization_guide_enums.h"
 #include "components/optimization_guide/core/optimization_guide_features.h"
 #include "components/optimization_guide/core/optimization_guide_prefs.h"
@@ -51,6 +55,7 @@
 
 namespace {
 
+using optimization_guide::OnDeviceModelComponentStateManager;
 using optimization_guide::proto::OptimizationType;
 
 // A WebContentsObserver that asks whether an optimization type can be applied.
@@ -163,6 +168,10 @@ class OptimizationGuideKeyedServiceBrowserTest
          {optimization_guide::features::kOptimizationGuideModelExecution, {}},
          {optimization_guide::features::internal::kComposeSettingsVisibility,
           {}},
+         {optimization_guide::features::kLogOnDeviceMetricsOnStartup,
+          {
+              {"on_device_startup_metric_delay", "0"},
+          }},
          {optimization_guide::features::internal::
               kTabOrganizationSettingsVisibility,
           {{"allow_unsigned_user", "true"}}}},
@@ -1153,6 +1162,25 @@ IN_PROC_BROWSER_TEST_F(OptimizationGuideKeyedServiceBrowserTest,
   EXPECT_FALSE(otr_ogks->ShouldFeatureBeCurrentlyEnabledForUser(
       optimization_guide::proto::ModelExecutionFeature::
           MODEL_EXECUTION_FEATURE_WALLPAPER_SEARCH));
+}
+
+IN_PROC_BROWSER_TEST_F(OptimizationGuideKeyedServiceBrowserTest,
+                       LogOnDeviceMetricsAfterStart) {
+  OptimizationGuideKeyedServiceFactory::GetForProfile(browser()->profile());
+  OnDeviceModelComponentStateManager* on_device_component_state_manager =
+      OnDeviceModelComponentStateManager::GetInstanceForTesting();
+  ASSERT_TRUE(on_device_component_state_manager);
+
+  EXPECT_TRUE(base::test::RunUntil([&]() {
+    return histogram_tester()
+               ->GetAllSamples(
+                   "OptimizationGuide.ModelExecution."
+                   "OnDeviceModelPerformanceClass")
+               .size() > 0;
+  }));
+
+  histogram_tester()->ExpectTotalCount(
+      "OptimizationGuide.ModelExecution.OnDeviceModelPerformanceClass", 1);
 }
 
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CHROMEOS_ASH)

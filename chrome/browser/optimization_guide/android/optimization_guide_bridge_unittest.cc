@@ -53,16 +53,15 @@ class OptimizationGuideBridgeTest : public testing::Test {
     pref_service_ = std::make_unique<TestingPrefServiceSimple>();
     optimization_guide::prefs::RegisterProfilePrefs(pref_service_->registry());
 
-    optimization_guide_keyed_service_ =
-        static_cast<MockOptimizationGuideKeyedService*>(
-            OptimizationGuideKeyedServiceFactory::GetInstance()
-                ->SetTestingFactoryAndUse(
-                    profile_,
-                    base::BindRepeating([](content::BrowserContext* context)
-                                            -> std::unique_ptr<KeyedService> {
-                      return std::make_unique<
-                          MockOptimizationGuideKeyedService>(context);
-                    })));
+    optimization_guide_keyed_service_ = static_cast<
+        MockOptimizationGuideKeyedService*>(
+        OptimizationGuideKeyedServiceFactory::GetInstance()
+            ->SetTestingFactoryAndUse(
+                profile_,
+                base::BindRepeating([](content::BrowserContext* context)
+                                        -> std::unique_ptr<KeyedService> {
+                  return std::make_unique<MockOptimizationGuideKeyedService>();
+                })));
   }
 
   void RegisterOptimizationTypes() {

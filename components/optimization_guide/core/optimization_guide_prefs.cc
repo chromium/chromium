@@ -125,10 +125,24 @@ const char kOnDeviceModelCrashCount[] =
 const char kOnDeviceModelTimeoutCount[] =
     "optimization_guide.on_device.timeout_count";
 
+// Stores the last computed `OnDeviceModelPerformanceClass` of the device.
+const char kOnDevicePerformanceClass[] =
+    "optimization_guide.on_device.performance_class";
+
 // A dictionary pref that stores the file paths that need to be deleted as keys.
 // The value will not be used.
 const char kStoreFilePathsToDelete[] =
     "optimization_guide.store_file_paths_to_delete";
+
+// A timestamp for the last time a feature was used which could have benefited
+// from the on-device model. We will use this to help decide whether to acquire
+// the on device model.
+const char kLastTimeOnDeviceEligibleFeatureWasUsed[] =
+    "optimization_guide.last_time_on_device_eligible_feature_used";
+
+// A timestamp for the last time the on-device model was eligible for download.
+const char kLastTimeEligibleForOnDeviceModelDownload[] =
+    "optimization_guide.on_device.last_time_eligible_for_download";
 
 }  // namespace localstate
 
@@ -165,7 +179,12 @@ void RegisterLocalStatePrefs(PrefRegistrySimple* registry) {
   registry->RegisterDictionaryPref(localstate::kModelCacheKeyMapping);
   registry->RegisterIntegerPref(localstate::kOnDeviceModelCrashCount, 0);
   registry->RegisterIntegerPref(localstate::kOnDeviceModelTimeoutCount, 0);
+  registry->RegisterIntegerPref(localstate::kOnDevicePerformanceClass, 0);
   registry->RegisterDictionaryPref(localstate::kStoreFilePathsToDelete);
+  registry->RegisterTimePref(
+      localstate::kLastTimeOnDeviceEligibleFeatureWasUsed, base::Time::Min());
+  registry->RegisterTimePref(
+      localstate::kLastTimeEligibleForOnDeviceModelDownload, base::Time::Min());
 }
 
 }  // namespace prefs

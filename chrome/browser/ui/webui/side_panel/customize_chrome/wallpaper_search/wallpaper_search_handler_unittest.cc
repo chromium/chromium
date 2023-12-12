@@ -110,7 +110,7 @@ std::unique_ptr<TestingProfile> MakeTestingProfile(
       base::BindRepeating([](content::BrowserContext* context)
                               -> std::unique_ptr<KeyedService> {
         return std::make_unique<
-            testing::NiceMock<MockOptimizationGuideKeyedService>>(context);
+            testing::NiceMock<MockOptimizationGuideKeyedService>>();
       }));
   profile_builder.SetSharedURLLoaderFactory(url_loader_factory);
   auto profile = profile_builder.Build();

@@ -64,7 +64,13 @@ extern const char kOnDeviceModelCrashCount[];
 COMPONENT_EXPORT(OPTIMIZATION_GUIDE_FEATURES)
 extern const char kOnDeviceModelTimeoutCount[];
 COMPONENT_EXPORT(OPTIMIZATION_GUIDE_FEATURES)
+extern const char kOnDevicePerformanceClass[];
+COMPONENT_EXPORT(OPTIMIZATION_GUIDE_FEATURES)
 extern const char kStoreFilePathsToDelete[];
+COMPONENT_EXPORT(OPTIMIZATION_GUIDE_FEATURES)
+extern const char kLastTimeOnDeviceEligibleFeatureWasUsed[];
+COMPONENT_EXPORT(OPTIMIZATION_GUIDE_FEATURES)
+extern const char kLastTimeEligibleForOnDeviceModelDownload[];
 
 }  // namespace localstate
 

@@ -60,10 +60,7 @@ class MockTranslateManager : public translate::TranslateManager {
 class CustomMockOptimizationGuideKeyedService
     : public MockOptimizationGuideKeyedService {
  public:
-  explicit CustomMockOptimizationGuideKeyedService(
-      content::BrowserContext* browser_context)
-      : MockOptimizationGuideKeyedService(browser_context) {}
-
+  CustomMockOptimizationGuideKeyedService() = default;
   ~CustomMockOptimizationGuideKeyedService() override = default;
 
   MOCK_METHOD(void,
@@ -100,8 +97,7 @@ void RegisterMockOptimizationGuideKeyedServiceFactory(
       context, base::BindRepeating([](content::BrowserContext* context)
                                        -> std::unique_ptr<KeyedService> {
         return std::make_unique<
-            testing::NiceMock<CustomMockOptimizationGuideKeyedService>>(
-            context);
+            testing::NiceMock<CustomMockOptimizationGuideKeyedService>>();
       }));
 }
 

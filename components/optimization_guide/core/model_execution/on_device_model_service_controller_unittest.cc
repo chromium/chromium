@@ -14,6 +14,7 @@
 #include "base/test/task_environment.h"
 #include "components/optimization_guide/core/model_execution/on_device_model_access_controller.h"
 #include "components/optimization_guide/core/model_execution/on_device_model_execution_config_interpreter.h"
+#include "components/optimization_guide/core/model_execution/test_on_device_model_component.h"
 #include "components/optimization_guide/core/optimization_guide_features.h"
 #include "components/optimization_guide/core/optimization_guide_logger.h"
 #include "components/optimization_guide/core/optimization_guide_prefs.h"
@@ -180,8 +181,12 @@ class FakeOnDeviceModelServiceController
     : public OnDeviceModelServiceController {
  public:
   explicit FakeOnDeviceModelServiceController(
-      std::unique_ptr<OnDeviceModelAccessController> access_controller)
-      : OnDeviceModelServiceController(std::move(access_controller)) {}
+      std::unique_ptr<OnDeviceModelAccessController> access_controller,
+      base::WeakPtr<OnDeviceModelComponentStateManager>
+          on_device_component_state_manager)
+      : OnDeviceModelServiceController(
+            std::move(access_controller),
+            std::move(on_device_component_state_manager)) {}
 
   void LaunchService() override {
     did_launch_service_ = true;
@@ -225,6 +230,11 @@ class OnDeviceModelServiceControllerTest : public testing::Test {
     RecreateServiceController();
   }
 
+  void TearDown() override {
+    access_controller_ = nullptr;
+    test_controller_ = nullptr;
+  }
+
   ExecuteRemoteFn CreateExecuteRemoteFn() {
     return base::BindLambdaForTesting(
         [=](proto::ModelExecutionFeature feature,
@@ -239,14 +249,16 @@ class OnDeviceModelServiceControllerTest : public testing::Test {
   }
 
   void RecreateServiceController() {
-    test_controller_ = nullptr;
     access_controller_ = nullptr;
+    test_controller_ = nullptr;
 
     auto access_controller =
         std::make_unique<OnDeviceModelAccessController>(pref_service_);
     access_controller_ = access_controller.get();
     test_controller_ = base::MakeRefCounted<FakeOnDeviceModelServiceController>(
-        std::move(access_controller));
+        std::move(access_controller),
+        on_device_component_state_manager_.get()->GetWeakPtr());
+
     proto::OnDeviceModelExecutionFeatureConfig config;
     config.set_feature(kFeature);
     auto& input_config = *config.mutable_input_config();
@@ -327,6 +339,8 @@ class OnDeviceModelServiceControllerTest : public testing::Test {
   base::test::TaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
   TestingPrefServiceSimple pref_service_;
+  TestOnDeviceModelComponentStateManager on_device_component_state_manager_{
+      &pref_service_};
   scoped_refptr<FakeOnDeviceModelServiceController> test_controller_;
   // Owned by FakeOnDeviceModelServiceController.
   raw_ptr<OnDeviceModelAccessController> access_controller_ = nullptr;
@@ -801,7 +815,8 @@ TEST_F(OnDeviceModelServiceControllerTest, AddContextInvalidConfig) {
       std::make_unique<OnDeviceModelAccessController>(pref_service_);
   access_controller_ = access_controller.get();
   test_controller_ = base::MakeRefCounted<FakeOnDeviceModelServiceController>(
-      std::move(access_controller));
+      std::move(access_controller),
+      on_device_component_state_manager_.get()->GetWeakPtr());
 
   proto::OnDeviceModelExecutionFeatureConfig config;
   config.set_feature(kFeature);
@@ -844,7 +859,8 @@ TEST_F(OnDeviceModelServiceControllerTest, ExecuteInvalidConfig) {
       std::make_unique<OnDeviceModelAccessController>(pref_service_);
   access_controller_ = access_controller.get();
   test_controller_ = base::MakeRefCounted<FakeOnDeviceModelServiceController>(
-      std::move(access_controller));
+      std::move(access_controller),
+      on_device_component_state_manager_.get()->GetWeakPtr());
 
   proto::OnDeviceModelExecutionFeatureConfig config;
   config.set_feature(kFeature);

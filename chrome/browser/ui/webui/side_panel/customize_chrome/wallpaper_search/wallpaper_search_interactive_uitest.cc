@@ -194,7 +194,7 @@ class WallpaperSearchInteractiveTest : public InteractiveBrowserTest {
         context, base::BindRepeating([](content::BrowserContext* context)
                                          -> std::unique_ptr<KeyedService> {
           return std::make_unique<
-              testing::NiceMock<MockOptimizationGuideKeyedService>>(context);
+              testing::NiceMock<MockOptimizationGuideKeyedService>>();
         }));
   }
 

@@ -15,10 +15,12 @@
 #include "base/metrics/field_trial_params.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
+#include "base/strings/to_string.h"
 #include "base/system/sys_info.h"
 #include "build/build_config.h"
 #include "components/optimization_guide/core/insertion_ordered_set.h"
 #include "components/optimization_guide/core/optimization_guide_constants.h"
+#include "components/optimization_guide/core/optimization_guide_enums.h"
 #include "components/optimization_guide/core/optimization_guide_switches.h"
 #include "components/optimization_guide/machine_learning_tflite_buildflags.h"
 #include "components/optimization_guide/proto/common_types.pb.h"
@@ -990,9 +992,37 @@ bool GetOnDeviceFallbackToServerOnDisconnect() {
   return kOnDeviceModelFallbackToServerOnDisconnect.Get();
 }
 
+bool IsPerformanceClassCompatibleWithOnDeviceModel(
+    OnDeviceModelPerformanceClass performance_class) {
+  std::string perf_classes_string = base::GetFieldTrialParamValueByFeature(
+      kOptimizationGuideOnDeviceModel,
+      "compatible_on_device_performance_classes");
+  if (perf_classes_string.empty()) {
+    perf_classes_string = "3,4,5,6";
+  }
+  std::vector<std::string_view> perf_classes_list = base::SplitStringPiece(
+      perf_classes_string, ",", base::WhitespaceHandling::TRIM_WHITESPACE,
+      base::SplitResult::SPLIT_WANT_NONEMPTY);
+  return base::Contains(perf_classes_list,
+                        base::ToString(static_cast<int>(performance_class)));
+}
+
 bool CanLaunchOnDeviceModelService() {
   return base::FeatureList::IsEnabled(kOptimizationGuideOnDeviceModel) ||
          base::FeatureList::IsEnabled(kLogOnDeviceMetricsOnStartup);
+}
+
+bool IsOnDeviceExecutionEnabled() {
+  return base::FeatureList::IsEnabled(
+             features::kOptimizationGuideModelExecution) &&
+         base::FeatureList::IsEnabled(kOptimizationGuideOnDeviceModel) &&
+         base::FeatureList::IsEnabled(kLogOnDeviceMetricsOnStartup);
+}
+
+base::TimeDelta GetOnDeviceModelRetentionTime() {
+  return base::GetFieldTrialParamByFeatureAsTimeDelta(
+      kOptimizationGuideOnDeviceModel, "on_device_model_retention_time",
+      base::Days(30));
 }
 
 }  // namespace features

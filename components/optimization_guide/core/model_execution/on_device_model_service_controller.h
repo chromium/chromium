@@ -10,9 +10,11 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/raw_ref.h"
 #include "base/memory/ref_counted.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
 #include "base/types/pass_key.h"
+#include "components/optimization_guide/core/model_execution/on_device_model_component.h"
 #include "components/optimization_guide/core/model_execution/session_impl.h"
 #include "components/optimization_guide/core/optimization_guide_model_executor.h"
 #include "components/optimization_guide/proto/model_execution.pb.h"
@@ -29,6 +31,7 @@ class FilePath;
 
 namespace optimization_guide {
 class OnDeviceModelAccessController;
+class OnDeviceModelComponentStateManager;
 class OnDeviceModelExecutionConfigInterpreter;
 
 // Controls the lifetime of the on-device model service, loading and unloading
@@ -43,10 +46,13 @@ class OnDeviceModelExecutionConfigInterpreter;
 // this. Also handle multiple requests gracefully and fail the subsequent
 // requests, while handling the first one.
 class OnDeviceModelServiceController
-    : public base::RefCounted<OnDeviceModelServiceController> {
+    : public base::RefCounted<OnDeviceModelServiceController>,
+      public OnDeviceModelComponentStateManager::Observer {
  public:
   explicit OnDeviceModelServiceController(
-      std::unique_ptr<OnDeviceModelAccessController> access_controller);
+      std::unique_ptr<OnDeviceModelAccessController> access_controller,
+      base::WeakPtr<OnDeviceModelComponentStateManager>
+          on_device_component_state_manager);
 
   // Initializes the on-device model controller with the parameters, to be ready
   // to load models and execute.
@@ -88,13 +94,16 @@ class OnDeviceModelServiceController
     return model_remote_.is_bound() || service_remote_.is_bound();
   }
 
+  // OnDeviceModelComponentStateManager::Observer.
+  void StateChanged(const OnDeviceModelComponentState* state) override;
+
  private:
   friend class base::RefCounted<OnDeviceModelServiceController>;
   friend class ChromeOnDeviceModelServiceController;
   friend class OnDeviceModelServiceControllerTest;
   friend class FakeOnDeviceModelServiceController;
 
-  virtual ~OnDeviceModelServiceController();
+  ~OnDeviceModelServiceController() override;
 
   // Makes sure the service is running and starts a mojo session.
   void StartMojoSession(
@@ -118,6 +127,8 @@ class OnDeviceModelServiceController
 
   // This may be null in the destructor, otherwise non-null.
   std::unique_ptr<OnDeviceModelAccessController> access_controller_;
+  base::WeakPtr<OnDeviceModelComponentStateManager>
+      on_device_component_state_manager_;
   base::FilePath model_path_;
   std::unique_ptr<OnDeviceModelExecutionConfigInterpreter> config_interpreter_;
   mojo::Remote<on_device_model::mojom::OnDeviceModelService> service_remote_;

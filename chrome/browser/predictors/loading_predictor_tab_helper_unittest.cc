@@ -94,7 +94,7 @@ void LoadingPredictorTabHelperTest::SetUp() {
                   base::BindRepeating([](content::BrowserContext* context)
                                           -> std::unique_ptr<KeyedService> {
                     return std::make_unique<
-                        NiceMock<MockOptimizationGuideKeyedService>>(context);
+                        NiceMock<MockOptimizationGuideKeyedService>>();
                   })));
   LoadingPredictorTabHelper::CreateForWebContents(web_contents());
   tab_helper_ = LoadingPredictorTabHelper::FromWebContents(web_contents());

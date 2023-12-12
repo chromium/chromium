@@ -141,6 +141,7 @@ component("features") {
     "insertion_ordered_set.h",
     "optimization_guide_constants.cc",
     "optimization_guide_constants.h",
+    "optimization_guide_enums.h",
     "optimization_guide_features.cc",
     "optimization_guide_features.h",
     "optimization_guide_prefs.cc",
@@ -203,7 +204,6 @@ static_library("core") {
     "optimization_filter.h",
     "optimization_guide_decider.h",
     "optimization_guide_decision.h",
-    "optimization_guide_enums.h",
     "optimization_guide_logger.cc",
     "optimization_guide_logger.h",
     "optimization_guide_model_executor.h",
@@ -254,6 +254,8 @@ static_library("core") {
       "model_execution/model_execution_util.h",
       "model_execution/on_device_model_access_controller.cc",
       "model_execution/on_device_model_access_controller.h",
+      "model_execution/on_device_model_component.cc",
+      "model_execution/on_device_model_component.h",
       "model_execution/on_device_model_execution_config_interpreter.cc",
       "model_execution/on_device_model_execution_config_interpreter.h",
       "model_execution/on_device_model_execution_proto_descriptors.h",
@@ -496,10 +498,13 @@ source_set("unit_tests") {
       "model_execution/model_execution_features_unittest.cc",
       "model_execution/model_execution_fetcher_unittest.cc",
       "model_execution/model_execution_manager_unittest.cc",
+      "model_execution/on_device_model_component_unittest.cc",
       "model_execution/on_device_model_execution_config_interpreter_unittest.cc",
       "model_execution/on_device_model_execution_proto_value_utils_unittest.cc",
       "model_execution/on_device_model_service_controller_unittest.cc",
       "model_execution/optimization_guide_model_execution_error_unittest.cc",
+      "model_execution/test_on_device_model_component.cc",
+      "model_execution/test_on_device_model_component.h",
     ]
   }
   if (build_with_tflite_lib) {

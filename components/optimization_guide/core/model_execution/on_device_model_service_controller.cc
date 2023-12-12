@@ -8,6 +8,7 @@
 #include "base/strings/strcat.h"
 #include "base/task/thread_pool.h"
 #include "components/optimization_guide/core/model_execution/on_device_model_access_controller.h"
+#include "components/optimization_guide/core/model_execution/on_device_model_component.h"
 #include "components/optimization_guide/core/model_execution/on_device_model_execution_config_interpreter.h"
 #include "components/optimization_guide/core/model_execution/session_impl.h"
 #include "components/optimization_guide/core/model_util.h"
@@ -61,10 +62,22 @@ OnDeviceModelLoadResult ConvertToOnDeviceModelLoadResult(
 }  // namespace
 
 OnDeviceModelServiceController::OnDeviceModelServiceController(
-    std::unique_ptr<OnDeviceModelAccessController> access_controller)
-    : access_controller_(std::move(access_controller)) {}
+    std::unique_ptr<OnDeviceModelAccessController> access_controller,
+    base::WeakPtr<optimization_guide::OnDeviceModelComponentStateManager>
+        on_device_component_state_manager)
+    : access_controller_(std::move(access_controller)),
+      on_device_component_state_manager_(
+          std::move(on_device_component_state_manager)) {
+  if (on_device_component_state_manager_) {
+    on_device_component_state_manager_->AddObserver(this);
+  }
+}
 
-OnDeviceModelServiceController::~OnDeviceModelServiceController() = default;
+OnDeviceModelServiceController::~OnDeviceModelServiceController() {
+  if (on_device_component_state_manager_) {
+    on_device_component_state_manager_->RemoveObserver(this);
+  }
+}
 
 void OnDeviceModelServiceController::Init(
     const base::FilePath& model_path,
@@ -79,12 +92,20 @@ void OnDeviceModelServiceController::Init(
 void OnDeviceModelServiceController::Init() {
   auto model_path_override_switch =
       switches::GetOnDeviceModelExecutionOverride();
+  std::optional<base::FilePath> model_path;
   if (model_path_override_switch) {
-    auto file_path = StringToFilePath(*model_path_override_switch);
-    if (file_path) {
-      Init(*file_path,
-           std::make_unique<OnDeviceModelExecutionConfigInterpreter>());
+    model_path = StringToFilePath(*model_path_override_switch);
+  } else if (on_device_component_state_manager_) {
+    const OnDeviceModelComponentState* state =
+        on_device_component_state_manager_->GetState();
+    if (state) {
+      model_path = state->GetInstallDirectory();
     }
+  }
+
+  if (model_path) {
+    Init(*model_path,
+         std::make_unique<OnDeviceModelExecutionConfigInterpreter>());
   }
 }
 
@@ -93,6 +114,7 @@ OnDeviceModelServiceController::CreateSession(
     proto::ModelExecutionFeature feature,
     ExecuteRemoteFn execute_remote_fn,
     OptimizationGuideLogger* optimization_guide_logger) {
+  on_device_component_state_manager_->OnDeviceEligibleFeatureUsed();
   ScopedEligibilityReasonLogger logger(feature);
   if (!base::FeatureList::IsEnabled(
           features::kOptimizationGuideOnDeviceModel)) {
@@ -177,6 +199,19 @@ void OnDeviceModelServiceController::OnModelAssetsLoaded(
       std::move(model),
       base::BindOnce(&OnDeviceModelServiceController::OnLoadModelResult,
                      weak_ptr_factory_.GetWeakPtr()));
+}
+
+void OnDeviceModelServiceController::StateChanged(
+    const OnDeviceModelComponentState* state) {
+  if (state && model_path_.empty()) {
+    Init();
+  } else {
+    // TODO(b/302327114): Support other cases. Decide how to handle:
+    // * If state is null and Init() has already been called. We should prevent
+    // future requests from being handled, and maybe kill in-flight tasks.
+    // * If state is non-null and Init() has already been called. We should
+    // probably re-load any files as they may have changed.
+  }
 }
 
 void OnDeviceModelServiceController::OnLoadModelResult(

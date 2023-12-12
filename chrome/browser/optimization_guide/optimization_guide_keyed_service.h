@@ -44,6 +44,7 @@ class ModelExecutionManager;
 class ModelInfo;
 class ModelQualityLogEntry;
 class ModelQualityLogsUploaderService;
+class OnDeviceModelComponentStateManager;
 class OptimizationGuideStore;
 class PredictionManager;
 class PredictionManagerBrowserTestBase;
@@ -192,8 +193,10 @@ class OptimizationGuideKeyedService
   friend class PersonalizedHintsFetcherBrowserTest;
   friend class settings::SettingsUI;
 
-  // Logs metrics from the OnDeviceModelService.
-  static void LogOnDeviceMetrics();
+  // Evaluates and logs the device performance class.
+  static void DeterminePerformanceClass(
+      base::WeakPtr<optimization_guide::OnDeviceModelComponentStateManager>
+          on_device_component_state_manager);
 
   // Initializes |this|.
   void Initialize();
@@ -210,13 +213,14 @@ class OptimizationGuideKeyedService
   }
 
   // Notifies |hints_manager_| that the navigation associated with
-  // |navigation_data| has started or redirected.
-  void OnNavigationStartOrRedirect(
+  // |navigation_data| has started or redirected. Virtual for testing.
+  virtual void OnNavigationStartOrRedirect(
       OptimizationGuideNavigationData* navigation_data);
 
   // Notifies |hints_manager_| that the navigation associated with
-  // |navigation_redirect_chain| has finished.
-  void OnNavigationFinish(const std::vector<GURL>& navigation_redirect_chain);
+  // |navigation_redirect_chain| has finished. Virtual for testing.
+  virtual void OnNavigationFinish(
+      const std::vector<GURL>& navigation_redirect_chain);
 
   // Clears data specific to the user.
   void ClearData();
@@ -253,6 +257,10 @@ class OptimizationGuideKeyedService
   // The logger that plumbs the debug logs to the optimization guide
   // internals page. Must outlive `prediction_manager_` and `hints_manager_`.
   std::unique_ptr<OptimizationGuideLogger> optimization_guide_logger_;
+
+  // Keep a reference to this so it stays alive.
+  scoped_refptr<optimization_guide::OnDeviceModelComponentStateManager>
+      on_device_component_manager_;
 
   // Manages the storing, loading, and fetching of hints.
   std::unique_ptr<optimization_guide::ChromeHintsManager> hints_manager_;

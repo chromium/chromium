@@ -268,9 +268,9 @@ enum class OnDeviceModelEligibilityReason {
 
 // Performance class of this device.
 //
-// These values are persisted to logs. Entries should not be renumbered and
-// numeric values should never be reused.
-enum class OnDeviceModelPerformanceClass {
+// These values are persisted to logs and prefs. Entries should not be
+// renumbered and numeric values should never be reused.
+enum class OnDeviceModelPerformanceClass : int {
   kUnknown = 0,
 
   // See on_device_model::mojom::PerformanceClass for explanation of these.
@@ -280,6 +280,9 @@ enum class OnDeviceModelPerformanceClass {
   kMedium = 4,
   kHigh = 5,
   kVeryHigh = 6,
+
+  // WARNING!: If you add a new performance class, please be aware of
+  // `IsPerformanceClassCompatibleWithOnDeviceModel`.
 
   // The service crashed, so a valid value was not returned.
   kServiceCrash = 7,
