@@ -101,7 +101,7 @@
       </template>
       <localized-link
           localized-string=
-            "[[getManagementDescription_(isChildUser_, deviceAccount_)]]"
+            "[[getManagementDescription_(isChildUser_, deviceAccount)]]"
           link-url="$i18nRaw{accountManagerChromeUIManagementURL}">
       </localized-link>
     </div>
@@ -113,7 +113,7 @@
       aria-describedby="deviceAccountEmail">
     <div class="profile-icon device-account-icon"
         aria-hidden="true"
-        style="background-image: [[getIconImageSet_(deviceAccount_.pic)]]">
+        style="background-image: [[getIconImageSet_(deviceAccount)]]">
       <template is="dom-if"
           if="[[shouldShowManagedBadge_(isDeviceAccountManaged_,
                 isChildUser_)]]">
@@ -123,10 +123,10 @@
       </template>
     </div>
     <span id="deviceAccountFullName" class="primary" aria-hidden="true">
-      [[deviceAccount_.fullName]]
+      [[deviceAccount.fullName]]
     </span>
     <span id="deviceAccountEmail" class="secondary" aria-hidden="true">
-      [[deviceAccount_.email]]
+      [[deviceAccount.email]]
     </span>
   </div>
 </settings-card>

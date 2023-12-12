@@ -7,7 +7,6 @@ import 'chrome://os-settings/os_settings.js';
 import {AccountManagerBrowserProxyImpl} from 'chrome://os-settings/lazy_load.js';
 import {AdditionalAccountsSettingsCardElement, CrTooltipIconElement, Router, routes, settingMojom, setUserActionRecorderForTesting} from 'chrome://os-settings/os_settings.js';
 import {assert} from 'chrome://resources/js/assert.js';
-import {webUIListenerCallback} from 'chrome://resources/js/cr.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {getDeepActiveElement} from 'chrome://resources/js/util.js';
 import {DomRepeat, flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
@@ -27,16 +26,18 @@ suite('<additonal-accounts-settings-card>', () => {
   suiteSetup(() => {
     loadTimeData.overrideValues({isDeviceAccountManaged: true});
 
-    browserProxy = new TestAccountManagerBrowserProxy();
-    AccountManagerBrowserProxyImpl.setInstanceForTesting(browserProxy);
+    userActionRecorder = new FakeUserActionRecorder();
+    setUserActionRecorderForTesting(userActionRecorder);
   });
 
   setup(async () => {
-    userActionRecorder = new FakeUserActionRecorder();
-    setUserActionRecorderForTesting(userActionRecorder);
+    browserProxy = new TestAccountManagerBrowserProxy();
+    AccountManagerBrowserProxyImpl.setInstanceForTesting(browserProxy);
+    const accounts = await browserProxy.getAccounts();
 
     additionalAccountSettingsCard =
         document.createElement('additional-accounts-settings-card');
+    additionalAccountSettingsCard.accounts = accounts;
     document.body.appendChild(additionalAccountSettingsCard);
     const list =
         additionalAccountSettingsCard.shadowRoot!.querySelector<DomRepeat>(
@@ -45,9 +46,6 @@ suite('<additonal-accounts-settings-card>', () => {
     accountList = list;
 
     Router.getInstance().navigateTo(routes.OS_PEOPLE);
-    flush();
-
-    await browserProxy.whenCalled('getAccounts');
     flush();
   });
 
@@ -153,12 +151,6 @@ suite('<additonal-accounts-settings-card>', () => {
     assertEquals(
         deepLinkElement, getDeepActiveElement(),
         `Kebab menu should be focused for settingId${removeAccountSettingId}.`);
-  });
-
-  test('accountList is updated when account manager updates', () => {
-    assertEquals(1, browserProxy.getCallCount('getAccounts'));
-    webUIListenerCallback('accounts-changed');
-    assertEquals(2, browserProxy.getCallCount('getAccounts'));
   });
 
   if (loadTimeData.getBoolean('arcAccountRestrictionsEnabled')) {

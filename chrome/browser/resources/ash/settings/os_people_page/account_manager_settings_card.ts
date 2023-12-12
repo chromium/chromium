@@ -24,7 +24,7 @@ import {assertExists} from '../assert_extras.js';
 import {isChild} from '../common/load_time_booleans.js';
 import {ParentalControlsBrowserProxyImpl} from '../parental_controls_page/parental_controls_browser_proxy.js';
 
-import {Account, AccountManagerBrowserProxy, AccountManagerBrowserProxyImpl} from './account_manager_browser_proxy.js';
+import {Account} from './account_manager_browser_proxy.js';
 import {getTemplate} from './account_manager_settings_card.html.js';
 
 const AccountManagerSettingsCardElementBase =
@@ -45,7 +45,7 @@ export class AccountManagerSettingsCardElement extends
       /**
        * Primary / Device account.
        */
-      deviceAccount_: Object,
+      deviceAccount: Object,
 
       isChildUser_: {
         type: Boolean,
@@ -87,39 +87,10 @@ export class AccountManagerSettingsCardElement extends
     };
   }
 
-  private browserProxy_: AccountManagerBrowserProxy;
-  private deviceAccount_: Account|null;
+  deviceAccount: Account|null;
   private isChildUser_: boolean;
   private isDeviceAccountManaged_: boolean;
   private isSecondaryGoogleAccountSigninAllowed_: boolean;
-
-  constructor() {
-    super();
-
-    this.browserProxy_ = AccountManagerBrowserProxyImpl.getInstance();
-  }
-
-  override connectedCallback(): void {
-    super.connectedCallback();
-
-    this.addWebUiListener('accounts-changed', this.refreshAccounts_.bind(this));
-  }
-
-  override ready(): void {
-    super.ready();
-    this.refreshAccounts_();
-  }
-
-  private async refreshAccounts_(): Promise<void> {
-    const accounts = await this.browserProxy_.getAccounts();
-    this.set('accounts_', accounts);
-    const deviceAccount = accounts.find(account => account.isDeviceAccount);
-    if (!deviceAccount) {
-      console.error('Cannot find device account.');
-      return;
-    }
-    this.deviceAccount_ = deviceAccount;
-  }
 
   private onManagedIconClick_(): void {
     if (this.isChildUser_) {
@@ -138,11 +109,11 @@ export class AccountManagerSettingsCardElement extends
     if (this.isChildUser_) {
       return this.i18nAdvanced('accountManagerManagementDescription');
     }
-    if (!this.deviceAccount_) {
+    if (!this.deviceAccount) {
       return '';
     }
-    assertExists(this.deviceAccount_.organization);
-    if (!this.deviceAccount_.organization) {
+    assertExists(this.deviceAccount.organization);
+    if (!this.deviceAccount.organization) {
       if (this.isDeviceAccountManaged_) {
         console.error(
             'The device account is managed, but the organization is not set.');
@@ -154,7 +125,7 @@ export class AccountManagerSettingsCardElement extends
     // Where href will be set by <localized-link>.
     return this.i18nAdvanced('accountManagerManagementDescription', {
       substitutions: [
-        this.deviceAccount_.organization,
+        this.deviceAccount.organization,
       ],
     });
   }
@@ -170,8 +141,11 @@ export class AccountManagerSettingsCardElement extends
   /**
    * @return a CSS image-set for multiple scale factors.
    */
-  private getIconImageSet_(iconUrl: string): string {
-    return getImage(iconUrl);
+  private getIconImageSet_(): string {
+    if (!this.deviceAccount) {
+      return '';
+    }
+    return getImage(this.deviceAccount.pic);
   }
 }
 
