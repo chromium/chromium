@@ -1121,15 +1121,8 @@ IN_PROC_BROWSER_TEST_P(DetachToBrowserTabDragControllerTest,
 // tabs joining the same group as the tab in the second position. Then dragging
 // the tabs over two to the right will result in the tabs joining the same group
 // as the last tab.
-// Flaky on windows. http://crbug.com/1164561
-#if BUILDFLAG(IS_WIN)
-#define MAYBE_DragMultipleTabsRightIntoGroup \
-  DISABLED_DragMultipleTabsRightIntoGroup
-#else
-#define MAYBE_DragMultipleTabsRightIntoGroup DragMultipleTabsRightIntoGroup
-#endif
 IN_PROC_BROWSER_TEST_P(DetachToBrowserTabDragControllerTest,
-                       MAYBE_DragMultipleTabsRightIntoGroup) {
+                       DragMultipleTabsRightIntoGroup) {
   ASSERT_TRUE(browser()->tab_strip_model()->SupportsTabGroups());
 
   // Create a browser with four tabs total, and put each tab into its own
