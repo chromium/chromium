@@ -47,41 +47,33 @@ div {
 var scroller = document.getElementById("scroller");
 var width = scroller.clientWidth;
 
-function scrollLeft() {
-  return scroller.scrollLeft;
-}
-
-function keyPress(key) {
-  return new Promise((resolve, reject) => {
-    if (window.eventSender) {
-      eventSender.keyDown(key);
-      resolve();
-    }
-    else {
-      reject('This test requires window.eventSender');
-    }
-  })
-}
-
 promise_test (async () => {
+  // Ensure focus.
   await mouseClickOn(510, 10);
-  scroller.scrollTo(-615, 0);
-  await waitForAnimationEndTimeBased(scrollLeft);
-  await keyPress("ArrowRight");
+  // Snap to #left and then use a RightArrow keyPress to snap to #right.
+  // 585 represents the scroll amount needed to align the scroller's right edge
+  // with #left's right edge:
+  //   | left.offsetLeft + (left.offsetWidth - scroller.clientWidth) |
+  await waitForScrollReset(scroller, -585, 0);
+  await keyboardScroll("ArrowRight", scroller);
   // The left border of #right is at -width.
   // The right border of #right is thus 200 - width.
   // When right-aligned, the scroll position should be 200 - width.
-  await waitForScrollEnd(scroller, scrollLeft, 200 - width);
+  assert_equals(scroller.scrollLeft, 200 - width);
 }, "Snaps to #right after pressing ArrowRight");
 
 promise_test (async () => {
+  // Ensure focus.
   await mouseClickOn(510, 10);
-  scroller.scrollTo(-215, 0);
-  await waitForAnimationEndTimeBased(scrollLeft);
-  await keyPress("ArrowLeft");
+  // Snap to #right and then use a LeftArrow keyPress to snap to #left.
+  // 185 represents the scroll amount needed to align the scroller's right edge
+  // with #right's right edge:
+  //    | right.offsetLeft + (right.offsetWidth - scroller.clientWidth)|
+  await waitForScrollReset(scroller, -185, 0);
+  await keyboardScroll("ArrowLeft", scroller);
   // The left border of #left is at -(400 + width).
   // The right border of #left is thus -(200 + width).
   // When right-aligned, the scroll position should be -(200 + width).
-  await waitForScrollEnd(scroller, scrollLeft, -(200 + width));
+  assert_equals(scroller.scrollLeft, -(200 + width));
 }, "Snaps to #left after pressing ArrowLeft");
 </script>
