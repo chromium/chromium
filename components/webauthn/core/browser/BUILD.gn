@@ -2,6 +2,8 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//build/config/features.gni")
+
 source_set("browser") {
   sources = [
     "passkey_model_type_controller.cc",
@@ -51,7 +53,7 @@ source_set("unit_tests") {
 
 static_library("test_support") {
   testonly = true
-  if (!is_ios) {
+  if (use_blink) {
     sources = [
       "mock_internal_authenticator.cc",
       "mock_internal_authenticator.h",
