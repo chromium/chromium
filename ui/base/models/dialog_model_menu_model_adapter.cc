@@ -33,14 +33,14 @@ size_t DialogModelMenuModelAdapter::GetItemCount() const {
 }
 
 MenuModel::ItemType DialogModelMenuModelAdapter::GetTypeAt(size_t index) const {
-  return GetField(index)->type(GetPassKey()) == DialogModelField::kSeparator
+  return GetField(index)->type() == DialogModelField::kSeparator
              ? TYPE_SEPARATOR
              : TYPE_COMMAND;
 }
 
 MenuSeparatorType DialogModelMenuModelAdapter::GetSeparatorTypeAt(
     size_t index) const {
-  CHECK_EQ(GetField(index)->type(GetPassKey()), DialogModelField::kSeparator,
+  CHECK_EQ(GetField(index)->type(), DialogModelField::kSeparator,
            base::NotFatalUntil::M123);
   return MenuSeparatorType::NORMAL_SEPARATOR;
 }
@@ -88,7 +88,7 @@ bool DialogModelMenuModelAdapter::IsEnabledAt(size_t index) const {
   CHECK_LT(index, GetItemCount(), base::NotFatalUntil::M123);
 
   const DialogModelField* const field = GetField(index);
-  return field->type(GetPassKey()) != DialogModelField::kSeparator &&
+  return field->type() != DialogModelField::kSeparator &&
          field->AsMenuItem(GetPassKey())->is_enabled(GetPassKey());
 }
 

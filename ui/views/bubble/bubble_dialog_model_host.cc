@@ -75,7 +75,7 @@ BubbleDialogModelHost::FieldType GetFieldTypeForField(
     ui::DialogModelField* field,
     base::PassKey<ui::DialogModelHost> pass_key) {
   DCHECK(field);
-  switch (field->type(pass_key)) {
+  switch (field->type()) {
     case ui::DialogModelField::kButton:
       return BubbleDialogModelHost::FieldType::kControl;
     case ui::DialogModelField::kParagraph:
@@ -585,7 +585,7 @@ void BubbleDialogModelHost::Close() {
 }
 
 void BubbleDialogModelHost::OnFieldAdded(ui::DialogModelField* field) {
-  switch (field->type(GetPassKey())) {
+  switch (field->type()) {
     case ui::DialogModelField::kButton:
       // TODO(pbos): Add support for buttons that are part of content area.
       NOTREACHED_NORETURN();
@@ -634,7 +634,7 @@ void BubbleDialogModelHost::OnFieldChanged(ui::DialogModelField* field) {
 
   UpdateFieldVisibility(field);
 
-  if (field->type(GetPassKey()) == ui::DialogModelField::kButton) {
+  if (field->type() == ui::DialogModelField::kButton) {
     UpdateButton(field->AsButton(GetPassKey()));
   }
 
@@ -853,8 +853,7 @@ void BubbleDialogModelHost::AddOrUpdateMenuItem(
 
 void BubbleDialogModelHost::AddOrUpdateSeparator(
     ui::DialogModelField* model_field) {
-  DCHECK_EQ(ui::DialogModelField::Type::kSeparator,
-            model_field->type(GetPassKey()));
+  DCHECK_EQ(ui::DialogModelField::Type::kSeparator, model_field->type());
   // TODO(pbos): Support updates to the existing model.
 
   auto separator = std::make_unique<Separator>();

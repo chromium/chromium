@@ -85,7 +85,7 @@ class COMPONENT_EXPORT(UI_BASE) DialogModelDelegate {
 // views::Widget* const widget =
 //     views::BubbleDialogDelegate::CreateBubble(std::move(bubble));
 // widget->Show();
-class COMPONENT_EXPORT(UI_BASE) DialogModel final : public DialogModelBase {
+class COMPONENT_EXPORT(UI_BASE) DialogModel final {
  public:
   // A variant for button callbacks that allows different behavior to be
   // specified when a button is pressed.
@@ -334,43 +334,57 @@ class COMPONENT_EXPORT(UI_BASE) DialogModel final : public DialogModelBase {
   // label and an optional header.
   void AddParagraph(const DialogModelLabel& label,
                     std::u16string header,
-                    ElementIdentifier id = ElementIdentifier());
+                    ElementIdentifier id = ElementIdentifier()) {
+    contents_.AddParagraph(label, std::move(header), id);
+  }
 
   // Adds a checkbox ([checkbox] label) at the end of the dialog model.
   void AddCheckbox(ElementIdentifier id,
                    const DialogModelLabel& label,
                    const DialogModelCheckbox::Params& params =
-                       DialogModelCheckbox::Params());
+                       DialogModelCheckbox::Params()) {
+    contents_.AddCheckbox(id, std::move(label), params);
+  }
 
   // Adds a labeled combobox (label: [model]) at the end of the dialog model.
   void AddCombobox(ElementIdentifier id,
                    std::u16string label,
                    std::unique_ptr<ui::ComboboxModel> combobox_model,
                    const DialogModelCombobox::Params& params =
-                       DialogModelCombobox::Params());
+                       DialogModelCombobox::Params()) {
+    contents_.AddCombobox(id, std::move(label), std::move(combobox_model),
+                          params);
+  }
 
   // Adds a menu item at the end of the dialog model.
   void AddMenuItem(ImageModel icon,
                    std::u16string label,
                    base::RepeatingCallback<void(int)> callback,
                    const DialogModelMenuItem::Params& params =
-                       DialogModelMenuItem::Params());
+                       DialogModelMenuItem::Params()) {
+    contents_.AddMenuItem(std::move(icon), std::move(label),
+                          std::move(callback), params);
+  }
 
   // Adds a separator at the end of the dialog model.
-  void AddSeparator();
+  void AddSeparator() { contents_.AddSeparator(); }
 
   // Adds a labeled textfield (label: [text]) at the end of the dialog model.
   void AddTextfield(ElementIdentifier id,
                     std::u16string label,
                     std::u16string text,
                     const DialogModelTextfield::Params& params =
-                        DialogModelTextfield::Params());
+                        DialogModelTextfield::Params()) {
+    contents_.AddTextfield(id, std::move(label), std::move(text), params);
+  }
 
   // Adds a custom field at the end of the dialog model. This is used to inject
   // framework-specific custom UI into dialogs that are otherwise constructed as
   // DialogModels.
   void AddCustomField(std::unique_ptr<DialogModelCustomField::Field> field,
-                      ElementIdentifier id = ElementIdentifier());
+                      ElementIdentifier id = ElementIdentifier()) {
+    contents_.AddCustomField(std::move(field), id);
+  }
 
   // Check for the existence of a field. Should not be used if the code path
   // expects the |unique_id| to always be present, as GetFieldByUniqueId() and
@@ -482,11 +496,11 @@ class COMPONENT_EXPORT(UI_BASE) DialogModel final : public DialogModelBase {
   // TODO(pbos): Replace this with a section() or something.
   const std::vector<std::unique_ptr<DialogModelField>>& fields(
       base::PassKey<DialogModelHost>) {
-    return contents_.fields(GetPassKey());
+    return contents_.fields();
   }
 
  private:
-  void AddField(std::unique_ptr<DialogModelField> field);
+  void OnFieldAdded(DialogModelField* field);
 
   // Runs the appropriate variant of the provided ButtonCallbackVariant and
   // returns whether the dialog should close as a result.

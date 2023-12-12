@@ -61,8 +61,9 @@ void TestDialogModelHost::TriggerExtraButton(const ui::Event& event) {
 DialogModelTextfield* TestDialogModelHost::FindSingleTextfield() {
   // TODO(pbos): Consider validating how "single" this field is.
   for (const auto& field : dialog_model_->fields(GetPassKey())) {
-    if (field->type(GetPassKey()) == ui::DialogModelField::kTextfield)
+    if (field->type() == ui::DialogModelField::kTextfield) {
       return field->AsTextfield(GetPassKey());
+    }
   }
   NOTREACHED_NORETURN();
 }

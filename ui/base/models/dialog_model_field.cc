@@ -94,8 +94,7 @@ DialogModelLabel::TextReplacement DialogModelLabel::CreateEmphasizedText(
   return TextReplacement(text, true);
 }
 
-DialogModelField::DialogModelField(base::PassKey<DialogModelBase>,
-                                   Type type,
+DialogModelField::DialogModelField(Type type,
                                    ElementIdentifier id,
                                    base::flat_set<Accelerator> accelerators,
                                    const DialogModelField::Params& params)
@@ -219,14 +218,9 @@ DialogModelButton::Params& DialogModelButton::Params::AddAccelerator(
 }
 
 DialogModelButton::DialogModelButton(
-    base::PassKey<DialogModelBase> pass_key,
     base::RepeatingCallback<void(const Event&)> callback,
     const DialogModelButton::Params& params)
-    : DialogModelField(pass_key,
-                       kButton,
-                       params.id_,
-                       params.accelerators_,
-                       params),
+    : DialogModelField(kButton, params.id_, params.accelerators_, params),
       label_(std::move(params.label_)),
       style_(params.style_),
       is_enabled_(params.is_enabled_),
@@ -241,27 +235,20 @@ void DialogModelButton::OnPressed(base::PassKey<DialogModelHost>,
   callback_.Run(event);
 }
 
-DialogModelParagraph::DialogModelParagraph(
-    base::PassKey<DialogModelBase> pass_key,
-    const DialogModelLabel& label,
-    std::u16string header,
-    ElementIdentifier id)
-    : DialogModelField(pass_key,
-                       kParagraph,
-                       id,
-                       {},
-                       DialogModelField::Params()),
+DialogModelParagraph::DialogModelParagraph(const DialogModelLabel& label,
+                                           std::u16string header,
+                                           ElementIdentifier id)
+    : DialogModelField(kParagraph, id, {}, DialogModelField::Params()),
       label_(label),
       header_(header) {}
 
 DialogModelParagraph::~DialogModelParagraph() = default;
 
 DialogModelCheckbox::DialogModelCheckbox(
-    base::PassKey<DialogModelBase> pass_key,
     ElementIdentifier id,
     const DialogModelLabel& label,
     const DialogModelCheckbox::Params& params)
-    : DialogModelField(pass_key, kCheckbox, id, {}, params),
+    : DialogModelField(kCheckbox, id, {}, params),
       label_(label),
       is_checked_(params.is_checked_) {}
 
@@ -288,12 +275,11 @@ DialogModelCombobox::Params& DialogModelCombobox::Params::AddAccelerator(
 }
 
 DialogModelCombobox::DialogModelCombobox(
-    base::PassKey<DialogModelBase> pass_key,
     ElementIdentifier id,
     std::u16string label,
     std::unique_ptr<ui::ComboboxModel> combobox_model,
     const DialogModelCombobox::Params& params)
-    : DialogModelField(pass_key, kCombobox, id, params.accelerators_, params),
+    : DialogModelField(kCombobox, id, params.accelerators_, params),
       label_(std::move(label)),
       accessible_name_(params.accessible_name_),
       selected_index_(combobox_model->GetDefaultIndex().value()),
@@ -330,12 +316,11 @@ DialogModelMenuItem::Params& DialogModelMenuItem::Params::SetId(
 }
 
 DialogModelMenuItem::DialogModelMenuItem(
-    base::PassKey<DialogModelBase> pass_key,
     ImageModel icon,
     std::u16string label,
     base::RepeatingCallback<void(int)> callback,
     const DialogModelMenuItem::Params& params)
-    : DialogModelField(pass_key, kMenuItem, params.id_, {}, params),
+    : DialogModelField(kMenuItem, params.id_, {}, params),
       icon_(std::move(icon)),
       label_(std::move(label)),
       is_enabled_(params.is_enabled_),
@@ -349,25 +334,8 @@ void DialogModelMenuItem::OnActivated(base::PassKey<DialogModelHost> pass_key,
   callback_.Run(event_flags);
 }
 
-DialogModelSection::DialogModelSection(base::PassKey<DialogModelBase> pass_key)
-    : DialogModelField(pass_key,
-                       kSection,
-                       ElementIdentifier(),
-                       {},
-                       DialogModelField::Params()) {}
-
-DialogModelSection::~DialogModelSection() = default;
-
-void DialogModelSection::AddField(base::PassKey<DialogModelBase>,
-                                  std::unique_ptr<DialogModelField> field) {
-  CHECK(field);
-  fields_.push_back(std::move(field));
-}
-
-DialogModelSeparator::DialogModelSeparator(
-    base::PassKey<DialogModelBase> pass_key)
-    : DialogModelField(pass_key,
-                       kSeparator,
+DialogModelSeparator::DialogModelSeparator()
+    : DialogModelField(kSeparator,
                        ElementIdentifier(),
                        {},
                        DialogModelField::Params()) {}
@@ -384,12 +352,11 @@ DialogModelTextfield::Params& DialogModelTextfield::Params::AddAccelerator(
 }
 
 DialogModelTextfield::DialogModelTextfield(
-    base::PassKey<DialogModelBase> pass_key,
     ElementIdentifier id,
     std::u16string label,
     std::u16string text,
     const ui::DialogModelTextfield::Params& params)
-    : DialogModelField(pass_key, kTextfield, id, params.accelerators_, params),
+    : DialogModelField(kTextfield, id, params.accelerators_, params),
       label_(label),
       accessible_name_(params.accessible_name_),
       text_(std::move(text)) {
@@ -409,12 +376,84 @@ void DialogModelTextfield::OnTextChanged(base::PassKey<DialogModelHost>,
 DialogModelCustomField::Field::~Field() = default;
 
 DialogModelCustomField::DialogModelCustomField(
-    base::PassKey<DialogModelBase> pass_key,
     ElementIdentifier id,
     std::unique_ptr<DialogModelCustomField::Field> field)
-    : DialogModelField(pass_key, kCustom, id, {}, DialogModelField::Params()),
+    : DialogModelField(kCustom, id, {}, DialogModelField::Params()),
       field_(std::move(field)) {}
 
 DialogModelCustomField::~DialogModelCustomField() = default;
+
+DialogModelSection::DialogModelSection(
+    base::RepeatingCallback<void(DialogModelField*)> on_field_added)
+    : DialogModelField(kSection,
+                       ElementIdentifier(),
+                       {},
+                       DialogModelField::Params()),
+      on_field_added_(on_field_added) {
+  CHECK(on_field_added_);
+}
+
+DialogModelSection::~DialogModelSection() = default;
+
+void DialogModelSection::AddParagraph(const DialogModelLabel& label,
+                                      std::u16string header,
+                                      ElementIdentifier id) {
+  AddField(std::make_unique<DialogModelParagraph>(label, header, id));
+}
+
+void DialogModelSection::AddCheckbox(
+    ElementIdentifier id,
+    const DialogModelLabel& label,
+    const DialogModelCheckbox::Params& params) {
+  AddField(std::make_unique<DialogModelCheckbox>(id, label, params));
+}
+
+void DialogModelSection::AddCombobox(
+    ElementIdentifier id,
+    std::u16string label,
+    std::unique_ptr<ui::ComboboxModel> combobox_model,
+    const DialogModelCombobox::Params& params) {
+  AddField(std::make_unique<DialogModelCombobox>(
+      id, std::move(label), std::move(combobox_model), params));
+}
+
+void DialogModelSection::AddSeparator() {
+  AddField(std::make_unique<DialogModelSeparator>());
+}
+
+void DialogModelSection::AddMenuItem(
+    ImageModel icon,
+    std::u16string label,
+    base::RepeatingCallback<void(int)> callback,
+    const DialogModelMenuItem::Params& params) {
+  AddField(std::make_unique<DialogModelMenuItem>(
+      std::move(icon), std::move(label), std::move(callback), params));
+}
+
+void DialogModelSection::AddTextfield(
+    ElementIdentifier id,
+    std::u16string label,
+    std::u16string text,
+    const DialogModelTextfield::Params& params) {
+  AddField(std::make_unique<DialogModelTextfield>(id, std::move(label),
+                                                  std::move(text), params));
+}
+
+void DialogModelSection::AddCustomField(
+    std::unique_ptr<DialogModelCustomField::Field> field,
+    ElementIdentifier id) {
+  AddField(std::make_unique<DialogModelCustomField>(id, std::move(field)));
+}
+
+void DialogModelSection::AddField(std::unique_ptr<DialogModelField> field) {
+  CHECK(field);
+  // This probably needs to be updated for recursive fields. CHECK that we don't
+  // add recursive sections until we've thought through how the updates are
+  // communicated.
+  CHECK_NE(field->type(), DialogModelField::kSection);
+  auto* const field_ptr = field.get();
+  fields_.push_back(std::move(field));
+  on_field_added_.Run(field_ptr);
+}
 
 }  // namespace ui
