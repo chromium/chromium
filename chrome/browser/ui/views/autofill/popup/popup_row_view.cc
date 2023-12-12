@@ -69,8 +69,10 @@ class EnterExitHandler : public ui::EventHandler {
   base::RepeatingClosure exit_callback_;
 };
 
-constexpr int kExpandableControlCellInsetPadding = 16;
-constexpr int kExpandableControlCellIconSize = 6;
+constexpr int kExpandChildSuggestionsViewWidth = 24;
+constexpr int kExpandChildSuggestionsIconWidth = 6;
+constexpr int kExpandChildSuggestionsViewHorizontalPadding =
+    (kExpandChildSuggestionsViewWidth - kExpandChildSuggestionsIconWidth) / 2;
 
 // Computes the position and set size of the suggestion at `suggestion_index` in
 // `controller`'s suggestions ignoring `PopupItemId::kSeparator`s.
@@ -127,9 +129,9 @@ PopupRowView::ExpandChildSuggestionsView::ExpandChildSuggestionsView() {
   SetNotifyEnterExitOnChild(true);
   SetLayoutManager(std::make_unique<views::BoxLayout>(
       views::BoxLayout::Orientation::kHorizontal,
-      gfx::Insets(kExpandableControlCellInsetPadding)));
+      gfx::Insets(kExpandChildSuggestionsViewHorizontalPadding)));
   AddChildView(popup_cell_utils::ImageViewFromVectorIcon(
-      vector_icons::kSubmenuArrowIcon, kExpandableControlCellIconSize));
+      vector_icons::kSubmenuArrowIcon, kExpandChildSuggestionsIconWidth));
 }
 
 void PopupRowView::ExpandChildSuggestionsView::GetAccessibleNodeData(
