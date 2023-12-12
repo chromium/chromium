@@ -1604,7 +1604,8 @@ bool CredentialProviderPromoDismissed(PrefService* local_state) {
     item.status = (ParcelState)iter->state;
     [parcelItems addObject:item];
 
-    if (iter->estimated_delivery_time < base::Time::Now() - base::Days(2)) {
+    if (!iter->estimated_delivery_time.is_null() &&
+        iter->estimated_delivery_time < base::Time::Now() - base::Days(2)) {
       // Parcel was delivered more than two days ago, make this the last time it
       // is shown by stopping tracking.
       _shoppingService->StopTrackingParcel(iter->tracking_id,
