@@ -9,7 +9,6 @@
 #include "ash/display/screen_orientation_controller.h"
 #include "ash/public/cpp/shell_window_ids.h"
 #include "ash/style/ash_color_id.h"
-#include "ash/style/ash_color_provider.h"
 #include "ash/style/color_util.h"
 #include "ash/wm/gestures/back_gesture/back_gesture_util.h"
 #include "ash/wm/splitview/split_view_controller.h"
@@ -118,9 +117,7 @@ class AffordanceView : public views::View {
     ripple_flags.setAntiAlias(true);
     ripple_flags.setStyle(cc::PaintFlags::kFill_Style);
     ripple_flags.setColor(ColorUtil::GetSecondToneColor(
-        AshColorProvider::Get()->GetControlsLayerColor(
-            AshColorProvider::ControlsLayerType::
-                kControlBackgroundColorActive)));
+        GetColorProvider()->GetColor(kColorAshControlBackgroundColorActive)));
 
     float ripple_radius = 0.f;
     if (state_ == BackGestureAffordance::State::COMPLETING) {

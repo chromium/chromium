@@ -7,7 +7,6 @@
 #include "ash/public/cpp/style/color_provider.h"
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/strings/grit/ash_strings.h"
-#include "ash/style/ash_color_provider.h"
 #include "ash/style/typography.h"
 #include "ash/system/message_center/message_center_constants.h"
 #include "chromeos/constants/chromeos_features.h"
@@ -74,18 +73,6 @@ int AshNotificationInputContainer::GetDefaultPlaceholderStringId() const {
 }
 
 void AshNotificationInputContainer::StyleTextfield() {
-  if (!chromeos::features::IsJellyEnabled()) {
-    textfield()->SetFontList(gfx::FontList({kGoogleSansFont}, gfx::Font::NORMAL,
-                                           kNotificationBodyFontWeight,
-                                           gfx::Font::Weight::MEDIUM));
-    auto* color_provider = ash::AshColorProvider::Get();
-    textfield()->SetBackground(views::CreateRoundedRectBackground(
-        color_provider->GetControlsLayerColor(
-            ash::AshColorProvider::ControlsLayerType::
-                kControlBackgroundColorInactive),
-        kTextfieldBackgroundCornerRadius));
-  }
-
   views::FocusRing::Install(textfield());
   views::InstallRoundRectHighlightPathGenerator(
       textfield(), gfx::Insets(), kTextfieldBackgroundCornerRadius);

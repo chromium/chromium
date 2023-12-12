@@ -122,9 +122,8 @@ class CameraRollThumbnailTest : public views::ViewsTestBase {
   SkBitmap CreateExpectedThumbnail(bool is_video) {
     gfx::Canvas expected(gfx::Size(kRectWidthInDip, kRectHeightInDip),
                          /* image_scale= */ 1.0f, /* is_opaque= */ true);
-    auto* provider = AshColorProvider::Get();
-    expected.DrawColor(provider->GetControlsLayerColor(
-        AshColorProvider::ControlsLayerType::kControlBackgroundColorInactive));
+    expected.DrawColor(camera_roll_thumbnail()->GetColorProvider()->GetColor(
+        kColorAshControlBackgroundColorInactive));
 
     gfx::ImageSkia test_image = CreateTestThumbnail().AsImageSkia();
     expected.DrawImageInt(
@@ -133,6 +132,7 @@ class CameraRollThumbnailTest : public views::ViewsTestBase {
         kExpectedCameraRollThumbnailBorderSize.height(), false);
 
     if (is_video) {
+      auto* provider = AshColorProvider::Get();
       cc::PaintFlags flags;
       flags.setAntiAlias(true);
       flags.setStyle(cc::PaintFlags::kFill_Style);

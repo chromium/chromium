@@ -6,6 +6,7 @@
 
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/strings/grit/ash_strings.h"
+#include "ash/style/ash_color_id.h"
 #include "ash/style/ash_color_provider.h"
 #include "ash/style/style_util.h"
 #include "ash/system/media/unified_media_controls_controller.h"
@@ -100,11 +101,6 @@ const gfx::VectorIcon& GetVectorIconForMediaAction(MediaSessionAction action) {
   return gfx::kNoneIcon;
 }
 
-SkColor GetBackgroundColor() {
-  return AshColorProvider::Get()->GetControlsLayerColor(
-      AshColorProvider::ControlsLayerType::kControlBackgroundColorInactive);
-}
-
 }  // namespace
 
 UnifiedMediaControlsView::MediaActionButton::MediaActionButton(
@@ -153,8 +149,8 @@ UnifiedMediaControlsView::UnifiedMediaControlsView(
           this)),
       controller_(controller) {
   SetFocusBehavior(views::View::FocusBehavior::ALWAYS);
-  SetBackground(views::CreateRoundedRectBackground(GetBackgroundColor(),
-                                                   kMediaControlsCornerRadius));
+  SetBackground(views::CreateThemedRoundedRectBackground(
+      kColorAshControlBackgroundColorInactive, kMediaControlsCornerRadius));
   auto* box_layout = SetLayoutManager(std::make_unique<views::BoxLayout>(
       views::BoxLayout::Orientation::kHorizontal, kMediaControlsViewInsets,
       kMediaControlsViewPadding));
@@ -305,7 +301,6 @@ void UnifiedMediaControlsView::UpdateActionButtonAvailability(
 void UnifiedMediaControlsView::OnThemeChanged() {
   views::Button::OnThemeChanged();
   auto* color_provider = AshColorProvider::Get();
-  background()->SetNativeControlColor(GetBackgroundColor());
   title_label_->SetEnabledColor(color_provider->GetContentLayerColor(
       AshColorProvider::ContentLayerType::kTextColorPrimary));
   drop_down_icon_->SetImage(CreateVectorIcon(
@@ -336,10 +331,8 @@ void UnifiedMediaControlsView::ShowEmptyState() {
   if (!artwork_view_->GetVisible())
     return;
 
-  artwork_view_->SetBackground(views::CreateSolidBackground(
-      AshColorProvider::Get()->GetControlsLayerColor(
-          AshColorProvider::ControlsLayerType::
-              kControlBackgroundColorInactive)));
+  artwork_view_->SetBackground(views::CreateThemedSolidBackground(
+      kColorAshControlBackgroundColorInactive));
   artwork_view_->SetImageSize(kEmptyArtworkIconSize);
   artwork_view_->SetImage(CreateVectorIcon(
       kMusicNoteIcon, kEmptyArtworkIconSize.width(),

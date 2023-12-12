@@ -275,11 +275,7 @@ void AshNotificationExpandButton::AnimateBoundsChange(
 
 void AshNotificationExpandButton::UpdateBackgroundColor() {
   layer()->SetColor(
-      chromeos::features::IsJellyEnabled()
-          ? GetColorProvider()->GetColor(cros_tokens::kCrosSysSystemOnBase1)
-          : AshColorProvider::Get()->GetControlsLayerColor(
-                AshColorProvider::ControlsLayerType::
-                    kControlBackgroundColorInactive));
+      GetColorProvider()->GetColor(cros_tokens::kCrosSysSystemOnBase1));
 }
 
 void AshNotificationExpandButton::UpdateTooltip() {

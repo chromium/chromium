@@ -440,8 +440,8 @@ void MediaTray::SetNotificationColorTheme() {
       AshColorProvider::ContentLayerType::kIconColorSecondary);
   theme.separator_color = AshColorProvider::Get()->GetContentLayerColor(
       AshColorProvider::ContentLayerType::kSeparatorColor);
-  theme.background_color = AshColorProvider::Get()->GetControlsLayerColor(
-      AshColorProvider::ControlsLayerType::kControlBackgroundColorInactive);
+  theme.background_color =
+      GetColorProvider()->GetColor(kColorAshControlBackgroundColorInactive);
   MediaNotificationProvider::Get()->SetColorTheme(theme);
 }
 

@@ -10,7 +10,7 @@
 #include "ash/public/cpp/system_tray_client.h"
 #include "ash/shell.h"
 #include "ash/strings/grit/ash_strings.h"
-#include "ash/style/ash_color_provider.h"
+#include "ash/style/ash_color_id.h"
 #include "ash/style/icon_button.h"
 #include "ash/style/pill_button.h"
 #include "ash/system/model/system_tray_model.h"
@@ -84,10 +84,9 @@ class CalendarEmptyEventListView : public PillButton {
       label()->SetTextContext(CONTEXT_CALENDAR_DATE);
     }
 
-    SetBorder(views::CreateRoundedRectBorder(
+    SetBorder(views::CreateThemedRoundedRectBorder(
         kOpenGoogleCalendarBorderThickness, GetPreferredSize().height() / 2,
-        AshColorProvider::Get()->GetControlsLayerColor(
-            ColorProvider::ControlsLayerType::kHairlineBorderColor)));
+        kColorAshHairlineBorderColor));
     SetTooltipText(
         l10n_util::GetStringUTF16(IDS_ASH_CALENDAR_NO_EVENT_BUTTON_TOOL_TIP));
   }

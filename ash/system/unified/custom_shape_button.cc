@@ -4,7 +4,7 @@
 
 #include "ash/system/unified/custom_shape_button.h"
 
-#include "ash/style/ash_color_provider.h"
+#include "ash/style/ash_color_id.h"
 #include "ash/style/color_util.h"
 #include "ash/style/style_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
@@ -54,8 +54,8 @@ void CustomShapeButton::PaintButtonContents(gfx::Canvas* canvas) {
 void CustomShapeButton::PaintCustomShapePath(gfx::Canvas* canvas) {
   cc::PaintFlags flags;
   flags.setAntiAlias(true);
-  const SkColor button_color = AshColorProvider::Get()->GetControlsLayerColor(
-      AshColorProvider::ControlsLayerType::kControlBackgroundColorInactive);
+  const SkColor button_color =
+      GetColorProvider()->GetColor(kColorAshControlBackgroundColorInactive);
   flags.setColor(GetEnabled() ? button_color
                               : ColorUtil::GetDisabledColor(button_color));
   flags.setStyle(cc::PaintFlags::kFill_Style);

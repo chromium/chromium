@@ -26,6 +26,7 @@
 #include "components/prefs/pref_service.h"
 #include "ui/accessibility/ax_node_data.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/chromeos/styles/cros_tokens_color_mappings.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/gfx/paint_vector_icon.h"
 #include "ui/views/controls/button/md_text_button.h"
@@ -90,11 +91,11 @@ void LogoutButtonTray::OnActiveUserPrefServiceChanged(PrefService* prefs) {
 
 void LogoutButtonTray::OnThemeChanged() {
   TrayBackgroundView::OnThemeChanged();
-  auto* color_provider = AshColorProvider::Get();
-  button_->SetBgColorOverride(color_provider->GetControlsLayerColor(
-      AshColorProvider::ControlsLayerType::kControlBackgroundColorAlert));
-  button_->SetEnabledTextColors(color_provider->GetContentLayerColor(
-      AshColorProvider::ContentLayerType::kButtonLabelColorPrimary));
+  const auto* color_provider = GetColorProvider();
+  button_->SetBgColorOverride(
+      color_provider->GetColor(cros_tokens::kColorAlert));
+  button_->SetEnabledTextColors(
+      color_provider->GetColor(cros_tokens::kColorPrimaryInverted));
 }
 
 void LogoutButtonTray::UpdateShowLogoutButtonInTray() {
