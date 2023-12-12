@@ -15,6 +15,7 @@
 #include <stdint.h>
 
 #include <memory>
+#include <optional>
 #include <string>
 
 #include "base/at_exit.h"
@@ -51,6 +52,7 @@
 #include "base/win/current_module.h"
 #include "base/win/process_startup_helper.h"
 #include "base/win/registry.h"
+#include "base/win/resource_exhaustion.h"
 #include "base/win/scoped_com_initializer.h"
 #include "base/win/scoped_handle.h"
 #include "base/win/win_util.h"
@@ -1503,6 +1505,19 @@ InstallStatus InstallProductsHelper(InstallationState& original_state,
 
 namespace {
 
+class ScopedIgnoreResourceExhaustion {
+ public:
+  ScopedIgnoreResourceExhaustion() {
+    base::win::SetOnResourceExhaustedFunction(&DoNothing);
+  }
+  ~ScopedIgnoreResourceExhaustion() {
+    base::win::SetOnResourceExhaustedFunction(nullptr);
+  }
+
+ private:
+  static void DoNothing() {}
+};
+
 int SetupMain() {
   // Check to see if the CPU is supported before doing anything else. There's
   // very little than can safely be accomplished if the CPU isn't supported
@@ -1601,11 +1616,17 @@ int SetupMain() {
   }
 
   // Initialize COM for use later.
-  base::win::ScopedCOMInitializer com_initializer;
-  if (!com_initializer.Succeeded()) {
-    installer_state.WriteInstallerResult(installer::OS_ERROR,
-                                         IDS_INSTALL_OS_ERROR_BASE, nullptr);
-    return installer::OS_ERROR;
+  std::optional<base::win::ScopedCOMInitializer> com_initializer;
+  {
+    // Temporarily ignore resource exhaustion to suppress crashes in case there
+    // are no ATOMs left -- the error is handled here by exiting gracefully.
+    ScopedIgnoreResourceExhaustion ignore_resource_exhaustion;
+    com_initializer.emplace();
+    if (!com_initializer->Succeeded()) {
+      installer_state.WriteInstallerResult(installer::OS_ERROR,
+                                           IDS_INSTALL_OS_ERROR_BASE, nullptr);
+      return installer::OS_ERROR;
+    }
   }
 
   // Make sure system_level is supported if requested. For historical reasons,
