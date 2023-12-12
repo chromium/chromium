@@ -776,21 +776,21 @@ class HttpCacheIOCallbackTest : public HttpCacheTest {
   // The below functions are forwarding calls to the HttpCache class.
   int OpenEntry(HttpCache* cache,
                 const std::string& url,
-                HttpCache::ActiveEntry** entry,
+                scoped_refptr<ActiveEntry>* entry,
                 HttpCache::Transaction* trans) {
     return cache->OpenEntry(GenerateCacheKey(url), entry, trans);
   }
 
   int OpenOrCreateEntry(HttpCache* cache,
                         const std::string& url,
-                        HttpCache::ActiveEntry** entry,
+                        scoped_refptr<ActiveEntry>* entry,
                         HttpCache::Transaction* trans) {
     return cache->OpenOrCreateEntry(GenerateCacheKey(url), entry, trans);
   }
 
   int CreateEntry(HttpCache* cache,
                   const std::string& url,
-                  HttpCache::ActiveEntry** entry,
+                  scoped_refptr<ActiveEntry>* entry,
                   HttpCache::Transaction* trans) {
     return cache->CreateEntry(GenerateCacheKey(url), entry, trans);
   }
@@ -799,10 +799,6 @@ class HttpCacheIOCallbackTest : public HttpCacheTest {
                 const std::string& url,
                 HttpCache::Transaction* trans) {
     return cache->DoomEntry(GenerateCacheKey(url), trans);
-  }
-
-  void DeactivateEntry(HttpCache* cache, ActiveEntry* entry) {
-    cache->DeactivateEntry(entry);
   }
 };
 
@@ -13396,7 +13392,7 @@ TEST_F(HttpCacheIOCallbackTest, FailedDoomFollowedByOpen) {
   // functions.
   ScopedMockTransaction m_transaction(kSimpleGET_Transaction);
 
-  ActiveEntry* entry1 = nullptr;
+  scoped_refptr<ActiveEntry> entry1 = nullptr;
 
   cache.disk_cache()->set_force_fail_callback_later(true);
 
@@ -13436,7 +13432,7 @@ TEST_F(HttpCacheIOCallbackTest, FailedDoomFollowedByCreate) {
   // functions.
   ScopedMockTransaction m_transaction(kSimpleGET_Transaction);
 
-  ActiveEntry* entry1 = nullptr;
+  scoped_refptr<ActiveEntry> entry1 = nullptr;
 
   cache.disk_cache()->set_force_fail_callback_later(true);
 
@@ -13512,8 +13508,8 @@ TEST_F(HttpCacheIOCallbackTest, FailedOpenFollowedByCreate) {
   // functions.
   ScopedMockTransaction m_transaction(kSimpleGET_Transaction);
 
-  ActiveEntry* entry1 = nullptr;
-  ActiveEntry* entry2 = nullptr;
+  scoped_refptr<ActiveEntry> entry1 = nullptr;
+  scoped_refptr<ActiveEntry> entry2 = nullptr;
 
   cache.disk_cache()->set_force_fail_callback_later(true);
 
@@ -13555,8 +13551,8 @@ TEST_F(HttpCacheIOCallbackTest, FailedCreateFollowedByOpen) {
   // functions.
   ScopedMockTransaction m_transaction(kSimpleGET_Transaction);
 
-  ActiveEntry* entry1 = nullptr;
-  ActiveEntry* entry2 = nullptr;
+  scoped_refptr<ActiveEntry> entry1 = nullptr;
+  scoped_refptr<ActiveEntry> entry2 = nullptr;
 
   cache.disk_cache()->set_force_fail_callback_later(true);
 
@@ -13598,8 +13594,8 @@ TEST_F(HttpCacheIOCallbackTest, FailedCreateFollowedByCreate) {
   // functions.
   ScopedMockTransaction m_transaction(kSimpleGET_Transaction);
 
-  ActiveEntry* entry1 = nullptr;
-  ActiveEntry* entry2 = nullptr;
+  scoped_refptr<ActiveEntry> entry1 = nullptr;
+  scoped_refptr<ActiveEntry> entry2 = nullptr;
 
   cache.disk_cache()->set_force_fail_callback_later(true);
 
@@ -13640,8 +13636,8 @@ TEST_F(HttpCacheIOCallbackTest, CreateFollowedByCreate) {
   // functions.
   ScopedMockTransaction m_transaction(kSimpleGET_Transaction);
 
-  ActiveEntry* entry1 = nullptr;
-  ActiveEntry* entry2 = nullptr;
+  scoped_refptr<ActiveEntry> entry1 = nullptr;
+  scoped_refptr<ActiveEntry> entry2 = nullptr;
 
   // Queue up our operations.
   int rv = CreateEntry(cache.http_cache(), m_transaction.url, &entry1,
@@ -13680,7 +13676,7 @@ TEST_F(HttpCacheIOCallbackTest, OperationFollowedByDoom) {
   // functions.
   ScopedMockTransaction m_transaction(kSimpleGET_Transaction);
 
-  ActiveEntry* entry1 = nullptr;
+  scoped_refptr<ActiveEntry> entry1 = nullptr;
 
   // Queue up our operations.
   // For this test all we need is some operation followed by a doom, a create
@@ -13718,8 +13714,8 @@ TEST_F(HttpCacheIOCallbackTest, CreateFollowedByOpenOrCreate) {
   // functions.
   ScopedMockTransaction m_transaction(kSimpleGET_Transaction);
 
-  ActiveEntry* entry1 = nullptr;
-  ActiveEntry* entry2 = nullptr;
+  scoped_refptr<ActiveEntry> entry1 = nullptr;
+  scoped_refptr<ActiveEntry> entry2 = nullptr;
 
   // Queue up our operations.
   int rv = CreateEntry(cache.http_cache(), m_transaction.url, &entry1,
@@ -13759,8 +13755,8 @@ TEST_F(HttpCacheIOCallbackTest, FailedCreateFollowedByOpenOrCreate) {
   // functions.
   ScopedMockTransaction m_transaction(kSimpleGET_Transaction);
 
-  ActiveEntry* entry1 = nullptr;
-  ActiveEntry* entry2 = nullptr;
+  scoped_refptr<ActiveEntry> entry1 = nullptr;
+  scoped_refptr<ActiveEntry> entry2 = nullptr;
 
   cache.disk_cache()->set_force_fail_callback_later(true);
 
@@ -13802,9 +13798,9 @@ TEST_F(HttpCacheIOCallbackTest, OpenFollowedByOpenOrCreate) {
   // functions.
   ScopedMockTransaction m_transaction(kSimpleGET_Transaction);
 
-  ActiveEntry* entry0 = nullptr;
-  ActiveEntry* entry1 = nullptr;
-  ActiveEntry* entry2 = nullptr;
+  scoped_refptr<ActiveEntry> entry0 = nullptr;
+  scoped_refptr<ActiveEntry> entry1 = nullptr;
+  scoped_refptr<ActiveEntry> entry2 = nullptr;
 
   // First need to create and entry so we can open it.
   int rv = CreateEntry(cache.http_cache(), m_transaction.url, &entry0,
@@ -13814,9 +13810,9 @@ TEST_F(HttpCacheIOCallbackTest, OpenFollowedByOpenOrCreate) {
   ASSERT_EQ(cb.results().size(), static_cast<size_t>(1));
   ASSERT_EQ(cb.results()[0], OK);
   ASSERT_NE(entry0, nullptr);
-  // Manually DeactivateEntry() because OpenEntry() fails if there is an
+  // Manually Deactivate() `entry0` because OpenEntry() fails if there is an
   // existing active entry.
-  DeactivateEntry(cache.http_cache(), entry0);
+  entry0.reset();
 
   // Queue up our operations.
   rv = OpenEntry(cache.http_cache(), m_transaction.url, &entry1,
@@ -13856,8 +13852,8 @@ TEST_F(HttpCacheIOCallbackTest, FailedOpenFollowedByOpenOrCreate) {
   // functions.
   ScopedMockTransaction m_transaction(kSimpleGET_Transaction);
 
-  ActiveEntry* entry1 = nullptr;
-  ActiveEntry* entry2 = nullptr;
+  scoped_refptr<ActiveEntry> entry1 = nullptr;
+  scoped_refptr<ActiveEntry> entry2 = nullptr;
 
   cache.disk_cache()->set_force_fail_callback_later(true);
 
@@ -13899,8 +13895,8 @@ TEST_F(HttpCacheIOCallbackTest, OpenOrCreateFollowedByCreate) {
   // functions.
   ScopedMockTransaction m_transaction(kSimpleGET_Transaction);
 
-  ActiveEntry* entry1 = nullptr;
-  ActiveEntry* entry2 = nullptr;
+  scoped_refptr<ActiveEntry> entry1 = nullptr;
+  scoped_refptr<ActiveEntry> entry2 = nullptr;
 
   // Queue up our operations.
   int rv = OpenOrCreateEntry(cache.http_cache(), m_transaction.url, &entry1,
@@ -13939,8 +13935,8 @@ TEST_F(HttpCacheIOCallbackTest, OpenOrCreateFollowedByOpenOrCreate) {
   // functions.
   ScopedMockTransaction m_transaction(kSimpleGET_Transaction);
 
-  ActiveEntry* entry1 = nullptr;
-  ActiveEntry* entry2 = nullptr;
+  scoped_refptr<ActiveEntry> entry1 = nullptr;
+  scoped_refptr<ActiveEntry> entry2 = nullptr;
 
   // Queue up our operations.
   int rv = OpenOrCreateEntry(cache.http_cache(), m_transaction.url, &entry1,
@@ -13979,8 +13975,8 @@ TEST_F(HttpCacheIOCallbackTest, FailedOpenOrCreateFollowedByOpenOrCreate) {
   // functions.
   ScopedMockTransaction m_transaction(kSimpleGET_Transaction);
 
-  ActiveEntry* entry1 = nullptr;
-  ActiveEntry* entry2 = nullptr;
+  scoped_refptr<ActiveEntry> entry1 = nullptr;
+  scoped_refptr<ActiveEntry> entry2 = nullptr;
 
   cache.disk_cache()->set_force_fail_callback_later(true);
 

@@ -666,7 +666,7 @@ void HttpCache::Transaction::SetValidatingCannotProceed() {
   DCHECK_NE(STATE_UNSET, next_state_);
 
   next_state_ = STATE_HEADERS_PHASE_CANNOT_PROCEED;
-  entry_ = nullptr;
+  entry_.reset();
 }
 
 void HttpCache::Transaction::WriterAboutToBeRemovedFromEntry(int result) {
@@ -680,7 +680,7 @@ void HttpCache::Transaction::WriterAboutToBeRemovedFromEntry(int result) {
     SaveNetworkTransactionInfo(*(entry_->writers()->network_transaction()));
   }
 
-  entry_ = nullptr;
+  entry_.reset();
   mode_ = NONE;
 
   // Transactions in the midst of a Read call through writers will get any error
@@ -1427,7 +1427,7 @@ int HttpCache::Transaction::DoAddToEntry() {
   }
 
   entry_lock_waiting_since_ = TimeTicks::Now();
-  AddCacheLockTimeoutHandler(new_entry_);
+  AddCacheLockTimeoutHandler(new_entry_.get());
   return rv;
 }
 
@@ -1491,11 +1491,11 @@ int HttpCache::Transaction::DoAddToEntryComplete(int result) {
     cache_pending_ = false;
 
     if (result == OK) {
-      entry_ = new_entry_;
+      entry_ = std::move(new_entry_);
     }
 
     // If there is a failure, the cache should have taken care of new_entry_.
-    new_entry_ = nullptr;
+    new_entry_.reset();
   }
 
   if (result == ERR_CACHE_RACE) {
@@ -1569,7 +1569,7 @@ int HttpCache::Transaction::DoDoneHeadersAddToEntryComplete(int result) {
     return OK;
   }
 
-  entry_ = new_entry_;
+  entry_ = std::move(new_entry_);
   DCHECK_NE(response_.headers->response_code(), net::HTTP_NOT_MODIFIED);
   DCHECK(entry_->CanTransactionWriteResponseHeaders(this, partial_ != nullptr,
                                                     false));
@@ -2198,8 +2198,8 @@ int HttpCache::Transaction::DoCacheWriteResponse() {
     // so that this transaction can go straight to writing a response.
     mode_ = WRITE;
     TransitionToState(STATE_INIT_ENTRY);
-    cache_->DoomEntryValidationNoMatch(entry_);
-    entry_ = nullptr;
+    cache_->DoomEntryValidationNoMatch(std::move(entry_));
+    entry_.reset();
     return OK;
   }
 
@@ -2273,8 +2273,8 @@ int HttpCache::Transaction::DoHeadersPhaseCannotProceed(int result) {
 
   SetRequest(net_log_);
 
-  entry_ = nullptr;
-  new_entry_ = nullptr;
+  entry_.reset();
+  new_entry_.reset();
   last_disk_cache_access_start_time_ = TimeTicks();
 
   // TODO(https://crbug.com/1219402): This should probably clear `response_`,
@@ -2317,7 +2317,7 @@ int HttpCache::Transaction::DoFinishHeaders(int result) {
   if (rv == ERR_IO_PENDING) {
     DCHECK(entry_lock_waiting_since_.is_null());
     entry_lock_waiting_since_ = TimeTicks::Now();
-    AddCacheLockTimeoutHandler(entry_);
+    AddCacheLockTimeoutHandler(entry_.get());
   }
   return rv;
 }
@@ -3506,8 +3506,12 @@ void HttpCache::Transaction::DoneWithEntry(bool entry_is_complete) {
     return;
   }
 
+  // Our `entry_` member must be valid throughout this call since
+  // `DoneWithEntry` calls into
+  // `HttpCache::Transaction::WriterAboutToBeRemovedFromEntry` which accesses
+  // `this`'s `entry_` member.
   cache_->DoneWithEntry(entry_, this, entry_is_complete, partial_ != nullptr);
-  entry_ = nullptr;
+  entry_.reset();
   mode_ = NONE;  // switch to 'pass through' mode
 }
 
@@ -3526,9 +3530,14 @@ int HttpCache::Transaction::OnCacheReadError(int result, bool restart) {
     // Since we are going to add this to a new entry, not recording histograms
     // or setting mode to NONE at this point by invoking the wrapper
     // DoneWithEntry.
+    //
+    // Our `entry_` member must be valid throughout this call since
+    // `DoneWithEntry` calls into
+    // `HttpCache::Transaction::WriterAboutToBeRemovedFromEntry` which accesses
+    // `this`'s `entry_` member.
     cache_->DoneWithEntry(entry_, this, true /* entry_is_complete */,
                           partial_ != nullptr);
-    entry_ = nullptr;
+    entry_.reset();
     is_sparse_ = false;
     // It's OK to use PartialData::RestoreHeaders here as |restart| is only set
     // when the HttpResponseInfo couldn't even be read, at which point it's
@@ -3572,9 +3581,13 @@ void HttpCache::Transaction::DoomPartialEntry(bool delete_object) {
     DCHECK_EQ(OK, rv);
   }
 
+  // Our `entry_` member must be valid throughout this call since
+  // `DoneWithEntry` calls into
+  // `HttpCache::Transaction::WriterAboutToBeRemovedFromEntry` which accesses
+  // `this`'s `entry_` member.
   cache_->DoneWithEntry(entry_, this, false /* entry_is_complete */,
                         partial_ != nullptr);
-  entry_ = nullptr;
+  entry_.reset();
   is_sparse_ = false;
   truncated_ = false;
   if (delete_object) {
@@ -3938,7 +3951,7 @@ void HttpCache::Transaction::OnCacheIOComplete(int result) {
     entry_lock_waiting_since_ = TimeTicks();
 
     if (result == OK) {
-      entry_ = new_entry_;
+      entry_ = std::move(new_entry_);
       if (!entry_->IsWritingInProgress()) {
         open_entry_last_used_ = entry_->GetEntry()->GetLastUsed();
       }
@@ -3947,7 +3960,7 @@ void HttpCache::Transaction::OnCacheIOComplete(int result) {
       // this case independent of the state of the network IO callback.
       mode_ = NONE;
     }
-    new_entry_ = nullptr;
+    new_entry_.reset();
 
     // See if there is a pending IO result that completed while the HttpCache
     // transaction was being processed that now needs to be processed.
