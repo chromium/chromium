@@ -266,6 +266,16 @@ chromium-metrics-reviews@google.com.
   <int value="2" label="Default Browser Settings"/>
 </enum>
 
+<enum name="IOSExternalActionDefaultBrowserPromoUsage">
+  <summary>
+    The action taken by the user after they landed on the Default Browser Promo
+    from an External Action (URL passed to Chrome with
+    &quot;ChromeExternalAction&quot; as host).
+  </summary>
+  <int value="0" label="Open iOS Settings"/>
+  <int value="1" label="Dismissed"/>
+</enum>
+
 <enum name="IOSHomeActionType">
   <int value="0" label="Most Visited Tiles"/>
   <int value="1" label="Shortcuts"/>

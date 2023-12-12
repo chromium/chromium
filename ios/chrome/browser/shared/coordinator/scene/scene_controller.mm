@@ -2366,7 +2366,8 @@ void InjectNTP(Browser* browser) {
       };
     case SHOW_DEFAULT_BROWSER_SETTINGS:
       return ^{
-        [weakSelf showDefaultBrowserSettings];
+        [weakSelf showDefaultBrowserSettingsWithSourceForUMA:
+                      DefaultBrowserPromoSource::kExternalIntent];
       };
     case SEARCH_PASSWORDS:
       return ^{
@@ -2390,7 +2391,8 @@ void InjectNTP(Browser* browser) {
       };
     case SET_CHROME_DEFAULT_BROWSER:
       return ^{
-        [weakSelf showDefaultBrowserSettings];
+        [weakSelf showDefaultBrowserSettingsWithSourceForUMA:
+                      DefaultBrowserPromoSource::kExternalIntent];
       };
     case VIEW_HISTORY:
       return ^{
@@ -2432,6 +2434,11 @@ void InjectNTP(Browser* browser) {
     case ADD_READING_LIST_ITEMS:
       return ^{
         [weakSelf addReadingListItems:weakSelf.startupParameters.inputURLs];
+      };
+    case EXTERNAL_ACTION_SHOW_BROWSER_SETTINGS:
+      return ^{
+        [weakSelf showDefaultBrowserSettingsWithSourceForUMA:
+                      DefaultBrowserPromoSource::kExternalAction];
       };
     default:
       return nil;
@@ -2484,7 +2491,8 @@ void InjectNTP(Browser* browser) {
   [omniboxCommandsHandler focusOmnibox];
 }
 
-- (void)showDefaultBrowserSettings {
+- (void)showDefaultBrowserSettingsWithSourceForUMA:
+    (DefaultBrowserPromoSource)sourceForUMA {
   if (!self.currentInterface.browser) {
     return;
   }
@@ -2493,8 +2501,7 @@ void InjectNTP(Browser* browser) {
                          ApplicationSettingsCommands);
   [applicationSettingsCommandsHandler
       showDefaultBrowserSettingsFromViewController:nil
-                                      sourceForUMA:DefaultBrowserPromoSource::
-                                                       kExternalIntent];
+                                      sourceForUMA:sourceForUMA];
 }
 
 - (void)startPasswordSearch {
