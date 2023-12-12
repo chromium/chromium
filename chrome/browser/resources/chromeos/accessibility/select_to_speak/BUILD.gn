@@ -33,6 +33,7 @@ ts_modules = [
   "tts_manager.ts",
   "input_handler.ts",
   "ui_manager.ts",
+  "prefs_manager.ts",
 ]
 
 # Add TS files needed from ../common/ here.
@@ -59,6 +60,8 @@ ts_library("ts_build") {
     "../definitions/i18n.d.ts",
     "../definitions/tabs.d.ts",
     "../definitions/accessibility_private_mv2.d.ts",
+    "../definitions/settings_private_mv2.d.ts",
+    "../definitions/storage_mv2.d.ts",
     "../definitions/clipboard_mv2.d.ts",
     "../definitions/extension_types.d.ts",
     "//tools/typescript/definitions/windows.d.ts",
@@ -88,7 +91,6 @@ run_jsbundler("select_to_speak_copied_files") {
     "background.html",
     "checked.png",
     "earcons/null_selection.ogg",
-    "prefs_manager.js",
     "select_to_speak-2x.svg",
     "select_to_speak.js",
     "sts-icon-128.png",
