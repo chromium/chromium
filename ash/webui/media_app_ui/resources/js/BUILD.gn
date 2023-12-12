@@ -18,20 +18,12 @@ stage_folder = "$root_gen_dir/ash/webui/media_app_ui/stage_rollup"
 # JS bundling with rollup.
 # This is for files direct from the src/:  input_folder="./".
 copy("stage_static") {
-  sources = [
-    "../../../../../ui/file_manager/image_loader/piex_loader.js",
-    "//ash/webui/system_apps/public/js/message_pipe.js",
-    "//ash/webui/system_apps/public/js/sandboxed_load_time_data.js",
-    "app_context_test_support.js",
-    "error_reporter.js",
-    "launch.js",
-    "message_types.js",
-    "mojo_api_bootstrap.js",
-    "mojo_api_bootstrap_untrusted.js",
-    "piex_module.js",
-    "piex_module_loader.js",
-    "receiver.js",
-  ]
+  sources = media_app_static_js_sources + media_app_unconverted_js_sources +
+            media_app_external_js +
+            [
+              "//ash/webui/system_apps/public/js/sandboxed_load_time_data.js",
+              "//ui/file_manager/image_loader/piex_loader.js",
+            ]
   outputs = [ stage_folder + "/{{source_file_part}}" ]
 }
 
@@ -54,15 +46,28 @@ copy("stage_generated") {
   ]
 }
 
-copy("stage_static_ts") {
+# Takes the JS emitted by the `ts_library` targets and places it with other JS
+# files in the staging folder for `rollup` to consume.
+copy("stage_compiled_ts") {
+  sources = media_app_compiled_sources
+  outputs = [ stage_folder + "/{{source_file_part}}" ]
+  deps = [ "//ash/webui/media_app_ui:build_ts" ]
+}
+
+copy("stage_for_tsc") {
   # Note only converted .ts and handcrafted .d.ts files are staged here.
   # Generated .d.ts emit directly to `ts_root_dir`. Confusingly, unconverted JS
   # files must also appear here even though tsc ignores them: this is necessary
   # to engage logic in ts_library.py that handles clearing out old build
   # dependencies.
+  # External JS that is not consumed as a module (and that requires a .d.ts -
+  # generated or static) must also be staged here for tsc consumption within
+  # media_app.
   sources = media_app_converted_ts_sources + media_app_static_defs +
-            media_app_unconverted_js_sources + [ "receiver.js" ]
+            media_app_unconverted_js_sources + media_app_static_js_sources +
+            media_app_external_js + media_app_defs_for_external_js
   outputs = [ ts_root_dir + "/{{source_file_part}}" ]
+  deps = [ "//ash/webui/system_apps/public/js:generate_definitions" ]
 }
 
 ts_definitions("generate_definitions") {
@@ -86,6 +91,7 @@ optimize_webui("receiver_rollup") {
   js_module_in_files = [ "receiver.js" ]
   input = rebase_path(stage_folder, root_build_dir)
   deps = [
+    ":stage_compiled_ts",
     ":stage_generated",
     ":stage_static",
     "//ui/webui/resources/cr_components/color_change_listener:build_ts",
@@ -118,7 +124,6 @@ media_closure_flags = system_app_closure_flags_strict + [
 
 group("closure_compile") {
   deps = [
-    ":closure_compile_app",
     ":closure_compile_index",
     ":closure_compile_piex_module",
   ]
@@ -127,11 +132,6 @@ group("closure_compile") {
 js_type_check("closure_compile_index") {
   closure_flags = media_closure_flags
   deps = [ ":launch" ]
-}
-
-js_type_check("closure_compile_app") {
-  closure_flags = media_closure_flags
-  deps = [ ":receiver" ]
 }
 
 js_type_check("closure_compile_piex_module") {
@@ -174,18 +174,6 @@ js_library("piex_module_loader") {
 
 js_library("piex_module") {
   deps = [ "//ui/file_manager/image_loader:piex_loader" ]
-}
-
-js_library("receiver") {
-  externs_list = [ "media_app.externs.js" ]
-  deps = [
-    ":app_context_test_support",
-    ":message_types",
-    ":mojo_api_bootstrap_untrusted",
-    ":piex_module_loader",
-    "//ash/webui/system_apps/public/js:message_pipe",
-    "//ash/webui/system_apps/public/js:sandboxed_load_time_data",
-  ]
 }
 
 js_library("mojo_api_bootstrap") {

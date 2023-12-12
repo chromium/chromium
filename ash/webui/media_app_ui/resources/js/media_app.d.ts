@@ -264,3 +264,7 @@ declare interface CustomLaunchData {
   delegate?: ClientApiDelegate;
   files: AbstractFileList;
 }
+
+interface Window {
+  customLaunchData: CustomLaunchData;
+}

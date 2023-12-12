@@ -1,10 +1,13 @@
-// Copyright 2019 The Chromium Authors
+// Copyright 2023 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
+
+/// <reference path="media_app.d.ts" />
 
 import './sandboxed_load_time_data.js';
 
 import {COLOR_PROVIDER_CHANGED, ColorChangeUpdater} from '//resources/cr_components/color_change_listener/colors_css_updater.js';
+import type {RectF} from '//resources/mojo/ui/gfx/geometry/mojom/geometry.mojom-webui.js';
 
 import {assertCast, MessagePipe} from './message_pipe.js';
 import {EditInPhotosMessage, FileContext, IsFileArcWritableMessage, IsFileArcWritableResponse, IsFileBrowserWritableMessage, IsFileBrowserWritableResponse, LoadFilesMessage, Message, OpenAllowedFileMessage, OpenAllowedFileResponse, OpenFilesWithPickerMessage, OverwriteFileMessage, OverwriteViaFilePickerResponse, RenameFileResponse, RenameResult, RequestSaveFileMessage, RequestSaveFileResponse, SaveAsMessage, SaveAsResponse} from './message_types.js';
@@ -25,9 +28,19 @@ const PLACEHOLDER_BLOB = new Blob([]);
  * added in the untrusted (this) context to communicate back.
  * @implements {mediaApp.AbstractFile}
  */
-class ReceivedFile {
-  /** @param {!FileContext} file */
-  constructor(file) {
+class ReceivedFile implements AbstractFile {
+  blob: Blob;
+  name: string;
+  token: number;
+  size: number;
+  mimeType: string;
+  fromClipboard: boolean;
+  error: string;
+
+  deleteOriginalFile?: () => Promise<void>;
+  renameOriginalFile?: (newName: string) => Promise<number>;
+
+  constructor(file: FileContext) {
     this.blob = file.file || PLACEHOLDER_BLOB;
     this.name = file.name;
     this.size = this.blob.size;
@@ -39,59 +52,43 @@ class ReceivedFile {
       this.deleteOriginalFile = () => this.deleteOriginalFileImpl();
     }
     if (file.canRename) {
-      this.renameOriginalFile = (/** string */ newName) =>
+      this.renameOriginalFile = (newName) =>
           this.renameOriginalFileImpl(newName);
     }
   }
 
-  /**
-   * @override
-   * @return {!Promise<boolean>}
-   */
   async isArcWritable() {
-    /** @type {!IsFileArcWritableMessage} */
-    const message = {token: this.token};
+    const message: IsFileArcWritableMessage = {token: this.token};
 
-    const {writable} = /** @type {!IsFileArcWritableResponse} */ (
-        await parentMessagePipe.sendMessage(
-            Message.IS_FILE_ARC_WRITABLE, message));
+    const {writable} = (await parentMessagePipe.sendMessage(
+                           Message.IS_FILE_ARC_WRITABLE, message)) as
+        IsFileArcWritableResponse;
     return writable;
   }
 
-  /**
-   * @override
-   * @return {!Promise<boolean>}
-   */
   async isBrowserWritable() {
-    /** @type {!IsFileBrowserWritableMessage} */
-    const message = {token: this.token};
+    const message: IsFileBrowserWritableMessage = {token: this.token};
 
-    const {writable} = /** @type {!IsFileBrowserWritableResponse} */ (
-        await parentMessagePipe.sendMessage(
-            Message.IS_FILE_BROWSER_WRITABLE, message));
+    const {writable} = (await parentMessagePipe.sendMessage(
+                           Message.IS_FILE_BROWSER_WRITABLE, message)) as
+        IsFileBrowserWritableResponse;
     return writable;
   }
 
-  /**
-   * @override
-   */
   async editInPhotos() {
-    /** @type {!EditInPhotosMessage} */
-    const message = {token: this.token, mimeType: this.mimeType};
+    const message: EditInPhotosMessage = {
+      token: this.token,
+      mimeType: this.mimeType,
+    };
 
     await parentMessagePipe.sendMessage(Message.EDIT_IN_PHOTOS, message);
   }
 
-  /**
-   * @override
-   * @param{!Blob} blob
-   */
-  async overwriteOriginal(blob) {
-    /** @type {!OverwriteFileMessage} */
-    const message = {token: this.token, blob: blob};
+  async overwriteOriginal(blob: Blob) {
+    const message: OverwriteFileMessage = {token: this.token, blob: blob};
 
-    const result = /** @type {!OverwriteViaFilePickerResponse} */ (
-        await parentMessagePipe.sendMessage(Message.OVERWRITE_FILE, message));
+    const result: OverwriteViaFilePickerResponse =
+        await parentMessagePipe.sendMessage(Message.OVERWRITE_FILE, message);
     // Note the following are skipped if an exception is thrown above.
     if (result.renamedTo) {
       this.name = result.renamedTo;
@@ -104,39 +101,33 @@ class ReceivedFile {
     this.updateFile(blob, this.name);
   }
 
-  /**
-   * @return {!Promise<undefined>}
-   */
   async deleteOriginalFileImpl() {
     await parentMessagePipe.sendMessage(
         Message.DELETE_FILE, {token: this.token});
   }
 
-  /**
-   * @param {string} newName
-   * @return {!Promise<number>}
-   */
-  async renameOriginalFileImpl(newName) {
-    const renameResponse =
-        /** @type {!RenameFileResponse} */ (await parentMessagePipe.sendMessage(
-            Message.RENAME_FILE, {token: this.token, newFilename: newName}));
+  async renameOriginalFileImpl(newName: string) {
+    const renameResponse: RenameFileResponse =
+        await parentMessagePipe.sendMessage(Message.RENAME_FILE, {
+          token: this.token,
+          newFilename: newName,
+        });
     if (renameResponse.renameResult === RenameResult.SUCCESS) {
       this.name = newName;
     }
     return renameResponse.renameResult;
   }
 
-  /**
-   * @override
-   * @param {!Blob} blob
-   * @param {number} pickedFileToken
-   * @return {!Promise<undefined>}
-   */
-  async saveAs(blob, pickedFileToken) {
-    /** @type {!SaveAsMessage} */
-    const message = {blob, oldFileToken: this.token, pickedFileToken};
-    const result = /** @type {!SaveAsResponse} */ (
-        await parentMessagePipe.sendMessage(Message.SAVE_AS, message));
+  async saveAs(blob: Blob, pickedFileToken: number) {
+    const message: SaveAsMessage = {
+      blob,
+      oldFileToken: this.token,
+      pickedFileToken,
+    };
+    const result: SaveAsResponse = await parentMessagePipe.sendMessage(
+        Message.SAVE_AS,
+        message,
+    );
     this.updateFile(blob, result.newFilename);
     // Files obtained by a file picker currently can not be renamed/deleted.
     // TODO(b/163285659): Detect when the new file is in the same folder as an
@@ -145,49 +136,31 @@ class ReceivedFile {
     delete this.renameOriginalFile;
   }
 
-  /**
-   * @override
-   * @param {!Array<string>} accept
-   * @return {!Promise<!mediaApp.AbstractFile>}
-   */
-  async getExportFile(accept) {
-    /** @type {!RequestSaveFileMessage} */
-    const msg = {
+  async getExportFile(accept: string[]) {
+    const msg: RequestSaveFileMessage = {
       suggestedName: this.name,
       mimeType: this.mimeType,
       startInToken: this.token,
       accept,
     };
-    const response =
-        /** @type {!RequestSaveFileResponse} */ (
-            await parentMessagePipe.sendMessage(
-                Message.REQUEST_SAVE_FILE, msg));
+    const response: RequestSaveFileResponse =
+        await parentMessagePipe.sendMessage(Message.REQUEST_SAVE_FILE, msg);
     return new ReceivedFile(response.pickedFileContext);
   }
 
-  /**
-   * @override
-   * @return {!Promise<!File>}
-   */
   async openFile() {
-    /** @type {!OpenAllowedFileMessage} */
-    const msg = {
+    const msg: OpenAllowedFileMessage = {
       fileToken: this.token,
     };
-    const response =
-        /** @type {!OpenAllowedFileResponse} */ (
-            await parentMessagePipe.sendMessage(
-                Message.OPEN_ALLOWED_FILE, msg));
+    const response: OpenAllowedFileResponse =
+        await parentMessagePipe.sendMessage(Message.OPEN_ALLOWED_FILE, msg);
     return response.file;
   }
 
   /**
    * Updates the wrapped file to reflect a change written to disk.
-   * @private
-   * @param {!Blob} blob
-   * @param {string} name
    */
-  updateFile(blob, name) {
+  private updateFile(blob: Blob, name: string) {
     // Wrap the blob to acquire "now()" as the lastModified time. Note this may
     // differ from the actual mtime recorded on the inode.
     this.blob = new File([blob], name, {type: blob.type});
@@ -200,18 +173,21 @@ class ReceivedFile {
 /**
  * Source of truth for what files are loaded in the app. This can be appended to
  * via `ReceivedFileList.addFiles()`.
- * @type {?ReceivedFileList}
  */
-let lastLoadedReceivedFileList = null;
+let lastLoadedReceivedFileList: ReceivedFileList|null = null;
 
 /**
  * A file list consisting of all files received from the parent. Exposes all
  * readable files in the directory, some of which may be writable.
- * @implements mediaApp.AbstractFileList
  */
-export class ReceivedFileList {
-  /** @param {!LoadFilesMessage} filesMessage */
-  constructor(filesMessage) {
+export class ReceivedFileList implements AbstractFileList {
+  length: number;
+  currentFileIndex: number;
+
+  private files: ReceivedFile[];
+  private observers: Array<(files: AbstractFileList) => unknown> = [];
+
+  constructor(filesMessage: LoadFilesMessage) {
     const {files, currentFileIndex} = filesMessage;
     if (files.length) {
       // If we were not provided with a currentFileIndex, default to making the
@@ -223,19 +199,14 @@ export class ReceivedFileList {
     }
 
     this.length = files.length;
-    /** @type {!Array<!ReceivedFile>} */
-    this.files = files.map(f => new ReceivedFile(f));
-    /** @type {!Array<function(!mediaApp.AbstractFileList): void>} */
-    this.observers = [];
+    this.files = files.map((f) => new ReceivedFile(f));
   }
 
-  /** @override */
-  item(index) {
+  item(index: number) {
     return this.files[index] || null;
   }
 
-  /** @override */
-  async loadNext(currentFileToken) {
+  async loadNext(currentFileToken: number) {
     // Awaiting this message send allows callers to wait for the full effects of
     // the navigation to complete. This may include a call to load a new set of
     // files, and the initial decode, which replaces this AbstractFileList and
@@ -244,92 +215,78 @@ export class ReceivedFileList {
         Message.NAVIGATE, {currentFileToken, direction: 1});
   }
 
-  /** @override */
-  async loadPrev(currentFileToken) {
+  async loadPrev(currentFileToken: number) {
     await parentMessagePipe.sendMessage(
         Message.NAVIGATE, {currentFileToken, direction: -1});
   }
 
-  /** @override */
-  addObserver(observer) {
+  addObserver(observer: (files: AbstractFileList) => unknown) {
     this.observers.push(observer);
   }
 
-  /**
-   * @override
-   * @param {!Array<string>} acceptTypeKeys
-   * @param {?mediaApp.AbstractFile} startInFolder
-   * @param {?boolean} isSingleFile
-   * @return {!Promise<undefined>}
-   */
-  async openFilesWithFilePicker(acceptTypeKeys, startInFolder, isSingleFile) {
+  async openFilesWithFilePicker(
+      acceptTypeKeys: string[],
+      startInFolder?: AbstractFile,
+      isSingleFile?: boolean,
+  ) {
     // AbstractFile doesn't guarantee tokens. Use one from a ReceivedFile if
     // there is one, after ensuring it is valid.
-    const fileRep = /** @type {{token: (number|undefined)}} */ (startInFolder);
-    const startInToken = startInFolder ? (fileRep.token || 0) : 0;
-    /** @type {!OpenFilesWithPickerMessage} */
-    const msg = {
+    const startInToken = startInFolder?.token || 0;
+    const msg: OpenFilesWithPickerMessage = {
       startInToken: startInToken > 0 ? startInToken : 0,
       accept: acceptTypeKeys,
-      isSingleFile,
+      isSingleFile: !!isSingleFile,
     };
     await parentMessagePipe.sendMessage(Message.OPEN_FILES_WITH_PICKER, msg);
   }
 
-  /**
-   * @override
-   * @param {!function(!mediaApp.AbstractFile): boolean} filter
-   */
-  filterInPlace(filter) {
+  filterInPlace(filter: (file: AbstractFile) => boolean) {
     this.files = this.files.filter(filter);
     this.length = this.files.length;
     this.currentFileIndex = this.length > 0 ? 0 : -1;
   }
 
-  /** @param {!Array<!ReceivedFile>} files */
-  addFiles(files) {
+  addFiles(files: ReceivedFile[]) {
     if (files.length === 0) {
       return;
     }
     this.files = [...this.files, ...files];
     this.length = this.files.length;
     // Call observers with the new underlying files.
-    this.observers.map(o => o(this));
+    this.observers.map((o) => o(this));
   }
 }
 
-parentMessagePipe.registerHandler(Message.LOAD_FILES, async (message) => {
-  const filesMessage = /** @type {!LoadFilesMessage} */ (message);
-  lastLoadedReceivedFileList = new ReceivedFileList(filesMessage);
-  await loadFiles(lastLoadedReceivedFileList);
-});
+parentMessagePipe.registerHandler(
+    Message.LOAD_FILES, async (filesMessage: LoadFilesMessage) => {
+      lastLoadedReceivedFileList = new ReceivedFileList(filesMessage);
+      await loadFiles(lastLoadedReceivedFileList);
+    });
 
 // Load extra files by appending to the current `ReceivedFileList`.
-parentMessagePipe.registerHandler(Message.LOAD_EXTRA_FILES, async (message) => {
-  if (!lastLoadedReceivedFileList) {
-    return;
-  }
-  const extraFilesMessage = /** @type {!LoadFilesMessage} */ (message);
-  const newFiles = extraFilesMessage.files.map(f => new ReceivedFile(f));
-  lastLoadedReceivedFileList.addFiles(newFiles);
-});
+parentMessagePipe.registerHandler(
+    Message.LOAD_EXTRA_FILES, async (extraFilesMessage: LoadFilesMessage) => {
+      if (!lastLoadedReceivedFileList) {
+        return;
+      }
+      const newFiles = extraFilesMessage.files.map((f) => new ReceivedFile(f));
+      lastLoadedReceivedFileList.addFiles(newFiles);
+    });
 
 // As soon as the LOAD_FILES handler is installed, signal readiness to the
 // parent frame (privileged context).
 parentMessagePipe.sendMessage(Message.IFRAME_READY);
 
-let ocrUntrustedPageHandler;
-
 ocrCallbackRouter.setViewport.addListener(
-    (viewportBox) => {
+    (viewportBox: RectF) => {
       const app = getApp();
       if (app) {
-        app.setViewport(/** @type {!mediaApp.Rect} */ ({
+        app.setViewport({
           left: viewportBox.x,
           top: viewportBox.y,
           width: viewportBox.width,
           height: viewportBox.height,
-        }));
+        });
       }
     },
 );
@@ -337,64 +294,51 @@ ocrCallbackRouter.setViewport.addListener(
 /**
  * A delegate which exposes privileged WebUI functionality to the media
  * app.
- * @type {!mediaApp.ClientApiDelegate}
  */
-const DELEGATE = {
+const DELEGATE: ClientApiDelegate = {
   async openFeedbackDialog() {
     const response =
         await parentMessagePipe.sendMessage(Message.OPEN_FEEDBACK_DIALOG);
-    return /** @type {?string} */ (response['errorMessage']);
+    return response['errorMessage'] as string;
   },
   async toggleBrowserFullscreenMode() {
     await parentMessagePipe.sendMessage(Message.TOGGLE_BROWSER_FULLSCREEN_MODE);
   },
-  /**
-   * @param {string} suggestedName
-   * @param {string} mimeType
-   * @param {!Array<string>} accept
-   * @return {!Promise<!mediaApp.AbstractFile>}
-   */
-  async requestSaveFile(suggestedName, mimeType, accept) {
-    /** @type {!RequestSaveFileMessage} */
-    const msg = {suggestedName, mimeType, startInToken: 0, accept};
-    const response =
-        /** @type {!RequestSaveFileResponse} */ (
-            await parentMessagePipe.sendMessage(
-                Message.REQUEST_SAVE_FILE, msg));
+  async requestSaveFile(
+      suggestedName: string,
+      mimeType: string,
+      accept: string[],
+  ) {
+    const msg: RequestSaveFileMessage = {
+      suggestedName,
+      mimeType,
+      startInToken: 0,
+      accept,
+    };
+    const response: RequestSaveFileResponse =
+        await parentMessagePipe.sendMessage(Message.REQUEST_SAVE_FILE, msg);
     return new ReceivedFile(response.pickedFileContext);
   },
-  /**
-   * @param {string|undefined} name
-   * @param {string|undefined} type
-   */
-  notifyCurrentFile(name, type) {
+  notifyCurrentFile(name?: string, type?: string) {
     parentMessagePipe.sendMessage(Message.NOTIFY_CURRENT_FILE, {name, type});
     if (type === 'application/pdf') {
-      ocrUntrustedPageHandler = connectToOcrHandler();
+      connectToOcrHandler();
     }
   },
-  /**
-   * @param {!Blob} file
-   * @return {!Promise<!File>}
-   */
-  async extractPreview(file) {
+  async extractPreview(file: Blob) {
     try {
       const bufferPromise = file.arrayBuffer();
       const extractFromRawImageBuffer = await loadPiex();
       return await extractFromRawImageBuffer(await bufferPromise);
-    } catch (/** @type {!Error} */ e) {
+    } catch (e: unknown) {
       console.warn(e);
-      if (e.name === 'Error') {
-        e.name = 'JpegNotFound';
+      if ((e as Error).name === 'Error') {
+        (e as Error).name = 'JpegNotFound';
       }
       throw e;
     }
   },
-  /**
-   * @param {string} title
-   * @param {string} blobUuid
-   */
-  openInSandboxedViewer(title, blobUuid) {
+  openInSandboxedViewer(title: string, blobUuid: string) {
     parentMessagePipe.sendMessage(
         Message.OPEN_IN_SANDBOXED_VIEWER, {title, blobUuid});
   },
@@ -409,19 +353,15 @@ const DELEGATE = {
 
 /**
  * Returns the media app if it can find it in the DOM.
- * @return {?mediaApp.ClientApi}
  */
-function getApp() {
-  return /** @type {?mediaApp.ClientApi} */ (
-      document.querySelector('backlight-app'));
+function getApp(): ClientApi {
+  return document.querySelector('backlight-app') as unknown as ClientApi;
 }
 
 /**
  * Loads a file list into the media app.
- * @param {!ReceivedFileList} fileList
- * @return {!Promise<undefined>}
  */
-async function loadFiles(fileList) {
+async function loadFilesImpl(fileList: ReceivedFileList) {
   const app = getApp();
   if (app) {
     await app.loadFiles(fileList);
@@ -431,21 +371,22 @@ async function loadFiles(fileList) {
   }
 }
 
+/** Store `loadFilesImpl` into a variable so that tests may spy on it. */
+let loadFiles = loadFilesImpl;
+
 /**
  * Runs any initialization code on the media app once it is in the dom.
- * @param {!mediaApp.ClientApi} app
  */
-function initializeApp(app) {
+function initializeApp(app: ClientApi) {
   app.setDelegate(DELEGATE);
 }
 
 /**
  * Called when a mutation occurs on document.body to check if the media app is
  * available.
- * @param {!Array<!MutationRecord>} mutationsList
- * @param {!MutationObserver} observer
  */
-function mutationCallback(mutationsList, observer) {
+function mutationCallback(
+    _mutationsList: MutationRecord[], observer: MutationObserver) {
   const app = getApp();
   if (!app) {
     return;
@@ -474,6 +415,20 @@ window.addEventListener('DOMContentLoaded', () => {
   observer.observe(document.body, {childList: true});
 });
 
+declare global {
+  interface Window {
+    chooseFileSystemEntries: null;
+    showOpenFilePicker: null;
+    showSaveFilePicker: null;
+    showDirectoryPicker: null;
+    addColorChangeListener: (listener: EventListenerOrEventListenerObject|
+                             null) => unknown;
+    removeColorChangeListener: (listener: EventListenerOrEventListenerObject|
+                                null) => unknown;
+    lastLoadedReceivedFileList: () => ReceivedFileList | null;
+  }
+}
+
 // Ensure that if no files are loaded into the media app there is a default
 // empty file list available.
 window.customLaunchData = {
@@ -483,25 +438,21 @@ window.customLaunchData = {
 
 // Attempting to show file pickers in the sandboxed <iframe> is guaranteed to
 // result in a SecurityError: hide them.
-// TODO(crbug/1040328): Remove this when we have a polyfill that allows us to
-// talk to the privileged frame.
-window['chooseFileSystemEntries'] = null;
-window['showOpenFilePicker'] = null;
-window['showSaveFilePicker'] = null;
-window['showDirectoryPicker'] = null;
+window.chooseFileSystemEntries = null;
+window.showOpenFilePicker = null;
+window.showSaveFilePicker = null;
+window.showDirectoryPicker = null;
 
 // Expose functions to bind to color change events to window so they can be
 // automatically picked up by installColors(). See ts_helpers.ts in google3.
-window['addColorChangeListener'] =
-    /** @suppress {checkTypes} */ function(listener) {
-      ColorChangeUpdater.forDocument().eventTarget.addEventListener(
-          COLOR_PROVIDER_CHANGED, listener);
-    };
-window['removeColorChangeListener'] =
-    /** @suppress {checkTypes} */ function(listener) {
-      ColorChangeUpdater.forDocument().eventTarget.removeEventListener(
-          COLOR_PROVIDER_CHANGED, listener);
-    };
+window.addColorChangeListener = function(listener) {
+  ColorChangeUpdater.forDocument().eventTarget.addEventListener(
+      COLOR_PROVIDER_CHANGED, listener);
+};
+window.removeColorChangeListener = function(listener) {
+  ColorChangeUpdater.forDocument().eventTarget.removeEventListener(
+      COLOR_PROVIDER_CHANGED, listener);
+};
 
 export const TEST_ONLY = {
   RenameResult,
@@ -509,7 +460,7 @@ export const TEST_ONLY = {
   assertCast,
   parentMessagePipe,
   loadFiles,
-  setLoadFiles: spy => {
+  setLoadFiles: (spy: any) => {
     loadFiles = spy;
   },
 };
@@ -521,4 +472,4 @@ import './app_context_test_support.js';
 // Temporarily expose lastLoadedReceivedFileList on `window` for
 // MediaAppIntegrationWithFilesAppAllProfilesTest.RenameFile.
 // TODO(b/185957537): Convert the test case to a JS module.
-window['lastLoadedReceivedFileList'] = () => lastLoadedReceivedFileList;
+window.lastLoadedReceivedFileList = () => lastLoadedReceivedFileList;

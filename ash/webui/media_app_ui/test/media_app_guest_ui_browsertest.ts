@@ -10,14 +10,6 @@
 import {GUEST_TEST} from './guest_query_receiver.js';
 import {ReceivedFileList} from './receiver.js';
 
-// TODO(b/314827247): Move this somewhere sharable. `declare global` can't
-// appear in the "ambient" modules we use while converting to TS.
-declare global {
-  interface Window {
-    customLaunchData: CustomLaunchData;
-  }
-}
-
 export function eventToPromise(eventType: string, target: EventTarget) {
   return new Promise<Event>(function (resolve) {
     target.addEventListener(eventType, function f(e: Event) {
@@ -128,8 +120,8 @@ GUEST_TEST('GuestCanFilterInPlace', async () => {
 
   assertEquals(fileList.length, 2);
   assertEquals(fileList.currentFileIndex, 0);
-  assertEquals(fileList.item(0).name, '0');
-  assertEquals(fileList.item(1).name, '2');
+  assertEquals(fileList.item(0)!.name, '0');
+  assertEquals(fileList.item(1)!.name, '2');
 
   fileList.filterInPlace(() => false);
 

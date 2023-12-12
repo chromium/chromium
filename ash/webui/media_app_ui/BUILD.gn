@@ -79,6 +79,27 @@ source_set("browser_test_support") {
   ]
 }
 
+# All files in the rollup for the untrusted context should be here.
+ts_library("build_ts") {
+  root_dir = ts_root_dir
+
+  in_files = media_app_converted_ts_sources + media_app_unconverted_js_sources +
+             media_app_static_js_sources + media_app_external_js_staged
+  definitions =
+      media_app_definitions_staged + media_app_defs_for_external_js_staged
+
+  composite = true
+  deps = [
+    "//ui/webui/resources/cr_components/color_change_listener:build_ts",
+    "//ui/webui/resources/mojo:build_ts",
+  ]
+  extra_deps = [
+    "//ash/webui/media_app_ui/resources/js:generate_definitions",
+    "//ash/webui/media_app_ui/resources/js:stage_for_tsc",
+  ]
+  path_mappings = [ "//resources/*|$root_gen_dir/ui/webui/resources/*" ]
+}
+
 # Supporting files for tests have historically been in ./test. That becomes a
 # problem when using `ts_library` because we want to stage everything in
 # ./gen/resources/js. In order for those paths to be merged, the `ts_library`
@@ -87,14 +108,12 @@ source_set("browser_test_support") {
 ts_library("test_media_app_guest_ui_browsertest_ts") {
   root_dir = ts_root_dir
   testonly = true
-  in_files = media_app_test_ts + media_app_converted_ts_sources +
-             media_app_unconverted_js_sources +
-             media_app_test_unconverted_js_sources + [ "receiver.js" ]
-
+  in_files = media_app_test_ts + media_app_test_unconverted_js_sources
   definitions = media_app_definitions_staged + media_app_test_definitions_staged
+  deps = [ ":build_ts" ]
   extra_deps = [
     "//ash/webui/media_app_ui/resources/js:generate_definitions",
-    "//ash/webui/media_app_ui/resources/js:stage_static_ts",
+    "//ash/webui/media_app_ui/resources/js:stage_for_tsc",
     "//ash/webui/media_app_ui/test:stage_for_test_tsc",
   ]
 }
@@ -145,7 +164,6 @@ js_type_check("closure_compile_test_lib") {
   deps = [
     ":test_driver_api_js",
     ":test_driver_js",
-    ":test_guest_query_receiver_js",
   ]
 }
 
@@ -160,17 +178,6 @@ js_library("test_driver_api_js") {
   externs_list =
       [ "//ash/webui/web_applications/externs/file_handling.externs.js" ]
   sources = [ "test/driver_api.js" ]
-}
-
-js_library("test_guest_query_receiver_js") {
-  testonly = true
-  sources = [ "test/guest_query_receiver.js" ]
-  deps = [
-    ":test_driver_api_js",
-    "//ash/webui/media_app_ui/resources/js:receiver",
-    "//ash/webui/system_apps/public/js:dom_testing_helpers",
-    "//ash/webui/system_apps/public/js:message_pipe",
-  ]
 }
 
 js_library("test_driver_js") {

@@ -14,10 +14,27 @@ media_app_unconverted_js_sources = [
   "piex_module_loader.js",
 ]
 
-media_app_converted_ts_sources = []
+# Files converted to TS.
+media_app_converted_ts_sources = [ "receiver.ts" ]
+
+# Corresponding .js outputs of compiled .ts that are consumed by rollup.
+media_app_compiled_sources =
+    process_file_template(
+        media_app_converted_ts_sources,
+        "$root_gen_dir/ash/webui/media_app_ui/{{source_name_part}}.js")
+
+# Inputs to rollup with no additional deps. These are also fed to tsc in case
+# they ever get converted to .ts in future.
+media_app_static_js_sources = [
+  "error_reporter.js",
+  "launch.js",
+  "mojo_api_bootstrap.js",
+  "piex_module.js",
+]
+
 media_app_static_defs = [
+  "extra_types.d.ts",
   "media_app.d.ts",
-  "receiver.d.ts",
 ]
 
 # Definitions corresponding to unconverted JS.
@@ -29,6 +46,14 @@ media_app_definitions_staged =
     process_file_template(
         media_app_static_defs + media_app_defs_for_unconverted_js,
         "$ts_root_dir/{{source_file_part}}")
+
+# Extend with external .js and .d.ts that is fed to both .tsc and rollup. .js
+# that is only fed to rollup is listed in resources/js/BUILD.gn.
+media_app_external_js = [ "//ash/webui/system_apps/public/js/message_pipe.js" ]
+media_app_external_js_staged = [ "message_pipe.js" ]
+media_app_defs_for_external_js =
+    [ "$root_gen_dir/ash/webui/system_apps/public/js/message_pipe.d.ts" ]
+media_app_defs_for_external_js_staged = [ "$ts_root_dir/message_pipe.d.ts" ]
 
 # Unconverted test JS sources. Since these may potentially be .ts in future,
 # they must be fed to `ts_library` rules to avoid a .ts file potentially
