@@ -35649,6 +35649,7 @@ from previous Chrome versions.
   <int value="1200946197" label="ConfirmationChip:disabled"/>
   <int value="1201008500"
       label="EnableAmbientAuthenticationInIncognito:enabled"/>
+  <int value="1201619786" label="ShoppingIconColorVariant:disabled"/>
   <int value="1203002682"
       label="CmdDecoderAlwaysGetSizeFromSourceTexture:disabled"/>
   <int value="1203084856"
@@ -37067,6 +37068,7 @@ from previous Chrome versions.
   <int value="1855184563"
       label="EarlyDocumentSwapForBackForwardTransitions:disabled"/>
   <int value="1855524566" label="allow-insecure-websocket-from-https-origin"/>
+  <int value="1855804266" label="ShoppingIconColorVariant:enabled"/>
   <int value="1856270952" label="AutofillAssistantProactiveHelp:disabled"/>
   <int value="1857000695" label="SendWebUIJavaScriptErrorReports:disabled"/>
   <int value="1858133486" label="UsernameFirstFlowStoreSeveralValues:enabled"/>

@@ -236,23 +236,64 @@ void IconLabelBubbleView::SetFontList(const gfx::FontList& font_list) {
   label()->SetFontList(font_list);
 }
 
+SkColor IconLabelBubbleView::GetBackgroundColor() const {
+  if (background_color_id_.has_value()) {
+    return GetColorProvider()->GetColor(background_color_id_.value());
+  }
+  return delegate_->GetIconLabelBubbleBackgroundColor();
+}
+
 SkColor IconLabelBubbleView::GetForegroundColor() const {
+  if (foreground_color_id_.has_value()) {
+    return GetColorProvider()->GetColor(foreground_color_id_.value());
+  }
   return delegate_->GetIconLabelBubbleSurroundingForegroundColor();
+}
+
+void IconLabelBubbleView::SetCustomForegroundColorId(
+    const ui::ColorId color_id) {
+  if (foreground_color_id_ == color_id) {
+    return;
+  }
+  foreground_color_id_ = color_id;
+}
+
+void IconLabelBubbleView::SetCustomBackgroundColorId(
+    const ui::ColorId color_id) {
+  if (background_color_id_ == color_id) {
+    return;
+  }
+  background_color_id_ = color_id;
+}
+
+absl::optional<ui::ColorId> IconLabelBubbleView::GetCustomForegroundColorId() {
+  return foreground_color_id_;
+}
+absl::optional<ui::ColorId> IconLabelBubbleView::GetCustomBackgroundColorId() {
+  return background_color_id_;
 }
 
 void IconLabelBubbleView::UpdateLabelColors() {
   SetEnabledTextColors(GetForegroundColor());
-  label()->SetBackgroundColor(delegate_->GetIconLabelBubbleBackgroundColor());
+  label()->SetBackgroundColor(GetBackgroundColor());
 }
 
 void IconLabelBubbleView::UpdateBackground() {
   // If the label is showing we must ensure the icon label is painted over a
   // solid background.
   const bool painted_on_solid_background =
-      paint_label_over_solid_background_ && ShouldShowLabel();
-  const ui::ColorId background_color = use_tonal_color_when_expanded_
-                                           ? kColorPageInfoBackgroundTonal
-                                           : kColorPageInfoBackground;
+      (paint_label_over_solid_background_ && ShouldShowLabel()) ||
+      background_color_id_.has_value();
+
+  ui::ColorId background_color;
+  if (background_color_id_.has_value()) {
+    background_color = background_color_id_.value();
+  } else {
+    background_color = use_tonal_color_when_expanded_
+                           ? kColorPageInfoBackgroundTonal
+                           : kColorPageInfoBackground;
+  }
+
   SetBackground(painted_on_solid_background
                     ? views::CreateThemedRoundedRectBackground(
                           background_color, GetPreferredSize().height())
@@ -651,6 +692,7 @@ void IconLabelBubbleView::HideAnimation() {
   UpdateBackground();
 }
 
+// TODO(josephjoopark): Refactor using addCircle().
 SkPath IconLabelBubbleView::GetHighlightPath() const {
   gfx::Rect highlight_bounds = GetLocalBounds();
   if (ShouldShowSeparator())
@@ -662,6 +704,7 @@ SkPath IconLabelBubbleView::GetHighlightPath() const {
   const SkRect rect = RectToSkRect(highlight_bounds);
 
   return SkPath().addRoundRect(rect, corner_radius, corner_radius);
+  // return SkPath().addCircle(12, radius, radius); // size / 2
 }
 
 BEGIN_METADATA(IconLabelBubbleView, views::LabelButton)

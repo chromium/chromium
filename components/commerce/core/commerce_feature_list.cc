@@ -197,6 +197,10 @@ BASE_FEATURE(kPriceTrackingIconColors,
              "PriceTrackingIconColors",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+BASE_FEATURE(kShoppingIconColorVariant,
+             "ShoppingIconColorVariant",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Discount on navigation
 BASE_FEATURE(kEnableDiscountInfoApi,
              "EnableDiscountInfoApi",

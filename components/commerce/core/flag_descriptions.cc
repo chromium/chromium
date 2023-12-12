@@ -21,6 +21,12 @@ const char kPriceTrackingIconColorsDescription[] =
     "Tonal colors for the expanded state of the price tracking chip on "
     "desktop.";
 
+const char kShoppingIconColorVariantName[] =
+    "Enable color variant for shopping icons";
+const char kShoppingIconColorVariantDescription[] =
+    "Enables a color variant for shopping page action icons (Price Insights & "
+    "Price Tracking)";
+
 const char kShoppingCollectionName[] = "Shopping Collection";
 const char kShoppingCollectionDescription[] =
     "Organize all products into an automatically created bookmark folder.";

@@ -9,6 +9,7 @@
 #include "chrome/browser/feature_engagement/tracker_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
+#include "chrome/browser/ui/color/chrome_color_id.h"
 #include "chrome/browser/ui/commerce/commerce_ui_tab_helper.h"
 #include "chrome/browser/ui/side_panel/side_panel_entry_id.h"
 #include "chrome/browser/ui/side_panel/side_panel_ui.h"
@@ -40,6 +41,11 @@ PriceInsightsIconView::PriceInsightsIconView(
   SetAccessibilityProperties(
       /*role*/ std::nullopt,
       l10n_util::GetStringUTF16(IDS_SHOPPING_INSIGHTS_ICON_TOOLTIP_TEXT));
+
+  if (base::FeatureList::IsEnabled(commerce::kShoppingIconColorVariant)) {
+    SetCustomForegroundColorId(kColorShoppingPageActionIconForegroundVariant);
+    SetCustomBackgroundColorId(kColorShoppingPageActionIconBackgroundVariant);
+  }
 }
 PriceInsightsIconView::~PriceInsightsIconView() = default;
 
@@ -61,6 +67,7 @@ void PriceInsightsIconView::UpdateImpl() {
   } else {
     HidePageActionLabel();
   }
+  UpdateBackground();
 
   SetVisible(should_show);
 }

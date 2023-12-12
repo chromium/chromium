@@ -13,6 +13,7 @@
 #include "chrome/browser/ui/bookmarks/bookmark_utils.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
+#include "chrome/browser/ui/color/chrome_color_id.h"
 #include "chrome/browser/ui/commerce/commerce_ui_tab_helper.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/commerce/price_tracking_bubble_dialog_view.h"
@@ -92,6 +93,11 @@ PriceTrackingIconView::PriceTrackingIconView(
 
   SetUseTonalColorsWhenExpanded(
       base::FeatureList::IsEnabled(commerce::kPriceTrackingIconColors));
+
+  if (base::FeatureList::IsEnabled(commerce::kShoppingIconColorVariant)) {
+    SetCustomForegroundColorId(kColorShoppingPageActionIconForegroundVariant);
+    SetCustomBackgroundColorId(kColorShoppingPageActionIconBackgroundVariant);
+  }
 }
 
 PriceTrackingIconView::~PriceTrackingIconView() = default;

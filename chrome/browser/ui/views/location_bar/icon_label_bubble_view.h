@@ -128,6 +128,8 @@ class IconLabelBubbleView : public views::InkDropObserver,
  protected:
   static constexpr int kOpenTimeMS = 150;
 
+  virtual SkColor GetBackgroundColor() const;
+
   // Gets the color for displaying text and/or icons.
   virtual SkColor GetForegroundColor() const;
 
@@ -229,6 +231,12 @@ class IconLabelBubbleView : public views::InkDropObserver,
   // to the suggestion text, like in the SelectedKeywordView.
   virtual int GetExtraInternalSpacing() const;
 
+  absl::optional<ui::ColorId> GetCustomBackgroundColorId();
+  absl::optional<ui::ColorId> GetCustomForegroundColorId();
+
+  void SetCustomBackgroundColorId(const ui::ColorId color_id);
+  void SetCustomForegroundColorId(const ui::ColorId color_id);
+
   // Slide animation for label.
   gfx::SlideAnimation slide_animation_{this};
 
@@ -298,6 +306,9 @@ class IconLabelBubbleView : public views::InkDropObserver,
       ui::TouchUiController::Get()->RegisterCallback(
           base::BindRepeating(&IconLabelBubbleView::OnTouchUiChanged,
                               base::Unretained(this)));
+
+  absl::optional<ui::ColorId> background_color_id_;
+  absl::optional<ui::ColorId> foreground_color_id_;
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_LOCATION_BAR_ICON_LABEL_BUBBLE_VIEW_H_

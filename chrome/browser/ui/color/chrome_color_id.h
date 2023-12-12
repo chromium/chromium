@@ -307,6 +307,9 @@
   E_CPONLY(kColorPageInfoChosenObjectDeleteButtonIconDisabled) \
   E_CPONLY(kColorPageInfoIconHover) \
   E_CPONLY(kColorPageInfoIconPressed) \
+  /* Experimentation */ \
+  E_CPONLY(kColorShoppingPageActionIconBackgroundVariant) \
+  E_CPONLY(kColorShoppingPageActionIconForegroundVariant) \
   /* Payments colors. */ \
   E_CPONLY(kColorPaymentsFeedbackTipBackground) \
   E_CPONLY(kColorPaymentsFeedbackTipBorder) \
