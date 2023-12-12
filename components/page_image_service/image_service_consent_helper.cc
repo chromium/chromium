@@ -119,10 +119,15 @@ void ImageServiceConsentHelper::OnSyncShutdown(
   CHECK(base::FeatureList::IsEnabled(kImageServiceObserveSyncDownloadStatus));
 
   sync_service_observer_.Reset();
+  sync_service_ = nullptr;
 }
 
 absl::optional<bool> ImageServiceConsentHelper::GetConsentStatus() {
   CHECK(base::FeatureList::IsEnabled(kImageServiceObserveSyncDownloadStatus));
+
+  if (!sync_service_) {
+    return false;
+  }
 
   syncer::SyncService::ModelTypeDownloadStatus download_status =
       sync_service_->GetDownloadStatusFor(model_type_);
@@ -140,16 +145,19 @@ void ImageServiceConsentHelper::OnTimeoutExpired() {
   for (auto& request_callback_with_client_id : enqueued_request_callbacks_) {
     // Report consent status on timeout for each request to compare against the
     // number of all requests.
+    PageImageServiceConsentStatus consent_status =
+        ConsentStatusToUmaStatus(GetConsentStatus());
     base::UmaHistogramEnumeration("PageImageService.ConsentStatusOnTimeout",
-                                  ConsentStatusToUmaStatus(GetConsentStatus()));
-    sync_service_->RecordReasonIfWaitingForUpdates(
-        model_type_, kConsentTimeoutReasonHistogramName);
-    sync_service_->RecordReasonIfWaitingForUpdates(
-        model_type_,
-        std::string(kConsentTimeoutReasonHistogramName) + "." +
-            ClientIdToString(request_callback_with_client_id.second));
-    std::move(request_callback_with_client_id.first)
-        .Run(PageImageServiceConsentStatus::kTimedOut);
+                                  consent_status);
+    if (sync_service_) {
+      sync_service_->RecordReasonIfWaitingForUpdates(
+          model_type_, kConsentTimeoutReasonHistogramName);
+      sync_service_->RecordReasonIfWaitingForUpdates(
+          model_type_,
+          std::string(kConsentTimeoutReasonHistogramName) + "." +
+              ClientIdToString(request_callback_with_client_id.second));
+    }
+    std::move(request_callback_with_client_id.first).Run(consent_status);
   }
   enqueued_request_callbacks_.clear();
 }

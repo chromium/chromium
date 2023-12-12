@@ -119,6 +119,19 @@ TEST_F(ImageServiceConsentHelperTest, ExpireOldRequests) {
   FastForwardBy(base::Seconds(10));
   ASSERT_EQ(results.size(), 3U);
   EXPECT_EQ(results[2], PageImageServiceConsentStatus::kTimedOut);
+
+  // Enqueuing another one should restart the timer and shut down sync.
+  consent_helper()->EnqueueRequest(
+      base::BindLambdaForTesting([&](PageImageServiceConsentStatus result) {
+        results.push_back(result);
+      }),
+      mojom::ClientId::Bookmarks);
+  EXPECT_EQ(results.size(), 3U) << "Callback should not be run immediately.";
+  consent_helper()->OnSyncShutdown(sync_service());
+  FastForwardBy(base::Seconds(11));
+  ASSERT_EQ(results.size(), 4U);
+  // Sync service shutdown. We do not know consent status.
+  EXPECT_EQ(results[3], PageImageServiceConsentStatus::kFailure);
 }
 
 TEST_F(ImageServiceConsentHelperTest, InitializationFulfillsAllQueuedRequests) {
