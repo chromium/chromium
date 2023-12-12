@@ -3012,25 +3012,39 @@ void RenderProcessHostImpl::DumpProcessStack() {
 #endif
 
 void RenderProcessHostImpl::OnMediaStreamAdded() {
+  CHECK_NE(media_stream_count_, std::numeric_limits<int>::max());
   ++media_stream_count_;
-  UpdateProcessPriority();
+
+  if (media_stream_count_ == 1) {
+    UpdateProcessPriority();
+  }
 }
 
 void RenderProcessHostImpl::OnMediaStreamRemoved() {
-  DCHECK_GT(media_stream_count_, 0);
+  CHECK_GT(media_stream_count_, 0);
   --media_stream_count_;
-  UpdateProcessPriority();
+
+  if (media_stream_count_ == 0) {
+    UpdateProcessPriority();
+  }
 }
 
 void RenderProcessHostImpl::OnForegroundServiceWorkerAdded() {
+  CHECK_NE(foreground_service_worker_count_, std::numeric_limits<int>::max());
   foreground_service_worker_count_ += 1;
-  UpdateProcessPriority();
+
+  if (foreground_service_worker_count_ == 1) {
+    UpdateProcessPriority();
+  }
 }
 
 void RenderProcessHostImpl::OnForegroundServiceWorkerRemoved() {
-  DCHECK_GT(foreground_service_worker_count_, 0);
+  CHECK_GT(foreground_service_worker_count_, 0);
   foreground_service_worker_count_ -= 1;
-  UpdateProcessPriority();
+
+  if (foreground_service_worker_count_ == 0) {
+    UpdateProcessPriority();
+  }
 }
 
 // static
