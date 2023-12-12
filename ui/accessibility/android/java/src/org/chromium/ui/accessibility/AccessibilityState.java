@@ -565,7 +565,7 @@ public class AccessibilityState {
                         == AccessibilityServiceInfo.FEEDBACK_GENERIC);
     }
 
-    static void updateAccessibilityServices() {
+    protected static void updateAccessibilityServices() {
         long now = SystemClock.elapsedRealtimeNanos() / 1000;
         if (!sInitialized) {
             sState = new State(false, false, false, false, false, false, false, false);
@@ -1177,5 +1177,13 @@ public class AccessibilityState {
         fetchAccessibilityManager();
         sInitialized = true;
         sIsInTestingMode = true;
+    }
+
+    protected static void uninitializeForTesting() {
+        sState = null;
+        sAccessibilityManager = null;
+        sInitialized = false;
+        sIsInTestingMode = false;
+        sPreInitCachedValuePerformGesturesEnabled = null;
     }
 }
