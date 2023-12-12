@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {beginLoadRecentSeaPenImagesAction, beginSearchSeaPenThumbnailsAction, getRecentSeaPenImages, SeaPenState, searchSeaPenThumbnails, setRecentSeaPenImagesAction, setSeaPenThumbnailsAction} from 'chrome://personalization/js/personalization_app.js';
+import {beginLoadRecentSeaPenImagesAction, beginSearchSeaPenThumbnailsAction, getRecentSeaPenImages, getSeaPenStore, SeaPenState, SeaPenStoreAdapter, SeaPenStoreInterface, searchSeaPenThumbnails, setRecentSeaPenImagesAction, setSeaPenThumbnailsAction} from 'chrome://personalization/js/personalization_app.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {assertDeepEquals} from 'chrome://webui-test/chai_assert.js';
 
@@ -13,16 +13,20 @@ import {TestSeaPenProvider} from './test_sea_pen_interface_provider.js';
 suite('SeaPen reducers', () => {
   let seaPenProvider: TestSeaPenProvider;
   let personalizationStore: TestPersonalizationStore;
+  let seaPenStore: SeaPenStoreInterface;
 
   setup(() => {
     loadTimeData.overrideValues({isSeaPenEnabled: true});
     seaPenProvider = new TestSeaPenProvider();
     personalizationStore = new TestPersonalizationStore({});
     personalizationStore.setReducersEnabled(true);
+    personalizationStore.replaceSingleton();
+    SeaPenStoreAdapter.initSeaPenStore();
+    seaPenStore = getSeaPenStore();
   });
 
   test('sets recent sea pen images in store', async () => {
-    await getRecentSeaPenImages(seaPenProvider, personalizationStore);
+    await getRecentSeaPenImages(seaPenProvider, seaPenStore);
 
     assertDeepEquals(
         [
@@ -39,7 +43,7 @@ suite('SeaPen reducers', () => {
 
   test('sets sea pen thumbnails in store', async () => {
     const query = {textQuery: 'test_query'};
-    await searchSeaPenThumbnails(query, seaPenProvider, personalizationStore);
+    await searchSeaPenThumbnails(query, seaPenProvider, seaPenStore);
     assertDeepEquals(
         [
           beginSearchSeaPenThumbnailsAction(query),

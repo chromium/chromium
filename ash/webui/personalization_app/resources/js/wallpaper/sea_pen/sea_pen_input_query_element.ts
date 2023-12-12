@@ -19,14 +19,14 @@ import {assert} from 'chrome://resources/js/assert.js';
 
 import {MAXIMUM_SEARCH_WALLPAPER_TEXT_BYTES, SeaPenQuery} from '../../../sea_pen.mojom-webui.js';
 import {Paths, PersonalizationRouterElement} from '../../personalization_router_element.js';
-import {WithPersonalizationStore} from '../../personalization_store.js';
 import {QUERY} from '../utils.js';
 
 import {searchSeaPenThumbnails} from './sea_pen_controller.js';
 import {getTemplate} from './sea_pen_input_query_element.html.js';
 import {getSeaPenProvider} from './sea_pen_interface_provider.js';
+import {WithSeaPenStore} from './sea_pen_store.js';
 
-export class SeaPenInputQueryElement extends WithPersonalizationStore {
+export class SeaPenInputQueryElement extends WithSeaPenStore {
   static get is() {
     return 'sea-pen-input-query';
   }
@@ -56,8 +56,7 @@ export class SeaPenInputQueryElement extends WithPersonalizationStore {
   override connectedCallback() {
     super.connectedCallback();
     this.watch<SeaPenInputQueryElement['thumbnailsLoading_']>(
-        'thumbnailsLoading_',
-        state => state.wallpaper.seaPen.loading.thumbnails);
+        'thumbnailsLoading_', state => state.loading.thumbnails);
     this.updateFromStore();
   }
 

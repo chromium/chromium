@@ -116,7 +116,7 @@ export class Store<S, A extends Action = Action> {
     action(this.reduce.bind(this));
   }
 
-  reduce(action: A|null) {
+  protected reduce(action: A|null) {
     if (!action) {
       return;
     }

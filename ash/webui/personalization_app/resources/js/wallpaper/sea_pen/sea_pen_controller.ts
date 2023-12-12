@@ -5,44 +5,22 @@
 import {FilePath} from 'chrome://resources/mojo/mojo/public/mojom/base/file_path.mojom-webui.js';
 
 import {SeaPenProviderInterface, SeaPenQuery, SeaPenThumbnail} from '../../../sea_pen.mojom-webui.js';
-import {PersonalizationStore} from '../../personalization_store.js';
 import {isNonEmptyArray} from '../../utils.js';
-import {isImageEqualToSelected} from '../utils.js';
-import * as action from '../wallpaper_actions.js';
 
 import * as seaPenAction from './sea_pen_actions.js';
+import {SeaPenStoreInterface} from './sea_pen_store.js';
 
 export async function selectRecentSeaPenImage(
-    image: FilePath, provider: SeaPenProviderInterface,
-    store: PersonalizationStore): Promise<void> {
-  const currentWallpaper = store.data.wallpaper.currentSelected;
-  if (currentWallpaper && isImageEqualToSelected(image, currentWallpaper)) {
-    return;
-  }
-  // Batch these changes together to reduce polymer churn as multiple state
-  // fields change quickly.
-  store.beginBatchUpdate();
-  store.dispatch(action.beginSelectImageAction(image));
-  store.dispatch(action.beginLoadSelectedImageAction());
-  store.endBatchUpdate();
-
+    image: FilePath, provider: SeaPenProviderInterface): Promise<void> {
   const {success} = await provider.selectRecentSeaPenImage(image);
-
-  store.beginBatchUpdate();
-  store.dispatch(action.endSelectImageAction(image, success));
   if (!success) {
-    console.warn('Error setting wallpaper');
-    store.dispatch(
-        action.setAttributionAction(store.data.wallpaper.attribution));
-    store.dispatch(
-        action.setSelectedImageAction(store.data.wallpaper.currentSelected));
+    console.warn('failed to set recent sea pen image');
   }
-  store.endBatchUpdate();
 }
 
 export async function searchSeaPenThumbnails(
     query: SeaPenQuery, provider: SeaPenProviderInterface,
-    store: PersonalizationStore): Promise<void> {
+    store: SeaPenStoreInterface): Promise<void> {
   store.dispatch(seaPenAction.beginSearchSeaPenThumbnailsAction(query));
   const {images} = await provider.searchWallpaper(query);
   if (!isNonEmptyArray(images)) {
@@ -53,7 +31,7 @@ export async function searchSeaPenThumbnails(
 
 export async function selectSeaPenWallpaper(
     thumbnail: SeaPenThumbnail, provider: SeaPenProviderInterface,
-    store: PersonalizationStore): Promise<void> {
+    store: SeaPenStoreInterface): Promise<void> {
   // TODO(b/305965517) show loading state.
   const {success} = await provider.selectSeaPenThumbnail(thumbnail.id);
   // Re-fetches the recent Sea Pen image if setting sea pen wallpaper
@@ -65,7 +43,7 @@ export async function selectSeaPenWallpaper(
 
 export async function deleteRecentSeaPenImage(
     image: FilePath, provider: SeaPenProviderInterface,
-    store: PersonalizationStore): Promise<void> {
+    store: SeaPenStoreInterface): Promise<void> {
   const {success} = await provider.deleteRecentSeaPenImage(image);
   // Re-fetches the recent Sea Pen images if recent Sea Pen image is removed
   // successfully.
@@ -76,7 +54,7 @@ export async function deleteRecentSeaPenImage(
 
 export async function getRecentSeaPenImages(
     provider: SeaPenProviderInterface,
-    store: PersonalizationStore): Promise<void> {
+    store: SeaPenStoreInterface): Promise<void> {
   store.dispatch(seaPenAction.beginLoadRecentSeaPenImagesAction());
 
   const {images} = await provider.getRecentSeaPenImages();
@@ -93,9 +71,9 @@ export async function getRecentSeaPenImages(
  */
 export async function fetchRecentSeaPenData(
     provider: SeaPenProviderInterface,
-    store: PersonalizationStore): Promise<void> {
+    store: SeaPenStoreInterface): Promise<void> {
   // Do not restart loading local image list if a load is already in progress.
-  if (!store.data.wallpaper.seaPen.loading.recentImages) {
+  if (!store.data.loading.recentImages) {
     await getRecentSeaPenImages(provider, store);
   }
   await getMissingRecentSeaPenImageData(provider, store);
@@ -114,17 +92,17 @@ const recentSeaPenImageDataToFetch = new Set<FilePath['path']>();
  */
 async function getMissingRecentSeaPenImageData(
     provider: SeaPenProviderInterface,
-    store: PersonalizationStore): Promise<void> {
-  if (!Array.isArray(store.data.wallpaper.seaPen.recentImages)) {
+    store: SeaPenStoreInterface): Promise<void> {
+  if (!Array.isArray(store.data.recentImages)) {
     console.warn('Cannot fetch thumbnails with invalid image list');
     return;
   }
   // Set correct loading state for each image thumbnail. Do in a batch update to
   // reduce number of times that polymer must re-render.
   store.beginBatchUpdate();
-  for (const image of store.data.wallpaper.seaPen.recentImages) {
-    if (store.data.wallpaper.seaPen.recentImageData[image.path] ||
-        store.data.wallpaper.seaPen.loading.recentImageData[image.path] ||
+  for (const image of store.data.recentImages) {
+    if (store.data.recentImageData[image.path] ||
+        store.data.loading.recentImageData[image.path] ||
         recentSeaPenImageDataToFetch.has(image.path)) {
       // Do not re-load thumbnail if already present, or already loading.
       continue;

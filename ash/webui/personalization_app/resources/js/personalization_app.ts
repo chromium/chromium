@@ -49,6 +49,7 @@ import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {isPersonalizationJellyEnabled} from './load_time_booleans.js';
 import {emptyState} from './personalization_state.js';
 import {PersonalizationStore} from './personalization_store.js';
+import {SeaPenStoreAdapter} from './sea_pen_store_adapter.js';
 
 /**
  * With optimize_webui, the generated JS files are bundled into single file
@@ -88,8 +89,9 @@ export {reduce} from './personalization_reducers.js';
 export {Paths, PersonalizationRouterElement, QueryParams, ScrollableTarget} from './personalization_router_element.js';
 export {emptyState, PersonalizationState} from './personalization_state.js';
 export {PersonalizationStore} from './personalization_store.js';
-export {PersonalizationThemeElement} from './theme/personalization_theme_element.js';
+export {SeaPenStoreAdapter} from './sea_pen_store_adapter.js';
 export {PersonalizationToastElement} from './personalization_toast_element.js';
+export {PersonalizationThemeElement} from './theme/personalization_theme_element.js';
 export {setDarkModeEnabledAction, SetDarkModeEnabledAction, setColorSchemeAction, setStaticColorAction, SetStaticColorAction, SetSampleColorSchemesAction, SetColorSchemeAction, ThemeActionName, ThemeActions} from './theme/theme_actions.js';
 export {setThemeProviderForTesting} from './theme/theme_interface_provider.js';
 export {ColorSchemeIconSvgElement} from './theme/color_scheme_icon_svg_element.js';
@@ -122,6 +124,7 @@ export {SeaPenImagesElement} from './wallpaper/sea_pen/sea_pen_images_element.js
 export {SeaPenInputQueryElement} from './wallpaper/sea_pen/sea_pen_input_query_element.js';
 export {SeaPenRecentWallpapersElement} from './wallpaper/sea_pen/sea_pen_recent_wallpapers_element.js';
 export {SeaPenState} from './wallpaper/sea_pen/sea_pen_state.js';
+export {getSeaPenStore, setSeaPenStore, SeaPenStoreInterface} from './wallpaper/sea_pen/sea_pen_store.js';
 export {SeaPenTemplateQueryElement} from './wallpaper/sea_pen/sea_pen_template_query_element.js';
 export {setSeaPenProviderForTesting} from './wallpaper/sea_pen/sea_pen_interface_provider.js';
 export {SparklePlaceholderElement} from './wallpaper/sea_pen/sparkle_placeholder_element.js';
@@ -143,6 +146,8 @@ export {DailyRefreshType} from './wallpaper/wallpaper_state.js';
 export {TimeOfDayAcceptEvent, TimeOfDayWallpaperDialogElement} from './wallpaper/time_of_day_wallpaper_dialog_element.js';
 
 PersonalizationStore.getInstance().init(emptyState());
+SeaPenStoreAdapter.initSeaPenStore();
+
 const link = document.querySelector('link[rel=\'icon\']') as HTMLLinkElement;
 if (link) {
   // |link| may be null in tests.

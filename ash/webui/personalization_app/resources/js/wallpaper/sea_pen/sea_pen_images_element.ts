@@ -13,14 +13,14 @@ import './sparkle_placeholder_element.js';
 import '../../../css/sea_pen.css.js';
 
 import {SeaPenThumbnail} from '../../../sea_pen.mojom-webui.js';
-import {WithPersonalizationStore} from '../../personalization_store.js';
 import {getZerosArray, isNonEmptyArray} from '../../utils.js';
 
 import {selectSeaPenWallpaper} from './sea_pen_controller.js';
 import {getTemplate} from './sea_pen_images_element.html.js';
 import {getSeaPenProvider} from './sea_pen_interface_provider.js';
+import {WithSeaPenStore} from './sea_pen_store.js';
 
-export class SeaPenImagesElement extends WithPersonalizationStore {
+export class SeaPenImagesElement extends WithSeaPenStore {
   static get is() {
     return 'sea-pen-images';
   }
@@ -51,10 +51,9 @@ export class SeaPenImagesElement extends WithPersonalizationStore {
   override connectedCallback() {
     super.connectedCallback();
     this.watch<SeaPenImagesElement['thumbnails_']>(
-        'thumbnails_', state => state.wallpaper.seaPen.thumbnails);
+        'thumbnails_', state => state.thumbnails);
     this.watch<SeaPenImagesElement['thumbnailsLoading_']>(
-        'thumbnailsLoading_',
-        state => state.wallpaper.seaPen.loading.thumbnails);
+        'thumbnailsLoading_', state => state.loading.thumbnails);
     this.updateFromStore();
   }
 

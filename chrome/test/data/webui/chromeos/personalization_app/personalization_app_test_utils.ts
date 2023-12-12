@@ -7,7 +7,7 @@
  * SWA.
  */
 
-import {emptyState, PersonalizationState, setAmbientProviderForTesting, setKeyboardBacklightProviderForTesting, setSeaPenProviderForTesting, setThemeProviderForTesting, setUserProviderForTesting, setWallpaperProviderForTesting} from 'chrome://personalization/js/personalization_app.js';
+import {emptyState, getSeaPenStore, PersonalizationState, SeaPenStoreAdapter, setAmbientProviderForTesting, setKeyboardBacklightProviderForTesting, setSeaPenProviderForTesting, setThemeProviderForTesting, setUserProviderForTesting, setWallpaperProviderForTesting} from 'chrome://personalization/js/personalization_app.js';
 import {flush, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {flushTasks, waitAfterNextRender} from 'chrome://webui-test/polymer_test_util.js';
 
@@ -64,6 +64,8 @@ export function baseSetup(initialState: PersonalizationState = emptyState()) {
   setSeaPenProviderForTesting(seaPenProvider);
   const personalizationStore = new TestPersonalizationStore(initialState);
   personalizationStore.replaceSingleton();
+  // Re-init SeaPenStoreAdapter so that it sees TestPersonalizationStore.
+  SeaPenStoreAdapter.initSeaPenStore();
   document.body.innerHTML = window.trustedTypes!.emptyHTML;
   return {
     ambientProvider,
@@ -73,6 +75,7 @@ export function baseSetup(initialState: PersonalizationState = emptyState()) {
     userProvider,
     wallpaperProvider,
     personalizationStore,
+    seaPenStore: getSeaPenStore(),
   };
 }
 

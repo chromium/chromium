@@ -17,22 +17,21 @@ import {assert} from 'chrome://resources/js/assert.js';
 import {FilePath} from 'chrome://resources/mojo/mojo/public/mojom/base/file_path.mojom-webui.js';
 import {Url} from 'chrome://resources/mojo/url/mojom/url.mojom-webui.js';
 
-import {CurrentWallpaper} from '../../../personalization_app.mojom-webui.js';
-import {WithPersonalizationStore} from '../../personalization_store.js';
 import {isImageDataUrl, isNonEmptyArray} from '../../utils.js';
-import {DisplayableImage} from '../constants.js';
-import {isFilePath, isImageAMatchForKey, isImageEqualToSelected} from '../utils.js';
+import {isFilePath} from '../utils.js';
 import {WallpaperGridItemSelectedEvent} from '../wallpaper_grid_item_element.js';
 
 import {RecentSeaPenData} from './constants.js';
 import {deleteRecentSeaPenImage, fetchRecentSeaPenData, selectRecentSeaPenImage} from './sea_pen_controller.js';
 import {getSeaPenProvider} from './sea_pen_interface_provider.js';
 import {getTemplate} from './sea_pen_recent_wallpapers_element.html.js';
+import {WithSeaPenStore} from './sea_pen_store.js';
 
-export class SeaPenRecentWallpapersElement extends WithPersonalizationStore {
+export class SeaPenRecentWallpapersElement extends WithSeaPenStore {
   static get is() {
     return 'sea-pen-recent-wallpapers';
   }
+
   static get template() {
     return getTemplate();
   }
@@ -61,10 +60,6 @@ export class SeaPenRecentWallpapersElement extends WithPersonalizationStore {
         type: Number,
         value: null,
       },
-
-      currentSelected_: Object,
-
-      pendingSelected_: Object,
     };
   }
 
@@ -73,8 +68,6 @@ export class SeaPenRecentWallpapersElement extends WithPersonalizationStore {
   private recentImageDataLoading_: Record<FilePath['path'], boolean>;
   private recentImagesToDisplay_: FilePath[];
   private currentShowWallpaperInfoDialog_: number|null;
-  private currentSelected_: CurrentWallpaper|null;
-  private pendingSelected_: DisplayableImage|null;
 
   static get observers() {
     return ['onRecentImageLoaded_(recentImageData_, recentImageDataLoading_)'];
@@ -83,16 +76,11 @@ export class SeaPenRecentWallpapersElement extends WithPersonalizationStore {
   override connectedCallback() {
     super.connectedCallback();
     this.watch<SeaPenRecentWallpapersElement['recentImages_']>(
-        'recentImages_', state => state.wallpaper.seaPen.recentImages);
+        'recentImages_', state => state.recentImages);
     this.watch<SeaPenRecentWallpapersElement['recentImageData_']>(
-        'recentImageData_', state => state.wallpaper.seaPen.recentImageData);
+        'recentImageData_', state => state.recentImageData);
     this.watch<SeaPenRecentWallpapersElement['recentImageDataLoading_']>(
-        'recentImageDataLoading_',
-        state => state.wallpaper.seaPen.loading.recentImageData);
-    this.watch<SeaPenRecentWallpapersElement['currentSelected_']>(
-        'currentSelected_', state => state.wallpaper.currentSelected);
-    this.watch<SeaPenRecentWallpapersElement['pendingSelected_']>(
-        'pendingSelected_', state => state.wallpaper.pendingSelected);
+        'recentImageDataLoading_', state => state.loading.recentImageData);
     this.updateFromStore();
     // TODO(b/304576846): also refetch sea pen data when adding and deleting
     // image.
@@ -183,24 +171,16 @@ export class SeaPenRecentWallpapersElement extends WithPersonalizationStore {
     return isNonEmptyArray(recentImages);
   }
 
-  private isRecentImageSelected_(
-      image: FilePath, currentSelected: CurrentWallpaper|null,
-      pendingSelected: DisplayableImage|null) {
-    if (!isFilePath(image)) {
-      return false;
-    }
-    return (isFilePath(pendingSelected) &&
-            isImageAMatchForKey(image, pendingSelected.path)) ||
-        (!pendingSelected && !!currentSelected &&
-         isImageEqualToSelected(image, currentSelected));
+  private isRecentImageSelected_(_: FilePath) {
+    // TODO(b/314342868) show real checked state.
+    return false;
   }
 
   private onRecentImageSelected_(event: WallpaperGridItemSelectedEvent&
                                  {model: {image: FilePath}}) {
     assert(
         isFilePath(event.model.image), 'recent Sea Pen image is a file path');
-    selectRecentSeaPenImage(
-        event.model.image, getSeaPenProvider(), this.getStore());
+    selectRecentSeaPenImage(event.model.image, getSeaPenProvider());
   }
 
   private onClickMenuIcon_(e: Event) {
