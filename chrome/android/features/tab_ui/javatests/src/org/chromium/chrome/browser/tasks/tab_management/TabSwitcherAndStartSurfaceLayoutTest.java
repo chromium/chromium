@@ -879,10 +879,6 @@ public class TabSwitcherAndStartSurfaceLayoutTest {
     @UseMethodParameter(RefactorTestParams.class)
     @EnableFeatures({ChromeFeatureList.TAB_TO_GTS_ANIMATION + "<Study"})
     @CommandLineFlags.Add({BASE_PARAMS})
-    @DisableIf.Build(
-            message = "Flaky on Android P, see https://crbug.com/1063991",
-            sdk_is_greater_than = VERSION_CODES.O_MR1,
-            sdk_is_less_than = VERSION_CODES.Q)
     public void testIncognitoToggle_tabCount(boolean isStartSurfaceRefactorEnabled)
             throws InterruptedException {
         mActivityTestRule.loadUrl(mUrl);
