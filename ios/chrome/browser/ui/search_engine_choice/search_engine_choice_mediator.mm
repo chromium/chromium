@@ -31,16 +31,8 @@
   }
   _selectedItem = item;
 
-  __weak __typeof(self) weakSelf = self;
-  _faviconLoader->FaviconForPageUrl(
-      item.URL, kDesiredMediumFaviconSizePt, kMinFaviconSizePt,
-      /*fallback_to_google_server=*/YES, ^(FaviconAttributes* attributes) {
-        [weakSelf.consumer
-            updateFakeOmniboxWithFavicon:[[UIImageView alloc]
-                                             initWithImage:attributes
-                                                               .faviconImage]
-                        SearchEngineName:item.name];
-      });
+  [self.consumer updateFakeOmniboxWithFaviconImage:item.faviconImage
+                                  searchEngineName:item.name];
 }
 
 - (void)disconnect {

@@ -138,6 +138,9 @@ SnippetSearchEngineItem* CreateSnippetSearchEngineItemFromTemplateURL(
         /*fallback_to_google_server=*/YES, ^(FaviconAttributes* attributes) {
           item.faviconImage = attributes.faviconImage;
           [weakSelf.consumer faviconAttributesUpdatedForItem:item];
+          if (item.checked) {
+            [weakSelf.faviconUpdateConsumer updateFaviconImageForItem:item];
+          }
         });
   }
 
