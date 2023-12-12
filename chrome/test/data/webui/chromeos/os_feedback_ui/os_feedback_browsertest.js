@@ -32,11 +32,6 @@ this.OSFeedbackBrowserTest = class extends PolymerTest {
 // TODO(crbug.com/1401615): Flaky.
 const tests = [
   ['ConfirmationPage', 'confirmation_page_test.js', 'DISABLED_All'],
-  [
-    'FakeHelpContentProvider', 'fake_help_content_provider_test.js',
-    'DISABLED_All'
-  ],
-  ['MojoInterfaceProvider', 'mojo_interface_provider_test.js', 'DISABLED_All'],
   ['FeedbackFlow', 'feedback_flow_test.js', 'DISABLED_All'],
   ['FileAttachment', 'file_attachment_test.js', 'DISABLED_All'],
   ['HelpContent', 'help_content_test.js', 'DISABLED_All'],
