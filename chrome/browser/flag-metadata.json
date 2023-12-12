@@ -8136,8 +8136,8 @@
   },
   {
     "name": "vc-background-replace",
-    "owners": [ "shafron@chromium.org", "skyostil@chromium.org", "charleszhao@chromium.org", "jmpollock@chromium.org" ],
-    "expiry_milestone": 120
+    "owners": [ "skyostil@chromium.org", "charleszhao@chromium.org", "jmpollock@chromium.org" ],
+    "expiry_milestone": 126
   },
   {
     "name": "vc-light-intensity",
