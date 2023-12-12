@@ -11,7 +11,7 @@
 #include "base/android/build_info.h"
 #endif
 
-#if BUILDFLAG(IS_LINUX)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 #include <vulkan/vulkan_core.h>
 #include "third_party/angle/src/gpu_info_util/SystemInfo.h"  // nogncheck
 #endif
@@ -299,7 +299,7 @@ BASE_FEATURE(kANGLEDebugLayer,
 bool IsDefaultANGLEVulkan() {
 #if defined(MEMORY_SANITIZER)
   return false;
-#else
+#else  // !defined(MEMORY_SANITIZER)
 #if BUILDFLAG(IS_ANDROID)
   // No support for devices before Q -- exit before checking feature flags
   // so that devices are not counted in finch trials.
@@ -307,7 +307,7 @@ bool IsDefaultANGLEVulkan() {
       base::android::SDK_VERSION_Q)
     return false;
 #endif  // BUILDFLAG(IS_ANDROID)
-#if BUILDFLAG(IS_LINUX)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
   angle::SystemInfo system_info;
   if (!angle::GetSystemInfoVulkan(&system_info))
     return false;
@@ -319,6 +319,7 @@ bool IsDefaultANGLEVulkan() {
 
   const auto& active_gpu = system_info.gpus[system_info.activeGPUIndex];
 
+#if BUILDFLAG(IS_LINUX)
   // Vulkan 1.1 is required.
   if (active_gpu.driverApiVersion < VK_VERSION_1_1)
     return false;
@@ -327,15 +328,16 @@ bool IsDefaultANGLEVulkan() {
   // crbug.com/1340081
   if (active_gpu.driverId == VK_DRIVER_ID_AMD_OPEN_SOURCE)
     return false;
+#endif  // BUILDFLAG(IS_LINUX)
 
   // The performance of MESA llvmpipe is really bad.
   if (active_gpu.driverId == VK_DRIVER_ID_MESA_LLVMPIPE) {
     return false;
   }
 
-#endif
+#endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
   return base::FeatureList::IsEnabled(kDefaultANGLEVulkan);
-#endif  // defined(MEMORY_SANITIZER)
+#endif  // !defined(MEMORY_SANITIZER)
 }
 
 // Use waitable swap chain on Windows to reduce display latency.

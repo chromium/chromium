@@ -401,7 +401,7 @@ component("gl") {
 
     deps += [ ":gl_jni_headers" ]
   }
-  if (is_linux) {
+  if (is_linux || is_chromeos) {
     deps += [ "//third_party/angle:angle_gpu_info_util" ]
   }
 }
