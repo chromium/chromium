@@ -39,6 +39,7 @@ import org.robolectric.shadows.ShadowLooper;
 
 import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.base.test.util.JniMocker;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsSizer;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
@@ -1078,6 +1079,28 @@ public class ReadAloudControllerUnitTest {
         mCallbackCaptor.getValue().onSuccess(testUrl, true, false);
 
         assertEquals(mController.getReadabilitySupplier().get(), testUrl);
+    }
+
+    @Test
+    public void testMetricRecorded_readability() {
+        final String histogramName = ReadAloudMetrics.READABILITY_SUCCESS;
+
+        var histogram = HistogramWatcher.newSingleRecordWatcher(histogramName, true);
+        mController.maybeCheckReadability(sTestGURL);
+        verify(mHooksImpl, times(1))
+                .isPageReadable(eq(sTestGURL.getSpec()), mCallbackCaptor.capture());
+        mCallbackCaptor.getValue().onSuccess(sTestGURL.getSpec(), true, false);
+        histogram.assertExpected();
+
+        histogram = HistogramWatcher.newSingleRecordWatcher(histogramName, false);
+        mCallbackCaptor.getValue().onSuccess(sTestGURL.getSpec(), false, false);
+        histogram.assertExpected();
+
+        histogram = HistogramWatcher.newSingleRecordWatcher(histogramName, false);
+        mCallbackCaptor
+                .getValue()
+                .onFailure(sTestGURL.getSpec(), new Throwable("Something went wrong"));
+        histogram.assertExpected();
     }
 
     private void onPlaybackSuccess(Playback playback) {

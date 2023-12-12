@@ -196,6 +196,7 @@ public class ReadAloudController
                 @Override
                 public void onSuccess(String url, boolean isReadable, boolean timepointsSupported) {
                     Log.d(TAG, "onSuccess called for %s", url);
+                    ReadAloudMetrics.recordIsPageReadable(isReadable);
                     mReadabilityMap.put(url, isReadable);
                     mTimepointsSupportedMap.put(url, timepointsSupported);
                     mPendingRequests.remove(url);
@@ -205,6 +206,7 @@ public class ReadAloudController
                 @Override
                 public void onFailure(String url, Throwable t) {
                     Log.d(TAG, "onFailure called for %s because %s", url, t);
+                    ReadAloudMetrics.recordIsPageReadable(false);
                     mPendingRequests.remove(url);
                 }
             };
@@ -280,6 +282,7 @@ public class ReadAloudController
     @VisibleForTesting(otherwise = VisibleForTesting.PACKAGE_PRIVATE)
     public void maybeCheckReadability(GURL url) {
         if (!isURLReadAloudSupported(url)) {
+            ReadAloudMetrics.recordIsPageReadable(false);
             return;
         }
 

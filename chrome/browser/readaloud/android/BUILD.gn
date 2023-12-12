@@ -8,6 +8,7 @@ import("//third_party/jni_zero/jni_zero.gni")
 android_library("java") {
   sources = [
     "java/src/org/chromium/chrome/browser/readaloud/ReadAloudController.java",
+    "java/src/org/chromium/chrome/browser/readaloud/ReadAloudMetrics.java",
     "java/src/org/chromium/chrome/browser/readaloud/ReadAloudMiniPlayerSceneLayer.java",
     "java/src/org/chromium/chrome/browser/readaloud/ReadAloudPrefs.java",
     "java/src/org/chromium/chrome/browser/readaloud/ReadAloudToolbarButtonController.java",
@@ -156,6 +157,7 @@ robolectric_library("junit") {
   testonly = true
   sources = [
     "java/src/org/chromium/chrome/browser/readaloud/ReadAloudControllerUnitTest.java",
+    "java/src/org/chromium/chrome/browser/readaloud/ReadAloudMetricsUnitTest.java",
     "java/src/org/chromium/chrome/browser/readaloud/ReadAloudMiniPlayerSceneLayerUnitTest.java",
     "java/src/org/chromium/chrome/browser/readaloud/ReadAloudPrefsUnitTest.java",
     "java/src/org/chromium/chrome/browser/readaloud/ReadAloudToolbarButtonControllerUnitTest.java",
@@ -196,6 +198,7 @@ robolectric_library("junit") {
     "//third_party/androidx:androidx_appcompat_appcompat_java",
     "//third_party/androidx:androidx_test_core_java",
     "//third_party/androidx:androidx_test_ext_junit_java",
+    "//third_party/androidx:androidx_test_runner_java",
     "//third_party/jni_zero:jni_zero_java",
     "//third_party/junit",
     "//third_party/mockito:mockito_java",
