@@ -31,6 +31,7 @@ export interface ServiceInterface extends ActivityLogDelegate,
   getProfileConfiguration(): Promise<chrome.developerPrivate.ProfileInfo>;
   getExtensionsInfo(): Promise<chrome.developerPrivate.ExtensionInfo[]>;
   getExtensionSize(id: string): Promise<string>;
+  dismissSafetyHubExtensionsMenuNotification(): void;
 }
 
 export class Service implements ServiceInterface {
@@ -492,6 +493,10 @@ export class Service implements ServiceInterface {
       updates: chrome.developerPrivate.ExtensionSiteAccessUpdate[]):
       Promise<void> {
     return chrome.developerPrivate.updateSiteAccess(site, updates);
+  }
+
+  dismissSafetyHubExtensionsMenuNotification() {
+    chrome.developerPrivate.dismissSafetyHubExtensionsMenuNotification();
   }
 
   static getInstance(): ServiceInterface {

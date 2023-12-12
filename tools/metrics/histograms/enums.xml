@@ -16563,6 +16563,8 @@ Called by update_extension_histograms.py.-->
   <int value="1854" label="ACCESSIBILITY_PRIVATE_GETDISPLAYBOUNDS"/>
   <int value="1855" label="AUTOFILLPRIVATE_SERVERIBANLINKCLICKED"/>
   <int value="1856" label="AUTOTESTPRIVATE_CLEARALLOWEDPREF"/>
+  <int value="1857"
+      label="DEVELOPERPRIVATE_DISMISSSAFETYHUBEXTENSIONSMENUNOTIFICATION"/>
 </enum>
 
 <enum name="ExtensionInProgressRequestState">

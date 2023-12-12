@@ -154,6 +154,9 @@ class SafetyHubHandler : public settings::SettingsPageUIHandler {
   // Handles dismissing the menu notifications for the password module.
   void HandleDismissPasswordMenuNotification(const base::Value::List& args);
 
+  // Handles dismissing the menu notifications for the extensions module.
+  void HandleDismissExtensionsMenuNotification(const base::Value::List& args);
+
   // Returns the data for Safe Browsing card.
   void HandleGetSafeBrowsingCardData(const base::Value::List& args);
 
