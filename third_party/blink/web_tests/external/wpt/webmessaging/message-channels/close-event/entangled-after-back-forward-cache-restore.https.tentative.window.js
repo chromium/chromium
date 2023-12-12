@@ -5,15 +5,15 @@
 // META: script=/common/utils.js
 // META: script=/html/browsers/browsing-the-web/remote-context-helper/resources/remote-context-helper.js
 // META: script=/service-workers/service-worker/resources/test-helpers.sub.js
-// META: script=resources/rc-helper.js
+// META: script=/html/browsers/browsing-the-web/back-forward-cache/resources/rc-helper.js
 
 promise_test(async t => {
   // Register a service worker.
   const scope =
       '/html/browsers/browsing-the-web/remote-context-helper/resources'
   const workerUrl =
-      `resources/service-worker.js?pipe=header(Service-Worker-Allowed,${
-          scope})`;
+      `/html/browsers/browsing-the-web/back-forward-cache/resources/` +
+      `service-worker.js?pipe=header(Service-Worker-Allowed,${scope})`;
   const registration =
       await service_worker_unregister_and_register(t, workerUrl, scope);
   t.add_cleanup(_ => registration.unregister());
