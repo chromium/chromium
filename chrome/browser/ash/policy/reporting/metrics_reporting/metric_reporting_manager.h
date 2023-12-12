@@ -306,7 +306,7 @@ class MetricReportingManager : public policy::ManagedSessionService::Observer,
   std::unique_ptr<MetricReportQueue> telemetry_report_queue_;
   std::unique_ptr<MetricReportQueue> user_telemetry_report_queue_;
   std::unique_ptr<MetricReportQueue> event_report_queue_;
-  std::unique_ptr<MetricReportQueue> immediate_event_report_queue_;
+  std::unique_ptr<MetricReportQueue> crash_event_report_queue_;
   std::unique_ptr<MetricReportQueue> user_event_report_queue_;
   std::unique_ptr<MetricReportQueue> app_event_report_queue_;
   std::unique_ptr<MetricReportQueue> website_event_report_queue_;

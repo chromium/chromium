@@ -356,9 +356,6 @@ class MetricReportingManagerTest
     event_queue_ptr_ = CreateMockMetricReportQueueHelper(
         mock_delegate_.get(), EventType::kDevice, Destination::EVENT_METRIC,
         Priority::SLOW_BATCH);
-    immediate_event_queue_ptr_ = CreateMockMetricReportQueueHelper(
-        mock_delegate_.get(), EventType::kDevice, Destination::EVENT_METRIC,
-        Priority::IMMEDIATE);
     user_telemetry_queue_ptr_ = CreateMockMetricReportQueueHelper(
         mock_delegate_.get(), EventType::kUser, Destination::TELEMETRY_METRIC,
         Priority::MANUAL_BATCH);
@@ -376,6 +373,9 @@ class MetricReportingManagerTest
         mock_delegate_.get(), EventType::kUser, Destination::EVENT_METRIC,
         Priority::SLOW_BATCH, metrics::kWebsiteEventsTotalSize,
         metrics::kWebsiteEventsWindow, metrics::kWebsiteEventsBucketCount);
+    crash_event_queue_ptr_ = CreateMockMetricReportQueueHelper(
+        mock_delegate_.get(), EventType::kDevice, Destination::CRASH_EVENTS,
+        Priority::IMMEDIATE);
 
     auto telemetry_queue = std::make_unique<test::FakeMetricReportQueue>();
     telemetry_queue_ptr_ = telemetry_queue.get();
@@ -403,8 +403,6 @@ class MetricReportingManagerTest
   raw_ptr<test::FakeMetricReportQueue, DanglingUntriaged | ExperimentalAsh>
       event_queue_ptr_;
   raw_ptr<test::FakeMetricReportQueue, DanglingUntriaged | ExperimentalAsh>
-      immediate_event_queue_ptr_;
-  raw_ptr<test::FakeMetricReportQueue, DanglingUntriaged | ExperimentalAsh>
       peripheral_queue_ptr_;
   raw_ptr<test::FakeMetricReportQueue, DanglingUntriaged | ExperimentalAsh>
       user_telemetry_queue_ptr_;
@@ -416,6 +414,8 @@ class MetricReportingManagerTest
       website_event_queue_ptr_;
   raw_ptr<test::FakeMetricReportQueue, DanglingUntriaged | ExperimentalAsh>
       heartbeat_queue_ptr_;
+  raw_ptr<test::FakeMetricReportQueue, DanglingUntriaged | ExperimentalAsh>
+      crash_event_queue_ptr_;
 
   std::unique_ptr<::testing::NiceMock<MockDelegate>> mock_delegate_;
 };
@@ -606,7 +606,7 @@ TEST_P(MetricReportingManagerEventTest, Default) {
   ON_CALL(
       *mock_delegate_ptr,
       CreateEventObserverManager(
-          _, immediate_event_queue_ptr_.get(), _,
+          _, crash_event_queue_ptr_.get(), _,
           test_case.setting_data.enable_setting_path,
           test_case.setting_data.setting_enabled_default_value, _, init_delay))
       .WillByDefault([&]() {

@@ -9,8 +9,8 @@ option optimize_for = LITE_RUNTIME;
 package reporting;
 
 // |Destination| indicates which handler a |Record| should be delivered to.
-// This must be kept in sync with //tools/metrics/histograms/enums.xml's
-// EnterpriseCloudReportingDestination in the Chromium repo.
+// This must be kept in sync with EnterpriseCloudReportingDestination in
+// //tools/metrics/histograms/metadata/browser/enums.xml in the Chromium repo.
 enum Destination {
   UNDEFINED_DESTINATION = 0;
 
@@ -112,6 +112,9 @@ enum Destination {
 
   // |CHROME_BROWSER_ENTERPRISE| is for CBE Security and Integrations events
   CHROME_BROWSER_ENTERPRISE = 30;
+
+  // |CRASH_EVENTS| is for fatal crash events.
+  CRASH_EVENTS = 31;
 
   reserved 8;
 }

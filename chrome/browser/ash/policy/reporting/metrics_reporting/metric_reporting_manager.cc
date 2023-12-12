@@ -256,8 +256,8 @@ MetricReportingManager::MetricReportingManager(
   event_report_queue_ = delegate_->CreateMetricReportQueue(
       EventType::kDevice, Destination::EVENT_METRIC, Priority::SLOW_BATCH,
       /*rate_limiter=*/nullptr, source_info);
-  immediate_event_report_queue_ = delegate_->CreateMetricReportQueue(
-      EventType::kDevice, Destination::EVENT_METRIC, Priority::IMMEDIATE,
+  crash_event_report_queue_ = delegate_->CreateMetricReportQueue(
+      EventType::kDevice, Destination::CRASH_EVENTS, Priority::IMMEDIATE,
       /*rate_limiter=*/nullptr, std::move(source_info));
   DelayedInit();
 
@@ -284,7 +284,7 @@ void MetricReportingManager::Shutdown() {
   telemetry_report_queue_.reset();
   user_telemetry_report_queue_.reset();
   event_report_queue_.reset();
-  immediate_event_report_queue_.reset();
+  crash_event_report_queue_.reset();
   user_event_report_queue_.reset();
   app_event_report_queue_.reset();
   website_event_report_queue_.reset();
@@ -696,7 +696,7 @@ void MetricReportingManager::InitFatalCrashCollectors() {
 
   if (base::FeatureList::IsEnabled(kEnableFatalCrashEventsObserver)) {
     event_observer_managers_.emplace_back(delegate_->CreateEventObserverManager(
-        FatalCrashEventsObserver::Create(), immediate_event_report_queue_.get(),
+        FatalCrashEventsObserver::Create(), crash_event_report_queue_.get(),
         &reporting_settings_, ash::kReportDeviceCrashReportInfo,
         metrics::kReportDeviceCrashReportInfoDefaultValue,
         /*collector_pool=*/this));

@@ -103,6 +103,7 @@ chromium-metrics-reviews@google.com.
   <int value="28" label="CROS_SECURITY_USER"/>
   <int value="29" label="KIOSK_HEARTBEAT_EVENTS"/>
   <int value="30" label="CHROME_BROWSER_ENTERPRISE"/>
+  <int value="31" label="CRASH_EVENTS"/>
 </enum>
 
 <enum name="EnterpriseCloudReportingMetricEventType">
