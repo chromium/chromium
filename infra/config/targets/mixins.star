@@ -1042,6 +1042,9 @@ targets.mixin(
     ),
 )
 
+# mac_default_x64 is used as a prefered OS dimension for mac platform
+# instead of any mac OS version. It selects the most representative
+# dimension on Swarming.
 targets.mixin(
     name = "mac_default_x64",
     swarming = targets.swarming(
@@ -1160,18 +1163,6 @@ targets.mixin(
                 revision = "git_revision:b28cf90d462a7bbd45c28f2d931960c2b9404cb0",
             ),
         ],
-    ),
-)
-
-# mac_x64 is used as a prefered OS dimension for mac platform instead of any
-# mac OS version. It selects the most representative dimension on Swarming.
-targets.mixin(
-    name = "mac_x64",
-    swarming = targets.swarming(
-        dimensions = {
-            "os": "Mac-12",
-            "cpu": "x86-64",
-        },
     ),
 )
 

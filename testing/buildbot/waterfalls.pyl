@@ -2017,7 +2017,7 @@
       },
       'ToTMac': {
         'mixins': [
-          'mac_x64',
+          'mac_default_x64',
         ],
         'test_suites': {
           'gtest_tests': 'clang_tot_gtests',
@@ -2029,7 +2029,7 @@
       },
       'ToTMac (dbg)': {
         'mixins': [
-          'mac_x64',
+          'mac_default_x64',
         ],
         'additional_compile_targets': [
           'all',
@@ -2037,7 +2037,7 @@
       },
       'ToTMacASan': {
         'mixins': [
-          'mac_x64',
+          'mac_default_x64',
         ],
         'test_suites': {
           'gtest_tests': 'clang_tot_gtests',
@@ -2054,7 +2054,7 @@
           'all',
         ],
         'mixins': [
-          'mac_x64',
+          'mac_default_x64',
         ],
       },
       'ToTMacArm64PGO': {
@@ -2062,14 +2062,14 @@
           'all',
         ],
         'mixins': [
-          'mac_x64',
+          'mac_default_x64',
         ],
       },
       # Used on an internal builder.
       'ToTMacOfficial': {
         'mixins': [
           'chrome-tester-service-account',
-          'mac_x64',
+          'mac_default_x64',
           'chrome-swarming-pool',
         ],
         'test_suites': {
@@ -2085,7 +2085,7 @@
           'all',
         ],
         'mixins': [
-          'mac_x64',
+          'mac_default_x64',
         ],
         'test_suites': {
           'gtest_tests': 'clang_tot_gtests',
@@ -2934,7 +2934,7 @@
       },
       'mac-rel-dev': {
         'mixins': [
-          'mac_x64',
+          'mac_default_x64',
         ],
         'test_suites': {
            'gtest_tests': 'chromium_dev_desktop_gtests',
@@ -4047,7 +4047,7 @@
       # See crbug.com/899425
       'Chromium Mac Goma RBE Staging': {
         'mixins': [
-          'mac_x64',
+          'mac_default_x64',
         ],
         'additional_compile_targets': [
           'chrome',
@@ -4058,7 +4058,7 @@
       },
       'Chromium Mac Goma RBE Staging (dbg)': {
         'mixins': [
-          'mac_x64',
+          'mac_default_x64',
         ],
         'additional_compile_targets': [
           'chrome',
@@ -5241,7 +5241,7 @@
       },
       'Mac ASan 64 Tests (1)': {
         'mixins': [
-          'mac_x64',
+          'mac_default_x64',
         ],
         'test_suites': {
           'gtest_tests': 'chromium_mac_gtests',
@@ -5380,7 +5380,7 @@
       },
       'mac-lsan-fyi-rel': {
         'mixins': [
-          'mac_x64',
+          'mac_default_x64',
         ],
         'test_suites': {
           'gtest_tests': 'mac_lsan_fyi_gtests',

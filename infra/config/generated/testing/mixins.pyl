@@ -917,14 +917,6 @@
       ],
     },
   },
-  'mac_x64': {
-    'swarming': {
-      'dimensions': {
-        'os': 'Mac-12',
-        'cpu': 'x86-64',
-      },
-    },
-  },
   'marshmallow': {
     'swarming': {
       'dimensions': {
