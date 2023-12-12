@@ -26,7 +26,7 @@ TEST_F(LayoutBlockTest, LayoutNameCalledWithNullStyle) {
   obj->SetStyle(nullptr, LayoutObject::ApplyStyleChanges::kNo);
   EXPECT_FALSE(obj->Style());
   EXPECT_THAT(obj->DecoratedName().Ascii(),
-              MatchesRegex("LayoutN?G?BlockFlow \\(anonymous\\)"));
+              MatchesRegex("LayoutN?G?BlockFlow \\(anonymous, inline\\)"));
   obj->Destroy();
 }
 

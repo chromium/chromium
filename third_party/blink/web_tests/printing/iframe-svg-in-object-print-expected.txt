@@ -2,7 +2,7 @@ layer at (0,0)
   LayoutView at (0,0) size 800x600
 layer at (0,0)
   LayoutNGBlockFlow {HTML} at (0,0) size 800x600
-    LayoutNGBlockFlow {BODY} at (8,8) size 784x584
+    LayoutNGBlockFlow (children-inline) {BODY} at (8,8) size 784x584
       LayoutText {#text} at (0,0) size 0x0
 layer at (8,8)
   LayoutIFrame {IFRAME} at (0,0) size 204x204 [border: (2px inset #EEEEEE) (2px inset #EEEEEE) (2px inset #EEEEEE) (2px inset #EEEEEE)]
@@ -10,12 +10,12 @@ layer at (8,8)
       LayoutView at (0,0) size 200x200
     layer at (0,0)
       LayoutNGBlockFlow {HTML} at (0,0) size 100x100
-        LayoutNGBlockFlow {BODY} at (8,8) size 100x100
+        LayoutNGBlockFlow (children-inline) {BODY} at (8,8) size 100x100
           LayoutText {#text} at (0,0) size 0x0
     layer at (8,8)
       LayoutEmbeddedObject {OBJECT} at (0,0) size 100x100
         layer at (0,0)
           LayoutView at (0,0) size 100x100
         layer at (0,0)
-          LayoutSVGRoot {svg} at (0,0) size 100x100
+          LayoutSVGRoot (block) {svg} at (0,0) size 100x100
             LayoutSVGEllipse {circle} at (25,25) size 50x50 [fill={[type=SOLID] [color=#0000FF]}] [cx=50.00] [cy=50.00] [r=25.00]

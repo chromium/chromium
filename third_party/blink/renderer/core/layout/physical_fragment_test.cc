@@ -44,7 +44,7 @@ TEST_F(PhysicalFragmentTest, DumpFragmentTreeWithAbspos) {
   String expectation = R"DUMP(.:: LayoutNG Physical Fragment Tree ::.
   Box (out-of-flow-positioned block-flow)(self paint) offset:unplaced size:800x600 LayoutView #document
     Box (block-flow-root block-flow)(self paint) offset:0,0 size:800x8 LayoutNGBlockFlow HTML
-      Box (block-flow) offset:8,8 size:784x0 LayoutNGBlockFlow BODY
+      Box (block-flow) offset:8,8 size:784x0 LayoutNGBlockFlow (children-inline) BODY
     Box (out-of-flow-positioned block-flow)(self paint) offset:8,8 size:0x0 LayoutNGBlockFlow (positioned) DIV id='abs'
 )DUMP";
   EXPECT_EQ(expectation, dump);
@@ -63,7 +63,7 @@ TEST_F(PhysicalFragmentTest, DumpFragmentTreeWithAbsposInRelpos) {
   Box (out-of-flow-positioned block-flow)(self paint) offset:unplaced size:800x600 LayoutView #document
     Box (block-flow-root block-flow)(self paint) offset:0,0 size:800x8 LayoutNGBlockFlow HTML
       Box (block-flow) offset:8,8 size:784x0 LayoutNGBlockFlow BODY
-        Box (block-flow)(self paint) offset:0,0 size:784x0 LayoutNGBlockFlow (relative positioned) DIV id='rel'
+        Box (block-flow)(self paint) offset:0,0 size:784x0 LayoutNGBlockFlow (relative positioned, children-inline) DIV id='rel'
           Box (out-of-flow-positioned block-flow)(self paint) offset:10,20 size:0x0 LayoutNGBlockFlow (positioned) DIV id='abs'
 )DUMP";
   EXPECT_EQ(expectation, dump);

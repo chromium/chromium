@@ -7,7 +7,7 @@
       "backgroundColor": "#FFFFFF"
     },
     {
-      "name": "LayoutNGBlockFlow (positioned) DIV class='composited box'",
+      "name": "LayoutNGBlockFlow (positioned, children-inline) DIV class='composited box'",
       "position": [-10, -10],
       "bounds": [120, 120],
       "backgroundColor": "#008000",

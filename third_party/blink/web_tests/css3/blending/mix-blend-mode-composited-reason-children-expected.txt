@@ -14,7 +14,7 @@
       "backgroundColor": "#008000"
     },
     {
-      "name": "LayoutNGBlockFlow DIV class='blended'",
+      "name": "LayoutNGBlockFlow (children-inline) DIV class='blended'",
       "position": [8, 8],
       "bounds": [160, 90],
       "contentsOpaque": true,

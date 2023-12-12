@@ -119,8 +119,9 @@ TEST_F(LayoutObjectTest, LayoutDecoratedNameCalledWithPositionedObject) {
   DCHECK(div);
   LayoutObject* obj = div->GetLayoutObject();
   DCHECK(obj);
-  EXPECT_THAT(obj->DecoratedName().Ascii(),
-              MatchesRegex("LayoutN?G?BlockFlow \\(positioned\\)"));
+  EXPECT_THAT(
+      obj->DecoratedName().Ascii(),
+      MatchesRegex("LayoutN?G?BlockFlow \\(positioned, children-inline\\)"));
 }
 
 // Some display checks.
@@ -1006,8 +1007,9 @@ lime'>
   StringBuilder result;
   block->DumpLayoutObject(result, false, 0);
   EXPECT_THAT(result.ToString().Utf8(),
-              MatchesRegex("LayoutN?G?BlockFlow\tDIV id=\"block\" "
-                           "style=\"background:\\\\nlime\""));
+              MatchesRegex(
+                  "LayoutN?G?BlockFlow \\(children-inline\\)\tDIV id=\"block\" "
+                  "style=\"background:\\\\nlime\""));
 
   result.Clear();
   text->DumpLayoutObject(result, false, 0);

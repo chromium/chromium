@@ -7,12 +7,12 @@
       "backgroundColor": "#FFFFFF"
     },
     {
-      "name": "LayoutNGBlockFlow (positioned) DIV id='container' class='composited box'",
+      "name": "LayoutNGBlockFlow (positioned, children-inline) DIV id='container' class='composited box'",
       "bounds": [300, 300],
       "drawsContent": false
     },
     {
-      "name": "LayoutHTMLCanvas (positioned) CANVAS",
+      "name": "LayoutHTMLCanvas (positioned, block) CANVAS",
       "bounds": [200, 200]
     }
   ]

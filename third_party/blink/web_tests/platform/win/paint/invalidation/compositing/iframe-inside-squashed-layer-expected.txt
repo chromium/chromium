@@ -20,7 +20,7 @@
       "drawsContent": false
     },
     {
-      "name": "LayoutNGBlockFlow (positioned) DIV",
+      "name": "LayoutNGBlockFlow (positioned, children-inline) DIV",
       "position": [8, 500],
       "bounds": [300, 155],
       "invalidations": [

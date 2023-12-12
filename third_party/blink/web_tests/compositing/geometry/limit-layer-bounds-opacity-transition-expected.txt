@@ -15,7 +15,7 @@ Fader
       "transform": 1
     },
     {
-      "name": "LayoutNGBlockFlow (relative positioned) DIV class='test'",
+      "name": "LayoutNGBlockFlow (relative positioned, children-inline) DIV class='test'",
       "bounds": [108, 99],
       "backgroundColor": "#FFFFFF"
     }

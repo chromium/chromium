@@ -10,7 +10,7 @@
       "backgroundColor": "#FFFFFF"
     },
     {
-      "name": "LayoutNGBlockFlow DIV class='composited block'",
+      "name": "LayoutNGBlockFlow (inline) DIV class='composited block'",
       "position": [-5, -5],
       "bounds": [210, 60],
       "backgroundColor": "#0000FF",
@@ -24,7 +24,7 @@
       "transform": 1
     },
     {
-      "name": "LayoutNGBlockFlow DIV class='composited block'",
+      "name": "LayoutNGBlockFlow (inline) DIV class='composited block'",
       "position": [-5, -5],
       "bounds": [210, 60],
       "backgroundColor": "#0000FF",

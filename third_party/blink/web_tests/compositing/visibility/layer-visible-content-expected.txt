@@ -12,7 +12,7 @@
       "drawsContent": false
     },
     {
-      "name": "LayoutNGBlockFlow PRE id='layer-tree'",
+      "name": "LayoutNGBlockFlow (children-inline) PRE id='layer-tree'",
       "bounds": [800, 16],
       "drawsContent": false
     }

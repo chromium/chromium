@@ -7,7 +7,7 @@
       "backgroundColor": "#FFFFFF"
     },
     {
-      "name": "LayoutNGBlockFlow (positioned) DIV id='outer'",
+      "name": "LayoutNGBlockFlow (positioned, children-inline) DIV id='outer'",
       "position": [2, 2],
       "bounds": [400, 400],
       "drawsContent": false,

@@ -21,7 +21,7 @@
       "backgroundColor": "#00FF00"
     },
     {
-      "name": "LayoutImage (positioned) IMG id='repaintdiv' class='repaintdiv'",
+      "name": "LayoutImage (positioned, block) IMG id='repaintdiv' class='repaintdiv'",
       "position": [260, 260],
       "bounds": [182, 120],
       "invalidations": [
