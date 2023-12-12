@@ -418,6 +418,18 @@ IN_PROC_BROWSER_TEST_F(EnrollmentEmbeddedPolicyServerBase, ManualEnrollment) {
   EXPECT_TRUE(InstallAttributes::Get()->IsCloudManaged());
 }
 
+IN_PROC_BROWSER_TEST_F(EnrollmentEmbeddedPolicyServerBase, GetDeviceId) {
+  host()->HandleAccelerator(LoginAcceleratorAction::kStartEnrollment);
+  OobeScreenWaiter(EnrollmentScreenView::kScreenId).Wait();
+  WaitForGaiaPageBackButtonUpdate();
+
+  SigninFrameJS().ExecuteAsync("gaia.chromeOSLogin.sendGetDeviceId()");
+  SigninFrameJS().CreateWaiter("gaia.chromeOSLogin.receivedDeviceId")->Wait();
+  std::string received_device_id =
+      SigninFrameJS().GetString("gaia.chromeOSLogin.receivedDeviceId");
+  EXPECT_TRUE(!received_device_id.empty());
+}
+
 // The test case is the same as
 // EnrollmentEmbeddedPolicyServerBase.ManualEnrollment but the environment is
 // different (simulate reven board, simulate state keys not being available).

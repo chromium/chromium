@@ -13,6 +13,7 @@
 #include "base/json/json_reader.h"
 #include "base/logging.h"
 #include "base/system/sys_info.h"
+#include "base/uuid.h"
 #include "base/values.h"
 #include "build/build_config.h"
 #include "chrome/browser/ash/login/help_app_launcher.h"
@@ -623,6 +624,8 @@ void EnrollmentScreenHandler::DeclareJSCallbacks() {
               &EnrollmentScreenHandler::HandleDeviceAttributesProvided);
   AddCallback("oauthEnrollOnLearnMore",
               &EnrollmentScreenHandler::HandleOnLearnMore);
+  AddCallback("getDeviceIdForEnrollment",
+              &EnrollmentScreenHandler::HandleGetDeviceId);
 }
 
 void EnrollmentScreenHandler::GetAdditionalParameters(
@@ -798,6 +801,21 @@ void EnrollmentScreenHandler::HandleOnLearnMore() {
     help_app_ = new HelpAppLauncher(
         LoginDisplayHost::default_host()->GetNativeWindow());
   help_app_->ShowHelpTopic(HelpAppLauncher::HELP_DEVICE_ATTRIBUTES);
+}
+
+void EnrollmentScreenHandler::HandleGetDeviceId(
+    const std::string& callback_id) {
+  if (!IsJavascriptAllowed()) {
+    return;
+  }
+
+  // We need to respond to "getDeviceId" message from Gaia. This is normally
+  // used for regular signin scenarios but since we need to respond with
+  // something here - we will respond with a GUID. The account used for
+  // enrollment is not actually logging into the device - and "getDeviceId" is
+  // meant for those kinds of users.
+  ResolveJavascriptCallback(base::Value(callback_id),
+                            base::Uuid::GenerateRandomV4().AsLowercaseString());
 }
 
 void EnrollmentScreenHandler::ShowStep(const std::string& step) {
