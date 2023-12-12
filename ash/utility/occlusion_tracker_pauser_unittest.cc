@@ -140,6 +140,36 @@ TEST_F(OcclusionTrackerPauserTest, MultiDisplay) {
   EXPECT_FALSE(tracker->IsPaused());
 }
 
+TEST_F(OcclusionTrackerPauserTest, MultiDisplaySingleAnimatingCompositor) {
+  aura::WindowOcclusionTracker* tracker =
+      aura::Env::GetInstance()->GetWindowOcclusionTracker();
+  UpdateDisplay("800x1000, 800x1000");
+
+  auto* compositor1 = Shell::GetAllRootWindows()[0]->GetHost()->compositor();
+  TestObserver observer1;
+
+  Shell::Get()->occlusion_tracker_pauser()->PauseUntilAnimationsEnd(
+      base::TimeDelta());
+  EXPECT_TRUE(tracker->IsPaused());
+  compositor1->AddAnimationObserver(&observer1);
+  EXPECT_TRUE(tracker->IsPaused());
+
+  // Wait for BeginFrame since compositor animation notifications happen
+  // on BeginFrame.
+  ui::BeginMainFrameWaiter(compositor1).Wait();
+  EXPECT_TRUE(tracker->IsPaused());
+
+  compositor1->RemoveAnimationObserver(&observer1);
+  EXPECT_TRUE(tracker->IsPaused());
+
+  // Wait for BeginFrame since compositor animation notifications happen
+  // on BeginFrame.
+  ui::BeginMainFrameWaiter(compositor1).Wait();
+
+  // There are no more animations, so expect the tracker to be unpaused.
+  EXPECT_FALSE(tracker->IsPaused());
+}
+
 TEST_F(OcclusionTrackerPauserTest, Timeout) {
   aura::WindowOcclusionTracker* tracker =
       aura::Env::GetInstance()->GetWindowOcclusionTracker();
