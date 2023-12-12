@@ -199,6 +199,16 @@ class FormDataImporter : public PersonalDataManagerObserver {
                                 std::vector<AddressProfileImportCandidate>*
                                     address_profile_import_candidates);
 
+  // Iterates over `section_fields` and builds a map from field type to observed
+  // value for that field type.
+  base::flat_map<ServerFieldType, std::u16string> GetAddressObservedFieldValues(
+      base::span<const AutofillField* const> section_fields,
+      ProfileImportMetadata& import_metadata,
+      LogBuffer* import_log_buffer,
+      bool& has_invalid_field_types,
+      bool& has_multiple_distinct_email_addresses,
+      bool& has_address_related_fields) const;
+
   // Helper method to construct an AutofillProfile out of observed values in the
   // form. Used during `ExtractAddressProfileFromSection()`.
   AutofillProfile ConstructProfileFromObservedValues(

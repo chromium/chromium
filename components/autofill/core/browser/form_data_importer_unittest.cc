@@ -17,6 +17,8 @@
 #include <utility>
 #include <vector>
 
+#include "base/containers/flat_map.h"
+#include "base/containers/span.h"
 #include "base/feature_list.h"
 #include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
@@ -29,7 +31,10 @@
 #include "base/uuid.h"
 #include "build/build_config.h"
 #include "components/autofill/core/browser/autofill_experiments.h"
+#include "components/autofill/core/browser/autofill_field.h"
+#include "components/autofill/core/browser/autofill_form_test_utils.h"
 #include "components/autofill/core/browser/autofill_test_utils.h"
+#include "components/autofill/core/browser/autofill_type.h"
 #include "components/autofill/core/browser/data_model/autofill_profile.h"
 #include "components/autofill/core/browser/data_model/autofill_structured_address_utils.h"
 #include "components/autofill/core/browser/data_model/credit_card.h"
@@ -55,6 +60,7 @@
 #include "components/autofill/core/common/autofill_util.h"
 #include "components/autofill/core/common/form_data.h"
 #include "components/autofill/core/common/form_field_data.h"
+#include "components/autofill/core/common/mojom/autofill_types.mojom-shared.h"
 #include "components/plus_addresses/plus_address_service.h"
 #include "components/prefs/pref_service.h"
 #include "components/signin/public/identity_manager/identity_test_environment.h"
@@ -1544,7 +1550,7 @@ TEST_F(FormDataImporterTest,
 }
 
 // Test that even from unfocusable fields we extract.
-TEST_F(FormDataImporterTest, ImportAddressProfiles_UnFocussableFields) {
+TEST_F(FormDataImporterTest, ImportAddressProfiles_UnfocusableFields) {
   std::unique_ptr<FormStructure> form_structure =
       ConstructDefaultProfileFormStructure();
   // Set the Address line field as unfocusable.
@@ -2879,7 +2885,7 @@ TEST_F(
 // This test includes two cases:
 // 1. The extracted credit card has the same expiration with the second masked
 //    server card.
-// 2. The extracted credit card's expiraion date is not the same as any of the
+// 2. The extracted credit card's expiration date is not the same as any of the
 //    the masked server cards.
 TEST_F(
     FormDataImporterTest,
@@ -4200,4 +4206,29 @@ TEST_F(FormDataImporterTest,
                                   /*payment_methods_autofill_enabled=*/true,
                                   /*is_credit_card_upstream_enabled=*/false);
 }
+
+// Test that Autofill will not try to import from a field that was filled with
+// fallback.
+TEST_F(FormDataImporterTest,
+       GetObservedFieldValues_SkipFieldsFilledWithFallback) {
+  AutofillField field;
+  field.SetTypeTo(AutofillType(NAME_FIRST));
+  field.value = u"First";
+  const AutofillField* field_ptr = &field;
+
+  base::flat_map<ServerFieldType, std::u16string> observed_field_types =
+      test_api(form_data_importer())
+          .GetObservedFieldValues(base::make_span(&field_ptr, 1u));
+  EXPECT_EQ(observed_field_types.size(), 1u);
+
+  // Set the autofilled type of the field as something different from its
+  // classified type, representing that the field was filled using this type as
+  // fallback.
+  field.set_autofilled_type(NAME_FULL);
+  observed_field_types =
+      test_api(form_data_importer())
+          .GetObservedFieldValues(base::make_span(&field_ptr, 1u));
+  EXPECT_TRUE(observed_field_types.empty());
+}
+
 }  // namespace autofill

@@ -5,6 +5,10 @@
 #ifndef COMPONENTS_AUTOFILL_CORE_BROWSER_FORM_DATA_IMPORTER_TEST_API_H_
 #define COMPONENTS_AUTOFILL_CORE_BROWSER_FORM_DATA_IMPORTER_TEST_API_H_
 
+#include <string>
+
+#include "base/containers/flat_map.h"
+#include "components/autofill/core/browser/field_types.h"
 #include "components/autofill/core/browser/form_data_importer.h"
 #include "components/autofill/core/browser/payments/credit_card_save_manager.h"
 
@@ -63,6 +67,17 @@ class FormDataImporterTestApi {
                                     address_profile_import_candidates) {
     return fdi_->ExtractAddressProfiles(form,
                                         address_profile_import_candidates);
+  }
+
+  base::flat_map<ServerFieldType, std::u16string> GetObservedFieldValues(
+      base::span<const AutofillField* const> section_fields) {
+    ProfileImportMetadata import_metadata;
+    bool has_invalid_field_types = false;
+    bool has_multiple_distinct_email_addresses = false;
+    bool has_address_related_fields = false;
+    return fdi_->GetAddressObservedFieldValues(
+        section_fields, import_metadata, nullptr, has_invalid_field_types,
+        has_multiple_distinct_email_addresses, has_address_related_fields);
   }
 
   bool ProcessAddressProfileImportCandidates(

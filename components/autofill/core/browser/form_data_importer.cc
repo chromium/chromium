@@ -15,6 +15,7 @@
 #include <string>
 #include <utility>
 
+#include "base/containers/flat_map.h"
 #include "base/functional/bind.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
@@ -442,7 +443,7 @@ AutofillProfile FormDataImporter::ConstructProfileFromObservedValues(
   // profile's country has been set to make sure the correct address
   // representation is used.
   for (const auto& [type, value] : observed_values) {
-    // The profile country has already been stablished by this point. It's
+    // The profile country has already been established by this point. It's
     // ignored here to avoid re-setting up a potentially invalid country that
     // was present in the form.
     if (type == ADDRESS_HOME_COUNTRY) {
@@ -469,36 +470,21 @@ AutofillProfile FormDataImporter::ConstructProfileFromObservedValues(
   return candidate_profile;
 }
 
-bool FormDataImporter::ExtractAddressProfileFromSection(
+base::flat_map<ServerFieldType, std::u16string>
+FormDataImporter::GetAddressObservedFieldValues(
     base::span<const AutofillField* const> section_fields,
-    const GURL& source_url,
-    std::vector<FormDataImporter::AddressProfileImportCandidate>*
-        address_profile_import_candidates,
-    LogBuffer* import_log_buffer) {
-  // Tracks if the form section contains multiple distinct email addresses.
-  bool has_multiple_distinct_email_addresses = false;
-
-  // Tracks if the form section contains an invalid types.
-  bool has_invalid_field_types = false;
+    ProfileImportMetadata& import_metadata,
+    LogBuffer* import_log_buffer,
+    bool& has_invalid_field_types,
+    bool& has_multiple_distinct_email_addresses,
+    bool& has_address_related_fields) const {
+  plus_addresses::PlusAddressService* plus_address_service =
+      client_->GetPlusAddressService();
+  base::flat_map<ServerFieldType, std::u16string> observed_field_values;
 
   // Tracks if subsequent phone number fields should be ignored,
   // since they do not belong to the first phone number in the form.
   bool ignore_phone_number_fields = false;
-
-  // Metadata about the way we construct candidate_profile.
-  ProfileImportMetadata import_metadata{.origin =
-                                            url::Origin::Create(source_url)};
-
-  // Tracks if any of the fields belongs to FormType::kAddressForm.
-  bool has_address_related_fields = false;
-
-  plus_addresses::PlusAddressService* plus_address_service =
-      client_->GetPlusAddressService();
-
-  // Stores the values collected for each related `ServerFieldType`. Used as
-  // well to detect and discard address forms with multiple fields of the same
-  // type.
-  base::flat_map<ServerFieldType, std::u16string> observed_field_values;
 
   // Go through each |form| field and attempt to constitute a valid profile.
   for (const AutofillField* const field : section_fields) {
@@ -507,8 +493,16 @@ bool FormDataImporter::ExtractAddressProfileFromSection(
 
     // If we don't know the type of the field, or the user hasn't entered any
     // information into the field, then skip it.
-    if (!field->IsFieldFillable() || value.empty())
+    if (!field->IsFieldFillable() || value.empty()) {
       continue;
+    }
+
+    // If the field was filled with a fallback type, skip it in order to not
+    // introduce noise to the map's data, as this would add an entry for
+    // field type X with a value retrieved from another field type Y.
+    if (field->WasAutofilledWithFallback()) {
+      continue;
+    }
 
     // When the experimental plus addresses feature is enabled, and the value is
     // a plus address, exclude it from the resulting address profile.
@@ -529,8 +523,9 @@ bool FormDataImporter::ExtractAddressProfileFromSection(
     AutofillType field_type = field->Type();
 
     // Credit card fields are handled by ExtractCreditCard().
-    if (field_type.group() == FieldTypeGroup::kCreditCard)
+    if (field_type.group() == FieldTypeGroup::kCreditCard) {
       continue;
+    }
 
     // There can be multiple email fields (e.g. in the case of 'confirm email'
     // fields) but they must all contain the same value, else the profile is
@@ -559,8 +554,9 @@ bool FormDataImporter::ExtractAddressProfileFromSection(
     if (field_type.group() == FieldTypeGroup::kPhone &&
         base::FeatureList::IsEnabled(
             features::kAutofillEnableImportWhenMultiplePhoneNumbers)) {
-      if (ignore_phone_number_fields)
+      if (ignore_phone_number_fields) {
         continue;
+      }
       // Each phone number related type only occurs once per number. Seeing a
       // type a second time implies that it belongs to a new number. Since
       // Autofill currently supports storing only one phone number per profile,
@@ -583,6 +579,36 @@ bool FormDataImporter::ExtractAddressProfileFromSection(
       }
     }
   }
+  return observed_field_values;
+}
+
+bool FormDataImporter::ExtractAddressProfileFromSection(
+    base::span<const AutofillField* const> section_fields,
+    const GURL& source_url,
+    std::vector<FormDataImporter::AddressProfileImportCandidate>*
+        address_profile_import_candidates,
+    LogBuffer* import_log_buffer) {
+  // Tracks if the form section contains multiple distinct email addresses.
+  bool has_multiple_distinct_email_addresses = false;
+
+  // Tracks if the form section contains an invalid types.
+  bool has_invalid_field_types = false;
+
+  // Metadata about the way we construct candidate_profile.
+  ProfileImportMetadata import_metadata{.origin =
+                                            url::Origin::Create(source_url)};
+
+  // Tracks if any of the fields belongs to FormType::kAddressForm.
+  bool has_address_related_fields = false;
+
+  // Stores the values collected for each related `ServerFieldType`. Used as
+  // well to detect and discard address forms with multiple fields of the same
+  // type.
+  base::flat_map<ServerFieldType, std::u16string> observed_field_values =
+      GetAddressObservedFieldValues(section_fields, import_metadata,
+                                    import_log_buffer, has_invalid_field_types,
+                                    has_multiple_distinct_email_addresses,
+                                    has_address_related_fields);
 
   // The candidate for profile import.
   AutofillProfile candidate_profile = ConstructProfileFromObservedValues(
