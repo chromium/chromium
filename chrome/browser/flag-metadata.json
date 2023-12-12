@@ -2283,8 +2283,8 @@
   },
   {
     "name": "enable-core-location-backend",
-    "owners": [ "jameshollyer@google.com" ],
-    "expiry_milestone": 100
+    "owners": [ "deviceapi-team@google.com" ],
+    "expiry_milestone": 135
   },
   {
     "name": "enable-critical-persisted-tab-data",
