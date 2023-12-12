@@ -29,6 +29,7 @@
 
 #include <memory>
 
+#include "base/functional/callback_forward.h"
 #include "base/task/single_thread_task_runner.h"
 #include "services/metrics/public/cpp/ukm_recorder.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
@@ -37,6 +38,7 @@
 #include "third_party/blink/public/common/frame/history_user_activation_state.h"
 #include "third_party/blink/public/common/metrics/post_message_counter.h"
 #include "third_party/blink/public/common/tokens/tokens.h"
+#include "third_party/blink/public/mojom/permissions/permission.mojom-blink.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_value.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/dom/document.h"
@@ -538,9 +540,25 @@ class CORE_EXPORT LocalDOMWindow final : public DOMWindow,
   // given window, it cannot be taken away.
   void SetHasStorageAccess();
 
-  void maximize(ExceptionState&);
-  void minimize(ExceptionState&);
-  void restore(ExceptionState&);
+  void OnMaximizePermissionRequestComplete(
+      ScriptPromiseResolver* resolver,
+      mojom::blink::PermissionStatus status);
+  void OnMinimizePermissionRequestComplete(
+      ScriptPromiseResolver* resolver,
+      mojom::blink::PermissionStatus status);
+  void OnRestorePermissionRequestComplete(
+      ScriptPromiseResolver* resolver,
+      mojom::blink::PermissionStatus status);
+
+  using AdditionalWindowingControlsActionCallback =
+      base::OnceCallback<void(mojom::blink::PermissionStatus)>;
+  ScriptPromise MaybePromptWindowManagementPermission(
+      ScriptPromiseResolver* resolver,
+      AdditionalWindowingControlsActionCallback callback);
+
+  ScriptPromise maximize(ScriptState*, ExceptionState&);
+  ScriptPromise minimize(ScriptState*, ExceptionState&);
+  ScriptPromise restore(ScriptState*, ExceptionState&);
   void setResizable(bool resizable, ExceptionState&);
 
  protected:
