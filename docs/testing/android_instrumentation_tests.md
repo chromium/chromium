@@ -1,57 +1,11 @@
 # Android Instrumentation Tests
 
-Instrumentation tests are Java tests based on
-[`android.app.Instrumentation`](https://developer.android.com/reference/android/app/Instrumentation.html).
-They run on a device.
+Instrumentation tests are JUnit 4 tests that run on devices or emulators. They
+can be either unit tests or integration test.
 
 [TOC]
 
-## Writing an instrumentation test
-
-Currently, an instrumentation test is just a JUnit3-style test based on
-[android.test.InstrumentationTestCase](https://developer.android.com/reference/android/test/InstrumentationTestCase.html).
-(This will change starting in [Android N](https://en.wikipedia.org/wiki/Android_Nougat).)
-
-Writing an instrumentation test case can be simple, e.g.
-
-```java
-package org.chromium.sample.test;
-
-import android.test.InstrumentationTestCase;
-
-public class MyInstrumentationTest extends InstrumentationTestCase {
-
-    // Note that, because it's a JUnit3-style test, the test method *must*
-    // start with "test".
-    public void testTheFirst() {
-        bool writingInstrumentationTestsCanBeEasy = true;
-
-        // InstrumentationTestCase inherits the assert* methods through
-        // junit.framework.TestCase.
-        assertTrue(writingInstrumentationTestsCanBeEasy);
-    }
-
-    public void testTheSecond() {
-        bool writingInstrumentationTestsIsAlwaysEasy = false;
-        assertFalse(writingInstrumentationTestsIsAlwaysEasy);
-    }
-}
-```
-
-After writing a test, you can run it by:
-
- - Adding the file to the relevant gn target if the entire file is new.
-Typically, the "relevant gn target" is simply the target containing the
-other files in the same directory.
- - Rebuild.
- - Run the test
-
-## Instrumentation test features
-
-In many cases, Chromium has extended the instrumentation test framework
-classes to implement additional features.
-
-### Tracing
+## Tracing
 
 Enabling tracing during a test run allows all the function calls involved to be
 observed in a visual display (using Chrome's built-in chrome://tracing feature).
@@ -66,13 +20,7 @@ run, both within the Python test runner framework and the Java code running on
 the device. For a more detailed look, add the (no-argument) `--trace-all` flag.
 This causes every function called on the Python side to be added to the trace.
 
-### Annotations
-
-Instrumentation tests in Chromium use a wide variety of annotations to control
-and manipulate test execution. Some of these are implemented in Chromium, while
-others are pulled in from outside. They include:
-
-#### Test Batching
+## Test Batching Annotations
 
 The [`@Batch("group_name")`](https://chromium.googlesource.com/chromium/src/+/main/base/test/android/javatests/src/org/chromium/base/test/util/Batch.java)
 annotation is used to run all tests with the same batch group name in the same
@@ -84,23 +32,18 @@ of restarting the process can be as high as 10 seconds (usually around 2
 seconds), and that doesn't count the cost of starting an Activity like
 ChromeTabbedActivity.
 
-#### Size annotations
+## Size Annotations
 
-Size annotations are used primarily by the test runner to determine the length
-of time to wait before considering a test hung (i.e., its timeout duration).
+Size annotations are [used by the test runner] to determine the length of time
+to wait before considering a test hung (i.e., its timeout duration).
 
-Several of the annotations are Android APIs from
-[android.test.suitebuilder.annotation](https://developer.android.com/reference/android/test/suitebuilder/annotation/package-summary.html)
-(prior to [Android N](https://en.wikipedia.org/wiki/Android_Nougat)) or
-[androidx.test.filters](https://developer.android.com/reference/androidx/test/filters/package-summary.html)
-(starting in Android N). These are all fairly self-explanatory:
+Annotations from `androidx.test.filters`:
 
  - [`@SmallTest`](https://developer.android.com/reference/androidx/test/filters/SmallTest.html) (timeout: **10 seconds**)
  - [`@MediumTest`](https://developer.android.com/reference/androidx/test/filters/MediumTest.html) (timeout: **30 seconds**)
  - [`@LargeTest`](https://developer.android.com/reference/androidx/test/filters/LargeTest.html) (timeout: **2 minutes**)
 
-A few additional size annotations are provided in
-[//base](https://chromium.googlesource.com/chromium/src/+/main/base):
+Annotations from `//base`:
 
  - [`@EnormousTest`](https://chromium.googlesource.com/chromium/src/+/main/base/test/android/javatests/src/org/chromium/base/test/util/EnormousTest.java)
 (timeout: **5 minutes**) Typically used for tests that require WiFi.
@@ -109,16 +52,14 @@ A few additional size annotations are provided in
  - [`@Manual`](https://chromium.googlesource.com/chromium/src/+/main/base/test/android/javatests/src/org/chromium/base/test/util/Manual.java)
 (timeout: **10 hours**) Used for manual tests.
 
-Beware that the timeout durations for these annotations are subject to
-change, though they rarely do. These values are defined
-[here](https://chromium.googlesource.com/chromium/src/+/main/build/android/pylib/local/device/local_device_instrumentation_test_run.py#20).
+[used by the test runner]: https://source.chromium.org/search?q=file:local_device_instrumentation_test_run.py%20symbol:TIMEOUT_ANNOTATIONS&sq=&ss=chromium
 
-#### Annotations that disable tests
+## Annotations that Disable Tests
 
 There are several annotations that control whether or not a test runs.
 Some are conditional, others are not.
 
-##### Unconditional disabling
+### Unconditional Disabling
 
 [**@DisabledTest**](https://chromium.googlesource.com/chromium/src/+/main/base/test/android/javatests/src/org/chromium/base/test/util/DisabledTest.java)
 unconditionally disables a test.
@@ -129,7 +70,7 @@ unconditionally disables a test.
 )
 ```
 
-##### Conditional disabling
+### Conditional Disabling
 
 There are two primary annotation categories that conditionally disable tests:
 **@DisableIf** and **@Restriction**. The **@DisableIf** annotations are intended
@@ -235,7 +176,7 @@ intended to permanently limit a test to only recent versions of Android.
 )
 ```
 
-#### Annotations that affect how a test is run
+## Command-Line Flags Annotations
 
 Several annotations affect how a test is run in interesting or nontrivial ways.
 
@@ -263,7 +204,7 @@ command-line flags on a per-test basis (i.e., the flags handled by
 )
 ```
 
-#### Feature annotations
+## Feature Annotations
 
 [**@Feature**](https://chromium.googlesource.com/chromium/src/+/main/base/test/android/javatests/src/org/chromium/base/test/util/Feature.java)
 has been used inconsistently in Chromium to group tests across
