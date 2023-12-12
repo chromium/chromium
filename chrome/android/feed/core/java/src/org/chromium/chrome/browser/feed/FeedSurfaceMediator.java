@@ -312,6 +312,18 @@ public class FeedSurfaceMediator
         }
         mPrefChangeRegistrar.addObserver(Pref.ENABLE_SNIPPETS, this::updateContent);
         mPrefChangeRegistrar.addObserver(Pref.ENABLE_SNIPPETS_BY_DSE, this::updateContent);
+        mPrefChangeRegistrar.addObserver(
+                Pref.SUPERVISED_USER_FEED_INFO_CARD_DISMISSED,
+                () -> {
+                    updateSupervisedUserInfoCardVisibility(isSuggestionsVisible());
+                });
+
+        if (ChromeFeatureList.isEnabled(ChromeFeatureList.KID_FRIENDLY_CONTENT_FEED)) {
+            // The content feed must be updated as supervision status changes.
+            // If supervision is enabled, the for-you feed should be replaced with the supervised
+            // feed, and vice versa.
+            mPrefChangeRegistrar.addObserver(Pref.SUPERVISED_USER_ID, this::resetContent);
+        }
 
         if (openingTabId == FeedSurfaceCoordinator.StreamTabId.DEFAULT) {
             mRestoreTabId = FeedFeatures.getFeedTabIdToRestore();
@@ -461,6 +473,13 @@ public class FeedSurfaceMediator
         }
     }
 
+    /** Destroys and re-initializes the content feed. */
+    void resetContent() {
+        mCoordinator.setupHeaders(/* feedEnabled= */ false);
+        destroyPropertiesForStream();
+        updateContent();
+    }
+
     /** Gets the current state, for restoring later. */
     String getSavedInstanceString() {
         FeedScrollState state = new FeedScrollState();
@@ -531,6 +550,7 @@ public class FeedSurfaceMediator
         mPrefChangeRegistrar.addObserver(Pref.ARTICLES_LIST_VISIBLE, this::updateSectionHeader);
 
         boolean suggestionsVisible = isSuggestionsVisible();
+        updateSupervisedUserInfoCardVisibility(suggestionsVisible);
 
         @StreamKind
         int streamKind =
@@ -831,6 +851,11 @@ public class FeedSurfaceMediator
      * @return Whether the SignPromo should be visible.
      */
     private boolean shouldShowSigninPromo() {
+        // Supervised users should not see the Signin promo
+        if (mCoordinator.shouldDisplaySupervisedFeed()) {
+            return false;
+        }
+
         SyncPromoController.resetNtpSyncPromoLimitsIfHiddenForTooLong();
         SyncPromoController promoController =
                 new SyncPromoController(
@@ -845,6 +870,14 @@ public class FeedSurfaceMediator
             mSignInPromo.setCanShowPersonalizedSuggestions(isSuggestionsVisible());
         }
         return mSignInPromo.isVisible();
+    }
+
+    /**
+     * @return Whether the supervised user info card should be visible.
+     */
+    boolean shouldShowSupervisedUserInfoCard() {
+        return mCoordinator.shouldDisplaySupervisedFeed()
+                && !getPrefService().getBoolean(Pref.SUPERVISED_USER_FEED_INFO_CARD_DISMISSED);
     }
 
     /** Clear any dependencies related to the {@link Stream}. */
@@ -931,6 +964,18 @@ public class FeedSurfaceMediator
                 SectionHeaderListProperties.IS_SECTION_ENABLED_KEY, suggestionsVisible);
     }
 
+    void updateSupervisedUserInfoCardVisibility(boolean suggestionsVisible) {
+        int visibility =
+                (suggestionsVisible && shouldShowSupervisedUserInfoCard())
+                        ? View.VISIBLE
+                        : View.GONE;
+        View infoCardView = mCoordinator.getSupervisedUserInfoCardView();
+        if (infoCardView == null || infoCardView.getVisibility() == visibility) {
+            return;
+        }
+        infoCardView.setVisibility(visibility);
+    }
+
     /**
      * Update whether the section header should be expanded.
      *
@@ -957,6 +1002,7 @@ public class FeedSurfaceMediator
                                 suggestionsVisible, mTabToStreamMap.get(0).getStreamKind()));
 
         setHeaderIndicatorState(suggestionsVisible);
+        updateSupervisedUserInfoCardVisibility(suggestionsVisible);
 
         // Update toggleswitch item, which is last item in list.
         mSectionHeaderModel.set(SectionHeaderListProperties.MENU_MODEL_LIST_KEY, buildMenuItems());
@@ -1278,7 +1324,7 @@ public class FeedSurfaceMediator
                     feedType, FeedUserActionType.TAPPED_MANAGE_REACTIONS);
             FeedUma.recordFeedControlsAction(FeedUma.CONTROLS_ACTION_CLICKED_MANAGE_INTERESTS);
         } else if (itemId == R.id.ntp_feed_header_menu_item_learn) {
-            mActionDelegate.openHelpPage();
+            mCoordinator.requestSupervisedUserBottomsheet();
             FeedServiceBridge.reportOtherUserAction(feedType, FeedUserActionType.TAPPED_LEARN_MORE);
             FeedUma.recordFeedControlsAction(FeedUma.CONTROLS_ACTION_CLICKED_LEARN_MORE);
         } else if (itemId == R.id.ntp_feed_header_menu_item_toggle_switch) {

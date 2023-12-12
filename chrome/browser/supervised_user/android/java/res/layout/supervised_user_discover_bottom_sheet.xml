@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+Copyright 2023 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:paddingTop="8dp"
+    android:paddingStart="20dp"
+    android:paddingEnd="20dp"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+  <ImageView
+      android:id="@+id/drag_handlebar"
+      android:layout_height="wrap_content"
+      android:layout_width="32dp"
+      android:layout_gravity="center_horizontal"
+      android:importantForAccessibility="no"
+      app:srcCompat="@drawable/drag_handlebar" />
+
+  <TextView
+      android:id="@+id/discover_bottom_sheet_title"
+      android:layout_width="wrap_content"
+      android:layout_height="wrap_content"
+      android:layout_gravity="start"
+      android:includeFontPadding="false"
+      android:textAppearance="@style/TextAppearance.TextMediumThick.Primary"
+      android:translationY="-0.23sp"
+      android:text="@string/supervised_user_discover_bottom_sheet_title"
+      android:layout_marginTop="14dp"
+      android:layout_marginBottom="14dp"
+      />
+
+  <TextView
+      android:id="@+id/discover_info_card_title"
+      android:layout_width="wrap_content"
+      android:layout_height="wrap_content"
+      android:layout_marginBottom="10dp"
+      android:layout_gravity="center"
+      android:includeFontPadding="false"
+      android:textAppearance="@style/TextAppearance.TextMedium.Primary"
+      android:translationY="-0.23sp"
+      android:text="@string/supervised_user_discover_bottom_sheet_text"/>
+
+</LinearLayout>

@@ -94,7 +94,8 @@ import org.chromium.ui.modelutil.PropertyModel;
     ChromeFeatureList.WEB_FEED,
     ChromeFeatureList.INTEREST_FEED_V2_HEARTS,
     ChromeFeatureList.WEB_FEED_SORT,
-    ChromeFeatureList.FEED_HEADER_STICK_TO_TOP
+    ChromeFeatureList.FEED_HEADER_STICK_TO_TOP,
+    ChromeFeatureList.KID_FRIENDLY_CONTENT_FEED
 })
 public class FeedSurfaceMediatorTest {
     static final @Px int TOOLBAR_HEIGHT = 10;
@@ -288,6 +289,29 @@ public class FeedSurfaceMediatorTest {
         assertEquals(
                 FeedSurfaceCoordinator.StreamTabId.FOR_YOU,
                 model.get(SectionHeaderListProperties.CURRENT_TAB_INDEX_KEY));
+    }
+
+    @Test
+    public void testResetContent_supervisedUserSignedInThemSignedOut() {
+        when(mPrefService.getBoolean(Pref.ARTICLES_LIST_VISIBLE)).thenReturn(true);
+        when(mFeedServiceBridgeJniMock.isSignedIn()).thenReturn(true);
+        when(mPrefService.getBoolean(Pref.ENABLE_SNIPPETS)).thenReturn(true);
+
+        PropertyModel model = SectionHeaderListProperties.create(TOOLBAR_HEIGHT);
+        mFeedSurfaceMediator = createMediator(FeedSurfaceCoordinator.StreamTabId.FOR_YOU, model);
+
+        // Sign in supervised user.
+        when(mFeedSurfaceCoordinator.shouldDisplaySupervisedFeed()).thenReturn(true);
+        mFeedSurfaceMediator.updateContent();
+
+        // Sign out.
+        when(mFeedSurfaceCoordinator.shouldDisplaySupervisedFeed()).thenReturn(false);
+        mFeedSurfaceMediator.resetContent();
+
+        verify(mSupervisedUserStream, times(1))
+                .bind(any(), any(), any(), any(), any(), any(), anyInt());
+        verify(mForYouStream, times(1)).bind(any(), any(), any(), any(), any(), any(), anyInt());
+        verify(mFollowingStream, never()).bind(any(), any(), any(), any(), any(), any(), anyInt());
     }
 
     @Test
@@ -1128,6 +1152,47 @@ public class FeedSurfaceMediatorTest {
         verify(mUiConfig).addObserver(mDisplayStyleObserverCaptor.capture());
         assertTrue(
                 sectionHeaderModel.get(SectionHeaderListProperties.IS_NARROW_WINDOW_ON_TABLET_KEY));
+    }
+
+    @Test
+    public void testSupervisedInfoCardShownForSupervisedUsers() {
+        when(mFeedSurfaceCoordinator.shouldDisplaySupervisedFeed()).thenReturn(true);
+        when(mFeedServiceBridgeJniMock.isSignedIn()).thenReturn(true);
+        when(mPrefService.getBoolean(Pref.ENABLE_SNIPPETS)).thenReturn(true);
+
+        PropertyModel model = SectionHeaderListProperties.create(TOOLBAR_HEIGHT);
+        mFeedSurfaceMediator = createMediator(FeedSurfaceCoordinator.StreamTabId.FOR_YOU, model);
+        mFeedSurfaceMediator.updateContent();
+
+        assertTrue(mFeedSurfaceMediator.shouldShowSupervisedUserInfoCard());
+    }
+
+    @Test
+    public void testSupervisedInfoCardNotShownForSupervisedUsersAfterDismissed() {
+        when(mFeedSurfaceCoordinator.shouldDisplaySupervisedFeed()).thenReturn(true);
+        when(mFeedServiceBridgeJniMock.isSignedIn()).thenReturn(true);
+        when(mPrefService.getBoolean(Pref.ENABLE_SNIPPETS)).thenReturn(true);
+        when(mPrefService.getBoolean(Pref.SUPERVISED_USER_FEED_INFO_CARD_DISMISSED))
+                .thenReturn(true);
+
+        PropertyModel model = SectionHeaderListProperties.create(TOOLBAR_HEIGHT);
+        mFeedSurfaceMediator = createMediator(FeedSurfaceCoordinator.StreamTabId.FOR_YOU, model);
+        mFeedSurfaceMediator.updateContent();
+
+        assertFalse(mFeedSurfaceMediator.shouldShowSupervisedUserInfoCard());
+    }
+
+    @Test
+    public void testSupervisedInfoCardNotShownForRegularUsers() {
+        when(mFeedSurfaceCoordinator.shouldDisplaySupervisedFeed()).thenReturn(false);
+        when(mFeedServiceBridgeJniMock.isSignedIn()).thenReturn(true);
+        when(mPrefService.getBoolean(Pref.ENABLE_SNIPPETS)).thenReturn(true);
+
+        PropertyModel model = SectionHeaderListProperties.create(TOOLBAR_HEIGHT);
+        mFeedSurfaceMediator = createMediator(FeedSurfaceCoordinator.StreamTabId.FOR_YOU, model);
+        mFeedSurfaceMediator.updateContent();
+
+        assertFalse(mFeedSurfaceMediator.shouldShowSupervisedUserInfoCard());
     }
 
     private FeedSurfaceMediator createMediator() {

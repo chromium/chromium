@@ -1,0 +1,15 @@
+syntax = "proto2";
+
+option optimize_for = LITE_RUNTIME;
+package supervised_user;
+
+// Represents a client platform supported by Kid-friendly Search. It determines
+// which Search features and rendering experiences should trigger for a given
+// device or surface.
+enum Surface {
+  KFS_SURFACE_UNSPECIFIED = 0;
+  // Google Kids Space (go/dumbledore and go/kfs-gks-dd)
+  KFS_SURFACE_GKS = 1;
+  // Chrome NTP kids experience
+  KFS_CHROME_NTP = 2;
+}

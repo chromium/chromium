@@ -675,7 +675,6 @@ void FeedNetworkImpl::SendKidFriendlyApiRequest(
       binary_proto, base::Base64UrlEncodePolicy::INCLUDE_PADDING, &base64proto);
 
   GURL url(supervised_user::kKidFriendlyContentFeedEndpoint.Get());
-  bool host_overriden = false;
 
   // Overrides with a custom endpoint if available.
   std::string host_override =
@@ -684,14 +683,12 @@ void FeedNetworkImpl::SendKidFriendlyApiRequest(
     GURL override_url(host_override);
     if (override_url.is_valid()) {
       url = override_url;
-      host_overriden = true;
     }
   }
 
   AddMothershipPayloadQueryParams(base64proto, "", url);
   Send(url, "GET", /*request_body=*/{},
-       /*allow_bless_auth=*/host_overriden, account_info,
-       net::HttpRequestHeaders(),
+       /*allow_bless_auth=*/true, account_info, net::HttpRequestHeaders(),
        /*is_feed_query=*/false,
        base::BindOnce(&ParseAndForwardKidFriendlyQueryResponse,
                       std::move(callback)));

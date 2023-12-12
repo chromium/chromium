@@ -160,13 +160,6 @@ void SupervisedUserSettingsService::SetActive(bool active) {
   active_ = active;
 
   if (active_) {
-// TODO(b/290004926): Modifying `prefs::kSigninAllowed` causes check failures on
-// iOS.
-#if !BUILDFLAG(IS_IOS)
-    // Child account supervised users must be signed in.
-    SetLocalSetting(supervised_user::kSigninAllowed, base::Value(true));
-#endif  // !BUILDFLAG(IS_IOS)
-
     if (base::FeatureList::IsEnabled(
             supervised_user::kSupervisedPrefsControlledBySupervisedStore)) {
       SetLocalSetting(supervised_user::kSigninAllowedOnNextStartup,
@@ -179,12 +172,6 @@ void SupervisedUserSettingsService::SetActive(bool active) {
     // SafeSearch and GeolocationDisabled are controlled at the account level,
     // so don't override them client-side.
   } else {
-// TODO(b/290004926): Modifying `prefs::kSigninAllowed` causes check failures on
-// iOS.
-#if !BUILDFLAG(IS_IOS)
-    RemoveLocalSetting(supervised_user::kSigninAllowed);
-#endif  // !BUILDFLAG(IS_IOS)
-
     RemoveLocalSetting(supervised_user::kCookiesAlwaysAllowed);
     RemoveLocalSetting(supervised_user::kForceSafeSearch);
     RemoveLocalSetting(supervised_user::kGeolocationDisabled);

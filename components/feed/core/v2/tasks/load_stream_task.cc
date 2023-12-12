@@ -333,6 +333,8 @@ void LoadStreamTask::SendFeedQueryRequest() {
   if (options_.stream_type.IsForSupervisedUser()) {
     // TODO(b/295472540): Update parameters required for request.
     supervised_user::GetDiscoverFeedRequest kid_friendly_request;
+    kid_friendly_request.mutable_query()->mutable_context()->set_surface(
+        supervised_user::Surface::KFS_CHROME_NTP);
     network.SendKidFriendlyApiRequest(
         kid_friendly_request, account_info,
         base::BindOnce(&LoadStreamTask::KidFriendlyRequestComplete,

@@ -7,9 +7,8 @@ syntax = "proto2";
 option optimize_for = LITE_RUNTIME;
 package supervised_user;
 
-import "get_discover_feed_query.proto";
+import "request_context.proto";
 
-// Request for kid-friendly content feed.
-message GetDiscoverFeedRequest {
-  optional GetDiscoverFeedQuery query = 2;
+message GetDiscoverFeedQuery {
+  optional RequestContext context = 1;
 }

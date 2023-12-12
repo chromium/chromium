@@ -3242,7 +3242,7 @@ To change this setting, <ph name="BEGIN_LINK">&lt;resetlink&gt;</ph>reset sync<p
         Remove all
       </message>
       <message name="IDS_NTP_LEARN_MORE_ABOUT_SUGGESTED_CONTENT" desc="Text in the footer of the New Tab Page. Part of the text is a link to a help center page where the user can learn more about suggested content.">
-        <ph name="BEGIN_LINK">&lt;link&gt;</ph>Learn more<ph name="END_LINK">&lt;/link&gt;</ph> about suggested content
+        <ph name="BEGIN_LINK">&lt;LINK&gt;</ph>Learn more<ph name="END_LINK">&lt;/LINK&gt;</ph> about suggested content
       </message>
       <message name="IDS_NTP_MANAGE_MY_ACTIVITY" desc="Content description to manage my activity from the feed header overflow menu.">
         Manage activity
@@ -3349,19 +3349,48 @@ To change this setting, <ph name="BEGIN_LINK">&lt;resetlink&gt;</ph>reset sync<p
       <message name="IDS_NTP_DISCOVER_OFF_BRANDED" desc="Title in the feed header when the feed is turned off and the default search engine is not Google. Please use the branded term for Discover, as listed under Product Names in the Google Glossary Manager (TC ID 1799975766543019278).">
         Discover by Google - off
       </message>
-      <message name="IDS_SUPERVISED_USER_NTP_DISCOVER_ON" desc="Title in the feed header when the feed is turned on for a supervised user. Please use the branded term for Discover, as listed under Product Names in the Google Glossary Manager (TC ID 1799975766543019278).">
-        Content for young minds
+      <message name="IDS_SUPERVISED_USER_NTP_DISCOVER_ON" desc="Title in the feed header when the feed is turned on for a supervised user." translateable="false">
+        Check out today’s content
       </message>
-      <message name="IDS_SUPERVISED_USER_NTP_DISCOVER_ON_BRANDED" desc="Title in the feed header when the feed is turned on for a supervised user and the default search engine is not Google. Please use the branded term for Discover, as listed under Product Names in the Google Glossary Manager (TC ID 1799975766543019278).">
-        Content by Google for young minds
+      <message name="IDS_SUPERVISED_USER_NTP_DISCOVER_ON_BRANDED" desc="Title in the feed header when the feed is turned on for a supervised user and the default search engine is not Google." translateable="false">
+        Check out today’s content chosen by Google
       </message>
-      <message name="IDS_SUPERVISED_USER_NTP_DISCOVER_OFF" desc="Title in the feed header when the feed is turned off for a supervised user. Please use the branded term for Discover, as listed under Product Names in the Google Glossary Manager (TC ID 1799975766543019278).">
-        Content for young minds - off
+      <message name="IDS_SUPERVISED_USER_NTP_DISCOVER_OFF" desc="Title in the feed header when the feed is turned off for a supervised user." translateable="false">
+        Check out today’s content - off
       </message>
-      <message name="IDS_SUPERVISED_USER_NTP_DISCOVER_OFF_BRANDED" desc="Title in the feed header when the feed is turned off for a supervised user and the default search engine is not Google. Please use the branded term for Discover, as listed under Product Names in the Google Glossary Manager (TC ID 1799975766543019278).">
-        Content by Google for young minds - off
+      <message name="IDS_SUPERVISED_USER_NTP_DISCOVER_OFF_BRANDED" desc="Title in the feed header when the feed is turned off for a supervised user and the default search engine is not Google." translateable="false">
+        Check out today’s content chosen by Google - off
       </message>
-
+      <message name="IDS_SUPERVISED_USER_DISCOVER_INFO_CARD_TITLE" desc="Title of the info card shown to supervised users the first time they see the discover feed" translateable="false">
+        Everything here is chosen for kids
+      </message>
+      <message name="IDS_SUPERVISED_USER_DISCOVER_INFO_CARD_DESCRIPTION" desc="Description of the info card shown to supervised users the first time they see the discover feed. When clicked this will open a bottomsheet for with information on how content is chosen" translateable="false">
+       Learn <ph name="BEGIN_LINK">&lt;link&gt;</ph>how content is chosen<ph name="END_LINK">&lt;/link&gt;</ph>
+      </message>
+      <message name="IDS_SUPERVISED_USER_DISCOVER_BOTTOM_SHEET_TITLE" desc="Title of the bottomsheet with information on how content is chosen for the supervised user discover feed" translateable="false">
+        Read content chosen for kids
+      </message>
+      <message name="IDS_SUPERVISED_USER_DISCOVER_BOTTOM_SHEET_DESCRIPTION" desc="Accessibility string read when the bottom sheet is opened. The bottom sheet contains information on how content is chosen for the supervised user discover feed" translateable="false">
+        Read content chosen for kids
+      </message>
+          <message name="IDS_SUPERVISED_USER_DISCOVER_BOTTOM_SHEET_HALF_HEIGHT" desc="Accessibility string read when the bottom sheet is opened at half height. The bottom sheet contains information on how content is chosen for the supervised user discover feed" translateable="false">
+        Read content chosen for kids opened at half height
+      </message>
+        <message name="IDS_SUPERVISED_USER_DISCOVER_BOTTOM_SHEET_FULL_HEIGHT" desc="Accessibility string read when the bottom sheet is opened at full height. The bottom sheet contains information on how content is chosen for the supervised user discover feed" translateable="false">
+        Read content chosen for kids opened at full height
+      </message>
+     <message name="IDS_SUPERVISED_USER_DISCOVER_BOTTOM_SHEET_CLOSED" desc="Accessibility string read when the bottom sheet is closed. The bottom sheet contains information on how content is chosen for the supervised user discover feed" translateable="false">
+        Read content chosen for kids closed
+      </message>
+      <message name="IDS_SUPERVISED_USER_DISCOVER_BOTTOM_SHEET_TEXT" desc="Text on bottomsheet with information on how content is chosen for the supervised user discover feed " translateable="false">
+        Whether you’re learning or just browsing around for fun, the web is full of amazing articles, photos, and videos about all sorts of interesting stuff.\n\nGoogle Chrome on Android finds quality content to help you discover, create, and grow. On a New Tab Page in Chrome, you’ll find recommended content that is interesting and appropriate for your age. You can save content to read later, or share it with a friend or family member. Your list of content will be updated each day. The list is not based on your interests or browsing history, so it won’t be customized for you.
+      </message>
+      <message name="IDS_SUPERVISED_USER_DISCOVER_FOOTER_TITLE" desc="Title of the footer to supervised users when they reach the bottom of the discover feed" translateable="false">
+        That's all for today
+      </message>
+      <message name="IDS_SUPERVISED_USER_DISCOVER_FOOTER_SUBTITLE" desc="Subtitle of the footer to supervised users when they reach the bottom of the discover feed" translateable="false">
+        You'll see new stuff tomorrow
+      </message>
       <message name="IDS_NTP_FOLLOWING"
         meaning="Title for content - e.g. Followed sites"
         desc="Title in the feed header for user-customized following feed. This feed is composed of articles and content from sites that the user has followed">Following</message>

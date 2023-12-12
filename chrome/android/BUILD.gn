@@ -202,6 +202,7 @@ if (current_toolchain == default_toolchain) {
       "//chrome/browser/ui/android/quickactionsearchwidget:java_resources",
       "//chrome/browser/ui/android/signin:java_resources",
       "//chrome/browser/ui/android/strings:ui_strings_grd",
+      "//chrome/browser/ui/android/supervised_user:java_resources",
       "//chrome/browser/ui/android/theme:java_resources",
       "//chrome/browser/ui/android/toolbar:java_resources",
       "//chrome/browser/ui/android/webid/internal:java_resources",
@@ -440,7 +441,7 @@ if (current_toolchain == default_toolchain) {
       "//chrome/browser/ui/android/quickactionsearchwidget:java",
       "//chrome/browser/ui/android/searchactivityutils:java",
       "//chrome/browser/ui/android/signin:java",
-      "//chrome/browser/ui/android/signin:java",
+      "//chrome/browser/ui/android/supervised_user:java",
       "//chrome/browser/ui/android/theme:java",
       "//chrome/browser/ui/android/toolbar:java",
       "//chrome/browser/ui/messages/android:java",
@@ -758,6 +759,7 @@ if (current_toolchain == default_toolchain) {
 
     if (enable_supervised_users) {
       deps += [
+        "//chrome/browser/supervised_user:supervised_user_discover_bottom_sheet_java",
         "//chrome/browser/supervised_user:website_parent_approval_java",
         "//components/supervised_user/android:supervised_user_preferences_java",
       ]
@@ -1090,6 +1092,7 @@ if (current_toolchain == default_toolchain) {
       "//chrome/browser/ui/android/searchactivityutils:java",
       "//chrome/browser/ui/android/signin:java",
       "//chrome/browser/ui/android/signin:junit",
+      "//chrome/browser/ui/android/supervised_user:java",
       "//chrome/browser/ui/android/theme:java",
       "//chrome/browser/ui/android/toolbar:java",
       "//chrome/browser/ui/android/toolbar:junit",

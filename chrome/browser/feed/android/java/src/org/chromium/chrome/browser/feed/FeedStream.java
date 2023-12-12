@@ -41,6 +41,7 @@ import org.chromium.chrome.browser.feed.webfeed.WebFeedSnackbarController;
 import org.chromium.chrome.browser.feed.webfeed.WebFeedSubscriptionRequestStatus;
 import org.chromium.chrome.browser.feedback.HelpAndFeedbackLauncher;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
+import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.share.ChromeShareExtras;
 import org.chromium.chrome.browser.share.ShareDelegate;
 import org.chromium.chrome.browser.ui.messages.snackbar.Snackbar;
@@ -61,7 +62,10 @@ import org.chromium.components.browser_ui.bottomsheet.BottomSheetController.Stat
 import org.chromium.components.browser_ui.bottomsheet.EmptyBottomSheetObserver;
 import org.chromium.components.browser_ui.share.ShareParams;
 import org.chromium.components.feed.proto.FeedUiProto;
+import org.chromium.components.prefs.PrefService;
 import org.chromium.components.signin.metrics.SigninAccessPoint;
+import org.chromium.components.supervised_user.SupervisedUserPreferences;
+import org.chromium.components.user_prefs.UserPrefs;
 import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.ui.base.PageTransition;
 import org.chromium.ui.base.WindowAndroid;
@@ -1154,6 +1158,19 @@ public class FeedStream implements Stream {
                     // We intentionially don't add the spacer back in. The spacer has a key
                     // SPACER_KEY, not a slice id.
                 }
+            }
+
+            PrefService prefService = UserPrefs.get(Profile.getLastUsedRegularProfile());
+            if (SupervisedUserPreferences.isSubjectToParentalControls(prefService)
+                    && foundNewContent) {
+                View footer =
+                        LayoutInflater.from(mActivity)
+                                .inflate(
+                                        R.layout.supervised_user_end_of_feed, mRecyclerView, false);
+                FeedListContentManager.FeedContent content =
+                        new FeedListContentManager.NativeViewContent(
+                                getLateralPaddingsPx(), "-1", footer);
+                newContentList.add(content);
             }
 
             updateContentsInPlace(newContentList);

@@ -1,0 +1,24 @@
+// Copyright 2023 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+syntax = "proto2";
+
+option optimize_for = LITE_RUNTIME;
+package supervised_user;
+
+import "surface.proto";
+
+message RequestContext {
+  // Represents the surface of the requesting client. This determines what
+  // features should be fulfilled and how they should be rendered within a KFS
+  // API endpoint.
+  optional Surface surface = 1;
+
+  // The version of the requesting client. The format of the version string is
+  // specific to each client. For Google Kids Space clients this is expected to
+  // be the app's version code. For client's requesting xUIKit rendering, this
+  // field is used to determine client capabilities and prevent client-server
+  // skew (see go/xuikit-versioning).
+  optional string client_version = 2;
+}

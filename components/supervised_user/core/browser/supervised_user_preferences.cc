@@ -153,6 +153,8 @@ void RegisterProfilePrefs(PrefRegistrySimple* registry) {
       prefs::kFirstTimeInterstitialBannerState,
       static_cast<int>(FirstTimeInterstitialBannerState::kUnknown));
   registry->RegisterBooleanPref(prefs::kChildAccountStatusKnown, false);
+  registry->RegisterBooleanPref(prefs::kSupervisedUserFeedInfoCardDismissed,
+                                false);
 }
 
 void EnableParentalControls(PrefService& pref_service) {

@@ -18,6 +18,7 @@ import static androidx.test.espresso.matcher.ViewMatchers.withText;
 import static org.hamcrest.Matchers.allOf;
 import static org.hamcrest.Matchers.instanceOf;
 import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.not;
 import static org.junit.Assert.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
@@ -79,8 +80,11 @@ import org.chromium.chrome.browser.ntp.NewTabPage;
 import org.chromium.chrome.browser.ntp.cards.SignInPromo;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
+import org.chromium.chrome.browser.preferences.Pref;
+import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.suggestions.SiteSuggestion;
 import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.chrome.browser.tasks.tab_management.TabUiTestHelper;
 import org.chromium.chrome.browser.toolbar.top.ToolbarPhone;
 import org.chromium.chrome.test.ChromeJUnit4RunnerDelegate;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
@@ -96,6 +100,7 @@ import org.chromium.components.externalauth.ExternalAuthUtils;
 import org.chromium.components.signin.base.CoreAccountInfo;
 import org.chromium.components.signin.test.util.AccountCapabilitiesBuilder;
 import org.chromium.components.signin.test.util.FakeAccountManagerFacade;
+import org.chromium.components.user_prefs.UserPrefs;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.content_public.browser.test.util.TestTouchUtils;
 import org.chromium.net.NetworkChangeNotifier;
@@ -129,6 +134,7 @@ public class FeedV2NewTabPageTest {
 
     private static final int ARTICLE_SECTION_HEADER_POSITION = 1;
     private static final int SIGNIN_PROMO_POSITION = 2;
+    private static final int SUPERVISED_USER_INFO_CARD_POSITION = 3;
     private static final int MIN_ITEMS_AFTER_LOAD = 10;
 
     // Espresso ViewAction that performs a swipe from center to left across the vertical center
@@ -473,6 +479,50 @@ public class FeedV2NewTabPageTest {
                             .getDimension(org.chromium.chrome.R.dimen.ntp_search_box_height_polish),
                     0.5);
         }
+    }
+
+    @Test
+    @MediumTest
+    @Feature({"FeedNewTabPage"})
+    @EnableFeatures({ChromeFeatureList.KID_FRIENDLY_CONTENT_FEED})
+    public void testSupervisedUserInfoCard_DismissedByClickAcrossTabs() {
+        enableSupervision();
+
+        // Open a new tab page and verify that the info card is displayed.
+        openNewTabPage();
+        onView(withId(R.id.supervised_user_discover_info_card_view_container))
+                .check(matches(isDisplayed()));
+
+        // Create another new tab page.
+        Tab tab = mActivityTestRule.loadUrlInNewTab(UrlConstants.NTP_URL);
+        NewTabPageTestUtils.waitForNtpLoaded(tab);
+
+        // Switch to the newly created tab and verify that the info card is displayed.
+        ChromeTabbedActivity cta = mActivityTestRule.getActivity();
+        TabUiTestHelper.enterTabSwitcher(cta);
+        TabUiTestHelper.verifyTabSwitcherCardCount(cta, 2);
+        TabUiTestHelper.clickNthCardFromTabSwitcher(cta, 1);
+        onView(withId(R.id.supervised_user_discover_info_card_view_container))
+                .check(matches(isDisplayed()));
+
+        // Dismiss the info card.
+        onView(withId(R.id.discover_info_card_close_button)).perform(click());
+        onView(withId(R.id.supervised_user_discover_info_card_view_container))
+                .check(matches(not(isDisplayed())));
+
+        // Switch back to the original tab and verify that the info card is dismissed.
+        TabUiTestHelper.enterTabSwitcher(cta);
+        TabUiTestHelper.clickFirstCardFromTabSwitcher(cta);
+        onView(withId(R.id.supervised_user_discover_info_card_view_container))
+                .check(matches(not(isDisplayed())));
+    }
+
+    private void enableSupervision() {
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    UserPrefs.get(Profile.getLastUsedRegularProfile())
+                            .setString(Pref.SUPERVISED_USER_ID, "ChildAccountSUID");
+                });
     }
 
     /**

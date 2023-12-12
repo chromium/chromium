@@ -60,10 +60,6 @@ SupervisedUserSettingsPrefMappingEntry kSupervisedUserSettingsPrefMapping[] = {
         prefs::kSupervisedUserSafeSites,
     },
     {
-        supervised_user::kSigninAllowed,
-        prefs::kSigninAllowed,
-    },
-    {
         supervised_user::kSigninAllowedOnNextStartup,
         prefs::kSigninAllowedOnNextStartup,
     },
@@ -144,13 +140,6 @@ void SupervisedUserPrefStore::OnNewSettingsAvailable(
                        safe_search_api::YOUTUBE_RESTRICT_MODERATE);
 #endif
     prefs_->SetBoolean(policy::policy_prefs::kHideWebStoreIcon, false);
-
-// TODO(b/290004926): Modifying `prefs::kSigninAllowed` causes check failures on
-// iOS.
-#if !BUILDFLAG(IS_IOS)
-    prefs_->SetBoolean(prefs::kSigninAllowed, false);
-#endif  // !BUILDFLAG(IS_IOS)
-
     prefs_->SetBoolean(feed::prefs::kEnableSnippets,
                        supervised_user::IsKidFriendlyContentFeedAvailable());
 

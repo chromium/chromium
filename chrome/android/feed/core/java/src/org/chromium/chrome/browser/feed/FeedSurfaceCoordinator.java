@@ -48,14 +48,17 @@ import org.chromium.chrome.browser.feedback.HelpAndFeedbackLauncher;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.ntp.NewTabPageLaunchOrigin;
 import org.chromium.chrome.browser.ntp.NewTabPageLayout;
+import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.chrome.browser.privacy.settings.PrivacyPreferencesManagerImpl;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.share.ShareDelegate;
+import org.chromium.chrome.browser.supervised_user.SupervisedUserDiscoverSheetContent;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.toolbar.top.Toolbar;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.chrome.browser.ui.native_page.TouchEnabledDelegate;
 import org.chromium.chrome.browser.ui.signin.PersonalizedSigninPromoView;
+import org.chromium.chrome.browser.ui.supervised_user.SupervisedUserInfoCardView;
 import org.chromium.chrome.browser.user_education.UserEducationHelper;
 import org.chromium.chrome.browser.xsurface.HybridListRenderer;
 import org.chromium.chrome.browser.xsurface.ProcessScope;
@@ -128,6 +131,7 @@ public class FeedSurfaceCoordinator
     private @Nullable Profile mProfile;
     private @Nullable FeedSurfaceLifecycleManager mFeedSurfaceLifecycleManager;
     private @Nullable View mSigninPromoView;
+    private @Nullable View mSupervisedUserInfoCardView;
     private @Nullable FeedStreamViewResizer mStreamViewResizer;
     // Feed header fields.
     private @Nullable PropertyModel mSectionHeaderModel;
@@ -891,10 +895,6 @@ public class FeedSurfaceCoordinator
                 FeedLaunchReliabilityLogger launchLogger =
                         mSurfaceScope.getLaunchReliabilityLogger();
                 FeedUserInteractionReliabilityLogger userInteractionLogger = null;
-                if (ChromeFeatureList.isEnabled(
-                        ChromeFeatureList.FEED_USER_INTERACTION_RELIABILITY_REPORT)) {
-                    userInteractionLogger = mSurfaceScope.getUserInteractionReliabilityLogger();
-                }
                 mReliabilityLogger = new FeedReliabilityLogger(launchLogger, userInteractionLogger);
                 launchLogger.logUiStarting(mSurfaceType, mEmbeddingSurfaceCreatedTimeNs);
             }
@@ -1048,7 +1048,11 @@ public class FeedSurfaceCoordinator
                                     .getDimensionPixelSize(R.dimen.signin_promo_lateral_paddings);
                     ((PersonalizedSigninPromoView) mSigninPromoView)
                             .setCardBackgroundResource(R.drawable.home_surface_ui_background);
+                } else if (header == mSupervisedUserInfoCardView) {
+                    ((SupervisedUserInfoCardView) mSupervisedUserInfoCardView)
+                            .setCardBackgroundResource();
                 }
+
             }
 
             FeedListContentManager.NativeViewContent content =
@@ -1069,7 +1073,9 @@ public class FeedSurfaceCoordinator
         return mSectionHeaderModel;
     }
 
-    /** @return The {@link View} for this class. */
+    /**
+     * @return The {@link View} for this Signin Promo.
+     */
     View getSigninPromoView() {
         if (mSigninPromoView == null) {
             LayoutInflater inflater = LayoutInflater.from(mRootView.getContext());
@@ -1080,7 +1086,51 @@ public class FeedSurfaceCoordinator
         return mSigninPromoView;
     }
 
-    /** Update header views in the Feed. */
+    /**
+     * @return The {@link View} for the Supervised User Info Card.
+     */
+    View getSupervisedUserInfoCardView() {
+        if (shouldDisplaySupervisedFeed() && mSupervisedUserInfoCardView == null) {
+            LayoutInflater inflater = LayoutInflater.from(mRootView.getContext());
+            mSupervisedUserInfoCardView =
+                    inflater.inflate(
+                            R.layout.supervised_user_discover_info_card_view_container,
+                            mRootView,
+                            false);
+            ((SupervisedUserInfoCardView) mSupervisedUserInfoCardView)
+                    .setDismissButtonOnClickListener(
+                            new View.OnClickListener() {
+                                @Override
+                                public void onClick(View view) {
+                                    PrefService prefService = UserPrefs.get(mProfile);
+                                    prefService.setBoolean(
+                                            Pref.SUPERVISED_USER_FEED_INFO_CARD_DISMISSED, true);
+                                    mSupervisedUserInfoCardView.setVisibility(View.GONE);
+                                }
+                            });
+
+            ((SupervisedUserInfoCardView) mSupervisedUserInfoCardView)
+                    .setDescriptionLink(
+                            new View.OnClickListener() {
+                                @Override
+                                public void onClick(View view) {
+                                    requestSupervisedUserBottomsheet();
+                                }
+                            });
+        }
+
+        return mSupervisedUserInfoCardView;
+    }
+
+    /** Requests the bottom sheet for supervised users */
+    public void requestSupervisedUserBottomsheet() {
+        mBottomSheetController.requestShowContent(
+                new SupervisedUserDiscoverSheetContent(mActivity, mBottomSheetController), false);
+    }
+
+    /**
+     * Update header views in the Feed.
+     */
     void updateHeaderViews(boolean isSignInPromoVisible) {
         if (!mMediator.hasStreams()) return;
 
@@ -1090,6 +1140,10 @@ public class FeedSurfaceCoordinator
         }
 
         headers.add(mSectionHeaderView);
+
+        if (mMediator.shouldShowSupervisedUserInfoCard()) {
+            headers.add(getSupervisedUserInfoCardView());
+        }
 
         if (isSignInPromoVisible) {
             headers.add(getSigninPromoView());
