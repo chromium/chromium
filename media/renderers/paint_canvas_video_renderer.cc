@@ -1829,8 +1829,7 @@ bool PaintCanvasVideoRenderer::CopyVideoFrameYUVDataToGLTexture(
   // We need a shared image to receive the intermediate RGB result. Try to reuse
   // one if compatible, otherwise create a new one.
   gpu::SyncToken token;
-  if (!yuv_cache_.mailbox.IsZero() &&
-      yuv_cache_.size == video_frame->coded_size() &&
+  if (yuv_cache_.shared_image && yuv_cache_.size == video_frame->coded_size() &&
       yuv_cache_.raster_context_provider == raster_context_provider) {
     token = yuv_cache_.sync_token;
   } else {
@@ -1844,19 +1843,18 @@ bool PaintCanvasVideoRenderer::CopyVideoFrameYUVDataToGLTexture(
                gpu::SHARED_IMAGE_USAGE_OOP_RASTERIZATION;
     }
 
-    auto client_shared_image = sii->CreateSharedImage(
+    yuv_cache_.shared_image = sii->CreateSharedImage(
         SHARED_IMAGE_FORMAT, video_frame->coded_size(),
         GetVideoFrameRGBColorSpacePreferringSRGB(video_frame.get()),
         kTopLeft_GrSurfaceOrigin, kPremul_SkAlphaType, usage,
         "PaintCanvasVideoRenderer", gpu::kNullSurfaceHandle);
-    CHECK(client_shared_image);
-    yuv_cache_.mailbox = client_shared_image->mailbox();
+    CHECK(yuv_cache_.shared_image);
     token = sii->GenUnverifiedSyncToken();
   }
 
   // On the source Raster context, do the YUV->RGB conversion.
   gpu::MailboxHolder dest_holder;
-  dest_holder.mailbox = yuv_cache_.mailbox;
+  dest_holder.mailbox = yuv_cache_.shared_image->mailbox();
   dest_holder.texture_target = GL_TEXTURE_2D;
   dest_holder.sync_token = token;
   yuv_cache_.yuv_converter.ConvertYUVVideoFrame(
@@ -1870,8 +1868,8 @@ bool PaintCanvasVideoRenderer::CopyVideoFrameYUVDataToGLTexture(
   // destination texture.
   CopyMailboxToTexture(
       destination_gl, video_frame->coded_size(), video_frame->visible_rect(),
-      yuv_cache_.mailbox, post_conversion_sync_token, target, texture,
-      internal_format, format, type, level, premultiply_alpha, flip_y);
+      yuv_cache_.shared_image->mailbox(), post_conversion_sync_token, target,
+      texture, internal_format, format, type, level, premultiply_alpha, flip_y);
   destination_gl->GenUnverifiedSyncTokenCHROMIUM(
       yuv_cache_.sync_token.GetData());
 
@@ -2219,8 +2217,9 @@ PaintCanvasVideoRenderer::YUVTextureCache::~YUVTextureCache() {
 }
 
 void PaintCanvasVideoRenderer::YUVTextureCache::Reset() {
-  if (mailbox.IsZero())
+  if (!shared_image) {
     return;
+  }
   DCHECK(raster_context_provider);
 
   gpu::raster::RasterInterface* ri = raster_context_provider->RasterInterface();
@@ -2228,8 +2227,7 @@ void PaintCanvasVideoRenderer::YUVTextureCache::Reset() {
   ri->OrderingBarrierCHROMIUM();
 
   auto* sii = raster_context_provider->SharedImageInterface();
-  sii->DestroySharedImage(sync_token, mailbox);
-  mailbox.SetZero();
+  sii->DestroySharedImage(sync_token, std::move(shared_image));
 
   yuv_converter.ReleaseCachedData();
 
