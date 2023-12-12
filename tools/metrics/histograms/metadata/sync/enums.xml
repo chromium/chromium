@@ -53,6 +53,13 @@ chromium-metrics-reviews@google.com.
   <int value="1" label="Signed in"/>
 </enum>
 
+<enum name="CrossUserSharingDecryptionResult">
+  <int value="0" label="Succeeded"/>
+  <int value="1" label="Invitation missing required fields"/>
+  <int value="2" label="Failed to decrypt invitation"/>
+  <int value="3" label="Failed to parse decrypted invitation"/>
+</enum>
+
 <enum name="FaviconAvailabilityStatus">
   <int value="0" label="Favicon available locally"/>
   <int value="1" label="Favicon available via sync"/>

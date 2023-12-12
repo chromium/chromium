@@ -357,6 +357,17 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
+<histogram name="Sync.CrossUserSharingDecryptionResult"
+    enum="CrossUserSharingDecryptionResult" expires_after="2024-11-12">
+  <owner>rushans@google.com</owner>
+  <owner>mmoskvitin@google.com</owner>
+  <component>Services&gt;Sync</component>
+  <summary>
+    Records the result of decryption of incoming password sharing invitations.
+    Recorded for each incoming invitation received from the server.
+  </summary>
+</histogram>
+
 <histogram name="Sync.CrossUserSharingPublicPrivateKeyInitializedOnStartup"
     enum="Boolean" expires_after="2024-05-19">
   <owner>rushans@google.com</owner>

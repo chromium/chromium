@@ -66,6 +66,17 @@ BASE_FEATURE(kSyncKeepGcDirectiveDuringSyncCycle,
              "SyncKeepGcDirectiveDuringSyncCycle",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+enum class CrossUserSharingDecryptionResult {
+  kSuccess = 0,
+  kInvitationMissingFields = 1,
+  kFailedToDecryptInvitation = 2,
+  kFailedToParseDecryptedInvitation = 3,
+
+  kMaxValue = kFailedToParseDecryptedInvitation,
+};
+
 void LogPasswordNotesState(PasswordNotesStateForUMA state) {
   base::UmaHistogramEnumeration(kPasswordNotesStateHistogramName, state);
 }
@@ -76,6 +87,12 @@ void LogEncryptionResult(ModelType type, bool success) {
       base::StrCat({kEntityEncryptionResultHistogramName, ".",
                     ModelTypeToHistogramSuffix(type)}),
       success);
+}
+
+void LogCrossUserSharingDecryptionResult(
+    CrossUserSharingDecryptionResult result) {
+  base::UmaHistogramEnumeration("Sync.CrossUserSharingDecryptionResult",
+                                result);
 }
 
 // A proxy which can be called from any sequence and delegates the work to the
@@ -248,8 +265,8 @@ bool DecryptIncomingPasswordSharingInvitationSpecifics(
     sync_pb::PasswordSharingInvitationData* unencrypted_invitation_data) {
   if (!invitation.has_encrypted_password_sharing_invitation_data() ||
       !invitation.sender_info().has_cross_user_sharing_public_key()) {
-    DLOG(ERROR)
-        << "Incoming password sharing invitation missing required fields";
+    LogCrossUserSharingDecryptionResult(
+        CrossUserSharingDecryptionResult::kInvitationMissingFields);
     return false;
   }
 
@@ -262,16 +279,20 @@ bool DecryptIncomingPasswordSharingInvitationSpecifics(
                                              .x25519_public_key())),
           invitation.recipient_key_version());
   if (!decrypted) {
-    DLOG(ERROR) << "Failed to decrypt an incoming password sharing invitation";
+    LogCrossUserSharingDecryptionResult(
+        CrossUserSharingDecryptionResult::kFailedToDecryptInvitation);
     return false;
   }
 
   if (!unencrypted_invitation_data->ParseFromArray(decrypted->data(),
                                                    decrypted->size())) {
-    DLOG(ERROR) << "Failed to parse password sharing invitation";
+    LogCrossUserSharingDecryptionResult(
+        CrossUserSharingDecryptionResult::kFailedToParseDecryptedInvitation);
     return false;
   }
 
+  LogCrossUserSharingDecryptionResult(
+      CrossUserSharingDecryptionResult::kSuccess);
   return true;
 }
 

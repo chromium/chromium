@@ -182,12 +182,12 @@ CryptographerImpl::AuthEncryptForCrossUserSharing(
     base::span<const uint8_t> plaintext,
     base::span<const uint8_t> recipient_public_key) const {
   if (!default_cross_user_sharing_key_version_.has_value()) {
-    DVLOG(1) << "Default encryption key pair version is not set";
+    VLOG(1) << "Default encryption key pair version is not set";
     return absl::nullopt;
   }
   if (!cross_user_sharing_keys_.HasKeyPair(
           default_cross_user_sharing_key_version_.value())) {
-    DVLOG(1) << "Encryption key pair is not available";
+    VLOG(1) << "Encryption key pair is not available";
     return absl::nullopt;
   }
 
@@ -205,6 +205,7 @@ CryptographerImpl::AuthDecryptForCrossUserSharing(
     base::span<const uint8_t> sender_public_key,
     const uint32_t recipient_key_version) const {
   if (!cross_user_sharing_keys_.HasKeyPair(recipient_key_version)) {
+    VLOG(1) << "Decryption key pair does not exist: " << recipient_key_version;
     return absl::nullopt;
   }
 
