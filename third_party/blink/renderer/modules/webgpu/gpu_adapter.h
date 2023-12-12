@@ -22,7 +22,7 @@ class GPUSupportedLimits;
 class GPUMemoryHeapInfo;
 class ScriptPromiseResolver;
 
-class GPUAdapter final : public ScriptWrappable, public DawnObjectBase {
+class GPUAdapter final : public ScriptWrappable, DawnObject<WGPUAdapter> {
   DEFINE_WRAPPERTYPEINFO();
 
  public:
@@ -67,7 +67,6 @@ class GPUAdapter final : public ScriptWrappable, public DawnObjectBase {
     // There isn't a wgpu::Adapter::SetLabel, just skip.
   }
 
-  WGPUAdapter handle_;
   Member<GPU> gpu_;
   bool is_fallback_adapter_;
   WGPUBackendType backend_type_;
