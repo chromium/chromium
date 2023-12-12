@@ -1679,7 +1679,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Android.InputDevice.Keyboard.Active" enum="Boolean"
-    expires_after="2024-04-04">
+    expires_after="2024-06-09">
   <owner>aishwaryarj@google.com</owner>
   <owner>clank-large-form-factors@google.com</owner>
   <summary>
@@ -1688,7 +1688,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Android.InputDevice.Mouse.Active" enum="Boolean"
-    expires_after="2024-04-04">
+    expires_after="2024-06-09">
   <owner>aishwaryarj@google.com</owner>
   <owner>clank-large-form-factors@google.com</owner>
   <summary>Emitted when a mouse is connected or disconnected.</summary>
@@ -3425,7 +3425,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Android.RestoreTabsOnFRE.ResultActionFirstShow2"
-    enum="RestoreTabsOnFREResultAction" expires_after="2024-03-31">
+    enum="RestoreTabsOnFREResultAction" expires_after="2024-06-09">
   <owner>ckitagawa@chromium.org</owner>
   <owner>bjfong@google.com</owner>
   <owner>fredmello@chromium.org</owner>
@@ -3436,7 +3436,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Android.RestoreTabsOnFRE.ResultActionSecondShow2"
-    enum="RestoreTabsOnFREResultAction" expires_after="2024-03-31">
+    enum="RestoreTabsOnFREResultAction" expires_after="2024-06-09">
   <owner>ckitagawa@chromium.org</owner>
   <owner>bjfong@google.com</owner>
   <owner>fredmello@chromium.org</owner>

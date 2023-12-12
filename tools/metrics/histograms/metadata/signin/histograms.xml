@@ -44,7 +44,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Signin.AccountCapabilities.GetFromSystemLibraryDuration{Caller}"
-    units="ms" expires_after="2024-04-10">
+    units="ms" expires_after="2024-06-09">
   <owner>fernandex@chromium.org</owner>
   <owner>msarda@chromium.org</owner>
   <owner>triploblastic@chromium.org</owner>
@@ -123,7 +123,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Signin.AccountCapabilities.{Priority}.FetchDuration.{Result}"
-    units="ms" expires_after="2024-04-10">
+    units="ms" expires_after="2024-06-09">
   <owner>alexilin@chromium.org</owner>
   <owner>msarda@chromium.org</owner>
   <owner>chrome-signin-team@google.com</owner>
@@ -148,7 +148,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Signin.AccountCapabilities.{Priority}.FetchResult"
-    enum="AccountCapabilitiesFetchResult" expires_after="2024-04-10">
+    enum="AccountCapabilitiesFetchResult" expires_after="2024-06-09">
   <owner>alexilin@chromium.org</owner>
   <owner>msarda@chromium.org</owner>
   <owner>chrome-signin-team@google.com</owner>
@@ -814,7 +814,7 @@ prefs when the profile is loaded.  -->
 </histogram>
 
 <histogram name="Signin.HadPreviousSyncAccount.SignedOutOnProfileLoad"
-    enum="BooleanHadSyncAccount" expires_after="2024-04-10">
+    enum="BooleanHadSyncAccount" expires_after="2024-06-09">
   <owner>mastiz@chromium.org</owner>
   <owner>msarda@chromium.org</owner>
   <owner>chrome-signin-team@google.com</owner>
@@ -827,7 +827,7 @@ prefs when the profile is loaded.  -->
 </histogram>
 
 <histogram name="Signin.HadPreviousSyncAccount.SyncOffOnProfileLoad"
-    enum="BooleanHadSyncAccount" expires_after="2024-04-10">
+    enum="BooleanHadSyncAccount" expires_after="2024-06-09">
   <owner>mastiz@chromium.org</owner>
   <owner>msarda@chromium.org</owner>
   <owner>chrome-signin-team@google.com</owner>

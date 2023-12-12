@@ -8288,7 +8288,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="PushMessaging.UnregistrationStatus"
-    enum="PushUnregistrationStatus" expires_after="2024-02-04">
+    enum="PushUnregistrationStatus" expires_after="2024-06-09">
   <owner>peter@chromium.org</owner>
   <owner>knollr@chromium.org</owner>
   <summary>

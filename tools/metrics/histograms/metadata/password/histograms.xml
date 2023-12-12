@@ -215,7 +215,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="KeyboardAccessory.GenerationDialogChoice.{GenerationType}"
-    enum="GenerationDialogChoice" expires_after="M124">
+    enum="GenerationDialogChoice" expires_after="2024-06-09">
   <owner>ioanap@chromium.org</owner>
   <owner>vasilii@chromium.org</owner>
   <summary>
@@ -574,7 +574,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="PasswordManager.AccountStoreCredentialsAfterOptIn"
-    units="credentials" expires_after="2024-02-20">
+    units="credentials" expires_after="2024-06-09">
   <owner>treib@chromium.org</owner>
   <owner>mamir@chromium.org</owner>
   <summary>
@@ -2526,7 +2526,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="PasswordManager.PasswordSharingIOS.UserAction"
     enum="PasswordManager.PasswordSharingIOSUserAction"
-    expires_after="2024-03-01">
+    expires_after="2024-06-09">
   <owner>rgod@google.com</owner>
   <owner>mamir@chromium.org</owner>
   <summary>

@@ -130,7 +130,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Compose.Session.ComposeCount.{Status}" units="count"
-    expires_after="2024-03-31">
+    expires_after="2024-06-09">
   <owner>perrier@chromium.org</owner>
   <owner>chrome-compose-frontend@google.com</owner>
   <summary>
@@ -181,7 +181,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Compose.Session.DialogShownCount.{FinalStatus}" units="count"
-    expires_after="2024-03-31">
+    expires_after="2024-06-09">
   <owner>perrier@chromium.org</owner>
   <owner>chrome-compose-frontend@google.com</owner>
   <summary>
@@ -195,7 +195,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Compose.Session.UndoCount.{Status}" units="count"
-    expires_after="2024-03-31">
+    expires_after="2024-06-09">
   <owner>perrier@chromium.org</owner>
   <owner>chrome-compose-frontend@google.com</owner>
   <summary>

@@ -113,7 +113,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="IOS.BackgroundTimeBeforeColdStart" units="minutes"
-    expires_after="2024-04-06">
+    expires_after="2024-06-09">
   <owner>thegreenfrog@chromium.org</owner>
   <owner>bling-team@google.com</owner>
   <summary>
@@ -816,7 +816,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="IOS.ExperienceKitCalendar.Present"
-    enum="ExperienceKitCalendarTypes" expires_after="2024-03-10">
+    enum="ExperienceKitCalendarTypes" expires_after="2024-06-09">
   <owner>djean@chromium.org</owner>
   <owner>erahmaoui@google.com</owner>
   <summary>
@@ -3630,7 +3630,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="IOS.WhatsNew.InstructionsShown" enum="WhatsNewType"
-    expires_after="2024-03-17">
+    expires_after="2024-06-09">
   <owner>cheickcisse@google.com</owner>
   <owner>sebsg@google.com</owner>
   <summary>
@@ -3640,7 +3640,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="IOS.WhatsNew.ItemsClickedCount" units="count"
-    expires_after="2024-03-10">
+    expires_after="2024-06-09">
   <owner>cheickcisse@google.com</owner>
   <owner>sebsg@google.com</owner>
   <summary>The number of clicked What's New items per impression</summary>

@@ -1247,7 +1247,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="SiteEngagementService.EngagementType"
-    enum="SiteEngagementServiceEngagementType" expires_after="2024-02-11">
+    enum="SiteEngagementServiceEngagementType" expires_after="2024-06-09">
   <owner>calamity@chromium.org</owner>
   <owner>dominickn@chromium.org</owner>
   <summary>

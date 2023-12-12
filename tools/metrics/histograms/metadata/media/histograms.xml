@@ -5283,7 +5283,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Media.Video.Autoplay.Muted.PlayMethod.OffscreenDuration"
-    units="ms" expires_after="2024-01-30">
+    units="ms" expires_after="2024-06-09">
   <owner>dalecurtis@chromium.org</owner>
   <owner>evliu@google.com</owner>
   <owner>media-dev-uma@chromium.org</owner>

@@ -5205,7 +5205,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Ash.Personalization.App.Duration" units="ms"
-    expires_after="2024-04-05">
+    expires_after="2024-06-09">
   <owner>pzliu@google.com</owner>
   <owner>assistive-eng@google.com</owner>
   <summary>
@@ -5215,7 +5215,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Ash.Personalization.DynamicColor.ColorScheme.Settled"
-    enum="PersonalizationDynamicColorColorScheme" expires_after="2024-04-05">
+    enum="PersonalizationDynamicColorColorScheme" expires_after="2024-06-09">
   <owner>ericamlee@chromium.org</owner>
   <owner>assistive-eng@google.com</owner>
   <summary>
@@ -5235,7 +5235,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Ash.Personalization.DynamicColor.StaticColor.Settled"
-    enum="PersonalizationDynamicColorStaticColor" expires_after="2024-04-05">
+    enum="PersonalizationDynamicColorStaticColor" expires_after="2024-06-09">
   <owner>ericamlee@chromium.org</owner>
   <owner>assistive-eng@google.com</owner>
   <summary>

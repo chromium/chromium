@@ -512,7 +512,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Renderer.Preload.UnusedResource" enum="BooleanSuccess"
-    expires_after="2024-02-17">
+    expires_after="2024-06-09">
   <owner>yoavweiss@chromium.org</owner>
   <owner>speed-metrics-dev@chromium.org</owner>
   <summary>

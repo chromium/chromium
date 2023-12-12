@@ -355,7 +355,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="SBClientDownload.Warning.DownloadIsHttps.{DangerType}.{Action}"
-    enum="BooleanHttps" expires_after="2024-03-02">
+    enum="BooleanHttps" expires_after="2024-06-09">
   <owner>xinghuilu@chromium.org</owner>
   <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>

@@ -149,7 +149,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Companion.VisualQuery.Agent.DomImageCount" units="images"
-    expires_after="2024-03-31">
+    expires_after="2024-06-09">
   <owner>srna@google.com</owner>
   <owner>pstjuste@google.com</owner>
   <owner>src/chrome/browser/companion/OWNERS</owner>

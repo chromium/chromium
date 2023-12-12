@@ -201,7 +201,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Borealis.Install.Result" enum="BorealisInstallResult"
-    expires_after="2024-04-09">
+    expires_after="2024-06-09">
   <owner>danielng@google.com</owner>
   <owner>src/chrome/browser/ash/borealis/OWNERS</owner>
   <summary>
@@ -253,7 +253,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Borealis.Startup.NumAttempts" enum="BooleanAttempted"
-    expires_after="2024-04-09">
+    expires_after="2024-06-09">
   <owner>danielng@google.com</owner>
   <owner>src/chrome/browser/ash/borealis/OWNERS</owner>
   <summary>Recording every attempt to start Borealis (via the UI).</summary>
