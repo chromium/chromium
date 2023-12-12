@@ -6,7 +6,9 @@
 
 #include <string>
 
+#include "base/containers/contains.h"
 #include "base/containers/flat_map.h"
+#include "base/containers/flat_set.h"
 #include "base/strings/escape.h"
 #include "base/strings/string_util.h"
 #include "base/time/time.h"
@@ -226,12 +228,25 @@ bool StructTraits<blink::mojom::AuctionAdConfigNonSharedParamsDataView,
     }
   }
 
-  // Each entry in `all_slots_requested_sizes` must be distinct.
-  if (out->all_slots_requested_sizes &&
-      std::set<blink::AdSize>(out->all_slots_requested_sizes->begin(),
-                              out->all_slots_requested_sizes->end())
-              .size() != out->all_slots_requested_sizes->size()) {
-    return false;
+  if (out->all_slots_requested_sizes) {
+    // `all_slots_requested_sizes` must not be empty
+    if (out->all_slots_requested_sizes->empty()) {
+      return false;
+    }
+
+    base::flat_set<blink::AdSize> ad_sizes(
+        out->all_slots_requested_sizes->begin(),
+        out->all_slots_requested_sizes->end());
+    // Each entry in `all_slots_requested_sizes` must be distinct.
+    if (out->all_slots_requested_sizes->size() != ad_sizes.size()) {
+      return false;
+    }
+
+    // If `all_slots_requested_sizes` is set, `requested_size` must be in it.
+    if (out->requested_size &&
+        !base::Contains(ad_sizes, *out->requested_size)) {
+      return false;
+    }
   }
 
   return true;

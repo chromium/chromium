@@ -78,7 +78,6 @@ const makeTest = ({
       assert_false(dontExpectPromiseError.sawError,
                    "Should not see a promise error");
     }
-
   }, name);
 };
 
@@ -359,6 +358,21 @@ makeTest({
   name: 'requestedSize hexideximal',
   expect: EXPECT_EXCEPTION(TypeError),
   auctionConfigOverrides: {requestedSize: {width: '0x100', height: '100'}}
+});
+
+makeTest({
+  name: 'Empty allSlotsRequestedSizes',
+  expect: EXPECT_EXCEPTION(TypeError),
+  auctionConfigOverrides: {allSlotsRequestedSizes: []}
+});
+
+makeTest({
+  name: 'allSlotsRequestedSizes without matching value in requestedSize',
+  expect: EXPECT_EXCEPTION(TypeError),
+  auctionConfigOverrides: {requestedSize:
+                             {width: '100', height: '100'},
+                           allSlotsRequestedSizes:
+                            [{width: '100', height: '101'}]}
 });
 
 makeTest({
