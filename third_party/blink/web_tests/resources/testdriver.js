@@ -647,7 +647,7 @@
          *
          * This function places `Secure Payment
          * Confirmation <https://w3c.github.io/secure-payment-confirmation>`_ into
-         * an automated 'autoaccept' or 'autoreject' mode, to allow testing
+         * an automated 'autoAccept' or 'autoReject' mode, to allow testing
          * without user interaction with the transaction UX prompt.
          *
          * Matches the `Set SPC Transaction Mode
@@ -667,8 +667,8 @@
          * @param {String} mode - The `transaction mode
          *                        <https://w3c.github.io/secure-payment-confirmation/#enumdef-transactionautomationmode>`_
          *                        to set. Must be one of "``none``",
-         *                        "``autoaccept``", or
-         *                        "``autoreject``".
+         *                        "``autoAccept``", or
+         *                        "``autoReject``".
          * @param {WindowProxy} context - Browsing context in which
          *                                to run the call, or null for the current
          *                                browsing context.
@@ -678,6 +678,42 @@
          */
         set_spc_transaction_mode: function(mode, context=null) {
           return window.test_driver_internal.set_spc_transaction_mode(mode, context);
+        },
+
+        /**
+         * Sets the current registration automation mode for Register Protocol Handlers.
+         *
+         * This function places `Register Protocol Handlers
+         * <https://html.spec.whatwg.org/multipage/system-state.html#custom-handlers>`_ into
+         * an automated 'autoAccept' or 'autoReject' mode, to allow testing
+         * without user interaction with the transaction UX prompt.
+         *
+         * Matches the `Set Register Protocol Handler Mode
+         * <https://html.spec.whatwg.org/multipage/system-state.html#set-rph-registration-mode>`_
+         * WebDriver command.
+         *
+         * @example
+         * await test_driver.set_rph_registration_mode("autoAccept");
+         * test.add_cleanup(() => {
+         *   return test_driver.set_rph_registration_mode("none");
+         * });
+         *
+         * navigator.registerProtocolHandler('web+soup', 'soup?url=%s');
+         *
+         * @param {String} mode - The `registration mode
+         *                        <https://html.spec.whatwg.org/multipage/system-state.html#registerprotocolhandler()-automation-mode>`_
+         *                        to set. Must be one of "``none``",
+         *                        "``autoAccept``", or
+         *                        "``autoReject``".
+         * @param {WindowProxy} context - Browsing context in which
+         *                                to run the call, or null for the current
+         *                                browsing context.
+         *
+         * @returns {Promise} Fulfilled after the transaction mode has been set,
+         *                    or rejected if setting the mode fails.
+         */
+        set_rph_registration_mode: function(mode, context=null) {
+          return window.test_driver_internal.set_rph_registration_mode(mode, context);
         },
 
         /**
@@ -696,6 +732,25 @@
          */
         cancel_fedcm_dialog: function(context=null) {
             return window.test_driver_internal.cancel_fedcm_dialog(context);
+        },
+
+        /**
+         * Clicks a button on the Federated Credential Management dialog
+         *
+         * Matches the `Click dialog button
+         * <https://fedidcg.github.io/FedCM/#webdriver-clickdialogbutton>`_
+         * WebDriver command.
+         *
+         * @param {String} dialog_button - String enum representing the dialog button to click.
+         * @param {WindowProxy} context - Browsing context in which
+         *                                to run the call, or null for the current
+         *                                browsing context.
+         *
+         * @returns {Promise} Fulfilled after the button is clicked,
+         *                    or rejected in case the WebDriver command errors
+         */
+        click_fedcm_dialog_button: function(dialog_button, context=null) {
+          return window.test_driver_internal.click_fedcm_dialog_button(dialog_button, context);
         },
 
         /**
@@ -806,6 +861,149 @@
          */
         reset_fedcm_cooldown: function(context=null) {
           return window.test_driver_internal.reset_fedcm_cooldown(context);
+        },
+
+        /**
+         * Creates a virtual sensor for use with the Generic Sensors APIs.
+         *
+         * Matches the `Create Virtual Sensor
+         * <https://w3c.github.io/sensors/#create-virtual-sensor-command>`_
+         * WebDriver command.
+         *
+         * Once created, a virtual sensor is available to all navigables under
+         * the same top-level traversable (i.e. all frames in the same page,
+         * regardless of origin).
+         *
+         * @param {String} sensor_type - A `virtual sensor type
+         *                               <https://w3c.github.io/sensors/#virtual-sensor-metadata-virtual-sensor-type>`_
+         *                               such as "accelerometer".
+         * @param {Object} [sensor_params={}] - Optional parameters described
+         *                                     in `Create Virtual Sensor
+         *                                     <https://w3c.github.io/sensors/#create-virtual-sensor-command>`_.
+         * @param {WindowProxy} [context=null] - Browsing context in which to
+         *                                       run the call, or null for the
+         *                                       current browsing context.
+         *
+         * @returns {Promise} Fulfilled when virtual sensor is created.
+         *                    Rejected in case the WebDriver command errors out
+         *                    (including if a virtual sensor of the same type
+         *                    already exists).
+         */
+        create_virtual_sensor: function(sensor_type, sensor_params={}, context=null) {
+          return window.test_driver_internal.create_virtual_sensor(sensor_type, sensor_params, context);
+        },
+
+        /**
+         * Causes a virtual sensor to report a new reading to any connected
+         * platform sensor.
+         *
+         * Matches the `Update Virtual Sensor Reading
+         * <https://w3c.github.io/sensors/#update-virtual-sensor-reading-command>`_
+         * WebDriver command.
+         *
+         * Note: The ``Promise`` it returns may fulfill before or after a
+         * "reading" event is fired. When using
+         * :js:func:`EventWatcher.wait_for`, it is necessary to take this into
+         * account:
+         *
+         * Note: New values may also be discarded due to the checks in `update
+         * latest reading
+         * <https://w3c.github.io/sensors/#update-latest-reading>`_.
+         *
+         * @example
+         * // Avoid races between EventWatcher and update_virtual_sensor().
+         * // This assumes you are sure this reading will be processed (see
+         * // the example below otherwise).
+         * const reading = { x: 1, y: 2, z: 3 };
+         * await Promise.all([
+         *   test_driver.update_virtual_sensor('gyroscope', reading),
+         *   watcher.wait_for('reading')
+         * ]);
+         *
+         * @example
+         * // Do not wait forever if you are not sure the reading will be
+         * // processed.
+         * const readingPromise = watcher.wait_for('reading');
+         * const timeoutPromise = new Promise(resolve => {
+         *     t.step_timeout(() => resolve('TIMEOUT', 3000))
+         * });
+         *
+         * const reading = { x: 1, y: 2, z: 3 };
+         * await test_driver.update_virtual_sensor('gyroscope', 'reading');
+         *
+         * const value =
+         *     await Promise.race([timeoutPromise, readingPromise]);
+         * if (value !== 'TIMEOUT') {
+         *   // Do something. The "reading" event was fired.
+         * }
+         *
+         * @param {String} sensor_type - A `virtual sensor type
+         *                               <https://w3c.github.io/sensors/#virtual-sensor-metadata-virtual-sensor-type>`_
+         *                               such as "accelerometer".
+         * @param {Object} reading - An Object describing a reading in a format
+         *                           dependent on ``sensor_type`` (e.g. ``{x:
+         *                           1, y: 2, z: 3}`` or ``{ illuminance: 42
+         *                           }``).
+         * @param {WindowProxy} [context=null] - Browsing context in which to
+         *                                       run the call, or null for the
+         *                                       current browsing context.
+         *
+         * @returns {Promise} Fulfilled after the reading update reaches the
+         *                    virtual sensor. Rejected in case the WebDriver
+         *                    command errors out (including if a virtual sensor
+         *                    of the given type does not exist).
+         */
+        update_virtual_sensor: function(sensor_type, reading, context=null) {
+          return window.test_driver_internal.update_virtual_sensor(sensor_type, reading, context);
+        },
+
+        /**
+         * Triggers the removal of a virtual sensor if it exists.
+         *
+         * Matches the `Delete Virtual Sensor
+         * <https://w3c.github.io/sensors/#delete-virtual-sensor-command>`_
+         * WebDriver command.
+         *
+         * @param {String} sensor_type - A `virtual sensor type
+         *                               <https://w3c.github.io/sensors/#virtual-sensor-metadata-virtual-sensor-type>`_
+         *                               such as "accelerometer".
+         * @param {WindowProxy} [context=null] - Browsing context in which to
+         *                                       run the call, or null for the
+         *                                       current browsing context.
+         *
+         * @returns {Promise} Fulfilled after the virtual sensor has been
+         *                    removed or if a sensor of the given type does not
+         *                    exist. Rejected in case the WebDriver command
+         *                    errors out.
+
+         */
+        remove_virtual_sensor: function(sensor_type, context=null) {
+          return window.test_driver_internal.remove_virtual_sensor(sensor_type, context);
+        },
+
+        /**
+         * Returns information about a virtual sensor.
+         *
+         * Matches the `Get Virtual Sensor Information
+         * <https://w3c.github.io/sensors/#get-virtual-sensor-information-command>`_
+         * WebDriver command.
+         *
+         * @param {String} sensor_type - A `virtual sensor type
+         *                               <https://w3c.github.io/sensors/#virtual-sensor-metadata-virtual-sensor-type>`_
+         *                               such as "accelerometer".
+         * @param {WindowProxy} [context=null] - Browsing context in which to
+         *                                       run the call, or null for the
+         *                                       current browsing context.
+         *
+         * @returns {Promise} Fulfilled with an Object with the properties
+         *                    described in `Get Virtual Sensor Information
+         *                    <https://w3c.github.io/sensors/#get-virtual-sensor-information-command>`_.
+         *                    Rejected in case the WebDriver command errors out
+         *                    (including if a virtual sensor of the given type
+         *                    does not exist).
+         */
+        get_virtual_sensor_information: function(sensor_type, context=null) {
+            return window.test_driver_internal.get_virtual_sensor_information(sensor_type, context);
         }
     };
 
@@ -932,8 +1130,16 @@
             throw new Error("set_spc_transaction_mode() is not implemented by testdriver-vendor.js");
         },
 
+        set_rph_registration_mode: function(mode, context=null) {
+            return Promise.reject(new Error("unimplemented"));
+        },
+
         async cancel_fedcm_dialog(context=null) {
             throw new Error("cancel_fedcm_dialog() is not implemented by testdriver-vendor.js");
+        },
+
+        async click_fedcm_dialog_button(dialog_button, context=null) {
+            throw new Error("click_fedcm_dialog_button() is not implemented by testdriver-vendor.js");
         },
 
         async select_fedcm_account(account_index, context=null) {
@@ -958,6 +1164,22 @@
 
         async reset_fedcm_cooldown(context=null) {
             throw new Error("reset_fedcm_cooldown() is not implemented by testdriver-vendor.js");
+        },
+
+        async create_virtual_sensor(sensor_type, sensor_params, context=null) {
+            throw new Error("create_virtual_sensor() is not implemented by testdriver-vendor.js");
+        },
+
+        async update_virtual_sensor(sensor_type, reading, context=null) {
+            throw new Error("update_virtual_sensor() is not implemented by testdriver-vendor.js");
+        },
+
+        async remove_virtual_sensor(sensor_type, context=null) {
+            throw new Error("remove_virtual_sensor() is not implemented by testdriver-vendor.js");
+        },
+
+        async get_virtual_sensor_information(sensor_type, context=null) {
+            throw new Error("get_virtual_sensor_information() is not implemented by testdriver-vendor.js");
         }
     };
 })();
