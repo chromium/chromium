@@ -14,6 +14,7 @@
 #include "content/public/browser/service_process_host.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_ui_data_source.h"
+#include "mojo/public/cpp/bindings/callback_helpers.h"
 #include "services/on_device_model/public/cpp/model_assets.h"
 
 OnDeviceInternalsUI::OnDeviceInternalsUI(content::WebUI* web_ui)
@@ -59,13 +60,17 @@ OnDeviceInternalsUI::GetService() {
         content::ServiceProcessHost::Options()
             .WithDisplayName("On-Device Model Service")
             .Pass());
+    service_.reset_on_disconnect();
   }
   return *service_.get();
 }
 
 void OnDeviceInternalsUI::GetEstimatedPerformanceClass(
     GetEstimatedPerformanceClassCallback callback) {
-  GetService().GetEstimatedPerformanceClass(std::move(callback));
+  GetService().GetEstimatedPerformanceClass(
+      mojo::WrapCallbackWithDefaultInvokeIfNotRun(
+          std::move(callback),
+          on_device_model::mojom::PerformanceClass::kError));
 }
 
 void OnDeviceInternalsUI::OnModelAssetsLoaded(

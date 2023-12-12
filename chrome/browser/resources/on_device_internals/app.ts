@@ -21,6 +21,7 @@ interface Response {
   text: string;
   response: string;
   retracted: boolean;
+  error: boolean;
 }
 
 interface OnDeviceInternalsAppElement {
@@ -141,8 +142,23 @@ class OnDeviceInternalsAppElement extends PolymerElement {
     this.onModelSelected_();
   }
 
+  private onServiceCrashed_() {
+    if (this.currentResponse_) {
+      this.currentResponse_.error = true;
+      this.addResponse_();
+    }
+    this.error_ = 'Service crashed, please reload the model.';
+    this.model_ = null;
+    this.modelPath_ = '';
+    this.loadModelStart_ = 0;
+    this.$.modelInput.focus();
+  }
+
   private async onModelSelected_() {
     this.error_ = '';
+    if (this.model_) {
+      this.model_.$.close();
+    }
     this.model_ = null;
     this.loadModelStart_ = new Date().getTime();
     const modelPath = this.$.modelInput.value;
@@ -160,6 +176,9 @@ class OnDeviceInternalsAppElement extends PolymerElement {
       this.error_ = 'Unable to load model';
     } else {
       this.model_ = newModel;
+      this.model_.onConnectionError.addListener(() => {
+        this.onServiceCrashed_();
+      });
       this.startNewSession_();
       this.modelPath_ = modelPath;
     }
@@ -222,13 +241,17 @@ class OnDeviceInternalsAppElement extends PolymerElement {
           this.responseRouter_.removeListener(onResponseId);
           this.responseRouter_.removeListener(onCompleteId);
         });
-    this.currentResponse_ = {text: this.text_, response: '', retracted: false};
+    this.currentResponse_ =
+        {text: this.text_, response: '', retracted: false, error: false};
     this.text_ = '';
   }
 
   private responseClass_(response: Response): string {
     if (response.retracted) {
       return 'response retracted';
+    }
+    if (response.error) {
+      return 'response error';
     }
     return 'response';
   }
