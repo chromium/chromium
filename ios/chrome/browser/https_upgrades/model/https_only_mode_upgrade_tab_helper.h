@@ -107,11 +107,16 @@ class HttpsOnlyModeUpgradeTabHelper
   // The original HTTP URL that was navigated to.
   GURL http_url_;
 
-  // Parameters for the upgraded navigation.
+  // Parameters for the upgraded navigation. These are stored upon a new
+  // navigation and used when starting a fallback or upgraded navigation.
   GURL upgraded_https_url_;
   ui::PageTransition navigation_transition_type_ = ui::PAGE_TRANSITION_FIRST;
   bool navigation_is_renderer_initiated_ = false;
   web::Referrer referrer_;
+  // Set to true when a new navigation with a POST method is started.
+  // Used to check if the navigation should be upgraded when a response is
+  // received. Cleared when the current navigation finishes.
+  bool navigation_is_post_ = false;
 
   base::OneShotTimer timer_;
 

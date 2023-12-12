@@ -91,6 +91,7 @@ void HttpsOnlyModeUpgradeTabHelper::DidStartNavigation(
     navigation_transition_type_ = navigation_context->GetPageTransition();
     navigation_is_renderer_initiated_ =
         navigation_context->IsRendererInitiated();
+    navigation_is_post_ = navigation_context->IsPost();
   }
 }
 
@@ -100,7 +101,7 @@ void HttpsOnlyModeUpgradeTabHelper::DidFinishNavigation(
   if (navigation_context->IsSameDocument()) {
     return;
   }
-
+  navigation_is_post_ = false;
   if (state_ == State::kNone) {
     return;
   }
@@ -267,8 +268,10 @@ void HttpsOnlyModeUpgradeTabHelper::ShouldAllowResponse(
     return;
   }
 
-  // Upgrade to HTTPS if the navigation wasn't upgraded before.
-  if (item_pending->GetHttpsUpgradeType() == web::HttpsUpgradeType::kNone) {
+  // Upgrade to HTTPS if the navigation wasn't upgraded before. Ignore POST
+  // navigations.
+  if (item_pending->GetHttpsUpgradeType() == web::HttpsUpgradeType::kNone &&
+      !navigation_is_post_) {
     if ((!base::FeatureList::IsEnabled(
              security_interstitials::features::kHttpsUpgrades) &&
          !(prefs_ && prefs_->GetBoolean(prefs::kHttpsOnlyModeEnabled))) ||
@@ -277,9 +280,6 @@ void HttpsOnlyModeUpgradeTabHelper::ShouldAllowResponse(
       // See ShouldCreateLoader() function in
       // https_only_mode_upgrade_interceptor.cc for the desktop/Android
       // implementation.
-      // TODO(crbug.com/1302509): Also ignore POST requests. On Desktop and
-      // Android we ignore all requests with methods other than "GET", but we
-      // don't have method information here.
       ResetState();
       std::move(callback).Run(
           web::WebStatePolicyDecider::PolicyDecision::Allow());
@@ -311,7 +311,7 @@ void HttpsOnlyModeUpgradeTabHelper::ShouldAllowResponse(
     return;
   }
 
-  if (state_ == State::kNone) {
+  if (state_ == State::kNone && !navigation_is_post_) {
     // If the pending item was a failed upgrade but the upgrade bit wasn't set,
     // this is likely an interstitial reload.
     timer_.Stop();
