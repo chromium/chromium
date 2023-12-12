@@ -51,23 +51,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="PaymentRequest.EventResponse.IsReadyToPay" enum="Boolean"
-    expires_after="2023-07-02">
-  <owner>rouslan@chromium.org</owner>
-  <owner>web-payments-team@google.com</owner>
-  <summary>
-    An Android payment app's response to an IS_READY_TO_PAY intent. The intent
-    is sent when &quot;new PaymentRequest()&quot; is called in JavaScript, but
-    only for URL-based payment methods, only for apps that expose the
-    IS_READY_TO_PAY intent to Chrome, only when Chrome is able to connect to the
-    service at this intent filter, and only when not in private browsing mode.
-    The response from IS_READY_TO_PAY is expected to be &quot;true&quot; in the
-    majority of cases. The value of &quot;false&quot; could be either the
-    payment app refusing to make payments or an internal error, which should
-    both be rare.
-  </summary>
-</histogram>
-
 <histogram name="PaymentRequest.Events" units="bitfield value"
     expires_after="2023-08-27">
   <owner>rouslan@chromium.org</owner>
