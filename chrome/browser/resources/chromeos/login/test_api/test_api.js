@@ -1039,6 +1039,11 @@ class ChoobeScreenTester extends ScreenElementApi {
         this.choobeScreensList, '#cr-button-theme-selection');
   }
 
+  /** @override */
+  shouldSkip() {
+    return loadTimeData.getBoolean('testapi_shouldSkipChoobe');
+  }
+
   isReadyForTesting() {
     return this.isVisible();
   }
