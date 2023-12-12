@@ -115,8 +115,9 @@ void FrameOrWorkerScheduler::RegisterStickyFeature(
     if (v8::Isolate::TryGetCurrent()) {
       OnStartedUsingStickyFeature(feature, policy, CaptureSourceLocation());
     }
+  } else {
+    OnStartedUsingStickyFeature(feature, policy, nullptr);
   }
-  OnStartedUsingStickyFeature(feature, policy, nullptr);
 }
 
 std::unique_ptr<FrameOrWorkerScheduler::LifecycleObserverHandle>
