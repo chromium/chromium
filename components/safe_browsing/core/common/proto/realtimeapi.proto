@@ -190,18 +190,34 @@ message MatchedUrlNavigationRule {
   // Action for matched rule not implemented.
   reserved 4;
 
+  // This represents text segment in a custom message defined for DLP rule.
+  // For eg: “Please learn more (here)[link] and (here)[link]"
+  // is broken into 4 segments.
+  message CustomRuleMessageSegment {
+    // Required. Text to be displayed in this segment.
+    optional string text = 1;
+
+    // Optional. Link to external resource, such as a company's communication
+    // policy. This is supposed to be hyperlink on text field above.
+    optional string link = 2;
+  }
+
   message CustomMessage {
     // Custom message provided by admin during rule creation. Contains text
     // only.
-    optional string custom_message = 1;
+    optional string custom_message = 1 [deprecated = true];
 
     // learn more link provided by admin during rule creation. Contains a single
     // URL.
-    optional string learn_more_link = 2;
+    optional string learn_more_link = 2 [deprecated = true];
 
     // Custom message containing <a> tags wrapping URLs. This is sanitized HTML
     // restricted to <a> tags with "href" attribute.
-    optional string custom_message_with_links = 3;
+    optional string custom_message_with_links = 3 [deprecated = true];
+
+    // Ordered list of text segments comprised of plain text and URLs. These
+    // combined represent the custom rule message.
+    repeated CustomRuleMessageSegment message_segments = 4;
   }
   // Contains custom interstitial message associated with this rule.
   optional CustomMessage custom_message = 5;
