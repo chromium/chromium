@@ -285,6 +285,7 @@ void CaptureModeEducationController::CreateAndShowTutorialDialog() {
   views::Widget::InitParams params(views::Widget::InitParams::TYPE_POPUP);
   params.delegate = CreateDialogView().release();
   params.name = "CaptureModeEducationTutorialWidget";
+  params.activatable = views::Widget::InitParams::Activatable::kYes;
   tutorial_widget_ = std::make_unique<views::Widget>();
   tutorial_widget_->Init(std::move(params));
   tutorial_widget_->Show();
