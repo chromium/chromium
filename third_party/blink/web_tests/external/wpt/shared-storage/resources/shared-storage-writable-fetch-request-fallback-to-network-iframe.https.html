@@ -18,5 +18,23 @@
         img.src = url;
       });
     }
+
+    function loadFrame(url, hasSharedStorageWritableAttribute) {
+      return new Promise(function(resolve, reject) {
+        var frame = document.createElement('iframe');
+        document.body.appendChild(frame);
+        frame.onload = function() {
+          window.parent.postMessage({msg: 'iframe loaded'}, "*");
+          resolve(frame);
+        };
+        frame.onerror = function() {
+          reject(new Error('Nested iframe load failed'));
+        };
+        if (hasSharedStorageWritableAttribute) {
+          frame.sharedStorageWritable = true;
+        }
+        frame.src = url;
+      });
+    }
   </script>
 </body>
