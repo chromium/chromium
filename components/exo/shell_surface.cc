@@ -415,6 +415,9 @@ void ShellSurface::MaybeActivateSurface() {
   // `host_window()`'s layer doesn't have a SurfaceId yet, so set it to embed
   // the upcoming CompositorFrame.
   if (!host_window()->layer()->GetSurfaceId()) {
+    DCHECK(host_window()->GetLocalSurfaceId().parent_sequence_number() ==
+               GetCurrentLocalSurfaceId().parent_sequence_number() ||
+           !pending_configs_.empty());
     host_window()->layer()->SetShowSurface(
         host_window()->GetSurfaceId(), host_window()->bounds().size(),
         SK_ColorWHITE, cc::DeadlinePolicy::UseDefaultDeadline(),

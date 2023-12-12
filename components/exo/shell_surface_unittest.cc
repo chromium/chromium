@@ -147,6 +147,25 @@ uint32_t Configure(
   return 0;
 }
 
+uint32_t ConfigureSerial(
+    ConfigureData* config_data,
+    const gfx::Rect& bounds,
+    chromeos::WindowStateType state_type,
+    bool resizing,
+    bool activated,
+    const gfx::Vector2d& origin_offset,
+    float raster_scale,
+    std::optional<chromeos::WindowStateType> restore_state_type) {
+  config_data->suggested_bounds = bounds;
+  config_data->state_type = state_type;
+  config_data->is_resizing = resizing;
+  config_data->is_active = activated;
+  config_data->raster_scale = raster_scale;
+  config_data->restore_state_type = restore_state_type;
+  config_data->count++;
+  return config_data->count;
+}
+
 bool IsCaptureWindow(ShellSurface* shell_surface) {
   aura::Window* window = shell_surface->GetWidget()->GetNativeWindow();
   return WMHelper::GetInstance()->GetCaptureClient()->GetCaptureWindow() ==
@@ -4228,6 +4247,32 @@ TEST_F(ShellSurfaceTest, WindowPropertyChangedNotificationWithoutRootSurface) {
   shell_surface.reset();
 
   overview_controller->EndOverview(ash::OverviewEndAction::kTests);
+}
+
+TEST_F(ShellSurfaceTest, SurfaceSyncWithShellSurfaceCreatedOnDisplayWithScale) {
+  ash::Shell::GetRootWindowForNewWindows()->layer()->OnDeviceScaleFactorChanged(
+      2.f);
+
+  // Empty means no initial size.
+  constexpr gfx::Size kEmptySize(0, 0);
+  ConfigureData config_data;
+  auto shell_surface =
+      test::ShellSurfaceBuilder(kEmptySize)
+          .SetNoCommit()
+          .SetConfigureCallback(base::BindRepeating(
+              &ConfigureSerial, base::Unretained(&config_data)))
+          .BuildShellSurface();
+  auto* surface = shell_surface->root_surface();
+
+  // Creates the shell widget, and add the surface_tree_host's window as child.
+  surface->Commit();
+
+  EXPECT_EQ(config_data.count, 1u);
+  EXPECT_EQ(config_data.suggested_bounds, gfx::Rect());
+  EXPECT_EQ(shell_surface->GetCommitTargetLayer(),
+            shell_surface->host_window()->layer());
+  EXPECT_EQ(shell_surface->GetSurfaceId(),
+            shell_surface->host_window()->GetSurfaceId());
 }
 
 }  // namespace exo
