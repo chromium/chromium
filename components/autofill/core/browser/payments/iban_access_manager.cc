@@ -20,18 +20,14 @@ IbanAccessManager::IbanAccessManager(AutofillClient* client)
 IbanAccessManager::~IbanAccessManager() = default;
 
 void IbanAccessManager::FetchValue(const Suggestion& suggestion,
-                                   base::WeakPtr<Accessor> accessor) {
-  if (!accessor) {
-    return;
-  }
-
+                                   OnIbanFetchedCallback on_iban_fetched) {
   // If `ValueToFill` has a value then that means that it's a local IBAN
   // suggestion, and the full IBAN value is known already.
   if (absl::holds_alternative<Suggestion::ValueToFill>(suggestion.payload)) {
     const std::u16string value =
         suggestion.GetPayload<Suggestion::ValueToFill>().value();
     if (!value.empty()) {
-      accessor->OnIbanFetched(value);
+      std::move(on_iban_fetched).Run(value);
     }
     return;
   }
@@ -61,18 +57,18 @@ void IbanAccessManager::FetchValue(const Suggestion& suggestion,
   client_->GetPaymentsNetworkInterface()->UnmaskIban(
       request_details,
       base::BindOnce(&IbanAccessManager::OnUnmaskResponseReceived,
-                     weak_ptr_factory_.GetWeakPtr(), accessor));
+                     weak_ptr_factory_.GetWeakPtr(),
+                     std::move(on_iban_fetched)));
 }
 
 void IbanAccessManager::OnUnmaskResponseReceived(
-    base::WeakPtr<Accessor> accessor,
+    OnIbanFetchedCallback on_iban_fetched,
     AutofillClient::PaymentsRpcResult result,
     const std::u16string& value) {
   client_->CloseAutofillProgressDialog(
       /*show_confirmation_before_closing=*/false);
-  if (accessor && result == AutofillClient::PaymentsRpcResult::kSuccess &&
-      !value.empty()) {
-    accessor->OnIbanFetched(value);
+  if (result == AutofillClient::PaymentsRpcResult::kSuccess && !value.empty()) {
+    std::move(on_iban_fetched).Run(value);
     return;
   }
   AutofillErrorDialogContext error_context;

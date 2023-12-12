@@ -7,6 +7,7 @@
 
 #include <string>
 
+#include "base/functional/callback_forward.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "components/autofill/core/browser/autofill_client.h"
@@ -23,11 +24,10 @@ struct Suggestion;
 // IBANs.
 class IbanAccessManager {
  public:
-  class Accessor {
-   public:
-    virtual ~Accessor() = default;
-    virtual void OnIbanFetched(const std::u16string& value) = 0;
-  };
+  // Callback to notify the caller of the access manager when fetching the value
+  // of an IBAN has finished.
+  using OnIbanFetchedCallback =
+      base::OnceCallback<void(std::u16string_view value)>;
 
   explicit IbanAccessManager(AutofillClient* client);
   IbanAccessManager(const IbanAccessManager&) = delete;
@@ -35,17 +35,16 @@ class IbanAccessManager {
   ~IbanAccessManager();
 
   // Returns the full IBAN value corresponding to the input `suggestion`.
-  // As this may require a network round-trip for server IBANs, the value
-  // is returned via a call to `Accessor::OnIbanFetched` which may occur
-  // asynchronously to this method.
-  // If the IBAN value cannot be extracted, the accessor will never be called.
+  // As this may require a network round-trip for server IBANs,
+  //`on_iban_fetched` is run once the value is fetched. For local IBANs, value
+  // will be filled immediately.
   void FetchValue(const Suggestion& suggestion,
-                  base::WeakPtr<Accessor> accessor);
+                  OnIbanFetchedCallback on_iban_fetched);
 
  private:
   // Called when an UnmaskIban call is completed. The full IBAN value will be
   // returned via `value`.
-  void OnUnmaskResponseReceived(base::WeakPtr<Accessor> accessor,
+  void OnUnmaskResponseReceived(OnIbanFetchedCallback on_iban_fetched,
                                 AutofillClient::PaymentsRpcResult result,
                                 const std::u16string& value);
 
