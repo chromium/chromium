@@ -1107,7 +1107,7 @@ bool EventRewriterAsh::RewriteModifierKeys(const KeyEvent& key_event,
         break;
       }
 
-      characteristic_flag = EF_CAPS_LOCK_ON;
+      characteristic_flag = EF_MOD3_DOWN;
       remapped_key =
           GetRemappedKey(device_id, mojom::ModifierKey::kCapsLock,
                          prefs::kLanguageRemapCapsLockKeyTo, delegate_);
@@ -1175,23 +1175,6 @@ bool EventRewriterAsh::RewriteModifierKeys(const KeyEvent& key_event,
     incoming.flags |= characteristic_flag;
     characteristic_flag = remapped_key->flag;
 
-    // If the internal state of CapLocks is enabled, we should not remove
-    // the modifier flag. This is important for the case in which the user
-    // remaps the CapsLock key to another key (e.g. Search) and CapsLock is
-    // enabled. If the user were to press the CapsLock key (remapped to Search),
-    // we risk removing the CapsLock modifier and accidentally disabling
-    // CapsLocks.
-    if (incoming.key_code == VKEY_CAPITAL &&
-        !ime_keyboard_->IsCapsLockEnabled()) {
-      // We remove the CapsLock modifier here because we do not want to
-      // turn on the Capslock modifier when the key has been remapped.
-      incoming.flags &= ~EF_CAPS_LOCK_ON;
-      base::RecordAction(
-          base::UserMetricsAction("CapsLock_Toggled_Using_CapsLockKey"));
-    }
-    if (remapped_key->remap_to == ui::mojom::ModifierKey::kCapsLock) {
-      characteristic_flag |= EF_CAPS_LOCK_ON;
-    }
     auto original_location = KeycodeConverter::DomCodeToLocation(incoming.code);
     state->code = RelocateModifier(state->code, original_location);
     state->key_code = RelocateKeyboardCode(state->key_code, original_location);
@@ -1240,8 +1223,27 @@ bool EventRewriterAsh::RewriteModifierKeys(const KeyEvent& key_event,
   // AcceleratorController, so that the event is visible to apps (see
   // crbug.com/775743).
   if (key_event.type() == ET_KEY_PRESSED && state->key_code == VKEY_CAPITAL) {
-    ime_keyboard_->SetCapsLockEnabled(!ime_keyboard_->IsCapsLockEnabled());
+    // Toggle the EF_CAPS_LOCK_ON only when the key is pressed, so here it
+    // checks whether the key is auto-repeat event. Unfortunately, EF_IS_REPEAT
+    // for CapsLock is not reliable, because it checks whether flags are the
+    // same, too, but actually CapsLock will trigger to change the
+    // EF_CAPS_LOCK_ON flag of the original event. Instead, check whether the
+    // current key is already pressed or not.
+    bool is_repeat = base::ranges::find(
+                         pressed_key_states_,
+                         std::tuple(key_event.code(), key_event.GetDomKey(),
+                                    key_event.key_code()),
+                         [](auto entry) {
+                           return std::tuple(entry.first.code, entry.first.key,
+                                             entry.first.key_code);
+                         }) != pressed_key_states_.end();
+    if (!is_repeat) {
+      ime_keyboard_->SetCapsLockEnabled(!ime_keyboard_->IsCapsLockEnabled());
+    }
   }
+  state->flags = (state->flags & ~EF_CAPS_LOCK_ON) |
+                 (ime_keyboard_->IsCapsLockEnabled() ? EF_CAPS_LOCK_ON : 0);
+
   return exact_event;
 }
 
