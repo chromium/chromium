@@ -1667,11 +1667,7 @@ ScriptPromise MLGraphBuilder::build(ScriptState* script_state,
 #endif
 
 #if !BUILDFLAG(IS_CHROMEOS)
-  // The runtime enable feature is used to disable the cross process hardware
-  // acceleration by default.
-  if (base::FeatureList::IsEnabled(
-          webnn::features::kEnableMachineLearningNeuralNetworkService) &&
-      ml_context_->GetDeviceType() == V8MLDeviceType::Enum::kGpu) {
+  if (ml_context_->GetDeviceType() == V8MLDeviceType::Enum::kGpu) {
     // Reject unsupported error on unimplemented platform when getting
     // `WebNNContext` mojo interface with BrowserInterfaceBroker's
     // GetInterface() method before creating `WebNNGraph` message pipe.
@@ -1704,12 +1700,7 @@ MLGraph* MLGraphBuilder::buildSync(ScriptState* script_state,
 #endif
 
 #if !BUILDFLAG(IS_CHROMEOS)
-  // GPU support requires a cross-process WebNN acceleration service. This
-  // services is gated behind the EnableMachineLearningNeuralNetworkService
-  // runtime feature.
-  if (ml_context_->GetDeviceType() == V8MLDeviceType::Enum::kGpu &&
-      base::FeatureList::IsEnabled(
-          webnn::features::kEnableMachineLearningNeuralNetworkService)) {
+  if (ml_context_->GetDeviceType() == V8MLDeviceType::Enum::kGpu) {
     MLContextMojo* ml_context_mojo =
         static_cast<MLContextMojo*>(ml_context_.Get());
     return MLGraphMojo::ValidateAndBuildSync(script_state, ml_context_mojo,

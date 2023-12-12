@@ -10,11 +10,10 @@
 
 namespace webnn::features {
 
-// Enables the Web Machine Learning Neural Network Service to access hardware
-// acceleration out of renderer process. Explainer:
+// Enables the Web Machine Learning Neural Network API. Explainer:
 // https://github.com/webmachinelearning/webnn/blob/main/explainer.md
 COMPONENT_EXPORT(WEBNN_FEATURES)
-BASE_DECLARE_FEATURE(kEnableMachineLearningNeuralNetworkService);
+BASE_DECLARE_FEATURE(kWebMachineLearningNeuralNetwork);
 
 }  // namespace webnn::features
 

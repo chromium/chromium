@@ -2288,6 +2288,7 @@
     },
     {
       name: "MachineLearningNeuralNetwork",
+      public: true,
       status: {
         "ChromeOS_Ash": "experimental",
         "ChromeOS_Lacros": "experimental",

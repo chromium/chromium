@@ -33791,6 +33791,7 @@ from previous Chrome versions.
   <int value="307543404" label="disable-team-drives"/>
   <int value="307670929"
       label="enable-ambient-authentication-in-guest-session"/>
+  <int value="308163683" label="WebMachineLearningNeuralNetwork:disabled"/>
   <int value="308941571" label="PrintPreviewDiscoveredPrinters:enabled"/>
   <int value="309795366" label="ScrollUnification:disabled"/>
   <int value="309861115"
@@ -34540,6 +34541,7 @@ from previous Chrome versions.
   <int value="665409384"
       label="AutofillToolkitViewsCreditCardDialogsMac:enabled"/>
   <int value="665647051" label="DiscountConsentV2:enabled"/>
+  <int value="666163273" label="WebMachineLearningNeuralNetwork:enabled"/>
   <int value="666428855" label="MediaRemotingWithoutFullscreen:enabled"/>
   <int value="666871156" label="KaleidoscopeModule:enabled"/>
   <int value="667643314" label="LitePageServerPreviews:enabled"/>
@@ -35479,8 +35481,6 @@ from previous Chrome versions.
   <int value="1115564918" label="LacrosWaylandLogging:enabled"/>
   <int value="1115635149" label="EnableUnifiedMultiDeviceSetup:enabled"/>
   <int value="1115732111" label="OmniboxCalcProvider:enabled"/>
-  <int value="1115946303"
-      label="EnableMachineLearningNeuralNetworkService:enabled"/>
   <int value="1116084116" label="BindingManagerConnectionLimit:enabled"/>
   <int value="1116593018" label="CaptureThumbnailOnLoadFinished:disabled"/>
   <int value="1116798400" label="NoncedPartitionedCookies:enabled"/>
@@ -37595,8 +37595,6 @@ from previous Chrome versions.
       label="WebAuthenticationPasskeysUIExperiment:disabled"/>
   <int value="2098714203" label="enable-generic-sensors"/>
   <int value="2098907258" label="UseSurfaceLayerForVideo:disabled"/>
-  <int value="2099135667"
-      label="EnableMachineLearningNeuralNetworkService:disabled"/>
   <int value="2099583779" label="DefaultLinkCapturingInBrowser:enabled"/>
   <int value="2099676690" label="CastStreamingPerformanceOverlay:disabled"/>
   <int value="2099945365" label="OmniboxAssistantVoiceSearch:enabled"/>

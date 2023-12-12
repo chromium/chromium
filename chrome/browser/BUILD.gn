@@ -2234,6 +2234,7 @@ static_library("browser") {
     "//components/metrics/structured:structured_events",
     "//components/metrics_services_manager",
     "//components/mirroring/service:mirroring_service",
+    "//components/ml/webnn:features",
     "//components/navigation_interception",
     "//components/navigation_metrics",
     "//components/net_log",

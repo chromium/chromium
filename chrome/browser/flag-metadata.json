@@ -8302,6 +8302,11 @@
     "expiry_milestone": 125
   },
   {
+    "name": "web-machine-learning-neural-network",
+    "owners": [ "qjw@chromium.org", "ningxin.hu@intel.com", "rafael.cintron@microsoft.com" ],
+    "expiry_milestone": 130
+  },
+  {
     "name": "web-midi",
     "owners": [ "//third_party/blink/renderer/modules/webaudio/OWNERS", "reillyg@chromium.org", "deviceapi-team@google.com" ],
     "expiry_milestone": 124

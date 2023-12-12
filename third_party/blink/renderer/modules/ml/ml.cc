@@ -85,13 +85,7 @@ ScriptPromise ML::createContext(ScriptState* script_state,
 
 #if !BUILDFLAG(IS_CHROMEOS)
   if (options->deviceType() == V8MLDeviceType::Enum::kGpu) {
-    if (base::FeatureList::IsEnabled(
-            webnn::features::kEnableMachineLearningNeuralNetworkService)) {
-      MLContextMojo::ValidateAndCreateAsync(resolver, options, this);
-    } else {
-      resolver->Reject(MakeGarbageCollected<DOMException>(
-          DOMExceptionCode::kNotSupportedError, "Not implemented"));
-    }
+    MLContextMojo::ValidateAndCreateAsync(resolver, options, this);
     return promise;
   }
 #endif
@@ -118,15 +112,8 @@ MLContext* ML::createContextSync(ScriptState* script_state,
   // The runtime enable feature is used to disable the cross process hardware
   // acceleration by default.
   if (options->deviceType() == V8MLDeviceType::Enum::kGpu) {
-    if (base::FeatureList::IsEnabled(
-            webnn::features::kEnableMachineLearningNeuralNetworkService)) {
       return MLContextMojo::ValidateAndCreateSync(script_state, exception_state,
                                                   options, this);
-    } else {
-      exception_state.ThrowDOMException(DOMExceptionCode::kNotSupportedError,
-                                        "Not implemented");
-      return nullptr;
-    }
   }
 #endif
 

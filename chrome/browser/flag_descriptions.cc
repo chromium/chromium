@@ -2296,6 +2296,11 @@ const char kEnableMachineLearningModelLoaderWebPlatformApiName[] =
 const char kEnableMachineLearningModelLoaderWebPlatformApiDescription[] =
     "Enables the Machine Learning Model Loader Web Platform API.";
 
+const char kWebMachineLearningNeuralNetworkName[] = "Enables WebNN API";
+const char kWebMachineLearningNeuralNetworkDescription[] =
+    "Enables the Web Machine Learning Neural Network (WebNN) API. Spec at "
+    "https://www.w3.org/TR/webnn/";
+
 #if !BUILDFLAG(IS_ANDROID)
 const char kEnableMantaServiceName[] = "Enable Manta Service";
 const char kEnableMantaServiceDescription[] =

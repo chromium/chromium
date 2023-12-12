@@ -126,7 +126,7 @@ base::WeakPtr<GpuClient> GpuClient::GetWeakPtr() {
 void GpuClient::BindWebNNContextProvider(
     mojo::PendingReceiver<webnn::mojom::WebNNContextProvider> receiver) {
   CHECK(base::FeatureList::IsEnabled(
-      webnn::features::kEnableMachineLearningNeuralNetworkService));
+      webnn::features::kWebMachineLearningNeuralNetwork));
 
   if (auto* gpu_host = delegate_->EnsureGpuHost()) {
     gpu_host->gpu_service()->BindWebNNContextProvider(std::move(receiver),

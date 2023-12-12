@@ -7,8 +7,7 @@
 
 namespace webnn::features {
 
-BASE_FEATURE(kEnableMachineLearningNeuralNetworkService,
-             "MachineLearningNeuralNetworkService",
+BASE_FEATURE(kWebMachineLearningNeuralNetwork,
+             "WebMachineLearningNeuralNetwork",
              base::FEATURE_DISABLED_BY_DEFAULT);
-
 }

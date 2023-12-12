@@ -938,7 +938,7 @@ void GpuServiceImpl::BindWebNNContextProvider(
     mojo::PendingReceiver<webnn::mojom::WebNNContextProvider> pending_receiver,
     int client_id) {
   CHECK(base::FeatureList::IsEnabled(
-      webnn::features::kEnableMachineLearningNeuralNetworkService));
+      webnn::features::kWebMachineLearningNeuralNetwork));
   webnn::WebNNContextProviderImpl::Create(std::move(pending_receiver));
 }
 #endif  // !BUILDFLAG(IS_CHROMEOS)

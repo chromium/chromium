@@ -231,26 +231,11 @@ TEST_P(MLGraphTestMojo, CreateWebNNGraphTest) {
   options->setDeviceType(V8MLDeviceType::Enum::kGpu);
 
   {
-    // Test disabling WebNN Service by default. The promise should be rejected
-    // since the WebNN Service is disabled.
-    ScriptPromiseTester tester(scope.GetScriptState(),
-                               CreateContext(scope, options));
-    tester.WaitUntilSettled();
-    EXPECT_TRUE(tester.IsRejected());
-    auto* exception = V8DOMException::ToWrappable(scope.GetIsolate(),
-                                                  tester.Value().V8Value());
-    EXPECT_NE(exception, nullptr);
-    EXPECT_EQ(exception->name(), "NotSupportedError");
-    EXPECT_EQ(exception->message(), "Not implemented");
-    EXPECT_FALSE(scoped_setup_binder.IsWebNNContextBound());
-  }
-
-  {
     // Test enabling WebNN Service in feature list. The promise should be
     // resoveld with an MLGraphMojo object.
     base::test::ScopedFeatureList scoped_feature_list;
     scoped_feature_list.InitAndEnableFeature(
-        webnn::features::kEnableMachineLearningNeuralNetworkService);
+        webnn::features::kWebMachineLearningNeuralNetwork);
 
     ScriptPromiseTester tester(script_state, BuildSimpleGraph(scope, options));
     tester.WaitUntilSettled();
@@ -317,7 +302,7 @@ TEST_P(MLGraphTestMojo, ClampTest) {
   ScopedWebNNServiceBinder scoped_setup_binder(*this, scope);
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitAndEnableFeature(
-      webnn::features::kEnableMachineLearningNeuralNetworkService);
+      webnn::features::kWebMachineLearningNeuralNetwork);
   auto* options = MLContextOptions::Create();
   // Create WebNN Context with GPU device type.
   options->setDeviceType(V8MLDeviceType::Enum::kGpu);
@@ -452,7 +437,7 @@ TEST_P(MLGraphTestMojo, ConcatTest) {
   ScopedWebNNServiceBinder scoped_setup_binder(*this, scope);
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitAndEnableFeature(
-      webnn::features::kEnableMachineLearningNeuralNetworkService);
+      webnn::features::kWebMachineLearningNeuralNetwork);
   auto* options = MLContextOptions::Create();
   // Create WebNN Context with GPU device type.
   options->setDeviceType(V8MLDeviceType::Enum::kGpu);
@@ -719,7 +704,7 @@ TEST_P(MLGraphTestMojo, BatchNormalizationTest) {
   ScopedWebNNServiceBinder scoped_setup_binder(*this, scope);
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitAndEnableFeature(
-      webnn::features::kEnableMachineLearningNeuralNetworkService);
+      webnn::features::kWebMachineLearningNeuralNetwork);
   auto* options = MLContextOptions::Create();
   // Create WebNN Context with GPU device type.
   options->setDeviceType(V8MLDeviceType::Enum::kGpu);
@@ -1169,7 +1154,7 @@ TEST_P(MLGraphTestMojo, Conv2dTest) {
   ScopedWebNNServiceBinder scoped_setup_binder(*this, scope);
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitAndEnableFeature(
-      webnn::features::kEnableMachineLearningNeuralNetworkService);
+      webnn::features::kWebMachineLearningNeuralNetwork);
   auto* options = MLContextOptions::Create();
   // Create WebNN Context with GPU device type.
   options->setDeviceType(V8MLDeviceType::Enum::kGpu);
@@ -1590,7 +1575,7 @@ TEST_P(MLGraphTestMojo, ElementWiseBinaryTest) {
   ScopedWebNNServiceBinder scoped_setup_binder(*this, scope);
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitAndEnableFeature(
-      webnn::features::kEnableMachineLearningNeuralNetworkService);
+      webnn::features::kWebMachineLearningNeuralNetwork);
   auto* options = MLContextOptions::Create();
   // Create WebNN Context with GPU device type.
   options->setDeviceType(V8MLDeviceType::Enum::kGpu);
@@ -1792,7 +1777,7 @@ TEST_P(MLGraphTestMojo, EluTest) {
   ScopedWebNNServiceBinder scoped_setup_binder(*this, scope);
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitAndEnableFeature(
-      webnn::features::kEnableMachineLearningNeuralNetworkService);
+      webnn::features::kWebMachineLearningNeuralNetwork);
   auto* options = MLContextOptions::Create();
   // Create WebNN Context with GPU device type.
   options->setDeviceType(V8MLDeviceType::Enum::kGpu);
@@ -1891,7 +1876,7 @@ TEST_P(MLGraphTestMojo, ExpandTest) {
   ScopedWebNNServiceBinder scoped_setup_binder(*this, scope);
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitAndEnableFeature(
-      webnn::features::kEnableMachineLearningNeuralNetworkService);
+      webnn::features::kWebMachineLearningNeuralNetwork);
   auto* options = MLContextOptions::Create();
   // Create WebNN Context with GPU device type.
   options->setDeviceType(V8MLDeviceType::Enum::kGpu);
@@ -2029,7 +2014,7 @@ TEST_P(MLGraphTestMojo, GatherTest) {
   ScopedWebNNServiceBinder scoped_setup_binder(*this, scope);
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitAndEnableFeature(
-      webnn::features::kEnableMachineLearningNeuralNetworkService);
+      webnn::features::kWebMachineLearningNeuralNetwork);
   auto* options = MLContextOptions::Create();
   // Create WebNN Context with GPU device type.
   options->setDeviceType(V8MLDeviceType::Enum::kGpu);
@@ -2172,7 +2157,7 @@ TEST_P(MLGraphTestMojo, GemmTest) {
   ScopedWebNNServiceBinder scoped_setup_binder(*this, scope);
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitAndEnableFeature(
-      webnn::features::kEnableMachineLearningNeuralNetworkService);
+      webnn::features::kWebMachineLearningNeuralNetwork);
   auto* options = MLContextOptions::Create();
   // Create WebNN Context with GPU device type.
   options->setDeviceType(V8MLDeviceType::Enum::kGpu);
@@ -2412,7 +2397,7 @@ TEST_P(MLGraphTestMojo, LayerNormalizationTest) {
   ScopedWebNNServiceBinder scoped_setup_binder(*this, scope);
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitAndEnableFeature(
-      webnn::features::kEnableMachineLearningNeuralNetworkService);
+      webnn::features::kWebMachineLearningNeuralNetwork);
   auto* options = MLContextOptions::Create();
   // Create WebNN Context with GPU device type.
   options->setDeviceType(V8MLDeviceType::Enum::kGpu);
@@ -2582,7 +2567,7 @@ TEST_P(MLGraphTestMojo, LeakyReluTest) {
   ScopedWebNNServiceBinder scoped_setup_binder(*this, scope);
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitAndEnableFeature(
-      webnn::features::kEnableMachineLearningNeuralNetworkService);
+      webnn::features::kWebMachineLearningNeuralNetwork);
   auto* options = MLContextOptions::Create();
   // Create WebNN Context with GPU device type.
   options->setDeviceType(V8MLDeviceType::Enum::kGpu);
@@ -2712,7 +2697,7 @@ TEST_P(MLGraphTestMojo, MatmulTest) {
   ScopedWebNNServiceBinder scoped_setup_binder(*this, scope);
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitAndEnableFeature(
-      webnn::features::kEnableMachineLearningNeuralNetworkService);
+      webnn::features::kWebMachineLearningNeuralNetwork);
   auto* options = MLContextOptions::Create();
   // Create WebNN Context with GPU device type.
   options->setDeviceType(V8MLDeviceType::Enum::kGpu);
@@ -2817,7 +2802,7 @@ TEST_P(MLGraphTestMojo, PadTest) {
   ScopedWebNNServiceBinder scoped_setup_binder(*this, scope);
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitAndEnableFeature(
-      webnn::features::kEnableMachineLearningNeuralNetworkService);
+      webnn::features::kWebMachineLearningNeuralNetwork);
   auto* options = MLContextOptions::Create();
   // Create WebNN Context with GPU device type.
   options->setDeviceType(V8MLDeviceType::Enum::kGpu);
@@ -3016,7 +3001,7 @@ TEST_P(MLGraphTestMojo, Pool2dTest) {
   ScopedWebNNServiceBinder scoped_setup_binder(*this, scope);
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitAndEnableFeature(
-      webnn::features::kEnableMachineLearningNeuralNetworkService);
+      webnn::features::kWebMachineLearningNeuralNetwork);
   auto* options = MLContextOptions::Create();
   // Create WebNN Context with GPU device type.
   options->setDeviceType(V8MLDeviceType::Enum::kGpu);
@@ -3237,7 +3222,7 @@ TEST_P(MLGraphTestMojo, PreluTest) {
   ScopedWebNNServiceBinder scoped_setup_binder(*this, scope);
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitAndEnableFeature(
-      webnn::features::kEnableMachineLearningNeuralNetworkService);
+      webnn::features::kWebMachineLearningNeuralNetwork);
   auto* options = MLContextOptions::Create();
   // Create WebNN Context with GPU device type.
   options->setDeviceType(V8MLDeviceType::Enum::kGpu);
@@ -3336,7 +3321,7 @@ TEST_P(MLGraphTestMojo, ReluTest) {
   ScopedWebNNServiceBinder scoped_setup_binder(*this, scope);
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitAndEnableFeature(
-      webnn::features::kEnableMachineLearningNeuralNetworkService);
+      webnn::features::kWebMachineLearningNeuralNetwork);
   auto* options = MLContextOptions::Create();
   // Create WebNN Context with GPU device type.
   options->setDeviceType(V8MLDeviceType::Enum::kGpu);
@@ -3456,7 +3441,7 @@ TEST_P(MLGraphTestMojo, Resample2dTest) {
   ScopedWebNNServiceBinder scoped_setup_binder(*this, scope);
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitAndEnableFeature(
-      webnn::features::kEnableMachineLearningNeuralNetworkService);
+      webnn::features::kWebMachineLearningNeuralNetwork);
   auto* options = MLContextOptions::Create();
   // Create WebNN Context with GPU device type.
   options->setDeviceType(V8MLDeviceType::Enum::kGpu);
@@ -3605,7 +3590,7 @@ TEST_P(MLGraphTestMojo, ReshapeTest) {
   ScopedWebNNServiceBinder scoped_setup_binder(*this, scope);
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitAndEnableFeature(
-      webnn::features::kEnableMachineLearningNeuralNetworkService);
+      webnn::features::kWebMachineLearningNeuralNetwork);
   auto* options = MLContextOptions::Create();
   // Create WebNN Context with GPU device type.
   options->setDeviceType(V8MLDeviceType::Enum::kGpu);
@@ -3746,7 +3731,7 @@ TEST_P(MLGraphTestMojo, FloatingPointUnaryTest) {
   ScopedWebNNServiceBinder scoped_setup_binder(*this, scope);
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitAndEnableFeature(
-      webnn::features::kEnableMachineLearningNeuralNetworkService);
+      webnn::features::kWebMachineLearningNeuralNetwork);
   auto* options = MLContextOptions::Create();
   // Create WebNN Context with GPU device type.
   options->setDeviceType(V8MLDeviceType::Enum::kGpu);
@@ -3854,7 +3839,7 @@ TEST_P(MLGraphTestMojo, SliceTest) {
   ScopedWebNNServiceBinder scoped_setup_binder(*this, scope);
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitAndEnableFeature(
-      webnn::features::kEnableMachineLearningNeuralNetworkService);
+      webnn::features::kWebMachineLearningNeuralNetwork);
   auto* options = MLContextOptions::Create();
   // Create WebNN Context with GPU device type.
   options->setDeviceType(V8MLDeviceType::Enum::kGpu);
@@ -3922,7 +3907,7 @@ TEST_P(MLGraphTestMojo, SoftmaxTest) {
   ScopedWebNNServiceBinder scoped_setup_binder(*this, scope);
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitAndEnableFeature(
-      webnn::features::kEnableMachineLearningNeuralNetworkService);
+      webnn::features::kWebMachineLearningNeuralNetwork);
   auto* options = MLContextOptions::Create();
   // Create WebNN Context with GPU device type.
   options->setDeviceType(V8MLDeviceType::Enum::kGpu);
@@ -4011,7 +3996,7 @@ TEST_P(MLGraphTestMojo, TransposeTest) {
   ScopedWebNNServiceBinder scoped_setup_binder(*this, scope);
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitAndEnableFeature(
-      webnn::features::kEnableMachineLearningNeuralNetworkService);
+      webnn::features::kWebMachineLearningNeuralNetwork);
   auto* options = MLContextOptions::Create();
   // Create WebNN Context with GPU device type.
   options->setDeviceType(V8MLDeviceType::Enum::kGpu);
@@ -4136,7 +4121,7 @@ TEST_P(MLGraphTestMojo, WhereTest) {
   ScopedWebNNServiceBinder scoped_setup_binder(*this, scope);
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitAndEnableFeature(
-      webnn::features::kEnableMachineLearningNeuralNetworkService);
+      webnn::features::kWebMachineLearningNeuralNetwork);
   auto* options = MLContextOptions::Create();
   // Create WebNN Context with GPU device type.
   options->setDeviceType(V8MLDeviceType::Enum::kGpu);
@@ -4324,7 +4309,7 @@ TEST_P(MLGraphTestMojo, ReduceTest) {
   ScopedWebNNServiceBinder scoped_setup_binder(*this, scope);
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitAndEnableFeature(
-      webnn::features::kEnableMachineLearningNeuralNetworkService);
+      webnn::features::kWebMachineLearningNeuralNetwork);
   auto* options = MLContextOptions::Create();
   // Create WebNN Context with GPU device type.
   options->setDeviceType(V8MLDeviceType::Enum::kGpu);
@@ -4408,7 +4393,7 @@ TEST_P(MLGraphTestMojo, ConstantTest) {
   ScopedWebNNServiceBinder scoped_setup_binder(*this, scope);
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitAndEnableFeature(
-      webnn::features::kEnableMachineLearningNeuralNetworkService);
+      webnn::features::kWebMachineLearningNeuralNetwork);
   auto* options = MLContextOptions::Create();
   // Create WebNN Context with GPU device type.
   options->setDeviceType(V8MLDeviceType::Enum::kGpu);
@@ -4551,7 +4536,7 @@ TEST_P(MLGraphTestMojo, SplitTest) {
   ScopedWebNNServiceBinder scoped_setup_binder(*this, scope);
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitAndEnableFeature(
-      webnn::features::kEnableMachineLearningNeuralNetworkService);
+      webnn::features::kWebMachineLearningNeuralNetwork);
   auto* options = MLContextOptions::Create();
   // Create WebNN Context with GPU device type.
   options->setDeviceType(V8MLDeviceType::Enum::kGpu);
@@ -4632,7 +4617,7 @@ TEST_P(MLGraphTestMojo, CastTester) {
   ScopedWebNNServiceBinder scoped_setup_binder(*this, scope);
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitAndEnableFeature(
-      webnn::features::kEnableMachineLearningNeuralNetworkService);
+      webnn::features::kWebMachineLearningNeuralNetwork);
   auto* options = MLContextOptions::Create();
   // Create WebNN Context with GPU device type.
   options->setDeviceType(V8MLDeviceType::Enum::kGpu);
@@ -4867,7 +4852,7 @@ TEST_P(MLGraphTestMojo, WebNNGraphComputeTest) {
   ScopedWebNNServiceBinder scoped_setup_binder(*this, scope);
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitAndEnableFeature(
-      webnn::features::kEnableMachineLearningNeuralNetworkService);
+      webnn::features::kWebMachineLearningNeuralNetwork);
   auto* options = MLContextOptions::Create();
   // Create WebNN Context with GPU device type.
   options->setDeviceType(V8MLDeviceType::Enum::kGpu);
