@@ -195,6 +195,11 @@ template("cargo_crate") {
     }
   }
 
+  _testonly = false
+  if (defined(invoker.testonly)) {
+    _testonly = invoker.testonly
+  }
+
   # The main target, either a Rust source set or an executable.
   target(_target_type, target_name) {
     forward_variables_from(invoker,
@@ -214,7 +219,11 @@ template("cargo_crate") {
                                  "rustenv",
                                  "dev_deps",
                                ])
-    forward_variables_from(invoker, TESTONLY_AND_VISIBILITY)
+
+    testonly = _testonly
+    if (defined(invoker.visibility)) {
+      visibility = invoker.visibility
+    }
     if (defined(crate_type) && crate_type == "cdylib") {
       # See comments above about cdylib.
       crate_type = "rlib"
@@ -327,6 +336,10 @@ template("cargo_crate") {
       script = rebase_path("//build/rust/run_build_script.py")
       build_script_target = ":${_build_script_name}($rust_macro_toolchain)"
       deps = [ build_script_target ]
+      testonly = _testonly
+      if (defined(invoker.visibility)) {
+        visibility = invoker.visibility
+      }
 
       # The build script may be built with a different toolchain when
       # cross-compiling (the host toolchain) so we must find the path relative
@@ -391,6 +404,10 @@ template("cargo_crate") {
       rust_executable(_build_script_name) {
         sources = invoker.build_sources
         crate_root = invoker.build_root
+        testonly = _testonly
+        if (defined(invoker.visibility)) {
+          visibility = invoker.visibility
+        }
         if (defined(invoker.build_deps)) {
           deps = invoker.build_deps
         }
