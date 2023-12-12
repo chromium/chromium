@@ -204,6 +204,7 @@ class CreditCardAccessManagerTest : public testing::Test {
     // Resets all variables related to credit card fetching.
     credit_card_access_manager().is_authentication_in_progress_ = false;
     credit_card_access_manager().can_fetch_unmask_details_ = true;
+    credit_card_access_manager().unmask_details_request_in_progress_ = false;
     credit_card_access_manager().is_user_verifiable_ = absl::nullopt;
   }
 
@@ -3219,6 +3220,64 @@ TEST_F(
       autofill_client_.GetFormDataImporter()
           ->GetCardRecordTypeIfNonInteractiveAuthenticationFlowCompleted()
           .has_value());
+}
+
+// Params of the
+// CreditCardAccessManagerRiskBasedMaskedServerCardUnmaskingPreflightCallReturnedTest:
+// -- bool fido_opted_in;
+// -- bool preflight_call_returned;
+class
+    CreditCardAccessManagerRiskBasedMaskedServerCardUnmaskingPreflightCallReturnedTest
+    : public CreditCardAccessManagerRiskBasedMaskedServerCardUnmaskingTest,
+      public testing::WithParamInterface<std::tuple<bool, bool>> {
+ public:
+  CreditCardAccessManagerRiskBasedMaskedServerCardUnmaskingPreflightCallReturnedTest() =
+      default;
+  ~CreditCardAccessManagerRiskBasedMaskedServerCardUnmaskingPreflightCallReturnedTest()
+      override = default;
+
+  bool FidoOptedIn() { return std::get<0>(GetParam()); }
+  bool PreflightCallReturned() { return std::get<1>(GetParam()); }
+};
+
+INSTANTIATE_TEST_SUITE_P(
+    ,
+    CreditCardAccessManagerRiskBasedMaskedServerCardUnmaskingPreflightCallReturnedTest,
+    testing::Combine(testing::Bool(), testing::Bool()));
+
+// Ensures that the metric for if the preflight call's response is received
+// before card selection is logged correctly.
+TEST_P(
+    CreditCardAccessManagerRiskBasedMaskedServerCardUnmaskingPreflightCallReturnedTest,
+    Metrics_LogPreflightCallResponseReceivedOnCardSelection) {
+  base::HistogramTester histogram_tester;
+  std::string test_number = "4444333322221111";
+  CreditCard* masked_server_card = CreateServerCard(kTestGUID, test_number);
+  GetFIDOAuthenticator()->SetUserVerifiable(true);
+  if (FidoOptedIn()) {
+    OptUserInToFido();
+  }
+  payments_network_interface().ShouldReturnUnmaskDetailsImmediately(
+      PreflightCallReturned());
+
+  std::string histogram_name =
+      "Autofill.BetterAuth.PreflightCallResponseReceivedOnCardSelection.";
+  histogram_name += FidoOptedIn() ? "OptedIn." : "OptedOut.";
+  histogram_name += "ServerCard";
+
+  credit_card_access_manager().PrepareToFetchCreditCard();
+  credit_card_access_manager().FetchCreditCard(
+      masked_server_card, base::BindOnce(&TestAccessor::OnCreditCardFetched,
+                                         accessor_->GetWeakPtr()));
+  WaitForCallbacks();
+
+  histogram_tester.ExpectUniqueSample(
+      histogram_name,
+      PreflightCallReturned() ? autofill_metrics::PreflightCallEvent::
+                                    kPreflightCallReturnedBeforeCardChosen
+                              : autofill_metrics::PreflightCallEvent::
+                                    kCardChosenBeforePreflightCallReturned,
+      1);
 }
 
 #endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_ANDROID)

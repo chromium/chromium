@@ -43,6 +43,17 @@ void LogCardUnmaskTypeDecision(CardUnmaskTypeDecisionMetric metric) {
                                 metric);
 }
 
+void LogPreflightCallResponseReceivedOnCardSelection(
+    PreflightCallEvent event,
+    bool fido_opted_in,
+    CreditCard::RecordType record_type) {
+  std::string histogram_name =
+      "Autofill.BetterAuth.PreflightCallResponseReceivedOnCardSelection.";
+  histogram_name += fido_opted_in ? "OptedIn" : "OptedOut";
+  histogram_name += AutofillMetrics::GetHistogramStringForCardType(record_type);
+  base::UmaHistogramEnumeration(histogram_name, event);
+}
+
 void LogUserPerceivedLatencyOnCardSelection(PreflightCallEvent event,
                                             bool fido_auth_enabled) {
   std::string histogram_name =

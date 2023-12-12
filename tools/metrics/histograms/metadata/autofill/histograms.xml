@@ -264,6 +264,11 @@ chromium-metrics-reviews@google.com.
   <variant name=".FromSettingsPage" summary="Opt-in from settings page"/>
 </variants>
 
+<variants name="AutofillFidoAuthenticationEnabledState">
+  <variant name="OptedIn" summary="FIDO authentication enabled"/>
+  <variant name="OptedOut" summary="FIDO authentication disabled"/>
+</variants>
+
 <variants name="AutofillFieldFillingStats">
   <variant name=".Accepted"
       summary="The field was autofilled without subsequent corrections."/>
@@ -1033,6 +1038,25 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram
+    name="Autofill.BetterAuth.PreflightCallResponseReceivedOnCardSelection.{AutofillFidoAuthenticationEnabledState}.{CardType}"
+    enum="AutofillCreditCardPreflightCallEvent" expires_after="2024-07-01">
+  <owner>junhuihe@google.com</owner>
+  <owner>payments-autofill-team@google.com</owner>
+  <summary>
+    The GetDetailsForGetRealPan call is made when card suggestions are shown.
+    This metric tracks whether the response is received before or after a card
+    is chosen by the user. For an opted-in user, a late response would imply
+    FIDO registration/authentication for the selected card will not be offered.
+    For an opted-out user, a late response would imply that opt-in may not have
+    been offered. This metric is split by whether the user is opted-out or
+    opted-in, and by the type of card used.
+  </summary>
+  <token key="AutofillFidoAuthenticationEnabledState"
+      variants="AutofillFidoAuthenticationEnabledState"/>
+  <token key="CardType" variants="Autofill.PaymentsRpcCardType"/>
+</histogram>
+
+<histogram
     name="Autofill.BetterAuth.UserPerceivedLatencyOnCardSelection.OptedIn.Duration"
     units="ms" expires_after="2024-07-01">
   <owner>jsaul@google.com</owner>
@@ -1064,7 +1088,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram
-    name="Autofill.BetterAuth.UserPerceivedLatencyOnCardSelection{AutofillFidoAuthenticationEnabledState}"
+    name="Autofill.BetterAuth.UserPerceivedLatencyOnCardSelection.{AutofillFidoAuthenticationEnabledState}"
     enum="AutofillCreditCardPreflightCallEvent" expires_after="2024-07-01">
   <owner>jsaul@google.com</owner>
   <owner>siyua@chromium.org</owner>
@@ -1076,10 +1100,8 @@ chromium-metrics-reviews@google.com.
     perceived latency. For an opted-out user, a late response would imply that
     opt-in may not have been offered. {AutofillFidoAuthenticationEnabledState}
   </summary>
-  <token key="AutofillFidoAuthenticationEnabledState">
-    <variant name=".OptedIn" summary="FIDO authentication enabled"/>
-    <variant name=".OptedOut" summary="FIDO authentication disabled"/>
-  </token>
+  <token key="AutofillFidoAuthenticationEnabledState"
+      variants="AutofillFidoAuthenticationEnabledState"/>
 </histogram>
 
 <histogram name="Autofill.BetterAuth.UserVerifiabilityCheckDuration" units="ms"

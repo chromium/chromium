@@ -1069,7 +1069,25 @@ std::string CreditCardAccessManager::GetKeyForUnmaskedCardsCache(
 void CreditCardAccessManager::FetchMaskedServerCard() {
   is_authentication_in_progress_ = true;
 
+  bool get_unmask_details_returned =
+      ready_to_start_authentication_.IsSignaled();
+
   if (IsMaskedServerCardRiskBasedAuthAvailable()) {
+    // Preflight call response time metrics should only be logged if the user is
+    // verifiable.
+#if !BUILDFLAG(IS_IOS)
+    if (is_user_verifiable_.value_or(false)) {
+      autofill_metrics::LogPreflightCallResponseReceivedOnCardSelection(
+          get_unmask_details_returned
+              ? autofill_metrics::PreflightCallEvent::
+                    kPreflightCallReturnedBeforeCardChosen
+              : autofill_metrics::PreflightCallEvent::
+                    kCardChosenBeforePreflightCallReturned,
+          GetOrCreateFidoAuthenticator()->IsUserOptedIn(),
+          CreditCard::RecordType::kMaskedServerCard);
+    }
+#endif
+
     client_->ShowAutofillProgressDialog(
         AutofillProgressDialogType::kServerCardUnmaskProgressDialog,
         /*cancel_callback=*/base::BindOnce(
@@ -1083,11 +1101,6 @@ void CreditCardAccessManager::FetchMaskedServerCard() {
     // CreditCardAccessManager::OnRiskBasedAuthenticationResponseReceived.
     return;
   }
-
-  bool get_unmask_details_returned =
-      ready_to_start_authentication_.IsSignaled();
-  bool should_wait_to_authenticate =
-      IsUserOptedInToFidoAuth() && !get_unmask_details_returned;
 
   // Latency metrics should only be logged if the user is verifiable.
 #if !BUILDFLAG(IS_IOS)
@@ -1110,6 +1123,9 @@ void CreditCardAccessManager::FetchMaskedServerCard() {
     ShowVerifyPendingDialog();
   }
 #endif
+
+  bool should_wait_to_authenticate =
+      IsUserOptedInToFidoAuth() && !get_unmask_details_returned;
 
   if (should_wait_to_authenticate) {
     card_selected_without_unmask_details_timestamp_ =
