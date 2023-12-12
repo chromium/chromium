@@ -200,12 +200,22 @@ static const auto kReservedAccelerators =
 // times in the frontend. GetHiddenAcceleratorMap() is used to collect such
 // accelerators and hide them from display.
 const HiddenAcceleratorMap& GetHiddenAcceleratorMap() {
+  // TODO(jimmyxgong): nice to remove entries for positional modifiers.
   static const auto kHiddenAcceleratorMap =
       base::NoDestructor<HiddenAcceleratorMap>({
           {AcceleratorAction::kToggleAppList,
            {ui::Accelerator(ui::VKEY_BROWSER_SEARCH, ui::EF_SHIFT_DOWN,
                             ui::Accelerator::KeyState::PRESSED),
             ui::Accelerator(ui::VKEY_LWIN, ui::EF_SHIFT_DOWN,
+                            ui::Accelerator::KeyState::RELEASED),
+            ui::Accelerator(ui::VKEY_RWIN, ui::EF_NONE,
+                            ui::Accelerator::KeyState::RELEASED),
+            ui::Accelerator(ui::VKEY_RWIN, ui::EF_SHIFT_DOWN,
+                            ui::Accelerator::KeyState::RELEASED)}},
+          {AcceleratorAction::kToggleCapsLock,
+           {ui::Accelerator(ui::VKEY_RWIN, ui::EF_ALT_DOWN,
+                            ui::Accelerator::KeyState::RELEASED),
+            ui::Accelerator(ui::VKEY_MENU, ui::EF_COMMAND_DOWN,
                             ui::Accelerator::KeyState::RELEASED)}},
           {AcceleratorAction::kShowShortcutViewer,
            {ui::Accelerator(ui::VKEY_F14, ui::EF_NONE,

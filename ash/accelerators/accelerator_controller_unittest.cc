@@ -1515,6 +1515,21 @@ TEST_F(AcceleratorControllerTest, GlobalAcceleratorsToggleAppList) {
       CreateReleaseAccelerator(ui::VKEY_LWIN, ui::EF_NONE)));
   base::RunLoop().RunUntilIdle();
   GetAppListTestHelper()->CheckVisibility(true);
+
+  // Verifies VKEY_RWIN triggers AppList, too. This happens if modifier
+  // keys are swapped.
+  GetAppListTestHelper()->DismissAndRunLoop();
+  EXPECT_FALSE(
+      ProcessInController(ui::Accelerator(ui::VKEY_RWIN, ui::EF_NONE)));
+  base::RunLoop().RunUntilIdle();
+  EXPECT_EQ(ui::VKEY_RWIN, GetCurrentAccelerator().key_code());
+  GetAppListTestHelper()->CheckVisibility(false);
+
+  EXPECT_TRUE(ProcessInController(
+      CreateReleaseAccelerator(ui::VKEY_RWIN, ui::EF_NONE)));
+  base::RunLoop().RunUntilIdle();
+  GetAppListTestHelper()->CheckVisibility(true);
+  EXPECT_EQ(ui::VKEY_RWIN, GetPreviousAccelerator().key_code());
 }
 
 TEST_F(AcceleratorControllerTest, GlobalAcceleratorsToggleQuickSettings) {

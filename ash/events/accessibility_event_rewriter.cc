@@ -155,7 +155,8 @@ bool AccessibilityEventRewriter::RewriteEventForChromeVox(
 
     // Always capture the Search key.
     capture |= rewritten_key_event->IsCommandDown() ||
-               rewritten_key_event->key_code() == ui::VKEY_LWIN;
+               rewritten_key_event->key_code() == ui::VKEY_LWIN ||
+               rewritten_key_event->key_code() == ui::VKEY_RWIN;
 
     // Don't capture tab as it gets consumed by Blink so never comes back
     // unhandled. In third_party/WebKit/Source/core/input/EventHandler.cpp, a

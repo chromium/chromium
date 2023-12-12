@@ -131,8 +131,11 @@ void RecordToggleAssistant(const ui::Accelerator& accelerator) {
 }
 
 void RecordToggleAppList(const ui::Accelerator& accelerator) {
-  if (accelerator.key_code() == ui::VKEY_LWIN)
+  if (accelerator.key_code() == ui::VKEY_LWIN) {
     base::RecordAction(UserMetricsAction("Accel_Search_LWin"));
+  } else if (accelerator.key_code() == ui::VKEY_RWIN) {
+    base::RecordAction(UserMetricsAction("Accel_Search_RWin"));
+  }
 }
 
 void RecordSwitchToNextIme(const ui::Accelerator& accelerator) {
@@ -191,24 +194,25 @@ bool CanHandleToggleAppList(
   }
 
   for (auto key : currently_pressed_keys) {
-    // The AppList accelerator is triggered on search(VKEY_LWIN) key release.
-    // Sometimes users will press and release the search key while holding other
-    // keys in an attempt to trigger a different accelerator. We should not
-    // toggle the AppList in that case. Check for VKEY_SHIFT because this is
-    // used to show fullscreen app list.
-    if (key != ui::VKEY_LWIN && key != ui::VKEY_SHIFT &&
+    // The AppList accelerator is triggered on search(VKEY_LWIN, VKEY_RWIN) key
+    // release. Sometimes users will press and release the search key while
+    // holding other keys in an attempt to trigger a different accelerator.
+    // We should not toggle the AppList in that case. Check for VKEY_SHIFT
+    // because this is used to show fullscreen app list.
+    if (key != ui::VKEY_LWIN && key != ui::VKEY_RWIN && key != ui::VKEY_SHIFT &&
         key != ui::VKEY_BROWSER_SEARCH && key != ui::VKEY_ALL_APPLICATIONS) {
       return false;
     }
   }
 
-  if (accelerator.key_code() == ui::VKEY_LWIN) {
+  if (accelerator.key_code() == ui::VKEY_LWIN ||
+      accelerator.key_code() == ui::VKEY_RWIN) {
     // If something else was pressed between the Search key (LWIN)
     // being pressed and released, then ignore the release of the
     // Search key.
     if (previous_accelerator.key_state() !=
             ui::Accelerator::KeyState::PRESSED ||
-        previous_accelerator.key_code() != ui::VKEY_LWIN ||
+        previous_accelerator.key_code() != accelerator.key_code() ||
         previous_accelerator.interrupted_by_mouse_event()) {
       return false;
     }
@@ -257,14 +261,16 @@ bool CanHandleToggleCapsLock(
   // should not be triggered. Otherwise, CapsLock may be triggered accidentally.
   // See issue 789283 (https://crbug.com/789283)
   for (const auto& pressed_key : currently_pressed_keys) {
-    if (pressed_key != ui::VKEY_LWIN && pressed_key != ui::VKEY_MENU) {
+    if (pressed_key != ui::VKEY_LWIN && pressed_key != ui::VKEY_RWIN &&
+        pressed_key != ui::VKEY_MENU) {
       return false;
     }
   }
 
   // This shortcut is set to be trigger on release. Either the current
   // accelerator is a Search release or Alt release.
-  if (accelerator.key_code() == ui::VKEY_LWIN &&
+  if ((accelerator.key_code() == ui::VKEY_LWIN ||
+       accelerator.key_code() == ui::VKEY_RWIN) &&
       accelerator.key_state() == ui::Accelerator::KeyState::RELEASED) {
     // The previous must be either an Alt press or Search press:
     // 1. Press Alt, Press Search, Release Search, Release Alt.
@@ -272,6 +278,7 @@ bool CanHandleToggleCapsLock(
     if (previous_accelerator.key_state() ==
             ui::Accelerator::KeyState::PRESSED &&
         (previous_accelerator.key_code() == ui::VKEY_LWIN ||
+         previous_accelerator.key_code() == ui::VKEY_RWIN ||
          previous_accelerator.key_code() == ui::VKEY_MENU)) {
       return true;
     }
@@ -286,6 +293,7 @@ bool CanHandleToggleCapsLock(
     if (previous_accelerator.key_state() ==
             ui::Accelerator::KeyState::PRESSED &&
         (previous_accelerator.key_code() == ui::VKEY_LWIN ||
+         previous_accelerator.key_code() == ui::VKEY_RWIN ||
          previous_accelerator.key_code() == ui::VKEY_MENU)) {
       return true;
     }
