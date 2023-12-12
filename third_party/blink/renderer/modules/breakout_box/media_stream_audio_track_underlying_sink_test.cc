@@ -30,6 +30,7 @@
 #include "third_party/blink/renderer/platform/mediastream/media_stream_audio_track.h"
 #include "third_party/blink/renderer/platform/mediastream/media_stream_component_impl.h"
 #include "third_party/blink/renderer/platform/mediastream/media_stream_source.h"
+#include "third_party/blink/renderer/platform/testing/task_environment.h"
 #include "third_party/blink/renderer/platform/wtf/cross_thread_copier_base.h"
 
 using testing::_;
@@ -97,6 +98,7 @@ class MediaStreamAudioTrackUnderlyingSinkTest : public testing::Test {
   }
 
  protected:
+  test::TaskEnvironment task_environment_;
   base::Thread testing_thread_;
   Persistent<MediaStreamSource> media_stream_source_;
   Persistent<MediaStreamComponent> media_stream_component_;
