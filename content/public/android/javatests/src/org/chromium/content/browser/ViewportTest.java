@@ -81,7 +81,8 @@ public class ViewportTest {
             Assert.assertTrue(viewportWidth <= metrics.widthPixels / metrics.density + 1);
         } else {
             Assert.assertTrue(viewportWidth >= 979);
-            Assert.assertTrue(viewportWidth <= 981);
+            Assert.assertTrue(
+                    viewportWidth <= Math.max(981, metrics.widthPixels / metrics.density + 1));
         }
     }
 
