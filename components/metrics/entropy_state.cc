@@ -9,6 +9,8 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/rand_util.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/token.h"
+#include "base/unguessable_token.h"
 #include "components/metrics/metrics_pref_names.h"
 #include "components/metrics/metrics_switches.h"
 #include "components/prefs/pref_service.h"
@@ -83,6 +85,7 @@ void EntropyState::ClearPrefs(PrefService* local_state) {
   local_state->ClearPref(prefs::kMetricsLowEntropySource);
   local_state->ClearPref(prefs::kMetricsOldLowEntropySource);
   local_state->ClearPref(prefs::kMetricsPseudoLowEntropySource);
+  local_state->ClearPref(prefs::kMetricsLimitedEntropySource);
 #endif
 }
 
@@ -94,6 +97,8 @@ void EntropyState::RegisterPrefs(PrefRegistrySimple* registry) {
                                 kLowEntropySourceNotSet);
   registry->RegisterIntegerPref(prefs::kMetricsPseudoLowEntropySource,
                                 kLowEntropySourceNotSet);
+  registry->RegisterStringPref(prefs::kMetricsLimitedEntropySource,
+                               std::string());
 }
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
@@ -157,6 +162,49 @@ int EntropyState::GetPseudoLowEntropySource() {
 int EntropyState::GetOldLowEntropySource() {
   UpdateLowEntropySources();
   return old_low_entropy_source_;
+}
+
+std::string EntropyState::GenerateLimitedEntropySource() {
+  // Uses a cryptographically strong random source to generate a random 128 bit
+  // value. The value cannot be all zeros.
+  auto token = base::UnguessableToken::Create().ToString();
+  DCHECK(IsValidLimitedEntropySource(token));
+  return token;
+}
+
+std::string_view EntropyState::GetLimitedEntropySource() {
+  UpdateLimitedEntropySource();
+  return limited_entropy_source_;
+}
+
+void EntropyState::UpdateLimitedEntropySource() {
+  // The default value for limited entropy source is an empty string.
+  // If it's not empty, it must have been set during this session and an update
+  // is not needed.
+  if (!limited_entropy_source_.empty()) {
+    return;
+  }
+
+  auto* pref_name = prefs::kMetricsLimitedEntropySource;
+  const auto* command_line = base::CommandLine::ForCurrentProcess();
+  // Load the previously set value from prefs, unless the reset variations state
+  // command line flag is given.
+  if (!command_line->HasSwitch(switches::kResetVariationState)) {
+    auto pref_value = local_state_->GetString(pref_name);
+    if (IsValidLimitedEntropySource(pref_value)) {
+      limited_entropy_source_ = pref_value;
+    }
+  }
+
+  // If a previously set value is not found, or if the the reset variations
+  // state command line flag is given, generate a new value and store it into
+  // prefs.
+  if (limited_entropy_source_.empty()) {
+    limited_entropy_source_ = GenerateLimitedEntropySource();
+    local_state_->SetString(pref_name, limited_entropy_source_);
+  }
+
+  CHECK(!limited_entropy_source_.empty());
 }
 
 void EntropyState::UpdateLowEntropySources() {
@@ -224,6 +272,17 @@ void EntropyState::UpdateLowEntropySources() {
 // static
 bool EntropyState::IsValidLowEntropySource(int value) {
   return value >= 0 && value < kMaxLowEntropySize;
+}
+
+// static
+bool EntropyState::IsValidLimitedEntropySource(std::string_view value) {
+  if (value.empty()) {
+    return false;
+  }
+  // Use Token::FromString() to check whether the given value is a valid
+  // `base::UnguessableToken`.
+  auto token = base::Token::FromString(value);
+  return token.has_value() && !token.value().is_zero();
 }
 
 }  // namespace metrics
