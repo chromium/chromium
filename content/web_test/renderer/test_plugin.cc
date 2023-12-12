@@ -285,7 +285,9 @@ void TestPlugin::UpdateGeometry(const gfx::Rect& window_rect,
     shared_image_ = sii->CreateSharedImage(
         viz::SinglePlaneFormat::kRGBA_8888, rect_.size(), gfx::ColorSpace(),
         kTopLeft_GrSurfaceOrigin, kPremul_SkAlphaType,
-        gpu::SHARED_IMAGE_USAGE_GLES2 | gpu::SHARED_IMAGE_USAGE_DISPLAY_READ,
+        gpu::SHARED_IMAGE_USAGE_GLES2_READ |
+            gpu::SHARED_IMAGE_USAGE_GLES2_WRITE |
+            gpu::SHARED_IMAGE_USAGE_DISPLAY_READ,
         "TestLabel", gpu::kNullSurfaceHandle);
     CHECK(shared_image_);
     gl_->WaitSyncTokenCHROMIUM(sii->GenUnverifiedSyncToken().GetConstData());
