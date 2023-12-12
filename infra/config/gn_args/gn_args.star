@@ -7,56 +7,56 @@
 load("//lib/gn_args.star", "gn_args")
 
 gn_args.config(
-    "official_optimize",
+    name = "official_optimize",
     args = {
         "is_official_build": True,
     },
 )
 
 gn_args.config(
-    "reclient",
+    name = "reclient",
     args = {
         "use_remoteexec": True,
     },
 )
 
 gn_args.config(
-    "minimal_symbols",
+    name = "minimal_symbols",
     args = {
         "symbol_level": 1,
     },
 )
 
 gn_args.config(
-    "dcheck_always_on",
+    name = "dcheck_always_on",
     args = {
         "dcheck_always_on": True,
     },
 )
 
 gn_args.config(
-    "debug",
+    name = "debug",
     args = {
         "is_debug": True,
     },
 )
 
 gn_args.config(
-    "shared",
+    name = "shared",
     args = {
         "is_component_build": True,
     },
 )
 
 gn_args.config(
-    "goma",
+    name = "goma",
     args = {
         "use_goma": True,
     },
 )
 
 gn_args.config(
-    "try_builder",
+    name = "try_builder",
     configs = [
         "minimal_symbols",
         "dcheck_always_on",
@@ -64,7 +64,7 @@ gn_args.config(
 )
 
 gn_args.config(
-    "debug_build",
+    name = "debug_build",
     configs = [
         "debug",
         "shared",
