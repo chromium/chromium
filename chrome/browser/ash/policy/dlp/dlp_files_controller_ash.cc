@@ -40,6 +40,7 @@
 #include "chrome/browser/ash/file_manager/volume_manager.h"
 #include "chrome/browser/ash/file_system_provider/service.h"
 #include "chrome/browser/ash/policy/dlp/dlp_extract_io_task_observer.h"
+#include "chrome/browser/ash/policy/dlp/dlp_files_controller_ash_utils.h"
 #include "chrome/browser/ash/policy/dlp/dlp_files_event_storage.h"
 #include "chrome/browser/ash/policy/dlp/files_policy_notification_manager.h"
 #include "chrome/browser/ash/policy/dlp/files_policy_notification_manager_factory.h"
@@ -136,23 +137,6 @@ std::vector<storage::FileSystemURL> ConvertFilePathsToFileSystemUrls(
   }
 
   return file_system_urls;
-}
-
-// Shows DLP block desktop notification.
-void ShowDlpBlockedFiles(Profile* profile,
-                         std::optional<file_manager::io_task::IOTaskId> task_id,
-                         std::vector<base::FilePath> blocked_files,
-                         dlp::FileAction action) {
-  auto* fpnm =
-      FilesPolicyNotificationManagerFactory::GetForBrowserContext(profile);
-  if (!fpnm) {
-    LOG(ERROR) << "No FilesPolicyNotificationManager instantiated,"
-                  "can't show policy block UI";
-    return;
-  }
-
-  fpnm->ShowDlpBlockedFiles(std::move(task_id), std::move(blocked_files),
-                            action);
 }
 
 file_manager::VolumeManager* GetVolumeManager(
@@ -401,9 +385,9 @@ void DlpFilesControllerAsh::CheckIfDownloadAllowed(
               }
             }
             if (!is_allowed) {
-              ::policy::ShowDlpBlockedFiles(profile, /*task_id=*/std::nullopt,
-                                            {file_path},
-                                            dlp::FileAction::kDownload);
+              ::policy::files_controller_ash_utils::ShowDlpBlockedFiles(
+                  profile, /*task_id=*/absl::nullopt, {file_path},
+                  dlp::FileAction::kDownload);
             }
             std::move(result_callback).Run(is_allowed);
           },
@@ -760,8 +744,8 @@ void DlpFilesControllerAsh::ShowDlpBlockedFiles(
     std::optional<file_manager::io_task::IOTaskId> task_id,
     std::vector<base::FilePath> blocked_files,
     dlp::FileAction action) {
-  ::policy::ShowDlpBlockedFiles(profile_, std::move(task_id),
-                                std::move(blocked_files), action);
+  ::policy::files_controller_ash_utils::ShowDlpBlockedFiles(
+      profile_, std::move(task_id), std::move(blocked_files), action);
 }
 
 void DlpFilesControllerAsh::OnDlpWarnDialogReply(
@@ -820,9 +804,9 @@ void DlpFilesControllerAsh::ReturnDisallowedFiles(
   if (!restricted_files_paths.empty() &&
       base::FeatureList::IsEnabled(features::kNewFilesPolicyUX) &&
       task_id.has_value()) {
-    ::policy::ShowDlpBlockedFiles(profile_, std::move(task_id),
-                                  std::move(restricted_files_paths),
-                                  file_action);
+    ::policy::files_controller_ash_utils::ShowDlpBlockedFiles(
+        profile_, std::move(task_id), std::move(restricted_files_paths),
+        file_action);
   }
   std::move(result_callback).Run(std::move(restricted_files_urls));
 }
@@ -853,9 +837,9 @@ void DlpFilesControllerAsh::ReturnAllowedUploads(
               });
         });
 
-    ::policy::ShowDlpBlockedFiles(profile_, /*task_id=*/std::nullopt,
-                                  std::move(restricted_files),
-                                  dlp::FileAction::kUpload);
+    ::policy::files_controller_ash_utils::ShowDlpBlockedFiles(
+        profile_, /*task_id=*/absl::nullopt, std::move(restricted_files),
+        dlp::FileAction::kUpload);
   }
 
   std::move(result_callback).Run(std::move(selected_files));

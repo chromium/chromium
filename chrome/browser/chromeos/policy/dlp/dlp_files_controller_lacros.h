@@ -28,8 +28,12 @@ class DlpFilesControllerLacros : public DlpFilesController {
                            std::vector<base::FilePath> blocked_files,
                            dlp::FileAction action) override;
 
+  // TODO(b/284122497): Cleanup friend for testing
   FRIEND_TEST_ALL_PREFIXES(DlpFilesControllerLacrosTest,
                            MapFilePathToPolicyComponentTest);
+
+  FRIEND_TEST_ALL_PREFIXES(DlpFilesControllerLacrosBlockUITest,
+                           ShowDlpBlockedFilesTest);
 };
 }  // namespace policy
 

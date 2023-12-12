@@ -6,9 +6,15 @@
 
 #include "ash/test/ash_test_base.h"
 #include "base/test/bind.h"
+#include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
 #include "chrome/browser/ash/policy/dlp/dlp_content_manager_ash.h"
+#include "chrome/browser/ash/policy/dlp/files_policy_notification_manager_factory.h"
+#include "chrome/browser/ash/policy/dlp/test/mock_files_policy_notification_manager.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_content_observer.h"
 #include "chrome/browser/chromeos/policy/dlp/test/mock_dlp_content_manager.h"
+#include "components/user_manager/scoped_user_manager.h"
+#include "components/user_manager/user.h"
+#include "content/public/test/browser_task_environment.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/aura/window.h"
@@ -19,6 +25,8 @@ namespace {
 
 const std::u16string kAppId = u"app_id";
 constexpr char kScreenShareLabel[] = "label";
+
+constexpr char kFilePath[] = "test.txt";
 
 class MockStateChangeDelegate : public mojom::StateChangeDelegate {
  public:
@@ -38,6 +46,11 @@ class MockStateChangeDelegate : public mojom::StateChangeDelegate {
 
 class DlpAshTest : public ash::AshTestBase {
  public:
+  explicit DlpAshTest(
+      std::unique_ptr<base::test::TaskEnvironment> task_environment)
+      : ash::AshTestBase(std::move(task_environment)) {}
+  DlpAshTest() {}
+
   DlpAsh* dlp_ash() { return &dlp_ash_; }
 
  private:
@@ -189,6 +202,104 @@ TEST_F(DlpAshTest, ScreenShareStoppedInvalidWindow) {
   mojom::ScreenShareAreaPtr area = mojom::ScreenShareArea::New();
   area->window_id = "id";
   dlp_ash()->OnScreenShareStopped(kScreenShareLabel, std::move(area));
+}
+
+class DlpAshBlockUITest
+    : public DlpAshTest,
+      public ::testing::WithParamInterface<
+          std::pair<mojom::FileAction, policy::dlp::FileAction>> {
+ public:
+  DlpAshBlockUITest()
+      : DlpAshTest(std::unique_ptr<base::test::TaskEnvironment>(
+            std::make_unique<content::BrowserTaskEnvironment>(
+                base::test::TaskEnvironment::TimeSource::MOCK_TIME))) {}
+
+  void SetUp() override {
+    DlpAshTest::SetUp();
+
+    auto user_manager = std::make_unique<ash::FakeChromeUserManager>();
+    scoped_profile_ = std::make_unique<TestingProfile>();
+    profile_ = scoped_profile_.get();
+    AccountId account_id =
+        AccountId::FromUserEmailGaiaId("test@example.com", "12345");
+    profile_->SetIsNewProfile(true);
+    user_manager::User* user =
+        user_manager->AddUserWithAffiliationAndTypeAndProfile(
+            account_id,
+            /*is_affiliated=*/false, user_manager::USER_TYPE_REGULAR, profile_);
+    user_manager->UserLoggedIn(account_id, user->username_hash(),
+                               /*browser_restart=*/false,
+                               /*is_child=*/false);
+    user_manager->SimulateUserProfileLoad(account_id);
+    scoped_user_manager_ = std::make_unique<user_manager::ScopedUserManager>(
+        std::move(user_manager));
+
+    // Set FilesPolicyNotificationManager.
+    policy::FilesPolicyNotificationManagerFactory::GetInstance()
+        ->SetTestingFactory(
+            profile_.get(),
+            base::BindRepeating(
+                &DlpAshBlockUITest::SetFilesPolicyNotificationManager,
+                base::Unretained(this)));
+
+    ASSERT_TRUE(
+        policy::FilesPolicyNotificationManagerFactory::GetForBrowserContext(
+            profile_.get()));
+    ASSERT_TRUE(fpnm_);
+  }
+
+ protected:
+  raw_ptr<policy::MockFilesPolicyNotificationManager,
+          DisableDanglingPtrDetection | ExperimentalAsh>
+      fpnm_ = nullptr;
+
+ private:
+  std::unique_ptr<KeyedService> SetFilesPolicyNotificationManager(
+      content::BrowserContext* context) {
+    auto fpnm = std::make_unique<
+        testing::StrictMock<policy::MockFilesPolicyNotificationManager>>(
+        profile_.get());
+    fpnm_ = fpnm.get();
+
+    return fpnm;
+  }
+
+  std::unique_ptr<TestingProfile> scoped_profile_;
+  std::unique_ptr<user_manager::ScopedUserManager> scoped_user_manager_;
+  raw_ptr<TestingProfile> profile_;
+};
+
+INSTANTIATE_TEST_SUITE_P(
+    DlpAshBlockUI,
+    DlpAshBlockUITest,
+    ::testing::Values(std::make_tuple(mojom::FileAction::kUnknown,
+                                      policy::dlp::FileAction::kUnknown),
+                      std::make_tuple(mojom::FileAction::kDownload,
+                                      policy::dlp::FileAction::kDownload),
+                      std::make_tuple(mojom::FileAction::kTransfer,
+                                      policy::dlp::FileAction::kTransfer),
+                      std::make_tuple(mojom::FileAction::kUpload,
+                                      policy::dlp::FileAction::kUpload),
+                      std::make_tuple(mojom::FileAction::kCopy,
+                                      policy::dlp::FileAction::kCopy),
+                      std::make_tuple(mojom::FileAction::kMove,
+                                      policy::dlp::FileAction::kMove),
+                      std::make_tuple(mojom::FileAction::kOpen,
+                                      policy::dlp::FileAction::kOpen),
+                      std::make_tuple(mojom::FileAction::kShare,
+                                      policy::dlp::FileAction::kShare)));
+
+TEST_P(DlpAshBlockUITest, ShowBlockedFiles) {
+  auto [mojo_action, dlp_action] = GetParam();
+
+  absl::optional<uint64_t> task_id = absl::nullopt;
+  base::FilePath path(kFilePath);
+
+  EXPECT_CALL(*fpnm_,
+              ShowDlpBlockedFiles(task_id, std::vector<base::FilePath>{path},
+                                  dlp_action));
+
+  dlp_ash()->ShowBlockedFiles(task_id, {path}, mojo_action);
 }
 
 }  // namespace crosapi

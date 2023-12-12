@@ -6,6 +6,7 @@ module crosapi.mojom;
 
 import "mojo/public/mojom/base/string16.mojom";
 import "url/mojom/url.mojom";
+import "mojo/public/mojom/base/file_path.mojom";
 
 // Corresponds to DlpRulesManager::Level enum.
 [Stable, Extensible]
@@ -54,6 +55,19 @@ interface StateChangeDelegate {
   OnStop@2();
 };
 
+// Corresponds to the dlp::FileAction enum.
+[Stable, Extensible]
+enum FileAction {
+  [Default] kUnknown = 0,
+  kDownload = 1,
+  kTransfer = 2,
+  kUpload = 3,
+  kCopy = 4,
+  kMove = 5,
+  kOpen = 6,
+  kShare = 7,
+};
+
 // Interface to communicate from Lacros DLP layer to Ash. Used to notify Ash
 // about changes in restrictions applied to web content in Lacros.
 //
@@ -61,8 +75,8 @@ interface StateChangeDelegate {
 // connection by Lacros has to be kept over its whole lifetime as the closing
 // indicates that associated windows are no longer existing.
 //
-// Next MinVersion: 4
-// Next ID: 4
+// Next MinVersion: 5
+// Next ID: 5
 [Stable, Uuid="793ee9c6-3873-4ea8-a541-894412ddfc0b"]
 interface Dlp {
   // Called when |restrictions| are changed for window with |window_id|.
@@ -80,4 +94,9 @@ interface Dlp {
 
   // Called when screen share in Lacros is stopped.
   [MinVersion=2] OnScreenShareStopped@3(string label, ScreenShareArea area);
+
+  // Shows a notification to inform the user that `files` where blocked during
+  // `action` while performing a task with id `task_id`.
+  [MinVersion=4] ShowBlockedFiles@4(uint64? task_id,
+      array<mojo_base.mojom.FilePath> files, FileAction action);
 };

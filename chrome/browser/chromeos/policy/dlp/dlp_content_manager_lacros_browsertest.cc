@@ -6,6 +6,7 @@
 
 #include "base/test/bind.h"
 #include "chrome/browser/chromeos/policy/dlp/test/dlp_content_manager_test_helper.h"
+#include "chrome/browser/chromeos/policy/dlp/test/mock_dlp_crosapi.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chromeos/crosapi/mojom/dlp.mojom.h"
 #include "chromeos/lacros/lacros_service.h"
@@ -21,34 +22,6 @@ namespace {
 
 const std::u16string kAppId = u"app_id";
 constexpr char kScreenShareLabel[] = "label";
-
-// TODO(crbug.com/1291609): Mock Lacros side of crosapi instead when possible.
-// This will allow these tests to be just unit_tests, not
-// lacros_chrome_browsertests.
-class MockDlpCrosapi : public crosapi::mojom::Dlp {
- public:
-  MOCK_METHOD(void,
-              DlpRestrictionsUpdated,
-              (const std::string&, crosapi::mojom::DlpRestrictionSetPtr),
-              (override));
-  MOCK_METHOD(void,
-              CheckScreenShareRestriction,
-              (crosapi::mojom::ScreenShareAreaPtr,
-               const std::u16string&,
-               CheckScreenShareRestrictionCallback),
-              (override));
-  MOCK_METHOD(void,
-              OnScreenShareStarted,
-              (const std::string&,
-               crosapi::mojom::ScreenShareAreaPtr,
-               const ::std::u16string&,
-               ::mojo::PendingRemote<crosapi::mojom::StateChangeDelegate>),
-              (override));
-  MOCK_METHOD(void,
-              OnScreenShareStopped,
-              (const std::string&, crosapi::mojom::ScreenShareAreaPtr),
-              (override));
-};
 
 }  // namespace
 

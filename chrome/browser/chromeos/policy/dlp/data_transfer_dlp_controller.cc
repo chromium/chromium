@@ -14,6 +14,7 @@
 #include "base/time/time.h"
 #include "base/types/optional_util.h"
 #include "build/chromeos_buildflags.h"
+#include "chrome/browser/chromeos/policy/dlp/dlp_files_controller.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_rules_manager.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_rules_manager_factory.h"
 #include "chrome/browser/enterprise/data_controls/dlp_reporting_manager.h"
@@ -27,7 +28,6 @@
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "ash/webui/file_manager/url_constants.h"
-#include "chrome/browser/ash/policy/dlp/dlp_files_controller_ash.h"
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 namespace policy {
@@ -208,9 +208,7 @@ void MaybeReportWarningProceededEventAndPaste(
   std::move(paste_cb).Run(should_proceed);
 }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-// Returns file paths from the given file infos. Currently only used in ChromeOS
-// Ash.
+// Returns file paths from the given file infos.
 std::vector<base::FilePath> GetFilePathsFromFileInfos(
     const std::vector<ui::FileInfo>& files) {
   std::vector<base::FilePath> paths;
@@ -220,7 +218,6 @@ std::vector<base::FilePath> GetFilePathsFromFileInfos(
   }
   return paths;
 }
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 }  // namespace
 
@@ -311,18 +308,14 @@ void DataTransferDlpController::PasteIfAllowed(
     base::OnceCallback<void(bool)> paste_cb) {
   if (absl::holds_alternative<std::vector<base::FilePath>>(pasted_content) &&
       !IsFilesApp(data_dst)) {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
     auto pasted_files =
         std::move(absl::get<std::vector<base::FilePath>>(pasted_content));
-    auto* files_controller = static_cast<policy::DlpFilesControllerAsh*>(
-        dlp_rules_manager_->GetDlpFilesController());
+    auto* files_controller = dlp_rules_manager_->GetDlpFilesController();
     if (files_controller) {
       files_controller->CheckIfPasteOrDropIsAllowed(
           pasted_files, data_dst.as_ptr(), std::move(paste_cb));
     }
     return;
-#endif
-    // TODO(b/269610458): Check pasted files in Lacros.
   }
 
   if (absl::holds_alternative<size_t>(pasted_content)) {
@@ -342,9 +335,7 @@ void DataTransferDlpController::DropIfAllowed(
   DCHECK(drag_data);
 
   if (drag_data->HasFile() && !IsFilesApp(data_dst)) {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-    auto* files_controller = static_cast<policy::DlpFilesControllerAsh*>(
-        dlp_rules_manager_->GetDlpFilesController());
+    auto* files_controller = dlp_rules_manager_->GetDlpFilesController();
     if (files_controller) {
       std::vector<ui::FileInfo> dropped_files;
       drag_data->GetFilenames(&dropped_files);
@@ -356,8 +347,6 @@ void DataTransferDlpController::DropIfAllowed(
                          std::move(drop_cb)));
       return;
     }
-#endif
-    // TODO(b/269610458): Check dropped files in Lacros.
   }
   ContinueDropIfAllowed(*drag_data->GetSource(), data_dst, std::move(drop_cb),
                         /*is_allowed=*/true);

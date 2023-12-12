@@ -2459,6 +2459,8 @@ source_set("ash") {
     "policy/dlp/dlp_extract_io_task_observer.h",
     "policy/dlp/dlp_files_controller_ash.cc",
     "policy/dlp/dlp_files_controller_ash.h",
+    "policy/dlp/dlp_files_controller_ash_utils.cc",
+    "policy/dlp/dlp_files_controller_ash_utils.h",
     "policy/dlp/dlp_files_event_storage.cc",
     "policy/dlp/dlp_files_event_storage.h",
     "policy/dlp/dlp_window_observer.cc",

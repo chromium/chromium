@@ -10,8 +10,32 @@
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/common/chrome_paths.h"
 #include "chrome/common/chrome_paths_lacros.h"
+#include "chromeos/crosapi/mojom/dlp.mojom.h"
+#include "chromeos/lacros/lacros_service.h"
 
 namespace policy {
+namespace {
+crosapi::mojom::FileAction ConvertFileActionToMojo(dlp::FileAction action) {
+  switch (action) {
+    case dlp::FileAction::kUnknown:
+      return crosapi::mojom::FileAction::kUnknown;
+    case dlp::FileAction::kDownload:
+      return crosapi::mojom::FileAction::kDownload;
+    case dlp::FileAction::kTransfer:
+      return crosapi::mojom::FileAction::kTransfer;
+    case dlp::FileAction::kUpload:
+      return crosapi::mojom::FileAction::kUpload;
+    case dlp::FileAction::kCopy:
+      return crosapi::mojom::FileAction::kCopy;
+    case dlp::FileAction::kMove:
+      return crosapi::mojom::FileAction::kMove;
+    case dlp::FileAction::kOpen:
+      return crosapi::mojom::FileAction::kOpen;
+    case dlp::FileAction::kShare:
+      return crosapi::mojom::FileAction::kShare;
+  }
+}
+}  // namespace
 
 DlpFilesControllerLacros::DlpFilesControllerLacros(
     const DlpRulesManager& rules_manager)
@@ -62,7 +86,13 @@ void DlpFilesControllerLacros::ShowDlpBlockedFiles(
     absl::optional<uint64_t> task_id,
     std::vector<base::FilePath> blocked_files,
     dlp::FileAction action) {
-  // TODO(b/314907867): Show blocked files in Lacros.
+  chromeos::LacrosService* lacros_service = chromeos::LacrosService::Get();
+  if (!lacros_service->IsAvailable<crosapi::mojom::Dlp>()) {
+    LOG(WARNING) << "DLP mojo service not available";
+    return;
+  }
+  lacros_service->GetRemote<crosapi::mojom::Dlp>()->ShowBlockedFiles(
+      task_id, std::move(blocked_files), ConvertFileActionToMojo(action));
 }
 
 }  // namespace policy

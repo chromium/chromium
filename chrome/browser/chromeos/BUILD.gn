@@ -469,6 +469,8 @@ static_library("test_support") {
     "policy/dlp/test/mock_dlp_content_manager.h",
     "policy/dlp/test/mock_dlp_content_observer.cc",
     "policy/dlp/test/mock_dlp_content_observer.h",
+    "policy/dlp/test/mock_dlp_crosapi.cc",
+    "policy/dlp/test/mock_dlp_crosapi.h",
     "policy/dlp/test/mock_dlp_rules_manager.cc",
     "policy/dlp/test/mock_dlp_rules_manager.h",
   ]
