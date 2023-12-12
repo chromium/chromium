@@ -214,8 +214,7 @@ class DownloadItemFactoryImpl : public download::DownloadItemFactory {
 
 std::unique_ptr<network::PendingSharedURLLoaderFactory>
 CreatePendingSharedURLLoaderFactory(StoragePartitionImpl* storage_partition,
-                                    RenderFrameHost* rfh,
-                                    bool is_download) {
+                                    RenderFrameHost* rfh) {
   mojo::PendingRemote<network::mojom::URLLoaderFactory> proxy_factory_remote;
   mojo::PendingReceiver<network::mojom::URLLoaderFactory>
       proxy_factory_receiver;
@@ -232,8 +231,9 @@ CreatePendingSharedURLLoaderFactory(StoragePartitionImpl* storage_partition,
 
     // Allow DevTools to potentially inject itself into the proxy pipe.
     should_proxy = devtools_instrumentation::WillCreateURLLoaderFactory(
-        static_cast<RenderFrameHostImpl*>(rfh), true, is_download,
-        &maybe_proxy_factory_receiver, nullptr /* factory_override */);
+        static_cast<RenderFrameHostImpl*>(rfh), /*is_navigation=*/true,
+        /*is_download=*/true, &maybe_proxy_factory_receiver,
+        nullptr /* factory_override */);
 
     // Also allow the Content embedder to inject itself if it wants to.
     should_proxy |= GetContentClient()->browser()->WillCreateURLLoaderFactory(
@@ -1329,8 +1329,8 @@ void DownloadManagerImpl::InterceptNavigationOnChecksComplete(
       tab_url, tab_referrer_url, std::move(url_chain), std::move(cert_status),
       std::move(response_head), std::move(response_body),
       std::move(url_loader_client_endpoints),
-      CreatePendingSharedURLLoaderFactory(storage_partition, render_frame_host,
-                                          false));
+      CreatePendingSharedURLLoaderFactory(storage_partition,
+                                          render_frame_host));
 }
 
 void DownloadManagerImpl::BeginResourceDownloadOnChecksComplete(
@@ -1412,7 +1412,7 @@ void DownloadManagerImpl::BeginResourceDownloadOnChecksComplete(
     StoragePartitionImpl* storage_partition = GetStoragePartitionForConfig(
         browser_context_, storage_partition_config);
     pending_url_loader_factory =
-        CreatePendingSharedURLLoaderFactory(storage_partition, rfh, true);
+        CreatePendingSharedURLLoaderFactory(storage_partition, rfh);
   }
 
   in_progress_manager_->BeginDownload(
