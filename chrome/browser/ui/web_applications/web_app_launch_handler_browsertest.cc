@@ -205,7 +205,7 @@ IN_PROC_BROWSER_TEST_F(WebAppLaunchHandlerBrowserTest,
   // start_url again.
   {
     GURL alt_url = embedded_test_server()->GetURL("/web_apps/basic.html");
-    NavigateToURLAndWait(app_browser, alt_url);
+    EXPECT_TRUE(ui_test_utils::NavigateToURL(app_browser, alt_url));
     EXPECT_EQ(app_web_contents->GetLastCommittedURL(), alt_url);
 
     Browser* app_browser_2 = LaunchWebAppBrowserAndWait(app_id);
@@ -222,7 +222,7 @@ IN_PROC_BROWSER_TEST_F(WebAppLaunchHandlerBrowserTest,
 
     chrome::NewTab(browser());
     EXPECT_EQ(browser()->tab_strip_model()->count(), 2);
-    NavigateToURLAndWait(browser(), start_url);
+    EXPECT_TRUE(ui_test_utils::NavigateToURL(browser(), start_url));
     ReparentWebAppForActiveTab(browser());
     EXPECT_EQ(browser()->tab_strip_model()->count(), 1);
 
@@ -642,7 +642,7 @@ IN_PROC_BROWSER_TEST_F(WebAppLaunchHandlerOriginTrialBrowserTest, OriginTrial) {
     UpdateAwaiter update_awaiter(provider.install_manager());
 
     serve_token = false;
-    NavigateToURLAndWait(browser(), GURL(kTestWebAppUrl));
+    EXPECT_TRUE(ui_test_utils::NavigateToURL(browser(), GURL(kTestWebAppUrl)));
 
     update_awaiter.AwaitUpdate();
   }

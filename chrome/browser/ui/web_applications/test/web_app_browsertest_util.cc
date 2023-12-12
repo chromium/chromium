@@ -94,7 +94,7 @@ void AutoAcceptDialogCallback(
 }  // namespace
 
 webapps::AppId InstallWebAppFromPage(Browser* browser, const GURL& app_url) {
-  NavigateToURLAndWait(browser, app_url);
+  EXPECT_TRUE(ui_test_utils::NavigateToURL(browser, app_url));
 
   webapps::AppId app_id;
   base::RunLoop run_loop;

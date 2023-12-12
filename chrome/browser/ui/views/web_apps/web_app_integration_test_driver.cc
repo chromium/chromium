@@ -4575,6 +4575,9 @@ WebAppIntegrationTest::WebAppIntegrationTest() : helper_(this) {
 #if BUILDFLAG(IS_CHROMEOS)
   // TODO(crbug.com/1357905): Update test driver to work with new UI.
   disabled_features.push_back(apps::features::kLinkCapturingUiUpdate);
+#else
+  // TOOD(b/313492499): Update test driver to work with new intent picker UI.
+  disabled_features.push_back(features::kDesktopPWAsLinkCapturing);
 #endif  // BUILDFLAG(IS_CHROMEOS)
   scoped_feature_list_.InitWithFeatures(enabled_features, disabled_features);
 }

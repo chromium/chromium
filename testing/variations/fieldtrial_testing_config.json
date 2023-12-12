@@ -5586,6 +5586,37 @@
             ]
         }
     ],
+    "DesktopLinkCapturingPWAExperiment": [
+        {
+            "platforms": [
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled_DefaultOn",
+                    "params": {
+                        "link_capturing_guardrail_storage_duration": "60",
+                        "on_by_default": "true"
+                    },
+                    "enable_features": [
+                        "DesktopPWAsLinkCapturing"
+                    ]
+                },
+                {
+                    "name": "Enabled_DefaultOff",
+                    "params": {
+                        "link_capturing_guardrail_storage_duration": "60",
+                        "on_by_default": "false"
+                    },
+                    "enable_features": [
+                        "DesktopPWAsLinkCapturing"
+                    ]
+                }
+            ]
+        }
+    ],
     "DesktopNtpDriveCache": [
         {
             "platforms": [
