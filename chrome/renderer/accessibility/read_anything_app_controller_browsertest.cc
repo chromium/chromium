@@ -118,13 +118,21 @@ class ReadAnythingAppControllerTest : public ChromeRenderViewTest {
 
     // Create simple AXTreeUpdate with a root node and 3 children.
     ui::AXTreeUpdate snapshot;
-    snapshot.root_id = 1;
-    snapshot.nodes.resize(4);
-    snapshot.nodes[0].id = 1;
-    snapshot.nodes[0].child_ids = {2, 3, 4};
-    snapshot.nodes[1].id = 2;
-    snapshot.nodes[2].id = 3;
-    snapshot.nodes[3].id = 4;
+    ui::AXNodeData root;
+    root.id = 1;
+
+    ui::AXNodeData child1;
+    child1.id = 2;
+
+    ui::AXNodeData child2;
+    child2.id = 3;
+
+    ui::AXNodeData child3;
+    child3.id = 4;
+
+    root.child_ids = {child1.id, child2.id, child3.id};
+    snapshot.root_id = root.id;
+    snapshot.nodes = {root, child1, child2, child3};
     SetUpdateTreeID(&snapshot);
 
     // Send the snapshot to the controller and set its tree ID to be the active
@@ -149,17 +157,19 @@ class ReadAnythingAppControllerTest : public ChromeRenderViewTest {
     // Send update for main web content with child tree (pdf web contents).
     ui::AXTreeUpdate main_web_contents_update;
     SetUpdateTreeID(&main_web_contents_update);
-    main_web_contents_update.nodes.resize(1);
-    main_web_contents_update.nodes[0].id = 1;
-    main_web_contents_update.nodes[0].AddChildTreeId(pdf_web_contents_tree_id);
+    ui::AXNodeData node;
+    node.id = 1;
+    node.AddChildTreeId(pdf_web_contents_tree_id);
+    main_web_contents_update.nodes = {node};
     AccessibilityEventReceived({main_web_contents_update});
 
     // Send update for pdf web contents with child tree (iframe).
     ui::AXTreeUpdate pdf_web_contents_update;
-    pdf_web_contents_update.nodes.resize(1);
-    pdf_web_contents_update.root_id = 1;
-    pdf_web_contents_update.nodes[0].id = 1;
-    pdf_web_contents_update.nodes[0].AddChildTreeId(pdf_iframe_tree_id);
+    ui::AXNodeData pdfNode;
+    pdfNode.id = 1;
+    pdfNode.AddChildTreeId(pdf_iframe_tree_id);
+    pdf_web_contents_update.nodes = {pdfNode};
+    pdf_web_contents_update.root_id = pdfNode.id;
     SetUpdateTreeID(&pdf_web_contents_update, pdf_web_contents_tree_id);
     AccessibilityEventReceived({pdf_web_contents_update});
 
@@ -399,9 +409,10 @@ TEST_F(ReadAnythingAppControllerTest, RootIdIsSnapshotRootId) {
 TEST_F(ReadAnythingAppControllerTest, GetChildren_NoSelectionOrContentNodes) {
   ui::AXTreeUpdate update;
   SetUpdateTreeID(&update);
-  update.nodes.resize(1);
-  update.nodes[0].id = 3;
-  update.nodes[0].role = ax::mojom::Role::kNone;
+  ui::AXNodeData node;
+  node.id = 3;
+  node.role = ax::mojom::Role::kNone;
+  update.nodes = {node};
   AccessibilityEventReceived({update});
   OnAXTreeDistilled({});
   EXPECT_EQ(0u, GetChildren(1).size());
@@ -413,9 +424,10 @@ TEST_F(ReadAnythingAppControllerTest, GetChildren_NoSelectionOrContentNodes) {
 TEST_F(ReadAnythingAppControllerTest, GetChildren_WithContentNodes) {
   ui::AXTreeUpdate update;
   SetUpdateTreeID(&update);
-  update.nodes.resize(1);
-  update.nodes[0].id = 3;
-  update.nodes[0].role = ax::mojom::Role::kNone;
+  ui::AXNodeData node;
+  node.id = 3;
+  node.role = ax::mojom::Role::kNone;
+  update.nodes = {node};
   AccessibilityEventReceived({update});
   OnAXTreeDistilled({1, 2, 3, 4});
   EXPECT_EQ(2u, GetChildren(1).size());
@@ -479,14 +491,19 @@ TEST_F(ReadAnythingAppControllerTest, GetHtmlTag) {
   std::string ul = "ul";
   ui::AXTreeUpdate update;
   SetUpdateTreeID(&update);
-  update.nodes.resize(3);
-  update.nodes[0].id = 2;
-  update.nodes[1].id = 3;
-  update.nodes[2].id = 4;
-  update.nodes[0].AddStringAttribute(ax::mojom::StringAttribute::kHtmlTag,
-                                     span);
-  update.nodes[1].AddStringAttribute(ax::mojom::StringAttribute::kHtmlTag, h1);
-  update.nodes[2].AddStringAttribute(ax::mojom::StringAttribute::kHtmlTag, ul);
+  ui::AXNodeData spanNode;
+  spanNode.id = 2;
+  spanNode.AddStringAttribute(ax::mojom::StringAttribute::kHtmlTag, span);
+
+  ui::AXNodeData h1Node;
+  h1Node.id = 3;
+  h1Node.AddStringAttribute(ax::mojom::StringAttribute::kHtmlTag, h1);
+
+  ui::AXNodeData ulNode;
+  ulNode.id = 4;
+  ulNode.AddStringAttribute(ax::mojom::StringAttribute::kHtmlTag, ul);
+  update.nodes = {spanNode, h1Node, ulNode};
+
   AccessibilityEventReceived({update});
   OnAXTreeDistilled({});
   EXPECT_EQ(span, GetHtmlTag(2));
@@ -501,16 +518,21 @@ TEST_F(ReadAnythingAppControllerTest, GetHtmlTag_TextFieldReturnsDiv) {
   std::string div = "div";
   ui::AXTreeUpdate update;
   SetUpdateTreeID(&update);
-  update.nodes.resize(3);
-  update.nodes[0].id = 2;
-  update.nodes[1].id = 3;
-  update.nodes[2].id = 4;
-  update.nodes[0].AddStringAttribute(ax::mojom::StringAttribute::kHtmlTag,
-                                     span);
-  update.nodes[1].AddStringAttribute(ax::mojom::StringAttribute::kHtmlTag, h1);
-  update.nodes[1].role = ax::mojom::Role::kTextField;
-  update.nodes[2].AddStringAttribute(ax::mojom::StringAttribute::kHtmlTag, ul);
-  update.nodes[2].role = ax::mojom::Role::kTextFieldWithComboBox;
+  ui::AXNodeData spanNode;
+  spanNode.id = 2;
+  spanNode.AddStringAttribute(ax::mojom::StringAttribute::kHtmlTag, span);
+
+  ui::AXNodeData h1Node;
+  h1Node.id = 3;
+  h1Node.AddStringAttribute(ax::mojom::StringAttribute::kHtmlTag, h1);
+  h1Node.role = ax::mojom::Role::kTextField;
+
+  ui::AXNodeData ulNode;
+  ulNode.id = 4;
+  ulNode.AddStringAttribute(ax::mojom::StringAttribute::kHtmlTag, ul);
+  ulNode.role = ax::mojom::Role::kTextFieldWithComboBox;
+  update.nodes = {spanNode, h1Node, ulNode};
+
   AccessibilityEventReceived({update});
   OnAXTreeDistilled({});
   EXPECT_EQ(span, GetHtmlTag(2));
@@ -524,12 +546,16 @@ TEST_F(ReadAnythingAppControllerTest, GetHtmlTag_SvgReturnsDivIfGoogleDocs) {
   ui::AXTreeUpdate update;
   ui::AXTreeID id_1 = ui::AXTreeID::CreateNewAXTreeID();
   SetUpdateTreeID(&update, id_1);
-  update.root_id = 1;
-  update.nodes.resize(2);
-  update.nodes[0].id = 1;
-  update.nodes[0].child_ids = {2};
-  update.nodes[1].id = 2;
-  update.nodes[1].AddStringAttribute(ax::mojom::StringAttribute::kHtmlTag, svg);
+  ui::AXNodeData node;
+  node.id = 2;
+  node.AddStringAttribute(ax::mojom::StringAttribute::kHtmlTag, svg);
+
+  ui::AXNodeData root;
+  root.id = 1;
+  root.child_ids = {node.id};
+  update.nodes = {root, node};
+  update.root_id = root.id;
+
   AccessibilityEventReceived({update});
   OnAXTreeDistilled({});
   OnActiveAXTreeIDChanged(
@@ -547,16 +573,21 @@ TEST_F(ReadAnythingAppControllerTest,
   ui::AXTreeUpdate update;
   ui::AXTreeID id_1 = ui::AXTreeID::CreateNewAXTreeID();
   SetUpdateTreeID(&update, id_1);
-  update.root_id = 1;
-  update.nodes.resize(3);
-  update.nodes[0].id = 1;
-  update.nodes[0].child_ids = {2, 3};
-  update.nodes[1].id = 2;
-  update.nodes[2].id = 3;
-  update.nodes[0].role = ax::mojom::Role::kParagraph;
-  update.nodes[1].role = ax::mojom::Role::kParagraph;
-  update.nodes[1].AddStringAttribute(ax::mojom::StringAttribute::kHtmlTag, g);
-  update.nodes[2].AddStringAttribute(ax::mojom::StringAttribute::kHtmlTag, g);
+  ui::AXNodeData paragraphNode;
+  paragraphNode.id = 2;
+  paragraphNode.role = ax::mojom::Role::kParagraph;
+  paragraphNode.AddStringAttribute(ax::mojom::StringAttribute::kHtmlTag, g);
+
+  ui::AXNodeData svgNode;
+  svgNode.id = 3;
+  svgNode.AddStringAttribute(ax::mojom::StringAttribute::kHtmlTag, g);
+
+  ui::AXNodeData root;
+  root.role = ax::mojom::Role::kParagraph;
+  root.id = 1;
+  root.child_ids = {paragraphNode.id, svgNode.id};
+  update.root_id = root.id;
+  update.nodes = {root, paragraphNode, svgNode};
   AccessibilityEventReceived({update});
   OnAXTreeDistilled({});
   OnActiveAXTreeIDChanged(
@@ -575,12 +606,17 @@ TEST_F(ReadAnythingAppControllerTest,
   std::string div = "div";
   ui::AXTreeUpdate update;
   SetUpdateTreeID(&update);
-  update.nodes.resize(3);
-  update.nodes[0].id = 2;
-  update.nodes[1].id = 3;
-  update.nodes[2].id = 4;
-  update.nodes[1].role = ax::mojom::Role::kHeading;
-  update.nodes[1].html_attributes.emplace_back("aria-level", "3");
+  ui::AXNodeData node1;
+  node1.id = 2;
+
+  ui::AXNodeData node2;
+  node2.id = 3;
+  node2.role = ax::mojom::Role::kHeading;
+  node2.html_attributes.emplace_back("aria-level", "3");
+
+  ui::AXNodeData node3;
+  node3.id = 4;
+  update.nodes = {node1, node2, node3};
   AccessibilityEventReceived({update});
   OnAXTreeDistilled({});
   EXPECT_EQ(h3, GetHtmlTag(3));
@@ -592,17 +628,20 @@ TEST_F(ReadAnythingAppControllerTest, GetHtmlTag_PDF) {
   // Send pdf iframe update with html tags to test.
   ui::AXTreeUpdate update;
   SetUpdateTreeID(&update, pdf_iframe_tree_id);
-  update.nodes.resize(3);
-  update.root_id = 1;
-  update.nodes[0].id = 1;
-  update.nodes[0].child_ids = {2, 3};
-  update.nodes[1].id = 2;
-  update.nodes[2].id = 3;
-  update.nodes[0].role = ax::mojom::Role::kPdfRoot;
-  update.nodes[1].AddStringAttribute(ax::mojom::StringAttribute::kHtmlTag,
-                                     "h1");
-  update.nodes[2].role = ax::mojom::Role::kHeading;
-  update.nodes[2].html_attributes.emplace_back("aria-level", "2");
+  ui::AXNodeData node1;
+  node1.id = 2;
+  node1.AddStringAttribute(ax::mojom::StringAttribute::kHtmlTag, "h1");
+  ui::AXNodeData node2;
+  node2.id = 3;
+  node2.role = ax::mojom::Role::kHeading;
+  node2.html_attributes.emplace_back("aria-level", "2");
+
+  ui::AXNodeData root;
+  root.id = 1;
+  root.child_ids = {node1.id, node2.id};
+  root.role = ax::mojom::Role::kPdfRoot;
+  update.root_id = root.id;
+  update.nodes = {root, node1, node2};
   AccessibilityEventReceived({update});
 
   OnAXTreeDistilled({});
@@ -620,28 +659,34 @@ TEST_F(ReadAnythingAppControllerTest, GetHtmlTag_IncorrectlyFormattedPDF) {
   // paragraph.
   ui::AXTreeUpdate update;
   SetUpdateTreeID(&update, pdf_iframe_tree_id);
-  update.nodes.resize(5);
-  update.root_id = 1;
-  update.nodes[0].id = 1;
-  update.nodes[0].child_ids = {2, 3, 4, 5};
-  update.nodes[1].id = 2;
-  update.nodes[2].id = 3;
-  update.nodes[3].id = 4;
-  update.nodes[4].id = 5;
-  update.nodes[0].role = ax::mojom::Role::kPdfRoot;
-  update.nodes[1].role = ax::mojom::Role::kHeading;
-  update.nodes[1].AddStringAttribute(ax::mojom::StringAttribute::kHtmlTag,
-                                     "h1");
-  update.nodes[2].role = ax::mojom::Role::kHeading;
-  update.nodes[2].AddStringAttribute(ax::mojom::StringAttribute::kHtmlTag,
-                                     "h1");
-  update.nodes[3].role = ax::mojom::Role::kLink;
-  update.nodes[4].role = ax::mojom::Role::kHeading;
-  update.nodes[4].html_attributes.emplace_back("aria-level", "1");
-  update.nodes[4].SetNameChecked(
+  ui::AXNodeData headingNode1;
+  headingNode1.id = 2;
+  headingNode1.role = ax::mojom::Role::kHeading;
+  headingNode1.AddStringAttribute(ax::mojom::StringAttribute::kHtmlTag, "h1");
+  ui::AXNodeData headingNode2;
+  headingNode2.id = 3;
+  headingNode2.role = ax::mojom::Role::kHeading;
+  headingNode2.AddStringAttribute(ax::mojom::StringAttribute::kHtmlTag, "h1");
+
+  ui::AXNodeData linkNode;
+  linkNode.id = 4;
+  linkNode.role = ax::mojom::Role::kLink;
+
+  ui::AXNodeData ariaNode;
+  ariaNode.id = 5;
+  ariaNode.role = ax::mojom::Role::kHeading;
+  ariaNode.html_attributes.emplace_back("aria-level", "1");
+  ariaNode.SetNameChecked(
       "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod "
       "tempor incididunt ut labore et dolore magna aliqua.");
-  update.nodes[4].SetNameFrom(ax::mojom::NameFrom::kContents);
+  ariaNode.SetNameFrom(ax::mojom::NameFrom::kContents);
+
+  ui::AXNodeData root;
+  root.id = 1;
+  root.child_ids = {headingNode1.id, headingNode2.id, linkNode.id, ariaNode.id};
+  root.role = ax::mojom::Role::kPdfRoot;
+  update.root_id = root.id;
+  update.nodes = {root, headingNode1, headingNode2, linkNode, ariaNode};
 
   AccessibilityEventReceived({update});
 
@@ -659,15 +704,18 @@ TEST_F(ReadAnythingAppControllerTest, GetHtmlTag_InaccessiblePDF) {
   // Send pdf iframe update with html tags to test.
   ui::AXTreeUpdate update;
   SetUpdateTreeID(&update, pdf_iframe_tree_id);
-  update.nodes.resize(2);
+  ui::AXNodeData node;
+  node.id = 2;
+  node.role = ax::mojom::Role::kContentInfo;
+  node.SetNameChecked(string_constants::kPDFPageEnd);
+  node.SetNameFrom(ax::mojom::NameFrom::kContents);
+
+  ui::AXNodeData root;
+  root.id = 1;
+  root.child_ids = {node.id};
+  root.role = ax::mojom::Role::kPdfRoot;
   update.root_id = 1;
-  update.nodes[0].id = 1;
-  update.nodes[0].child_ids = {2};
-  update.nodes[1].id = 2;
-  update.nodes[0].role = ax::mojom::Role::kPdfRoot;
-  update.nodes[1].role = ax::mojom::Role::kContentInfo;
-  update.nodes[1].SetNameChecked(string_constants::kPDFPageEnd);
-  update.nodes[1].SetNameFrom(ax::mojom::NameFrom::kContents);
+  update.nodes = {root, node};
   AccessibilityEventReceived({update});
 
   OnAXTreeDistilled({});
@@ -680,16 +728,21 @@ TEST_F(ReadAnythingAppControllerTest, GetTextContent_NoSelection) {
   std::string more_text_content = " world";
   ui::AXTreeUpdate update;
   SetUpdateTreeID(&update);
-  update.nodes.resize(3);
-  update.nodes[0].id = 2;
-  update.nodes[1].id = 3;
-  update.nodes[2].id = 4;
-  update.nodes[0].role = ax::mojom::Role::kStaticText;
-  update.nodes[0].SetNameChecked(text_content);
-  update.nodes[1].role = ax::mojom::Role::kStaticText;
-  update.nodes[1].SetNameExplicitlyEmpty();
-  update.nodes[2].role = ax::mojom::Role::kStaticText;
-  update.nodes[2].SetNameChecked(more_text_content);
+  ui::AXNodeData node1;
+  node1.id = 2;
+  node1.role = ax::mojom::Role::kStaticText;
+  node1.SetNameChecked(text_content);
+
+  ui::AXNodeData node2;
+  node2.id = 3;
+  node2.role = ax::mojom::Role::kStaticText;
+  node2.SetNameExplicitlyEmpty();
+
+  ui::AXNodeData node3;
+  node3.id = 4;
+  node3.role = ax::mojom::Role::kStaticText;
+  node3.SetNameChecked(more_text_content);
+  update.nodes = {node1, node2, node3};
   AccessibilityEventReceived({update});
   OnAXTreeDistilled({});
   EXPECT_EQ("Hello world", GetTextContent(1));
@@ -704,16 +757,22 @@ TEST_F(ReadAnythingAppControllerTest, GetTextContent_WithSelection) {
   std::string text_content_3 = " friend";
   ui::AXTreeUpdate update;
   SetUpdateTreeID(&update);
-  update.nodes.resize(3);
-  update.nodes[0].id = 2;
-  update.nodes[1].id = 3;
-  update.nodes[2].id = 4;
-  update.nodes[0].role = ax::mojom::Role::kStaticText;
-  update.nodes[0].SetNameChecked(text_content_1);
-  update.nodes[1].role = ax::mojom::Role::kStaticText;
-  update.nodes[1].SetNameChecked(text_content_2);
-  update.nodes[2].role = ax::mojom::Role::kStaticText;
-  update.nodes[2].SetNameChecked(text_content_3);
+  ui::AXNodeData node1;
+  node1.id = 2;
+  node1.role = ax::mojom::Role::kStaticText;
+  node1.SetNameChecked(text_content_1);
+
+  ui::AXNodeData node2;
+  node2.id = 3;
+  node2.role = ax::mojom::Role::kStaticText;
+  node2.SetNameChecked(text_content_2);
+
+  ui::AXNodeData node3;
+  node3.id = 4;
+  node3.role = ax::mojom::Role::kStaticText;
+  node3.SetNameChecked(text_content_3);
+  update.nodes = {node1, node2, node3};
+
   // Create selection from node 2-3.
   update.tree_data.sel_anchor_object_id = 2;
   update.tree_data.sel_focus_object_id = 3;
@@ -735,17 +794,21 @@ TEST_F(ReadAnythingAppControllerTest,
   ui::AXTreeUpdate update;
   ui::AXTreeID id_1 = ui::AXTreeID::CreateNewAXTreeID();
   SetUpdateTreeID(&update, id_1);
-  update.root_id = 1;
-  update.nodes.resize(3);
-  update.nodes[0].id = 1;
-  update.nodes[0].child_ids = {2, 3};
-  update.nodes[0].role = ax::mojom::Role::kParagraph;
-  update.nodes[1].id = 2;
-  update.nodes[1].AddStringAttribute(ax::mojom::StringAttribute::kName,
-                                     text_content);
-  update.nodes[2].id = 3;
-  update.nodes[2].AddStringAttribute(ax::mojom::StringAttribute::kName,
-                                     more_text_content);
+  ui::AXNodeData node1;
+  node1.id = 2;
+  node1.AddStringAttribute(ax::mojom::StringAttribute::kName, text_content);
+
+  ui::AXNodeData node2;
+  node2.id = 3;
+  node2.AddStringAttribute(ax::mojom::StringAttribute::kName,
+                           more_text_content);
+  ui::AXNodeData root;
+  root.id = 1;
+  root.child_ids = {node1.id, node2.id};
+  root.role = ax::mojom::Role::kParagraph;
+  update.root_id = root.id;
+  update.nodes = {root, node1, node2};
+
   AccessibilityEventReceived({update});
   OnAXTreeDistilled({});
   OnActiveAXTreeIDChanged(
@@ -765,17 +828,22 @@ TEST_F(ReadAnythingAppControllerTest,
   ui::AXTreeUpdate update;
   ui::AXTreeID id_1 = ui::AXTreeID::CreateNewAXTreeID();
   SetUpdateTreeID(&update, id_1);
-  update.root_id = 1;
-  update.nodes.resize(3);
-  update.nodes[0].id = 1;
-  update.nodes[0].child_ids = {2, 3};
-  update.nodes[0].role = ax::mojom::Role::kParagraph;
-  update.nodes[1].id = 2;
-  update.nodes[1].AddStringAttribute(ax::mojom::StringAttribute::kName,
-                                     text_content);
-  update.nodes[2].id = 3;
-  update.nodes[2].AddStringAttribute(ax::mojom::StringAttribute::kName,
-                                     more_text_content);
+  ui::AXNodeData node1;
+  node1.id = 2;
+  node1.AddStringAttribute(ax::mojom::StringAttribute::kName, text_content);
+
+  ui::AXNodeData node2;
+  node2.id = 3;
+  node2.AddStringAttribute(ax::mojom::StringAttribute::kName,
+                           more_text_content);
+
+  ui::AXNodeData root;
+  root.id = 1;
+  root.child_ids = {node1.id, node2.id};
+  root.role = ax::mojom::Role::kParagraph;
+  update.root_id = root.id;
+  update.nodes = {root, node1, node2};
+
   AccessibilityEventReceived({update});
   OnAXTreeDistilled({});
   OnActiveAXTreeIDChanged(id_1, GURL("https://www.google.com/"));
@@ -793,23 +861,32 @@ TEST_F(ReadAnythingAppControllerTest, GetUrl) {
   std::string js = "javascript:alert(origin)";
   ui::AXTreeUpdate update;
   SetUpdateTreeID(&update);
-  update.nodes.resize(6);
-  update.nodes[0].id = 1;
-  update.nodes[1].id = 2;
-  update.nodes[2].id = 3;
-  update.nodes[3].id = 4;
-  update.nodes[4].id = 5;
-  update.nodes[5].id = 6;
-  update.nodes[0].child_ids = {2, 3, 4, 5, 6};
-  update.nodes[1].AddStringAttribute(ax::mojom::StringAttribute::kUrl,
-                                     http_url);
-  update.nodes[2].AddStringAttribute(ax::mojom::StringAttribute::kUrl,
-                                     https_url);
-  update.nodes[3].AddStringAttribute(ax::mojom::StringAttribute::kUrl,
-                                     invalid_url);
-  update.nodes[4].AddStringAttribute(ax::mojom::StringAttribute::kUrl,
-                                     missing_url);
-  update.nodes[5].AddStringAttribute(ax::mojom::StringAttribute::kUrl, js);
+
+  ui::AXNodeData node1;
+  node1.id = 2;
+  node1.AddStringAttribute(ax::mojom::StringAttribute::kUrl, http_url);
+
+  ui::AXNodeData node2;
+  node2.id = 3;
+  node2.AddStringAttribute(ax::mojom::StringAttribute::kUrl, https_url);
+
+  ui::AXNodeData node3;
+  node3.id = 4;
+  node3.AddStringAttribute(ax::mojom::StringAttribute::kUrl, invalid_url);
+
+  ui::AXNodeData node4;
+  node4.id = 5;
+  node4.AddStringAttribute(ax::mojom::StringAttribute::kUrl, missing_url);
+
+  ui::AXNodeData node5;
+  node5.id = 6;
+  node5.AddStringAttribute(ax::mojom::StringAttribute::kUrl, js);
+
+  ui::AXNodeData root;
+  root.id = 1;
+  root.child_ids = {node1.id, node2.id, node3.id, node4.id, node5.id};
+  update.nodes = {root, node1, node2, node3, node4, node5};
+
   AccessibilityEventReceived({update});
   OnAXTreeDistilled({});
   EXPECT_EQ(http_url, GetUrl(2));
@@ -822,13 +899,19 @@ TEST_F(ReadAnythingAppControllerTest, GetUrl) {
 TEST_F(ReadAnythingAppControllerTest, ShouldBold) {
   ui::AXTreeUpdate update;
   SetUpdateTreeID(&update);
-  update.nodes.resize(3);
-  update.nodes[0].id = 2;
-  update.nodes[1].id = 3;
-  update.nodes[2].id = 4;
-  update.nodes[0].AddTextStyle(ax::mojom::TextStyle::kOverline);
-  update.nodes[1].AddTextStyle(ax::mojom::TextStyle::kUnderline);
-  update.nodes[2].AddTextStyle(ax::mojom::TextStyle::kItalic);
+  ui::AXNodeData overlineNode;
+  overlineNode.id = 2;
+  overlineNode.AddTextStyle(ax::mojom::TextStyle::kOverline);
+
+  ui::AXNodeData underlineNode;
+  underlineNode.id = 3;
+  underlineNode.AddTextStyle(ax::mojom::TextStyle::kUnderline);
+
+  ui::AXNodeData italicNode;
+  italicNode.id = 4;
+  italicNode.AddTextStyle(ax::mojom::TextStyle::kItalic);
+  update.nodes = {overlineNode, underlineNode, italicNode};
+
   AccessibilityEventReceived({update});
   OnAXTreeDistilled({});
   EXPECT_EQ(false, ShouldBold(2));
@@ -840,9 +923,10 @@ TEST_F(ReadAnythingAppControllerTest, GetDataFontCss) {
   std::string dataFontCss = "italic 400 14.6667px 'Courier New'";
   ui::AXTreeUpdate update;
   SetUpdateTreeID(&update);
-  update.nodes.resize(1);
-  update.nodes[0].id = 2;
-  update.nodes[0].html_attributes.emplace_back("data-font-css", dataFontCss);
+  ui::AXNodeData node;
+  node.id = 2;
+  node.html_attributes.emplace_back("data-font-css", dataFontCss);
+  update.nodes = {node};
   AccessibilityEventReceived({update});
   OnAXTreeDistilled({});
   EXPECT_EQ(dataFontCss, GetDataFontCss(2));
@@ -851,11 +935,15 @@ TEST_F(ReadAnythingAppControllerTest, GetDataFontCss) {
 TEST_F(ReadAnythingAppControllerTest, IsOverline) {
   ui::AXTreeUpdate update;
   SetUpdateTreeID(&update);
-  update.nodes.resize(2);
-  update.nodes[0].id = 2;
-  update.nodes[1].id = 3;
-  update.nodes[0].AddTextStyle(ax::mojom::TextStyle::kOverline);
-  update.nodes[1].AddTextStyle(ax::mojom::TextStyle::kUnderline);
+  ui::AXNodeData overlineNode;
+  overlineNode.id = 2;
+  overlineNode.AddTextStyle(ax::mojom::TextStyle::kOverline);
+
+  ui::AXNodeData underlineNode;
+  underlineNode.id = 3;
+  underlineNode.AddTextStyle(ax::mojom::TextStyle::kUnderline);
+  update.nodes = {overlineNode, underlineNode};
+
   AccessibilityEventReceived({update});
   OnAXTreeDistilled({});
   EXPECT_EQ(true, IsOverline(2));
@@ -865,12 +953,20 @@ TEST_F(ReadAnythingAppControllerTest, IsOverline) {
 TEST_F(ReadAnythingAppControllerTest, IsLeafNode) {
   ui::AXTreeUpdate update;
   SetUpdateTreeID(&update);
-  update.nodes.resize(4);
-  update.nodes[0].id = 1;
-  update.nodes[0].child_ids = {2, 3, 4};
-  update.nodes[1].id = 2;
-  update.nodes[2].id = 3;
-  update.nodes[3].id = 4;
+  ui::AXNodeData node1;
+  node1.id = 2;
+
+  ui::AXNodeData node2;
+  node2.id = 3;
+
+  ui::AXNodeData node3;
+  node3.id = 4;
+
+  ui::AXNodeData parent;
+  parent.id = 1;
+  parent.child_ids = {node1.id, node2.id, node3.id};
+  update.nodes = {parent, node1, node2, node3};
+
   AccessibilityEventReceived({update});
   OnAXTreeDistilled({});
   EXPECT_EQ(false, IsLeafNode(1));
@@ -894,13 +990,19 @@ TEST_F(ReadAnythingAppControllerTest, IsGoogleDocs) {
 TEST_F(ReadAnythingAppControllerTest, IsNodeIgnoredForReadAnything) {
   ui::AXTreeUpdate update;
   SetUpdateTreeID(&update);
-  update.nodes.resize(3);
-  update.nodes[0].id = 2;
-  update.nodes[1].id = 3;
-  update.nodes[2].id = 4;
-  update.nodes[0].role = ax::mojom::Role::kStaticText;
-  update.nodes[1].role = ax::mojom::Role::kComboBoxGrouping;
-  update.nodes[2].role = ax::mojom::Role::kButton;
+  ui::AXNodeData staticTextNode;
+  staticTextNode.id = 2;
+  staticTextNode.role = ax::mojom::Role::kStaticText;
+
+  ui::AXNodeData comboboxNode;
+  comboboxNode.id = 3;
+  comboboxNode.role = ax::mojom::Role::kComboBoxGrouping;
+
+  ui::AXNodeData buttonNode;
+  buttonNode.id = 4;
+  buttonNode.role = ax::mojom::Role::kButton;
+  update.nodes = {staticTextNode, comboboxNode, buttonNode};
+
   AccessibilityEventReceived({update});
   OnAXTreeDistilled({});
   EXPECT_EQ(false, IsNodeIgnoredForReadAnything(2));
@@ -948,8 +1050,9 @@ TEST_F(ReadAnythingAppControllerTest,
 TEST_F(ReadAnythingAppControllerTest, DisplayNodeIdsContains_ContentNodes) {
   ui::AXTreeUpdate update;
   SetUpdateTreeID(&update);
-  update.nodes.resize(1);
-  update.nodes[0].id = 3;
+  ui::AXNodeData node;
+  node.id = 3;
+  update.nodes = {node};
   // This update says the page loaded. When the controller receives it in
   // AccessibilityEventReceived, it will re-distill the tree. This is an
   // example of a non-generated event.
@@ -986,10 +1089,11 @@ TEST_F(ReadAnythingAppControllerTest, AccessibilityEventReceived) {
   // Send a new update which settings the text content of node 2.
   ui::AXTreeUpdate update_1;
   SetUpdateTreeID(&update_1);
-  update_1.nodes.resize(1);
-  update_1.nodes[0].id = 2;
-  update_1.nodes[0].role = ax::mojom::Role::kStaticText;
-  update_1.nodes[0].SetNameChecked("Hello world");
+  ui::AXNodeData node;
+  node.id = 2;
+  node.role = ax::mojom::Role::kStaticText;
+  node.SetNameChecked("Hello world");
+  update_1.nodes = {node};
   AccessibilityEventReceived({update_1});
   EXPECT_EQ("Hello world", GetTextContent(1));
   EXPECT_EQ("Hello world", GetTextContent(2));
@@ -1001,10 +1105,11 @@ TEST_F(ReadAnythingAppControllerTest, AccessibilityEventReceived) {
   for (int i = 2; i < 5; i++) {
     ui::AXTreeUpdate update;
     SetUpdateTreeID(&update);
-    update.nodes.resize(1);
-    update.nodes[0].id = i;
-    update.nodes[0].role = ax::mojom::Role::kStaticText;
-    update.nodes[0].SetNameChecked("Node " + base::NumberToString(i));
+    ui::AXNodeData staticTextNode;
+    staticTextNode.id = i;
+    staticTextNode.role = ax::mojom::Role::kStaticText;
+    staticTextNode.SetNameChecked("Node " + base::NumberToString(i));
+    update.nodes = {staticTextNode};
     batch_updates.push_back(update);
   }
   AccessibilityEventReceived(batch_updates);
@@ -1018,8 +1123,9 @@ TEST_F(ReadAnythingAppControllerTest, AccessibilityEventReceived) {
   SetUpdateTreeID(&clear_update);
   clear_update.root_id = 1;
   clear_update.node_id_to_clear = 1;
-  clear_update.nodes.resize(1);
-  clear_update.nodes[0].id = 1;
+  ui::AXNodeData clearNode;
+  clearNode.id = 1;
+  clear_update.nodes = {clearNode};
   AccessibilityEventReceived({clear_update});
   EXPECT_EQ("", GetTextContent(1));
 }
@@ -1035,10 +1141,11 @@ TEST_F(ReadAnythingAppControllerTest,
   // Send a new update which settings the text content of node 2.
   ui::AXTreeUpdate update_1;
   SetUpdateTreeID(&update_1);
-  update_1.nodes.resize(1);
-  update_1.nodes[0].id = 2;
-  update_1.nodes[0].role = ax::mojom::Role::kStaticText;
-  update_1.nodes[0].SetNameChecked("Hello world");
+  ui::AXNodeData startNode;
+  startNode.id = 2;
+  startNode.role = ax::mojom::Role::kStaticText;
+  startNode.SetNameChecked("Hello world");
+  update_1.nodes = {startNode};
   AccessibilityEventReceived({update_1});
   EXPECT_EQ("Hello world", GetTextContent(1));
   EXPECT_EQ("Hello world", GetTextContent(2));
@@ -1051,10 +1158,11 @@ TEST_F(ReadAnythingAppControllerTest,
   for (int i = 2; i < 5; i++) {
     ui::AXTreeUpdate update;
     SetUpdateTreeID(&update);
-    update.nodes.resize(1);
-    update.nodes[0].id = i;
-    update.nodes[0].role = ax::mojom::Role::kStaticText;
-    update.nodes[0].SetNameChecked("Node " + base::NumberToString(i));
+    ui::AXNodeData node;
+    node.id = i;
+    node.role = ax::mojom::Role::kStaticText;
+    node.SetNameChecked("Node " + base::NumberToString(i));
+    update.nodes = {node};
     batch_updates.push_back(update);
   }
   AccessibilityEventReceived(batch_updates);
@@ -1069,10 +1177,11 @@ TEST_F(ReadAnythingAppControllerTest,
   SetDistillationInProgress(false);
   ui::AXTreeUpdate update_2;
   SetUpdateTreeID(&update_2);
-  update_2.nodes.resize(1);
-  update_2.nodes[0].id = 2;
-  update_2.nodes[0].role = ax::mojom::Role::kStaticText;
-  update_2.nodes[0].SetNameChecked("Final update");
+  ui::AXNodeData finalNode;
+  finalNode.id = 2;
+  finalNode.role = ax::mojom::Role::kStaticText;
+  finalNode.SetNameChecked("Final update");
+  update_2.nodes = {finalNode};
   AccessibilityEventReceived({update_2});
 
   EXPECT_EQ("Final updateNode 3Node 4", GetTextContent(1));
@@ -1090,11 +1199,12 @@ TEST_F(ReadAnythingAppControllerTest, OnActiveAXTreeIDChanged) {
   for (int i = 0; i < 3; i++) {
     ui::AXTreeUpdate update;
     SetUpdateTreeID(&update, tree_ids[i]);
-    update.root_id = 1;
-    update.nodes.resize(1);
-    update.nodes[0].id = 1;
-    update.nodes[0].role = ax::mojom::Role::kStaticText;
-    update.nodes[0].SetNameChecked("Tree " + base::NumberToString(i));
+    ui::AXNodeData node;
+    node.id = 1;
+    node.role = ax::mojom::Role::kStaticText;
+    node.SetNameChecked("Tree " + base::NumberToString(i));
+    update.root_id = node.id;
+    update.nodes = {node};
     updates.push_back(update);
   }
   // Add the three updates separately since they have different tree IDs.
@@ -1121,8 +1231,9 @@ TEST_F(ReadAnythingAppControllerTest,
   ui::AXTreeID id_1 = ui::AXTreeID::CreateNewAXTreeID();
   SetUpdateTreeID(&update, id_1);
   update.root_id = 1;
-  update.nodes.resize(1);
-  update.nodes[0].id = 1;
+  ui::AXNodeData node;
+  node.id = 1;
+  update.nodes = {node};
   AccessibilityEventReceived({update});
   OnAXTreeDistilled({1});
 
@@ -1133,9 +1244,10 @@ TEST_F(ReadAnythingAppControllerTest,
 
   ui::AXTreeUpdate update_1;
   SetUpdateTreeID(&update_1, tree_id_);
-  update_1.root_id = 1;
-  update_1.nodes.resize(1);
-  update_1.nodes[0].id = 1;
+  ui::AXNodeData root;
+  root.id = 1;
+  update_1.root_id = root.id;
+  update_1.nodes = {root};
   AccessibilityEventReceived({update_1});
   OnAXTreeDistilled({1});
 
@@ -1171,9 +1283,10 @@ TEST_F(ReadAnythingAppControllerTest, AddAndRemoveTrees) {
   for (int i = 0; i < 2; i++) {
     ui::AXTreeUpdate update;
     SetUpdateTreeID(&update, tree_ids[i]);
-    update.root_id = 1;
-    update.nodes.resize(1);
-    update.nodes[0].id = 1;
+    ui::AXNodeData node;
+    node.id = 1;
+    update.root_id = node.id;
+    update.nodes = {node};
     updates.push_back(update);
   }
 
@@ -1230,13 +1343,16 @@ TEST_F(ReadAnythingAppControllerTest, OnAXTreeDestroyed_EraseTreeCalled) {
 
     ui::AXTreeUpdate update;
     SetUpdateTreeID(&update);
-    update.root_id = 1;
-    update.nodes.resize(2);
-    update.nodes[0].id = 1;
-    update.nodes[0].child_ids = child_ids;
-    update.nodes[1].id = id;
-    update.nodes[1].role = ax::mojom::Role::kStaticText;
-    update.nodes[1].SetNameChecked(base::NumberToString(id));
+    ui::AXNodeData root;
+    root.id = 1;
+    root.child_ids = child_ids;
+
+    ui::AXNodeData node;
+    node.id = id;
+    node.role = ax::mojom::Role::kStaticText;
+    node.SetNameChecked(base::NumberToString(id));
+    update.root_id = root.id;
+    update.nodes = {root, node};
     updates.push_back(update);
   }
 
@@ -1286,13 +1402,16 @@ TEST_F(ReadAnythingAppControllerTest,
 
     ui::AXTreeUpdate update;
     SetUpdateTreeID(&update);
-    update.root_id = 1;
-    update.nodes.resize(2);
-    update.nodes[0].id = 1;
-    update.nodes[0].child_ids = child_ids;
-    update.nodes[1].id = id;
-    update.nodes[1].role = ax::mojom::Role::kStaticText;
-    update.nodes[1].SetNameChecked(base::NumberToString(id));
+    ui::AXNodeData root;
+    root.id = 1;
+    root.child_ids = child_ids;
+
+    ui::AXNodeData node;
+    node.id = id;
+    node.role = ax::mojom::Role::kStaticText;
+    node.SetNameChecked(base::NumberToString(id));
+    update.root_id = root.id;
+    update.nodes = {root, node};
     updates.push_back(update);
   }
 
@@ -1358,13 +1477,16 @@ TEST_F(ReadAnythingAppControllerTest,
 
     ui::AXTreeUpdate update;
     SetUpdateTreeID(&update);
-    update.root_id = 1;
-    update.nodes.resize(2);
-    update.nodes[0].id = 1;
-    update.nodes[0].child_ids = child_ids;
-    update.nodes[1].id = id;
-    update.nodes[1].role = ax::mojom::Role::kStaticText;
-    update.nodes[1].SetNameChecked(base::NumberToString(id));
+    ui::AXNodeData root;
+    root.id = 1;
+    root.child_ids = child_ids;
+
+    ui::AXNodeData node;
+    node.id = id;
+    node.role = ax::mojom::Role::kStaticText;
+    node.SetNameChecked(base::NumberToString(id));
+    update.root_id = root.id;
+    update.nodes = {root, node};
 
     updates.push_back(update);
   }
@@ -1401,13 +1523,16 @@ TEST_F(ReadAnythingAppControllerTest,
 
     ui::AXTreeUpdate update;
     SetUpdateTreeID(&update);
-    update.root_id = 1;
-    update.nodes.resize(2);
-    update.nodes[0].id = 1;
-    update.nodes[0].child_ids = child_ids;
-    update.nodes[1].id = id;
-    update.nodes[1].role = ax::mojom::Role::kStaticText;
-    update.nodes[1].SetNameChecked(base::NumberToString(id));
+    ui::AXNodeData root;
+    root.id = 1;
+    root.child_ids = child_ids;
+
+    ui::AXNodeData node;
+    node.id = id;
+    node.role = ax::mojom::Role::kStaticText;
+    node.SetNameChecked(base::NumberToString(id));
+    update.root_id = root.id;
+    update.nodes = {root, node};
     updates.push_back(update);
   }
 
@@ -1472,21 +1597,25 @@ TEST_F(ReadAnythingAppControllerTest,
 
     ui::AXTreeUpdate update;
     SetUpdateTreeID(&update);
-    update.root_id = 1;
-    update.nodes.resize(2);
-    update.nodes[0].id = 1;
-    update.nodes[0].child_ids = child_ids;
-    update.nodes[1].id = id;
-    update.nodes[1].role = ax::mojom::Role::kStaticText;
-    update.nodes[1].SetNameChecked(base::NumberToString(id));
+    ui::AXNodeData root;
+    root.id = 1;
+    root.child_ids = child_ids;
+
+    ui::AXNodeData node;
+    node.id = id;
+    node.role = ax::mojom::Role::kStaticText;
+    node.SetNameChecked(base::NumberToString(id));
+    update.root_id = root.id;
+    update.nodes = {root, node};
     updates.push_back(update);
   }
 
   // Create an update which has no tree id.
   ui::AXTreeUpdate update;
-  update.nodes.resize(1);
-  update.nodes[0].id = 1;
-  update.nodes[0].role = ax::mojom::Role::kGenericContainer;
+  ui::AXNodeData genericContainerNode;
+  genericContainerNode.id = 1;
+  genericContainerNode.role = ax::mojom::Role::kGenericContainer;
+  update.nodes = {genericContainerNode};
   updates.push_back(update);
 
   // Add the three updates.
@@ -1513,9 +1642,10 @@ TEST_F(ReadAnythingAppControllerTest, OnLinkClicked_DistillationInProgress) {
   ui::AXTreeID new_tree_id = ui::AXTreeID::CreateNewAXTreeID();
   ui::AXTreeUpdate update;
   SetUpdateTreeID(&update, new_tree_id);
-  update.root_id = 1;
-  update.nodes.resize(1);
-  update.nodes[0].id = 1;
+  ui::AXNodeData node;
+  node.id = 1;
+  update.root_id = node.id;
+  update.nodes = {node};
   AccessibilityEventReceived({update});
 
   EXPECT_CALL(*distiller_, Distill).Times(1);
@@ -1532,13 +1662,18 @@ TEST_F(ReadAnythingAppControllerTest, OnLinkClicked_DistillationInProgress) {
 TEST_F(ReadAnythingAppControllerTest, OnSelectionChange) {
   ui::AXTreeUpdate update;
   SetUpdateTreeID(&update);
-  update.nodes.resize(3);
-  update.nodes[0].id = 2;
-  update.nodes[1].id = 3;
-  update.nodes[2].id = 4;
-  update.nodes[0].role = ax::mojom::Role::kStaticText;
-  update.nodes[1].role = ax::mojom::Role::kStaticText;
-  update.nodes[2].role = ax::mojom::Role::kStaticText;
+  ui::AXNodeData node1;
+  node1.id = 2;
+  node1.role = ax::mojom::Role::kStaticText;
+
+  ui::AXNodeData node2;
+  node2.id = 3;
+  node2.role = ax::mojom::Role::kStaticText;
+
+  ui::AXNodeData node3;
+  node3.id = 4;
+  node3.role = ax::mojom::Role::kStaticText;
+  update.nodes = {node1, node2, node3};
   AccessibilityEventReceived({update});
   ui::AXNodeID anchor_node_id = 2;
   int anchor_offset = 0;
@@ -1555,13 +1690,18 @@ TEST_F(ReadAnythingAppControllerTest, OnSelectionChange) {
 TEST_F(ReadAnythingAppControllerTest, OnCollapseSelection) {
   ui::AXTreeUpdate update;
   SetUpdateTreeID(&update);
-  update.nodes.resize(3);
-  update.nodes[0].id = 2;
-  update.nodes[1].id = 3;
-  update.nodes[2].id = 4;
-  update.nodes[0].role = ax::mojom::Role::kStaticText;
-  update.nodes[1].role = ax::mojom::Role::kStaticText;
-  update.nodes[2].role = ax::mojom::Role::kStaticText;
+  ui::AXNodeData node1;
+  node1.id = 2;
+  node1.role = ax::mojom::Role::kStaticText;
+
+  ui::AXNodeData node2;
+  node2.id = 3;
+  node2.role = ax::mojom::Role::kStaticText;
+
+  ui::AXNodeData node3;
+  node3.id = 4;
+  node3.role = ax::mojom::Role::kStaticText;
+  update.nodes = {node1, node2, node3};
   AccessibilityEventReceived({update});
   EXPECT_CALL(page_handler_, OnCollapseSelection()).Times(1);
   OnCollapseSelection();
@@ -1572,11 +1712,14 @@ TEST_F(ReadAnythingAppControllerTest,
        OnSelectionChange_ClickAfterClickDoesNotUpdateSelection) {
   ui::AXTreeUpdate update;
   SetUpdateTreeID(&update);
-  update.nodes.resize(2);
-  update.nodes[0].id = 2;
-  update.nodes[1].id = 3;
-  update.nodes[0].role = ax::mojom::Role::kStaticText;
-  update.nodes[1].role = ax::mojom::Role::kStaticText;
+  ui::AXNodeData node1;
+  node1.id = 2;
+  node1.role = ax::mojom::Role::kStaticText;
+
+  ui::AXNodeData node2;
+  node2.id = 3;
+  node2.role = ax::mojom::Role::kStaticText;
+  update.nodes = {node1, node2};
   AccessibilityEventReceived({update});
 
   ui::AXTreeUpdate selection;
@@ -1598,11 +1741,14 @@ TEST_F(ReadAnythingAppControllerTest,
        OnSelectionChange_ClickAfterSelectionClearsSelection) {
   ui::AXTreeUpdate update;
   SetUpdateTreeID(&update);
-  update.nodes.resize(2);
-  update.nodes[0].id = 2;
-  update.nodes[1].id = 3;
-  update.nodes[0].role = ax::mojom::Role::kStaticText;
-  update.nodes[1].role = ax::mojom::Role::kStaticText;
+  ui::AXNodeData node1;
+  node1.id = 2;
+  node1.role = ax::mojom::Role::kStaticText;
+
+  ui::AXNodeData node2;
+  node2.id = 3;
+  node2.role = ax::mojom::Role::kStaticText;
+  update.nodes = {node1, node2};
   AccessibilityEventReceived({update});
 
   ui::AXTreeUpdate selection;
@@ -1630,10 +1776,11 @@ TEST_F(ReadAnythingAppControllerTest,
   ui::AXTreeID new_tree_id = ui::AXTreeID::CreateNewAXTreeID();
   ui::AXTreeUpdate update;
   SetUpdateTreeID(&update, new_tree_id);
-  update.root_id = 1;
-  update.nodes.resize(1);
-  update.nodes[0].role = ax::mojom::Role::kStaticText;
-  update.nodes[0].id = 1;
+  ui::AXNodeData root;
+  root.id = 1;
+  root.role = ax::mojom::Role::kStaticText;
+  update.root_id = root.id;
+  update.nodes = {root};
   AccessibilityEventReceived({update});
   EXPECT_CALL(*distiller_, Distill).Times(1);
   OnActiveAXTreeIDChanged(new_tree_id);
@@ -1650,13 +1797,19 @@ TEST_F(ReadAnythingAppControllerTest,
        OnSelectionChange_NonTextFieldDoesNotUpdateSelection) {
   ui::AXTreeUpdate update;
   SetUpdateTreeID(&update);
-  update.nodes.resize(3);
-  update.nodes[0].id = 2;
-  update.nodes[1].id = 3;
-  update.nodes[2].id = 4;
-  update.nodes[0].role = ax::mojom::Role::kTextField;
-  update.nodes[1].role = ax::mojom::Role::kGenericContainer;
-  update.nodes[2].role = ax::mojom::Role::kTextField;
+  ui::AXNodeData textFieldNode1;
+  textFieldNode1.id = 2;
+  textFieldNode1.role = ax::mojom::Role::kTextField;
+
+  ui::AXNodeData containerNode;
+  containerNode.id = 3;
+  containerNode.role = ax::mojom::Role::kGenericContainer;
+
+  ui::AXNodeData textFieldNode2;
+  textFieldNode2.id = 4;
+  textFieldNode2.role = ax::mojom::Role::kTextField;
+  update.nodes = {textFieldNode1, containerNode, textFieldNode2};
+
   AccessibilityEventReceived({update});
   ui::AXNodeID anchor_node_id = 2;
   int anchor_offset = 0;
@@ -1712,12 +1865,15 @@ TEST_F(ReadAnythingAppControllerTest, Selection_IgnoredNode) {
   ui::AXTreeUpdate update;
   SetUpdateTreeID(&update);
   update.root_id = 1;
-  update.nodes.resize(2);
-  update.nodes[0].id = 3;
-  update.nodes[1].id = 4;
-  update.nodes[0].role = ax::mojom::Role::kStaticText;
-  update.nodes[0].SetNameChecked("Hello");
-  update.nodes[1].role = ax::mojom::Role::kNone;  // This node is ignored.
+  ui::AXNodeData textNode;
+  textNode.id = 3;
+  textNode.role = ax::mojom::Role::kStaticText;
+  textNode.SetNameChecked("Hello");
+
+  ui::AXNodeData ignoredNode;
+  ignoredNode.id = 4;
+  ignoredNode.role = ax::mojom::Role::kNone;  // This node is ignored.
+  update.nodes = {textNode, ignoredNode};
   AccessibilityEventReceived({update});
   OnAXTreeDistilled({});
 
@@ -1853,16 +2009,18 @@ TEST_F(ReadAnythingAppControllerTest, AccessibilityEventReceived_PDFHandling) {
   ui::AXTreeID pdf_web_contents_tree_id = ui::AXTreeID::CreateNewAXTreeID();
   ui::AXTreeUpdate update;
   SetUpdateTreeID(&update);
-  update.nodes.resize(1);
-  update.nodes[0].id = 1;
-  update.nodes[0].AddChildTreeId(pdf_web_contents_tree_id);
+  ui::AXNodeData node;
+  node.id = 1;
+  node.AddChildTreeId(pdf_web_contents_tree_id);
+  update.nodes = {node};
   AccessibilityEventReceived({update});
 
   // Send update for pdf web contents.
   ui::AXTreeUpdate pdf_web_contents_update;
-  pdf_web_contents_update.nodes.resize(1);
-  pdf_web_contents_update.root_id = 1;
-  pdf_web_contents_update.nodes[0].id = 1;
+  ui::AXNodeData pdfNode;
+  pdfNode.id = 1;
+  pdf_web_contents_update.root_id = pdfNode.id;
+  pdf_web_contents_update.nodes = {pdfNode};
   SetUpdateTreeID(&pdf_web_contents_update, pdf_web_contents_tree_id);
   AccessibilityEventReceived({pdf_web_contents_update});
 
@@ -1878,9 +2036,6 @@ TEST_F(ReadAnythingAppControllerTest, GetNextValidPosition) {
   std::u16string sentence3 = u"And this is yet another sentence.";
   ui::AXTreeUpdate update;
   SetUpdateTreeID(&update);
-  // TODO(crbug.com/1474951): Update the rest of the tests to use this
-  // formatting
-  //  instead of update.nodes.resize where possible to improve readability.
   ui::AXNodeData staticText1;
   staticText1.id = 2;
   staticText1.role = ax::mojom::Role::kStaticText;
