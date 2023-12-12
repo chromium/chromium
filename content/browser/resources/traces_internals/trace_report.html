@@ -205,7 +205,7 @@
   </template>
   <div class="trace-id-container">
     <button class="clickable-field copiable" on-click="onCopyUuidClick_">
-      [[trace.uuid.high]]-[[trace.uuid.low]]
+      [[tokenToString_(trace.uuid)]]
     </button>
     <div class="info">Trace ID</div>
   </div>
