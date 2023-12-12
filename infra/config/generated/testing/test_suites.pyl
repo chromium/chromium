@@ -5262,7 +5262,7 @@
     },
 
     'telemetry_perf_unittests_isolated_scripts_android': {
-      'telemetry_perf_unittests': {
+      'telemetry_perf_unittests_android_chrome': {
         'test': 'telemetry_perf_unittests_android_chrome',
         'args': [
           '--extra-browser-args=--enable-crashpad',

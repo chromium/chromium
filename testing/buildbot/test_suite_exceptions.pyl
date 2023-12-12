@@ -4205,24 +4205,6 @@
       'Mac13 Tests': {
         'ci_only': True,
       },
-      # If you change this, make similar changes in android-x86-code-coverage below
-      'android-oreo-x86-rel': {
-        'args': [
-          # For whatever reason, automatic browser selection on this bot chooses
-          # webview instead of the full browser, so explicitly specify it here.
-          '--browser=android-chromium',
-        ],
-        'ci_only': True,
-      },
-      # Keep this same as android-oreo-x86-rel above
-      'android-x86-code-coverage': {
-        'args': [
-          # For whatever reason, automatic browser selection on this bot chooses
-          # webview instead of the full browser, so explicitly specify it here.
-          '--browser=android-chromium',
-        ],
-        'ci_only': True,
-      },
       'chromeos-eve-chrome': {
         'args': [
           # TODO(crbug.com/1191132): Re-enable.
@@ -4258,6 +4240,28 @@
       'win10-rel-no-external-ip',
       'win-rel-cft',
     ],
+  },
+  'telemetry_perf_unittests_android_chrome': {
+    'modifications': {
+      # If you change this, make similar changes in android-x86-code-coverage below
+      'android-oreo-x86-rel': {
+        'args': [
+          # For whatever reason, automatic browser selection on this bot chooses
+          # webview instead of the full browser, so explicitly specify it here.
+          '--browser=android-chromium',
+        ],
+        'ci_only': True,
+      },
+      # Keep this same as android-oreo-x86-rel above
+      'android-x86-code-coverage': {
+        'args': [
+          # For whatever reason, automatic browser selection on this bot chooses
+          # webview instead of the full browser, so explicitly specify it here.
+          '--browser=android-chromium',
+        ],
+        'ci_only': True,
+      },
+    },
   },
   'telemetry_unittests': {
     'modifications': {

@@ -30438,7 +30438,7 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
-        "name": "telemetry_perf_unittests",
+        "name": "telemetry_perf_unittests_android_chrome",
         "resultdb": {
           "enable": true,
           "has_native_resultdb_integration": true

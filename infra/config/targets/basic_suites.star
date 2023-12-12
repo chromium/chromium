@@ -6193,7 +6193,7 @@ targets.legacy_basic_suite(
 targets.legacy_basic_suite(
     name = "telemetry_perf_unittests_isolated_scripts_android",
     tests = {
-        "telemetry_perf_unittests": targets.legacy_test_config(
+        "telemetry_perf_unittests_android_chrome": targets.legacy_test_config(
             test = "telemetry_perf_unittests_android_chrome",
             args = [
                 # TODO(crbug.com/1077284): Remove this once Crashpad is the default.
