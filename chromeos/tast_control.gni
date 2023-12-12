@@ -130,6 +130,9 @@ tast_disabled_tests_from_chrome_all = [
   "wmp.DeskTemplatesDelete",
   "wmp.SavedDeskDelete",
 
+  # b/314779670, waiting for LKGM including the revert
+  "platform.Resourced.baseline",
+
   # READ COMMENT AT TOP BEFORE ADDING NEW TESTS HERE.
 ]
 
