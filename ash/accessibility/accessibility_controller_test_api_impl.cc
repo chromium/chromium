@@ -13,7 +13,7 @@ namespace ash {
 
 namespace {
 
-AccessibilityControllerImpl* GetController() {
+AccessibilityController* GetController() {
   return Shell::Get()->accessibility_controller();
 }
 

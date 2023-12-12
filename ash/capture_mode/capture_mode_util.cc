@@ -238,7 +238,7 @@ void TriggerAccessibilityAlertSoon(const std::string& message) {
   base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE,
       base::BindOnce(
-          &AccessibilityControllerImpl::TriggerAccessibilityAlertWithMessage,
+          &AccessibilityController::TriggerAccessibilityAlertWithMessage,
           Shell::Get()->accessibility_controller()->GetWeakPtr(), message));
 }
 

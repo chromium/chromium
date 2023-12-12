@@ -50,7 +50,7 @@ class AccessibilityFeaturePodControllerTest
     tile_ = controller_->CreateTile();
   }
 
-  AccessibilityControllerImpl* GetAccessibilityController() {
+  AccessibilityController* GetAccessibilityController() {
     return Shell::Get()->accessibility_controller();
   }
 

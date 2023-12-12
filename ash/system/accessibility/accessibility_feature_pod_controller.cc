@@ -31,7 +31,7 @@ namespace ash {
 namespace {
 
 std::u16string GenerateSublabelText(
-    std::vector<AccessibilityControllerImpl::Feature*> enabled_features,
+    std::vector<AccessibilityController::Feature*> enabled_features,
     int max_width,
     gfx::FontList font_list) {
   CHECK(!enabled_features.empty());
@@ -61,7 +61,7 @@ std::u16string GenerateSublabelText(
 }
 
 std::u16string GenerateTooltipText(
-    std::vector<AccessibilityControllerImpl::Feature*> enabled_features) {
+    std::vector<AccessibilityController::Feature*> enabled_features) {
   if (enabled_features.empty()) {
     return l10n_util::GetStringUTF16(IDS_ASH_STATUS_TRAY_ACCESSIBILITY_TOOLTIP);
   }

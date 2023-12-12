@@ -9,6 +9,7 @@
 
 #include <utility>
 
+#include "ash/accessibility/accessibility_controller_impl.h"
 #include "ash/accessibility/autoclick/autoclick_controller.h"
 #include "ash/accessibility/sticky_keys/sticky_keys_controller.h"
 #include "ash/color_enhancement/color_enhancement_controller.h"
@@ -16,7 +17,6 @@
 #include "ash/constants/ash_pref_names.h"
 #include "ash/constants/ash_switches.h"
 #include "ash/public/cpp/accelerators.h"
-#include "ash/public/cpp/accessibility_controller.h"
 #include "ash/public/cpp/accessibility_controller_enums.h"
 #include "ash/public/cpp/accessibility_focus_ring_controller.h"
 #include "ash/public/cpp/accessibility_focus_ring_info.h"

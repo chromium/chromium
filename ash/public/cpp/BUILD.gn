@@ -18,8 +18,6 @@ component("cpp") {
     "accelerators.h",
     "accelerators_util.cc",
     "accelerators_util.h",
-    "accessibility_controller.cc",
-    "accessibility_controller.h",
     "accessibility_controller_client.h",
     "accessibility_controller_enums.h",
     "accessibility_event_rewriter_delegate.h",

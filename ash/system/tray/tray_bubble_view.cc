@@ -272,7 +272,7 @@ TrayBubbleView::TrayBubbleView(const InitParams& init_params)
   DCHECK((init_params.anchor_mode != TrayBubbleView::AnchorMode::kView) ||
          anchor_widget());
   set_parent_window(params_.parent_window);
-  AccessibilityControllerImpl* controller =
+  AccessibilityController* controller =
       Shell::Get()->accessibility_controller();
   SetCanActivate(controller->spoken_feedback().enabled() ||
                  controller->dictation().enabled());

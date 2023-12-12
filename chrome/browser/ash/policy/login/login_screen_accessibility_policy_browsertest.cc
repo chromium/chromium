@@ -4,9 +4,9 @@
 
 #include <string>
 
+#include "ash/accessibility/accessibility_controller_impl.h"
 #include "ash/constants/ash_pref_names.h"
 #include "ash/constants/ash_switches.h"
-#include "ash/public/cpp/accessibility_controller.h"
 #include "base/command_line.h"
 #include "base/compiler_specific.h"
 #include "base/functional/bind.h"

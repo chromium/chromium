@@ -171,8 +171,7 @@ class ScopedStickyKeyboardEnabler {
   }
 
  private:
-  raw_ptr<AccessibilityControllerImpl, ExperimentalAsh>
-      accessibility_controller_;
+  raw_ptr<AccessibilityController, ExperimentalAsh> accessibility_controller_;
   const bool enabled_;
 };
 
@@ -1972,7 +1971,7 @@ TEST_F(WorkspaceLayoutManagerBackdropTest,
 TEST_F(WorkspaceLayoutManagerBackdropTest, SpokenFeedbackFullscreenBackground) {
   WorkspaceController* wc = ShellTestApi().workspace_controller();
   WorkspaceControllerTestApi test_helper(wc);
-  AccessibilityControllerImpl* controller =
+  AccessibilityController* controller =
       Shell::Get()->accessibility_controller();
   TestAccessibilityControllerClient client;
 

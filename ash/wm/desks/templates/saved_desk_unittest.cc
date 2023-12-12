@@ -4508,7 +4508,7 @@ TEST_F(DeskSaveAndRecallTest, ExitOverviewDeskItemFocusCrash) {
   ui::ScopedAnimationDurationScaleMode animation_scale(
       ui::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
 
-  AccessibilityControllerImpl* accessibility_controller =
+  AccessibilityController* accessibility_controller =
       Shell::Get()->accessibility_controller();
   accessibility_controller->spoken_feedback().SetEnabled(true);
   EXPECT_TRUE(accessibility_controller->spoken_feedback().enabled());

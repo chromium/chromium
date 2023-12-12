@@ -24,7 +24,7 @@ bool DefaultAccessibilityDelegate::IsMagnifierEnabled() const {
 }
 
 bool DefaultAccessibilityDelegate::ShouldShowAccessibilityMenu() const {
-  AccessibilityControllerImpl* controller =
+  AccessibilityController* controller =
       Shell::Get()->accessibility_controller();
   return controller->spoken_feedback().enabled() || screen_magnifier_enabled_ ||
          controller->autoclick().enabled() ||

@@ -1249,7 +1249,7 @@ void Shell::Init(
   accessibility_focus_ring_controller_ =
       std::make_unique<AccessibilityFocusRingControllerImpl>();
   accessibility_delegate_.reset(shell_delegate_->CreateAccessibilityDelegate());
-  accessibility_controller_ = std::make_unique<AccessibilityControllerImpl>();
+  accessibility_controller_ = std::make_unique<AccessibilityController>();
   toast_manager_ = std::make_unique<ToastManagerImpl>();
   anchored_nudge_manager_ = std::make_unique<AnchoredNudgeManagerImpl>();
   system_nudge_pause_manager_ = std::make_unique<SystemNudgePauseManagerImpl>();

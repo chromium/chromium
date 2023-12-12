@@ -92,7 +92,7 @@ TEST_F(VirtualKeyboardControllerTest, RestoreKeyboardDevices) {
 
 TEST_F(VirtualKeyboardControllerTest,
        ForceToShowKeyboardWithKeysetWhenAccessibilityKeyboardIsEnabled) {
-  AccessibilityControllerImpl* accessibility_controller =
+  AccessibilityController* accessibility_controller =
       Shell::Get()->accessibility_controller();
   accessibility_controller->virtual_keyboard().SetEnabled(true);
   ASSERT_TRUE(accessibility_controller->virtual_keyboard().enabled());

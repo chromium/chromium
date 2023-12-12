@@ -27,7 +27,7 @@ struct TutorialDescription;
 
 namespace ash {
 
-class AccessibilityControllerImpl;
+class AccessibilityController;
 class ScopedNudgePause;
 class ScopedToastPause;
 class SessionController;
@@ -141,7 +141,7 @@ class ASH_EXPORT WelcomeTourController : public UserEducationFeatureController,
 
   // The accessibility controller is observed only while the Welcome Tour is in
   // progress, and will trigger an abort of the tour if ChromeVox is enabled.
-  base::ScopedObservation<AccessibilityControllerImpl, AccessibilityObserver>
+  base::ScopedObservation<AccessibilityController, AccessibilityObserver>
       accessibility_observation_{this};
 
   // Sessions are observed only until the primary user session is activated for

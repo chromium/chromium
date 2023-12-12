@@ -12,7 +12,6 @@
 #include "ash/constants/ash_switches.h"
 #include "ash/display/display_configuration_controller.h"
 #include "ash/public/cpp/accelerators.h"
-#include "ash/public/cpp/accessibility_controller.h"
 #include "ash/public/cpp/event_rewriter_controller.h"
 #include "ash/public/cpp/screen_backlight.h"
 #include "ash/public/cpp/shelf_model.h"

@@ -4024,7 +4024,7 @@ TEST_P(CaptureModeCameraPreviewTest,
   auto* event_generator = GetEventGenerator();
 
   for (const bool switch_access_enabled : {false, true}) {
-    AccessibilityControllerImpl* a11y_controller =
+    AccessibilityController* a11y_controller =
         Shell::Get()->accessibility_controller();
     a11y_controller->switch_access().SetEnabled(switch_access_enabled);
     EXPECT_EQ(switch_access_enabled, a11y_controller->IsSwitchAccessRunning());
@@ -4088,7 +4088,7 @@ TEST_P(CaptureModeCameraPreviewTest,
   auto* event_generator = GetEventGenerator();
 
   for (const bool switch_access_enabled : {false, true}) {
-    AccessibilityControllerImpl* a11y_controller =
+    AccessibilityController* a11y_controller =
         Shell::Get()->accessibility_controller();
     a11y_controller->switch_access().SetEnabled(switch_access_enabled);
     EXPECT_EQ(switch_access_enabled, a11y_controller->IsSwitchAccessRunning());

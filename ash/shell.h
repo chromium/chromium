@@ -96,7 +96,7 @@ class AcceleratorControllerImpl;
 class AcceleratorKeycodeLookupCache;
 class AcceleratorPrefs;
 class AcceleratorTracker;
-class AccessibilityControllerImpl;
+class AccessibilityController;
 class AccessibilityDelegate;
 class AccessibilityEventHandlerManager;
 class AccessibilityFocusRingControllerImpl;
@@ -407,7 +407,7 @@ class ASH_EXPORT Shell : public SessionObserver,
   AcceleratorTracker* accelerator_tracker() {
     return accelerator_tracker_.get();
   }
-  AccessibilityControllerImpl* accessibility_controller() {
+  AccessibilityController* accessibility_controller() {
     return accessibility_controller_.get();
   }
   AccessibilityDelegate* accessibility_delegate() {
@@ -971,7 +971,7 @@ class ASH_EXPORT Shell : public SessionObserver,
   std::unique_ptr<AcceleratorControllerImpl> accelerator_controller_;
   std::unique_ptr<AcceleratorKeycodeLookupCache>
       accelerator_keycode_lookup_cache_;
-  std::unique_ptr<AccessibilityControllerImpl> accessibility_controller_;
+  std::unique_ptr<AccessibilityController> accessibility_controller_;
   std::unique_ptr<AccessibilityDelegate> accessibility_delegate_;
   std::unique_ptr<AccessibilityFocusRingControllerImpl>
       accessibility_focus_ring_controller_;

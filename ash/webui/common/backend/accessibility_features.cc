@@ -20,7 +20,7 @@ namespace ash {
 namespace {
 
 bool ShouldForceHiddenElementsVisible() {
-  AccessibilityControllerImpl* accessibility_controller =
+  AccessibilityController* accessibility_controller =
       Shell::Get()->accessibility_controller();
   if (!accessibility_controller) {
     return false;
@@ -34,7 +34,7 @@ bool ShouldForceHiddenElementsVisible() {
 }  // namespace
 
 AccessibilityFeatures::AccessibilityFeatures() {
-  AccessibilityControllerImpl* accessibility_controller =
+  AccessibilityController* accessibility_controller =
       Shell::Get()->accessibility_controller();
   if (!accessibility_controller) {
     return;
@@ -47,7 +47,7 @@ AccessibilityFeatures::AccessibilityFeatures() {
 }
 
 AccessibilityFeatures::~AccessibilityFeatures() {
-  AccessibilityControllerImpl* accessibility_controller =
+  AccessibilityController* accessibility_controller =
       Shell::Get()->accessibility_controller();
   if (!accessibility_controller) {
     return;

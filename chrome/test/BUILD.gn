@@ -810,8 +810,6 @@ static_library("test_support") {
       "../browser/enterprise/connectors/analysis/source_destination_test_util.h",
       "../browser/nearby_sharing/fake_nearby_connection.cc",
       "../browser/nearby_sharing/fake_nearby_connection.h",
-      "../browser/ui/ash/accessibility/fake_accessibility_controller.cc",
-      "../browser/ui/ash/accessibility/fake_accessibility_controller.h",
       "../browser/ui/ash/clipboard_history_test_util.cc",
       "../browser/ui/ash/clipboard_history_test_util.h",
       "../browser/ui/webui/ash/login/fake_app_launch_splash_screen_handler.cc",

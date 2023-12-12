@@ -17,7 +17,7 @@ using SpokenFeedbackTogglerTest = AshTestBase;
 
 TEST_F(SpokenFeedbackTogglerTest, Basic) {
   SpokenFeedbackToggler::ScopedEnablerForTest scoped;
-  AccessibilityControllerImpl* controller =
+  AccessibilityController* controller =
       Shell::Get()->accessibility_controller();
   ui::test::EventGenerator* generator = GetEventGenerator();
   EXPECT_FALSE(controller->spoken_feedback().enabled());

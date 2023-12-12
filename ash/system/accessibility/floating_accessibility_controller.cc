@@ -54,7 +54,7 @@ class ScopedBubbleViewActivator {
 }  // namespace
 
 FloatingAccessibilityController::FloatingAccessibilityController(
-    AccessibilityControllerImpl* accessibility_controller)
+    AccessibilityController* accessibility_controller)
     : accessibility_controller_(accessibility_controller) {
   Shell::Get()->locale_update_controller()->AddObserver(this);
   accessibility_controller_->AddObserver(this);

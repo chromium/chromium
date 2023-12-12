@@ -52,7 +52,7 @@ bool SpokenFeedbackToggler::ShouldStopEventPropagation() const {
 void SpokenFeedbackToggler::OnKeyHold(const ui::KeyEvent* event) {
   if (!toggled_) {
     toggled_ = true;
-    AccessibilityControllerImpl* controller =
+    AccessibilityController* controller =
         Shell::Get()->accessibility_controller();
     controller->SetSpokenFeedbackEnabled(
         !controller->spoken_feedback().enabled(), A11Y_NOTIFICATION_SHOW);

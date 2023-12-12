@@ -21,7 +21,6 @@
 #include "chrome/browser/certificate_provider/certificate_provider_service.h"
 #include "chrome/browser/certificate_provider/certificate_provider_service_factory.h"
 #include "chrome/browser/profiles/profile_manager.h"
-#include "chrome/browser/ui/ash/accessibility/fake_accessibility_controller.h"
 #include "chrome/browser/ui/ash/assistant/assistant_browser_delegate_impl.h"
 #include "chrome/browser/ui/ash/login_screen_client_impl.h"
 #include "chrome/browser/ui/ash/session_controller_client_impl.h"
@@ -183,8 +182,6 @@ class ScreenLockerUnitTest : public testing::Test {
   ScopedStubInstallAttributes test_install_attributes_;
 
   // ScreenLocker dependencies:
-  // * AccessibilityManager dependencies:
-  FakeAccessibilityController fake_accessibility_controller_;
   // * LoginScreenClientImpl dependencies:
   session_manager::SessionManager session_manager_;
   TestLoginScreen test_login_screen_;

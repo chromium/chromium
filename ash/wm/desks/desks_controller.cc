@@ -11,7 +11,6 @@
 #include "ash/app_list/app_list_controller_impl.h"
 #include "ash/constants/ash_features.h"
 #include "ash/constants/notifier_catalogs.h"
-#include "ash/public/cpp/accessibility_controller.h"
 #include "ash/public/cpp/shelf_model.h"
 #include "ash/public/cpp/shelf_prefs.h"
 #include "ash/public/cpp/shelf_types.h"
@@ -1984,7 +1983,7 @@ void DesksController::RemoveDeskInternal(const Desk* desk,
 
   // We should only announce desks are being merged if we are combining desks.
   // Otherwise, we tell the user that the desk has closed with its windows.
-  AccessibilityControllerImpl* accessibility_controller =
+  AccessibilityController* accessibility_controller =
       shell->accessibility_controller();
   if (close_type == DeskCloseType::kCombineDesks) {
     accessibility_controller->TriggerAccessibilityAlertWithMessage(

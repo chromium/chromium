@@ -1326,7 +1326,7 @@ void ToggleDockedMagnifier() {
 
   DockedMagnifierController* docked_magnifier_controller =
       shell->docked_magnifier_controller();
-  AccessibilityControllerImpl* accessibility_controller =
+  AccessibilityController* accessibility_controller =
       shell->accessibility_controller();
 
   const bool current_enabled = docked_magnifier_controller->GetEnabled();
@@ -1394,7 +1394,7 @@ void ToggleFullscreenMagnifier() {
 
   FullscreenMagnifierController* magnification_controller =
       shell->fullscreen_magnifier_controller();
-  AccessibilityControllerImpl* accessibility_controller =
+  AccessibilityController* accessibility_controller =
       shell->accessibility_controller();
 
   const bool current_enabled = magnification_controller->IsEnabled();
@@ -1442,7 +1442,7 @@ void ToggleHighContrast() {
     return;
   }
 
-  AccessibilityControllerImpl* controller = shell->accessibility_controller();
+  AccessibilityController* controller = shell->accessibility_controller();
   const bool current_enabled = controller->high_contrast().enabled();
   const bool dialog_ever_accepted =
       controller->high_contrast().WasDialogAccepted();

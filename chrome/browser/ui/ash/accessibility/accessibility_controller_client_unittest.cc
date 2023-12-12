@@ -6,11 +6,11 @@
 
 #include <optional>
 
+#include "ash/accessibility/accessibility_controller_impl.h"
 #include "ash/public/cpp/accessibility_controller_enums.h"
+#include "ash/test/ash_test_base.h"
 #include "base/time/time.h"
-#include "chrome/browser/ui/ash/accessibility/fake_accessibility_controller.h"
 #include "chromeos/ash/components/audio/sounds.h"
-#include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/gfx/geometry/point_f.h"
@@ -86,7 +86,7 @@ class FakeAccessibilityControllerClient : public AccessibilityControllerClient {
 
 }  // namespace
 
-class AccessibilityControllerClientTest : public testing::Test {
+class AccessibilityControllerClientTest : public ash::AshTestBase {
  public:
   AccessibilityControllerClientTest() = default;
 
@@ -96,17 +96,14 @@ class AccessibilityControllerClientTest : public testing::Test {
       const AccessibilityControllerClientTest&) = delete;
 
   ~AccessibilityControllerClientTest() override = default;
-
- private:
-  content::BrowserTaskEnvironment task_environment_;
 };
 
 TEST_F(AccessibilityControllerClientTest, MethodCalls) {
-  FakeAccessibilityController controller;
   FakeAccessibilityControllerClient client;
 
-  // Tests client is set.
-  EXPECT_TRUE(controller.was_client_set());
+  ash::AccessibilityController* controller =
+      ash::AccessibilityController::Get();
+  controller->SetClient(&client);
 
   // Tests TriggerAccessibilityAlert method call.
   const ash::AccessibilityAlert alert = ash::AccessibilityAlert::SCREEN_ON;

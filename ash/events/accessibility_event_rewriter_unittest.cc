@@ -247,7 +247,7 @@ class ChromeVoxAccessibilityEventRewriterTest
 
 // The delegate should not intercept events when spoken feedback is disabled.
 TEST_F(ChromeVoxAccessibilityEventRewriterTest, EventsNotConsumedWhenDisabled) {
-  AccessibilityControllerImpl* controller =
+  AccessibilityController* controller =
       Shell::Get()->accessibility_controller();
   EXPECT_FALSE(controller->spoken_feedback().enabled());
 
@@ -269,7 +269,7 @@ TEST_F(ChromeVoxAccessibilityEventRewriterTest, EventsNotConsumedWhenDisabled) {
 
 // The delegate should intercept key events when spoken feedback is enabled.
 TEST_F(ChromeVoxAccessibilityEventRewriterTest, KeyEventsConsumedWhenEnabled) {
-  AccessibilityControllerImpl* controller =
+  AccessibilityController* controller =
       Shell::Get()->accessibility_controller();
   controller->SetSpokenFeedbackEnabled(true, A11Y_NOTIFICATION_NONE);
   EXPECT_TRUE(controller->spoken_feedback().enabled());
@@ -316,7 +316,7 @@ TEST_F(ChromeVoxAccessibilityEventRewriterTest,
 
 TEST_F(ChromeVoxAccessibilityEventRewriterTest,
        KeysNotEatenWithChromeVoxDisabled) {
-  AccessibilityControllerImpl* controller =
+  AccessibilityController* controller =
       Shell::Get()->accessibility_controller();
   EXPECT_FALSE(controller->spoken_feedback().enabled());
 
@@ -347,7 +347,7 @@ TEST_F(ChromeVoxAccessibilityEventRewriterTest,
 }
 
 TEST_F(ChromeVoxAccessibilityEventRewriterTest, KeyEventsCaptured) {
-  AccessibilityControllerImpl* controller =
+  AccessibilityController* controller =
       Shell::Get()->accessibility_controller();
   controller->SetSpokenFeedbackEnabled(true, A11Y_NOTIFICATION_NONE);
   EXPECT_TRUE(controller->spoken_feedback().enabled());
@@ -392,7 +392,7 @@ TEST_F(ChromeVoxAccessibilityEventRewriterTest, KeyEventsCaptured) {
 
 TEST_F(ChromeVoxAccessibilityEventRewriterTest,
        KeyEventsCapturedWithModifierRemapping) {
-  AccessibilityControllerImpl* controller =
+  AccessibilityController* controller =
       Shell::Get()->accessibility_controller();
   controller->SetSpokenFeedbackEnabled(true, A11Y_NOTIFICATION_NONE);
   EXPECT_TRUE(controller->spoken_feedback().enabled());
@@ -450,7 +450,7 @@ TEST_F(ChromeVoxAccessibilityEventRewriterTest,
 
 TEST_F(ChromeVoxAccessibilityEventRewriterTest,
        PositionalInputMethodKeysMightBeRewritten) {
-  AccessibilityControllerImpl* controller =
+  AccessibilityController* controller =
       Shell::Get()->accessibility_controller();
   controller->SetSpokenFeedbackEnabled(true, A11Y_NOTIFICATION_NONE);
   EXPECT_TRUE(controller->spoken_feedback().enabled());
@@ -677,7 +677,7 @@ class SwitchAccessAccessibilityEventRewriterTest
  protected:
   raw_ptr<ui::test::EventGenerator, ExperimentalAsh> generator_ = nullptr;
   EventCapturer event_capturer_;
-  raw_ptr<AccessibilityControllerImpl, ExperimentalAsh> controller_ = nullptr;
+  raw_ptr<AccessibilityController, ExperimentalAsh> controller_ = nullptr;
   std::unique_ptr<SwitchAccessTestDelegate> delegate_;
   input_method::FakeImeKeyboard fake_ime_keyboard_;
   std::unique_ptr<AccessibilityEventRewriter> accessibility_event_rewriter_;
@@ -999,7 +999,7 @@ class MagnifierAccessibilityEventRewriterTest : public AshTestBase {
  protected:
   raw_ptr<ui::test::EventGenerator, ExperimentalAsh> generator_ = nullptr;
   EventCapturer event_capturer_;
-  raw_ptr<AccessibilityControllerImpl, ExperimentalAsh> controller_ = nullptr;
+  raw_ptr<AccessibilityController, ExperimentalAsh> controller_ = nullptr;
   std::unique_ptr<MagnifierTestDelegate> delegate_;
   input_method::FakeImeKeyboard fake_ime_keyboard_;
   std::unique_ptr<AccessibilityEventRewriter> accessibility_event_rewriter_;

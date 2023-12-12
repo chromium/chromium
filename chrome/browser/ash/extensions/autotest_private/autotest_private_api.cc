@@ -12,6 +12,7 @@
 #include <sstream>
 #include <utility>
 
+#include "ash/accessibility/accessibility_controller_impl.h"
 #include "ash/app_list/app_list_public_test_util.h"
 #include "ash/components/arc/arc_prefs.h"
 #include "ash/components/arc/metrics/arc_metrics_constants.h"
@@ -25,7 +26,6 @@
 #include "ash/constants/ash_pref_names.h"
 #include "ash/constants/ash_switches.h"
 #include "ash/public/cpp/accelerators.h"
-#include "ash/public/cpp/accessibility_controller.h"
 #include "ash/public/cpp/ambient/ambient_prefs.h"
 #include "ash/public/cpp/ambient/ambient_ui_model.h"
 #include "ash/public/cpp/app_list/app_list_types.h"

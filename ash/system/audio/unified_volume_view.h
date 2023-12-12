@@ -91,7 +91,6 @@ class ASH_EXPORT UnifiedVolumeView : public UnifiedSliderView,
   // Whether this `UnifiedVolumeView` is the view for the active output node.
   bool const is_active_output_node_;
 
-  const raw_ptr<AccessibilityControllerImpl, ExperimentalAsh> a11y_controller_;
   uint64_t device_id_ = 0;
   // Owned by the views hierarchy.
   raw_ptr<IconButton, ExperimentalAsh> live_caption_button_ = nullptr;

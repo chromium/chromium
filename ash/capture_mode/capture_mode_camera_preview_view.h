@@ -199,7 +199,7 @@ class CameraPreviewView
   // True only while handling a gesture tap event on this view.
   bool has_been_tapped_ = false;
 
-  base::ScopedObservation<AccessibilityControllerImpl, AccessibilityObserver>
+  base::ScopedObservation<AccessibilityController, AccessibilityObserver>
       accessibility_observation_{this};
 
   // Helps to update the current a11y override window. It will be the native

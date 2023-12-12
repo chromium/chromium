@@ -814,7 +814,7 @@ TEST_F(AutoclickTest, WaitsToDrawAnimationAfterDwellBegins) {
 }
 
 TEST_F(AutoclickTest, DoesActionOnBubbleWhenInDifferentModes) {
-  AccessibilityControllerImpl* accessibility_controller =
+  AccessibilityController* accessibility_controller =
       Shell::Get()->accessibility_controller();
   // Enable autoclick from the accessibility controller so that the bubble is
   // constructed too.

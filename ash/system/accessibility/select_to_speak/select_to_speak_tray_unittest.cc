@@ -121,7 +121,7 @@ TEST_F(SelectToSpeakTrayTest, ButtonRequestsSelectToSpeakStateChange) {
 // Test that changing the SelectToSpeakState in the AccessibilityController
 // results in a change of icon and activation in the tray.
 TEST_F(SelectToSpeakTrayTest, SelectToSpeakStateImpactsImageAndActivation) {
-  AccessibilityControllerImpl* controller =
+  AccessibilityController* controller =
       Shell::Get()->accessibility_controller();
   controller->SetSelectToSpeakState(
       SelectToSpeakState::kSelectToSpeakStateSelecting);
@@ -161,7 +161,7 @@ TEST_F(SelectToSpeakTrayTest, SelectToSpeakStateImpactsTooltipText) {
   feature_list.InitAndEnableFeature(
       ::features::kAccessibilitySelectToSpeakHoverTextImprovements);
 
-  AccessibilityControllerImpl* controller =
+  AccessibilityController* controller =
       Shell::Get()->accessibility_controller();
   controller->SetSelectToSpeakState(
       SelectToSpeakState::kSelectToSpeakStateSelecting);
@@ -194,7 +194,7 @@ TEST_F(SelectToSpeakTrayTest,
   feature_list.InitAndDisableFeature(
       ::features::kAccessibilitySelectToSpeakHoverTextImprovements);
 
-  AccessibilityControllerImpl* controller =
+  AccessibilityController* controller =
       Shell::Get()->accessibility_controller();
   controller->SetSelectToSpeakState(
       SelectToSpeakState::kSelectToSpeakStateSelecting);

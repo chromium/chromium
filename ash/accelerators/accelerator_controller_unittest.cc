@@ -993,7 +993,7 @@ TEST_F(AcceleratorControllerTest, RotateScreen) {
   display::Display display = display::Screen::GetScreen()->GetPrimaryDisplay();
   display::Display::Rotation initial_rotation =
       GetActiveDisplayRotation(display.id());
-  AccessibilityControllerImpl* accessibility_controller =
+  AccessibilityController* accessibility_controller =
       Shell::Get()->accessibility_controller();
 
   EXPECT_FALSE(accessibility_controller
@@ -1459,7 +1459,7 @@ TEST_F(AcceleratorControllerTest, GlobalAccelerators) {
 }
 
 TEST_F(AcceleratorControllerTest, GlobalAcceleratorsToggleAppList) {
-  AccessibilityControllerImpl* accessibility_controller =
+  AccessibilityController* accessibility_controller =
       Shell::Get()->accessibility_controller();
 
   // The press event should not toggle the AppList, the release should instead.
@@ -2235,7 +2235,7 @@ TEST_F(AcceleratorControllerTest, DisallowedAtModalWindow) {
 }
 
 TEST_F(AcceleratorControllerTest, DisallowedWithNoWindow) {
-  AccessibilityControllerImpl* accessibility_controller =
+  AccessibilityController* accessibility_controller =
       Shell::Get()->accessibility_controller();
   TestAccessibilityControllerClient client;
 
@@ -2294,7 +2294,7 @@ TEST_F(AcceleratorControllerTest, DisallowedWithNoWindow) {
 TEST_F(AcceleratorControllerTest, TestDialogCancel) {
   ui::Accelerator accelerator(ui::VKEY_H,
                               ui::EF_COMMAND_DOWN | ui::EF_CONTROL_DOWN);
-  AccessibilityControllerImpl* accessibility_controller =
+  AccessibilityController* accessibility_controller =
       Shell::Get()->accessibility_controller();
   // Pressing cancel on the dialog should have no effect.
   EXPECT_FALSE(accessibility_controller->high_contrast().WasDialogAccepted());
@@ -2316,7 +2316,7 @@ TEST_F(AcceleratorControllerTest, TestToggleHighContrast) {
                               ui::EF_COMMAND_DOWN | ui::EF_CONTROL_DOWN);
   // High Contrast Mode Enabled dialog and notification should be shown.
   EXPECT_FALSE(IsConfirmationDialogOpen());
-  AccessibilityControllerImpl* accessibility_controller =
+  AccessibilityController* accessibility_controller =
       Shell::Get()->accessibility_controller();
   EXPECT_FALSE(accessibility_controller->high_contrast().WasDialogAccepted());
   EXPECT_TRUE(ProcessInController(accelerator));
@@ -2751,7 +2751,7 @@ TEST_F(MagnifiersAcceleratorsTester, TestToggleFullscreenMagnifier) {
   EXPECT_FALSE(fullscreen_magnifier_controller()->IsEnabled());
   EXPECT_FALSE(IsConfirmationDialogOpen());
 
-  AccessibilityControllerImpl* accessibility_controller =
+  AccessibilityController* accessibility_controller =
       Shell::Get()->accessibility_controller();
   // Toggle the fullscreen magnifier on/off, dialog should be shown on first use
   // of accelerator.
@@ -2799,7 +2799,7 @@ TEST_F(MagnifiersAcceleratorsTester, TestToggleDockedMagnifier) {
   EXPECT_FALSE(fullscreen_magnifier_controller()->IsEnabled());
   EXPECT_FALSE(IsConfirmationDialogOpen());
 
-  AccessibilityControllerImpl* accessibility_controller =
+  AccessibilityController* accessibility_controller =
       Shell::Get()->accessibility_controller();
   // Toggle the docked magnifier on/off, dialog should be shown on first use of
   // accelerator.

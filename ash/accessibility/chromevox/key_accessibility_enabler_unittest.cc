@@ -68,7 +68,7 @@ TEST_F(KeyAccessibilityEnablerTest, TwoVolumeKeyDown) {
   ui::KeyEvent vol_up_release(ui::ET_KEY_RELEASED, ui::VKEY_VOLUME_UP,
                               ui::EF_NONE);
 
-  AccessibilityControllerImpl* controller =
+  AccessibilityController* controller =
       Shell::Get()->accessibility_controller();
 
   ASSERT_FALSE(controller->spoken_feedback().enabled());

@@ -6,12 +6,13 @@
 #define ASH_ACCESSIBILITY_ACCESSIBILITY_CONTROLLER_IMPL_H_
 
 #include <memory>
+#include <optional>
 
 #include "ash/accessibility/a11y_feature_type.h"
 #include "ash/accessibility/accessibility_notification_controller.h"
 #include "ash/ash_export.h"
 #include "ash/constants/ash_constants.h"
-#include "ash/public/cpp/accessibility_controller.h"
+#include "ash/public/cpp/accelerator_actions.h"
 #include "ash/public/cpp/session/session_observer.h"
 #include "base/functional/callback_forward.h"
 #include "base/memory/raw_ptr.h"
@@ -19,6 +20,7 @@
 #include "base/observer_list.h"
 #include "base/time/time.h"
 #include "ui/display/display_observer.h"
+#include "ui/gfx/geometry/rect.h"
 
 class PrefChangeRegistrar;
 class PrefRegistrySimple;
@@ -47,18 +49,26 @@ struct VectorIcon;
 namespace ash {
 
 class AccessibilityConfirmationDialog;
+class AccessibilityControllerClient;
 class AccessibilityEventRewriter;
 class AccessibilityHighlightController;
 class AccessibilityObserver;
+enum class AccessibilityPanelState;
+enum class DictationToggleSource;
 class DictationBubbleController;
+enum class DictationBubbleHintType;
+enum class DictationBubbleIconType;
+enum class DictationNotificationType;
 class DictationNudgeController;
 class FloatingAccessibilityController;
 class PointScanController;
 class ScopedBacklightsForcedOff;
 class SelectToSpeakEventHandler;
+class SelectToSpeakEventHandlerDelegate;
 class SelectToSpeakMenuBubbleController;
-class SwitchAccessMenuBubbleController;
+enum class SelectToSpeakState;
 enum class Sound;
+class SwitchAccessMenuBubbleController;
 
 enum AccessibilityNotificationVisibility {
   A11Y_NOTIFICATION_NONE,
@@ -92,9 +102,8 @@ enum class A11yNotificationType {
 // The controller for accessibility features in ash. Features can be enabled
 // in chrome's webui settings or the system tray menu (see TrayAccessibility).
 // Uses preferences to communicate with chrome to support mash.
-class ASH_EXPORT AccessibilityControllerImpl : public AccessibilityController,
-                                               public SessionObserver,
-                                               public display::DisplayObserver {
+class ASH_EXPORT AccessibilityController : public SessionObserver,
+                                           public display::DisplayObserver {
  public:
   // Common interface for all features.
   class Feature {
@@ -104,7 +113,7 @@ class ASH_EXPORT AccessibilityControllerImpl : public AccessibilityController,
             const gfx::VectorIcon* icon,
             const int name_resource_id,
             const bool toggleable_in_quicksettings,
-            AccessibilityControllerImpl* controller);
+            AccessibilityController* controller);
     Feature(const Feature&) = delete;
     Feature& operator=(Feature const&) = delete;
     virtual ~Feature();
@@ -153,7 +162,7 @@ class ASH_EXPORT AccessibilityControllerImpl : public AccessibilityController,
     // available in the quicksettings menu.
     const bool toggleable_in_quicksettings_;
 
-    const raw_ptr<AccessibilityControllerImpl, ExperimentalAsh> owner_;
+    const raw_ptr<AccessibilityController, ExperimentalAsh> owner_;
   };
 
   // Helper struct to store information about a11y dialog -- pref name, resource
@@ -178,7 +187,7 @@ class ASH_EXPORT AccessibilityControllerImpl : public AccessibilityController,
                       const int name_resource_id,
                       const bool toggleable_in_quicksettings,
                       const Dialog& dialog,
-                      AccessibilityControllerImpl* controller);
+                      AccessibilityController* controller);
     ~FeatureWithDialog() override;
 
     // Tries to set the feature enabled, if its dialog is mandatory, shows the
@@ -207,13 +216,14 @@ class ASH_EXPORT AccessibilityControllerImpl : public AccessibilityController,
     std::vector<std::u16string> replacements;
   };
 
-  AccessibilityControllerImpl();
+  static AccessibilityController* Get();
 
-  AccessibilityControllerImpl(const AccessibilityControllerImpl&) = delete;
-  AccessibilityControllerImpl& operator=(const AccessibilityControllerImpl&) =
-      delete;
+  AccessibilityController();
 
-  ~AccessibilityControllerImpl() override;
+  AccessibilityController(const AccessibilityController&) = delete;
+  AccessibilityController& operator=(const AccessibilityController&) = delete;
+
+  ~AccessibilityController() override;
 
   // See Shell::RegisterProfilePrefs().
   static void RegisterProfilePrefs(PrefRegistrySimple* registry);
@@ -229,7 +239,7 @@ class ASH_EXPORT AccessibilityControllerImpl : public AccessibilityController,
   // enabled.
   std::vector<Feature*> GetEnabledFeaturesInQuickSettings() const;
 
-  base::WeakPtr<AccessibilityControllerImpl> GetWeakPtr();
+  base::WeakPtr<AccessibilityController> GetWeakPtr();
 
   // Getters for the corresponding features.
   Feature& autoclick() const;
@@ -350,7 +360,8 @@ class ASH_EXPORT AccessibilityControllerImpl : public AccessibilityController,
     return tablet_mode_shelf_navigation_buttons_enabled_;
   }
 
-  void ShowFloatingMenuIfEnabled() override;
+  // Shows floating accessibility menu if it was enabled by policy.
+  void ShowFloatingMenuIfEnabled();
 
   bool dictation_active() const { return dictation_active_; }
 
@@ -415,64 +426,155 @@ class ASH_EXPORT AccessibilityControllerImpl : public AccessibilityController,
   // set the a11y override window back to null.
   void SetA11yOverrideWindow(aura::Window* a11y_override_window);
 
-  // AccessibilityController:
-  void SetClient(AccessibilityControllerClient* client) override;
-  void SetDarkenScreen(bool darken) override;
-  void BrailleDisplayStateChanged(bool connected) override;
-  void SetFocusHighlightRect(const gfx::Rect& bounds_in_screen) override;
-  void SetCaretBounds(const gfx::Rect& bounds_in_screen) override;
-  void SetAccessibilityPanelAlwaysVisible(bool always_visible) override;
+  // Sets the client interface.
+  void SetClient(AccessibilityControllerClient* client);
+
+  // Starts or stops darkening the screen (e.g. to allow chrome a11y extensions
+  // to darken the screen).
+  void SetDarkenScreen(bool darken);
+
+  // Called when braille display state is changed.
+  void BrailleDisplayStateChanged(bool connected);
+
+  // Sets the focus highlight rect using |bounds_in_screen|. Called when focus
+  // changed in page and a11y focus highlight feature is enabled.
+  void SetFocusHighlightRect(const gfx::Rect& bounds_in_screen);
+
+  // Sets the text input caret bounds used to draw the caret highlight effect.
+  // For effciency, only sent when the caret highlight feature is enabled.
+  // Setting off-screen or empty bounds suppresses the highlight.
+  void SetCaretBounds(const gfx::Rect& bounds_in_screen);
+
+  // Sets whether the accessibility panel should always be visible, regardless
+  // of whether the window is fullscreen.
+  void SetAccessibilityPanelAlwaysVisible(bool always_visible);
+
+  // Sets the bounds for the accessibility panel. Overrides current
+  // configuration (i.e. fullscreen, full-width).
   void SetAccessibilityPanelBounds(const gfx::Rect& bounds,
-                                   AccessibilityPanelState state) override;
-  void SetSelectToSpeakState(SelectToSpeakState state) override;
+                                   AccessibilityPanelState state);
+
+  // Sets the current Select-to-Speak state. This should be used by the Select-
+  // to-Speak extension to inform ash of its updated state.
+  void SetSelectToSpeakState(SelectToSpeakState state);
+
+  // Set the delegate used by the Select-to-Speak event handler.
   void SetSelectToSpeakEventHandlerDelegate(
-      SelectToSpeakEventHandlerDelegate* delegate) override;
+      SelectToSpeakEventHandlerDelegate* delegate);
+
+  // Displays the Select-to-Speak panel.
   void ShowSelectToSpeakPanel(const gfx::Rect& anchor,
                               bool is_paused,
-                              double speech_rate) override;
-  void HideSelectToSpeakPanel() override;
+                              double speech_rate);
+
+  // Hides the Select-to-Speak panel.
+  void HideSelectToSpeakPanel();
+
+  // Dispatches event to notify Select-to-speak that a panel action occurred,
+  // with an optional value.
   void OnSelectToSpeakPanelAction(SelectToSpeakPanelAction action,
-                                  double value) override;
-  void HideSwitchAccessBackButton() override;
-  void HideSwitchAccessMenu() override;
-  void ShowSwitchAccessBackButton(const gfx::Rect& anchor) override;
+                                  double value);
+
+  // Hides the Switch Access back button.
+  void HideSwitchAccessBackButton();
+
+  // Hides the Switch Access menu.
+  void HideSwitchAccessMenu();
+
+  // Show the Switch Access back button next to the specified rectangle.
+  void ShowSwitchAccessBackButton(const gfx::Rect& anchor);
+
+  // Show the Switch Access menu with the specified actions.
   void ShowSwitchAccessMenu(const gfx::Rect& anchor,
-                            std::vector<std::string> actions_to_show) override;
-  void StartPointScan() override;
-  void StopPointScan() override;
-  void SetPointScanSpeedDipsPerSecond(
-      int point_scan_speed_dips_per_second) override;
-  void SetDictationActive(bool is_active) override;
-  void ToggleDictationFromSource(DictationToggleSource source) override;
-  void EnableOrToggleDictationFromSource(DictationToggleSource source) override;
+                            std::vector<std::string> actions_to_show);
+
+  // Starts point scanning in Switch Access.
+  void StartPointScan();
+
+  // Stops point scanning in Switch Access.
+  void StopPointScan();
+
+  // Sets point scanning speed in Switch Access.
+  void SetPointScanSpeedDipsPerSecond(int point_scan_speed_dips_per_second);
+
+  // Set whether dictation is active.
+  void SetDictationActive(bool is_active);
+
+  // Starts or stops dictation. Records metrics for toggling via SwitchAccess.
+  void ToggleDictationFromSource(DictationToggleSource source);
+
+  // Enables Dictation if the feature is currently disabled. Toggles (starts or
+  // stops) Dictation if the feature is currently enabled. Note: this behavior
+  // is currently behind a feature flag - if the feature flag is off, then this
+  // method behaves like ToggleDictationFromSource.
+  void EnableOrToggleDictationFromSource(DictationToggleSource source);
+
+  // Shows a nudge explaining that a user's dictation language was upgraded to
+  // work offline.
   void ShowDictationLanguageUpgradedNudge(
       const std::string& dictation_locale,
-      const std::string& application_locale) override;
-  void HandleAutoclickScrollableBoundsFound(
-      const gfx::Rect& bounds_in_screen) override;
-  std::u16string GetBatteryDescription() const override;
-  void SetVirtualKeyboardVisible(bool is_visible) override;
-  void PerformAcceleratorAction(AcceleratorAction accelerator_action) override;
-  void NotifyAccessibilityStatusChanged() override;
-  bool IsAccessibilityFeatureVisibleInTrayMenu(
-      const std::string& path) override;
-  void DisablePolicyRecommendationRestorerForTesting() override;
-  void SuspendSwitchAccessKeyHandling(bool suspend) override;
-  void EnableChromeVoxVolumeSlideGesture() override;
+      const std::string& application_locale);
+
+  // Called when the Automatic Clicks extension finds scrollable bounds.
+  void HandleAutoclickScrollableBoundsFound(const gfx::Rect& bounds_in_screen);
+
+  // Retrieves a string description of the current battery status.
+  std::u16string GetBatteryDescription() const;
+
+  // Shows or hides the virtual keyboard.
+  void SetVirtualKeyboardVisible(bool is_visible);
+
+  // Performs the given accelerator action.
+  void PerformAcceleratorAction(AcceleratorAction accelerator_action);
+
+  // Notify observers that the accessibility status has changed. This is part of
+  // the public interface because a11y features like screen magnifier are
+  // managed outside of this accessibility controller.
+  void NotifyAccessibilityStatusChanged();
+
+  // Returns true if the |path| pref is being controlled by a policy which
+  // enforces turning it on or its not being controlled by any type of policy
+  // and false otherwise.
+  bool IsAccessibilityFeatureVisibleInTrayMenu(const std::string& path);
+
+  // Disables restoring of recommended policy values.
+  void DisablePolicyRecommendationRestorerForTesting();
+
+  // Suspends (or resumes) key handling for Switch Access.
+  void SuspendSwitchAccessKeyHandling(bool suspend);
+
+  // Enables ChromeVox's volume slide gesture.
+  void EnableChromeVoxVolumeSlideGesture();
+
+  // Updates the enabled state, tooltip, and progress ring of the dictation
+  // button in the status tray when speech recognition file download state
+  // changes. `download_progress` indicates SODA download progress and is
+  // guaranteed to be between 0 and 100 (inclusive).
   void UpdateDictationButtonOnSpeechRecognitionDownloadChanged(
-      int download_progress) override;
-  void ShowNotificationForDictation(
-      DictationNotificationType type,
-      const std::u16string& display_language) override;
+      int download_progress);
+
+  // Shows a notification card in the message center informing the user that
+  // speech recognition files have either downloaded successfully or failed.
+  // Specific to the Dictation feature.
+  void ShowNotificationForDictation(DictationNotificationType type,
+                                    const std::u16string& display_language);
+  // Updates the Dictation UI bubble. `text` is optional to allow clients to
+  // clear the bubble's text.
   void UpdateDictationBubble(
       bool visible,
       DictationBubbleIconType icon,
       const std::optional<std::u16string>& text,
-      const std::optional<std::vector<DictationBubbleHintType>>& hints)
-      override;
-  void SilenceSpokenFeedback() override;
-  void ShowToast(AccessibilityToastType type) override;
+      const std::optional<std::vector<DictationBubbleHintType>>& hints);
 
+  // Cancels all of spoken feedback's current and queued speech immediately.
+  void SilenceSpokenFeedback();
+
+  // Shows an accessibility-related toast.
+  void ShowToast(AccessibilityToastType type);
+
+  // Shows a confirmation dialog with the given text, description,
+  // and cancel button name, and calls the relevant callback when the
+  // dialog is confirmed, canceled or closed.
   // A confirmation dialog will be shown the first time an accessibility feature
   // is enabled using the specified accelerator key sequence. Only one dialog
   // will be shown at a time, and will not be shown again if the user has
@@ -490,7 +592,7 @@ class ASH_EXPORT AccessibilityControllerImpl : public AccessibilityController,
                               const std::u16string& cancel_name,
                               base::OnceClosure on_accept_callback,
                               base::OnceClosure on_cancel_callback,
-                              base::OnceClosure on_close_callback) override;
+                              base::OnceClosure on_close_callback);
 
   // SessionObserver:
   void OnSigninScreenPrefServiceInitialized(PrefService* prefs) override;
@@ -502,8 +604,13 @@ class ASH_EXPORT AccessibilityControllerImpl : public AccessibilityController,
   SwitchAccessMenuBubbleController* GetSwitchAccessBubbleControllerForTest() {
     return switch_access_bubble_controller_.get();
   }
-  void DisableSwitchAccessDisableConfirmationDialogTesting() override;
-  void DisableSwitchAccessEnableNotificationTesting() override;
+
+  // Disables the dialog shown when Switch Access is turned off.
+  // Used in tests.
+  void DisableSwitchAccessDisableConfirmationDialogTesting();
+  // Disables the dialog shown when Switch Access is turned off.
+  // Used in tests.
+  void DisableSwitchAccessEnableNotificationTesting();
   SelectToSpeakMenuBubbleController*
   GetSelectToSpeakMenuBubbleControllerForTest() {
     return select_to_speak_bubble_controller_.get();
@@ -677,7 +784,7 @@ class ASH_EXPORT AccessibilityControllerImpl : public AccessibilityController,
   base::RepeatingCallback<void()>
       show_confirmation_dialog_callback_for_testing_;
 
-  base::WeakPtrFactory<AccessibilityControllerImpl> weak_ptr_factory_{this};
+  base::WeakPtrFactory<AccessibilityController> weak_ptr_factory_{this};
 };
 
 }  // namespace ash

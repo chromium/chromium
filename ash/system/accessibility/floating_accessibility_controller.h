@@ -18,7 +18,7 @@
 
 namespace ash {
 
-class AccessibilityControllerImpl;
+class AccessibilityController;
 class FloatingAccessibilityView;
 
 // Controls the floating accessibility menu.
@@ -31,7 +31,7 @@ class ASH_EXPORT FloatingAccessibilityController
       public display::DisplayObserver {
  public:
   explicit FloatingAccessibilityController(
-      AccessibilityControllerImpl* accessibility_controller);
+      AccessibilityController* accessibility_controller);
   FloatingAccessibilityController(const FloatingAccessibilityController&) =
       delete;
   FloatingAccessibilityController& operator=(
@@ -88,7 +88,7 @@ class ASH_EXPORT FloatingAccessibilityController
 
   display::ScopedDisplayObserver display_observer_{this};
 
-  const raw_ptr<AccessibilityControllerImpl, ExperimentalAsh>
+  const raw_ptr<AccessibilityController, ExperimentalAsh>
       accessibility_controller_;  // Owns us.
 };
 

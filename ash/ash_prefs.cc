@@ -97,7 +97,7 @@ void RegisterProfilePrefs(PrefRegistrySimple* registry,
                           std::string_view country,
                           bool for_test) {
   AcceleratorPrefs::RegisterProfilePrefs(registry);
-  AccessibilityControllerImpl::RegisterProfilePrefs(registry);
+  AccessibilityController::RegisterProfilePrefs(registry);
   AppListControllerImpl::RegisterProfilePrefs(registry);
   AppListNudgeController::RegisterProfilePrefs(registry);
   AshAcceleratorConfiguration::RegisterProfilePrefs(registry);

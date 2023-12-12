@@ -105,7 +105,7 @@ TEST_F(AccessibilityFeaturesTest, ForceVisibleObserver) {
   // Verify the observer is initialized with |force_visible| as false.
   ASSERT_FALSE(fake_observer_.force_visible());
 
-  AccessibilityControllerImpl* accessibility_controller =
+  AccessibilityController* accessibility_controller =
       Shell::Get()->accessibility_controller();
 
   // Spoken feedback.

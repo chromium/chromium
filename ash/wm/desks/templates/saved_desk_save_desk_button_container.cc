@@ -137,7 +137,7 @@ class SavedDeskSaveDeskButtonContainer::
  private:
   base::RepeatingClosure accessibility_state_changed_callback_;
 
-  base::ScopedObservation<AccessibilityControllerImpl, AccessibilityObserver>
+  base::ScopedObservation<AccessibilityController, AccessibilityObserver>
       observation_{this};
 };
 

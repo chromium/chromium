@@ -883,7 +883,7 @@ TEST_F(KeyboardTest, OnKeyboardTypeChanged_AccessibilityKeyboard) {
   EXPECT_TRUE(keyboard.HasDeviceConfigurationDelegate());
   testing::Mock::VerifyAndClearExpectations(&configuration_delegate);
 
-  ash::AccessibilityControllerImpl* accessibility_controller =
+  ash::AccessibilityController* accessibility_controller =
       ash::Shell::Get()->accessibility_controller();
 
   // Enable a11y keyboard calls OnKeyboardTypeChanged() with false.

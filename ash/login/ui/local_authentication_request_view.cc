@@ -9,7 +9,6 @@
 #include "ash/login/ui/arrow_button_view.h"
 #include "ash/login/ui/local_authentication_request_widget.h"
 #include "ash/login/ui/non_accessible_view.h"
-#include "ash/public/cpp/accessibility_controller.h"
 #include "ash/public/cpp/login/local_authentication_request_controller.h"
 #include "ash/public/cpp/login/login_utils.h"
 #include "ash/public/cpp/session/user_info.h"

@@ -38,7 +38,7 @@ class SelectToSpeakMenuBubbleControllerTest : public AshTestBase {
 
   void TearDown() override { AshTestBase::TearDown(); }
 
-  AccessibilityControllerImpl* GetAccessibilitController() {
+  AccessibilityController* GetAccessibilitController() {
     return Shell::Get()->accessibility_controller();
   }
 

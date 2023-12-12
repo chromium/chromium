@@ -35,7 +35,7 @@ void SpokenFeedbackEnabler::OnTimer() {
   base::TimeTicks now = ui::EventTimeForNow();
   int tick_count = base::ClampRound((now - start_time_) / kTimerDelay);
 
-  AccessibilityControllerImpl* controller =
+  AccessibilityController* controller =
       Shell::Get()->accessibility_controller();
   CHECK(controller);
   if (tick_count >= kTimerTicksOfFirstSoundFeedback &&

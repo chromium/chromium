@@ -518,7 +518,7 @@ TEST_F(AudioEffectsControllerTest, LiveCaptionNotEnabled) {
   SimulateUserLogin("testuser1@gmail.com");
 
   // Explicitly disable live caption, confirm that it is disabled.
-  AccessibilityControllerImpl* controller =
+  AccessibilityController* controller =
       Shell::Get()->accessibility_controller();
   controller->live_caption().SetEnabled(false);
   EXPECT_FALSE(controller->live_caption().enabled());
@@ -541,7 +541,7 @@ TEST_F(AudioEffectsControllerTest, LiveCaptionEnabled) {
   SimulateUserLogin("testuser1@gmail.com");
 
   // Explicitly enable live caption, confirm that it is enabled.
-  AccessibilityControllerImpl* controller =
+  AccessibilityController* controller =
       Shell::Get()->accessibility_controller();
   controller->live_caption().SetEnabled(true);
   EXPECT_TRUE(controller->live_caption().enabled());
@@ -564,7 +564,7 @@ TEST_F(AudioEffectsControllerTest, LiveCaptionSetNotEnabled) {
   SimulateUserLogin("testuser1@gmail.com");
 
   // Explicitly enable live caption, confirm that it is enabled.
-  AccessibilityControllerImpl* controller =
+  AccessibilityController* controller =
       Shell::Get()->accessibility_controller();
   controller->live_caption().SetEnabled(true);
   EXPECT_TRUE(controller->live_caption().enabled());
@@ -588,7 +588,7 @@ TEST_F(AudioEffectsControllerTest, LiveCaptionSetEnabled) {
   SimulateUserLogin("testuser1@gmail.com");
 
   // Explicitly disable live caption, confirm that it is disabled.
-  AccessibilityControllerImpl* controller =
+  AccessibilityController* controller =
       Shell::Get()->accessibility_controller();
   controller->live_caption().SetEnabled(false);
   EXPECT_FALSE(controller->live_caption().enabled());

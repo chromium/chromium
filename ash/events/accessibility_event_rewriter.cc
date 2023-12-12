@@ -212,7 +212,7 @@ bool AccessibilityEventRewriter::RewriteEventForSwitchAccess(
   }
 
   if (key_event->type() == ui::ET_KEY_PRESSED) {
-    AccessibilityControllerImpl* accessibility_controller =
+    AccessibilityController* accessibility_controller =
         Shell::Get()->accessibility_controller();
 
     if (accessibility_controller->IsPointScanEnabled()) {
@@ -301,7 +301,7 @@ void AccessibilityEventRewriter::OnMagnifierKeyReleased(
 void AccessibilityEventRewriter::MaybeSendMouseEvent(const ui::Event& event) {
   // Mouse moves are the only pertinent event for accessibility component
   // extensions.
-  AccessibilityControllerImpl* accessibility_controller =
+  AccessibilityController* accessibility_controller =
       Shell::Get()->accessibility_controller();
   if (send_mouse_events_ &&
       (event.type() == ui::ET_MOUSE_MOVED ||

@@ -476,7 +476,7 @@ class AccessibilityDetailedViewTest : public AshTestBase,
     return detailed_menu_->GetClassName();
   }
 
-  AccessibilityControllerImpl* controller() { return controller_; }
+  AccessibilityController* controller() { return controller_; }
   AccessibilityDetailedView* detailed_menu() { return detailed_menu_; }
   views::View* scroll_content() { return detailed_menu_->scroll_content(); }
 
@@ -601,7 +601,7 @@ class AccessibilityDetailedViewTest : public AshTestBase,
     }
   }
 
-  raw_ptr<AccessibilityControllerImpl, ExperimentalAsh> controller_ = nullptr;
+  raw_ptr<AccessibilityController, ExperimentalAsh> controller_ = nullptr;
   std::unique_ptr<views::Widget> widget_;
   std::unique_ptr<DetailedViewDelegate> delegate_;
   raw_ptr<AccessibilityDetailedView, DanglingUntriaged | ExperimentalAsh>
@@ -1039,7 +1039,7 @@ TEST_F(AccessibilityDetailedViewTest, CheckMenuVisibilityOnDetailMenu) {
 }
 
 TEST_F(AccessibilityDetailedViewTest, ClickDetailMenu) {
-  AccessibilityControllerImpl* accessibility_controller =
+  AccessibilityController* accessibility_controller =
       Shell::Get()->accessibility_controller();
   // Confirms that the check item toggles the spoken feedback.
   EXPECT_FALSE(accessibility_controller->spoken_feedback().enabled());

@@ -689,7 +689,7 @@ TEST_F(PinRequestViewTest, VirtualTextFieldForA11y) {
 TEST_F(PinRequestWidgetTest, SpokenFeedbackKeyCombo) {
   ShowWidget();
 
-  AccessibilityControllerImpl* controller =
+  AccessibilityController* controller =
       Shell::Get()->accessibility_controller();
   EXPECT_FALSE(controller->spoken_feedback().enabled());
 

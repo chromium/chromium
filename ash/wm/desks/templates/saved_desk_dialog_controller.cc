@@ -221,7 +221,7 @@ void SavedDeskDialogController::CreateDialogWidget(
   dialog_widget_observation_.Observe(dialog_widget_.get());
 
   // Ensure that if ChromeVox is enabled, it focuses on the dialog.
-  AccessibilityControllerImpl* accessibility_controller =
+  AccessibilityController* accessibility_controller =
       Shell::Get()->accessibility_controller();
   if (accessibility_controller->spoken_feedback().enabled()) {
     accessibility_controller->SetA11yOverrideWindow(

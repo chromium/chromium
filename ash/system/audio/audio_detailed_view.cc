@@ -254,7 +254,7 @@ void AudioDetailedView::Update() {
 }
 
 void AudioDetailedView::OnAccessibilityStatusChanged() {
-  AccessibilityControllerImpl* controller =
+  AccessibilityController* controller =
       Shell::Get()->accessibility_controller();
   // The live caption state has been updated.
   UpdateLiveCaptionView(controller->live_caption().enabled());
@@ -582,7 +582,7 @@ std::unique_ptr<HoverHighlightView> AudioDetailedView::CreateAgcInfoRow(
 
 void AudioDetailedView::MaybeShowSodaMessage(speech::LanguageCode language_code,
                                              std::u16string message) {
-  AccessibilityControllerImpl* controller =
+  AccessibilityController* controller =
       Shell::Get()->accessibility_controller();
   const bool is_live_caption_enabled = controller->live_caption().enabled();
   // Only show updates for this feature if the language code applies to the SODA
@@ -615,7 +615,7 @@ void AudioDetailedView::OnSettingsButtonClicked() {
 }
 
 void AudioDetailedView::ToggleLiveCaptionState() {
-  AccessibilityControllerImpl* controller =
+  AccessibilityController* controller =
       Shell::Get()->accessibility_controller();
   // Updates the enable state for live caption.
   controller->live_caption().SetEnabled(!controller->live_caption().enabled());

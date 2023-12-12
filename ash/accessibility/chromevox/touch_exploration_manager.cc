@@ -30,7 +30,7 @@ namespace ash {
 
 namespace {
 
-AccessibilityControllerImpl* GetA11yController() {
+AccessibilityController* GetA11yController() {
   return Shell::Get()->accessibility_controller();
 }
 
@@ -154,8 +154,9 @@ void TouchExplorationManager::OnTwoFingerTouchStart() {
 
 void TouchExplorationManager::OnTwoFingerTouchStop() {
   // Can be null during shutdown.
-  if (AccessibilityControllerImpl* controller = GetA11yController())
+  if (AccessibilityController* controller = GetA11yController()) {
     controller->OnTwoFingerTouchStop();
+  }
 }
 
 void TouchExplorationManager::PlaySpokenFeedbackToggleCountdown(

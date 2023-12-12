@@ -45,7 +45,7 @@ class SelectToSpeakSpeedBubbleControllerTest : public AshTestBase {
     AshTestBase::TearDown();
   }
 
-  AccessibilityControllerImpl* GetAccessibilitController() {
+  AccessibilityController* GetAccessibilitController() {
     return Shell::Get()->accessibility_controller();
   }
 

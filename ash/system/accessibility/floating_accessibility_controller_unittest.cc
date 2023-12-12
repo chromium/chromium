@@ -45,7 +45,7 @@ class FloatingAccessibilityControllerTest : public AshTestBase {
     SetTwoAvailableImes();
   }
 
-  AccessibilityControllerImpl* accessibility_controller() {
+  AccessibilityController* accessibility_controller() {
     return Shell::Get()->accessibility_controller();
   }
 

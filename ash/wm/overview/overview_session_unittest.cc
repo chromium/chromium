@@ -1107,7 +1107,7 @@ TEST_P(OverviewSessionTest, FullscreenWindowTabletMode) {
 TEST_P(OverviewSessionTest, DesksWidgetBoundsChangeWhenDisableChromeVox) {
   std::unique_ptr<aura::Window> window1 = CreateTestWindow();
 
-  AccessibilityControllerImpl* accessibility_controller =
+  AccessibilityController* accessibility_controller =
       Shell::Get()->accessibility_controller();
 
   // Enable ChromeVox.

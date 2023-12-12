@@ -16,7 +16,6 @@ SwitchAccessE2ETest = class extends E2ETestBase {
 #include "ash/keyboard/ui/keyboard_util.h"
 #include "ash/accessibility/accessibility_controller_impl.h"
 #include "ash/constants/ash_pref_names.h"
-#include "ash/public/cpp/accessibility_controller.h"
 #include "chrome/browser/ash/accessibility/accessibility_manager.h"
     `);
   }

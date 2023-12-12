@@ -158,7 +158,7 @@ class TrayBackgroundViewTest : public AshTestBase,
                 std::unique_ptr<TrayBackgroundView>(std::move(tmp))));
 
     // Set Dictation button to be visible.
-    AccessibilityControllerImpl* controller =
+    AccessibilityController* controller =
         Shell::Get()->accessibility_controller();
     controller->dictation().SetEnabled(true);
   }
