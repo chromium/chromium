@@ -1888,7 +1888,7 @@
       {
         "autotest_name": "chromium",
         "cros_board": "puff",
-        "cros_img": "puff-release/R118-15604.57.0",
+        "cros_img": "puff-release/R120-15662.16.0",
         "dut_pool": "chrome",
         "name": "chromeos_integration_tests PUFF_RELEASE_STABLE",
         "test": "chromeos_integration_tests",
@@ -1900,7 +1900,6 @@
         "cros_board": "brya",
         "cros_img": "brya-release/R120-15662.16.0",
         "dut_pool": "chrome",
-        "experiment_percentage": 100,
         "name": "lacros_all_tast_tests BRYA_RELEASE_BETA",
         "resultdb": {
           "enable": true,
@@ -1919,7 +1918,6 @@
         "cros_board": "brya",
         "cros_img": "brya-release/R121-15678.0.0",
         "dut_pool": "chrome",
-        "experiment_percentage": 100,
         "name": "lacros_all_tast_tests BRYA_RELEASE_DEV",
         "resultdb": {
           "enable": true,
@@ -1956,7 +1954,6 @@
         "cros_board": "brya",
         "cros_img": "brya-release/R119-15633.44.0",
         "dut_pool": "chrome",
-        "experiment_percentage": 100,
         "name": "lacros_all_tast_tests BRYA_RELEASE_STABLE",
         "resultdb": {
           "enable": true,
@@ -1974,7 +1971,6 @@
         "autotest_name": "tast.lacros-from-gcs",
         "cros_board": "dedede",
         "cros_img": "dedede-release/R120-15662.16.0",
-        "experiment_percentage": 100,
         "name": "lacros_all_tast_tests DEDEDE_RELEASE_BETA",
         "resultdb": {
           "enable": true,
@@ -1992,7 +1988,6 @@
         "autotest_name": "tast.lacros-from-gcs",
         "cros_board": "dedede",
         "cros_img": "dedede-release/R121-15678.0.0",
-        "experiment_percentage": 100,
         "name": "lacros_all_tast_tests DEDEDE_RELEASE_DEV",
         "resultdb": {
           "enable": true,
@@ -2027,7 +2022,6 @@
         "autotest_name": "tast.lacros-from-gcs",
         "cros_board": "dedede",
         "cros_img": "dedede-release/R119-15633.44.0",
-        "experiment_percentage": 100,
         "name": "lacros_all_tast_tests DEDEDE_RELEASE_STABLE",
         "resultdb": {
           "enable": true,
@@ -2046,7 +2040,6 @@
         "cros_board": "fizz",
         "cros_img": "fizz-release/R120-15662.16.0",
         "dut_pool": "chrome",
-        "experiment_percentage": 100,
         "name": "lacros_all_tast_tests FIZZ_RELEASE_BETA",
         "resultdb": {
           "enable": true,
@@ -2065,7 +2058,6 @@
         "cros_board": "fizz",
         "cros_img": "fizz-release/R121-15678.0.0",
         "dut_pool": "chrome",
-        "experiment_percentage": 100,
         "name": "lacros_all_tast_tests FIZZ_RELEASE_DEV",
         "resultdb": {
           "enable": true,
@@ -2102,7 +2094,6 @@
         "cros_board": "fizz",
         "cros_img": "fizz-release/R119-15633.44.0",
         "dut_pool": "chrome",
-        "experiment_percentage": 100,
         "name": "lacros_all_tast_tests FIZZ_RELEASE_STABLE",
         "resultdb": {
           "enable": true,
@@ -2121,7 +2112,6 @@
         "cros_board": "guybrush",
         "cros_img": "guybrush-release/R120-15662.16.0",
         "dut_pool": "chrome",
-        "experiment_percentage": 100,
         "name": "lacros_all_tast_tests GUYBRUSH_RELEASE_BETA",
         "resultdb": {
           "enable": true,
@@ -2140,7 +2130,6 @@
         "cros_board": "guybrush",
         "cros_img": "guybrush-release/R121-15678.0.0",
         "dut_pool": "chrome",
-        "experiment_percentage": 100,
         "name": "lacros_all_tast_tests GUYBRUSH_RELEASE_DEV",
         "resultdb": {
           "enable": true,
@@ -2177,7 +2166,6 @@
         "cros_board": "guybrush",
         "cros_img": "guybrush-release/R119-15633.44.0",
         "dut_pool": "chrome",
-        "experiment_percentage": 100,
         "name": "lacros_all_tast_tests GUYBRUSH_RELEASE_STABLE",
         "resultdb": {
           "enable": true,
@@ -2196,7 +2184,6 @@
         "cros_board": "puff",
         "cros_img": "puff-release/R120-15662.16.0",
         "dut_pool": "chrome",
-        "experiment_percentage": 100,
         "name": "lacros_all_tast_tests PUFF_RELEASE_BETA",
         "resultdb": {
           "enable": true,
@@ -2215,7 +2202,6 @@
         "cros_board": "puff",
         "cros_img": "puff-release/R121-15678.0.0",
         "dut_pool": "chrome",
-        "experiment_percentage": 100,
         "name": "lacros_all_tast_tests PUFF_RELEASE_DEV",
         "resultdb": {
           "enable": true,
@@ -2250,9 +2236,8 @@
       {
         "autotest_name": "tast.lacros-from-gcs",
         "cros_board": "puff",
-        "cros_img": "puff-release/R118-15604.57.0",
+        "cros_img": "puff-release/R120-15662.16.0",
         "dut_pool": "chrome",
-        "experiment_percentage": 100,
         "name": "lacros_all_tast_tests PUFF_RELEASE_STABLE",
         "resultdb": {
           "enable": true,

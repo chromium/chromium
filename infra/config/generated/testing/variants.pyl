@@ -205,7 +205,7 @@
     'identifier': 'PUFF_RELEASE_STABLE',
     'skylab': {
       'cros_board': 'puff',
-      'cros_img': 'puff-release/R118-15604.57.0',
+      'cros_img': 'puff-release/R120-15662.16.0',
       'dut_pool': 'chrome',
     },
   },
