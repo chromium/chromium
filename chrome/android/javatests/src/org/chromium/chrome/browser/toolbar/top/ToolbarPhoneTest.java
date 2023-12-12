@@ -50,8 +50,7 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 
-import org.chromium.base.Callback;
-import org.chromium.base.supplier.ObservableSupplier;
+import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.supplier.OneshotSupplierImpl;
 import org.chromium.base.test.params.ParameterAnnotations;
 import org.chromium.base.test.params.ParameterizedRunner;
@@ -1126,21 +1125,7 @@ public class ToolbarPhoneTest {
     private static class TestControlsVisibilityDelegate
             extends BrowserStateBrowserControlsVisibilityDelegate {
         public TestControlsVisibilityDelegate() {
-            super(
-                    new ObservableSupplier<Boolean>() {
-                        @Override
-                        public Boolean addObserver(Callback<Boolean> obs) {
-                            return false;
-                        }
-
-                        @Override
-                        public void removeObserver(Callback<Boolean> obs) {}
-
-                        @Override
-                        public Boolean get() {
-                            return false;
-                        }
-                    });
+            super(new ObservableSupplierImpl<>(false));
         }
     }
 }
