@@ -23,7 +23,7 @@
 
 namespace content {
 struct FencedFrameConfig;
-struct FencedFrameProperties;
+class FencedFrameProperties;
 }  // namespace content
 
 namespace blink::FencedFrame {
@@ -208,7 +208,7 @@ struct BLINK_COMMON_EXPORT RedactedFencedFrameProperties {
   }
 
  private:
-  friend struct content::FencedFrameProperties;
+  friend class content::FencedFrameProperties;
   friend struct mojo::StructTraits<
       blink::mojom::FencedFramePropertiesDataView,
       blink::FencedFrame::RedactedFencedFrameProperties>;

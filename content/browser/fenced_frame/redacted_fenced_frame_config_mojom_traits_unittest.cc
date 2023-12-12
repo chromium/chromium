@@ -301,7 +301,7 @@ TEST_F(FencedFrameConfigMojomTraitsTest, ConfigMojomTraitsModeTest) {
 
       RedactedFencedFrameProperties input_properties =
           browser_properties.RedactFor(entity);
-      ASSERT_TRUE(browser_properties.mode_ == input_properties.mode());
+      ASSERT_TRUE(browser_properties.mode() == input_properties.mode());
 
       RedactedFencedFrameProperties output_properties;
       mojo::test::SerializeAndDeserialize<blink::mojom::FencedFrameProperties>(

@@ -528,10 +528,10 @@ TEST_F(NavigationRequestTest, SharedStorageWritable) {
       content::RenderFrameHostTester::For(main_rfh())->AppendFencedFrame());
   FrameTreeNode* fenced_frame_node =
       static_cast<RenderFrameHostImpl*>(fenced_frame_root)->frame_tree_node();
-  absl::optional<FencedFrameProperties> new_props =
-      fenced_frame_node->GetFencedFrameProperties();
-  new_props->effective_enabled_permissions.push_back(
+  FencedFrameConfig new_config = FencedFrameConfig(GURL("about:blank"));
+  new_config.effective_enabled_permissions.push_back(
       blink::mojom::PermissionsPolicyFeature::kSharedStorage);
+  FencedFrameProperties new_props = FencedFrameProperties(new_config);
   fenced_frame_node->set_fenced_frame_properties(new_props);
   fenced_frame_root->ResetPermissionsPolicy();
 

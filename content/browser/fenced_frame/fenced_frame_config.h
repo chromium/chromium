@@ -40,9 +40,6 @@
 //   `FencedFrameConfig` and the `kEmbedder` entity. The constructor
 //   automatically performs the redaction process.
 //
-//   TODO(crbug.com/1347953): Remove this disclaimer.
-//   (Note: the following two steps aren't implemented yet, and are currently
-//    accomplished with urns.)
 // * FLEDGE returns the redacted config to the embedder's renderer.
 //   `RedactedFencedFrameConfig` supports mojom type mappings for
 //   `blink::mojom::FencedFrameConfig`.
@@ -200,7 +197,7 @@ class CONTENT_EXPORT FencedFrameProperty {
  private:
   friend class content::FencedFrameURLMapping;
   friend struct FencedFrameConfig;
-  friend struct FencedFrameProperties;
+  friend class FencedFrameProperties;
 
   T value_;
   VisibilityToEmbedder visibility_to_embedder_;
@@ -333,8 +330,8 @@ struct CONTENT_EXPORT FencedFrameConfig {
 // These `FencedFrameProperties` are stored in the fenced frame root
 // `FrameTreeNode`, and live between embedder-initiated fenced frame
 // navigations.
-// TODO(crbug.com/1417871): Turn this into a class and make its fields private.
-struct CONTENT_EXPORT FencedFrameProperties {
+class CONTENT_EXPORT FencedFrameProperties {
+ public:
   // The empty constructor is used for:
   // * pre-navigation fenced frames
   // * embedder-initiated non-opaque url navigations
@@ -353,8 +350,6 @@ struct CONTENT_EXPORT FencedFrameProperties {
 
   blink::FencedFrame::RedactedFencedFrameProperties RedactFor(
       FencedFrameEntity entity) const;
-
-  absl::optional<FencedFrameProperty<GURL>> mapped_url_;
 
   // Update the stored mapped URL to a new one given by `url`.
   // `this` must have a value for `mapped_url_` when the function is called.
@@ -379,6 +374,90 @@ struct CONTENT_EXPORT FencedFrameProperties {
   // Attempts to retrieve the automatic beacon data for a given event type.
   const absl::optional<AutomaticBeaconInfo> GetAutomaticBeaconInfo(
       blink::mojom::AutomaticBeaconType event_type) const;
+
+  const absl::optional<FencedFrameProperty<GURL>>& mapped_url() const {
+    return mapped_url_;
+  }
+
+  const absl::optional<FencedFrameProperty<AdAuctionData>>& ad_auction_data()
+      const {
+    return ad_auction_data_;
+  }
+
+  const base::RepeatingClosure& on_navigate_callback() const {
+    return on_navigate_callback_;
+  }
+
+  const absl::optional<
+      FencedFrameProperty<std::vector<std::pair<GURL, FencedFrameConfig>>>>
+  nested_urn_config_pairs() const {
+    return nested_urn_config_pairs_;
+  }
+
+  const absl::optional<
+      FencedFrameProperty<raw_ptr<const SharedStorageBudgetMetadata>>>&
+  shared_storage_budget_metadata() const {
+    return shared_storage_budget_metadata_;
+  }
+
+  const absl::optional<std::u16string>& embedder_shared_storage_context()
+      const {
+    return embedder_shared_storage_context_;
+  }
+
+  // Used to store the shared storage context passed from the embedder
+  // (navigation initiator)'s renderer into the new FencedFrameProperties.
+  // TODO(crbug.com/1417871): Refactor this to be part of the
+  // FencedFrameProperties constructor rather than
+  // OnFencedFrameURLMappingComplete.
+  void SetEmbedderSharedStorageContext(
+      const absl::optional<std::u16string>& embedder_shared_storage_context) {
+    embedder_shared_storage_context_ = embedder_shared_storage_context;
+  }
+
+  const scoped_refptr<FencedFrameReporter>& fenced_frame_reporter() const {
+    return fenced_frame_reporter_;
+  }
+
+  const absl::optional<FencedFrameProperty<base::UnguessableToken>>&
+  partition_nonce() const {
+    return partition_nonce_;
+  }
+
+  // Used for urn iframes, which should not have a separate storage/network
+  // partition.
+  // TODO(crbug.com/1417871): Refactor this to be part of the
+  // FencedFrameProperties constructor rather than
+  // OnFencedFrameURLMappingComplete.
+  void ClearPartitionNonce() { partition_nonce_ = absl::nullopt; }
+
+  const DeprecatedFencedFrameMode& mode() const { return mode_; }
+
+  bool is_ad_component() const { return is_ad_component_; }
+
+  const std::vector<blink::mojom::PermissionsPolicyFeature>&
+  effective_enabled_permissions() const {
+    return effective_enabled_permissions_;
+  }
+
+  // Set the current FencedFrameProperties to have "opaque ads mode".
+  // This should only be used during tests, when the proper embedder-initiated
+  // fenced frame root urn/config navigation flow isn't available.
+  // TODO(crbug.com/1347953): Refactor and expand use of test utils so there is
+  // a consistent way to do this properly everywhere. Consider removing
+  // arbitrary restrictions in "default mode" so that using opaque ads mode is
+  // less necessary.
+  void SetFencedFramePropertiesOpaqueAdsModeForTesting() {
+    mode_ = blink::FencedFrame::DeprecatedFencedFrameMode::kOpaqueAds;
+  }
+
+ private:
+  FRIEND_TEST_ALL_PREFIXES(FencedFrameConfigMojomTraitsTest,
+                           ConfigMojomTraitsTest);
+  FRIEND_TEST_ALL_PREFIXES(FencedFrameConfigMojomTraitsTest,
+                           PropertiesHasFencedFrameReportingTest);
+
+  absl::optional<FencedFrameProperty<GURL>> mapped_url_;
 
   absl::optional<FencedFrameProperty<gfx::Size>> container_size_;
 
@@ -452,7 +531,7 @@ struct CONTENT_EXPORT FencedFrameProperties {
   // See entry in spec:
   // https://wicg.github.io/fenced-frame/#fenced-frame-config-effective-enabled-permissions
   std::vector<blink::mojom::PermissionsPolicyFeature>
-      effective_enabled_permissions;
+      effective_enabled_permissions_;
 };
 
 }  // namespace content

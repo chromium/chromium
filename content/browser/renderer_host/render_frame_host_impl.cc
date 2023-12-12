@@ -642,7 +642,7 @@ DetermineWhetherToForbidTrustTokenOperation(
         frame->frame_tree_node()->GetFencedFrameProperties();
     base::span<const blink::mojom::PermissionsPolicyFeature> permissions;
     if (fenced_frame_properties) {
-      permissions = fenced_frame_properties->effective_enabled_permissions;
+      permissions = fenced_frame_properties->effective_enabled_permissions();
     }
     subframe_policy = blink::PermissionsPolicy::CreateForFencedFrame(
         subframe_origin, permissions);
@@ -8492,7 +8492,7 @@ void RenderFrameHostImpl::SendPrivateAggregationRequestsForFencedFrameEvent(
   const absl::optional<FencedFrameProperties>& fenced_frame_properties =
       frame_tree_node_->GetFencedFrameProperties();
   if (!fenced_frame_properties.has_value() ||
-      !fenced_frame_properties->fenced_frame_reporter_) {
+      !fenced_frame_properties->fenced_frame_reporter()) {
     // No associated fenced frame reporter. This should have been captured
     // in the renderer process at `Fence::reportEvent`.
     // This implies there is an inconsistency between the browser and the
@@ -8503,9 +8503,9 @@ void RenderFrameHostImpl::SendPrivateAggregationRequestsForFencedFrameEvent(
         "consistent between the two.");
     return;
   }
-  if (!fenced_frame_properties->mapped_url_.has_value() ||
+  if (!fenced_frame_properties->mapped_url().has_value() ||
       !GetLastCommittedOrigin().IsSameOriginWith(
-          url::Origin::Create(fenced_frame_properties->mapped_url_
+          url::Origin::Create(fenced_frame_properties->mapped_url()
                                   ->GetValueIgnoringVisibility()))) {
     mojo::ReportBadMessage(
         "This frame is cross-origin to the mapped url of its fenced frame "
@@ -8513,7 +8513,7 @@ void RenderFrameHostImpl::SendPrivateAggregationRequestsForFencedFrameEvent(
     return;
   }
 
-  fenced_frame_properties->fenced_frame_reporter_
+  fenced_frame_properties->fenced_frame_reporter()
       ->SendPrivateAggregationRequestsForEvent(event_type);
 }
 
@@ -8691,7 +8691,7 @@ void RenderFrameHostImpl::MaybeSendFencedFrameAutomaticReportingBeacon(
     base::UmaHistogramEnumeration(blink::kFencedFrameTopNavigationHistogram,
                                   blink::FencedFrameNavigationState::kCommit);
   }
-  if (!properties.has_value() || !properties->fenced_frame_reporter_) {
+  if (!properties.has_value() || !properties->fenced_frame_reporter()) {
     return;
   }
   FencedDocumentData* fenced_document_data = nullptr;
@@ -8752,10 +8752,10 @@ void RenderFrameHostImpl::MaybeSendFencedFrameAutomaticReportingBeacon(
   // when the initiator document is cross-origin with the fenced frame config's
   // mapped url, but only if the document opts in through a header.
   bool is_same_origin =
-      properties->mapped_url_.has_value() &&
+      properties->mapped_url().has_value() &&
       initiator_rfh->GetLastCommittedOrigin().IsSameOriginWith(
           url::Origin::Create(
-              properties->mapped_url_->GetValueIgnoringVisibility()));
+              properties->mapped_url()->GetValueIgnoringVisibility()));
   if (!is_same_origin && !initiator_allows_fenced_frame_automatic_beacons) {
     RecordAutomaticBeaconOutcome(
         blink::AutomaticBeaconOutcome::kNotSameOriginNotOptedIn);
@@ -8772,7 +8772,7 @@ void RenderFrameHostImpl::MaybeSendFencedFrameAutomaticReportingBeacon(
     RecordAutomaticBeaconOutcome(blink::AutomaticBeaconOutcome::kSuccess);
 
     for (const auto& destination :
-         properties->fenced_frame_reporter_->ReportingDestinations()) {
+         properties->fenced_frame_reporter()->ReportingDestinations()) {
       std::string data;
       // For data to be sent in the automatic beacon, it must be specified in
       // the event's "destination" for setReportEventDataForAutomaticBeacons().
@@ -8828,7 +8828,7 @@ bool RenderFrameHostImpl::IsFencedFrameReportingFromRendererAllowed() {
       frame_tree_node_->GetFencedFrameProperties();
 
   if (!fenced_frame_properties.has_value() ||
-      !fenced_frame_properties->fenced_frame_reporter_) {
+      !fenced_frame_properties->fenced_frame_reporter()) {
     // No associated fenced frame reporter. This should have been captured
     // in the renderer process at `Fence::reportEvent`.
     // This implies there is an inconsistency between the browser and the
@@ -8838,7 +8838,7 @@ bool RenderFrameHostImpl::IsFencedFrameReportingFromRendererAllowed() {
     return false;
   }
 
-  if (fenced_frame_properties->is_ad_component_) {
+  if (fenced_frame_properties->is_ad_component()) {
     // Direct invocation of fence.reportEvent from an ad component is
     // disallowed.
     AddMessageToConsole(
@@ -8848,9 +8848,9 @@ bool RenderFrameHostImpl::IsFencedFrameReportingFromRendererAllowed() {
     return false;
   }
 
-  if (!fenced_frame_properties->mapped_url_.has_value() ||
+  if (!fenced_frame_properties->mapped_url().has_value() ||
       !GetLastCommittedOrigin().IsSameOriginWith(
-          url::Origin::Create(fenced_frame_properties->mapped_url_
+          url::Origin::Create(fenced_frame_properties->mapped_url()
                                   ->GetValueIgnoringVisibility()))) {
     mojo::ReportBadMessage(
         "This frame is cross-origin to the mapped url of its fenced frame "
@@ -8896,7 +8896,8 @@ void RenderFrameHostImpl::SendFencedFrameReportingBeaconInternal(
   }
 
   if (!frame_tree_node_->GetFencedFrameProperties()
-           ->fenced_frame_reporter_->SendReport(
+           ->fenced_frame_reporter()
+           ->SendReport(
                event_variant, destination, /*request_initiator_frame=*/this,
                fenced_frame_data->features(), error_message,
                console_message_level, GetFrameTreeNodeId(), navigation_id)) {
@@ -8945,7 +8946,7 @@ void RenderFrameHostImpl::SetFencedFrameAutomaticBeaconReportEventData(
     // iframes loaded with a urn:uuid. This allows URN iframes to call this
     // function without getting bad-messaged.
     if (!fenced_frame_properties ||
-        !fenced_frame_properties->fenced_frame_reporter_) {
+        !fenced_frame_properties->fenced_frame_reporter()) {
       mojo::ReportBadMessage(
           "Automatic beacon data can only be set in fenced frames or iframes "
           "loaded from a config with a fenced frame reporter.");
@@ -8953,9 +8954,9 @@ void RenderFrameHostImpl::SetFencedFrameAutomaticBeaconReportEventData(
     }
     // This metadata should only be present in the renderer in frames that are
     // same-origin to the mapped url.
-    if (!fenced_frame_properties->mapped_url_.has_value() ||
+    if (!fenced_frame_properties->mapped_url().has_value() ||
         !GetLastCommittedOrigin().IsSameOriginWith(
-            url::Origin::Create(fenced_frame_properties->mapped_url_
+            url::Origin::Create(fenced_frame_properties->mapped_url()
                                     ->GetValueIgnoringVisibility()))) {
       mojo::ReportBadMessage(
           "Automatic beacon data can only be set from documents that are same-"
@@ -8965,7 +8966,7 @@ void RenderFrameHostImpl::SetFencedFrameAutomaticBeaconReportEventData(
 
     // Ad components cannot set event data for automatic beacons.
     std::string event_data_to_use =
-        fenced_frame_properties->is_ad_component_ ? std::string{} : event_data;
+        fenced_frame_properties->is_ad_component() ? std::string{} : event_data;
 
     auto* fenced_document_data =
         FencedDocumentData::GetOrCreateForCurrentDocument(this);
@@ -11695,7 +11696,7 @@ void RenderFrameHostImpl::ResetPermissionsPolicy() {
         frame_tree_node()->GetFencedFrameProperties();
     base::span<const blink::mojom::PermissionsPolicyFeature> permissions;
     if (fenced_frame_properties) {
-      permissions = fenced_frame_properties->effective_enabled_permissions;
+      permissions = fenced_frame_properties->effective_enabled_permissions();
     }
     permissions_policy_ = blink::PermissionsPolicy::CreateForFencedFrame(
         last_committed_origin_, permissions);
@@ -13229,7 +13230,7 @@ bool RenderFrameHostImpl::DidCommitNavigationInternal(
     if (fenced_frame_properties &&
         (frame_tree_node()->IsFencedFrameRoot() ||
          !frame_tree_node()->IsInFencedFrameTree())) {
-      if (fenced_frame_properties->nested_urn_config_pairs_.has_value()) {
+      if (fenced_frame_properties->nested_urn_config_pairs().has_value()) {
         // Store nested ad components in the fenced frame's url map.
         // This may only be done after creating the DocumentAssociatedData for
         // the new document, if appropriate, since `fenced_frame_urls_map` hangs
@@ -13237,17 +13238,17 @@ bool RenderFrameHostImpl::DidCommitNavigationInternal(
         // the urn iframe root don't create a new Page (because the root of the
         // Page is the top-level frame). So this operation is a no-op.
         GetPage().fenced_frame_urls_map().ImportPendingAdComponents(
-            fenced_frame_properties->nested_urn_config_pairs_
+            fenced_frame_properties->nested_urn_config_pairs()
                 ->GetValueIgnoringVisibility());
       }
 
-      if (fenced_frame_properties->ad_auction_data_.has_value()) {
+      if (fenced_frame_properties->ad_auction_data().has_value()) {
         AdAuctionDocumentData::CreateForCurrentDocument(
             this,
-            fenced_frame_properties->ad_auction_data_
+            fenced_frame_properties->ad_auction_data()
                 ->GetValueIgnoringVisibility()
                 .interest_group_owner,
-            fenced_frame_properties->ad_auction_data_
+            fenced_frame_properties->ad_auction_data()
                 ->GetValueIgnoringVisibility()
                 .interest_group_name);
       }

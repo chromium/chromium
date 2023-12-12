@@ -833,8 +833,8 @@ class AdAuctionServiceImplTest : public RenderViewHostTestHarness {
 
   absl::optional<GURL> ConvertFencedFrameURNToURL(const GURL& urn_url) {
     auto properties = GetFencedFramePropertiesForURN(urn_url);
-    if (properties && properties->mapped_url_.has_value()) {
-      return properties->mapped_url_->GetValueIgnoringVisibility();
+    if (properties && properties->mapped_url().has_value()) {
+      return properties->mapped_url()->GetValueIgnoringVisibility();
     }
     return absl::nullopt;
   }
@@ -846,7 +846,7 @@ class AdAuctionServiceImplTest : public RenderViewHostTestHarness {
   void InvokeCallbackForURN(const GURL& urn_url) {
     auto properties = GetFencedFramePropertiesForURN(urn_url);
     ASSERT_TRUE(properties);
-    properties->on_navigate_callback_.Run();
+    properties->on_navigate_callback().Run();
   }
 
   // Creates a new AdAuctionServiceImpl and use it to try and join
@@ -10798,7 +10798,7 @@ TEST_F(AdAuctionServiceImplBAndATest, RunBAndAAuction) {
       GetFencedFramePropertiesForURN(*result);
   ASSERT_TRUE(properties);
   EXPECT_THAT(
-      properties->fenced_frame_reporter_->GetAdBeaconMapForTesting(),
+      properties->fenced_frame_reporter()->GetAdBeaconMapForTesting(),
       testing::UnorderedElementsAre(
           testing::Pair(
               blink::FencedFrame::ReportingDestination::kBuyer,
@@ -11082,7 +11082,7 @@ TEST_F(AdAuctionServiceImplBAndATest, RunBAndAAuctionWithCustomMediaType) {
       GetFencedFramePropertiesForURN(*result);
   ASSERT_TRUE(properties);
   EXPECT_THAT(
-      properties->fenced_frame_reporter_->GetAdBeaconMapForTesting(),
+      properties->fenced_frame_reporter()->GetAdBeaconMapForTesting(),
       testing::UnorderedElementsAre(
           testing::Pair(
               blink::FencedFrame::ReportingDestination::kBuyer,
@@ -11707,7 +11707,7 @@ function reportResult(auctionConfig, browserSignals) {
       GetFencedFramePropertiesForURN(*result);
   ASSERT_TRUE(properties);
   EXPECT_THAT(
-      properties->fenced_frame_reporter_->GetAdBeaconMapForTesting(),
+      properties->fenced_frame_reporter()->GetAdBeaconMapForTesting(),
       testing::UnorderedElementsAre(
           testing::Pair(
               blink::FencedFrame::ReportingDestination::kBuyer,
@@ -11913,7 +11913,7 @@ function reportResult(auctionConfig, browserSignals) {
       GetFencedFramePropertiesForURN(*result);
   ASSERT_TRUE(properties);
   EXPECT_THAT(
-      properties->fenced_frame_reporter_->GetAdBeaconMapForTesting(),
+      properties->fenced_frame_reporter()->GetAdBeaconMapForTesting(),
       testing::UnorderedElementsAre(
           testing::Pair(
               blink::FencedFrame::ReportingDestination::kBuyer,
@@ -12121,7 +12121,7 @@ function reportResult(auctionConfig, browserSignals) {
       GetFencedFramePropertiesForURN(*result);
   ASSERT_TRUE(properties);
   EXPECT_THAT(
-      properties->fenced_frame_reporter_->GetAdBeaconMapForTesting(),
+      properties->fenced_frame_reporter()->GetAdBeaconMapForTesting(),
       testing::UnorderedElementsAre(
           testing::Pair(
               blink::FencedFrame::ReportingDestination::kBuyer,
@@ -12291,7 +12291,7 @@ function reportResult(auctionConfig, browserSignals) {
       GetFencedFramePropertiesForURN(*result);
   ASSERT_TRUE(properties);
   EXPECT_THAT(
-      properties->fenced_frame_reporter_->GetAdBeaconMapForTesting(),
+      properties->fenced_frame_reporter()->GetAdBeaconMapForTesting(),
       testing::UnorderedElementsAre(
           testing::Pair(
               blink::FencedFrame::ReportingDestination::kBuyer,
@@ -12471,7 +12471,7 @@ function reportResult(auctionConfig, browserSignals) {
       GetFencedFramePropertiesForURN(*result);
   ASSERT_TRUE(properties);
   EXPECT_THAT(
-      properties->fenced_frame_reporter_->GetAdBeaconMapForTesting(),
+      properties->fenced_frame_reporter()->GetAdBeaconMapForTesting(),
       testing::UnorderedElementsAre(
           testing::Pair(blink::FencedFrame::ReportingDestination::kBuyer,
                         testing::ElementsAre()),

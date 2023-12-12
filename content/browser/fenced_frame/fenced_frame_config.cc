@@ -238,7 +238,7 @@ FencedFrameProperties::FencedFrameProperties(const FencedFrameConfig& config)
                        VisibilityToContent::kOpaque),
       mode_(config.mode_),
       is_ad_component_(config.is_ad_component_),
-      effective_enabled_permissions(config.effective_enabled_permissions) {
+      effective_enabled_permissions_(config.effective_enabled_permissions) {
   if (config.shared_storage_budget_metadata_) {
     shared_storage_budget_metadata_.emplace(
         &config.shared_storage_budget_metadata_->GetValueIgnoringVisibility(),
@@ -322,7 +322,7 @@ FencedFrameProperties::RedactFor(FencedFrameEntity entity) const {
   redacted_properties.mode_ = mode_;
 
   redacted_properties.effective_enabled_permissions_ =
-      effective_enabled_permissions;
+      effective_enabled_permissions_;
 
   return redacted_properties;
 }

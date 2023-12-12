@@ -526,8 +526,8 @@ class CONTENT_EXPORT FrameTreeNode : public RenderFrameHostOwner {
   // less necessary.
   void SetFencedFramePropertiesOpaqueAdsModeForTesting() {
     if (fenced_frame_properties_.has_value()) {
-      fenced_frame_properties_->mode_ =
-          blink::FencedFrame::DeprecatedFencedFrameMode::kOpaqueAds;
+      fenced_frame_properties_
+          ->SetFencedFramePropertiesOpaqueAdsModeForTesting();
     }
   }
 

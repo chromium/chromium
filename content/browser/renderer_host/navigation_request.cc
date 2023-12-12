@@ -2416,16 +2416,16 @@ void NavigationRequest::OnFencedFrameURLMappingComplete(
     return;
   }
 
-  if (properties->on_navigate_callback_) {
-    properties->on_navigate_callback_.Run();
+  if (properties->on_navigate_callback()) {
+    properties->on_navigate_callback().Run();
   }
 
   // Currently, all fenced frame use cases include mapped urls. Patch up
   // url-related fields to use the underlying mapped url, rather than the
   // original urn.
-  CHECK(properties->mapped_url_.has_value());
+  CHECK(properties->mapped_url().has_value());
   const GURL& mapped_url_value =
-      properties->mapped_url_->GetValueIgnoringVisibility();
+      properties->mapped_url()->GetValueIgnoringVisibility();
   common_params_->url = mapped_url_value;
   commit_params_->original_url = mapped_url_value;
 
@@ -2436,19 +2436,19 @@ void NavigationRequest::OnFencedFrameURLMappingComplete(
 
   // Set the shared storage context in the fenced frame properties.
   DCHECK(fenced_frame_properties_);
-  fenced_frame_properties_->embedder_shared_storage_context_ =
-      embedder_shared_storage_context_;
+  fenced_frame_properties_->SetEmbedderSharedStorageContext(
+      embedder_shared_storage_context_);
   embedder_shared_storage_context_ = absl::nullopt;
 
   // For urns loaded into iframes for FLEDGE OT, for compatibility we don't
   // want to use a fenced frame nonce.
   if (!frame_tree_node_->IsFencedFrameRoot()) {
     CHECK(blink::features::IsAllowURNsInIframeEnabled());
-    fenced_frame_properties_->partition_nonce_ = absl::nullopt;
+    fenced_frame_properties_->ClearPartitionNonce();
   }
 
   // This implies the URN is created from shared storage.
-  if (fenced_frame_properties_->shared_storage_budget_metadata_) {
+  if (fenced_frame_properties_->shared_storage_budget_metadata()) {
     base::TimeDelta time_spent_in_fenced_frame_url_mapping =
         base::TimeTicks::Now() - fenced_frame_url_mapping_start_time_;
 
@@ -7509,7 +7509,7 @@ void NavigationRequest::ReadyToCommitNavigation(bool is_error) {
     // * Embedder-initiated FF root navigations to transparent (non-urn) urls.
     // In those cases, we skip this step.
     if (fenced_frame_properties_.has_value() &&
-        fenced_frame_properties_->mapped_url_.has_value()) {
+        fenced_frame_properties_->mapped_url().has_value()) {
       fenced_frame_properties_->UpdateMappedURL(GetURL());
     }
   }
@@ -7529,9 +7529,9 @@ void NavigationRequest::ReadyToCommitNavigation(bool is_error) {
   if (computed_fenced_frame_properties.has_value()) {
     content::FencedFrameEntity entity =
         content::FencedFrameEntity::kSameOriginContent;
-    if (computed_fenced_frame_properties->mapped_url_.has_value() &&
+    if (computed_fenced_frame_properties->mapped_url().has_value() &&
         !url::Origin::Create(common_params_->url)
-             .IsSameOriginWith(computed_fenced_frame_properties->mapped_url_
+             .IsSameOriginWith(computed_fenced_frame_properties->mapped_url()
                                    ->GetValueIgnoringVisibility())) {
       entity = content::FencedFrameEntity::kCrossOriginContent;
     }
@@ -8766,7 +8766,7 @@ bool NavigationRequest::CheckPermissionsPoliciesForFencedFrames(
   // extra policies defined in the outer document/"allow" attribute won't have
   // any effect.
   for (const blink::mojom::PermissionsPolicyFeature feature :
-       computed_fenced_frame_properties->effective_enabled_permissions) {
+       computed_fenced_frame_properties->effective_enabled_permissions()) {
     if (!IsFencedFrameRequiredPolicyFeatureAllowed(origin, feature)) {
       const blink::PermissionsPolicyFeatureToNameMap& feature_to_name_map =
           blink::GetPermissionsPolicyFeatureToNameMap();
@@ -9422,14 +9422,14 @@ NavigationRequest::ComputeFencedFrameNonce() const {
   if (!computed_fenced_frame_properties.has_value()) {
     return absl::nullopt;
   }
-  if (!computed_fenced_frame_properties->partition_nonce_.has_value()) {
+  if (!computed_fenced_frame_properties->partition_nonce().has_value()) {
     // It is only possible for there to be `FencedFrameProperties` but no
     // partition nonce in urn iframes (which could indeed be nested inside a
     // fenced frame).
     CHECK(blink::features::IsAllowURNsInIframeEnabled());
     return absl::nullopt;
   }
-  return computed_fenced_frame_properties->partition_nonce_
+  return computed_fenced_frame_properties->partition_nonce()
       ->GetValueIgnoringVisibility();
 }
 

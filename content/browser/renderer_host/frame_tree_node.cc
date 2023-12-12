@@ -958,7 +958,7 @@ void FrameTreeNode::SetFencedFrameAutomaticBeaconReportEventData(
   // `properties` will exist for both fenced frames as well as iframes loaded
   // with a urn:uuid. This allows URN iframes to call this function without
   // getting bad-messaged.
-  if (!properties || !properties->fenced_frame_reporter_) {
+  if (!properties || !properties->fenced_frame_reporter()) {
     mojo::ReportBadMessage(
         "Automatic beacon data can only be set in fenced frames or iframes "
         "loaded from a config with a fenced frame reporter.");
@@ -966,9 +966,9 @@ void FrameTreeNode::SetFencedFrameAutomaticBeaconReportEventData(
   }
   // This metadata should only be present in the renderer in frames that are
   // same-origin to the mapped url.
-  if (!properties->mapped_url_.has_value() ||
+  if (!properties->mapped_url().has_value() ||
       !current_origin().IsSameOriginWith(url::Origin::Create(
-          properties->mapped_url_->GetValueIgnoringVisibility()))) {
+          properties->mapped_url()->GetValueIgnoringVisibility()))) {
     mojo::ReportBadMessage(
         "Automatic beacon data can only be set from documents that are same-"
         "origin to the mapped url from the fenced frame config.");
@@ -992,7 +992,7 @@ size_t FrameTreeNode::GetFencedFrameDepth(
 
       // This implies the fenced frame is from shared storage.
       if (node->fenced_frame_properties_ &&
-          node->fenced_frame_properties_->shared_storage_budget_metadata_) {
+          node->fenced_frame_properties_->shared_storage_budget_metadata()) {
         shared_storage_fenced_frame_root_count += 1;
       }
     } else {
@@ -1015,8 +1015,8 @@ absl::optional<base::UnguessableToken> FrameTreeNode::GetFencedFrameNonce() {
   if (!root_fenced_frame_properties.has_value()) {
     return absl::nullopt;
   }
-  if (root_fenced_frame_properties->partition_nonce_.has_value()) {
-    return root_fenced_frame_properties->partition_nonce_
+  if (root_fenced_frame_properties->partition_nonce().has_value()) {
+    return root_fenced_frame_properties->partition_nonce()
         ->GetValueIgnoringVisibility();
   }
   // It is only possible for there to be `FencedFrameProperties` but no
@@ -1056,7 +1056,7 @@ FrameTreeNode::GetDeprecatedFencedFrameMode() {
     return blink::FencedFrame::DeprecatedFencedFrameMode::kDefault;
   }
 
-  return root_fenced_frame_properties->mode_;
+  return root_fenced_frame_properties->mode();
 }
 
 bool FrameTreeNode::IsErrorPageIsolationEnabled() const {
@@ -1075,9 +1075,9 @@ FrameTreeNode::FindSharedStorageBudgetMetadata() {
 
   while (true) {
     if (node->fenced_frame_properties_ &&
-        node->fenced_frame_properties_->shared_storage_budget_metadata_) {
+        node->fenced_frame_properties_->shared_storage_budget_metadata()) {
       result.emplace_back(
-          node->fenced_frame_properties_->shared_storage_budget_metadata_
+          node->fenced_frame_properties_->shared_storage_budget_metadata()
               ->GetValueIgnoringVisibility());
     }
 
@@ -1097,12 +1097,12 @@ FrameTreeNode::GetEmbedderSharedStorageContextIfAllowed() {
       GetFencedFramePropertiesForEditing();
   // We only return embedder context for frames that are same origin with the
   // fenced frame root or ancestor URN iframe.
-  if (!properties || !properties->mapped_url_.has_value() ||
+  if (!properties || !properties->mapped_url().has_value() ||
       !current_origin().IsSameOriginWith(url::Origin::Create(
-          properties->mapped_url_->GetValueIgnoringVisibility()))) {
+          properties->mapped_url()->GetValueIgnoringVisibility()))) {
     return absl::nullopt;
   }
-  return properties->embedder_shared_storage_context_;
+  return properties->embedder_shared_storage_context();
 }
 
 const scoped_refptr<BrowsingContextState>&

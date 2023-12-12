@@ -246,11 +246,11 @@ void AdAuctionServiceImpl::LeaveInterestGroupForDocument() {
     return;
   }
 
-  if (!fenced_frame_properties->ad_auction_data_.has_value()) {
+  if (!fenced_frame_properties->ad_auction_data().has_value()) {
     return;
   }
 
-  if (fenced_frame_properties->is_ad_component_ &&
+  if (fenced_frame_properties->is_ad_component() &&
       !base::FeatureList::IsEnabled(
           blink::features::kFencedFramesM120FeaturesPart2)) {
     // The ability to leave interest group from an ad component is not supported
@@ -259,7 +259,7 @@ void AdAuctionServiceImpl::LeaveInterestGroupForDocument() {
   }
 
   const blink::FencedFrame::AdAuctionData& auction_data =
-      fenced_frame_properties->ad_auction_data_->GetValueIgnoringVisibility();
+      fenced_frame_properties->ad_auction_data()->GetValueIgnoringVisibility();
 
   if (auction_data.interest_group_owner != origin()) {
     // The ad page calling LeaveAdInterestGroup is not the owner of the group.
@@ -447,11 +447,11 @@ class FencedFrameURLMappingObserver
   void OnFencedFrameURLMappingComplete(
       const absl::optional<FencedFrameProperties>& properties) override {
     if (properties) {
-      if (properties->mapped_url_) {
-        *mapped_url_ = properties->mapped_url_->GetValueIgnoringVisibility();
+      if (properties->mapped_url()) {
+        *mapped_url_ = properties->mapped_url()->GetValueIgnoringVisibility();
       }
-      if (send_reports_ && properties->on_navigate_callback_) {
-        properties->on_navigate_callback_.Run();
+      if (send_reports_ && properties->on_navigate_callback()) {
+        properties->on_navigate_callback().Run();
       }
     }
     called_ = true;

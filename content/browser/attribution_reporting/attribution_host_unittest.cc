@@ -122,10 +122,10 @@ class AttributionHostTest : public RenderViewHostTestHarness {
     // permissions policy set.
     FrameTreeNode* fenced_frame_node =
         static_cast<RenderFrameHostImpl*>(fenced_frame)->frame_tree_node();
-    absl::optional<FencedFrameProperties> new_props =
-        fenced_frame_node->GetFencedFrameProperties();
-    new_props->effective_enabled_permissions.push_back(
+    FencedFrameConfig new_config = FencedFrameConfig(GURL("about:blank"));
+    new_config.effective_enabled_permissions.push_back(
         blink::mojom::PermissionsPolicyFeature::kAttributionReporting);
+    FencedFrameProperties new_props = FencedFrameProperties(new_config);
     fenced_frame_node->set_fenced_frame_properties(new_props);
   }
 
