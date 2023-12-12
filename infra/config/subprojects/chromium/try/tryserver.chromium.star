@@ -43,7 +43,7 @@ try_.builder(
             "dcheck_always_on",
         ],
     ),
-    ssd = True,
+    builderless = False,
     contact_team_email = "clank-engprod@google.com",
 )
 
