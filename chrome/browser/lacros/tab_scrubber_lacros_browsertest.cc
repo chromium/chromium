@@ -55,14 +55,7 @@ IN_PROC_BROWSER_TEST_F(TabScrubberBrowserTest, DISABLED_Smoke) {
                            kTriggerTabScrubbingMinVersion)) {
     return;
   }
-
-  // Wait for the window to be created.
-  aura::Window* window = browser()->window()->GetNativeWindow();
-  std::string window_id =
-      lacros_window_utility::GetRootWindowUniqueId(window->GetRootWindow());
-  ASSERT_TRUE(browser_test_util::WaitForWindowCreation(window_id));
-
-  // Add further 5 blank tabs.
+  // Add further 5 blank tabs to the initial browser.
   for (int i = 0; i < 5; ++i)
     AddBlankTab(browser());
 

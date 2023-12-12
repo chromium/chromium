@@ -586,7 +586,13 @@ IN_PROC_BROWSER_TEST_P(InputMethodLacrosBrowserTest,
   if (!input_method.is_bound()) {
     GTEST_SKIP() << "Unsupported ash version";
   }
-  const std::string id = RenderAutofocusedInputFieldInLacros(browser());
+
+  // Create a browser without omnibox since we don't want to deal with the
+  // automatic omnibox focus.
+  // TODO(b/315079554): Find a cleaner way.
+  auto* browser2 = CreateBrowserForApp("browser2", browser()->profile());
+
+  const std::string id = RenderAutofocusedInputFieldInLacros(browser2);
   InputMethodTestInterfaceAsyncWaiter input_method_async_waiter(
       input_method.get());
   input_method_async_waiter.WaitForFocus();
@@ -881,7 +887,13 @@ IN_PROC_BROWSER_TEST_P(InputMethodLacrosBrowserTest,
   if (!input_method.is_bound()) {
     GTEST_SKIP() << "Unsupported ash version";
   }
-  const std::string id = RenderAutofocusedInputFieldInLacros(browser());
+
+  // Create a browser without omnibox since we don't want to deal with the
+  // automatic omnibox focus.
+  // TODO(b/315079554): Find a cleaner way.
+  auto* browser2 = CreateBrowserForApp("browser2", browser()->profile());
+
+  const std::string id = RenderAutofocusedInputFieldInLacros(browser2);
   InputMethodTestInterfaceAsyncWaiter input_method_async_waiter(
       input_method.get());
   input_method_async_waiter.WaitForFocus();

@@ -67,9 +67,6 @@ IN_PROC_BROWSER_TEST_F(ClipboardLacrosBrowserTest, GetCopyPasteText) {
   aura::Window* window = BrowserView::GetBrowserViewForBrowser(browser())
                              ->frame()
                              ->GetNativeWindow();
-  std::string id =
-      lacros_window_utility::GetRootWindowUniqueId(window->GetRootWindow());
-  ASSERT_TRUE(browser_test_util::WaitForWindowCreation(id));
   ASSERT_TRUE(
       browser_test_util::SendAndWaitForMouseClick(window->GetRootWindow()));
 
