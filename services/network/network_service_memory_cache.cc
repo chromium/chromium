@@ -8,7 +8,6 @@
 #include <limits>
 #include <string_view>
 
-#include "base/bit_cast.h"
 #include "base/memory/ref_counted_memory.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/metrics/field_trial_params.h"
@@ -137,7 +136,7 @@ bool CheckCrossOriginReadBlocking(const ResourceRequest& resource_request,
     const size_t size =
         std::min(static_cast<size_t>(net::kMaxBytesToSniff), content.size());
     decision = analyzer->Sniff(
-        std::string_view(base::bit_cast<const char*>(content.front()), size));
+        std::string_view(reinterpret_cast<const char*>(content.front()), size));
     if (decision == corb::ResponseAnalyzer::Decision::kSniffMore)
       decision = analyzer->HandleEndOfSniffableResponseBody();
     DCHECK_NE(decision, corb::ResponseAnalyzer::Decision::kSniffMore);
