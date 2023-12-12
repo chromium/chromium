@@ -412,7 +412,7 @@ class CORE_EXPORT Element : public ContainerNode, public Animatable {
   DOMRectList* getClientRects();
   // Returns a rectangle in zoomed pixel units.
   gfx::RectF GetBoundingClientRectNoLifecycleUpdateNoAdjustment() const;
-  // Returns a rectangle in CSS pixel units.  i.e. ignorign zoom.
+  // Returns a rectangle in CSS pixel units.  i.e. ignoring zoom.
   gfx::RectF GetBoundingClientRectNoLifecycleUpdate() const;
   DOMRect* GetBoundingClientRect();
   DOMRect* GetBoundingClientRectForBinding();

@@ -548,80 +548,10 @@ chromium-metrics-reviews@google.com.
   <affected-histogram name="WebRTC.Stun.BatchSuccessPercent.UnknownNAT"/>
 </histogram_suffixes>
 
-<histogram_suffixes name="BlinkUpdateTimeAggregatedSuffixes" separator=".">
+<histogram_suffixes name="BlinkUpdateTimeSuffixes" separator=".">
   <suffix name="AggregatedPreFCP"
       label="All the time spent Pre First Contentful Paint in this component"/>
-  <affected-histogram name="Blink.Accessibility.UpdateTime"/>
-  <affected-histogram
-      name="Blink.AnchorElementMetricsIntersectionObserver.UpdateTime"/>
-  <affected-histogram name="Blink.Animate.UpdateTime"/>
-  <affected-histogram name="Blink.CompositingCommit.UpdateTime"/>
-  <affected-histogram name="Blink.CompositingInputs.UpdateTime"/>
-  <affected-histogram name="Blink.ContentDocumentUpdate.UpdateTime"/>
-  <affected-histogram name="Blink.DisplayLockIntersectionObserver.UpdateTime"/>
-  <affected-histogram name="Blink.ForcedStyleAndLayout.UpdateTime"/>
-  <affected-histogram name="Blink.HandleInputEvents.UpdateTime"/>
-  <affected-histogram name="Blink.HitTestDocumentUpdate.UpdateTime"/>
-  <affected-histogram name="Blink.ImplCompositorCommit.UpdateTime"/>
-  <affected-histogram name="Blink.IntersectionObservation.UpdateTime"/>
-  <affected-histogram
-      name="Blink.IntersectionObservationInternalCount.UpdateTime"/>
-  <affected-histogram
-      name="Blink.IntersectionObservationJavascriptCount.UpdateTime"/>
-  <affected-histogram name="Blink.JavascriptDocumentUpdate.UpdateTime"/>
-  <affected-histogram name="Blink.JavascriptIntersectionObserver.UpdateTime"/>
-  <affected-histogram name="Blink.Layout.UpdateTime"/>
-  <affected-histogram name="Blink.LazyLoadIntersectionObserver.UpdateTime"/>
-  <affected-histogram name="Blink.MainFrame.UpdateTime"/>
-  <affected-histogram name="Blink.MediaIntersectionObserver.UpdateTime"/>
-  <affected-histogram name="Blink.Paint.UpdateTime"/>
-  <affected-histogram name="Blink.ParseStyleSheet.UpdateTime"/>
-  <affected-histogram name="Blink.PrePaint.UpdateTime"/>
-  <affected-histogram name="Blink.ServiceDocumentUpdate.UpdateTime"/>
-  <affected-histogram name="Blink.Style.UpdateTime"/>
-  <affected-histogram name="Blink.UpdateViewportIntersection.UpdateTime"/>
-  <affected-histogram name="Blink.UserDrivenDocumentUpdate.UpdateTime"/>
-  <affected-histogram name="Blink.VisualUpdateDelay.UpdateTime"/>
-  <affected-histogram name="Blink.WaitForCommit.UpdateTime"/>
-</histogram_suffixes>
-
-<histogram_suffixes name="BlinkUpdateTimePostFCPSuffixes" separator=".">
   <suffix name="PostFCP" label="Update occurred after First Contentful Paint."/>
-  <affected-histogram name="Blink.Accessibility.UpdateTime"/>
-  <affected-histogram
-      name="Blink.AnchorElementMetricsIntersectionObserver.UpdateTime"/>
-  <affected-histogram name="Blink.Animate.UpdateTime"/>
-  <affected-histogram name="Blink.CompositingCommit.UpdateTime"/>
-  <affected-histogram name="Blink.CompositingInputs.UpdateTime"/>
-  <affected-histogram name="Blink.ContentDocumentUpdate.UpdateTime"/>
-  <affected-histogram name="Blink.DisplayLockIntersectionObserver.UpdateTime"/>
-  <affected-histogram name="Blink.ForcedStyleAndLayout.UpdateTime"/>
-  <affected-histogram name="Blink.HandleInputEvents.UpdateTime"/>
-  <affected-histogram name="Blink.HitTestDocumentUpdate.UpdateTime"/>
-  <affected-histogram name="Blink.ImplCompositorCommit.UpdateTime"/>
-  <affected-histogram name="Blink.IntersectionObservation.UpdateTime"/>
-  <affected-histogram
-      name="Blink.IntersectionObservationInternalCount.UpdateTime"/>
-  <affected-histogram
-      name="Blink.IntersectionObservationJavascriptCount.UpdateTime"/>
-  <affected-histogram name="Blink.JavascriptDocumentUpdate.UpdateTime"/>
-  <affected-histogram name="Blink.JavascriptIntersectionObserver.UpdateTime"/>
-  <affected-histogram name="Blink.Layout.UpdateTime"/>
-  <affected-histogram name="Blink.LazyLoadIntersectionObserver.UpdateTime"/>
-  <affected-histogram name="Blink.MainFrame.UpdateTime"/>
-  <affected-histogram name="Blink.MediaIntersectionObserver.UpdateTime"/>
-  <affected-histogram name="Blink.Paint.UpdateTime"/>
-  <affected-histogram name="Blink.ParseStyleSheet.UpdateTime"/>
-  <affected-histogram name="Blink.PrePaint.UpdateTime"/>
-  <affected-histogram name="Blink.ServiceDocumentUpdate.UpdateTime"/>
-  <affected-histogram name="Blink.Style.UpdateTime"/>
-  <affected-histogram name="Blink.UpdateViewportIntersection.UpdateTime"/>
-  <affected-histogram name="Blink.UserDrivenDocumentUpdate.UpdateTime"/>
-  <affected-histogram name="Blink.VisualUpdateDelay.UpdateTime"/>
-  <affected-histogram name="Blink.WaitForCommit.UpdateTime"/>
-</histogram_suffixes>
-
-<histogram_suffixes name="BlinkUpdateTimePreFCPSuffixes" separator=".">
   <suffix name="PreFCP" label="Update occurred before First Contentful Paint."/>
   <affected-histogram name="Blink.Accessibility.UpdateTime"/>
   <affected-histogram
@@ -648,6 +578,7 @@ chromium-metrics-reviews@google.com.
   <affected-histogram name="Blink.MediaIntersectionObserver.UpdateTime"/>
   <affected-histogram name="Blink.Paint.UpdateTime"/>
   <affected-histogram name="Blink.ParseStyleSheet.UpdateTime"/>
+  <affected-histogram name="Blink.PossibleSynchronizedScrollCount.UpdateTime"/>
   <affected-histogram name="Blink.PrePaint.UpdateTime"/>
   <affected-histogram name="Blink.ServiceDocumentUpdate.UpdateTime"/>
   <affected-histogram name="Blink.Style.UpdateTime"/>

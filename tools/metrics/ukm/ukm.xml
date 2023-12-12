@@ -5004,6 +5004,14 @@ be describing additional metrics about the same event.
       The time spent parsing style sheets.
     </summary>
   </metric>
+  <metric name="PossibleSynchronizedScrollCount">
+    <summary>
+      The total number times a page (whose main frame is both the outermost main
+      frame and is local) is estimated to have attempted a sync- scroll update
+      (i.e., synchronizing an effect with scroll) between navigation and First
+      Contentful Paint.
+    </summary>
+  </metric>
   <metric name="PrePaint">
     <summary>
       The time spent in pre-paint document lifecycle work, between navigation
@@ -6063,6 +6071,27 @@ be describing additional metrics about the same event.
   <metric name="ParseStyleSheetBeginMainFrame">
     <summary>
       The total main frame time spent parsing style sheets.
+    </summary>
+  </metric>
+  <metric name="PossibleSynchronizedScrollCount">
+    <summary>
+      The total number times a page (whose main frame is both the outermost main
+      frame and is local) is estimated to have attempted a sync- scroll update
+      (i.e., synchronizing an effect with scroll).
+    </summary>
+    <aggregation>
+      <history>
+        <statistics>
+          <quantiles type="std-percentiles"/>
+        </statistics>
+      </history>
+    </aggregation>
+  </metric>
+  <metric name="PossibleSynchronizedScrollCountBeginMainFrame">
+    <summary>
+      The total number times a page (whose main frame is both the outermost main
+      frame and is local) is estimated to have attempted a sync- scroll update
+      (i.e., synchronizing an effect with scroll).
     </summary>
   </metric>
   <metric name="PrePaint">

@@ -20,6 +20,7 @@
 #include "third_party/blink/renderer/core/loader/document_loader.h"
 #include "third_party/blink/renderer/core/page/chrome_client.h"
 #include "third_party/blink/renderer/core/page/page.h"
+#include "third_party/blink/renderer/core/page/scrolling/sync_scroll_attempt_heuristic.h"
 #include "third_party/blink/renderer/core/page/validation_message_client.h"
 #include "third_party/blink/renderer/core/paint/paint_layer_scrollable_area.h"
 #include "third_party/blink/renderer/core/svg/svg_document_extensions.h"
@@ -103,6 +104,9 @@ void PageAnimator::ServiceScriptedAnimations(
     controllers.emplace_back(document.first->GetScriptedAnimationController(),
                              document.second);
   }
+  // TODO(crbug.com/1499981): This should be removed once synchronized scrolling
+  // impact is understood.
+  SyncScrollAttemptHeuristic heuristic(page_->MainFrame());
   ServiceScriptedAnimations(monotonic_animation_start_time, controllers);
   page_->GetValidationMessageClient().LayoutOverlay();
 }
@@ -249,6 +253,7 @@ void PageAnimator::ServiceScriptedAnimations(
   // 8. For each fully active Document in docs, run the scroll steps
   // for that Document, passing in now as the timestamp.
   run_for_all_active_controllers_with_timing([&](wtf_size_t i) {
+    auto scope = SyncScrollAttemptHeuristic::GetScrollHandlerScope();
     active_controllers[i]->DispatchEvents(WTF::BindRepeating([](Event* event) {
       return event->type() == event_type_names::kScroll ||
              event->type() == event_type_names::kSnapchanged ||
@@ -283,6 +288,7 @@ void PageAnimator::ServiceScriptedAnimations(
   // 13. For each fully active Document in docs, run the animation
   // frame callbacks for that Document, passing in now as the timestamp.
   run_for_all_active_controllers_with_timing([&](wtf_size_t i) {
+    auto scope = SyncScrollAttemptHeuristic::GetRequestAnimationFrameScope();
     active_controllers[i]->ExecuteFrameCallbacks();
     if (!active_controllers[i]->GetExecutionContext()) {
       return;

@@ -124,11 +124,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram base="true" name="Blink.Accessibility.UpdateTime"
     units="microseconds" expires_after="2024-06-01">
-<!-- Name completed by histogram_suffixes name="BlinkUpdateTimePreFCPSuffixes" -->
-
-<!-- Name completed by histogram_suffixes name="BlinkUpdateTimePostFCPSuffixes" -->
-
-<!-- Name completed by histogram_suffixes name="BlinkUpdateTimeAggregatedSuffixes" -->
+<!-- Name completed by histogram_suffixes name="BlinkUpdateTimeSuffixes" -->
 
   <owner>ikilpatrick@chromium.org</owner>
   <owner>layout-dev@chromium.org</owner>
@@ -149,11 +145,7 @@ chromium-metrics-reviews@google.com.
 <histogram base="true"
     name="Blink.AnchorElementMetricsIntersectionObserver.UpdateTime"
     units="microseconds" expires_after="2024-06-01">
-<!-- Name completed by histogram_suffixes name="BlinkUpdateTimePreFCPSuffixes" -->
-
-<!-- Name completed by histogram_suffixes name="BlinkUpdateTimePostFCPSuffixes" -->
-
-<!-- Name completed by histogram_suffixes name="BlinkUpdateTimeAggregatedSuffixes" -->
+<!-- Name completed by histogram_suffixes name="BlinkUpdateTimeSuffixes" -->
 
   <owner>pdr@chromium.org</owner>
   <owner>paint-dev@chromium.org</owner>
@@ -176,11 +168,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram base="true" name="Blink.Animate.UpdateTime" units="microseconds"
     expires_after="2024-06-01">
-<!-- Name completed by histogram_suffixes name="BlinkUpdateTimePreFCPSuffixes" -->
-
-<!-- Name completed by histogram_suffixes name="BlinkUpdateTimePostFCPSuffixes" -->
-
-<!-- Name completed by histogram_suffixes name="BlinkUpdateTimeAggregatedSuffixes" -->
+<!-- Name completed by histogram_suffixes name="BlinkUpdateTimeSuffixes" -->
 
   <owner>pdr@chromium.org</owner>
   <owner>paint-dev@chromium.org</owner>
@@ -715,11 +703,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram base="true" name="Blink.CompositingCommit.UpdateTime"
     units="microseconds" expires_after="2024-06-01">
-<!-- Name completed by histogram_suffixes name="BlinkUpdateTimePreFCPSuffixes" -->
-
-<!-- Name completed by histogram_suffixes name="BlinkUpdateTimePostFCPSuffixes" -->
-
-<!-- Name completed by histogram_suffixes name="BlinkUpdateTimeAggregatedSuffixes" -->
+<!-- Name completed by histogram_suffixes name="BlinkUpdateTimeSuffixes" -->
 
   <owner>pdr@chromium.org</owner>
   <owner>paint-dev@chromium.org</owner>
@@ -740,11 +724,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram base="true" name="Blink.CompositingInputs.UpdateTime"
     units="microseconds" expires_after="2024-06-01">
-<!-- Name completed by histogram_suffixes name="BlinkUpdateTimePreFCPSuffixes" -->
-
-<!-- Name completed by histogram_suffixes name="BlinkUpdateTimePostFCPSuffixes" -->
-
-<!-- Name completed by histogram_suffixes name="BlinkUpdateTimeAggregatedSuffixes" -->
+<!-- Name completed by histogram_suffixes name="BlinkUpdateTimeSuffixes" -->
 
   <owner>pdr@chromium.org</owner>
   <owner>paint-dev@chromium.org</owner>
@@ -798,11 +778,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram base="true" name="Blink.ContentDocumentUpdate.UpdateTime"
     units="microseconds" expires_after="2024-06-01">
-<!-- Name completed by histogram_suffixes name="BlinkUpdateTimePreFCPSuffixes" -->
-
-<!-- Name completed by histogram_suffixes name="BlinkUpdateTimePostFCPSuffixes" -->
-
-<!-- Name completed by histogram_suffixes name="BlinkUpdateTimeAggregatedSuffixes" -->
+<!-- Name completed by histogram_suffixes name="BlinkUpdateTimeSuffixes" -->
 
   <owner>pdr@chromium.org</owner>
   <owner>paint-dev@chromium.org</owner>
@@ -1096,11 +1072,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram base="true" name="Blink.DisplayLockIntersectionObserver.UpdateTime"
     units="microseconds" expires_after="2024-06-01">
-<!-- Name completed by histogram_suffixes name="BlinkUpdateTimePreFCPSuffixes" -->
-
-<!-- Name completed by histogram_suffixes name="BlinkUpdateTimePostFCPSuffixes" -->
-
-<!-- Name completed by histogram_suffixes name="BlinkUpdateTimeAggregatedSuffixes" -->
+<!-- Name completed by histogram_suffixes name="BlinkUpdateTimeSuffixes" -->
 
   <owner>pdr@chromium.org</owner>
   <owner>paint-dev@chromium.org</owner>
@@ -2020,11 +1992,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram base="true" name="Blink.ForcedStyleAndLayout.UpdateTime"
     units="microseconds" expires_after="2024-06-01">
-<!-- Name completed by histogram_suffixes name="BlinkUpdateTimePreFCPSuffixes" -->
-
-<!-- Name completed by histogram_suffixes name="BlinkUpdateTimePostFCPSuffixes" -->
-
-<!-- Name completed by histogram_suffixes name="BlinkUpdateTimeAggregatedSuffixes" -->
+<!-- Name completed by histogram_suffixes name="BlinkUpdateTimeSuffixes" -->
 
   <owner>pdr@chromium.org</owner>
   <owner>paint-dev@chromium.org</owner>
@@ -2058,11 +2026,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram base="true" name="Blink.HandleInputEvents.UpdateTime"
     units="microseconds" expires_after="2024-06-01">
-<!-- Name completed by histogram_suffixes name="BlinkUpdateTimePreFCPSuffixes" -->
-
-<!-- Name completed by histogram_suffixes name="BlinkUpdateTimePostFCPSuffixes" -->
-
-<!-- Name completed by histogram_suffixes name="BlinkUpdateTimeAggregatedSuffixes" -->
+<!-- Name completed by histogram_suffixes name="BlinkUpdateTimeSuffixes" -->
 
   <owner>pdr@chromium.org</owner>
   <owner>paint-dev@chromium.org</owner>
@@ -2082,11 +2046,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram base="true" name="Blink.HitTestDocumentUpdate.UpdateTime"
     units="microseconds" expires_after="2024-06-01">
-<!-- Name completed by histogram_suffixes name="BlinkUpdateTimePreFCPSuffixes" -->
-
-<!-- Name completed by histogram_suffixes name="BlinkUpdateTimePostFCPSuffixes" -->
-
-<!-- Name completed by histogram_suffixes name="BlinkUpdateTimeAggregatedSuffixes" -->
+<!-- Name completed by histogram_suffixes name="BlinkUpdateTimeSuffixes" -->
 
   <owner>pdr@chromium.org</owner>
   <owner>paint-dev@chromium.org</owner>
@@ -2455,11 +2415,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram base="true" name="Blink.ImplCompositorCommit.UpdateTime"
     units="microseconds" expires_after="2024-06-01">
-<!-- Name completed by histogram_suffixes name="BlinkUpdateTimePreFCPSuffixes" -->
-
-<!-- Name completed by histogram_suffixes name="BlinkUpdateTimePostFCPSuffixes" -->
-
-<!-- Name completed by histogram_suffixes name="BlinkUpdateTimeAggregatedSuffixes" -->
+<!-- Name completed by histogram_suffixes name="BlinkUpdateTimeSuffixes" -->
 
   <owner>pdr@chromium.org</owner>
   <owner>paint-dev@chromium.org</owner>
@@ -2481,11 +2437,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram base="true" name="Blink.IntersectionObservation.UpdateTime"
     units="microseconds" expires_after="2024-06-01">
-<!-- Name completed by histogram_suffixes name="BlinkUpdateTimePreFCPSuffixes" -->
-
-<!-- Name completed by histogram_suffixes name="BlinkUpdateTimePostFCPSuffixes" -->
-
-<!-- Name completed by histogram_suffixes name="BlinkUpdateTimeAggregatedSuffixes" -->
+<!-- Name completed by histogram_suffixes name="BlinkUpdateTimeSuffixes" -->
 
   <owner>pdr@chromium.org</owner>
   <owner>paint-dev@chromium.org</owner>
@@ -2507,11 +2459,7 @@ chromium-metrics-reviews@google.com.
 <histogram base="true"
     name="Blink.IntersectionObservationInternalCount.UpdateTime" units="count"
     expires_after="2024-06-01">
-<!-- Name completed by histogram_suffixes name="BlinkUpdateTimePreFCPSuffixes" -->
-
-<!-- Name completed by histogram_suffixes name="BlinkUpdateTimePostFCPSuffixes" -->
-
-<!-- Name completed by histogram_suffixes name="BlinkUpdateTimeAggregatedSuffixes" -->
+<!-- Name completed by histogram_suffixes name="BlinkUpdateTimeSuffixes" -->
 
   <owner>szager@chromium.org</owner>
   <owner>paint-dev@chromium.org</owner>
@@ -2524,11 +2472,7 @@ chromium-metrics-reviews@google.com.
 <histogram base="true"
     name="Blink.IntersectionObservationJavascriptCount.UpdateTime"
     units="count" expires_after="2024-06-01">
-<!-- Name completed by histogram_suffixes name="BlinkUpdateTimePreFCPSuffixes" -->
-
-<!-- Name completed by histogram_suffixes name="BlinkUpdateTimePostFCPSuffixes" -->
-
-<!-- Name completed by histogram_suffixes name="BlinkUpdateTimeAggregatedSuffixes" -->
+<!-- Name completed by histogram_suffixes name="BlinkUpdateTimeSuffixes" -->
 
   <owner>szager@chromium.org</owner>
   <owner>paint-dev@chromium.org</owner>
@@ -2540,11 +2484,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram base="true" name="Blink.JavascriptDocumentUpdate.UpdateTime"
     units="microseconds" expires_after="2024-06-01">
-<!-- Name completed by histogram_suffixes name="BlinkUpdateTimePreFCPSuffixes" -->
-
-<!-- Name completed by histogram_suffixes name="BlinkUpdateTimePostFCPSuffixes" -->
-
-<!-- Name completed by histogram_suffixes name="BlinkUpdateTimeAggregatedSuffixes" -->
+<!-- Name completed by histogram_suffixes name="BlinkUpdateTimeSuffixes" -->
 
   <owner>pdr@chromium.org</owner>
   <owner>paint-dev@chromium.org</owner>
@@ -2569,11 +2509,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram base="true" name="Blink.JavascriptIntersectionObserver.UpdateTime"
     units="microseconds" expires_after="2024-06-01">
-<!-- Name completed by histogram_suffixes name="BlinkUpdateTimePreFCPSuffixes" -->
-
-<!-- Name completed by histogram_suffixes name="BlinkUpdateTimePostFCPSuffixes" -->
-
-<!-- Name completed by histogram_suffixes name="BlinkUpdateTimeAggregatedSuffixes" -->
+<!-- Name completed by histogram_suffixes name="BlinkUpdateTimeSuffixes" -->
 
   <owner>pdr@chromium.org</owner>
   <owner>paint-dev@chromium.org</owner>
@@ -2626,11 +2562,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram base="true" name="Blink.Layout.UpdateTime" units="microseconds"
     expires_after="2024-06-01">
-<!-- Name completed by histogram_suffixes name="BlinkUpdateTimePreFCPSuffixes" -->
-
-<!-- Name completed by histogram_suffixes name="BlinkUpdateTimePostFCPSuffixes" -->
-
-<!-- Name completed by histogram_suffixes name="BlinkUpdateTimeAggregatedSuffixes" -->
+<!-- Name completed by histogram_suffixes name="BlinkUpdateTimeSuffixes" -->
 
   <owner>pdr@chromium.org</owner>
   <owner>layout-dev@chromium.org</owner>
@@ -2673,11 +2605,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram base="true" name="Blink.LazyLoadIntersectionObserver.UpdateTime"
     units="microseconds" expires_after="2024-06-01">
-<!-- Name completed by histogram_suffixes name="BlinkUpdateTimePreFCPSuffixes" -->
-
-<!-- Name completed by histogram_suffixes name="BlinkUpdateTimePostFCPSuffixes" -->
-
-<!-- Name completed by histogram_suffixes name="BlinkUpdateTimeAggregatedSuffixes" -->
+<!-- Name completed by histogram_suffixes name="BlinkUpdateTimeSuffixes" -->
 
   <owner>pdr@chromium.org</owner>
   <owner>paint-dev@chromium.org</owner>
@@ -2915,11 +2843,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram base="true" name="Blink.MainFrame.UpdateTime" units="microseconds"
     expires_after="2024-06-01">
-<!-- Name completed by histogram_suffixes name="BlinkUpdateTimePreFCPSuffixes" -->
-
-<!-- Name completed by histogram_suffixes name="BlinkUpdateTimePostFCPSuffixes" -->
-
-<!-- Name completed by histogram_suffixes name="BlinkUpdateTimeAggregatedSuffixes" -->
+<!-- Name completed by histogram_suffixes name="BlinkUpdateTimeSuffixes" -->
 
   <owner>pdr@chromium.org</owner>
   <owner>paint-dev@chromium.org</owner>
@@ -2939,11 +2863,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram base="true" name="Blink.MediaIntersectionObserver.UpdateTime"
     units="microseconds" expires_after="2024-06-01">
-<!-- Name completed by histogram_suffixes name="BlinkUpdateTimePreFCPSuffixes" -->
-
-<!-- Name completed by histogram_suffixes name="BlinkUpdateTimePostFCPSuffixes" -->
-
-<!-- Name completed by histogram_suffixes name="BlinkUpdateTimeAggregatedSuffixes" -->
+<!-- Name completed by histogram_suffixes name="BlinkUpdateTimeSuffixes" -->
 
   <owner>pdr@chromium.org</owner>
   <owner>paint-dev@chromium.org</owner>
@@ -3193,11 +3113,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram base="true" name="Blink.Paint.UpdateTime" units="microseconds"
     expires_after="2024-06-01">
-<!-- Name completed by histogram_suffixes name="BlinkUpdateTimePreFCPSuffixes" -->
-
-<!-- Name completed by histogram_suffixes name="BlinkUpdateTimePostFCPSuffixes" -->
-
-<!-- Name completed by histogram_suffixes name="BlinkUpdateTimeAggregatedSuffixes" -->
+<!-- Name completed by histogram_suffixes name="BlinkUpdateTimeSuffixes" -->
 
   <owner>pdr@chromium.org</owner>
   <owner>paint-dev@chromium.org</owner>
@@ -3217,11 +3133,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram base="true" name="Blink.ParseStyleSheet.UpdateTime"
     units="microseconds" expires_after="2024-06-01">
-<!-- Name completed by histogram_suffixes name="BlinkUpdateTimePreFCPSuffixes" -->
-
-<!-- Name completed by histogram_suffixes name="BlinkUpdateTimePostFCPSuffixes" -->
-
-<!-- Name completed by histogram_suffixes name="BlinkUpdateTimeAggregatedSuffixes" -->
+<!-- Name completed by histogram_suffixes name="BlinkUpdateTimeSuffixes" -->
 
   <owner>cduvall@chromium.org</owner>
   <owner>jam@chromium.org</owner>
@@ -3240,6 +3152,18 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram base="true" name="Blink.PossibleSynchronizedScrollCount.UpdateTime"
+    units="count" expires_after="2024-06-01">
+<!-- Name completed by histogram_suffixes name="BlinkUpdateTimeSuffixes" -->
+
+  <owner>vollick@chromium.org</owner>
+  <owner>flackr@chromium.org</owner>
+  <summary>
+    The total number times a page is estimated to have attempted a sync-scroll
+    update (i.e., synchronizing an effect with scroll).
+  </summary>
+</histogram>
+
 <histogram name="Blink.PreloadRequestWaitTime" units="ms"
     expires_after="2023-10-22">
   <owner>cduvall@chromium.org</owner>
@@ -3252,11 +3176,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram base="true" name="Blink.PrePaint.UpdateTime" units="microseconds"
     expires_after="2024-06-01">
-<!-- Name completed by histogram_suffixes name="BlinkUpdateTimePreFCPSuffixes" -->
-
-<!-- Name completed by histogram_suffixes name="BlinkUpdateTimePostFCPSuffixes" -->
-
-<!-- Name completed by histogram_suffixes name="BlinkUpdateTimeAggregatedSuffixes" -->
+<!-- Name completed by histogram_suffixes name="BlinkUpdateTimeSuffixes" -->
 
   <owner>pdr@chromium.org</owner>
   <owner>paint-dev@chromium.org</owner>
@@ -3544,11 +3464,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram base="true" name="Blink.ServiceDocumentUpdate.UpdateTime"
     units="microseconds" expires_after="2024-06-01">
-<!-- Name completed by histogram_suffixes name="BlinkUpdateTimePreFCPSuffixes" -->
-
-<!-- Name completed by histogram_suffixes name="BlinkUpdateTimePostFCPSuffixes" -->
-
-<!-- Name completed by histogram_suffixes name="BlinkUpdateTimeAggregatedSuffixes" -->
+<!-- Name completed by histogram_suffixes name="BlinkUpdateTimeSuffixes" -->
 
   <owner>pdr@chromium.org</owner>
   <owner>paint-dev@chromium.org</owner>
@@ -3731,11 +3647,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram base="true" name="Blink.Style.UpdateTime" units="microseconds"
     expires_after="2024-06-01">
-<!-- Name completed by histogram_suffixes name="BlinkUpdateTimePreFCPSuffixes" -->
-
-<!-- Name completed by histogram_suffixes name="BlinkUpdateTimePostFCPSuffixes" -->
-
-<!-- Name completed by histogram_suffixes name="BlinkUpdateTimeAggregatedSuffixes" -->
+<!-- Name completed by histogram_suffixes name="BlinkUpdateTimeSuffixes" -->
 
   <owner>pdr@chromium.org</owner>
   <owner>layout-dev@chromium.org</owner>
@@ -3767,11 +3679,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Blink.UpdateViewportIntersection.UpdateTime"
     units="microseconds" expires_after="2024-06-01">
-<!-- Name completed by histogram_suffixes name="BlinkUpdateTimePreFCPSuffixes" -->
-
-<!-- Name completed by histogram_suffixes name="BlinkUpdateTimePostFCPSuffixes" -->
-
-<!-- Name completed by histogram_suffixes name="BlinkUpdateTimeAggregatedSuffixes" -->
+<!-- Name completed by histogram_suffixes name="BlinkUpdateTimeSuffixes" -->
 
   <owner>pdr@chromium.org</owner>
   <owner>paint-dev@chromium.org</owner>
@@ -4180,11 +4088,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram base="true" name="Blink.UserDrivenDocumentUpdate.UpdateTime"
     units="microseconds" expires_after="2024-06-01">
-<!-- Name completed by histogram_suffixes name="BlinkUpdateTimePreFCPSuffixes" -->
-
-<!-- Name completed by histogram_suffixes name="BlinkUpdateTimePostFCPSuffixes" -->
-
-<!-- Name completed by histogram_suffixes name="BlinkUpdateTimeAggregatedSuffixes" -->
+<!-- Name completed by histogram_suffixes name="BlinkUpdateTimeSuffixes" -->
 
   <owner>pdr@chromium.org</owner>
   <owner>paint-dev@chromium.org</owner>
@@ -4272,11 +4176,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram base="true" name="Blink.VisualUpdateDelay.UpdateTime"
     units="microseconds" expires_after="2024-06-01">
-<!-- Name completed by histogram_suffixes name="BlinkUpdateTimePreFCPSuffixes" -->
-
-<!-- Name completed by histogram_suffixes name="BlinkUpdateTimePostFCPSuffixes" -->
-
-<!-- Name completed by histogram_suffixes name="BlinkUpdateTimeAggregatedSuffixes" -->
+<!-- Name completed by histogram_suffixes name="BlinkUpdateTimeSuffixes" -->
 
   <owner>szager@chromium.org</owner>
   <owner>paint-dev@chromium.org</owner>
@@ -4291,11 +4191,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram base="true" name="Blink.WaitForCommit.UpdateTime"
     units="microseconds" expires_after="2024-06-01">
-<!-- Name completed by histogram_suffixes name="BlinkUpdateTimePreFCPSuffixes" -->
-
-<!-- Name completed by histogram_suffixes name="BlinkUpdateTimePostFCPSuffixes" -->
-
-<!-- Name completed by histogram_suffixes name="BlinkUpdateTimeAggregatedSuffixes" -->
+<!-- Name completed by histogram_suffixes name="BlinkUpdateTimeSuffixes" -->
 
   <owner>pdr@chromium.org</owner>
   <owner>paint-dev@chromium.org</owner>
