@@ -3950,11 +3950,6 @@ const char kCCTPageInsightsHubName[] = "Page Insights Hub";
 const char kCCTPageInsightsHubDescription[] =
     "Show Page Insights Hub on Chrome Custom Tabs.";
 
-const char kCCTPreventTouchesName[] = "Prevent touches from overlay";
-const char kCCTPreventTouchesDescription[] =
-    "Prevent touches from being processed if they are coming from an overlay "
-    "activity.";
-
 const char kCCTResizableForThirdPartiesName[] =
     "Bottom sheet Custom Tabs (third party)";
 const char kCCTResizableForThirdPartiesDescription[] =

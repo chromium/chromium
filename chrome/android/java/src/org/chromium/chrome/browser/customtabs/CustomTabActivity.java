@@ -68,7 +68,9 @@ public class CustomTabActivity extends BaseCustomTabActivity {
     public static final AllCachedFieldTrialParameters EXPERIMENTS_FOR_AGSA_PARAMS =
             new AllCachedFieldTrialParameters(ChromeFeatureList.EXPERIMENTS_FOR_AGSA);
 
-    private boolean mPreventTouchFeatureEnabled;
+    /** Prevents Tapjacking on T-. See crbug.com/1430867 */
+    private static final boolean sPreventTouches =
+            Build.VERSION.SDK_INT < Build.VERSION_CODES.TIRAMISU;
 
     private CustomTabsOpenTimeRecorder mOpenTimeRecorder;
 
@@ -191,15 +193,7 @@ public class CustomTabActivity extends BaseCustomTabActivity {
                             && urlPackage.equals(
                                     mConnection.getClientPackageNameForSession(mSession));
                 });
-        initPreventTouchFeatureFlag();
         super.finishNativeInitialization();
-    }
-
-    @VisibleForTesting(otherwise = PRIVATE)
-    void initPreventTouchFeatureFlag() {
-        mPreventTouchFeatureEnabled =
-                Build.VERSION.SDK_INT < Build.VERSION_CODES.TIRAMISU
-                        && ChromeFeatureList.isEnabled(ChromeFeatureList.CCT_PREVENT_TOUCHES);
     }
 
     @Override
@@ -293,7 +287,7 @@ public class CustomTabActivity extends BaseCustomTabActivity {
 
     @Override
     public boolean dispatchTouchEvent(MotionEvent ev) {
-        if (mPreventTouchFeatureEnabled && shouldPreventTouch(ev)) {
+        if (sPreventTouches && shouldPreventTouch(ev)) {
             // Discard the events which may be trickling down from an overlay activity above.
             return true;
         }

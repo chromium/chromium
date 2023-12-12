@@ -2287,9 +2287,6 @@ extern const char kCCTMinimizedDescription[];
 extern const char kCCTPageInsightsHubName[];
 extern const char kCCTPageInsightsHubDescription[];
 
-extern const char kCCTPreventTouchesName[];
-extern const char kCCTPreventTouchesDescription[];
-
 extern const char kCCTResizableForThirdPartiesName[];
 extern const char kCCTResizableForThirdPartiesDescription[];
 extern const char kCCTResizableSideSheetName[];
