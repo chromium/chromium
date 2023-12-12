@@ -27,6 +27,8 @@ cargo_crate("buildrs_support") {
   library_configs += [ "//build/config/compiler:no_chromium_code" ]
   executable_configs -= [ "//build/config/compiler:chromium_code" ]
   executable_configs += [ "//build/config/compiler:no_chromium_code" ]
+  proc_macro_configs -= [ "//build/config/compiler:chromium_code" ]
+  proc_macro_configs += [ "//build/config/compiler:no_chromium_code" ]
   deps = [ "//third_party/rust/semver/v1:lib" ]
 
   # Only for usage from third-party crates. Add the crate to
