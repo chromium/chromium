@@ -828,11 +828,11 @@ class ConcatenatingUnderlyingSource final : public UnderlyingSourceBase {
                                        ExceptionContextType::kUnknown, "", "");
         resolver_->Resolve(
             script_state,
-            ToV8(source_->source2_
-                     ->StartWrapper(script_state, controller, exception_state)
-                     .Then(CreateFunction<PullSource2>(
-                         script_state, source_, exception_state.GetContext())),
-                 script_state->GetContext()->Global(), isolate));
+            source_->source2_
+                ->StartWrapper(script_state, controller, exception_state)
+                .Then(CreateFunction<PullSource2>(script_state, source_,
+                                                  exception_state.GetContext()))
+                .V8Value());
       } else {
         // TODO(crbug.com/1418910): Investigate how to handle cases when the
         // controller is cleared.

@@ -53,6 +53,7 @@
 #include "third_party/blink/renderer/bindings/core/v8/script_controller.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_value.h"
+#include "third_party/blink/renderer/bindings/core/v8/to_v8_traits.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_scroll_to_options.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_throw_dom_exception.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_void_function.h"
@@ -318,11 +319,12 @@ ScriptValue LocalDOMWindow::event(ScriptState* script_state) {
   // If current event is null, return undefined.
   if (!current_event_) {
     return ScriptValue(script_state->GetIsolate(),
-                       ToV8(ToV8UndefinedGenerator(), script_state));
+                       v8::Undefined(script_state->GetIsolate()));
   }
 
-  return ScriptValue(script_state->GetIsolate(),
-                     ToV8(CurrentEvent(), script_state));
+  return ScriptValue(
+      script_state->GetIsolate(),
+      ToV8Traits<Event>::ToV8(script_state, CurrentEvent()).ToLocalChecked());
 }
 
 Event* LocalDOMWindow::CurrentEvent() const {

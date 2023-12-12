@@ -22,6 +22,7 @@
 
 #include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
+#include "third_party/blink/renderer/bindings/core/v8/to_v8_traits.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_core.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_css_style_sheet_init.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_union_medialist_string.h"
@@ -511,7 +512,9 @@ ScriptPromise CSSStyleSheet::replace(ScriptState* script_state,
   // We currently parse synchronously, and since @import support was removed,
   // nothing else happens asynchronously. This API is left as-is, so that future
   // async parsing can still be supported here.
-  return ScriptPromise::Cast(script_state, ToV8(this, script_state));
+  return ScriptPromise::Cast(
+      script_state,
+      ToV8Traits<CSSStyleSheet>::ToV8(script_state, this).ToLocalChecked());
 }
 
 void CSSStyleSheet::replaceSync(const String& text,

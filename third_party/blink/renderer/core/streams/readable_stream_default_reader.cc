@@ -14,7 +14,6 @@
 #include "third_party/blink/renderer/core/streams/stream_promise_resolver.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/bindings/script_state.h"
-#include "third_party/blink/renderer/platform/bindings/to_v8.h"
 #include "third_party/blink/renderer/platform/bindings/v8_throw_exception.h"
 
 namespace blink {
@@ -34,7 +33,9 @@ class ReadableStreamDefaultReader::DefaultReaderReadRequest final
     auto* read_result = ReadableStreamReadResult::Create();
     read_result->setValue(ScriptValue(script_state->GetIsolate(), chunk));
     read_result->setDone(false);
-    resolver_->Resolve(script_state, ToV8(read_result, script_state));
+    resolver_->Resolve(script_state, ToV8Traits<ReadableStreamReadResult>::ToV8(
+                                         script_state, read_result)
+                                         .ToLocalChecked());
   }
 
   void CloseSteps(ScriptState* script_state) const override {
@@ -42,9 +43,9 @@ class ReadableStreamDefaultReader::DefaultReaderReadRequest final
     read_result->setValue(ScriptValue(
         script_state->GetIsolate(), v8::Undefined(script_state->GetIsolate())));
     read_result->setDone(true);
-    resolver_->Resolve(script_state,
-                       ToV8(read_result, script_state->GetContext()->Global(),
-                            script_state->GetIsolate()));
+    resolver_->Resolve(script_state, ToV8Traits<ReadableStreamReadResult>::ToV8(
+                                         script_state, read_result)
+                                         .ToLocalChecked());
   }
 
   void ErrorSteps(ScriptState* script_state,

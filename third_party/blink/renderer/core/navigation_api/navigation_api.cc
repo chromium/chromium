@@ -12,6 +12,7 @@
 #include "third_party/blink/renderer/bindings/core/v8/capture_source_location.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_value.h"
+#include "third_party/blink/renderer/bindings/core/v8/to_v8_traits.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_core.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_navigate_event_init.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_navigation_current_entry_change_event_init.h"
@@ -42,7 +43,6 @@
 #include "third_party/blink/renderer/core/timing/soft_navigation_heuristics.h"
 #include "third_party/blink/renderer/platform/bindings/exception_context.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
-#include "third_party/blink/renderer/platform/bindings/to_v8.h"
 #include "third_party/blink/renderer/platform/scheduler/public/thread_scheduler.h"
 
 namespace blink {
@@ -74,10 +74,10 @@ NavigationResult* EarlyErrorResult(ScriptState* script_state,
 NavigationResult* EarlySuccessResult(ScriptState* script_state,
                                      NavigationHistoryEntry* entry) {
   auto* result = NavigationResult::Create();
-  result->setCommitted(
-      ScriptPromise::Cast(script_state, ToV8(entry, script_state)));
-  result->setFinished(
-      ScriptPromise::Cast(script_state, ToV8(entry, script_state)));
+  auto v8_entry = ToV8Traits<NavigationHistoryEntry>::ToV8(script_state, entry)
+                      .ToLocalChecked();
+  result->setCommitted(ScriptPromise::Cast(script_state, v8_entry));
+  result->setFinished(ScriptPromise::Cast(script_state, v8_entry));
   return result;
 }
 

@@ -8,6 +8,7 @@
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/renderer/bindings/core/v8/to_v8_traits.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_testing.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_readable_stream.h"
 #include "third_party/blink/renderer/core/dom/abort_controller.h"
@@ -663,7 +664,9 @@ TEST_P(BodyStreamBufferTest, NestedPull) {
       scope.GetScriptState()->GetContext()->Global()->CreateDataProperty(
           scope.GetScriptState()->GetContext(),
           V8String(scope.GetIsolate(), "stream"),
-          ToV8(buffer->Stream(), scope.GetScriptState()));
+          ToV8Traits<ReadableStream>::ToV8(scope.GetScriptState(),
+                                           buffer->Stream())
+              .ToLocalChecked());
 
   ASSERT_TRUE(result.IsJust());
   ASSERT_TRUE(result.FromJust());
