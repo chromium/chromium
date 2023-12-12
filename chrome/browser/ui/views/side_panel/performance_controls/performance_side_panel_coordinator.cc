@@ -38,7 +38,10 @@ END_METADATA
 
 PerformanceSidePanelCoordinator::PerformanceSidePanelCoordinator(
     Browser* browser)
-    : BrowserUserData<PerformanceSidePanelCoordinator>(*browser) {}
+    : BrowserUserData<PerformanceSidePanelCoordinator>(*browser) {
+  performance_state_observer_ =
+      std::make_unique<PerformanceStateObserver>(browser);
+}
 
 PerformanceSidePanelCoordinator::~PerformanceSidePanelCoordinator() {
   auto* global_registry =

@@ -67,6 +67,7 @@ PageInfoBubbleViewIsolatedWebAppBrowserTest.*
 *PasswordGenerationPopupViewBrowsertest.*
 *PasswordManagementRevampedBubbleInteractiveUiTest.*
 PasswordReuseModalWarningTest.*
+PerformanceToolbarButtonInteractiveUiTest.*
 PermissionRequestChipBrowserUiTest.*
 *PermissionPromptBubble*ViewBrowserTest.InvokeUi_*
 *PopupViewViewsBrowsertest*
