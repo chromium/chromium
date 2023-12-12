@@ -7,20 +7,39 @@
 #include "base/time/default_tick_clock.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/tabs/organization/tab_data.h"
+#include "chrome/browser/ui/tabs/organization/tab_organization_service.h"
+#include "chrome/browser/ui/tabs/organization/tab_organization_service_factory.h"
 #include "chrome/browser/ui/tabs/organization/trigger_policies.h"
 #include "chrome/browser/ui/tabs/tab_group_model.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/ui_features.h"
+#include "tab_sensitivity_cache.h"
 
 namespace {
 
 // Just counts the number of tabs in the browser.
-float MVPScoringFunction(TabStripModel* const model) {
+float MVPScoringFunction(float sensitivity_threshold,
+                         TabStripModel* const model) {
+  // Feature may be disabled in tests, in which case GetForProfile will CHECK.
+  const TabOrganizationService* const service =
+      base::FeatureList::IsEnabled(features::kTabOrganization)
+          ? TabOrganizationServiceFactory::GetForProfile(model->profile())
+          : nullptr;
+
   int num_eligible_tabs = 0;
   for (int i = 0; i < model->count(); i++) {
-    if (TabData(model, model->GetWebContentsAt(i)).IsValidForOrganizing()) {
-      num_eligible_tabs++;
+    const TabData tab = TabData(model, model->GetWebContentsAt(i));
+    if (service) {
+      const absl::optional<float> score =
+          service->tab_sensitivity_cache()->GetScore(tab.original_url());
+      if (score && score.value() > sensitivity_threshold) {
+        continue;
+      }
     }
+    if (!tab.IsValidForOrganizing()) {
+      continue;
+    }
+    num_eligible_tabs++;
   }
   return num_eligible_tabs;
 }
@@ -47,11 +66,16 @@ bool TabOrganizationTrigger::ShouldTrigger(
 }
 
 TriggerScoringFunction GetDefaultTriggerScoringFunction() {
-  return base::BindRepeating(&MVPScoringFunction);
+  return base::BindRepeating(&MVPScoringFunction,
+                             GetDefaultSensitivityThreshold());
 }
 
 float GetDefaultTriggerScoreThreshold() {
   return features::kTabOrganizationTriggerThreshold.Get();
+}
+
+float GetDefaultSensitivityThreshold() {
+  return features::kTabOrganizationTriggerSensitivityThreshold.Get();
 }
 
 std::unique_ptr<TriggerPolicy> GetDefaultTriggerPolicy(

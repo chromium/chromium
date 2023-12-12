@@ -47,6 +47,7 @@ class TabOrganizationTrigger {
 
 TriggerScoringFunction GetDefaultTriggerScoringFunction();
 float GetDefaultTriggerScoreThreshold();
+float GetDefaultSensitivityThreshold();
 std::unique_ptr<TriggerPolicy> GetDefaultTriggerPolicy(
     std::unique_ptr<BackoffLevelProvider> backoff_level_provider);
 

@@ -267,6 +267,9 @@ const base::FeatureParam<double> kTabOrganizationTriggerBackoffBase{
 const base::FeatureParam<double> kTabOrganizationTriggerThreshold{
     &kTabOrganization, "trigger_threshold", 7.0};
 
+const base::FeatureParam<double> kTabOrganizationTriggerSensitivityThreshold{
+    &kTabOrganization, "trigger_sensitivity_threshold", 0.5};
+
 BASE_FEATURE(kTabSearchChevronIcon,
              "TabSearchChevronIcon",
              base::FEATURE_ENABLED_BY_DEFAULT);
