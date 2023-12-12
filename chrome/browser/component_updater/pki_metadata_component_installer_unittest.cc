@@ -419,7 +419,6 @@ TEST_F(PKIMetadataComponentInstallerTest, InstallComponentUpdatesCTConfig) {
   ASSERT_TRUE(base::Base64Decode(kLogSPKIBase64, &expected_public_key));
   EXPECT_EQ(logs.at(0)->public_key, expected_public_key);
   EXPECT_EQ(logs.at(0)->name, kLogName);
-  EXPECT_FALSE(logs.at(0)->operated_by_google);
   EXPECT_FALSE(logs.at(0)->disqualified_at);
   EXPECT_EQ(logs.at(0)->mmd, base::Seconds(kLogMMDSeconds));
   EXPECT_EQ(logs.at(0)->current_operator, kLogOperatorName);
@@ -427,7 +426,6 @@ TEST_F(PKIMetadataComponentInstallerTest, InstallComponentUpdatesCTConfig) {
   EXPECT_EQ(logs.at(1)->id, expected_log_id);
   EXPECT_EQ(logs.at(1)->public_key, expected_public_key);
   EXPECT_EQ(logs.at(1)->name, kGoogleLogName);
-  EXPECT_TRUE(logs.at(1)->operated_by_google);
   EXPECT_EQ(*logs.at(1)->disqualified_at,
             base::Time::UnixEpoch() + kGoogleLogDisqualificationDate);
   EXPECT_EQ(logs.at(1)->mmd, base::Seconds(kLogMMDSeconds));

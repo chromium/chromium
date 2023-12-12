@@ -564,7 +564,6 @@ TEST(CertVerifierServiceFactoryTest, UpdateCtLogList) {
       log_info->id = crypto::SHA256HashString(log_info->public_key);
       log_info->name = "log name";
       log_info->current_operator = "log operator";
-      log_info->operated_by_google = false;
       log_list_mojo.push_back(std::move(log_info));
     }
     {
@@ -573,7 +572,6 @@ TEST(CertVerifierServiceFactoryTest, UpdateCtLogList) {
       log_info->id = crypto::SHA256HashString(log_info->public_key);
       log_info->name = "log2 name";
       log_info->current_operator = "log2 operator";
-      log_info->operated_by_google = true;
       log_list_mojo.push_back(std::move(log_info));
     }
 
@@ -601,7 +599,6 @@ TEST(CertVerifierServiceFactoryTest, UpdateCtLogList) {
       log_info->id = crypto::SHA256HashString(log_info->public_key);
       log_info->name = "log name";
       log_info->current_operator = "log operator";
-      log_info->operated_by_google = false;
       log_list_mojo.push_back(std::move(log_info));
     }
     {
@@ -610,7 +607,6 @@ TEST(CertVerifierServiceFactoryTest, UpdateCtLogList) {
       log_info->id = crypto::SHA256HashString(log_info->public_key);
       log_info->name = "log2 name";
       log_info->current_operator = "log2 operator";
-      log_info->operated_by_google = true;
       log_list_mojo.push_back(std::move(log_info));
     }
 

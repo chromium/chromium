@@ -6570,8 +6570,7 @@ TEST_F(NetworkContextTest, CertificateTransparencyConfig) {
     // Shift to ASCII '0' (0x30)
     log_info->public_key = std::string(4, 0x30 + static_cast<char>(i));
     log_info->name = std::string(4, 0x30 + static_cast<char>(i));
-    log_info->operated_by_google = i % 2;
-    if (log_info->operated_by_google) {
+    if (i % 2) {
       log_info->current_operator = "Google";
     } else {
       log_info->current_operator = "Not Google";
@@ -6583,7 +6582,6 @@ TEST_F(NetworkContextTest, CertificateTransparencyConfig) {
     // Shift to ASCII 'A' (0x41)
     log_info->public_key = std::string(4, 0x41 + static_cast<char>(i));
     log_info->name = std::string(4, 0x41 + static_cast<char>(i));
-    log_info->operated_by_google = false;
     log_info->disqualified_at = base::Time::FromTimeT(i);
     log_info->current_operator = "Not Google Either";
 
@@ -6611,18 +6609,10 @@ TEST_F(NetworkContextTest, CertificateTransparencyConfig) {
       reinterpret_cast<certificate_transparency::ChromeCTPolicyEnforcer*>(
           request_enforcer);
 
-  EXPECT_TRUE(std::is_sorted(
-      policy_enforcer->operated_by_google_logs_for_testing().begin(),
-      policy_enforcer->operated_by_google_logs_for_testing().end()));
   EXPECT_TRUE(
       std::is_sorted(policy_enforcer->disqualified_logs_for_testing().begin(),
                      policy_enforcer->disqualified_logs_for_testing().end()));
 
-  EXPECT_THAT(
-      policy_enforcer->operated_by_google_logs_for_testing(),
-      ::testing::UnorderedElementsAreArray({crypto::SHA256HashString("1111"),
-                                            crypto::SHA256HashString("3333"),
-                                            crypto::SHA256HashString("5555")}));
   EXPECT_THAT(policy_enforcer->disqualified_logs_for_testing(),
               ::testing::UnorderedElementsAre(
                   ::testing::Pair(crypto::SHA256HashString("AAAA"),
@@ -6634,11 +6624,6 @@ TEST_F(NetworkContextTest, CertificateTransparencyConfig) {
 
   std::map<std::string, certificate_transparency::OperatorHistoryEntry>
       operator_history = policy_enforcer->operator_history_for_testing();
-
-  for (auto log : policy_enforcer->operated_by_google_logs_for_testing()) {
-    EXPECT_EQ(operator_history[log].current_operator_, "Google");
-    EXPECT_TRUE(operator_history[log].previous_operators_.empty());
-  }
 
   for (auto log : policy_enforcer->disqualified_logs_for_testing()) {
     EXPECT_EQ(operator_history[log.first].current_operator_,

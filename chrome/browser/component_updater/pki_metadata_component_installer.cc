@@ -65,8 +65,6 @@ const uint64_t kMaxSupportedCTCompatibilityVersion = 2;
 // Chrome is compatible with the version it is being incremented to.
 const uint64_t kMaxSupportedKPCompatibilityVersion = 1;
 
-const char kGoogleOperatorName[] = "Google";
-
 // The SHA256 of the SubjectPublicKeyInfo used to sign the extension.
 // The extension id is: efniojlnjndmcbiieegkicadnoecjjef
 const uint8_t kPKIMetadataPublicKeySHA256[32] = {
@@ -268,9 +266,6 @@ void PKIMetadataComponentInstallerService::UpdateNetworkServiceCTListOnUI(
     // Operator history is ordered in inverse chronological order, so the 0th
     // element will be the current operator.
     if (!log.operator_history().empty()) {
-      if (log.operator_history().Get(0).name() == kGoogleOperatorName) {
-        log_ptr->operated_by_google = true;
-      }
       log_ptr->current_operator = log.operator_history().Get(0).name();
       if (log.operator_history().size() > 1) {
         // The protobuffer includes operator history in reverse chronological

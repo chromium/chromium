@@ -19,12 +19,6 @@ namespace {
 #include "components/certificate_transparency/data/log_list-inc.cc"
 }  // namespace
 
-TEST(CTKnownLogsTest, GoogleIDsAreSorted) {
-  std::vector<std::string> google_log_ids = GetLogsOperatedByGoogle();
-  ASSERT_TRUE(
-      std::is_sorted(std::begin(google_log_ids), std::end(google_log_ids)));
-}
-
 TEST(CTKnownLogsTest, DisallowedLogsAreSortedByLogID) {
   std::vector<std::pair<std::string, base::Time>> disqualified_logs =
       GetDisqualifiedLogs();

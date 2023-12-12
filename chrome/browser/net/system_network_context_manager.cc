@@ -723,8 +723,6 @@ void SystemNetworkContextManager::OnNetworkServiceCreated(
   // before the PKIMetadataComponentInstallerService
   // ReconfigureAfterNetworkRestart call below.
   if (IsCertificateTransparencyEnabled()) {
-    std::vector<std::string> operated_by_google_logs =
-        certificate_transparency::GetLogsOperatedByGoogle();
     std::vector<std::pair<std::string, base::Time>> disqualified_logs =
         certificate_transparency::GetDisqualifiedLogs();
     std::vector<network::mojom::CTLogInfoPtr> log_list_mojo;
@@ -737,9 +735,6 @@ void SystemNetworkContextManager::OnNetworkServiceCreated(
       log_info->name = ct_log.log_name;
       log_info->current_operator = ct_log.current_operator;
 
-      log_info->operated_by_google =
-          std::binary_search(std::begin(operated_by_google_logs),
-                             std::end(operated_by_google_logs), log_info->id);
       auto it = std::lower_bound(
           std::begin(disqualified_logs), std::end(disqualified_logs),
           log_info->id,
