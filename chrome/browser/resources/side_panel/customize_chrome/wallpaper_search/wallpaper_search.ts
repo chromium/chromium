@@ -14,8 +14,10 @@ import 'chrome://resources/cr_elements/cr_hidden_style.css.js';
 import 'chrome://resources/cr_elements/cr_icons.css.js';
 import 'chrome://resources/cr_elements/cr_input/cr_input.js';
 import 'chrome://resources/cr_elements/cr_loading_gradient/cr_loading_gradient.js';
+import 'chrome://resources/cr_elements/cr_shared_vars.css.js';
 import 'chrome://resources/cr_elements/icons.html.js';
 import 'chrome://resources/cr_components/theme_color_picker/theme_hue_slider_dialog.js';
+import 'chrome://resources/polymer/v3_0/paper-ripple/paper-ripple.js';
 
 import {SpHeading} from 'chrome://customize-chrome-side-panel.top-chrome/shared/sp_heading.js';
 import {ThemeHueSliderDialogElement} from 'chrome://resources/cr_components/theme_color_picker/theme_hue_slider_dialog.js';

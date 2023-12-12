@@ -152,13 +152,38 @@
     width: 100%;
   }
 
-  #descriptorMenuD cr-button {
+  #descriptorMenuD button {
+    appearance: none;
+    display: flex;
+    align-items: center;
+    justify-content: center;
     background-color: var(--color-menu-button-background);
     border-radius: 8px;
-    border-color: var(--color-menu-button-background);
-    height: 40px;
-    min-width: 40px;
-    padding: 0px;
+    border: 0;
+    padding: 0;
+    width: 100%;
+    aspect-ratio: 1 / 1;
+    position: relative;
+    overflow: hidden;
+    cursor: pointer;
+  }
+
+  #descriptorMenuD button:hover::before {
+    display: block;
+    content: '';
+    inset: 0;
+    position: absolute;
+    background-color: var(--cr-hover-background-color);
+  }
+
+  #descriptorMenuD button paper-ripple {
+    --paper-ripple-opacity: 1;
+    color: var(--cr-active-background-color);
+  }
+
+  :host-context(.focus-outline-visible) #descriptorMenuD button:focus {
+    outline: 2px solid var(--cr-focus-outline-color);
+    outline-offset: 2px;
   }
 
   .color-check-mark {
@@ -347,20 +372,22 @@
       </customize-chrome-combobox>
       <cr-grid columns="6" id="descriptorMenuD">
         <template is="dom-repeat" items="[[descriptorD_]]">
-          <cr-button class="default-color" on-click="onDefaultColorClick_"
+          <button class="default-color" on-click="onDefaultColorClick_"
               aria-current$="[[getColorCheckedStatus_(item, selectedDefaultColor_)]]"
               title$="[[getColorLabel_(item)]]">
+            <paper-ripple></paper-ripple>
             <customize-chrome-check-mark-wrapper class="color-check-mark"
                 checked="[[isColorSelected_(item, selectedDefaultColor_)]]"
                 checkmark-border-hidden>
               <span class="descriptor-d" style$="background-color: [[item]];">
               </span>
             </customize-chrome-check-mark-wrapper>
-          </cr-button>
+          </button>
         </template>
-        <cr-button id="customColorContainer" on-click="onCustomColorClick_"
+        <button id="customColorContainer" on-click="onCustomColorClick_"
             aria-current$="[[getCustomColorCheckedStatus_(selectedHue_)]]"
             title="$i18n{colorPickerLabel}">
+          <paper-ripple></paper-ripple>
           <customize-chrome-check-mark-wrapper class="color-check-mark"
               checked="[[selectedHue_]]" checkmark-border-hidden>
             <div class="descriptor-d"
@@ -368,7 +395,7 @@
               <div id="colorPickerIcon"></div>
             </div>
           </customize-chrome-check-mark-wrapper>
-        </cr-button>
+        </button>
       </div>
     </cr-grid>
     <cr-theme-hue-slider-dialog id="hueSlider"

@@ -130,7 +130,7 @@ suite('WallpaperSearchTest', () => {
       assertEquals(
           6,
           wallpaperSearchElement.shadowRoot!
-              .querySelectorAll('#descriptorMenuD cr-button')
+              .querySelectorAll('#descriptorMenuD button')
               .length);
     });
 
@@ -209,13 +209,13 @@ suite('WallpaperSearchTest', () => {
       await flushTasks();
 
       assertFalse(
-          !!$$(wallpaperSearchElement, '#descriptorMenuD cr-button [checked]'));
+          !!$$(wallpaperSearchElement, '#descriptorMenuD button [checked]'));
 
       $$<HTMLElement>(wallpaperSearchElement, '.default-color')!.click();
 
       let checkedMarkedColors =
           wallpaperSearchElement.shadowRoot!.querySelectorAll(
-              '#descriptorMenuD cr-button [checked]');
+              '#descriptorMenuD button [checked]');
       assertEquals(1, checkedMarkedColors.length);
       assertEquals(
           checkedMarkedColors[0],
@@ -229,7 +229,7 @@ suite('WallpaperSearchTest', () => {
           new Event('selected-hue-changed'));
 
       checkedMarkedColors = wallpaperSearchElement.shadowRoot!.querySelectorAll(
-          '#descriptorMenuD cr-button [checked]');
+          '#descriptorMenuD button [checked]');
       assertEquals(1, checkedMarkedColors.length);
       assertEquals(
           checkedMarkedColors[0],
@@ -277,7 +277,7 @@ suite('WallpaperSearchTest', () => {
           wallpaperSearchElement,
           '#descriptorComboboxC .dropdown-item')!.click();
       $$<HTMLElement>(
-          wallpaperSearchElement, '#descriptorMenuD cr-button')!.click();
+          wallpaperSearchElement, '#descriptorMenuD button')!.click();
       wallpaperSearchElement.$.submitButton.click();
 
       assertEquals(1, handler.getCallCount('getWallpaperSearchResults'));
@@ -298,7 +298,7 @@ suite('WallpaperSearchTest', () => {
       await flushTasks();
 
       $$<HTMLElement>(
-          wallpaperSearchElement, '#descriptorMenuD cr-button')!.click();
+          wallpaperSearchElement, '#descriptorMenuD button')!.click();
 
       wallpaperSearchElement.$.hueSlider.selectedHue = 10;
       wallpaperSearchElement.$.hueSlider.dispatchEvent(
