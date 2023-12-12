@@ -12,12 +12,17 @@ import java.util.Optional;
 
 /** Fake {@link PasswordCheckupClientHelper} to be used in integration tests. */
 public class FakePasswordCheckupClientHelper implements PasswordCheckupClientHelper {
-    private PendingIntent mPendingIntent;
+    private PendingIntent mPendingIntentForLocalCheckup;
+    private PendingIntent mPendingIntentForAccountCheckup;
     private Integer mBreachedCredentialsCount;
     private Exception mError;
 
-    public void setIntent(PendingIntent pendingIntent) {
-        mPendingIntent = pendingIntent;
+    public void setIntentForLocalCheckup(PendingIntent pendingIntent) {
+        mPendingIntentForLocalCheckup = pendingIntent;
+    }
+
+    public void setIntentForAccountCheckup(PendingIntent pendingIntent) {
+        mPendingIntentForAccountCheckup = pendingIntent;
     }
 
     public void setBreachedCredentialsCount(Integer count) {
@@ -38,7 +43,10 @@ public class FakePasswordCheckupClientHelper implements PasswordCheckupClientHel
             failureCallback.onResult(mError);
             return;
         }
-        successCallback.onResult(mPendingIntent);
+        successCallback.onResult(
+                accountName.isPresent()
+                        ? mPendingIntentForAccountCheckup
+                        : mPendingIntentForLocalCheckup);
     }
 
     @Override
