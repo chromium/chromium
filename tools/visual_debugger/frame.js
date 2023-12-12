@@ -43,6 +43,10 @@ class DrawFrame {
   static maxBufferNumFrames = 60*60;
   static frameBuffer = new CircularBuffer(DrawFrame.maxBufferNumFrames);
   static buffer_map = new Object();
+  static demo_thread = {
+    thread_name: "demo thread",
+    thread_id: -1,
+  };
   static count() { return DrawFrame.frameBuffer.instances.length; }
 
   static get(index) {
@@ -61,6 +65,9 @@ class DrawFrame {
 
     this.threadMapping_ = {}
 
+    if (!('threads' in json)) {
+      json.threads = [DrawFrame.demo_thread];
+    }
     json.threads.forEach(t => {
       // If new thread has not been registered yet, then register it.
       if (!(Thread.isThreadRegistered(t.thread_name))) {
@@ -317,6 +324,9 @@ class DrawFrame {
     for (const log of this.logs_) {
       if (log.drawindex > this.submissionFreezeIndex()) break;
 
+      if (!('thread_id' in log)) {
+        log.thread_id = DrawFrame.demo_thread.thread_id;
+      }
       // If thread not enabled, then skip draw call from this thread.
       if (!this.threadMapping_[log.thread_id].threadEnabled) {
         continue;
