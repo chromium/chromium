@@ -331,6 +331,17 @@ FederatedAuthRequestPageData* GetPageData(RenderFrameHost* render_frame_host) {
       render_frame_host->GetPage());
 }
 
+FedCmMetrics::NumAccounts ComputeNumMatchingAccounts(
+    const IdpNetworkRequestManager::AccountList& accounts) {
+  if (accounts.empty()) {
+    return FedCmMetrics::NumAccounts::kZero;
+  }
+  if (accounts.size() == 1u) {
+    return FedCmMetrics::NumAccounts::kOne;
+  }
+  return FedCmMetrics::NumAccounts::kMultiple;
+}
+
 void FilterAccountsWithLoginHint(
     const std::string& login_hint,
     IdpNetworkRequestManager::AccountList& accounts) {
@@ -346,12 +357,7 @@ void FilterAccountsWithLoginHint(
     return !base::Contains(account.login_hints, login_hint);
   };
   base::EraseIf(accounts, filter);
-  FedCmMetrics::NumAccounts num_matching = FedCmMetrics::NumAccounts::kZero;
-  if (accounts.size() == 1u) {
-    num_matching = FedCmMetrics::NumAccounts::kOne;
-  } else if (accounts.size() > 1u) {
-    num_matching = FedCmMetrics::NumAccounts::kMultiple;
-  }
+  FedCmMetrics::NumAccounts num_matching = ComputeNumMatchingAccounts(accounts);
   base::UmaHistogramEnumeration("Blink.FedCm.LoginHint.NumMatchingAccounts",
                                 num_matching);
 }
@@ -374,6 +380,9 @@ void FilterAccountsWithDomainHint(
     };
     base::EraseIf(accounts, filter);
   }
+  FedCmMetrics::NumAccounts num_matching = ComputeNumMatchingAccounts(accounts);
+  base::UmaHistogramEnumeration("Blink.FedCm.DomainHint.NumMatchingAccounts",
+                                num_matching);
 }
 
 std::unique_ptr<FedCmMetrics> CreateFedCmMetrics(
