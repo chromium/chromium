@@ -131,8 +131,9 @@ although it shouldn't be necessary on Linux and Windows, where Chrome uses the
 llvm-symbolizer in its source tree by default.
 
 ASan should perfectly work with Chrome's sandbox. You should only need to run
-with `--no-sandbox` on Linux if you're debugging ASan.
-Note: you have to disable the sandbox on Windows until it is supported.
+with `--no-sandbox` on Linux if you're debugging ASan. To get reports on Windows
+from sandboxed processes you will have to run with both `--enable-logging` and
+`--log-file=d:\valid\path.log` then inspect the logfile.
 
 You may need to run with `--disable-gpu` on Linux with NVIDIA driver older than
 295.20.
