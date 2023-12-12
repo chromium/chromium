@@ -194,8 +194,9 @@ class AutofillAgentTest : public content::RenderViewTest {
     autofill_agent_ = std::make_unique<AutofillAgent>(
         GetMainRenderFrame(), std::move(password_autofill_agent),
         std::move(password_generation), &associated_interfaces_);
-    autofill_agent_->set_form_tracker_for_testing(
-        std::make_unique<MockFormTracker>(GetMainRenderFrame()));
+    test_api(*autofill_agent_)
+        .set_form_tracker(
+            std::make_unique<MockFormTracker>(GetMainRenderFrame()));
   }
 
   void TearDown() override {
@@ -204,8 +205,8 @@ class AutofillAgentTest : public content::RenderViewTest {
   }
 
   MockFormTracker& form_tracker() {
-    return *static_cast<MockFormTracker*>(
-        autofill_agent_->form_tracker_for_testing());
+    return static_cast<MockFormTracker&>(
+        test_api(*autofill_agent_).form_tracker());
   }
 
   // AutofillDriver::FormsSeen() is throttled indirectly because some callsites

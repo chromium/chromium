@@ -132,11 +132,8 @@ class FormTracker : public content::RenderFrameObserver,
     user_gesture_required_ = required;
   }
 
-  void FireProbablyFormSubmittedForTesting();
-
  private:
-  FRIEND_TEST_ALL_PREFIXES(FormAutocompleteTest,
-                           FormSubmittedBySameDocumentNavigation);
+  friend class FormTrackerTestApi;
 
   // content::RenderFrameObserver:
   void DidCommitProvisionalLoad(ui::PageTransition transition) override;

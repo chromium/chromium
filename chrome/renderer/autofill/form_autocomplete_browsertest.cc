@@ -13,8 +13,10 @@
 #include "build/build_config.h"
 #include "chrome/test/base/chrome_render_view_test.h"
 #include "components/autofill/content/renderer/autofill_agent.h"
+#include "components/autofill/content/renderer/autofill_agent_test_api.h"
 #include "components/autofill/content/renderer/focus_test_utils.h"
 #include "components/autofill/content/renderer/form_autofill_util.h"
+#include "components/autofill/content/renderer/form_tracker_test_api.h"
 #include "components/autofill/core/common/autofill_features.h"
 #include "components/autofill/core/common/form_data.h"
 #include "components/autofill/core/common/mojom/autofill_types.mojom-shared.h"
@@ -307,8 +309,6 @@ void SimulateFillFormWithNonFillableFields(
                                   mojom::ActionPersistence::kFill,
                                   form.unique_renderer_id, form.fields);
 }
-
-}  // end namespace
 
 class FormAutocompleteTest : public ChromeRenderViewTest {
  public:
@@ -820,7 +820,8 @@ TEST_F(FormAutocompleteTest, CollectFormlessElements) {
       "<form><input type='text' name='excluded'/></form>"
       "</html>");
 
-  std::optional<FormData> result = autofill_agent_->CollectFormlessElements();
+  std::optional<FormData> result =
+      test_api(*autofill_agent_).CollectFormlessElements();
   ASSERT_TRUE(result);
 
   // Asserting size 4 also ensures that 'excluded' field inside <form> is not
@@ -1117,8 +1118,8 @@ TEST_F(FormAutocompleteTest, FormSubmittedBySameDocumentNavigation) {
   ExecuteJavaScriptForTests(hide_elements.c_str());
 
   // Simulate same document navigation.
-  autofill_agent_->form_tracker_for_testing()
-      ->DidFinishSameDocumentNavigation();
+  test_api(test_api(*autofill_agent_).form_tracker())
+      .DidFinishSameDocumentNavigation();
   base::RunLoop().RunUntilIdle();
 
   VerifyReceivedAddressRendererMessages(
@@ -1146,8 +1147,8 @@ TEST_F(FormAutocompleteTest, FormSubmittedByProbablyFormSubmitted) {
   ExecuteJavaScriptForTests(hide_elements.c_str());
 
   // Simulate navigation.
-  autofill_agent_->form_tracker_for_testing()
-      ->FireProbablyFormSubmittedForTesting();
+  test_api(test_api(*autofill_agent_).form_tracker())
+      .FireProbablyFormSubmitted();
 
   base::RunLoop().RunUntilIdle();
 
@@ -1182,5 +1183,7 @@ TEST_F(FormAutocompleteTest, SelectControlChanged) {
   EXPECT_EQ(u"color", field->name);
   EXPECT_EQ(u"blue", field->value);
 }
+
+}  // namespace
 
 }  // namespace autofill

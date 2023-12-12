@@ -177,12 +177,6 @@ class AutofillAgent : public content::RenderFrameObserver,
   void UpdateStateForTextChange(const blink::WebFormControlElement& element,
                                 FieldPropertiesFlags flag);
 
-  FormTracker* form_tracker_for_testing() { return form_tracker_.get(); }
-  void set_form_tracker_for_testing(
-      std::unique_ptr<FormTracker>&& form_tracker) {
-    form_tracker_ = std::move(form_tracker);
-  }
-
   bool is_heavy_form_data_scraping_enabled() {
     return is_heavy_form_data_scraping_enabled_;
   }
@@ -313,7 +307,6 @@ class AutofillAgent : public content::RenderFrameObserver,
       DenseSet<form_util::ExtractOption> extract_options = {
           form_util::ExtractOption::kValue,
           form_util::ExtractOption::kOptions}) const;
-  FRIEND_TEST_ALL_PREFIXES(FormAutocompleteTest, CollectFormlessElements);
 
   void OnTextFieldDidChange(const blink::WebFormControlElement& element);
   void DidChangeScrollOffsetImpl(const blink::WebFormControlElement& element);

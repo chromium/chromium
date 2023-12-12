@@ -222,10 +222,6 @@ void FormTracker::TrackAutofilledElement(const WebFormControlElement& element) {
   TrackElement();
 }
 
-void FormTracker::FireProbablyFormSubmittedForTesting() {
-  FireProbablyFormSubmitted();
-}
-
 void FormTracker::FormControlDidChangeImpl(
     const WebFormControlElement& element,
     Observer::ElementChangeSource change_source) {
