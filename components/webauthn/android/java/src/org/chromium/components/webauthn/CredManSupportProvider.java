@@ -9,11 +9,13 @@ import android.os.Build;
 import org.jni_zero.CalledByNative;
 
 import org.chromium.base.PackageUtils;
+import org.chromium.components.version_info.VersionInfo;
 import org.chromium.device.DeviceFeatureList;
 import org.chromium.device.DeviceFeatureMap;
 
 public class CredManSupportProvider {
-    private static final int GMSCORE_MIN_VERSION_CREDMAN = 234600000;
+    private static final int GMSCORE_MIN_VERSION_CANARY_DEV = 234600000;
+    private static final int GMSCORE_MIN_VERSION_BETA_STABLE = 240200000;
 
     private static @CredManSupport int sCredManSupport;
 
@@ -34,8 +36,7 @@ public class CredManSupportProvider {
                 sCredManSupport = CredManSupport.DISABLED;
                 return sCredManSupport;
             }
-            int packageVersion = PackageUtils.getPackageVersion("com.google.android.gms");
-            if (packageVersion != -1 && packageVersion < GMSCORE_MIN_VERSION_CREDMAN) {
+            if (hasOldGmsVersion()) {
                 sCredManSupport = CredManSupport.DISABLED;
                 return sCredManSupport;
             }
@@ -55,5 +56,28 @@ public class CredManSupportProvider {
         sCredManSupport = CredManSupport.IF_REQUIRED;
 
         return sCredManSupport;
+    }
+
+    private static boolean hasOldGmsVersion() {
+        assert !sOverrideVersionCheckForTesting : "Don't use in testing!";
+        int gmsVersion = PackageUtils.getPackageVersion("com.google.android.gms");
+        if (gmsVersion == -1) {
+            return true; // Couldn't get a GMS version. Assume insufficient GMS availability.
+        }
+
+        final int requiredMinGmsVersion =
+                DeviceFeatureMap.getInstance()
+                        .getFieldTrialParamByFeatureAsInt(
+                                DeviceFeatureList.WEBAUTHN_ANDROID_CRED_MAN,
+                                "min_gms_core_version_no_dots",
+                                getMinGmsVersionForCurrentChannel());
+
+        return gmsVersion < requiredMinGmsVersion;
+    }
+
+    private static int getMinGmsVersionForCurrentChannel() {
+        return (VersionInfo.isBetaBuild() || VersionInfo.isStableBuild())
+                ? GMSCORE_MIN_VERSION_BETA_STABLE
+                : GMSCORE_MIN_VERSION_CANARY_DEV;
     }
 }
