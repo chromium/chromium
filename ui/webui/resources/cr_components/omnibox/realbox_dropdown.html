@@ -67,7 +67,12 @@
           var(--color-realbox-results-icon-selected);
   }
 
-  cr-realbox-match:-webkit-any(:hover, :focus-within, [selected]) {
+  :host(:not([chrome-refresh-hover-shape])) cr-realbox-match:-webkit-any(:hover, :focus-within, [selected]) {
+    background-color:
+        var(--color-realbox-results-background-hovered);
+  }
+
+  :host([chrome-refresh-hover-shape]) .secondary-side cr-realbox-match:-webkit-any(:hover, :focus-within, [selected]) {
     background-color:
         var(--color-realbox-results-background-hovered);
   }

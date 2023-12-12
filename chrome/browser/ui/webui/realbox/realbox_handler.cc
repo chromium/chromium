@@ -676,6 +676,10 @@ void RealboxHandler::SetupWebUIDataSource(content::WebUIDataSource* source,
       base::FeatureList::IsEnabled(
           ntp_features::kRealboxCr23ConsistentRowHeight) ||
           base::FeatureList::IsEnabled(ntp_features::kRealboxCr23All));
+  source->AddBoolean(
+      "realboxCr23HoverFillShape",
+      base::FeatureList::IsEnabled(ntp_features::kRealboxCr23HoverFillShape) ||
+          base::FeatureList::IsEnabled(ntp_features::kRealboxCr23All));
 }
 
 // static

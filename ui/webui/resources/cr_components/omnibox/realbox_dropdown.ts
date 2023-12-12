@@ -56,6 +56,12 @@ export class RealboxDropdownElement extends PolymerElement {
         value: false,
       },
 
+      chromeRefreshHoverShape: {
+        type: Boolean,
+        value: () => loadTimeData.getBoolean('realboxCr23HoverFillShape'),
+        reflectToAttribute: true,
+      },
+
       expandedStateLayoutChromeRefresh: {
         type: Boolean,
         value: () => loadTimeData.getBoolean('realboxCr23ExpandedStateLayout'),
@@ -78,6 +84,7 @@ export class RealboxDropdownElement extends PolymerElement {
         type: Boolean,
         computed: `computeHasSecondarySide_(result)`,
         notify: true,
+        reflectToAttribute: true,
       },
 
       result: {
@@ -123,6 +130,7 @@ export class RealboxDropdownElement extends PolymerElement {
   }
 
   canShowSecondarySide: boolean;
+  chromeRefreshHoverShape: boolean;
   expandedStateLayoutChromeRefresh: boolean;
   hadSecondarySide: boolean;
   hasSecondarySide: boolean;
