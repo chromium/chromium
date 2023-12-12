@@ -248,14 +248,6 @@ OzoneImageBacking::RetainGLTexturePerContextCache(bool is_passthrough) {
     return holder;
   }
 
-  // It'll be a new entry. |this| must observe current context and react on
-  // context losses or destructions accordingly. Otherwise, it'll keep the
-  // texture holders until it dies, which is not what we want from the resource
-  // management point of view. Also, textures must be destroyed/marked with
-  // context lost to avoid wrong behaviour (eg textures are reused despite a
-  // context lost).
-  current_context->AddObserver(this);
-
   // Case 2. Try to find a compatible context. There are some drivers that
   // fail when doing multiple reimport of dmas (and creating multiple textures
   // from a single image). See https://crbug.com/1498703.
@@ -276,6 +268,18 @@ OzoneImageBacking::RetainGLTexturePerContextCache(bool is_passthrough) {
     new_holder = OzoneImageGLTexturesHolder::CreateAndInitTexturesHolder(
         this, pixmap_, plane_, is_passthrough);
   }
+
+  if (!new_holder) {
+    return nullptr;
+  }
+
+  // It'll be a new entry. |this| must observe current context and react on
+  // context losses or destructions accordingly. Otherwise, it'll keep the
+  // texture holders until it dies, which is not what we want from the resource
+  // management point of view. Also, textures must be destroyed/marked with
+  // context lost to avoid wrong behaviour (eg textures are reused despite a
+  // context lost).
+  current_context->AddObserver(this);
 
   auto result = per_context_cached_textures_holders_.insert(
       std::make_pair(current_context, std::move(new_holder)));
