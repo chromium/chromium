@@ -4524,6 +4524,14 @@ be describing additional metrics about the same event.
       to when the user presses the Continue button.
     </summary>
   </metric>
+  <metric name="Timing.Disconnect">
+    <summary>
+      Records the time in milliseconds from when the disconnect() request is
+      received by the browser process to the time in which it is completed, e.g.
+      right before sending the response back to the renderer process. Records
+      one sample for every disconnect call which sends a disconnect request.
+    </summary>
+  </metric>
   <metric name="Timing.IdTokenResponse">
     <summary>
       Records the time (in milliseconds) from when the user presses the Continue
@@ -4657,6 +4665,14 @@ be describing additional metrics about the same event.
     <summary>
       Records the time (in milliseconds) from when the accounts dialog is shown
       to when the user presses the Continue button.
+    </summary>
+  </metric>
+  <metric name="Timing.Disconnect">
+    <summary>
+      Records the time in milliseconds from when the disconnect() request is
+      received by the browser process to the time in which it is completed, e.g.
+      right before sending the response back to the renderer process. Records
+      one sample for every disconnect call which sends a disconnect request.
     </summary>
   </metric>
   <metric name="Timing.IdTokenResponse">

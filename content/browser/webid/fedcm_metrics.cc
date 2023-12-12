@@ -395,12 +395,19 @@ void FedCmMetrics::RecordNumRequestsPerDocument(const int num_requests) {
                               num_requests);
 }
 
-void FedCmMetrics::RecordDisconnectStatus(FedCmDisconnectStatus status) {
+void FedCmMetrics::RecordDisconnectMetrics(
+    FedCmDisconnectStatus status,
+    std::optional<base::TimeDelta> duration) {
   if (is_disabled_) {
     return;
   }
   auto RecordUkm = [&](auto& ukm_builder) {
     ukm_builder.SetStatus_Disconnect(static_cast<int>(status));
+    if (duration) {
+      ukm_builder.SetTiming_Disconnect(
+          ukm::GetSemanticBucketMinForDurationTiming(
+              duration->InMilliseconds()));
+    }
     ukm_builder.SetFedCmSessionID(session_id_);
     ukm_builder.Record(ukm::UkmRecorder::Get());
   };
@@ -411,6 +418,9 @@ void FedCmMetrics::RecordDisconnectStatus(FedCmDisconnectStatus status) {
   RecordUkm(fedcm_idp_builder);
 
   base::UmaHistogramEnumeration("Blink.FedCm.Status.Disconnect", status);
+  if (duration) {
+    base::UmaHistogramMediumTimes("Blink.FedCm.Timing.Disconnect", *duration);
+  }
 }
 
 void FedCmMetrics::RecordErrorDialogResult(FedCmErrorDialogResult result) {

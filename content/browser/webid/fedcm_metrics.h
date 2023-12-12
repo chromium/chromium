@@ -264,8 +264,11 @@ class CONTENT_EXPORT FedCmMetrics {
   // FedCM request or for the purpose of MDocs or multi-IDP are not counted.
   void RecordNumRequestsPerDocument(const int num_requests);
 
-  // Records the status of the disconnect call.
-  void RecordDisconnectStatus(FedCmDisconnectStatus status);
+  // Records metrics for a disconnect call. `duration` is nullopt if the
+  // disconnect fetch request was not sent, in which case we do not log the
+  // metric.
+  void RecordDisconnectMetrics(FedCmDisconnectStatus status,
+                               std::optional<base::TimeDelta> duration);
 
   // Records the type of error dialog shown.
   void RecordErrorDialogType(

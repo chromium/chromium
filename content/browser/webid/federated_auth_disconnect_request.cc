@@ -52,7 +52,8 @@ FederatedAuthDisconnectRequest::FederatedAuthDisconnectRequest(
       metrics_(metrics),
       render_frame_host_(render_frame_host),
       options_(std::move(options)),
-      origin_(render_frame_host->GetLastCommittedOrigin()) {
+      origin_(render_frame_host->GetLastCommittedOrigin()),
+      start_time_(base::TimeTicks::Now()) {
   RenderFrameHost* main_frame = render_frame_host->GetMainFrame();
   DCHECK(main_frame->IsInPrimaryMainFrame());
   embedding_origin_ = main_frame->GetLastCommittedOrigin();
@@ -201,6 +202,7 @@ void FederatedAuthDisconnectRequest::OnAllConfigAndWellKnownFetched(
              DisconnectStatusForMetrics::kDisconnectUrlIsCrossOrigin);
     return;
   }
+  disconnect_request_sent_ = true;
   network_manager_->SendDisconnectRequest(
       fetch_result.endpoints.disconnect, options_->account_hint,
       options_->config->client_id,
@@ -235,15 +237,16 @@ void FederatedAuthDisconnectRequest::OnDisconnectResponse(
 
 void FederatedAuthDisconnectRequest::Complete(
     blink::mojom::DisconnectStatus status,
-    absl::optional<content::FedCmDisconnectStatus>
-        disconnect_status_for_metrics) {
+    content::FedCmDisconnectStatus disconnect_status_for_metrics) {
   if (!callback_) {
     return;
   }
 
-  if (disconnect_status_for_metrics) {
-    metrics_->RecordDisconnectStatus(*disconnect_status_for_metrics);
-  }
+  std::optional<base::TimeDelta> duration =
+      disconnect_request_sent_
+          ? std::optional<base::TimeDelta>{base::TimeTicks::Now() - start_time_}
+          : std::nullopt;
+  metrics_->RecordDisconnectMetrics(disconnect_status_for_metrics, duration);
 
   std::move(callback_).Run(status);
 }

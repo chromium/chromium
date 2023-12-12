@@ -61,13 +61,9 @@ class CONTENT_EXPORT FederatedAuthDisconnectRequest {
   void OnDisconnectResponse(IdpNetworkRequestManager::FetchStatus fetch_status,
                             const std::string& account_id);
 
-  // `should_delay_callback` represents whether we should call the callback
-  // with some delay or immediately. For some failures we choose to reject
-  // with some delay for privacy reasons. `disconnect_status_for_metrics` is
-  // non-nullopt if metrics have not yet been recorded for this request.
+  // Records disconnect metrics and completes the request.
   void Complete(blink::mojom::DisconnectStatus status,
-                absl::optional<content::FedCmDisconnectStatus>
-                    disconnect_status_for_metrics);
+                content::FedCmDisconnectStatus disconnect_status_for_metrics);
 
   std::unique_ptr<IdpNetworkRequestManager> network_manager_;
   // Owned by |BrowserContext|
@@ -84,6 +80,13 @@ class CONTENT_EXPORT FederatedAuthDisconnectRequest {
   url::Origin embedding_origin_;
 
   blink::mojom::FederatedAuthRequest::DisconnectCallback callback_;
+
+  // The time when this class is created. Approximates the time in which the
+  // disconnect() call begins.
+  base::TimeTicks start_time_;
+  // Whether the disconnect fetch request is sent. Used to know whether to
+  // record the disconnect call duration.
+  bool disconnect_request_sent_ = false;
 
   base::WeakPtrFactory<FederatedAuthDisconnectRequest> weak_ptr_factory_{this};
 };

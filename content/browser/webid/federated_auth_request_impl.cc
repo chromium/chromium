@@ -2798,8 +2798,10 @@ void FederatedAuthRequestImpl::Disconnect(
         /*is_disabled=*/false);
   }
   if (disconnect_request_) {
-    fedcm_metrics_->RecordDisconnectStatus(
-        FedCmDisconnectStatus::kTooManyRequests);
+    // Since we do not send any fetches in this case, consider the request to be
+    // instant, e.g. duration is 0.
+    fedcm_metrics_->RecordDisconnectMetrics(
+        FedCmDisconnectStatus::kTooManyRequests, std::nullopt);
     std::move(callback).Run(DisconnectStatus::kErrorTooManyRequests);
     return;
   }

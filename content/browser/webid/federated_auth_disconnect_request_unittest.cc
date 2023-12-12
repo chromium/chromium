@@ -39,7 +39,6 @@ using ::testing::Return;
 using DisconnectResponse =
     content::IdpNetworkRequestManager::DisconnectResponse;
 using DisconnectStatusForMetrics = content::FedCmDisconnectStatus;
-using FedCmEntry = ukm::builders::Blink_FedCm;
 using LoginState = content::IdentityRequestAccount::LoginState;
 using blink::mojom::DisconnectStatus;
 
@@ -276,8 +275,21 @@ class FederatedAuthDisconnectRequestTest
     EXPECT_EQ(expected_disconnect_status, callback_helper.status());
   }
 
-  void ExpectDisconnectStatusUKM(DisconnectStatusForMetrics status,
-                                 const char* entry_name) {
+  void ExpectDisconnectMetrics(DisconnectStatusForMetrics status,
+                               bool should_record_duration) {
+    histogram_tester_.ExpectUniqueSample("Blink.FedCm.Status.Disconnect",
+                                         status, 1);
+    histogram_tester_.ExpectTotalCount("Blink.FedCm.Timing.Disconnect",
+                                       should_record_duration ? 1 : 0);
+    ExpectDisconnectUKM(status, ukm::builders::Blink_FedCm::kEntryName,
+                        should_record_duration);
+    ExpectDisconnectUKM(status, ukm::builders::Blink_FedCmIdp::kEntryName,
+                        should_record_duration);
+  }
+
+  void ExpectDisconnectUKM(DisconnectStatusForMetrics status,
+                           const char* entry_name,
+                           bool should_record_duration) {
     auto entries = ukm_recorder()->GetEntriesByName(entry_name);
 
     ASSERT_FALSE(entries.empty())
@@ -287,6 +299,10 @@ class FederatedAuthDisconnectRequestTest
     // make sure that the metric only includes the expected one.
     bool metric_found = false;
     for (const auto* const entry : entries) {
+      if (!should_record_duration) {
+        EXPECT_FALSE(ukm_recorder()->GetEntryMetric(entry, "Timing.Disconnect"))
+            << "Timing.Disconnect must not be present";
+      }
       const int64_t* metric =
           ukm_recorder()->GetEntryMetric(entry, "Status.Disconnect");
       if (!metric) {
@@ -298,6 +314,12 @@ class FederatedAuthDisconnectRequestTest
       metric_found = true;
       EXPECT_EQ(static_cast<int>(status), *metric)
           << "Unexpected status recorded in " << entry_name;
+
+      if (should_record_duration) {
+        EXPECT_TRUE(ukm_recorder()->GetEntryMetric(entry, "Timing.Disconnect"))
+            << "Timing.Disconnect must be present in the same entry as "
+               "Status.Disconnect";
+      }
     }
     EXPECT_TRUE(metric_found)
         << "No Status.Disconnect entry was found in " << entry_name;
@@ -329,10 +351,8 @@ TEST_F(FederatedAuthDisconnectRequestTest, Success) {
   EXPECT_TRUE(network_manager_->has_fetched_config_);
   EXPECT_TRUE(network_manager_->has_fetched_disconnect_);
 
-  histogram_tester_.ExpectUniqueSample("Blink.FedCm.Status.Disconnect",
-                                       DisconnectStatusForMetrics::kSuccess, 1);
-  ExpectDisconnectStatusUKM(DisconnectStatusForMetrics::kSuccess,
-                            FedCmEntry::kEntryName);
+  ExpectDisconnectMetrics(DisconnectStatusForMetrics::kSuccess,
+                          /*should_record_duration=*/true);
 }
 
 TEST_F(FederatedAuthDisconnectRequestTest, NotTrustworthyIdP) {
@@ -341,12 +361,9 @@ TEST_F(FederatedAuthDisconnectRequestTest, NotTrustworthyIdP) {
   RunDisconnectTest(config, DisconnectStatus::kError);
   EXPECT_FALSE(DidFetchAnyEndpoint());
 
-  histogram_tester_.ExpectUniqueSample(
-      "Blink.FedCm.Status.Disconnect",
-      DisconnectStatusForMetrics::kIdpNotPotentiallyTrustworthy, 1);
-  ExpectDisconnectStatusUKM(
+  ExpectDisconnectMetrics(
       DisconnectStatusForMetrics::kIdpNotPotentiallyTrustworthy,
-      FedCmEntry::kEntryName);
+      /*should_record_duration=*/false);
 }
 
 TEST_F(FederatedAuthDisconnectRequestTest,
@@ -371,10 +388,8 @@ TEST_F(FederatedAuthDisconnectRequestTest,
   EXPECT_TRUE(network_manager_->has_fetched_config_);
   EXPECT_TRUE(network_manager_->has_fetched_disconnect_);
 
-  histogram_tester_.ExpectUniqueSample("Blink.FedCm.Status.Disconnect",
-                                       DisconnectStatusForMetrics::kSuccess, 1);
-  ExpectDisconnectStatusUKM(DisconnectStatusForMetrics::kSuccess,
-                            FedCmEntry::kEntryName);
+  ExpectDisconnectMetrics(DisconnectStatusForMetrics::kSuccess,
+                          /*should_record_duration=*/true);
 }
 
 }  // namespace content

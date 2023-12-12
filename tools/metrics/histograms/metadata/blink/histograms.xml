@@ -1687,6 +1687,18 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Blink.FedCm.Timing.Disconnect" units="ms"
+    expires_after="2024-06-08">
+  <owner>npm@chromium.org</owner>
+  <owner>web-identity-eng@google.com</owner>
+  <summary>
+    Records the time from when the disconnect() request is received by the
+    browser process to the time in which it is completed, e.g. right before
+    sending the response back to the renderer process. Records one sample for
+    every disconnect call which sends a disconnect request.
+  </summary>
+</histogram>
+
 <histogram name="Blink.FedCm.Timing.IdTokenResponse" units="ms"
     expires_after="2024-06-16">
   <owner>yigu@chromium.org</owner>
