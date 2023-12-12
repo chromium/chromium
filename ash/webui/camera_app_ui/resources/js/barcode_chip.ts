@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {assert} from './assert.js';
+import {assert, assertExists} from './assert.js';
 import * as dom from './dom.js';
 import {reportError} from './error.js';
 import {Flag} from './flag.js';
@@ -20,9 +20,13 @@ import {
 
 interface WifiConfig {
   securityType: string;
-  ssid: string;
-  password: string;
+  ssid: string|null;
+  password: string|null;
   hidden: boolean;
+  eapMethod: string|null;     // EAP only
+  anonIdentity: string|null;  // EAP only
+  identity: string|null;      // EAP only
+  phase2method: string|null;  // EAP only
 }
 
 const QR_CODE_ESCAPE_CHARS = ['\\', ';', ',', ':'];
@@ -98,8 +102,18 @@ function isSafeUrl(s: string): boolean {
  */
 function parseWifi(s: string): WifiConfig|null {
   // Example string `WIFI:S:<SSID>;P:<PASSWORD>;T:<WPA|WEP|WPA2-EAP|nopass>;H;;`
-  const wifiConfig =
-      {securityType: 'nopass', ssid: '', password: '', hidden: false};
+  // Reference:
+  // https://github.com/zxing/zxing/wiki/Barcode-Contents#wi-fi-network-config-android-ios-11
+  const wifiConfig: WifiConfig = {
+    securityType: 'nopass',
+    ssid: null,
+    password: null,
+    hidden: false,
+    eapMethod: null,
+    anonIdentity: null,
+    identity: null,
+    phase2method: null,
+  };
   if (s.startsWith('WIFI:') && s.endsWith(';;')) {
     s = s.substring(5, s.length - 1);
     let i = 0;
@@ -117,14 +131,37 @@ function parseWifi(s: string): WifiConfig|null {
         }
         const key = component.substring(0, splitIdx);
         const val = component.substring(splitIdx + 1);
-        if (key === 'T') {
-          wifiConfig.securityType = val;
-        } else if (key === 'S') {
-          wifiConfig.ssid = val;
-        } else if (key === 'P') {
-          wifiConfig.password = val;
-        } else if (key === 'H' && val === 'true') {
-          wifiConfig.hidden = true;
+        switch (key) {
+          case 'A':
+            wifiConfig.anonIdentity = val;
+            break;
+          case 'E':
+            wifiConfig.eapMethod = val;
+            break;
+          case 'H':
+            if (val === 'true') {
+              wifiConfig.hidden = true;
+            } else if (val !== 'false') {
+              wifiConfig.phase2method = val;
+            }
+            break;
+          case 'I':
+            wifiConfig.identity = val;
+            break;
+          case 'P':
+            wifiConfig.password = val;
+            break;
+          case 'PH2':
+            wifiConfig.phase2method = val;
+            break;
+          case 'S':
+            wifiConfig.ssid = val;
+            break;
+          case 'T':
+            wifiConfig.securityType = val;
+            break;
+          default:
+            return null;
         }
         component = '';
         i += 1;
@@ -135,7 +172,7 @@ function parseWifi(s: string): WifiConfig|null {
     }
   }
 
-  if (wifiConfig.ssid === '') {
+  if (wifiConfig.ssid === null) {
     return null;
   }
   return wifiConfig;
@@ -229,7 +266,7 @@ function showWifi(wifiConfig: WifiConfig) {
 
   const textEl = dom.get('#barcode-chip-wifi-content', HTMLSpanElement);
   const label = loadTimeData.getI18nMessage(
-      I18nString.BARCODE_WIFI_CHIPTEXT, wifiConfig.ssid);
+      I18nString.BARCODE_WIFI_CHIPTEXT, assertExists(wifiConfig.ssid));
   textEl.textContent = label;
 
   const chip = dom.get('#barcode-chip-wifi', HTMLDivElement);
@@ -264,7 +301,8 @@ export function show(code: string): void {
   if (loadTimeData.getChromeFlag(Flag.AUTO_QR) && wifiConfig !== null) {
     sendBarcodeDetectedEvent(
         {contentType: BarcodeContentType.WIFI}, wifiConfig.securityType);
-    if (['WPA', 'nopass'].includes(wifiConfig.securityType)) {
+    if (['WEP', 'WPA', 'WPA2-EAP', 'nopass'].includes(
+            wifiConfig.securityType)) {
       showWifi(wifiConfig);
     } else {
       // For unsupported security types, we show a raw string.
