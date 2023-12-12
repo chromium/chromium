@@ -82,6 +82,7 @@ extern const base::FeatureParam<BatterySaverNotificationBehavior>
 COMPONENT_EXPORT(ASH_CONSTANTS)
 extern const base::FeatureParam<double> kBatterySaverActivationChargePercent;
 COMPONENT_EXPORT(ASH_CONSTANTS) BASE_DECLARE_FEATURE(kBatterySaverAlwaysOn);
+COMPONENT_EXPORT(ASH_CONSTANTS) BASE_DECLARE_FEATURE(kBirchFeature);
 COMPONENT_EXPORT(ASH_CONSTANTS)
 BASE_DECLARE_FEATURE(kBluetoothFixA2dpPacketSize);
 COMPONENT_EXPORT(ASH_CONSTANTS) BASE_DECLARE_FEATURE(kBluetoothQualityReport);
@@ -925,6 +926,7 @@ COMPONENT_EXPORT(ASH_CONSTANTS) bool IsAudioHFPMicSRToggleEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsBackgroundBlurEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsBatterySaverAvailable();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsBatterySaverAlwaysOn();
+COMPONENT_EXPORT(ASH_CONSTANTS) bool IsBirchFeatureEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsBluetoothQualityReportEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsCaptureModeAudioMixingEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsCaptureModeEducationEnabled();

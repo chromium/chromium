@@ -8,6 +8,7 @@
 #include <string>
 
 #include "base/command_line.h"
+#include "base/hash/sha1.h"
 #include "base/metrics/field_trial.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/time/time.h"
@@ -21,6 +22,11 @@ namespace {
 // nudges when override switch is set.
 constexpr base::TimeDelta kAshContextualNudgesMinInterval = base::Seconds(0);
 constexpr base::TimeDelta kAshContextualNudgesMaxInterval = base::Seconds(60);
+
+// The hash value for the secret key of the birch feature.
+constexpr char kBirchHashKey[] =
+    "\x1a\x93\x5f\x64\x0d\x7f\x0c\x2f\x88\xe8\x80\x9a\x5f\x16\xbb\xd8\x74\x06"
+    "\x8a\xb1";
 
 }  // namespace
 
@@ -294,6 +300,9 @@ const char kAshUiModeTablet[] = "touch_view";
 // lock the screen or shutdown the system immediately in response to a press
 // instead of displaying an interactive animation.
 const char kAuraLegacyPowerButton[] = "aura-legacy-power-button";
+
+// Supply secret key for the Birch feature.
+const char kBirchFeatureKey[] = "birch-feature-key";
 
 // If this flag is set, it indicates that this device is a "Cellular First"
 // device. Cellular First devices use cellular telephone data networks as
@@ -1303,6 +1312,22 @@ bool UseFakeCrasAudioClientForDBus() {
 bool ShouldAllowDefaultShelfPinLayoutIgnoringSync() {
   return base::CommandLine::ForCurrentProcess()->HasSwitch(
       kAllowDefaultShelfPinLayoutIgnoringSync);
+}
+
+bool IsBirchSecretKeyMatched() {
+  // Commandline looks like:
+  //  out/Default/chrome --user-data-dir=/tmp/tmp123
+  //  --birch-feature-key="INSERT KEY HERE" --enable-features=BirchFeature
+  const std::string provided_key_hash = base::SHA1HashString(
+      base::CommandLine::ForCurrentProcess()->GetSwitchValueASCII(
+          switches::kBirchFeatureKey));
+
+  bool birch_key_matched = (provided_key_hash == kBirchHashKey);
+  if (!birch_key_matched) {
+    LOG(ERROR) << "Provided secret key does not match with the expected one.";
+  }
+
+  return birch_key_matched;
 }
 
 }  // namespace switches
