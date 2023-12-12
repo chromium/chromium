@@ -20768,22 +20768,6 @@
             ]
         }
     ],
-    "WebApkInstallFailureAndRetry": [
-        {
-            "platforms": [
-                "android"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "WebApkInstallFailureNotification",
-                        "WebApkInstallFailureRetry"
-                    ]
-                }
-            ]
-        }
-    ],
     "WebApkUniversalInstall": [
         {
             "platforms": [

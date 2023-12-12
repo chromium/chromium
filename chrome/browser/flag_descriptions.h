@@ -2691,12 +2691,6 @@ extern const char kVideoTutorialsDescription[];
 extern const char kWebAuthnAndroidCredManName[];
 extern const char kWebAuthnAndroidCredManDescription[];
 
-extern const char kWebApkInstallFailureNotificationName[];
-extern const char kWebApkInstallFailureNotificationDescription[];
-
-extern const char kWebApkInstallFailureRetryName[];
-extern const char kWebApkInstallFailureRetryDescription[];
-
 extern const char kWebFeedName[];
 extern const char kWebFeedDescription[];
 

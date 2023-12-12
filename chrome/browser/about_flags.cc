@@ -10705,18 +10705,6 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(features::kSafetyCheckExtensions)},
 #endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 
-#if BUILDFLAG(IS_ANDROID)
-    {"webapk-install-failure-notification",
-     flag_descriptions::kWebApkInstallFailureNotificationName,
-     flag_descriptions::kWebApkInstallFailureNotificationDescription,
-     kOsAndroid,
-     FEATURE_VALUE_TYPE(webapps::features::kWebApkInstallFailureNotification)},
-    {"webapk-install-failure-retry",
-     flag_descriptions::kWebApkInstallFailureRetryName,
-     flag_descriptions::kWebApkInstallFailureRetryDescription, kOsAndroid,
-     FEATURE_VALUE_TYPE(webapps::features::kWebApkInstallFailureRetry)},
-#endif  // BUILDFLAG(IS_ANDROID)
-
     {"autofill-enable-cvc-storage-and-filling",
      flag_descriptions::kAutofillEnableCvcStorageAndFillingName,
      flag_descriptions::kAutofillEnableCvcStorageAndFillingDescription, kOsAll,

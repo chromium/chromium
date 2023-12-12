@@ -4666,16 +4666,6 @@ const char kWebAuthnAndroidCredManDescription[] =
     "Use Credential Management API for passkeys. Requires Android 14 or "
     "higher.";
 
-const char kWebApkInstallFailureNotificationName[] =
-    "Web app install failure notification";
-const char kWebApkInstallFailureNotificationDescription[] =
-    "Enables showing a notification when web app install failed";
-
-const char kWebApkInstallFailureRetryName[] = "Web app install retry";
-const char kWebApkInstallFailureRetryDescription[] =
-    "Allows user to retry failed web app installs with the failure "
-    "notification";
-
 const char kWebFeedName[] = "Web Feed";
 const char kWebFeedDescription[] =
     "Allows users to keep up with and consume web content.";
