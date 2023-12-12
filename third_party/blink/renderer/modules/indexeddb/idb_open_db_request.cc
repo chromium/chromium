@@ -106,11 +106,13 @@ void IDBOpenDBRequest::OnBlocked(int64_t old_version) {
       event_type_names::kBlocked, old_version, new_version_nullable));
 }
 
-void IDBOpenDBRequest::OnUpgradeNeeded(int64_t old_version,
-                                       std::unique_ptr<WebIDBDatabase> backend,
-                                       const IDBDatabaseMetadata& metadata,
-                                       mojom::blink::IDBDataLoss data_loss,
-                                       String data_loss_message) {
+void IDBOpenDBRequest::OnUpgradeNeeded(
+    int64_t old_version,
+    mojo::PendingAssociatedRemote<mojom::blink::IDBDatabase> pending_database,
+    scoped_refptr<base::SingleThreadTaskRunner> task_runner,
+    const IDBDatabaseMetadata& metadata,
+    mojom::blink::IDBDataLoss data_loss,
+    String data_loss_message) {
   TRACE_EVENT0("IndexedDB", "IDBOpenDBRequest::onUpgradeNeeded()");
   probe::AsyncTask async_task(GetExecutionContext(), async_task_context(),
                               "upgradeNeeded");
@@ -122,8 +124,8 @@ void IDBOpenDBRequest::OnUpgradeNeeded(int64_t old_version,
   DCHECK(callbacks_receiver_);
 
   auto* idb_database = MakeGarbageCollected<IDBDatabase>(
-      GetExecutionContext(), std::move(backend), std::move(callbacks_receiver_),
-      std::move(connection_lifetime_));
+      GetExecutionContext(), std::move(callbacks_receiver_),
+      std::move(connection_lifetime_), std::move(pending_database));
   idb_database->SetMetadata(metadata);
 
   if (old_version == IDBDatabaseMetadata::kNoVersion) {
@@ -146,8 +148,10 @@ void IDBOpenDBRequest::OnUpgradeNeeded(int64_t old_version,
       data_loss_message));
 }
 
-void IDBOpenDBRequest::OnOpenDBSuccess(std::unique_ptr<WebIDBDatabase> backend,
-                                       const IDBDatabaseMetadata& metadata) {
+void IDBOpenDBRequest::OnOpenDBSuccess(
+    mojo::PendingAssociatedRemote<mojom::blink::IDBDatabase> pending_database,
+    scoped_refptr<base::SingleThreadTaskRunner> task_runner,
+    const IDBDatabaseMetadata& metadata) {
   TRACE_EVENT0("IndexedDB", "IDBOpenDBRequest::onSuccess(database)");
   probe::AsyncTask async_task(GetExecutionContext(), async_task_context(),
                               "success");
@@ -159,17 +163,17 @@ void IDBOpenDBRequest::OnOpenDBSuccess(std::unique_ptr<WebIDBDatabase> backend,
 
   IDBDatabase* idb_database = nullptr;
   if (ResultAsAny()) {
-    // Previous OnUpgradeNeeded call delivered the backend.
-    DCHECK(!backend.get());
+    DCHECK(!pending_database.is_valid());
     idb_database = ResultAsAny()->IdbDatabase();
     DCHECK(idb_database);
     DCHECK(!callbacks_receiver_);
   } else {
-    DCHECK(backend.get());
+    DCHECK(pending_database);
     DCHECK(callbacks_receiver_);
+
     idb_database = MakeGarbageCollected<IDBDatabase>(
-        GetExecutionContext(), std::move(backend),
-        std::move(callbacks_receiver_), std::move(connection_lifetime_));
+        GetExecutionContext(), std::move(callbacks_receiver_),
+        std::move(connection_lifetime_), std::move(pending_database));
     SetResult(MakeGarbageCollected<IDBAny>(idb_database));
   }
   idb_database->SetMetadata(metadata);

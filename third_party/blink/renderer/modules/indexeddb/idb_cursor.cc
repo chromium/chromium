@@ -40,7 +40,6 @@
 #include "third_party/blink/renderer/modules/indexeddb/idb_database.h"
 #include "third_party/blink/renderer/modules/indexeddb/idb_object_store.h"
 #include "third_party/blink/renderer/modules/indexeddb/idb_transaction.h"
-#include "third_party/blink/renderer/modules/indexeddb/web_idb_database.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/bindings/script_state.h"
 #include "third_party/blink/renderer/platform/bindings/v8_private_property.h"
@@ -356,7 +355,7 @@ IDBRequest* IDBCursor::Delete(ScriptState* script_state,
                                       IDBDatabase::kIsKeyCursorErrorMessage);
     return nullptr;
   }
-  if (!transaction_->BackendDB()) {
+  if (!transaction_->db()) {
     exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
                                       IDBDatabase::kDatabaseClosedErrorMessage);
     return nullptr;
@@ -364,7 +363,7 @@ IDBRequest* IDBCursor::Delete(ScriptState* script_state,
 
   IDBRequest* request = IDBRequest::Create(
       script_state, this, transaction_.Get(), std::move(metrics));
-  transaction_->BackendDB()->Delete(
+  transaction_->db()->Delete(
       transaction_->Id(), EffectiveObjectStore()->Id(), IdbPrimaryKey(),
       WTF::BindOnce(&IDBRequest::OnDelete, WrapPersistent(request)));
   return request;

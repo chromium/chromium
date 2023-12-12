@@ -17,10 +17,8 @@ void MockIDBDatabase::Bind(
 mojo::PendingAssociatedRemote<mojom::blink::IDBDatabase>
 MockIDBDatabase::BindNewEndpointAndPassDedicatedRemote() {
   auto remote = receiver_.BindNewEndpointAndPassDedicatedRemote();
-
   receiver_.set_disconnect_handler(
       WTF::BindOnce(&MockIDBDatabase::OnDisconnect, base::Unretained(this)));
-
   return remote;
 }
 
