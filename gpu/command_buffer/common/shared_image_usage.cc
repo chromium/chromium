@@ -21,7 +21,7 @@ std::string CreateLabelForSharedImageUsage(uint32_t usage) {
     return {};
 
   const std::pair<SharedImageUsage, const char*> kUsages[] = {
-      {SHARED_IMAGE_USAGE_GLES2, "Gles2"},
+      {SHARED_IMAGE_USAGE_GLES2_READ, "Gles2Read"},
       {SHARED_IMAGE_USAGE_GLES2_FRAMEBUFFER_HINT, "Gles2FramebufferHint"},
       {SHARED_IMAGE_USAGE_RASTER, "Raster"},
       {SHARED_IMAGE_USAGE_DISPLAY_READ, "DisplayRead"},
@@ -42,6 +42,7 @@ std::string CreateLabelForSharedImageUsage(uint32_t usage) {
       {SHARED_IMAGE_USAGE_CPU_UPLOAD, "CpuUpload"},
       {SHARED_IMAGE_USAGE_SCANOUT_DCOMP_SURFACE, "ScanoutDCompSurface"},
       {SHARED_IMAGE_USAGE_WEBGPU_STORAGE_TEXTURE, "WebgpuStorageTexture"},
+      {SHARED_IMAGE_USAGE_GLES2_WRITE, "Gles2Write"},
   };
 
   std::string label;
