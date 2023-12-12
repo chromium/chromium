@@ -55,6 +55,7 @@ import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.Restriction;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
+import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.multiwindow.MultiWindowUtils;
@@ -65,6 +66,8 @@ import org.chromium.chrome.test.util.ActivityTestUtils;
 import org.chromium.chrome.test.util.ChromeRenderTestRule;
 import org.chromium.chrome.test.util.ChromeTabUtils;
 import org.chromium.chrome.test.util.browser.Features.DisableFeatures;
+import org.chromium.components.feature_engagement.FeatureConstants;
+import org.chromium.components.feature_engagement.Tracker;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.ui.modaldialog.ModalDialogProperties;
@@ -93,6 +96,7 @@ import java.io.IOException;
 @DisableFeatures({ChromeFeatureList.ARCHIVE_TAB_SERVICE, ChromeFeatureList.START_SURFACE_ANDROID})
 public class TabGridIphTest {
     private ModalDialogManager mModalDialogManager;
+    private Tracker mTracker;
 
     @Rule
     public ChromeTabbedActivityTestRule mActivityTestRule = new ChromeTabbedActivityTestRule();
@@ -113,6 +117,18 @@ public class TabGridIphTest {
         mModalDialogManager =
                 TestThreadUtils.runOnUiThreadBlockingNoException(
                         mActivityTestRule.getActivity()::getModalDialogManager);
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    mTracker =
+                            TrackerFactory.getTrackerForProfile(
+                                    mActivityTestRule.getProfile(false));
+                });
+        CriteriaHelper.pollUiThread(mTracker::isInitialized);
+        CriteriaHelper.pollUiThread(
+                () -> {
+                    return mTracker.wouldTriggerHelpUI(
+                            FeatureConstants.TAB_GROUPS_DRAG_AND_DROP_FEATURE);
+                });
     }
 
     @After
