@@ -2490,7 +2490,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Enterprise.SecondaryGoogleAccountUsage.PolicyFetch.ResponseLatency"
-    units="ms" expires_after="2023-10-04">
+    units="ms" expires_after="2024-12-11">
   <owner>rodmartin@google.com</owner>
   <owner>chromeos-commercial-identity@google.com</owner>
   <summary>
@@ -2498,6 +2498,9 @@ chromium-metrics-reviews@google.com.
     the amount of time required to fetch the policy value of
     SecondaryGoogleAccountUsage from the Secure Connect API. This is recorded
     when a user account is added as a secondary account (in-session).
+
+    Warning: this histogram was expired from 2023-10-04 to 2023-12-11; data may
+    be missing.
   </summary>
 </histogram>
 
