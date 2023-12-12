@@ -1101,9 +1101,14 @@ void PartitionAllocSupport::ReconfigureAfterFeatureListInit(
       break;
   }
 
+  const bool scheduler_loop_quarantine = base::FeatureList::IsEnabled(
+      base::features::kPartitionAllocSchedulerLoopQuarantine);
   const size_t scheduler_loop_quarantine_capacity_in_bytes =
       static_cast<size_t>(
           base::features::kPartitionAllocSchedulerLoopQuarantineCapacity.Get());
+  const size_t scheduler_loop_quarantine_capacity_count = static_cast<size_t>(
+      base::features::kPartitionAllocSchedulerLoopQuarantineCapacityCount
+          .Get());
   const bool zapping_by_free_flags = base::FeatureList::IsEnabled(
       base::features::kPartitionAllocZappingByFreeFlags);
 
@@ -1181,7 +1186,9 @@ void PartitionAllocSupport::ReconfigureAfterFeatureListInit(
       allocator_shim::UseDedicatedAlignedPartition(
           brp_config.use_dedicated_aligned_partition),
       brp_config.ref_count_size, bucket_distribution,
+      allocator_shim::SchedulerLoopQuarantine(scheduler_loop_quarantine),
       scheduler_loop_quarantine_capacity_in_bytes,
+      scheduler_loop_quarantine_capacity_count,
       allocator_shim::ZappingByFreeFlags(zapping_by_free_flags));
 
   const uint32_t extras_size = allocator_shim::GetMainPartitionRootExtrasSize();

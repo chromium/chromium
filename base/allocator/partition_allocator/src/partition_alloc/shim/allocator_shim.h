@@ -201,6 +201,8 @@ using SplitMainPartition =
 using UseDedicatedAlignedPartition = partition_alloc::internal::base::
     StrongAlias<class UseDedicatedAlignedPartitionTag, bool>;
 enum class BucketDistribution : uint8_t { kNeutral, kDenser };
+using SchedulerLoopQuarantine = partition_alloc::internal::base::
+    StrongAlias<class SchedulerLoopQuarantineTag, bool>;
 using ZappingByFreeFlags =
     partition_alloc::internal::base::StrongAlias<class ZappingByFreeFlagsTag,
                                                  bool>;
@@ -217,7 +219,9 @@ void ConfigurePartitions(
     UseDedicatedAlignedPartition use_dedicated_aligned_partition,
     size_t ref_count_size,
     BucketDistribution distribution,
+    SchedulerLoopQuarantine scheduler_loop_quarantine,
     size_t scheduler_loop_quarantine_capacity_in_bytes,
+    size_t scheduler_loop_quarantine_capacity_count,
     ZappingByFreeFlags zapping_by_free_flags);
 
 // If |thread_cache_on_non_quarantinable_partition| is specified, the

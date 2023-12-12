@@ -993,6 +993,20 @@ void PartitionRoot::Init(PartitionOptions opts) {
     PA_DCHECK(!settings.use_configurable_pool || IsConfigurablePoolAvailable());
     settings.zapping_by_free_flags =
         opts.zapping_by_free_flags == PartitionOptions::kEnabled;
+
+    settings.scheduler_loop_quarantine =
+        opts.scheduler_loop_quarantine == PartitionOptions::kEnabled;
+    if (settings.scheduler_loop_quarantine) {
+      scheduler_loop_quarantine_root.SetCapacityInBytes(
+          opts.scheduler_loop_quarantine_capacity_in_bytes);
+      scheduler_loop_quarantine.emplace(
+          scheduler_loop_quarantine_root.CreateBranch(
+              opts.scheduler_loop_quarantine_capacity_count));
+    } else {
+      // Deleting a running quarantine is not supported.
+      PA_CHECK(!scheduler_loop_quarantine.has_value());
+    }
+
 #if PA_CONFIG(HAS_MEMORY_TAGGING)
     settings.memory_tagging_enabled_ =
         opts.memory_tagging.enabled == PartitionOptions::kEnabled;
@@ -1134,21 +1148,10 @@ void PartitionRoot::Init(PartitionOptions opts) {
 
 PartitionRoot::Settings::Settings() = default;
 
-PartitionRoot::PartitionRoot()
-    : scheduler_loop_quarantine_root(*this),
-      scheduler_loop_quarantine(
-          scheduler_loop_quarantine_root
-              .CreateBranch<internal::SchedulerLoopQuarantineBranch::
-                                kQuarantineCapacityCount>()) {}
+PartitionRoot::PartitionRoot() : scheduler_loop_quarantine_root(*this) {}
 
 PartitionRoot::PartitionRoot(PartitionOptions opts)
-    : scheduler_loop_quarantine_root(
-          *this,
-          opts.scheduler_loop_quarantine_capacity_in_bytes),
-      scheduler_loop_quarantine(
-          scheduler_loop_quarantine_root
-              .CreateBranch<internal::SchedulerLoopQuarantineBranch::
-                                kQuarantineCapacityCount>()) {
+    : scheduler_loop_quarantine_root(*this) {
   Init(opts);
 }
 

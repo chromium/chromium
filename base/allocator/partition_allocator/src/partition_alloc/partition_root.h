@@ -36,6 +36,7 @@
 #include <cstddef>
 #include <cstdint>
 #include <limits>
+#include <optional>
 
 #include "build/build_config.h"
 #include "partition_alloc/address_pool_manager_types.h"
@@ -180,6 +181,8 @@ struct PartitionOptions {
 
   size_t ref_count_size = 0;
 
+  EnableToggle scheduler_loop_quarantine = kDisabled;
+  size_t scheduler_loop_quarantine_capacity_count = 0;
   size_t scheduler_loop_quarantine_capacity_in_bytes = 0;
 
   EnableToggle zapping_by_free_flags = kDisabled;
@@ -275,6 +278,7 @@ struct PA_ALIGNAS(64) PA_COMPONENT_EXPORT(PARTITION_ALLOC) PartitionRoot {
 #endif  // BUILDFLAG(ENABLE_BACKUP_REF_PTR_SUPPORT)
     bool use_configurable_pool = false;
     bool zapping_by_free_flags = false;
+    bool scheduler_loop_quarantine = false;
 #if PA_CONFIG(HAS_MEMORY_TAGGING)
     bool memory_tagging_enabled_ = false;
     TagViolationReportingMode memory_tagging_reporting_mode_ =
@@ -389,7 +393,8 @@ struct PA_ALIGNAS(64) PA_COMPONENT_EXPORT(PARTITION_ALLOC) PartitionRoot {
   internal::LightweightQuarantineRoot scheduler_loop_quarantine_root;
   // NoDestructor because we don't need to dequarantine objects as the root
   // associated with it is dying anyway.
-  internal::base::NoDestructor<internal::SchedulerLoopQuarantineBranch>
+  std::optional<
+      internal::base::NoDestructor<internal::LightweightQuarantineBranch>>
       scheduler_loop_quarantine;
 
   PartitionRoot();
@@ -880,11 +885,9 @@ struct PA_ALIGNAS(64) PA_COMPONENT_EXPORT(PARTITION_ALLOC) PartitionRoot {
     return straighten_larger_slot_span_free_lists_;
   }
 
-  internal::SchedulerLoopQuarantineBranch&
+  internal::LightweightQuarantineBranch&
   GetSchedulerLoopQuarantineBranchForTesting() {
-    // TODO(crbug.com/1462223): Implement thread-local version and return it
-    // here.
-    return *scheduler_loop_quarantine;
+    return GetSchedulerLoopQuarantineBranch();
   }
 
 #if BUILDFLAG(USE_FREELIST_POOL_OFFSETS)
@@ -1010,7 +1013,7 @@ struct PA_ALIGNAS(64) PA_COMPONENT_EXPORT(PARTITION_ALLOC) PartitionRoot {
   PA_ALWAYS_INLINE ThreadCache* GetOrCreateThreadCache();
   PA_ALWAYS_INLINE ThreadCache* GetThreadCache();
 
-  PA_ALWAYS_INLINE internal::SchedulerLoopQuarantineBranch&
+  PA_ALWAYS_INLINE internal::LightweightQuarantineBranch&
   GetSchedulerLoopQuarantineBranch();
 
   PA_ALWAYS_INLINE AllocationNotificationData
@@ -1415,24 +1418,6 @@ PA_ALWAYS_INLINE void PartitionRoot::FreeInline(void* object) {
     return;
   }
 
-  if constexpr (ContainsFlags(flags, FreeFlags::kZap)) {
-    if (settings.zapping_by_free_flags) {
-      SlotSpan* slot_span = SlotSpan::FromObject(object);
-      uintptr_t slot_start = ObjectToSlotStart(object);
-      internal::SecureMemset(internal::SlotStartAddr2Ptr(slot_start),
-                             internal::kFreedByte,
-                             GetSlotUsableSize(slot_span));
-    }
-  }
-  // TODO(https://crbug.com/1497380): Collecting objects for
-  // `kSchedulerLoopQuarantineBranch` here means it "delays" other checks (BRP
-  // refcount, cookie, etc.)
-  // For better debuggability, we should do these checks before quarantining.
-  if constexpr (ContainsFlags(flags, FreeFlags::kSchedulerLoopQuarantine)) {
-    GetSchedulerLoopQuarantineBranch().Quarantine(object);
-    return;
-  }
-
   // Almost all calls to FreeNoNooks() will end up writing to |*object|, the
   // only cases where we don't would be delayed free() in PCScan, but |*object|
   // can be cold in cache.
@@ -1491,6 +1476,25 @@ PA_ALWAYS_INLINE void PartitionRoot::FreeInline(void* object) {
 
   uintptr_t slot_start = ObjectToSlotStart(object);
   PA_DCHECK(slot_span == SlotSpan::FromSlotStart(slot_start));
+
+  if constexpr (ContainsFlags(flags, FreeFlags::kZap)) {
+    if (settings.zapping_by_free_flags) {
+      internal::SecureMemset(internal::SlotStartAddr2Ptr(slot_start),
+                             internal::kFreedByte,
+                             GetSlotUsableSize(slot_span));
+    }
+  }
+  // TODO(https://crbug.com/1497380): Collecting objects for
+  // `kSchedulerLoopQuarantineBranch` here means it "delays" other checks (BRP
+  // refcount, cookie, etc.)
+  // For better debuggability, we should do these checks before quarantining.
+  if constexpr (ContainsFlags(flags, FreeFlags::kSchedulerLoopQuarantine)) {
+    if (settings.scheduler_loop_quarantine) {
+      GetSchedulerLoopQuarantineBranch().Quarantine(object, slot_span,
+                                                    slot_start);
+    }
+    return;
+  }
 
 #if BUILDFLAG(USE_STARSCAN)
   // TODO(bikineev): Change the condition to PA_LIKELY once PCScan is enabled by
@@ -2508,10 +2512,11 @@ ThreadCache* PartitionRoot::GetThreadCache() {
 }
 
 // private.
-internal::SchedulerLoopQuarantineBranch&
+internal::LightweightQuarantineBranch&
 PartitionRoot::GetSchedulerLoopQuarantineBranch() {
   // TODO(crbug.com/1462223): Implement thread-local version and return it here.
-  return *scheduler_loop_quarantine;
+  PA_DCHECK(scheduler_loop_quarantine.has_value());
+  return *scheduler_loop_quarantine->get();
 }
 
 // Explicitly declare common template instantiations to reduce compile time.

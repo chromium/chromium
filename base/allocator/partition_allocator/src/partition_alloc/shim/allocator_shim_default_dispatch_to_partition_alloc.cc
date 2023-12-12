@@ -533,7 +533,9 @@ void ConfigurePartitions(
     UseDedicatedAlignedPartition use_dedicated_aligned_partition,
     size_t ref_count_size,
     BucketDistribution distribution,
+    SchedulerLoopQuarantine scheduler_loop_quarantine,
     size_t scheduler_loop_quarantine_capacity_in_bytes,
+    size_t scheduler_loop_quarantine_capacity_count,
     ZappingByFreeFlags zapping_by_free_flags) {
   // BRP cannot be enabled without splitting the main partition. Furthermore, in
   // the "before allocation" mode, it can't be enabled without further splitting
@@ -592,8 +594,14 @@ void ConfigurePartitions(
             zapping_by_free_flags
                 ? partition_alloc::PartitionOptions::kEnabled
                 : partition_alloc::PartitionOptions::kDisabled;
+        opts.scheduler_loop_quarantine =
+            scheduler_loop_quarantine
+                ? partition_alloc::PartitionOptions::kEnabled
+                : partition_alloc::PartitionOptions::kDisabled;
         opts.scheduler_loop_quarantine_capacity_in_bytes =
             scheduler_loop_quarantine_capacity_in_bytes;
+        opts.scheduler_loop_quarantine_capacity_count =
+            scheduler_loop_quarantine_capacity_count;
         opts.memory_tagging = {
             .enabled = enable_memory_tagging
                            ? partition_alloc::PartitionOptions::kEnabled
@@ -672,14 +680,17 @@ void ConfigurePartitions(
               : partition_alloc::TagViolationReportingMode::kDisabled;
 
   // We don't use these features in PDFium.
+  auto scheduler_loop_quarantine = SchedulerLoopQuarantine(false);
   size_t scheduler_loop_quarantine_capacity_in_bytes = 0;
+  size_t scheduler_loop_quarantine_capacity_count = 0;
   auto zapping_by_free_flags = ZappingByFreeFlags(false);
 
-  ConfigurePartitions(enable_brp, enable_memory_tagging,
-                      memory_tagging_reporting_mode, split_main_partition,
-                      use_dedicated_aligned_partition, ref_count_size,
-                      distribution, scheduler_loop_quarantine_capacity_in_bytes,
-                      zapping_by_free_flags);
+  ConfigurePartitions(
+      enable_brp, enable_memory_tagging, memory_tagging_reporting_mode,
+      split_main_partition, use_dedicated_aligned_partition, ref_count_size,
+      distribution, scheduler_loop_quarantine,
+      scheduler_loop_quarantine_capacity_in_bytes,
+      scheduler_loop_quarantine_capacity_count, zapping_by_free_flags);
 }
 
 // No synchronization provided: `PartitionRoot.flags` is only written

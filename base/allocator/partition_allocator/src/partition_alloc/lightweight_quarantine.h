@@ -37,11 +37,13 @@
 #include <array>
 #include <atomic>
 #include <limits>
+#include <memory>
 #include <type_traits>
 
-#include "partition_alloc/partition_alloc_base/export_template.h"
+#include "partition_alloc/partition_alloc_base/component_export.h"
 #include "partition_alloc/partition_alloc_base/rand_util.h"
 #include "partition_alloc/partition_alloc_base/thread_annotations.h"
+#include "partition_alloc/partition_alloc_forward.h"
 #include "partition_alloc/partition_lock.h"
 #include "partition_alloc/partition_stats.h"
 
@@ -52,22 +54,17 @@ struct LightweightQuarantineStats;
 
 namespace internal {
 
-template <size_t QuarantineCapacityCount>
 class LightweightQuarantineBranch;
 
-class LightweightQuarantineRoot {
+class PA_COMPONENT_EXPORT(PARTITION_ALLOC) LightweightQuarantineRoot {
  public:
   explicit LightweightQuarantineRoot(PartitionRoot& allocator_root,
                                      size_t capacity_in_bytes = 0)
       : allocator_root_(allocator_root),
         capacity_in_bytes_(capacity_in_bytes) {}
 
-  template <size_t QuarantineCapacityCount>
-  LightweightQuarantineBranch<QuarantineCapacityCount> CreateBranch(
-      bool lock_required = true) {
-    return LightweightQuarantineBranch<QuarantineCapacityCount>(*this,
-                                                                lock_required);
-  }
+  LightweightQuarantineBranch CreateBranch(size_t quarantine_capacity_count,
+                                           bool lock_required = true);
 
   void AccumulateStats(LightweightQuarantineStats& stats) const {
     stats.count += count_.load(std::memory_order_relaxed);
@@ -82,7 +79,7 @@ class LightweightQuarantineRoot {
   size_t GetCapacityInBytes() const {
     return capacity_in_bytes_.load(std::memory_order_relaxed);
   }
-  void SetCapacityInBytesForTesting(size_t capacity) {
+  void SetCapacityInBytes(size_t capacity) {
     capacity_in_bytes_.store(capacity, std::memory_order_relaxed);
     // `size_in_bytes` may exceed `capacity_in_bytes` here.
     // Each branch will try to shrink their quarantine later.
@@ -102,33 +99,24 @@ class LightweightQuarantineRoot {
   std::atomic_size_t cumulative_size_in_bytes_ = 0;
   std::atomic_size_t quarantine_miss_count_ = 0;
 
-  template <size_t>
   friend class LightweightQuarantineBranch;
 };
 
-template <size_t QuarantineCapacityCount>
-class LightweightQuarantineBranch {
+class PA_COMPONENT_EXPORT(PARTITION_ALLOC) LightweightQuarantineBranch {
  public:
-  // `QuarantineCapacityCount` must be a positive number.
-  static constexpr uint32_t kQuarantineCapacityCount = QuarantineCapacityCount;
-  static_assert(0 < QuarantineCapacityCount);
-
   using Root = LightweightQuarantineRoot;
 
   LightweightQuarantineBranch(const LightweightQuarantineBranch&) = delete;
-  LightweightQuarantineBranch(LightweightQuarantineBranch&& b)
-      : root_(b.root_),
-        lock_required_(b.lock_required_),
-        slots_(std::move(b.slots_)),
-        branch_count_(b.branch_count_),
-        branch_size_in_bytes_(b.branch_size_in_bytes_) {}
-  ~LightweightQuarantineBranch() { Purge(); }
+  LightweightQuarantineBranch(LightweightQuarantineBranch&& b);
+  ~LightweightQuarantineBranch();
 
   // Quarantines an object. This list holds information you put into `entry`
   // as much as possible.  If the object is too large, this may return
   // `false`, meaning that quarantine request has failed (and freed
   // immediately). Otherwise, returns `true`.
-  bool Quarantine(void* object);
+  bool Quarantine(void* object,
+                  SlotSpanMetadata* slot_span,
+                  uintptr_t slot_start);
 
   // Dequarantine all entries **held by this branch**.
   // It is possible that another branch with entries and it remains untouched.
@@ -141,7 +129,7 @@ class LightweightQuarantineBranch {
   bool IsQuarantinedForTesting(void* object) {
     ConditionalScopedGuard guard(lock_required_, lock_);
     for (size_t i = 0; i < branch_count_; i++) {
-      if (slots_[i] == object) {
+      if (slots_[i].object == object) {
         return true;
       }
     }
@@ -151,8 +139,9 @@ class LightweightQuarantineBranch {
   Root& GetRoot() { return root_; }
 
  private:
-  explicit LightweightQuarantineBranch(Root& root, bool lock_required)
-      : root_(root), lock_required_(lock_required) {}
+  LightweightQuarantineBranch(Root& root,
+                              size_t quarantine_capacity_count,
+                              bool lock_required);
 
   // Try to dequarantine entries to satisfy below:
   //   branch_count_ <= target_branch_count
@@ -164,6 +153,7 @@ class LightweightQuarantineBranch {
       PA_EXCLUSIVE_LOCKS_REQUIRED(lock_);
 
   Root& root_;
+  const size_t quarantine_capacity_count_;
 
   bool lock_required_;
   Lock lock_;
@@ -196,7 +186,11 @@ class LightweightQuarantineBranch {
   // `slots_` hold an array of quarantined entries.
   // The contents of empty slots are undefined and reads should not occur.
   // First `branch_count_` slots are used and entries should be shuffled.
-  std::array<void*, kQuarantineCapacityCount> slots_ PA_GUARDED_BY(lock_);
+  struct QuarantineSlot {
+    void* object;
+    size_t usable_size;
+  };
+  std::unique_ptr<QuarantineSlot[]> slots_ PA_GUARDED_BY(lock_);
 
   // # of quarantined entries in this branch.
   size_t branch_count_ PA_GUARDED_BY(lock_) = 0;
@@ -204,15 +198,6 @@ class LightweightQuarantineBranch {
 
   friend class LightweightQuarantineRoot;
 };
-
-#define EXPORT_TEMPLATE                             \
-  extern template class PA_EXPORT_TEMPLATE_DECLARE( \
-      PA_COMPONENT_EXPORT(PARTITION_ALLOC))
-using LightweightQuarantineBranchForTesting = LightweightQuarantineBranch<1024>;
-using SchedulerLoopQuarantineRoot = LightweightQuarantineRoot;
-using SchedulerLoopQuarantineBranch = LightweightQuarantineBranch<1024>;
-EXPORT_TEMPLATE LightweightQuarantineBranch<1024>;
-#undef EXPORT_TEMPLATE
 
 }  // namespace internal
 

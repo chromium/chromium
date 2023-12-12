@@ -358,7 +358,12 @@ class PartitionAllocTest
   PartitionOptions GetCommonPartitionOptions() {
     PartitionOptions opts;
     opts.ref_count_size = GetParam().ref_count_size;
+    // Requires explicit `FreeFlag` to activate, no effect otherwise.
     opts.zapping_by_free_flags = PartitionOptions::kEnabled;
+    opts.scheduler_loop_quarantine = PartitionOptions::kEnabled;
+    opts.scheduler_loop_quarantine_capacity_in_bytes =
+        std::numeric_limits<size_t>::max();
+    opts.scheduler_loop_quarantine_capacity_count = 1024;
     return opts;
   }
 
@@ -3625,12 +3630,12 @@ TEST_P(PartitionAllocTest, ZeroFill) {
 }
 
 TEST_P(PartitionAllocTest, SchedulerLoopQuarantine) {
-  SchedulerLoopQuarantineBranch& branch =
+  LightweightQuarantineBranch& branch =
       allocator.root()->GetSchedulerLoopQuarantineBranchForTesting();
 
   constexpr size_t kCapacityInBytes = std::numeric_limits<size_t>::max();
   size_t original_capacity_in_bytes = branch.GetRoot().GetCapacityInBytes();
-  branch.GetRoot().SetCapacityInBytesForTesting(kCapacityInBytes);
+  branch.GetRoot().SetCapacityInBytes(kCapacityInBytes);
 
   for (size_t size : kTestSizes) {
     SCOPED_TRACE(size);
@@ -3648,7 +3653,7 @@ TEST_P(PartitionAllocTest, SchedulerLoopQuarantine) {
   }
 
   branch.Purge();
-  branch.GetRoot().SetCapacityInBytesForTesting(original_capacity_in_bytes);
+  branch.GetRoot().SetCapacityInBytes(original_capacity_in_bytes);
 }
 
 TEST_P(PartitionAllocTest, ZapOnFree) {

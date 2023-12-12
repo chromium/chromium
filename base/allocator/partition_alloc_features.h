@@ -72,8 +72,12 @@ BASE_EXPORT int GetPartitionAllocLargeThreadCacheSizeValueForLowRAMAndroid();
 
 BASE_EXPORT BASE_DECLARE_FEATURE(kPartitionAllocLargeEmptySlotSpanRing);
 BASE_EXPORT BASE_DECLARE_FEATURE(kPartitionAllocSchedulerLoopQuarantine);
+// Scheduler Loop Quarantine's capacity in bytes.
 extern const BASE_EXPORT base::FeatureParam<int>
     kPartitionAllocSchedulerLoopQuarantineCapacity;
+// Scheduler Loop Quarantine's capacity count.
+extern const BASE_EXPORT base::FeatureParam<int>
+    kPartitionAllocSchedulerLoopQuarantineCapacityCount;
 
 BASE_EXPORT BASE_DECLARE_FEATURE(kPartitionAllocZappingByFreeFlags);
 #endif  // BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
