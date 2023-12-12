@@ -10537,7 +10537,6 @@ if (!is_android) {
 
     if (is_chromeos_lacros) {
       deps += [
-        ":lacros_test_support_ui",
         "//chromeos/lacros",
         "//chromeos/lacros:test_support",
         "//components/account_manager_core",
