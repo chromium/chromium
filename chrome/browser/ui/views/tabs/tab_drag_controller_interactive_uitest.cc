@@ -70,6 +70,7 @@
 #include "ui/compositor/layer.h"
 #include "ui/display/display.h"
 #include "ui/display/screen.h"
+#include "ui/gfx/animation/animation_test_api.h"
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/controls/native/native_view_host.h"
 #include "ui/views/view.h"
@@ -811,6 +812,12 @@ class DetachToBrowserTabDragControllerTest
 #endif
   base::test::ScopedFeatureList scoped_feature_list_;
   std::optional<webapps::AppId> tabbed_app_id_;
+
+  // Some of these tests rely on animation being enabled. This forces
+  // animation on even if it's turned off in the OS.
+  gfx::AnimationTestApi::RenderModeResetter animation_mode_reset_{
+      gfx::AnimationTestApi::SetRichAnimationRenderMode(
+          gfx::Animation::RichAnimationRenderMode::FORCE_ENABLED)};
 };
 
 // Creates a browser with four tabs. The first three belong in the same Tab
@@ -1125,6 +1132,8 @@ IN_PROC_BROWSER_TEST_P(DetachToBrowserTabDragControllerTest,
                        MAYBE_DragMultipleTabsRightIntoGroup) {
   ASSERT_TRUE(browser()->tab_strip_model()->SupportsTabGroups());
 
+  // Create a browser with four tabs total, and put each tab into its own
+  // single-tab group.
   TabStrip* tab_strip = GetTabStripForBrowser(browser());
   TabStripModel* model = browser()->tab_strip_model();
   TabGroupModel* group_model = model->group_model();
@@ -1143,8 +1152,9 @@ IN_PROC_BROWSER_TEST_P(DetachToBrowserTabDragControllerTest,
   ASSERT_TRUE(ReleaseInput());
   browser()->tab_strip_model()->ToggleSelectionAt(2);
 
-  // Dragging the first tab at the leftmost position to the center of the first
-  // tab will result in the tabs joining the beginning of Tab Group 2.
+  // Drag the first tab from its left edge toward the right. This should make
+  // the two selected tabs join the start of Tab Group 2 (which previously held
+  // only the second tab).
   const gfx::Point center_first_tab =
       GetCenterInScreenCoordinates(tab_strip->tab_at(0));
   ASSERT_TRUE(
