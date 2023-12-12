@@ -1060,8 +1060,9 @@ void ManagePasswordsUIController::
     }
     return;
   }
-  // If reauth wasn't successful, change to local store and reopen the bubble is
-  // the state didn't change.
+  // If reauth wasn't successful, explicitly opt out, change to local store and
+  // reopen the bubble if the state didn't change.
+  GetPasswordFeatureManager()->OptOutOfAccountStorageAndClearSettings();
   GetPasswordFeatureManager()->SetDefaultPasswordStore(
       password_manager::PasswordForm::Store::kProfileStore);
   if (passwords_data_.state() != password_manager::ui::PENDING_PASSWORD_STATE)
@@ -1119,6 +1120,10 @@ void ManagePasswordsUIController::MoveJustSavedPasswordAfterAccountStoreOptIn(
     // locally. This is already the default value, but setting it explicitly
     // makes sure the user won't be asked to opt in again (since "store not set"
     // gets interpreted as "first-time save").
+    // Similarly, opting out explicitly has special handling in
+    // SyncUserSettings::GetSelectedTypes(), and thus in
+    // IsOptedInForAccountStorage().
+    GetPasswordFeatureManager()->OptOutOfAccountStorageAndClearSettings();
     GetPasswordFeatureManager()->SetDefaultPasswordStore(
         password_manager::PasswordForm::Store::kProfileStore);
   }

@@ -668,10 +668,17 @@ TEST_F(ManagePasswordsUIControllerTest,
                   signin_metrics::ReauthAccessPoint::kPasswordSaveBubble, _))
       .WillOnce(MoveArg<1>(&reauth_callback));
 
-  // Unsuccessful reauth should change the default store to profile store.
-  EXPECT_CALL(*client().GetPasswordFeatureManager(),
-              SetDefaultPasswordStore(
-                  password_manager::PasswordForm::Store::kProfileStore));
+  {
+    // Unsuccessful reauth should change the default store to profile store and
+    // opt out of account storage. OptOutOfAccountStorageAndClearSettings()
+    // clears the store pref, so SetDefaultPasswordStore() should come second.
+    testing::InSequence in_sequence;
+    EXPECT_CALL(*client().GetPasswordFeatureManager(),
+                OptOutOfAccountStorageAndClearSettings());
+    EXPECT_CALL(*client().GetPasswordFeatureManager(),
+                SetDefaultPasswordStore(
+                    password_manager::PasswordForm::Store::kProfileStore));
+  }
 
   // The user clicks save which will invoke the reauth flow.
   controller()->AuthenticateUserForAccountStoreOptInAndSavePassword(

@@ -185,6 +185,16 @@ void KeepAccountStorageSettingsOnlyForUsers(
 // SyncUserSettings::GetSelectedTypes(), see crbug.com/1484531.
 // TODO(crbug.com/1503112): Delete the migration when appropriate, see bug.
 void MigrateOptInPrefToSyncSelectedTypes(PrefService* pref_service);
+
+// When the user declines the opt-in offer during saving, the default
+// store pref is set to kProfileStore, to signal the opt-in shouldn't be
+// offered again (see PasswordFeatureManagerImpl::
+// ShouldOfferOptInAndMoveToAccountStoreAfterSavingLocally()).
+// This function additionally ensures that the opt-in pref is explicitly
+// set to false in that state, which is relevant for GetUserSettings().
+// Opt-in offers from other flows are unaffected (e.g. filling).
+// See crbug.com/1509865.
+void MigrateDeclinedSaveOptInToExplicitOptOut(PrefService* pref_service);
 #endif  // !BUILDFLAG(IS_IOS) && !BUILDFLAG(IS_ANDROID)
 
 }  // namespace password_manager::features_util

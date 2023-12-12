@@ -2661,6 +2661,12 @@ void MigrateObsoleteProfilePrefs(PrefService* profile_prefs,
   // Added 11/2023.
   profile_prefs->ClearPref(kWebAndAppActivityEnabledForShopping);
 
+#if !BUILDFLAG(IS_ANDROID)
+  // Added 12/2023.
+  password_manager::features_util::MigrateDeclinedSaveOptInToExplicitOptOut(
+      profile_prefs);
+#endif  // !BUILDFLAG(IS_ANDROID)
+
   // Please don't delete the following line. It is used by PRESUBMIT.py.
   // END_MIGRATE_OBSOLETE_PROFILE_PREFS
 
