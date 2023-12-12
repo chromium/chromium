@@ -13,6 +13,7 @@
 #include "base/containers/flat_set.h"
 #include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/raw_ref.h"
 #include "base/no_destructor.h"
 #include "base/types/strong_alias.h"
 #include "base/unguessable_token.h"
@@ -352,6 +353,16 @@ class PrintBackendServiceManager {
     base::UnguessableToken saved_callback_id;
   };
 
+  struct ServiceAndCallbackContext {
+    ServiceAndCallbackContext(
+        CallbackContext callback_context,
+        const mojo::Remote<mojom::PrintBackendService>& backend_service);
+    ServiceAndCallbackContext(ServiceAndCallbackContext&& other) = delete;
+    ~ServiceAndCallbackContext();
+    CallbackContext context;
+    const raw_ref<const mojo::Remote<mojom::PrintBackendService>> service;
+  };
+
   PrintBackendServiceManager();
   ~PrintBackendServiceManager();
 
@@ -498,35 +509,24 @@ class PrintBackendServiceManager {
   // Helper function to get the service and initialize a `context` for a given
   // `printer_name`.  This is used for calls supporting Print Preview, where
   // the client type is `kQuery`.
-  // TODO(crbug.com/1418830):  Replace out parameter `context` with a
-  // structured return.
-  const mojo::Remote<mojom::PrintBackendService>&
-  GetServiceAndCallbackContextForQuery(const std::string& printer_name,
-                                       CallbackContext& context);
+  ServiceAndCallbackContext GetServiceAndCallbackContextForQuery(
+      const std::string& printer_name);
 
   // Helper function to get the service and initialize a `context` for a given
   // query with UI `client_id`.  Use `printer_name` for extra sandbox behavior
   // handling.  This is used for calls supporting system print dialogs and
   // printing of a document.
-  // TODO(crbug.com/1418830):  Replace out parameter `context` with a
-  // structured return.
-  const mojo::Remote<mojom::PrintBackendService>&
-  GetServiceAndCallbackContextForQueryWithUiClient(
+  ServiceAndCallbackContext GetServiceAndCallbackContextForQueryWithUiClient(
       ClientId client_id,
-      const std::string& printer_name,
-      CallbackContext& context);
+      const std::string& printer_name);
 
   // Helper function to get the service and initialize a `context` for a given
   // print document `client_id`.  Use `printer_name` for extra sandbox behavior
   // handling.  This is used for calls supporting system print dialogs and
   // printing of a document.
-  // TODO(crbug.com/1418830):  Replace out parameter `context` with a
-  // structured return.
-  const mojo::Remote<mojom::PrintBackendService>&
-  GetServiceAndCallbackContextForPrintDocumentClient(
+  ServiceAndCallbackContext GetServiceAndCallbackContextForPrintDocumentClient(
       ClientId client_id,
-      const std::string& printer_name,
-      CallbackContext& context);
+      const std::string& printer_name);
 
   // Helper functions to save outstanding callbacks.
   template <class... T, class... X>
