@@ -994,6 +994,11 @@ constexpr char kImageSearchPrivacyNotice[] =
 constexpr char kWebAndAppActivityEnabledForShopping[] =
     "web_and_app_activity_enabled_for_shopping";
 
+// Deprecated 12/2023.
+#if BUILDFLAG(IS_ANDROID)
+const char kTemplatesRandomOrder[] = "content_creation.notes.random_order";
+#endif
+
 // Register local state used only for migration (clearing or moving to a new
 // key).
 void RegisterLocalStatePrefsForMigration(PrefRegistrySimple* registry) {
@@ -1413,6 +1418,11 @@ void RegisterProfilePrefsForMigration(
 
   // Deprecated 11/2023.
   registry->RegisterBooleanPref(kWebAndAppActivityEnabledForShopping, true);
+
+  // Deprecated 12/2023.
+#if BUILDFLAG(IS_ANDROID)
+  registry->RegisterListPref(kTemplatesRandomOrder);
+#endif
 }
 
 void ClearSyncRequestedPrefAndMaybeMigrate(PrefService* profile_prefs) {
@@ -1850,7 +1860,6 @@ void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry,
 
 #if BUILDFLAG(IS_ANDROID)
   cdm::MediaDrmStorageImpl::RegisterProfilePrefs(registry);
-  content_creation::prefs::RegisterProfilePrefs(registry);
   KnownInterceptionDisclosureInfoBarDelegate::RegisterProfilePrefs(registry);
   MediaDrmOriginIdManager::RegisterProfilePrefs(registry);
   NotificationChannelsProviderAndroid::RegisterProfilePrefs(registry);
@@ -2666,6 +2675,11 @@ void MigrateObsoleteProfilePrefs(PrefService* profile_prefs,
   password_manager::features_util::MigrateDeclinedSaveOptInToExplicitOptOut(
       profile_prefs);
 #endif  // !BUILDFLAG(IS_ANDROID)
+
+#if BUILDFLAG(IS_ANDROID)
+  // Added 12/2023.
+  profile_prefs->ClearPref(kTemplatesRandomOrder);
+#endif
 
   // Please don't delete the following line. It is used by PRESUBMIT.py.
   // END_MIGRATE_OBSOLETE_PROFILE_PREFS
