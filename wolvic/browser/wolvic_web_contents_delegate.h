@@ -9,6 +9,8 @@
 
 namespace wolvic {
 
+class WolvicJavascriptDialogManager;
+
 class WolvicWebContentsDelegate
     : public web_contents_delegate_android::WebContentsDelegateAndroid {
  public:
@@ -28,8 +30,13 @@ class WolvicWebContentsDelegate
                       bool user_gesture,
                       bool* was_blocked) final;
 
+  content::JavaScriptDialogManager* GetJavaScriptDialogManager(
+      content::WebContents* source) final;
+
+
  private:
   std::unique_ptr<content::WebContents> new_contents_;
+  std::unique_ptr<WolvicJavascriptDialogManager> javascript_dialog_manager_;
 };
 
 }// namespace wolvic
