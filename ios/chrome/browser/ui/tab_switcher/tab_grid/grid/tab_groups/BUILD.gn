@@ -11,6 +11,7 @@ source_set("tab_groups") {
   ]
   deps = [
     ":tab_group_consumer",
+    ":tab_group_mutator",
     ":tab_groups_ui",
     "//base",
     "//ios/chrome/browser/shared/coordinator/chrome_coordinator",
@@ -30,6 +31,7 @@ source_set("tab_groups_ui") {
   ]
   deps = [
     ":tab_group_consumer",
+    ":tab_group_mutator",
     "//base",
     "//ios/chrome/browser/shared/public/features",
     "//ios/chrome/browser/ui/tab_switcher/tab_grid/grid:grid_ui_constants",
@@ -40,6 +42,10 @@ source_set("tab_groups_ui") {
 
 source_set("tab_group_consumer") {
   sources = [ "tab_group_consumer.h" ]
+}
+
+source_set("tab_group_mutator") {
+  sources = [ "tab_group_mutator.h" ]
 }
 
 source_set("unit_tests") {

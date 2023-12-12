@@ -36,4 +36,12 @@
   return self;
 }
 
+#pragma mark - TabGroupMutator
+
+- (BOOL)addNewItemInGroup {
+  // TODO(crbug.com/1501837): Call the appropriate function. Ensure to add new
+  // tab only if policies allows it.
+  return NO;
+}
+
 @end

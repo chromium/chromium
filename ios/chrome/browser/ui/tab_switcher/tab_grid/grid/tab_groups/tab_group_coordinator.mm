@@ -33,6 +33,7 @@
   id<TabGroupsCommands> handler = HandlerForProtocol(
       self.browser->GetCommandDispatcher(), TabGroupsCommands);
   _viewController = [[TabGroupViewController alloc] initWithHandler:handler];
+  _viewController.mutator = _mediator;
 
   _mediator = [[TabGroupMediator alloc]
       initWithWebStateList:self.browser->GetWebStateList()

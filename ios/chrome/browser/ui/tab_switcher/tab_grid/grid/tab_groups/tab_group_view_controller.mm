@@ -7,6 +7,7 @@
 #import "base/check.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/grid_constants.h"
+#import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/tab_groups/tab_group_mutator.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/tab_groups/tab_groups_commands.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"
@@ -68,8 +69,9 @@ constexpr CGFloat kDotTitleSeparationMargin = 8;
 }
 
 - (void)didTapPlusButton {
-  // TODO(crbug.com/1501837): Add the creation of a new tab in the current
-  // group.
+  // TODO(crbug.com/1501837): Take into account the returned bool value of
+  // `addNewItemInGroup`.
+  [self.mutator addNewItemInGroup];
 }
 
 #pragma mark - UINavigationBarDelegate

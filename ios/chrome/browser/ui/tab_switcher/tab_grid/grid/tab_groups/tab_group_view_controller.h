@@ -10,9 +10,12 @@
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/tab_groups/tab_group_consumer.h"
 
 @protocol TabGroupsCommands;
+@protocol TabGroupMutator;
 
 // Tab group view controller displaying one group.
 @interface TabGroupViewController : UIViewController <TabGroupConsumer>
+
+@property(nonatomic, weak) id<TabGroupMutator> mutator;
 
 // Initiates a TabGroupViewController with `handler` to handle user action.
 - (instancetype)initWithHandler:(id<TabGroupsCommands>)handler;
