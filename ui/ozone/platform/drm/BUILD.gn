@@ -12,13 +12,6 @@ import("//testing/test.gni")
 
 visibility = [ "//ui/ozone/*" ]
 
-declare_args() {
-  # Enables commiting of CRTC properties on page flip events.
-  # This is not enabled by default because of a bug on Intel:
-  # https://crbug.com/854753
-  drm_commit_properties_on_page_flip = false
-}
-
 source_set("gbm") {
   sources = [
     "client_native_pixmap_factory_drm.cc",
@@ -185,10 +178,6 @@ source_set("gbm") {
     # Enable VLOG(1) so that they are included in field feedbacks.
     "ENABLED_VLOG_LEVEL=1",
   ]
-
-  if (drm_commit_properties_on_page_flip) {
-    defines += [ "COMMIT_PROPERTIES_ON_PAGE_FLIP" ]
-  }
 }
 
 source_set("gbm_unittests") {
@@ -232,10 +221,6 @@ source_set("gbm_unittests") {
     "//ui/ozone:platform",
     "//ui/ozone/common",
   ]
-
-  if (drm_commit_properties_on_page_flip) {
-    defines = [ "COMMIT_PROPERTIES_ON_PAGE_FLIP" ]
-  }
 }
 
 source_set("drm_integration_tests") {

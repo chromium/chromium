@@ -1062,11 +1062,7 @@ TEST_P(HardwareDisplayPlaneManagerTest, SetColorMatrix_Success) {
   if (use_atomic_) {
     HardwareDisplayPlaneList state;
     PerformPageFlip(/*crtc_idx=*/0, &state);
-#if defined(COMMIT_PROPERTIES_ON_PAGE_FLIP)
-    EXPECT_EQ(1, fake_drm_->get_commit_count());
-#else
     EXPECT_EQ(2, fake_drm_->get_commit_count());
-#endif
     EXPECT_NE(0u, GetCrtcPropertyValue(fake_drm_->crtc_property(0).id, "CTM"));
   } else {
     EXPECT_EQ(1, fake_drm_->get_set_object_property_count());
@@ -1208,11 +1204,7 @@ TEST_P(HardwareDisplayPlaneManagerTest, SetGammaCorrection_Success) {
       fake_drm_->crtc_property(0).id, {}, {}));
   if (use_atomic_) {
     PerformPageFlip(/*crtc_idx=*/0, &state);
-#if defined(COMMIT_PROPERTIES_ON_PAGE_FLIP)
-    EXPECT_EQ(1, fake_drm_->get_commit_count());
-#else
     EXPECT_EQ(2, fake_drm_->get_commit_count());
-#endif
     EXPECT_EQ(
         0u, GetCrtcPropertyValue(fake_drm_->crtc_property(0).id, "GAMMA_LUT"));
     EXPECT_EQ(0u, GetCrtcPropertyValue(fake_drm_->crtc_property(0).id,
@@ -1226,11 +1218,7 @@ TEST_P(HardwareDisplayPlaneManagerTest, SetGammaCorrection_Success) {
       kNonemptyGammaCurve));
   if (use_atomic_) {
     PerformPageFlip(/*crtc_idx=*/0, &state);
-#if defined(COMMIT_PROPERTIES_ON_PAGE_FLIP)
-    EXPECT_EQ(2, fake_drm_->get_commit_count());
-#else
     EXPECT_EQ(4, fake_drm_->get_commit_count());
-#endif
     EXPECT_NE(
         0u, GetCrtcPropertyValue(fake_drm_->crtc_property(0).id, "GAMMA_LUT"));
     EXPECT_NE(0u, GetCrtcPropertyValue(fake_drm_->crtc_property(0).id,

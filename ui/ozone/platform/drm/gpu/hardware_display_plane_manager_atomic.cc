@@ -249,18 +249,6 @@ void HardwareDisplayPlaneManagerAtomic::SetAtomicPropsForCommit(
     if (!idx)
       continue;
 
-#if defined(COMMIT_PROPERTIES_ON_PAGE_FLIP)
-    // Apply all CRTC properties in the page-flip so we don't block the
-    // swap chain for a vsync.
-    // TODO(dnicoara): See if we can apply these properties async using
-    // DRM_MODE_ATOMIC_ASYNC_UPDATE flag when committing.
-    AddPropertyIfValid(atomic_request, crtc,
-                       crtc_state_[*idx].properties.degamma_lut);
-    AddPropertyIfValid(atomic_request, crtc,
-                       crtc_state_[*idx].properties.gamma_lut);
-    AddPropertyIfValid(atomic_request, crtc, crtc_state_[*idx].properties.ctm);
-#endif
-
     AddPropertyIfValid(atomic_request, crtc,
                        crtc_state_[*idx].properties.background_color);
   }
@@ -452,7 +440,6 @@ HardwareDisplayPlaneManagerAtomic::CreatePlane(uint32_t plane_id) {
 bool HardwareDisplayPlaneManagerAtomic::CommitColorMatrix(
     const CrtcProperties& crtc_props) {
   DCHECK(crtc_props.ctm.id);
-#if !defined(COMMIT_PROPERTIES_ON_PAGE_FLIP)
   ScopedDrmAtomicReqPtr property_set(drmModeAtomicAlloc());
   int ret = drmModeAtomicAddProperty(property_set.get(), crtc_props.id,
                                      crtc_props.ctm.id, crtc_props.ctm.value);
@@ -467,15 +454,11 @@ bool HardwareDisplayPlaneManagerAtomic::CommitColorMatrix(
   // TODO(dnicoara): Should cache these values locally and aggregate them with
   // the page flip event otherwise this "steals" a vsync to apply the property.
   return drm_->CommitProperties(property_set.get(), 0, 0, nullptr);
-#else
-  return true;
-#endif
 }
 
 bool HardwareDisplayPlaneManagerAtomic::CommitGammaCorrection(
     const CrtcProperties& crtc_props) {
   DCHECK(crtc_props.degamma_lut.id || crtc_props.gamma_lut.id);
-#if !defined(COMMIT_PROPERTIES_ON_PAGE_FLIP)
   ScopedDrmAtomicReqPtr property_set(drmModeAtomicAlloc());
   if (crtc_props.degamma_lut.id) {
     int ret = drmModeAtomicAddProperty(property_set.get(), crtc_props.id,
@@ -505,9 +488,6 @@ bool HardwareDisplayPlaneManagerAtomic::CommitGammaCorrection(
   // TODO(dnicoara): Should cache these values locally and aggregate them with
   // the page flip event otherwise this "steals" a vsync to apply the property.
   return drm_->CommitProperties(property_set.get(), 0, 0, nullptr);
-#else
-  return true;
-#endif
 }
 
 bool HardwareDisplayPlaneManagerAtomic::AddOutFencePtrProperties(
