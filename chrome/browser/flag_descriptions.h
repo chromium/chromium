@@ -1250,6 +1250,9 @@ extern const char kLegacyTechReportEnableCookieIssueReportsDescription[];
 extern const char kLegacyTechReportTopLevelUrlName[];
 extern const char kLegacyTechReportTopLevelUrlDescription[];
 
+extern const char kLensCameraAssistedSearchName[];
+extern const char kLensCameraAssistedSearchDescription[];
+
 extern const char kLensImageFormatOptimizationsName[];
 extern const char kLensImageFormatOptimizationsDescription[];
 
