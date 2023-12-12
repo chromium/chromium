@@ -83,6 +83,14 @@ struct FileHandlerDialogArgs {
   // The local file tasks the user can pick from to open the files. Displayed in
   // the `kFileHandlerDialog` dialog.
   array<DialogTask> local_tasks;
+
+  // Whether Google Workspace should be displayed in the `kFileHandlerDialog`
+  // dialog.
+  bool show_google_workspace_task;
+
+  // Whether Microsoft 365 should be displayed in the `kFileHandlerDialog`
+  // dialog.
+  bool show_microsoft_office_task;
 };
 
 union DialogSpecificArgs {

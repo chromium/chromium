@@ -33,6 +33,7 @@
 #include "chrome/browser/ash/file_manager/volume_manager.h"
 #include "chrome/browser/ash/file_system_provider/mount_path_util.h"
 #include "chrome/browser/browser_process.h"
+#include "chrome/browser/chromeos/upload_office_to_cloud/upload_office_to_cloud.h"
 #include "chrome/browser/notifications/notification_display_service.h"
 #include "chrome/browser/ui/ash/system_web_apps/system_web_app_ui_utils.h"
 #include "chrome/browser/ui/browser_list.h"
@@ -49,6 +50,7 @@
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/grit/generated_resources.h"
 #include "chromeos/ash/components/browser_context_helper/browser_context_helper.h"
+#include "chromeos/constants/chromeos_features.h"
 #include "components/user_manager/user_manager.h"
 #include "extensions/browser/api/file_handlers/mime_util.h"
 #include "extensions/browser/entry_info.h"
@@ -440,6 +442,13 @@ bool CloudOpenTask::ExecuteInternal() {
     return InitAndShowDialog(DialogPage::kFileHandlerDialog);
   }
 
+  return MaybeRunFixupFlow();
+}
+
+// Runs the fixup version of setup if there are any issues, e.g. ODFS is not
+// mounted. Otherwise, attempts to move files to the correct cloud or open the
+// files if they are already there.
+bool CloudOpenTask::MaybeRunFixupFlow() {
   if (ShouldFixUpOffice(profile_, cloud_provider_)) {
     // TODO(cassycc): Use page specifically for fix up.
     return InitAndShowDialog(DialogPage::kOneDriveSetup);
@@ -930,11 +939,17 @@ mojom::DialogArgsPtr CloudOpenTask::CreateDialogArgs(DialogPage dialog_page) {
     args->file_names.push_back(file_url.path().BaseName().value());
   }
   switch (dialog_page) {
-    case DialogPage::kFileHandlerDialog:
+    case DialogPage::kFileHandlerDialog: {
+      auto file_handler_dialog_args = mojom::FileHandlerDialogArgs::New();
+      file_handler_dialog_args->show_google_workspace_task =
+          chromeos::cloud_upload::IsGoogleWorkspaceCloudUploadAllowed(profile_);
+      file_handler_dialog_args->show_microsoft_office_task =
+          chromeos::cloud_upload::IsMicrosoftOfficeCloudUploadAllowed(profile_);
       args->dialog_specific_args =
           mojom::DialogSpecificArgs::NewFileHandlerDialogArgs(
-              mojom::FileHandlerDialogArgs::New());
+              std::move(file_handler_dialog_args));
       break;
+    }
     case DialogPage::kOneDriveSetup: {
       auto one_drive_setup_dialog_args = mojom::OneDriveSetupDialogArgs::New();
       one_drive_setup_dialog_args->set_office_as_default_handler =
@@ -983,6 +998,26 @@ void CloudOpenTask::ShowDialog(
     std::unique_ptr<fm_tasks::ResultingTasks> resulting_tasks) {
   if (resulting_tasks) {
     SetTaskArgs(args, std::move(resulting_tasks));
+
+    if (chromeos::features::IsUploadOfficeToCloudForEnterpriseEnabled()) {
+      const auto& file_handler_dialog_args =
+          args->dialog_specific_args->get_file_handler_dialog_args();
+      // When there is only one possible task (Microsoft or Google) and no
+      // further local tasks, skip the file handler page and either show the
+      // OneDrive setup if necessary, or go straight to opening/moving the
+      // files.
+      if ((!file_handler_dialog_args->show_microsoft_office_task ||
+           !file_handler_dialog_args->show_google_workspace_task) &&
+          local_tasks_.empty()) {
+        // Validate that `cloud_provider_` differs from the disabled task.
+        CHECK(!(cloud_provider_ == CloudProvider::kOneDrive &&
+                !file_handler_dialog_args->show_microsoft_office_task));
+        CHECK(!(cloud_provider_ == CloudProvider::kGoogleDrive &&
+                !file_handler_dialog_args->show_google_workspace_task));
+        MaybeRunFixupFlow();
+        return;
+      }
+    }
   }
 
   bool office_move_confirmation_shown =
@@ -1301,6 +1336,7 @@ constexpr int kDialogHeightForOneDriveSetup = 556;
 constexpr int kDialogWidthForFileHandlerDialog = 512;
 constexpr int kDialogHeightForFileHandlerDialog = 379;
 constexpr int kDialogHeightForFileHandlerDialogNoLocalApp = 315;
+constexpr int kDialogHeightForFileHandlerDialogOneHandlerMissing = 295;
 
 constexpr int kDialogWidthForMoveConfirmation = 512;
 constexpr int kDialogHeightForMoveConfirmationWithCheckbox = 524;
@@ -1314,13 +1350,21 @@ constexpr int kDialogHeightForConnectToOneDrive = 556;
 void CloudUploadDialog::GetDialogSize(gfx::Size* size) const {
   const auto& dialog_specific_args = dialog_args_->dialog_specific_args;
   if (dialog_specific_args->is_file_handler_dialog_args()) {
-    const bool has_local_tasks =
-        !dialog_specific_args->get_file_handler_dialog_args()
-             ->local_tasks.empty();
+    const auto& file_handler_dialog_args =
+        dialog_specific_args->get_file_handler_dialog_args();
+    const bool has_local_tasks = !file_handler_dialog_args->local_tasks.empty();
+    const bool is_microsoft_office_or_google_workspace_disabled_by_policy =
+        !file_handler_dialog_args->show_microsoft_office_task ||
+        !file_handler_dialog_args->show_google_workspace_task;
     size->set_width(kDialogWidthForFileHandlerDialog);
-    size->set_height(has_local_tasks
-                         ? kDialogHeightForFileHandlerDialog
-                         : kDialogHeightForFileHandlerDialogNoLocalApp);
+    if (is_microsoft_office_or_google_workspace_disabled_by_policy) {
+      CHECK(has_local_tasks);
+      size->set_height(kDialogHeightForFileHandlerDialogOneHandlerMissing);
+    } else {
+      size->set_height(has_local_tasks
+                           ? kDialogHeightForFileHandlerDialog
+                           : kDialogHeightForFileHandlerDialogNoLocalApp);
+    }
   } else if (dialog_specific_args->is_one_drive_setup_dialog_args()) {
     size->set_width(kDialogWidthForOneDriveSetup);
     size->set_height(kDialogHeightForOneDriveSetup);

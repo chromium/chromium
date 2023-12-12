@@ -166,6 +166,7 @@ class CloudOpenTask : public BrowserListObserver,
 
   // See the .cc implementation for comments on private methods.
   bool ExecuteInternal();
+  bool MaybeRunFixupFlow();
   void OpenOrMoveFiles();
   void OpenAlreadyHostedDriveUrls();
   void OnGoogleDriveGetMetadata(drive::FileError error,
@@ -318,6 +319,9 @@ class CloudUploadDialog : public SystemWebDialogDelegate {
   mojom::DialogArgsPtr dialog_args_;
   UploadRequestCallback callback_;
   bool office_move_confirmation_shown_;
+
+  // Only relevant for `mojom::DialogPage::kFileHandlerDialog`.
+  bool is_microsoft_office_or_google_workspace_disabled_by_policy_ = false;
 };
 
 }  // namespace ash::cloud_upload

@@ -101,6 +101,8 @@ suite('<file-handler-page>', () => {
       dialogSpecificArgs: {
         fileHandlerDialogArgs: {
           localTasks: createTasks(numTasks),
+          showGoogleWorkspaceTask: true,
+          showMicrosoftOfficeTask: true,
         },
       },
     });
@@ -137,6 +139,8 @@ suite('<file-handler-page>', () => {
       dialogSpecificArgs: {
         fileHandlerDialogArgs: {
           localTasks: createTasks(numTasks),
+          showGoogleWorkspaceTask: true,
+          showMicrosoftOfficeTask: true,
         },
       },
     });
@@ -172,6 +176,8 @@ suite('<file-handler-page>', () => {
       dialogSpecificArgs: {
         fileHandlerDialogArgs: {
           localTasks: createTasks(numTasks),
+          showGoogleWorkspaceTask: true,
+          showMicrosoftOfficeTask: true,
         },
       },
     });
@@ -208,6 +214,8 @@ suite('<file-handler-page>', () => {
       dialogSpecificArgs: {
         fileHandlerDialogArgs: {
           localTasks: createTasks(numTasks),
+          showGoogleWorkspaceTask: true,
+          showMicrosoftOfficeTask: true,
         },
       },
     });
@@ -246,6 +254,8 @@ suite('<file-handler-page>', () => {
               dialogSpecificArgs: {
                 fileHandlerDialogArgs: {
                   localTasks: createTasks(numTasks),
+                  showGoogleWorkspaceTask: true,
+                  showMicrosoftOfficeTask: true,
                 },
               },
             });
@@ -295,6 +305,8 @@ suite('<file-handler-page>', () => {
               dialogSpecificArgs: {
                 fileHandlerDialogArgs: {
                   localTasks: createTasks(numTasks),
+                  showGoogleWorkspaceTask: true,
+                  showMicrosoftOfficeTask: true,
                 },
               },
             });
@@ -336,6 +348,8 @@ suite('<file-handler-page>', () => {
       dialogSpecificArgs: {
         fileHandlerDialogArgs: {
           localTasks: [],
+          showGoogleWorkspaceTask: true,
+          showMicrosoftOfficeTask: true,
         },
       },
     });
@@ -343,6 +357,43 @@ suite('<file-handler-page>', () => {
     assertEquals(fileHandlerPageApp.localHandlerCards.length, numTasks);
     assertFalse(!!fileHandlerPageApp.$('#accordion'));
   });
+
+  /**
+   * For each configuration of (showMicrosoftOfficeTask,showGoogleWorkspaceTask)
+   * booleans checks that the corresponding cards are conditionally shown or not
+   * shown. Note that (false,false) is not a valid configuration and is hence
+   * excluded from the array.
+   */
+  [[true, true], [true, false], [false, true]].forEach(
+      showPredefinedTasks => test(
+          `Show predefined tasks with params = ${showPredefinedTasks}`,
+          async () => {
+            const [showMicrosoftOfficeTask, showGoogleWorkspaceTask] =
+                showPredefinedTasks;
+            await setUp({
+              fileNames: ['file.docx'],
+              officeWebAppInstalled: false,
+              installOfficeWebAppResult: false,
+              odfsMounted: false,
+              dialogSpecificArgs: {
+                fileHandlerDialogArgs: {
+                  localTasks: createTasks(1),
+                  showMicrosoftOfficeTask: showMicrosoftOfficeTask!,
+                  showGoogleWorkspaceTask: showGoogleWorkspaceTask!,
+                },
+              },
+            });
+            const cloudProviderCardsCount =
+                (!showGoogleWorkspaceTask || !showMicrosoftOfficeTask) ? 1 : 2;
+            assertEquals(
+                fileHandlerPageApp.cloudProviderCards.length,
+                cloudProviderCardsCount);
+            assertEquals(fileHandlerPageApp.localHandlerCards.length, 1);
+            assertEquals(
+                !!fileHandlerPageApp.$('#onedrive'), showMicrosoftOfficeTask);
+            assertEquals(
+                !!fileHandlerPageApp.$('#drive'), showGoogleWorkspaceTask);
+          }));
 
   /**
    * Test that any selected local task gets unselected if the accordion gets
@@ -360,6 +411,8 @@ suite('<file-handler-page>', () => {
           dialogSpecificArgs: {
             fileHandlerDialogArgs: {
               localTasks: createTasks(numTasks),
+              showGoogleWorkspaceTask: true,
+              showMicrosoftOfficeTask: true,
             },
           },
         });

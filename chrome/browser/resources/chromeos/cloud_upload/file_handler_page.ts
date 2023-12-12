@@ -65,11 +65,20 @@ export class FileHandlerPageElement extends HTMLElement {
       assert(dialogArgs.args.dialogSpecificArgs);
       assert(dialogArgs.args.dialogSpecificArgs.fileHandlerDialogArgs);
 
-      const localTasks =
-          dialogArgs.args.dialogSpecificArgs.fileHandlerDialogArgs?.localTasks;
+      const fileHandlerDialogArgs =
+          dialogArgs.args.dialogSpecificArgs.fileHandlerDialogArgs;
+
+      const localTasks = fileHandlerDialogArgs?.localTasks;
+      const showGoogleWorkspaceTask =
+          fileHandlerDialogArgs?.showGoogleWorkspaceTask;
+      const showMicrosoftOfficeTask =
+          fileHandlerDialogArgs?.showMicrosoftOfficeTask;
+
       // Adjust the dialog's size if there are no local tasks to display.
       if (localTasks.length == 0) {
         this.$('#dialog').style.height = '315px';
+      } else if (!showGoogleWorkspaceTask || !showMicrosoftOfficeTask) {
+        this.$('#dialog').style.height = '295px';
       }
 
       const {name, icon, type} =
@@ -80,21 +89,25 @@ export class FileHandlerPageElement extends HTMLElement {
       titleElement.innerText =
           loadTimeData.getStringF('fileHandlerTitle', type);
 
-      const driveCard = new CloudProviderCardElement();
-      driveCard.setParameters(
-          CloudProviderType.DRIVE, name,
-          loadTimeData.getString('googleDriveStorage'));
-      driveCard.setIconClass(icon);
-      driveCard.id = 'drive';
-      this.addCloudProviderCard(driveCard);
+      if (showGoogleWorkspaceTask) {
+        const driveCard = new CloudProviderCardElement();
+        driveCard.setParameters(
+            CloudProviderType.DRIVE, name,
+            loadTimeData.getString('googleDriveStorage'));
+        driveCard.setIconClass(icon);
+        driveCard.id = 'drive';
+        this.addCloudProviderCard(driveCard);
+      }
 
-      const officeCard = new CloudProviderCardElement();
-      officeCard.setParameters(
-          CloudProviderType.ONE_DRIVE, loadTimeData.getString('microsoft365'),
-          loadTimeData.getString('oneDriveStorage'));
-      officeCard.setIconClass('office');
-      officeCard.id = 'onedrive';
-      this.addCloudProviderCard(officeCard);
+      if (showMicrosoftOfficeTask) {
+        const officeCard = new CloudProviderCardElement();
+        officeCard.setParameters(
+            CloudProviderType.ONE_DRIVE, loadTimeData.getString('microsoft365'),
+            loadTimeData.getString('oneDriveStorage'));
+        officeCard.setIconClass('office');
+        officeCard.id = 'onedrive';
+        this.addCloudProviderCard(officeCard);
+      }
 
       if (localTasks.length == 0) {
         return;
