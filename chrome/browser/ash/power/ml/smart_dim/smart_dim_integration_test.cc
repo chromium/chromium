@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "base/cpu.h"
 #include "base/run_loop.h"
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
@@ -17,6 +18,7 @@
 #include "chromeos/ash/components/standalone_browser/standalone_browser_features.h"
 #include "components/component_updater/component_updater_service.h"
 #include "net/dns/mock_host_resolver.h"
+#include "testing/gtest/include/gtest/gtest.h"
 #include "ui/aura/env.h"
 #include "ui/aura/env_observer.h"
 #include "ui/aura/window_observer.h"
@@ -189,9 +191,13 @@ class SmartDimLacrosIntegrationTest : public SmartDimIntegrationTest {
   base::test::ScopedFeatureList feature_list_;
 };
 
-// Disabled due to failure on chromeos-betty-pi-arc-chrome.
-// TODO(http://b/308674133): Enable after fix.
-IN_PROC_BROWSER_TEST_F(SmartDimLacrosIntegrationTest, DISABLED_SmartDim) {
+IN_PROC_BROWSER_TEST_F(SmartDimLacrosIntegrationTest, SmartDim) {
+  // Lacros fails to start up correctly on VM tryservers like
+  // chromeos-amd64-generic (Lacros restarts in a loop). b/303359438
+  if (base::CPU().is_running_in_vm()) {
+    GTEST_SKIP();
+  }
+
   ASSERT_TRUE(crosapi::browser_util::IsLacrosEnabled());
 
   // The test opens a Lacros window, so ensure the Wayland server is running and
