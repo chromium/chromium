@@ -572,6 +572,12 @@ extern const char kCleanupSubPage[];
 extern const char kChromeUICastFeedbackHost[];
 #endif
 
+#if !BUILDFLAG(IS_ANDROID) && BUILDFLAG(GOOGLE_CHROME_BRANDING)
+extern const char kChromeUILensUntrustedURL[];
+extern const char kChromeUILensURL[];
+extern const char kChromeUILensHost[];
+#endif
+
 // Extensions sub pages.
 extern const char kExtensionConfigureCommandsSubPage[];
 

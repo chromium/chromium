@@ -660,6 +660,12 @@ const char kChromeUISearchEngineChoiceHost[] = "search-engine-choice";
 const char kChromeUISearchEngineChoiceURL[] = "chrome://search-engine-choice";
 #endif
 
+#if BUILDFLAG(ENABLE_LENS_DESKTOP_GOOGLE_BRANDED_FEATURES)
+const char kChromeUILensURL[] = "chrome://lens/";
+const char kChromeUILensUntrustedURL[] = "chrome-untrusted://lens/";
+const char kChromeUILensHost[] = "lens";
+#endif
+
 // Extension sub pages.
 const char kExtensionConfigureCommandsSubPage[] = "configureCommands";
 

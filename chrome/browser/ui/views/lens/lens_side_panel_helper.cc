@@ -9,6 +9,7 @@
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/frame/top_container_view.h"
 #include "chrome/browser/ui/views/lens/lens_region_search_instructions_view.h"
+#include "chrome/browser/ui/views/lens/lens_static_page_controller.h"
 #include "chrome/browser/ui/views/side_panel/lens/lens_side_panel_coordinator.h"
 #include "chrome/browser/ui/views/side_panel/search_companion/search_companion_side_panel_coordinator.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_coordinator.h"
@@ -92,6 +93,16 @@ content::WebContents* GetLensUnifiedSidePanelWebContentsForTesting(
       lens_side_panel_coordinator->GetViewWebContentsForTesting();
   DCHECK(web_contents);
   return web_contents;
+}
+
+void OpenLensStaticPage(Browser* browser) {
+  DCHECK(browser);
+  auto lens_static_page_data = std::make_unique<lens::LensStaticPageData>();
+  lens_static_page_data->lens_static_page_controller =
+      std::make_unique<lens::LensStaticPageController>(browser);
+  lens_static_page_data->lens_static_page_controller->OpenStaticPage();
+  browser->SetUserData(LensStaticPageData::kDataKey,
+                       std::move(lens_static_page_data));
 }
 
 }  // namespace lens

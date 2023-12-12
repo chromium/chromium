@@ -6376,10 +6376,18 @@ static_library("ui") {
       "views/lens/lens_region_search_instructions_view.h",
       "views/lens/lens_side_panel_helper.cc",
       "views/lens/lens_side_panel_navigation_helper.cc",
+      "views/lens/lens_static_page_controller.cc",
+      "views/lens/lens_static_page_controller.h",
       "views/side_panel/lens/lens_side_panel_coordinator.cc",
       "views/side_panel/lens/lens_side_panel_coordinator.h",
       "views/side_panel/lens/lens_unified_side_panel_view.cc",
       "views/side_panel/lens/lens_unified_side_panel_view.h",
+      "webui/lens/lens_ui.cc",
+      "webui/lens/lens_ui.h",
+      "webui/lens/lens_untrusted_ui.cc",
+      "webui/lens/lens_untrusted_ui.h",
+      "webui/lens/lens_untrusted_ui_config.cc",
+      "webui/lens/lens_untrusted_ui_config.h",
     ]
   }
 

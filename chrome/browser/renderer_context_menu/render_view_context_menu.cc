@@ -4122,6 +4122,10 @@ void RenderViewContextMenu::ExecRegionSearch(
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
   Browser* browser = GetBrowser();
   CHECK(browser);
+  if (lens::features::IsLensRegionSearchStaticPageEnabled()) {
+    lens::OpenLensStaticPage(browser);
+    return;
+  }
 
   // We don't use `source_web_contents_` here because it doesn't work with the
   // PDF reader.
