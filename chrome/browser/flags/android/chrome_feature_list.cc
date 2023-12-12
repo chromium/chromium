@@ -211,7 +211,6 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &kCCTResourcePrefetch,
     &kCCTTabModalDialog,
     &kCCTTextFragmentLookupApiEnabled,
-    &kCCTToolbarCustomizations,
     &kDontAutoHideBrowserControls,
     &kCacheDeprecatedSystemLocationSetting,
     &kChromeNewDownloadTab,
@@ -618,10 +617,6 @@ BASE_FEATURE(kCCTTabModalDialog,
 
 BASE_FEATURE(kCCTTextFragmentLookupApiEnabled,
              "CCTTextFragmentLookupApiEnabled",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
-BASE_FEATURE(kCCTToolbarCustomizations,
-             "CCTToolbarCustomizations",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kDontAutoHideBrowserControls,

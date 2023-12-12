@@ -665,16 +665,15 @@ public class CustomTabIntentDataProvider extends BrowserServicesIntentDataProvid
         int defaultRadius =
                 context.getResources()
                         .getDimensionPixelSize(R.dimen.custom_tabs_default_corner_radius);
-        if (ChromeFeatureList.sCctToolbarCustomizations.isEnabled()) {
-            int radiusPx =
-                    IntentUtils.safeGetIntExtra(
-                            intent, EXTRA_TOOLBAR_CORNER_RADIUS_IN_PIXEL_LEGACY, 0);
-            if (radiusPx > 0) return radiusPx;
-            int radiusDp = IntentUtils.safeGetIntExtra(intent, EXTRA_TOOLBAR_CORNER_RADIUS_DP, 0);
-            if (radiusDp > 0) {
-                return Math.round(radiusDp * context.getResources().getDisplayMetrics().density);
-            }
+        int radiusPx =
+                IntentUtils.safeGetIntExtra(intent, EXTRA_TOOLBAR_CORNER_RADIUS_IN_PIXEL_LEGACY, 0);
+        if (radiusPx > 0) return radiusPx;
+
+        int radiusDp = IntentUtils.safeGetIntExtra(intent, EXTRA_TOOLBAR_CORNER_RADIUS_DP, 0);
+        if (radiusDp > 0) {
+            return Math.round(radiusDp * context.getResources().getDisplayMetrics().density);
         }
+
         return defaultRadius;
     }
 
@@ -1424,9 +1423,6 @@ public class CustomTabIntentDataProvider extends BrowserServicesIntentDataProvid
 
     @Override
     public @CloseButtonPosition int getCloseButtonPosition() {
-        if (!ChromeFeatureList.sCctToolbarCustomizations.isEnabled()) {
-            return CLOSE_BUTTON_POSITION_DEFAULT;
-        }
         return IntentUtils.safeGetIntExtra(
                 mIntent, EXTRA_CLOSE_BUTTON_POSITION, CLOSE_BUTTON_POSITION_DEFAULT);
     }
