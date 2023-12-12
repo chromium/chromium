@@ -623,13 +623,12 @@ TEST_F(AssistantPageViewTest, PageViewHasBackgroundBlurInTabletMode) {
   EXPECT_FALSE(page_view_layer->fills_bounds_opaquely());
   EXPECT_EQ(page_view_layer->background_blur(),
             ColorProvider::kBackgroundBlurSigma);
-  EXPECT_EQ(page_view_layer->GetTargetColor(),
-            ColorProvider::Get()->GetBaseLayerColor(
-                ColorProvider::BaseLayerType::kTransparent80));
+  EXPECT_EQ(
+      page_view_layer->GetTargetColor(),
+      page_view()->GetColorProvider()->GetColor(kColorAshShieldAndBase80));
 }
 
 TEST_F(AssistantPageViewTest, BackgroundColorInDarkLightMode) {
-  auto* color_provider = AshColorProvider::Get();
   auto* dark_light_mode_controller = DarkLightModeControllerImpl::Get();
   dark_light_mode_controller->OnActiveUserPrefServiceChanged(
       Shell::Get()->session_controller()->GetActivePrefService());
@@ -641,18 +640,18 @@ TEST_F(AssistantPageViewTest, BackgroundColorInDarkLightMode) {
 
   const bool initial_dark_mode_status =
       dark_light_mode_controller->IsDarkModeEnabled();
-  EXPECT_EQ(page_view()->layer()->GetTargetColor(),
-            color_provider->GetBaseLayerColor(
-                ColorProvider::BaseLayerType::kTransparent80));
+  EXPECT_EQ(
+      page_view()->layer()->GetTargetColor(),
+      page_view()->GetColorProvider()->GetColor(kColorAshShieldAndBase80));
 
   // Switch the color mode.
   dark_light_mode_controller->ToggleColorMode();
   ASSERT_NE(initial_dark_mode_status,
             dark_light_mode_controller->IsDarkModeEnabled());
 
-  EXPECT_EQ(page_view()->layer()->GetTargetColor(),
-            color_provider->GetBaseLayerColor(
-                ColorProvider::BaseLayerType::kTransparent80));
+  EXPECT_EQ(
+      page_view()->layer()->GetTargetColor(),
+      page_view()->GetColorProvider()->GetColor(kColorAshShieldAndBase80));
 }
 
 //------------------------------------------------------------------------------

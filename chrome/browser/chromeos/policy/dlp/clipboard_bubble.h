@@ -33,6 +33,9 @@ class ClipboardBubbleView : public views::View {
   virtual gfx::Size GetBubbleSize() const = 0;
 
  protected:
+  // views::View:
+  void OnThemeChanged() override;
+
   // This function should get called if the view got updated e.g. AddChildView.
   void UpdateBorderSize(const gfx::Size& size);
 

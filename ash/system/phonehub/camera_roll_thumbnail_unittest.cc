@@ -7,6 +7,7 @@
 #include "ash/constants/ash_features.h"
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/strings/grit/ash_strings.h"
+#include "ash/style/ash_color_id.h"
 #include "ash/style/ash_color_provider.h"
 #include "base/logging.h"
 #include "base/strings/string_number_conversions.h"
@@ -134,9 +135,9 @@ class CameraRollThumbnailTest : public views::ViewsTestBase {
     if (is_video) {
       cc::PaintFlags flags;
       flags.setAntiAlias(true);
-      flags.setColor(provider->GetBaseLayerColor(
-          AshColorProvider::BaseLayerType::kTransparent80));
       flags.setStyle(cc::PaintFlags::kFill_Style);
+      flags.setColor(camera_roll_thumbnail()->GetColorProvider()->GetColor(
+          kColorAshShieldAndBase80));
       expected.DrawCircle(kExpectedCameraRollThumbnailVideoCircleOrigin,
                           kExpectedCameraRollThumbnailVideoCircleRadius, flags);
       expected.DrawImageInt(

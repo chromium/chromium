@@ -21,9 +21,9 @@
 #include "ui/views/controls/styled_label.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-#include "ash/constants/ash_features.h"
 #include "ash/public/cpp/new_window_delegate.h"
 #include "ash/public/cpp/style/color_provider.h"
+#include "ui/chromeos/styles/cros_tokens_color_mappings.h"
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
@@ -158,22 +158,18 @@ END_METADATA
 
 ClipboardBubbleView::ClipboardBubbleView(const std::u16string& text) {
   SetPaintToLayer(ui::LAYER_SOLID_COLOR);
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  ash::ColorProvider* color_provider = ash::ColorProvider::Get();
-  SkColor background_color = color_provider->GetBaseLayerColor(
-      ash::ColorProvider::BaseLayerType::kTransparent80);
-  layer()->SetColor(background_color);
-#elif BUILDFLAG(IS_CHROMEOS_LACROS)
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
   // TODO(crbug.com/1311180) Replace color retrieval with more long term
   // solution.
   layer()->SetColor(RetrieveColor(cros_styles::ColorName::kBgColor));
   layer()->SetBackgroundBlur(kBubbleBlurRadius);
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
   layer()->SetBackgroundBlur(kBubbleBlurRadius);
   layer()->SetRoundedCornerRadius(kCornerRadii);
 
   // Add the managed icon.
 #if BUILDFLAG(IS_CHROMEOS_ASH)
+  ash::ColorProvider* color_provider = ash::ColorProvider::Get();
   const SkColor icon_color = color_provider->GetContentLayerColor(
       ash::ColorProvider::ContentLayerType::kIconColorPrimary);
 #elif BUILDFLAG(IS_CHROMEOS_LACROS)
@@ -211,7 +207,6 @@ ClipboardBubbleView::ClipboardBubbleView(const std::u16string& text) {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   message_style.override_color = color_provider->GetContentLayerColor(
       ash::ColorProvider::ContentLayerType::kTextColorPrimary);
-  label_->SetDisplayedOnBackgroundColor(background_color);
 #elif BUILDFLAG(IS_CHROMEOS_LACROS)
   // TODO(crbug.com/1311180) Replace color retrieval with more long term
   // solution.
@@ -260,6 +255,16 @@ ClipboardBubbleView::ClipboardBubbleView(const std::u16string& text) {
 }
 
 ClipboardBubbleView::~ClipboardBubbleView() = default;
+
+void ClipboardBubbleView::OnThemeChanged() {
+  views::View::OnThemeChanged();
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  const SkColor background_color =
+      GetColorProvider()->GetColor(cros_tokens::kCrosSysSystemBaseElevated);
+  layer()->SetColor(background_color);
+  label_->SetDisplayedOnBackgroundColor(background_color);
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+}
 
 void ClipboardBubbleView::UpdateBorderSize(const gfx::Size& size) {
   border_->SetSize(size);

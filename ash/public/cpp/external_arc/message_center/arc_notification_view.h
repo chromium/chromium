@@ -77,6 +77,7 @@ class ArcNotificationView : public message_center::MessageView,
   bool OnKeyPressed(const ui::KeyEvent& event) override;
   void ChildPreferredSizeChanged(View* child) override;
   bool HandleAccessibleAction(const ui::AXActionData& action) override;
+  void OnThemeChanged() override;
 
   // ArcNotificationItem::Observer
   void OnItemDestroying() override;
