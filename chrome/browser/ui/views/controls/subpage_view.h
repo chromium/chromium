@@ -19,7 +19,8 @@ class BubbleFrameView;
 
 DECLARE_ELEMENT_IDENTIFIER_VALUE(kSubpageViewId);
 
-// A sub-page View for the PageSwitcherView. This view contains:
+// A sub-page View for the PageSwitcherView in a standard preferred width
+// bubble. This view contains:
 //   * a header that has a page navigation back button, a title label, a close
 //   button
 //   * a content view
