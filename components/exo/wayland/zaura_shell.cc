@@ -24,6 +24,7 @@
 #include "ash/wm/overview/overview_controller.h"
 #include "ash/wm/overview/overview_observer.h"
 #include "ash/wm/window_state.h"
+#include "base/bit_cast.h"
 #include "base/logging.h"
 #include "base/memory/raw_ptr.h"
 #include "base/ranges/algorithm.h"
@@ -1073,7 +1074,7 @@ void AuraToplevel::OnConfigure(
 
   if (wl_resource_get_version(aura_toplevel_resource_) >=
       ZAURA_TOPLEVEL_CONFIGURE_RASTER_SCALE_SINCE_VERSION) {
-    uint32_t value = *reinterpret_cast<uint32_t*>(&raster_scale);
+    uint32_t value = base::bit_cast<uint32_t>(raster_scale);
     zaura_toplevel_send_configure_raster_scale(aura_toplevel_resource_, value);
   }
 }
@@ -1534,14 +1535,14 @@ void aura_toplevel_unset_float(wl_client* client, wl_resource* resource) {
 void aura_toplevel_set_snap_primary(wl_client* client,
                                     wl_resource* resource,
                                     uint32_t snap_ratio_as_uint) {
-  float snap_ratio = *reinterpret_cast<float*>(&snap_ratio_as_uint);
+  float snap_ratio = base::bit_cast<float>(snap_ratio_as_uint);
   GetUserDataAs<AuraToplevel>(resource)->SetSnapPrimary(snap_ratio);
 }
 
 void aura_toplevel_set_snap_secondary(wl_client* client,
                                       wl_resource* resource,
                                       uint32_t snap_ratio_as_uint) {
-  float snap_ratio = *reinterpret_cast<float*>(&snap_ratio_as_uint);
+  float snap_ratio = base::bit_cast<float>(snap_ratio_as_uint);
   GetUserDataAs<AuraToplevel>(resource)->SetSnapSecondary(snap_ratio);
 }
 
@@ -1631,7 +1632,7 @@ void aura_toplevel_set_scale_factor(wl_client* client,
                                     uint32_t scale_factor_as_uint) {
   static_assert(sizeof(uint32_t) == sizeof(float),
                 "Sizes much match for reinterpret cast to be meaningful");
-  float scale_factor = *reinterpret_cast<float*>(&scale_factor_as_uint);
+  float scale_factor = base::bit_cast<float>(scale_factor_as_uint);
   GetUserDataAs<AuraToplevel>(resource)->SetScaleFactor(scale_factor);
 }
 
@@ -1756,7 +1757,7 @@ void aura_popup_release(wl_client* client, wl_resource* resource) {
 void aura_popup_set_scale_factor(wl_client* client,
                                  wl_resource* resource,
                                  uint32_t scale_factor_as_uint) {
-  float scale_factor = *reinterpret_cast<float*>(&scale_factor_as_uint);
+  float scale_factor = base::bit_cast<float>(scale_factor_as_uint);
   GetUserDataAs<AuraPopup>(resource)->SetScaleFactor(scale_factor);
 }
 

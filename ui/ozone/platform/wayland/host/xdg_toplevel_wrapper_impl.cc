@@ -7,6 +7,7 @@
 #include <aura-shell-client-protocol.h>
 #include <xdg-decoration-unstable-v1-client-protocol.h>
 
+#include "base/bit_cast.h"
 #include "base/logging.h"
 #include "base/notreached.h"
 #include "base/strings/utf_string_conversions.h"
@@ -425,7 +426,7 @@ void XDGToplevelWrapperImpl::OnConfigureRasterScale(
   auto* self = static_cast<XDGToplevelWrapperImpl*>(data);
   DCHECK(self);
   auto* wayland_window = static_cast<WaylandWindow*>(self->wayland_window_);
-  float scale = *reinterpret_cast<float*>(&scale_as_uint);
+  float scale = base::bit_cast<float>(scale_as_uint);
   wayland_window->SetPendingRasterScale(scale);
 }
 
@@ -626,7 +627,7 @@ void XDGToplevelWrapperImpl::Deactivate() {
 void XDGToplevelWrapperImpl::SetScaleFactor(float scale_factor) {
   if (aura_toplevel_ && zaura_toplevel_get_version(aura_toplevel_.get()) >=
                             ZAURA_TOPLEVEL_SET_SCALE_FACTOR_SINCE_VERSION) {
-    uint32_t value = *reinterpret_cast<uint32_t*>(&scale_factor);
+    uint32_t value = base::bit_cast<uint32_t>(scale_factor);
     zaura_toplevel_set_scale_factor(aura_toplevel_.get(), value);
   }
 }
@@ -660,7 +661,7 @@ void XDGToplevelWrapperImpl::SetFloatToLocation(
 
   uint32_t version = zaura_toplevel_get_version(aura_toplevel_.get());
   if (version >= ZAURA_TOPLEVEL_SET_FLOAT_TO_LOCATION_SINCE_VERSION) {
-    uint32_t value = *reinterpret_cast<uint32_t*>(&float_start_location);
+    uint32_t value = base::bit_cast<uint32_t>(float_start_location);
     zaura_toplevel_set_float_to_location(aura_toplevel_.get(), value);
   } else if (version >= ZAURA_TOPLEVEL_SET_FLOAT_SINCE_VERSION) {
     zaura_toplevel_set_float(aura_toplevel_.get());
@@ -690,7 +691,7 @@ void XDGToplevelWrapperImpl::CommitSnap(
 
   if (zaura_toplevel_get_version(aura_toplevel_.get()) >=
       ZAURA_TOPLEVEL_SET_SNAP_PRIMARY_SINCE_VERSION) {
-    uint32_t value = *reinterpret_cast<uint32_t*>(&snap_ratio);
+    uint32_t value = base::bit_cast<uint32_t>(snap_ratio);
     switch (snap_direction) {
       case WaylandWindowSnapDirection::kPrimary:
         zaura_toplevel_set_snap_primary(aura_toplevel_.get(), value);

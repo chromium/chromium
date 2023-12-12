@@ -15,6 +15,7 @@
 #include "ash/wm/tablet_mode/tablet_mode_controller.h"
 #include "ash/wm/window_state.h"
 #include "ash/wm/wm_event.h"
+#include "base/bit_cast.h"
 #include "base/functional/bind.h"
 #include "base/posix/unix_domain_socket.h"
 #include "components/exo/display.h"
@@ -576,7 +577,7 @@ TEST_F(WaylandRemoteShellTest, MoveAcrossDisplaysWithDifferentScaleFactors) {
         gfx::ScaleToRoundedSize(max_size_in_dp, device_scale_factor);
 
     const uint scale_factor_value =
-        *reinterpret_cast<const uint*>(&device_scale_factor);
+        base::bit_cast<const uint>(device_scale_factor);
     zcr_remote_shell::remote_surface_set_scale_factor(
         wl_client(), wl_remote_surface(), scale_factor_value);
 
