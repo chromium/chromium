@@ -71,18 +71,6 @@ EXCLUDED_TESTS = [
     os.path.join('tests', 'codegen', 'issue-45222.rs'),
     # https://github.com/rust-lang/rust/issues/96497
     os.path.join('tests', 'codegen', 'issue-96497-slice-size-nowrap.rs'),
-    # https://github.com/rust-lang/rust/issues/109671 the test is being
-    # optimized in newer LLVM which breaks its expectations.
-    os.path.join('tests', 'ui', 'abi', 'stack-protector.rs'),
-    # https://github.com/rust-lang/rust/issues/109672 the second panic in a
-    # double-panic is being optimized out (reasonably correctly) by newer LLVM.
-    os.path.join('tests', 'ui', 'backtrace.rs'),
-    # https://github.com/rust-lang/rust/issues/94322 large output from
-    # compiletests is breaking json parsing of the results.
-    os.path.join('tests', 'ui', 'numeric', 'numeric-cast.rs'),
-    # https://github.com/rust-lang/rust/pull/116018
-    # disable temporarily for the clang roll
-    os.path.join('tests', 'codegen', 'simd', 'simd-wide-sum.rs'),
 ]
 EXCLUDED_TESTS_WINDOWS = [
     # https://github.com/rust-lang/rust/issues/96464
