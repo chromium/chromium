@@ -254,13 +254,13 @@ typedef NS_ENUM(NSInteger, ItemType) {
       [self updateDetailTextForItem:_priceTrackingItem withClientID:clientID];
       break;
     }
-    // TODO(b/307593022): Move Notification popup logic here when the pref is
-    // ready.
     case PushNotificationClientId::kContent: {
       break;
     }
   }
 }
+
+#pragma mark - private
 
 // Updates the current user's permission preference for the given `client_id`.
 - (void)setPreferenceFor:(PushNotificationClientId)clientID to:(BOOL)enabled {

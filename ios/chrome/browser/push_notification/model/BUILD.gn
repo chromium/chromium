@@ -56,6 +56,7 @@ source_set("push_notification_service") {
     "push_notification_util.mm",
   ]
   deps = [
+    ":constants",
     ":push_notification_client",
     "//base",
     "//components/optimization_guide/core:features",
@@ -82,6 +83,13 @@ source_set("push_notification_client") {
 
 source_set("alert_presenter") {
   sources = [ "notifications_alert_presenter.h" ]
+}
+
+source_set("constants") {
+  sources = [
+    "constants.h",
+    "constants.mm",
+  ]
 }
 
 source_set("unit_tests") {

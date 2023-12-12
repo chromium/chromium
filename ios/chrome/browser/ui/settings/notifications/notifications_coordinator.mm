@@ -81,6 +81,11 @@
                                            animated:YES];
 }
 
+- (void)stop {
+  _notificationsObserver.delegate = nil;
+  _notificationsObserver = nil;
+}
+
 #pragma mark - NotificationsAlertPresenter
 
 - (void)presentPushNotificationPermissionAlert {
