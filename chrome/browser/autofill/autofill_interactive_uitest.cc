@@ -1164,6 +1164,10 @@ IN_PROC_BROWSER_TEST_F(AutofillInteractiveTest,
   // Modify a field.
   ASSERT_TRUE(FocusField(GetElementById("city"), GetWebContents()));
   FillElementWithValue("city", "Montreal");
+
+  ASSERT_TRUE(AutofillFlow(GetElementById("firstname"), this));
+  EXPECT_THAT(GetFormValues(),
+              ValuesAre(MergeValue(kDefaultAddress, {"city", "Montreal"})));
 }
 
 IN_PROC_BROWSER_TEST_F(AutofillInteractiveTest, ModifyTextNotifiesObserver) {
