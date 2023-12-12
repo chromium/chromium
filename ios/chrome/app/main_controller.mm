@@ -470,6 +470,7 @@ void MainControllerAuthenticationServiceDelegate::ClearBrowsingData(
   ChromeBrowserState* chromeBrowserState = GetApplicationContext()
                                                ->GetChromeBrowserStateManager()
                                                ->GetLastUsedBrowserState();
+  DCHECK(chromeBrowserState);
 
   // Initialize and set the main browser state.
   [self initializeBrowserState:chromeBrowserState];
@@ -488,9 +489,9 @@ void MainControllerAuthenticationServiceDelegate::ClearBrowsingData(
   // this during background initialization when the app is launched into the
   // foreground.
   AuthenticationServiceFactory::CreateAndInitializeForBrowserState(
-      self.appState.mainBrowserState,
+      chromeBrowserState,
       std::make_unique<MainControllerAuthenticationServiceDelegate>(
-          self.appState.mainBrowserState, self));
+          chromeBrowserState, self));
 
   // Initialize the provider UI global state.
   ios::provider::InitializeUI();
@@ -518,17 +519,15 @@ void MainControllerAuthenticationServiceDelegate::ClearBrowsingData(
 
   [NSURLCache setSharedURLCache:[EmptyNSURLCache emptyNSURLCache]];
 
-  ChromeBrowserState* browserState = self.appState.mainBrowserState;
-  DCHECK(browserState);
   [self.appState
       addAgent:
           [[PostRestoreAppAgent alloc]
               initWithPromosManager:PromosManagerFactory::GetForBrowserState(
-                                        browserState)
+                                        chromeBrowserState)
               authenticationService:AuthenticationServiceFactory::
-                                        GetForBrowserState(browserState)
+                                        GetForBrowserState(chromeBrowserState)
                     identityManager:IdentityManagerFactory::GetForBrowserState(
-                                        browserState)
+                                        chromeBrowserState)
                          localState:GetApplicationContext()->GetLocalState()]];
 
   // Perform any background initialisation that is required and then
@@ -567,15 +566,15 @@ void MainControllerAuthenticationServiceDelegate::ClearBrowsingData(
 
   RegisterComponentsForUpdate();
 
-#if !defined(NDEBUG)
+  ChromeBrowserState* chromeBrowserState = self.appState.mainBrowserState;
+  DCHECK(chromeBrowserState);
+
   // Legacy code used GetLastUsedBrowserState() in this method. We changed it to
   // use self.appState.mainBrowserState instead. The DCHECK ensures that
   // invariant holds true.
-  ChromeBrowserState* chromeBrowserState = GetApplicationContext()
-                                               ->GetChromeBrowserStateManager()
-                                               ->GetLastUsedBrowserState();
-  DCHECK_EQ(chromeBrowserState, self.appState.mainBrowserState);
-#endif  // !defined(NDEBUG)
+  DCHECK_EQ(chromeBrowserState, GetApplicationContext()
+                                    ->GetChromeBrowserStateManager()
+                                    ->GetLastUsedBrowserState());
 
   if (!base::ios::IsMultipleScenesSupported()) {
     NSSet<NSString*>* previousSessions =
@@ -587,7 +586,7 @@ void MainControllerAuthenticationServiceDelegate::ClearBrowsingData(
 
   feature_engagement::Tracker* tracker =
       feature_engagement::TrackerFactory::GetForBrowserState(
-          self.appState.mainBrowserState);
+          chromeBrowserState);
   // Send "Chrome Opened" event to the feature_engagement::Tracker on cold
   // start.
   tracker->NotifyEvent(feature_engagement::events::kChromeOpened);
@@ -599,18 +598,16 @@ void MainControllerAuthenticationServiceDelegate::ClearBrowsingData(
         feature_engagement::events::kDefaultBrowserVideoPromoConditionsMet);
   }
 
-  _spotlightManager = [SpotlightManager
-      spotlightManagerWithBrowserState:self.appState.mainBrowserState];
+  _spotlightManager =
+      [SpotlightManager spotlightManagerWithBrowserState:chromeBrowserState];
 
   ShareExtensionService* service =
-      ShareExtensionServiceFactory::GetForBrowserState(
-          self.appState.mainBrowserState);
+      ShareExtensionServiceFactory::GetForBrowserState(chromeBrowserState);
   service->Initialize();
 
 #if BUILDFLAG(IOS_CREDENTIAL_PROVIDER_ENABLED)
   if (IsCredentialProviderExtensionSupported()) {
-    CredentialProviderServiceFactory::GetForBrowserState(
-        self.appState.mainBrowserState);
+    CredentialProviderServiceFactory::GetForBrowserState(chromeBrowserState);
   }
 #endif
 
@@ -1060,7 +1057,7 @@ void MainControllerAuthenticationServiceDelegate::ClearBrowsingData(
 
                     if (browserState) {
                       SessionRestorationServiceFactory::GetForBrowserState(
-                          self.appState.mainBrowserState)
+                          browserState)
                           ->PurgeUnassociatedData(base::DoNothing());
                     }
                   }];
@@ -1074,13 +1071,14 @@ void MainControllerAuthenticationServiceDelegate::ClearBrowsingData(
 
   // ClearSessionCookies() is not synchronous.
   if (cookie_util::ShouldClearSessionCookies()) {
+    ChromeBrowserState* browserState = self.appState.mainBrowserState;
     cookie_util::ClearSessionCookies(
-        self.appState.mainBrowserState->GetOriginalChromeBrowserState());
+        browserState->GetOriginalChromeBrowserState());
     Browser* otrBrowser =
         self.browserProviderInterface.incognitoBrowserProvider.browser;
     if (otrBrowser && !(otrBrowser->GetWebStateList()->empty())) {
       cookie_util::ClearSessionCookies(
-          self.appState.mainBrowserState->GetOffTheRecordChromeBrowserState());
+          browserState->GetOffTheRecordChromeBrowserState());
     }
   }
 
