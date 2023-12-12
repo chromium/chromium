@@ -12,7 +12,8 @@ import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {routes} from '../route.js';
-import {Router} from '../router.js';
+import {Router, RouteObserverMixin} from '../router.js';
+import {MetricsBrowserProxy, MetricsBrowserProxyImpl, SafetyHubEntryPoint} from '../metrics_browser_proxy.js';
 
 import {SafetyHubBrowserProxy, SafetyHubBrowserProxyImpl} from './safety_hub_browser_proxy.js';
 import {getTemplate} from './safety_hub_entry_point.html.js';
@@ -26,7 +27,8 @@ export interface SettingsSafetyHubEntryPointElement {
   };
 }
 
-const SettingsSafetyHubEntryPointElementBase = I18nMixin(PolymerElement);
+const SettingsSafetyHubEntryPointElementBase =
+    RouteObserverMixin(I18nMixin(PolymerElement));
 
 export class SettingsSafetyHubEntryPointElement extends
     SettingsSafetyHubEntryPointElementBase {
@@ -65,17 +67,17 @@ export class SettingsSafetyHubEntryPointElement extends
     };
   }
 
-  private safetyHubBrowserProxy_: SafetyHubBrowserProxy =
-      SafetyHubBrowserProxyImpl.getInstance();
-
   private buttonClass_: string;
   private hasRecommendations_: boolean;
   private headerString_: string;
   private subheaderString_: string;
   private headerIconColor_: string;
+  private safetyHubBrowserProxy_: SafetyHubBrowserProxy =
+      SafetyHubBrowserProxyImpl.getInstance();
+  private metricsBrowserProxy_: MetricsBrowserProxy =
+      MetricsBrowserProxyImpl.getInstance();
 
   override connectedCallback() {
-    super.connectedCallback();
     this.safetyHubBrowserProxy_.getSafetyHubHasRecommendations().then(
         (hasRecommendations: boolean) => {
           this.hasRecommendations_ = hasRecommendations;
@@ -85,6 +87,24 @@ export class SettingsSafetyHubEntryPointElement extends
         (subheader: string) => {
           this.subheaderString_ = subheader;
         });
+    // This should be called after the data for modules are retrieved so that
+    // currentRouteChanged is called afterwards.
+    super.connectedCallback();
+  }
+
+  override currentRouteChanged() {
+    if (Router.getInstance().getCurrentRoute() !== routes.PRIVACY) {
+      return;
+    }
+    // Only record the metrics when the user navigates to the privacy page
+    // that shows the entry point.
+    if (this.hasRecommendations_) {
+      this.metricsBrowserProxy_.recordSafetyHubEntryPointShown(
+          SafetyHubEntryPoint.PRIVACY_WARNING);
+    } else {
+      this.metricsBrowserProxy_.recordSafetyHubEntryPointShown(
+          SafetyHubEntryPoint.PRIVACY_SAFE);
+    }
   }
 
   private computeButtonClass_() {
@@ -101,6 +121,13 @@ export class SettingsSafetyHubEntryPointElement extends
   }
 
   private onClick_() {
+    if (this.hasRecommendations_) {
+      this.metricsBrowserProxy_.recordSafetyHubEntryPointClicked(
+          SafetyHubEntryPoint.PRIVACY_WARNING);
+    } else {
+      this.metricsBrowserProxy_.recordSafetyHubEntryPointClicked(
+          SafetyHubEntryPoint.PRIVACY_SAFE);
+    }
     Router.getInstance().navigateTo(routes.SAFETY_HUB);
   }
 }

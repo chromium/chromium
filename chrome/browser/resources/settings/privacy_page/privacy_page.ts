@@ -38,7 +38,7 @@ import {BaseMixin} from '../base_mixin.js';
 import {FocusConfig} from '../focus_config.js';
 import {HatsBrowserProxyImpl, TrustSafetyInteraction} from '../hats_browser_proxy.js';
 import {loadTimeData} from '../i18n_setup.js';
-import {MetricsBrowserProxy, MetricsBrowserProxyImpl, PrivacyGuideInteractions} from '../metrics_browser_proxy.js';
+import {MetricsBrowserProxy, MetricsBrowserProxyImpl, PrivacyGuideInteractions, SafetyHubEntryPoint} from '../metrics_browser_proxy.js';
 import {routes} from '../route.js';
 import {RouteObserverMixin, Router} from '../router.js';
 import {NotificationPermission, SafetyHubBrowserProxy, SafetyHubBrowserProxyImpl, SafetyHubEvent} from '../safety_hub/safety_hub_browser_proxy.js';
@@ -391,6 +391,15 @@ export class SettingsPrivacyPageElement extends SettingsPrivacyPageElementBase {
     this.showPrivacyGuideDialog_ =
         Router.getInstance().getCurrentRoute() === routes.PRIVACY_GUIDE &&
         this.isPrivacyGuideAvailable;
+
+    // Only record the metrics when the user navigates to the notification
+    // settings page that shows the entry point.
+    if (Router.getInstance().getCurrentRoute() ===
+            routes.SITE_SETTINGS_NOTIFICATIONS &&
+        this.showNotificationPermissionsReview_) {
+      this.metricsBrowserProxy_.recordSafetyHubEntryPointShown(
+          SafetyHubEntryPoint.NOTIFICATIONS);
+    }
   }
 
   /**
@@ -587,6 +596,8 @@ export class SettingsPrivacyPageElement extends SettingsPrivacyPageElementBase {
   }
 
   private onSafetyHubButtonClick_() {
+    this.metricsBrowserProxy_.recordSafetyHubEntryPointClicked(
+        SafetyHubEntryPoint.NOTIFICATIONS);
     Router.getInstance().navigateTo(routes.SAFETY_HUB);
   }
 }

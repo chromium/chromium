@@ -17,7 +17,7 @@ import {WebUiListenerMixin} from 'chrome://resources/cr_elements/web_ui_listener
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {PasswordManagerImpl, PasswordManagerPage} from '../autofill_page/password_manager_proxy.js';
-import {MetricsBrowserProxy, MetricsBrowserProxyImpl, SafetyHubCardState, SafetyHubSurfaces} from '../metrics_browser_proxy.js';
+import {MetricsBrowserProxy, MetricsBrowserProxyImpl, SafetyHubCardState, SafetyHubModuleType, SafetyHubSurfaces} from '../metrics_browser_proxy.js';
 import {RelaunchMixin, RestartType} from '../relaunch_mixin.js';
 import {routes} from '../route.js';
 import {RouteObserverMixin, Router} from '../router.js';
@@ -83,16 +83,35 @@ export class SettingsSafetyHubPageElement extends
       },
 
       userEducationItemList_: Array,
+
+      // Whether the data for notification permissions is ready.
+      hasDataForNotificationPermissions_: Boolean,
+
+      // Whether the data for unused site permissions is ready.
+      hasDataForUnusedPermissions_: Boolean,
+
+      // Whether the data for extensions is ready.
+      hasDataForExtensions_: Boolean,
     };
+  }
+
+  static get observers() {
+    return [
+      'onAllModulesLoaded_(passwordCardData_, versionCardData_, safeBrowsingCardData_, hasDataForUnusedPermissions_, hasDataForNotificationPermissions_, hasDataForExtensions_)',
+    ];
   }
 
   private passwordCardData_: CardInfo;
   private versionCardData_: CardInfo;
   private safeBrowsingCardData_: CardInfo;
   private showNotificationPermissions_: boolean;
+  private hasDataForNotificationPermissions_: boolean;
   private showUnusedSitePermissions_: boolean;
+  private hasDataForUnusedPermissions_: boolean;
   private showNoRecommendationsState_: boolean;
   private showExtensions_: boolean;
+  private hasDataForExtensions_: boolean;
+  private shouldRecordMetric_: boolean = false;
   private userEducationItemList_: SiteInfo[];
   private browserProxy_: SafetyHubBrowserProxy =
       SafetyHubBrowserProxyImpl.getInstance();
@@ -100,11 +119,11 @@ export class SettingsSafetyHubPageElement extends
       MetricsBrowserProxyImpl.getInstance();
 
   override connectedCallback() {
-    super.connectedCallback();
-
     this.initializeCards_();
     this.initializeModules_();
     this.initializeUserEducation_();
+
+    super.connectedCallback();
   }
 
   override currentRouteChanged() {
@@ -119,10 +138,14 @@ export class SettingsSafetyHubPageElement extends
         SafetyHubSurfaces.SAFETY_HUB_PAGE);
     this.metricsBrowserProxy_.recordSafetyHubInteraction(
         SafetyHubSurfaces.SAFETY_HUB_PAGE);
+
+    // Only record the metrics when the user navigates to the Safety Hub page.
+    this.shouldRecordMetric_ = true;
+    this.onAllModulesLoaded_();
   }
 
   private initializeCards_() {
-    // TODO(1443466): Add listeners for cards.
+    // TODO(crbug.com/1443466): Add listeners for cards.
     this.browserProxy_.getPasswordCardData().then((data: CardInfo) => {
       this.passwordCardData_ = data;
     });
@@ -243,6 +266,7 @@ export class SettingsSafetyHubPageElement extends
     // there is no item on the list but the list was shown before.
     this.showNotificationPermissions_ =
         permissions.length > 0 || this.showNotificationPermissions_;
+    this.hasDataForNotificationPermissions_ = true;
   }
 
   private onUnusedSitePermissionListChanged_(permissions:
@@ -251,6 +275,7 @@ export class SettingsSafetyHubPageElement extends
     // there is no item on the list but the list was shown before.
     this.showUnusedSitePermissions_ =
         permissions.length > 0 || this.showUnusedSitePermissions_;
+    this.hasDataForUnusedPermissions_ = true;
   }
 
   private computeShowNoRecommendationsState_(): boolean {
@@ -261,10 +286,72 @@ export class SettingsSafetyHubPageElement extends
 
   private onExtensionsChanged_(numberOfExtensions: number) {
     this.showExtensions_ = !!numberOfExtensions;
+    this.hasDataForExtensions_ = true;
   }
 
   private isEnterOrSpaceClicked_(e: KeyboardEvent): boolean {
     return e.key === 'Enter' || e.key === ' ';
+  }
+
+  private onAllModulesLoaded_() {
+    // If the metrics are recorded already, don't record again.
+    if (!this.shouldRecordMetric_) {
+      return;
+    }
+
+    // Wait till the data of the cards be ready.
+    if (!this.passwordCardData_ || !this.safeBrowsingCardData_ ||
+        !this.versionCardData_) {
+      return;
+    }
+
+    // Wait till the data of the modules be ready.
+    if (!this.hasDataForUnusedPermissions_ ||
+        !this.hasDataForNotificationPermissions_ ||
+        !this.hasDataForExtensions_) {
+      return;
+    }
+
+    this.shouldRecordMetric_ = false;
+    let hasAnyWarning: boolean = false;
+    // TODO(crbug.com/1443466): Iterate over the cards/modules with for loop.
+    if (this.passwordCardData_.state !== CardState.SAFE) {
+      this.metricsBrowserProxy_.recordSafetyHubModuleWarningImpression(
+          SafetyHubModuleType.PASSWORDS);
+      hasAnyWarning = true;
+    }
+
+    if (this.safeBrowsingCardData_.state !== CardState.SAFE) {
+      this.metricsBrowserProxy_.recordSafetyHubModuleWarningImpression(
+          SafetyHubModuleType.SAFE_BROWSING);
+      hasAnyWarning = true;
+    }
+
+    if (this.versionCardData_.state !== CardState.SAFE) {
+      this.metricsBrowserProxy_.recordSafetyHubModuleWarningImpression(
+          SafetyHubModuleType.VERSION);
+      hasAnyWarning = true;
+    }
+
+    if (this.showNotificationPermissions_) {
+      this.metricsBrowserProxy_.recordSafetyHubModuleWarningImpression(
+          SafetyHubModuleType.NOTIFICATIONS);
+      hasAnyWarning = true;
+    }
+
+    if (this.showUnusedSitePermissions_) {
+      this.metricsBrowserProxy_.recordSafetyHubModuleWarningImpression(
+          SafetyHubModuleType.PERMISSIONS);
+      hasAnyWarning = true;
+    }
+
+    if (this.showExtensions_) {
+      this.metricsBrowserProxy_.recordSafetyHubModuleWarningImpression(
+          SafetyHubModuleType.EXTENSIONS);
+      hasAnyWarning = true;
+    }
+
+    this.metricsBrowserProxy_.recordSafetyHubDashboardAnyWarning(hasAnyWarning);
   }
 }
 
