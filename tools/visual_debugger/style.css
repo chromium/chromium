@@ -81,13 +81,14 @@ button#disconnect {
   --mdc-theme-on-primary: white;
 }
 
-.default-orientation {
-  background: white;
+.nonzero-orientation {
+  background: rgba(255, 0, 0, 0.2);;
   color: black;
 }
 
-.selected-orientation {
-  background: rgba(255, 0, 0, 0.2);;
+/* Don't color the option elements */
+.nonzero-orientation > option {
+  background: white;
   color: black;
 }
 

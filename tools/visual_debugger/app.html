@@ -247,22 +247,22 @@
   <div style='float: right' class='sectionTitle'>
     Scale
     <select id="viewerscale">
-      <option>100%</option>
-      <option>50%</option>
-      <option>200%</option>
-      <option disabled>Free Camera</option>
+      <option id="100pct">100%</option>
+      <option id="50pct">50%</option>
+      <option id="200pct">200%</option>
+      <option id="freeCam" disabled>Free Camera</option>
     </select>
   </div>
 
   <div style='float: right' class='sectionTitle'>
   Orientation
     <select id="viewerorientation">
-      <option class="default-orientation">0 deg clockwise</option>
-      <option class="default-orientation">90 deg clockwise</option>
-      <option class="default-orientation">180 deg clockwise</option>
-      <option class="default-orientation">270 deg clockwise</option>
-      <option class="default-orientation">Horizontal Flip</option>
-      <option class="default-orientation">Vertical Flip</option>
+      <option id="0deg">0 deg clockwise</option>
+      <option id="90deg">90 deg clockwise</option>
+      <option id="180deg">180 deg clockwise</option>
+      <option id="270deg">270 deg clockwise</option>
+      <option id="hFlip">Horizontal Flip</option>
+      <option id="vFlip">Vertical Flip</option>
     </select>
   </div>
 
@@ -416,6 +416,30 @@
     restoreFilters();
   }
 
+  /**
+   * Gets value from localStorage if it exists, and sets the <option> with that
+   * id to be selected in options_el.
+   * @param {string} key: The localStorage key to get if present.
+   * @param {Element} options_el: The <select> Element to be updated.
+   * @returns {boolean} Whether a value from localStorage was used to change the
+   *     the selected option.
+   */
+  function getStoredOptionsValue(key, options_el) {
+    let storedId = localStorage.getItem(key);
+    if (storedId != null) {
+      let option = options_el.namedItem(storedId);
+      if (option == null) {
+        console.error(`No option with id ${storedId} found on ${options_el.id}`);
+        localStorage.removeItem(key);
+      } else {
+        options_el.selectedIndex = option.index;
+        return true;
+      }
+    }
+
+    return false;
+  }
+
   function setUpPlayer() {
     // First, set up the viewer.
     const canvas = document.querySelector('#canvas');
@@ -472,8 +496,10 @@
     let currentMouseY = 0;
     let zoom = 100;
     const viewerScale = document.querySelector("#viewerscale");
-    viewerScale.addEventListener('input', () => {
-      if (viewerScale.value != "Free Camera") {
+
+    function scaleChanged() {
+      let selected = viewerScale.selectedOptions[0];
+      if (selected.id != "freeCam") {
         player.setViewerScale(viewerScale.value);
         zoom = parseInt(viewerScale.value);
       }
@@ -493,21 +519,37 @@
 
         }, {passive:false});
       }
+    }
+    const scaleKey = "scale";
+    if (getStoredOptionsValue(scaleKey, viewerScale)) {
+      scaleChanged();
+    }
+    viewerScale.addEventListener('input', () => {
+      scaleChanged();
+      localStorage.setItem(scaleKey, viewerScale.selectedOptions[0].id);
     });
 
     const viewerOrientation = document.querySelector("#viewerorientation");
-    viewerOrientation.addEventListener('input', () => {
+
+    function orientationChanged() {
+      let selected = viewerOrientation.selectedOptions[0];
+      // Change dropdown style when setting non-zero orientation.
+      if (selected.id != '0deg') {
+        viewerOrientation.classList.add("nonzero-orientation");
+      } else {
+        viewerOrientation.classList.remove("nonzero-orientation");
+      }
       player.setViewerOrientation(viewerOrientation.value);
-    });
+    }
+    const orientationKey = 'orientation';
+    if (getStoredOptionsValue(orientationKey, viewerOrientation)) {
+      orientationChanged();
+    }
     viewerOrientation.addEventListener('change', () => {
-      // change dropdown style when rotation occurs
-      if (viewerOrientation.value !== "0 deg clockwise") {
-        document.getElementById("viewerorientation").className = "selected-orientation";
-      }
-      else {
-        document.getElementById("viewerorientation").className = "default-orientation";
-      }
+      orientationChanged();
+      localStorage.setItem(orientationKey, viewerOrientation.selectedOptions[0].id);
     });
+
   }
 
 
