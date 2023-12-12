@@ -136,11 +136,11 @@ export class InputHandler {
     document.addEventListener('copy', evt => this.onClipboardCopy_(evt));
     chrome.accessibilityPrivate.onSelectToSpeakKeysPressedChanged.addListener(
         (keysPressed) => {
-          this.onKeysPressedChanged_(new Set(keysPressed));
+          this.onKeysPressedChanged(new Set(keysPressed));
         });
     chrome.accessibilityPrivate.onSelectToSpeakMouseChanged.addListener(
         (eventType, mouseX, mouseY) => {
-          this.onMouseEvent_(eventType, mouseX, mouseY);
+          this.onMouseEvent(eventType, mouseX, mouseY);
         });
   }
 
@@ -180,8 +180,9 @@ export class InputHandler {
    *     coordinates.
    * @param mouseY The mouse y coordinate in global screen
    *     coordinates.
+   * Visible for testing.
    */
-  private onMouseEvent_(
+  onMouseEvent(
       type: chrome.accessibilityPrivate.SyntheticMouseEventType, mouseX: number,
       mouseY: number): void {
     if (type === chrome.accessibilityPrivate.SyntheticMouseEventType.PRESS) {
@@ -272,7 +273,7 @@ export class InputHandler {
   /**
    * Visible for testing.
    */
-  private onKeysPressedChanged_(keysCurrentlyPressed: Set<number>) : void {
+  onKeysPressedChanged(keysCurrentlyPressed: Set<number>): void {
     if (keysCurrentlyPressed.size > this.keysCurrentlyDown_.size) {
       // If a key was pressed.
       for (const key of keysCurrentlyPressed) {

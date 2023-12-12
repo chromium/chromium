@@ -34,6 +34,7 @@ ts_modules = [
   "input_handler.ts",
   "ui_manager.ts",
   "prefs_manager.ts",
+  "select_to_speak.ts",
 ]
 
 # Add TS files needed from ../common/ here.
@@ -43,9 +44,6 @@ common_ts_modules = [
   "tree_walker.ts",
 ]
 
-# JS files required for ts build.
-js_deps = [ "select_to_speak.js" ]
-
 # Root dir must be the parent directory so it can reach common.
 ts_library("ts_build") {
   root_dir = "../"
@@ -54,6 +52,7 @@ ts_library("ts_build") {
   definitions = [
     "../definitions/tts.d.ts",
     "//tools/typescript/definitions/metrics_private.d.ts",
+    "//tools/typescript/definitions/context_menus.d.ts",
     "../definitions/automation.d.ts",
     "../definitions/extensions.d.ts",
     "../definitions/runtime.d.ts",
@@ -68,9 +67,6 @@ ts_library("ts_build") {
   ]
 
   in_files = []
-  foreach(_js_file, js_deps) {
-    in_files += [ "select_to_speak/" + _js_file ]
-  }
   foreach(_ts_file, ts_modules) {
     in_files += [ "select_to_speak/" + _ts_file ]
   }
@@ -92,7 +88,6 @@ run_jsbundler("select_to_speak_copied_files") {
     "checked.png",
     "earcons/null_selection.ogg",
     "select_to_speak-2x.svg",
-    "select_to_speak.js",
     "sts-icon-128.png",
     "sts-icon-16.png",
     "sts-icon-48.png",

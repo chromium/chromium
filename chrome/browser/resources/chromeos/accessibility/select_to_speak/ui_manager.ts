@@ -63,7 +63,7 @@ export interface SelectToSpeakUiListener {
    * User requests reading speed adjustment.
    * @param speed rate multiplier.
    */
-  onChangeSpeedRequested: (speed: number) => {};
+  onChangeSpeedRequested: (speed: number) => void;
 
   /** User requests exiting STS. */
   onExitRequested: () => void;

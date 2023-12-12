@@ -11,6 +11,7 @@
     "../../../../../../tools/typescript/definitions"
   ],
   "exclude": [
+    "../../../../../../tools/typescript/definitions/runtime.d.ts",
     "../../../../../../tools/typescript/definitions/i18n.d.ts",
     "../../../../../../tools/typescript/definitions/storage.d.ts"
   ]
