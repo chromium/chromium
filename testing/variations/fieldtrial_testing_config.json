@@ -15644,9 +15644,7 @@
                     "name": "Enabled",
                     "enable_features": [
                         "ShoppingCollection",
-                        "ShoppingListTrackByDefault",
-                        "ShoppingListWAARestrictionRemoval",
-                        "SimplifiedBookmarkSaveFlow"
+                        "ShoppingListTrackByDefault"
                     ]
                 }
             ]

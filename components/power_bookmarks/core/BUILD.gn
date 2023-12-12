@@ -43,8 +43,6 @@ static_library("core") {
 
 static_library("features") {
   sources = [
-    "flag_descriptions.cc",
-    "flag_descriptions.h",
     "power_bookmark_features.cc",
     "power_bookmark_features.h",
   ]

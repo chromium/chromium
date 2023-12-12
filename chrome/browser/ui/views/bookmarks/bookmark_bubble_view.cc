@@ -43,7 +43,6 @@
 #include "components/image_fetcher/core/image_fetcher.h"
 #include "components/image_fetcher/core/image_fetcher_service.h"
 #include "components/page_image_service/image_service.h"
-#include "components/power_bookmarks/core/power_bookmark_features.h"
 #include "components/signin/public/base/signin_buildflags.h"
 #include "components/signin/public/base/signin_metrics.h"
 #include "components/strings/grit/components_strings.h"
@@ -380,9 +379,7 @@ void BookmarkBubbleView::ShowBubble(
       CreatePriceTrackingEmailCallback(profile, anchor_view, web_contents,
                                        bookmark_node);
 
-  bool show_simplified_flow =
-      !already_bookmarked && base::FeatureList::IsEnabled(
-                                 power_bookmarks::kSimplifiedBookmarkSaveFlow);
+  bool show_simplified_flow = !already_bookmarked;
 
   auto bubble_delegate_unique = std::make_unique<BookmarkBubbleDelegate>(
       std::move(delegate), browser, url, show_simplified_flow);
