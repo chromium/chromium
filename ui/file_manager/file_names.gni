@@ -67,7 +67,6 @@ static_js_files = [
   "file_manager/foreground/js/ui/files_menu.js",
   "file_manager/foreground/js/ui/gear_menu.js",
   "file_manager/foreground/js/ui/install_linux_package_dialog.js",
-  "file_manager/foreground/js/ui/position_util.js",
   "file_manager/foreground/js/ui/providers_menu.js",
   "file_manager/foreground/js/ui/tree.js",
 ]
@@ -210,6 +209,7 @@ ts_files = [
   "file_manager/foreground/js/ui/menu_item.ts",
   "file_manager/foreground/js/ui/multi_menu.ts",
   "file_manager/foreground/js/ui/multi_menu_button.ts",
+  "file_manager/foreground/js/ui/position_util.ts",
   "file_manager/foreground/js/ui/progress_center_panel.ts",
   "file_manager/foreground/js/ui/splitter.ts",
   "file_manager/foreground/js/ui/table/table_column.ts",
