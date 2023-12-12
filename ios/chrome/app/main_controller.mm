@@ -44,6 +44,7 @@
 #import "ios/chrome/app/features.h"
 #import "ios/chrome/app/feed_app_agent.h"
 #import "ios/chrome/app/first_run_app_state_agent.h"
+#import "ios/chrome/app/launch_screen_view_controller.h"
 #import "ios/chrome/app/memory_monitor.h"
 #import "ios/chrome/app/post_restore_app_agent.h"
 #import "ios/chrome/app/safe_mode_app_state_agent.h"
@@ -384,11 +385,17 @@ void MainControllerAuthenticationServiceDelegate::ClearBrowsingData(
 // Initializes the application to the minimum initialization needed in all
 // cases.
 - (void)startUpBrowserBasicInitialization;
-//  Initializes the browser objects for the background handlers.
+// Initializes the browser objects for the background handlers, perform any
+// background initilisation that are required, and then transition to the
+// next stage.
 - (void)startUpBrowserBackgroundInitialization;
 // Initializes the browser objects for the browser UI (e.g., the browser
 // state).
 - (void)startUpBrowserForegroundInitialization;
+// Performs any background initialisation that are required before the app
+// can progress. If there are no initialisation, `completion` must be called
+// synchronously.
+- (void)performBrowserBackgroundInitialisation:(ProceduralBlock)completion;
 @end
 
 @implementation MainController
@@ -523,6 +530,19 @@ void MainControllerAuthenticationServiceDelegate::ClearBrowsingData(
                     identityManager:IdentityManagerFactory::GetForBrowserState(
                                         browserState)
                          localState:GetApplicationContext()->GetLocalState()]];
+
+  // Perform any background initialisation that is required and then
+  // migrate to the next stage.
+  __weak __typeof(self) weakSelf = self;
+  [self performBrowserBackgroundInitialisation:^{
+    [weakSelf.appState queueTransitionToNextInitStage];
+  }];
+}
+
+- (void)performBrowserBackgroundInitialisation:(ProceduralBlock)completion {
+  // For the moment there are no background initialisation, call `completion`
+  // immediately.
+  completion();
 }
 
 // This initialization must happen before any windows are created.
@@ -668,6 +688,16 @@ void MainControllerAuthenticationServiceDelegate::ClearBrowsingData(
 
 - (void)appState:(AppState*)appState sceneConnected:(SceneState*)sceneState {
   [sceneState addObserver:self];
+
+  // If the application is not yet ready to present the UI, install
+  // a LaunchScreenViewController as the root view of the connected
+  // SceneState. This ensures that there is no "blank" window.
+  if (self.appState.initStage < InitStageBrowserObjectsForUI) {
+    LaunchScreenViewController* launchScreen =
+        [[LaunchScreenViewController alloc] init];
+    [sceneState.window setRootViewController:launchScreen];
+    [sceneState.window makeKeyAndVisible];
+  }
 }
 
 // Called when the first scene becomes active.
@@ -706,7 +736,6 @@ void MainControllerAuthenticationServiceDelegate::ClearBrowsingData(
       break;
     case InitStageBrowserObjectsForBackgroundHandlers:
       [self startUpBrowserBackgroundInitialization];
-      [appState queueTransitionToNextInitStage];
       break;
     case InitStageEnterprise:
       break;
