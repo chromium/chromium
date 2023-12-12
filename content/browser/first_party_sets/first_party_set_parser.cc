@@ -339,26 +339,28 @@ class ParseContext {
   // Removes invalid site entries and aliases, and fixes up any lingering
   // singletons. Modifies the data in-place.
   void PostProcessSets(std::vector<SetsMap::value_type>& sets,
-                       std::vector<Aliases::value_type>& aliases) const {
+                       std::vector<Aliases::value_type>& aliases) {
     if (invalid_keys_.empty()) {
       return;
     }
 
     base::flat_set<net::SchemefulSite> possible_singletons;
-    // Erase invalid aliases, and collect canonical sites that are primaries
-    // and might become singletons.
+
+    // Erase invalid members/primaries, and collect primary sites that might
+    // become singletons.
+    base::EraseIf(
+        sets,
+        [&](const std::pair<net::SchemefulSite, net::FirstPartySetEntry>& pair)
+            -> bool { return IsInvalidEntry(pair, &possible_singletons); });
+
+    // Erase invalid aliases, and collect canonical sites that are primaries and
+    // might become singletons.
     base::EraseIf(
         aliases,
         [&](const std::pair<net::SchemefulSite, net::SchemefulSite>& pair)
             -> bool {
           return IsInvalidAlias(pair, possible_singletons, sets);
         });
-
-    // Erase invalid members/primaries, and collect more possible-singletons.
-    base::EraseIf(
-        sets,
-        [&](const std::pair<net::SchemefulSite, net::FirstPartySetEntry>& pair)
-            -> bool { return IsInvalidEntry(pair, &possible_singletons); });
 
     if (possible_singletons.empty()) {
       return;
@@ -398,7 +400,7 @@ class ParseContext {
   // Modifies the lists in-place.
   void PostProcessSetLists(
       base::expected<ParsedPolicySetLists, FirstPartySetsHandler::ParseError>&
-          lists_or_error) const {
+          lists_or_error) {
     if (!lists_or_error.has_value() || invalid_keys_.empty()) {
       return;
     }
@@ -602,20 +604,27 @@ class ParseContext {
   // set.
   bool IsInvalidEntry(
       const std::pair<net::SchemefulSite, net::FirstPartySetEntry> pair,
-      base::flat_set<net::SchemefulSite>* possible_singletons) const {
+      base::flat_set<net::SchemefulSite>* possible_singletons) {
     const net::SchemefulSite& key = pair.first;
     const net::FirstPartySetEntry& entry = pair.second;
     return base::ranges::any_of(
         invalid_keys_, [&](const net::SchemefulSite& invalid_key) -> bool {
-          const bool key_matches = invalid_key == key;
-          const bool primary_matches = invalid_key == entry.primary();
-          if (key_matches && !primary_matches && possible_singletons) {
+          if (invalid_key == entry.primary()) {
+            // The primary is invalid, so we have to kill the whole set. So this
+            // non-primary site must also be considered invalid in the future.
+            invalid_keys_.insert(pair.first);
+            return true;
+          }
+          if (invalid_key == key) {
             // This is a member whose primary might end up being a
             // singleton, since it's losing at least one member (and it
             // itself isn't invalid).
-            possible_singletons->insert(entry.primary());
+            if (possible_singletons) {
+              possible_singletons->insert(entry.primary());
+            }
+            return true;
           }
-          return key_matches || primary_matches;
+          return false;
         });
   }
 

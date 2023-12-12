@@ -419,6 +419,20 @@ TEST(FirstPartySetParser, TruncatesSubdomain_Primary) {
           {}));
 }
 
+TEST(FirstPartySetParser, TruncatesPrimaryInvalidWithAlias) {
+  // Regression test for https://crbug.com/1510152.
+  //
+  // The primary and first service site get truncated down to the same TLD, so
+  // they get marked as invalid. Since the primary is invalid, that means we
+  // have to delete the whole set (including any aliases).
+  EXPECT_EQ(
+      ParseSets(
+          R"({"primary": "https://subdomain1..test",)"
+          R"("serviceSites": ["https://subdomain2..test","https://foo.test"],)"
+          R"("ccTLDs": {"https://foo.test": ["https://foo.cctld"]}})"),
+      net::GlobalFirstPartySets(kVersion, {}, {}));
+}
+
 TEST(FirstPartySetParser, TruncatesSubdomain_AssociatedSite) {
   net::SchemefulSite example(GURL("https://example.test"));
   net::SchemefulSite aaaa(GURL("https://aaaa.test"));
