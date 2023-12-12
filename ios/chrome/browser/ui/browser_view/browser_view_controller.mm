@@ -71,8 +71,6 @@
 #import "ios/chrome/browser/ui/tabs/tab_strip_constants.h"
 #import "ios/chrome/browser/ui/tabs/tab_strip_legacy_coordinator.h"
 #import "ios/chrome/browser/ui/toolbar/accessory/toolbar_accessory_presenter.h"
-#import "ios/chrome/browser/ui/toolbar/adaptive_toolbar_coordinator.h"
-#import "ios/chrome/browser/ui/toolbar/adaptive_toolbar_view_controller.h"
 #import "ios/chrome/browser/ui/toolbar/fullscreen/toolbar_ui.h"
 #import "ios/chrome/browser/ui/toolbar/fullscreen/toolbar_ui_broadcasting_util.h"
 #import "ios/chrome/browser/ui/toolbar/toolbar_coordinator.h"
@@ -1972,6 +1970,11 @@ enum HeaderBehaviour {
 // progress of 1.0 fully shows the footer and a progress of 0.0 fully hides it.
 - (void)updateFootersForFullscreenProgress:(CGFloat)progress {
   self.footerFullscreenProgress = progress;
+
+  // Don't update the height of the secondary toolbar if it is hidden.
+  if (!IsSplitToolbarMode(self)) {
+    return;
+  }
 
   const CGFloat expandedToolbarHeight =
       self.fullscreenController->GetMaxViewportInsets().bottom;
