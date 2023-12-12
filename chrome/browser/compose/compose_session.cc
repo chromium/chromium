@@ -177,7 +177,7 @@ ComposeSession::~ComposeSession() {
 
   LogComposeSessionCloseMetrics(close_reason_, compose_count_,
                                 dialog_shown_count_, undo_count_,
-                                consent_given_in_session_);
+                                update_input_count_, consent_given_in_session_);
 
   // If we have a modeling quality log entry, upload it.
 
@@ -230,6 +230,9 @@ void ComposeSession::Bind(
 
 // ComposeSessionPageHandler
 void ComposeSession::Compose(const std::string& input, bool is_input_edited) {
+  if (is_input_edited) {
+    update_input_count_ += 1;
+  }
   optimization_guide::proto::ComposeRequest request;
   request.mutable_generate_params()->set_user_input(input);
   MakeRequest(std::move(request), is_input_edited);

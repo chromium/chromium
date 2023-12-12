@@ -23,6 +23,8 @@ const char kComposeSessionCloseReason[] = "Compose.Session.CloseReason";
 const char kComposeSessionDialogShownCount[] =
     "Compose.Session.DialogShownCount";
 const char kComposeSessionUndoCount[] = "Compose.Session.UndoCount";
+const char kComposeSessionUpdateInputCount[] =
+    "Compose.Session.SubmitEditCount";
 const char kComposeShowStatus[] = "Compose.ContextMenu.ShowStatus";
 const char kComposeConsentSessionCloseReason[] =
     "Compose.Session.Consent.CloseReason";
@@ -76,6 +78,7 @@ void LogComposeSessionCloseMetrics(ComposeSessionCloseReason reason,
                                    int compose_count,
                                    int dialog_shown_count,
                                    int undo_count,
+                                   int update_input_count_,
                                    bool consent_given_in_session) {
   base::UmaHistogramEnumeration(kComposeSessionCloseReason, reason);
   base::UmaHistogramBoolean(kComposeSessionConsentGivenInSession,
@@ -96,6 +99,8 @@ void LogComposeSessionCloseMetrics(ComposeSessionCloseReason reason,
   base::UmaHistogramCounts1000(kComposeSessionDialogShownCount + status,
                                dialog_shown_count);
   base::UmaHistogramCounts1000(kComposeSessionUndoCount + status, undo_count);
+  base::UmaHistogramCounts1000(kComposeSessionUpdateInputCount + status,
+                               update_input_count_);
 }
 
 void LogComposeDialogInnerTextShortenedBy(int shortened_by) {

@@ -21,6 +21,7 @@ extern const char kComposeSessionComposeCount[];
 extern const char kComposeSessionCloseReason[];
 extern const char kComposeSessionDialogShownCount[];
 extern const char kComposeSessionUndoCount[];
+extern const char kComposeSessionUpdateInputCount[];
 extern const char kComposeShowStatus[];
 extern const char kComposeConsentSessionCloseReason[];
 extern const char kComposeConsentSessionDialogShownCount[];
@@ -100,6 +101,7 @@ void LogComposeSessionCloseMetrics(ComposeSessionCloseReason reason,
                                    int compose_count,
                                    int dialog_shown_count,
                                    int undo_count,
+                                   int update_input_count,
                                    bool consent_given_in_session);
 
 // Log the amount trimmed from the inner text from the page (in bytes) when the

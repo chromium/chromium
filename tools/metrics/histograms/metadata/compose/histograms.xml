@@ -129,17 +129,17 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Compose.Session.ComposeCount.{Status}" units="count"
+<histogram name="Compose.Session.ComposeCount.{FinalStatus}" units="count"
     expires_after="2024-06-09">
   <owner>perrier@chromium.org</owner>
   <owner>chrome-compose-frontend@google.com</owner>
   <summary>
-    Count of the number of Compose requests for {Status} sessions. Recorded once
-    per session when it is closed or destroyed.
+    Count of the number of Compose requests in a session where {FinalStatus}.
+    Recorded once per session when it is closed or destroyed.
   </summary>
-  <token key="Status">
-    <variant name="Accepted"/>
-    <variant name="Ignored"/>
+  <token key="FinalStatus">
+    <variant name="Accepted" summary="the Compose response was inserted"/>
+    <variant name="Ignored" summary="the Compose response was ignored"/>
   </token>
 </histogram>
 
@@ -194,17 +194,32 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
-<histogram name="Compose.Session.UndoCount.{Status}" units="count"
+<histogram name="Compose.Session.UndoCount.{FinalStatus}" units="count"
     expires_after="2024-06-09">
   <owner>perrier@chromium.org</owner>
   <owner>chrome-compose-frontend@google.com</owner>
   <summary>
-    Count of the number of times undo is done during an {Status} session.
+    Count of the number of times undo is done in a session where {FinalStatus}.
     Recorded once per session when it is closed or destroyed.
   </summary>
-  <token key="Status">
-    <variant name="Accepted"/>
-    <variant name="Ignored"/>
+  <token key="FinalStatus">
+    <variant name="Accepted" summary="the Compose response was inserted"/>
+    <variant name="Ignored" summary="the Compose response was ignored"/>
+  </token>
+</histogram>
+
+<histogram name="Compose.Session.UpdateInputCount.{FinalStatus}" units="count"
+    expires_after="2024-03-31">
+  <owner>cuianthony@chromium.org</owner>
+  <owner>chrome-compose-frontend@google.com</owner>
+  <summary>
+    Count of the number of Compose requests resulting from submitting an input
+    edit in a session where {FinalStatus}. Recorded once per session when it is
+    closed or destroyed.
+  </summary>
+  <token key="FinalStatus">
+    <variant name="Accepted" summary="the Compose response was inserted"/>
+    <variant name="Ignored" summary="the Compose response was ignored"/>
   </token>
 </histogram>
 

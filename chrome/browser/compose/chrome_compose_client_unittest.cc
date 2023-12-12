@@ -1080,14 +1080,14 @@ TEST_F(ChromeComposeClientTest, CloseButtonHistogramTest) {
   base::test::TestFuture<compose::mojom::ComposeResponsePtr> compose_future;
   BindComposeFutureToOnResponseReceived(compose_future);
 
-  // Simulate three compose request.
+  // Simulate three compose requests - two from edits.
   page_handler()->Compose("", false);
   compose::mojom::ComposeResponsePtr response = compose_future.Take();
 
-  page_handler()->Compose("", false);
+  page_handler()->Compose("", true);
   response = compose_future.Take();
 
-  page_handler()->Compose("", false);
+  page_handler()->Compose("", true);
   response = compose_future.Take();
 
   // Show the dialog a second time.
@@ -1107,7 +1107,11 @@ TEST_F(ChromeComposeClientTest, CloseButtonHistogramTest) {
       compose::ComposeSessionCloseReason::kCloseButtonPressed, 1);
   histograms().ExpectBucketCount(
       compose::kComposeSessionComposeCount + std::string(".Ignored"),
-      3,  // Expect that three Compose calls were recorded.
+      3,  // Expect that three total Compose calls were recorded.
+      1);
+  histograms().ExpectBucketCount(
+      compose::kComposeSessionUpdateInputCount + std::string(".Ignored"),
+      2,  // Expect that two of the Compose calls were from edits.
       1);
   histograms().ExpectBucketCount(
       compose::kComposeSessionUndoCount + std::string(".Ignored"),
@@ -1291,14 +1295,14 @@ TEST_F(ChromeComposeClientTest, AcceptSuggestionHistogramTest) {
   base::test::TestFuture<compose::mojom::ComposeResponsePtr> compose_future;
   BindComposeFutureToOnResponseReceived(compose_future);
 
-  // Simulate three compose request.
+  // Simulate three compose requests - two from edits.
   page_handler()->Compose("", false);
   compose::mojom::ComposeResponsePtr response = compose_future.Take();
 
-  page_handler()->Compose("", false);
+  page_handler()->Compose("", true);
   response = compose_future.Take();
 
-  page_handler()->Compose("", false);
+  page_handler()->Compose("", true);
   response = compose_future.Take();
 
   // Show the dialog a second time.
@@ -1319,6 +1323,10 @@ TEST_F(ChromeComposeClientTest, AcceptSuggestionHistogramTest) {
   histograms().ExpectBucketCount(
       compose::kComposeSessionComposeCount + std::string(".Accepted"),
       3,  // Expect that three Compose calls were recorded.
+      1);
+  histograms().ExpectBucketCount(
+      compose::kComposeSessionUpdateInputCount + std::string(".Accepted"),
+      2,  // Expect that two of the Compose calls were from edits.
       1);
   histograms().ExpectBucketCount(
       compose::kComposeSessionUndoCount + std::string(".Accepted"),

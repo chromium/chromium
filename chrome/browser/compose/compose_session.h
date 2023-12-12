@@ -252,6 +252,7 @@ class ComposeSession : public compose::mojom::ComposeSessionPageHandler {
   int compose_count_ = 0;
   int dialog_shown_count_ = 0;
   int undo_count_ = 0;
+  int update_input_count_ = 0;
 
   bool consent_given_in_session_ = false;
 
