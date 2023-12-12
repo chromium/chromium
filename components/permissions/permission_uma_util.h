@@ -42,7 +42,8 @@ class PermissionRequest;
 //   1) The PermissionRequestType enum in tools/metrics/histograms/enums.xml.
 //   2) The PermissionRequestTypes suffix list in
 //      tools/metrics/histograms/metadata/histogram_suffixes_list.xml.
-//   3) GetPermissionRequestString below.
+//   3) GetPermissionRequestString function in
+//      components/permissions/permission_uma_util.cc
 //
 // The usual rules of updating UMA values applies to this enum:
 // - don't remove values
@@ -83,6 +84,7 @@ enum class RequestTypeForUma {
   PERMISSION_MIDI = 31,
   PERMISSION_FILE_SYSTEM_ACCESS = 32,
   CAPTURED_SURFACE_CONTROL = 33,
+  PERMISSION_SMART_CARD = 34,
   // NUM must be the last value in the enum.
   NUM
 };

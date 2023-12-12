@@ -69,6 +69,7 @@ bool IsAllowlistedPermissionType(PermissionType permission) {
     case PermissionType::LOCAL_FONTS:
     case PermissionType::DISPLAY_CAPTURE:
     case PermissionType::CAPTURED_SURFACE_CONTROL:
+    case PermissionType::SMART_CARD:
       return false;
   }
 

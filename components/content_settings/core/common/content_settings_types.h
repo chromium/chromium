@@ -375,6 +375,12 @@ enum class ContentSettingsType : int32_t {
   // the captured tab.
   CAPTURED_SURFACE_CONTROL,
 
+  // Content setting for access to smart card readers.
+  // The "guard" content setting stores whether to allow sites to access the
+  // Smart Card API.
+  SMART_CARD_GUARD,
+  SMART_CARD_DATA,
+
   NUM_TYPES,
 };
 

@@ -126,6 +126,12 @@ const gfx::VectorIcon& GetIconIdDesktop(RequestType type) {
 #endif
     case RequestType::kRegisterProtocolHandler:
       return vector_icons::kProtocolHandlerIcon;
+#if BUILDFLAG(IS_CHROMEOS)
+    case RequestType::kSmartCard:
+      // TODO(crbug.com/1503624): Use a proper smart card icon.
+      return cr23 ? vector_icons::kDevicesChromeRefreshIcon
+                  : vector_icons::kDevicesIcon;
+#endif
     case RequestType::kStorageAccess:
     case RequestType::kTopLevelStorageAccess:
       if (base::FeatureList::IsEnabled(
@@ -254,6 +260,10 @@ absl::optional<RequestType> ContentSettingsTypeToRequestTypeIfExists(
     case ContentSettingsType::FILE_SYSTEM_WRITE_GUARD:
       return RequestType::kFileSystemAccess;
 #endif
+#if BUILDFLAG(IS_CHROMEOS)
+    case ContentSettingsType::SMART_CARD_DATA:
+      return RequestType::kSmartCard;
+#endif
     default:
       return absl::nullopt;
   }
@@ -313,6 +323,10 @@ absl::optional<ContentSettingsType> RequestTypeToContentSettingsType(
 #if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_WIN)
     case RequestType::kProtectedMediaIdentifier:
       return ContentSettingsType::PROTECTED_MEDIA_IDENTIFIER;
+#endif
+#if BUILDFLAG(IS_CHROMEOS)
+    case RequestType::kSmartCard:
+      return ContentSettingsType::SMART_CARD_DATA;
 #endif
     case RequestType::kStorageAccess:
       return ContentSettingsType::STORAGE_ACCESS;
@@ -417,6 +431,10 @@ const char* PermissionKeyForRequestType(permissions::RequestType request_type) {
 #if !BUILDFLAG(IS_ANDROID)
     case permissions::RequestType::kRegisterProtocolHandler:
       return "register_protocol_handler";
+#endif
+#if BUILDFLAG(IS_CHROMEOS)
+    case RequestType::kSmartCard:
+      return "smart_card";
 #endif
     case permissions::RequestType::kStorageAccess:
       return "storage_access";

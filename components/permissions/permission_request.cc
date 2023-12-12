@@ -260,6 +260,12 @@ std::u16string PermissionRequest::GetMessageTextFragment() const {
       // Handled by an override in `RegisterProtocolHandlerPermissionRequest`.
       NOTREACHED();
       return std::u16string();
+#if BUILDFLAG(IS_CHROMEOS)
+    case RequestType::kSmartCard:
+      // Handled by an override in `SmartCardPermissionRequest`.
+      NOTREACHED();
+      return std::u16string();
+#endif
     case RequestType::kStorageAccess:
     case RequestType::kTopLevelStorageAccess:
       message_id = IDS_STORAGE_ACCESS_PERMISSION_FRAGMENT;

@@ -176,6 +176,7 @@ chromium-metrics-reviews@google.com.
   <int value="31" label="PERMISSION_MIDI"/>
   <int value="32" label="PERMISSION_FILE_SYSTEM_ACCESS"/>
   <int value="33" label="CAPTURED_SURFACE_CONTROL"/>
+  <int value="34" label="PERMISSION_SMART_CARD"/>
 </enum>
 
 <enum name="PermissionSourceUI">

@@ -77,6 +77,7 @@ PermissionToSchedulingFeature(PermissionType permission_name) {
     case PermissionType::GEOLOCATION:
     case PermissionType::NOTIFICATIONS:
     case PermissionType::CAPTURED_SURFACE_CONTROL:
+    case PermissionType::SMART_CARD:
       return absl::nullopt;
   }
 }

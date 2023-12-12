@@ -123,6 +123,8 @@ constexpr auto kHistogramValue = base::MakeFixedFlatMap<ContentSettingsType,
     {ContentSettingsType::TPCD_HEURISTICS_GRANTS, 109},
     {ContentSettingsType::FILE_SYSTEM_ACCESS_RESTORE_PERMISSION, 110},
     {ContentSettingsType::CAPTURED_SURFACE_CONTROL, 111},
+    {ContentSettingsType::SMART_CARD_GUARD, 112},
+    {ContentSettingsType::SMART_CARD_DATA, 113},
 
     // As mentioned at the top, please don't forget to update ContentType in
     // enums.xml when you add entries here!

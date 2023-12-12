@@ -341,6 +341,11 @@ This will otherwise be blocked by your privacy settings. This will allow the con
         Embedded content not allowed
     </message>
   </if>
+  <if expr="is_chromeos">
+    <message name="IDS_SMART_CARD_PERMISSION_PROMPT" desc="Text on dialog that asks the user for permission to access a smart card reader device and the card inserted in it (or presented to it, if contactless).">
+      Control <ph name="ReaderName">$1<ex>HID Omnikey</ex></ph> and gain access to the smart card accessible to it?
+    </message>
+  </if>
 
   <!-- Quota messages -->
   <if expr="is_android">

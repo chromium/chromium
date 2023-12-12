@@ -72,6 +72,8 @@ std::string GetPermissionString(PermissionType permission) {
       return "VR";
     case PermissionType::AR:
       return "AR";
+    case PermissionType::SMART_CARD:
+      return "SmartCard";
     case PermissionType::STORAGE_ACCESS_GRANT:
       return "StorageAccess";
     case PermissionType::CAMERA_PAN_TILT_ZOOM:
@@ -121,6 +123,8 @@ PermissionTypeToPermissionsPolicyFeature(PermissionType permission) {
       return mojom::PermissionsPolicyFeature::kWebXr;
     case PermissionType::AR:
       return mojom::PermissionsPolicyFeature::kWebXr;
+    case PermissionType::SMART_CARD:
+      return mojom::PermissionsPolicyFeature::kSmartCard;
     case PermissionType::STORAGE_ACCESS_GRANT:
       return mojom::PermissionsPolicyFeature::kStorageAccessAPI;
     case PermissionType::TOP_LEVEL_STORAGE_ACCESS:

@@ -8871,6 +8871,7 @@ Called by update_net_error_codes.py.-->
   <int value="108" label="File System Access extended permission"/>
   <int value="109" label="3PCD Heuristics Grants"/>
   <int value="110" label="File System Access Restore Permission"/>
+  <int value="111" label="Smart Card data"/>
 </enum>
 
 <enum name="ContextMenuIOSCopyImage">

@@ -206,6 +206,9 @@ const ContentSettingsTypeNameEntry kContentSettingsTypeGroupNames[] = {
     {ContentSettingsType::FILE_SYSTEM_ACCESS_EXTENDED_PERMISSION, nullptr},
     {ContentSettingsType::TPCD_HEURISTICS_GRANTS, nullptr},
     {ContentSettingsType::FILE_SYSTEM_ACCESS_RESTORE_PERMISSION, nullptr},
+    // TODO(crbug.com/1464851): Update name once UI design is done.
+    {ContentSettingsType::SMART_CARD_GUARD, nullptr},
+    {ContentSettingsType::SMART_CARD_DATA, nullptr},
 };
 
 static_assert(std::size(kContentSettingsTypeGroupNames) ==

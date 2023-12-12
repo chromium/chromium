@@ -116,6 +116,10 @@ RequestTypeForUma GetUmaValueForRequestType(RequestType request_type) {
     case RequestType::kRegisterProtocolHandler:
       return RequestTypeForUma::REGISTER_PROTOCOL_HANDLER;
 #endif
+#if BUILDFLAG(IS_CHROMEOS)
+    case RequestType::kSmartCard:
+      return RequestTypeForUma::PERMISSION_SMART_CARD;
+#endif
     case RequestType::kStorageAccess:
       return RequestTypeForUma::PERMISSION_STORAGE_ACCESS;
     case RequestType::kVrSession:
@@ -189,6 +193,8 @@ std::string GetPermissionRequestString(RequestTypeForUma type) {
       return "FileSystemAccess";
     case RequestTypeForUma::CAPTURED_SURFACE_CONTROL:
       return "CapturedSurfaceControl";
+    case RequestTypeForUma::PERMISSION_SMART_CARD:
+      return "SmartCard";
 
     case RequestTypeForUma::UNKNOWN:
     case RequestTypeForUma::PERMISSION_FLASH:
@@ -1227,6 +1233,10 @@ void PermissionUmaUtil::RecordPermissionAction(
     case ContentSettingsType::CAPTURED_SURFACE_CONTROL:
       base::UmaHistogramEnumeration("Permissions.Action.CapturedSurfaceControl",
                                     action, PermissionAction::NUM);
+      break;
+    case ContentSettingsType::SMART_CARD_DATA:
+      base::UmaHistogramEnumeration("Permissions.Action.SmartCard", action,
+                                    PermissionAction::NUM);
       break;
     // The user is not prompted for these permissions, thus there is no
     // permission action recorded for them.
