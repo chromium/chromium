@@ -414,9 +414,8 @@ AccountInfo MakeAccountAvailable(IdentityManager* identity_manager,
     auto consent_level = options.consent_level.value();
     PrimaryAccountManager* primary_account_manager =
         identity_manager->GetPrimaryAccountManager();
-    primary_account_manager->SetPrimaryAccountInfo(
-        account_info, consent_level,
-        signin_metrics::AccessPoint::ACCESS_POINT_UNKNOWN);
+    primary_account_manager->SetPrimaryAccountInfo(account_info, consent_level,
+                                                   options.access_point);
     CHECK_EQ(account_info.gaia,
              identity_manager->GetPrimaryAccountInfo(consent_level).gaia);
   }

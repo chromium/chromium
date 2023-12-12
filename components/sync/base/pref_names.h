@@ -19,6 +19,12 @@ inline constexpr char kEnableLocalSyncBackend[] =
 // flag is present.
 inline constexpr char kLocalSyncBackendDir[] = "sync.local_sync_backend_dir";
 
+// Registers that the signin occurred under `switches::kUnoDesktop` active
+// feature, with an explicit user sign in. Helps differentiate with pre feature
+// activation sign ins, even if there was a previous explicit sign in (without
+// sync), we will not be able to detect it.
+inline constexpr char kExplicitBrowserSignin[] = "sync.explicit_browser_signin";
+
 // NOTE: All the "internal" prefs should not be used directly by non-sync code,
 // but should rather always be accessed via SyncUserSettings.
 // TODO(crbug.com/1435427): Clean up/replace any existing references to these

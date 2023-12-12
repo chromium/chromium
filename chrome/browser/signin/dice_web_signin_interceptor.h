@@ -136,7 +136,7 @@ class DiceWebSigninInterceptor : public KeyedService,
   void Shutdown() override;
 
  private:
-  friend class DiceWebSigninInterceptorWithUnoEnabledBrowserTest;
+  friend class DiceWebSigninInterceptorWithChromeSigninHelpersBrowserTest;
 
   FRIEND_TEST_ALL_PREFIXES(DiceWebSigninInterceptorTest,
                            ShouldShowProfileSwitchBubble);
