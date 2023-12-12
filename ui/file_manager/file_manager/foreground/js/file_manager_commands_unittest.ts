@@ -11,21 +11,50 @@ import {installMockChrome, MockMetrics} from '../../common/js/mock_chrome.js';
 import {MockDirectoryEntry, MockEntry, MockFileSystem} from '../../common/js/mock_entry.js';
 import {waitUntil} from '../../common/js/test_error_reporting.js';
 import {RootType, VolumeType} from '../../common/js/volume_manager_types.js';
+import type {CommandHandlerDeps} from '../../externs/command_handler_deps.js';
+import type {VolumeInfo} from '../../externs/volume_info.js';
 import {addVolume, convertVolumeInfoAndMetadataToVolume, updateIsInteractiveVolume} from '../../state/ducks/volumes.js';
 import {createMyFilesDataWithVolumeEntry} from '../../state/ducks/volumes_unittest.js';
 import {createFakeVolumeMetadata, setUpFileManagerOnWindow, setupStore, waitDeepEquals} from '../../state/for_tests.js';
 
 import {CommandHandler, ValidMenuCommandsForUma} from './command_handler.js';
+import type {FilesCommandId} from './command_handler.js';
+import {CanExecuteEvent, Command} from './ui/command.js';
 
-/** @type {!MockMetrics} */
-let mockMetrics;
+let mockMetrics: MockMetrics;
 
-/**
- * @param {number} metricIndex
- * @returns {string|undefined}
- */
-function getMetricName(metricIndex) {
+function getMetricName(metricIndex: number): string|undefined {
   return ValidMenuCommandsForUma[metricIndex];
+}
+
+interface ExtraCanExecuteCommandProperties {
+  target: {entry?: DirectoryEntry, parentElement?: {contextElement: null}};
+}
+
+interface CurrentSelection {
+  entries: MockEntry[];
+  iconType: string;
+  totalCount: number;
+}
+
+function createMockEvent(
+    commandId?: string,
+    properties?: ExtraCanExecuteCommandProperties): CanExecuteEvent {
+  const command = {
+    hidden: false,
+    setHidden: (hidden: boolean) => {
+      event.command.hidden = hidden;
+    },
+  } as unknown as Command;
+  if (commandId) {
+    command.id = commandId;
+  }
+  let event = new CanExecuteEvent(command);
+  event.canExecute = true;
+  if (properties) {
+    event = Object.assign(properties, event);
+  }
+  return event;
 }
 
 /**
@@ -41,19 +70,18 @@ export async function testToggleHoldingSpaceCommand() {
 
   /**
    * Mock chrome APIs.
-   * @type {!Object}
    */
-  let itemUrls = [];
+  let itemUrls: string[] = [];
   mockMetrics = new MockMetrics();
   const mockChrome = {
     metricsPrivate: mockMetrics,
     fileManagerPrivate: {
-      // @ts-ignore: error TS7006: Parameter 'callback' implicitly has an 'any'
-      // type.
-      getHoldingSpaceState: (callback) => {
-        callback({itemUrls});
-        getHoldingSpaceStateCalled = true;
-      },
+      getHoldingSpaceState:
+          (callback: (state: chrome.fileManagerPrivate.HoldingSpaceState) =>
+               void) => {
+            callback({itemUrls});
+            getHoldingSpaceStateCalled = true;
+          },
     },
 
     runtime: {},
@@ -66,14 +94,12 @@ export async function testToggleHoldingSpaceCommand() {
   // Create `DOWNLOADS` volume.
   const downloadsVolumeInfo = volumeManager.createVolumeInfo(
       VolumeType.DOWNLOADS, 'downloadsVolumeId', 'Downloads volume');
-  const downloadsFileSystem =
-      /** @type{MockFileSystem} */ (downloadsVolumeInfo.fileSystem);
+  const downloadsFileSystem = downloadsVolumeInfo.fileSystem as MockFileSystem;
 
   // Create `REMOVABLE` volume.
   const removableVolumeInfo = volumeManager.createVolumeInfo(
       VolumeType.REMOVABLE, 'removableVolumeId', 'Removable volume');
-  const removableFileSystem =
-      /** @type{MockFileSystem} */ (removableVolumeInfo.fileSystem);
+  const removableFileSystem = removableVolumeInfo.fileSystem as MockFileSystem;
 
   // Mock file/folder entries.
   const audioFileEntry = new MockEntry(downloadsFileSystem, '/audio.mp3');
@@ -192,17 +218,7 @@ export async function testToggleHoldingSpaceCommand() {
     console.log('Starting test case... ' + testCase.description);
 
     // Mock `Event`.
-    const event = {
-      canExecute: true,
-      command: {
-        hidden: false,
-        // @ts-ignore: error TS7006: Parameter 'hidden' implicitly has an 'any'
-        // type.
-        setHidden: (hidden) => {
-          event.command.hidden = hidden;
-        },
-      },
-    };
+    const event = createMockEvent();
 
     // Mock `FileManager`.
     const fileManager = {
@@ -214,16 +230,13 @@ export async function testToggleHoldingSpaceCommand() {
         selection: {entries: testCase.selection},
       },
       volumeManager: volumeManager,
-    };
+    } as unknown as CommandHandlerDeps;
 
     // Mock `chrome.fileManagerPrivate.getHoldingSpaceState()` response.
     itemUrls = testCase.itemUrls;
 
     // Verify `command.canExecute()` results in expected `event` state.
     getHoldingSpaceStateCalled = false;
-    // @ts-ignore: error TS2345: Argument of type '{ canExecute: boolean;
-    // command: { hidden: boolean; setHidden: (hidden: any) => void; }; }' is
-    // not assignable to parameter of type 'Event'.
     command.canExecute(event, fileManager);
     if (testCase.expect.canExecute) {
       await waitUntil(() => getHoldingSpaceStateCalled);
@@ -240,23 +253,29 @@ export async function testToggleHoldingSpaceCommand() {
 
     // Mock private API.
     let didInteractWithMockPrivateApi = false;
-    chrome.fileManagerPrivate.toggleAddedToHoldingSpace = (entries, isAdd) => {
-      didInteractWithMockPrivateApi = true;
-      // @ts-ignore: error TS2345: Argument of type 'MockEntry[] |
-      // FileSystemDirectoryEntry[] | undefined' is not assignable to parameter
-      // of type 'any[]'.
-      assertArrayEquals(entries, testCase.expect.entries);
-      assertEquals(isAdd, testCase.expect.isAdd);
-    };
+    chrome.fileManagerPrivate.toggleAddedToHoldingSpace =
+        (entries: Entry[], isAdd: boolean) => {
+          didInteractWithMockPrivateApi = true;
+          assertArrayEquals(entries, testCase.expect.entries as Entry[]);
+          assertEquals(isAdd, testCase.expect.isAdd);
+        };
 
     // Reset cache of metrics recorded.
     mockMetrics.metricCalls['FileBrowser.MenuItemSelected'] = [];
 
+    const commandEvent = new CustomEvent('command', {
+      detail: {
+        command: {
+          hidden: false,
+          setHidden: (hidden: boolean) => {
+            event.command.hidden = hidden;
+          },
+        } as unknown as Command,
+      },
+    });
+
     // Verify `command.execute()` results in expected mock API interactions.
-    // @ts-ignore: error TS2345: Argument of type '{ canExecute: boolean;
-    // command: { hidden: boolean; setHidden: (hidden: any) => void; }; }' is
-    // not assignable to parameter of type 'Event'.
-    command.execute(event, fileManager);
+    command.execute(commandEvent, fileManager);
     assertTrue(didInteractWithMockPrivateApi);
 
     // Verify metrics recorded.
@@ -280,21 +299,13 @@ export async function testExtractAllCommand() {
   const command = CommandHandler.getCommand('extract-all');
   assertNotEquals(command, undefined);
 
-  // @ts-ignore: error TS6133: 'startIOTaskCalled' is declared but its value is
-  // never read.
-  let startIOTaskCalled = false;
-
   /**
    * Mock chrome startIOTask API.
-   * @type {!Object}
    */
   const mockChrome = {
     fileManagerPrivate: {
-      startIOTask: () => {
-        startIOTaskCalled = true;
-      },
+      startIOTask: () => {},
     },
-
     runtime: {},
   };
   installMockChrome(mockChrome);
@@ -305,8 +316,7 @@ export async function testExtractAllCommand() {
   // Create `DOWNLOADS` volume.
   const downloadsVolumeInfo = volumeManager.createVolumeInfo(
       VolumeType.DOWNLOADS, 'downloadsVolumeId', 'Downloads volume');
-  const downloadsFileSystem =
-      /** @type{MockFileSystem} */ (downloadsVolumeInfo.fileSystem);
+  const downloadsFileSystem = downloadsVolumeInfo.fileSystem as MockFileSystem;
 
   // Mock file entries.
   const folderEntry = MockDirectoryEntry.create(downloadsFileSystem, '/folder');
@@ -315,20 +325,10 @@ export async function testExtractAllCommand() {
   const imageFileEntry = new MockEntry(downloadsFileSystem, '/image.jpg');
 
   // Mock `Event`.
-  const event = {
-    canExecute: true,
-    command: {
-      hidden: false,
-      // @ts-ignore: error TS7006: Parameter 'hidden' implicitly has an 'any'
-      // type.
-      setHidden: (hidden) => {
-        event.command.hidden = hidden;
-      },
-    },
-  };
+  const event = createMockEvent();
 
   // The current selection for testing.
-  const currentSelection = {
+  const currentSelection: CurrentSelection = {
     entries: [],
     iconType: 'none',
     totalCount: 0,
@@ -347,25 +347,17 @@ export async function testExtractAllCommand() {
     getCurrentDirectoryEntry: () => folderEntry,
     getSelection: () => currentSelection,
     volumeManager: volumeManager,
-  };
+  } as unknown as CommandHandlerDeps;
 
   // Check: canExecute is false and command is hidden with no selection.
-  // @ts-ignore: error TS2345: Argument of type '{ canExecute: boolean;
-  // command: { hidden: boolean; setHidden: (hidden: any) => void; }; }' is not
-  // assignable to parameter of type 'Event'.
   command.canExecute(event, fileManager);
   assertFalse(event.canExecute);
   assertTrue(event.command.hidden);
 
   // Check: canExecute is true and command is visible with a single ZIP file.
-  // @ts-ignore: error TS2322: Type 'MockEntry' is not assignable to type
-  // 'never'.
   currentSelection.entries = [zipFileEntry];
   currentSelection.iconType = 'archive';
   currentSelection.totalCount = 1;
-  // @ts-ignore: error TS2345: Argument of type '{ canExecute: boolean;
-  // command: { hidden: boolean; setHidden: (hidden: any) => void; }; }' is not
-  // assignable to parameter of type 'Event'.
   command.canExecute(event, fileManager);
   assertTrue(event.canExecute);
   assertFalse(event.command.hidden);
@@ -375,41 +367,25 @@ export async function testExtractAllCommand() {
   assertNotEquals(command, undefined);
 
   // Check: ZIP canExecute is false and command hidden with a single ZIP file.
-  // @ts-ignore: error TS2345: Argument of type '{ canExecute: boolean;
-  // command: { hidden: boolean; setHidden: (hidden: any) => void; }; }' is not
-  // assignable to parameter of type 'Event'.
   zipCommand.canExecute(event, fileManager);
   assertFalse(event.canExecute);
   assertTrue(event.command.hidden);
 
   // Check: canExecute is false and command hidden for no ZIP multi-selection.
-  // @ts-ignore: error TS2322: Type 'MockEntry' is not assignable to type
-  // 'never'.
   currentSelection.entries = [imageFileEntry, textFileEntry];
   currentSelection.totalCount = 2;
-  // @ts-ignore: error TS2345: Argument of type '{ canExecute: boolean;
-  // command: { hidden: boolean; setHidden: (hidden: any) => void; }; }' is not
-  // assignable to parameter of type 'Event'.
   command.canExecute(event, fileManager);
   assertFalse(event.canExecute);
   assertTrue(event.command.hidden);
 
   // Check: canExecute is true and command visible for ZIP multiple selection.
-  // @ts-ignore: error TS2322: Type 'MockEntry' is not assignable to type
-  // 'never'.
   currentSelection.entries = [zipFileEntry, textFileEntry];
   currentSelection.totalCount = 2;
-  // @ts-ignore: error TS2345: Argument of type '{ canExecute: boolean;
-  // command: { hidden: boolean; setHidden: (hidden: any) => void; }; }' is not
-  // assignable to parameter of type 'Event'.
   command.canExecute(event, fileManager);
   assertTrue(event.canExecute);
   assertFalse(event.command.hidden);
 
   // Check: ZIP canExecute is true and command visible for multiple selection.
-  // @ts-ignore: error TS2345: Argument of type '{ canExecute: boolean;
-  // command: { hidden: boolean; setHidden: (hidden: any) => void; }; }' is not
-  // assignable to parameter of type 'Event'.
   zipCommand.canExecute(event, fileManager);
   assertTrue(event.canExecute);
   assertFalse(event.command.hidden);
@@ -434,24 +410,11 @@ export async function testRenameCommand() {
   // Mock file entries.
   const recentEntry = new FakeEntryImpl('Recent', RootType.RECENT);
   const pdfEntry = MockDirectoryEntry.create(
-      /** @type{MockFileSystem} */ (documentsRootVolumeInfo.fileSystem),
+      documentsRootVolumeInfo.fileSystem as MockFileSystem,
       'Documents/abc.pdf');
 
   // Mock `Event`.
-  const event = {
-    canExecute: true,
-    target: {
-      entry: pdfEntry,
-    },
-    command: {
-      hidden: false,
-      // @ts-ignore: error TS7006: Parameter 'hidden' implicitly has an 'any'
-      // type.
-      setHidden: (hidden) => {
-        event.command.hidden = hidden;
-      },
-    },
-  };
+  const event = createMockEvent(undefined, {target: {entry: pdfEntry}});
 
   // The current selection for testing.
   const currentSelection = {
@@ -470,13 +433,9 @@ export async function testRenameCommand() {
     getCurrentDirectoryEntry: () => recentEntry,
     getSelection: () => currentSelection,
     volumeManager: volumeManager,
-  };
+  } as unknown as CommandHandlerDeps;
 
   // Check: canExecute is false and command is disabled.
-  // @ts-ignore: error TS2345: Argument of type '{ canExecute: boolean;
-  // target: { entry: FileSystemDirectoryEntry; }; command: { hidden: boolean;
-  // setHidden: (hidden: any) => void; }; }' is not assignable to parameter of
-  // type 'Event'.
   command.canExecute(event, fileManager);
   assertFalse(event.canExecute);
   assertFalse(event.command.hidden);
@@ -485,9 +444,9 @@ export async function testRenameCommand() {
 /**
  * Create and add a Downloads volume to the store. Update the volume as
  * non-interactive.
- * @return {!Promise<import("../../externs/volume_info.js").VolumeInfo>}
  */
-async function createAndAddNonInteractiveDownloadsVolume() {
+async function createAndAddNonInteractiveDownloadsVolume():
+    Promise<VolumeInfo> {
   setUpFileManagerOnWindow();
   // Dispatch an action to add MyFiles volume.
   const store = setupStore();
@@ -545,7 +504,7 @@ export async function testCommandsForNonInteractiveVolumeAndNoEntries() {
   const nonInteractiveVolumeInfo =
       await createAndAddNonInteractiveDownloadsVolume();
 
-  const currentSelection = {
+  const currentSelection: CurrentSelection = {
     entries: [],
     iconType: 'none',
     totalCount: 0,
@@ -577,44 +536,28 @@ export async function testCommandsForNonInteractiveVolumeAndNoEntries() {
         contains: () => false,
       },
     },
-  };
+  } as unknown as CommandHandlerDeps;
 
   // Check each command is disabled and hidden.
-  const commandNames =
-      /** @type {import('./command_handler.js').FilesCommandId[]} */ ([
-        'paste',
-        'cut',
-        'copy',
-        'new-folder',
-      ]);
+  const commandNames: FilesCommandId[] = [
+    'paste',
+    'cut',
+    'copy',
+    'new-folder',
+  ];
   for (const commandName of commandNames) {
     // Check: command exists.
     const command = CommandHandler.getCommand(commandName);
     assertNotEquals(command, undefined);
 
     // Mock `Event`.
-    const event = {
-      canExecute: true,
+    const event = createMockEvent(commandName, {
       target: {
         parentElement: {
           contextElement: null,
         },
       },
-      command: {
-        hidden: false,
-        // @ts-ignore: error TS7006: Parameter 'hidden' implicitly has an 'any'
-        // type.
-        setHidden: (hidden) => {
-          event.command.hidden = hidden;
-        },
-        id: commandName,
-      },
-    };
-
-    // @ts-ignore: error TS2345: Argument of type '{ canExecute: boolean;
-    // target: { parentElement: { contextElement: null; }; }; command: { hidden:
-    // boolean; setHidden: (hidden: any) => void; id: string; }; }' is not
-    // assignable to parameter of type 'Event'.
+    });
     command.canExecute(event, fileManager);
     assertFalse(event.canExecute);
     assertTrue(event.command.hidden);
@@ -636,8 +579,7 @@ export async function testCommandsForEntriesOnNonInteractiveVolume() {
 
   // Create file entry on non-interactive volume.
   const nonInteractiveVolumeEntry = MockDirectoryEntry.create(
-      /** @type{MockFileSystem} */ (nonInteractiveVolumeInfo.fileSystem),
-      'abc.pdf');
+      nonInteractiveVolumeInfo.fileSystem as MockFileSystem, 'abc.pdf');
   const currentSelection = {
     entries: [nonInteractiveVolumeEntry],
     iconType: 'none',
@@ -669,48 +611,33 @@ export async function testCommandsForEntriesOnNonInteractiveVolume() {
       },
     },
     volumeManager: volumeManager,
-  };
+  } as unknown as CommandHandlerDeps;
 
   // Check each command is disabled and hidden.
-  const commandNames =
-      /** @type {import('./command_handler.js').FilesCommandId[]} */ ([
-        'paste',
-        'cut',
-        'copy',
-        'new-folder',
-        'delete',
-        'move-to-trash',
-        'paste-into-folder',
-        'rename',
-        'extract-all',
-        'zip-selection',
-      ]);
+  const commandNames: FilesCommandId[] = [
+    'paste',
+    'cut',
+    'copy',
+    'new-folder',
+    'delete',
+    'move-to-trash',
+    'paste-into-folder',
+    'rename',
+    'extract-all',
+    'zip-selection',
+  ];
   for (const commandName of commandNames) {
     // Check: command exists.
     const command = CommandHandler.getCommand(commandName);
     assertNotEquals(command, undefined);
 
     // Mock `Event`.
-    const event = {
-      canExecute: true,
+    const event = createMockEvent(commandName, {
       target: {
         entry: nonInteractiveVolumeEntry,
       },
-      command: {
-        hidden: false,
-        // @ts-ignore: error TS7006: Parameter 'hidden' implicitly has an 'any'
-        // type.
-        setHidden: (hidden) => {
-          event.command.hidden = hidden;
-        },
-        id: commandName,
-      },
-    };
+    });
 
-    // @ts-ignore: error TS2345: Argument of type '{ canExecute: boolean;
-    // target: { entry: FileSystemDirectoryEntry; }; command: { hidden: boolean;
-    // setHidden: (hidden: any) => void; id: string; }; }' is not assignable to
-    // parameter of type 'Event'.
     command.canExecute(event, fileManager);
     assertFalse(event.canExecute);
     assertTrue(event.command.hidden);
