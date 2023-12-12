@@ -19,6 +19,7 @@ const char kEnterprisePlusAddressServerUrlName[] = "server-url";
 const char kSyncWithEnterprisePlusAddressServerName[] = "sync-with-server";
 const char kEnterprisePlusAddressTimerDelayName[] = "timer-delay";
 const char kPlusAddressManagementUrlName[] = "manage-url";
+const char kPlusAddressExcludedSitesName[] = "excluded-sites";
 
 const base::FeatureParam<std::string> kEnterprisePlusAddressLabelOverride{
     &kFeature, kEnterprisePlusAddressLabelOverrideName, "Lorem Ipsum"};
@@ -32,4 +33,7 @@ const base::FeatureParam<base::TimeDelta> kEnterprisePlusAddressTimerDelay{
     &kFeature, kEnterprisePlusAddressTimerDelayName, base::Hours(24)};
 const base::FeatureParam<std::string> kPlusAddressManagementUrl{
     &kFeature, kPlusAddressManagementUrlName, ""};
+const base::FeatureParam<std::string> kPlusAddressExcludedSites{
+    &kFeature, kPlusAddressExcludedSitesName, ""};
+
 }  // namespace plus_addresses

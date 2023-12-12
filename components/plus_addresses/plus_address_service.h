@@ -128,6 +128,14 @@ class PlusAddressService : public KeyedService,
 
   void HandleSignout();
 
+  // Get and parse the excluded sites.
+  std::set<std::string> GetAndParseExcludedSites();
+
+  // Checks whether the `origin` supports plus address.
+  // Returns `true` when origin is not opaque, ETLD+1 of `origin` is not
+  // on `excluded_sites_` set, and scheme is http or https.
+  bool IsSupportedOrigin(const url::Origin& origin) const;
+
   // The user's existing set of plus addresses, scoped to sites.
   PlusAddressMap plus_address_by_site_ GUARDED_BY_CONTEXT(sequence_checker_);
 
@@ -150,6 +158,10 @@ class PlusAddressService : public KeyedService,
 
   // Handles requests to a remote server that this service uses.
   PlusAddressClient plus_address_client_;
+
+  // Store set of excluded sites ETLD+1 where PlusAddressService is not
+  // supported.
+  std::set<std::string> excluded_sites_;
 
   // Stores last auth error (potentially NONE) to toggle is_enabled() on/off.
   // Defaults to NONE to enable this service while refresh tokens (and potential
