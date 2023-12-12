@@ -49,6 +49,7 @@ class _ImageParameters():
     self.driver_version: Optional[str] = None
     self.driver_vendor: Optional[str] = None
     self.display_server: Optional[str] = None
+    self.skia_graphite_status: Optional[str] = None
 
 
 # This and its subclasses could potentially be switched to using dataclasses,
@@ -321,6 +322,8 @@ class SkiaGoldIntegrationTestBase(gpu_integration_test.GpuIntegrationTest):
     params.driver_version = device.driver_version
     params.driver_vendor = device.driver_vendor
     params.display_server = gpu_helper.GetDisplayServer(browser.browser_type)
+    params.skia_graphite_status = gpu_helper.GetSkiaGraphiteStatus(
+        system_info.gpu)
 
   @classmethod
   def _UploadBitmapToCloudStorage(cls,
@@ -403,6 +406,8 @@ class SkiaGoldIntegrationTestBase(gpu_integration_test.GpuIntegrationTest):
         _GetCombinedHardwareIdentifier(img_params),
         'browser_type':
         _ToNonEmptyStrOrNone(self.browser.browser_type),
+        'skia_graphite_status':
+        _ToNonEmptyStrOrNone(img_params.skia_graphite_status),
     }
     # If we have a grace period active, then the test is potentially flaky.
     # Include a pair that will cause Gold to ignore any untriaged images, which
