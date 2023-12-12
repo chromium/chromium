@@ -109,10 +109,10 @@ export class DirectoryTreeNamingController {
    *     node of the target.
    * @param {boolean} isRemovableRoot Indicates whether the target is a
    *     removable volume root or not.
-   * @param {import("../../externs/volume_info.js").VolumeInfo} volumeInfo A
-   *     volume information about the target entry. |volumeInfo| can be null if
-   *     method is invoked on a folder that is in the tree view and is not root
-   *     of an external drive.
+   * @param {import("../../externs/volume_info.js").VolumeInfo|null} volumeInfo
+   *     A volume information about the target entry. |volumeInfo| can be null
+   *     if method is invoked on a folder that is in the tree view and is not
+   *     root of an external drive.
    */
   attachAndStart(directoryItem, isRemovableRoot, volumeInfo) {
     this.isRemovableRoot_ = isRemovableRoot;
