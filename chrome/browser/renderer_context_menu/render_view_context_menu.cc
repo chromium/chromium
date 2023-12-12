@@ -3386,10 +3386,11 @@ void RenderViewContextMenu::ExecuteCommand(int id, int event_flags) {
             autofill::ContentAutofillDriver::GetForRenderFrameHost(
                 render_frame_host);
         if (content_autofill_driver) {
-          compose_manager->OpenComposeFromContextMenu(
-              content_autofill_driver,
+          compose_manager->OpenCompose(
+              *content_autofill_driver,
               autofill::FormRendererId(params_.form_renderer_id),
-              autofill::FieldRendererId(params_.field_renderer_id));
+              autofill::FieldRendererId(params_.field_renderer_id),
+              compose::ComposeManagerImpl::UiEntryPoint::kContextMenu);
         }
       }
       break;

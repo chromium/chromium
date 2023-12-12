@@ -1728,22 +1728,15 @@ TEST_F(AutofillExternalDelegateUnitTest, ExternalDelegateOpensComposeAndFills) {
                                             suggestions);
 
   // Simulate accepting a Compose suggestion.
-  AutofillComposeDelegate::ComposeCallback callback;
-  EXPECT_CALL(compose_delegate, OpenCompose).WillOnce(MoveArg<3>(&callback));
+  EXPECT_CALL(
+      compose_delegate,
+      OpenCompose(_, queried_form_.unique_renderer_id,
+                  queried_form_triggering_field_id_.renderer_id,
+                  AutofillComposeDelegate::UiEntryPoint::kAutofillPopup));
   EXPECT_CALL(client(),
               HideAutofillPopup(PopupHidingReason::kAcceptSuggestion));
   external_delegate().DidAcceptSuggestion(suggestions[0],
                                           SuggestionPosition{.row = 0});
-  Mock::VerifyAndClearExpectations(&compose_delegate);
-  ASSERT_TRUE(callback);
-
-  const std::u16string kComposeResponse = u"Cucumbers are tasty.";
-  EXPECT_CALL(manager(),
-              FillOrPreviewField(mojom::ActionPersistence::kFill,
-                                 mojom::TextReplacement::kReplaceSelection,
-                                 HasQueriedFormId(), HasQueriedFieldId(),
-                                 kComposeResponse, PopupItemId::kCompose));
-  std::move(callback).Run(kComposeResponse);
 }
 
 class AutofillExternalDelegateUnitTest_UndoAutofill

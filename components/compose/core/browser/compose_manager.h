@@ -13,12 +13,16 @@ namespace compose {
 class ComposeManager : public autofill::AutofillComposeDelegate {
  public:
   // TODO(b/300325327): Add non-Autofill specific methods.
-  // Opens compose from the context menu given the 'driver',
-  // 'form_renderer_id', and 'field_renderer_id'.
-  virtual void OpenComposeFromContextMenu(
-      autofill::AutofillDriver* driver,
-      const autofill::FormRendererId form_renderer_id,
-      const autofill::FieldRendererId field_renderer_id) = 0;
+  // Opens the Compose UI. `ui_entry_point` and `trigger_field` describe the
+  // field on which Compose was triggered. `popup_screen_location` contains the
+  // location (and arrow position) of the currently open popup bubble (if there
+  // is one) and `callback` is the response callback to Autofill.
+  virtual void OpenComposeWithFormFieldData(
+      UiEntryPoint ui_entry_point,
+      const autofill::FormFieldData& trigger_field,
+      std::optional<autofill::AutofillClient::PopupScreenLocation>
+          popup_screen_location,
+      ComposeCallback callback) = 0;
 };
 
 }  // namespace compose

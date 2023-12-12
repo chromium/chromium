@@ -670,20 +670,10 @@ void AutofillExternalDelegate::DidAcceptSuggestion(
     case PopupItemId::kCompose:
       if (AutofillComposeDelegate* delegate =
               manager_->client().GetComposeDelegate()) {
-        AutofillComposeDelegate::ComposeCallback callback = base::BindOnce(
-            [](base::WeakPtr<AutofillManager> manager, const FormData& form,
-               const FormFieldData& field, const std::u16string& text) {
-              if (manager) {
-                manager->FillOrPreviewField(
-                    mojom::ActionPersistence::kFill,
-                    mojom::TextReplacement::kReplaceSelection, form, field,
-                    text, PopupItemId::kCompose);
-              }
-            },
-            manager_->GetWeakPtr(), query_form_, query_field_);
         delegate->OpenCompose(
-            AutofillComposeDelegate::UiEntryPoint::kAutofillPopup, query_field_,
-            manager_->client().GetPopupScreenLocation(), std::move(callback));
+            manager_->driver(), query_form_.unique_renderer_id,
+            query_field_.unique_renderer_id,
+            autofill::AutofillComposeDelegate::UiEntryPoint::kAutofillPopup);
       }
       break;
     case PopupItemId::kInsecureContextPaymentDisabledMessage:
