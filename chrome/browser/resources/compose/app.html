@@ -367,6 +367,32 @@
   </div>
 </div>
 
+
+<div id="consentMSBBDialog" class="dialog" hidden>
+  <div id="consentMSBBHeading">
+    <h1>$i18n{consentMSBBTitle}</h1>
+    <cr-icon-button id="closeButtonConsent" iron-icon="cr:close"
+      on-click="onClose_">
+    </cr-icon-button>
+  </div>
+
+  <div id="consentMSBBContainer">
+    <div id="consentMSBBTopText">
+      $i18nRaw{consentMSBBMainTop}
+    </div>
+    <div id="consentMSBBBottomText">
+      $i18n{consentMSBBMainBottom}
+    </div>
+  </div>
+
+  <div id="consentMSBBFooter" class="footer">
+    <cr-button id="ContinueButton" class="action-button">
+      $i18n{consentMSBBContinueButton}
+    </cr-button>
+  </div>
+</div>
+
+
 <div id="appDialog" class="dialog" hidden="[[!showMainAppDialog_]]">
   <div id="heading">
     <h1>$i18n{dialogTitle}</h1>
