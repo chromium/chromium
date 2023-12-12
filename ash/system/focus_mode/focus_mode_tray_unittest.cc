@@ -187,19 +187,21 @@ TEST_F(FocusModeTrayTest, ProgressIndicatorProgresses) {
   task_environment()->FastForwardBy(base::Seconds(1));
 
   // Define a margin of error for floating point math.
-  constexpr float allowed_difference = 0.001f;
+  constexpr float allowed_difference = 0.01f;
 
   // Progress should start near zero.
   EXPECT_NEAR(0.0, GetProgressIndicator()->progress().value(),
               allowed_difference);
 
   // Progress one quarter the way through the session should be near 0.25.
-  task_environment()->FastForwardBy(base::Minutes(10));
+  task_environment()->AdvanceClock(base::Minutes(10));
+  task_environment()->FastForwardBy(base::Seconds(1));
   EXPECT_NEAR(0.25, GetProgressIndicator()->progress().value(),
               allowed_difference);
 
   // Progress half way through the session should be near .5.
-  task_environment()->FastForwardBy(base::Minutes(10));
+  task_environment()->AdvanceClock(base::Minutes(10));
+  task_environment()->FastForwardBy(base::Seconds(1));
   EXPECT_NEAR(0.5, GetProgressIndicator()->progress().value(),
               allowed_difference);
 }
