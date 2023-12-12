@@ -111,7 +111,7 @@ public class AsyncTaskTest {
         thrown.expectMessage(
                 CoreMatchers.containsString(
                         "org.chromium.base.task.AsyncTaskTest$SpecialChromeAsyncTask"));
-        thrown.expectMessage(CoreMatchers.not(CoreMatchers.containsString("SpecialOsAsyncTask")));
+        thrown.expectMessage(CoreMatchers.not(CoreMatchers.containsString("android.os.AsyncTask")));
         new SpecialOsAsyncTask().executeOnExecutor(executor);
     }
 
@@ -139,9 +139,7 @@ public class AsyncTaskTest {
             new SpecialOsAsyncTask().executeOnExecutor(executor);
         }
         thrown.expect(RejectedExecutionException.class);
-        thrown.expectMessage(
-                CoreMatchers.containsString(
-                        "org.chromium.base.task.AsyncTaskTest$SpecialOsAsyncTask"));
+        thrown.expectMessage(CoreMatchers.containsString("android.os.AsyncTask"));
         thrown.expectMessage(
                 CoreMatchers.not(CoreMatchers.containsString("SpecialChromeAsyncTask")));
         new SpecialChromeAsyncTask().executeOnExecutor(executor);
