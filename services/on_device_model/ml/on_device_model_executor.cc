@@ -5,6 +5,7 @@
 #include "services/on_device_model/ml/on_device_model_executor.h"
 
 #include "base/check.h"
+#include "base/compiler_specific.h"
 #include "base/containers/unique_ptr_adapters.h"
 #include "base/logging.h"
 #include "base/memory/raw_ref.h"
@@ -188,6 +189,7 @@ class SessionImpl : public on_device_model::OnDeviceModel::Session {
   SessionImpl(const SessionImpl&) = delete;
   SessionImpl& operator=(const SessionImpl&) = delete;
 
+  DISABLE_CFI_DLSYM
   void AddContext(on_device_model::mojom::InputOptionsPtr input,
                   mojo::PendingRemote<on_device_model::mojom::ContextClient>
                       client) override {
@@ -209,6 +211,7 @@ class SessionImpl : public on_device_model::OnDeviceModel::Session {
     clear_context_ = false;
   }
 
+  DISABLE_CFI_DLSYM
   void Execute(on_device_model::mojom::InputOptionsPtr input,
                mojo::PendingRemote<on_device_model::mojom::StreamingResponder>
                    response) override {
@@ -257,6 +260,7 @@ OnDeviceModelExecutor::OnDeviceModelExecutor(
     : chrome_ml_(chrome_ml),
       task_runner_(base::SequencedTaskRunner::GetCurrentDefault()) {}
 
+DISABLE_CFI_DLSYM
 OnDeviceModelExecutor::~OnDeviceModelExecutor() {
   if (model_ != 0) {
     chrome_ml_->api().DestroyModel(model_);
@@ -283,6 +287,7 @@ OnDeviceModelExecutor::CreateSession() {
   return std::make_unique<SessionImpl>(*chrome_ml_, model_);
 }
 
+DISABLE_CFI_DLSYM
 LoadModelResult OnDeviceModelExecutor::Init(
     on_device_model::mojom::LoadModelParamsPtr params) {
   if (chrome_ml_->IsGpuBlocked()) {

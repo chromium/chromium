@@ -160,6 +160,13 @@ fun:*AddTraceEvent*
 # Dawn, calls to OpenGL and Vulkan function pointers from shared library.
 src:*third_party/dawn/src/dawn/native/*
 
+# liboptimization_guide_internal.so calls into the main binary for the Dawn
+# procs and Dawn uses std::function for callbacks back to the lib.
+# TODO(crbug.com/1511050): See if we can avoid disabling CFI for std::function.
+src:*third_party/dawn/src/dawn/dawn_proc.c
+src:*third_party/libc*/invoke.h
+src:*third_party/libc*/function.h
+
 # PPAPI
 src:*ppapi/*
 src:*content/renderer/pepper*

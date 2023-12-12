@@ -143,6 +143,9 @@ struct GpuConfig {
   WGPUBackendType backend_type;
 };
 
+// IMPORTANT: All functions that call ChromeMLAPI should be annotated with
+// DISABLE_CFI_DLSYM.
+
 // Table of C API functions defined within the library.
 struct ChromeMLAPI {
   // Initializes the Dawn proc table. This must be called before any other
