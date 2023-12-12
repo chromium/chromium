@@ -311,6 +311,8 @@ class CONTENT_EXPORT BrowserContext : public base::SupportsUserData {
   // to the declaration of ChromeBrowserContext proto.
   void WriteIntoTrace(perfetto::TracedProto<TraceProto> context) const;
 
+  base::WeakPtr<BrowserContext> GetWeakPtr();
+
   //////////////////////////////////////////////////////////////////////////////
   // The //content embedder can override the methods below to change or extend
   // how the //content layer interacts with a BrowserContext.
@@ -466,6 +468,7 @@ class CONTENT_EXPORT BrowserContext : public base::SupportsUserData {
   std::unique_ptr<BrowserContextImpl> impl_;
   BrowserContextImpl* impl() { return impl_.get(); }
   const BrowserContextImpl* impl() const { return impl_.get(); }
+  base::WeakPtrFactory<BrowserContext> weak_factory_{this};
 };
 
 }  // namespace content

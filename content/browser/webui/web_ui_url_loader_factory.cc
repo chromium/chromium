@@ -334,6 +334,12 @@ class WebUIURLLoaderFactory : public network::SelfDeletingURLLoaderFactory {
       const net::MutableNetworkTrafficAnnotationTag& traffic_annotation)
       override {
     DCHECK_CURRENTLY_ON(BrowserThread::UI);
+    if (browser_context_.WasInvalidated()) {
+      DVLOG(1) << "Context has been destroyed";
+      CallOnError(std::move(client), net::ERR_FAILED);
+      DisconnectReceiversAndDestroy();
+      return;
+    }
 
     if (frame_tree_node_id_ != RenderFrameHost::kNoFrameTreeNodeId &&
         !FrameTreeNode::GloballyFindByID(frame_tree_node_id_)) {
@@ -370,7 +376,7 @@ class WebUIURLLoaderFactory : public network::SelfDeletingURLLoaderFactory {
           base::BindOnce(
               &StartBlobInternalsURLLoader, request, std::move(client),
               base::Unretained(
-                  ChromeBlobStorageContext::GetFor(browser_context_))));
+                  ChromeBlobStorageContext::GetFor(browser_context_.get()))));
       return;
     }
 
@@ -385,7 +391,7 @@ class WebUIURLLoaderFactory : public network::SelfDeletingURLLoaderFactory {
     // navigation. The URLDataSources just need the WebContents; the specific
     // frame doesn't matter.
     StartURLLoader(request, frame_tree_node_id_, std::move(client),
-                   browser_context_);
+                   browser_context_.get());
   }
 
   const std::string& scheme() const { return scheme_; }
@@ -397,12 +403,12 @@ class WebUIURLLoaderFactory : public network::SelfDeletingURLLoaderFactory {
       base::flat_set<std::string> allowed_hosts,
       mojo::PendingReceiver<network::mojom::URLLoaderFactory> factory_receiver)
       : network::SelfDeletingURLLoaderFactory(std::move(factory_receiver)),
-        browser_context_(browser_context),
+        browser_context_(browser_context->GetWeakPtr()),
         frame_tree_node_id_(frame_tree_node_id),
         scheme_(scheme),
         allowed_hosts_(std::move(allowed_hosts)) {}
 
-  raw_ptr<BrowserContext, AcrossTasksDanglingUntriaged> browser_context_;
+  base::WeakPtr<BrowserContext> browser_context_;
   int const frame_tree_node_id_;
   const std::string scheme_;
   const base::flat_set<std::string> allowed_hosts_;  // if empty all allowed.
