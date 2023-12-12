@@ -218,7 +218,6 @@ bool AutofillExternalDelegate::IsAutofillAndFirstLayerSuggestionId(
     case PopupItemId::kSeePromoCodeDetails:
     case PopupItemId::kSeparator:
     case PopupItemId::kShowAccountCards:
-    case PopupItemId::kTitle:
     case PopupItemId::kUsernameEntry:
     case PopupItemId::kWebauthnCredential:
     case PopupItemId::kWebauthnSignInWithAnotherDevice:
@@ -469,7 +468,6 @@ void AutofillExternalDelegate::DidSelectSuggestion(
     case PopupItemId::kAddressEntryNotSelectable:
     case PopupItemId::kPaymentsEntryNotSelectable:
       return;
-    case PopupItemId::kTitle:
     case PopupItemId::kEditAddressProfile:
     case PopupItemId::kDeleteAddressProfile:
     case PopupItemId::kAutofillOptions:
@@ -716,7 +714,6 @@ void AutofillExternalDelegate::DidAcceptSuggestion(
       break;
     case PopupItemId::kDevtoolsTestAddresses:
     case PopupItemId::kDevtoolsTestAddressEntry:
-    case PopupItemId::kTitle:
       FillAutofillFormData(
           suggestion.popup_item_id,
           suggestion.GetPayload<Suggestion::BackendId>(), /*is_preview=*/false,

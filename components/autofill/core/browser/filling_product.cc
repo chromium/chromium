@@ -56,7 +56,6 @@ FillingProduct GetFillingProductFromPopupItemId(PopupItemId popup_item_id) {
     case PopupItemId::kCreateNewPlusAddress:
     case PopupItemId::kFillExistingPlusAddress:
       return FillingProduct::kPlusAddresses;
-    case PopupItemId::kTitle:
     case PopupItemId::kAutofillOptions:
     case PopupItemId::kSeparator:
     case PopupItemId::kClearForm:

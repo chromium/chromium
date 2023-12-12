@@ -38,7 +38,6 @@ enum class PopupItemId : int {
   // will fill every email field.
   kFillFullEmail,
   kAddressFieldByFieldFilling,
-  kTitle,
   kEditAddressProfile,
   kDeleteAddressProfile,
   kAddressEntryNotSelectable,

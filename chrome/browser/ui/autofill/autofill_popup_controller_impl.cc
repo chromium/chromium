@@ -72,7 +72,7 @@ static constexpr base::TimeDelta kIgnoreEarlyClicksOnPopupDuration =
 bool CanAccept(PopupItemId id) {
   return id != PopupItemId::kSeparator &&
          id != PopupItemId::kInsecureContextPaymentDisabledMessage &&
-         id != PopupItemId::kMixedFormMessage && id != PopupItemId::kTitle;
+         id != PopupItemId::kMixedFormMessage;
 }
 
 }  // namespace

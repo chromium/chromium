@@ -79,7 +79,6 @@ const std::vector<PopupItemId> kClickablePopupItemIds{
     PopupItemId::kAutofillOptions,
     PopupItemId::kDatalistEntry,
     PopupItemId::kScanCreditCard,
-    PopupItemId::kTitle,
     PopupItemId::kUsernameEntry,
     PopupItemId::kAllSavedPasswordsEntry,
     PopupItemId::kPasswordAccountStorageOptIn,
