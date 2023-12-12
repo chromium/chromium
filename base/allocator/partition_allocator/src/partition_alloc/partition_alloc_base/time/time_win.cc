@@ -40,9 +40,9 @@
 #include <stdint.h>
 
 #include <atomic>
-#include <bit>
 
 #include "build/build_config.h"
+#include "partition_alloc/partition_alloc_base/bit_cast.h"
 #include "partition_alloc/partition_alloc_base/check.h"
 #include "partition_alloc/partition_alloc_base/cpu.h"
 #include "partition_alloc/partition_alloc_base/threading/platform_thread.h"
@@ -58,7 +58,7 @@ int64_t FileTimeToMicroseconds(const FILETIME& ft) {
   // Need to bit_cast to fix alignment, then divide by 10 to convert
   // 100-nanoseconds to microseconds. This only works on little-endian
   // machines.
-  return std::bit_cast<int64_t, FILETIME>(ft) / 10;
+  return bit_cast<int64_t, FILETIME>(ft) / 10;
 }
 
 bool CanConvertToFileTime(int64_t us) {
@@ -72,7 +72,7 @@ FILETIME MicrosecondsToFileTime(int64_t us) {
 
   // Multiply by 10 to convert microseconds to 100-nanoseconds. Bit_cast will
   // handle alignment problems. This only works on little-endian machines.
-  return std::bit_cast<FILETIME, int64_t>(us * 10);
+  return bit_cast<FILETIME, int64_t>(us * 10);
 }
 
 int64_t CurrentWallclockMicroseconds() {
@@ -147,7 +147,7 @@ Time TimeNowFromSystemTimeIgnoringOverride() {
 
 // static
 Time Time::FromFileTime(FILETIME ft) {
-  if (std::bit_cast<int64_t, FILETIME>(ft) == 0) {
+  if (bit_cast<int64_t, FILETIME>(ft) == 0) {
     return Time();
   }
   if (ft.dwHighDateTime == std::numeric_limits<DWORD>::max() &&
@@ -159,7 +159,7 @@ Time Time::FromFileTime(FILETIME ft) {
 
 FILETIME Time::ToFileTime() const {
   if (is_null()) {
-    return std::bit_cast<FILETIME, int64_t>(0);
+    return bit_cast<FILETIME, int64_t>(0);
   }
   if (is_max()) {
     FILETIME result;
