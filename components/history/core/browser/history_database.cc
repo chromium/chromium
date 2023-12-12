@@ -293,7 +293,6 @@ void HistoryDatabase::ComputeDatabaseMetrics(
 }
 
 int HistoryDatabase::CountUniqueHostsVisitedLastMonth() {
-  base::TimeTicks start_time = base::TimeTicks::Now();
   // Collect all URLs visited within the last month.
   base::Time one_month_ago = base::Time::Now() - base::Days(30);
 
@@ -310,8 +309,6 @@ int HistoryDatabase::CountUniqueHostsVisitedLastMonth() {
     hosts.insert(url.host());
   }
 
-  UMA_HISTOGRAM_TIMES("History.DatabaseMonthlyHostCountTime",
-                      base::TimeTicks::Now() - start_time);
   return hosts.size();
 }
 
