@@ -171,6 +171,10 @@ if (enable_vulkan) {
       deps += [ "//ui/ozone:drm_modifiers_filter" ]
     }
 
+    if (is_chromeos_ash) {
+      deps += [ "//ui/gfx/linux:drm" ]
+    }
+
     if (is_fuchsia) {
       sources += [ "vulkan_image_fuchsia.cc" ]
 

@@ -13,6 +13,7 @@
 #include <vector>
 
 #include "base/component_export.h"
+#include "base/containers/flat_map.h"
 #include "base/containers/span.h"
 #include "gpu/vulkan/semaphore_handle.h"
 #include "gpu/vulkan/vulkan_device_queue.h"
@@ -149,6 +150,11 @@ COMPONENT_EXPORT(VULKAN)
 std::vector<VkDrmFormatModifierPropertiesEXT>
 QueryVkDrmFormatModifierPropertiesEXT(VkPhysicalDevice physical_device,
                                       VkFormat format);
+
+COMPONENT_EXPORT(VULKAN)
+void PopulateVkDrmFormatsAndModifiers(
+    VulkanDeviceQueue* device_queue,
+    base::flat_map<uint32_t, std::vector<uint64_t>>& drm_formats_and_modifiers);
 
 }  // namespace gpu
 
