@@ -11,6 +11,7 @@ void UserModifiableProvider::ExpireWebsiteSetting(
     const ContentSettingsPattern& secondary_pattern,
     ContentSettingsType content_settings_type) {
   SetWebsiteSetting(primary_pattern, secondary_pattern, content_settings_type,
-                    base::Value(), {});
+                    base::Value(), {},
+                    content_settings::PartitionKey::WipGetDefault());
 }
 }  // namespace content_settings

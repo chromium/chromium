@@ -24,6 +24,7 @@
 #include "components/content_settings/core/browser/content_settings_utils.h"
 #include "components/content_settings/core/browser/website_settings_registry.h"
 #include "components/content_settings/core/common/content_settings_metadata.h"
+#include "components/content_settings/core/common/content_settings_partition_key.h"
 #include "components/content_settings/core/common/content_settings_pattern.h"
 #include "components/content_settings/core/common/content_settings_types.h"
 #include "components/content_settings/core/common/content_settings_utils.h"
@@ -246,7 +247,8 @@ bool PrefProvider::UpdateSetting(
     return false;
   }
 
-  auto it = GetRuleIterator(content_type, off_the_record_);
+  auto it = GetRuleIterator(content_type, off_the_record_,
+                            PartitionKey::WipGetDefault());
   if (!it) {
     return false;
   }

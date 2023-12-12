@@ -47,6 +47,7 @@
 #include "components/content_settings/core/common/content_settings.h"
 #include "components/content_settings/core/common/content_settings_constraints.h"
 #include "components/content_settings/core/common/content_settings_metadata.h"
+#include "components/content_settings/core/common/content_settings_partition_key.h"
 #include "components/content_settings/core/common/content_settings_pattern.h"
 #include "components/content_settings/core/common/content_settings_types.h"
 #include "components/content_settings/core/common/content_settings_utils.h"
@@ -377,7 +378,9 @@ ContentSetting HostContentSettingsMap::GetDefaultContentSettingFromProvider(
     ContentSettingsType content_type,
     content_settings::ProviderInterface* provider) const {
   std::unique_ptr<content_settings::RuleIterator> rule_iterator(
-      provider->GetRuleIterator(content_type, false));
+      provider->GetRuleIterator(
+          content_type, false,
+          content_settings::PartitionKey::WipGetDefault()));
 
   if (rule_iterator) {
     ContentSettingsPattern wildcard = ContentSettingsPattern::Wildcard();
@@ -529,7 +532,7 @@ void HostContentSettingsMap::SetWebsiteSettingCustomScope(
     // the value. If successful then ownership is passed to the provider.
     if (provider_pair.second->SetWebsiteSetting(
             primary_pattern, secondary_pattern, content_type, std::move(value),
-            constraints)) {
+            constraints, content_settings::PartitionKey::WipGetDefault())) {
       if (base::FeatureList::IsEnabled(
               content_settings::features::kActiveContentSettingExpiry)) {
         UpdateExpiryEnforcementTimer(content_type, constraints.expiration());
@@ -845,7 +848,8 @@ void HostContentSettingsMap::ClearSettingsForOneType(
     ContentSettingsType content_type) {
   UsedContentSettingsProviders();
   for (const auto& provider_pair : content_settings_providers_)
-    provider_pair.second->ClearAllContentSettingsRules(content_type);
+    provider_pair.second->ClearAllContentSettingsRules(
+        content_type, content_settings::PartitionKey::WipGetDefault());
   FlushLossyWebsiteSettings();
 }
 
@@ -880,9 +884,9 @@ void HostContentSettingsMap::ClearSettingsForOneTypeWithPredicate(
        GetSettingsForOneType(content_type)) {
     if (predicate(setting)) {
       for (auto* provider : user_modifiable_providers_) {
-        provider->SetWebsiteSetting(setting.primary_pattern,
-                                    setting.secondary_pattern, content_type,
-                                    base::Value(), {});
+        provider->SetWebsiteSetting(
+            setting.primary_pattern, setting.secondary_pattern, content_type,
+            base::Value(), {}, content_settings::PartitionKey::WipGetDefault());
       }
     }
   }
@@ -923,7 +927,9 @@ void HostContentSettingsMap::AddSettingsForOneType(
     bool incognito,
     absl::optional<content_settings::SessionModel> session_model) const {
   std::unique_ptr<content_settings::RuleIterator> rule_iterator(
-      provider->GetRuleIterator(content_type, incognito));
+      provider->GetRuleIterator(
+          content_type, incognito,
+          content_settings::PartitionKey::WipGetDefault()));
   if (!rule_iterator)
     return;
 
@@ -1093,7 +1099,9 @@ base::Value HostContentSettingsMap::GetContentSettingValueAndPatterns(
     // |RuleIterator| gets out of scope before we get a rule iterator for the
     // normal mode.
     std::unique_ptr<content_settings::RuleIterator> incognito_rule_iterator(
-        provider->GetRuleIterator(content_type, true /* incognito */));
+        provider->GetRuleIterator(
+            content_type, true /* incognito */,
+            content_settings::PartitionKey::WipGetDefault()));
     base::Value value = GetContentSettingValueAndPatterns(
         incognito_rule_iterator.get(), primary_url, secondary_url,
         primary_pattern, secondary_pattern, metadata, clock);
@@ -1102,7 +1110,9 @@ base::Value HostContentSettingsMap::GetContentSettingValueAndPatterns(
   }
   // No settings from the incognito; use the normal mode.
   std::unique_ptr<content_settings::RuleIterator> rule_iterator(
-      provider->GetRuleIterator(content_type, false /* incognito */));
+      provider->GetRuleIterator(
+          content_type, false /* incognito */,
+          content_settings::PartitionKey::WipGetDefault()));
   base::Value value = GetContentSettingValueAndPatterns(
       rule_iterator.get(), primary_url, secondary_url, primary_pattern,
       secondary_pattern, metadata, clock);
