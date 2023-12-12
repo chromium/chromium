@@ -3723,10 +3723,6 @@ void RenderFrameHostImpl::PropagateEmbeddingTokenToParentFrame() {
   }
 }
 
-bool RenderFrameHostImpl::IsAudible() const {
-  return media_stream_counts_[MediaStreamType::kPlayingAudibleAudioStream] > 0;
-}
-
 void RenderFrameHostImpl::OnMediaStreamAdded(MediaStreamType type) {
   int& media_stream_count = media_stream_counts_[type];
   CHECK_NE(media_stream_count, std::numeric_limits<int>::max());
@@ -3741,7 +3737,7 @@ void RenderFrameHostImpl::OnMediaStreamAdded(MediaStreamType type) {
         GetProcess()->OnMediaStreamAdded();
         delegate_->OnFrameIsCapturingMediaStreamChanged(this, true);
         break;
-      case MediaStreamType::kPlayingAudibleAudioStream:
+      case GetAudibleMediaStreamType():
         DCHECK_NE(lifecycle_state(), LifecycleStateImpl::kPrerendering);
         GetProcess()->OnMediaStreamAdded();
         delegate_->OnFrameAudioStateChanged(this, true);
@@ -3766,7 +3762,7 @@ void RenderFrameHostImpl::OnMediaStreamRemoved(MediaStreamType type) {
         GetProcess()->OnMediaStreamRemoved();
         delegate_->OnFrameIsCapturingMediaStreamChanged(this, false);
         break;
-      case MediaStreamType::kPlayingAudibleAudioStream:
+      case GetAudibleMediaStreamType():
         GetProcess()->OnMediaStreamRemoved();
         delegate_->OnFrameAudioStateChanged(this, false);
         break;
@@ -3774,6 +3770,10 @@ void RenderFrameHostImpl::OnMediaStreamRemoved(MediaStreamType type) {
         break;
     }
   }
+}
+
+bool RenderFrameHostImpl::HasMediaStreams(MediaStreamType type) const {
+  return media_stream_counts_[type] > 0;
 }
 
 void RenderFrameHostImpl::DidAddMessageToConsole(

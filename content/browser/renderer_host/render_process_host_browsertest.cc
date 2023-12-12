@@ -842,7 +842,8 @@ class AudioStartObserver : public WebContentsObserver {
         render_frame_host_(
             static_cast<RenderFrameHostImpl*>(render_frame_host)),
         contents_audible_(web_contents->IsCurrentlyAudible()),
-        frame_audible_(render_frame_host_->IsAudible()),
+        frame_audible_(render_frame_host_->HasMediaStreams(
+            RenderFrameHostImpl::GetAudibleMediaStreamType())),
         audible_closure_(std::move(audible_closure)) {
     MaybeFireClosure();
   }

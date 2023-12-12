@@ -3446,21 +3446,18 @@ IN_PROC_BROWSER_TEST_F(RenderFrameHostImplBrowserTest,
   ASSERT_EQ(0, process->get_media_stream_count_for_testing());
 
   // Audible audio output should cause the media stream count to increment.
-  frame->OnMediaStreamAdded(
-      RenderFrameHostImpl::MediaStreamType::kPlayingAudibleAudioStream);
+  frame->OnMediaStreamAdded(RenderFrameHostImpl::GetAudibleMediaStreamType());
   RunPostedTasks();
   EXPECT_EQ(1, process->get_media_stream_count_for_testing());
 
   // Silence should cause the media stream count to decrement.
-  frame->OnMediaStreamRemoved(
-      RenderFrameHostImpl::MediaStreamType::kPlayingAudibleAudioStream);
+  frame->OnMediaStreamRemoved(RenderFrameHostImpl::GetAudibleMediaStreamType());
   RunPostedTasks();
   EXPECT_EQ(0, process->get_media_stream_count_for_testing());
 
   // Start audible audio output again, and then crash the renderer. Expect the
   // media stream count to be zero after the crash.
-  frame->OnMediaStreamAdded(
-      RenderFrameHostImpl::MediaStreamType::kPlayingAudibleAudioStream);
+  frame->OnMediaStreamAdded(RenderFrameHostImpl::GetAudibleMediaStreamType());
   RunPostedTasks();
   EXPECT_EQ(1, process->get_media_stream_count_for_testing());
   RenderProcessHostWatcher crash_observer(

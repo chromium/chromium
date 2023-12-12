@@ -29,6 +29,7 @@
 #include "base/memory/raw_ref.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
+#include "base/numerics/checked_math.h"
 #include "base/process/kill.h"
 #include "base/strings/string_piece.h"
 #include "base/supports_user_data.h"
@@ -719,9 +720,6 @@ class CONTENT_EXPORT RenderFrameHostImpl
   // and after the embedding token has been set.
   void PropagateEmbeddingTokenToParentFrame();
 
-  // Returns true if the frame recently plays an audio.
-  bool IsAudible() const;
-
   // Adds/removes a media stream to this render frame.
   enum MediaStreamType {
     // This stream is capturing an audio or video source. For example, the
@@ -738,6 +736,22 @@ class CONTENT_EXPORT RenderFrameHostImpl
   };
   void OnMediaStreamAdded(MediaStreamType type);
   void OnMediaStreamRemoved(MediaStreamType type);
+
+  // Returns true if this frame has at least one media stream of this `type`.
+  bool HasMediaStreams(MediaStreamType type) const;
+
+  // Returns the MediaStreamType that denotes if the frame should be considered
+  // audible. This returns kPlayingAudibleAudioStream on all platforms except
+  // for MacOS. On MacOS, all active audio stream are considered as audible. Thi
+  // avoid a priority inversion that causes audio glitches when a renderer
+  // playing silent audio is backgrounded. See https://crbug.com/1504625.
+  static constexpr MediaStreamType GetAudibleMediaStreamType() {
+#if BUILDFLAG(IS_MAC)
+    return MediaStreamType::kPlayingAudioStream;
+#else
+    return MediaStreamType::kPlayingAudibleAudioStream;
+#endif
+  }
 
   // Called when this frame has added a child. This is a continuation of an IPC
   // that was partially handled on the IO thread (to allocate |new_routing_id|,

@@ -179,7 +179,7 @@ struct TestEnvironment {
 }  // namespace
 
 TEST(AudioOutputStreamBrokerTest, StoresProcessAndFrameId) {
-  base::test::TaskEnvironment env;
+  BrowserTaskEnvironment env;
   MockDeleterCallback deleter;
   StrictMock<MockAudioOutputStreamProviderClient> provider_client;
 
