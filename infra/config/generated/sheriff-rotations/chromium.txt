@@ -53,6 +53,7 @@ ci/Mac Builder (dbg)
 ci/Mac10.15 Tests
 ci/Mac11 Tests
 ci/Mac12 Tests
+ci/Mac13 Tests
 ci/Network Service Linux
 ci/TSAN Debug
 ci/TSAN Release
