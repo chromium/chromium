@@ -609,9 +609,6 @@ void DualReadingListModel::ReadingListWillMoveEntry(
     return;
   }
 
-  // Only expected for changes received via sync.
-  DCHECK(ToReadingListModelImpl(model)->IsTrackingSyncMetadata());
-
   NotifyObserversWithWillMoveEntry(url);
   UpdateEntryStateCountersOnEntryRemoval(*GetEntryByURL(url));
 }
@@ -622,9 +619,6 @@ void DualReadingListModel::ReadingListDidMoveEntry(
   if (!loaded() || suppress_observer_notifications_) {
     return;
   }
-
-  // Only expected for changes received via sync.
-  DCHECK(ToReadingListModelImpl(model)->IsTrackingSyncMetadata());
 
   UpdateEntryStateCountersOnEntryInsertion(*GetEntryByURL(url));
   NotifyObserversWithDidMoveEntry(url);
@@ -810,6 +804,15 @@ base::flat_set<GURL> DualReadingListModel::GetKeysThatNeedUploadToSyncServer()
     return {};
   }
   return local_or_syncable_model_->GetKeys();
+}
+
+ReadingListModel* DualReadingListModel::GetLocalOrSyncableModel() {
+  return local_or_syncable_model_.get();
+}
+
+ReadingListModel* DualReadingListModel::GetAccountModelIfSyncing() {
+  return account_model_->IsTrackingSyncMetadata() ? account_model_.get()
+                                                  : nullptr;
 }
 
 }  // namespace reading_list

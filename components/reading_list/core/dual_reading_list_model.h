@@ -138,6 +138,13 @@ class DualReadingListModel : public ReadingListModel,
 
   StorageStateForTesting GetStorageStateForURLForTesting(const GURL& url);
 
+  // Returns the model responsible for the local/syncable reading list.
+  ReadingListModel* GetLocalOrSyncableModel();
+  // Returns the model responsible for the account-bound reading list. This can
+  // toggle between null and non-null at runtime depending on the sync/signin
+  // state.
+  ReadingListModel* GetAccountModelIfSyncing();
+
  private:
   void NotifyObserversWithWillRemoveEntry(const GURL& url);
   void NotifyObserversWithDidRemoveEntry(const GURL& url);
