@@ -51,8 +51,7 @@ const tests = [
   ['SearchBoxTest', 'search_box_test.js'],
   ['SearchResultRowTest', 'search_result_row_test.js'],
   ['SearchResultBoldingTest', 'search_result_bolding_test.js'],
-  // TODO(https://crbug.com/1498419): Tests are flaky.
-  // ['ShortcutCustomizationApp', 'shortcut_customization_test.js'],
+  ['ShortcutCustomizationApp', 'shortcut_customization_test.js'],
   ['ShortcutSearchHandlerTest', 'shortcut_search_handler_test.js'],
   ['ShortcutsPageTest', 'shortcuts_page_test.js'],
   ['ShortcutUtils', 'shortcut_utils_test.js'],

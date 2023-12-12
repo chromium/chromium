@@ -1416,25 +1416,32 @@ suite('shortcutCustomizationAppTest', function() {
         strictQuery('search-box', getPage().shadowRoot, SearchBoxElement);
     let searchField = strictQuery(
         '#search', searchBox.shadowRoot, CrToolbarSearchFieldElement);
+
+    // Verify that the search field is focused by default when the app opens.
+    await flushTasks();
+    assertTrue(searchField.isSearchFocused());
+
+    // Remove focus from the search field.
+    searchField.blur();
+    searchBox =
+        strictQuery('search-box', getPage().shadowRoot, SearchBoxElement);
+    searchField = strictQuery(
+        '#search', searchBox.shadowRoot, CrToolbarSearchFieldElement);
+
+    // Confirm that the search field is no longer focused.
+    await flushTasks();
     assertFalse(searchField.isSearchFocused());
 
-    // press ctrl + f.
-    const keyboardEvent = new KeyboardEvent('keydown', {
-      key: 'f',
-      keyCode: 70,
-      code: 'KeyF',
-      ctrlKey: true,
-      altKey: false,
-      shiftKey: false,
-      metaKey: false,
-    });
-    getPage().dispatchEvent(keyboardEvent);
-    await flushTasks();
+    // Trigger the 'handleFindShortcut' function.
+    getPage().handleFindShortcut(/*modalContextOpen=*/ false);
 
     searchBox =
         strictQuery('search-box', getPage().shadowRoot, SearchBoxElement);
     searchField = strictQuery(
         '#search', searchBox.shadowRoot, CrToolbarSearchFieldElement);
+
+    // Verify that the search field is focused.
+    await flushTasks();
     assertTrue(searchField.isSearchFocused());
   });
 });
