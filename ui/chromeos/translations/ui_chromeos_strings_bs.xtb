@@ -250,7 +250,7 @@
 <translation id="3003189754374775221">Mreža <ph name="NETWORK_INDEX" /> od <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" />, jačina signala <ph name="SIGNAL_STRENGTH" />%, poveži</translation>
 <translation id="3003633581067744647">Prebaci na prikaz sličice</translation>
 <translation id="3016566519832145558">Oprez: ovi fajlovi su privremeni i moguće je da će se automatski izbrisati radi oslobađanja prostora na disku.</translation>
-<translation id="3029114385395636667">Omogućite Google Dokumente van mreže da vam Dokumenti, Tabele i Slajdovi budu dostupni offline.</translation>
+<translation id="3029114385395636667">Omogućite Google Dokumente offline da vam Dokumenti, Tabele i Slajdovi budu dostupni offline.</translation>
 <translation id="303198083543495566">Geografija</translation>
 <translation id="3044404008258011032">Da vratite ove stavke, prevucite ih u novi folder izvan otpada. Izvorni folder "<ph name="PARENT_FOLDER_NAME" />" ovih stavki je izbrisan.</translation>
 <translation id="3047197340186497470">kineski dayi</translation>

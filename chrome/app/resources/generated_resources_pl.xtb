@@ -618,6 +618,7 @@ Na tym koncie mogą obowiązywać uprawnienia przyznane wcześniej aplikacjom. U
 <translation id="1478340334823509079">Szczegóły: <ph name="FILE_NAME" /></translation>
 <translation id="1478607704480248626">Instalacja nie została włączona</translation>
 <translation id="1480663089572535854">Możesz wrócić, aby zmienić przypisanie do czynności „Wybierz”. Zawsze możesz wyłączyć automatyczne skanowanie w Ustawieniach.</translation>
+<translation id="1481001611315487791">Dowiedz się więcej o tworzeniu motywów za pomocą AI.</translation>
 <translation id="1481537595330271162">Błąd podczas zmiany rozmiaru dysku</translation>
 <translation id="1482626744466814421">Dodaj tę kartę do zakładek...</translation>
 <translation id="1482772681918035149">edytować hasła</translation>
@@ -812,6 +813,7 @@ Na tym koncie mogą obowiązywać uprawnienia przyznane wcześniej aplikacjom. U
 <translation id="1615433306336820465">Zarządzaj danymi logowania zapisanymi na kluczu bezpieczeństwa</translation>
 <translation id="1616206807336925449">To rozszerzenie nie wymaga specjalnych uprawnień.</translation>
 <translation id="1616298854599875024">Nie można zaimportować rozszerzenia „<ph name="IMPORT_NAME" />”, ponieważ nie jest to moduł udostępniany</translation>
+<translation id="161654560322394775">Zdjęcie <ph name="INDEX" /> z <ph name="A" />, styl: <ph name="B" />, nastrój: <ph name="C" />.</translation>
 <translation id="1617765145568323981">{NUM_FILES,plural, =0{Sprawdzam zgodność danych z zasadami bezpieczeństwa obowiązującymi w Twojej organizacji…}=1{Sprawdzam zgodność pliku z zasadami bezpieczeństwa obowiązującymi w Twojej organizacji…}few{Sprawdzam zgodność plików z zasadami bezpieczeństwa obowiązującymi w Twojej organizacji…}many{Sprawdzam zgodność plików z zasadami bezpieczeństwa obowiązującymi w Twojej organizacji…}other{Sprawdzam zgodność plików z zasadami bezpieczeństwa obowiązującymi w Twojej organizacji…}}</translation>
 <translation id="1618102204889321535"><ph name="CURRENT_CHARACTER_COUNT" />/<ph name="MAX_CHARACTER_COUNT" /></translation>
 <translation id="1618268899808219593">C&amp;entrum pomocy</translation>
@@ -1690,6 +1692,7 @@ Możesz zarządzać ustawieniami konta, korzystając z aplikacji Family Link na
 <translation id="2291452790265535215">Wypróbuj panel boczny – poznaj zakładki, serie czynności i inne funkcje</translation>
 <translation id="229182044471402145">Nie znaleziono pasującej czcionki.</translation>
 <translation id="2292848386125228270">Uruchom <ph name="PRODUCT_NAME" /> jako normalny użytkownik. Jeśli jesteś programistą i chcesz skorzystać z konta roota, uruchom program jeszcze raz z flagą --no-sandbox.</translation>
+<translation id="2292862094862078674">Sprawdź połączenie z internetem i spróbuj ponownie. Nadal możesz wybrać jeden z wygenerowanych wcześniej motywów poniżej.</translation>
 <translation id="2294081976975808113">Prywatność ekranu</translation>
 <translation id="2294358108254308676">Czy chcesz zainstalować aplikację <ph name="PRODUCT_NAME" />?</translation>
 <translation id="229477815107578534">Sprawdź ustawienia</translation>
@@ -3016,6 +3019,7 @@ Domena <ph name="DOMAIN" /> wymaga, by karta inteligentna pozostała w gnieźdz
 <translation id="3325804108816646710">Szukam dostępnych profili...</translation>
 <translation id="3325910708063135066">Kamera i mikrofon są wyłączone w Preferencjach systemowych Maca</translation>
 <translation id="3325930488268995856">Połączono z Microsoft OneDrive</translation>
+<translation id="3325995804968971809">Styl</translation>
 <translation id="3327050066667856415">Chromebooki mają bezpieczeństwo w genach. Twoje urządzenie ma automatyczne zabezpieczenia przed złośliwym oprogramowaniem. Innych nie trzeba.</translation>
 <translation id="3328489342742826322">Przywrócenie danych z kopii zapasowej spowoduje usunięcie wszystkich dotychczasowych aplikacji na Linuksa oraz danych w folderach z plikami Linuksa.</translation>
 <translation id="3331321258768829690">(<ph name="UTCOFFSET" />) <ph name="LONGTZNAME" /> (<ph name="EXEMPLARCITY" />)</translation>
@@ -3292,6 +3296,7 @@ Domena <ph name="DOMAIN" /> wymaga, by karta inteligentna pozostała w gnieźdz
 <translation id="3561201631376780358">Otwórz panel boczny, aby zobaczyć wszystkie zakładki</translation>
 <translation id="3562423906127931518">Może to potrwać kilka minut. Konfiguruję kontener Linuxa.</translation>
 <translation id="3562655211539199254">Wyświetlaj ostatnio przeglądane karty Chrome z telefonu</translation>
+<translation id="3563392617245068355">Nastrój</translation>
 <translation id="3563432852173030730">Nie można pobrać aplikacji kiosku.</translation>
 <translation id="3563558822383875692">Konfiguruję DLC.</translation>
 <translation id="3564334271939054422">Sieć Wi-Fi (<ph name="NETWORK_ID" />), której używasz, może wymagać wejścia na stronę logowania.</translation>
@@ -4175,6 +4180,7 @@ Mogą one obejmować informacje o zainstalowanym oprogramowaniu, plikach, przeg
 <translation id="4250229828105606438">Zrzut ekranu</translation>
 <translation id="4250680216510889253">Nie</translation>
 <translation id="4251377547188244181">Trwa rejestrowanie urządzenia w trybie kiosku i tablicy informacyjnej</translation>
+<translation id="4252141040239557279">Obraz <ph name="INDEX" /> z <ph name="A" /></translation>
 <translation id="4252899949534773101">Bluetooth jest wyłączony</translation>
 <translation id="4252996741873942488"><ph name="WINDOW_TITLE" /> – udostępniono zawartość karty</translation>
 <translation id="4253168017788158739">Notatka</translation>
@@ -4553,6 +4559,7 @@ Mogą one obejmować informacje o zainstalowanym oprogramowaniu, plikach, przeg
 <translation id="4548858987594081919">Aby pomóc Menedżerowi haseł Google zapisać dane logowania, dodaj nazwę użytkownika dla tej strony</translation>
 <translation id="4549791035683739768">Na kluczu bezpieczeństwa nie ma zapisanych żadnych odcisków palców</translation>
 <translation id="4550926046134589611">Niektóre obsługiwane linki nadal będą się otwierać w aplikacji <ph name="APP_NAME" />.</translation>
+<translation id="4551379727767354516">Najnowsze motywy AI</translation>
 <translation id="4551763574344810652">Naciśnij <ph name="MODIFIER_KEY_DESCRIPTION" />, by cofnąć</translation>
 <translation id="4553526521109675518">Aby zmienić język, musisz ponownie uruchomić Chromebooka. <ph name="BEGIN_LINK_LEARN_MORE" />Więcej informacji<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="4554591392113183336">Wersja rozszerzenia zewnętrznego jest starsza lub taka sama jak wersja obecna.</translation>
@@ -5876,6 +5883,7 @@ Na tym koncie mogą obowiązywać uprawnienia przyznane stronom i aplikacjom. K
 <translation id="5620568081365989559">DevTools wymaga pełnego dostępu do <ph name="FOLDER_PATH" />. Upewnij się, że nie ujawniasz żadnych poufnych informacji.</translation>
 <translation id="5620612546311710611">statystyki użytkowania</translation>
 <translation id="5621272825308610394">Brak wyświetlanej nazwy</translation>
+<translation id="5621350029086078628">To jest eksperymentalna funkcja AI.</translation>
 <translation id="562250930904332809">W&amp;yłącz napisy na żywo</translation>
 <translation id="5623282979409330487">Ta strona ma dostęp do czujników ruchu.</translation>
 <translation id="5623842676595125836">Dziennik</translation>
@@ -5994,6 +6002,7 @@ Na tym koncie mogą obowiązywać uprawnienia przyznane stronom i aplikacjom. K
 <translation id="572328651809341494">Ostatnie karty</translation>
 <translation id="5723508132121499792">Brak aplikacji uruchomionych w tle</translation>
 <translation id="5723967018671998714">Pliki cookie innych firm są blokowane w trybie incognito</translation>
+<translation id="5725112283692663422">Prześlij opinię na temat tworzenia motywu z AI</translation>
 <translation id="5727728807527375859">Rozszerzenia, aplikacje i motywy mogą wyrządzić szkody na komputerze. Czy na pewno chcesz kontynuować?</translation>
 <translation id="5728290366864286776">To rozszerzenie może odczytywać i zmieniać informacje o witrynie oraz działać w tle</translation>
 <translation id="5728450728039149624">Opcje ekranu blokady Smart Lock</translation>
@@ -8406,6 +8415,7 @@ Masz jeszcze # przejętego hasła. Menedżer haseł Google zaleca, aby jak najs
 <translation id="7657090467145778067">Niewielka oszczędność</translation>
 <translation id="7657218410916651670"><ph name="BEGIN_LINK_GOOGLE" />Inne formy aktywności<ph name="END_LINK_GOOGLE" /> mogą być zapisywane na Twoim koncie Google, gdy się zalogujesz. W każdej chwili możesz je usunąć.</translation>
 <translation id="7658239707568436148">Anuluj</translation>
+<translation id="7658727964021657194">Ostatni motyw AI: <ph name="TILE_INDEX" /></translation>
 <translation id="7659154729610375585">Zamknąć tryb incognito mimo to?</translation>
 <translation id="7659336857671800422">Zapoznaj się z Przewodnikiem po prywatności</translation>
 <translation id="7659584679870740384">Nie masz uprawnień do korzystania z tego urządzenia. Aby uzyskać pozwolenie na logowanie się, skontaktuj się z jego administratorem.</translation>
@@ -8627,6 +8637,7 @@ Aby usunąć przypisanie, naciśnij przypisany przełącznik lub klawisz.</trans
 <translation id="7807711621188256451">Zawsze zezwalaj witrynie <ph name="HOST" /> na dostęp do kamery</translation>
 <translation id="7810202088502699111">Wyskakujące okienka na tej stronie zostały zablokowane.</translation>
 <translation id="7810367892333449285">Wpisany ciąg musi mieć format <ph name="LPA_0" />$<ph name="LPA_1" />SM-DP+ adres<ph name="LPA_2" />$<ph name="LPA_3" />opcjonalny zgodny identyfikator<ph name="LPA_4" /></translation>
+<translation id="7811263553491007091">Spróbuj ponownie lub wybierz jeden z wygenerowanych wcześniej motywów poniżej.</translation>
 <translation id="7814458197256864873">&amp;Kopiuj</translation>
 <translation id="7814857791038398352">Microsoft OneDrive</translation>
 <translation id="7815583197273433531">Edytuj skrót <ph name="SHORTCUT" /> dotyczący rozszerzenia <ph name="EXTENSION_NAME" /></translation>
@@ -8731,6 +8742,7 @@ Aby usunąć przypisanie, naciśnij przypisany przełącznik lub klawisz.</trans
 <translation id="789722939441020330">Nie zezwalaj witrynom na automatyczne pobieranie wielu plików</translation>
 <translation id="7897900149154324287">W przyszłości pamiętaj, by przed odłączeniem urządzenia wymiennego wysunąć je w aplikacji Pliki. W przeciwnym razie możesz stracić dane.</translation>
 <translation id="7898725031477653577">Zawsze tłumacz</translation>
+<translation id="7899324822972399722">Obraz <ph name="INDEX" /> z <ph name="A" />, styl: <ph name="B" /></translation>
 <translation id="7901405293566323524">Phone Hub</translation>
 <translation id="7903290522161827520">Szukasz komponentów przeglądarki? Wejdź na</translation>
 <translation id="7903429136755645827">Kliknij, aby dostosować elementy sterujące gry</translation>
@@ -8992,6 +9004,7 @@ Przechowuj plik klucza w bezpiecznym miejscu. Będzie on potrzebny do utworzenia
 <translation id="8089547136368562137">Będzie ono chronione za pomocą najlepszych funkcji Google.</translation>
 <translation id="8090234456044969073">Odczyt listy najczęściej odwiedzanych stron</translation>
 <translation id="8090513782447872344">Zawsze możesz tu wrócić, aby sprawdzić te informacje jeszcze raz</translation>
+<translation id="8090686009202681725">Utwórz motyw za pomocą AI</translation>
 <translation id="8093359998839330381"><ph name="PLUGIN_NAME" /> nie odpowiada</translation>
 <translation id="8094536695728193970">Morela</translation>
 <translation id="8095105960962832018"><ph name="BEGIN_PARAGRAPH1" />Zapisuj kopie zapasowe na Dysku Google, by móc łatwo i wygodnie przywrócić dane lub zmienić urządzenie. Kopie zapasowe zawierają dane aplikacji.<ph name="END_PARAGRAPH1" />
@@ -9008,6 +9021,7 @@ Przechowuj plik klucza w bezpiecznym miejscu. Będzie on potrzebny do utworzenia
 <translation id="8098616321286360457">Wymagane połączenie sieciowe</translation>
 <translation id="8100230553590752325">Korzystaj z zapisanych haseł na dowolnym urządzeniu</translation>
 <translation id="810068641062493918">Wybrano: <ph name="LANGUAGE" />. Aby usunąć wybór języka, naciśnij Wyszukaj i spację.</translation>
+<translation id="8100725874569949614">Zdjęcie <ph name="INDEX" /> z <ph name="A" />, nastrój: <ph name="C" />.</translation>
 <translation id="8101409298456377967">Twórz i zapisuj hasła oraz nimi zarządzaj, aby łatwo logować się na stronach i w aplikacjach. <ph name="BEGIN_LINK" />Więcej informacji<ph name="END_LINK" /></translation>
 <translation id="810185532889603849">Kolor niestandardowy</translation>
 <translation id="8101987792947961127">Przy następnym uruchomieniu trzeba wykonać Powerwash</translation>
@@ -9018,6 +9032,7 @@ Przechowuj plik klucza w bezpiecznym miejscu. Będzie on potrzebny do utworzenia
 <translation id="810728361871746125">Rozdzielczość wyświetlacza</translation>
 <translation id="8108526232944491552">{COUNT,plural, =0{Brak plików cookie innych firm}=1{Zablokowano 1 plik cookie innej firmy}few{Zablokowano # pliki cookie innych firm}many{Zablokowano # plików cookie innych firm}other{Zablokowano # pliku cookie innych firm}}</translation>
 <translation id="8109109153262930486">Awatar domyślny</translation>
+<translation id="8109991406044913868">Motyw utworzony przez AI</translation>
 <translation id="8110393529211831722">Subskrypcja jest instalowana tylko na tym urządzeniu i nie synchronizuje się z innymi urządzeniami na Twoim koncie. <ph name="LINK_BEGIN" />Więcej informacji<ph name="LINK_END" /></translation>
 <translation id="8110489095782891123">Pobieram listę kontaktów…</translation>
 <translation id="8115139559594092084">Z Twojego Dysku Google</translation>

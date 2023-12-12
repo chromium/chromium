@@ -121,7 +121,7 @@
 <translation id="3008272652534848354">Đặt lại quyền</translation>
 <translation id="3013291976881901233">Thiết bị MIDI</translation>
 <translation id="301521992641321250">Tự động bị chặn</translation>
-<translation id="3069226013421428034">Cho phép bên thứ ba đăng nhập đối với một trang web cụ thể.</translation>
+<translation id="3069226013421428034">Cho phép đăng nhập qua bên thứ ba cho một trang web cụ thể.</translation>
 <translation id="3082992102194421695">{COUNT,plural, =1{Hết hạn ngày mai}other{Hết hạn sau # ngày nữa}}</translation>
 <translation id="310297983047869047">Trang trình bày trước</translation>
 <translation id="3109724472072898302">Đã thu gọn</translation>
@@ -319,7 +319,7 @@
 <translation id="6304434827459067558"><ph name="SITE" /> không được sử dụng thông tin của bạn trên</translation>
 <translation id="6320088164292336938">Rung</translation>
 <translation id="6344622098450209924">Tính năng chống theo dõi</translation>
-<translation id="6367753977865761591">Chặn đăng nhập của bên thứ ba đối với một trang web cụ thể.</translation>
+<translation id="6367753977865761591">Cho phép đăng nhập qua bên thứ ba cho một trang web cụ thể.</translation>
 <translation id="6398765197997659313">Thoát khỏi chế độ toàn màn hình</translation>
 <translation id="640163077447496506">Hết hạn hôm nay</translation>
 <translation id="6405650995156823521"><ph name="FIRST_PART" /> • <ph name="SECOND_PART" /></translation>

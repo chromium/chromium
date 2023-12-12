@@ -117,7 +117,7 @@ To inače blokiraju podešavanja privatnosti. To omogućava da sadržaj sa koji
 <translation id="1206967143813997005">Neispravan potpis inicijalima</translation>
 <translation id="1209206284964581585">Sakrij za sada</translation>
 <translation id="121201262018556460">Pokušali ste da kontaktirate <ph name="DOMAIN" />, ali je server poslao sertifikat koji sadrži slab ključ. Moguće je da je napadač otkrio privatni ključ i da server možda nije onaj koji mislite da jeste (možda komunicirate sa napadačem).</translation>
-<translation id="1212527389003717329">Preuzimanje je počelo. Da biste je videli, pritisnite i zadržite |<ph name="ACCELERATOR" />|.</translation>
+<translation id="1212527389003717329">Preuzimanje je počelo. Da biste ga videli, pritisnite i zadržite |<ph name="ACCELERATOR" />|.</translation>
 <translation id="1219129156119358924">Bezbednost sistema</translation>
 <translation id="1222060260947439312">Desna fioka</translation>
 <translation id="1224330468394120478">A3x6</translation>

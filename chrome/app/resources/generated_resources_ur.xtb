@@ -616,6 +616,7 @@
 <translation id="1478340334823509079">تفصیلات: <ph name="FILE_NAME" /></translation>
 <translation id="1478607704480248626">انسٹالیشن فعال نہیں ہے</translation>
 <translation id="1480663089572535854">آپ "منتخب کریں" کیلئے تفویض کو تبدیل کرنے کی خاطر واپس جا سکتے ہیں۔ آپ ترتیبات میں خودکار اسکین کو ہمیشہ آف کر سکتے ہیں۔</translation>
+<translation id="1481001611315487791">‏AI کے ساتھ تھیمز بنانے کے بارے میں مزید جانیں۔</translation>
 <translation id="1481537595330271162">ڈسک کا سائز تبدیل کرنے میں خرابی</translation>
 <translation id="1482626744466814421">اس ٹیب کو بُک مارک کریں...</translation>
 <translation id="1482772681918035149">پاس ورڈز میں ترمیم کریں</translation>
@@ -810,6 +811,7 @@
 <translation id="1615433306336820465">اپنی سیکیورٹی کلید پر اسٹور کردہ سائن ان ڈیٹا کا نظم کریں</translation>
 <translation id="1616206807336925449">اس ایکسٹینشن کو کوئی خاص اجازتیں درکار نہیں ہیں۔</translation>
 <translation id="1616298854599875024">ایکسٹینشن "<ph name="IMPORT_NAME" />" کو درآمد کرنے سے قاصر ہے کیونکہ یہ ایک اشتراک کردہ ماڈیول نہیں ہے</translation>
+<translation id="161654560322394775"><ph name="C" /> مُوڈ کے ساتھ <ph name="B" /> طرز میں <ph name="A" /> میں سے تصویر <ph name="INDEX" />۔</translation>
 <translation id="1617765145568323981">{NUM_FILES,plural, =0{آپ کی تنظیم کی سکیورٹی پالیسیز کے ساتھ اس ڈیٹا کو چیک کیا جا رہا ہے...}=1{آپ کی تنظیم کی سکیورٹی پالیسیز کے ساتھ اس فائل کو چیک کیا جا رہا ہے...}other{آپ کی تنظیم کی سکیورٹی پالیسیز کے ساتھ ان فائلز کو چیک کیا جا رہا ہے...}}</translation>
 <translation id="1618102204889321535"><ph name="CURRENT_CHARACTER_COUNT" />/<ph name="MAX_CHARACTER_COUNT" /></translation>
 <translation id="1618268899808219593">امدادی &amp;مرکز</translation>
@@ -1694,6 +1696,7 @@
 <translation id="2291452790265535215">بُک مارکس، صارف کے تجربے وغیرہ کیلئے سائیڈ پینل استعمال کرنے کی کوشش کریں</translation>
 <translation id="229182044471402145">کوئی مماثل فونٹ نہیں ملا۔</translation>
 <translation id="2292848386125228270">‏براہ کرم <ph name="PRODUCT_NAME" /> کو ایک عام صارف کے بطور شروع کریں۔ اگر آپ کو ڈویلپمنٹ کیلئے روٹ کے بطور چلانے کی ضرورت پڑتی ہے تو ‎--no-sandbox پرچم کے ساتھ دوبارہ چلائیں۔</translation>
+<translation id="2292862094862078674">اپنا انٹرنیٹ چیک کریں اور دوبارہ کوشش کریں۔ آپ اب بھی ذیل میں پہلے سے تیار کردہ تھیمز میں سے کسی ایک کو منتخب کر سکتے ہیں۔</translation>
 <translation id="2294081976975808113">اسکرین کی رازداری</translation>
 <translation id="2294358108254308676">کیا آپ <ph name="PRODUCT_NAME" /> کو انسٹال کرنا چاہتے ہیں؟</translation>
 <translation id="229477815107578534">اپنی ترتیبات کا جائزہ لیں</translation>
@@ -3036,6 +3039,7 @@
 <translation id="3325804108816646710">دستیاب پروفائلز کو تلاش کیا جا رہا ہے...</translation>
 <translation id="3325910708063135066">‏Mac سسٹم کی ترجیحات میں کیمرا اور مائیکروفون آف ہیں</translation>
 <translation id="3325930488268995856">‏Microsoft OneDrive منسلک ہے</translation>
+<translation id="3325995804968971809">طرز</translation>
 <translation id="3327050066667856415">‏Chromebooks سیکیورٹی کے لئے ڈیزائن کیے گئے ہیں۔ آپ کا آلہ میلوئیر سے خود کار طور پر محفوظ ہے - کسی اضافی سافٹ ویئر کی ضرورت نہیں ہے۔</translation>
 <translation id="3328489342742826322">‏بیک اپ سے بحال کرنے سے آپ کے Linux فائلز کے فولڈر موجود ڈیٹا اور موجود Linux ایپلیکیشنز حذف ہو جائیں گی۔</translation>
 <translation id="3331321258768829690">(<ph name="UTCOFFSET" />) <ph name="LONGTZNAME" /> (<ph name="EXEMPLARCITY" />)</translation>
@@ -3312,6 +3316,7 @@
 <translation id="3561201631376780358">‏سبھی Bookmarks دیکھنے کے لیے سائیڈ پینل کھولیں</translation>
 <translation id="3562423906127931518">‏اس کارروائی میں چند منٹس لگ سکتے ہيں۔ Linux کنٹینر سیٹ کیا جا رہا ہے۔</translation>
 <translation id="3562655211539199254">‏اپنے فون سے حالیہ Chrome ٹیبز دیکھیں</translation>
+<translation id="3563392617245068355">مُوڈ</translation>
 <translation id="3563432852173030730">کیوسک ایپلیکیشن کو ڈاؤن لوڈ نہیں کیا جا سکا۔</translation>
 <translation id="3563558822383875692">‏DLC کو کنفیگر کیا جا رہا ہے۔</translation>
 <translation id="3564334271939054422">‏آپ کے زیر استعمال Wi-Fi نیٹ ورک (<ph name="NETWORK_ID" />) آپ سے اپنا لاگ ان صفحہ ملاحظہ کرنے کا تقاضہ کر سکتا ہے۔</translation>
@@ -4195,6 +4200,7 @@
 <translation id="4250229828105606438">اسکرین شاٹ</translation>
 <translation id="4250680216510889253">نہیں</translation>
 <translation id="4251377547188244181">کیوسک اور سائنیج آلہ کا اندراج</translation>
+<translation id="4252141040239557279"><ph name="A" /> میں سے تصویر <ph name="INDEX" /></translation>
 <translation id="4252899949534773101">بلوٹوتھ غیر فعال ہے</translation>
 <translation id="4252996741873942488"><ph name="WINDOW_TITLE" /> - ٹیب مواد کا اشتراک کیا جا رہا ہے</translation>
 <translation id="4253168017788158739">نوٹ</translation>
@@ -4573,6 +4579,7 @@
 <translation id="4548858987594081919">‏Google پاس ورڈ مینیجر کو اپنی سائن ان معلومات محفوظ کرنے میں مدد کرنے کے لئے، اس سائٹ کے لئے اپنا صارف نام شامل کریں</translation>
 <translation id="4549791035683739768">آپ کی سیکیورٹی کلید میں کوئی فنگر پرنٹ اسٹور نہیں ہے</translation>
 <translation id="4550926046134589611">کچھ تعاون یافتہ لنکس اب بھی <ph name="APP_NAME" /> میں کھلیں گے۔</translation>
+<translation id="4551379727767354516">‏آپ کی حالیہ AI تھیمز</translation>
 <translation id="4551763574344810652">کالعدم کرنے کے لیے <ph name="MODIFIER_KEY_DESCRIPTION" /> دبائيں</translation>
 <translation id="4553526521109675518">‏آلہ کی زبان تبدیل کرنے کے لیے آپ کو اپنا Chromebook ری سٹارٹ کرنا ہوگا۔ <ph name="BEGIN_LINK_LEARN_MORE" />مزید جانیں<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="4554591392113183336">بیرونی ایکسٹینشن موجودہ ورژن کے مقابلہ ویسا ہی یا اس سے کم تر ورژن پر ہے۔</translation>
@@ -5896,6 +5903,7 @@
 <translation id="5620568081365989559">‏<ph name="FOLDER_PATH" /> تک DevTools مکمل رسائی کی درخواست کرتا ہے۔ اس بات کو یقینی بنائیں کہ آپ کسی حساس معلومات کا انکشاف نہیں کرتے ہیں۔</translation>
 <translation id="5620612546311710611">استعمال کے اعداد و شمار</translation>
 <translation id="5621272825308610394">کوئی ڈسپلے نام نہیں</translation>
+<translation id="5621350029086078628">‏یہ ایک تجرباتی AI خصوصیت ہے۔</translation>
 <translation id="562250930904332809">لائیو کیپشن کو &amp;غیر فعال کریں</translation>
 <translation id="5623282979409330487">یہ سائٹ آپ کے موشن سینسرز تک رسائی حاصل کر رہی ہے۔</translation>
 <translation id="5623842676595125836">لاگ</translation>
@@ -6014,6 +6022,7 @@
 <translation id="572328651809341494">حالیہ ٹیبز</translation>
 <translation id="5723508132121499792">کوئی پس منظر ایپس نہیں چل رہی ہیں</translation>
 <translation id="5723967018671998714">فریق ثالث کی کوکیز پوشیدگی وضع میں مسدود کی جاتی ہیں</translation>
+<translation id="5725112283692663422">‏AI کے ساتھ تھیم تخلیق کرنے کے لیے تاثرات بھیجیں</translation>
 <translation id="5727728807527375859">ایکسٹینشز، ایپس اور تھیمز آپ کے کمپیوٹر کو نقصان پہنچا سکتی ہیں۔ کیا آپ واقعی جاری رکھنا چاہتے ہیں؟</translation>
 <translation id="5728290366864286776">یہ ایکسٹینشن سائٹ کی معلومات پڑھ اور تبدیل کر سکتی ہے یا یہ پس منظر میں چل سکتی ہے</translation>
 <translation id="5728450728039149624">اسمارٹ لاک اسکرین لاک کے اختیارات</translation>
@@ -8424,6 +8433,7 @@
 <translation id="7657090467145778067">چھوٹی بچت</translation>
 <translation id="7657218410916651670">‏سائن ان ہونے پر آپ کے Google اکاؤنٹ میں <ph name="BEGIN_LINK_GOOGLE" />دیگر اقسام کی سرگرمی<ph name="END_LINK_GOOGLE" /> محفوظ ہو سکتی ہے۔ آپ انہیں کسی بھی وقت حذف کر سکتے ہیں۔</translation>
 <translation id="7658239707568436148">منسوخ کریں</translation>
+<translation id="7658727964021657194">‏حالیہ AI تصاویر <ph name="TILE_INDEX" /></translation>
 <translation id="7659154729610375585">بہر حال پوشیدگی وضع سے باہر نکلیں؟</translation>
 <translation id="7659336857671800422">رازداری کی گائیڈ لیں</translation>
 <translation id="7659584679870740384">آپ کو یہ آلہ استعمال کرنے کی اجازت نہیں ہے۔ سائن ان کی اجازت کیلئے براہ کرم منتظم سے رابطہ کریں۔</translation>
@@ -8645,6 +8655,7 @@
 <translation id="7807711621188256451"><ph name="HOST" /> کو ہمیشہ اپنے کیمرے تک رسائی حاصل کرنے کی اجازت دیں</translation>
 <translation id="7810202088502699111">پاپ اپس کو اس صفحہ پر مسدود کر دیا گیا۔</translation>
 <translation id="7810367892333449285">‏آپ کے اندراج کا فارمیٹ <ph name="LPA_0" />$<ph name="LPA_1" />SM-DP+ address‏<ph name="LPA_2" />$<ph name="LPA_3" />اختیاری مماثلت والی ID<ph name="LPA_4" /> ہونا چاہیے</translation>
+<translation id="7811263553491007091">دوبارہ کوشش کریں یا ذیل میں پہلے سے تیار کردہ تھیمز میں سے کسی ایک کو منتخب کریں۔</translation>
 <translation id="7814458197256864873">&amp;کاپی کریں</translation>
 <translation id="7814857791038398352">Microsoft OneDrive</translation>
 <translation id="7815583197273433531"><ph name="EXTENSION_NAME" /> کے لیے شارٹ کٹ <ph name="SHORTCUT" /> میں ترمیم کریں</translation>
@@ -8749,6 +8760,7 @@
 <translation id="789722939441020330">سائٹس کو خودکار طور پر متعدد فائلیں ڈاؤن لوڈ کرنے کی اجازت نہ دیں</translation>
 <translation id="7897900149154324287">آئندہ، فائلز ایپ میں اپنے قابل منتقلی آلے کو ان پلگ کرنے سے پہلے اسے یقینی طور پر نکال لیں۔ بصورت دیگر، آپ ڈیٹا سے محروم ہو سکتے ہیں۔</translation>
 <translation id="7898725031477653577">ہمیشہ ترجمہ کریں</translation>
+<translation id="7899324822972399722"><ph name="B" /> طرز میں <ph name="A" /> میں سے تصویر <ph name="INDEX" /></translation>
 <translation id="7901405293566323524">فون کا ہب</translation>
 <translation id="7903290522161827520">براؤزر کے اجزاء تلاش کر رہے ہیں؟ ملاحظہ کریں</translation>
 <translation id="7903429136755645827">اپنے گیم کنٹرولز کو حسب ضرورت بنانے کے لیے کلک کریں</translation>
@@ -9009,6 +9021,7 @@
 <translation id="8089547136368562137">‏یہ Google کے بہترین حصوں کے ذریعہ محفوظ ہے</translation>
 <translation id="8090234456044969073">جو ویب سائٹس آپ سب سے زیادہ کثرت سے ملاحظہ کرتے ہیں ان کی ایک فہرست پڑھیں</translation>
 <translation id="8090513782447872344">آپ کسی بھی وقت واپس آ کر ایک اور نظر ڈال سکتے ہیں</translation>
+<translation id="8090686009202681725">‏AI کے ساتھ تھیم تخلیق کریں</translation>
 <translation id="8093359998839330381"><ph name="PLUGIN_NAME" /> جواب نہیں دے رہی ہے</translation>
 <translation id="8094536695728193970">خوبانی</translation>
 <translation id="8095105960962832018">‏<ph name="BEGIN_PARAGRAPH1" />Google Drive پر بیک اپ لیں۔ آسانی سے کسی بھی وقت اپنا ڈیٹا بحال کریں یا آلہ سوئچ کریں۔ آپ کے بیک اپ میں ایپ ڈیٹا شامل ہے۔<ph name="END_PARAGRAPH1" />
@@ -9025,6 +9038,7 @@
 <translation id="8098616321286360457">نیٹ ورک کنکشن درکار ہے</translation>
 <translation id="8100230553590752325">کسی بھی آلے پر محفوظ کردہ پاس ورڈز کا استعمال کریں</translation>
 <translation id="810068641062493918">‏<ph name="LANGUAGE" /> کا انتخاب کیا گیا۔ غیر منتخب کرنے کیلئے، Search اور Space دبائیں۔</translation>
+<translation id="8100725874569949614"><ph name="C" /> مُوڈ کے ساتھ <ph name="A" /> میں سے تصویر <ph name="INDEX" /></translation>
 <translation id="8101409298456377967">اپنے پاس ورڈز تخلیق کریں، محفوظ کریں اور ان کا نظم کریں تاکہ آپ آسانی سے سائٹس اور ایپس میں سائن ان کر سکیں۔ <ph name="BEGIN_LINK" />مزید جانیں<ph name="END_LINK" /></translation>
 <translation id="810185532889603849">حسب ضرورت رنگ</translation>
 <translation id="8101987792947961127">اگلے ریبوٹ پر پاور واش درکار ہوگا</translation>
@@ -9035,6 +9049,7 @@
 <translation id="810728361871746125">ڈسپلے کا ریزولیوشن</translation>
 <translation id="8108526232944491552">{COUNT,plural, =0{کوئی فریق ثالث کوکی نہیں ہے}=1{1 فریق ثالث کوکی مسدود ہے}other{# فریق ثالث کوکیز مسدود ہیں}}</translation>
 <translation id="8109109153262930486">ڈیفالٹ اوتار</translation>
+<translation id="8109991406044913868">‏AI کی تخلیق کردہ تھیم</translation>
 <translation id="8110393529211831722">سبسکرپشن صرف اس آلے پر انسٹال ہے اور آپ کے اکاؤنٹ کے تحت دیگر آلات کے ساتھ مطابقت پذیر نہیں ہے۔ <ph name="LINK_BEGIN" />مزید جانیں<ph name="LINK_END" /></translation>
 <translation id="8110489095782891123">رابطے کی فہرست ڈاؤن لوڈ ہو رہی ہے...</translation>
 <translation id="8115139559594092084">‏آپ کے Google Drive سے</translation>

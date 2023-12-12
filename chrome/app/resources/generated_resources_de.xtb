@@ -616,6 +616,7 @@ Berechtigungen, die du Apps bereits gewährt hast, gelten möglicherweise für d
 <translation id="1478340334823509079">Details: <ph name="FILE_NAME" /></translation>
 <translation id="1478607704480248626">Die Installation ist nicht aktiviert</translation>
 <translation id="1480663089572535854">Du kannst zurückgehen, um die Zuweisung für „Auswählen“ zu ändern. Der automatische Scan lässt sich jederzeit in den Einstellungen deaktivieren.</translation>
+<translation id="1481001611315487791">Weitere Informationen zum Erstellen von Designs mit KI</translation>
 <translation id="1481537595330271162">Fehler bei der Größenanpassung des Laufwerks</translation>
 <translation id="1482626744466814421">Lesezeichen für diesen Tab erstellen…</translation>
 <translation id="1482772681918035149">Passwörter bearbeiten</translation>
@@ -807,6 +808,7 @@ Berechtigungen, die du Apps bereits gewährt hast, gelten möglicherweise für d
 <translation id="1615433306336820465">Auf deinem Sicherheitsschlüssel gespeicherte Anmeldedaten verwalten</translation>
 <translation id="1616206807336925449">Diese Erweiterung erfordert keine speziellen Berechtigungen.</translation>
 <translation id="1616298854599875024">Die Erweiterung "<ph name="IMPORT_NAME" />" konnte nicht importiert werden, da es sich nicht um ein freigegebenes Modul handelt</translation>
+<translation id="161654560322394775">Bild <ph name="INDEX" /> von <ph name="A" /> im Stil „<ph name="B" />“ und mit der Stimmung „<ph name="C" />“.</translation>
 <translation id="1617765145568323981">{NUM_FILES,plural, =0{Diese Daten werden auf die Einhaltung der Sicherheitsrichtlinien deines Unternehmens geprüft…}=1{Diese Datei wird auf die Einhaltung der Sicherheitsrichtlinien deines Unternehmens geprüft…}other{Diese Dateien werden auf die Einhaltung der Sicherheitsrichtlinien deines Unternehmens geprüft…}}</translation>
 <translation id="1618102204889321535"><ph name="CURRENT_CHARACTER_COUNT" />/<ph name="MAX_CHARACTER_COUNT" /></translation>
 <translation id="1618268899808219593">H&amp;ilfe</translation>
@@ -1690,6 +1692,7 @@ Wenn du die Family Link App auf deinem Gerät installierst, kannst du die Einste
 <translation id="2291452790265535215">Die Seitenleiste kann für Lesezeichen, die Onlinerecherche und vieles mehr genutzt werden</translation>
 <translation id="229182044471402145">Es wurde keine passende Schriftart gefunden.</translation>
 <translation id="2292848386125228270">Starte <ph name="PRODUCT_NAME" /> als normaler Nutzer. Um Chrome für Entwicklungszwecke als Root auszuführen, musst du den Browser noch einmal mit dem Kennzeichen „--no-sandbox“ ausführen.</translation>
+<translation id="2292862094862078674">Prüfe deine Internetverbindung und versuche es noch einmal. Du kannst auch unten eines der zuvor generierten Designs auswählen.</translation>
 <translation id="2294081976975808113">Privatsphärefunktion</translation>
 <translation id="2294358108254308676">Möchtest du <ph name="PRODUCT_NAME" /> installieren?</translation>
 <translation id="229477815107578534">Einstellungen prüfen</translation>
@@ -3031,6 +3034,7 @@ Servernachricht: <ph name="SERVER_MSG" /></translation>
 <translation id="3325804108816646710">Es wird nach verfügbaren Profilen gesucht…</translation>
 <translation id="3325910708063135066">Kamera und Mikrofon wurden in den Mac-Systemeinstellungen ausgeschaltet</translation>
 <translation id="3325930488268995856">Mit Microsoft OneDrive verbunden</translation>
+<translation id="3325995804968971809">Stil</translation>
 <translation id="3327050066667856415">Chromebooks sind auf Sicherheit ausgelegt. Dein Gerät ist automatisch vor Malware geschützt – ganz ohne zusätzliche Software.</translation>
 <translation id="3328489342742826322">Bei der Wiederherstellung aus einer Sicherung werden bestehende Linux-Anwendungen und -Daten in deinen Linux-Dateiordnern gelöscht.</translation>
 <translation id="3331321258768829690">(<ph name="UTCOFFSET" />) <ph name="LONGTZNAME" /> (<ph name="EXEMPLARCITY" />)</translation>
@@ -3307,6 +3311,7 @@ Servernachricht: <ph name="SERVER_MSG" /></translation>
 <translation id="3561201631376780358">Seitenleiste öffnen, um alle Lesezeichen zu sehen</translation>
 <translation id="3562423906127931518">Der Vorgang kann einige Minuten dauern. Linux-Container wird eingerichtet.</translation>
 <translation id="3562655211539199254">Zuletzt geöffnete Chrome-Tabs von deinem Smartphone sehen</translation>
+<translation id="3563392617245068355">Stimmung</translation>
 <translation id="3563432852173030730">Die Kioskanwendung konnte nicht heruntergeladen werden.</translation>
 <translation id="3563558822383875692">DLC wird konfiguriert.</translation>
 <translation id="3564334271939054422">Eventuell musst du die Anmeldeseite des verwendeten WLAN-Netzwerks (<ph name="NETWORK_ID" />) aufrufen.</translation>
@@ -4190,6 +4195,7 @@ Dazu gehören beispielsweise installierte Software, Dateien, dein Browser und da
 <translation id="4250229828105606438">Screenshot</translation>
 <translation id="4250680216510889253">Nein</translation>
 <translation id="4251377547188244181">Gerät wird für Kioske und digitale Beschilderung registriert</translation>
+<translation id="4252141040239557279">Bild <ph name="INDEX" /> von <ph name="A" /></translation>
 <translation id="4252899949534773101">Bluetooth ist deaktiviert</translation>
 <translation id="4252996741873942488"><ph name="WINDOW_TITLE" /> – Tabinhalte geteilt</translation>
 <translation id="4253168017788158739">Notiz</translation>
@@ -4568,6 +4574,7 @@ Dazu gehören beispielsweise installierte Software, Dateien, dein Browser und da
 <translation id="4548858987594081919">Nutzername für diese Website hinzufügen, damit der Google Passwortmanager deine Anmeldedaten speichern kann</translation>
 <translation id="4549791035683739768">Auf deinem Sicherheitsschlüssel sind keine Fingerabdrücke gespeichert</translation>
 <translation id="4550926046134589611">Einige unterstützte Links werden weiterhin in <ph name="APP_NAME" /> geöffnet.</translation>
+<translation id="4551379727767354516">Meine letzten KI-Designs</translation>
 <translation id="4551763574344810652">"<ph name="MODIFIER_KEY_DESCRIPTION" />" drücken, um Aktion rückgängig zu machen</translation>
 <translation id="4553526521109675518">Du musst dein Chromebook neu starten, um die Gerätesprache zu ändern. <ph name="BEGIN_LINK_LEARN_MORE" />Weitere Informationen<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="4554591392113183336">Die Version der externen Erweiterung ist identisch mit der vorhandenen Version oder niedriger als diese.</translation>
@@ -5890,6 +5897,7 @@ Berechtigungen, die du Websites und Apps bereits gewährt hast, gelten mögliche
 <translation id="5620568081365989559">DevTools erfordert Vollzugriff auf <ph name="FOLDER_PATH" />. Achte darauf, dass dadurch keine vertraulichen Informationen offengelegt werden.</translation>
 <translation id="5620612546311710611">Nutzungsstatistiken</translation>
 <translation id="5621272825308610394">Kein Anzeigename</translation>
+<translation id="5621350029086078628">Dies ist eine experimentelle KI-Funktion.</translation>
 <translation id="562250930904332809">Automatische Untertitel &amp;deaktivieren</translation>
 <translation id="5623282979409330487">Diese Website greift auf deine Bewegungssensoren zu.</translation>
 <translation id="5623842676595125836">Protokoll</translation>
@@ -6008,6 +6016,7 @@ Berechtigungen, die du Websites und Apps bereits gewährt hast, gelten mögliche
 <translation id="572328651809341494">Zuletzt geöffnete Tabs</translation>
 <translation id="5723508132121499792">Es werden keine Apps im Hintergrund ausgeführt.</translation>
 <translation id="5723967018671998714">Drittanbieter-Cookies sind im Inkognitomodus blockiert</translation>
+<translation id="5725112283692663422">Feedback zu „Design mit KI erstellen“ senden</translation>
 <translation id="5727728807527375859">Erweiterungen, Apps und Designs können deinen Computer beschädigen. Möchtest du den Vorgang wirklich fortsetzen?</translation>
 <translation id="5728290366864286776">Diese Erweiterung kann Websiteinformationen lesen und ändern oder im Hintergrund ausgeführt werden</translation>
 <translation id="5728450728039149624">Optionen für die Smart Lock-Displaysperre</translation>
@@ -8418,6 +8427,7 @@ Du hast # weitere gehackte Passwörter. Der Google Passwortmanager empfiehlt, d
 <translation id="7657090467145778067">Geringe Einsparungen</translation>
 <translation id="7657218410916651670"><ph name="BEGIN_LINK_GOOGLE" />Andere Arten von Aktivitäten<ph name="END_LINK_GOOGLE" /> können in deinem Google-Konto gespeichert werden, wenn du angemeldet bist. Du kannst sie jederzeit löschen.</translation>
 <translation id="7658239707568436148">Abbrechen</translation>
+<translation id="7658727964021657194">Zuletzt generiertes KI-Design <ph name="TILE_INDEX" /></translation>
 <translation id="7659154729610375585">Inkognitomodus trotzdem beenden?</translation>
 <translation id="7659336857671800422">Datenschutz-Leitfaden durchgehen</translation>
 <translation id="7659584679870740384">Du bist nicht zur Verwendung dieses Geräts berechtigt. Bitte den Administrator um eine Anmeldeberechtigung.</translation>
@@ -8639,6 +8649,7 @@ Drücke zum Entfernen der Zuweisung einen bereits zugewiesenen Schalter oder ein
 <translation id="7807711621188256451"><ph name="HOST" /> immer Zugriff auf deine Kamera gestatten</translation>
 <translation id="7810202088502699111">Pop-ups wurden auf dieser Seite blockiert.</translation>
 <translation id="7810367892333449285">Deine Eingabe muss dieses Format haben: <ph name="LPA_0" />$<ph name="LPA_1" />SM-DP+-Adresse<ph name="LPA_2" />$<ph name="LPA_3" />optionale ID zum Abgleich<ph name="LPA_4" /></translation>
+<translation id="7811263553491007091">Versuche es noch einmal oder wähle unten eines der zuvor generierten Designs aus.</translation>
 <translation id="7814458197256864873">&amp;Kopieren</translation>
 <translation id="7814857791038398352">Microsoft OneDrive</translation>
 <translation id="7815583197273433531">Tastenkombination <ph name="SHORTCUT" /> für <ph name="EXTENSION_NAME" /> bearbeiten</translation>
@@ -8743,6 +8754,7 @@ Drücke zum Entfernen der Zuweisung einen bereits zugewiesenen Schalter oder ein
 <translation id="789722939441020330">Websites dürfen nicht automatisch mehrere Dateien herunterladen</translation>
 <translation id="7897900149154324287">Wirf dein externes Gerät in Zukunft über die Dateien-App aus, bevor du die Verbindung trennst. Sonst könnte es zu einem Datenverlust kommen.</translation>
 <translation id="7898725031477653577">Immer übersetzen</translation>
+<translation id="7899324822972399722">Bild <ph name="INDEX" /> von <ph name="A" /> im Stil „<ph name="B" />“</translation>
 <translation id="7901405293566323524">Phone Hub</translation>
 <translation id="7903290522161827520">Suchst du die Browser-Komponenten? Gehe zu</translation>
 <translation id="7903429136755645827">Zum Anpassen der Spielsteuerung klicken</translation>
@@ -9004,6 +9016,7 @@ Speichere deine Schlüsseldatei an einem sicheren Ort. Du benötigst die Datei, 
 <translation id="8089547136368562137">Es ist bestmöglich durch Google geschützt</translation>
 <translation id="8090234456044969073">Liste deiner meistbesuchten Websites lesen</translation>
 <translation id="8090513782447872344">Du kannst jederzeit wieder herkommen, um dir alles anzusehen</translation>
+<translation id="8090686009202681725">Design mit KI erstellen</translation>
 <translation id="8093359998839330381"><ph name="PLUGIN_NAME" /> reagiert nicht</translation>
 <translation id="8094536695728193970">Apricot</translation>
 <translation id="8095105960962832018"><ph name="BEGIN_PARAGRAPH1" />In Google Drive sichern: Du kannst deine Daten jederzeit wiederherstellen – auch auf einem anderen Gerät. Deine Sicherung enthält App-Daten.<ph name="END_PARAGRAPH1" />
@@ -9020,6 +9033,7 @@ Speichere deine Schlüsseldatei an einem sicheren Ort. Du benötigst die Datei, 
 <translation id="8098616321286360457">Netzwerkverbindung erforderlich</translation>
 <translation id="8100230553590752325">Gespeicherte Passwörter auf beliebigen Geräten verwenden</translation>
 <translation id="810068641062493918"><ph name="LANGUAGE" /> ausgewählt. Drücke zum Aufheben der Auswahl die Suchtaste + Leertaste.</translation>
+<translation id="8100725874569949614">Bild <ph name="INDEX" /> von <ph name="A" /> mit der Stimmung „<ph name="C" />“.</translation>
 <translation id="8101409298456377967">Hier kannst du Passwörter erstellen, speichern und verwalten, damit du dich einfacher auf Websites und in Apps anmelden kannst. <ph name="BEGIN_LINK" />Weitere Informationen<ph name="END_LINK" /></translation>
 <translation id="810185532889603849">Personalisierte Farbe</translation>
 <translation id="8101987792947961127">Powerwash beim nächsten Neustart erforderlich</translation>
@@ -9030,6 +9044,7 @@ Speichere deine Schlüsseldatei an einem sicheren Ort. Du benötigst die Datei, 
 <translation id="810728361871746125">Displayauflösung</translation>
 <translation id="8108526232944491552">{COUNT,plural, =0{Keine Drittanbieter-Cookies}=1{1 Cookie von Drittanbietern blockiert}other{# Cookies von Drittanbietern blockiert}}</translation>
 <translation id="8109109153262930486">Standardavatar</translation>
+<translation id="8109991406044913868">Von KI erstelltes Design</translation>
 <translation id="8110393529211831722">Das Abo ist nur auf diesem Gerät installiert und wird nicht mit anderen Geräten in deinem Konto synchronisiert. <ph name="LINK_BEGIN" />Weitere Informationen<ph name="LINK_END" /></translation>
 <translation id="8110489095782891123">Kontaktliste wird heruntergeladen...</translation>
 <translation id="8115139559594092084">Von deinem Google Drive</translation>

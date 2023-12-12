@@ -202,7 +202,7 @@ Ili kubadilisha mpangilio huu, <ph name="BEGIN_LINK" />futa data ya Chrome kweny
 <translation id="199425419756152024">Angalia Nenosiri</translation>
 <translation id="2008357574463816229">Ukisahau kauli yako ya siri au ukitaka kubadilisha mpangilio huu, <ph name="BEGIN_LINK" />futa data ya Chrome kwenye akaunti yako<ph name="END_LINK" />.</translation>
 <translation id="2010008505735295285">Pakia upya</translation>
-<translation id="2015722694326466240">Ili uone manenosiri, ni lazima kwanza uweke nambari ya siri kwenye kifaa chako.</translation>
+<translation id="2015722694326466240">Ili uone manenosiri, ni lazima kwanza uweke namba ya siri kwenye kifaa chako.</translation>
 <translation id="2021670401941426298">Angalia maagizo ya mtambo wako wa kutafuta, ikiwa yapo, kuhusu jinsi ya kufuta historia ya mambo uliyotafuta.</translation>
 <translation id="202292859882676807">Ufikiaji wa Maikrofoni Umeruhusiwa</translation>
 <translation id="20485545164632846">kipengee kipya</translation>
@@ -433,7 +433,7 @@ Angalia maagizo ya mtambo wako wa kutafuta, ikiwa yapo, kuhusu jinsi ya kufuta h
 <translation id="3190736958609431397">Tendua ufuatiliaji</translation>
 <translation id="3208260410153224535">Shirika lako limezima kipengele cha uingiaji katika akaunti. Alamisho, manenosiri mapya na zaidi yatahifadhiwa tu katika kifaa hiki.</translation>
 <translation id="3214379938835224220">Uliondolewa kwenye akaunti ikiwa sehemu ya kuweka upya mipangilio ya iPad yako. Gusa "endelea" hapo chini ili uingie katika akaunti.</translation>
-<translation id="3224641773458703735">Ili utume manenosiri, ni lazima kwanza uweke nambari ya siri kwenye kifaa chako.</translation>
+<translation id="3224641773458703735">Ili utume manenosiri, ni lazima kwanza uweke namba ya siri kwenye kifaa chako.</translation>
 <translation id="3227137524299004712">Maikrofoni</translation>
 <translation id="3235063766008841141">Liliwekwa kwenye tovuti inayopotosha na kupatikana kwenye tukio la ufichuzi haramu wa data</translation>
 <translation id="3235242129752692527">Badilisha maelezo ya tukio kisha uguse “Hifadhi.“</translation>
@@ -704,7 +704,7 @@ Angalia maagizo ya mtambo wako wa kutafuta, ikiwa yapo, kuhusu jinsi ya kufuta h
 <translation id="4751162929052964260"><ph name="TITLE" />, <ph name="STATE" />, Kwenye kifaa hiki pekee, <ph name="URL" /></translation>
 <translation id="4751645464639803239">Kichupo Fiche Kipya</translation>
 <translation id="4766112107778026136">Gundua na Unazofuatilia</translation>
-<translation id="47677902929517676">Ili uhifadhi manenosiri katika akaunti yako, ni lazima uweke kwanza nambari ya siri kwenye kifaa chako.</translation>
+<translation id="47677902929517676">Ili uhifadhi manenosiri katika akaunti yako, ni lazima uweke kwanza namba ya siri kwenye kifaa chako.</translation>
 <translation id="4775879719735953715">Kivinjari Chaguomsingi</translation>
 <translation id="4779732376610430319">Nenda Kwenye Mipangilio...</translation>
 <translation id="478808905805139173">Ungependa kufungua katika hali fiche?</translation>
@@ -808,7 +808,7 @@ Angalia maagizo ya mtambo wako wa kutafuta, ikiwa yapo, kuhusu jinsi ya kufuta h
 <translation id="5245322853195994030">Ungependa kughairi usawazishaji</translation>
 <translation id="5248640482715684545">Tovuti hii inajaribu kufungua programu nyingine.</translation>
 <translation id="5256661381001734217">Tovuti hii inajaribu kufungua programu.  Hatua hii itakuondoa kwenye hali fiche.</translation>
-<translation id="5256908199795498284">Chrome itagundua nambari za ufuatiliaji wa kifurushi kwenye tovuti unazotembelea na kukuonyesha taarifa za kifurushi kwenye ukurasa wa Kichupo Kipya. Data yako itashirikiwa na Google ili kutoa kipengele hiki na kuboresha Ununuzi kwa kila mtu.</translation>
+<translation id="5256908199795498284">Chrome itagundua namba za ufuatiliaji wa kifurushi kwenye tovuti unazotembelea na kukuonyesha taarifa za kifurushi kwenye ukurasa wa Kichupo Kipya. Data yako itashirikiwa na Google ili kutoa kipengele hiki na kuboresha Ununuzi kwa kila mtu.</translation>
 <translation id="5271265092610673171">{count,plural, =1{Sehemu ambayo sharti ijazwe iko tupu. Ijaze kabla ya kuhifadhi.}other{Baadhi ya sehemu ambazo sharti zijazwe ziko tupu. Zijaze kabla ya kuhifadhi.}}</translation>
 <translation id="5271549068863921519">Hifadhi nenosiri</translation>
 <translation id="5283494734135414249">Gusa njia ya mkato ambayo inaonekana katika sehemu ya anwani.</translation>
@@ -1028,7 +1028,7 @@ Lazima Handoff iwashwe pia katika sehemu ya Jumla ya Mipangilio, na lazima vifaa
 <translation id="6387994324662817823">Manenosiri huhifadhiwa kwenye Kidhibiti cha Manenosiri cha Google kwenye kifaa hiki tu.</translation>
 <translation id="6389470377220713856">Jina lilio kwenye Kadi</translation>
 <translation id="6406506848690869874">Sawazisha</translation>
-<translation id="6410390304316730527">Kipengele cha Kuvinjari Salama hukulinda dhidi ya washambulizi ambao wanaweza kukulaghai ufanye kitu hatari kama vile kusakinisha programu hasidi au kufichua taarifa binafsi kama vile manenosiri, nambari za simu au kadi za mikopo. Ukikizima, kuwa makini unapovinjari tovuti zisizo za kawaida au zisizo na sifa nzuri.</translation>
+<translation id="6410390304316730527">Kipengele cha Kuvinjari Salama hukulinda dhidi ya washambulizi ambao wanaweza kukulaghai ufanye kitu hatari kama vile kusakinisha programu hasidi au kufichua taarifa binafsi kama vile manenosiri, namba za simu au kadi za mikopo. Ukikizima, kuwa makini unapovinjari tovuti zisizo za kawaida au zisizo na sifa nzuri.</translation>
 <translation id="6410883413783534063">Fungua vichupo ili utembelee kurasa mbalimbali kwa wakati mmoja</translation>
 <translation id="6418346271604475326">Inaandaa PDF</translation>
 <translation id="6429213933892582367">Fungua Chaguo za Nenosiri</translation>
@@ -1135,7 +1135,7 @@ Katika hali fiche, tovuti haziwezi kutumia vidakuzi kuona shughuli zako za kuvin
 <translation id="6869389390665537774">Unaweza kuona kurasa ambazo umetembelea au uzifute kwenye historia yako</translation>
 <translation id="687135068089457384">Onyesha Mipangilio</translation>
 <translation id="6873263987691478642">Mwonekano wa Madirisha Mawili</translation>
-<translation id="687586529977635009">Chrome itagundua nambari za ufuatiliaji kwenye tovuti unazotembelea na kukuonyesha taarifa za kifurushi kwenye ukurasa wa Kichupo Kipya. Data yako itashirikiwa na Google ili kutoa kipengele hiki na kuboresha Ununuzi kwa kila mtu. Unaweza kubadilisha hali hii kwenye <ph name="BEGIN_LINK" />Mipangilio ya Ufuatiliaji wa Kifurushi<ph name="END_LINK" />.</translation>
+<translation id="687586529977635009">Chrome itagundua namba za ufuatiliaji kwenye tovuti unazotembelea na kukuonyesha taarifa za kifurushi kwenye ukurasa wa Kichupo Kipya. Data yako itashirikiwa na Google ili kutoa kipengele hiki na kuboresha Ununuzi kwa kila mtu. Unaweza kubadilisha hali hii kwenye <ph name="BEGIN_LINK" />Mipangilio ya Ufuatiliaji wa Kifurushi<ph name="END_LINK" />.</translation>
 <translation id="6882836635272038266">Ulinzi wa kawaida dhidi ya tovuti, vipakuliwa na viendelezi vinavyojulikana kuwa hatari.</translation>
 <translation id="6888009575607455378">Je, una uhakika unataka kufuta mabadiliko uliyofanya?</translation>
 <translation id="6896758677409633944">Nakili</translation>
@@ -1391,7 +1391,7 @@ Tovuti zinaweza kutumia vidakuzi kuona shughuli zako za kuvinjari kwenye tovuti 
 <translation id="8281886186245836920">Ruka</translation>
 <translation id="8283172974887967105">Weka…</translation>
 <translation id="8286036467436129157">Ingia</translation>
-<translation id="8299417921174340354">Ili utumie manenosiri, ni lazima kwanza uweke nambari ya siri kwenye kifaa chako.</translation>
+<translation id="8299417921174340354">Ili utumie manenosiri, ni lazima kwanza uweke namba ya siri kwenye kifaa chako.</translation>
 <translation id="8299613349954694191">Fungua kichupo fiche ili uvinjari wavuti kwa njia ya faragha.</translation>
 <translation id="8311853334103696030">Kuficha Kipengele cha Kufuatilia Bei</translation>
 <translation id="8319076807703933069">Utafutaji Mpya</translation>
