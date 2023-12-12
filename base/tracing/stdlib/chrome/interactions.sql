@@ -8,6 +8,7 @@
 
 INCLUDE PERFETTO MODULE chrome.page_loads;
 INCLUDE PERFETTO MODULE chrome.startups;
+INCLUDE PERFETTO MODULE chrome.web_content_interactions;
 
 -- All critical user interaction events, including type and table with
 -- associated metrics.
@@ -46,4 +47,12 @@ SELECT
       THEN first_visible_content_ts - startup_begin_ts
     ELSE 0
   END AS dur
-FROM chrome_startups;
+FROM chrome_startups
+UNION ALL
+SELECT
+  id AS scoped_id,
+  'chrome_web_content_interactions' AS type,
+  'InteractionToFirstPaint' AS name,
+  ts,
+  dur
+FROM chrome_web_content_interactions;
