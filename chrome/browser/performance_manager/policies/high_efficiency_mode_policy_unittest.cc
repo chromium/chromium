@@ -81,7 +81,6 @@ class HighEfficiencyModeTest
     other_page_node_ = CreateNode<performance_manager::PageNodeImpl>();
     other_main_frame_node_ = CreateFrameNodeAutoId(other_process_node_.get(),
                                                    other_page_node_.get());
-    other_main_frame_node_->SetIsCurrent(true);
     testing::MakePageNodeDiscardable(other_page_node_.get(), task_env());
 
     return other_page_node_.get();

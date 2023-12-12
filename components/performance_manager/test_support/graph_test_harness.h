@@ -31,6 +31,10 @@
 
 namespace performance_manager {
 
+// Returns a unique frame routing ID to use for test FrameNodes. The generated
+// id is not guaranteed to be different from ids set explicitly by the test.
+int NextTestFrameRoutingId();
+
 // Returns a unique RenderProcessHostId to use for test ProcessNodes. The
 // generated id is not guaranteed to be different from ids set explicitly by the
 // test.
@@ -106,11 +110,12 @@ struct TestNodeWrapper<FrameNodeImpl>::Factory {
       const blink::LocalFrameToken& frame_token = blink::LocalFrameToken(),
       content::BrowsingInstanceId browsing_instance_id =
           content::BrowsingInstanceId(0),
-      content::SiteInstanceId site_instance_id = content::SiteInstanceId(0)) {
+      content::SiteInstanceId site_instance_id = content::SiteInstanceId(0),
+      bool is_current = true) {
     return std::make_unique<FrameNodeImpl>(
         process_node, page_node, parent_frame_node,
         fenced_frame_embedder_frame_node, render_frame_id, frame_token,
-        browsing_instance_id, site_instance_id);
+        browsing_instance_id, site_instance_id, is_current);
   }
 };
 
@@ -252,9 +257,6 @@ class TestGraphImpl : public GraphImpl {
   TestNodeWrapper<ProcessNodeImpl> CreateBrowserChildProcessNode(
       content::ProcessType process_type = content::PROCESS_TYPE_UTILITY,
       BrowserChildProcessHostProxy proxy = BrowserChildProcessHostProxy());
-
- private:
-  int next_frame_routing_id_ = 0;
 };
 
 // A test harness that initializes the graph without the rest of

@@ -656,7 +656,7 @@ content::GlobalRenderFrameHostId TestFrameNodeSource::CreateFrameNode(
       process_node, page_node_.get(), /*parent_frame_node=*/nullptr,
       /*fenced_frame_embedder_frame_node*/ nullptr, frame_id,
       blink::LocalFrameToken(), content::BrowsingInstanceId(0),
-      content::SiteInstanceId(0));
+      content::SiteInstanceId(0), /*is_current=*/true);
 
   bool inserted =
       frame_node_map_.insert({render_frame_host_id, std::move(frame_node)})

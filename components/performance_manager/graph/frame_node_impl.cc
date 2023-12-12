@@ -32,7 +32,8 @@ FrameNodeImpl::FrameNodeImpl(ProcessNodeImpl* process_node,
                              int render_frame_id,
                              const blink::LocalFrameToken& frame_token,
                              content::BrowsingInstanceId browsing_instance_id,
-                             content::SiteInstanceId site_instance_id)
+                             content::SiteInstanceId site_instance_id,
+                             bool is_current)
     : parent_frame_node_(parent_frame_node),
       outer_document_for_fenced_frame_(outer_document_for_fenced_frame),
       page_node_(page_node),
@@ -43,7 +44,8 @@ FrameNodeImpl::FrameNodeImpl(ProcessNodeImpl* process_node,
       site_instance_id_(site_instance_id),
       render_frame_host_proxy_(content::GlobalRenderFrameHostId(
           process_node->GetRenderProcessHostId().value(),
-          render_frame_id)) {
+          render_frame_id)),
+      is_current_(is_current) {
   // Nodes are created on the UI thread, then accessed on the PM sequence.
   // `weak_this_` can be returned from GetWeakPtrOnUIThread() and dereferenced
   // on the PM sequence.

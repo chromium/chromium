@@ -76,7 +76,7 @@ TEST_F(PerformanceManagerImplTest, InstantiateNodes) {
           process_node.get(), page_node.get(), /*parent_frame_node=*/nullptr,
           /*fenced_frame_embedder_frame_node*/ nullptr, ++next_render_frame_id,
           blink::LocalFrameToken(), content::BrowsingInstanceId(0),
-          content::SiteInstanceId(0));
+          content::SiteInstanceId(0), /*is_current=*/true);
   EXPECT_NE(nullptr, frame_node.get());
 
   PerformanceManagerImpl::DeleteNode(std::move(frame_node));
@@ -119,26 +119,26 @@ TEST_F(PerformanceManagerImplTest, BatchDeleteNodes) {
           process_node.get(), page_node.get(), /*parent_frame_node=*/nullptr,
           /*fenced_frame_embedder_frame_node*/ nullptr, ++next_render_frame_id,
           blink::LocalFrameToken(), content::BrowsingInstanceId(0),
-          content::SiteInstanceId(0));
+          content::SiteInstanceId(0), /*is_current*/ true);
   std::unique_ptr<FrameNodeImpl> parent2_frame =
       PerformanceManagerImpl::CreateFrameNode(
           process_node.get(), page_node.get(), /*parent_frame_node=*/nullptr,
           /*fenced_frame_embedder_frame_node*/ nullptr, ++next_render_frame_id,
           blink::LocalFrameToken(), content::BrowsingInstanceId(0),
-          content::SiteInstanceId(0));
+          content::SiteInstanceId(0), /*is_current*/ true);
 
   std::unique_ptr<FrameNodeImpl> child1_frame =
       PerformanceManagerImpl::CreateFrameNode(
           process_node.get(), page_node.get(), parent1_frame.get(),
           /*fenced_frame_embedder_frame_node*/ nullptr, ++next_render_frame_id,
           blink::LocalFrameToken(), content::BrowsingInstanceId(0),
-          content::SiteInstanceId(0));
+          content::SiteInstanceId(0), /*is_current*/ true);
   std::unique_ptr<FrameNodeImpl> child2_frame =
       PerformanceManagerImpl::CreateFrameNode(
           process_node.get(), page_node.get(), parent2_frame.get(),
           /*fenced_frame_embedder_frame_node*/ nullptr, ++next_render_frame_id,
           blink::LocalFrameToken(), content::BrowsingInstanceId(0),
-          content::SiteInstanceId(0));
+          content::SiteInstanceId(0), /*is_current*/ true);
 
   std::vector<std::unique_ptr<NodeBase>> nodes;
   for (size_t i = 0; i < 10; ++i) {
@@ -146,12 +146,12 @@ TEST_F(PerformanceManagerImplTest, BatchDeleteNodes) {
         process_node.get(), page_node.get(), child1_frame.get(),
         /*fenced_frame_embedder_frame_node*/ nullptr, ++next_render_frame_id,
         blink::LocalFrameToken(), content::BrowsingInstanceId(0),
-        content::SiteInstanceId(0)));
+        content::SiteInstanceId(0), /*is_current*/ true));
     nodes.push_back(PerformanceManagerImpl::CreateFrameNode(
         process_node.get(), page_node.get(), child1_frame.get(),
         /*fenced_frame_embedder_frame_node*/ nullptr, ++next_render_frame_id,
         blink::LocalFrameToken(), content::BrowsingInstanceId(0),
-        content::SiteInstanceId(0)));
+        content::SiteInstanceId(0), /*is_current*/ true));
   }
 
   nodes.push_back(std::move(process_node));

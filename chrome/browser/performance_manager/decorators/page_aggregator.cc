@@ -209,15 +209,20 @@ PageAggregator::PageAggregator() = default;
 PageAggregator::~PageAggregator() = default;
 
 void PageAggregator::OnFrameNodeAdded(const FrameNode* frame_node) {
-  DCHECK(!frame_node->IsCurrent());
+  CHECK(!frame_node->HadFormInteraction());
+  CHECK(!frame_node->HadUserEdits());
+  CHECK(!frame_node->IsHoldingWebLock());
+  CHECK(!frame_node->IsHoldingIndexedDBLock());
 }
 
 void PageAggregator::OnBeforeFrameNodeRemoved(const FrameNode* frame_node) {
   auto* page_node = PageNodeImpl::FromNode(frame_node->GetPageNode());
   Data* data = Data::Get(page_node);
+  if (!data) {
+    return;
+  }
+
   if (frame_node->IsCurrent()) {
-    // Data should have been created when the frame became current.
-    DCHECK(data);
     // Decrement the form interaction and user edits counters for this page if
     // needed.
     if (frame_node->HadFormInteraction()) {

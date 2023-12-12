@@ -138,11 +138,12 @@ std::unique_ptr<FrameNodeImpl> PerformanceManagerImpl::CreateFrameNode(
     const blink::LocalFrameToken& frame_token,
     content::BrowsingInstanceId browsing_instance_id,
     content::SiteInstanceId site_instance_id,
+    bool is_current,
     FrameNodeCreationCallback creation_callback) {
   return CreateNodeImpl<FrameNodeImpl>(
       std::move(creation_callback), process_node, page_node, parent_frame_node,
       fenced_frame_embedder_frame_node, render_frame_id, frame_token,
-      browsing_instance_id, site_instance_id);
+      browsing_instance_id, site_instance_id, is_current);
 }
 
 // static

@@ -103,6 +103,7 @@ class PerformanceManagerImpl : public PerformanceManager {
       const blink::LocalFrameToken& frame_token,
       content::BrowsingInstanceId browsing_instance_id,
       content::SiteInstanceId site_instance_id,
+      bool is_current,
       FrameNodeCreationCallback creation_callback =
           FrameNodeCreationCallback());
   static std::unique_ptr<PageNodeImpl> CreatePageNode(
