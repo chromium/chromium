@@ -51,7 +51,7 @@ steps:
       - "be_cmd update-all-repos -- node replay_build_scripts/update-all-repos.mjs"
       - "pushd ../backend"
       - "be_cmd buck2-kill -- buckle kill"
-      - "be_cmd buck2-build -- buckle build --console simple //:chromium"
+      - "be_cmd buck2-build -- buckle build --console simple //:chromium --target-platforms=//:macos-x86_64"
       - "popd"
     env:
       GOMA_SERVER_HOST: simpsonite.goma.engflow.com
@@ -81,7 +81,7 @@ steps:
       - "be_cmd update-all-repos -- node replay_build_scripts/update-all-repos.mjs"
       - "pushd ../backend"
       - "be_cmd buck2-kill -- buckle kill"
-      - "be_cmd buck2-build -- buckle build --console simple //:chromium"
+      - "be_cmd buck2-build -- buckle build --console simple //:chromium --target-platforms=//:macos-arm64"
       - "popd"
     env:
       GOMA_SERVER_HOST: simpsonite.goma.engflow.com
