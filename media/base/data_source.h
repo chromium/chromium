@@ -108,7 +108,7 @@ class MEDIA_EXPORT DataSource {
   virtual void OnMediaIsPlaying();
 
   // Gets a CrossOriginDataSource version of |this|, or nullptr if it isn't one.
-  virtual const CrossOriginDataSource* GetAsCrossOriginDataSource() const;
+  virtual CrossOriginDataSource* GetAsCrossOriginDataSource();
 };
 
 }  // namespace media

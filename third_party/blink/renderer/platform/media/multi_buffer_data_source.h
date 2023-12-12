@@ -119,9 +119,7 @@ class PLATFORM_EXPORT MultiBufferDataSource
     is_client_audio_element_ = is_client_audio_element;
   }
 
-  const CrossOriginDataSource* GetAsCrossOriginDataSource() const override {
-    return this;
-  }
+  CrossOriginDataSource* GetAsCrossOriginDataSource() override { return this; }
 
   bool cancel_on_defer_for_testing() const { return cancel_on_defer_; }
 

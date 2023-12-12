@@ -154,7 +154,7 @@ class MEDIA_EXPORT DemuxerManager {
 #endif  // BUILDFLAG(IS_ANDROID)
 
   // Methods that help manage or access |data_source_|
-  const DataSource* GetDataSourceForTesting() const;
+  DataSource* GetDataSourceForTesting() const;
   void SetDataSource(std::unique_ptr<DataSource> data_source);
   void OnBufferingHaveEnough(bool enough);
   void SetPreload(DataSource::Preload preload);

@@ -679,7 +679,7 @@ class WebMediaPlayerImplTest
   }
 
   bool ShouldCancelUponDefer() const {
-    const auto* ds = wmpi_->demuxer_manager_->GetDataSourceForTesting();
+    auto* ds = wmpi_->demuxer_manager_->GetDataSourceForTesting();
     CHECK_NE(ds, nullptr);
     CHECK_NE(ds->GetAsCrossOriginDataSource(), nullptr);
     // Right now, the only implementation of DataSource that WMPI can get
@@ -694,7 +694,7 @@ class WebMediaPlayerImplTest
   }
 
   bool IsDataSourceMarkedAsPlaying() const {
-    const auto* ds = wmpi_->demuxer_manager_->GetDataSourceForTesting();
+    auto* ds = wmpi_->demuxer_manager_->GetDataSourceForTesting();
     CHECK_NE(ds, nullptr);
     CHECK_NE(ds->GetAsCrossOriginDataSource(), nullptr);
     // See comment in |ShouldCancelUponDefer|.

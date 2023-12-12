@@ -448,7 +448,7 @@ void DemuxerManager::SetAllowMediaPlayerRendererCredentials(bool allow) {
 }
 #endif  // BUILDFLAG(IS_ANDROID)
 
-const DataSource* DemuxerManager::GetDataSourceForTesting() const {
+DataSource* DemuxerManager::GetDataSourceForTesting() const {
   return data_source_.get();
 }
 

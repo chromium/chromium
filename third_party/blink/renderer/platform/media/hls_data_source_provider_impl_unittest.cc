@@ -77,10 +77,10 @@ class MockDataSource : public media::CrossOriginDataSource {
               (double playback_rate),
               (override));
   MOCK_METHOD(void, OnMediaIsPlaying, (), (override));
-  MOCK_METHOD(const CrossOriginDataSource*,
+  MOCK_METHOD(CrossOriginDataSource*,
               GetAsCrossOriginDataSource,
               (),
-              (const, override));
+              (override));
 };
 
 class MockDataSourceFactory
