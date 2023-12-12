@@ -26,6 +26,8 @@
 #include "chrome/browser/ui/views/toolbar/app_menu.h"
 #include "chrome/browser/ui/web_applications/test/isolated_web_app_test_utils.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_url_info.h"
+#include "chrome/browser/web_applications/test/os_integration_test_override_impl.h"
+#include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/grit/generated_resources.h"
 #include "chrome/test/base/in_process_browser_test.h"
@@ -404,6 +406,26 @@ class PageSpecificSiteDataDialogIsolatedWebAppInteractiveUiTest
   ~PageSpecificSiteDataDialogIsolatedWebAppInteractiveUiTest() override =
       default;
 
+  void SetUpOnMainThread() override {
+#if !BUILDFLAG(IS_MAC)
+    // TODO(https://crbug.com/1454297): OsIntegrationTestOverrideImpl seems
+    // to interfere with Kombucha on the Mac.
+    base::ScopedAllowBlockingForTesting allow_blocking;
+    override_registration_ =
+        web_app::OsIntegrationTestOverrideImpl::OverrideForTesting();
+#endif  // BUILDFLAG(IS_MAC)
+    PageSpecificSiteDataDialogInteractiveUiTest::SetUpOnMainThread();
+  }
+  void TearDownOnMainThread() override {
+    web_app::test::UninstallWebApp(browser()->profile(), app_id_);
+
+#if !BUILDFLAG(IS_MAC)
+    base::ScopedAllowBlockingForTesting allow_blocking;
+    override_registration_.reset();
+#endif  // BUILDFLAG(IS_MAC)
+    PageSpecificSiteDataDialogInteractiveUiTest::TearDownOnMainThread();
+  }
+
  protected:
   void SetUpFeatureList() override {
     feature_list_.InitWithFeatures(
@@ -416,8 +438,9 @@ class PageSpecificSiteDataDialogIsolatedWebAppInteractiveUiTest
         FILE_PATH_LITERAL("web_apps/simple_isolated_app"));
     auto iwa_url_info = web_app::InstallDevModeProxyIsolatedWebApp(
         profile, iwa_dev_server->GetOrigin());
+    app_id_ = iwa_url_info.app_id();
     content::RenderFrameHost* iwa_frame =
-        web_app::OpenIsolatedWebApp(profile, iwa_url_info.app_id());
+        web_app::OpenIsolatedWebApp(profile, app_id_);
 
     CHECK(content::ExecJs(iwa_frame, "localStorage.setItem('key', 'value')"));
 
@@ -453,6 +476,14 @@ class PageSpecificSiteDataDialogIsolatedWebAppInteractiveUiTest
                      }),
                      string);
   }
+
+ private:
+  webapps::AppId app_id_;
+#if !BUILDFLAG(IS_MAC)
+  std::unique_ptr<
+      ::web_app::OsIntegrationTestOverrideImpl::BlockingRegistration>
+      override_registration_;
+#endif  // !BUILDFLAG(IS_MAC)
 };
 
 IN_PROC_BROWSER_TEST_F(
