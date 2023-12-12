@@ -88,7 +88,6 @@ android_library("internal_java") {
     "java/src/org/chromium/chrome/browser/keyboard_accessory/bar_component/KeyboardAccessoryModernViewBinder.java",
     "java/src/org/chromium/chrome/browser/keyboard_accessory/bar_component/KeyboardAccessoryProperties.java",
     "java/src/org/chromium/chrome/browser/keyboard_accessory/bar_component/KeyboardAccessoryRecyclerViewMcp.java",
-    "java/src/org/chromium/chrome/browser/keyboard_accessory/bar_component/KeyboardAccessoryView.java",
     "java/src/org/chromium/chrome/browser/keyboard_accessory/button_group_component/KeyboardAccessoryButtonGroupCoordinator.java",
     "java/src/org/chromium/chrome/browser/keyboard_accessory/button_group_component/KeyboardAccessoryButtonGroupMediator.java",
     "java/src/org/chromium/chrome/browser/keyboard_accessory/button_group_component/KeyboardAccessoryButtonGroupProperties.java",

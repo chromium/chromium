@@ -13,13 +13,16 @@ import android.util.AttributeSet;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewPropertyAnimator;
+import android.view.accessibility.AccessibilityEvent;
 import android.view.animation.AccelerateInterpolator;
 import android.view.animation.OvershootInterpolator;
+import android.widget.LinearLayout;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Px;
 import androidx.annotation.VisibleForTesting;
 import androidx.core.view.ViewCompat;
+import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import org.chromium.base.Callback;
@@ -31,7 +34,7 @@ import org.chromium.ui.widget.ViewRectProvider;
  * The Accessory sitting above the keyboard and below the content area. It is used for autofill
  * suggestions and manual entry points assisting the user in filling forms.
  */
-class KeyboardAccessoryModernView extends KeyboardAccessoryView {
+class KeyboardAccessoryModernView extends LinearLayout {
     private static final int ARRIVAL_ANIMATION_DURATION_MS = 300;
     private static final float ARRIVAL_ANIMATION_BOUNCE_LENGTH_DIP = 200f;
     private static final float ARRIVAL_ANIMATION_TENSION = 1f;
@@ -44,6 +47,9 @@ class KeyboardAccessoryModernView extends KeyboardAccessoryView {
     private ViewPropertyAnimator mRunningAnimation;
     private float mLastBarItemsViewPosition;
     private boolean mShouldSkipClosingAnimation;
+    private boolean mDisableAnimations;
+
+    protected RecyclerView mBarItemsView;
 
     /** Interface that allows to react to animations. */
     interface AnimationListener {
@@ -153,7 +159,28 @@ class KeyboardAccessoryModernView extends KeyboardAccessoryView {
 
     @Override
     protected void onFinishInflate() {
+        TraceEvent.begin("KeyboardAccessoryView#onFinishInflate");
         super.onFinishInflate();
+        sendAccessibilityEvent(AccessibilityEvent.TYPE_WINDOW_STATE_CHANGED);
+
+        mBarItemsView = findViewById(R.id.bar_items_view);
+        initializeHorizontalRecyclerView(mBarItemsView);
+
+        // Apply RTL layout changes to the view's children:
+        int layoutDirection = isLayoutRtl() ? View.LAYOUT_DIRECTION_RTL : View.LAYOUT_DIRECTION_LTR;
+        findViewById(R.id.accessory_bar_contents).setLayoutDirection(layoutDirection);
+        mBarItemsView.setLayoutDirection(layoutDirection);
+
+        // Set listener's to touch/click events so they are not propagated to the page below.
+        setOnTouchListener(
+                (view, motionEvent) -> {
+                    performClick(); // Setting a touch listener requires this call which is a NoOp.
+                    // Return that the motionEvent was consumed and needs no further handling.
+                    return true;
+                });
+        setOnClickListener(view -> {});
+        setClickable(false); // Disables the "Double-tap to activate" Talkback reading.
+        setSoundEffectsEnabled(false);
 
         int pad = getResources().getDimensionPixelSize(R.dimen.keyboard_accessory_bar_item_padding);
         // Ensure the last element (although scrollable) is always end-aligned.
@@ -162,6 +189,7 @@ class KeyboardAccessoryModernView extends KeyboardAccessoryView {
 
         // Remove any paddings that might be inherited since this messes up the fading edge.
         ViewCompat.setPaddingRelative(mBarItemsView, 0, 0, 0, 0);
+        TraceEvent.end("KeyboardAccessoryView#onFinishInflate");
     }
 
     @Override
@@ -172,7 +200,7 @@ class KeyboardAccessoryModernView extends KeyboardAccessoryView {
     }
 
     void setVisible(boolean visible) {
-        TraceEvent.begin("KeyboardAccessoryModernView#setVisible");
+        TraceEvent.begin("KeyboardAccessoryView#setVisible");
         if (!visible || getVisibility() != VISIBLE) mBarItemsView.scrollToPosition(0);
         if (visible) {
             show();
@@ -182,15 +210,7 @@ class KeyboardAccessoryModernView extends KeyboardAccessoryView {
         } else {
             hide();
         }
-        TraceEvent.end("KeyboardAccessoryModernView#setVisible");
-    }
-
-    @Override
-    protected void onItemsChanged() {
-        super.onItemsChanged();
-        if (isLastChildObfuscated()) {
-            mObfuscatedLastChildAt.onResult(mBarItemsView.indexOfChild(getLastChild()));
-        }
+        TraceEvent.end("KeyboardAccessoryView#setVisible");
     }
 
     void setSkipClosingAnimation(boolean shouldSkipClosingAnimation) {
@@ -209,8 +229,52 @@ class KeyboardAccessoryModernView extends KeyboardAccessoryView {
         return provider;
     }
 
+    void setBottomOffset(int bottomOffset) {
+        MarginLayoutParams params = (MarginLayoutParams) getLayoutParams();
+        params.setMargins(params.leftMargin, params.topMargin, params.rightMargin, bottomOffset);
+        setLayoutParams(params);
+    }
+
+    void setObfuscatedLastChildAt(Callback<Integer> obfuscatedLastChildAt) {
+        mObfuscatedLastChildAt = obfuscatedLastChildAt;
+    }
+
+    void disableAnimationsForTesting() {
+        mDisableAnimations = true;
+    }
+
+    boolean areAnimationsDisabled() {
+        return mDisableAnimations;
+    }
+
+    void setAccessibilityMessage(boolean hasSuggestions) {
+        setContentDescription(
+                getContext()
+                        .getString(
+                                hasSuggestions
+                                        ? R.string
+                                                .autofill_keyboard_accessory_modern_content_description
+                                        : R.string
+                                                .autofill_keyboard_accessory_modern_content_fallback_description));
+    }
+
+    void setBarItemsAdapter(RecyclerView.Adapter adapter) {
+        // Make sure the view updates the fallback icon padding whenever new items arrive.
+        adapter.registerAdapterDataObserver(
+                new RecyclerView.AdapterDataObserver() {
+                    @Override
+                    public void onItemRangeChanged(int positionStart, int itemCount) {
+                        super.onItemRangeChanged(positionStart, itemCount);
+                        mBarItemsView.scrollToPosition(0);
+                        mBarItemsView.invalidateItemDecorations();
+                        onItemsChanged();
+                    }
+                });
+        mBarItemsView.setAdapter(adapter);
+    }
+
     private void show() {
-        TraceEvent.begin("KeyboardAccessoryModernView#show");
+        TraceEvent.begin("KeyboardAccessoryView#show");
         bringToFront(); // Needs to overlay every component and the bottom sheet - like a keyboard.
         if (mRunningAnimation != null) {
             mRunningAnimation.cancel();
@@ -234,7 +298,7 @@ class KeyboardAccessoryModernView extends KeyboardAccessoryView {
                                     mRunningAnimation = null;
                                 });
         announceForAccessibility(getContentDescription());
-        TraceEvent.end("KeyboardAccessoryModernView#show");
+        TraceEvent.end("KeyboardAccessoryView#show");
     }
 
     private void hide() {
@@ -273,6 +337,12 @@ class KeyboardAccessoryModernView extends KeyboardAccessoryView {
                 : lastChild.getX() + lastChild.getWidth() > mBarItemsView.getWidth();
     }
 
+    private void onItemsChanged() {
+        if (isLastChildObfuscated()) {
+            mObfuscatedLastChildAt.onResult(mBarItemsView.indexOfChild(getLastChild()));
+        }
+    }
+
     private View getLastChild() {
         for (int i = mBarItemsView.getChildCount() - 1; i >= 0; --i) {
             View lastChild = mBarItemsView.getChildAt(i);
@@ -280,21 +350,6 @@ class KeyboardAccessoryModernView extends KeyboardAccessoryView {
             return lastChild;
         }
         return null;
-    }
-
-    void setObfuscatedLastChildAt(Callback<Integer> obfuscatedLastChildAt) {
-        mObfuscatedLastChildAt = obfuscatedLastChildAt;
-    }
-
-    void setAccessibilityMessage(boolean hasSuggestions) {
-        setContentDescription(
-                getContext()
-                        .getString(
-                                hasSuggestions
-                                        ? R.string
-                                                .autofill_keyboard_accessory_modern_content_description
-                                        : R.string
-                                                .autofill_keyboard_accessory_modern_content_fallback_description));
     }
 
     private void animateSuggestionArrival() {
@@ -318,6 +373,20 @@ class KeyboardAccessoryModernView extends KeyboardAccessoryView {
         mAnimator.setDuration(ARRIVAL_ANIMATION_DURATION_MS);
         mAnimator.setInterpolator(new OvershootInterpolator(ARRIVAL_ANIMATION_TENSION));
         mAnimator.start();
+    }
+
+    private void initializeHorizontalRecyclerView(RecyclerView recyclerView) {
+        // Set horizontal layout.
+        recyclerView.setLayoutManager(
+                new LinearLayoutManager(getContext(), LinearLayoutManager.HORIZONTAL, false));
+
+        int pad =
+                getResources().getDimensionPixelSize(R.dimen.keyboard_accessory_horizontal_padding);
+
+        // Remove all animations - the accessory shouldn't be visibly built anyway.
+        recyclerView.setItemAnimator(null);
+
+        ViewCompat.setPaddingRelative(recyclerView, pad, 0, 0, 0);
     }
 
     @VisibleForTesting

@@ -40,7 +40,7 @@ public class KeyboardAccessoryCoordinator {
     private final KeyboardAccessoryMediator mMediator;
     private final KeyboardAccessoryButtonGroupCoordinator mButtonGroup;
     private final PropertyModel mModel;
-    private KeyboardAccessoryView mView;
+    private KeyboardAccessoryModernView mView;
 
     /**
      * The interface to notify consumers about keyboard accessories visibility. E.g: the animation
@@ -133,7 +133,7 @@ public class KeyboardAccessoryCoordinator {
             KeyboardAccessoryButtonGroupCoordinator buttonGroup,
             BarVisibilityDelegate barVisibilityDelegate,
             AccessorySheetCoordinator.SheetVisibilityDelegate sheetVisibilityDelegate,
-            ViewProvider<KeyboardAccessoryView> viewProvider) {
+            ViewProvider<KeyboardAccessoryModernView> viewProvider) {
         mButtonGroup = buttonGroup;
         mModel = KeyboardAccessoryProperties.defaultModelBuilder().build();
         mMediator =

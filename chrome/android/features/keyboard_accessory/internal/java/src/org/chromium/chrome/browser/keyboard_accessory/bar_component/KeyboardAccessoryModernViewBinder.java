@@ -241,43 +241,42 @@ class KeyboardAccessoryModernViewBinder {
      * Tries to bind the given property to the given view by using the value in the given model.
      *
      * @param model A {@link PropertyModel}.
-     * @param view A {@link KeyboardAccessoryView}.
+     * @param view A {@link KeyboardAccessoryModernView}.
      * @param propertyKey A {@link PropertyKey}.
      */
-    static void bind(PropertyModel model, KeyboardAccessoryView view, PropertyKey propertyKey) {
-        assert view instanceof KeyboardAccessoryModernView;
-        KeyboardAccessoryModernView modernView = (KeyboardAccessoryModernView) view;
+    static void bind(
+            PropertyModel model, KeyboardAccessoryModernView view, PropertyKey propertyKey) {
         if (propertyKey == BAR_ITEMS) {
             view.setBarItemsAdapter(
                     KeyboardAccessoryCoordinator.createBarItemsAdapter(model.get(BAR_ITEMS)));
         } else if (propertyKey == DISABLE_ANIMATIONS_FOR_TESTING) {
             if (model.get(DISABLE_ANIMATIONS_FOR_TESTING)) view.disableAnimationsForTesting();
         } else if (propertyKey == VISIBLE) {
-            modernView.setVisible(model.get(VISIBLE));
+            view.setVisible(model.get(VISIBLE));
         } else if (propertyKey == SKIP_CLOSING_ANIMATION) {
-            modernView.setSkipClosingAnimation(model.get(SKIP_CLOSING_ANIMATION));
+            view.setSkipClosingAnimation(model.get(SKIP_CLOSING_ANIMATION));
             if (!model.get(VISIBLE)) {
-                modernView.setVisible(false); // Update to cancel any animation.
+                view.setVisible(false); // Update to cancel any animation.
             }
         } else if (propertyKey == BOTTOM_OFFSET_PX) {
             view.setBottomOffset(model.get(BOTTOM_OFFSET_PX));
         } else if (propertyKey == ANIMATION_LISTENER) {
-            modernView.setAnimationListener(model.get(ANIMATION_LISTENER));
+            view.setAnimationListener(model.get(ANIMATION_LISTENER));
         } else if (propertyKey == OBFUSCATED_CHILD_AT_CALLBACK) {
-            modernView.setObfuscatedLastChildAt(model.get(OBFUSCATED_CHILD_AT_CALLBACK));
+            view.setObfuscatedLastChildAt(model.get(OBFUSCATED_CHILD_AT_CALLBACK));
         } else if (propertyKey == SHOW_SWIPING_IPH) {
-            RectProvider swipingIphRectProvider = modernView.getSwipingIphRect();
+            RectProvider swipingIphRectProvider = view.getSwipingIphRect();
             if (model.get(SHOW_SWIPING_IPH)
                     && swipingIphRectProvider != null
                     && hasShownAnyAutofillIphBefore()) {
                 showHelpBubble(
                         FeatureConstants.KEYBOARD_ACCESSORY_BAR_SWIPING_FEATURE,
                         swipingIphRectProvider,
-                        modernView.getContext(),
-                        modernView.mBarItemsView);
+                        view.getContext(),
+                        view.mBarItemsView);
             }
         } else if (propertyKey == HAS_SUGGESTIONS) {
-            modernView.setAccessibilityMessage(model.get(HAS_SUGGESTIONS));
+            view.setAccessibilityMessage(model.get(HAS_SUGGESTIONS));
         } else if (propertyKey == SHEET_OPENER_ITEM) {
             // No binding required.
         } else {
