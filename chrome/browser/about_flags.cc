@@ -7104,11 +7104,6 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kStartSurfaceOnTabletDescription, kOsAndroid,
      FEATURE_VALUE_TYPE(chrome::android::kStartSurfaceOnTablet)},
 
-    {"enable-start-surface-spare-tab",
-     flag_descriptions::kStartSurfaceSpareTabName,
-     flag_descriptions::kStartSurfaceSpareTabDescription, kOsAndroid,
-     FEATURE_VALUE_TYPE(chrome::android::kStartSurfaceSpareTab)},
-
     {"enable-start-surface-with-accessibility",
      flag_descriptions::kStartSurfaceWithAccessibilityName,
      flag_descriptions::kStartSurfaceWithAccessibilityDescription, kOsAndroid,

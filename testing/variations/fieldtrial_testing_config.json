@@ -17780,25 +17780,6 @@
             ]
         }
     ],
-    "StartSurfaceSpareTab": [
-        {
-            "platforms": [
-                "android"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled_NonStable_InitializeRenderer_20230627",
-                    "params": {
-                        "spare_tab_initialize_renderer": "true"
-                    },
-                    "enable_features": [
-                        "SpareTab",
-                        "StartSurfaceSpareTab"
-                    ]
-                }
-            ]
-        }
-    ],
     "StorageAccessAPIWithPromptsAndroid": [
         {
             "platforms": [

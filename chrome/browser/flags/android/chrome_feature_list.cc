@@ -315,13 +315,11 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &kThumbnailPlaceholder,
     &kToolbarMicIphAndroid,
     &kTrustedWebActivityPostMessage,
-    &kSpareTab,
     &kStartSurfaceAndroid,
     &kStartSurfaceOnTablet,
     &kStartSurfaceReturnTime,
     &kAccountReauthenticationRecentTimeWindow,
     &kStartSurfaceRefactor,
-    &kStartSurfaceSpareTab,
     &kStartSurfaceDisabledFeedImprovement,
     &kStartSurfaceWithAccessibility,
     &kSurfacePolish,
@@ -1045,11 +1043,6 @@ BASE_FEATURE(kSearchEnginesPromoV3,
              "SearchEnginesPromoV3",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// SpareTab is enabled by default for configuring renderer initialization
-// through field trial. Users of spareTab should declare their own field trial
-// feature.
-BASE_FEATURE(kSpareTab, "SpareTab", base::FEATURE_ENABLED_BY_DEFAULT);
-
 BASE_FEATURE(kStartSurfaceAndroid,
              "StartSurfaceAndroid",
              base::FEATURE_ENABLED_BY_DEFAULT);
@@ -1064,10 +1057,6 @@ BASE_FEATURE(kSearchResumptionModuleAndroid,
 
 BASE_FEATURE(kStartSurfaceOnTablet,
              "StartSurfaceOnTablet",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
-BASE_FEATURE(kStartSurfaceSpareTab,
-             "StartSurfaceSpareTab",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kStartSurfaceReturnTime,

@@ -15,7 +15,6 @@ import org.chromium.base.ApplicationStatus;
 import org.chromium.base.FieldTrialList;
 import org.chromium.base.library_loader.LibraryLoader;
 import org.chromium.build.BuildConfig;
-import org.chromium.chrome.browser.WarmupManager;
 import org.chromium.chrome.browser.back_press.BackPressManager;
 import org.chromium.chrome.browser.back_press.MinimizeAppAndCloseTabBackPressHandler;
 import org.chromium.chrome.browser.customtabs.CustomTabActivity;
@@ -108,7 +107,6 @@ public class ChromeCachedFlags {
                         CustomTabIntentDataProvider.ALLOWLIST_ENTRIES,
                         DseNewTabUrlManager.EEA_COUNTRY_ONLY,
                         DseNewTabUrlManager.SWAP_OUT_NTP,
-                        WarmupManager.SPARE_TAB_INITIALIZE_RENDERER,
                         RestoreTabsFeatureHelper.RESTORE_TABS_PROMO_SKIP_FEATURE_ENGAGEMENT,
                         StartSurfaceConfiguration.IS_DOODLE_SUPPORTED,
                         StartSurfaceConfiguration.START_SURFACE_RETURN_TIME_SECONDS,

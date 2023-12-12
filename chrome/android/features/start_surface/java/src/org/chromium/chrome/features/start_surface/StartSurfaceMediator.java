@@ -671,11 +671,6 @@ class StartSurfaceMediator
         mActivityLifecycleDispatcher.unregister(this);
     }
 
-    /** Returns true if START_SURFACE_SPARE_TAB feature is enabled. */
-    private static boolean isStartSurfaceSpareTabEnabled() {
-        return ChromeFeatureList.isEnabled(ChromeFeatureList.START_SURFACE_SPARE_TAB);
-    }
-
     /**
      * Schedules creating a spare tab when native is initialized and when start surface is shown.
      */
@@ -689,9 +684,6 @@ class StartSurfaceMediator
         TabCreator tabCreator = mTabCreatorManager.getTabCreator(mIsIncognito);
         // Don't create a spare tab when no tab creator is present.
         if (tabCreator == null) return;
-
-        // Only create a spare tab if the StartSurfaceSpareTab feature is enabled.
-        if (!isStartSurfaceSpareTabEnabled()) return;
 
         // Only create a spare tab when start surface is shown.
         if (!isHomepageShown()) return;

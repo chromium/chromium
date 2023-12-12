@@ -428,7 +428,6 @@ public abstract class ChromeFeatureList {
             "ShowScrollableMVTOnNtpPhoneAndroid";
     public static final String SMART_SUGGESTION_FOR_LARGE_DOWNLOADS =
             "SmartSuggestionForLargeDownloads";
-    public static final String SPARE_TAB = "SpareTab";
     public static final String SPLIT_CACHE_BY_NETWORK_ISOLATION_KEY =
             "SplitCacheByNetworkIsolationKey";
     public static final String START_SURFACE_ANDROID = "StartSurfaceAndroid";
@@ -440,7 +439,6 @@ public abstract class ChromeFeatureList {
     public static final String ACCOUNT_REAUTHENTICATION_RECENT_TIME_WINDOW =
             "AccountReauthenticationRecentTimeWindow";
     public static final String START_SURFACE_WITH_ACCESSIBILITY = "StartSurfaceWithAccessibility";
-    public static final String START_SURFACE_SPARE_TAB = "StartSurfaceSpareTab";
     public static final String STORE_HOURS = "StoreHoursAndroid";
     public static final String SUGGESTION_ANSWERS_COLOR_REVERSE = "SuggestionAnswersColorReverse";
     public static final String SUPPRESS_TOOLBAR_CAPTURES = "SuppressToolbarCaptures";
@@ -599,7 +597,6 @@ public abstract class ChromeFeatureList {
             new CachedFlag(SEARCH_ENGINE_CHOICE, false);
     public static final CachedFlag sShowNtpAtStartupAndroid =
             new CachedFlag(SHOW_NTP_AT_STARTUP_ANDROID, false);
-    public static final CachedFlag sSpareTab = new CachedFlag(SPARE_TAB, false);
     public static final CachedFlag sStartSurfaceAndroid =
             new CachedFlag(START_SURFACE_ANDROID, true);
     public static final CachedFlag sStartSurfaceDisabledFeedImprovement =
@@ -697,7 +694,6 @@ public abstract class ChromeFeatureList {
                     sRedirectExplicitCTAIntentsToExistingActivity,
                     sSearchEngineChoice,
                     sShowNtpAtStartupAndroid,
-                    sSpareTab,
                     sStartSurfaceAndroid,
                     sStartSurfaceDisabledFeedImprovement,
                     sStartSurfaceOnTablet,

@@ -4500,10 +4500,6 @@ const char kStartSurfaceRefactorName[] = "Start Surface Refactor";
 const char kStartSurfaceRefactorDescription[] =
     "Enable splitting Tab switcher from Start surface";
 
-const char kStartSurfaceSpareTabName[] = "Start Surface Spare Tab";
-const char kStartSurfaceSpareTabDescription[] =
-    "Enable using Spare Tab for navigations from Start Surface.";
-
 const char kStartSurfaceWithAccessibilityName[] =
     "Start Surface With Accessibility";
 const char kStartSurfaceWithAccessibilityDescription[] =

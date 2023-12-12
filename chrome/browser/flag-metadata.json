@@ -3538,11 +3538,6 @@
     "expiry_milestone": 140
   },
   {
-    "name": "enable-start-surface-spare-tab",
-    "owners": [ "sreejakshetty@chromium.org", "chrome-brapp-loading@google.com" ],
-    "expiry_milestone": 120
-  },
-  {
     "name": "enable-start-surface-with-accessibility",
     "owners": [ "hanxi@chromium.org", "xinyiji@chromium.org", "clank-start@chromium.org" ],
     "expiry_milestone": 130

@@ -51,7 +51,6 @@ import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.chrome.test.R;
 import org.chromium.chrome.test.batch.BlankCTATabInitialStateRule;
 import org.chromium.chrome.test.util.ChromeTabUtils;
-import org.chromium.chrome.test.util.browser.Features.DisableFeatures;
 import org.chromium.chrome.test.util.browser.Features.EnableFeatures;
 import org.chromium.chrome.test.util.browser.signin.AccountManagerTestRule;
 import org.chromium.content_public.browser.LoadUrlParams;
@@ -386,11 +385,7 @@ public class WarmupManagerTest {
     @Test
     @MediumTest
     @Feature({"SpareTab"})
-    @EnableFeatures(ChromeFeatureList.SPARE_TAB)
     public void testCreateAndTakeSpareTabWithInitializeRenderer() {
-        // Set the param to true allowing renderer initialization.
-        WarmupManager.SPARE_TAB_INITIALIZE_RENDERER.setForTesting(true);
-
         TestThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     Profile profile = getProfile(ProfileType.REGULAR_PROFILE);
@@ -411,41 +406,10 @@ public class WarmupManagerTest {
                 });
     }
 
-    // Test to check the functionality of spare tab creation without initializing renderer.
-    // Disable CreateNewTabInitializeRenderer to test spare tab without renderer initialization.
-    @Test
-    @MediumTest
-    @Feature({"SpareTab"})
-    @EnableFeatures(ChromeFeatureList.SPARE_TAB)
-    @DisableFeatures(ChromeFeatureList.CREATE_NEW_TAB_INITIALIZE_RENDERER)
-    public void testCreateAndTakeSpareTabWithoutInitializeRenderer() {
-        WarmupManager.SPARE_TAB_INITIALIZE_RENDERER.setForTesting(false);
-
-        TestThreadUtils.runOnUiThreadBlocking(
-                () -> {
-                    Profile profile = getProfile(ProfileType.REGULAR_PROFILE);
-                    mWarmupManager.createRegularSpareTab(profile);
-                    Assert.assertTrue(mWarmupManager.hasSpareTab(profile));
-                    Tab tab =
-                            mWarmupManager.takeSpareTab(profile, TabLaunchType.FROM_START_SURFACE);
-                    WebContents webContents = tab.getWebContents();
-                    Assert.assertNotNull(tab);
-                    Assert.assertNotNull(webContents);
-                    Assert.assertFalse(mWarmupManager.hasSpareTab(profile));
-                    Assert.assertEquals(TabLaunchType.FROM_START_SURFACE, tab.getLaunchType());
-
-                    // RenderFrame shouldn't be created when the SPARE_TAB_INITIALIZE_RENDERER is
-                    // false.
-                    Assert.assertFalse(webContents.getMainFrame().isRenderFrameLive());
-                    tab.destroy();
-                });
-    }
-
     /** Tests that taking a spare Tab makes it unavailable to subsequent callers. */
     @Test
     @MediumTest
     @Feature({"SpareTab"})
-    @EnableFeatures(ChromeFeatureList.SPARE_TAB)
     @UiThreadTest
     public void testTakeSpareTab() {
         var histogramWatcher =
@@ -468,7 +432,6 @@ public class WarmupManagerTest {
     @Test
     @MediumTest
     @Feature({"SpareTab"})
-    @EnableFeatures(ChromeFeatureList.SPARE_TAB)
     @UiThreadTest
     public void testDestroySpareTab() {
         var histogramWatcher =
@@ -491,12 +454,8 @@ public class WarmupManagerTest {
     @Test
     @MediumTest
     @Feature({"SpareTab"})
-    @EnableFeatures(ChromeFeatureList.SPARE_TAB)
     @UiThreadTest
     public void testDontDestroySpareTabWhenRendererKilled() {
-        // Set the param to true allowing renderer initialization.
-        WarmupManager.SPARE_TAB_INITIALIZE_RENDERER.setForTesting(true);
-
         var histogramWatcher =
                 HistogramWatcher.newSingleRecordWatcher(
                         HISTOGRAM_SPARE_TAB_FINAL_STATUS, SpareTabFinalStatus.TAB_USED);
@@ -513,24 +472,10 @@ public class WarmupManagerTest {
         tab.destroy();
     }
 
-    /** Tests that when SpareTab is disabled we don't create any spare tab. */
-    @Test
-    @MediumTest
-    @Feature({"SpareTab"})
-    @DisableFeatures(ChromeFeatureList.SPARE_TAB)
-    @UiThreadTest
-    public void testTakeSpareTabWhenFeatureDisabled() {
-        Assert.assertNotNull(sActivityTestRule.getActivity().getCurrentTabCreator());
-        mWarmupManager.createRegularSpareTab(getProfile(ProfileType.REGULAR_PROFILE));
-        Assert.assertFalse(mWarmupManager.hasSpareTab(getProfile(ProfileType.REGULAR_PROFILE)));
-        Assert.assertFalse(mWarmupManager.hasSpareTab(getProfile(ProfileType.PRIMARY_OTR_PROFILE)));
-    }
-
     /** Tests that we are able to load url in the spare tab once it is created. */
     @Test
     @MediumTest
     @Feature({"SpareTab"})
-    @EnableFeatures(ChromeFeatureList.SPARE_TAB)
     public void testLoadURLInSpareTab() {
         var histogramWatcher =
                 HistogramWatcher.newSingleRecordWatcher(
@@ -568,7 +513,6 @@ public class WarmupManagerTest {
     @Test
     @MediumTest
     @Feature({"SpareTab"})
-    @EnableFeatures(ChromeFeatureList.SPARE_TAB)
     public void testMetricsRecordedWithSpareTab() {
         Assert.assertNotNull(sActivityTestRule.getActivity().getCurrentTabCreator());
 
@@ -613,10 +557,7 @@ public class WarmupManagerTest {
     @MediumTest
     @Feature({"SpareTab"})
     @UiThreadTest
-    @EnableFeatures({
-        ChromeFeatureList.SPARE_TAB,
-        ChromeFeatureList.CREATE_NEW_TAB_INITIALIZE_RENDERER
-    })
+    @EnableFeatures({ChromeFeatureList.CREATE_NEW_TAB_INITIALIZE_RENDERER})
     public void testOnTabCreationWithInitializeRenderer() {
         Profile profile = getProfile(ProfileType.REGULAR_PROFILE);
         mWarmupManager.createRegularSpareTab(profile);

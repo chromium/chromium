@@ -37,8 +37,6 @@ import org.chromium.chrome.browser.app.tab_activity_glue.ReparentingTask;
 import org.chromium.chrome.browser.content.WebContentsFactory;
 import org.chromium.chrome.browser.crash.ChromePureJavaExceptionReporter;
 import org.chromium.chrome.browser.customtabs.CustomTabDelegateFactory;
-import org.chromium.chrome.browser.flags.BooleanCachedFieldTrialParameter;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.EmptyTabObserver;
 import org.chromium.chrome.browser.tab.Tab;
@@ -134,20 +132,6 @@ public class WarmupManager {
     // from scratch.
     @VisibleForTesting Tab mSpareTab;
 
-    /** Returns true if SPARE_TAB feature is enabled. */
-    private static boolean isSpareTabEnabled() {
-        return ChromeFeatureList.isEnabled(ChromeFeatureList.SPARE_TAB);
-    }
-
-    // Feature Param to control initializing renderer creation with spare tab creation. This
-    // initializes a renderer process and creates a RenderFrame in it for the initial
-    // RenderFrameHost. By default we don't initialize renderer.
-    public static final String SPARE_TAB_INITIALIZE_RENDERER_PARAM =
-            "spare_tab_initialize_renderer";
-    public static final BooleanCachedFieldTrialParameter SPARE_TAB_INITIALIZE_RENDERER =
-            new BooleanCachedFieldTrialParameter(
-                    ChromeFeatureList.SPARE_TAB, SPARE_TAB_INITIALIZE_RENDERER_PARAM, false);
-
     /**
      * Represents various states of spareTab.
      *
@@ -217,9 +201,6 @@ public class WarmupManager {
         ThreadUtils.assertOnUiThread();
         assert !profile.isOffTheRecord();
         try (TraceEvent e = TraceEvent.scoped("WarmupManager.createSpareTab")) {
-            // Return without creating spare Tab if spareTab feature isn't enabled.
-            if (!isSpareTabEnabled()) return;
-
             mSpareTabFinalStatus = SpareTabFinalStatus.TAB_CREATION_IN_PROGRESS;
 
             // Ensure native is initialized before creating spareTab.
@@ -227,11 +208,8 @@ public class WarmupManager {
 
             if (mSpareTab != null) return;
 
-            // Initializes renderer with WebContents creation if enabled.
-            boolean initializeRenderer = SPARE_TAB_INITIALIZE_RENDERER.getValue();
-
             // Build a spare detached tab.
-            Tab spareTab = buildDetachedSpareTab(profile, initializeRenderer);
+            Tab spareTab = buildDetachedSpareTab(profile);
 
             mSpareTab = spareTab;
             assert mSpareTab != null : "Building a spare detached tab shouldn't return null.";
@@ -249,11 +227,10 @@ public class WarmupManager {
      *
      * <p>Also performs general tab initialization as well as detached specifics.
      *
-     * @param initializeRenderer Whether to initialize renderer with WebContents creation.
      * @return The newly created and initialized spare tab.
      *     <p>TODO(crbug.com/1412572): Adapt this method to create other tabs.
      */
-    private Tab buildDetachedSpareTab(Profile profile, boolean initializeRenderer) {
+    private Tab buildDetachedSpareTab(Profile profile) {
         Context context = ContextUtils.getApplicationContext();
 
         // These are effectively unused as they will be set when finishing reparenting.
@@ -262,13 +239,14 @@ public class WarmupManager {
 
         // TODO(crbug.com/1190971): Set isIncognito flag here if spare tabs are allowed for
         // incognito mode.
+        // Creates a tab with renderer initialized for spareTab. See https://crbug.com/1412572.
         Tab tab =
                 TabBuilder.createLiveTab(profile, true)
                         .setWindow(window)
                         .setLaunchType(TabLaunchType.UNSET)
                         .setDelegateFactory(delegateFactory)
                         .setInitiallyHidden(true)
-                        .setInitializeRenderer(initializeRenderer)
+                        .setInitializeRenderer(true)
                         .build();
 
         // Resize the webContents to avoid expensive post load resize when attaching the tab.
@@ -292,9 +270,6 @@ public class WarmupManager {
     public Tab takeSpareTab(Profile profile, @TabLaunchType int type) {
         ThreadUtils.assertOnUiThread();
         try (TraceEvent e = TraceEvent.scoped("WarmupManager.takeSpareTab")) {
-            // We should only invoke this when the spare tab feature is enabled.
-            assert isSpareTabEnabled();
-
             if (mSpareTab.getProfile() != profile) {
                 throw new RuntimeException("Attempted to take the tab from another profile.");
             }

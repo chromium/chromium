@@ -2634,9 +2634,6 @@ extern const char kStartSurfaceOnTabletDescription[];
 extern const char kStartSurfaceRefactorName[];
 extern const char kStartSurfaceRefactorDescription[];
 
-extern const char kStartSurfaceSpareTabName[];
-extern const char kStartSurfaceSpareTabDescription[];
-
 extern const char kStartSurfaceWithAccessibilityName[];
 extern const char kStartSurfaceWithAccessibilityDescription[];
 
