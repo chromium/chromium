@@ -205,6 +205,11 @@ targets.legacy_matrix_compound_suite(
                 "CROS_JACUZZI_RELEASE_CHROME_FROM_TLS_ASH_LKGM",
             ],
         ),
+        "chromeos_device_only_gtests": targets.legacy_matrix_config(
+            variants = [
+                "CROS_JACUZZI_RELEASE_CHROME_FROM_TLS_ASH_LKGM",
+            ],
+        ),
         "chromeos_integration_tests": targets.legacy_matrix_config(
             variants = [
                 "CROS_JACUZZI_RELEASE_CHROME_FROM_TLS_ASH_LKGM",
@@ -232,6 +237,11 @@ targets.legacy_matrix_compound_suite(
                 "CROS_OCTOPUS_RELEASE_CHROME_FROM_TLS_ASH_LKGM",
             ],
         ),
+        "chromeos_device_only_gtests": targets.legacy_matrix_config(
+            variants = [
+                "CROS_OCTOPUS_RELEASE_CHROME_FROM_TLS_ASH_LKGM",
+            ],
+        ),
     },
 )
 
@@ -242,6 +252,11 @@ targets.legacy_matrix_compound_suite(
             mixins = [
                 "chromeos-trogdor-skylab-chrome-all-tast-tests",
             ],
+            variants = [
+                "CROS_TROGDOR_RELEASE_ASH_LKGM",
+            ],
+        ),
+        "chromeos_device_only_gtests": targets.legacy_matrix_config(
             variants = [
                 "CROS_TROGDOR_RELEASE_ASH_LKGM",
             ],
@@ -268,6 +283,11 @@ targets.legacy_matrix_compound_suite(
             ],
         ),
         "chromeos_chrome_disabled_tast_tests": targets.legacy_matrix_config(
+            variants = [
+                "CROS_VOLTEER_RELEASE_ASH_LKGM",
+            ],
+        ),
+        "chromeos_device_only_gtests": targets.legacy_matrix_config(
             variants = [
                 "CROS_VOLTEER_RELEASE_ASH_LKGM",
             ],
