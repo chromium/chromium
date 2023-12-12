@@ -40,7 +40,8 @@ ReadAnythingSidePanelNavigationThrottle::HandleSidePanelRequest() {
   const auto& url = navigation_handle()->GetURL();
   // Only cancel the request if a user initiated it. Otherwise when reading mode
   // opens, it will hit this block and cause a stack overflow.
-  if (url != chrome::kChromeUIUntrustedReadAnythingSidePanelURL ||
+  if (url.GetWithEmptyPath() !=
+          chrome::kChromeUIUntrustedReadAnythingSidePanelURL ||
       !ui::PageTransitionCoreTypeIs(navigation_handle()->GetPageTransition(),
                                     ui::PAGE_TRANSITION_TYPED)) {
     return content::NavigationThrottle::PROCEED;

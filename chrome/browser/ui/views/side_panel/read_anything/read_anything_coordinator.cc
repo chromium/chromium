@@ -6,7 +6,6 @@
 
 #include <memory>
 #include <string>
-#include <utility>
 #include <vector>
 
 #include "base/functional/bind.h"
@@ -22,13 +21,14 @@
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/side_panel/read_anything/read_anything_container_view.h"
 #include "chrome/browser/ui/views/side_panel/read_anything/read_anything_controller.h"
+#include "chrome/browser/ui/views/side_panel/read_anything/read_anything_side_panel_controller.h"
+#include "chrome/browser/ui/views/side_panel/read_anything/read_anything_side_panel_web_view.h"
 #include "chrome/browser/ui/views/side_panel/read_anything/read_anything_toolbar_view.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_coordinator.h"
-#include "chrome/browser/ui/views/side_panel/side_panel_entry.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_registry.h"
+#include "chrome/browser/ui/views/side_panel/side_panel_web_ui_view.h"
 #include "chrome/browser/ui/webui/side_panel/read_anything/read_anything_prefs.h"
 #include "chrome/browser/ui/webui/side_panel/read_anything/read_anything_untrusted_ui.h"
-#include "chrome/common/webui_url_constants.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/feature_engagement/public/feature_constants.h"
 #include "components/language/core/browser/language_model.h"
@@ -36,8 +36,6 @@
 #include "components/language/core/common/locale_util.h"
 #include "ui/accessibility/accessibility_features.h"
 #include "ui/base/l10n/l10n_util.h"
-#include "ui/base/metadata/metadata_header_macros.h"
-#include "ui/base/models/combobox_model.h"
 
 namespace {
 
@@ -55,10 +53,6 @@ base::TimeDelta GetDelaySeconds() {
 
 }  // namespace
 
-using SidePanelWebUIViewT_ReadAnythingUntrustedUI =
-    SidePanelWebUIViewT<ReadAnythingUntrustedUI>;
-DECLARE_TEMPLATE_METADATA(SidePanelWebUIViewT_ReadAnythingUntrustedUI,
-                          SidePanelWebUIViewT);
 
 ReadAnythingCoordinator::ReadAnythingCoordinator(Browser* browser)
     : BrowserUserData<ReadAnythingCoordinator>(*browser),
@@ -249,17 +243,7 @@ void ReadAnythingCoordinator::OnReadAnythingSidePanelEntryHidden() {
 std::unique_ptr<views::View> ReadAnythingCoordinator::CreateContainerView() {
   Browser* browser = &GetBrowser();
   auto web_view =
-      std::make_unique<SidePanelWebUIViewT<ReadAnythingUntrustedUI>>(
-          /* on_show_cb= */ base::RepeatingClosure(),
-          /* close_cb= */ base::RepeatingClosure(),
-          /* contents_wrapper= */
-          std::make_unique<BubbleContentsWrapperT<ReadAnythingUntrustedUI>>(
-              /* webui_url= */ GURL(
-                  chrome::kChromeUIUntrustedReadAnythingSidePanelURL),
-              /* browser_context= */ browser->profile(),
-              /* task_manager_string_id= */ IDS_READING_MODE_TITLE,
-              /* webui_resizes_host= */ false,
-              /* esc_closes_ui= */ false));
+      std::make_unique<ReadAnythingSidePanelWebView>(browser->profile());
 
   if (features::IsReadAnythingWebUIToolbarEnabled()) {
     return std::move(web_view);

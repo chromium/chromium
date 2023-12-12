@@ -12,6 +12,7 @@
 #include "chrome/browser/ui/views/side_panel/read_anything/read_anything_container_view.h"
 #include "chrome/browser/ui/views/side_panel/read_anything/read_anything_controller.h"
 #include "chrome/browser/ui/views/side_panel/read_anything/read_anything_coordinator.h"
+#include "chrome/browser/ui/views/side_panel/read_anything/read_anything_side_panel_web_view.h"
 #include "chrome/browser/ui/views/side_panel/read_anything/read_anything_toolbar_view.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_registry.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_web_ui_view.h"
@@ -84,15 +85,8 @@ void ReadAnythingSidePanelController::OnEntryHidden(SidePanelEntry* entry) {
 
 std::unique_ptr<views::View>
 ReadAnythingSidePanelController::CreateContainerView() {
-  auto web_view =
-      std::make_unique<SidePanelWebUIViewT<ReadAnythingUntrustedUI>>(
-          base::RepeatingClosure(), base::RepeatingClosure(),
-          std::make_unique<BubbleContentsWrapperT<ReadAnythingUntrustedUI>>(
-              GURL(chrome::kChromeUIUntrustedReadAnythingSidePanelURL),
-              Profile::FromBrowserContext(web_contents_->GetBrowserContext()),
-              IDS_READING_MODE_TITLE,
-              /*webui_resizes_host=*/false,
-              /*esc_closes_ui=*/false));
+  auto web_view = std::make_unique<ReadAnythingSidePanelWebView>(
+      Profile::FromBrowserContext(web_contents_->GetBrowserContext()));
 
   if (features::IsReadAnythingWebUIToolbarEnabled()) {
     return std::move(web_view);

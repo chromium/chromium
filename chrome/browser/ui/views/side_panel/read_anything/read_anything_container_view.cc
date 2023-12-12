@@ -7,30 +7,17 @@
 #include <memory>
 #include <utility>
 
-#include "base/metrics/histogram_functions.h"
-#include "chrome/browser/ui/views/frame/browser_view.h"
+#include "chrome/browser/ui/views/side_panel/read_anything/read_anything_side_panel_web_view.h"
 #include "chrome/browser/ui/views/side_panel/read_anything/read_anything_toolbar_view.h"
-#include "chrome/browser/ui/views/side_panel/side_panel_web_ui_view.h"
-#include "chrome/browser/ui/webui/side_panel/read_anything/read_anything_untrusted_ui.h"
-#include "chrome/common/accessibility/read_anything_constants.h"
-#include "chrome/common/webui_url_constants.h"
-#include "chrome/grit/generated_resources.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
-#include "ui/gfx/geometry/geometry_export.h"
 #include "ui/views/background.h"
 #include "ui/views/controls/separator.h"
 #include "ui/views/layout/flex_layout.h"
 
-using SidePanelWebUIViewT_ReadAnythingUntrustedUI =
-    SidePanelWebUIViewT<ReadAnythingUntrustedUI>;
-BEGIN_TEMPLATE_METADATA(SidePanelWebUIViewT_ReadAnythingUntrustedUI,
-                        SidePanelWebUIViewT)
-END_METADATA
-
 ReadAnythingContainerView::ReadAnythingContainerView(
     ReadAnythingCoordinator* coordinator,
     std::unique_ptr<ReadAnythingToolbarView> toolbar,
-    std::unique_ptr<SidePanelWebUIViewT<ReadAnythingUntrustedUI>> content)
+    std::unique_ptr<ReadAnythingSidePanelWebView> content)
     : coordinator_(std::move(coordinator)) {
   // Create and set a FlexLayout LayoutManager for this view, set background.
   auto layout = std::make_unique<views::FlexLayout>();

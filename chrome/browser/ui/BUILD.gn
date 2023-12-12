@@ -5764,6 +5764,8 @@ static_library("ui") {
       "views/side_panel/read_anything/read_anything_model.h",
       "views/side_panel/read_anything/read_anything_side_panel_controller.cc",
       "views/side_panel/read_anything/read_anything_side_panel_controller.h",
+      "views/side_panel/read_anything/read_anything_side_panel_web_view.cc",
+      "views/side_panel/read_anything/read_anything_side_panel_web_view.h",
       "views/side_panel/read_anything/read_anything_toolbar_view.cc",
       "views/side_panel/read_anything/read_anything_toolbar_view.h",
       "views/side_panel/read_later_side_panel_web_view.cc",

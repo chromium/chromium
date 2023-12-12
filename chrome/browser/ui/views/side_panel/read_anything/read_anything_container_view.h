@@ -9,13 +9,12 @@
 
 #include "chrome/browser/ui/views/side_panel/read_anything/read_anything_coordinator.h"
 #include "chrome/browser/ui/views/side_panel/read_anything/read_anything_model.h"
-#include "chrome/browser/ui/views/side_panel/side_panel_web_ui_view.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/controls/separator.h"
 #include "ui/views/view.h"
 
 class ReadAnythingToolbarView;
-class ReadAnythingUntrustedUI;
+class ReadAnythingSidePanelWebView;
 
 ///////////////////////////////////////////////////////////////////////////////
 // ReadAnythingContainerView
@@ -33,7 +32,7 @@ class ReadAnythingContainerView : public views::View,
   ReadAnythingContainerView(
       ReadAnythingCoordinator* coordinator,
       std::unique_ptr<ReadAnythingToolbarView> toolbar,
-      std::unique_ptr<SidePanelWebUIViewT<ReadAnythingUntrustedUI>> content);
+      std::unique_ptr<ReadAnythingSidePanelWebView> content);
   ReadAnythingContainerView(const ReadAnythingContainerView&) = delete;
   ReadAnythingContainerView& operator=(const ReadAnythingContainerView&) =
       delete;
