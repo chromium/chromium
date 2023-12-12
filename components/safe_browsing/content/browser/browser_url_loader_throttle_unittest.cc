@@ -19,7 +19,10 @@
 #include "components/safe_browsing/core/browser/safe_browsing_url_checker_impl.h"
 #include "components/safe_browsing/core/browser/url_checker_delegate.h"
 #include "components/safe_browsing/core/common/features.h"
+#include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_task_environment.h"
+#include "content/public/test/test_browser_context.h"
+#include "content/public/test/test_web_contents_factory.h"
 #include "net/base/net_errors.h"
 #include "net/traffic_annotation/network_traffic_annotation_test_helper.h"
 #include "services/network/public/cpp/resource_request.h"
@@ -284,7 +287,9 @@ class MockSafeBrowsingUrlChecker : public SafeBrowsingUrlCheckerImpl {
 
 class SBBrowserUrlLoaderThrottleTestBase : public ::testing::Test {
  protected:
-  SBBrowserUrlLoaderThrottleTestBase() {
+  SBBrowserUrlLoaderThrottleTestBase()
+      : web_contents_(
+            web_contents_factory_.CreateWebContents(&browser_context_)) {
     feature_list_.InitAndEnableFeature(kSafeBrowsingSkipSubresources);
   }
 
@@ -302,12 +307,12 @@ class SBBrowserUrlLoaderThrottleTestBase : public ::testing::Test {
     base::MockCallback<base::RepeatingCallback<content::WebContents*()>>
         mock_web_contents_getter;
     EXPECT_CALL(mock_web_contents_getter, Run())
-        .WillRepeatedly(testing::Return(nullptr));
-    async_check_tracker_ =
-        async_check_enabled
-            ? base::WrapUnique(new AsyncCheckTracker(
-                  /*web_contents=*/nullptr, /*ui_manager=*/nullptr))
-            : nullptr;
+        .WillRepeatedly(testing::Return(web_contents_));
+    ui_manager_ = base::MakeRefCounted<BaseUIManager>();
+    async_check_tracker_ = async_check_enabled
+                               ? base::WrapUnique(new AsyncCheckTracker(
+                                     web_contents_, ui_manager_.get()))
+                               : nullptr;
     throttle_ = BrowserURLLoaderThrottle::Create(
         std::move(url_checker_delegate_getter), mock_web_contents_getter.Get(),
         /*frame_tree_node_id=*/0,
@@ -458,6 +463,10 @@ class SBBrowserUrlLoaderThrottleTestBase : public ::testing::Test {
   scoped_refptr<MockUrlCheckerDelegate> url_checker_delegate_;
   std::unique_ptr<MockThrottleDelegate> throttle_delegate_;
   std::unique_ptr<AsyncCheckTracker> async_check_tracker_;
+  scoped_refptr<BaseUIManager> ui_manager_;
+  content::TestBrowserContext browser_context_;
+  content::TestWebContentsFactory web_contents_factory_;
+  raw_ptr<content::WebContents> web_contents_;
 };
 
 class SBBrowserUrlLoaderThrottleTest
