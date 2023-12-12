@@ -608,7 +608,8 @@ void ExtensionRegistrar::MaybeSpinUpLazyContext(const Extension* extension,
   // installed, this will result in a no-op task that's not necessary, since
   // this is really only needed for a previously-installed extension. However,
   // that cost is minimal, since the worker is already active.
-  const LazyContextId context_id(browser_context_, extension);
+  const auto context_id =
+      LazyContextId::ForExtension(browser_context_, extension);
   context_id.GetTaskQueue()->AddPendingTask(context_id, base::DoNothing());
 }
 

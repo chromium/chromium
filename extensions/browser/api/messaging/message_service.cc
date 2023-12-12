@@ -80,11 +80,7 @@ const char kProhibitedByPoliciesError[] =
 
 LazyContextId LazyContextIdFor(content::BrowserContext* browser_context,
                                const Extension* extension) {
-  if (BackgroundInfo::HasLazyBackgroundPage(extension))
-    return LazyContextId(browser_context, extension->id());
-
-  DCHECK(BackgroundInfo::IsServiceWorkerBased(extension));
-  return LazyContextId(browser_context, extension->id(), extension->url());
+  return LazyContextId::ForExtension(browser_context, extension);
 }
 
 const Extension* GetExtensionForNativeAppChannel(

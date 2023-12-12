@@ -122,12 +122,16 @@ void DoTaskQueueFunction(content::BrowserContext* browser_context,
 
 LazyContextTaskQueue* GetTaskQueueForLazyContextId(
     const LazyContextId& context_id) {
-  if (context_id.is_for_event_page())
+  if (context_id.IsForBackgroundPage()) {
     return LazyBackgroundTaskQueue::Get(context_id.browser_context());
+  }
 
-  DCHECK(context_id.is_for_service_worker());
-  return GetServiceWorkerTaskQueueForExtensionId(context_id.browser_context(),
-                                                 context_id.extension_id());
+  if (context_id.IsForServiceWorker()) {
+    return GetServiceWorkerTaskQueueForExtensionId(context_id.browser_context(),
+                                                   context_id.extension_id());
+  }
+
+  return nullptr;
 }
 
 void ActivateTaskQueueForExtension(content::BrowserContext* browser_context,

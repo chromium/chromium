@@ -220,6 +220,12 @@ class Extension final : public base::RefCountedThreadSafe<Extension> {
   // Returns the base extension url for a given |extension_id|.
   static GURL GetBaseURLFromExtensionId(const ExtensionId& extension_id);
 
+  // Returns for scope for the extension's service worker.
+  static GURL GetServiceWorkerScopeFromExtensionId(
+      const ExtensionId& extension_id) {
+    return GetBaseURLFromExtensionId(extension_id);
+  }
+
   // Returns the extension origin for a given |extension_id|.
   static url::Origin CreateOriginFromExtensionId(
       const ExtensionId& extension_id);

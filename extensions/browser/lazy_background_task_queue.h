@@ -74,12 +74,11 @@ class LazyBackgroundTaskQueue : public KeyedService,
   FRIEND_TEST_ALL_PREFIXES(LazyBackgroundTaskQueueTest, ProcessPendingTasks);
   FRIEND_TEST_ALL_PREFIXES(LazyBackgroundTaskQueueTest,
                            CreateLazyBackgroundPageOnExtensionLoaded);
+  using PendingTasksList = std::vector<PendingTask>;
   // A map between a LazyContextId and the queue of tasks pending the load of
   // its background page.
-  using PendingTasksKey = LazyContextId;
-  using PendingTasksList = std::vector<PendingTask>;
   using PendingTasksMap =
-      std::map<PendingTasksKey, std::unique_ptr<PendingTasksList>>;
+      std::map<LazyContextId, std::unique_ptr<PendingTasksList>>;
 
   // ExtensionHostRegistry::Observer:
   void OnExtensionHostCompletedFirstLoad(

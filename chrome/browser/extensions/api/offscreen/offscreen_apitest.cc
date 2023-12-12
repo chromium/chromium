@@ -19,8 +19,9 @@
 #include "extensions/browser/api/offscreen/offscreen_document_manager.h"
 #include "extensions/browser/background_script_executor.h"
 #include "extensions/browser/extension_util.h"
+#include "extensions/browser/lazy_context_id.h"
+#include "extensions/browser/lazy_context_task_queue.h"
 #include "extensions/browser/offscreen_document_host.h"
-#include "extensions/browser/service_worker_task_queue.h"
 #include "extensions/browser/test_extension_registry_observer.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/features/feature_channel.h"
@@ -99,8 +100,10 @@ scoped_refptr<const Extension> SetExtensionIncognitoEnabled(
 // Wakes up the service worker for the `extension` in the given `profile`.
 void WakeUpServiceWorker(const Extension& extension, Profile& profile) {
   base::RunLoop run_loop;
-  ServiceWorkerTaskQueue::Get(&profile)->AddPendingTask(
-      LazyContextId(&profile, extension.id(), extension.url()),
+  const auto context_id = LazyContextId::ForExtension(&profile, &extension);
+  ASSERT_TRUE(context_id.IsForServiceWorker());
+  context_id.GetTaskQueue()->AddPendingTask(
+      context_id,
       base::BindOnce([](std::unique_ptr<LazyContextTaskQueue::ContextInfo>) {
       }).Then(run_loop.QuitWhenIdleClosure()));
   run_loop.Run();

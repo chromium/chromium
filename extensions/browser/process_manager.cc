@@ -448,7 +448,9 @@ bool ProcessManager::WakeEventPage(const std::string& extension_id,
     // The extension is already awake.
     return false;
   }
-  const LazyContextId context_id(browser_context_, extension_id);
+
+  const auto context_id =
+      LazyContextId::ForBackgroundPage(browser_context_, extension_id);
   context_id.GetTaskQueue()->AddPendingTask(
       context_id,
       base::BindOnce(&PropagateExtensionWakeResult, std::move(callback)));

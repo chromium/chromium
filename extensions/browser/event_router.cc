@@ -138,11 +138,12 @@ LazyContextId LazyContextIdForListener(const EventListener* listener,
   // TODO(lazyboy): Clean these inconsistencies across different types of event
   // listener and their corresponding background types.
   if (is_service_worker_based_extension && listener->is_for_service_worker()) {
-    return LazyContextId(browser_context, listener->extension_id(),
-                         listener->listener_url());
+    return LazyContextId::ForServiceWorker(browser_context,
+                                           listener->extension_id());
   }
 
-  return LazyContextId(browser_context, listener->extension_id());
+  return LazyContextId::ForBackgroundPage(browser_context,
+                                          listener->extension_id());
 }
 
 // A global identifier used to distinguish extension events.

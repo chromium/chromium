@@ -245,7 +245,9 @@ void FileBrowserHandlerExecutor::ExecuteFileActionsOnUIThread(
   extensions::ExtensionHost* extension_host =
       manager->GetBackgroundHostForExtension(extension_->id());
 
-  const extensions::LazyContextId context_id(profile_, extension_->id());
+  const auto context_id =
+      extensions::LazyContextId::ForExtension(profile_, extension_.get());
+  CHECK(context_id.IsForBackgroundPage());
   extensions::LazyContextTaskQueue* task_queue = context_id.GetTaskQueue();
 
   if (task_queue->ShouldEnqueueTask(profile_, extension_.get())) {

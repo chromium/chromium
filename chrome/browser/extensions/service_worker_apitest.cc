@@ -2302,8 +2302,8 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerBasedBackgroundTest,
   const Extension* extension = LoadExtension(test_dir.UnpackedPath());
   ASSERT_TRUE(extension);
   ASSERT_EQ(test_extension_id, extension->id());
-  LazyContextId context_id(browser()->profile(), extension->id(),
-                           extension->url());
+  LazyContextId context_id =
+      LazyContextId::ForExtension(browser()->profile(), extension);
   // Let the worker start so it rejects 'install' event. This causes the worker
   // to stop.
   observer.WaitForWorkerStart();

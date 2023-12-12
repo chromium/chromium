@@ -73,9 +73,7 @@ void InspectInactiveServiceWorkerBackground(const Extension* extension,
                                             DevToolsOpenedByAction opened_by) {
   DCHECK(extension);
   DCHECK(BackgroundInfo::IsServiceWorkerBased(extension));
-  LazyContextId context_id(
-      profile, extension->id(),
-      Extension::GetBaseURLFromExtensionId(extension->id()));
+  const auto context_id = LazyContextId::ForExtension(profile, extension);
   context_id.GetTaskQueue()->AddPendingTask(
       context_id,
       base::BindOnce(&InspectServiceWorkerBackgroundHelper, opened_by));
@@ -91,7 +89,7 @@ void InspectBackgroundPage(const Extension* extension,
     InspectExtensionHost(
         opened_by, std::make_unique<LazyContextTaskQueue::ContextInfo>(host));
   } else {
-    const LazyContextId context_id(profile, extension->id());
+    const auto context_id = LazyContextId::ForExtension(profile, extension);
     context_id.GetTaskQueue()->AddPendingTask(
         context_id, base::BindOnce(&InspectExtensionHost, opened_by));
   }

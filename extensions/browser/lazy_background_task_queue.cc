@@ -117,10 +117,15 @@ void LazyBackgroundTaskQueue::ProcessPendingTasks(
   DCHECK(extension);
 
   if (!ExtensionsBrowserClient::Get()->IsSameContext(browser_context,
-                                                     browser_context_))
+                                                     browser_context_)) {
     return;
+  }
 
-  PendingTasksKey key(browser_context, extension->id());
+  const auto key = LazyContextId::ForExtension(browser_context, extension);
+  if (key.IsForServiceWorker()) {
+    return;
+  }
+
   auto map_it = pending_tasks_.find(key);
   if (map_it == pending_tasks_.end()) {
     if (BackgroundInfo::HasLazyBackgroundPage(extension))
@@ -215,7 +220,8 @@ void LazyBackgroundTaskQueue::OnExtensionUnloaded(
 void LazyBackgroundTaskQueue::CreateLazyBackgroundHostOnExtensionLoaded(
     content::BrowserContext* browser_context,
     const Extension* extension) {
-  PendingTasksKey key(browser_context, extension->id());
+  const auto key = LazyContextId::ForExtension(browser_context, extension);
+  CHECK(key.IsForBackgroundPage());
   if (!base::Contains(pending_tasks_, key))
     return;
 
