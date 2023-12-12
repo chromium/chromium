@@ -255,6 +255,7 @@ class LocalTestInfoBarVisibilityManager :
 
   void AddInfobarForActiveLocalTestPolicies(
       content::WebContents* web_contents) {
+    infobars::ContentInfoBarManager::CreateForWebContents(web_contents);
     CreateSimpleAlertInfoBar(
         infobars::ContentInfoBarManager::FromWebContents(web_contents),
         infobars::InfoBarDelegate::LOCAL_TEST_POLICIES_APPLIED_INFOBAR, nullptr,
@@ -293,6 +294,7 @@ class LocalTestInfoBarVisibilityManager :
 
   void DismissInfobarForActiveLocalTestPolicies(
       content::WebContents* web_contents) {
+    infobars::ContentInfoBarManager::CreateForWebContents(web_contents);
     auto* infobar_manager =
         infobars::ContentInfoBarManager::FromWebContents(web_contents);
     const auto it = base::ranges::find(
