@@ -373,6 +373,7 @@ UseCounterMetricsRecorder::GetAllowedUkmFeatures() {
           WebFeature::kOverrideFlashEmbedwithHTML,
           WebFeature::kElementRequestPointerLock,
           WebFeature::kKeyboardApiLock,
+          WebFeature::kLCPImageWasLazy,
       }));
   return *opt_in_features;
 }
