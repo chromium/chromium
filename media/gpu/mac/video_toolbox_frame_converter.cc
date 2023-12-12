@@ -230,6 +230,7 @@ void VideoToolboxFrameConverter::Convert(
   // IOSurface color space. There doesn't seem to be a way to specify it for
   // H.264 unless we create the format description manually.
   frame->set_color_space(metadata->color_space);
+  frame->set_hdr_metadata(metadata->hdr_metadata);
   frame->set_shared_image_format_type(
       IsMultiPlaneFormatForHardwareVideoEnabled()
           ? SharedImageFormatType::kSharedImageFormat
