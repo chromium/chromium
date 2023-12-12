@@ -1687,7 +1687,8 @@ void SearchBoxView::UpdateIphViewVisibility() {
 
     SetIphView(std::make_unique<LauncherSearchIphView>(
         /*delegate=*/this, /*is_in_tablet_mode=*/!is_app_list_bubble_,
-        std::move(scoped_iph_session)));
+        std::move(scoped_iph_session),
+        LauncherSearchIphView::UiLocation::kSearchBox));
 
     assistant_button()->SetBackground(views::CreateThemedRoundedRectBackground(
         kColorAshControlBackgroundColorInactive,

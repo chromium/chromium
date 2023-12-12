@@ -147,7 +147,8 @@ void AssistantZeroStateView::InitLayout() {
   // Launcher search IPH view:
   iph_view_ = AddChildView(std::make_unique<LauncherSearchIphView>(
       /*delegate=*/this, delegate_->IsTabletMode(),
-      /*scoped_iph_session=*/nullptr, /*show_assistant_chip=*/false));
+      /*scoped_iph_session=*/nullptr,
+      /*location=*/LauncherSearchIphView::UiLocation::kAssistantPage));
   iph_view_->SetID(AssistantViewID::kLauncherSearchIph);
 }
 

@@ -47,7 +47,8 @@ TEST_F(LauncherSearchIphViewTest,
 TEST_F(LauncherSearchIphViewTest, ShouldShuffleQueriesWhenVisible) {
   auto iph_view = std::make_unique<LauncherSearchIphView>(
       /*delegate=*/nullptr, /*is_in_tablet_mode=*/false,
-      /*scoped_iph_session=*/nullptr, /*show_assistant_chip=*/false);
+      /*scoped_iph_session=*/nullptr,
+      /*location=*/LauncherSearchIphView::UiLocation::kAssistantPage);
 
   std::vector<std::u16string> queries_1;
   for (auto chip : iph_view->GetChipsForTesting()) {

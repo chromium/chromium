@@ -1597,6 +1597,15 @@ Unknown properties are collapsed to zero. -->
   <int value="4" label="Snapped"/>
 </enum>
 
+<enum name="Assistant.LauncherSearchIphQueryType">
+  <int value="0" label="Weather"/>
+  <int value="1" label="Unit Conversion 1"/>
+  <int value="2" label="Unit Conversion 2"/>
+  <int value="3" label="Translation"/>
+  <int value="4" label="Definition"/>
+  <int value="5" label="Calculation"/>
+</enum>
+
 <!-- These values must be in sync with ProvisionConstants in CloudDPC code -->
 
 <enum name="Assistant.LibassistantDlcInstallResult">

@@ -103,6 +103,21 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Assistant.LauncherSearchIphQueryType.{Location}"
+    enum="Assistant.LauncherSearchIphQueryType" expires_after="2024-12-01">
+  <owner>wutao@chromium.org</owner>
+  <owner>assistive-eng@google.com</owner>
+  <summary>
+    Record the query types selected in the Assistant LauncherSearchIphView.
+    Emitted when the query chip in the LauncherSearchIphView is clicked. The
+    LauncherSearchIphView can be located in the {Location}
+  </summary>
+  <token key="Location">
+    <variant name="AssistantPage" summary="IPH in AssistantPage"/>
+    <variant name="SearchBox" summary="IPH in SearchBox"/>
+  </token>
+</histogram>
+
 <histogram name="Assistant.Libassistant.DlcInstallResult"
     enum="Assistant.LibassistantDlcInstallResult" expires_after="2024-05-19">
   <owner>wutao@chromium.org</owner>

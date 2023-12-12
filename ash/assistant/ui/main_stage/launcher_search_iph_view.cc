@@ -15,7 +15,9 @@
 #include "ash/style/typography.h"
 #include "base/functional/bind.h"
 #include "base/i18n/rtl.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/rand_util.h"
+#include "chromeos/ash/services/assistant/public/cpp/assistant_enums.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/color/color_id.h"
 #include "ui/color/color_provider.h"
@@ -35,7 +37,16 @@
 #include "url/gurl.h"
 
 namespace ash {
+
 namespace {
+
+using QueryType = assistant::LauncherSearchIphQueryType;
+
+constexpr char kLauncherSearchIphQueryTypeHistogramPrefix[] =
+    "Assistant.LauncherSearchIphQueryType.";
+constexpr char kLauncherSearchIphQueryFromSearchBox[] = "SearchBox";
+constexpr char kLauncherSearchIphQueryFromAssistantPage[] = "AssistantPage";
+
 constexpr int kMainLayoutBetweenChildSpacing = 16;
 constexpr int kActionContainerBetweenChildSpacing = 8;
 
@@ -50,7 +61,6 @@ constexpr char16_t kChipUnitConversionQuery2Placeholder[] = u"90°F in C";
 constexpr char16_t kChipTranslationQueryPlaceholder[] = u"Hi in French";
 constexpr char16_t kChipDefinitionQueryPlaceholder[] = u"Define zenith";
 constexpr char16_t kChipCalculationQueryPlaceholder[] = u"50+94/5";
-constexpr char16_t kChipStockQueryPlaceholder[] = u"S&P 500";
 
 constexpr char16_t kAssistantButtonPlaceholder[] = u"Go to Assistant";
 
@@ -71,18 +81,32 @@ constexpr gfx::Insets kInnerBackgroundInsetsTablet = gfx::Insets::VH(16, 16);
 
 constexpr int kBackgroundRadiusTablet = 16;
 
-std::vector<std::u16string> GetQueryChips() {
-  std::vector<std::u16string> chips = {kChipWeatherQueryPlaceholder,
-                                       kChipUnitConversionQuery1Placeholder,
-                                       kChipUnitConversionQuery2Placeholder,
-                                       kChipTranslationQueryPlaceholder,
-                                       kChipDefinitionQueryPlaceholder,
-                                       kChipCalculationQueryPlaceholder,
-                                       kChipStockQueryPlaceholder};
+std::vector<QueryType> GetQueryChips() {
+  std::vector<QueryType> chips = {
+      QueryType::kWeather,         QueryType::kUnitConversion1,
+      QueryType::kUnitConversion2, QueryType::kTranslation,
+      QueryType::kDefinition,      QueryType::kCalculation};
   CHECK_GE(static_cast<int>(chips.size()), kNumberOfQueryChips);
   base::RandomShuffle(chips.begin(), chips.end());
   chips.resize(kNumberOfQueryChips);
   return chips;
+}
+
+std::u16string GetQueryText(QueryType type) {
+  switch (type) {
+    case QueryType::kWeather:
+      return kChipWeatherQueryPlaceholder;
+    case QueryType::kUnitConversion1:
+      return kChipUnitConversionQuery1Placeholder;
+    case QueryType::kUnitConversion2:
+      return kChipUnitConversionQuery2Placeholder;
+    case QueryType::kTranslation:
+      return kChipTranslationQueryPlaceholder;
+    case QueryType::kDefinition:
+      return kChipDefinitionQueryPlaceholder;
+    case QueryType::kCalculation:
+      return kChipCalculationQueryPlaceholder;
+  }
 }
 
 }  // namespace
@@ -91,10 +115,10 @@ LauncherSearchIphView::LauncherSearchIphView(
     Delegate* delegate,
     bool is_in_tablet_mode,
     std::unique_ptr<ScopedIphSession> scoped_iph_session,
-    bool show_assistant_chip)
+    UiLocation location)
     : delegate_(delegate),
       scoped_iph_session_(std::move(scoped_iph_session)),
-      show_assistant_chip_(show_assistant_chip) {
+      location_(location) {
   SetID(ViewId::kSelf);
 
   SetLayoutManager(std::make_unique<views::FillLayout>());
@@ -148,7 +172,7 @@ LauncherSearchIphView::LauncherSearchIphView(
 
   CreateQueryChips(actions_container);
 
-  if (show_assistant_chip_) {
+  if (location_ == UiLocation::kSearchBox) {
     views::View* spacer =
         actions_container->AddChildView(std::make_unique<views::View>());
     actions_container->SetFlexForView(spacer, 1);
@@ -163,7 +187,7 @@ LauncherSearchIphView::LauncherSearchIphView(
         PillButton::Type::kDefaultLargeWithoutIcon);
   }
 
-  if (is_in_tablet_mode || !show_assistant_chip_) {
+  if (is_in_tablet_mode || location_ == UiLocation::kAssistantPage) {
     box_layout_view->SetBackground(views::CreateThemedRoundedRectBackground(
         kColorAshControlBackgroundColorInactive, kBackgroundRadiusTablet));
   } else {
@@ -198,12 +222,18 @@ std::vector<raw_ptr<ChipView>> LauncherSearchIphView::GetChipsForTesting() {
   return chips_;
 }
 
-void LauncherSearchIphView::RunLauncherSearchQuery(
-    const std::u16string& query) {
+void LauncherSearchIphView::RunLauncherSearchQuery(QueryType query_type) {
+  const std::string& location = location_ == UiLocation::kSearchBox
+                                    ? kLauncherSearchIphQueryFromSearchBox
+                                    : kLauncherSearchIphQueryFromAssistantPage;
+  base::UmaHistogramEnumeration(
+      kLauncherSearchIphQueryTypeHistogramPrefix + location, query_type);
+
   if (scoped_iph_session_) {
     scoped_iph_session_->NotifyEvent(kIphEventNameChipClick);
   }
-  delegate_->RunLauncherSearchQuery(query);
+
+  delegate_->RunLauncherSearchQuery(GetQueryText(query_type));
 }
 
 void LauncherSearchIphView::OpenAssistantPage() {
@@ -213,13 +243,13 @@ void LauncherSearchIphView::OpenAssistantPage() {
 
 void LauncherSearchIphView::CreateQueryChips(views::View* actions_container) {
   int query_chip_view_id = ViewId::kChipStart;
-  for (const std::u16string& query : GetQueryChips()) {
+  for (auto query_type : GetQueryChips()) {
     ChipView* chip = actions_container->AddChildView(
         std::make_unique<ChipView>(ChipView::Type::kLarge));
-    chip->SetText(query);
+    chip->SetText(GetQueryText(query_type));
     chip->SetCallback(
         base::BindRepeating(&LauncherSearchIphView::RunLauncherSearchQuery,
-                            weak_ptr_factory_.GetWeakPtr(), query));
+                            weak_ptr_factory_.GetWeakPtr(), query_type));
     chip->SetID(query_chip_view_id);
     query_chip_view_id++;
     chips_.emplace_back(chip);
@@ -228,13 +258,13 @@ void LauncherSearchIphView::CreateQueryChips(views::View* actions_container) {
 
 void LauncherSearchIphView::ShuffleChipsQuery() {
   size_t chip_index = 0;
-  for (const std::u16string& query : GetQueryChips()) {
+  for (auto query_type : GetQueryChips()) {
     CHECK_LT(chip_index, chips_.size());
     auto chip = chips_[chip_index++];
-    chip->SetText(query);
+    chip->SetText(GetQueryText(query_type));
     chip->SetCallback(
         base::BindRepeating(&LauncherSearchIphView::RunLauncherSearchQuery,
-                            weak_ptr_factory_.GetWeakPtr(), query));
+                            weak_ptr_factory_.GetWeakPtr(), query_type));
   }
 }
 

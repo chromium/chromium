@@ -38,6 +38,7 @@
 #include "chrome/browser/ui/ash/assistant/assistant_test_mixin.h"
 #include "chrome/test/base/mixin_based_in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
+#include "chromeos/ash/services/assistant/public/cpp/assistant_enums.h"
 #include "chromeos/ash/services/assistant/public/cpp/features.h"
 #include "components/feature_engagement/public/feature_constants.h"
 #include "components/feature_engagement/test/scoped_iph_feature_list.h"
@@ -108,6 +109,29 @@ bool IsLauncherSearchIphViewVisible() {
 
 std::string GenerateTestSuffix(const testing::TestParamInfo<bool>& info) {
   return info.param ? "tablet" : "clamshell";
+}
+
+ash::assistant::LauncherSearchIphQueryType GetQueryType(
+    const std::u16string& query) {
+  if (query == u"Weather") {
+    return ash::assistant::LauncherSearchIphQueryType::kWeather;
+  }
+  if (query == u"5 ft in m") {
+    return ash::assistant::LauncherSearchIphQueryType::kUnitConversion1;
+  }
+  if (query == u"90°F in C") {
+    return ash::assistant::LauncherSearchIphQueryType::kUnitConversion2;
+  }
+  if (query == u"Hi in French") {
+    return ash::assistant::LauncherSearchIphQueryType::kTranslation;
+  }
+  if (query == u"Define zenith") {
+    return ash::assistant::LauncherSearchIphQueryType::kDefinition;
+  }
+  if (query == u"50+94/5") {
+    return ash::assistant::LauncherSearchIphQueryType::kCalculation;
+  }
+  NOTREACHED_NORETURN();
 }
 
 }  // namespace
@@ -385,6 +409,11 @@ IN_PROC_BROWSER_TEST_P(AppListIphBrowserTestWithTestConfig, ClickChip) {
   Click(chip);
   EXPECT_EQ(1,
             user_action_tester.GetActionCount(kNotifyUsedEventUserActionName));
+  histogram_tester()->ExpectTotalCount(
+      "Assistant.LauncherSearchIphQueryType.SearchBox", 1);
+  histogram_tester()->ExpectBucketCount(
+      "Assistant.LauncherSearchIphQueryType.SearchBox",
+      static_cast<int>(GetQueryType(text)), 1);
 
   EXPECT_EQ(text, app_list_client_impl()->search_controller()->get_query());
   EXPECT_TRUE(IsSearchPageActive());
@@ -548,6 +577,12 @@ IN_PROC_BROWSER_TEST_P(AppListIphBrowserTestAssistantZeroState,
   ASSERT_TRUE(chip);
   auto text = chip->GetText();
   Click(chip);
+
+  histogram_tester()->ExpectTotalCount(
+      "Assistant.LauncherSearchIphQueryType.AssistantPage", 1);
+  histogram_tester()->ExpectBucketCount(
+      "Assistant.LauncherSearchIphQueryType.AssistantPage",
+      static_cast<int>(GetQueryType(text)), 1);
 
   EXPECT_EQ(text, app_list_client_impl()->search_controller()->get_query());
   EXPECT_TRUE(IsSearchPageActive());

@@ -10,6 +10,7 @@
 
 #include "ash/public/cpp/app_list/app_list_client.h"
 #include "base/memory/raw_ptr.h"
+#include "chromeos/ash/services/assistant/public/cpp/assistant_enums.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/events/event.h"
 #include "ui/views/controls/link.h"
@@ -49,11 +50,17 @@ class LauncherSearchIphView : public views::View {
     kChipStart
   };
 
-  LauncherSearchIphView(
-      Delegate* delegate,
-      bool is_in_tablet_mode,
-      std::unique_ptr<ScopedIphSession> scoped_iph_session = nullptr,
-      bool show_assistant_chip = true);
+  enum class UiLocation {
+    // In the Launcher search box.
+    kSearchBox = 0,
+    // In the `assistant_page` in the Launcher.
+    kAssistantPage
+  };
+
+  LauncherSearchIphView(Delegate* delegate,
+                        bool is_in_tablet_mode,
+                        std::unique_ptr<ScopedIphSession> scoped_iph_session,
+                        UiLocation location);
   ~LauncherSearchIphView() override;
 
   // views::View:
@@ -64,8 +71,7 @@ class LauncherSearchIphView : public views::View {
   std::vector<raw_ptr<ChipView>> GetChipsForTesting();
 
  private:
-  // TODO(b/272370530): Use string id for internationalization.
-  void RunLauncherSearchQuery(const std::u16string& query);
+  void RunLauncherSearchQuery(assistant::LauncherSearchIphQueryType query_type);
 
   void OpenAssistantPage();
 
@@ -77,7 +83,7 @@ class LauncherSearchIphView : public views::View {
 
   std::unique_ptr<ScopedIphSession> scoped_iph_session_;
 
-  bool show_assistant_chip_ = false;
+  UiLocation location_ = UiLocation::kSearchBox;
 
   std::vector<raw_ptr<ChipView>> chips_;
 
