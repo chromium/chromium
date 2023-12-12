@@ -55,6 +55,7 @@
 #include "services/network/public/mojom/shared_dictionary_access_observer.mojom.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/associated_interfaces/associated_interface_provider.h"
+#include "third_party/blink/public/common/navigation/navigation_params.h"
 #include "third_party/blink/public/common/storage_key/storage_key.h"
 #include "third_party/blink/public/mojom/navigation/renderer_content_settings.mojom.h"
 #include "url/gurl.h"
@@ -415,7 +416,7 @@ void WebContentsHandler::ReadyToCommitNavigation(
 
   const GURL& secondary_url = navigation_handle->GetURL();
 
-  auto content_settings = blink::mojom::RendererContentSettings::New();
+  auto content_settings = blink::CreateDefaultRendererContentSettings();
   content_settings->allow_script =
       map_->GetContentSetting(primary_url, secondary_url,
                               ContentSettingsType::JAVASCRIPT) ==
