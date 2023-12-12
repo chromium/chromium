@@ -697,44 +697,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="ManagedUsers.KidsManagementClassifyUrlFailureDelay" units="ms"
-    expires_after="2024-12-12">
-  <owner>escordeiro@chromium.org</owner>
-  <owner>unichrome-eng@google.com</owner>
-  <owner>cros-families-eng@google.com</owner>
-  <summary>
-    The extra page load delays introduced by network requests due to the
-    supervised user url filtering feature, measured once per page load, for
-    failed requests. This is the delay to fetch the token and call the
-    ClassifyUrl rpc, when there is a cache miss.
-  </summary>
-</histogram>
-
-<histogram name="ManagedUsers.KidsManagementClassifyUrlSuccessDelay" units="ms"
-    expires_after="2024-12-12">
-  <owner>escordeiro@chromium.org</owner>
-  <owner>unichrome-eng@google.com</owner>
-  <owner>cros-families-eng@google.com</owner>
-  <summary>
-    The extra page load delays introduced by network requests due to the
-    supervised user url filtering feature, measured once per page load. This is
-    the delay to fetch the token and call the ClassifyUrl rpc, when there is a
-    cache miss. Only recorded for successful requests.
-  </summary>
-</histogram>
-
-<histogram name="ManagedUsers.KidsManagementUrlCheckerResponseStatus"
-    enum="KidsManagementURLCheckerResponseStatus" expires_after="2024-12-12">
-  <owner>escordeiro@chromium.org</owner>
-  <owner>unichrome-eng@google.com</owner>
-  <owner>cros-families-eng@google.com</owner>
-  <summary>
-    The counts of response status from supervised user
-    KidsManagementURLCheckerCLient. Each entry includes the outcome of a request
-    (i.e. success, net error, parsing error).
-  </summary>
-</histogram>
-
 <histogram name="ManagedUsers.RequestPermissionSource"
     enum="ManagedUserURLRequestPermissionSource" expires_after="2024-04-28">
   <owner>agawronska@chromium.org</owner>
