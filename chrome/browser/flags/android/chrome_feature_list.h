@@ -57,7 +57,6 @@ BASE_DECLARE_FEATURE(kCCTMinimized);
 BASE_DECLARE_FEATURE(kCCTPageInsightsHub);
 BASE_DECLARE_FEATURE(kCCTPrefetchDelayShowOnStart);
 BASE_DECLARE_FEATURE(kCCTRealTimeEngagementSignals);
-BASE_DECLARE_FEATURE(kCCTRedirectPreconnect);
 BASE_DECLARE_FEATURE(kCCTReportParallelRequestStatus);
 BASE_DECLARE_FEATURE(kCCTResizableForThirdParties);
 BASE_DECLARE_FEATURE(kCCTResizableSideSheet);

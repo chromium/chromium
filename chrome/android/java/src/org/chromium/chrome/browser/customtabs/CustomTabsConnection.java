@@ -1013,7 +1013,6 @@ public class CustomTabsConnection {
         if (!ChromeBrowserInitializer.getInstance().isFullBrowserInitialized()) {
             return;
         }
-        if (!ChromeFeatureList.isEnabled(ChromeFeatureList.CCT_REDIRECT_PRECONNECT)) return;
 
         // Conditions:
         // - There is a valid redirect endpoint.
