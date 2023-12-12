@@ -19,6 +19,7 @@ constexpr CGFloat kTitleVerticalMargin = 10;
 constexpr CGFloat kLeftMargin = 9;
 constexpr CGFloat kFullTitleTopMargin = 24;
 constexpr CGFloat kDotTitleSeparationMargin = 8;
+constexpr CGFloat kBackgroundAlpha = 0.6;
 }  // namespace
 
 @interface TabGroupViewController () <UINavigationBarDelegate>
@@ -52,7 +53,8 @@ constexpr CGFloat kDotTitleSeparationMargin = 8;
 - (void)viewDidLoad {
   [super viewDidLoad];
   if (!UIAccessibilityIsReduceTransparencyEnabled()) {
-    self.view.backgroundColor = [UIColor clearColor];
+    self.view.backgroundColor = [[UIColor colorNamed:kGrey900Color]
+        colorWithAlphaComponent:kBackgroundAlpha];
     UIBlurEffect* blurEffect =
         [UIBlurEffect effectWithStyle:UIBlurEffectStyleDark];
     UIVisualEffectView* blurEffectView =
