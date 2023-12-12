@@ -1435,7 +1435,7 @@ See your search engine’s instructions for deleting your search history, if app
         Never Auto-Detect Packages
       </message>
       <message name="IDS_IOS_GOOGLE_SERVICES_SETTINGS_AUTO_TRACK_PACKAGES_FOOTER" desc="Parcel tracking feature setting page footer detailing how the data is shared. [iOS only]">
-        Chrome will detect package tracking numbers on sites you visit and show you package updates on the New Tab page. Your data will be shared with Google to provide this feature and to improve Shopping for everyone.
+        Chrome will detect tracking numbers on sites you visit and show you package updates on the New Tab page. Your shopping data will be sent to Google to provide this feature and to improve Google Shopping for everyone.
       </message>
       <message name="IDS_IOS_GOOGLE_SYNC_SETTINGS_TITLE" desc="Title for the view in the Settings for enabling/disabling Sync. [Length: 26em] [iOS only]">
         Sync
@@ -2321,7 +2321,7 @@ While in Incognito, sites can't use cookies to see your browsing activity across
         No Thanks
       </message>
       <message name="IDS_IOS_PARCEL_TRACKING_OPT_IN_SUBTITLE" desc="Text for the subtitle string of the parcel tracking opt-in half-sheet screen.">
-        Chrome will detect tracking numbers on sites you visit and show you package updates on the New Tab page. Your data will be shared with Google to provide this feature and to improve Shopping for everyone. You can change this in <ph name="BEGIN_LINK">BEGIN_LINK</ph>Package Tracking Settings<ph name="END_LINK">END_LINK</ph>.
+        Chrome will detect tracking numbers on sites you visit and show you package updates on the New Tab page. Your shopping data will be sent to Google to provide this feature and to improve Google Shopping for everyone. You can update this anytime in <ph name="BEGIN_LINK">BEGIN_LINK</ph>Package Tracking Settings<ph name="END_LINK">END_LINK</ph>.
       </message>
       <message name="IDS_IOS_PARCEL_TRACKING_OPT_IN_TERTIARY_ACTION" desc="Text for the tertiary action string of the parcel tracking opt-in half-sheet screen.">
         Ask Me Every Time
