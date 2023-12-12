@@ -24038,12 +24038,6 @@ Called by update_permissions_policy_enum.py.-->
   <int value="8" label="Unknown Pointer"/>
 </enum>
 
-<enum name="HighEfficiencyModeState">
-  <int value="0" label="Disabled"/>
-  <int value="1" label="Enabled"/>
-  <int value="2" label="Enabled on timer"/>
-</enum>
-
 <enum name="HistoryClustersFinalState">
   <obsolete>
     Removed as of 05/2022.
@@ -39246,6 +39240,12 @@ Called by update_use_counter_css.py.-->
   <int value="1" label="Edit"/>
   <int value="2" label="Remove"/>
   <int value="3" label="Add from current"/>
+</enum>
+
+<enum name="MemorySaverModeState">
+  <int value="0" label="Disabled"/>
+  <int value="1" label="Enabled"/>
+  <int value="2" label="Enabled on timer"/>
 </enum>
 
 <enum name="MenuSourceType">

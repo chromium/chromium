@@ -91,7 +91,7 @@ class PerformanceLogSourceTest : public BrowserWithTestWindowTest {
   void SetHighEfficiencyModeEnabled(bool enabled) {
     performance_manager::user_tuning::UserPerformanceTuningManager::
         GetInstance()
-            ->SetHighEfficiencyModeEnabled(enabled);
+            ->SetMemorySaverModeEnabled(enabled);
   }
 
   void SetOnBatteryPower(bool on_battery_power) {

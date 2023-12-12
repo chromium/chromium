@@ -1070,7 +1070,7 @@ const PrefsUtil::TypedPrefMap& PrefsUtil::GetAllowlistedKeys() {
 
   // Performance settings.
   (*s_allowlist)
-      [performance_manager::user_tuning::prefs::kHighEfficiencyModeState] =
+      [performance_manager::user_tuning::prefs::kMemorySaverModeState] =
           settings_api::PrefType::kNumber;
   (*s_allowlist)[performance_manager::user_tuning::prefs::
                      kHighEfficiencyModeTimeBeforeDiscardInMinutes] =

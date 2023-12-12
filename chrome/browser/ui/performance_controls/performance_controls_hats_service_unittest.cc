@@ -72,7 +72,7 @@ class PerformanceControlsHatsServiceTest : public testing::Test {
   void SetMemorySaverEnabled(const bool high_efficiency_enabled) {
     performance_manager::user_tuning::UserPerformanceTuningManager::
         GetInstance()
-            ->SetHighEfficiencyModeEnabled(high_efficiency_enabled);
+            ->SetMemorySaverModeEnabled(high_efficiency_enabled);
   }
 
   PerformanceControlsHatsService* performance_controls_hats_service() {

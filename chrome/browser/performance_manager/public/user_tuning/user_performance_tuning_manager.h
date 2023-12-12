@@ -25,7 +25,7 @@ class PrefService;
 
 namespace performance_manager::user_tuning {
 
-// This singleton is responsible for managing the state of high efficiency mode,
+// This singleton is responsible for managing the state of memory saver mode,
 // as well as the different signals surrounding its toggling.
 //
 // It is created and owned by `ChromeBrowserMainExtraPartsPerformanceManager`
@@ -37,19 +37,18 @@ namespace performance_manager::user_tuning {
 // This object lives on the main thread and should be used from it exclusively.
 class UserPerformanceTuningManager {
  public:
-  class HighEfficiencyModeDelegate {
+  class MemorySaverModeDelegate {
    public:
-    virtual void ToggleHighEfficiencyMode(
-        prefs::HighEfficiencyModeState state) = 0;
+    virtual void ToggleMemorySaverMode(prefs::MemorySaverModeState state) = 0;
     virtual void SetTimeBeforeDiscard(base::TimeDelta time_before_discard) = 0;
-    virtual ~HighEfficiencyModeDelegate() = default;
+    virtual ~MemorySaverModeDelegate() = default;
   };
 
   class Observer : public base::CheckedObserver {
    public:
-    // Raised when the high efficiency mode setting is changed. Get the new
-    // state using `UserPerformanceTuningManager::IsHighEfficiencyModeActive()`
-    virtual void OnHighEfficiencyModeChanged() {}
+    // Raised when the memory saver mode setting is changed. Get the new
+    // state using `UserPerformanceTuningManager::IsMemorySaverModeActive()`
+    virtual void OnMemorySaverModeChanged() {}
 
     // Raised when the total memory footprint reaches X%.
     // Can be used by the UI to show a promo
@@ -160,19 +159,19 @@ class UserPerformanceTuningManager {
   void AddObserver(Observer* o);
   void RemoveObserver(Observer* o);
 
-  // Returns true if High Efficiency mode is currently enabled.
-  bool IsHighEfficiencyModeActive();
+  // Returns true if Memory Saver mode is currently enabled.
+  bool IsMemorySaverModeActive();
 
-  // Returns true if the prefs underlying High Efficiency Mode are managed by an
+  // Returns true if the prefs underlying Memory Saver Mode are managed by an
   // enterprise policy.
-  bool IsHighEfficiencyModeManaged() const;
+  bool IsMemorySaverModeManaged() const;
 
-  // Returns true if the prefs underlying High Efficiency Mode are still in the
+  // Returns true if the prefs underlying Memory Saver Mode are still in the
   // default state.
-  bool IsHighEfficiencyModeDefault() const;
+  bool IsMemorySaverModeDefault() const;
 
-  // Enables high efficiency mode and sets the relevant prefs accordingly.
-  void SetHighEfficiencyModeEnabled(bool enabled);
+  // Enables memory saver mode and sets the relevant prefs accordingly.
+  void SetMemorySaverModeEnabled(bool enabled);
 
   // Discards the given WebContents with the same mechanism as one that is
   // discarded through a natural timeout
@@ -200,20 +199,20 @@ class UserPerformanceTuningManager {
   explicit UserPerformanceTuningManager(
       PrefService* local_state,
       std::unique_ptr<UserPerformanceTuningNotifier> notifier = nullptr,
-      std::unique_ptr<HighEfficiencyModeDelegate>
-          high_efficiency_mode_delegate = nullptr);
+      std::unique_ptr<MemorySaverModeDelegate> memory_saver_mode_delegate =
+          nullptr);
 
   void Start();
 
-  void UpdateHighEfficiencyModeState();
-  void OnHighEfficiencyModePrefChanged();
-  void OnHighEfficiencyModeTimeBeforeDiscardChanged();
+  void UpdateMemorySaverModeState();
+  void OnMemorySaverModePrefChanged();
+  void OnMemorySaverModeTimeBeforeDiscardChanged();
 
   void NotifyTabCountThresholdReached();
   void NotifyMemoryThresholdReached();
   void NotifyMemoryMetricsRefreshed();
 
-  std::unique_ptr<HighEfficiencyModeDelegate> high_efficiency_mode_delegate_;
+  std::unique_ptr<MemorySaverModeDelegate> memory_saver_mode_delegate_;
 
   PrefChangeRegistrar pref_change_registrar_;
   base::ObserverList<Observer> observers_;

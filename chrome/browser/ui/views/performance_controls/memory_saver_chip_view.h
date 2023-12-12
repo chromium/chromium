@@ -49,7 +49,7 @@ class MemorySaverChipView : public PageActionIconView,
  private:
   // performance_manager::user_tuning::UserPerformanceTuningManager::Observer:
   // Checks whether high efficiency mode is currently enabled.
-  void OnHighEfficiencyModeChanged() override;
+  void OnMemorySaverModeChanged() override;
 
   const raw_ptr<Browser> browser_;
   const std::u16string chip_accessible_label_;

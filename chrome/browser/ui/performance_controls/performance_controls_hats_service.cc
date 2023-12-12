@@ -61,7 +61,7 @@ void PerformanceControlsHatsService::OpenedNewTabPage() {
   const bool high_efficiency_mode =
       performance_manager::user_tuning::UserPerformanceTuningManager::
           GetInstance()
-              ->IsHighEfficiencyModeActive();
+              ->IsMemorySaverModeActive();
 
   // A general performance survey for all users.
   if (base::FeatureList::IsEnabled(performance_manager::features::
@@ -109,7 +109,7 @@ void PerformanceControlsHatsService::OnBatterySaverModeChanged(
   }
 }
 
-void PerformanceControlsHatsService::OnHighEfficiencyModeChanged() {
+void PerformanceControlsHatsService::OnMemorySaverModeChanged() {
   HatsService* hats_service = HatsServiceFactory::GetForProfile(profile_, true);
   if (!hats_service) {
     return;
@@ -118,9 +118,9 @@ void PerformanceControlsHatsService::OnHighEfficiencyModeChanged() {
   auto* manager = performance_manager::user_tuning::
       UserPerformanceTuningManager::GetInstance();
   // A survey for users who have turned off high efficiency mode.
-  if (!manager->IsHighEfficiencyModeActive() &&
-      !manager->IsHighEfficiencyModeManaged() &&
-      !manager->IsHighEfficiencyModeDefault()) {
+  if (!manager->IsMemorySaverModeActive() &&
+      !manager->IsMemorySaverModeManaged() &&
+      !manager->IsMemorySaverModeDefault()) {
     hats_service->LaunchDelayedSurvey(
         kHatsSurveyTriggerPerformanceControlsMemorySaverOptOut, 10000);
   }

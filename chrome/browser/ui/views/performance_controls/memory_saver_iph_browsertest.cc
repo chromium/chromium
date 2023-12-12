@@ -98,10 +98,10 @@ IN_PROC_BROWSER_TEST_F(MemorySaverHelpPromoTest, ShowPromoOnTabThreshold) {
 IN_PROC_BROWSER_TEST_F(MemorySaverHelpPromoTest, PromoCustomActionClicked) {
   EXPECT_TRUE(performance_manager::user_tuning::UserPerformanceTuningManager::
                   GetInstance()
-                      ->IsHighEfficiencyModeDefault());
+                      ->IsMemorySaverModeDefault());
   EXPECT_FALSE(performance_manager::user_tuning::UserPerformanceTuningManager::
                    GetInstance()
-                       ->IsHighEfficiencyModeActive());
+                       ->IsMemorySaverModeActive());
 
   TriggerMemorySaverPromo();
 
@@ -114,10 +114,10 @@ IN_PROC_BROWSER_TEST_F(MemorySaverHelpPromoTest, PromoCustomActionClicked) {
 
   EXPECT_FALSE(performance_manager::user_tuning::UserPerformanceTuningManager::
                    GetInstance()
-                       ->IsHighEfficiencyModeDefault());
+                       ->IsMemorySaverModeDefault());
   EXPECT_TRUE(performance_manager::user_tuning::UserPerformanceTuningManager::
                   GetInstance()
-                      ->IsHighEfficiencyModeActive());
+                      ->IsMemorySaverModeActive());
 }
 
 // Check that the performance menu item is alerted when the high efficiency

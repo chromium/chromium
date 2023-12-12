@@ -38,8 +38,8 @@ void MemorySaverOptInIPHController::MaybeTriggerPromo() {
   BrowserWindow* const browser_window = browser_->window();
   auto* const manager = performance_manager::user_tuning::
       UserPerformanceTuningManager::GetInstance();
-  if (browser_window != nullptr && manager->IsHighEfficiencyModeDefault() &&
-      !manager->IsHighEfficiencyModeActive()) {
+  if (browser_window != nullptr && manager->IsMemorySaverModeDefault() &&
+      !manager->IsMemorySaverModeActive()) {
     browser_window->MaybeShowStartupFeaturePromo(
         feature_engagement::kIPHHighEfficiencyModeFeature);
   }

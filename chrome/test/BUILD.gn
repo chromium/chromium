@@ -640,8 +640,8 @@ static_library("test_support") {
       "../browser/installable/ml_promotion_browsertest_base.h",
       "../browser/performance_manager/test_support/fake_frame_throttling_delegate.cc",
       "../browser/performance_manager/test_support/fake_frame_throttling_delegate.h",
-      "../browser/performance_manager/test_support/fake_high_efficiency_mode_delegate.cc",
-      "../browser/performance_manager/test_support/fake_high_efficiency_mode_delegate.h",
+      "../browser/performance_manager/test_support/fake_memory_saver_mode_delegate.cc",
+      "../browser/performance_manager/test_support/fake_memory_saver_mode_delegate.h",
       "../browser/performance_manager/test_support/fake_power_monitor_source.cc",
       "../browser/performance_manager/test_support/fake_power_monitor_source.h",
       "../browser/performance_manager/test_support/page_discarding_utils.cc",
@@ -8123,7 +8123,7 @@ test("unit_tests") {
     sources += [
       # Urgent discarding from performance_manager, high-efficiency mode, and
       # the High-PMF discard policy aren't supported on Android.
-      "../browser/performance_manager/policies/high_efficiency_mode_policy_unittest.cc",
+      "../browser/performance_manager/policies/memory_saver_mode_policy_unittest.cc",
       "../browser/performance_manager/policies/page_discarding_helper_unittest.cc",
       "../browser/performance_manager/policies/probabilistic_memory_saver_policy_unittest.cc",
       "../browser/performance_manager/policies/probability_distribution_unittest.cc",
@@ -9607,7 +9607,7 @@ test("unit_tests") {
       "../browser/enterprise/connectors/device_trust/signals/signals_filterer_unittest.cc",
       "../browser/enterprise/connectors/device_trust/signals/signals_service_impl_unittest.cc",
       "../browser/enterprise/signals/user_delegate_impl_unittest.cc",
-      "../browser/performance_manager/user_tuning/high_efficiency_policy_handler_unittest.cc",
+      "../browser/performance_manager/user_tuning/memory_saver_policy_handler_unittest.cc",
     ]
 
     deps += [

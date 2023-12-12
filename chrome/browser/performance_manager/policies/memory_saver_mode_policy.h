@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_PERFORMANCE_MANAGER_POLICIES_HIGH_EFFICIENCY_MODE_POLICY_H_
-#define CHROME_BROWSER_PERFORMANCE_MANAGER_POLICIES_HIGH_EFFICIENCY_MODE_POLICY_H_
+#ifndef CHROME_BROWSER_PERFORMANCE_MANAGER_POLICIES_MEMORY_SAVER_MODE_POLICY_H_
+#define CHROME_BROWSER_PERFORMANCE_MANAGER_POLICIES_MEMORY_SAVER_MODE_POLICY_H_
 
 #include <map>
 #include <memory>
@@ -18,7 +18,7 @@ namespace performance_manager::policies {
 // This policy is responsible for discarding tabs after they have been
 // backgrounded for a certain amount of time, when High Efficiency Mode is
 // enabled by the user.
-class HighEfficiencyModePolicy : public GraphOwned,
+class MemorySaverModePolicy : public GraphOwned,
                                  public PageNode::ObserverDefaultImpl,
                                  public TabPageObserverDefaultImpl {
  public:
@@ -30,10 +30,10 @@ class HighEfficiencyModePolicy : public GraphOwned,
     kMaxValue = kAggressive,
   };
 
-  HighEfficiencyModePolicy();
-  ~HighEfficiencyModePolicy() override;
+  MemorySaverModePolicy();
+  ~MemorySaverModePolicy() override;
 
-  static HighEfficiencyModePolicy* GetInstance();
+  static MemorySaverModePolicy* GetInstance();
 
   // PageNode::ObserverDefaultImpl:
   void OnIsVisibleChanged(const PageNode* page_node) override;
@@ -77,4 +77,4 @@ class HighEfficiencyModePolicy : public GraphOwned,
 
 }  // namespace performance_manager::policies
 
-#endif  // CHROME_BROWSER_PERFORMANCE_MANAGER_POLICIES_HIGH_EFFICIENCY_MODE_POLICY_H_
+#endif  // CHROME_BROWSER_PERFORMANCE_MANAGER_POLICIES_MEMORY_SAVER_MODE_POLICY_H_

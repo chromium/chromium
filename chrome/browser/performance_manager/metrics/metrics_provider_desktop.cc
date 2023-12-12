@@ -15,8 +15,8 @@
 #include "ui/accessibility/ax_mode.h"
 #include "ui/accessibility/platform/ax_platform_node.h"
 
-using performance_manager::user_tuning::prefs::HighEfficiencyModeState;
-using performance_manager::user_tuning::prefs::kHighEfficiencyModeState;
+using performance_manager::user_tuning::prefs::kMemorySaverModeState;
+using performance_manager::user_tuning::prefs::MemorySaverModeState;
 
 namespace performance_manager {
 
@@ -134,7 +134,7 @@ void MetricsProviderDesktop::Initialize() {
 
   pref_change_registrar_.Init(local_state_);
   pref_change_registrar_.Add(
-      kHighEfficiencyModeState,
+      kMemorySaverModeState,
       base::BindRepeating(&MetricsProviderDesktop::OnHighEfficiencyPrefChanged,
                           base::Unretained(this)));
   performance_manager::user_tuning::BatterySaverModeManager::GetInstance()
@@ -233,8 +233,8 @@ MetricsProviderDesktop::ComputeCurrentMode() const {
 }
 
 bool MetricsProviderDesktop::IsHighEfficiencyEnabled() const {
-  return local_state_->GetInteger(kHighEfficiencyModeState) !=
-         static_cast<int>(HighEfficiencyModeState::kDisabled);
+  return local_state_->GetInteger(kMemorySaverModeState) !=
+         static_cast<int>(MemorySaverModeState::kDisabled);
 }
 
 void MetricsProviderDesktop::RecordAvailableMemoryMetrics() {

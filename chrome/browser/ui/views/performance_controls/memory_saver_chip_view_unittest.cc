@@ -107,7 +107,7 @@ class MemorySaverChipViewTest : public TestWithBrowserView {
   void SetHighEfficiencyModeEnabled(bool enabled) {
     performance_manager::user_tuning::UserPerformanceTuningManager::
         GetInstance()
-            ->SetHighEfficiencyModeEnabled(enabled);
+            ->SetMemorySaverModeEnabled(enabled);
   }
 
   void SetChipExpandedCount(int count) {

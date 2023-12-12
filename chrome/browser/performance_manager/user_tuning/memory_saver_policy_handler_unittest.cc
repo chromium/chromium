@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/performance_manager/public/user_tuning/high_efficiency_policy_handler.h"
+#include "chrome/browser/performance_manager/public/user_tuning/memory_saver_policy_handler.h"
 
 #include "components/performance_manager/public/user_tuning/prefs.h"
 #include "components/policy/core/browser/configuration_policy_pref_store.h"
@@ -11,24 +11,24 @@
 
 namespace performance_manager {
 
-class HighEfficiencyPolicyHandlerTest
+class MemorySaverPolicyHandlerTest
     : public policy::ConfigurationPolicyPrefStoreTest {
   void SetUp() override {
-    handler_list_.AddHandler(std::make_unique<HighEfficiencyPolicyHandler>());
+    handler_list_.AddHandler(std::make_unique<MemorySaverPolicyHandler>());
   }
 };
 
-TEST_F(HighEfficiencyPolicyHandlerTest, PolicyNotSet) {
+TEST_F(MemorySaverPolicyHandlerTest, PolicyNotSet) {
   const base::Value* value_ptr = nullptr;
   policy::PolicyMap policy;
   UpdateProviderPolicy(policy);
   // When no policy is set, no value should be pushed to prefs.
   EXPECT_FALSE(store_->GetValue(
-      performance_manager::user_tuning::prefs::kHighEfficiencyModeState,
+      performance_manager::user_tuning::prefs::kMemorySaverModeState,
       &value_ptr));
 }
 
-TEST_F(HighEfficiencyPolicyHandlerTest, PolicySetToFalseSetsPrefToDisabled) {
+TEST_F(MemorySaverPolicyHandlerTest, PolicySetToFalseSetsPrefToDisabled) {
   const base::Value* value_ptr = nullptr;
   policy::PolicyMap policy;
   policy.Set(policy::key::kHighEfficiencyModeEnabled,
@@ -37,15 +37,14 @@ TEST_F(HighEfficiencyPolicyHandlerTest, PolicySetToFalseSetsPrefToDisabled) {
   UpdateProviderPolicy(policy);
 
   EXPECT_TRUE(store_->GetValue(
-      performance_manager::user_tuning::prefs::kHighEfficiencyModeState,
+      performance_manager::user_tuning::prefs::kMemorySaverModeState,
       &value_ptr));
   EXPECT_EQ(value_ptr->GetInt(),
             static_cast<int>(performance_manager::user_tuning::prefs::
-                                 HighEfficiencyModeState::kDisabled));
+                                 MemorySaverModeState::kDisabled));
 }
 
-TEST_F(HighEfficiencyPolicyHandlerTest,
-       PolicySetToTrueSetsPrefToEnabledOnTimer) {
+TEST_F(MemorySaverPolicyHandlerTest, PolicySetToTrueSetsPrefToEnabledOnTimer) {
   const base::Value* value_ptr = nullptr;
   policy::PolicyMap policy;
   policy.Set(policy::key::kHighEfficiencyModeEnabled,
@@ -54,11 +53,11 @@ TEST_F(HighEfficiencyPolicyHandlerTest,
   UpdateProviderPolicy(policy);
 
   EXPECT_TRUE(store_->GetValue(
-      performance_manager::user_tuning::prefs::kHighEfficiencyModeState,
+      performance_manager::user_tuning::prefs::kMemorySaverModeState,
       &value_ptr));
   EXPECT_EQ(value_ptr->GetInt(),
             static_cast<int>(performance_manager::user_tuning::prefs::
-                                 HighEfficiencyModeState::kEnabledOnTimer));
+                                 MemorySaverModeState::kEnabledOnTimer));
 }
 
 }  // namespace performance_manager

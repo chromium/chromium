@@ -33,7 +33,7 @@ class PerformanceControlsHatsService
   // performance_manager::user_tuning::UserPerformanceTuningManager::Observer:
   // Called in response to a change in the high efficiency mode pref to check
   // whether a HaTS survey should be shown.
-  void OnHighEfficiencyModeChanged() override;
+  void OnMemorySaverModeChanged() override;
 
  private:
   raw_ptr<Profile> profile_;

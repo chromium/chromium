@@ -21,14 +21,13 @@ TEST_F(HighEfficiencyModePrefMigrationTest, NoChangeToUserSetNewPref) {
   // The old pref is set by the user, but so is the new pref so no migration
   // should happen.
   pref_service_.SetBoolean(kHighEfficiencyModeEnabled, true);
-  pref_service_.SetInteger(
-      kHighEfficiencyModeState,
-      static_cast<int>(HighEfficiencyModeState::kDisabled));
+  pref_service_.SetInteger(kMemorySaverModeState,
+                           static_cast<int>(MemorySaverModeState::kDisabled));
 
   MigrateHighEfficiencyModePref(&pref_service_);
 
-  EXPECT_EQ(pref_service_.GetInteger(kHighEfficiencyModeState),
-            static_cast<int>(HighEfficiencyModeState::kDisabled));
+  EXPECT_EQ(pref_service_.GetInteger(kMemorySaverModeState),
+            static_cast<int>(MemorySaverModeState::kDisabled));
   // The old pref should be reset.
   EXPECT_TRUE(pref_service_.FindPreference(kHighEfficiencyModeEnabled)
                   ->IsDefaultValue());
@@ -37,20 +36,20 @@ TEST_F(HighEfficiencyModePrefMigrationTest, NoChangeToUserSetNewPref) {
 
 TEST_F(HighEfficiencyModePrefMigrationTest, BothPrefsDefaultNoMigration) {
   // Simulate that the default enum state value is not "disabled"
-  pref_service_.SetDefaultPrefValue(kHighEfficiencyModeState, base::Value(1));
+  pref_service_.SetDefaultPrefValue(kMemorySaverModeState, base::Value(1));
 
-  EXPECT_EQ(pref_service_.GetInteger(kHighEfficiencyModeState),
-            static_cast<int>(HighEfficiencyModeState::kEnabled));
+  EXPECT_EQ(pref_service_.GetInteger(kMemorySaverModeState),
+            static_cast<int>(MemorySaverModeState::kEnabled));
   EXPECT_TRUE(
-      pref_service_.FindPreference(kHighEfficiencyModeState)->IsDefaultValue());
+      pref_service_.FindPreference(kMemorySaverModeState)->IsDefaultValue());
 
   MigrateHighEfficiencyModePref(&pref_service_);
 
   // Both prefs were in the default state, no migration happens
   EXPECT_TRUE(
-      pref_service_.FindPreference(kHighEfficiencyModeState)->IsDefaultValue());
-  EXPECT_EQ(pref_service_.GetInteger(kHighEfficiencyModeState),
-            static_cast<int>(HighEfficiencyModeState::kEnabled));
+      pref_service_.FindPreference(kMemorySaverModeState)->IsDefaultValue());
+  EXPECT_EQ(pref_service_.GetInteger(kMemorySaverModeState),
+            static_cast<int>(MemorySaverModeState::kEnabled));
 }
 
 TEST_F(HighEfficiencyModePrefMigrationTest,
@@ -58,18 +57,18 @@ TEST_F(HighEfficiencyModePrefMigrationTest,
   // Set the old pref as-if set by the user.
   pref_service_.SetBoolean(kHighEfficiencyModeEnabled, true);
 
-  EXPECT_EQ(pref_service_.GetInteger(kHighEfficiencyModeState),
-            static_cast<int>(HighEfficiencyModeState::kDisabled));
+  EXPECT_EQ(pref_service_.GetInteger(kMemorySaverModeState),
+            static_cast<int>(MemorySaverModeState::kDisabled));
   EXPECT_TRUE(
-      pref_service_.FindPreference(kHighEfficiencyModeState)->IsDefaultValue());
+      pref_service_.FindPreference(kMemorySaverModeState)->IsDefaultValue());
 
   MigrateHighEfficiencyModePref(&pref_service_);
 
   EXPECT_FALSE(
-      pref_service_.FindPreference(kHighEfficiencyModeState)->IsDefaultValue());
+      pref_service_.FindPreference(kMemorySaverModeState)->IsDefaultValue());
   // "true" in the boolean pref maps to `2` (enabled on timer)
-  EXPECT_EQ(pref_service_.GetInteger(kHighEfficiencyModeState),
-            static_cast<int>(HighEfficiencyModeState::kEnabledOnTimer));
+  EXPECT_EQ(pref_service_.GetInteger(kMemorySaverModeState),
+            static_cast<int>(MemorySaverModeState::kEnabledOnTimer));
 
   // The old pref should be reset.
   EXPECT_TRUE(pref_service_.FindPreference(kHighEfficiencyModeEnabled)
@@ -82,18 +81,18 @@ TEST_F(HighEfficiencyModePrefMigrationTest,
   // Set the old pref as-if set by the user.
   pref_service_.SetBoolean(kHighEfficiencyModeEnabled, false);
 
-  EXPECT_EQ(pref_service_.GetInteger(kHighEfficiencyModeState),
-            static_cast<int>(HighEfficiencyModeState::kDisabled));
+  EXPECT_EQ(pref_service_.GetInteger(kMemorySaverModeState),
+            static_cast<int>(MemorySaverModeState::kDisabled));
   EXPECT_TRUE(
-      pref_service_.FindPreference(kHighEfficiencyModeState)->IsDefaultValue());
+      pref_service_.FindPreference(kMemorySaverModeState)->IsDefaultValue());
 
   MigrateHighEfficiencyModePref(&pref_service_);
 
   EXPECT_FALSE(
-      pref_service_.FindPreference(kHighEfficiencyModeState)->IsDefaultValue());
+      pref_service_.FindPreference(kMemorySaverModeState)->IsDefaultValue());
   // "false" in the boolean pref maps to `0` (disabled)
-  EXPECT_EQ(pref_service_.GetInteger(kHighEfficiencyModeState),
-            static_cast<int>(HighEfficiencyModeState::kDisabled));
+  EXPECT_EQ(pref_service_.GetInteger(kMemorySaverModeState),
+            static_cast<int>(MemorySaverModeState::kDisabled));
 
   // The old pref should be reset.
   EXPECT_TRUE(pref_service_.FindPreference(kHighEfficiencyModeEnabled)

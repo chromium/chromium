@@ -21,11 +21,11 @@ class PerformanceManagerMetricsProviderDesktopTest : public testing::Test {
 
   void SetHighEfficiencyEnabled(bool enabled) {
     local_state()->SetInteger(
-        performance_manager::user_tuning::prefs::kHighEfficiencyModeState,
+        performance_manager::user_tuning::prefs::kMemorySaverModeState,
         static_cast<int>(enabled ? performance_manager::user_tuning::prefs::
-                                       HighEfficiencyModeState::kEnabledOnTimer
+                                       MemorySaverModeState::kEnabledOnTimer
                                  : performance_manager::user_tuning::prefs::
-                                       HighEfficiencyModeState::kDisabled));
+                                       MemorySaverModeState::kDisabled));
   }
 
   void SetBatterySaverEnabled(bool enabled) {

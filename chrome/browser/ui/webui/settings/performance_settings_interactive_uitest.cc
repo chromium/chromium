@@ -28,7 +28,7 @@
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 using performance_manager::user_tuning::prefs::BatterySaverModeState;
-using performance_manager::user_tuning::prefs::HighEfficiencyModeState;
+using performance_manager::user_tuning::prefs::MemorySaverModeState;
 
 namespace {
 DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kPerformanceSettingsPage);
@@ -69,7 +69,7 @@ class PerformanceSettingsInteractiveTest : public InteractiveBrowserTest {
     InteractiveBrowserTest::SetUpOnMainThread();
     performance_manager::user_tuning::UserPerformanceTuningManager::
         GetInstance()
-            ->SetHighEfficiencyModeEnabled(true);
+            ->SetMemorySaverModeEnabled(true);
     ASSERT_TRUE(embedded_test_server()->InitializeAndListen());
     embedded_test_server()->StartAcceptingConnections();
   }
@@ -91,17 +91,17 @@ class PerformanceSettingsInteractiveTest : public InteractiveBrowserTest {
     return CheckResult(get_tab_count, expected_tab_count);
   }
 
-  auto CheckMemorySaverModePrefState(HighEfficiencyModeState state) {
-    return CheckResult(base::BindLambdaForTesting([]() {
-                         return performance_manager::user_tuning::prefs::
-                             GetCurrentHighEfficiencyModeState(
-                                 g_browser_process->local_state());
-                       }),
-                       state);
+  auto CheckMemorySaverModePrefState(MemorySaverModeState state) {
+    return CheckResult(
+        base::BindLambdaForTesting([]() {
+          return performance_manager::user_tuning::prefs::
+              GetCurrentMemorySaverModeState(g_browser_process->local_state());
+        }),
+        state);
   }
 
   auto CheckMemorySaverModeLogged(
-      HighEfficiencyModeState state,
+      MemorySaverModeState state,
       int expected_count,
       const base::HistogramTester& histogram_tester) {
     return Do(base::BindLambdaForTesting([=, &histogram_tester]() {
@@ -167,13 +167,13 @@ IN_PROC_BROWSER_TEST_F(PerformanceSettingsInteractiveTest,
       ClickElement(kPerformanceSettingsPage, kMemorySaverToggleQuery),
       WaitForButtonStateChange(kPerformanceSettingsPage,
                                kMemorySaverToggleQuery, false),
-      CheckMemorySaverModePrefState(HighEfficiencyModeState::kDisabled),
+      CheckMemorySaverModePrefState(MemorySaverModeState::kDisabled),
 
       // Turn High Efficiency Mode back on
       ClickElement(kPerformanceSettingsPage, kMemorySaverToggleQuery),
       WaitForButtonStateChange(kPerformanceSettingsPage,
                                kMemorySaverToggleQuery, true),
-      CheckMemorySaverModePrefState(HighEfficiencyModeState::kEnabledOnTimer));
+      CheckMemorySaverModePrefState(MemorySaverModeState::kEnabledOnTimer));
 }
 
 IN_PROC_BROWSER_TEST_F(PerformanceSettingsInteractiveTest,
@@ -213,14 +213,14 @@ IN_PROC_BROWSER_TEST_F(PerformanceSettingsInteractiveTest,
       ClickElement(kPerformanceSettingsPage, kMemorySaverToggleQuery),
       WaitForButtonStateChange(kPerformanceSettingsPage,
                                kMemorySaverToggleQuery, false),
-      CheckMemorySaverModeLogged(HighEfficiencyModeState::kDisabled, 1,
+      CheckMemorySaverModeLogged(MemorySaverModeState::kDisabled, 1,
                                  histogram_tester),
 
       // Turn High Efficiency Mode back on
       ClickElement(kPerformanceSettingsPage, kMemorySaverToggleQuery),
       WaitForButtonStateChange(kPerformanceSettingsPage,
                                kMemorySaverToggleQuery, true),
-      CheckMemorySaverModeLogged(HighEfficiencyModeState::kEnabledOnTimer, 1,
+      CheckMemorySaverModeLogged(MemorySaverModeState::kEnabledOnTimer, 1,
                                  histogram_tester));
 }
 
@@ -283,19 +283,19 @@ IN_PROC_BROWSER_TEST_F(PerformanceSettingsMultiStateModeInteractiveTest,
       ClickElement(kPerformanceSettingsPage, kDiscardOnTimerQuery),
       WaitForButtonStateChange(kPerformanceSettingsPage, kDiscardOnTimerQuery,
                                true),
-      CheckMemorySaverModePrefState(HighEfficiencyModeState::kEnabledOnTimer),
+      CheckMemorySaverModePrefState(MemorySaverModeState::kEnabledOnTimer),
 
       // Turn off high efficiency mode
       ClickElement(kPerformanceSettingsPage, kMemorySaverToggleQuery),
       WaitForButtonStateChange(kPerformanceSettingsPage,
                                kMemorySaverToggleQuery, false),
-      CheckMemorySaverModePrefState(HighEfficiencyModeState::kDisabled),
+      CheckMemorySaverModePrefState(MemorySaverModeState::kDisabled),
 
       // Turn high efficiency mode back on
       ClickElement(kPerformanceSettingsPage, kMemorySaverToggleQuery),
       WaitForButtonStateChange(kPerformanceSettingsPage,
                                kMemorySaverToggleQuery, true),
-      CheckMemorySaverModePrefState(HighEfficiencyModeState::kEnabled));
+      CheckMemorySaverModePrefState(MemorySaverModeState::kEnabled));
 }
 
 IN_PROC_BROWSER_TEST_F(PerformanceSettingsMultiStateModeInteractiveTest,
@@ -318,14 +318,14 @@ IN_PROC_BROWSER_TEST_F(PerformanceSettingsMultiStateModeInteractiveTest,
       ClickElement(kPerformanceSettingsPage, kMemorySaverToggleQuery),
       WaitForButtonStateChange(kPerformanceSettingsPage,
                                kMemorySaverToggleQuery, false),
-      CheckMemorySaverModeLogged(HighEfficiencyModeState::kDisabled, 1,
+      CheckMemorySaverModeLogged(MemorySaverModeState::kDisabled, 1,
                                  histogram_tester),
 
       // Turn High Efficiency Mode back on
       ClickElement(kPerformanceSettingsPage, kMemorySaverToggleQuery),
       WaitForButtonStateChange(kPerformanceSettingsPage,
                                kMemorySaverToggleQuery, true),
-      CheckMemorySaverModeLogged(HighEfficiencyModeState::kEnabled, 1,
+      CheckMemorySaverModeLogged(MemorySaverModeState::kEnabled, 1,
                                  histogram_tester),
 
       // Wait for the iron-collapse animation to finish so that the performance
@@ -337,14 +337,14 @@ IN_PROC_BROWSER_TEST_F(PerformanceSettingsMultiStateModeInteractiveTest,
       ClickElement(kPerformanceSettingsPage, kDiscardOnTimerQuery),
       WaitForButtonStateChange(kPerformanceSettingsPage, kDiscardOnTimerQuery,
                                true),
-      CheckMemorySaverModeLogged(HighEfficiencyModeState::kEnabledOnTimer, 1,
+      CheckMemorySaverModeLogged(MemorySaverModeState::kEnabledOnTimer, 1,
                                  histogram_tester),
 
       // Change high efficiency setting to discard tabs based on usage
       ClickElement(kPerformanceSettingsPage, kDiscardOnUsageQuery),
       WaitForButtonStateChange(kPerformanceSettingsPage, kDiscardOnUsageQuery,
                                true),
-      CheckMemorySaverModeLogged(HighEfficiencyModeState::kEnabled, 2,
+      CheckMemorySaverModeLogged(MemorySaverModeState::kEnabled, 2,
                                  histogram_tester));
 }
 

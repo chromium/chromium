@@ -648,9 +648,10 @@ void MaybeRegisterChromeFeaturePromos(
               [](ui::ElementContext ctx,
                  user_education::FeaturePromoHandle promo_handle) {
                 auto* browser = chrome::FindBrowserWithUiElementContext(ctx);
-                if (browser)
+                if (browser) {
                   chrome::ShowSettingsSubPage(browser,
                                               chrome::kPerformanceSubPage);
+                }
                 RecordBatterySaverIPHOpenSettings(browser != nullptr);
               }))
           .SetBubbleTitleText(IDS_BATTERY_SAVER_MODE_PROMO_TITLE)
@@ -667,7 +668,7 @@ void MaybeRegisterChromeFeaturePromos(
                  user_education::FeaturePromoHandle promo_handle) {
                 performance_manager::user_tuning::UserPerformanceTuningManager::
                     GetInstance()
-                        ->SetHighEfficiencyModeEnabled(true);
+                        ->SetMemorySaverModeEnabled(true);
                 RecordMemorySaverIPHEnableMode(true);
               }))
           .SetCustomActionIsDefault(true)
@@ -752,8 +753,9 @@ void MaybeRegisterChromeTutorials(
 
   // TODO (dfried): we might want to do something more sophisticated in the
   // future.
-  if (tutorial_registry.IsTutorialRegistered(kTabGroupTutorialId))
+  if (tutorial_registry.IsTutorialRegistered(kTabGroupTutorialId)) {
     return;
+  }
 
   {  // Menu item bubble test.
     TutorialDescription test_description;

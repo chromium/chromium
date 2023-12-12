@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/performance_manager/policies/high_efficiency_mode_policy.h"
+#include "chrome/browser/performance_manager/policies/memory_saver_mode_policy.h"
 
 #include "base/containers/contains.h"
 #include "chrome/browser/performance_manager/policies/page_discarding_helper.h"
@@ -13,35 +13,34 @@
 namespace performance_manager::policies {
 
 namespace {
-HighEfficiencyModePolicy* g_high_efficiency_mode_policy = nullptr;
+MemorySaverModePolicy* g_memory_saver_mode_policy = nullptr;
 
-HighEfficiencyModePolicy::MemorySaverMode GetCurrentMode() {
+MemorySaverModePolicy::MemorySaverMode GetCurrentMode() {
   int mode_value = performance_manager::features::kModalMemorySaverMode.Get();
   CHECK_GE(mode_value, 0);
-  CHECK_LE(
-      mode_value,
-      static_cast<int>(HighEfficiencyModePolicy::MemorySaverMode::kMaxValue));
-  return static_cast<HighEfficiencyModePolicy::MemorySaverMode>(mode_value);
+  CHECK_LE(mode_value,
+           static_cast<int>(MemorySaverModePolicy::MemorySaverMode::kMaxValue));
+  return static_cast<MemorySaverModePolicy::MemorySaverMode>(mode_value);
 }
 }  // namespace
 
-HighEfficiencyModePolicy::HighEfficiencyModePolicy()
+MemorySaverModePolicy::MemorySaverModePolicy()
     : time_before_discard_(base::TimeDelta::Max()) {
-  DCHECK(!g_high_efficiency_mode_policy);
-  g_high_efficiency_mode_policy = this;
+  DCHECK(!g_memory_saver_mode_policy);
+  g_memory_saver_mode_policy = this;
 }
 
-HighEfficiencyModePolicy::~HighEfficiencyModePolicy() {
-  DCHECK_EQ(this, g_high_efficiency_mode_policy);
-  g_high_efficiency_mode_policy = nullptr;
+MemorySaverModePolicy::~MemorySaverModePolicy() {
+  DCHECK_EQ(this, g_memory_saver_mode_policy);
+  g_memory_saver_mode_policy = nullptr;
 }
 
 // static
-HighEfficiencyModePolicy* HighEfficiencyModePolicy::GetInstance() {
-  return g_high_efficiency_mode_policy;
+MemorySaverModePolicy* MemorySaverModePolicy::GetInstance() {
+  return g_memory_saver_mode_policy;
 }
 
-void HighEfficiencyModePolicy::OnIsVisibleChanged(const PageNode* page_node) {
+void MemorySaverModePolicy::OnIsVisibleChanged(const PageNode* page_node) {
   TabPageDecorator::TabHandle* tab_handle =
       TabPageDecorator::FromPageNode(page_node);
   if (!tab_handle) {
@@ -59,7 +58,7 @@ void HighEfficiencyModePolicy::OnIsVisibleChanged(const PageNode* page_node) {
   }
 }
 
-void HighEfficiencyModePolicy::OnTabAdded(
+void MemorySaverModePolicy::OnTabAdded(
     TabPageDecorator::TabHandle* tab_handle) {
   if (!tab_handle->page_node()->IsVisible()) {
     // Some mechanisms (like "session restore" and "open all bookmarks") can
@@ -72,18 +71,19 @@ void HighEfficiencyModePolicy::OnTabAdded(
   }
 }
 
-void HighEfficiencyModePolicy::OnBeforeTabRemoved(
+void MemorySaverModePolicy::OnBeforeTabRemoved(
     TabPageDecorator::TabHandle* tab_handle) {
   RemoveActiveTimer(tab_handle);
 }
 
-void HighEfficiencyModePolicy::OnPassedToGraph(Graph* graph) {
+void MemorySaverModePolicy::OnPassedToGraph(Graph* graph) {
+
   graph_ = graph;
   graph->AddPageNodeObserver(this);
   graph->GetRegisteredObjectAs<TabPageDecorator>()->AddObserver(this);
 }
 
-void HighEfficiencyModePolicy::OnTakenFromGraph(Graph* graph) {
+void MemorySaverModePolicy::OnTakenFromGraph(Graph* graph) {
   // The logic in this class depends on being notified of pages being removed,
   // otherwise there's no guarantee PageNode pointers are still valid when
   // timers fire. To avoid possibly having callbacks manipulate invalid PageNode
@@ -100,7 +100,7 @@ void HighEfficiencyModePolicy::OnTakenFromGraph(Graph* graph) {
   graph_ = nullptr;
 }
 
-void HighEfficiencyModePolicy::OnHighEfficiencyModeChanged(bool enabled) {
+void MemorySaverModePolicy::OnHighEfficiencyModeChanged(bool enabled) {
   high_efficiency_mode_enabled_ = enabled;
 
   if (high_efficiency_mode_enabled_) {
@@ -111,12 +111,11 @@ void HighEfficiencyModePolicy::OnHighEfficiencyModeChanged(bool enabled) {
   }
 }
 
-base::TimeDelta HighEfficiencyModePolicy::GetTimeBeforeDiscardForTesting()
-    const {
+base::TimeDelta MemorySaverModePolicy::GetTimeBeforeDiscardForTesting() const {
   return GetTimeBeforeDiscardForCurrentMode();
 }
 
-void HighEfficiencyModePolicy::SetTimeBeforeDiscard(
+void MemorySaverModePolicy::SetTimeBeforeDiscard(
     base::TimeDelta time_before_discard) {
   time_before_discard_ = time_before_discard;
   if (high_efficiency_mode_enabled_) {
@@ -125,11 +124,11 @@ void HighEfficiencyModePolicy::SetTimeBeforeDiscard(
   }
 }
 
-bool HighEfficiencyModePolicy::IsHighEfficiencyDiscardingEnabled() const {
+bool MemorySaverModePolicy::IsHighEfficiencyDiscardingEnabled() const {
   return high_efficiency_mode_enabled_;
 }
 
-void HighEfficiencyModePolicy::StartAllDiscardTimers() {
+void MemorySaverModePolicy::StartAllDiscardTimers() {
   for (const PageNode* page_node : graph_->GetAllPageNodes()) {
     TabPageDecorator::TabHandle* tab_handle =
         TabPageDecorator::FromPageNode(page_node);
@@ -140,7 +139,7 @@ void HighEfficiencyModePolicy::StartAllDiscardTimers() {
   }
 }
 
-void HighEfficiencyModePolicy::StartDiscardTimerIfEnabled(
+void MemorySaverModePolicy::StartDiscardTimerIfEnabled(
     const TabPageDecorator::TabHandle* tab_handle,
     base::TimeDelta time_before_discard) {
   if (IsHighEfficiencyDiscardingEnabled()) {
@@ -165,20 +164,20 @@ void HighEfficiencyModePolicy::StartDiscardTimerIfEnabled(
     CHECK_NE(time_before_discard, base::TimeDelta::Max());
     active_discard_timers_[tab_handle].Start(
         FROM_HERE, time_before_discard,
-        base::BindOnce(&HighEfficiencyModePolicy::DiscardPageTimerCallback,
+        base::BindOnce(&MemorySaverModePolicy::DiscardPageTimerCallback,
                        base::Unretained(this), tab_handle,
                        base::LiveTicks::Now(), time_before_discard));
   }
 }
 
-void HighEfficiencyModePolicy::RemoveActiveTimer(
+void MemorySaverModePolicy::RemoveActiveTimer(
     const TabPageDecorator::TabHandle* tab_handle) {
   // If there's a discard timer already running for this page, erase it from the
   // map which will stop the timer when it is destroyed.
   active_discard_timers_.erase(tab_handle);
 }
 
-void HighEfficiencyModePolicy::DiscardPageTimerCallback(
+void MemorySaverModePolicy::DiscardPageTimerCallback(
     const TabPageDecorator::TabHandle* tab_handle,
     base::LiveTicks posted_at,
     base::TimeDelta requested_time_before_discard) {
@@ -208,7 +207,7 @@ void HighEfficiencyModePolicy::DiscardPageTimerCallback(
   }
 }
 
-base::TimeDelta HighEfficiencyModePolicy::GetTimeBeforeDiscardForCurrentMode()
+base::TimeDelta MemorySaverModePolicy::GetTimeBeforeDiscardForCurrentMode()
     const {
   if (base::FeatureList::IsEnabled(features::kModalMemorySaver)) {
     MemorySaverMode mode = GetCurrentMode();
@@ -225,7 +224,7 @@ base::TimeDelta HighEfficiencyModePolicy::GetTimeBeforeDiscardForCurrentMode()
   return time_before_discard_;
 }
 
-int HighEfficiencyModePolicy::GetMaxNumRevisitsForCurrentMode() const {
+int MemorySaverModePolicy::GetMaxNumRevisitsForCurrentMode() const {
   MemorySaverMode mode = GetCurrentMode();
 
   if (mode == MemorySaverMode::kConservative) {

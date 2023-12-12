@@ -75,7 +75,7 @@ class MemorySaverBubbleViewTest : public TestWithBrowserView {
 
     performance_manager::user_tuning::UserPerformanceTuningManager::
         GetInstance()
-            ->SetHighEfficiencyModeEnabled(true);
+            ->SetMemorySaverModeEnabled(true);
   }
 
   // Creates a new tab at index 0 that would report the given memory savings and

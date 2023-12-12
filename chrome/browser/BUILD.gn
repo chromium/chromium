@@ -4126,8 +4126,8 @@ static_library("browser") {
       "performance_manager/policies/background_tab_loading_policy.h",
       "performance_manager/policies/background_tab_loading_policy_helpers.cc",
       "performance_manager/policies/background_tab_loading_policy_helpers.h",
-      "performance_manager/policies/high_efficiency_mode_policy.cc",
-      "performance_manager/policies/high_efficiency_mode_policy.h",
+      "performance_manager/policies/memory_saver_mode_policy.cc",
+      "performance_manager/policies/memory_saver_mode_policy.h",
       "performance_manager/policies/page_discarding_helper.cc",
       "performance_manager/policies/page_discarding_helper.h",
       "performance_manager/policies/probabilistic_memory_saver_policy.cc",
@@ -6336,8 +6336,8 @@ static_library("browser") {
       "enterprise/signals/user_permission_service_factory.h",
 
       # These policies are only supported on non-lacros desktop
-      "performance_manager/public/user_tuning/high_efficiency_policy_handler.h",
-      "performance_manager/user_tuning/high_efficiency_policy_handler.cc",
+      "performance_manager/public/user_tuning/memory_saver_policy_handler.h",
+      "performance_manager/user_tuning/memory_saver_policy_handler.cc",
       "policy/battery_saver_policy_handler.cc",
       "policy/battery_saver_policy_handler.h",
     ]

@@ -65,7 +65,7 @@ MemorySaverChipView::MemorySaverChipView(
   auto* manager = performance_manager::user_tuning::
       UserPerformanceTuningManager::GetInstance();
   user_performance_tuning_manager_observation_.Observe(manager);
-  OnHighEfficiencyModeChanged();
+  OnMemorySaverModeChanged();
 
   SetUpForInOutAnimation(kChipAnimationDuration);
   SetPaintLabelOverSolidBackground(true);
@@ -183,10 +183,10 @@ views::BubbleDialogDelegate* MemorySaverChipView::GetBubble() const {
   return bubble_;
 }
 
-void MemorySaverChipView::OnHighEfficiencyModeChanged() {
+void MemorySaverChipView::OnMemorySaverModeChanged() {
   auto* manager = performance_manager::user_tuning::
       UserPerformanceTuningManager::GetInstance();
-  is_high_efficiency_mode_enabled_ = manager->IsHighEfficiencyModeActive();
+  is_high_efficiency_mode_enabled_ = manager->IsMemorySaverModeActive();
 }
 
 BEGIN_METADATA(MemorySaverChipView, PageActionIconView)

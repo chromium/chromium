@@ -15,7 +15,7 @@
 #include "base/run_loop.h"
 #include "base/values.h"
 #include "chrome/browser/performance_manager/metrics/page_timeline_monitor.h"
-#include "chrome/browser/performance_manager/policies/high_efficiency_mode_policy.h"
+#include "chrome/browser/performance_manager/policies/memory_saver_mode_policy.h"
 #include "chrome/browser/performance_manager/policies/page_discarding_helper.h"
 #include "chrome/browser/performance_manager/user_tuning/user_performance_tuning_notifier.h"
 #include "chrome/browser/resource_coordinator/lifecycle_unit_state.mojom-shared.h"
@@ -34,40 +34,37 @@
 #include "chromeos/dbus/power/power_manager_client.h"
 #endif
 
-using performance_manager::user_tuning::prefs::HighEfficiencyModeState;
-using performance_manager::user_tuning::prefs::kHighEfficiencyModeState;
+using performance_manager::user_tuning::prefs::kMemorySaverModeState;
+using performance_manager::user_tuning::prefs::MemorySaverModeState;
 
 namespace performance_manager::user_tuning {
 namespace {
 
 UserPerformanceTuningManager* g_user_performance_tuning_manager = nullptr;
 
-class HighEfficiencyModeDelegateImpl
+class MemorySaverModeDelegateImpl
     : public performance_manager::user_tuning::UserPerformanceTuningManager::
-          HighEfficiencyModeDelegate {
+          MemorySaverModeDelegate {
  public:
-  void ToggleHighEfficiencyMode(HighEfficiencyModeState state) override {
+  void ToggleMemorySaverMode(MemorySaverModeState state) override {
     performance_manager::PerformanceManager::CallOnGraph(
         FROM_HERE,
         base::BindOnce(
-            [](HighEfficiencyModeState state) {
-              auto* high_efficiency_mode_policy =
-                  policies::HighEfficiencyModePolicy::GetInstance();
-              CHECK(high_efficiency_mode_policy);
+            [](MemorySaverModeState state) {
+              auto* memory_saver_mode_policy =
+                  policies::MemorySaverModePolicy::GetInstance();
+              CHECK(memory_saver_mode_policy);
               switch (state) {
-                case HighEfficiencyModeState::kDisabled:
-                  high_efficiency_mode_policy->OnHighEfficiencyModeChanged(
-                      false);
+                case MemorySaverModeState::kDisabled:
+                  memory_saver_mode_policy->OnHighEfficiencyModeChanged(false);
                   return;
-                case HighEfficiencyModeState::kEnabled:
+                case MemorySaverModeState::kEnabled:
                   // TODO(crbug.com/1492508): This setting should enable the
                   // non-timer Memory Saver policy.
-                  high_efficiency_mode_policy->OnHighEfficiencyModeChanged(
-                      false);
+                  memory_saver_mode_policy->OnHighEfficiencyModeChanged(false);
                   return;
-                case HighEfficiencyModeState::kEnabledOnTimer:
-                  high_efficiency_mode_policy->OnHighEfficiencyModeChanged(
-                      true);
+                case MemorySaverModeState::kEnabledOnTimer:
+                  memory_saver_mode_policy->OnHighEfficiencyModeChanged(true);
                   return;
               }
               NOTREACHED_NORETURN();
@@ -80,14 +77,14 @@ class HighEfficiencyModeDelegateImpl
         FROM_HERE, base::BindOnce(
                        [](base::TimeDelta time_before_discard) {
                          auto* policy =
-                             policies::HighEfficiencyModePolicy::GetInstance();
+                             policies::MemorySaverModePolicy::GetInstance();
                          CHECK(policy);
                          policy->SetTimeBeforeDiscard(time_before_discard);
                        },
                        time_before_discard));
   }
 
-  ~HighEfficiencyModeDelegateImpl() override = default;
+  ~MemorySaverModeDelegateImpl() override = default;
 };
 
 }  // namespace
@@ -150,29 +147,29 @@ void UserPerformanceTuningManager::RemoveObserver(Observer* o) {
   observers_.RemoveObserver(o);
 }
 
-bool UserPerformanceTuningManager::IsHighEfficiencyModeActive() {
-  HighEfficiencyModeState state = performance_manager::user_tuning::prefs::
-      GetCurrentHighEfficiencyModeState(pref_change_registrar_.prefs());
-  return state != HighEfficiencyModeState::kDisabled;
+bool UserPerformanceTuningManager::IsMemorySaverModeActive() {
+  MemorySaverModeState state =
+      performance_manager::user_tuning::prefs::GetCurrentMemorySaverModeState(
+          pref_change_registrar_.prefs());
+  return state != MemorySaverModeState::kDisabled;
 }
 
-bool UserPerformanceTuningManager::IsHighEfficiencyModeManaged() const {
+bool UserPerformanceTuningManager::IsMemorySaverModeManaged() const {
   auto* pref =
-      pref_change_registrar_.prefs()->FindPreference(kHighEfficiencyModeState);
+      pref_change_registrar_.prefs()->FindPreference(kMemorySaverModeState);
   return pref->IsManaged();
 }
 
-bool UserPerformanceTuningManager::IsHighEfficiencyModeDefault() const {
+bool UserPerformanceTuningManager::IsMemorySaverModeDefault() const {
   auto* pref =
-      pref_change_registrar_.prefs()->FindPreference(kHighEfficiencyModeState);
+      pref_change_registrar_.prefs()->FindPreference(kMemorySaverModeState);
   return pref->IsDefaultValue();
 }
 
-void UserPerformanceTuningManager::SetHighEfficiencyModeEnabled(bool enabled) {
-  HighEfficiencyModeState state = enabled
-                                      ? HighEfficiencyModeState::kEnabledOnTimer
-                                      : HighEfficiencyModeState::kDisabled;
-  pref_change_registrar_.prefs()->SetInteger(kHighEfficiencyModeState,
+void UserPerformanceTuningManager::SetMemorySaverModeEnabled(bool enabled) {
+  MemorySaverModeState state = enabled ? MemorySaverModeState::kEnabledOnTimer
+                                       : MemorySaverModeState::kDisabled;
+  pref_change_registrar_.prefs()->SetInteger(kMemorySaverModeState,
                                              static_cast<int>(state));
 }
 
@@ -232,11 +229,11 @@ void UserPerformanceTuningManager::UserPerformanceTuningReceiverImpl::
 UserPerformanceTuningManager::UserPerformanceTuningManager(
     PrefService* local_state,
     std::unique_ptr<UserPerformanceTuningNotifier> notifier,
-    std::unique_ptr<HighEfficiencyModeDelegate> high_efficiency_mode_delegate)
-    : high_efficiency_mode_delegate_(
-          high_efficiency_mode_delegate
-              ? std::move(high_efficiency_mode_delegate)
-              : std::make_unique<HighEfficiencyModeDelegateImpl>()) {
+    std::unique_ptr<MemorySaverModeDelegate> memory_saver_mode_delegate)
+    : memory_saver_mode_delegate_(
+          memory_saver_mode_delegate
+              ? std::move(memory_saver_mode_delegate)
+              : std::make_unique<MemorySaverModeDelegateImpl>()) {
   DCHECK(!g_user_performance_tuning_manager);
   g_user_performance_tuning_manager = this;
 
@@ -256,50 +253,49 @@ void UserPerformanceTuningManager::Start() {
       performance_manager::user_tuning::prefs::
           kHighEfficiencyModeTimeBeforeDiscardInMinutes,
       base::BindRepeating(&UserPerformanceTuningManager::
-                              OnHighEfficiencyModeTimeBeforeDiscardChanged,
+                              OnMemorySaverModeTimeBeforeDiscardChanged,
                           base::Unretained(this)));
   // Make sure the initial state of the discard timer pref is passed on to the
   // policy before it can be enabled, because the policy initially has a dummy
   // value for time_before_discard_. This prevents tabs' discard timers from
   // starting with a value different from the pref.
-  OnHighEfficiencyModeTimeBeforeDiscardChanged();
+  OnMemorySaverModeTimeBeforeDiscardChanged();
 
   pref_change_registrar_.Add(
-      kHighEfficiencyModeState,
+      kMemorySaverModeState,
       base::BindRepeating(
-          &UserPerformanceTuningManager::OnHighEfficiencyModePrefChanged,
+          &UserPerformanceTuningManager::OnMemorySaverModePrefChanged,
           base::Unretained(this)));
   // Make sure the initial state of the pref is passed on to the policy.
-  UpdateHighEfficiencyModeState();
+  UpdateMemorySaverModeState();
 }
 
-void UserPerformanceTuningManager::UpdateHighEfficiencyModeState() {
-  HighEfficiencyModeState state =
-      prefs::GetCurrentHighEfficiencyModeState(pref_change_registrar_.prefs());
+void UserPerformanceTuningManager::UpdateMemorySaverModeState() {
+  MemorySaverModeState state =
+      prefs::GetCurrentMemorySaverModeState(pref_change_registrar_.prefs());
   if (!base::FeatureList::IsEnabled(features::kMemorySaverMultistateMode)) {
-    if (state != HighEfficiencyModeState::kDisabled) {
+    if (state != MemorySaverModeState::kDisabled) {
       // The user has enabled high efficiency mode, but without the multistate
       // UI they didn't choose a policy. The feature controls which policy to
       // use.
-      state = HighEfficiencyModeState::kEnabledOnTimer;
+      state = MemorySaverModeState::kEnabledOnTimer;
     }
   }
-  high_efficiency_mode_delegate_->ToggleHighEfficiencyMode(state);
+  memory_saver_mode_delegate_->ToggleMemorySaverMode(state);
 }
 
-void UserPerformanceTuningManager::OnHighEfficiencyModePrefChanged() {
-  UpdateHighEfficiencyModeState();
+void UserPerformanceTuningManager::OnMemorySaverModePrefChanged() {
+  UpdateMemorySaverModeState();
   for (auto& obs : observers_) {
-    obs.OnHighEfficiencyModeChanged();
+    obs.OnMemorySaverModeChanged();
   }
 }
 
-void UserPerformanceTuningManager::
-    OnHighEfficiencyModeTimeBeforeDiscardChanged() {
+void UserPerformanceTuningManager::OnMemorySaverModeTimeBeforeDiscardChanged() {
   base::TimeDelta time_before_discard = performance_manager::user_tuning::
       prefs::GetCurrentHighEfficiencyModeTimeBeforeDiscard(
           pref_change_registrar_.prefs());
-  high_efficiency_mode_delegate_->SetTimeBeforeDiscard(time_before_discard);
+  memory_saver_mode_delegate_->SetTimeBeforeDiscard(time_before_discard);
 }
 
 void UserPerformanceTuningManager::NotifyTabCountThresholdReached() {

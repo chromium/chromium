@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/performance_manager/policies/high_efficiency_mode_policy.h"
+#include "chrome/browser/performance_manager/policies/memory_saver_mode_policy.h"
 
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
@@ -31,7 +31,7 @@ class TestTabRevisitTracker : public TabRevisitTracker {
     // Some of these tests don't exercise behavior around the
     // TabRevisitTrackerState. Instead of requiring all of them to set up proper
     // state explicitly, just return a default constructed bundle. The only
-    // field that is being used from HighEfficiencyModePolicy is `num_revisits`,
+    // field that is being used from MemorySaverModePolicy is `num_revisits`,
     // and it being default initialized to 0 is what we'd want anyway.
     if (it != state_bundles_.end()) {
       return it->second;
@@ -43,8 +43,7 @@ class TestTabRevisitTracker : public TabRevisitTracker {
       state_bundles_;
 };
 
-class HighEfficiencyModeTest
-    : public testing::GraphTestHarnessWithMockDiscarder {
+class MemorySaverModeTest : public testing::GraphTestHarnessWithMockDiscarder {
  public:
   void SetUp() override {
     testing::GraphTestHarnessWithMockDiscarder::SetUp();
@@ -62,7 +61,7 @@ class HighEfficiencyModeTest
     PageDiscardingHelper::GetFromGraph(graph())->SetNoDiscardPatternsForProfile(
         static_cast<PageNode*>(page_node())->GetBrowserContextID(), {});
 
-    auto policy = std::make_unique<HighEfficiencyModePolicy>();
+    auto policy = std::make_unique<MemorySaverModePolicy>();
     policy->SetTimeBeforeDiscard(base::Hours(2));
     policy_ = policy.get();
     graph()->PassToGraph(std::move(policy));
@@ -73,7 +72,7 @@ class HighEfficiencyModeTest
     testing::GraphTestHarnessWithMockDiscarder::TearDown();
   }
 
-  HighEfficiencyModePolicy* policy() { return policy_; }
+  MemorySaverModePolicy* policy() { return policy_; }
 
  protected:
   PageNodeImpl* CreateOtherPageNode() {
@@ -95,7 +94,7 @@ class HighEfficiencyModeTest
   TestTabRevisitTracker* tab_revisit_tracker() { return tab_revisit_tracker_; }
 
  private:
-  raw_ptr<HighEfficiencyModePolicy, DanglingUntriaged> policy_;
+  raw_ptr<MemorySaverModePolicy, DanglingUntriaged> policy_;
 
   performance_manager::TestNodeWrapper<performance_manager::PageNodeImpl>
       other_page_node_;
@@ -107,7 +106,7 @@ class HighEfficiencyModeTest
   raw_ptr<TestTabRevisitTracker> tab_revisit_tracker_;
 };
 
-TEST_F(HighEfficiencyModeTest, NoDiscardIfHighEfficiencyOff) {
+TEST_F(MemorySaverModeTest, NoDiscardIfHighEfficiencyOff) {
   page_node()->SetType(PageType::kTab);
   page_node()->SetIsVisible(true);
   page_node()->SetIsVisible(false);
@@ -115,7 +114,7 @@ TEST_F(HighEfficiencyModeTest, NoDiscardIfHighEfficiencyOff) {
   ::testing::Mock::VerifyAndClearExpectations(discarder());
 }
 
-TEST_F(HighEfficiencyModeTest, DiscardAfterBackgrounded) {
+TEST_F(MemorySaverModeTest, DiscardAfterBackgrounded) {
   page_node()->SetType(PageType::kTab);
   page_node()->SetIsVisible(true);
   policy()->OnHighEfficiencyModeChanged(true);
@@ -128,7 +127,7 @@ TEST_F(HighEfficiencyModeTest, DiscardAfterBackgrounded) {
   ::testing::Mock::VerifyAndClearExpectations(discarder());
 }
 
-TEST_F(HighEfficiencyModeTest, DontDiscardAfterBackgroundedIfSuspended) {
+TEST_F(MemorySaverModeTest, DontDiscardAfterBackgroundedIfSuspended) {
   policy()->SetTimeBeforeDiscard(base::Hours(2));
   page_node()->SetType(PageType::kTab);
   page_node()->SetIsVisible(true);
@@ -159,7 +158,7 @@ TEST_F(HighEfficiencyModeTest, DontDiscardAfterBackgroundedIfSuspended) {
   ::testing::Mock::VerifyAndClearExpectations(discarder());
 }
 
-TEST_F(HighEfficiencyModeTest, DontDiscardIfPageIsNotATab) {
+TEST_F(MemorySaverModeTest, DontDiscardIfPageIsNotATab) {
   page_node()->SetType(PageType::kUnknown);
   policy()->OnHighEfficiencyModeChanged(true);
   page_node()->SetIsVisible(true);
@@ -172,7 +171,7 @@ TEST_F(HighEfficiencyModeTest, DontDiscardIfPageIsNotATab) {
 // The tab shouldn't be discarded if it's playing audio. There are many other
 // conditions that prevent discarding, but they're implemented in
 // `PageDiscardingHelper` and therefore tested there.
-TEST_F(HighEfficiencyModeTest, DontDiscardIfPlayingAudio) {
+TEST_F(MemorySaverModeTest, DontDiscardIfPlayingAudio) {
   page_node()->SetType(PageType::kTab);
   page_node()->SetIsVisible(true);
   policy()->OnHighEfficiencyModeChanged(true);
@@ -184,7 +183,7 @@ TEST_F(HighEfficiencyModeTest, DontDiscardIfPlayingAudio) {
   ::testing::Mock::VerifyAndClearExpectations(discarder());
 }
 
-TEST_F(HighEfficiencyModeTest, TimeBeforeDiscardChangedBeforeTimerStarted) {
+TEST_F(MemorySaverModeTest, TimeBeforeDiscardChangedBeforeTimerStarted) {
   base::TimeDelta original_time_before_discard =
       policy()->GetTimeBeforeDiscardForTesting();
   base::TimeDelta increased_time_before_discard = base::Seconds(10);
@@ -206,7 +205,7 @@ TEST_F(HighEfficiencyModeTest, TimeBeforeDiscardChangedBeforeTimerStarted) {
   ::testing::Mock::VerifyAndClearExpectations(discarder());
 }
 
-TEST_F(HighEfficiencyModeTest, TimeBeforeDiscardReduced) {
+TEST_F(MemorySaverModeTest, TimeBeforeDiscardReduced) {
   base::TimeDelta original_time_before_discard =
       policy()->GetTimeBeforeDiscardForTesting();
   constexpr base::TimeDelta kNewTimeBeforeDiscard = base::Minutes(20);
@@ -238,7 +237,7 @@ TEST_F(HighEfficiencyModeTest, TimeBeforeDiscardReduced) {
   ::testing::Mock::VerifyAndClearExpectations(discarder());
 }
 
-TEST_F(HighEfficiencyModeTest, TimeBeforeDiscardReducedBelowBackgroundedTime) {
+TEST_F(MemorySaverModeTest, TimeBeforeDiscardReducedBelowBackgroundedTime) {
   base::TimeDelta original_time_before_discard =
       policy()->GetTimeBeforeDiscardForTesting();
   constexpr base::TimeDelta kNewTimeBeforeDiscard = base::Minutes(5);
@@ -268,7 +267,7 @@ TEST_F(HighEfficiencyModeTest, TimeBeforeDiscardReducedBelowBackgroundedTime) {
   ::testing::Mock::VerifyAndClearExpectations(discarder());
 }
 
-TEST_F(HighEfficiencyModeTest, TimeBeforeDiscardIncreased) {
+TEST_F(MemorySaverModeTest, TimeBeforeDiscardIncreased) {
   base::TimeDelta original_time_before_discard =
       policy()->GetTimeBeforeDiscardForTesting();
   constexpr base::TimeDelta kNewTimeBeforeDiscard = base::Hours(3);
@@ -310,7 +309,7 @@ TEST_F(HighEfficiencyModeTest, TimeBeforeDiscardIncreased) {
   //                                        kNewTimeBeforeDiscard
 }
 
-TEST_F(HighEfficiencyModeTest, DontDiscardIfAlreadyNotVisibleWhenModeEnabled) {
+TEST_F(MemorySaverModeTest, DontDiscardIfAlreadyNotVisibleWhenModeEnabled) {
   page_node()->SetType(PageType::kTab);
   page_node()->SetIsVisible(true);
   page_node()->SetIsVisible(false);
@@ -338,7 +337,7 @@ TEST_F(HighEfficiencyModeTest, DontDiscardIfAlreadyNotVisibleWhenModeEnabled) {
   ::testing::Mock::VerifyAndClearExpectations(discarder());
 }
 
-TEST_F(HighEfficiencyModeTest, NoDiscardIfPageNodeRemoved) {
+TEST_F(MemorySaverModeTest, NoDiscardIfPageNodeRemoved) {
   // This case will be using a different page node, so make the default one
   // visible so it's not discarded.
   page_node()->SetIsVisible(true);
@@ -356,7 +355,7 @@ TEST_F(HighEfficiencyModeTest, NoDiscardIfPageNodeRemoved) {
   ::testing::Mock::VerifyAndClearExpectations(discarder());
 }
 
-TEST_F(HighEfficiencyModeTest, UnknownPageNodeNeverAddedToMap) {
+TEST_F(MemorySaverModeTest, UnknownPageNodeNeverAddedToMap) {
   // This case will be using a different page node, so make the default one
   // visible so it's not discarded.
   page_node()->SetIsVisible(true);
@@ -372,7 +371,7 @@ TEST_F(HighEfficiencyModeTest, UnknownPageNodeNeverAddedToMap) {
   ::testing::Mock::VerifyAndClearExpectations(discarder());
 }
 
-TEST_F(HighEfficiencyModeTest, PageNodeDiscardedIfTypeChanges) {
+TEST_F(MemorySaverModeTest, PageNodeDiscardedIfTypeChanges) {
   // This case will be using a different page node, so make the default one
   // visible so it's not discarded.
   page_node()->SetIsVisible(true);
@@ -391,7 +390,7 @@ TEST_F(HighEfficiencyModeTest, PageNodeDiscardedIfTypeChanges) {
   ::testing::Mock::VerifyAndClearExpectations(discarder());
 }
 
-TEST_F(HighEfficiencyModeTest,
+TEST_F(MemorySaverModeTest,
        DiscardAfterTimeForCurrentModeIfNumRevisitsUnderMax) {
   page_node()->SetType(PageType::kTab);
   page_node()->SetIsVisible(true);
@@ -416,7 +415,7 @@ TEST_F(HighEfficiencyModeTest,
   ::testing::Mock::VerifyAndClearExpectations(discarder());
 }
 
-TEST_F(HighEfficiencyModeTest, DontDiscardIfAboveMaxNumRevisits) {
+TEST_F(MemorySaverModeTest, DontDiscardIfAboveMaxNumRevisits) {
   page_node()->SetType(PageType::kTab);
   page_node()->SetIsVisible(true);
   policy()->OnHighEfficiencyModeChanged(true);

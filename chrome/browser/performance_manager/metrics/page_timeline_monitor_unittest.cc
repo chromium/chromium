@@ -43,7 +43,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 
 #if !BUILDFLAG(IS_ANDROID)
-#include "chrome/browser/performance_manager/policies/high_efficiency_mode_policy.h"
+#include "chrome/browser/performance_manager/policies/memory_saver_mode_policy.h"
 #endif  // !BUILDFLAG(IS_ANDROID)
 
 namespace performance_manager::metrics {
@@ -505,8 +505,7 @@ TEST_F(PageTimelineMonitorUnitTest, TestHighEfficiencyMode) {
   test_ukm_recorder()->ExpectEntryMetric(entries[0], "HighEfficiencyMode", 0);
 
   graph()->PassToGraph(
-      std::make_unique<
-          performance_manager::policies::HighEfficiencyModePolicy>());
+      std::make_unique<performance_manager::policies::MemorySaverModePolicy>());
 
   TriggerCollectSlice();
   entries = test_ukm_recorder()->GetEntriesByName(
@@ -514,8 +513,8 @@ TEST_F(PageTimelineMonitorUnitTest, TestHighEfficiencyMode) {
   EXPECT_EQ(entries.size(), 2UL);
   test_ukm_recorder()->ExpectEntryMetric(entries[1], "HighEfficiencyMode", 0);
 
-  performance_manager::policies::HighEfficiencyModePolicy* policy =
-      performance_manager::policies::HighEfficiencyModePolicy::GetInstance();
+  performance_manager::policies::MemorySaverModePolicy* policy =
+      performance_manager::policies::MemorySaverModePolicy::GetInstance();
   policy->SetTimeBeforeDiscard(base::Hours(2));
   policy->OnHighEfficiencyModeChanged(true);
 

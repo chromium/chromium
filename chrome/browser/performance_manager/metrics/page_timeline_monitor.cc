@@ -38,7 +38,7 @@
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 #if !BUILDFLAG(IS_ANDROID)
-#include "chrome/browser/performance_manager/policies/high_efficiency_mode_policy.h"
+#include "chrome/browser/performance_manager/policies/memory_saver_mode_policy.h"
 #endif  // !BUILDFLAG(IS_ANDROID)
 
 namespace performance_manager::metrics {
@@ -297,8 +297,8 @@ void PageTimelineMonitor::CollectSlice() {
 
 #if !BUILDFLAG(IS_ANDROID)
     bool high_efficiency_mode_active =
-        (policies::HighEfficiencyModePolicy::GetInstance() &&
-         policies::HighEfficiencyModePolicy::GetInstance()
+        (policies::MemorySaverModePolicy::GetInstance() &&
+         policies::MemorySaverModePolicy::GetInstance()
              ->IsHighEfficiencyDiscardingEnabled());
 
     builder.SetHighEfficiencyMode(high_efficiency_mode_active)
