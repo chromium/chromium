@@ -25,7 +25,7 @@ import {FileTasks, TaskPickerType} from './file_tasks.js';
 import {FileTransferController} from './file_transfer_controller.js';
 import {MetadataModel} from './metadata/metadata_model.js';
 import {MetadataUpdateController} from './metadata_update_controller.js';
-import {TaskHistory} from './task_history.js';
+import {EventType, TaskHistory} from './task_history.js';
 import {ComboButtonSelectEvent} from './ui/combobutton.js';
 import {Command} from './ui/command.js';
 import {FileManagerUI} from './ui/file_manager_ui.js';
@@ -82,7 +82,7 @@ export class TaskController {
         'combobutton-select', this.onTaskItemClicked_.bind(this));
     // TODO: Move the following events to the Store.
     this.taskHistory_.addEventListener(
-        TaskHistory.EventType.UPDATE, this.updateTasks_.bind(this));
+        EventType.UPDATE, this.updateTasks_.bind(this));
     chrome.fileManagerPrivate.onIOTaskProgressStatus.addListener(
         this.onIoTaskProgressStatus_.bind(this));
     chrome.fileManagerPrivate.onAppsUpdated.addListener(

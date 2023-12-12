@@ -43,7 +43,6 @@ static_js_files = [
   "file_manager/foreground/js/mock_navigation_list_model.js",
   "file_manager/foreground/js/navigation_list_model.js",
   "file_manager/foreground/js/selection_menu_controller.js",
-  "file_manager/foreground/js/task_history.js",
 
   # Metadata:
   "file_manager/foreground/js/metadata/metadata_dispatcher.js",
@@ -190,6 +189,7 @@ ts_files = [
   # These lines will be removed at the end of the TS migration.
   # Foreground UI.
   "file_manager/foreground/js/deferred_elements.ts",
+  "file_manager/foreground/js/task_history.ts",
   "file_manager/foreground/js/ui/combobutton.ts",
   "file_manager/foreground/js/ui/command.ts",
   "file_manager/foreground/js/ui/file_grid.ts",
