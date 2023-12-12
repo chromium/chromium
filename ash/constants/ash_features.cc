@@ -1318,7 +1318,7 @@ BASE_FEATURE(kGesturePropertiesDBusService,
 
 // Enables the ability to record the screen into an animated GIF image from the
 // native screen capture tool.
-BASE_FEATURE(kGifRecording, "GifRecording", base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kGifRecording, "GifRecording", base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Enables a Files banner about Google One offer.
 BASE_FEATURE(kGoogleOneOfferFilesBanner,
