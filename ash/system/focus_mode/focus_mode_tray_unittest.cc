@@ -6,13 +6,17 @@
 
 #include "ash/api/tasks/tasks_types.h"
 #include "ash/constants/ash_features.h"
+#include "ash/root_window_controller.h"
 #include "ash/screen_util.h"
+#include "ash/shelf/shelf.h"
 #include "ash/shell.h"
 #include "ash/system/focus_mode/focus_mode_controller.h"
 #include "ash/system/progress_indicator/progress_indicator.h"
 #include "ash/system/status_area_widget_test_helper.h"
 #include "ash/system/tray/tray_bubble_wrapper.h"
+#include "ash/system/tray/tray_container.h"
 #include "ash/test/ash_test_base.h"
+#include "ash/wm/tablet_mode/tablet_mode_controller.h"
 #include "base/test/scoped_feature_list.h"
 #include "ui/compositor/layer_animator.h"
 #include "ui/compositor/scoped_animation_duration_scale_mode.h"
@@ -198,6 +202,42 @@ TEST_F(FocusModeTrayTest, ProgressIndicatorProgresses) {
   task_environment()->FastForwardBy(base::Minutes(10));
   EXPECT_NEAR(0.5, GetProgressIndicator()->progress().value(),
               allowed_difference);
+}
+
+// Tests that the progress indicator is centered within the tray and is the
+// correct size.
+TEST_F(FocusModeTrayTest, ProgressIndicatorCentered) {
+  FocusModeController* controller = FocusModeController::Get();
+  controller->ToggleFocusMode();
+  EXPECT_EQ(focus_mode_tray_->tray_container()->GetLocalBounds().CenterPoint(),
+            GetProgressIndicator()->layer()->bounds().CenterPoint());
+
+  // Check the size since it is set dynamically based on the lamp icon.
+  EXPECT_EQ(gfx::Size(32, 32),
+            GetProgressIndicator()->layer()->bounds().size());
+
+  // The indicator should still be centered when the shelf is vertically
+  // aligned.
+  Shelf* shelf = Shell::GetPrimaryRootWindowController()->shelf();
+  shelf->SetAlignment(ShelfAlignment::kLeft);
+  EXPECT_EQ(focus_mode_tray_->tray_container()->GetLocalBounds().CenterPoint(),
+            GetProgressIndicator()->layer()->bounds().CenterPoint());
+  EXPECT_EQ(gfx::Size(32, 32),
+            GetProgressIndicator()->layer()->bounds().size());
+
+  shelf->SetAlignment(ShelfAlignment::kRight);
+  EXPECT_EQ(focus_mode_tray_->tray_container()->GetLocalBounds().CenterPoint(),
+            GetProgressIndicator()->layer()->bounds().CenterPoint());
+  EXPECT_EQ(gfx::Size(32, 32),
+            GetProgressIndicator()->layer()->bounds().size());
+
+  // The indicator should still be centered in tablet mode.
+  Shell::Get()->tablet_mode_controller()->SetEnabledForTest(true);
+  base::RunLoop().RunUntilIdle();
+  EXPECT_EQ(focus_mode_tray_->tray_container()->GetLocalBounds().CenterPoint(),
+            GetProgressIndicator()->layer()->bounds().CenterPoint());
+  EXPECT_EQ(gfx::Size(32, 32),
+            GetProgressIndicator()->layer()->bounds().size());
 }
 
 }  // namespace ash

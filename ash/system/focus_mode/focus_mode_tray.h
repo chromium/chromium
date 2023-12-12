@@ -50,6 +50,9 @@ class ASH_EXPORT FocusModeTray : public TrayBackgroundView,
   void OnTimerTick() override;
   void OnSessionDurationChanged() override;
 
+  // views::View:
+  void Layout() override;
+
   TrayBubbleWrapper* tray_bubble_wrapper_for_testing() { return bubble_.get(); }
   FocusModeCountdownView* countdown_view_for_testing() {
     return countdown_view_;

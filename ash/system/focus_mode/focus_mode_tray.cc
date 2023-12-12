@@ -38,7 +38,7 @@ constexpr int kTaskItemViewInsets = 6;
 constexpr int kTaskItemViewCornerRadius = 16;
 constexpr int kProgressIndicatorThickness = 2;
 constexpr auto kTaskTitleLabelInsets = gfx::Insets::TLBR(0, 12, 0, 18);
-constexpr auto kProgressIndicatorBounds = gfx::Rect(2, 0, 32, 32);
+constexpr auto kProgressIndicatorInsets = gfx::Insets(-6);
 constexpr base::TimeDelta kStartAnimationDelay = base::Milliseconds(300);
 constexpr base::TimeDelta kTaskItemViewFadeOutDuration =
     base::Milliseconds(200);
@@ -153,7 +153,6 @@ FocusModeTray::FocusModeTray(Shelf* shelf)
           },
           base::Unretained(tray_container()))));
   UpdateProgressRing();
-  progress_indicator_->layer()->SetBounds(kProgressIndicatorBounds);
 
   auto* controller = FocusModeController::Get();
   SetVisiblePreferred(controller->in_focus_session());
@@ -283,6 +282,20 @@ void FocusModeTray::OnTimerTick() {
 void FocusModeTray::OnSessionDurationChanged() {
   UpdateProgressRing();
   MaybeUpdateCountdownViewUI();
+}
+
+void FocusModeTray::Layout() {
+  views::View::Layout();
+
+  // Position the progress indicator based on the position of the image view.
+  // The centered position inside of the tray container changes based on shelf
+  // orientation and tablet mode, but there is already logic to keep the image
+  // view centered that we can use.
+  gfx::Rect progress_bounds = gfx::Rect(views::View::ConvertRectToTarget(
+      /*source=*/image_view_,
+      /*target=*/tray_container(), image_view_->GetImageBounds()));
+  progress_bounds.Inset(kProgressIndicatorInsets);
+  progress_indicator_->layer()->SetBounds(progress_bounds);
 }
 
 void FocusModeTray::UpdateTrayIcon() {
