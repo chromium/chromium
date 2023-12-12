@@ -599,37 +599,6 @@ public class AndroidShareSheetControllerUnitTest {
     }
 
     @Test
-    @DisableFeatures(ChromeFeatureList.SHARE_SHEET_CUSTOM_ACTIONS_POLISH)
-    @Config(
-            sdk = 34,
-            shadows = {ShadowChooserActionHelper.class})
-    public void ensureNonPolishActionInOrder() {
-        Uri testImageUri = Uri.parse("content://test.image.uri");
-        ShareParams params =
-                new ShareParams.Builder(mWindow, "", "")
-                        .setFileContentType("image/png")
-                        .setSingleImageUri(testImageUri)
-                        .setBypassFixingDomDistillerUrl(true)
-                        .build();
-        ChromeShareExtras chromeShareExtras =
-                new ChromeShareExtras.Builder()
-                        .setDetailedContentType(DetailedContentType.IMAGE)
-                        .setContentUrl(JUnitTestGURLs.GOOGLE_URL)
-                        .setImageSrcUrl(JUnitTestGURLs.GOOGLE_URL_DOGS)
-                        .build();
-
-        mController.showShareSheet(params, chromeShareExtras, 1L);
-
-        // No download option here.
-        Intent intent = Shadows.shadowOf((Activity) mActivity).peekNextStartedActivity();
-        assertCustomActions(
-                intent,
-                R.string.sharing_copy_image_with_link,
-                R.string.sharing_send_tab_to_self,
-                R.string.qr_code_share_icon_label);
-    }
-
-    @Test
     @Config(
             sdk = 34,
             shadows = {ShadowChooserActionHelper.class})

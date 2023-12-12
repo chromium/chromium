@@ -5304,10 +5304,6 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kShareSheetMigrationAndroidName,
      flag_descriptions::kShareSheetMigrationAndroidDescription, kOsAndroid,
      FEATURE_VALUE_TYPE(chrome::android::kShareSheetMigrationAndroid)},
-    {"share-sheet-custom-actions-polish",
-     flag_descriptions::kShareSheetCustomActionsPolishName,
-     flag_descriptions::kShareSheetCustomActionsPolishDescription, kOsAndroid,
-     FEATURE_VALUE_TYPE(chrome::android::kShareSheetCustomActionsPolish)},
 
 #endif  // BUILDFLAG(IS_ANDROID)
     {"disallow-doc-written-script-loads",

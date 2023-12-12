@@ -11,10 +11,9 @@ import android.content.ClipboardManager;
 import android.content.Context;
 import android.graphics.drawable.Icon;
 import android.net.Uri;
+import android.os.Build;
 
 import androidx.annotation.Nullable;
-import androidx.annotation.OptIn;
-import androidx.core.os.BuildCompat;
 
 import org.chromium.base.Callback;
 import org.chromium.base.supplier.Supplier;
@@ -121,12 +120,10 @@ class AndroidCustomActionProvider extends ChromeProvidedSharingOptionsProviderBa
      * @param params The {@link ShareParams} for the current share.
      * @param chromeShareExtras The {@link ChromeShareExtras} for the current share, if exists.
      * @param isMultiWindow Whether the current activity is in multi-window mode.
-     * @return List of custom action used for Android share sheet.
      */
-    @OptIn(markerClass = androidx.core.os.BuildCompat.PrereleaseSdkCheck.class)
     private void initCustomActions(
             ShareParams params, ChromeShareExtras chromeShareExtras, boolean isMultiWindow) {
-        if (!BuildCompat.isAtLeastU()) {
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
             return;
         }
 
@@ -147,18 +144,6 @@ class AndroidCustomActionProvider extends ChromeProvidedSharingOptionsProviderBa
     }
 
     //  extends ChromeProvidedSharingOptionsProviderBase:
-
-    @Override
-    protected boolean usePolishedActionOrderedList() {
-        // Always use the polished list of actions for Android share sheet.
-        return true;
-    }
-
-    @Nullable
-    @Override
-    protected FirstPartyOption createScreenshotFirstPartyOption() {
-        return null;
-    }
 
     @Nullable
     @Override
@@ -186,12 +171,6 @@ class AndroidCustomActionProvider extends ChromeProvidedSharingOptionsProviderBa
     }
 
     @Override
-    protected void maybeAddWebStyleNotesFirstPartyOption() {}
-
-    @Override
-    protected void maybeAddDownloadImageFirstPartyOption() {}
-
-    @Override
     protected void maybeAddCopyFirstPartyOption() {
         // getLinkToTextSuccessful is only populated when an link is generated for share.
         if (mShareParams.getLinkToTextSuccessful() != null
@@ -208,7 +187,7 @@ class AndroidCustomActionProvider extends ChromeProvidedSharingOptionsProviderBa
                 && (mChromeShareExtras.getDetailedContentType() == DetailedContentType.WEB_SHARE
                         || mChromeShareExtras.getDetailedContentType()
                                 == DetailedContentType.SCREENSHOT)) {
-            mOrderedFirstPartyOptions.add(createCopyImageFirstPartyOption(false));
+            mOrderedFirstPartyOptions.add(createCopyImageFirstPartyOption());
         }
         mOrderedFirstPartyOptions.add(createCopyImageWithLinkFirstPartyOption());
     }

@@ -36,7 +36,6 @@ import org.chromium.base.test.util.JniMocker;
 import org.chromium.base.test.util.UserActionTester;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.share.ChromeShareExtras.DetailedContentType;
 import org.chromium.chrome.browser.share.ShareContentTypeHelper;
@@ -50,8 +49,6 @@ import org.chromium.chrome.browser.share.share_sheet.ShareSheetLinkToggleMetrics
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.test.AutomotiveContextWrapperTestRule;
 import org.chromium.chrome.test.util.browser.Features;
-import org.chromium.chrome.test.util.browser.Features.DisableFeatures;
-import org.chromium.chrome.test.util.browser.Features.EnableFeatures;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.device_lock.DeviceLockActivityLauncher;
 import org.chromium.components.browser_ui.share.ShareParams;
@@ -66,13 +63,10 @@ import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.url.GURL;
 import org.chromium.url.JUnitTestGURLs;
 
-import java.util.ArrayList;
 import java.util.List;
 
 /** Instrumentation Unit tests {@link ChromeProvidedSharingOptionsProvider}. */
 @RunWith(BaseRobolectricTestRunner.class)
-@EnableFeatures(ChromeFeatureList.WEBNOTES_STYLIZE)
-@DisableFeatures({ChromeFeatureList.SHARE_SHEET_CUSTOM_ACTIONS_POLISH})
 public class ChromeProvidedSharingOptionsProviderTest {
     @Rule
     public ActivityScenarioRule<TestActivity> mActivityScenarioRule =
@@ -179,22 +173,6 @@ public class ChromeProvidedSharingOptionsProviderTest {
     }
 
     @Test
-    public void getPropertyModels_multiWindow_doesNotIncludeScreenshot() {
-        setUpChromeProvidedSharingOptionsProviderTest(
-                /* isIncognito= */ false, /* printingEnabled= */ false, LinkGeneration.MAX);
-
-        List<PropertyModel> propertyModels =
-                mChromeProvidedSharingOptionsProvider.getPropertyModels(
-                        ShareContentTypeHelper.ALL_CONTENT_TYPES_FOR_TEST,
-                        DetailedContentType.NOT_SPECIFIED,
-                        /* isMultiWindow= */ true);
-
-        assertFalse(
-                "Property models should not contain Screenshot.",
-                propertyModelsContain(propertyModels, R.string.sharing_screenshot));
-    }
-
-    @Test
     public void getPropertyModels_isIncognito_doesNotIncludeQrCode() {
         setUpChromeProvidedSharingOptionsProviderTest(
                 /* isIncognito= */ true, /* printingEnabled= */ false, LinkGeneration.MAX);
@@ -238,15 +216,12 @@ public class ChromeProvidedSharingOptionsProviderTest {
                         /* isMultiWindow= */ false);
 
         // Long Screenshots is supported >= Android N (7.0).
-        List<String> expectedModels = new ArrayList<String>();
-        expectedModels.add(mActivity.getResources().getString(R.string.sharing_screenshot));
-        expectedModels.add(mActivity.getResources().getString(R.string.sharing_long_screenshot));
-        expectedModels.addAll(
+        List<String> expectedModels =
                 ImmutableList.of(
                         mActivity.getResources().getString(R.string.sharing_copy_url),
                         mActivity.getResources().getString(R.string.sharing_copy_image),
-                        mActivity.getResources().getString(R.string.qr_code_share_icon_label),
-                        mActivity.getResources().getString(R.string.sharing_save_image)));
+                        mActivity.getResources().getString(R.string.sharing_long_screenshot),
+                        mActivity.getResources().getString(R.string.qr_code_share_icon_label));
 
         assertCorrectModelsAreInTheRightOrder(propertyModels, expectedModels);
     }
@@ -261,14 +236,11 @@ public class ChromeProvidedSharingOptionsProviderTest {
                         DetailedContentType.IMAGE,
                         /* isMultiWindow= */ false);
 
-        List<String> expectedModels = new ArrayList<String>();
-        expectedModels.add(mActivity.getResources().getString(R.string.sharing_screenshot));
-        expectedModels.add(mActivity.getResources().getString(R.string.sharing_long_screenshot));
-        expectedModels.addAll(
+        List<String> expectedModels =
                 ImmutableList.of(
                         mActivity.getResources().getString(R.string.sharing_copy_image),
-                        mActivity.getResources().getString(R.string.qr_code_share_icon_label),
-                        mActivity.getResources().getString(R.string.sharing_save_image)));
+                        mActivity.getResources().getString(R.string.sharing_long_screenshot),
+                        mActivity.getResources().getString(R.string.qr_code_share_icon_label));
 
         assertCorrectModelsAreInTheRightOrder(propertyModels, expectedModels);
     }
@@ -286,7 +258,6 @@ public class ChromeProvidedSharingOptionsProviderTest {
         List<String> expectedModels =
                 ImmutableList.<String>builder()
                         .add(mActivity.getResources().getString(R.string.sharing_copy_image))
-                        .add(mActivity.getResources().getString(R.string.sharing_save_image))
                         .build();
 
         assertCorrectModelsAreInTheRightOrder(propertyModels, expectedModels);
@@ -332,7 +303,6 @@ public class ChromeProvidedSharingOptionsProviderTest {
     }
 
     @Test
-    @EnableFeatures({ChromeFeatureList.SHARE_SHEET_CUSTOM_ACTIONS_POLISH})
     public void getPropertyModels_sharingImageForAutomotiveIncognito() {
         mAutoTestRule.setIsAutomotive(true);
         setUpChromeProvidedSharingOptionsProviderTest(
@@ -350,7 +320,6 @@ public class ChromeProvidedSharingOptionsProviderTest {
     }
 
     @Test
-    @EnableFeatures({ChromeFeatureList.SHARE_SHEET_CUSTOM_ACTIONS_POLISH})
     public void getPropertyModels_textAndLinksIncognito() {
         mAutoTestRule.setIsAutomotive(true);
         setUpChromeProvidedSharingOptionsProviderTest(
@@ -543,9 +512,7 @@ public class ChromeProvidedSharingOptionsProviderTest {
             String label = propertyModel.get(ShareSheetItemViewProperties.LABEL);
             Resources res = mActivity.getResources();
             // There is no link generation for Stylize Cards / Screenshots / Long Screenshots.
-            if (label.equals(res.getString(R.string.sharing_webnotes_create_card))
-                    || label.equals(res.getString(R.string.sharing_screenshot))
-                    || label.equals(res.getString(R.string.sharing_long_screenshot))) {
+            if (label.equals(res.getString(R.string.sharing_long_screenshot))) {
                 continue;
             }
 
