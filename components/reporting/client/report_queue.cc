@@ -58,8 +58,9 @@ void EnqueueResponded(ReportQueue::EnqueueCallback callback,
   const auto* const enqueue_destination_metrics_name =
       status.ok() ? ReportQueue::kEnqueueSuccessDestinationMetricsName
                   : ReportQueue::kEnqueueFailedDestinationMetricsName;
-  base::UmaHistogramEnumeration(enqueue_destination_metrics_name, destination,
-                                Destination_MAX);
+  base::UmaHistogramExactLinear(enqueue_destination_metrics_name,
+                                static_cast<int>(destination),
+                                Destination_ARRAYSIZE);
   std::move(callback).Run(std::move(status));
 }
 }  // namespace
