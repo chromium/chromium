@@ -7912,15 +7912,18 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kEnableFencedFramesDescription, kOsAll,
      FEATURE_VALUE_TYPE(blink::features::kFencedFrames)},
 
+    {"enable-fenced-frames-cross-origin-automatic-beacons",
+     flag_descriptions::kEnableFencedFramesCrossOriginAutomaticBeaconsName,
+     flag_descriptions::
+         kEnableFencedFramesCrossOriginAutomaticBeaconsDescription,
+     kOsAll,
+     FEATURE_VALUE_TYPE(
+         blink::features::kFencedFramesCrossOriginAutomaticBeacons)},
+
     {"enable-fenced-frames-developer-mode",
      flag_descriptions::kEnableFencedFramesDeveloperModeName,
      flag_descriptions::kEnableFencedFramesDeveloperModeDescription, kOsAll,
      FEATURE_VALUE_TYPE(blink::features::kFencedFramesDefaultMode)},
-
-    {"enable-fenced-frames-M120-features",
-     flag_descriptions::kEnableFencedFramesM120FeaturesName,
-     flag_descriptions::kEnableFencedFramesM120FeaturesDescription, kOsAll,
-     FEATURE_VALUE_TYPE(blink::features::kFencedFramesM120FeaturesPart2)},
 
     {"enable-fenced-frames-reporting-attestations-changes",
      flag_descriptions::kEnableFencedFramesReportingAttestationsChangeName,
