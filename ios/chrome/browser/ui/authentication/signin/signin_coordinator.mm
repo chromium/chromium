@@ -265,8 +265,7 @@ using signin_metrics::PromoAction;
 - (void)dealloc {
   // -[SigninCoordinator runCompletionCallbackWithSigninResult:completionInfo:]
   // has to be called by the subclass before the coordinator is deallocated.
-  DUMP_WILL_BE_CHECK(!self.signinCompletion)
-      << base::SysNSStringToUTF8([self description]);
+  DCHECK(!self.signinCompletion) << base::SysNSStringToUTF8([self description]);
 }
 
 - (void)interruptWithAction:(SigninCoordinatorInterrupt)action
