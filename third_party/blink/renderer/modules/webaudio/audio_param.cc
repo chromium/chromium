@@ -120,12 +120,15 @@ void AudioParam::setValue(float value) {
 void AudioParam::setValue(float value, ExceptionState& exception_state) {
   WarnIfOutsideRange("value", value);
 
-  // This is to signal any errors, if necessary, about conflicting
-  // automations.
-  setValueAtTime(value, Context()->currentTime(), exception_state);
-  // This is to change the value so that an immediate query for the
-  // value returns the expected values.
+  // Change the intrinsic value so that an immediate query for the value
+  // returns the value that the user code provided. It also clamps the value
+  // to the nominal range.
   Handler().SetValue(value);
+
+  // Use the intrinsic value (after clamping) to schedule the actual
+  // automation event.
+  setValueAtTime(Handler().IntrinsicValue(), Context()->currentTime(),
+                 exception_state);
 }
 
 float AudioParam::defaultValue() const {
