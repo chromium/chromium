@@ -109,8 +109,6 @@ crbug.com/1378044 [ Linux ] external/wpt/html/semantics/scripting-1/the-script-e
 crbug.com/1378044 [ Linux ] external/wpt/html/semantics/scripting-1/the-script-element/module/dynamic-import/microtasks/basic.any.worker.html [ Timeout ]
 
 # Suppress blink canvas web tests that cause MSAN builder failure
-crbug.com/1419916 [ Linux ] virtual/oopr-canvas2d/fast/canvas/canvas-fillPath-shadow.html [ Crash ]
-crbug.com/1419916 [ Linux ] virtual/oopr-canvas2d/fast/canvas/canvas-fillPath-alpha-shadow.html [ Crash ]
 crbug.com/1419916 [ Linux ] virtual/oopr-canvas2d/fast/canvas/canvas-fillPath-gradient-shadow.html [ Crash ]
 
 crbug.com/1457275 [ Linux ] external/wpt/dom/ranges/Range-surroundContents.html [ Skip ]

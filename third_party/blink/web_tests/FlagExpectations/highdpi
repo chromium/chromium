@@ -237,7 +237,6 @@ crbug.com/1179565 svg/custom/anchor-on-use.svg [ Failure ]
 crbug.com/1179565 svg/custom/focus-ring-2.svg [ Failure ]
 crbug.com/1179565 svg/custom/rgba-color-outline.svg [ Failure ]
 crbug.com/1179565 svg/custom/svg-root-padding-border-margin.html [ Failure ]
-crbug.com/1179565 svg/dom/filter-reference-in-shadow-tree.html [ Failure ]
 crbug.com/1179565 svg/filters/color-space-conversion.svg [ Failure ]
 crbug.com/1179565 svg/filters/feComposite-operator-lighter.svg [ Failure ]
 crbug.com/1179565 svg/filters/feDisplacementMap-filterUnits.svg [ Failure ]
@@ -395,7 +394,6 @@ crbug.com/1266821 transforms/3d/point-mapping/3d-point-mapping.html [ Failure ]
 # Existing failures. Mark these as [ Pass ] when these tests are fixed.
 crbug.com/626703 external/wpt/acid/acid3/test.html [ Failure ]
 crbug.com/626703 external/wpt/css/css-fill-stroke/paint-order-001.tentative.html [ Failure ]
-crbug.com/694218 external/wpt/css/css-masking/clip-path/clip-path-viewBox-1b.html [ Failure ]
 crbug.com/1129522 external/wpt/css/css-shapes/shape-outside/shape-box/shape-outside-border-box-border-radius-011.html [ Failure ]
 crbug.com/591099 external/wpt/css/css-text/shaping/shaping-011.html [ Failure ]
 crbug.com/970200 external/wpt/css/css-text/text-indent/text-indent-tab-positions-001.html [ Failure ]
@@ -431,7 +429,6 @@ crbug.com/1315309 external/wpt/css/css-layout-api/layout-child/before-after.http
 crbug.com/1315309 external/wpt/css/css-layout-api/position-fragment/vrl-ltr.https.html [ Failure ]
 # Letter spacing is different.
 crbug.com/1315309 external/wpt/css/css-text/letter-spacing/letter-spacing-201.html [ Failure ]
-crbug.com/1315309 external/wpt/css/css-text/word-boundary/word-boundary-009.html [ Failure ]
 # Resize observer scrollbar size slightly off.
 crbug.com/1315309 external/wpt/resize-observer/scrollbars-2.html [ Failure ]
 

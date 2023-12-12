@@ -19,7 +19,6 @@
 
 crbug.com/1181667 [ Linux ] external/wpt/css/selectors/focus-visible-011.html [ Failure Pass ]
 
-crbug.com/733494 [ Linux ] media/autoplay/document-user-activation.html [ Pass Failure ]
 
 crbug.com/769885 [ Linux ] virtual/android/fullscreen/video-scrolled-iframe.html [ Failure ]
 
@@ -27,8 +26,6 @@ crbug.com/769885 [ Linux ] virtual/android/fullscreen/video-scrolled-iframe.html
 # a prior crash.
 crbug.com/1103082 [ Linux ] fast/forms/select/select-change-layout-object-crash.html [ Failure ]
 
-# Sheriff 2021-02-25
-crbug.com/1182675 [ Linux ] dom/mutation-event-tests/dom/attr/id-update-map-crash.html [ Failure Pass ]
 
 # Sheriff 2021-03-02
 crbug.com/1183788 [ Linux ] external/wpt/pointerevents/pointerevent_fractional_coordinates.html?touch [ Pass Failure ]
@@ -47,8 +44,6 @@ crbug.com/1219915 [ Linux ] fast/events/touch/gesture/long-press-selects-word-wh
 crbug.com/1219915 [ Linux ] touchadjustment/focusout-on-touch.html [ Failure ]
 crbug.com/1219915 [ Linux ] touchadjustment/touch-links-longpress.html [ Failure ]
 
-# Sheriff 2021-11-18
-crbug.com/1271392 [ Linux ] external/wpt/service-workers/service-worker/navigation-headers.https.html [ Failure Pass ]
 
 # This has been marked as Skip in the TestExpectations file.
 crbug.com/1385278 [ Linux ] external/wpt/resource-timing/iframe-failed-commit.html [ Skip ]
@@ -62,9 +57,6 @@ crbug.com/1499775 external/wpt/pointerevents/pointerevent_attributes_hoverable_p
 crbug.com/1499775 external/wpt/pointerevents/pointerevent_attributes_hoverable_rightbutton.html?mouse [ Failure Pass ]
 crbug.com/1499775 external/wpt/pointerevents/pointerevent_attributes_hoverable_rightbutton.html?pen [ Failure Pass ]
 
-# Sheriff 2023-11-28
-crbug.com/1483398 external/wpt/accelerometer/Accelerometer-enabled-on-self-origin-by-feature-policy.https.html [ Failure Pass ]
-crbug.com/1483398 external/wpt/accelerometer/Accelerometer-enabled-by-feature-policy.https.html [ Failure Pass ]
 
 ###########################################################################
 # WARNING: Memory leaks must be fixed asap. Sheriff is expected to revert #
