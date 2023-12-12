@@ -31,6 +31,10 @@ namespace content {
 class NavigationHandle;
 }
 
+namespace net::test_server {
+class EmbeddedTestServer;
+}
+
 // Base class for tests of ash-chrome integration with the ChromeOS platform,
 // like hardware daemons, graphics, kernel, etc.
 //
@@ -91,6 +95,7 @@ class InteractiveAshTest
   void WaitForAshFullyStarted();
 
   // MixinBasedInProcessBrowserTest:
+  void SetUpOnMainThread() override;
   void TearDownOnMainThread() override;
 
   // Blocks until a window exists with the given title. If a matching window
@@ -134,6 +139,10 @@ class InteractiveAshTest
 
  private:
 #if BUILDFLAG(IS_CHROMEOS_DEVICE)
+  // Overrides the Gaia URL to point to a local test server that produces an
+  // error, which is expected behavior in test environments.
+  void OverrideGaiaUrlForLacros(base::CommandLine* command_line);
+
   // This test runs on linux-chromeos in interactive_ui_tests and on a DUT in
   // chromeos_integration_tests.
   ChromeOSIntegrationTestMixin chromeos_integration_test_mixin_{&mixin_host_};
@@ -144,5 +153,7 @@ class InteractiveAshTest
 
   // Directory used by Wayland/Lacros in environment variable XDG_RUNTIME_DIR.
   base::ScopedTempDir scoped_temp_dir_xdg_;
+
+  std::unique_ptr<net::test_server::EmbeddedTestServer> https_server_;
 };
 #endif  // CHROME_TEST_BASE_CHROMEOS_CROSIER_INTERACTIVE_ASH_TEST_H_

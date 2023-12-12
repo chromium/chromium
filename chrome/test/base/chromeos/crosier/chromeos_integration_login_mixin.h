@@ -57,6 +57,8 @@ class ChromeOSIntegrationLoginMixin : public InProcessBrowserTestMixin {
   void SetUp() override;
   void SetUpCommandLine(base::CommandLine* command_line) override;
 
+  Mode mode() const { return mode_; }
+
  private:
   bool ShouldStartLoginScreen() const;
   void PrepareForNewUserLogin();

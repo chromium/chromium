@@ -7,6 +7,7 @@
 #include "ash/shell.h"
 #include "ash/system/model/enterprise_domain_model.h"
 #include "ash/system/model/system_tray_model.h"
+#include "base/cpu.h"
 #include "base/test/gtest_tags.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/ash/crosapi/browser_util.h"
@@ -16,6 +17,7 @@
 #include "chrome/test/base/chromeos/crosier/interactive_ash_test.h"
 #include "chromeos/ash/components/standalone_browser/standalone_browser_features.h"
 #include "components/strings/grit/components_strings.h"
+#include "testing/gtest/include/gtest/gtest.h"
 #include "ui/aura/env.h"
 #include "ui/aura/env_observer.h"
 #include "ui/aura/window.h"
@@ -165,10 +167,13 @@ class QuickSettingsLacrosIntegrationTest : public QuickSettingsIntegrationTest {
   base::test::ScopedFeatureList feature_list_;
 };
 
-// Flaky because Lacros can be older than Ash in chromeos_integration_tests,
-// causing NOTREACHED failures at the crosapi level. b/303359438
-IN_PROC_BROWSER_TEST_F(QuickSettingsLacrosIntegrationTest,
-                       DISABLED_ManagedDeviceInfo) {
+IN_PROC_BROWSER_TEST_F(QuickSettingsLacrosIntegrationTest, ManagedDeviceInfo) {
+  // On VM tryservers like chromeos-amd64-generic Lacros fails to start up
+  // correctly (it restarts in a loop). b/303359438
+  if (base::CPU().is_running_in_vm()) {
+    GTEST_SKIP();
+  }
+
   ASSERT_TRUE(crosapi::browser_util::IsLacrosEnabled());
 
   base::AddFeatureIdTagToTestResult(

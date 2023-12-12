@@ -27,12 +27,29 @@
 #include "chrome/browser/ui/ash/chrome_browser_main_extra_parts_ash.h"
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/browser_navigator.h"
+#include "chrome/common/chrome_switches.h"
 #include "chrome/test/base/chromeos/crosier/aura_window_title_observer.h"
+#include "chrome/test/base/chromeos/crosier/chromeos_integration_login_mixin.h"
+#include "google_apis/gaia/gaia_switches.h"
+#include "net/test/embedded_test_server/embedded_test_server.h"
+#include "net/test/embedded_test_server/http_response.h"
 #include "ui/aura/test/find_window.h"
 #include "url/gurl.h"
 
+namespace {
+
 using InteractiveMixinBasedBrowserTest =
     InteractiveBrowserTestT<MixinBasedInProcessBrowserTest>;
+
+#if BUILDFLAG(IS_CHROMEOS_DEVICE)
+// Simulates a failure for a Gaia URL request.
+std::unique_ptr<net::test_server::HttpResponse> HandleGaiaURL(
+    const net::test_server::HttpRequest& request) {
+  return std::make_unique<net::test_server::HungResponse>();
+}
+#endif  // BUILDFLAG(IS_CHROMEOS_DEVICE)
+
+}  // namespace
 
 InteractiveAshTest::InteractiveAshTest() {
   // See header file class comment.
@@ -85,6 +102,10 @@ void InteractiveAshTest::SetUpCommandLineForLacros(
     base::CommandLine* command_line) {
   CHECK(command_line);
 
+#if BUILDFLAG(IS_CHROMEOS_DEVICE)
+  OverrideGaiaUrlForLacros(command_line);
+#endif
+
   // Enable the Wayland server.
   command_line->AppendSwitch(ash::switches::kAshEnableWaylandServer);
 
@@ -125,6 +146,15 @@ void InteractiveAshTest::WaitForAshFullyStarted() {
     run_loop2.Run();
   }
   CHECK(extra_parts->did_post_browser_start());
+}
+
+void InteractiveAshTest::SetUpOnMainThread() {
+  InteractiveBrowserTestT<MixinBasedInProcessBrowserTest>::SetUpOnMainThread();
+
+  // The embedded test server starts accepting connections after fork.
+  if (https_server_) {
+    https_server_->StartAcceptingConnections();
+  }
 }
 
 void InteractiveAshTest::TearDownOnMainThread() {
@@ -189,3 +219,31 @@ InteractiveAshTest::WaitForElementTextContains(
   state_change.event = kTextFound;
   return WaitForStateChange(element_id, state_change);
 }
+
+#if BUILDFLAG(IS_CHROMEOS_DEVICE)
+void InteractiveAshTest::OverrideGaiaUrlForLacros(
+    base::CommandLine* command_line) {
+  // When using real Gaia login, don't override the Gaia URL.
+  if (login_mixin_.mode() == ChromeOSIntegrationLoginMixin::Mode::kGaiaLogin) {
+    return;
+  }
+
+  // Set up an embedded test server.
+  https_server_ = std::make_unique<net::test_server::EmbeddedTestServer>(
+      net::test_server::EmbeddedTestServer::TYPE_HTTPS);
+  https_server_->RegisterRequestHandler(base::BindRepeating(&HandleGaiaURL));
+  CHECK(https_server_->InitializeAndListen());
+
+  std::vector<std::string> lacros_args;
+  lacros_args.emplace_back(base::StringPrintf("--%s", switches::kNoFirstRun));
+  // Override Gaia url in Lacros so that the gaia requests will NOT be handled
+  // with the real internet connection, but with the embedded test server. The
+  // embedded test server will simulate failure of the Gaia url requests which
+  // is expected in testing environment for Gaia authentication flow. See
+  // crbug.com/1371655.
+  lacros_args.emplace_back(base::StringPrintf(
+      "--%s=%s", switches::kGaiaUrl, https_server_->base_url().spec().c_str()));
+  command_line->AppendSwitchASCII(ash::switches::kLacrosChromeAdditionalArgs,
+                                  base::JoinString(lacros_args, "####"));
+}
+#endif  // BUILDFLAG(IS_CHROMEOS_DEVICE)
