@@ -303,7 +303,7 @@ BASE_FEATURE(kSuspiciousSiteTriggerQuotaFeature,
 
 BASE_FEATURE(kTailoredSecurityRetryForSyncUsers,
              "TailoredSecurityRetryForSyncUsers",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 #if BUILDFLAG(IS_ANDROID)
 BASE_FEATURE(kTailoredSecurityObserverRetries,
