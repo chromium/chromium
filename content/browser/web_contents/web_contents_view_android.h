@@ -140,6 +140,27 @@ class WebContentsViewAndroid : public WebContentsView,
     device_orientation_ = orientation;
   }
 
+  // Insert `screenshot_layer` into the layer tree, as a *direct* sibling of
+  // `parent_for_web_page_widgets_`.
+  //
+  // `screenshot_layer_on_top` controls the position of `screenshot_layer`:
+  // `true` means the screenshot will be placed right above
+  // `parent_for_web_page_widgets_`; `false` means right below it.
+  //
+  // TODO(crbug/1488075): The boolean might not be enough if
+  // `parent_for_web_page_widgets_` has more siblings, and we need finer control
+  // of the position.
+  void AddScreenshotLayerForNavigationTransitions(
+      scoped_refptr<cc::slim::Layer> screenshot_layer,
+      bool screenshot_layer_on_top);
+
+  // See the block comments above `parent_for_web_page_widgets_` for the
+  // hierarchies of layers and native views. The callers can operate upon all
+  // the web widgets and the web page via this getter.
+  cc::slim::Layer* parent_for_web_page_widgets() const {
+    return parent_for_web_page_widgets_.get();
+  }
+
  private:
   void OnDragEntered(const std::vector<DropData::Metadata>& metadata,
                      const gfx::PointF& location,
@@ -176,7 +197,7 @@ class WebContentsViewAndroid : public WebContentsView,
 
   // A common parent to all the native widgets as part of a web page.
   //
-  // Layer layout:
+  // Layer hierarchy:
   // `view_`
   //   |
   //   |- `parent_for_web_page_widgets_`
@@ -185,9 +206,9 @@ class WebContentsViewAndroid : public WebContentsView,
   //   |                |- Overscroll
   //   |                |- SelectionHandle
   //   |
-  //   |- `NavigationEntryScreenshot`  // TODO(https://crbug.com/1420783)
+  //   |- `NavigationEntryScreenshot`  // TODO(https://crbug.com/1509888)
   //
-  // ViewAndroid layout:
+  // ViewAndroid hierarchy:
   // `view_`
   //   |
   //   |- `RenderWidgetHostViewAndroid`
