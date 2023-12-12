@@ -219,8 +219,10 @@ void LayoutBlock::AddChildBeforeDescendant(LayoutObject* new_child,
   // because there is an anonymous container within this object that contains
   // the beforeDescendant.
   if (before_descendant_container->IsAnonymousBlock()) {
-    // Insert the child into the anonymous block box instead of here.
-    if (new_child->IsInline() ||
+    // Insert the child into the anonymous block box instead of here. Note that
+    // a LayoutOutsideListMarker is out-of-flow for tree building purposes, and
+    // that is not inline level, although IsInline() is true.
+    if ((new_child->IsInline() && !new_child->IsLayoutOutsideListMarker()) ||
         (new_child->IsFloatingOrOutOfFlowPositioned() &&
          (StyleRef().IsDeprecatedFlexboxUsingFlexLayout() ||
           (!IsFlexibleBox() && !IsLayoutGrid()))) ||
