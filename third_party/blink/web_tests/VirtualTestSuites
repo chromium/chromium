@@ -2222,16 +2222,6 @@
     "expires": "Oct 1, 2024"
   },
   {
-    "prefix": "allow-rtc-encoded-video-frame-set-metadata-all-fields",
-    "platforms": ["Linux", "Mac", "Win"],
-    "bases": [
-      "fast/peerconnection/RTCEncodedVideoFrame-set-metadata.html"
-    ],
-    "args": ["--enable-features=AllowRTCEncodedVideoFrameSetMetadataAllFields",
-             "--disable-threaded-compositing", "--disable-threaded-animation"],
-    "expires": "Jul 1, 2023"
-  },
-  {
     "prefix": "disable-device-id-pointer-event",
     "platforms": ["Linux", "Mac", "Win"],
     "bases": ["fast/events/pointerevents/device-id"],
