@@ -87,9 +87,10 @@ void PeriodicCollector::OnMetricDataCollected(
   CheckOnSequence();
   CHECK(metric_report_queue_);
   if (!metric_data.has_value()) {
-    base::UmaHistogramEnumeration(PeriodicCollector::kNoMetricDataMetricsName,
-                                  metric_report_queue_->GetDestination(),
-                                  Destination_MAX);
+    base::UmaHistogramExactLinear(
+        PeriodicCollector::kNoMetricDataMetricsName,
+        static_cast<int>(metric_report_queue_->GetDestination()),
+        Destination_ARRAYSIZE);
     return;
   }
 
