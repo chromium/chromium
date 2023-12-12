@@ -51,7 +51,7 @@ reviewer.
 </variants>
 
 <histogram name="Privacy.3PCD.AdsHeuristicAddedToOverrides"
-    enum="ProfileEligibilityMismatch" expires_after="2024-07-01">
+    enum="AdsHeuristicCookieOverride" expires_after="2024-07-01">
   <owner>johnidel@chromium.org</owner>
   <owner>src/chrome/browser/tpcd/OWNERS</owner>
   <summary>
