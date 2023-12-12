@@ -37,6 +37,7 @@
 #include "third_party/blink/renderer/core/style/computed_style.h"
 #include "third_party/blink/renderer/core/testing/core_unit_test_helper.h"
 #include "third_party/blink/renderer/platform/testing/runtime_enabled_features_test_helpers.h"
+#include "third_party/blink/renderer/platform/testing/task_environment.h"
 #include "third_party/blink/renderer/platform/testing/unit_test_helpers.h"
 
 namespace blink {
@@ -194,6 +195,8 @@ class DisplayLockContextTest : public testing::Test,
   const int FAKE_FIND_ID = 1;
 
  private:
+  test::TaskEnvironment task_environment;
+
   frame_test_helpers::WebViewHelper web_view_helper_;
 };
 
