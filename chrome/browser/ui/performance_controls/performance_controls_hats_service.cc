@@ -122,6 +122,6 @@ void PerformanceControlsHatsService::OnHighEfficiencyModeChanged() {
       !manager->IsHighEfficiencyModeManaged() &&
       !manager->IsHighEfficiencyModeDefault()) {
     hats_service->LaunchDelayedSurvey(
-        kHatsSurveyTriggerPerformanceControlsHighEfficiencyOptOut, 10000);
+        kHatsSurveyTriggerPerformanceControlsMemorySaverOptOut, 10000);
   }
 }

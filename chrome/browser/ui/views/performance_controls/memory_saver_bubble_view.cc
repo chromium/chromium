@@ -9,10 +9,10 @@
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
-#include "chrome/browser/ui/performance_controls/high_efficiency_bubble_delegate.h"
-#include "chrome/browser/ui/performance_controls/high_efficiency_bubble_observer.h"
-#include "chrome/browser/ui/performance_controls/high_efficiency_chip_tab_helper.h"
-#include "chrome/browser/ui/performance_controls/high_efficiency_utils.h"
+#include "chrome/browser/ui/performance_controls/memory_saver_bubble_delegate.h"
+#include "chrome/browser/ui/performance_controls/memory_saver_bubble_observer.h"
+#include "chrome/browser/ui/performance_controls/memory_saver_chip_tab_helper.h"
+#include "chrome/browser/ui/performance_controls/memory_saver_utils.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/frame/toolbar_button_provider.h"
 #include "chrome/browser/ui/views/page_action/page_action_icon_view.h"
@@ -62,18 +62,18 @@ void AddBubbleBodyText(
 }
 
 void AddCancelButton(ui::DialogModel::Builder* dialog_model_builder,
-                     HighEfficiencyBubbleDelegate* bubble_delegate,
+                     MemorySaverBubbleDelegate* bubble_delegate,
                      const bool is_site_excluded) {
   int button_string_id;
   base::OnceClosure callback;
   if (is_site_excluded) {
     button_string_id = IDS_MEMORY_SAVER_DIALOG_BODY_LINK_TEXT;
-    callback = base::BindOnce(&HighEfficiencyBubbleDelegate::OnSettingsClicked,
+    callback = base::BindOnce(&MemorySaverBubbleDelegate::OnSettingsClicked,
                               base::Unretained(bubble_delegate));
   } else {
     button_string_id = IDS_MEMORY_SAVER_DIALOG_BUTTON_ADD_TO_EXCLUSION_LIST;
     callback = base::BindOnce(
-        &HighEfficiencyBubbleDelegate::OnAddSiteToExceptionsListClicked,
+        &MemorySaverBubbleDelegate::OnAddSiteToExceptionsListClicked,
         base::Unretained(bubble_delegate));
   }
   dialog_model_builder->AddCancelButton(
@@ -88,9 +88,9 @@ void AddCancelButton(ui::DialogModel::Builder* dialog_model_builder,
 views::BubbleDialogModelHost* MemorySaverBubbleView::ShowBubble(
     Browser* browser,
     views::View* anchor_view,
-    HighEfficiencyBubbleObserver* observer) {
+    MemorySaverBubbleObserver* observer) {
   auto bubble_delegate_unique =
-      std::make_unique<HighEfficiencyBubbleDelegate>(browser, observer);
+      std::make_unique<MemorySaverBubbleDelegate>(browser, observer);
   auto* bubble_delegate = bubble_delegate_unique.get();
   auto dialog_model_builder =
       ui::DialogModel::Builder(std::move(bubble_delegate_unique));
@@ -104,7 +104,7 @@ views::BubbleDialogModelHost* MemorySaverBubbleView::ShowBubble(
               ? l10n_util::GetStringUTF16(IDS_MEMORY_SAVER_DIALOG_TITLE_V2)
               : l10n_util::GetStringUTF16(IDS_MEMORY_SAVER_DIALOG_TITLE))
       .SetDialogDestroyingCallback(
-          base::BindOnce(&HighEfficiencyBubbleDelegate::OnDialogDestroy,
+          base::BindOnce(&MemorySaverBubbleDelegate::OnDialogDestroy,
                          base::Unretained(bubble_delegate)))
       .AddOkButton(base::DoNothing(),
                    ui::DialogModelButton::Params()
@@ -151,9 +151,8 @@ views::BubbleDialogModelHost* MemorySaverBubbleView::ShowBubble(
     ui::DialogModelLabel::TextReplacement settings_link =
         ui::DialogModelLabel::CreateLink(
             IDS_MEMORY_SAVER_DIALOG_BODY_LINK_TEXT,
-            base::BindRepeating(
-                &HighEfficiencyBubbleDelegate::OnSettingsClicked,
-                base::Unretained(bubble_delegate)));
+            base::BindRepeating(&MemorySaverBubbleDelegate::OnSettingsClicked,
+                                base::Unretained(bubble_delegate)));
 
     if (memory_savings > kMemoryUsageThresholdInBytes) {
       AddBubbleBodyText(&dialog_model_builder,

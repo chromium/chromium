@@ -28,7 +28,7 @@ extern const char kHatsSurveyTriggerNtpModules[];
 extern const char kHatsSurveyTriggerNtpPhotosModuleOptOut[];
 extern const char kHatsSurveyTriggerPerformanceControlsPerformance[];
 extern const char kHatsSurveyTriggerPerformanceControlsBatteryPerformance[];
-extern const char kHatsSurveyTriggerPerformanceControlsHighEfficiencyOptOut[];
+extern const char kHatsSurveyTriggerPerformanceControlsMemorySaverOptOut[];
 extern const char kHatsSurveyTriggerPerformanceControlsBatterySaverOptOut[];
 extern const char kHatsSurveyTriggerPrivacyGuide[];
 extern const char kHatsSurveyTriggerPrivacySandbox[];

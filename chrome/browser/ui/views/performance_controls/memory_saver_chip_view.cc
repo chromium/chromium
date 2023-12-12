@@ -13,8 +13,8 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/browser_window.h"
-#include "chrome/browser/ui/performance_controls/high_efficiency_chip_tab_helper.h"
-#include "chrome/browser/ui/performance_controls/high_efficiency_utils.h"
+#include "chrome/browser/ui/performance_controls/memory_saver_chip_tab_helper.h"
+#include "chrome/browser/ui/performance_controls/memory_saver_utils.h"
 #include "chrome/browser/ui/performance_controls/performance_controls_metrics.h"
 #include "chrome/browser/ui/side_panel/side_panel_enums.h"
 #include "chrome/browser/ui/side_panel/side_panel_ui.h"
@@ -24,9 +24,9 @@
 #include "chrome/browser/ui/views/frame/toolbar_button_provider.h"
 #include "chrome/browser/ui/views/location_bar/icon_label_bubble_view.h"
 #include "chrome/browser/ui/views/page_action/page_action_icon_view.h"
+#include "chrome/browser/ui/views/performance_controls/memory_saver_bubble_view.h"
 #include "chrome/browser/ui/views/side_panel/performance_controls/performance_side_panel_coordinator.h"
 #include "chrome/browser/ui/webui/side_panel/performance_controls/performance.mojom-shared.h"
-#include "chrome/browser/ui/views/performance_controls/memory_saver_bubble_view.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/feature_engagement/public/event_constants.h"
@@ -69,7 +69,7 @@ MemorySaverChipView::MemorySaverChipView(
 
   SetUpForInOutAnimation(kChipAnimationDuration);
   SetPaintLabelOverSolidBackground(true);
-  SetProperty(views::kElementIdentifierKey, kHighEfficiencyChipElementId);
+  SetProperty(views::kElementIdentifierKey, kMemorySaverChipElementId);
 }
 
 MemorySaverChipView::~MemorySaverChipView() = default;
@@ -89,8 +89,8 @@ void MemorySaverChipView::UpdateImpl() {
     return;
   }
 
-  HighEfficiencyChipTabHelper* const tab_helper =
-      HighEfficiencyChipTabHelper::FromWebContents(web_contents);
+  MemorySaverChipTabHelper* const tab_helper =
+      MemorySaverChipTabHelper::FromWebContents(web_contents);
   auto chip_state = tab_helper->chip_state();
 
   if (chip_state != high_efficiency::ChipState::HIDDEN &&
@@ -103,8 +103,7 @@ void MemorySaverChipView::UpdateImpl() {
       case high_efficiency::ChipState::EXPANDED_EDUCATION: {
         SetVisible(true);
         AnimateIn(IDS_MEMORY_SAVER_CHIP_LABEL);
-        RecordHighEfficiencyChipState(
-            HighEfficiencyChipState::kExpandedEducation);
+        RecordMemorySaverChipState(MemorySaverChipState::kExpandedEducation);
         break;
       }
       case high_efficiency::ChipState::EXPANDED_WITH_SAVINGS: {
@@ -118,8 +117,7 @@ void MemorySaverChipView::UpdateImpl() {
                      IDS_MEMORY_SAVER_CHIP_WITH_SAVINGS_ACCNAME,
                      {memory_savings_string}));
         AnimateIn(std::nullopt);
-        RecordHighEfficiencyChipState(
-            HighEfficiencyChipState::kExpandedWithSavings);
+        RecordMemorySaverChipState(MemorySaverChipState::kExpandedWithSavings);
         break;
       }
       case high_efficiency::ChipState::COLLAPSED_FROM_EXPANDED: {
@@ -132,7 +130,7 @@ void MemorySaverChipView::UpdateImpl() {
       case high_efficiency::ChipState::COLLAPSED: {
         SetVisible(true);
         SetAccessibleName(chip_accessible_label_);
-        RecordHighEfficiencyChipState(HighEfficiencyChipState::kCollapsed);
+        RecordMemorySaverChipState(MemorySaverChipState::kCollapsed);
         break;
       }
       default: {

@@ -9,8 +9,8 @@
 #include "base/scoped_observation.h"
 #include "chrome/browser/performance_manager/public/user_tuning/user_performance_tuning_manager.h"
 #include "chrome/browser/ui/browser.h"
-#include "chrome/browser/ui/performance_controls/high_efficiency_bubble_observer.h"
-#include "chrome/browser/ui/performance_controls/high_efficiency_chip_tab_helper.h"
+#include "chrome/browser/ui/performance_controls/memory_saver_bubble_observer.h"
+#include "chrome/browser/ui/performance_controls/memory_saver_chip_tab_helper.h"
 #include "chrome/browser/ui/views/page_action/page_action_icon_view.h"
 #include "components/prefs/pref_change_registrar.h"
 #include "ui/base/metadata/metadata_header_macros.h"
@@ -19,7 +19,7 @@
 // Represents the high efficiency page action chip that appears on previously
 // discarded tabs.
 class MemorySaverChipView : public PageActionIconView,
-                            public HighEfficiencyBubbleObserver,
+                            public MemorySaverBubbleObserver,
                             public performance_manager::user_tuning::
                                 UserPerformanceTuningManager::Observer {
  public:
@@ -35,7 +35,7 @@ class MemorySaverChipView : public PageActionIconView,
   MemorySaverChipView& operator=(const MemorySaverChipView&) = delete;
   ~MemorySaverChipView() override;
 
-  // HighEfficiencyBubbleObserver:
+  // MemorySaverBubbleObserver:
   void OnBubbleShown() override;
   void OnBubbleHidden() override;
 

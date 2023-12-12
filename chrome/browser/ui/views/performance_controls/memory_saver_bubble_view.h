@@ -6,7 +6,7 @@
 #define CHROME_BROWSER_UI_VIEWS_PERFORMANCE_CONTROLS_MEMORY_SAVER_BUBBLE_VIEW_H_
 
 #include "chrome/browser/ui/browser.h"
-#include "chrome/browser/ui/performance_controls/high_efficiency_bubble_observer.h"
+#include "chrome/browser/ui/performance_controls/memory_saver_bubble_observer.h"
 #include "ui/views/bubble/bubble_dialog_model_host.h"
 #include "ui/views/view.h"
 
@@ -24,7 +24,7 @@ class MemorySaverBubbleView {
   static views::BubbleDialogModelHost* ShowBubble(
       Browser* browser,
       views::View* anchor_view,
-      HighEfficiencyBubbleObserver* observer);
+      MemorySaverBubbleObserver* observer);
 
  private:
   MemorySaverBubbleView() = default;

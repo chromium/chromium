@@ -348,12 +348,12 @@ class MemorySaverChipInteractiveTest : public MemorySaverInteractiveTest {
   }
 
   auto CheckChipIsExpandedState() {
-    return CheckViewProperty(kHighEfficiencyChipElementId,
+    return CheckViewProperty(kMemorySaverChipElementId,
                              &PageActionIconView::ShouldShowLabel, true);
   }
 
   auto CheckChipIsCollapsedState() {
-    return CheckViewProperty(kHighEfficiencyChipElementId,
+    return CheckViewProperty(kMemorySaverChipElementId,
                              &PageActionIconView::ShouldShowLabel, false);
   }
 
@@ -365,7 +365,7 @@ class MemorySaverChipInteractiveTest : public MemorySaverInteractiveTest {
       size_t non_discard_tab_index,
       const ui::ElementIdentifier& contents_id) {
     MultiStep result;
-    for (int i = 0; i < HighEfficiencyChipTabHelper::kChipAnimationCount; i++) {
+    for (int i = 0; i < MemorySaverChipTabHelper::kChipAnimationCount; i++) {
       MultiStep temp = std::move(result);
       result = Steps(std::move(temp),
                      SelectTab(kTabStripElementId, non_discard_tab_index),
@@ -396,7 +396,7 @@ IN_PROC_BROWSER_TEST_F(MemorySaverChipInteractiveTest, PageActionChipShows) {
       NavigateWebContents(kFirstTabContents, GetURL("/title1.html")),
       AddInstrumentedTab(kSecondTabContents, GURL(chrome::kChromeUINewTabURL)),
       SelectTab(kTabStripElementId, 0),
-      EnsureNotPresent(kHighEfficiencyChipElementId),
+      EnsureNotPresent(kMemorySaverChipElementId),
       DiscardTabUntilChipStopsExpanding(0, 1, kFirstTabContents),
       SelectTab(kTabStripElementId, 1),
       DiscardAndSelectTab(0, kFirstTabContents), CheckChipIsCollapsedState());
@@ -409,13 +409,13 @@ IN_PROC_BROWSER_TEST_F(MemorySaverChipInteractiveTest,
       InstrumentTab(kFirstTabContents, 0),
       NavigateWebContents(kFirstTabContents, GetURL("/title1.html")),
       AddInstrumentedTab(kSecondTabContents, GetURL("/title1.html")),
-      EnsureNotPresent(kHighEfficiencyChipElementId),
+      EnsureNotPresent(kMemorySaverChipElementId),
       DiscardAndSelectTab(0, kFirstTabContents), CheckChipIsExpandedState(),
       SelectTab(kTabStripElementId, 1),
-      EnsureNotPresent(kHighEfficiencyChipElementId),
+      EnsureNotPresent(kMemorySaverChipElementId),
       SelectTab(kTabStripElementId, 0), CheckChipIsCollapsedState(),
       SelectTab(kTabStripElementId, 1),
-      EnsureNotPresent(kHighEfficiencyChipElementId));
+      EnsureNotPresent(kMemorySaverChipElementId));
 }
 
 // Page Action chip should stay collapsed when navigating between two
@@ -426,7 +426,7 @@ IN_PROC_BROWSER_TEST_F(MemorySaverChipInteractiveTest,
       InstrumentTab(kFirstTabContents, 0),
       NavigateWebContents(kFirstTabContents, GetURL("/title1.html")),
       AddInstrumentedTab(kSecondTabContents, GetURL("/title1.html")),
-      EnsureNotPresent(kHighEfficiencyChipElementId),
+      EnsureNotPresent(kMemorySaverChipElementId),
       DiscardAndSelectTab(0, kFirstTabContents), CheckChipIsExpandedState(),
       DiscardAndSelectTab(1, kSecondTabContents), CheckChipIsExpandedState(),
       SelectTab(kTabStripElementId, 0), CheckChipIsCollapsedState(),
@@ -442,12 +442,12 @@ IN_PROC_BROWSER_TEST_F(MemorySaverChipInteractiveTest,
       AddInstrumentedTab(kSecondTabContents, GURL(chrome::kChromeUINewTabURL)),
       // Discards tab on non-chrome page
       DiscardAndSelectTab(0, kFirstTabContents),
-      WaitForShow(kHighEfficiencyChipElementId),
+      WaitForShow(kMemorySaverChipElementId),
 
       // Discards tab on chrome://newtab page
       TryDiscardTab(1), WaitForHide(kSecondTabContents), CheckTabIsDiscarded(1),
       SelectTab(kTabStripElementId, 1),
-      EnsureNotPresent(kHighEfficiencyChipElementId));
+      EnsureNotPresent(kMemorySaverChipElementId));
 }
 
 // High Efficiency Dialog bubble should close after clicking the "OK" button
@@ -458,7 +458,7 @@ IN_PROC_BROWSER_TEST_F(MemorySaverChipInteractiveTest,
       NavigateWebContents(kFirstTabContents, GetURL("/title1.html")),
       AddInstrumentedTab(kSecondTabContents, GURL(chrome::kChromeUINewTabURL)),
       DiscardAndSelectTab(0, kFirstTabContents),
-      PressButton(kHighEfficiencyChipElementId),
+      PressButton(kMemorySaverChipElementId),
       WaitForShow(MemorySaverBubbleView::kMemorySaverDialogBodyElementId),
       PressButton(MemorySaverBubbleView::kMemorySaverDialogOkButton),
       WaitForHide(MemorySaverBubbleView::kMemorySaverDialogBodyElementId));
@@ -475,7 +475,7 @@ IN_PROC_BROWSER_TEST_F(MemorySaverChipInteractiveTest,
       NavigateWebContents(kFirstTabContents, GetURL("/title1.html")),
       AddInstrumentedTab(kSecondTabContents, GURL(chrome::kChromeUINewTabURL)),
       DiscardAndSelectTab(0, kFirstTabContents),
-      PressButton(kHighEfficiencyChipElementId),
+      PressButton(kMemorySaverChipElementId),
       WaitForShow(MemorySaverBubbleView::kMemorySaverDialogBodyElementId),
       NameView(kDialogCloseButton, base::BindLambdaForTesting([&]() {
                  return static_cast<views::View*>(GetPageActionIconView()
@@ -495,9 +495,9 @@ IN_PROC_BROWSER_TEST_F(MemorySaverChipInteractiveTest, CloseBubbleOnChipClick) {
       NavigateWebContents(kFirstTabContents, GetURL("/title1.html")),
       AddInstrumentedTab(kSecondTabContents, GURL(chrome::kChromeUINewTabURL)),
       DiscardAndSelectTab(0, kFirstTabContents),
-      PressButton(kHighEfficiencyChipElementId),
+      PressButton(kMemorySaverChipElementId),
       WaitForShow(MemorySaverBubbleView::kMemorySaverDialogBodyElementId),
-      PressButton(kHighEfficiencyChipElementId),
+      PressButton(kMemorySaverChipElementId),
       EnsureNotPresent(MemorySaverBubbleView::kMemorySaverDialogBodyElementId));
 }
 
@@ -511,7 +511,7 @@ IN_PROC_BROWSER_TEST_F(MemorySaverChipInteractiveTest, CloseBubbleOnTabSwitch) {
       NavigateWebContents(kFirstTabContents, GetURL("/title1.html")),
       AddInstrumentedTab(kSecondTabContents, GURL(chrome::kChromeUINewTabURL)),
       DiscardAndSelectTab(0, kFirstTabContents),
-      PressButton(kHighEfficiencyChipElementId),
+      PressButton(kMemorySaverChipElementId),
       WaitForShow(MemorySaverBubbleView::kMemorySaverDialogBodyElementId),
       NameTab(1, kSecondTab), MoveMouseTo(kSecondTab), ClickMouse(),
       WaitForHide(MemorySaverBubbleView::kMemorySaverDialogBodyElementId));
@@ -532,8 +532,8 @@ IN_PROC_BROWSER_TEST_F(MemorySaverChipInteractiveTest,
       NavigateWebContents(kFirstTabContents, GetURL("/title1.html")),
       AddInstrumentedTab(kSecondTabContents, GURL(chrome::kChromeUINewTabURL)),
       ForceRefreshMemoryMetrics(), DiscardAndSelectTab(0, kFirstTabContents),
-      WaitForShow(kHighEfficiencyChipElementId),
-      PressButton(kHighEfficiencyChipElementId),
+      WaitForShow(kMemorySaverChipElementId),
+      PressButton(kMemorySaverChipElementId),
       WaitForShow(MemorySaverResourceView::
                       kMemorySaverResourceViewMemorySavingsElementId),
       CheckView(
@@ -565,7 +565,7 @@ IN_PROC_BROWSER_TEST_F(MemorySaverChipInteractiveTest,
       NavigateWebContents(kFirstTabContents, GetURL("/title1.html")),
       AddInstrumentedTab(kSecondTabContents, GURL(chrome::kChromeUINewTabURL)),
       DiscardAndSelectTab(0, kFirstTabContents),
-      PressButton(kHighEfficiencyChipElementId),
+      PressButton(kMemorySaverChipElementId),
       WaitForShow(MemorySaverBubbleView::kMemorySaverDialogBodyElementId),
       CheckViewProperty(
           MemorySaverBubbleView::kMemorySaverDialogCancelButton,
@@ -592,7 +592,7 @@ IN_PROC_BROWSER_TEST_F(MemorySaverChipInteractiveTest,
       FlushEvents(),
       // Dialog's cancel button should now allow users to navigate to the
       // performance settings page
-      PressButton(kHighEfficiencyChipElementId),
+      PressButton(kMemorySaverChipElementId),
       WaitForShow(MemorySaverBubbleView::kMemorySaverDialogBodyElementId),
       CheckViewProperty(
           MemorySaverBubbleView::kMemorySaverDialogCancelButton,
@@ -616,37 +616,35 @@ IN_PROC_BROWSER_TEST_F(MemorySaverChipInteractiveTest,
       NavigateWebContents(kFirstTabContents, GetURL("a.test", "/title1.html")),
       AddInstrumentedTab(kSecondTabContents, GetURL("b.test", "/title1.html")),
       DiscardAndSelectTab(0, kFirstTabContents), TryDiscardTab(1),
-      PressButton(kHighEfficiencyChipElementId),
+      PressButton(kMemorySaverChipElementId),
       WaitForShow(MemorySaverBubbleView::kMemorySaverDialogBodyElementId),
       // Add site to the exceptions list
       PressButton(MemorySaverBubbleView::kMemorySaverDialogCancelButton),
       WaitForHide(MemorySaverBubbleView::kMemorySaverDialogBodyElementId),
       FlushEvents(),
       // Check that the cancel button can go to settings page
-      PressButton(kHighEfficiencyChipElementId),
+      PressButton(kMemorySaverChipElementId),
       WaitForShow(MemorySaverBubbleView::kMemorySaverDialogBodyElementId),
       CheckViewProperty(
           MemorySaverBubbleView::kMemorySaverDialogCancelButton,
           &views::LabelButton::GetText,
           l10n_util::GetStringUTF16(IDS_MEMORY_SAVER_DIALOG_BODY_LINK_TEXT)),
-      PressButton(kHighEfficiencyChipElementId),
+      PressButton(kMemorySaverChipElementId),
       WaitForHide(MemorySaverBubbleView::kMemorySaverDialogBodyElementId),
       // Second tab's cancel button should allow users to exclude the site
       // since this tab's site wasn't excluded yet
-      SelectTab(kTabStripElementId, 1),
-      PressButton(kHighEfficiencyChipElementId),
+      SelectTab(kTabStripElementId, 1), PressButton(kMemorySaverChipElementId),
       WaitForShow(MemorySaverBubbleView::kMemorySaverDialogBodyElementId),
       CheckViewProperty(
           MemorySaverBubbleView::kMemorySaverDialogCancelButton,
           &views::LabelButton::GetText,
           l10n_util::GetStringUTF16(
               IDS_MEMORY_SAVER_DIALOG_BUTTON_ADD_TO_EXCLUSION_LIST)),
-      PressButton(kHighEfficiencyChipElementId),
+      PressButton(kMemorySaverChipElementId),
       WaitForHide(MemorySaverBubbleView::kMemorySaverDialogBodyElementId),
       // Ensure that the first tab's cancel button continues to allow users
       // to navigate to the settings page even after we selected another tab
-      SelectTab(kTabStripElementId, 0),
-      PressButton(kHighEfficiencyChipElementId),
+      SelectTab(kTabStripElementId, 0), PressButton(kMemorySaverChipElementId),
       WaitForShow(MemorySaverBubbleView::kMemorySaverDialogBodyElementId),
       CheckViewProperty(
           MemorySaverBubbleView::kMemorySaverDialogCancelButton,
@@ -761,7 +759,7 @@ IN_PROC_BROWSER_TEST_F(MemorySaverMemorySavingsReportingImprovementsTest,
         pre_discard_resource_usage->SetMemoryFootprintEstimateKbForTesting(
             135 * 1024);
       })),
-      PressButton(kHighEfficiencyChipElementId),
+      PressButton(kMemorySaverChipElementId),
       WaitForShow(
           MemorySaverBubbleView::kMemorySaverDialogResourceViewElementId),
       Screenshot(MemorySaverBubbleView::kMemorySaverDialogResourceViewElementId,

@@ -11,7 +11,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/resource_coordinator/lifecycle_unit_state.mojom-shared.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
-#include "chrome/browser/ui/performance_controls/high_efficiency_chip_tab_helper.h"
+#include "chrome/browser/ui/performance_controls/memory_saver_chip_tab_helper.h"
 #include "chrome/browser/ui/performance_controls/performance_controls_metrics.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/frame/test_with_browser_view.h"
@@ -85,7 +85,7 @@ class MemorySaverBubbleViewTest : public TestWithBrowserView {
     AddTab(browser(), GURL("http://foo"));
     content::WebContents* const contents =
         browser()->tab_strip_model()->GetActiveWebContents();
-    HighEfficiencyChipTabHelper::CreateForWebContents(contents);
+    MemorySaverChipTabHelper::CreateForWebContents(contents);
     performance_manager::user_tuning::UserPerformanceTuningManager::
         PreDiscardResourceUsage::CreateForWebContents(contents, memory_savings,
                                                       discard_reason);
@@ -98,7 +98,7 @@ class MemorySaverBubbleViewTest : public TestWithBrowserView {
         std::make_unique<DiscardMockNavigationHandle>();
     navigation_handle.get()->SetWasDiscarded(is_discarded);
     navigation_handle.get()->SetWebContents(web_contents);
-    HighEfficiencyChipTabHelper::FromWebContents(web_contents)
+    MemorySaverChipTabHelper::FromWebContents(web_contents)
         ->DidStartNavigation(navigation_handle.get());
 
     browser_view()
@@ -161,7 +161,7 @@ TEST_F(MemorySaverBubbleViewTest, ShouldLogMetricsOnDialogDismiss) {
 
   histogram_tester_.ExpectUniqueSample(
       "PerformanceControls.MemorySaver.BubbleAction",
-      HighEfficiencyBubbleActionType::kDismiss, 1);
+      MemorySaverBubbleActionType::kDismiss, 1);
 }
 
 // A link should be rendered within the dialog.

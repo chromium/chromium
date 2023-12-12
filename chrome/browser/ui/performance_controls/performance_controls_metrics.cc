@@ -16,17 +16,17 @@ void RecordBatterySaverIPHOpenSettings(bool success) {
                             success);
 }
 
-void RecordHighEfficiencyBubbleAction(HighEfficiencyBubbleActionType type) {
+void RecordMemorySaverBubbleAction(MemorySaverBubbleActionType type) {
   base::UmaHistogramEnumeration("PerformanceControls.MemorySaver.BubbleAction",
                                 type);
 }
 
-void RecordHighEfficiencyIPHEnableMode(bool success) {
+void RecordMemorySaverIPHEnableMode(bool success) {
   base::UmaHistogramBoolean("PerformanceControls.MemorySaver.IPHEnableMode",
                             success);
 }
 
-void RecordHighEfficiencyChipState(HighEfficiencyChipState state) {
+void RecordMemorySaverChipState(MemorySaverChipState state) {
   base::UmaHistogramEnumeration("PerformanceControls.MemorySaver.ChipState",
                                 state);
 }

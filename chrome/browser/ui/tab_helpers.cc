@@ -89,7 +89,7 @@
 #include "chrome/browser/ui/find_bar/find_bar_state.h"
 #include "chrome/browser/ui/focus_tab_after_navigation_helper.h"
 #include "chrome/browser/ui/passwords/manage_passwords_ui_controller.h"
-#include "chrome/browser/ui/performance_controls/high_efficiency_chip_tab_helper.h"
+#include "chrome/browser/ui/performance_controls/memory_saver_chip_tab_helper.h"
 #include "chrome/browser/ui/prefs/prefs_tab_helper.h"
 #include "chrome/browser/ui/privacy_sandbox/privacy_sandbox_prompt_helper.h"
 #include "chrome/browser/ui/recently_audible_helper.h"
@@ -586,7 +586,7 @@ void TabHelpers::AttachTabHelpers(WebContents* web_contents) {
     privacy_sandbox::TrackingProtectionNoticeService::TabHelper::
         CreateForWebContents(web_contents);
   }
-  HighEfficiencyChipTabHelper::CreateForWebContents(web_contents);
+  MemorySaverChipTabHelper::CreateForWebContents(web_contents);
   if (base::FeatureList::IsEnabled(
           performance_manager::features::kMemoryUsageInHovercards)) {
     performance_manager::user_tuning::UserPerformanceTuningManager::

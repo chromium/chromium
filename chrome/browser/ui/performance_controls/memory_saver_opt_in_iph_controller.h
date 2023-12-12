@@ -2,25 +2,24 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_UI_PERFORMANCE_CONTROLS_HIGH_EFFICIENCY_OPT_IN_IPH_CONTROLLER_H_
-#define CHROME_BROWSER_UI_PERFORMANCE_CONTROLS_HIGH_EFFICIENCY_OPT_IN_IPH_CONTROLLER_H_
+#ifndef CHROME_BROWSER_UI_PERFORMANCE_CONTROLS_MEMORY_SAVER_OPT_IN_IPH_CONTROLLER_H_
+#define CHROME_BROWSER_UI_PERFORMANCE_CONTROLS_MEMORY_SAVER_OPT_IN_IPH_CONTROLLER_H_
 
 #include "base/memory/raw_ptr.h"
 #include "base/scoped_observation.h"
 #include "chrome/browser/performance_manager/public/user_tuning/user_performance_tuning_manager.h"
 #include "chrome/browser/ui/browser.h"
 
-class HighEfficiencyOptInIPHController
+class MemorySaverOptInIPHController
     : public performance_manager::user_tuning::UserPerformanceTuningManager::
           Observer {
  public:
-  explicit HighEfficiencyOptInIPHController(Browser* browser);
-  ~HighEfficiencyOptInIPHController() override;
+  explicit MemorySaverOptInIPHController(Browser* browser);
+  ~MemorySaverOptInIPHController() override;
 
-  HighEfficiencyOptInIPHController(const HighEfficiencyOptInIPHController&) =
-      delete;
-  HighEfficiencyOptInIPHController& operator=(
-      const HighEfficiencyOptInIPHController&) = delete;
+  MemorySaverOptInIPHController(const MemorySaverOptInIPHController&) = delete;
+  MemorySaverOptInIPHController& operator=(
+      const MemorySaverOptInIPHController&) = delete;
 
   // UserPerformanceTuningManager::Observer:
   void OnMemoryThresholdReached() override;
@@ -38,4 +37,4 @@ class HighEfficiencyOptInIPHController
   const raw_ptr<Browser> browser_;
 };
 
-#endif  // CHROME_BROWSER_UI_PERFORMANCE_CONTROLS_HIGH_EFFICIENCY_OPT_IN_IPH_CONTROLLER_H_
+#endif  // CHROME_BROWSER_UI_PERFORMANCE_CONTROLS_MEMORY_SAVER_OPT_IN_IPH_CONTROLLER_H_

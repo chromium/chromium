@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/performance_controls/high_efficiency_utils.h"
+#include "chrome/browser/ui/performance_controls/memory_saver_utils.h"
 
 #include "base/containers/contains.h"
 #include "chrome/browser/performance_manager/public/user_tuning/user_performance_tuning_manager.h"

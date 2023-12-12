@@ -2,22 +2,22 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/performance_controls/high_efficiency_chip_tab_helper.h"
+#include "chrome/browser/ui/performance_controls/memory_saver_chip_tab_helper.h"
 
 #include "chrome/browser/performance_manager/public/user_tuning/user_performance_tuning_manager.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_window.h"
-#include "chrome/browser/ui/performance_controls/high_efficiency_utils.h"
+#include "chrome/browser/ui/performance_controls/memory_saver_utils.h"
 #include "chrome/common/pref_names.h"
 #include "components/performance_manager/public/features.h"
 #include "components/performance_manager/public/user_tuning/prefs.h"
 #include "content/public/browser/visibility.h"
 #include "content/public/common/url_constants.h"
 
-HighEfficiencyChipTabHelper::~HighEfficiencyChipTabHelper() = default;
+MemorySaverChipTabHelper::~MemorySaverChipTabHelper() = default;
 
-void HighEfficiencyChipTabHelper::DidStartNavigation(
+void MemorySaverChipTabHelper::DidStartNavigation(
     content::NavigationHandle* navigation_handle) {
   // Pages can only be discarded while they are in the background, and we only
   // need to inform the user after they have been subsequently reloaded so it
@@ -37,7 +37,7 @@ void HighEfficiencyChipTabHelper::DidStartNavigation(
   ComputeChipState(navigation_handle);
 }
 
-void HighEfficiencyChipTabHelper::OnVisibilityChanged(
+void MemorySaverChipTabHelper::OnVisibilityChanged(
     content::Visibility visibility) {
   if (visibility == content::Visibility::HIDDEN) {
     was_rendered_ = false;
@@ -48,21 +48,21 @@ void HighEfficiencyChipTabHelper::OnVisibilityChanged(
   }
 }
 
-bool HighEfficiencyChipTabHelper::ShouldChipAnimate() {
+bool MemorySaverChipTabHelper::ShouldChipAnimate() {
   bool should_animate = !was_rendered_;
   was_rendered_ = true;
   return should_animate;
 }
 
-HighEfficiencyChipTabHelper::HighEfficiencyChipTabHelper(
+MemorySaverChipTabHelper::MemorySaverChipTabHelper(
     content::WebContents* contents)
     : content::WebContentsObserver(contents),
-      content::WebContentsUserData<HighEfficiencyChipTabHelper>(*contents) {
+      content::WebContentsUserData<MemorySaverChipTabHelper>(*contents) {
   pref_service_ =
       Profile::FromBrowserContext(contents->GetBrowserContext())->GetPrefs();
 }
 
-bool HighEfficiencyChipTabHelper::ComputeShouldHighlightMemorySavings() {
+bool MemorySaverChipTabHelper::ComputeShouldHighlightMemorySavings() {
   if (!base::FeatureList::IsEnabled(
           performance_manager::features::kMemorySavingsReportingImprovements)) {
     return false;
@@ -99,7 +99,7 @@ bool HighEfficiencyChipTabHelper::ComputeShouldHighlightMemorySavings() {
   return false;
 }
 
-bool HighEfficiencyChipTabHelper::ComputeShouldEducateAboutMemorySavings() {
+bool MemorySaverChipTabHelper::ComputeShouldEducateAboutMemorySavings() {
   int times_rendered =
       pref_service_->GetInteger(prefs::kHighEfficiencyChipExpandedCount);
   if (times_rendered < kChipAnimationCount) {
@@ -110,7 +110,7 @@ bool HighEfficiencyChipTabHelper::ComputeShouldEducateAboutMemorySavings() {
   return false;
 }
 
-void HighEfficiencyChipTabHelper::ComputeChipState(
+void MemorySaverChipTabHelper::ComputeChipState(
     content::NavigationHandle* navigation_handle) {
   // This high efficiency chip only appears for eligible sites that have been
   // proactively discarded.
@@ -133,4 +133,4 @@ void HighEfficiencyChipTabHelper::ComputeChipState(
   }
 }
 
-WEB_CONTENTS_USER_DATA_KEY_IMPL(HighEfficiencyChipTabHelper);
+WEB_CONTENTS_USER_DATA_KEY_IMPL(MemorySaverChipTabHelper);

@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_UI_PERFORMANCE_CONTROLS_HIGH_EFFICIENCY_CHIP_TAB_HELPER_H_
-#define CHROME_BROWSER_UI_PERFORMANCE_CONTROLS_HIGH_EFFICIENCY_CHIP_TAB_HELPER_H_
+#ifndef CHROME_BROWSER_UI_PERFORMANCE_CONTROLS_MEMORY_SAVER_CHIP_TAB_HELPER_H_
+#define CHROME_BROWSER_UI_PERFORMANCE_CONTROLS_MEMORY_SAVER_CHIP_TAB_HELPER_H_
 
 #include "chrome/browser/resource_coordinator/lifecycle_unit_state.mojom-shared.h"
 #include "components/prefs/pref_service.h"
@@ -30,17 +30,16 @@ enum class ChipState {
 // When a page in the background has been discarded due to high efficiency mode,
 // and the user returns to that tab, a page action chip should be shown to the
 // user which conveys information about the discarded tab to the user.
-// The HighEfficiencyChipTabHelper is a per-tab class which manages the state of
+// The MemorySaverChipTabHelper is a per-tab class which manages the state of
 // the high efficiency chip.
-class HighEfficiencyChipTabHelper
+class MemorySaverChipTabHelper
     : public content::WebContentsObserver,
-      public content::WebContentsUserData<HighEfficiencyChipTabHelper> {
+      public content::WebContentsUserData<MemorySaverChipTabHelper> {
  public:
-  HighEfficiencyChipTabHelper(const HighEfficiencyChipTabHelper&) = delete;
-  HighEfficiencyChipTabHelper& operator=(const HighEfficiencyChipTabHelper&) =
-      delete;
+  MemorySaverChipTabHelper(const MemorySaverChipTabHelper&) = delete;
+  MemorySaverChipTabHelper& operator=(const MemorySaverChipTabHelper&) = delete;
 
-  ~HighEfficiencyChipTabHelper() override;
+  ~MemorySaverChipTabHelper() override;
 
   static constexpr int kChipAnimationCount = 3;
 
@@ -56,8 +55,8 @@ class HighEfficiencyChipTabHelper
   bool ShouldChipAnimate();
 
  private:
-  friend class content::WebContentsUserData<HighEfficiencyChipTabHelper>;
-  explicit HighEfficiencyChipTabHelper(content::WebContents* contents);
+  friend class content::WebContentsUserData<MemorySaverChipTabHelper>;
+  explicit MemorySaverChipTabHelper(content::WebContents* contents);
 
   // Checks whether a promotional expanded chip should be shown to highlight
   // memory savings and, if so, update prefs to reflect that it is shown.
@@ -80,4 +79,4 @@ class HighEfficiencyChipTabHelper
   WEB_CONTENTS_USER_DATA_KEY_DECL();
 };
 
-#endif  // CHROME_BROWSER_UI_PERFORMANCE_CONTROLS_HIGH_EFFICIENCY_CHIP_TAB_HELPER_H_
+#endif  // CHROME_BROWSER_UI_PERFORMANCE_CONTROLS_MEMORY_SAVER_CHIP_TAB_HELPER_H_

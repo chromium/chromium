@@ -3261,14 +3261,12 @@ const FeatureEntry::FeatureVariation
 #if !BUILDFLAG(IS_ANDROID)
 
 const FeatureEntry::FeatureParam
-    kHighEfficiencyMultistateModeShowRecommendedBadge[] = {
+    kMemorySaverMultistateModeShowRecommendedBadge[] = {
         {"show_recommended_badge", "true"},
 };
-const FeatureEntry::FeatureVariation kHighEfficiencyMultistateModeVariations[] =
-    {
-        {"With Recommended Badge",
-         kHighEfficiencyMultistateModeShowRecommendedBadge,
-         std::size(kHighEfficiencyMultistateModeShowRecommendedBadge), nullptr},
+const FeatureEntry::FeatureVariation kMemorySaverMultistateModeVariations[] = {
+    {"With Recommended Badge", kMemorySaverMultistateModeShowRecommendedBadge,
+     std::size(kMemorySaverMultistateModeShowRecommendedBadge), nullptr},
 };
 
 const FeatureEntry::FeatureParam kDiscardedTabTreatmentWithRing30Opacity[] = {
@@ -3349,7 +3347,7 @@ const FeatureEntry::FeatureParam kMemorySavingsReportingVeryFrequent[] = {
     {"expanded_high_efficiency_chip_discarded_duration", "5m"}};
 
 const FeatureEntry::FeatureVariation
-    kHighEfficiencyMemorySavingsReportingVariations[] = {
+    kMemorySaverMemorySavingsReportingVariations[] = {
         {"With Frequent Memory Savings Reporting",
          kMemorySavingsReportingFrequent,
          std::size(kMemorySavingsReportingFrequent), nullptr},
@@ -10053,18 +10051,20 @@ const FeatureEntry kFeatureEntries[] = {
 #endif
 
 #if !BUILDFLAG(IS_ANDROID)
+    // "High Efficiency" mode was renamed to "Memory Saver" but some variables
+    // refer to the old name due to being tied to Finch launches.
     {"memory-saver-multi-state-mode",
-     flag_descriptions::kHighEfficiencyMultistateModeAvailableName,
-     flag_descriptions::kHighEfficiencyMultistateModeAvailableDescription,
+     flag_descriptions::kMemorySaverMultistateModeAvailableName,
+     flag_descriptions::kMemorySaverMultistateModeAvailableDescription,
      kOsDesktop,
      FEATURE_WITH_PARAMS_VALUE_TYPE(
          performance_manager::features::kMemorySaverMultistateMode,
-         kHighEfficiencyMultistateModeVariations,
+         kMemorySaverMultistateModeVariations,
          "HighEfficiencyMultistateMode")},
 
     {"memory-saver-discarded-tab-treatment",
-     flag_descriptions::kHighEfficiencyDiscardedTabTreatmentName,
-     flag_descriptions::kHighEfficiencyDiscardedTabTreatmentDescription,
+     flag_descriptions::kMemorySaverDiscardedTabTreatmentName,
+     flag_descriptions::kMemorySaverDiscardedTabTreatmentDescription,
      kOsDesktop,
      FEATURE_WITH_PARAMS_VALUE_TYPE(
          performance_manager::features::kDiscardedTabTreatment,
@@ -10072,8 +10072,8 @@ const FeatureEntry kFeatureEntries[] = {
          "DiscardedTabTreatment")},
 
     {"memory-saver-memory-usage-in-hovercards",
-     flag_descriptions::kHighEfficiencyMemoryUsageInHovercardsName,
-     flag_descriptions::kHighEfficiencyMemoryUsageInHovercardsDescription,
+     flag_descriptions::kMemorySaverMemoryUsageInHovercardsName,
+     flag_descriptions::kMemorySaverMemoryUsageInHovercardsDescription,
      kOsDesktop,
      FEATURE_WITH_PARAMS_VALUE_TYPE(
          performance_manager::features::kMemoryUsageInHovercards,
@@ -10081,19 +10081,19 @@ const FeatureEntry kFeatureEntries[] = {
          "MemoryUsageInHovercards")},
 
     {"memory-saver-discard-exceptions-improvements",
-     flag_descriptions::kHighEfficiencyDiscardExceptionsImprovementsName,
-     flag_descriptions::kHighEfficiencyDiscardExceptionsImprovementsDescription,
+     flag_descriptions::kMemorySaverDiscardExceptionsImprovementsName,
+     flag_descriptions::kMemorySaverDiscardExceptionsImprovementsDescription,
      kOsDesktop,
      FEATURE_VALUE_TYPE(
          performance_manager::features::kDiscardExceptionsImprovements)},
 
     {"memory-saver-savings-reporting-improvements",
-     flag_descriptions::kHighEfficiencySavingsReportingImprovementsName,
-     flag_descriptions::kHighEfficiencySavingsReportingImprovementsDescription,
+     flag_descriptions::kMemorySaverSavingsReportingImprovementsName,
+     flag_descriptions::kMemorySaverSavingsReportingImprovementsDescription,
      kOsDesktop,
      FEATURE_WITH_PARAMS_VALUE_TYPE(
          performance_manager::features::kMemorySavingsReportingImprovements,
-         kHighEfficiencyMemorySavingsReportingVariations,
+         kMemorySaverMemorySavingsReportingVariations,
          "MemorySavingsReportingImprovements")},
 
     {"probabilistic-memory-saver",

@@ -4813,35 +4813,35 @@ const char kHeuristicMemorySaverDescription[] =
     "discarding a tab rather than doing it after a fixed amount of time in the "
     "background.";
 
-const char kHighEfficiencyMultistateModeAvailableName[] =
+const char kMemorySaverMultistateModeAvailableName[] =
     "Enable the multi-state option for Memory Saver Mode.";
-const char kHighEfficiencyMultistateModeAvailableDescription[] =
+const char kMemorySaverMultistateModeAvailableDescription[] =
     "When enabled, Memory Saver can take one of three options: enabled with a "
     "heuristic mode, enabled with a fixed timer, and discarded. Configure this "
     "through the settings page.";
 
-const char kHighEfficiencyDiscardedTabTreatmentName[] =
+const char kMemorySaverDiscardedTabTreatmentName[] =
     "Enable discarded tab treatment for Memory Saver Mode.";
-const char kHighEfficiencyDiscardedTabTreatmentDescription[] =
+const char kMemorySaverDiscardedTabTreatmentDescription[] =
     "When enabled, discarded tabs will have a modified favicon to indicate "
     "that state.";
 
-const char kHighEfficiencyMemoryUsageInHovercardsName[] =
+const char kMemorySaverMemoryUsageInHovercardsName[] =
     "Show memory usage in hovercards.";
-const char kHighEfficiencyMemoryUsageInHovercardsDescription[] =
+const char kMemorySaverMemoryUsageInHovercardsDescription[] =
     "When enabled, memory usage for active tabs can be found in their "
     "hovercards.";
 
-const char kHighEfficiencyDiscardExceptionsImprovementsName[] =
+const char kMemorySaverDiscardExceptionsImprovementsName[] =
     "Enable improvements to creating tab discard exceptions.";
-const char kHighEfficiencyDiscardExceptionsImprovementsDescription[] =
+const char kMemorySaverDiscardExceptionsImprovementsDescription[] =
     "When enabled, tab discard exceptions can be created from the Memory Saver "
     "page action chip dialog and they can be created from currently open tabs "
     "via the settings page.";
 
-const char kHighEfficiencySavingsReportingImprovementsName[] =
+const char kMemorySaverSavingsReportingImprovementsName[] =
     "Enable improvements to how memory savings are reported.";
-const char kHighEfficiencySavingsReportingImprovementsDescription[] =
+const char kMemorySaverSavingsReportingImprovementsDescription[] =
     "When enabled, the Memory Saver page action chip and dialog will be used "
     "to highlight memory savings.";
 

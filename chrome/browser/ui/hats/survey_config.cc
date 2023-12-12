@@ -36,7 +36,7 @@ constexpr char kHatsSurveyTriggerPerformanceControlsPerformance[] =
     "performance-general";
 constexpr char kHatsSurveyTriggerPerformanceControlsBatteryPerformance[] =
     "performance-battery";
-constexpr char kHatsSurveyTriggerPerformanceControlsHighEfficiencyOptOut[] =
+constexpr char kHatsSurveyTriggerPerformanceControlsMemorySaverOptOut[] =
     "performance-high-efficiency-opt-out";
 constexpr char kHatsSurveyTriggerPerformanceControlsBatterySaverOptOut[] =
     "performance-battery-saver-opt-out";
@@ -422,7 +422,7 @@ std::vector<hats::SurveyConfig> GetAllSurveyConfigs() {
   survey_configs.emplace_back(
       &performance_manager::features::
           kPerformanceControlsMemorySaverOptOutSurvey,
-      kHatsSurveyTriggerPerformanceControlsHighEfficiencyOptOut);
+      kHatsSurveyTriggerPerformanceControlsMemorySaverOptOut);
   survey_configs.emplace_back(
       &performance_manager::features::
           kPerformanceControlsBatterySaverOptOutSurvey,

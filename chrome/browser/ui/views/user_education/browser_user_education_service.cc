@@ -668,7 +668,7 @@ void MaybeRegisterChromeFeaturePromos(
                 performance_manager::user_tuning::UserPerformanceTuningManager::
                     GetInstance()
                         ->SetHighEfficiencyModeEnabled(true);
-                RecordHighEfficiencyIPHEnableMode(true);
+                RecordMemorySaverIPHEnableMode(true);
               }))
           .SetCustomActionIsDefault(true)
           .SetCustomActionDismissText(IDS_NO_THANKS)

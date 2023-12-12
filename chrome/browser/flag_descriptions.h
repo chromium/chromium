@@ -2779,20 +2779,20 @@ extern const char kGlobalMediaControlsCastStartStopDescription[];
 extern const char kHeuristicMemorySaverName[];
 extern const char kHeuristicMemorySaverDescription[];
 
-extern const char kHighEfficiencyMultistateModeAvailableName[];
-extern const char kHighEfficiencyMultistateModeAvailableDescription[];
+extern const char kMemorySaverMultistateModeAvailableName[];
+extern const char kMemorySaverMultistateModeAvailableDescription[];
 
-extern const char kHighEfficiencyDiscardedTabTreatmentName[];
-extern const char kHighEfficiencyDiscardedTabTreatmentDescription[];
+extern const char kMemorySaverDiscardedTabTreatmentName[];
+extern const char kMemorySaverDiscardedTabTreatmentDescription[];
 
-extern const char kHighEfficiencyMemoryUsageInHovercardsName[];
-extern const char kHighEfficiencyMemoryUsageInHovercardsDescription[];
+extern const char kMemorySaverMemoryUsageInHovercardsName[];
+extern const char kMemorySaverMemoryUsageInHovercardsDescription[];
 
-extern const char kHighEfficiencyDiscardExceptionsImprovementsName[];
-extern const char kHighEfficiencyDiscardExceptionsImprovementsDescription[];
+extern const char kMemorySaverDiscardExceptionsImprovementsName[];
+extern const char kMemorySaverDiscardExceptionsImprovementsDescription[];
 
-extern const char kHighEfficiencySavingsReportingImprovementsName[];
-extern const char kHighEfficiencySavingsReportingImprovementsDescription[];
+extern const char kMemorySaverSavingsReportingImprovementsName[];
+extern const char kMemorySaverSavingsReportingImprovementsDescription[];
 
 extern const char kModalMemorySaverName[];
 extern const char kModalMemorySaverDescription[];

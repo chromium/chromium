@@ -2,11 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_UI_PERFORMANCE_CONTROLS_HIGH_EFFICIENCY_BUBBLE_OBSERVER_H_
-#define CHROME_BROWSER_UI_PERFORMANCE_CONTROLS_HIGH_EFFICIENCY_BUBBLE_OBSERVER_H_
+#ifndef CHROME_BROWSER_UI_PERFORMANCE_CONTROLS_MEMORY_SAVER_BUBBLE_OBSERVER_H_
+#define CHROME_BROWSER_UI_PERFORMANCE_CONTROLS_MEMORY_SAVER_BUBBLE_OBSERVER_H_
 
 // This observer interface for the high efficiency bubble dialog.
-class HighEfficiencyBubbleObserver {
+class MemorySaverBubbleObserver {
  public:
   // Called when the high efficiency dialog is opened.
   virtual void OnBubbleShown() = 0;
@@ -14,7 +14,7 @@ class HighEfficiencyBubbleObserver {
   virtual void OnBubbleHidden() = 0;
 
  protected:
-  virtual ~HighEfficiencyBubbleObserver() = default;
+  virtual ~MemorySaverBubbleObserver() = default;
 };
 
-#endif  // CHROME_BROWSER_UI_PERFORMANCE_CONTROLS_HIGH_EFFICIENCY_BUBBLE_OBSERVER_H_
+#endif  // CHROME_BROWSER_UI_PERFORMANCE_CONTROLS_MEMORY_SAVER_BUBBLE_OBSERVER_H_

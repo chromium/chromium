@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_UI_PERFORMANCE_CONTROLS_HIGH_EFFICIENCY_UTILS_H_
-#define CHROME_BROWSER_UI_PERFORMANCE_CONTROLS_HIGH_EFFICIENCY_UTILS_H_
+#ifndef CHROME_BROWSER_UI_PERFORMANCE_CONTROLS_MEMORY_SAVER_UTILS_H_
+#define CHROME_BROWSER_UI_PERFORMANCE_CONTROLS_MEMORY_SAVER_UTILS_H_
 
 #include "chrome/browser/resource_coordinator/lifecycle_unit.h"
 #include "components/prefs/pref_service.h"
@@ -31,4 +31,4 @@ uint64_t GetDiscardedMemorySavingsInBytes(content::WebContents* contents);
 
 }  // namespace high_efficiency
 
-#endif  // CHROME_BROWSER_UI_PERFORMANCE_CONTROLS_HIGH_EFFICIENCY_UTILS_H_
+#endif  // CHROME_BROWSER_UI_PERFORMANCE_CONTROLS_MEMORY_SAVER_UTILS_H_
