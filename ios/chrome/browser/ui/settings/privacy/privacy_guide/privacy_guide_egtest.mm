@@ -12,6 +12,7 @@
 #import "ios/testing/earl_grey/earl_grey_test.h"
 
 using chrome_test_util::ButtonWithAccessibilityLabelId;
+using chrome_test_util::PromoStylePrimaryActionButtonMatcher;
 using chrome_test_util::PromoStyleSecondaryActionButtonMatcher;
 using chrome_test_util::SettingsMenuPrivacyButton;
 
@@ -28,7 +29,7 @@ using chrome_test_util::SettingsMenuPrivacyButton;
   return config;
 }
 
-// Test that the Privacy Guide can be dismissed via the 'Cancel' button.
+// Tests that the Privacy Guide can be dismissed via the 'Cancel' button.
 - (void)testDismissPrivacyGuideWithCancelButton {
   [self openPrivacyGuide];
 
@@ -38,23 +39,37 @@ using chrome_test_util::SettingsMenuPrivacyButton;
 
   // Verify that the Privacy Guide is dismissed.
   [[EarlGrey
-      selectElementWithMatcher:grey_accessibilityID(kPrivacyGuideWelcomeViewId)]
+      selectElementWithMatcher:grey_accessibilityID(kPrivacyGuideWelcomeViewID)]
       assertWithMatcher:grey_nil()];
 }
 
-// Test that the Privacy Guide can be dismissed by swipping down.
+// Tests that the Privacy Guide can be dismissed by swipping down.
 - (void)testDismissPrivacyGuideWithSwipeDown {
   [self openPrivacyGuide];
 
   // Dismiss the Privacy Guide by swipping down.
   [[EarlGrey
-      selectElementWithMatcher:grey_accessibilityID(kPrivacyGuideWelcomeViewId)]
+      selectElementWithMatcher:grey_accessibilityID(kPrivacyGuideWelcomeViewID)]
       performAction:grey_swipeFastInDirection(kGREYDirectionDown)];
 
   // Verify that the Privacy Guide is dismissed.
   [[EarlGrey
-      selectElementWithMatcher:grey_accessibilityID(kPrivacyGuideWelcomeViewId)]
+      selectElementWithMatcher:grey_accessibilityID(kPrivacyGuideWelcomeViewID)]
       assertWithMatcher:grey_nil()];
+}
+
+// Tests that the 'Let's go' button transitions to the next step.
+- (void)testLetsGoButton {
+  [self openPrivacyGuide];
+
+  // Tap the 'Let's go' button.
+  [[EarlGrey selectElementWithMatcher:PromoStylePrimaryActionButtonMatcher()]
+      performAction:grey_tap()];
+
+  // Verify that the next step is displayed.
+  [[EarlGrey selectElementWithMatcher:grey_accessibilityID(
+                                          kPrivacyGuideURLUsageViewID)]
+      assertWithMatcher:grey_notNil()];
 }
 
 #pragma mark - Helpers
