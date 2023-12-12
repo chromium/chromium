@@ -10,6 +10,7 @@
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/side_panel/side_panel_entry_id.h"
+#include "chrome/browser/ui/side_panel/side_panel_entry_key.h"
 #include "chrome/browser/ui/side_search/side_search_config.h"
 #include "chrome/browser/ui/toolbar/app_menu_model.h"
 #include "chrome/browser/ui/toolbar/bookmark_sub_menu_model.h"
@@ -29,6 +30,7 @@
 #include "chrome/test/interaction/interactive_browser_test.h"
 #include "chrome/test/interaction/tracked_element_webcontents.h"
 #include "chrome/test/interaction/webcontents_interaction_test_util.h"
+#include "components/reading_list/core/reading_list_entry.h"
 #include "content/public/test/browser_test.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/accessibility/accessibility_features.h"
@@ -63,6 +65,8 @@ class SidePanelInteractiveTest : public InteractiveBrowserTest {
 IN_PROC_BROWSER_TEST_F(SidePanelInteractiveTest, SidePanelNotShownOnPwa) {
   DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kSecondTabElementId);
   GURL second_tab_url("https://test.com");
+  auto* coordinator =
+      SidePanelUtil::GetSidePanelCoordinatorForBrowser(browser());
 
   RunTestSequence(
       // Add a second tab to the tab strip
@@ -79,22 +83,23 @@ IN_PROC_BROWSER_TEST_F(SidePanelInteractiveTest, SidePanelNotShownOnPwa) {
                         ->GetActiveWebContents()
                         ->GetLastCommittedURL();
                   }),
-                  second_tab_url));
-
-  // Register side search entry to second_tab.
-  content::WebContents* active_contents =
-      browser()->tab_strip_model()->GetActiveWebContents();
-  auto* registry = SidePanelRegistry::Get(active_contents);
-  registry->Register(std::make_unique<SidePanelEntry>(
-      SidePanelEntry::Id::kSideSearch, u"testing1", ui::ImageModel(),
-      base::BindRepeating([]() { return std::make_unique<views::View>(); })));
-
-  // Toggle side search entry to show on second_tab.
-  auto* coordinator =
-      SidePanelUtil::GetSidePanelCoordinatorForBrowser(browser());
-  coordinator->Show(SidePanelEntry::Id::kSideSearch);
-  EXPECT_EQ(coordinator->GetComboboxDisplayedEntryIdForTesting(),
-            SidePanelEntry::Id::kSideSearch);
+                  second_tab_url),
+      Do(base::BindLambdaForTesting([=]() {
+        content::WebContents* active_contents =
+            browser()->tab_strip_model()->GetActiveWebContents();
+        auto* registry = SidePanelRegistry::Get(active_contents);
+        registry->Register(std::make_unique<SidePanelEntry>(
+            SidePanelEntry::Id::kCustomizeChrome, u"testing1", ui::ImageModel(),
+            base::BindRepeating(
+                []() { return std::make_unique<views::View>(); })));
+        coordinator->Show(SidePanelEntry::Id::kCustomizeChrome);
+      })),
+      WaitForShow(kSidePanelElementId), FlushEvents(),
+      CheckResult(base::BindLambdaForTesting([coordinator]() {
+                    return coordinator->IsSidePanelEntryShowing(
+                        SidePanelEntryKey(SidePanelEntryId::kCustomizeChrome));
+                  }),
+                  true));
 
   // Install an app using second_tab_url.
   auto app_id = web_app::test::InstallDummyWebApp(browser()->profile(),
@@ -113,6 +118,11 @@ IN_PROC_BROWSER_TEST_F(SidePanelInteractiveTest, SidePanelNotShownOnPwa) {
 }
 
 IN_PROC_BROWSER_TEST_F(SidePanelInteractiveTest, ToggleSidePanelVisibility) {
+  if (base::FeatureList::IsEnabled(features::kSidePanelPinning)) {
+    GTEST_SKIP()
+        << "Default sidepanel button is not present with pinning feature.";
+  }
+
   RunTestSequence(
       // Ensure the side panel isn't open
       EnsureNotPresent(kSidePanelElementId),
@@ -132,6 +142,11 @@ IN_PROC_BROWSER_TEST_F(SidePanelInteractiveTest, ToggleSidePanelVisibility) {
 
 IN_PROC_BROWSER_TEST_F(SidePanelInteractiveTest,
                        SwitchBetweenDifferentEntries) {
+  if (base::FeatureList::IsEnabled(features::kSidePanelPinning)) {
+    GTEST_SKIP()
+        << "Default sidepanel button is not present with pinning feature.";
+  }
+
   DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kBookmarksWebContentsId);
   DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kReadLaterWebContentsId);
 
@@ -160,6 +175,11 @@ IN_PROC_BROWSER_TEST_F(SidePanelInteractiveTest,
 
 IN_PROC_BROWSER_TEST_F(SidePanelInteractiveTest,
                        StaysOpenOnTabSwitchWithActiveGlobalEntry) {
+  if (base::FeatureList::IsEnabled(features::kSidePanelPinning)) {
+    GTEST_SKIP()
+        << "Default sidepanel button is not present with pinning feature.";
+  }
+
   DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kSecondTabElementId);
 
   RunTestSequence(
@@ -185,6 +205,14 @@ IN_PROC_BROWSER_TEST_F(SidePanelInteractiveTest,
 
 IN_PROC_BROWSER_TEST_F(SidePanelInteractiveTest,
                        ReopensToLastActiveGlobalEntry) {
+  // This test does not make sense with pinned feature the default toolbar
+  // sidepanel button is not present to show the last active global entry.
+  // A particular sidepanel has to be opened.
+  if (base::FeatureList::IsEnabled(features::kSidePanelPinning)) {
+    GTEST_SKIP()
+        << "Default sidepanel button is not present with pinning feature.";
+  }
+
   RunTestSequence(
       // Ensure the side panel isn't open
       EnsureNotPresent(kSidePanelElementId),
@@ -279,6 +307,12 @@ class PinnedSidePanelInteractiveTest : public InteractiveBrowserTest {
                                       views::InkDropState::ACTIVATED;
                              }),
                              is_active));
+  }
+
+  auto ShowSidePanelForKey(SidePanelEntryKey key) {
+    return Do(base::BindLambdaForTesting([=]() {
+      SidePanelUtil::GetSidePanelCoordinatorForBrowser(browser())->Show(key);
+    }));
   }
 
  private:
@@ -400,4 +434,85 @@ IN_PROC_BROWSER_TEST_F(PinnedSidePanelInteractiveTest,
       OpenReadingModeSidePanel(),
       // Verify the bookmarks pinned toolbar button is not highlighted.
       CheckPinnedToolbarActionsContainerChildInkDropState(0, false));
+}
+
+IN_PROC_BROWSER_TEST_F(PinnedSidePanelInteractiveTest,
+                       ToggleSidePanelVisibility) {
+  constexpr char kBookmarksButton[] = "bookmarks_button";
+  RunTestSequence(
+      // Ensure the side panel isn't open
+      EnsureNotPresent(kSidePanelElementId),
+      // Open bookmarks sidepanel
+      OpenBookmarksSidePanel(), WaitForShow(kSidePanelElementId), FlushEvents(),
+      WaitForShow(kPinnedToolbarActionsContainerElementId), FlushEvents(),
+      // Pin the button
+      CheckPinButtonToggleState(false),
+      PressButton(kSidePanelPinButtonElementId),
+      CheckActionPinnedToToolbar(kActionSidePanelShowBookmarks, true),
+      EnsurePresent(kPinnedToolbarActionsContainerElementId),
+      NameChildViewByType<
+          PinnedToolbarActionsContainer::PinnedActionToolbarButton>(
+          kPinnedToolbarActionsContainerElementId, kBookmarksButton),
+      WaitForShow(kBookmarksButton), FlushEvents(),
+      // Toggle side panel
+      PressButton(kBookmarksButton), WaitForHide(kSidePanelElementId));
+}
+
+IN_PROC_BROWSER_TEST_F(PinnedSidePanelInteractiveTest,
+                       SwitchBetweenDifferentEntries) {
+  DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kBookmarksWebContentsId);
+  DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kReadLaterWebContentsId);
+  auto* coordinator =
+      SidePanelUtil::GetSidePanelCoordinatorForBrowser(browser());
+
+  RunTestSequence(
+      // Ensure the side panel isn't open
+      EnsureNotPresent(kSidePanelElementId),
+      // Click the toolbar button to open the side panel
+      OpenBookmarksSidePanel(), WaitForShow(kSidePanelElementId), FlushEvents(),
+      InstrumentNonTabWebView(kBookmarksWebContentsId,
+                              kBookmarkSidePanelWebViewElementId),
+      FlushEvents(),
+      CheckResult(base::BindLambdaForTesting([coordinator]() {
+                    return coordinator->IsSidePanelEntryShowing(
+                        SidePanelEntryKey(SidePanelEntryId::kBookmarks));
+                  }),
+                  true),
+      // Switch to the reading list entry.
+      ShowSidePanelForKey(SidePanelEntryKey(SidePanelEntry::Id::kReadingList)),
+      InstrumentNonTabWebView(kReadLaterWebContentsId,
+                              kReadLaterSidePanelWebViewElementId),
+      FlushEvents(),
+      CheckResult(base::BindLambdaForTesting([coordinator]() {
+                    return coordinator->IsSidePanelEntryShowing(
+                        SidePanelEntryKey(SidePanelEntryId::kReadingList));
+                  }),
+                  true),
+      // Click on the close button to dismiss the side panel
+      PressButton(kSidePanelCloseButtonElementId),
+      WaitForHide(kSidePanelElementId));
+}
+
+IN_PROC_BROWSER_TEST_F(PinnedSidePanelInteractiveTest,
+                       StaysOpenOnTabSwitchWithActiveGlobalEntry) {
+  DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kSecondTabElementId);
+
+  RunTestSequence(
+      // Add a second tab to the tab strip
+      AddInstrumentedTab(kSecondTabElementId, GURL(url::kAboutBlankURL)),
+      CheckResult(base::BindLambdaForTesting([this]() {
+                    return browser()->tab_strip_model()->active_index();
+                  }),
+                  testing::Eq(1)),
+      // Ensure the side panel isn't open
+      EnsureNotPresent(kSidePanelElementId),
+      // Click the toolbar button to open the side panel
+      OpenBookmarksSidePanel(), WaitForShow(kSidePanelElementId), FlushEvents(),
+      // Switch to the first tab again with the side panel open
+      SelectTab(kTabStripElementId, 0),
+      // Ensure the side panel is still visible
+      CheckViewProperty(kSidePanelElementId, &views::View::GetVisible, true),
+      // Click on the close button to dismiss the side panel
+      PressButton(kSidePanelCloseButtonElementId),
+      WaitForHide(kSidePanelElementId));
 }
