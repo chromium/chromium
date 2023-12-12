@@ -6603,7 +6603,6 @@ crbug.com/1459304 [ Linux ] virtual/coop-restrict-properties/external/wpt/html/c
 crbug.com/1459304 [ Linux ] virtual/coop-restrict-properties/external/wpt/html/cross-origin-opener-policy/tentative/restrict-properties/iframe-popup-to-soap.https.html?7-8 [ Failure Pass ]
 crbug.com/1459304 [ Linux ] css2.1/t090501-c414-flt-02-d-g.html [ Failure Pass ]
 # Very flaky
-crbug.com/1459304 [ Linux ] virtual/fenced-frame-mparch/http/tests/inspector-protocol/fenced-frame/device-emulation-fenced-frame.https.js [ Failure Pass ]
 crbug.com/1459304 [ Linux ] virtual/fenced-frame-mparch/external/wpt/fenced-frame/navigator-vibrate.https.html [ Failure Pass ]
 crbug.com/1459304 [ Linux ] fast/peerconnection/RTCPeerConnection-iframe-gc.html [ Failure Pass ]
 crbug.com/1459347 [ Fuchsia ] virtual/text-antialias/stroking-decorations.html [ Failure Pass ]
