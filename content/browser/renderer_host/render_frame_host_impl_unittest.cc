@@ -1561,21 +1561,25 @@ TEST_F(RenderFrameHostImplTest, CapturedMediaStreamAddedRemoved) {
 
   // Calling OnMediaStreamAdded for the first time will cause a notification.
   EXPECT_CALL(observer, OnFrameIsCapturingMediaStreamChanged(main_rfh, true));
-  main_rfh->OnMediaStreamAdded();
+  main_rfh->OnMediaStreamAdded(
+      RenderFrameHostImpl::MediaStreamType::kCapturingMediaStream);
 
   // Calling it again will not result in a notification (verified by the
   // StrictMock).
-  main_rfh->OnMediaStreamAdded();
+  main_rfh->OnMediaStreamAdded(
+      RenderFrameHostImpl::MediaStreamType::kCapturingMediaStream);
 
   // Calling OnMediaStreamRemoved to cancel out one of the OnMediaStreamAdded
   // calls. Overall, the frame is still capturing at least one media stream so
   // there is no notifications.
-  main_rfh->OnMediaStreamRemoved();
+  main_rfh->OnMediaStreamRemoved(
+      RenderFrameHostImpl::MediaStreamType::kCapturingMediaStream);
 
   // Cancelling the first OnMediaStreamAdded call. This changes the state of the
   // frame and thus cause a notification.
   EXPECT_CALL(observer, OnFrameIsCapturingMediaStreamChanged(main_rfh, false));
-  main_rfh->OnMediaStreamRemoved();
+  main_rfh->OnMediaStreamRemoved(
+      RenderFrameHostImpl::MediaStreamType::kCapturingMediaStream);
 }
 
 }  // namespace content

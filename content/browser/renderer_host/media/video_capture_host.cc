@@ -73,7 +73,9 @@ class VideoCaptureHost::RenderFrameHostDelegateImpl
                          RenderFrameHostImpl* host =
                              RenderFrameHostImpl::FromID(render_frame_host_id);
                          if (host) {
-                           host->OnMediaStreamAdded();
+                           host->OnMediaStreamAdded(
+                               RenderFrameHostImpl::MediaStreamType::
+                                   kCapturingMediaStream);
                          }
                        },
                        render_frame_host_id_));
@@ -87,7 +89,9 @@ class VideoCaptureHost::RenderFrameHostDelegateImpl
                          RenderFrameHostImpl* host =
                              RenderFrameHostImpl::FromID(render_frame_host_id);
                          if (host) {
-                           host->OnMediaStreamRemoved();
+                           host->OnMediaStreamRemoved(
+                               RenderFrameHostImpl::MediaStreamType::
+                                   kCapturingMediaStream);
                          }
                        },
                        render_frame_host_id_));

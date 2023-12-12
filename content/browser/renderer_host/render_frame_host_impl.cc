@@ -1811,17 +1811,11 @@ RenderFrameHostImpl::~RenderFrameHostImpl() {
 
   g_token_frame_map.Get().erase(frame_token_);
 
-  // Ensure that the render process host has been notified that all audio
+  // Ensure that the render process host has been notified that all media
   // streams from this frame have terminated. This is required to ensure the
   // process host has the correct media stream count, which affects its
   // background priority.
-  if (is_audible_) {
-    OnAudibleStateChanged(false);
-  }
-
-  while (media_stream_count_) {
-    OnMediaStreamRemoved();
-  }
+  CleanUpMediaStreams();
 
   auto* process = GetProcess();
   SCOPED_CRASH_KEY_BOOL("Bug1407526", "si_exists", !!site_instance_);
@@ -3218,15 +3212,10 @@ void RenderFrameHostImpl::RenderProcessGone(
   // process should be ignored until the next commit.
   set_nav_entry_id(0);
 
-  if (is_audible_)
-    OnAudibleStateChanged(false);
-
   // During fast-shutdown, avoid cleanup as the VideoCaptureHost will still send
   // removal notifications after this function ends.
   if (!GetProcess()->FastShutdownStarted()) {
-    while (media_stream_count_) {
-      OnMediaStreamRemoved();
-    }
+    CleanUpMediaStreams();
   }
 
   ++renderer_exit_count_;
@@ -3734,40 +3723,56 @@ void RenderFrameHostImpl::PropagateEmbeddingTokenToParentFrame() {
   }
 }
 
-void RenderFrameHostImpl::OnAudibleStateChanged(bool is_audible) {
-  DCHECK_NE(is_audible_, is_audible);
-  if (is_audible) {
-    DCHECK_NE(lifecycle_state(), LifecycleStateImpl::kPrerendering);
-    GetProcess()->OnMediaStreamAdded();
-  } else {
-    GetProcess()->OnMediaStreamRemoved();
-  }
-  is_audible_ = is_audible;
-  delegate_->OnFrameAudioStateChanged(this, is_audible_);
+bool RenderFrameHostImpl::IsAudible() const {
+  return media_stream_counts_[MediaStreamType::kPlayingAudibleAudioStream] > 0;
 }
 
-void RenderFrameHostImpl::OnMediaStreamAdded() {
-  CHECK_NE(media_stream_count_, std::numeric_limits<int>::max());
-  ++media_stream_count_;
+void RenderFrameHostImpl::OnMediaStreamAdded(MediaStreamType type) {
+  int& media_stream_count = media_stream_counts_[type];
+  CHECK_NE(media_stream_count, std::numeric_limits<int>::max());
 
-  // Only notify on the first media stream, as both the RenderProcessHost and
-  // the delegate only care about the existence of at least 1 stream, but not
-  // the exact count.
-  if (media_stream_count_ == 1) {
-    GetProcess()->OnMediaStreamAdded();
-    delegate_->OnFrameIsCapturingMediaStreamChanged(this, true);
+  ++media_stream_count;
+
+  // Only notify on the first media stream, as the delegate only care about the
+  // existence of at least 1 stream, but not the exact count.
+  if (media_stream_count == 1) {
+    switch (type) {
+      case MediaStreamType::kCapturingMediaStream:
+        GetProcess()->OnMediaStreamAdded();
+        delegate_->OnFrameIsCapturingMediaStreamChanged(this, true);
+        break;
+      case MediaStreamType::kPlayingAudibleAudioStream:
+        DCHECK_NE(lifecycle_state(), LifecycleStateImpl::kPrerendering);
+        GetProcess()->OnMediaStreamAdded();
+        delegate_->OnFrameAudioStateChanged(this, true);
+        break;
+      default:
+        break;
+    }
   }
 }
 
-void RenderFrameHostImpl::OnMediaStreamRemoved() {
-  CHECK(media_stream_count_);
-  --media_stream_count_;
+void RenderFrameHostImpl::OnMediaStreamRemoved(MediaStreamType type) {
+  int& media_stream_count = media_stream_counts_[type];
+  CHECK(media_stream_count);
+
+  --media_stream_count;
 
   // Only notify the delegate if this is the last media stream that was removed
   // to match the behavior in `OnMediaStreamAdded`.
-  if (media_stream_count_ == 0) {
-    GetProcess()->OnMediaStreamRemoved();
-    delegate_->OnFrameIsCapturingMediaStreamChanged(this, false);
+  if (media_stream_count == 0) {
+    switch (type) {
+      case MediaStreamType::kCapturingMediaStream:
+        GetProcess()->OnMediaStreamRemoved();
+        delegate_->OnFrameIsCapturingMediaStreamChanged(this, false);
+        break;
+      case MediaStreamType::kPlayingAudibleAudioStream:
+        GetProcess()->OnMediaStreamRemoved();
+        delegate_->OnFrameAudioStateChanged(this, false);
+        break;
+      default:
+        break;
+    }
   }
 }
 
@@ -15351,6 +15356,14 @@ void RenderFrameHostImpl::OnMakeCredentialWebAuthSecurityChecksCompleted(
   std::move(callback).Run(status);
 }
 #endif
+
+void RenderFrameHostImpl::CleanUpMediaStreams() {
+  for (int i = 0; i < static_cast<int>(MediaStreamType::kCount); ++i) {
+    while (media_stream_counts_[i] != 0) {
+      OnMediaStreamRemoved(static_cast<MediaStreamType>(i));
+    }
+  }
+}
 
 const blink::DocumentToken& RenderFrameHostImpl::GetDocumentToken() const {
   DCHECK_NE(LifecycleStateImpl::kPendingCommit, lifecycle_state());

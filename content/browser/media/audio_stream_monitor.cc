@@ -234,8 +234,16 @@ void AudioStreamMonitor::UpdateStreams() {
     }
 
     bool is_frame_audible = kv.second;
-    if (is_frame_audible != render_frame_host_impl->is_audible()) {
-      render_frame_host_impl->OnAudibleStateChanged(is_frame_audible);
+    if (is_frame_audible == render_frame_host_impl->IsAudible()) {
+      continue;
+    }
+
+    if (is_frame_audible) {
+      render_frame_host_impl->OnMediaStreamAdded(
+          RenderFrameHostImpl::MediaStreamType::kPlayingAudibleAudioStream);
+    } else {
+      render_frame_host_impl->OnMediaStreamRemoved(
+          RenderFrameHostImpl::MediaStreamType::kPlayingAudibleAudioStream);
     }
   }
 

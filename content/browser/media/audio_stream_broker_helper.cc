@@ -12,27 +12,41 @@
 namespace content {
 
 void NotifyFrameHostOfAudioStreamStarted(int render_process_id,
-                                         int render_frame_id) {
-  auto impl = [](int render_process_id, int render_frame_id) {
+                                         int render_frame_id,
+                                         bool is_capturing) {
+  auto impl = [](int render_process_id, int render_frame_id,
+                 bool is_capturing) {
     if (auto* host =
             RenderFrameHostImpl::FromID(render_process_id, render_frame_id)) {
-      host->OnMediaStreamAdded();
+      const auto type =
+          is_capturing
+              ? RenderFrameHostImpl::MediaStreamType::kCapturingMediaStream
+              : RenderFrameHostImpl::MediaStreamType::kPlayingAudioStream;
+      host->OnMediaStreamAdded(type);
     }
   };
   GetUIThreadTaskRunner({})->PostTask(
-      FROM_HERE, base::BindOnce(impl, render_process_id, render_frame_id));
+      FROM_HERE,
+      base::BindOnce(impl, render_process_id, render_frame_id, is_capturing));
 }
 
 void NotifyFrameHostOfAudioStreamStopped(int render_process_id,
-                                         int render_frame_id) {
-  auto impl = [](int render_process_id, int render_frame_id) {
+                                         int render_frame_id,
+                                         bool is_capturing) {
+  auto impl = [](int render_process_id, int render_frame_id,
+                 bool is_capturing) {
     if (auto* host =
             RenderFrameHostImpl::FromID(render_process_id, render_frame_id)) {
-      host->OnMediaStreamRemoved();
+      const auto type =
+          is_capturing
+              ? RenderFrameHostImpl::MediaStreamType::kCapturingMediaStream
+              : RenderFrameHostImpl::MediaStreamType::kPlayingAudioStream;
+      host->OnMediaStreamRemoved(type);
     }
   };
   GetUIThreadTaskRunner({})->PostTask(
-      FROM_HERE, base::BindOnce(impl, render_process_id, render_frame_id));
+      FROM_HERE,
+      base::BindOnce(impl, render_process_id, render_frame_id, is_capturing));
 }
 
 }  // namespace content

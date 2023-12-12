@@ -720,18 +720,24 @@ class CONTENT_EXPORT RenderFrameHostImpl
   void PropagateEmbeddingTokenToParentFrame();
 
   // Returns true if the frame recently plays an audio.
-  bool is_audible() const { return is_audible_; }
+  bool IsAudible() const;
 
-  // Toggles the audible state of this render frame. This should only be called
-  // from AudioStreamMonitor, and should not be invoked with the same value
-  // successively.
-  void OnAudibleStateChanged(bool is_audible);
-
-  // Called when this render frame starts or stops capturing a media stream
-  // (audio or video). This should only be called from VideoCaptureHost or
-  // AudioStreamBroker (or internally, during clean up).
-  void OnMediaStreamAdded();
-  void OnMediaStreamRemoved();
+  // Adds/removes a media stream to this render frame.
+  enum MediaStreamType {
+    // This stream is capturing an audio or video source. For example, the
+    // stream could be capturing the microphone's audio, or capturing the
+    // content of a tab.
+    kCapturingMediaStream,
+    // This stream is playing audio data. For example, the user is listening to
+    // an audio file. Exists even if the audio data is silent.
+    kPlayingAudioStream,
+    // Same as kPlayingAudioStream, but only if the audio data is actually
+    // audible to the user.
+    kPlayingAudibleAudioStream,
+    kCount,
+  };
+  void OnMediaStreamAdded(MediaStreamType type);
+  void OnMediaStreamRemoved(MediaStreamType type);
 
   // Called when this frame has added a child. This is a continuation of an IPC
   // that was partially handled on the IO thread (to allocate |new_routing_id|,
@@ -4089,6 +4095,11 @@ class CONTENT_EXPORT RenderFrameHostImpl
       blink::mojom::AuthenticatorStatus status);
 #endif
 
+  // Notifies the RenderProcessHost instance that this frame no longer has any
+  // media stream. Called when this render frame is deleted or when the process
+  // is gone.
+  void CleanUpMediaStreams();
+
   // The RenderViewHost that this RenderFrameHost is associated with.
   //
   // It is kept alive as long as any RenderFrameHosts or RenderFrameProxyHosts
@@ -4505,14 +4516,9 @@ class CONTENT_EXPORT RenderFrameHostImpl
   // If true, then the RenderFrame has selected text.
   bool has_selection_ = false;
 
-  // If true, then this RenderFrame has one or more audio streams with audible
-  // signal. If false, all audio streams are currently silent (or there are no
-  // audio streams).
-  bool is_audible_ = false;
-
-  // Indicates the number of media streams (audio or video) this frame is
-  // capturing.
-  int media_stream_count_ = 0;
+  // Indicates the number of media streams (audio or video) that are tracked
+  // via OnMediaStreamAdded/OnMediaStreamRemoved, split by the stream type.
+  int media_stream_counts_[MediaStreamType::kCount] = {};
 
   // If true, then this RenderFrameHost is waiting to update its
   // LifecycleStateImpl. Happens when the old RenderFrameHost is waiting to
