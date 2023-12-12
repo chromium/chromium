@@ -872,6 +872,14 @@ class AutofillAcrossIframesTest_Submission
  public:
   bool submission_happens_in_main_frame() const { return GetParam(); }
 
+  void TearDownOnMainThread() override {
+    // RunUntilIdle() is necessary because otherwise, under the hood
+    // PasswordFormManager::OnFetchComplete() callback is run after this test is
+    // destroyed meaning that OsCryptImpl will be used instead of OsCryptMocker,
+    // causing this test to fail.
+    base::RunLoop().RunUntilIdle();
+  }
+
   // Creates a simple cross-frame form with <form> elements so we can submit the
   // form in the iframe and the main frame.
   //
@@ -906,14 +914,8 @@ INSTANTIATE_TEST_SUITE_P(AutofillAcrossIframesTest,
                          ::testing::Bool());
 
 // Tests that submission of a cross-frame form is detected in the main frame.
-// TODO(crbug.com/1510056): Test is flaky on Linux.
-#if BUILDFLAG(IS_LINUX)
-#define MAYBE_SubmissionGetsDetected DISABLED_SubmissionGetsDetected
-#else
-#define MAYBE_SubmissionGetsDetected SubmissionGetsDetected
-#endif
 IN_PROC_BROWSER_TEST_P(AutofillAcrossIframesTest_Submission,
-                       MAYBE_SubmissionGetsDetected) {
+                       SubmissionGetsDetected) {
   const FormStructure* form = LoadForm({"$2", "$2", "$2"});
   ASSERT_TRUE(form);
   ASSERT_THAT(FillForm(*form, *form->field(1)),

@@ -80,6 +80,10 @@ class PasswordGenerationInteractiveTest
   }
 
   void TearDownOnMainThread() override {
+    // RunUntilIdle() is necessary because otherwise, under the hood
+    // PasswordFormManager::OnFetchComplete() callback is run after this test is
+    // destroyed meaning that OsCryptImpl will be used instead of OsCryptMocker,
+    // causing this test to fail.
     base::RunLoop().RunUntilIdle();
     PasswordManagerBrowserTestBase::TearDownOnMainThread();
 
