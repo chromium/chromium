@@ -587,7 +587,14 @@ void ProfilePickerHandler::OnProfileForDialogLoaded(Profile* profile) {
       ProfilePicker::ShowDialogAndDisplayErrorMessage(profile);
     } else {
       // Fresh sign in via profile picker without existing email address.
-      ProfilePickerForceSigninDialog::ShowForceSigninDialog(profile);
+      if (base::FeatureList::IsEnabled(kForceSigninFlowInProfilePicker)) {
+        ProfilePicker::SwitchToDiceSignIn(
+            profile->GetPath(),
+            base::BindOnce(&ProfilePickerHandler::OnLoadSigninFinished,
+                           weak_factory_.GetWeakPtr()));
+      } else {
+        ProfilePickerForceSigninDialog::ShowForceSigninDialog(profile);
+      }
     }
   }
 #endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
@@ -973,6 +980,7 @@ void ProfilePickerHandler::HandleSelectExistingAccountLacros(
 #endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 
 void ProfilePickerHandler::OnLoadSigninFinished(bool success) {
+  AllowJavascript();
   FireWebUIListener("load-signin-finished", base::Value(success));
 }
 

@@ -52,7 +52,7 @@ class ProfilePickerDiceSignInProvider
   explicit ProfilePickerDiceSignInProvider(
       ProfilePickerWebContentsHost* host,
       signin_metrics::AccessPoint signin_access_point,
-      std::optional<base::FilePath> profile_path = std::nullopt);
+      base::FilePath profile_path = base::FilePath());
   ~ProfilePickerDiceSignInProvider() override;
   ProfilePickerDiceSignInProvider(const ProfilePickerDiceSignInProvider&) =
       delete;
@@ -140,9 +140,9 @@ class ProfilePickerDiceSignInProvider
 
   const signin_metrics::AccessPoint signin_access_point_;
 
-  // The path to the profile in which to perform the sign-in. If absent, a new
+  // The path to the profile in which to perform the sign-in. If empty, a new
   // profile will be created.
-  const std::optional<base::FilePath> profile_path_;
+  const base::FilePath profile_path_;
   // Sign-in callback, valid until it's called.
   SignedInCallback callback_;
 

@@ -15,6 +15,7 @@
 #include "build/buildflag.h"
 #include "build/chromeos_buildflags.h"
 #include "components/signin/public/base/signin_buildflags.h"
+#include "third_party/abseil-cpp/absl/types/variant.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "url/gurl.h"
 
@@ -211,15 +212,26 @@ class ProfilePicker {
   static void Show(Params&& params);
 
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
+  // Helper struct to allow passing different profile information for sign in:
+  // - An optional color for a new profile.
+  // - A file path for an existing profile.
+  using ProfileInfo = absl::variant<std::optional<SkColor>, base::FilePath>;
+
   // Starts the Dice sign-in flow. The layout of the window gets updated for the
-  // sign-in flow. At the same time, the new profile is created and the sign-in
-  // page is rendered using the new profile.
-  // The new profile uses a theme generated from `profile_color` if provided or
-  // the default theme.
+  // sign-in flow while the profiles are created/loaded.
+  // The sign in flow can be triggered for a new or existing profile.
+  // For new profiles, the expected color is expected to be given as the
+  // `profile_info` param. The creation of the new profile happens and then the
+  // sign-in page is rendered using the new profile. The new profile uses a
+  // theme generated from the given profile color if provided or the default
+  // theme.
+  // For an existing profile, the profile path is expected to given as the
+  // `profile_info` param. The profile is loaded then the sign-page will be
+  // rendered with the profile.
   // `switch_finished_callback` gets informed whether the creation of the new
   // profile succeeded and the sign-in page gets displayed.
   static void SwitchToDiceSignIn(
-      std::optional<SkColor> profile_color,
+      ProfileInfo profile_info,
       base::OnceCallback<void(bool)> switch_finished_callback);
 
   // Starts the reauth for the existing primary account in the given `profile`.

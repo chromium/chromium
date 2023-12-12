@@ -27,10 +27,10 @@ class ProfilePickerFlowController : public ProfileManagementFlowControllerImpl {
 
   void Init(StepSwitchFinishedCallback step_switch_finished_callback) override;
 
-  void SwitchToDiceSignIn(std::optional<SkColor> profile_color,
+#if BUILDFLAG(ENABLE_DICE_SUPPORT)
+  void SwitchToDiceSignIn(ProfilePicker::ProfileInfo profile_info,
                           StepSwitchFinishedCallback switch_finished_callback);
 
-#if BUILDFLAG(ENABLE_DICE_SUPPORT)
   void SwitchToReauth(Profile* profile,
                       base::OnceCallback<void()> on_error_callback);
 #endif
@@ -55,9 +55,6 @@ class ProfilePickerFlowController : public ProfileManagementFlowControllerImpl {
 
  private:
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
-  std::unique_ptr<ProfilePickerDiceSignInProvider> CreateDiceSignInProvider()
-      override;
-
   void OnReauthCompleted(Profile* profile,
                          base::OnceCallback<void()> on_error_callback,
                          bool success);

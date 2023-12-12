@@ -8,6 +8,8 @@
 
 #include "base/functional/bind.h"
 #include "base/functional/callback_forward.h"
+#include "base/functional/callback_helpers.h"
+#include "base/functional/overloaded.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/trace_event/trace_event.h"
 #include "chrome/browser/browser_process.h"
@@ -343,13 +345,26 @@ void ProfilePickerFlowController::Init(
 
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
 void ProfilePickerFlowController::SwitchToDiceSignIn(
-    std::optional<SkColor> profile_color,
+    ProfilePicker::ProfileInfo profile_info,
     StepSwitchFinishedCallback switch_finished_callback) {
   DCHECK_EQ(Step::kProfilePicker, current_step());
 
-  suggested_profile_color_ = profile_color;
-  SwitchToIdentityStepsFromAccountSelection(
-      std::move(switch_finished_callback));
+  base::FilePath profile_path;
+  // Split the variant information from `profile_info`.
+  absl::visit(base::Overloaded{
+                  [&suggested_profile_color = suggested_profile_color_](
+                      absl::optional<SkColor> color) {
+                    suggested_profile_color = color;
+                  },
+                  [&profile_path](base::FilePath profile_path_info) {
+                    profile_path = profile_path_info;
+                  },
+              },
+              profile_info);
+
+  SwitchToIdentityStepsFromAccountSelection(std::move(switch_finished_callback),
+                                            kAccessPoint,
+                                            std::move(profile_path));
 }
 
 void ProfilePickerFlowController::SwitchToReauth(
@@ -484,14 +499,6 @@ std::u16string ProfilePickerFlowController::GetFallbackAccessibleWindowTitle()
   return l10n_util::GetStringUTF16(IDS_PROFILE_PICKER_MAIN_VIEW_TITLE);
 #endif
 }
-
-#if BUILDFLAG(ENABLE_DICE_SUPPORT)
-std::unique_ptr<ProfilePickerDiceSignInProvider>
-ProfilePickerFlowController::CreateDiceSignInProvider() {
-  return std::make_unique<ProfilePickerDiceSignInProvider>(host(),
-                                                           kAccessPoint);
-}
-#endif
 
 std::unique_ptr<ProfilePickerSignedInFlowController>
 ProfilePickerFlowController::CreateSignedInFlowController(

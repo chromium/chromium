@@ -178,10 +178,10 @@ class ProfilePickerView : public views::WidgetDelegateView,
   void FinishInit();
 
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
-  // Switches the layout to the sign-in screen (and creates a new profile).
-  // std::nullopt `profile_color` corresponds to the default theme.
+  // Switches the layout to the sign-in screen (and creates a new profile or
+  // load an existing one based on the `profile_info` content).
   void SwitchToDiceSignIn(
-      std::optional<SkColor> profile_color,
+      ProfilePicker::ProfileInfo profile_info,
       base::OnceCallback<void(bool)> switch_finished_callback);
 
   // Starts the forced sign-in flow (and creates a new profile).

@@ -53,7 +53,9 @@ void ProfileManagementFlowControllerImpl::SwitchToIdentityStepsFromPostSignIn(
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
 void ProfileManagementFlowControllerImpl::
     SwitchToIdentityStepsFromAccountSelection(
-        StepSwitchFinishedCallback step_switch_finished_callback) {
+        StepSwitchFinishedCallback step_switch_finished_callback,
+        signin_metrics::AccessPoint access_point,
+        base::FilePath profile_path) {
   DCHECK_NE(Step::kAccountSelection, current_step());
   DCHECK_NE(Step::kPostSignInFlow, current_step());
 
@@ -62,7 +64,9 @@ void ProfileManagementFlowControllerImpl::
     RegisterStep(
         Step::kAccountSelection,
         ProfileManagementStepController::CreateForDiceSignIn(
-            host(), CreateDiceSignInProvider(),
+            host(),
+            std::make_unique<ProfilePickerDiceSignInProvider>(
+                host(), access_point, std::move(profile_path)),
             base::BindOnce(
                 &ProfileManagementFlowControllerImpl::HandleSignInCompleted,
                 // Binding as Unretained as `this`

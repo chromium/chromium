@@ -43,6 +43,7 @@
 #include "chrome/browser/profiles/profile_attributes_storage.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/profiles/profile_test_util.h"
+#include "chrome/browser/profiles/profiles_state.h"
 #include "chrome/browser/signin/chrome_signin_client_factory.h"
 #include "chrome/browser/signin/chrome_signin_client_test_util.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
@@ -1148,6 +1149,50 @@ IN_PROC_BROWSER_TEST_F(ForceSigninProfilePickerCreationFlowBrowserTest,
   EXPECT_TRUE(ProfilePicker::IsOpen());
   EXPECT_EQ(BrowserList::GetInstance()->size(), initial_browser_count);
   EXPECT_TRUE(entry->IsSigninRequired());
+}
+
+IN_PROC_BROWSER_TEST_F(ForceSigninProfilePickerCreationFlowBrowserTest,
+                       ForceSigninLaunchInactiveDefaultProfile) {
+  size_t initial_browser_count = BrowserList::GetInstance()->size();
+  ASSERT_EQ(initial_browser_count, 0u);
+
+  ProfileManager* profile_manager = g_browser_process->profile_manager();
+  const std::vector<Profile*> profiles = profile_manager->GetLoadedProfiles();
+  ASSERT_GE(profiles.size(), 1u);
+  Profile* default_profile = profiles[0];
+  ProfileAttributesEntry* default_profile_entry =
+      profile_manager->GetProfileAttributesStorage()
+          .GetProfileAttributesWithPath(default_profile->GetPath());
+
+  ASSERT_TRUE(ProfilePicker::IsOpen());
+  // Make sure that this is the default profile. Also this profile is not yet
+  // active/used which makes a valid candidate to sign in.
+  ASSERT_EQ(default_profile_entry->GetPath(),
+            profiles::GetDefaultProfileDir(profile_manager->user_data_dir()));
+  ASSERT_EQ(default_profile_entry->GetActiveTime(), base::Time());
+  ASSERT_TRUE(default_profile_entry->IsSigninRequired());
+
+  // Opening the default profile for the first time is allowed, it is expected
+  // to open the sign in screen.
+  OpenProfileFromPicker(default_profile_entry->GetPath(), false);
+  WaitForLoadStop(GetSigninChromeSyncDiceUrl());
+
+  // Finish the signin that was started from opening the default profile.
+  FinishDiceSignIn(default_profile, "joe.consumer@gmail.com", "Joe");
+  WaitForLoadStop(GetSyncConfirmationURL());
+
+  // Accept Sync.
+  LoginUIServiceFactory::GetForProfile(default_profile)
+      ->SyncConfirmationUIClosed(LoginUIService::SYNC_WITH_DEFAULT_SETTINGS);
+
+  // A browser should open and the profile should now be unlocked.
+  Browser* new_browser = BrowserAddedWaiter(initial_browser_count + 1u).Wait();
+  EXPECT_TRUE(new_browser);
+  EXPECT_EQ(new_browser->profile(), default_profile);
+  EXPECT_FALSE(default_profile_entry->IsSigninRequired());
+
+  // Default profile is now active.
+  EXPECT_NE(default_profile_entry->GetActiveTime(), base::Time());
 }
 #endif
 

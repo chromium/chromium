@@ -58,13 +58,10 @@ bool IsExternalURL(const GURL& url) {
 ProfilePickerDiceSignInProvider::ProfilePickerDiceSignInProvider(
     ProfilePickerWebContentsHost* host,
     signin_metrics::AccessPoint signin_access_point,
-    std::optional<base::FilePath> profile_path)
+    base::FilePath profile_path)
     : host_(host),
       signin_access_point_(signin_access_point),
-      profile_path_(profile_path) {
-  // If the path is provided, it must be non-empty.
-  DCHECK(!(profile_path.has_value() && profile_path->empty()));
-}
+      profile_path_(profile_path) {}
 
 ProfilePickerDiceSignInProvider::~ProfilePickerDiceSignInProvider() {
   // Handle unfinished signed-in profile creation (i.e. when callback was not
@@ -99,10 +96,9 @@ void ProfilePickerDiceSignInProvider::SwitchToSignIn(
       &ProfilePickerDiceSignInProvider::OnProfileInitialized,
       weak_ptr_factory_.GetWeakPtr(), std::move(switch_finished_callback));
   ProfileManager* profile_manager = g_browser_process->profile_manager();
-  if (profile_path_.has_value()) {
+  if (!profile_path_.empty()) {
     bool profile_exists = profile_manager->LoadProfileByPath(
-        profile_path_.value(), /*incognito=*/false,
-        std::move(profile_init_callback));
+        profile_path_, /*incognito=*/false, std::move(profile_init_callback));
     DCHECK(profile_exists);
   } else {
     size_t icon_index = profiles::GetPlaceholderAvatarIndex();
@@ -224,7 +220,7 @@ void ProfilePickerDiceSignInProvider::OnProfileInitialized(
   // Apply the default theme to get consistent colors for toolbars in newly
   // created profiles (this matters for linux where the 'system' theme is used
   // for new profiles).
-  if (!profile_path_.has_value()) {
+  if (profile_path_.empty()) {
     auto* theme_service = ThemeServiceFactory::GetForProfile(profile_);
     theme_service->UseDefaultTheme();
   }

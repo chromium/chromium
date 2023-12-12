@@ -474,7 +474,8 @@ void FirstRunFlowControllerDice::HandleIntroSigninChoice(IntroChoice choice) {
   }
 
   SwitchToIdentityStepsFromAccountSelection(
-      /*step_switch_finished_callback=*/base::DoNothing());
+      /*step_switch_finished_callback=*/base::DoNothing(), kAccessPoint,
+      profile_->GetPath());
 }
 
 void FirstRunFlowControllerDice::HandleIdentityStepsCompleted(
@@ -489,12 +490,6 @@ void FirstRunFlowControllerDice::HandleIdentityStepsCompleted(
   }
 
   SwitchToPostIdentitySteps();
-}
-
-std::unique_ptr<ProfilePickerDiceSignInProvider>
-FirstRunFlowControllerDice::CreateDiceSignInProvider() {
-  return std::make_unique<ProfilePickerDiceSignInProvider>(host(), kAccessPoint,
-                                                           profile_->GetPath());
 }
 
 std::unique_ptr<ProfilePickerSignedInFlowController>
