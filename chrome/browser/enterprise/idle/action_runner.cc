@@ -27,12 +27,8 @@ void ActionRunner::Run() {
 }
 
 ActionRunner::ActionQueue ActionRunner::GetActions() {
-  std::vector<ActionType> actions;
-  base::ranges::transform(
-      profile_->GetPrefs()->GetList(prefs::kIdleTimeoutActions),
-      std::back_inserter(actions), [](const base::Value& action) {
-        return static_cast<ActionType>(action.GetInt());
-      });
+  std::vector<ActionType> actions =
+      GetActionTypesFromPrefs(profile_->GetPrefs());
   return action_factory_->Build(profile_, actions);
 }
 
