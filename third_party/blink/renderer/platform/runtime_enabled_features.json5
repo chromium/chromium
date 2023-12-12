@@ -3238,7 +3238,7 @@
     {
       // crbug.com/1493273
       name: "RubyInlinify",
-      status: "experimental",
+      status: "stable",
       depends_on: ["CssDisplayRuby"],
     },
     {
