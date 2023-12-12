@@ -20,7 +20,7 @@ namespace blink {
 //   "RendererSchedulerTaskType" enum
 // * update TaskTypes.md
 //
-// Next value: 84
+// Next value: 86
 enum class TaskType : unsigned char {
   ///////////////////////////////////////
   // Speced tasks should use one of the following task types
@@ -184,6 +184,9 @@ enum class TaskType : unsigned char {
   // https://storage.spec.whatwg.org/#storage-task-source
   kStorage = 82,
 
+  // https://www.w3.org/TR/clipboard-apis/#clipboard-task-source
+  kClipboard = 85,
+
   ///////////////////////////////////////
   // Not-speced tasks should use one of the following task types
   ///////////////////////////////////////
@@ -305,7 +308,7 @@ enum class TaskType : unsigned char {
   kWorkerThreadTaskQueueV8 = 47,
   kWorkerThreadTaskQueueCompositor = 48,
 
-  kMaxValue = kMainThreadTaskQueueV8LowPriority,
+  kMaxValue = kClipboard,
 };
 
 }  // namespace blink

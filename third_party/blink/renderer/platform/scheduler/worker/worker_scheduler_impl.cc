@@ -196,6 +196,7 @@ scoped_refptr<base::SingleThreadTaskRunner> WorkerSchedulerImpl::GetTaskRunner(
     case TaskType::kInternalContinueScriptLoading:
     case TaskType::kWakeLock:
     case TaskType::kStorage:
+    case TaskType::kClipboard:
       // UnthrottledTaskRunner is generally discouraged in future.
       // TODO(nhiroki): Identify which tasks can be throttled / suspendable and
       // move them into other task runners. See also comments in

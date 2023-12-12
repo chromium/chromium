@@ -479,6 +479,7 @@ QueueTraits FrameSchedulerImpl::CreateQueueTraitsForTaskType(TaskType type) {
     case TaskType::kPermission:
     case TaskType::kWakeLock:
     case TaskType::kStorage:
+    case TaskType::kClipboard:
       // TODO(altimin): Move appropriate tasks to throttleable task queue.
       return DeferrableTaskQueueTraits();
     case TaskType::kFileReading:
