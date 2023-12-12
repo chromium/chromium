@@ -43,12 +43,9 @@
 #include "net/base/schemeful_site.h"
 #include "net/base/test_completion_callback.h"
 #include "net/cert/asn1_util.h"
-#include "net/cert/cert_and_ct_verifier.h"
 #include "net/cert/cert_database.h"
 #include "net/cert/ct_policy_enforcer.h"
 #include "net/cert/ct_policy_status.h"
-#include "net/cert/ct_verifier.h"
-#include "net/cert/do_nothing_ct_verifier.h"
 #include "net/cert/mock_cert_verifier.h"
 #include "net/cert/mock_client_cert_verifier.h"
 #include "net/cert/sct_auditing_delegate.h"
@@ -585,18 +582,6 @@ class DeleteSocketCallback : public TestCompletionCallbackBase {
   raw_ptr<StreamSocket, DanglingUntriaged> socket_;
 };
 
-// A mock CTVerifier that records every call to Verify but doesn't verify
-// anything.
-class MockCTVerifier : public CTVerifier {
- public:
-  MOCK_CONST_METHOD5(Verify,
-                     void(X509Certificate*,
-                          base::StringPiece,
-                          base::StringPiece,
-                          SignedCertificateTimestampAndStatusList*,
-                          const NetLogWithSource&));
-};
-
 // A mock CTPolicyEnforcer that returns a custom verification result.
 class MockCTPolicyEnforcer : public CTPolicyEnforcer {
  public:
@@ -680,7 +665,7 @@ class SSLClientSocketTest : public PlatformTest, public WithTaskEnvironment {
       : socket_factory_(ClientSocketFactory::GetDefaultFactory()),
         ssl_config_service_(
             std::make_unique<TestSSLConfigService>(SSLContextConfig())),
-        cert_verifier_(std::make_unique<MockCertVerifier>()),
+        cert_verifier_(std::make_unique<ParamRecordingMockCertVerifier>()),
         transport_security_state_(std::make_unique<TransportSecurityState>()),
         ct_policy_enforcer_(std::make_unique<MockCTPolicyEnforcer>()),
         ssl_client_session_cache_(std::make_unique<SSLClientSessionCache>(
@@ -828,7 +813,7 @@ class SSLClientSocketTest : public PlatformTest, public WithTaskEnvironment {
   RecordingNetLogObserver log_observer_;
   raw_ptr<ClientSocketFactory, DanglingUntriaged> socket_factory_;
   std::unique_ptr<TestSSLConfigService> ssl_config_service_;
-  std::unique_ptr<MockCertVerifier> cert_verifier_;
+  std::unique_ptr<ParamRecordingMockCertVerifier> cert_verifier_;
   std::unique_ptr<TransportSecurityState> transport_security_state_;
   std::unique_ptr<MockCTPolicyEnforcer> ct_policy_enforcer_;
   std::unique_ptr<SSLClientSessionCache> ssl_client_session_cache_;
@@ -2749,27 +2734,19 @@ TEST_P(SSLClientSocketVersionTest, ConnectSignedCertTimestampsTLSExtension) {
   ASSERT_TRUE(
       StartEmbeddedTestServer(EmbeddedTestServer::CERT_OK, server_config));
 
-  auto ct_verifier = std::make_unique<MockCTVerifier>();
-
-  // Check that the SCT list is extracted from the TLS extension as expected,
-  // while also simulating that it was an unparsable response.
-  SignedCertificateTimestampAndStatusList sct_list;
-  EXPECT_CALL(*ct_verifier, Verify(_, _, sct_ext, _, _))
-      .WillOnce(testing::SetArgPointee<3>(sct_list));
-
-  auto cert_and_ct_verifier = std::make_unique<CertAndCTVerifier>(
-      std::move(cert_verifier_), std::move(ct_verifier));
-
-  context_ = std::make_unique<SSLClientContext>(
-      ssl_config_service_.get(), cert_and_ct_verifier.get(),
-      transport_security_state_.get(), ct_policy_enforcer_.get(),
-      ssl_client_session_cache_.get(), nullptr);
-
   int rv;
   ASSERT_TRUE(CreateAndConnectSSLClientSocket(SSLConfig(), &rv));
   EXPECT_THAT(rv, IsOk());
 
   EXPECT_TRUE(sock_->signed_cert_timestamps_received_);
+
+  ASSERT_EQ(cert_verifier_->GetVerifyParams().size(), 1u);
+  const auto& params = cert_verifier_->GetVerifyParams().front();
+  EXPECT_TRUE(params.certificate()->EqualsIncludingChain(
+      embedded_test_server()->GetCertificate().get()));
+  EXPECT_EQ(params.hostname(), embedded_test_server()->host_port_pair().host());
+  EXPECT_EQ(params.ocsp_response(), "");
+  EXPECT_EQ(params.sct_list(), sct_ext);
 
   sock_ = nullptr;
   context_ = nullptr;

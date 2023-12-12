@@ -7027,6 +7027,7 @@ test("unit_tests") {
     "//net:test_support",
     "//net/third_party/quiche:blind_sign_auth",
     "//ppapi/buildflags",
+    "//services/cert_verifier:lib",
     "//services/data_decoder/public/cpp:test_support",
     "//services/device/public/cpp:device_features",
     "//services/device/public/cpp:test_support",

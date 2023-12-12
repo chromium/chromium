@@ -19,6 +19,10 @@ namespace base {
 class SequencedTaskRunner;
 }
 
+namespace cert_verifier {
+class CertVerifierServiceFactoryImpl;
+}
+
 namespace net {
 class NetworkChangeNotifier;
 }  // namespace net
@@ -106,6 +110,15 @@ GetCertVerifierServiceFactory();
 CONTENT_EXPORT
 mojo::Remote<cert_verifier::mojom::CertVerifierServiceFactory>&
 GetCertVerifierServiceFactoryRemoteForTesting();
+
+// Returns the |CertVerifierServiceFactoryImpl|. For testing only.
+// Must only be called on the same thread the CertVerifierServiceFactoryImpl
+// storage was created on, which can be either the UI or IO thread depending on
+// the platform. (Note that if the unittest uses a default
+// BrowserTaskEnvironment, both UI and IO sequences share the same thread.)
+CONTENT_EXPORT
+cert_verifier::CertVerifierServiceFactoryImpl*
+GetCertVerifierServiceFactoryForTesting();
 
 // Convenience function to create a NetworkContext from the given set of
 // |params|. Any creation of network contexts should be done through this
