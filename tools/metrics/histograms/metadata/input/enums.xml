@@ -149,6 +149,7 @@ chromium-metrics-reviews@google.com.
   <int value="1" label="US_ENGLISH_PREBUNDLED"/>
   <int value="2" label="US_ENGLISH_DOWNLOADED"/>
   <int value="3" label="US_ENGLISH_EN840"/>
+  <int value="4" label="US_ENGLISH_EN840V2"/>
 </enum>
 
 <enum name="IMECommitType2">

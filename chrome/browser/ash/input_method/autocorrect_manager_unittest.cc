@@ -443,6 +443,8 @@ std::string ToString(const AutocorrectSuggestionProvider& provider) {
   switch (provider) {
     case AutocorrectSuggestionProvider::kUsEnglish840:
       return "UsEnglish840";
+    case AutocorrectSuggestionProvider::kUsEnglish840V2:
+      return "UsEnglish840V2";
     case AutocorrectSuggestionProvider::kUsEnglishDownloaded:
       return "UsEnglishDownloaded";
     case AutocorrectSuggestionProvider::kUsEnglishPrebundled:
@@ -3575,6 +3577,7 @@ INSTANTIATE_TEST_SUITE_P(
         AutocorrectSuggestionProvider::kUsEnglishPrebundled,
         AutocorrectSuggestionProvider::kUsEnglishDownloaded,
         AutocorrectSuggestionProvider::kUsEnglish840,
+        AutocorrectSuggestionProvider::kUsEnglish840V2,
     }),
     [](const testing::TestParamInfo<AutocorrectSuggestionProvider> info) {
       return ToString(info.param);

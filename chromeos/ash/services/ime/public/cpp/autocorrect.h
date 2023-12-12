@@ -17,7 +17,8 @@ enum class AutocorrectSuggestionProvider {
   kUsEnglishPrebundled = 1,
   kUsEnglishDownloaded = 2,
   kUsEnglish840 = 3,
-  kMaxValue = kUsEnglish840,
+  kUsEnglish840V2 = 4,
+  kMaxValue = kUsEnglish840V2,
 };
 
 }  // namespace ime
