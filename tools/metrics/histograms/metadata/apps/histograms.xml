@@ -562,9 +562,9 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Apps.AppList.FileResult.DefaultRelevanceUsed"
-    enum="BooleanUsage" expires_after="2023-11-30">
-  <owner>tby@chromium.org</owner>
-  <owner>thanhdng@chromium.org</owner>
+    enum="BooleanUsage" expires_after="2024-11-30">
+  <owner>dgrebenyuk@google.com</owner>
+  <owner>laurencom@chromium.org</owner>
   <summary>
     Whether or not the default relevance was used when calculating the relevance
     score between a filename and the search query. The default relevance is used
@@ -596,9 +596,9 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Apps.AppList.FileSearchProvider.Relevance" units="score"
-    expires_after="2023-12-04">
-  <owner>tby@chromium.org</owner>
-  <owner>thanhdng@chromium.org</owner>
+    expires_after="2024-12-04">
+  <owner>dgrebenyuk@google.com</owner>
+  <owner>laurencom@chromium.org</owner>
   <summary>
     Relevance score for a local file result that was returned in response to a
     search query. Logged once for each file per search query.
@@ -659,9 +659,9 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Apps.AppList.HelpAppProvider.QueryTime" units="ms"
-    expires_after="2023-11-30">
-  <owner>thanhdng@chromium.org</owner>
-  <owner>tby@chromium.org</owner>
+    expires_after="2025-01-14">
+  <owner>dgrebenyuk@google.com</owner>
+  <owner>chenjih@chromium.org</owner>
   <owner>zufeng@google.com</owner>
   <summary>
     The latency of a search in the HelpAppProvider. Recorded each time a search
@@ -806,9 +806,9 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Apps.AppList.OsSettingsProvider.Error"
-    enum="OsSettingsProviderStatus" expires_after="2024-01-14">
-  <owner>tby@chromium.org</owner>
-  <owner>thanhdng@chromium.org</owner>
+    enum="OsSettingsProviderStatus" expires_after="2025-01-14">
+  <owner>chenjih@chromium.org</owner>
+  <owner>dgrebenyuk@google.com</owner>
   <summary>
     Various error states of the provider for OS settings in the cros launcher.
     Emitted either the case of an unexpected error or an successful non-empty
@@ -819,8 +819,8 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Apps.AppList.OsSettingsProvider.IconLoadStatus"
-    enum="OsSettingsProviderIconLoadStatus" expires_after="2024-01-14">
-  <owner>tby@chromium.org</owner>
+    enum="OsSettingsProviderIconLoadStatus" expires_after="2025-01-14">
+  <owner>dgrebenyuk@google.com</owner>
   <owner>chenjih@chromium.org</owner>
   <summary>
     Various states of the icon related parameters for OS settings in the cros
