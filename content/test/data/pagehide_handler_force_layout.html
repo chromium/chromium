@@ -2,11 +2,11 @@
 <html>
 <body>
   <div id="tall" style="height: 1000em">
-    This page will force a layout on unload
+    This page will force a layout on pagehide
   </div>
 </body>
 <script>
-window.addEventListener('unload', function(event) {
+window.addEventListener('pagehide', function(event) {
   // Shrink the page.
   document.getElementById('tall').style.height = '999em';
   // Move the scroll position.

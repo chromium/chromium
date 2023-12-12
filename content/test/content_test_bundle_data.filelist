@@ -6859,6 +6859,7 @@ data/page404.html
 data/page404.html.mock-http-headers
 data/page500.html
 data/page500.html.mock-http-headers
+data/pagehide_handler_force_layout.html
 data/page_with_allowfullscreen_frame.html
 data/page_with_animation.html
 data/page_with_blank_iframe.html
@@ -7394,7 +7395,6 @@ data/title4.html
 data/touch_selection.html
 data/tree_parser_util.js
 data/unload.html
-data/unload_handler_force_layout.html
 data/view_transitions/green.html
 data/view_transitions/red_jank_second_pageshow.html
 data/virtual-keyboard.html

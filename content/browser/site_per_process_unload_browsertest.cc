@@ -992,26 +992,26 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest,
   shutdown_B.Wait();
 }
 
-// Tests that running layout from an unload handler inside teardown of the
+// Tests that running layout from an pagehide handler inside teardown of the
 // RenderWidget (inside WidgetMsg_Close) can succeed.
 IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest,
-                       RendererInitiatedWindowCloseWithUnload) {
+                       RendererInitiatedWindowCloseWithPagehide) {
   GURL main_url(embedded_test_server()->GetURL("a.com", "/empty.html"));
   EXPECT_TRUE(NavigateToURL(shell(), main_url));
 
   FrameTreeNode* root = web_contents()->GetPrimaryFrameTree().root();
 
   // We will window.open() another URL on the same domain so they share a
-  // renderer. This window has an unload handler that forces layout to occur.
+  // renderer. This window has an pagehide handler that forces layout to occur.
   // Then we (in a new stack) close that window causing that layout. If all
   // goes well the window closes. If it goes poorly, the renderer may crash.
   //
   // This path is special because the unload results from window.close() which
   // avoids the user-initiated close path through ViewMsg_ClosePage. In that
-  // path the unload handlers are run early, before the actual teardown of
+  // path the pagehide handlers are run early, before the actual teardown of
   // the closing RenderWidget.
   GURL open_url = embedded_test_server()->GetURL(
-      "a.com", "/unload_handler_force_layout.html");
+      "a.com", "/pagehide_handler_force_layout.html");
 
   // Listen for messages from the window that the test opens, and convert them
   // into the document title, which we can wait on in the main test window.
@@ -1021,7 +1021,7 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest,
                      "});"));
 
   // This performs window.open() and waits for the title of the original
-  // document to change to signal that the unload handler has been registered.
+  // document to change to signal that the pagehide handler has been registered.
   {
     std::u16string title_when_loaded = u"loaded";
     TitleWatcher title_watcher(shell()->web_contents(), title_when_loaded);
@@ -1030,7 +1030,7 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest,
   }
 
   // The closes the window and waits for the title of the original document to
-  // change again to signal that the unload handler has run.
+  // change again to signal that the pagehide handler has run.
   {
     std::u16string title_when_done = u"unloaded";
     TitleWatcher title_watcher(shell()->web_contents(), title_when_done);
