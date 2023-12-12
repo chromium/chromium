@@ -27,7 +27,6 @@
 #import "components/sync_preferences/pref_service_syncable.h"
 #import "components/sync_preferences/pref_service_syncable_factory.h"
 #import "ios/chrome/browser/prefs/model/ios_chrome_pref_model_associator_client.h"
-#import "ios/chrome/browser/shared/model/application_context/application_context.h"
 
 namespace {
 

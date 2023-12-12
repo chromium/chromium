@@ -119,7 +119,6 @@ source_set("client_side") {
     "//components/metrics",
     "//components/variations",
     "//ios/chrome/app:tests_hook",
-    "//ios/chrome/browser/shared/model/application_context",
     "//ios/chrome/browser/shared/model/paths",
     "//ios/chrome/browser/ui/first_run:field_trial",
     "//ios/chrome/browser/ui/ntp:field_trial",

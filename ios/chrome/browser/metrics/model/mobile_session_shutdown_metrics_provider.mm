@@ -20,7 +20,6 @@
 #import "ios/chrome/browser/crash_report/model/crash_helper.h"
 #import "ios/chrome/browser/crash_report/model/features.h"
 #import "ios/chrome/browser/crash_report/model/main_thread_freeze_detector.h"
-#import "ios/chrome/browser/shared/model/application_context/application_context.h"
 
 using previous_session_info_constants::DeviceBatteryState;
 using previous_session_info_constants::DeviceThermalState;

@@ -24,7 +24,6 @@
 #import "ios/chrome/browser/net/http_server_properties_factory.h"
 #import "ios/chrome/browser/net/ios_chrome_network_delegate.h"
 #import "ios/chrome/browser/net/ios_chrome_url_request_context_getter.h"
-#import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
 #import "ios/components/cookie_util/cookie_util.h"

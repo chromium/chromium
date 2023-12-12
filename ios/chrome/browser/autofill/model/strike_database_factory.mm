@@ -9,7 +9,6 @@
 #import "base/no_destructor.h"
 #import "components/autofill/core/browser/strike_databases/strike_database.h"
 #import "components/keyed_service/ios/browser_state_dependency_manager.h"
-#import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
 
 namespace autofill {

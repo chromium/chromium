@@ -56,7 +56,6 @@ source_set("sync_settings_factory") {
   deps = [
     "//components/keyed_service/ios",
     "//components/supervised_user/core/browser",
-    "//ios/chrome/browser/shared/model/application_context",
     "//ios/chrome/browser/shared/model/browser_state",
   ]
 }
@@ -86,7 +85,6 @@ source_set("unit_tests") {
     "//components/sync_preferences",
     "//components/sync_preferences:test_support",
     "//ios/chrome/browser/first_run/model",
-    "//ios/chrome/browser/shared/model/application_context:application_context",
     "//ios/chrome/browser/shared/model/browser_state:test_support",
     "//ios/chrome/browser/shared/model/prefs:browser_prefs",
     "//ios/chrome/browser/signin/model",
