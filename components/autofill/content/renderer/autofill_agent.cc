@@ -1527,18 +1527,11 @@ void AutofillAgent::OnProvisionallySaveForm(
                              form_util::IsWebElementFocusableForAutofill(field);
                     });
     }
-    // Update provisionally_saved_form_. Afterwards, only keep one of
-    // `provisionally_saved_form_` or `last_interacted_form_` non-null to avoid
-    // tracking different and outdated elements.
+    // Update provisionally_saved_form_.
     formless_elements_user_edited_.insert(
         form_util::GetFieldRendererId(element));
     provisionally_saved_form_ = CollectFormlessElements();
-    // TODO(crbug.com/1483242): Investigate why don't we reset
-    // `last_interacted_form_` except when formless extraction fails, document
-    // the reason if any, cleanup otherwise.
-    if (provisionally_saved_form_) {
-      last_interacted_form_ = {};
-    }
+    last_interacted_form_ = {};
   };
 
   switch (source) {
