@@ -33,7 +33,7 @@ class MemorySaverHelpPromoTest : public InProcessBrowserTest {
 
   void SetUp() override {
     iph_features_.InitAndEnableFeaturesWithParameters(
-        {{feature_engagement::kIPHHighEfficiencyModeFeature, {}}});
+        {{feature_engagement::kIPHMemorySaverModeFeature, {}}});
 
     InProcessBrowserTest::SetUp();
   }
@@ -68,7 +68,7 @@ class MemorySaverHelpPromoTest : public InProcessBrowserTest {
 
     auto* const promo_controller = GetFeaturePromoController();
     bool promo_active = user_education::test::WaitForStartupPromo(
-        promo_controller, feature_engagement::kIPHHighEfficiencyModeFeature);
+        promo_controller, feature_engagement::kIPHMemorySaverModeFeature);
     EXPECT_TRUE(promo_active);
   }
 
@@ -89,7 +89,7 @@ IN_PROC_BROWSER_TEST_F(MemorySaverHelpPromoTest, ShowPromoOnTabThreshold) {
 
   auto* const promo_controller = GetFeaturePromoController();
   bool promo_active = promo_controller->IsPromoActive(
-      feature_engagement::kIPHHighEfficiencyModeFeature);
+      feature_engagement::kIPHMemorySaverModeFeature);
   EXPECT_FALSE(promo_active);
 }
 

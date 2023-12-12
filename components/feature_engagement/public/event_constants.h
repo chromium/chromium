@@ -71,7 +71,7 @@ extern const char kFocusHelpBubbleAcceleratorPromoRead[];
 extern const char kBatterySaverDialogShown[];
 
 // The user has opened the high efficiency page action chip
-extern const char kHighEfficiencyDialogShown[];
+extern const char kMemorySaverDialogShown[];
 
 // Extensions menu is opened when any extension has access to the current site.
 extern const char kExtensionsMenuOpenedWhileExtensionHasAccess[];

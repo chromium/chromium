@@ -46,7 +46,9 @@ const char kFocusHelpBubbleAcceleratorPromoRead[] =
 
 const char kBatterySaverDialogShown[] = "battery_saver_info_shown";
 
-const char kHighEfficiencyDialogShown[] = "high_efficiency_info_shown";
+// The event constant is used in Finch experiments so it is unable to be renamed
+// alongside the variable name.
+const char kMemorySaverDialogShown[] = "high_efficiency_info_shown";
 
 const char kExtensionsMenuOpenedWhileExtensionHasAccess[] =
     "extensions_menu_opened_while_extension_has_access";

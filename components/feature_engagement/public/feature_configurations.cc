@@ -228,7 +228,7 @@ absl::optional<FeatureConfig> GetClientSideFeatureConfig(
     return config;
   }
 
-  if (kIPHHighEfficiencyModeFeature.name == feature->name) {
+  if (kIPHMemorySaverModeFeature.name == feature->name) {
     absl::optional<FeatureConfig> config = FeatureConfig();
     config->valid = true;
     config->availability = Comparator(ANY, 0);

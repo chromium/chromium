@@ -169,7 +169,7 @@ void MemorySaverChipView::OnExecuting(
   bubble_ = MemorySaverBubbleView::ShowBubble(browser_, anchor_view, this);
   if (browser_->window() != nullptr) {
     browser_->window()->NotifyFeatureEngagementEvent(
-        feature_engagement::events::kHighEfficiencyDialogShown);
+        feature_engagement::events::kMemorySaverDialogShown);
   }
 }
 

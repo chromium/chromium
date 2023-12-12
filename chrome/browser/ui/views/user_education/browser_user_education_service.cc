@@ -660,7 +660,7 @@ void MaybeRegisterChromeFeaturePromos(
   // kIPHHighEfficiencyModeFeature:
   registry.RegisterFeature(std::move(
       FeaturePromoSpecification::CreateForCustomAction(
-          feature_engagement::kIPHHighEfficiencyModeFeature,
+          feature_engagement::kIPHMemorySaverModeFeature,
           kToolbarAppMenuButtonElementId, IDS_MEMORY_SAVER_MODE_PROMO_TEXT,
           IDS_MEMORY_SAVER_MODE_PROMO_ACTION_TEXT,
           base::BindRepeating(

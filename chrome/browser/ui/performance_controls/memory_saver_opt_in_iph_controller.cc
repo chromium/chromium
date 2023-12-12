@@ -41,6 +41,6 @@ void MemorySaverOptInIPHController::MaybeTriggerPromo() {
   if (browser_window != nullptr && manager->IsMemorySaverModeDefault() &&
       !manager->IsMemorySaverModeActive()) {
     browser_window->MaybeShowStartupFeaturePromo(
-        feature_engagement::kIPHHighEfficiencyModeFeature);
+        feature_engagement::kIPHMemorySaverModeFeature);
   }
 }
