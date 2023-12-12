@@ -171,6 +171,10 @@ absl::optional<BiddingAndAuctionResponse> BiddingAndAuctionResponse::TryParse(
     }
     output.top_level_seller = std::move(top_level_seller);
   }
+  std::string* maybe_ad_metadata = input_dict->FindString("adMetadata");
+  if (maybe_ad_metadata) {
+    output.ad_metadata = *maybe_ad_metadata;
+  }
 
   output.result = AuctionResult::kSuccess;
   return std::move(output);

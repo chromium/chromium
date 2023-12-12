@@ -11577,6 +11577,9 @@ function reportWin() {}
   constexpr char kDecisionScript[] = R"(
 function scoreAd(
     adMetadata, bid, auctionConfig, trustedScoringSignals, browserSignals) {
+  if (adMetadata !== "foo") {
+    throw new Error('Bad metadata');
+  }
   return {desirability: 1 + bid, allowComponentAuction: true};
 }
 
@@ -11636,18 +11639,20 @@ function reportResult(auctionConfig, browserSignals) {
           "click": "https://e.test/sellerInteractionReporting"
         }
       }
-    }
-    "topLevelSeller": "https://a.test/"
+    },
+    "topLevelSeller": "https://a.test/",
+    "adMetadata": "\"foo\""
   }
   */
   // Converted to base64 with `cat | sed 's/#.*//' | xxd -r -p | gzip |
-  //   xxd -ps -c 0 | sed 's/^/02000000cd/' | xxd -r -p | base64`
+  //   xxd -ps -c 0 | sed 's/^/02000000dc/' | xxd -r -p | base64`
   ASSERT_TRUE(base::Base64Decode(
-      "AgAAANEfiwgAAAAAAAADhZBNCsIwEEY9RkF0rZt27wVEKAoVD5Amgw1NkziZ/"
-      "rj0KHXjNS0thaaKLmf4vjePefFUikDkTCSgBeAliauMyLpdFPGQwFHERJhRoYouKKS+"
-      "7tGU1rVmTLEh9VhoMjaGCtQZlAKcB2wtdQLWIHWQ7ox7YlreAf2dwsnYrEaGGBh+"
-      "oQmkJkDGSRof3QJXkufNZuzDpH/4UmqWvvwvqfVMyvmN/1bbmdUA+KZ161Fdpn/"
-      "6kRUgOEOH3vpU689vvwFDT7FZ2AEAAA==",
+      "AgAAANwfiwgAAAAAAAADhZBNDgFBEEYdQyIsrNiYvQuIxE8y4gClq9D0dLfqwlg6CivHNDGZ"
+      "RA9hWZXve/"
+      "VSD7XS2MQd4JQEEASou3auuwdMySLxMp2ctiI+"
+      "DJNEDYSCJICDrWQmK5qo7WbE7ujDzVUpKFPXhhXnJ3QisyBjiOsBf9Y2Je9YCkhxJtx5dbwQ"
+      "xzvDb2PerhhYMuJC3tRWiEGJdjH6Rspotc97VZ/e+uMvpbwVy/"
+      "+S6tSkQtz4b9WvWZWAb1qHF6rIvJ4+g4xQAQeO1vOz/fz2ExyL0tjpAQAA",
       &response));
 
   network_responder_->RegisterReportResponse("/buyerReporting",
@@ -11687,7 +11692,7 @@ function reportResult(auctionConfig, browserSignals) {
                     base::as_bytes(base::make_span(encrypted_response))));
           }),
       main_rfh());
-  EXPECT_TRUE(result);
+  ASSERT_TRUE(result);
   InvokeCallbackForURN(*result);
 
   // Fast forward enough for all reports to be sent.

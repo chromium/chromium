@@ -1116,6 +1116,7 @@ class InterestGroupAuction::BuyerHelper
   std::unique_ptr<Bid> TryToCreateBidFromServerResponse(
       InterestGroupAuction::Bid::BidRole bid_role,
       double bid,
+      const absl::optional<std::string>& ad_metadata,
       blink::AdDescriptor ad_descriptor,
       std::vector<blink::AdDescriptor> ad_component_descriptors) {
     CHECK_EQ(1u, bid_states_.size());
@@ -1151,15 +1152,15 @@ class InterestGroupAuction::BuyerHelper
     // 2. Reporting URLs must be okay
     // TODO(1457931): Implement reporting
 
-    return std::make_unique<Bid>(
-        bid_role, matching_ad->metadata.value_or("null"), bid,
-        /*bid_currency=*/absl::nullopt,
-        /*ad_cost=*/absl::nullopt, std::move(ad_descriptor),
-        std::move(ad_component_descriptors),
-        /*modeling_signals=*/absl::nullopt,
-        /*bid_duration=*/base::Seconds(0),
-        /*bidding_signals_data_version=*/absl::nullopt, matching_ad, bid_state,
-        auction_);
+    return std::make_unique<Bid>(bid_role, ad_metadata.value_or("null"), bid,
+                                 /*bid_currency=*/absl::nullopt,
+                                 /*ad_cost=*/absl::nullopt,
+                                 std::move(ad_descriptor),
+                                 std::move(ad_component_descriptors),
+                                 /*modeling_signals=*/absl::nullopt,
+                                 /*bid_duration=*/base::Seconds(0),
+                                 /*bidding_signals_data_version=*/absl::nullopt,
+                                 matching_ad, bid_state, auction_);
   }
 
  private:
@@ -4705,7 +4706,7 @@ void InterestGroupAuction::CreateBidFromServerResponse() {
   std::unique_ptr<Bid> bid =
       buyer_helpers_[0]->TryToCreateBidFromServerResponse(
           Bid::BidRole::kUnenforcedKAnon,  // TODO(behamilton): Fix this.
-          saved_response_->bid.value_or(0.00001),
+          saved_response_->bid.value_or(0.00001), saved_response_->ad_metadata,
           /*ad_descriptor=*/
           blink::AdDescriptor(saved_response_->ad_render_url),
           /*ad_component_descriptors=*/std::move(ad_components));
