@@ -16,7 +16,6 @@
 #include <utility>
 #include <vector>
 
-#include "base/containers/cxx20_erase_vector.h"
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
 #include "base/no_destructor.h"
@@ -605,9 +604,11 @@ void SelectFileDialogLinuxGtk::OnSelectMultiFileDialogResponse(
   }
 
   auto filenames = GtkFileChooserGetFilenames(dialog);
-  base::EraseIf(filenames, [this](const base::FilePath& path) {
-    return CallDirectoryExistsOnUIThread(path);
-  });
+  filenames.erase(std::remove_if(filenames.begin(), filenames.end(),
+                                 [this](const base::FilePath& path) {
+                                   return CallDirectoryExistsOnUIThread(path);
+                                 }),
+                  filenames.end());
   if (filenames.empty()) {
     FileNotSelected(dialog);
     return;

@@ -12,7 +12,6 @@
 #include <vector>
 
 #include "base/containers/adapters.h"
-#include "base/containers/cxx20_erase_vector.h"
 #include "base/functional/bind.h"
 #include "base/i18n/rtl.h"
 #include "base/lazy_instance.h"
@@ -953,9 +952,15 @@ void ViewAXPlatformNodeDelegate::GetViewsInGroupForSet(
   view_to_check->GetViewsInGroup(group_id, views_in_group);
 
   // Remove any views that are ignored in the accessibility tree.
-  base::EraseIf(*views_in_group, [](View* view) {
-    return view->GetViewAccessibility().IsIgnored();
-  });
+  views_in_group->erase(
+      std::remove_if(
+          views_in_group->begin(), views_in_group->end(),
+          [](View* view) {
+            ViewAccessibility& view_accessibility =
+                view->GetViewAccessibility();
+            return view_accessibility.IsIgnored();
+          }),
+      views_in_group->end());
 }
 
 bool ViewAXPlatformNodeDelegate::TableHasColumnOrRowHeaderNodeForTesting()

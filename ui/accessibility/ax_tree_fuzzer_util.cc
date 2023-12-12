@@ -4,7 +4,6 @@
 
 #include "ui/accessibility/ax_tree_fuzzer_util.h"
 
-#include "base/containers/cxx20_erase_vector.h"
 #include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/accessibility/ax_node.h"
 #include "ui/accessibility/ax_node_data.h"
@@ -163,7 +162,10 @@ void AXTreeFuzzerGenerator::RecursiveGenerateUpdate(
       // To delete a node, just find the parent and update the child list to
       // no longer include this node.
       ui::AXNodeData parent_update = parent->data();
-      base::Erase(parent_update.child_ids, node->id());
+      parent_update.child_ids.erase(
+          std::remove(parent_update.child_ids.begin(),
+                      parent_update.child_ids.end(), node->id()),
+          parent_update.child_ids.end());
       tree_update.nodes.push_back(parent_update);
       updated_nodes.emplace(parent_update.id);
 
