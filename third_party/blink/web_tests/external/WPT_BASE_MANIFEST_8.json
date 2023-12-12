@@ -258488,19 +258488,6 @@
      ]
     },
     "selectors": {
-     "any-link-dynamic-001.html": [
-      "e84989fd0c27089a821e36145cebfc1423d1b03d",
-      [
-       null,
-       [
-        [
-         "/css/selectors/any-link-dynamic-001-ref.html",
-         "=="
-        ]
-       ],
-       {}
-      ]
-     ],
      "case-insensitive-parent.html": [
       "a684bbb97c870b587b73e616ca1bfa4fa423f4ff",
       [
@@ -259241,6 +259228,19 @@
       ]
      },
      "invalidation": {
+      "any-link-attribute-removal.html": [
+       "9da6b2edeba36fe0a98b661fd1f027e85ea729bf",
+       [
+        null,
+        [
+         [
+          "/css/selectors/invalidation/any-link-attribute-removal-ref.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
       "class-id-attr.html": [
        "91a6f1a3a544bea376af2916b69a590bb0ac0a9a",
        [
@@ -344484,10 +344484,6 @@
       "5e03d9bce08ec1c2c4d3a23b993e8f428c9e68db",
       []
      ],
-     "any-link-dynamic-001-ref.html": [
-      "b5407429be803d9b774c4ca0108318fbd6e5134f",
-      []
-     ],
      "attribute-selectors": {
       "attribute-case": {
        "resources": {
@@ -344641,6 +344637,10 @@
       ]
      },
      "invalidation": {
+      "any-link-attribute-removal-ref.html": [
+       "b5407429be803d9b774c4ca0108318fbd6e5134f",
+       []
+      ],
       "class-id-attr-ref.html": [
        "a3cc6d3d8f56fd31c4b19d23af606d7c65487145",
        []
@@ -523869,49 +523869,6 @@
          }
         ]
        ],
-       "message-port-entangled-after-restore.https.tentative.window.js": [
-        "d1d545e89b0b34f5616d0e135b5387c3c1562db2",
-        [
-         "html/browsers/browsing-the-web/back-forward-cache/message-port-entangled-after-restore.https.tentative.window.html",
-         {
-          "script_metadata": [
-           [
-            "timeout",
-            "long"
-           ],
-           [
-            "title",
-            "Confirm close event is not fired when the page enters BFCache and MessagePort still works after the page is restored."
-           ],
-           [
-            "script",
-            "/common/dispatcher/dispatcher.js"
-           ],
-           [
-            "script",
-            "/common/get-host-info.sub.js"
-           ],
-           [
-            "script",
-            "/common/utils.js"
-           ],
-           [
-            "script",
-            "/html/browsers/browsing-the-web/remote-context-helper/resources/remote-context-helper.js"
-           ],
-           [
-            "script",
-            "/service-workers/service-worker/resources/test-helpers.sub.js"
-           ],
-           [
-            "script",
-            "resources/rc-helper.js"
-           ]
-          ],
-          "timeout": "long"
-         }
-        ]
-       ],
        "pushstate.https.html": [
         "218562254a6f6396dcf491aa9901463a18aa8090",
         [
@@ -657244,6 +657201,49 @@
            "resources/helper.js"
           ]
          ]
+        }
+       ]
+      ],
+      "entangled-after-back-forward-cache-restore.https.tentative.window.js": [
+       "c99e89f02b7ef4e3c9f3df3dcc35fcf020823dd1",
+       [
+        "webmessaging/message-channels/close-event/entangled-after-back-forward-cache-restore.https.tentative.window.html",
+        {
+         "script_metadata": [
+          [
+           "timeout",
+           "long"
+          ],
+          [
+           "title",
+           "Confirm close event is not fired when the page enters BFCache and MessagePort still works after the page is restored."
+          ],
+          [
+           "script",
+           "/common/dispatcher/dispatcher.js"
+          ],
+          [
+           "script",
+           "/common/get-host-info.sub.js"
+          ],
+          [
+           "script",
+           "/common/utils.js"
+          ],
+          [
+           "script",
+           "/html/browsers/browsing-the-web/remote-context-helper/resources/remote-context-helper.js"
+          ],
+          [
+           "script",
+           "/service-workers/service-worker/resources/test-helpers.sub.js"
+          ],
+          [
+           "script",
+           "/html/browsers/browsing-the-web/back-forward-cache/resources/rc-helper.js"
+          ]
+         ],
+         "timeout": "long"
         }
        ]
       ],
