@@ -197,7 +197,7 @@ ShellPermissionManager::GetPermissionStatusForEmbeddedRequester(
 }
 
 ShellPermissionManager::SubscriptionId
-ShellPermissionManager::SubscribePermissionStatusChange(
+ShellPermissionManager::SubscribeToPermissionStatusChange(
     PermissionType permission,
     RenderProcessHost* render_process_host,
     RenderFrameHost* render_frame_host,
@@ -206,7 +206,7 @@ ShellPermissionManager::SubscribePermissionStatusChange(
   return SubscriptionId();
 }
 
-void ShellPermissionManager::UnsubscribePermissionStatusChange(
+void ShellPermissionManager::UnsubscribeFromPermissionStatusChange(
     SubscriptionId subscription_id) {}
 
 }  // namespace content

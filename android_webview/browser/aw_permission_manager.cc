@@ -509,7 +509,7 @@ PermissionStatus AwPermissionManager::GetPermissionStatusForEmbeddedRequester(
 }
 
 AwPermissionManager::SubscriptionId
-AwPermissionManager::SubscribePermissionStatusChange(
+AwPermissionManager::SubscribeToPermissionStatusChange(
     PermissionType permission,
     content::RenderProcessHost* render_process_host,
     content::RenderFrameHost* render_frame_host,
@@ -518,7 +518,7 @@ AwPermissionManager::SubscribePermissionStatusChange(
   return SubscriptionId();
 }
 
-void AwPermissionManager::UnsubscribePermissionStatusChange(
+void AwPermissionManager::UnsubscribeFromPermissionStatusChange(
     SubscriptionId subscription_id) {}
 
 void AwPermissionManager::CancelPermissionRequest(int request_id) {

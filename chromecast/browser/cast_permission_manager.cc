@@ -210,7 +210,7 @@ CastPermissionManager::GetPermissionStatusForEmbeddedRequester(
 }
 
 CastPermissionManager::SubscriptionId
-CastPermissionManager::SubscribePermissionStatusChange(
+CastPermissionManager::SubscribeToPermissionStatusChange(
     blink::PermissionType permission,
     content::RenderProcessHost* render_process_host,
     content::RenderFrameHost* render_frame_host,
@@ -219,7 +219,7 @@ CastPermissionManager::SubscribePermissionStatusChange(
   return SubscriptionId();
 }
 
-void CastPermissionManager::UnsubscribePermissionStatusChange(
+void CastPermissionManager::UnsubscribeFromPermissionStatusChange(
     SubscriptionId subscription_id) {}
 
 }  // namespace shell

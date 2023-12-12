@@ -1756,7 +1756,7 @@ void BrowserView::OnTabDetached(content::WebContents* contents,
     contents->GetPrimaryMainFrame()
         ->GetBrowserContext()
         ->GetPermissionController()
-        ->UnsubscribePermissionStatusChange(
+        ->UnsubscribeFromPermissionStatusChange(
             window_management_subscription_id_.value());
     window_management_subscription_id_.reset();
   }
@@ -2336,7 +2336,7 @@ void BrowserView::SetWindowManagementPermissionSubscriptionForBorderlessMode(
   // It is safe to bind base::Unretained(this) because WebContents is
   // owned by BrowserView.
   window_management_subscription_id_ =
-      controller->SubscribePermissionStatusChange(
+      controller->SubscribeToPermissionStatusChange(
           blink::PermissionType::WINDOW_MANAGEMENT, rfh->GetProcess(), origin,
           base::BindRepeating(&BrowserView::UpdateWindowManagementPermission,
                               base::Unretained(this)));

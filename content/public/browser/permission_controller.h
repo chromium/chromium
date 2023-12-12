@@ -100,13 +100,13 @@ class CONTENT_EXPORT PermissionController
   virtual void ResetPermission(blink::PermissionType permission,
                                const url::Origin& origin) = 0;
 
-  virtual SubscriptionId SubscribePermissionStatusChange(
+  virtual SubscriptionId SubscribeToPermissionStatusChange(
       blink::PermissionType permission,
       RenderProcessHost* render_process_host,
       const url::Origin& requesting_origin,
       const base::RepeatingCallback<void(PermissionStatus)>& callback) = 0;
 
-  virtual void UnsubscribePermissionStatusChange(
+  virtual void UnsubscribeFromPermissionStatusChange(
       SubscriptionId subscription_id) = 0;
 
   // Returns `true` if a document subscribed to

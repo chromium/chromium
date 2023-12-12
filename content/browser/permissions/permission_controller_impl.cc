@@ -651,7 +651,7 @@ void PermissionControllerImpl::OnDelegatePermissionStatusChange(
 }
 
 PermissionControllerImpl::SubscriptionId
-PermissionControllerImpl::SubscribePermissionStatusChange(
+PermissionControllerImpl::SubscribeToPermissionStatusChange(
     PermissionType permission,
     RenderProcessHost* render_process_host,
     RenderFrameHost* render_frame_host,
@@ -682,7 +682,7 @@ PermissionControllerImpl::SubscribePermissionStatusChange(
       browser_context_->GetPermissionControllerDelegate();
   if (delegate) {
     subscription->delegate_subscription_id =
-        delegate->SubscribePermissionStatusChange(
+        delegate->SubscribeToPermissionStatusChange(
             permission, render_process_host, render_frame_host,
             requesting_origin,
             base::BindRepeating(
@@ -694,17 +694,17 @@ PermissionControllerImpl::SubscribePermissionStatusChange(
 }
 
 PermissionControllerImpl::SubscriptionId
-PermissionControllerImpl::SubscribePermissionStatusChange(
+PermissionControllerImpl::SubscribeToPermissionStatusChange(
     PermissionType permission,
     RenderProcessHost* render_process_host,
     const url::Origin& requesting_origin,
     const base::RepeatingCallback<void(PermissionStatus)>& callback) {
-  return SubscribePermissionStatusChange(permission, render_process_host,
-                                         /*render_frame_host=*/nullptr,
-                                         requesting_origin.GetURL(), callback);
+  return SubscribeToPermissionStatusChange(
+      permission, render_process_host,
+      /*render_frame_host=*/nullptr, requesting_origin.GetURL(), callback);
 }
 
-void PermissionControllerImpl::UnsubscribePermissionStatusChange(
+void PermissionControllerImpl::UnsubscribeFromPermissionStatusChange(
     SubscriptionId subscription_id) {
   Subscription* subscription = subscriptions_.Lookup(subscription_id);
   if (!subscription)
@@ -712,7 +712,7 @@ void PermissionControllerImpl::UnsubscribePermissionStatusChange(
   PermissionControllerDelegate* delegate =
       browser_context_->GetPermissionControllerDelegate();
   if (delegate) {
-    delegate->UnsubscribePermissionStatusChange(
+    delegate->UnsubscribeFromPermissionStatusChange(
         subscription->delegate_subscription_id);
   }
   subscriptions_.Remove(subscription_id);

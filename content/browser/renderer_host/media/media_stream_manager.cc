@@ -4031,7 +4031,7 @@ void MediaStreamManager::SubscribeToPermissionControllerOnUIThread(
   if (is_audio_request) {
     // It is safe to bind base::Unretained(this) because MediaStreamManager is
     // owned by BrowserMainLoop.
-    audio_subscription_id = controller->SubscribePermissionStatusChange(
+    audio_subscription_id = controller->SubscribeToPermissionStatusChange(
         blink::PermissionType::AUDIO_CAPTURE,
         /*render_process_host=*/nullptr,
         RenderFrameHost::FromID(requesting_render_frame_host_id), origin,
@@ -4044,7 +4044,7 @@ void MediaStreamManager::SubscribeToPermissionControllerOnUIThread(
   if (is_video_request) {
     // It is safe to bind base::Unretained(this) because MediaStreamManager is
     // owned by BrowserMainLoop.
-    video_subscription_id = controller->SubscribePermissionStatusChange(
+    video_subscription_id = controller->SubscribeToPermissionStatusChange(
         blink::PermissionType::VIDEO_CAPTURE,
         /*render_process_host=*/nullptr,
         RenderFrameHost::FromID(requesting_render_frame_host_id), origin,
@@ -4104,8 +4104,8 @@ void MediaStreamManager::UnsubscribeFromPermissionControllerOnUIThread(
     return;
   }
 
-  controller->UnsubscribePermissionStatusChange(audio_subscription_id);
-  controller->UnsubscribePermissionStatusChange(video_subscription_id);
+  controller->UnsubscribeFromPermissionStatusChange(audio_subscription_id);
+  controller->UnsubscribeFromPermissionStatusChange(video_subscription_id);
 }
 
 void MediaStreamManager::PermissionChangedCallback(

@@ -94,7 +94,7 @@ HeadlessPermissionManager::GetPermissionStatusForEmbeddedRequester(
 }
 
 HeadlessPermissionManager::SubscriptionId
-HeadlessPermissionManager::SubscribePermissionStatusChange(
+HeadlessPermissionManager::SubscribeToPermissionStatusChange(
     blink::PermissionType permission,
     content::RenderProcessHost* render_process_host,
     content::RenderFrameHost* render_frame_host,
@@ -103,7 +103,7 @@ HeadlessPermissionManager::SubscribePermissionStatusChange(
   return SubscriptionId();
 }
 
-void HeadlessPermissionManager::UnsubscribePermissionStatusChange(
+void HeadlessPermissionManager::UnsubscribeFromPermissionStatusChange(
     SubscriptionId subscription_id) {}
 
 }  // namespace headless
