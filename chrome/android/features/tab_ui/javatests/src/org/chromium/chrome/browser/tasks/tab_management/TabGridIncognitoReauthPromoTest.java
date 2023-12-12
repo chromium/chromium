@@ -119,6 +119,7 @@ public class TabGridIncognitoReauthPromoTest {
 
     @Test
     @MediumTest
+    @DisabledTest(message = "https://crbug.com/1510419")
     public void testIncognitoPromoNotShownInRegularMode_WhenTogglingFromIncognito() {
         final ChromeTabbedActivity cta = mActivityTestRule.getActivity();
         createTabs(cta, false, 1);
