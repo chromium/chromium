@@ -27,7 +27,7 @@ BASE_FEATURE(kPasswordNotesWithBackup,
 
 BASE_FEATURE(kSharingOfferKeyPairBootstrap,
              "SharingOfferKeyPairBootstrap",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kSharingOfferKeyPairRead,
              "SharingOfferKeyPairRead",

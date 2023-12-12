@@ -56,6 +56,18 @@ KeyParamsForTesting ScryptPassphraseKeyParamsForTesting(
   return {KeyDerivationParams::CreateForScrypt(passphrase), passphrase};
 }
 
+sync_pb::CrossUserSharingPublicKey CrossUserSharingKeysToPublicKeyProto(
+    const CrossUserSharingKeys& cross_user_sharing_keys,
+    size_t key_version) {
+  sync_pb::CrossUserSharingPublicKey public_key;
+  auto raw_public_key =
+      cross_user_sharing_keys.GetKeyPair(key_version).GetRawPublicKey();
+  public_key.set_x25519_public_key(
+      std::string(raw_public_key.begin(), raw_public_key.end()));
+  public_key.set_version(key_version);
+  return public_key;
+}
+
 sync_pb::NigoriSpecifics BuildKeystoreNigoriSpecifics(
     const std::vector<KeyParamsForTesting>& keybag_keys_params,
     const KeyParamsForTesting& keystore_decryptor_params,
@@ -95,6 +107,12 @@ sync_pb::NigoriSpecifics BuildKeystoreNigoriSpecifics(
   EXPECT_TRUE(keystore_cryptographer->EncryptString(
       serialized_keystore_decryptor,
       specifics.mutable_keystore_decryptor_token()));
+
+  if (cross_user_sharing_keys.HasKeyPair(/*key_version=*/0)) {
+    specifics.mutable_cross_user_sharing_public_key()->CopyFrom(
+        CrossUserSharingKeysToPublicKeyProto(cross_user_sharing_keys,
+                                             /*key_version=*/0));
+  }
 
   specifics.set_passphrase_type(sync_pb::NigoriSpecifics::KEYSTORE_PASSPHRASE);
   specifics.set_keystore_migration_time(TimeToProtoTime(base::Time::Now()));

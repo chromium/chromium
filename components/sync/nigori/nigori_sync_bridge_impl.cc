@@ -607,6 +607,8 @@ absl::optional<ModelError> NigoriSyncBridgeImpl::MergeFullSyncData(
   if (specifics.passphrase_type() != NigoriSpecifics::IMPLICIT_PASSPHRASE ||
       !specifics.encryption_keybag().blob().empty()) {
     // We received regular Nigori.
+    // TODO(crbug.com/1445056): consider generating a new public-private key
+    // pair after the initial sync.
     return UpdateLocalState(data->specifics.nigori());
   }
   // Ensure we have |keystore_keys| during the initial download, requested to
@@ -1025,6 +1027,8 @@ void NigoriSyncBridgeImpl::MaybeTriggerKeystoreReencryption() {
 
 void NigoriSyncBridgeImpl::QueuePendingLocalCommit(
     std::unique_ptr<PendingLocalNigoriCommit> local_commit) {
+  // TODO(crbug.com/1445056): Consider adding more validations in ctor to get
+  // stronger guarantee around DCHECK() below.
   DCHECK(processor_->IsTrackingMetadata());
 
   pending_local_commit_queue_.push_back(std::move(local_commit));

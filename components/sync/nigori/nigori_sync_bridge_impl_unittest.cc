@@ -149,6 +149,15 @@ MATCHER_P2(IsDummyNigoriMetadataBatchWithTokenAndSequenceNumber,
          expected.entity_metadata->SerializeAsString();
 }
 
+CrossUserSharingKeys CreateNewCrossUserSharingKeys() {
+  const uint32_t kKeyVersion = 0;
+  CrossUserSharingKeys cross_user_sharing_keys =
+      CrossUserSharingKeys::CreateEmpty();
+  cross_user_sharing_keys.AddKeyPair(
+      CrossUserSharingPublicPrivateKeyPair::GenerateNewKeyPair(), kKeyVersion);
+  return cross_user_sharing_keys;
+}
+
 NigoriMetadataBatch CreateDummyNigoriMetadataBatch(
     const std::string& progress_marker_token,
     int64_t entity_metadata_sequence_number) {
@@ -1200,6 +1209,7 @@ TEST_F(NigoriSyncBridgeImplPersistenceTest, ShouldRestoreKeystoreNigori) {
   // with previously stored metadata.
   auto processor2 =
       std::make_unique<testing::NiceMock<MockNigoriLocalChangeProcessor>>();
+  ON_CALL(*processor2, IsTrackingMetadata()).WillByDefault(Return(true));
   EXPECT_CALL(
       *processor2,
       ModelReadyToSync(NotNull(),
@@ -1668,6 +1678,7 @@ TEST_F(NigoriSyncBridgeImplPersistenceTest,
   // Create secondary processor.
   auto processor2 =
       std::make_unique<testing::NiceMock<MockNigoriLocalChangeProcessor>>();
+  ON_CALL(*processor2, IsTrackingMetadata()).WillByDefault(Return(true));
   // Once decryption passphrase is provided, bridge should ReportError().
   EXPECT_CALL(*processor2, ReportError);
 
@@ -1733,7 +1744,8 @@ TEST_F(NigoriSyncBridgeImplPersistenceTest, ShouldCompleteKeystoreMigration) {
   *entity_data.specifics.mutable_nigori() = BuildKeystoreNigoriSpecifics(
       /*keybag_keys_params=*/{kKeystoreKeyParams, kPassphraseKeyParams},
       /*keystore_decryptor_params=*/kPassphraseKeyParams,
-      /*keystore_key_params=*/kKeystoreKeyParams);
+      /*keystore_key_params=*/kKeystoreKeyParams,
+      CreateNewCrossUserSharingKeys());
   ASSERT_TRUE(bridge1->SetKeystoreKeys({kRawKeystoreKey}));
   ASSERT_THAT(bridge1->MergeFullSyncData(std::move(entity_data)),
               Eq(absl::nullopt));
@@ -1745,6 +1757,7 @@ TEST_F(NigoriSyncBridgeImplPersistenceTest, ShouldCompleteKeystoreMigration) {
   auto processor2 =
       std::make_unique<testing::NiceMock<MockNigoriLocalChangeProcessor>>();
   ON_CALL(*processor2, IsTrackingMetadata()).WillByDefault(Return(true));
+
   // Upon startup bridge should issue a commit with full keystore Nigori.
   EXPECT_CALL(*processor2, Put(HasKeystoreNigori()));
 
@@ -1798,8 +1811,6 @@ TEST_F(NigoriSyncBridgeImplPersistenceTest,
   auto processor2 =
       std::make_unique<testing::NiceMock<MockNigoriLocalChangeProcessor>>();
   ON_CALL(*processor2, IsTrackingMetadata()).WillByDefault(Return(true));
-  // No commits should be issued.
-  EXPECT_CALL(*processor2, Put).Times(0);
 
   auto bridge2 = std::make_unique<NigoriSyncBridgeImpl>(std::move(processor2),
                                                         std::move(storage2));
@@ -1838,9 +1849,12 @@ TEST_F(NigoriSyncBridgeImplPersistenceTest, ShouldRestoreTrustedVaultNigori) {
   auto storage2 = std::make_unique<testing::NiceMock<MockNigoriStorage>>();
   ON_CALL(*storage2, RestoreData()).WillByDefault(Return(nigori_local_data));
 
-  auto bridge2 = std::make_unique<NigoriSyncBridgeImpl>(
-      std::make_unique<testing::NiceMock<MockNigoriLocalChangeProcessor>>(),
-      std::move(storage2));
+  auto processor2 =
+      std::make_unique<testing::NiceMock<MockNigoriLocalChangeProcessor>>();
+  ON_CALL(*processor2, IsTrackingMetadata()).WillByDefault(Return(true));
+
+  auto bridge2 = std::make_unique<NigoriSyncBridgeImpl>(std::move(processor2),
+                                                        std::move(storage2));
 
   testing::NiceMock<MockObserver> observer;
   bridge2->AddObserver(&observer);
@@ -1886,9 +1900,12 @@ TEST_F(NigoriSyncBridgeImplPersistenceTest,
   auto storage2 = std::make_unique<testing::NiceMock<MockNigoriStorage>>();
   ON_CALL(*storage2, RestoreData()).WillByDefault(Return(nigori_local_data));
 
-  auto bridge2 = std::make_unique<NigoriSyncBridgeImpl>(
-      std::make_unique<testing::NiceMock<MockNigoriLocalChangeProcessor>>(),
-      std::move(storage2));
+  auto processor2 =
+      std::make_unique<testing::NiceMock<MockNigoriLocalChangeProcessor>>();
+  ON_CALL(*processor2, IsTrackingMetadata()).WillByDefault(Return(true));
+
+  auto bridge2 = std::make_unique<NigoriSyncBridgeImpl>(std::move(processor2),
+                                                        std::move(storage2));
 
   testing::NiceMock<MockObserver> observer;
   bridge2->AddObserver(&observer);
