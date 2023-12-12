@@ -525,6 +525,40 @@ uint16_t BigEndianReadU16(std::vector<uint8_t>::const_iterator it) {
   return (uint16_t{*it} << 8) + (uint16_t{*(it + 1)});
 }
 
+// Loads up to the last 80K bytes from `filename`.
+std::vector<uint8_t> ReadFileTail(const base::FilePath& filename) {
+  constexpr int64_t kMaxBytesToRead = 81920;  // 80K
+
+  base::File file(filename, base::File::FLAG_OPEN | base::File::FLAG_READ);
+  if (!file.IsValid()) {
+    return {};
+  }
+
+  const int64_t file_length = file.GetLength();
+  const int64_t bytes_to_read = std::min(file_length, kMaxBytesToRead);
+  const int64_t offset =
+      (file_length > bytes_to_read) ? file_length - bytes_to_read : 0;
+
+  std::vector<uint8_t> buffer(bytes_to_read);
+  const int num_bytes_read =
+      file.Read(offset, reinterpret_cast<char*>(&buffer[0]), bytes_to_read);
+  if (num_bytes_read != bytes_to_read) {
+    return {};
+  }
+
+  return buffer;
+}
+
+std::string ParseTagBuffer(const std::vector<uint8_t>& tag_buffer) {
+  if (tag_buffer.empty()) {
+    return {};
+  }
+
+  const std::string tag_string = ReadTag(tag_buffer.begin(), tag_buffer.end());
+  LOG_IF(ERROR, tag_string.empty()) << __func__ << ": Tag not found in file.";
+  return tag_string;
+}
+
 std::vector<uint8_t> ReadEntireFile(const base::FilePath& file) {
   int64_t file_size = 0;
   if (!base::GetFileSize(file, &file_size)) {
@@ -698,7 +732,7 @@ std::string ReadTag(std::vector<uint8_t>::const_iterator begin,
   const uint8_t* magic_end = std::end(kTagMagicUtf8);
 
   std::vector<uint8_t>::const_iterator magic_str =
-      std::search(begin, end, magic_begin, magic_end);
+      std::find_end(begin, end, magic_begin, magic_end);
   if (magic_str == end) {
     return std::string();
   }
@@ -745,6 +779,13 @@ std::unique_ptr<tagging::BinaryInterface> CreateBinary(
 }
 
 std::string BinaryReadTagString(const base::FilePath& file) {
+  // For MSI files, simply search the tail of the file for the tag.
+  if (!file.MatchesExtension(FILE_PATH_LITERAL(".exe"))) {
+    return ParseTagBuffer(ReadFileTail(file));
+  }
+
+  // TODO(crbug.com/1472820): Can we do similar for EXEs, or can we consider PE
+  // parsing to be a safer implementation?
   const std::vector<uint8_t> contents = ReadEntireFile(file);
   std::unique_ptr<tagging::BinaryInterface> bin = CreateBinary(file, contents);
   if (!bin) {

@@ -1164,6 +1164,12 @@ TEST(TagExtractorTest, CheckRange) {
   ASSERT_FALSE(tagging::internal::CheckRange(it, 1, binary.end()));
 }
 
+TEST(ExeTagTest, FileNotFound) {
+  ASSERT_TRUE(
+      tagging::BinaryReadTagString(test::GetTestFilePath("FileNotFound.exe"))
+          .empty());
+}
+
 TEST(ExeTagTest, UntaggedExe) {
   ASSERT_TRUE(tagging::BinaryReadTagString(test::GetTestFilePath("signed.exe"))
                   .empty());
@@ -1286,6 +1292,21 @@ INSTANTIATE_TEST_SUITE_P(
            return tag_args;
          }()},
 
+        // MSI file size greater than `kMaxBufferLength` of 80KB.
+        {"GUH-size-greater-than-max.msi",
+         [] {
+           tagging::TagArgs tag_args;
+           tag_args.bundle_name = "Google Chrome Beta";
+           tag_args.brand_code = "GGLL";
+
+           tagging::AppArgs app_args("{8237E44A-0054-442C-B6B6-EA0509993955}");
+           app_args.app_name = "Google Chrome Beta";
+           app_args.needs_admin = tagging::AppArgs::NeedsAdmin::kYes;
+           tag_args.apps = {app_args};
+
+           return tag_args;
+         }()},
+
         // special character in the tag value.
         {"GUH-special-value.msi",
          [] {
@@ -1299,6 +1320,12 @@ INSTANTIATE_TEST_SUITE_P(
 
         // tag: BRAND=.
         {"GUH-empty-value.msi", {}},
+
+        // tag:(empty string).
+        {"GUH-empty-tag.msi", {}},
+
+        // invalid magic signature "Gact2.0Foo".
+        {"GUH-invalid-marker.msi", {}},
 
         // invalid characters in the tag key.
         {"GUH-invalid-key.msi", {}},

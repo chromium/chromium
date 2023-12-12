@@ -125,6 +125,7 @@ DMStorage.LoadEnrollmentToken
 DMStorage.PersistPolicies
 DMStorage.ReadCachedOmahaPolicy
 DMStorage.StoreEnrollmentToken
+ExeTagTest.FileNotFound
 ExeTagTest.TaggedExeEncodeUtf8
 ExeTagTest.UntaggedExe
 ExeTagTestExeWriteTagTestCases/ExeTagTestExeWriteTagTest.TestCases/0
@@ -234,6 +235,7 @@ MsiCustomActionTest.ExtractTagInfoFromInstaller
 MsiCustomActionTest.ShowInstallerResultUIString
 MsiSetTagsTestCases/MsiSetTagsTest.MsiSetTags/0
 MsiSetTagsTestCases/MsiSetTagsTest.MsiSetTags/1
+MsiSetTagsTestCases/MsiSetTagsTest.MsiSetTags/10
 MsiSetTagsTestCases/MsiSetTagsTest.MsiSetTags/2
 MsiSetTagsTestCases/MsiSetTagsTest.MsiSetTags/3
 MsiSetTagsTestCases/MsiSetTagsTest.MsiSetTags/4
@@ -241,8 +243,12 @@ MsiSetTagsTestCases/MsiSetTagsTest.MsiSetTags/5
 MsiSetTagsTestCases/MsiSetTagsTest.MsiSetTags/6
 MsiSetTagsTestCases/MsiSetTagsTest.MsiSetTags/7
 MsiSetTagsTestCases/MsiSetTagsTest.MsiSetTags/8
+MsiSetTagsTestCases/MsiSetTagsTest.MsiSetTags/9
 MsiTagTestMsiReadTagTestCases/MsiTagTestMsiReadTagTest.TestCases/0
 MsiTagTestMsiReadTagTestCases/MsiTagTestMsiReadTagTest.TestCases/1
+MsiTagTestMsiReadTagTestCases/MsiTagTestMsiReadTagTest.TestCases/10
+MsiTagTestMsiReadTagTestCases/MsiTagTestMsiReadTagTest.TestCases/11
+MsiTagTestMsiReadTagTestCases/MsiTagTestMsiReadTagTest.TestCases/12
 MsiTagTestMsiReadTagTestCases/MsiTagTestMsiReadTagTest.TestCases/2
 MsiTagTestMsiReadTagTestCases/MsiTagTestMsiReadTagTest.TestCases/3
 MsiTagTestMsiReadTagTestCases/MsiTagTestMsiReadTagTest.TestCases/4

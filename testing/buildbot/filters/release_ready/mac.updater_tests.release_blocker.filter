@@ -65,6 +65,7 @@ DMStorage.LoadDeviceID
 DMStorage.PersistPolicies
 DMStorage.ReadCachedOmahaPolicy
 DMStorage.StoreEnrollmentToken
+ExeTagTest.FileNotFound
 ExeTagTest.TaggedExeEncodeUtf8
 ExeTagTest.UntaggedExe
 ExeTagTestExeWriteTagTestCases/ExeTagTestExeWriteTagTest.TestCases/0
@@ -101,6 +102,9 @@ LockTest.TryLockInThreadSuccess
 ManagedPreferencePolicyManagerTest.GetPolicyManager
 MsiTagTestMsiReadTagTestCases/MsiTagTestMsiReadTagTest.TestCases/0
 MsiTagTestMsiReadTagTestCases/MsiTagTestMsiReadTagTest.TestCases/1
+MsiTagTestMsiReadTagTestCases/MsiTagTestMsiReadTagTest.TestCases/10
+MsiTagTestMsiReadTagTestCases/MsiTagTestMsiReadTagTest.TestCases/11
+MsiTagTestMsiReadTagTestCases/MsiTagTestMsiReadTagTest.TestCases/12
 MsiTagTestMsiReadTagTestCases/MsiTagTestMsiReadTagTest.TestCases/2
 MsiTagTestMsiReadTagTestCases/MsiTagTestMsiReadTagTest.TestCases/3
 MsiTagTestMsiReadTagTestCases/MsiTagTestMsiReadTagTest.TestCases/4
