@@ -1139,6 +1139,7 @@ class CrosNetworkConfigTest : public testing::Test {
       std::optional<bool> expected_policy_value,
       ::chromeos::network_config::mojom::PolicySource policy_source) {
     mojom::ManagedPropertiesPtr properties = GetManagedProperties(guid);
+    mojom::GlobalPolicyPtr policy = GetGlobalPolicy();
 
     ASSERT_TRUE(properties);
     ASSERT_EQ(guid, properties->guid);
@@ -1149,6 +1150,7 @@ class CrosNetworkConfigTest : public testing::Test {
         !expected_policy_value.has_value()) {
       EXPECT_FALSE(
           properties->type_properties->get_cellular()->allow_text_messages);
+      EXPECT_EQ(mojom::SuppressionType::kUnset, policy->allow_text_messages);
       return;
     }
 
@@ -1161,6 +1163,13 @@ class CrosNetworkConfigTest : public testing::Test {
       EXPECT_EQ(*expected_policy_value,
                 properties->type_properties->get_cellular()
                     ->allow_text_messages->policy_value);
+
+      mojom::SuppressionType expected_global_policy_type =
+          expected_policy_value.value() ? mojom::SuppressionType::kAllow
+                                        : mojom::SuppressionType::kSuppress;
+      EXPECT_EQ(expected_global_policy_type, policy->allow_text_messages);
+    } else {
+      EXPECT_EQ(mojom::SuppressionType::kUnset, policy->allow_text_messages);
     }
 
     if (expected_active_value.has_value()) {
@@ -3783,6 +3792,7 @@ TEST_F(CrosNetworkConfigTest, GetGlobalPolicy) {
   EXPECT_EQ("blocked_ssid2", policy->blocked_hex_ssids[1]);
   EXPECT_FALSE(policy->recommended_values_are_ephemeral);
   EXPECT_FALSE(policy->user_created_network_configurations_are_ephemeral);
+  EXPECT_EQ(mojom::SuppressionType::kUnset, policy->allow_text_messages);
 }
 
 TEST_F(CrosNetworkConfigTest, GlobalPolicyApplied) {
@@ -3812,6 +3822,8 @@ TEST_F(CrosNetworkConfigTest, GlobalPolicyApplied) {
   EXPECT_FALSE(policy->report_xdr_events_enabled);
   EXPECT_FALSE(policy->recommended_values_are_ephemeral);
   EXPECT_FALSE(policy->user_created_network_configurations_are_ephemeral);
+  EXPECT_EQ(mojom::SuppressionType::kUnset, policy->allow_text_messages);
+
   EXPECT_EQ(1, observer()->GetPolicyAppliedCount(/*userhash=*/std::string()));
 }
 
