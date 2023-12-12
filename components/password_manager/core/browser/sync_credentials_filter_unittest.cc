@@ -188,22 +188,86 @@ class CredentialsFilterTest : public SyncUsernameTestBase,
 };
 
 TEST_P(CredentialsFilterTest, ShouldSave_NotSignedIn) {
-  PasswordForm form = SimpleGaiaForm("user@example.org");
+  const char kTestEmail[] = "user@example.org";
 
   ASSERT_FALSE(
       identity_manager()->HasPrimaryAccount(signin::ConsentLevel::kSignin));
   ASSERT_TRUE(sync_service()->GetAccountInfo().IsEmpty());
 
   SetSyncingPasswords(false);
+
+  // Non-Gaia forms should always offer saving.
+  EXPECT_TRUE(filter_->ShouldSave(SimpleNonGaiaForm(kTestEmail)));
+  EXPECT_TRUE(filter_->ShouldSave(SimpleNonGaiaForm("")));
+
   // See comments inside ShouldSave() for the justification.
 #if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
-  EXPECT_TRUE(filter_->ShouldSave(form));
-#else
-  if (base::FeatureList::IsEnabled(features::kEnablePasswordsAccountStorage))
-    EXPECT_FALSE(filter_->ShouldSave(form));
-  else
-    EXPECT_TRUE(filter_->ShouldSave(form));
-#endif
+  // Some scenarios behave differently based on whether or not the feature
+  // toggle is enabled.
+  // TODO(crbug.com/1499837): Revisit if these differences are desirable.
+  EXPECT_EQ(
+      filter_->ShouldSave(SimpleGaiaForm("")),
+      base::FeatureList::IsEnabled(features::kEnablePasswordsAccountStorage));
+  EXPECT_EQ(
+      filter_->ShouldSave(SimpleGAIAChangePasswordForm()),
+      base::FeatureList::IsEnabled(features::kEnablePasswordsAccountStorage));
+  EXPECT_TRUE(filter_->ShouldSave(SimpleGaiaForm(kTestEmail)));
+#else   // BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
+  EXPECT_FALSE(filter_->ShouldSave(SimpleGaiaForm("")));
+  EXPECT_FALSE(filter_->ShouldSave(SimpleGAIAChangePasswordForm()));
+  EXPECT_EQ(
+      filter_->ShouldSave(SimpleGaiaForm(kTestEmail)),
+      !base::FeatureList::IsEnabled(features::kEnablePasswordsAccountStorage));
+#endif  // BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
+}
+
+TEST_P(CredentialsFilterTest, ShouldSave_SignedInWithSyncServiceNull) {
+  const char kPrimaryAccountEmail[] = "sync_user@example.org";
+
+  FakeSigninAs(kPrimaryAccountEmail, signin::ConsentLevel::kSync);
+  SetSyncingPasswords(false);
+
+  // Create a new filter that uses a null SyncService.
+  filter_ = std::make_unique<SyncCredentialsFilter>(
+      client_.get(), base::BindRepeating([]() -> const syncer::SyncService* {
+        return nullptr;
+      }));
+
+  // Some scenarios behave differently based on whether or not the feature
+  // toggle is enabled.
+  // TODO(crbug.com/1499837): Revisit if these differences are desirable.
+  const bool passwords_account_storage_enabled =
+      base::FeatureList::IsEnabled(features::kEnablePasswordsAccountStorage);
+
+  // Non-Gaia forms should always offer saving.
+  EXPECT_TRUE(filter_->ShouldSave(SimpleNonGaiaForm(kPrimaryAccountEmail)));
+  EXPECT_TRUE(filter_->ShouldSave(SimpleNonGaiaForm("")));
+
+  // See comments inside ShouldSave() for the justification.
+  const PasswordForm simple_gaia_form =
+      SimpleGaiaForm("non_sync_user@example.org");
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
+  EXPECT_TRUE(filter_->ShouldSave(simple_gaia_form));
+  EXPECT_EQ(filter_->ShouldSave(SimpleGaiaForm("")),
+            passwords_account_storage_enabled);
+  EXPECT_EQ(filter_->ShouldSave(SimpleGAIAChangePasswordForm()),
+            passwords_account_storage_enabled);
+  EXPECT_TRUE(filter_->ShouldSave(SimpleGaiaForm(kPrimaryAccountEmail)));
+#else   // BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
+  EXPECT_EQ(filter_->ShouldSave(simple_gaia_form),
+            !passwords_account_storage_enabled);
+  EXPECT_FALSE(filter_->ShouldSave(SimpleGaiaForm("")));
+  EXPECT_FALSE(filter_->ShouldSave(SimpleGAIAChangePasswordForm()));
+  EXPECT_EQ(filter_->ShouldSave(SimpleGaiaForm(kPrimaryAccountEmail)),
+            !passwords_account_storage_enabled);
+#endif  // BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
+
+  EXPECT_TRUE(filter_->ShouldSave(
+      SimpleForm("https://subdomain.google.com/", kPrimaryAccountEmail)));
+
+  EXPECT_EQ(
+      filter_->ShouldSave(SimpleForm("https://subdomain.google.com/", "")),
+      passwords_account_storage_enabled);
 }
 
 TEST_P(CredentialsFilterTest, ShouldSave_SyncFeatureOnWithPasswordsEnabled) {
