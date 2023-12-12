@@ -23,11 +23,9 @@ void WriteClangProfilingProfile() {
   base::AutoLock auto_lock(*lock);
 
 // Fuchsia's profile runtime does not handle profile dumping.
-// Coverage builds use the continuous mode / runtime counter relocation, so
-// __llvm_profile_dump() is not needed.
-#if !BUILDFLAG(IS_FUCHSIA) && !BUILDFLAG(USE_CLANG_COVERAGE)
+#if !BUILDFLAG(IS_FUCHSIA)
   __llvm_profile_dump();
-#endif  // !BUILDFLAG(IS_FUCHSIA) && !BUILDFLAG(USE_CLANG_COVERAGE)
+#endif  // !BUILDFLAG(IS_FUCHSIA)
 }
 
 }  // namespace base

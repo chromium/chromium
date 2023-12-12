@@ -63,8 +63,6 @@ import sys
 _COVERAGE_FLAGS = [
     '-fprofile-instr-generate',
     '-fcoverage-mapping',
-    '-mllvm',
-    '-runtime-counter-relocation=true',
     # Following experimental flags remove unused header functions from the
     # coverage mapping data embedded in the test binaries, and the reduction
     # of binary size enables building Chrome's large unit test targets on

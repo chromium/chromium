@@ -123,11 +123,6 @@ def get_coverage_continuous_mode_env(env):
   if not llvm_profile_file:
     return {}
 
-  if '%c' in llvm_profile_file:
-    return {
-      'LLVM_PROFILE_FILE': llvm_profile_file
-    }
-
   dirname, basename = os.path.split(llvm_profile_file)
   root, ext = os.path.splitext(basename)
   return {
@@ -373,7 +368,8 @@ def run_executable(cmd, env, stdoutfile=None, cwd=None):
     cmd.append('--no-sandbox')
 
   # Enable clang code coverage continuous mode.
-  extra_env.update(get_coverage_continuous_mode_env(env))
+  if '--coverage-continuous-mode=1' in cmd:
+    extra_env.update(get_coverage_continuous_mode_env(env))
 
   # pylint: disable=import-outside-toplevel
   if '--skip-set-lpac-acls=1' not in cmd and sys.platform == 'win32':

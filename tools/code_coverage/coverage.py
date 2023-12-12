@@ -504,12 +504,9 @@ def _ExecuteCommand(target, command, output_file_path):
   #
   # For other cases, "%4m" is chosen as it creates some level of parallelism,
   # but it's not too big to consume too much computing resource or disk space.
-  #
-  # "%c" expands out to nothing, but it enables the continuous coverage mode
-  # where profile counter updates are continuously written to the profraw file.
   profile_pattern_string = '%1m' if _IsFuzzerTarget(target) else '%4m'
   expected_profraw_file_name = os.extsep.join(
-      [target, '%c', profile_pattern_string, PROFRAW_FILE_EXTENSION])
+      [target, profile_pattern_string, PROFRAW_FILE_EXTENSION])
   expected_profraw_file_path = os.path.join(
       coverage_utils.GetCoverageReportRootDirPath(OUTPUT_DIR),
       expected_profraw_file_name)
@@ -870,7 +867,7 @@ def _GetCommandForWebTests(targets, arguments):
   assert len(targets) == 1, "Only one wpt target can be run"
   target = targets[0]
   expected_profraw_file_name = os.extsep.join(
-      [target, '%c', '%2m', PROFRAW_FILE_EXTENSION])
+      [target, '%2m', PROFRAW_FILE_EXTENSION])
   expected_profraw_file_path = os.path.join(
       coverage_utils.GetCoverageReportRootDirPath(OUTPUT_DIR),
       expected_profraw_file_name)
