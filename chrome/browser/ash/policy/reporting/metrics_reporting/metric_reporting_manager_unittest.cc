@@ -48,11 +48,14 @@
 #include "testing/gtest/include/gtest/gtest.h"
 
 using testing::_;
+using testing::AnyNumber;
 using testing::ByMove;
 using testing::Eq;
 using testing::IsNull;
 using testing::Ne;
+using testing::Not;
 using testing::NotNull;
+using testing::Pointer;
 using testing::Return;
 using testing::SizeIs;
 using testing::StrEq;
@@ -1100,13 +1103,46 @@ class KioskHeartbeatTelemetryTest : public MetricReportingManagerTest {
  protected:
   void SetUp() override {
     MetricReportingManagerTest::SetUp();
+    collector_count_ = 0;
     auto* const mock_delegate_ptr = mock_delegate_.get();
+
     ON_CALL(*mock_delegate_ptr, IsUserAffiliated).WillByDefault(Return(true));
     // Mock app service unavailability to eliminate noise.
     ON_CALL(*mock_delegate_ptr, IsAppServiceAvailableForProfile)
         .WillByDefault(Return(false));
+    ON_CALL(
+        *mock_delegate_ptr,
+        CreatePeriodicCollector(
+            /*sampler=*/_,
+            /*queue=*/heartbeat_queue_ptr_.get(),
+            /*report_settings=*/_,
+            /*enable_setting_path=*/::ash::kHeartbeatEnabled,
+            /*setting_enabled_default_value=*/
+            metrics::kHeartbeatTelemetryDefaultValue,
+            /*rate_setting_path=*/::ash::kHeartbeatFrequency, _, 1,
+            /*init_delay=*/metrics::kDefaultHeartbeatTelemetryCollectionRate))
+        .WillByDefault([&]() {
+          return std::make_unique<FakeCollector>(&collector_count_);
+        });
   }
+
+  int collector_count_;
 };
+
+TEST_F(KioskHeartbeatTelemetryTest, Disabled) {
+  auto* const mock_delegate_ptr = mock_delegate_.get();
+  auto metric_reporting_manager = MetricReportingManager::CreateForTesting(
+      std::move(mock_delegate_), nullptr);
+
+  // MetricReportQueue for KIOSK_HEARTBEAT_EVENTS must not be created for
+  // disabled flag kKioskHeartbeatsViaERP
+  EXPECT_CALL(*mock_delegate_ptr,
+              CreatePeriodicUploadReportQueue(
+                  _, Destination::KIOSK_HEARTBEAT_EVENTS, _, _, _, _, _, _))
+      .Times(0);
+
+  metric_reporting_manager->OnLogin(profile());
+}
 
 TEST_F(KioskHeartbeatTelemetryTest, Init) {
   base::test::ScopedFeatureList scoped_feature_list;
@@ -1123,21 +1159,41 @@ TEST_F(KioskHeartbeatTelemetryTest, Init) {
               CreatePeriodicUploadReportQueue(
                   _, Destination::KIOSK_HEARTBEAT_EVENTS, _, _, _, _, _, _))
       .Times(1);
-  metric_reporting_manager->OnLogin(profile());
-}
 
-TEST_F(KioskHeartbeatTelemetryTest, Disabled) {
-  auto* const mock_delegate_ptr = mock_delegate_.get();
-  auto metric_reporting_manager = MetricReportingManager::CreateForTesting(
-      std::move(mock_delegate_), nullptr);
+  // Ignore any other call to CreatePeriodicCollector -> irrelevant. Should
+  // be covered in other places.
+  EXPECT_CALL(
+      *mock_delegate_ptr,
+      CreatePeriodicCollector(_, Not(Pointer(heartbeat_queue_ptr_.get())), _, _,
+                              _, _, _, _, _))
+      .Times(AnyNumber());
+  // PeriodicCollector should be created here.
+  EXPECT_CALL(
+      *mock_delegate_ptr,
+      CreatePeriodicCollector(
+          /*sampler=*/_,
+          /*queue=*/heartbeat_queue_ptr_.get(),
+          /*report_settings=*/_,
+          /*enable_setting_path=*/::ash::kHeartbeatEnabled,
+          /*setting_enabled_default_value=*/
+          metrics::kHeartbeatTelemetryDefaultValue,
+          /*rate_setting_path=*/::ash::kHeartbeatFrequency, _, 1,
+          /*init_delay=*/metrics::kDefaultHeartbeatTelemetryCollectionRate))
+      .Times(1);
 
-  // MetricReportQueue for KIOSK_HEARTBEAT_EVENTS must not be created for
-  // disabled flag kKioskHeartbeatsViaERP
-  EXPECT_CALL(*mock_delegate_ptr,
-              CreatePeriodicUploadReportQueue(
-                  _, Destination::KIOSK_HEARTBEAT_EVENTS, _, _, _, _, _, _))
-      .Times(0);
   metric_reporting_manager->OnLogin(profile());
+  EXPECT_EQ(collector_count_, 1);
+
+  // Call Flush after initial delay
+  task_environment_.FastForwardBy(mock_delegate_->GetInitialUploadDelay() +
+                                  metrics::kInitialCollectionDelay);
+  EXPECT_EQ(telemetry_queue_ptr_->GetNumFlush(), 1);
+
+  // deprovision -> destruction
+  ON_CALL(*mock_delegate_ptr, IsDeprovisioned).WillByDefault(Return(true));
+  metric_reporting_manager->DeviceSettingsUpdated();
+
+  EXPECT_EQ(collector_count_, 0);
 }
 
 struct EventDrivenTelemetryCollectorPoolTestCase {

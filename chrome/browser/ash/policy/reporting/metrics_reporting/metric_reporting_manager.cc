@@ -37,6 +37,7 @@
 #include "chrome/browser/ash/policy/reporting/metrics_reporting/cros_healthd_sampler_handlers/cros_healthd_sampler_handler.h"
 #include "chrome/browser/ash/policy/reporting/metrics_reporting/device_activity/device_activity_sampler.h"
 #include "chrome/browser/ash/policy/reporting/metrics_reporting/fatal_crash/fatal_crash_events_observer.h"
+#include "chrome/browser/ash/policy/reporting/metrics_reporting/kiosk_heartbeat/kiosk_heartbeat_telemetry_sampler.h"
 #include "chrome/browser/ash/policy/reporting/metrics_reporting/metric_reporting_prefs.h"
 #include "chrome/browser/ash/policy/reporting/metrics_reporting/network/https_latency_event_detector.h"
 #include "chrome/browser/ash/policy/reporting/metrics_reporting/network/https_latency_sampler.h"
@@ -86,6 +87,7 @@ constexpr char kPsrTelemetry[] = "psr_telemetry";
 constexpr char kDelayedPeripheralTelemetry[] = "delayed_peripheral_telemetry";
 constexpr char kDisplaysTelemetry[] = "displays_telemetry";
 constexpr char kDeviceActivityTelemetry[] = "device_activity_telemetry";
+constexpr char kKioskHeartbeatTelemetry[] = "kiosk_heartbeat_telemetry";
 constexpr char kWebsiteTelemetry[] = "website_telemetry";
 
 }  // namespace
@@ -379,6 +381,7 @@ void MetricReportingManager::DelayedInitOnAffiliatedLogin(Profile* profile) {
   InitAudioCollectors();
   InitDisplayCollectors();
   InitDeviceActivityCollector();
+  InitKioskHeartbeatTelemetryCollector();
 
   initial_upload_timer_.Start(FROM_HERE, GetUploadDelay(), this,
                               &MetricReportingManager::UploadTelemetry);
@@ -784,6 +787,24 @@ void MetricReportingManager::InitDeviceActivityCollector() {
           metrics::kDefaultDeviceActivityHeartbeatCollectionRate),
       /*rate_unit_to_ms=*/1, delegate_->GetInitDelay());
   samplers_.push_back(std::move(device_activity_sampler));
+}
+
+void MetricReportingManager::InitKioskHeartbeatTelemetryCollector() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  auto heartbeat_sampler = std::make_unique<KioskHeartbeatTelemetrySampler>();
+  InitPeriodicTelemetryCollector(
+      /*name=*/kKioskHeartbeatTelemetry,
+      /*sampler=*/heartbeat_sampler.get(),
+      /*queue=*/kiosk_heartbeat_telemetry_report_queue_.get(),
+      /*enable_setting_path=*/::ash::kHeartbeatEnabled,
+      /*enable_default_value=*/metrics::kHeartbeatTelemetryDefaultValue,
+      /*rate_setting_path=*/::ash::kHeartbeatFrequency,
+      /*default_rate=*/
+      metrics::GetDefaultCollectionRate(
+          metrics::kDefaultHeartbeatTelemetryCollectionRate),
+      /*rate_unit_to_ms=*/1,
+      /*init_delay=*/metrics::kDefaultHeartbeatTelemetryCollectionRate);
+  samplers_.push_back(std::move(heartbeat_sampler));
 }
 
 std::vector<CollectorBase*>

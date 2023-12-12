@@ -283,6 +283,9 @@ class MetricReportingManager : public policy::ManagedSessionService::Observer,
   // Initializes a periodic collector that collects device activity state.
   void InitDeviceActivityCollector();
 
+  // Initializes a periodic collector that sends out heartbeat signals.
+  void InitKioskHeartbeatTelemetryCollector();
+
   base::TimeDelta GetUploadDelay() const;
 
   std::vector<CollectorBase*> GetTelemetryCollectorsFromSetting(
