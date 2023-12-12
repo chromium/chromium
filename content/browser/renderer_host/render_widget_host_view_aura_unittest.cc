@@ -6610,6 +6610,13 @@ class RenderWidgetHostViewAuraInputMethodTest
     text_input_client_ = nullptr;
   }
 
+  void TearDown() override {
+    // text_input_client_ may point at |parent_view_| or something else owned by
+    // RenderWidgetHostViewAuraTest and will get destroyed in TearDown().
+    text_input_client_ = nullptr;
+    RenderWidgetHostViewAuraTest::TearDown();
+  }
+
   // Override from ui::InputMethodObserver.
   void OnFocus() override {}
   void OnBlur() override {}
@@ -6620,7 +6627,7 @@ class RenderWidgetHostViewAuraInputMethodTest
   void OnInputMethodDestroyed(const ui::InputMethod* input_method) override {}
 
  protected:
-  raw_ptr<const ui::TextInputClient, DanglingUntriaged> text_input_client_;
+  raw_ptr<const ui::TextInputClient> text_input_client_;
 };
 
 // This test is for notifying InputMethod for surrounding text changes.
