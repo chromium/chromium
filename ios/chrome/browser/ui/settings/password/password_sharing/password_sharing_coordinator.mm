@@ -208,7 +208,6 @@ using password_manager::FetchFamilyMembersRequestStatus;
 - (void)onFetchFamilyMembers:
             (NSArray<RecipientInfoForIOSDisplay*>*)familyMembers
                   withStatus:(const FetchFamilyMembersRequestStatus&)status {
-  // TODO(crbug.com/1463882): Add EG tests for the whole flow.
   self.recipients = familyMembers;
 
   switch (status) {
