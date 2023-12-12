@@ -473,6 +473,13 @@ void ChipController::OnCollapseAnimationEnded() {
   }
 }
 
+void ChipController::OnOcclusionStateChanged(bool occluded) {
+  if (GetBubbleWidget()) {
+    // Disable the prompt if it's occluded by a picture-in-picture window.
+    GetBubbleWidget()->GetContentsView()->SetEnabled(!occluded);
+  }
+}
+
 void ChipController::HideChip() {
   if (!chip_->GetVisible())
     return;
@@ -554,6 +561,7 @@ void ChipController::ObservePromptBubble() {
     parent_was_visible_when_activation_changed_ =
         prompt_bubble_widget->GetPrimaryWindowWidget()->IsVisible();
     prompt_bubble_widget->AddObserver(this);
+    occlusion_observation_.Observe(prompt_bubble_widget);
   }
 }
 

@@ -6,6 +6,8 @@
 #define CHROME_BROWSER_UI_VIEWS_PERMISSIONS_PERMISSION_PROMPT_BUBBLE_H_
 
 #include "chip_controller.h"
+#include "chrome/browser/picture_in_picture/picture_in_picture_occlusion_observer.h"
+#include "chrome/browser/picture_in_picture/scoped_picture_in_picture_occlusion_observation.h"
 #include "chrome/browser/ui/views/permissions/permission_prompt_bubble_base_view.h"
 #include "chrome/browser/ui/views/permissions/permission_prompt_desktop.h"
 #include "content/public/browser/web_contents_observer.h"
@@ -17,7 +19,8 @@ class WebContents;
 }
 
 class PermissionPromptBubble : public PermissionPromptDesktop,
-                               public views::WidgetObserver {
+                               public views::WidgetObserver,
+                               public PictureInPictureOcclusionObserver {
  public:
   PermissionPromptBubble(Browser* browser,
                          content::WebContents* web_contents,
@@ -41,6 +44,9 @@ class PermissionPromptBubble : public PermissionPromptDesktop,
 
   views::Widget* GetPromptBubbleWidgetForTesting() override;
 
+  // PictureInPictureOcclusionObserver:
+  void OnOcclusionStateChanged(bool occluded) override;
+
  private:
   PermissionPromptBubbleBaseView* GetPromptBubble();
   const PermissionPromptBubbleBaseView* GetPromptBubble() const;
@@ -54,6 +60,8 @@ class PermissionPromptBubble : public PermissionPromptDesktop,
   bool parent_was_visible_when_activation_changed_;
 
   base::ScopedClosureRunner disallowed_custom_cursors_scope_;
+
+  ScopedPictureInPictureOcclusionObservation occlusion_observation_{this};
 
   base::WeakPtrFactory<PermissionPromptBubble> weak_factory_{this};
 };
