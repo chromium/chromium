@@ -2641,6 +2641,7 @@ Du kan administrere innstillingene for denne kontoen ved å installere Family Li
 <translation id="2990313168615879645">Legg til Google-konto</translation>
 <translation id="2990375978470734995">For at denne endringen skal tre i kraft, må du koble til det eksterne tilbehøret på nytt.</translation>
 <translation id="2990583317361835189">Ikke la nettsteder bruke bevegelsessensorer</translation>
+<translation id="2991182900092497283">Oppgi en årsak til at du laster ned disse dataene:</translation>
 <translation id="2992931425024192067">Vis alt innhold i varsler</translation>
 <translation id="2993517869960930405">Appinformasjon</translation>
 <translation id="2996108796702395498">Enhetens serienummer er <ph name="SERIAL_NUMBER" />. Dette nummeret kan brukes til å aktivere tjenesten.</translation>
@@ -3155,6 +3156,7 @@ Du kan administrere innstillingene for denne kontoen ved å installere Family Li
 <translation id="3432762828853624962">Delte arbeidere (SharedWorker)</translation>
 <translation id="3433507769937235446">Lås når enheten forlates</translation>
 <translation id="3433621910545056227">Beklager. Systemet kunne ikke oppdage enhetens attributtlås for installasjonstid.</translation>
+<translation id="3434025015623587566">Google Passordlagring trenger mer tilgang</translation>
 <translation id="3434107140712555581"><ph name="BATTERY_PERCENTAGE" /> %</translation>
 <translation id="3434272557872943250">Hvis du har slått på innstillingen for annen nett- og appaktivitet for barnet ditt, kan disse dataene bli lagret i barnets Google-konto. Finn ut mer om disse innstillingene og hvordan du justerer dem, på families.google.com.</translation>
 <translation id="3434475275396485144">Denne innstillingen administreres av telefonadministratoren</translation>
@@ -3369,6 +3371,7 @@ Du kan administrere innstillingene for denne kontoen ved å installere Family Li
 <translation id="3605156246402033687">{COUNT,plural, =1{{COUNT} konto bruker det samme passordet}other{{COUNT} kontoer bruker det samme passordet}}</translation>
 <translation id="3605780360466892872">Businessmann</translation>
 <translation id="3607671391978830431">For et barn</translation>
+<translation id="3608460311600621471">Oppgi en årsak til at du skriver ut disse dataene:</translation>
 <translation id="3608730769702025110">Trinn 3 av 4: Gå gjennom personlig identifiserende informasjon</translation>
 <translation id="3609277884604412258">Hurtigsøk</translation>
 <translation id="3610241585790874201">Nettsteder som ikke har lov til å lagre data på enheten din</translation>
@@ -6669,6 +6672,7 @@ Tillatelser du allerede har gitt nettsteder og apper, kan gjelde for denne konto
 <translation id="6238982280403036866">Nettsteder som har lov til å bruke JavaScript</translation>
 <translation id="6239558157302047471">Last inn &amp;rammen på nytt</translation>
 <translation id="6240821072888636753">Spør hver gang</translation>
+<translation id="6240964651812394252">For å bruke Google Passordlagring med operativsystemet ditt, start Chrome på nytt og gi tilgang til datamaskinens passordlagring. Fanene dine åpnes på nytt når du starter på nytt.</translation>
 <translation id="6241530762627360640">bruke informasjon om Bluetooth-enheter tilkoblet systemet ditt og oppdage Bluetooth-enheter i nærheten.</translation>
 <translation id="6241844896329831164">Ingen tilgang trengs</translation>
 <translation id="6242574558232861452">Sjekker opp mot sikkerhetsretningslinjene til organisasjonen din.</translation>

@@ -496,6 +496,7 @@ Veja as instruções do seu mecanismo de pesquisa para excluir o histórico de p
 <translation id="355101282835380364">Salvar na conta…</translation>
 <translation id="3551320343578183772">Fechar guia</translation>
 <translation id="3565207542107370586">Limpar dados de navegação…</translation>
+<translation id="3570693105179140209">Toque duas vezes para conferir mais senhas.</translation>
 <translation id="3575234738189584619">Pesquisar com o Lens</translation>
 <translation id="3581564640715911333">Oferecer para traduzir páginas em outros idiomas</translation>
 <translation id="3587885837929752825">Sua organização limita o que você pode salvar na sua Conta do Google.</translation>
@@ -661,6 +662,7 @@ Veja as instruções do seu mecanismo de pesquisa para excluir o histórico de p
 <translation id="452750746583162491">Revisar dados sincronizados</translation>
 <translation id="4527660062930312477">Sua conta é gerenciada</translation>
 <translation id="4536418791685807335">Tente fazer login novamente.</translation>
+<translation id="4539187448429948815">{count,plural, =1{{count} sugestão de preenchimento automático salva disponível acima do teclado.}one{{count} sugestão de preenchimento automático salva disponível acima do teclado.}other{{count} sugestões de preenchimento automático salvas disponíveis acima do teclado.}}</translation>
 <translation id="4540780316273593836">Ocorreu um erro</translation>
 <translation id="4550040941166547650">Somente neste dispositivo</translation>
 <translation id="457292989631956153">{COUNT,plural, =1{Fechar {COUNT} guia inativa?}one{Fechar {COUNT} guia inativa?}other{Fechar {COUNT} guias inativas?}}</translation>

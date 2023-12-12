@@ -496,6 +496,7 @@ Chỉ những người có cụm mật khẩu mới đọc được dữ liệu 
 <translation id="355101282835380364">Lưu trong tài khoản…</translation>
 <translation id="3551320343578183772">Đóng Thẻ</translation>
 <translation id="3565207542107370586">Xoá dữ liệu duyệt web…</translation>
+<translation id="3570693105179140209">Nhấn đúp để xem các mật khẩu khác.</translation>
 <translation id="3575234738189584619">Tìm kiếm bằng Ống kính</translation>
 <translation id="3581564640715911333">Đề xuất dịch trang bằng các ngôn ngữ khác</translation>
 <translation id="3587885837929752825">Tổ chức của bạn giới hạn những nội dung bạn có thể lưu trong Tài khoản Google.</translation>
@@ -661,6 +662,7 @@ Chỉ những người có cụm mật khẩu mới đọc được dữ liệu 
 <translation id="452750746583162491">Xem lại các dữ liệu đã đồng bộ hóa của bạn</translation>
 <translation id="4527660062930312477">Tài khoản của bạn được quản lý</translation>
 <translation id="4536418791685807335">Thử đăng nhập lại.</translation>
+<translation id="4539187448429948815">{count,plural, =1{Có {count} đề xuất tự động hoàn thành đã lưu phía trên bàn phím.}other{Có {count} đề xuất tự động hoàn thành đã lưu phía trên bàn phím.}}</translation>
 <translation id="4540780316273593836">Đã xảy ra lỗi</translation>
 <translation id="4550040941166547650">Chỉ trên thiết bị này</translation>
 <translation id="457292989631956153">{COUNT,plural, =1{Đóng {COUNT} thẻ không hoạt động?}other{Đóng {COUNT} thẻ không hoạt động?}}</translation>

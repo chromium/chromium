@@ -496,6 +496,7 @@
 <translation id="355101282835380364">በመለያ ውስጥ አስቀምጥ…</translation>
 <translation id="3551320343578183772">ትር ዝጋ</translation>
 <translation id="3565207542107370586">የአሰሳ ውሂብን አጽዳ…</translation>
+<translation id="3570693105179140209">ለተጨማሪ የይለፍ ቃላት ሁለቴ መታ ያድርጉ።</translation>
 <translation id="3575234738189584619">በሌንስ ፈልግ</translation>
 <translation id="3581564640715911333">በሌሎች ቋንቋዎች ለመተርጎም ሐሳብ አቅርብ</translation>
 <translation id="3587885837929752825">ድርጅትዎ በGoogle መለያዎ ውስጥ ማስቀመጥ የሚችሉትን ነገር ይገድባል።</translation>
@@ -661,6 +662,7 @@
 <translation id="452750746583162491">የሰመረ ውሂብዎን ይገምግሙ</translation>
 <translation id="4527660062930312477">የእርስዎ መለያ ተስዳድሯል</translation>
 <translation id="4536418791685807335">እንደገና ወደ መለያ ለመግባት ይሞክሩ።</translation>
+<translation id="4539187448429948815">{count,plural, =1{{count} የተቀመጠ ራስሰር አጠናቅ ጥቆማ ከቁልፍ ሰሌዳዎ በላይ ይገኛል።}one{{count} የተቀመጡ ራስሰር አጠናቅ ጥቆማዎች ከቁልፍ ሰሌዳዎ በላይ ይገኛሉ።}other{{count} የተቀመጡ ራስሰር አጠናቅ ጥቆማዎች ከቁልፍ ሰሌዳዎ በላይ ይገኛሉ።}}</translation>
 <translation id="4540780316273593836">የሆነ ችግር ተፈጥሯል</translation>
 <translation id="4550040941166547650">በዚህ መሣሪያ ላይ ብቻ</translation>
 <translation id="457292989631956153">{COUNT,plural, =1{{COUNT} ገቢር ያልሆነ ትር ይዘጋ?}one{{COUNT} ገቢር ያልሆነ ትር ይዘጋ?}other{{COUNT} ገቢር ያልሆኑ ትሮች ይዘጉ?}}</translation>

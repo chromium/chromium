@@ -1137,6 +1137,7 @@
 <translation id="5577281275355252094">Βεβαιωθείτε ότι το Bluetooth είναι ενεργοποιημένο στο τηλέφωνό σας για να χρησιμοποιήσετε το Phone Hub.</translation>
 <translation id="5578188167649348993">μνήμη</translation>
 <translation id="5580000943347215299">Βιβλιοθήκη</translation>
+<translation id="5587506661873751671">Λήψη <ph name="DOWNLOAD_PERCENT" />%</translation>
 <translation id="558849140439112033">Σύρετε, για να επιλέξετε μια περιοχή για λήψη</translation>
 <translation id="5590609058453685222">Η υπενθύμιση σίγασης είναι ενεργή. Θα ειδοποιηθείτε εάν μιλήσετε ενώ είστε σε σίγαση.</translation>
 <translation id="5596627076506792578">Περισσότερες επιλογές</translation>
@@ -1796,6 +1797,7 @@
 <translation id="830868413617744215">Beta</translation>
 <translation id="8314772463905284467">Το Caps Lock είναι ενεργοποιημένο</translation>
 <translation id="8315514906653279104">Ενεργοποίηση…</translation>
+<translation id="8331351032546853669">Λήψη σε εκκρεμότητα</translation>
 <translation id="8341451174107936385"><ph name="UNLOCK_MORE_FEATURES" />  <ph name="GET_STARTED" /></translation>
 <translation id="8345019317483336363">Επιλέχτηκε το παράθυρο <ph name="WINDOW_TITLE" />.</translation>
 <translation id="8349826889576450703">εφαρμογή εκκίνησης</translation>

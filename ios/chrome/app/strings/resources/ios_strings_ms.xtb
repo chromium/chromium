@@ -496,6 +496,7 @@ Lihat arahan enjin carian anda untuk memadamkan sejarah carian anda, jika berken
 <translation id="355101282835380364">Simpan dalam Akaun…</translation>
 <translation id="3551320343578183772">Tutup Tab</translation>
 <translation id="3565207542107370586">Kosongkan Data Semakan Imbas…</translation>
+<translation id="3570693105179140209">Dwiketik untuk mendapatkan lebih banyak kata laluan.</translation>
 <translation id="3575234738189584619">Cari dengan Lens</translation>
 <translation id="3581564640715911333">Tawaran untuk menterjemah halaman dalam bahasa lain</translation>
 <translation id="3587885837929752825">Organisasi anda mengehadkan perkara yang boleh anda simpan dalam Google Account anda.</translation>
@@ -661,6 +662,7 @@ Lihat arahan enjin carian anda untuk memadamkan sejarah carian anda, jika berken
 <translation id="452750746583162491">Semak data anda yang disegerak</translation>
 <translation id="4527660062930312477">Akaun Anda Terurus</translation>
 <translation id="4536418791685807335">Cuba log masuk semula.</translation>
+<translation id="4539187448429948815">{count,plural, =1{{count} cadangan autolengkap yang disimpan tersedia pada sebelah atas papan kekunci anda.}other{{count} cadangan autolengkap yang disimpan tersedia pada sebelah atas papan kekunci anda.}}</translation>
 <translation id="4540780316273593836">Kesilapan Telah Berlaku</translation>
 <translation id="4550040941166547650">Hanya pada Peranti Ini</translation>
 <translation id="457292989631956153">{COUNT,plural, =1{Tutup {COUNT} Tab Tidak Aktif?}other{Tutup {COUNT} Tab Tidak Aktif?}}</translation>

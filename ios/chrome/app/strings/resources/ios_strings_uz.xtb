@@ -496,6 +496,7 @@ Imkon boʻlsa, qidiruv tarixini qanday tozalash haqidagi qidiruv tizimi koʻrsat
 <translation id="355101282835380364">Hisobda saqlash…</translation>
 <translation id="3551320343578183772">Ichki oynani yopish</translation>
 <translation id="3565207542107370586">Brauzer tarixini tozalash…</translation>
+<translation id="3570693105179140209">Boshqa parollarni ochish uchun ikki marta bosing.</translation>
 <translation id="3575234738189584619">Lens orqali qidirish</translation>
 <translation id="3581564640715911333">Boshqa tildagi sahifalarni tarjima qilish taklif qilinsin</translation>
 <translation id="3587885837929752825">Tashkilot Google hisobida nimalar saqlanishi mumkinligini cheklagan.</translation>
@@ -661,6 +662,7 @@ Imkon boʻlsa, qidiruv tarixini qanday tozalash haqidagi qidiruv tizimi koʻrsat
 <translation id="452750746583162491">Sinxronlangan maʼlumotlaringizni tekshiring</translation>
 <translation id="4527660062930312477">Hisobingiz nazorat ostida</translation>
 <translation id="4536418791685807335">Qaytadan kirib ko‘ring.</translation>
+<translation id="4539187448429948815">{count,plural, =1{{count} ta saqlangan avtomatik kiritish taklifi klavuatura ustida chiqadi.}other{{count} ta saqlangan avtomatik kiritish taklifi klavuatura ustida chiqadi.}}</translation>
 <translation id="4540780316273593836">Nimadir xato ketdi</translation>
 <translation id="4550040941166547650">Faqat shu qurilmada</translation>
 <translation id="457292989631956153">{COUNT,plural, =1{{COUNT} ta nofaol varaq yopilsinmi?}other{{COUNT} ta nofaol varaq yopilsinmi?}}</translation>
