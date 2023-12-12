@@ -629,6 +629,8 @@ web::WebStateID GetActiveNonPinnedTabID(WebStateList* web_state_list) {
           WebStateSearchCriteria{.identifier = itemID,
                                  .pinned_state = PinnedState::kNonPinned});
       if (index != WebStateList::kInvalidIndex) {
+        _selectedEditingItemIDs.erase(itemID);
+        _selectedSharableEditingItemIDs.erase(itemID);
         webStateList->CloseWebStateAt(index, WebStateList::CLOSE_USER_ACTION);
       }
     }
