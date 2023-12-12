@@ -334,6 +334,8 @@ source_set("web_applications") {
       "isolated_web_apps/policy/isolated_web_app_policy_constants.h",
       "isolated_web_apps/policy/isolated_web_app_policy_manager.cc",
       "isolated_web_apps/policy/isolated_web_app_policy_manager.h",
+      "migrations/adobe_express_oem_to_default_migration.cc",
+      "migrations/adobe_express_oem_to_default_migration.h",
       "os_integration/web_app_run_on_os_login_chromeos.cc",
       "os_integration/web_app_shortcut_chromeos.cc",
       "preinstalled_web_app_window_experiment.cc",
@@ -943,6 +945,7 @@ source_set("web_applications_browser_tests") {
   if (is_chromeos) {
     sources += [
       "commands/install_preloaded_verified_app_command_browsertest.cc",
+      "migrations/adobe_express_oem_to_default_migration_browsertest.cc",
       "web_app_run_on_os_login_manager_browsertest.cc",
 
       # TODO(crbug.com/1458725): Support automatic IWA updates on other

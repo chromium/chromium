@@ -58,6 +58,7 @@
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 #if BUILDFLAG(IS_CHROMEOS)
+#include "chrome/browser/web_applications/migrations/adobe_express_oem_to_default_migration.h"
 #include "chrome/browser/web_applications/web_app_run_on_os_login_manager.h"
 #endif
 
@@ -419,6 +420,14 @@ void WebAppProvider::StartSyncBridge() {
 
 void WebAppProvider::OnSyncBridgeReady() {
   DCHECK(!on_registry_ready_.is_signaled());
+
+  // Perform database migrations once the sync bridge is ready, but before
+  // starting the rest of the subsystems and notifying that the registry is
+  // ready.
+#if BUILDFLAG(IS_CHROMEOS)
+  web_app::migrations::MigrateAdobeExpressFromOemInstallToDefault(
+      sync_bridge_.get());
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
   // Note: This does not wait for the call from the ChromeOS
   // SystemWebAppManager, which is a separate keyed service.
