@@ -63,6 +63,7 @@ import org.chromium.chrome.modules.readaloud.Player;
 import org.chromium.chrome.modules.readaloud.ReadAloudPlaybackHooks;
 import org.chromium.chrome.modules.readaloud.contentjs.Highlighter;
 import org.chromium.chrome.test.util.browser.Features;
+import org.chromium.chrome.test.util.browser.Features.DisableFeatures;
 import org.chromium.chrome.test.util.browser.Features.EnableFeatures;
 import org.chromium.chrome.test.util.browser.tabmodel.MockTabModelSelector;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
@@ -81,7 +82,7 @@ import java.util.List;
 /** Unit tests for {@link ReadAloudController}. */
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
-@EnableFeatures(ChromeFeatureList.READALOUD)
+@EnableFeatures({ChromeFeatureList.READALOUD, ChromeFeatureList.READALOUD_PLAYBACK})
 public class ReadAloudControllerUnitTest {
     private static final GURL sTestGURL = JUnitTestGURLs.EXAMPLE_URL;
 
@@ -1101,6 +1102,17 @@ public class ReadAloudControllerUnitTest {
                 .getValue()
                 .onFailure(sTestGURL.getSpec(), new Throwable("Something went wrong"));
         histogram.assertExpected();
+    }
+
+    @Test
+    @DisableFeatures(ChromeFeatureList.READALOUD_PLAYBACK)
+    public void testReadAloudPlaybackFlagCheckedAfterReadability() {
+        mController.maybeCheckReadability(sTestGURL);
+        verify(mHooksImpl, times(1))
+                .isPageReadable(eq(sTestGURL.getSpec()), mCallbackCaptor.capture());
+        mCallbackCaptor.getValue().onSuccess(sTestGURL.getSpec(), true, false);
+
+        assertFalse(mController.isReadable(mTab));
     }
 
     private void onPlaybackSuccess(Playback playback) {

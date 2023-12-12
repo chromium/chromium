@@ -197,6 +197,8 @@ public class ReadAloudController
                 public void onSuccess(String url, boolean isReadable, boolean timepointsSupported) {
                     Log.d(TAG, "onSuccess called for %s", url);
                     ReadAloudMetrics.recordIsPageReadable(isReadable);
+                    // isPlaybackEnabled() should only be checked if isReadable == true.
+                    isReadable = isReadable && ReadAloudFeatures.isPlaybackEnabled();
                     mReadabilityMap.put(url, isReadable);
                     mTimepointsSupportedMap.put(url, timepointsSupported);
                     mPendingRequests.remove(url);

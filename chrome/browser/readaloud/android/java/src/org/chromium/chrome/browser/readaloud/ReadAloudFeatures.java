@@ -46,12 +46,17 @@ public final class ReadAloudFeatures {
                         currentSearchEngine.getKeyword());
 
         return searchEngineType == SearchEngineType.SEARCH_ENGINE_GOOGLE
-                && ChromeFeatureList.isEnabled(ChromeFeatureList.READALOUD) //
                 && UserPrefs.get(profile).getBoolean(Pref.LISTEN_TO_THIS_PAGE_ENABLED)
                 // Check whether the user has enabled anonymous URL-keyed data collection.
                 // This is surfaced on the relatively new "Make searches and browsing
                 // better" user setting.
-                && UnifiedConsentServiceBridge.isUrlKeyedAnonymizedDataCollectionEnabled(profile);
+                && UnifiedConsentServiceBridge.isUrlKeyedAnonymizedDataCollectionEnabled(profile)
+                && ChromeFeatureList.isEnabled(ChromeFeatureList.READALOUD);
+    }
+
+    /** Returns true if playback is enabled. */
+    public static boolean isPlaybackEnabled() {
+        return ChromeFeatureList.isEnabled(ChromeFeatureList.READALOUD_PLAYBACK);
     }
 
     /** Returns the API key override feature param if present, or null otherwise. */
