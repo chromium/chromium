@@ -45,7 +45,6 @@ MockShoppingService::MockShoppingService()
   SetIsSubscribedCallbackValue(true);
   SetGetAllSubscriptionsCallbackValue(std::vector<CommerceSubscription>());
   SetIsShoppingListEligible(true);
-  SetIsClusterIdTrackedByUserResponse(true);
   SetIsMerchantViewerEnabled(true);
   SetGetAllPriceTrackedBookmarksCallbackValue(
       std::vector<const bookmarks::BookmarkNode*>());
@@ -188,15 +187,6 @@ void MockShoppingService::SetIsReady(bool ready) {
                   FROM_HERE, base::BindOnce(std::move(callback), this));
             }
           });
-}
-
-void MockShoppingService::SetIsClusterIdTrackedByUserResponse(bool is_tracked) {
-  ON_CALL(*this, IsClusterIdTrackedByUser)
-      .WillByDefault([is_tracked](uint64_t cluster_id,
-                                  base::OnceCallback<void(bool)> callback) {
-        base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
-            FROM_HERE, base::BindOnce(std::move(callback), is_tracked));
-      });
 }
 
 void MockShoppingService::SetIsMerchantViewerEnabled(bool is_enabled) {

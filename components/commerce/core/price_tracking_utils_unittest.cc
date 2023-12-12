@@ -373,7 +373,7 @@ TEST_F(PriceTrackingUtilsTest, GetAllPriceTrackedBookmarks) {
   ASSERT_EQ(2U, bookmark_model_->other_node()->children().size());
 
   shopping_service_->SetGetAllSubscriptionsCallbackValue(
-      {CreateUserTrackedSubscription(12345L)});
+      {BuildUserSubscriptionForClusterId(12345L)});
 
   base::RunLoop run_loop;
   GetAllPriceTrackedBookmarks(

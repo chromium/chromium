@@ -1527,21 +1527,6 @@ bool ShoppingService::IsShoppingListEligible(AccountChecker* account_checker,
   return true;
 }
 
-void ShoppingService::IsClusterIdTrackedByUser(
-    uint64_t cluster_id,
-    base::OnceCallback<void(bool)> callback) {
-  if (!subscriptions_manager_) {
-    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
-        FROM_HERE, base::BindOnce(std::move(callback), false));
-    return;
-  }
-
-  CommerceSubscription sub(
-      SubscriptionType::kPriceTrack, IdentifierType::kProductClusterId,
-      base::NumberToString(cluster_id), ManagementType::kUserManaged);
-  subscriptions_manager_->IsSubscribed(std::move(sub), std::move(callback));
-}
-
 void ShoppingService::StartTrackingParcels(
     const std::vector<std::pair<ParcelIdentifier::Carrier, std::string>>&
         parcel_identifiers,

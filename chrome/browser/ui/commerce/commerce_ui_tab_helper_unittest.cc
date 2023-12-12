@@ -17,6 +17,7 @@
 #include "components/bookmarks/test/test_bookmark_client.h"
 #include "components/commerce/core/commerce_feature_list.h"
 #include "components/commerce/core/mock_shopping_service.h"
+#include "components/commerce/core/price_tracking_utils.h"
 #include "components/commerce/core/shopping_service.h"
 #include "components/commerce/core/subscriptions/commerce_subscription.h"
 #include "components/commerce/core/test_utils.h"
@@ -160,20 +161,19 @@ TEST_F(CommerceUiTabHelperTest, TestSubscriptionEventsUpdateState) {
 
   shopping_service_->SetResponseForGetProductInfoForUrl(info);
   shopping_service_->SetIsSubscribedCallbackValue(true);
-  shopping_service_->SetIsClusterIdTrackedByUserResponse(true);
 
   SimulateNavigationCommitted(GURL(kProductUrl));
 
   // First ensure that subscribe is successful.
-  tab_helper_->OnSubscribe(CreateUserTrackedSubscription(kClusterId), true);
+  tab_helper_->OnSubscribe(BuildUserSubscriptionForClusterId(kClusterId), true);
   base::RunLoop().RunUntilIdle();
 
   ASSERT_TRUE(tab_helper_->IsPriceTracking());
 
   // Now assume the user has unsubscribed again.
   shopping_service_->SetIsSubscribedCallbackValue(false);
-  shopping_service_->SetIsClusterIdTrackedByUserResponse(false);
-  tab_helper_->OnUnsubscribe(CreateUserTrackedSubscription(kClusterId), true);
+  tab_helper_->OnUnsubscribe(BuildUserSubscriptionForClusterId(kClusterId),
+                             true);
   base::RunLoop().RunUntilIdle();
 
   ASSERT_FALSE(tab_helper_->IsPriceTracking());
@@ -241,7 +241,6 @@ TEST_F(CommerceUiTabHelperTest,
 
   shopping_service_->SetResponseForGetProductInfoForUrl(info);
   shopping_service_->SetIsSubscribedCallbackValue(false);
-  shopping_service_->SetIsClusterIdTrackedByUserResponse(false);
   shopping_service_->SetSubscribeCallbackValue(true);
 
   SimulateNavigationCommitted(GURL(kProductUrl));
@@ -255,7 +254,7 @@ TEST_F(CommerceUiTabHelperTest,
                 testing::_))
       .Times(1);
 
-  shopping_service_->SetIsClusterIdTrackedByUserResponse(true);
+  shopping_service_->SetIsSubscribedCallbackValue(true);
   tab_helper_->SetPriceTrackingState(true, true, base::DoNothing());
   ASSERT_TRUE(GetPendingTrackingStateForTesting().has_value());
   ASSERT_TRUE(GetPendingTrackingStateForTesting().value());

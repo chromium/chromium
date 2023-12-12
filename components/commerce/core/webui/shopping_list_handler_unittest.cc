@@ -230,7 +230,7 @@ TEST_F(ShoppingListHandlerTest, TestTrackProductSuccess) {
   handler_->TrackPriceForBookmark(product->id());
 
   // Assume the subscription callback fires with a success.
-  handler_->OnSubscribe(CreateUserTrackedSubscription(cluster_id), true);
+  handler_->OnSubscribe(BuildUserSubscriptionForClusterId(cluster_id), true);
 
   task_environment_.RunUntilIdle();
 }
@@ -253,7 +253,7 @@ TEST_F(ShoppingListHandlerTest, TestUntrackProductSuccess) {
   handler_->UntrackPriceForBookmark(product->id());
 
   // Assume the subscription callback fires with a success.
-  handler_->OnUnsubscribe(CreateUserTrackedSubscription(cluster_id), true);
+  handler_->OnUnsubscribe(BuildUserSubscriptionForClusterId(cluster_id), true);
 
   task_environment_.RunUntilIdle();
 }
@@ -280,7 +280,7 @@ TEST_F(ShoppingListHandlerTest, TestTrackProductFailure) {
   handler_->TrackPriceForBookmark(product->id());
 
   // Assume the subscription callback fires with a failure.
-  handler_->OnUnsubscribe(CreateUserTrackedSubscription(cluster_id), false);
+  handler_->OnUnsubscribe(BuildUserSubscriptionForClusterId(cluster_id), false);
 
   task_environment_.RunUntilIdle();
 }
@@ -307,7 +307,7 @@ TEST_F(ShoppingListHandlerTest, TestUntrackProductFailure) {
   handler_->UntrackPriceForBookmark(product->id());
 
   // Assume the subscription callback fires with a failure.
-  handler_->OnUnsubscribe(CreateUserTrackedSubscription(cluster_id), false);
+  handler_->OnUnsubscribe(BuildUserSubscriptionForClusterId(cluster_id), false);
 
   task_environment_.RunUntilIdle();
 }
@@ -321,7 +321,7 @@ TEST_F(ShoppingListHandlerTest, PageUpdateForPriceTrackChange) {
               PriceUntrackedForBookmark(MojoBookmarkInfoWithId(product->id())));
 
   // Assume the plumbing for subscriptions works and fake an unsubscribe event.
-  handler_->OnUnsubscribe(CreateUserTrackedSubscription(123L), true);
+  handler_->OnUnsubscribe(BuildUserSubscriptionForClusterId(123L), true);
 
   task_environment_.RunUntilIdle();
 }
@@ -332,7 +332,7 @@ TEST_F(ShoppingListHandlerTest, TestUnsubscribeCausedByBookmarkDeletion) {
                          MojoBookmarkInfoWithClusterId(cluster_id)))
       .Times(1);
 
-  handler_->OnUnsubscribe(CreateUserTrackedSubscription(cluster_id), true);
+  handler_->OnUnsubscribe(BuildUserSubscriptionForClusterId(cluster_id), true);
 
   task_environment_.RunUntilIdle();
 }
@@ -346,7 +346,7 @@ TEST_F(ShoppingListHandlerTest, TestGetProductInfo_FeatureEnabled) {
   AddProductBookmark(bookmark_model_.get(), u"product 2",
                      GURL("http://example.com/2"), 456L, false, 4560000, "usd");
   shopping_service_->SetGetAllSubscriptionsCallbackValue(
-      {CreateUserTrackedSubscription(123L)});
+      {BuildUserSubscriptionForClusterId(123L)});
 
   std::vector<const bookmarks::BookmarkNode*> bookmark_list;
   bookmark_list.push_back(product);

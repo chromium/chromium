@@ -497,8 +497,8 @@ void CommerceUiTabHelper::UpdatePriceTrackingStateFromSubscriptions() {
   if (!cluster_id_for_page_.has_value())
     return;
 
-  shopping_service_->IsClusterIdTrackedByUser(
-      cluster_id_for_page_.value(),
+  shopping_service_->IsSubscribed(
+      BuildUserSubscriptionForClusterId(cluster_id_for_page_.value()),
       base::BindOnce(
           [](base::WeakPtr<CommerceUiTabHelper> helper, bool is_tracked) {
             if (!helper) {

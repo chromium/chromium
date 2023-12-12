@@ -72,12 +72,6 @@ void AddProductInfoToExistingBookmark(
                                             std::move(meta));
 }
 
-CommerceSubscription CreateUserTrackedSubscription(uint64_t cluster_id) {
-  return CommerceSubscription(
-      SubscriptionType::kPriceTrack, IdentifierType::kProductClusterId,
-      base::NumberToString(cluster_id), ManagementType::kUserManaged);
-}
-
 void SetShoppingListEnterprisePolicyPref(PrefService* prefs, bool enabled) {
   prefs->SetBoolean(kShoppingListEnabledPrefName, enabled);
 }

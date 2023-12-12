@@ -130,7 +130,6 @@ class PriceTrackingEmailDialogConsentViewInteractiveTest
     info.product_cluster_id.emplace(kClusterId);
     mock_shopping_service->SetResponseForGetProductInfoForUrl(info);
     mock_shopping_service->SetIsSubscribedCallbackValue(true);
-    mock_shopping_service->SetIsClusterIdTrackedByUserResponse(true);
   }
 
   base::WeakPtrFactory<PriceTrackingEmailDialogConsentViewInteractiveTest>

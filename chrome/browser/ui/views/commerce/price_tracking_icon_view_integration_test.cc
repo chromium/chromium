@@ -22,6 +22,7 @@
 #include "components/bookmarks/test/bookmark_test_helpers.h"
 #include "components/commerce/core/commerce_feature_list.h"
 #include "components/commerce/core/mock_shopping_service.h"
+#include "components/commerce/core/price_tracking_utils.h"
 #include "components/commerce/core/test_utils.h"
 #include "components/omnibox/browser/vector_icons.h"
 #include "components/strings/grit/components_strings.h"
@@ -111,11 +112,11 @@ class PriceTrackingIconViewIntegrationTest : public TestWithBrowserView {
 
   void SimulateSubscriptionChangeEvent(bool is_subscribed) {
     if (is_subscribed) {
-      GetTabHelper()->OnSubscribe(commerce::CreateUserTrackedSubscription(0L),
-                                  true);
+      GetTabHelper()->OnSubscribe(
+          commerce::BuildUserSubscriptionForClusterId(0L), true);
     } else {
-      GetTabHelper()->OnUnsubscribe(commerce::CreateUserTrackedSubscription(0L),
-                                    true);
+      GetTabHelper()->OnUnsubscribe(
+          commerce::BuildUserSubscriptionForClusterId(0L), true);
     }
   }
 
