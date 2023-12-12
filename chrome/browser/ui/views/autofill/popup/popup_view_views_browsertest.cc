@@ -148,6 +148,19 @@ IN_PROC_BROWSER_TEST_P(PopupViewViewsBrowsertest,
 }
 
 IN_PROC_BROWSER_TEST_P(PopupViewViewsBrowsertest,
+                       InvokeUi_Autofill_MultipleLabels) {
+  std::vector<std::vector<Suggestion::Text>> labels = {
+      {Suggestion::Text(
+           u"Fill full address - Main Second First Third Street 123"),
+       Suggestion::Text(u"Alexander Joseph Ricardo Park")},
+      {Suggestion::Text(u"Fill full address"), Suggestion::Text(u"Alex Park")}};
+  Suggestion suggestion("Google", std::move(labels), Suggestion::Icon::kAccount,
+                        PopupItemId::kAddressEntry);
+  PrepareSuggestions({suggestion});
+  ShowAndVerifyUi();
+}
+
+IN_PROC_BROWSER_TEST_P(PopupViewViewsBrowsertest,
                        InvokeUi_Passwords_PasswordField) {
   // An account store entry.
   std::vector<Suggestion> suggestions;
