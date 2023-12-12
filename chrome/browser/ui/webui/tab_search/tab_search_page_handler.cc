@@ -566,7 +566,7 @@ void TabSearchPageHandler::TriggerSignIn() {
 
 void TabSearchPageHandler::OpenHelpPage() {
   Browser* browser = chrome::FindLastActive();
-  GURL help_url("https://support.google.com/chrome?p=tab_organization");
+  GURL help_url("https://support.google.com/chrome?p=auto_tab_group");
   NavigateParams params(browser, help_url,
                         ui::PageTransition::PAGE_TRANSITION_LINK);
   params.disposition = WindowOpenDisposition::NEW_FOREGROUND_TAB;

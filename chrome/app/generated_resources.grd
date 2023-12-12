@@ -10635,7 +10635,7 @@ Check your passwords anytime in <ph name="GOOGLE_PASSWORD_MANAGER">$1<ex>Google 
         Turn on sync to let Chrome suggest tab groups and keep your tabs organized
       </message>
       <message name="IDS_TAB_ORGANIZATION_NOT_STARTED_BODY_UNSYNCED_HISTORY" desc="The body text for the not started state in the tab organization UI, when history sync is disabled" translateable="false">
-        Turn on History sync in Settings to let Chrome suggest tab groups and keep your tabs organized.
+        Turn on History sync in Settings to let Chrome suggest tab groups and keep your tabs organized
       </message>
       <message name="IDS_TAB_ORGANIZATION_NOT_STARTED_BODY_SYNC_PAUSED" desc="The body text for the not started state in the tab organization UI, sync is paused" translateable="false">
         Sign in to let Chrome suggest tab groups and keep your tabs organized
@@ -10650,7 +10650,7 @@ Check your passwords anytime in <ph name="GOOGLE_PASSWORD_MANAGER">$1<ex>Google 
         Turn on sync
       </message>
       <message name="IDS_TAB_ORGANIZATION_NOT_STARTED_BUTTON_UNSYNCED_HISTORY" desc="The label for the button in the not started state of the tab organization UI, when history sync is disabled" translateable="false">
-        Open settings
+        Settings
       </message>
       <message name="IDS_TAB_ORGANIZATION_NOT_STARTED_BUTTON_SYNC_PAUSED" desc="The label for the button in the not started state of the tab organization UI, when sync is paused" translateable="false">
         Sign in
