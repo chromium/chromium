@@ -361,6 +361,10 @@ void MockMediaSession::NextTrack() {
   next_track_count_++;
 }
 
+void MockMediaSession::SkipAd() {
+  skip_ad_count_++;
+}
+
 void MockMediaSession::Seek(base::TimeDelta seek_time) {
   seek_count_++;
 }

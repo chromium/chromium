@@ -513,6 +513,25 @@ TEST_F(MediaControllerTest, ActiveController_Seek) {
   EXPECT_EQ(1, media_session.seek_count());
 }
 
+TEST_F(MediaControllerTest, ActiveController_SkipAd) {
+  test::MockMediaSession media_session;
+  media_session.SetIsControllable(true);
+
+  EXPECT_EQ(0, media_session.skip_ad_count());
+
+  {
+    test::MockMediaSessionMojoObserver observer(media_session);
+    RequestAudioFocus(media_session, mojom::AudioFocusType::kGain);
+    observer.WaitForState(mojom::MediaSessionInfo::SessionState::kActive);
+    EXPECT_EQ(0, media_session.skip_ad_count());
+  }
+
+  controller()->SkipAd();
+  controller().FlushForTesting();
+
+  EXPECT_EQ(1, media_session.skip_ad_count());
+}
+
 TEST_F(MediaControllerTest, ActiveController_SeekTo) {
   test::MockMediaSession media_session;
   media_session.SetIsControllable(true);

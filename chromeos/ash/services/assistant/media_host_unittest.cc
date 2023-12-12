@@ -91,6 +91,7 @@ class MediaControllerMock : public media_session::mojom::MediaController {
        mojo::PendingRemote<media_session::mojom::MediaControllerImageObserver>
            observer));
   MOCK_METHOD(void, SeekTo, (::base::TimeDelta seek_time));
+  MOCK_METHOD(void, SkipAd, ());
   MOCK_METHOD(void, ScrubTo, (::base::TimeDelta seek_time));
   MOCK_METHOD(void, EnterPictureInPicture, ());
   MOCK_METHOD(void, ExitPictureInPicture, ());

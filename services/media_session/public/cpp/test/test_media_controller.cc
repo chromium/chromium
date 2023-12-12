@@ -266,6 +266,10 @@ void TestMediaController::SeekTo(base::TimeDelta seek_time) {
   ++seek_to_count_;
 }
 
+void TestMediaController::SkipAd() {
+  ++skip_ad_count_;
+}
+
 void TestMediaController::EnterPictureInPicture() {
   // TODO(crbug.com/1040263): Implement EnterPictureInPicture.
 }
