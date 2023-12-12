@@ -98,6 +98,8 @@ class CreditCardAccessManager
  public:
   using OnCreditCardFetchedCallback =
       base::OnceCallback<void(CreditCardFetchResult, const CreditCard*)>;
+  using OtpAuthenticationResponse =
+      CreditCardOtpAuthenticator::OtpAuthenticationResponse;
 
   CreditCardAccessManager(AutofillDriver* driver,
                           AutofillClient* client,
@@ -263,6 +265,11 @@ class CreditCardAccessManager
   // etc., is available and enabled. If set to true, then an Unmask Details
   // request will be sent to Google Payments.
   void GetUnmaskDetailsIfUserIsVerifiable(bool is_user_verifiable);
+
+  // Log success metrics based on `unmask_auth_flow_type` if user passed
+  // authentication, as well as fill the form.
+  void LogMetricsAndFillFormForServerUnmaskFlows(
+      UnmaskAuthFlowType unmask_auth_flow_type);
 
   // Sets |unmask_details_|. May be ignored if response is too late and user is
   // not opted-in for FIDO auth, or if user does not select a card.

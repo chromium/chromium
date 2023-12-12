@@ -3319,7 +3319,7 @@ TEST_F(CreditCardAccessManagerTest,
   // Mock FIDO authentication completed.
   CreditCardFidoAuthenticator::FidoAuthenticationResponse fido_response;
   fido_response.did_succeed = true;
-  CreditCard card = test::WithCvc(test::GetCreditCard(), u"234");
+  CreditCard card = test::WithCvc(test::GetVirtualCard(), u"234");
   fido_response.card = &card;
   credit_card_access_manager().OnFIDOAuthenticationComplete(fido_response);
 
@@ -3382,7 +3382,7 @@ TEST_F(
   // Mock FIDO authentication completed.
   CreditCardFidoAuthenticator::FidoAuthenticationResponse fido_response;
   fido_response.did_succeed = true;
-  CreditCard card = test::GetCreditCard();
+  CreditCard card = test::GetVirtualCard();
   fido_response.card = &card;
   fido_response.cvc = u"123";
   credit_card_access_manager().OnFIDOAuthenticationComplete(fido_response);
