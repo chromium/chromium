@@ -73,6 +73,9 @@ COMPONENT_EXPORT(BACKGROUND_TRACING_UTILS)
 absl::optional<perfetto::protos::gen::ChromeFieldTracingConfig>
 GetFieldTracingConfig();
 
+COMPONENT_EXPORT(BACKGROUND_TRACING_UTILS)
+bool IsFieldTracingEnabled();
+
 }  // namespace tracing
 
 #endif  // COMPONENTS_TRACING_COMMON_BACKGROUND_TRACING_UTILS_H_

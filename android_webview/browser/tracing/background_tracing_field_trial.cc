@@ -28,6 +28,9 @@ bool MaybeSetupSystemTracingFromFieldTrial() {
     return false;
   }
 
+  if (tracing::IsFieldTracingEnabled()) {
+    return false;
+  }
   auto& manager = BackgroundTracingManager::GetInstance();
   std::unique_ptr<BackgroundTracingConfig> config =
       manager.GetBackgroundTracingConfig(kBackgroundTracingFieldTrial);
