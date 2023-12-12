@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "wolvic/wolvic_content_browser_client.h"
+#include <memory>
 
 #include "base/path_service.h"
 #include "components/cdm/browser/media_drm_storage_impl.h"

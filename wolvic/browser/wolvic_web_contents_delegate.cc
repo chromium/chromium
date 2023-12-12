@@ -10,11 +10,14 @@
 #include "wolvic/browser/wolvic_contents.h"
 #include "wolvic/jni_headers/WolvicWebContentsDelegate_jni.h"
 #include "url/android/gurl_android.h"
+#include "wolvic/browser/dialogs/wolvic_javascript_dialog_manager.h"
 
 namespace wolvic {
 
 WolvicWebContentsDelegate::WolvicWebContentsDelegate(JNIEnv* env, jobject obj)
-    : WebContentsDelegateAndroid(env, obj) {}
+    : WebContentsDelegateAndroid(env, obj),
+      javascript_dialog_manager_(
+          std::make_unique<WolvicJavascriptDialogManager>()) {}
 
 WolvicWebContentsDelegate::~WolvicWebContentsDelegate() = default;
 
@@ -58,6 +61,11 @@ void WolvicWebContentsDelegate::LoadingStateChanged(
   if (obj.is_null())
     return;
   WebContentsDelegateAndroid::LoadingStateChanged(source, should_show_loading_ui);
+}
+
+content::JavaScriptDialogManager* WolvicWebContentsDelegate::GetJavaScriptDialogManager(
+    content::WebContents* source) {
+  return javascript_dialog_manager_.get();
 }
 
 } // namespace wolvic

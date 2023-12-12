@@ -7,6 +7,7 @@
 
 #include "base/memory/raw_ptr.h"
 #include "content/public/browser/content_browser_client.h"
+#include "wolvic/browser/dialogs/user_dialog_manager_bridge.h"
 #include "wolvic/browser/vr/wolvic_xr_integration_client.h"
 
 namespace content {
