@@ -46,6 +46,11 @@ namespace ios::sessions {
 [[nodiscard]] bool CopyDirectory(const base::FilePath& from_dir,
                                  const base::FilePath& dest_dir);
 
+// Copies file at `from_path` to `dest_path`. It is an error if `from_path`
+// is not a file or if `dest_path` exists and is not a file.
+[[nodiscard]] bool CopyFile(const base::FilePath& from_path,
+                            const base::FilePath& dest_path);
+
 // Writes `data` to `filename` and returns whether the operation was a success.
 // The file is created with protection until first user authentication.
 [[nodiscard]] bool WriteFile(const base::FilePath& filename, NSData* data);

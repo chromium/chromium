@@ -542,6 +542,105 @@ TEST_F(SessionInternalUtilTest, CopyDirectory_FailureCannotCreateTargetParent) {
   EXPECT_NSEQ(ios::sessions::ReadFile(deep), data);
 }
 
+// Tests that `CopyFile` returns success if the file can be copied.
+TEST_F(SessionInternalUtilTest, CopyFile) {
+  base::ScopedTempDir scoped_temp_dir;
+  ASSERT_TRUE(scoped_temp_dir.CreateUniqueTempDir());
+  const base::FilePath root = scoped_temp_dir.GetPath();
+
+  const base::FilePath from = root.Append(kDirname1).Append(kFromName);
+  const base::FilePath dest = root.Append(kDirname2).Append(kDestName);
+
+  NSData* data = [@"data" dataUsingEncoding:NSUTF8StringEncoding];
+  ASSERT_TRUE(ios::sessions::WriteFile(from, data));
+
+  // Check that copying the file leave the source file intact, creates
+  // the directory structure for destination file, and both files have
+  // the same content.
+  EXPECT_TRUE(ios::sessions::CopyFile(from, dest));
+
+  EXPECT_TRUE(ios::sessions::FileExists(from));
+  EXPECT_NSEQ(ios::sessions::ReadFile(from), data);
+
+  EXPECT_TRUE(ios::sessions::FileExists(dest));
+  EXPECT_NSEQ(ios::sessions::ReadFile(dest), data);
+}
+
+// Tests that `CopyFile` returns success and overwritten destination if
+// it exists and is a file.
+TEST_F(SessionInternalUtilTest, CopyFile_OverwriteDestination) {
+  base::ScopedTempDir scoped_temp_dir;
+  ASSERT_TRUE(scoped_temp_dir.CreateUniqueTempDir());
+  const base::FilePath root = scoped_temp_dir.GetPath();
+
+  const base::FilePath from = root.Append(kDirname1).Append(kFromName);
+  const base::FilePath dest = root.Append(kDirname2).Append(kDestName);
+
+  NSData* data1 = [@"data1" dataUsingEncoding:NSUTF8StringEncoding];
+  ASSERT_TRUE(ios::sessions::WriteFile(from, data1));
+
+  NSData* data2 = [@"data2" dataUsingEncoding:NSUTF8StringEncoding];
+  ASSERT_TRUE(ios::sessions::WriteFile(dest, data2));
+  ASSERT_NSEQ(ios::sessions::ReadFile(dest), data2);
+
+  // Check that copying the file leave the source file intact, overwrite the
+  // destination file, and both files have the same content.
+  EXPECT_TRUE(ios::sessions::CopyFile(from, dest));
+
+  EXPECT_TRUE(ios::sessions::FileExists(from));
+  EXPECT_NSEQ(ios::sessions::ReadFile(from), data1);
+
+  EXPECT_TRUE(ios::sessions::FileExists(dest));
+  EXPECT_NSEQ(ios::sessions::ReadFile(dest), data1);
+}
+
+// Tests that `CopyFile` fails if the source is not a file.
+TEST_F(SessionInternalUtilTest, CopyFile_FailureSourceIsADirectory) {
+  base::ScopedTempDir scoped_temp_dir;
+  ASSERT_TRUE(scoped_temp_dir.CreateUniqueTempDir());
+  const base::FilePath root = scoped_temp_dir.GetPath();
+
+  const base::FilePath from = root.Append(kDirname1).Append(kFromName);
+  const base::FilePath dest = root.Append(kDirname2).Append(kDestName);
+
+  ASSERT_TRUE(ios::sessions::CreateDirectory(from));
+
+  // Check that trying to copy `from` which is a directory using CopyFile()`
+  // fails with an error.
+  EXPECT_FALSE(ios::sessions::CopyFile(from, dest));
+}
+
+// Tests that `CopyFile` fails if the source does not exist.
+TEST_F(SessionInternalUtilTest, CopyFile_FailureSourceMissing) {
+  base::ScopedTempDir scoped_temp_dir;
+  ASSERT_TRUE(scoped_temp_dir.CreateUniqueTempDir());
+  const base::FilePath root = scoped_temp_dir.GetPath();
+
+  const base::FilePath from = root.Append(kDirname1).Append(kFromName);
+  const base::FilePath dest = root.Append(kDirname2).Append(kDestName);
+
+  // Check that trying to copy `from` which is a directory using CopyFile()`
+  // fails with an error.
+  EXPECT_FALSE(ios::sessions::CopyFile(from, dest));
+}
+
+// Tests that `CopyFile` fails if the destination path is a directory.
+TEST_F(SessionInternalUtilTest, CopyFile_FailureDestinationIsADirectory) {
+  base::ScopedTempDir scoped_temp_dir;
+  ASSERT_TRUE(scoped_temp_dir.CreateUniqueTempDir());
+  const base::FilePath root = scoped_temp_dir.GetPath();
+
+  const base::FilePath from = root.Append(kDirname1).Append(kFromName);
+  const base::FilePath dest = root.Append(kDirname2).Append(kDestName);
+
+  NSData* data = [@"data" dataUsingEncoding:NSUTF8StringEncoding];
+  ASSERT_TRUE(ios::sessions::WriteFile(from, data));
+  ASSERT_TRUE(ios::sessions::CreateDirectory(dest));
+
+  // Check that trying to copy a file to a path that is a directory fails.
+  EXPECT_FALSE(ios::sessions::CopyFile(from, dest));
+}
+
 // Tests that `WriteFile` returns success when the file is created and the
 // data written to disk.
 TEST_F(SessionInternalUtilTest, WriteFile) {

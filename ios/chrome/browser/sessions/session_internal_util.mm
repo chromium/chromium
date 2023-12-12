@@ -156,6 +156,55 @@ enum class PathStatus {
   return true;
 }
 
+// Copies file at `from_path` to `dest_path`. It is an error if `from_path`
+// is not a file or if `dest_path` exists and is not a file.
+[[nodiscard]] bool CopyFile(NSString* from_path, NSString* dest_path) {
+  if (!FileExists(from_path)) {
+    DLOG(WARNING) << "Error copying file: "
+                  << base::SysNSStringToUTF8(from_path) << " to "
+                  << base::SysNSStringToUTF8(dest_path) << ": no such file";
+    return false;
+  }
+
+  switch (GetPathStatus(dest_path)) {
+    case PathStatus::kDirectory:
+      DLOG(WARNING) << "Error copying file: "
+                    << base::SysNSStringToUTF8(from_path) << " to "
+                    << base::SysNSStringToUTF8(dest_path)
+                    << ": directory exists";
+      break;
+
+    case PathStatus::kFile:
+      if (!DeleteRecursively(dest_path)) {
+        return false;
+      }
+      break;
+
+    case PathStatus::kInexistent:
+      break;
+  }
+
+  // Create parent directory of `dest_path`.
+  if (!CreateDirectory([dest_path stringByDeletingLastPathComponent])) {
+    return false;
+  }
+
+  // Use hardlink to perform the copy to reduce the impact on storage.
+
+  NSError* error = nil;
+  if (![[NSFileManager defaultManager] linkItemAtPath:from_path
+                                               toPath:dest_path
+                                                error:&error]) {
+    DLOG(WARNING) << "Error copying file: "
+                  << base::SysNSStringToUTF8(from_path) << " to "
+                  << base::SysNSStringToUTF8(dest_path) << ": "
+                  << base::SysNSStringToUTF8([error description]);
+    return false;
+  }
+
+  return true;
+}
+
 // Writes `data` to `filename` and returns whether the operation was a success.
 // The file is created with protection until first user authentication.
 [[nodiscard]] bool WriteFile(NSString* filename, NSData* data) {
@@ -226,6 +275,12 @@ bool CopyDirectory(const base::FilePath& from_dir,
                    const base::FilePath& dest_dir) {
   return internal::CopyDirectory(base::apple::FilePathToNSString(from_dir),
                                  base::apple::FilePathToNSString(dest_dir));
+}
+
+bool CopyFile(const base::FilePath& from_path,
+              const base::FilePath& dest_path) {
+  return internal::CopyFile(base::apple::FilePathToNSString(from_path),
+                            base::apple::FilePathToNSString(dest_path));
 }
 
 bool WriteFile(const base::FilePath& filename, NSData* data) {
