@@ -439,9 +439,7 @@ public class ToolbarTablet extends ToolbarLayout
 
     @Override
     public CaptureReadinessResult isReadyForTextureCapture() {
-        if (ToolbarFeatures.shouldBlockCapturesForAblation()) {
-            return CaptureReadinessResult.notReady(TopToolbarBlockCaptureReason.SCROLL_ABLATION);
-        } else if (ToolbarFeatures.shouldSuppressCaptures()) {
+        if (ToolbarFeatures.shouldSuppressCaptures()) {
             if (urlHasFocus()) {
                 return CaptureReadinessResult.notReady(
                         TopToolbarBlockCaptureReason.URL_BAR_HAS_FOCUS);

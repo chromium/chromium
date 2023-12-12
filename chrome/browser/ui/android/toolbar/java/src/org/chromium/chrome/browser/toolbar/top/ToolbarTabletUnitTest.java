@@ -326,14 +326,6 @@ public final class ToolbarTabletUnitTest {
     }
 
     @Test
-    @EnableFeatures(ChromeFeatureList.TOOLBAR_SCROLL_ABLATION_ANDROID)
-    public void testIsReadyForTextureCapture_Ablation() {
-        CaptureReadinessResult result = mToolbarTablet.isReadyForTextureCapture();
-        Assert.assertFalse(result.isReady);
-        Assert.assertEquals(TopToolbarBlockCaptureReason.SCROLL_ABLATION, result.blockReason);
-    }
-
-    @Test
     @DisableFeatures(ChromeFeatureList.SUPPRESS_TOOLBAR_CAPTURES)
     public void testIsReadyForTextureCapture_NoSuppression() {
         CaptureReadinessResult result = mToolbarTablet.isReadyForTextureCapture();

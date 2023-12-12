@@ -466,7 +466,6 @@ public abstract class ChromeFeatureList {
     public static final String TEST_DEFAULT_DISABLED = "TestDefaultDisabled";
     public static final String TEST_DEFAULT_ENABLED = "TestDefaultEnabled";
     public static final String THUMBNAIL_PLACEHOLDER = "ThumbnailPlaceholder";
-    public static final String TOOLBAR_SCROLL_ABLATION_ANDROID = "ToolbarScrollAblationAndroid";
     public static final String TOOLBAR_USE_HARDWARE_BITMAP_DRAW = "ToolbarUseHardwareBitmapDraw";
     public static final String TRACKING_PROTECTION_SETTINGS_PAGE_ROLLBACK_NOTICE =
             "TrackingProtectionSettingsPageRollbackNotice";
@@ -786,8 +785,6 @@ public abstract class ChromeFeatureList {
             newMutableFlagWithSafeDefault(SUPPRESS_TOOLBAR_CAPTURES, false);
     public static final MutableFlagWithSafeDefault sThumbnailPlaceholder =
             newMutableFlagWithSafeDefault(THUMBNAIL_PLACEHOLDER, true);
-    public static final MutableFlagWithSafeDefault sToolbarScrollAblation =
-            newMutableFlagWithSafeDefault(TOOLBAR_SCROLL_ABLATION_ANDROID, false);
     public static final MutableFlagWithSafeDefault sTouchDownTriggerForPrefetch =
             newMutableFlagWithSafeDefault(OMNIBOX_TOUCH_DOWN_TRIGGER_FOR_PREFETCH, false);
     public static final MutableFlagWithSafeDefault sVisibleUrlTruncation =

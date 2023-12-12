@@ -1815,9 +1815,7 @@ public class ToolbarPhone extends ToolbarLayout
 
     @Override
     public CaptureReadinessResult isReadyForTextureCapture() {
-        if (ToolbarFeatures.shouldBlockCapturesForAblation()) {
-            return CaptureReadinessResult.notReady(TopToolbarBlockCaptureReason.SCROLL_ABLATION);
-        } else if (mForceTextureCapture) {
+        if (mForceTextureCapture) {
             return CaptureReadinessResult.readyForced();
         } else if (ToolbarFeatures.shouldSuppressCaptures()) {
             return getReadinessStateWithSuppression();

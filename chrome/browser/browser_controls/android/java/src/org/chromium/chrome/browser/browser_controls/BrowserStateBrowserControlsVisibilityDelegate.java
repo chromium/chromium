@@ -131,9 +131,6 @@ public class BrowserStateBrowserControlsVisibilityDelegate extends BrowserContro
             return BrowserControlsState.HIDDEN;
         } else if (mTokenHolder.hasTokens() && !sDisableOverridesForTesting) {
             return BrowserControlsState.SHOWN;
-        } else if (FeatureList.isNativeInitialized()
-                && ChromeFeatureList.isEnabled(ChromeFeatureList.TOOLBAR_SCROLL_ABLATION_ANDROID)) {
-            return BrowserControlsState.SHOWN;
         }
         return BrowserControlsState.BOTH;
     }

@@ -946,9 +946,7 @@ public class CustomTabToolbar extends ToolbarLayout implements View.OnLongClickL
 
     @Override
     public CaptureReadinessResult isReadyForTextureCapture() {
-        if (ToolbarFeatures.shouldBlockCapturesForAblation()) {
-            return CaptureReadinessResult.notReady(TopToolbarBlockCaptureReason.SCROLL_ABLATION);
-        } else if (ToolbarFeatures.shouldSuppressCaptures()) {
+        if (ToolbarFeatures.shouldSuppressCaptures()) {
             CustomTabCaptureStateToken currentToken = generateCaptureStateToken();
             final @ToolbarSnapshotDifference int difference =
                     currentToken.getAnyDifference(mLastCustomTabCaptureStateToken);
