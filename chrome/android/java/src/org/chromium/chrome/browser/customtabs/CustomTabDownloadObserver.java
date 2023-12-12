@@ -13,7 +13,6 @@ import org.chromium.chrome.browser.download.DownloadManagerService;
 import org.chromium.chrome.browser.download.interstitial.DownloadInterstitialCoordinator;
 import org.chromium.chrome.browser.download.interstitial.DownloadInterstitialCoordinatorFactory;
 import org.chromium.chrome.browser.download.interstitial.NewDownloadTab;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.tab.EmptyTabObserver;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabObserver;
@@ -53,8 +52,7 @@ public class CustomTabDownloadObserver extends EmptyTabObserver {
             unregister();
             return;
         }
-        if (ChromeFeatureList.isEnabled(ChromeFeatureList.CCT_NEW_DOWNLOAD_TAB)
-                && navigation.isDownload()) {
+        if (navigation.isDownload()) {
             Runnable urlRegistration =
                     () -> {
                         if (mActivity.isFinishing()
