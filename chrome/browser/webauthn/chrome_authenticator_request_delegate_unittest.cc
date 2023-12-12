@@ -40,6 +40,9 @@
 #include "device/fido/test_callback_receiver.h"
 #include "device/fido/virtual_ctap2_device.h"
 #include "device/fido/virtual_fido_device_authenticator.h"
+#include "extensions/browser/extension_registry.h"
+#include "extensions/common/extension_builder.h"
+#include "extensions/common/permissions/permissions_data.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
@@ -503,32 +506,174 @@ TEST_F(ChromeAuthenticatorRequestDelegateTest, ConditionalUI) {
   }
 }
 
-TEST_F(ChromeAuthenticatorRequestDelegateTest,
-       OverrideValidateDomainAndRelyingPartyIDTest) {
-  constexpr char kTestExtensionOrigin[] = "chrome-extension://abcdef";
-  static const struct {
-    std::string rp_id;
-    std::string origin;
-    bool expected;
-  } kTests[] = {
-      {"example.com", "https://example.com", false},
-      {"foo.com", "https://example.com", false},
-      {"abcdef", kTestExtensionOrigin, true},
-      {"abcdefg", kTestExtensionOrigin, false},
-      {"example.com", kTestExtensionOrigin, false},
-  };
+constexpr char kExtensionId[] = "extension-id";
+constexpr char kExtensionOrigin[] = "chrome-extension://extension-id";
 
-  ChromeWebAuthenticationDelegate delegate;
-  for (const auto& test : kTests) {
-    EXPECT_EQ(delegate.OverrideCallerOriginAndRelyingPartyIdValidation(
-                  GetBrowserContext(), url::Origin::Create(GURL(test.origin)),
-                  test.rp_id),
-              test.expected);
+typedef struct {
+  const char* pattern;
+  const char* rp_id;
+} PatternRpIdPair;
+
+constexpr PatternRpIdPair kValidRelyingPartyTestCases[] = {
+    // Extensions are always allowed to claim their own origins.
+    {"", kExtensionId},
+
+    {"<all_urls>", "google.com"},
+    {"https://*/*", "google.com"},
+    {"https://*.google.com/", "google.com"},
+    {"https://*.subdomain.google.com/", "google.com"},
+
+    // The rules below are a sanity check to verify that the implementation
+    // matches webauthn rules and are copied from
+    // content/browser/webauth/authenticator_impl_unittest.cc.
+    {"http://localhost/", "localhost"},
+    {"https://foo.bar.google.com/", "foo.bar.google.com"},
+    {"https://foo.bar.google.com/", "bar.google.com"},
+    {"https://foo.bar.google.com/", "google.com"},
+    {"https://earth.login.awesomecompany/", "login.awesomecompany"},
+    {"https://google.com:1337/", "google.com"},
+    {"https://google.com./", "google.com"},
+    {"https://google.com./", "google.com."},
+    {"https://google.com../", "google.com.."},
+    {"https://.google.com/", "google.com"},
+    {"https://..google.com/", "google.com"},
+    {"https://.google.com/", ".google.com"},
+    {"https://..google.com/", ".google.com"},
+    {"https://accounts.google.com/", ".google.com"},
+};
+
+constexpr PatternRpIdPair kInvalidRelyingPartyTestCases[] = {
+    // Extensions are not allowed to claim RP IDs belonging to other extensions.
+    {"chrome-extension://some-other-extension/",
+     "chrome-extension://some-other-extension/"},
+    {"chrome-extension://some-other-extension/", "some-other-extension"},
+
+    // Extensions are not allowed to claim RP IDs matching eTLDs, even if they
+    // have host permissions over their origins.
+    {"<all_urls>", "com"},
+    {"https://*/*", "com"},
+    {"https://com/", "com"},
+
+    // Single component domains are considered eTLDs, even if not on the PSL.
+    {"https://myawesomedomain/", "myawesomedomain"},
+
+    // The rules below are a sanity check to verify that the implementation
+    // matches webauthn rules and are copied from
+    // content/browser/webauth/authenticator_impl_unittest.cc.
+    {"https://google.com/", "com"},
+    {"http://google.com/", "google.com"},
+    {"http://myawesomedomain/", "myawesomedomain"},
+    {"https://google.com/", "foo.bar.google.com"},
+    {"http://myawesomedomain/", "randomdomain"},
+    {"https://myawesomedomain/", "randomdomain"},
+    {"https://notgoogle.com/", "google.com)"},
+    {"https://not-google.com/", "google.com)"},
+    {"https://evil.appspot.com/", "appspot.com"},
+    {"https://evil.co.uk/", "co.uk"},
+    // TODO(nsatragno): URLPattern erroneously trims trailing dots. Fix
+    // CanonicalizeHostForMatching and uncomment this line.
+    // {"https://google.com/", "google.com."},
+    {"https://google.com/", "google.com.."},
+    {"https://google.com/", ".google.com"},
+    {"https://google.com../", "google.com"},
+    {"https://.com/", "com."},
+    {"https://.co.uk/", "co.uk."},
+    {"https://1.2.3/", "1.2.3"},
+    {"https://1.2.3/", "2.3"},
+    {"https://127.0.0.1/", "127.0.0.1"},
+    {"https://127.0.0.1/", "27.0.0.1"},
+    {"https://127.0.0.1/", ".0.0.1"},
+    {"https://127.0.0.1/", "0.0.1"},
+    {"https://[::127.0.0.1]/", "127.0.0.1"},
+    {"https://[::127.0.0.1]/", "[127.0.0.1]"},
+    {"https://[::1]/", "1"},
+    {"https://[::1]/", "1]"},
+    {"https://[::1]/", "::1"},
+    {"https://[::1]/", "[::1]"},
+    {"https://[1::1]/", "::1"},
+    {"https://[1::1]/", "::1]"},
+    {"https://[1::1]/", "[::1]"},
+    {"http://google.com:443/", "google.com"},
+    {"data:google.com/", "google.com"},
+    {"data:text/html,google.com/", "google.com"},
+    {"ws://google.com/", "google.com"},
+    {"ftp://google.com/", "google.com"},
+    {"file://google.com/", "google.com"},
+    {"wss://google.com/", "google.com"},
+    {"data:,/", ""},
+    {"https://google.com/", ""},
+    {"ws://google.com/", ""},
+    {"wss://google.com/", ""},
+    {"ftp://google.com/", ""},
+    {"file://google.com/", ""},
+    {"https://login.awesomecompany/", "awesomecompany"},
+};
+
+// Tests that an extension origin can claim relying party IDs it has permissions
+// for.
+TEST_F(ChromeAuthenticatorRequestDelegateTest,
+       OverrideValidateDomainAndRelyingPartyIDTest_ExtensionValidCases) {
+  for (const auto& test : kValidRelyingPartyTestCases) {
+    scoped_refptr<const extensions::Extension> extension =
+        extensions::ExtensionBuilder("Extension name")
+            .SetID(kExtensionId)
+            .AddPermission(test.pattern)
+            .Build();
+    extensions::ExtensionRegistry::Get(browser_context())
+        ->AddEnabled(extension);
+
+    ChromeWebAuthenticationDelegate delegate;
+    SCOPED_TRACE(::testing::Message() << "rp_id=" << test.rp_id);
+    SCOPED_TRACE(::testing::Message() << "pattern=" << test.pattern);
+    EXPECT_TRUE(delegate.OverrideCallerOriginAndRelyingPartyIdValidation(
+        GetBrowserContext(), url::Origin::Create(GURL(kExtensionOrigin)),
+        test.rp_id));
   }
 }
 
+// Tests that an extension origin cannot claim relying party IDs it does not
+// have permissions for.
+TEST_F(ChromeAuthenticatorRequestDelegateTest,
+       OverrideValidateDomainAndRelyingPartyIDTest_ExtensionInvalidCases) {
+  for (const auto& test : kInvalidRelyingPartyTestCases) {
+    scoped_refptr<const extensions::Extension> extension =
+        extensions::ExtensionBuilder("Extension name")
+            .SetID(kExtensionId)
+            .AddPermission(test.pattern)
+            .Build();
+    extensions::ExtensionRegistry::Get(browser_context())
+        ->AddEnabled(extension);
+
+    ChromeWebAuthenticationDelegate delegate;
+    SCOPED_TRACE(::testing::Message() << "rp_id=" << test.rp_id);
+    SCOPED_TRACE(::testing::Message() << "pattern=" << test.pattern);
+    EXPECT_FALSE(delegate.OverrideCallerOriginAndRelyingPartyIdValidation(
+        GetBrowserContext(), url::Origin::Create(GURL(kExtensionOrigin)),
+        test.rp_id));
+  }
+}
+
+// Tests that OverrideCallerOriginAndRelyingPartyIdValidation returns false for
+// chrome-extension origins that don't match an active extension.
+TEST_F(ChromeAuthenticatorRequestDelegateTest,
+       OverrideValidateDomainAndRelyingPartyIDTest_ExtensionNotFound) {
+  ChromeWebAuthenticationDelegate delegate;
+  EXPECT_FALSE(delegate.OverrideCallerOriginAndRelyingPartyIdValidation(
+      GetBrowserContext(), url::Origin::Create(GURL(kExtensionOrigin)),
+      kExtensionId));
+}
+
+// Tests that OverrideCallerOriginAndRelyingPartyIdValidation returns false for
+// web origins.
+TEST_F(ChromeAuthenticatorRequestDelegateTest,
+       OverrideValidateDomainAndRelyingPartyIDTest_WebOrigin) {
+  ChromeWebAuthenticationDelegate delegate;
+  EXPECT_FALSE(delegate.OverrideCallerOriginAndRelyingPartyIdValidation(
+      GetBrowserContext(), url::Origin::Create(GURL("https://google.com")),
+      kExtensionId));
+}
+
 TEST_F(ChromeAuthenticatorRequestDelegateTest, MaybeGetRelyingPartyIdOverride) {
-  constexpr char kTestExtensionOrigin[] = "chrome-extension://abcdef";
   ChromeWebAuthenticationDelegate delegate;
   static const struct {
     std::string rp_id;
@@ -537,8 +682,8 @@ TEST_F(ChromeAuthenticatorRequestDelegateTest, MaybeGetRelyingPartyIdOverride) {
   } kTests[] = {
       {"example.com", "https://example.com", absl::nullopt},
       {"foo.com", "https://example.com", absl::nullopt},
-      {"abcdef", kTestExtensionOrigin, kTestExtensionOrigin},
-      {"example.com", kTestExtensionOrigin, kTestExtensionOrigin},
+      {"example.com", kExtensionOrigin, absl::nullopt},
+      {kExtensionId, kExtensionOrigin, kExtensionOrigin},
   };
   for (const auto& test : kTests) {
     EXPECT_EQ(delegate.MaybeGetRelyingPartyIdOverride(

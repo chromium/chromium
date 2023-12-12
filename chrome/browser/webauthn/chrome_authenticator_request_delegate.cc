@@ -67,13 +67,16 @@
 #include "device/fido/fido_types.h"
 #include "device/fido/public_key_credential_descriptor.h"
 #include "device/fido/public_key_credential_user_entity.h"
+#include "extensions/browser/extension_registry.h"
 #include "extensions/common/constants.h"
+#include "extensions/common/permissions/permissions_data.h"
 #include "net/base/url_util.h"
 #include "third_party/icu/source/common/unicode/locid.h"
 #include "third_party/icu/source/i18n/unicode/timezone.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/window_open_disposition.h"
 #include "ui/views/widget/widget.h"
+#include "url/url_util.h"
 
 #if BUILDFLAG(IS_MAC)
 #include "chrome/browser/webauthn/chrome_authenticator_request_delegate_mac.h"
@@ -153,6 +156,70 @@ void FilterGoogleAuthPasskeys(
   });
 }
 
+// Returns true if |extension| is allowed to create and assert |rp_id|.
+bool ExtensionCanAssertRpId(const extensions::Extension& extension,
+                            const std::string& rp_id) {
+  // Extensions are always allowed to assert their own extension identifier.
+  // This has special handling in
+  // ChromeWebAuthenticationDelegate::MaybeGetRelyingPartyIdOverride, the RP ID
+  // will be prefixed with the extension scheme to isolate it from web origins.
+  if (extension.id() == rp_id) {
+    return true;
+  }
+  if (!base::FeatureList::IsEnabled(
+          device::kAllowExtensionsToSetWebAuthnRpIds)) {
+    return false;
+  }
+
+  // Extensions may not claim eTLDs as RP IDs, even if WebAuthn does not
+  // forbid origins from doing so if they are eTLDs themselves.
+  if (!net::registry_controlled_domains::HostHasRegistryControlledDomain(
+          base::TrimString(rp_id, ".", base::TrimPositions::TRIM_TRAILING),
+          net::registry_controlled_domains::INCLUDE_UNKNOWN_REGISTRIES,
+          net::registry_controlled_domains::INCLUDE_PRIVATE_REGISTRIES) &&
+      !net::HostStringIsLocalhost(rp_id)) {
+    return false;
+  }
+
+  // An extension should be able to assert a WebAuthn RP ID if it has host
+  // permissions over any host that can assert that RP ID. This code duplicates
+  // some of the logic on content/public/browser/webauthn_security_utils.h.
+  // https://w3c.github.io/webauthn/#relying-party-identifier
+  for (const URLPattern& pattern :
+       extension.permissions_data()->active_permissions().explicit_hosts()) {
+    // Only https hosts and localhost are allowed to assert RP IDs. By design,
+    // this means extensions cannot claim RP IDs for other extensions.
+    if (!pattern.MatchesScheme(url::kHttpsScheme) &&
+        !(pattern.MatchesScheme(url::kHttpScheme) &&
+          net::HostStringIsLocalhost(pattern.host()))) {
+      continue;
+    }
+    // IP hosts are not allowed to assert RP IDs.
+    if (url::HostIsIPAddress(pattern.host())) {
+      continue;
+    }
+    // If the pattern matches the RP ID, then it is allowed to assert it.
+    // Pattern                   RP ID                     Allowed?
+    // *.com                     example.com               Yes
+    // example.com               example.com               Yes
+    // *.example.com             subdomain.example.com     Yes
+    if (pattern.MatchesHost(rp_id)) {
+      return true;
+    }
+    // If the pattern matchens any valid subdomain of the RP ID, then it is
+    // allowed to assert it, since subdomains can assert parent components up to
+    // eTLD+1 on WebAuthn.
+    // Pattern                   RP ID                     Allowed?
+    // subdomain.example.com     example.com               Yes
+    // *.subdomain.example.com   example.com               Yes
+    // example.com               subdomain.example.com     No
+    if (url::DomainIs(pattern.host(), rp_id)) {
+      return true;
+    }
+  }
+  return false;
+}
+
 #if BUILDFLAG(IS_MAC)
 const char kWebAuthnTouchIdMetadataSecretPrefName[] =
     "webauthn.touchid.metadata_secret";
@@ -228,10 +295,19 @@ bool ChromeWebAuthenticationDelegate::
         const url::Origin& caller_origin,
         const std::string& relying_party_id) {
   // Allow chrome-extensions:// origins to make WebAuthn requests.
-  // `MaybeGetRelyingPartyId` will override the RP ID to use when processing
-  // requests from extensions.
-  return caller_origin.scheme() == extensions::kExtensionScheme &&
-         caller_origin.host() == relying_party_id;
+  // `MaybeGetRelyingPartyId` will override the RP ID if it matches the
+  // extension origin.
+  if (caller_origin.scheme() != extensions::kExtensionScheme) {
+    return false;
+  }
+  const extensions::Extension* extension =
+      extensions::ExtensionRegistry::Get(browser_context)
+          ->enabled_extensions()
+          .GetByID(caller_origin.host());
+  if (!extension) {
+    return false;
+  }
+  return ExtensionCanAssertRpId(*extension, relying_party_id);
 }
 
 bool ChromeWebAuthenticationDelegate::OriginMayUseRemoteDesktopClientOverride(
@@ -286,13 +362,12 @@ absl::optional<std::string>
 ChromeWebAuthenticationDelegate::MaybeGetRelyingPartyIdOverride(
     const std::string& claimed_relying_party_id,
     const url::Origin& caller_origin) {
-  // Otherwise, allow extensions to use WebAuthn and map their origins
-  // directly to RP IDs.
-  if (caller_origin.scheme() == extensions::kExtensionScheme) {
-    // `OverrideCallerOriginAndRelyingPartyIdValidation' ensures an extension
-    // must only use the extension identifier as the RP ID, no flexibility is
-    // permitted. When interacting with authenticators, however, we use the
-    // whole origin to avoid collisions with the RP ID space for HTTPS origins.
+  // Extensions may claim their origin as an RP ID. In that case, we use the
+  // whole origin to avoid collisions with the RP ID space for HTTPS origins.
+  // Extensions may not claim other extensions RP IDs, even if they have host
+  // permissions on them.
+  if (caller_origin.scheme() == extensions::kExtensionScheme &&
+      claimed_relying_party_id == caller_origin.host()) {
     return caller_origin.Serialize();
   }
 

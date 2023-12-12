@@ -228,9 +228,11 @@ IN_PROC_BROWSER_TEST_F(WebAuthnBrowserTest, ChromeExtensions) {
   WriteFile(temp_dir.GetPath().AppendASCII(kPageFile), kContents,
             sizeof(kContents) - 1);
 
+  static constexpr char kExtensionSite[] = "https://extension-site.com/";
   extensions::ExtensionBuilder builder("test");
   builder.SetPath(temp_dir.GetPath())
       .SetVersion("1.0")
+      .AddPermission(kExtensionSite)
       .SetLocation(extensions::mojom::ManifestLocation::kExternalPolicyDownload)
       .SetManifestKey("web_accessible_resources", std::move(resources));
 
@@ -256,7 +258,26 @@ IN_PROC_BROWSER_TEST_F(WebAuthnBrowserTest, ChromeExtensions) {
       content::EvalJs(browser()->tab_strip_model()->GetActiveWebContents(),
                       kGetAssertionCredID1234));
 
-  static constexpr char kMakeCredentialCrossDomain[] = R"((() => {
+  static constexpr char kMakeCredentialCrossDomainWithHostPerms[] = R"((() => {
+  return navigator.credentials.create({ publicKey: {
+    rp: { id: "extension-site.com", name: "" },
+    user: { id: new Uint8Array([0]), name: "foo", displayName: "" },
+    pubKeyCredParams: [{type: "public-key", alg: -7}],
+    challenge: new Uint8Array([0]),
+    timeout: 10000,
+    userVerification: 'discouraged',
+  }}).then(c => 'webauthn: OK',
+           e => 'error ' + e);
+})())";
+
+  // This should work as the extension has host permissions over the site.
+  EXPECT_EQ(
+      content::EvalJs(browser()->tab_strip_model()->GetActiveWebContents(),
+                      kMakeCredentialCrossDomainWithHostPerms)
+          .ExtractString(),
+      "webauthn: OK");
+
+  static constexpr char kMakeCredentialCrossDomainNoHostPerms[] = R"((() => {
   return navigator.credentials.create({ publicKey: {
     rp: { id: "example.com", name: "" },
     user: { id: new Uint8Array([0]), name: "foo", displayName: "" },
@@ -273,7 +294,7 @@ IN_PROC_BROWSER_TEST_F(WebAuthnBrowserTest, ChromeExtensions) {
   // system.
   EXPECT_THAT(
       content::EvalJs(browser()->tab_strip_model()->GetActiveWebContents(),
-                      kMakeCredentialCrossDomain)
+                      kMakeCredentialCrossDomainNoHostPerms)
           .ExtractString(),
       testing::HasSubstr("Public-key credentials are only available to"));
 }
