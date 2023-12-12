@@ -61,7 +61,6 @@ BASE_DECLARE_FEATURE(kCCTPostMessageAPI);
 BASE_DECLARE_FEATURE(kCCTPrefetchDelayShowOnStart);
 BASE_DECLARE_FEATURE(kCCTRealTimeEngagementSignals);
 BASE_DECLARE_FEATURE(kCCTRedirectPreconnect);
-BASE_DECLARE_FEATURE(kCCTRemoveRemoteViewIds);
 BASE_DECLARE_FEATURE(kCCTReportParallelRequestStatus);
 BASE_DECLARE_FEATURE(kCCTResizableForThirdParties);
 BASE_DECLARE_FEATURE(kCCTResizableSideSheet);

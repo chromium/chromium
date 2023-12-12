@@ -193,7 +193,6 @@ public abstract class ChromeFeatureList {
     public static final String CCT_PREFETCH_DELAY_SHOW_ON_START = "CCTPrefetchDelayShowOnStart";
     public static final String CCT_REAL_TIME_ENGAGEMENT_SIGNALS = "CCTRealTimeEngagementSignals";
     public static final String CCT_REDIRECT_PRECONNECT = "CCTRedirectPreconnect";
-    public static final String CCT_REMOVE_REMOTE_VIEW_IDS = "CCTRemoveRemoteViewIds";
     public static final String CCT_REPORT_PARALLEL_REQUEST_STATUS =
             "CCTReportParallelRequestStatus";
     public static final String CCT_RESIZABLE_FOR_THIRD_PARTIES = "CCTResizableForThirdParties";
@@ -530,8 +529,6 @@ public abstract class ChromeFeatureList {
     public static final CachedFlag sCctMinimized = new CachedFlag(CCT_MINIMIZED, false);
     public static final CachedFlag sCctPageInsightsHub =
             new CachedFlag(CCT_PAGE_INSIGHTS_HUB, false);
-    public static final CachedFlag sCctRemoveRemoteViewIds =
-            new CachedFlag(CCT_REMOVE_REMOTE_VIEW_IDS, true);
     public static final CachedFlag sCctResizableForThirdParties =
             new CachedFlag(CCT_RESIZABLE_FOR_THIRD_PARTIES, true);
     public static final CachedFlag sCctResizableSideSheet =
@@ -662,7 +659,6 @@ public abstract class ChromeFeatureList {
                     sCctIntentFeatureOverrides,
                     sCctMinimized,
                     sCctPageInsightsHub,
-                    sCctRemoveRemoteViewIds,
                     sCctResizableForThirdParties,
                     sCctResizableSideSheet,
                     sCctResizableSideSheetForThirdParties,

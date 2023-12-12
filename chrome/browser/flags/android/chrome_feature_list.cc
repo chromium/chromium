@@ -205,7 +205,6 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &kCCTPrefetchDelayShowOnStart,
     &kCCTRealTimeEngagementSignals,
     &kCCTRedirectPreconnect,
-    &kCCTRemoveRemoteViewIds,
     &kCCTReportParallelRequestStatus,
     &kCCTResizableForThirdParties,
     &kCCTResizableSideSheet,
@@ -597,10 +596,6 @@ BASE_FEATURE(kCCTRealTimeEngagementSignals,
 
 BASE_FEATURE(kCCTRedirectPreconnect,
              "CCTRedirectPreconnect",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
-BASE_FEATURE(kCCTRemoveRemoteViewIds,
-             "CCTRemoveRemoteViewIds",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kCCTReportParallelRequestStatus,
