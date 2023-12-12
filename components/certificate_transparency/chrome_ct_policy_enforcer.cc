@@ -103,7 +103,7 @@ ChromeCTPolicyEnforcer::~ChromeCTPolicyEnforcer() {}
 CTPolicyCompliance ChromeCTPolicyEnforcer::CheckCompliance(
     net::X509Certificate* cert,
     const net::ct::SCTList& verified_scts,
-    const net::NetLogWithSource& net_log) {
+    const net::NetLogWithSource& net_log) const {
   // If the build is not timely, no certificate is considered compliant
   // with CT policy. The reasoning is that, for example, a log might
   // have been pulled and is no longer considered valid; thus, a client

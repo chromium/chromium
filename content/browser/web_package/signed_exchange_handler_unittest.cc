@@ -161,7 +161,7 @@ class GMockCertVerifier : public net::CertVerifier {
 
 class MockCTPolicyEnforcer : public net::CTPolicyEnforcer {
  public:
-  MOCK_METHOD3(
+  MOCK_CONST_METHOD3(
       CheckCompliance,
       net::ct::CTPolicyCompliance(net::X509Certificate* cert,
                                   const net::ct::SCTList& verified_scts,

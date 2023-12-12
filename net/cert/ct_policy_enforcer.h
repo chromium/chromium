@@ -38,7 +38,7 @@ class NET_EXPORT CTPolicyEnforcer {
   virtual ct::CTPolicyCompliance CheckCompliance(
       X509Certificate* cert,
       const ct::SCTList& verified_scts,
-      const NetLogWithSource& net_log) = 0;
+      const NetLogWithSource& net_log) const = 0;
 };
 
 // A default implementation of Certificate Transparency policies that is
@@ -53,7 +53,7 @@ class NET_EXPORT DefaultCTPolicyEnforcer : public net::CTPolicyEnforcer {
   ct::CTPolicyCompliance CheckCompliance(
       X509Certificate* cert,
       const ct::SCTList& verified_scts,
-      const NetLogWithSource& net_log) override;
+      const NetLogWithSource& net_log) const override;
 };
 
 }  // namespace net

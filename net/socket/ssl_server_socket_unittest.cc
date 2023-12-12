@@ -115,7 +115,7 @@ class MockCTPolicyEnforcer : public CTPolicyEnforcer {
   ct::CTPolicyCompliance CheckCompliance(
       X509Certificate* cert,
       const ct::SCTList& verified_scts,
-      const NetLogWithSource& net_log) override {
+      const NetLogWithSource& net_log) const override {
     return ct::CTPolicyCompliance::CT_POLICY_COMPLIES_VIA_SCTS;
   }
 };

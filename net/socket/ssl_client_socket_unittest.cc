@@ -585,10 +585,10 @@ class DeleteSocketCallback : public TestCompletionCallbackBase {
 // A mock CTPolicyEnforcer that returns a custom verification result.
 class MockCTPolicyEnforcer : public CTPolicyEnforcer {
  public:
-  MOCK_METHOD3(CheckCompliance,
-               ct::CTPolicyCompliance(X509Certificate* cert,
-                                      const ct::SCTList&,
-                                      const NetLogWithSource&));
+  MOCK_CONST_METHOD3(CheckCompliance,
+                     ct::CTPolicyCompliance(X509Certificate* cert,
+                                            const ct::SCTList&,
+                                            const NetLogWithSource&));
 };
 
 class MockRequireCTDelegate : public TransportSecurityState::RequireCTDelegate {

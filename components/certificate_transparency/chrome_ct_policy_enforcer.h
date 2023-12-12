@@ -65,7 +65,7 @@ class COMPONENT_EXPORT(CERTIFICATE_TRANSPARENCY) ChromeCTPolicyEnforcer
   net::ct::CTPolicyCompliance CheckCompliance(
       net::X509Certificate* cert,
       const net::ct::SCTList& verified_scts,
-      const net::NetLogWithSource& net_log) override;
+      const net::NetLogWithSource& net_log) const override;
 
   // Updates the list of logs used for compliance checks. |disqualified_logs|
   // is a map of log ID to disqualification date.
