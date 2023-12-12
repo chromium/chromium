@@ -1127,12 +1127,13 @@ void VideoEncoder::OnEncodeDone(Request* request, media::EncoderStatus status) {
 void VideoEncoder::ProcessConfigure(Request* request) {
   DCHECK_NE(state_.AsEnum(), V8CodecState::Enum::kClosed);
   DCHECK_EQ(request->type, Request::Type::kConfigure);
-  DCHECK(active_config_);
+  DCHECK(request->config);
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   request->StartTracing();
 
   blocking_request_in_progress_ = request;
 
+  active_config_ = request->config;
   String js_error_message;
   if (!VerifyCodecSupport(active_config_, &js_error_message)) {
     QueueHandleError(MakeGarbageCollected<DOMException>(
@@ -1156,7 +1157,7 @@ void VideoEncoder::ProcessConfigure(Request* request) {
 void VideoEncoder::ProcessReconfigure(Request* request) {
   DCHECK_EQ(state_.AsEnum(), V8CodecState::Enum::kConfigured);
   DCHECK_EQ(request->type, Request::Type::kReconfigure);
-  DCHECK(active_config_);
+  DCHECK(request->config);
   DCHECK(media_encoder_);
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   request->StartTracing();
@@ -1200,6 +1201,7 @@ void VideoEncoder::ProcessReconfigure(Request* request) {
       return;
     }
 
+    self->active_config_ = req->config;
     auto output_cb =
         ConvertToBaseRepeatingCallback(WTF::CrossThreadBindRepeating(
             &VideoEncoder::CallOutputCallback,

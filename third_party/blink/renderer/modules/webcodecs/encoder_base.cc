@@ -120,7 +120,7 @@ void EncoderBase<Traits>::configure(const ConfigType* config,
     state_ = V8CodecState(V8CodecState::Enum::kConfigured);
     request->type = Request::Type::kConfigure;
   }
-  active_config_ = parsed_config;
+  request->config = parsed_config;
   EnqueueRequest(request);
 }
 
@@ -457,6 +457,7 @@ void EncoderBase<Traits>::Request::Trace(Visitor* visitor) const {
   visitor->Trace(input);
   visitor->Trace(encodeOpts);
   visitor->Trace(resolver);
+  visitor->Trace(config);
 }
 
 template <typename Traits>

@@ -114,6 +114,7 @@ class MODULES_EXPORT EncoderBase
     Member<InputType> input;                     // used by kEncode
     Member<const EncodeOptionsType> encodeOpts;  // used by kEncode
     Member<ScriptPromiseResolver> resolver;      // used by kFlush
+    Member<InternalConfigType> config;  // used by kConfigure and kReconfigure
 
 #if DCHECK_IS_ON()
     // Tracks the state of tracing for debug purposes.
