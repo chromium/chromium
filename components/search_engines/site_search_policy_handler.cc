@@ -66,6 +66,7 @@ base::Value SiteSearchDictFromPolicyValue(
   dict.Set(DefaultSearchManager::kCreatedByPolicy,
            static_cast<int>(TemplateURLData::CreatedByPolicy::kSiteSearch));
   dict.Set(DefaultSearchManager::kEnforcedByPolicy, false);
+  dict.Set(DefaultSearchManager::kIsActive, true);
 
   // TODO(b/307543761): Create a new field `featured_by_policy` and setting
   // according to the corresponding dictionary field.

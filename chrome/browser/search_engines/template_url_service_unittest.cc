@@ -139,6 +139,7 @@ std::unique_ptr<TemplateURLData> CreateTestSiteSearchEntry(
   data->SetURL(std::string("https://") + keyword + ".com/q={searchTerms}");
   data->created_by_policy = TemplateURLData::CreatedByPolicy::kSiteSearch;
   data->enforced_by_policy = false;
+  data->is_active = TemplateURLData::ActiveStatus::kTrue;
   data->favicon_url =
       GURL(std::string("https://") + keyword + ".com/favicon.ico");
   data->safe_for_autoreplace = false;

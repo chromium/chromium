@@ -284,6 +284,7 @@ testing::Matcher<const base::Value&> IsSiteSearchEntry(TestProvider test_case) {
           DefaultSearchManager::kCreatedByPolicy,
           static_cast<int>(TemplateURLData::CreatedByPolicy::kSiteSearch)),
       HasBooleanField(DefaultSearchManager::kEnforcedByPolicy, false),
+      HasBooleanField(DefaultSearchManager::kIsActive, true),
       HasStringField(DefaultSearchManager::kFaviconURL, test_case.favicon),
       HasBooleanField(DefaultSearchManager::kSafeForAutoReplace, false),
       HasDoubleField(DefaultSearchManager::kDateCreated),
