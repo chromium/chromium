@@ -124,7 +124,7 @@ def _create_gn_config_node(name, gn_args = {}, configs = [], args_file = "", bui
 
     return gn_config_key
 
-def _config(name = None, args = {}, configs = [], args_file = ""):
+def _config(*, name = None, args = {}, configs = [], args_file = ""):
     """Define a GN config.
 
     This method can be used to create commonly used GN config by setting
