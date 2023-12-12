@@ -880,8 +880,9 @@ IN_PROC_BROWSER_TEST_P(InputMethodLacrosBrowserTest,
   EXPECT_FALSE(event_listener.HasMessages());
 }
 
+// TODO(crbug.com/1510768): Reenable once fixed.
 IN_PROC_BROWSER_TEST_P(InputMethodLacrosBrowserTest,
-                       SetCompositionUpdatesSurroundingText) {
+                       DISABLED_SetCompositionUpdatesSurroundingText) {
   mojo::Remote<InputMethodTestInterface> input_method =
       BindInputMethodTestInterface(GetParam());
   if (!input_method.is_bound()) {
