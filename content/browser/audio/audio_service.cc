@@ -46,6 +46,8 @@ namespace content {
 
 namespace {
 
+audio::mojom::AudioService* g_service_override = nullptr;
+
 bool IsAudioServiceOutOfProcess() {
   return !base::CommandLine::ForCurrentProcess()->HasSwitch(
              switches::kSingleProcess) &&
@@ -176,6 +178,9 @@ uint32_t ScanEdidBitstreams() {
 
 audio::mojom::AudioService& GetAudioService() {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  if (g_service_override) {
+    return *g_service_override;
+  }
 
   // NOTE: We use sequence-local storage slot not because we support access from
   // any sequence, but to limit the lifetime of this Remote to the lifetime of
@@ -206,6 +211,13 @@ audio::mojom::AudioService& GetAudioService() {
     remote.reset_on_disconnect();
   }
   return *remote.get();
+}
+
+base::AutoReset<audio::mojom::AudioService*>
+OverrideAudioServiceForTesting(  // IN-TEST
+    audio::mojom::AudioService* service) {
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  return {&g_service_override, service};
 }
 
 std::unique_ptr<media::AudioSystem> CreateAudioSystemForAudioService() {

@@ -6,6 +6,10 @@ source_set("test_support") {
   testonly = true
 
   sources = [
+    "fake_audio_service.cc",
+    "fake_audio_service.h",
+    "fake_audio_system_info.cc",
+    "fake_audio_system_info.h",
     "fake_video_capture_service.cc",
     "fake_video_capture_service.h",
     "fake_video_source_provider.cc",
@@ -14,6 +18,7 @@ source_set("test_support") {
 
   deps = [
     "//base",
+    "//services/audio/public/cpp:test_support",
     "//services/video_capture/public/mojom",
   ]
 }
