@@ -25,7 +25,7 @@
 
 BubbleSyncPromoSigninButtonView::BubbleSyncPromoSigninButtonView(
     views::Button::PressedCallback callback,
-    bool prominent)
+    ui::ButtonStyle button_style)
     : account_(std::nullopt) {
   views::Builder<BubbleSyncPromoSigninButtonView>(this)
       .SetUseDefaultFillLayout(true)
@@ -35,7 +35,7 @@ BubbleSyncPromoSigninButtonView::BubbleSyncPromoSigninButtonView(
               .SetCallback(std::move(callback))
               .SetText(
                   l10n_util::GetStringUTF16(IDS_PROFILES_DICE_SIGNIN_BUTTON))
-              .SetProminent(prominent))
+              .SetStyle(button_style))
       .BuildChildren();
 }
 

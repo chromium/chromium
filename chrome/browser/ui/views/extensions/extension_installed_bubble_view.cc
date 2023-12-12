@@ -88,7 +88,7 @@ std::unique_ptr<views::View> CreateSigninPromoView(
       profile, delegate,
       signin_metrics::AccessPoint::ACCESS_POINT_EXTENSION_INSTALL_BUBBLE,
       IDS_EXTENSION_INSTALLED_DICE_PROMO_SYNC_MESSAGE,
-      /*dice_signin_button_prominent=*/true);
+      ui::ButtonStyle::kProminent);
 }
 #endif
 

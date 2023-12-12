@@ -21,13 +21,11 @@
 class BubbleSyncPromoSigninButtonView : public views::View {
  public:
   METADATA_HEADER(BubbleSyncPromoSigninButtonView);
-  // Create a non-personalized sign-in button.
+  // Create a non-personalized sign-in button with |button_style|.
   // |callback| is called every time the user interacts with this button.
-  // The button is prominent by default but can be made non-prominent by setting
-  // |prominent| to false.
   explicit BubbleSyncPromoSigninButtonView(
       views::Button::PressedCallback callback,
-      bool prominent = true);
+      ui::ButtonStyle button_style);
 
   // Creates a sign-in button personalized with the data from |account|.
   // |callback| is called every time the user interacts with this button.

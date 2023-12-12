@@ -532,8 +532,7 @@ void BookmarkBubbleView::ShowBubble(
     bubble->SetFootnoteView(std::make_unique<BubbleSyncPromoView>(
         profile, delegate_ptr,
         signin_metrics::AccessPoint::ACCESS_POINT_BOOKMARK_BUBBLE,
-        IDS_BOOKMARK_DICE_PROMO_SYNC_MESSAGE,
-        /*dice_signin_button_prominent=*/false));
+        IDS_BOOKMARK_DICE_PROMO_SYNC_MESSAGE, ui::ButtonStyle::kDefault));
 #endif
   }
 
