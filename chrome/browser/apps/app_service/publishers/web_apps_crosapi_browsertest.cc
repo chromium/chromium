@@ -350,7 +350,7 @@ IN_PROC_BROWSER_TEST_P(WebAppsPreventCloseCrosapiBrowserTest,
                      update.AllowClose().value() == expected_allow_close;
             },
             !IsPreventCloseEnabled()));
-    waiter.Wait();
+    waiter.Await();
   }
 
   EXPECT_TRUE(ash::ShelfModel::Get()->ItemByID(

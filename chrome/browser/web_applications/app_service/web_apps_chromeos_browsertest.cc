@@ -191,7 +191,7 @@ IN_PROC_BROWSER_TEST_P(WebAppsPreventCloseChromeOsBrowserTest, CheckMenuModel) {
                    update.AllowClose().value() == expected_allow_close;
           },
           !IsPreventCloseEnabled()));
-  waiter.Wait();
+  waiter.Await();
 
   ash::ShelfModel* const shelf_model = ash::ShelfModel::Get();
   ASSERT_TRUE(shelf_model);

@@ -243,7 +243,7 @@ class RemoteAppsManagerBrowsertest
     ExpectImageDownloaderDownload(icon_url, icon);
     apps::AppUpdateWaiter waiter(profile_, app_id, IconChanged());
     AddApp(source_id, name, folder_id, icon_url, add_to_front);
-    waiter.Wait();
+    waiter.Await();
   }
 
   void AddAppAssertError(const std::string& source_id,

@@ -19,11 +19,14 @@ class Profile;
 
 namespace apps {
 
+// Waits for a given AppType to be initialized in App Service.
 class AppTypeInitializationWaiter : public apps::AppRegistryCache::Observer {
  public:
   AppTypeInitializationWaiter(Profile* profile, apps::AppType app_type);
   ~AppTypeInitializationWaiter() override;
 
+  // Waits for the app type to be initialized, returns immediately if it is
+  // already initialized.
   void Await(const base::Location& location = base::Location::Current());
 
  private:
@@ -41,120 +44,62 @@ class AppTypeInitializationWaiter : public apps::AppRegistryCache::Observer {
       app_registry_cache_observer_{this};
 };
 
-class AppReadinessWaiter : public apps::AppRegistryCache::Observer {
- public:
-  AppReadinessWaiter(
-      Profile* profile,
-      const std::string& app_id,
-      base::RepeatingCallback<bool(apps::Readiness)> readiness_predicate);
-  AppReadinessWaiter(Profile* profile,
-                     const std::string& app_id,
-                     apps::Readiness readiness = apps::Readiness::kReady);
-  ~AppReadinessWaiter() override;
-
-  void Await(const base::Location& location = base::Location::Current());
-
- private:
-  // apps::AppRegistryCache::Observer:
-  void OnAppUpdate(const apps::AppUpdate& update) override;
-  void OnAppRegistryCacheWillBeDestroyed(
-      apps::AppRegistryCache* cache) override;
-
-  const std::string app_id_;
-  const base::RepeatingCallback<bool(apps::Readiness)> readiness_predicate_;
-  base::RunLoop run_loop_;
-
-  base::ScopedObservation<apps::AppRegistryCache,
-                          apps::AppRegistryCache::Observer>
-      app_registry_cache_observer_{this};
-};
-
-// Waits for the web app's scope in the App Service app cache to match the
-// expected |scope|.
-class WebAppScopeWaiter : public apps::AppRegistryCache::Observer {
- public:
-  WebAppScopeWaiter(Profile* profile, const std::string& app_id, GURL scope);
-  ~WebAppScopeWaiter() override;
-
-  // Waits for the web app's scope in the App Service app cache to match the
-  // expected scope. Returns immediately if the app already has the expected
-  // scope.
-  void Await(const base::Location& location = base::Location::Current());
-
- private:
-  // apps::AppRegistryCache::Observer:
-  void OnAppUpdate(const apps::AppUpdate& update) override;
-  void OnAppRegistryCacheWillBeDestroyed(
-      apps::AppRegistryCache* cache) override;
-
-  bool ContainsExpectedIntentFilter(const apps::AppUpdate& update) const;
-
-  const std::string app_id_;
-  const GURL scope_;
-  base::RunLoop run_loop_;
-
-  base::ScopedObservation<apps::AppRegistryCache,
-                          apps::AppRegistryCache::Observer>
-      app_registry_cache_observer_{this};
-};
-
+// Waits for an app in the App Registry Cache to match an arbitrary condition.
+// See below for specializations for common conditions.
 class AppUpdateWaiter : public apps::AppRegistryCache::Observer {
  public:
   AppUpdateWaiter(
       Profile* profile,
       const std::string& app_id,
-      base::RepeatingCallback<bool(const apps::AppUpdate&)> condition =
-          base::BindRepeating([](const apps::AppUpdate& update) {
-            return true;
-          }));
+      base::RepeatingCallback<bool(const apps::AppUpdate&)> condition);
   ~AppUpdateWaiter() override;
 
-  void Wait();
-
-  // apps::AppRegistryCache::Observer:
-  void OnAppUpdate(const apps::AppUpdate& update) override;
-
-  // apps::AppRegistryCache::Observer:
-  void OnAppRegistryCacheWillBeDestroyed(
-      apps::AppRegistryCache* cache) override;
-
- private:
-  std::string app_id_;
-  base::OnceClosure callback_;
-  base::RepeatingCallback<bool(const apps::AppUpdate&)> condition_;
-  bool condition_met_ = false;
-  base::ScopedObservation<apps::AppRegistryCache,
-                          apps::AppRegistryCache::Observer>
-      app_registry_cache_observation_{this};
-};
-
-// Waits for the app's window mode in the App Service app cache to match the
-// expected |window_mode|.
-class AppWindowModeWaiter : public apps::AppRegistryCache::Observer {
- public:
-  AppWindowModeWaiter(Profile* profile,
-                      const std::string& app_id,
-                      apps::WindowMode window_mode);
-  ~AppWindowModeWaiter() override;
-
-  // Returns immediately if the app already has the expected window mode.
+  // Waits for the condition to match. Returns immediately if it already
+  // matches.
   void Await(const base::Location& location = base::Location::Current());
 
- private:
   // apps::AppRegistryCache::Observer:
   void OnAppUpdate(const apps::AppUpdate& update) override;
   void OnAppRegistryCacheWillBeDestroyed(
       apps::AppRegistryCache* cache) override;
 
-  bool HasExpectedWindowMode(const apps::AppUpdate& update) const;
-
+ private:
   const std::string app_id_;
-  const apps::WindowMode window_mode_;
+  base::RepeatingCallback<bool(const apps::AppUpdate&)> condition_;
   base::RunLoop run_loop_;
 
   base::ScopedObservation<apps::AppRegistryCache,
                           apps::AppRegistryCache::Observer>
       app_registry_cache_observer_{this};
+};
+
+// Waits for the app's Readiness in the App Service app cache to match the
+// expected value.
+class AppReadinessWaiter : public AppUpdateWaiter {
+ public:
+  AppReadinessWaiter(
+      Profile* profile,
+      const std::string& app_id,
+      base::RepeatingCallback<bool(apps::Readiness)> readiness_condition);
+  AppReadinessWaiter(Profile* profile,
+                     const std::string& app_id,
+                     apps::Readiness readiness = apps::Readiness::kReady);
+};
+
+// Waits for the web app's scope in the App Service app cache to match the
+// expected |scope|.
+class WebAppScopeWaiter : public AppUpdateWaiter {
+ public:
+  WebAppScopeWaiter(Profile* profile, const std::string& app_id, GURL scope);
+};
+
+// Waits for the app's window mode in the App Service app cache to match the
+// expected |window_mode|.
+class AppWindowModeWaiter : public AppUpdateWaiter {
+ public:
+  AppWindowModeWaiter(Profile* profile,
+                      const std::string& app_id,
+                      apps::WindowMode window_mode);
 };
 
 }  // namespace apps

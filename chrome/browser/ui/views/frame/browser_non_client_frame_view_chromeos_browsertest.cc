@@ -1365,7 +1365,7 @@ IN_PROC_BROWSER_TEST_F(PreventCloseBrowserNonClientFrameViewChromeOSTest,
           return update.AllowClose().has_value() && update.AllowClose().value();
         }));
     ClearWebAppSettings();
-    waiter.Wait();
+    waiter.Await();
   }
 
   {
