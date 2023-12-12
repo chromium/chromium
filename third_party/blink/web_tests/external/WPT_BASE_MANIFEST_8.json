@@ -393437,6 +393437,12 @@
          []
         ]
        },
+       "locate_nodes": {
+        "__init__.py": [
+         "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+         []
+        ]
+       },
        "navigate": {
         "__init__.py": [
          "c2bf7558f4fe75413f81057c8ab96f31d3fc537f",
@@ -699739,6 +699745,64 @@
        "load": {
         "load.py": [
          "4c2c6e74c53a4129162bf66bb10aef0e71f8cd8b",
+         [
+          null,
+          {}
+         ]
+        ]
+       },
+       "locate_nodes": {
+        "context.py": [
+         "6aac78a48ba08e28944520f682fb7aa223da77b9",
+         [
+          null,
+          {}
+         ]
+        ],
+        "invalid.py": [
+         "d549cf35de281154e79d33fd2174c29943c96868",
+         [
+          null,
+          {}
+         ]
+        ],
+        "locator.py": [
+         "656eaddc1fc40c85050c3e267e45da3e47ed1b54",
+         [
+          null,
+          {}
+         ]
+        ],
+        "max_node_count.py": [
+         "9147fb318326d918d9ea9137abae18f94cdeeeb4",
+         [
+          null,
+          {}
+         ]
+        ],
+        "ownership.py": [
+         "d5450ffc80c8c060d575b7893f8bd8cd179c4c94",
+         [
+          null,
+          {}
+         ]
+        ],
+        "sandbox.py": [
+         "7f9cd9dfd8584bee967d1d070b79a6eb92f31d4f",
+         [
+          null,
+          {}
+         ]
+        ],
+        "serialization_options.py": [
+         "9d7e7a861380b51b15b0c15e18db93559fd5a94f",
+         [
+          null,
+          {}
+         ]
+        ],
+        "start_nodes.py": [
+         "3f46a50642c7c3bba1b8a92884c3a6ab50244a7f",
          [
           null,
           {}
