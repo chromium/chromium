@@ -9,8 +9,6 @@ example_value: 0
 features:
   dynamic_refresh: true
   per_profile: false
-future_on:
-- chrome_os
 items:
 - caption: F11/F12 settings are disabled
   name: Disabled
@@ -34,5 +32,7 @@ schema:
   - 2
   - 3
   type: integer
+supported_on:
+- chrome_os:122-
 tags: []
 type: int-enum
