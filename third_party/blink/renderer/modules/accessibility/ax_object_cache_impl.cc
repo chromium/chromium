@@ -3509,9 +3509,6 @@ void AXObjectCacheImpl::FireTreeUpdatedEventImmediately(
     case TreeUpdateReason::kMarkDirtyFromRemove:
       EnsureMarkDirtyWithCleanLayout(node);
       break;
-    case TreeUpdateReason::kNameAttributeChanged:
-      HandleNameAttributeChangedWithCleanLayout(node);
-      break;
     case TreeUpdateReason::kNodeGainedFocus:
       HandleNodeGainedFocusWithCleanLayout(node);
       break;
@@ -3527,6 +3524,7 @@ void AXObjectCacheImpl::FireTreeUpdatedEventImmediately(
       RemoveValidationMessageObjectWithCleanLayout(node);
       break;
     case TreeUpdateReason::kRoleChangeFromAriaHasPopup:
+    case TreeUpdateReason::kRoleChangeFromImageMapName:
     case TreeUpdateReason::kRoleChangeFromRoleOrType:
       HandleRoleChangeWithCleanLayout(node);
       break;
@@ -4059,7 +4057,7 @@ void AXObjectCacheImpl::HandleAttributeChanged(const QualifiedName& attr_name,
   } else if (attr_name == html_names::kUsemapAttr) {
     DeferTreeUpdate(TreeUpdateReason::kUseMapAttributeChanged, element);
   } else if (attr_name == html_names::kNameAttr) {
-    DeferTreeUpdate(TreeUpdateReason::kNameAttributeChanged, element);
+    HandleNameAttributeChanged(element);
   } else if (attr_name == html_names::kControlsAttr) {
     ChildrenChanged(element);
   } else if (attr_name == html_names::kHrefAttr) {
@@ -4086,16 +4084,26 @@ void AXObjectCacheImpl::HandleUseMapAttributeChangedWithCleanLayout(
     HandleRoleChangeWithCleanLayout(previous_map->ImageElement());
 }
 
-void AXObjectCacheImpl::HandleNameAttributeChangedWithCleanLayout(Node* node) {
+void AXObjectCacheImpl::HandleNameAttributeChanged(Node* node) {
+  HTMLMapElement* map = DynamicTo<HTMLMapElement>(node);
+  if (!map) {
+    return;
+  }
+
   // Changing a map name can alter an image's role and children.
-  // The name has already changed, so we can no longer find the primary image
-  // via the DOM. Use an area child's parent to find the old image.
-  // If the old image was treated as a map, and now isn't, it will take care
-  // of updating any other image that is newly associated with the map,
-  // via AXNodeObject::AddImageMapChildren().
-  if (HTMLMapElement* map = DynamicTo<HTMLMapElement>(node)) {
-    if (AXObject* ax_previous_image = GetAXImageForMap(*map))
-      HandleRoleChangeWithCleanLayout(ax_previous_image->GetNode());
+  // First update any image that may have used the old map name.
+  if (AXObject* ax_previous_image = GetAXImageForMap(*map)) {
+    DeferTreeUpdate(TreeUpdateReason::kRoleChangeFromImageMapName,
+                    ax_previous_image->GetElement());
+  }
+
+  // Then, update any image which may use the new map name.
+  HTMLImageElement* new_image = map->ImageElement();
+  if (new_image) {
+    if (AXObject* obj = Get(new_image)) {
+      DeferTreeUpdate(TreeUpdateReason::kRoleChangeFromImageMapName,
+                      obj->GetElement());
+    }
   }
 }
 

@@ -5439,6 +5439,7 @@ data/accessibility/regression/slot-creation-crash-expected-blink.txt
 data/accessibility/regression/slot-creation-crash.html
 data/accessibility/regression/title-in-shadow-expected-blink.txt
 data/accessibility/regression/title-in-shadow.html
+data/accessibility/regression/workplace.jpg
 data/accessibility/regression/xml-in-iframe-crash.html
 data/accessibility/relations/ignore-duplicate-relation-ids-expected-auralinux.txt
 data/accessibility/relations/ignore-duplicate-relation-ids-expected-win.txt

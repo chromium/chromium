@@ -774,15 +774,15 @@ class MODULES_EXPORT AXObjectCacheImpl
     kMarkDirtyFromHandleLayout = 11,
     kMarkDirtyFromHandleScroll = 12,
     kMarkDirtyFromRemove = 13,
-    kNameAttributeChanged = 14,
-    kNodeGainedFocus = 15,
-    kNodeLostFocus = 16,
-    kPostNotificationFromHandleLoadComplete = 17,
-    kPostNotificationFromHandleLoadStart = 18,
-    kPostNotificationFromHandleScrolledToAnchor = 19,
-    kRemoveValidationMessageObjectFromFocusedUIElement = 20,
-    kRemoveValidationMessageObjectFromValidationMessageObject = 21,
-    kRoleChangeFromAriaHasPopup = 22,
+    kNodeGainedFocus = 14,
+    kNodeLostFocus = 15,
+    kPostNotificationFromHandleLoadComplete = 16,
+    kPostNotificationFromHandleLoadStart = 17,
+    kPostNotificationFromHandleScrolledToAnchor = 18,
+    kRemoveValidationMessageObjectFromFocusedUIElement = 19,
+    kRemoveValidationMessageObjectFromValidationMessageObject = 20,
+    kRoleChangeFromAriaHasPopup = 21,
+    kRoleChangeFromImageMapName = 22,
     kRoleChangeFromRoleOrType = 23,
     kRoleMaybeChangedFromEventListener = 24,
     kRoleMaybeChangedFromHref = 25,
@@ -989,7 +989,7 @@ class MODULES_EXPORT AXObjectCacheImpl
   // call children changed.
   void HandleTextMarkerDataAddedWithCleanLayout(Node*);
   void HandleUseMapAttributeChangedWithCleanLayout(Node*);
-  void HandleNameAttributeChangedWithCleanLayout(Node*);
+  void HandleNameAttributeChanged(Node*);
 
   bool DoesEventListenerImpactIgnoredState(const AtomicString& event_type,
                                            const Node& node) const;

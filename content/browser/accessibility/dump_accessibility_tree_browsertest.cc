@@ -3729,9 +3729,12 @@ IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest, TitleInShadow) {
   RunRegressionTest(FILE_PATH_LITERAL("title-in-shadow.html"));
 }
 
-// TODO(https://crbug.com/1175562): Flaky
-IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest,
-                       DISABLED_ReusedMapChangeMapName) {
+IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest, ReusedMapChangeMapName) {
+  RunRegressionTest(FILE_PATH_LITERAL("reused-map-change-map-name.html"));
+}
+
+IN_PROC_BROWSER_TEST_P(YieldingParserDumpAccessibilityTreeTest,
+                       ReusedMapChangeMapName) {
   RunRegressionTest(FILE_PATH_LITERAL("reused-map-change-map-name.html"));
 }
 
