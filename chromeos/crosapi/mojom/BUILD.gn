@@ -20,6 +20,7 @@ mojom("mojom") {
     "browser_version.mojom",
     "cert_database.mojom",
     "cert_provisioning.mojom",
+    "chaps_service.mojom",
     "chrome_app_kiosk_service.mojom",
     "clipboard.mojom",
     "clipboard_history.mojom",

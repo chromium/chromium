@@ -31,6 +31,7 @@
 #include "chrome/browser/ash/crosapi/browser_version_service_ash.h"
 #include "chrome/browser/ash/crosapi/cert_database_ash.h"
 #include "chrome/browser/ash/crosapi/cert_provisioning_ash.h"
+#include "chrome/browser/ash/crosapi/chaps_service_ash.h"
 #include "chrome/browser/ash/crosapi/chrome_app_kiosk_service_ash.h"
 #include "chrome/browser/ash/crosapi/chrome_app_window_tracker_ash.h"
 #include "chrome/browser/ash/crosapi/clipboard_ash.h"
@@ -211,6 +212,7 @@ CrosapiAsh::CrosapiAsh(CrosapiDependencyRegistry* registry)
           std::make_unique<GuestOsSkForwarderFactoryAsh>()),
       cert_database_ash_(std::make_unique<CertDatabaseAsh>()),
       cert_provisioning_ash_(std::make_unique<CertProvisioningAsh>()),
+      chaps_service_ash_(std::make_unique<ChapsServiceAsh>()),
       chrome_app_kiosk_service_ash_(
           std::make_unique<ChromeAppKioskServiceAsh>()),
       chrome_app_window_tracker_ash_(
@@ -417,6 +419,11 @@ void CrosapiAsh::BindCertDatabase(
 void CrosapiAsh::BindCertProvisioning(
     mojo::PendingReceiver<mojom::CertProvisioning> receiver) {
   cert_provisioning_ash_->BindReceiver(std::move(receiver));
+}
+
+void CrosapiAsh::BindChapsService(
+    mojo::PendingReceiver<mojom::ChapsService> receiver) {
+  chaps_service_ash_->BindReceiver(std::move(receiver));
 }
 
 void CrosapiAsh::BindChromeAppKioskService(

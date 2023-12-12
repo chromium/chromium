@@ -52,6 +52,7 @@ class BrowserVersionServiceAsh;
 class GuestOsSkForwarderFactoryAsh;
 class CertDatabaseAsh;
 class CertProvisioningAsh;
+class ChapsServiceAsh;
 class ChromeAppKioskServiceAsh;
 class ChromeAppWindowTrackerAsh;
 class ClipboardAsh;
@@ -180,6 +181,8 @@ class CrosapiAsh : public mojom::Crosapi {
       mojo::PendingReceiver<mojom::CertDatabase> receiver) override;
   void BindCertProvisioning(
       mojo::PendingReceiver<mojom::CertProvisioning> receiver) override;
+  void BindChapsService(
+      mojo::PendingReceiver<mojom::ChapsService> receiver) override;
   void BindChromeAppKioskService(
       mojo::PendingReceiver<mojom::ChromeAppKioskService> receiver) override;
   void BindChromeAppPublisher(
@@ -423,6 +426,8 @@ class CrosapiAsh : public mojom::Crosapi {
     return cert_provisioning_ash_.get();
   }
 
+  ChapsServiceAsh* chaps_service_ash() { return chaps_service_ash_.get(); }
+
   ChromeAppKioskServiceAsh* chrome_app_kiosk_service() {
     return chrome_app_kiosk_service_ash_.get();
   }
@@ -598,6 +603,7 @@ class CrosapiAsh : public mojom::Crosapi {
       guest_os_sk_forwarder_factory_ash_;
   std::unique_ptr<CertDatabaseAsh> cert_database_ash_;
   std::unique_ptr<CertProvisioningAsh> cert_provisioning_ash_;
+  std::unique_ptr<ChapsServiceAsh> chaps_service_ash_;
   std::unique_ptr<ChromeAppKioskServiceAsh> chrome_app_kiosk_service_ash_;
   std::unique_ptr<ChromeAppWindowTrackerAsh> chrome_app_window_tracker_ash_;
   std::unique_ptr<ClipboardAsh> clipboard_ash_;

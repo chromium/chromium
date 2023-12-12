@@ -5582,6 +5582,7 @@ if (is_chromeos_lacros) {
       "../browser/lacros/browser_launcher_browsertest.cc",
       "../browser/lacros/browser_service_lacros_browsertest.cc",
       "../browser/lacros/cert/cert_db_initializer_browsertest.cc",
+      "../browser/lacros/chaps_service_lacros_browsertest.cc",
       "../browser/lacros/clipboard_history_lacros_browsertest.cc",
       "../browser/lacros/clipboard_lacros_browsertest.cc",
       "../browser/lacros/component_policy_lacros_browsertest.cc",
