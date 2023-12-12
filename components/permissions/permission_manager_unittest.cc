@@ -813,18 +813,14 @@ TEST_F(PermissionManagerTest, GetPermissionStatusDelegation) {
   NavigateAndCommit(GURL(kOrigin1));
   content::RenderFrameHost* parent = main_rfh();
 
-  content::RenderFrameHost* child = AddChildRFH(parent, GURL(kOrigin2));
+  content::RenderFrameHost* child = AddChildRFH(
+      parent, GURL(kOrigin2), PermissionsPolicyFeature::kGeolocation);
 
   // By default the parent should be able to request access, but not the child.
   EXPECT_EQ(PermissionStatus::ASK, GetPermissionStatusForCurrentDocument(
                                        PermissionType::GEOLOCATION, parent));
-  EXPECT_EQ(PermissionStatus::DENIED, GetPermissionStatusForCurrentDocument(
-                                          PermissionType::GEOLOCATION, child));
-
-  // Enabling geolocation by FP should allow the child to request access also.
-  child = AddChildRFH(parent, GURL(kOrigin2),
-                      PermissionsPolicyFeature::kGeolocation);
-
+  // Permission policy is no longer verified in PermissionContextBase, hence in
+  // this code a cross-origin iframe is allowed to use permission.
   EXPECT_EQ(PermissionStatus::ASK, GetPermissionStatusForCurrentDocument(
                                        PermissionType::GEOLOCATION, child));
 
@@ -856,16 +852,6 @@ TEST_F(PermissionManagerTest, GetPermissionStatusDelegation) {
   EXPECT_EQ(PermissionStatus::ASK, GetPermissionStatusForCurrentDocument(
                                        PermissionType::GEOLOCATION, child));
 
-  // If the parent changes its policy, the child should be blocked.
-  RefreshPageAndSetHeaderPolicy(&parent, PermissionsPolicyFeature::kGeolocation,
-                                {kOrigin1});
-  child = AddChildRFH(parent, GURL(kOrigin2));
-
-  EXPECT_EQ(PermissionStatus::ASK, GetPermissionStatusForCurrentDocument(
-                                       PermissionType::GEOLOCATION, parent));
-  EXPECT_EQ(PermissionStatus::DENIED, GetPermissionStatusForCurrentDocument(
-                                          PermissionType::GEOLOCATION, child));
-
   prompt_factory.reset();
 }
 
@@ -877,26 +863,8 @@ TEST_F(PermissionManagerTest, SubscribeWithPermissionDelegation) {
   content::RenderFrameHost* parent = main_rfh();
   content::RenderFrameHost* child = AddChildRFH(parent, GURL(kOrigin2));
 
-  content::PermissionControllerDelegate::SubscriptionId subscription_id =
-      SubscribeToPermissionStatusChange(
-          PermissionType::GEOLOCATION, /*render_process_host=*/nullptr, child,
-          GURL(kOrigin2),
-          base::BindRepeating(&PermissionManagerTest::OnPermissionChange,
-                              base::Unretained(this)));
-  EXPECT_FALSE(callback_called());
-
-  // Location should be blocked for the child because it's not delegated.
-  EXPECT_EQ(PermissionStatus::DENIED, GetPermissionStatusForCurrentDocument(
-                                          PermissionType::GEOLOCATION, child));
-
   // Allow access for the top level origin.
   SetPermission(PermissionType::GEOLOCATION, PermissionStatus::GRANTED);
-
-  // The child's permission should still be block and no callback should be run.
-  EXPECT_EQ(PermissionStatus::DENIED, GetPermissionStatusForCurrentDocument(
-                                          PermissionType::GEOLOCATION, child));
-
-  EXPECT_FALSE(callback_called());
 
   // Enabling geolocation by FP should allow the child to request access also.
   child = AddChildRFH(parent, GURL(kOrigin2),
@@ -905,11 +873,12 @@ TEST_F(PermissionManagerTest, SubscribeWithPermissionDelegation) {
   EXPECT_EQ(PermissionStatus::GRANTED, GetPermissionStatusForCurrentDocument(
                                            PermissionType::GEOLOCATION, child));
 
-  subscription_id = SubscribeToPermissionStatusChange(
-      PermissionType::GEOLOCATION, /*render_process_host=*/nullptr, child,
-      GURL(kOrigin2),
-      base::BindRepeating(&PermissionManagerTest::OnPermissionChange,
-                          base::Unretained(this)));
+  content::PermissionControllerDelegate::SubscriptionId subscription_id =
+      SubscribeToPermissionStatusChange(
+          PermissionType::GEOLOCATION, /*render_process_host=*/nullptr, child,
+          GURL(kOrigin2),
+          base::BindRepeating(&PermissionManagerTest::OnPermissionChange,
+                              base::Unretained(this)));
   EXPECT_FALSE(callback_called());
 
   // Blocking access to the parent should trigger the callback to be run for the

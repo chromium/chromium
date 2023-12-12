@@ -121,7 +121,7 @@ IN_PROC_BROWSER_TEST_F(PermissionsBrowserTest, PermissionInCrossOriginIframe) {
 
   ASSERT_NO_FATAL_FAILURE(LoadPageInIframe(iframe_src.spec()));
 
-  frame_.navigation_listener().RunUntilTitleEquals("ended-NotAllowedError");
+  frame_.navigation_listener().RunUntilTitleEquals("ended-NotFoundError");
 }
 
 IN_PROC_BROWSER_TEST_F(PermissionsBrowserTest,
