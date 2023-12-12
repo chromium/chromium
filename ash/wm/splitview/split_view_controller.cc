@@ -1439,6 +1439,11 @@ void SplitViewController::OnDisplayRemoved(
   // be removed, there's no need to start overview.
   if (GetRootWindowSettings(root_window_)->display_id ==
       display::kInvalidDisplayId) {
+    // Explicitly destroy the metrics controller here. If the display is removed
+    // while a desk switch is in progress, the metrics controller will try to
+    // access the non-existent root window in its desk activation obserer. Note
+    // that `this` is soon going to be destroyed anyway.
+    split_view_metrics_controller_.reset();
     return;
   }
 

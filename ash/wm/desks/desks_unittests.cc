@@ -2498,6 +2498,31 @@ TEST_P(DesksTest, LacrosProfileId) {
   desk->RemoveObserver(&desk_observer);
 }
 
+// Tests that a display can be removed during a desk switch.
+TEST_P(DesksTest, RemoveDisplayWhileSwitchingDesks) {
+  auto* controller = DesksController::Get();
+
+  // Set up two desks and two displays. We're then going to switch to the second
+  // desk and during the switch, remove one of the displays.
+  UpdateDisplay("800x600,800x600");
+  NewDesk();
+
+  ui::ScopedAnimationDurationScaleMode animation_scale(
+      ui::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
+
+  DeskSwitchAnimationWaiter desk_switch_waiter;
+
+  const Desk* desk_2 = controller->GetDeskAtIndex(1);
+  controller->ActivateDesk(desk_2, DesksSwitchSource::kMiniViewButton);
+
+  // Updating to one display. This will cause the root window for the second
+  // display to be destroyed.
+  UpdateDisplay("800x600");
+
+  desk_switch_waiter.Wait();
+  EXPECT_EQ(desk_2, controller->active_desk());
+}
+
 class DesksWithMultiDisplayOverview : public AshTestBase {
  public:
   DesksWithMultiDisplayOverview() = default;

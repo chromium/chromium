@@ -231,7 +231,7 @@ void DeskAnimationBase::ActivateTargetDeskWithoutAnimation() {
 
 bool DeskAnimationBase::AnimatorFailed() const {
   for (const auto& animator : desk_switch_animators_) {
-    if (animator->screenshot_failed()) {
+    if (animator->animator_failed()) {
       return true;
     }
   }
