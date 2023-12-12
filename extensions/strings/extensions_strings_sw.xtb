@@ -15,13 +15,13 @@
 <translation id="2785530881066938471">Isingweza kupakia faili '<ph name="RELATIVE_PATH" />' ya hati ya maudhui. Haijasimbwa kwa UTF-8.</translation>
 <translation id="2903070246402204397"><ph name="EXTENSION_NAME" /> (kitambulisho cha kiendelezi cha "<ph name="EXTENSION_ID" />") kimezuiwa na msimamizi. <ph name="ADMIN_INFO" /></translation>
 <translation id="2988488679308982380">Isingeweza kusakinisha furushi: '<ph name="ERROR_CODE" />'</translation>
-<translation id="3115238746683532089">Bidhaa isiyojulikana <ph name="PRODUCT_ID" /> kutoka kwa mchuuzi <ph name="VENDOR_ID" /> (nambari tambulishi <ph name="SERIAL_NUMBER" />)</translation>
+<translation id="3115238746683532089">Bidhaa isiyojulikana <ph name="PRODUCT_ID" /> kutoka kwa mchuuzi <ph name="VENDOR_ID" /> (namba tambulishi <ph name="SERIAL_NUMBER" />)</translation>
 <translation id="3144135466825225871">Imeshindwa kubadilisha faili ya crx. Angalia kuona ikiwa faili inatumika.</translation>
 <translation id="3163201441334626963">Bidhaa isiyojulikana <ph name="PRODUCT_ID" /> kutoka kwa mchuuzi <ph name="VENDOR_ID" /></translation>
 <translation id="3302709122321372472">CSS '<ph name="RELATIVE_PATH" />' haikuweza kupakiwa kwa ajili ya hati ya maudhui.</translation>
 <translation id="3369521687965833290">Haiwezi kufungua kiendelezi. Ili kufungua kiendelezi kwa usalama, sharti kuwe na kijia katika saraka ya maelzeo yako mafupi ambacho kinaanza kwa sarufi ya kiendeshi na hakina makutano, sehemu ya kuangika, au kiungo cha mfumo. Hakuna vijia kama hivyo vinavyopo kwa maelezo yako mafupi.</translation>
-<translation id="3393440416772303020"><ph name="PRODUCT_NAME" /> (nambari tambulishi <ph name="SERIAL_NUMBER" />)</translation>
-<translation id="3466070586188012397"><ph name="PRODUCT_NAME" /> kutoka kwa mchuuzi <ph name="VENDOR_ID" /> (nambari tambulishi <ph name="SERIAL_NUMBER" />)</translation>
+<translation id="3393440416772303020"><ph name="PRODUCT_NAME" /> (namba tambulishi <ph name="SERIAL_NUMBER" />)</translation>
+<translation id="3466070586188012397"><ph name="PRODUCT_NAME" /> kutoka kwa mchuuzi <ph name="VENDOR_ID" /> (namba tambulishi <ph name="SERIAL_NUMBER" />)</translation>
 <translation id="3561217442734750519">Thamani ya kuingizwa kwa ufunguo binafsi sharti iwe njia halali.</translation>
 <translation id="388442998277590542">Isingeweza kupakia ukurasa wa chaguo <ph name="OPTIONS_PAGE" /> '.</translation>
 <translation id="3984413272403535372">Hitilafu katika kuweka sahihi kwenye kiendelezi.</translation>
@@ -38,7 +38,7 @@
 <translation id="5456409301717116725">Kiendelezi hiki kinajumuisha faili muhimu '<ph name="KEY_PATH" />'. Huenda hutaki kufanya hivyo.</translation>
 <translation id="5486326529110362464">Thamani ya uingizaji ya ufunguo binafsi sharti iwepo.</translation>
 <translation id="5972529113578162692">Msimamizi wa mashine hii anahitaji <ph name="EXTENSION_NAME" /> kusakinishwa. Hakiwezi kuondolewa.</translation>
-<translation id="6027032947578871493">Bidhaa isiyojulikana <ph name="PRODUCT_ID" /> kutoka kwa <ph name="VENDOR_NAME" /> (nambari tambulishi <ph name="SERIAL_NUMBER" />)</translation>
+<translation id="6027032947578871493">Bidhaa isiyojulikana <ph name="PRODUCT_ID" /> kutoka kwa <ph name="VENDOR_NAME" /> (namba tambulishi <ph name="SERIAL_NUMBER" />)</translation>
 <translation id="6068932090455285721"><ph name="PRODUCT_NAME" /> kutoa kwa mchuuzi <ph name="VENDOR_ID" /></translation>
 <translation id="6143635259298204954">Haiwezi kufungua kiendelezi. Ili kufungua kiendelezi kwa usalama, sharti kuwe na kijia katika saraka yako ya maelezo mafupi ambacho hakina kiungo cha mfumo. Hakuna vijia kama hivyo vilivyopo kwa maelezo yako mafupi.</translation>
 <translation id="6322279351188361895">Imeshindwa kusoma ufunguo wa kibinafsi</translation>
@@ -46,7 +46,7 @@
 <translation id="641087317769093025">Isingeweza kufungua kiendelezi</translation>
 <translation id="6542618148162044354">"<ph name="APP_NAME" />" inaomba idhini ya kufikia kifaa chako kimoja au vingi:</translation>
 <translation id="657064425229075395">Haikuweza kupakia hati ya mandharinyuma '<ph name="BACKGROUND_SCRIPT" />'.</translation>
-<translation id="6580950983454333167"><ph name="PRODUCT_NAME" /> kutoka kwa <ph name="VENDOR_NAME" /> (nambari ya ufuatiliaji <ph name="SERIAL_NUMBER" />)</translation>
+<translation id="6580950983454333167"><ph name="PRODUCT_NAME" /> kutoka kwa <ph name="VENDOR_NAME" /> (namba ya ufuatiliaji <ph name="SERIAL_NUMBER" />)</translation>
 <translation id="677806580227005219">Kishikilio cha Mime: <ph name="MIMEHANDLERVIEW_TAG_NAME" /></translation>
 <translation id="6840444547062817500">Kiendelezi hiki kilijipakia chenyewe upya kila mara.</translation>
 <translation id="7003844668372540529">Bidhaa isiyojulikana <ph name="PRODUCT_ID" /> kutoka kwa <ph name="VENDOR_NAME" /></translation>

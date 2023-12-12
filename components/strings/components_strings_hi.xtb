@@ -1182,7 +1182,7 @@
 <translation id="3399952811970034796">डिलीवरी का पता</translation>
 <translation id="3402261774528610252">इस साइट को लोड करने में इस्तेमाल हुआ कनेक्शन TLS 1.0 या TLS 1.1 का इस्तेमाल कर रहा है. ये वर्शन रोक दिए गए हैं और आने वाले समय में इन्हें बंद कर दिया जाएगा. बंद होने के बाद, उपयोगकर्ता इस साइट को लोड नहीं कर पाएंगे. सर्वर पर TLS 1.2 या इसके बाद का वर्शन चालू होना चाहिए.</translation>
 <translation id="3405664148539009465">फ़ॉन्‍ट को पसंद के मुताबिक बनाएं</translation>
-<translation id="3407789382767355356">तीसरे पक्ष की सेवा के लिए साइन इन</translation>
+<translation id="3407789382767355356">तीसरे पक्ष की मदद से साइन-इन</translation>
 <translation id="3409896703495473338">सुरक्षा की सेटिंग मैनेज करें</translation>
 <translation id="3414952576877147120">आकार:</translation>
 <translation id="341513675006332771">'Chrome Dino गेम खेलें' बटन, Chrome में Dino Run गेम खेलने के लिए इसे चालू करें</translation>
@@ -1404,7 +1404,7 @@
 <translation id="3823019343150397277">IBAN</translation>
 <translation id="3823402221513322552">आपके ब्राउज़र को <ph name="BROWSER_DOMAIN" /> मैनेज करता है और आपकी प्रोफ़ाइल को <ph name="PROFILE_DOMAIN" /> मैनेज करता है</translation>
 <translation id="382518646247711829">अगर आप प्रॉक्सी सर्वर का उपयोग करते हैं...</translation>
-<translation id="3826050100957962900">तीसरे पक्ष की सेवा के लिए साइन इन</translation>
+<translation id="3826050100957962900">तीसरे पक्ष की मदद से साइन-इन</translation>
 <translation id="3827112369919217609">पूरा</translation>
 <translation id="3827666161959873541">पारिवारिक फ़िल्में</translation>
 <translation id="3828924085048779000">खाली 'पासफ़्रेज़' की अनुमति नहीं है.</translation>

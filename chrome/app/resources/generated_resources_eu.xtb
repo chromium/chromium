@@ -821,7 +821,7 @@ Baliteke aplikazioei emandako baimenak kontu honi aplikatzea. <ph name="APPS_LIN
 <translation id="163072119192489970">Datuak bidaltzen eta jasotzen amai dezakete</translation>
 <translation id="1630768113285622200">Berrabiarazi eta egin aurrera</translation>
 <translation id="1631503405579357839">Daltonismoa</translation>
-<translation id="1632278969378690607">Bilaketa-tekla + klik</translation>
+<translation id="1632278969378690607">Bilaketa + klik</translation>
 <translation id="1632293440289326475">Aktibatu Energia-aurreztailea bateriaren iraupena luzatzeko</translation>
 <translation id="1632756664321977232">Ebakitzeko tresna</translation>
 <translation id="163309982320328737">Hasierako karakterearen zabalera beteta dago</translation>
@@ -3950,7 +3950,7 @@ Besteak beste, instalatutako softwareari, fitxategiei, arakatzaileari eta sistem
 <translation id="4049783682480068824">{COUNT,plural, =1{# kontaktu ez dago erabilgarri. Nearby Share kontaktu horrekin erabiltzeko, gehitu kontaktuetan haren Google-ko kontuarekin lotutako helbide elektronikoa.}other{# kontaktu ez daude erabilgarri. Nearby Share kontaktu horiekin erabiltzeko, gehitu kontaktuetan haien Google-ko kontuarekin lotutako helbide elektronikoa.}}</translation>
 <translation id="4050225813016893843">Autentifikazio-metodoa</translation>
 <translation id="4050534976465737778">Egiaztatu bi gailuak desblokeatuta eta elkarrengandik hurbil daudela, eta Bluetootha aktibatuta daukatela. Zure kontaktuetan ez dagoen Chromebook batekin edukia partekatzeko asmoa baduzu, egiaztatu Nearby-ren ikusgaitasuna aktibatuta dagoela (ireki egoeraren eremua eta, gero, aktibatu Nearby-ren ikusgaitasuna). <ph name="LINK_BEGIN" />Lortu informazio gehiago<ph name="LINK_END" /></translation>
-<translation id="4051177682900543628">bilaketa-tekla + eskuinera egiteko gezi-tekla</translation>
+<translation id="4051177682900543628">Bilaketa + eskuinera egiteko gezi-tekla</translation>
 <translation id="4052120076834320548">Oso txikia</translation>
 <translation id="4052913941260326985">Sortu QR kodea</translation>
 <translation id="4054070260844648638">Guztientzat ikusgai</translation>
@@ -5254,7 +5254,7 @@ Pantaila txikitzeko, berriz, erabili Ktrl + Alt + Txikitu distira.</translat
 <translation id="5123433949759960244">Saskibaloiko baloia</translation>
 <translation id="5125751979347152379">URLak ez du balio.</translation>
 <translation id="5125967981703109366">Txartel honi buruz</translation>
-<translation id="512642543295077915">bilaketa-tekla + Atzera tekla</translation>
+<translation id="512642543295077915">Bilaketa + Atzera tekla</translation>
 <translation id="5126611267288187364">Ikusi aldaketak</translation>
 <translation id="5127620150973591153">Konexio seguruaren IDa: <ph name="TOKEN" /></translation>
 <translation id="5127805178023152808">Sinkronizazioa desaktibatuta dago</translation>
@@ -5365,7 +5365,7 @@ Pantaila txikitzeko, berriz, erabili Ktrl + Alt + Txikitu distira.</translat
 <translation id="5213891612754844763">Erakutsi proxy-ezarpenak</translation>
 <translation id="5214639857958972833"><ph name="BOOKMARK_TITLE" /> laster-marka sortu da.</translation>
 <translation id="5215502535566372932">Hautatu herrialdea</translation>
-<translation id="5220011581825921581">bilaketa-tekla + gora egiteko gezi-tekla</translation>
+<translation id="5220011581825921581">Bilaketa + gora egiteko gezi-tekla</translation>
 <translation id="5222403284441421673">Segurua ez den deskarga bat blokeatu da</translation>
 <translation id="5222676887888702881">Amaitu saioa</translation>
 <translation id="5225324770654022472">Erakutsi aplikazioen lasterbidea</translation>
@@ -6782,7 +6782,7 @@ Txartel adimenduna sartuta edukitzea eskatzen du <ph name="DOMAIN" /> domeinuak.
 <translation id="6368276408895187373">Gaituta: <ph name="VARIATION_NAME" /></translation>
 <translation id="636850387210749493">Erregistratu erakundean</translation>
 <translation id="6370021412472292592">Ezin izan da manifestua kargatu.</translation>
-<translation id="6370551072524410110">bilaketa-tekla + Maius + Atzera tekla</translation>
+<translation id="6370551072524410110">Bilaketa + Maius + Atzera tekla</translation>
 <translation id="637135143619858508">Handia</translation>
 <translation id="6374077068638737855">Iceweasel</translation>
 <translation id="6374469231428023295">Saiatu berriro</translation>
@@ -7578,7 +7578,7 @@ Inoiz Voice Match erabiltzeari utzi nahi badiozu, ken ezazu Laguntzailea zerbitz
 <translation id="6998793565256476099">Erregistratu gailua bideokonferentziak egiteko</translation>
 <translation id="6999956497249459195">Talde berria</translation>
 <translation id="7000206553895739324"><ph name="PRINTER_NAME" /> konektatu da baina konfiguratu egin behar da</translation>
-<translation id="7000347579424117903">Erabili Ktrl, Alt edo bilaketa-tekla</translation>
+<translation id="7000347579424117903">Erabili Ktrl, Alt edo Bilaketa</translation>
 <translation id="7001036685275644873">Linux aplikazioen eta fitxategien babeskopia egiten</translation>
 <translation id="7001066449188684145">Identitatea egiaztatu behar duzu <ph name="PRINTER_NAME" /> inprimagailuaren bidez inprimatzeko. Jarri administratzailearekin harremanetan.</translation>
 <translation id="7001397294201412227">Erabili telefono, tableta edo segurtasun-giltza bat</translation>
@@ -8677,7 +8677,7 @@ Esleipen bat kentzeko, berriz, sakatu esleipen bat daukan erabilerraztasun-eteng
 <translation id="7870730066603611552">Berrikusi sinkronizazio-aukerak konfigurazioaren ondoren</translation>
 <translation id="7870790288828963061">Ez da aurkitu kiosko-aplikazio berriagorik. Ez dago ezer eguneratzeko. Kendu USB memoria.</translation>
 <translation id="7871109039747854576">Erabili <ph name="COMMA" /> eta <ph name="PERIOD" /> teklak aukeren zerrenda erakusteko</translation>
-<translation id="7871277686245037315">bilaketa-tekla + ezkerrera egiteko gezi-tekla</translation>
+<translation id="7871277686245037315">Bilaketa + ezkerrera egiteko gezi-tekla</translation>
 <translation id="7871691770940645922">Braille-bistaratze birtuala</translation>
 <translation id="787268756490971083">Desaktibatuta</translation>
 <translation id="7872758299142009420">Habiaratutako talde gehiegi daude: <ph name="ERROR_LINE" /></translation>
@@ -9506,7 +9506,7 @@ Gorde gakoen fitxategia leku seguru batean. Zure luzapenaren bertsio berriak sor
 <translation id="851991974800416566">Erabili pasahitz konplexu bat bizkor</translation>
 <translation id="8523493869875972733">Mantendu aldaketak</translation>
 <translation id="8523849605371521713">Gidalerroei jarraikiz gehitu da</translation>
-<translation id="8524594273111932386">bilaketa-tekla + behera egiteko gezi-tekla</translation>
+<translation id="8524594273111932386">Bilaketa + behera egiteko gezi-tekla</translation>
 <translation id="8524783101666974011">Gorde txartelak Google-ko kontuan</translation>
 <translation id="8525306231823319788">Pantaila osoa</translation>
 <translation id="8525461909394569609">Aplikazio honek hauetako sareko edukia dauka:</translation>
