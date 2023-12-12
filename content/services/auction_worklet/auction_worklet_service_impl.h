@@ -67,6 +67,7 @@ class CONTENT_EXPORT AuctionWorkletServiceImpl
       const GURL& script_source_url,
       const absl::optional<GURL>& wasm_helper_url,
       const absl::optional<GURL>& trusted_bidding_signals_url,
+      const std::string& trusted_bidding_signals_slot_size_param,
       const url::Origin& top_window_origin,
       mojom::AuctionWorkletPermissionsPolicyStatePtr permissions_policy_state,
       bool has_experiment_group_id,
