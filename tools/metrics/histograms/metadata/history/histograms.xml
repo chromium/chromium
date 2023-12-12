@@ -1834,18 +1834,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="History.FirstUpdateTime" units="ms" expires_after="2020-02-02">
-  <owner>yiyaoliu@chromium.org</owner>
-  <component>UI&gt;Browser&gt;History</component>
-  <summary>
-    The amount of time for function
-    history::TopSitesBackend::UpdateTopSitesOnDBThread to execute when this
-    function is called during startup. Excludes the case where local
-    TopSitesDatabase db_ is unavailable, i.e. where the update doesn't really
-    happen.
-  </summary>
-</histogram>
-
 <histogram name="History.ForeignVisitsLegacy" units="visits"
     expires_after="2024-04-28">
   <owner>tommycli@chromium.org</owner>

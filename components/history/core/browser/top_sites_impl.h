@@ -234,10 +234,6 @@ class TopSitesImpl : public TopSites, public HistoryServiceObserver {
   // Are we loaded?
   bool loaded_;
 
-  // Have the SetTopSites execution time related histograms been recorded?
-  // The histogram should only be recorded once for each Chrome execution.
-  static bool histogram_recorded_;
-
   base::ScopedObservation<HistoryService, HistoryServiceObserver>
       history_service_observation_{this};
 };
