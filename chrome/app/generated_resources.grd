@@ -9101,7 +9101,7 @@ Keep your key file in a safe place. You will need it to create new versions of y
         Right-click on the tab group name to edit this group or click to collapse
       </message>
       <message name="IDS_TAB_ORGANIZATION_SUCCESS_IPH_SCREENREADER" desc="The screen reader text of the IPH describing how to interact with a tab group resulting from tab organization." translateable="false">
-        Select the tab group and activate the context menu to edit, or select the tab group and press enter to collapse
+        Select the tab group and activate the context menu to edit
       </message>
 
       <!-- Strings for intent picker -->
@@ -10695,7 +10695,7 @@ Check your passwords anytime in <ph name="GOOGLE_PASSWORD_MANAGER">$1<ex>Google 
         Show me how
       </message>
       <message name="IDS_TAB_ORGANIZATION_LEARN_MORE" desc="The actionable text in the tab organization UI results state for getting more information" translateable="false">
-        Learn more
+        Learn more about using AI tools
       </message>
 
       <!-- Strings for Window Titles in Menus -->
