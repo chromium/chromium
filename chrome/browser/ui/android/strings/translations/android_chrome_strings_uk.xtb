@@ -410,7 +410,6 @@
 <translation id="3226612997184048185">Щоб відстежувати ціни на товари в Chrome і отримувати сповіщення, якщо вони знизяться, також збережіть закладки в обліковому записі Google</translation>
 <translation id="3227557059438308877">Google Chrome як ключ безпеки</translation>
 <translation id="3232754137068452469">Веб-додаток</translation>
-<translation id="3234978181857588512">Зберегти на пристрій</translation>
 <translation id="3236059992281584593">Залишилась 1 хв</translation>
 <translation id="3237087289225714896">Стандартне попереднє завантаження:</translation>
 <translation id="3237433641417325993">Прокрутіть униз, що переглянути рекомендовані статті</translation>
@@ -582,7 +581,6 @@
 <translation id="4181841719683918333">Мови</translation>
 <translation id="4188221736490993796">Сортувати від Я до А</translation>
 <translation id="4195643157523330669">Відкрити в новій вкладці</translation>
-<translation id="4196597275619698563">Створити картку</translation>
 <translation id="4197828496439691735">{NUM_TABS,plural, =1{1 вкладка на цьому пристрої}one{# вкладка на цьому пристрої}few{# вкладки на цьому пристрої}many{# вкладок на цьому пристрої}other{# вкладки на цьому пристрої}}</translation>
 <translation id="4198423547019359126">Немає доступних місць для завантаження</translation>
 <translation id="4202218894997543208">Теми, які ви заблокували</translation>
@@ -594,7 +592,6 @@
 <translation id="4248098802131000011">Захистіть свої паролі від порушень безпеки даних та інших проблем із безпекою</translation>
 <translation id="424864128008805179">Вийти з Chrome?</translation>
 <translation id="4249955472157341256">Сортувати за категорією "Останні"</translation>
-<translation id="4250229828105606438">Знімок екрана</translation>
 <translation id="4256782883801055595">Ліцензії ПЗ з відкритим кодом</translation>
 <translation id="4257230861809842349">Видалити паролі з Google Менеджера паролів?</translation>
 <translation id="4269820728363426813">Копіювати адресу посилання</translation>
@@ -1148,7 +1145,6 @@
 <translation id="7030304022046916278">Надсилає URL-адреси в Безпечний перегляд на перевірку</translation>
 <translation id="7035701931849773472">Інші варіанти</translation>
 <translation id="7037830628447527439">Увійдіть у Chrome через обліковий запис Google</translation>
-<translation id="7038956721828960940">chrome_image_<ph name="CURRENT_TIMESTAMP_MS" /></translation>
 <translation id="7054588988317389591">Отримувати описи зображень?</translation>
 <translation id="7055152154916055070">Переадресацію заблоковано:</translation>
 <translation id="7063006564040364415">Не вдалося з’єднатись із сервером синхронізації.</translation>
@@ -1279,7 +1275,6 @@
 <translation id="7658239707568436148">Скасувати</translation>
 <translation id="7665369617277396874">Додати обліковий запис</translation>
 <translation id="766587987807204883">Тут з'являються статті, які можна читати навіть у режимі офлайн</translation>
-<translation id="768232549260819724">Файл GIF скопійовано</translation>
 <translation id="7682724950699840886">Порада. Переконайтеся, що на пристрої достатньо вільного місця та спробуйте експортувати дані знову.</translation>
 <translation id="7686086654630106285">Докладніше про рекламу, пропоновану сайтами</translation>
 <translation id="768618399695552958">Деякі сторінки, які ви відвідуєте, попередньо завантажені. Сторінки можуть попередньо завантажуватися через сервери Google, коли вони зв’язані через сайт Google.</translation>
@@ -1334,7 +1329,6 @@
 <translation id="7929962904089429003">Відкрити меню</translation>
 <translation id="7930998711684428189">Попереджає, якщо паролі розкрито через порушення безпеки даних.</translation>
 <translation id="7934668619883965330">Неможливо завантажити файл. Формат файлу не підтримується.</translation>
-<translation id="7939485076072265087">Створити стилізовану картку з виділеним текстом</translation>
 <translation id="7942131818088350342">Застаріла версія <ph name="PRODUCT_NAME" />.</translation>
 <translation id="7944772052836377867">Для синхронізації потрібно підтвердити вашу особу</translation>
 <translation id="7947953824732555851">Прийняти й увійти</translation>
@@ -1472,7 +1466,6 @@
 <translation id="856481929701340285">Версія для комп’ютера</translation>
 <translation id="8570677896027847510">Не можна безпечно завантажити файл</translation>
 <translation id="8571213806525832805">Останні 4 тижні</translation>
-<translation id="8580884231102452214">Копіювати файл GIF</translation>
 <translation id="8583805026567836021">Очищення даних облікового запису</translation>
 <translation id="859046281437143747">Відстежувати ціну через кнопку "Більше опцій"</translation>
 <translation id="860043288473659153">Ім’я і прізвище власника картки</translation>

@@ -869,6 +869,7 @@ Rechten die je al hebt gegeven aan apps, kunnen van toepassing zijn op dit accou
 <translation id="1651008383952180276">Je moet twee keer dezelfde wachtwoordzin opgeven</translation>
 <translation id="1651609627703324721">Dit tabblad presenteert VR-content aan een headset</translation>
 <translation id="1652326691684645429">Dichtbij delen aanzetten</translation>
+<translation id="1652862280638399816">Als je Wachtwoordmanager wilt gebruiken met macOS-sleutelhanger, herstart je Chromium en sta je sleutelhangertoegang toe. Je tabbladen worden opnieuw geopend na de herstart.</translation>
 <translation id="1654580009054503925">Geen toestemming om verzoeken te tonen</translation>
 <translation id="1656528038316521561">Ondoorzichtigheid van achtergrond</translation>
 <translation id="1657406563541664238">Help <ph name="PRODUCT_NAME" /> beter te maken door automatisch gebruiksstatistieken en crashmeldingen naar Google te verzenden</translation>
@@ -2819,6 +2820,7 @@ Je kunt instellingen beheren via het kaartmenu of meer opties bekijken in het ge
 <translation id="3151562827395986343">Geschiedenis, cookies, cache en meer wissen</translation>
 <translation id="3151786313568798007">Stand</translation>
 <translation id="3152356229013609796">Bekijk, sluit en beantwoord meldingen van je telefoon</translation>
+<translation id="3155163173539279776">Chromium opnieuw starten</translation>
 <translation id="3157387275655328056">Toevoegen aan leeslijst</translation>
 <translation id="3157931365184549694">Herstellen</translation>
 <translation id="3158033540161634471">Je vingerafdruk instellen</translation>
@@ -3636,6 +3638,7 @@ Je kunt instellingen beheren via het kaartmenu of meer opties bekijken in het ge
 <translation id="3809272675881623365">Konijn</translation>
 <translation id="3809280248639369696">Marsmannetje</translation>
 <translation id="3810593934879994994"><ph name="ORIGIN" /> kan bestanden bekijken in de volgende mappen</translation>
+<translation id="3810770279996899697">Wachtwoordmanager heeft toegang tot macOS-sleutelhanger nodig</translation>
 <translation id="3810914450553844415">Je beheerder staat geen extra Google-accounts toe.</translation>
 <translation id="3810973564298564668">Beheren</translation>
 <translation id="381202950560906753">Nog een toevoegen</translation>
@@ -9469,7 +9472,6 @@ Bewaar je sleutelbestand op een veilige plaats. Je hebt het bestand nodig om nie
 <translation id="8473540203671727883">Spreek tekst onder de cursor uit</translation>
 <translation id="8473863474539038330">Adressen en meer</translation>
 <translation id="8474378002946546633">Meldingen toestaan</translation>
-<translation id="8474733733775441349">Wachtwoorden van je Google-account tonen</translation>
 <translation id="8475313423285172237">Een ander programma op je computer heeft een extensie toegevoegd die de manier waarop Chrome werkt kan wijzigen.</translation>
 <translation id="8476408756881832830">Afspelen onderbreken wanneer ChromeVox spreekt</translation>
 <translation id="8476491056950015181"><ph name="BEGIN_PARAGRAPH1" />Als je ChromeOS-apparaten toestaat ons automatische rapporten te sturen, kunnen we beter prioriteiten stellen voor wat in ChromeOS moet worden opgelost en verbeterd. Deze rapporten kunnen informatie bevatten zoals wanneer ChromeOS crasht, welke functies zijn gebruikt, hoeveel geheugen er gewoonlijk wordt gebruikt en diagnostische en gebruiksgegevens over Android-apps. Daarnaast zijn bepaalde verzamelde gegevens nuttig voor Google-apps en -partners, zoals Android-ontwikkelaars.<ph name="END_PARAGRAPH1" />

@@ -869,6 +869,7 @@
 <translation id="1651008383952180276">Трябва да въведете един и същ пропуск два пъти</translation>
 <translation id="1651609627703324721">Този раздел предава съдържание във VR към очила</translation>
 <translation id="1652326691684645429">Активиране на „Споделяне наблизо“</translation>
+<translation id="1652862280638399816">За да използвате Мениджър на пароли с Keychain на macOS, стартирайте Chromium отново и разрешете достъпа до Keychain. След повторното стартиране разделите ви ще се отворят отново.</translation>
 <translation id="1654580009054503925">Няма разрешение да показва заявки</translation>
 <translation id="1656528038316521561">Плътност на фона</translation>
 <translation id="1657406563541664238">Помогнете ни да подобрим <ph name="PRODUCT_NAME" /> като автоматично изпращате на Google статистически данни за използването му и сигнали за сривове</translation>
@@ -2830,6 +2831,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="3151562827395986343">Изчистване на историята, „бисквитките“, кеша и др.</translation>
 <translation id="3151786313568798007">Ориентация</translation>
 <translation id="3152356229013609796">Преглед, отхвърляне и отговаряне на известията на телефона ви</translation>
+<translation id="3155163173539279776">Рестартиране на Chromium</translation>
 <translation id="3157387275655328056">Добавяне към списъка за четене</translation>
 <translation id="3157931365184549694">Възстановяване</translation>
 <translation id="3158033540161634471">Настройте отпечатъка си</translation>
@@ -3647,6 +3649,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="3809272675881623365">Заек</translation>
 <translation id="3809280248639369696">Пришълец</translation>
 <translation id="3810593934879994994"><ph name="ORIGIN" /> може да преглежда файловете в следните папки</translation>
+<translation id="3810770279996899697">Мениджър на пароли се нуждае от достъп до Keychain на macOS</translation>
 <translation id="3810914450553844415">Администраторът ви не разрешава допълнителни профили в Google.</translation>
 <translation id="3810973564298564668">Управление</translation>
 <translation id="381202950560906753">Добавяне на друг</translation>
@@ -9493,7 +9496,6 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="8473540203671727883">Изговаряне на текста под курсора на мишката</translation>
 <translation id="8473863474539038330">Адреси и др.</translation>
 <translation id="8474378002946546633">Разрешаване на известията</translation>
-<translation id="8474733733775441349">Показване на паролите от профила ви в Google</translation>
 <translation id="8475313423285172237">Друга програма на компютъра ви добави разширение, което може да промени начина на работа на Chrome.</translation>
 <translation id="8476408756881832830">Поставяне на възпроизвеждането на пауза, когато ChromeVox говори</translation>
 <translation id="8476491056950015181"><ph name="BEGIN_PARAGRAPH1" />Разрешаването на устройства с ChromeOS да изпращат автоматични сигнали ни помага да разбираме какво е най-важно да поправим и подобрим в операционната система. Тези сигнали могат да включват различни неща, като например информация за възникнали сривове в ChromeOS, използваните функции, количеството памет, което обикновено ползвате, и диагностична информация и данни за използването на приложения за Android. Някои обобщени данни също така ще подпомогнат приложенията и партньорите на Google, като например програмистите за Android.<ph name="END_PARAGRAPH1" />

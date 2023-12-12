@@ -1217,6 +1217,7 @@
 <translation id="3432601291244612633">పేజీని మూసివేయండి</translation>
 <translation id="3433111389595862568">సహకార &amp; కాన్ఫరెన్సింగ్ సాఫ్ట్‌వేర్</translation>
 <translation id="3433144818443565002">వాయిస్ &amp; వీడియో చాట్</translation>
+<translation id="3434025015623587566">Google Password Managerకు మరింత యాక్సెస్ అవసరం</translation>
 <translation id="343474037147570563">మీరు అప్‌లోడ్ చేసిన లేదా జోడించిన ఫైల్స్ Google Cloudకు లేదా థర్డ్-పార్టీలకు విశ్లేషణ కోసం పంపబడతాయి. ఉదాహరణకు, అవి సున్నితమైన వ్యక్తిగత సమాచారం లేదా మాల్‌వేర్ కోసం స్కాన్ చేయబడవచ్చు, కంపెనీ పాలసీల ఆధారంగా స్టోర్ చేయబడవచ్చు, మీ అడ్మినిస్ట్రేటర్‌కు కనిపించవచ్చు.</translation>
 <translation id="3435557549311968410">కంటిన్యువస్ (షార్ట్)</translation>
 <translation id="3435738964857648380">భద్రత</translation>
@@ -1969,6 +1970,7 @@
 <translation id="4918221908152712722"><ph name="APP_NAME" />ను ఇన్‌స్టాల్ చేయండి (డౌన్‌లోడ్ చేయాల్సిన అవసరం లేదు)</translation>
 <translation id="4920457992177678649">వెకేషన్ రెంట‌ల్స్ &amp; తక్కువ రోజులు బస చేయడానికి స్థలాలు</translation>
 <translation id="4920710383559189047">స్లీవ్</translation>
+<translation id="4922104989726031751">మీ ఆపరేటింగ్ సిస్టమ్‌తో Password Managerను ఉపయోగించడానికి, Chromiumను రీ-లాంచ్ చేసి, మీ కంప్యూటర్ పాస్‌వర్డ్ మేనేజర్‌కు యాక్సెస్‌ను అనుమతించండి. మీ ట్యాబ్‌లు రీ-లాంచ్ చేసిన తర్వాత మళ్లీ తెరవబడతాయి.</translation>
 <translation id="4923459931733593730">చెల్లింపు</translation>
 <translation id="4926049483395192435">ఖచ్చితంగా పేర్కొనాలి.</translation>
 <translation id="4926159001844873046"><ph name="SITE" /> ఇలా చెబుతోంది</translation>
@@ -2610,6 +2612,7 @@
 <translation id="6234122620015464377">ప్రతి డాక్యుమెంట్‌ తర్వాత కత్తిరించండి</translation>
 <translation id="6236290670123303279">సెట్టింగ్‌లను మేనేజ్ చేయండి</translation>
 <translation id="6240447795304464094">Google Pay లోగో</translation>
+<translation id="6240964651812394252">మీ ఆపరేటింగ్ సిస్టమ్‌తో Google Password Managerను ఉపయోగించడానికి, Chromeను రీ-లాంచ్ చేసి, మీ కంప్యూటర్ పాస్‌వర్డ్ మేనేజర్‌కు యాక్సెస్‌ను అనుమతించండి. మీ ట్యాబ్‌లు రీ-లాంచ్ చేసిన తర్వాత మళ్లీ తెరవబడతాయి.</translation>
 <translation id="6241121617266208201">సూచనలను దాచు</translation>
 <translation id="624499991300733384">ప్రింట్ కంపోజిటర్ సేవ</translation>
 <translation id="6251906504834538140">{0,plural, =1{తరలించకుండా ఫైల్ బ్లాక్ చేయబడింది}other{తరలించకుండా <ph name="FILE_COUNT" /> ఫైల్స్ బ్లాక్ చేయబడ్డాయి}}</translation>
@@ -2620,6 +2623,7 @@
 <translation id="6263376278284652872"><ph name="DOMAIN" /> బుక్‌మార్క్‌లు</translation>
 <translation id="6264376385120300461">ఏదేమైనా డౌన్‌లోడ్ చేయండి</translation>
 <translation id="6264485186158353794">భద్రతకు తిరిగి వెళ్ళు</translation>
+<translation id="6264636978858465832">Password Managerకు మరింత యాక్సెస్ అవసరం</translation>
 <translation id="6265794661083428563"><ph name="POLICY_NAME" /> పాలసీ విలువను కాపీ చేయి</translation>
 <translation id="6266934640124581640">లేత నీలి ఆకుపచ్చ రంగు</translation>
 <translation id="6270066318535733958">పడవ విహారం</translation>

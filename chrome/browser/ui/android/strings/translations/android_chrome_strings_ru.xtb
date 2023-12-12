@@ -410,7 +410,6 @@
 <translation id="3226612997184048185">Сохранив закладки в аккаунте Google, вы сможете отслеживать в Chrome цены на товары и получать уведомления о скидках.</translation>
 <translation id="3227557059438308877">Google Chrome в качестве электронного ключа</translation>
 <translation id="3232754137068452469">Веб-приложение</translation>
-<translation id="3234978181857588512">Сохранить на устройстве</translation>
 <translation id="3236059992281584593">Осталась 1 мин.</translation>
 <translation id="3237087289225714896">Стандартная предзагрузка:</translation>
 <translation id="3237433641417325993">Чтобы посмотреть рекомендуемые статьи, прокрутите экран вниз</translation>
@@ -582,7 +581,6 @@
 <translation id="4181841719683918333">Языки</translation>
 <translation id="4188221736490993796">По алфавиту (от Я до А)</translation>
 <translation id="4195643157523330669">Открыть в новой вкладке</translation>
-<translation id="4196597275619698563">Создать карточку</translation>
 <translation id="4197828496439691735">{NUM_TABS,plural, =1{1 вкладка на этом устройстве}one{# вкладка на этом устройстве}few{# вкладки на этом устройстве}many{# вкладок на этом устройстве}other{# вкладки на этом устройстве}}</translation>
 <translation id="4198423547019359126">Нет доступных мест для скачивания</translation>
 <translation id="4202218894997543208">Заблокированные темы</translation>
@@ -594,7 +592,6 @@
 <translation id="4248098802131000011">Защитите пароли от утечки данных и других проблем с безопасностью</translation>
 <translation id="424864128008805179">Выйти из Chrome?</translation>
 <translation id="4249955472157341256">Сортировать по дате</translation>
-<translation id="4250229828105606438">Скриншот</translation>
 <translation id="4256782883801055595">Лицензии на ПО с открытым кодом</translation>
 <translation id="4257230861809842349">Удалить пароли из Google Менеджера паролей?</translation>
 <translation id="4269820728363426813">Копировать адрес ссылки</translation>
@@ -1148,7 +1145,6 @@
 <translation id="7030304022046916278">Обеспечивает отправку URL на проверку по критериям Безопасного просмотра.</translation>
 <translation id="7035701931849773472">Другие варианты</translation>
 <translation id="7037830628447527439">Войдите в Chrome, используя аккаунт Google</translation>
-<translation id="7038956721828960940">chrome_image_<ph name="CURRENT_TIMESTAMP_MS" /></translation>
 <translation id="7054588988317389591">Генерировать описания изображений?</translation>
 <translation id="7055152154916055070">Заблокирована попытка переадресации:</translation>
 <translation id="7063006564040364415">Не удалось связаться с сервером синхронизации</translation>
@@ -1279,7 +1275,6 @@
 <translation id="7658239707568436148">Отмена</translation>
 <translation id="7665369617277396874">Добавить аккаунт</translation>
 <translation id="766587987807204883">Здесь появляются статьи, которые можно читать даже в офлайн-режиме.</translation>
-<translation id="768232549260819724">GIF-файл скопирован.</translation>
 <translation id="7682724950699840886">Убедитесь, что на вашем устройстве достаточно свободного места. Затем снова попробуйте экспортировать пароли.</translation>
 <translation id="7686086654630106285">Сведения о рекламе, рекомендуемой сайтами</translation>
 <translation id="768618399695552958">Некоторые посещаемые вами страницы загружаются предварительно. Если переход выполняется с сайта на платформе Google, предзагрузка может осуществляться через серверы Google.</translation>
@@ -1334,7 +1329,6 @@
 <translation id="7929962904089429003">Открыть меню</translation>
 <translation id="7930998711684428189">Сообщает, если пароли были раскрыты в результате утечки данных.</translation>
 <translation id="7934668619883965330">Невозможно скачать файл. Его формат не поддерживается.</translation>
-<translation id="7939485076072265087">Создать стилизованную карточку с выделенным текстом</translation>
 <translation id="7942131818088350342">Версия <ph name="PRODUCT_NAME" /> устарела.</translation>
 <translation id="7944772052836377867">Подтвердите личность для синхронизации</translation>
 <translation id="7947953824732555851">Принять и войти</translation>
@@ -1472,7 +1466,6 @@
 <translation id="856481929701340285">Полная версия</translation>
 <translation id="8570677896027847510">Невозможно безопасно скачать файл</translation>
 <translation id="8571213806525832805">Последние 4 недели</translation>
-<translation id="8580884231102452214">Копировать GIF</translation>
 <translation id="8583805026567836021">Удаление данных аккаунта</translation>
 <translation id="859046281437143747">Нажмите кнопку "Ещё" и выберите пункт "Отслеживание цен"</translation>
 <translation id="860043288473659153">Имя владельца карты</translation>

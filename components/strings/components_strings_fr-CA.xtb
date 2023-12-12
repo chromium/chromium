@@ -349,6 +349,7 @@
 <translation id="1633941398432788136">Planification d'événements</translation>
 <translation id="1634828734222219955">Total</translation>
 <translation id="163669211644121865">Planification et déclarations fiscales</translation>
+<translation id="163826442096818926">Raccourcir</translation>
 <translation id="1639239467298939599">Chargement en cours</translation>
 <translation id="1640180200866533862">Règles relatives aux utilisateurs</translation>
 <translation id="1640244768702815859">Essayez de <ph name="BEGIN_LINK" />consulter la page d'accueil du site<ph name="END_LINK" />.</translation>
@@ -724,6 +725,7 @@
 <translation id="238459632961158867">Site Web</translation>
 <translation id="2385809941344967209">Mettez à jour Chrome dans les paramètres de Chrome</translation>
 <translation id="2386255080630008482">Le certificat du serveur a été révoqué.</translation>
+<translation id="239203817277685015">Élaborer</translation>
 <translation id="239293030466334554">Cabriolets</translation>
 <translation id="2392959068659972793">Afficher les règles non paramétrées</translation>
 <translation id="239429038616798445">Ce mode de livraison n'est pas disponible. Essayez un autre mode.</translation>
@@ -971,6 +973,7 @@
 <translation id="2938225289965773019">Ouvrir des liens <ph name="PROTOCOL" /></translation>
 <translation id="2941878205777356567">Enveloppe 9 x 12 po</translation>
 <translation id="2941952326391522266">Impossible de vérifier sur le serveur qu'il s'agit bien du domaine <ph name="DOMAIN" />, car son certificat de sécurité provient du domaine <ph name="DOMAIN2" />. Cela peut être dû à une mauvaise configuration ou bien à l'interception de votre connexion par un pirate informatique.</translation>
+<translation id="2942492342931589800">Grand public</translation>
 <translation id="2942515540157583425">Emplois dans le domaine de l'informatique et technique</translation>
 <translation id="2943895734390379394">Heure du téléversement :</translation>
 <translation id="2945026002409061480">Communautés en ligne</translation>
@@ -1231,6 +1234,7 @@
 <translation id="3447661539832366887">Le propriétaire de cet appareil a désactivé le jeu dinosaure.</translation>
 <translation id="3447884698081792621">Afficher le certificat (délivré par <ph name="ISSUER" />)</translation>
 <translation id="3450323514459570273">Le site peut demander de contrôler et de reprogrammer vos appareils MIDI</translation>
+<translation id="3452151267620065789">Progrès enregistré</translation>
 <translation id="3452404311384756672">Intervalle de récupération :</translation>
 <translation id="3453962258458347894">Nombre de nouveaux essais</translation>
 <translation id="3461266716147554923"><ph name="URL" /> veut voir le texte et les images copiés dans le presse-papiers</translation>
@@ -1314,6 +1318,7 @@
 <translation id="361438452008624280">Élément de liste « <ph name="LANGUAGE_ID" /> » : langue inconnue ou non prise en charge.</translation>
 <translation id="3614934205542186002"><ph name="RUN_CHROME_SAFETY_CHECK_FOCUSED_FRIENDLY_MATCH_TEXT" />, appuyez sur la touche Tabulation, puis sur la touche Entrée pour effectuer une vérification de sécurité dans les paramètres de Chrome</translation>
 <translation id="3615309852743236517">Manucures et pédicures</translation>
+<translation id="3617072447978270288">Régénérer</translation>
 <translation id="3620239073311576716">Uniformes et vêtements de travail</translation>
 <translation id="36224234498066874">Effacer données navigation…</translation>
 <translation id="362276910939193118">Afficher l'historique complet</translation>
@@ -1336,6 +1341,7 @@
 <translation id="3650594806107685466">Pour assurer la sécurité de votre carte, entrer le code CVC figurant sur le <ph name="SIDE_OF_CARD" /></translation>
 <translation id="3650917416636556301">Randonnée et camping</translation>
 <translation id="3653033846669030038">Parcs thématiques</translation>
+<translation id="3654980960391973513">Générer</translation>
 <translation id="3655241534245626312">Accéder aux paramètres de l'autorisation</translation>
 <translation id="3655670868607891010">Si ce message s'affiche souvent, essayez ces <ph name="HELP_LINK" />.</translation>
 <translation id="365641980390710834">Vêtements confortables</translation>
@@ -2571,6 +2577,7 @@
 <translation id="6157754950574419155">Retirer tous les éléments de l'historique</translation>
 <translation id="6157877588268064908">Pour voir les exigences et les modes de livraison, sélectionnez une adresse</translation>
 <translation id="6159554577634054750">Contrôle des insectes et des animaux nuisibles</translation>
+<translation id="6159908896951210943">Soutenu</translation>
 <translation id="6160391204859821737">Activer une fonctionnalité de confidentialité des annonces</translation>
 <translation id="6165508094623778733">En savoir plus</translation>
 <translation id="6167577165590485365">Dernière tentative de récupération :</translation>
@@ -3216,6 +3223,7 @@ Détails supplémentaires :
 <translation id="7422347648202898039">Étiquettes (sécurité)</translation>
 <translation id="7423283032694727565">Bouton Gérer les témoins, activez-le pour gérer vos préférences relatives aux témoins dans les paramètres de Chrome</translation>
 <translation id="7424421098814895617">L'option Supprimer l'adresse a été sélectionnée</translation>
+<translation id="7425037327577270384">Aide à la rédaction</translation>
 <translation id="7427366580982928791">Sécurité des enfants sur Internet</translation>
 <translation id="7429429656042611765">Dirigeant</translation>
 <translation id="7432774160230062882">Vérifiez qu'il s'agit bien de vous afin que Chromium puisse remplir vos infos de paiement.</translation>
@@ -3282,6 +3290,7 @@ Détails supplémentaires :
 <translation id="7529884293139707752">Enseignement à domicile</translation>
 <translation id="7534987659046836932">Enveloppe C7</translation>
 <translation id="7535087603100972091">Valeur</translation>
+<translation id="753556296624075801">Propulsé par Google</translation>
 <translation id="7537536606612762813">Obligatoire</translation>
 <translation id="7542995811387359312">Le remplissage automatique des numéros de carte de crédit est désactivé, car la connexion utilisée par ce formulaire n'est pas sécurisée.</translation>
 <translation id="7543525346216957623">Demande à l'un de tes parents</translation>
@@ -3465,6 +3474,7 @@ Détails supplémentaires :
 <translation id="7871445724586827387">Modifier le mot de passe de votre compte Google</translation>
 <translation id="7877007680666472091">identifiants de contenu protégé</translation>
 <translation id="7878562273885520351">Votre mot de passe a peut-être été compromis</translation>
+<translation id="7878966190323222027">Rouvrir pour continuer</translation>
 <translation id="7880146494886811634">Enregistrer l'adresse</translation>
 <translation id="7882421473871500483">Brun</translation>
 <translation id="7882995332186050355">Poids lourds et semi-remorques</translation>
@@ -3994,6 +4004,7 @@ Détails supplémentaires :
 <translation id="8942355029279167844">Votre administrateur a autorisé <ph name="APP_NAME" /> à collecter des données de diagnostic afin d'améliorer l'expérience du produit. Pour en savoir plus, consultez la page <ph name="BEGIN_LINK" />https://www.parallels.com/pcep<ph name="END_LINK" />.</translation>
 <translation id="8943282376843390568">Vert lime</translation>
 <translation id="8944485226638699751">Limités</translation>
+<translation id="8949410982325929394">Ton</translation>
 <translation id="8949493680961858543">A1 x 4</translation>
 <translation id="8951415078585015151">Justice et gouvernement</translation>
 <translation id="8954252855949068147">Vêtements</translation>

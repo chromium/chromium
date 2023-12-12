@@ -410,7 +410,6 @@
 <translation id="3226612997184048185">እንዲሁም ዕልባቶችዎን በእርስዎ Google መለያ ውስጥ ካስቀመጡ Chrome ውስጥ የምርት ዋጋዎችን መከታተል እና ዋጋው ሲቀንስ ማሳወቂያ ማግኘት ይችላሉ</translation>
 <translation id="3227557059438308877">Google Chrome እንደ የደህንነት ቁልፍ</translation>
 <translation id="3232754137068452469">የድር መተግበሪያ</translation>
-<translation id="3234978181857588512">ወደ መሣሪያ አስቀምጥ</translation>
 <translation id="3236059992281584593">1 ደቂቃ ይቀራል</translation>
 <translation id="3237087289225714896">መደበኛ ቅድሚያ መጫን፦</translation>
 <translation id="3237433641417325993">የተጠቆሙ ጽሑፎችን ለማየት ወደ ታች ይሸብልሉ</translation>
@@ -582,7 +581,6 @@
 <translation id="4181841719683918333">ቋንቋዎች</translation>
 <translation id="4188221736490993796">ከፐ ወደ ሀ ደርድር</translation>
 <translation id="4195643157523330669">በአዲስ ትር ክፈት</translation>
-<translation id="4196597275619698563">ካርድ ፍጠር</translation>
 <translation id="4197828496439691735">{NUM_TABS,plural, =1{በዚህ መሣሪያ ላይ 1 ትር}one{በዚህ መሣሪያ ላይ # ትር}other{በዚህ መሣሪያ ላይ # ትሮች}}</translation>
 <translation id="4198423547019359126">ምንም የማውረጃ አካባቢዎች የሉም</translation>
 <translation id="4202218894997543208">እርስዎ ያገዷቸው ርዕሶች</translation>
@@ -594,7 +592,6 @@
 <translation id="4248098802131000011">የይለፍ ቃላትዎን ከውሂብ ጥሰቶች እና ሌሎች የደህንነት ችግሮች ይጠብቁ</translation>
 <translation id="424864128008805179">ከChrome ተዘግቶ ይወጣ?</translation>
 <translation id="4249955472157341256">በጊዜ ቅርበት ደርድር</translation>
-<translation id="4250229828105606438">ቅጽበታዊ ገፅ ዕይታ</translation>
 <translation id="4256782883801055595">የክፍት ምንጭ ፍቃዶች</translation>
 <translation id="4257230861809842349">የይለፍ ቃላት ከGoogle የይለፍ ቃል አስተዳዳሪ ይሰረዙ?</translation>
 <translation id="4269820728363426813">የአገናኝ አድራሻ ቅዳ</translation>
@@ -1148,7 +1145,6 @@
 <translation id="7030304022046916278">ዩአርኤሎችን ለመፈተሽ ወደ ደህንነቱ የተጠበቀ አሰሳ ይልካቸዋል</translation>
 <translation id="7035701931849773472">ሌሎች አማራጮች</translation>
 <translation id="7037830628447527439">በእርስዎ Google መለያ ወደ Chrome ይግቡ</translation>
-<translation id="7038956721828960940">chrome_image_<ph name="CURRENT_TIMESTAMP_MS" /></translation>
 <translation id="7054588988317389591">የምስል መግለጫዎችን ያግኙ?</translation>
 <translation id="7055152154916055070">አቅጣጫ ማዞር ታግዷል፦</translation>
 <translation id="7063006564040364415">ከማመሳሰያ አገልጋዩ ጋር መገናኘት አልተቻለም።</translation>
@@ -1279,7 +1275,6 @@
 <translation id="7658239707568436148">ይቅር</translation>
 <translation id="7665369617277396874">መለያ ያክሉ</translation>
 <translation id="766587987807204883">እርስዎ ከመስመር ውጭ ሆነውም እንኳ ሊያነብቧቸው የሚችሏቸውን ጽሑፎች እዚህ ይመጣሉ</translation>
-<translation id="768232549260819724">ጂአይኤፍ ተቀድቷል</translation>
 <translation id="7682724950699840886">የሚከተሉትን ጠቃሚ ምክሮች ይሞክሩ፦ በእርስዎ መሣሪያ ላይ በቂ ባዶ ቦታ መኖሩን ያረጋግጡ፣ ወይም እንደገና ወደ ውጭ ለመላክ ይሞክሩ።</translation>
 <translation id="7686086654630106285">ስለ በጣቢያ የተጠቆሙ ማስታወቂያዎች ተጨማሪ</translation>
 <translation id="768618399695552958">የጎበኟቸው አንዳንድ ገጾች ቅድሚያ ተጭነዋል። ገጾች ከGoogle ጣቢያ ከተገናኙ በGoogle አገልጋዮች በኩል ቅድሚያ ሊጫኑ ይችላሉ።</translation>
@@ -1334,7 +1329,6 @@
 <translation id="7929962904089429003">ምናሌውን ክፈት</translation>
 <translation id="7930998711684428189">የይለፍ ቃላት በውሂብ ደንብ ጥሰት ተጋላጭ ከሆነ ያስጠንቅቀዎታል።</translation>
 <translation id="7934668619883965330">ፋይል ማውረድ አልተቻለም። የፋይል ቅርጸት አይደገፍም።</translation>
-<translation id="7939485076072265087">ከድምቀት ጋር ቅጥ የተሰጠው ካርድ ይፍጠሩ</translation>
 <translation id="7942131818088350342"><ph name="PRODUCT_NAME" /> ጊዜው ያለፈበት ነው።</translation>
 <translation id="7944772052836377867">ስምረት እርስዎ መሆንዎን ማረጋገጥ ይፈልጋል</translation>
 <translation id="7947953824732555851">ተቀበል እና ግባ</translation>
@@ -1472,7 +1466,6 @@
 <translation id="856481929701340285">የዴስክቶፕ ጣቢያን ይጠይቁ</translation>
 <translation id="8570677896027847510">ፋይል ደህንነቱ በተጠበቀ ሁኔታ ሊወርድ አይችልም</translation>
 <translation id="8571213806525832805">ባለፉት 4 ሳምንቶች</translation>
-<translation id="8580884231102452214">ጂአይኤፍ ቅዳ</translation>
 <translation id="8583805026567836021">የመለያ ውሂብን በማጽዳት ላይ</translation>
 <translation id="859046281437143747">ከተጨማሪ አማራጮች አዝራር ዋጋን ይከታተሉ</translation>
 <translation id="860043288473659153">የካርድ ያዢ ስም</translation>

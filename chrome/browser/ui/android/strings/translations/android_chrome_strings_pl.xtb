@@ -410,7 +410,6 @@ Twoje zaszyfrowane dane może odczytać tylko osoba znająca hasło. Hasło nie 
 <translation id="3226612997184048185">Jeśli zapisujesz też zakładki na koncie Google, możesz śledzić ceny produktów w Chrome i otrzymywać powiadomienia o obniżkach</translation>
 <translation id="3227557059438308877">Google Chrome jako klucz bezpieczeństwa</translation>
 <translation id="3232754137068452469">Aplikacja internetowa</translation>
-<translation id="3234978181857588512">Zapisz na urządzeniu</translation>
 <translation id="3236059992281584593">Pozostała minuta</translation>
 <translation id="3237087289225714896">Wczytywanie standardowe:</translation>
 <translation id="3237433641417325993">Przewiń w dół, aby zobaczyć sugerowane artykuły</translation>
@@ -582,7 +581,6 @@ Twoje zaszyfrowane dane może odczytać tylko osoba znająca hasło. Hasło nie 
 <translation id="4181841719683918333">Języki</translation>
 <translation id="4188221736490993796">Sortuj od Z do A</translation>
 <translation id="4195643157523330669">Otwórz w nowej karcie</translation>
-<translation id="4196597275619698563">Utwórz kartę</translation>
 <translation id="4197828496439691735">{NUM_TABS,plural, =1{1 karta na tym urządzeniu}few{# karty na tym urządzeniu}many{# kart na tym urządzeniu}other{# karty na tym urządzeniu}}</translation>
 <translation id="4198423547019359126">Brak dostępnych miejsc zapisu pobieranych plików</translation>
 <translation id="4202218894997543208">Zablokowane tematy</translation>
@@ -594,7 +592,6 @@ Twoje zaszyfrowane dane może odczytać tylko osoba znająca hasło. Hasło nie 
 <translation id="4248098802131000011">Chroń swoje hasła przed naruszeniem bezpieczeństwa danych i innymi zagrożeniami</translation>
 <translation id="424864128008805179">Wylogować z Chrome?</translation>
 <translation id="4249955472157341256">Sortuj od najnowszego</translation>
-<translation id="4250229828105606438">Zrzut ekranu</translation>
 <translation id="4256782883801055595">Licencje open source</translation>
 <translation id="4257230861809842349">Usunąć hasła z Menedżera haseł Google?</translation>
 <translation id="4269820728363426813">Kopiuj adres linku</translation>
@@ -1148,7 +1145,6 @@ Na przykład niektóre strony mogą na nie zareagować, wyświetlając reklamy b
 <translation id="7030304022046916278">Wysyła adresy URL do sprawdzenia przez usługę Bezpieczne przeglądanie.</translation>
 <translation id="7035701931849773472">Inne opcje</translation>
 <translation id="7037830628447527439">Zaloguj się w Chrome, korzystając ze swojego konta Google</translation>
-<translation id="7038956721828960940">chrome_obraz_<ph name="CURRENT_TIMESTAMP_MS" /></translation>
 <translation id="7054588988317389591">Czy chcesz pobierać opisy obrazów?</translation>
 <translation id="7055152154916055070">Zablokowano przekierowanie:</translation>
 <translation id="7063006564040364415">Nie udało się nawiązać połączenia z serwerem synchronizacji.</translation>
@@ -1279,7 +1275,6 @@ Na przykład niektóre strony mogą na nie zareagować, wyświetlając reklamy b
 <translation id="7658239707568436148">Anuluj</translation>
 <translation id="7665369617277396874">Dodaj konto</translation>
 <translation id="766587987807204883">Tutaj pojawiają się artykuły, które możesz czytać, nawet gdy jesteś offline</translation>
-<translation id="768232549260819724">GIF został skopiowany</translation>
 <translation id="7682724950699840886">Skorzystaj z tych wskazówek: upewnij się, że masz wystarczająco dużo miejsca na urządzeniu, i ponownie spróbuj wyeksportować hasła.</translation>
 <translation id="7686086654630106285">Więcej informacji o reklamach sugerowanych przez witrynę</translation>
 <translation id="768618399695552958">Niektóre z odwiedzanych przez Ciebie stron są wstępnie wczytywane. Serwery Google mogą wstępnie wczytywać strony, gdy prowadzą do nich linki z witryny Google.</translation>
@@ -1334,7 +1329,6 @@ Na przykład niektóre strony mogą na nie zareagować, wyświetlając reklamy b
 <translation id="7929962904089429003">Otwórz menu</translation>
 <translation id="7930998711684428189">Ostrzega, jeśli wskutek naruszenia bezpieczeństwa danych doszło do ujawnienia haseł.</translation>
 <translation id="7934668619883965330">Nie można pobrać pliku. Format pliku nie jest obsługiwany.</translation>
-<translation id="7939485076072265087">Utwórz stylizowaną kartę z wyróżnieniem</translation>
 <translation id="7942131818088350342">Przeglądarka <ph name="PRODUCT_NAME" /> jest nieaktualna.</translation>
 <translation id="7944772052836377867">Synchronizacja musi potwierdzić Twoją tożsamość</translation>
 <translation id="7947953824732555851">Zaakceptuj i zaloguj się</translation>
@@ -1472,7 +1466,6 @@ Na przykład niektóre strony mogą na nie zareagować, wyświetlając reklamy b
 <translation id="856481929701340285">Wersja na komputer</translation>
 <translation id="8570677896027847510">Nie można pobrać pliku w bezpieczny sposób</translation>
 <translation id="8571213806525832805">Ostatnie 4 tygodnie</translation>
-<translation id="8580884231102452214">Kopiuj GIF</translation>
 <translation id="8583805026567836021">Usuwam dane konta</translation>
 <translation id="859046281437143747">Monitoruj cenę za pomocą przycisku Więcej opcji</translation>
 <translation id="860043288473659153">Imię i nazwisko posiadacza karty</translation>

@@ -410,7 +410,6 @@ Ang sinumang may passphrase mo lang ang makakapagbasa sa iyong naka-encrypt na d
 <translation id="3226612997184048185">Kung sine-save mo rin ang iyong mga bookmark sa Google Account mo, puwede mong subaybayan sa Chrome ang mga presyo ng produkto at puwede kang maabisuhan kapag bumaba ang presyo</translation>
 <translation id="3227557059438308877">Google Chrome bilang Security Key</translation>
 <translation id="3232754137068452469">Web App</translation>
-<translation id="3234978181857588512">I-save sa device</translation>
 <translation id="3236059992281584593">1 minuto na lang ang natitira</translation>
 <translation id="3237087289225714896">Karaniwang pag-preload:</translation>
 <translation id="3237433641417325993">Mag-scroll pababa para makakita ng mga iminumungkahing artikulo</translation>
@@ -582,7 +581,6 @@ Ang sinumang may passphrase mo lang ang makakapagbasa sa iyong naka-encrypt na d
 <translation id="4181841719683918333">Mga Wika</translation>
 <translation id="4188221736490993796">Isaayos: Z hanggang A</translation>
 <translation id="4195643157523330669">Buksan sa bagong tab</translation>
-<translation id="4196597275619698563">Gumawa ng card</translation>
 <translation id="4197828496439691735">{NUM_TABS,plural, =1{1 tab sa device na ito}one{# tab sa device na ito}other{# na tab sa device na ito}}</translation>
 <translation id="4198423547019359126">Walang available na lokasyon ng pag-download</translation>
 <translation id="4202218894997543208">Mga paksang na-block mo</translation>
@@ -594,7 +592,6 @@ Ang sinumang may passphrase mo lang ang makakapagbasa sa iyong naka-encrypt na d
 <translation id="4248098802131000011">Panatilihing ligtas ang iyong mga password mula sa mga paglabag sa data breaches at iba pang isyu sa seguridad</translation>
 <translation id="424864128008805179">Mag-sign out sa Chrome?</translation>
 <translation id="4249955472157341256">Pagbukud-bukurin ayon sa Pinakabago</translation>
-<translation id="4250229828105606438">Screenshot</translation>
 <translation id="4256782883801055595">Mga lisensya ng open source</translation>
 <translation id="4257230861809842349">Mag-delete ng mga password mula sa Google Password Manager?</translation>
 <translation id="4269820728363426813">Kopyahin ang address ng link</translation>
@@ -1148,7 +1145,6 @@ Halimbawa, puwedeng tumugon ang ilang website sa kahilingang ito sa pamamagitan 
 <translation id="7030304022046916278">Nagpapadala ng mga URL sa Ligtas na Pag-browse para masuri ang mga ito</translation>
 <translation id="7035701931849773472">Iba pang opsyon</translation>
 <translation id="7037830628447527439">Mag-sign in sa Chrome gamit ang iyong Google Account</translation>
-<translation id="7038956721828960940">chrome_image_<ph name="CURRENT_TIMESTAMP_MS" /></translation>
 <translation id="7054588988317389591">Makakuha ng mga paglalarawan ng larawan?</translation>
 <translation id="7055152154916055070">Na-block ang pag-redirect:</translation>
 <translation id="7063006564040364415">Hindi makakonekta sa server ng pag-sync.</translation>
@@ -1279,7 +1275,6 @@ Halimbawa, puwedeng tumugon ang ilang website sa kahilingang ito sa pamamagitan 
 <translation id="7658239707568436148">Kanselahin</translation>
 <translation id="7665369617277396874">Magdagdag ng account</translation>
 <translation id="766587987807204883">Lalabas dito ang mga artikulong mababasa mo kahit offline ka</translation>
-<translation id="768232549260819724">Nakopya ang GIF</translation>
 <translation id="7682724950699840886">Subukan ang mga sumusunod na tip: tiyaking may sapat na espasyo sa iyong device, at subukang mag-export muli.</translation>
 <translation id="7686086654630106285">Higit pa tungkol sa mga ad na iminumungkahi ng site</translation>
 <translation id="768618399695552958">Na-preload ang ilan sa mga page na binibisita mo. Posibleng mag-preload ng mga page sa pamamagitan ng mga server ng Google kapag naka-link mula sa isang site ng Google.</translation>
@@ -1334,7 +1329,6 @@ Halimbawa, puwedeng tumugon ang ilang website sa kahilingang ito sa pamamagitan 
 <translation id="7929962904089429003">Buksan ang menu</translation>
 <translation id="7930998711684428189">Binibigyan ka ng babala kung malalantad ang mga password sa paglabag sa data.</translation>
 <translation id="7934668619883965330">Hindi ma-download ang file. Hindi sinusuportahan ang format ng file.</translation>
-<translation id="7939485076072265087">Gumawa ng stylized na card gamit ang highlight</translation>
 <translation id="7942131818088350342">Luma na ang <ph name="PRODUCT_NAME" />.</translation>
 <translation id="7944772052836377867">Kailangang ma-verify ng pag-sync na ikaw ito</translation>
 <translation id="7947953824732555851">I-accept, mag-sign in</translation>
@@ -1472,7 +1466,6 @@ Halimbawa, puwedeng tumugon ang ilang website sa kahilingang ito sa pamamagitan 
 <translation id="856481929701340285">Hilingin ang desktop site</translation>
 <translation id="8570677896027847510">Hindi secure na mada-download ang mga file</translation>
 <translation id="8571213806525832805">Huling 4 na linggo</translation>
-<translation id="8580884231102452214">Kopyahin ang GIF</translation>
 <translation id="8583805026567836021">Kini-clear ang data ng account</translation>
 <translation id="859046281437143747">Subaybayan ang presyo mula sa button na Higit pang opsyon</translation>
 <translation id="860043288473659153">Pangalan ng cardholder</translation>

@@ -410,7 +410,6 @@ Zure pasaesaldia dakitenek soilik irakur ditzakete zure datu enkriptatuak. Googl
 <translation id="3226612997184048185">Era berean, laster-markak Google-ko kontuan gordetzen badituzu, Chrome-n produktuen prezioen jarraipena egin ahal izango duzu, eta prezioak jaisten direnean jakinarazpenak jaso</translation>
 <translation id="3227557059438308877">Erabili Google Chrome segurtasun-giltza gisa</translation>
 <translation id="3232754137068452469">Sareko aplikazioa</translation>
-<translation id="3234978181857588512">Gorde gailuan</translation>
 <translation id="3236059992281584593">1 min gelditzen da</translation>
 <translation id="3237087289225714896">Aurrez kargatzeko modu arrunta:</translation>
 <translation id="3237433641417325993">Egin behera iradokitako artikuluak ikusteko</translation>
@@ -582,7 +581,6 @@ Zure pasaesaldia dakitenek soilik irakur ditzakete zure datu enkriptatuak. Googl
 <translation id="4181841719683918333">Hizkuntzak</translation>
 <translation id="4188221736490993796">Ordenatu Ztik Ara</translation>
 <translation id="4195643157523330669">Ireki fitxa berri batean</translation>
-<translation id="4196597275619698563">Sortu txartel bat</translation>
 <translation id="4197828496439691735">{NUM_TABS,plural, =1{Gailu honetako fitxa bat}other{Gailu honetako # fitxa}}</translation>
 <translation id="4198423547019359126">Ez dago deskarga-kokapenik eskuragarri</translation>
 <translation id="4202218894997543208">Blokeatu dituzun gaiak</translation>
@@ -594,7 +592,6 @@ Zure pasaesaldia dakitenek soilik irakur ditzakete zure datu enkriptatuak. Googl
 <translation id="4248098802131000011">Babestu pasahitzak datuen isilpekotasunaren urratzeen eta beste segurtasun-arazo batzuen aurka</translation>
 <translation id="424864128008805179">Chrome-ko saioa amaitu nahi duzu?</translation>
 <translation id="4249955472157341256">Ordenatu berrienetatik zaharrenetara</translation>
-<translation id="4250229828105606438">Pantaila-argazkia</translation>
 <translation id="4256782883801055595">Kode irekiko lizentziak</translation>
 <translation id="4257230861809842349">Pasahitzak Google-ren Pasahitz-kudeatzailea zerbitzutik ezabatu nahi dituzu?</translation>
 <translation id="4269820728363426813">Kopiatu estekaren helbidea</translation>
@@ -1148,7 +1145,6 @@ Esaterako, bisitatu dituzun webguneetan oinarritzen ez diren iragarkiak bidalita
 <translation id="7030304022046916278">URLak Arakatze segurua eginbideari bidaltzen dizkio egiazta ditzan.</translation>
 <translation id="7035701931849773472">Beste aukera batzuk</translation>
 <translation id="7037830628447527439">Hasi saioa Chrome-n Google-ko kontuarekin</translation>
-<translation id="7038956721828960940">chrome-ko_irudia_<ph name="CURRENT_TIMESTAMP_MS" /></translation>
 <translation id="7054588988317389591">Irudi-deskribapenak lortu nahi dituzu?</translation>
 <translation id="7055152154916055070">Birbideratze hau blokeatu da:</translation>
 <translation id="7063006564040364415">Ezin izan da sinkronizazio-zerbitzarira konektatu</translation>
@@ -1279,7 +1275,6 @@ Esaterako, bisitatu dituzun webguneetan oinarritzen ez diren iragarkiak bidalita
 <translation id="7658239707568436148">Utzi</translation>
 <translation id="7665369617277396874">Gehitu kontu bat</translation>
 <translation id="766587987807204883">Artikuluak agertuko dira hemen, nahi duzunean irakur ditzazun, baita konektatuta ez bazaude ere</translation>
-<translation id="768232549260819724">Kopiatu da GIFa</translation>
 <translation id="7682724950699840886">Saiatu hau egiten: ziurtatu gailuan behar adina toki duzula eta saiatu berriro esportatzen.</translation>
 <translation id="7686086654630106285">Webguneek iradokitako iragarkiei buruzko informazio gehiago</translation>
 <translation id="768618399695552958">Bisitatzen dituzun orrietako batzuk aurrez kargatzen dira. Baliteke orriak Google-ren zerbitzarien bidez aurrez kargatzea esteka Google-ren webgune batean badago.</translation>
@@ -1334,7 +1329,6 @@ Esaterako, bisitatu dituzun webguneetan oinarritzen ez diren iragarkiak bidalita
 <translation id="7929962904089429003">Ireki menua</translation>
 <translation id="7930998711684428189">Abisatu egiten dizu pasahitzak arriskuan badaude datuen isilpekotasuna urratu delako.</translation>
 <translation id="7934668619883965330">Ezin da deskargatu fitxategia. Ez da onartzen fitxategi-formatua.</translation>
-<translation id="7939485076072265087">Sortu txartel estilizatu bat nabarmendutako testuarekin</translation>
 <translation id="7942131818088350342">Zaharkituta dago <ph name="PRODUCT_NAME" />.</translation>
 <translation id="7944772052836377867">Sinkronizazioak zure identitatea egiaztatu behar du</translation>
 <translation id="7947953824732555851">Onartu eta hasi saioa</translation>
@@ -1472,7 +1466,6 @@ Esaterako, bisitatu dituzun webguneetan oinarritzen ez diren iragarkiak bidalita
 <translation id="856481929701340285">Eskatu ordenagailuetarako gunea</translation>
 <translation id="8570677896027847510">Ezin da segurtasunez deskargatu fitxategia</translation>
 <translation id="8571213806525832805">Azken lau asteetakoak</translation>
-<translation id="8580884231102452214">Kopiatu GIFa</translation>
 <translation id="8583805026567836021">Kontuko datuak garbitzen</translation>
 <translation id="859046281437143747">Erabili Aukera gehiago botoia prezioaren jarraipena egiten hasteko</translation>
 <translation id="860043288473659153">Txartelaren titularraren izena</translation>

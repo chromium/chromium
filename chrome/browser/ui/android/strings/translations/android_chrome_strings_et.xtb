@@ -410,7 +410,6 @@ Teie krüpteeritud andmeid saab lugeda ainult isik, kes teab teie parooli. Paroo
 <translation id="3226612997184048185">Kui salvestate ka oma järjehoidjad Google'i kontole, saate jälgida Chrome'is toodete hindu ja saada teateid hinnalanguste kohta</translation>
 <translation id="3227557059438308877">Google Chrome turvavõtmena</translation>
 <translation id="3232754137068452469">Veebirakendus</translation>
-<translation id="3234978181857588512">Salvesta seadmesse</translation>
 <translation id="3236059992281584593">Jäänud on 1 minut</translation>
 <translation id="3237087289225714896">Standardne eellaadimine:</translation>
 <translation id="3237433641417325993">Kerige alla, et näha soovitatud artikleid</translation>
@@ -582,7 +581,6 @@ Teie krüpteeritud andmeid saab lugeda ainult isik, kes teab teie parooli. Paroo
 <translation id="4181841719683918333">Keeled</translation>
 <translation id="4188221736490993796">Sordi Y-st A-ni järgi</translation>
 <translation id="4195643157523330669">Ava uuel vahelehel</translation>
-<translation id="4196597275619698563">Loo kaart</translation>
 <translation id="4197828496439691735">{NUM_TABS,plural, =1{1 vahekaart selles seadmes}other{# vahekaarti selles seadmes}}</translation>
 <translation id="4198423547019359126">Ükski allalaadimise asukoht ei ole saadaval</translation>
 <translation id="4202218894997543208">Teie blokeeritud teemad</translation>
@@ -594,7 +592,6 @@ Teie krüpteeritud andmeid saab lugeda ainult isik, kes teab teie parooli. Paroo
 <translation id="4248098802131000011">Tagage oma paroolide turvalisus, et vältida andmetega seotud rikkumisi ja muid turvaprobleeme</translation>
 <translation id="424864128008805179">Kas logida Chrome'ist välja?</translation>
 <translation id="4249955472157341256">Sordi uusimate järgi</translation>
-<translation id="4250229828105606438">Ekraanipilt</translation>
 <translation id="4256782883801055595">Avatud lähtekoodi litsentsid</translation>
 <translation id="4257230861809842349">Kas soovite Google'i paroolihaldurist paroolid kustutada?</translation>
 <translation id="4269820728363426813">Kopeeri lingi aadress</translation>
@@ -1148,7 +1145,6 @@ Näiteks võivad mõned veebisaidid taotlusele reageerida nii, et näitavad teil
 <translation id="7030304022046916278">Saadab URL-id kontrollimiseks teenusele Google'i ohutu sirvimine.</translation>
 <translation id="7035701931849773472">Muud valikud</translation>
 <translation id="7037830628447527439">Logige Chrome’i oma Google’i kontoga sisse</translation>
-<translation id="7038956721828960940">Chrome'i_pilt_<ph name="CURRENT_TIMESTAMP_MS" /></translation>
 <translation id="7054588988317389591">Kas saada piltide kirjeldusi?</translation>
 <translation id="7055152154916055070">Ümbersuunamine blokeeriti:</translation>
 <translation id="7063006564040364415">Sünkroonimisserveriga ei saanud ühendust.</translation>
@@ -1279,7 +1275,6 @@ Näiteks võivad mõned veebisaidid taotlusele reageerida nii, et näitavad teil
 <translation id="7658239707568436148">Tühista</translation>
 <translation id="7665369617277396874">Konto lisamine</translation>
 <translation id="766587987807204883">Artiklid kuvatakse siin ja saate neid lugeda ka võrguühenduseta</translation>
-<translation id="768232549260819724">GIF on kopeeritud</translation>
 <translation id="7682724950699840886">Järgige neid nõuandeid: veenduge, et seadmes oleks piisavalt ruumi, seejärel proovige uuesti eksportida.</translation>
 <translation id="7686086654630106285">Lisateave saidi soovitatud reklaamide kohta</translation>
 <translation id="768618399695552958">Mõned teie külastatavad lehed on eellaaditud. Kui lehed on lingitud Google'i saidilt, võidakse need eellaadida Google'i serverite kaudu.</translation>
@@ -1334,7 +1329,6 @@ Näiteks võivad mõned veebisaidid taotlusele reageerida nii, et näitavad teil
 <translation id="7929962904089429003">Menüü avamine</translation>
 <translation id="7930998711684428189">Teid hoiatatakse, kui paroolid andmetega seotud rikkumise käigus avalikustatakse.</translation>
 <translation id="7934668619883965330">Faili ei saa alla laadida. Failivormingut ei toetata.</translation>
-<translation id="7939485076072265087">Esiletõstuga stiliseeritud kaardi loomine</translation>
 <translation id="7942131818088350342">Teenus <ph name="PRODUCT_NAME" /> on aegunud.</translation>
 <translation id="7944772052836377867">Sünkroonimisfunktsioon peab teie isiku kinnitama</translation>
 <translation id="7947953824732555851">Nõustu ja logi sisse</translation>
@@ -1472,7 +1466,6 @@ Näiteks võivad mõned veebisaidid taotlusele reageerida nii, et näitavad teil
 <translation id="856481929701340285">Saidi arvutiversiooni taotlemine</translation>
 <translation id="8570677896027847510">Faili ei saa turvaliselt alla laadida</translation>
 <translation id="8571213806525832805">Viimased 4 nädalat</translation>
-<translation id="8580884231102452214">Kopeeri GIF</translation>
 <translation id="8583805026567836021">Kontoandmete kustutamine</translation>
 <translation id="859046281437143747">Jälgige hinda nupu Rohkem valikuid kaudu</translation>
 <translation id="860043288473659153">Kaardiomaniku nimi</translation>

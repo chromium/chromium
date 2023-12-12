@@ -410,7 +410,6 @@ Samo neko ko ima pristupnu frazu može da čita šifrovane podatke. Pristupna fr
 <translation id="3226612997184048185">Ako sačuvate obeleživače i na Google nalogu, možete da pratite cene proizvoda u Chrome-u i da dobijate obaveštenja kada padne cena</translation>
 <translation id="3227557059438308877">Google Chrome kao bezbednosni ključ</translation>
 <translation id="3232754137068452469">Veb-aplikacija</translation>
-<translation id="3234978181857588512">Sačuvaj na uređaju</translation>
 <translation id="3236059992281584593">Još 1 min</translation>
 <translation id="3237087289225714896">Standardno predučitavanje:</translation>
 <translation id="3237433641417325993">Skrolujte nadole da biste videli podržane članke</translation>
@@ -582,7 +581,6 @@ Samo neko ko ima pristupnu frazu može da čita šifrovane podatke. Pristupna fr
 <translation id="4181841719683918333">Jezici</translation>
 <translation id="4188221736490993796">Sortiraj od Z do A</translation>
 <translation id="4195643157523330669">Otvori na novoj kartici</translation>
-<translation id="4196597275619698563">Napravi karticu</translation>
 <translation id="4197828496439691735">{NUM_TABS,plural, =1{1 kartica na ovom uređaju}one{# kartica na ovom uređaju}few{# kartice na ovom uređaju}other{# kartica na ovom uređaju}}</translation>
 <translation id="4198423547019359126">Nema dostupnih lokacija za preuzimanja</translation>
 <translation id="4202218894997543208">Teme koje ste blokirali</translation>
@@ -594,7 +592,6 @@ Samo neko ko ima pristupnu frazu može da čita šifrovane podatke. Pristupna fr
 <translation id="4248098802131000011">Zaštitite lozinke od upada u podatke i drugih bezbednosnih problema</translation>
 <translation id="424864128008805179">Želite li da se odjavite iz Chrome-a?</translation>
 <translation id="4249955472157341256">Sortiraj prema najnovijem</translation>
-<translation id="4250229828105606438">Snimak ekrana</translation>
 <translation id="4256782883801055595">Licence otvorenog koda</translation>
 <translation id="4257230861809842349">Želite da izbrišete lozinke iz Google menadžera lozinki?</translation>
 <translation id="4269820728363426813">Kopiraj adresu linka</translation>
@@ -1148,7 +1145,6 @@ Na primer, neki veb-sajtovi mogu da odgovore na ovaj zahtev prikazivanjem oglasa
 <translation id="7030304022046916278">Šalje URL-ove u Bezbedno pregledanje na proveru</translation>
 <translation id="7035701931849773472">Druge opcije</translation>
 <translation id="7037830628447527439">Prijavite se u Chrome pomoću Google naloga</translation>
-<translation id="7038956721828960940">chrome_image_<ph name="CURRENT_TIMESTAMP_MS" /></translation>
 <translation id="7054588988317389591">Želite da dobijate opise slika?</translation>
 <translation id="7055152154916055070">Blokirano je preusmeravanje:</translation>
 <translation id="7063006564040364415">Nije moguće povezivanje sa serverom za sinhronizaciju.</translation>
@@ -1279,7 +1275,6 @@ Na primer, neki veb-sajtovi mogu da odgovore na ovaj zahtev prikazivanjem oglasa
 <translation id="7658239707568436148">Otkaži</translation>
 <translation id="7665369617277396874">Dodajte nalog</translation>
 <translation id="766587987807204883">Ovde se pojavljuju članci, koje možete da čitate čak i kada ste oflajn</translation>
-<translation id="768232549260819724">GIF je kopiran</translation>
 <translation id="7682724950699840886">Isprobajte sledeće savete: proverite da li na uređaju ima dovoljno prostora, pa probajte da ponovo izvezete lozinke.</translation>
 <translation id="7686086654630106285">Više o oglasima koje predlažu sajtovi</translation>
 <translation id="768618399695552958">Neke od stranice koje posećujete su predučitane. Stranice mogu da budu predučitane preko Google servera kada do njih vodi link sa Google sajta.</translation>
@@ -1334,7 +1329,6 @@ Na primer, neki veb-sajtovi mogu da odgovore na ovaj zahtev prikazivanjem oglasa
 <translation id="7929962904089429003">Otvorite meni</translation>
 <translation id="7930998711684428189">Upozorava vas ako su lozinke otkrivene pri upadu u podatke.</translation>
 <translation id="7934668619883965330">Preuzimanje fajla nije uspelo. Format fajla nije podržan.</translation>
-<translation id="7939485076072265087">Napravite stilizovanu karticu sa isticanjem</translation>
 <translation id="7942131818088350342">Proizvod <ph name="PRODUCT_NAME" /> je zastareo.</translation>
 <translation id="7944772052836377867">Sinhronizacija mora da potvrdi da ste to vi</translation>
 <translation id="7947953824732555851">Prihvati i prijavi me</translation>
@@ -1472,7 +1466,6 @@ Na primer, neki veb-sajtovi mogu da odgovore na ovaj zahtev prikazivanjem oglasa
 <translation id="856481929701340285">Zahtevaj sajt za računar</translation>
 <translation id="8570677896027847510">Fajl ne može da se bezbedno preuzme</translation>
 <translation id="8571213806525832805">Poslednje 4 nedelje</translation>
-<translation id="8580884231102452214">Kopiraj GIF</translation>
 <translation id="8583805026567836021">Brisanje podataka o nalogu</translation>
 <translation id="859046281437143747">Pratite cenu pomoću dugmeta Još opcija</translation>
 <translation id="860043288473659153">Ime vlasnika kartice</translation>

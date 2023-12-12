@@ -1137,6 +1137,7 @@ Certaines fonctionnalités sont limitées afin d'augmenter l'autonomie de la bat
 <translation id="5577281275355252094">Vérifiez que le Bluetooth est activé sur votre téléphone pour utiliser Phone Hub</translation>
 <translation id="5578188167649348993">mémoire</translation>
 <translation id="5580000943347215299">Bibliothèque</translation>
+<translation id="5587506661873751671">Téléchargement à <ph name="DOWNLOAD_PERCENT" /> %</translation>
 <translation id="558849140439112033">Faire glisser pour sélectionner une zone à capturer</translation>
 <translation id="5590609058453685222">Le rappel micro est activé. Vous recevrez une notification si vous parlez alors que le son est coupé.</translation>
 <translation id="5596627076506792578">Plus d'options</translation>
@@ -1797,6 +1798,7 @@ Pour éteindre l'appareil, appuyez à nouveau de manière prolongée sur le bout
 <translation id="830868413617744215">Bêta</translation>
 <translation id="8314772463905284467">Touche Verr Maj activée</translation>
 <translation id="8315514906653279104">Activation…</translation>
+<translation id="8331351032546853669">Téléchargement en attente</translation>
 <translation id="8341451174107936385"><ph name="UNLOCK_MORE_FEATURES" />  <ph name="GET_STARTED" /></translation>
 <translation id="8345019317483336363">Fenêtre <ph name="WINDOW_TITLE" /> sélectionnée</translation>
 <translation id="8349826889576450703">lanceur d'applications</translation>

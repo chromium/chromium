@@ -410,7 +410,6 @@
 <translation id="3226612997184048185">ଯଦି ଆପଣ ଆପଣଙ୍କ Google ଆକାଉଣ୍ଟରେ ବୁକମାର୍କଗୁଡ଼ିକୁ ସେଭ କରନ୍ତି, ତେବେ ଆପଣ Chromeରେ ପ୍ରଡକ୍ଟ ମୂଲ୍ୟଗୁଡ଼ିକୁ ଟ୍ରାକ କରିପାରିବେ ଏବଂ ମୂଲ୍ୟ ହ୍ରାସ ହେଲେ ସୂଚନା ପାଇପାରିବେ</translation>
 <translation id="3227557059438308877">ଏକ ସୁରକ୍ଷା କୀ ଭାବେ Google Chromeର ବ୍ୟବହାର</translation>
 <translation id="3232754137068452469">ୱେବ୍ ଆପ୍</translation>
-<translation id="3234978181857588512">ଡିଭାଇସରେ ସେଭ୍ କରନ୍ତୁ</translation>
 <translation id="3236059992281584593">ଅବଶିଷ୍ଟ 1 ମିନଟ୍‌ ଅଛି</translation>
 <translation id="3237087289225714896">ଷ୍ଟାଣ୍ଡାର୍ଡ ପ୍ରିଲୋଡିଂ:</translation>
 <translation id="3237433641417325993">ପ୍ରସ୍ତାବିତ ଆର୍ଟିକିଲଗୁଡ଼ିକୁ ଦେଖିବା ପାଇଁ ତଳକୁ ସ୍କ୍ରୋଲ କରନ୍ତୁ</translation>
@@ -582,7 +581,6 @@
 <translation id="4181841719683918333">ଭାଷାସମୂହ</translation>
 <translation id="4188221736490993796">Zରୁ A ଅନୁସାରେ ସର୍ଟ କର</translation>
 <translation id="4195643157523330669">ନୂତନ ଟ୍ୟାବରେ ଖୋଲନ୍ତୁ</translation>
-<translation id="4196597275619698563">କାର୍ଡ ତିଆରି କରନ୍ତୁ</translation>
 <translation id="4197828496439691735">{NUM_TABS,plural, =1{ଏହି ଡିଭାଇସରେ 1ଟି ଟାବ}other{ଏହି ଡିଭାଇସରେ #ଟି ଟାବ}}</translation>
 <translation id="4198423547019359126">କୌଣସି ଡାଉନ୍‍‍‍ଲୋଡ୍ ହୋଇଥିବା ଲୋକେସନ୍ ଉପଲବ୍ଧ ନାହିଁ</translation>
 <translation id="4202218894997543208">ଆପଣ ବ୍ଲକ କରିଥିବା ବିଷୟଗୁଡ଼ିକ</translation>
@@ -594,7 +592,6 @@
 <translation id="4248098802131000011">ଡାଟା ଉଲ୍ଲଙ୍ଘନ ଏବଂ ଅନ୍ୟ ସୁରକ୍ଷା ସମସ୍ୟାଗୁଡ଼ିକରୁ ଆପଣଙ୍କର ପାସୱାର୍ଡଗୁଡ଼ିକୁ ସୁରକ୍ଷିତ ରଖନ୍ତୁ</translation>
 <translation id="424864128008805179">Chromeରୁ ସାଇନ୍‌ ଆଉଟ୍‍ କରିବେ?</translation>
 <translation id="4249955472157341256">ନବୀନତମ ଅନୁସାରେ ସର୍ଟ କରନ୍ତୁ</translation>
-<translation id="4250229828105606438">ସ୍କ୍ରିନସଟ</translation>
 <translation id="4256782883801055595">ମୁକ୍ତ ଉତ୍ସ ଲାଇସେନ୍ସ</translation>
 <translation id="4257230861809842349">Google Password Managerରୁ ପାସୱାର୍ଡଗୁଡ଼ିକୁ ଡିଲିଟ କରିବେ?</translation>
 <translation id="4269820728363426813">ଲିଙ୍କ୍ ଠିକଣା କପି କରନ୍ତୁ</translation>
@@ -1148,7 +1145,6 @@
 <translation id="7030304022046916278">URLଗୁଡ଼ିକ ଯାଞ୍ଚ କରିବା ପାଇଁ ସେଗୁଡ଼ିକୁ ସୁରକ୍ଷିତ ବ୍ରାଉଜିଂକୁ ପଠାଏ</translation>
 <translation id="7035701931849773472">ଅନ୍ୟ ବିକଳ୍ପଗୁଡ଼ିକ</translation>
 <translation id="7037830628447527439">ଆପଣଙ୍କ Google ଆକାଉଣ୍ଟ ମାଧ୍ୟମରେ Chromeରେ ସାଇନ ଇନ କରନ୍ତୁ</translation>
-<translation id="7038956721828960940">chrome_image_<ph name="CURRENT_TIMESTAMP_MS" /></translation>
 <translation id="7054588988317389591">ଛବିର ବର୍ଣ୍ଣନା ପାଇବାକୁ ଚାହାଁନ୍ତି କି?</translation>
 <translation id="7055152154916055070">ରିଡାଇରେକ୍ଟକୁ ଅବରୋଧ କରାଯାଇଛି:</translation>
 <translation id="7063006564040364415">ସିଙ୍କ ସର୍ଭର ସହ ସଂଯୋଗ କରାଯାଇପାରିଲା ନାହିଁ।</translation>
@@ -1279,7 +1275,6 @@
 <translation id="7658239707568436148">ବାତିଲ</translation>
 <translation id="7665369617277396874">ଆକାଉଣ୍ଟ ଯୋଗ କରନ୍ତୁ</translation>
 <translation id="766587987807204883">ଅନୁଚ୍ଛେଦଗୁଡ଼ିକ ଏଠାରେ ଦେଖାଯାଏ, ଯାହା ଆପଣ ଅଫ୍‌ଲାଇନ୍ ଥିଲେ ମଧ୍ୟ ପଢ଼ିପାରିବେ</translation>
-<translation id="768232549260819724">GIF କପି କରାଯାଇଛି</translation>
 <translation id="7682724950699840886">ନିମ୍ନୋକ୍ତ ପରାମର୍ଶ‌ଗୁଡ଼ିକୁ ଚେଷ୍ଟା କରନ୍ତୁ: ଆପଣଙ୍କର ଡିଭାଇସ୍‌ରେ ଯଥେଷ୍ଟ ଜାଗା ଥିବା ସୁନିଶ୍ଚିତ କରନ୍ତୁ, ପୁଣି ଏକ୍ସପୋର୍ଟ କରିବାକୁ ଚେଷ୍ଟା କରନ୍ତୁ।</translation>
 <translation id="7686086654630106285">ସାଇଟ-ଦ୍ୱାରା ପରାମର୍ଶ ଦିଆଯାଇଥିବା ବିଜ୍ଞାପନଗୁଡ଼ିକ ବିଷୟରେ ଅଧିକ ବିବରଣୀ</translation>
 <translation id="768618399695552958">ଆପଣ ଭିଜିଟ କରୁଥିବା କିଛି ପୃଷ୍ଠାକୁ ପ୍ରିଲୋଡ କରାଯାଇଛି। ପୃଷ୍ଠାଗୁଡ଼ିକୁ କୌଣସି Google ସାଇଟରୁ ଲିଙ୍କ କରାଯାଇଥିଲେ, Google ସର୍ଭରଗୁଡ଼ିକ ମାଧ୍ୟମରେ ସେଗୁଡ଼ିକୁ ପ୍ରିଲୋଡ କରାଯାଇପାରେ।</translation>
@@ -1334,7 +1329,6 @@
 <translation id="7929962904089429003">ମେନୁ ଖୋଲନ୍ତୁ</translation>
 <translation id="7930998711684428189">ଯଦି ଡାଟା ଚୋରି ଯୋଗୁଁ ପାସୱାର୍ଡଗୁଡ଼ିକ ବିପଦରେ ପଡ଼ିଯାଏ, ତେବେ ଆପଣଙ୍କୁ ଚେତାବନୀ ଦେଇଥାଏ।</translation>
 <translation id="7934668619883965330">ଫାଇଲକୁ ଡାଉନଲୋଡ କରାଯାଇପାରିବ ନାହିଁ। ଫାଇଲ ଫର୍ମାଟ ସମର୍ଥିତ ନୁହେଁ।</translation>
-<translation id="7939485076072265087">ହାଇଲାଇଟ ସହ ଷ୍ଟାଇଲାଇଜଡ କାର୍ଡ ତିଆରି କରନ୍ତୁ</translation>
 <translation id="7942131818088350342"><ph name="PRODUCT_NAME" />ର ସମୟସୀମା ଶେଷ ହୋଇଛି।</translation>
 <translation id="7944772052836377867">ଏହା ଆପଣ ଅଟନ୍ତି ବୋଲି ସିଙ୍କ ଯାଞ୍ଚ କରିବାକୁ ଚାହେଁ</translation>
 <translation id="7947953824732555851">ସ୍ୱୀକାର ଓ ସାଇନ୍‌ଇନ୍‍</translation>
@@ -1472,7 +1466,6 @@
 <translation id="856481929701340285">ଡେସ୍କଟପ ସାଇଟ ପାଇଁ ଅନୁରୋଧ କର</translation>
 <translation id="8570677896027847510">ଫାଇଲକୁ ସୁରକ୍ଷିତ ଭାବେ ଡାଉନଲୋଡ କରାଯାଇପାରିବ ନାହିଁ</translation>
 <translation id="8571213806525832805">ବିଗତ 4 ସପ୍ତାହ</translation>
-<translation id="8580884231102452214">GIF କପି କରନ୍ତୁ</translation>
 <translation id="8583805026567836021">ଆକାଉଣ୍ଟ ଡାଟା ଖାଲି ହେଉଛି</translation>
 <translation id="859046281437143747">ଅଧିକ ବିକଳ୍ପ ବଟନରୁ ମୂଲ୍ୟ ଟ୍ରାକ କରନ୍ତୁ</translation>
 <translation id="860043288473659153">କାର୍ଡହୋଲ୍ଡର୍‌ର ନାମ</translation>

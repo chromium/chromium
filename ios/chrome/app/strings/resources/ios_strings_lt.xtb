@@ -496,6 +496,7 @@ Peržiūrėkite paieškos variklio instrukcijas, kaip ištrinti paieškos istori
 <translation id="355101282835380364">Išsaugoti paskyroje…</translation>
 <translation id="3551320343578183772">Uždaryti skirtuką</translation>
 <translation id="3565207542107370586">Išvalyti naršymo duomenis…</translation>
+<translation id="3570693105179140209">Dukart palieskite, jei reikia daugiau slaptažodžių.</translation>
 <translation id="3575234738189584619">Paieška naudojant „Lens“</translation>
 <translation id="3581564640715911333">Siūlyti versti puslapius į kitas kalbas</translation>
 <translation id="3587885837929752825">Jūsų organizacija riboja, ką galite išsaugoti savo „Google“ paskyroje.</translation>
@@ -661,6 +662,7 @@ Peržiūrėkite paieškos variklio instrukcijas, kaip ištrinti paieškos istori
 <translation id="452750746583162491">Peržiūrėti sinchronizuotus duomenis</translation>
 <translation id="4527660062930312477">Jūsų paskyra yra valdoma</translation>
 <translation id="4536418791685807335">Bandykite prisijungti dar kartą.</translation>
+<translation id="4539187448429948815">{count,plural, =1{Virš klaviatūros pasiekiamas {count} išsaugotas automatinio užbaigimo pasiūlymas.}one{Virš klaviatūros pasiekiamas {count} išsaugotas automatinio užbaigimo pasiūlymas.}few{Virš klaviatūros pasiekiami {count} išsaugoti automatinio užbaigimo pasiūlymai.}many{Virš klaviatūros pasiekiama {count} išsaugoto automatinio užbaigimo pasiūlymo.}other{Virš klaviatūros pasiekiama {count} išsaugotų automatinio užbaigimo pasiūlymų.}}</translation>
 <translation id="4540780316273593836">Kažkas nepavyko</translation>
 <translation id="4550040941166547650">Tik šiame įrenginyje</translation>
 <translation id="457292989631956153">{COUNT,plural, =1{Uždaryti {COUNT} neaktyvų skirtuką?}one{Uždaryti {COUNT} neaktyvų skirtuką?}few{Uždaryti {COUNT} neaktyvius skirtukus?}many{Uždaryti {COUNT} neaktyvaus skirtuko?}other{Uždaryti {COUNT} neaktyvių skirtukų?}}</translation>

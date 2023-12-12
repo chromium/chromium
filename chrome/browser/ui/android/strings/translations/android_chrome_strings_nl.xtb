@@ -410,7 +410,6 @@ Alleen iemand met je wachtwoordzin kan je versleutelde gegevens lezen. De wachtw
 <translation id="3226612997184048185">Als je je bookmarks ook opslaat in je Google-account, kun je productprijzen in Chrome bijhouden en een melding krijgen als de prijs daalt</translation>
 <translation id="3227557059438308877">Google Chrome als beveiligingssleutel</translation>
 <translation id="3232754137068452469">Webapp</translation>
-<translation id="3234978181857588512">Opslaan op apparaat</translation>
 <translation id="3236059992281584593">1 minuut resterend</translation>
 <translation id="3237087289225714896">Standaard vooraf laden:</translation>
 <translation id="3237433641417325993">Scroll omlaag om voorgestelde artikelen te bekijken</translation>
@@ -582,7 +581,6 @@ Alleen iemand met je wachtwoordzin kan je versleutelde gegevens lezen. De wachtw
 <translation id="4181841719683918333">Talen</translation>
 <translation id="4188221736490993796">Sorteren van Z tot A</translation>
 <translation id="4195643157523330669">Openen op nieuw tabblad</translation>
-<translation id="4196597275619698563">Kaart maken</translation>
 <translation id="4197828496439691735">{NUM_TABS,plural, =1{1 tabblad op dit apparaat}other{# tabbladen op dit apparaat}}</translation>
 <translation id="4198423547019359126">Geen beschikbare downloadlocaties</translation>
 <translation id="4202218894997543208">Onderwerpen die je hebt geblokkeerd</translation>
@@ -594,7 +592,6 @@ Alleen iemand met je wachtwoordzin kan je versleutelde gegevens lezen. De wachtw
 <translation id="4248098802131000011">Bescherm je wachtwoorden tegen gegevenslekken en andere beveiligingsproblemen</translation>
 <translation id="424864128008805179">Uitloggen bij Chrome?</translation>
 <translation id="4249955472157341256">Sorteren op nieuwste</translation>
-<translation id="4250229828105606438">Screenshot</translation>
 <translation id="4256782883801055595">Opensource-licenties</translation>
 <translation id="4257230861809842349">Wachtwoorden verwijderen uit Google Wachtwoordmanager?</translation>
 <translation id="4269820728363426813">Linkadres kopiëren</translation>
@@ -1148,7 +1145,6 @@ Zo kunnen sommige websites op dit verzoek reageren door advertenties te bekijken
 <translation id="7030304022046916278">Stuurt URL's naar Safe Browsing om deze te checken</translation>
 <translation id="7035701931849773472">Andere opties</translation>
 <translation id="7037830628447527439">Log in bij Chrome met je Google-account</translation>
-<translation id="7038956721828960940">chrome_image_<ph name="CURRENT_TIMESTAMP_MS" /></translation>
 <translation id="7054588988317389591">Afbeeldingsbeschrijvingen ophalen?</translation>
 <translation id="7055152154916055070">Omleiding geblokkeerd:</translation>
 <translation id="7063006564040364415">Kan geen verbinding maken met synchronisatieserver.</translation>
@@ -1279,7 +1275,6 @@ Zo kunnen sommige websites op dit verzoek reageren door advertenties te bekijken
 <translation id="7658239707568436148">Annuleren</translation>
 <translation id="7665369617277396874">Account toevoegen</translation>
 <translation id="766587987807204883">Hier zie je artikelen die je zelfs kunt lezen wanneer je offline bent</translation>
-<translation id="768232549260819724">Gif gekopieerd</translation>
 <translation id="7682724950699840886">Probeer de volgende tips: zorg dat er voldoende ruimte op je apparaat beschikbaar is, probeer opnieuw te exporteren.</translation>
 <translation id="7686086654630106285">Meer informatie over door de site voorgestelde advertenties</translation>
 <translation id="768618399695552958">Sommige pagina's die je bezoekt, zijn vooraf geladen. Pagina's kunnen vooraf worden geladen via Google-servers als ernaar wordt gelinkt vanaf een Google-site.</translation>
@@ -1334,7 +1329,6 @@ Zo kunnen sommige websites op dit verzoek reageren door advertenties te bekijken
 <translation id="7929962904089429003">Het menu openen</translation>
 <translation id="7930998711684428189">Stuurt een waarschuwing als je wachtwoorden zijn gelekt bij een gegevenslek.</translation>
 <translation id="7934668619883965330">Kan bestand niet downloaden. Bestandsindeling wordt niet ondersteund.</translation>
-<translation id="7939485076072265087">Gestileerde kaart van markering maken</translation>
 <translation id="7942131818088350342"><ph name="PRODUCT_NAME" /> is verouderd.</translation>
 <translation id="7944772052836377867">Synchronisatie moet bevestigen dat jij het bent</translation>
 <translation id="7947953824732555851">Accepteren en inloggen</translation>
@@ -1472,7 +1466,6 @@ Zo kunnen sommige websites op dit verzoek reageren door advertenties te bekijken
 <translation id="856481929701340285">Desktopversie opvragen</translation>
 <translation id="8570677896027847510">Bestand kan niet beveiligd worden gedownload</translation>
 <translation id="8571213806525832805">Afgelopen 4 weken</translation>
-<translation id="8580884231102452214">Gif kopiëren</translation>
 <translation id="8583805026567836021">Accountgegevens wissen</translation>
 <translation id="859046281437143747">Volg de prijs via de knop Meer opties</translation>
 <translation id="860043288473659153">Naam kaarthouder</translation>

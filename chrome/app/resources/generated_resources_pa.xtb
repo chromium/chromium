@@ -873,6 +873,7 @@
 <translation id="1651008383952180276">ਤੁਹਾਡੇ ਵੱਲੋਂ ਇੱਕੋ ਪਾਸਫਰੇਜ਼ ਦੋ ਵਾਰ ਦਾਖਲ ਕਰਨਾ ਲਾਜ਼ਮੀ ਹੈ</translation>
 <translation id="1651609627703324721">ਇਹ ਟੈਬ ਕਿਸੇ ਹੈੱਡਸੈੱਟ ਵਿੱਚ VR ਸਮੱਗਰੀ ਨੂੰ ਪੇਸ਼ ਕਰ ਰਹੀ ਹੈ</translation>
 <translation id="1652326691684645429">ਨਜ਼ਦੀਕੀ ਸਾਂਝ ਚਾਲੂ ਕਰੋ</translation>
+<translation id="1652862280638399816">macOS Keychain ਨਾਲ Password Manager ਦੀ ਵਰਤੋਂ ਕਰਨ ਲਈ Chromium ਨੂੰ ਮੁੜ-ਲਾਂਚ ਕਰੋ ਅਤੇ Keychain ਨੂੰ ਪਹੁੰਚ ਕਰਨ ਦੀ ਆਗਿਆ ਦਿਓ। ਮੁੜ-ਲਾਂਚ ਕਰਨ ਤੋਂ ਬਾਅਦ ਤੁਹਾਡੀਆਂ ਟੈਬਾਂ ਮੁੜ ਖੁੱਲ੍ਹ ਜਾਣਗੀਆਂ।</translation>
 <translation id="1654580009054503925">ਬੇਨਤੀਆਂ ਦਿਖਾਉਣ ਦੀ ਆਗਿਆ ਨਹੀਂ ਹੈ</translation>
 <translation id="1656528038316521561">ਬੈਕਗ੍ਰਾਊਂਡ ਅਪਾਰਦਰਸ਼ਤਾ</translation>
 <translation id="1657406563541664238">Google ਨੂੰ ਸਵੈਚਲਿਤ ਤੌਰ 'ਤੇ ਵਰਤੋਂ ਅੰਕੜੇ ਅਤੇ ਕ੍ਰੈਸ਼ ਰਿਪੋਰਟਾਂ ਭੇਜ ਕੇ <ph name="PRODUCT_NAME" /> ਨੂੰ ਬਿਹਤਰ ਬਣਾਉਣ ਵਿੱਚ ਮਦਦ ਕਰੋ</translation>
@@ -2836,6 +2837,7 @@
 <translation id="3151562827395986343">ਇਤਿਹਾਸ, ਕੁਕੀਜ਼, ਕੈਸ਼ੇ, ਅਤੇ ਹੋਰ ਚੀਜ਼ਾਂ ਨੂੰ ਕਲੀਅਰ ਕਰੋ</translation>
 <translation id="3151786313568798007">ਦਿਸ਼ਾਮਾਨ</translation>
 <translation id="3152356229013609796">ਆਪਣੇ ਫ਼ੋਨ ਦੀਆਂ ਸੂਚਨਾਵਾਂ ਨੂੰ ਦੇਖੋ, ਖਾਰਜ ਕਰੋ ਅਤੇ ਉਨ੍ਹਾਂ ਦਾ ਜਵਾਬ ਦਿਓ</translation>
+<translation id="3155163173539279776">Chromium ਮੁੜ-ਲਾਂਚ ਕਰੋ</translation>
 <translation id="3157387275655328056">ਪੜ੍ਹਨ ਸੂਚੀ ਵਿੱਚ ਸ਼ਾਮਲ ਕਰੋ</translation>
 <translation id="3157931365184549694">ਰੀਸਟੋਰ ਕਰੋ</translation>
 <translation id="3158033540161634471">ਆਪਣਾ ਫਿੰਗਰਪ੍ਰਿੰਟ ਸੈੱਟਅੱਪ ਕਰੋ</translation>
@@ -3653,6 +3655,7 @@
 <translation id="3809272675881623365">ਖਰਗੋਸ਼</translation>
 <translation id="3809280248639369696">Moonbeam</translation>
 <translation id="3810593934879994994"><ph name="ORIGIN" /> ਸਾਈਟ ਅੱਗੇ ਦਿੱਤੇ ਫੋਲਡਰਾਂ ਵਿਚਲੀਆਂ ਫ਼ਾਈਲਾਂ ਨੂੰ ਦੇਖ ਸਕਦੀ ਹੈ</translation>
+<translation id="3810770279996899697">Password Manager ਨੂੰ MacOS Keychain ਤੱਕ ਪਹੁੰਚ ਦੀ ਲੋੜ ਹੈ</translation>
 <translation id="3810914450553844415">ਤੁਹਾਡਾ ਪ੍ਰਸ਼ਾਸਕ ਵਧੀਕ Google ਖਾਤਿਆਂ ਦੀ ਇਜਾਜ਼ਤ ਨਹੀਂ ਦਿੰਦਾ।</translation>
 <translation id="3810973564298564668">ਵਿਵਸਥਿਤ ਕਰੋ</translation>
 <translation id="381202950560906753">ਇੱਕ ਹੋਰ ਫਿੰਗਰਪ੍ਰਿੰਟ ਸ਼ਾਮਲ ਕਰੋ</translation>
@@ -9497,7 +9500,6 @@
 <translation id="8473540203671727883">ਮਾਊਸ ਦੇ ਕਰਸਰ ਹੇਠਲੀ ਲਿਖਤ ਬੋਲੋ</translation>
 <translation id="8473863474539038330">ਪਤੇ ਅਤੇ ਹੋਰ</translation>
 <translation id="8474378002946546633">ਸੂਚਨਾਵਾਂ ਦੀ ਆਗਿਆ ਦਿਓ</translation>
-<translation id="8474733733775441349">ਤੁਹਾਡੇ Google ਖਾਤੇ ਤੋਂ ਪਾਸਵਰਡ ਦਿਖਾਓ</translation>
 <translation id="8475313423285172237">ਤੁਹਾਡੇ ਕੰਪਿਊਟਰ ਦੇ ਕਿਸੇ ਹੋਰ ਪ੍ਰੋਗਰਾਮ ਨੇ ਇੱਕ ਐਕਸਟੈਂਸ਼ਨ ਜੋੜ ਦਿੱਤੀ ਜੋ Chrome ਦੇ ਕੰਮ ਕਰਨ ਦੇ ਤਰੀਕੇ ਨੂੰ ਬਦਲ ਸਕਦੀ ਹੈ।</translation>
 <translation id="8476408756881832830">ChromeVox ਬੋਲ ਰਿਹਾ ਹੋਵੇ ਉਦੋਂ ਪਲੇਬੈਕ ਨੂੰ ਵਿਰਾਮ ਦਿਓ</translation>
 <translation id="8476491056950015181"><ph name="BEGIN_PARAGRAPH1" />ChromeOS ਡੀਵਾਈਸਾਂ ਨੂੰ ਸਵੈਚਲਿਤ ਰਿਪੋਰਟਾਂ ਭੇਜਣ ਦੀ ਆਗਿਆ ਦੇਣ ਨਾਲ ਸਾਨੂੰ, ChromeOS ਵਿੱਚ ਕੀ ਠੀਕ ਕਰਨਾ ਹੈ ਅਤੇ ਕੀ ਸੁਧਾਰ ਕਰਨਾ ਹੈ, ਇਸ ਨੂੰ ਤਰਜੀਹ ਦੇਣ ਵਿੱਚ ਮਦਦ ਮਿਲਦੀ ਹੈ। ਇਨ੍ਹਾਂ ਰਿਪੋਰਟਾਂ ਵਿੱਚ ਅਜਿਹੀਆਂ ਚੀਜ਼ਾਂ ਸ਼ਾਮਲ ਹੋ ਸਕਦੀਆਂ ਹਨ ਜਿਵੇਂ ਕਿ ChromeOS ਕਦੋਂ ਕ੍ਰੈਸ਼ ਹੁੰਦਾ ਹੈ, ਕਿਹੜੀਆਂ ਵਿਸ਼ੇਸ਼ਤਾਵਾਂ ਵਰਤੀਆਂ ਗਈਆਂ ਸਨ, ਆਮ ਤੌਰ 'ਤੇ ਕਿੰਨੀ ਮੈਮੋਰੀ ਵਰਤੀ ਗਈ ਸੀ ਅਤੇ Android ਐਪ ਤਸ਼ਖੀਸੀ ਅਤੇ ਵਰਤੋਂ ਡਾਟਾ। ਕੁਝ ਇਕੱਤਰ ਡਾਟਾ Google ਐਪਾਂ ਅਤੇ ਪਾਰਟਨਰਾਂ, ਜਿਵੇਂ ਕਿ Android ਵਿਕਾਸਕਾਰਾਂ ਦੀ ਵੀ ਮਦਦ ਕਰੇਗਾ।<ph name="END_PARAGRAPH1" />

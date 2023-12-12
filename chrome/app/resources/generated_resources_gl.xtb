@@ -868,6 +868,7 @@ Pode que se lle apliquen a esta conta os permisos que xa lles concedeses ás apl
 <translation id="1651008383952180276">Debes introducir a mesma frase de acceso dúas veces</translation>
 <translation id="1651609627703324721">Esta pestana está mostrando contido de RV nun visor</translation>
 <translation id="1652326691684645429">Activar Compartir por Nearby</translation>
+<translation id="1652862280638399816">Para poder usar o xestor de contrasinais con MacOS Keychain, reinicia Chromium e dálle acceso a Keychain. Despois do reinicio volverán abrirse as pestanas.</translation>
 <translation id="1654580009054503925">Non se permite mostrar solicitudes</translation>
 <translation id="1656528038316521561">Opacidade do fondo</translation>
 <translation id="1657406563541664238">Axúdanos a mellorar <ph name="PRODUCT_NAME" /> enviando automaticamente estatísticas de uso e informes de erros a Google</translation>
@@ -2818,6 +2819,7 @@ Podes xestionar a configuración desde o menú da tarxeta ou ver máis opcións 
 <translation id="3151562827395986343">Borra o historial, as cookies, a memoria caché e moito máis</translation>
 <translation id="3151786313568798007">Orientación</translation>
 <translation id="3152356229013609796">Consulta as notificacións do teu teléfono, ignóraas ou respóndeas</translation>
+<translation id="3155163173539279776">Reiniciar Chromium</translation>
 <translation id="3157387275655328056">Engadir á lista de lectura</translation>
 <translation id="3157931365184549694">Restaurar</translation>
 <translation id="3158033540161634471">Configurar a túa impresión dixital</translation>
@@ -3638,6 +3640,7 @@ https://allthings.how/content/images/wordpress/2023/02/allthings.how-how-to-make
 <translation id="3809272675881623365">Coello</translation>
 <translation id="3809280248639369696">Alieníxena</translation>
 <translation id="3810593934879994994"><ph name="ORIGIN" /> pode ver os ficheiros dos seguintes cartafoles</translation>
+<translation id="3810770279996899697">O xestor de contrasinais necesita permiso para acceder a MacOS Keychain</translation>
 <translation id="3810914450553844415">O teu administrador non permite Contas de Google adicionais.</translation>
 <translation id="3810973564298564668">Xestionar</translation>
 <translation id="381202950560906753">Engadir outra</translation>
@@ -9476,7 +9479,6 @@ Mantén o ficheiro de clave nun lugar seguro, xa que o precisarás para crear no
 <translation id="8473540203671727883">Pronunciar texto ao pasar por encima o punteiro do rato</translation>
 <translation id="8473863474539038330">Enderezos e moito máis</translation>
 <translation id="8474378002946546633">Permitir notificacións</translation>
-<translation id="8474733733775441349">Mostrar contrasinais da túa Conta de Google</translation>
 <translation id="8475313423285172237">Outro programa do teu ordenador engadiu unha extensión que pode cambiar o funcionamento de Chrome.</translation>
 <translation id="8476408756881832830">Pausar a reprodución cando ChromeVox estea falando</translation>
 <translation id="8476491056950015181"><ph name="BEGIN_PARAGRAPH1" />Ao permitir que os dispositivos ChromeOS envíen informes de forma automática, axúdasnos a establecer prioridades en relación cos aspectos que necesitan corrixirse e mellorarse no sistema operativo. Nestes informes poden incluírse datos sobre cando falla ChromeOS, as funcións que se utilizaron e o espazo de memoria que adoita empregarse, así como datos de uso e de diagnóstico das aplicacións Android, entre outros. Algúns datos agregados tamén serán útiles para as aplicacións e os socios de Google, como os programadores de Android.<ph name="END_PARAGRAPH1" />

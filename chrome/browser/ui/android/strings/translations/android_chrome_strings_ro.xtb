@@ -410,7 +410,6 @@ Numai un utilizator care deține expresia ta de acces îți poate citi datele cr
 <translation id="3226612997184048185">Dacă salvezi marcajele și în Contul Google, poți să urmărești prețurile produselor în Chrome și să primești notificări când scad</translation>
 <translation id="3227557059438308877">Google Chrome drept cheie de securitate</translation>
 <translation id="3232754137068452469">Aplicație web</translation>
-<translation id="3234978181857588512">Salvează pe dispozitiv</translation>
 <translation id="3236059992281584593">1 min. rămas</translation>
 <translation id="3237087289225714896">Preîncărcare standard:</translation>
 <translation id="3237433641417325993">Derulează în jos pentru a vedea articolele sugerate</translation>
@@ -582,7 +581,6 @@ Numai un utilizator care deține expresia ta de acces îți poate citi datele cr
 <translation id="4181841719683918333">Limbi</translation>
 <translation id="4188221736490993796">Sortează de la Z la A</translation>
 <translation id="4195643157523330669">Deschide în filă nouă</translation>
-<translation id="4196597275619698563">Creează un card</translation>
 <translation id="4197828496439691735">{NUM_TABS,plural, =1{O filă pe acest dispozitiv}few{# file pe acest dispozitiv}other{# de file pe acest dispozitiv}}</translation>
 <translation id="4198423547019359126">Nu există locații de descărcare disponibile</translation>
 <translation id="4202218894997543208">Subiecte pe care le-ai blocat</translation>
@@ -594,7 +592,6 @@ Numai un utilizator care deține expresia ta de acces îți poate citi datele cr
 <translation id="4248098802131000011">Protejează-ți parolele împotriva încălcării securității datelor și a altor probleme de securitate</translation>
 <translation id="424864128008805179">Te deconectezi de la Chrome?</translation>
 <translation id="4249955472157341256">Sortează după cele mai recente</translation>
-<translation id="4250229828105606438">Captură de ecran</translation>
 <translation id="4256782883801055595">Licențe open source</translation>
 <translation id="4257230861809842349">Ștergi parolele din Managerul de parole Google?</translation>
 <translation id="4269820728363426813">Copiază adresa linkului</translation>
@@ -1148,7 +1145,6 @@ De exemplu, unele site-uri pot răspunde la această solicitare afișând anunț
 <translation id="7030304022046916278">Trimite adresele URL la funcția Navigare sigură, pentru a le verifica</translation>
 <translation id="7035701931849773472">Alte opțiuni</translation>
 <translation id="7037830628447527439">Conectează-te la Chrome cu Contul Google</translation>
-<translation id="7038956721828960940">chrome_image_<ph name="CURRENT_TIMESTAMP_MS" /></translation>
 <translation id="7054588988317389591">Vrei să generezi descrieri ale imaginilor?</translation>
 <translation id="7055152154916055070">Redirecționarea a fost blocată:</translation>
 <translation id="7063006564040364415">Nu s-a putut stabili conexiunea cu serverul de sincronizare.</translation>
@@ -1279,7 +1275,6 @@ De exemplu, unele site-uri pot răspunde la această solicitare afișând anunț
 <translation id="7658239707568436148">Anulează</translation>
 <translation id="7665369617277396874">Adaugă un cont</translation>
 <translation id="766587987807204883">Articolele apar aici și le poți citi chiar dacă ești offline</translation>
-<translation id="768232549260819724">GIF-ul a fost copiat</translation>
 <translation id="7682724950699840886">Încearcă următoarele sfaturi: asigură-te că există spațiu suficient pe dispozitiv, încearcă să exporți din nou.</translation>
 <translation id="7686086654630106285">Mai multe despre anunțurile sugerate de site-uri</translation>
 <translation id="768618399695552958">Unele pagini pe care le accesezi sunt preîncărcate. Este posibil ca paginile să fie preîncărcate prin serverele Google atunci când un site Google trimite un link spre ele.</translation>
@@ -1334,7 +1329,6 @@ De exemplu, unele site-uri pot răspunde la această solicitare afișând anunț
 <translation id="7929962904089429003">Deschide meniul</translation>
 <translation id="7930998711684428189">Te avertizează dacă parolele au fost expuse în urma încălcării securității datelor.</translation>
 <translation id="7934668619883965330">Nu se poate descărca fișierul. Formatul fișierului nu este acceptat.</translation>
-<translation id="7939485076072265087">Creează un card stilizat cu evidențiere</translation>
 <translation id="7942131818088350342"><ph name="PRODUCT_NAME" /> este învechit.</translation>
 <translation id="7944772052836377867">Sincronizarea trebuie să-ți confirme identitatea</translation>
 <translation id="7947953824732555851">Accept și conectare</translation>
@@ -1472,7 +1466,6 @@ De exemplu, unele site-uri pot răspunde la această solicitare afișând anunț
 <translation id="856481929701340285">Versiune site desktop</translation>
 <translation id="8570677896027847510">Fișierul nu se poate descărca în siguranță</translation>
 <translation id="8571213806525832805">Ultimele 4 săptămâni</translation>
-<translation id="8580884231102452214">Copiază GIF-ul</translation>
 <translation id="8583805026567836021">Se șterg datele contului</translation>
 <translation id="859046281437143747">Urmărește prețul de la butonul Mai multe opțiuni</translation>
 <translation id="860043288473659153">Nume titular de card</translation>

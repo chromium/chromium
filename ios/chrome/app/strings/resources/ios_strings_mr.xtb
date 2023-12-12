@@ -496,6 +496,7 @@
 <translation id="355101282835380364">खाते मध्ये सेव्ह करा…</translation>
 <translation id="3551320343578183772">टॅब बंद करा</translation>
 <translation id="3565207542107370586">ब्राउझिंग डेटा साफ करा…</translation>
+<translation id="3570693105179140209">आणखी पासवर्डसाठी दोनदा टॅप करा.</translation>
 <translation id="3575234738189584619">Lens वापरून शोधा</translation>
 <translation id="3581564640715911333">पेजचे अन्य भाषांमध्ये भाषांतर उपलब्ध करा</translation>
 <translation id="3587885837929752825">तुम्ही तुमच्या Google खाते मध्ये काय सेव्ह करू शकता यावर तुमच्या संस्थेने मर्यादा घातल्या आहेत.</translation>
@@ -661,6 +662,7 @@
 <translation id="452750746583162491">तुमच्या सिंक केलेल्या डेटाचे पुनरावलोकन करा</translation>
 <translation id="4527660062930312477">तुमचे खाते व्यवस्थापित केले आहे</translation>
 <translation id="4536418791685807335">पुन्हा साइन इन करण्याचा प्रयत्न करा.</translation>
+<translation id="4539187448429948815">{count,plural, =1{तुमच्या कीबोर्डच्या वर {count} सेव्ह केलेली ऑटोकंप्लीट सूचना उपलब्ध आहे.}other{तुमच्या कीबोर्डच्या वर {count} सेव्ह केलेल्या ऑटोकंप्लीट सूचना उपलब्ध आहेत.}}</translation>
 <translation id="4540780316273593836">काहीतरी चूक झाली</translation>
 <translation id="4550040941166547650">फक्त या डिव्हाइसवर</translation>
 <translation id="457292989631956153">{COUNT,plural, =1{{COUNT} इनॅक्टिव्ह टॅब बंद करायचा का?}other{{COUNT} इनॅक्टिव्ह टॅब बंद करायचे का?}}</translation>

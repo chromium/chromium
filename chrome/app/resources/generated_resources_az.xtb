@@ -865,6 +865,7 @@ Hazırda tətbiqlərə verdiyiniz icazələr bu hesaba tətbiq oluna bilər. And
 <translation id="1651008383952180276">Eyni parol sözü iki dəfə daxil etməlisiniz</translation>
 <translation id="1651609627703324721">Bu tab qulaqlıq üçün VR kontenti göstərir</translation>
 <translation id="1652326691684645429">Yaxındakılarla Paylaşmanı aktivləşdirin</translation>
+<translation id="1652862280638399816">MacOS Keychain ilə Parol Menecerindən istifadə üçün Chromium-u yenidən başladın və Keychain-ə giriş imkanı verin. Yenidən başladıldıqdan sonra tablar təkrar açılacaq.</translation>
 <translation id="1654580009054503925">Sorğular göstərməsinə icazə verilməyib</translation>
 <translation id="1656528038316521561">Arxa fonun qeyri-şəffaflığı</translation>
 <translation id="1657406563541664238">İstifadə statistikası və xəta hesabatlarını avtomatik Google'a göndərməklə <ph name="PRODUCT_NAME" /> tətbiqini təkmilləşdirməyə kömək edin</translation>
@@ -2818,6 +2819,7 @@ Cihazda Family Link tətbiqini quraşdırmaqla bu hesabın ayarlarını idarə e
 <translation id="3151562827395986343">Axtarış tarixçəsi, kuki, gizli yer və daha çoxunu təmizləyin</translation>
 <translation id="3151786313568798007">Oriyentasiya</translation>
 <translation id="3152356229013609796">Telefonunuzun bildirişlərinə baxın, qapadın və cavab yazın</translation>
+<translation id="3155163173539279776">Chromium'u yenidən başladın</translation>
 <translation id="3157387275655328056">Oxu Siyahısına əlavə edin</translation>
 <translation id="3157931365184549694">Bərpa edin</translation>
 <translation id="3158033540161634471">Barmaq izi ayarlayın</translation>
@@ -3635,6 +3637,7 @@ Cihazda Family Link tətbiqini quraşdırmaqla bu hesabın ayarlarını idarə e
 <translation id="3809272675881623365">Dovşan</translation>
 <translation id="3809280248639369696">Ay işığı</translation>
 <translation id="3810593934879994994"><ph name="ORIGIN" /> aşağıdakı qovluqlarda olan fayllara baxa bilər</translation>
+<translation id="3810770279996899697">Parol meneceri MacOS Keychain-ə giriş tələb edir</translation>
 <translation id="3810914450553844415">Administratorunuz əlavə Google Hesablarına icazə vermir.</translation>
 <translation id="3810973564298564668">İdarə edin</translation>
 <translation id="381202950560906753">Başqasını əlavə edin</translation>
@@ -9472,7 +9475,6 @@ Açar faylınızı güvənli yerdə saxlayın.</translation>
 <translation id="8473540203671727883">Mətni maus ilə səsləndirin</translation>
 <translation id="8473863474539038330">Ünvanlar və s.</translation>
 <translation id="8474378002946546633">Bildirişlərə icazə verin</translation>
-<translation id="8474733733775441349">Google Hesabınızdakı parolları göstərin</translation>
 <translation id="8475313423285172237">Kompüterinizdə başqa bir proqram Chrome'un işləməsini dəyişən artırma əlavə etdi.</translation>
 <translation id="8476408756881832830">ChromeVox danışanda oxutmağa fasilə verin</translation>
 <translation id="8476491056950015181"><ph name="BEGIN_PARAGRAPH1" />ChromeOS cihazlarına avtomatik hesabatlar göndərmək icazəsi vermək bizə ChromeOS'da nəyi düzəldəcıyimizi və təkmilləşdirəcəyimizi prioritetləşdirməyə kömək edir. Bu hesabatlara ChromeOS'un nə vaxt çökməsi, hansı funksiyaların istifadə edilməsi və adətən nə qədər yaddaş istifadə edildiyi və Android tətbiqi diaqnostika və istifadə datası kimi məlumatlar daxil ola bilər. Bəzi birləşdirilmiş data Google tətbiqlərinə və Android developerləri kimi partnyorlara da kömək edəcək.<ph name="END_PARAGRAPH1" />

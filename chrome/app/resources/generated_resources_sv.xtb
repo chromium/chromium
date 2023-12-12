@@ -872,6 +872,7 @@ Behörigheter som du redan har gett appar kan gälla för det här kontot. Du ka
 <translation id="1651008383952180276">Du måste ange samma lösenfras två gånger</translation>
 <translation id="1651609627703324721">På den här fliken visas VR-innehåll för en kikare</translation>
 <translation id="1652326691684645429">Aktivera Närdelning</translation>
+<translation id="1652862280638399816">Om du vill använda Lösenordshantering med en macOS-nyckelring ska du starta om Chromium och tillåta åtkomst till nyckelringen. Flikarna öppnas igen när du har startat om enheten.</translation>
 <translation id="1654580009054503925">Får inte visa begäranden</translation>
 <translation id="1656528038316521561">Bakgrundens genomskinlighet</translation>
 <translation id="1657406563541664238">Hjälp till att göra <ph name="PRODUCT_NAME" /> bättre genom att automatiskt skicka användningsstatistik och felrapporter till Google</translation>
@@ -2834,6 +2835,7 @@ Du kan hantera inställningarna för det här kontot genom att installera Family
 <translation id="3151562827395986343">Rensa historik, cookies, cacheminne med mera</translation>
 <translation id="3151786313568798007">Orientering</translation>
 <translation id="3152356229013609796">Visa, ignorera eller svara på aviseringar från telefonen</translation>
+<translation id="3155163173539279776">Starta om Chromium</translation>
 <translation id="3157387275655328056">Lägg till i läslistan</translation>
 <translation id="3157931365184549694">Återställ</translation>
 <translation id="3158033540161634471">Konfigurera fingeravtryck</translation>
@@ -3651,6 +3653,7 @@ Du kan hantera inställningarna för det här kontot genom att installera Family
 <translation id="3809272675881623365">Kanin</translation>
 <translation id="3809280248639369696">Utomjording</translation>
 <translation id="3810593934879994994"><ph name="ORIGIN" /> har läsbehörigheter till filer i följande mappar</translation>
+<translation id="3810770279996899697">Lösenordshantering behöver åtkomst till MacOS-nyckelringen</translation>
 <translation id="3810914450553844415">Administratören tillåter inte att du använder flera Google-konton.</translation>
 <translation id="3810973564298564668">Hantera</translation>
 <translation id="381202950560906753">Lägg till ett till</translation>
@@ -9495,7 +9498,6 @@ Spara nyckelfilen på ett säkert ställe. Den behövs om du ska skapa nya versi
 <translation id="8473540203671727883">Läs upp text under muspekaren</translation>
 <translation id="8473863474539038330">Adresser och annat</translation>
 <translation id="8474378002946546633">Tillåt meddelanden</translation>
-<translation id="8474733733775441349">Visa lösenord från Google-kontot</translation>
 <translation id="8475313423285172237">Ett annat program i datorn har lagt till ett tillägg som kan ändra hur Chrome fungerar.</translation>
 <translation id="8476408756881832830">Pausa uppspelningen när ChromeVox används</translation>
 <translation id="8476491056950015181"><ph name="BEGIN_PARAGRAPH1" />Du kan tillåta att rapporter skickas till oss automatiskt från ChromeOS-enheter, vilket hjälper oss att prioritera vad som bör åtgärdas och förbättras i ChromeOS. Dessa rapporter kan innehålla information som när ChromeOS kraschar, vilka funktioner som använts, hur mycket minne som brukar användas, diagnostikdata om Android-appar och data om användning. Viss samlad data används även till att förbättra appar från Google och produkter från Googles partner, till exempel Android-utvecklare.<ph name="END_PARAGRAPH1" />

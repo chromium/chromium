@@ -410,7 +410,6 @@
 <translation id="3226612997184048185">‏اگر نشانک‌ها را در «حساب Google» هم ذخیره کنید، می‌توانید قیمت محصولات را در Chrome پیگیری کنید و از کاهش قیمت‌ها مطلع شوید</translation>
 <translation id="3227557059438308877">‏Google Chrome به‌عنوان «کلید امنیتی»</translation>
 <translation id="3232754137068452469">برنامه وب</translation>
-<translation id="3234978181857588512">ذخیره کردن در دستگاه</translation>
 <translation id="3236059992281584593">۱ دقیقه باقی‌مانده است</translation>
 <translation id="3237087289225714896">پیش‌بارگذاری استاندارد:</translation>
 <translation id="3237433641417325993">برای دیدن مقاله‌های پیشنهادی، به پایین پیمایش کنید</translation>
@@ -582,7 +581,6 @@
 <translation id="4181841719683918333">زبان‌ها</translation>
 <translation id="4188221736490993796">ترتیب براساس ی تا الف</translation>
 <translation id="4195643157523330669">باز کردن در برگهٔ جدید</translation>
-<translation id="4196597275619698563">ایجاد کارت</translation>
 <translation id="4197828496439691735">{NUM_TABS,plural, =1{یک برگه در این دستگاه}one{# برگه در این دستگاه}other{# برگه در این دستگاه}}</translation>
 <translation id="4198423547019359126">مکانی برای بارگیری دردسترس نیست</translation>
 <translation id="4202218894997543208">موضوع‌هایی که مسدود کرده‌اید</translation>
@@ -594,7 +592,6 @@
 <translation id="4248098802131000011">گذرواژه خود را از نقض داده و سایر مسائل امنیتی ایمن نگه دارید</translation>
 <translation id="424864128008805179">‏از سیستم Chrome خارج می شوید؟</translation>
 <translation id="4249955472157341256">مرتب‌سازی براساس جدیدترین</translation>
-<translation id="4250229828105606438">نماگرفت</translation>
 <translation id="4256782883801055595">مجوزهای متن‌باز</translation>
 <translation id="4257230861809842349">‏گذرواژه‌ها از «مدیر گذرواژه Google» حذف شود؟</translation>
 <translation id="4269820728363426813">کپی نشانی پیوند</translation>
@@ -1148,7 +1145,6 @@
 <translation id="7030304022046916278">نشانی‌های وب را به «مرور ایمن» ارسال می‌کند تا بررسی شوند</translation>
 <translation id="7035701931849773472">گزینه‌های دیگر</translation>
 <translation id="7037830628447527439">‏با «حساب Google» به سیستم Chrome وارد شوید.</translation>
-<translation id="7038956721828960940">chrome_image_<ph name="CURRENT_TIMESTAMP_MS" />‎</translation>
 <translation id="7054588988317389591">توضیحات تصویر دریافت شود؟</translation>
 <translation id="7055152154916055070">هدایت کردن مسدود شده است:</translation>
 <translation id="7063006564040364415">اتصال به سرور همگام‌سازی ممکن نیست.</translation>
@@ -1279,7 +1275,6 @@
 <translation id="7658239707568436148">لغو</translation>
 <translation id="7665369617277396874">افزودن حساب</translation>
 <translation id="766587987807204883">مقاله‌ها اینجا نشان داده می‌شوند و حتی درحالت آفلاین هم می‌توانید آن‌ها را بخوانید.</translation>
-<translation id="768232549260819724">‏GIF کپی شد</translation>
 <translation id="7682724950699840886">نکات زیر را امتحان کنید: مطمئن شوید که در دستگاهتان فضای کافی وجود داشته باشد، سعی کنید دوباره صادر کنید.</translation>
 <translation id="7686086654630106285">اطلاعات بیشتر درباره آگهی‌های پیشنهادی سایت</translation>
 <translation id="768618399695552958">‏برخی‌از صفحاتی که بازدید می‌کنید پیش‌بارگیری شده‌اند وقتی صفحات از سایت Google پیوند داده شده باشند، ممکن است ازطریق سرورهای Google پیش‌بارگیری شوند.</translation>
@@ -1334,7 +1329,6 @@
 <translation id="7929962904089429003">باز کردن منو</translation>
 <translation id="7930998711684428189">اگر گذرواژه‌ها به‌دلیل نقض داده لو رفته باشد، به شما هشدار می‌دهد.</translation>
 <translation id="7934668619883965330">فایل بارگیری نشد. از قالب فایل پشتیبانی نمی‌شود.</translation>
-<translation id="7939485076072265087">ایجاد کارت سبْک‌دار با نوشتار برجسته</translation>
 <translation id="7942131818088350342"><ph name="PRODUCT_NAME" /> قدیمی است.</translation>
 <translation id="7944772052836377867">همگام‌سازی باید هویتتان را تأیید کند</translation>
 <translation id="7947953824732555851">پذیرش و ورود به سیستم</translation>
@@ -1472,7 +1466,6 @@
 <translation id="856481929701340285">درخواست نمای رایانه</translation>
 <translation id="8570677896027847510">نمی‌توان این فایل را به‌طور ایمن بارگیری کرد</translation>
 <translation id="8571213806525832805">۴ هفته گذشته</translation>
-<translation id="8580884231102452214">‏کپی کردن GIF</translation>
 <translation id="8583805026567836021">پاک‌سازی داده‌های حساب</translation>
 <translation id="859046281437143747">قیمت را ازطریق دکمه «گزینه‌های بیشتر» پیگیری کنید</translation>
 <translation id="860043288473659153">نام صاحب کارت</translation>

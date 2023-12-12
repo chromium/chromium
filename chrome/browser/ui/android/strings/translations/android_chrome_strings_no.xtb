@@ -410,7 +410,6 @@ Bare personer som har passordfrasen din, kan lese de krypterte dataene. Passordf
 <translation id="3226612997184048185">Hvis du også lagrer bokmerkene i Google-kontoen din, kan du spore produktpriser i Chrome og bli varslet om avslag</translation>
 <translation id="3227557059438308877">Google Chrome som sikkerhetsnøkkel</translation>
 <translation id="3232754137068452469">Nettprogram</translation>
-<translation id="3234978181857588512">Lagre på enheten</translation>
 <translation id="3236059992281584593">1 minutt igjen</translation>
 <translation id="3237087289225714896">Standard forhåndslasting:</translation>
 <translation id="3237433641417325993">Rull ned for å se foreslåtte artikler</translation>
@@ -582,7 +581,6 @@ Bare personer som har passordfrasen din, kan lese de krypterte dataene. Passordf
 <translation id="4181841719683918333">Språk</translation>
 <translation id="4188221736490993796">Sorter fra Å til A</translation>
 <translation id="4195643157523330669">Åpne i ny fane</translation>
-<translation id="4196597275619698563">Opprett et kort</translation>
 <translation id="4197828496439691735">{NUM_TABS,plural, =1{1 fane på denne enheten}other{# faner på denne enheten}}</translation>
 <translation id="4198423547019359126">Ingen tilgjengelige nedlastingssteder</translation>
 <translation id="4202218894997543208">Emner du har blokkert</translation>
@@ -594,7 +592,6 @@ Bare personer som har passordfrasen din, kan lese de krypterte dataene. Passordf
 <translation id="4248098802131000011">Beskytt passordene dine mot databrudd og andre sikkerhetsproblemer</translation>
 <translation id="424864128008805179">Vil du logge av Chrome?</translation>
 <translation id="4249955472157341256">Sorter etter nyeste</translation>
-<translation id="4250229828105606438">Skjermdump</translation>
 <translation id="4256782883801055595">Lisenser for åpen kildekode</translation>
 <translation id="4257230861809842349">Vil du slette passord fra Google Passordlagring?</translation>
 <translation id="4269820728363426813">Kopiér linkadressen</translation>
@@ -1148,7 +1145,6 @@ Noen nettsteder kan for eksempel svare på denne forespørselen ved å vise deg 
 <translation id="7030304022046916278">Sender nettadresser til Safe Browsing for å sjekke dem</translation>
 <translation id="7035701931849773472">Andre alternativer</translation>
 <translation id="7037830628447527439">Logg på Chrome med Google-kontoen din</translation>
-<translation id="7038956721828960940">chrome_bilde_<ph name="CURRENT_TIMESTAMP_MS" /></translation>
 <translation id="7054588988317389591">Vil du ha bildebeskrivelser?</translation>
 <translation id="7055152154916055070">Viderekoblingen er blokkert:</translation>
 <translation id="7063006564040364415">Kunne ikke koble til synkroniseringstjeneren.</translation>
@@ -1279,7 +1275,6 @@ Noen nettsteder kan for eksempel svare på denne forespørselen ved å vise deg 
 <translation id="7658239707568436148">Avbryt</translation>
 <translation id="7665369617277396874">Legg til konto</translation>
 <translation id="766587987807204883">Her vises artikler, som du kan lese selv om du er uten nett</translation>
-<translation id="768232549260819724">GIF-en er kopiert</translation>
 <translation id="7682724950699840886">Prøv dette: Sørg for at det er nok plass på enheten, og prøv å eksportere på nytt.</translation>
 <translation id="7686086654630106285">Mer om annonser som foreslås på nettstedet</translation>
 <translation id="768618399695552958">Noen av sidene du besøker, er forhåndslastede. Sider kan bli forhåndslastet via Googles tjenere når de er linket på Google-nettsteder.</translation>
@@ -1334,7 +1329,6 @@ Noen nettsteder kan for eksempel svare på denne forespørselen ved å vise deg 
 <translation id="7929962904089429003">Åpne menyen</translation>
 <translation id="7930998711684428189">Advarer deg hvis passord blir avdekket i databrudd.</translation>
 <translation id="7934668619883965330">Kan ikke laste ned filen. Filformatet støttes ikke.</translation>
-<translation id="7939485076072265087">Opprett stilisert kort med fremheving</translation>
 <translation id="7942131818088350342"><ph name="PRODUCT_NAME" /> er utdatert.</translation>
 <translation id="7944772052836377867">Synkronisering må bekrefte at det er deg</translation>
 <translation id="7947953824732555851">Godta og logg på</translation>
@@ -1472,7 +1466,6 @@ Noen nettsteder kan for eksempel svare på denne forespørselen ved å vise deg 
 <translation id="856481929701340285">Bruk skrivebordsversjon</translation>
 <translation id="8570677896027847510">Filen kan ikke lastes ned sikkert</translation>
 <translation id="8571213806525832805">Siste 4 uker</translation>
-<translation id="8580884231102452214">Kopier GIF</translation>
 <translation id="8583805026567836021">Fjerner kontodata …</translation>
 <translation id="859046281437143747">Spor prisen med Flere alternativer-knappen</translation>
 <translation id="860043288473659153">Kortinnehavers navn</translation>

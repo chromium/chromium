@@ -868,6 +868,7 @@
 <translation id="1651008383952180276">同じパスフレーズを 2 回入力する必要があります</translation>
 <translation id="1651609627703324721">このタブはヘッドセットに VR コンテンツを配信しています</translation>
 <translation id="1652326691684645429">ニアバイシェアを有効にする</translation>
+<translation id="1652862280638399816">macOS キーチェーンでパスワード マネージャーを使用するには、Chromium を再起動してキーチェーンへのアクセスを許可してください。再起動すると、タブが再度開きます。</translation>
 <translation id="1654580009054503925">リクエストの表示を許可しないウェブサイト</translation>
 <translation id="1656528038316521561">背景の透明度</translation>
 <translation id="1657406563541664238">使用統計データや障害レポートを Google に自動送信して <ph name="PRODUCT_NAME" /> の機能向上に役立てる</translation>
@@ -2813,6 +2814,7 @@
 <translation id="3151562827395986343">閲覧履歴、Cookie、キャッシュなどを削除します</translation>
 <translation id="3151786313568798007">向き</translation>
 <translation id="3152356229013609796">スマートフォンの通知を確認する、閉じる、返信するなどの操作を行います</translation>
+<translation id="3155163173539279776">Chromium を再起動します</translation>
 <translation id="3157387275655328056">リーディング リストに追加</translation>
 <translation id="3157931365184549694">復元</translation>
 <translation id="3158033540161634471">指紋の設定</translation>
@@ -3629,6 +3631,7 @@
 <translation id="3809272675881623365">ウサギ</translation>
 <translation id="3809280248639369696">ムーンビーム</translation>
 <translation id="3810593934879994994"><ph name="ORIGIN" /> は次のフォルダのファイルを表示できます</translation>
+<translation id="3810770279996899697">パスワード マネージャーに MacOS キーチェーンへのアクセスを許可する必要があります</translation>
 <translation id="3810914450553844415">管理者が Google アカウントの追加を許可していません。</translation>
 <translation id="3810973564298564668">管理</translation>
 <translation id="381202950560906753">別の指紋を登録</translation>
@@ -9465,7 +9468,6 @@
 <translation id="8473540203671727883">カーソル部分のテキストを読み上げる</translation>
 <translation id="8473863474539038330">住所やその他の情報</translation>
 <translation id="8474378002946546633">通知を許可する</translation>
-<translation id="8474733733775441349">Google アカウントに保存したパスワードを表示</translation>
 <translation id="8475313423285172237">パソコン上の別のプログラムにより、Chrome の動作方法を変更する可能性のある拡張機能が追加されました。</translation>
 <translation id="8476408756881832830">ChromeVox の読み上げ中は再生を一時停止する</translation>
 <translation id="8476491056950015181"><ph name="BEGIN_PARAGRAPH1" />Chrome OS デバイスが自動レポートを送信することを許可して、Google が優先度の高い順に Chrome OS を修正および改善する取り組みにご協力ください。障害レポートでは、Chrome OS がクラッシュした時間や使用された機能、通常のメモリ使用量、Android アプリの診断内容と使用状況が送信されます。一部の集計データは、Google のアプリとパートナー（Android デベロッパーなど）によっても利用されます。<ph name="END_PARAGRAPH1" />

@@ -1137,6 +1137,7 @@
 <translation id="5577281275355252094">फोन हब नामक सुविधा प्रयोग गर्न फोनको ब्लुटुथ अन छ भन्ने कुरा सुनिश्चित गर्नुहोस्</translation>
 <translation id="5578188167649348993">मेमोरी</translation>
 <translation id="5580000943347215299">लाइब्रेरी</translation>
+<translation id="5587506661873751671">डाउनलोड गरिँदै छ (<ph name="DOWNLOAD_PERCENT" />%)</translation>
 <translation id="558849140439112033">फोटो खिच्ने कुनै क्षेत्र चयन गर्न ड्र्याग गर्नुहोस्</translation>
 <translation id="5590609058453685222">म्युट नज अन छ। तपाईं म्युट गरिएका बेला बोल्नुभयो भने तपाईंलाई सूचित गरिने छ।</translation>
 <translation id="5596627076506792578">अन्य विकल्पहरू</translation>
@@ -1796,6 +1797,7 @@
 <translation id="830868413617744215">बेटा</translation>
 <translation id="8314772463905284467">क्याप्स लक अन छ</translation>
 <translation id="8315514906653279104">अन हुँदै छ…</translation>
+<translation id="8331351032546853669">डाउनलोड गर्न बाँकी छ</translation>
 <translation id="8341451174107936385"><ph name="UNLOCK_MORE_FEATURES" />  <ph name="GET_STARTED" /></translation>
 <translation id="8345019317483336363"><ph name="WINDOW_TITLE" /> नामक विन्डो चयन गरियो</translation>
 <translation id="8349826889576450703">लन्चर</translation>

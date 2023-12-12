@@ -874,6 +874,7 @@ Dopuštenja koja ste već dali aplikacijama mogu se primijeniti na ovaj račun. 
 <translation id="1651008383952180276">Morate dvaput unijeti istu šifru</translation>
 <translation id="1651609627703324721">VR sadržaj ove kartice prikazuje se putem maske</translation>
 <translation id="1652326691684645429">Omogući dijeljenje u blizini</translation>
+<translation id="1652862280638399816">Da biste upotrebljavali Upravitelj zaporki s macOS Keychainom, ponovo pokrenite Chromium i dopustite pristup Keychainu. Kartice će se ponovo otvoriti nakon ponovnog pokretanja.</translation>
 <translation id="1654580009054503925">Nije dopušteno prikazivanje zahtjeva</translation>
 <translation id="1656528038316521561">Prozirnost pozadine</translation>
 <translation id="1657406563541664238">Olakšajte nam poboljšanje preglednika <ph name="PRODUCT_NAME" /> automatskim slanjem statistike o upotrebi i izvješća o padu programa Googleu</translation>
@@ -2634,6 +2635,7 @@ Postavkama računa možete upravljati tako da instalirate aplikaciju Family Link
 <translation id="2990313168615879645">Dodavanje Google računa</translation>
 <translation id="2990375978470734995">Da bi se ta promjena primijenila, ponovo povežite vanjske uređaje.</translation>
 <translation id="2990583317361835189">Ne dopuštaj web-lokacijama korištenje senzora kretanja</translation>
+<translation id="2991182900092497283">Unesite razlog za lijepljenje tih podataka:</translation>
 <translation id="2992931425024192067">Prikazuje se cijeli sadržaj obavijesti </translation>
 <translation id="2993517869960930405">Informacije o aplikaciji</translation>
 <translation id="2996108796702395498">Serijski broj uređaja je <ph name="SERIAL_NUMBER" />. Pomoću tog broja možete aktivirati uslugu.</translation>
@@ -2827,6 +2829,7 @@ Postavkama računa možete upravljati tako da instalirate aplikaciju Family Link
 <translation id="3151562827395986343">Brisanje povijesti, kolačića, predmemorije i ostalog</translation>
 <translation id="3151786313568798007">Usmjerenje</translation>
 <translation id="3152356229013609796">Pregledajte obavijesti telefona, odgovorite na njih ili ih odbacite</translation>
+<translation id="3155163173539279776">Ponovo pokreni Chromium</translation>
 <translation id="3157387275655328056">Dodaj na popis za čitanje</translation>
 <translation id="3157931365184549694">Vrati</translation>
 <translation id="3158033540161634471">Postavljanje otiska prsta</translation>
@@ -3148,6 +3151,7 @@ Postavkama računa možete upravljati tako da instalirate aplikaciju Family Link
 <translation id="3432762828853624962">Shared Workers</translation>
 <translation id="3433507769937235446">Zaključavanje prilikom odlaska</translation>
 <translation id="3433621910545056227">Ups! Sustav nije uspješno uspostavio zaključavanje atributa vremena instalacije uređaja.</translation>
+<translation id="3434025015623587566">Google upravitelj zaporki treba više pristupa</translation>
 <translation id="3434107140712555581"><ph name="BATTERY_PERCENTAGE" />%</translation>
 <translation id="3434272557872943250">Ako je za vaše dijete uključena dodatna aktivnost na webu i u aplikacijama, ti se podaci mogu spremati na djetetov Google račun. Više o tim postavkama i načinu na koji ih možete prilagoditi saznajte na families.google.com.</translation>
 <translation id="3434475275396485144">Administrator vašeg telefona upravlja ovom postavkom</translation>
@@ -3362,6 +3366,7 @@ Postavkama računa možete upravljati tako da instalirate aplikaciju Family Link
 <translation id="3605156246402033687">{COUNT,plural, =1{{COUNT} račun koristi istu zaporku}one{{COUNT} račun koristi istu zaporku}few{{COUNT} računa koriste istu zaporku}other{{COUNT} računa koristi istu zaporku}}</translation>
 <translation id="3605780360466892872">Poslovnjak</translation>
 <translation id="3607671391978830431">Za dijete</translation>
+<translation id="3608460311600621471">Unesite razlog za ispis tih podataka:</translation>
 <translation id="3608730769702025110">3. od 4 koraka: pregledajte podatke koji otkrivaju identitet</translation>
 <translation id="3609277884604412258">Brzo pretraživanje</translation>
 <translation id="3610241585790874201">Spremanje podataka na uređaj nije dopušteno</translation>
@@ -3647,6 +3652,7 @@ Postavkama računa možete upravljati tako da instalirate aplikaciju Family Link
 <translation id="3809272675881623365">Zec</translation>
 <translation id="3809280248639369696">Mjesečeva zraka</translation>
 <translation id="3810593934879994994">Web-lokacija <ph name="ORIGIN" /> može pregledavati datoteke u sljedećim mapama</translation>
+<translation id="3810770279996899697">Upravitelj zaporki treba pristup MacOS Keychainu</translation>
 <translation id="3810914450553844415">Vaš administrator ne dopušta dodatne Google račune.</translation>
 <translation id="3810973564298564668">Upravljanje</translation>
 <translation id="381202950560906753">Dodaj još jedan</translation>
@@ -5046,6 +5052,7 @@ Upotrijebite Ctrl + Alt + Smanjivanje svjetline za smanjivanje prikaza.</transla
 <translation id="4918134162946436591">Prikaži preklapanje savjeta</translation>
 <translation id="4918762404810341788">Kopiraj i otvori</translation>
 <translation id="4921348630401250116">Pretvaranje teksta u govor</translation>
+<translation id="4922104989726031751">Da biste upotrebljavali Upravitelj zaporki sa svojim operativnim sustavom, ponovo pokrenite Chromium i dopustite pristup upravitelju zaporki računala. Kartice će se ponovo otvoriti nakon ponovnog pokretanja.</translation>
 <translation id="492299503953721473">Ukloni Android aplikacije</translation>
 <translation id="492363500327720082">Deinstaliranje aplikacije <ph name="APP_NAME" />...</translation>
 <translation id="4924002401726507608">Pošalji komentare</translation>
@@ -6662,6 +6669,7 @@ Dopuštenja koja ste već dali web-lokacijama i aplikacijama mogu se primijeniti
 <translation id="6238982280403036866">Dopuštena je upotreba JavaScripta</translation>
 <translation id="6239558157302047471">Ponovo učitaj okvir</translation>
 <translation id="6240821072888636753">Pitaj svaki put</translation>
+<translation id="6240964651812394252">Da biste upotrebljavali Google upravitelj zaporki sa svojim operativnim sustavom, ponovo pokrenite Chrome i dopustite pristup upravitelju zaporki računala. Kartice će se ponovo otvoriti nakon ponovnog pokretanja.</translation>
 <translation id="6241530762627360640">pristupiti informacijama o Bluetooth uređajima uparenim s vašim sustavom i otkrivati Bluetooth uređaje u blizini</translation>
 <translation id="6241844896329831164">Pristup nije potreban</translation>
 <translation id="6242574558232861452">Provjeravamo je li preuzimanje u skladu sa sigurnosnim pravilima vaše organizacije.</translation>
@@ -6696,6 +6704,7 @@ Dopuštenja koja ste već dali web-lokacijama i aplikacijama mogu se primijeniti
 <translation id="6264365405983206840">Odaberi &amp;sve</translation>
 <translation id="6264376385120300461">Svejedno preuzmi</translation>
 <translation id="6264520534872750757">Nastavi s upotrebom uređaja</translation>
+<translation id="6264636978858465832">Upravitelj zaporki treba više pristupa</translation>
 <translation id="6265159465845424232">Pitaj prije kopiranja ili premještanja Microsoftovih datoteka na Microsoft OneDrive</translation>
 <translation id="6265687851677020761">Ukloni priključak</translation>
 <translation id="6266532094411434237">Povezivanje s uređajem <ph name="DEVICE" /></translation>
@@ -9505,7 +9514,6 @@ Ključnu datoteku čuvajte na sigurnom mjestu. Trebat će vam za stvaranje novih
 <translation id="8473540203671727883">Izgovori tekst ispod pokazivača miša</translation>
 <translation id="8473863474539038330">Adrese i više</translation>
 <translation id="8474378002946546633">Dopusti obavijesti</translation>
-<translation id="8474733733775441349">Prikazivanje zaporki s vašeg Google računa</translation>
 <translation id="8475313423285172237">Drugi program na vašem računalu dodao je proširenje koje može promijeniti način na koji radi Chrome.</translation>
 <translation id="8476408756881832830">Pauziraj reprodukciju kad ChromeVox govori</translation>
 <translation id="8476491056950015181"><ph name="BEGIN_PARAGRAPH1" />Ako dopustite ChromeOS uređajima da nam šalju automatska izvješća, lakše ćemo odrediti prioritete za ispravljanje pogrešaka i poboljšavanje ChromeOS-a. Ta izvješća mogu uključivati informacije o situacijama u kojima se ChromeOS ruši, o tome koje su značajke upotrebljavane, koliko se memorije obično upotrebljavalo te dijagnostičke podatke i podatke o upotrebi Android aplikacija. Neki skupni podaci pomoći će i Googleovim aplikacijama i partnerima, na primjer razvojnim programerima za Android.<ph name="END_PARAGRAPH1" />

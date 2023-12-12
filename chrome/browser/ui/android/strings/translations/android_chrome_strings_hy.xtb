@@ -410,7 +410,6 @@
 <translation id="3226612997184048185">Պահելով էջանիշները Google հաշվում՝ դուք կարող եք հետագծել ապրանքների գները Chrome-ում և ստանալ զեղչերի մասին ծանուցումներ</translation>
 <translation id="3227557059438308877">Google Chrome-ը որպես անվտանգության բանալի</translation>
 <translation id="3232754137068452469">Վեբ ծրագիր</translation>
-<translation id="3234978181857588512">Պահել սարքում</translation>
 <translation id="3236059992281584593">Մնացել է 1 րոպե</translation>
 <translation id="3237087289225714896">Սովորական նախաբեռնում՝</translation>
 <translation id="3237433641417325993">Ոլորեք ներքև՝ առաջարկվող հոդվածները տեսնելու համար</translation>
@@ -582,7 +581,6 @@
 <translation id="4181841719683918333">Լեզուներ</translation>
 <translation id="4188221736490993796">Դասավորել Ֆ-ից Ա</translation>
 <translation id="4195643157523330669">Բացել նոր ներդիրով</translation>
-<translation id="4196597275619698563">Ստեղծել քարտ</translation>
 <translation id="4197828496439691735">{NUM_TABS,plural, =1{1 ներդիր այս սարքում}one{# ներդիր այս սարքում}other{# ներդիր այս սարքում}}</translation>
 <translation id="4198423547019359126">Ներբեռնումների պանակներ չկան</translation>
 <translation id="4202218894997543208">Ձեր արգելափակած թեմաները</translation>
@@ -594,7 +592,6 @@
 <translation id="4248098802131000011">Պաշտպանեք ձեր գաղտնաբառերը տվյալների արտահոսքից և անվտանգության հետ կապված այլ խնդիրներից</translation>
 <translation id="424864128008805179">Դուրս գա՞լ Chrome-ից:</translation>
 <translation id="4249955472157341256">Տեսակավորել ըստ ամսաթվի</translation>
-<translation id="4250229828105606438">Սքրինշոթ</translation>
 <translation id="4256782883801055595">Բաց կոդով ծրագրերի լիցենզիաներ</translation>
 <translation id="4257230861809842349">Ջնջե՞լ գաղտնաբառերը Google գաղտնաբառերի կառավարչից</translation>
 <translation id="4269820728363426813">Պատճենել հղման հասցեն</translation>
@@ -1148,7 +1145,6 @@
 <translation id="7030304022046916278">Ուղարկում է URL-ները Ապահով դիտարկմանը՝ դրանք ստուգելու համար։</translation>
 <translation id="7035701931849773472">Այլ տարբերակներ</translation>
 <translation id="7037830628447527439">Մուտք գործեք Chrome ձեր Google հաշվով</translation>
-<translation id="7038956721828960940">chrome_image_<ph name="CURRENT_TIMESTAMP_MS" /></translation>
 <translation id="7054588988317389591">Ուզո՞ւմ եք ստանալ պատկերների նկարագրություններ</translation>
 <translation id="7055152154916055070">Վերահասցեավորումն արգելափակված է՝</translation>
 <translation id="7063006564040364415">Չհաջողվեց կապակցվել համաժամացման սերվերին:</translation>
@@ -1279,7 +1275,6 @@
 <translation id="7658239707568436148">Չեղարկել</translation>
 <translation id="7665369617277396874">Ավելացնել հաշիվ</translation>
 <translation id="766587987807204883">Հոդվածները ցուցադրվում են այստեղ։ Դրանք կարող եք կարդալ նույնիսկ անցանց ռեժիմում։</translation>
-<translation id="768232549260819724">GIF-ը պատճենված է</translation>
 <translation id="7682724950699840886">Փորձեք անել հետևյալը․ համոզվեք, որ ձեր սարքում բավարար տարածք կա և նորից փորձեք արտահանել։</translation>
 <translation id="7686086654630106285">Կայքերի կողմից առաջարկվող գովազդների մասին</translation>
 <translation id="768618399695552958">Ձեր կողմից այցելվող որոշ էջեր նախապես են բեռնվում։ Եթե հղումը կատարվում է Google-ի որևէ կայքից, նախաբեռնումը կարող է կատարվել Google-ի սերվերների միջոցով։</translation>
@@ -1334,7 +1329,6 @@
 <translation id="7929962904089429003">Բացել ընտրացանկը</translation>
 <translation id="7930998711684428189">Զգուշացնում է, եթե տվյալների արտահոսքի արդյունքում գաղտնաբառերը հայտնի են դարձել կողմնակի անձանց։</translation>
 <translation id="7934668619883965330">Չհաջողվեց ներբեռնել ֆայլը։ Ֆայլի ձևաչափը չի աջակցվում։</translation>
-<translation id="7939485076072265087">Ստեղծել ոճավորված քարտ ընդգծումով</translation>
 <translation id="7942131818088350342"><ph name="PRODUCT_NAME" />-ը հնացած է:</translation>
 <translation id="7944772052836377867">Համաժամացման համար անհրաժեշտ է հաստատել ձեր ինքնությունը</translation>
 <translation id="7947953824732555851">Ընդունել և մտնել</translation>
@@ -1472,7 +1466,6 @@
 <translation id="856481929701340285">Համակարգչային տարբերակ</translation>
 <translation id="8570677896027847510">Ֆայլը հնարավոր չէ ներբեռնել անվտանգ եղանակով</translation>
 <translation id="8571213806525832805">Վերջին 4 շաբաթվա</translation>
-<translation id="8580884231102452214">Պատճենել GIF-ը</translation>
 <translation id="8583805026567836021">Հաշվի տվյալների մաքրում</translation>
 <translation id="859046281437143747">Հետևել գներին «Այլ ընտրանքներ» կոճակի օգնությամբ</translation>
 <translation id="860043288473659153">Քարտապանի անունը</translation>

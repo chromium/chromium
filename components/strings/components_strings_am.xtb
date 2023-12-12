@@ -53,6 +53,7 @@
 <translation id="1078033282564106222">የሕንፃ ቁጥር አማራጭ ተመርጧል</translation>
 <translation id="1080116354587839789">ከስፋቱ ጋር አመጣጥን</translation>
 <translation id="1081061862829655580">መሳቢያ 19</translation>
+<translation id="1082026381988252344">ያሸብልሉ እና የተጋራውን ትር ይዘቶች ያጉሉ</translation>
 <translation id="1089439967362294234">የይለፍ ቃል ቀይር</translation>
 <translation id="1090629319939036170">የምናባዊ እውነታ ምናሌ</translation>
 <translation id="1094777233105318927">ስለ የእርስዎ አሳሽ፣ ስርዓተ ክወና፣ መሣሪያ፣ የተጫነ ሶፍትዌር እና ፋይሎች መረጃ</translation>
@@ -2533,6 +2534,7 @@
 <translation id="6051221802930200923"><ph name="SITE" /> የዕውቅና ማረጋገጫ ሚስማር መሰካትን ስለሚጠቀም ድር ጣቢያውን አሁን መጎብኘት አይችሉም። የአውታረ መረብ ስህተቶች እና ጥቃቶች ብዙውን ጊዜ ጊዜያዊ ስለሆኑ ይህ ገፅ በኋላ ላይ ሊሠራ ይችላል።</translation>
 <translation id="6051898664905071243">የገጽ ብዛት፦</translation>
 <translation id="6052284303005792909">•</translation>
+<translation id="605237284704429106">አይ ቢ ኤ ኤን እየተሞላ ነው</translation>
 <translation id="6053584886670442526">በመላው የGoogle ምርቶች ላይ የተቀመጡ አድራሻዎችን መጠቀም ይችላሉ። ይህ አድራሻ በGoogle መለያዎ፣ <ph name="ACCOUNT" /> ውስጥ ተቀምጧል።</translation>
 <translation id="6053735090575989697">Google በግላዊነት መመሪያችን ውስጥ እንዴት ውሂብዎን እንደሚጠብቅ የበለጠ ይወቁ።</translation>
 <translation id="6055888660316801977">ደህንነቱ የተጠበቀ የመግቢያ ማስረጃ ምንም ተዛማጅ የመግቢያ ማስረጃ ሉህ የለም</translation>
@@ -2807,6 +2809,7 @@
 <translation id="6612010098632894193">የመስመር ላይ ቪድዮ</translation>
 <translation id="6613866251791999074">በChrome ውስጥ ስለ የፍለጋ ፕሮግራምዎ የበለጠ ይወቁ</translation>
 <translation id="6615297766614333076">ቁልል 2</translation>
+<translation id="6619496928666593220">አይ ቢ ኤ ኤን አልተሞላም</translation>
 <translation id="6624427990725312378">የዕውቂያ መረጃ</translation>
 <translation id="6628463337424475685"><ph name="ENGINE" /> ፍለጋ</translation>
 <translation id="6629652037942826935">ቅንጡ ጉዞ</translation>

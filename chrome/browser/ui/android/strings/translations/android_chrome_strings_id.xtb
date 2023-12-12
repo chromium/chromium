@@ -410,7 +410,6 @@ Hanya orang yang memiliki frasa sandi Anda yang dapat membaca data terenkripsi A
 <translation id="3226612997184048185">Jika Anda juga menyimpan bookmark di Akun Google, Anda dapat memantau harga produk di Chrome dan mendapatkan notifikasi jika ada penurunan harga</translation>
 <translation id="3227557059438308877">Google Chrome sebagai Kunci Keamanan</translation>
 <translation id="3232754137068452469">Aplikasi Web</translation>
-<translation id="3234978181857588512">Simpan ke perangkat</translation>
 <translation id="3236059992281584593">1 menit lagi</translation>
 <translation id="3237087289225714896">Pramuat standar:</translation>
 <translation id="3237433641417325993">Scroll ke bawah untuk melihat artikel yang disarankan</translation>
@@ -582,7 +581,6 @@ Hanya orang yang memiliki frasa sandi Anda yang dapat membaca data terenkripsi A
 <translation id="4181841719683918333">Bahasa</translation>
 <translation id="4188221736490993796">Urutkan menurut Z ke A</translation>
 <translation id="4195643157523330669">Buka di tab baru</translation>
-<translation id="4196597275619698563">Buat kartu</translation>
 <translation id="4197828496439691735">{NUM_TABS,plural, =1{1 tab di perangkat ini}other{# tab di perangkat ini}}</translation>
 <translation id="4198423547019359126">Tidak tersedia lokasi download</translation>
 <translation id="4202218894997543208">Topik yang Anda blokir</translation>
@@ -594,7 +592,6 @@ Hanya orang yang memiliki frasa sandi Anda yang dapat membaca data terenkripsi A
 <translation id="4248098802131000011">Amankan sandi Anda dari pelanggaran data dan masalah keamanan lainnya</translation>
 <translation id="424864128008805179">Logout dari Chrome?</translation>
 <translation id="4249955472157341256">Urutkan menurut yang Terbaru</translation>
-<translation id="4250229828105606438">Screenshot</translation>
 <translation id="4256782883801055595">Lisensi open source</translation>
 <translation id="4257230861809842349">Hapus sandi dari Pengelola Sandi Google?</translation>
 <translation id="4269820728363426813">Salin URL</translation>
@@ -1148,7 +1145,6 @@ Misalnya, beberapa situs web mungkin menanggapi permintaan ini dengan menayangka
 <translation id="7030304022046916278">Mengirimkan URL ke Safe Browsing untuk memeriksanya</translation>
 <translation id="7035701931849773472">Opsi lainnya</translation>
 <translation id="7037830628447527439">Login ke Chrome dengan Akun Google Anda</translation>
-<translation id="7038956721828960940">chrome_image_<ph name="CURRENT_TIMESTAMP_MS" /></translation>
 <translation id="7054588988317389591">Dapatkan deskripsi gambar?</translation>
 <translation id="7055152154916055070">Pengalihan diblokir:</translation>
 <translation id="7063006564040364415">Tidak dapat menyambung ke server sinkronisasi.</translation>
@@ -1279,7 +1275,6 @@ Misalnya, beberapa situs web mungkin menanggapi permintaan ini dengan menayangka
 <translation id="7658239707568436148">Batal</translation>
 <translation id="7665369617277396874">Tambahkan akun</translation>
 <translation id="766587987807204883">Artikel ditampilkan di sini, yang dapat Anda baca bahkan saat offline</translation>
-<translation id="768232549260819724">GIF Disalin</translation>
 <translation id="7682724950699840886">Coba tips berikut ini: pastikan ruang di perangkat Anda mencukupi, lalu coba ekspor lagi.</translation>
 <translation id="7686086654630106285">Selengkapnya tentang iklan yang disarankan situs</translation>
 <translation id="768618399695552958">Beberapa halaman yang Anda buka akan dipramuat. Halaman mungkin dipramuat melalui server Google saat ditautkan dari situs Google.</translation>
@@ -1334,7 +1329,6 @@ Misalnya, beberapa situs web mungkin menanggapi permintaan ini dengan menayangka
 <translation id="7929962904089429003">Membuka menu</translation>
 <translation id="7930998711684428189">Memberi Anda peringatan jika sandi terekspos saat terjadi pelanggaran data.</translation>
 <translation id="7934668619883965330">Tidak dapat mendownload file. Format file tidak didukung.</translation>
-<translation id="7939485076072265087">Buat kartu bergaya dengan sorotan</translation>
 <translation id="7942131818088350342"><ph name="PRODUCT_NAME" /> sudah usang.</translation>
 <translation id="7944772052836377867">Sinkronisasi perlu memverifikasi diri Anda</translation>
 <translation id="7947953824732555851">Terima dan masuk</translation>
@@ -1472,7 +1466,6 @@ Misalnya, beberapa situs web mungkin menanggapi permintaan ini dengan menayangka
 <translation id="856481929701340285">Ubah situs desktop</translation>
 <translation id="8570677896027847510">File tidak dapat didownload dengan aman</translation>
 <translation id="8571213806525832805">4 minggu terakhir</translation>
-<translation id="8580884231102452214">Salin GIF</translation>
 <translation id="8583805026567836021">Menghapus data akun</translation>
 <translation id="859046281437143747">Pantau harga dari tombol opsi Lainnya</translation>
 <translation id="860043288473659153">Nama pemegang kartu</translation>

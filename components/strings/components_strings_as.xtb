@@ -1217,6 +1217,7 @@
 <translation id="3432601291244612633">পৃষ্ঠাখন বন্ধ কৰক</translation>
 <translation id="3433111389595862568">সহযোগিতা আৰু কনফাৰেন্সিং ছফ্টৱেৰ</translation>
 <translation id="3433144818443565002">ভইচ আৰু ভিডিঅ’ চাট</translation>
+<translation id="3434025015623587566">Google Password Managerক অধিক এক্সেছৰ আৱশ্যক</translation>
 <translation id="343474037147570563">আপুনি আপল’ড বা সংলগ্ন কৰা ফাইলসমূহ বিশ্লেষণৰ বাবে Google Cloud বা তৃতীয় পক্ষলৈ পঠিওৱা হয়। উদাহৰণস্বৰূপে, সেইবিলাক সংবেদনশীল ডেটা বা মালৱেৰৰ বাবে স্কেন কৰা হ’ব পাৰে আৰু কোম্পানীৰ নীতিৰ ওপৰত ভিত্তি কৰি ষ্ট’ৰ কৰা হ’ব পাৰে আৰু প্ৰশাসকৰ বাবে দৃশ্যমান হ’ব পাৰে।</translation>
 <translation id="3435557549311968410">অবিৰত (Short)</translation>
 <translation id="3435738964857648380">সুৰক্ষা</translation>
@@ -1964,6 +1965,7 @@
 <translation id="4918221908152712722"><ph name="APP_NAME" /> ইনষ্টল কৰক (ডাউনল’ড কৰাৰ প্ৰয়োজন নাই)</translation>
 <translation id="4920457992177678649">বন্ধৰ দিনৰ ভাড়া আৰু হ্ৰস্বম্যাদী থকাৰ ব্যৱস্থা</translation>
 <translation id="4920710383559189047">ছ্লীভ</translation>
+<translation id="4922104989726031751">আপোনাৰ অপাৰেটিং ছিষ্টেমৰ সৈতে Password Manager ব্যৱহাৰ কৰিবলৈ, পুনৰ Chromium লঞ্চ কৰক আৰু আপোনাৰ কম্পিউটাৰৰ পাছৱৰ্ড পৰিচালক এক্সেছ কৰাৰ অনুমতি দিয়ক। পুনৰ লঞ্চ কৰাৰ পাছত আপোনাৰ টেবসমূহ পুনৰ খোল খাব।</translation>
 <translation id="4923459931733593730">পৰিশোধ</translation>
 <translation id="4926049483395192435">নির্দিষ্ট হ’বই লাগিব।</translation>
 <translation id="4926159001844873046"><ph name="SITE" />এ কয় যে</translation>
@@ -2603,6 +2605,7 @@
 <translation id="6234122620015464377">প্ৰতিখন নথিৰ পাছত ট্ৰিম কৰক</translation>
 <translation id="6236290670123303279">ছেটিংসমূহ পৰিচালনা কৰক</translation>
 <translation id="6240447795304464094">Google Pay ৰ ল’গ’</translation>
+<translation id="6240964651812394252">আপোনাৰ অপাৰেটিং ছিষ্টেমৰ সৈতে Password Manager ব্যৱহাৰ কৰিবলৈ, পুনৰ Chrome লঞ্চ কৰক আৰু আপোনাৰ কম্পিউটাৰৰ পাছৱৰ্ড পৰিচালক এক্সেছ কৰাৰ অনুমতি দিয়ক। পুনৰ লঞ্চ কৰাৰ পাছত আপোনাৰ টেবসমূহ পুনৰ খোল খাব।</translation>
 <translation id="6241121617266208201">পৰামৰ্শসমূহ লুকুৱাওক</translation>
 <translation id="624499991300733384">প্ৰিণ্ট কম্প’জিটৰ সেৱা</translation>
 <translation id="6251906504834538140">{0,plural, =1{ফাইল স্থানান্তৰ কৰাটো অৱৰোধ কৰা হৈছে}one{<ph name="FILE_COUNT" /> টা ফাইল স্থানান্তৰ কৰাটো অৱৰোধ কৰা হৈছে}other{<ph name="FILE_COUNT" /> টা ফাইল স্থানান্তৰ কৰাটো অৱৰোধ কৰা হৈছে}}</translation>
@@ -2613,6 +2616,7 @@
 <translation id="6263376278284652872"><ph name="DOMAIN" />ৰ বুকমার্ক</translation>
 <translation id="6264376385120300461">তথাপি ডাউনল’ড কৰক</translation>
 <translation id="6264485186158353794">পূৰ্বৱৰ্তী পৃষ্ঠাটোলৈ উভতি যাওক</translation>
+<translation id="6264636978858465832">Password Managerক অধিক এক্সেছৰ আৱশ্যক</translation>
 <translation id="6265794661083428563"><ph name="POLICY_NAME" /> নীতিৰ মানটো প্ৰতিলিপি কৰক</translation>
 <translation id="6266934640124581640">পাতল নীলা</translation>
 <translation id="6270066318535733958">নাও চালনা</translation>

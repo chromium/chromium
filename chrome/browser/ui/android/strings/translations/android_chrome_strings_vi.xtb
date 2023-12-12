@@ -410,7 +410,6 @@ Chỉ những người có cụm mật khẩu của bạn mới đọc được 
 <translation id="3226612997184048185">Nếu cũng lưu dấu trang trong Tài khoản Google, bạn có thể theo dõi giá sản phẩm trong Chrome và nhận thông báo khi sản phẩm giảm giá</translation>
 <translation id="3227557059438308877">Dùng Google Chrome làm khóa bảo mật</translation>
 <translation id="3232754137068452469">Ứng dụng web</translation>
-<translation id="3234978181857588512">Lưu vào thiết bị</translation>
 <translation id="3236059992281584593">Còn 1 phút</translation>
 <translation id="3237087289225714896">Chế độ tải trước tiêu chuẩn:</translation>
 <translation id="3237433641417325993">Di chuyển xuống để xem các bài viết được đề xuất</translation>
@@ -582,7 +581,6 @@ Chỉ những người có cụm mật khẩu của bạn mới đọc được 
 <translation id="4181841719683918333">Ngôn ngữ</translation>
 <translation id="4188221736490993796">Sắp xếp từ Z đến A</translation>
 <translation id="4195643157523330669">Mở trong thẻ mới</translation>
-<translation id="4196597275619698563">Tạo thẻ</translation>
 <translation id="4197828496439691735">{NUM_TABS,plural, =1{1 thẻ trên thiết bị này}other{# thẻ trên thiết bị này}}</translation>
 <translation id="4198423547019359126">Không có vị trí tải xuống</translation>
 <translation id="4202218894997543208">Chủ đề bạn đã chặn</translation>
@@ -594,7 +592,6 @@ Chỉ những người có cụm mật khẩu của bạn mới đọc được 
 <translation id="4248098802131000011">Bảo vệ mật khẩu của bạn trước việc bị rò rỉ dữ liệu và các vấn đề bảo mật khác</translation>
 <translation id="424864128008805179">Đăng xuất khỏi Chrome?</translation>
 <translation id="4249955472157341256">Sắp xếp theo Mới nhất</translation>
-<translation id="4250229828105606438">Ảnh chụp màn hình</translation>
 <translation id="4256782883801055595">Giấy phép nguồn mở</translation>
 <translation id="4257230861809842349">Xoá mật khẩu khỏi Trình quản lý mật khẩu của Google?</translation>
 <translation id="4269820728363426813">Sao chép địa chỉ liên kết</translation>
@@ -1148,7 +1145,6 @@ Ví dụ: một số trang web có thể phản hồi yêu cầu này bằng cá
 <translation id="7030304022046916278">Gửi URL để tính năng Duyệt web an toàn kiểm tra</translation>
 <translation id="7035701931849773472">Tuỳ chọn khác</translation>
 <translation id="7037830628447527439">Đăng nhập vào Chrome bằng Tài khoản Google</translation>
-<translation id="7038956721828960940">chrome_image_<ph name="CURRENT_TIMESTAMP_MS" /></translation>
 <translation id="7054588988317389591">Tải nội dung mô tả hình ảnh?</translation>
 <translation id="7055152154916055070">Liên kết chuyển hướng đã chặn:</translation>
 <translation id="7063006564040364415">Không thể kết nối với máy chủ đồng bộ hóa.</translation>
@@ -1279,7 +1275,6 @@ Ví dụ: một số trang web có thể phản hồi yêu cầu này bằng cá
 <translation id="7658239707568436148">Hủy</translation>
 <translation id="7665369617277396874">Thêm tài khoản</translation>
 <translation id="766587987807204883">Các bài viết xuất hiện ở đây và bạn có thể đọc ngay cả khi không có kết nối mạng</translation>
-<translation id="768232549260819724">Đã sao chép GIF</translation>
 <translation id="7682724950699840886">Thử các mẹo sau: đảm bảo thiết bị của bạn có đủ dung lượng, sau đó thử xuất lại.</translation>
 <translation id="7686086654630106285">Tìm hiểu thêm về quảng cáo do trang web đề xuất</translation>
 <translation id="768618399695552958">Một số trang bạn truy cập đã được tải trước. Những trang này có thể được tải trước thông qua các máy chủ của Google khi được liên kết bởi một trang web tạo bằng Google Sites.</translation>
@@ -1334,7 +1329,6 @@ Ví dụ: một số trang web có thể phản hồi yêu cầu này bằng cá
 <translation id="7929962904089429003">Mở menu</translation>
 <translation id="7930998711684428189">Cảnh báo bạn nếu mật khẩu bị lộ trong một sự cố rò rỉ dữ liệu.</translation>
 <translation id="7934668619883965330">Không thể tải tệp xuống. Định dạng tệp không được hỗ trợ.</translation>
-<translation id="7939485076072265087">Tạo thẻ cách điệu cho văn bản nổi bật</translation>
 <translation id="7942131818088350342"><ph name="PRODUCT_NAME" /> đã lỗi thời.</translation>
 <translation id="7944772052836377867">Tính năng đồng bộ hóa cần xác minh danh tính của bạn</translation>
 <translation id="7947953824732555851">Chấp nhận &amp; đăng nhập</translation>
@@ -1472,7 +1466,6 @@ Ví dụ: một số trang web có thể phản hồi yêu cầu này bằng cá
 <translation id="856481929701340285">Yêu cầu trang máy tính</translation>
 <translation id="8570677896027847510">Không thể tải tệp xuống một cách an toàn</translation>
 <translation id="8571213806525832805">4 tuần qua</translation>
-<translation id="8580884231102452214">Sao chép GIF</translation>
 <translation id="8583805026567836021">Xóa dữ liệu tài khoản</translation>
 <translation id="859046281437143747">Theo dõi giá trong nút Tuỳ chọn khác</translation>
 <translation id="860043288473659153">Tên chủ thẻ</translation>

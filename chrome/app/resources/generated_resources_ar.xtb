@@ -871,6 +871,7 @@
 <translation id="1651008383952180276">يجب إدخال عبارة المرور نفسها مرتين</translation>
 <translation id="1651609627703324721">تعرض علامة التبويب هذه محتوى واقع افتراضي على سماعة رأس.</translation>
 <translation id="1652326691684645429">تفعيل ميزة "المشاركة عن قرب"</translation>
+<translation id="1652862280638399816">‏لاستخدام "مدير كلمات المرور" مع تطبيق macOS Keychain، يُرجى إعادة تشغيل Chromium والسماح بالوصول إلى التطبيق. وستتم إعادة فتح علامات التبويب بعد إعادة التشغيل.</translation>
 <translation id="1654580009054503925">غير مسموح للإضافة بعرض الطلبات</translation>
 <translation id="1656528038316521561">درجة تعتيم الخلفية</translation>
 <translation id="1657406563541664238">‏المساعدة في تحسين <ph name="PRODUCT_NAME" /> بإرسال إحصاءات الاستخدام وتقارير الأعطال إلى Google تلقائيًا</translation>
@@ -2630,6 +2631,7 @@
 <translation id="2990313168615879645">‏إضافة حساب Google</translation>
 <translation id="2990375978470734995">عليك إعادة توصيل الملحقات الخارجية لتطبيق هذا التغيير.</translation>
 <translation id="2990583317361835189">عدم السماح للمواقع الإلكترونية باستخدام أجهزة استشعار الحركة</translation>
+<translation id="2991182900092497283">يُرجى إدخال سبب للصق هذه البيانات:</translation>
 <translation id="2992931425024192067">عرض كل محتوى الإشعارات</translation>
 <translation id="2993517869960930405">معلومات التطبيق</translation>
 <translation id="2996108796702395498">الرقم التسلسلي للجهاز هو <ph name="SERIAL_NUMBER" />. يمكن استخدام هذا الرقم للمساعدة في تفعيل الخدمة.</translation>
@@ -2823,6 +2825,7 @@
 <translation id="3151562827395986343">محو السجلّ وملفات تعريف الارتباط وذاكرة التخزين المؤقت والمزيد</translation>
 <translation id="3151786313568798007">الاتجاه</translation>
 <translation id="3152356229013609796">عرض إشعارات هاتفك وإغلاقها والردّ عليها</translation>
+<translation id="3155163173539279776">‏إعادة تشغيل Chromium</translation>
 <translation id="3157387275655328056">إضافة إلى قائمة القراءة</translation>
 <translation id="3157931365184549694">استعادة</translation>
 <translation id="3158033540161634471">إعداد بصمة الإصبع</translation>
@@ -3143,6 +3146,7 @@
 <translation id="3432762828853624962">العمال المشتركون</translation>
 <translation id="3433507769937235446">قفل الشاشة عند الابتعاد عن الجهاز</translation>
 <translation id="3433621910545056227">عفوًا!  تعذّر النظام في إنشاء قفل سمات وقت التثبيت بالجهاز.</translation>
+<translation id="3434025015623587566">‏يحتاج "مدير كلمات المرور في Google" إلى مزيد من أذونات الوصول</translation>
 <translation id="3434107140712555581"><ph name="BATTERY_PERCENTAGE" />%</translation>
 <translation id="3434272557872943250">‏في حال تفعيل إعداد "النشاط الإضافي على الويب وفي التطبيقات" لحسابك الفرعي، قد يتم حفظ هذه البيانات في حسابك على Google. تعرّف على المزيد حول هذه الإعدادات وطريقة ضبطها من خلال families.google.com.</translation>
 <translation id="3434475275396485144">يدير مشرف هاتفك هذه الميزة.</translation>
@@ -3355,6 +3359,7 @@
 <translation id="3605156246402033687">{COUNT,plural, =1{حساب واحد ({COUNT}) يستخدم كلمة المرور نفسها}zero{‫{COUNT} حساب يستخدم كلمة المرور نفسها}two{حسابان ({COUNT}) يستخدمان كلمة المرور نفسها}few{‫{COUNT} حسابات تستخدم كلمة المرور نفسها}many{‫{COUNT} حسابًا يستخدم كلمة المرور نفسها}other{‫{COUNT} حساب يستخدم كلمة المرور نفسها}}</translation>
 <translation id="3605780360466892872">الزر لأسفل</translation>
 <translation id="3607671391978830431">لطفل</translation>
+<translation id="3608460311600621471">يُرجى إدخال سبب لطباعة هذه البيانات:</translation>
 <translation id="3608730769702025110">الخطوة 3 من 4: مراجعة معلومات تحديد الهوية الشخصية</translation>
 <translation id="3609277884604412258">بحث سريع</translation>
 <translation id="3610241585790874201">المواقع الإلكترونية غير المسموح لها بحفظ البيانات على جهازك</translation>
@@ -3641,6 +3646,7 @@
 <translation id="3809272675881623365">أرنب</translation>
 <translation id="3809280248639369696">شعاع القمر</translation>
 <translation id="3810593934879994994">بإمكان <ph name="ORIGIN" /> عرض الملفات في المجلدات التالية:</translation>
+<translation id="3810770279996899697">‏يحتاج "مدير كلمات المرور" إلى الإذن بالوصول إلى تطبيق MacOS Keychain.</translation>
 <translation id="3810914450553844415">‏لا يسمح المشرف بإنشاء حسابات Google إضافية.</translation>
 <translation id="3810973564298564668">إدارة</translation>
 <translation id="381202950560906753">إضافة بصمة إصبع أخرى</translation>
@@ -5035,6 +5041,7 @@
 <translation id="4918134162946436591">عرض تراكب التعديلات</translation>
 <translation id="4918762404810341788">النسخ والفتح</translation>
 <translation id="4921348630401250116">تحويل النص إلى كلام</translation>
+<translation id="4922104989726031751">‏لاستخدام "مدير كلمات المرور" مع نظام التشغيل، يُرجى إعادة تشغيل Chromium والسماح بالوصول إلى مدير كلمات المرور على جهاز الكمبيوتر. ستتم إعادة فتح علامات التبويب بعد إعادة التشغيل.</translation>
 <translation id="492299503953721473">‏إزالة تطبيقات Android</translation>
 <translation id="492363500327720082">جارٍ إلغاء تثبيت <ph name="APP_NAME" />...</translation>
 <translation id="4924002401726507608">إرسال التعليقات</translation>
@@ -6651,6 +6658,7 @@
 <translation id="6238982280403036866">‏المواقع الإلكترونية التي يُسمح لها باستخدام JavaScript</translation>
 <translation id="6239558157302047471">تحديث الإطار</translation>
 <translation id="6240821072888636753">السؤال في كل مرة</translation>
+<translation id="6240964651812394252">‏لاستخدام "مدير كلمات المرور في Google" مع نظام التشغيل، يُرجى إعادة تشغيل Chrome والسماح بالوصول إلى مدير كلمات المرور على جهاز الكمبيوتر. ستتم إعادة فتح علامات التبويب بعد إعادة التشغيل.</translation>
 <translation id="6241530762627360640">الوصول إلى معلومات حول أجهزة البلوتوث المقترنة بنظامك واكتشاف أجهزة البلوتوث القريبة.</translation>
 <translation id="6241844896329831164">لا حاجة للوصول</translation>
 <translation id="6242574558232861452">جارٍ فحص الملف الجاري تنزيله للتأكّد من توافقه مع سياسات أمان مؤسستك.</translation>
@@ -6685,6 +6693,7 @@
 <translation id="6264365405983206840">تحديد &amp;الكل</translation>
 <translation id="6264376385120300461">التنزيل على أيّ حال</translation>
 <translation id="6264520534872750757">مواصلة استخدام الجهاز</translation>
+<translation id="6264636978858465832">يحتاج "مدير كلمات المرور" إلى مزيد من أذونات الوصول</translation>
 <translation id="6265159465845424232">‏طلب الإذن قبل نسخ ملفات Microsoft أو نقلها إلى Microsoft OneDrive</translation>
 <translation id="6265687851677020761">إزالة المنفذ</translation>
 <translation id="6266532094411434237">جارٍ الربط بجهاز <ph name="DEVICE" /></translation>
@@ -9490,7 +9499,6 @@
 <translation id="8473540203671727883">قول النص أسفل الماوس</translation>
 <translation id="8473863474539038330">العناوين والمزيد</translation>
 <translation id="8474378002946546633">السماح بالإشعارات</translation>
-<translation id="8474733733775441349">‏عرض كلمات المرور من حسابك على Google</translation>
 <translation id="8475313423285172237">‏أضاف برنامج آخر بجهاز الكمبيوتر إضافة قد تؤدي إلى تغيير طريقة عمل Chrome.</translation>
 <translation id="8476408756881832830">‏إيقاف التشغيل مؤقتًا أثناء تحدُّث ChromeVox</translation>
 <translation id="8476491056950015181">‏<ph name="BEGIN_PARAGRAPH1" />إنّ السماح لأجهزة ChromeOS بإرسال تقارير تلقائية إلينا يساعدنا في التركيز على ما يجب إصلاحه وتحسينه في ChromeOS. يمكن أن تتضمّن هذه التقارير بيانات، مثل أوقات تعطّل ChromeOS والميزات التي تتوقّف نتيجة للأعطال وحجم الذاكرة المستخدَم عادةً عند حدوث تلك الأعطال وبيانات تشخيص تطبيق Android وبيانات استخدامه. ستساعد أيضًا بعض البيانات المجمَّعة في تحسين تطبيقات Google ومنتجات شركائها، مثل مطوّري برامج Android.<ph name="END_PARAGRAPH1" />

@@ -410,7 +410,6 @@ Tik jūsų slaptafrazę turintis asmuo galės perskaityti šifruotus duomenis. S
 <translation id="3226612997184048185">Jei taip pat išsaugosite žymes „Google“ paskyroje, galėsite stebėti produktų kainas naršyklėje „Chrome“ ir gauti pranešimą, kai kaina sumažės</translation>
 <translation id="3227557059438308877">„Google Chrome“ kaip saugos raktas</translation>
 <translation id="3232754137068452469">Žiniatinklio programa</translation>
-<translation id="3234978181857588512">Išsaugoti įrenginyje</translation>
 <translation id="3236059992281584593">Liko 1 min.</translation>
 <translation id="3237087289225714896">Įprastas išankstinis įkėlimas:</translation>
 <translation id="3237433641417325993">Slinkite žemyn ir peržiūrėkite siūlomus straipsnius</translation>
@@ -582,7 +581,6 @@ Tik jūsų slaptafrazę turintis asmuo galės perskaityti šifruotus duomenis. S
 <translation id="4181841719683918333">Kalbos</translation>
 <translation id="4188221736490993796">Rūšiuoti nuo Ž iki A</translation>
 <translation id="4195643157523330669">Atidaryti naujame skirtuke</translation>
-<translation id="4196597275619698563">Sukurti kortelę</translation>
 <translation id="4197828496439691735">{NUM_TABS,plural, =1{Vienas skirtukas šiame įrenginyje}one{# skirtukas šiame įrenginyje}few{# skirtukai šiame įrenginyje}many{# skirtuko šiame įrenginyje}other{# skirtukų šiame įrenginyje}}</translation>
 <translation id="4198423547019359126">Nėra pasiekiamų atsisiuntimo vietų</translation>
 <translation id="4202218894997543208">Jūsų užblokuotos temos</translation>
@@ -594,7 +592,6 @@ Tik jūsų slaptafrazę turintis asmuo galės perskaityti šifruotus duomenis. S
 <translation id="4248098802131000011">Apsaugokite slaptažodžius nuo duomenų saugos pažeidimų ir kitų saugos problemų</translation>
 <translation id="424864128008805179">Atsijungti nuo „Chrome“?</translation>
 <translation id="4249955472157341256">Rūšiuoti pagal naujausią</translation>
-<translation id="4250229828105606438">Ekrano kopija</translation>
 <translation id="4256782883801055595">Atvirojo šaltinio licencijos</translation>
 <translation id="4257230861809842349">Ištrinti slaptažodžius iš „Google“ slaptažodžių tvarkyklės?</translation>
 <translation id="4269820728363426813">Kopijuoti nuorodos adresą</translation>
@@ -1148,7 +1145,6 @@ Pavyzdžiui, kai kurios svetainės gali atsakyti į šią užklausą rodydamos j
 <translation id="7030304022046916278">Siunčia URL Saugaus naršymo funkcijai, kad juos patikrintų</translation>
 <translation id="7035701931849773472">Kitos parinktys</translation>
 <translation id="7037830628447527439">Prisijunkite prie „Chrome“ naudodami „Google“ paskyrą</translation>
-<translation id="7038956721828960940">chrome_vaizdas_<ph name="CURRENT_TIMESTAMP_MS" /></translation>
 <translation id="7054588988317389591">Gauti vaizdų aprašus?</translation>
 <translation id="7055152154916055070">Peradresavimas užblokuotas:</translation>
 <translation id="7063006564040364415">Nepavyko prisijungti prie sinchronizavimo serverio.</translation>
@@ -1279,7 +1275,6 @@ Pavyzdžiui, kai kurios svetainės gali atsakyti į šią užklausą rodydamos j
 <translation id="7658239707568436148">Atšaukti</translation>
 <translation id="7665369617277396874">Pridėti paskyrą</translation>
 <translation id="766587987807204883">Čia rodomi straipsniai, kuriuos galima skaityti net neprisijungus</translation>
-<translation id="768232549260819724">GIF nukopijuotas</translation>
 <translation id="7682724950699840886">Išbandykite nurodytus patarimus: įsitikinkite, kad įrenginyje yra pakankamai vietos, ir bandykite eksportuoti dar kartą.</translation>
 <translation id="7686086654630106285">Daugiau apie svetainių siūlomus skelbimus</translation>
 <translation id="768618399695552958">Kai kurie puslapiai, kuriuose lankotės, yra iš anksto įkelti. Puslapiai gali būti iš anksto įkelti per „Google“ serverius, kai susieti iš „Google“ svetainės.</translation>
@@ -1334,7 +1329,6 @@ Pavyzdžiui, kai kurios svetainės gali atsakyti į šią užklausą rodydamos j
 <translation id="7929962904089429003">Atidaryti meniu</translation>
 <translation id="7930998711684428189">Įspėjama, jei slaptažodžiai atskleidžiami įvykus duomenų saugos pažeidimui</translation>
 <translation id="7934668619883965330">Negalima atsisiųsti failo. Failo formatas nepalaikomas.</translation>
-<translation id="7939485076072265087">Sukurti stilizuotą kortelę su paryškinimu</translation>
 <translation id="7942131818088350342">„<ph name="PRODUCT_NAME" />“ pasenęs.</translation>
 <translation id="7944772052836377867">Sinchronizuojant reikia patvirtinti jūsų tapatybę</translation>
 <translation id="7947953824732555851">Sutikti ir prisij.</translation>
@@ -1472,7 +1466,6 @@ Pavyzdžiui, kai kurios svetainės gali atsakyti į šią užklausą rodydamos j
 <translation id="856481929701340285">Užkl. svet. kompiuteriui</translation>
 <translation id="8570677896027847510">Negalima saugiai atsisiųsti failo</translation>
 <translation id="8571213806525832805">Pastarosios 4 savaitės</translation>
-<translation id="8580884231102452214">Kopijuoti GIF</translation>
 <translation id="8583805026567836021">Valomi paskyros duomenys</translation>
 <translation id="859046281437143747">Stebėkite kainas naudodami mygtuką „Daugiau parinkčių“</translation>
 <translation id="860043288473659153">Kortelės savininko vardas</translation>

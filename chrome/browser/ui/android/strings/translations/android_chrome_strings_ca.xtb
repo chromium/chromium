@@ -410,7 +410,6 @@ Només els usuaris que sàpiguen la teva frase de contrasenya poden llegir les d
 <translation id="3226612997184048185">Si també deses les teves adreces d'interès al teu Compte de Google, pots fer un seguiment dels preus dels productes a Chrome i rebre una notificació quan baixi el preu</translation>
 <translation id="3227557059438308877">Google Chrome com a clau de seguretat</translation>
 <translation id="3232754137068452469">Aplicació web</translation>
-<translation id="3234978181857588512">Desa al dispositiu</translation>
 <translation id="3236059992281584593">Queda 1 minut</translation>
 <translation id="3237087289225714896">Precàrrega estàndard:</translation>
 <translation id="3237433641417325993">Desplaça't cap avall per veure els articles suggerits</translation>
@@ -582,7 +581,6 @@ Només els usuaris que sàpiguen la teva frase de contrasenya poden llegir les d
 <translation id="4181841719683918333">Idiomes</translation>
 <translation id="4188221736490993796">Ordena de la Z a la A</translation>
 <translation id="4195643157523330669">Obre en una pestanya nova</translation>
-<translation id="4196597275619698563">Crea una targeta</translation>
 <translation id="4197828496439691735">{NUM_TABS,plural, =1{1 pestanya en aquest dispositiu}other{# pestanyes en aquest dispositiu}}</translation>
 <translation id="4198423547019359126">No hi ha cap ubicació de baixada disponible</translation>
 <translation id="4202218894997543208">Temes que has bloquejat</translation>
@@ -594,7 +592,6 @@ Només els usuaris que sàpiguen la teva frase de contrasenya poden llegir les d
 <translation id="4248098802131000011">Protegeix les contrasenyes contra les violacions de les dades i contra altres problemes de seguretat</translation>
 <translation id="424864128008805179">Vols tancar la sessió de Chrome?</translation>
 <translation id="4249955472157341256">Ordena per Més recents</translation>
-<translation id="4250229828105606438">Captura de pantalla</translation>
 <translation id="4256782883801055595">Llicències de codi obert</translation>
 <translation id="4257230861809842349">Vols suprimir les contrasenyes del gestor de contrasenyes de Google?</translation>
 <translation id="4269820728363426813">Copia l'adreça de l'enllaç</translation>
@@ -1148,7 +1145,6 @@ Per exemple, és possible que alguns llocs web responguin a aquesta sol·licitud
 <translation id="7030304022046916278">Envia els URL a Navegació segura perquè els comprovi</translation>
 <translation id="7035701931849773472">Altres opcions</translation>
 <translation id="7037830628447527439">Inicia la sessió a Chrome amb el teu Compte de Google</translation>
-<translation id="7038956721828960940">chrome_image_<ph name="CURRENT_TIMESTAMP_MS" /></translation>
 <translation id="7054588988317389591">Vols obtenir descripcions de les imatges?</translation>
 <translation id="7055152154916055070">S'ha bloquejat la redirecció:</translation>
 <translation id="7063006564040364415">No s'ha pogut connectar amb el servidor de sincronització.</translation>
@@ -1279,7 +1275,6 @@ Per exemple, és possible que alguns llocs web responguin a aquesta sol·licitud
 <translation id="7658239707568436148">Cancel·la</translation>
 <translation id="7665369617277396874">Afegeix un compte</translation>
 <translation id="766587987807204883">Els articles es mostren aquí i els pots llegir fins i tot sense connexió</translation>
-<translation id="768232549260819724">S'ha copiat el GIF</translation>
 <translation id="7682724950699840886">Segueix aquests consells: comprova que hi hagi prou espai al dispositiu i prova d'exportar les contrasenyes de nou.</translation>
 <translation id="7686086654630106285">Més informació sobre els anuncis suggerits per llocs web</translation>
 <translation id="768618399695552958">Algunes de les pàgines que visites estan precarregades. És possible que les pàgines es precarreguin a través dels servidors de Google quan s'enllacin des d'un lloc web de Google.</translation>
@@ -1334,7 +1329,6 @@ Per exemple, és possible que alguns llocs web responguin a aquesta sol·licitud
 <translation id="7929962904089429003">Obre el menú</translation>
 <translation id="7930998711684428189">T'avisa si les contrasenyes queden exposades a causa d'una violació de les dades.</translation>
 <translation id="7934668619883965330">No es pot baixar el fitxer. No s'admet aquest format de fitxer.</translation>
-<translation id="7939485076072265087">Crea una targeta estilitzada amb marcatge</translation>
 <translation id="7942131818088350342"><ph name="PRODUCT_NAME" /> no està actualitzat.</translation>
 <translation id="7944772052836377867">La sincronització ha de verificar la teva identitat</translation>
 <translation id="7947953824732555851">Acc. i inicia sessió</translation>
@@ -1472,7 +1466,6 @@ Per exemple, és possible que alguns llocs web responguin a aquesta sol·licitud
 <translation id="856481929701340285">Mostra com a ordinador</translation>
 <translation id="8570677896027847510">El fitxer no es pot baixar de manera segura</translation>
 <translation id="8571213806525832805">4 darreres setmanes</translation>
-<translation id="8580884231102452214">Copia el GIF</translation>
 <translation id="8583805026567836021">S'estan esborrant les dades del compte</translation>
 <translation id="859046281437143747">Fes un seguiment del preu des del botó Més opcions</translation>
 <translation id="860043288473659153">Nom del titular de la targeta</translation>

@@ -873,6 +873,7 @@
 <translation id="1651008383952180276">Мора да ја внесете истата лозинка двапати</translation>
 <translation id="1651609627703324721">Картичкава прикажува VR-содржини преку слушалки</translation>
 <translation id="1652326691684645429">Овозможете „Споделување во близина“</translation>
+<translation id="1652862280638399816">За да користите Google Password Manager со macOS Keychain, рестартирајте го Chromium и дозволете пристап до Keychain. Вашите картички ќе се отворат повторно по рестартирањето.</translation>
 <translation id="1654580009054503925">Не е дозволено да се прикажуваат барања</translation>
 <translation id="1656528038316521561">Непроѕирност на заднината</translation>
 <translation id="1657406563541664238">Помогнете да го подобриме <ph name="PRODUCT_NAME" /> со автоматско испраќање статистика за користење и извештај за пад до Google</translation>
@@ -1653,6 +1654,7 @@
 <translation id="2249111429176737533">Отвори како прозорец со картички</translation>
 <translation id="2249605167705922988">на пр. 1-5, 8, 11-13</translation>
 <translation id="2249635629516220541">Приспособете ги податоците што ги користат сајтовите за да ви прикажуваат реклами</translation>
+<translation id="2250624716625396929">Картичкава ги користи камерата и микрофонот</translation>
 <translation id="2251218783371366160">Отвори со прикажувач на систем</translation>
 <translation id="225163402930830576">Освежи мрежи</translation>
 <translation id="2251809247798634662">Нов прозорец „Инкогнито“</translation>
@@ -2835,6 +2837,7 @@
 <translation id="3151562827395986343">Исчистете ги историјата, колачињата, кешот и друго</translation>
 <translation id="3151786313568798007">Ориентација</translation>
 <translation id="3152356229013609796">Прегледувајте ги, отфрлајте ги и одговарајте на известувањата од телефонот</translation>
+<translation id="3155163173539279776">Рестартирајте го Chromium</translation>
 <translation id="3157387275655328056">Додај во „Списокот за читање“</translation>
 <translation id="3157931365184549694">Обнови</translation>
 <translation id="3158033540161634471">Поставете го отпечатокот</translation>
@@ -3652,6 +3655,7 @@
 <translation id="3809272675881623365">Зајак</translation>
 <translation id="3809280248639369696">Вонземјанин</translation>
 <translation id="3810593934879994994"><ph name="ORIGIN" /> може да прегледува датотеки во следниве папки</translation>
+<translation id="3810770279996899697">Password Manager бара пристап до macOS Keychain</translation>
 <translation id="3810914450553844415">Вашиот администратор не дозволува дополнителни сметки на Google.</translation>
 <translation id="3810973564298564668">Управувај</translation>
 <translation id="381202950560906753">Додајте друг</translation>
@@ -6619,6 +6623,7 @@
 <translation id="6202304368170870640">PIN-кодот може да го користите за да се најавите или да го отклучите уредот.</translation>
 <translation id="6203247599828309566">Зачувавте белешка за лозинка на сајтов. За да ја прегледате, кликнете на иконата со клуч.</translation>
 <translation id="6205314730813004066">Приватност за реклами</translation>
+<translation id="6205993460077903908"><ph name="WINDOW_TITLE" /> - се снима со микрофонот</translation>
 <translation id="6206199626856438589">Ќе ве одјавиме од прикажаните сајтови, вклучително и од отворените картички.</translation>
 <translation id="6206311232642889873">Коп&amp;ирај слика</translation>
 <translation id="6207200176136643843">Ресетирај на стандардно ниво на зумирање</translation>
@@ -7170,6 +7175,7 @@
 <translation id="6657585470893396449">Лозинка</translation>
 <translation id="6659213950629089752">Страницата ја зумираше наставката „<ph name="NAME" />“</translation>
 <translation id="6659594942844771486">Картичка</translation>
+<translation id="6660099350750552197"><ph name="WINDOW_TITLE" /> - се снима со камерата</translation>
 <translation id="6660819301598582123">Ѓакон Гоце и Љутфи Хоџа ноќе ѕвезди бројат. Постоиш ли боже? Молчење.</translation>
 <translation id="666099631117081440">Сервери за печатење</translation>
 <translation id="6662931079349804328">Правилото на компанијата се смени. Копчето за експерименти е отстрането од алатникот.</translation>
@@ -8974,6 +8980,7 @@
 <translation id="8059417245945632445">&amp;Провери уреди</translation>
 <translation id="8059456211585183827">Нема достапни печатачи за зачувување.</translation>
 <translation id="8061091456562007989">Врати како што беше</translation>
+<translation id="8061244502316511332">Картичкава го користи микрофонот</translation>
 <translation id="8061970399284390013">Проверка на правопис и граматика</translation>
 <translation id="8061991877177392872">Се чини дека веќе сте ја поставиле Voice Match за вашиот „Помошник на Google“ на друг уред. Претходните снимки се користеа за да се направи гласовниот модел за уредов.</translation>
 <translation id="8062844841289846053">{COUNT,plural, =1{1 лист хартија}one{{COUNT} лист хартија}other{{COUNT} листови хартија}}</translation>
@@ -9455,6 +9462,7 @@
 <translation id="844063558976952706">Секогаш на сајтов</translation>
 <translation id="8441313165929432954">Овозможете/оневозможете интернет преку мобилен</translation>
 <translation id="8443986842926457191">URL-адресата има повеќе од 2.048 знаци.</translation>
+<translation id="8445281870900174108">Картичкава ја користи камерата</translation>
 <translation id="8446884382197647889">Дознај повеќе</translation>
 <translation id="8447409163267621480">Опфатете или Ctrl или Alt</translation>
 <translation id="844850004779619592">Нема наредби</translation>
@@ -9499,7 +9507,6 @@
 <translation id="8473540203671727883">Изговарај го текстот под глувчето</translation>
 <translation id="8473863474539038330">Адреси и друго</translation>
 <translation id="8474378002946546633">Дозволете известувања</translation>
-<translation id="8474733733775441349">Прикажување лозинки од сметката на Google</translation>
 <translation id="8475313423285172237">Друга програма на компјутерот додаде наставка која може да промени како работи Chrome.</translation>
 <translation id="8476408756881832830">Паузирај ja репродукцијата кога зборува ChromeVox</translation>
 <translation id="8476491056950015181"><ph name="BEGIN_PARAGRAPH1" />Ако дозволите уредите со ChromeOS да испраќаат автоматски извештаи, тоа ќе ни помогне да правиме приоритетни поправки и да го подобруваме ChromeOS. Извештаиве може да содржат податоци за падовите на ChromeOS, кои функции ги користите и колку меморија типично користите, како и дијагностика за апликацијата на Android и податоци за користењето. Некои збирни податоци ќе им помогнат на апликациите и партнерите на Google, како што се програмерите на Android.<ph name="END_PARAGRAPH1" />
@@ -10531,6 +10538,7 @@
 <translation id="981121421437150478">Без мрежа</translation>
 <translation id="983192555821071799">Затвори ги сите картички</translation>
 <translation id="983511809958454316">Функцијава не е поддржана во VR</translation>
+<translation id="983531994960412650"><ph name="WINDOW_TITLE" /> - се снима со камерата и микрофонот</translation>
 <translation id="984275831282074731">Начини на плаќање</translation>
 <translation id="984705303330760860">Додајте јазици за проверка на правопис</translation>
 <translation id="98515147261107953">Пејзаж</translation>

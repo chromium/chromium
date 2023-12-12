@@ -869,6 +869,7 @@ Baliteke aplikazioei emandako baimenak kontu honi aplikatzea. <ph name="APPS_LIN
 <translation id="1651008383952180276">Pasaesaldi bera idatzi behar duzu bietan</translation>
 <translation id="1651609627703324721">Fitxa hau errealitate birtuala erakusten ari da ikustaile batean</translation>
 <translation id="1652326691684645429">Gaitu Nearby Share</translation>
+<translation id="1652862280638399816">Google-ren Pasahitz-kudeatzailea macOS Keychain-ekin erabiltzeko, exekutatu berriro Chromium eta eman Keychain erabiltzeko baimena. Berriro exekutatu ondoren, berriro irekiko dira fitxak.</translation>
 <translation id="1654580009054503925">Ez du eskaerak erakusteko baimenik</translation>
 <translation id="1656528038316521561">Atzeko planoaren opakutasuna</translation>
 <translation id="1657406563541664238">Lagundu <ph name="PRODUCT_NAME" /> hobetzen Google-ra erabilera-estatistikak eta hutsegite-txostenak bidalita</translation>
@@ -2819,6 +2820,7 @@ Txartel adimenduna sartuta edukitzea eskatzen du <ph name="DOMAIN" /> domeinuak.
 <translation id="3151562827395986343">Garbitu historia, cookieak, cachea, etab.</translation>
 <translation id="3151786313568798007">Orientazioa</translation>
 <translation id="3152356229013609796">Telefonoko jakinarazpenak ikusi eta baztertu, eta haiei erantzun.</translation>
+<translation id="3155163173539279776">Berrabiarazi Chromium</translation>
 <translation id="3157387275655328056">Gehitu zerrendan</translation>
 <translation id="3157931365184549694">Leheneratu</translation>
 <translation id="3158033540161634471">Konfiguratu hatz-marka</translation>
@@ -3636,6 +3638,7 @@ Txartel adimenduna sartuta edukitzea eskatzen du <ph name="DOMAIN" /> domeinuak.
 <translation id="3809272675881623365">Untxia</translation>
 <translation id="3809280248639369696">Ilargi-argia</translation>
 <translation id="3810593934879994994"><ph name="ORIGIN" /> webguneak karpeta hauetako fitxategiak ikus ditzake</translation>
+<translation id="3810770279996899697">Pasahitz-kudeatzailea zerbitzuak MacOS Keychain erabiltzeko baimena behar du</translation>
 <translation id="3810914450553844415">Administratzaileak ez du ematen baimenik Google-ko beste konturik gehitzeko.</translation>
 <translation id="3810973564298564668">Kudeatu</translation>
 <translation id="381202950560906753">Gehitu beste bat</translation>
@@ -9473,7 +9476,6 @@ Gorde gakoen fitxategia leku seguru batean. Zure luzapenaren bertsio berriak sor
 <translation id="8473540203671727883">Irakurri ozen saguaren kurtsorearen azpiko testua</translation>
 <translation id="8473863474539038330">Helbideak eta beste</translation>
 <translation id="8474378002946546633">Eman jakinarazpenak bidaltzeko baimena</translation>
-<translation id="8474733733775441349">Erakutsi Google-ko kontuko pasahitzak</translation>
 <translation id="8475313423285172237">Ordenagailuan duzun beste programa batek Chrome-ren funtzionamendua alda dezakeen luzapen bat gehitu du.</translation>
 <translation id="8476408756881832830">Pausatu erreprodukzioa ChromeVox hitz egiten ari bada</translation>
 <translation id="8476491056950015181"><ph name="BEGIN_PARAGRAPH1" />ChromeOS-eko gailuei txosten automatikoak bidaltzeko baimena emanez gero, ChromeOS-en zer konpondu eta hobetu behar den lehenesten lagunduko diguzu. Txosten horietan hauek sar daitezke, bestek beste: ChromeOS-en gertatzen diren hutsegiteak, zer eginbide erabiltzen diren, zenbat memoria erabili ohi den, eta Android-erako aplikazioen diagnostiko- eta erabilera-datuak. Gainera, datu bateratu batzuk oso baliagarriak izango dira Google-ren aplikazioak hobetzeko eta bazkideei laguntzeko (adibidez, Android-en garatzaileei).<ph name="END_PARAGRAPH1" />

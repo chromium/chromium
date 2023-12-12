@@ -1220,6 +1220,7 @@
 <translation id="3432601291244612633">পৃষ্ঠা বন্ধ করুন</translation>
 <translation id="3433111389595862568">কোলাবোরেশন ও কনফারেন্সিং সফ্টওয়্যার</translation>
 <translation id="3433144818443565002">ভয়েস ও ভিডিও চ্যাট</translation>
+<translation id="3434025015623587566">Google Password Manager-এর আরও বেশি অ্যাক্সেস প্রয়োজন</translation>
 <translation id="343474037147570563">আপনার আপলোড বা অ্যাটাচ করা ফাইল Google Cloud-এ বা থার্ড-পার্টির কাছে বিশ্লেষণ করার জন্য পাঠানো হয়। যেমন, সংবেদনশীল ব্যক্তিগত তথ্য বা ম্যালওয়্যার রয়েছে কিনা তা জানার জন্য সেগুলি স্ক্যান করা হতে পারে এবং কোম্পানির নীতির উপরে ভিত্তি করে সেভ করা হতে পারে ও আপনার অ্যাডমিনিস্ট্রেটর সেগুলি দেখতে পেতে পারেন।</translation>
 <translation id="3435557549311968410">কন্টিনিউআস (শর্ট)</translation>
 <translation id="3435738964857648380">নিরাপত্তা</translation>
@@ -1969,6 +1970,7 @@
 <translation id="4918221908152712722"><ph name="APP_NAME" /> ইনস্টল করুন (ডাউনলোডের প্রয়োজন নেই)</translation>
 <translation id="4920457992177678649">হলিডে হোম ও কম দিনের জন্য থাকা</translation>
 <translation id="4920710383559189047">স্লিভ</translation>
+<translation id="4922104989726031751">আপনার অপারেটিং সিস্টেমের সাথে Password Manager ব্যবহার করতে, Chromium আবার চালু করুন এবং নিজের কম্পিউটারের Password Manager অ্যাক্সেস করার অনুমতি দিন। আবার চালু করার পরে আপনার ট্যাব আবার খোলা হবে।</translation>
 <translation id="4923459931733593730">অর্থপ্রদান</translation>
 <translation id="4926049483395192435">নির্দিষ্ট করা উচিত৷</translation>
 <translation id="4926159001844873046"><ph name="SITE" /> এ এটি দেখানো হচ্ছে</translation>
@@ -2608,6 +2610,7 @@
 <translation id="6234122620015464377">প্রতিটি ডকুমেন্টের শেষে ট্রিম করুন</translation>
 <translation id="6236290670123303279">সেটিংস ম্যানেজ করুন</translation>
 <translation id="6240447795304464094">Google Pay লোগো</translation>
+<translation id="6240964651812394252">আপনার অপারেটিং সিস্টেমের সাথে Google Password Manager ব্যবহার করতে, Chrome আবার চালু করুন এবং নিজের কম্পিউটারের Password Manager অ্যাক্সেস করার অনুমতি দিন। আবার চালু করার পরে আপনার ট্যাব আবার খোলা হবে।</translation>
 <translation id="6241121617266208201">সাজেশন মেনু লুকান</translation>
 <translation id="624499991300733384">প্রিন্ট কম্পোজিটর পরিষেবা</translation>
 <translation id="6251906504834538140">{0,plural, =1{ফাইল সরানো যাবে না}one{<ph name="FILE_COUNT" />টি ফাইল সরানো যাবে না}other{<ph name="FILE_COUNT" />টি ফাইল সরানো যাবে না}}</translation>
@@ -2618,6 +2621,7 @@
 <translation id="6263376278284652872"><ph name="DOMAIN" /> বুকমার্কগুলি</translation>
 <translation id="6264376385120300461">তবুও ডাউনলোড করুন</translation>
 <translation id="6264485186158353794">সুরক্ষাতে ফিরুন</translation>
+<translation id="6264636978858465832">Password Manager-এর আরও বেশি অ্যাক্সেস প্রয়োজন</translation>
 <translation id="6265794661083428563"><ph name="POLICY_NAME" />-এর নীতির মান কপি করুন</translation>
 <translation id="6266934640124581640">হালকা টিল</translation>
 <translation id="6270066318535733958">বোটিং</translation>

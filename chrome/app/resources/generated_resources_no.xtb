@@ -872,6 +872,7 @@ Tillatelser du allerede har gitt apper, kan gjelde for denne kontoen. Du kan sty
 <translation id="1651008383952180276">Du må skrive inn den samme passordfrasen to ganger</translation>
 <translation id="1651609627703324721">Denne fanen sender VR-innhold til VR-briller</translation>
 <translation id="1652326691684645429">Slå på nærdeling</translation>
+<translation id="1652862280638399816">For å bruke Passordlagring med macOS-nøkkelring, start Chromium på nytt og gi tilgang til Nøkkelring. Fanene dine åpnes på nytt når du starter på nytt.</translation>
 <translation id="1654580009054503925">Ikke tillatt å vise forespørsler</translation>
 <translation id="1656528038316521561">Bakgrunnsopasitet</translation>
 <translation id="1657406563541664238">Bidra til å gjøre <ph name="PRODUCT_NAME" /> bedre ved å sende brukerstatistikk og programstopprapporter til Google automatisk</translation>
@@ -2835,6 +2836,7 @@ Du kan administrere innstillingene for denne kontoen ved å installere Family Li
 <translation id="3151562827395986343">Tøm loggen, fjern informasjonskapsler, tøm bufferen og så videre</translation>
 <translation id="3151786313568798007">Retning</translation>
 <translation id="3152356229013609796">Se, skjul og svar på varsler fra telefonen</translation>
+<translation id="3155163173539279776">Start Chromium på nytt</translation>
 <translation id="3157387275655328056">Legg til i leselisten</translation>
 <translation id="3157931365184549694">Gjenopprett</translation>
 <translation id="3158033540161634471">Konfigurer fingeravtrykket ditt</translation>
@@ -3657,6 +3659,7 @@ Du kan administrere innstillingene for denne kontoen ved å installere Family Li
 <translation id="3809272675881623365">Kanin</translation>
 <translation id="3809280248639369696">Marsboer</translation>
 <translation id="3810593934879994994"><ph name="ORIGIN" /> kan se filer i disse mappene</translation>
+<translation id="3810770279996899697">Passordlagring trenger tilgang til macOS-nøkkelring</translation>
 <translation id="3810914450553844415">Administratoren din tillater ikke flere Google-kontoer.</translation>
 <translation id="3810973564298564668">Administrer</translation>
 <translation id="381202950560906753">Legg til ett til</translation>
@@ -5054,6 +5057,7 @@ Bruk Ctrl + Alt + lysstyrke ned for å zoome ut.</translation>
 <translation id="4918134162946436591">Vis hintoverlegg</translation>
 <translation id="4918762404810341788">Kopier og åpne</translation>
 <translation id="4921348630401250116">Tekst til tale</translation>
+<translation id="4922104989726031751">For å bruke Passordlagring med operativsystemet ditt, start Chromium på nytt og gi tilgang til passordlagringen på datamaskinen. Fanene dine åpnes på nytt når du starter på nytt.</translation>
 <translation id="492299503953721473">Fjern Android-appene</translation>
 <translation id="492363500327720082">Avinstallerer <ph name="APP_NAME" /> …</translation>
 <translation id="4924002401726507608">Send inn tilbakemelding</translation>
@@ -6707,6 +6711,7 @@ Tillatelser du allerede har gitt nettsteder og apper, kan gjelde for denne konto
 <translation id="6264365405983206840">Velg &amp;alle</translation>
 <translation id="6264376385120300461">Last ned likevel</translation>
 <translation id="6264520534872750757">Fortsett å bruke enheten</translation>
+<translation id="6264636978858465832">Passordlagring trenger mer tilgang</translation>
 <translation id="6265159465845424232">Spør før Microsoft-filer flyttes eller kopieres til Microsoft OneDrive</translation>
 <translation id="6265687851677020761">Fjern porten</translation>
 <translation id="6266532094411434237">Kobler til <ph name="DEVICE" /></translation>
@@ -9512,7 +9517,6 @@ Oppbevar nøkkelfilen på et trygt sted. Du får bruk for den når du skal oppre
 <translation id="8473540203671727883">Les opp teksten som er under musepekeren</translation>
 <translation id="8473863474539038330">Adresser med mer</translation>
 <translation id="8474378002946546633">Tillat varsler</translation>
-<translation id="8474733733775441349">Vis passord fra Google-kontoen din</translation>
 <translation id="8475313423285172237">Et annet program på datamaskinen la til en utvidelse som kan endre måten Chrome fungerer på.</translation>
 <translation id="8476408756881832830">Sett avspillingen på pause når ChromeVox snakker</translation>
 <translation id="8476491056950015181"><ph name="BEGIN_PARAGRAPH1" />Ved å gi ChromeOS-enheter lov til å sende oss automatiske rapporter hjelper du oss med å prioritere hva vi skal fikse og gjøre bedre i ChromeOS. Disse rapportene kan blant annet inneholde informasjon om når ChromeOS krasjer, hvilke funksjoner som var i bruk, hvor mye minne som vanligvis var i bruk, samt Android-appdiagnostikk og -bruksdata. Noen samlede data hjelper også Google-apper og -partnere, for eksempel Android-utviklere.<ph name="END_PARAGRAPH1" />

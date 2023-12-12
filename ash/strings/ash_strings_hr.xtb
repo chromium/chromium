@@ -1137,6 +1137,7 @@ Neke su značajke ograničene i mogu produljiti trajanje baterije.</translation>
 <translation id="5577281275355252094">Da biste mogli koristiti Phone hub, provjerite je li na telefonu omogućen Bluetooth</translation>
 <translation id="5578188167649348993">memorija</translation>
 <translation id="5580000943347215299">Zbirka</translation>
+<translation id="5587506661873751671">Preuzimanje <ph name="DOWNLOAD_PERCENT" />%</translation>
 <translation id="558849140439112033">Povucite da biste odabrali područje za fotografiranje</translation>
 <translation id="5590609058453685222">Uključen je podsjetnik na isključeni mikrofon. Primit ćete obavijest ako govorite, a zvuk je isključen.</translation>
 <translation id="5596627076506792578">Više opcija</translation>
@@ -1796,6 +1797,7 @@ Da biste isključili uređaj, ponovno pritisnite i zadržite tipku za uključiva
 <translation id="830868413617744215">Beta</translation>
 <translation id="8314772463905284467">Uključena je opcija Caps Lock</translation>
 <translation id="8315514906653279104">Uključivanje...</translation>
+<translation id="8331351032546853669">Preuzimanje na čekanju</translation>
 <translation id="8341451174107936385"><ph name="UNLOCK_MORE_FEATURES" />  <ph name="GET_STARTED" /></translation>
 <translation id="8345019317483336363">Odabran je prozor <ph name="WINDOW_TITLE" /></translation>
 <translation id="8349826889576450703">pokretač</translation>

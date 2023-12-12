@@ -870,6 +870,7 @@ Permisiunile pe care le-ai acordat deja aplicațiilor se pot aplica acestui cont
 <translation id="1651008383952180276">Trebuie să introduci aceeași expresie de acces de două ori</translation>
 <translation id="1651609627703324721">Această filă prezintă conținut RV unui set de căști-microfon</translation>
 <translation id="1652326691684645429">Activează Trimiterea în apropiere</translation>
+<translation id="1652862280638399816">Pentru a folosi Managerul de parole cu macOS Keychain, relansează Chromium și permite accesul pentru Keychain. Filele se vor redeschide după relansare.</translation>
 <translation id="1654580009054503925">Nu are permisiunea de a afișa solicitări</translation>
 <translation id="1656528038316521561">Opacitatea fundalului</translation>
 <translation id="1657406563541664238">Trimite automat statistici de utilizare și rapoarte de blocare la Google pentru a contribui la îmbunătățirea <ph name="PRODUCT_NAME" />.</translation>
@@ -2820,6 +2821,7 @@ Mesaj de la server: <ph name="SERVER_MSG" /></translation>
 <translation id="3151562827395986343">Șterge istoricul, cookie-urile, memoria cache și altele</translation>
 <translation id="3151786313568798007">Orientare</translation>
 <translation id="3152356229013609796">Afișează notificările telefonului, le respinge și răspunde la ele</translation>
+<translation id="3155163173539279776">Reporniți Chromium</translation>
 <translation id="3157387275655328056">Adaugă în lista de lectură</translation>
 <translation id="3157931365184549694">Restabilește</translation>
 <translation id="3158033540161634471">Adaugă amprenta</translation>
@@ -3637,6 +3639,7 @@ Mesaj de la server: <ph name="SERVER_MSG" /></translation>
 <translation id="3809272675881623365">Iepure</translation>
 <translation id="3809280248639369696">Rază de lună</translation>
 <translation id="3810593934879994994"><ph name="ORIGIN" /> poate vedea fișierele din următoarele dosare</translation>
+<translation id="3810770279996899697">Managerul de parole necesită acces la MacOS Keychain</translation>
 <translation id="3810914450553844415">Administratorul nu permite Conturi Google suplimentare.</translation>
 <translation id="3810973564298564668">Gestionează</translation>
 <translation id="381202950560906753">Adaugă alta</translation>
@@ -9482,7 +9485,6 @@ Păstrează fișierul cu cheia într-un loc sigur. Acesta va fi necesar la crear
 <translation id="8473540203671727883">Rostește textul de sub cursor</translation>
 <translation id="8473863474539038330">Adrese și altele</translation>
 <translation id="8474378002946546633">Permiteți notificări</translation>
-<translation id="8474733733775441349">Afișează parolele din Contul Google</translation>
 <translation id="8475313423285172237">Un alt program de pe computerul dvs. a adăugat o extensie care poate schimba modul în care funcționează Chrome.</translation>
 <translation id="8476408756881832830">Întrerupe redarea când ChromeVox vorbește</translation>
 <translation id="8476491056950015181"><ph name="BEGIN_PARAGRAPH1" />Dacă permiți ca dispozitivele cu sistem de operare Chrome să trimită rapoarte automate, ne ajuți să stabilim o ordine a priorităților privind remedierile și îmbunătățirile pentru sistemul de operare Chrome. Aceste rapoarte pot include aspecte precum când se blochează dispozitivul de operare Chrome, ce funcții au fost folosite, câtă memorie a fost folosită în mod obișnuit, precum și datele privind folosirea și diagnosticarea aplicațiilor Android. Unele date agregate vor ajuta aplicațiile și partenerii Google, cum ar fi dezvoltatorii Android.<ph name="END_PARAGRAPH1" />

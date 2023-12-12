@@ -410,7 +410,6 @@
 <translation id="3226612997184048185">જો તમે બુકમાર્કને તમારા Google એકાઉન્ટમાં પણ સાચવશો, તો તમે પ્રોડક્ટની કિંમતો Chromeમાં ટ્રૅક કરી શકશો તેમજ જ્યારે પણ કિંમતમાં ઘટાડો થાય ત્યારે નોટિફિકેશન મેળવશો</translation>
 <translation id="3227557059438308877">સિક્યુરિટી કી તરીકે Google Chrome</translation>
 <translation id="3232754137068452469">વેબ ઍપ</translation>
-<translation id="3234978181857588512">ડિવાઇસમાં સાચવો</translation>
 <translation id="3236059992281584593">1 મિનિટ બાકી</translation>
 <translation id="3237087289225714896">પહેલેથી લોડ કરવાનો માનક મોડ:</translation>
 <translation id="3237433641417325993">સૂચવેલા લેખો જોવા માટે નીચેની તરફ સ્ક્રોલ કરો</translation>
@@ -582,7 +581,6 @@
 <translation id="4181841719683918333">ભાષાઓ</translation>
 <translation id="4188221736490993796">Zથી A અનુસાર સૉર્ટ કરો</translation>
 <translation id="4195643157523330669">નવા ટૅબમાં ખોલો</translation>
-<translation id="4196597275619698563">કાર્ડ બનાવો</translation>
 <translation id="4197828496439691735">{NUM_TABS,plural, =1{આ ડિવાઇસ પર 1 ટૅબ}one{આ ડિવાઇસ પર # ટૅબ}other{આ ડિવાઇસ પર # ટૅબ}}</translation>
 <translation id="4198423547019359126">કોઈ ડાઉનલોડ સ્થાનો ઉપલબ્ધ નથી</translation>
 <translation id="4202218894997543208">તમે બ્લૉક કરેલા વિષયો</translation>
@@ -594,7 +592,6 @@
 <translation id="4248098802131000011">ડેટા ઉલ્લંઘનો અને અન્ય સુરક્ષા સંબંધિત સમસ્યાઓથી તમારા પાસવર્ડને સલામત રાખો</translation>
 <translation id="424864128008805179">Chromeમાંથી સાઇન આઉટ કરીએ?</translation>
 <translation id="4249955472157341256">નવીનતમ મુજબ સૉર્ટ કરો</translation>
-<translation id="4250229828105606438">સ્ક્રીનશૉટ</translation>
 <translation id="4256782883801055595">ઓપન સોર્સ લાઇસન્સ</translation>
 <translation id="4257230861809842349">શું Google Password Managerમાંથી પાસવર્ડ ડિલીટ કરીએ?</translation>
 <translation id="4269820728363426813">લિંક સરનામું કૉપિ કરો</translation>
@@ -1148,7 +1145,6 @@
 <translation id="7030304022046916278">URLs ચેક કરવા માટે તેમને Safe Browsing પર મોકલે છે</translation>
 <translation id="7035701931849773472">અન્ય વિકલ્પો</translation>
 <translation id="7037830628447527439">તમારા Google એકાઉન્ટ વડે Chromeમાં સાઇન ઇન કરો</translation>
-<translation id="7038956721828960940">chrome_image_<ph name="CURRENT_TIMESTAMP_MS" /></translation>
 <translation id="7054588988317389591">છબીના વર્ણનો મેળવીએ?</translation>
 <translation id="7055152154916055070">રીડાયરેક્ટ કરવાનું બ્લૉક કરવામાં આવ્યું છે:</translation>
 <translation id="7063006564040364415">સમન્વયન સર્વર સાથે કનેક્ટ કરી શકાયું નથી</translation>
@@ -1279,7 +1275,6 @@
 <translation id="7658239707568436148">રદ કરો</translation>
 <translation id="7665369617277396874">એકાઉન્ટ ઉમેરો</translation>
 <translation id="766587987807204883">લેખો અહીં દેખાય છે, જે તમે ઑફલાઇન હો ત્યારે પણ વાંચી શકો છો</translation>
-<translation id="768232549260819724">GIFની કૉપિ કરી</translation>
 <translation id="7682724950699840886">નીચેની ટિપ અજમાવી જુઓ: ખાતરી કરો કે તમારા ઉપકરણ પર પૂરતી સ્પેસ છે, ફરીથી નિકાસ કરવાનો પ્રયાસ કરો.</translation>
 <translation id="7686086654630106285">સાઇટ દ્વારા સૂચિત જાહેરાતો વિશે વધુ વિગતો</translation>
 <translation id="768618399695552958">તમે મુલાકાત લો છો તે કેટલાક પેજ પહેલેથી લોડ કરેલા છે. જ્યારે પેજ Google site પરથી લિંક કરવામાં આવેલા હોય, ત્યારે તેમને Googleના સર્વર મારફતે પહેલેથી લોડ કરી શકાય છે.</translation>
@@ -1334,7 +1329,6 @@
 <translation id="7929962904089429003">મેનૂ ખોલો</translation>
 <translation id="7930998711684428189">જો ડેટા ઉલ્લંઘનોમાં પાસવર્ડ જાહેર થાય તો તમને ચેતવણી આપવામાં આવે છે.</translation>
 <translation id="7934668619883965330">ફાઇલ ડાઉનલોડ કરી શકતા નથી. ફાઇલનું ફૉર્મેટ સપોર્ટેડ નથી.</translation>
-<translation id="7939485076072265087">હાઇલાઇટ કરીને સ્ટાઇલિશ કાર્ડ બનાવો</translation>
 <translation id="7942131818088350342"><ph name="PRODUCT_NAME" /> જૂનું થઈ ગયું છે.</translation>
 <translation id="7944772052836377867">સિંકને તમારી ઓળખની ચકાસણી કરવાની જરૂર પડે છે</translation>
 <translation id="7947953824732555851">સ્વીકારો અને સાઇન ઇન કરો</translation>
@@ -1472,7 +1466,6 @@
 <translation id="856481929701340285">ડેસ્કટૉપ સાઇટની વિનંતી કરો</translation>
 <translation id="8570677896027847510">ફાઇલ સુરક્ષિત રીતે ડાઉનલોડ કરી શકાતી નથી</translation>
 <translation id="8571213806525832805">છેલ્લા 4 અઠવાડિયા</translation>
-<translation id="8580884231102452214">GIFની કૉપિ કરો</translation>
 <translation id="8583805026567836021">એકાઉન્ટ ડેટા સાફ કરી રહ્યું છે</translation>
 <translation id="859046281437143747">વધુ વિકલ્પોના બટન પરથી કિંમત ટ્રૅક કરો</translation>
 <translation id="860043288473659153">કાર્ડધારકનું નામ</translation>

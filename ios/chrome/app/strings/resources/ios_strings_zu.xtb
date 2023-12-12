@@ -496,6 +496,7 @@ Bona imiyalelo yenjini yakho yokusesha yokusula umlando wakho wosesho, uma kuseb
 <translation id="355101282835380364">Londoloza Ku-akhawunti…</translation>
 <translation id="3551320343578183772">Vala ithebhu</translation>
 <translation id="3565207542107370586">Sula Idatha Yopheqululo</translation>
+<translation id="3570693105179140209">Thepha kabili ngamaphasiwedi engeziwe.</translation>
 <translation id="3575234738189584619">Sesha nge-Lens</translation>
 <translation id="3581564640715911333">Nikeza ngokuhumusha amakhasi ngezinye izilimi</translation>
 <translation id="3587885837929752825">Inhlangano yakho ikhawulela lokho ongakulondoloza ku-Google Account yakho.</translation>
@@ -661,6 +662,7 @@ Bona imiyalelo yenjini yakho yokusesha yokusula umlando wakho wosesho, uma kuseb
 <translation id="452750746583162491">Buyekeza idatha yakho evunyelanisiwe</translation>
 <translation id="4527660062930312477">I-akhawunti Yakho Iyalawulwa</translation>
 <translation id="4536418791685807335">Zama ukuphinda ungene ngemvume.</translation>
+<translation id="4539187448429948815">{count,plural, =1{Kutholakala isiphakamiso sokuqedela ngokuzenzekela esilondoloziwe esingu-{count} ngaphezu kwekhibhodi yakho.}one{Kutholakala iziphakamiso zokuqedela ngokuzenzekela ezilondoloziwe ezingu-{count} ngaphezu kwekhibhodi yakho.}other{Kutholakala iziphakamiso zokuqedela ngokuzenzekela ezilondoloziwe ezingu-{count} ngaphezu kwekhibhodi yakho.}}</translation>
 <translation id="4540780316273593836">Kukhona Okungahambanga Kahle</translation>
 <translation id="4550040941166547650">Kule Divayisi Kuphela</translation>
 <translation id="457292989631956153">{COUNT,plural, =1{Vala Ithebhu Engasebenzi e-{COUNT}?}one{Vala Amathebhu Angasebenzi angu-{COUNT}?}other{Vala Amathebhu Angasebenzi angu-{COUNT}?}}</translation>

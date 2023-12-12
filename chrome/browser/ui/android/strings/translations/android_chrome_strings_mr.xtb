@@ -410,7 +410,6 @@
 <translation id="3226612997184048185">तुम्ही तुमच्या Google खाते मध्ये बुकमार्कदेखील सेव्ह केले असल्यास, तुम्ही Chrome उत्पादनाच्या किमती ट्रॅक करू शकता आणि किंमत कमी झाल्यावर सूचना मिळवू शकता</translation>
 <translation id="3227557059438308877">सिक्युरिटी की म्हणून Google Chrome</translation>
 <translation id="3232754137068452469">वेब अ‍ॅप</translation>
-<translation id="3234978181857588512">डिव्हाइसमध्ये सेव्ह करा</translation>
 <translation id="3236059992281584593">1 मिनिट शिल्लक</translation>
 <translation id="3237087289225714896">साधारण प्रीलोडिंग:</translation>
 <translation id="3237433641417325993">सुचवलेले लेख पाहण्यासाठी खाली स्क्रोल करा</translation>
@@ -582,7 +581,6 @@
 <translation id="4181841719683918333">भाषा</translation>
 <translation id="4188221736490993796">ज्ञ-अ नुसार क्रमाने लावा</translation>
 <translation id="4195643157523330669">नवीन टॅबमध्ये उघडा</translation>
-<translation id="4196597275619698563">कार्ड तयार करा</translation>
 <translation id="4197828496439691735">{NUM_TABS,plural, =1{या डिव्हाइसवर १ टॅब आहे}other{या डिव्हाइसवर # टॅब आहेत}}</translation>
 <translation id="4198423547019359126">कोणतीही डाउनलोड स्थाने उपलब्ध नाहीत</translation>
 <translation id="4202218894997543208">तुम्ही ब्लॉक केलेले विषय</translation>
@@ -594,7 +592,6 @@
 <translation id="4248098802131000011">डेटा भंग आणि इतर सुरक्षितता समस्यांपासून तुमचे पासवर्ड सुरक्षित ठेवा</translation>
 <translation id="424864128008805179">Chrome मधून साइन आउट करायचे?</translation>
 <translation id="4249955472157341256">नवीनतम यानुसार क्रमाने लावा</translation>
-<translation id="4250229828105606438">स्क्रीनशॉट</translation>
 <translation id="4256782883801055595">मुक्त स्रोत परवाने</translation>
 <translation id="4257230861809842349">Google Password Manager मधून पासवर्ड हटवायचे आहेत का?</translation>
 <translation id="4269820728363426813">लिंकचा पत्ता कॉपी करा</translation>
@@ -1148,7 +1145,6 @@
 <translation id="7030304022046916278">URLs तपासण्यासाठी त्या सुरक्षित ब्राउझिंग ला पाठवते</translation>
 <translation id="7035701931849773472">इतर पर्याय</translation>
 <translation id="7037830628447527439">तुमचे Google खाते वापरून Chrome मध्ये साइन इन करा</translation>
-<translation id="7038956721828960940">chrome_image_<ph name="CURRENT_TIMESTAMP_MS" /></translation>
 <translation id="7054588988317389591">इमेजची वर्णने मिळवायची का?</translation>
 <translation id="7055152154916055070">रीडिरेक्ट ब्लॉक केले:</translation>
 <translation id="7063006564040364415">संकालित सर्व्हरशी कनेक्ट करू शकलो नाही.</translation>
@@ -1279,7 +1275,6 @@
 <translation id="7658239707568436148">रद्द करा</translation>
 <translation id="7665369617277396874">खाते जोडा</translation>
 <translation id="766587987807204883">तुम्ही ऑफलाइन असताना देखील तुम्ही वाचू शकता असे लेख येथे दिसतात</translation>
-<translation id="768232549260819724">GIF कॉपी केली</translation>
 <translation id="7682724950699840886">खालील टिपा वापरून पहा: तुमच्या डिव्हाइसवर पुरेशी जागा असल्याची खात्री करा, पुन्हा एक्सपोर्ट करण्याचा प्रयत्न करा.</translation>
 <translation id="7686086654630106285">साइटने सुचवलेल्या जाहिरातींबद्दल आणखी</translation>
 <translation id="768618399695552958">तुम्ही भेट देत असलेली काही पेज प्रीलोड केलेली आहेत. Google साइटवरून लिंक केल्यावर पेज Google सर्व्हरद्वारे प्रीलोड केली जाऊ शकतात.</translation>
@@ -1334,7 +1329,6 @@
 <translation id="7929962904089429003">मेनू उघडा</translation>
 <translation id="7930998711684428189">डेटा भंगामध्ये पासवर्ड उघड झाल्यास, तुम्हाला चेतावणी देतो.</translation>
 <translation id="7934668619883965330">फाइल डाउनलोड करू शकत नाही. फाइल फॉरमॅटला सपोर्ट नाही.</translation>
-<translation id="7939485076072265087">हायलाइट वापरून स्टायलाइझ केलेले कार्ड तयार करा</translation>
 <translation id="7942131818088350342"><ph name="PRODUCT_NAME" /> कालबाह्य झाले आहे.</translation>
 <translation id="7944772052836377867">सिंकला हे तुम्हीच आहात याची पडताळणी करायची आहे</translation>
 <translation id="7947953824732555851">स्वीकार करा आणि साइन इन करा</translation>
@@ -1472,7 +1466,6 @@
 <translation id="856481929701340285">डेस्कटॉप साइटची विनंती करा</translation>
 <translation id="8570677896027847510">फाइल सुरक्षितपणे डाउनलोड केली जाऊ शकत नाही</translation>
 <translation id="8571213806525832805">मागील 4 आठवड्यांमधील</translation>
-<translation id="8580884231102452214">GIF कॉपी करा</translation>
 <translation id="8583805026567836021">खाते डेटा साफ करत आहे</translation>
 <translation id="859046281437143747">आणखी पर्याय बटणावरून किमतीचा माग ठेवा</translation>
 <translation id="860043288473659153">कार्डधारकाचे नाव</translation>

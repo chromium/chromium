@@ -875,6 +875,7 @@ Az alkalmazások számára már megadott engedélyek erre a fiókra is érvénye
 <translation id="1651008383952180276">Mindkét alkalommal ugyanazt az összetett jelszót kell megadnia</translation>
 <translation id="1651609627703324721">Ez a lap VR-tartalmat jelenít meg egy headseten</translation>
 <translation id="1652326691684645429">Közeli megosztás bekapcsolása</translation>
+<translation id="1652862280638399816">Ha a Jelszókezelőt a macOS Keychain szolgáltatásával szeretné használni, indítsa újra a Chromiumot, és engedélyezze a Keychain-hozzáférést. Megnyitott lapjai az újraindítás után újra meg fognak nyílni.</translation>
 <translation id="1654580009054503925">Nem jeleníthet meg kérelmeket</translation>
 <translation id="1656528038316521561">Háttér átlátszatlansága</translation>
 <translation id="1657406563541664238">Segítsen a <ph name="PRODUCT_NAME" /> fejlesztésében azáltal, hogy automatikusan elküldi a használati statisztikákat és hibajelentéseket a Google részére</translation>
@@ -2838,6 +2839,7 @@ A(z) <ph name="DOMAIN" /> megköveteli, hogy ne távolítsa el az intelligens k�
 <translation id="3151562827395986343">Előzmények, cookie-k, gyorsítótár és egyebek törlése</translation>
 <translation id="3151786313568798007">Tájolás</translation>
 <translation id="3152356229013609796">Megtekintheti, elvetheti és megválaszolhatja telefonja értesítéseit</translation>
+<translation id="3155163173539279776">A Chromium újraindítása</translation>
 <translation id="3157387275655328056">Hozzáadás olvasási listához</translation>
 <translation id="3157931365184549694">Helyreállítás</translation>
 <translation id="3158033540161634471">Az ujjlenyomat beállítása</translation>
@@ -3658,6 +3660,7 @@ A(z) <ph name="DOMAIN" /> megköveteli, hogy ne távolítsa el az intelligens k�
 <translation id="3809272675881623365">Nyúl</translation>
 <translation id="3809280248639369696">Alien</translation>
 <translation id="3810593934879994994">A(z) <ph name="ORIGIN" /> megtekintheti a fájlokat a következő mappákban:</translation>
+<translation id="3810770279996899697">A Jelszókezelő hozzáférést igényel a macOS Keychain szolgáltatásához</translation>
 <translation id="3810914450553844415">A rendszergazda nem engedélyez további Google-fiókokat.</translation>
 <translation id="3810973564298564668">Kezelés</translation>
 <translation id="381202950560906753">Még egy hozzáadása</translation>
@@ -9515,7 +9518,6 @@ A kulcsfájlt tartsa biztonságos helyen. Szüksége lesz rá ahhoz, hogy új ve
 <translation id="8473540203671727883">Kurzor alatti szöveg felolvasása</translation>
 <translation id="8473863474539038330">Címek és egyebek</translation>
 <translation id="8474378002946546633">Értesítések engedélyezése</translation>
-<translation id="8474733733775441349">Jelszavak megjelenítése az Ön Google-fiókjából</translation>
 <translation id="8475313423285172237">A számítógépen lévő egyik program olyan bővítményt adott hozzá, amely módosíthatja a Chrome működését.</translation>
 <translation id="8476408756881832830">Lejátszás szüneteltetése, amikor a ChromeVox beszél</translation>
 <translation id="8476491056950015181"><ph name="BEGIN_PARAGRAPH1" />Ha engedélyezi a ChromeOS-t futtató eszközöknek az automatikus jelentésküldést, azzal segít nekünk a ChromeOS hibajavításaival és fejlesztéseivel kapcsolatos prioritások meghatározásában. Ezek a jelentések a következőket tartalmazhatják: mikor omlik össze a ChromeOS, milyen funkciókat használ, jellemzően mennyi memóriát használ fel, illetve az Android-alkalmazás diagnosztikai és használati adatait. Bizonyos összesített adatok a Google-alkalmazásoknak és -partnereknek, például az Android-fejlesztőknek is segítenek.<ph name="END_PARAGRAPH1" />

@@ -876,6 +876,7 @@ Heimildir sem þú hefur þegar veitt forritum kunna að gilda á þessum reikni
 <translation id="1651008383952180276">Þú verður að slá sama aðgangsorðið inn tvisvar</translation>
 <translation id="1651609627703324721">Þessi flipi sýnir sýndarveruleikaefni í höfuðtólum</translation>
 <translation id="1652326691684645429">Kveikja á Nærdeilingu</translation>
+<translation id="1652862280638399816">Til að nota Aðgangsorðastjórnun með macOS Keychain skaltu endurræsa Chromium og veita Keychain aðgang. Fliparnir þínir opnast aftur eftir endurræsingu.</translation>
 <translation id="1654580009054503925">Má ekki sýna beiðnir</translation>
 <translation id="1656528038316521561">Gagnsæi bakgrunns</translation>
 <translation id="1657406563541664238">Hjálpa til við að bæta <ph name="PRODUCT_NAME" /> með því að senda sjálfkrafa talnagögn um notkun og tilkynningar um hrun til Google</translation>
@@ -2840,6 +2841,7 @@ Annars skaltu skrá þig út núna svo breytingarnar á þessum reikningi taki g
 <translation id="3151562827395986343">Hreinsa feril, fótspor, skyndiminni og fleira</translation>
 <translation id="3151786313568798007">Stefna</translation>
 <translation id="3152356229013609796">Skoðaðu, hunsaðu og svaraðu tilkynningum símans</translation>
+<translation id="3155163173539279776">Endurræsa Chromium</translation>
 <translation id="3157387275655328056">Bæta við leslista</translation>
 <translation id="3157931365184549694">Endurheimta</translation>
 <translation id="3158033540161634471">Skráðu fingrafarið þitt</translation>
@@ -3660,6 +3662,7 @@ Annars skaltu skrá þig út núna svo breytingarnar á þessum reikningi taki g
 <translation id="3809272675881623365">Kanína</translation>
 <translation id="3809280248639369696">Maggi Skarp</translation>
 <translation id="3810593934879994994"><ph name="ORIGIN" /> getur skoðað skrár í eftirfarandi möppum</translation>
+<translation id="3810770279996899697">Aðgangsorðastjórnun þarf aðgang að MacOS Keychain</translation>
 <translation id="3810914450553844415">Stjórnandinn heimilar ekki fleiri Google reikninga.</translation>
 <translation id="3810973564298564668">Stjórna</translation>
 <translation id="381202950560906753">Bæta öðru við</translation>
@@ -9518,7 +9521,6 @@ Geymdu lykilskrána á öruggum stað. Þú þarft hana til að búa til nýjar 
 <translation id="8473540203671727883">Textaupplestur á því sem er undir músarbendli</translation>
 <translation id="8473863474539038330">Heimilisföng og fleira</translation>
 <translation id="8474378002946546633">Leyfa tilkynningar</translation>
-<translation id="8474733733775441349">Sýna aðgangsorð á Google reikningnum þínum</translation>
 <translation id="8475313423285172237">Annað forrit í tölvunni þinni bætti við viðbót sem gæti breytt því hvernig Chrome virkar.</translation>
 <translation id="8476408756881832830">Gera hlé á spilun þegar ChromeVox talar</translation>
 <translation id="8476491056950015181"><ph name="BEGIN_PARAGRAPH1" />Við eigum auðveldara með að forgangsraða því sem þarf að lagfæra og bæta í ChromeOS ef þú leyfir ChromeOS-tækjum að senda skýrslur sjálfkrafa. Þessar skýrslur innihalda t.d. upplýsingar um hvenær ChromeOS hrynur, hvaða eiginleikar voru notaðir, hversu mikið minni var yfirleitt notað sem og greiningar- og notkunargögn Android-forrita. Sum samantekin gögn munu einnig gagnast forritum og samstarfsaðilum Google, til dæmis þróunaraðilum Android.<ph name="END_PARAGRAPH1" />

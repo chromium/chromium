@@ -410,7 +410,6 @@ Aðeins einstaklingar sem eru með aðgangsorðið þitt geta lesið dulkóðuð
 <translation id="3226612997184048185">Ef þú vistar bókamerkin þín einnig á Google-reikningnum þínum geturðu vaktað verð á vörum í Chrome og fengið tilkynningar þegar verð lækka</translation>
 <translation id="3227557059438308877">Google Chrome sem öryggislykill</translation>
 <translation id="3232754137068452469">Vefforrit</translation>
-<translation id="3234978181857588512">Vista í tæki</translation>
 <translation id="3236059992281584593">Ein mín. eftir</translation>
 <translation id="3237087289225714896">Hefðbundin forhleðsla:</translation>
 <translation id="3237433641417325993">Flettu niður til að sjá tillögur að greinum</translation>
@@ -582,7 +581,6 @@ Aðeins einstaklingar sem eru með aðgangsorðið þitt geta lesið dulkóðuð
 <translation id="4181841719683918333">Tungumál</translation>
 <translation id="4188221736490993796">Flokka frá Ö til A</translation>
 <translation id="4195643157523330669">Opna í nýjum flipa</translation>
-<translation id="4196597275619698563">Búa til spjald</translation>
 <translation id="4197828496439691735">{NUM_TABS,plural, =1{1 flipi í þessu tæki}one{# flipi í þessu tæki}other{# flipar í þessu tæki}}</translation>
 <translation id="4198423547019359126">Engar tiltækar niðurhalsstaðsetningar</translation>
 <translation id="4202218894997543208">Umfjöllunarefni sem þú hefur sett á bannlista</translation>
@@ -594,7 +592,6 @@ Aðeins einstaklingar sem eru með aðgangsorðið þitt geta lesið dulkóðuð
 <translation id="4248098802131000011">Tryggðu öryggi aðgangsorðanna gagnvart öryggisbrotum og öðrum öryggisvandamálum</translation>
 <translation id="424864128008805179">Viltu skrá þig út úr Chrome?</translation>
 <translation id="4249955472157341256">Raða eftir nýjasta</translation>
-<translation id="4250229828105606438">Skjámynd</translation>
 <translation id="4256782883801055595">Leyfi opins kóða</translation>
 <translation id="4257230861809842349">Eyða aðgangsorðum úr Google-aðgangsorðastjórnun?</translation>
 <translation id="4269820728363426813">Afrita slóð tengils</translation>
@@ -1148,7 +1145,6 @@ Sum vefsvæði kunna til dæmis að bregðast við beiðninni með því að bir
 <translation id="7030304022046916278">Sendir vefslóðir til athugunar í öruggri vefskoðun</translation>
 <translation id="7035701931849773472">Aðrir valkostir</translation>
 <translation id="7037830628447527439">Skráðu þig inn á Chrome með Google reikningnum þínum</translation>
-<translation id="7038956721828960940">chrome_image_<ph name="CURRENT_TIMESTAMP_MS" /></translation>
 <translation id="7054588988317389591">Fá myndlýsingar?</translation>
 <translation id="7055152154916055070">Lokað á framsendingu:</translation>
 <translation id="7063006564040364415">Ekki var hægt að tengjast samstillingarþjóninum.</translation>
@@ -1279,7 +1275,6 @@ Sum vefsvæði kunna til dæmis að bregðast við beiðninni með því að bir
 <translation id="7658239707568436148">Hætta við</translation>
 <translation id="7665369617277396874">Bæta við reikningi</translation>
 <translation id="766587987807204883">Greinar birtast hér. Þú getur lesið þær jafnvel þótt nettenging sé ekki til staðar</translation>
-<translation id="768232549260819724">GIF afritað</translation>
 <translation id="7682724950699840886">Prófaðu eftirfarandi: Gakktu úr skugga um að nóg pláss sé á tækinu og reyndu að flytja út aftur.</translation>
 <translation id="7686086654630106285">Nánar um auglýsingar sem vefsvæði leggja til</translation>
 <translation id="768618399695552958">Sumar síður sem þú opnar eru forhlaðnar. Síður kunna að forhlaðast í gegnum netþjóna Google þegar þær eru tengdar Google vefsvæði.</translation>
@@ -1334,7 +1329,6 @@ Sum vefsvæði kunna til dæmis að bregðast við beiðninni með því að bir
 <translation id="7929962904089429003">Opna valmyndina</translation>
 <translation id="7930998711684428189">Vara við ef aðgangsorðin þín eru afhjúpuð vegna öryggisbrots</translation>
 <translation id="7934668619883965330">Ekki er hægt að sækja skrá. Skráarsnið ekki stutt.</translation>
-<translation id="7939485076072265087">Búa til stílfært kort með yfirstrikun</translation>
 <translation id="7942131818088350342"><ph name="PRODUCT_NAME" /> er úrelt.</translation>
 <translation id="7944772052836377867">Samstilling verður að staðfesta að þetta sért þú</translation>
 <translation id="7947953824732555851">Samþykkja og skrá inn</translation>
@@ -1472,7 +1466,6 @@ Sum vefsvæði kunna til dæmis að bregðast við beiðninni með því að bir
 <translation id="856481929701340285">Biðja um tölvuvefsvæði</translation>
 <translation id="8570677896027847510">Ekki er hægt að sækja skrána á öruggan hátt</translation>
 <translation id="8571213806525832805">Síðastliðnar fjórar vikur</translation>
-<translation id="8580884231102452214">Afrita GIF</translation>
 <translation id="8583805026567836021">Hreinsar reikningsgögn</translation>
 <translation id="859046281437143747">Nota hnappinn „Fleiri valkostir“ til að vakta verð</translation>
 <translation id="860043288473659153">Nafn korthafa</translation>

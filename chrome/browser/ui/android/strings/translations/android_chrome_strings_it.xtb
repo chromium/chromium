@@ -410,7 +410,6 @@ Solo chi conosce la tua passphrase può leggere i tuoi dati criptati. La passphr
 <translation id="3226612997184048185">Se salvi anche i preferiti nel tuo Account Google, puoi monitorare i prezzi dei prodotti in Chrome e ricevere notifiche quando il prezzo scende</translation>
 <translation id="3227557059438308877">Google Chrome come token di sicurezza</translation>
 <translation id="3232754137068452469">App web</translation>
-<translation id="3234978181857588512">Salva sul dispositivo</translation>
 <translation id="3236059992281584593">1 min rimanente</translation>
 <translation id="3237087289225714896">Precaricamento standard:</translation>
 <translation id="3237433641417325993">Scorri verso il basso per vedere gli articoli suggeriti</translation>
@@ -582,7 +581,6 @@ Solo chi conosce la tua passphrase può leggere i tuoi dati criptati. La passphr
 <translation id="4181841719683918333">Lingue</translation>
 <translation id="4188221736490993796">Ordina dalla Z alla A</translation>
 <translation id="4195643157523330669">Apri in un'altra scheda</translation>
-<translation id="4196597275619698563">Crea scheda</translation>
 <translation id="4197828496439691735">{NUM_TABS,plural, =1{1 scheda su questo dispositivo}other{# schede su questo dispositivo}}</translation>
 <translation id="4198423547019359126">Nessun percorso di download disponibile</translation>
 <translation id="4202218894997543208">Argomenti che hai bloccato</translation>
@@ -594,7 +592,6 @@ Solo chi conosce la tua passphrase può leggere i tuoi dati criptati. La passphr
 <translation id="4248098802131000011">Proteggi le tue password da violazioni dei dati e altri problemi di sicurezza</translation>
 <translation id="424864128008805179">Uscire da Chrome?</translation>
 <translation id="4249955472157341256">Ordina per Più recenti</translation>
-<translation id="4250229828105606438">Screenshot</translation>
 <translation id="4256782883801055595">Licenze open source</translation>
 <translation id="4257230861809842349">Vuoi eliminare le password da Gestore delle password di Google?</translation>
 <translation id="4269820728363426813">Copia indirizzo link</translation>
@@ -1148,7 +1145,6 @@ Ad esempio, alcuni siti web potrebbero rispondere alla richiesta mostrando annun
 <translation id="7030304022046916278">Invia gli URL a Navigazione sicura per controllarli</translation>
 <translation id="7035701931849773472">Altre opzioni</translation>
 <translation id="7037830628447527439">Accedi a Chrome con il tuo Account Google</translation>
-<translation id="7038956721828960940">chrome_image_<ph name="CURRENT_TIMESTAMP_MS" /></translation>
 <translation id="7054588988317389591">Vuoi recuperare le descrizioni delle immagini?</translation>
 <translation id="7055152154916055070">Reindirizzamento bloccato:</translation>
 <translation id="7063006564040364415">Impossibile collegarsi al server di sincronizzazione.</translation>
@@ -1279,7 +1275,6 @@ Ad esempio, alcuni siti web potrebbero rispondere alla richiesta mostrando annun
 <translation id="7658239707568436148">Annulla</translation>
 <translation id="7665369617277396874">Aggiungi account</translation>
 <translation id="766587987807204883">Qui vengono visualizzati gli articoli che potrai leggere anche offline</translation>
-<translation id="768232549260819724">GIF copiata</translation>
 <translation id="7682724950699840886">Prova i seguenti suggerimenti: assicurati di avere spazio sufficiente sul dispositivo e prova a esportare di nuovo.</translation>
 <translation id="7686086654630106285">Scopri di più sugli annunci suggeriti dai siti</translation>
 <translation id="768618399695552958">Alcune delle pagine che visiti sono precaricate. Le pagine potrebbero essere precaricate tramite i server di Google quando il sito che vi rimanda è un sito Google.</translation>
@@ -1334,7 +1329,6 @@ Ad esempio, alcuni siti web potrebbero rispondere alla richiesta mostrando annun
 <translation id="7929962904089429003">Apri il menu</translation>
 <translation id="7930998711684428189">Ricevi un avviso se le password sono esposte a una violazione dei dati.</translation>
 <translation id="7934668619883965330">Impossibile scaricare il file. Formato file non supportato.</translation>
-<translation id="7939485076072265087">Crea una scheda stilizzata con il testo evidenziato</translation>
 <translation id="7942131818088350342"><ph name="PRODUCT_NAME" /> è obsoleto.</translation>
 <translation id="7944772052836377867">La sincronizzazione deve verificare la tua identità</translation>
 <translation id="7947953824732555851">Accetta e accedi</translation>
@@ -1472,7 +1466,6 @@ Ad esempio, alcuni siti web potrebbero rispondere alla richiesta mostrando annun
 <translation id="856481929701340285">Richiedi sito desktop</translation>
 <translation id="8570677896027847510">Impossibile scaricare il file in modo sicuro</translation>
 <translation id="8571213806525832805">Ultime 4 settimane</translation>
-<translation id="8580884231102452214">Copia GIF</translation>
 <translation id="8583805026567836021">Cancellazione dati dell'account</translation>
 <translation id="859046281437143747">Monitora il prezzo dal pulsante Altre opzioni</translation>
 <translation id="860043288473659153">Nome del titolare della carta</translation>

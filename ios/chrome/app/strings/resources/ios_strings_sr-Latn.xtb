@@ -496,6 +496,7 @@ Pogledajte uputstva pretraživača za brisanje istorije pretrage ako je to prime
 <translation id="355101282835380364">Sačuvaj na nalogu…</translation>
 <translation id="3551320343578183772">Zatvori karticu</translation>
 <translation id="3565207542107370586">Obriši podatke pregledanja…</translation>
+<translation id="3570693105179140209">Dvaput dodirnite za još lozinki.</translation>
 <translation id="3575234738189584619">Pretražujte pomoću Objektiva</translation>
 <translation id="3581564640715911333">Ponudi prevod stranica na drugim jezicima</translation>
 <translation id="3587885837929752825">Organizacija ograničava sadržaj koji možete da čuvate na Google nalogu.</translation>
@@ -661,6 +662,7 @@ Pogledajte uputstva pretraživača za brisanje istorije pretrage ako je to prime
 <translation id="452750746583162491">Pregledajte sinhronizovane podatke</translation>
 <translation id="4527660062930312477">Nalogom se upravlja</translation>
 <translation id="4536418791685807335">Probajte ponovo da se prijavite.</translation>
+<translation id="4539187448429948815">{count,plural, =1{{count} sačuvani predlog za automatsko dovršavanje je dostupan iznad tastature.}one{{count} sačuvani predlog za automatsko dovršavanje je dostupan iznad tastature.}few{{count} sačuvana predloga za automatsko dovršavanje su dostupna iznad tastature.}other{{count} sačuvanih predloga za automatsko dovršavanje je dostupno iznad tastature.}}</translation>
 <translation id="4540780316273593836">Došlo je do greške</translation>
 <translation id="4550040941166547650">Samo na ovom uređaju</translation>
 <translation id="457292989631956153">{COUNT,plural, =1{Želite da zatvorite {COUNT} neaktivnu karticu?}one{Želite da zatvorite {COUNT} neaktivnu karticu?}few{Želite da zatvorite {COUNT} neaktivne kartice?}other{Želite da zatvorite {COUNT} neaktivnih kartica?}}</translation>

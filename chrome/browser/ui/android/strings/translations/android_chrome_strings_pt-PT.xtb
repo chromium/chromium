@@ -410,7 +410,6 @@ Só alguém com a sua frase de acesso pode ler os dados encriptados. A Google n�
 <translation id="3226612997184048185">Se também guardar os marcadores na sua Conta Google, pode monitorizar os preços dos produtos no Chrome e receber uma notificação quando o preço descer.</translation>
 <translation id="3227557059438308877">Google Chrome como uma chave de segurança</translation>
 <translation id="3232754137068452469">App Web</translation>
-<translation id="3234978181857588512">Guardar no dispositivo</translation>
 <translation id="3236059992281584593">Falta 1 minuto</translation>
 <translation id="3237087289225714896">Pré-carregamento padrão:</translation>
 <translation id="3237433641417325993">Desloque o ecrã para baixo para ver artigos sugeridos</translation>
@@ -582,7 +581,6 @@ Só alguém com a sua frase de acesso pode ler os dados encriptados. A Google n�
 <translation id="4181841719683918333">Idiomas</translation>
 <translation id="4188221736490993796">Ordenar de Z a A</translation>
 <translation id="4195643157523330669">Abrir num novo separador</translation>
-<translation id="4196597275619698563">Criar cartão</translation>
 <translation id="4197828496439691735">{NUM_TABS,plural, =1{1 separador neste dispositivo}other{# separadores neste dispositivo}}</translation>
 <translation id="4198423547019359126">Não existem localizações de transferência disponíveis.</translation>
 <translation id="4202218894997543208">Tópicos que bloqueou</translation>
@@ -594,7 +592,6 @@ Só alguém com a sua frase de acesso pode ler os dados encriptados. A Google n�
 <translation id="4248098802131000011">Mantenha as suas palavras-passe protegidas contra violações de dados e outros problemas de segurança.</translation>
 <translation id="424864128008805179">Quer terminar sessão no Chrome?</translation>
 <translation id="4249955472157341256">Ordenar por mais recente</translation>
-<translation id="4250229828105606438">Captura de ecrã</translation>
 <translation id="4256782883801055595">Licenças de código aberto</translation>
 <translation id="4257230861809842349">Eliminar as palavras-passe do Gestor de Palavras-passe da Google?</translation>
 <translation id="4269820728363426813">Copiar endereço do link</translation>
@@ -1148,7 +1145,6 @@ Por exemplo, alguns Sites podem responder a este pedido ao mostrar-lhe anúncios
 <translation id="7030304022046916278">Envia URLs para a Navegação segura para os verificar</translation>
 <translation id="7035701931849773472">Outras opções</translation>
 <translation id="7037830628447527439">Inicie sessão no Chrome com a sua Conta Google</translation>
-<translation id="7038956721828960940">chrome_image_<ph name="CURRENT_TIMESTAMP_MS" /></translation>
 <translation id="7054588988317389591">Quer obter descrições de imagens?</translation>
 <translation id="7055152154916055070">Redirecionamento bloqueado:</translation>
 <translation id="7063006564040364415">Não foi possível estabelecer ligação ao servidor de sincronização.</translation>
@@ -1279,7 +1275,6 @@ Por exemplo, alguns Sites podem responder a este pedido ao mostrar-lhe anúncios
 <translation id="7658239707568436148">Cancelar</translation>
 <translation id="7665369617277396874">Adicionar conta</translation>
 <translation id="766587987807204883">Os artigos são apresentados aqui e pode lê-los mesmo quando está offline.</translation>
-<translation id="768232549260819724">GIF copiado</translation>
 <translation id="7682724950699840886">Experimente as seguintes sugestões: certifique-se de que existe espaço suficiente no dispositivo e tente exportar novamente.</translation>
 <translation id="7686086654630106285">Mais informações acerca de anúncios sugeridos por sites</translation>
 <translation id="768618399695552958">Algumas das páginas que visita são pré-carregadas. As páginas podem ser pré-carregadas através dos servidores da Google quando contêm links de um site Google.</translation>
@@ -1334,7 +1329,6 @@ Por exemplo, alguns Sites podem responder a este pedido ao mostrar-lhe anúncios
 <translation id="7929962904089429003">Abrir o menu</translation>
 <translation id="7930998711684428189">Envia-lhe um aviso se as palavras-passe forem expostas numa violação de dados.</translation>
 <translation id="7934668619883965330">Não é possível transferir o ficheiro. O formato de ficheiro não é suportado.</translation>
-<translation id="7939485076072265087">Crie um cartão estilizado com realce</translation>
 <translation id="7942131818088350342">O <ph name="PRODUCT_NAME" /> está desatualizado.</translation>
 <translation id="7944772052836377867">A sincronização precisa de validar a sua identidade</translation>
 <translation id="7947953824732555851">Aceitar e in. sessão</translation>
@@ -1472,7 +1466,6 @@ Por exemplo, alguns Sites podem responder a este pedido ao mostrar-lhe anúncios
 <translation id="856481929701340285">Versão para computador</translation>
 <translation id="8570677896027847510">Não é possível transferir o ficheiro em segurança</translation>
 <translation id="8571213806525832805">Últimas 4 semanas</translation>
-<translation id="8580884231102452214">Copiar GIF</translation>
 <translation id="8583805026567836021">A limpar os dados da conta</translation>
 <translation id="859046281437143747">Monitorize o preço a partir do botão Mais opções</translation>
 <translation id="860043288473659153">Nome do titular do cartão</translation>

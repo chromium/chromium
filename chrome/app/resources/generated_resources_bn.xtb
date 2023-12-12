@@ -873,6 +873,7 @@
 <translation id="1651008383952180276">আপনাকে একই পাসফ্রেজ অবশ্যই দু'বার লিখতে হবে</translation>
 <translation id="1651609627703324721">হেডসেটে এই ট্যাব ভিআর (VR) কন্টেন্ট দেখাচ্ছে</translation>
 <translation id="1652326691684645429">'নিয়ারবাই শেয়ার' ফিচারটি চালু করুন</translation>
+<translation id="1652862280638399816">MacOS Keychain-এর মাধ্যমে Password Manager ব্যবহার করতে, Chromium আবার লঞ্চ করুন ও Keychain অ্যাক্সেস করার অনুমতি দিন। আবার চালু করার পরে আপনার ট্যাব আবার খোলা হবে।</translation>
 <translation id="1654580009054503925">অনুরোধ দেখানোর অনুমতি নেই</translation>
 <translation id="1656528038316521561">ব্যাকগ্রাউন্ডের অস্বচ্ছতা</translation>
 <translation id="1657406563541664238">Google-এ ব্যবহারের পরিসংখ্যান এবং ক্র্যাশ রিপোর্ট অটোমেটিক পাঠিয়ে <ph name="PRODUCT_NAME" />কে আরও ভালো করে তুলতে সাহায্য করুন</translation>
@@ -2642,6 +2643,7 @@
 <translation id="2990313168615879645">Google অ্যাকাউন্ট যোগ করুন</translation>
 <translation id="2990375978470734995">এই পরিবর্তন যাতে প্রয়োগ করা যায়, আপনার এক্সটার্নাল অ্যাক্সেসরিজ আবার কানেক্ট করুন।</translation>
 <translation id="2990583317361835189">সাইটগুলিকে মোশন সেন্সর ব্যবহার করতে দেয় না</translation>
+<translation id="2991182900092497283">এই ডেটা পেস্ট করার জন্য একটি কারণ লিখুন:</translation>
 <translation id="2992931425024192067">সব বিজ্ঞপ্তি দেখতে চাই</translation>
 <translation id="2993517869960930405">অ্যাপ্লিকেশানের তথ্য</translation>
 <translation id="2996108796702395498">আপনার ডিভাইসের সিরিয়াল নম্বর <ph name="SERIAL_NUMBER" />। পরিষেবা চালু করতে সাহায্য করার জন্য এই নম্বর ব্যবহার করা যেতে পারে।</translation>
@@ -2835,6 +2837,7 @@
 <translation id="3151562827395986343">ইতিহাস, কুকিজ, ক্যাশে এবং আরও কিছু সাফ করুন</translation>
 <translation id="3151786313568798007">সজ্জা</translation>
 <translation id="3152356229013609796">আপনার ফোনের বিজ্ঞপ্তি দেখুন, বাতিল করুন এবং উত্তর দিন</translation>
+<translation id="3155163173539279776">Chromium আবার লঞ্চ করুন</translation>
 <translation id="3157387275655328056">পড়ার তালিকায় যোগ করুন</translation>
 <translation id="3157931365184549694">পুনরুদ্ধার করুন</translation>
 <translation id="3158033540161634471">আপনার আঙ্গুলের ছাপ সেট-আপ করুন</translation>
@@ -3155,6 +3158,7 @@
 <translation id="3432762828853624962">শেয়ার্ড ওয়ার্কার</translation>
 <translation id="3433507769937235446">স্ক্রিন বন্ধ করার সময় লক করা</translation>
 <translation id="3433621910545056227">ওহো! সিস্টেমটি ডিভাইস ইনস্টলেশন-সময় অ্যাট্রিবিউটস লক স্থাপন করতে ব্যর্থ হয়েছে৷</translation>
+<translation id="3434025015623587566">Google Password Manager-এর আরও বেশি অ্যাক্সেস প্রয়োজন</translation>
 <translation id="3434107140712555581"><ph name="BATTERY_PERCENTAGE" />%</translation>
 <translation id="3434272557872943250">অতিরিক্ত 'ওয়েব ও অ্যাপ অ্যাক্টিভিটি' সেটিং আপনার সন্তানের ডিভাইসের জন্য চালু করা থাকলে, এই ডেটা তাদের Google অ্যাকাউন্টে সেভ করা হতে পারে। এই সেটিং এবং এটি কীভাবে অ্যাডজাস্ট করবেন সেই সম্পর্কে families.google.com লিঙ্কে গিয়ে আরও জানুন।</translation>
 <translation id="3434475275396485144">আপনার ফোনের অ্যাডমিনিস্ট্রেটর এই সেটিং ম্যানেজ করেন</translation>
@@ -3367,6 +3371,7 @@
 <translation id="3605156246402033687">{COUNT,plural, =1{{COUNT}টি অ্যাকাউন্ট একই পাসওয়ার্ড ব্যবহার করছে}one{{COUNT}টি অ্যাকাউন্ট একই পাসওয়ার্ড ব্যবহার করছে}other{{COUNT}টি অ্যাকাউন্ট একই পাসওয়ার্ড ব্যবহার করছে}}</translation>
 <translation id="3605780360466892872">বটনডাউন</translation>
 <translation id="3607671391978830431">কোনও বাচ্চার জন্য</translation>
+<translation id="3608460311600621471">এই ডেটা প্রিন্ট করার জন্য একটি কারণ লিখুন:</translation>
 <translation id="3608730769702025110">৪টির মধ্যে ৩ নম্বর ধাপ: ব্যক্তিগতভাবে শনাক্তকরণযোগ্য তথ্য পর্যালোচনা করুন</translation>
 <translation id="3609277884604412258">কুইক সার্চ</translation>
 <translation id="3610241585790874201">আপনার ডিভাইসে ডেটা সেভ করার অনুমতি নেই</translation>
@@ -3652,6 +3657,7 @@
 <translation id="3809272675881623365">খরগোশ</translation>
 <translation id="3809280248639369696">চন্দ্রপ্রভা</translation>
 <translation id="3810593934879994994"><ph name="ORIGIN" /> নিচে উল্লেখ করা ফোল্ডারের ফাইলগুলি দেখতে পাবে</translation>
+<translation id="3810770279996899697">Password Manager-এর MacOS Keychain-এর অ্যাক্সেস প্রয়োজন</translation>
 <translation id="3810914450553844415">আপনার অ্যাডমিনিস্ট্রেটর আর কোনও Google অ্যাকাউন্ট ব্যবহার করার অনুমতি দেয় না।</translation>
 <translation id="3810973564298564668">পরিচালনা করুন</translation>
 <translation id="381202950560906753">আরেকটি জুড়ুন</translation>
@@ -5051,6 +5057,7 @@
 <translation id="4918134162946436591">ইঙ্গিতের ওভারলে দেখুন</translation>
 <translation id="4918762404810341788">কপি করুন এবং খুলুন</translation>
 <translation id="4921348630401250116">টেক্সট-টু-স্পিচ</translation>
+<translation id="4922104989726031751">আপনার অপারেটিং সিস্টেমের সাথে Password Manager ব্যবহার করতে, Chromium আবার চালু করুন এবং নিজের কম্পিউটারের Password Manager অ্যাক্সেস করার অনুমতি দিন। আবার চালু করার পরে আপনার ট্যাব আবার খোলা হবে।</translation>
 <translation id="492299503953721473">Android অ্যাপ্লিকেশানগুলি সরান</translation>
 <translation id="492363500327720082"><ph name="APP_NAME" /> আনইনস্টল করা হচ্ছে...</translation>
 <translation id="4924002401726507608">মতামত জানান</translation>
@@ -6669,6 +6676,7 @@
 <translation id="6238982280403036866">জাভাস্ক্রিপ্ট ব্যবহার করার অনুমতি দেওয়া হয়েছে</translation>
 <translation id="6239558157302047471">রিলোড এবং ফ্রেম</translation>
 <translation id="6240821072888636753">প্রত্যেকবার জিজ্ঞাসা করো</translation>
+<translation id="6240964651812394252">আপনার অপারেটিং সিস্টেমের সাথে Google Password Manager ব্যবহার করতে, Chrome আবার চালু করুন এবং নিজের কম্পিউটারের Password Manager অ্যাক্সেস করার অনুমতি দিন। আবার চালু করার পরে আপনার ট্যাব আবার খোলা হবে।</translation>
 <translation id="6241530762627360640">আপনার সিস্টেমের সঙ্গে যুক্ত করা ব্লুটুথ ডিভাইসগুলির সম্পর্কে তথ্য অ্যাক্সেস করুন এবং কাছাকাছি  ব্লুটুথ ডিভাইসগুলি খুঁজুন।</translation>
 <translation id="6241844896329831164">কোনও অ্যাক্সেসের প্রয়োজন নেই</translation>
 <translation id="6242574558232861452">আপনার সংস্থার সুরক্ষা নীতি মেনে চলছে কিনা তা জানতে চেক করা হচ্ছে।</translation>
@@ -6703,6 +6711,7 @@
 <translation id="6264365405983206840">&amp;সকল বেছে নিন</translation>
 <translation id="6264376385120300461">তবুও ডাউনলোড করুন</translation>
 <translation id="6264520534872750757">ডিভাইসটি ব্যবহার করা চালিয়ে যান</translation>
+<translation id="6264636978858465832">Password Manager-এর আরও বেশি অ্যাক্সেস প্রয়োজন</translation>
 <translation id="6265159465845424232">Microsoft OneDrive-এ Microsoft-এর ফাইল কপি করা বা সরানোর আগে জিজ্ঞেস করুন</translation>
 <translation id="6265687851677020761">পোর্ট সরান</translation>
 <translation id="6266532094411434237"><ph name="DEVICE" />-এর সাথে কানেক্ট করা হচ্ছে</translation>
@@ -9500,7 +9509,6 @@
 <translation id="8473540203671727883">মাউস কার্সারের নিচে থাকা টেক্সট পড়ুন</translation>
 <translation id="8473863474539038330">ঠিকানা ও আরও অনেককিছু</translation>
 <translation id="8474378002946546633">সূচনাকে মঞ্জুরী দিন</translation>
-<translation id="8474733733775441349">আপনার Google অ্যাকাউন্টে সেভ করা পাসওয়ার্ড দেখুন</translation>
 <translation id="8475313423285172237">আপনার কম্পিউটারের অন্য একটি প্রোগ্রাম এক্সটেনশন যোগ করেছে যা Chrome-এর কাজ করার ধরন পাল্টে দিতে পারে৷</translation>
 <translation id="8476408756881832830">ChromeVox কথা বলতে থাকলে প্লেব্যাক সাময়িকভাবে থামান</translation>
 <translation id="8476491056950015181"><ph name="BEGIN_PARAGRAPH1" />ChromeOS ডিভাইসকে অটোমেটিক রিপোর্ট পাঠানোর অনুমতি দিলে, ChromeOS কোন সমস্যার সমাধান ও ফিচারের উন্নতি করার ব্যাপারে প্রাধান্য দেবে সেই বিষয়ে সিদ্ধান্ত নিতে আমাদের সুবিধা হয়। এই রিপোর্টে কখন ChromeOS ক্র্যাশ করেছে, কোন ফিচার ও সাধারণত কত মেমরি ব্যবহার করা হয়েছে, Android অ্যাপ ডায়াগনস্টিক ও ব্যবহারের ডেটার মতো তথ্য থাকতে পারে। কিছু একত্রিত ডেটা Google অ্যাপ ও পার্টনারদেরও সাহায্য করবে, যেমন Android ডেভেলপার।<ph name="END_PARAGRAPH1" />

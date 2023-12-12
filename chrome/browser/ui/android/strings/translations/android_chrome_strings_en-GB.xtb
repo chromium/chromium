@@ -410,7 +410,6 @@ Only someone with your passphrase can read your encrypted data. The passphrase i
 <translation id="3226612997184048185">If you also save your bookmarks in your Google Account, you can track product prices in Chrome and get notified when the price drops</translation>
 <translation id="3227557059438308877">Google Chrome as a security key</translation>
 <translation id="3232754137068452469">Web App</translation>
-<translation id="3234978181857588512">Save to device</translation>
 <translation id="3236059992281584593">1 min left</translation>
 <translation id="3237087289225714896">Standard preloading:</translation>
 <translation id="3237433641417325993">Scroll down to see suggested articles</translation>
@@ -582,7 +581,6 @@ Only someone with your passphrase can read your encrypted data. The passphrase i
 <translation id="4181841719683918333">Languages</translation>
 <translation id="4188221736490993796">Sort by Z to A</translation>
 <translation id="4195643157523330669">Open in new tab</translation>
-<translation id="4196597275619698563">Create card</translation>
 <translation id="4197828496439691735">{NUM_TABS,plural, =1{1 tab on this device}other{# tabs on this device}}</translation>
 <translation id="4198423547019359126">No available download locations</translation>
 <translation id="4202218894997543208">Topics that you blocked</translation>
@@ -594,7 +592,6 @@ Only someone with your passphrase can read your encrypted data. The passphrase i
 <translation id="4248098802131000011">Keep your passwords safe from data breaches and other security issues</translation>
 <translation id="424864128008805179">Sign out of Chrome?</translation>
 <translation id="4249955472157341256">Sort by Latest</translation>
-<translation id="4250229828105606438">Screenshot</translation>
 <translation id="4256782883801055595">Open-source licences</translation>
 <translation id="4257230861809842349">Delete passwords from Google Password Manager?</translation>
 <translation id="4269820728363426813">Copy link address</translation>
@@ -1148,7 +1145,6 @@ For example, some websites may respond to this request by showing you ads that a
 <translation id="7030304022046916278">Sends URLs to Safe Browsing to check them</translation>
 <translation id="7035701931849773472">Other options</translation>
 <translation id="7037830628447527439">Sign in to Chrome with your Google Account</translation>
-<translation id="7038956721828960940">chrome_image_<ph name="CURRENT_TIMESTAMP_MS" /></translation>
 <translation id="7054588988317389591">Get image descriptions?</translation>
 <translation id="7055152154916055070">Redirect blocked:</translation>
 <translation id="7063006564040364415">Could not connect to the sync server.</translation>
@@ -1279,7 +1275,6 @@ For example, some websites may respond to this request by showing you ads that a
 <translation id="7658239707568436148">Cancel</translation>
 <translation id="7665369617277396874">Add account</translation>
 <translation id="766587987807204883">Articles appear here, which you can read even when you're offline</translation>
-<translation id="768232549260819724">GIF copied</translation>
 <translation id="7682724950699840886">Try the following tips: make sure that there is enough space on your device; try to export again.</translation>
 <translation id="7686086654630106285">More about site-suggested ads</translation>
 <translation id="768618399695552958">Some of the pages that you visit are preloaded. Pages may be preloaded through Google servers when linked from a Google site.</translation>
@@ -1334,7 +1329,6 @@ For example, some websites may respond to this request by showing you ads that a
 <translation id="7929962904089429003">Opening the menu</translation>
 <translation id="7930998711684428189">Warns you if passwords are exposed in a data breach.</translation>
 <translation id="7934668619883965330">Cannot download file. File format not supported.</translation>
-<translation id="7939485076072265087">Create stylised card with highlight</translation>
 <translation id="7942131818088350342"><ph name="PRODUCT_NAME" /> is out of date.</translation>
 <translation id="7944772052836377867">Sync needs to verify that it's you</translation>
 <translation id="7947953824732555851">Accept and sign in</translation>
@@ -1472,7 +1466,6 @@ For example, some websites may respond to this request by showing you ads that a
 <translation id="856481929701340285">Request desktop site</translation>
 <translation id="8570677896027847510">File can’t be downloaded securely</translation>
 <translation id="8571213806525832805">Last 4 weeks</translation>
-<translation id="8580884231102452214">Copy GIF</translation>
 <translation id="8583805026567836021">Clearing account data</translation>
 <translation id="859046281437143747">Track price from the 'More options' button</translation>
 <translation id="860043288473659153">Cardholder name</translation>

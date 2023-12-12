@@ -410,7 +410,6 @@ Orang yang mengetahui ungkapan laluan anda sahaja yang dapat membaca data tersul
 <translation id="3226612997184048185">Jika anda juga menyimpan penanda halaman dalam Google Account anda, anda boleh menjejak harga produk dalam Chrome dan mendapatkan pemberitahuan jika harga produk tersebut turun</translation>
 <translation id="3227557059438308877">Google Chrome sebagai Kunci Keselamatan</translation>
 <translation id="3232754137068452469">Apl Web</translation>
-<translation id="3234978181857588512">Simpan pada peranti</translation>
 <translation id="3236059992281584593">1 minit lagi</translation>
 <translation id="3237087289225714896">Pramuat standard:</translation>
 <translation id="3237433641417325993">Tatal ke bawah untuk melihat artikel yang dicadangkan</translation>
@@ -582,7 +581,6 @@ Orang yang mengetahui ungkapan laluan anda sahaja yang dapat membaca data tersul
 <translation id="4181841719683918333">Bahasa</translation>
 <translation id="4188221736490993796">Isih mengikut Z hingga A</translation>
 <translation id="4195643157523330669">Buka dalam tab baharu</translation>
-<translation id="4196597275619698563">Buat kad</translation>
 <translation id="4197828496439691735">{NUM_TABS,plural, =1{1 tab pada peranti ini}other{# tab pada peranti ini}}</translation>
 <translation id="4198423547019359126">Tiada lokasi muat turun tersedia</translation>
 <translation id="4202218894997543208">Topik yang anda sekat</translation>
@@ -594,7 +592,6 @@ Orang yang mengetahui ungkapan laluan anda sahaja yang dapat membaca data tersul
 <translation id="4248098802131000011">Pastikan kata laluan anda selamat daripada pelanggaran data dan isu keselamatan yang lain</translation>
 <translation id="424864128008805179">Log keluar daripada Chrome?</translation>
 <translation id="4249955472157341256">Isih mengikut yang Terbaharu</translation>
-<translation id="4250229828105606438">Tangkapan skrin</translation>
 <translation id="4256782883801055595">Lesen sumber terbuka</translation>
 <translation id="4257230861809842349">Padamkan kata laluan daripada Google Password Manager?</translation>
 <translation id="4269820728363426813">Salin alamat pautan</translation>
@@ -1148,7 +1145,6 @@ Sebagai contoh, sesetengah laman web mungkin memberi respons kepada permintaan i
 <translation id="7030304022046916278">Menghantar URL kepada Penyemakan Imbas Selamat untuk semakan</translation>
 <translation id="7035701931849773472">Pilihan lain</translation>
 <translation id="7037830628447527439">Log masuk ke Chrome menggunakan Google Account anda</translation>
-<translation id="7038956721828960940">imej_chrome_<ph name="CURRENT_TIMESTAMP_MS" /></translation>
 <translation id="7054588988317389591">Dapatkan perihalan imej?</translation>
 <translation id="7055152154916055070">Ubah hala disekat:</translation>
 <translation id="7063006564040364415">Tidak dapat bersambung ke pelayan yang disegerakkan.</translation>
@@ -1279,7 +1275,6 @@ Sebagai contoh, sesetengah laman web mungkin memberi respons kepada permintaan i
 <translation id="7658239707568436148">Batal</translation>
 <translation id="7665369617277396874">Tambah akaun</translation>
 <translation id="766587987807204883">Artikel dipaparkan di sini, yang boleh anda baca walaupun semasa anda luar talian</translation>
-<translation id="768232549260819724">GIF Disalin</translation>
 <translation id="7682724950699840886">Cuba petua berikut: pastikan ruang pada peranti anda mencukupi, cuba eksport sekali lagi.</translation>
 <translation id="7686086654630106285">Lagi tentang iklan laman yang dicadangkan</translation>
 <translation id="768618399695552958">Beberapa halaman yang anda lawati dipramuat. Halaman mungkin dipramuat melalui pelayan Google apabila dipautkan dari laman Google.</translation>
@@ -1334,7 +1329,6 @@ Sebagai contoh, sesetengah laman web mungkin memberi respons kepada permintaan i
 <translation id="7929962904089429003">Buka menu</translation>
 <translation id="7930998711684428189">Memberi anda amaran jika kata laluan terdedah dalam pelanggaran data.</translation>
 <translation id="7934668619883965330">Tidak boleh memuat turun fail. Format fail tidak disokong.</translation>
-<translation id="7939485076072265087">Buat kad digayakan dengan serlahan</translation>
 <translation id="7942131818088350342"><ph name="PRODUCT_NAME" /> telah lapuk.</translation>
 <translation id="7944772052836377867">Penyegerakan perlu mengesahkan itu anda</translation>
 <translation id="7947953824732555851">Terima dan log masuk</translation>
@@ -1472,7 +1466,6 @@ Sebagai contoh, sesetengah laman web mungkin memberi respons kepada permintaan i
 <translation id="856481929701340285">Minta tapak desktop</translation>
 <translation id="8570677896027847510">Fail tidak dapat dimuat turun dengan selamat</translation>
 <translation id="8571213806525832805">4 minggu terakhir</translation>
-<translation id="8580884231102452214">Salin GIF</translation>
 <translation id="8583805026567836021">Menghapuskan data akaun</translation>
 <translation id="859046281437143747">Jejaki harga daripada butang Lagi pilihan</translation>
 <translation id="860043288473659153">Nama pemegang kad</translation>

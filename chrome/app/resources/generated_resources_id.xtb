@@ -872,6 +872,7 @@ Izin yang telah Anda berikan ke aplikasi dapat berlaku untuk akun ini. Anda dapa
 <translation id="1651008383952180276">Anda harus memasukkan frasa sandi yang sama dua kali</translation>
 <translation id="1651609627703324721">Tab ini menyajikan konten VR ke headset</translation>
 <translation id="1652326691684645429">Aktifkan Berbagi Langsung</translation>
+<translation id="1652862280638399816">Untuk menggunakan Pengelola Sandi dengan Rantai Kunci macOS, luncurkan kembali Chromium dan izinkan akses Rantai Kunci. Tab Anda akan dibuka lagi setelah peluncuran kembali.</translation>
 <translation id="1654580009054503925">Tidak diizinkan menampilkan permintaan</translation>
 <translation id="1656528038316521561">Opasitas latar belakang</translation>
 <translation id="1657406563541664238">Bantu menjadikan <ph name="PRODUCT_NAME" /> lebih baik dengan mengirim statistik penggunaan dan laporan kerusakan secara otomatis ke Google</translation>
@@ -2834,6 +2835,7 @@ Anda dapat mengelola setelan akun ini dengan menginstal aplikasi Family Link di 
 <translation id="3151562827395986343">Hapus histori, cookie, cache, dan lainnya</translation>
 <translation id="3151786313568798007">Orientasi</translation>
 <translation id="3152356229013609796">Lihat, tutup, dan balas notifikasi dari ponsel Anda</translation>
+<translation id="3155163173539279776">Luncurkan ulang Chromium</translation>
 <translation id="3157387275655328056">Tambahkan ke Daftar Bacaan</translation>
 <translation id="3157931365184549694">Pulihkan</translation>
 <translation id="3158033540161634471">Siapkan sidik jari Anda</translation>
@@ -3651,6 +3653,7 @@ Anda dapat mengelola setelan akun ini dengan menginstal aplikasi Family Link di 
 <translation id="3809272675881623365">Kelinci</translation>
 <translation id="3809280248639369696">Alien</translation>
 <translation id="3810593934879994994"><ph name="ORIGIN" /> dapat melihat file dalam folder berikut ini</translation>
+<translation id="3810770279996899697">Pengelola Sandi memerlukan akses ke Rantai Kunci macOS</translation>
 <translation id="3810914450553844415">Administrator tidak mengizinkan Akun Google tambahan.</translation>
 <translation id="3810973564298564668">Kelola</translation>
 <translation id="381202950560906753">Tambahkan lainnya</translation>
@@ -9494,7 +9497,6 @@ Simpan file kunci Anda di tempat yang aman. Anda akan membutuhkannya untuk membu
 <translation id="8473540203671727883">Ucapkan teks di bawah kursor</translation>
 <translation id="8473863474539038330">Alamat dan lain-lain</translation>
 <translation id="8474378002946546633">Izinkan pemberitahuan</translation>
-<translation id="8474733733775441349">Tampilkan sandi dari Akun Google Anda</translation>
 <translation id="8475313423285172237">Program lain di komputer Anda menambahkan ekstensi yang dapat mengubah cara kerja Chrome.</translation>
 <translation id="8476408756881832830">Jeda pemutaran saat ChromeVox sedang berbicara</translation>
 <translation id="8476491056950015181"><ph name="BEGIN_PARAGRAPH1" />Mengizinkan perangkat ChromeOS mengirim laporan otomatis akan membantu kami memprioritaskan hal-hal yang harus diperbaiki dan ditingkatkan di ChromeOS. Laporan tersebut dapat mencakup informasi seperti kapan ChromeOS mengalami error, fitur mana yang digunakan, berapa banyak memori yang biasanya digunakan, serta data penggunaan dan diagnostik aplikasi Android. Beberapa data gabungan juga akan membantu aplikasi dan partner Google, seperti developer Android.<ph name="END_PARAGRAPH1" />

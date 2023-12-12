@@ -410,7 +410,6 @@ Kun personer med din adgangssætning kan læse dine krypterede data. Adgangssæt
 <translation id="3226612997184048185">Hvis du også gemmer dine bogmærker på din Google-konto, kan du holde øje med produktpriser i Chrome og få besked, når prisen falder</translation>
 <translation id="3227557059438308877">Google Chrome som sikkerhedsnøgle</translation>
 <translation id="3232754137068452469">Webapp</translation>
-<translation id="3234978181857588512">Gem på enheden</translation>
 <translation id="3236059992281584593">1 minut tilbage</translation>
 <translation id="3237087289225714896">Standardforudindlæsning:</translation>
 <translation id="3237433641417325993">Rul ned for at se foreslåede artikler</translation>
@@ -582,7 +581,6 @@ Kun personer med din adgangssætning kan læse dine krypterede data. Adgangssæt
 <translation id="4181841719683918333">Sprog</translation>
 <translation id="4188221736490993796">Sortér fra Å til A</translation>
 <translation id="4195643157523330669">Åbn på ny fane</translation>
-<translation id="4196597275619698563">Opret kort</translation>
 <translation id="4197828496439691735">{NUM_TABS,plural, =1{1 fane på denne enhed}one{# fane på denne enhed}other{# faner på denne enhed}}</translation>
 <translation id="4198423547019359126">Der er ingen tilgængelige downloadplaceringer</translation>
 <translation id="4202218894997543208">Emner, du har blokeret</translation>
@@ -594,7 +592,6 @@ Kun personer med din adgangssætning kan læse dine krypterede data. Adgangssæt
 <translation id="4248098802131000011">Beskyt dine adgangskoder mod brud på datasikkerheden og andre sikkerhedsproblemer</translation>
 <translation id="424864128008805179">Vil du logge ud af Chrome?</translation>
 <translation id="4249955472157341256">Sortér efter seneste</translation>
-<translation id="4250229828105606438">Screenshot</translation>
 <translation id="4256782883801055595">Open source-licenser</translation>
 <translation id="4257230861809842349">Vil du slette adgangskoderne fra Google Adgangskodeadministrator?</translation>
 <translation id="4269820728363426813">Kopiér linkadresse</translation>
@@ -1148,7 +1145,6 @@ Nogle websites kan f.eks. reagere på denne anmodning ved at vise dig annoncer, 
 <translation id="7030304022046916278">Webadresser sendes til tjek i Beskyttet browsing</translation>
 <translation id="7035701931849773472">Andre valgmuligheder</translation>
 <translation id="7037830628447527439">Log ind på Chrome med din Google-konto</translation>
-<translation id="7038956721828960940">chrome_image_<ph name="CURRENT_TIMESTAMP_MS" /></translation>
 <translation id="7054588988317389591">Vil du have billedbeskrivelser?</translation>
 <translation id="7055152154916055070">Omdirigeringen blev blokeret:</translation>
 <translation id="7063006564040364415">Der kunne ikke oprettes forbindelse til synkroniseringsserveren.</translation>
@@ -1279,7 +1275,6 @@ Nogle websites kan f.eks. reagere på denne anmodning ved at vise dig annoncer, 
 <translation id="7658239707568436148">Annuller</translation>
 <translation id="7665369617277396874">Tilføj konto</translation>
 <translation id="766587987807204883">Her vises artikler, som du kan læse, selv når du er offline</translation>
-<translation id="768232549260819724">Giffen er kopieret</translation>
 <translation id="7682724950699840886">Prøv følgende tips: Sørg for, at der er nok ledig plads på din enhed, og prøv at eksportere igen.</translation>
 <translation id="7686086654630106285">Mere om foreslåede annoncer fra websites</translation>
 <translation id="768618399695552958">Nogle af de sider, du besøger, forudindlæses. Nogle sider forudindlæses muligvis via Google-servere, når de er linket fra et Google-website.</translation>
@@ -1334,7 +1329,6 @@ Nogle websites kan f.eks. reagere på denne anmodning ved at vise dig annoncer, 
 <translation id="7929962904089429003">Åbn menuen</translation>
 <translation id="7930998711684428189">Advarer dig, hvis adgangskoder offentliggøres i et brud på datasikkerheden.</translation>
 <translation id="7934668619883965330">Filen kan ikke downloades. Filformatet understøttes ikke.</translation>
-<translation id="7939485076072265087">Opret stiliseret kort med fremhævning</translation>
 <translation id="7942131818088350342"><ph name="PRODUCT_NAME" /> er forældet.</translation>
 <translation id="7944772052836377867">Synkronisering skal verificere din identitet</translation>
 <translation id="7947953824732555851">Acceptér og log ind</translation>
@@ -1472,7 +1466,6 @@ Nogle websites kan f.eks. reagere på denne anmodning ved at vise dig annoncer, 
 <translation id="856481929701340285">Vis computerversion</translation>
 <translation id="8570677896027847510">Filen kan ikke downloades sikkert</translation>
 <translation id="8571213806525832805">Seneste 4 uger</translation>
-<translation id="8580884231102452214">Kopiér gif</translation>
 <translation id="8583805026567836021">Kontodataene ryddes</translation>
 <translation id="859046281437143747">Hold øje med prisen ved hjælp af knappen Flere valgmuligheder</translation>
 <translation id="860043288473659153">Kortholderens navn</translation>

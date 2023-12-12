@@ -873,6 +873,7 @@ Posibleng malapat sa account na ito ang mga pahintulot na naibigay mo na sa mga 
 <translation id="1651008383952180276">Dapat mong ilagay ang katulad na passphrase nang dalawang beses</translation>
 <translation id="1651609627703324721">Nagpe-present ang tab na ito ng VR content sa isang headset</translation>
 <translation id="1652326691684645429">I-enable ang Nearby Share</translation>
+<translation id="1652862280638399816">Para magamit ang Password Manager sa macOS Keychain, ilunsad ulit ang Chromium at payagan ang access sa Keychain. Bubukas ulit ang iyong mga tab pagkatapos malunsad ulit.</translation>
 <translation id="1654580009054503925">Hindi pinapayagang magpakita ng mga request</translation>
 <translation id="1656528038316521561">Opacity ng background</translation>
 <translation id="1657406563541664238">Tulungan ang <ph name="PRODUCT_NAME" /> na maging mas mahusay sa pamamagitan ng awtomatikong pagpapadala ng mga istatistika ng paggamit at mga crash report sa Google</translation>
@@ -2835,6 +2836,7 @@ Inaatasan ka ng <ph name="DOMAIN" /> na panatilihing nakalagay ang iyong smart c
 <translation id="3151562827395986343">I-clear ang history, cookies, cache, at higit pa</translation>
 <translation id="3151786313568798007">Oryentasyon</translation>
 <translation id="3152356229013609796">Tingnan, i-dismiss, at sagutin ang mga notification ng iyong telepono</translation>
+<translation id="3155163173539279776">Muling ilunsad ang Chromium</translation>
 <translation id="3157387275655328056">Idagdag sa Listahan ng Babasahin</translation>
 <translation id="3157931365184549694">Ipanumbalik</translation>
 <translation id="3158033540161634471">I-set up ang iyong fingerprint</translation>
@@ -3652,6 +3654,7 @@ Inaatasan ka ng <ph name="DOMAIN" /> na panatilihing nakalagay ang iyong smart c
 <translation id="3809272675881623365">Kuneho</translation>
 <translation id="3809280248639369696">Alien</translation>
 <translation id="3810593934879994994">Puwedeng tingnan ng <ph name="ORIGIN" /> ang mga file sa mga sumusunod na folder</translation>
+<translation id="3810770279996899697">Kailangan ng Password Manager ng access sa MacOS Keychain</translation>
 <translation id="3810914450553844415">Hindi pinapayagan ng iyong administrator ang mga karagdagang Google Account.</translation>
 <translation id="3810973564298564668">Pamahalaan</translation>
 <translation id="381202950560906753">Magdagdag ng isa pa</translation>
@@ -9499,7 +9502,6 @@ Ilagay ang iyong key file sa ligtas na lugar. Kailangan mo ito upang lumikha ng 
 <translation id="8473540203671727883">Bigkasin ang text na hino-hover ng cursor</translation>
 <translation id="8473863474539038330">Mga address at higit pa</translation>
 <translation id="8474378002946546633">Payagan ang mga notification</translation>
-<translation id="8474733733775441349">Ipakita ang mga password mula sa iyong Google Account</translation>
 <translation id="8475313423285172237">Ang isa pang program sa iyong computer ay nagdagdag ng extension na maaaring magpabago sa paraan ng paggana ng Chrome.</translation>
 <translation id="8476408756881832830">I-pause ang pag-playback kapag nagsasalita ang ChromeVox</translation>
 <translation id="8476491056950015181"><ph name="BEGIN_PARAGRAPH1" />Kapag pinayagan ang mga ChromeOS device na magpadala ng mga awtomatikong ulat, makakatulong ito sa aming bigyang-priyoridad kung ano ang dapat ayusin at pahusayin sa ChromeOS. Posibleng kasama sa mga ulat na ito ang mga bagay gaya kung kailan nagka-crash ang ChromeOS, aling mga feature ang ginamit, kung gaano kalaking memory ang karaniwang nagamit, at data ng diagnostic at paggamit ng Android app. Makakatulong din ang ilang pinagsama-samang data sa mga Google app at partner, gaya ng mga developer ng Android.<ph name="END_PARAGRAPH1" />

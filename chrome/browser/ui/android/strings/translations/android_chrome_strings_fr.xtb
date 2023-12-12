@@ -410,7 +410,6 @@ Seule une personne connaissant votre phrase secrète peut lire vos données chif
 <translation id="3226612997184048185">Si vous enregistrez également vos favoris dans votre compte Google, vous pouvez suivre le prix de produits dans Chrome et être averti lorsqu'ils baissent</translation>
 <translation id="3227557059438308877">Utiliser Google Chrome comme clé de sécurité</translation>
 <translation id="3232754137068452469">Application Web</translation>
-<translation id="3234978181857588512">Enregistrer sur l'appareil</translation>
 <translation id="3236059992281584593">1 minute restante</translation>
 <translation id="3237087289225714896">Préchargement standard :</translation>
 <translation id="3237433641417325993">Faire défiler la page vers le bas pour voir les suggestions d'articles</translation>
@@ -582,7 +581,6 @@ Seule une personne connaissant votre phrase secrète peut lire vos données chif
 <translation id="4181841719683918333">Langues</translation>
 <translation id="4188221736490993796">Trier de Z à A</translation>
 <translation id="4195643157523330669">Ouvrir dans un nouvel onglet</translation>
-<translation id="4196597275619698563">Créer une fiche</translation>
 <translation id="4197828496439691735">{NUM_TABS,plural, =1{1 onglet sur cet appareil}one{# onglet sur cet appareil}other{# onglets sur cet appareil}}</translation>
 <translation id="4198423547019359126">Aucun emplacement de téléchargements disponible</translation>
 <translation id="4202218894997543208">Thèmes que vous avez bloqués</translation>
@@ -594,7 +592,6 @@ Seule une personne connaissant votre phrase secrète peut lire vos données chif
 <translation id="4248098802131000011">Protégez vos mots de passe contre les violations de données et d'autres problèmes liés à la sécurité</translation>
 <translation id="424864128008805179">Se déconnecter de Chrome ?</translation>
 <translation id="4249955472157341256">Trier par "Les plus récents"</translation>
-<translation id="4250229828105606438">Capture d'écran</translation>
 <translation id="4256782883801055595">Licences Open Source</translation>
 <translation id="4257230861809842349">Supprimer les mots de passe du Gestionnaire de mots de passe de Google ?</translation>
 <translation id="4269820728363426813">Copier l'adresse du lien</translation>
@@ -1148,7 +1145,6 @@ Par exemple, certains sites Web peuvent répondre à cette demande en diffusant 
 <translation id="7030304022046916278">Les URL sont envoyées à la navigation sécurisée pour vérification</translation>
 <translation id="7035701931849773472">Autres options</translation>
 <translation id="7037830628447527439">Se connecter à Chrome avec votre compte Google</translation>
-<translation id="7038956721828960940">chrome_image_<ph name="CURRENT_TIMESTAMP_MS" /></translation>
 <translation id="7054588988317389591">Obtenir les descriptions d'images ?</translation>
 <translation id="7055152154916055070">Redirection bloquée :</translation>
 <translation id="7063006564040364415">Impossible de se connecter au serveur de synchronisation.</translation>
@@ -1279,7 +1275,6 @@ Par exemple, certains sites Web peuvent répondre à cette demande en diffusant 
 <translation id="7658239707568436148">Annuler</translation>
 <translation id="7665369617277396874">Ajouter un compte</translation>
 <translation id="766587987807204883">Les articles sont affichés ici (vous pouvez les lire même lorsque vous êtes hors connexion)</translation>
-<translation id="768232549260819724">GIF copié</translation>
 <translation id="7682724950699840886">Essayez l'astuce suivante°: assurez-vous de disposer de suffisamment d'espace sur votre appareil, puis tentez à nouveau d'exporter les mots de passe.</translation>
 <translation id="7686086654630106285">En savoir plus sur les annonces suggérées par les sites</translation>
 <translation id="768618399695552958">Certaines pages que vous consultez sont préchargées. Elles peuvent l'être via les serveurs de Google lorsqu'elles sont liées à partir d'un site Google.</translation>
@@ -1334,7 +1329,6 @@ Par exemple, certains sites Web peuvent répondre à cette demande en diffusant 
 <translation id="7929962904089429003">Ouvrir le menu</translation>
 <translation id="7930998711684428189">Il vous avertit en cas de divulgation de mots de passe suite à une violation des données.</translation>
 <translation id="7934668619883965330">Impossible de télécharger le fichier. Format de fichier non compatible.</translation>
-<translation id="7939485076072265087">Créer une fiche stylisée avec le texte en surbrillance</translation>
 <translation id="7942131818088350342"><ph name="PRODUCT_NAME" /> est obsolète.</translation>
 <translation id="7944772052836377867">La synchronisation doit confirmer votre identité</translation>
 <translation id="7947953824732555851">Accepter/Se connecter</translation>
@@ -1472,7 +1466,6 @@ Par exemple, certains sites Web peuvent répondre à cette demande en diffusant 
 <translation id="856481929701340285">Voir version ordinateur</translation>
 <translation id="8570677896027847510">Impossible de télécharger le fichier de façon sécurisée</translation>
 <translation id="8571213806525832805">4 dernières semaines</translation>
-<translation id="8580884231102452214">Copier le GIF</translation>
 <translation id="8583805026567836021">Suppression des données du compte</translation>
 <translation id="859046281437143747">Effectuez le suivi du prix via le bouton "Plus d'options"</translation>
 <translation id="860043288473659153">Nom du titulaire de la carte</translation>

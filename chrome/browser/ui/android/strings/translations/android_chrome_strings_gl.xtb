@@ -410,7 +410,6 @@ Só pode ler os datos encriptados alguén que coñeza a túa frase de acceso. A 
 <translation id="3226612997184048185">Se tamén gardas os marcadores na túa Conta de Google, poderás facer un seguimento dos prezos dos produtos en Chrome e recibir notificacións cando baixen</translation>
 <translation id="3227557059438308877">Google Chrome como chave de seguranza</translation>
 <translation id="3232754137068452469">Aplicación web</translation>
-<translation id="3234978181857588512">Gardar no dispositivo</translation>
 <translation id="3236059992281584593">Queda 1 minuto</translation>
 <translation id="3237087289225714896">Precarga estándar:</translation>
 <translation id="3237433641417325993">Desprázate cara abaixo para ver artigos suxeridos</translation>
@@ -582,7 +581,6 @@ Só pode ler os datos encriptados alguén que coñeza a túa frase de acceso. A 
 <translation id="4181841719683918333">Idiomas</translation>
 <translation id="4188221736490993796">Ordenar do Z ao A</translation>
 <translation id="4195643157523330669">Abrir en pestana nova</translation>
-<translation id="4196597275619698563">Crear tarxeta</translation>
 <translation id="4197828496439691735">{NUM_TABS,plural, =1{1 pestana neste dispositivo}other{# pestanas neste dispositivo}}</translation>
 <translation id="4198423547019359126">Non hai localizacións de descarga dispoñibles</translation>
 <translation id="4202218894997543208">Temas que bloqueaches</translation>
@@ -594,7 +592,6 @@ Só pode ler os datos encriptados alguén que coñeza a túa frase de acceso. A 
 <translation id="4248098802131000011">Protexe os teus contrasinais fronte a violacións da seguranza dos datos e outros problemas de seguranza</translation>
 <translation id="424864128008805179">Queres pechar sesión en Chrome?</translation>
 <translation id="4249955472157341256">Ordenar por máis recente</translation>
-<translation id="4250229828105606438">Captura de pantalla</translation>
 <translation id="4256782883801055595">Licenzas de código aberto</translation>
 <translation id="4257230861809842349">Queres eliminar contrasinais do xestor de contrasinais de Google?</translation>
 <translation id="4269820728363426813">Copiar enderezo da ligazón</translation>
@@ -1148,7 +1145,6 @@ Por exemplo, algúns sitios web poden responder a esta solicitude mostrándoche 
 <translation id="7030304022046916278">Envía enderezos URL á función Navegación segura para comprobalos</translation>
 <translation id="7035701931849773472">Outras opcións</translation>
 <translation id="7037830628447527439">Inicia sesión en Chrome coa túa Conta de Google</translation>
-<translation id="7038956721828960940">chrome_imaxe_<ph name="CURRENT_TIMESTAMP_MS" /></translation>
 <translation id="7054588988317389591">Queres obter descricións de imaxes?</translation>
 <translation id="7055152154916055070">Bloqueouse unha redirección:</translation>
 <translation id="7063006564040364415">Non se puido conectar co servidor de sincronización.</translation>
@@ -1279,7 +1275,6 @@ Por exemplo, algúns sitios web poden responder a esta solicitude mostrándoche 
 <translation id="7658239707568436148">Cancelar</translation>
 <translation id="7665369617277396874">Engadir conta</translation>
 <translation id="766587987807204883">Aquí aparecen os artigos e podes lelos mesmo cando esteas sen conexión</translation>
-<translation id="768232549260819724">Copiouse o GIF</translation>
 <translation id="7682724950699840886">Sigue estes consellos: asegúrate de que hai espazo suficiente no dispositivo e proba a exportar os contrasinais de novo.</translation>
 <translation id="7686086654630106285">Máis información sobre os anuncios suxeridos polos sitios</translation>
 <translation id="768618399695552958">Precárganse algunhas das páxinas que visitas. As páxinas poden precargarse a través dos nosos servidores se están vinculadas a un sitio de Google.</translation>
@@ -1334,7 +1329,6 @@ Por exemplo, algúns sitios web poden responder a esta solicitude mostrándoche 
 <translation id="7929962904089429003">Abrir o menú</translation>
 <translation id="7930998711684428189">Móstrache unha advertencia se os teus contrasinais están en risco debido a unha violación da seguranza dos datos.</translation>
 <translation id="7934668619883965330">Produciuse un erro na descarga. O formato de ficheiro non é compatible.</translation>
-<translation id="7939485076072265087">Crear tarxeta estilizada con texto destacado</translation>
 <translation id="7942131818088350342"><ph name="PRODUCT_NAME" /> está desactualizado.</translation>
 <translation id="7944772052836377867">A sincronización necesita verificar a túa identidade</translation>
 <translation id="7947953824732555851">Acep. e iniciar ses.</translation>
@@ -1472,7 +1466,6 @@ Por exemplo, algúns sitios web poden responder a esta solicitude mostrándoche 
 <translation id="856481929701340285">Ver como ordenador</translation>
 <translation id="8570677896027847510">Non se pode descargar o ficheiro de forma segura</translation>
 <translation id="8571213806525832805">Últimas 4 semanas</translation>
-<translation id="8580884231102452214">Copiar GIF</translation>
 <translation id="8583805026567836021">Borrando datos da conta</translation>
 <translation id="859046281437143747">Facer seguimento do prezo desde o botón Máis opcións</translation>
 <translation id="860043288473659153">Nome do titular da tarxeta</translation>

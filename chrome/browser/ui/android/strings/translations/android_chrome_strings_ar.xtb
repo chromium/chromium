@@ -412,7 +412,6 @@
 <translation id="3226612997184048185">‏إذا حفظت أيضًا إشاراتك المرجعية في حسابك على Google، يمكنك تتبُّع أسعار المنتجات من خلال Chrome وتلقّي إشعارات عند انخفاض السعر.</translation>
 <translation id="3227557059438308877">‏استخدام Google Chrome كمفتاح أمان</translation>
 <translation id="3232754137068452469">تطبيق الويب</translation>
-<translation id="3234978181857588512">حفظ على الجهاز</translation>
 <translation id="3236059992281584593">يتبقى دقيقة واحدة</translation>
 <translation id="3237087289225714896">التحميل المُسبق العادي:</translation>
 <translation id="3237433641417325993">انتقِل إلى الأسفل للاطّلاع على المقالات المقتَرحة.</translation>
@@ -584,7 +583,6 @@
 <translation id="4181841719683918333">اللغات</translation>
 <translation id="4188221736490993796">الترتيب من ي إلى أ</translation>
 <translation id="4195643157523330669">الفتح في علامة تبويب جديدة</translation>
-<translation id="4196597275619698563">إنشاء بطاقة</translation>
 <translation id="4197828496439691735">{NUM_TABS,plural, =1{علامة تبويب واحدة على هذا الجهاز}zero{‫# علامة تبويب على هذا الجهاز}two{علامتا تبويب على هذا الجهاز}few{‫# علامات تبويب على هذا الجهاز}many{‫# علامة تبويب على هذا الجهاز}other{‫# علامة تبويب على هذا الجهاز}}</translation>
 <translation id="4198423547019359126">ما من مواقع تنزيل متاحة</translation>
 <translation id="4202218894997543208">المواضيع التي حظرتها</translation>
@@ -596,7 +594,6 @@
 <translation id="4248098802131000011">لحماية كلمة المرور من عمليات اختراق البيانات ومشاكل الأمان الأخرى</translation>
 <translation id="424864128008805179">‏هل تريد تسجيل الخروج من Chrome؟</translation>
 <translation id="4249955472157341256">الترتيب حسب الأحدث</translation>
-<translation id="4250229828105606438">لقطة شاشة</translation>
 <translation id="4256782883801055595">تراخيص البرامج المفتوحة المصدر</translation>
 <translation id="4257230861809842349">‏هل تريد حذف كلمات المرور من "مدير كلمات المرور في Google"؟</translation>
 <translation id="4269820728363426813">نسخ عنوان الرابط</translation>
@@ -1150,7 +1147,6 @@
 <translation id="7030304022046916278">‏يُرسِل هذا الوضع عناوين URL إلى خدمة "التصفّح الآمن" للتحقّق منها.</translation>
 <translation id="7035701931849773472">خيارات أخرى</translation>
 <translation id="7037830628447527439">‏سجِّل الدخول إلى Chrome باستخدام حسابك على Google.</translation>
-<translation id="7038956721828960940">chrome_image_<ph name="CURRENT_TIMESTAMP_MS" /></translation>
 <translation id="7054588988317389591">هل تريد عرض أوصاف الصور؟</translation>
 <translation id="7055152154916055070">تم حظر إعادة توجيه:</translation>
 <translation id="7063006564040364415">تعذر الاتصال بخادم المزامنة.</translation>
@@ -1281,7 +1277,6 @@
 <translation id="7658239707568436148">إلغاء</translation>
 <translation id="7665369617277396874">إضافة حساب</translation>
 <translation id="766587987807204883">تظهر المقالات هنا، ويمكنك الاطّلاع عليها حتى عندما لا يكون الجهاز متّصلًا بالإنترنت.</translation>
-<translation id="768232549260819724">‏تم نسخ ملف GIF.</translation>
 <translation id="7682724950699840886">يمكنك تجربة النصائح التالية: تأكد من توفر مساحة كافية على جهازك وحاول التصدير مرة أخرى.</translation>
 <translation id="7686086654630106285">مزيد من المعلومات عن الإعلانات التي تقترحها المواقع الإلكترونية</translation>
 <translation id="768618399695552958">‏إنّ بعض الصفحات التي تنتقل إليها يتم تحميلها مُسبقًا. يمكن تحميل صفحات الويب مُسبقًا من خلال خوادم Google عند ربطها من موقع مصمَّم في "مواقع Google".</translation>
@@ -1336,7 +1331,6 @@
 <translation id="7929962904089429003">فتح القائمة</translation>
 <translation id="7930998711684428189">التحذير في حال الكشف عن كلمات المرور في عملية اختراق بيانات</translation>
 <translation id="7934668619883965330">لا يمكن تنزيل الملف لأنّ تنسيقه غير متوافق.</translation>
-<translation id="7939485076072265087">يمكنك إنشاء بطاقة بنمط معيَّن للنص المحدَّد.</translation>
 <translation id="7942131818088350342"><ph name="PRODUCT_NAME" /> قديم.</translation>
 <translation id="7944772052836377867">تحتاج ميزة المزامنة إلى التحقّق من هويتك</translation>
 <translation id="7947953824732555851">قبول وتسجيل الدخول</translation>
@@ -1475,7 +1469,6 @@
 <translation id="856481929701340285">طلب موقع الكمبيوتر</translation>
 <translation id="8570677896027847510">تعذَّر تنزيل الملف بشكل آمن</translation>
 <translation id="8571213806525832805">الأسابيع الـ4 الأخيرة</translation>
-<translation id="8580884231102452214">‏نسخ ملف GIF</translation>
 <translation id="8583805026567836021">محو بيانات الحساب</translation>
 <translation id="859046281437143747">يمكنك تتبُّع سعر المنتج من خلال الزر "خيارات إضافية".</translation>
 <translation id="860043288473659153">اسم حامل البطاقة</translation>

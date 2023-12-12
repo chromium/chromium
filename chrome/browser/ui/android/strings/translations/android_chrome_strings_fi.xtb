@@ -410,7 +410,6 @@ Salatun datasi voi lukea vain tunnuslauseen avulla. Tunnuslausetta ei lähetetä
 <translation id="3226612997184048185">Jos tallennat kirjanmerkit myös Google-tilillesi, voit seurata tuotteiden hintoja Chromessa ja saada ilmoituksen, kun hinta laskee</translation>
 <translation id="3227557059438308877">Google Chrome suojausavaimena</translation>
 <translation id="3232754137068452469">Verkkosovellus</translation>
-<translation id="3234978181857588512">Tallenna laitteelle</translation>
 <translation id="3236059992281584593">1 minuutti jäljellä</translation>
 <translation id="3237087289225714896">Vakioesilataus:</translation>
 <translation id="3237433641417325993">Vieritä alaspäin, niin näet artikkeliehdotuksia</translation>
@@ -582,7 +581,6 @@ Salatun datasi voi lukea vain tunnuslauseen avulla. Tunnuslausetta ei lähetetä
 <translation id="4181841719683918333">Kielet</translation>
 <translation id="4188221736490993796">Lajittele Z:sta A:han</translation>
 <translation id="4195643157523330669">Avaa uudelle välilehdelle</translation>
-<translation id="4196597275619698563">Luo kortti</translation>
 <translation id="4197828496439691735">{NUM_TABS,plural, =1{1 välilehti tällä laitteella}other{# välilehteä tällä laitteella}}</translation>
 <translation id="4198423547019359126">Tallennussijainteja ei ole saatavilla</translation>
 <translation id="4202218894997543208">Estämäsi aiheet</translation>
@@ -594,7 +592,6 @@ Salatun datasi voi lukea vain tunnuslauseen avulla. Tunnuslausetta ei lähetetä
 <translation id="4248098802131000011">Suojaa salasanasi tietosuojaloukkauksilta ja muilta tietoturvaongelmilta</translation>
 <translation id="424864128008805179">Kirjaudutaanko ulos Chromesta?</translation>
 <translation id="4249955472157341256">Lajittele viimeisimmät ensimmäisiksi</translation>
-<translation id="4250229828105606438">Kuvakaappaus</translation>
 <translation id="4256782883801055595">Avoimen lähdekoodin käyttöluvat</translation>
 <translation id="4257230861809842349">Poistetaanko salasanat Google Salasanoista?</translation>
 <translation id="4269820728363426813">Kopioi linkin osoite</translation>
@@ -1148,7 +1145,6 @@ Jotkin verkkosivustot voivat vastata tähän pyyntöön esimerkiksi näyttämäl
 <translation id="7030304022046916278">Lähettää URL-osoitteita Selaussuojan tarkistettavaksi</translation>
 <translation id="7035701931849773472">Muut vaihtoehdot</translation>
 <translation id="7037830628447527439">Kirjaudu Chromeen Google-tililläsi</translation>
-<translation id="7038956721828960940">chrome_image_<ph name="CURRENT_TIMESTAMP_MS" /></translation>
 <translation id="7054588988317389591">Muodostetaanko kuvaselitykset?</translation>
 <translation id="7055152154916055070">Uudelleenohjaus estetty:</translation>
 <translation id="7063006564040364415">Synkronointipalvelimeen ei saada yhteyttä.</translation>
@@ -1279,7 +1275,6 @@ Jotkin verkkosivustot voivat vastata tähän pyyntöön esimerkiksi näyttämäl
 <translation id="7658239707568436148">Peru</translation>
 <translation id="7665369617277396874">Lisää tili</translation>
 <translation id="766587987807204883">Tässä näet artikkelit, jotka voit lukea myös offline-tilassa</translation>
-<translation id="768232549260819724">GIF kopioitu</translation>
 <translation id="7682724950699840886">Kokeile seuraavia keinoja: varmista, että laitteellasi on tarpeeksi tilaa, yritä viedä uudelleen.</translation>
 <translation id="7686086654630106285">Lisätietoja sivuston ehdottamista mainoksista</translation>
 <translation id="768618399695552958">Jotkin avaamistasi sivuista ovat esiladattuja. Sivut on mahdollisesti esiladattu Googlen palvelimien kautta, kun niihin on linkitetty Googlen sivustolta.</translation>
@@ -1334,7 +1329,6 @@ Jotkin verkkosivustot voivat vastata tähän pyyntöön esimerkiksi näyttämäl
 <translation id="7929962904089429003">Avaa valikko</translation>
 <translation id="7930998711684428189">Varoittaa, jos salasanoja vaarantuu tietosuojaloukkauksessa</translation>
 <translation id="7934668619883965330">Tiedostoa ei voida ladata. Tiedostomuotoa ei tueta.</translation>
-<translation id="7939485076072265087">Luo tyylitelty kortti korostetusta kohdasta</translation>
 <translation id="7942131818088350342"><ph name="PRODUCT_NAME" /> on vanhentunut.</translation>
 <translation id="7944772052836377867">Synkronoinnin on vahvistettava henkilöllisyytesi</translation>
 <translation id="7947953824732555851">Hyväksy ja kirjaudu sisään</translation>
@@ -1472,7 +1466,6 @@ Jotkin verkkosivustot voivat vastata tähän pyyntöön esimerkiksi näyttämäl
 <translation id="856481929701340285">Käytä tietokoneversiota</translation>
 <translation id="8570677896027847510">Tiedostoa ei voi ladata turvallisesti</translation>
 <translation id="8571213806525832805">Viimeiset neljä viikkoa</translation>
-<translation id="8580884231102452214">Kopioi GIF</translation>
 <translation id="8583805026567836021">Poistetaan tilin tietoja</translation>
 <translation id="859046281437143747">Seuraa hintaa Lisäasetukset-painikkeen kautta</translation>
 <translation id="860043288473659153">Kortinhaltijan nimi</translation>

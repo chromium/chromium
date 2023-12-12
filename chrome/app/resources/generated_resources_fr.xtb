@@ -870,6 +870,7 @@ Les autorisations que vous avez déjà accordées aux applis peuvent s'appliquer
 <translation id="1651008383952180276">Vous devez saisir deux fois la même phrase secrète</translation>
 <translation id="1651609627703324721">Du contenu en RV est diffusé sur un casque à partir de cet onglet</translation>
 <translation id="1652326691684645429">Activer le Partage à proximité</translation>
+<translation id="1652862280638399816">Pour utiliser le Gestionnaire de mots de passe avec le trousseau macOS, relancez Chromium et autorisez l'accès au trousseau. Vos onglets s'ouvriront alors de nouveau.</translation>
 <translation id="1654580009054503925">Non autorisée à afficher les demandes</translation>
 <translation id="1656528038316521561">Opacité de l'arrière-plan</translation>
 <translation id="1657406563541664238">Nous aider à améliorer <ph name="PRODUCT_NAME" /> en envoyant automatiquement les statistiques d'utilisation et les rapports d'erreur à Google</translation>
@@ -2627,6 +2628,7 @@ Vous pouvez gérer les paramètres de ce compte en installant l'application Fami
 <translation id="2990313168615879645">Ajouter un compte Google</translation>
 <translation id="2990375978470734995">Pour que cette modification soit prise en compte, reconnectez vos accessoires externes.</translation>
 <translation id="2990583317361835189">Ne pas autoriser les sites à utiliser les capteurs de mouvement</translation>
+<translation id="2991182900092497283">Veuillez indiquer la raison pour laquelle vous collez ces données :</translation>
 <translation id="2992931425024192067">Afficher tout le contenu des notifications</translation>
 <translation id="2993517869960930405">Infos sur l'appli</translation>
 <translation id="2996108796702395498">Le numéro de série de votre appareil est <ph name="SERIAL_NUMBER" />. Ce numéro peut servir à activer le service.</translation>
@@ -2820,6 +2822,7 @@ Vous pouvez gérer les paramètres de ce compte en installant l'application Fami
 <translation id="3151562827395986343">Effacer l'historique, supprimer les cookies, vider le cache, etc.</translation>
 <translation id="3151786313568798007">Orientation</translation>
 <translation id="3152356229013609796">Afficher les notifications de votre téléphone, les fermer et y répondre</translation>
+<translation id="3155163173539279776">Relancer Chromium</translation>
 <translation id="3157387275655328056">Ajouter à la liste de lecture</translation>
 <translation id="3157931365184549694">Restaurer</translation>
 <translation id="3158033540161634471">Configurer votre empreinte digitale</translation>
@@ -3140,6 +3143,7 @@ Vous pouvez gérer les paramètres de ce compte en installant l'application Fami
 <translation id="3432762828853624962">Shared Workers</translation>
 <translation id="3433507769937235446">Verrouiller en cas d'éloignement</translation>
 <translation id="3433621910545056227">Petit problème… Le système n'a pas réussi à établir le verrouillage des attributs du temps d'installation de l'appareil.</translation>
+<translation id="3434025015623587566">Le Gestionnaire de mots de passe de Google a besoin d'un accès plus étendu</translation>
 <translation id="3434107140712555581"><ph name="BATTERY_PERCENTAGE" /> %</translation>
 <translation id="3434272557872943250">Si vous avez activé le paramètre "Activité additionnelle sur le Web et les applications" pour votre enfant, ces données peuvent être enregistrées dans son compte Google. Découvrez plus en détail ces paramètres et comment les ajuster sur le site families.google.com.</translation>
 <translation id="3434475275396485144">Ce paramètre est géré par l'administrateur de votre téléphone</translation>
@@ -3352,6 +3356,7 @@ Vous pouvez gérer les paramètres de ce compte en installant l'application Fami
 <translation id="3605156246402033687">{COUNT,plural, =1{{COUNT} compte utilise le même mot de passe}one{{COUNT} compte utilise le même mot de passe}other{{COUNT} comptes utilisent le même mot de passe}}</translation>
 <translation id="3605780360466892872">Businessman</translation>
 <translation id="3607671391978830431">Pour un enfant</translation>
+<translation id="3608460311600621471">Veuillez indiquer la raison pour laquelle vous imprimez ces données :</translation>
 <translation id="3608730769702025110">Étape 3 sur 4 : Consultez les informations permettant d'identifier personnellement l'utilisateur</translation>
 <translation id="3609277884604412258">Recherche rapide</translation>
 <translation id="3610241585790874201">Non autorisés à enregistrer des données sur votre appareil</translation>
@@ -3637,6 +3642,7 @@ Vous pouvez gérer les paramètres de ce compte en installant l'application Fami
 <translation id="3809272675881623365">Lapin</translation>
 <translation id="3809280248639369696">Alien</translation>
 <translation id="3810593934879994994">Le site <ph name="ORIGIN" /> peut afficher les fichiers des dossiers suivants</translation>
+<translation id="3810770279996899697">Le Gestionnaire de mots de passe a besoin d'accéder au trousseau macOS</translation>
 <translation id="3810914450553844415">Votre administrateur n'autorise pas les comptes Google supplémentaires.</translation>
 <translation id="3810973564298564668">Gérer</translation>
 <translation id="381202950560906753">Ajouter une autre empreinte</translation>
@@ -5034,6 +5040,7 @@ Appuyez sur Ctrl+Alt+Baisser la luminosité pour faire un zoom arrière.</transl
 <translation id="4918134162946436591">Afficher la superposition des indications</translation>
 <translation id="4918762404810341788">Copier et ouvrir</translation>
 <translation id="4921348630401250116">Synthèse vocale</translation>
+<translation id="4922104989726031751">Pour utiliser le Gestionnaire de mots de passe avec votre système d'exploitation, relancez Chromium et autorisez l'accès au gestionnaire de mots de passe de votre ordinateur. Vos onglets s'ouvriront alors de nouveau.</translation>
 <translation id="492299503953721473">Supprimer les applications Android</translation>
 <translation id="492363500327720082">Désinstallation de <ph name="APP_NAME" />…</translation>
 <translation id="4924002401726507608">Envoyer des commentaires</translation>
@@ -6651,6 +6658,7 @@ Assurez-vous de ne pas dévoiler d'informations sensibles.</translation>
 <translation id="6238982280403036866">Autorisé à utiliser JavaScript</translation>
 <translation id="6239558157302047471">Actualiser le &amp;cadre</translation>
 <translation id="6240821072888636753">Toujours demander</translation>
+<translation id="6240964651812394252">Pour utiliser le Gestionnaire de mots de passe de Google avec votre système d'exploitation, relancez Chrome et autorisez l'accès au gestionnaire de mots de passe de votre ordinateur. Vos onglets s'ouvriront alors de nouveau.</translation>
 <translation id="6241530762627360640">Accéder aux informations relatives aux appareils Bluetooth associés à votre système et détecter les appareils Bluetooth à proximité</translation>
 <translation id="6241844896329831164">Aucun accès nécessaire</translation>
 <translation id="6242574558232861452">Vérification de la conformité du fichier avec les règles de sécurité de votre organisation…</translation>
@@ -6685,6 +6693,7 @@ Assurez-vous de ne pas dévoiler d'informations sensibles.</translation>
 <translation id="6264365405983206840">Tout &amp;sélectionner</translation>
 <translation id="6264376385120300461">Télécharger quand même</translation>
 <translation id="6264520534872750757">Continuer à utiliser l'appareil</translation>
+<translation id="6264636978858465832">Le Gestionnaire de mots de passe a besoin d'un accès plus étendu</translation>
 <translation id="6265159465845424232">Demander avant de copier ou de déplacer des fichiers Microsoft vers Microsoft OneDrive</translation>
 <translation id="6265687851677020761">Supprimer le port</translation>
 <translation id="6266532094411434237">Connexion à <ph name="DEVICE" />…</translation>
@@ -9483,7 +9492,6 @@ Conservez votre fichier de clé en lieu sûr. Vous en aurez besoin lors de la cr
 <translation id="8473540203671727883">Prononcer le texte sous la souris</translation>
 <translation id="8473863474539038330">Adresses et autres</translation>
 <translation id="8474378002946546633">Autoriser les notifications</translation>
-<translation id="8474733733775441349">Afficher les mots de passe enregistrés dans votre compte Google</translation>
 <translation id="8475313423285172237">Un autre programme sur votre ordinateur a ajouté une extension qui risque de modifier le fonctionnement de Google Chrome.</translation>
 <translation id="8476408756881832830">Interrompre la lecture pendant la diffusion des commentaires audio ChromeVox</translation>
 <translation id="8476491056950015181"><ph name="BEGIN_PARAGRAPH1" />Autoriser les appareils ChromeOS à envoyer automatiquement des rapports nous aide à prioriser ce qu'il faut corriger et améliorer dans ChromeOS. Ces rapports peuvent inclure diverses informations (plantages de ChromeOS, fonctionnalités utilisées, quantité de mémoire généralement utilisée, et données d'utilisation et de diagnostic des applis Android). Certaines données globales seront aussi utiles aux partenaires et développeurs d'applis Google tels que les développeurs Android.<ph name="END_PARAGRAPH1" />

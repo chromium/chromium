@@ -871,6 +871,7 @@ Na tento účet se mohou vztahovat oprávnění, která jste již udělili aplik
 <translation id="1651008383952180276">Musíte zadat dvakrát stejnou heslovou frázi</translation>
 <translation id="1651609627703324721">Tato karta odesílá VR obsah do náhlavní soupravy</translation>
 <translation id="1652326691684645429">Aktivovat sdílení nablízko</translation>
+<translation id="1652862280638399816">Pokud Správce hesel Google chcete používat s Klíčenkou systému macOS, restartujte Chromium a povolte přístup ke Klíčence. Karty se po opětovném spuštění znovu otevřou.</translation>
 <translation id="1654580009054503925">Není povoleno zobrazovat žádosti</translation>
 <translation id="1656528038316521561">Neprůhlednost pozadí</translation>
 <translation id="1657406563541664238">Pomozte <ph name="PRODUCT_NAME" /> zlepšit tím, že budete Googlu automaticky zasílat statistiky o využívání a zprávy o selhání aplikace</translation>
@@ -2821,6 +2822,7 @@ Zpráva serveru: <ph name="SERVER_MSG" /></translation>
 <translation id="3151562827395986343">Vymaže historii, soubory cookie, mezipaměť a další obsah</translation>
 <translation id="3151786313568798007">Orientace</translation>
 <translation id="3152356229013609796">Zobrazovat oznámení z telefonu, zavírat je a odpovídat na ně</translation>
+<translation id="3155163173539279776">Restartovat Chromium</translation>
 <translation id="3157387275655328056">Přidat do seznamu četby</translation>
 <translation id="3157931365184549694">Obnovit</translation>
 <translation id="3158033540161634471">Nastavení otisku prstu</translation>
@@ -3638,6 +3640,7 @@ Zpráva serveru: <ph name="SERVER_MSG" /></translation>
 <translation id="3809272675881623365">Králík</translation>
 <translation id="3809280248639369696">Marťan</translation>
 <translation id="3810593934879994994">Web <ph name="ORIGIN" /> může zobrazovat soubory v následujících složkách</translation>
+<translation id="3810770279996899697">Správce hesel potřebuje přístup ke Klíčence systému MacOS</translation>
 <translation id="3810914450553844415">Váš administrátor další účty Google nepovoluje.</translation>
 <translation id="3810973564298564668">Spravovat</translation>
 <translation id="381202950560906753">Přidat další</translation>
@@ -9480,7 +9483,6 @@ Svůj soubor klíče uchovávejte na bezpečném místě. Budete jej potřebovat
 <translation id="8473540203671727883">Přečíst text pod myší</translation>
 <translation id="8473863474539038330">Adresy a další</translation>
 <translation id="8474378002946546633">Povolit oznámení</translation>
-<translation id="8474733733775441349">Zobrazit hesla z účtu Google</translation>
 <translation id="8475313423285172237">Jiný program ve vašem počítači nainstaloval rozšíření, které může měnit funkce Chromu.</translation>
 <translation id="8476408756881832830">Při hlasové odezvě ChromeVox pozastavit přehrávání</translation>
 <translation id="8476491056950015181"><ph name="BEGIN_PARAGRAPH1" />Povolením odesílání automatických zpráv v systému ChromeOS nám pomůžete určit, které opravy a vylepšení systému ChromeOS mají prioritu. Tyto zprávy obsahují údaje jako datum a čas selhání systému ChromeOS, používané funkce, typické využití paměti nebo diagnostická data a údaje o využití aplikací pro Android. Některá souhrnná data budou moci využít také naši partneři, např. vývojáři aplikací pro Android.<ph name="END_PARAGRAPH1" />

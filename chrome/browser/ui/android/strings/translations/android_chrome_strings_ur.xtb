@@ -410,7 +410,6 @@
 <translation id="3226612997184048185">‏اگر آپ اپنے بُک مارکس کو اپنے Google اکاؤنٹ میں بھی محفوظ کرتے ہیں تو آپ Chrome میں پروڈکٹ کی قیمتوں کو ٹریک کر سکتے ہیں اور قیمت میں گراوٹ ہونے پر اطلاع حاصل کر سکتے ہیں</translation>
 <translation id="3227557059438308877">‏سیکیورٹی کلید کے بطور Google Chrome</translation>
 <translation id="3232754137068452469">ویب ایپ</translation>
-<translation id="3234978181857588512">آلہ پر محفوظ کریں</translation>
 <translation id="3236059992281584593">1 منٹ باقی</translation>
 <translation id="3237087289225714896">معیاری پیشگی لوڈنگ:</translation>
 <translation id="3237433641417325993">تجویز کردہ مضامین دیکھنے کے لیے نیچے اسکرول کریں</translation>
@@ -582,7 +581,6 @@
 <translation id="4181841719683918333">زبانیں</translation>
 <translation id="4188221736490993796">‏Z سے A کے لحاظ سے ترتیب دیں</translation>
 <translation id="4195643157523330669">نئے ٹیب میں کھولیں</translation>
-<translation id="4196597275619698563">کارڈ تخلیق کریں</translation>
 <translation id="4197828496439691735">{NUM_TABS,plural, =1{اس آلہ پر 1 ٹیب}other{اس آلہ پر # ٹیبز}}</translation>
 <translation id="4198423547019359126">ڈاؤن لوڈ کیلئے کوئی مقام دستیاب نہیں ہے</translation>
 <translation id="4202218894997543208">آپ کے مسدود کردہ موضوعات</translation>
@@ -594,7 +592,6 @@
 <translation id="4248098802131000011">ڈیٹا کی خلاف ورزیوں اور سیکیورٹی کے دیگر معاملات سے اپنا پاس ورڈ محفوظ رکھیں</translation>
 <translation id="424864128008805179">‏Chrome سے سائن آؤٹ کریں؟</translation>
 <translation id="4249955472157341256">تازہ ترین کے لحاظ سے ترتیب دیں</translation>
-<translation id="4250229828105606438">اسکرین شاٹ</translation>
 <translation id="4256782883801055595">اوپن سورس لائسنسز</translation>
 <translation id="4257230861809842349">‏Google پاس ورڈ مینیجر سے پاس ورڈز کو حذف کریں؟</translation>
 <translation id="4269820728363426813">لنک کا پتہ کاپی کریں</translation>
@@ -1148,7 +1145,6 @@
 <translation id="7030304022046916278">‏چیک کرنے کے لیے URLs کو محفوظ براؤزنگ کو بھیجتا ہے</translation>
 <translation id="7035701931849773472">دیگر اختیارات</translation>
 <translation id="7037830628447527439">‏اپنے Google اکاؤنٹ سے Chrome میں سائن ان کریں</translation>
-<translation id="7038956721828960940">chrome_image_<ph name="CURRENT_TIMESTAMP_MS" /></translation>
 <translation id="7054588988317389591">تصویری تفصیلات حاصل کریں؟</translation>
 <translation id="7055152154916055070">ری ڈائریکٹ مسدود کیا گیا:</translation>
 <translation id="7063006564040364415">مطابقت پذیری سرور سے منسلک نہیں کیا جا سکا۔</translation>
@@ -1279,7 +1275,6 @@
 <translation id="7658239707568436148">منسوخ کریں</translation>
 <translation id="7665369617277396874">اکاؤنٹ شامل کریں</translation>
 <translation id="766587987807204883">مضامین یہاں دکھائی دیتے ہیں جنہیں آپ آف لائن ہونے پر بھی پڑھ سکتے ہیں</translation>
-<translation id="768232549260819724">‏GIF کاپی ہو گیا</translation>
 <translation id="7682724950699840886">مندرجہ ذیل تجاویز آزمائیں: یقینی بنائیں کہ آپ کے آلہ پر کافی جگہ ہے، دوبارہ برآمد کرنے کی کوشش کریں۔</translation>
 <translation id="7686086654630106285">سائٹ کے تجویز کردہ اشتہارات کے بارے میں مزید</translation>
 <translation id="768618399695552958">‏آپ کے ملاحظہ کردہ صفحات میں سے کچھ پیشگی لوڈ کردہ ہیں۔ کسی Google سائٹ سے لنک ہونے پر صفحات کو Google سرورز کے ذریعے پیشگی لوڈ کیا جا سکتا ہے۔</translation>
@@ -1334,7 +1329,6 @@
 <translation id="7929962904089429003">مینیو کھولیں</translation>
 <translation id="7930998711684428189">اگر پاس ورڈز ڈیٹا کی خلاف ورزی میں افشاء ہوتے ہیں تو آپ کو متنبہ کرتا ہے۔</translation>
 <translation id="7934668619883965330">فائل ڈاؤن لوڈ نہیں ہو سکتی۔ فائل فارمیٹ تعاون یافتہ نہیں ہے۔</translation>
-<translation id="7939485076072265087">ہائی لائٹ کے ساتھ اسٹائلائزڈ کارڈ تخلیق کریں</translation>
 <translation id="7942131818088350342"><ph name="PRODUCT_NAME" /> پرانا ہے۔</translation>
 <translation id="7944772052836377867">مطابقت پذیری کو آپ کی شناخت کی توثیق کرنے کی ضرورت ہے</translation>
 <translation id="7947953824732555851">قبول و سائن ان کریں</translation>
@@ -1472,7 +1466,6 @@
 <translation id="856481929701340285">ڈیسک ٹاپ سائٹ کی درخواست کریں</translation>
 <translation id="8570677896027847510">فائل کو محفوظ طریقے سے ڈاؤن لوڈ نہیں کیا جا سکتا</translation>
 <translation id="8571213806525832805">گزشتہ 4 ہفتے</translation>
-<translation id="8580884231102452214">‏GIF کاپی کریں</translation>
 <translation id="8583805026567836021">اکاؤنٹ ڈیٹا صاف کرنا</translation>
 <translation id="859046281437143747">مزید اختیارات والے بٹن سے قیمت ٹریک کریں</translation>
 <translation id="860043288473659153">کارڈ کے حامل کا نام</translation>

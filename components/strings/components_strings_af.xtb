@@ -1219,6 +1219,7 @@ Dit sal andersins deur jou privaatheidinstellings geblokkeer word. Dit sal die i
 <translation id="3432601291244612633">Maak bladsy toe</translation>
 <translation id="3433111389595862568">Samewerking- en konferensiesagteware</translation>
 <translation id="3433144818443565002">Stem- en videoklets</translation>
+<translation id="3434025015623587566">Google Wagwoordbestuurder het meer toegang nodig</translation>
 <translation id="343474037147570563">Lêers wat jy oplaai of aanheg, word na Google Cloud of derde partye gestuur om ontleed te word. Hulle kan byvoorbeeld vir sensitiewe data of wanware geskandeer word en kan op grond van maatskappybeleide geberg word en sigbaar vir jou administrateur wees.</translation>
 <translation id="3435557549311968410">Aaneenlopend (kort)</translation>
 <translation id="3435738964857648380">Sekuriteit</translation>
@@ -1968,6 +1969,7 @@ Dit sal andersins deur jou privaatheidinstellings geblokkeer word. Dit sal die i
 <translation id="4918221908152712722">Installeer <ph name="APP_NAME" /> (geen aflaai word vereis nie)</translation>
 <translation id="4920457992177678649">Vakansiehuurplekke en korttermynverblyf</translation>
 <translation id="4920710383559189047">Omslag</translation>
+<translation id="4922104989726031751">Herbegin Chromium en laat jou rekenaar se wagwoordbestuurder toe om Wagwoordbestuurder met jou bedryfstelsel te gebruik. Jou oortjies sal weer oopmaak nadat jy herbegin het.</translation>
 <translation id="4923459931733593730">Betaling</translation>
 <translation id="4926049483395192435">Moet gespesifiseer word.</translation>
 <translation id="4926159001844873046"><ph name="SITE" /> sê</translation>
@@ -2608,6 +2610,7 @@ Dit sal andersins deur jou privaatheidinstellings geblokkeer word. Dit sal die i
 <translation id="6234122620015464377">Knip ná elke dokument</translation>
 <translation id="6236290670123303279">Bestuur instellings</translation>
 <translation id="6240447795304464094">Google Pay-logo</translation>
+<translation id="6240964651812394252">Herbegin Chrome en laat jou rekenaar se wagwoordbestuurder toe om Google Wagwoordbestuurder met jou bedryfstelsel te gebruik. Jou oortjies sal weer oopmaak nadat jy herbegin het.</translation>
 <translation id="6241121617266208201">Versteek voorstelle</translation>
 <translation id="624499991300733384">Druksamestellerdiens</translation>
 <translation id="6251906504834538140">{0,plural, =1{Lêer kan weens blokkering nie geskuif word nie}other{<ph name="FILE_COUNT" /> lêers kan weens blokkering nie geskuif word nie}}</translation>
@@ -2618,6 +2621,7 @@ Dit sal andersins deur jou privaatheidinstellings geblokkeer word. Dit sal die i
 <translation id="6263376278284652872"><ph name="DOMAIN" />-boekmerke</translation>
 <translation id="6264376385120300461">Laai in elk geval af</translation>
 <translation id="6264485186158353794">Terug na veiligheid</translation>
+<translation id="6264636978858465832">Wagwoordbestuurder het meer toegang nodig</translation>
 <translation id="6265794661083428563">Kopieer die waarde van die <ph name="POLICY_NAME" />-beleid</translation>
 <translation id="6266934640124581640">Liggroenblou</translation>
 <translation id="6270066318535733958">Skuitvaar</translation>

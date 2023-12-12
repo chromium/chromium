@@ -410,7 +410,6 @@
 <translation id="3226612997184048185">अगर आपने बुकमार्क Google खाते में भी सेव किए हैं, तो आपको Chrome में प्रॉडक्ट की कीमतें ट्रैक करने का विकल्प मिलेगा. साथ ही, प्रॉडक्ट की कीमत में गिरावट आने पर आपको सूचना दी जाएगी</translation>
 <translation id="3227557059438308877">Google Chrome, सुरक्षा कुंजी के रूप में</translation>
 <translation id="3232754137068452469">वेब ऐप्लिकेशन</translation>
-<translation id="3234978181857588512">डिवाइस में सेव करें</translation>
 <translation id="3236059992281584593">1 मिनट शेष</translation>
 <translation id="3237087289225714896">पहले से लोड करने की स्टैंडर्ड सुविधा:</translation>
 <translation id="3237433641417325993">सुझाए गए लेख देखने के लिए, नीचे की ओर स्क्रोल करें</translation>
@@ -582,7 +581,6 @@
 <translation id="4181841719683918333">भाषाएं</translation>
 <translation id="4188221736490993796">Z से A के क्रम से लगाएं</translation>
 <translation id="4195643157523330669">नए टैब में खोलें</translation>
-<translation id="4196597275619698563">कार्ड बनाएं</translation>
 <translation id="4197828496439691735">{NUM_TABS,plural, =1{इस डिवाइस पर 1 टैब}one{इस डिवाइस पर # टैब}other{इस डिवाइस पर # टैब}}</translation>
 <translation id="4198423547019359126">डाउनलोड करने की कोई जगह उपलब्ध नहीं है</translation>
 <translation id="4202218894997543208">वे विषय जिन्हें आपने ब्लॉक किया है</translation>
@@ -594,7 +592,6 @@
 <translation id="4248098802131000011">डेटा के गलत इस्तेमाल और दूसरी सुरक्षा समस्याओं से अपने पासवर्ड सुरक्षित रखें</translation>
 <translation id="424864128008805179">Chrome से साइन आउट करें?</translation>
 <translation id="4249955472157341256">'सबसे नए' के मुताबिक क्रम से लगाएं</translation>
-<translation id="4250229828105606438">स्क्रीनशॉट</translation>
 <translation id="4256782883801055595">ओपन सोर्स लाइसेंस</translation>
 <translation id="4257230861809842349">क्या आपको Google Password Manager से पासवर्ड मिटाने हैं?</translation>
 <translation id="4269820728363426813">लिंक पते को कॉपी करें</translation>
@@ -1148,7 +1145,6 @@
 <translation id="7030304022046916278">सुरक्षित ब्राउज़िंग की सेवा को यूआरएल भेजे जाते हैं, ताकि उनकी जांच की जा सके</translation>
 <translation id="7035701931849773472">दूसरे विकल्प</translation>
 <translation id="7037830628447527439">अपने Google खाते से Chrome में साइन इन करें</translation>
-<translation id="7038956721828960940">chrome_image_<ph name="CURRENT_TIMESTAMP_MS" /></translation>
 <translation id="7054588988317389591">क्या आप इमेज की जानकारी पाना चाहते हैं?</translation>
 <translation id="7055152154916055070">रीडायरेक्ट ब्लॉक किया गया:</translation>
 <translation id="7063006564040364415">समन्‍वयन सर्वर से कनेक्‍ट नहीं किया जा सका.</translation>
@@ -1279,7 +1275,6 @@
 <translation id="7658239707568436148">अभी नहीं</translation>
 <translation id="7665369617277396874">खाता जोड़ें</translation>
 <translation id="766587987807204883">लेख यहां दिखाई देते हैं जिन्हें आप ऑफ़लाइन होने पर भी पढ़ सकते हैं.</translation>
-<translation id="768232549260819724">GIF को कॉपी किया गया</translation>
 <translation id="7682724950699840886">ये सलाह आज़माएं: पक्का करें कि आपके डिवाइस पर ज़रूरी जगह उपलब्ध है, फिर दोबारा निर्यात करके देखें.</translation>
 <translation id="7686086654630106285">'साइट के सुझाए गए विज्ञापन' सेटिंग के बारे में ज़्यादा जानकारी</translation>
 <translation id="768618399695552958">आपके विज़िट किए गए पेजों में से कुछ पेज पहले से ही लोड किए गए होते हैं. Google साइट से लिंक होने पर, Google के सर्वर की मदद से, पेज पहले से लोड किए गए हो सकते हैं.</translation>
@@ -1334,7 +1329,6 @@
 <translation id="7929962904089429003">मेन्यू खोलें</translation>
 <translation id="7930998711684428189">डेटा का उल्लंघन होने पर अगर आपके पासवर्ड बिना अनुमति के सार्वजनिक हो जाते हैं, तो आपको चेतावनी मिलती है</translation>
 <translation id="7934668619883965330">फ़ाइल को डाउनलोड नहीं किया जा सकता. यह फ़ाइल फ़ॉर्मैट काम नहीं करता.</translation>
-<translation id="7939485076072265087">हाइलाइट टेक्स्ट के लिए बेहतर कार्ड बनाएं</translation>
 <translation id="7942131818088350342"><ph name="PRODUCT_NAME" /> पुराना है.</translation>
 <translation id="7944772052836377867">सिंक को आपकी पहचान की पुष्टि करनी है</translation>
 <translation id="7947953824732555851">स्वीकार करें और साइन इन करें</translation>
@@ -1472,7 +1466,6 @@
 <translation id="856481929701340285">डेस्‍कटॉप साइट का अनुरोध करें</translation>
 <translation id="8570677896027847510">फ़ाइल सुरक्षित तरीके से डाउनलोड नहीं की जा सकी</translation>
 <translation id="8571213806525832805">पिछले चार हफ़्ते</translation>
-<translation id="8580884231102452214">GIF को कॉपी करें</translation>
 <translation id="8583805026567836021">खाते का डेटा साफ़ हो रहा है</translation>
 <translation id="859046281437143747">'ज़्यादा विकल्प' बटन से कीमत ट्रैक करें</translation>
 <translation id="860043288473659153">कार्डधारक का नाम</translation>

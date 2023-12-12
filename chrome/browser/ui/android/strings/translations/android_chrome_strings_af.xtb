@@ -410,7 +410,6 @@ Net iemand met jou wagfrase kan jou geënkripteerde data lees. Die wagfrase word
 <translation id="3226612997184048185">As jy jou boekmerke ook in jou Google-rekening stoor, kan jy produkpryse in Chrome naspoor en kennisgewings kry wanneer die prys daal</translation>
 <translation id="3227557059438308877">Google Chrome as 'n sekuriteitsleutel</translation>
 <translation id="3232754137068452469">Webprogram</translation>
-<translation id="3234978181857588512">Stoor op toestel</translation>
 <translation id="3236059992281584593">1 minuut oor</translation>
 <translation id="3237087289225714896">Standaardvooraflaai:</translation>
 <translation id="3237433641417325993">Rollees af om voorgestelde artikels te sien</translation>
@@ -582,7 +581,6 @@ Net iemand met jou wagfrase kan jou geënkripteerde data lees. Die wagfrase word
 <translation id="4181841719683918333">Tale</translation>
 <translation id="4188221736490993796">Rangskik volgens Z na A</translation>
 <translation id="4195643157523330669">Maak in nuwe oortjie oop</translation>
-<translation id="4196597275619698563">Skep kaart</translation>
 <translation id="4197828496439691735">{NUM_TABS,plural, =1{1 oortjie op hierdie toestel}other{# oortjies op hierdie toestel}}</translation>
 <translation id="4198423547019359126">Geen beskikbare aflaailiggings nie</translation>
 <translation id="4202218894997543208">Onderwerpe wat jy geblokkeer het</translation>
@@ -594,7 +592,6 @@ Net iemand met jou wagfrase kan jou geënkripteerde data lees. Die wagfrase word
 <translation id="4248098802131000011">Beskerm jou wagwoorde teen dataskendings en ander sekuriteitsprobleme</translation>
 <translation id="424864128008805179">Meld af uit Chrome?</translation>
 <translation id="4249955472157341256">Rangskik volgens Jongste</translation>
-<translation id="4250229828105606438">Skermkiekie</translation>
 <translation id="4256782883801055595">Oopbronlisensies</translation>
 <translation id="4257230861809842349">Vee wagwoorde van Google Wagwoordbestuurder af uit?</translation>
 <translation id="4269820728363426813">Kopieer skakeladres</translation>
@@ -1148,7 +1145,6 @@ Byvoorbeeld, sommige webwerwe kan op hierdie versoek reageer deur vir jou advert
 <translation id="7030304022046916278">Stuur URL'e na Veiligblaai toe om hulle na te gaan</translation>
 <translation id="7035701931849773472">Ander opsies</translation>
 <translation id="7037830628447527439">Meld by Chrome aan met jou Google-rekening</translation>
-<translation id="7038956721828960940">chrome_image_<ph name="CURRENT_TIMESTAMP_MS" /></translation>
 <translation id="7054588988317389591">Kry prentbeskrywings?</translation>
 <translation id="7055152154916055070">Herleiding is geblokkeer:</translation>
 <translation id="7063006564040364415">Kon nie aan die sinkroniseringbediener koppel nie.</translation>
@@ -1279,7 +1275,6 @@ Byvoorbeeld, sommige webwerwe kan op hierdie versoek reageer deur vir jou advert
 <translation id="7658239707568436148">Kanselleer</translation>
 <translation id="7665369617277396874">Voeg rekening by</translation>
 <translation id="766587987807204883">Artikels verskyn hier, wat jy kan lees selfs wanneer jy vanlyn is</translation>
-<translation id="768232549260819724">GIF is gekopieer</translation>
 <translation id="7682724950699840886">Probeer die volgende wenke: maak seker dat daar genoeg spasie op jou toestel is; probeer om weer uit te voer.</translation>
 <translation id="7686086654630106285">Meer oor advertensies wat deur ’n werf voorgestel is</translation>
 <translation id="768618399695552958">Sommige van die bladsye wat jy besoek, word vooraf gelaai. Bladsye kan vooraf deur Google-bedieners gelaai word wanneer hulle van 'n Google-werf af geskakel word.</translation>
@@ -1334,7 +1329,6 @@ Byvoorbeeld, sommige webwerwe kan op hierdie versoek reageer deur vir jou advert
 <translation id="7929962904089429003">Maak die kieslys oop</translation>
 <translation id="7930998711684428189">Waarsku jou as wagwoorde in 'n dataskending blootgestel is.</translation>
 <translation id="7934668619883965330">Kan nie lêer aflaai nie. Lêerformaat word nie gesteun nie.</translation>
-<translation id="7939485076072265087">Skep gestileerde kaart met hoogtepunt</translation>
 <translation id="7942131818088350342"><ph name="PRODUCT_NAME" /> is verouderd.</translation>
 <translation id="7944772052836377867">Sinkronisering moet verifieer dat dit jy is</translation>
 <translation id="7947953824732555851">Aanvaar en meld aan</translation>
@@ -1472,7 +1466,6 @@ Byvoorbeeld, sommige webwerwe kan op hierdie versoek reageer deur vir jou advert
 <translation id="856481929701340285">Versoek rekenaarwerf</translation>
 <translation id="8570677896027847510">Lêer kan nie veilig afgelaai word nie</translation>
 <translation id="8571213806525832805">Afgelope vier weke</translation>
-<translation id="8580884231102452214">Kopieer GIF</translation>
 <translation id="8583805026567836021">Vee tans rekeningdata uit</translation>
 <translation id="859046281437143747">Spoor pryse deur die Meer Opsies-knoppie na</translation>
 <translation id="860043288473659153">Kaarthouernaam</translation>

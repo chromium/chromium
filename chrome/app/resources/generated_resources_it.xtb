@@ -869,6 +869,7 @@ A questo account potrebbero essere applicate le autorizzazioni già concesse all
 <translation id="1651008383952180276">Devi inserire la stessa passphrase due volte</translation>
 <translation id="1651609627703324721">Questa scheda mostra contenuti VR su un visore</translation>
 <translation id="1652326691684645429">Attiva Condivisione nelle vicinanze</translation>
+<translation id="1652862280638399816">Per usare Gestore delle password con il Portachiavi di macOS, riavvia Chromium e consenti l'accesso al Portachiavi. Le schede verranno riaperte dopo il riavvio.</translation>
 <translation id="1654580009054503925">Non autorizzate a mostrare richieste</translation>
 <translation id="1656528038316521561">Opacità sfondo</translation>
 <translation id="1657406563541664238">Aiutaci a migliorare <ph name="PRODUCT_NAME" /> inviando automaticamente a Google le statistiche sull'utilizzo e segnalazioni sugli arresti anomali</translation>
@@ -2626,6 +2627,7 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="2990313168615879645">Aggiungi Account Google</translation>
 <translation id="2990375978470734995">Per applicare questa modifica, ricollega gli accessori esterni.</translation>
 <translation id="2990583317361835189">Non consentire ai siti di usare i sensori di movimento</translation>
+<translation id="2991182900092497283">Inserisci un motivo per voler incollare questi dati:</translation>
 <translation id="2992931425024192067">Mostra tutti i contenuti delle notifiche</translation>
 <translation id="2993517869960930405">Informazioni app</translation>
 <translation id="2996108796702395498">Il numero di serie del tuo dispositivo è <ph name="SERIAL_NUMBER" />. Questo numero può essere utilizzato per attivare il servizio.</translation>
@@ -2819,6 +2821,7 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="3151562827395986343">Cancella i cookie e la cronologia di navigazione, svuota la cache e altro</translation>
 <translation id="3151786313568798007">Orientamento</translation>
 <translation id="3152356229013609796">Visualizza, ignora e rispondi alle notifiche del tuo telefono</translation>
+<translation id="3155163173539279776">Riavvia Chromium</translation>
 <translation id="3157387275655328056">Aggiungi all'elenco di lettura</translation>
 <translation id="3157931365184549694">Ripristina</translation>
 <translation id="3158033540161634471">Imposta la tua impronta</translation>
@@ -3139,6 +3142,7 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="3432762828853624962">Shared Workers</translation>
 <translation id="3433507769937235446">Blocca quando ti allontani</translation>
 <translation id="3433621910545056227">Spiacenti. Il sistema non è riuscito a stabilire il blocco degli attributi del tempo di installazione del dispositivo.</translation>
+<translation id="3434025015623587566">Gestore delle password di Google richiede un maggiore accesso</translation>
 <translation id="3434107140712555581"><ph name="BATTERY_PERCENTAGE" />%</translation>
 <translation id="3434272557872943250">Se l'impostazione Attività web e app aggiuntiva è attiva per tuo figlio, questi dati potrebbero essere salvati nel suo Account Google. Ulteriori informazioni su queste impostazioni e su come configurarle sono disponibili all'indirizzo families.google.com.</translation>
 <translation id="3434475275396485144">Questa impostazione è gestita dall'amministratore del telefono</translation>
@@ -3351,6 +3355,7 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="3605156246402033687">{COUNT,plural, =1{{COUNT} account utilizza la stessa password}other{{COUNT} account utilizzano la stessa password}}</translation>
 <translation id="3605780360466892872">Ventiquattrore</translation>
 <translation id="3607671391978830431">Per un bambino</translation>
+<translation id="3608460311600621471">Inserisci un motivo per voler stampare questi dati:</translation>
 <translation id="3608730769702025110">Passaggio 3 di 4: esamina le informazioni che consentono l'identificazione personale</translation>
 <translation id="3609277884604412258">Ricerca rapida</translation>
 <translation id="3610241585790874201">Non autorizzati a salvare dati sul dispositivo</translation>
@@ -3636,6 +3641,7 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="3809272675881623365">Coniglio</translation>
 <translation id="3809280248639369696">Raggio di luna</translation>
 <translation id="3810593934879994994"><ph name="ORIGIN" /> può vedere i file nelle seguenti cartelle</translation>
+<translation id="3810770279996899697">Gestore delle password richiede l'accesso al Portachiavi di macOS</translation>
 <translation id="3810914450553844415">Il tuo amministratore non consente Account Google aggiuntivi.</translation>
 <translation id="3810973564298564668">Gestisci</translation>
 <translation id="381202950560906753">Aggiungine un'altra</translation>
@@ -5033,6 +5039,7 @@ Premi Ctrl + Alt + Diminuisci luminosità per diminuire lo zoom.</translation>
 <translation id="4918134162946436591">Mostra overlay dei suggerimenti</translation>
 <translation id="4918762404810341788">Copia e apri</translation>
 <translation id="4921348630401250116">Sintesi vocale</translation>
+<translation id="4922104989726031751">Per usare Gestore delle password con il tuo sistema operativo, riavvia Chromium e consenti l'accesso al gestore delle password del tuo computer. Le schede verranno riaperte dopo il riavvio.</translation>
 <translation id="492299503953721473">Rimuovi app Android</translation>
 <translation id="492363500327720082">Disinstallazione di <ph name="APP_NAME" />…</translation>
 <translation id="4924002401726507608">Invia feedback</translation>
@@ -6646,6 +6653,7 @@ A questo account potrebbero essere applicate le autorizzazioni già concesse a s
 <translation id="6238982280403036866">Possono utilizzare JavaScript</translation>
 <translation id="6239558157302047471">Ricarica &amp;frame</translation>
 <translation id="6240821072888636753">Chiedi ogni volta</translation>
+<translation id="6240964651812394252">Per usare Gestore delle password di Google con il tuo sistema operativo, riavvia Chrome e consenti l'accesso al gestore delle password del tuo computer. Le schede verranno riaperte dopo il riavvio.</translation>
 <translation id="6241530762627360640">Accedere a informazioni sui dispositivi Bluetooth accoppiati con il sistema e rilevare dispositivi Bluetooth nelle vicinanze.</translation>
 <translation id="6241844896329831164">Nessun accesso necessario</translation>
 <translation id="6242574558232861452">Controllo della conformità alle norme di sicurezza della tua organizzazione in corso.</translation>
@@ -6680,6 +6688,7 @@ A questo account potrebbero essere applicate le autorizzazioni già concesse a s
 <translation id="6264365405983206840">Seleziona &amp;tutto</translation>
 <translation id="6264376385120300461">Scarica comunque</translation>
 <translation id="6264520534872750757">Continua a usare il dispositivo</translation>
+<translation id="6264636978858465832">Gestore delle password richiede un maggiore accesso</translation>
 <translation id="6265159465845424232">Chiedi prima di copiare o spostare i file Microsoft su Microsoft OneDrive</translation>
 <translation id="6265687851677020761">Rimuovi porta</translation>
 <translation id="6266532094411434237">Connessione a <ph name="DEVICE" /> in corso…</translation>
@@ -9476,7 +9485,6 @@ Conserva il file di chiave in un luogo sicuro. Ti servirà per creare nuove vers
 <translation id="8473540203671727883">Leggi il testo sotto il puntatore del mouse</translation>
 <translation id="8473863474539038330">Indirizzi e altro</translation>
 <translation id="8474378002946546633">Consenti notifiche</translation>
-<translation id="8474733733775441349">Mostra le password memorizzate nel tuo Account Google</translation>
 <translation id="8475313423285172237">Un altro programma sul computer ha aggiunto un'estensione che potrebbe modificare il funzionamento di Chrome.</translation>
 <translation id="8476408756881832830">Interrompi la riproduzione durante la lettura vocale di ChromeVox</translation>
 <translation id="8476491056950015181"><ph name="BEGIN_PARAGRAPH1" />Se consenti ai dispositivi ChromeOS di inviare i report automatici, ci aiuti a capire a quali problemi e miglioramenti dare la priorità in ChromeOS. Questi report possono includere, ad esempio, informazioni su quando ChromeOS ha un arresto anomalo, sulle funzionalità che sono state utilizzate, sulla quantità di memoria solitamente impiegata o sui dati diagnostici e sull'utilizzo delle app per Android. Alcuni dati aggregati saranno utili anche alle app e ai partner di Google, come gli sviluppatori Android.<ph name="END_PARAGRAPH1" />

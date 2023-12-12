@@ -410,7 +410,6 @@
 <translation id="3226612997184048185">మీ బుక్‌మార్క్‌లను Google ఖాతాలో కూడా సేవ్ చేస్తే, మీరు Chromeలో ప్రోడక్ట్ ధరలను ట్రాక్ చేయవచ్చు, ధర తగ్గినప్పుడు తెలియజేయబడుతుంది</translation>
 <translation id="3227557059438308877">'సెక్యూరిటీ కీ'గా Google Chrome</translation>
 <translation id="3232754137068452469">వెబ్ యాప్‌</translation>
-<translation id="3234978181857588512">పరికరానికి సేవ్ చేయండి</translation>
 <translation id="3236059992281584593">1 నిమిషం మిగిలి ఉంది</translation>
 <translation id="3237087289225714896">స్టాండర్డ్ ప్రీ - లోడింగ్:</translation>
 <translation id="3237433641417325993">సూచించిన కథనాలను చూడటానికి కిందికి స్క్రోల్ చేయండి</translation>
@@ -582,7 +581,6 @@
 <translation id="4181841719683918333">భాషలు</translation>
 <translation id="4188221736490993796">Z నుండి Aకు సార్ట్ చేయి</translation>
 <translation id="4195643157523330669">కొత్త ట్యాబ్‌లో తెరువు</translation>
-<translation id="4196597275619698563">కార్డ్‌ను క్రియేట్ చేయండి</translation>
 <translation id="4197828496439691735">{NUM_TABS,plural, =1{ఈ పరికరంలో 1 ట్యాబ్}other{ఈ పరికరంలో # ట్యాబ్‌లు}}</translation>
 <translation id="4198423547019359126">డౌన్‌లోడ్ స్థానాలు అందుబాటులో లేవు</translation>
 <translation id="4202218894997543208">మీరు బ్లాక్ చేసిన టాపిక్‌లు</translation>
@@ -594,7 +592,6 @@
 <translation id="4248098802131000011">డేటా ఉల్లంఘనలు, ఇతర సెక్యూరిటీ సమస్యల నుండి మీ పాస్‌వర్డ్‌లను సురక్షితంగా ఉంచుకోండి</translation>
 <translation id="424864128008805179">Chrome నుండి సైన్ అవుట్ చేయాలా?</translation>
 <translation id="4249955472157341256">ఇటీవలి లేబుల్ టెక్స్ట్ ఆధారంగా క్రమపద్ధతిలో అమర్చండి</translation>
-<translation id="4250229828105606438">స్క్రీన్‌షాట్</translation>
 <translation id="4256782883801055595">ఓపెన్ సోర్స్ లైసెన్స్‌లు</translation>
 <translation id="4257230861809842349">Google Password Manager నుండి పాస్‌వర్డ్‌లను తొలగించాలా?</translation>
 <translation id="4269820728363426813">లింక్ అడ్రస్‌ను కాపీ చేయండి</translation>
@@ -1148,7 +1145,6 @@
 <translation id="7030304022046916278">URLలను చెక్ చేయడానికి వాటిని సురక్షిత బ్రౌజింగ్‌కు పంపుతుంది</translation>
 <translation id="7035701931849773472">ఇతర ఆప్షన్‌లు</translation>
 <translation id="7037830628447527439">మీ Google ఖాతాతో Chromeకు సైన్ ఇన్ చేయండి</translation>
-<translation id="7038956721828960940">chrome_image_<ph name="CURRENT_TIMESTAMP_MS" /></translation>
 <translation id="7054588988317389591">ఇమేజ్ వివరణలను పొందాలనుకుంటున్నారా?</translation>
 <translation id="7055152154916055070">మళ్లింపు బ్లాక్ చేయబడింది:</translation>
 <translation id="7063006564040364415">సింక్ సర్వర్‌కు కనెక్ట్ చేయడం సాధ్యపడలేదు.</translation>
@@ -1279,7 +1275,6 @@
 <translation id="7658239707568436148">రద్దు చేయండి</translation>
 <translation id="7665369617277396874">ఖాతాను జోడించండి</translation>
 <translation id="766587987807204883">కథనాలు ఇక్కడ కనిపిస్తాయి, మీరు ఆఫ్‌లైన్‌లో ఉన్నప్పటికీ కూడా వీటిని చదవవచ్చు</translation>
-<translation id="768232549260819724">GIF కాపీ చేయబడింది</translation>
 <translation id="7682724950699840886">కింది చిట్కాలను ప్రయత్నించండి: మీ పరికరంలో తగినంత స్థలం ఉన్నట్లు నిర్ధారించుకోండి, మళ్లీ ఎగుమతి చేయడానికి ప్రయత్నించండి.</translation>
 <translation id="7686086654630106285">సైట్ సూచించిన యాడ్‌ల గురించి మరింత సమాచారం</translation>
 <translation id="768618399695552958">మీరు సందర్శించే కొన్ని పేజీలు ప్రీ - లోడ్ చేయబడ్డాయి. Google సైట్ నుండి లింక్ చేసినప్పుడు పేజీలు Google సర్వర్‌ల ద్వారా ప్రీ - లోడ్ చేయబడవచ్చు.</translation>
@@ -1334,7 +1329,6 @@
 <translation id="7929962904089429003">మెనూను తెరవండి</translation>
 <translation id="7930998711684428189">పాస్‌వర్డ్‌లు, ఏదైనా డేటా ఉల్లంఘనలో బహిర్గతమైతే మిమ్మల్ని హెచ్చరిస్తుంది.</translation>
 <translation id="7934668619883965330">ఫైల్‌ను డౌన్‌లోడ్ చేయడం సాధ్యపడదు. ఫైల్ ఫార్మాట్ సపోర్ట్ చేయదు.</translation>
-<translation id="7939485076072265087">హైలైట్‌తో శైలీకరించిన కార్డ్‌ను క్రియేట్ చేయండి</translation>
 <translation id="7942131818088350342"><ph name="PRODUCT_NAME" /> కాలం చెల్లినది.</translation>
 <translation id="7944772052836377867">ఇది మీరేనని సింక్ వెరిఫై చేయాలి</translation>
 <translation id="7947953824732555851">ఆమోదించి, సైన్ ఇన్ చేయండి</translation>
@@ -1472,7 +1466,6 @@
 <translation id="856481929701340285">డెస్క్‌టాప్ సైట్‌ను రిక్వెస్ట్ చేయండి</translation>
 <translation id="8570677896027847510">ఫైల్‌ను సురక్షితంగా డౌన్‌లోడ్ చేయడం సాధ్యపడదు</translation>
 <translation id="8571213806525832805">గత 4 వారాలు</translation>
-<translation id="8580884231102452214">GIFను కాపీ చేయండి</translation>
 <translation id="8583805026567836021">ఖాతా డేటాను క్లియర్ చేస్తోంది</translation>
 <translation id="859046281437143747">'మరిన్ని ఆప్షన్‌లు' బటన్ ఉపయోగించి ధరను ట్రాక్ చేయండి</translation>
 <translation id="860043288473659153">కార్డుదారుని పేరు</translation>

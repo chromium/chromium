@@ -869,6 +869,7 @@ Berechtigungen, die du Apps bereits gewährt hast, gelten möglicherweise für d
 <translation id="1651008383952180276">Du musst zweimal dieselbe Passphrase eingeben</translation>
 <translation id="1651609627703324721">Auf diesem Tab werden VR-Inhalte für ein Headset dargestellt</translation>
 <translation id="1652326691684645429">Nearby Share aktivieren</translation>
+<translation id="1652862280638399816">Wenn du den Passwortmanager mit dem macOS-Schlüsselbund verwenden möchtest, starte Chromium neu und erlaube den Zugriff auf den Schlüsselbund. Deine Tabs werden nach dem Neustart wieder geöffnet.</translation>
 <translation id="1654580009054503925">Dürfen keine Anfragen anzeigen</translation>
 <translation id="1656528038316521561">Deckkraft des Hintergrunds</translation>
 <translation id="1657406563541664238">Zur Verbesserung von <ph name="PRODUCT_NAME" /> Nutzungsstatistiken und Absturzberichte automatisch an Google senden</translation>
@@ -2821,6 +2822,7 @@ Servernachricht: <ph name="SERVER_MSG" /></translation>
 <translation id="3151562827395986343">Cache leeren sowie Verlauf, Cookies und andere Daten löschen</translation>
 <translation id="3151786313568798007">Ausrichtung</translation>
 <translation id="3152356229013609796">Smartphone-Benachrichtigungen abrufen, schließen und beantworten</translation>
+<translation id="3155163173539279776">Chromium neu starten</translation>
 <translation id="3157387275655328056">Zur Leseliste hinzufügen</translation>
 <translation id="3157931365184549694">Wieder­her­stellen</translation>
 <translation id="3158033540161634471">Fingerabdruck einrichten</translation>
@@ -3641,6 +3643,7 @@ Servernachricht: <ph name="SERVER_MSG" /></translation>
 <translation id="3809272675881623365">Kaninchen</translation>
 <translation id="3809280248639369696">Alien</translation>
 <translation id="3810593934879994994"><ph name="ORIGIN" /> kann Dateien in den folgenden Ordnern lesen</translation>
+<translation id="3810770279996899697">Der Passwortmanager benötigt Zugriff auf den macOS-Schlüsselbund</translation>
 <translation id="3810914450553844415">Der Administrator lässt keine zusätzlichen Google-Konten zu.</translation>
 <translation id="3810973564298564668">Verwalten</translation>
 <translation id="381202950560906753">Weitere hinzufügen</translation>
@@ -9495,7 +9498,6 @@ Speichere deine Schlüsseldatei an einem sicheren Ort. Du benötigst die Datei, 
 <translation id="8473540203671727883">Text unter dem Mauszeiger vorlesen</translation>
 <translation id="8473863474539038330">Adressen</translation>
 <translation id="8474378002946546633">Benachrichtigungen zulassen</translation>
-<translation id="8474733733775441349">Passwörter aus deinem Google-Konto anzeigen</translation>
 <translation id="8475313423285172237">Ein anderes Programm auf deinem Computer hat eine Erweiterung hinzugefügt, die sich möglicherweise auf die Funktionsweise von Chrome auswirkt.</translation>
 <translation id="8476408756881832830">Wiedergabe pausieren, wenn eine Sprachausgabe durch ChromeVox stattfindet</translation>
 <translation id="8476491056950015181"><ph name="BEGIN_PARAGRAPH1" />Wenn du zulässt, dass ChromeOS-Geräte automatisch erstellte Berichte an Google senden, hilfst du uns dabei, Probleme in ChromeOS zu beheben und das Betriebssystem zu verbessern. Diese Berichte können Diagnose- und Nutzungsdaten von Android-Apps enthalten – außerdem Informationen über ChromeOS-Abstürze und Angaben dazu, welche Funktionen verwendet wurden und wie viel Speicher in der Regel genutzt wurde. Bestimmte aggregierte Daten sind auch für Apps und Partner von Google, beispielsweise Android-Entwickler, nützlich.<ph name="END_PARAGRAPH1" />

@@ -410,7 +410,6 @@ Vaše šifrirane podatke lahko bere samo oseba, ki ima vaše geslo. Geslo ni pos
 <translation id="3226612997184048185">Če v računu Google shranite tudi zaznamke, lahko v Chromu spremljate cene izdelkov in prejmete obvestilo, ko se cena zniža</translation>
 <translation id="3227557059438308877">Google Chrome kot varnostni ključ</translation>
 <translation id="3232754137068452469">Spletna aplikacija</translation>
-<translation id="3234978181857588512">Shrani v napravo</translation>
 <translation id="3236059992281584593">Še 1 min</translation>
 <translation id="3237087289225714896">Standardno vnaprejšnje nalaganje:</translation>
 <translation id="3237433641417325993">Pomaknite se navzdol, če si želite ogledati predlagane članke.</translation>
@@ -582,7 +581,6 @@ Vaše šifrirane podatke lahko bere samo oseba, ki ima vaše geslo. Geslo ni pos
 <translation id="4181841719683918333">Jeziki</translation>
 <translation id="4188221736490993796">Razvrsti od Ž do A</translation>
 <translation id="4195643157523330669">Odpri v novem zavihku</translation>
-<translation id="4196597275619698563">Ustvari kartico</translation>
 <translation id="4197828496439691735">{NUM_TABS,plural, =1{1 zavihek v tej napravi}one{# zavihek v tej napravi}two{# zavihka v tej napravi}few{# zavihki v tej napravi}other{# zavihkov v tej napravi}}</translation>
 <translation id="4198423547019359126">Ni razpoložljivih mest za prenos</translation>
 <translation id="4202218894997543208">Teme, ki ste jih blokirali</translation>
@@ -594,7 +592,6 @@ Vaše šifrirane podatke lahko bere samo oseba, ki ima vaše geslo. Geslo ni pos
 <translation id="4248098802131000011">Varuje gesla pred podatkovnimi kršitvami in drugimi varnostnimi težavami</translation>
 <translation id="424864128008805179">Se želite odjaviti iz Chroma?</translation>
 <translation id="4249955472157341256">Razvrsti glede na najnovejše</translation>
-<translation id="4250229828105606438">Posnetek zaslona</translation>
 <translation id="4256782883801055595">Odprtokodne licence</translation>
 <translation id="4257230861809842349">Želite izbrisati gesla iz Googlovega upravitelja gesel?</translation>
 <translation id="4269820728363426813">Kopiraj naslov povezave</translation>
@@ -1148,7 +1145,6 @@ Nekatera spletna mesta se lahko na primer na zahtevo odzovejo tako, da prikažej
 <translation id="7030304022046916278">Pošlje URL-je Varnemu brskanju, da jih ta preveri.</translation>
 <translation id="7035701931849773472">Druge možnosti</translation>
 <translation id="7037830628447527439">Prijavite se v Chrome z računom Google.</translation>
-<translation id="7038956721828960940">chrome_image_<ph name="CURRENT_TIMESTAMP_MS" /></translation>
 <translation id="7054588988317389591">Želite pridobiti opise slik?</translation>
 <translation id="7055152154916055070">Preusmeritev je preprečena:</translation>
 <translation id="7063006564040364415">Povezave s strežnikom za sinhronizacijo ni bilo mogoče vzpostaviti.</translation>
@@ -1279,7 +1275,6 @@ Nekatera spletna mesta se lahko na primer na zahtevo odzovejo tako, da prikažej
 <translation id="7658239707568436148">Prekliči</translation>
 <translation id="7665369617277396874">Dodaj račun</translation>
 <translation id="766587987807204883">Članki so prikazani tukaj in lahko jih berete, tudi ko nimate povezave</translation>
-<translation id="768232549260819724">GIF je bil kopiran</translation>
 <translation id="7682724950699840886">Poskusite ta nasveta: poskrbite, da je v napravi dovolj prostora, ali poskusite znova izvoziti.</translation>
 <translation id="7686086654630106285">Več o oglasih, ki jih predlaga spletno mesto</translation>
 <translation id="768618399695552958">Nekatere strani, ki jih obiskujete, so vnaprej naložene. Strani bodo morda vnaprej naložene prek Googlovih strežnikov, ko nanje vodi povezava z Googlovega spletnega mesta.</translation>
@@ -1334,7 +1329,6 @@ Nekatera spletna mesta se lahko na primer na zahtevo odzovejo tako, da prikažej
 <translation id="7929962904089429003">Odpiranje menija</translation>
 <translation id="7930998711684428189">Posvari, če so gesla razkrita zaradi podatkovne kršitve.</translation>
 <translation id="7934668619883965330">Datoteke ni mogoče prenesti. Oblika datoteke ni podprta.</translation>
-<translation id="7939485076072265087">Ustvarjanje stilizirane kartice z označenim besedilom</translation>
 <translation id="7942131818088350342">Izdelek <ph name="PRODUCT_NAME" /> je zastarel.</translation>
 <translation id="7944772052836377867">Sinhroniziranje mora potrditi, da ste to vi</translation>
 <translation id="7947953824732555851">Sprejem in prijava</translation>
@@ -1472,7 +1466,6 @@ Nekatera spletna mesta se lahko na primer na zahtevo odzovejo tako, da prikažej
 <translation id="856481929701340285">Zah. za namiz. sp. mesto</translation>
 <translation id="8570677896027847510">Datoteke ni mogoče varno prenesti</translation>
 <translation id="8571213806525832805">Zadnji 4 tedni</translation>
-<translation id="8580884231102452214">Kopiraj GIF</translation>
 <translation id="8583805026567836021">Brisanje podatkov računa</translation>
 <translation id="859046281437143747">Spremljanje cene prek gumba za več možnosti</translation>
 <translation id="860043288473659153">Ime imetnika kartice</translation>

@@ -410,7 +410,6 @@ Solo las personas que tengan tu frase de contraseña podrán leer tus datos cifr
 <translation id="3226612997184048185">Si también guardas los marcadores en tu cuenta de Google, puedes hacer un seguimiento de los precios de los productos en Chrome y recibir una notificación cuando bajen</translation>
 <translation id="3227557059438308877">Google Chrome como llave de seguridad</translation>
 <translation id="3232754137068452469">Aplicación web</translation>
-<translation id="3234978181857588512">Guardar en el dispositivo</translation>
 <translation id="3236059992281584593">Queda 1 minuto</translation>
 <translation id="3237087289225714896">Precarga estándar:</translation>
 <translation id="3237433641417325993">Desplázate hacia abajo para ver artículos sugeridos</translation>
@@ -582,7 +581,6 @@ Solo las personas que tengan tu frase de contraseña podrán leer tus datos cifr
 <translation id="4181841719683918333">Idiomas</translation>
 <translation id="4188221736490993796">Ordenar de la Z a la A</translation>
 <translation id="4195643157523330669">Abrir en una pestaña nueva</translation>
-<translation id="4196597275619698563">Crear tarjeta</translation>
 <translation id="4197828496439691735">{NUM_TABS,plural, =1{1 pestaña en este dispositivo}other{# pestañas en este dispositivo}}</translation>
 <translation id="4198423547019359126">No hay ubicaciones de descarga disponibles</translation>
 <translation id="4202218894997543208">Temas que has bloqueado</translation>
@@ -594,7 +592,6 @@ Solo las personas que tengan tu frase de contraseña podrán leer tus datos cifr
 <translation id="4248098802131000011">Mantén tus contraseñas protegidas frente a quiebras de seguridad de datos y otros problemas de seguridad.</translation>
 <translation id="424864128008805179">¿Quieres cerrar sesión en Chrome?</translation>
 <translation id="4249955472157341256">Ordenar por más recientes</translation>
-<translation id="4250229828105606438">Captura de pantalla</translation>
 <translation id="4256782883801055595">Licencias de software libre</translation>
 <translation id="4257230861809842349">¿Eliminar contraseñas del Gestor de contraseñas de Google?</translation>
 <translation id="4269820728363426813">Copiar dirección del enlace</translation>
@@ -1148,7 +1145,6 @@ Por ejemplo, algunos sitios web pueden responder a la solicitud mostrándote anu
 <translation id="7030304022046916278">Envía URLs a Navegación segura para comprobarlas.</translation>
 <translation id="7035701931849773472">Otras opciones</translation>
 <translation id="7037830628447527439">Inicia sesión en Chrome con tu cuenta de Google</translation>
-<translation id="7038956721828960940">chrome_image_<ph name="CURRENT_TIMESTAMP_MS" /></translation>
 <translation id="7054588988317389591">¿Obtener descripciones de imágenes?</translation>
 <translation id="7055152154916055070">Redirección bloqueada:</translation>
 <translation id="7063006564040364415">No se ha podido conectar con el servidor de sincronización.</translation>
@@ -1279,7 +1275,6 @@ Por ejemplo, algunos sitios web pueden responder a la solicitud mostrándote anu
 <translation id="7658239707568436148">Cancelar</translation>
 <translation id="7665369617277396874">Añadir cuenta</translation>
 <translation id="766587987807204883">Los artículos se muestran aquí y los puedes leer aunque no tengas conexión a Internet</translation>
-<translation id="768232549260819724">GIF copiado</translation>
 <translation id="7682724950699840886">Prueba los siguientes consejos: deja suficiente espacio en el dispositivo y vuelve a exportar las contraseñas.</translation>
 <translation id="7686086654630106285">Más información sobre anuncios sugeridos por sitios</translation>
 <translation id="768618399695552958">Algunas de las páginas que visitas están precargadas. Es posible que las páginas se precarguen a través de los servidores de Google cuando se enlacen desde un sitio de Google.</translation>
@@ -1334,7 +1329,6 @@ Por ejemplo, algunos sitios web pueden responder a la solicitud mostrándote anu
 <translation id="7929962904089429003">Abre el menú</translation>
 <translation id="7930998711684428189">Te avisa si tus contraseñas se ven expuestas en una brecha de seguridad de datos.</translation>
 <translation id="7934668619883965330">No se puede descargar el archivo. Formato de archivo no admitido.</translation>
-<translation id="7939485076072265087">Crear tarjeta estilizada con texto resaltado</translation>
 <translation id="7942131818088350342"><ph name="PRODUCT_NAME" /> está obsoleto.</translation>
 <translation id="7944772052836377867">Verifica tu identidad para usar la sincronización</translation>
 <translation id="7947953824732555851">Aceptar y acceder</translation>
@@ -1472,7 +1466,6 @@ Por ejemplo, algunos sitios web pueden responder a la solicitud mostrándote anu
 <translation id="856481929701340285">Ver como ordenador</translation>
 <translation id="8570677896027847510">El archivo no se puede descargar de forma segura</translation>
 <translation id="8571213806525832805">Últimas 4 semanas</translation>
-<translation id="8580884231102452214">Copiar GIF</translation>
 <translation id="8583805026567836021">Borrando datos de cuenta</translation>
 <translation id="859046281437143747">Sigue el precio desde el botón Más opciones</translation>
 <translation id="860043288473659153">Nombre del titular de la tarjeta</translation>

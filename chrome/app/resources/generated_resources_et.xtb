@@ -872,6 +872,7 @@ Load, mille olete juba rakendustele andnud, võivad selle konto puhul kehtida. S
 <translation id="1651008383952180276">Peate sisestama sama parooli kaks korda</translation>
 <translation id="1651609627703324721">Sellel vahelehel esitletakse peakomplektile VR-sisu</translation>
 <translation id="1652326691684645429">Läheduses jagamise lubamine</translation>
+<translation id="1652862280638399816">Paroolihalduri kasutamiseks koos macOS Keychainiga taaskäivitage Chromium ja lubage juurdepääs Keychainile. Teie vahelehed avanevad pärast taaskäivitamist uuesti.</translation>
 <translation id="1654580009054503925">Pole lubatud taotlusi kuvada</translation>
 <translation id="1656528038316521561">Tausta läbipaistvus</translation>
 <translation id="1657406563541664238">Aidake muuta rakendus <ph name="PRODUCT_NAME" /> paremaks, saates Google'ile automaatselt kasutusstatistikat ja veaaruandeid</translation>
@@ -2826,6 +2827,7 @@ Selle konto seadete haldamiseks installige oma seadmesse Family Link.  Saatsime 
 <translation id="3151562827395986343">Ajaloo, küpsisefailide, vahemälu ja muu kustutamine</translation>
 <translation id="3151786313568798007">Suund</translation>
 <translation id="3152356229013609796">Teie telefoni märguannete vaatamine, neist loobumine ja neile vastamine</translation>
+<translation id="3155163173539279776">Chromiumi taaskäivitamine</translation>
 <translation id="3157387275655328056">Lisa lugemisloendisse</translation>
 <translation id="3157931365184549694">Taasta</translation>
 <translation id="3158033540161634471">Sõrmejälje seadistamine</translation>
@@ -3645,6 +3647,7 @@ Selle konto seadete haldamiseks installige oma seadmesse Family Link.  Saatsime 
 <translation id="3809272675881623365">Küülik</translation>
 <translation id="3809280248639369696">Tulnukas</translation>
 <translation id="3810593934879994994"><ph name="ORIGIN" /> saab vaadata järgmistes kaustades olevaid faile</translation>
+<translation id="3810770279996899697">Paroolihaldur vajab juurdepääsu MacOS Keychainile</translation>
 <translation id="3810914450553844415">Teie administraator ei luba täiendavaid Google'i kontosid.</translation>
 <translation id="3810973564298564668">Halda</translation>
 <translation id="381202950560906753">Lisa veel üks</translation>
@@ -5042,6 +5045,7 @@ Väljasuumimiseks kasutage klahvikombinatsiooni Ctrl + Alt + Ereduse vähendamin
 <translation id="4918134162946436591">Kuva vihje ülekate</translation>
 <translation id="4918762404810341788">Kopeeri ja ava</translation>
 <translation id="4921348630401250116">Kõnesüntees</translation>
+<translation id="4922104989726031751">Paroolihalduri kasutamiseks oma operatsioonisüsteemiga käivitage Chromium uuesti ja lubage juurdepääs oma arvuti paroolihaldurile. Pärast uuesti käivitamist avanevad teie vahelehed taas.</translation>
 <translation id="492299503953721473">Eemalda Androidi rakendused</translation>
 <translation id="492363500327720082">Rakenduse <ph name="APP_NAME" />desinstallimine …</translation>
 <translation id="4924002401726507608">Tagasiside esitamine</translation>
@@ -6693,6 +6697,7 @@ Load, mille olete veebisaitidele ja rakendustele juba andnud, võivad kehtida ka
 <translation id="6264365405983206840">Vali &amp;kõik</translation>
 <translation id="6264376385120300461">Laadi ikkagi alla</translation>
 <translation id="6264520534872750757">Jätka seadme kasutamist</translation>
+<translation id="6264636978858465832">Paroolihaldur vajab laialdasemat juurdepääsu</translation>
 <translation id="6265159465845424232">Küsi enne Microsofti failide kopeerimist või teisaldamist Microsoft OneDrive'i</translation>
 <translation id="6265687851677020761">Eemalda port</translation>
 <translation id="6266532094411434237">Ühendamine seadmega <ph name="DEVICE" /></translation>
@@ -9489,7 +9494,6 @@ Hoidke oma võtmefail kindlas kohas. Teil läheb seda oma laiendi uute versiooni
 <translation id="8473540203671727883">Hiirekursori all oleva teksti ettelugemine</translation>
 <translation id="8473863474539038330">Aadressid ja muu</translation>
 <translation id="8474378002946546633">Luba märguanded</translation>
-<translation id="8474733733775441349">Paroolide kuvamine teie Google'i kontolt</translation>
 <translation id="8475313423285172237">Teine programm teie arvutis lisas laienduse, mis võib muuta Chrome'i toimimist.</translation>
 <translation id="8476408756881832830">Peata taasesitus, kui ChromeVox räägib</translation>
 <translation id="8476491056950015181"><ph name="BEGIN_PARAGRAPH1" />Kui lubate Chrome OS-i seadmetel meile saata automaatseid aruandeid, aitab see meil prioriseerida, mida Chrome OS-is parandada ja täiustada. Need aruanded hõlmavad näiteks teavet selle kohta, millal Chrome OS kokku jookseb, milliseid funktsioone kasutati ja kui palju mälumahtu tavaliselt kasutati, ning Androidi rakenduste diagnostika- ja kasutusandmeid. Teatud koondandmed on abiks ka Google'i rakendustele ja partneritele, näiteks Androidi arendajatele.<ph name="END_PARAGRAPH1" />

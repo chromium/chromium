@@ -1220,6 +1220,7 @@
 <translation id="3432601291244612633">إغلاق الصفحة</translation>
 <translation id="3433111389595862568">برامج تعاون ومكالمات الفيديو</translation>
 <translation id="3433144818443565002">محادثة الفيديو والمحادثة الصوتية</translation>
+<translation id="3434025015623587566">‏يحتاج "مدير كلمات المرور في Google" إلى مزيد من أذونات الوصول</translation>
 <translation id="343474037147570563">‏يتم إرسال الملفات التي تحمِّلها أو ترفقها إلى Google Cloud أو جهات خارجية لتحليلها. على سبيل المثال، قد يتم فحص هذه الملفات بحثًا عن بيانات حسّاسة أو برامج ضارة وتخزينها استنادًا إلى سياسات الشركة، وقد تظهر للمشرف.</translation>
 <translation id="3435557549311968410">غير متقطع (قصير)</translation>
 <translation id="3435738964857648380">أمن المعلومات</translation>
@@ -1972,6 +1973,7 @@
 <translation id="4918221908152712722">تثبيت <ph name="APP_NAME" /> (لا يتطلَّب تنزيلاً)</translation>
 <translation id="4920457992177678649">أماكن للاستئجار والإقامات القصيرة الأمد</translation>
 <translation id="4920710383559189047">غلاف أسطواني</translation>
+<translation id="4922104989726031751">‏لاستخدام "مدير كلمات المرور" مع نظام التشغيل، يُرجى إعادة تشغيل Chromium والسماح بالوصول إلى مدير كلمات المرور على جهاز الكمبيوتر. ستتم إعادة فتح علامات التبويب بعد إعادة التشغيل.</translation>
 <translation id="4923459931733593730">الدفع</translation>
 <translation id="4926049483395192435">يجب تحديدها.</translation>
 <translation id="4926159001844873046">يعرض موقع <ph name="SITE" /></translation>
@@ -2612,6 +2614,7 @@
 <translation id="6234122620015464377">القطع بعد كل مستند</translation>
 <translation id="6236290670123303279">إدارة الإعدادات</translation>
 <translation id="6240447795304464094">‏شعار Google Pay</translation>
+<translation id="6240964651812394252">‏لاستخدام "مدير كلمات المرور في Google" مع نظام التشغيل، يُرجى إعادة تشغيل Chrome والسماح بالوصول إلى مدير كلمات المرور على جهاز الكمبيوتر. ستتم إعادة فتح علامات التبويب بعد إعادة التشغيل.</translation>
 <translation id="6241121617266208201">إخفاء الاقتراحات</translation>
 <translation id="624499991300733384">خدمة مكوّن الطباعة</translation>
 <translation id="6251906504834538140">{0,plural, =1{تم حظر نقل الملف}zero{تم حظر نقل <ph name="FILE_COUNT" /> ملف}two{تم حظر نقل ملفَين (<ph name="FILE_COUNT" />)}few{تم حظر نقل <ph name="FILE_COUNT" /> ملفات}many{تم حظر نقل <ph name="FILE_COUNT" /> ملفًا}other{تم حظر نقل <ph name="FILE_COUNT" /> ملف}}</translation>
@@ -2622,6 +2625,7 @@
 <translation id="6263376278284652872">إشعارات <ph name="DOMAIN" /></translation>
 <translation id="6264376385120300461">التنزيل على أيّ حال</translation>
 <translation id="6264485186158353794">الرجوع</translation>
+<translation id="6264636978858465832">يحتاج "مدير كلمات المرور" إلى مزيد من أذونات الوصول</translation>
 <translation id="6265794661083428563">نسخ قيمة السياسة <ph name="POLICY_NAME" /></translation>
 <translation id="6266934640124581640">أزرق مخضر فاتح</translation>
 <translation id="6270066318535733958">ركوب قوارب</translation>

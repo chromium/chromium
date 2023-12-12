@@ -1219,6 +1219,7 @@ Par défaut, ce type d'accès est bloqué par vos paramètres de confidentialit�
 <translation id="3432601291244612633">Fermer la page</translation>
 <translation id="3433111389595862568">Logiciels de collaboration et de conférence</translation>
 <translation id="3433144818443565002">Chat audio et vidéo</translation>
+<translation id="3434025015623587566">Le Gestionnaire de mots de passe de Google a besoin d'un accès plus étendu</translation>
 <translation id="343474037147570563">Les fichiers que vous importez ou joignez sont envoyés à Google Cloud ou à des tiers pour analyse. Ils peuvent par exemple être analysés pour rechercher des données sensibles ou des logiciels malveillants, être stockés conformément aux règles de l'entreprise et être visibles par votre administrateur.</translation>
 <translation id="3435557549311968410">Continu (court)</translation>
 <translation id="3435738964857648380">Sécurité</translation>
@@ -1968,6 +1969,7 @@ Par défaut, ce type d'accès est bloqué par vos paramètres de confidentialit�
 <translation id="4918221908152712722">Installer <ph name="APP_NAME" /> (aucun téléchargement requis)</translation>
 <translation id="4920457992177678649">Locations de vacances et courts séjours</translation>
 <translation id="4920710383559189047">Pochette</translation>
+<translation id="4922104989726031751">Pour utiliser le Gestionnaire de mots de passe avec votre système d'exploitation, relancez Chromium et autorisez l'accès au gestionnaire de mots de passe de votre ordinateur. Vos onglets s'ouvriront alors de nouveau.</translation>
 <translation id="4923459931733593730">Paiement</translation>
 <translation id="4926049483395192435">Doit être spécifié.</translation>
 <translation id="4926159001844873046"><ph name="SITE" /> indique</translation>
@@ -2608,6 +2610,7 @@ Par défaut, ce type d'accès est bloqué par vos paramètres de confidentialit�
 <translation id="6234122620015464377">Couper après chaque document</translation>
 <translation id="6236290670123303279">Gérer les paramètres</translation>
 <translation id="6240447795304464094">Logo Google Pay</translation>
+<translation id="6240964651812394252">Pour utiliser le Gestionnaire de mots de passe de Google avec votre système d'exploitation, relancez Chrome et autorisez l'accès au gestionnaire de mots de passe de votre ordinateur. Vos onglets s'ouvriront alors de nouveau.</translation>
 <translation id="6241121617266208201">Masquer les suggestions</translation>
 <translation id="624499991300733384">Service de composition d'impression</translation>
 <translation id="6251906504834538140">{0,plural, =1{Déplacement bloqué pour le fichier}one{Déplacement bloqué pour <ph name="FILE_COUNT" /> fichier}other{Déplacement bloqué pour <ph name="FILE_COUNT" /> fichiers}}</translation>
@@ -2618,6 +2621,7 @@ Par défaut, ce type d'accès est bloqué par vos paramètres de confidentialit�
 <translation id="6263376278284652872">Favoris de <ph name="DOMAIN" /></translation>
 <translation id="6264376385120300461">Télécharger quand même</translation>
 <translation id="6264485186158353794">Revenir en lieu sûr</translation>
+<translation id="6264636978858465832">Le Gestionnaire de mots de passe a besoin d'un accès plus étendu</translation>
 <translation id="6265794661083428563">Copier la valeur de la règle <ph name="POLICY_NAME" /></translation>
 <translation id="6266934640124581640">Turquoise clair</translation>
 <translation id="6270066318535733958">Nautisme</translation>

@@ -1137,6 +1137,7 @@ Algumas funcionalidades são limitadas para aumentar a autonomia da bateria.</tr
 <translation id="5577281275355252094">Verifique se o Bluetooth está ativado no seu telemóvel para utilizar o Phone Hub.</translation>
 <translation id="5578188167649348993">memória</translation>
 <translation id="5580000943347215299">Biblioteca</translation>
+<translation id="5587506661873751671">A transferir – <ph name="DOWNLOAD_PERCENT" />%</translation>
 <translation id="558849140439112033">Arraste para selecionar uma área a capturar.</translation>
 <translation id="5590609058453685222">A chamada de atenção sobre a desativação do som está ativada. Vai receber uma notificação se falar enquanto estiver com o som desativado.</translation>
 <translation id="5596627076506792578">Mais opções</translation>
@@ -1796,6 +1797,7 @@ Para encerrar o dispositivo, prima sem soltar o botão ligar/desligar novamente 
 <translation id="830868413617744215">Beta</translation>
 <translation id="8314772463905284467">Caps Lock está ativado</translation>
 <translation id="8315514906653279104">A ativar…</translation>
+<translation id="8331351032546853669">Transferência pendente</translation>
 <translation id="8341451174107936385"><ph name="UNLOCK_MORE_FEATURES" />  <ph name="GET_STARTED" /></translation>
 <translation id="8345019317483336363">Janela <ph name="WINDOW_TITLE" /> selecionada</translation>
 <translation id="8349826889576450703">iniciador</translation>

@@ -410,7 +410,6 @@ Vetëm dikush me frazën tënde të kalimit mund të lexojë të dhënat e tua t
 <translation id="3226612997184048185">Nëse i ruan faqeshënuesit e tu vetëm në "Llogarinë tënde të Google", mund t'i monitorosh çmimet e produkteve në Chrome dhe të marrësh njoftime kur të ulet çmimi</translation>
 <translation id="3227557059438308877">Google Chrome si çelës sigurie</translation>
 <translation id="3232754137068452469">Aplikacioni i uebit</translation>
-<translation id="3234978181857588512">Ruaj te pajisja</translation>
 <translation id="3236059992281584593">1 minutë e mbetur</translation>
 <translation id="3237087289225714896">Ngarkimi paraprak standard:</translation>
 <translation id="3237433641417325993">Lëviz poshtë për të parë artikujt e sugjeruar</translation>
@@ -582,7 +581,6 @@ Vetëm dikush me frazën tënde të kalimit mund të lexojë të dhënat e tua t
 <translation id="4181841719683918333">Gjuhët</translation>
 <translation id="4188221736490993796">Rendit nga Zh-ja në A</translation>
 <translation id="4195643157523330669">Hape në një skedë të re</translation>
-<translation id="4196597275619698563">Krijo kartën</translation>
 <translation id="4197828496439691735">{NUM_TABS,plural, =1{1 skedë në këtë pajisje}other{# skeda në këtë pajisje}}</translation>
 <translation id="4198423547019359126">Nuk ka vendndodhje shkarkimi</translation>
 <translation id="4202218894997543208">Temat që ke bllokuar</translation>
@@ -594,7 +592,6 @@ Vetëm dikush me frazën tënde të kalimit mund të lexojë të dhënat e tua t
 <translation id="4248098802131000011">Mbaji fjalëkalimet e tua të sigurta nga nxjerrjet e paautorizuara të të dhënave dhe problemeve të tjera të sigurisë</translation>
 <translation id="424864128008805179">Do të dalësh nga Chrome?</translation>
 <translation id="4249955472157341256">Rendit sipas "Më të fundit"</translation>
-<translation id="4250229828105606438">Pamje e ekranit</translation>
 <translation id="4256782883801055595">Licencat me burim të hapur</translation>
 <translation id="4257230861809842349">Të fshihen fjalëkalimet nga "Menaxheri i fjalëkalimeve i Google"?</translation>
 <translation id="4269820728363426813">Kopjo adresën e lidhjes</translation>
@@ -1148,7 +1145,6 @@ Për shembull, disa uebsajte mund t'i përgjigjen kësaj kërkese duke të tregu
 <translation id="7030304022046916278">I dërgon URL-të te "Shfletimi i sigurt" për t'i kontrolluar</translation>
 <translation id="7035701931849773472">Opsione të tjera…</translation>
 <translation id="7037830628447527439">Identifikohu në Chrome me "Llogarinë tënde të Google"</translation>
-<translation id="7038956721828960940">chrome_image_<ph name="CURRENT_TIMESTAMP_MS" /></translation>
 <translation id="7054588988317389591">Të merren përshkrimet e imazheve?</translation>
 <translation id="7055152154916055070">Ridrejtimi u bllokua:</translation>
 <translation id="7063006564040364415">Nuk mund të lidhej me serverin e sinkronizimit.</translation>
@@ -1279,7 +1275,6 @@ Për shembull, disa uebsajte mund t'i përgjigjen kësaj kërkese duke të tregu
 <translation id="7658239707568436148">Anulo</translation>
 <translation id="7665369617277396874">Shto një llogari</translation>
 <translation id="766587987807204883">Këtu shfaqen artikujt, të cilët mund t'i lexosh edhe kur je offline</translation>
-<translation id="768232549260819724">GIF u kopjua</translation>
 <translation id="7682724950699840886">Provoni këshillat e mëposhtme: sigurohu që ka hapësirë ​​të mjaftueshme në pajisjen tënde dhe provo të eksportosh përsëri.</translation>
 <translation id="7686086654630106285">Më shumë rreth reklamave të sugjeruara nga sajtet</translation>
 <translation id="768618399695552958">Disa nga faqet që ti viziton janë të ngarkuara paraprakisht. Faqet mund të ngarkohen paraprakisht nëpërmjet serverëve të Google kur lidhen nga një sajt i Google.</translation>
@@ -1334,7 +1329,6 @@ Për shembull, disa uebsajte mund t'i përgjigjen kësaj kërkese duke të tregu
 <translation id="7929962904089429003">Hap menynë</translation>
 <translation id="7930998711684428189">Të paralajmëron nëse fjalëkalimet janë ekspozuar në një nxjerrje të paautorizuar të të dhënave.</translation>
 <translation id="7934668619883965330">Skedari nuk mund të shkarkohet. Formati i skedarit nuk mbështetet.</translation>
-<translation id="7939485076072265087">Krijo kartë të stilizuar me theksim</translation>
 <translation id="7942131818088350342"><ph name="PRODUCT_NAME" /> është i vjetruar.</translation>
 <translation id="7944772052836377867">Sinkronizimi ka nevojë të verifikojë që je ti</translation>
 <translation id="7947953824732555851">Pranoje dhe identifikohu</translation>
@@ -1472,7 +1466,6 @@ Për shembull, disa uebsajte mund t'i përgjigjen kësaj kërkese duke të tregu
 <translation id="856481929701340285">Kërko sajtin për desktop</translation>
 <translation id="8570677896027847510">Skedari nuk mund të shkarkohet në mënyrë të sigurt</translation>
 <translation id="8571213806525832805">4 javët e fundit</translation>
-<translation id="8580884231102452214">Kopjo GIF</translation>
 <translation id="8583805026567836021">Po pastron të dhënat e llogarisë</translation>
 <translation id="859046281437143747">Monitoro çmimin nga butoni "Opsione të tjera"</translation>
 <translation id="860043288473659153">Emri i mbajtësit të kartës</translation>

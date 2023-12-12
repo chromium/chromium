@@ -410,7 +410,6 @@ Sadece parolanıza sahip olan kişiler şifrelenmiş verilerinizi okuyabilir. Pa
 <translation id="3226612997184048185">Google Hesabınıza yer işaretlerinizi de kaydederseniz Chrome'da ürün fiyatlarını takip edebilir ve fiyat düştüğünde bildirim alabilirsiniz</translation>
 <translation id="3227557059438308877">Güvenlik Anahtarı olarak Google Chrome</translation>
 <translation id="3232754137068452469">Web Uygulaması</translation>
-<translation id="3234978181857588512">Cihaza kaydet</translation>
 <translation id="3236059992281584593">1 dk. kaldı</translation>
 <translation id="3237087289225714896">Standart önceden yükleme:</translation>
 <translation id="3237433641417325993">Önerilen makaleleri görmek için aşağı kaydırın</translation>
@@ -582,7 +581,6 @@ Sadece parolanıza sahip olan kişiler şifrelenmiş verilerinizi okuyabilir. Pa
 <translation id="4181841719683918333">Diller</translation>
 <translation id="4188221736490993796">Z'den A'ya sırala</translation>
 <translation id="4195643157523330669">Yeni sekmede aç</translation>
-<translation id="4196597275619698563">Kart oluştur</translation>
 <translation id="4197828496439691735">{NUM_TABS,plural, =1{Bu cihazda 1 sekme}other{Bu cihazda # sekme var}}</translation>
 <translation id="4198423547019359126">Kullanılabilir indirme yeri yok</translation>
 <translation id="4202218894997543208">Engellediğiniz konular</translation>
@@ -594,7 +592,6 @@ Sadece parolanıza sahip olan kişiler şifrelenmiş verilerinizi okuyabilir. Pa
 <translation id="4248098802131000011">Şifrelerinizi veri ihlali ve diğer güvenlik sorunlarına karşı güvende tutun</translation>
 <translation id="424864128008805179">Chrome oturumu kapatılsın mı?</translation>
 <translation id="4249955472157341256">En güncel tarihe göre sırala</translation>
-<translation id="4250229828105606438">Ekran görüntüsü</translation>
 <translation id="4256782883801055595">Açık kaynak lisansları</translation>
 <translation id="4257230861809842349">Şifreler, Google Şifre Yöneticisi'nden silinsin mi?</translation>
 <translation id="4269820728363426813">Bağlantı adresini kopyala</translation>
@@ -1148,7 +1145,6 @@ Bu ayarı değiştirmek için <ph name="BEGIN_LINK" />senkronizasyonu sıfırlay
 <translation id="7030304022046916278">URL'leri kontrol etmek için Güvenli Tarama'ya gönderir</translation>
 <translation id="7035701931849773472">Diğer seçenekler</translation>
 <translation id="7037830628447527439">Chrome'da Google Hesabınızla oturum açın</translation>
-<translation id="7038956721828960940">chrome_resim_<ph name="CURRENT_TIMESTAMP_MS" /></translation>
 <translation id="7054588988317389591">Resim açıklaması almak istiyor musunuz?</translation>
 <translation id="7055152154916055070">Yönlendirme engellendi:</translation>
 <translation id="7063006564040364415">Senkronizasyon sunucusuna bağlanılamadı.</translation>
@@ -1279,7 +1275,6 @@ Bu ayarı değiştirmek için <ph name="BEGIN_LINK" />senkronizasyonu sıfırlay
 <translation id="7658239707568436148">İptal</translation>
 <translation id="7665369617277396874">Hesap ekle</translation>
 <translation id="766587987807204883">Çevrimdışı olsanız bile okuyabileceğiniz makaleler burada görünür.</translation>
-<translation id="768232549260819724">GIF Kopyalandı</translation>
 <translation id="7682724950699840886">Şu ipuçlarını deneyin: Cihazınızda yeterli alan bulunduğundan emin olun, daha sonra dışa aktarmayı tekrar deneyin.</translation>
 <translation id="7686086654630106285">Site tarafından önerilen reklamlar hakkında daha fazla bilgi</translation>
 <translation id="768618399695552958">Ziyaret ettiğiniz sayfaların bazıları önceden yüklenir. Bir Google sitesinden bağlantı verildiğinde sayfalar Google sunucuları aracılığıyla önceden yüklenebilir.</translation>
@@ -1334,7 +1329,6 @@ Bu ayarı değiştirmek için <ph name="BEGIN_LINK" />senkronizasyonu sıfırlay
 <translation id="7929962904089429003">Menüyü açar</translation>
 <translation id="7930998711684428189">Şifreleriniz veri ihlali nedeniyle ifşa olursa sizi uyarır.</translation>
 <translation id="7934668619883965330">Dosya indirilemiyor. Dosya biçimi desteklenmiyor.</translation>
-<translation id="7939485076072265087">Vurgu içeren, stil eklenmiş kart oluşturun</translation>
 <translation id="7942131818088350342"><ph name="PRODUCT_NAME" /> güncel değil.</translation>
 <translation id="7944772052836377867">Senkronizasyonun, kimliğinizi doğrulaması gerekiyor</translation>
 <translation id="7947953824732555851">Kabul et ve oturum aç</translation>
@@ -1472,7 +1466,6 @@ Bu ayarı değiştirmek için <ph name="BEGIN_LINK" />senkronizasyonu sıfırlay
 <translation id="856481929701340285">Masaüstü sitesi iste</translation>
 <translation id="8570677896027847510">Dosya güvenli bir şekilde indirilemiyor</translation>
 <translation id="8571213806525832805">Son 4 hafta</translation>
-<translation id="8580884231102452214">GIF'i kopyala</translation>
 <translation id="8583805026567836021">Hesap verileri temizleniyor</translation>
 <translation id="859046281437143747">Daha fazla seçenek düğmesinden fiyatı takip edin</translation>
 <translation id="860043288473659153">Kart sahibinin adı</translation>

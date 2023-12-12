@@ -875,6 +875,7 @@ Mae'n bosib y bydd caniatadau rydych eisoes wedi'u rhoi i apiau yn berthnasol i'
 <translation id="1651008383952180276">Rhaid i chi nodi'r un cyfrinymadrodd ddwywaith</translation>
 <translation id="1651609627703324721">Mae'r tab hwn yn cyflwyno cynnwys VR i glustffonau</translation>
 <translation id="1652326691684645429">Galluogi Rhannu Gerllaw</translation>
+<translation id="1652862280638399816">I ddefnyddio'r Rheolwr Cyfrineiriau gyda macOS Keychain, ail-lansiwch Chromium a chaniatewch fynediad Keychain. Bydd eich tabiau yn ailagor ar ôl ail-lansio.</translation>
 <translation id="1654580009054503925">Ni chaniateir dangos ceisiadau</translation>
 <translation id="1656528038316521561">Anhryloywder y cefndir</translation>
 <translation id="1657406563541664238">Helpwch i wella <ph name="PRODUCT_NAME" /> drwy anfon ystadegau defnydd ac adroddiadau toriadau at Google yn awtomatig</translation>
@@ -2837,6 +2838,7 @@ Mae <ph name="DOMAIN" /> yn gofyn i chi gadw'ch cerdyn smart wedi'i fewnosod.</t
 <translation id="3151562827395986343">Clirio'ch hanes, eich cwcis, eich storfa a rhagor</translation>
 <translation id="3151786313568798007">Gogwydd</translation>
 <translation id="3152356229013609796">Gweld, gwrthod, ac ymateb i hysbysebion eich ffôn</translation>
+<translation id="3155163173539279776">Ail-lansio Chromium</translation>
 <translation id="3157387275655328056">Ychwanegu at y Rhestr Ddarllen</translation>
 <translation id="3157931365184549694">Adfer</translation>
 <translation id="3158033540161634471">Gosod eich ôl bys</translation>
@@ -3654,6 +3656,7 @@ Mae <ph name="DOMAIN" /> yn gofyn i chi gadw'ch cerdyn smart wedi'i fewnosod.</t
 <translation id="3809272675881623365">Cwningen</translation>
 <translation id="3809280248639369696">Moonbeam</translation>
 <translation id="3810593934879994994">Gall <ph name="ORIGIN" /> weld ffeiliau yn y ffolderi canlynol</translation>
+<translation id="3810770279996899697">Mae angen mynediad at MacOS Keychain ar y Rheolwr Cyfrineiriau</translation>
 <translation id="3810914450553844415">Nid yw eich gweinyddwr yn caniatáu Cyfrifon Google ychwanegol.</translation>
 <translation id="3810973564298564668">Rheoli</translation>
 <translation id="381202950560906753">Ychwanegu un arall</translation>
@@ -9504,7 +9507,6 @@ Cadwch eich ffeil allwedd mewn man diogel. Bydd ei hangen arnoch i greu fersiyna
 <translation id="8473540203671727883">Adrodd testun sydd o dan y llygoden</translation>
 <translation id="8473863474539038330">Cyfeiriadau a rhagor</translation>
 <translation id="8474378002946546633">Caniatáu hysbysiadau</translation>
-<translation id="8474733733775441349">Dangos cyfrineiriau o'ch Cyfrif Google</translation>
 <translation id="8475313423285172237">Ychwanegodd rhaglen arall ar eich cyfrifiadur estyniad a allai newid y ffordd y mae Chrome yn gweithio.</translation>
 <translation id="8476408756881832830">Seibio'r chwarae pan mae ChromeVox yn siarad</translation>
 <translation id="8476491056950015181"><ph name="BEGIN_PARAGRAPH1" />Mae caniatáu i ddyfeisiau ChromeOS anfon adroddiadau awtomatig yn ein helpu i flaenoriaethu beth i'w drwsio a'i wella yn ChromeOS. Gall yr adroddiadau hyn gynnwys pethau megis pan fydd ChromeOS yn torri, pa nodweddion a ddefnyddiwyd, faint o gof a ddefnyddiwyd yn nodweddiadol, a data diagnostig a defnydd ap Android. Bydd rhywfaint o ddata cyfanredol hefyd yn helpu apiau a phartneriaid Google, megis datblygwyr Android.<ph name="END_PARAGRAPH1" />

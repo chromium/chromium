@@ -410,7 +410,6 @@
 <translation id="3226612997184048185">Google 계정에도 북마크를 저장하면 Chrome에서 제품 가격을 추적하고 가격이 인하되면 알림을 받을 수 있습니다.</translation>
 <translation id="3227557059438308877">Chrome을 보안 키로 사용</translation>
 <translation id="3232754137068452469">웹 앱</translation>
-<translation id="3234978181857588512">기기에 저장</translation>
 <translation id="3236059992281584593">1분 남음</translation>
 <translation id="3237087289225714896">표준 미리 로드:</translation>
 <translation id="3237433641417325993">아래로 스크롤하여 추천 기사 확인하기</translation>
@@ -582,7 +581,6 @@
 <translation id="4181841719683918333">언어</translation>
 <translation id="4188221736490993796">내림차순으로 정렬</translation>
 <translation id="4195643157523330669">새 탭에서 열기</translation>
-<translation id="4196597275619698563">카드 만들기</translation>
 <translation id="4197828496439691735">{NUM_TABS,plural, =1{이 기기의 탭 1개}other{이 기기의 탭 #개}}</translation>
 <translation id="4198423547019359126">사용할 수 있는 다운로드 위치가 없음</translation>
 <translation id="4202218894997543208">차단한 주제</translation>
@@ -594,7 +592,6 @@
 <translation id="4248098802131000011">정보 유출 및 다른 보안 문제로부터 비밀번호를 안전하게 보호하세요.</translation>
 <translation id="424864128008805179">Chrome에서 로그아웃하시겠습니까?</translation>
 <translation id="4249955472157341256">최신순 정렬</translation>
-<translation id="4250229828105606438">스크린샷</translation>
 <translation id="4256782883801055595">오픈소스 라이선스</translation>
 <translation id="4257230861809842349">Google 비밀번호 관리자에서 비밀번호를 삭제하시겠습니까?</translation>
 <translation id="4269820728363426813">링크 주소 복사</translation>
@@ -1148,7 +1145,6 @@
 <translation id="7030304022046916278">세이프 브라우징 서비스에 URL을 전송하여 확인하도록 합니다.</translation>
 <translation id="7035701931849773472">기타 옵션</translation>
 <translation id="7037830628447527439">Google 계정으로 Chrome에 로그인하기</translation>
-<translation id="7038956721828960940">chrome_image_<ph name="CURRENT_TIMESTAMP_MS" /></translation>
 <translation id="7054588988317389591">이미지 설명을 표시하시겠습니까?</translation>
 <translation id="7055152154916055070">다음 주소로의 리디렉션이 차단됨:</translation>
 <translation id="7063006564040364415">동기화 서버에 연결할 수 없습니다.</translation>
@@ -1279,7 +1275,6 @@
 <translation id="7658239707568436148">취소</translation>
 <translation id="7665369617277396874">계정 추가</translation>
 <translation id="766587987807204883">기사가 여기 표시되며 오프라인 상태에서도 읽을 수 있습니다.</translation>
-<translation id="768232549260819724">GIF 복사됨</translation>
 <translation id="7682724950699840886">다음 방법을 시도해 보세요. 기기 저장용량이 충분한지 확인하고 다시 내보내 봅니다.</translation>
 <translation id="7686086654630106285">사이트 추천 광고에 관해 자세히 알아보기</translation>
 <translation id="768618399695552958">방문한 페이지 중 일부가 미리 로드되었습니다. Google 사이트에서 페이지에 연결하는 경우 Google 서버를 통해 페이지가 미리 로드될 수 있습니다.</translation>
@@ -1334,7 +1329,6 @@
 <translation id="7929962904089429003">메뉴 열기</translation>
 <translation id="7930998711684428189">데이터 유출로 인해 비밀번호가 노출된 경우 알립니다.</translation>
 <translation id="7934668619883965330">파일을 다운로드할 수 없습니다. 지원되지 않는 파일 형식입니다.</translation>
-<translation id="7939485076072265087">강조표시한 텍스트에 사용할 스타일 카드 만들기</translation>
 <translation id="7942131818088350342"><ph name="PRODUCT_NAME" />이(가) 이전 버전입니다.</translation>
 <translation id="7944772052836377867">동기화를 위해 본인 인증 필요</translation>
 <translation id="7947953824732555851">수락 및 로그인</translation>
@@ -1472,7 +1466,6 @@
 <translation id="856481929701340285">데스크톱 버전으로 보기</translation>
 <translation id="8570677896027847510">파일을 안전하게 다운로드할 수 없음</translation>
 <translation id="8571213806525832805">지난 4주</translation>
-<translation id="8580884231102452214">GIF 복사</translation>
 <translation id="8583805026567836021">계정 데이터 지우기</translation>
 <translation id="859046281437143747">옵션 더보기 버튼으로 가격을 추적하세요</translation>
 <translation id="860043288473659153">카드 명의자 이름</translation>

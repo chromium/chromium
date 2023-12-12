@@ -872,6 +872,7 @@ Permissions that you've already given to apps may apply to this account. You can
 <translation id="1651008383952180276">You must enter the same passphrase twice</translation>
 <translation id="1651609627703324721">This tab is presenting VR content to a headset</translation>
 <translation id="1652326691684645429">Enable Nearby Share</translation>
+<translation id="1652862280638399816">To use Password Manager with macOS Keychain, relaunch Chromium and allow Keychain access. Your tabs will reopen after relaunching.</translation>
 <translation id="1654580009054503925">Not allowed to show requests</translation>
 <translation id="1656528038316521561">Background opacity</translation>
 <translation id="1657406563541664238">Help make <ph name="PRODUCT_NAME" /> better by automatically sending usage statistics and crash reports to Google.</translation>
@@ -2834,6 +2835,7 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="3151562827395986343">Clear history, cookies, cache and more</translation>
 <translation id="3151786313568798007">Orientation</translation>
 <translation id="3152356229013609796">View, dismiss and reply to your phone's notifications</translation>
+<translation id="3155163173539279776">Relaunch Chromium</translation>
 <translation id="3157387275655328056">Add to reading list</translation>
 <translation id="3157931365184549694">Restore</translation>
 <translation id="3158033540161634471">Set up your fingerprint</translation>
@@ -3651,6 +3653,7 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="3809272675881623365">Rabbit</translation>
 <translation id="3809280248639369696">Moonbeam</translation>
 <translation id="3810593934879994994"><ph name="ORIGIN" /> can view files in the following folders</translation>
+<translation id="3810770279996899697">Password Manager needs access to MacOS Keychain</translation>
 <translation id="3810914450553844415">Your administrator doesn’t allow additional Google Accounts.</translation>
 <translation id="3810973564298564668">Manage</translation>
 <translation id="381202950560906753">Add another</translation>
@@ -9495,7 +9498,6 @@ Keep your key file in a safe place. You will need it to create new versions of y
 <translation id="8473540203671727883">Speak text under the mouse</translation>
 <translation id="8473863474539038330">Addresses and more</translation>
 <translation id="8474378002946546633">Allow notifications</translation>
-<translation id="8474733733775441349">Show passwords from your Google Account</translation>
 <translation id="8475313423285172237">Another programme on your computer added an extension that may change the way Chrome works.</translation>
 <translation id="8476408756881832830">Pause playback when ChromeVox is speaking</translation>
 <translation id="8476491056950015181"><ph name="BEGIN_PARAGRAPH1" />Allowing ChromeOS devices to send automatic reports helps us prioritise what to fix and improve in ChromeOS. These reports can include things, like when ChromeOS crashes, which features were enabled, how much memory was typically used and Android app diagnostic and usage data. Some aggregate data will also help Google apps and partners, such as Android developers.<ph name="END_PARAGRAPH1" />

@@ -869,6 +869,7 @@
 <translation id="1651008383952180276">你必須輸入兩次相同的通關密語</translation>
 <translation id="1651609627703324721">這個分頁正在對頭戴式裝置展示 VR 內容</translation>
 <translation id="1652326691684645429">啟用鄰近分享功能</translation>
+<translation id="1652862280638399816">如要搭配 macOS 鑰匙圈使用密碼管理工具，請重新啟動 Chromium 並允許存取鑰匙圈。重新啟動之後，會重新開啟所有分頁。</translation>
 <translation id="1654580009054503925">不允許顯示要求</translation>
 <translation id="1656528038316521561">背景不透明度</translation>
 <translation id="1657406563541664238">只要自動傳送使用統計資料及當機報告給 Google，就能助我們一臂之力，讓「<ph name="PRODUCT_NAME" />」更臻完美</translation>
@@ -2820,6 +2821,7 @@
 <translation id="3151562827395986343">清除歷史記錄、Cookie、快取等資料</translation>
 <translation id="3151786313568798007">方向</translation>
 <translation id="3152356229013609796">查看、關閉及回覆手機上的通知</translation>
+<translation id="3155163173539279776">重新啟動 Chromium</translation>
 <translation id="3157387275655328056">加入閱讀清單</translation>
 <translation id="3157931365184549694">還原</translation>
 <translation id="3158033540161634471">設定指紋</translation>
@@ -3639,6 +3641,7 @@
 <translation id="3809272675881623365">兔子</translation>
 <translation id="3809280248639369696">外星人</translation>
 <translation id="3810593934879994994"><ph name="ORIGIN" /> 可以查看下列資料夾中的檔案</translation>
+<translation id="3810770279996899697">密碼管理工具需要 macOS 鑰匙圈存取權</translation>
 <translation id="3810914450553844415">管理員已禁止新增其他 Google 帳戶。</translation>
 <translation id="3810973564298564668">管理</translation>
 <translation id="381202950560906753">新增其他指紋</translation>
@@ -5035,6 +5038,7 @@
 <translation id="4918134162946436591">重疊顯示提示</translation>
 <translation id="4918762404810341788">複製並開啟</translation>
 <translation id="4921348630401250116">文字轉語音</translation>
+<translation id="4922104989726031751">如要在作業系統上使用 Google 密碼管理工具，請重新啟動 Chromium，並允許存取電腦的密碼管理工具。分頁會在重新啟動之後再次開啟。</translation>
 <translation id="492299503953721473">移除 Android 應用程式</translation>
 <translation id="492363500327720082">正在解除安裝「<ph name="APP_NAME" />」...</translation>
 <translation id="4924002401726507608">提供意見</translation>
@@ -6682,6 +6686,7 @@
 <translation id="6264365405983206840">選取全部(&amp;A)</translation>
 <translation id="6264376385120300461">仍要下載</translation>
 <translation id="6264520534872750757">繼續使用這部裝置</translation>
+<translation id="6264636978858465832">密碼管理工具需要更多存取權</translation>
 <translation id="6265159465845424232">先詢問我，再將 Microsoft 檔案複製或移動到 Microsoft OneDrive</translation>
 <translation id="6265687851677020761">移除連接埠</translation>
 <translation id="6266532094411434237">正在連線到 <ph name="DEVICE" /></translation>
@@ -9478,7 +9483,6 @@
 <translation id="8473540203671727883">請讀出滑鼠游標下方的文字</translation>
 <translation id="8473863474539038330">地址和其他資訊</translation>
 <translation id="8474378002946546633">允許通知</translation>
-<translation id="8474733733775441349">顯示 Google 帳戶中的密碼</translation>
 <translation id="8475313423285172237">電腦中其他程式所新增的擴充功能可能會變更 Chrome 的運作方式。</translation>
 <translation id="8476408756881832830">ChromeVox 朗讀時暫停播放音訊</translation>
 <translation id="8476491056950015181"><ph name="BEGIN_PARAGRAPH1" />如果你允許 ChromeOS 裝置自動傳送報告，可以協助我們為 ChromeOS 優先規劃要修正及改善的項目。這類報告可能包含 ChromeOS 當機時間、曾使用的功能、記憶體一般使用量，以及 Android 應用程式診斷與使用資料。此外，部分匯總資料還能協助 Google 應用程式和合作夥伴 (例如 Android 開發人員) 改善產品和服務。<ph name="END_PARAGRAPH1" />

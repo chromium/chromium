@@ -410,7 +410,6 @@
 <translation id="3226612997184048185">ນອກຈາກນັ້ນ, ຫາກທ່ານບັນທຶກບຸກມາກຂອງທ່ານໃນບັນຊີ Google ຂອງທ່ານ, ທ່ານສາມາດຕິດຕາມລາຄາຜະລິດຕະພັນໃນ Chrome ແລະ ຮັບການແຈ້ງເຕືອນເມື່ອລາຄາຫຼຸດລົງໄດ້</translation>
 <translation id="3227557059438308877">Google Chrome ເປັນກະແຈຄວາມປອດໄພ</translation>
 <translation id="3232754137068452469">ແອັບຂອງເວັບ</translation>
-<translation id="3234978181857588512">ບັນທຶກໃສ່ອຸປະກອນ</translation>
 <translation id="3236059992281584593">ຍັງເຫຼືອ 1 ນາທີ</translation>
 <translation id="3237087289225714896">ການໂຫຼດກ່ອນລ່ວງໜ້າແບບມາດຕະຖານ:</translation>
 <translation id="3237433641417325993">ເລື່ອນລົງເພື່ອເບິ່ງບົດຄວາມທີ່ແນະນຳ</translation>
@@ -582,7 +581,6 @@
 <translation id="4181841719683918333">ພາສາ</translation>
 <translation id="4188221736490993796">ຈັດຮຽງຈາກ ຮ ຫາ ກ</translation>
 <translation id="4195643157523330669">ເປີດຢູ່ໃນແຖບໃໝ່</translation>
-<translation id="4196597275619698563">ສ້າງ​ບັດ</translation>
 <translation id="4197828496439691735">{NUM_TABS,plural, =1{1 ແຖບຢູ່ອຸປະກອນນີ້}other{# ແຖບຢູ່ອຸປະກອນນີ້}}</translation>
 <translation id="4198423547019359126">ບໍ່ມີບ່ອນບັນທຶກການດາວໂຫຼດທີ່ສາມາດໃຊ້ໄດ້</translation>
 <translation id="4202218894997543208">ຫົວຂໍ້ທີ່ທ່ານບລັອກ</translation>
@@ -594,7 +592,6 @@
 <translation id="4248098802131000011">ຮັກສາລະຫັດຜ່ານຂອງທ່ານໃຫ້ປອດໄພຈາກການລະເມີດຂໍ້ມູນ ແລະ ບັນຫາຄວາມປອດໄພອື່ນໆ</translation>
 <translation id="424864128008805179">ອອກຈາກລະບົບ Chrome ບໍ?</translation>
 <translation id="4249955472157341256">ຈັດຮຽງຕາມຫຼ້າສຸດ</translation>
-<translation id="4250229828105606438">ຮູບຖ່າຍໜ້າຈໍ</translation>
 <translation id="4256782883801055595">ໃບ​ອະ​ນຸ​ຍາດ Open source</translation>
 <translation id="4257230861809842349">ລຶບລະຫັດຜ່ານອອກຈາກຕົວຈັດການລະຫັດຜ່ານ Google ບໍ?</translation>
 <translation id="4269820728363426813">ກັອບປີ້ທີ່ຢູ່ລິ້ງ</translation>
@@ -1148,7 +1145,6 @@
 <translation id="7030304022046916278">ສົ່ງ URL ໄປໃຫ້ Safe Browsing ກວດເບິ່ງພວກມັນ</translation>
 <translation id="7035701931849773472">ຕົວເລືອກອື່ນ</translation>
 <translation id="7037830628447527439">ເຂົ້າສູ່ລະບົບຫາ Chrome ດ້ວຍບັນຊີ Google ຂອງທ່ານ</translation>
-<translation id="7038956721828960940">chrome_image_<ph name="CURRENT_TIMESTAMP_MS" /></translation>
 <translation id="7054588988317389591">ຮັບຄຳອະທິບາຍຮູບບໍ?</translation>
 <translation id="7055152154916055070">ບລັອກການປ່ຽນເສັ້ນທາງແລ້ວ:</translation>
 <translation id="7063006564040364415">ບໍ່​ສາ​ມາດ​ເຊື່ອມ​ຕໍ່​ກັບ​ເຊີບເວີຊິງຄ໌ໄດ້​.</translation>
@@ -1279,7 +1275,6 @@
 <translation id="7658239707568436148">ຍົກ​ເລີກ​</translation>
 <translation id="7665369617277396874">ເພີ່ມ​ບັນ​ຊີ</translation>
 <translation id="766587987807204883">ບົດຄວາມປາກົດຢູ່ບ່ອນນີ້ ເຊິ່ງທ່ານສາມາດອ່ານໄດ້ເຖິງແມ່ນໃນເວລາທີ່ທ່ານອອບລາຍຢູ່ກໍຕາມ</translation>
-<translation id="768232549260819724">ສຳເນົາ GIF ແລ້ວ</translation>
 <translation id="7682724950699840886">ລອງຄຳແນະນຳຕໍ່ໄປນີ້: ກວດໃຫ້ແນ່ໃຈວ່າມີພື້ນທີ່ຫວ່າງພຽງພໍໃນອຸປະກອນຂອງທ່ານ, ລອງສົ່ງອອກອີກຄັ້ງ.</translation>
 <translation id="7686086654630106285">ເພີ່ມເຕີມກ່ຽວກັບການໂຄສະນາທີ່ແນະນໍາຈາກເວັບໄຊ</translation>
 <translation id="768618399695552958">ໜ້າບາງໜ້າທີ່ທ່ານເຂົ້າແມ່ນຖືກໂຫຼດກ່ອນລ່ວງໜ້າແລ້ວ. ໜ້າຕ່າງໆອາດຖືກໂຫຼດກ່ອນລ່ວງໜ້າຜ່ານເຊີບເວີ Google ໃນເວລາລິ້ງມາຈາກເວັບໄຊ Google ໃດໜຶ່ງ.</translation>
@@ -1334,7 +1329,6 @@
 <translation id="7929962904089429003">ເປີດເມນູ</translation>
 <translation id="7930998711684428189">ເຕືອນບອກທ່ານຖ້າລະຫັດຜ່ານຮົ່ວໄຫຼໃນການລະເມີດຂໍ້ມູນ.</translation>
 <translation id="7934668619883965330">ບໍ່ສາມາດດາວໂຫຼດໄຟລ໌ໄດ້. ບໍ່ຮອງຮັບຮູບແບບໄຟລ໌.</translation>
-<translation id="7939485076072265087">ສ້າງບັດທີ່ມີຮູບແບບດ້ວຍໄຮໄລ້</translation>
 <translation id="7942131818088350342"><ph name="PRODUCT_NAME" /> ເກົ່າແລ້ວ.</translation>
 <translation id="7944772052836377867">ການຊິ້ງຂໍ້ມູນຕ້ອງການຢັ້ງຢືນວ່າແມ່ນທ່ານແທ້</translation>
 <translation id="7947953824732555851">ຍອມ​ຮັບ​ ແລະ​ລົງຊື່ເຂົ້າ​ໃຊ້</translation>
@@ -1472,7 +1466,6 @@
 <translation id="856481929701340285">ຮ້ອງ​ຂໍ​ເວັບໄຊ​ທ໌​ເດັສທັອບ</translation>
 <translation id="8570677896027847510">ບໍ່ສາມາດດາວໂຫຼດໄຟລ໌ໄດ້ຢ່າງປອດໄພ</translation>
 <translation id="8571213806525832805">4 ອາທິດຜ່ານມາ</translation>
-<translation id="8580884231102452214">ສຳເນົາ GIF</translation>
 <translation id="8583805026567836021">ກໍາລັງລຶບຂໍ້ມູນບັນຊີ</translation>
 <translation id="859046281437143747">ຕິດຕາມລາຄາຈາກປຸ່ມຕົວເລືອກເພີ່ມເຕີມ</translation>
 <translation id="860043288473659153">ຊື່ຜູ້ຖືບັດ</translation>

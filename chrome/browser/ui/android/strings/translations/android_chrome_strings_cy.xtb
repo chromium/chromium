@@ -410,7 +410,6 @@ Dim ond rhywun sydd â'ch cyfrinymadrodd all ddarllen eich data sydd wedi'u hamg
 <translation id="3226612997184048185">Os ydych hefyd yn cadw eich nodau tudalen yn eich Cyfrif Google, gallwch olrhain prisiau cynnyrch yn Chrome a chael gwybod pan fydd y pris yn gostwng</translation>
 <translation id="3227557059438308877">Google Chrome fel Allwedd Ddiogelwch</translation>
 <translation id="3232754137068452469">Ap Gwe</translation>
-<translation id="3234978181857588512">Cadw i'r ddyfais</translation>
 <translation id="3236059992281584593">1 funud ar ôl</translation>
 <translation id="3237087289225714896">Rhaglwytho safonol:</translation>
 <translation id="3237433641417325993">Sgroliwch i lawr i weld erthyglau a awgrymir</translation>
@@ -582,7 +581,6 @@ Dim ond rhywun sydd â'ch cyfrinymadrodd all ddarllen eich data sydd wedi'u hamg
 <translation id="4181841719683918333">Ieithoedd</translation>
 <translation id="4188221736490993796">Trefnu yn ôl Z i A</translation>
 <translation id="4195643157523330669">Agor mewn tab newydd</translation>
-<translation id="4196597275619698563">Creu cerdyn</translation>
 <translation id="4197828496439691735">{NUM_TABS,plural, =1{1 tab ar y ddyfais hon}zero{# tab ar y ddyfais hon}two{# dab ar y ddyfais hon}few{# thab ar y ddyfais hon}many{# thab ar y ddyfais hon}other{# tab ar y ddyfais hon}}</translation>
 <translation id="4198423547019359126">Nid oes unrhyw leoliadau lawrlwytho ar gael</translation>
 <translation id="4202218894997543208">Pynciau rydych wedi'u rhwystro</translation>
@@ -594,7 +592,6 @@ Dim ond rhywun sydd â'ch cyfrinymadrodd all ddarllen eich data sydd wedi'u hamg
 <translation id="4248098802131000011">Cadwch eich cyfrineiriau'n ddiogel rhag toriadau data a phroblemau diogelwch eraill</translation>
 <translation id="424864128008805179">Allgofnodi o Chrome?</translation>
 <translation id="4249955472157341256">Trefnu yn ôl Diweddaraf</translation>
-<translation id="4250229828105606438">Sgrinlun</translation>
 <translation id="4256782883801055595">Trwyddedau ffynhonnell agored</translation>
 <translation id="4257230861809842349">Dileu cyfrineiriau o Rheolwr Cyfrineiriau Google?</translation>
 <translation id="4269820728363426813">Copïo cyfeiriad y ddolen</translation>
@@ -1148,7 +1145,6 @@ Er enghraifft, gall rhai gwefannau ymateb i'r cais hwn drwy ddangos hysbysebion 
 <translation id="7030304022046916278">Yn anfon cyfeiriadau URL i Pori'n Ddiogel i'w gwirio</translation>
 <translation id="7035701931849773472">Dewisiadau eraill</translation>
 <translation id="7037830628447527439">Mewngofnodi i Chrome gyda'ch Cyfrif Google</translation>
-<translation id="7038956721828960940">chrome_image_<ph name="CURRENT_TIMESTAMP_MS" /></translation>
 <translation id="7054588988317389591">Cael disgrifiadau lluniau?</translation>
 <translation id="7055152154916055070">Mae ailgyfeirio wedi'i rwystro:</translation>
 <translation id="7063006564040364415">Methu â chysylltu â'r gweinydd cysoni.</translation>
@@ -1279,7 +1275,6 @@ Er enghraifft, gall rhai gwefannau ymateb i'r cais hwn drwy ddangos hysbysebion 
 <translation id="7658239707568436148">Canslo</translation>
 <translation id="7665369617277396874">Ychwanegu cyfrif</translation>
 <translation id="766587987807204883">Mae erthyglau yn ymddangos yma, y gallwch eu darllen hyd yn oed pan fyddwch all-lein</translation>
-<translation id="768232549260819724">Copïwyd GIF</translation>
 <translation id="7682724950699840886">Rhowch gynnig ar yr argymhellion canlynol: gwnewch yn siŵr bod digon o le ar eich dyfais, rhowch gynnig arall ar allforio.</translation>
 <translation id="7686086654630106285">Rhagor am hysbysebion a awgrymir gan wefan</translation>
 <translation id="768618399695552958">Mae rhai o'r tudalennau rydych yn ymweld â nhw wedi'u rhaglwytho. Gellir rhaglwytho tudalennau drwy weinyddion Google pan fyddant wedi'u cysylltu o wefan Google.</translation>
@@ -1334,7 +1329,6 @@ Er enghraifft, gall rhai gwefannau ymateb i'r cais hwn drwy ddangos hysbysebion 
 <translation id="7929962904089429003">Agorwch y ddewislen</translation>
 <translation id="7930998711684428189">Yn eich rhybuddio os yw cyfrineiriau'n cael eu datgelu mewn achos o dor data.</translation>
 <translation id="7934668619883965330">Methu â lawrlwytho ffeil. Ni chefnogir fformat y ffeil.</translation>
-<translation id="7939485076072265087">Creu cerdyn wedi'i arddullio gydag amlygu</translation>
 <translation id="7942131818088350342">Mae <ph name="PRODUCT_NAME" /> yn hen.</translation>
 <translation id="7944772052836377867">Mae angen i gysoni gadarnhau mai chi sydd yno</translation>
 <translation id="7947953824732555851">Derbyn a mewngofnodi</translation>
@@ -1472,7 +1466,6 @@ Er enghraifft, gall rhai gwefannau ymateb i'r cais hwn drwy ddangos hysbysebion 
 <translation id="856481929701340285">Gofyn am wefan bwrdd gwaith</translation>
 <translation id="8570677896027847510">Ni ellir lawrlwytho'r ffeil yn ddiogel</translation>
 <translation id="8571213806525832805">Y 4 wythnos diwethaf</translation>
-<translation id="8580884231102452214">Copïo GIF</translation>
 <translation id="8583805026567836021">Clirio data'r cyfrif</translation>
 <translation id="859046281437143747">Dilyn y pris o'r botwm Rhagor o ddewisiadau</translation>
 <translation id="860043288473659153">Enw deiliad y cerdyn</translation>

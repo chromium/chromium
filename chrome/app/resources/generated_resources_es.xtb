@@ -90,7 +90,7 @@
 <translation id="106855837688344862">Eventos táctiles</translation>
 <translation id="1069104208554708737">Esta llave de acceso solo se guardará en este dispositivo</translation>
 <translation id="1069355737714877171">Retirar el perfil eSIM con nombre <ph name="PROFILE_NAME" /></translation>
-<translation id="1069778954840159202">Obtener automáticamente la cuenta desde el teléfono Android</translation>
+<translation id="1069778954840159202">Obtener automáticamente la cuenta desde un teléfono Android</translation>
 <translation id="1069814191880976658">Elige otra pantalla</translation>
 <translation id="1070377999570795893">Otro programa de tu ordenador ha añadido una extensión que puede cambiar el funcionamiento de Chrome.
 
@@ -869,6 +869,7 @@ Los permisos que hayas dado a aplicaciones se pueden aplicar a esta cuenta. Pued
 <translation id="1651008383952180276">Debes introducir la misma frase de contraseña dos veces</translation>
 <translation id="1651609627703324721">Esta pestaña está proyectando contenido de realidad virtual a un visor</translation>
 <translation id="1652326691684645429">Habilitar Compartir con Nearby</translation>
+<translation id="1652862280638399816">Para usar el Gestor de contraseñas con el llavero de macOS, reinicia Chromium y permite el acceso al llavero. Las pestañas que tuvieras abiertas se reabrirán después de reiniciar.</translation>
 <translation id="1654580009054503925">No tiene permiso para mostrar solicitudes</translation>
 <translation id="1656528038316521561">Opacidad del fondo</translation>
 <translation id="1657406563541664238">Ayúdanos a mejorar <ph name="PRODUCT_NAME" /> enviando estadísticas de uso e informes sobre fallos.</translation>
@@ -2820,6 +2821,7 @@ Puedes gestionar la configuración de esta cuenta instalando la aplicación Fami
 <translation id="3151562827395986343">Borra el historial, las cookies, la caché y mucho más</translation>
 <translation id="3151786313568798007">Orientación</translation>
 <translation id="3152356229013609796">Consulta, descarta y responde notificaciones de tu teléfono</translation>
+<translation id="3155163173539279776">Reiniciar Chromium</translation>
 <translation id="3157387275655328056">Añadir a lista de lectura</translation>
 <translation id="3157931365184549694">Restaurar</translation>
 <translation id="3158033540161634471">Configura la huella digital</translation>
@@ -3637,6 +3639,7 @@ Puedes gestionar la configuración de esta cuenta instalando la aplicación Fami
 <translation id="3809272675881623365">Conejo</translation>
 <translation id="3809280248639369696">Alienígena</translation>
 <translation id="3810593934879994994"><ph name="ORIGIN" /> puede ver archivos de las siguientes carpetas</translation>
+<translation id="3810770279996899697">El Gestor de contraseñas necesita acceder al llavero de macOS</translation>
 <translation id="3810914450553844415">El administrador no permite cuentas de Google adicionales.</translation>
 <translation id="3810973564298564668">Gestionar</translation>
 <translation id="381202950560906753">Añadir otra</translation>
@@ -9479,7 +9482,6 @@ Guarda tu archivo de clave en un lugar seguro, ya que lo necesitarás para crear
 <translation id="8473540203671727883">Enunciar el texto que está debajo del ratón</translation>
 <translation id="8473863474539038330">Direcciones y más</translation>
 <translation id="8474378002946546633">Permitir notificaciones</translation>
-<translation id="8474733733775441349">Mostrar contraseñas de tu cuenta de Google</translation>
 <translation id="8475313423285172237">Otro programa de tu ordenador ha añadido una extensión que puede cambiar el funcionamiento de Chrome.</translation>
 <translation id="8476408756881832830">Pausar la reproducción cuando ChromeVox habla</translation>
 <translation id="8476491056950015181"><ph name="BEGIN_PARAGRAPH1" />Si permites que los dispositivos ChromeOS nos envíen informes de forma automática, nos ayudarás a priorizar qué debemos arreglar y mejorar en ChromeOS. Estos informes pueden incluir información como cuándo ha fallado ChromeOS, qué funciones se han utilizado y cuánta memoria se ha usado habitualmente, así como datos de uso y diagnóstico de aplicaciones Android. Parte de los datos agregados también ayudarán a las aplicaciones y a los partners de Google, como los desarrolladores de Android.<ph name="END_PARAGRAPH1" />

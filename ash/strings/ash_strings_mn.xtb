@@ -1138,6 +1138,7 @@
 <translation id="5577281275355252094">Phone Hub-г ашиглахын тулд утсан дээрээ Bluetooth-г идэвхжүүлсэн эсэхийг шалгана уу</translation>
 <translation id="5578188167649348993">санах ой</translation>
 <translation id="5580000943347215299">Сан</translation>
+<translation id="5587506661873751671"><ph name="DOWNLOAD_PERCENT" />%-ийг татаж байна</translation>
 <translation id="558849140439112033">Зураг авах хэсгийг сонгохын тулд чирнэ үү</translation>
 <translation id="5590609058453685222">Дуу хаалттай тухай мэдэгдэл асаалттай байна. Та дууг нь хаасан үед яривал танд мэдэгдэнэ.</translation>
 <translation id="5596627076506792578">Бусад сонголт</translation>
@@ -1797,6 +1798,7 @@
 <translation id="830868413617744215">Бета</translation>
 <translation id="8314772463905284467">Caps Lock асаалттай байна</translation>
 <translation id="8315514906653279104">Асааж байна...</translation>
+<translation id="8331351032546853669">Таталт хүлээгдэж байна</translation>
 <translation id="8341451174107936385"><ph name="UNLOCK_MORE_FEATURES" />  <ph name="GET_STARTED" /></translation>
 <translation id="8345019317483336363"><ph name="WINDOW_TITLE" /> цонх сонгосон</translation>
 <translation id="8349826889576450703">эхлүүлэгч</translation>

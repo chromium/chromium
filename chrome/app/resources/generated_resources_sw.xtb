@@ -869,6 +869,7 @@ Huenda ruhusa ambazo tayari umezipa programu zikatumika kwenye akaunti hii. Unaw
 <translation id="1651008383952180276">Lazima uweke kauli ya siri sawa mara mbili</translation>
 <translation id="1651609627703324721">Kichupo hiki kinawasilisha maudhui ya VR kwenye kifaa cha kutazama uhalisia pepe</translation>
 <translation id="1652326691684645429">Washa kipengele cha Uhamishaji wa Karibu</translation>
+<translation id="1652862280638399816">Ili utumie Kidhibiti cha Manenosiri na MacOS Keychain, fungua tena Chromium na uruhusu ufikiaji wa Keychain. Vichupo vyako vitafunguka upya ukishafungua tena.</translation>
 <translation id="1654580009054503925">Hakiruhusiwi kuonyesha maombi</translation>
 <translation id="1656528038316521561">Nuru ya mandharinyuma</translation>
 <translation id="1657406563541664238">Saidia kuboresha <ph name="PRODUCT_NAME" /> kwa kutumia Google takwimu za matumizi na ripoti wakati wowote huduma hii inapoacha kufanya kazi.</translation>
@@ -2831,6 +2832,7 @@ Unaweza kudhibiti mipangilio ya akaunti hii kwa kusakinisha programu ya Family L
 <translation id="3151562827395986343">Futa historia, vidakuzi, akiba na mengine mengi</translation>
 <translation id="3151786313568798007">Mkao</translation>
 <translation id="3152356229013609796">Tazama, ondoa na ujibu arifa za simu yako</translation>
+<translation id="3155163173539279776">Zindua upya Chromium</translation>
 <translation id="3157387275655328056">Ongeza kwenye Orodha ya Kusoma</translation>
 <translation id="3157931365184549694">Rejesha</translation>
 <translation id="3158033540161634471">Weka mipangilio ya alama ya kidole</translation>
@@ -3648,6 +3650,7 @@ Unaweza kudhibiti mipangilio ya akaunti hii kwa kusakinisha programu ya Family L
 <translation id="3809272675881623365">Sungura</translation>
 <translation id="3809280248639369696">Moonbeam</translation>
 <translation id="3810593934879994994"><ph name="ORIGIN" /> inaweza kuona faili zilizo katika folda zifuatazo</translation>
+<translation id="3810770279996899697">Kidhibiti cha Manenosiri kinahitaji idhini ya kufikia MacOS Keychain</translation>
 <translation id="3810914450553844415">Msimamizi wako haruhusu kuweka Akaunti za ziada za Google.</translation>
 <translation id="3810973564298564668">Dhibiti</translation>
 <translation id="381202950560906753">Ongeza kingine</translation>
@@ -9491,7 +9494,6 @@ Weka faili yako ya funguo mahali salama. Utaihitaji kuunda matoleo mapya ya kien
 <translation id="8473540203671727883">Tamka maandishi yaliyo chini ya kipanya</translation>
 <translation id="8473863474539038330">Anwani na zaidi</translation>
 <translation id="8474378002946546633">Ruhusu arifa</translation>
-<translation id="8474733733775441349">Onyesha manenosiri yaliyo kwenye Akaunti yako ya Google</translation>
 <translation id="8475313423285172237">Programu nyingine kwenye kompyuta yako iliongeza kiendelezi ambacho kinaweza kubadilisha jinsi Chrome inavyofanya kazi.</translation>
 <translation id="8476408756881832830">Sitisha kucheza ChromeVox inapozungumza</translation>
 <translation id="8476491056950015181"><ph name="BEGIN_PARAGRAPH1" />Hatua ya kuruhusu vifaa vinavyotumia mfumo wa uendeshaji wa Chrome vitume ripoti za kiotomatiki hutusaidia kufahamu vipengele tutakavyovipa kipaumbele wakati wa kurekebisha na kuboresha kwenye mfumo wa uendeshaji wa Chrome. Ripoti hizi zinaweza kujumuisha vitu kama vile ChromeOS inapoacha kufanya kazi, vipengele vilivyotumika, kiasi cha hifadhi kilichotumika na data ya uchunguzi na matumizi ya programu za Android. Baadhi ya data iliyojumlishwa pia itasaidia programu na washirika wa Google, kama vile wasanidi programu wa Android.<ph name="END_PARAGRAPH1" />

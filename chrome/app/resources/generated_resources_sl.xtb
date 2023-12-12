@@ -878,6 +878,7 @@ Dovoljenja, ki ste jih že odobrili aplikacijam, morda veljajo za ta račun. Dov
 <translation id="1651008383952180276">Dvakrat morate vnesti isto geslo</translation>
 <translation id="1651609627703324721">Ta zavihek predvaja vsebino VR v slušalkah z mikrofonom</translation>
 <translation id="1652326691684645429">Omogočanje deljenja v bližini</translation>
+<translation id="1652862280638399816">Če želite Googlovega upravitelja gesel uporabljati s shrambo poverilnic sistema macOS, Keychain, znova zaženite Chromium in omogočite dostop do shrambe poverilnic Keychain. Zavihki se bodo po vnovičnem zagonu znova odprli.</translation>
 <translation id="1654580009054503925">Prikazovanje zahtev ni dovoljeno</translation>
 <translation id="1656528038316521561">Neprosojnost ozadja</translation>
 <translation id="1657406563541664238">Pomagajte izboljšati <ph name="PRODUCT_NAME" /> s samodejnim pošiljanjem statističnih podatkov o uporabi in poročil o zrušitvah Googlu</translation>
@@ -2649,6 +2650,7 @@ Domena <ph name="DOMAIN" /> zahteva, da je pametna kartica vstavljena.</translat
 <translation id="2990313168615879645">Dodaj račun Google</translation>
 <translation id="2990375978470734995">Če želite, da začne ta sprememba veljati, znova povežite zunanjo dodatno opremo.</translation>
 <translation id="2990583317361835189">Spletnim mestom ni dovoljena uporaba tipal gibanja.</translation>
+<translation id="2991182900092497283">Navedite razlog za lepljenje teh podatkov:</translation>
 <translation id="2992931425024192067">Pokaži vso vsebino obvestil</translation>
 <translation id="2993517869960930405">Podatki o aplikaciji</translation>
 <translation id="2996108796702395498">Serijska številka naprave je <ph name="SERIAL_NUMBER" />. To številko je mogoče uporabiti pri aktiviranju storitve.</translation>
@@ -2842,6 +2844,7 @@ Domena <ph name="DOMAIN" /> zahteva, da je pametna kartica vstavljena.</translat
 <translation id="3151562827395986343">Brisanje zgodovine, piškotkov, predpomnilnika in drugega</translation>
 <translation id="3151786313568798007">Usmerjenost</translation>
 <translation id="3152356229013609796">Ogled obvestil telefona, njihovo opuščanje in odgovarjanje nanja</translation>
+<translation id="3155163173539279776">Znova zaženite Chromium</translation>
 <translation id="3157387275655328056">Dodaj na bralni seznam</translation>
 <translation id="3157931365184549694">Obnovi</translation>
 <translation id="3158033540161634471">Nastavite prstni odtis</translation>
@@ -3163,6 +3166,7 @@ Domena <ph name="DOMAIN" /> zahteva, da je pametna kartica vstavljena.</translat
 <translation id="3432762828853624962">Shared Workers</translation>
 <translation id="3433507769937235446">Zaklepanje ob oddaljitvi</translation>
 <translation id="3433621910545056227">Ojej!  Sistemu ni uspelo zakleniti atributov časa namestitve naprave.</translation>
+<translation id="3434025015623587566">Googlov upravitelj gesel potrebuje več dostopa</translation>
 <translation id="3434107140712555581">Akumulator: <ph name="BATTERY_PERCENTAGE" /> %</translation>
 <translation id="3434272557872943250">Če ste za otroka vklopili dodatno beleženje dejavnosti v spletu in aplikacijah, bodo ti podatki morda shranjeni v njegovem računu Google. Preberite več o teh nastavitvah in njihovem prilagajanju na families.google.com.</translation>
 <translation id="3434475275396485144">To nastavitev upravlja skrbnik telefona.</translation>
@@ -3377,6 +3381,7 @@ Domena <ph name="DOMAIN" /> zahteva, da je pametna kartica vstavljena.</translat
 <translation id="3605156246402033687">{COUNT,plural, =1{{COUNT} račun uporablja isto geslo}one{{COUNT} račun uporablja isto geslo}two{{COUNT} računa uporabljata isto geslo}few{{COUNT} računi uporabljajo isto geslo}other{{COUNT} računov uporablja isto geslo}}</translation>
 <translation id="3605780360466892872">Srajca</translation>
 <translation id="3607671391978830431">Za otroka</translation>
+<translation id="3608460311600621471">Navedite razlog za tiskanje teh podatkov:</translation>
 <translation id="3608730769702025110">3. korak od 4: Pregled podatkov, ki omogočajo osebno prepoznavo</translation>
 <translation id="3609277884604412258">Hitro iskanje</translation>
 <translation id="3610241585790874201">Shranjevanje podatkov v napravi ni dovoljeno</translation>
@@ -3662,6 +3667,7 @@ Domena <ph name="DOMAIN" /> zahteva, da je pametna kartica vstavljena.</translat
 <translation id="3809272675881623365">Zajec</translation>
 <translation id="3809280248639369696">Vesoljec</translation>
 <translation id="3810593934879994994">Spletno mesto <ph name="ORIGIN" /> si lahko ogleda datoteke v naslednjih mapah</translation>
+<translation id="3810770279996899697">Upravitelj gesel potrebuje dostop do shrambe poverilnic Keychain sistema macOS</translation>
 <translation id="3810914450553844415">Skrbnik ne dovoljuje dodatnih računov Google.</translation>
 <translation id="3810973564298564668">Upravljaj</translation>
 <translation id="381202950560906753">Dodaj še enega</translation>
@@ -5062,6 +5068,7 @@ Za pomanjšavo pritisnite Ctrl + Alt + tipko za zmanjšanje svetlosti.</translat
 <translation id="4918134162946436591">Prikaz prekrivanja z namigi</translation>
 <translation id="4918762404810341788">Kopiraj in odpri</translation>
 <translation id="4921348630401250116">Pretvorba besedila v govor</translation>
+<translation id="4922104989726031751">Če želite z operacijskim sistemom uporabljati upravitelja gesel, znova zaženite Chromium in omogočite dostop do upravitelja gesel v računalniku. Zavihki se bodo po vnovičnem zagonu znova odprli.</translation>
 <translation id="492299503953721473">Odstrani aplikacije za Android</translation>
 <translation id="492363500327720082">Odmeščanje aplikacije <ph name="APP_NAME" /> …</translation>
 <translation id="4924002401726507608">Pošlji povratne informacije</translation>
@@ -6683,6 +6690,7 @@ Poskrbite, da ne boste razkrili morebitnih občutljivih podatkov.</translation>
 <translation id="6238982280403036866">Dovoljena je uporaba JavaScripta</translation>
 <translation id="6239558157302047471">Znova naloži &amp;okvir</translation>
 <translation id="6240821072888636753">Vedno vprašaj</translation>
+<translation id="6240964651812394252">Če želite z operacijskim sistemom uporabljati Googlovega upravitelja gesel, znova zaženite Chrome in omogočite dostop do upravitelja gesel v računalniku. Zavihki se bodo po vnovičnem zagonu znova odprli.</translation>
 <translation id="6241530762627360640">Dostop do podatkov o napravah Bluetooth, ki so seznanjene z vašim sistemom, in odkrivanje naprav Bluetooth v bližini.</translation>
 <translation id="6241844896329831164">Dostop ni potreben</translation>
 <translation id="6242574558232861452">Preverjamo, ali je datoteka v skladu z varnostnimi pravilniki organizacije.</translation>
@@ -6717,6 +6725,7 @@ Poskrbite, da ne boste razkrili morebitnih občutljivih podatkov.</translation>
 <translation id="6264365405983206840">Izberi &amp;vse</translation>
 <translation id="6264376385120300461">Vseeno prenesi</translation>
 <translation id="6264520534872750757">Nadaljuj uporabo naprave</translation>
+<translation id="6264636978858465832">Upravitelj gesel potrebuje več dostopa</translation>
 <translation id="6265159465845424232">Vprašaj pred kopiranjem ali premikanjem Microsoftovih datotek v Microsoft OneDrive</translation>
 <translation id="6265687851677020761">Odstrani vrata</translation>
 <translation id="6266532094411434237">Vzpostavljanje povezave z napravo <ph name="DEVICE" /></translation>
@@ -9528,7 +9537,6 @@ Datoteko s ključem shranite na varnem. Potrebovali jo boste za izdelavo novih r
 <translation id="8473540203671727883">Izgovori besedilo pod miško</translation>
 <translation id="8473863474539038330">Naslovi in drugo</translation>
 <translation id="8474378002946546633">Omogoči obvestila</translation>
-<translation id="8474733733775441349">Prikaz gesel iz računa Google</translation>
 <translation id="8475313423285172237">Drug program v računalniku je dodal razširitev, ki lahko spremeni način delovanja Chroma.</translation>
 <translation id="8476408756881832830">Zaustavi predvajanje, ko ChromeVox govori</translation>
 <translation id="8476491056950015181"><ph name="BEGIN_PARAGRAPH1" />Če napravam s sistemom ChromeOS dovolite pošiljanje samodejnih poročil, bomo potrebne popravke in izboljšave sistema ChromeOS lažje razvrstili po pomembnosti. Ta poročila lahko med drugim vključujejo podatke o tem, kdaj v sistemu ChromeOS pride do sesutij, katere funkcije so bile uporabljene, koliko pomnilnika je bilo običajno uporabljenega in podatke o uporabi aplikacij za Android. Nekateri združeni podatki bodo pomagali tudi Googlovim aplikacijam in partnerjem, na primer razvijalcem za Android.<ph name="END_PARAGRAPH1" />

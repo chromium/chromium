@@ -866,6 +866,7 @@ Es posible que se apliquen a esta cuenta los permisos que otorgaste a apps. Pued
 <translation id="1651008383952180276">Debes ingresar la misma frase de contraseña dos veces</translation>
 <translation id="1651609627703324721">Esta pestaña muestra contenido de RV en un visor</translation>
 <translation id="1652326691684645429">Habilitar Compartir con Nearby</translation>
+<translation id="1652862280638399816">Para usar el Administrador de contraseñas con el llavero de macOS, reinicia Chromium y permite el acceso al llavero. Las pestañas se volverán a abrir después de que lo reinicies.</translation>
 <translation id="1654580009054503925">No puede mostrar solicitudes</translation>
 <translation id="1656528038316521561">Opacidad del fondo</translation>
 <translation id="1657406563541664238">Ayúdanos a <ph name="PRODUCT_NAME" /> mejorar enviando automáticamente estadísticas de uso e informes de fallos a Google.</translation>
@@ -2816,6 +2817,7 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="3151562827395986343">Borra el historial, las cookies, la caché y más</translation>
 <translation id="3151786313568798007">Orientación</translation>
 <translation id="3152356229013609796">Mirar las notificaciones del teléfono, descartarlas o responderlas</translation>
+<translation id="3155163173539279776">Reiniciar Chromium</translation>
 <translation id="3157387275655328056">Agregar a la Lista de lectura</translation>
 <translation id="3157931365184549694">Restaurar</translation>
 <translation id="3158033540161634471">Configura tu huella</translation>
@@ -3633,6 +3635,7 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="3809272675881623365">Conejo</translation>
 <translation id="3809280248639369696">Alien</translation>
 <translation id="3810593934879994994"><ph name="ORIGIN" /> puede ver archivos en las siguientes carpetas</translation>
+<translation id="3810770279996899697">El Administrador de contraseñas necesita acceso al llavero de macOS</translation>
 <translation id="3810914450553844415">Tu administrador no permite Cuentas de Google adicionales.</translation>
 <translation id="3810973564298564668">Administrar</translation>
 <translation id="381202950560906753">Agregar otra</translation>
@@ -9476,7 +9479,6 @@ Mantén el archivo de clave en un lugar seguro. Debes crear las nuevas versiones
 <translation id="8473540203671727883">Pronunciar el texto cuando pasas el puntero del mouse</translation>
 <translation id="8473863474539038330">Direcciones y más</translation>
 <translation id="8474378002946546633">Permitir notificaciones</translation>
-<translation id="8474733733775441349">Muestra las contraseñas de tu Cuenta de Google</translation>
 <translation id="8475313423285172237">Otro programa en tu computadora agregó una extensión que puede cambiar el funcionamiento de Chrome.</translation>
 <translation id="8476408756881832830">Pausar la reproducción cuando ChromeVox esté hablando</translation>
 <translation id="8476491056950015181"><ph name="BEGIN_PARAGRAPH1" />Cuando permites que los dispositivos ChromeOS envíen informes automáticos, nos ayudas a priorizar las tareas de corrección y mejora en ChromeOS. Estos informes pueden incluir cierta información como el momento en que falló ChromeOS, qué funciones se estaban usando, la cantidad de memoria que se usó en general y datos de uso y de diagnóstico sobre las apps para Android. Algunos datos agregados también ayudarán a las apps y los socios de Google, como los desarrolladores de Android.<ph name="END_PARAGRAPH1" />

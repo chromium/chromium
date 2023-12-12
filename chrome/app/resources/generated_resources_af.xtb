@@ -872,6 +872,7 @@ Toestemmings wat jy reeds aan programme gegee het, kan op hierdie rekening van t
 <translation id="1651008383952180276">Jy moet dieselfde wagfrase twee keer invoer</translation>
 <translation id="1651609627703324721">Hierdie oortjie bied VR-inhoud vir ’n kopstuk aan</translation>
 <translation id="1652326691684645429">Aktiveer Nabydeling</translation>
+<translation id="1652862280638399816">Herbegin Chromium en laat Keychain-toegang toe om Wagwoordbestuurder met macOS Keychain te gebruik. Jou oortjies sal weer oopmaak nadat jy herbegin het.</translation>
 <translation id="1654580009054503925">Nie toegelaat om versoeke te wys nie</translation>
 <translation id="1656528038316521561">Agtergrondondeursigtigheid</translation>
 <translation id="1657406563541664238">Help om <ph name="PRODUCT_NAME" /> te verbeter deur gebruikstatistiek en omvalverslae outomaties na Google te stuur</translation>
@@ -2641,6 +2642,7 @@ Jy kan hierdie rekening se instellings bestuur deur die Family Link-program op j
 <translation id="2990313168615879645">Voeg Google-rekening by</translation>
 <translation id="2990375978470734995">Herkoppel jou eksterne bykomstighede sodat hierdie verandering om in werking te tree.</translation>
 <translation id="2990583317361835189">Moenie werwe toelaat om bewegingsensors te gebruik nie</translation>
+<translation id="2991182900092497283">Voer asseblief ’n rede in hoekom jy hierdie data plak:</translation>
 <translation id="2992931425024192067">Wys alle kennisgewinginhoud</translation>
 <translation id="2993517869960930405">Programinligting</translation>
 <translation id="2996108796702395498">Jou toestel se reeksnommer is <ph name="SERIAL_NUMBER" />. Hierdie nommer kan gebruik word om diens te help aktiveer.</translation>
@@ -2834,6 +2836,7 @@ Jy kan hierdie rekening se instellings bestuur deur die Family Link-program op j
 <translation id="3151562827395986343">Vee geskiedenis, webkoekies, kas en meer uit</translation>
 <translation id="3151786313568798007">Oriëntasie</translation>
 <translation id="3152356229013609796">Bekyk, antwoord op en maak jou foon se kennisgewings toe</translation>
+<translation id="3155163173539279776">Herbegin Chromium</translation>
 <translation id="3157387275655328056">Voeg by leeslys</translation>
 <translation id="3157931365184549694">Stel terug</translation>
 <translation id="3158033540161634471">Stel jou vingerafdruk op</translation>
@@ -3154,6 +3157,7 @@ Jy kan hierdie rekening se instellings bestuur deur die Family Link-program op j
 <translation id="3432762828853624962">Gedeelde werkers</translation>
 <translation id="3433507769937235446">Sluit as jy weggaan</translation>
 <translation id="3433621910545056227">Oeps! Die stelsel kon nie die toestel se kenmerkeslot by installering vasmaak nie.</translation>
+<translation id="3434025015623587566">Google Wagwoordbestuurder het meer toegang nodig</translation>
 <translation id="3434107140712555581"><ph name="BATTERY_PERCENTAGE" />%</translation>
 <translation id="3434272557872943250">As die bykomende Web- en App-aktiwiteit-instelling vir jou kind aangeskakel is, kan hierdie data in hul Google-rekening gestoor word. Kom by families.google.com meer te wete oor hierdie instellings en hoe om hulle te verstel.</translation>
 <translation id="3434475275396485144">Jou foon se administrateur bestuur hierdie instelling</translation>
@@ -3366,6 +3370,7 @@ Jy kan hierdie rekening se instellings bestuur deur die Family Link-program op j
 <translation id="3605156246402033687">{COUNT,plural, =1{{COUNT} rekening gebruik dieselfde wagwoord}other{{COUNT} rekeninge gebruik dieselfde wagwoord}}</translation>
 <translation id="3605780360466892872">Toegeknoop</translation>
 <translation id="3607671391978830431">Vir ’n kind</translation>
+<translation id="3608460311600621471">Voer asseblief ’n rede in hoekom jy hierdie data druk:</translation>
 <translation id="3608730769702025110">Stap 3 van 4: Hersien persoonlik identifiseerbare inligting</translation>
 <translation id="3609277884604412258">Kitssoektog</translation>
 <translation id="3610241585790874201">Mag nie data op jou toestel stoor nie</translation>
@@ -3651,6 +3656,7 @@ Jy kan hierdie rekening se instellings bestuur deur die Family Link-program op j
 <translation id="3809272675881623365">Haas</translation>
 <translation id="3809280248639369696">Maanligstraal</translation>
 <translation id="3810593934879994994"><ph name="ORIGIN" /> kan lêers in die volgende vouers bekyk</translation>
+<translation id="3810770279996899697">Wagwoordbestuurder het toegang tot MacOS Keychain nodig</translation>
 <translation id="3810914450553844415">Jou administrateur laat nie bykomende Google-rekeninge toe nie.</translation>
 <translation id="3810973564298564668">Bestuur</translation>
 <translation id="381202950560906753">Voeg nog een by</translation>
@@ -5049,6 +5055,7 @@ Gebruik Ctrl + Alt + Verlaag Helderheid om uit te zoem.</translation>
 <translation id="4918134162946436591">Wys wenkoorlegger</translation>
 <translation id="4918762404810341788">Kopieer en maak oop</translation>
 <translation id="4921348630401250116">Teks-na-spraak</translation>
+<translation id="4922104989726031751">Herbegin Chromium en laat jou rekenaar se wagwoordbestuurder toe om Wagwoordbestuurder met jou bedryfstelsel te gebruik. Jou oortjies sal weer oopmaak nadat jy herbegin het.</translation>
 <translation id="492299503953721473">Verwyder Android-programme</translation>
 <translation id="492363500327720082">Deïnstalleer tans <ph name="APP_NAME" /> …</translation>
 <translation id="4924002401726507608">Dien terugvoer in</translation>
@@ -6666,6 +6673,7 @@ Maak seker jy wys nie enige sensitiewe inligting nie.</translation>
 <translation id="6238982280403036866">Mag JavaScript gebruik</translation>
 <translation id="6239558157302047471">Herlaai raam</translation>
 <translation id="6240821072888636753">Vra elke keer</translation>
+<translation id="6240964651812394252">Herbegin Chrome en laat jou rekenaar se wagwoordbestuurder toe om Google Wagwoordbestuurder met jou bedryfstelsel te gebruik. Jou oortjies sal weer oopmaak nadat jy herbegin het.</translation>
 <translation id="6241530762627360640">Verkry inligting oor Bluetooth-toestelle wat met jou stelsel saamgebind is en ontdek nabygeleë Bluetooth-toestelle.</translation>
 <translation id="6241844896329831164">Geen toegang nodig nie</translation>
 <translation id="6242574558232861452">Kontroleer tans met jou organisasie se sekuriteitbeleid.</translation>
@@ -6700,6 +6708,7 @@ Maak seker jy wys nie enige sensitiewe inligting nie.</translation>
 <translation id="6264365405983206840">Kies alles</translation>
 <translation id="6264376385120300461">Laai in elk geval af</translation>
 <translation id="6264520534872750757">Gaan voort om die toestel te gebruik</translation>
+<translation id="6264636978858465832">Wagwoordbestuurder het meer toegang nodig</translation>
 <translation id="6265159465845424232">Vra voordat jy Microsoft-lêers na Microsoft OneDrive kopieer of skuif</translation>
 <translation id="6265687851677020761">Verwyder poort</translation>
 <translation id="6266532094411434237">Koppel tans aan <ph name="DEVICE" /></translation>
@@ -9494,7 +9503,6 @@ Hou jou sleutellêer op 'n veilige plek. Jy gaan dit nodig hê om nuwe weergawes
 <translation id="8473540203671727883">Lees teks onder die muis</translation>
 <translation id="8473863474539038330">Adresse en meer</translation>
 <translation id="8474378002946546633">Laat kennisgewings toe</translation>
-<translation id="8474733733775441349">Wys wagwoorde uit jou Google-rekening</translation>
 <translation id="8475313423285172237">'n Ander program op jou rekenaar het 'n uitbreiding bygevoeg wat Chrome se werkwyse kan verander.</translation>
 <translation id="8476408756881832830">Onderbreek terugspeling wanneer ChromeVox besig is om te praat</translation>
 <translation id="8476491056950015181"><ph name="BEGIN_PARAGRAPH1" />As jy Chrome-toestelle toelaat om outomatiese verslae te stuur, help dit ons om te prioritiseer wat om in ChromeOS reg te stel en te verbeter. Hierdie verslae kan dinge insluit soos wanneer ChromeOS omval, watter kenmerke gebruik is, hoeveel geheue gewoonlik gebruik is, en diagnostiese en gebruiksdata oor Android-programme. Sekere aggregaatdata sal ook Google-programme en -vennote, soos Android-ontwikkelaars, help.<ph name="END_PARAGRAPH1" />

@@ -872,6 +872,7 @@
 <translation id="1651008383952180276">คุณต้องป้อนรหัสผ่านเดียวกัน 2 ครั้ง</translation>
 <translation id="1651609627703324721">แท็บนี้กำลังนำเสนอเนื้อหา VR ไปยังชุดหูฟัง</translation>
 <translation id="1652326691684645429">เปิดใช้การแชร์ใกล้เคียง</translation>
+<translation id="1652862280638399816">หากต้องการใช้เครื่องมือจัดการรหัสผ่านกับ Keychain ของ macOS ให้เปิด Chromium อีกครั้งแล้วอนุญาตให้มีการเข้าถึง Keychain แท็บจะเปิดขึ้นมาใหม่หลังจากที่เปิดอีกครั้ง</translation>
 <translation id="1654580009054503925">ไม่ได้รับอนุญาตให้แสดงคำขอ</translation>
 <translation id="1656528038316521561">ความทึบแสงของพื้นหลัง</translation>
 <translation id="1657406563541664238">ช่วยปรับปรุง <ph name="PRODUCT_NAME" /> ให้ดีขึ้นโดยการส่งสถิติการใช้งานและรายงานปัญหาไปยัง Google โดยอัตโนมัติ</translation>
@@ -2824,6 +2825,7 @@
 <translation id="3151562827395986343">ล้างประวัติ คุกกี้ แคช และอื่นๆ</translation>
 <translation id="3151786313568798007">การวางแนว</translation>
 <translation id="3152356229013609796">ดู ปิด และตอบกลับการแจ้งเตือนของโทรศัพท์</translation>
+<translation id="3155163173539279776">เรียกใช้งาน Chromium อีกครั้ง</translation>
 <translation id="3157387275655328056">เพิ่มไปยังเรื่องรออ่าน</translation>
 <translation id="3157931365184549694">คืนค่า</translation>
 <translation id="3158033540161634471">ตั้งค่าลายนิ้วมือ</translation>
@@ -3644,6 +3646,7 @@
 <translation id="3809272675881623365">กระต่าย</translation>
 <translation id="3809280248639369696">มูนบีม</translation>
 <translation id="3810593934879994994"><ph name="ORIGIN" /> ดูไฟล์ในโฟลเดอร์ต่อไปนี้ได้</translation>
+<translation id="3810770279996899697">เครื่องมือจัดการรหัสผ่านต้องการสิทธิ์เข้าถึง Keychain ของ MacOS</translation>
 <translation id="3810914450553844415">ผู้ดูแลระบบไม่อนุญาตให้มีบัญชี Google เพิ่มเติม</translation>
 <translation id="3810973564298564668">จัดการ</translation>
 <translation id="381202950560906753">เพิ่มลายนิ้วมืออีก</translation>
@@ -9497,7 +9500,6 @@
 <translation id="8473540203671727883">พูดข้อความที่อยู่ใต้เมาส์</translation>
 <translation id="8473863474539038330">ที่อยู่และอื่นๆ</translation>
 <translation id="8474378002946546633">อนุญาตการแจ้งเตือน</translation>
-<translation id="8474733733775441349">แสดงรหัสผ่านจากบัญชี Google</translation>
 <translation id="8475313423285172237">โปรแกรมอื่นในคอมพิวเตอร์ของคุณเพิ่มส่วนขยายที่อาจเปลี่ยนวิธีการทำงานของ Chrome</translation>
 <translation id="8476408756881832830">หยุดเล่นชั่วคราวเมื่อ ChromeVox กำลังพูด</translation>
 <translation id="8476491056950015181"><ph name="BEGIN_PARAGRAPH1" />การอนุญาตให้อุปกรณ์ Chrome OS ส่งรายงานอัตโนมัติจะช่วยให้เราจัดลำดับความสำคัญของสิ่งที่ต้องแก้ไขและปรับปรุงใน Chrome OS ได้ รายงานเหล่านี้ประกอบด้วยข้อมูลต่างๆ เช่น เวลาที่ ChromeOS ขัดข้อง ฟีเจอร์ที่ใช้ จำนวนหน่วยความจำที่ใช้โดยปกติ รวมถึงข้อมูลการวินิจฉัยและการใช้งานแอป Android ข้อมูลรวมบางส่วนจะมีประโยชน์ต่อแอปและพาร์ทเนอร์ของ Google ด้วย เช่น นักพัฒนาแอป Android<ph name="END_PARAGRAPH1" />

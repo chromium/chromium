@@ -873,6 +873,7 @@
 <translation id="1651008383952180276">ተመሳሳዩ የይለፍ ሐረጉን ሁለት ጊዜ ማስገባት አለብዎት</translation>
 <translation id="1651609627703324721">ይህ ትር የምናባዊ እውነታ ይዘትን ወደ የጆሮ ማዳመጫ በማቅረብ ላይ ነው</translation>
 <translation id="1652326691684645429">የአቅራቢያ አጋራን ያንቁ</translation>
+<translation id="1652862280638399816">የሚስጥር ቁልፍ አስተዳዳሪን ከ macOS Keychain ጋር ለመጠቀም Chromium ን እንደገና ያስጀምሩ እና የ Keychain መዳረሻን ይፍቀዱ። ዳግም ከጀመረ በኋላ ትሮችዎ እንደገና ይከፈታሉ።</translation>
 <translation id="1654580009054503925">ጥያቄዎችን ለማሳየት አልተፈቀደም</translation>
 <translation id="1656528038316521561">የበስተጀርባ ብርሃን-ከልነት</translation>
 <translation id="1657406563541664238">የአጠቃቀም ስታቲክሶችን እና የስንኩል ሪፖርቶችን ወደ Google በቀጥታ በመላክ <ph name="PRODUCT_NAME" />ን የተሻለ ለማድረግ እገዛ ያድርጉ።</translation>
@@ -1652,6 +1653,7 @@
 <translation id="2249111429176737533">እንደ በትር የተከፈተ መስኮት ተከፍቷል</translation>
 <translation id="2249605167705922988">ለምሳሌ፦ 1-5፣ 8፣ 11-13</translation>
 <translation id="2249635629516220541">ማስታወቂያዎችን ለእርስዎ ለማሳየት በጣቢያዎች ጥቅም ላይ የሚውለውን መረጃ ያብጁ</translation>
+<translation id="2250624716625396929">ይህ ትር የእርስዎን ካሜራ እና ማይክሮፎን እየተጠቀመ ነው</translation>
 <translation id="2251218783371366160">በስርዓት መመልከቻ ክፈት</translation>
 <translation id="225163402930830576">አውታረ መረቦችን አድስ</translation>
 <translation id="2251809247798634662">አዲስ ማንነትን የማያሳውቅ መስኮት</translation>
@@ -2834,6 +2836,7 @@
 <translation id="3151562827395986343">ታሪክ፣ ኩኪዎች፣ መሸጎጫ እና ተጨማሪ ነገሮችን ያጽዱ</translation>
 <translation id="3151786313568798007">አቀማመጥ</translation>
 <translation id="3152356229013609796">የስልክዎን ማሳወቂያዎች ይመልከቱ፣ ያሰናብቱ እና ምላሽ ይስጡ</translation>
+<translation id="3155163173539279776">Chromiumን ዳግም አስጀምር</translation>
 <translation id="3157387275655328056">ወደ የንባብ ዝርዝር አክል</translation>
 <translation id="3157931365184549694">እነበረበት መልስ</translation>
 <translation id="3158033540161634471">የጣት አሻራዎን ያዋቅሩ</translation>
@@ -3656,6 +3659,7 @@
 <translation id="3809272675881623365">ጥንቸል</translation>
 <translation id="3809280248639369696">Moonbeam</translation>
 <translation id="3810593934879994994"><ph name="ORIGIN" /> በሚከተሉት አቃፊዎሽ ውስጥ ያሉ ፋይሎችን መመልከት ይችላል</translation>
+<translation id="3810770279996899697">የሚስጥር ቁልፍ አስተዳዳሪ የ MacOS Keychain መዳረሻ ያስፈልገዋል</translation>
 <translation id="3810914450553844415">አስተዳዳሪዎ ተጨማሪ የGoogle መለያዎችን አይፈቅድም።</translation>
 <translation id="3810973564298564668">አደራጅ</translation>
 <translation id="381202950560906753">ሌላ አክል</translation>
@@ -5053,6 +5057,7 @@
 <translation id="4918134162946436591">ፍንጭ ተደራቢ አሳይ</translation>
 <translation id="4918762404810341788">ቅዳ እና ክፈት</translation>
 <translation id="4921348630401250116">ጽሁፍ-ወደ-ንግግር</translation>
+<translation id="4922104989726031751">ከስርዓተ ክወናዎ ጋር የይለፍ ቃል አስተዳዳሪን ለመጠቀም Chromiumን ዳግም ያስጀምሩ እና የኮምፒውተርዎን ይለፍ ቃል አቀናባሪ የመግቢያ ፍቃድ ይስጡ። ዳግም ከጀመረ በኋላ ትሮችዎ እንደገና ይከፈታሉ።</translation>
 <translation id="492299503953721473">የAndroid መተግበሪያዎችን አስወግድ</translation>
 <translation id="492363500327720082"><ph name="APP_NAME" />ን በማራገፍ ላይ...</translation>
 <translation id="4924002401726507608">ግብረመልስ አስገባ</translation>
@@ -6625,6 +6630,7 @@
 <translation id="6202304368170870640">ወደ መሣሪያዎ ለመግባት ወይም መሣሪያዎን ለመቆለፍ የእርስዎን ፒን መጠቀም ይችላሉ።</translation>
 <translation id="6203247599828309566">ለይለፍ ቃል በዚህ ጣቢያ ላይ ማስታወሻ አክለዋል። ለመመልከት፣ የቁልፍ አዶውን ጠቅ ያድርጉ።</translation>
 <translation id="6205314730813004066">የማስታወቂያ ግላዊነት</translation>
+<translation id="6205993460077903908"><ph name="WINDOW_TITLE" /> - ማይክሮፎን እየቀዳ ነው</translation>
 <translation id="6206199626856438589">በክፍት ትሮች ውስጥ ጨምሮ ከሚታዩት ጣቢያዎች ዘግተው እንዲወጡ ይደረጋሉ</translation>
 <translation id="6206311232642889873">ምስል ቅ&amp;ዳ</translation>
 <translation id="6207200176136643843">ወደ ነባሪ የማጉላት ደረጃ ዳግም አስጀምር</translation>
@@ -6707,6 +6713,7 @@
 <translation id="6264365405983206840">&amp;ሁሉንም ምረጥ</translation>
 <translation id="6264376385120300461">ለማንኛውም አውርድ</translation>
 <translation id="6264520534872750757">መሣሪያውን ለመጠቀም ይቀጥሉ</translation>
+<translation id="6264636978858465832">የሚስጥር ቁልፍ አስተዳዳሪ ተጨማሪ መዳረሻ ያስፈልገዋል</translation>
 <translation id="6265159465845424232">የMicrosoft ፋይሎችን ወደ Microsoft OneDrive ከመቅዳትዎ ወይም ከማንቀሳቀስዎ በፊት ይጠይቁ</translation>
 <translation id="6265687851677020761">ወደብን አስወግድ</translation>
 <translation id="6266532094411434237">ወደ <ph name="DEVICE" /> በመገናኘት ላይ</translation>
@@ -7177,6 +7184,7 @@
 <translation id="6657585470893396449">የይለፍ ቃል</translation>
 <translation id="6659213950629089752">ይህ ገፅ በ«<ph name="NAME" />» ቅጥያው ነው የጎላው</translation>
 <translation id="6659594942844771486">ትር</translation>
+<translation id="6660099350750552197"><ph name="WINDOW_TITLE" /> - ካሜራዎ እየቀዳ ነው</translation>
 <translation id="6660819301598582123">The quick brown fox jumps over the lazy dog</translation>
 <translation id="666099631117081440">የአትም አገልጋዮች</translation>
 <translation id="6662931079349804328">የድርጅት መመሪያ ተለውጧል የሙከራዎች አዝራር ከመሣሪያ አሞሌ ተወግዷል።</translation>
@@ -8994,6 +9002,7 @@ nil</translation>
 <translation id="8059417245945632445">&amp;መሣሪያዎችን መርምር</translation>
 <translation id="8059456211585183827">ለማስቀመጥ ሊገኙ የሚችሉ ምንም አታሚዎች የሉም።</translation>
 <translation id="8061091456562007989">መልሰው ይቀይሩት</translation>
+<translation id="8061244502316511332">ይህ ትር ማይክሮፎንዎን እየተጠቀመ ነው</translation>
 <translation id="8061970399284390013">የፊደል እና ሰዋስው እርማት</translation>
 <translation id="8061991877177392872">አስቀድመው በሌላ መሣሪያ ላይ በእርስዎ ረዳት Voice Matchን ያቀናበሩ ይመስላሉ። እነዚህ ቀዳሚ ቀረጻዎች በዚህ መሣሪያ ላይ የድምፅ ሞዴል ለመስራት ጥቅም ላይ ውለው ነበር።</translation>
 <translation id="8062844841289846053">{COUNT,plural, =1{1 የወረቀት ሉህ}one{{COUNT} የወረቀት ሉሆች}other{{COUNT} የወረቀት ሉሆች}}</translation>
@@ -9475,6 +9484,7 @@ nil</translation>
 <translation id="844063558976952706">ሁሌም በዚህ ጣቢያ ላይ</translation>
 <translation id="8441313165929432954">እንደ ሞደም መሰካትን አንቃ/አሰናክል</translation>
 <translation id="8443986842926457191">ዩአርኤል ከ2048 ቁምፊዎች በላይ ነው</translation>
+<translation id="8445281870900174108">ይህ ትር ካሜራዎን እየተጠቀመ ነው</translation>
 <translation id="8446884382197647889">ተጨማሪ ለመረዳት</translation>
 <translation id="8447409163267621480">Ctrl ወይም Alt ያካትቱ</translation>
 <translation id="844850004779619592">ምንም ትዕዛዞች አልተገኙም</translation>
@@ -9519,7 +9529,6 @@ nil</translation>
 <translation id="8473540203671727883">ከመዳፊቱ ሥር ያለውን ጽሁፍ ይናገሩ</translation>
 <translation id="8473863474539038330">አድራሻዎች እና ተጨማሪ</translation>
 <translation id="8474378002946546633">ማሳወቂያዎችን ፍቀድ</translation>
-<translation id="8474733733775441349">የይለፍ ቃላትን ከGoogle መለያዎ ያሳዩ</translation>
 <translation id="8475313423285172237">በኮምፒውተርዎ ላይ ያለ ሌላ ፕሮግራም Chrome የሚሰራበት መንገድ ሊቀይር የሚችል አንድ ቅጥያ አክሏል።</translation>
 <translation id="8476408756881832830">ChromeVox እየተናገረ ሳለ መልሶ ማጫወትን ባለበት አቁም</translation>
 <translation id="8476491056950015181"><ph name="BEGIN_PARAGRAPH1" />የChromeOS መሣሪያዎች ራስ-ሰር ሪፖርቶችን እንዲልኩ መፍቀድ እኛ በChromeOS ውስጥ ምን መስተካከል እና መሻሻል እንዳለበት ቅድሚያ እንድንሰጥ ያግዘናል። እነዚህ ሪፖርቶች እንደ ChromeOS ሲበላሽ፣ የትኛዎቹ ባህሪያት ሥራ ላይ እንደዋሉ፣ በተለምዶ ምን ያህል ማህደረ ትውስታ ሥራ ላይ ውሎ እንደነበር እና የAndroid መተግበሪያ የምርመራ እና የአጠቃቀም ውሂብ ያሉ ነገሮችን ሊያካትቱ ይችላሉ። አንዳንድ ውሑድ ውሂብ እንዲሁም የGoogle መተግበሪያዎችን እና እንደ የAndroid ገንቢዎች ያሉ አጋሮችን ያግዛሉ።<ph name="END_PARAGRAPH1" />
@@ -10551,6 +10560,7 @@ nil</translation>
 <translation id="981121421437150478">ከመስመር ውጭ</translation>
 <translation id="983192555821071799">ሁሉንም ትሮች ይዝጉ</translation>
 <translation id="983511809958454316">ይህ ባህሪ በቪአር ውስጥ አይደገፍም</translation>
+<translation id="983531994960412650"><ph name="WINDOW_TITLE" /> - ካሜራዎ እና ማይክሮፎንዎ እየቀዱ ነው</translation>
 <translation id="984275831282074731">የመክፈያ ዘዴዎች</translation>
 <translation id="984705303330760860">የፊደል ማረሚያ የቋንቋዎችን ያክሉ</translation>
 <translation id="98515147261107953">በወርድ</translation>

@@ -53,6 +53,7 @@
 <translation id="1078033282564106222">Opção de número do edifício selecionada</translation>
 <translation id="1080116354587839789">Ajustar à largura</translation>
 <translation id="1081061862829655580">Tabuleiro 19</translation>
+<translation id="1082026381988252344">Desloque a página e aumente o zoom do conteúdo do seu separador partilhado</translation>
 <translation id="1089439967362294234">Alterar palavra-passe</translation>
 <translation id="1090629319939036170">Menu de RV</translation>
 <translation id="1094777233105318927">Informações sobre o seu navegador, SO, dispositivo, software instalado e ficheiros</translation>
@@ -1222,6 +1223,7 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="3432601291244612633">Fechar página</translation>
 <translation id="3433111389595862568">Software de colaboração e videoconferência</translation>
 <translation id="3433144818443565002">Chat de voz e vídeo</translation>
+<translation id="3434025015623587566">O Gestor de Palavras-passe da Google precisa de mais acesso</translation>
 <translation id="343474037147570563">Os ficheiros que carrega ou anexa são enviados para o Google Cloud ou terceiros para análise. Por exemplo, podem ser analisados quanto a dados confidenciais ou software malicioso, ser armazenados com base nas políticas da empresa e ficar visíveis para o seu administrador.</translation>
 <translation id="3435557549311968410">Contínuo (curto)</translation>
 <translation id="3435738964857648380">Segurança</translation>
@@ -1974,6 +1976,7 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="4918221908152712722">Instale a aplicação <ph name="APP_NAME" /> (não é necessária qualquer transferência).</translation>
 <translation id="4920457992177678649">Alugueres de férias e estadias de curto prazo</translation>
 <translation id="4920710383559189047">Manga</translation>
+<translation id="4922104989726031751">Para usar o Gestor de Palavras-passe com o seu sistema operativo, reinicie o Chromium e permita o acesso ao gestor de palavras-passe do computador. Os separadores reabrem depois de serem reiniciados.</translation>
 <translation id="4923459931733593730">Pagamento</translation>
 <translation id="4926049483395192435">Tem de ser especificado.</translation>
 <translation id="4926159001844873046"><ph name="SITE" /> diz</translation>
@@ -2532,6 +2535,7 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="6051221802930200923">Não pode visitar <ph name="SITE" /> neste momento, porque o Website utiliza a afixação de certificados. Os erros de rede e os ataques são geralmente temporários, pelo que esta página deverá funcionar mais tarde.</translation>
 <translation id="6051898664905071243">Número de páginas:</translation>
 <translation id="6052284303005792909">•</translation>
+<translation id="605237284704429106">A preencher o IBAN</translation>
 <translation id="6053584886670442526">Pode usar moradas guardadas em produtos Google. Esta morada está guardada na sua Conta Google, <ph name="ACCOUNT" />.</translation>
 <translation id="6053735090575989697">Saiba mais sobre como a Google protege os seus dados na nossa Política de Privacidade.</translation>
 <translation id="6055888660316801977">Página de credenciais de pagamento seguro sem correspondência com as credenciais</translation>
@@ -2615,6 +2619,7 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="6234122620015464377">Cortar no fim de cada documento</translation>
 <translation id="6236290670123303279">Gerir definições</translation>
 <translation id="6240447795304464094">Logótipo do Google Pay</translation>
+<translation id="6240964651812394252">Para usar o Gestor de Palavras-passe da Google com o seu sistema operativo, reinicie o Chrome e permita o acesso ao gestor de palavras-passe do computador. Os separadores reabrem depois de serem reiniciados.</translation>
 <translation id="6241121617266208201">Ocultar sugestões</translation>
 <translation id="624499991300733384">Serviço do compositor de impressão</translation>
 <translation id="6251906504834538140">{0,plural, =1{A movimentação do ficheiro foi bloqueada}other{A movimentação de <ph name="FILE_COUNT" /> ficheiros foi bloqueada}}</translation>
@@ -2625,6 +2630,7 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="6263376278284652872">Marcadores do <ph name="DOMAIN" /></translation>
 <translation id="6264376385120300461">Transferir mesmo assim</translation>
 <translation id="6264485186158353794">Voltar para segurança</translation>
+<translation id="6264636978858465832">O Gestor de Palavras-passe precisa de mais acesso</translation>
 <translation id="6265794661083428563">Copie o valor da política <ph name="POLICY_NAME" /></translation>
 <translation id="6266934640124581640">Azul esverdeado claro</translation>
 <translation id="6270066318535733958">Passeios de barco</translation>
@@ -2804,6 +2810,7 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="6612010098632894193">Vídeo online</translation>
 <translation id="6613866251791999074">Saber mais sobre o seu motor de pesquisa no Chrome</translation>
 <translation id="6615297766614333076">Empilhador 2</translation>
+<translation id="6619496928666593220">IBAN não preenchido</translation>
 <translation id="6624427990725312378">Informações de contacto</translation>
 <translation id="6628463337424475685"><ph name="ENGINE" /> Pesquisar</translation>
 <translation id="6629652037942826935">Viagens de luxo</translation>

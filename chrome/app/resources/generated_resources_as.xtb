@@ -870,6 +870,7 @@
 <translation id="1651008383952180276">আপুনি একেটা পাছফ্ৰেজ দুবাৰ দিবই লাগিব</translation>
 <translation id="1651609627703324721">এই টেবটোৱে কোনো হেডছেটত VR সমল উপস্থাপন কৰি আছে</translation>
 <translation id="1652326691684645429">Nearby Share সুবিধাটো সক্ষম কৰক</translation>
+<translation id="1652862280638399816">macOS কীচেইনৰ জৰিয়তে Password Manager ব্যৱহাৰ কৰিবলৈ, Chromium পুনৰ লঞ্চ কৰক আৰু কীচেইন এক্সেছ কৰাৰ অনুমতি দিয়ক। পুনৰ লঞ্চ কৰাৰ পাছত আপোনাৰ টেবসমূহ পুনৰ খোল খাব।</translation>
 <translation id="1654580009054503925">অনুৰোধ দেখুৱাবলৈ অনুমতি নাই</translation>
 <translation id="1656528038316521561">নেপথ্যৰ অস্বচ্ছতা</translation>
 <translation id="1657406563541664238">Googleলৈ ব্যৱহাৰৰ পৰিসংখ্যা আৰু ক্ৰেশ্বৰ অভিযোগ স্বয়ংক্ৰিয়ভাৱে পঠিয়াই <ph name="PRODUCT_NAME" />ক অধিক উন্নত কৰাত সহায় কৰক</translation>
@@ -2639,6 +2640,7 @@
 <translation id="2990313168615879645">Google একাউণ্ট যোগ দিয়ক</translation>
 <translation id="2990375978470734995">এই সালসলনিটো কার্যকৰী হ'বলৈ, আপোনাৰ বাহ্যিক আনুষংগিক সামগ্ৰীসমূহ পুনৰ সংযোগ কৰক।</translation>
 <translation id="2990583317361835189">ছাইটক ম’শ্বন ছেন্সৰ ব্যৱহাৰ কৰাৰ অনুমতি নিদিব</translation>
+<translation id="2991182900092497283">অনুগ্ৰহ কৰি এই ডেটাখিনি পে’ষ্ট কৰাৰ এটা কাৰণ দিয়ক:</translation>
 <translation id="2992931425024192067">সকলো জাননীৰ সমল দেখুৱাওক</translation>
 <translation id="2993517869960930405">এপ্ সম্পৰ্কীয় তথ্য</translation>
 <translation id="2996108796702395498">আপোনাৰ ডিভাইচৰ ক্ৰমিক নম্বৰটো হৈছে <ph name="SERIAL_NUMBER" />। সেৱা সক্ৰিয় কৰিবলৈ এই সংখ্যাটো ব্যৱহাৰ কৰিব পৰা যায়।</translation>
@@ -2832,6 +2834,7 @@
 <translation id="3151562827395986343">ব্ৰাউজিঙৰ ইতিহাস, কুকি, কেশ্ব আৰু অধিক তথ্য মচক</translation>
 <translation id="3151786313568798007">দিশ</translation>
 <translation id="3152356229013609796">আপোনাৰ ফ’নৰ জাননী চাওক, অগ্ৰাহ্য কৰক আৰু তাৰ প্ৰত্যুত্তৰ দিয়ক</translation>
+<translation id="3155163173539279776">Chromium পুনৰ লঞ্চ কৰক</translation>
 <translation id="3157387275655328056">পঢ়াৰ সূচীত যোগ দিয়ক</translation>
 <translation id="3157931365184549694">পুনঃস্থাপন কৰক</translation>
 <translation id="3158033540161634471">আপোনাৰ ফিংগাৰপ্ৰিণ্ট ছেট আপ কৰক</translation>
@@ -3152,6 +3155,7 @@
 <translation id="3432762828853624962">শ্বেয়াৰ কৰা ৱৰ্কাৰ</translation>
 <translation id="3433507769937235446">এৰি গ’লে লক হোৱাৰ সুবিধা</translation>
 <translation id="3433621910545056227">আমি দুঃখিত!  ছিষ্টেমটোৱে ডিভাইচটোৰ ইনষ্টলেশ্বনৰ সময়ৰ এট্রিবিউট লক স্থাপন কৰিব নোৱাৰিলে।</translation>
+<translation id="3434025015623587566">Google Password Managerক অধিক এক্সেছৰ আৱশ্যক</translation>
 <translation id="3434107140712555581"><ph name="BATTERY_PERCENTAGE" />%</translation>
 <translation id="3434272557872943250">যদি আপোনাৰ শিশুৰ বাবে অতিৰিক্ত ৱেব আৰু এপৰ কার্যকলাপ অন কৰা হয়, তেন্তে এই ডেটা তেওঁৰ Google একাউণ্টত ছেভ কৰা হ’ব পাৰে। এই ছেটিংসমূহৰ বিষয়ে আৰু সেইবোৰ কেনেদৰে মিলাব পাৰি সেই বিষয়ে জানিবলৈ families.google.comলৈ যাওক।</translation>
 <translation id="3434475275396485144">এই ছেটিংটো আপোনাৰ ফ’নটোৰ প্ৰশাসকে পৰিচালনা কৰে</translation>
@@ -3364,6 +3368,7 @@
 <translation id="3605156246402033687">{COUNT,plural, =1{{COUNT} টা একাউণ্টে একেটা পাছৱৰ্ড ব্যৱহাৰ কৰি আছে}one{{COUNT} টা একাউণ্টে একেটা পাছৱৰ্ড ব্যৱহাৰ কৰি আছে}other{{COUNT} টা একাউণ্টে একেটা পাছৱৰ্ড ব্যৱহাৰ কৰি আছে}}</translation>
 <translation id="3605780360466892872">Buttondown</translation>
 <translation id="3607671391978830431">শিশুৰ বাবে</translation>
+<translation id="3608460311600621471">অনুগ্ৰহ কৰি এই ডেটাখিনি প্ৰিণ্ট কৰাৰ এটা কাৰণ দিয়ক:</translation>
 <translation id="3608730769702025110">৪ টা পদক্ষেপৰ ৩ নম্বৰটো: ব্যক্তিগতভাৱে চিনাক্ত কৰিব পৰা তথ্যৰ পৰ্যালোচনা কৰক</translation>
 <translation id="3609277884604412258">ক্ষিপ্ৰ সন্ধান</translation>
 <translation id="3610241585790874201">আপোনাৰ ডিভাইচত ডেটা ছেভ কৰিবলৈ অনুমতি দিয়া নহয়</translation>
@@ -3649,6 +3654,7 @@
 <translation id="3809272675881623365">শহা</translation>
 <translation id="3809280248639369696">জোনাক</translation>
 <translation id="3810593934879994994"><ph name="ORIGIN" />এ তলৰ ফ’ল্ডাৰসমূহত থকা ফাইলসমূহ চাব পাৰে</translation>
+<translation id="3810770279996899697">Password Managerএ MacOS কীচেইন এক্সেছ কৰাৰ প্ৰয়োজন</translation>
 <translation id="3810914450553844415">আপোনাৰ প্ৰশাসকে অতিৰিক্ত Google একাউণ্ট ব্যৱহাৰ কৰাৰ অনুমতি নিদিয়ে।</translation>
 <translation id="3810973564298564668">পৰিচালনা কৰক</translation>
 <translation id="381202950560906753">অন্য এটা যোগ কৰক</translation>
@@ -5046,6 +5052,7 @@
 <translation id="4918134162946436591">ইংগিতৰ অ’ভাৰলে’ দেখুৱাওক</translation>
 <translation id="4918762404810341788">প্ৰতিলিপি কৰক আৰু খোলক</translation>
 <translation id="4921348630401250116">পাঠৰ পৰা কথন</translation>
+<translation id="4922104989726031751">আপোনাৰ অপাৰেটিং ছিষ্টেমৰ সৈতে Password Manager ব্যৱহাৰ কৰিবলৈ, পুনৰ Chromium লঞ্চ কৰক আৰু আপোনাৰ কম্পিউটাৰৰ পাছৱৰ্ড পৰিচালক এক্সেছ কৰাৰ অনুমতি দিয়ক। পুনৰ লঞ্চ কৰাৰ পাছত আপোনাৰ টেবসমূহ পুনৰ খোল খাব।</translation>
 <translation id="492299503953721473">Android এপ্‌বোৰ আঁতৰাওক</translation>
 <translation id="492363500327720082"><ph name="APP_NAME" /> আনইনষ্টল কৰি থকা হৈছে...</translation>
 <translation id="4924002401726507608">মতামত দাখিল কৰক</translation>
@@ -6662,6 +6669,7 @@
 <translation id="6238982280403036866">JavaScript ব্যৱহাৰ কৰাৰ অনুমতি দিয়া হয়</translation>
 <translation id="6239558157302047471">&amp;ফ্ৰে'ম পুনৰ ল'ড কৰক</translation>
 <translation id="6240821072888636753">প্ৰতিবাৰতে সোধক</translation>
+<translation id="6240964651812394252">আপোনাৰ অপাৰেটিং ছিষ্টেমৰ সৈতে Password Manager ব্যৱহাৰ কৰিবলৈ, পুনৰ Chrome লঞ্চ কৰক আৰু আপোনাৰ কম্পিউটাৰৰ পাছৱৰ্ড পৰিচালক এক্সেছ কৰাৰ অনুমতি দিয়ক। পুনৰ লঞ্চ কৰাৰ পাছত আপোনাৰ টেবসমূহ পুনৰ খোল খাব।</translation>
 <translation id="6241530762627360640">আপোনাৰ ছিষ্টেমৰ সৈতে যোৰা লগোৱা ব্লুটুথ ডিভাইচসমূহৰ সম্পর্কীয় তথ্যত এক্সেছ কৰক আৰু নিকটৱৰ্তী ব্লুটুথ ডিভাইচসমূহ বিচাৰি পাওক।</translation>
 <translation id="6241844896329831164">কোনো এক্সেছৰ প্ৰয়োজন নাই</translation>
 <translation id="6242574558232861452">আপোনাৰ প্ৰতিষ্ঠানৰ সুৰক্ষা নীতিসমূহৰ জৰিয়তে পৰীক্ষা কৰি থকা হৈছে।</translation>
@@ -6696,6 +6704,7 @@
 <translation id="6264365405983206840">&amp;সকলো বাছনি কৰক</translation>
 <translation id="6264376385120300461">তথাপি ডাউনল’ড কৰক</translation>
 <translation id="6264520534872750757">ডিভাইচটো ব্যৱহাৰ কৰাটো অব্যাহত ৰাখক</translation>
+<translation id="6264636978858465832">Password Managerক অধিক এক্সেছৰ আৱশ্যক</translation>
 <translation id="6265159465845424232">Microsoft OneDriveলৈ Microsoft ফাইল প্ৰতিলিপি কৰা অথবা নিয়াৰ পূর্বে সোধক</translation>
 <translation id="6265687851677020761">প’ৰ্টটো আঁতৰাওক</translation>
 <translation id="6266532094411434237"><ph name="DEVICE" />ৰ সৈতে সংযোগ কৰি থকা হৈছে</translation>
@@ -9492,7 +9501,6 @@
 <translation id="8473540203671727883">মাউছৰ তলত থকা পাঠ কৈ শুনাওক</translation>
 <translation id="8473863474539038330">ঠিকনা আৰু অধিক</translation>
 <translation id="8474378002946546633">জাননীৰ অনুমতি দিয়ক</translation>
-<translation id="8474733733775441349">আপোনাৰ Google একাউণ্টৰ পাছৱৰ্ডসমূহ দেখুৱাওক</translation>
 <translation id="8475313423285172237">আপোনাৰ কম্পিউটাৰৰ অন্য প্ৰ'গ্ৰেম যোগ কৰা এক্সটেনশ্বনে Chrome কার্যপ্ৰণালী সলনি কৰিব পাৰে।</translation>
 <translation id="8476408756881832830">ChromeVoxএ কিবা কৈ থাকিলে প্লে’বেল পজ কৰক</translation>
 <translation id="8476491056950015181"><ph name="BEGIN_PARAGRAPH1" />ChromeOS ডিভাইচক স্বয়ংক্ৰিয় ৰিপ’ৰ্ট পঠিওৱাৰ অনুমতি দিয়াটোৱে ChromeOSত কি সমস্যাৰ সমাধান কৰিব আৰু কি উন্নতি সাধিব লাগে তাত অগ্ৰাধিকাৰ দিয়াত আমাক সহায় কৰে। এই ৰিপ’ৰ্টসমূহত ChromeOS কেতিয়া ক্ৰেশ্ব হয়, কোনবোৰ সুবিধা ব্যৱহাৰ কৰা হৈছে, সাধাৰণতে কিমান মেম’ৰী ব্যৱহাৰ কৰা হৈছে আৰু Android এপৰ ডায়েগন’ষ্টিক আৰু ব্যৱহাৰৰ ডেটা আদিৰ দৰে বস্তুবোৰ অন্তৰ্ভুক্ত হ’ব পাৰে। কিছুমান একত্ৰিত ডেটাই Google এপ্‌ আৰু Android বিকাশকৰ্তাৰ দৰে অংশীদাৰকো সহায় কৰিব।<ph name="END_PARAGRAPH1" />

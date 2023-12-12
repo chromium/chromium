@@ -871,6 +871,7 @@ Uz šo kontu var attiekties atļaujas, ko esat jau piešķīris lietotnēm. Vara
 <translation id="1651008383952180276">Jums divreiz jāievada viena un tā pati ieejas frāze.</translation>
 <translation id="1651609627703324721">Šī cilne rāda VR saturu skatītājā</translation>
 <translation id="1652326691684645429">Iespējot funkciju Kopīgošana tuvumā</translation>
+<translation id="1652862280638399816">Lai izmantotu paroļu pārvaldnieku ar macOS sistēmu Keychain, atkārtoti palaidiet pārlūku Chromium un atļaujiet piekļuvi sistēmai Keychain. Jūsu cilnes tiks atkal atvērtas pēc atkārtotas palaišanas.</translation>
 <translation id="1654580009054503925">Nedrīkst rādīt pieprasījumus</translation>
 <translation id="1656528038316521561">Fona necaurredzamība</translation>
 <translation id="1657406563541664238">Palīdziet uzlabot programmu <ph name="PRODUCT_NAME" />, automātiski nosūtot lietošanas statistiku un avārijas pārskatus uzņēmumam Google</translation>
@@ -2821,6 +2822,7 @@ Saskaņā ar domēna <ph name="DOMAIN" /> prasībām viedkartei ir jābūt ievie
 <translation id="3151562827395986343">Dzēst vēsturi, sīkfailus, kešatmiņu un citus datus</translation>
 <translation id="3151786313568798007">Orientācija</translation>
 <translation id="3152356229013609796">Skatiet un noraidiet tālruņa paziņojumus, kā arī atbildiet uz tiem.</translation>
+<translation id="3155163173539279776">Restartēt Chromium</translation>
 <translation id="3157387275655328056">Pievienot lasīšanas sarakstam</translation>
 <translation id="3157931365184549694">Atjaunot</translation>
 <translation id="3158033540161634471">Iestatiet pirksta nospiedumu</translation>
@@ -3638,6 +3640,7 @@ Saskaņā ar domēna <ph name="DOMAIN" /> prasībām viedkartei ir jābūt ievie
 <translation id="3809272675881623365">Trusis</translation>
 <translation id="3809280248639369696">Citplanētietis</translation>
 <translation id="3810593934879994994">Vietne <ph name="ORIGIN" /> var atvērt tālāk norādītajās mapēs esošos failus.</translation>
+<translation id="3810770279996899697">Paroļu pārvaldniekam ir nepieciešama piekļuve MacOS sistēmai Keychain</translation>
 <translation id="3810914450553844415">Jūsu administrators neļauj pievienot papildu Google kontus.</translation>
 <translation id="3810973564298564668">Pārvaldīt</translation>
 <translation id="381202950560906753">Pievienot citu</translation>
@@ -9481,7 +9484,6 @@ Glabājiet atslēgas failu drošā vietā. Tas būs vajadzīgs, lai izveidotu ja
 <translation id="8473540203671727883">Izrunāt tekstu, virs kura novietots kursors</translation>
 <translation id="8473863474539038330">Adreses un citi dati</translation>
 <translation id="8474378002946546633">Atļaut paziņojumus</translation>
-<translation id="8474733733775441349">Rādīt Google konta paroles</translation>
 <translation id="8475313423285172237">Cita datorā instalēta programma ir izraisījusi tāda paplašinājuma pievienošanu, kas var ietekmēt pārlūkprogrammas Chrome darbību.</translation>
 <translation id="8476408756881832830">Apturēt atskaņošanu ChromeVox komentāru izvades laikā</translation>
 <translation id="8476491056950015181"><ph name="BEGIN_PARAGRAPH1" />Atļaujot ChromeOS ierīcēm sūtīt automātiskos pārskatus, varat palīdzēt mums noteikt ChromeOS problēmu un uzlabojumu prioritāti. Šie pārskati var ietvert, piemēram, ChromeOS avāriju datus, informāciju par izmantotajām funkcijām un atmiņas lietojuma parasto apjomu, kā arī Android lietotņu diagnostikas un lietojuma datus. Noteiktus apkopotus datus izmantos arī Google lietotņu izstrādātāji un partneri, piemēram, Android izstrādātāji.<ph name="END_PARAGRAPH1" />

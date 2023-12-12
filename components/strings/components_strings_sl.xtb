@@ -1222,6 +1222,7 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="3432601291244612633">Zapri stran</translation>
 <translation id="3433111389595862568">Programska oprema za sodelovanje in konference</translation>
 <translation id="3433144818443565002">Glasovni klepet in videoklepet</translation>
+<translation id="3434025015623587566">Googlov upravitelj gesel potrebuje več dostopa</translation>
 <translation id="343474037147570563">Datoteke, ki jih naložite ali pripnete, so poslane v oblak Google Cloud ali drugim ponudnikom v analizo. Lahko so na primer pregledane glede tega, ali vsebujejo občutljive podatke ali zlonamerno programsko opremo, in shranjene glede na pravilnike podjetja ter vidne vašemu skrbniku.</translation>
 <translation id="3435557549311968410">Continuous (Short)</translation>
 <translation id="3435738964857648380">Varnost</translation>
@@ -1974,6 +1975,7 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="4918221908152712722">Namestite <ph name="APP_NAME" /> (prenos ni potreben)</translation>
 <translation id="4920457992177678649">Oddajanje počitniških in kratkotrajnih namestitev</translation>
 <translation id="4920710383559189047">Sleeve</translation>
+<translation id="4922104989726031751">Če želite z operacijskim sistemom uporabljati upravitelja gesel, znova zaženite Chromium in omogočite dostop do upravitelja gesel v računalniku. Zavihki se bodo po vnovičnem zagonu znova odprli.</translation>
 <translation id="4923459931733593730">Plačilo</translation>
 <translation id="4926049483395192435">Vrednost mora biti določena.</translation>
 <translation id="4926159001844873046"><ph name="SITE" /> sporoča:</translation>
@@ -2615,6 +2617,7 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="6234122620015464377">Obrezovanje po vsakem dokumentu</translation>
 <translation id="6236290670123303279">Upravljanje nastavitev</translation>
 <translation id="6240447795304464094">Logotip Googla Pay</translation>
+<translation id="6240964651812394252">Če želite z operacijskim sistemom uporabljati Googlovega upravitelja gesel, znova zaženite Chrome in omogočite dostop do upravitelja gesel v računalniku. Zavihki se bodo po vnovičnem zagonu znova odprli.</translation>
 <translation id="6241121617266208201">Skrij predloge</translation>
 <translation id="624499991300733384">Storitev sestavljalnika tiskanja</translation>
 <translation id="6251906504834538140">{0,plural, =1{Premik datoteke je blokiran}one{Premik <ph name="FILE_COUNT" /> datoteke je blokiran}two{Premik <ph name="FILE_COUNT" /> datotek je blokiran}few{Premik <ph name="FILE_COUNT" /> datotek je blokiran}other{Premik <ph name="FILE_COUNT" /> datotek je blokiran}}</translation>
@@ -2625,6 +2628,7 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="6263376278284652872">Zaznamki <ph name="DOMAIN" /></translation>
 <translation id="6264376385120300461">Vseeno prenesi</translation>
 <translation id="6264485186158353794">Nazaj na varno</translation>
+<translation id="6264636978858465832">Upravitelj gesel potrebuje več dostopa</translation>
 <translation id="6265794661083428563">Kopiranje vrednosti pravilnika <ph name="POLICY_NAME" /></translation>
 <translation id="6266934640124581640">Svetlo zelenomodra</translation>
 <translation id="6270066318535733958">Čolnarjenje</translation>

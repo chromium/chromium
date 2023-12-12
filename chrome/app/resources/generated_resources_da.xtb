@@ -873,6 +873,7 @@ De tilladelser, du har givet til apps, gælder muligvis for denne konto. Du kan 
 <translation id="1651008383952180276">Du skal angive den samme adgangssætning to gange</translation>
 <translation id="1651609627703324721">Denne fane viser VR-indhold til et headset</translation>
 <translation id="1652326691684645429">Slå Deling tæt på til</translation>
+<translation id="1652862280638399816">Hvis du vil bruge Adgangskodeadministrator sammen med macOS-nøgleringen, skal du genstarte Chromium og give adgang til nøgleringen. Dine faner åbnes igen, når du har genstartet.</translation>
 <translation id="1654580009054503925">Har ikke tilladelse til at vise anmodninger</translation>
 <translation id="1656528038316521561">Baggrundens gennemsigtighed</translation>
 <translation id="1657406563541664238">Vær med til at gøre <ph name="PRODUCT_NAME" /> bedre ved automatisk at sende forbrugsstatistikker og rapportere om nedbrud til Google</translation>
@@ -2835,6 +2836,7 @@ Du kan administrere indstillingerne for denne konto ved at installere Family Lin
 <translation id="3151562827395986343">Ryd historik, cookies, cache m.m.</translation>
 <translation id="3151786313568798007">Retning</translation>
 <translation id="3152356229013609796">Se, afvis og reager på notifikationer fra din telefon</translation>
+<translation id="3155163173539279776">Genstart Chromium</translation>
 <translation id="3157387275655328056">Føj til læseliste</translation>
 <translation id="3157931365184549694">Gendan</translation>
 <translation id="3158033540161634471">Konfigurer dit fingeraftryk</translation>
@@ -3652,6 +3654,7 @@ Du kan administrere indstillingerne for denne konto ved at installere Family Lin
 <translation id="3809272675881623365">Kanin</translation>
 <translation id="3809280248639369696">Rumvæsen</translation>
 <translation id="3810593934879994994"><ph name="ORIGIN" /> kan se filer i følgende mapper</translation>
+<translation id="3810770279996899697">Adgangskodeadministrator skal have adgang til macOS-nøgleringen</translation>
 <translation id="3810914450553844415">Din administrator tillader ikke yderligere Google-konti.</translation>
 <translation id="3810973564298564668">Administrer</translation>
 <translation id="381202950560906753">Tilføj endnu et</translation>
@@ -9497,7 +9500,6 @@ Opbevar din nøglefil på et sikkert sted. Du skal bruge den til at oprette nye 
 <translation id="8473540203671727883">Oplæs teksten under markøren</translation>
 <translation id="8473863474539038330">Adresser m.m.</translation>
 <translation id="8474378002946546633">Tillad notifikationer</translation>
-<translation id="8474733733775441349">Vis adgangskoder fra din Google-konto</translation>
 <translation id="8475313423285172237">Et andet program på din computer tilføjede en udvidelse, der kan ændre den måde, hvorpå Chrome fungerer.</translation>
 <translation id="8476408756881832830">Sæt afspilning på pause, når ChromeVox taler</translation>
 <translation id="8476491056950015181"><ph name="BEGIN_PARAGRAPH1" />Ved at give ChromeOS-enheder tilladelse til at sende automatiske rapporter gør du det nemmere for os at prioritere, hvad der skal rettes og forbedres i ChromeOS. Disse rapporter kan f.eks. indeholde oplysninger om, hvornår ChromeOS oplever nedbrud, hvilke funktioner der blev brugt, hvor meget hukommelse der normalt bruges, samt diagnostik- og brugsdata for Android-apps. Visse samlede data hjælper også Google-apps og -partnere, f.eks. Android-udviklere.<ph name="END_PARAGRAPH1" />

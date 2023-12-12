@@ -410,7 +410,6 @@
 <translation id="3226612997184048185">Ak vo svojom účte Google ukladáte aj záložky, môžete sledovať ceny produktov v prehliadači Chrome a dostávať upozornenia na poklesy ceny</translation>
 <translation id="3227557059438308877">Google Chrome ako bezpečnostný kľúč</translation>
 <translation id="3232754137068452469">Webová aplikácia</translation>
-<translation id="3234978181857588512">Uložiť do zariadenia</translation>
 <translation id="3236059992281584593">Zostáva: 1 min</translation>
 <translation id="3237087289225714896">Štandardné prednačítavanie:</translation>
 <translation id="3237433641417325993">Navrhované články zobrazíte posunutím zobrazenia nadol</translation>
@@ -582,7 +581,6 @@
 <translation id="4181841719683918333">Jazyky</translation>
 <translation id="4188221736490993796">Zoradiť od Z po A</translation>
 <translation id="4195643157523330669">Otvoriť na novej karte</translation>
-<translation id="4196597275619698563">Vytvoriť kartu</translation>
 <translation id="4197828496439691735">{NUM_TABS,plural, =1{1 karta v tomto zariadení}few{# karty v tomto zariadení}many{# tabs on this device}other{# kariet v tomto zariadení}}</translation>
 <translation id="4198423547019359126">Nie sú k dispozícii žiadne umiestnenia stiahnutých súborov</translation>
 <translation id="4202218894997543208">Blokované témy</translation>
@@ -594,7 +592,6 @@
 <translation id="4248098802131000011">Ochráňte svoje heslá pred porušením ochrany údajov a ďalšími bezpečnostnými problémami</translation>
 <translation id="424864128008805179">Odhlásiť sa z Chromu?</translation>
 <translation id="4249955472157341256">Zoradiť od najnovších</translation>
-<translation id="4250229828105606438">Snímka obrazovky</translation>
 <translation id="4256782883801055595">Licencie open source</translation>
 <translation id="4257230861809842349">Chcete odstrániť heslá zo Správcu hesiel Google?</translation>
 <translation id="4269820728363426813">Kopírovať adresu odkazu</translation>
@@ -1148,7 +1145,6 @@ Niektoré weby môžu napríklad na túto žiadosť reagovať tak, že vám zobr
 <translation id="7030304022046916278">Odosiela Bezpečnému prehliadaniu webové adresy na kontrolu</translation>
 <translation id="7035701931849773472">Ďalšie možnosti</translation>
 <translation id="7037830628447527439">Prihláste sa do Chromu svojím účtom Google</translation>
-<translation id="7038956721828960940">chrome_image_<ph name="CURRENT_TIMESTAMP_MS" /></translation>
 <translation id="7054588988317389591">Chcete získať popisy obrázkov?</translation>
 <translation id="7055152154916055070">Presmerovanie bolo zablokované:</translation>
 <translation id="7063006564040364415">Nepodarilo sa pripojiť k synchronizačnému serveru.</translation>
@@ -1279,7 +1275,6 @@ Niektoré weby môžu napríklad na túto žiadosť reagovať tak, že vám zobr
 <translation id="7658239707568436148">Zrušiť</translation>
 <translation id="7665369617277396874">Pridať účet</translation>
 <translation id="766587987807204883">Tu sa zobrazia články, ktoré môžete čítať dokonca aj offline</translation>
-<translation id="768232549260819724">Gif bol skopírovaný</translation>
 <translation id="7682724950699840886">Skúste tieto tipy: Uistite sa, že máte v zariadení dosť miesta, a potom skúste znova spustiť exportovanie.</translation>
 <translation id="7686086654630106285">Ďalšie informácie o reklamách navrhovaných webmi</translation>
 <translation id="768618399695552958">Niektoré stránky, ktoré navštevujete, sú prednačítané. Stránky môžu byť prednačítané prostredníctvom serverov Googlu, keď s nimi prepojíte web Google.</translation>
@@ -1334,7 +1329,6 @@ Niektoré weby môžu napríklad na túto žiadosť reagovať tak, že vám zobr
 <translation id="7929962904089429003">Otvorenie ponuky</translation>
 <translation id="7930998711684428189">Upozorní vás pri prezradení hesiel v rámci porušenia ochrany údajov.</translation>
 <translation id="7934668619883965330">Súbor sa nedá stiahnuť. Formát súboru nie je podporovaný.</translation>
-<translation id="7939485076072265087">Vytvoriť štylizovanú kartu so zvýraznením</translation>
 <translation id="7942131818088350342">Aplikácia <ph name="PRODUCT_NAME" /> je zastaraná.</translation>
 <translation id="7944772052836377867">Synchronizácia potrebuje overiť vašu totožnosť</translation>
 <translation id="7947953824732555851">Prijať a prihl. sa</translation>
@@ -1472,7 +1466,6 @@ Niektoré weby môžu napríklad na túto žiadosť reagovať tak, že vám zobr
 <translation id="856481929701340285">Verzia webu pre počítače</translation>
 <translation id="8570677896027847510">Súbor sa nedá bezpečne stiahnuť</translation>
 <translation id="8571213806525832805">Posledné 4 týždne</translation>
-<translation id="8580884231102452214">Skopírovať gif</translation>
 <translation id="8583805026567836021">Prebieha vymazávanie údajov účtu</translation>
 <translation id="859046281437143747">Tlačidlo na sledovanie ceny v ponuke ďalších možností</translation>
 <translation id="860043288473659153">Meno držiteľa karty</translation>

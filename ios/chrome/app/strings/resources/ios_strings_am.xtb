@@ -66,6 +66,7 @@
 <translation id="1285320974508926690">ይህን ጣቢያ በጭራሽ አትተርጉም</translation>
 <translation id="1291506870746876680"><ph name="BEGIN_BOLD" />«<ph name="SITE_NAME" />»<ph name="END_BOLD" /> ፈቃዶች እርስዎ ከዚህ ጣቢያ ሲወጡ ዳግም ይጀመራሉ።</translation>
 <translation id="1295289763199166823">ምናሌን ያብጁ</translation>
+<translation id="1296581780163690620">ፋይል ይውረድ? (<ph name="FILE_SIZE" />)</translation>
 <translation id="1305822519689023679">በGoogle መለያዎ ውስጥ ያሉትን የይለፍ ቃላት ሁልጊዜ መጠቀም መቻልዎን ለማረጋገጥ እርስዎ መሆንዎን ያረጋግጡ።</translation>
 <translation id="1312721752506309252">የተሻሻለ ጥበቃ በርቷል</translation>
 <translation id="1321993286294231467">ምስልን በማስቀመጥ ላይ ስህተት።</translation>
@@ -210,6 +211,7 @@
 <translation id="2055515971416882518">«ቅንብሮች» የሚለውን ይክፈቱ</translation>
 <translation id="2059166748188874810">ማዘጋጃ ቤት</translation>
 <translation id="2062410130322589403">የግላዊነት ምርጫዎችዎ መመሪያ</translation>
+<translation id="20638360198452347">የክፍል ዓይነት መራጭ</translation>
 <translation id="2073572773299281212">ገባሪ ከ<ph name="DAYS" /> ቀናት በፊት</translation>
 <translation id="2074131957428911366">በማንኛውም ጊዜ ምን እንደሚያሳምሩ በ<ph name="BEGIN_LINK" />ቅንብሮች<ph name="END_LINK" /> ውስጥ መምረጥ ይችላሉ።</translation>
 <translation id="2079545284768500474">ቀልብስ</translation>
@@ -256,6 +258,7 @@
 <translation id="2310154074101836012">መዘውርን ያርትዑ</translation>
 <translation id="2316709634732130529">የተጠቆመውን የይለፍ ቃል ይጠቀሙ</translation>
 <translation id="2320166752086256636">የቁልፍ ሰሌዳን ደብቅ</translation>
+<translation id="2326302612031521902">የክፍል መራጭ</translation>
 <translation id="2348630484974447747">ጥቅል</translation>
 <translation id="2351097562818989364">የትርጉም ቅንብሮችዎ ዳግም እንዲጀምሩ ተደርገዋል።</translation>
 <translation id="235789365079050412">የGoogle የግላዊነት መመሪያ</translation>
@@ -279,6 +282,7 @@
 <translation id="2459155039684421202">በአድራሻ አሞሌው ውስጥ እንደ «የእኔን ታሪክ አጽዳ» ወይም «የይለፍ ቃላትን አርትዕ» ያለ ተግባር ያስገቡ።</translation>
 <translation id="2461070143328828326">የይለፍ ቃል ቅንብሮች</translation>
 <translation id="2462736546165239215">ሁሉም የአሰሳ ታሪክዎን እዚህ ማግኘት ይችላሉ።</translation>
+<translation id="2468132863574325555">Drive</translation>
 <translation id="2469960372084740698">የጥንቃቄ አሰሳ ይጥፋ?</translation>
 <translation id="2473876017985765807">አስቀድመው ለ<ph name="WEBSITE" /> የይለፍ ቃል አስቀምጠዋል</translation>
 <translation id="2476359652512522418">አልተመረጠም</translation>
@@ -971,6 +975,7 @@ Handoff እንዲሁም በSettings ውስጥ ባለው የGeneral ክፍል ላ
 <translation id="6149061208933997199">የይለፍ ቃል ይጠቀሙ</translation>
 <translation id="6152406514676263192">በእርስዎ ዝንባሌዎች ላይ የተመሠረተ በጣም አግባብነት ያለው ይዘትን ለማግኘት ያስምሩ።</translation>
 <translation id="6159839020698489198">የግድ አይደለም</translation>
+<translation id="6160780110287872296">ፋይል ይውረድ?</translation>
 <translation id="6170450281939467187">ትርጉም አልተሳካም</translation>
 <translation id="6173499589275053515">የይለፍ ቃል የእርስዎ Google መለያ <ph name="EMAIL" /> ውስጥ ተቀምጧል</translation>
 <translation id="6177442314419606057">በChrome ውስጥ ይፈልጉ</translation>
@@ -1040,6 +1045,7 @@ Handoff እንዲሁም በSettings ውስጥ ባለው የGeneral ክፍል ላ
 <translation id="6447842834002726250">ኩኪዎች</translation>
 <translation id="6453018583485750254">በጭራሽ አታሂድ ላይ ምልክት አድርግ።</translation>
 <translation id="6459307836338400162">ከግላዊነት፣ ደህንነት እና የውሂብ ስብስብ ጋር ለሚዛመዱ ሁለቱንም ተጨማሪ ቅንብሮች <ph name="BEGIN_LINK" />ስምረት<ph name="END_LINK" /> እና የ<ph name="BEGIN_LINK" />Google አገልግሎቶች<ph name="END_LINK" />ን ይመልከቱ</translation>
+<translation id="646394917185284261">ፋይሎች</translation>
 <translation id="6464071786529933911">በአዲስ ማንነት የማያሳውቅ ትር ውስጥ ክፈት</translation>
 <translation id="6464397691496239022">ጣቢያዎች የአሰሳዎን ተሞክሮ ለማሻሻል፣ ለምሳሌ እርስዎ በመለያ እንደገቡ ለማቆየት ወይም በግዢ ጋሪዎ ውስጥ ንጥሎችን ለማስታወስ ኩኪዎችን መጠቀም ይችላሉ።
 

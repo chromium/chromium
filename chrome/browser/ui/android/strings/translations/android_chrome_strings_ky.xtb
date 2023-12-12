@@ -410,7 +410,6 @@
 <translation id="3226612997184048185">Эгер кыстармаларды Google аккаунтуңузга сактап койсоңуз, товарлардын бааларына Chrome'до көз салып, баалар төмөндөгөндө кабар аласыз</translation>
 <translation id="3227557059438308877">Google Chrome'ду Коопсуздук ачкычы катары колдонуу</translation>
 <translation id="3232754137068452469">Веб колдонмо</translation>
-<translation id="3234978181857588512">Түзмөккө сактоо</translation>
 <translation id="3236059992281584593">1 мүн. калды</translation>
 <translation id="3237087289225714896">Стандарттуу алдын ала жүктөө:</translation>
 <translation id="3237433641417325993">Сунушталган макалаларды көрүү үчүн ылдый сыдырыңыз</translation>
@@ -582,7 +581,6 @@
 <translation id="4181841719683918333">Тилдер</translation>
 <translation id="4188221736490993796">Я-А тартибинде иргөө</translation>
 <translation id="4195643157523330669">Жаңы өтмөктө ачуу</translation>
-<translation id="4196597275619698563">Карта түзүү</translation>
 <translation id="4197828496439691735">{NUM_TABS,plural, =1{Ушул түзмөктөгү 1 өтмөк}other{Ушул түзмөктөгү # өтмөк}}</translation>
 <translation id="4198423547019359126">Жүктөп алуу үчүн жеткиликтүү орун жок</translation>
 <translation id="4202218894997543208">Сиз бөгөттөгөн темалар</translation>
@@ -594,7 +592,6 @@
 <translation id="4248098802131000011">Сырсөздөрүңүздү коопсуз сактаңыз</translation>
 <translation id="424864128008805179">Chrome каттоо эсебинен чыгасызбы?</translation>
 <translation id="4249955472157341256">Акыркылар боюнча иреттөө</translation>
-<translation id="4250229828105606438">Скриншот</translation>
 <translation id="4256782883801055595">Ачык программа уруксаттамалары</translation>
 <translation id="4257230861809842349">Сырсөздөрдү башкаргычтан сырсөздөрдү өчүрөсүзбү?</translation>
 <translation id="4269820728363426813">Шилтеме дарегин көчүрүү</translation>
@@ -1148,7 +1145,6 @@ Google аккаунтуңуздун башка Google кызматтарынан
 <translation id="7030304022046916278">URL даректерин текшерүү үчүн Коопсуз серептөөгө жөнөтөт</translation>
 <translation id="7035701931849773472">Башка параметрлер</translation>
 <translation id="7037830628447527439">Chrome'го Google аккаунтуңуз менен кириңиз</translation>
-<translation id="7038956721828960940">chrome_image_<ph name="CURRENT_TIMESTAMP_MS" /></translation>
 <translation id="7054588988317389591">Сүрөттүн сүрөттөмөлөрүн аласызбы?</translation>
 <translation id="7055152154916055070">Багыттоо бөгөттөлгөн:</translation>
 <translation id="7063006564040364415">Шайкештештирүү серверине туташкан жок.</translation>
@@ -1279,7 +1275,6 @@ Google аккаунтуңуздун башка Google кызматтарынан
 <translation id="7658239707568436148">Жокко чыгаруу</translation>
 <translation id="7665369617277396874">Аккаунт кошуу</translation>
 <translation id="766587987807204883">Оффлайн режиминде да окула турган макалалар ушул жерде көрүнөт</translation>
-<translation id="768232549260819724">GIF көчүрүлдү</translation>
 <translation id="7682724950699840886">Төмөнкү кеңештерди аткарып көрүңүз: түзмөгүңүздө бош орун бар экенин текшерип, кайра экспорттоп көрүңүз.</translation>
 <translation id="7686086654630106285">Сайтта сунушталган жарнамалар жөнүндө кеңири маалымат</translation>
 <translation id="768618399695552958">Cиз баш баккан айрым барактар алдын ала жүктөлгөн. Google сайтынан шилтеме берилген барактар Google'дун серверлери аркылуу алдын ала жүктөлүшү мүмкүн.</translation>
@@ -1334,7 +1329,6 @@ Google аккаунтуңуздун башка Google кызматтарынан
 <translation id="7929962904089429003">Менюну ачуу</translation>
 <translation id="7930998711684428189">Сырсөзүңүздү кимдир-бирөө билип алса, эскертүү жөнөтүлсүн.</translation>
 <translation id="7934668619883965330">Файлды жүктөп алуу мүмкүн эмес. Файлдын форматы колдоого алынбайт.</translation>
-<translation id="7939485076072265087">Бөлүп көрсөтүлгөн текст үчүн стилдештирилген карта түзүү</translation>
 <translation id="7942131818088350342"><ph name="PRODUCT_NAME" /> эскирип калган.</translation>
 <translation id="7944772052836377867">Шайкештирүү өзүңүздү ырасташы керек</translation>
 <translation id="7947953824732555851">Кабыл алуу жана кирүү</translation>
@@ -1472,7 +1466,6 @@ Google аккаунтуңуздун башка Google кызматтарынан
 <translation id="856481929701340285">Толук версия талап кылнт</translation>
 <translation id="8570677896027847510">Файлды коопсуз жүктөп алуу мүмкүн эмес</translation>
 <translation id="8571213806525832805">Акыркы 4 апта</translation>
-<translation id="8580884231102452214">GIF файлын көчүрүү</translation>
 <translation id="8583805026567836021">Аккаунттун дайындары тазаланууда</translation>
 <translation id="859046281437143747">Баасына "Дагы параметрлер" баскычы аркылуу көз сала аласыз</translation>
 <translation id="860043288473659153">Карта ээсинин аты</translation>

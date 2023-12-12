@@ -410,7 +410,6 @@ Csak az Ön összetett jelszava ismeretében tudja bárki is megtekinteni a titk
 <translation id="3226612997184048185">Ha Google-fiókjába is menti könyvjelzőit, a Chrome-ban nyomon követheti a termékek árait, és értesítést kaphat, amikor az árak csökkennek.</translation>
 <translation id="3227557059438308877">A Google Chrome mint biztonsági kulcs</translation>
 <translation id="3232754137068452469">Internetes alkalmazás</translation>
-<translation id="3234978181857588512">Mentés az eszközre</translation>
 <translation id="3236059992281584593">1 perc van hátra</translation>
 <translation id="3237087289225714896">Normál előtöltés:</translation>
 <translation id="3237433641417325993">Görgessen le a javasolt cikkek megtekintéséhez</translation>
@@ -582,7 +581,6 @@ Csak az Ön összetett jelszava ismeretében tudja bárki is megtekinteni a titk
 <translation id="4181841719683918333">Nyelvek</translation>
 <translation id="4188221736490993796">Rendezés Z-től A-ig</translation>
 <translation id="4195643157523330669">Megnyitás új lapon</translation>
-<translation id="4196597275619698563">Kártya létrehozása</translation>
 <translation id="4197828496439691735">{NUM_TABS,plural, =1{1 lap ezen az eszközön}other{# lap ezen az eszközön}}</translation>
 <translation id="4198423547019359126">Nem áll rendelkezésre letöltési hely</translation>
 <translation id="4202218894997543208">Ön által letiltott témák</translation>
@@ -594,7 +592,6 @@ Csak az Ön összetett jelszava ismeretében tudja bárki is megtekinteni a titk
 <translation id="4248098802131000011">Védje meg jelszavait az adatvédelmi incidensektől és más biztonsági problémáktól</translation>
 <translation id="424864128008805179">Kijelentkezés a Chrome-ból</translation>
 <translation id="4249955472157341256">Rendezés a legutóbbiak szerint</translation>
-<translation id="4250229828105606438">Képernyőkép</translation>
 <translation id="4256782883801055595">Nyílt forráskódú licencek</translation>
 <translation id="4257230861809842349">Törli a jelszavakat a Google Jelszókezelőből?</translation>
 <translation id="4269820728363426813">Link másolása</translation>
@@ -1148,7 +1145,6 @@ Egyes webhelyek például válaszolhatnak rá úgy, hogy olyan hirdetéseket jel
 <translation id="7030304022046916278">Elküldi az URL-eket a Biztonságos Böngészésnek ellenőrzésre.</translation>
 <translation id="7035701931849773472">Egyéb beállítások</translation>
 <translation id="7037830628447527439">Jelentkezzen be a Chrome-ba Google-fiókjával</translation>
-<translation id="7038956721828960940">chrome_image_<ph name="CURRENT_TIMESTAMP_MS" /></translation>
 <translation id="7054588988317389591">Lekéri a képleírásokat?</translation>
 <translation id="7055152154916055070">Átirányítás letiltva:</translation>
 <translation id="7063006564040364415">Nem sikerült csatlakozni a szinkronizálószerverhez.</translation>
@@ -1279,7 +1275,6 @@ Egyes webhelyek például válaszolhatnak rá úgy, hogy olyan hirdetéseket jel
 <translation id="7658239707568436148">Mégse</translation>
 <translation id="7665369617277396874">Fiók hozzáadása</translation>
 <translation id="766587987807204883">Itt jelennek meg a cikkek, amelyeket offline állapotban is olvashat</translation>
-<translation id="768232549260819724">GIF vágólapra másolva</translation>
 <translation id="7682724950699840886">Próbálkozzon a következő tippekkel: Győződjön meg arról, hogy elegendő tárhely áll rendelkezésre az eszközön, majd próbálja újra az exportálást.</translation>
 <translation id="7686086654630106285">További információ a webhelyek által javasolt hirdetésekről</translation>
 <translation id="768618399695552958">Az Ön által felkeresett oldalak némelyikét előre betölti a rendszer. Az oldalakat előre betöltheti a rendszer a Google szerverein keresztül, ha Google-webhellyel vannak összekapcsolva.</translation>
@@ -1334,7 +1329,6 @@ Egyes webhelyek például válaszolhatnak rá úgy, hogy olyan hirdetéseket jel
 <translation id="7929962904089429003">A menü megnyitása</translation>
 <translation id="7930998711684428189">Figyelmezteti Önt, ha a jelszavak adatvédelmi incidens során nyilvánosságra kerülnek</translation>
 <translation id="7934668619883965330">A fájl nem tölthető le. A fájlformátum nem támogatott.</translation>
-<translation id="7939485076072265087">Stilizált kártya létrehozása kiemeléssel</translation>
 <translation id="7942131818088350342">A(z) <ph name="PRODUCT_NAME" /> elavult.</translation>
 <translation id="7944772052836377867">A szinkronizálás ellenőrizni szeretné az Ön személyazonosságát</translation>
 <translation id="7947953824732555851">Elfogadás és bejelentkezés</translation>
@@ -1472,7 +1466,6 @@ Egyes webhelyek például válaszolhatnak rá úgy, hogy olyan hirdetéseket jel
 <translation id="856481929701340285">Asztali webhely kérése</translation>
 <translation id="8570677896027847510">A fájlt nem lehet biztonságosan letölteni</translation>
 <translation id="8571213806525832805">Az elmúlt 4 hétből</translation>
-<translation id="8580884231102452214">GIF másolása</translation>
 <translation id="8583805026567836021">Fiókadatok törlése</translation>
 <translation id="859046281437143747">Az ár követéséhez nyomja meg a További műveletek gombot</translation>
 <translation id="860043288473659153">Kártyatulajdonos neve</translation>

@@ -496,6 +496,7 @@
 <translation id="355101282835380364">ذخیره در حساب…</translation>
 <translation id="3551320343578183772">بستن برگه</translation>
 <translation id="3565207542107370586">پاک کردن داده‌های مرور…</translation>
+<translation id="3570693105179140209">برای دیدن گذرواژه‌های بیشتر، دوضربه بزنید.</translation>
 <translation id="3575234738189584619">جستجو با «لنز»</translation>
 <translation id="3581564640715911333">پیشنهاد ترجمه صفحات نوشته‌شده به زبان‌های دیگر</translation>
 <translation id="3587885837929752825">‏سازمان شما آنچه را می‌توانید در «حساب Google» خود ذخیره کنید محدود می‌کند.</translation>
@@ -661,6 +662,7 @@
 <translation id="452750746583162491">مرور داده‌های همگام‌سازی‌شده</translation>
 <translation id="4527660062930312477">حسابتان مدیریت می‌شود</translation>
 <translation id="4536418791685807335">دوباره برای ورود به سیستم تلاش کنید.</translation>
+<translation id="4539187448429948815">{count,plural, =1{{count} پیشنهاد تکمیل خودکار ذخیره‌شده در بالای صفحه‌کلید موجود است.}one{{count} پیشنهاد تکمیل خودکار ذخیره‌شده در بالای صفحه‌کلید موجود است.}other{{count} پیشنهاد تکمیل خودکار ذخیره‌شده در بالای صفحه‌کلید موجود است.}}</translation>
 <translation id="4540780316273593836">مشکلی رخ داد</translation>
 <translation id="4550040941166547650">فقط در «این دستگاه»</translation>
 <translation id="457292989631956153">{COUNT,plural, =1{{COUNT} برگه غیرفعال بسته شود؟}one{{COUNT} برگه غیرفعال بسته شود؟}other{{COUNT} برگه غیرفعال بسته شود؟}}</translation>

@@ -410,7 +410,6 @@
 <translation id="3226612997184048185">Бетбелгілерді Google аккаунтыңызда да сақтасаңыз, Chrome-да өнім бағаларын бақылап, баға төмендеген кезде, хабарландыру аласыз.</translation>
 <translation id="3227557059438308877">Google Chrome браузерін қауіпсіздік кілті ретінде пайдалану</translation>
 <translation id="3232754137068452469">Веб-қолданба</translation>
-<translation id="3234978181857588512">Құрылғыға сақтау</translation>
 <translation id="3236059992281584593">1 мин қалды</translation>
 <translation id="3237087289225714896">Стандартты алдын ала жүктеу:</translation>
 <translation id="3237433641417325993">Ұсынылатын мақалаларды көру үшін төменге айналдырыңыз.</translation>
@@ -582,7 +581,6 @@
 <translation id="4181841719683918333">Тілдер</translation>
 <translation id="4188221736490993796">Я–А бойынша сұрыптау</translation>
 <translation id="4195643157523330669">Жаңа қойындыда ашу</translation>
-<translation id="4196597275619698563">Карта жасау</translation>
 <translation id="4197828496439691735">{NUM_TABS,plural, =1{Бұл құрылғыда 1 қойынды}other{Бұл құрылғыда # қойынды}}</translation>
 <translation id="4198423547019359126">Жүктеп алуға пайдалануға болатын орындар жоқ</translation>
 <translation id="4202218894997543208">Сіз блоктаған тақырыптар</translation>
@@ -594,7 +592,6 @@
 <translation id="4248098802131000011">Құпия сөздерді деректердің қолды болуынан және тағы басқа қауіпсіздік мәселелерінен қорғаңыз.</translation>
 <translation id="424864128008805179">Chrome жүйесінен шығасыз ба?</translation>
 <translation id="4249955472157341256">Соңғысы бойынша сұрыптау</translation>
-<translation id="4250229828105606438">Скриншот</translation>
 <translation id="4256782883801055595">Ашық кодты бағдарлама лицензиялары</translation>
 <translation id="4257230861809842349">Google Password Manager қызметінен құпия сөздерді жою керек пе?</translation>
 <translation id="4269820728363426813">Сілтеме мекенжайын көшіру</translation>
@@ -1148,7 +1145,6 @@ Google аккаунтының шолу тарихы басқа Google қызме
 <translation id="7030304022046916278">URL сілтемелерін тексеру үшін Safe Browsing қызметіне жібереді.</translation>
 <translation id="7035701931849773472">Басқа опциялар</translation>
 <translation id="7037830628447527439">Chrome-ға Google аккаунтыңызбен кіріңіз.</translation>
-<translation id="7038956721828960940">chrome_image_<ph name="CURRENT_TIMESTAMP_MS" /></translation>
 <translation id="7054588988317389591">Сурет сипаттамаларын аласыз ба?</translation>
 <translation id="7055152154916055070">Бағыттау функциясына тыйым салынды.</translation>
 <translation id="7063006564040364415">Синхрондау серверіне қосылу мүмкін емес.</translation>
@@ -1279,7 +1275,6 @@ Google аккаунтының шолу тарихы басқа Google қызме
 <translation id="7658239707568436148">Бас тарту</translation>
 <translation id="7665369617277396874">Аккаунт қосу</translation>
 <translation id="766587987807204883">Мақалалар осы жерде тұрады. Оларды, интернетіңіз жоқ болса да, оқи аласыз.</translation>
-<translation id="768232549260819724">GIF көшірілді</translation>
 <translation id="7682724950699840886">Келесі әрекетті орындап көріңіз: құрылғыңыздағы бос орынның жеткілікті екеніне көз жеткізіп, экспорттауды қайталаңыз.</translation>
 <translation id="7686086654630106285">Сайт ұсынған жарнамалар туралы толық ақпарат</translation>
 <translation id="768618399695552958">Сіз кіретін беттердің кейбірі алдын ала жүктеледі. Сілтеме Google платформасындағы сайт арқылы жасалған жағдайда, беттер Google серверлері арқылы алдын ала жүктелуі мүмкін.</translation>
@@ -1334,7 +1329,6 @@ Google аккаунтының шолу тарихы басқа Google қызме
 <translation id="7929962904089429003">Мәзірді ашу</translation>
 <translation id="7930998711684428189">Құпия сөздер қолды болған жағдайда, сізге бұл туралы хабарлайды.</translation>
 <translation id="7934668619883965330">Файлды жүктеп алу мүмкін емес. Файл форматына қолдау көрсетілмейді.</translation>
-<translation id="7939485076072265087">Ерекшеленген мәтін үшін стильденген карта жасау</translation>
 <translation id="7942131818088350342"><ph name="PRODUCT_NAME" /> ескірген.</translation>
 <translation id="7944772052836377867">Sync жеке басыңызды растау керек</translation>
 <translation id="7947953824732555851">Қабылдау және кіру</translation>
@@ -1472,7 +1466,6 @@ Google аккаунтының шолу тарихы басқа Google қызме
 <translation id="856481929701340285">Жұмыс үстелі сайтын сұрау</translation>
 <translation id="8570677896027847510">Файлды қауіпсіз жүктеп алу мүмкін емес</translation>
 <translation id="8571213806525832805">Соңғы 4 апта</translation>
-<translation id="8580884231102452214">GIF көшіру</translation>
 <translation id="8583805026567836021">Аккаунт деректерін өшіру</translation>
 <translation id="859046281437143747">"Қосымша опциялар" түймесін басып, бағаларды бақылаңыз.</translation>
 <translation id="860043288473659153">Карта иесінің аты-жөні</translation>

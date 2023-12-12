@@ -1216,6 +1216,7 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
 <translation id="3432601291244612633">Chiudi pagina</translation>
 <translation id="3433111389595862568">Software di collaborazione e per conferenze</translation>
 <translation id="3433144818443565002">Chat vocali e videochiamate</translation>
+<translation id="3434025015623587566">Gestore delle password di Google richiede un maggiore accesso</translation>
 <translation id="343474037147570563">I file che carichi o alleghi vengono inviati a Google Cloud o a terze parti per essere analizzati. Ad esempio, potrebbero essere analizzati per rilevare dati sensibili o malware, essere archiviati in base ai criteri aziendali ed essere visibili al tuo amministratore.</translation>
 <translation id="3435557549311968410">Continuo (corto)</translation>
 <translation id="3435738964857648380">Sicurezza</translation>
@@ -1965,6 +1966,7 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
 <translation id="4918221908152712722">Installa <ph name="APP_NAME" /> (non è richiesto alcun download)</translation>
 <translation id="4920457992177678649">Case vacanze e soggiorni di breve durata</translation>
 <translation id="4920710383559189047">Manicotto</translation>
+<translation id="4922104989726031751">Per usare Gestore delle password con il tuo sistema operativo, riavvia Chromium e consenti l'accesso al gestore delle password del tuo computer. Le schede verranno riaperte dopo il riavvio.</translation>
 <translation id="4923459931733593730">Pagamento</translation>
 <translation id="4926049483395192435">Deve essere specificato.</translation>
 <translation id="4926159001844873046"><ph name="SITE" /> dice</translation>
@@ -2604,6 +2606,7 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
 <translation id="6234122620015464377">Taglia le pagine dopo la stampa di ciascun documento</translation>
 <translation id="6236290670123303279">Gestisci impostazioni</translation>
 <translation id="6240447795304464094">Logo Google Pay</translation>
+<translation id="6240964651812394252">Per usare Gestore delle password di Google con il tuo sistema operativo, riavvia Chrome e consenti l'accesso al gestore delle password del tuo computer. Le schede verranno riaperte dopo il riavvio.</translation>
 <translation id="6241121617266208201">Nascondi suggerimenti</translation>
 <translation id="624499991300733384">Servizio compositore di stampa</translation>
 <translation id="6251906504834538140">{0,plural, =1{Spostamento del file bloccato}other{Spostamento di <ph name="FILE_COUNT" /> file bloccato}}</translation>
@@ -2614,6 +2617,7 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
 <translation id="6263376278284652872">Segnalibri di <ph name="DOMAIN" /></translation>
 <translation id="6264376385120300461">Scarica comunque</translation>
 <translation id="6264485186158353794">Torna nell'area protetta</translation>
+<translation id="6264636978858465832">Gestore delle password richiede un maggiore accesso</translation>
 <translation id="6265794661083428563">Copia il valore del criterio <ph name="POLICY_NAME" /></translation>
 <translation id="6266934640124581640">Verde acqua</translation>
 <translation id="6270066318535733958">Nautica</translation>

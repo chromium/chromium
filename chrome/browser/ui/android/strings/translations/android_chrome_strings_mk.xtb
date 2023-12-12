@@ -410,7 +410,6 @@
 <translation id="3226612997184048185">Ако ги зачувувате и вашите обележувачи во вашата сметка на Google, може да ги следите цените на производите во Chrome и да добивате известувања кога ќе се намали цената</translation>
 <translation id="3227557059438308877">Google Chrome како безбедносен клуч</translation>
 <translation id="3232754137068452469">Веб-апликација</translation>
-<translation id="3234978181857588512">Зачувај на уредот</translation>
 <translation id="3236059992281584593">Остана 1 минута</translation>
 <translation id="3237087289225714896">Стандардно вчитување однапред:</translation>
 <translation id="3237433641417325993">Лизгајте надолу за да ги видите предложените статии</translation>
@@ -582,7 +581,6 @@
 <translation id="4181841719683918333">Јазици</translation>
 <translation id="4188221736490993796">Подредување од Ш до А</translation>
 <translation id="4195643157523330669">Отвори во нова картичка</translation>
-<translation id="4196597275619698563">Создај картичка</translation>
 <translation id="4197828496439691735">{NUM_TABS,plural, =1{1 картичка на уредов}one{# картичка на уредов}other{# картички на уредов}}</translation>
 <translation id="4198423547019359126">Нема достапни локации за преземање</translation>
 <translation id="4202218894997543208">Теми што сте ги блокирале</translation>
@@ -594,7 +592,6 @@
 <translation id="4248098802131000011">Заштитете ги лозинките од упади во податоци и други безбедносни проблеми</translation>
 <translation id="424864128008805179">Ќе се одјавите од Chrome?</translation>
 <translation id="4249955472157341256">Подредете според последни</translation>
-<translation id="4250229828105606438">Слика од екран</translation>
 <translation id="4256782883801055595">Лиценци за отворен код</translation>
 <translation id="4257230861809842349">Да се избришат лозинките од Google Password Manager?</translation>
 <translation id="4269820728363426813">Копирај ја адресата на линкот</translation>
@@ -1148,7 +1145,6 @@
 <translation id="7030304022046916278">Испраќа URL-адреси во „Безбедно прелистување“ за да се проверат</translation>
 <translation id="7035701931849773472">Други опции</translation>
 <translation id="7037830628447527439">Најавете се на Chrome со вашата сметка на Google</translation>
-<translation id="7038956721828960940">chrome_image_<ph name="CURRENT_TIMESTAMP_MS" /></translation>
 <translation id="7054588988317389591">Сакате ли да добивате описи на слики?</translation>
 <translation id="7055152154916055070">Пренасочувањето е блокирано:</translation>
 <translation id="7063006564040364415">Не може да се поврзе на серверот за синхронизација.</translation>
@@ -1279,7 +1275,6 @@
 <translation id="7658239707568436148">Откажи</translation>
 <translation id="7665369617277396874">Додајте сметка</translation>
 <translation id="766587987807204883">Статиите се појавуваат тука, а може да се читаат кога сте офлајн</translation>
-<translation id="768232549260819724">GIF-датотеката е копирана</translation>
 <translation id="7682724950699840886">Испробајте ги следниве совети: проверете дали има доволно простор на уредот, обидете се да ги извезете повторно.</translation>
 <translation id="7686086654630106285">Повеќе за реклами предложени од сајтови</translation>
 <translation id="768618399695552958">Некои од страниците што ги посетувате се вчитани однапред. Страниците може да се вчитани однапред преку серверите на Google кога се поврзани од сајт на Google.</translation>
@@ -1334,7 +1329,6 @@
 <translation id="7929962904089429003">Отворете го менито</translation>
 <translation id="7930998711684428189">Ве предупредува ако лозинките се откриени при упад во податоците.</translation>
 <translation id="7934668619883965330">Датотеката не може да се преземе. Форматот на датотеката не е поддржан.</translation>
-<translation id="7939485076072265087">Создајте стилизирана картичка со нагласен текст</translation>
 <translation id="7942131818088350342"><ph name="PRODUCT_NAME" /> е застарен.</translation>
 <translation id="7944772052836377867">Синхронизацијата треба да потврди дека сте вие</translation>
 <translation id="7947953824732555851">Прифати и најави се</translation>
@@ -1472,7 +1466,6 @@
 <translation id="856481929701340285">Барај лок. на раб. пов.</translation>
 <translation id="8570677896027847510">Датотеката не може да се преземе безбедно</translation>
 <translation id="8571213806525832805">Изминатите 4 седмици</translation>
-<translation id="8580884231102452214">Копирај ја GIF-датотеката</translation>
 <translation id="8583805026567836021">Чистење податоци за сметка</translation>
 <translation id="859046281437143747">Следете ја цената преку копчето „Повеќе опции“</translation>
 <translation id="860043288473659153">Име на сопственикот на картичката</translation>

@@ -410,7 +410,6 @@
 <translation id="3226612997184048185">如果一併將書籤儲存在 Google 帳戶中，便可以在 Chrome 中追蹤產品價格，並在降價時收到通知</translation>
 <translation id="3227557059438308877">以 Google Chrome 作為安全密鑰</translation>
 <translation id="3232754137068452469">網絡應用程式</translation>
-<translation id="3234978181857588512">儲存至裝置</translation>
 <translation id="3236059992281584593">尚餘 1 分鐘</translation>
 <translation id="3237087289225714896">標準預先載入模式：</translation>
 <translation id="3237433641417325993">向下捲動以查看建議的文章</translation>
@@ -582,7 +581,6 @@
 <translation id="4181841719683918333">語言</translation>
 <translation id="4188221736490993796">由 Z 到 A 排序</translation>
 <translation id="4195643157523330669">在新分頁中開啟</translation>
-<translation id="4196597275619698563">建立資訊卡</translation>
 <translation id="4197828496439691735">{NUM_TABS,plural, =1{此裝置上的 1 個分頁}other{此裝置上的 # 個分頁}}</translation>
 <translation id="4198423547019359126">沒有可用的下載位置</translation>
 <translation id="4202218894997543208">您已封鎖的主題</translation>
@@ -594,7 +592,6 @@
 <translation id="4248098802131000011">確保密碼安全，避免發生資料外洩或其他安全性問題</translation>
 <translation id="424864128008805179">要登出 Chrome 嗎？</translation>
 <translation id="4249955472157341256">按最新項目排序</translation>
-<translation id="4250229828105606438">螢幕截圖</translation>
 <translation id="4256782883801055595">開放原始碼授權</translation>
 <translation id="4257230861809842349">要從「Google 密碼管理工具」中刪除密碼嗎？</translation>
 <translation id="4269820728363426813">複製連結網址</translation>
@@ -1148,7 +1145,6 @@
 <translation id="7030304022046916278">將網址傳送至「安全瀏覽」功能檢查</translation>
 <translation id="7035701931849773472">其他選項</translation>
 <translation id="7037830628447527439">使用 Google 帳戶登入 Chrome</translation>
-<translation id="7038956721828960940">chrome_image_<ph name="CURRENT_TIMESTAMP_MS" /></translation>
 <translation id="7054588988317389591">要取得圖片說明嗎？</translation>
 <translation id="7055152154916055070">已禁止重新導向：</translation>
 <translation id="7063006564040364415">無法連線至同步處理伺服器。</translation>
@@ -1279,7 +1275,6 @@
 <translation id="7658239707568436148">取消</translation>
 <translation id="7665369617277396874">新增帳戶</translation>
 <translation id="766587987807204883">文章在這裡顯示，即使處於離線狀態也可閱讀</translation>
-<translation id="768232549260819724">已複製 GIF</translation>
 <translation id="7682724950699840886">請嘗試按照以下提示操作：確保您的裝置上有足夠的儲存空間，然後嘗試重新匯出。</translation>
 <translation id="7686086654630106285">進一步瞭解網站建議的廣告</translation>
 <translation id="768618399695552958">系統會預先載入您瀏覽的部分網頁。當您從 Google 網站連至這些網頁時，系統可能會透過 Google 伺服器預先載入網頁內容。</translation>
@@ -1334,7 +1329,6 @@
 <translation id="7929962904089429003">開啟選單</translation>
 <translation id="7930998711684428189">密碼因資料外洩而被洩露時接收警告</translation>
 <translation id="7934668619883965330">無法下載檔案，因為系統不支援檔案格式。</translation>
-<translation id="7939485076072265087">建立精選內容嘅風格資訊卡</translation>
 <translation id="7942131818088350342"><ph name="PRODUCT_NAME" /> 版本過舊。</translation>
 <translation id="7944772052836377867">同步功能需要驗證您的身分</translation>
 <translation id="7947953824732555851">接受並登入</translation>
@@ -1472,7 +1466,6 @@
 <translation id="856481929701340285">切換至電腦版網站</translation>
 <translation id="8570677896027847510">無法安全下載檔案</translation>
 <translation id="8571213806525832805">過去 4 週</translation>
-<translation id="8580884231102452214">複製 GIF</translation>
 <translation id="8583805026567836021">正在清除帳戶數據</translation>
 <translation id="859046281437143747">使用「更多選項」按鈕追蹤價格</translation>
 <translation id="860043288473659153">持卡人姓名</translation>

@@ -876,6 +876,7 @@ As permissões que você já concedeu a apps podem ser aplicadas a essa conta. V
 <translation id="1651008383952180276">Informe a mesma senha longa duas vezes</translation>
 <translation id="1651609627703324721">Esta guia está apresentando conteúdo de RV para um headset</translation>
 <translation id="1652326691684645429">Ativar o "Compartilhar por proximidade"</translation>
+<translation id="1652862280638399816">Para usar o Gerenciador de senhas do Google com o Acesso às Chaves do macOS, reinicie o Chromium e permita o acesso. Suas guias serão reabertas após a reinicialização.</translation>
 <translation id="1654580009054503925">A exibição de solicitações está bloqueada</translation>
 <translation id="1656528038316521561">Opacidade do plano de fundo</translation>
 <translation id="1657406563541664238">Ajudar a tornar o <ph name="PRODUCT_NAME" /> melhor enviando automaticamente estatísticas de uso e relatórios de problemas ao Google.</translation>
@@ -2839,6 +2840,7 @@ Para gerenciar as configurações dessa conta, instale o app Family Link no seu 
 <translation id="3151562827395986343">Limpa o histórico, os cookies, o cache e muito mais</translation>
 <translation id="3151786313568798007">Orientação</translation>
 <translation id="3152356229013609796">Ver, dispensar e responder às notificações do smartphone</translation>
+<translation id="3155163173539279776">Reiniciar Chromium</translation>
 <translation id="3157387275655328056">Adicionar à lista de leitura</translation>
 <translation id="3157931365184549694">Restaurar</translation>
 <translation id="3158033540161634471">Configurar impressão digital</translation>
@@ -3660,6 +3662,7 @@ Para gerenciar as configurações dessa conta, instale o app Family Link no seu 
 <translation id="3809272675881623365">Coelho</translation>
 <translation id="3809280248639369696">Lunar</translation>
 <translation id="3810593934879994994"><ph name="ORIGIN" /> tem permissão para ver arquivos nas seguintes pastas</translation>
+<translation id="3810770279996899697">O Gerenciador de senhas precisa de permissão para abrir o Acesso às Chaves do MacOS</translation>
 <translation id="3810914450553844415">O administrador não permite Contas do Google adicionais.</translation>
 <translation id="3810973564298564668">Gerenciar</translation>
 <translation id="381202950560906753">Adicionar outra</translation>
@@ -9521,7 +9524,6 @@ Mantenha a sua chave de arquivo em um local seguro. Você precisará dela para c
 <translation id="8473540203671727883">Falar o texto que está sob o cursor do mouse</translation>
 <translation id="8473863474539038330">Endereços e mais</translation>
 <translation id="8474378002946546633">Permitir notificações</translation>
-<translation id="8474733733775441349">Mostrar senhas da sua Conta do Google</translation>
 <translation id="8475313423285172237">Outro programa em seu computador adicionou uma extensão que pode mudar a forma como o Google Chrome funciona.</translation>
 <translation id="8476408756881832830">Pausar reprodução quando o ChromeVox estiver falando</translation>
 <translation id="8476491056950015181"><ph name="BEGIN_PARAGRAPH1" />Ao permitir que dispositivos ChromeOS enviem relatórios automáticos, você nos ajuda a priorizar o que precisamos corrigir e melhorar nesse sistema. Esses relatórios podem incluir informações como falhas do ChromeOS, quais recursos foram usados, a quantidade de memória utilizada normalmente e dados de uso e diagnóstico do app Android. Alguns dados agregados também vão ajudar apps do Google e nossos parceiros, como os desenvolvedores Android.<ph name="END_PARAGRAPH1" />

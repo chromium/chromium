@@ -410,7 +410,6 @@
 <translation id="3226612997184048185">หากบันทึกบุ๊กมาร์กไว้ในบัญชี Google ด้วย คุณจะติดตามราคาผลิตภัณฑ์ใน Chrome และรับการแจ้งเตือนเมื่อราคาต่ำลงได้</translation>
 <translation id="3227557059438308877">ใช้ Google Chrome เป็นคีย์ความปลอดภัย</translation>
 <translation id="3232754137068452469">เว็บแอป</translation>
-<translation id="3234978181857588512">บันทึกลงในอุปกรณ์</translation>
 <translation id="3236059992281584593">เหลือ 1 นาที</translation>
 <translation id="3237087289225714896">การโหลดล่วงหน้าแบบมาตรฐาน:</translation>
 <translation id="3237433641417325993">เลื่อนลงเพื่อดูบทความที่แนะนำ</translation>
@@ -582,7 +581,6 @@
 <translation id="4181841719683918333">ภาษา</translation>
 <translation id="4188221736490993796">จัดเรียงจาก ฮ ถึง ก</translation>
 <translation id="4195643157523330669">เปิดในแท็บใหม่</translation>
-<translation id="4196597275619698563">สร้างการ์ด</translation>
 <translation id="4197828496439691735">{NUM_TABS,plural, =1{1 แท็บในอุปกรณ์นี้}other{# แท็บในอุปกรณ์นี้}}</translation>
 <translation id="4198423547019359126">ไม่มีตำแหน่งการดาวน์โหลดที่ใช้ได้</translation>
 <translation id="4202218894997543208">หัวข้อที่คุณบล็อก</translation>
@@ -594,7 +592,6 @@
 <translation id="4248098802131000011">รักษารหัสผ่านให้ปลอดภัยจากการละเมิดข้อมูลและปัญหาด้านความปลอดภัยอื่นๆ</translation>
 <translation id="424864128008805179">ต้องการออกจากระบบ Chrome ไหม</translation>
 <translation id="4249955472157341256">จัดเรียงตามล่าสุด</translation>
-<translation id="4250229828105606438">ภาพหน้าจอ</translation>
 <translation id="4256782883801055595">ใบอนุญาตโอเพนซอร์ส</translation>
 <translation id="4257230861809842349">ลบรหัสผ่านจากเครื่องมือจัดการรหัสผ่านบน Google ไหม</translation>
 <translation id="4269820728363426813">คัดลอกที่อยู่ลิงก์</translation>
@@ -1148,7 +1145,6 @@
 <translation id="7030304022046916278">ส่ง URL ให้ Google Safe Browsing ตรวจสอบ</translation>
 <translation id="7035701931849773472">ตัวเลือกอื่นๆ</translation>
 <translation id="7037830628447527439">ลงชื่อเข้าใช้ Chrome ด้วยบัญชี Google</translation>
-<translation id="7038956721828960940">chrome_image_<ph name="CURRENT_TIMESTAMP_MS" /></translation>
 <translation id="7054588988317389591">รับคำอธิบายรูปภาพใช่ไหม</translation>
 <translation id="7055152154916055070">การเปลี่ยนเส้นทางถูกบล็อก</translation>
 <translation id="7063006564040364415">ไม่สามารถเชื่อมต่อกับเซิร์ฟเวอร์การซิงค์</translation>
@@ -1279,7 +1275,6 @@
 <translation id="7658239707568436148">ยกเลิก</translation>
 <translation id="7665369617277396874">เพิ่มบัญชี</translation>
 <translation id="766587987807204883">บทความจะแสดงที่นี่ ซึ่งคุณจะอ่านได้แม้ในขณะออฟไลน์</translation>
-<translation id="768232549260819724">คัดลอก GIF แล้ว</translation>
 <translation id="7682724950699840886">ลองทำตามเคล็ดลับต่อไปนี้ ตรวจสอบว่าอุปกรณ์มีพื้นที่ว่างเพียงพอ จากนั้นพยายามส่งออกอีกครั้ง</translation>
 <translation id="7686086654630106285">ข้อมูลเพิ่มเติมเกี่ยวกับโฆษณาที่เว็บไซต์แนะนำ</translation>
 <translation id="768618399695552958">ระบบจะโหลดหน้าเว็บบางหน้าที่คุณเข้าชมไว้ล่วงหน้า ระบบอาจโหลดหน้าเว็บล่วงหน้าผ่านเซิร์ฟเวอร์ของ Google เมื่อลิงก์จากเว็บไซต์ Google</translation>
@@ -1334,7 +1329,6 @@
 <translation id="7929962904089429003">เปิดเมนู</translation>
 <translation id="7930998711684428189">เตือนคุณในกรณีที่รหัสผ่านรั่วไหลจากการละเมิดข้อมูล</translation>
 <translation id="7934668619883965330">ดาวน์โหลดไฟล์ไม่ได้ ไม่รองรับรูปแบบไฟล์</translation>
-<translation id="7939485076072265087">สร้างการ์ดที่ปรับแต่งสไตล์ด้วยการไฮไลต์ข้อความ</translation>
 <translation id="7942131818088350342"><ph name="PRODUCT_NAME" /> ล้าสมัย</translation>
 <translation id="7944772052836377867">การซิงค์จะต้องยืนยันว่าเป็นคุณ</translation>
 <translation id="7947953824732555851">ยอมรับและลงชื่อเข้าใช้</translation>
@@ -1472,7 +1466,6 @@
 <translation id="856481929701340285">ขอเว็บไซต์เดสก์ท็อป</translation>
 <translation id="8570677896027847510">ดาวน์โหลดไฟล์อย่างปลอดภัยไม่ได้</translation>
 <translation id="8571213806525832805">4 สัปดาห์ที่แล้ว</translation>
-<translation id="8580884231102452214">คัดลอก GIF</translation>
 <translation id="8583805026567836021">กำลังล้างข้อมูลบัญชี</translation>
 <translation id="859046281437143747">ติดตามราคาโดยใช้ปุ่ม "ตัวเลือกเพิ่มเติม"</translation>
 <translation id="860043288473659153">ชื่อผู้ถือบัตร</translation>

@@ -410,7 +410,6 @@ Din krypterade data kan endast läsas av en person som har din lösenfras. Löse
 <translation id="3226612997184048185">Om du även sparar bokmärken i Google-kontot kan du bevaka produktpriser i Chrome och få en avisering när priset sänks.</translation>
 <translation id="3227557059438308877">Google Chrome som säkerhetsnyckel</translation>
 <translation id="3232754137068452469">Webbapp</translation>
-<translation id="3234978181857588512">Spara på enhet</translation>
 <translation id="3236059992281584593">1 minut kvar</translation>
 <translation id="3237087289225714896">Standardförinläsning:</translation>
 <translation id="3237433641417325993">Du hittar artikelförslag om du scrollar ned</translation>
@@ -583,7 +582,6 @@ Din krypterade data kan endast läsas av en person som har din lösenfras. Löse
 <translation id="4181841719683918333">Språk</translation>
 <translation id="4188221736490993796">Sortera från Ö till A</translation>
 <translation id="4195643157523330669">Öppna i ny flik</translation>
-<translation id="4196597275619698563">Skapa kort</translation>
 <translation id="4197828496439691735">{NUM_TABS,plural, =1{1 flik på den här enheten}other{# flikar på den här enheten}}</translation>
 <translation id="4198423547019359126">Det fins inga tillgängliga nedladdningsplatser</translation>
 <translation id="4202218894997543208">Ämnen som du har blockerat</translation>
@@ -595,7 +593,6 @@ Din krypterade data kan endast läsas av en person som har din lösenfras. Löse
 <translation id="4248098802131000011">Skydda dina lösenord från dataintrång och andra säkerhetsproblem</translation>
 <translation id="424864128008805179">Vill du logga ut från Chrome?</translation>
 <translation id="4249955472157341256">Sortera efter senaste</translation>
-<translation id="4250229828105606438">Skärmbild</translation>
 <translation id="4256782883801055595">Licenser för öppen källkod</translation>
 <translation id="4257230861809842349">Vill du radera lösenord från Google Lösenordshantering?</translation>
 <translation id="4269820728363426813">Kopiera länkadress</translation>
@@ -1149,7 +1146,6 @@ Vissa webbplatser kan till exempel svara på begäran genom att visa annonser so
 <translation id="7030304022046916278">Webbadresser skickas till Säker webbsökning för kontroll</translation>
 <translation id="7035701931849773472">Andra alternativ</translation>
 <translation id="7037830628447527439">Logga in i Chrome med ditt Google-konto</translation>
-<translation id="7038956721828960940">chrome_image_<ph name="CURRENT_TIMESTAMP_MS" /></translation>
 <translation id="7054588988317389591">Vill du få bildbeskrivningar?</translation>
 <translation id="7055152154916055070">Omdirigeringen blockerades:</translation>
 <translation id="7063006564040364415">Det gick inte att ansluta till synkroniseringsservern.</translation>
@@ -1280,7 +1276,6 @@ Vissa webbplatser kan till exempel svara på begäran genom att visa annonser so
 <translation id="7658239707568436148">Avbryt</translation>
 <translation id="7665369617277396874">Lägg till konto</translation>
 <translation id="766587987807204883">Artiklar som du kan läsa även när du är offline visas här</translation>
-<translation id="768232549260819724">GIF-bilden har kopierats</translation>
 <translation id="7682724950699840886">Testa följande: kontrollera att det finns tillräckligt mycket utrymme på enheten, gör om exporten.</translation>
 <translation id="7686086654630106285">Mer om föreslagna annonser på webbplatser</translation>
 <translation id="768618399695552958">Vissa av sidorna du besöker läser in i förväg. Sidor kan läsas in i förväg via Googles servrar när de länkas från en Google-webbplats.</translation>
@@ -1335,7 +1330,6 @@ Vissa webbplatser kan till exempel svara på begäran genom att visa annonser so
 <translation id="7929962904089429003">Öppna menyn</translation>
 <translation id="7930998711684428189">En varning visas om lösenord har läckt ut vid ett dataintrång.</translation>
 <translation id="7934668619883965330">Det gick inte att ladda ned filen. Filformatet stöds inte.</translation>
-<translation id="7939485076072265087">Skapa stiliserat kort med markerad text</translation>
 <translation id="7942131818088350342"><ph name="PRODUCT_NAME" /> är inaktuell.</translation>
 <translation id="7944772052836377867">Verifiera din identitet för synkronisering</translation>
 <translation id="7947953824732555851">Godkänn och logga in</translation>
@@ -1473,7 +1467,6 @@ Vissa webbplatser kan till exempel svara på begäran genom att visa annonser so
 <translation id="856481929701340285">Begär skrivbordsversion</translation>
 <translation id="8570677896027847510">Det går inte att ladda ned filen på ett säkert sätt</translation>
 <translation id="8571213806525832805">Senaste fyra veckorna</translation>
-<translation id="8580884231102452214">Kopiera GIF</translation>
 <translation id="8583805026567836021">Rensar kontouppgifter</translation>
 <translation id="859046281437143747">Bevaka pris via knappen Flera alternativ</translation>
 <translation id="860043288473659153">Namn på kortinnehavare</translation>

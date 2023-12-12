@@ -866,6 +866,7 @@
 <translation id="1651008383952180276">તમારે તે જ પાસફ્રેઝ બે વાર દાખલ કરવો આવશ્યક છે</translation>
 <translation id="1651609627703324721">આ ટૅબ કોઈ હૅડસેટ પર VR કન્ટેન્ટ પ્રસ્તુત કરી રહ્યું છે</translation>
 <translation id="1652326691684645429">'નજીકના શેર' સુવિધા ચાલુ કરો</translation>
+<translation id="1652862280638399816">macOS કીચેન સાથે Password Managerનો ઉપયોગ કરવા માટે, Chromiumને ફરીથી લૉન્ચ કરો અને કીચેનના ઍક્સેસની મંજૂરી આપો. ફરીથી લૉન્ચ થયા પછી, તમારા ટૅબ ફરીથી ખૂલશે.</translation>
 <translation id="1654580009054503925">વિનંતીઓ બતાવવાની મંજૂરી આપી નથી</translation>
 <translation id="1656528038316521561">બૅકગ્રાઉન્ડની અપારદર્શકતા</translation>
 <translation id="1657406563541664238">ઉપયોગનાં આંકડાઓ અને ક્રૅશ રિપોર્ટ ઑટોમૅટિક રીતે Googleને મોકલીને <ph name="PRODUCT_NAME" />ને વધુ સારું બનાવવામાં મદદ કરો</translation>
@@ -2817,6 +2818,7 @@
 <translation id="3151562827395986343">ઇતિહાસ કુકી, કૅશ અને વધુ સાફ કરો</translation>
 <translation id="3151786313568798007">ઓરિએન્ટેશન</translation>
 <translation id="3152356229013609796">તમારા ફોનના નોટિફિકેશન જુઓ, છોડી દો અને તેમનો જવાબ આપો</translation>
+<translation id="3155163173539279776">Chromium ને ફરીથી લોંચ કરો</translation>
 <translation id="3157387275655328056">વાંચન સૂચિમાં ઉમેરો</translation>
 <translation id="3157931365184549694">રિસ્ટોર કરો</translation>
 <translation id="3158033540161634471">તમારી ફિંગરપ્રિન્ટ સેટઅપ કરો</translation>
@@ -3634,6 +3636,7 @@
 <translation id="3809272675881623365">સસલું</translation>
 <translation id="3809280248639369696">મૂનબીમ</translation>
 <translation id="3810593934879994994"><ph name="ORIGIN" /> નીચેના ફોલ્ડરોમાં સાચવેલી ફાઇલોને જોઈ શકે છે</translation>
+<translation id="3810770279996899697">Password Managerને MacOS કીચેનનો ઍક્સેસ હોવો જરૂરી છે</translation>
 <translation id="3810914450553844415">તમારા વ્યવસ્થાપક વધારાના Google એકાઉન્ટની મંજૂરી આપતા નથી.</translation>
 <translation id="3810973564298564668">મેનેજ કરો</translation>
 <translation id="381202950560906753">બીજી ઉમેરો</translation>
@@ -9475,7 +9478,6 @@ USB ડિવાઇસ</translation>
 <translation id="8473540203671727883">માઉસ હેઠળ આવતી ટેક્સ્ટ બોલો</translation>
 <translation id="8473863474539038330">સરનામા અને વધુ</translation>
 <translation id="8474378002946546633">સૂચનાઓને અનુમતિ આપો</translation>
-<translation id="8474733733775441349">તમારા Google એકાઉન્ટમાં સ્ટોર કરેલા પાસવર્ડ બતાવો</translation>
 <translation id="8475313423285172237">તમારા કમ્પ્યુટર પરના બીજા પ્રોગ્રામે એક એક્સ્ટેંશન ઉમેર્યું જે Chrome કાર્ય કરે છે તે રીતને બદલી શકે છે.</translation>
 <translation id="8476408756881832830">ChromeVox બોલી રહ્યું હોય ત્યારે પ્લેબેક થોભાવો</translation>
 <translation id="8476491056950015181"><ph name="BEGIN_PARAGRAPH1" />ChromeOS ડિવાઇસને ઑટોમૅટિક રિપોર્ટ મોકલવાની મંજૂરી આપવાથી, અમને ChromeOSમાં સુધારવી અને બહેતર બનાવવી જરૂરી બાબતોને પ્રાધાન્ય આપવામાં સહાય મળે છે. આ રિપોર્ટમાં ChromeOS ક્યારે ક્રૅશ થાય છે, કઈ સુવિધાઓનો ઉપયોગ કરવામાં આવ્યો હતો, સામાન્ય રીતે કેટલી મેમરીનો ઉપયોગ કરવામાં આવ્યો હતો અને Android ઍપ અને વપરાશનો ડેટા જેવી બાબતોનો સમાવેશ થઈ શકે છે. કેટલોક કુલ ડેટા Googleની ઍપ અને Android ડેવલપર જેવા તેના ભાગીદારોને પણ સહાય કરશે.<ph name="END_PARAGRAPH1" />

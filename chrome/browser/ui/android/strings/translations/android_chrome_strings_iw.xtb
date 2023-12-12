@@ -410,7 +410,6 @@
 <translation id="3226612997184048185">‏אם הסימניות שלך נשמרות גם בחשבון Google, יש לך אפשרות לעקוב אחרי מחירי מוצרים ב-Chrome ולקבל הודעות כשהמחירים יורדים</translation>
 <translation id="3227557059438308877">‏Google Chrome כמפתח אבטחה</translation>
 <translation id="3232754137068452469">אפליקציית אינטרנט</translation>
-<translation id="3234978181857588512">שמירה במכשיר</translation>
 <translation id="3236059992281584593">נותרה דקה אחת</translation>
 <translation id="3237087289225714896">טעינה רגילה מראש:</translation>
 <translation id="3237433641417325993">גוללים למטה כדי להציג את המאמרים המומלצים</translation>
@@ -582,7 +581,6 @@
 <translation id="4181841719683918333">שפות</translation>
 <translation id="4188221736490993796">מיון בסדר אלפביתי יורד</translation>
 <translation id="4195643157523330669">פתיחה בכרטיסייה חדשה</translation>
-<translation id="4196597275619698563">ליצירת כרטיס</translation>
 <translation id="4197828496439691735">{NUM_TABS,plural, =1{כרטיסייה אחת במכשיר הזה}one{# כרטיסיות במכשיר הזה}two{# כרטיסיות במכשיר הזה}other{# כרטיסיות במכשיר הזה}}</translation>
 <translation id="4198423547019359126">אין מיקומים זמינים להורדה</translation>
 <translation id="4202218894997543208">נושאים שחסמת</translation>
@@ -594,7 +592,6 @@
 <translation id="4248098802131000011">הגנה על הסיסמאות שלך מפני פרצות באבטחת המידע ובעיות אבטחה אחרות</translation>
 <translation id="424864128008805179">‏האם לצאת מ-Chrome?</translation>
 <translation id="4249955472157341256">מיון לפי 'האחרון'</translation>
-<translation id="4250229828105606438">צילום מסך</translation>
 <translation id="4256782883801055595">רישיונות קוד פתוח</translation>
 <translation id="4257230861809842349">‏למחוק את הסיסמאות ממנהל הסיסמאות של Google?</translation>
 <translation id="4269820728363426813">העתקת כתובת של קישור</translation>
@@ -1148,7 +1145,6 @@
 <translation id="7030304022046916278">‏שליחת כתובות URL לבדיקה על ידי 'גלישה בטוחה'</translation>
 <translation id="7035701931849773472">אפשרויות אחרות</translation>
 <translation id="7037830628447527439">‏אפשר להיכנס לחשבון Google ב-Chrome</translation>
-<translation id="7038956721828960940">chrome_image_<ph name="CURRENT_TIMESTAMP_MS" /></translation>
 <translation id="7054588988317389591">רוצה לקבל תיאורי תמונות?</translation>
 <translation id="7055152154916055070">הפניה אוטומטית נחסמה:</translation>
 <translation id="7063006564040364415">לא ניתן היה להתחבר אל שרת הסנכרון.</translation>
@@ -1279,7 +1275,6 @@
 <translation id="7658239707568436148">ביטול</translation>
 <translation id="7665369617277396874">חשבון חדש</translation>
 <translation id="766587987807204883">כאן יוצגו מאמרים, ואפשר לקרוא אותם גם במצב אונליין</translation>
-<translation id="768232549260819724">‏ה-GIF הועתק</translation>
 <translation id="7682724950699840886">אפשר לנסות את הטיפים הבאים: צריך לוודא שיש מספיק מקום פנוי במכשיר ואז לנסות לייצא שוב.</translation>
 <translation id="7686086654630106285">מידע נוסף על הצעות למודעות באתרים</translation>
 <translation id="768618399695552958">‏חלק מהדפים שאליהם עוברים נטענים מראש. דפים יכולים להיטען מראש באמצעות שרתי Google כשיש אליהם קישורים מאתר שנוצר באמצעות Google Sites.</translation>
@@ -1334,7 +1329,6 @@
 <translation id="7929962904089429003">פתיחת התפריט</translation>
 <translation id="7930998711684428189">הצגת אזהרה אם סיסמאות נחשפות עקב פרצה באבטחת מידע.</translation>
 <translation id="7934668619883965330">לא ניתן להוריד את הקובץ. פורמט הקובץ לא נתמך.</translation>
-<translation id="7939485076072265087">יצירת כרטיס מעוצב עם הדגשה</translation>
 <translation id="7942131818088350342"><ph name="PRODUCT_NAME" /> אינו מעודכן.</translation>
 <translation id="7944772052836377867">כדי לסנכרן צריך לאמת את הזהות שלך</translation>
 <translation id="7947953824732555851">קבלה וכניסה</translation>
@@ -1472,7 +1466,6 @@
 <translation id="856481929701340285">בקש אתר לשולחן העבודה</translation>
 <translation id="8570677896027847510">לא ניתן להוריד את הקובץ באופן מאובטח</translation>
 <translation id="8571213806525832805">מארבעת השבועות האחרונים</translation>
-<translation id="8580884231102452214">‏העתקה של ה-GIF</translation>
 <translation id="8583805026567836021">נתוני החשבון נמחקים</translation>
 <translation id="859046281437143747">אפשר לעקוב אחר המחיר באמצעות לחצן האפשרויות הנוספות</translation>
 <translation id="860043288473659153">שם בעל הכרטיס</translation>

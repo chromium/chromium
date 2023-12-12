@@ -872,6 +872,7 @@
 <translation id="1651008383952180276">동일한 암호를 두 번 입력해야 합니다.</translation>
 <translation id="1651609627703324721">이 탭에서 헤드셋에 VR 콘텐츠를 전송하는 중입니다</translation>
 <translation id="1652326691684645429">Nearby Share 사용</translation>
+<translation id="1652862280638399816">비밀번호 관리자를 MacOS 키체인과 함께 사용하려면 Chromium을 다시 실행한 다음 키체인 액세스를 허용하세요. 탭을 다시 실행하면 탭이 다시 열립니다.</translation>
 <translation id="1654580009054503925">요청 표시가 허용되지 않음</translation>
 <translation id="1656528038316521561">배경 불투명도</translation>
 <translation id="1657406563541664238">사용 통계 및 비정상 종료 보고서가 Google로 자동 전송되게 하여 <ph name="PRODUCT_NAME" /> 개선에 도움 주기</translation>
@@ -2836,6 +2837,7 @@
 <translation id="3151562827395986343">방문 기록, 쿠키, 캐시 등을 삭제</translation>
 <translation id="3151786313568798007">방향</translation>
 <translation id="3152356229013609796">휴대전화의 알림을 보고 닫거나 답장합니다.</translation>
+<translation id="3155163173539279776">Chromium 다시 시작</translation>
 <translation id="3157387275655328056">읽기 목록에 추가</translation>
 <translation id="3157931365184549694">복구</translation>
 <translation id="3158033540161634471">지문 설정</translation>
@@ -3653,6 +3655,7 @@
 <translation id="3809272675881623365">토끼</translation>
 <translation id="3809280248639369696">달빛</translation>
 <translation id="3810593934879994994"><ph name="ORIGIN" />에서 다음 폴더의 파일을 볼 수 있습니다.</translation>
+<translation id="3810770279996899697">비밀번호 관리자에 MacOS 키체인 액세스 권한 필요</translation>
 <translation id="3810914450553844415">관리자가 보조 Google 계정 추가를 허용하지 않습니다.</translation>
 <translation id="3810973564298564668">관리</translation>
 <translation id="381202950560906753">다른 지문 추가</translation>
@@ -9495,7 +9498,6 @@ https://support.google.com/chromebook/?p=sm</translation>
 <translation id="8473540203671727883">마우스 커서를 올린 텍스트를 음성으로 알려줍니다.</translation>
 <translation id="8473863474539038330">주소 및 기타</translation>
 <translation id="8474378002946546633">알림 허용</translation>
-<translation id="8474733733775441349">Google 계정의 비밀번호 표시</translation>
 <translation id="8475313423285172237">컴퓨터의 다른 프로그램에서 Chrome 작동에 영향을 줄 수 있는 확장 프로그램을 추가했습니다.</translation>
 <translation id="8476408756881832830">ChromeVox 음성이 나올 때는 재생을 일시중지합니다.</translation>
 <translation id="8476491056950015181"><ph name="BEGIN_PARAGRAPH1" />ChromeOS 기기에서 자동 보고서를 전송하도록 허용하면 Google이 ChromeOS에서 해결할 문제와 개선할 기능의 우선순위를 정하는 데 도움이 됩니다. 보고서에는 ChromeOS가 언제 비정상적으로 종료되는지, 어떤 기능이 사용되었는지, 일반적으로 메모리가 얼마나 많이 사용되는지 등의 정보와 함께 Android 앱 진단 및 사용 데이터가 포함됩니다. 일부 합산 데이터는 Google 앱과 파트너(Android 개발자 등)에게도 도움이 됩니다.<ph name="END_PARAGRAPH1" />

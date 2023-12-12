@@ -874,6 +874,7 @@ Na tym koncie mogą obowiązywać uprawnienia przyznane wcześniej aplikacjom. U
 <translation id="1651008383952180276">Musisz dwukrotnie wpisać to samo hasło</translation>
 <translation id="1651609627703324721">Ta karta prezentuje treści VR na goglach</translation>
 <translation id="1652326691684645429">Włącz Udostępnianie w pobliżu</translation>
+<translation id="1652862280638399816">Aby używać Menedżera haseł z pękiem kluczy macOS, uruchom ponownie Chromium i zezwól na dostęp do pęku kluczy. Po ponownym uruchomieniu karty zostaną otwarte.</translation>
 <translation id="1654580009054503925">Nie zezwolono na wyświetlanie żądań</translation>
 <translation id="1656528038316521561">Przezroczystość tła</translation>
 <translation id="1657406563541664238">Pomóż ulepszyć <ph name="PRODUCT_NAME" />, przesyłając do Google statystyki użytkowania i raporty o awariach</translation>
@@ -2809,6 +2810,7 @@ Domena <ph name="DOMAIN" /> wymaga, by karta inteligentna pozostała w gnieźdz
 <translation id="3151562827395986343">Usuń pliki cookie, dane z historii i pamięci podręcznej oraz inne dane</translation>
 <translation id="3151786313568798007">Orientacja</translation>
 <translation id="3152356229013609796">Wyświetlaj powiadomienia z telefonu, odpowiadaj na nie i je zamykaj</translation>
+<translation id="3155163173539279776">Ponownie uruchom Chromium</translation>
 <translation id="3157387275655328056">Dodaj do listy Do przeczytania</translation>
 <translation id="3157931365184549694">Przywróć</translation>
 <translation id="3158033540161634471">Skonfiguruj swój odcisk palca</translation>
@@ -3629,6 +3631,7 @@ Domena <ph name="DOMAIN" /> wymaga, by karta inteligentna pozostała w gnieźdz
 <translation id="3809272675881623365">Królik</translation>
 <translation id="3809280248639369696">Księżycowy promień</translation>
 <translation id="3810593934879994994">Strona <ph name="ORIGIN" /> może przeglądać pliki w tych folderach</translation>
+<translation id="3810770279996899697">Menedżer haseł potrzebuje dostępu do pęku kluczy macOS</translation>
 <translation id="3810914450553844415">Administrator nie zezwala na dodatkowe konta Google.</translation>
 <translation id="3810973564298564668">Zarządzaj</translation>
 <translation id="381202950560906753">Dodaj kolejny</translation>
@@ -5028,6 +5031,7 @@ Aby pomniejszyć, naciśnij Ctrl + Alt + zmniejsz jasność.</translation>
 <translation id="4918134162946436591">Pokaż nakładkę ze wskazówkami</translation>
 <translation id="4918762404810341788">Skopiuj i otwórz</translation>
 <translation id="4921348630401250116">Zamiana tekstu na mowę</translation>
+<translation id="4922104989726031751">Aby używać Menedżera haseł w swoim systemie operacyjnym, uruchom ponownie Chromium i zezwól na dostęp do menedżera haseł na komputerze. Po ponownym uruchomieniu karty zostaną otwarte.</translation>
 <translation id="492299503953721473">Usuń aplikacje na Androida</translation>
 <translation id="492363500327720082">Odinstalowuję <ph name="APP_NAME" />...</translation>
 <translation id="4924002401726507608">Prześlij opinię</translation>
@@ -6681,6 +6685,7 @@ Na tym koncie mogą obowiązywać uprawnienia przyznane stronom i aplikacjom. K
 <translation id="6264365405983206840">Wybierz &amp;wszystko</translation>
 <translation id="6264376385120300461">Pobierz mimo to</translation>
 <translation id="6264520534872750757">Nadal korzystaj z urządzenia</translation>
+<translation id="6264636978858465832">Menedżer haseł potrzebuje szerszych uprawnień dostępu</translation>
 <translation id="6265159465845424232">Pytaj przed skopiowaniem lub przeniesieniem plików Microsoft do Microsoft OneDrive</translation>
 <translation id="6265687851677020761">Usuń port</translation>
 <translation id="6266532094411434237">Łączę z urządzeniem <ph name="DEVICE" /></translation>
@@ -9487,7 +9492,6 @@ Przechowuj plik klucza w bezpiecznym miejscu. Będzie on potrzebny do utworzenia
 <translation id="8473540203671727883">Przeczytaj na głos tekst wskazany myszą</translation>
 <translation id="8473863474539038330">Adresy i ustawienia</translation>
 <translation id="8474378002946546633">Zezwalaj na powiadomienia.</translation>
-<translation id="8474733733775441349">Pokazuj hasła z konta Google</translation>
 <translation id="8475313423285172237">Inny program na Twoim komputerze dodał rozszerzenie, które może zmienić działanie Chrome.</translation>
 <translation id="8476408756881832830">Wstrzymaj odtwarzanie, gdy ChromeVox mówi</translation>
 <translation id="8476491056950015181"><ph name="BEGIN_PARAGRAPH1" />Jeśli pozwolisz na wysyłanie automatycznych raportów z urządzeń z ChromeOS, pomożesz nam w ustalaniu, co przede wszystkim należy naprawić i ulepszyć w tym systemie operacyjnym. Raporty mogą zawierać na przykład informacje o czasie wystąpienia awarii ChromeOS, używanych funkcjach i typowym wykorzystaniu pamięci, a także dane o korzystaniu z aplikacji na Androida i dotyczące ich dane diagnostyczne. Niektóre dane zbiorcze pomogą nam też udoskonalić aplikacje Google lub zostaną wykorzystane przez naszych partnerów, na przykład deweloperów aplikacji na Androida.<ph name="END_PARAGRAPH1" />

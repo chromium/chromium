@@ -411,7 +411,6 @@
 <translation id="3226612997184048185">ブックマークを Google アカウントにも保存している場合は、Chrome で商品価格をトラッキングして、値下げがあったときに通知を受け取ることができます</translation>
 <translation id="3227557059438308877">Google Chrome をセキュリティ キーとして使用</translation>
 <translation id="3232754137068452469">ウェブアプリ</translation>
-<translation id="3234978181857588512">デバイスに保存</translation>
 <translation id="3236059992281584593">残り 1 分</translation>
 <translation id="3237087289225714896">標準プリロード:</translation>
 <translation id="3237433641417325993">おすすめの記事を見るには、下にスクロールします</translation>
@@ -583,7 +582,6 @@
 <translation id="4181841719683918333">言語</translation>
 <translation id="4188221736490993796">降順で並べ替え</translation>
 <translation id="4195643157523330669">新しいタブで開く</translation>
-<translation id="4196597275619698563">カードを作成</translation>
 <translation id="4197828496439691735">{NUM_TABS,plural, =1{このデバイスの 1 個のタブ}other{このデバイスの # 個のタブ}}</translation>
 <translation id="4198423547019359126">ダウンロードの保存先はありません</translation>
 <translation id="4202218894997543208">ブロックしたトピック</translation>
@@ -595,7 +593,6 @@
 <translation id="4248098802131000011">データ侵害などのセキュリティの問題からパスワードを保護します</translation>
 <translation id="424864128008805179">Chrome からログアウトしますか？</translation>
 <translation id="4249955472157341256">最新で並べ替え</translation>
-<translation id="4250229828105606438">スクリーンショット</translation>
 <translation id="4256782883801055595">オープンソース ライセンス</translation>
 <translation id="4257230861809842349">Google パスワード マネージャーからパスワードを削除しますか？</translation>
 <translation id="4269820728363426813">リンクアドレスをコピー</translation>
@@ -1149,7 +1146,6 @@
 <translation id="7030304022046916278">セーフ ブラウジングに URL を送信して安全性を確認します</translation>
 <translation id="7035701931849773472">その他のオプション</translation>
 <translation id="7037830628447527439">Google アカウントで Chrome にログインします</translation>
-<translation id="7038956721828960940">chrome_image_<ph name="CURRENT_TIMESTAMP_MS" /></translation>
 <translation id="7054588988317389591">画像の説明文を取得しますか？</translation>
 <translation id="7055152154916055070">リダイレクトがブロックされました</translation>
 <translation id="7063006564040364415">同期サーバーに接続できませんでした。</translation>
@@ -1280,7 +1276,6 @@
 <translation id="7658239707568436148">キャンセル</translation>
 <translation id="7665369617277396874">アカウントを追加</translation>
 <translation id="766587987807204883">記事がここに表示されます。これらの記事はオフラインでも読むことができます</translation>
-<translation id="768232549260819724">GIF をコピーしました</translation>
 <translation id="7682724950699840886">推奨される対策: デバイスに十分な空き容量があることを確認し、再度エクスポートを試します。</translation>
 <translation id="7686086654630106285">ウェブサイトによる広告提案の詳細</translation>
 <translation id="768618399695552958">アクセスしたページの一部はプリロードされています。ページが Google サイトからリンクされている場合、Google サーバーを介してプリロードされる可能性があります。</translation>
@@ -1335,7 +1330,6 @@
 <translation id="7929962904089429003">メニューを開く</translation>
 <translation id="7930998711684428189">データ侵害によりパスワードが漏洩した場合に警告します。</translation>
 <translation id="7934668619883965330">ファイルをダウンロードできません。このファイル形式はサポートされていません。</translation>
-<translation id="7939485076072265087">スタイルが指定されたカードをハイライト表示で作成します</translation>
 <translation id="7942131818088350342"><ph name="PRODUCT_NAME" /> は最新ではありません。</translation>
 <translation id="7944772052836377867">同期するには本人確認が必要です</translation>
 <translation id="7947953824732555851">同意してログイン</translation>
@@ -1474,7 +1468,6 @@
 <translation id="856481929701340285">PC 版サイトを見る</translation>
 <translation id="8570677896027847510">ファイルを安全にダウンロードできません</translation>
 <translation id="8571213806525832805">過去 4 週間</translation>
-<translation id="8580884231102452214">GIF をコピー</translation>
 <translation id="8583805026567836021">アカウント データをクリア中</translation>
 <translation id="859046281437143747">[その他のオプション] から価格をトラッキングできます</translation>
 <translation id="860043288473659153">カード名義人</translation>

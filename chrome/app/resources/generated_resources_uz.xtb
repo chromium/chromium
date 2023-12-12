@@ -870,6 +870,7 @@ Ilovalarga berilgan ruxsatlar bu hisobga tatbiq etilishi mumkin. Android ilovala
 <translation id="1651008383952180276">Siz kodli iborani ikki marta bir xil kiritishingiz kerak.</translation>
 <translation id="1651609627703324721">Bu varaq garnituraga VR kontent namoyish qilmoqda</translation>
 <translation id="1652326691684645429">Nearby Share’ni yoqish</translation>
+<translation id="1652862280638399816">MacOS Keychain bilan Parol menejeridan foydalanish uchun Chromium brauzerini qayta ishga tushiring va Keychainʼdan foydalanish ruxsatini bering. Qayta ishga tushirilgandan keyin varaqlar qayta ochiladi.</translation>
 <translation id="1654580009054503925">Soʻrovlar chiqarishga ruxsat berilmagan</translation>
 <translation id="1656528038316521561">Orqa fon shaffofligi</translation>
 <translation id="1657406563541664238">Google’ga foydalanish statistikasi va ishdan chiqish hisobotlarini jo‘natish orqali <ph name="PRODUCT_NAME" />’ni takomillashtirishga yordam bering</translation>
@@ -2827,6 +2828,7 @@ Oʻz qurilmangizda Family Link ilovasini oʻrnatib, bu hisob sozlamalarini boshq
 <translation id="3151562827395986343">Brauzer tarixi, cookie-fayllar, kesh va boshqa sayt ma’lumotlarini tozalash</translation>
 <translation id="3151786313568798007">Joylashuv</translation>
 <translation id="3152356229013609796">Telefon bildirishnomalarini ochish, yopish va ularga javob berish mumkin</translation>
+<translation id="3155163173539279776">Chromium’ni qayta ishga tushiring</translation>
 <translation id="3157387275655328056">Mutolaa ro‘yxatiga qo‘shish</translation>
 <translation id="3157931365184549694">Qayta tiklash</translation>
 <translation id="3158033540161634471">Barmoq izingizni sozlang</translation>
@@ -3649,6 +3651,7 @@ Oʻz qurilmangizda Family Link ilovasini oʻrnatib, bu hisob sozlamalarini boshq
 <translation id="3809272675881623365">Quyon</translation>
 <translation id="3809280248639369696">Oybola</translation>
 <translation id="3810593934879994994"><ph name="ORIGIN" /> quyidagi jildlardagi fayllarni ocha oladi</translation>
+<translation id="3810770279996899697">Parollar menejeriga MacOS Keychain ishlatishi uchun ruxsat berish kerak</translation>
 <translation id="3810914450553844415">Administrator qoʻshimcha Google hisobi kiritishni taqiqlagan.</translation>
 <translation id="3810973564298564668">Sozlash</translation>
 <translation id="381202950560906753">Yana qo‘shish</translation>
@@ -5049,6 +5052,7 @@ Kichiklashtirish uchun Ctrl+Alt+Yorqinlikni pasaytirish tugmalarini bosing.</tra
 <translation id="4918134162946436591">Ustki bildirgini chiqarish</translation>
 <translation id="4918762404810341788">Nusxalash va ochish</translation>
 <translation id="4921348630401250116">Matndan nutqqa</translation>
+<translation id="4922104989726031751">Parollar menejeridan operatsion tizimda foydalanish uchun Chromiumni qaytadan oching va kompyuterdagi parollar menejeridan foydalanishga ruxsat bering. Qayta ishga tushirilgandan keyin varaqlar qayta ochiladi.</translation>
 <translation id="492299503953721473">Android ilovarni olib tashlash</translation>
 <translation id="492363500327720082"><ph name="APP_NAME" /> oʻchirilmoqda...</translation>
 <translation id="4924002401726507608">Fikr-mulohaza yuborish</translation>
@@ -6703,6 +6707,7 @@ Ochiq eksponenta (<ph name="PUBLIC_EXPONENT_NUM_BITS" /> bit):
 <translation id="6264365405983206840">&amp;Barchasini tanlash</translation>
 <translation id="6264376385120300461">Baribir yuklab olish</translation>
 <translation id="6264520534872750757">Qurilmadan foydalanishda davom etish</translation>
+<translation id="6264636978858465832">Parollar menejeriga qoʻshimcha ruxsat kerak</translation>
 <translation id="6265159465845424232">Microsoft fayllarini OneDrive xizmatiga koʻchirish yoki nusxalashdan oldin soʻralsin</translation>
 <translation id="6265687851677020761">Portni olib tashlash</translation>
 <translation id="6266532094411434237"><ph name="DEVICE" /> qurilmasiga ulanmoqda</translation>
@@ -9505,7 +9510,6 @@ Kalit faylini ishonchli joyda saqlang. U kengaytmaning yangi versiyalarini yarat
 <translation id="8473540203671727883">Sichqoncha ostidagi matnni ovoz chiqarib oʻqish</translation>
 <translation id="8473863474539038330">Mazillar va boshqa ma’lumotlar</translation>
 <translation id="8474378002946546633">Bildirishnoma kelsin</translation>
-<translation id="8474733733775441349">Google hisobingizdagi parollarni ochish</translation>
 <translation id="8475313423285172237">Kompyuteringizdagi dasturlardan biri Chrome ishlash faoliyatini o‘zgartiradigan kengaytma o‘rnatdi.</translation>
 <translation id="8476408756881832830">ChromeVox ekrandan o‘qiyotganda media fayllar ijrosi vaqtincha to‘xtatilsin</translation>
 <translation id="8476491056950015181"><ph name="BEGIN_PARAGRAPH1" />ChromeOS qurilmalariga hisobotlarni avtomatik yuborishga ruxsat bersangiz, xatolarni tuzatish va ChromeOS tizimini yaxshilashimizda yordam bergan boʻlasiz. Bunday hisobotlarga ChromeOS qachon ishlamay qolgani, qaysi funksiyalardan foydalanilgani, odatda qancha xotira ishlatilishi, Android ilovasi diagnostika va foydalanish statistikasi kabi maʼlumotlar kirishi mumkin. Olingan ayrim maʼlumotlar Android dasturchilar kabi hamkorlarimizga ham oʻz ilovalari va mahsulotlarini yanada yaxshilashga yordam beradi.<ph name="END_PARAGRAPH1" />

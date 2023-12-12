@@ -410,7 +410,6 @@
 <translation id="3226612997184048185">Хэрэв та мөн хавчуургаа Google Бүртгэлдээ хадгалдаг бол бүтээгдэхүүний үнийг Chrome-д хянаж, үнэ буурах үед мэдэгдэл авах боломжтой</translation>
 <translation id="3227557059438308877">Google Chrome-г аюулгүй байдлын түлхүүр болгох</translation>
 <translation id="3232754137068452469">Веб Апп</translation>
-<translation id="3234978181857588512">Төхөөрөмжид хадгалах</translation>
 <translation id="3236059992281584593">1 минут үлдсэн</translation>
 <translation id="3237087289225714896">Стандарт урьдчилан ачаалал:</translation>
 <translation id="3237433641417325993">Санал болгож буй нийтлэлүүдийг харахын тулд доош гүйлгэнэ үү</translation>
@@ -582,7 +581,6 @@
 <translation id="4181841719683918333">Хэл</translation>
 <translation id="4188221736490993796">А-аас Я руу эрэмбэлэх</translation>
 <translation id="4195643157523330669">Шинэ таб дээр нээх</translation>
-<translation id="4196597275619698563">Карт үүсгэх</translation>
 <translation id="4197828496439691735">{NUM_TABS,plural, =1{Энэ төхөөрөмжийн 1 таб}other{Энэ төхөөрөмжийн # таб}}</translation>
 <translation id="4198423547019359126">Татах боломжтой байршил алга</translation>
 <translation id="4202218894997543208">Таны блоклосон сэдвүүд</translation>
@@ -594,7 +592,6 @@
 <translation id="4248098802131000011">Нууц үгээ өгөгдлийн зөрчил болон бусад аюулгүй байдлын асуудлаас хамгаалаарай</translation>
 <translation id="424864128008805179">Chrome-с гарах уу?</translation>
 <translation id="4249955472157341256">Сүүлийн үеийнхээр нь эрэмбэлэх</translation>
-<translation id="4250229828105606438">Дэлгэцийн агшин</translation>
 <translation id="4256782883801055595">Source licenses-г нээх</translation>
 <translation id="4257230861809842349">Google Password Manager-с нууц үгнүүд устгах уу?</translation>
 <translation id="4269820728363426813">Холбоосын хаягийг хуулах</translation>
@@ -1147,7 +1144,6 @@ Tаны Google бүртгэл <ph name="BEGIN_LINK" />history.google.com<ph name
 <translation id="7030304022046916278">URL-г шалгуулахаар Аюулгүй үзэх рүү илгээнэ</translation>
 <translation id="7035701931849773472">Бусад сонголт</translation>
 <translation id="7037830628447527439">Chrome-д Google Бүртгэлээрээ нэвтэрнэ үү</translation>
-<translation id="7038956721828960940">chrome_image_<ph name="CURRENT_TIMESTAMP_MS" /></translation>
 <translation id="7054588988317389591">Зургийн тайлбар авах уу?</translation>
 <translation id="7055152154916055070">Дахин чиглүүлэлтийг блоклосон:</translation>
 <translation id="7063006564040364415">Синхийн сервер лүү холбогдож чадсангүй.</translation>
@@ -1278,7 +1274,6 @@ Tаны Google бүртгэл <ph name="BEGIN_LINK" />history.google.com<ph name
 <translation id="7658239707568436148">Болих</translation>
 <translation id="7665369617277396874">Бүртгэл нэмэх</translation>
 <translation id="766587987807204883">Офлайн үедээ ч унших боломжтой нийтлэлүүд энд харагддаг</translation>
-<translation id="768232549260819724">GIF-г хуулсан</translation>
 <translation id="7682724950699840886">Дараах зөвлөмжийг хэрэгжүүлж үзнэ үү: төхөөрөмж дээрээ хангалттай сул зай гаргаад дахин экспорт хийж үзнэ үү.</translation>
 <translation id="7686086654630106285">Сайтаас санал болгож буй зарын талаарх илүү дэлгэрэнгүй</translation>
 <translation id="768618399695552958">Таны зочилдог зарим хуудсыг урьдчилан ачаална. Google-н сайтаас холбосон үед хуудаснуудыг Google-н серверүүдээр урьдчилан ачаалж магадгүй.</translation>
@@ -1333,7 +1328,6 @@ Tаны Google бүртгэл <ph name="BEGIN_LINK" />history.google.com<ph name
 <translation id="7929962904089429003">Цэс нээх</translation>
 <translation id="7930998711684428189">Өгөгдлийн зөрчлийн улмаас нууц үгийг задруулсан бол танд анхааруулга өгдөг.</translation>
 <translation id="7934668619883965330">Файлыг татах боломжгүй. Файл форматыг дэмждэггүй.</translation>
-<translation id="7939485076072265087">Тодруулгатай стильжүүлсэн карт үүсгэнэ үү</translation>
 <translation id="7942131818088350342"><ph name="PRODUCT_NAME" />-н хугацаа дууссан.</translation>
 <translation id="7944772052836377867">Синк таныг мөн болохыг баталгаажуулах шаардлагатай байна</translation>
 <translation id="7947953824732555851">Хүлээн зөвшөөрсний дараагаар нэвтрэх</translation>
@@ -1471,7 +1465,6 @@ Tаны Google бүртгэл <ph name="BEGIN_LINK" />history.google.com<ph name
 <translation id="856481929701340285">Сайтыг компьютерийн горимоор харах хүсэлт</translation>
 <translation id="8570677896027847510">Файлыг аюулгүйгээр татах боломжгүй</translation>
 <translation id="8571213806525832805">Сүүлийн 4 долоо хоног</translation>
-<translation id="8580884231102452214">GIF-г хуулах</translation>
 <translation id="8583805026567836021">Бүртгэлийн өгөгдлийг цэвэрлэж байна</translation>
 <translation id="859046281437143747">Бусад сонголт товчлуураас үнэ хянаарай</translation>
 <translation id="860043288473659153">Карт эзэмшигчийн нэр</translation>
