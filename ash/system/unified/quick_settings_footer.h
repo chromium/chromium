@@ -28,8 +28,9 @@ class UnifiedSystemTrayController;
 // `PowerStatus`.
 class ASH_EXPORT QsBatteryInfoViewBase : public PillButton,
                                          public PowerStatus::Observer {
+  METADATA_HEADER(QsBatteryInfoViewBase, PillButton)
+
  public:
-  METADATA_HEADER(QsBatteryInfoViewBase);
   explicit QsBatteryInfoViewBase(UnifiedSystemTrayController* controller,
                                  const Type type = Type::kFloatingWithoutIcon,
                                  gfx::VectorIcon* icon = nullptr);
@@ -61,8 +62,9 @@ class ASH_EXPORT QsBatteryInfoViewBase : public PillButton,
 
 // A view that shows battery status.
 class ASH_EXPORT QsBatteryLabelView : public QsBatteryInfoViewBase {
+  METADATA_HEADER(QsBatteryLabelView, QsBatteryInfoViewBase)
+
  public:
-  METADATA_HEADER(QsBatteryLabelView);
   explicit QsBatteryLabelView(UnifiedSystemTrayController* controller);
   QsBatteryLabelView(const QsBatteryLabelView&) = delete;
   QsBatteryLabelView& operator=(const QsBatteryLabelView&) = delete;
@@ -76,8 +78,9 @@ class ASH_EXPORT QsBatteryLabelView : public QsBatteryInfoViewBase {
 // A view that shows battery icon and charging state when smart charging is
 // enabled.
 class ASH_EXPORT QsBatteryIconView : public QsBatteryInfoViewBase {
+  METADATA_HEADER(QsBatteryIconView, QsBatteryInfoViewBase)
+
  public:
-  METADATA_HEADER(QsBatteryIconView);
   explicit QsBatteryIconView(UnifiedSystemTrayController* controller);
   QsBatteryIconView(const QsBatteryIconView&) = delete;
   QsBatteryIconView& operator=(const QsBatteryIconView&) = delete;
@@ -90,9 +93,9 @@ class ASH_EXPORT QsBatteryIconView : public QsBatteryInfoViewBase {
 
 // The footer view shown on the the bottom of the `QuickSettingsView`.
 class ASH_EXPORT QuickSettingsFooter : public views::View {
- public:
-  METADATA_HEADER(QuickSettingsFooter);
+  METADATA_HEADER(QuickSettingsFooter, views::View)
 
+ public:
   explicit QuickSettingsFooter(UnifiedSystemTrayController* controller);
   QuickSettingsFooter(const QuickSettingsFooter&) = delete;
   QuickSettingsFooter& operator=(const QuickSettingsFooter&) = delete;
