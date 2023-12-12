@@ -302,9 +302,7 @@ constexpr base::TimeDelta kSyncOperationTimeout = base::Seconds(10);
 
 // Tests that selecting sign-out and clear data from a non-managed user account
 // clears the user's synced data.
-// TODO(crbug.com/1377798): fails on iPhone SE because the screen is too small
-// to present both the prompt to select and account and the background view.
-- (void)DISABLED_testSignOutAndClearDataFromNonManagedAccountClearsData {
+- (void)testSignOutAndClearDataFromNonManagedAccount {
   FakeSystemIdentity* fakeIdentity = [FakeSystemIdentity fakeIdentity1];
 
   // Sign In `fakeIdentity`.
@@ -315,9 +313,11 @@ constexpr base::TimeDelta kSyncOperationTimeout = base::Seconds(10);
                                    syncTimeout:kSyncOperationTimeout];
   [BookmarkEarlGrey waitForBookmarkModelsLoaded];
   [BookmarkEarlGrey
-      setupStandardBookmarksInStorage:bookmarks::StorageType::kLocalOrSyncable];
+      setupStandardBookmarksInStorage:bookmarks::StorageType::kAccount];
 
-  // Sign out.
+  // TODO(crbug.com/1509737) The parameter is ignored when
+  // kReplaceSyncPromosWithSignInPromos is enabled. Change the method to one
+  // that is more meaningful with Sign-in only Sign out.
   [SigninEarlGreyUI
       signOutWithConfirmationChoice:SignOutConfirmationChoiceClearData];
 
@@ -330,9 +330,7 @@ constexpr base::TimeDelta kSyncOperationTimeout = base::Seconds(10);
 }
 
 // Tests that signing out from a managed user account clears the user's data.
-// TODO(crbug.com/1377800): fails on iPhone SE because the screen is too small
-// to present both the prompt to select and account and the background view.
-- (void)DISABLED_testsSignOutFromManagedAccount {
+- (void)testsSignOutFromManagedAccount {
   // Sign In `fakeManagedIdentity`.
   [SigninEarlGreyUI
       signinWithFakeIdentity:[FakeSystemIdentity fakeManagedIdentity]];
@@ -342,9 +340,11 @@ constexpr base::TimeDelta kSyncOperationTimeout = base::Seconds(10);
                                    syncTimeout:kSyncOperationTimeout];
   [BookmarkEarlGrey waitForBookmarkModelsLoaded];
   [BookmarkEarlGrey
-      setupStandardBookmarksInStorage:bookmarks::StorageType::kLocalOrSyncable];
+      setupStandardBookmarksInStorage:bookmarks::StorageType::kAccount];
 
-  // Sign out.
+  // TODO(crbug.com/1509737) The parameter is ignored when
+  // kReplaceSyncPromosWithSignInPromos is enabled. Change the method to one
+  // that is more meaningful with Sign-in only Sign out.
   [SigninEarlGreyUI
       signOutWithConfirmationChoice:SignOutConfirmationChoiceClearData];
 
