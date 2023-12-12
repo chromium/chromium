@@ -51,7 +51,8 @@ PDFiumFormFiller::ScriptOption PDFiumFormFiller::DefaultScriptOption() {
 
 PDFiumFormFiller::PDFiumFormFiller(PDFiumEngine* engine,
                                    ScriptOption script_option)
-    : engine_in_isolate_scope_factory_(engine), script_option_(script_option) {
+    : engine_in_isolate_scope_factory_(engine, script_option),
+      script_option_(script_option) {
   // Initialize FPDF_FORMFILLINFO member variables.  Deriving from this struct
   // allows the static callbacks to be able to cast the FPDF_FORMFILLINFO in
   // callbacks to ourself instead of maintaining a map of them to
@@ -740,8 +741,13 @@ PDFiumFormFiller::EngineInIsolateScope::operator=(EngineInIsolateScope&&) =
 PDFiumFormFiller::EngineInIsolateScope::~EngineInIsolateScope() = default;
 
 PDFiumFormFiller::EngineInIsolateScopeFactory::EngineInIsolateScopeFactory(
-    PDFiumEngine* engine)
-    : engine_(engine), callback_isolate_(v8::Isolate::TryGetCurrent()) {
+    PDFiumEngine* engine,
+    ScriptOption script_option)
+    : engine_(engine),
+      callback_isolate_(script_option !=
+                                PDFiumFormFiller::ScriptOption::kNoJavaScript
+                            ? v8::Isolate::TryGetCurrent()
+                            : nullptr) {
   if (callback_isolate_)
     CHECK_EQ(blink::MainThreadIsolate(), callback_isolate_);
 }
