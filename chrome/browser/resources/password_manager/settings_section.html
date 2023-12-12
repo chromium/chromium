@@ -84,7 +84,7 @@
   <template is="dom-if" if="[[isEligibleForAccountStorage]]">
     <pref-toggle-button id="accountStorageToggle" class="hr"
         label="$i18n{accountStorageToggleLabel}"
-        sub-label="[[accountEmail]]"
+        sub-label="[[getToggleSubLabelForAccountStorageOptIn_(accountEmail)]]"
         checked="[[isAccountStoreUser]]"
         change-requires-validation
         on-validate-and-change-pref="changeAccountStorageOptIn_">

@@ -111,6 +111,13 @@ export class SettingsSectionElement extends SettingsSectionElementBase {
           return loadTimeData.getBoolean('canAddShortcut');
         },
       },
+
+      enableButterOnDesktopFollowup_: {
+        type: Boolean,
+        value() {
+          return loadTimeData.getBoolean('enableButterOnDesktopFollowup');
+        },
+      },
     };
   }
 
@@ -119,6 +126,7 @@ export class SettingsSectionElement extends SettingsSectionElementBase {
   private hasPasswordsToExport_: boolean;
   private showPasswordsImporter_: boolean;
   private trustedVaultBannerState_: TrustedVaultBannerState;
+  private enableButterOnDesktopFollowup_: boolean;
 
   private setBlockedSitesListListener_: BlockedSitesListChangedListener|null =
       null;
@@ -285,6 +293,14 @@ export class SettingsSectionElement extends SettingsSectionElementBase {
     } else {
       this.optInForAccountStorage();
     }
+  }
+
+  private getToggleSubLabelForAccountStorageOptIn_(accountEmail: string):
+      string {
+    if (this.enableButterOnDesktopFollowup_) {
+      return this.i18n('accountStorageToggleSubLabel', accountEmail);
+    }
+    return accountEmail;
   }
 
   // <if expr="is_win or is_macosx">
