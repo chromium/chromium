@@ -740,7 +740,7 @@ TEST_F(V4LocalDatabaseManagerTest, TestCheckCsdAllowlistWithNoMatch) {
   ReplaceV4Database(store_and_hash_prefixes, /* stores_available= */ true);
 
   TestAllowlistClient client(
-      /* match_expected= */ true,
+      /* match_expected= */ false,
       /* expected_sb_threat_type= */ SB_THREAT_TYPE_CSD_ALLOWLIST);
   const GURL url_check("https://other.com/");
   auto result =
