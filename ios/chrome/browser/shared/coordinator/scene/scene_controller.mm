@@ -382,6 +382,10 @@ void InjectNTP(Browser* browser) {
 // switcher.
 @property(nonatomic, assign) BOOL activatingBrowser;
 
+// YES if the scene has been backgrounded since it has last been
+// SceneActivationLevelForegroundActive.
+@property(nonatomic, assign) BOOL backgroundedSinceLastActivated;
+
 // Wrangler to handle BVC and tab model creation, access, and related logic.
 // Implements features exposed from this object through the
 // BrowserViewInformation protocol.
@@ -784,6 +788,17 @@ void InjectNTP(Browser* browser) {
 // in one place.
 - (void)transitionToSceneActivationLevel:(SceneActivationLevel)level
                             appInitStage:(InitStage)appInitStage {
+  // Update `backgroundedSinceLastActivated` and, if the scene has just been
+  // activated, mark its state before the current activation for future use.
+  BOOL transitionedToForegroundActiveFromBackground =
+      level == SceneActivationLevelForegroundActive &&
+      self.backgroundedSinceLastActivated;
+  if (level <= SceneActivationLevelBackground) {
+    self.backgroundedSinceLastActivated = YES;
+  } else if (level == SceneActivationLevelForegroundActive) {
+    self.backgroundedSinceLastActivated = NO;
+  }
+
   if (level == SceneActivationLevelDisconnected) {
     //  The scene may become disconnected at any time. In that case, any UI that
     //  was already set-up should be torn down.
@@ -817,7 +832,9 @@ void InjectNTP(Browser* browser) {
 
     [self handleExternalIntents];
 
-    if (!initializingUIInColdStart && self.mainCoordinator.isTabGridActive &&
+    if (!initializingUIInColdStart &&
+        transitionedToForegroundActiveFromBackground &&
+        self.mainCoordinator.isTabGridActive &&
         [self shouldOpenNTPTabOnActivationOfBrowser:self.currentInterface
                                                         .browser]) {
       DCHECK(!self.activatingBrowser);

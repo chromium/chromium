@@ -136,7 +136,7 @@ void WaitUntilTabResumptionTileVisibleOrTimeout(bool should_show) {
 // Tests that navigating to a page and restarting upon cold start, an NTP page
 // is opened with the Return to Recent Tab tile. Then, removing that last tab
 // also removes the tile while that NTP is still being shown.
-- (void)testRemoveRecentTabRemovesReturnToRecenTabTile {
+- (void)testRemoveRecentTabRemovesReturnToRecentTabTile {
   GREYAssertTrue(self.testServer->Start(), @"Test server failed to start.");
   const GURL destinationUrl = self.testServer->GetURL("/pony.html");
   [ChromeEarlGrey loadURL:destinationUrl];
@@ -168,6 +168,28 @@ void WaitUntilTabResumptionTileVisibleOrTimeout(bool should_show) {
           grey_accessibilityLabel(
               kMagicStackContentSuggestionsModuleTabResumptionAccessibilityIdentifier)]
       assertWithMatcher:grey_notVisible()];
+}
+
+#pragma mark - Multiwindow
+
+// Tests that when a new window is being opened on iPad and the app enters split
+// screen mode, Chrome will NOT force open a new tab page even when it does not
+// have existing tabs.
+- (void)testOpenNewWindowDoesNotReopenNTP {
+  if (![ChromeEarlGrey areMultipleWindowsSupported]) {
+    EARL_GREY_TEST_DISABLED(@"Multiple windows can't be opened.");
+  }
+
+  // Make sure there are no tabs on the current window.
+  [ChromeEarlGrey closeAllExtraWindows];
+  [ChromeEarlGrey closeAllTabs];
+  // Open a new window.
+  [ChromeEarlGrey openNewWindow];
+  [ChromeEarlGrey waitUntilReadyWindowWithNumber:1];
+  // NTP should be opened in the new window, but not in the original one.
+  [ChromeEarlGrey waitForMainTabCount:1 inWindowWithNumber:1];
+  [ChromeEarlGrey waitForMainTabCount:0 inWindowWithNumber:0];
+  [ChromeEarlGrey closeAllExtraWindows];
 }
 
 @end
