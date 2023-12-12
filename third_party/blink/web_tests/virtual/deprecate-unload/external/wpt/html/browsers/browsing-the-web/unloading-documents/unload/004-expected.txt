@@ -1,0 +1,5 @@
+This is a testharness.js-based test.
+[FAIL] pagehide / unload event order
+  assert_array_equals: lengths differ, expected array ["pagehide", "unload"] length 2, got ["pagehide"] length 1
+Harness: the test ran to completion.
+
