@@ -15,6 +15,7 @@
 #include "base/task/thread_pool.h"
 #include "base/thread_annotations.h"
 #include "base/trace_event/typed_macros.h"
+#include "base/types/fixed_array.h"
 #include "build/buildflag.h"
 #include "components/ml/webnn/graph_validation_utils.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
@@ -1430,7 +1431,7 @@ xnn_status DefineXnnNodeForReshape(
   // already calculated by `MLGraphBuilder::reshape()`.
   const auto& output_dimensions = reshape->Outputs()[0]->Dimensions();
   const auto output_rank = output_dimensions.size();
-  size_t new_shape[output_rank];
+  base::FixedArray<size_t> new_shape(output_rank);
   for (wtf_size_t i = 0; i < output_rank; ++i) {
     new_shape[i] = base::checked_cast<size_t>(output_dimensions[i]);
   }
@@ -1440,7 +1441,7 @@ xnn_status DefineXnnNodeForReshape(
   // Please refer to the implementation at:
   // https://source.chromium.org/chromium/chromium/src/+/main:third_party/xnnpack/src/src/subgraph/static-reshape.c;l=246
   XNN_CHECK_STATUS_AND_SET_ERROR_MESSAGE(xnn_define_static_reshape(
-      subgraph, output_rank, new_shape, input_id, output_id, flags));
+      subgraph, output_rank, new_shape.data(), input_id, output_id, flags));
   return xnn_status_success;
 }
 
