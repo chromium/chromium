@@ -27,6 +27,12 @@ suite('<app-language-selection-dialog>', () => {
   const listItemId = '#listItem';
   const ironIconTag = 'iron-icon' as const;
   const deviceLanguageLabel = 'Device language';
+  const lastSetAppLocalePrefKey = 'arc.last_set_app_locale';
+  const defaultPref: chrome.settingsPrivate.PrefObject = {
+    key: lastSetAppLocalePrefKey,
+    type: chrome.settingsPrivate.PrefType.STRING,
+    value: '',
+  };
   let appLanguageSelectionDialog: AppLanguageSelectionDialogElement;
   let fakeHandler: FakePageHandler;
   let searchField: CrSearchFieldElement;
@@ -44,10 +50,16 @@ suite('<app-language-selection-dialog>', () => {
     appLanguageSelectionDialog.remove();
   });
 
-  async function addDialog(arcConfig: AppConfig, appId: string): Promise<void> {
+  async function addDialog(
+      arcConfig: AppConfig, appId: string,
+      lastSetAppLocalePref: chrome.settingsPrivate.PrefObject =
+          defaultPref): Promise<void> {
     const arcApp: App = await fakeHandler.addApp(appId, arcConfig);
     await fakeHandler.flushPipesForTesting();
     appLanguageSelectionDialog.app = arcApp;
+    appLanguageSelectionDialog.prefs = {
+      arc: {last_set_app_locale: lastSetAppLocalePref},
+    };
 
     document.body.appendChild(appLanguageSelectionDialog);
     flush();
@@ -387,5 +399,136 @@ suite('<app-language-selection-dialog>', () => {
 
         const app = AppManagementStore.getInstance().data.apps[appId];
         assertEquals(testLocaleTag, app!.selectedLocale!.localeTag);
+      });
+
+  test(
+      'Last set app locale exists with no selected locale, ' +
+          'display in suggested locales',
+      async () => {
+        const appId = 'last-set-app-locale-exists-with-no-selected-locale';
+        const testLocaleTag = 'testLocaleTag';
+        const testDisplayName = 'testDisplayName';
+        const pref: chrome.settingsPrivate.PrefObject = {
+          key: lastSetAppLocalePrefKey,
+          type: chrome.settingsPrivate.PrefType.STRING,
+          value: testLocaleTag,
+        };
+        const arcOptions: AppConfig = {
+          type: AppType.kArc,
+          supportedLocales: [{
+            localeTag: testLocaleTag,
+            displayName: testDisplayName,
+            nativeDisplayName: '',
+          }],
+        };
+        await addDialog(arcOptions, appId, pref);
+
+        // Suggested items should contain device language and last set app
+        // locale.
+        const suggestedItems = getSuggestedItems();
+        assertEquals(2, suggestedItems.length);
+        assertLanguageItem(
+            suggestedItems, /* idx= */ 0, deviceLanguageLabel,
+            /* isSelected= */ true, ListType.SUGGESTED);
+        assertLanguageItem(
+            suggestedItems, /* idx= */ 1, testDisplayName,
+            /* isSelected= */ false, ListType.SUGGESTED);
+        // Filtered list should be hidden.
+        assertTrue(
+            isHidden(getFilteredList()), '#filteredItemsList is not hidden');
+      });
+
+  test(
+      'Last set app locale is same with selected locale, no duplicates',
+      async () => {
+        const appId = 'last-set-app-locale-is-same-with-selected-locale';
+        const testLocaleTag = 'testLocaleTag';
+        const testDisplayName = 'testDisplayName';
+        const pref: chrome.settingsPrivate.PrefObject = {
+          key: lastSetAppLocalePrefKey,
+          type: chrome.settingsPrivate.PrefType.STRING,
+          value: testLocaleTag,
+        };
+        const arcOptions: AppConfig = {
+          type: AppType.kArc,
+          supportedLocales: [{
+            localeTag: testLocaleTag,
+            displayName: testDisplayName,
+            nativeDisplayName: '',
+          }],
+          selectedLocale: {
+            localeTag: testLocaleTag,
+            displayName: testDisplayName,
+            nativeDisplayName: '',
+          },
+        };
+        await addDialog(arcOptions, appId, pref);
+
+        // Suggested items should contain device language and selected locale.
+        const suggestedItems = getSuggestedItems();
+        assertEquals(2, suggestedItems.length);
+        assertLanguageItem(
+            suggestedItems, /* idx= */ 0, deviceLanguageLabel,
+            /* isSelected= */ false, ListType.SUGGESTED);
+        assertLanguageItem(
+            suggestedItems, /* idx= */ 1, testDisplayName,
+            /* isSelected= */ true, ListType.SUGGESTED);
+        // Filtered list should be hidden.
+        assertTrue(
+            isHidden(getFilteredList()), '#filteredItemsList is not hidden');
+      });
+
+  test(
+      'Last set app locale is different with selected locale, ' +
+          'display 3 locales in sugested locales',
+      async () => {
+        const appId = 'last-set-app-locale-is-different-with-selected-locale';
+        const testLocaleTag = 'testLocaleTag';
+        const testLocaleTag2 = 'testLocaleTag2';
+        const testDisplayName = 'testDisplayName';
+        const testDisplayName2 = 'testDisplayName2';
+        const pref: chrome.settingsPrivate.PrefObject = {
+          key: lastSetAppLocalePrefKey,
+          type: chrome.settingsPrivate.PrefType.STRING,
+          value: testLocaleTag2,
+        };
+        const arcOptions: AppConfig = {
+          type: AppType.kArc,
+          supportedLocales: [
+            {
+              localeTag: testLocaleTag,
+              displayName: testDisplayName,
+              nativeDisplayName: '',
+            },
+            {
+              localeTag: testLocaleTag2,
+              displayName: testDisplayName2,
+              nativeDisplayName: '',
+            },
+          ],
+          selectedLocale: {
+            localeTag: testLocaleTag,
+            displayName: testDisplayName,
+            nativeDisplayName: '',
+          },
+        };
+        await addDialog(arcOptions, appId, pref);
+
+        // Suggested items should contain device language, selected locale and
+        // last set app locale.
+        const suggestedItems = getSuggestedItems();
+        assertEquals(3, suggestedItems.length);
+        assertLanguageItem(
+            suggestedItems, /* idx= */ 0, deviceLanguageLabel,
+            /* isSelected= */ false, ListType.SUGGESTED);
+        assertLanguageItem(
+            suggestedItems, /* idx= */ 1, testDisplayName,
+            /* isSelected= */ true, ListType.SUGGESTED);
+        assertLanguageItem(
+            suggestedItems, /* idx= */ 2, testDisplayName2,
+            /* isSelected= */ false, ListType.SUGGESTED);
+        // Filtered list should be hidden.
+        assertTrue(
+            isHidden(getFilteredList()), '#filteredItemsList is not hidden');
       });
 });

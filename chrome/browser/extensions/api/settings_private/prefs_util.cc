@@ -730,6 +730,8 @@ const PrefsUtil::TypedPrefMap& PrefsUtil::GetAllowlistedKeys() {
 
   // Android Apps.
   (*s_allowlist)[arc::prefs::kArcEnabled] = settings_api::PrefType::kBoolean;
+  (*s_allowlist)[arc::prefs::kArcLastSetAppLocale] =
+      settings_api::PrefType::kString;
 
   // App Notifications
   (*s_allowlist)[::ash::prefs::kAppNotificationBadgingEnabled] =
