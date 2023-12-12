@@ -14,3 +14,15 @@ source_set("drive_availability") {
     "//ios/chrome/browser/shared/public/features",
   ]
 }
+
+source_set("drive_service") {
+  sources = [
+    "drive_service.h",
+    "drive_service.mm",
+    "drive_service_configuration.h",
+  ]
+  deps = [
+    "//components/keyed_service/core",
+    "//ios/chrome/browser/shared/model/browser_state",
+  ]
+}
