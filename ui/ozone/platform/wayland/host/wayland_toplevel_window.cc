@@ -996,12 +996,14 @@ void WaylandToplevelWindow::SendToDeskAtIndex(int index) {
 void WaylandToplevelWindow::Pin(bool trusted) {
   if (auto* zaura_surface = GetZAuraSurface()) {
     zaura_surface->SetPin(trusted);
+    connection()->Flush();
   }
 }
 
 void WaylandToplevelWindow::Unpin() {
   if (auto* zaura_surface = GetZAuraSurface()) {
     zaura_surface->UnsetPin();
+    connection()->Flush();
   }
 }
 
