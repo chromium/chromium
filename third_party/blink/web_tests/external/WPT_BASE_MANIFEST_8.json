@@ -263683,9 +263683,139 @@
          ],
          {}
         ]
+       ],
+       "2d.filter.canvasFilterObject.gaussianBlur.tentative.isotropic.html": [
+        "6376d07b0e640b617ef100b7c04e8fe93e352ee8",
+        [
+         null,
+         [
+          [
+           "/html/canvas/element/filters/2d.filter.canvasFilterObject.gaussianBlur.tentative.isotropic-expected.html",
+           "=="
+          ]
+         ],
+         {}
+        ]
+       ],
+       "2d.filter.canvasFilterObject.gaussianBlur.tentative.mostly-x.html": [
+        "145cb32757adbec61bb541a0cf6737b3ac9146f4",
+        [
+         null,
+         [
+          [
+           "/html/canvas/element/filters/2d.filter.canvasFilterObject.gaussianBlur.tentative.mostly-x-expected.html",
+           "=="
+          ]
+         ],
+         {}
+        ]
+       ],
+       "2d.filter.canvasFilterObject.gaussianBlur.tentative.mostly-y.html": [
+        "e921e0eaa65a6410a66aadce57fd8b1fe6096998",
+        [
+         null,
+         [
+          [
+           "/html/canvas/element/filters/2d.filter.canvasFilterObject.gaussianBlur.tentative.mostly-y-expected.html",
+           "=="
+          ]
+         ],
+         {}
+        ]
+       ],
+       "2d.filter.canvasFilterObject.gaussianBlur.tentative.x-only.html": [
+        "fd6ac687f9cf72a2efbf0975e5d645c88d5d4ed8",
+        [
+         null,
+         [
+          [
+           "/html/canvas/element/filters/2d.filter.canvasFilterObject.gaussianBlur.tentative.x-only-expected.html",
+           "=="
+          ]
+         ],
+         {}
+        ]
+       ],
+       "2d.filter.canvasFilterObject.gaussianBlur.tentative.y-only.html": [
+        "6442433e7c5a37e5447a9871e7528f16cd37b9c9",
+        [
+         null,
+         [
+          [
+           "/html/canvas/element/filters/2d.filter.canvasFilterObject.gaussianBlur.tentative.y-only-expected.html",
+           "=="
+          ]
+         ],
+         {}
+        ]
        ]
       },
       "layers": {
+       "2d.layer.anisotropic-blur.isotropic.html": [
+        "4e496b7e4813c6af0c9676076612df123526a546",
+        [
+         null,
+         [
+          [
+           "/html/canvas/element/layers/2d.layer.anisotropic-blur.isotropic-expected.html",
+           "=="
+          ]
+         ],
+         {}
+        ]
+       ],
+       "2d.layer.anisotropic-blur.mostly-x.html": [
+        "4217d9fad3fb719092c2d80ced75bb28dceeed3a",
+        [
+         null,
+         [
+          [
+           "/html/canvas/element/layers/2d.layer.anisotropic-blur.mostly-x-expected.html",
+           "=="
+          ]
+         ],
+         {}
+        ]
+       ],
+       "2d.layer.anisotropic-blur.mostly-y.html": [
+        "97a44e9045a040aae8b90cb6b2c5ca16f97cab04",
+        [
+         null,
+         [
+          [
+           "/html/canvas/element/layers/2d.layer.anisotropic-blur.mostly-y-expected.html",
+           "=="
+          ]
+         ],
+         {}
+        ]
+       ],
+       "2d.layer.anisotropic-blur.x-only.html": [
+        "fdf604616b8c904f2de1f37b2a53ccd343ea32ad",
+        [
+         null,
+         [
+          [
+           "/html/canvas/element/layers/2d.layer.anisotropic-blur.x-only-expected.html",
+           "=="
+          ]
+         ],
+         {}
+        ]
+       ],
+       "2d.layer.anisotropic-blur.y-only.html": [
+        "c7ceb63a87cb0a5d38208f973eda3f9f70d7d350",
+        [
+         null,
+         [
+          [
+           "/html/canvas/element/layers/2d.layer.anisotropic-blur.y-only-expected.html",
+           "=="
+          ]
+         ],
+         {}
+        ]
+       ],
        "2d.layer.blur-from-outside-canvas.no-clipping.html": [
         "b689ad39fe160d85725f67fa2fe7ebf03349d4dc",
         [
@@ -265616,9 +265746,269 @@
          ],
          {}
         ]
+       ],
+       "2d.filter.canvasFilterObject.gaussianBlur.tentative.isotropic.html": [
+        "4417a1917c9abe01ad1fd7ed90051c72be1080e7",
+        [
+         null,
+         [
+          [
+           "/html/canvas/offscreen/filters/2d.filter.canvasFilterObject.gaussianBlur.tentative.isotropic-expected.html",
+           "=="
+          ]
+         ],
+         {}
+        ]
+       ],
+       "2d.filter.canvasFilterObject.gaussianBlur.tentative.isotropic.w.html": [
+        "d2024ad205e415ef069faef0a47d4008c531dbe9",
+        [
+         null,
+         [
+          [
+           "/html/canvas/offscreen/filters/2d.filter.canvasFilterObject.gaussianBlur.tentative.isotropic-expected.html",
+           "=="
+          ]
+         ],
+         {}
+        ]
+       ],
+       "2d.filter.canvasFilterObject.gaussianBlur.tentative.mostly-x.html": [
+        "2ea26359fe9b5f05a874a79566a4964351aaff70",
+        [
+         null,
+         [
+          [
+           "/html/canvas/offscreen/filters/2d.filter.canvasFilterObject.gaussianBlur.tentative.mostly-x-expected.html",
+           "=="
+          ]
+         ],
+         {}
+        ]
+       ],
+       "2d.filter.canvasFilterObject.gaussianBlur.tentative.mostly-x.w.html": [
+        "fa49ea4682823b3b48b6fa77f3dbb4fae2e61812",
+        [
+         null,
+         [
+          [
+           "/html/canvas/offscreen/filters/2d.filter.canvasFilterObject.gaussianBlur.tentative.mostly-x-expected.html",
+           "=="
+          ]
+         ],
+         {}
+        ]
+       ],
+       "2d.filter.canvasFilterObject.gaussianBlur.tentative.mostly-y.html": [
+        "a9783ccb6a006a34d8cba0d533e23099c6ee7024",
+        [
+         null,
+         [
+          [
+           "/html/canvas/offscreen/filters/2d.filter.canvasFilterObject.gaussianBlur.tentative.mostly-y-expected.html",
+           "=="
+          ]
+         ],
+         {}
+        ]
+       ],
+       "2d.filter.canvasFilterObject.gaussianBlur.tentative.mostly-y.w.html": [
+        "ab83f50ea0e36b36caeb3411f698b19cf1fec636",
+        [
+         null,
+         [
+          [
+           "/html/canvas/offscreen/filters/2d.filter.canvasFilterObject.gaussianBlur.tentative.mostly-y-expected.html",
+           "=="
+          ]
+         ],
+         {}
+        ]
+       ],
+       "2d.filter.canvasFilterObject.gaussianBlur.tentative.x-only.html": [
+        "3028c2a700e1c4d2736de39565abfbbd00f1ac6f",
+        [
+         null,
+         [
+          [
+           "/html/canvas/offscreen/filters/2d.filter.canvasFilterObject.gaussianBlur.tentative.x-only-expected.html",
+           "=="
+          ]
+         ],
+         {}
+        ]
+       ],
+       "2d.filter.canvasFilterObject.gaussianBlur.tentative.x-only.w.html": [
+        "e8482cf3ed8df4d0c66dc2fd99a9f3011f6edc19",
+        [
+         null,
+         [
+          [
+           "/html/canvas/offscreen/filters/2d.filter.canvasFilterObject.gaussianBlur.tentative.x-only-expected.html",
+           "=="
+          ]
+         ],
+         {}
+        ]
+       ],
+       "2d.filter.canvasFilterObject.gaussianBlur.tentative.y-only.html": [
+        "fca324716b4807d54c74a0045704de3ced4040aa",
+        [
+         null,
+         [
+          [
+           "/html/canvas/offscreen/filters/2d.filter.canvasFilterObject.gaussianBlur.tentative.y-only-expected.html",
+           "=="
+          ]
+         ],
+         {}
+        ]
+       ],
+       "2d.filter.canvasFilterObject.gaussianBlur.tentative.y-only.w.html": [
+        "50cfb3083a2507040dabb7fc577d5edbbba15534",
+        [
+         null,
+         [
+          [
+           "/html/canvas/offscreen/filters/2d.filter.canvasFilterObject.gaussianBlur.tentative.y-only-expected.html",
+           "=="
+          ]
+         ],
+         {}
+        ]
        ]
       },
       "layers": {
+       "2d.layer.anisotropic-blur.isotropic.html": [
+        "d59a4ccf62e3759438abf74e305eb61df3d63745",
+        [
+         null,
+         [
+          [
+           "/html/canvas/offscreen/layers/2d.layer.anisotropic-blur.isotropic-expected.html",
+           "=="
+          ]
+         ],
+         {}
+        ]
+       ],
+       "2d.layer.anisotropic-blur.isotropic.w.html": [
+        "15961d5c7ea822529fe1c0891463dd29c0569332",
+        [
+         null,
+         [
+          [
+           "/html/canvas/offscreen/layers/2d.layer.anisotropic-blur.isotropic-expected.html",
+           "=="
+          ]
+         ],
+         {}
+        ]
+       ],
+       "2d.layer.anisotropic-blur.mostly-x.html": [
+        "c5ad2ee6c585cc1448093b81cb1773b4b5a54599",
+        [
+         null,
+         [
+          [
+           "/html/canvas/offscreen/layers/2d.layer.anisotropic-blur.mostly-x-expected.html",
+           "=="
+          ]
+         ],
+         {}
+        ]
+       ],
+       "2d.layer.anisotropic-blur.mostly-x.w.html": [
+        "60f5ac3ebdb1f699e1cced2477da6b0ae6d4bbb0",
+        [
+         null,
+         [
+          [
+           "/html/canvas/offscreen/layers/2d.layer.anisotropic-blur.mostly-x-expected.html",
+           "=="
+          ]
+         ],
+         {}
+        ]
+       ],
+       "2d.layer.anisotropic-blur.mostly-y.html": [
+        "9545257cfa02c0aa7756d51e39aa030f5332975f",
+        [
+         null,
+         [
+          [
+           "/html/canvas/offscreen/layers/2d.layer.anisotropic-blur.mostly-y-expected.html",
+           "=="
+          ]
+         ],
+         {}
+        ]
+       ],
+       "2d.layer.anisotropic-blur.mostly-y.w.html": [
+        "d533ad3187bf2b506f05f3021219a8891271d032",
+        [
+         null,
+         [
+          [
+           "/html/canvas/offscreen/layers/2d.layer.anisotropic-blur.mostly-y-expected.html",
+           "=="
+          ]
+         ],
+         {}
+        ]
+       ],
+       "2d.layer.anisotropic-blur.x-only.html": [
+        "4552ad44339ab96cde937d19c5d6af5ed87afcb5",
+        [
+         null,
+         [
+          [
+           "/html/canvas/offscreen/layers/2d.layer.anisotropic-blur.x-only-expected.html",
+           "=="
+          ]
+         ],
+         {}
+        ]
+       ],
+       "2d.layer.anisotropic-blur.x-only.w.html": [
+        "38abb21cd99baec10701077d88ab4a2a1ffc6bfc",
+        [
+         null,
+         [
+          [
+           "/html/canvas/offscreen/layers/2d.layer.anisotropic-blur.x-only-expected.html",
+           "=="
+          ]
+         ],
+         {}
+        ]
+       ],
+       "2d.layer.anisotropic-blur.y-only.html": [
+        "87dbcd3708e41e73cf21f10d148c939b71bd08eb",
+        [
+         null,
+         [
+          [
+           "/html/canvas/offscreen/layers/2d.layer.anisotropic-blur.y-only-expected.html",
+           "=="
+          ]
+         ],
+         {}
+        ]
+       ],
+       "2d.layer.anisotropic-blur.y-only.w.html": [
+        "062328db751dbace3775d250bf9aefea54969e14",
+        [
+         null,
+         [
+          [
+           "/html/canvas/offscreen/layers/2d.layer.anisotropic-blur.y-only-expected.html",
+           "=="
+          ]
+         ],
+         {}
+        ]
+       ],
        "2d.layer.blur-from-outside-canvas.no-clipping.html": [
         "3cd1c674a131f1e81c960ff4059a59cc7b38e1c5",
         [
@@ -265827,19 +266217,6 @@
          {}
         ]
        ],
-       "2d.layer.css-filters.html": [
-        "6f170aa1632bc8a87ab931d11a143c088ba1bbc3",
-        [
-         null,
-         [
-          [
-           "/html/canvas/offscreen/layers/2d.layer.css-filters-expected.html",
-           "=="
-          ]
-         ],
-         {}
-        ]
-       ],
        "2d.layer.css-filters.shadow.html": [
         "28d6e6e4033e6263e7141ccaf8ccf813e22e690d",
         [
@@ -265860,19 +266237,6 @@
          [
           [
            "/html/canvas/offscreen/layers/2d.layer.css-filters.shadow-expected.html",
-           "=="
-          ]
-         ],
-         {}
-        ]
-       ],
-       "2d.layer.css-filters.w.html": [
-        "0c086af825d678eadf2769ecb9e78d7d3af19032",
-        [
-         null,
-         [
-          [
-           "/html/canvas/offscreen/layers/2d.layer.css-filters-expected.html",
            "=="
           ]
          ],
@@ -357629,9 +357993,49 @@
        "2d.filter.canvasFilterObject.dropShadow.tentative-expected.html": [
         "86c5710132f348bd3e2332983d7211f4b3315cdb",
         []
+       ],
+       "2d.filter.canvasFilterObject.gaussianBlur.tentative.isotropic-expected.html": [
+        "f9571f208ea843b11bc18dfe142c08a950571ff7",
+        []
+       ],
+       "2d.filter.canvasFilterObject.gaussianBlur.tentative.mostly-x-expected.html": [
+        "e76613271f3971ac267e13a6a36fe87036902a25",
+        []
+       ],
+       "2d.filter.canvasFilterObject.gaussianBlur.tentative.mostly-y-expected.html": [
+        "0f214fca9fdf37aba06dc20425c85d84c9bf2b19",
+        []
+       ],
+       "2d.filter.canvasFilterObject.gaussianBlur.tentative.x-only-expected.html": [
+        "285a6417266212d28aec1515a9d7c5a339d47338",
+        []
+       ],
+       "2d.filter.canvasFilterObject.gaussianBlur.tentative.y-only-expected.html": [
+        "d59945b5da6da751480b8d4361aa26670d69b3cc",
+        []
        ]
       },
       "layers": {
+       "2d.layer.anisotropic-blur.isotropic-expected.html": [
+        "6a6f0f6892815ab709202cc1796f54bafce83907",
+        []
+       ],
+       "2d.layer.anisotropic-blur.mostly-x-expected.html": [
+        "b0473f2ff0a0d278fd7097df48e71a75faba3227",
+        []
+       ],
+       "2d.layer.anisotropic-blur.mostly-y-expected.html": [
+        "43da016eeaf1784cbac524c17743a9b2f200f48e",
+        []
+       ],
+       "2d.layer.anisotropic-blur.x-only-expected.html": [
+        "0b4d269189fe98be074eab864709608b2b89aa17",
+        []
+       ],
+       "2d.layer.anisotropic-blur.y-only-expected.html": [
+        "25723864122a52dd042c6e6e9458975a7abc99ad",
+        []
+       ],
        "2d.layer.blur-from-outside-canvas.no-clipping-expected.html": [
         "6cad180f1487e576ea4062a24b049759c28ba4b0",
         []
@@ -358727,9 +359131,49 @@
        "2d.filter.canvasFilterObject.dropShadow.tentative-expected.html": [
         "86c5710132f348bd3e2332983d7211f4b3315cdb",
         []
+       ],
+       "2d.filter.canvasFilterObject.gaussianBlur.tentative.isotropic-expected.html": [
+        "f9571f208ea843b11bc18dfe142c08a950571ff7",
+        []
+       ],
+       "2d.filter.canvasFilterObject.gaussianBlur.tentative.mostly-x-expected.html": [
+        "e76613271f3971ac267e13a6a36fe87036902a25",
+        []
+       ],
+       "2d.filter.canvasFilterObject.gaussianBlur.tentative.mostly-y-expected.html": [
+        "0f214fca9fdf37aba06dc20425c85d84c9bf2b19",
+        []
+       ],
+       "2d.filter.canvasFilterObject.gaussianBlur.tentative.x-only-expected.html": [
+        "285a6417266212d28aec1515a9d7c5a339d47338",
+        []
+       ],
+       "2d.filter.canvasFilterObject.gaussianBlur.tentative.y-only-expected.html": [
+        "d59945b5da6da751480b8d4361aa26670d69b3cc",
+        []
        ]
       },
       "layers": {
+       "2d.layer.anisotropic-blur.isotropic-expected.html": [
+        "6a6f0f6892815ab709202cc1796f54bafce83907",
+        []
+       ],
+       "2d.layer.anisotropic-blur.mostly-x-expected.html": [
+        "b0473f2ff0a0d278fd7097df48e71a75faba3227",
+        []
+       ],
+       "2d.layer.anisotropic-blur.mostly-y-expected.html": [
+        "43da016eeaf1784cbac524c17743a9b2f200f48e",
+        []
+       ],
+       "2d.layer.anisotropic-blur.x-only-expected.html": [
+        "0b4d269189fe98be074eab864709608b2b89aa17",
+        []
+       ],
+       "2d.layer.anisotropic-blur.y-only-expected.html": [
+        "25723864122a52dd042c6e6e9458975a7abc99ad",
+        []
+       ],
        "2d.layer.blur-from-outside-canvas.no-clipping-expected.html": [
         "6cad180f1487e576ea4062a24b049759c28ba4b0",
         []
@@ -358752,10 +359196,6 @@
        ],
        "2d.layer.cross-layer-paths-expected.html": [
         "c394ecdfe3904f0afb1e4879241cf38d985155e6",
-        []
-       ],
-       "2d.layer.css-filters-expected.html": [
-        "19aec30ec4d8c809408bdd9c37cbae861208b24d",
         []
        ],
        "2d.layer.css-filters.blur-and-shadow-expected.html": [
@@ -359251,11 +359691,11 @@
         []
        ],
        "filters.yaml": [
-        "6133628335a2388093e87fcc3c7fdab0dbda8dc5",
+        "01c83a33e2c0b92fc46b69039f47a4a867f809b3",
         []
        ],
        "layers.yaml": [
-        "3a05e75521319206146eb6da95b4e786d5070fc0",
+        "d255a834f6c5534c066ce85cd8ca5d087a7de600",
         []
        ],
        "line-styles.yaml": [
@@ -386951,7 +387391,7 @@
       []
      ],
      "soft-navigation-helper.js": [
-      "d405adb4e7eb7690fe73f31db523d357a38734ee",
+      "58ca9c22657b68c495f6c4662a1073352db6be32",
       []
      ]
     }
@@ -386966,23 +387406,35 @@
      },
      "resources": {
       "authenticate.py": [
-       "037a7c144e0ba6d14aec7e7108d161c049f46dd8",
+       "8820781709d30f11cb842f54d8e25d1ed24a4a8e",
+       []
+      ],
+      "cacheable-executor.sub.html": [
+       "ba1b3acb0c1198284c74c345b3de5c6d98fc2421",
+       []
+      ],
+      "cacheable-executor.sub.html.headers": [
+       "0ee6ec2ab103e45685829452b0b50b3ac8e3f343",
        []
       ],
       "cookies.py": [
-       "3c2299aa3a6787c6c6444fc1b58db1288ef710a4",
+       "3ba9cd9270b2c30b2d7911878338d624ecacc281",
        []
       ],
       "executor.sub.html": [
        "ba1b3acb0c1198284c74c345b3de5c6d98fc2421",
        []
       ],
+      "executor.sub.html.headers": [
+       "4030ea1d3ddb186a2b5361eb1a3f2404a45531fc",
+       []
+      ],
       "prefetch.py": [
-       "4a0a7a360209059937222e9eaebbd38f05c6240e",
+       "14ac4d1699ea0c52ac4b40f0a4a0f71c99147073",
        []
       ],
       "prefetch_nvs_hint.py": [
-       "1de33a75d868805645ac5420a0a4a4f1d7538701",
+       "d912eff90a5b9cc7f726a2a9c9d5da7eb4103fa6",
        []
       ],
       "ruleset.py": [
@@ -434558,6 +435010,15 @@
       }
      ]
     ],
+    "fedcm-auto-reauthn-without-approved-clients.https.html": [
+     "fb93cb632db09dfd3332ac6008f1f40253361ea6",
+     [
+      null,
+      {
+       "testdriver": true
+      }
+     ]
+    ],
     "fedcm-auto-selected-flag.https.html": [
      "d06aba73bc1de9a9b6e238695587c1ff47480de3",
      [
@@ -435667,6 +436128,13 @@
       ],
       "align-content-block-011.html": [
        "9210f5a83a7a5c95775c42d7a01d1f3ac6ab440e",
+       [
+        null,
+        {}
+       ]
+      ],
+      "align-content-block-display-coverage.html": [
+       "3d581be28c95e1a3b17218d2b4e2bcc867949659",
        [
         null,
         {}
@@ -472606,6 +473074,15 @@
         }
        ]
       ],
+      "user-valid-user-invalid.html": [
+       "bca20fc99c3053491fe6e54d28c88cf1b294633a",
+       [
+        null,
+        {
+         "testdriver": true
+        }
+       ]
+      ],
       "where.html": [
        "170398300f0b4359139c597937f84e69e774a71e",
        [
@@ -472941,15 +473418,6 @@
      ],
      "user-invalid.html": [
       "12a3b83862c014efffc46ea41ea804b2cfd6d7ed",
-      [
-       null,
-       {
-        "testdriver": true
-       }
-      ]
-     ],
-     "user-valid-user-invalid-invalidation.html": [
-      "bca20fc99c3053491fe6e54d28c88cf1b294633a",
       [
        null,
        {
@@ -532919,7 +533387,7 @@
       },
       "filters": {
        "2d.filter.canvasFilterObject.blur.exceptions.tentative.html": [
-        "f43e10703df1eb9e23bc3046dafad698486992dc",
+        "42fb1ee8f84ff038c9b67f681d05a6a7323b88b3",
         [
          null,
          {}
@@ -532982,7 +533450,7 @@
         ]
        ],
        "2d.filter.canvasFilterObject.tentative.html": [
-        "c19bc700880875b8ed4c0ecfbf3f3ca754f93a2b",
+        "c40e718d7229d64f4f0edb6a53267c0e01b7330a",
         [
          null,
          {}
@@ -543288,14 +543756,14 @@
       },
       "filters": {
        "2d.filter.canvasFilterObject.blur.exceptions.tentative.html": [
-        "e4d4798a8e8113a9ee9c3e1e4f08f059e7c006ba",
+        "d8f14529c5306cccc5dd4806186e935edb2c4a2a",
         [
          null,
          {}
         ]
        ],
        "2d.filter.canvasFilterObject.blur.exceptions.tentative.worker.js": [
-        "75afb17b792251d249e771e143c891e2759d02ba",
+        "9b3fb3c04cd5a98f0d4f6b5b27035ba72bd98c39",
         [
          "html/canvas/offscreen/filters/2d.filter.canvasFilterObject.blur.exceptions.tentative.worker.html",
          {}
@@ -543414,14 +543882,14 @@
         ]
        ],
        "2d.filter.canvasFilterObject.tentative.html": [
-        "0d057e41050b2b4ef91be59337b5d14f2c696aef",
+        "fb99ef7d1ff8013e7ebfd4146ed0688f9ed2277c",
         [
          null,
          {}
         ]
        ],
        "2d.filter.canvasFilterObject.tentative.worker.js": [
-        "22a743877ff32893a022e250f38ead67a3178767",
+        "db95e0b006c414019f3cc687a359e0b833b6ed75",
         [
          "html/canvas/offscreen/filters/2d.filter.canvasFilterObject.tentative.worker.html",
          {}
@@ -543580,13 +544048,6 @@
         "5c2bb73e8f8423aa0a3971ec6a1b8bfe60fdf2ba",
         [
          "html/canvas/offscreen/layers/2d.layer.layer-rendering-state-reset-in-layer.worker.html",
-         {}
-        ]
-       ],
-       "2d.layer.opaque-canvas.worker.js": [
-        "df8bee548858a039b2a9183f32d9e50d31145081",
-        [
-         "html/canvas/offscreen/layers/2d.layer.opaque-canvas.worker.html",
          {}
         ]
        ],
@@ -623679,15 +624140,6 @@
       }
      ]
     ],
-    "click-event-bubbles.tentative.html": [
-     "ee9d1e12335c8dc775a391585b02d892081000f7",
-     [
-      null,
-      {
-       "testdriver": true
-      }
-     ]
-    ],
     "disabled.html": [
      "b53c2f701222c4a85e80d2f604ea34baef2b859b",
      [
@@ -623718,24 +624170,6 @@
     ],
     "hash.tentative.html": [
      "3a8419c71da75196205190aadc707394bfe6614e",
-     [
-      null,
-      {
-       "testdriver": true
-      }
-     ]
-    ],
-    "image-lcp-before-detection-second-softnav.tentative.html": [
-     "4d26bb926955f6c86e3adae583d1828c8e6b833a",
-     [
-      null,
-      {
-       "testdriver": true
-      }
-     ]
-    ],
-    "image-lcp-before-detection.tentative.html": [
-     "0de675d372b68866d92eca772461cb0800f6e7f1",
      [
       null,
       {
@@ -623779,24 +624213,6 @@
       }
      ]
     ],
-    "interaction-with-paint-before-back.tentative.html": [
-     "b587411991383e47381e14fc6e00c0bcfc2dc447",
-     [
-      null,
-      {
-       "testdriver": true
-      }
-     ]
-    ],
-    "interaction-with-paint-before-softnav.tentative.html": [
-     "7a15a894fcb8bc7d0080eaf1db8b0784f7cbc9b8",
-     [
-      null,
-      {
-       "testdriver": true
-      }
-     ]
-    ],
     "load-classic-script-history-push.tentative.html": [
      "4e375b2164db87258132f4a6edba4b68c1c2b99b",
      [
@@ -623815,15 +624231,6 @@
       }
      ]
     ],
-    "multiple-nested-events.tentative.html": [
-     "e51841865d654a65e44fefc505e8102196a4093c",
-     [
-      null,
-      {
-       "testdriver": true
-      }
-     ]
-    ],
     "multiple-paint-entries-buffered.tentative.html": [
      "dbb945a0a811330a3efa74b8b34da3f7987e9f38",
      [
@@ -623831,6 +624238,15 @@
       {
        "testdriver": true,
        "timeout": "long"
+      }
+     ]
+    ],
+    "multiple_nested_events.tentative.html": [
+     "196cfa06868ca9fd321db59755e1908a52c26c1e",
+     [
+      null,
+      {
+       "testdriver": true
       }
      ]
     ],
@@ -623844,7 +624260,7 @@
      ]
     ],
     "navigation-api-after-transition-commit.tentative.html": [
-     "ae17db7d59f4c5cf2bf01af2b7224fa6aa8232df",
+     "5c7d8f4f7a4fa4669ab42a18562bd1dceecc4c56",
      [
       null,
       {
@@ -623871,7 +624287,7 @@
      ]
     ],
     "navigation-api-hash.tentative.html": [
-     "e20578ea79ed7a6564a2d960cc1148b520c55ef2",
+     "a63b177a63f4974423954a720b77b3874139057d",
      [
       null,
       {
@@ -623880,7 +624296,7 @@
      ]
     ],
     "navigation-api-preventDefault.tentative.html": [
-     "b7b2a24c94203080d052411f080a0dd3c0d11cbe",
+     "d6c61efb3cbc3da1412748b9b2c8a50ab537be63",
      [
       null,
       {
@@ -623889,7 +624305,7 @@
      ]
     ],
     "navigation-api-rejected.tentative.html": [
-     "693f876b6e188b4c8ec8531aa7723c6afada70af",
+     "bcc0451d5bd80203092b6ed769d4ab2c9ccfff19",
      [
       null,
       {
@@ -623907,7 +624323,7 @@
      ]
     ],
     "navigation-api-view-transition.tentative.html": [
-     "4d88f3d0b7d9bee962f7b7e71c7695c421e7b560",
+     "2755f9f9ac75b980018f0ef78055c3f7874621b8",
      [
       null,
       {
@@ -623916,7 +624332,7 @@
      ]
     ],
     "navigation-api.tentative.html": [
-     "2d61736a486127cdfb37210906856cb4404a48d6",
+     "ca11f684f49908855323e8a337092f9dc971823b",
      [
       null,
       {
@@ -623925,7 +624341,7 @@
      ]
     ],
     "popstate-multiple-backs.tentative.html": [
-     "fd87f5f03e753b3ac5a8d8268a76496d93c15969",
+     "2a12a352bffc3fed4f207daaf877c781b0799ff3",
      [
       null,
       {
@@ -623934,7 +624350,7 @@
      ]
     ],
     "popstate.tentative.html": [
-     "f89991d76b044c5165c53b3b90b4620eb1e2d047",
+     "60a5ff72292c15abd281b1264e747a8f3c0d0d2b",
      [
       null,
       {
@@ -624055,24 +624471,6 @@
      [
       null,
       {}
-     ]
-    ],
-    "text-lcp-before-detection-second-softnav.tentative.html": [
-     "bed27c3506914e34cfb7d288ed745fd1fc2cea01",
-     [
-      null,
-      {
-       "testdriver": true
-      }
-     ]
-    ],
-    "text-lcp-before-detection.tentative.html": [
-     "11e82e539ff08b249be1fe79f64e4b8df0859601",
-     [
-      null,
-      {
-       "testdriver": true
-      }
      ]
     ],
     "text-lcp-followed-by-anim-image-softnav-lcp.tentative.html": [
@@ -624707,6 +625105,21 @@
       "2b66db2f8aec5ea12575f73a51a98a805c6e999b",
       [
        null,
+       {
+        "timeout": "long"
+       }
+      ]
+     ],
+     "prefetch-uses-cache.sub.https.html": [
+      "c0e9e73c75e877f4e130a26de6764c8966ef8620",
+      [
+       "speculation-rules/prefetch/prefetch-uses-cache.sub.https.html?cross-site",
+       {
+        "timeout": "long"
+       }
+      ],
+      [
+       "speculation-rules/prefetch/prefetch-uses-cache.sub.https.html?same-site",
        {
         "timeout": "long"
        }
