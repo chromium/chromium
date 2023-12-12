@@ -1756,6 +1756,8 @@ void DeviceSection::AddCustomizeButtonsPageStrings(
        IDS_SETTINGS_CUSTOMIZE_BUTTONS_RENAMING_DIALOG_INPUT_LABEL},
       {"buttonRemappingDialogCancelLabel",
        IDS_SETTINGS_CUSTOMIZE_BUTTONS_DIALOG_CANCEL},
+      {"buttonRemappingDialogChangeLabel",
+       IDS_SETTINGS_CUSTOMIZE_BUTTONS_DIALOG_CHANGE},
       {"buttonRemappingDialogDescription",
        IDS_SETTINGS_CUSTOMIZE_BUTTONS_DIALOG_DESCRIPTION},
       {"buttonRemappingDialogSaveLabel",
