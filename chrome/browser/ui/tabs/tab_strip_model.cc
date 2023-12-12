@@ -1577,6 +1577,7 @@ void TabStripModel::ExecuteContextMenuCommand(int context_index,
       TabOrganizationService* const service =
           TabOrganizationServiceFactory::GetForProfile(profile_);
       service->ResetSessionForBrowser(browser, GetWebContentsAt(context_index));
+      service->OnUserInvokedFeature(browser);
       break;
     }
 
