@@ -89,7 +89,8 @@ class AwProxyingRestrictedCookieManager
 
   // This one is internal.
   bool AllowCookies(const GURL& url,
-                    const net::SiteForCookies& site_for_cookies) const;
+                    const net::SiteForCookies& site_for_cookies,
+                    bool has_storage_access) const;
 
  private:
   AwProxyingRestrictedCookieManager(
