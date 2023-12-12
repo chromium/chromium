@@ -1016,6 +1016,7 @@ source_set("unit_tests_v2") {
     "//third_party/blink/renderer/modules/mediastream:test_support",
     "//third_party/blink/renderer/modules/peerconnection:test_support",
     "//third_party/blink/renderer/modules/storage:unit_tests",
+    "//third_party/blink/renderer/modules/webgpu:unit_tests",
     "//third_party/blink/renderer/platform",
     "//third_party/blink/renderer/platform:test_support",
     "//third_party/blink/renderer/platform/wtf",

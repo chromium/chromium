@@ -17,6 +17,7 @@
 #include "third_party/blink/renderer/modules/webgpu/gpu.h"
 #include "third_party/blink/renderer/platform/graphics/gpu/dawn_control_client_holder.h"
 #include "third_party/blink/renderer/platform/graphics/gpu/drawing_buffer_test_helpers.h"
+#include "third_party/blink/renderer/platform/testing/task_environment.h"
 
 namespace blink {
 
@@ -70,6 +71,7 @@ class WebGPUContextLostTest : public testing::Test {
     return std::make_tuple(execution_context, gpu);
   }
 
+  test::TaskEnvironment task_environment_;
   std::unique_ptr<DummyPageHolder> page_;
 };
 
