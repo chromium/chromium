@@ -305,6 +305,9 @@
 # TODO(crbug.com/1504145): Fails due to incorrect line wrapping.
 -All/YieldingParserDumpAccessibilityTreeTest.AccessibilityPopoverApi/blink*
 
+# TODO(crbug.com/1511011): These emit an extra inlineTextBox
+-All/DumpAccessibilityTreeTest.ReusedMapChangeMapName/blink*
+-All/YieldingParserDumpAccessibilityTreeTest.ReusedMapChangeMapName/blink*
 
 # These tests are flaky.
 -All/CoopRestrictPropertiesReportingBrowserTest.NavigationVirtualBrowsingContextGroup/RDCrashedFrame_BFCacheDisabled
