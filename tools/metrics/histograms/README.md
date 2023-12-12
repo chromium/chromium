@@ -724,7 +724,7 @@ it was replaced by.
 
 **Note:** You can skip this step if the histogram is expired. This is because
 tooling automatically records the date and milestone of a histogram's
-expiration.
+removal.
 
 You can provide a custom obsoletion message for a removed histogram via tags
 on the CL description:
@@ -736,8 +736,8 @@ on the CL description:
   you can use `OBSOLETE_HISTOGRAMS=message`, e.g.:
   `OBSOLETE_HISTOGRAMS=Patterned histogram Hist.{Token} is replaced by Hist.{Token}.2`
 * **Notes:**
-  * The full tag should be put on a single line, even if it is longer than the
-    maximum CL description width.
+  * **The full tag should be put on a single line, even if it is longer than the
+    maximum CL description width.**
   * You can add multiple obsoletion message tags in one CL.
   * `OBSOLETE_HISTOGRAMS` messages will be overwritten by histogram-specific
     ones, if present.
