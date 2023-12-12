@@ -6,7 +6,6 @@
 #define CHROME_BROWSER_ASH_ARC_INPUT_OVERLAY_DISPLAY_OVERLAY_CONTROLLER_H_
 
 #include <string>
-#include <vector>
 
 #include "ash/public/cpp/arc_game_controls_flag.h"
 #include "ash/public/cpp/window_properties.h"
