@@ -67,11 +67,6 @@ class ButtonOptionsMenuTest : public OverlayViewTestBase {
 
   bool IsEditingListInZeroState() { return editing_list_->is_zero_state_; }
 
-  void PressDeleteButton(ButtonOptionsMenu* menu) {
-    DCHECK(menu);
-    menu->OnDeleteButtonPressed();
-  }
-
   ActionType GetActionType(ButtonOptionsMenu* menu) {
     DCHECK(menu);
     return menu->action()->GetType();
@@ -96,11 +91,6 @@ class ButtonOptionsMenuTest : public OverlayViewTestBase {
     ActionEditView* action_edit = menu->action_edit_;
     DCHECK(action_edit);
     action_edit->OnClicked();
-  }
-
-  void PressDoneButton(ButtonOptionsMenu* menu) {
-    DCHECK(menu);
-    LeftClickOn(menu->done_button_);
   }
 
   void MouseDragActionBy(Action* action, int x, int y) {
@@ -156,8 +146,8 @@ TEST_F(ButtonOptionsMenuTest, TestRemoveAction) {
   EXPECT_FALSE(move_action_->IsDeleted());
 
   // Remove Action Tap.
-  auto* menu = ShowButtonOptionsMenu(tap_action_);
-  PressDeleteButton(menu);
+  ShowButtonOptionsMenu(tap_action_);
+  PressDeleteButtonOnButtonOptionsMenu();
   // Default action is still in the list even it is deleted and it is marked as
   // deleted. But it doesn't show up visually.
   CheckActions(touch_injector_, /*expect_size=*/3u, /*expect_types=*/
@@ -170,8 +160,8 @@ TEST_F(ButtonOptionsMenuTest, TestRemoveAction) {
   EXPECT_EQ(2u, GetActionViewSize());
 
   // Remove Action Move.
-  menu = ShowButtonOptionsMenu(move_action_);
-  PressDeleteButton(menu);
+  ShowButtonOptionsMenu(move_action_);
+  PressDeleteButtonOnButtonOptionsMenu();
   // Default action is still in the list even it is deleted and it is marked as
   // deleted. But it doesn't show up visually.
   CheckActions(touch_injector_, /*expect_size=*/3u, /*expect_types=*/
@@ -184,8 +174,8 @@ TEST_F(ButtonOptionsMenuTest, TestRemoveAction) {
   EXPECT_EQ(1u, GetActionViewSize());
 
   // Remove Action Move.
-  menu = ShowButtonOptionsMenu(tap_action_two_);
-  PressDeleteButton(menu);
+  ShowButtonOptionsMenu(tap_action_two_);
+  PressDeleteButtonOnButtonOptionsMenu();
   // Default action is still in the list even it is deleted and it is marked as
   // deleted. But it doesn't show up visually.
   CheckActions(touch_injector_, /*expect_size=*/3u, /*expect_types=*/
@@ -259,7 +249,7 @@ TEST_F(ButtonOptionsMenuTest, TestDisplayRelatedToShelf) {
       root_window->bounds().bottom() - ash::ShelfConfig::Get()->shelf_size(),
       menu->GetWidget()->GetNativeWindow()->bounds().bottom());
   // Close menu.
-  PressDoneButton(menu);
+  PressDoneButtonOnButtonOptionsMenu();
   // Set shelf to auto hide.
   shelf->SetAutoHideBehavior(ash::ShelfAutoHideBehavior::kAlways);
   EXPECT_FALSE(shelf->IsVisible());

@@ -128,7 +128,7 @@ class EditingListTest : public OverlayViewTestBase {
   }
 
   void ScrollTo(bool top) {
-    if (!editing_list_) {
+    if (!editing_list_ || !editing_list_->GetVisible()) {
       return;
     }
     views::View* scroll_content = editing_list_->scroll_content_;
@@ -171,6 +171,14 @@ class EditingListTest : public OverlayViewTestBase {
     return menu_widget && menu_widget->IsVisible();
   }
 
+  bool IsEditingListVisible() {
+    DCHECK(controller_);
+    if (auto* editing_list_widget = controller_->editing_list_widget_.get()) {
+      return editing_list_widget->IsVisible();
+    }
+    return false;
+  }
+
   bool IsKeyEditNudgeShown() const {
     DCHECK(controller_);
     auto* editing_list = controller_->GetEditingList();
@@ -183,13 +191,6 @@ class EditingListTest : public OverlayViewTestBase {
     auto* editing_list = controller_->GetEditingList();
     DCHECK(editing_list);
     return editing_list->GetKeyEditNudgeForTesting();
-  }
-
-  void PressDoneButtonOnButtonOptionsMenu() {
-    auto* menu = controller_->GetButtonOptionsMenu();
-    if (menu) {
-      LeftClickOn(menu->done_button_);
-    }
   }
 
   void PressEditButton() {
@@ -258,6 +259,43 @@ TEST_F(EditingListTest, TestAddNewAction) {
   EXPECT_FALSE(new_action->touch_down_positions().empty());
 }
 
+TEST_F(EditingListTest, TestVisibilityForButtonPlacementMode) {
+  EXPECT_TRUE(IsEditingListVisible());
+  // Enter into the button placement mode and press key `esc` to give up adding
+  // a new action.
+  PressAddButton();
+  EXPECT_FALSE(IsEditingListVisible());
+  auto* event_generator = GetEventGenerator();
+  event_generator->PressAndReleaseKey(ui::VKEY_ESCAPE, ui::EF_NONE);
+  EXPECT_TRUE(IsEditingListVisible());
+
+  // Enter into the button placement mode and press key `enter` to add a new
+  // action.
+  PressAddButton();
+  EXPECT_FALSE(IsEditingListVisible());
+  event_generator->PressAndReleaseKey(ui::VKEY_RETURN, ui::EF_NONE);
+  EXPECT_FALSE(IsEditingListVisible());
+  PressDoneButtonOnButtonOptionsMenu();
+  EXPECT_TRUE(IsEditingListVisible());
+
+  // Enter into the button placement mode and press key `enter` to add a new
+  // action.
+  PressAddButton();
+  EXPECT_FALSE(IsEditingListVisible());
+  event_generator->PressAndReleaseKey(ui::VKEY_RETURN, ui::EF_NONE);
+  EXPECT_FALSE(IsEditingListVisible());
+  PressDeleteButtonOnButtonOptionsMenu();
+  EXPECT_TRUE(IsEditingListVisible());
+
+  // Shows any button options menu and the editing list is hidden.
+  const auto& actions = touch_injector_->actions();
+  DCHECK_GT(actions.size(), 1u);
+  EXPECT_TRUE(ShowButtonOptionsMenu(actions[actions.size() - 1].get()));
+  EXPECT_FALSE(IsEditingListVisible());
+  PressDoneButtonOnButtonOptionsMenu();
+  EXPECT_TRUE(IsEditingListVisible());
+}
+
 TEST_F(EditingListTest, TestDragAtNewAction) {
   CheckActions(touch_injector_, /*expect_size=*/3u, /*expect_types=*/
                {ActionType::TAP, ActionType::TAP, ActionType::MOVE},
@@ -282,12 +320,18 @@ TEST_F(EditingListTest, TestPressAtActionViewListItem) {
   AddNewAction();
   EXPECT_TRUE(ButtonOptionsMenuExists());
   auto* action_1 = GetButtonOptionsAction();
+  PressDoneButtonOnButtonOptionsMenu();
   // Scroll back to top to click the first list item.
   ScrollTo(/*top=*/true);
   LeftClickAtActionViewListItem(/*index=*/0);
   EXPECT_TRUE(ButtonOptionsMenuExists());
   auto* action_2 = GetButtonOptionsAction();
   EXPECT_NE(action_1, action_2);
+  PressDoneButtonOnButtonOptionsMenu();
+  LeftClickAtActionViewListItem(/*index=*/1);
+  EXPECT_TRUE(ButtonOptionsMenuExists());
+  auto* action_3 = GetButtonOptionsAction();
+  EXPECT_NE(action_3, action_2);
 }
 
 TEST_F(EditingListTest, TestHoverAtActionViewListItem) {
@@ -440,15 +484,20 @@ TEST_F(EditingListTest, TestScrollView) {
   EXPECT_FALSE(GetScrollBarVisible());
   // Add new actions until it shows scroll bar.
   AddNewAction();
+  PressDoneButtonOnButtonOptionsMenu();
   EXPECT_GT(list_window->bounds().height(), original_height);
   AddNewAction();
+  PressDoneButtonOnButtonOptionsMenu();
   AddNewAction();
+  PressDoneButtonOnButtonOptionsMenu();
   EXPECT_TRUE(GetScrollBarVisible());
   EXPECT_EQ(window_content_height, list_window->bounds().height());
   AddNewAction();
+  PressDoneButtonOnButtonOptionsMenu();
   EXPECT_TRUE(GetScrollBarVisible());
   EXPECT_EQ(window_content_height, list_window->bounds().height());
   AddNewAction();
+  PressDoneButtonOnButtonOptionsMenu();
   EXPECT_TRUE(GetScrollBarVisible());
   EXPECT_EQ(window_content_height, list_window->bounds().height());
 

@@ -114,7 +114,9 @@ class DisplayOverlayController : public ui::EventHandler,
   void RemoveDeleteEditShortcutWidget();
 
   void EnterButtonPlaceMode(ActionType action_type);
-  void ExitButtonPlaceMode();
+  // Exits button placement mode after adding a new action if `is_action_added`
+  // is true or giving up by pressing key `esc` if `is_action_added` is false.
+  void ExitButtonPlaceMode(bool is_action_added);
   void UpdateButtonPlacementNudgeAnchorRect();
 
   void AddActionHighlightWidget(Action* action);

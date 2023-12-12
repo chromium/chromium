@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ash/arc/input_overlay/test/overlay_view_test_base.h"
 
+#include "ash/style/icon_button.h"
 #include "chrome/browser/ash/arc/input_overlay/actions/action.h"
 #include "chrome/browser/ash/arc/input_overlay/display_overlay_controller.h"
 #include "chrome/browser/ash/arc/input_overlay/touch_injector.h"
@@ -46,6 +47,20 @@ ButtonOptionsMenu* OverlayViewTestBase::ShowButtonOptionsMenu(Action* action) {
   action->action_view()->ShowButtonOptionsMenu();
   DCHECK(controller_->button_options_widget_);
   return controller_->GetButtonOptionsMenu();
+}
+
+void OverlayViewTestBase::PressDoneButtonOnButtonOptionsMenu() {
+  DCHECK(controller_);
+  if (auto* menu = controller_->GetButtonOptionsMenu()) {
+    LeftClickOn(menu->done_button_);
+  }
+}
+
+void OverlayViewTestBase::PressDeleteButtonOnButtonOptionsMenu() {
+  DCHECK(controller_);
+  if (auto* menu = controller_->GetButtonOptionsMenu()) {
+    menu->OnDeleteButtonPressed();
+  }
 }
 
 TargetView* OverlayViewTestBase::GetTargetView() const {

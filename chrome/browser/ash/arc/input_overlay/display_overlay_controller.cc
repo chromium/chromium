@@ -637,8 +637,10 @@ InputOverlayWindowStateType DisplayOverlayController::GetWindowStateType()
 
 void DisplayOverlayController::AddNewAction(ActionType action_type,
                                             const gfx::Point& target_pos) {
+  // Keep adding new action before exiting button placement mode because
+  // `target_pos` is from button placement mode.
   touch_injector_->AddNewAction(action_type, target_pos);
-  ExitButtonPlaceMode();
+  ExitButtonPlaceMode(/*is_action_added=*/true);
 }
 
 void DisplayOverlayController::RemoveAction(Action* action) {
@@ -703,22 +705,27 @@ void DisplayOverlayController::AddButtonOptionsMenuWidget(Action* action) {
       std::make_unique<ButtonOptionsMenu>(this, action));
   UpdateButtonOptionsMenuWidgetBounds();
 
+  // Always hide editing list when button options menu shows up.
+  SetEditingListVisibility(/*visible=*/false);
+
   button_options_widget_->ShowInactive();
 }
 
 void DisplayOverlayController::RemoveButtonOptionsMenuWidget() {
-  if (button_options_widget_) {
-    // Check if related action is already deleted.
-    if (auto* menu = GetButtonOptionsMenu()) {
-      auto* menu_action = menu->action();
-      if (IsActiveAction(menu_action)) {
-        RemoveActionNewState(menu_action);
-      }
-    }
-
-    button_options_widget_->Close();
-    button_options_widget_.reset();
+  if (!button_options_widget_) {
+    return;
   }
+  // Check if related action is already deleted.
+  if (const auto* menu = GetButtonOptionsMenu()) {
+    if (auto* menu_action = menu->action(); IsActiveAction(menu_action)) {
+      RemoveActionNewState(menu_action);
+    }
+  }
+
+  button_options_widget_->Close();
+  button_options_widget_.reset();
+
+  SetEditingListVisibility(/*visible=*/true);
 }
 
 void DisplayOverlayController::SetButtonOptionsMenuWidgetVisibility(
@@ -1168,7 +1175,10 @@ void DisplayOverlayController::RemoveEditingListWidget() {
 }
 
 void DisplayOverlayController::SetEditingListVisibility(bool visible) {
-  DCHECK(editing_list_widget_);
+  if (!editing_list_widget_ || editing_list_widget_->IsVisible() == visible) {
+    return;
+  }
+
   if (visible) {
     editing_list_widget_->ShowInactive();
   } else {
@@ -1201,10 +1211,12 @@ void DisplayOverlayController::EnterButtonPlaceMode(ActionType action_type) {
   AddRichNudge();
 }
 
-void DisplayOverlayController::ExitButtonPlaceMode() {
+void DisplayOverlayController::ExitButtonPlaceMode(bool is_action_added) {
   RemoveRichNudge();
   RemoveTargetWidget();
-  SetEditingListVisibility(/*visible=*/true);
+  if (!is_action_added) {
+    SetEditingListVisibility(/*visible=*/true);
+  }
 }
 
 void DisplayOverlayController::UpdateButtonPlacementNudgeAnchorRect() {

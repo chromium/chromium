@@ -30,6 +30,9 @@ class OverlayViewTestBase : public GameControlsTestBase {
   size_t GetActionViewSize();
 
   ButtonOptionsMenu* ShowButtonOptionsMenu(Action* action);
+  void PressDoneButtonOnButtonOptionsMenu();
+  void PressDeleteButtonOnButtonOptionsMenu();
+
   TargetView* GetTargetView() const;
 
   // GameControlsTestBase:

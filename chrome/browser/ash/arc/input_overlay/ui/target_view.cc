@@ -168,7 +168,7 @@ bool TargetView::OnKeyPressed(const ui::KeyEvent& event) {
 
   // Exit the button placement mode when key `esc` is pressed.
   if (key_code == ui::VKEY_ESCAPE) {
-    controller_->ExitButtonPlaceMode();
+    controller_->ExitButtonPlaceMode(/*is_action_added=*/false);
     return true;
   }
 
