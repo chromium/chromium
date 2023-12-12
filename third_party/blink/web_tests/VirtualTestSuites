@@ -2212,7 +2212,7 @@
   },
   {
     "prefix": "date-input-inline-block-disabled",
-    "owners": ["jarhar@chromium.org", "dom-dev@chromium.org"],
+    "owners": ["jarhar@chromium.org", "tkent@chromium.org"],
     "platforms": ["Linux"],
     "bases": [
       "external/wpt/html/rendering/non-replaced-elements/form-controls/resets.html",
@@ -2224,7 +2224,7 @@
     ],
     "args": ["--disable-blink-features=DateInputInlineBlock",
              "--disable-threaded-compositing", "--disable-threaded-animation"],
-    "expires": "Oct 1, 2023"
+    "expires": "Oct 1, 2024"
   },
   {
     "prefix": "allow-rtc-encoded-video-frame-set-metadata-all-fields",
