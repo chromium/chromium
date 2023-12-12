@@ -2333,13 +2333,14 @@ std::optional<FormData> FindFormForContentEditable(
   }
   field.aria_label = GetAriaLabel(document, content_editable);
   field.aria_description = GetAriaDescription(document, content_editable);
-  // TextContent() includes hidden elements and does not add linebreaks. If this
-  // is not sufficient in the future, consider calling HTMLElement::innerText(),
-  // which returns the text "as rendered" (i.e., it inserts whitespace at the
-  // right places and it ignores "display:none" subtrees), but is significantly
-  // more expensive because it triggers a layout.
+  // TextContentAbridged() includes hidden elements and does not add linebreaks.
+  // If this is not sufficient in the future, consider calling
+  // HTMLElement::innerText(), which returns the text "as rendered" (i.e., it
+  // inserts whitespace at the right places and it ignores "display:none"
+  // subtrees), but is significantly more expensive because it triggers a layout.
   field.value =
-      content_editable.TextContent().Utf16().substr(0, kMaxStringLength);
+      content_editable.TextContentAbridged(kMaxStringLength).Utf16();
+  DCHECK_LE(field.value.length(), kMaxStringLength);
   field.selected_text =
       content_editable.SelectedText().Utf16().substr(0, kMaxSelectedTextLength);
   return form;

@@ -119,6 +119,9 @@ void WebElement::SetAttribute(const WebString& attr_name,
 WebString WebElement::TextContent() const {
   return ConstUnwrap<Element>()->textContent();
 }
+WebString WebElement::TextContentAbridged(const unsigned int max_length) const {
+  return ConstUnwrap<Element>()->textContent(false, nullptr, max_length);
+}
 
 WebString WebElement::InnerHTML() const {
   return ConstUnwrap<Element>()->innerHTML();

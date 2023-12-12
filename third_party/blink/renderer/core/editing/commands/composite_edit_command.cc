@@ -72,6 +72,7 @@
 #include "third_party/blink/renderer/core/editing/visible_selection.h"
 #include "third_party/blink/renderer/core/editing/visible_units.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
+#include "third_party/blink/renderer/core/html/forms/html_input_element.h"
 #include "third_party/blink/renderer/core/html/html_br_element.h"
 #include "third_party/blink/renderer/core/html/html_div_element.h"
 #include "third_party/blink/renderer/core/html/html_element.h"
@@ -82,6 +83,8 @@
 #include "third_party/blink/renderer/core/html_names.h"
 #include "third_party/blink/renderer/core/layout/layout_block_flow.h"
 #include "third_party/blink/renderer/core/layout/layout_text.h"
+#include "third_party/blink/renderer/core/page/chrome_client.h"
+#include "third_party/blink/renderer/core/page/page.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/clear_collection_scope.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
@@ -2101,6 +2104,12 @@ void CompositeEditCommand::AppliedEditing() {
   // Command will be equal to last edit command only in the case of typing
   if (last_edit_command == this) {
     DCHECK(IsTypingCommand());
+    if (Element* element = undo_step.StartingRootEditableElement()) {
+      element->GetDocument()
+          .GetPage()
+          ->GetChromeClient()
+          .DidUserChangeContentEditableContent(*element);
+    }
   } else if (last_edit_command && last_edit_command->IsDragAndDropCommand() &&
              (GetInputType() == InputEvent::InputType::kDeleteByDrag ||
               GetInputType() == InputEvent::InputType::kInsertFromDrop)) {

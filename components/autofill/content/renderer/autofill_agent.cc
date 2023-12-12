@@ -540,6 +540,25 @@ void AutofillAgent::TextFieldDidChange(const WebFormControlElement& element) {
   form_tracker_->TextFieldDidChange(element);
 }
 
+void AutofillAgent::ContentEditableDidChange(const WebElement& element) {
+  DCHECK(MaybeWasOwnedByFrame(element, unsafe_render_frame()));
+  if (!base::FeatureList::IsEnabled(
+          features::kAutofillContentEditableChangeEvents) ||
+      !base::FeatureList::IsEnabled(features::kAutofillContentEditables) ||
+      !base::FeatureList::IsEnabled(features::kAutofillTextAreaChangeEvents)) {
+    return;
+  }
+  // TODO(crbug.com/1494479): Add throttling to avoid sending this event for
+  // rapid changes.
+  if (std::optional<FormData> form = FindFormForContentEditable(element)) {
+    const FormFieldData& field = form->fields.front();
+    if (auto* autofill_driver = unsafe_autofill_driver()) {
+      autofill_driver->TextFieldDidChange(*form, field, field.bounds,
+                                          AutofillTickClock::NowTicks());
+    }
+  }
+}
+
 void AutofillAgent::OnTextFieldDidChange(const WebFormControlElement& element) {
   DCHECK(MaybeWasOwnedByFrame(element, unsafe_render_frame()));
   // TODO(crbug.com/1494479): Add throttling to avoid sending this event for

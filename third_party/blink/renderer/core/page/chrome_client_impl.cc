@@ -49,6 +49,7 @@
 #include "third_party/blink/public/web/blink.h"
 #include "third_party/blink/public/web/web_autofill_client.h"
 #include "third_party/blink/public/web/web_console_message.h"
+#include "third_party/blink/public/web/web_form_element.h"
 #include "third_party/blink/public/web/web_input_element.h"
 #include "third_party/blink/public/web/web_local_frame_client.h"
 #include "third_party/blink/public/web/web_node.h"
@@ -59,6 +60,7 @@
 #include "third_party/blink/public/web/web_window_features.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_controller.h"
 #include "third_party/blink/renderer/core/dom/document.h"
+#include "third_party/blink/renderer/core/dom/element.h"
 #include "third_party/blink/renderer/core/dom/node.h"
 #include "third_party/blink/renderer/core/events/web_input_event_conversion.h"
 #include "third_party/blink/renderer/core/exported/web_dev_tools_agent_impl.h"
@@ -1242,6 +1244,23 @@ void ChromeClientImpl::DidChangeValueInTextField(
     // The resource coordinator is not available in some tests.
     if (auto* rc = doc.GetResourceCoordinator())
       rc->SetHadFormInteraction();
+  }
+}
+
+void ChromeClientImpl::DidUserChangeContentEditableContent(Element& element) {
+  Document& doc = element.GetDocument();
+  // Selecting the focused element as we are only interested in changes made by
+  // the user. We assume the user must focus the field to type into it.
+  WebElement focused_element = doc.FocusedElement();
+  // If element argument is not the focused element we can assume the user
+  // was not typing (this covers cases like element.innerText = 'foo').
+  // Value changes caused by |document.execCommand| calls should not be
+  // interpreted as a user action. See https://crbug.com/764760.
+  if (!element.IsFocusedElementInDocument() || doc.IsRunningExecCommand()) {
+    return;
+  }
+  if (auto* fill_client = AutofillClientFromFrame(doc.GetFrame())) {
+    fill_client->ContentEditableDidChange(focused_element);
   }
 }
 

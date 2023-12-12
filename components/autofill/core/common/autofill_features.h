@@ -206,6 +206,8 @@ BASE_DECLARE_FEATURE(kAutofillSilentProfileUpdateForInsufficientImport);
 COMPONENT_EXPORT(AUTOFILL)
 BASE_DECLARE_FEATURE(kAutofillTextAreaChangeEvents);
 COMPONENT_EXPORT(AUTOFILL)
+BASE_DECLARE_FEATURE(kAutofillContentEditableChangeEvents);
+COMPONENT_EXPORT(AUTOFILL)
 BASE_DECLARE_FEATURE(kAutofillTrackProfileTokenQuality);
 COMPONENT_EXPORT(AUTOFILL)
 BASE_DECLARE_FEATURE(kAutofillUseImprovedLabelDisambiguation);

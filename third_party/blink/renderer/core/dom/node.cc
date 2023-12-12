@@ -1940,7 +1940,8 @@ const AtomicString& Node::lookupNamespaceURI(
 }
 
 String Node::textContent(bool convert_brs_to_newlines,
-                         TextVisitor* visitor) const {
+                         TextVisitor* visitor,
+                         unsigned int max_length) const {
   // This covers ProcessingInstruction and Comment that should return their
   // value when .textContent is accessed on them, but should be ignored when
   // iterated over as a descendant of a ContainerNode.
@@ -1965,8 +1966,14 @@ String Node::textContent(bool convert_brs_to_newlines,
       content.Append('\n');
     } else if (auto* text_node = DynamicTo<Text>(node)) {
       content.Append(text_node->data());
+      // Only abridge text content when max_length is explicitly set.
+      if (max_length < UINT_MAX && content.length() > max_length) {
+        content.Resize(max_length);
+        break;
+      }
     }
   }
+
   return content.ReleaseString();
 }
 

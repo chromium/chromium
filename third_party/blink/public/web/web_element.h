@@ -80,6 +80,7 @@ class BLINK_EXPORT WebElement : public WebNode {
   WebString GetAttribute(const WebString&) const;
   void SetAttribute(const WebString& name, const WebString& value);
   WebString TextContent() const;
+  WebString TextContentAbridged(unsigned int max_length) const;
   WebString InnerHTML() const;
 
   // Returns true if the element's contenteditable attribute is in the true
