@@ -1109,7 +1109,7 @@
   "ash/shortcut_viewer/shortcut_viewer_strings.grd": {
     "messages": [7500],
   },
-  "<(SHARED_INTERMEDIATE_DIR)/ash/webui/shimless_rma/resources/ash_shimless_rma_resources.grd": {
+  "<(SHARED_INTERMEDIATE_DIR)/ash/webui/shimless_rma/resources/resources.grd": {
     "META": {"sizes": {"includes": [80],}},
     "includes": [7520],
   },

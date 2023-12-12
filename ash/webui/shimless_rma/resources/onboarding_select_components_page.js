@@ -4,7 +4,7 @@
 
 import './base_page.js';
 import './repair_component_chip.js';
-import './shimless_rma_shared_css.js';
+import './shimless_rma_shared.css.js';
 
 import {assert} from 'chrome://resources/ash/common/assert.js';
 import {I18nBehavior, I18nBehaviorInterface} from 'chrome://resources/ash/common/i18n_behavior.js';
@@ -12,6 +12,7 @@ import {afterNextRender, html, mixinBehaviors, PolymerElement} from 'chrome://re
 
 import {ComponentTypeToId} from './data.js';
 import {getShimlessRmaService} from './mojo_interface_provider.js';
+import {getTemplate} from './onboarding_select_components_page.html.js';
 import {Component, ComponentRepairStatus, ComponentType, ShimlessRmaServiceInterface, StateResult} from './shimless_rma.mojom-webui.js';
 import {enableNextButton, executeThenTransitionState, focusPageTitle} from './shimless_rma_util.js';
 
@@ -52,7 +53,7 @@ export class OnboardingSelectComponentsPageElement extends
   }
 
   static get template() {
-    return html`{__html_template__}`;
+    return getTemplate();
   }
 
   static get properties() {

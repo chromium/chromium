@@ -2,8 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import './shimless_rma_fonts_css.js';
-import './shimless_rma_shared_css.js';
+import './shimless_rma_shared.css.js';
 import './base_page.js';
 import 'chrome://resources/cr_elements/cr_dialog/cr_dialog.js';
 import 'chrome://resources/cr_elements/cr_input/cr_input.js';
@@ -12,6 +11,7 @@ import {I18nBehavior, I18nBehaviorInterface} from 'chrome://resources/ash/common
 import {afterNextRender, html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {getShimlessRmaService} from './mojo_interface_provider.js';
+import {getTemplate} from './onboarding_enter_rsu_wp_disable_code_page.html.js';
 import {QrCode, RmadErrorCode, ShimlessRmaServiceInterface, StateResult} from './shimless_rma.mojom-webui.js';
 import {dispatchNextButtonClick, enableNextButton} from './shimless_rma_util.js';
 
@@ -40,7 +40,7 @@ export class OnboardingEnterRsuWpDisableCodePage extends
   }
 
   static get template() {
-    return html`{__html_template__}`;
+    return getTemplate();
   }
 
   static get properties() {

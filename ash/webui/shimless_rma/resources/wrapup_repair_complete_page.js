@@ -6,15 +6,15 @@ import 'chrome://resources/cr_elements/cr_button/cr_button.js';
 import 'chrome://resources/cr_elements/cr_dialog/cr_dialog.js';
 import 'chrome://resources/polymer/v3_0/paper-tooltip/paper-tooltip.js';
 import './base_page.js';
-import './shimless_rma_fonts_css.js';
-import './shimless_rma_shared_css.js';
+import './shimless_rma_shared.css.js';
 
 import {I18nBehavior, I18nBehaviorInterface} from 'chrome://resources/ash/common/i18n_behavior.js';
-import {html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {getShimlessRmaService} from './mojo_interface_provider.js';
 import {PowerCableStateObserverInterface, PowerCableStateObserverReceiver, RmadErrorCode, ShimlessRmaServiceInterface, ShutdownMethod} from './shimless_rma.mojom-webui.js';
 import {executeThenTransitionState, focusPageTitle} from './shimless_rma_util.js';
+import {getTemplate} from './wrapup_repair_complete_page.html.js';
 
 /**
  * @fileoverview
@@ -46,7 +46,7 @@ export class WrapupRepairCompletePage extends WrapupRepairCompletePageBase {
   }
 
   static get template() {
-    return html`{__html_template__}`;
+    return getTemplate();
   }
 
   static get properties() {

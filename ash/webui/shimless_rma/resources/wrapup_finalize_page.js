@@ -3,15 +3,16 @@
 // found in the LICENSE file.
 
 import 'chrome://resources/cr_elements/cr_button/cr_button.js';
-import './shimless_rma_shared_css.js';
+import './shimless_rma_shared.css.js';
 import './base_page.js';
 
 import {I18nBehavior, I18nBehaviorInterface} from 'chrome://resources/ash/common/i18n_behavior.js';
-import {html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {getShimlessRmaService} from './mojo_interface_provider.js';
 import {FinalizationError, FinalizationObserverInterface, FinalizationObserverReceiver, FinalizationStatus, RmadErrorCode, ShimlessRmaServiceInterface, StateResult} from './shimless_rma.mojom-webui.js';
 import {executeThenTransitionState, focusPageTitle} from './shimless_rma_util.js';
+import {getTemplate} from './wrapup_finalize_page.html.js';
 
 /** @type {!Object<!FinalizationStatus, string>} */
 const finalizationStatusTextKeys = {
@@ -45,7 +46,7 @@ export class WrapupFinalizePage extends WrapupFinalizePageBase {
   }
 
   static get template() {
-    return html`{__html_template__}`;
+    return getTemplate();
   }
 
   static get properties() {

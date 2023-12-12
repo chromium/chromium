@@ -7,8 +7,8 @@ import 'chrome://resources/cr_elements/icons.html.js';
 import 'chrome://resources/polymer/v3_0/iron-icon/iron-icon.js';
 import './base_page.js';
 import './calibration_component_chip.js';
-import './icons.js';
-import './shimless_rma_shared_css.js';
+import './icons.html.js';
+import './shimless_rma_shared.css.js';
 
 import {assert} from 'chrome://resources/ash/common/assert.js';
 import {I18nBehavior, I18nBehaviorInterface} from 'chrome://resources/ash/common/i18n_behavior.js';
@@ -16,6 +16,7 @@ import {afterNextRender, html, mixinBehaviors, PolymerElement} from 'chrome://re
 
 import {ComponentTypeToId} from './data.js';
 import {getShimlessRmaService} from './mojo_interface_provider.js';
+import {getTemplate} from './reimaging_calibration_failed_page.html.js';
 import {CalibrationComponentStatus, CalibrationStatus, ComponentType, ShimlessRmaServiceInterface, StateResult} from './shimless_rma.mojom-webui.js';
 import {disableNextButton, enableNextButton, executeThenTransitionState, focusPageTitle} from './shimless_rma_util.js';
 
@@ -57,7 +58,7 @@ export class ReimagingCalibrationFailedPage extends
   }
 
   static get template() {
-    return html`{__html_template__}`;
+    return getTemplate();
   }
 
   static get properties() {

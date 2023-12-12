@@ -49,14 +49,6 @@ ash_generated_grit("shortcut_customization_app_resources") {
   deps = [ "//ash/webui/shortcut_customization_ui/resources:build_grd" ]
 }
 
-# Resources used by shimless rma flow
-ash_generated_grit("shimless_rma_resources") {
-  shimless_rma_resource_gen_dir =
-      "$root_gen_dir/ash/webui/shimless_rma/resources"
-  source = "$shimless_rma_resource_gen_dir/ash_shimless_rma_resources.grd"
-  deps = [ "//ash/webui/shimless_rma/resources:build_grd" ]
-}
-
 ash_generated_grit("files_internals_resources") {
   source = "$root_gen_dir/ash/webui/files_internals/ash_files_internals_resources.grd"
   deps = [ "//ash/webui/files_internals:build_grd" ]

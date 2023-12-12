@@ -3,8 +3,8 @@
 // found in the LICENSE file.
 
 import './base_page.js';
-import './icons.js';
-import './shimless_rma_shared_css.js';
+import './icons.html.js';
+import './shimless_rma_shared.css.js';
 import './strings.m.js';
 import 'chrome://resources/ash/common/network/network_config.js';
 import 'chrome://resources/ash/common/network/network_list.js';
@@ -21,9 +21,10 @@ import {OncMojo} from 'chrome://resources/ash/common/network/onc_mojo.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {CrosNetworkConfigInterface as NetworkConfigServiceInterface, FilterType, NetworkStateProperties, NO_LIMIT, StartConnectResult} from 'chrome://resources/mojo/chromeos/services/network_config/public/mojom/cros_network_config.mojom-webui.js';
 import {ConnectionStateType, NetworkType} from 'chrome://resources/mojo/chromeos/services/network_config/public/mojom/network_types.mojom-webui.js';
-import {html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {getNetworkConfigService, getShimlessRmaService} from './mojo_interface_provider.js';
+import {getTemplate} from './onboarding_network_page.html.js';
 import {ShimlessRmaServiceInterface, StateResult} from './shimless_rma.mojom-webui.js';
 import {enableNextButton, focusPageTitle} from './shimless_rma_util.js';
 
@@ -50,7 +51,7 @@ export class OnboardingNetworkPage extends OnboardingNetworkPageBase {
   }
 
   static get template() {
-    return html`{__html_template__}`;
+    return getTemplate();
   }
 
   static get properties() {

@@ -3,60 +3,14 @@
 # found in the LICENSE file.
 
 import("//build/config/chromeos/ui_mode.gni")
-import("//tools/grit/grit_rule.gni")
-import("//tools/grit/preprocess_if_expr.gni")
-import("//tools/polymer/html_to_js.gni")
-import("//ui/webui/resources/tools/generate_grd.gni")
+import("//ui/webui/resources/tools/build_webui.gni")
 
-assert(is_chromeos_ash)
+assert(is_chromeos_ash, "Non-ChromeOS builds cannot depend on //ash")
 
-preprocessed_dir = "preprocessed"
-preprocessed_gen_manifest = "preprocessed_gen_manifest.json"
-preprocessed_mojo_manifest = "preprocessed_mojo_manifest.json"
-
-polymer_element_files = [
-  "base_page.js",
-  "calibration_component_chip.js",
-  "icons.js",
-  "critical_error_page.js",
-  "hardware_error_page.js",
-  "onboarding_choose_destination_page.js",
-  "onboarding_choose_wp_disable_method_page.js",
-  "onboarding_choose_wipe_device_page.js",
-  "onboarding_enter_rsu_wp_disable_code_page.js",
-  "onboarding_landing_page.js",
-  "onboarding_network_page.js",
-  "onboarding_select_components_page.js",
-  "onboarding_update_page.js",
-  "onboarding_wait_for_manual_wp_disable_page.js",
-  "onboarding_wp_disable_complete_page.js",
-  "reboot_page.js",
-  "reimaging_calibration_failed_page.js",
-  "reimaging_calibration_run_page.js",
-  "reimaging_calibration_setup_page.js",
-  "reimaging_device_information_page.js",
-  "reimaging_firmware_update_page.js",
-  "reimaging_provisioning_page.js",
-  "repair_component_chip.js",
-  "shimless_3p_diagnostics.js",
-  "shimless_rma.js",
-  "shimless_rma_fonts_css.js",
-  "shimless_rma_shared_css.js",
-  "splash_screen.js",
-  "wrapup_finalize_page.js",
-  "wrapup_repair_complete_page.js",
-  "wrapup_restock_page.js",
-  "wrapup_wait_for_manual_wp_enable_page.js",
-]
-
-generate_grd("build_grd") {
-  input_files = [
+build_webui("build") {
+  static_files = [
     "app_icon_192.png",
-    "data.js",
-    "fake_data.js",
-    "fake_shimless_rma_service.js",
     "index.html",
-    "mojo_interface_provider.js",
     "illustrations/base_on_flat_surface.svg",
     "illustrations/downloading.svg",
     "illustrations/error.svg",
@@ -65,14 +19,14 @@ generate_grd("build_grd") {
     "illustrations/repair_start.svg",
     "illustrations/success.svg",
     "illustrations/update_os.svg",
-    "shimless_rma_util.js",
   ]
 
-  # Project Simon strings cannot be made public until after the feature is
-  # released. Thus, they are currently hosted in CIPD and downloaded to
-  # this directory only if an internal chrome-branded checkout is being used.
+  css_files = [ "shimless_rma_shared.css" ]
+
+  icons_html_files = [ "icons.html" ]
+
   if (is_chrome_branded) {
-    input_files += [
+    static_files += [
       "project_simon_strings/device_compliant.txt",
       "project_simon_strings/device_not_compliant.txt",
       "project_simon_strings/question_does_meet_requirements.txt",
@@ -80,43 +34,61 @@ generate_grd("build_grd") {
     ]
   }
 
-  input_files_base_dir = rebase_path(".", "//")
-  deps = [
-    ":preprocess_generated",
-    ":preprocess_mojo",
-    "//mojo/public/mojom/base:base_js__generator",
+  web_component_files = [
+    "base_page.js",
+    "calibration_component_chip.js",
+    "critical_error_page.js",
+    "hardware_error_page.js",
+    "onboarding_choose_destination_page.js",
+    "onboarding_choose_wp_disable_method_page.js",
+    "onboarding_choose_wipe_device_page.js",
+    "onboarding_enter_rsu_wp_disable_code_page.js",
+    "onboarding_landing_page.js",
+    "onboarding_network_page.js",
+    "onboarding_select_components_page.js",
+    "onboarding_update_page.js",
+    "onboarding_wait_for_manual_wp_disable_page.js",
+    "onboarding_wp_disable_complete_page.js",
+    "reboot_page.js",
+    "reimaging_calibration_failed_page.js",
+    "reimaging_calibration_run_page.js",
+    "reimaging_calibration_setup_page.js",
+    "reimaging_device_information_page.js",
+    "reimaging_firmware_update_page.js",
+    "reimaging_provisioning_page.js",
+    "repair_component_chip.js",
+    "shimless_3p_diagnostics.js",
+    "shimless_rma.js",
+    "splash_screen.js",
+    "wrapup_finalize_page.js",
+    "wrapup_repair_complete_page.js",
+    "wrapup_restock_page.js",
+    "wrapup_wait_for_manual_wp_enable_page.js",
   ]
-  manifest_files = [
-    "$target_gen_dir/$preprocessed_mojo_manifest",
-    "$target_gen_dir/$preprocessed_gen_manifest",
+
+  non_web_component_files = [
+    "data.js",
+    "fake_data.js",
+    "fake_shimless_rma_service.js",
+    "mojo_interface_provider.js",
+    "shimless_rma_util.js",
+  ]
+
+  mojo_files = [ "$root_gen_dir/mojom-webui/ash/webui/shimless_rma/mojom/shimless_rma.mojom-webui.js" ]
+
+  mojo_files_deps = [ "//ash/webui/shimless_rma/mojom:mojom_webui_js" ]
+  ts_composite = true
+  ts_definitions = [ "//tools/typescript/definitions/chrome_send.d.ts" ]
+
+  ts_deps = [
+    "//ash/webui/common/resources:build_ts",
+    "//third_party/polymer/v3_0:library",
+    "//ui/webui/resources/cr_components/color_change_listener:build_ts",
+    "//ui/webui/resources/cr_elements:build_ts",
+    "//ui/webui/resources/js:build_ts",
+    "//ui/webui/resources/mojo:build_ts",
   ]
 
   grd_prefix = "ash_shimless_rma"
-  out_grd = "$target_gen_dir/${grd_prefix}_resources.grd"
-}
-
-preprocess_if_expr("preprocess_generated") {
-  deps = [ ":web_components" ]
-  in_folder = target_gen_dir
-  out_folder = "$target_gen_dir/$preprocessed_dir"
-  out_manifest = "$target_gen_dir/$preprocessed_gen_manifest"
-  in_files = polymer_element_files
-}
-
-preprocess_if_expr("preprocess_mojo") {
-  deps = [ ":copy_webui_mojo" ]
-  in_folder = target_gen_dir
-  out_folder = "$target_gen_dir/$preprocessed_dir/mojom"
-  out_manifest = "$target_gen_dir/$preprocessed_mojo_manifest"
-  in_files = [ "shimless_rma.mojom-webui.js" ]
-}
-
-html_to_js("web_components") {
-  js_files = polymer_element_files
-}
-
-copy("copy_webui_mojo") {
-  deps = [ "../mojom:mojom_webui_js" ]
-  sources = [ "$root_gen_dir/mojom-webui/ash/webui/shimless_rma/mojom/shimless_rma.mojom-webui.js" ]
-  outputs = [ "$target_gen_dir/{{source_file_part}}" ]
+  grit_output_dir = "$root_gen_dir/ash/webui"
 }
