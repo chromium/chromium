@@ -12,6 +12,7 @@
 #include <utility>
 
 #include "base/containers/contains.h"
+#include "base/containers/cxx20_erase_vector.h"
 #include "base/logging.h"
 #include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram_functions.h"
@@ -165,12 +166,11 @@ MovableDisplaySnapshots DrmGpuDisplayManager::GetDisplays() {
     // Make sure that the display infos we got have valid connector IDs.
     // If not, we need to remove the display info from the list. This removes
     // any zombie connectors.
-    display_infos.erase(
-        std::remove_if(display_infos.begin(), display_infos.end(),
-                       [&valid_connector_ids](const auto& display_info) {
-                         return !base::Contains(
-                                 valid_connector_ids, display_info->connector()->connector_id);}),
-                                 display_infos.end());
+    base::EraseIf(
+        display_infos, [&valid_connector_ids](const auto& display_info) {
+          return !base::Contains(valid_connector_ids,
+                                 display_info->connector()->connector_id);
+        });
 
     for (auto& display_info : display_infos) {
       display_snapshots.emplace_back(CreateDisplaySnapshot(
