@@ -35,6 +35,53 @@ using pc_preserved_file_test =
     private_computing::PrivateComputingClientRegressionTestData;
 namespace ash::report::device_metrics {
 
+TEST(ReportControllerTest, UnknownDeviceMode) {
+  ASSERT_EQ(MARKET_SEGMENT_UNKNOWN, ReportController::GetMarketSegment(
+                                        policy::DeviceMode::DEVICE_MODE_PENDING,
+                                        policy::MarketSegment::UNKNOWN));
+}
+
+TEST(ReportControllerTest, ConsumerDeviceMode) {
+  ASSERT_EQ(MARKET_SEGMENT_CONSUMER,
+            ReportController::GetMarketSegment(
+                policy::DeviceMode::DEVICE_MODE_CONSUMER,
+                policy::MarketSegment::UNKNOWN));
+}
+
+TEST(ReportControllerTest, DemoEnterpriseDeviceMode) {
+  ASSERT_EQ(
+      MARKET_SEGMENT_ENTERPRISE_DEMO,
+      ReportController::GetMarketSegment(policy::DeviceMode::DEVICE_MODE_DEMO,
+                                         policy::MarketSegment::ENTERPRISE));
+}
+
+TEST(ReportControllerTest, EnterpriseDeviceModeEnterpriseSegment) {
+  ASSERT_EQ(MARKET_SEGMENT_ENTERPRISE,
+            ReportController::GetMarketSegment(
+                policy::DeviceMode::DEVICE_MODE_ENTERPRISE,
+                policy::MarketSegment::ENTERPRISE));
+}
+
+TEST(ReportControllerTest, EnterpriseDeviceModeEducationSegment) {
+  ASSERT_EQ(MARKET_SEGMENT_EDUCATION,
+            ReportController::GetMarketSegment(
+                policy::DeviceMode::DEVICE_MODE_ENTERPRISE,
+                policy::MarketSegment::EDUCATION));
+}
+
+TEST(ReportControllerTest, EnterpriseDeviceModeUnknownSegment) {
+  ASSERT_EQ(MARKET_SEGMENT_ENTERPRISE_ENROLLED_BUT_UNKNOWN,
+            ReportController::GetMarketSegment(
+                policy::DeviceMode::DEVICE_MODE_ENTERPRISE,
+                policy::MarketSegment::UNKNOWN));
+}
+
+TEST(ReportControllerTest, UnknownDeviceModeAndSegment) {
+  ASSERT_EQ(MARKET_SEGMENT_UNKNOWN, ReportController::GetMarketSegment(
+                                        policy::DeviceMode::DEVICE_MODE_NOT_SET,
+                                        policy::MarketSegment::UNKNOWN));
+}
+
 class ReportControllerTestBase : public testing::Test {
  public:
   static private_computing::PrivateComputingClientRegressionTestData*
@@ -244,7 +291,6 @@ class ReportControllerSimpleFlowTest : public ReportControllerTestBase {
  public:
   static constexpr ChromeDeviceMetadataParameters kFakeChromeParameters = {
       version_info::Channel::STABLE /* chromeos_channel */,
-      MarketSegment::MARKET_SEGMENT_CONSUMER /* market_segment */,
   };
 
   void SetUp() override {
@@ -273,6 +319,10 @@ class ReportControllerSimpleFlowTest : public ReportControllerTestBase {
 
     report_controller_ = std::make_unique<ReportController>(
         kFakeChromeParameters, GetLocalState(), GetUrlLoaderFactory(),
+        base::Time(), base::BindRepeating([]() { return base::Minutes(1); }),
+        base::BindRepeating(
+            []() { return policy::DeviceMode::DEVICE_MODE_NOT_SET; }),
+        base::BindRepeating([]() { return policy::MarketSegment::UNKNOWN; }),
         std::make_unique<PsmClientManager>(std::move(psm_client_delegate)));
 
     task_environment_.RunUntilIdle();
@@ -581,8 +631,7 @@ class ReportControllerPreservedFileReadWriteSuccessTest
     : public ReportControllerTestBase {
  public:
   static constexpr ChromeDeviceMetadataParameters kFakeChromeParameters = {
-      version_info::Channel::STABLE /* chromeos_channel */,
-      MarketSegment::MARKET_SEGMENT_CONSUMER /* market_segment */,
+      version_info::Channel::STABLE /* chromeos_channel */
   };
 
   void SetUp() override {
@@ -615,6 +664,10 @@ class ReportControllerPreservedFileReadWriteSuccessTest
 
     report_controller_ = std::make_unique<ReportController>(
         kFakeChromeParameters, GetLocalState(), GetUrlLoaderFactory(),
+        base::Time(), base::BindRepeating([]() { return base::Minutes(1); }),
+        base::BindRepeating(
+            []() { return policy::DeviceMode::DEVICE_MODE_NOT_SET; }),
+        base::BindRepeating([]() { return policy::MarketSegment::UNKNOWN; }),
         std::make_unique<PsmClientManager>(std::move(psm_client_delegate)));
 
     task_environment_.RunUntilIdle();
@@ -682,7 +735,6 @@ class ReportControllerDeviceRecoveryTest : public ReportControllerTestBase {
  public:
   static constexpr ChromeDeviceMetadataParameters kFakeChromeParameters = {
       version_info::Channel::STABLE /* chromeos_channel */,
-      MarketSegment::MARKET_SEGMENT_CONSUMER /* market_segment */,
   };
 
   void SetUp() override {
@@ -715,6 +767,10 @@ class ReportControllerDeviceRecoveryTest : public ReportControllerTestBase {
 
     report_controller_ = std::make_unique<ReportController>(
         kFakeChromeParameters, GetLocalState(), GetUrlLoaderFactory(),
+        base::Time(), base::BindRepeating([]() { return base::Minutes(1); }),
+        base::BindRepeating(
+            []() { return policy::DeviceMode::DEVICE_MODE_NOT_SET; }),
+        base::BindRepeating([]() { return policy::MarketSegment::UNKNOWN; }),
         std::make_unique<PsmClientManager>(std::move(psm_client_delegate)));
 
     task_environment_.RunUntilIdle();

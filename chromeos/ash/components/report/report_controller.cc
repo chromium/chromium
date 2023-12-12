@@ -39,6 +39,13 @@ namespace {
 
 ReportController* g_ash_report_controller = nullptr;
 
+// Number of minutes to wait before retrying
+// reading the .oobe_completed file again.
+constexpr base::TimeDelta kOobeReadFailedRetryDelay = base::Minutes(60);
+
+// Number of times to retry before failing to report any device actives.
+constexpr int kNumberOfRetriesBeforeFail = 120;
+
 // Amount of time to wait before triggering repeating timer.
 constexpr base::TimeDelta kTimeToRepeat = base::Hours(1);
 
@@ -117,17 +124,97 @@ void ReportController::RegisterPrefs(PrefRegistrySimple* registry) {
       prefs::kDeviceActiveLastKnownIsActiveCurrentPeriodMinus2, false);
 }
 
+// static
+base::TimeDelta ReportController::DetermineStartUpDelay(
+    base::Time chrome_first_run_ts) {
+  // Wait at least 1 hour from the first chrome run sentinel file creation
+  // time. This creation time is used as an indicator of when the device last
+  // reset (powerwash/recovery/RMA). PSM servers can take 1 hour after CheckIn
+  // to return the correct response for CheckMembership requests, since the PSM
+  // servers need to update their cache.
+  //
+  // This delay avoids the scenario where a device checks in, powerwashes, and
+  // on device start up, gets the wrong check membership response.
+  base::TimeDelta delay_on_first_chrome_run;
+  base::Time current_ts = base::Time::Now();
+  if (current_ts < (chrome_first_run_ts + base::Hours(1))) {
+    delay_on_first_chrome_run =
+        chrome_first_run_ts + base::Hours(1) - current_ts;
+  }
+
+  return delay_on_first_chrome_run;
+}
+
+// static
+MarketSegment ReportController::GetMarketSegment(
+    policy::DeviceMode device_mode,
+    policy::MarketSegment device_market_segment) {
+  // Policy device modes that should be classified as not being set.
+  const std::unordered_set<policy::DeviceMode> kDeviceModeNotSet{
+      policy::DeviceMode::DEVICE_MODE_PENDING,
+      policy::DeviceMode::DEVICE_MODE_NOT_SET};
+
+  // Policy device modes that should be classified as consumer devices.
+  const std::unordered_set<policy::DeviceMode> kDeviceModeConsumer{
+      policy::DeviceMode::DEVICE_MODE_CONSUMER,
+      policy::DeviceMode::DEVICE_MODE_CONSUMER_KIOSK_AUTOLAUNCH};
+
+  // Policy device modes that should be classified as enterprise devices.
+  const std::unordered_set<policy::DeviceMode> kDeviceModeEnterprise{
+      policy::DeviceMode::DEVICE_MODE_ENTERPRISE};
+
+  // Policy device modes that should be classified as demo devices.
+  const std::unordered_set<policy::DeviceMode> kDeviceModeDemoEnterprise{
+      policy::DeviceMode::DEVICE_MODE_DEMO};
+
+  // Determine Fresnel market segment using the retrieved device policy
+  // |device_mode| and |device_market_segment|.
+  if (kDeviceModeNotSet.count(device_mode)) {
+    return MARKET_SEGMENT_UNKNOWN;
+  }
+
+  if (kDeviceModeConsumer.count(device_mode)) {
+    return MARKET_SEGMENT_CONSUMER;
+  }
+
+  if (kDeviceModeDemoEnterprise.count(device_mode)) {
+    return MARKET_SEGMENT_ENTERPRISE_DEMO;
+  }
+
+  if (kDeviceModeEnterprise.count(device_mode)) {
+    if (device_market_segment == policy::MarketSegment::ENTERPRISE) {
+      return MARKET_SEGMENT_ENTERPRISE;
+    }
+
+    if (device_market_segment == policy::MarketSegment::EDUCATION) {
+      return MARKET_SEGMENT_EDUCATION;
+    }
+
+    return MARKET_SEGMENT_ENTERPRISE_ENROLLED_BUT_UNKNOWN;
+  }
+
+  return MARKET_SEGMENT_UNKNOWN;
+}
+
 ReportController::ReportController(
     const device_metrics::ChromeDeviceMetadataParameters& chrome_device_params,
     PrefService* local_state,
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
+    base::Time chrome_first_run_time,
+    base::RepeatingCallback<base::TimeDelta()> check_oobe_completed_callback,
+    base::RepeatingCallback<policy::DeviceMode()> device_mode_callback,
+    base::RepeatingCallback<policy::MarketSegment()> market_segment_callback,
     std::unique_ptr<device_metrics::PsmClientManager> psm_client_manager)
     : chrome_device_params_(chrome_device_params),
       local_state_(local_state),
       url_loader_factory_(url_loader_factory),
+      chrome_first_run_time_(chrome_first_run_time),
+      device_mode_callback_(std::move(device_mode_callback)),
+      market_segment_callback_(std::move(market_segment_callback)),
       report_timer_(std::make_unique<base::RepeatingTimer>()),
       network_state_handler_(NetworkHandler::Get()->network_state_handler()),
       statistics_provider_(system::StatisticsProvider::GetInstance()),
+      oobe_completed_timer_(std::make_unique<base::OneShotTimer>()),
       clock_(base::DefaultClock::GetInstance()),
       psm_client_manager_(std::move(psm_client_manager)) {
   DCHECK(local_state);
@@ -144,11 +231,12 @@ ReportController::ReportController(
     return;
   }
 
-  // Wrap with callback from |psm_device_active_secret_| retrieval using
-  // |SessionManagerClient| DBus.
-  SessionManagerClient::Get()->GetPsmDeviceActiveSecret(
-      base::BindOnce(&report::ReportController::OnPsmDeviceActiveSecretFetched,
-                     weak_factory_.GetWeakPtr()));
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
+      FROM_HERE,
+      base::BindOnce(&report::ReportController::CheckOobeCompletedInWorker,
+                     weak_factory_.GetWeakPtr(),
+                     std::move(check_oobe_completed_callback)),
+      ReportController::DetermineStartUpDelay(chrome_first_run_time));
 }
 
 ReportController::~ReportController() {
@@ -157,6 +245,7 @@ ReportController::~ReportController() {
 
   // Reset all dependency unique_ptr objects of this class that are not needed.
   report_timer_.reset();
+  oobe_completed_timer_.reset();
   system_clock_sync_observation_.reset();
 
   // Reset all reporting use cases.
@@ -186,6 +275,63 @@ void ReportController::DefaultNetworkChanged(const NetworkState* network) {
 
 void ReportController::OnShuttingDown() {
   network_state_handler_observer_.Reset();
+}
+
+void ReportController::CheckOobeCompletedInWorker(
+    base::RepeatingCallback<base::TimeDelta()> check_oobe_completed_callback) {
+  base::ThreadPool::PostTaskAndReplyWithResult(
+      FROM_HERE,
+      {base::MayBlock(), base::TaskPriority::BEST_EFFORT,
+       base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN},
+      base::BindOnce(check_oobe_completed_callback),
+      base::BindOnce(&ReportController::OnOobeFileWritten,
+                     weak_factory_.GetWeakPtr(),
+                     check_oobe_completed_callback));
+}
+
+void ReportController::OnOobeFileWritten(
+    base::RepeatingCallback<base::TimeDelta()> check_oobe_completed_callback,
+    base::TimeDelta time_since_oobe_file_written) {
+  // We block if the oobe completed file is not written.
+  // ChromeOS devices should go through oobe to be considered a real device.
+  // The ActivateDate is also only set after oobe is written.
+  if (retry_oobe_completed_count_ >= kNumberOfRetriesBeforeFail) {
+    LOG(ERROR) << "Retry failed - .oobe_completed file was not written for "
+               << "1 minute after retrying 120 times. "
+               << "There was a 60 minute wait between each retry and spanned "
+               << "5 days.";
+    return;
+  }
+
+  if (time_since_oobe_file_written < base::Minutes(1)) {
+    ++retry_oobe_completed_count_;
+
+    LOG(ERROR) << "Time since oobe file created was less than 1 minute. "
+               << "Wait and retry again after 1 minute to ensure that "
+               << "the ActivateDate VPD field is set. "
+               << "TimeDelta since oobe flag file was created = "
+               << time_since_oobe_file_written
+               << ". Retry count = " << retry_oobe_completed_count_;
+
+    oobe_completed_timer_->Start(
+        FROM_HERE, kOobeReadFailedRetryDelay,
+        base::BindOnce(&ReportController::CheckOobeCompletedInWorker,
+                       weak_factory_.GetWeakPtr(),
+                       std::move(check_oobe_completed_callback)));
+
+    return;
+  }
+
+  // Set the market segment since we know OOBE was completed and the
+  // .oobe_completed file existed for more than 1 minute.
+  chrome_device_params_.market_segment = GetMarketSegment(
+      device_mode_callback_.Run(), market_segment_callback_.Run());
+
+  // Wrap with callback from |psm_device_active_secret_| retrieval using
+  // |SessionManagerClient| DBus.
+  SessionManagerClient::Get()->GetPsmDeviceActiveSecret(
+      base::BindOnce(&report::ReportController::OnPsmDeviceActiveSecretFetched,
+                     weak_factory_.GetWeakPtr()));
 }
 
 void ReportController::OnPsmDeviceActiveSecretFetched(

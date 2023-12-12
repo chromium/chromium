@@ -86,7 +86,6 @@ class MemoryMetrics;
 class MisconfiguredUserCleaner;
 class PowerMetricsReporter;
 class RendererFreezer;
-class ReportControllerInitializer;
 class SessionTerminationManager;
 class ShortcutMappingPrefService;
 class ShutdownPolicyForwarder;
@@ -103,6 +102,10 @@ class CarrierLockManager;
 
 namespace cros_healthd::internal {
 class DataCollector;
+}
+
+namespace report {
+class ReportController;
 }
 
 namespace internal {
@@ -171,6 +174,9 @@ class ChromeBrowserMainPartsAsh : public ChromeBrowserMainPartsLinux {
   void PostDestroyThreads() override;
 
  private:
+  // Load device policies before initializing the |report_controller_|.
+  void StartReportController();
+
   std::unique_ptr<chromeos::default_app_order::ExternalLoader>
       app_order_loader_;
   std::unique_ptr<NetworkPrefStateObserver> network_pref_state_observer_;
@@ -250,7 +256,7 @@ class ChromeBrowserMainPartsAsh : public ChromeBrowserMainPartsLinux {
   std::unique_ptr<AshUsbDetector> ash_usb_detector_;
   std::unique_ptr<CrosUsbDetector> cros_usb_detector_;
 
-  std::unique_ptr<ReportControllerInitializer> report_controller_initializer_;
+  std::unique_ptr<report::ReportController> report_controller_;
 
   std::unique_ptr<crostini::CrostiniUnsupportedActionNotifier>
       crostini_unsupported_action_notifier_;
