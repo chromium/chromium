@@ -16,6 +16,7 @@
 #include "ash/wm/window_positioning_utils.h"
 #include "ash/wm/window_state_delegate.h"
 #include "ash/wm/window_state_util.h"
+#include "ash/wm/window_util.h"
 #include "ash/wm/wm_event.h"
 #include "ash/wm/workspace_controller.h"
 #include "base/check.h"
@@ -440,7 +441,13 @@ bool DefaultState::SetMaximizedOrFullscreenBounds(WindowState* window_state) {
 
 void DefaultState::SetBounds(WindowState* window_state,
                              const SetBoundsWMEvent* event) {
-  if (window_state->is_dragged() || window_state->allow_set_bounds_direct()) {
+  // TODO(andreaorru|oshima): Fix dragging code so that if a window is dragging
+  // tabs, it contains drag details, and `is_dragged` is true for its state.
+  // Then we can simplify this condition and remove `IsDraggingTabs`.
+  bool is_dragged = window_state->is_dragged() ||
+                    window_util::IsDraggingTabs(window_state->window());
+
+  if (is_dragged || window_state->allow_set_bounds_direct()) {
     if (event->animate()) {
       window_state->SetBoundsDirectAnimated(event->requested_bounds(),
                                             event->duration());

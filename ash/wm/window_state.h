@@ -324,6 +324,10 @@ class ASH_EXPORT WindowState : public aura::WindowObserver {
   // state machine.
   void OnWMEvent(const WMEvent* event);
 
+  // Sets `bounds` as is and ensure the layer is aligned with pixel boundary.
+  // For use in unit tests.
+  void SetBoundsDirectForTesting(const gfx::Rect& bounds);
+
   // TODO(oshima): Try hiding these methods and making them accessible only to
   // state impl. State changes should happen through events (as much
   // as possible).

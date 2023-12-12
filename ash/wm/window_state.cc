@@ -967,6 +967,10 @@ void WindowState::OnPostPipStateChange(WindowStateType old_window_state_type) {
   }
 }
 
+void WindowState::SetBoundsDirectForTesting(const gfx::Rect& bounds) {
+  SetBoundsDirect(bounds);
+}
+
 void WindowState::SetBoundsDirect(const gfx::Rect& bounds) {
   gfx::Rect actual_new_bounds(bounds);
   // Ensure we don't go smaller than our minimum bounds in "normal" window
@@ -1015,7 +1019,18 @@ void WindowState::SetBoundsConstrained(const gfx::Rect& bounds) {
   gfx::Rect work_area_in_parent =
       screen_util::GetDisplayWorkAreaBoundsInParent(window_);
   gfx::Rect child_bounds(bounds);
-  AdjustBoundsSmallerThan(work_area_in_parent.size(), &child_bounds);
+
+  if (window_->GetType() == aura::client::WINDOW_TYPE_NORMAL) {
+    // Normal windows should have the top of the bounds visible.
+    AdjustBoundsToEnsureWindowVisibility(work_area_in_parent, 0, 0,
+                                         &child_bounds);
+  } else {
+    // Other types of window can have the top of the bounds outside
+    // of the screen, but we still require their size to be smaller
+    // than the screen.
+    AdjustBoundsSmallerThan(work_area_in_parent.size(), &child_bounds);
+  }
+
   SetBoundsDirect(child_bounds);
 }
 

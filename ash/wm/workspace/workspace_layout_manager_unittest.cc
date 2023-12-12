@@ -260,7 +260,7 @@ TEST_F(WorkspaceLayoutManagerTest, KeepRestoredWindowInDisplay) {
   EXPECT_GE(window->bounds().y(), 0);
 
   // Minimized -> Normal transition.
-  window->SetBounds(gfx::Rect(-100, -100, 130, 40));
+  window_state->SetBoundsDirectForTesting(gfx::Rect(-100, -100, 130, 40));
   window_state->Minimize();
   EXPECT_FALSE(
       Shell::GetPrimaryRootWindow()->bounds().Intersects(window->bounds()));
