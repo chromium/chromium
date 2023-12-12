@@ -9,10 +9,13 @@ import android.content.Context;
 import android.util.AttributeSet;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.ViewPropertyAnimator;
+import android.view.animation.AccelerateInterpolator;
 import android.view.animation.OvershootInterpolator;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Px;
+import androidx.annotation.VisibleForTesting;
 import androidx.core.view.ViewCompat;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -29,10 +32,24 @@ class KeyboardAccessoryModernView extends KeyboardAccessoryView {
     private static final int ARRIVAL_ANIMATION_DURATION_MS = 300;
     private static final float ARRIVAL_ANIMATION_BOUNCE_LENGTH_DIP = 200f;
     private static final float ARRIVAL_ANIMATION_TENSION = 1f;
+    private static final int FADE_ANIMATION_DURATION_MS = 150; // Total duration of show/hide.
+    private static final int HIDING_ANIMATION_DELAY_MS = 50; // Shortens animation duration.
 
     private Callback<Integer> mObfuscatedLastChildAt;
     private ObjectAnimator mAnimator;
+    private AnimationListener mAnimationListener;
+    private ViewPropertyAnimator mRunningAnimation;
     private float mLastBarItemsViewPosition;
+    private boolean mShouldSkipClosingAnimation;
+
+    /** Interface that allows to react to animations. */
+    interface AnimationListener {
+        /**
+         * Called if the accessory bar stopped fading in. The fade-in only happens sometimes, e.g.
+         * if the bar is already visible or animations are disabled, this signal is not issued.
+         */
+        void onFadeInEnd();
+    }
 
     // Records the first time a user scrolled to suppress an IPH explaining how scrolling works.
     private final RecyclerView.OnScrollListener mScrollingIphCallback =
@@ -139,14 +156,16 @@ class KeyboardAccessoryModernView extends KeyboardAccessoryView {
         mBarItemsView.post(mBarItemsView::invalidateItemDecorations);
     }
 
-    @Override
     void setVisible(boolean visible) {
         TraceEvent.begin("KeyboardAccessoryModernView#setVisible");
-        super.setVisible(visible);
+        if (!visible || getVisibility() != VISIBLE) mBarItemsView.scrollToPosition(0);
         if (visible) {
+            show();
             mBarItemsView.post(mBarItemsView::invalidateItemDecorations);
             // Animate the suggestions only if the bar wasn't visible already.
             if (getVisibility() != View.VISIBLE) animateSuggestionArrival();
+        } else {
+            hide();
         }
         TraceEvent.end("KeyboardAccessoryModernView#setVisible");
     }
@@ -159,12 +178,71 @@ class KeyboardAccessoryModernView extends KeyboardAccessoryView {
         }
     }
 
+    void setSkipClosingAnimation(boolean shouldSkipClosingAnimation) {
+        mShouldSkipClosingAnimation = shouldSkipClosingAnimation;
+    }
+
+    void setAnimationListener(AnimationListener animationListener) {
+        mAnimationListener = animationListener;
+    }
+
     ViewRectProvider getSwipingIphRect() {
         View lastChild = getLastChild();
         if (lastChild == null) return null;
         ViewRectProvider provider = new ViewRectProvider(getLastChild());
         provider.setIncludePadding(true);
         return provider;
+    }
+
+    private void show() {
+        TraceEvent.begin("KeyboardAccessoryModernView#show");
+        bringToFront(); // Needs to overlay every component and the bottom sheet - like a keyboard.
+        if (mRunningAnimation != null) {
+            mRunningAnimation.cancel();
+            mRunningAnimation = null;
+        }
+        if (areAnimationsDisabled()) {
+            mRunningAnimation = null;
+            setVisibility(View.VISIBLE);
+            return;
+        }
+        if (getVisibility() != View.VISIBLE) setAlpha(0f);
+        mRunningAnimation =
+                animate()
+                        .alpha(1f)
+                        .setDuration(FADE_ANIMATION_DURATION_MS)
+                        .setInterpolator(new AccelerateInterpolator())
+                        .withStartAction(() -> setVisibility(View.VISIBLE))
+                        .withEndAction(
+                                () -> {
+                                    mAnimationListener.onFadeInEnd();
+                                    mRunningAnimation = null;
+                                });
+        announceForAccessibility(getContentDescription());
+        TraceEvent.end("KeyboardAccessoryModernView#show");
+    }
+
+    private void hide() {
+        if (mRunningAnimation != null) {
+            mRunningAnimation.cancel();
+            mRunningAnimation = null;
+        }
+        if (mShouldSkipClosingAnimation || areAnimationsDisabled()) {
+            mRunningAnimation = null;
+            setVisibility(View.GONE);
+            return;
+        }
+        mRunningAnimation =
+                animate()
+                        .alpha(0.0f)
+                        .setInterpolator(new AccelerateInterpolator())
+                        .setStartDelay(HIDING_ANIMATION_DELAY_MS)
+                        .setDuration(FADE_ANIMATION_DURATION_MS - HIDING_ANIMATION_DELAY_MS)
+                        .withEndAction(
+                                () -> {
+                                    setVisibility(View.GONE);
+                                    mRunningAnimation = null;
+                                });
     }
 
     private boolean isLastChildObfuscated() {
@@ -225,5 +303,10 @@ class KeyboardAccessoryModernView extends KeyboardAccessoryView {
         mAnimator.setDuration(ARRIVAL_ANIMATION_DURATION_MS);
         mAnimator.setInterpolator(new OvershootInterpolator(ARRIVAL_ANIMATION_TENSION));
         mAnimator.start();
+    }
+
+    @VisibleForTesting
+    boolean hasRunningAnimation() {
+        return mRunningAnimation != null;
     }
 }

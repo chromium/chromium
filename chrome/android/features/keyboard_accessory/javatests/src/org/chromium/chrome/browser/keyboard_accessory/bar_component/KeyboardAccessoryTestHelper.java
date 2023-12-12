@@ -43,7 +43,7 @@ public class KeyboardAccessoryTestHelper {
      * @return True iff the bar view is visible and animations have ended.
      */
     public static boolean accessoryViewFullyShown(Activity activity) {
-        KeyboardAccessoryView accessory = activity.findViewById(R.id.keyboard_accessory);
+        KeyboardAccessoryModernView accessory = activity.findViewById(R.id.keyboard_accessory);
         return accessory != null
                 && accessory.isShown()
                 && !accessory.hasRunningAnimation()
@@ -73,7 +73,7 @@ public class KeyboardAccessoryTestHelper {
      * @return True iff the bar view is hidden and animations have ended.
      */
     public static boolean accessoryViewFullyHidden(Activity activity) {
-        KeyboardAccessoryView accessory = activity.findViewById(R.id.keyboard_accessory);
+        KeyboardAccessoryModernView accessory = activity.findViewById(R.id.keyboard_accessory);
         return accessory == null || (!accessory.isShown() && !accessory.hasRunningAnimation());
     }
 }

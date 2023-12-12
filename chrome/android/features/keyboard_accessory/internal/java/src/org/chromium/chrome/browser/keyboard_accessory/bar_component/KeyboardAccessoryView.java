@@ -10,13 +10,10 @@ import android.content.Context;
 import android.graphics.Rect;
 import android.util.AttributeSet;
 import android.view.View;
-import android.view.ViewPropertyAnimator;
 import android.view.accessibility.AccessibilityEvent;
-import android.view.animation.AccelerateInterpolator;
 import android.widget.LinearLayout;
 
 import androidx.annotation.CallSuper;
-import androidx.annotation.VisibleForTesting;
 import androidx.core.view.ViewCompat;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -29,24 +26,10 @@ import org.chromium.chrome.browser.keyboard_accessory.R;
  * suggestions and manual entry points assisting the user in filling forms.
  */
 class KeyboardAccessoryView extends LinearLayout {
-    protected static final int FADE_ANIMATION_DURATION_MS = 150; // Total duration of show/hide.
-    protected static final int HIDING_ANIMATION_DELAY_MS = 50; // Shortens animation duration.
 
     protected RecyclerView mBarItemsView;
-    private ViewPropertyAnimator mRunningAnimation;
-    private boolean mShouldSkipClosingAnimation;
+
     private boolean mDisableAnimations;
-
-    /** Interface that allows to react to animations. */
-    interface AnimationListener {
-        /**
-         * Called if the accessory bar stopped fading in. The fade-in only happens sometimes, e.g.
-         * if the bar is already visible or animations are disabled, this signal is not issued.
-         */
-        void onFadeInEnd();
-    }
-
-    private AnimationListener mAnimationListener;
 
     protected static class HorizontalDividerItemDecoration extends RecyclerView.ItemDecoration {
         private final int mHorizontalMargin;
@@ -103,17 +86,6 @@ class KeyboardAccessoryView extends LinearLayout {
         TraceEvent.end("KeyboardAccessoryView#onFinishInflate");
     }
 
-    void setVisible(boolean visible) {
-        TraceEvent.begin("KeyboardAccessoryView#setVisible");
-        if (!visible || getVisibility() != VISIBLE) mBarItemsView.scrollToPosition(0);
-        if (visible) {
-            show();
-        } else {
-            hide();
-        }
-        TraceEvent.end("KeyboardAccessoryView#setVisible");
-    }
-
     void setBottomOffset(int bottomOffset) {
         MarginLayoutParams params = (MarginLayoutParams) getLayoutParams();
         params.setMargins(params.leftMargin, params.topMargin, params.rightMargin, bottomOffset);
@@ -135,68 +107,9 @@ class KeyboardAccessoryView extends LinearLayout {
         mBarItemsView.setAdapter(adapter);
     }
 
-    void setAnimationListener(AnimationListener animationListener) {
-        mAnimationListener = animationListener;
-    }
-
     /** Template method. Override to be notified if the bar items change. */
     @CallSuper
     protected void onItemsChanged() {}
-
-    private void show() {
-        TraceEvent.begin("KeyboardAccessoryView#show");
-        bringToFront(); // Needs to overlay every component and the bottom sheet - like a keyboard.
-        if (mRunningAnimation != null) {
-            mRunningAnimation.cancel();
-            mRunningAnimation = null;
-        }
-        if (areAnimationsDisabled()) {
-            mRunningAnimation = null;
-            setVisibility(View.VISIBLE);
-            return;
-        }
-        if (getVisibility() != View.VISIBLE) setAlpha(0f);
-        mRunningAnimation =
-                animate()
-                        .alpha(1f)
-                        .setDuration(FADE_ANIMATION_DURATION_MS)
-                        .setInterpolator(new AccelerateInterpolator())
-                        .withStartAction(() -> setVisibility(View.VISIBLE))
-                        .withEndAction(
-                                () -> {
-                                    mAnimationListener.onFadeInEnd();
-                                    mRunningAnimation = null;
-                                });
-        announceForAccessibility(getContentDescription());
-        TraceEvent.end("KeyboardAccessoryView#show");
-    }
-
-    private void hide() {
-        if (mRunningAnimation != null) {
-            mRunningAnimation.cancel();
-            mRunningAnimation = null;
-        }
-        if (mShouldSkipClosingAnimation || areAnimationsDisabled()) {
-            mRunningAnimation = null;
-            setVisibility(View.GONE);
-            return;
-        }
-        mRunningAnimation =
-                animate()
-                        .alpha(0.0f)
-                        .setInterpolator(new AccelerateInterpolator())
-                        .setStartDelay(HIDING_ANIMATION_DELAY_MS)
-                        .setDuration(FADE_ANIMATION_DURATION_MS - HIDING_ANIMATION_DELAY_MS)
-                        .withEndAction(
-                                () -> {
-                                    setVisibility(View.GONE);
-                                    mRunningAnimation = null;
-                                });
-    }
-
-    void setSkipClosingAnimation(boolean shouldSkipClosingAnimation) {
-        mShouldSkipClosingAnimation = shouldSkipClosingAnimation;
-    }
 
     void disableAnimationsForTesting() {
         mDisableAnimations = true;
@@ -218,10 +131,5 @@ class KeyboardAccessoryView extends LinearLayout {
         recyclerView.setItemAnimator(null);
 
         ViewCompat.setPaddingRelative(recyclerView, pad, 0, 0, 0);
-    }
-
-    @VisibleForTesting
-    boolean hasRunningAnimation() {
-        return mRunningAnimation != null;
     }
 }

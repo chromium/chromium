@@ -51,7 +51,7 @@ class KeyboardAccessoryProperties {
     static final WritableBooleanPropertyKey HAS_SUGGESTIONS =
             new WritableBooleanPropertyKey("has_suggestions");
 
-    static final WritableObjectPropertyKey<KeyboardAccessoryView.AnimationListener>
+    static final WritableObjectPropertyKey<KeyboardAccessoryModernView.AnimationListener>
             ANIMATION_LISTENER = new WritableObjectPropertyKey<>("animation_listener");
 
     static PropertyModel.Builder defaultModelBuilder() {
