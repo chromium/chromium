@@ -58,10 +58,9 @@ const int kBatchSize = 100;
   std::map<web::WebStateID, GURL> _lastCommittedURLs;
   // Tracks the number of open tabs with this URL.
   std::map<GURL, NSUInteger> _knownURLCounts;
-  // Bridges that observe all web state lists in all non-incognito browsers.
+  // Bridge that observes all web state lists in all non-incognito browsers.
   // Used to keep track of closing tabs.
-  std::map<WebStateList*, std::unique_ptr<WebStateListObserverBridge>>
-      _webStateListObserverBridges;
+  std::unique_ptr<WebStateListObserverBridge> _webStateListObserverBridge;
 
   // At full reindex of a WebStateList, this queue is used for WebStates that
   // require indexing.
@@ -111,6 +110,8 @@ const int kBatchSize = 100;
         std::make_unique<BrowserListObserverBridge>(self);
     _webStateObserverBridge =
         std::make_unique<web::WebStateObserverBridge>(self);
+    _webStateListObserverBridge =
+        std::make_unique<WebStateListObserverBridge>(self);
     _browserList->AddObserver(_browserListObserverBridge.get());
     [self startObservingAllWebStates];
   }
@@ -162,9 +163,7 @@ const int kBatchSize = 100;
   WebStateList* webStateList = browser->GetWebStateList();
   [self addAllURLsFromWebStateList:webStateList];
 
-  _webStateListObserverBridges[webStateList] =
-      std::make_unique<WebStateListObserverBridge>(self);
-  webStateList->AddObserver(_webStateListObserverBridges[webStateList].get());
+  webStateList->AddObserver(_webStateListObserverBridge.get());
 }
 
 - (void)browserList:(const BrowserList*)browserList
@@ -173,11 +172,7 @@ const int kBatchSize = 100;
 
   [self removeAllURLsFromWebStateList:webStateList];
 
-  if (_webStateListObserverBridges[webStateList]) {
-    webStateList->RemoveObserver(
-        _webStateListObserverBridges[webStateList].get());
-    _webStateListObserverBridges.erase(webStateList);
-  }
+  webStateList->RemoveObserver(_webStateListObserverBridge.get());
 }
 
 - (void)browserListWillShutdown:(const BrowserList*)browserList {
@@ -214,9 +209,7 @@ const int kBatchSize = 100;
 - (void)webStateListDestroyed:(WebStateList*)webStateList {
   [self removeAllURLsFromWebStateList:webStateList];
 
-  webStateList->RemoveObserver(
-      _webStateListObserverBridges[webStateList].get());
-  _webStateListObserverBridges.erase(webStateList);
+  webStateList->RemoveObserver(_webStateListObserverBridge.get());
 }
 
 #pragma mark - CRWWebStateObserver
@@ -459,15 +452,12 @@ const int kBatchSize = 100;
       WebState* webState = webStateList->GetWebStateAt(i);
       webState->RemoveObserver(_webStateObserverBridge.get());
     }
+    webStateList->RemoveObserver(_webStateListObserverBridge.get());
   }
-  _webStateObserverBridge = std::make_unique<web::WebStateObserverBridge>(self);
 
-  // Stop observing all web state lists
-  for (auto it = _webStateListObserverBridges.begin();
-       it != _webStateListObserverBridges.end(); ++it) {
-    it->first->RemoveObserver(it->second.get());
-  }
-  _webStateListObserverBridges.clear();
+  _webStateObserverBridge = std::make_unique<web::WebStateObserverBridge>(self);
+  _webStateListObserverBridge =
+      std::make_unique<WebStateListObserverBridge>(self);
 }
 
 - (void)startObservingAllWebStateLists {
@@ -477,9 +467,7 @@ const int kBatchSize = 100;
 
   for (Browser* browser : _browserList->AllRegularBrowsers()) {
     WebStateList* webStateList = browser->GetWebStateList();
-    _webStateListObserverBridges[webStateList] =
-        std::make_unique<WebStateListObserverBridge>(self);
-    webStateList->AddObserver(_webStateListObserverBridges[webStateList].get());
+    webStateList->AddObserver(_webStateListObserverBridge.get());
   }
 }
 
