@@ -9127,7 +9127,9 @@ Called by update_net_error_codes.py.-->
   <int value="4" label="Invalid reporting_origin field"/>
   <int value="5" label="Invalid report_type field"/>
   <int value="6" label="Mismatched reporting origin between source and report"/>
-  <int value="7" label="Metadata could not be read from database"/>
+  <int value="7"
+      label="(Obsolete) Metadata could not be read from database. Removed in
+             2023/12."/>
   <int value="8" label="Source data missing - event level report"/>
   <int value="9" label="Source data missing - aggregatable report"/>
   <int value="10" label="Source data found - null aggregatable report"/>

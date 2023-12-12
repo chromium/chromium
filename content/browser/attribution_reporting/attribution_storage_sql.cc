@@ -21,6 +21,7 @@
 #include "base/check_op.h"
 #include "base/containers/enum_set.h"
 #include "base/containers/flat_set.h"
+#include "base/containers/span.h"
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
 #include "base/functional/overloaded.h"
@@ -831,14 +832,10 @@ AttributionStorageSql::MaybeReplaceLowerPriorityEventLevelReport(
   int64_t min_priority;
 
   while (min_priority_statement.Step()) {
-    std::string metadata;
-    if (!min_priority_statement.ColumnBlobAsString(0, &metadata)) {
-      continue;
-    }
-
     uint32_t trigger_data;
     int64_t priority;
-    if (!DeserializeReportMetadata(metadata, trigger_data, priority)) {
+    if (base::span<const uint8_t> blob = min_priority_statement.ColumnBlob(0);
+        !DeserializeReportMetadata(blob, trigger_data, priority)) {
       continue;
     }
 
@@ -1542,13 +1539,9 @@ AttributionStorageSql::ReadReportFromStatement(sql::Statement& statement) {
     corruption_causes.Put(ReportCorruptionStatus::kReportingOriginMismatch);
   }
 
-  std::string metadata;
-  if (!statement.ColumnBlobAsString(col++, &metadata)) {
-    corruption_causes.Put(ReportCorruptionStatus::kMetadataAsStringFailed);
-  }
-
   absl::optional<AttributionReport::Data> data;
-  switch (*report_type) {
+  switch (base::span<const uint8_t> metadata = statement.ColumnBlob(col++);
+          *report_type) {
     case AttributionReport::Type::kEventLevel: {
       if (!source_data.has_value()) {
         corruption_causes.Put(

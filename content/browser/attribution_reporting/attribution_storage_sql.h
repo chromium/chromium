@@ -93,7 +93,7 @@ class CONTENT_EXPORT AttributionStorageSql : public AttributionStorage {
     kInvalidReportingOrigin = 4,
     kInvalidReportType = 5,
     kReportingOriginMismatch = 6,
-    kMetadataAsStringFailed = 7,
+    // Obsolete: kMetadataAsStringFailed = 7,
     kSourceDataMissingEventLevel = 8,
     kSourceDataMissingAggregatable = 9,
     kSourceDataFoundNullAggregatable = 10,

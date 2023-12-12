@@ -11,6 +11,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/containers/span.h"
 #include "base/feature_list.h"
 #include "base/time/time.h"
 #include "components/aggregation_service/features.h"
@@ -195,13 +196,10 @@ std::string SerializeReadOnlySourceData(
 
 absl::optional<proto::AttributionReadOnlySourceData>
 DeserializeReadOnlySourceDataAsProto(sql::Statement& stmt, int col) {
-  std::string str;
-  if (!stmt.ColumnBlobAsString(col, &str)) {
-    return absl::nullopt;
-  }
 
   proto::AttributionReadOnlySourceData msg;
-  if (!msg.ParseFromString(str)) {
+  if (base::span<const uint8_t> blob = stmt.ColumnBlob(col);
+      !msg.ParseFromArray(blob.data(), blob.size())) {
     return absl::nullopt;
   }
   return msg;
@@ -223,13 +221,9 @@ std::string SerializeFilterData(
 absl::optional<attribution_reporting::FilterData> DeserializeFilterData(
     sql::Statement& stmt,
     int col) {
-  std::string string;
-  if (!stmt.ColumnBlobAsString(col, &string)) {
-    return absl::nullopt;
-  }
-
   proto::AttributionFilterData msg;
-  if (!msg.ParseFromString(string)) {
+  if (base::span<const uint8_t> blob = stmt.ColumnBlob(col);
+      !msg.ParseFromArray(blob.data(), blob.size())) {
     return absl::nullopt;
   }
 
@@ -273,13 +267,9 @@ std::string SerializeAggregationKeys(
 
 absl::optional<attribution_reporting::AggregationKeys>
 DeserializeAggregationKeys(sql::Statement& stmt, int col) {
-  std::string str;
-  if (!stmt.ColumnBlobAsString(col, &str)) {
-    return absl::nullopt;
-  }
-
   proto::AttributionAggregatableSource msg;
-  if (!msg.ParseFromString(str)) {
+  if (base::span<const uint8_t> blob = stmt.ColumnBlob(col);
+      !msg.ParseFromArray(blob.data(), blob.size())) {
     return absl::nullopt;
   }
 
@@ -305,12 +295,12 @@ std::string SerializeReportMetadata(
   return msg.SerializeAsString();
 }
 
-bool DeserializeReportMetadata(const std::string& str,
+bool DeserializeReportMetadata(base::span<const uint8_t> blob,
                                uint32_t& trigger_data,
                                int64_t& priority) {
   proto::AttributionEventLevelMetadata msg;
-  if (!msg.ParseFromString(str) || !msg.has_trigger_data() ||
-      !msg.has_priority()) {
+  if (!msg.ParseFromArray(blob.data(), blob.size()) ||
+      !msg.has_trigger_data() || !msg.has_priority()) {
     return false;
   }
 
@@ -340,11 +330,11 @@ std::string SerializeReportMetadata(
 }
 
 bool DeserializeReportMetadata(
-    const std::string& str,
+    base::span<const uint8_t> blob,
     AttributionReport::AggregatableAttributionData& data) {
   proto::AttributionAggregatableMetadata msg;
-  if (!msg.ParseFromString(str) || msg.contributions().empty() ||
-      !msg.has_common_data() ||
+  if (!msg.ParseFromArray(blob.data(), blob.size()) ||
+      msg.contributions().empty() || !msg.has_common_data() ||
       !DeserializeCommonAggregatableData(msg.common_data(), data.common_data)) {
     return false;
   }
@@ -378,11 +368,11 @@ std::string SerializeReportMetadata(
   return msg.SerializeAsString();
 }
 
-bool DeserializeReportMetadata(const std::string& str,
+bool DeserializeReportMetadata(base::span<const uint8_t> blob,
                                AttributionReport::NullAggregatableData& data) {
   proto::AttributionNullAggregatableMetadata msg;
-  if (!msg.ParseFromString(str) || !msg.has_fake_source_time() ||
-      !msg.has_common_data() ||
+  if (!msg.ParseFromArray(blob.data(), blob.size()) ||
+      !msg.has_fake_source_time() || !msg.has_common_data() ||
       !DeserializeCommonAggregatableData(msg.common_data(), data.common_data)) {
     return false;
   }
