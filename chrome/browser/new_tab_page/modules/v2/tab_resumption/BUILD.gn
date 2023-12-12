@@ -5,7 +5,6 @@ import("//mojo/public/tools/bindings/mojom.gni")
 mojom("mojo_bindings") {
   sources = [ "tab_resumption.mojom" ]
   webui_module_path = "/"
-  use_typescript_sources = true
   public_deps = [
     "//components/history/core/browser/mojom:mojo_bindings",
     "//mojo/public/mojom/base",

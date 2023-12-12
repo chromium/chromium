@@ -338,6 +338,11 @@ if (enable_scrambled_message_ids) {
 #       correct dependency order. Note that this only has an effect if
 #       the |enable_mojom_closure_compile| global arg is set to |true| as well.
 #
+#   generate_webui_js_bindings (optional)
+#       Generate WebUI bindings in JavaScript rather than TypeScript. Defaults
+#       to false. ChromeOS only parameter. Use instead of
+#       |use_typescript_sources|, which is being removed.
+#
 #   use_typescript_sources (optional)
 #       Generate WebUI bindings in TypeScript. Defaults to "true". When set to
 #       "false", WebUI bindings will be generated in JavaScript instead.
@@ -815,8 +820,10 @@ template("mojom") {
           "--add-module-metadata",
           "webui_module_path=${invoker.webui_module_path}",
         ]
-        if (defined(invoker.use_typescript_sources) &&
-            !invoker.use_typescript_sources) {
+        if ((defined(invoker.use_typescript_sources) &&
+             !invoker.use_typescript_sources) ||
+            (defined(invoker.generate_webui_js_bindings) &&
+             invoker.generate_webui_js_bindings)) {
           args += [
             "--add-module-metadata",
             "generate_webui_js=True",
@@ -1846,16 +1853,21 @@ template("mojom") {
     }
   }
 
+  if (defined(invoker.generate_webui_js_bindings)) {
+    assert(is_chromeos_ash,
+           "generate_webui_js_bindings can only be used on ChromeOS Ash")
+    assert(invoker.generate_webui_js_bindings,
+           "generate_webui_js_bindings should be set to true or removed")
+  }
+
   use_typescript_for_target = defined(invoker.webui_module_path) &&
+                              !defined(invoker.generate_webui_js_bindings) &&
                               (!defined(invoker.use_typescript_sources) ||
                                (defined(invoker.use_typescript_sources) &&
                                 invoker.use_typescript_sources))
 
-  if (use_typescript_for_target && defined(invoker.use_typescript_sources)) {
-    not_needed(invoker, [ "use_typescript_sources" ])
-  }
-
   # Don't allow JavaScript WebUI bindings on non-ChromeOS platforms.
+  # TODO (rbpotter): Remove this check once use_typescript_sources is removed.
   if (!use_typescript_for_target && defined(invoker.webui_module_path)) {
     assert(
         is_chromeos_ash,
