@@ -17485,6 +17485,23 @@
             ]
         }
     ],
+    "SingleVideoFrameRateThrottling": [
+        {
+            "platforms": [
+                "chromeos",
+                "linux",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "SingleVideoFrameRateThrottling"
+                    ]
+                }
+            ]
+        }
+    ],
     "SmallerInterestArea": [
         {
             "platforms": [

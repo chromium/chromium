@@ -7,7 +7,9 @@
 #include <memory>
 
 #include "base/functional/callback_helpers.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/time/time.h"
+#include "components/viz/common/features.h"
 #include "components/viz/common/frame_sinks/begin_frame_source.h"
 #include "components/viz/common/surfaces/surface_info.h"
 #include "components/viz/service/surfaces/surface.h"
@@ -462,7 +464,8 @@ TEST_F(FrameRateDeciderTest, NoFixedIntervalSurfaces) {
   Surface* surfaces[3];
   for (int i = 0; i < 3; ++i) {
     FrameSinkId frame_sink_id(1u, i);
-    preferred_intervals_[frame_sink_id] = BeginFrameArgs::MaxInterval();
+    preferred_intervals_[frame_sink_id] =
+        FrameRateDecider::UnspecifiedFrameInterval();
     frame_sink_types_[frame_sink_id] =
         mojom::CompositorFrameSinkType::kLayerTree;
     surfaces[i] = CreateAndDrawSurface(frame_sink_id);
@@ -484,13 +487,10 @@ TEST_F(FrameRateDeciderTest, NoHwSupportForMultiRefreshRates) {
       surface_manager_.get(), this, hw_support_for_multiple_refresh_rate,
       false);
   frame_rate_decider_->set_min_num_of_frames_to_toggle_interval_for_testing(0u);
-  base::TimeDelta min_supported_interval = base::Seconds(1);
+  base::TimeDelta min_supported_interval = base::Milliseconds(16.667);
   const std::vector<base::TimeDelta> supported_intervals = {
-      min_supported_interval * 3, min_supported_interval * 2,
+      min_supported_interval * 4, min_supported_interval * 2,
       min_supported_interval};
-  frame_rate_decider_
-      ->set_frame_interval_for_sinks_with_no_preference_for_testing(
-          min_supported_interval);
   frame_rate_decider_->SetSupportedFrameIntervals(supported_intervals);
   EXPECT_EQ(display_interval_, FrameRateDecider::UnspecifiedFrameInterval());
 
@@ -508,11 +508,11 @@ TEST_F(FrameRateDeciderTest, NoHwSupportForMultiRefreshRates) {
 
   FrameSinkId content_frame_sink_id(1u, 3u);
   Surface* content_surface = CreateAndDrawSurface(content_frame_sink_id);
-  preferred_intervals_[content_frame_sink_id] = BeginFrameArgs::MaxInterval();
+  preferred_intervals_[content_frame_sink_id] = BeginFrameArgs::MinInterval();
   frame_sink_types_[content_frame_sink_id] =
       mojom::CompositorFrameSinkType::kLayerTree;
 
-  // Only 1 fixed rate source, frame interval is unchanged.
+  // Only 1 fixed rate source, frame rate is unchanged.
   {
     FrameRateDecider::ScopedAggregate scope(frame_rate_decider_.get());
     UpdateFrame(video_surface);
@@ -520,7 +520,7 @@ TEST_F(FrameRateDeciderTest, NoHwSupportForMultiRefreshRates) {
   }
   EXPECT_EQ(display_interval_, FrameRateDecider::UnspecifiedFrameInterval());
 
-  // Multiple fixed rate sources, frame interval is lowered.
+  // Multiple fixed rate sources, frame rate is lowered.
   {
     FrameRateDecider::ScopedAggregate scope(frame_rate_decider_.get());
     frame_rate_decider_->OnSurfaceWillBeDrawn(video_surface);
@@ -528,20 +528,9 @@ TEST_F(FrameRateDeciderTest, NoHwSupportForMultiRefreshRates) {
   }
   EXPECT_EQ(display_interval_, min_supported_interval);
 
-  // One fixed rate source + content source with no preference, frame interval
-  // is lowered.
+  // 1 content source + 1 fixed rate source, frame rate is not lowered.
   {
     FrameRateDecider::ScopedAggregate scope(frame_rate_decider_.get());
-    frame_rate_decider_->OnSurfaceWillBeDrawn(video_surface);
-    frame_rate_decider_->OnSurfaceWillBeDrawn(content_surface);
-  }
-  EXPECT_EQ(display_interval_, min_supported_interval);
-
-  // The content source opts out of no preference, frame interval is not
-  // lowered.
-  {
-    FrameRateDecider::ScopedAggregate scope(frame_rate_decider_.get());
-    preferred_intervals_[content_frame_sink_id] = BeginFrameArgs::MinInterval();
     frame_rate_decider_->OnSurfaceWillBeDrawn(video_surface);
     frame_rate_decider_->OnSurfaceWillBeDrawn(content_surface);
   }
@@ -557,6 +546,29 @@ TEST_F(FrameRateDeciderTest, NoHwSupportForMultiRefreshRates) {
     frame_rate_decider_->OnSurfaceWillBeDrawn(content_surface);
   }
   EXPECT_EQ(display_interval_, min_supported_interval);
+
+  // Tests with |kSingleVideoFrameRateThrottling| enabled.
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(
+      features::kSingleVideoFrameRateThrottling);
+
+  // 1 video with perfect candence, frame rate is lowered.
+  preferred_intervals_[video_frame_sink_id] = min_supported_interval * 2;
+  {
+    FrameRateDecider::ScopedAggregate scope(frame_rate_decider_.get());
+    UpdateFrame(video_surface);
+    frame_rate_decider_->OnSurfaceWillBeDrawn(video_surface);
+  }
+  EXPECT_EQ(display_interval_, min_supported_interval * 2);
+
+  // 1 video without perfect candence, frame rate is unchanged.
+  preferred_intervals_[video_frame_sink_id] = min_supported_interval * 1.3;
+  {
+    FrameRateDecider::ScopedAggregate scope(frame_rate_decider_.get());
+    UpdateFrame(video_surface);
+    frame_rate_decider_->OnSurfaceWillBeDrawn(video_surface);
+  }
+  EXPECT_EQ(display_interval_, FrameRateDecider::UnspecifiedFrameInterval());
 }
 
 }  // namespace

@@ -345,6 +345,13 @@ BASE_FEATURE(kEvictionUnlocksResources,
              "EvictionUnlocksResources",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// If enabled, FrameRateDecider will toggle to half framerate if there's only
+// one video on screen whose framerate is lower than the display vsync and in
+// perfect cadence.
+BASE_FEATURE(kSingleVideoFrameRateThrottling,
+             "SingleVideoFrameRateThrottling",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 bool IsDelegatedCompositingEnabled() {
   return base::FeatureList::IsEnabled(kDelegatedCompositing);
 }

@@ -7,11 +7,15 @@
 #include <algorithm>
 #include <utility>
 
+#include "base/metrics/histogram_macros.h"
 #include "base/trace_event/trace_event.h"
 #include "build/build_config.h"
+#include "components/viz/common/constants.h"
+#include "components/viz/common/features.h"
 #include "components/viz/common/frame_sinks/begin_frame_args.h"
 #include "components/viz/service/surfaces/surface.h"
 #include "components/viz/service/surfaces/surface_manager.h"
+#include "media/filters/video_cadence_estimator.h"
 
 namespace viz {
 namespace {
@@ -52,12 +56,6 @@ FrameRateDecider::FrameRateDecider(SurfaceManager* surface_manager,
       hw_support_for_multiple_refresh_rates_(
           hw_support_for_multiple_refresh_rates),
       supports_set_frame_rate_(supports_set_frame_rate) {
-  // For sources which have no preference, allow lowering them to up to
-  // 24Hz.
-  double interval_in_seconds = 1.0 / 24.0;
-  frame_interval_for_sinks_with_no_preference_ =
-      base::Seconds(interval_in_seconds);
-
   surface_manager_->AddObserver(this);
 }
 
@@ -129,8 +127,7 @@ void FrameRateDecider::UpdatePreferredFrameIntervalIfNeeded() {
   if (!multiple_refresh_rates_supported())
     return;
 
-  int num_of_frame_sinks_with_fixed_interval = 0;
-  int num_of_frame_sinks_with_no_preference = 0;
+  std::vector<base::TimeDelta> fixed_interval_frame_sink_intervals;
   for (const auto& frame_sink_id : frame_sinks_drawn_in_previous_frame_) {
     auto type = mojom::CompositorFrameSinkType::kUnspecified;
     auto interval =
@@ -141,21 +138,49 @@ void FrameRateDecider::UpdatePreferredFrameIntervalIfNeeded() {
         DCHECK_EQ(interval, BeginFrameArgs::MinInterval());
         continue;
       case mojom::CompositorFrameSinkType::kVideo:
-        num_of_frame_sinks_with_fixed_interval++;
+        fixed_interval_frame_sink_intervals.push_back(interval);
         break;
       case mojom::CompositorFrameSinkType::kMediaStream:
-        num_of_frame_sinks_with_fixed_interval++;
+        fixed_interval_frame_sink_intervals.push_back(interval);
         break;
       case mojom::CompositorFrameSinkType::kLayerTree:
-        if (interval == BeginFrameArgs::MaxInterval()) {
-          num_of_frame_sinks_with_no_preference++;
-        }
+        DCHECK_NE(interval, BeginFrameArgs::MaxInterval());
         break;
     }
   }
 
-  if (!ShouldToggleFrameInterval(num_of_frame_sinks_with_fixed_interval,
-                                 num_of_frame_sinks_with_no_preference)) {
+  ToggleFrameRateCase toggle_case =
+      GetToggleFrameRateCase(fixed_interval_frame_sink_intervals);
+  bool should_toggle = true;
+  switch (toggle_case) {
+    // If there is no fixed rate content, we don't try to lower the frame rate.
+    case ToggleFrameRateCase::kNone:
+    // For single video cases, we only try to toggle framerate for perfect
+    // cadence when |kSingleVideoFrameRateThrottling| is enabled.
+    case ToggleFrameRateCase::kSingleVideoNoPerfectCadence:
+      should_toggle = false;
+      break;
+    case ToggleFrameRateCase::kSingleVideoPerfectCadence:
+      should_toggle = base::FeatureList::IsEnabled(
+          features::kSingleVideoFrameRateThrottling);
+      break;
+    // If lowering the refresh rate is supported by the platform then we try to
+    // do this in all cases where any content drawing onscreen animates at a
+    // fixed rate. This includes surfaces backed by videos or media streams.
+    case ToggleFrameRateCase::kHardwareSupported:
+    // If we're reducing frame rate for the display compositor, as opposed to
+    // the underlying platform compositor or physical display, then restrict it
+    // to cases with multiple animating sources that can be lowered. We should
+    // be able to do it for all video cases but this results in dropped frame
+    // regressions which need to be investigated (see crbug.com/976583).
+    case ToggleFrameRateCase::kMultipleVideos:
+      break;
+  }
+  if (toggle_case != ToggleFrameRateCase::kNone) {
+    UMA_HISTOGRAM_ENUMERATION(
+        "Compositing.FrameRateDecider.ToggleFrameRateCase", toggle_case);
+  }
+  if (!should_toggle) {
     TRACE_EVENT_INSTANT0(
         "viz",
         "FrameRateDecider::UpdatePreferredFrameIntervalIfNeeded - not enough "
@@ -176,9 +201,7 @@ void FrameRateDecider::UpdatePreferredFrameIntervalIfNeeded() {
   for (const auto& frame_sink_id : frame_sinks_updated_in_previous_frame_) {
     auto interval =
         client_->GetPreferredFrameIntervalForFrameSinkId(frame_sink_id);
-    if (interval == BeginFrameArgs::MaxInterval()) {
-      interval = frame_interval_for_sinks_with_no_preference_;
-    }
+    DCHECK_NE(interval, BeginFrameArgs::MaxInterval());
     if (!min_frame_sink_interval) {
       min_frame_sink_interval = interval;
       continue;
@@ -225,13 +248,24 @@ void FrameRateDecider::UpdatePreferredFrameIntervalIfNeeded() {
   if (*min_frame_sink_interval != BeginFrameArgs::MinInterval()) {
     base::TimeDelta min_delta = base::TimeDelta::Max();
     for (auto supported_interval : supported_intervals_) {
-      // Pick the display interval which is closest to the preferred interval
-      // and less than or equal to the min_frame_sink_interval.
-      base::TimeDelta delta = (*min_frame_sink_interval - supported_interval);
-      if (AreAlmostEqual(*min_frame_sink_interval, supported_interval) ||
-          (delta.is_positive() && delta < min_delta)) {
-        new_preferred_interval = supported_interval;
-        min_delta = delta.magnitude();
+      if (toggle_case == ToggleFrameRateCase::kSingleVideoPerfectCadence) {
+        // For single video cases, pick the maximum interval with perfect
+        // cadence from supported intervals.
+        bool simple_cadence = media::VideoCadenceEstimator::HasSimpleCadence(
+            supported_interval, *min_frame_sink_interval,
+            kMaxTimeUntilNextGlitch);
+        if (simple_cadence && supported_interval > new_preferred_interval) {
+          new_preferred_interval = supported_interval;
+        }
+      } else {
+        // Pick the display interval which is closest to the preferred interval
+        // and less than or equal to the min_frame_sink_interval.
+        base::TimeDelta delta = (*min_frame_sink_interval - supported_interval);
+        if (AreAlmostEqual(*min_frame_sink_interval, supported_interval) ||
+            (delta.is_positive() && delta < min_delta)) {
+          new_preferred_interval = supported_interval;
+          min_delta = delta.magnitude();
+        }
       }
     }
   }
@@ -239,27 +273,31 @@ void FrameRateDecider::UpdatePreferredFrameIntervalIfNeeded() {
   SetPreferredInterval(new_preferred_interval);
 }
 
-bool FrameRateDecider::ShouldToggleFrameInterval(
-    int num_of_frame_sinks_with_fixed_interval,
-    int num_of_frame_sinks_with_no_preference) const {
-  // If there is no fixed rate content, we don't try to lower the frame rate.
+ToggleFrameRateCase FrameRateDecider::GetToggleFrameRateCase(
+    const std::vector<base::TimeDelta>& fixed_interval_frame_sink_intervals)
+    const {
+  int num_of_frame_sinks_with_fixed_interval =
+      fixed_interval_frame_sink_intervals.size();
+
   if (num_of_frame_sinks_with_fixed_interval == 0)
-    return false;
+    return ToggleFrameRateCase::kNone;
 
-  // If lowering the refresh rate is supported by the platform then we try to
-  // do this in all cases where any content drawing onscreen animates at a
-  // fixed rate. This includes surfaces backed by videos or media streams.
   if (hw_support_for_multiple_refresh_rates_)
-    return num_of_frame_sinks_with_fixed_interval > 0;
+    return ToggleFrameRateCase::kHardwareSupported;
 
-  // If we're reducing frame rate for the display compositor, as opposed to the
-  // underlying platform compositor or physical display, then restrict it to
-  // cases with multiple animating sources that can be lowered. We should be
-  // able to do it for all video cases but this results in dropped frame
-  // regressions which need to be investigated (see crbug.com/976583).
-  return num_of_frame_sinks_with_fixed_interval +
-             num_of_frame_sinks_with_no_preference >
-         1;
+  // For single video cases, check if it is a perfect cadence one.
+  if (num_of_frame_sinks_with_fixed_interval == 1) {
+    base::TimeDelta interval = fixed_interval_frame_sink_intervals.back();
+    for (auto supported_interval : supported_intervals_) {
+      if (media::VideoCadenceEstimator::HasSimpleCadence(
+              supported_interval, interval, kMaxTimeUntilNextGlitch)) {
+        return ToggleFrameRateCase::kSingleVideoPerfectCadence;
+      }
+    }
+    return ToggleFrameRateCase::kSingleVideoNoPerfectCadence;
+  }
+
+  return ToggleFrameRateCase::kMultipleVideos;
 }
 
 void FrameRateDecider::SetPreferredInterval(
