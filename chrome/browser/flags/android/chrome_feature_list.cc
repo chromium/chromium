@@ -201,7 +201,6 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &kCCTMinimized,
     &kCCTNewDownloadTab,
     &kCCTPageInsightsHub,
-    &kCCTPostMessageAPI,
     &kCCTPrefetchDelayShowOnStart,
     &kCCTRealTimeEngagementSignals,
     &kCCTRedirectPreconnect,
@@ -581,10 +580,6 @@ BASE_FEATURE(kCCTMinimized, "CCTMinimized", base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE(kCCTPageInsightsHub,
              "CCTPageInsightsHub",
              base::FEATURE_DISABLED_BY_DEFAULT);
-
-BASE_FEATURE(kCCTPostMessageAPI,
-             "CCTPostMessageAPI",
-             base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kCCTPrefetchDelayShowOnStart,
              "CCTPrefetchDelayShowOnStart",
