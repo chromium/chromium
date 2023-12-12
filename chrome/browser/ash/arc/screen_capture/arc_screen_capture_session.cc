@@ -227,7 +227,8 @@ void ArcScreenCaptureSession::SetOutputBuffer(
   auto client_shared_image = sii->CreateSharedImage(
       si_format, size_, gfx::ColorSpace(), kTopLeft_GrSurfaceOrigin,
       kPremul_SkAlphaType,
-      gpu::SHARED_IMAGE_USAGE_RASTER | gpu::SHARED_IMAGE_USAGE_GLES2,
+      gpu::SHARED_IMAGE_USAGE_RASTER | gpu::SHARED_IMAGE_USAGE_GLES2_READ |
+          gpu::SHARED_IMAGE_USAGE_GLES2_WRITE,
       "ArcScreenCapture", std::move(handle));
   CHECK(client_shared_image);
   ri->WaitSyncTokenCHROMIUM(sii->GenUnverifiedSyncToken().GetConstData());
