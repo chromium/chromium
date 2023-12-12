@@ -27125,4 +27125,201 @@ TEST_P(HttpNetworkTransactionTest, SetProxyInfoInResponse_IpProtection) {
   EXPECT_EQ(response_info.proxy_chain, ip_protection_proxy_chain);
 }
 
+class IpProtectionProxyDelegate : public ProxyDelegate {
+ public:
+  explicit IpProtectionProxyDelegate(const ProxyChain& proxy_chain)
+      : proxy_chain_(proxy_chain) {}
+
+  // ProxyDelegate implementation:
+  void OnResolveProxy(const GURL& url,
+                      const NetworkAnonymizationKey& network_anonymization_key,
+                      const std::string& method,
+                      const ProxyRetryInfoMap& proxy_retry_info,
+                      ProxyInfo* result) override {
+    CHECK(proxy_chain_.IsValid());
+
+    ProxyList proxy_list;
+    proxy_list.AddProxyChain(proxy_chain_);
+
+    if (!proxy_chain_.is_direct()) {
+      proxy_list.AddProxyChain(ProxyChain::Direct());
+    }
+
+    result->UseProxyList(proxy_list);
+  }
+  void OnFallback(const ProxyChain& bad_chain, int net_error) override {}
+  void OnBeforeTunnelRequest(const ProxyChain& proxy_chain,
+                             size_t chain_index,
+                             HttpRequestHeaders* extra_headers) override {}
+  Error OnTunnelHeadersReceived(
+      const ProxyChain& proxy_chain,
+      size_t chain_index,
+      const HttpResponseHeaders& response_headers) override {
+    return OK;
+  }
+
+ private:
+  ProxyChain proxy_chain_;
+};
+
+// Test that for requests sent through an IP Protection proxy, the
+// 'IP-Protection' header is sent as expected.
+TEST_P(HttpNetworkTransactionTest,
+       HttpsNestedProxyIpProtectionRequestHeaderAdded) {
+  HttpRequestInfo request;
+  request.method = "GET";
+  request.url = GURL("https://www.example.org/");
+  request.traffic_annotation =
+      net::MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
+
+  const ProxyServer kProxyServer1{ProxyServer::SCHEME_HTTPS,
+                                  HostPortPair("proxy1.test", 70)};
+  const ProxyServer kProxyServer2{ProxyServer::SCHEME_HTTPS,
+                                  HostPortPair("proxy2.test", 71)};
+  ProxyChain kNestedProxyChain{{kProxyServer1, kProxyServer2}};
+  kNestedProxyChain = std::move(kNestedProxyChain).ForIpProtection();
+
+  auto proxy_delegate =
+      std::make_unique<IpProtectionProxyDelegate>(kNestedProxyChain);
+
+  session_deps_.proxy_resolution_service =
+      ConfiguredProxyResolutionService::CreateFixedForTest(
+          "https://not-used:70", TRAFFIC_ANNOTATION_FOR_TESTS);
+  session_deps_.proxy_resolution_service->SetProxyDelegate(
+      proxy_delegate.get());
+  session_deps_.net_log = NetLog::Get();
+  std::unique_ptr<HttpNetworkSession> session(CreateSession(&session_deps_));
+
+  MockWrite data_writes[] = {
+      MockWrite("CONNECT proxy2.test:71 HTTP/1.1\r\n"
+                "Host: proxy2.test:71\r\n"
+                "Proxy-Connection: keep-alive\r\n\r\n"),
+      MockWrite("CONNECT www.example.org:443 HTTP/1.1\r\n"
+                "Host: www.example.org:443\r\n"
+                "Proxy-Connection: keep-alive\r\n\r\n"),
+      MockWrite("GET / HTTP/1.1\r\n"
+                "Host: www.example.org\r\n"
+                "Connection: keep-alive\r\n"
+                "IP-Protection: 1\r\n\r\n"),
+  };
+
+  MockRead data_reads[] = {
+      MockRead("HTTP/1.1 200 Connection Established\r\n\r\n"),
+      MockRead("HTTP/1.1 200 Connection Established\r\n\r\n"),
+      MockRead("HTTP/1.1 200\r\n\r\n"),
+      MockRead(SYNCHRONOUS, OK),
+  };
+
+  StaticSocketDataProvider data(data_reads, data_writes);
+  session_deps_.socket_factory->AddSocketDataProvider(&data);
+
+  SSLSocketDataProvider ssl(ASYNC, OK);
+  session_deps_.socket_factory->AddSSLSocketDataProvider(&ssl);
+
+  SSLSocketDataProvider ssl2(ASYNC, OK);
+  session_deps_.socket_factory->AddSSLSocketDataProvider(&ssl2);
+
+  SSLSocketDataProvider ssl3(ASYNC, OK);
+  session_deps_.socket_factory->AddSSLSocketDataProvider(&ssl2);
+
+  TestCompletionCallback callback;
+
+  HttpNetworkTransaction trans(DEFAULT_PRIORITY, session.get());
+
+  int rv = trans.Start(&request, callback.callback(),
+                       NetLogWithSource::Make(NetLogSourceType::NONE));
+  EXPECT_THAT(rv, IsError(ERR_IO_PENDING));
+
+  rv = callback.WaitForResult();
+  EXPECT_THAT(rv, IsOk());
+
+  const HttpResponseInfo* response = trans.GetResponseInfo();
+  ASSERT_TRUE(response);
+  ASSERT_TRUE(response->headers);
+  EXPECT_EQ("HTTP/1.1 200", response->headers->GetStatusLine());
+}
+
+// Test that for a request that fails to be sent through an IP Protection proxy,
+// after we fallback to direct the 'IP-Protection' header is not added to the
+// request headers.
+TEST_P(HttpNetworkTransactionTest,
+       HttpsNestedProxyIpProtectionRequestHeaderNotAddedAfterFallback) {
+  HttpRequestInfo request;
+  request.method = "GET";
+  request.url = GURL("https://www.example.org/");
+  request.traffic_annotation =
+      net::MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
+
+  const ProxyServer kProxyServer1{ProxyServer::SCHEME_HTTPS,
+                                  HostPortPair("proxy1.test", 70)};
+  const ProxyServer kProxyServer2{ProxyServer::SCHEME_HTTPS,
+                                  HostPortPair("proxy2.test", 71)};
+  ProxyChain kNestedProxyChain{{kProxyServer1, kProxyServer2}};
+  kNestedProxyChain = std::move(kNestedProxyChain).ForIpProtection();
+
+  auto proxy_delegate =
+      std::make_unique<IpProtectionProxyDelegate>(kNestedProxyChain);
+
+  session_deps_.proxy_resolution_service =
+      ConfiguredProxyResolutionService::CreateFixedForTest(
+          "https://not-used:70", TRAFFIC_ANNOTATION_FOR_TESTS);
+  session_deps_.proxy_resolution_service->SetProxyDelegate(
+      proxy_delegate.get());
+  session_deps_.net_log = NetLog::Get();
+  std::unique_ptr<HttpNetworkSession> session(CreateSession(&session_deps_));
+
+  MockWrite data_writes1[] = {
+      MockWrite("CONNECT proxy2.test:71 HTTP/1.1\r\n"
+                "Host: proxy2.test:71\r\n"
+                "Proxy-Connection: keep-alive\r\n\r\n"),
+  };
+
+  MockRead data_reads1[] = {
+      MockRead("HTTP/1.1 401 Not Authorized\r\n\r\n"),
+      MockRead(SYNCHRONOUS, OK),
+  };
+
+  StaticSocketDataProvider data1(data_reads1, data_writes1);
+  session_deps_.socket_factory->AddSocketDataProvider(&data1);
+
+  SSLSocketDataProvider ssl1(ASYNC, OK);
+  session_deps_.socket_factory->AddSSLSocketDataProvider(&ssl1);
+
+  // The proxy delegate should implement falling back to direct after an error,
+  // and we don't expect any proxying or an IP Protection request header on the
+  // GET.
+  MockWrite data_writes2[] = {
+      MockWrite("GET / HTTP/1.1\r\n"
+                "Host: www.example.org\r\n"
+                "Connection: keep-alive\r\n\r\n"),
+  };
+
+  MockRead data_reads2[] = {
+      MockRead("HTTP/1.1 200\r\n\r\n"),
+      MockRead(SYNCHRONOUS, OK),
+  };
+
+  StaticSocketDataProvider data2(data_reads2, data_writes2);
+  session_deps_.socket_factory->AddSocketDataProvider(&data2);
+
+  SSLSocketDataProvider ssl2(ASYNC, OK);
+  session_deps_.socket_factory->AddSSLSocketDataProvider(&ssl2);
+
+  TestCompletionCallback callback;
+
+  HttpNetworkTransaction trans(DEFAULT_PRIORITY, session.get());
+
+  int rv = trans.Start(&request, callback.callback(),
+                       NetLogWithSource::Make(NetLogSourceType::NONE));
+  EXPECT_THAT(rv, IsError(ERR_IO_PENDING));
+
+  rv = callback.WaitForResult();
+  EXPECT_THAT(rv, IsOk());
+
+  const HttpResponseInfo* response = trans.GetResponseInfo();
+  ASSERT_TRUE(response);
+  ASSERT_TRUE(response->headers);
+  EXPECT_EQ("HTTP/1.1 200", response->headers->GetStatusLine());
+}
+
 }  // namespace net

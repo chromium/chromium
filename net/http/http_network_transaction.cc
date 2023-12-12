@@ -1108,6 +1108,10 @@ int HttpNetworkTransaction::BuildRequestHeaders(
     auth_controllers_[HttpAuth::AUTH_SERVER]->AddAuthorizationHeader(
         &request_headers_);
 
+  if (proxy_info_.is_for_ip_protection() && !proxy_info_.is_direct()) {
+    request_headers_.SetHeader("IP-Protection", "1");
+  }
+
   request_headers_.MergeFrom(request_->extra_headers);
 
   if (modify_headers_callbacks_) {

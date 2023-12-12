@@ -128,7 +128,9 @@ class NET_EXPORT ProxyChain {
   // Returns a `ProxyChain` for use by the IP Protection feature. This is used
   // for metrics collection and for special handling (for instance, IP
   // protection proxy chains will have an authorization header appended to the
-  // CONNECT requests sent to the proxy servers).
+  // CONNECT requests sent to the proxy servers, and requests sent through an
+  // IP Protection proxy chain will have an "IP-Protection: 1" header added to
+  // them).
   ProxyChain&& ForIpProtection() &&;
   bool is_for_ip_protection() const { return is_for_ip_protection_; }
 
