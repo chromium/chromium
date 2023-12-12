@@ -94,7 +94,6 @@ import org.chromium.ui.base.LocalizationUtils;
 import org.chromium.ui.base.ViewUtils;
 import org.chromium.ui.interpolators.Interpolators;
 import org.chromium.ui.util.ColorUtils;
-import org.chromium.ui.util.TokenHolder;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
@@ -159,9 +158,6 @@ public class ToolbarPhone extends ToolbarLayout
     protected boolean mTextureCaptureMode;
 
     private boolean mForceTextureCapture;
-
-    private BrowserStateBrowserControlsVisibilityDelegate mBrowserControlsVisibilityDelegate;
-    private int mShowBrowserControlsToken = TokenHolder.INVALID_TOKEN;
 
     private TabSwitcherDrawable mTabSwitcherAnimationTabStackDrawable;
 
@@ -3020,24 +3016,6 @@ public class ToolbarPhone extends ToolbarLayout
      */
     private boolean isMenuButtonPresent() {
         return getMenuButtonCoordinator().isVisible();
-    }
-
-    private void keepControlsShownForAnimation() {
-        // isShown() being false implies that the toolbar isn't visible. We don't want to force it
-        // back into visibility just so that we can show an animation.
-        if (isShown() && mBrowserControlsVisibilityDelegate != null) {
-            mShowBrowserControlsToken =
-                    mBrowserControlsVisibilityDelegate.showControlsPersistentAndClearOldToken(
-                            mShowBrowserControlsToken);
-        }
-    }
-
-    private void allowBrowserControlsHide() {
-        if (mBrowserControlsVisibilityDelegate != null) {
-            mBrowserControlsVisibilityDelegate.releasePersistentShowingToken(
-                    mShowBrowserControlsToken);
-            mShowBrowserControlsToken = TokenHolder.INVALID_TOKEN;
-        }
     }
 
     /**

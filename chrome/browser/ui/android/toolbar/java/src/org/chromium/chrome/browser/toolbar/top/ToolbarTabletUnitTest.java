@@ -12,6 +12,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import android.animation.ObjectAnimator;
+import android.animation.ValueAnimator;
 import android.app.Activity;
 import android.graphics.drawable.Drawable;
 import android.os.Looper;
@@ -56,6 +57,7 @@ import org.chromium.chrome.test.util.browser.Features.EnableFeatures;
 import org.chromium.ui.widget.ToastManager;
 
 import java.util.ArrayList;
+import java.util.List;
 
 /** Unit tests for @{@link ToolbarTablet} */
 @LooperMode(LooperMode.Mode.PAUSED)
@@ -472,6 +474,46 @@ public final class ToolbarTabletUnitTest {
         CaptureReadinessResult result = mToolbarTablet.isReadyForTextureCapture();
         Assert.assertFalse(result.isReady);
         Assert.assertEquals(TopToolbarBlockCaptureReason.TAB_SWITCHER_MODE, result.blockReason);
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.SUPPRESS_TOOLBAR_CAPTURES)
+    public void testIsReadyForTextureCapture_ButtonShowAnimationInProgress() {
+        mToolbarTablet.setToolbarButtonsVisibleForTesting(false);
+        mToolbarTablet.enableButtonVisibilityChangeAnimationForTesting();
+
+        // Set a test-only animator so the animation can have an in-between state.
+        ValueAnimator animator = ValueAnimator.ofFloat(0.f, 1.f);
+        when(mLocationBar.getShowButtonsWhenUnfocusedAnimatorsForTablet(anyInt()))
+                .thenReturn(List.of(animator));
+
+        // Run animation.
+        mToolbarTablet.measure(700, 300);
+        CaptureReadinessResult result = mToolbarTablet.isReadyForTextureCapture();
+        Assert.assertFalse(result.isReady);
+        Assert.assertEquals(
+                TopToolbarBlockCaptureReason.TABLET_BUTTON_ANIMATION_IN_PROGRESS,
+                result.blockReason);
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.SUPPRESS_TOOLBAR_CAPTURES)
+    public void testIsReadyForTextureCapture_ButtonHideAnimationInProgress() {
+        mToolbarTablet.setToolbarButtonsVisibleForTesting(true);
+        mToolbarTablet.enableButtonVisibilityChangeAnimationForTesting();
+
+        // Set a test-only animator so the animation can have an in-between state.
+        ValueAnimator animator = ValueAnimator.ofFloat(0.f, 1.f);
+        when(mLocationBar.getHideButtonsWhenUnfocusedAnimatorsForTablet(anyInt()))
+                .thenReturn(List.of(animator));
+
+        // Run animation.
+        mToolbarTablet.measure(300, 300);
+        CaptureReadinessResult result = mToolbarTablet.isReadyForTextureCapture();
+        Assert.assertFalse(result.isReady);
+        Assert.assertEquals(
+                TopToolbarBlockCaptureReason.TABLET_BUTTON_ANIMATION_IN_PROGRESS,
+                result.blockReason);
     }
 
     @Test

@@ -446,6 +446,9 @@ public class ToolbarTablet extends ToolbarLayout
             } else if (mIsInTabSwitcherMode) {
                 return CaptureReadinessResult.notReady(
                         TopToolbarBlockCaptureReason.TAB_SWITCHER_MODE);
+            } else if (mButtonVisibilityAnimators != null) {
+                return CaptureReadinessResult.notReady(
+                        TopToolbarBlockCaptureReason.TABLET_BUTTON_ANIMATION_IN_PROGRESS);
             } else {
                 return getReadinessStateWithSuppression();
             }
@@ -850,6 +853,7 @@ public class ToolbarTablet extends ToolbarLayout
                 new AnimatorListenerAdapter() {
                     @Override
                     public void onAnimationStart(Animator animation) {
+                        keepControlsShownForAnimation();
                         for (ImageButton button : mToolbarButtons) {
                             button.setVisibility(View.VISIBLE);
                         }
@@ -864,6 +868,7 @@ public class ToolbarTablet extends ToolbarLayout
                         // as the capture state token only checks the button's visibility.
                         mLastCaptureStateToken = null;
                         mButtonVisibilityAnimators = null;
+                        allowBrowserControlsHide();
                     }
                 });
 
@@ -893,6 +898,11 @@ public class ToolbarTablet extends ToolbarLayout
         set.addListener(
                 new AnimatorListenerAdapter() {
                     @Override
+                    public void onAnimationStart(Animator animation) {
+                        keepControlsShownForAnimation();
+                    }
+
+                    @Override
                     public void onAnimationEnd(Animator animation) {
                         // Only set end visibility and alpha if the animation is ending because it's
                         // completely finished and not because it was canceled.
@@ -905,8 +915,8 @@ public class ToolbarTablet extends ToolbarLayout
                             // don't jump when the animation starts.
                             setStartPaddingBasedOnButtonVisibility(false);
                         }
-
                         mButtonVisibilityAnimators = null;
+                        allowBrowserControlsHide();
                     }
                 });
 

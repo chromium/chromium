@@ -60,6 +60,7 @@ import org.chromium.chrome.browser.ui.appmenu.AppMenuButtonHelper;
 import org.chromium.chrome.browser.ui.theme.BrandedColorScheme;
 import org.chromium.ui.UiUtils;
 import org.chromium.ui.base.ViewUtils;
+import org.chromium.ui.util.TokenHolder;
 import org.chromium.url.GURL;
 
 import java.util.function.BooleanSupplier;
@@ -94,6 +95,9 @@ public abstract class ToolbarLayout extends FrameLayout
     private AppMenuButtonHelper mAppMenuButtonHelper;
 
     private TopToolbarOverlayCoordinator mOverlayCoordinator;
+
+    protected BrowserStateBrowserControlsVisibilityDelegate mBrowserControlsVisibilityDelegate;
+    protected int mShowBrowserControlsToken = TokenHolder.INVALID_TOKEN;
 
     protected final DestroyChecker mDestroyChecker;
 
@@ -818,7 +822,27 @@ public abstract class ToolbarLayout extends FrameLayout
      * the toolbar itself.
      */
     public void setBrowserControlsVisibilityDelegate(
-            BrowserStateBrowserControlsVisibilityDelegate controlsVisibilityDelegate) {}
+            BrowserStateBrowserControlsVisibilityDelegate controlsVisibilityDelegate) {
+        mBrowserControlsVisibilityDelegate = controlsVisibilityDelegate;
+    }
+
+    protected void keepControlsShownForAnimation() {
+        // isShown() being false implies that the toolbar isn't visible. We don't want to force it
+        // back into visibility just so that we can show an animation.
+        if (isShown() && mBrowserControlsVisibilityDelegate != null) {
+            mShowBrowserControlsToken =
+                    mBrowserControlsVisibilityDelegate.showControlsPersistentAndClearOldToken(
+                            mShowBrowserControlsToken);
+        }
+    }
+
+    protected void allowBrowserControlsHide() {
+        if (mBrowserControlsVisibilityDelegate != null) {
+            mBrowserControlsVisibilityDelegate.releasePersistentShowingToken(
+                    mShowBrowserControlsToken);
+            mShowBrowserControlsToken = TokenHolder.INVALID_TOKEN;
+        }
+    }
 
     /**
      * Notify the observer that the toolbar color is changed and pass the toolbar color to the

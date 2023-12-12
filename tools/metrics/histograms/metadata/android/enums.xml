@@ -1558,6 +1558,7 @@ chromium-metrics-reviews@google.com.
   <int value="11" label="COMPOSITOR_IN_MOTION"/>
   <int value="12" label="NTP_Y_TRANSLATION"/>
   <int value="13" label="FULLSCREEN"/>
+  <int value="14" label="TABLET_BUTTON_ANIMATION_IN_PROGRESS"/>
 </enum>
 
 <enum name="UserAgentMetadataAvailableType">
