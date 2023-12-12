@@ -46,6 +46,11 @@ class MockDlpFilesController : public DlpFilesController {
               (Profile * profile, const base::FilePath& file_path),
               (override));
 
+  MOCK_METHOD(bool,
+              IsInLocalFileSystem,
+              (const base::FilePath& file_path),
+              (override));
+
   MOCK_METHOD(void,
               ShowDlpBlockedFiles,
               (absl::optional<uint64_t> task_id,
@@ -171,6 +176,9 @@ TEST_F(DlpFilesControllerTest, LocalFileCopyTest) {
   EXPECT_CALL(*files_controller_, MapFilePathToPolicyComponent)
       .WillOnce(testing::Return(absl::nullopt))
       .WillOnce(testing::Return(absl::nullopt));
+  EXPECT_CALL(*files_controller_, IsInLocalFileSystem)
+      .WillOnce(testing::Return(true))
+      .WillOnce(testing::Return(true));
   files_controller_->RequestCopyAccess(source, destination,
                                        file_access_future.GetCallback());
   std::unique_ptr<file_access::ScopedFileAccess> file_access =
@@ -243,6 +251,9 @@ TEST_F(DlpFilesControllerTest, CopyEmptyMetadataTest) {
       file_access_future;
 
   ASSERT_TRUE(files_controller_);
+  EXPECT_CALL(*files_controller_, IsInLocalFileSystem)
+      .WillOnce(testing::Return(true))
+      .WillOnce(testing::Return(true));
   files_controller_->RequestCopyAccess(source, destination,
                                        file_access_future.GetCallback());
   EXPECT_TRUE(file_access_future.Get()->is_allowed());
@@ -288,6 +299,9 @@ TEST_F(DlpFilesControllerTest, CopyNoMetadataTest) {
       file_access_future;
 
   ASSERT_TRUE(files_controller_);
+  EXPECT_CALL(*files_controller_, IsInLocalFileSystem)
+      .WillOnce(testing::Return(true))
+      .WillOnce(testing::Return(true));
   files_controller_->RequestCopyAccess(source, destination,
                                        file_access_future.GetCallback());
   EXPECT_TRUE(file_access_future.Get()->is_allowed());
@@ -381,6 +395,8 @@ TEST_F(DlpFilesControllerTest, FileCopyToExternalAllowTest) {
 
   base::test::TestFuture<std::unique_ptr<file_access::ScopedFileAccess>> future;
   ASSERT_TRUE(files_controller_);
+  EXPECT_CALL(*files_controller_, IsInLocalFileSystem)
+      .WillOnce(testing::Return(true));
   files_controller_->RequestCopyAccess(source, storage::FileSystemURL(),
                                        future.GetCallback());
   EXPECT_TRUE(future.Get()->is_allowed());
@@ -429,6 +445,8 @@ TEST_F(DlpFilesControllerTest, FileCopyToExternalDenyTest) {
 
   base::test::TestFuture<std::unique_ptr<file_access::ScopedFileAccess>> future;
   ASSERT_TRUE(files_controller_);
+  EXPECT_CALL(*files_controller_, IsInLocalFileSystem)
+      .WillOnce(testing::Return(true));
   files_controller_->RequestCopyAccess(source, storage::FileSystemURL(),
                                        future.GetCallback());
   EXPECT_FALSE(future.Get()->is_allowed());
@@ -462,6 +480,9 @@ TEST_F(DlpFilesControllerTest, FileCopyToUnknownComponent) {
 
   base::test::TestFuture<std::unique_ptr<file_access::ScopedFileAccess>> future;
   ASSERT_TRUE(files_controller_);
+  EXPECT_CALL(*files_controller_, IsInLocalFileSystem)
+      .WillOnce(testing::Return(true))
+      .WillOnce(testing::Return(false));
   files_controller_->RequestCopyAccess(source, destination,
                                        future.GetCallback());
   EXPECT_FALSE(future.Get()->is_allowed());
@@ -487,6 +508,9 @@ TEST_F(DlpFilesControllerTest, CheckIfPasteOrDropIsAllowed_ErrorResponse) {
 
   base::test::TestFuture<bool> future;
   ASSERT_TRUE(files_controller_);
+  EXPECT_CALL(*files_controller_, IsInLocalFileSystem)
+      .WillOnce(testing::Return(true));
+
   files_controller_->CheckIfPasteOrDropIsAllowed({file_path1}, &data_dst,
                                                  future.GetCallback());
 
@@ -533,6 +557,9 @@ TEST_F(DlpFilesControllerTest, CheckIfPasteOrDropIsAllowed) {
               ShowDlpBlockedFiles(/*task_id=*/{absl::nullopt},
                                   std::vector<base::FilePath>{file_path2},
                                   dlp::FileAction::kCopy));
+  EXPECT_CALL(*files_controller_, IsInLocalFileSystem)
+      .WillOnce(testing::Return(false))
+      .WillOnce(testing::Return(true));
 
   const ui::DataTransferEndpoint data_dst((GURL(kExampleUrl1)));
 
@@ -568,6 +595,8 @@ TEST_F(DlpFilesControllerTest,
 
   base::test::TestFuture<bool> future;
   ASSERT_TRUE(files_controller_);
+  EXPECT_CALL(*files_controller_, IsInLocalFileSystem)
+      .WillOnce(testing::Return(true));
   files_controller_->SetFileSystemContextForTesting(nullptr);
   files_controller_->CheckIfPasteOrDropIsAllowed({file_path1}, &data_dst,
                                                  future.GetCallback());

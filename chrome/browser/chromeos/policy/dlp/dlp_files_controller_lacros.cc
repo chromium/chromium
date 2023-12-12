@@ -8,6 +8,7 @@
 #include "chrome/browser/chromeos/policy/dlp/dlp_file_destination.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_rules_manager.h"
 #include "chrome/browser/profiles/profile_manager.h"
+#include "chrome/common/chrome_paths.h"
 #include "chrome/common/chrome_paths_lacros.h"
 
 namespace policy {
@@ -45,6 +46,16 @@ DlpFilesControllerLacros::MapFilePathToPolicyComponent(
   }
 
   return {};
+}
+
+bool DlpFilesControllerLacros::IsInLocalFileSystem(
+    const base::FilePath& file_path) {
+  base::FilePath my_files_folder;
+  base::PathService::Get(chrome::DIR_USER_DOCUMENTS, &my_files_folder);
+  if (my_files_folder == file_path || my_files_folder.IsParent(file_path)) {
+    return true;
+  }
+  return false;
 }
 
 void DlpFilesControllerLacros::ShowDlpBlockedFiles(

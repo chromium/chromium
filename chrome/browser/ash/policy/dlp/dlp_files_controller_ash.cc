@@ -84,16 +84,6 @@ constexpr base::TimeDelta kCooldownTimeout = base::Seconds(5);
 // TODO(crbug.com/1366299): determine the value to use.
 constexpr size_t kEntriesLimit = 100;
 
-// Returns true if `file_path` is in My Files directory.
-bool IsInLocalFileSystem(Profile* profile, const base::FilePath& file_path) {
-  auto my_files_folder =
-      file_manager::util::GetMyFilesFolderForProfile(profile);
-  if (my_files_folder == file_path || my_files_folder.IsParent(file_path)) {
-    return true;
-  }
-  return false;
-}
-
 // Returns a `DlpFileDestination` with a source URL or component, based on
 // |app_update|. If neither URL nor component can be found, returns nullopt.
 std::optional<DlpFileDestination> GetFileDestinationForApp(
@@ -271,7 +261,7 @@ void DlpFilesControllerAsh::CheckIfTransferAllowed(
 
   // If the destination file path is in My Files, all files transfers should be
   // allowed.
-  if (IsInLocalFileSystem(profile_, destination.path())) {
+  if (IsInLocalFileSystem(destination.path())) {
     std::move(result_callback).Run(std::vector<storage::FileSystemURL>());
     return;
   }
@@ -280,7 +270,7 @@ void DlpFilesControllerAsh::CheckIfTransferAllowed(
   // If the copied file isn't in the local file system, or the file is in the
   // same file system as the destination, no restrictions should be applied.
   for (const auto& file : transferred_files) {
-    if (!IsInLocalFileSystem(profile_, file.path()) ||
+    if (!IsInLocalFileSystem(file.path()) ||
         file.IsInSameFileSystem(destination)) {
       continue;
     }
@@ -316,7 +306,7 @@ void DlpFilesControllerAsh::GetDlpMetadata(
 
   ::dlp::GetFilesSourcesRequest request;
   for (const auto& file : files) {
-    if (IsInLocalFileSystem(profile_, file.path())) {
+    if (IsInLocalFileSystem(file.path())) {
       request.add_files_paths(file.path().value());
     }
   }
@@ -754,6 +744,16 @@ DlpFilesControllerAsh::MapFilePathToPolicyComponent(
   }
 
   return {};
+}
+
+bool DlpFilesControllerAsh::IsInLocalFileSystem(
+    const base::FilePath& file_path) {
+  auto my_files_folder =
+      file_manager::util::GetMyFilesFolderForProfile(profile_);
+  if (my_files_folder == file_path || my_files_folder.IsParent(file_path)) {
+    return true;
+  }
+  return false;
 }
 
 void DlpFilesControllerAsh::ShowDlpBlockedFiles(
