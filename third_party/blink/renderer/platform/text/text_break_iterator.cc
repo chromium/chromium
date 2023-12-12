@@ -304,13 +304,12 @@ inline int LazyLineBreakIterator::NextBreakablePosition(
   DCHECK_GE(static_cast<unsigned>(pos), start_offset_);
   CHECK_LE(pos, len);
   int next_break = -1;
-  UChar last_last_ch = pos > 1 ? str[pos - 2] : SecondToLastCharacter();
-  UChar last_ch = pos > 0 ? str[pos - 1] : LastCharacter();
+  UChar last_last_ch = pos > 1 ? str[pos - 2] : 0;
+  UChar last_ch = pos > 0 ? str[pos - 1] : 0;
   bool is_last_space = IsBreakableSpace(last_ch);
   ULineBreak last_line_break;
   if (lineBreakType == LineBreakType::kBreakAll)
     last_line_break = LineBreakPropertyValue(last_last_ch, last_ch);
-  PriorContext prior_context = GetPriorContext();
   CharacterType ch;
   bool is_space;
   for (int i = pos; i < len;
@@ -353,21 +352,20 @@ inline int LazyLineBreakIterator::NextBreakablePosition(
 
     if (NeedsLineBreakIterator(ch) || NeedsLineBreakIterator(last_ch)) {
       if (next_break < i) {
-        // Don't break if positioned at start of primary context and there is no
-        // prior context.
-        if (i || prior_context.length) {
-          if (TextBreakIterator* break_iterator = GetIterator(prior_context)) {
+        // Don't break if positioned at start of primary context.
+        if (i) {
+          if (TextBreakIterator* break_iterator = GetIterator()) {
             next_break = i - 1;
             for (;;) {
               // Adjust the offset by |start_offset_| because |break_iterator|
               // has text after |start_offset_|.
               // TODO(crbug.com/1500931): `+1` below shouldn't be there, but it
               // was so before and removing it hits. This is to be investigated.
-              DCHECK_GE(next_break + prior_context.length + 1, start_offset_);
-              next_break = break_iterator->following(
-                  next_break + prior_context.length - start_offset_);
+              DCHECK_GE(next_break + 1u, start_offset_);
+              next_break =
+                  break_iterator->following(next_break - start_offset_);
               if (next_break >= 0) {
-                next_break = next_break + start_offset_ - prior_context.length;
+                next_break = next_break + start_offset_;
                 if (UNLIKELY(disable_soft_hyphen_) && next_break > 0 &&
                     UNLIKELY(str[next_break - 1] == kSoftHyphenCharacter)) {
                   continue;
