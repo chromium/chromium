@@ -19,6 +19,7 @@
 #include "base/metrics/field_trial_params.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/no_destructor.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/rand_util.h"
 #include "base/strings/strcat.h"
@@ -47,6 +48,7 @@
 #include "components/prefs/pref_service.h"
 #include "components/prefs/scoped_user_pref_update.h"
 #include "components/variations/net/variations_http_headers.h"
+#include "components/variations/variations_ids_provider.h"
 #include "google_apis/google_api_keys.h"
 #include "net/base/load_flags.h"
 #include "net/http/http_request_headers.h"
@@ -535,6 +537,39 @@ std::string GetAPIKeyForUrl(version_info::Channel channel) {
   return google_apis::GetNonStableAPIKey();
 }
 
+std::optional<std::vector<variations::VariationID>>& GetActiveExperiments() {
+  static base::NoDestructor<std::optional<std::vector<variations::VariationID>>>
+      active_experiments;
+  return *active_experiments;
+}
+
+// Populates `GetActiveExperiments()` with the set of active autofill server
+// experiments.
+void InitActiveExperiments() {
+  auto* variations_ids_provider =
+      variations::VariationsIdsProvider::GetInstance();
+  DCHECK(variations_ids_provider != nullptr);
+
+  // TODO(crbug.com/1331322): Retire the hardcoded GWS ID ranges and only read
+  // the finch parameter.
+  std::vector<variations::VariationID> active_experiments =
+      variations_ids_provider->GetVariationsVector(
+          {variations::GOOGLE_WEB_PROPERTIES_TRIGGER_ANY_CONTEXT,
+           variations::GOOGLE_WEB_PROPERTIES_TRIGGER_FIRST_PARTY});
+  std::erase_if(active_experiments, std::not_fn(&IsAutofillExperimentId));
+  if (base::FeatureList::IsEnabled(
+          autofill::features::kAutofillServerBehaviors)) {
+    active_experiments.push_back(
+        autofill::features::kAutofillServerBehaviorsParam.Get());
+  }
+  std::sort(active_experiments.begin(), active_experiments.end());
+  active_experiments.erase(
+      std::unique(active_experiments.begin(), active_experiments.end()),
+      active_experiments.end());
+
+  GetActiveExperiments() = std::move(active_experiments);
+}
+
 }  // namespace
 
 struct AutofillCrowdsourcingManager::FormRequestData {
@@ -547,15 +582,12 @@ struct AutofillCrowdsourcingManager::FormRequestData {
 };
 
 ScopedActiveAutofillExperiments::ScopedActiveAutofillExperiments() {
-  AutofillCrowdsourcingManager::ResetActiveExperiments();
+  GetActiveExperiments().reset();
 }
 
 ScopedActiveAutofillExperiments::~ScopedActiveAutofillExperiments() {
-  AutofillCrowdsourcingManager::ResetActiveExperiments();
+  GetActiveExperiments().reset();
 }
-
-std::vector<variations::VariationID>*
-    AutofillCrowdsourcingManager::active_experiments_ = nullptr;
 
 AutofillCrowdsourcingManager::AutofillCrowdsourcingManager(AutofillClient* client,
                                                  version_info::Channel channel,
@@ -606,13 +638,15 @@ bool AutofillCrowdsourcingManager::StartQueryRequest(
   // The set of active autofill experiments is constant for the life of the
   // process. We initialize and statically cache it on first use. Leaked on
   // process termination.
-  if (active_experiments_ == nullptr)
+  if (!GetActiveExperiments()) {
     InitActiveExperiments();
+  }
 
   // Attach any active autofill experiments.
-  query.mutable_experiments()->Reserve(active_experiments_->size());
-  for (int id : *active_experiments_)
+  query.mutable_experiments()->Reserve(GetActiveExperiments()->size());
+  for (variations::VariationID id : *GetActiveExperiments()) {
     query.mutable_experiments()->Add(id);
+  }
 
   std::optional<std::string> payload = GetAPIQueryPayload(query);
   if (!payload) {
@@ -996,39 +1030,6 @@ void AutofillCrowdsourcingManager::OnSimpleLoaderComplete(
       return;
   }
   NOTREACHED_NORETURN();
-}
-
-void AutofillCrowdsourcingManager::InitActiveExperiments() {
-  auto* variations_ids_provider =
-      variations::VariationsIdsProvider::GetInstance();
-  DCHECK(variations_ids_provider != nullptr);
-
-  // TODO(crbug.com/1331322): Retire the hardcoded GWS ID ranges and only read
-  // the finch parameter.
-  std::vector<int> active_experiments =
-      variations_ids_provider->GetVariationsVector(
-          {variations::GOOGLE_WEB_PROPERTIES_TRIGGER_ANY_CONTEXT,
-           variations::GOOGLE_WEB_PROPERTIES_TRIGGER_FIRST_PARTY});
-  std::erase_if(active_experiments, std::not_fn(&IsAutofillExperimentId));
-  if (base::FeatureList::IsEnabled(
-          autofill::features::kAutofillServerBehaviors)) {
-    active_experiments.push_back(
-        autofill::features::kAutofillServerBehaviorsParam.Get());
-  }
-  std::sort(active_experiments.begin(), active_experiments.end());
-  active_experiments.erase(
-      std::unique(active_experiments.begin(), active_experiments.end()),
-      active_experiments.end());
-
-  delete active_experiments_;
-  active_experiments_ = new std::vector<int>();
-  *active_experiments_ = std::move(active_experiments);
-}
-
-// static
-void AutofillCrowdsourcingManager::ResetActiveExperiments() {
-  delete active_experiments_;
-  active_experiments_ = nullptr;
 }
 
 }  // namespace autofill

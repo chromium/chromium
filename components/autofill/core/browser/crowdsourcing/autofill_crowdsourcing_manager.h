@@ -19,7 +19,6 @@
 #include "components/autofill/core/browser/autofill_type.h"
 #include "components/autofill/core/browser/form_structure.h"
 #include "components/autofill/core/common/signatures.h"
-#include "components/variations/variations_ids_provider.h"
 #include "components/version_info/channel.h"
 #include "net/base/backoff_entry.h"
 #include "net/base/isolation_info.h"
@@ -196,9 +195,6 @@ class AutofillCrowdsourcingManager {
       base::TimeTicks request_start,
       std::unique_ptr<std::string> response_body);
 
-  static void InitActiveExperiments();
-  static void ResetActiveExperiments();
-
   // The AutofillClient that this instance will use. Must not be null, and must
   // outlive this instance.
   const raw_ptr<AutofillClient> client_;
@@ -215,9 +211,6 @@ class AutofillCrowdsourcingManager {
 
   // The period after which the tracked set of uploads to throttle is reset.
   const base::TimeDelta throttle_reset_period_;
-
-  // The set of active autofill server experiments.
-  static std::vector<variations::VariationID>* active_experiments_;
 
   // Loaders used for the processing the requests. Invalidated after completion.
   std::list<std::unique_ptr<network::SimpleURLLoader>> url_loaders_;
