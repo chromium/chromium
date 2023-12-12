@@ -18,6 +18,7 @@
 #include "chrome/browser/ash/app_list/search/chrome_search_result.h"
 #include "chrome/browser/ash/app_list/search/common/icon_constants.h"
 #include "chromeos/ash/services/assistant/public/cpp/assistant_service.h"
+#include "chromeos/ash/services/assistant/public/cpp/features.h"
 #include "chromeos/ui/vector_icons/vector_icons.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/gfx/color_palette.h"
@@ -36,6 +37,10 @@ constexpr char kIdPrefix[] = "googleassistant_text://";
 // Returns if the Assistant omnibox search provider is allowed to contribute
 // results.
 bool AreResultsAllowed() {
+  if (ash::assistant::features::IsAssistantLearnMoreEnabled()) {
+    return false;
+  }
+
   ash::AssistantState* assistant_state = ash::AssistantState::Get();
   return assistant_state->allowed_state() == AssistantAllowedState::ALLOWED &&
          assistant_state->settings_enabled() == true;
