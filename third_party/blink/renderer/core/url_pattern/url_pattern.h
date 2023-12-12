@@ -18,6 +18,7 @@ namespace blink {
 
 class ExceptionState;
 class KURL;
+struct SafeUrlPattern;
 class URLPatternInit;
 class URLPatternOptions;
 class URLPatternResult;
@@ -108,6 +109,11 @@ class CORE_EXPORT URLPattern : public ScriptWrappable {
   static int compareComponent(const V8URLPatternComponent& component,
                               const URLPattern* left,
                               const URLPattern* right);
+
+  // Throws a TypeError if the pattern does not meet the requirements to be
+  // safe. i.e. has no regexp groups.
+  std::optional<SafeUrlPattern> ToSafeUrlPattern(
+      ExceptionState& exception_state) const;
 
   // Used for testing and debugging.
   String ToString() const;

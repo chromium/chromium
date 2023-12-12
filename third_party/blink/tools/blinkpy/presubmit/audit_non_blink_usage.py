@@ -1961,7 +1961,6 @@ _CONFIG = [
     },
     {
         'paths': [
-            'third_party/blink/renderer/modules/service_worker/service_worker_router_type_converter.cc',
             'third_party/blink/renderer/modules/service_worker/service_worker_router_type_converter_test.cc',
             # TODO(crbug.com/1371756): consolidate code using liburlpattern.
             # Especially, consolidate manifest and this code.

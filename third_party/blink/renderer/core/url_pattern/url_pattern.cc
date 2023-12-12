@@ -6,6 +6,7 @@
 
 #include "base/ranges/algorithm.h"
 #include "base/strings/string_util.h"
+#include "third_party/blink/public/common/safe_url_pattern.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_regexp.h"
 #include "third_party/blink/renderer/bindings/core/v8/to_v8_traits.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_union_urlpattern_urlpatterninit_usvstring.h"
@@ -705,6 +706,46 @@ int URLPattern::compareComponent(const V8URLPatternComponent& component,
       return url_pattern::Component::Compare(*left->hash_, *right->hash_);
   }
   NOTREACHED();
+}
+
+std::optional<SafeUrlPattern> URLPattern::ToSafeUrlPattern(
+    ExceptionState& exception_state) const {
+  const std::pair<const url_pattern::Component*, const char*>
+      components_with_names[] = {
+          {protocol_, "protocol"}, {username_, "username"},
+          {password_, "password"}, {hostname_, "hostname"},
+          {port_, "port"},         {pathname_, "pathname"},
+          {search_, "search"},     {hash_, "hash"}};
+  String components_with_regexp;
+  for (auto [component, name] : components_with_names) {
+    if (component->HasRegexpGroups()) {
+      components_with_regexp = components_with_regexp +
+                               (components_with_regexp.IsNull() ? "" : ", ") +
+                               name + " (" +
+                               component->GeneratePatternString() + ")";
+    }
+  }
+  if (!components_with_regexp.IsNull()) {
+    exception_state.ThrowTypeError(
+        "The pattern cannot contain regexp groups, but did in the following "
+        "components: " +
+        components_with_regexp);
+    return std::nullopt;
+  }
+  CHECK(!hasRegExpGroups());
+
+  SafeUrlPattern safe_url_pattern;
+  safe_url_pattern.protocol = protocol_->PartList();
+  safe_url_pattern.username = username_->PartList();
+  safe_url_pattern.password = password_->PartList();
+  safe_url_pattern.hostname = hostname_->PartList();
+  safe_url_pattern.port = port_->PartList();
+  safe_url_pattern.pathname = pathname_->PartList();
+  safe_url_pattern.search = search_->PartList();
+  safe_url_pattern.hash = hash_->PartList();
+  safe_url_pattern.options.ignore_case = options_.ignore_case;
+
+  return safe_url_pattern;
 }
 
 String URLPattern::ToString() const {

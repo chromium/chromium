@@ -90,6 +90,8 @@ class Component final : public GarbageCollected<Component> {
   // regular expression.
   bool HasRegexpGroups() const { return pattern_.HasRegexGroups(); }
 
+  const std::vector<liburlpattern::Part>& PartList() const;
+
   void Trace(Visitor* visitor) const;
 
  private:
