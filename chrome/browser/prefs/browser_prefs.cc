@@ -554,53 +554,6 @@ namespace {
 // Please keep the list of deprecated prefs in chronological order. i.e. Add to
 // the bottom of the list, not here at the top.
 
-// Deprecated 06/2022
-// TODO(crbug.com/1476489): Remove when unit test code is updated.
-#if BUILDFLAG(ENABLE_DICE_SUPPORT)
-const char kTokenServiceDiceCompatible[] = "token_service.dice_compatible";
-#endif
-
-#if BUILDFLAG(ENABLE_EXTENSIONS)
-// Deprecated 10/2022.
-const char kLoadCryptoTokenExtension[] =
-    "extensions.load_cryptotoken_extension";
-#endif
-
-// Deprecated 10/2022.
-const char kOriginTrialPrefKey[] = "origin_trials.persistent_trials";
-
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-// Deprecated 10/2022.
-const char kSuggestedContentInfoShownInLauncher[] =
-    "ash.launcher.suggested_content_info_shown";
-const char kSuggestedContentInfoDismissedInLauncher[] =
-    "ash.launcher.suggested_content_info_dismissed";
-#endif
-
-#if BUILDFLAG(ENABLE_BACKGROUND_MODE) && BUILDFLAG(IS_MAC)
-// Deprecated 11/2022.
-const char kUserRemovedLoginItem[] = "background_mode.user_removed_login_item";
-const char kChromeCreatedLoginItem[] =
-    "background_mode.chrome_created_login_item";
-const char kMigratedLoginItemPref[] =
-    "background_mode.migrated_login_item_pref";
-#endif
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-const char kPrimaryProfileFirstRunFinished[] =
-    "lacros.primary_profile_first_run_finished";
-#endif
-
-// Deprecated 11/2022.
-const char kLocalConsentsDictionary[] = "local_consents";
-
-// Deprecated 11/2022.
-const char kAutofillAssistantConsent[] = "autofill_assistant.consent";
-const char kAutofillAssistantEnabled[] = "autofill_assistant.enabled";
-const char kAutofillAssistantTriggerScriptsEnabled[] =
-    "autofill_assistant.trigger_scripts.enabled";
-const char kAutofillAssistantTriggerScriptsIsFirstTimeUser[] =
-    "autofill_assistant.trigger_scripts.is_first_time_user";
-
 // Deprecated 12/2022.
 const char kAutofillWalletImportStorageCheckboxState[] =
     "autofill.wallet_import_storage_checkbox_state";
@@ -1002,20 +955,6 @@ const char kTemplatesRandomOrder[] = "content_creation.notes.random_order";
 // Register local state used only for migration (clearing or moving to a new
 // key).
 void RegisterLocalStatePrefsForMigration(PrefRegistrySimple* registry) {
-// Deprecated 11/2022.
-#if BUILDFLAG(ENABLE_BACKGROUND_MODE) && BUILDFLAG(IS_MAC)
-  registry->RegisterBooleanPref(kUserRemovedLoginItem, false);
-  registry->RegisterBooleanPref(kChromeCreatedLoginItem, false);
-  registry->RegisterBooleanPref(kMigratedLoginItemPref, false);
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
-
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  registry->RegisterBooleanPref(kPrimaryProfileFirstRunFinished, false);
-#endif
-
-  // Deprecated 11/2022.
-  registry->RegisterDictionaryPref(kLocalConsentsDictionary);
-
   // Deprecated 01/2023.
   registry->RegisterListPref(kSendDownloadToCloudPref);
 
@@ -1135,33 +1074,6 @@ void RegisterProfilePrefsForMigration(
     user_prefs::PrefRegistrySyncable* registry) {
   chrome_browser_net::secure_dns::RegisterProbesSettingBackupPref(registry);
 
-#if BUILDFLAG(ENABLE_DICE_SUPPORT)
-  // Deprecated 06/2022
-  // TODO(crbug.com/1476489): Remove when unit test code is updated.
-  registry->RegisterBooleanPref(kTokenServiceDiceCompatible, false);
-#endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
-
-#if BUILDFLAG(ENABLE_EXTENSIONS)
-  // Deprecated 10/2022.
-  registry->RegisterBooleanPref(kLoadCryptoTokenExtension, false);
-#endif
-
-// Deprecated 10/2022.
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  registry->RegisterIntegerPref(kSuggestedContentInfoShownInLauncher, 0);
-  registry->RegisterBooleanPref(kSuggestedContentInfoDismissedInLauncher,
-                                false);
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
-  // Deprecated 10/2022.
-  registry->RegisterDictionaryPref(kOriginTrialPrefKey,
-                                   PrefRegistry::LOSSY_PREF);
-
-  // Deprecated 11/2022.
-  registry->RegisterBooleanPref(kAutofillAssistantEnabled, true);
-  registry->RegisterBooleanPref(kAutofillAssistantConsent, false);
-  registry->RegisterBooleanPref(kAutofillAssistantTriggerScriptsEnabled, true);
-  registry->RegisterBooleanPref(kAutofillAssistantTriggerScriptsIsFirstTimeUser,
-                                true);
 
   // Deprecated 12/2022.
   registry->RegisterBooleanPref(kAutofillWalletImportStorageCheckboxState,
@@ -2180,22 +2092,6 @@ void MigrateObsoleteLocalStatePrefs(PrefService* local_state) {
   // BEGIN_MIGRATE_OBSOLETE_LOCAL_STATE_PREFS
   // Please don't delete the preceding line. It is used by PRESUBMIT.py.
 
-#if BUILDFLAG(ENABLE_BACKGROUND_MODE) && BUILDFLAG(IS_MAC)
-  // Added 11/2022.
-  local_state->ClearPref(kUserRemovedLoginItem);
-  local_state->ClearPref(kChromeCreatedLoginItem);
-  local_state->ClearPref(kMigratedLoginItemPref);
-#endif
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  if (local_state->HasPrefPath(kPrimaryProfileFirstRunFinished)) {
-    bool old_value = local_state->GetBoolean(kPrimaryProfileFirstRunFinished);
-    local_state->ClearPref(kPrimaryProfileFirstRunFinished);
-    local_state->SetBoolean(prefs::kFirstRunFinished, old_value);
-  }
-#endif
-
-  // Added 11/2022.
-  local_state->ClearPref(kLocalConsentsDictionary);
 
   // Added 01/2023
   local_state->ClearPref(kSendDownloadToCloudPref);
@@ -2341,18 +2237,6 @@ void MigrateObsoleteProfilePrefs(PrefService* profile_prefs,
   chrome_browser_net::secure_dns::MigrateProbesSettingToOrFromBackup(
       profile_prefs);
 
-#if BUILDFLAG(ENABLE_DICE_SUPPORT)
-  // Added 06/2022.
-  // TODO(crbug.com/1476489): Remove when unit test code is updated.
-  profile_prefs->ClearPref(kTokenServiceDiceCompatible);
-#endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
-
-  // Added 10/2022
-#if BUILDFLAG(IS_ANDROID)
-  feed::MigrateObsoleteProfilePrefsOct_2022(profile_prefs);
-#endif  // BUILDFLAG(IS_ANDROID)
-  profile_prefs->ClearPref(kOriginTrialPrefKey);
-
   // Once this migration is complete, the tracked preference
   // `kGoogleServicesLastSyncingAccountIdDeprecated` can be removed.
   if (profile_prefs->HasPrefPath(
@@ -2367,23 +2251,6 @@ void MigrateObsoleteProfilePrefs(PrefService* profile_prefs,
                                account_id);
     }
   }
-
-  // Added 10/2022.
-#if BUILDFLAG(ENABLE_EXTENSIONS)
-  profile_prefs->ClearPref(kLoadCryptoTokenExtension);
-#endif
-
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  // Added 10/2022.
-  profile_prefs->ClearPref(kSuggestedContentInfoShownInLauncher);
-  profile_prefs->ClearPref(kSuggestedContentInfoDismissedInLauncher);
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
-
-  // Added 11/2022.
-  profile_prefs->ClearPref(kAutofillAssistantEnabled);
-  profile_prefs->ClearPref(kAutofillAssistantConsent);
-  profile_prefs->ClearPref(kAutofillAssistantTriggerScriptsEnabled);
-  profile_prefs->ClearPref(kAutofillAssistantTriggerScriptsIsFirstTimeUser);
 
   // Added 12/2022.
   profile_prefs->ClearPref(kDeprecatedReadingListHasUnseenEntries);
