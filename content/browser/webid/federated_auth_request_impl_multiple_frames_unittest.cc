@@ -265,8 +265,6 @@ class FederatedAuthRequestImplMultipleFramesTest
                                                dialog_controller_state));
     federated_auth_request_impl->SetNetworkManagerForTests(
         std::make_unique<TestIdpNetworkRequestManager>());
-    federated_auth_request_impl->SetTokenRequestDelayForTests(
-        base::TimeDelta());
     return federated_auth_request_impl;
   }
 

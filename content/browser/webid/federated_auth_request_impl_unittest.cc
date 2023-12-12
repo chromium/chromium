@@ -930,9 +930,6 @@ class FederatedAuthRequestImplTest : public RenderViewHostImplTestHarness {
     std::unique_ptr<TestIdpNetworkRequestManager> network_request_manager =
         std::make_unique<TestIdpNetworkRequestManager>();
     SetNetworkRequestManager(std::move(network_request_manager));
-
-    federated_auth_request_impl_->SetTokenRequestDelayForTests(
-        base::TimeDelta());
   }
 
   void SetNetworkRequestManager(
@@ -5016,9 +5013,6 @@ class FederatedAuthRequestImplNewTabTest : public FederatedAuthRequestImplTest {
     std::unique_ptr<TestIdpNetworkRequestManager> network_request_manager =
         std::make_unique<TestIdpNetworkRequestManager>();
     SetNetworkRequestManager(std::move(network_request_manager));
-
-    federated_auth_request_impl_->SetTokenRequestDelayForTests(
-        base::TimeDelta());
   }
 };
 
@@ -6019,10 +6013,6 @@ TEST_F(FederatedAuthRequestImplTest, AutoReauthnInButtonMode) {
 TEST_F(FederatedAuthRequestImplTest, AutoReauthnInButtonModeHasNoRequestDelay) {
   base::test::ScopedFeatureList list;
   list.InitAndEnableFeature(features::kFedCmButtonMode);
-
-  // Reset the delay to kDefaultTokenRequestDelay to make sure the button flow
-  // is exempted from the request delay.
-  federated_auth_request_impl_->SetTokenRequestDelayForTests(base::Seconds(3));
 
   // Pretend the sharing permission has been granted for this account.
   EXPECT_CALL(

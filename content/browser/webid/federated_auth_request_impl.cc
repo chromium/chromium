@@ -76,7 +76,7 @@ using CompleteRequestWithErrorCallback =
 namespace content {
 
 namespace {
-static constexpr base::TimeDelta kDefaultTokenRequestDelay = base::Seconds(3);
+static constexpr base::TimeDelta kTokenRequestDelay = base::Seconds(3);
 static constexpr base::TimeDelta kMaxRejectionTime = base::Seconds(60);
 
 // Users spend less time on Android to dismiss the UI. Given the difference, we
@@ -523,8 +523,7 @@ FederatedAuthRequestImpl::FederatedAuthRequestImpl(
       api_permission_delegate_(api_permission_context),
       auto_reauthn_permission_delegate_(auto_reauthn_permission_context),
       permission_delegate_(permission_context),
-      identity_registry_(identity_registry),
-      token_request_delay_(kDefaultTokenRequestDelay) {}
+      identity_registry_(identity_registry) {}
 
 FederatedAuthRequestImpl::~FederatedAuthRequestImpl() {
   // Ensures key data members are destructed in proper order and resolves any
@@ -2129,21 +2128,21 @@ void FederatedAuthRequestImpl::OnTokenResponseReceived(
   // When fetching id tokens we show a "Verify" sheet to users in case fetching
   // takes a long time due to latency etc. In case that the fetching process is
   // fast, we still want to show the "Verify" sheet for at least
-  // |token_request_delay_| seconds for better UX.
+  // `kTokenRequestDelay` seconds for better UX.
   // Note that for auto reauthn in the button flow, we can complete without
   // delay since we skip the UI for streamlined sign-in experience.
   token_response_time_ = base::TimeTicks::Now();
   base::TimeDelta fetch_time = token_response_time_ - select_account_time_;
   if (should_complete_request_immediately_ ||
       identity_selection_type_ == kAutoButton ||
-      fetch_time >= token_request_delay_) {
+      fetch_time >= kTokenRequestDelay) {
     std::move(complete_request_callback).Run();
     return;
   }
 
   base::SequencedTaskRunner::GetCurrentDefault()->PostDelayedTask(
       FROM_HERE, std::move(complete_request_callback),
-      token_request_delay_ - fetch_time);
+      kTokenRequestDelay - fetch_time);
 }
 
 void FederatedAuthRequestImpl::CompleteTokenRequest(
@@ -2517,11 +2516,6 @@ FederatedAuthRequestImpl::CreateDigitalCredentialProvider() {
     return DigitalCredentialProvider::Create();
   }
   return provider;
-}
-
-void FederatedAuthRequestImpl::SetTokenRequestDelayForTests(
-    base::TimeDelta delay) {
-  token_request_delay_ = delay;
 }
 
 void FederatedAuthRequestImpl::SetNetworkManagerForTests(

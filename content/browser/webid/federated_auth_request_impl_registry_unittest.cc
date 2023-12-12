@@ -88,9 +88,6 @@ class FederatedAuthRequestImplRegistryTest
         std::make_unique<NiceMock<MockIdentityRequestDialogController>>();
     federated_auth_request_impl_->SetDialogControllerForTests(
         std::move(mock_dialog_controller));
-
-    federated_auth_request_impl_->SetTokenRequestDelayForTests(
-        base::TimeDelta());
   }
 
   void TearDown() override {

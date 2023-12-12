@@ -97,7 +97,6 @@ class CONTENT_EXPORT FederatedAuthRequestImpl
   void OnIdpSigninStatusReceived(const url::Origin& idp_config_origin,
                                  bool idp_signin_status) override;
 
-  void SetTokenRequestDelayForTests(base::TimeDelta delay);
   void SetNetworkManagerForTests(
       std::unique_ptr<IdpNetworkRequestManager> manager);
   void SetDialogControllerForTests(
@@ -416,7 +415,6 @@ class CONTENT_EXPORT FederatedAuthRequestImpl
   base::TimeTicks show_accounts_dialog_time_;
   base::TimeTicks select_account_time_;
   base::TimeTicks token_response_time_;
-  base::TimeDelta token_request_delay_;
   bool errors_logged_to_console_{false};
   // This gets set at the beginning of a request. It indicates whether we
   // should bypass the delay to notify the renderer, for use in automated
