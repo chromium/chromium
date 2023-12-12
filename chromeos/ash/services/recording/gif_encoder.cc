@@ -29,8 +29,17 @@ constexpr uint8_t kMaxColorBitDepth = 8;
 constexpr uint8_t kExtensionIntroducer = 0x21;
 
 // The minimum number of frames that needs to be received since the last time we
-// built the color palette, before we build a new one.
-constexpr uint8_t kMinNumberOfFramesBetweenPaletteRebuilds = 20;
+// built the color palette, before we build a new one. Since we are dithering
+// the image, we can work with an old color palette for a larger number of
+// frames before we have to rebuild it.
+constexpr uint8_t kMinNumberOfFramesBetweenPaletteRebuilds = 60;
+
+// If the screen doesn't have any damage, video frames may never be generated.
+// As a result, there can be a large time interval between one frame and the
+// next, in which case the existing color palette might be very stale, and needs
+// to be rebuilt.
+constexpr base::TimeDelta kMaxDurationBetweenSuccessiveFrames =
+    base::Seconds(2);
 
 // Calculates and returns the color bit depth based on the size of the given
 // `color_palette`. The color bit depth is the least number of bits needed to be
@@ -207,11 +216,30 @@ SkBitmap WrapVideoFrameInBitmap(const media::VideoFrame& video_frame) {
   return bitmap;
 }
 
-OctreeColorQuantizer CreateQuantizer(const RgbVideoFrame& rgb_video_frame) {
-  return OctreeColorQuantizer(rgb_video_frame);
+QuantizerPalettePair CreateQuantizer(const RgbVideoFrame& rgb_video_frame) {
+  return QuantizerPalettePair(OctreeColorQuantizer(rgb_video_frame));
 }
 
 }  // namespace
+
+// -----------------------------------------------------------------------------
+// QuantizerPalettePair:
+
+QuantizerPalettePair::QuantizerPalettePair(OctreeColorQuantizer&& new_quantizer)
+    : quantizer(std::move(new_quantizer)) {
+  color_palette.reserve(kMaxNumberOfColorsInPalette);
+  quantizer.ExtractColorPalette(color_palette);
+}
+
+QuantizerPalettePair::QuantizerPalettePair(QuantizerPalettePair&&) = default;
+
+QuantizerPalettePair& QuantizerPalettePair::operator=(QuantizerPalettePair&&) =
+    default;
+
+QuantizerPalettePair::~QuantizerPalettePair() = default;
+
+// -----------------------------------------------------------------------------
+// GifEncoder:
 
 // static
 base::SequenceBound<GifEncoder> GifEncoder::Create(
@@ -302,12 +330,18 @@ void GifEncoder::EncodeVideo(scoped_refptr<media::VideoFrame> frame) {
   // sequence. We don't want the in-flight frame pool in
   // `FrameSinkVideoCapturerImpl` to fill up because we're not returning the
   // frames quick enough.
+  // Note that we don't allow the duration between any two successive frames to
+  // exceed `kMaxDurationBetweenSuccessiveFrames` without rebuilding the color
+  // palette as it may be very stale.
   if (color_palette_.empty()) {
-    SetQuantizer(OctreeColorQuantizer(rgb_video_frame));
-    color_quantizer_.ExtractPixelColorIndices(rgb_video_frame,
+    SetQuantizer(CreateQuantizer(rgb_video_frame));
+    color_quantizer_.ExtractPixelColorIndices(rgb_video_frame, color_palette_,
                                               pixel_color_indices_);
   } else {
-    if (frame_count_ % kMinNumberOfFramesBetweenPaletteRebuilds == 0) {
+    if (frame_count_ % kMinNumberOfFramesBetweenPaletteRebuilds == 0 ||
+        (!last_frame_time_.is_null() &&
+         frame_time - last_frame_time_ >=
+             kMaxDurationBetweenSuccessiveFrames)) {
       // Note that we have to clone the `rgb_video_frame` as the one we have
       // here will be disposed once this function returns.
       color_palette_task_runner_->PostTaskAndReplyWithResult(
@@ -317,7 +351,7 @@ void GifEncoder::EncodeVideo(scoped_refptr<media::VideoFrame> frame) {
     }
 
     // Rebuild the pixel color indices using the existing palette.
-    color_quantizer_.ExtractPixelColorIndices(rgb_video_frame,
+    color_quantizer_.ExtractPixelColorIndices(rgb_video_frame, color_palette_,
                                               pixel_color_indices_);
   }
 
@@ -483,9 +517,9 @@ void GifEncoder::WriteColorPalette(uint8_t color_bit_depth) {
   }
 }
 
-void GifEncoder::SetQuantizer(OctreeColorQuantizer&& new_color_quantizer) {
-  color_quantizer_ = std::move(new_color_quantizer);
-  color_quantizer_.ExtractColorPalette(color_palette_);
+void GifEncoder::SetQuantizer(QuantizerPalettePair&& quantizer_pair) {
+  color_quantizer_ = std::move(quantizer_pair.quantizer);
+  color_palette_ = std::move(quantizer_pair.color_palette);
 }
 
 }  // namespace recording

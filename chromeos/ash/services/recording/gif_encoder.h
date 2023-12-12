@@ -21,6 +21,18 @@ namespace recording {
 
 class RgbVideoFrame;
 
+// Defines a pair of an `OctreeColorQuantizer` and the extracted
+// `color_palette` from it.
+struct QuantizerPalettePair {
+  explicit QuantizerPalettePair(OctreeColorQuantizer&& new_quantizer);
+  QuantizerPalettePair(QuantizerPalettePair&&);
+  QuantizerPalettePair& operator=(QuantizerPalettePair&&);
+  ~QuantizerPalettePair();
+
+  OctreeColorQuantizer quantizer;
+  ColorTable color_palette;
+};
+
 // Encapsulates encoding video frames into an animated GIF and writes the
 // encoded output to a file that it creates at the given `gif_file_path`. An
 // instance of this object can only be interacted with via a
@@ -112,9 +124,9 @@ class GifEncoder : public RecordingEncoder {
   // implementation.
   void WriteColorPalette(uint8_t color_bit_depth);
 
-  // Moves the given `new_color_quantizer` into `color_quantizer_` and extracts
-  // a new color palette from it into `color_palette_`.
-  void SetQuantizer(OctreeColorQuantizer&& new_color_quantizer);
+  // Moves the quantizer and its extracted color palette from the given
+  // `quantizer_pair` into `color_quantizer_` and `color_palette_` respectively.
+  void SetQuantizer(QuantizerPalettePair&& quantizer_pair);
 
   // The thread pool task runner on which the color palettes are built every
   // `kMinNumberOfFramesBetweenPaletteRebuilds` frames except for the very first

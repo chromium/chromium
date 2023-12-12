@@ -47,9 +47,16 @@ class OctreeColorQuantizer {
   // closest colors for each pixel in the given `rgb_video_frame` from the
   // quantized color palette extracted by calling `ExtractColorPalette()` above.
   // This means `ExtractColorPalette()` must be called once before calling this
-  // for every received video frame (provided that the same color palette is
+  // for every received video frame (provided that the same `color_palette` is
   // still desired to be reused).
-  void ExtractPixelColorIndices(const RgbVideoFrame& rgb_video_frame,
+  // This also implements the Floyd-Steinberg dithering, meaning that the
+  // resulting color indices in `out_pixel_color_indices` will be of a
+  // quantized and dithered image of the given `rgb_video_frame` using the given
+  // `color_palette`. The given `rgb_video_frame` will be modified in the
+  // process of dithering to diffuse the color errors in each pixel over the
+  // colors of neighboring pixels (See implementation for details).
+  void ExtractPixelColorIndices(RgbVideoFrame& rgb_video_frame,
+                                const ColorTable& color_palette,
                                 ColorIndices& out_pixel_color_indices) const;
 
  private:
