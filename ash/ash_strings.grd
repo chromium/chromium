@@ -7330,12 +7330,12 @@ To shut down the device, press and hold the power button on the device again.
       <message name="IDS_ASH_DEVICE_SETTINGS_LEARN_MORE_BUTTON" desc="Button shown for device settings notifications which opens an article with helpful information related to the notification.">
         Learn more
       </message>
-        <message name="IDS_SETTINGS_CUSTOMIZATION_MIDDLE_BUTTON_DEFAULT_NAME" desc="The name of the middle mouse button on a mouse">
-    Middle Button
-  </message>
-  <message name="IDS_SETTINGS_CUSTOMIZATION_OTHER_BUTTON_DEFAULT_NAME" desc="The default name to give additional buttons on a mouse or graphics tablet">
-    Other Button <ph name="BUTTON_NUMBER">$1<ex>1</ex></ph>
-  </message>
+      <message name="IDS_SETTINGS_CUSTOMIZATION_MIDDLE_BUTTON_DEFAULT_NAME" desc="The name of the middle mouse button on a mouse">
+        Middle Button
+      </message>
+      <message name="IDS_SETTINGS_CUSTOMIZATION_OTHER_BUTTON_DEFAULT_NAME" desc="The default name to give additional buttons on a mouse or graphics tablet">
+        Other Button <ph name="BUTTON_NUMBER">$1<ex>1</ex></ph>
+      </message>
 
 
       <!-- Compat Mode Resize States-->
@@ -7347,6 +7347,11 @@ To shut down the device, press and hold the power button on the device again.
       </message>
       <message name="IDS_ARC_COMPAT_MODE_RESIZE_TOGGLE_MENU_RESIZABLE" desc="Item in a list of possible sizes for the app. Makes the app resizable.">
         Resizable
+      </message>
+
+      <!-- Ash download command text -->
+      <message name="IDS_ASH_DOWNLOAD_COMMAND_TEXT_CANCEL" desc="Text of the command to cancel a download.">
+        Cancel
       </message>
      </messages>
     </release>

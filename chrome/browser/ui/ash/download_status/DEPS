@@ -1,4 +1,7 @@
 specific_include_rules = {
+  "holding_space_display_client_browsertest\.cc": [
+    "+ui/message_center",
+  ],
   "notification_display_client_browsertest\.cc": [
     "+ui/message_center/views",
   ],

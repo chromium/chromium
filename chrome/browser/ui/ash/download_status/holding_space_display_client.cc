@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/ash/download_status/holding_space_display_client.h"
 
 #include <utility>
+#include <vector>
 
 #include "ash/constants/ash_features.h"
 #include "ash/public/cpp/holding_space/holding_space_controller.h"
@@ -12,11 +13,25 @@
 #include "ash/public/cpp/holding_space/holding_space_model.h"
 #include "ash/public/cpp/holding_space/holding_space_progress.h"
 #include "base/check.h"
+#include "base/functional/bind.h"
+#include "base/functional/callback_helpers.h"
 #include "chrome/browser/ui/ash/download_status/display_metadata.h"
 #include "chrome/browser/ui/ash/holding_space/holding_space_keyed_service.h"
 #include "chrome/browser/ui/ash/holding_space/holding_space_keyed_service_factory.h"
 
 namespace ash::download_status {
+
+namespace {
+
+// Returns the command ID corresponding to the given command type.
+HoldingSpaceCommandId ConvertCommandTypeToId(CommandType type) {
+  switch (type) {
+    case CommandType::kCancel:
+      return HoldingSpaceCommandId::kCancelItem;
+  }
+}
+
+}  // namespace
 
 HoldingSpaceDisplayClient::HoldingSpaceDisplayClient(Profile* profile)
     : DisplayClient(profile) {
@@ -58,10 +73,21 @@ void HoldingSpaceDisplayClient::AddOrUpdate(
     return;
   }
 
+  // Generate commands from `display_metadata`.
+  std::vector<HoldingSpaceItem::InProgressCommand> in_progress_commands;
+  for (const auto& command_info : display_metadata.command_infos) {
+    in_progress_commands.emplace_back(
+        ConvertCommandTypeToId(command_info.type), command_info.text_id,
+        command_info.icon,
+        base::IgnoreArgs<const HoldingSpaceItem*, HoldingSpaceCommandId>(
+            command_info.command_callback));
+  }
+
   // TODO(http://b/307347158): Update the holding space item specified by
   // `holding_space_item_id` with `display_metadata`.
   service->UpdateItem(item_id_by_guid->second)
-      ->SetProgress(progress)
+      ->SetInProgressCommands(std::move(in_progress_commands))
+      .SetProgress(progress)
       .SetSecondaryText(display_metadata.secondary_text)
       .SetText(display_metadata.text);
 
