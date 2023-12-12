@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "third_party/blink/renderer/platform/graphics/gpu_memory_buffer_image_copy.h"
+#include "third_party/blink/renderer/platform/graphics/image_to_buffer_copier.h"
 
 #include "gpu/GLES2/gl2extchromium.h"
 #include "gpu/command_buffer/client/client_shared_image.h"
@@ -18,16 +18,16 @@
 
 namespace blink {
 
-GpuMemoryBufferImageCopy::GpuMemoryBufferImageCopy(
+ImageToBufferCopier::ImageToBufferCopier(
     gpu::gles2::GLES2Interface* gl,
     gpu::SharedImageInterface* sii)
     : gl_(gl), sii_(sii) {}
 
-GpuMemoryBufferImageCopy::~GpuMemoryBufferImageCopy() {
+ImageToBufferCopier::~ImageToBufferCopier() {
   CleanupDestImage();
 }
 
-bool GpuMemoryBufferImageCopy::EnsureDestImage(const gfx::Size& size) {
+bool ImageToBufferCopier::EnsureDestImage(const gfx::Size& size) {
   // Create a new SharedImage if the size has changed, or we don't have one.
   if (dest_image_size_ != size || !dest_shared_image_) {
     // Cleanup old copy image before allocating a new one.
@@ -38,7 +38,7 @@ bool GpuMemoryBufferImageCopy::EnsureDestImage(const gfx::Size& size) {
     dest_shared_image_ = sii_->CreateSharedImage(
         viz::SinglePlaneFormat::kRGBA_8888, size, gfx::ColorSpace(),
         kTopLeft_GrSurfaceOrigin, kPremul_SkAlphaType,
-        gpu::SHARED_IMAGE_USAGE_GLES2, "GpuMemoryBufferImageCopy",
+        gpu::SHARED_IMAGE_USAGE_GLES2, "ImageToBufferCopier",
         gpu::kNullSurfaceHandle, gfx::BufferUsage::SCANOUT);
     CHECK(dest_shared_image_);
     gl_->WaitSyncTokenCHROMIUM(sii_->GenUnverifiedSyncToken().GetConstData());
@@ -47,11 +47,11 @@ bool GpuMemoryBufferImageCopy::EnsureDestImage(const gfx::Size& size) {
 }
 
 std::pair<gfx::GpuMemoryBufferHandle, gpu::SyncToken>
-GpuMemoryBufferImageCopy::CopyImage(Image* image) {
+ImageToBufferCopier::CopyImage(Image* image) {
   if (!image)
     return {};
 
-  TRACE_EVENT0("gpu", "GpuMemoryBufferImageCopy::CopyImage");
+  TRACE_EVENT0("gpu", "ImageToBufferCopier::CopyImage");
 
   gfx::Size size = image->Size();
   if (!EnsureDestImage(size))
@@ -110,7 +110,7 @@ GpuMemoryBufferImageCopy::CopyImage(Image* image) {
                         sync_token);
 }
 
-void GpuMemoryBufferImageCopy::CleanupDestImage() {
+void ImageToBufferCopier::CleanupDestImage() {
   if (!dest_shared_image_) {
     return;
   }

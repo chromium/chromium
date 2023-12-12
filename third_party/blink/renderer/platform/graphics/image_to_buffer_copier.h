@@ -1,5 +1,5 @@
-#ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_GRAPHICS_GPU_MEMORY_BUFFER_IMAGE_COPY_H_
-#define THIRD_PARTY_BLINK_RENDERER_PLATFORM_GRAPHICS_GPU_MEMORY_BUFFER_IMAGE_COPY_H_
+#ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_GRAPHICS_IMAGE_TO_BUFFER_COPIER_H_
+#define THIRD_PARTY_BLINK_RENDERER_PLATFORM_GRAPHICS_IMAGE_TO_BUFFER_COPIER_H_
 
 #include <memory>
 #include "base/memory/raw_ptr.h"
@@ -13,13 +13,15 @@ namespace blink {
 
 class Image;
 
-class PLATFORM_EXPORT GpuMemoryBufferImageCopy {
-  USING_FAST_MALLOC(GpuMemoryBufferImageCopy);
+// Supports copying an Image to a native buffer, returning a handle to the
+// native buffer.
+class PLATFORM_EXPORT ImageToBufferCopier {
+  USING_FAST_MALLOC(ImageToBufferCopier);
 
  public:
-  GpuMemoryBufferImageCopy(gpu::gles2::GLES2Interface*,
+  ImageToBufferCopier(gpu::gles2::GLES2Interface*,
                            gpu::SharedImageInterface*);
-  ~GpuMemoryBufferImageCopy();
+  ~ImageToBufferCopier();
 
   // SyncToken will be completed after access to the buffer is finished by
   // GPU process.
@@ -40,4 +42,4 @@ class PLATFORM_EXPORT GpuMemoryBufferImageCopy {
 
 }  // namespace blink
 
-#endif  // THIRD_PARTY_BLINK_RENDERER_PLATFORM_GRAPHICS_GPU_MEMORY_BUFFER_IMAGE_COPY_H_
+#endif  // THIRD_PARTY_BLINK_RENDERER_PLATFORM_GRAPHICS_IMAGE_TO_BUFFER_COPIER_H_

@@ -54,10 +54,10 @@ blink_python_runner("runtime_enabled_features") {
 
   build_scripts_output_dir = "$blink_platform_output_dir/../build/scripts"
   outputs = [
+    "$blink_platform_output_dir/exported/web_runtime_features_base.cc",
     "$blink_platform_output_dir/runtime_enabled_features.cc",
     "$blink_platform_output_dir/runtime_enabled_features.h",
     "$blink_platform_output_dir/testing/runtime_enabled_features_test_helpers.h",
-    "$blink_platform_output_dir/exported/web_runtime_features_base.cc",
     "$build_scripts_output_dir/runtime_enabled_features.pickle",
   ]
 
@@ -83,8 +83,8 @@ blink_python_runner("runtime_feature_state_override_context") {
              "../build/scripts/templates/runtime_feature_state_override_context.cc.tmpl",
            ]
   outputs = [
-    "$blink_platform_output_dir/runtime_feature_state/runtime_feature_state_override_context.h",
     "$blink_platform_output_dir/runtime_feature_state/runtime_feature_state_override_context.cc",
+    "$blink_platform_output_dir/runtime_feature_state/runtime_feature_state_override_context.h",
   ]
 
   args = [
@@ -996,8 +996,6 @@ component("platform") {
     "graphics/gpu/xr_frame_transport.h",
     "graphics/gpu/xr_webgl_drawing_buffer.cc",
     "graphics/gpu/xr_webgl_drawing_buffer.h",
-    "graphics/gpu_memory_buffer_image_copy.cc",
-    "graphics/gpu_memory_buffer_image_copy.h",
     "graphics/gradient.cc",
     "graphics/gradient.h",
     "graphics/gradient_generated_image.cc",
@@ -1027,6 +1025,8 @@ component("platform") {
     "graphics/image_orientation_enum.h",
     "graphics/image_pattern.cc",
     "graphics/image_pattern.h",
+    "graphics/image_to_buffer_copier.cc",
+    "graphics/image_to_buffer_copier.h",
     "graphics/intercepting_canvas.cc",
     "graphics/intercepting_canvas.h",
     "graphics/interpolation_space.cc",
