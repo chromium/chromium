@@ -12,6 +12,11 @@
 name = "{{this.name}}"
 version = "{{this.version}}"
 
+[features]
+{{#each this.features}}
+"{{this}}" = []
+{{/each}}
+
 {{#each this.dependencies}}
 [dependencies.{{this.name}}]
 version = "{{this.version}}"

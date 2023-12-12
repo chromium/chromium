@@ -12,6 +12,10 @@
 name = "cc"
 version = "1.0.83"
 
+[features]
+"jobserver" = []
+"parallel" = []
+
 [dependencies.libc]
 version = "*"
 default_features = false
