@@ -183,6 +183,7 @@ Connection::Connection(const std::string& address)
 Connection::~Connection() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
+  window_event_manager_.Reset();
   platform_event_source.reset();
 }
 

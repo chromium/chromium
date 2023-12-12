@@ -113,10 +113,18 @@ WindowEventManager::WindowEventManager(Connection* connection)
     : connection_(connection) {}
 
 WindowEventManager::~WindowEventManager() {
+  Reset();
+}
+
+void WindowEventManager::Reset() {
+  if (!connection_) {
+    return;
+  }
   // Clear events still requested by not-yet-deleted ScopedEventSelectors.
   for (const auto& mask_pair : mask_map_) {
     SetEventMask(connection_, mask_pair.first, EventMask::NoEvent);
   }
+  connection_ = nullptr;
 }
 
 void WindowEventManager::SelectEvents(Window window, EventMask event_mask) {
@@ -143,7 +151,9 @@ void WindowEventManager::AfterMaskChanged(Window window, EventMask old_mask) {
     return;
   }
 
-  SetEventMask(connection_, window, new_mask);
+  if (connection_) {
+    SetEventMask(connection_, window, new_mask);
+  }
 
   if (new_mask == EventMask::NoEvent) {
     mask_map_.erase(window);
