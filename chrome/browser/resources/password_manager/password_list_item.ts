@@ -4,11 +4,14 @@
 import 'chrome://resources/cr_elements/cr_icon_button/cr_icon_button.js';
 import 'chrome://resources/cr_elements/cr_icons.css.js';
 import 'chrome://resources/cr_elements/cr_shared_style.css.js';
+import 'chrome://resources/cr_elements/icons.html.js';
+import 'chrome://resources/polymer/v3_0/paper-tooltip/paper-tooltip.js';
 import './site_favicon.js';
 import './searchable_label.js';
 import './shared_style.css.js';
 
 import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
+import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {PluralStringProxyImpl} from 'chrome://resources/js/plural_string_proxy.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
@@ -41,6 +44,8 @@ export class PasswordListItemElement extends PasswordListItemElementBase {
         observer: 'onItemChanged_',
       },
 
+      isAccountStoreUser: Boolean,
+
       first: Boolean,
 
       searchTerm: String,
@@ -54,13 +59,23 @@ export class PasswordListItemElement extends PasswordListItemElementBase {
        * The number of accounts in a group as a formatted string.
        */
       numberOfAccounts_: String,
+
+      enableButterOnDesktopFollowup_: {
+        type: Boolean,
+        value() {
+          return loadTimeData.getBoolean('enableButterOnDesktopFollowup');
+        },
+      },
     };
   }
 
   item: chrome.passwordsPrivate.CredentialGroup;
+  isAccountStoreUser: boolean;
   first: boolean;
   searchTerm: string;
   private numberOfAccounts_: string;
+  private tooltipText_: string;
+  private enableButterOnDesktopFollowup_: boolean;
 
   private computeElementClass_(): string {
     return this.first ? 'flex-centered' : 'flex-centered hr';
@@ -109,6 +124,12 @@ export class PasswordListItemElement extends PasswordListItemElementBase {
           await PluralStringProxyImpl.getInstance().getPluralString(
               'numberOfAccounts', this.item.entries.length);
     }
+    if (this.enableButterOnDesktopFollowup_) {
+      this.tooltipText_ =
+          await PluralStringProxyImpl.getInstance().getPluralString(
+              'deviceOnlyPasswordsIconTooltip',
+              this.getNumberOfCredentialsOnDevice_());
+    }
   }
 
   private showNumberOfAccounts_(): boolean {
@@ -142,6 +163,19 @@ export class PasswordListItemElement extends PasswordListItemElementBase {
       return this.item.name + ' • ' + matchingDomain;
     }
     return this.item.name;
+  }
+
+  private getNumberOfCredentialsOnDevice_(): number {
+    return this.item.entries
+        .filter(
+            entry => entry.storedIn ===
+                chrome.passwordsPrivate.PasswordStoreSet.DEVICE)
+        .length;
+  }
+
+  private shouldShowDeviceOnlyCredentialsIcon_(): boolean {
+    return this.enableButterOnDesktopFollowup_ && this.isAccountStoreUser &&
+        (this.getNumberOfCredentialsOnDevice_() > 0);
   }
 
   private getAriaLabel_(): string {

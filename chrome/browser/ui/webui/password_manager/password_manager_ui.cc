@@ -37,6 +37,7 @@
 #include "components/favicon_base/favicon_url_parser.h"
 #include "components/grit/components_scaled_resources.h"
 #include "components/password_manager/content/common/web_ui_constants.h"
+#include "components/password_manager/core/browser/features/password_features.h"
 #include "components/password_manager/core/browser/leak_detection_dialog_utils.h"
 #include "components/password_manager/core/common/password_manager_constants.h"
 #include "components/password_manager/core/common/password_manager_features.h"
@@ -432,6 +433,10 @@ content::WebUIDataSource* CreateAndAddPasswordsUIHTMLSource(
       "enableSendPasswords",
       base::FeatureList::IsEnabled(password_manager::features::kSendPasswords));
 
+  source->AddBoolean("enableButterOnDesktopFollowup",
+                     base::FeatureList::IsEnabled(
+                         password_manager::features::kButterOnDesktopFollowup));
+
   source->AddString("passwordSharingLearnMoreURL",
                     chrome::kPasswordSharingLearnMoreURL);
 
@@ -533,6 +538,9 @@ void AddPluralStrings(content::WebUI* web_ui) {
   plural_string_handler->AddLocalizedString(
       "compromisedPasswords",
       IDS_PASSWORD_MANAGER_UI_COMPROMISED_PASSWORDS_COUNT);
+  plural_string_handler->AddLocalizedString(
+      "deviceOnlyPasswordsIconTooltip",
+      IDS_PASSWORD_MANAGER_UI_DEVICE_ONLY_PASSWORDS_ICON_TOOLTIP);
   plural_string_handler->AddLocalizedString(
       "importPasswordsFailuresSummary",
       IDS_PASSWORD_MANAGER_UI_IMPORT_FAILURES_SUMMARY);
