@@ -368,20 +368,20 @@ void DedicatedWorkerGlobalScope::postMessage(ScriptState* script_state,
                                              const ScriptValue& message,
                                              const PostMessageOptions* options,
                                              ExceptionState& exception_state) {
+  recordreplay::AutoAssertBufferAllocations autoAsserts("RUN-2037-3011");
   Transferables transferables;
   scoped_refptr<SerializedScriptValue> serialized_message =
       PostMessageHelper::SerializeMessageByMove(script_state->GetIsolate(),
                                                 message, options, transferables,
                                                 exception_state);
-  recordreplay::AssertMaybeEventsDisallowed("[RUN-1691] DedicatedWorkerGlobalScope::postMessage A");
   if (exception_state.HadException())
     return;
-  recordreplay::AssertMaybeEventsDisallowed("[RUN-1691] DedicatedWorkerGlobalScope::postMessage B");
   DCHECK(serialized_message);
   BlinkTransferableMessage transferable_message;
   transferable_message.message = serialized_message;
   transferable_message.sender_origin =
       GetExecutionContext()->GetSecurityOrigin()->IsolatedCopy();
+
   // Disentangle the port in preparation for sending it to the remote context.
   transferable_message.ports = MessagePort::DisentanglePorts(
       ExecutionContext::From(script_state), transferables.message_ports,
@@ -392,12 +392,8 @@ void DedicatedWorkerGlobalScope::postMessage(ScriptState* script_state,
       WorkerThreadDebugger::From(script_state->GetIsolate());
   transferable_message.sender_stack_trace_id =
       debugger->StoreCurrentStackTrace("postMessage");
-
-  recordreplay::AssertMaybeEventsDisallowed("[RUN-1691] DedicatedWorkerGlobalScope::postMessage C");
   WorkerObjectProxy().PostMessageToWorkerObject(
       std::move(transferable_message));
-
-  recordreplay::AssertMaybeEventsDisallowed("[RUN-1691] DedicatedWorkerGlobalScope::postMessage D");
 }
 
 void DedicatedWorkerGlobalScope::DidReceiveResponseForClassicScript(

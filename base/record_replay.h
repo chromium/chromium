@@ -282,6 +282,16 @@ class SCOPED_LOCKABLE AutoUnlockMaybeEventsDisallowed {
   base::Lock& lock_;
 };
 
+// RAII class to enable recording assertions on dynamic-length buffer 
+// allocations. Used to track down the allocation causing mismatched message 
+// sizes when replaying.
+// TODO: Merge this with the similar `AutoRecordReplayAssertBufferAllocations`
+// in mojo/public/cpp/bindings/lib/buffer.cc (for main-thread only).
+struct AutoAssertBufferAllocations {
+  AutoAssertBufferAllocations(const char* issueLabel = "");
+  ~AutoAssertBufferAllocations();
+};
+
 // Utility macro to add RecordReplayId to a class.
 // To be used in conjunction with INIT_RECORD_REPLAY_ID.
 #define HAS_RECORD_REPLAY_ID() \

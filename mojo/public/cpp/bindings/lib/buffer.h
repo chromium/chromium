@@ -126,9 +126,9 @@ class COMPONENT_EXPORT(MOJO_CPP_BINDINGS_BASE) Buffer {
   size_t cursor_ = 0;
 };
 
-// RAII class to enable recording assertions that all allocated buffers have a
-// consistent size. Used to track down the reason for mismatched message sizes
-// when replaying.
+// RAII class to enable recording assertions on dynamic-length buffer
+// allocations. Used to track down allocations that cause mismatched message
+// sizes when replaying.
 struct AutoRecordReplayAssertBufferAllocations {
   AutoRecordReplayAssertBufferAllocations(const char* issueLabel = "");
   ~AutoRecordReplayAssertBufferAllocations();
