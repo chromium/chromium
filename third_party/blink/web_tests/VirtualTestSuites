@@ -1372,7 +1372,7 @@
               "editing/text-iterator/auto-expand-details-shadowdom.html"],
     "args": ["--force-renderer-accessibility",
              "--disable-threaded-compositing", "--disable-threaded-animation"],
-    "expires": "Jul 1, 2023"
+    "expires": "Jul 1, 2025"
   },
   {
   "prefix": "force-renderer-accessibility-parser-yield-and-delay-often",
