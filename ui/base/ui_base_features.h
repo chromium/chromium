@@ -87,10 +87,6 @@ COMPONENT_EXPORT(UI_BASE_FEATURES)
 BASE_DECLARE_FEATURE(kSystemCursorSizeSupported);
 COMPONENT_EXPORT(UI_BASE_FEATURES) bool IsSystemCursorSizeSupported();
 
-// Used to enable the common select popup.
-COMPONENT_EXPORT(UI_BASE_FEATURES) BASE_DECLARE_FEATURE(kUseCommonSelectPopup);
-COMPONENT_EXPORT(UI_BASE_FEATURES) bool IsUseCommonSelectPopupEnabled();
-
 // Used to enable keyboard accessible tooltips in in-page content
 // (i.e., inside Blink). See
 // ::views::features::kKeyboardAccessibleTooltipInViews for

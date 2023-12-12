@@ -329,15 +329,6 @@ bool IsEyeDropperEnabled() {
   return base::FeatureList::IsEnabled(features::kEyeDropper);
 }
 
-// Enable the common select popup.
-BASE_FEATURE(kUseCommonSelectPopup,
-             "UseCommonSelectPopup",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
-bool IsUseCommonSelectPopupEnabled() {
-  return base::FeatureList::IsEnabled(features::kUseCommonSelectPopup);
-}
-
 // Used to enable keyboard accessible tooltips in in-page content
 // (i.e., inside Blink). See
 // ::views::features::kKeyboardAccessibleTooltipInViews for

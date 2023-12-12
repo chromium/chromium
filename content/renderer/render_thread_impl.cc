@@ -162,7 +162,6 @@
 #include "third_party/blink/public/web/web_view.h"
 #include "third_party/skia/include/core/SkFontMgr.h"
 #include "third_party/skia/include/core/SkGraphics.h"
-#include "ui/base/ui_base_features.h"
 #include "ui/base/ui_base_switches.h"
 #include "ui/base/ui_base_switches_util.h"
 #include "ui/display/display_switches.h"
@@ -502,11 +501,6 @@ void RenderThreadImpl::Init() {
 
 #if BUILDFLAG(USE_EXTERNAL_POPUP_MENU)
   // On Mac and Android Java UI, the select popups are rendered by the browser.
-#if BUILDFLAG(IS_MAC)
-  // When UseCommonSelectPopup is enabled, the internal popup menu should be
-  // used.
-  if (!features::IsUseCommonSelectPopupEnabled())
-#endif
     blink::WebView::SetUseExternalPopupMenus(true);
 #endif
 
