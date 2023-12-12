@@ -5219,11 +5219,6 @@
     "expiry_milestone": 122
   },
   {
-    "name": "lens-camera-assisted-search",
-    "owners": [ "yusuyoutube@google.com", "benwgold@google.com", "fgorski@chromium.org", "wylieb@chromium.org", "lens-chrome@google.com" ],
-    "expiry_milestone": 114
-  },
-  {
     "name": "link-cross-device-internals",
     "owners": [ "chromeos-cross-device-eng@google.com", "dclasson@chromium.org" ],
     "expiry_milestone": 125

@@ -250,7 +250,6 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &kIncognitoScreenshot,
     &kInstanceSwitcher,
     &kInstantStart,
-    &kLensCameraAssistedSearch,
     &kLensOnQuickActionSearchWidget,
     &kNewTabSearchEngineUrlAndroid,
     &kNotificationPermissionVariant,
@@ -687,10 +686,6 @@ BASE_FEATURE(kContextMenuSearchAndShopWithGoogleLens,
 BASE_FEATURE(kContextMenuTranslateWithGoogleLens,
              "ContextMenuTranslateWithGoogleLens",
              base::FEATURE_DISABLED_BY_DEFAULT);
-
-BASE_FEATURE(kLensCameraAssistedSearch,
-             "LensCameraAssistedSearch",
-             base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kLensOnQuickActionSearchWidget,
              "LensOnQuickActionSearchWidget",
