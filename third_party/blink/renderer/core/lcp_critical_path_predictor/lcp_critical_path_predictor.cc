@@ -11,6 +11,7 @@
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/html/html_image_element.h"
 #include "third_party/blink/renderer/core/lcp_critical_path_predictor/element_locator.h"
+#include "third_party/blink/renderer/core/loader/document_loader.h"
 
 namespace blink {
 
@@ -201,6 +202,34 @@ void LCPCriticalPathPredictor::OnFontFetched(const KURL& url) {
     return;
   }
   GetHost().NotifyFetchedFont(url);
+}
+
+void LCPCriticalPathPredictor::OnStartPreload(const KURL& url) {
+  if (!base::FeatureList::IsEnabled(
+          blink::features::kHttpDiskCachePrewarming)) {
+    return;
+  }
+  if (!frame_->IsOutermostMainFrame()) {
+    return;
+  }
+  if (!url.ProtocolIsInHTTPFamily()) {
+    return;
+  }
+  static size_t max_url_length = base::checked_cast<size_t>(
+      features::kHttpDiskCachePrewarmingMaxUrlLength.Get());
+  if (url.GetString().length() > max_url_length) {
+    return;
+  }
+  Document* document = frame_->GetDocument();
+  if (!document || !document->Loader()) {
+    return;
+  }
+  base::TimeDelta resource_load_start =
+      base::TimeTicks::Now() -
+      document->Loader()->GetTiming().NavigationStart();
+  CHECK_GE(resource_load_start, base::Seconds(0));
+  // TODO(chikamune): Send url and resource_load_start to browser.
+  NOTIMPLEMENTED();
 }
 
 mojom::blink::LCPCriticalPathPredictorHost&

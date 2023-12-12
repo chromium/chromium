@@ -687,6 +687,12 @@ BLINK_COMMON_EXPORT extern const base::FeatureParam<
 BLINK_COMMON_EXPORT extern const base::FeatureParam<bool>
     kLCPPFontURLPredictorEnablePrefetch;
 
+// If enabled, prewarm HTTP disk cache based on the previous navigation.
+BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kHttpDiskCachePrewarming);
+
+BLINK_COMMON_EXPORT extern const base::FeatureParam<int>
+    kHttpDiskCachePrewarmingMaxUrlLength;
+
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kLCPVideoFirstFrame);
 
 // Kill-switch for new parsing behaviour of the X-Content-Type-Options header.

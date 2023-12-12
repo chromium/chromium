@@ -1155,6 +1155,14 @@ const base::FeatureParam<LcppPreloadLazyLoadImageType>
 const base::FeatureParam<bool> kLCPPFontURLPredictorEnablePrefetch{
     &kLCPPFontURLPredictor, "lcpp_enable_font_prefetch", false};
 
+BASE_FEATURE(kHttpDiskCachePrewarming,
+             "HttpDiskCachePrewarming",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+const base::FeatureParam<int> kHttpDiskCachePrewarmingMaxUrlLength{
+    &kHttpDiskCachePrewarming, "http_disk_cache_prewarming_max_url_length",
+    1024};
+
 // Enables reporting as LCP of the time the first frame of a video was painted.
 BASE_FEATURE(kLCPVideoFirstFrame,
              "LCPVideoFirstFrame",
