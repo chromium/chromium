@@ -13,7 +13,7 @@ import {BaseDialog} from './dialogs.js';
 // base class 'BaseDialog'.
 export class FileManagerDialogBase extends BaseDialog {
   /**
-   * @param {HTMLElement} parentNode Parent node of the dialog.
+   * @param {HTMLDialogElement} parentNode Parent node of the dialog.
    */
   constructor(parentNode) {
     super(parentNode);
@@ -28,7 +28,7 @@ export class FileManagerDialogBase extends BaseDialog {
    */
   initDom() {
     super.initDom();
-    super.hasModalContainer = true;
+    this.hasModalContainer = true;
   }
 
   /**

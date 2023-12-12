@@ -55,7 +55,6 @@ static_js_files = [
   "file_manager/foreground/js/ui/context_menu_handler.js",
   "file_manager/foreground/js/ui/default_task_dialog.js",
   "file_manager/foreground/js/ui/dialog_footer.js",
-  "file_manager/foreground/js/ui/dialogs.js",
   "file_manager/foreground/js/ui/directory_tree.js",
   "file_manager/foreground/js/ui/drag_selector.js",
   "file_manager/foreground/js/ui/file_manager_dialog_base.js",
@@ -190,6 +189,7 @@ ts_files = [
   # Foreground UI.
   "file_manager/foreground/js/deferred_elements.ts",
   "file_manager/foreground/js/task_history.ts",
+  "file_manager/foreground/js/ui/dialogs.ts",
   "file_manager/foreground/js/ui/combobutton.ts",
   "file_manager/foreground/js/ui/command.ts",
   "file_manager/foreground/js/ui/file_grid.ts",

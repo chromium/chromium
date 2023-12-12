@@ -13,7 +13,7 @@ import {ConfirmDialog} from './dialogs.js';
 // class 'ConfirmDialog'.
 export class FilesConfirmDialog extends ConfirmDialog {
   /**
-   * @param {!Element} parentElement
+   * @param {!HTMLDialogElement} parentElement
    */
   constructor(parentElement) {
     super(parentElement);
@@ -50,7 +50,7 @@ export class FilesConfirmDialog extends ConfirmDialog {
    */
   initDom() {
     super.initDom();
-    super.hasModalContainer = true;
+    this.hasModalContainer = true;
 
     // @ts-ignore: error TS2531: Object is possibly 'null'.
     this.frame.classList.add('files-confirm-dialog');

@@ -155,7 +155,7 @@ export class FileManagerUI {
   /**
    * The container element of the dialog.
    */
-  dialogContainer: HTMLElement;
+  dialogContainer: HTMLDialogElement;
 
   /**
    * Context menu for texts.
@@ -288,12 +288,12 @@ export class FileManagerUI {
    * @param launchParam Launch param.
    */
   constructor(
-      providersModel: ProvidersModel, public element: HTMLElement,
+      providersModel: ProvidersModel, public element: HTMLDialogElement,
       launchParam: LaunchParam) {
     // Initialize the dialog label. This should be done before constructing
     // dialog instances.
-    BaseDialog.OK_LABEL = str('OK_LABEL');
-    BaseDialog.CANCEL_LABEL = str('CANCEL_LABEL');
+    BaseDialog.okLabel = str('OK_LABEL');
+    BaseDialog.cancelLabel = str('CANCEL_LABEL');
 
     this.dialogType_ = launchParam.type;
 
@@ -329,7 +329,8 @@ export class FileManagerUI {
         queryRequiredElement('#format-dialog') as FilesFormatDialog;
 
     this.dialogContainer =
-        queryRequiredElement('.dialog-container', this.element);
+        queryRequiredElement('.dialog-container', this.element) as
+        HTMLDialogElement;
 
     this.textContextMenu = queryDecoratedElement('#text-context-menu', Menu);
 

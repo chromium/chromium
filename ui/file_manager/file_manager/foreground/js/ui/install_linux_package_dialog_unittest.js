@@ -27,7 +27,9 @@ export function testInstallButtonHiddenUntilInfoReady() {
   };
 
   const info = {name: 'n', version: 'v', info: 'i', summary: 's'};
-  const dialog = new InstallLinuxPackageDialog(document.body);
+  const dialogElement = document.createElement('dialog');
+  document.body.append(dialogElement);
+  const dialog = new InstallLinuxPackageDialog(dialogElement);
 
   // Show dialog and verify that the install button is disabled.
   dialog.showInstallLinuxPackageDialog(/** @type {!Entry} */ ({}));

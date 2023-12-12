@@ -20,7 +20,7 @@ import {FileManagerDialogBase} from './file_manager_dialog_base.js';
 // extends base class 'FileManagerDialogBase'.
 export class InstallLinuxPackageDialog extends FileManagerDialogBase {
   /**
-   * @param {HTMLElement} parentNode Node to be parent for this dialog.
+   * @param {HTMLDialogElement} parentNode Node to be parent for this dialog.
    */
   constructor(parentNode) {
     super(parentNode);
@@ -186,7 +186,7 @@ export class InstallLinuxPackageDialog extends FileManagerDialogBase {
       label.textContent = detail[0] + ': ';
       label.className = 'install-linux-package-detail-label';
       const text = this.document_.createElement('div');
-      text.textContent = detail[1];
+      text.textContent = detail[1] || null;
       text.className = 'install-linux-package-detail-value';
       this.details_frame_.appendChild(label);
       this.details_frame_.appendChild(text);

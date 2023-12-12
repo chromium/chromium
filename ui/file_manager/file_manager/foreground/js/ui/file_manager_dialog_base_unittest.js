@@ -10,7 +10,9 @@ import {FileManagerDialogBase} from './file_manager_dialog_base.js';
 
 // @ts-ignore: error TS7006: Parameter 'done' implicitly has an 'any' type.
 export async function testShowDialogAfterHide(done) {
-  const dialog = new FileManagerDialogBase(document.body);
+  const dialogElement = document.createElement('dialog');
+  document.body.append(dialogElement);
+  const dialog = new FileManagerDialogBase(dialogElement);
 
   /** @return {boolean} True if cr.ui.dialog container has .shown class */
   function isShown() {

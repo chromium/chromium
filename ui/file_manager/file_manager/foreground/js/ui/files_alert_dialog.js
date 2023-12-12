@@ -13,7 +13,7 @@ import {AlertDialog} from './dialogs.js';
 // class 'AlertDialog'.
 export class FilesAlertDialog extends AlertDialog {
   /**
-   * @param {!HTMLElement} parentNode
+   * @param {!HTMLDialogElement} parentNode
    */
   constructor(parentNode) {
     super(parentNode);
@@ -28,7 +28,7 @@ export class FilesAlertDialog extends AlertDialog {
    */
   initDom() {
     super.initDom();
-    super.hasModalContainer = true;
+    this.hasModalContainer = true;
 
     // @ts-ignore: error TS2531: Object is possibly 'null'.
     this.frame.classList.add('files-alert-dialog');
