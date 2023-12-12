@@ -67,6 +67,7 @@ proto_library("userdataauth_proto") {
     "//third_party/cros_system_api/dbus/cryptohome/UserDataAuth.proto",
     "//third_party/cros_system_api/dbus/cryptohome/auth_factor.proto",
     "//third_party/cros_system_api/dbus/cryptohome/fido.proto",
+    "//third_party/cros_system_api/dbus/cryptohome/recoverable_key_store.proto",
   ]
 
   proto_out_dir = "chromeos/ash/components/dbus/cryptohome"
