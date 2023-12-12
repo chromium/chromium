@@ -93,31 +93,6 @@ void ApplyOverflowClip(OverflowClipAxes overflow_clip_axes,
   }
 }
 
-OofContainingBlock<PhysicalOffset> PhysicalContainingBlock(
-    FragmentBuilder* builder,
-    PhysicalSize outer_size,
-    PhysicalSize inner_size,
-    const OofContainingBlock<LogicalOffset>& containing_block) {
-  return OofContainingBlock<PhysicalOffset>(
-      containing_block.Offset().ConvertToPhysical(
-          builder->Style().GetWritingDirection(), outer_size, inner_size),
-      RelativeInsetToPhysical(containing_block.RelativeOffset(),
-                              builder->Style().GetWritingDirection()),
-      containing_block.Fragment(),
-      containing_block.ClippedContainerBlockOffset(),
-      containing_block.IsInsideColumnSpanner());
-}
-
-OofContainingBlock<PhysicalOffset> PhysicalContainingBlock(
-    FragmentBuilder* builder,
-    PhysicalSize size,
-    const OofContainingBlock<LogicalOffset>& containing_block) {
-  PhysicalSize containing_block_size =
-      containing_block.Fragment() ? containing_block.Fragment()->Size() : size;
-  return PhysicalContainingBlock(builder, size, containing_block_size,
-                                 containing_block);
-}
-
 }  // namespace
 
 // static
@@ -434,68 +409,6 @@ void PhysicalBoxFragment::Dispose() {
     SetInkOverflowType(ink_overflow_.Reset(InkOverflowType()));
   if (HasItems())
     ComputeItemsAddress()->~FragmentItems();
-}
-
-// TODO(kojii): Move to physical_fragment.cc
-PhysicalFragment::OofData* PhysicalFragment::FragmentedOofDataFromBuilder(
-    FragmentBuilder* builder) {
-  DCHECK(has_fragmented_out_of_flow_data_);
-  DCHECK_EQ(has_fragmented_out_of_flow_data_,
-            !builder->oof_positioned_fragmentainer_descendants_.empty() ||
-                !builder->multicols_with_pending_oofs_.empty());
-  auto* fragmented_data = MakeGarbageCollected<FragmentedOofData>();
-  fragmented_data->oof_positioned_fragmentainer_descendants.reserve(
-      builder->oof_positioned_fragmentainer_descendants_.size());
-  const PhysicalSize& size = Size();
-  WritingDirectionMode writing_direction = builder->GetWritingDirection();
-  const WritingModeConverter converter(writing_direction, size);
-  for (const auto& descendant :
-       builder->oof_positioned_fragmentainer_descendants_) {
-    OofInlineContainer<PhysicalOffset> inline_container(
-        descendant.inline_container.container,
-        converter.ToPhysical(descendant.inline_container.relative_offset,
-                             PhysicalSize()));
-    OofInlineContainer<PhysicalOffset> fixedpos_inline_container(
-        descendant.fixedpos_inline_container.container,
-        converter.ToPhysical(
-            descendant.fixedpos_inline_container.relative_offset,
-            PhysicalSize()));
-
-    // The static position should remain relative to the containing block.
-    PhysicalSize containing_block_size =
-        descendant.containing_block.Fragment()
-            ? descendant.containing_block.Fragment()->Size()
-            : size;
-    const WritingModeConverter containing_block_converter(
-        writing_direction, containing_block_size);
-
-    fragmented_data->oof_positioned_fragmentainer_descendants.emplace_back(
-        descendant.Node(),
-        descendant.static_position.ConvertToPhysical(
-            containing_block_converter),
-        descendant.requires_content_before_breaking, inline_container,
-        PhysicalContainingBlock(builder, size, containing_block_size,
-                                descendant.containing_block),
-        PhysicalContainingBlock(builder, size,
-                                descendant.fixedpos_containing_block),
-        fixedpos_inline_container);
-  }
-  for (const auto& multicol : builder->multicols_with_pending_oofs_) {
-    auto& value = multicol.value;
-    OofInlineContainer<PhysicalOffset> fixedpos_inline_container(
-        value->fixedpos_inline_container.container,
-        converter.ToPhysical(value->fixedpos_inline_container.relative_offset,
-                             PhysicalSize()));
-    fragmented_data->multicols_with_pending_oofs.insert(
-        multicol.key,
-        MakeGarbageCollected<MulticolWithPendingOofs<PhysicalOffset>>(
-            value->multicol_offset.ConvertToPhysical(
-                builder->Style().GetWritingDirection(), size, PhysicalSize()),
-            PhysicalContainingBlock(builder, size,
-                                    value->fixedpos_containing_block),
-            fixedpos_inline_container));
-  }
-  return fragmented_data;
 }
 
 const LayoutBox* PhysicalBoxFragment::OwnerLayoutBox() const {
