@@ -22,8 +22,7 @@
 
     div {
       display: table-cell;
-      border: none;
-      padding: 1px;
+      padding: 3px;
     }
 
     [role="cell"] > * {
@@ -40,13 +39,14 @@
       border: none;
     }
 
+    [role="cell"]:not(.row-remove-btn-cell) {
+      border-right: 1px solid rgba(0, 0, 0, .06);
+    }
+
     [role="cell"] > select {
       padding: 0px;
     }
 
-    .name-cell {
-      border-right: 1px solid rgba(0, 0, 0, .06);
-    }
     label {
       display: none;
     }
@@ -175,6 +175,6 @@
     </option>
   </select>
 </div>
-<div role="cell">
+<div role="cell" class="row-remove-btn-cell">
   <button class="remove-btn">–</button>
 </div>
