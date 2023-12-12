@@ -43,11 +43,12 @@ class ProfileOAuth2TokenServiceDelegateTest : public testing::Test {
 TEST_F(ProfileOAuth2TokenServiceDelegateTest, InvalidateTokensForMultilogin) {
   // Check that OnAuthErrorChanged is not fired from
   // InvalidateTokensForMultilogin and refresh tokens are not set in error.
-  EXPECT_CALL(
-      observer_,
-      OnAuthErrorChanged(::testing::_,
-                         GoogleServiceAuthError(
-                             GoogleServiceAuthError::INVALID_GAIA_CREDENTIALS)))
+  EXPECT_CALL(observer_,
+              OnAuthErrorChanged(
+                  ::testing::_,
+                  GoogleServiceAuthError::FromInvalidGaiaCredentialsReason(
+                      GoogleServiceAuthError::InvalidGaiaCredentialsReason::
+                          CREDENTIALS_REJECTED_BY_SERVER)))
       .Times(0);
 
   const CoreAccountId account_id1 = CoreAccountId::FromGaiaId("account_id1");

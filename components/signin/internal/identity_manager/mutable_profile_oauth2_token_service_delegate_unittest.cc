@@ -722,12 +722,12 @@ TEST_F(MutableProfileOAuth2TokenServiceDelegateTest,
   testing::Mock::VerifyAndClearExpectations(&observer);
 
   // This should be fired after error is set.
-  EXPECT_CALL(
-      observer,
-      OnAuthErrorChanged(account_id1,
-                         GoogleServiceAuthError(
-                             GoogleServiceAuthError::INVALID_GAIA_CREDENTIALS)))
-      .Times(1);
+  EXPECT_CALL(observer,
+              OnAuthErrorChanged(
+                  account_id1,
+                  GoogleServiceAuthError::FromInvalidGaiaCredentialsReason(
+                      GoogleServiceAuthError::InvalidGaiaCredentialsReason::
+                          CREDENTIALS_REJECTED_BY_SERVER)));
 
   oauth2_service_delegate_->InvalidateTokenForMultilogin(account_id1);
   EXPECT_EQ(oauth2_service_delegate_->GetAuthError(account_id1).state(),
