@@ -64,7 +64,8 @@ DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kTabId);
 DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kTabBId);
 }  // namespace
 
-// Remaining tests should be migrated to FindInPageTest
+// TODO(crbug.com/1509945): Remaining tests should be migrated to
+// FindInPageTest.
 class LegacyFindInPageTest : public InProcessBrowserTest {
  public:
   LegacyFindInPageTest() {
@@ -422,54 +423,35 @@ IN_PROC_BROWSER_TEST_F(FindInPageTest, SelectionRestoreOnTabSwitch) {
                         &FindBarView::GetFindSelectedText, kDe));
 }
 
-IN_PROC_BROWSER_TEST_F(LegacyFindInPageTest, FocusRestoreOnTabSwitch) {
-  ASSERT_TRUE(ui_test_utils::BringBrowserWindowToFront(browser()));
-  ASSERT_TRUE(embedded_test_server()->Start());
+IN_PROC_BROWSER_TEST_F(FindInPageTest, FocusRestoreOnTabSwitch) {
+  constexpr char16_t kSearchA[] = u"a";
+  constexpr char16_t kSearchB[] = u"b";
+  const GURL page_a = embedded_test_server()->GetURL("/a.html");
+  const GURL page_b = embedded_test_server()->GetURL("/b.html");
 
-  // First we navigate to our test page (tab A).
-  GURL url = embedded_test_server()->GetURL(kSimplePage);
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
-
-  chrome::Find(browser());
-  EXPECT_TRUE(IsViewFocused(browser(), VIEW_ID_FIND_IN_PAGE_TEXT_FIELD));
-
-  // Search for 'a'.
-  ui_test_utils::FindInPage(
-      browser()->tab_strip_model()->GetActiveWebContents(), u"a", true, false,
-      nullptr, nullptr);
-  EXPECT_EQ(u"a", GetFindBarSelectedText());
-
-  // Open another tab (tab B).
-  auto* const contents =
-      chrome::AddSelectedTabWithURL(browser(), url, ui::PAGE_TRANSITION_TYPED);
-  content::WaitForLoadStop(contents);
-
-  // Make sure Find box is open.
-  chrome::Find(browser());
-  EXPECT_TRUE(IsViewFocused(browser(), VIEW_ID_FIND_IN_PAGE_TEXT_FIELD));
-
-  // Search for 'b'.
-  ui_test_utils::FindInPage(
-      browser()->tab_strip_model()->GetActiveWebContents(), u"b", true, false,
-      nullptr, nullptr);
-  EXPECT_EQ(u"b", GetFindBarSelectedText());
-
-  // Set focus away from the Find bar (to the Location bar).
-  chrome::FocusLocationBar(browser());
-  EXPECT_TRUE(IsViewFocused(browser(), VIEW_ID_OMNIBOX));
-
-  // Select tab A. Find bar should get focus.
-  browser()->tab_strip_model()->ActivateTabAt(
-      0, TabStripUserGestureDetails(
-             TabStripUserGestureDetails::GestureType::kOther));
-  EXPECT_TRUE(IsViewFocused(browser(), VIEW_ID_FIND_IN_PAGE_TEXT_FIELD));
-  EXPECT_EQ(u"a", GetFindBarSelectedText());
-
-  // Select tab B. Location bar should get focus.
-  browser()->tab_strip_model()->ActivateTabAt(
-      1, TabStripUserGestureDetails(
-             TabStripUserGestureDetails::GestureType::kOther));
-  EXPECT_TRUE(IsViewFocused(browser(), VIEW_ID_OMNIBOX));
+  RunTestSequence(
+      // Open tab A and search for 'a'.
+      InstrumentTab(kTabId), NavigateWebContents(kTabId, page_a),
+      WaitForWebContentsReady(kTabId),
+      ObserveState(views::test::kCurrentWidgetFocus), ShowFindBar(),
+      EnterText(FindBarView::kTextField, kSearchA),
+      CheckViewProperty(FindBarView::kElementId, &FindBarView::GetFindText,
+                        kSearchA),
+      // Open another tab (tab B) and search for 'b'.
+      AddInstrumentedTab(kTabBId, page_b), ShowFindBar(),
+      EnterText(FindBarView::kTextField, kSearchB),
+      CheckViewProperty(FindBarView::kElementId, &FindBarView::GetFindText,
+                        kSearchB),
+      // Set focus away from the Find bar (to the omnibox).
+      WithView(kOmniboxElementId,
+               [](views::View* view) { view->RequestFocus(); }),
+      CheckViewProperty(kOmniboxElementId, &views::View::HasFocus, true),
+      // Select tab A, Find bar should get focus.
+      SelectTab(kTabStripElementId, 0),
+      CheckViewProperty(FindBarView::kTextField, &views::View::HasFocus, true),
+      // Select tab B, Omnibox should get focus.
+      SelectTab(kTabStripElementId, 1),
+      CheckViewProperty(kOmniboxElementId, &views::View::HasFocus, true));
 }
 
 IN_PROC_BROWSER_TEST_F(LegacyFindInPageTest, FocusRestoreOnTabSwitchDismiss) {
