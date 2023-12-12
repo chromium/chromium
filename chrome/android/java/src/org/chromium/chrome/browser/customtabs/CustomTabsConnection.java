@@ -2018,10 +2018,6 @@ public class CustomTabsConnection {
             String stateKey,
             ArrayList<String> foundTextFragments) {}
 
-    protected boolean isCCTAPIDeprecated(String featureParamName) {
-        return true;
-    }
-
     /**
      * @return The CalledWarmup state for the session.
      */

@@ -51,7 +51,6 @@ BASE_DECLARE_FEATURE(kCCTBottomBarSwipeUpGesture);
 BASE_DECLARE_FEATURE(kCCTBrandTransparency);
 BASE_DECLARE_FEATURE(kCCTBrandTransparencyMemoryImprovement);
 BASE_DECLARE_FEATURE(kCCTClientDataHeader);
-BASE_DECLARE_FEATURE(kCCTDeprecatedAPIs);
 BASE_DECLARE_FEATURE(kCCTFeatureUsage);
 BASE_DECLARE_FEATURE(kCCTIncognitoAvailableToThirdParty);
 BASE_DECLARE_FEATURE(kCCTIntentFeatureOverrides);

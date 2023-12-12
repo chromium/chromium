@@ -270,8 +270,6 @@ found in the LICENSE file.
     <dimen name="custom_tabs_url_text_size">12sp</dimen>
     <dimen name="custom_tabs_title_text_size">16sp</dimen>
     <dimen name="custom_tabs_bottom_bar_max_height">120dp</dimen>
-    <dimen name="custom_tabs_screenshot_height">300dp</dimen>
-    <dimen name="custom_tabs_screenshot_width">190dp</dimen>
     <dimen name="custom_tabs_handle_height">16dp</dimen>
     <dimen name="custom_tabs_elevation">8dp</dimen>
     <dimen name="custom_tabs_shadow_offset">4dp</dimen>
