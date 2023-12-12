@@ -89,6 +89,16 @@ void LayoutImage::StyleDidChange(StyleDifference diff,
   if (StyleRef().ImageOrientation() != old_orientation) {
     IntrinsicSizeChanged();
   }
+  // LayoutImage is used with arbitrary `display` types.  See the beginning of
+  // LayoutObject::CreateObject().
+  //
+  // Table-internal display types create anonymous inline or block <table>s
+  // depending on the parent. But if an element with a table-internal display
+  // type creates a LayoutImage, such anonymous <table> is not created, and the
+  // LayoutImage should adjust IsInline flag for inlinifying.
+  if (StyleRef().IsInInlinifyingDisplay()) {
+    SetInline(true);
+  }
 }
 
 void LayoutImage::SetImageResource(LayoutImageResource* image_resource) {

@@ -26,4 +26,28 @@ TEST_F(LayoutRubyBaseTest, AddChildNoBlockChildren) {
             base_box->FirstChild()->NextSibling()->StyleRef().Display());
 }
 
+// crbug.com/1510269
+
+TEST_F(LayoutRubyBaseTest, AddImageNoBlockChildren) {
+  SetBodyInnerHTML(R"HTML(
+<style> .c7 { content: url(data:text/plain,foo); }</style>
+<ruby id="target">abc</ruby>)HTML");
+  Element* caption = GetDocument().CreateRawElement(html_names::kCaptionTag);
+  caption->setAttribute(html_names::kClassAttr, AtomicString("c7"));
+  GetElementById("target")->appendChild(caption);
+  UpdateAllLifecyclePhasesForTest();
+
+  auto* run_box = To<LayoutRubyColumn>(
+      GetLayoutObjectByElementId("target")->SlowFirstChild());
+  auto* base_box = run_box->RubyBase();
+  // Adding a LayoutImage with display:table-caption should not move the prior
+  // Text to an anonymous block.
+  EXPECT_TRUE(base_box->FirstChild()->IsText());
+  LayoutObject* caption_box = base_box->FirstChild()->NextSibling();
+  ASSERT_TRUE(caption_box);
+  EXPECT_TRUE(caption_box->IsImage());
+  EXPECT_EQ(EDisplay::kTableCaption, caption_box->StyleRef().Display());
+  EXPECT_TRUE(caption_box->IsInline());
+}
+
 }  // namespace blink
