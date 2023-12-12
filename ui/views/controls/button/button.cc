@@ -815,12 +815,12 @@ void ButtonActionViewInterface::ActionItemChangedImpl(
   }
 }
 
-void ButtonActionViewInterface::LinkActionTriggerToView(
-    base::RepeatingClosure trigger_action_callback) {
+void ButtonActionViewInterface::LinkActionInvocationToView(
+    base::RepeatingClosure invoke_action_callback) {
   if (!action_view_) {
     return;
   }
-  action_view_->SetCallback(trigger_action_callback);
+  action_view_->SetCallback(invoke_action_callback);
 }
 
 BEGIN_METADATA(Button)

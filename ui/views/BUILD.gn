@@ -326,6 +326,7 @@ component("views") {
     "accessibility/view_accessibility_utils.cc",
     "accessible_pane_view.cc",
     "action_view_controller.cc",
+    "action_view_interface.cc",
     "animation/animation_abort_handle.cc",
     "animation/animation_builder.cc",
     "animation/animation_delegate_views.cc",

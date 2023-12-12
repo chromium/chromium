@@ -7,18 +7,60 @@
 #include <memory>
 #include <utility>
 
+#include "base/memory/raw_ptr.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/actions/actions.h"
+#include "ui/base/class_property.h"
+#include "ui/base/metadata/metadata_header_macros.h"
+#include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/events/base_event_utils.h"
 #include "ui/events/event.h"
 #include "ui/events/types/event_type.h"
 #include "ui/gfx/geometry/point.h"
+#include "ui/views/action_view_interface.h"
 #include "ui/views/controls/button/md_text_button.h"
 #include "ui/views/test/button_test_api.h"
 #include "ui/views/test/views_test_base.h"
 #include "ui/views/view.h"
 
 namespace {
+
+DEFINE_UI_CLASS_PROPERTY_KEY(bool, kTestPropertyValueKey, false)
+
+// More specific functionalities are tested for each individual
+// ActionViewInterface.
+class TestButtonActionViewInterface : public views::ButtonActionViewInterface {
+ public:
+  explicit TestButtonActionViewInterface(views::Button* action_view)
+      : ButtonActionViewInterface(action_view), action_view_(action_view) {}
+
+  // ButtonActionViewInterface:
+  void InvokeActionImpl(actions::ActionItem* action_item) override {
+    action_item->InvokeAction(actions::ActionInvocationContext::Builder()
+                                  .SetProperty(kTestPropertyValueKey, true)
+                                  .Build());
+  }
+
+ private:
+  raw_ptr<views::Button> action_view_;
+};
+
+class TestActionButton : public views::Button {
+  METADATA_HEADER(TestActionButton, Button)
+ public:
+  TestActionButton() = default;
+  ~TestActionButton() override = default;
+
+  // View:
+  std::unique_ptr<views::ActionViewInterface> GetActionViewInterface()
+      override {
+    return std::make_unique<TestButtonActionViewInterface>(this);
+  }
+};
+
+BEGIN_METADATA(TestActionButton)
+END_METADATA
+
 const std::u16string kActionTextDisabled = u"Test Action Disabled";
 const std::u16string kActionTextEnabled = u"Test Action Enabled";
 constexpr int kTestActionIdDisabled = 0;
@@ -135,6 +177,30 @@ TEST_F(ActionViewControllerTest, TestCreateActionViewRelationship) {
       first_action_view.get(), second_action_item->GetAsWeakPtr());
   first_action_item->SetEnabled(true);
   EXPECT_FALSE(first_action_view->GetEnabled());
+}
+
+TEST_F(ActionViewControllerTest, TestActionInvocationContext) {
+  std::unique_ptr<actions::ActionItem> action_item = CreateEnabledActionItem();
+  auto invoke_action_callback = [](actions::ActionItem* action_item,
+                                   actions::ActionInvocationContext context) {
+    EXPECT_EQ(context.GetProperty(kTestPropertyValueKey), true);
+  };
+  action_item->SetInvokeActionCallback(
+      base::BindRepeating(invoke_action_callback));
+
+  std::unique_ptr<Widget> test_widget = CreateTestWidget();
+  View* parent_view = test_widget->SetContentsView(std::make_unique<View>());
+  TestActionButton* test_button =
+      parent_view->AddChildView(std::make_unique<TestActionButton>());
+  test_widget->Show();
+
+  ActionViewController action_view_controller = ActionViewController();
+  action_view_controller.CreateActionViewRelationship(
+      test_button, action_item->GetAsWeakPtr());
+  ui::MouseEvent e(ui::ET_MOUSE_PRESSED, gfx::Point(), gfx::Point(),
+                   ui::EventTimeForNow(), 0, 0);
+  views::test::ButtonTestApi test_api(test_button);
+  test_api.NotifyClick(e);
 }
 
 }  // namespace views
