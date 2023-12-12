@@ -1113,14 +1113,7 @@ gfx::ColorSpace DirectRenderer::RootRenderPassColorSpace() const {
       current_frame()->display_color_spaces.GetOutputColorSpace(
           current_frame()->root_render_pass->content_color_usage,
           current_frame()->root_render_pass->has_transparent_background);
-
-  if (root_color_space.IsAffectedBySDRWhiteLevel()) {
-    auto sk_color_space =
-        root_color_space.ToSkColorSpace(CurrentFrameSDRWhiteLevel());
-    root_color_space = gfx::ColorSpace(*sk_color_space, /*is_hdr=*/true);
-  }
-
-  return root_color_space;
+  return root_color_space.GetWithSdrWhiteLevel(CurrentFrameSDRWhiteLevel());
 }
 
 gfx::ColorSpace DirectRenderer::RenderPassColorSpace(
@@ -1128,9 +1121,11 @@ gfx::ColorSpace DirectRenderer::RenderPassColorSpace(
   if (render_pass == current_frame()->root_render_pass) {
     return RootRenderPassColorSpace();
   }
-  return current_frame()->display_color_spaces.GetCompositingColorSpace(
-      render_pass->has_transparent_background,
-      render_pass->content_color_usage);
+  return current_frame()
+      ->display_color_spaces
+      .GetCompositingColorSpace(render_pass->has_transparent_background,
+                                render_pass->content_color_usage)
+      .GetWithSdrWhiteLevel(CurrentFrameSDRWhiteLevel());
 }
 
 gfx::ColorSpace DirectRenderer::CurrentRenderPassColorSpace() const {

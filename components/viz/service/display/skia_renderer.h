@@ -344,7 +344,8 @@ class VIZ_SERVICE_EXPORT SkiaRenderer : public DirectRenderer {
       render_pass_backings_;
   sk_sp<SkColorSpace> RenderPassBackingSkColorSpace(
       const RenderPassBacking& backing) {
-    return backing.color_space.ToSkColorSpace(CurrentFrameSDRWhiteLevel());
+    return backing.color_space.GetWithSdrWhiteLevel(CurrentFrameSDRWhiteLevel())
+        .ToSkColorSpace();
   }
 
   // Interface used for drawing. Common among different draw modes.
