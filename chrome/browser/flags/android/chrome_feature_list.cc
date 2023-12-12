@@ -191,7 +191,6 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &kCloseTabSaveTabList,
     &kCriticalPersistedTabData,
     &kCreateNewTabInitializeRenderer,
-    &kCCTBottomBarSwipeUpGesture,
     &kCCTBrandTransparency,
     &kCCTBrandTransparencyMemoryImprovement,
     &kCCTClientDataHeader,
@@ -539,10 +538,6 @@ BASE_FEATURE(kCreateNewTabInitializeRenderer,
 BASE_FEATURE(kCriticalPersistedTabData,
              "CriticalPersistedTabData",
              base::FEATURE_DISABLED_BY_DEFAULT);
-
-BASE_FEATURE(kCCTBottomBarSwipeUpGesture,
-             "CCTBottomBarSwipeUpGesture",
-             base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kCCTBrandTransparency,
              "CCTBrandTransparency",

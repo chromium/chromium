@@ -593,9 +593,7 @@ public class CustomTabIntentDataProvider extends BrowserServicesIntentDataProvid
         mRemoteViewsPendingIntent =
                 IntentUtils.safeGetParcelableExtra(
                         intent, CustomTabsIntent.EXTRA_REMOTEVIEWS_PENDINGINTENT);
-        if (ChromeFeatureList.sCctBottomBarSwipeUpGesture.isEnabled()) {
-            mSecondaryToolbarSwipeUpPendingIntent = getSecondaryToolbarSwipeUpGesture(intent);
-        }
+        mSecondaryToolbarSwipeUpPendingIntent = getSecondaryToolbarSwipeUpGesture(intent);
         mMediaViewerUrl =
                 isMediaViewer()
                         ? IntentUtils.safeGetStringExtra(intent, EXTRA_MEDIA_VIEWER_URL)

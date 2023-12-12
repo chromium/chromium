@@ -47,7 +47,6 @@ BASE_DECLARE_FEATURE(kCloseTabSaveTabList);
 BASE_DECLARE_FEATURE(kCreateNewTabInitializeRenderer);
 BASE_DECLARE_FEATURE(kCriticalPersistedTabData);
 BASE_DECLARE_FEATURE(kCastDeviceFilter);
-BASE_DECLARE_FEATURE(kCCTBottomBarSwipeUpGesture);
 BASE_DECLARE_FEATURE(kCCTBrandTransparency);
 BASE_DECLARE_FEATURE(kCCTBrandTransparencyMemoryImprovement);
 BASE_DECLARE_FEATURE(kCCTClientDataHeader);

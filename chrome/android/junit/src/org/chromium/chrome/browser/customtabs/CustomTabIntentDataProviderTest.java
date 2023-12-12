@@ -727,17 +727,6 @@ public class CustomTabIntentDataProviderTest {
     }
 
     @Test
-    @DisableFeatures(ChromeFeatureList.CCT_BOTTOM_BAR_SWIPE_UP_GESTURE)
-    public void getSecondaryToolbarSwipeUpPendingIntent_featureDisabled() {
-        Intent intent = new Intent();
-        var pendingIntent = mock(PendingIntent.class);
-        intent.putExtra(
-                CustomTabIntentDataProvider.EXTRA_SECONDARY_TOOLBAR_SWIPE_UP_ACTION, pendingIntent);
-        var provider = new CustomTabIntentDataProvider(intent, mContext, COLOR_SCHEME_LIGHT);
-        assertNull(provider.getSecondaryToolbarSwipeUpPendingIntent());
-    }
-
-    @Test
     public void testCanInteractWithBackground() {
         Intent intent = new Intent();
         CustomTabIntentDataProvider provider =

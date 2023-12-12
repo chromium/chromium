@@ -14,7 +14,6 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.ArgumentMatchers.refEq;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.robolectric.Shadows.shadowOf;
@@ -59,7 +58,6 @@ import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.metrics.UmaSessionStats;
 import org.chromium.chrome.browser.privacy.settings.PrivacyPreferencesManagerImpl;
 import org.chromium.chrome.test.util.browser.Features;
-import org.chromium.chrome.test.util.browser.Features.DisableFeatures;
 import org.chromium.chrome.test.util.browser.Features.EnableFeatures;
 
 /** Tests for some parts of {@link CustomTabsConnection}. */
@@ -132,18 +130,6 @@ public class CustomTabsConnectionUnitTest {
                 CustomTabIntentDataProvider.EXTRA_SECONDARY_TOOLBAR_SWIPE_UP_ACTION, pendingIntent);
         mConnection.updateVisuals(mSession, bundle);
         verify(mSessionHandler).updateSecondaryToolbarSwipeUpPendingIntent(eq(pendingIntent));
-    }
-
-    @Test
-    @DisableFeatures(ChromeFeatureList.CCT_BOTTOM_BAR_SWIPE_UP_GESTURE)
-    public void updateVisuals_BottomBarSwipeUpGesture_FeatureDisabled() {
-        var bundle = new Bundle();
-        var pendingIntent = mock(PendingIntent.class);
-        bundle.putParcelable(
-                CustomTabIntentDataProvider.EXTRA_SECONDARY_TOOLBAR_SWIPE_UP_ACTION, pendingIntent);
-        mConnection.updateVisuals(mSession, bundle);
-        verify(mSessionHandler, never())
-                .updateSecondaryToolbarSwipeUpPendingIntent(eq(pendingIntent));
     }
 
     @Test

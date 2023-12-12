@@ -788,17 +788,16 @@ public class CustomTabsConnection {
                                             remoteViews, clickableIDs, pendingIntent));
         }
 
-        if (ChromeFeatureList.sCctBottomBarSwipeUpGesture.isEnabled()) {
-            PendingIntent pendingIntent = getSecondarySwipeToolbarSwipeUpGesture(bundle);
-            if (pendingIntent != null) {
-                result &=
-                        PostTask.runSynchronously(
-                                TaskTraits.UI_DEFAULT,
-                                () ->
-                                        handler.updateSecondaryToolbarSwipeUpPendingIntent(
-                                                pendingIntent));
-            }
+        PendingIntent pendingIntent = getSecondarySwipeToolbarSwipeUpGesture(bundle);
+        if (pendingIntent != null) {
+            result &=
+                    PostTask.runSynchronously(
+                            TaskTraits.UI_DEFAULT,
+                            () ->
+                                    handler.updateSecondaryToolbarSwipeUpPendingIntent(
+                                            pendingIntent));
         }
+
         logCall("updateVisuals()", result);
         return result;
     }
