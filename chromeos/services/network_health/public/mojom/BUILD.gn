@@ -26,7 +26,7 @@ if (is_chromeos_ash) {
 
     # Used by ash/webui/common/resources/network_health, which is still using
     # JS + Closure.
-    use_typescript_sources = false
+    generate_webui_js_bindings = true
   }
 }
 
@@ -46,6 +46,6 @@ mojom("types") {
 
     # Used by ash/webui/common/resources/network_health, which is still using
     # JS + Closure.
-    use_typescript_sources = false
+    generate_webui_js_bindings = true
   }
 }

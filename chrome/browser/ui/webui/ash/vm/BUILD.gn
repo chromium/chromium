@@ -14,5 +14,5 @@ mojom("mojo_bindings") {
   webui_module_path = "/"
 
   # For Closure Compiler targets in chrome/browser/resources/ash/vm
-  use_typescript_sources = false
+  generate_webui_js_bindings = true
 }
