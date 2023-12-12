@@ -596,18 +596,14 @@ component("skia") {
   }
 
   if (skia_support_pdf) {
+    # Blink includes Skia's JPEG encoder and decoder which pdf uses.
+    assert(use_blink)
     deps += [
       "//third_party:freetype_harfbuzz",
       "//third_party/zlib",
     ]
     public += skia_pdf_public
     sources += skia_pdf_sources
-    if (use_blink) {
-      # Blink includes Skia's JPEG decoder
-      sources += skia_pdf_jpeginfo_lib
-    } else {
-      sources += skia_pdf_jpeginfo_none
-    }
   } else {
     sources += [ "//third_party/skia/src/pdf/SkDocument_PDF_None.cpp" ]
   }
