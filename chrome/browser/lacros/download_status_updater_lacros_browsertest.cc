@@ -4,6 +4,8 @@
 
 #include "chrome/browser/download/download_status_updater.h"
 
+#include <memory>
+
 #include "base/files/file_path.h"
 #include "base/observer_list.h"
 #include "base/strings/string_util.h"
@@ -13,6 +15,8 @@
 #include "chrome/browser/download/download_browsertest_utils.h"
 #include "chrome/browser/download/download_core_service.h"
 #include "chrome/browser/download/download_core_service_factory.h"
+#include "chrome/browser/download/download_item_model.h"
+#include "chrome/browser/download/download_ui_model.h"
 #include "chrome/browser/download/offline_item_utils.h"
 #include "chrome/browser/lacros/browser_test_util.h"
 #include "chrome/browser/profiles/profile.h"
@@ -858,6 +862,9 @@ IN_PROC_BROWSER_TEST_F(DownloadStatusUpdaterBrowserTest, Update) {
   content::DownloadItemUtils::AttachInfoForTesting(&item, browser()->profile(),
                                                    /*web_contents=*/nullptr);
 
+  DownloadItemModel download_item_model(
+      &item, std::make_unique<DownloadUIModel::BubbleStatusTextBuilder>());
+
   // Expect a `DownloadStatusUpdater::Update()` event in Ash Chrome when the
   // download status updater in Lacros Chrome is notified of `item` creation.
   EXPECT_CALL(
@@ -872,7 +879,9 @@ IN_PROC_BROWSER_TEST_F(DownloadStatusUpdaterBrowserTest, Update) {
           Field(&DownloadStatus::full_path, Eq(item.GetFullPath())),
           Field(&DownloadStatus::cancellable, Eq(true)),
           Field(&DownloadStatus::pausable, Eq(true)),
-          Field(&DownloadStatus::resumable, Eq(false))))));
+          Field(&DownloadStatus::resumable, Eq(false)),
+          Field(&DownloadStatus::status_text,
+                Eq(download_item_model.GetStatusText()))))));
 
   // Notify the download status updater in Lacros Chrome of `item` creation and
   // verify Ash Chrome expectations.
@@ -897,7 +906,9 @@ IN_PROC_BROWSER_TEST_F(DownloadStatusUpdaterBrowserTest, Update) {
           Field(&DownloadStatus::full_path, Eq(item.GetFullPath())),
           Field(&DownloadStatus::cancellable, Eq(true)),
           Field(&DownloadStatus::pausable, Eq(false)),
-          Field(&DownloadStatus::resumable, Eq(true))))));
+          Field(&DownloadStatus::resumable, Eq(true)),
+          Field(&DownloadStatus::status_text,
+                Eq(download_item_model.GetStatusText()))))));
 
   // Notify the download status updater in Lacros Chrome of `item` update and
   // verify Ash Chrome expectations.
@@ -925,7 +936,9 @@ IN_PROC_BROWSER_TEST_F(DownloadStatusUpdaterBrowserTest, Update) {
           Field(&DownloadStatus::full_path, Eq(item.GetFullPath())),
           Field(&DownloadStatus::cancellable, Eq(false)),
           Field(&DownloadStatus::pausable, Eq(false)),
-          Field(&DownloadStatus::resumable, Eq(false))))));
+          Field(&DownloadStatus::resumable, Eq(false)),
+          Field(&DownloadStatus::status_text,
+                Eq(download_item_model.GetStatusText()))))));
 
   // Notify the download status updater in Lacros Chrome of `item` update and
   // verify Ash Chrome expectations.

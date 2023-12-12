@@ -69,7 +69,8 @@ bool IsCommandEnabled(DownloadItemModel& model,
 
 crosapi::mojom::DownloadStatusPtr ConvertToMojoDownloadStatus(
     download::DownloadItem* download) {
-  DownloadItemModel model(download);
+  DownloadItemModel model(
+      download, std::make_unique<DownloadUIModel::BubbleStatusTextBuilder>());
   auto status = crosapi::mojom::DownloadStatus::New();
   status->guid = download->GetGuid();
   status->state = download::download_item_utils::ConvertToMojoDownloadState(
@@ -81,6 +82,7 @@ crosapi::mojom::DownloadStatusPtr ConvertToMojoDownloadStatus(
   status->cancellable = IsCommandEnabled(model, DownloadCommands::CANCEL);
   status->pausable = IsCommandEnabled(model, DownloadCommands::PAUSE);
   status->resumable = IsCommandEnabled(model, DownloadCommands::RESUME);
+  status->status_text = model.GetStatusText();
   return status;
 }
 

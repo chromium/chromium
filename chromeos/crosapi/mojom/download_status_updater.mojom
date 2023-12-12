@@ -4,14 +4,15 @@
 
 module crosapi.mojom;
 
+import "mojo/public/mojom/base/string16.mojom";
 import "chromeos/crosapi/mojom/download_controller.mojom";
 import "mojo/public/mojom/base/file_path.mojom";
 
 // Representation of a Lacros download's status to be passed into Ash Chrome
 // and rendered in the appropriate System UI surface(s).
 //
-// Next MinVersion: 3
-// Next ID: 9
+// Next MinVersion: 4
+// Next ID: 10
 //
 [Stable, Uuid="d18b6479-e70d-44aa-b657-58ffff57735d"]
 struct DownloadStatus {
@@ -52,6 +53,8 @@ struct DownloadStatus {
   // Whether an in-progress download can be resumed by the user.
   [MinVersion=1] bool? resumable@7;
 
+  // The text that indicates the underlying download's status.
+  [MinVersion=3] mojo_base.mojom.String16? status_text@9;
 };
 
 // The interface for the client of the `DownloadStatusUpdater` in Ash Chrome
