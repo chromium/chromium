@@ -252,9 +252,8 @@ class FakeServer : public syncer::LoopbackServer::ObserverForTests {
                 syncer::ModelTypeSet committed_model_types) override;
   void OnHistoryCommit(const std::string& url) override;
 
-  // Returns all URLs that were committed to server-side history, which happens
-  // either through SESSIONS (if the "History" toggle is enabled) or through
-  // HISTORY.
+  // Returns all URLs that were committed to server-side history through the
+  // HISTORY data type.
   const std::set<std::string>& GetCommittedHistoryURLs() const;
 
   std::string GetStoreBirthday() const;
@@ -300,8 +299,7 @@ class FakeServer : public syncer::LoopbackServer::ObserverForTests {
   // If set, the server will return HTTP errors.
   absl::optional<net::HttpStatusCode> http_error_status_code_;
 
-  // All URLs received via history sync (powered either by SESSIONS or by
-  // HISTORY).
+  // All URLs received via HISTORY sync.
   std::set<std::string> committed_history_urls_;
 
   // Used as the error_code field of ClientToServerResponse on all commit
