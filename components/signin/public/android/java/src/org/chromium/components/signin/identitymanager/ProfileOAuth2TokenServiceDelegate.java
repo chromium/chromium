@@ -175,6 +175,10 @@ final class ProfileOAuth2TokenServiceDelegate {
     @MainThread
     @CalledByNative
     private void invalidateAccountsSeedingStatus() {
+        if (SigninFeatureMap.isEnabled(SigninFeatures.SEED_ACCOUNTS_REVAMP)) {
+            throw new IllegalStateException(
+                    "This method should never be called when SeedAccountsRevamp is enabled");
+        }
         mAccountTrackerService.invalidateAccountsSeedingStatus();
     }
 
