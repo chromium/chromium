@@ -513,7 +513,7 @@ webrtc::SdpVideoFormat ToSdpVideoFormat(
   DCHECK(parsed_content_type.IsValid());
   const String codec_name =
       WebrtcCodecNameFromMimeType(parsed_content_type.MimeType(), "video");
-  const webrtc::SdpVideoFormat::Parameters parameters =
+  const std::map<std::string, std::string> parameters =
       ConvertToSdpVideoFormatParameters(parsed_content_type.GetParameters());
   return {codec_name.Utf8(), parameters};
 }

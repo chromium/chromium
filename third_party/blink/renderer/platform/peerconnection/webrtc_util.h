@@ -16,8 +16,7 @@ namespace blink {
 
 String PLATFORM_EXPORT WebrtcCodecNameFromMimeType(const String& mime_type,
                                                    const char* prefix);
-
-webrtc::SdpVideoFormat::Parameters PLATFORM_EXPORT
+std::map<std::string, std::string> PLATFORM_EXPORT
 ConvertToSdpVideoFormatParameters(
     const ParsedContentHeaderFieldParameters& parameters);
 
