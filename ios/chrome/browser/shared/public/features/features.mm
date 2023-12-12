@@ -48,7 +48,7 @@ BASE_FEATURE(kIOSKeyboardAccessoryUpgrade,
 
 BASE_FEATURE(kIOSPaymentsBottomSheet,
              "IOSPaymentsBottomSheet",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kTestFeature, "TestFeature", base::FEATURE_DISABLED_BY_DEFAULT);
 
