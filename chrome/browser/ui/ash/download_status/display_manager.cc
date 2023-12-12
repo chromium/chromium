@@ -20,8 +20,6 @@
 #include "chrome/browser/ui/ash/download_status/notification_display_client.h"
 #include "chromeos/crosapi/mojom/download_controller.mojom.h"
 #include "chromeos/crosapi/mojom/download_status_updater.mojom.h"
-#include "ui/base/l10n/l10n_util.h"
-#include "ui/base/text/bytes_formatting.h"
 
 namespace ash::download_status {
 
@@ -32,11 +30,6 @@ namespace {
 bool CanDisplay(const crosapi::mojom::DownloadStatus& download_status) {
   const std::optional<base::FilePath>& file_path = download_status.full_path;
   return file_path.has_value() && !file_path->empty();
-}
-
-// Returns true if the download specified by `download_status` is in progress.
-bool IsInProgress(const crosapi::mojom::DownloadStatus& download_status) {
-  return download_status.state == crosapi::mojom::DownloadState::kInProgress;
 }
 
 // Returns the total number of bytes, or `std::nullopt` if the
@@ -66,42 +59,6 @@ std::optional<int64_t> GetReceivedBytes(
   }
 
   return received_bytes;
-}
-
-// Returns the secondary text for the download specified by `download_status`,
-// typically the received bytes count and the total bytes count.
-std::optional<std::u16string> GetSecondaryText(
-    const crosapi::mojom::DownloadStatus& download_status) {
-  // Only in-progress downloads have secondary text.
-  if (!IsInProgress(download_status)) {
-    return std::nullopt;
-  }
-
-  const std::optional<int64_t> received_bytes =
-      GetReceivedBytes(download_status);
-  const std::optional<int64_t> total_bytes = GetTotalBytes(download_status);
-
-  // If both `received_bytes` and `total_bytes` are known, the secondary text
-  // will be something of the form "10/100 MB", where the first number is the
-  // count of received bytes and the second number is the count of total bytes.
-  if (received_bytes.has_value() && total_bytes.has_value()) {
-    const ui::DataUnits units = ui::GetByteDisplayUnits(total_bytes.value());
-    return l10n_util::GetStringFUTF16(
-        IDS_ASH_HOLDING_SPACE_IN_PROGRESS_DOWNLOAD_SIZE_INFO,
-        ui::FormatBytesWithUnits(*received_bytes, units, /*show_units=*/false),
-        ui::FormatBytesWithUnits(*total_bytes, units,
-                                 /*show_units=*/true));
-  }
-
-  // If only `received_bytes` is known, the secondary text will be something of
-  // the form "10 MB", indicating only the count of received bytes.
-  if (received_bytes.has_value()) {
-    return ui::FormatBytes(*received_bytes);
-  }
-
-  // TODO(http://b/307347158): Update the secondary text if the underlying
-  // download is paused.
-  return std::nullopt;
 }
 
 // Returns the text to display for the download specified by `download_status`.
@@ -189,7 +146,7 @@ DisplayMetadata DisplayManager::CalculateDisplayMetadata(
 
   display_metadata.file_path = *download_status.full_path;
   display_metadata.received_bytes = GetReceivedBytes(download_status);
-  display_metadata.secondary_text = GetSecondaryText(download_status);
+  display_metadata.secondary_text = download_status.status_text;
   display_metadata.text = GetText(download_status);
   display_metadata.total_bytes = GetTotalBytes(download_status);
 
