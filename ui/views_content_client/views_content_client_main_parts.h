@@ -47,6 +47,8 @@ class ViewsContentClientMainParts : public content::BrowserMainParts {
 
   // content::BrowserMainParts:
   int PreMainMessageLoopRun() override;
+  void WillRunMainMessageLoop(
+      std::unique_ptr<base::RunLoop>& run_loop) override;
   void PostMainMessageLoopRun() override;
 
   content::ShellBrowserContext* browser_context() {

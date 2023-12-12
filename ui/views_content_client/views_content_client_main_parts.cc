@@ -37,6 +37,11 @@ int ViewsContentClientMainParts::PreMainMessageLoopRun() {
   return content::RESULT_CODE_NORMAL_EXIT;
 }
 
+void ViewsContentClientMainParts::WillRunMainMessageLoop(
+    std::unique_ptr<base::RunLoop>& run_loop) {
+  run_loop = std::move(run_loop_);
+}
+
 void ViewsContentClientMainParts::PostMainMessageLoopRun() {
   browser_context_.reset();
   views_delegate_.reset();
