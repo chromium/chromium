@@ -36,5 +36,21 @@
         frame.src = url;
       });
     }
+
+    function fetchUrl(url, hasSharedStorageWritableAttribute) {
+      return new Promise(function(resolve, reject) {
+        fetch(url, {sharedStorageWritable:
+                    hasSharedStorageWritableAttribute})
+          .then(response => {
+              if (!response.ok) {
+                throw new Error('Failed to fetch ' + url + '; '
+                  + String(response.status) + ' ' + response.statusText);
+              }
+              resolve(response);
+          }).catch(error => {
+              reject(error);
+          });
+      });
+    }
   </script>
 </body>
