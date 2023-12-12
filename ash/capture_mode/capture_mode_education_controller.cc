@@ -136,6 +136,8 @@ std::unique_ptr<SystemDialogDelegateView> CreateDialogView() {
   auto dialog = std::make_unique<SystemDialogDelegateView>();
   dialog->SetTitleText(l10n_util::GetStringUTF16(
       IDS_ASH_SCREEN_CAPTURE_EDUCATION_TUTORIAL_TITLE));
+  dialog->SetAccessibleTitle(l10n_util::GetStringUTF16(
+      IDS_ASH_SCREEN_CAPTURE_EDUCATION_TUTORIAL_ACCESSIBLE_TITLE));
   dialog->SetMiddleContentView(CreateContentView());
   dialog->SetMiddleContentAlignment(views::LayoutAlignment::kStretch);
   // Override the title margins to be zero, as the space between the title and
