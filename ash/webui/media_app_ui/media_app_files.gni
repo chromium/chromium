@@ -1,0 +1,56 @@
+# Copyright 2023 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+# Where files are staged for tsc. Only .ts and .d.ts files should be put here.
+ts_root_dir = "$root_gen_dir/ash/webui/media_app_ui/stage_ts"
+
+# Static JS files that have .d.ts files generated for them for consumption by
+# tsc in the staging folder. These are also copied for rollup.
+media_app_unconverted_js_sources = [
+  "app_context_test_support.js",
+  "message_types.js",
+  "mojo_api_bootstrap_untrusted.js",
+  "piex_module_loader.js",
+]
+
+media_app_converted_ts_sources = []
+media_app_static_defs = [
+  "media_app.d.ts",
+  "receiver.d.ts",
+]
+
+# Definitions corresponding to unconverted JS.
+media_app_defs_for_unconverted_js =
+    process_file_template(media_app_unconverted_js_sources,
+                          "{{source_name_part}}.d.ts")
+
+media_app_definitions_staged =
+    process_file_template(
+        media_app_static_defs + media_app_defs_for_unconverted_js,
+        "$ts_root_dir/{{source_file_part}}")
+
+# Unconverted test JS sources. Since these may potentially be .ts in future,
+# they must be fed to `ts_library` rules to avoid a .ts file potentially
+# poisioning the build folder when rolling back to an earlier commit. Doing this
+# also copies them to the typescript output folder, which allows the test
+# harness to load everything from the same place.
+media_app_test_unconverted_js_sources = [
+  "driver.js",
+  "driver_api.js",
+  "guest_query_receiver.js",
+  "media_app_ui_browsertest.js",
+  "test_worker.js",
+]
+
+# Testing .d.ts and .ts files that are staged and consumed by tsc.
+media_app_test_ts = [ "media_app_guest_ui_browsertest.ts" ]
+
+media_app_test_defs = [
+  "guest_query_receiver.d.ts",
+  "test_api.d.ts",
+]
+
+media_app_test_definitions_staged =
+    process_file_template(media_app_test_defs,
+                          "$ts_root_dir/{{source_file_part}}")

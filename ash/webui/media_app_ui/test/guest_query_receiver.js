@@ -33,7 +33,7 @@ let lastLoadedFileList = null;
 
 /**
  * Test cases registered by GUEST_TEST.
- * @type {!Map<string, function(): !Promise<undefined>>}
+ * @type {!Map<string, function(): (!Promise<undefined>|undefined)>}
  */
 const guestTestCases = new Map();
 
@@ -294,7 +294,7 @@ async function runTestCase(data) {
  * Registers a test that runs in the guest context. To indicate failure, the
  * test throws an exception (e.g. via assertEquals).
  * @param {string} testName
- * @param {function(): !Promise<undefined>} testCase
+ * @param {function(): (!Promise<undefined>|undefined)} testCase
  */
 export function GUEST_TEST(testName, testCase) {
   guestTestCases.set(testName, testCase);

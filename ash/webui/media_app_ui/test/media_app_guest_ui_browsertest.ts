@@ -1,15 +1,26 @@
-// Copyright 2019 The Chromium Authors
+// Copyright 2023 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 /** @fileoverview Test suite for chrome-untrusted://media-app. */
 
+/// <reference path="media_app.d.ts" />
+/// <reference path="test_api.d.ts" />
+
 import {GUEST_TEST} from './guest_query_receiver.js';
 import {ReceivedFileList} from './receiver.js';
 
-export function eventToPromise(eventType, target) {
-  return new Promise(function(resolve, reject) {
-    target.addEventListener(eventType, function f(e) {
+// TODO(b/314827247): Move this somewhere sharable. `declare global` can't
+// appear in the "ambient" modules we use while converting to TS.
+declare global {
+  interface Window {
+    customLaunchData: CustomLaunchData;
+  }
+}
+
+export function eventToPromise(eventType: string, target: EventTarget) {
+  return new Promise<Event>(function (resolve) {
+    target.addEventListener(eventType, function f(e: Event) {
       target.removeEventListener(eventType, f);
       resolve(e);
     });
@@ -20,7 +31,7 @@ export function eventToPromise(eventType, target) {
 // will be logged in console from web_ui_browser_test.cc.
 GUEST_TEST('GuestCanSpawnWorkers', async () => {
   const worker = new Worker('test_worker.js');
-  const workerResponse = new Promise((resolve, reject) => {
+  const workerResponse = new Promise<MessageEvent>((resolve, reject) => {
     /**
      * Registers onmessage event handler.
      * @param {MessageEvent} event Incoming message event.
@@ -42,7 +53,8 @@ GUEST_TEST('GuestHasLang', () => {
 });
 
 GUEST_TEST('GuestLoadsLoadTimeData', () => {
-  const loadTimeData = window['loadTimeData'];
+  // TODO(b/314827247): Add types for `sandboxed_load_time_data.js`.
+  const loadTimeData = (window as any)['loadTimeData'];
   // Check `LoadTimeData` exists on the global window object.
   chai.assert.isTrue(loadTimeData !== undefined);
   // Check data loaded into `LoadTimeData` by "strings.js" via
@@ -73,8 +85,7 @@ GUEST_TEST('GuestCanLoadWithCspRestrictions', async () => {
   await eventToPromise('error', imageBlob);
 
   // Can load video blobs.
-  const videoBlob =
-      /** @type {!HTMLVideoElement} */ (document.createElement('video'));
+  const videoBlob = document.createElement('video');
   videoBlob.src = 'blob:chrome-untrusted://media-app/my-fake-blob-hash';
   await eventToPromise('error', videoBlob);
 });
@@ -86,11 +97,11 @@ GUEST_TEST('GuestStartsWithDefaultFileList', async () => {
 });
 
 GUEST_TEST('GuestFailsToFetchMissingFonts', async () => {
-  let error;
+  let error!: TypeError;
   try {
     await fetch('/fonts/NotAFont.ttf');
-  } catch (/** @type {TypeError} */ e) {
-    error = e;
+  } catch (e: unknown) {
+    error = e as TypeError;
   }
 
   // Note failed webui requests are completely missing response headers, so
@@ -100,7 +111,7 @@ GUEST_TEST('GuestFailsToFetchMissingFonts', async () => {
 });
 
 GUEST_TEST('GuestCanFilterInPlace', async () => {
-  function makeTestFile(name) {
+  function makeTestFile(name: number) {
     return {
       token: 0,
       file: null,
@@ -120,7 +131,7 @@ GUEST_TEST('GuestCanFilterInPlace', async () => {
   assertEquals(fileList.item(0).name, '0');
   assertEquals(fileList.item(1).name, '2');
 
-  fileList.filterInPlace(f => false);
+  fileList.filterInPlace(() => false);
 
   assertEquals(fileList.length, 0);
   assertEquals(fileList.currentFileIndex, -1);

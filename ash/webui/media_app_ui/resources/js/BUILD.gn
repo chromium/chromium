@@ -2,14 +2,17 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//ash/webui/media_app_ui/media_app_files.gni")
 import("//ash/webui/web_applications/system_apps.gni")
 import("//build/config/chromeos/ui_mode.gni")
 import("//third_party/closure_compiler/compile_js.gni")
+import("//tools/typescript/ts_definitions.gni")
 import("//ui/webui/resources/tools/optimize_webui.gni")
 
 assert(is_chromeos_ash)
 
-stage_folder = "$target_gen_dir/stage"
+# Where files are staged for rollup. .ts files should never be put here.
+stage_folder = "$root_gen_dir/ash/webui/media_app_ui/stage_rollup"
 
 # Move files to the stage folder to combine all resources in the same folder for
 # JS bundling with rollup.
@@ -32,14 +35,14 @@ copy("stage_static") {
   outputs = [ stage_folder + "/{{source_file_part}}" ]
 }
 
-# This is for files that are generated in "gen/".
+# This is for files that are generated in "gen/", except TypeScript output.
 copy("stage_generated") {
   sources = [
+    "$root_gen_dir/ash/webui/media_app_ui/media_app_ui.mojom-lite.js",
+    "$root_gen_dir/ash/webui/media_app_ui/media_app_ui_untrusted.mojom-lite.js",
     "$root_gen_dir/mojo/public/mojom/base/unguessable_token.mojom-lite.js",
     "$root_gen_dir/third_party/blink/public/mojom/file_system_access/file_system_access_transfer_token.mojom-lite.js",
     "$root_gen_dir/ui/gfx/geometry/mojom/geometry.mojom-lite.js",
-    "$target_gen_dir/../../media_app_ui.mojom-lite.js",
-    "$target_gen_dir/../../media_app_ui_untrusted.mojom-lite.js",
   ]
 
   outputs = [ stage_folder + "/{{source_file_part}}" ]
@@ -49,6 +52,23 @@ copy("stage_generated") {
     "//ash/webui/media_app_ui:mojo_bindings_untrusted_js",
     "//third_party/blink/public/mojom:mojom_platform_js",
   ]
+}
+
+copy("stage_static_ts") {
+  # Note only converted .ts and handcrafted .d.ts files are staged here.
+  # Generated .d.ts emit directly to `ts_root_dir`. Confusingly, unconverted JS
+  # files must also appear here even though tsc ignores them: this is necessary
+  # to engage logic in ts_library.py that handles clearing out old build
+  # dependencies.
+  sources = media_app_converted_ts_sources + media_app_static_defs +
+            media_app_unconverted_js_sources + [ "receiver.js" ]
+  outputs = [ ts_root_dir + "/{{source_file_part}}" ]
+}
+
+ts_definitions("generate_definitions") {
+  root_dir = "."
+  out_dir = ts_root_dir
+  js_files = media_app_unconverted_js_sources
 }
 
 optimize_webui("launch_rollup") {
