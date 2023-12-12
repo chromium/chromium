@@ -1113,9 +1113,10 @@ NotificationPtr
 SystemNotificationManager::MakeDataProtectionPolicyProgressNotification(
     const std::string& notification_id,
     const ProgressStatus& status) {
-  // TODO(b/279435843): Replace with translation strings.
   std::u16string message =
-      u"Checking files with your organization's security policies.";
+      status.sources.size() > 1
+          ? GetStringUTF16(IDS_FILE_BROWSER_SCANNING_LABEL_PLURAL)
+          : GetStringUTF16(IDS_FILE_BROWSER_SCANNING_LABEL);
   int progress = status.sources_scanned * 100.0 / status.sources.size();
   return CreateIOTaskProgressNotification(status.task_id, notification_id,
                                           app_name_, message, /*paused=*/false,

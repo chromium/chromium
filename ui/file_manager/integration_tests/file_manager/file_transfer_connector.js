@@ -690,7 +690,7 @@ async function verifyAfterPasteBlocking(
       appId,
       transferInfo.isMove ? new RegExp('^Moving.*$') :
                             new RegExp('^Copying.*$'),
-      new RegExp('^Scanning$'));
+      new RegExp('^Checking.*$'));
 
   // After the scanning label is shown, we resume the transfer.
   // Issue the responses, s.t., the transfer can continue.

@@ -443,7 +443,11 @@ export class ProgressCenterPanel implements ProgressCenterPanelInterface {
     }
 
     if (item.state === ProgressItemState.SCANNING) {
-      return str('SCANNING_LABEL');
+      if (item.itemCount === 1) {
+        return str('SCANNING_LABEL');
+      } else {
+        return str('SCANNING_LABEL_PLURAL');
+      }
     }
 
     // Check if remaining time is valid (ie finite and positive).

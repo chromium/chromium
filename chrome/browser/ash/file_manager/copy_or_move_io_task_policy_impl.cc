@@ -360,6 +360,8 @@ void CopyOrMoveIOTaskPolicyImpl::MaybeScanForDisallowedFiles(size_t idx) {
 
   progress_->state = State::kScanning;
   progress_->sources_scanned = idx + 1;
+  // TODO(b/315783871): recursively count the files in directories and pass this
+  // value to the js side to show the proper singular/plural scanning label.
   progress_callback_.Run(*progress_);
 
   DCHECK_EQ(file_transfer_analysis_delegates_.size(),
