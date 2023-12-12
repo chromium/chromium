@@ -4,8 +4,11 @@
 
 package org.chromium.chrome.browser.keyboard_accessory.bar_component;
 
+import static org.chromium.ui.base.LocalizationUtils.isLayoutRtl;
+
 import android.animation.ObjectAnimator;
 import android.content.Context;
+import android.graphics.Rect;
 import android.util.AttributeSet;
 import android.view.View;
 import android.view.ViewGroup;
@@ -64,28 +67,40 @@ class KeyboardAccessoryModernView extends KeyboardAccessoryView {
             };
 
     /**
-     * This decoration ensures that the last item is right-aligned.
-     * To do this, it subtracts the widths, margins and offsets of all items in the recycler view
-     * from the RecyclerView's total width. If the items fill the whole recycler view, the last item
-     * uses the same offset as all other items.
+     * This decoration ensures that the last item is right-aligned. To do this, it subtracts the
+     * widths, margins and offsets of all items in the recycler view from the RecyclerView's total
+     * width. If the items fill the whole recycler view, the last item uses the same offset as all
+     * other items.
      */
-    private class StickyLastItemDecoration extends HorizontalDividerItemDecoration {
+    private class StickyLastItemDecoration extends RecyclerView.ItemDecoration {
+        private final int mHorizontalMargin;
+
         StickyLastItemDecoration(@Px int minimalLeadingHorizontalMargin) {
-            super(minimalLeadingHorizontalMargin);
+            this.mHorizontalMargin = minimalLeadingHorizontalMargin;
         }
 
         @Override
-        protected int getItemOffsetInternal(
+        public void getItemOffsets(
+                Rect outRect, View view, RecyclerView parent, RecyclerView.State state) {
+            if (isLayoutRtl()) {
+                outRect.right = getItemOffsetInternal(view, parent, state);
+            } else {
+                outRect.left = getItemOffsetInternal(view, parent, state);
+            }
+        }
+
+        private int getItemOffsetInternal(
                 final View view, final RecyclerView parent, RecyclerView.State state) {
-            int minimalOffset = super.getItemOffsetInternal(view, parent, state);
-            if (!isLastItem(parent, view, parent.getAdapter().getItemCount())) return minimalOffset;
+            if (!isLastItem(parent, view, parent.getAdapter().getItemCount())) {
+                return mHorizontalMargin;
+            }
             if (view.getWidth() == 0 && state.didStructureChange()) {
                 // When the RecyclerView is first created, its children aren't measured yet and miss
                 // dimensions. Therefore, estimate the offset and recalculate after UI has loaded.
                 view.post(parent::invalidateItemDecorations);
                 return parent.getWidth() - estimateLastElementWidth(view);
             }
-            return Math.max(getSpaceLeftInParent(parent), minimalOffset);
+            return Math.max(getSpaceLeftInParent(parent), mHorizontalMargin);
         }
 
         private int getSpaceLeftInParent(RecyclerView parent) {
@@ -123,7 +138,7 @@ class KeyboardAccessoryModernView extends KeyboardAccessoryView {
         }
 
         private int getOccupiedSpaceByChildrenOffsets(RecyclerView parent) {
-            return (parent.getChildCount() - 1) * super.getItemOffsetInternal(null, null, null);
+            return (parent.getChildCount() - 1) * mHorizontalMargin;
         }
 
         private boolean isLastItem(RecyclerView parent, View view, int itemCount) {

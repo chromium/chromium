@@ -7,7 +7,6 @@ package org.chromium.chrome.browser.keyboard_accessory.bar_component;
 import static org.chromium.ui.base.LocalizationUtils.isLayoutRtl;
 
 import android.content.Context;
-import android.graphics.Rect;
 import android.util.AttributeSet;
 import android.view.View;
 import android.view.accessibility.AccessibilityEvent;
@@ -30,29 +29,6 @@ class KeyboardAccessoryView extends LinearLayout {
     protected RecyclerView mBarItemsView;
 
     private boolean mDisableAnimations;
-
-    protected static class HorizontalDividerItemDecoration extends RecyclerView.ItemDecoration {
-        private final int mHorizontalMargin;
-
-        HorizontalDividerItemDecoration(int horizontalMargin) {
-            this.mHorizontalMargin = horizontalMargin;
-        }
-
-        @Override
-        public void getItemOffsets(
-                Rect outRect, View view, RecyclerView parent, RecyclerView.State state) {
-            if (isLayoutRtl()) {
-                outRect.right = getItemOffsetInternal(view, parent, state);
-            } else {
-                outRect.left = getItemOffsetInternal(view, parent, state);
-            }
-        }
-
-        protected int getItemOffsetInternal(
-                final View view, final RecyclerView parent, RecyclerView.State state) {
-            return mHorizontalMargin;
-        }
-    }
 
     /** Constructor for inflating from XML. */
     public KeyboardAccessoryView(Context context, AttributeSet attrs) {
