@@ -918,24 +918,6 @@ const FeatureEntry::FeatureVariation kArcVmMemorySizeVariations[] = {
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 #if BUILDFLAG(IS_ANDROID)
-const FeatureEntry::FeatureParam kCriticalPersistedTabDataSaveAndRestore[] = {
-    {"critical_persisted_tab_data_save_only", "false"},
-    {"delay_saves_until_deferred_startup", "false"}};
-const FeatureEntry::FeatureParam kCriticalPersistedTabDataSaveOnly[] = {
-    {"critical_persisted_tab_data_save_only", "true"},
-    {"delay_saves_until_deferred_startup", "false"}};
-const FeatureEntry::FeatureParam kDelaySavesUntilDeferredStartup[] = {
-    {"critical_persisted_tab_data_save_only", "false"},
-    {"delay_saves_until_deferred_startup", "true"}};
-
-const FeatureEntry::FeatureVariation kCriticalPersistedTabDataVariations[] = {
-    {"Save and Restore", kCriticalPersistedTabDataSaveAndRestore,
-     std::size(kCriticalPersistedTabDataSaveAndRestore), nullptr},
-    {"Save Only", kCriticalPersistedTabDataSaveOnly,
-     std::size(kCriticalPersistedTabDataSaveOnly), nullptr},
-    {"Delay saves until DeferredStartup", kDelaySavesUntilDeferredStartup,
-     std::size(kDelaySavesUntilDeferredStartup), nullptr}};
-
 const FeatureEntry::FeatureParam kShowSingleRowMVTiles[] = {
     {"most_visited_max_rows_normal_screen", "1"},
     {"most_visited_max_rows_small_screen", "1"},
@@ -7103,12 +7085,6 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kArchiveTabServiceDescription, kOsAndroid,
      FEATURE_VALUE_TYPE(chrome::android::kArchiveTabService)},
 
-    {"enable-critical-persisted-tab-data",
-     flag_descriptions::kCriticalPersistedTabDataName,
-     flag_descriptions::kCriticalPersistedTabDataDescription, kOsAndroid,
-     FEATURE_WITH_PARAMS_VALUE_TYPE(chrome::android::kCriticalPersistedTabData,
-                                    kCriticalPersistedTabDataVariations,
-                                    "CriticalPersistedTabData")},
     {"enable-tabstate-flatbuffer", flag_descriptions::kTabStateFlatBufferName,
      flag_descriptions::kTabStateFlatBufferDescription, kOsAndroid,
      FEATURE_VALUE_TYPE(chrome::android::kTabStateFlatBuffer)},

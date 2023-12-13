@@ -2310,9 +2310,6 @@ extern const char kChimeAlwaysShowNotificationName[];
 extern const char kChimeAndroidSdkDescription[];
 extern const char kChimeAndroidSdkName[];
 
-extern const char kCriticalPersistedTabDataName[];
-extern const char kCriticalPersistedTabDataDescription[];
-
 extern const char kTabStateFlatBufferName[];
 extern const char kTabStateFlatBufferDescription[];
 

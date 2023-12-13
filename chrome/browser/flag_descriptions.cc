@@ -3989,11 +3989,6 @@ const char kChimeAndroidSdkDescription[] =
     "Enable Chime SDK to receive push notification.";
 const char kChimeAndroidSdkName[] = "Use Chime SDK";
 
-const char kCriticalPersistedTabDataName[] = "Enable CriticalPersistedTabData";
-const char kCriticalPersistedTabDataDescription[] =
-    "A new method of persisting Tab data across restarts has been devised "
-    "and implemented. This actives the new approach.";
-
 const char kTabStateFlatBufferName[] = "Enable TabState FlatBuffer";
 const char kTabStateFlatBufferDescription[] =
     "Migrates TabState from a pickle based schema to a FlatBuffer based "
