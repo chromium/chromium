@@ -7,6 +7,7 @@
 #include <memory>
 #include <string>
 
+#include "ash/constants/ash_features.h"
 #include "base/logging.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/values.h"
@@ -227,8 +228,12 @@ bool DeviceState::IsSimAbsent() const {
 bool DeviceState::IsSimLocked() const {
   if (technology_family_ == shill::kTechnologyFamilyCdma || !sim_present_)
     return false;
-  return sim_lock_type_ == shill::kSIMLockPin ||
-         sim_lock_type_ == shill::kSIMLockPuk;
+  if (sim_lock_type_ == shill::kSIMLockPin ||
+      sim_lock_type_ == shill::kSIMLockPuk) {
+    return true;
+  }
+  return features::IsCellularCarrierLockEnabled() &&
+         sim_lock_type_ == shill::kSIMLockNetworkPin;
 }
 
 bool DeviceState::IsSimCarrierLocked() const {

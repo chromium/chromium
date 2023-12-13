@@ -122,9 +122,9 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) NetworkConnectionHandler {
   // Error occurred while trying to perform an operation with an eSIM profile.
   static const char kErrorESimProfileIssue[];
 
-  // Failed due to a connection attempt to a cellular network with a locked SIM.
-  // The SIM must be unlocked before a connection can succeed.
-  static const char kErrorSimLocked[];
+  // Failed due to a connection attempt to a cellular network with a PIN/PUK
+  // locked SIM. The SIM must be unlocked before a connection can succeed.
+  static const char kErrorSimPinPukLocked[];
 
   // Connection attempt failed because SIM is incompatible with Carrier lock
   // policy.

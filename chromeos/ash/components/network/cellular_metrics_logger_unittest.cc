@@ -1121,6 +1121,16 @@ TEST_F(CellularMetricsLoggerTest, SwitchActiveNetworkOnManagedDevice) {
   histogram_tester_->ExpectBucketCount(
       CellularMetricsLogger::kRestrictedActiveNetworkSIMLockStatus,
       CellularMetricsLogger::SimPinLockType::kPukLocked, 1);
+
+  service_client_test()->SetServiceProperty(
+      kTestESimCellularServicePath, shill::kStateProperty, kIdleStateValue);
+  SetCellularSimLock(shill::kSIMLockNetworkPin);
+  service_client_test()->SetServiceProperty(
+      kTestPSimCellularServicePath, shill::kStateProperty, kFailedToConnect);
+  base::RunLoop().RunUntilIdle();
+  histogram_tester_->ExpectBucketCount(
+      CellularMetricsLogger::kRestrictedActiveNetworkSIMLockStatus,
+      CellularMetricsLogger::SimPinLockType::kCarrierLocked, 1);
 }
 
 TEST_F(CellularMetricsLoggerTest, SwitchActiveNetworkOnUnmanagedDevice) {

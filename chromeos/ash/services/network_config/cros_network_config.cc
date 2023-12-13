@@ -2823,6 +2823,12 @@ void CrosNetworkConfig::SetCellularSimState(
 
   const std::string& lock_type = device_state->sim_lock_type();
 
+  if (lock_type == shill::kSIMLockNetworkPin) {
+    NET_LOG(ERROR) << "SetCellularSimState: carrier locked sim.";
+    std::move(callback).Run(/*success=*/false);
+    return;
+  }
+
   // When unblocking a PUK locked SIM, a new PIN must be provided.
   if (lock_type == shill::kSIMLockPuk && !sim_state->new_pin) {
     NET_LOG(ERROR) << "SetCellularSimState: PUK locked and no pin provided.";

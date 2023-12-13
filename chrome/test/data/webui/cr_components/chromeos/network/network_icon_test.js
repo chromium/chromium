@@ -71,7 +71,8 @@ suite('NetworkIconTest', function() {
     };
     await flushAsync();
 
-    assertTrue(networkIcon.$$('#icon').classList.contains('cellular-locked'));
+    assertTrue(
+        networkIcon.$$('#icon').classList.contains('cellular-carrier-locked'));
   });
 
   [true, false].forEach(isUserLoggedIn => {

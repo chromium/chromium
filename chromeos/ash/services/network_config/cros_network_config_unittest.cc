@@ -1643,6 +1643,42 @@ TEST_F(CrosNetworkConfigTest, GetDeviceStateListCarrierUnlocked) {
   ASSERT_FALSE(cellular->is_carrier_locked);
 }
 
+TEST_F(CrosNetworkConfigTest, SimStateCarrierLocked) {
+  /* Lock the SIM using network-pin */
+  base::Value::Dict sim_value;
+  sim_value.Set(shill::kSIMLockEnabledProperty, true);
+  sim_value.Set(shill::kSIMLockTypeProperty, shill::kSIMLockNetworkPin);
+  sim_value.Set(shill::kSIMLockRetriesLeftProperty, kSimRetriesLeft);
+  helper()->device_test()->SetDeviceProperty(kCellularDevicePath,
+                                             shill::kSIMLockStatusProperty,
+                                             base::Value(std::move(sim_value)),
+                                             /*notify_changed=*/true);
+  base::RunLoop().RunUntilIdle();
+
+  mojom::DeviceStatePropertiesPtr cellular =
+      GetDeviceStateFromList(mojom::NetworkType::kCellular);
+
+  EXPECT_EQ(mojom::NetworkType::kCellular, cellular->type);
+  EXPECT_EQ(mojom::DeviceStateType::kEnabled, cellular->device_state);
+  ASSERT_TRUE(cellular->sim_lock_status);
+  EXPECT_TRUE(cellular->sim_lock_status->lock_enabled);
+  EXPECT_EQ(shill::kSIMLockNetworkPin, cellular->sim_lock_status->lock_type);
+  EXPECT_EQ(3, cellular->sim_lock_status->retries_left);
+
+  // Any attempt to unlock carrier locked sim with the pin should fail and
+  // should not change the carrier lock status.
+  EXPECT_FALSE(SetCellularSimState(FakeShillDeviceClient::kDefaultSimPin,
+                                   /*new_pin=*/absl::nullopt,
+                                   /*require_pin=*/false));
+
+  // Sim should continue to be carrier locked.
+  cellular = GetDeviceStateFromList(mojom::NetworkType::kCellular);
+  ASSERT_TRUE(cellular && cellular->sim_lock_status);
+  EXPECT_TRUE(cellular->sim_lock_status->lock_enabled);
+  EXPECT_EQ(shill::kSIMLockNetworkPin, cellular->sim_lock_status->lock_type);
+  EXPECT_EQ(3, cellular->sim_lock_status->retries_left);
+}
+
 // Tests that no VPN device state is returned by GetDeviceStateList if no VPN
 // services exist and built-in VPN is not prohibited.
 TEST_F(CrosNetworkConfigTest, GetDeviceStateListNoVpnServices) {

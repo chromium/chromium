@@ -2022,8 +2022,9 @@ chromium-metrics-reviews@google.com.
   <int value="13" label="Too Many STAs"/>
   <int value="14" label="Bad Passphrase"/>
   <int value="15" label="Bad Wep Key"/>
-  <int value="16" label="Sim Locked"/>
+  <int value="16" label="Sim PIN/PUK Locked"/>
   <int value="17" label="Not registered"/>
+  <int value="18" label="Sim Carrier Locked"/>
 </enum>
 
 <enum name="ShillConnectResult">
@@ -2050,7 +2051,7 @@ chromium-metrics-reviews@google.com.
   <int value="20" label="Out Of Range"/>
   <int value="21" label="Pin Missing"/>
   <int value="22" label="Ppp Auth Failed"/>
-  <int value="23" label="Sim Locked"/>
+  <int value="23" label="Sim PIN/PUK Locked"/>
   <int value="24" label="Not Registered"/>
   <int value="25" label="Too Many STAs"/>
   <int value="26" label="Disconnect"/>
@@ -2101,6 +2102,7 @@ chromium-metrics-reviews@google.com.
   <int value="0" label="PIN Locked"/>
   <int value="1" label="PUK Locked"/>
   <int value="2" label="Unlocked"/>
+  <int value="3" label="Carrier Locked"/>
 </enum>
 
 <enum name="SimPinOperationResult">
@@ -2158,7 +2160,7 @@ chromium-metrics-reviews@google.com.
   <int value="7" label="Cellular Inhibit Failure"/>
   <int value="8" label="ESim profile issue"/>
   <int value="9" label="Cellular out of credits"/>
-  <int value="10" label="Sim locked"/>
+  <int value="10" label="Sim PIN/PUK locked"/>
   <int value="11" label="Connect failed"/>
   <int value="12" label="Not connected"/>
   <int value="13" label="Activate Failed"/>
@@ -2166,6 +2168,7 @@ chromium-metrics-reviews@google.com.
   <int value="15" label="Cellular device busy"/>
   <int value="16" label="Error Connect Timeout"/>
   <int value="17" label="Cellular waiting for connectable timeout"/>
+  <int value="18" label="Carrier locked"/>
 </enum>
 
 <enum name="UserInitiatedNetworkConnectResult">
@@ -2193,7 +2196,7 @@ chromium-metrics-reviews@google.com.
   <int value="21" label="Cellular Inhibit Failure"/>
   <int value="22" label="Cellular Out Of Credits"/>
   <int value="23" label="ESim Profile Issue"/>
-  <int value="24" label="Sim Locked"/>
+  <int value="24" label="Sim PIN/PUK Locked"/>
   <int value="25" label="Cellular Device Busy"/>
   <int value="26" label="Connect Timeout"/>
   <int value="27" label="Connectable Cellular Timeout"/>

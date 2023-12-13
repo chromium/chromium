@@ -81,8 +81,9 @@ std::u16string GetConnectErrorString(const std::string& error_name) {
     return l10n_util::GetStringUTF16(
         IDS_CHROMEOS_NETWORK_ERROR_ACTIVATION_FAILED);
   }
-  if (error_name == NetworkConnectionHandler::kErrorSimLocked)
+  if (error_name == NetworkConnectionHandler::kErrorSimPinPukLocked) {
     return l10n_util::GetStringUTF16(IDS_NETWORK_LIST_SIM_CARD_LOCKED);
+  }
   if (features::IsCellularCarrierLockEnabled() &&
       error_name == NetworkConnectionHandler::kErrorSimCarrierLocked) {
     return l10n_util::GetStringUTF16(IDS_NETWORK_LIST_SIM_CARD_CARRIER_LOCKED);
@@ -132,7 +133,7 @@ bool ShouldConnectFailedNotificationBeShown(const std::string& error_name,
       error_name != NetworkConnectionHandler::kErrorNotFound &&
       error_name != NetworkConnectionHandler::kErrorConfigureFailed &&
       error_name != NetworkConnectionHandler::kErrorCertLoadTimeout &&
-      error_name != NetworkConnectionHandler::kErrorSimLocked &&
+      error_name != NetworkConnectionHandler::kErrorSimPinPukLocked &&
       (!features::IsCellularCarrierLockEnabled() ||
        error_name != NetworkConnectionHandler::kErrorSimCarrierLocked)) {
     return false;
@@ -158,8 +159,10 @@ const NetworkState* GetNetworkStateForGuid(const std::string& guid) {
 
 bool IsSimLockConnectionFailure(const std::string& connection_error_name,
                                 const NetworkState* network_state) {
-  if (connection_error_name == NetworkConnectionHandler::kErrorSimLocked)
+  if (connection_error_name ==
+      NetworkConnectionHandler::kErrorSimPinPukLocked) {
     return true;
+  }
 
   return network_state && network_state->GetError() == shill::kErrorSimLocked;
 }
