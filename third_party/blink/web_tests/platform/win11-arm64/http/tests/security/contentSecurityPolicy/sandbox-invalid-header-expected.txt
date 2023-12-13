@@ -1,2 +1,0 @@
-CONSOLE MESSAGE: Script executed in iframe.
-

@@ -1,0 +1,7 @@
+CONSOLE ERROR: Access to fetch at 'http://localhost:8000/fetch/resources/doctype.html' from origin 'http://127.0.0.1:8000' has been blocked by CORS policy: No 'Access-Control-Allow-Origin' header is present on the requested resource. If an opaque response serves your needs, set the request's mode to 'no-cors' to fetch the resource with CORS disabled.
+CONSOLE ERROR: Access to fetch at 'http://localhost:8000/fetch/resources/redirect-loop.php?Count=100&ACAOrigin=*' from origin 'http://127.0.0.1:8000' has been blocked by CORS policy: No 'Access-Control-Allow-Origin' header is present on the requested resource. If an opaque response serves your needs, set the request's mode to 'no-cors' to fetch the resource with CORS disabled.
+This is a testharness.js-based test.
+[FAIL] net::ERR_TOO_MANY_REDIRECTS should not output error messages
+  assert_unreached: must reject Reached unreachable code
+Harness: the test ran to completion.
+

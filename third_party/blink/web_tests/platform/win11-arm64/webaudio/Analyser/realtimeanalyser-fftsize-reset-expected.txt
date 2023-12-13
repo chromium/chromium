@@ -1,0 +1,9 @@
+This is a testharness.js-based test.
+[FAIL] X Linear FFT data after setting fftSize = 1024 does not equal [6.063636419639806e-7,6.10060567396431e-7,6.514114261335635e-7,6.956996116969094e-7,7.994843258529727e-7,8.804310027699103e-7,0.000001099945507121447,0.0000013056857142146328,0.000001665369950387685,0.000002156581331291818,0.000002902891083067516,0.000004041599822812714,0.000005879006039322121,0.000008955552402767353,0.000013970826330478303,0.000019471892301226035...] with an element-wise tolerance of {"absoluteThreshold":0,"relativeThreshold":0.0000019455}.\n	Index	Actual			Expected		AbsError		RelError		Test threshold\n	[489]	5.5076754268412742e-10	5.5076948557442051e-10	1.9428902930940239e-15	3.5275924755847765e-6	1.0715220341850350e-15\n	Max AbsError of 1.9428902930940239e-15 at index of 489.\n	Max RelError of 3.5275924755847765e-6 at index of 489.\n
+  assert_true: expected true got false
+[FAIL] < [128->1024] 1 out of 2 assertions were failed.
+  assert_true: expected true got false
+[FAIL] # AUDIT TASK RUNNER FINISHED: 1 out of 2 tasks were failed.
+  assert_true: expected true got false
+Harness: the test ran to completion.
+
