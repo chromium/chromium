@@ -10,6 +10,7 @@
 #include "ash/style/icon_button.h"
 #include "ash/wm/work_area_insets.h"
 #include "base/functional/bind.h"
+#include "base/ranges/algorithm.h"
 #include "base/time/time.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
@@ -78,7 +79,7 @@ class GlanceablesBarView::GlanceablesChipsContainer
   }
 
   void RemoveChip(GlanceablesChipButton* chip) {
-    auto iter = std::find(chips_.begin(), chips_.end(), chip);
+    auto iter = base::ranges::find(chips_, chip);
     if (iter != chips_.end()) {
       RemoveChildViewT(chip);
       chips_.erase(iter);

@@ -7,6 +7,7 @@
 #include <algorithm>
 #include <numeric>
 
+#include "base/ranges/algorithm.h"
 #include "ui/gfx/text_constants.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/layout/layout_manager.h"
@@ -161,7 +162,7 @@ class SystemUIComponentsGridView::GridLayout : public views::LayoutManager {
     DCHECK(view);
 
     // Get the index of `view` in `children_`.
-    auto iter = std::find(children_.begin(), children_.end(), view);
+    auto iter = base::ranges::find(children_, view);
     DCHECK(iter != children_.end());
     const int view_index = std::distance(children_.begin(), iter);
 

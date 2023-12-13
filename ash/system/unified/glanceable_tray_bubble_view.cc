@@ -4,7 +4,6 @@
 
 #include "ash/system/unified/glanceable_tray_bubble_view.h"
 
-#include <algorithm>
 #include <memory>
 
 #include "ash/api/tasks/tasks_client.h"
@@ -25,6 +24,7 @@
 #include "base/check.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
+#include "base/ranges/algorithm.h"
 #include "components/session_manager/session_manager_types.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/models/list_model.h"
@@ -307,8 +307,7 @@ void GlanceableTrayBubbleView::AddClassroomBubbleStudentViewIfNeeded(
   // Adds classroom bubble before `calendar_view_`.
   auto* const scroll_contents = scroll_view_->contents();
   const auto calendar_view_index =
-      std::find(scroll_contents->children().begin(),
-                scroll_contents->children().end(), calendar_view_) -
+      base::ranges::find(scroll_contents->children(), calendar_view_) -
       scroll_contents->children().begin();
   classroom_bubble_student_view_ = scroll_contents->AddChildViewAt(
       std::make_unique<ClassroomBubbleStudentView>(), calendar_view_index);

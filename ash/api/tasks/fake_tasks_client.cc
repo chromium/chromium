@@ -14,6 +14,7 @@
 #include "base/functional/callback.h"
 #include "base/functional/callback_forward.h"
 #include "base/notreached.h"
+#include "base/ranges/algorithm.h"
 #include "base/strings/string_util.h"
 #include "base/time/time.h"
 #include "base/uuid.h"
@@ -75,9 +76,9 @@ void FakeTasksClient::MarkAsCompleted(const std::string& task_list_id,
     pending_completed_tasks_.push_back(
         base::JoinString({task_list_id, task_id}, ":"));
   } else {
-    pending_completed_tasks_.erase(std::find(
-        pending_completed_tasks_.begin(), pending_completed_tasks_.end(),
-        base::JoinString({task_list_id, task_id}, ":")));
+    pending_completed_tasks_.erase(
+        base::ranges::find(pending_completed_tasks_,
+                           base::JoinString({task_list_id, task_id}, ":")));
   }
 }
 

@@ -4,6 +4,7 @@
 
 #include "ash/accessibility/accessibility_event_handler_manager.h"
 #include "ash/shell.h"
+#include "base/ranges/algorithm.h"
 #include "ui/events/event_handler.h"
 
 namespace ash {
@@ -30,7 +31,7 @@ void AccessibilityEventHandlerManager::AddAccessibilityEventHandler(
 void AccessibilityEventHandlerManager::RemoveAccessibilityEventHandler(
     ui::EventHandler* handler) {
   DCHECK(handler);
-  auto it = std::find(event_handlers_.begin(), event_handlers_.end(), handler);
+  auto it = base::ranges::find(event_handlers_, handler);
   DCHECK(it != event_handlers_.end());
 
   // Remove it from our list.

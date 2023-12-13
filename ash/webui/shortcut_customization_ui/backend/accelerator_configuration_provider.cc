@@ -350,8 +350,7 @@ bool IsAcceleratorHidden(AcceleratorActionId action_id,
     return false;
   }
   const std::vector<ui::Accelerator>& hidden_accelerators = iter->second;
-  return std::find(hidden_accelerators.begin(), hidden_accelerators.end(),
-                   accelerator) != hidden_accelerators.end();
+  return base::Contains(hidden_accelerators, accelerator);
 }
 
 std::optional<std::u16string> GetReservedAcceleratorName(

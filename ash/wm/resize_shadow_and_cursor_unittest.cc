@@ -659,10 +659,8 @@ TEST_F(ResizeShadowAndCursorTest, KeepShadowBeneathFloatWindow) {
   auto parent_children = shadow_layer->parent()->children();
   auto* window_layer = test_window->layer();
 
-  auto shadow_iter =
-      std::find(parent_children.begin(), parent_children.end(), shadow_layer);
-  auto window_iter =
-      std::find(parent_children.begin(), parent_children.end(), window_layer);
+  auto shadow_iter = base::ranges::find(parent_children, shadow_layer);
+  auto window_iter = base::ranges::find(parent_children, window_layer);
   EXPECT_LT(std::distance(parent_children.begin(), shadow_iter),
             std::distance(parent_children.begin(), window_iter));
 }
