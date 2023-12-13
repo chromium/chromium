@@ -29,11 +29,11 @@ namespace {
 
 const base::FeatureParam<double> kTemperature{
     &optimization_guide::features::kOptimizationGuideOnDeviceModel,
-    "on_device_model_temperature", 1.0};
+    "on_device_model_temperature", 0.8};
 
 const base::FeatureParam<int> kTopK{
     &optimization_guide::features::kOptimizationGuideOnDeviceModel,
-    "on_device_model_topk", 1};
+    "on_device_model_topk", 3};
 
 // Helper to bind object methods as weak task-posting callback functions.
 template <typename R, typename C, typename... Args>
