@@ -52,6 +52,9 @@ message ModelExecutionInfo {
 
   // Information for how the on-device model execution was done.
   OnDeviceModelExecutionInfo on_device_model_execution_info = 2;
+
+  // The error code returned by the model execution server, if any.
+  ErrorResponse error_response = 3;
 }
 
 message OnDeviceModelExecutionInfo {
