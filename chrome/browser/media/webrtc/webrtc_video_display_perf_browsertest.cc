@@ -125,52 +125,6 @@ content::WebContents* OpenWebrtcInternalsTab(Browser* browser) {
   return browser->tab_strip_model()->GetActiveWebContents();
 }
 
-std::vector<double> ParseGoogMaxDecodeFromWebrtcInternalsTab(
-    const std::string& webrtc_internals_stats_json) {
-  std::vector<double> goog_decode_ms;
-
-  absl::optional<base::Value> parsed_json =
-      base::JSONReader::Read(webrtc_internals_stats_json);
-  if (!parsed_json || !parsed_json->is_dict())
-    return goog_decode_ms;
-  const base::Value::Dict& dictionary = parsed_json->GetDict();
-
-  // |dictionary| should have exactly two entries, one per ssrc.
-  if (dictionary.size() != 2u)
-    return goog_decode_ms;
-
-  // Only a given |dictionary| entry will have a "stats" entry that has a key
-  // that ends with "recv-googMaxDecodeMs" inside (it will start with the ssrc
-  // id, but we don't care about that). Then collect the string of "values" out
-  // of that key and convert those into the |goog_decode_ms| vector of doubles.
-  for (auto dictionary_entry : dictionary) {
-    for (auto ssrc_entry : dictionary_entry.second.GetDict()) {
-      if (ssrc_entry.first != "stats")
-        continue;
-
-      for (auto stat_entry : ssrc_entry.second.GetDict()) {
-        if (!base::EndsWith(stat_entry.first, "recv-googMaxDecodeMs",
-                            base::CompareCase::SENSITIVE)) {
-          continue;
-        }
-        const std::string* values_entry =
-            stat_entry.second.GetDict().FindString("values");
-        if (!values_entry) {
-          continue;
-        }
-        base::StringTokenizer values_tokenizer(*values_entry, "[,]");
-        while (values_tokenizer.GetNext()) {
-          if (values_tokenizer.token_is_delim())
-            continue;
-          goog_decode_ms.push_back(atof(values_tokenizer.token().c_str()) *
-                                   base::Time::kMicrosecondsPerMillisecond);
-        }
-      }
-    }
-  }
-  return goog_decode_ms;
-}
-
 }  // anonymous namespace
 
 // Tests the performance of Chrome displaying remote video.
@@ -219,9 +173,6 @@ class WebRtcVideoDisplayPerfBrowserTest
     // connection(s) are up.
     content::WebContents* webrtc_internals_tab =
         OpenWebrtcInternalsTab(browser());
-    EXPECT_TRUE(
-        content::ExecJs(webrtc_internals_tab,
-                        "currentGetStatsMethod = OPTION_GETSTATS_LEGACY"));
 
     content::WebContents* left_tab =
         OpenPageAndGetUserMediaInNewTabWithConstraints(
@@ -263,11 +214,8 @@ class WebRtcVideoDisplayPerfBrowserTest
     ASSERT_TRUE(tracing::BeginTracing("media,viz,webrtc"));
     // Run the connection for 5 seconds to collect metrics.
     test::SleepInJavascript(left_tab, 5000);
-
-    const std::string webrtc_internals_stats_json = ExecuteJavascript(
-        "JSON.stringify(peerConnectionDataStore);", webrtc_internals_tab);
-    webrtc_decode_latencies_ =
-        ParseGoogMaxDecodeFromWebrtcInternalsTab(webrtc_internals_stats_json);
+    ExecuteJavascript("JSON.stringify(peerConnectionDataStore);",
+                      webrtc_internals_tab);
     chrome::CloseWebContents(browser(), webrtc_internals_tab, false);
 
     std::string json_events;
@@ -468,15 +416,14 @@ INSTANTIATE_TEST_SUITE_P(WebRtcVideoDisplayPerfBrowserTests,
                                           testing::Values(30, 60),
                                           testing::Bool()));
 
-// TODO(crbug.com/1509755): Rewrite these tests to not use legacy GetStats API.
 IN_PROC_BROWSER_TEST_P(WebRtcVideoDisplayPerfBrowserTest,
-                       DISABLED_TestVideoDisplayPerfVP9) {
+                       TestVideoDisplayPerfVP9) {
   TestVideoDisplayPerf("VP9");
 }
 
 #if BUILDFLAG(RTC_USE_H264)
 IN_PROC_BROWSER_TEST_P(WebRtcVideoDisplayPerfBrowserTest,
-                       DISABLED_TestVideoDisplayPerfH264) {
+                       TestVideoDisplayPerfH264) {
   if (!base::FeatureList::IsEnabled(
           blink::features::kWebRtcH264WithOpenH264FFmpeg)) {
     LOG(WARNING) << "Run-time feature WebRTC-H264WithOpenH264FFmpeg disabled. "
