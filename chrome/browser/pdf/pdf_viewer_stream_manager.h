@@ -76,6 +76,11 @@ class PdfViewerStreamManager
   PdfViewerStreamManager& operator=(const PdfViewerStreamManager&) = delete;
   ~PdfViewerStreamManager() override;
 
+  // Returns a pointer to the `PdfViewerStreamManager` instance associated with
+  // the `content::WebContents` of `render_frame_host`.
+  static PdfViewerStreamManager* FromRenderFrameHost(
+      content::RenderFrameHost* render_frame_host);
+
   // Starts tracking a `StreamContainer` in an embedder FrameTreeNode, before
   // the embedder host commits. The `StreamContainer` is considered unclaimed
   // until the embedder host commits, at which point the `StreamContainer` is

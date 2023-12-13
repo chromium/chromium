@@ -106,6 +106,13 @@ PdfViewerStreamManager::PdfViewerStreamManager(content::WebContents* contents)
 
 PdfViewerStreamManager::~PdfViewerStreamManager() = default;
 
+// static
+PdfViewerStreamManager* PdfViewerStreamManager::FromRenderFrameHost(
+    content::RenderFrameHost* render_frame_host) {
+  return FromWebContents(
+      content::WebContents::FromRenderFrameHost(render_frame_host));
+}
+
 void PdfViewerStreamManager::AddStreamContainer(
     int frame_tree_node_id,
     const std::string& internal_id,

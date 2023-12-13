@@ -60,8 +60,7 @@ base::WeakPtr<StreamContainer> GetStreamContainer(
   }
 
   auto* pdf_viewer_stream_manager =
-      pdf::PdfViewerStreamManager::FromWebContents(
-          content::WebContents::FromRenderFrameHost(embedder_host));
+      pdf::PdfViewerStreamManager::FromRenderFrameHost(embedder_host);
   if (!pdf_viewer_stream_manager) {
     return nullptr;
   }
