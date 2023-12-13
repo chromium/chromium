@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {isDirectoryEntry, isSameEntry, unwrapEntry} from '../../common/js/entry_utils.js';
+import {isDirectoryEntry, isNativeEntry, isSameEntry, unwrapEntry} from '../../common/js/entry_utils.js';
 import {getType} from '../../common/js/file_type.js';
 import {strf} from '../../common/js/translations.js';
 import {TrashEntry} from '../../common/js/trash.js';
@@ -230,6 +230,13 @@ export class MetadataBoxController {
       return;
     }
     const directoryEntry = unwrapEntry(entry);
+    if (!isNativeEntry(directoryEntry)) {
+      const typeName = ('typeName' in directoryEntry) ?
+          directoryEntry.typeName :
+          'no typeName';
+      console.warn('Supplied directory is not a native type:', typeName);
+      return;
+    }
 
     if (this.metadataBox.size === '') {
       this.metadataBox.size = ' ';  // Provide a dummy size value.
