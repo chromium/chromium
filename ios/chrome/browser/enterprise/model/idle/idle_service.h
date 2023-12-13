@@ -88,9 +88,14 @@ class IdleService : public KeyedService {
   // it calls `RunActionsForState` to run actions. Otherwise, it posts a task to
   // check again when the browser might possibly become idle.
   void CheckIfIdle();
+  // Checks whether the browser has been idle for the first time since last
+  // being active.
+  bool IsIdleAfterPreviouslyBeingActive();
+  // Checks if any action needs to run on idle timeout.
+  bool IsAnyActionNeededToRun();
   // Runs the actions based on `IdleTimeoutActions` and update the UI based on
   // the last state the browser was  idle in.
-  void RunActionsForState(LastState last_state);
+  void MaybeRunActionsForState(LastState last_state);
   // Calculates the time to when the browser might become idle.
   base::TimeDelta GetPossibleTimeToIdle();
 

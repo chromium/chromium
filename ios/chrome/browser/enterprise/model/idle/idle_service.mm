@@ -11,6 +11,8 @@
 #import "components/enterprise/idle/idle_pref_names.h"
 #import "components/prefs/pref_service.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
+#import "ios/chrome/browser/signin/model/authentication_service.h"
+#import "ios/chrome/browser/signin/model/authentication_service_factory.h"
 
 namespace enterprise_idle {
 
@@ -53,8 +55,6 @@ void IdleService::OnApplicationWillEnterForeground() {
 
   base::TimeDelta idle_threshold = GetTimeout();
   base::Time last_active_time = GetLastActiveTime();
-  base::Time last_idle_time = browser_state_->GetPrefs()->GetTime(
-      enterprise_idle::prefs::kLastIdleTimestamp);
 
   // Do nothing when the policy is unset.
   if (!idle_threshold.is_positive()) {
@@ -65,20 +65,10 @@ void IdleService::OnApplicationWillEnterForeground() {
   //  `LastActiveTimestamp` pref or if  the policy is not set.
   if (last_active_time == base::Time()) {
     PostCheckIdleTask(idle_threshold);
-  }
-
-  // There are  two cases we want to run  the actions:
-  // 1. If the browser has never been idle, the last idle timestamp will be
-  // empty, so just check the last active time.
-  // 2. If the browser has been inactive,  and the actions were not
-  // run while the browser was backgrounded or closed.
-  // The conditions are separated for readability.
-  else if (last_idle_time == base::Time() &&
-           (base::Time::Now() - last_active_time) >= idle_threshold) {
-    RunActionsForState(LastState::kIdleOnBackground);
-  } else if (last_idle_time != base::Time() &&
-             last_idle_time <= last_active_time + idle_threshold) {
-    RunActionsForState(LastState::kIdleOnBackground);
+  } else if (IsIdleAfterPreviouslyBeingActive()) {
+    // Check `IsIdleAfterPreviouslyBeingActive` for more details about this
+    // case.
+    MaybeRunActionsForState(LastState::kIdleOnBackground);
   } else {
     // The browser's last state was:
     // 1. active less than `idle_threshold` minutes ago.
@@ -110,7 +100,9 @@ void IdleService::OnIdleTimeoutPrefChanged() {
 }
 
 base::TimeDelta IdleService::GetPossibleTimeToIdle() {
-  return GetLastActiveTime() - base::Time::Now() + GetTimeout();
+  base::TimeDelta time_to_idle =
+      GetLastActiveTime() - base::Time::Now() + GetTimeout();
+  return time_to_idle.is_positive() ? time_to_idle : GetTimeout();
 }
 
 void IdleService::PostCheckIdleTask(base::TimeDelta time_from_now) {
@@ -123,24 +115,53 @@ void IdleService::PostCheckIdleTask(base::TimeDelta time_from_now) {
 
 void IdleService::CheckIfIdle() {
   DCHECK(base::FeatureList::IsEnabled(kIdleTimeout));
-  base::TimeDelta idle_threshold = GetTimeout();
-  base::Time last_active_time = GetLastActiveTime();
 
-  if ((base::Time::Now() - last_active_time) >= idle_threshold) {
-    RunActionsForState(LastState::kIdleOnForeground);
+  if (IsIdleAfterPreviouslyBeingActive()) {
+    MaybeRunActionsForState(LastState::kIdleOnForeground);
     return;
   }
 
   PostCheckIdleTask(GetPossibleTimeToIdle());
 }
 
-void IdleService::RunActionsForStateForTesting(LastState last_state) {
-  CHECK_IS_TEST();
-  RunActionsForState(last_state);
+bool IdleService::IsIdleAfterPreviouslyBeingActive() {
+  base::TimeDelta idle_threshold = GetTimeout();
+  base::Time last_active_time = GetLastActiveTime();
+  base::Time last_idle_time = browser_state_->GetPrefs()->GetTime(
+      enterprise_idle::prefs::kLastIdleTimestamp);
+
+  // There are  two cases we want to run  the actions:
+  // 1. If the browser has never been idle, the last idle timestamp will be
+  // empty, so just check the last active time.
+  // 2. If the browser has been idle at some point before, then became active,
+  // and the actions have not run since the last time the browser was active.
+  // The goal of #2 is to avoid running the actions every `idle_threshold`
+  // minutes if nothing changed in the idle state; i.e. it can be idle now but
+  // it may have been idle for a long time with no activity. The conditions are
+  // separated for readability.
+  bool is_idle_for_first_time =
+      last_idle_time == base::Time() &&
+      (base::Time::Now() - last_active_time) >= idle_threshold;
+  bool is_idle_after_being_active =
+      last_idle_time != base::Time() &&
+      last_idle_time < (last_active_time + idle_threshold) &&
+      (base::Time::Now() - last_active_time) >= idle_threshold;
+
+  return is_idle_for_first_time || is_idle_after_being_active;
 }
 
-void IdleService::RunActionsForState(LastState last_state) {
+void IdleService::RunActionsForStateForTesting(LastState last_state) {
+  CHECK_IS_TEST();
+  MaybeRunActionsForState(last_state);
+}
+
+void IdleService::MaybeRunActionsForState(LastState last_state) {
   DCHECK(base::FeatureList::IsEnabled(kIdleTimeout));
+  if (!IsAnyActionNeededToRun()) {
+    PostCheckIdleTask(GetTimeout());
+    return;
+  }
+
   if (last_state == LastState::kIdleOnBackground) {
     // TODO: check if data will be cleared.
     for (auto& observer : observer_list_) {
@@ -163,6 +184,20 @@ void IdleService::RunActionsForState(LastState last_state) {
 void IdleService::RunActions() {
   action_runner_->Run(base::BindOnce(&IdleService::OnActionsCompleted,
                                      weak_factory_.GetWeakPtr()));
+}
+
+bool IdleService::IsAnyActionNeededToRun() {
+  const auto& actions =
+      browser_state_->GetPrefs()->GetList(prefs::kIdleTimeoutActions);
+  AuthenticationService* authentication_service =
+      AuthenticationServiceFactory::GetForBrowserState(browser_state_);
+  // return false if the only idle timeout action that is set is signout, but
+  // the user is not currently signed in.
+  return !(actions.size() == 1 &&
+           static_cast<ActionType>(actions.front().GetInt()) ==
+               ActionType::kSignOut &&
+           !authentication_service->HasPrimaryIdentity(
+               signin::ConsentLevel::kSignin));
 }
 
 void IdleService::SetLastActiveTime() {

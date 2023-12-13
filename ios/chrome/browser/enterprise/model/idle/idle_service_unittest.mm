@@ -9,7 +9,13 @@
 #import "components/enterprise/idle/idle_features.h"
 #import "components/enterprise/idle/idle_pref_names.h"
 #import "ios/chrome/browser/enterprise/model/idle/action_runner.h"
+#import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/browser_state/test_chrome_browser_state.h"
+#import "ios/chrome/browser/signin/model/authentication_service.h"
+#import "ios/chrome/browser/signin/model/authentication_service_factory.h"
+#import "ios/chrome/browser/signin/model/fake_authentication_service_delegate.h"
+#import "ios/chrome/browser/signin/model/fake_system_identity.h"
+#import "ios/chrome/browser/signin/model/fake_system_identity_manager.h"
 #import "ios/chrome/test/ios_chrome_scoped_testing_local_state.h"
 #import "ios/web/public/test/web_task_environment.h"
 #import "testing/gmock/include/gmock/gmock.h"
@@ -73,11 +79,30 @@ class IdleTimeoutServiceTest : public PlatformTest {
     idle_service_->AddObserver(&mock_observer_);
   }
 
+  void SignIn() {
+    // Sign in.
+    FakeSystemIdentity* identity = [FakeSystemIdentity fakeIdentity1];
+    FakeSystemIdentityManager* system_identity_manager =
+        FakeSystemIdentityManager::FromSystemIdentityManager(
+            GetApplicationContext()->GetSystemIdentityManager());
+    system_identity_manager->AddIdentity(identity);
+    authentication_service_->SignIn(
+        identity, signin_metrics::AccessPoint::ACCESS_POINT_UNKNOWN);
+  }
+
   void SetUp() override {
     scoped_feature_list_ = std::make_unique<base::test::ScopedFeatureList>();
     scoped_feature_list_->InitWithFeatures({enterprise_idle::kIdleTimeout}, {});
     TestChromeBrowserState::Builder test_cbs_builder;
+    test_cbs_builder.AddTestingFactory(
+        AuthenticationServiceFactory::GetInstance(),
+        AuthenticationServiceFactory::GetDefaultFactory());
     browser_state_ = test_cbs_builder.Build();
+    AuthenticationServiceFactory::CreateAndInitializeForBrowserState(
+        browser_state_.get(),
+        std::make_unique<FakeAuthenticationServiceDelegate>());
+    authentication_service_ = static_cast<AuthenticationService*>(
+        AuthenticationServiceFactory::GetForBrowserState(browser_state_.get()));
   }
 
   void TearDown() override {
@@ -99,6 +124,7 @@ class IdleTimeoutServiceTest : public PlatformTest {
   std::unique_ptr<TestChromeBrowserState> browser_state_;
   std::unique_ptr<IdleService> idle_service_;
   IOSChromeScopedTestingLocalState local_state_;
+  AuthenticationService* authentication_service_;
 };
 
 // When policy timeout is set after being unset.
@@ -210,31 +236,25 @@ TEST_F(IdleTimeoutServiceTest,
   InitIdleService();
   idle_service_->OnApplicationWillEnterForeground();
 
-  // run actions and invoke the `OnActionsCompleted` callback to set the last
+  // Fast forward and invoke the `OnActionsCompleted` callback to set the last
   // idle time.
-  EXPECT_CALL(mock_observer_, OnIdleTimeoutInForeground()).Times(2);
-  EXPECT_CALL(*action_runner_, Run(_)).Times(2);
-  EXPECT_CALL(mock_observer_, OnIdleTimeoutActionsCompleted()).Times(2);
+  EXPECT_CALL(mock_observer_, OnIdleTimeoutInForeground()).Times(1);
+  EXPECT_CALL(mock_observer_, OnIdleTimeoutActionsCompleted()).Times(1);
   task_environment_.FastForwardBy(base::Minutes(1));
-  idle_service_->RunActions();
   idle_service_->OnActionsCompleted();
+  // `OnIdleTimeoutInForeground` should not be called again.
   task_environment_.FastForwardBy(base::Minutes(1));
-  idle_service_->RunActions();
-  idle_service_->OnActionsCompleted();
 
-  EXPECT_CALL(*action_runner_, Run(_)).Times(0);
   EXPECT_CALL(mock_observer_, OnIdleTimeoutInForeground()).Times(0);
-
-  EXPECT_CALL(mock_observer_, OnApplicationWillEnterBackground());
   idle_service_->OnApplicationWillEnterBackground();
   task_environment_.FastForwardBy(base::Minutes(1));
 
   // No action run on foreground because run was called last idle time and the
-  // browser was not active after that.
-  EXPECT_CALL(*action_runner_, Run(_)).Times(0);
+  // browser was not active after that. Reforegrounding sets the last active
+  // time, so next time the idle state is triggered, actions will run.
   idle_service_->OnApplicationWillEnterForeground();
-
-  // Ensure that idle state is detected after that.
+  // Ensure that idle state is detected after that but actions run after 1
+  // minute of no activity since foregrounding.
   EXPECT_CALL(mock_observer_, OnIdleTimeoutInForeground()).Times(1);
   task_environment_.FastForwardBy(base::Minutes(1));
 }
@@ -284,6 +304,12 @@ TEST_F(IdleTimeoutServiceTest, ActionsRunAtCorrectTimesWhileForegrounded) {
 
   EXPECT_CALL(mock_observer_, OnIdleTimeoutInForeground()).Times(1);
   task_environment_.FastForwardBy(base::Seconds(40));
+  idle_service_->OnActionsCompleted();
+
+  // Since the actions have completed last time, and the user continued being
+  // idle, observer should not be called.
+  EXPECT_CALL(mock_observer_, OnIdleTimeoutInForeground()).Times(0);
+  task_environment_.FastForwardBy(base::Minutes(3));
 }
 
 // If there are observers for the service, the service should call
@@ -309,6 +335,75 @@ TEST_F(IdleTimeoutServiceTest,
   EXPECT_CALL(mock_observer_, OnIdleTimeoutInForeground());
   EXPECT_CALL(*action_runner_, Run(_)).Times(0);
   task_environment_.FastForwardBy(base::Seconds(40));
+}
+
+// If the only action set is signout, and the user is not signed in when timeout
+// is detected, the actions should not run.
+TEST_F(IdleTimeoutServiceTest, NoActionsRunWhenNotNeeded) {
+  SetLastActiveTime(base::Time::Now() - base::Seconds(90));
+  SetIdleTimeoutPolicy(base::Minutes(1));
+  InitIdleService();
+  base::Value::List actions;
+  actions.Append(static_cast<int>(enterprise_idle::ActionType::kSignOut));
+  browser_state_->GetPrefs()->SetList(
+      enterprise_idle::prefs::kIdleTimeoutActions, std::move(actions));
+
+  EXPECT_CALL(mock_observer_, OnIdleTimeoutOnStartup()).Times(0);
+  EXPECT_CALL(*action_runner_, Run(_)).Times(0);
+  idle_service_->OnApplicationWillEnterForeground();
+}
+
+// If the only action set is signout, and the user is signed in when timeout is
+// detected, the actions should run.
+TEST_F(IdleTimeoutServiceTest, ActionsRunWhenNeeded_OnlySignoutSet) {
+  SetLastActiveTime(base::Time::Now() - base::Seconds(90));
+  SetIdleTimeoutPolicy(base::Minutes(1));
+  InitIdleService();
+  SignIn();
+  base::Value::List actions;
+  actions.Append(static_cast<int>(enterprise_idle::ActionType::kSignOut));
+  browser_state_->GetPrefs()->SetList(
+      enterprise_idle::prefs::kIdleTimeoutActions, std::move(actions));
+
+  EXPECT_CALL(mock_observer_, OnIdleTimeoutOnStartup());
+  EXPECT_CALL(*action_runner_, Run(_)).Times(1);
+  idle_service_->OnApplicationWillEnterForeground();
+}
+
+// If the only action set is not signout, the action should run regardless of
+// the sign-in state.
+TEST_F(IdleTimeoutServiceTest, ActionsRunWhenNeeded_OnlyActionSetIsNotSignOut) {
+  SetLastActiveTime(base::Time::Now() - base::Seconds(90));
+  SetIdleTimeoutPolicy(base::Minutes(1));
+  InitIdleService();
+  base::Value::List actions;
+  actions.Append(
+      static_cast<int>(enterprise_idle::ActionType::kClearBrowsingHistory));
+  browser_state_->GetPrefs()->SetList(
+      enterprise_idle::prefs::kIdleTimeoutActions, std::move(actions));
+
+  EXPECT_CALL(mock_observer_, OnIdleTimeoutOnStartup());
+  EXPECT_CALL(*action_runner_, Run(_)).Times(1);
+  idle_service_->OnApplicationWillEnterForeground();
+}
+
+// If the only action set is signout, and the user is signed in when timeout is
+// detected, the actions should run.
+TEST_F(IdleTimeoutServiceTest,
+       ActionsRunWhenNeeded_ManyActionsSetAndUserNotSignedIn) {
+  SetLastActiveTime(base::Time::Now() - base::Seconds(90));
+  SetIdleTimeoutPolicy(base::Minutes(1));
+  InitIdleService();
+  base::Value::List actions;
+  actions.Append(
+      static_cast<int>(enterprise_idle::ActionType::kClearBrowsingHistory));
+  actions.Append(static_cast<int>(enterprise_idle::ActionType::kSignOut));
+  browser_state_->GetPrefs()->SetList(
+      enterprise_idle::prefs::kIdleTimeoutActions, std::move(actions));
+
+  EXPECT_CALL(mock_observer_, OnIdleTimeoutOnStartup());
+  EXPECT_CALL(*action_runner_, Run(_)).Times(1);
+  idle_service_->OnApplicationWillEnterForeground();
 }
 
 }  // namespace enterprise_idle
