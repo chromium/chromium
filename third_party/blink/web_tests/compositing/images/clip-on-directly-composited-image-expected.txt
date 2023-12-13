@@ -7,7 +7,7 @@
       "backgroundColor": "#FFFFFF"
     },
     {
-      "name": "LayoutImage (positioned) IMG class='composited'",
+      "name": "LayoutImage (positioned, block) IMG class='composited'",
       "position": [10, 10],
       "bounds": [140, 140],
       "transform": 1

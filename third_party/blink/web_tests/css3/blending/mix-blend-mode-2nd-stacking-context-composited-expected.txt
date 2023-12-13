@@ -7,7 +7,7 @@
       "backgroundColor": "#FFFFFF"
     },
     {
-      "name": "LayoutNGBlockFlow (positioned) DIV class='stacking-context'",
+      "name": "LayoutNGBlockFlow (positioned, children-inline) DIV class='stacking-context'",
       "bounds": [160, 90],
       "backgroundColor": "#008000",
       "transform": 1

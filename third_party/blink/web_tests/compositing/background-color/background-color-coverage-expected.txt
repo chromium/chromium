@@ -20,7 +20,7 @@
       "transform": 1
     },
     {
-      "name": "LayoutNGBlockFlow (positioned) DIV id='green3'",
+      "name": "LayoutNGBlockFlow (positioned, children-inline) DIV id='green3'",
       "bounds": [110, 110],
       "backgroundColor": "#008000",
       "transform": 2

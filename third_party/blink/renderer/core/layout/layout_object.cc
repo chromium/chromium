@@ -2118,20 +2118,45 @@ String LayoutObject::DecoratedName() const {
   StringBuilder name;
   name.Append(GetName());
 
-  if (IsAnonymous())
-    name.Append(" (anonymous)");
+  Vector<const char*> attributes;
+  if (IsAnonymous()) {
+    attributes.push_back("anonymous");
+  }
   // FIXME: Remove the special case for LayoutView here (requires rebaseline of
   // all tests).
-  if (IsOutOfFlowPositioned() && !IsA<LayoutView>(this))
-    name.Append(" (positioned)");
-  if (IsRelPositioned())
-    name.Append(" (relative positioned)");
-  if (IsStickyPositioned())
-    name.Append(" (sticky positioned)");
-  if (IsFloating())
-    name.Append(" (floating)");
-  if (SpannerPlaceholder())
-    name.Append(" (column spanner)");
+  if (IsOutOfFlowPositioned() && !IsA<LayoutView>(this)) {
+    attributes.push_back("positioned");
+  }
+  if (IsRelPositioned()) {
+    attributes.push_back("relative positioned");
+  }
+  if (IsStickyPositioned()) {
+    attributes.push_back("sticky positioned");
+  }
+  if (IsFloating()) {
+    attributes.push_back("floating");
+  }
+  if (SpannerPlaceholder()) {
+    attributes.push_back("column spanner");
+  }
+  if (IsLayoutBlock() && IsInline()) {
+    attributes.push_back("inline");
+  }
+  if (IsLayoutReplaced() && !IsInline()) {
+    attributes.push_back("block");
+  }
+  if (IsLayoutBlockFlow() && ChildrenInline() && SlowFirstChild()) {
+    attributes.push_back("children-inline");
+  }
+  if (!attributes.empty()) {
+    name.Append(" (");
+    name.Append(attributes[0]);
+    for (wtf_size_t i = 1; i < attributes.size(); ++i) {
+      name.Append(", ");
+      name.Append(attributes[i]);
+    }
+    name.Append(")");
+  }
 
   return name.ToString();
 }

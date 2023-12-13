@@ -52,8 +52,9 @@ TEST_P(PaintPropertyTreePrinterTest, SimpleEffectTree) {
       EffectPropertyTreeAsString(*GetDocument().View());
   EXPECT_THAT(
       effect_tree_as_string.Ascii().c_str(),
-      testing::MatchesRegex("root .*"
-                            "  Effect \\(LayoutN?G?BlockFlow DIV\\) .*"));
+      testing::MatchesRegex(
+          "root .*"
+          "  Effect \\(LayoutN?G?BlockFlow \\(children-inline\\) DIV\\) .*"));
 }
 
 TEST_P(PaintPropertyTreePrinterTest, SimpleScrollTree) {

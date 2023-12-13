@@ -35,7 +35,7 @@ TEST_F(LayoutInputNodeTest, DumpBasic) {
   BlockNode: LayoutView #document
     BlockNode: LayoutNGBlockFlow HTML
       BlockNode: LayoutNGBlockFlow BODY
-        BlockNode: LayoutNGBlockFlow DIV id="block"
+        BlockNode: LayoutNGBlockFlow (children-inline) DIV id="block"
           InlineNode
             InlineItem OpenTag. LayoutInline SPAN
             InlineItem Text. "Hello world!"
@@ -61,13 +61,13 @@ TEST_F(LayoutInputNodeTest, DumpBlockInInline) {
   BlockNode: LayoutView #document
     BlockNode: LayoutNGBlockFlow HTML
       BlockNode: LayoutNGBlockFlow BODY
-        BlockNode: LayoutNGBlockFlow DIV id="block"
+        BlockNode: LayoutNGBlockFlow (children-inline) DIV id="block"
           InlineNode
             InlineItem OpenTag. LayoutInline SPAN
             InlineItem Text. "\n        Hello world!\n        "
             InlineItem BlockInInline. LayoutNGBlockFlow (anonymous)
               BlockNode: LayoutNGBlockFlow DIV id="blockininline"
-*               BlockNode: LayoutNGBlockFlow DIV id="inner"
+*               BlockNode: LayoutNGBlockFlow (children-inline) DIV id="inner"
                   InlineNode
                     InlineItem Text. "Hello trouble!"
             InlineItem CloseTag. LayoutInline SPAN
@@ -93,12 +93,12 @@ TEST_F(LayoutInputNodeTest, DumpInlineBlockInInline) {
   BlockNode: LayoutView #document
     BlockNode: LayoutNGBlockFlow HTML
       BlockNode: LayoutNGBlockFlow BODY
-        BlockNode: LayoutNGBlockFlow DIV id="block"
+        BlockNode: LayoutNGBlockFlow (children-inline) DIV id="block"
           InlineNode
             InlineItem OpenTag. LayoutInline SPAN
             InlineItem Text. "\n        Hello world!\n        "
-            InlineItem AtomicInline. LayoutNGBlockFlow DIV id="inlineblock" style="display:inline-block;"
-*             BlockNode: LayoutNGBlockFlow DIV id="inner"
+            InlineItem AtomicInline. LayoutNGBlockFlow (inline) DIV id="inlineblock" style="display:inline-block;"
+*             BlockNode: LayoutNGBlockFlow (children-inline) DIV id="inner"
                 InlineNode
                   InlineItem Text. "Hello Janus!"
             InlineItem Text. "\n      "
@@ -125,12 +125,12 @@ TEST_F(LayoutInputNodeTest, DumpFloatInInline) {
   BlockNode: LayoutView #document
     BlockNode: LayoutNGBlockFlow HTML
       BlockNode: LayoutNGBlockFlow BODY
-        BlockNode: LayoutNGBlockFlow DIV id="block"
+        BlockNode: LayoutNGBlockFlow (children-inline) DIV id="block"
           InlineNode
             InlineItem OpenTag. LayoutInline SPAN
             InlineItem Text. "\n        Hello world!\n        "
             InlineItem Floating. LayoutNGBlockFlow (floating) DIV id="float" style="float:left;"
-*             BlockNode: LayoutNGBlockFlow DIV id="inner"
+*             BlockNode: LayoutNGBlockFlow (children-inline) DIV id="inner"
                 InlineNode
                   InlineItem Text. "Hello Hermes!"
             InlineItem CloseTag. LayoutInline SPAN
@@ -156,12 +156,12 @@ TEST_F(LayoutInputNodeTest, DumpAbsposInInline) {
   BlockNode: LayoutView #document
     BlockNode: LayoutNGBlockFlow HTML
       BlockNode: LayoutNGBlockFlow BODY
-        BlockNode: LayoutNGBlockFlow DIV id="block"
+        BlockNode: LayoutNGBlockFlow (children-inline) DIV id="block"
           InlineNode
             InlineItem OpenTag. LayoutInline SPAN
             InlineItem Text. "\n        Hello world!\n        "
             InlineItem OutOfFlowPositioned. LayoutNGBlockFlow (positioned) DIV id="abspos" style="position:absolute;"
-*             BlockNode: LayoutNGBlockFlow DIV id="inner"
+*             BlockNode: LayoutNGBlockFlow (children-inline) DIV id="inner"
                 InlineNode
                   InlineItem Text. "Hello Thor!"
             InlineItem CloseTag. LayoutInline SPAN
@@ -178,7 +178,7 @@ TEST_F(LayoutInputNodeTest, DumpRelposInline) {
   String expectation = R"DUMP(.:: Layout input node tree ::.
   BlockNode: LayoutView #document
     BlockNode: LayoutNGBlockFlow HTML
-      BlockNode: LayoutNGBlockFlow BODY
+      BlockNode: LayoutNGBlockFlow (children-inline) BODY
         InlineNode
           InlineItem OpenTag. LayoutInline (relative positioned) SPAN style="position:relative;"
           InlineItem Text. "Hello world!"

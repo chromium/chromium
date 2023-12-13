@@ -7,7 +7,7 @@
       "backgroundColor": "#FFFFFF"
     },
     {
-      "name": "LayoutIFrame (positioned) IFRAME",
+      "name": "LayoutIFrame (positioned, block) IFRAME",
       "bounds": [400, 400],
       "drawsContent": false
     },

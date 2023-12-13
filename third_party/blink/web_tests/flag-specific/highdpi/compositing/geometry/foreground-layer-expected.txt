@@ -8,7 +8,7 @@
       "backgroundColor": "#FFFFFF"
     },
     {
-      "name": "LayoutNGBlockFlow (relative positioned) DIV class='main box'",
+      "name": "LayoutNGBlockFlow (relative positioned, inline, children-inline) DIV class='main box'",
       "position": [-45, -45],
       "bounds": [510, 510],
       "backgroundColor": "#FF0000",
@@ -21,14 +21,14 @@
       "transform": 3
     },
     {
-      "name": "LayoutNGBlockFlow (relative positioned) DIV class='main box'",
+      "name": "LayoutNGBlockFlow (relative positioned, inline, children-inline) DIV class='main box'",
       "position": [60, 60],
       "bounds": [300, 306],
       "backgroundColor": "#008000",
       "transform": 1
     },
     {
-      "name": "LayoutNGBlockFlow (relative positioned) DIV class='main box'",
+      "name": "LayoutNGBlockFlow (relative positioned, inline, children-inline) DIV class='main box'",
       "position": [-45, -45],
       "bounds": [510, 510],
       "backgroundColor": "#FF0000",
@@ -41,7 +41,7 @@
       "transform": 6
     },
     {
-      "name": "LayoutNGBlockFlow (relative positioned) DIV class='main box'",
+      "name": "LayoutNGBlockFlow (relative positioned, inline, children-inline) DIV class='main box'",
       "position": [60, 60],
       "bounds": [300, 300],
       "contentsOpaque": true,

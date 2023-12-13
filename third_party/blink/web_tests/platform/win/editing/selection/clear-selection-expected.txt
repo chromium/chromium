@@ -5,6 +5,6 @@ layer at (0,0)
 layer at (0,0)
   LayoutNGBlockFlow {HTML} at (0,0) size 800x600
     LayoutNGBlockFlow {BODY} at (8,8) size 784x584
-      LayoutNGBlockFlow {DIV} at (0,0) size 784x20
+      LayoutNGBlockFlow (children-inline) {DIV} at (0,0) size 784x20
         LayoutText {#text} at (0,0) size 775x19
           text run at (0,0) width 775: "This tests that window.getSelection().clear() clears the selection correctly. If this test is successful, this text should not be selected."

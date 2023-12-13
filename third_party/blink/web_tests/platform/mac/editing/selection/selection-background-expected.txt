@@ -4,10 +4,10 @@ layer at (0,0)
 layer at (0,0)
   LayoutNGBlockFlow {HTML} at (0,0) size 800x600
     LayoutNGBlockFlow {BODY} at (8,8) size 784x584
-      LayoutNGBlockFlow {P} at (0,0) size 784x18
+      LayoutNGBlockFlow (children-inline) {P} at (0,0) size 784x18
         LayoutText {#text} at (0,0) size 779x18
           text run at (0,0) width 779: "This tests that the selection tint is grey when the WebView is not focused (using the pixel output from DumpRenderTree)."
-      LayoutNGBlockFlow {DIV} at (0,34) size 784x18
+      LayoutNGBlockFlow (children-inline) {DIV} at (0,34) size 784x18
         LayoutText {#text} at (0,0) size 182x18
           text run at (0,0) width 182: "This text should be selected."
 selection start: position 0 of child 0 {#text} of child 3 {DIV} of body

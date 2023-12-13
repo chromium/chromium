@@ -27,7 +27,7 @@
       "transform": 2
     },
     {
-      "name": "LayoutNGBlockFlow (sticky positioned) DIV id='sticky'",
+      "name": "LayoutNGBlockFlow (sticky positioned, children-inline) DIV id='sticky'",
       "bounds": [345, 18],
       "transform": 4
     },
