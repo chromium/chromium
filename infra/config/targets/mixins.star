@@ -737,13 +737,6 @@ targets.mixin(
 )
 
 targets.mixin(
-    name = "linux-archive-rel-args",
-    args = [
-        "linux-release-64/sizes",
-    ],
-)
-
-targets.mixin(
     name = "linux-focal",
     swarming = targets.swarming(
         dimensions = {
@@ -880,13 +873,6 @@ targets.mixin(
 targets.mixin(
     name = "long_skylab_timeout",
     timeout_sec = 10800,
-)
-
-targets.mixin(
-    name = "mac-archive-rel-args",
-    args = [
-        "mac-release/sizes",
-    ],
 )
 
 targets.mixin(

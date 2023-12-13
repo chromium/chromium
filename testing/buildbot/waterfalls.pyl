@@ -414,9 +414,6 @@
         'os_type': 'chromeos',
       },
       'linux-archive-rel': {
-        'mixins': [
-          'linux-archive-rel-args',
-        ],
         'additional_compile_targets': [
           'all',
         ],
@@ -464,13 +461,11 @@
         ],
       },
       'mac-archive-rel': {
-        'mixins': ['mac-archive-rel-args'],
         'additional_compile_targets': [
           'all',
         ],
       },
       'mac-arm64-archive-rel': {
-        'mixins': ['mac-archive-rel-args'],
         'additional_compile_targets': [
           'all',
         ],

@@ -578,11 +578,6 @@
       'expiration': 21600,
     },
   },
-  'linux-archive-rel-args': {
-    'args': [
-      'linux-release-64/sizes',
-    ],
-  },
   'linux-focal': {
     'swarming': {
       'dimensions': {
@@ -688,11 +683,6 @@
   },
   'long_skylab_timeout': {
     'timeout_sec': 10800,
-  },
-  'mac-archive-rel-args': {
-    'args': [
-      'mac-release/sizes',
-    ],
   },
   'mac_10.15': {
     'swarming': {
