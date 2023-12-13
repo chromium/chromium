@@ -65,4 +65,8 @@ void NetworkPortalDetectorTestImpl::Enable() {
   enabled_ = true;
 }
 
+void NetworkPortalDetectorTestImpl::RequestCaptivePortalDetection() {
+  NetworkHandler::Get()->network_state_handler()->RequestPortalDetection();
+}
+
 }  // namespace ash

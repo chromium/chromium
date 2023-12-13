@@ -66,6 +66,7 @@ class NetworkPortalDetectorImpl : public NetworkPortalDetector,
   CaptivePortalStatus GetCaptivePortalStatus() override;
   bool IsEnabled() override;
   void Enable() override;
+  void RequestCaptivePortalDetection() override;
 
  private:
   friend class NetworkPortalDetectorImplTest;

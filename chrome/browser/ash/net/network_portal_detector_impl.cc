@@ -149,6 +149,23 @@ void NetworkPortalDetectorImpl::Enable() {
   SetNetworkPortalState(network, NetworkState::PortalState::kUnknown);
 }
 
+void NetworkPortalDetectorImpl::RequestCaptivePortalDetection() {
+  auto* handler = NetworkHandler::Get()->network_state_handler();
+  const NetworkState* default_network = handler->DefaultNetwork();
+  if (!default_network) {
+    return;
+  }
+  if (default_network->IsOnline()) {
+    // If shill has identified the default network as 'online', only proxy
+    // authentication may have changed. Since a probe is inexpensive,
+    // schedule a detection attempt rather than attempt accurate bookkeeping.
+    ScheduleAttempt();
+    return;
+  }
+  // Otherwise request shill portal detection.
+  handler->RequestPortalDetection();
+}
+
 NetworkPortalDetector::CaptivePortalStatus
 NetworkPortalDetectorImpl::GetCaptivePortalStatus() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);

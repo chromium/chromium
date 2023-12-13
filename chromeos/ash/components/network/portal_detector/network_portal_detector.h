@@ -41,6 +41,9 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) NetworkPortalDetector {
   // network will be handled any time the default network state changes.
   virtual void Enable() = 0;
 
+  // Request captive portal detection after a navigation event or proy signin.
+  virtual void RequestCaptivePortalDetection() = 0;
+
   // Returns non-localized string representation of |status|.
   static std::string CaptivePortalStatusString(CaptivePortalStatus status);
 

@@ -217,6 +217,10 @@ class NetworkPortalDetectorImplTest
     network_portal_detector_->StartDetectionForTesting();
   }
 
+  NetworkHandlerTestHelper* helper() {
+    return network_handler_test_helper_.get();
+  }
+
  private:
   void AddService(const std::string& network_id, const std::string& type) {
     network_handler_test_helper_->service_test()->AddService(
@@ -680,6 +684,36 @@ TEST_F(NetworkPortalDetectorImplTest, DetectionTimeoutIsCancelled) {
   EXPECT_TRUE(
       CheckPortalState(NetworkPortalDetector::CAPTIVE_PORTAL_STATUS_UNKNOWN,
                        kStatusCodeUnset, kStubWireless1));
+}
+
+TEST_F(NetworkPortalDetectorImplTest, RequestCaptivePortalDetection) {
+  SetDisconnected(kStubEthernet);
+  SetConnected(kStubWireless1);
+
+  auto* handler = NetworkHandler::Get()->network_state_handler();
+  ASSERT_TRUE(handler);
+  const NetworkState* default_network = handler->DefaultNetwork();
+  ASSERT_TRUE(default_network);
+  EXPECT_EQ(default_network->connection_state(), shill::kStateOnline);
+
+  // When the default network is online, chrome portal detection should be
+  // triggered.
+  ShillServiceClient::Get()->GetTestInterface()->SetRequestPortalState(
+      shill::kStateRedirectFound);
+  network_portal_detector()->RequestCaptivePortalDetection();
+  base::RunLoop().RunUntilIdle();
+  EXPECT_EQ(shill::kStateOnline, default_network->connection_state());
+  EXPECT_EQ(State::STATE_CHECKING_FOR_PORTAL, state());
+
+  // When the default network is not online, shill portal detection should be
+  // triggered.
+  helper()->SetServiceProperty(kStubWireless1, shill::kStateProperty,
+                               base::Value(shill::kStateRedirectFound));
+  ShillServiceClient::Get()->GetTestInterface()->SetRequestPortalState(
+      shill::kStateOnline);
+  network_portal_detector()->RequestCaptivePortalDetection();
+  base::RunLoop().RunUntilIdle();
+  EXPECT_EQ(shill::kStateOnline, default_network->connection_state());
 }
 
 }  // namespace ash
