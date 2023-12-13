@@ -90,25 +90,24 @@ class NotificationListView::MessageViewContainer : public MessageView::Observer,
   METADATA_HEADER(MessageViewContainer, views::View)
 
  public:
-  MessageViewContainer(MessageView* message_view,
+  MessageViewContainer(std::unique_ptr<MessageView> message_view,
                        NotificationListView* list_view)
-      : message_view_(message_view),
-        list_view_(list_view),
-        control_view_(new NotificationSwipeControlView(message_view)) {
-    message_view_->AddObserver(this);
+      : list_view_(list_view) {
+    message_view->AddObserver(this);
 
     message_center::ExpandState expand_state =
         MessageCenter::Get()->GetNotificationExpandState(
-            message_view_->notification_id());
+            message_view->notification_id());
 
     if (expand_state != message_center::ExpandState::DEFAULT) {
-      message_view_->SetExpanded(expand_state ==
-                                 message_center::ExpandState::USER_EXPANDED);
+      message_view->SetExpanded(expand_state ==
+                                message_center::ExpandState::USER_EXPANDED);
     }
 
     SetLayoutManager(std::make_unique<views::FillLayout>());
-    AddChildView(control_view_.get());
-    AddChildView(message_view_.get());
+    control_view_ = AddChildView(
+        std::make_unique<NotificationSwipeControlView>(message_view.get()));
+    message_view_ = AddChildView(std::move(message_view));
   }
 
   MessageViewContainer(const MessageViewContainer&) = delete;
@@ -376,9 +375,9 @@ class NotificationListView::MessageViewContainer : public MessageView::Observer,
   // radius of the view when sliding.
   bool need_update_corner_radius_ = true;
 
-  const raw_ptr<MessageView, ExperimentalAsh> message_view_;
   const raw_ptr<NotificationListView, ExperimentalAsh> list_view_;
-  const raw_ptr<NotificationSwipeControlView, ExperimentalAsh> control_view_;
+  raw_ptr<NotificationSwipeControlView, ExperimentalAsh> control_view_;
+  raw_ptr<MessageView, ExperimentalAsh> message_view_;
 };
 
 BEGIN_METADATA(NotificationListView, MessageViewContainer, views::View)
@@ -765,9 +764,10 @@ void NotificationListView::OnNotificationAdded(const std::string& id) {
     }
   }
 
-  auto* view = CreateMessageView(*notification);
+  auto view = CreateMessageView(*notification);
   view->SetExpanded(view->IsAutoExpandingAllowed());
-  AddChildViewAt(new MessageViewContainer(view, this), index_to_insert);
+  AddChildViewAt(std::make_unique<MessageViewContainer>(std::move(view), this),
+                 index_to_insert);
   UpdateBorders(/*force_update=*/false);
   ResetBounds();
 }
@@ -918,12 +918,11 @@ void NotificationListView::AnimationCanceled(const gfx::Animation* animation) {
   AnimationEnded(animation);
 }
 
-MessageView* NotificationListView::CreateMessageView(
+std::unique_ptr<MessageView> NotificationListView::CreateMessageView(
     const Notification& notification) {
-  auto* message_view =
-      MessageViewFactory::Create(notification, /*shown_in_popup=*/false)
-          .release();
-  ConfigureMessageView(message_view);
+  auto message_view =
+      MessageViewFactory::Create(notification, /*shown_in_popup=*/false);
+  ConfigureMessageView(message_view.get());
   return message_view;
 }
 
@@ -1057,7 +1056,7 @@ void NotificationListView::DeleteRemovedNotifications() {
     for (auto* view : removed_views) {
       message_view_multi_source_observation_.RemoveObservation(
           AsMVC(view)->message_view());
-      delete view;
+      RemoveChildViewT(view);
     }
   }
 
