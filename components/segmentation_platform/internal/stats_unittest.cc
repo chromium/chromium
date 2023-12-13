@@ -382,7 +382,9 @@ class BackgroundRecorderTest : public testing::Test {
   base::test::TaskEnvironment task_env_;
 };
 
-TEST_F(BackgroundRecorderTest, Blah) {
+// TODO(ssid): This test may cause delay in the test framework, fix and re-enable the test.
+// Tracking: b/299529800.
+TEST_F(BackgroundRecorderTest, DISABLED_Recording) {
   BackgroundUmaRecorder& recorder = BackgroundUmaRecorder::GetInstance();
   recorder.InitializeForTesting(task_env_.GetMainThreadTaskRunner());
   int counter = 0;
