@@ -7,6 +7,7 @@
 
 #include <set>
 #include <string>
+#include <string_view>
 
 #include "base/functional/callback.h"
 #include "base/functional/callback_forward.h"
@@ -17,6 +18,7 @@
 #include "chrome/browser/ui/hats/hats_service.h"
 #include "components/pref_registry/pref_registry_syncable.h"
 #include "content/public/browser/web_contents_observer.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 class Browser;
 
@@ -44,7 +46,8 @@ class HatsServiceDesktop : public HatsService {
                       const SurveyStringData& product_specific_string_data,
                       bool require_same_origin,
                       base::OnceClosure success_callback,
-                      base::OnceClosure failure_callback);
+                      base::OnceClosure failure_callback,
+                      absl::optional<std::string_view> supplied_trigger_id);
 
     // Not copyable or movable
     DelayedSurveyTask(const DelayedSurveyTask&) = delete;
@@ -78,6 +81,7 @@ class HatsServiceDesktop : public HatsService {
     bool require_same_origin_;
     base::OnceClosure success_callback_;
     base::OnceClosure failure_callback_;
+    absl::optional<std::string_view> supplied_trigger_id_;
     base::WeakPtrFactory<DelayedSurveyTask> weak_ptr_factory_{this};
   };
 
@@ -126,7 +130,9 @@ class HatsServiceDesktop : public HatsService {
       const SurveyBitsData& product_specific_bits_data,
       const SurveyStringData& product_specific_string_data,
       base::OnceClosure success_callback = base::DoNothing(),
-      base::OnceClosure failure_callback = base::DoNothing()) override;
+      base::OnceClosure failure_callback = base::DoNothing(),
+      const absl::optional<std::string_view>& supplied_trigger_id =
+          absl::nullopt) override;
 
   bool LaunchDelayedSurvey(
       const std::string& trigger,
@@ -142,7 +148,9 @@ class HatsServiceDesktop : public HatsService {
       const SurveyStringData& product_specific_string_data = {},
       bool require_same_origin = false,
       base::OnceClosure success_callback = base::DoNothing(),
-      base::OnceClosure failure_callback = base::DoNothing()) override;
+      base::OnceClosure failure_callback = base::DoNothing(),
+      const absl::optional<std::string_view>& supplied_trigger_id =
+          absl::nullopt) override;
 
   void SetSurveyMetadataForTesting(const HatsService::SurveyMetadata& metadata);
   void GetSurveyMetadataForTesting(HatsService::SurveyMetadata* metadata) const;
@@ -180,7 +188,9 @@ class HatsServiceDesktop : public HatsService {
       base::OnceClosure success_callback,
       base::OnceClosure failure_callback,
       const SurveyBitsData& product_specific_bits_data,
-      const SurveyStringData& product_specific_string_data);
+      const SurveyStringData& product_specific_string_data,
+      const absl::optional<std::string_view>& supplied_trigger_id =
+          absl::nullopt);
 
   // Check whether the survey is reachable and under capacity and show it.
   // |success_callback| is called when the survey is shown to the user.
@@ -193,7 +203,8 @@ class HatsServiceDesktop : public HatsService {
       base::OnceClosure success_callback,
       base::OnceClosure failure_callback,
       const SurveyBitsData& product_specific_bits_data,
-      const SurveyStringData& product_specific_string_data);
+      const SurveyStringData& product_specific_string_data,
+      const absl::optional<std::string_view>& supplied_trigger_id);
 
   std::set<DelayedSurveyTask> pending_tasks_;
 

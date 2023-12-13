@@ -243,6 +243,7 @@ std::vector<hats::SurveyConfig> GetAllSurveyConfigs() {
   survey_configs.emplace_back(
       &features::kHappinessTrackingSurveysForDesktopNtpModules,
       kHatsSurveyTriggerNtpModules);
+
   // NTP Photos module opt-out survey.
   survey_configs.emplace_back(
       &features::kHappinessTrackingSurveysForNtpPhotosOptOut,
@@ -559,7 +560,7 @@ void GetActiveSurveyConfigs(SurveyConfigs& survey_configs_by_triggers_) {
   // of whether the feature is enabled, so checking whether a particular survey
   // is enabled should be fast.
   for (const SurveyConfig& survey : surveys) {
-    if (!survey.enabled || survey.trigger_id.empty()) {
+    if (!survey.enabled) {
       continue;
     }
 
