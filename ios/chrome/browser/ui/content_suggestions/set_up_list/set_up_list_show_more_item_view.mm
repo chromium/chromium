@@ -210,7 +210,6 @@ NSAttributedString* Strikethrough(NSString* text) {
       return l10n_util::GetNSString(
           IDS_IOS_SET_UP_LIST_AUTOFILL_SEE_MORE_DESCRIPTION);
     case SetUpListItemType::kContentNotification:
-      // TODO(b/310713830): add see more strings when they are finalized.
       return l10n_util::GetNSString(
           IDS_IOS_SET_UP_LIST_CONTENT_NOTIFICATION_DESCRIPTION);
     case SetUpListItemType::kAllSet:

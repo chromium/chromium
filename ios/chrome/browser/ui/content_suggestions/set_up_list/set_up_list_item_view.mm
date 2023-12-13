@@ -94,8 +94,7 @@ struct ViewConfig {
           syncString,
           IDS_IOS_SET_UP_LIST_DEFAULT_BROWSER_SHORT_DESCRIPTION,
           IDS_IOS_SET_UP_LIST_AUTOFILL_SHORT_DESCRIPTION,
-          // TODO(b/310713830): add short strings when they are finalized.
-          IDS_IOS_SET_UP_LIST_CONTENT_NOTIFICATION_DESCRIPTION,
+          IDS_IOS_SET_UP_LIST_CONTENT_NOTIFICATION_SHORT_DESCRIPTION,
           UIFontTextStyleFootnote,
           UIFontTextStyleCaption2,
           kCompactTextSpacing,
@@ -112,7 +111,6 @@ struct ViewConfig {
           syncString,
           IDS_IOS_SET_UP_LIST_DEFAULT_BROWSER_MAGIC_STACK_DESCRIPTION,
           IDS_IOS_SET_UP_LIST_AUTOFILL_MAGIC_STACK_DESCRIPTION,
-          // TODO(b/310713830): add magic stack strings when they are finalized.
           IDS_IOS_SET_UP_LIST_CONTENT_NOTIFICATION_DESCRIPTION,
           UIFontTextStyleSubheadline,
           UIFontTextStyleFootnote,
