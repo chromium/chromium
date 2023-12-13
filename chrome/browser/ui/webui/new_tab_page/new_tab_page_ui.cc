@@ -617,10 +617,6 @@ content::WebUIDataSource* CreateAndAddNewTabPageUiHtmlSource(Profile* profile) {
           base::FeatureList::IsEnabled(
               ntp_features::kNtpChromeCartInHistoryClusterModule));
 
-  source->AddBoolean("historyClustersModuleDiscountsEnabled",
-                     base::FeatureList::IsEnabled(
-                         ntp_features::kNtpHistoryClustersModuleDiscounts));
-
   webui::SetupChromeRefresh2023(source);
 
   RealboxHandler::SetupWebUIDataSource(source, profile);

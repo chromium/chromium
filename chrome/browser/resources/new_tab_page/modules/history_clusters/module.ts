@@ -339,30 +339,25 @@ async function createElement(): Promise<HistoryClustersModuleElement|null> {
                          .length;
   const visitCount = element.cluster.visits.length;
   element.discounts = [];
-  if (loadTimeData.getBoolean('historyClustersModuleDiscountsEnabled')) {
-    const {discounts} = await HistoryClustersProxyImpl.getInstance()
-                            .handler.getDiscountsForCluster(clusters[0]);
-    for (const visit of clusters[0].visits) {
-      let discountInValue = '';
-      for (const [url, urlDiscounts] of discounts) {
-        if (url.url === visit.normalizedUrl.url && urlDiscounts.length > 0) {
-          // API is designed to support multiple discounts, but for now we only
-          // have one.
-          discountInValue = urlDiscounts[0].valueInText;
-          visit.normalizedUrl.url = urlDiscounts[0].annotatedVisitUrl.url;
-        }
+  const {discounts} = await HistoryClustersProxyImpl.getInstance()
+                          .handler.getDiscountsForCluster(clusters[0]);
+  for (const visit of clusters[0].visits) {
+    let discountInValue = '';
+    for (const [url, urlDiscounts] of discounts) {
+      if (url.url === visit.normalizedUrl.url && urlDiscounts.length > 0) {
+        // API is designed to support multiple discounts, but for now we only
+        // have one.
+        discountInValue = urlDiscounts[0].valueInText;
+        visit.normalizedUrl.url = urlDiscounts[0].annotatedVisitUrl.url;
       }
-      element.discounts.push(discountInValue);
     }
-    // For visits without discounts, discount string in corresponding index in
-    // `discounts` array is empty.
-    const hasDiscount =
-        element.discounts.some((discount) => discount.length > 0);
-    chrome.metricsPrivate.recordBoolean(
-        `NewTabPage.HistoryClusters.HasDiscount`, hasDiscount);
-  } else {
-    element.discounts = Array(visitCount).fill('');
+    element.discounts.push(discountInValue);
   }
+  // For visits without discounts, discount string in corresponding index in
+  // `discounts` array is empty.
+  const hasDiscount = element.discounts.some((discount) => discount.length > 0);
+  chrome.metricsPrivate.recordBoolean(
+      `NewTabPage.HistoryClusters.HasDiscount`, hasDiscount);
 
   // Calculate which layout to use.
   if (imageCount >= LAYOUT_3_MIN_IMAGE_VISITS) {

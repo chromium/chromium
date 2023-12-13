@@ -4913,12 +4913,6 @@ const char kNtpChromeCartHistoryClusterCoexistDescription[] =
     "Shows ChromeCart module and ChromeCart+Journeys module together when "
     "available on the New Tab Page.";
 
-const char kNtpDiscountsInHistoryClustersModuleName[] =
-    "NTP discounts in Journeys Module";
-const char kNtpDiscountsInHistoryClustersModuleDescription[] =
-    "Shows discounts on the visit tiles in the Journeys module when available "
-    "on the New Tab Page.";
-
 const char kNtpTabResumptionModuleName[] =
     "NTP Cross Device Tab Resumption Module";
 const char kNtpTabResumptionModuleDescription[] =

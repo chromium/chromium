@@ -469,6 +469,14 @@ TEST_F(HistoryClustersPageHandlerV2Test, UpdateClusterVisitsInteractionState) {
       "NewTabPage.HistoryClusters.DismissReason", 1, 1);
 }
 
+TEST_F(HistoryClustersPageHandlerV2Test, LoadDiscount) {
+  auto cluster_mojom = history_clusters::mojom::Cluster::New();
+  EXPECT_CALL(mock_shopping_service(),
+              GetDiscountInfoForUrls(testing::_, testing::_))
+      .Times(1);
+  handler().GetDiscountsForCluster(std::move(cluster_mojom), base::DoNothing());
+}
+
 TEST_F(HistoryClustersPageHandlerV2Test, NotLoadCartWithoutFeature) {
   base::test::ScopedFeatureList features;
   features.InitAndDisableFeature(
@@ -477,17 +485,6 @@ TEST_F(HistoryClustersPageHandlerV2Test, NotLoadCartWithoutFeature) {
   history_clusters::mojom::ClusterPtr cluster_mojom;
   EXPECT_CALL(mock_cart_service(), LoadAllActiveCarts(testing::_)).Times(0);
   handler().GetCartForCluster(std::move(cluster_mojom), base::DoNothing());
-}
-
-TEST_F(HistoryClustersPageHandlerV2Test, NotLoadDiscountWithoutFeature) {
-  base::test::ScopedFeatureList features;
-  features.InitAndDisableFeature(
-      ntp_features::kNtpHistoryClustersModuleDiscounts);
-  history_clusters::mojom::ClusterPtr cluster_mojom;
-  EXPECT_CALL(mock_shopping_service(),
-              GetDiscountInfoForUrls(testing::_, testing::_))
-      .Times(0);
-  handler().GetDiscountsForCluster(std::move(cluster_mojom), base::DoNothing());
 }
 
 class HistoryClustersPageHandlerV2CartInQuestTest
@@ -508,24 +505,4 @@ TEST_F(HistoryClustersPageHandlerV2CartInQuestTest, LoadCartWithFeature) {
   handler().GetCartForCluster(std::move(cluster_mojom), base::DoNothing());
 }
 
-class HistoryClustersPageHandlerV2DiscountInQuestTest
-    : public HistoryClustersPageHandlerV2Test {
- public:
-  HistoryClustersPageHandlerV2DiscountInQuestTest() {
-    features_.InitAndEnableFeature(
-        ntp_features::kNtpHistoryClustersModuleDiscounts);
-  }
-
- private:
-  base::test::ScopedFeatureList features_;
-};
-
-TEST_F(HistoryClustersPageHandlerV2DiscountInQuestTest,
-       LoadDiscountWithFeature) {
-  auto cluster_mojom = history_clusters::mojom::Cluster::New();
-  EXPECT_CALL(mock_shopping_service(),
-              GetDiscountInfoForUrls(testing::_, testing::_))
-      .Times(1);
-  handler().GetDiscountsForCluster(std::move(cluster_mojom), base::DoNothing());
-}
 }  // namespace

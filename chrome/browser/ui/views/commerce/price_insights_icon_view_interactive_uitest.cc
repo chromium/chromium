@@ -46,8 +46,9 @@ class PriceInsightsIconViewInteractiveTest : public InteractiveBrowserTest {
  public:
   PriceInsightsIconViewInteractiveTest() {
     test_features_.InitWithFeatures(
-        {commerce::kCommerceAllowChipExpansion, commerce::kPriceInsights},
-        {ntp_features::kNtpHistoryClustersModuleDiscounts});
+        /*enabled_features=*/{commerce::kCommerceAllowChipExpansion,
+                              commerce::kPriceInsights},
+        /*disabled_features*/ {});
   }
 
   void SetUp() override {

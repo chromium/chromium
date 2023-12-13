@@ -196,9 +196,7 @@ void CommerceUiTabHelper::DidFinishNavigation(
       base::BindOnce(&CommerceUiTabHelper::HandleProductInfoResponse,
                      weak_ptr_factory_.GetWeakPtr()));
 
-  if (shopping_service_->IsDiscountEligibleToShowOnNavigation() ||
-      base::FeatureList::IsEnabled(
-          ntp_features::kNtpHistoryClustersModuleDiscounts)) {
+  if (shopping_service_->IsDiscountEligibleToShowOnNavigation()) {
     shopping_service_->GetDiscountInfoForUrls(
         {web_contents()->GetLastCommittedURL()},
         base::BindOnce(&CommerceUiTabHelper::HandleDiscountsResponse,
@@ -378,10 +376,8 @@ void CommerceUiTabHelper::HandleDiscountsResponse(const DiscountsMap& map) {
   page_has_discounts_ =
       response_has_discounts
           ? shopping_service_->IsDiscountEligibleToShowOnNavigation() ||
-                (base::FeatureList::IsEnabled(
-                     ntp_features::kNtpHistoryClustersModuleDiscounts) &&
-                 commerce::UrlContainsDiscountUtmTag(
-                     web_contents()->GetLastCommittedURL()))
+                commerce::UrlContainsDiscountUtmTag(
+                    web_contents()->GetLastCommittedURL())
           : false;
 
   got_discounts_response_for_page_ = true;
@@ -394,9 +390,7 @@ void CommerceUiTabHelper::MaybeComputePageActionToExpand() {
   }
 
   // Make sure we have responses from all the relevant features first.
-  if ((shopping_service_->IsDiscountEligibleToShowOnNavigation() ||
-       base::FeatureList::IsEnabled(
-           ntp_features::kNtpHistoryClustersModuleDiscounts)) &&
+  if (shopping_service_->IsDiscountEligibleToShowOnNavigation() &&
       !got_discounts_response_for_page_) {
     return;
   }

@@ -1047,14 +1047,12 @@ INSTANTIATE_TEST_SUITE_P(
         OfferNotificationBubbleViewsInteractiveUiTestData{
             "FreeListingCoupon_on_history_cluster",
             AutofillOfferData::OfferType::FREE_LISTING_COUPON_OFFER,
-            std::make_optional<std::vector<base::test::FeatureRefAndParams>>(
-                {{ntp_features::kNtpHistoryClustersModuleDiscounts, {}}})},
+            std::make_optional<std::vector<base::test::FeatureRefAndParams>>()},
         OfferNotificationBubbleViewsInteractiveUiTestData{
             "FreeListingCoupon_on_history_cluster_chrome_refresh_style",
             AutofillOfferData::OfferType::FREE_LISTING_COUPON_OFFER,
             std::make_optional<std::vector<base::test::FeatureRefAndParams>>(
-                {{ntp_features::kNtpHistoryClustersModuleDiscounts, {}},
-                 {::features::kChromeRefresh2023, {}}})}),
+                {{::features::kChromeRefresh2023, {}}})}),
     GetTestName);
 
 IN_PROC_BROWSER_TEST_P(

@@ -18,9 +18,7 @@ namespace autofill::autofill_metrics {
 
 namespace {
 bool ShouldBreakDownUsageFromHistoryCluster() {
-  return base::FeatureList::IsEnabled(
-             ntp_features::kNtpHistoryClustersModuleDiscounts) ||
-         base::FeatureList::IsEnabled(commerce::kShowDiscountOnNavigation);
+  return base::FeatureList::IsEnabled(commerce::kShowDiscountOnNavigation);
 }
 }  // namespace
 

@@ -6654,12 +6654,6 @@ const FeatureEntry kFeatureEntries[] = {
          kNtpChromeCartInHistoryClustersModuleVariations,
          "DesktopNtpModules")},
 
-    {"ntp-discounts-in-journeys-module",
-     flag_descriptions::kNtpDiscountsInHistoryClustersModuleName,
-     flag_descriptions::kNtpDiscountsInHistoryClustersModuleDescription,
-     kOsDesktop,
-     FEATURE_VALUE_TYPE(ntp_features::kNtpHistoryClustersModuleDiscounts)},
-
     {"ntp-chrome-cart-module", flag_descriptions::kNtpChromeCartModuleName,
      flag_descriptions::kNtpChromeCartModuleDescription, kOsDesktop,
      FEATURE_WITH_PARAMS_VALUE_TYPE(ntp_features::kNtpChromeCartModule,
