@@ -80,9 +80,6 @@ plus_addresses::PlusAddressService* AutofillClient::GetPlusAddressService() {
 void AutofillClient::OfferPlusAddressCreation(
     const url::Origin& main_frame_origin,
     plus_addresses::PlusAddressCallback callback) {
-  // This is overridden by platform subclasses. Currently only
-  // ChromeAutofillClient (Chrome Desktop & Android) implements this, with iOS
-  // support also expected.
 }
 
 MerchantPromoCodeManager* AutofillClient::GetMerchantPromoCodeManager() {
@@ -135,20 +132,14 @@ void AutofillClient::ShowUnmaskAuthenticatorSelectionDialog(
     base::OnceCallback<void(const std::string&)>
         confirm_unmask_challenge_option_callback,
     base::OnceClosure cancel_unmasking_closure) {
-  // This is overridden by platform subclasses. Currently only
-  // ChromeAutofillClient (Chrome Desktop and Clank) implements this.
 }
 
 void AutofillClient::DismissUnmaskAuthenticatorSelectionDialog(
     bool server_success) {
-  // This is overridden by platform subclasses. Currently only
-  // ChromeAutofillClient (Chrome Desktop and Clank) implements this.
 }
 
 VirtualCardEnrollmentManager*
 AutofillClient::GetVirtualCardEnrollmentManager() {
-  // This is overridden by platform subclasses. Currently only
-  // ChromeAutofillClient (Chrome Desktop and Clank) implements this.
   return nullptr;
 }
 
@@ -156,8 +147,6 @@ void AutofillClient::ShowVirtualCardEnrollDialog(
     const VirtualCardEnrollmentFields& virtual_card_enrollment_fields,
     base::OnceClosure accept_virtual_card_callback,
     base::OnceClosure decline_virtual_card_callback) {
-  // This is overridden by platform subclasses. Currently only
-  // ChromeAutofillClient (Chrome Desktop and Clank) implements this.
 }
 
 payments::MandatoryReauthManager*
@@ -174,13 +163,10 @@ void AutofillClient::ShowMandatoryReauthOptInConfirmation() {}
 
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
 void AutofillClient::HideVirtualCardEnrollBubbleAndIconIfVisible() {
-  // This is overridden by platform subclasses. Currently only
-  // ChromeAutofillClient (Chrome Desktop) implements this.
 }
 
 void AutofillClient::ShowLocalCardMigrationDialog(
     base::OnceClosure show_migration_dialog_closure) {
-  // This is overridden by platform subclasses
 }
 
 void AutofillClient::ConfirmMigrateLocalCardToCloud(
@@ -188,7 +174,6 @@ void AutofillClient::ConfirmMigrateLocalCardToCloud(
     const std::string& user_email,
     const std::vector<MigratableCreditCard>& migratable_credit_cards,
     LocalCardMigrationCallback start_migrating_cards_callback) {
-  // This is overridden by platform subclasses
 }
 
 void AutofillClient::ShowLocalCardMigrationResults(
@@ -196,44 +181,36 @@ void AutofillClient::ShowLocalCardMigrationResults(
     const std::u16string& tip_message,
     const std::vector<MigratableCreditCard>& migratable_credit_cards,
     MigrationDeleteCardCallback delete_local_card_callback) {
-  // This is overridden by platform subclasses.
 }
 
 void AutofillClient::ShowWebauthnOfferDialog(
     WebauthnDialogCallback offer_dialog_callback) {
-  // This is overridden by platform subclasses.
 }
 
 void AutofillClient::ShowWebauthnVerifyPendingDialog(
     WebauthnDialogCallback verify_pending_dialog_callback) {
-  // This is overridden by platform subclasses.
 }
 
 void AutofillClient::UpdateWebauthnOfferDialogWithError() {
-  // This is overridden by platform subclasses.
 }
 
 bool AutofillClient::CloseWebauthnDialog() {
-  // This is overridden by platform subclasses.
   return false;
 }
 
 void AutofillClient::OfferVirtualCardOptions(
     const std::vector<CreditCard*>& candidates,
     base::OnceCallback<void(const std::string&)> callback) {
-  // This is overridden by platform subclasses.
 }
 #else
 void AutofillClient::ConfirmAccountNameFixFlow(
     base::OnceCallback<void(const std::u16string&)> callback) {
-  // This is overridden by platform subclasses.
 }
 
 void AutofillClient::ConfirmExpirationDateFixFlow(
     const CreditCard& card,
     base::OnceCallback<void(const std::u16string&, const std::u16string&)>
         callback) {
-  // This is overridden by platform subclasses.
 }
 #endif
 
@@ -247,21 +224,16 @@ AutofillClient::CreateCreditCardInternalAuthenticator(AutofillDriver* driver) {
 void AutofillClient::ShowCardUnmaskOtpInputDialog(
     const CardUnmaskChallengeOption& challenge_option,
     base::WeakPtr<OtpUnmaskDelegate> delegate) {
-  // This is overridden by platform subclasses. Currently only
-  // ChromeAutofillClient (Chrome Desktop and Clank) implements this.
 }
 
 void AutofillClient::OnUnmaskOtpVerificationResult(
     OtpUnmaskResult unmask_result) {
-  // This is overridden by platform subclasses. Currently only
-  // ChromeAutofillClient (Chrome Desktop and Clank) implements this.
 }
 
 void AutofillClient::ConfirmSaveCreditCardLocally(
     const CreditCard& card,
     AutofillClient::SaveCreditCardOptions options,
     LocalSaveCardPromptCallback callback) {
-  // This is overridden by platform subclasses.
 }
 
 void AutofillClient::ConfirmSaveCreditCardToCloud(
@@ -269,7 +241,6 @@ void AutofillClient::ConfirmSaveCreditCardToCloud(
     const LegalMessageLines& legal_message_lines,
     SaveCreditCardOptions options,
     UploadSaveCardPromptCallback callback) {
-  // This is overridden by platform subclasses.
 }
 
 void AutofillClient::ConfirmSaveIbanLocally(const Iban& iban,
@@ -283,56 +254,41 @@ void AutofillClient::ConfirmUploadIbanToCloud(
     SaveIbanPromptCallback callback) {}
 
 void AutofillClient::CreditCardUploadCompleted(bool card_saved) {
-  // This is overridden by platform subclasses.
 }
 
 void AutofillClient::ShowUnmaskPrompt(
     const CreditCard& card,
     const CardUnmaskPromptOptions& card_unmask_prompt_options,
     base::WeakPtr<CardUnmaskDelegate> delegate) {
-  // This is overridden by platform subclasses.
 }
 
 void AutofillClient::OnUnmaskVerificationResult(PaymentsRpcResult result) {
-  // This is overridden by platform subclasses.
 }
 
 void AutofillClient::UpdateOfferNotification(
     const AutofillOfferData* offer,
     const OfferNotificationOptions& options) {
-  // This is overridden by platform subclasses. Currently only
-  // ChromeAutofillClient (Chrome Desktop and Clank) implement this.
 }
 
 void AutofillClient::DismissOfferNotification() {
-  // This is overridden by platform subclasses. Currently only
-  // ChromeAutofillClient (Chrome Desktop and Clank) implements this.
 }
 
 void AutofillClient::OnVirtualCardDataAvailable(
     const VirtualCardManualFallbackBubbleOptions& options) {
-  // This is overridden by platform subclasses. Currently only
-  // ChromeAutofillClient (Chrome Desktop & Android) implements this.
 }
 
 void AutofillClient::ShowAutofillErrorDialog(
     const AutofillErrorDialogContext& context) {
-  // This is overridden by platform subclasses. Currently only
-  // ChromeAutofillClient (Chrome Desktop & Android) implements this.
 }
 
 void AutofillClient::ShowAutofillProgressDialog(
     AutofillProgressDialogType autofill_progress_dialog_type,
     base::OnceClosure cancel_callback) {
-  // This is overridden by platform subclasses. Currently only
-  // ChromeAutofillClient (Chrome Desktop & Android) implements this.
 }
 
 void AutofillClient::CloseAutofillProgressDialog(
     bool show_confirmation_before_closing,
     base::OnceClosure no_interactive_authentication_callback) {
-  // This is overridden by platform subclasses. Currently only
-  // ChromeAutofillClient (Chrome Desktop & Android) implements this.
 }
 
 LogManager* AutofillClient::GetLogManager() const {
@@ -346,7 +302,6 @@ const AutofillAblationStudy& AutofillClient::GetAblationStudy() const {
 }
 
 void AutofillClient::OpenPromoCodeOfferDetailsURL(const GURL& url) {
-  // This is overridden by platform subclasses.
   NOTIMPLEMENTED();
 }
 
