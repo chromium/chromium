@@ -449,7 +449,7 @@ template("linux_package") {
     } else if (current_cpu == "mips64el") {
       deb_arch = "mips64el"
     } else if (current_cpu == "loong64") {
-      deb_arch = "loongarch64"
+      deb_arch = "loong64"
     } else {
       assert(false, "Linux installer not configured for this architecture.")
     }
