@@ -346,7 +346,14 @@ IN_PROC_BROWSER_TEST_F(RecordingServiceBrowserTest,
   VerifyVideoFileAndDelete(video_path);
 }
 
-IN_PROC_BROWSER_TEST_F(RecordingServiceBrowserTest, InvalidDownloadsPath) {
+// TODO(b/273521375): Flaky on ChromeOS MSAN builds.
+#if defined(MEMORY_SANITIZER)
+#define MAYBE_InvalidDownloadsPath DISABLED_InvalidDownloadsPath
+#else
+#define MAYBE_InvalidDownloadsPath InvalidDownloadsPath
+#endif
+IN_PROC_BROWSER_TEST_F(RecordingServiceBrowserTest,
+                       MAYBE_InvalidDownloadsPath) {
   auto* download_prefs =
       DownloadPrefs::FromBrowserContext(browser()->profile());
   const base::FilePath removable_path =
