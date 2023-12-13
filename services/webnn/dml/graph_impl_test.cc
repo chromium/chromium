@@ -72,6 +72,7 @@ void BuildAndCompute(
   // The dml::GraphImpl should be built successfully.
   base::RunLoop run_loop_create_graph;
   was_callback_called = false;
+  bool was_create_graph_error = true;
   webnn_context_remote.set_disconnect_handler(
       base::BindOnce([](base::RunLoop* run_loop) { run_loop->Quit(); },
                      &run_loop_create_graph));
@@ -79,14 +80,19 @@ void BuildAndCompute(
       std::move(graph_info),
       base::BindLambdaForTesting(
           [&](mojom::CreateGraphResultPtr create_graph_result) {
-            webnn_graph_remote.Bind(
-                std::move(create_graph_result->get_graph_remote()));
+            if (!create_graph_result->is_error()) {
+              webnn_graph_remote.Bind(
+                  std::move(create_graph_result->get_graph_remote()));
+              was_create_graph_error = false;
+            }
             was_callback_called = true;
             run_loop_create_graph.Quit();
           }));
   run_loop_create_graph.Run();
+  EXPECT_TRUE(was_callback_called);
+
   if (expectation == BuildAndComputeExpectation::kCreateGraphFailure) {
-    EXPECT_FALSE(was_callback_called);
+    EXPECT_TRUE(was_create_graph_error);
     EXPECT_FALSE(webnn_graph_remote.is_bound());
     EXPECT_TRUE(webnn_context_remote.is_bound());
     webnn_graph_remote.reset();
@@ -95,7 +101,7 @@ void BuildAndCompute(
     base::RunLoop().RunUntilIdle();
     return;
   }
-  EXPECT_TRUE(was_callback_called);
+  EXPECT_FALSE(was_create_graph_error);
   EXPECT_TRUE(webnn_graph_remote.is_bound());
 
   // The dml::GraphImpl should compute successfully.
@@ -4054,6 +4060,197 @@ TEST_F(WebNNGraphDMLImplTest, BuildOneInputAndOneConstantOperand) {
 
   EXPECT_EQ(BigBufferToVector<float>(std::move(named_outputs["output"])),
             std::vector<float>({12, 14, 12, 14}));
+}
+
+template <typename T>
+struct LayerNormalizationTester {
+  OperandInfo<T> input;
+  absl::optional<OperandInfo<T>> scale;
+  absl::optional<OperandInfo<T>> bias;
+  struct LayerNormalizationAttributes {
+    absl::optional<uint64_t> scale_operand_id;
+    absl::optional<uint64_t> bias_operand_id;
+    std::vector<uint32_t> axes;
+    float epsilon = 1e-5;
+  };
+  LayerNormalizationAttributes attributes;
+  OperandInfo<T> output;
+
+  void Test(BuildAndComputeExpectation expectation =
+                BuildAndComputeExpectation::kSuccess) {
+    // Build the graph with mojo type.
+    GraphInfoBuilder builder;
+    uint64_t input_operand_id =
+        builder.BuildInput("input", input.dimensions, input.type);
+    uint64_t output_operand_id =
+        builder.BuildOutput("output", output.dimensions, output.type);
+    if (scale.has_value()) {
+      attributes.scale_operand_id =
+          builder.BuildInput("scale", scale->dimensions, scale->type);
+    }
+    if (bias.has_value()) {
+      attributes.bias_operand_id =
+          builder.BuildInput("bias", bias->dimensions, bias->type);
+    }
+
+    builder.BuildLayerNormalization(input_operand_id, output_operand_id,
+                                    std::move(attributes));
+
+    base::flat_map<std::string, mojo_base::BigBuffer> named_inputs;
+    named_inputs.insert({"input", VectorToBigBuffer(input.values)});
+    if (scale.has_value()) {
+      named_inputs.insert({"scale", VectorToBigBuffer(scale->values)});
+    }
+    if (bias.has_value()) {
+      named_inputs.insert({"bias", VectorToBigBuffer(bias->values)});
+    }
+    base::flat_map<std::string, mojo_base::BigBuffer> named_outputs;
+
+    BuildAndCompute(builder.CloneGraphInfo(), std::move(named_inputs),
+                    named_outputs, expectation);
+
+    if (expectation == BuildAndComputeExpectation::kSuccess) {
+      VerifyFloatDataIsEqual(
+          GetFloatOutputData(std::move(named_outputs["output"]), output.type),
+          output.values);
+    }
+  }
+};
+
+// Test building and computing a DML graph with single operator
+// layerNormalization.
+TEST_F(WebNNGraphDMLImplTest, BuildSingleOperatorLayerNormalization) {
+  // DML_MEAN_VARIANCE_NORMALIZATION1_OPERATOR_DESC support for 1~8 dimension
+  // counts was introduced in DML_FEATURE_LEVEL_3_1.
+  SKIP_TEST_IF(!adapter_->IsDMLFeatureLevelSupported(DML_FEATURE_LEVEL_3_1));
+  {
+    // Test layerNormalization with a scalar input with default scale and bias.
+    LayerNormalizationTester<float>{
+        .input = {.type = mojom::Operand::DataType::kFloat32,
+                  .dimensions = {},
+                  .values = {5}},
+        .attributes = {.axes = {}},
+        .output = {.type = mojom::Operand::DataType::kFloat32,
+                   .dimensions = {},
+                   .values = {0}}}
+        .Test();
+  }
+  {
+    // Test layerNormalization with 1-D input with axes = [0] and default scale
+    // and bias.
+    LayerNormalizationTester<float>{
+        .input = {.type = mojom::Operand::DataType::kFloat32,
+                  .dimensions = {5},
+                  .values = {0, 1, 2, 3, 4}},
+        .attributes = {.axes = {0}},
+        .output = {.type = mojom::Operand::DataType::kFloat32,
+                   .dimensions = {5},
+                   .values = {-1.4142100268524473, -0.7071050134262237, 0,
+                              0.7071050134262237, 1.4142100268524473}}}
+        .Test();
+  }
+  {
+    // Test layerNormalization with 4-D input with axes = [1, 2, 3] and default
+    // scale and bias.
+    LayerNormalizationTester<float>{
+        .input = {.type = mojom::Operand::DataType::kFloat32,
+                  .dimensions = {1, 2, 1, 3},
+                  .values = {-1, 0, 1, 2, 3, 4}},
+        .attributes = {.axes = {1, 2, 3}},
+        .output = {.type = mojom::Operand::DataType::kFloat32,
+                   .dimensions = {1, 2, 1, 3},
+                   .values = {-1.4638475999719223, -0.8783085599831534,
+                              -0.29276951999438444, 0.29276951999438444,
+                              0.8783085599831534, 1.4638475999719223}}}
+        .Test();
+  }
+  {
+    // Test layerNormalization with 4-D input with axes = [2, 3].
+    LayerNormalizationTester<float>{
+        .input = {.type = mojom::Operand::DataType::kFloat32,
+                  .dimensions = {1, 2, 1, 3},
+                  .values = {-1, 0, 1, 2, 3, 4}},
+        .scale = OperandInfo<float>{.type = mojom::Operand::DataType::kFloat32,
+                                    .dimensions = {1, 3},
+                                    .values = {0.5, 1, -0.5}},
+        .bias = OperandInfo<float>{.type = mojom::Operand::DataType::kFloat32,
+                                   .dimensions = {1, 3},
+                                   .values = {0.1, 0.2, 0.3}},
+        .attributes = {.axes = {2, 3}},
+        .output = {.type = mojom::Operand::DataType::kFloat32,
+                   .dimensions = {1, 2, 1, 3},
+                   .values = {-0.5123678429541951, 0.2, -0.3123678429541951,
+                              -0.5123678429541951, 0.2, -0.3123678429541951}}}
+        .Test();
+  }
+  {
+    // Test layerNormalization with 3-D input with axes = [0, 1, 2] and default
+    // scale and bias.
+    LayerNormalizationTester<float>{
+        .input = {.type = mojom::Operand::DataType::kFloat32,
+                  .dimensions = {2, 2, 2},
+                  .values = {-4, -3, -2, -1, 1, 2, 3, 4}},
+        .attributes = {.axes = {0, 1, 2}},
+        .output = {.type = mojom::Operand::DataType::kFloat32,
+                   .dimensions = {2, 2, 2},
+                   .values = {-1.4605925129524255, -1.0954443847143192,
+                              -0.7302962564762128, -0.3651481282381064,
+                              0.3651481282381064, 0.7302962564762128,
+                              1.0954443847143192, 1.4605925129524255}}}
+        .Test();
+  }
+  {
+    // Test layerNormalization with 6-D input with permuted axes = [4, 1, 2].
+    LayerNormalizationTester<float>{
+        .input = {.type = mojom::Operand::DataType::kFloat32,
+                  .dimensions = {1, 2, 1, 3, 2, 1},
+                  .values = {-4, -3, -2, -1, 0, 1, 2, 3, 4, 5, 6, 7}},
+        .scale = OperandInfo<float>{.type = mojom::Operand::DataType::kFloat32,
+                                    .dimensions = {2, 2, 1},
+                                    .values = {0.5, 0, 1, -0.5}},
+        .bias = OperandInfo<float>{.type = mojom::Operand::DataType::kFloat32,
+                                   .dimensions = {2, 2, 1},
+                                   .values = {0.1, 0.2, 0.3, 0.4}},
+        .attributes = {.axes = {4, 1, 2}},
+        .output = {.type = mojom::Operand::DataType::kFloat32,
+                   .dimensions = {1, 2, 1, 3, 2, 1},
+                   .values = {-0.47539614454389156, -0.5219944922055593,
+                              -0.47539614454389156, -0.5219944922055593,
+                              -0.47539614454389156, -0.5219944922055593, 0.2,
+                              -0.17539614454389152, 0.2, -0.17539614454389152,
+                              0.2, -0.17539614454389152}}}
+        .Test();
+  }
+  {
+    // Test graph creation failure with given scale only.
+    LayerNormalizationTester<float>{
+        .input = {.type = mojom::Operand::DataType::kFloat32,
+                  .dimensions = {1},
+                  .values = {5}},
+        .scale = OperandInfo<float>{.type = mojom::Operand::DataType::kFloat32,
+                                    .dimensions = {1},
+                                    .values = {0.5}},
+        .attributes = {.axes = {0}},
+        .output = {.type = mojom::Operand::DataType::kFloat32,
+                   .dimensions = {1},
+                   .values = {0}}}
+        .Test(BuildAndComputeExpectation::kCreateGraphFailure);
+  }
+  {
+    // Test graph creation failure with given bias only.
+    LayerNormalizationTester<float>{
+        .input = {.type = mojom::Operand::DataType::kFloat32,
+                  .dimensions = {1},
+                  .values = {5}},
+        .bias = OperandInfo<float>{.type = mojom::Operand::DataType::kFloat32,
+                                   .dimensions = {1},
+                                   .values = {0.5}},
+        .attributes = {.axes = {0}},
+        .output = {.type = mojom::Operand::DataType::kFloat32,
+                   .dimensions = {1},
+                   .values = {0}}}
+        .Test(BuildAndComputeExpectation::kCreateGraphFailure);
+  }
 }
 
 template <typename T>
