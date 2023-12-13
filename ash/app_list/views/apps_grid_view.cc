@@ -1184,6 +1184,9 @@ void AppsGridView::OnDragExited() {
     dragging_for_reparent_item_ = true;
     folder_delegate_->Close();
   }
+  if (drag_view_) {
+    drag_view_->ClearItemDraggingState();
+  }
   CancelDragWithNoDropAnimation();
 }
 

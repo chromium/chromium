@@ -1845,6 +1845,12 @@ void AppListItemView::SetMostRecentGridIndex(GridIndex new_grid_index,
   most_recent_grid_index_ = new_grid_index;
 }
 
+void AppListItemView::ClearItemDraggingState() {
+  SetState(STATE_NORMAL);
+  SetMouseDragging(false);
+  SetTouchDragging(false);
+}
+
 void AppListItemView::AnimateInFromPromiseApp(
     const ui::ImageModel& fallback_image,
     base::RepeatingClosure callback) {

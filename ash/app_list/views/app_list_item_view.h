@@ -323,6 +323,9 @@ class ASH_EXPORT AppListItemView : public views::Button,
   void AnimateInFromPromiseApp(const ui::ImageModel& fallback_icon,
                                base::RepeatingClosure callback);
 
+  // Remove all dragging states from the view.
+  void ClearItemDraggingState();
+
   GridIndex most_recent_grid_index() { return most_recent_grid_index_; }
 
   bool has_pending_row_change() { return has_pending_row_change_; }

@@ -757,6 +757,11 @@ class AppsGridViewTest : public AshTestBase, views::WidgetObserver {
     return view->new_install_dot_;
   }
 
+  bool IsUIStateDraggingForItemView(AppListItemView* item) {
+    return item->ui_state_ == AppListItemView::UI_STATE_DRAGGING ||
+           item->ui_state_ == AppListItemView::UI_STATE_TOUCH_DRAGGING;
+  }
+
   AppListTestModel* GetTestModel() { return GetAppListTestHelper()->model(); }
 
   // May be a PagedAppsGridView in tablet mode or a ScrollableAppsGridView in
@@ -6609,6 +6614,38 @@ TEST_F(AppsGridViewTest, DragEndsDuringPromiseAppReplacement) {
   EXPECT_FALSE(installed_view->GetIconView()->layer());
   EXPECT_FALSE(HasPendingPromiseAppRemoval(promise_app_id));
   EXPECT_FALSE(installed_view->layer());
+}
+
+TEST_P(AppsGridViewDragTest, DraggedItemExitsGridItemExitsDragState) {
+  if (!use_drag_drop_refactor()) {
+    return;
+  }
+
+  size_t kTotalItems = 2;
+  GetTestModel()->PopulateApps(kTotalItems);
+  UpdateLayout();
+  AppListItemView* drag_view =
+      GetItemViewInCurrentPageAt(0, 0, apps_grid_view_);
+  StartDragForViewAndFireTimer(AppsGridView::MOUSE, drag_view);
+
+  std::list<base::OnceClosure> tasks;
+  tasks.push_back(base::BindLambdaForTesting([&]() {
+    MaybeCheckHaptickEventsCount(1);
+
+    // Move item outside of the grid.
+    UpdateDragInScreen(AppsGridView::MOUSE,
+                       apps_grid_view_->GetBoundsInScreen().top_center() +
+                           gfx::Vector2d(0, -drag_view->height()
+                                         /*padding to completely exit view*/),
+                       /*steps=*/10);
+  }));
+  tasks.push_back(base::BindLambdaForTesting(
+      [&]() { EXPECT_FALSE(IsUIStateDraggingForItemView(drag_view)); }));
+  tasks.push_back(base::BindLambdaForTesting([&]() {
+    // Needed by the controller
+    EndDrag();
+  }));
+  MaybeRunDragAndDropSequenceForAppList(&tasks, /*is_touch =*/false);
 }
 
 }  // namespace test
