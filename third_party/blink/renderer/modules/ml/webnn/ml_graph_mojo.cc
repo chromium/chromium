@@ -119,12 +119,14 @@ base::expected<blink_mojom::GraphInfoPtr, String> BuildWebNNGraphInfo(
 }  // namespace
 
 // static
-void MLGraphMojo::ValidateAndBuildAsync(MLContextMojo* context,
+void MLGraphMojo::ValidateAndBuildAsync(ScopedMLTrace scoped_trace,
+                                        MLContextMojo* context,
                                         const MLNamedOperands& named_outputs,
                                         ScriptPromiseResolver* resolver) {
   auto* graph =
       MakeGarbageCollected<MLGraphMojo>(resolver->GetScriptState(), context);
-  graph->BuildAsync(named_outputs, resolver);
+  scoped_trace.AddStep("MLGraphMojo::ValidateAndBuildAsync");
+  graph->BuildAsync(std::move(scoped_trace), named_outputs, resolver);
 }
 
 // static
@@ -149,7 +151,8 @@ void MLGraphMojo::Trace(Visitor* visitor) const {
   MLGraph::Trace(visitor);
 }
 
-void MLGraphMojo::BuildAsyncImpl(const MLNamedOperands& outputs,
+void MLGraphMojo::BuildAsyncImpl(ScopedMLTrace scoped_trace,
+                                 const MLNamedOperands& outputs,
                                  ScriptPromiseResolver* resolver) {
   auto graph_info = BuildWebNNGraphInfo(outputs);
   if (!graph_info.has_value()) {
@@ -162,7 +165,7 @@ void MLGraphMojo::BuildAsyncImpl(const MLNamedOperands& outputs,
   ml_context_mojo_->CreateWebNNGraph(
       std::move(graph_info.value()),
       WTF::BindOnce(&MLGraphMojo::OnCreateWebNNGraph, WrapPersistent(this),
-                    WrapPersistent(resolver)));
+                    std::move(scoped_trace), WrapPersistent(resolver)));
 }
 
 MLGraph* MLGraphMojo::BuildSyncImpl(ScriptState* script_state,
@@ -199,7 +202,8 @@ MLGraph* MLGraphMojo::BuildSyncImpl(ScriptState* script_state,
   return this;
 }
 
-void MLGraphMojo::ComputeAsyncImpl(const MLNamedArrayBufferViews& inputs,
+void MLGraphMojo::ComputeAsyncImpl(ScopedMLTrace scoped_trace,
+                                   const MLNamedArrayBufferViews& inputs,
                                    const MLNamedArrayBufferViews& outputs,
                                    ScriptPromiseResolver* resolver,
                                    ExceptionState& exception_state) {
@@ -234,11 +238,12 @@ void MLGraphMojo::ComputeAsyncImpl(const MLNamedArrayBufferViews& inputs,
   remote_graph_->Compute(
       std::move(name_to_buffer_map),
       WTF::BindOnce(&MLGraphMojo::OnDidCompute, WrapPersistent(this),
-                    WrapPersistent(resolver), std::move(inputs_info),
-                    std::move(outputs_info)));
+                    std::move(scoped_trace), WrapPersistent(resolver),
+                    std::move(inputs_info), std::move(outputs_info)));
 }
 
 void MLGraphMojo::OnDidCompute(
+    ScopedMLTrace scoped_trace,
     ScriptPromiseResolver* resolver,
     std::unique_ptr<Vector<std::pair<String, ArrayBufferViewInfo>>> inputs_info,
     std::unique_ptr<Vector<std::pair<String, ArrayBufferViewInfo>>>
@@ -330,7 +335,8 @@ void MLGraphMojo::ComputeSyncImpl(const MLNamedArrayBufferViews& inputs,
   }
 }
 
-void MLGraphMojo::OnCreateWebNNGraph(ScriptPromiseResolver* resolver,
+void MLGraphMojo::OnCreateWebNNGraph(ScopedMLTrace scoped_trace,
+                                     ScriptPromiseResolver* resolver,
                                      blink_mojom::CreateGraphResultPtr result) {
   // Handle error message and throw exception.
   if (result->is_error()) {

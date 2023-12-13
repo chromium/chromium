@@ -4,3 +4,13 @@ include_rules = [
   "+components/ml/webnn",
   "+services/webnn/public/mojom",
 ]
+
+specific_include_rules = {
+  # Additional allowed list of include for ml trace unit test
+  # we need them for parsing the trace.
+  "ml_trace_unittest.cc" : [
+    "+base/json/json_reader.h",
+    "+base/memory/ref_counted_memory.h",
+    "+base/strings/stringprintf.h",
+  ],
+}

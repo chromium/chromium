@@ -1680,6 +1680,7 @@ MLOperand* MLGraphBuilder::where(const MLOperand* condition,
 ScriptPromise MLGraphBuilder::build(ScriptState* script_state,
                                     const MLNamedOperands& named_outputs,
                                     ExceptionState& exception_state) {
+  ScopedMLTrace scoped_trace("MLGraphBuilder::build");
   if (!script_state->ContextIsValid()) {
     exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
                                       "Invalid script state");
@@ -1698,7 +1699,8 @@ ScriptPromise MLGraphBuilder::build(ScriptState* script_state,
 
 #if BUILDFLAG(BUILD_WEBNN_WITH_XNNPACK)
   if (ml_context_->GetDeviceType() == V8MLDeviceType::Enum::kCpu) {
-    MLGraphXnnpack::ValidateAndBuildAsync(ml_context_, named_outputs, resolver);
+    MLGraphXnnpack::ValidateAndBuildAsync(std::move(scoped_trace), ml_context_,
+                                          named_outputs, resolver);
     return promise;
   }
 #endif
@@ -1706,7 +1708,8 @@ ScriptPromise MLGraphBuilder::build(ScriptState* script_state,
 #if BUILDFLAG(BUILD_WEBNN_ON_CROS)
   // On ChromeOS, ML model inferencing is off-loaded to ModelLoader service.
   if (ml_context_->GetDeviceType() == V8MLDeviceType::Enum::kCpu) {
-    MLGraphCrOS::ValidateAndBuildAsync(ml_context_, named_outputs, resolver);
+    MLGraphCrOS::ValidateAndBuildAsync(std::move(scoped_trace), ml_context_,
+                                       named_outputs, resolver);
     return promise;
   }
 #endif
@@ -1718,8 +1721,8 @@ ScriptPromise MLGraphBuilder::build(ScriptState* script_state,
     // GetInterface() method before creating `WebNNGraph` message pipe.
     MLContextMojo* ml_context_mojo =
         static_cast<MLContextMojo*>(ml_context_.Get());
-    MLGraphMojo::ValidateAndBuildAsync(ml_context_mojo, named_outputs,
-                                       resolver);
+    MLGraphMojo::ValidateAndBuildAsync(std::move(scoped_trace), ml_context_mojo,
+                                       named_outputs, resolver);
     return promise;
   }
 #endif
@@ -1732,6 +1735,7 @@ ScriptPromise MLGraphBuilder::build(ScriptState* script_state,
 MLGraph* MLGraphBuilder::buildSync(ScriptState* script_state,
                                    const MLNamedOperands& named_outputs,
                                    ExceptionState& exception_state) {
+  ScopedMLTrace scoped_trace("MLGraphBuilder::buildSync");
   if (g_backend_for_testing) {
     return g_backend_for_testing->BuildGraphSyncImpl(
         script_state, ml_context_, named_outputs, exception_state);

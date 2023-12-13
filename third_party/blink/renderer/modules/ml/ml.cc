@@ -72,6 +72,7 @@ void ML::Trace(Visitor* visitor) const {
 ScriptPromise ML::createContext(ScriptState* script_state,
                                 MLContextOptions* options,
                                 ExceptionState& exception_state) {
+  ScopedMLTrace scoped_trace("ML::createContext");
   if (!script_state->ContextIsValid()) {
     exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
                                       "Invalid script state");
@@ -102,6 +103,7 @@ ScriptPromise ML::createContext(ScriptState* script_state,
 MLContext* ML::createContextSync(ScriptState* script_state,
                                  MLContextOptions* options,
                                  ExceptionState& exception_state) {
+  ScopedMLTrace scoped_trace("ML::createContextSync");
   if (!script_state->ContextIsValid()) {
     exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
                                       "Invalid script state");

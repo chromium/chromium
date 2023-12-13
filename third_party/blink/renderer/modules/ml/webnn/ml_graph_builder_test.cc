@@ -16,6 +16,7 @@
 #include "third_party/blink/renderer/bindings/core/v8/v8_dom_exception.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ml_operand_descriptor.h"
 #include "third_party/blink/renderer/core/dom/dom_exception.h"
+#include "third_party/blink/renderer/modules/ml/ml_trace.h"
 #include "third_party/blink/renderer/modules/ml/webnn/ml_activation.h"
 #include "third_party/blink/renderer/modules/ml/webnn/ml_graph.h"
 #include "third_party/blink/renderer/modules/ml/webnn/ml_graph_builder.h"
@@ -6546,7 +6547,7 @@ class FakeMLGraphBackend final : public MLGraph {
                                     const MLNamedOperands& named_outputs,
                                     ScriptPromiseResolver* resolver) {
     auto* graph = MakeGarbageCollected<FakeMLGraphBackend>(context);
-    graph->BuildAsync(named_outputs, resolver);
+    graph->BuildAsync(ScopedMLTrace("BuildAsync"), named_outputs, resolver);
   }
 
   // Create and build a FakeMLGraphBackend object synchronously.
@@ -6567,7 +6568,8 @@ class FakeMLGraphBackend final : public MLGraph {
  private:
   // Resolve the promise with this FakeMLGraphBackend object for testing the
   // input and output resources info.
-  void BuildAsyncImpl(const MLNamedOperands& named_outputs,
+  void BuildAsyncImpl(ScopedMLTrace scoped_trace,
+                      const MLNamedOperands& named_outputs,
                       ScriptPromiseResolver* resolver) override {
     resolver->Resolve(this);
   }
@@ -6582,7 +6584,8 @@ class FakeMLGraphBackend final : public MLGraph {
 
   // Resolve the promise for testing the validation of inputs and outputs in
   // MLGraph::ComputeAsync().
-  void ComputeAsyncImpl(const MLNamedArrayBufferViews& inputs,
+  void ComputeAsyncImpl(ScopedMLTrace scoped_trace,
+                        const MLNamedArrayBufferViews& inputs,
                         const MLNamedArrayBufferViews& outputs,
                         ScriptPromiseResolver* resolver,
                         ExceptionState& exception_state) override {

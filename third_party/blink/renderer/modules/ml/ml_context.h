@@ -12,6 +12,7 @@
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ml_model_format.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ml_power_preference.h"
 #include "third_party/blink/renderer/core/inspector/console_message.h"
+#include "third_party/blink/renderer/modules/ml/ml_trace.h"
 #include "third_party/blink/renderer/modules/ml/webnn/ml_graph.h"
 #include "third_party/blink/renderer/modules/modules_export.h"
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
@@ -74,11 +75,14 @@ class MODULES_EXPORT MLContext : public ScriptWrappable {
   // Create and initialize a MLContext object. Resolve the promise with
   // this concrete object if the underlying context gets created
   // successfully.
-  void CreateAsync(ScriptPromiseResolver* resolver, MLContextOptions* options);
+  void CreateAsync(ScopedMLTrace scoped_trace,
+                   ScriptPromiseResolver* resolver,
+                   MLContextOptions* options);
 
   // An MLContext backend should implement this method to create and initialize
   // a platform specific context asynchronously.
-  virtual void CreateAsyncImpl(ScriptPromiseResolver* resolver,
+  virtual void CreateAsyncImpl(ScopedMLTrace scoped_trace,
+                               ScriptPromiseResolver* resolver,
                                MLContextOptions* options);
 
   // CreateSync() has the similar function as CreateAsync(). The difference is

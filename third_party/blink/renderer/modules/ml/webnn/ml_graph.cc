@@ -93,7 +93,8 @@ const HashMap<String, MLGraph::ResourceInfo>& MLGraph::GetOutputResourcesInfo()
   return output_resources_info_;
 }
 
-void MLGraph::ComputeAsync(const MLNamedArrayBufferViews& inputs,
+void MLGraph::ComputeAsync(ScopedMLTrace scoped_trace,
+                           const MLNamedArrayBufferViews& inputs,
                            const MLNamedArrayBufferViews& outputs,
                            ScriptPromiseResolver* resolver,
                            ExceptionState& exception_state) {
@@ -116,7 +117,8 @@ void MLGraph::ComputeAsync(const MLNamedArrayBufferViews& inputs,
   }
 
   // Call ComputeAsyncImpl() implemented by an MLGraph backend.
-  ComputeAsyncImpl(inputs, outputs, resolver, exception_state);
+  ComputeAsyncImpl(std::move(scoped_trace), inputs, outputs, resolver,
+                   exception_state);
 }
 
 void MLGraph::ComputeSync(const MLNamedArrayBufferViews& inputs,
@@ -124,7 +126,7 @@ void MLGraph::ComputeSync(const MLNamedArrayBufferViews& inputs,
                           ExceptionState& exception_state) {
   // The MLGraph object should be initialized before computing.
   DCHECK(resources_info_initialized_);
-
+  ScopedMLTrace scoped_trace("MLGraph::ComputeSync");
   // Validate the input and output MLNamedArrayBufferViews.
   String error_message;
   if (!ValidateNamedArrayBufferViews(inputs, input_resources_info_,
@@ -144,7 +146,8 @@ void MLGraph::ComputeSync(const MLNamedArrayBufferViews& inputs,
   ComputeSyncImpl(inputs, outputs, exception_state);
 }
 
-void MLGraph::BuildAsync(const MLNamedOperands& named_outputs,
+void MLGraph::BuildAsync(ScopedMLTrace scoped_trace,
+                         const MLNamedOperands& named_outputs,
                          ScriptPromiseResolver* resolver) {
   String error_message;
   if (!ValidateAndInitializeResourcesInfo(named_outputs, error_message)) {
@@ -152,12 +155,13 @@ void MLGraph::BuildAsync(const MLNamedOperands& named_outputs,
         DOMExceptionCode::kDataError, error_message));
     return;
   }
-  BuildAsyncImpl(named_outputs, resolver);
+  BuildAsyncImpl(std::move(scoped_trace), named_outputs, resolver);
 }
 
 MLGraph* MLGraph::BuildSync(ScriptState* script_state,
                             const MLNamedOperands& named_outputs,
                             ExceptionState& exception_state) {
+  ScopedMLTrace scoped_trace("MLGraph::BuildSync");
   String error_message;
   if (!ValidateAndInitializeResourcesInfo(named_outputs, error_message)) {
     exception_state.ThrowDOMException(DOMExceptionCode::kDataError,

@@ -8,6 +8,7 @@
 #include "services/webnn/public/mojom/webnn_context_provider.mojom-blink.h"
 #include "services/webnn/public/mojom/webnn_graph.mojom-blink.h"
 #include "third_party/blink/renderer/modules/ml/ml_context.h"
+#include "third_party/blink/renderer/modules/ml/ml_trace.h"
 #include "third_party/blink/renderer/platform/mojo/heap_mojo_remote.h"
 
 namespace blink {
@@ -61,7 +62,8 @@ class MODULES_EXPORT MLContextMojo : public MLContext {
   // Create `WebNNContext` message pipe with `ML` mojo interface, then
   // create the context with the hardware accelerated OS machine
   // learning API in the WebNN Service.
-  void CreateAsyncImpl(ScriptPromiseResolver* resolver,
+  void CreateAsyncImpl(ScopedMLTrace scoped_trace,
+                       ScriptPromiseResolver* resolver,
                        MLContextOptions* options) override;
 
   // Create `WebNNContext` message pipe with `ML` mojo interface, then
@@ -75,7 +77,8 @@ class MODULES_EXPORT MLContextMojo : public MLContext {
   // The callback of creating `WebNNContext` mojo interface from WebNN Service.
   // Return `CreateContextResult::kNotSupported` on non-supported input
   // configuration.
-  void OnCreateWebNNContext(ScriptPromiseResolver* resolver,
+  void OnCreateWebNNContext(ScopedMLTrace scoped_trace,
+                            ScriptPromiseResolver* resolver,
                             webnn::mojom::blink::CreateContextResultPtr result);
 
   // The `WebNNContext` is a initialized context that can be used by the
