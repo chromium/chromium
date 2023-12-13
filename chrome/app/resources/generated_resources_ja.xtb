@@ -616,6 +616,7 @@
 <translation id="1478340334823509079">詳細: <ph name="FILE_NAME" /></translation>
 <translation id="1478607704480248626">インストールが有効になっていません</translation>
 <translation id="1480663089572535854">戻って「選択」の割り当てを変更できます。設定でいつでも自動スキャンをオフにできます。</translation>
+<translation id="1481001611315487791">AI を使用してテーマを作成する方法の詳細。</translation>
 <translation id="1481537595330271162">ディスクのサイズ変更中にエラーが発生しました</translation>
 <translation id="1482626744466814421">このタブをブックマークに追加...</translation>
 <translation id="1482772681918035149">パスワードを編集</translation>
@@ -810,6 +811,7 @@
 <translation id="1615433306336820465">セキュリティ キーに保存されているログインデータを管理します</translation>
 <translation id="1616206807336925449">この拡張機能は特別な権限を必要としません。</translation>
 <translation id="1616298854599875024">拡張機能「<ph name="IMPORT_NAME" />」は、共有モジュールではないためインポートできません</translation>
+<translation id="161654560322394775">画像 <ph name="INDEX" />/<ph name="A" />、スタイル: <ph name="B" />、ムード: <ph name="C" />。</translation>
 <translation id="1617765145568323981">{NUM_FILES,plural, =0{組織のセキュリティ ポリシーに沿ってこのデータをチェックしています...}=1{組織のセキュリティ ポリシーに沿ってこのファイルをチェックしています...}other{組織のセキュリティ ポリシーに沿ってこれらのファイルをチェックしています...}}</translation>
 <translation id="1618102204889321535"><ph name="CURRENT_CHARACTER_COUNT" /> / <ph name="MAX_CHARACTER_COUNT" /></translation>
 <translation id="1618268899808219593">ヘルプセンター(&amp;E)</translation>
@@ -1689,6 +1691,7 @@
 <translation id="2291452790265535215">ブックマークやジャーニーなどのサイドパネル表示をお試しください</translation>
 <translation id="229182044471402145">一致するフォントは見つかりませんでした。</translation>
 <translation id="2292848386125228270">通常のユーザーとして <ph name="PRODUCT_NAME" /> を起動してください。開発の目的でルートとして実行する必要がある場合は、--no-sandbox フラグを指定して再実行してください。</translation>
+<translation id="2292862094862078674">インターネット接続を確認してから、もう一度お試しください。以前に生成された下のテーマから選択することは可能です。</translation>
 <translation id="2294081976975808113">画面のプライバシー</translation>
 <translation id="2294358108254308676"><ph name="PRODUCT_NAME" /> をインストールしますか？</translation>
 <translation id="229477815107578534">設定をご確認ください</translation>
@@ -3028,6 +3031,7 @@
 <translation id="3325804108816646710">使用可能なプロファイルを検出しています...</translation>
 <translation id="3325910708063135066">Mac のシステム環境設定でカメラとマイクがオフになっています</translation>
 <translation id="3325930488268995856">Microsoft OneDrive に接続しました</translation>
+<translation id="3325995804968971809">スタイル</translation>
 <translation id="3327050066667856415">Chromebook はセキュリティを重視して設計されています。デバイスはマルウェアから自動的に保護され、追加のソフトウェアは必要ありません。</translation>
 <translation id="3328489342742826322">バックアップから復元すると、Linux ファイル フォルダの既存の Linux アプリケーションとデータは削除されます。</translation>
 <translation id="3331321258768829690">（<ph name="UTCOFFSET" />）<ph name="LONGTZNAME" />（<ph name="EXEMPLARCITY" />）</translation>
@@ -3303,6 +3307,7 @@
 <translation id="3561201631376780358">サイドパネルを開いてすべてのブックマークを表示</translation>
 <translation id="3562423906127931518">この処理には数分かかることがあります。Linux コンテナを設定します。</translation>
 <translation id="3562655211539199254">スマートフォンで最近使った Chrome タブを表示します</translation>
+<translation id="3563392617245068355">ムード</translation>
 <translation id="3563432852173030730">キオスク アプリケーションをダウンロードできませんでした。</translation>
 <translation id="3563558822383875692">DLC を設定しています。</translation>
 <translation id="3564334271939054422">ご利用の Wi-Fi（<ph name="NETWORK_ID" />）では、ログインページへのアクセスが必要になる可能性があります。</translation>
@@ -4186,6 +4191,7 @@
 <translation id="4250229828105606438">スクリーンショット</translation>
 <translation id="4250680216510889253">いいえ</translation>
 <translation id="4251377547188244181">キオスクとサイネージ デバイスの登録</translation>
+<translation id="4252141040239557279">画像 <ph name="INDEX" />/<ph name="A" /></translation>
 <translation id="4252899949534773101">Bluetooth が無効です</translation>
 <translation id="4252996741873942488"><ph name="WINDOW_TITLE" /> - タブのコンテンツが共有されています</translation>
 <translation id="4253168017788158739">メモ</translation>
@@ -4563,6 +4569,7 @@
 <translation id="4548858987594081919">Google パスワード マネージャーでログイン情報を保存するには、このサイトのユーザー名を追加してください</translation>
 <translation id="4549791035683739768">セキュリティ キーにフィンガープリントは保存されていません</translation>
 <translation id="4550926046134589611">サポートされているリンクの一部は、引き続き <ph name="APP_NAME" /> で開かれます。</translation>
+<translation id="4551379727767354516">最近の AI テーマ</translation>
 <translation id="4551763574344810652">元に戻すには <ph name="MODIFIER_KEY_DESCRIPTION" /> を押します</translation>
 <translation id="4553526521109675518">デバイスの言語を変更するには Chromebook を再起動する必要があります。<ph name="BEGIN_LINK_LEARN_MORE" />詳細<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="4554591392113183336">外部の拡張機能のバージョンが既存のバージョン以下です。</translation>
@@ -5885,6 +5892,7 @@
 <translation id="5620568081365989559">デベロッパー ツールでは <ph name="FOLDER_PATH" /> へのフルアクセスがリクエストされます。機密情報の漏えいにご注意ください。</translation>
 <translation id="5620612546311710611">使用統計データ</translation>
 <translation id="5621272825308610394">表示名がありません</translation>
+<translation id="5621350029086078628">これは試験運用版の AI 機能です。</translation>
 <translation id="562250930904332809">自動字幕起こしをオフにする(&amp;D)</translation>
 <translation id="5623282979409330487">このサイトはモーション センサーにアクセスしています。</translation>
 <translation id="5623842676595125836">ログ</translation>
@@ -6003,6 +6011,7 @@
 <translation id="572328651809341494">最近使ったタブ</translation>
 <translation id="5723508132121499792">実行中のバックグラウンド アプリはありません</translation>
 <translation id="5723967018671998714">シークレット モードでサードパーティの Cookie がブロックされています</translation>
+<translation id="5725112283692663422">[AI を使用してテーマを作成] に関するフィードバックを送信</translation>
 <translation id="5727728807527375859">拡張機能、アプリ、テーマはパソコンに悪影響を与える可能性があります。処理を続けてもよろしいですか？</translation>
 <translation id="5728290366864286776">この拡張機能には、サイト情報の読み取りや変更、バックグラウンドでの実行が許可されています</translation>
 <translation id="5728450728039149624">Smart Lock の画面ロックの方法</translation>
@@ -8411,6 +8420,7 @@
 <translation id="7657090467145778067">少量の節約</translation>
 <translation id="7657218410916651670">ログイン中は Google アカウントに<ph name="BEGIN_LINK_GOOGLE" />その他のアクティビティ<ph name="END_LINK_GOOGLE" />が保存される可能性があります。これらのデータはいつでも削除できます。</translation>
 <translation id="7658239707568436148">キャンセル</translation>
+<translation id="7658727964021657194">最近の AI テーマ <ph name="TILE_INDEX" /></translation>
 <translation id="7659154729610375585">シークレット モードを終了してもよろしいですか？</translation>
 <translation id="7659336857671800422">プライバシー ガイドを開始</translation>
 <translation id="7659584679870740384">このデバイスを使用する権限がありません。ログイン権限については、デバイスの所有者にお問い合わせください。</translation>
@@ -8631,6 +8641,7 @@
 <translation id="7807711621188256451"><ph name="HOST" /> によるカメラへのアクセスを常に許可する</translation>
 <translation id="7810202088502699111">このページのポップアップはブロックされました。</translation>
 <translation id="7810367892333449285">エントリは「<ph name="LPA_0" />$<ph name="LPA_1" />SM-DP+ address<ph name="LPA_2" />$<ph name="LPA_3" />optional matching id<ph name="LPA_4" />」という形式にする必要があります</translation>
+<translation id="7811263553491007091">もう一度お試しいただくか、以前に生成された下のテーマから選択してください。</translation>
 <translation id="7814458197256864873">コピー(&amp;C)</translation>
 <translation id="7814857791038398352">Microsoft OneDrive</translation>
 <translation id="7815583197273433531"><ph name="EXTENSION_NAME" /> のショートカット <ph name="SHORTCUT" /> を編集</translation>
@@ -8735,6 +8746,7 @@
 <translation id="789722939441020330">サイトに複数のファイルの自動ダウンロードを許可しない</translation>
 <translation id="7897900149154324287">今後、リムーバブル デバイスを取り外す場合はまずファイル アプリで取り外しアイコンをクリックしてください。アイコンをクリックしないで取り外した場合、データを失うことがあります。</translation>
 <translation id="7898725031477653577">常に翻訳する</translation>
+<translation id="7899324822972399722">画像 <ph name="INDEX" />/<ph name="A" />、スタイル: <ph name="B" /></translation>
 <translation id="7901405293566323524">スマートフォン ハブ</translation>
 <translation id="7903290522161827520">ブラウザ コンポーネントをお探しですか？次にアクセスしてください</translation>
 <translation id="7903429136755645827">クリックすると、ゲーム操作キーをカスタマイズできます</translation>
@@ -8996,6 +9008,7 @@
 <translation id="8089547136368562137">Google の最高技術により保護されます</translation>
 <translation id="8090234456044969073">よくアクセスするウェブサイトのリストの読み取り</translation>
 <translation id="8090513782447872344">またいつでもご確認いただけます</translation>
+<translation id="8090686009202681725">AI を使用してテーマを作成</translation>
 <translation id="8093359998839330381"><ph name="PLUGIN_NAME" /> が応答していません</translation>
 <translation id="8094536695728193970">アプリコット</translation>
 <translation id="8095105960962832018"><ph name="BEGIN_PARAGRAPH1" />Google ドライブにバックアップします。これにより、いつでも簡単にデータを復元したりデバイスを切り替えたりできます。バックアップ対象にはアプリのデータが含まれます。<ph name="END_PARAGRAPH1" />
@@ -9012,6 +9025,7 @@
 <translation id="8098616321286360457">ネットワーク接続が必要です</translation>
 <translation id="8100230553590752325">保存したパスワードを他のデバイスで使用</translation>
 <translation id="810068641062493918">「<ph name="LANGUAGE" />」が選択されています。選択を解除するには検索+Space キーを押してください。</translation>
+<translation id="8100725874569949614">画像 <ph name="INDEX" />/<ph name="A" />、ムード: <ph name="C" />。</translation>
 <translation id="8101409298456377967">パスワードを作成、保存、管理して、サイトやアプリに簡単にログインできるようにします。<ph name="BEGIN_LINK" />詳細<ph name="END_LINK" /></translation>
 <translation id="810185532889603849">カスタム色</translation>
 <translation id="8101987792947961127">次回の再起動時に Powerwash が必要</translation>
@@ -9022,6 +9036,7 @@
 <translation id="810728361871746125">ディスプレイの解像度</translation>
 <translation id="8108526232944491552">{COUNT,plural, =0{サードパーティの Cookie はありません}=1{1 個のサードパーティ Cookie がブロックされています}other{# 個のサードパーティ Cookie がブロックされています}}</translation>
 <translation id="8109109153262930486">デフォルトのアバター</translation>
+<translation id="8109991406044913868">AI が作成したテーマ</translation>
 <translation id="8110393529211831722">登録はこのデバイスにのみインストールされ、アカウントの他のデバイスとは同期されません。<ph name="LINK_BEGIN" />詳細<ph name="LINK_END" /></translation>
 <translation id="8110489095782891123">連絡先リストをダウンロードしています...</translation>
 <translation id="8115139559594092084">Google ドライブから</translation>

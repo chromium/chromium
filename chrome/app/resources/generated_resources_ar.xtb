@@ -618,6 +618,7 @@
 <translation id="1478340334823509079">التفاصيل: <ph name="FILE_NAME" /></translation>
 <translation id="1478607704480248626">التثبيت غير مُفعَّل</translation>
 <translation id="1480663089572535854">يمكنك إعادة تغيير تخصيص الإجراء "اختيار". وبإمكانك متى شئت إيقاف ميزة "المسح التلقائي" من خلال الانتقال إلى "الإعدادات".</translation>
+<translation id="1481001611315487791">‏مزيد من المعلومات حول إنشاء مظاهر باستخدام الذكاء الاصطناعي (AI)</translation>
 <translation id="1481537595330271162">حدث خطأ أثناء تغيير حجم القرص.</translation>
 <translation id="1482626744466814421">وضع إشارة مرجعية لعلامة التبويب هذه</translation>
 <translation id="1482772681918035149">تعديل كلمات المرور</translation>
@@ -812,6 +813,7 @@
 <translation id="1615433306336820465">يمكنك إدارة بيانات تسجيل الدخول المخزّنة على مفتاح الأمان.</translation>
 <translation id="1616206807336925449">لا تتطلب هذه الإضافة أذونات خاصة.</translation>
 <translation id="1616298854599875024">تعذَّر استيراد الإضافة "<ph name="IMPORT_NAME" />" لأنها ليست وحدة مشتركة.</translation>
+<translation id="161654560322394775">الصورة <ph name="INDEX" /> من أصل <ph name="A" />، بنمط "<ph name="B" />" وبأجواء "<ph name="C" />"</translation>
 <translation id="1617765145568323981">{NUM_FILES,plural, =0{جارِ التحقُّق من توافق هذه البيانات مع سياسات أمان مؤسستك...}=1{جارِ التحقُّق من توافق هذا الملف مع سياسات أمان مؤسستك...}two{جارِ التحقُّق من توافق هذين الملفين مع سياسات أمان مؤسستك...}few{جارِ التحقُّق من توافق هذه الملفات مع سياسات أمان مؤسستك...}many{جارِ التحقُّق من توافق هذه الملفات مع سياسات أمان مؤسستك...}other{جارِ التحقُّق من توافق هذه الملفات مع سياسات أمان مؤسستك...}}</translation>
 <translation id="1618102204889321535"><ph name="CURRENT_CHARACTER_COUNT" />/<ph name="MAX_CHARACTER_COUNT" /></translation>
 <translation id="1618268899808219593">مركز المساعدة</translation>
@@ -1697,6 +1699,7 @@
 <translation id="2291452790265535215">جرِّب استخدام اللوحة الجانبية للاطّلاع على الإشارات المرجعية ورحلات البحث وغير ذلك.</translation>
 <translation id="229182044471402145">لم يتم العثور على خط مُطابق.</translation>
 <translation id="2292848386125228270">يُرجى بدء تشغيل <ph name="PRODUCT_NAME" /> كمستخدم عادي. إذا كنت بحاجة إلى إجراء تشغيل كجذر لأغراض متعلقة بالتطوير، يمكنك إعادة التشغيل باستخدام العلامة التي لا تتضمن وضع الحماية.</translation>
+<translation id="2292862094862078674">يُرجى التحقّق من اتصالك بالإنترنت وإعادة المحاولة. لا يزال بإمكانك الاختيار من بين أحد المظاهر أدناه المُنشأة سابقًا.</translation>
 <translation id="2294081976975808113">خصوصية الشاشة</translation>
 <translation id="2294358108254308676">هل تريد تثبيت <ph name="PRODUCT_NAME" />؟</translation>
 <translation id="229477815107578534">مراجعة الإعدادات</translation>
@@ -3038,6 +3041,7 @@
 <translation id="3325804108816646710">جارٍ البحث عن ملفات شخصية متوفّرة...</translation>
 <translation id="3325910708063135066">‏تم إيقاف الكاميرا والميكروفون في إعدادات نظام Mac المفضلة</translation>
 <translation id="3325930488268995856">‏تم ربط حسابك بمساحة تخزين Microsoft OneDrive</translation>
+<translation id="3325995804968971809">النمط</translation>
 <translation id="3327050066667856415">‏يتم تصميم أجهزة Chromebook للحفاظ على الأمان. جهازك محمي من البرامج الضارة بشكل تلقائي ولا يتطلب أي برامج إضافية.</translation>
 <translation id="3328489342742826322">‏ستؤدي الاستعادة من نسخة احتياطية إلى حذف تطبيقات Linux الحالية والبيانات في مجلد "ملفات Linux".</translation>
 <translation id="3331321258768829690">(<ph name="UTCOFFSET" />) <ph name="LONGTZNAME" /> (<ph name="EXEMPLARCITY" />)</translation>
@@ -3314,6 +3318,7 @@
 <translation id="3561201631376780358">فتح اللوحة الجانبية للاطّلاع على جميع الإشارات المرجعية</translation>
 <translation id="3562423906127931518">‏قد تستغرق هذه العملية بضع دقائق. جارٍ إعداد حاوية نظام التشغيل Linux.</translation>
 <translation id="3562655211539199254">‏يمكنك عرض علامات تبويب Chrome الأخيرة من هاتفك.</translation>
+<translation id="3563392617245068355">أجواء الصورة</translation>
 <translation id="3563432852173030730">‏تعذر تنزيل تطبيق Kiosk.</translation>
 <translation id="3563558822383875692">‏جارٍ تثبيت المحتوى القابل للتنزيل (DLC).</translation>
 <translation id="3564334271939054422">‏قد تتطلب شبكة Wi-Fi التي تستخدمها (<ph name="NETWORK_ID" />) منك الانتقال إلى صفحة تسجيل الدخول.</translation>
@@ -4195,6 +4200,7 @@
 <translation id="4250229828105606438">لقطة شاشة</translation>
 <translation id="4250680216510889253">لا</translation>
 <translation id="4251377547188244181">تسجيل الجهاز في وضع الكشك واللوحات الرقمية</translation>
+<translation id="4252141040239557279">الصورة <ph name="INDEX" /> من أصل <ph name="A" /></translation>
 <translation id="4252899949534773101">البلوتوث غير مُفعَّل</translation>
 <translation id="4252996741873942488"><ph name="WINDOW_TITLE" /> - تمت مشاركة محتوى علامة التبويب</translation>
 <translation id="4253168017788158739">ملاحظة</translation>
@@ -4573,6 +4579,7 @@
 <translation id="4548858987594081919">‏لمساعدة "مدير كلمات المرور في Google" على حفظ معلومات تسجيل الدخول، عليك إضافة اسم المستخدم لهذا الموقع الإلكتروني.</translation>
 <translation id="4549791035683739768">لا يتضمّن مفتاح الأمان بصمات أصابع مخزّنة.</translation>
 <translation id="4550926046134589611">ستظل بعض الروابط المتوافقة مفتوحة في تطبيق <ph name="APP_NAME" />.</translation>
+<translation id="4551379727767354516">المظاهر المُنشأة بالذكاء الاصطناعي مؤخرًا</translation>
 <translation id="4551763574344810652">اضغط على <ph name="MODIFIER_KEY_DESCRIPTION" /> للتراجع</translation>
 <translation id="4553526521109675518">‏عليك إعادة تشغيل جهاز Chromebook لتغيير لغة الجهاز. <ph name="BEGIN_LINK_LEARN_MORE" />مزيد من المعلومات<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="4554591392113183336">الإضافة الخارجية في نفس الإصدار أو إصدار أقل مقارنة بالموجودة حاليًا.</translation>
@@ -5897,6 +5904,7 @@
 <translation id="5620568081365989559">‏تطلب DevTools الدخول الكامل إلى <ph name="FOLDER_PATH" />. احرص على عدم كشف أي معلومات حساسة.</translation>
 <translation id="5620612546311710611">إحصاءات الاستخدام</translation>
 <translation id="5621272825308610394">بلا اسم معروض</translation>
+<translation id="5621350029086078628">هذه ميزة تجريبية تستخدم الذكاء الاصطناعي.</translation>
 <translation id="562250930904332809">إيقاف &amp;ميزة "النسخ النصي التلقائي"</translation>
 <translation id="5623282979409330487">يستخدم الموقع الإلكتروني هذا مستشعرات الحركة.</translation>
 <translation id="5623842676595125836">السجل</translation>
@@ -6015,6 +6023,7 @@
 <translation id="572328651809341494">علامات التبويب الأخيرة</translation>
 <translation id="5723508132121499792">ليس هناك تطبيقات خلفية قيد التشغيل</translation>
 <translation id="5723967018671998714">يتم حظر ملفات تعريف الارتباط التابعة لجهات خارجية في وضع التصفُّح المتخفي.</translation>
+<translation id="5725112283692663422">إرسال ملاحظات عن ميزة إنشاء المظاهر باستخدام الذكاء الاصطناعي</translation>
 <translation id="5727728807527375859">قد تلحق الإضافات والتطبيقات والمظاهر الضرر بالكمبيوتر، فهل تريد بالتأكيد المتابعة؟</translation>
 <translation id="5728290366864286776">يمكن لهذه الإضافة قراءة معلومات الموقع الإلكتروني أو يمكن أن تعمل في الخلفية.</translation>
 <translation id="5728450728039149624">‏خيارات قفل شاشة Smart Lock</translation>
@@ -8434,6 +8443,7 @@
 <translation id="7657090467145778067">تم إخلاء جزء صغير من مساحة التخزين</translation>
 <translation id="7657218410916651670">‏قد يتم حفظ <ph name="BEGIN_LINK_GOOGLE" />بيانات الأنشطة الأخرى<ph name="END_LINK_GOOGLE" /> في حسابك على Google عند تسجيل الدخول إليه. ويمكنك حذفها في أي وقت.</translation>
 <translation id="7658239707568436148">إلغاء</translation>
+<translation id="7658727964021657194">المظهر رقم <ph name="TILE_INDEX" /> المُنشأ بالذكاء الاصطناعي مؤخرًا</translation>
 <translation id="7659154729610375585">هل تريد الخروج من وضع التصفُّح المتخفي على أي حال؟</translation>
 <translation id="7659336857671800422">الاطّلاع على دليل الخصوصية</translation>
 <translation id="7659584679870740384">لا يصرح لك باستخدام هذا الجهاز. يُرجى الاتصال بالمسؤول، للحصول على إذن تسجيل الدخول.</translation>
@@ -8655,6 +8665,7 @@
 <translation id="7807711621188256451">السماح دائمًا لـ <ph name="HOST" /> بالدخول إلى الكاميرا</translation>
 <translation id="7810202088502699111">تم منع عرض النوافذ المنبثقة في هذه الصفحة.</translation>
 <translation id="7810367892333449285">‏يجب أن يكون الإدخال بالتنسيق <ph name="LPA_0" />$<ph name="LPA_1" />عنوان SM-DP+‎<ph name="LPA_2" />$<ph name="LPA_3" />رقم تعريف مطابق اختياري<ph name="LPA_4" />.</translation>
+<translation id="7811263553491007091">بإمكانك إعادة المحاولة أو اختيار أحد المظاهر أدناه المُنشأة سابقًا.</translation>
 <translation id="7814458197256864873">&amp;نسخ</translation>
 <translation id="7814857791038398352">Microsoft OneDrive</translation>
 <translation id="7815583197273433531">تعديل الاختصار <ph name="SHORTCUT" /> للإضافة <ph name="EXTENSION_NAME" /></translation>
@@ -8759,6 +8770,7 @@
 <translation id="789722939441020330">عدم السماح للمواقع الإلكترونية بتنزيل عدّة ملفات تلقائيًا</translation>
 <translation id="7897900149154324287">في المستقبل، تأكد من إخراج الجهاز القابل للإزالة في تطبيق الملفات قبل فصله؛ وإلا قد تفقد بيانات.</translation>
 <translation id="7898725031477653577">ترجمة اللغة دومًا</translation>
+<translation id="7899324822972399722">الصورة <ph name="INDEX" /> من أصل <ph name="A" />، بنمط "<ph name="B" />"</translation>
 <translation id="7901405293566323524">Phone Hub</translation>
 <translation id="7903290522161827520">هل تبحث عن مكوِّنات المتصفِّح؟ انتقِل إلى</translation>
 <translation id="7903429136755645827">انقر هنا لتخصيص عناصر التحكُّم في الألعاب.</translation>
@@ -9020,6 +9032,7 @@
 <translation id="8089547136368562137">‏كلمة المرور محميّة بأفضل التقنيات من Google.</translation>
 <translation id="8090234456044969073">قراءة قائمة بمواقع الويب التي تتردد عليها بكثرة</translation>
 <translation id="8090513782447872344">يمكنك الرجوع في أي وقت للاطّلاع مرة أخرى على دليل الخصوصية.</translation>
+<translation id="8090686009202681725">إنشاء مظهر باستخدام الذكاء الاصطناعي</translation>
 <translation id="8093359998839330381"><ph name="PLUGIN_NAME" /> لا يستجيب.</translation>
 <translation id="8094536695728193970">مِشمشي</translation>
 <translation id="8095105960962832018">‏<ph name="BEGIN_PARAGRAPH1" />يمكنك الاحتفاظ بنسخة احتياطية في Google Drive. وبإمكانك استعادة بياناتك أو تبديل جهازك بسهولة في أي وقت، علمًا بأن نسختك الاحتياطية تتضمن بيانات التطبيق.<ph name="END_PARAGRAPH1" />
@@ -9036,6 +9049,7 @@
 <translation id="8098616321286360457">يجب أن يتوفّر اتصال بالشبكة</translation>
 <translation id="8100230553590752325">استخدام كلمات المرور المحفوظة على أي جهاز</translation>
 <translation id="810068641062493918">تم اختيار <ph name="LANGUAGE" />. يُرجى الضغط على مفتاح "البحث" ومفتاح "المسافة" لإلغاء الاختيار.</translation>
+<translation id="8100725874569949614">الصورة <ph name="INDEX" /> من أصل <ph name="A" />، وبأجواء "<ph name="C" />"</translation>
 <translation id="8101409298456377967">يمكنك إنشاء كلمات المرور الخاصة بحسابك وحفظها وإدارتها لتسجيل الدخول إلى المواقع الإلكترونية والتطبيقات بسهولة. <ph name="BEGIN_LINK" />مزيد من المعلومات<ph name="END_LINK" /></translation>
 <translation id="810185532889603849">لون مخصص</translation>
 <translation id="8101987792947961127">‏يتطلب إجراء Powerwash بعد عملية إعادة التشغيل التالية</translation>
@@ -9046,6 +9060,7 @@
 <translation id="810728361871746125">درجة دقة شاشة العرض</translation>
 <translation id="8108526232944491552">{COUNT,plural, =0{ليس هناك ملفات تعريف ارتباط تابعة لجهات خارجية}=1{تم حظر ملف تعريف ارتباط واحد تابع لجهات خارجية}two{تم حظر ملفَي تعريف ارتباط تابعَين لجهات خارجية}few{تم حظر # ملفات تعريف ارتباط تابعة لجهات خارجية}many{تم حظر # ملف تعريف ارتباط تابع لجهات خارجية}other{تم حظر # ملف تعريف ارتباط تابع لجهات خارجية}}</translation>
 <translation id="8109109153262930486">الصورة الرمزية التلقائية</translation>
+<translation id="8109991406044913868">مظهر من إنشاء الذكاء الاصطناعي</translation>
 <translation id="8110393529211831722">تم تثبيت الاشتراك على هذا الجهاز فقط ولم تتم مزامنته مع الأجهزة الأخرى ضِمن حسابك. <ph name="LINK_BEGIN" />مزيد من المعلومات<ph name="LINK_END" /></translation>
 <translation id="8110489095782891123">جارٍ تنزيل قائمة جهات الاتصال...</translation>
 <translation id="8115139559594092084">‏من حسابك على Google Drive</translation>

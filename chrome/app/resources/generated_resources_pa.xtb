@@ -620,6 +620,7 @@
 <translation id="1478340334823509079">ਵੇਰਵੇ: <ph name="FILE_NAME" /></translation>
 <translation id="1478607704480248626">ਸਥਾਪਨਾ ਚਾਲੂ ਨਹੀਂ ਕੀਤੀ ਹੋਈ ਹੈ</translation>
 <translation id="1480663089572535854">ਤੁਸੀਂ “ਚੁਣੋ” ਲਈ ਅਸਾਈਨਮੈਂਟ ਬਦਲਣ ਵਾਸਤੇ ਪਿੱਛੇ ਜਾ ਸਕਦੇ ਹੋ। ਤੁਸੀਂ ਕਦੇ ਵੀ ਸੈਟਿੰਗਾਂ ਵਿੱਚ ਜਾ ਕੇ 'ਸਵੈ-ਸਕੈਨ' ਵਿਸ਼ੇਸ਼ਤਾ ਨੂੰ ਬੰਦ ਕਰ ਸਕਦੇ ਹੋ।</translation>
+<translation id="1481001611315487791">AI ਨਾਲ ਥੀਮ ਬਣਾਉਣ ਬਾਰੇ ਹੋਰ ਜਾਣੋ।</translation>
 <translation id="1481537595330271162">ਡਿਸਕ ਦਾ ਆਕਾਰ ਬਦਲਣ ਵੇਲੇ ਗੜਬੜ ਹੋਈ</translation>
 <translation id="1482626744466814421">ਇਸ ਟੈਬ ਨੂੰ ਬੁੱਕਮਾਰਕ ਕਰੋ...</translation>
 <translation id="1482772681918035149">ਪਾਸਵਰਡਾਂ ਦਾ ਸੰਪਾਦਨ ਕਰੋ</translation>
@@ -814,6 +815,7 @@
 <translation id="1615433306336820465">ਆਪਣੀ ਸੁਰੱਖਿਆ ਕੁੰਜੀ 'ਤੇ ਸਟੋਰ ਕੀਤੇ ਸਾਈਨ-ਇਨ ਡਾਟੇ ਦਾ ਪ੍ਰਬੰਧਨ ਕਰੋ</translation>
 <translation id="1616206807336925449">ਇਸ ਐਕਸਟੈਂਸ਼ਨ ਲਈ ਕੋਈ ਖ਼ਾਸ ਇਜਾਜ਼ਤਾਂ ਦੀ ਲੋੜ ਨਹੀਂ ਹੈ।</translation>
 <translation id="1616298854599875024">"<ph name="IMPORT_NAME" />" ਐਕਸਟੈਂਸ਼ਨ ਨੂੰ ਆਯਾਤ ਨਹੀਂ ਕੀਤਾ ਜਾ ਸਕਿਆ, ਕਿਉਂਕਿ ਇਹ ਇੱਕ ਸਾਂਝਾ ਕੀਤਾ ਗਿਆ ਮਾਡਿਊਲ ਨਹੀਂ ਹੈ</translation>
+<translation id="161654560322394775"><ph name="C" /> ਮਿਜ਼ਾਜ ਦੇ ਨਾਲ <ph name="B" /> ਸਟਾਈਲ ਵਿੱਚ <ph name="A" /> ਦਾ ਚਿੱਤਰ <ph name="INDEX" />.</translation>
 <translation id="1617765145568323981">{NUM_FILES,plural, =0{ਤੁਹਾਡੀ ਸੰਸਥਾ ਦੀ ਸੁਰੱਖਿਆ ਨੀਤੀਆਂ ਨਾਲ ਇਸ ਡਾਟੇ ਦੀ ਜਾਂਚ ਕੀਤੀ ਜਾ ਰਹੀ ਹੈ...}=1{ਤੁਹਾਡੀ ਸੰਸਥਾ ਦੀ ਸੁਰੱਖਿਆ ਨੀਤੀਆਂ ਨਾਲ ਇਸ ਫ਼ਾਈਲ ਦੀ ਜਾਂਚ ਕੀਤੀ ਜਾ ਰਹੀ ਹੈ...}other{ਤੁਹਾਡੀ ਸੰਸਥਾ ਦੀ ਸੁਰੱਖਿਆ ਨੀਤੀਆਂ ਨਾਲ ਇਹਨਾਂ ਫ਼ਾਈਲਾਂ ਦੀ ਜਾਂਚ ਕੀਤੀ ਜਾ ਰਹੀ ਹੈ...}}</translation>
 <translation id="1618102204889321535"><ph name="CURRENT_CHARACTER_COUNT" />/<ph name="MAX_CHARACTER_COUNT" /></translation>
 <translation id="1618268899808219593">ਸ&amp;ਹਾਇਤਾ ਕੇਂਦਰ</translation>
@@ -1709,6 +1711,7 @@
 <translation id="2291452790265535215">ਬੁੱਕਮਾਰਕਾਂ, ਖੋਜ ਸਫ਼ਰਾਂ, ਅਤੇ ਹੋਰ ਬਹੁਤ ਕੁਝ ਲਈ ਸਾਈਡ ਪੈਨਲ ਵਰਤ ਕੇ ਦੇਖੋ</translation>
 <translation id="229182044471402145">ਕੋਈ ਮੇਲ ਖਾਂਦਾ ਫ਼ੌਂਟ ਨਹੀਂ ਮਿਲਿਆ।</translation>
 <translation id="2292848386125228270">ਕਿਰਪਾ ਕਰਕੇ <ph name="PRODUCT_NAME" /> ਨੂੰ ਇੱਕ ਸਧਾਰਨ ਵਰਤੋਂਕਾਰ ਦੇ ਤੌਰ 'ਤੇ ਸ਼ੁਰੂ ਕਰੋ। ਜੇਕਰ ਤੁਹਾਨੂੰ ਵਿਕਾਸ ਦੇ ਲਈ ਇਸ ਨੂੰ ਰੂਟ ਦੇ ਤੌਰ 'ਤੇ ਚਲਾਉਣ ਦੀ ਲੋੜ ਪੈਂਦੀ ਹੈ, ਤਾਂ --no-sandbox ਫਲੈਗ ਨਾਲ ਮੁੜ-ਚਲਾਓ।</translation>
+<translation id="2292862094862078674">ਆਪਣੇ ਇੰਟਰਨੈੱਟ ਦੀ ਜਾਂਚ ਕਰ ਕੇ ਦੁਬਾਰਾ ਕੋਸ਼ਿਸ਼ ਕਰੋ। ਤੁਸੀਂ ਹਾਲੇ ਵੀ ਪਹਿਲਾਂ ਬਣਾਏ ਗਏ ਹੇਠਾਂ ਦਿੱਤੇ ਥੀਮਾਂ ਵਿੱਚੋਂ ਕੋਈ ਇੱਕ ਚੁਣ ਸਕਦੇ ਹੋ।</translation>
 <translation id="2294081976975808113">ਸਕ੍ਰੀਨ ਦੀ ਪਰਦੇਦਾਰੀ</translation>
 <translation id="2294358108254308676">ਕੀ ਤੁਸੀਂ <ph name="PRODUCT_NAME" /> ਨੂੰ ਇੰਸਟੌਲ ਕਰਨਾ ਚਾਹੁੰਦੇ ਹੋ?</translation>
 <translation id="229477815107578534">ਆਪਣੀਆਂ ਸੈਟਿੰਗਾਂ ਦੀ ਸਮੀਖਿਆ ਕਰੋ</translation>
@@ -3051,6 +3054,7 @@
 <translation id="3325804108816646710">ਉਪਲਬਧ ਪ੍ਰੋਫਾਈਲਾਂ ਨੂੰ ਲੱਭਿਆ ਜਾ ਰਿਹਾ ਹੈ...</translation>
 <translation id="3325910708063135066">Mac ਸਿਸਟਮ ਤਰਜੀਹਾਂ ਵਿੱਚ ਕੈਮਰਾ ਅਤੇ ਮਾਈਕ੍ਰੋਫ਼ੋਨ ਬੰਦ ਕੀਤੇ ਹੋਏ ਹਨ</translation>
 <translation id="3325930488268995856">Microsoft OneDrive ਨਾਲ ਕਨੈਕਟ ਕੀਤਾ ਗਿਆ</translation>
+<translation id="3325995804968971809">ਸਟਾਈਲ</translation>
 <translation id="3327050066667856415">Chromebooks ਨੂੰ ਸੁਰੱਖਿਆ ਦੇ ਉਦੇਸ਼ ਲਈ ਡਿਜ਼ਾਇਨ ਕੀਤਾ ਗਿਆ ਹੈ। ਤੁਹਾਡਾ ਡੀਵਾਈਸ ਸਵੈਚਲਿਤ ਤੌਰ 'ਤੇ ਮਾਲਵੇਅਰ ਤੋਂ ਸੁਰੱਖਿਅਤ ਹੈ – ਕਿਸੇ ਹੋਰ ਸਾਫ਼ਟਵੇਅਰ ਦੀ ਲੋੜ ਨਹੀਂ ਹੈ।</translation>
 <translation id="3328489342742826322">ਬੈਕਅੱਪ ਤੋਂ ਮੁੜ-ਬਹਾਲ ਕਰਨ ਨਾਲ ਤੁਹਾਡੇ Linux ਫ਼ਾਈਲਾਂ ਦੇ ਫੋਲਡਰ ਵਿੱਚ ਮੌਜੂਦ ਸਾਰੀਆਂ Linux ਐਪਲੀਕੇਸ਼ਨਾਂ ਅਤੇ ਡਾਟਾ ਮਿਟ ਜਾਵੇਗਾ।</translation>
 <translation id="3331321258768829690">(<ph name="UTCOFFSET" />) <ph name="LONGTZNAME" /> (<ph name="EXEMPLARCITY" />)</translation>
@@ -3327,6 +3331,7 @@
 <translation id="3561201631376780358">ਸਾਰੇ ਬੁੱਕਮਾਰਕ ਦੇਖਣ ਲਈ ਸਾਈਡ ਪੈਨਲ ਖੋਲ੍ਹੋ</translation>
 <translation id="3562423906127931518">ਇਸ ਪ੍ਰਕਿਰਿਆ ਵਿੱਚ ਕੁਝ ਮਿੰਟ ਲੱਗ ਸਕਦੇ ਹਨ। Linux ਕੰਟੇਨਰ ਦਾ ਸੈੱਟਅੱਪ ਕੀਤਾ ਜਾ ਰਿਹਾ ਹੈ।</translation>
 <translation id="3562655211539199254">ਆਪਣੇ ਫ਼ੋਨ ਤੋਂ ਹਾਲੀਆ Chrome ਟੈਬਾਂ ਦੇਖੋ</translation>
+<translation id="3563392617245068355">ਮਿਜ਼ਾਜ</translation>
 <translation id="3563432852173030730">ਕਿਓਸਕ ਐਪਲੀਕੇਸ਼ਨ ਡਾਊਨਲੋਡ ਨਹੀਂ ਕੀਤੀ ਜਾ ਸਕੀ।</translation>
 <translation id="3563558822383875692">DLC ਦਾ ਸੰਰੂਪਣ ਕੀਤਾ ਜਾ ਰਿਹਾ ਹੈ।</translation>
 <translation id="3564334271939054422">ਤੁਹਾਡੇ ਵੱਲੋਂ ਵਰਤਿਆ ਜਾ ਰਿਹਾ ਵਾਈ-ਫਾਈ ਨੈੱਟਵਰਕ (<ph name="NETWORK_ID" />) ਇਹ ਚਾਹ ਸਕਦਾ ਹੈ ਕਿ ਤੁਸੀਂ ਇਸਦੇ ਲੌਗ-ਇਨ ਪੰਨੇ 'ਤੇ ਜਾਓ।</translation>
@@ -4210,6 +4215,7 @@
 <translation id="4250229828105606438">ਸਕ੍ਰੀਨਸ਼ਾਟ</translation>
 <translation id="4250680216510889253">ਨਹੀਂ</translation>
 <translation id="4251377547188244181">ਕਿਓਸਕ ਅਤੇ ਸਾਈਨੇਜ ਡੀਵਾਈਸ ਨੂੰ ਦਰਜ ਕਰਨਾ</translation>
+<translation id="4252141040239557279"><ph name="A" /> ਵਿੱਚੋਂ <ph name="INDEX" /> ਚਿੱਤਰ</translation>
 <translation id="4252899949534773101">ਬਲੂਟੁੱਥ ਬੰਦ ਹੈ</translation>
 <translation id="4252996741873942488"><ph name="WINDOW_TITLE" /> - ਟੈਬ ਸਮੱਗਰੀ ਸਾਂਝੀ ਕੀਤੀ ਗਈ</translation>
 <translation id="4253168017788158739">ਨੋਟ</translation>
@@ -4589,6 +4595,7 @@
 <translation id="4548858987594081919">ਤੁਹਾਡੀ ਸਾਈਨ-ਇਨ ਜਾਣਕਾਰੀ ਨੂੰ ਰੱਖਿਅਤ ਕਰਨ ਵਿੱਚ Google Password Manager ਦੀ ਮਦਦ ਕਰਨ ਲਈ, ਇਸ ਸਾਈਟ ਵਾਸਤੇ ਆਪਣਾ ਵਰਤੋਂਕਾਰ ਨਾਮ ਸ਼ਾਮਲ ਕਰੋ</translation>
 <translation id="4549791035683739768">ਤੁਹਾਡੀ ਸੁਰੱਖਿਆ ਕੁੰਜੀ ਵਿੱਚ ਕੋਈ ਵੀ ਫਿੰਗਰਪ੍ਰਿੰਟ ਸਟੋਰ ਨਹੀਂ ਕੀਤਾ ਹੋਇਆ ਹੈ</translation>
 <translation id="4550926046134589611">ਕੁਝ ਸਮਰਥਿਤ ਲਿੰਕ ਹਾਲੇ ਵੀ <ph name="APP_NAME" /> ਵਿੱਚ ਖੁੱਲ੍ਹਣਗੇ।</translation>
+<translation id="4551379727767354516">AI ਨਾਲ ਬਣਾਏ ਗਏ ਤੁਹਾਡੇ ਹਾਲੀਆ ਥੀਮ</translation>
 <translation id="4551763574344810652">ਅਣਕੀਤਾ ਕਰਨ ਲਈ <ph name="MODIFIER_KEY_DESCRIPTION" /> ਨੂੰ ਦਬਾਓ</translation>
 <translation id="4553526521109675518">ਤੁਹਾਨੂੰ ਡੀਵਾਈਸ ਦੀ ਭਾਸ਼ਾ ਬਦਲਣ ਲਈ Chromebook ਨੂੰ ਮੁੜ-ਸ਼ੁਰੂ ਕਰਨ ਦੀ ਲੋੜ ਹੈ। <ph name="BEGIN_LINK_LEARN_MORE" />ਹੋਰ ਜਾਣੋ<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="4554591392113183336">ਬਾਹਰੀ ਐਕਸਟੈਂਸ਼ਨ ਮੌਜੂਦਾ ਜਾਂ ਘੱਟ ਵਰਜਨ ਦੀ ਹੈ।</translation>
@@ -5913,6 +5920,7 @@
 <translation id="5620568081365989559">DevTools <ph name="FOLDER_PATH" /> ਤੱਕ ਪੂਰੀ ਪਹੁੰਚ ਦੀ ਬੇਨਤੀ ਕਰਦਾ ਹੈ। ਪੱਕਾ ਕਰੋ ਕਿ ਤੁਸੀਂ ਕੋਈ ਵੀ ਸੰਵੇਦਨਸ਼ੀਲ ਜਾਣਕਾਰੀ ਪ੍ਰਗਟ ਨਹੀਂ ਕਰ ਰਹੇ ਹੋ।</translation>
 <translation id="5620612546311710611">ਵਰਤੋਂ ਅੰਕੜੇ</translation>
 <translation id="5621272825308610394">ਕੋਈ ਡਿਸਪਲੇ ਨਾਮ ਨਹੀਂ ਹੈ</translation>
+<translation id="5621350029086078628">ਇਹ AI ਦੀ ਇੱਕ ਪ੍ਰਯੋਗਾਤਮਕ ਵਿਸ਼ੇਸ਼ਤਾ ਹੈ।</translation>
 <translation id="562250930904332809">&amp;ਲਾਈਵ ਸੁਰਖੀਆਂ ਨੂੰ ਬੰਦ ਕਰੋ</translation>
 <translation id="5623282979409330487">ਇਹ ਸਾਈਟ ਤੁਹਾਡੇ ਗਤੀਸ਼ੀਲਤਾ ਸੈਂਸਰਾਂ ਤੱਕ ਪਹੁੰਚ ਕਰ ਰਹੀ ਹੈ।</translation>
 <translation id="5623842676595125836">ਲੌਗ</translation>
@@ -6031,6 +6039,7 @@
 <translation id="572328651809341494">ਹਾਲੀਆ ਟੈਬਸ</translation>
 <translation id="5723508132121499792">ਕੋਈ ਪਿਛੋਕੜ ਐਪ ਨਹੀਂ ਚੱਲ ਰਹੇ ਹਨ</translation>
 <translation id="5723967018671998714">ਇਨਕੋਗਨਿਟੋ ਮੋਡ ਵਿੱਚ ਤੀਜੀ-ਧਿਰ ਦੀਆਂ ਕੁਕੀਜ਼ ਨੂੰ ਬਲਾਕ ਕੀਤਾ ਗਿਆ ਹੈ</translation>
+<translation id="5725112283692663422">'AI ਨਾਲ ਥੀਮ ਬਣਾਓ' ਸੁਵਿਧਾ ਲਈ ਵਿਚਾਰ ਭੇਜੋ</translation>
 <translation id="5727728807527375859">ਐਕਸਟੈਂਸ਼ਨਾਂ, ਐਪਾਂ ਅਤੇ ਵਿਸੇ ਤੁਹਾਡੇ ਕੰਪਿਊਟਰ ਨੂੰ ਨੁਕਸਾਨ ਪਹੁੰਚਾ ਸਕਦੇ ਹਨ। ਕੀ ਤੁਸੀਂ ਪੱਕਾ ਜਾਰੀ ਰੱਖਣਾ ਚਾਹੁੰਦੇ ਹੋ?</translation>
 <translation id="5728290366864286776">ਇਹ ਐਕਸਟੈਂਸ਼ਨ ਸਾਈਟ ਦੀ ਜਾਣਕਾਰੀ ਨੂੰ ਪੜ੍ਹ ਅਤੇ ਬਦਲ ਸਕਦੀ ਹੈ ਜਾਂ ਬੈਕਗ੍ਰਾਊਂਡ ਵਿੱਚ ਚੱਲ ਸਕਦੀ ਹੈ</translation>
 <translation id="5728450728039149624">Smart Lock ਸਕ੍ਰੀਨ ਲਾਕ ਵਿਕਲਪ</translation>
@@ -8444,6 +8453,7 @@
 <translation id="7657090467145778067">ਥੋੜ੍ਹੀਆਂ ਬਚਤਾਂ</translation>
 <translation id="7657218410916651670">ਤੁਹਾਡੇ ਸਾਈਨ-ਇਨ ਹੋਣ 'ਤੇ, ਤੁਹਾਡੇ Google ਖਾਤੇ ਵਿੱਚ <ph name="BEGIN_LINK_GOOGLE" />ਸਰਗਰਮੀ ਦੀਆਂ ਹੋਰ ਕਿਸਮਾਂ<ph name="END_LINK_GOOGLE" /> ਨੂੰ ਰੱਖਿਅਤ ਕੀਤਾ ਜਾ ਸਕਦਾ ਹੈ। ਤੁਸੀਂ ਉਨ੍ਹਾਂ ਨੂੰ ਕਿਸੇ ਵੀ ਸਮੇਂ ਮਿਟਾ ਸਕਦੇ ਹੋ।</translation>
 <translation id="7658239707568436148">ਰੱਦ ਕਰੋ</translation>
+<translation id="7658727964021657194">ਹਾਲੀਆ ਬਣਾਇਆ ਗਿਆ AI ਥੀਮ <ph name="TILE_INDEX" /></translation>
 <translation id="7659154729610375585">ਕੀ ਫਿਰ ਵੀ ਇਨਕੋਗਨਿਟੋ ਮੋਡ ਤੋਂ ਬਾਹਰ ਜਾਣਾ ਹੈ?</translation>
 <translation id="7659336857671800422">ਪਰਦੇਦਾਰੀ ਗਾਈਡ ਨੂੰ ਦੇਖੋ</translation>
 <translation id="7659584679870740384">ਤੁਸੀਂ ਇਹ ਡੀਵਾਈਸ ਵਰਤਣ ਲਈ ਅਧਿਕਾਰਿਤ ਨਹੀਂ ਹੋ। ਕਿਰਪਾ ਕਰਕੇ ਸਾਈਨ-ਇਨ ਸੰਬੰਧੀ ਇਜਾਜ਼ਤ ਲਈ ਡੀਵਾਈਸ ਪ੍ਰਬੰਧਕ ਨੂੰ ਸੰਪਰਕ ਕਰੋ।</translation>
@@ -8664,6 +8674,7 @@
 <translation id="7807711621188256451">ਹਮੇਸ਼ਾਂ <ph name="HOST" /> ਨੂੰ ਆਪਣੇ ਕੈਮਰੇ ਤੇ ਪਹੁੰਚ ਦੀ ਆਗਿਆ ਦਿਓ</translation>
 <translation id="7810202088502699111">ਪੌਪ-ਅਪਸ ਇਸ ਸਫ਼ੇ ਤੇ ਬਲੌਕ ਕੀਤੇ ਗਏ ਸੀ।</translation>
 <translation id="7810367892333449285">ਤੁਹਾਡਾ ਇੰਦਰਾਜ <ph name="LPA_0" />$<ph name="LPA_1" />SM-DP+ ਪਤਾ<ph name="LPA_2" />$<ph name="LPA_3" />ਮੇਲ ਖਾਂਦੀ ਵਿਕਲਪਿਕ ਆਈਡੀ<ph name="LPA_4" /> ਦੇ ਫਾਰਮੈਟ ਵਿੱਚ ਹੋਣਾ ਚਾਹੀਦਾ ਹੈ</translation>
+<translation id="7811263553491007091">ਦੁਬਾਰਾ ਕੋਸ਼ਿਸ਼ ਕਰੋ ਜਾਂ ਪਹਿਲਾਂ ਬਣਾਏ ਗਏ ਹੇਠਾਂ ਦਿੱਤੇ ਥੀਮਾਂ ਵਿੱਚੋਂ ਕੋਈ ਇੱਕ ਚੁਣੋ।</translation>
 <translation id="7814458197256864873">&amp;ਕਾਪੀ ਕਰੋ</translation>
 <translation id="7814857791038398352">Microsoft OneDrive</translation>
 <translation id="7815583197273433531"><ph name="EXTENSION_NAME" /> ਲਈ <ph name="SHORTCUT" /> ਸ਼ਾਰਟਕੱਟ ਦਾ ਸੰਪਾਦਨ ਕਰੋ</translation>
@@ -8768,6 +8779,7 @@
 <translation id="789722939441020330">ਸਾਈਟਾਂ ਨੂੰ ਇੱਕ ਤੋਂ ਵੱਧ ਫ਼ਾਈਲ ਡਾਊਨਲੋਡ ਕਰਨ ਦੀ ਇਜਾਜ਼ਤ ਨਾ ਦਿਓ</translation>
 <translation id="7897900149154324287">ਭਵਿੱਖ ਵਿੱਚ, ਆਪਣੀ ਹਟਾਉਣਯੋਗ ਡੀਵਾਈਸ ਨੂੰ ਫ਼ਾਈਲਾਂ ਐਪ ਵਿੱਚ ਇਸਨੂੰ ਅਨਪਲੱਗ ਕਰਨ ਤੋਂ ਪਹਿਲਾਂ ਕੱਢਣਾ ਪੱਕਾ ਕਰੋ । ਨਹੀਂ ਤਾਂ, ਤੁੁਹਾਡਾ ਡਾਟਾ ਨਸ਼ਟ ਹੋ ਸਕਦਾ ਹੈ।</translation>
 <translation id="7898725031477653577">ਹਮੇਸ਼ਾਂ ਅਨੁਵਾਦ ਕਰੋ</translation>
+<translation id="7899324822972399722"><ph name="B" /> ਸਟਾਈਲ ਵਿੱਚ, <ph name="A" /> ਦਾ ਚਿੱਤਰ <ph name="INDEX" /></translation>
 <translation id="7901405293566323524">ਫ਼ੋਨ ਹੱਬ</translation>
 <translation id="7903290522161827520">ਕੀ ਬ੍ਰਾਊਜ਼ਰ ਤੱਤਾਂ ਨੂੰ ਲੱਭ ਰਹੇ ਹੋ? ਇੱਥੇ ਜਾਓ</translation>
 <translation id="7903429136755645827">ਆਪਣੀ ਗੇਮ ਦੇ ਕੰਟਰੋਲਾਂ ਨੂੰ ਵਿਉਂਤਬੱਧ ਕਰਨ ਲਈ ਕਲਿੱਕ ਕਰੋ</translation>
@@ -9028,6 +9040,7 @@
 <translation id="8089547136368562137">ਇਸਨੂੰ Google ਦੀਆਂ ਬਿਹਤਰੀਨ ਤਕਨਾਲੋਜੀਆਂ ਨਾਲ ਰੱਖਿਅਤ ਕੀਤਾ ਜਾਂਦਾ ਹੈ</translation>
 <translation id="8090234456044969073">ਤੁਹਾਡੀਆਂ ਸਭ ਤੋਂ ਵੱਧ ਵਾਰ ਵਿਜਿਟ ਕੀਤੀਆਂ ਵੈਬਸਾਈਟਾਂ ਦੀ ਇੱਕ ਸੂਚੀ ਪੜ੍ਹੋ</translation>
 <translation id="8090513782447872344">ਇੱਕ ਹੋਰ ਨਜ਼ਰ ਮਾਰਨ ਲਈ ਤੁਸੀਂ ਕਿਸੇ ਵੇਲੇ ਵੀ ਵਾਪਸ ਆ ਸਕਦੇ ਹੋ</translation>
+<translation id="8090686009202681725">AI ਨਾਲ ਥੀਮ ਬਣਾਓ</translation>
 <translation id="8093359998839330381"><ph name="PLUGIN_NAME" /> ਪ੍ਰਤਿਕਿਰਿਆ ਨਹੀਂ ਦੇ ਰਿਹਾ ਹੈ</translation>
 <translation id="8094536695728193970">ਐਪਰੀਕੋਟ</translation>
 <translation id="8095105960962832018"><ph name="BEGIN_PARAGRAPH1" />Google Drive ਵਿੱਚ ਬੈਕਅੱਪ ਲਓ। ਕਿਸੇ ਵੇਲੇ ਵੀ ਅਸਾਨੀ ਨਾਲ ਆਪਣਾ ਡਾਟਾ ਮੁੜ-ਬਹਾਲ ਕਰੋ ਜਾਂ ਡੀਵਾਈਸਾਂ ਵਿਚਾਲੇ ਅਦਲਾ-ਬਦਲੀ ਕਰੋ। ਤੁਹਾਡੇ ਬੈਕਅੱਪ ਵਿੱਚ ਐਪ ਡਾਟਾ ਸ਼ਾਮਲ ਹੈ।<ph name="END_PARAGRAPH1" />
@@ -9044,6 +9057,7 @@
 <translation id="8098616321286360457">ਨੈੱਟਵਰਕ ਕਨੈਕਸ਼ਨ ਲੋੜੀਂਦਾ ਹੈ</translation>
 <translation id="8100230553590752325">ਕਿਸੇ ਵੀ ਡੀਵਾਈਸ 'ਤੇ ਰੱਖਿਅਤ ਕੀਤੇ ਪਾਸਵਰਡਾਂ ਨੂੰ ਵਰਤੋ</translation>
 <translation id="810068641062493918"><ph name="LANGUAGE" /> ਨੂੰ ਚੁਣਿਆ ਗਿਆ। ਅਣਚੁਣਿਆ ਕਰਨ ਲਈ Search ਦੇ ਨਾਲ Space ਨੂੰ ਦਬਾਓ।</translation>
+<translation id="8100725874569949614"><ph name="C" /> ਮਿਜ਼ਾਜ ਦੇ ਨਾਲ, <ph name="A" /> ਦਾ ਚਿੱਤਰ <ph name="INDEX" />.</translation>
 <translation id="8101409298456377967">ਆਪਣੇ ਪਾਸਵਰਡਾਂ ਨੂੰ ਬਣਾਓ, ਰੱਖਿਅਤ ਕਰੋ ਅਤੇ ਉਨ੍ਹਾਂ ਦਾ ਪ੍ਰਬੰਧਨ ਕਰੋ ਤਾਂ ਜੋ ਤੁਸੀਂ ਆਸਾਨੀ ਨਾਲ ਸਾਈਟਾਂ ਅਤੇ ਐਪਾਂ ਵਿੱਚ ਸਾਈਨ-ਇਨ ਕਰ ਸਕੋ। <ph name="BEGIN_LINK" />ਹੋਰ ਜਾਣੋ<ph name="END_LINK" /></translation>
 <translation id="810185532889603849">ਵਿਉਂਤਿਆ ਰੰਗ</translation>
 <translation id="8101987792947961127">ਅਗਲੇ ਰੀਬੂਟ 'ਤੇ ਪਾਵਰਵਾਸ਼ ਲੁੜੀਂਦਾ</translation>
@@ -9054,6 +9068,7 @@
 <translation id="810728361871746125">ਡਿਸਪਲੇ ਰੈਜ਼ੋਲਿਊਸ਼ਨ</translation>
 <translation id="8108526232944491552">{COUNT,plural, =0{ਕੋਈ ਤੀਜੀ-ਧਿਰ ਦੀਆਂ ਕੁਕੀ ਨਹੀਂ}=1{1 ਤੀਜੀ-ਧਿਰ ਦੀ ਕੁਕੀ ਨੂੰ ਬਲਾਕ ਕੀਤਾ ਗਿਆ ਹੈ}other{# ਤੀਜੀ-ਧਿਰ ਦੀਆਂ ਕੁਕੀਜ਼ ਨੂੰ ਬਲਾਕ ਕੀਤਾ ਗਿਆ ਹੈ}}</translation>
 <translation id="8109109153262930486">ਪੂਰਵ-ਨਿਰਧਾਰਤ ਅਵਤਾਰ</translation>
+<translation id="8109991406044913868">AI ਨਾਲ ਬਣਾਇਆ ਗਿਆ ਥੀਮ</translation>
 <translation id="8110393529211831722">ਸਬਸਕ੍ਰਿਪਸ਼ਨ ਸਿਰਫ਼ ਇਸ ਡੀਵਾਈਸ 'ਤੇ ਸਥਾਪਤ ਕੀਤੀ ਗਈ ਹੈ ਅਤੇ ਤੁਹਾਡੇ ਖਾਤੇ ਦੇ ਅਧੀਨ ਹੋਰ ਡੀਵਾਈਸਾਂ ਨਾਲ ਸਿੰਕ ਨਹੀਂ ਕੀਤੀ ਗਈ। <ph name="LINK_BEGIN" />ਹੋਰ ਜਾਣੋ<ph name="LINK_END" /></translation>
 <translation id="8110489095782891123">ਸੰਪਰਕ ਸੂਚੀ ਨੂੰ ਡਾਊਨਲੋਡ ਕੀਤਾ ਜਾ ਰਿਹਾ ਹੈ...</translation>
 <translation id="8115139559594092084">ਤੁਹਾਡੇ Google Drive ਤੋਂ</translation>
