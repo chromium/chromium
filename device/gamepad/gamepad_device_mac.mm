@@ -179,14 +179,19 @@ bool GamepadDeviceMac::AddButtonsAndAxes(Gamepad* gamepad) {
 }
 
 bool GamepadDeviceMac::AddButtons(Gamepad* gamepad) {
-  base::apple::ScopedCFTypeRef<CFArrayRef> elements(
-      IOHIDDeviceCopyMatchingElements(device_ref_, /*matching=*/nullptr,
-                                      kIOHIDOptionsTypeNone));
-  DCHECK(elements);
   DCHECK(gamepad);
   memset(gamepad->buttons, 0, sizeof(gamepad->buttons));
   std::fill(button_elements_, button_elements_ + Gamepad::kButtonsLengthCap,
             nullptr);
+
+  base::apple::ScopedCFTypeRef<CFArrayRef> elements(
+      IOHIDDeviceCopyMatchingElements(device_ref_, /*matching=*/nullptr,
+                                      kIOHIDOptionsTypeNone));
+  if (!elements) {
+    // IOHIDDeviceCopyMatchingElements returns nullptr if we don't have
+    // permission to access the referenced IOHIDDevice.
+    return false;
+  }
 
   std::vector<IOHIDElementRef> special_element(kSpecialUsagesLen, nullptr);
   size_t button_count = 0;
