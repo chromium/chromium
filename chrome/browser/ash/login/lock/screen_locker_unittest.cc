@@ -206,11 +206,30 @@ class ScreenLockerUnitTest : public testing::Test {
 // the device.
 TEST_F(ScreenLockerUnitTest, VerifyAshIsNotifiedOfScreenLocked) {
   CreateSessionForUser(/*is_public_account=*/false);
-
   EXPECT_EQ(0, test_session_controller_.lock_animation_complete_call_count());
+
+  // Show the lock screen.
   ScreenLocker::Show();
   base::RunLoop().RunUntilIdle();
+  ASSERT_TRUE(ScreenLocker::default_screen_locker());
+  EXPECT_TRUE(ScreenLocker::default_screen_locker()->locked());
   EXPECT_EQ(1, test_session_controller_.lock_animation_complete_call_count());
+
+  // Hide the lock screen.
+  ScreenLocker::Hide();
+  // Needed to perform internal cleanup scheduled in ScreenLocker::Hide()
+  base::RunLoop().RunUntilIdle();
+  EXPECT_FALSE(ScreenLocker::default_screen_locker());
+}
+
+// Tests that `GetUsersToShow()` returns a list with one user when the user is
+// regular.
+TEST_F(ScreenLockerUnitTest, GetUsersToShowRegular) {
+  CreateSessionForUser(/*is_public_account=*/false);
+
+  ScreenLocker::Show();
+  base::RunLoop().RunUntilIdle();
+  EXPECT_EQ(ScreenLocker::default_screen_locker()->GetUsersToShow().size(), 1u);
   ScreenLocker::Hide();
   // Needed to perform internal cleanup scheduled in ScreenLocker::Hide()
   base::RunLoop().RunUntilIdle();
@@ -218,7 +237,7 @@ TEST_F(ScreenLockerUnitTest, VerifyAshIsNotifiedOfScreenLocked) {
 
 // Tests that `GetUsersToShow()` returns an empty list when the user is a
 // Managed Guest Session.
-TEST_F(ScreenLockerUnitTest, GetUsersToShow) {
+TEST_F(ScreenLockerUnitTest, GetUsersToShowPublicAccount) {
   CreateSessionForUser(/*is_public_account=*/true);
 
   ScreenLocker::Show();
