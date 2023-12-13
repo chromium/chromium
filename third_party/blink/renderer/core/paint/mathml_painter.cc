@@ -16,20 +16,19 @@
 
 namespace blink {
 
-void MathMLPainter::PaintBar(const PaintInfo& info, const gfx::Rect& bar) {
-  if (bar.IsEmpty())
+void MathMLPainter::PaintBar(const PaintInfo& info,
+                             const PhysicalRect& bar_rect) {
+  gfx::Rect snapped_bar_rect = ToPixelSnappedRect(bar_rect);
+  if (snapped_bar_rect.IsEmpty()) {
     return;
-
-  GraphicsContextStateSaver state_saver(info.context);
-  info.context.SetStrokeThickness(bar.height());
-  info.context.SetStrokeStyle(kSolidStroke);
-  info.context.SetStrokeColor(
-      box_fragment_.Style().VisitedDependentColor(GetCSSPropertyColor()));
-  gfx::Point line_end_point = {bar.width(), 0};
-  AutoDarkMode auto_dark_mode(PaintAutoDarkMode(
-      box_fragment_.Style(), DarkModeFilter::ElementRole::kForeground));
-  info.context.DrawLine(bar.origin(), line_end_point + bar.OffsetFromOrigin(),
-                        auto_dark_mode);
+  }
+  // The (vertical) origin of `snapped_bar_rect` is now at the mid-point of the
+  // bar. Shift up by half the height to produce the corresponding rectangle.
+  snapped_bar_rect -= gfx::Vector2d(0, snapped_bar_rect.height() / 2);
+  const ComputedStyle& style = box_fragment_.Style();
+  info.context.FillRect(
+      snapped_bar_rect, style.VisitedDependentColor(GetCSSPropertyColor()),
+      PaintAutoDarkMode(style, DarkModeFilter::ElementRole::kForeground));
 }
 
 void MathMLPainter::PaintStretchyOrLargeOperator(const PaintInfo& info,
@@ -66,7 +65,7 @@ void MathMLPainter::PaintFractionBar(const PaintInfo& info,
             padding.HorizontalSum(),
         line_thickness};
     bar_rect.Move(paint_offset);
-    PaintBar(info, ToPixelSnappedRect(bar_rect));
+    PaintBar(info, bar_rect);
   }
 }
 
@@ -155,7 +154,7 @@ void MathMLPainter::PaintRadicalSymbol(const PaintInfo& info,
   PhysicalRect bar_rect = {bar_physical_offset.left, bar_physical_offset.top,
                            base_width, rule_thickness};
   bar_rect.Move(paint_offset);
-  PaintBar(info, ToPixelSnappedRect(bar_rect));
+  PaintBar(info, bar_rect);
 }
 
 void MathMLPainter::Paint(const PaintInfo& info, PhysicalOffset paint_offset) {
