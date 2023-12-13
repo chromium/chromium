@@ -43,9 +43,9 @@ namespace {
 constexpr int kIconHeight = 20;
 constexpr gfx::RoundedCornersF kRoundedCornerRadius =
     gfx::RoundedCornersF(12.0f);
+constexpr gfx::Insets kArrowMargins = gfx::Insets::TLBR(0, 6, 0, 0);
 constexpr gfx::Insets kButtonBorderInsets = gfx::Insets::TLBR(0, 12, 0, 8);
 constexpr gfx::Insets kGamepadIconMargins = gfx::Insets::TLBR(0, 0, 0, 8);
-constexpr gfx::Insets kDropdownArrowMargins = gfx::Insets::TLBR(0, 6, 0, 0);
 
 // 30% opacity for disabled state.
 constexpr SkAlpha kAlphaForDisabled =
@@ -92,9 +92,9 @@ GameDashboardButton::GameDashboardButton(PressedCallback callback)
   title_view_ = AddChildView(
       bubble_utils::CreateLabel(ash::TypographyToken::kCrosButton2));
 
-  // Add the dropdown icon view.
-  dropdown_icon_view_ = AddChildView(std::make_unique<views::ImageView>());
-  dropdown_icon_view_->SetProperty(views::kMarginsKey, kDropdownArrowMargins);
+  // Add the arrow icon view.
+  arrow_icon_view_ = AddChildView(std::make_unique<views::ImageView>());
+  arrow_icon_view_->SetProperty(views::kMarginsKey, kArrowMargins);
 }
 
 GameDashboardButton::~GameDashboardButton() = default;
@@ -104,7 +104,7 @@ void GameDashboardButton::SetToggled(bool toggled) {
     return;
   }
   toggled_ = toggled;
-  UpdateDropDownArrow();
+  UpdateArrowIcon();
 }
 
 void GameDashboardButton::OnRecordingStarted() {
@@ -149,15 +149,15 @@ void GameDashboardButton::StateChanged(ButtonState old_state) {
   UpdateViews();
 }
 
-void GameDashboardButton::UpdateDropDownArrow() {
-  DCHECK(dropdown_icon_view_);
-  const gfx::VectorIcon& dropdown_icon =
-      toggled_ ? kGdDropUpArrowIcon : kGdDropDownArrowIcon;
+void GameDashboardButton::UpdateArrowIcon() {
+  DCHECK(arrow_icon_view_);
+  const gfx::VectorIcon& arrow_icon =
+      toggled_ ? kGdButtonUpArrowIcon : kGdButtonDownArrowIcon;
   const SkColor icon_color =
       GetColor(GetColorProvider(), GetIconAndLabelEnabledColorId(is_recording_),
                GetEnabled());
-  dropdown_icon_view_->SetImage(
-      ui::ImageModel::FromVectorIcon(dropdown_icon, icon_color, kIconHeight));
+  arrow_icon_view_->SetImage(
+      ui::ImageModel::FromVectorIcon(arrow_icon, icon_color, kIconHeight));
 }
 
 void GameDashboardButton::UpdateViews() {
@@ -182,7 +182,7 @@ void GameDashboardButton::UpdateViews() {
   gamepad_icon_view_->SetImage(ui::ImageModel::FromVectorIcon(
       chromeos::kGameDashboardGamepadIcon, icon_and_label_color, kIconHeight));
   title_view_->SetEnabledColor(icon_and_label_color);
-  UpdateDropDownArrow();
+  UpdateArrowIcon();
 }
 
 void GameDashboardButton::SetTitle(const std::u16string& title_text) {
