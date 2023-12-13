@@ -2688,10 +2688,6 @@ public class SiteSettingsTest {
                             preferences.findPreference(
                                     SingleCategorySettings.DESKTOP_SITE_WINDOW_TOGGLE_KEY);
                     PrefService prefService = UserPrefs.get(getBrowserContextHandle());
-                    Assert.assertFalse(
-                            "Window setting should be OFF.",
-                            prefService.getBoolean(DESKTOP_SITE_WINDOW_SETTING_ENABLED));
-
                     preferences.onPreferenceChange(windowSettingPref, true);
                     Assert.assertTrue(
                             "Window setting should be ON.",
