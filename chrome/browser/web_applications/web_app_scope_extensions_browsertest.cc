@@ -472,7 +472,7 @@ IN_PROC_BROWSER_TEST_F(WebAppScopeExtensionsOriginTrialBrowserTest,
   {
     UpdateAwaiter update_awaiter(provider.install_manager());
     serve_token = false;
-    EXPECT_TRUE(ui_test_utils::NavigateToURL(browser(), GURL(kTestWebAppUrl)));
+    NavigateToURLAndWait(browser(), GURL(kTestWebAppUrl));
     update_awaiter.AwaitUpdate();
   }
 

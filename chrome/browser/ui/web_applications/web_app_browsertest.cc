@@ -1373,7 +1373,7 @@ IN_PROC_BROWSER_TEST_F(WebAppBrowserTest, ReparentWebAppForSecureActiveTab) {
   const GURL app_url = GetSecureAppURL();
   const webapps::AppId app_id = InstallPWA(app_url);
 
-  EXPECT_TRUE(ui_test_utils::NavigateToURL(browser(), app_url));
+  NavigateToURLAndWait(browser(), app_url);
   content::WebContents* tab_contents =
       browser()->tab_strip_model()->GetActiveWebContents();
   ASSERT_EQ(tab_contents->GetLastCommittedURL(), app_url);
@@ -1390,10 +1390,10 @@ IN_PROC_BROWSER_TEST_F(WebAppBrowserTest, ShortcutIconCorrectColor) {
   std::unique_ptr<OsIntegrationTestOverrideImpl::BlockingRegistration>
       registration = OsIntegrationTestOverrideImpl::OverrideForTesting();
 
-  EXPECT_TRUE(ui_test_utils::NavigateToURL(
+  NavigateToURLAndWait(
       browser(),
       https_server()->GetURL(
-          "/banners/manifest_test_page.html?manifest=manifest_one_icon.json")));
+          "/banners/manifest_test_page.html?manifest=manifest_one_icon.json"));
 
   // Wait for OS hooks and installation to complete and the app to launch.
   base::RunLoop run_loop_install;
@@ -1699,7 +1699,7 @@ IN_PROC_BROWSER_TEST_F(WebAppBrowserTest, RunOnOsLoginMetrics) {
 IN_PROC_BROWSER_TEST_F(WebAppBrowserTest, ReparentLastBrowserTab) {
   const GURL app_url = GetSecureAppURL();
   const webapps::AppId app_id = InstallPWA(app_url);
-  EXPECT_TRUE(ui_test_utils::NavigateToURL(browser(), app_url));
+  NavigateToURLAndWait(browser(), app_url);
 
   Browser* const app_browser = ReparentWebAppForActiveTab(browser());
   ASSERT_EQ(app_browser->app_controller()->app_id(), app_id);
@@ -1824,7 +1824,7 @@ IN_PROC_BROWSER_TEST_F(WebAppBrowserTest, ReparentDisplayBrowserApp) {
   const webapps::AppId app_id = InstallWebApp(std::move(web_app_info));
 
   base::HistogramTester tester;
-  EXPECT_TRUE(ui_test_utils::NavigateToURL(browser(), app_url));
+  NavigateToURLAndWait(browser(), app_url);
   content::WebContents* tab_contents =
       browser()->tab_strip_model()->GetActiveWebContents();
   ASSERT_EQ(tab_contents->GetLastCommittedURL(), app_url);
@@ -2533,7 +2533,7 @@ IN_PROC_BROWSER_TEST_F(WebAppBrowserTest_PageInfoManagementLink, Reparenting) {
   const GURL app_url = GetSecureAppURL();
   InstallPWA(app_url);
 
-  EXPECT_TRUE(ui_test_utils::NavigateToURL(browser(), app_url));
+  NavigateToURLAndWait(browser(), app_url);
   content::WebContents* tab_contents =
       browser()->tab_strip_model()->GetActiveWebContents();
   ASSERT_EQ(tab_contents->GetLastCommittedURL(), app_url);
