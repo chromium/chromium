@@ -410,6 +410,20 @@ void RequestManager::PrepareCaptureRequest() {
     return;
   }
 
+  // Sets crop region if there is a value set from Camera app.
+  auto camera_app_device =
+      CameraAppDeviceBridgeImpl::GetInstance()->GetWeakCameraAppDevice(
+          device_id_);
+  if (camera_app_device) {
+    auto crop_region = camera_app_device->GetCropRegion();
+    if (crop_region.has_value()) {
+      SetCaptureMetadata(
+          cros::mojom::CameraMetadataTag::ANDROID_SCALER_CROP_REGION,
+          cros::mojom::EntryType::TYPE_INT32, crop_region->size(),
+          SerializeMetadataValueFromSpan<int32_t>(*crop_region));
+    }
+  }
+
   auto capture_request = request_builder_->BuildRequest(std::move(stream_types),
                                                         std::move(settings));
   CHECK_GT(capture_request->output_buffers.size(), 0u);

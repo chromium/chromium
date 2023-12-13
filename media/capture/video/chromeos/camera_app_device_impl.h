@@ -143,6 +143,10 @@ class CAPTURE_EXPORT CameraAppDeviceImpl : public cros::mojom::CameraAppDevice {
       mojo::PendingRemote<cros::mojom::CameraInfoObserver> observer,
       RegisterCameraInfoObserverCallback callback) override;
   absl::optional<PortraitModeCallbacks> ConsumePortraitModeCallbacks();
+  void SetCropRegion(const gfx::Rect& crop_region,
+                     SetCropRegionCallback callback) override;
+  void ResetCropRegion(ResetCropRegionCallback callback) override;
+  std::optional<std::vector<int32_t>> GetCropRegion();
 
  private:
   void OnMojoConnectionError();
@@ -225,6 +229,10 @@ class CAPTURE_EXPORT CameraAppDeviceImpl : public cros::mojom::CameraAppDevice {
 
   base::Lock multi_stream_lock_;
   bool multi_stream_enabled_ GUARDED_BY(multi_stream_lock_) = false;
+
+  base::Lock crop_region_lock_;
+  std::optional<std::vector<int32_t>> crop_region_
+      GUARDED_BY(crop_region_lock_);
 
   // The weak pointers should be dereferenced and invalidated on camera device
   // ipc thread.

@@ -505,4 +505,15 @@ export enum LowStorageDialogType {
   CANNOT_START = 'cannot-start',
 }
 
+/**
+ * A rectangle representing a crop region with size (width, height) and having
+ * the top-left coordinate at (x, y).
+ */
+export interface CropRegionRect {
+  height: number;
+  width: number;
+  x: number;
+  y: number;
+}
+
 export type Awaitable<T> = PromiseLike<T>|T;
