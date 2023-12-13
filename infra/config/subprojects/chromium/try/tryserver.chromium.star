@@ -48,22 +48,6 @@ try_.builder(
 )
 
 try_.builder(
-    name = "fuchsia-official",
-    branch_selector = branches.selector.FUCHSIA_BRANCHES,
-    mirrors = [
-        "ci/fuchsia-official",
-    ],
-    gn_args = gn_args.config(
-        configs = [
-            "ci/fuchsia-official",
-            "minimal_symbols",
-            "dcheck_always_on",
-        ],
-    ),
-    ssd = True,
-)
-
-try_.builder(
     name = "linux-official",
     branch_selector = branches.selector.LINUX_BRANCHES,
     mirrors = [

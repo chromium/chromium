@@ -395,11 +395,6 @@
           'all',
         ],
       },
-      'fuchsia-official': {
-        'additional_compile_targets': [
-          'all',
-        ],
-      },
       'lacros-arm-archive-rel': {
         'additional_compile_targets': [
           'chrome',

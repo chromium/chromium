@@ -3,7 +3,6 @@
     "android-archive-rel": "ci/android-archive-rel/gn-args.json",
     "android-arm64-archive-rel": "ci/android-arm64-archive-rel/gn-args.json",
     "android-official": "ci/android-official/gn-args.json",
-    "fuchsia-official": "ci/fuchsia-official/gn-args.json",
     "lacros-arm-archive-rel": "ci/lacros-arm-archive-rel/gn-args.json",
     "lacros-arm64-archive-rel": "ci/lacros-arm64-archive-rel/gn-args.json",
     "lacros64-archive-rel": "ci/lacros64-archive-rel/gn-args.json",
@@ -498,7 +497,6 @@
   },
   "tryserver.chromium": {
     "android-official": "try/android-official/gn-args.json",
-    "fuchsia-official": "try/fuchsia-official/gn-args.json",
     "linux-official": "try/linux-official/gn-args.json",
     "mac-official": "try/mac-official/gn-args.json",
     "win-official": "try/win-official/gn-args.json",
