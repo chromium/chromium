@@ -82,27 +82,49 @@ SK_API SkBitmap CGImageToSkBitmap(CGImageRef image);
 #ifdef __OBJC__
 
 // Draws an NSImage with a given size into a SkBitmap.
-SK_API SkBitmap NSImageToSkBitmapWithColorSpace(NSImage* image,
+SK_API SkBitmap NSImageToSkBitmap(NSImage* image, bool is_opaque);
+
+// TODO(https://crbug.com/1495334): Remove callers to this function.
+inline SkBitmap NSImageToSkBitmapWithColorSpace(NSImage* image,
                                                 bool is_opaque,
-                                                CGColorSpaceRef color_space);
+                                                CGColorSpaceRef color_space) {
+  return NSImageToSkBitmap(image, is_opaque);
+}
 
 // Draws an NSImageRep with a given size into a SkBitmap.
-SK_API SkBitmap NSImageRepToSkBitmapWithColorSpace(NSImageRep* image,
+SK_API SkBitmap NSImageRepToSkBitmap(NSImageRep* image,
+                                     NSSize size,
+                                     bool is_opaque);
+
+// TODO(https://crbug.com/1495334): Remove callers to this function.
+inline SkBitmap NSImageRepToSkBitmapWithColorSpace(NSImageRep* image,
                                                    NSSize size,
                                                    bool is_opaque,
-                                                   CGColorSpaceRef colorspace);
+                                                   CGColorSpaceRef colorspace) {
+  return NSImageRepToSkBitmap(image, size, is_opaque);
+}
 
 // Given an SkBitmap, return an autoreleased NSBitmapImageRep.
-SK_API NSBitmapImageRep* SkBitmapToNSBitmapImageRepWithColorSpace(
+SK_API NSBitmapImageRep* SkBitmapToNSBitmapImageRep(const SkBitmap& skiaBitmap);
+
+// TODO(https://crbug.com/1495334): Remove callers to this function.
+inline NSBitmapImageRep* SkBitmapToNSBitmapImageRepWithColorSpace(
     const SkBitmap& skiaBitmap,
-    CGColorSpaceRef colorSpace);
+    CGColorSpaceRef colorSpace) {
+  return SkBitmapToNSBitmapImageRep(skiaBitmap);
+}
 
 #endif  // __OBJC__
 
 // Given an SkBitmap and a color space, return an autoreleased NSImage.
 // TODO(https://crbug.com/1433041): Restrict this to Objective-C callers.
-SK_API NSImage* SkBitmapToNSImageWithColorSpace(const SkBitmap& icon,
-                                                CGColorSpaceRef colorSpace);
+SK_API NSImage* SkBitmapToNSImage(const SkBitmap& icon);
+
+// TODO(https://crbug.com/1495334): Remove callers to this function.
+inline NSImage* SkBitmapToNSImageWithColorSpace(const SkBitmap& icon,
+                                                CGColorSpaceRef colorSpace) {
+  return SkBitmapToNSImage(icon);
+}
 
 }  // namespace skia
 

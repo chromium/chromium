@@ -205,8 +205,7 @@ PlatformImage CreatePlatformImage() {
       skia::SkBitmapToUIImageWithColorSpace(bitmap, scale, color_space.get());
   return image;
 #elif BUILDFLAG(IS_MAC)
-  NSImage* image = skia::SkBitmapToNSImageWithColorSpace(
-      bitmap, base::mac::GetGenericRGBColorSpace());
+  NSImage* image = skia::SkBitmapToNSImage(bitmap);
   return image;
 #else
   return gfx::ImageSkia::CreateFrom1xBitmap(bitmap);
