@@ -12,5 +12,6 @@ include_rules = [
     "+gpu/config/gpu_driver_bug_workaround_type.h",
     "+gpu/config/gpu_feature_info.h",
     "+gpu/webgpu/callback.h",
+    "+ui/gl/buildflags.h",
     "+ui/gl/gpu_preference.h",
 ]

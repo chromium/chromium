@@ -126,11 +126,10 @@ GPU* GPU::gpu(NavigatorBase& navigator) {
 GPU::GPU(NavigatorBase& navigator)
     : Supplement<NavigatorBase>(navigator),
       ExecutionContextLifecycleObserver(navigator.GetExecutionContext()),
-      wgsl_language_features_(MakeGarbageCollected<WGSLLanguageFeatures>()),
+      wgsl_language_features_(
+          MakeGarbageCollected<WGSLLanguageFeatures>(GatherWGSLFeatures())),
       mappable_buffer_handles_(
-          base::MakeRefCounted<BoxedMappableWGPUBufferHandles>()) {
-  DCHECK(wgsl_language_features_->FeatureNameSet().empty());
-}
+          base::MakeRefCounted<BoxedMappableWGPUBufferHandles>()) {}
 
 GPU::~GPU() = default;
 

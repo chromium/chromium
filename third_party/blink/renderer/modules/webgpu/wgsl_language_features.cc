@@ -4,9 +4,20 @@
 
 #include "third_party/blink/renderer/modules/webgpu/wgsl_language_features.h"
 
+#include "third_party/blink/renderer/modules/webgpu/dawn_enum_conversions.h"
+
 namespace blink {
 
-WGSLLanguageFeatures::WGSLLanguageFeatures() = default;
+WGSLLanguageFeatures::WGSLLanguageFeatures(
+    const std::vector<WGPUWGSLFeatureName>& features) {
+  for (const auto& dawn_feature : features) {
+    V8WGSLFeatureName v8_feature{
+        V8WGSLFeatureName::Enum::kPointerCompositeAccess};
+    if (FromDawnEnum(dawn_feature, &v8_feature)) {
+      features_.insert(v8_feature.AsString());
+    }
+  }
+}
 
 bool WGSLLanguageFeatures::has(const String& feature) const {
   return features_.Contains(feature);

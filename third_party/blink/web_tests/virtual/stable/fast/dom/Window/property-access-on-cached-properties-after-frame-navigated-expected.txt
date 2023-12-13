@@ -47,7 +47,7 @@ PASS window.cached_navigator_connection.effectiveType is window.navigator.connec
 PASS window.cached_navigator_connection.onchange is null
 PASS window.cached_navigator_connection.rtt is window.navigator.connection.rtt
 PASS window.cached_navigator_connection.saveData is false
-PASS window.cached_navigator_gpu_wgslLanguageFeatures.size is 0
+PASS window.cached_navigator_gpu_wgslLanguageFeatures.size is window.navigator.gpu.wgslLanguageFeatures.size
 PASS window.cached_navigator_hid.onconnect is null
 PASS window.cached_navigator_hid.ondisconnect is null
 PASS window.cached_navigator_managed.onmanagedconfigurationchange is null

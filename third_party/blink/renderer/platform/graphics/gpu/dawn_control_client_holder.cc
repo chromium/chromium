@@ -4,11 +4,17 @@
 
 #include "third_party/blink/renderer/platform/graphics/gpu/dawn_control_client_holder.h"
 
+#include <dawn/wire/WireClient.h>
+
 #include "base/check.h"
+#include "base/command_line.h"
 #include "base/task/single_thread_task_runner.h"
+#include "gpu/config/gpu_switches.h"
 #include "third_party/blink/renderer/platform/graphics/gpu/webgpu_resource_provider_cache.h"
+#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/scheduler/public/event_loop.h"
 #include "third_party/blink/renderer/platform/wtf/functional.h"
+#include "ui/gl/buildflags.h"
 
 namespace blink {
 
@@ -127,6 +133,57 @@ void DawnControlClientHolder::EnsureFlush(scheduler::EventLoop& event_loop) {
         }
       },
       scoped_refptr<DawnControlClientHolder>(this)));
+}
+
+std::vector<WGPUWGSLFeatureName> GatherWGSLFeatures() {
+#if BUILDFLAG(USE_DAWN)
+  // Create a dawn::wire::WireClient on a noop serializer, to get an instance
+  // from it.
+  class NoopSerializer : public dawn::wire::CommandSerializer {
+   public:
+    size_t GetMaximumAllocationSize() const override { return sizeof(buf); }
+    void* GetCmdSpace(size_t size) override { return buf; }
+    bool Flush() override { return true; }
+
+   private:
+    char buf[1024];
+  };
+
+  NoopSerializer noop_serializer;
+  dawn::wire::WireClient client{{.serializer = &noop_serializer}};
+
+  // Make an instance descriptor with chained structs to control which WGSL
+  // features are exposed.
+  WGPUDawnWireWGSLControl wgsl_control = {};
+  wgsl_control.chain.sType = WGPUSType_DawnWireWGSLControl;
+  wgsl_control.enableUnsafe = base::CommandLine::ForCurrentProcess()->HasSwitch(
+      switches::kEnableUnsafeWebGPU);
+  wgsl_control.enableExperimental =
+      wgsl_control.enableUnsafe ||
+      RuntimeEnabledFeatures::WebGPUDeveloperFeaturesEnabled();
+  // This can be changed to true for manual testing with the chromium_testing_*
+  // WGSL features.
+  wgsl_control.enableTesting = false;
+
+  WGPUInstanceDescriptor instance_desc = {};
+  instance_desc.nextInChain = &wgsl_control.chain;
+  WGPUInstance instance = client.ReserveInstance(&instance_desc).instance;
+
+  // Gather features from the instance and release the reference we have to it.
+  const DawnProcTable& procs = dawn::wire::client::GetProcs();
+
+  size_t feature_count =
+      procs.instanceEnumerateWGSLLanguageFeatures(instance, nullptr);
+  std::vector<WGPUWGSLFeatureName> features(feature_count,
+                                            WGPUWGSLFeatureName_Undefined);
+  procs.instanceEnumerateWGSLLanguageFeatures(instance, features.data());
+
+  procs.instanceRelease(instance);
+
+  return features;
+#else
+  return {};
+#endif
 }
 
 }  // namespace blink
