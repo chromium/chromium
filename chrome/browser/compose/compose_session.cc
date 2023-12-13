@@ -392,7 +392,8 @@ void ComposeSession::RequestInitialState(RequestInitialStateCallback callback) {
   }
   auto compose_config = compose::GetComposeConfig();
   std::move(callback).Run(compose::mojom::OpenMetadata::New(
-      initial_consent_state_, initial_input_, current_state_->Clone(),
+      initial_consent_state_, initial_input_, text_selected_,
+      current_state_->Clone(),
       compose::mojom::ConfigurableParams::New(compose_config.input_min_words,
                                               compose_config.input_max_words,
                                               compose_config.input_max_chars)));
@@ -516,9 +517,10 @@ void ComposeSession::SetUserFeedback(compose::mojom::UserFeedback feedback) {
   }
 }
 
-void ComposeSession::InitializeWithText(
-    const std::optional<std::string>& text) {
+void ComposeSession::InitializeWithText(const std::optional<std::string>& text,
+                                        const bool text_selected) {
   dialog_shown_count_ += 1;
+  text_selected_ = text_selected;
   RefreshInnerText();
 
   // If no text provided (even an empty string), then we are reopening without

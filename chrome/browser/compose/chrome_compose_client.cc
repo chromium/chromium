@@ -267,9 +267,9 @@ void ChromeComposeClient::CreateOrUpdateSession(
 
   // If we are resuming then don't send the selected text - we want to keep the
   // prior selection and not trigger another Compose.
-  current_session->InitializeWithText(resume_current_session
-                                          ? std::nullopt
-                                          : std::make_optional(selected_text));
+  current_session->InitializeWithText(
+      resume_current_session ? std::nullopt : std::make_optional(selected_text),
+      !selected_text.empty());
 }
 
 void ChromeComposeClient::RemoveActiveSession() {

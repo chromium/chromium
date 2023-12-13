@@ -54,7 +54,7 @@ export interface ComposeAppElement {
     closeButtonConsent: HTMLElement,
     editTextarea: ComposeTextareaElement,
     errorFooter: HTMLElement,
-    insertButton: CrButtonElement,
+    acceptButton: CrButtonElement,
     loading: HTMLElement,
     undoButton: CrButtonElement,
     refreshButton: HTMLElement,
@@ -211,6 +211,7 @@ export class ComposeAppElement extends ComposeAppElementBase {
   private saveAppStateDebouncer_: Debouncer;
   private selectedLength_: Length;
   private selectedTone_: Tone;
+  private textSelected_: boolean;
   private submitted_: boolean;
   private undoEnabled_: boolean;
   private userHasModifiedState_: boolean = false;
@@ -261,6 +262,7 @@ export class ComposeAppElement extends ComposeAppElementBase {
       if (initialState.initialInput) {
         this.input_ = initialState.initialInput;
       }
+      this.textSelected_ = initialState.textSelected;
       const composeState = initialState.composeState;
       this.feedbackState_ = userFeedbackToFeedbackOption(composeState.feedback);
       this.loading_ = composeState.hasPendingRequest;
@@ -453,6 +455,11 @@ export class ComposeAppElement extends ComposeAppElementBase {
     }
 
     return this.response_.status !== ComposeStatus.kOk;
+  }
+
+  private acceptButtonText_(): string {
+    return this.textSelected_ ? this.i18n('replaceButton') :
+                                this.i18n('insertButton');
   }
 
   private failedResponseErrorText_(): string {

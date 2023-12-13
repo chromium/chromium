@@ -113,7 +113,8 @@ class ComposeSession : public compose::mojom::ComposeSessionPageHandler {
 
   // Notifies the session that a new dialog is opening and starts refreshing
   // inner text. Calls Compose immediately if the initial input is valid.
-  void InitializeWithText(const std::optional<std::string>& text);
+  void InitializeWithText(const std::optional<std::string>& text,
+                          const bool text_selected);
 
   // Opens the Chrome Feedback UI for Compose. |feedback_id| is returned from
   // OptimizationGuideModel result.
@@ -214,6 +215,8 @@ class ComposeSession : public compose::mojom::ComposeSessionPageHandler {
 
   // Renderer provided text selection.
   std::string initial_input_;
+  // True if the user selected text when the dialog is opened.
+  bool text_selected_;
 
   // The state of consent-related prefs when the session is first created.
   compose::mojom::ConsentState initial_consent_state_ =

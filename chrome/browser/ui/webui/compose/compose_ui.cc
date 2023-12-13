@@ -54,6 +54,7 @@ ComposeUI::ComposeUI(content::WebUI* web_ui)
       {"submitButton", IDS_COMPOSE_SUBMIT_BUTTON},
       {"resultFooter", IDS_COMPOSE_FOOTER_FISHFOOD},
       {"insertButton", IDS_COMPOSE_INSERT_BUTTON},
+      {"replaceButton", IDS_COMPOSE_REPLACE_BUTTON},
       {"lengthMenuTitle", IDS_COMPOSE_MENU_LENGTH_TITLE},
       {"shorterOption", IDS_COMPOSE_MENU_SHORTER_OPTION},
       {"longerOption", IDS_COMPOSE_MENU_LONGER_OPTION},

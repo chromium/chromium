@@ -17,6 +17,7 @@ import {isVisible, whenCheck} from 'chrome://webui-test/test_util.js';
 class TestingApiProxy extends TestBrowserProxy implements ComposeApiProxy {
   private initialConsentState_: ConsentState = ConsentState.kConsented;
   private initialInput_: string = '';
+  private textSelected_: boolean = false;
   private initialState_: ComposeState = {
     webuiState: '',
     feedback: UserFeedback.kUserFeedbackUnspecified,
@@ -88,6 +89,7 @@ class TestingApiProxy extends TestBrowserProxy implements ComposeApiProxy {
       consentState: this.initialConsentState_,
       composeState: this.initialState_,
       initialInput: this.initialInput_,
+      textSelected: this.textSelected_,
       configurableParams: {
         minWordLimit: 2,
         maxWordLimit: 50,
@@ -118,6 +120,10 @@ class TestingApiProxy extends TestBrowserProxy implements ComposeApiProxy {
         },
         state);
     this.initialInput_ = input || '';
+  }
+
+  setTextSelected(selected: boolean) {
+    this.textSelected_ = selected;
   }
 
   setUndoResponse(state: ComposeState|null) {
@@ -177,7 +183,7 @@ suite('ComposeApp', () => {
     assertTrue(isVisible(app.$.submitButton));
     assertFalse(app.$.submitButton.disabled);
     assertFalse(isVisible(app.$.resultContainer));
-    assertFalse(isVisible(app.$.insertButton));
+    assertFalse(isVisible(app.$.acceptButton));
 
     // Invalid input keeps submit enabled and error is not visible.
     mockInput('Short');
@@ -207,11 +213,32 @@ suite('ComposeApp', () => {
     assertFalse(isVisible(app.$.loading));
     assertFalse(isVisible(app.$.submitButton));
     assertTrue(app.$.textarea.readonly);
-    assertTrue(isVisible(app.$.insertButton));
+    assertTrue(isVisible(app.$.acceptButton));
 
-    // Clicking on Insert calls acceptComposeResult.
-    app.$.insertButton.click();
+    // Clicking on accept button calls acceptComposeResult.
+    app.$.acceptButton.click();
     await testProxy.whenCalled('acceptComposeResult');
+  });
+
+  test('AcceptButtonText', async () => {
+    async function initializeNewAppWithTextSelectedState(textSelected: boolean):
+        Promise<ComposeAppElement> {
+      document.body.innerHTML = window.trustedTypes!.emptyHTML;
+      testProxy.setTextSelected(textSelected);
+      const newApp = document.createElement('compose-app');
+      document.body.appendChild(newApp);
+      await flushTasks();
+      return newApp;
+    }
+    const appWithTextSelected =
+        await initializeNewAppWithTextSelectedState(true);
+    assertTrue(
+        appWithTextSelected.$.acceptButton.textContent!.includes('Replace'));
+
+    const appWithNoTextSelected =
+        await initializeNewAppWithTextSelectedState(false);
+    assertTrue(
+        appWithNoTextSelected.$.acceptButton.textContent!.includes('Insert'));
   });
 
   test('RefreshesResult', async () => {

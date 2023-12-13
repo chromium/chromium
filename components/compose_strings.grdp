@@ -101,6 +101,9 @@
   <message name="IDS_COMPOSE_INSERT_BUTTON" desc="The button that inserts the result into the selected textfield.">
     Insert
   </message>
+  <message name="IDS_COMPOSE_REPLACE_BUTTON" desc="The button that replaces the highlighted text with the restult in the input textfield.">
+  Replace
+  </message>
 
   <!-- Errors -->
   <message name="IDS_COMPOSE_CONFIGURATION_ERROR" desc="The error text shown when Compose is not available due to an internal configuration error." translateable="false">
