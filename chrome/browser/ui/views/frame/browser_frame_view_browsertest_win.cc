@@ -303,7 +303,7 @@ class WebAppBrowserFrameViewWinWindowControlsOverlayTest
     // during testing.
     app_browser->app_controller()->SetOnUpdateDraggableRegionForTesting(
         loop.QuitClosure());
-    web_app::NavigateToURLAndWait(app_browser, start_url);
+    web_app::NavigateViaLinkClickToURLAndWait(app_browser, start_url);
     loop.Run();
     navigation_observer.WaitForNavigationFinished();
 

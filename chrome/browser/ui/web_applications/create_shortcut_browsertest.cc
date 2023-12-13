@@ -105,7 +105,7 @@ class CreateShortcutBrowserTest : public WebAppControllerBrowserTest {
 IN_PROC_BROWSER_TEST_F(CreateShortcutBrowserTest,
                        CreateShortcutForInstallableSite) {
   base::UserActionTester user_action_tester;
-  NavigateToURLAndWait(browser(), GetInstallableAppURL());
+  NavigateViaLinkClickToURLAndWait(browser(), GetInstallableAppURL());
 
   webapps::AppId app_id = InstallShortcutAppForCurrentUrl();
   EXPECT_EQ(registrar().GetAppShortName(app_id), GetInstallableAppName());
@@ -133,7 +133,7 @@ IN_PROC_BROWSER_TEST_F(CreateShortcutBrowserTest, MAYBE_InstallSourceRecorded) {
         embedded_test_server()->GetURL(
             "/web_apps/get_manifest.html?theme_color_only.json")}) {
     base::HistogramTester histogram_tester;
-    NavigateToURLAndWait(browser(), url);
+    NavigateViaLinkClickToURLAndWait(browser(), url);
     webapps::AppId app_id = InstallShortcutAppForCurrentUrl();
 
     EXPECT_EQ(webapps::WebappInstallSource::MENU_CREATE_SHORTCUT,
@@ -147,7 +147,7 @@ IN_PROC_BROWSER_TEST_F(CreateShortcutBrowserTest, MAYBE_InstallSourceRecorded) {
 
 IN_PROC_BROWSER_TEST_F(CreateShortcutBrowserTest,
                        CanInstallOverTabShortcutApp) {
-  NavigateToURLAndWait(browser(), GetInstallableAppURL());
+  NavigateViaLinkClickToURLAndWait(browser(), GetInstallableAppURL());
   InstallShortcutAppForCurrentUrl();
 
   Browser* new_browser =
@@ -161,7 +161,7 @@ IN_PROC_BROWSER_TEST_F(CreateShortcutBrowserTest,
 
 IN_PROC_BROWSER_TEST_F(CreateShortcutBrowserTest,
                        CannotInstallOverWindowShortcutApp) {
-  NavigateToURLAndWait(browser(), GetInstallableAppURL());
+  NavigateViaLinkClickToURLAndWait(browser(), GetInstallableAppURL());
   webapps::AppId app_id = InstallShortcutAppForCurrentUrl();
   // Change launch container to open in window.
   sync_bridge().SetAppUserDisplayMode(app_id,
@@ -202,7 +202,7 @@ IN_PROC_BROWSER_TEST_F(CreateShortcutBrowserTest,
   // Install the shortcut app that links to the extension's popup page.
   const GURL popup_url("chrome-extension://" + extension_id + "/popup.html");
 
-  NavigateToURLAndWait(browser(), popup_url);
+  NavigateViaLinkClickToURLAndWait(browser(), popup_url);
 
   // TODO(crbug.com/1253234): IDC_CREATE_SHORTCUT command must become disabled.
   ASSERT_TRUE(chrome::IsCommandEnabled(browser(), IDC_CREATE_SHORTCUT));
@@ -221,8 +221,9 @@ IN_PROC_BROWSER_TEST_F(CreateShortcutBrowserTest,
 // iframe load. Context: crbug.com/1046883
 IN_PROC_BROWSER_TEST_F(CreateShortcutBrowserTest, WorksAfterDelayedIFrameLoad) {
   ASSERT_TRUE(embedded_test_server()->Start());
-  NavigateToURLAndWait(browser(), embedded_test_server()->GetURL(
-                                      "/favicon/page_with_favicon.html"));
+  NavigateViaLinkClickToURLAndWait(
+      browser(),
+      embedded_test_server()->GetURL("/favicon/page_with_favicon.html"));
 
   // Append an iframe and wait for it to finish loading.
   const char script[] = R"(
@@ -246,7 +247,7 @@ IN_PROC_BROWSER_TEST_F(CreateShortcutBrowserTest, WorksAfterDelayedIFrameLoad) {
 IN_PROC_BROWSER_TEST_F(CreateShortcutBrowserTest,
                        UseNonPromotableManifestData) {
   ASSERT_TRUE(embedded_test_server()->Start());
-  NavigateToURLAndWait(
+  NavigateViaLinkClickToURLAndWait(
       browser(), embedded_test_server()->GetURL(
                      "/web_apps/get_manifest.html?theme_color_only.json"));
   webapps::AppId app_id = InstallShortcutAppForCurrentUrl();
@@ -259,7 +260,7 @@ IN_PROC_BROWSER_TEST_F(CreateShortcutBrowserTest, IgnoreInvalidManifestData) {
   ASSERT_TRUE(embedded_test_server()->Start());
   GURL url = embedded_test_server()->GetURL(
       "/web_apps/get_manifest.html?invalid_start_url.json");
-  NavigateToURLAndWait(browser(), url);
+  NavigateViaLinkClickToURLAndWait(browser(), url);
   webapps::AppId app_id = InstallShortcutAppForCurrentUrl();
   EXPECT_EQ(registrar().GetAppStartUrl(app_id), url);
 }
@@ -268,7 +269,7 @@ IN_PROC_BROWSER_TEST_F(CreateShortcutBrowserTest, IgnoreInvalidManifestData) {
 IN_PROC_BROWSER_TEST_F(CreateShortcutBrowserTest,
                        DISABLED_CreateShortcutAgainOverwriteUserDisplayMode) {
   base::UserActionTester user_action_tester;
-  NavigateToURLAndWait(browser(), GetInstallableAppURL());
+  NavigateViaLinkClickToURLAndWait(browser(), GetInstallableAppURL());
 
   webapps::AppId app_id = InstallShortcutAppForCurrentUrl();
   EXPECT_EQ(registrar().GetAppShortName(app_id), GetInstallableAppName());
@@ -293,7 +294,7 @@ IN_PROC_BROWSER_TEST_F(CreateShortcutBrowserTest,
 IN_PROC_BROWSER_TEST_F(CreateShortcutBrowserTest,
                        DISABLED_OpenShortcutWindowOnlyOnce) {
   base::UserActionTester user_action_tester;
-  NavigateToURLAndWait(browser(), GetInstallableAppURL());
+  NavigateViaLinkClickToURLAndWait(browser(), GetInstallableAppURL());
 
   WebAppTestInstallObserver observer(profile());
   // The "Create shortcut" call is executed twice, but the dialog
@@ -308,8 +309,8 @@ IN_PROC_BROWSER_TEST_F(CreateShortcutBrowserTest,
 // letter icon correctly and does not use the "H" letter from the "https"
 // scheme.
 IN_PROC_BROWSER_TEST_F(CreateShortcutBrowserTest, UseHostWhenTitleIsUrl) {
-  NavigateToURLAndWait(browser(),
-                       https_server()->GetURL("example.com", "/empty.html"));
+  NavigateViaLinkClickToURLAndWait(
+      browser(), https_server()->GetURL("example.com", "/empty.html"));
   webapps::AppId app_id = InstallShortcutAppForCurrentUrl();
 
   base::test::TestFuture<std::map<SquareSizePx, SkBitmap>> future;
@@ -349,7 +350,7 @@ class CreateShortcutBrowserTest_CreateShortcutIgnoresManifest
 IN_PROC_BROWSER_TEST_P(CreateShortcutBrowserTest_CreateShortcutIgnoresManifest,
                        InstallableSiteDifferentStartUrl) {
   bool create_shortcut_ignores_manifest = GetParam();
-  NavigateToURLAndWait(browser(), PageWithDifferentStartUrl());
+  NavigateViaLinkClickToURLAndWait(browser(), PageWithDifferentStartUrl());
   webapps::AppId app_id = InstallShortcutAppForCurrentUrl();
 
   EXPECT_EQ(registrar().GetAppUserDisplayMode(app_id),
@@ -382,7 +383,7 @@ IN_PROC_BROWSER_TEST_P(CreateShortcutBrowserTest_CreateShortcutIgnoresManifest,
 
 IN_PROC_BROWSER_TEST_P(CreateShortcutBrowserTest_CreateShortcutIgnoresManifest,
                        CanInstallOverTabShortcutApp) {
-  NavigateToURLAndWait(browser(), GetInstallableAppURL());
+  NavigateViaLinkClickToURLAndWait(browser(), GetInstallableAppURL());
   webapps::AppId shortcut_app_id = InstallShortcutAppForCurrentUrl();
 
   bool create_shortcut_ignores_manifest = GetParam();

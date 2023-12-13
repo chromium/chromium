@@ -426,7 +426,8 @@ IN_PROC_BROWSER_TEST_F(MLPromotionBrowserTest, ManifestUpdateChangesUKM) {
 
   // Restart the pipeline by navigating to about::blank and then navigating back
   // to the no manifest page.
-  web_app::NavigateToURLAndWait(browser(), GURL(url::kAboutBlankURL));
+  web_app::NavigateViaLinkClickToURLAndWait(browser(),
+                                            GURL(url::kAboutBlankURL));
 
   NavigateUpdateManifestAndAwaitDelayedTaskPending(
       GetUrlWithNoManifest(), GetManifestUrlForNoManifestTestPage());
@@ -614,7 +615,8 @@ IN_PROC_BROWSER_TEST_F(MLPromotionBrowserTest, PageLoadVerifyFaviconUpdate) {
 
   // Navigate to a different page to reset the site URL the pipeline needs to be
   // triggered from.
-  web_app::NavigateToURLAndWait(browser(), GURL(url::kAboutBlankURL));
+  web_app::NavigateViaLinkClickToURLAndWait(browser(),
+                                            GURL(url::kAboutBlankURL));
 
   // Add favicons to page after loading and trigger pipeline for testing.
   UpdateFaviconAndRunPipelinePendingDelayedTask(GetUrlWithNoManifest());
@@ -680,7 +682,8 @@ IN_PROC_BROWSER_TEST_F(MLPromotionBrowserTest, MLInstallEmptyPageNoIcons) {
   ExpectTrainingResult(TrainingRequestId(1ll),
                        MlInstallResponse::kBlockedGuardrails);
   // Doing another navigation should now trigger the guardrail blocked signal.
-  web_app::NavigateToURLAndWait(browser(), GURL(url::kAboutBlankURL));
+  web_app::NavigateViaLinkClickToURLAndWait(browser(),
+                                            GURL(url::kAboutBlankURL));
 }
 
 // Test for crbug.com/1472629, where an already open dialog would cause
@@ -706,7 +709,7 @@ IN_PROC_BROWSER_TEST_F(MLPromotionBrowserTest,
   task_runner_->RunPendingTasks();
 
   // Refreshing the page should exit the pipeline early, and should not crash.
-  web_app::NavigateToURLAndWait(browser(), GetInstallableAppURL());
+  web_app::NavigateViaLinkClickToURLAndWait(browser(), GetInstallableAppURL());
   task_runner_->RunPendingTasks();
 }
 
@@ -844,7 +847,8 @@ IN_PROC_BROWSER_TEST_P(MLPromotionInstallDialogBrowserTest,
   ExpectTrainingResult(TrainingRequestId(1ll), MlInstallResponse::kIgnored);
 
   views::test::WidgetDestroyedWaiter destroyed(widget);
-  web_app::NavigateToURLAndWait(browser(), GURL(url::kAboutBlankURL));
+  web_app::NavigateViaLinkClickToURLAndWait(browser(),
+                                            GURL(url::kAboutBlankURL));
   destroyed.Wait();
 
   provider().command_manager().AwaitAllCommandsCompleteForTesting();
@@ -1008,7 +1012,8 @@ IN_PROC_BROWSER_TEST_P(MLPromotionInstallDialogBrowserTest,
   provider().command_manager().AwaitAllCommandsCompleteForTesting();
   EXPECT_TRUE(provider().registrar_unsafe().is_empty());
 
-  web_app::NavigateToURLAndWait(browser(), GURL(url::kAboutBlankURL));
+  web_app::NavigateViaLinkClickToURLAndWait(browser(),
+                                            GURL(url::kAboutBlankURL));
 
   // Test that guardrails now block the install.
   NavigateAndAwaitMetricsCollectionPending(GetUrlBasedOnDialogState());
@@ -1025,7 +1030,8 @@ IN_PROC_BROWSER_TEST_P(MLPromotionInstallDialogBrowserTest,
   ExpectTrainingResult(TrainingRequestId(2ll),
                        MlInstallResponse::kBlockedGuardrails, web_contents());
   // Doing another navigation should now trigger the guardrail blocked signal.
-  web_app::NavigateToURLAndWait(browser(), GURL(url::kAboutBlankURL));
+  web_app::NavigateViaLinkClickToURLAndWait(browser(),
+                                            GURL(url::kAboutBlankURL));
 }
 
 IN_PROC_BROWSER_TEST_P(MLPromotionInstallDialogBrowserTest,
@@ -1062,7 +1068,8 @@ IN_PROC_BROWSER_TEST_P(MLPromotionInstallDialogBrowserTest,
   provider().command_manager().AwaitAllCommandsCompleteForTesting();
   EXPECT_TRUE(provider().registrar_unsafe().is_empty());
 
-  web_app::NavigateToURLAndWait(browser(), GURL(url::kAboutBlankURL));
+  web_app::NavigateViaLinkClickToURLAndWait(browser(),
+                                            GURL(url::kAboutBlankURL));
 
   // Navigate back to the app url to re-trigger the ml pipeline.
   ExpectClasificationCallReturnResult(
@@ -1113,7 +1120,8 @@ IN_PROC_BROWSER_TEST_P(MLPromotionInstallDialogBrowserTest,
   provider().command_manager().AwaitAllCommandsCompleteForTesting();
   EXPECT_TRUE(provider().registrar_unsafe().is_empty());
 
-  web_app::NavigateToURLAndWait(browser(), GURL(url::kAboutBlankURL));
+  web_app::NavigateViaLinkClickToURLAndWait(browser(),
+                                            GURL(url::kAboutBlankURL));
 
   // Navigate back to the app url to re-trigger the ml pipeline.
   ExpectClasificationCallReturnResult(

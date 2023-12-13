@@ -195,7 +195,7 @@ IN_PROC_BROWSER_TEST_F(WebAppTabStripBrowserTest,
 IN_PROC_BROWSER_TEST_F(WebAppTabStripBrowserTest, PopOutTabOnInstall) {
   GURL start_url = embedded_test_server()->GetURL("/web_apps/basic.html");
 
-  NavigateToURLAndWait(browser(), start_url);
+  NavigateViaLinkClickToURLAndWait(browser(), start_url);
 
   // Install the site with the user display mode set to kTabbed.
   webapps::AppId app_id;
@@ -1370,7 +1370,7 @@ IN_PROC_BROWSER_TEST_F(WebAppTabStripOriginTrialBrowserTest, OriginTrial) {
     UpdateAwaiter update_awaiter(provider.install_manager());
 
     serve_token = false;
-    NavigateToURLAndWait(browser(), GURL(kTestWebAppUrl));
+    NavigateViaLinkClickToURLAndWait(browser(), GURL(kTestWebAppUrl));
 
     update_awaiter.AwaitUpdate();
   }

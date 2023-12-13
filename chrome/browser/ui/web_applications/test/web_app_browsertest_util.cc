@@ -143,7 +143,7 @@ webapps::AppId InstallWebAppFromManifest(Browser* browser,
                                          const GURL& app_url) {
   ServiceWorkerRegistrationWaiter registration_waiter(browser->profile(),
                                                       app_url);
-  NavigateToURLAndWait(browser, app_url);
+  NavigateViaLinkClickToURLAndWait(browser, app_url);
   registration_waiter.AwaitRegistration();
 
   webapps::AppId app_id;
@@ -279,9 +279,9 @@ ExternallyManagedAppManager::InstallResult ExternallyManagedAppManagerInstall(
   return result;
 }
 
-void NavigateToURLAndWait(Browser* browser,
-                          const GURL& url,
-                          bool proceed_through_interstitial) {
+void NavigateViaLinkClickToURLAndWait(Browser* browser,
+                                      const GURL& url,
+                                      bool proceed_through_interstitial) {
   content::WebContents* web_contents =
       browser->tab_strip_model()->GetActiveWebContents();
 
@@ -318,7 +318,7 @@ void NavigateAndCheckForToolbar(Browser* browser,
                                 const GURL& url,
                                 bool expected_visibility,
                                 bool proceed_through_interstitial) {
-  NavigateToURLAndWait(browser, url, proceed_through_interstitial);
+  NavigateViaLinkClickToURLAndWait(browser, url, proceed_through_interstitial);
   EXPECT_EQ(expected_visibility,
             browser->app_controller()->ShouldShowCustomTabBar());
 }

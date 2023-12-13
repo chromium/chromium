@@ -2078,7 +2078,7 @@ void WebAppIntegrationTestDriver::NavigatePwa(Site pwa, Site to) {
   content::TestNavigationObserver url_observer(GetUrlForSite(to));
   url_observer.StartWatchingNewWebContents();
   url_observer.WatchExistingWebContents();
-  NavigateToURLAndWait(app_browser(), GetUrlForSite(to), false);
+  NavigateViaLinkClickToURLAndWait(app_browser(), GetUrlForSite(to), false);
   url_observer.Wait();
   AfterStateChangeAction();
 }

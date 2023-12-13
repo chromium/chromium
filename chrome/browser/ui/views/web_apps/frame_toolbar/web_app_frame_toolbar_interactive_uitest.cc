@@ -102,7 +102,8 @@ IN_PROC_BROWSER_TEST_P(WebAppFrameToolbarInteractiveUITest,
 
   // Test that back button is enabled after navigating to another page
   const GURL another_url("https://anothertest.org");
-  web_app::NavigateToURLAndWait(helper()->app_browser(), another_url);
+  web_app::NavigateViaLinkClickToURLAndWait(helper()->app_browser(),
+                                            another_url);
   helper()->app_browser()->command_controller()->ExecuteCommand(
       IDC_FOCUS_TOOLBAR);
   EXPECT_EQ(focus_manager->GetFocusedView()->GetID(), VIEW_ID_BACK_BUTTON);

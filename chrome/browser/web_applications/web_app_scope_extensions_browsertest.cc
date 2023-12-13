@@ -136,7 +136,7 @@ class WebAppScopeExtensionsBrowserTest : public WebAppNavigationBrowserTest {
 
   bool WebAppCapturesUrl(const GURL& url) {
     CHECK_NE(url, unrelated_url_);
-    NavigateToURLAndWait(browser(), unrelated_url_);
+    NavigateViaLinkClickToURLAndWait(browser(), unrelated_url_);
 
     ui_test_utils::BrowserChangeObserver browser_observer(
         /*browser=*/nullptr,

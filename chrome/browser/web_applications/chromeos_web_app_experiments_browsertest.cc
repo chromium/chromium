@@ -84,7 +84,7 @@ IN_PROC_BROWSER_TEST_F(ChromeOsWebAppExperimentsBrowserTest,
   // Check that the out of scope banner doesn't show after navigating to the
   // different scope in the web app window.
   Browser* app_browser = LaunchWebAppBrowser(app_id_);
-  NavigateToURLAndWait(app_browser, extended_scope_page_);
+  NavigateViaLinkClickToURLAndWait(app_browser, extended_scope_page_);
   EXPECT_FALSE(app_browser->app_controller()->ShouldShowCustomTabBar());
 }
 

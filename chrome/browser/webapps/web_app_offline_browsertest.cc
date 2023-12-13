@@ -72,7 +72,7 @@ class WebAppOfflineTest : public InProcessBrowserTest {
   webapps::AppId StartWebAppAndDisconnect(content::WebContents* web_contents,
                                           base::StringPiece relative_url) {
     GURL target_url(embedded_test_server()->GetURL(relative_url));
-    web_app::NavigateToURLAndWait(browser(), target_url);
+    web_app::NavigateViaLinkClickToURLAndWait(browser(), target_url);
     webapps::AppId app_id = web_app::test::InstallPwaForCurrentUrl(browser());
     WebAppIconWaiter(browser()->profile(), app_id).Wait();
     std::unique_ptr<content::URLLoaderInterceptor> interceptor =
@@ -91,7 +91,7 @@ class WebAppOfflineTest : public InProcessBrowserTest {
     GURL target_url(embedded_test_server()->GetURL(relative_url));
     web_app::ServiceWorkerRegistrationWaiter registration_waiter(
         browser()->profile(), target_url);
-    web_app::NavigateToURLAndWait(browser(), target_url);
+    web_app::NavigateViaLinkClickToURLAndWait(browser(), target_url);
     registration_waiter.AwaitRegistration();
     webapps::AppId app_id = web_app::test::InstallPwaForCurrentUrl(browser());
     WebAppIconWaiter(browser()->profile(), app_id).Wait();

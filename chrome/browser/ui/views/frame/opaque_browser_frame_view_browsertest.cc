@@ -297,7 +297,7 @@ class WebAppOpaqueBrowserFrameViewWindowControlsOverlayTest
     Browser* app_browser =
         web_app::LaunchWebAppBrowser(browser()->profile(), app_id);
 
-    web_app::NavigateToURLAndWait(app_browser, start_url);
+    web_app::NavigateViaLinkClickToURLAndWait(app_browser, start_url);
 
     browser_view_ = BrowserView::GetBrowserViewForBrowser(app_browser);
     views::NonClientFrameView* frame_view =

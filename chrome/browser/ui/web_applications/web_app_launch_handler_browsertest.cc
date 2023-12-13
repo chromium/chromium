@@ -259,7 +259,7 @@ IN_PROC_BROWSER_TEST_F(WebAppLaunchHandlerBrowserTest,
   // next launch doesn't navigate to start_url.
   {
     GURL in_scope_url = embedded_test_server()->GetURL("/web_apps/basic.html");
-    NavigateToURLAndWait(browser_1, in_scope_url);
+    NavigateViaLinkClickToURLAndWait(browser_1, in_scope_url);
     EXPECT_EQ(web_contents->GetLastCommittedURL(), in_scope_url);
 
     ASSERT_TRUE(SetUpNextLaunchParamsTargetUrlPromise(browser_1));
@@ -274,7 +274,7 @@ IN_PROC_BROWSER_TEST_F(WebAppLaunchHandlerBrowserTest,
   // the next launch does navigate to start_url.
   {
     GURL out_of_scope_url = embedded_test_server()->GetURL("/empty.html");
-    NavigateToURLAndWait(browser_1, out_of_scope_url);
+    NavigateViaLinkClickToURLAndWait(browser_1, out_of_scope_url);
     EXPECT_EQ(web_contents->GetLastCommittedURL(), out_of_scope_url);
 
     Browser* browser_2 = LaunchWebAppBrowserAndWait(app_id);
@@ -415,7 +415,7 @@ IN_PROC_BROWSER_TEST_F(WebAppLaunchHandlerBrowserTest,
   // initial navigation.
   Browser* app_browser = LaunchWebAppBrowserAndWait(app_id);
   GURL out_of_scope_url = embedded_test_server()->GetURL("/empty.html");
-  NavigateToURLAndWait(app_browser, out_of_scope_url);
+  NavigateViaLinkClickToURLAndWait(app_browser, out_of_scope_url);
   content::WebContents* web_contents =
       app_browser->tab_strip_model()->GetActiveWebContents();
   EXPECT_EQ(web_contents->GetLastCommittedURL(), out_of_scope_url);
