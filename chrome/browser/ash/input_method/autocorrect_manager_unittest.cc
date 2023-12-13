@@ -2871,6 +2871,7 @@ INSTANTIATE_TEST_SUITE_P(
         AutocorrectSuggestionProvider::kUsEnglishPrebundled,
         AutocorrectSuggestionProvider::kUsEnglishDownloaded,
         AutocorrectSuggestionProvider::kUsEnglish840,
+        AutocorrectSuggestionProvider::kUsEnglish840V2,
     }),
     [](const testing::TestParamInfo<AutocorrectSuggestionProvider> info) {
       return ToString(info.param);
@@ -2956,16 +2957,31 @@ TEST_F(AutocorrectManagerTest,
   EXPECT_TRUE(manager_.DisabledByInvalidExperimentContext());
 }
 
-TEST_F(AutocorrectManagerTest,
-       IsNotDisabledWhenUserInDefaultBucketAndAllRequiredConstraintsMet) {
+class EnabledByValidSuggestionProvider
+    : public AutocorrectManagerTest,
+      public testing::WithParamInterface<AutocorrectSuggestionProvider> {};
+
+INSTANTIATE_TEST_SUITE_P(
+    AutocorrectManagerTest,
+    EnabledByValidSuggestionProvider,
+    testing::ValuesIn<>({
+        AutocorrectSuggestionProvider::kUsEnglish840,
+        AutocorrectSuggestionProvider::kUsEnglish840V2,
+    }),
+    [](const testing::TestParamInfo<AutocorrectSuggestionProvider> info) {
+      return ToString(info.param);
+    });
+
+TEST_P(EnabledByValidSuggestionProvider,
+       IsNotDisabledWhenUserInDefaultBucketAndValidSuggestionProviderUsed) {
+  const AutocorrectSuggestionProvider& provider = GetParam();
   feature_list_.Reset();
   feature_list_.InitWithFeatures(RequiredForAutocorrectByDefault(),
                                  DisabledFeatures());
 
   manager_.OnActivate(kUsEnglishEngineId);
   manager_.OnFocus(kContextId);
-  manager_.OnConnectedToSuggestionProvider(
-      AutocorrectSuggestionProvider::kUsEnglish840);
+  manager_.OnConnectedToSuggestionProvider(provider);
 
   EXPECT_FALSE(manager_.DisabledByInvalidExperimentContext());
 }

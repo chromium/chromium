@@ -820,6 +820,10 @@ INSTANTIATE_TEST_SUITE_P(
             "DownloadedUs840",
             /*provider=*/AutocorrectSuggestionProvider::kUsEnglish840,
             /*autocorrect_enabled=*/true},
+        InputMethodMetadataCase{
+            "DownloadedUs840V2",
+            /*provider=*/AutocorrectSuggestionProvider::kUsEnglish840V2,
+            /*autocorrect_enabled=*/true},
     }),
     [](const testing::TestParamInfo<InputMethodMetadataCase> info) {
       return info.param.test_name;
