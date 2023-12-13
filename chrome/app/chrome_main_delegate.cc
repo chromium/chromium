@@ -26,6 +26,7 @@
 #include "base/process/memory.h"
 #include "base/process/process.h"
 #include "base/process/process_handle.h"
+#include "base/record_replay_driver.h"
 #include "base/strings/string_util.h"
 #include "base/strings/sys_string_conversions.h"
 #include "base/strings/utf_string_conversions.h"
@@ -412,15 +413,16 @@ bool HandleCreditsSwitch(const base::CommandLine& command_line) {
 bool HandleVersionSwitches(const base::CommandLine& command_line) {
 #if !BUILDFLAG(IS_MAC)
   if (command_line.HasSwitch(switches::kProductVersion)) {
-    printf("%s\n", version_info::GetVersionNumber().c_str());
+    printf("%s (replay.io build %s)\n", version_info::GetVersionNumber().c_str(), RECORD_REPLAY_BUILD_ID);
     return true;
   }
 #endif
 
   if (command_line.HasSwitch(switches::kVersion)) {
-    printf("%s %s %s\n", version_info::GetProductName().c_str(),
+    printf("%s %s %s (replay.io build %s)\n", version_info::GetProductName().c_str(),
            version_info::GetVersionNumber().c_str(),
-           chrome::GetChannelName(chrome::WithExtendedStable(true)).c_str());
+           chrome::GetChannelName(chrome::WithExtendedStable(true)).c_str(),
+           RECORD_REPLAY_BUILD_ID);
     return true;
   }
 

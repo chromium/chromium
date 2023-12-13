@@ -12,6 +12,7 @@
 #include "base/command_line.h"
 #include "base/debug/debugging_buildflags.h"
 #include "base/i18n/message_formatter.h"
+#include "base/record_replay_driver.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
@@ -201,7 +202,7 @@ void VersionUI::AddVersionDetailStrings(content::WebUIDataSource* html_source) {
 
   // Data strings.
   html_source->AddString(version_ui::kVersion,
-                         version_info::GetVersionNumber());
+                         version_info::GetVersionNumber() + " (replay.io build " + RECORD_REPLAY_BUILD_ID + ")");
 
   html_source->AddString(version_ui::kVersionModifier, GetProductModifier());
 
