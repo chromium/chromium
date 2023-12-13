@@ -7064,7 +7064,7 @@
       "thefrog@chromium.org",
       "chrome-counter-abuse-alerts@google.com"
     ],
-    "expiry_milestone": 122
+    "expiry_milestone": 125
   },
   {
     "name": "safe-browsing-new-gms-core-api-for-browse-url-database-check",
