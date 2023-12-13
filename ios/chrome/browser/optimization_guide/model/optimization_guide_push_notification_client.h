@@ -14,6 +14,8 @@ class ChromeBrowserState;
 
 // Abstract class to be inherited from by push notification clients which
 // utilize the OptimizationGuide push notification infrastructure.
+// TODO(b/315149599): Remove this client and migrate any tests that are not
+// already covered by Commerce client tests.
 class OptimizationGuidePushNotificationClient : public PushNotificationClient {
  public:
   OptimizationGuidePushNotificationClient(

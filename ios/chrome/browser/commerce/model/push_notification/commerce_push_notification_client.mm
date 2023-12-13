@@ -4,9 +4,11 @@
 
 #import "ios/chrome/browser/commerce/model/push_notification/commerce_push_notification_client.h"
 
+#import "base/base64.h"
 #import "base/metrics/histogram_functions.h"
 #import "base/metrics/user_metrics.h"
 #import "base/run_loop.h"
+#import "base/strings/sys_string_conversions.h"
 #import "components/bookmarks/browser/bookmark_model.h"
 #import "components/bookmarks/browser/bookmark_node.h"
 #import "components/commerce/core/price_tracking_utils.h"
@@ -15,6 +17,7 @@
 #import "ios/chrome/browser/bookmarks/model/local_or_syncable_bookmark_model_factory.h"
 #import "ios/chrome/browser/push_notification/model/push_notification_client_id.h"
 #import "ios/chrome/browser/shared/coordinator/scene/scene_state.h"
+#import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/browser/browser_list.h"
 #import "ios/chrome/browser/shared/model/browser/browser_list_factory.h"
 #import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state_manager.h"
@@ -46,10 +49,31 @@ NSString* kUntrackPriceTitle = @"Untrack price";
 }  // namespace
 
 CommercePushNotificationClient::CommercePushNotificationClient()
-    : OptimizationGuidePushNotificationClient(
-          PushNotificationClientId::kCommerce) {}
+    : PushNotificationClient(PushNotificationClientId::kCommerce) {}
 
 CommercePushNotificationClient::~CommercePushNotificationClient() = default;
+
+// static
+std::unique_ptr<optimization_guide::proto::HintNotificationPayload>
+CommercePushNotificationClient::ParseHintNotificationPayload(
+    NSString* serialized_payload_escaped) {
+  std::string serialized_payload_unescaped;
+  if (!base::Base64Decode(base::SysNSStringToUTF8(serialized_payload_escaped),
+                          &serialized_payload_unescaped)) {
+    return nullptr;
+  }
+  optimization_guide::proto::Any any;
+  if (!any.ParseFromString(serialized_payload_unescaped) || !any.has_value()) {
+    return nullptr;
+  }
+  std::unique_ptr<optimization_guide::proto::HintNotificationPayload>
+      hint_notification_payload = std::make_unique<
+          optimization_guide::proto::HintNotificationPayload>();
+  if (!hint_notification_payload->ParseFromString(any.value())) {
+    return nullptr;
+  }
+  return hint_notification_payload;
+}
 
 void CommercePushNotificationClient::HandleNotificationInteraction(
     UNNotificationResponse* notification_response) {
@@ -131,7 +155,7 @@ void CommercePushNotificationClient::HandleNotificationInteraction(
     base::RunLoop* on_complete_for_testing) {
   std::unique_ptr<optimization_guide::proto::HintNotificationPayload>
       hint_notification_payload =
-          OptimizationGuidePushNotificationClient::ParseHintNotificationPayload(
+          CommercePushNotificationClient::ParseHintNotificationPayload(
               [user_info objectForKey:kSerializedPayloadKey]);
   if (!hint_notification_payload) {
     return;
@@ -195,4 +219,13 @@ void CommercePushNotificationClient::HandleNotificationInteraction(
                                     success);
         }));
   }
+}
+
+ChromeBrowserState* CommercePushNotificationClient::GetLastUsedBrowserState() {
+  if (last_used_browser_state_for_testing_) {
+    return last_used_browser_state_for_testing_;
+  }
+  return GetApplicationContext()
+      ->GetChromeBrowserStateManager()
+      ->GetLastUsedBrowserState();
 }
