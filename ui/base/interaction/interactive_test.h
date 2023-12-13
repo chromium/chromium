@@ -5,6 +5,7 @@
 #ifndef UI_BASE_INTERACTION_INTERACTIVE_TEST_H_
 #define UI_BASE_INTERACTION_INTERACTIVE_TEST_H_
 
+#include <concepts>
 #include <functional>
 #include <memory>
 #include <type_traits>
@@ -893,7 +894,7 @@ InteractionSequence::StepBuilder InteractiveTestApi::ObserveState(
             return api->private_test_impl().AddStateObserver(
                 id, el->context(),
                 std::make_unique<Observer>(
-                    (INTERACTIVE_TEST_UNWRAP_IMPL(args, Args))...));
+                    internal::UnwrapArgument<Args>(std::move(args))...));
           },
           base::Unretained(this), id.identifier(), std::move(args)...));
   step.SetDescription("ObserveState()");
@@ -979,7 +980,7 @@ InteractiveTestApi::MultiStep InteractiveTestApi::WaitForState(
         }
         if constexpr (internal::IsReferenceWrapper<U>) {
           typed->SetTarget(testing::Matcher<T>(T(value.get())));
-        } else if constexpr (std::is_base_of_v<testing::Matcher<T>, U>) {
+        } else if constexpr (std::derived_from<U, testing::Matcher<T>>) {
           // Note that a Matcher<T> is actually a wrapper around a "matcher"
           // object, not a matcher itself.
           typed->SetTarget(value);
@@ -987,8 +988,8 @@ InteractiveTestApi::MultiStep InteractiveTestApi::WaitForState(
           // Need to wrap the "matcher" in a Matcher<T> for it to be used.
           typed->SetTarget(testing::Matcher<T>(value));
         } else {
-          typed->SetTarget(
-              testing::Matcher<T>(T(INTERACTIVE_TEST_UNWRAP_IMPL(value, U))));
+          typed->SetTarget(testing::Matcher<T>(
+              T(internal::UnwrapArgument<U>(std::move(value)))));
         }
       },
       id.identifier(), U(std::forward<V>(value)));
@@ -1026,7 +1027,8 @@ InteractiveTestApi::StepBuilder InteractiveTestApi::Log(Args... args) {
   auto step = Do(base::BindOnce(
       [](std::remove_cvref_t<Args>... args) {
         auto info = COMPACT_GOOGLE_LOG_INFO;
-        ((info.stream() << INTERACTIVE_TEST_UNWRAP_IMPL(args, Args)), ...);
+        ((info.stream() << internal::UnwrapArgument<Args>(std::move(args))),
+         ...);
       },
       std::move(args)...));
   step.SetDescription("Log()");
