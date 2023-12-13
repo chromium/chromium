@@ -13,25 +13,6 @@ class GURL;
 
 namespace commerce {
 
-// The possible ways a suggested save location can be handled. These must be
-// kept in sync with the values in enums.xml.
-enum class PageActionIconInteractionState {
-  // The icon was shown and the user clicked it.
-  kClicked = 0,
-
-  // The icon was shown and expanded before the user clicked on it.
-  kClickedExpanded = 1,
-
-  // The icon was shown but the user did not interact with it.
-  kNotClicked = 2,
-
-  // The icon was shown and expanded but the user did not interact with it.
-  kNotClickedExpanded = 3,
-
-  // This enum must be last and is only used for histograms.
-  kMaxValue = kNotClickedExpanded
-};
-
 class CommercePageActionController {
  public:
   explicit CommercePageActionController(
