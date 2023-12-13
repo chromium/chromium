@@ -18,13 +18,15 @@ namespace invalidation {
 class FCMInvalidationService : public FCMInvalidationServiceBase,
                                public IdentityProvider::Observer {
  public:
-  FCMInvalidationService(IdentityProvider* identity_provider,
-                         FCMNetworkHandlerCallback fcm_network_handler_callback,
-                         PerUserTopicSubscriptionManagerCallback
-                             per_user_topic_subscription_manager_callback,
-                         instance_id::InstanceIDDriver* instance_id_driver,
-                         PrefService* pref_service,
-                         const std::string& sender_id = {});
+  FCMInvalidationService(
+      IdentityProvider* identity_provider,
+      FCMNetworkHandlerCallback fcm_network_handler_callback,
+      FCMInvalidationListenerCallback fcm_invalidation_listener_callback,
+      PerUserTopicSubscriptionManagerCallback
+          per_user_topic_subscription_manager_callback,
+      instance_id::InstanceIDDriver* instance_id_driver,
+      PrefService* pref_service,
+      const std::string& sender_id = {});
   FCMInvalidationService(const FCMInvalidationService& other) = delete;
   FCMInvalidationService& operator=(const FCMInvalidationService& other) =
       delete;

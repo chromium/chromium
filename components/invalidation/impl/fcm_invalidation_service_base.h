@@ -35,6 +35,10 @@ using PerUserTopicSubscriptionManagerCallback =
     base::RepeatingCallback<std::unique_ptr<PerUserTopicSubscriptionManager>(
         const std::string& project_id)>;
 
+using FCMInvalidationListenerCallback =
+    base::RepeatingCallback<std::unique_ptr<FCMInvalidationListener>(
+        std::unique_ptr<FCMSyncNetworkChannel>)>;
+
 // This InvalidationService wraps the C++ Invalidation Client (FCM) library.
 // It provides invalidations for desktop platforms (Win, Mac, Linux).
 // Subclasses should implement Init to set up their initial state and call
@@ -45,6 +49,7 @@ class FCMInvalidationServiceBase : public InvalidationService,
  public:
   FCMInvalidationServiceBase(
       FCMNetworkHandlerCallback fcm_network_handler_callback,
+      FCMInvalidationListenerCallback fcm_invalidation_listener_callback,
       PerUserTopicSubscriptionManagerCallback
           per_user_topic_subscription_manager_callback,
       instance_id::InstanceIDDriver* instance_id_driver,
@@ -75,10 +80,6 @@ class FCMInvalidationServiceBase : public InvalidationService,
   void OnInvalidatorStateChange(InvalidatorState state) override;
 
  protected:
-  // Initializes with an injected listener.
-  void InitForTest(
-      std::unique_ptr<FCMInvalidationListener> invalidation_listener);
-
   // Returns true if the service is currently started and able to receive
   // invalidations.
   bool IsStarted() const;
@@ -115,6 +116,7 @@ class FCMInvalidationServiceBase : public InvalidationService,
   InvalidatorRegistrarWithMemory invalidator_registrar_;
 
   FCMNetworkHandlerCallback fcm_network_handler_callback_;
+  FCMInvalidationListenerCallback fcm_invalidation_listener_callback_;
   PerUserTopicSubscriptionManagerCallback
       per_user_topic_subscription_manager_callback_;
 

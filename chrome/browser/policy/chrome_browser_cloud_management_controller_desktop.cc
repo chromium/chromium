@@ -299,6 +299,7 @@ void ChromeBrowserCloudManagementControllerDesktop::StartInvalidations() {
           base::BindRepeating(&invalidation::FCMNetworkHandler::Create,
                               g_browser_process->gcm_driver(),
                               device_instance_id_driver_.get()),
+          base::BindRepeating(&invalidation::FCMInvalidationListener::Create),
           base::BindRepeating(
               &invalidation::PerUserTopicSubscriptionManager::Create,
               identity_provider_.get(), g_browser_process->local_state(),

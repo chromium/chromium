@@ -27,6 +27,7 @@
 #include "components/prefs/scoped_user_pref_update.h"
 #include "components/prefs/testing_pref_service.h"
 #include "components/signin/public/identity_manager/identity_test_environment.h"
+#include "fcm_sync_network_channel.h"
 #include "services/data_decoder/public/cpp/test_support/in_process_data_decoder.h"
 #include "services/network/test/test_url_loader_factory.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -56,18 +57,6 @@ class TestFCMSyncNetworkChannel : public FCMSyncNetworkChannel {
  public:
   void StartListening() override {}
   void StopListening() override {}
-};
-
-// TODO: Make FCMInvalidationListener class abstract and explicitly make all the
-// methods virtual. Provide FCMInvalidationListenerImpl and
-// FakeFCMInvalidationListener classes that will inherit from
-// FCMInvalidationListener. The reason for such a change is that
-// FCMInvalidationService relies of FCMInvalidationListener class.
-class FakeFCMInvalidationListener : public FCMInvalidationListener {
- public:
-  explicit FakeFCMInvalidationListener(
-      std::unique_ptr<FCMSyncNetworkChannel> network_channel)
-      : FCMInvalidationListener(std::move(network_channel)) {}
 };
 
 const char kApplicationName[] = "com.google.chrome.fcm.invalidations";
@@ -147,6 +136,7 @@ class FCMInvalidationServiceTest : public testing::Test {
         prefs::kInvalidationClientIDCache);
     InvalidatorRegistrarWithMemory::RegisterProfilePrefs(
         pref_service_.registry());
+    PerUserTopicSubscriptionManager::RegisterPrefs(pref_service_.registry());
   }
 
   void CreateInvalidationService() {
@@ -157,6 +147,9 @@ class FCMInvalidationServiceTest : public testing::Test {
   void CreateUninitializedInvalidationService() {
     gcm_driver_ = std::make_unique<gcm::FakeGCMDriver>();
 
+    identity_test_env_.MakePrimaryAccountAvailable("example@gmail.com",
+                                                   signin::ConsentLevel::kSync);
+    identity_test_env_.SetAutomaticIssueOfAccessTokens(true);
     identity_provider_ = std::make_unique<ProfileIdentityProvider>(
         identity_test_env_.identity_manager());
 
@@ -176,30 +169,35 @@ class FCMInvalidationServiceTest : public testing::Test {
         identity_provider_.get(),
         base::BindRepeating(&FCMNetworkHandler::Create, gcm_driver_.get(),
                             mock_instance_id_driver_.get()),
+        base::BindRepeating(
+            [](raw_ptr<FCMInvalidationListener>& stored_listener,
+               std::unique_ptr<FCMSyncNetworkChannel> channel) {
+              auto listener = std::make_unique<FCMInvalidationListener>(
+                  std::make_unique<TestFCMSyncNetworkChannel>());
+              stored_listener = listener.get();
+
+              return listener;
+            },
+            std::ref(listener_)),
         base::BindRepeating(&PerUserTopicSubscriptionManager::Create,
                             identity_provider_.get(), &pref_service_,
                             &url_loader_factory_),
         mock_instance_id_driver_.get(), &pref_service_, kSenderId);
   }
 
-  void InitializeInvalidationService() {
-    auto fake_listener = std::make_unique<FakeFCMInvalidationListener>(
-        std::make_unique<TestFCMSyncNetworkChannel>());
-    fake_listener_ = fake_listener.get();
-    invalidation_service_->InitForTest(std::move(fake_listener));
-  }
+  void InitializeInvalidationService() { invalidation_service_->Init(); }
 
   FCMInvalidationService* GetInvalidationService() {
     return invalidation_service_.get();
   }
 
   void TriggerOnInvalidatorStateChange(InvalidatorState state) {
-    fake_listener_->EmitStateChangeForTest(state);
+    listener_->EmitStateChangeForTest(state);
   }
 
   template <class... Inv>
   void TriggerOnIncomingInvalidation(Inv... inv) {
-    (fake_listener_->EmitSavedInvalidationForTest(inv), ...);
+    (listener_->EmitSavedInvalidationForTest(inv), ...);
   }
 
   base::test::TaskEnvironment task_environment_;
@@ -215,8 +213,7 @@ class FCMInvalidationServiceTest : public testing::Test {
   // The service has to be below the provider since the service keeps
   // a non-owned pointer to the provider.
   std::unique_ptr<FCMInvalidationService> invalidation_service_;
-  raw_ptr<FCMInvalidationListener, DanglingUntriaged>
-      fake_listener_;  // Owned by the service.
+  raw_ptr<FCMInvalidationListener> listener_;  // Owned by the service.
 };
 
 // Initialize the invalidator, register a handler, register some IDs for that
@@ -493,6 +490,10 @@ TEST_F(FCMInvalidationServiceTest, ClearsInstanceIDOnSignout) {
   // Sync-the-transport was running). This should trigger deleting the
   // InstanceID.
   EXPECT_CALL(*mock_instance_id_, DeleteIDImpl(_));
+  // Invalidation service owns the invalidation listener, and destroys it
+  // OnActiveAccountLogout.
+  // Resetting listener_ here, otherwise it causes dangling raw_ptr.
+  listener_ = nullptr;
   invalidation_service->OnActiveAccountLogout();
 
   // Also the cached InstanceID (aka ClientID) in the invalidation service

@@ -24,6 +24,7 @@ constexpr char kDeprecatedSyncInvalidationGCMSenderId[] = "8181035976";
 
 FCMInvalidationServiceBase::FCMInvalidationServiceBase(
     FCMNetworkHandlerCallback fcm_network_handler_callback,
+    FCMInvalidationListenerCallback fcm_invalidation_listener_callback,
     PerUserTopicSubscriptionManagerCallback
         per_user_topic_subscription_manager_callback,
     instance_id::InstanceIDDriver* instance_id_driver,
@@ -32,6 +33,8 @@ FCMInvalidationServiceBase::FCMInvalidationServiceBase(
     : sender_id_(sender_id),
       invalidator_registrar_(pref_service, sender_id_),
       fcm_network_handler_callback_(std::move(fcm_network_handler_callback)),
+      fcm_invalidation_listener_callback_(
+          std::move(fcm_invalidation_listener_callback)),
       per_user_topic_subscription_manager_callback_(
           std::move(per_user_topic_subscription_manager_callback)),
       instance_id_driver_(instance_id_driver),
@@ -125,20 +128,6 @@ void FCMInvalidationServiceBase::OnInvalidatorStateChange(
   invalidator_registrar_.UpdateInvalidatorState(state);
 }
 
-void FCMInvalidationServiceBase::InitForTest(
-    std::unique_ptr<FCMInvalidationListener> invalidation_listener) {
-  // Here we perform the equivalent of Init() and StartInvalidator(), but with
-  // some minor changes to account for the fact that we're injecting the
-  // invalidation_listener.
-
-  // StartInvalidator initializes the invalidation_listener and starts it.
-  invalidation_listener_ = std::move(invalidation_listener);
-  invalidation_listener_->StartForTest(this);
-
-  PopulateClientID();
-  DoUpdateSubscribedTopicsIfNeeded();
-}
-
 bool FCMInvalidationServiceBase::IsStarted() const {
   return invalidation_listener_ != nullptr;
 }
@@ -158,7 +147,7 @@ void FCMInvalidationServiceBase::StartInvalidator() {
   // handler for the incoming messages, which is crucial on Android, because on
   // the startup cached messages might exists.
   invalidation_listener_ =
-      std::make_unique<FCMInvalidationListener>(std::move(network));
+      fcm_invalidation_listener_callback_.Run(std::move(network));
   auto subscription_manager =
       per_user_topic_subscription_manager_callback_.Run(sender_id_);
   invalidation_listener_->Start(this, std::move(subscription_manager));

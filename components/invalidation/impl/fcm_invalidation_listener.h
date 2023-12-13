@@ -50,6 +50,10 @@ class FCMInvalidationListener
       delete;
   ~FCMInvalidationListener() override;
 
+  // Creates a FCMInvalidationListener instance.
+  static std::unique_ptr<FCMInvalidationListener> Create(
+      std::unique_ptr<FCMSyncNetworkChannel> network_channel);
+
   void Start(Delegate* delegate,
              std::unique_ptr<PerUserTopicSubscriptionManager>
                  per_user_topic_subscription_manager);
@@ -76,7 +80,6 @@ class FCMInvalidationListener
   void OnSubscriptionRequestStarted(Topic topic) override;
   void OnSubscriptionRequestFinished(Topic topic, Status code) override;
 
-  void StartForTest(Delegate* delegate);
   void EmitStateChangeForTest(InvalidatorState state);
   void EmitSavedInvalidationForTest(const Invalidation& invalidation);
 

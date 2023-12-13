@@ -13,12 +13,14 @@ namespace invalidation {
 FCMInvalidationService::FCMInvalidationService(
     IdentityProvider* identity_provider,
     FCMNetworkHandlerCallback fcm_network_handler_callback,
+    FCMInvalidationListenerCallback fcm_invalidation_listener_callback,
     PerUserTopicSubscriptionManagerCallback
         per_user_topic_subscription_manager_callback,
     instance_id::InstanceIDDriver* instance_id_driver,
     PrefService* pref_service,
     const std::string& sender_id)
     : FCMInvalidationServiceBase(fcm_network_handler_callback,
+                                 fcm_invalidation_listener_callback,
                                  per_user_topic_subscription_manager_callback,
                                  instance_id_driver,
                                  pref_service,
