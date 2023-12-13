@@ -23790,6 +23790,13 @@ Called by update_permissions_policy_enum.py.-->
   <int value="15" label="CHALLENGE_RESPONSE_REQUIRED"/>
 </enum>
 
+<enum name="GpuBlockedReason">
+  <int value="0" label="GPU config error"/>
+  <int value="1" label="Blocklisted"/>
+  <int value="2" label="Blocklisted for CPU adapter"/>
+  <int value="3" label="Not blocked"/>
+</enum>
+
 <enum name="GpuImageUsageState">
   <int value="0" label="Wasted, once"/>
   <int value="1" label="Used, once"/>

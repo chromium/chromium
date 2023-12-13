@@ -7250,6 +7250,16 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
+<histogram name="OnDeviceModel.GpuBlockedReason" enum="GpuBlockedReason"
+    expires_after="2024-06-13">
+  <owner>cduvall@chromium.org</owner>
+  <owner>sophiechang@chromium.org</owner>
+  <summary>
+    Records the reason the GPU was blocked in OnDeviceModelService. Logged
+    whenever ChromeML::IsGpuBlocked() is called.
+  </summary>
+</histogram>
+
 <histogram name="OnDeviceModel.LoadModelDuration" units="ms"
     expires_after="2024-05-27">
   <owner>cduvall@chromium.org</owner>
