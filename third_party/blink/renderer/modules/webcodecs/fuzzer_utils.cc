@@ -22,6 +22,7 @@
 #include "third_party/blink/renderer/bindings/modules/v8/v8_encoded_video_chunk_init.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_plane_layout.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_union_cssimagevalue_htmlcanvaselement_htmlimageelement_htmlvideoelement_imagebitmap_offscreencanvas_svgimageelement_videoframe.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_video_color_space_init.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_video_decoder_config.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_video_decoder_init.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_video_encoder_config.h"
@@ -408,6 +409,85 @@ DOMRectInit* MakeDOMRectInit(const wc_fuzzer::DOMRectInit& proto) {
   return init;
 }
 
+VideoColorSpaceInit* MakeVideoColorSpaceInit(
+    const wc_fuzzer::VideoColorSpaceInit& proto) {
+  VideoColorSpaceInit* init = VideoColorSpaceInit::Create();
+
+  if (proto.has_primaries()) {
+    switch (proto.primaries()) {
+      case wc_fuzzer::VideoColorSpaceInit_VideoColorPrimaries_VCP_BT709:
+        init->setPrimaries("bt709");
+        break;
+      case wc_fuzzer::VideoColorSpaceInit_VideoColorPrimaries_VCP_BT470BG:
+        init->setPrimaries("bt470bg");
+        break;
+      case wc_fuzzer::VideoColorSpaceInit_VideoColorPrimaries_VCP_SMPTE170M:
+        init->setPrimaries("smpte170m");
+        break;
+      case wc_fuzzer::VideoColorSpaceInit_VideoColorPrimaries_VCP_BT2020:
+        init->setPrimaries("bt2020");
+        break;
+      case wc_fuzzer::VideoColorSpaceInit_VideoColorPrimaries_VCP_SMPTE432:
+        init->setPrimaries("smpte432");
+        break;
+    }
+  }
+
+  if (proto.has_transfer()) {
+    switch (proto.transfer()) {
+      case wc_fuzzer::
+          VideoColorSpaceInit_VideoTransferCharacteristics_VTC_BT709:
+        init->setTransfer("bt709");
+        break;
+      case wc_fuzzer::
+          VideoColorSpaceInit_VideoTransferCharacteristics_VTC_SMPTE170M:
+        init->setTransfer("smpte170m");
+        break;
+      case wc_fuzzer::
+          VideoColorSpaceInit_VideoTransferCharacteristics_VTC_IEC61966_2_1:
+        init->setTransfer("iec61966-2-1");
+        break;
+      case wc_fuzzer::
+          VideoColorSpaceInit_VideoTransferCharacteristics_VTC_LINEAR:
+        init->setTransfer("linear");
+        break;
+      case wc_fuzzer::VideoColorSpaceInit_VideoTransferCharacteristics_VTC_PQ:
+        init->setTransfer("pq");
+        break;
+      case wc_fuzzer::VideoColorSpaceInit_VideoTransferCharacteristics_VTC_HLG:
+        init->setTransfer("hlg");
+        break;
+    }
+  }
+
+  if (proto.has_matrix()) {
+    switch (proto.matrix()) {
+      case wc_fuzzer::VideoColorSpaceInit_VideoMatrixCoefficients_VMC_RGB:
+        init->setMatrix("rgb");
+        break;
+      case wc_fuzzer::VideoColorSpaceInit_VideoMatrixCoefficients_VMC_BT709:
+        init->setMatrix("bt709");
+        break;
+      case wc_fuzzer::VideoColorSpaceInit_VideoMatrixCoefficients_VMC_BT470BG:
+        init->setMatrix("bt470bg");
+        break;
+      case wc_fuzzer::VideoColorSpaceInit_VideoMatrixCoefficients_VMC_SMPTE170M:
+        init->setMatrix("smpte170m");
+        break;
+      case wc_fuzzer::
+          VideoColorSpaceInit_VideoMatrixCoefficients_VMC_BT2020_NCL:
+        init->setMatrix("bt2020-ncl");
+        break;
+    }
+  }
+
+  if (proto.has_full_range()) {
+    init->setFullRange(proto.full_range());
+  }
+
+  return init;
+}
+
 VideoFrame* MakeVideoFrame(
     ScriptState* script_state,
     const wc_fuzzer::VideoFrameBufferInitInvocation& proto) {
@@ -464,6 +544,10 @@ VideoFrame* MakeVideoFrame(
     init->setDisplayWidth(proto.init().display_width());
   if (proto.init().has_display_height())
     init->setDisplayHeight(proto.init().display_height());
+
+  if (proto.init().has_color_space()) {
+    init->setColorSpace(MakeVideoColorSpaceInit(proto.init().color_space()));
+  }
 
   if (data.buffer) {
     HeapVector<Member<DOMArrayBuffer>> transfer;
