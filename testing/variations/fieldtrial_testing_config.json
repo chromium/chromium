@@ -2818,29 +2818,6 @@
             ]
         }
     ],
-    "BrowsingTopicsParameters": [
-        {
-            "platforms": [
-                "android",
-                "chromeos",
-                "chromeos_lacros",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "PrioritizeHighUtilityTopics",
-                    "params": {
-                        "prioritized_topics_list": "57,86,126,149,172,180,196,207,239,254,263,272,289,299,332"
-                    },
-                    "enable_features": [
-                        "BrowsingTopicsParameters"
-                    ]
-                }
-            ]
-        }
-    ],
     "BubbleMetricsApi": [
         {
             "platforms": [

@@ -401,7 +401,8 @@ const base::FeatureParam<std::string> kBrowsingTopicsDisabledTopicsList{
 // Comma separated list of Topic IDs. Prioritize these topics and their
 // descendants during top topic selection.
 const base::FeatureParam<std::string> kBrowsingTopicsPrioritizedTopicsList{
-    &kBrowsingTopicsParameters, "prioritized_topics_list", ""};
+    &kBrowsingTopicsParameters, "prioritized_topics_list",
+    "57,86,126,149,172,180,196,207,239,254,263,272,289,299,332"};
 
 // Suppresses console errors for CORS problems which report an associated
 // inspector issue anyway.

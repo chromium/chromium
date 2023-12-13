@@ -1318,6 +1318,12 @@ TEST_F(BrowsingTopicsCalculatorTest, TopicHasDistantDescendant) {
 }
 
 TEST_F(BrowsingTopicsCalculatorTest, MultipleTopTopicsHaveDescendants) {
+  // This test assumes no top topics prioritization.
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeatureWithParameters(
+      blink::features::kBrowsingTopicsParameters,
+      {{"prioritized_topics_list", ""}});
+
   base::Time begin_time = base::Time::Now();
 
   AddHistoryEntries(
