@@ -17,6 +17,10 @@ class PasswordManagerAndroidUtilTest : public testing::Test {
     pref_service_.registry()->RegisterBooleanPref(
         password_manager::prefs::kUnenrolledFromGoogleMobileServicesDueToErrors,
         false);
+    pref_service_.registry()->RegisterIntegerPref(
+        password_manager::prefs::kPasswordsUseUPMLocalAndSeparateStores,
+        static_cast<int>(
+            password_manager::prefs::UseUpmLocalAndSeparateStoresState::kOff));
   }
 
  protected:
@@ -24,53 +28,41 @@ class PasswordManagerAndroidUtilTest : public testing::Test {
 };
 
 TEST_F(PasswordManagerAndroidUtilTest,
-       UsesSplitStoresAndUPMForLocalFalseWhenFeatureDisabled) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndDisableFeature(
-      password_manager::features::
-          kUnifiedPasswordManagerLocalPasswordsAndroidNoMigration);
-
-  EXPECT_FALSE(UsesSplitStoresAndUPMForLocal(&pref_service_));
+       CanUseUPMBackendFalseWhenNotSyncingAndSplitStoresOff) {
+  EXPECT_FALSE(
+      CanUseUPMBackend(/*is_pwd_sync_enabled = */ false, &pref_service_));
 }
 
 TEST_F(PasswordManagerAndroidUtilTest,
-       UsesSplitStoresAndUPMForLocalTrueWhenFeatureEnabled) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(
-      password_manager::features::
-          kUnifiedPasswordManagerLocalPasswordsAndroidNoMigration);
-
-  EXPECT_TRUE(UsesSplitStoresAndUPMForLocal(&pref_service_));
-}
-
-TEST_F(PasswordManagerAndroidUtilTest,
-       CanUseUPMBackendFalseWhenNotSyncingAndFeatureDisabled) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndDisableFeature(
-      password_manager::features::
-          kUnifiedPasswordManagerLocalPasswordsAndroidNoMigration);
+       CanUseUPMBackendFalseWhenNotSyncingAndSplitStoresMigrationPending) {
+  pref_service_.SetInteger(
+      password_manager::prefs::kPasswordsUseUPMLocalAndSeparateStores,
+      static_cast<int>(
+          password_manager::prefs::UseUpmLocalAndSeparateStoresState::
+              kOffAndMigrationPending));
 
   EXPECT_FALSE(
       CanUseUPMBackend(/*is_pwd_sync_enabled = */ false, &pref_service_));
 }
 
 TEST_F(PasswordManagerAndroidUtilTest,
-       CanUseUPMBackendTrueWhenNotSyncingAndFeatureEnabled) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(
-      password_manager::features::
-          kUnifiedPasswordManagerLocalPasswordsAndroidNoMigration);
+       CanUseUPMBackendTrueWhenNotSyncingAndSplitStoresOn) {
+  pref_service_.SetInteger(
+      password_manager::prefs::kPasswordsUseUPMLocalAndSeparateStores,
+      static_cast<int>(
+          password_manager::prefs::UseUpmLocalAndSeparateStoresState::kOn));
 
   EXPECT_TRUE(
       CanUseUPMBackend(/*is_pwd_sync_enabled = */ false, &pref_service_));
 }
 
 TEST_F(PasswordManagerAndroidUtilTest,
-       CanUseUPMBackendTrueWhenNotSyncingAndFeatureEnabledAndUnenrolled) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(
-      password_manager::features::
-          kUnifiedPasswordManagerLocalPasswordsAndroidNoMigration);
+       CanUseUPMBackendTrueWhenNotSyncingAndSplitStoresEnabledAndUnenrolled) {
+  pref_service_.SetInteger(
+      password_manager::prefs::kPasswordsUseUPMLocalAndSeparateStores,
+      static_cast<int>(
+          password_manager::prefs::UseUpmLocalAndSeparateStoresState::kOn));
+
   pref_service_.SetBoolean(
       password_manager::prefs::kUnenrolledFromGoogleMobileServicesDueToErrors,
       true);
@@ -90,22 +82,17 @@ TEST_F(PasswordManagerAndroidUtilTest,
 }
 
 TEST_F(PasswordManagerAndroidUtilTest,
-       CanUseUPMBackendTrueWhenSyncingAndFeatureDisabled) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndDisableFeature(
-      password_manager::features::
-          kUnifiedPasswordManagerLocalPasswordsAndroidNoMigration);
-
+       CanUseUPMBackendTrueWhenSyncingAndSplitStoresDisabled) {
   EXPECT_TRUE(
       CanUseUPMBackend(/*is_pwd_sync_enabled = */ true, &pref_service_));
 }
 
 TEST_F(PasswordManagerAndroidUtilTest,
-       CanUseUPMBackendTrueWhenSyncingAndFeatureEnabled) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(
-      password_manager::features::
-          kUnifiedPasswordManagerLocalPasswordsAndroidNoMigration);
+       CanUseUPMBackendTrueWhenSyncingAndSplitStoresEnabled) {
+  pref_service_.SetInteger(
+      password_manager::prefs::kPasswordsUseUPMLocalAndSeparateStores,
+      static_cast<int>(
+          password_manager::prefs::UseUpmLocalAndSeparateStoresState::kOn));
 
   EXPECT_TRUE(
       CanUseUPMBackend(/*is_pwd_sync_enabled = */ true, &pref_service_));

@@ -33,6 +33,7 @@
 #include "components/password_manager/core/browser/password_store/password_store_built_in_backend.h"
 #include "components/password_manager/core/browser/password_store/password_store_interface.h"
 #include "components/password_manager/core/browser/password_store_factory_util.h"
+#include "components/password_manager/core/common/password_manager_pref_names.h"
 #include "components/prefs/pref_service.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/network_service_instance.h"
@@ -178,9 +179,21 @@ AccountPasswordStoreFactory::GetForProfile(Profile* profile,
   }
 
 #if BUILDFLAG(IS_ANDROID)
-  if (!password_manager_android_util::UsesSplitStoresAndUPMForLocal(
-          profile->GetPrefs())) {
-    return nullptr;
+  // UsesSplitStoresAndUPMForLocal() doesn't fit here, it returns false for
+  // kOffAndMigrationPending.
+  switch (profile->GetPrefs()->GetInteger(
+      password_manager::prefs::kPasswordsUseUPMLocalAndSeparateStores)) {
+    case static_cast<int>(
+        password_manager::prefs::UseUpmLocalAndSeparateStoresState::kOff):
+      return nullptr;
+    case static_cast<int>(
+        password_manager::prefs::UseUpmLocalAndSeparateStoresState::
+            kOffAndMigrationPending):
+    case static_cast<int>(
+        password_manager::prefs::UseUpmLocalAndSeparateStoresState::kOn):
+      break;
+    default:
+      NOTREACHED_NORETURN();
   }
 #endif
 

@@ -9,8 +9,6 @@
 
 #include "base/memory/weak_ptr.h"
 #include "base/test/metrics/histogram_tester.h"
-#include "base/test/scoped_feature_list.h"
-#include "base/test/with_feature_override.h"
 #include "chrome/browser/password_manager/android/fake_password_manager_lifecycle_helper.h"
 #include "chrome/browser/password_manager/android/password_settings_updater_android_bridge_helper.h"
 #include "components/password_manager/core/browser/features/password_features.h"
@@ -216,10 +214,13 @@ void PasswordManagerSettingsServiceAndroidImplBaseTest::RegisterPrefs() {
   test_pref_service_.registry()->RegisterBooleanPref(
       password_manager::prefs::kUnenrolledFromGoogleMobileServicesDueToErrors,
       false);
+  test_pref_service_.registry()->RegisterIntegerPref(
+      password_manager::prefs::kPasswordsUseUPMLocalAndSeparateStores,
+      static_cast<int>(
+          password_manager::prefs::UseUpmLocalAndSeparateStoresState::kOff));
 }
 
-// The tests in this suite start with the
-// `UnifiedPasswordManagerLocalPasswordsAndroidNoMigration` feature disabled.
+// This suite starts with the pref `kPasswordsUseUPMLocalAndSeparateStores` off.
 class PasswordManagerSettingsServiceAndroidImplTest
     : public PasswordManagerSettingsServiceAndroidImplBaseTest {};
 
@@ -1030,19 +1031,16 @@ TEST_F(PasswordManagerSettingsServiceAndroidImplTest,
   sync_service()->FireStateChanged();
 }
 
-// The tests in this suite start with the feature
-// `UnifiedPasswordManagerLocalPasswordsAndroidNoMigration` enabled.
+// This suite starts with the pref `kPasswordsUseUPMLocalAndSeparateStores` on.
 class PasswordManagerSettingsServiceAndroidImplTestLocalUsers
     : public PasswordManagerSettingsServiceAndroidImplBaseTest {
  protected:
-  PasswordManagerSettingsServiceAndroidImplTestLocalUsers()
-      : feature_list_(
-            password_manager::features::
-                kUnifiedPasswordManagerLocalPasswordsAndroidNoMigration) {}
-  base::test::ScopedFeatureList* feature_list() { return &feature_list_; }
-
- private:
-  base::test::ScopedFeatureList feature_list_;
+  PasswordManagerSettingsServiceAndroidImplTestLocalUsers() {
+    pref_service()->SetInteger(
+        password_manager::prefs::kPasswordsUseUPMLocalAndSeparateStores,
+        static_cast<int>(
+            password_manager::prefs::UseUpmLocalAndSeparateStoresState::kOn));
+  }
 };
 
 TEST_F(PasswordManagerSettingsServiceAndroidImplTestLocalUsers,

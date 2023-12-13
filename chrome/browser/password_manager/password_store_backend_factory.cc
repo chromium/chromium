@@ -87,13 +87,13 @@ CreateAccountPasswordStoreBackend(
       password_manager::CreateLoginDatabaseForAccountStorage(
           login_db_directory));
 #if BUILDFLAG(IS_ANDROID)
-  // The min GMS Core version required by the account backend is larger than
-  // the one checked by `CanCreateBackend`. If an account backend is being
-  // created, it means that the version check already passed before, so no
-  // need to check `CanCreateBackend` here.
-  CHECK(password_manager::PasswordStoreAndroidBackendBridgeHelper::
-            CanCreateBackend());
-  CHECK(password_manager_android_util::UsesSplitStoresAndUPMForLocal(prefs));
+  if (!password_manager::PasswordStoreAndroidBackendBridgeHelper::
+          CanCreateBackend()) {
+    // Can happen if the downstream code is not available.
+    return std::make_unique<password_manager::PasswordStoreBuiltInBackend>(
+        std::move(login_db),
+        syncer::WipeModelUponSyncDisabledBehavior::kAlways);
+  }
 
   // Note: The built-in backend is backed by the login database and Chrome
   // syncs it. As such, it expects local data to be cleared every time when

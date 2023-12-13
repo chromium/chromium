@@ -8,16 +8,24 @@
 #include "base/notreached.h"
 #include "chrome/browser/password_manager/android/password_manager_eviction_util.h"
 #include "components/password_manager/core/browser/features/password_features.h"
+#include "components/password_manager/core/common/password_manager_pref_names.h"
 
 namespace password_manager_android_util {
 
 bool UsesSplitStoresAndUPMForLocal(PrefService* pref_service) {
-  bool is_upm_local_enabled = base::FeatureList::IsEnabled(
-      password_manager::features::
-          kUnifiedPasswordManagerLocalPasswordsAndroidNoMigration);
-  // TODO(crbug.com/1495626): Replace the flag check with the readiness pref
-  // check.
-  return is_upm_local_enabled;
+  auto value =
+      static_cast<password_manager::prefs::UseUpmLocalAndSeparateStoresState>(
+          pref_service->GetInteger(
+              password_manager::prefs::kPasswordsUseUPMLocalAndSeparateStores));
+  switch (value) {
+    case password_manager::prefs::UseUpmLocalAndSeparateStoresState::kOff:
+    case password_manager::prefs::UseUpmLocalAndSeparateStoresState::
+        kOffAndMigrationPending:
+      return false;
+    case password_manager::prefs::UseUpmLocalAndSeparateStoresState::kOn:
+      return true;
+  }
+  NOTREACHED_NORETURN();
 }
 
 bool CanUseUPMBackend(bool is_pwd_sync_enabled, PrefService* pref_service) {

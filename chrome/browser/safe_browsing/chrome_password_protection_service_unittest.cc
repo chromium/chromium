@@ -39,6 +39,7 @@
 #include "components/password_manager/core/browser/password_manager_test_utils.h"
 #include "components/password_manager/core/browser/password_reuse_detector.h"
 #include "components/password_manager/core/browser/password_store/mock_password_store_interface.h"
+#include "components/password_manager/core/common/password_manager_pref_names.h"
 #include "components/prefs/pref_service.h"
 #include "components/prefs/scoped_user_pref_update.h"
 #include "components/safe_browsing/content/browser/password_protection/password_protection_commit_deferring_condition.h"
@@ -252,6 +253,18 @@ class ChromePasswordProtectionServiceTest
 
     if (base::FeatureList::IsEnabled(
             password_manager::features::kEnablePasswordsAccountStorage)) {
+#if BUILDFLAG(IS_ANDROID)
+      // TODO(crbug.com/1495626): Remove once SetUsesSplitStoresAndUPMForLocal()
+      // is implemented.
+      if (base::FeatureList::IsEnabled(
+              password_manager::features::
+                  kUnifiedPasswordManagerLocalPasswordsAndroidNoMigration)) {
+        profile()->GetPrefs()->SetInteger(
+            password_manager::prefs::kPasswordsUseUPMLocalAndSeparateStores,
+            static_cast<int>(password_manager::prefs::
+                                 UseUpmLocalAndSeparateStoresState::kOn));
+      }
+#endif
       account_password_store_ = base::WrapRefCounted(
           static_cast<password_manager::MockPasswordStoreInterface*>(
               AccountPasswordStoreFactory::GetInstance()
