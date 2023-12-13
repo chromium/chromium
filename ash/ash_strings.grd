@@ -5559,6 +5559,33 @@ Some features are limited to increase battery life.
         I'm your Google Assistant, here to help you throughout your day!
 Here are some things you can try to get started.
       </message>
+      <message name="IDS_ASH_ASSISTANT_LAUNCHER_SEARCH_IPH_CHIP_WEATHER" desc="Message shown on suggestion chip in LauncherSearchIphView to initiate a query." meaning="Query text on the button. [CHAR_LIMIT=14]">
+        Weather
+      </message>
+      <message name="IDS_ASH_ASSISTANT_LAUNCHER_SEARCH_IPH_CHIP_UNIT_CONVERSION1" desc="Message shown on suggestion chip in LauncherSearchIphView to initiate a query." meaning="Query text on the button. [CHAR_LIMIT=14]">
+        5 ft in m
+      </message>
+      <message name="IDS_ASH_ASSISTANT_LAUNCHER_SEARCH_IPH_CHIP_UNIT_CONVERSION2" desc="Message shown on suggestion chip in LauncherSearchIphView to initiate a query." meaning="Query text on the button. [CHAR_LIMIT=14]">
+        90°F in C
+      </message>
+      <message name="IDS_ASH_ASSISTANT_LAUNCHER_SEARCH_IPH_CHIP_TRANSLATION" desc="Message shown on suggestion chip in LauncherSearchIphView to initiate a query." meaning="Query text on the button. [CHAR_LIMIT=14]">
+        Hi in French
+      </message>
+      <message name="IDS_ASH_ASSISTANT_LAUNCHER_SEARCH_IPH_CHIP_DEFINITION" desc="Message shown on suggestion chip in LauncherSearchIphView to initiate a query." meaning="Query text on the button. [CHAR_LIMIT=14]">
+        Define zenith
+      </message>
+      <message name="IDS_ASH_ASSISTANT_LAUNCHER_SEARCH_IPH_CHIP_CALCULATION" desc="Message shown on suggestion chip in LauncherSearchIphView to initiate a query." meaning="Query text on the button. [CHAR_LIMIT=14]">
+        50+94/5
+      </message>
+      <message name="IDS_ASH_ASSISTANT_LAUNCHER_SEARCH_IPH_CHIP_ASSISTANT" desc="Message shown on suggestion chip in LauncherSearchIphView to open the Assistant UI." meaning="Text on the button. [CHAR_LIMIT=14]">
+        Go to Assistant
+      </message>
+      <message name="IDS_ASH_ASSISTANT_LAUNCHER_SEARCH_IPH_TITLE" desc="Text shown in LauncherSearchIphView.">
+        Search for what you need directly in Launcher
+      </message>
+      <message name="IDS_ASH_ASSISTANT_LAUNCHER_SEARCH_IPH_DESCRIPTION" desc="Description shown in LauncherSearchIphView.">
+        Here are a few suggestions to try
+      </message>
 
       <!-- For ScreenCaptureTrayItemView -->
       <message name="IDS_ASH_ADMIN_SCREEN_CAPTURE" desc="Tooltip message shown at the systray screen capture indicator when an administrator is capturing the screens.">

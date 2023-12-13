@@ -10,6 +10,7 @@
 
 #include "ash/assistant/ui/main_stage/chip_view.h"
 #include "ash/public/cpp/app_list/app_list_client.h"
+#include "ash/strings/grit/ash_strings.h"
 #include "ash/style/ash_color_id.h"
 #include "ash/style/pill_button.h"
 #include "ash/style/typography.h"
@@ -18,6 +19,7 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/rand_util.h"
 #include "chromeos/ash/services/assistant/public/cpp/assistant_enums.h"
+#include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/color/color_id.h"
 #include "ui/color/color_provider.h"
@@ -52,18 +54,6 @@ constexpr int kActionContainerBetweenChildSpacing = 8;
 
 constexpr int kNumberOfQueryChips = 3;
 
-constexpr char16_t kTitleTextPlaceholder[] = u"Title text";
-constexpr char16_t kDescriptionTextPlaceholder[] = u"Description text";
-
-constexpr char16_t kChipWeatherQueryPlaceholder[] = u"Weather";
-constexpr char16_t kChipUnitConversionQuery1Placeholder[] = u"5 ft in m";
-constexpr char16_t kChipUnitConversionQuery2Placeholder[] = u"90°F in C";
-constexpr char16_t kChipTranslationQueryPlaceholder[] = u"Hi in French";
-constexpr char16_t kChipDefinitionQueryPlaceholder[] = u"Define zenith";
-constexpr char16_t kChipCalculationQueryPlaceholder[] = u"50+94/5";
-
-constexpr char16_t kAssistantButtonPlaceholder[] = u"Go to Assistant";
-
 constexpr gfx::RoundedCornersF kBackgroundRadiiClamshellLTR = {16, 4, 16, 16};
 
 constexpr gfx::RoundedCornersF kBackgroundRadiiClamshellRTL = {4, 16, 16, 16};
@@ -92,21 +82,26 @@ std::vector<QueryType> GetQueryChips() {
   return chips;
 }
 
-std::u16string GetQueryText(QueryType type) {
+int GetQueryTextId(QueryType type) {
   switch (type) {
     case QueryType::kWeather:
-      return kChipWeatherQueryPlaceholder;
+      return IDS_ASH_ASSISTANT_LAUNCHER_SEARCH_IPH_CHIP_WEATHER;
     case QueryType::kUnitConversion1:
-      return kChipUnitConversionQuery1Placeholder;
+      return IDS_ASH_ASSISTANT_LAUNCHER_SEARCH_IPH_CHIP_UNIT_CONVERSION1;
     case QueryType::kUnitConversion2:
-      return kChipUnitConversionQuery2Placeholder;
+      return IDS_ASH_ASSISTANT_LAUNCHER_SEARCH_IPH_CHIP_UNIT_CONVERSION2;
     case QueryType::kTranslation:
-      return kChipTranslationQueryPlaceholder;
+      return IDS_ASH_ASSISTANT_LAUNCHER_SEARCH_IPH_CHIP_TRANSLATION;
     case QueryType::kDefinition:
-      return kChipDefinitionQueryPlaceholder;
+      return IDS_ASH_ASSISTANT_LAUNCHER_SEARCH_IPH_CHIP_DEFINITION;
     case QueryType::kCalculation:
-      return kChipCalculationQueryPlaceholder;
+      return IDS_ASH_ASSISTANT_LAUNCHER_SEARCH_IPH_CHIP_CALCULATION;
   }
+}
+
+std::u16string GetQueryText(QueryType type) {
+  int id = GetQueryTextId(type);
+  return l10n_util::GetStringUTF16(id);
 }
 
 }  // namespace
@@ -148,12 +143,14 @@ LauncherSearchIphView::LauncherSearchIphView(
   text_container->SetBetweenChildSpacing(kMainLayoutBetweenChildSpacing);
 
   views::Label* title_label = text_container->AddChildView(
-      std::make_unique<views::Label>(kTitleTextPlaceholder));
+      std::make_unique<views::Label>(l10n_util::GetStringUTF16(
+          IDS_ASH_ASSISTANT_LAUNCHER_SEARCH_IPH_TITLE)));
   title_label->SetHorizontalAlignment(gfx::HorizontalAlignment::ALIGN_TO_HEAD);
   title_label->SetEnabledColorId(kColorAshTextColorPrimary);
 
   views::Label* description_label = text_container->AddChildView(
-      std::make_unique<views::Label>(kDescriptionTextPlaceholder));
+      std::make_unique<views::Label>(l10n_util::GetStringUTF16(
+          IDS_ASH_ASSISTANT_LAUNCHER_SEARCH_IPH_DESCRIPTION)));
   description_label->SetEnabledColorId(kColorAshTextColorPrimary);
 
   const TypographyProvider* typography_provider = TypographyProvider::Get();
@@ -181,7 +178,8 @@ LauncherSearchIphView::LauncherSearchIphView(
         actions_container->AddChildView(std::make_unique<ash::PillButton>(
             base::BindRepeating(&LauncherSearchIphView::OpenAssistantPage,
                                 weak_ptr_factory_.GetWeakPtr()),
-            kAssistantButtonPlaceholder));
+            l10n_util::GetStringUTF16(
+                IDS_ASH_ASSISTANT_LAUNCHER_SEARCH_IPH_CHIP_ASSISTANT)));
     assistant_button->SetID(ViewId::kAssistant);
     assistant_button->SetPillButtonType(
         PillButton::Type::kDefaultLargeWithoutIcon);
