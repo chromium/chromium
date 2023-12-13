@@ -352,6 +352,13 @@ BASE_FEATURE(kSingleVideoFrameRateThrottling,
              "SingleVideoFrameRateThrottling",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// When enabled, ClientResourceProvider will take callbacks intended to be ran
+// on the Main-thread, and will batch them into a single jump to that thread.
+// Rather than each performing its own separate post task.
+BASE_FEATURE(kBatchMainThreadReleaseCallbacks,
+             "BatchMainThreadReleaseCallbacks",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 bool IsDelegatedCompositingEnabled() {
   return base::FeatureList::IsEnabled(kDelegatedCompositing);
 }

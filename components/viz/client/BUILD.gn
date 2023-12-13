@@ -43,6 +43,7 @@ viz_source_set("unit_tests") {
     "//base",
     "//base/test:test_support",
     "//components/viz/client",
+    "//components/viz/test:test_suite",
     "//components/viz/test:test_support",
     "//gpu/command_buffer/client:raster_interface",
     "//mojo/public/cpp/bindings",
