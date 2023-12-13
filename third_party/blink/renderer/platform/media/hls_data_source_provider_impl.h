@@ -30,7 +30,7 @@ class PLATFORM_EXPORT HlsDataSourceProviderImpl
   class DataSourceFactory {
    public:
     using DataSourceCb =
-        base::OnceCallback<void(std::unique_ptr<media::CrossOriginDataSource>)>;
+        base::OnceCallback<void(std::unique_ptr<media::DataSource>)>;
     virtual ~DataSourceFactory() = 0;
     virtual void CreateDataSource(GURL uri, DataSourceCb cb) = 0;
   };
@@ -49,10 +49,9 @@ class PLATFORM_EXPORT HlsDataSourceProviderImpl
   void AbortPendingReads(base::OnceClosure cb) override;
 
  private:
-  void OnDataSourceReady(
-      absl::optional<media::hls::types::ByteRange> range,
-      ReadCb callback,
-      std::unique_ptr<media::CrossOriginDataSource> data_source);
+  void OnDataSourceReady(absl::optional<media::hls::types::ByteRange> range,
+                         ReadCb callback,
+                         std::unique_ptr<media::DataSource> data_source);
   void OnStreamReleased(media::HlsDataSourceStream::StreamId stream_id);
   void DataSourceInitialized(media::HlsDataSourceStream::StreamId stream_id,
                              absl::optional<media::hls::types::ByteRange> range,
@@ -64,7 +63,7 @@ class PLATFORM_EXPORT HlsDataSourceProviderImpl
   media::HlsDataSourceStream::StreamId::Generator stream_id_generator_;
 
   base::flat_map<media::HlsDataSourceStream::StreamId,
-                 std::unique_ptr<media::CrossOriginDataSource>>
+                 std::unique_ptr<media::DataSource>>
       data_source_map_;
 
   SEQUENCE_CHECKER(sequence_checker_);

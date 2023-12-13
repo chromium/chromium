@@ -110,13 +110,22 @@ HlsDataSourceProviderImpl::~HlsDataSourceProviderImpl() {
 void HlsDataSourceProviderImpl::OnDataSourceReady(
     absl::optional<media::hls::types::ByteRange> range,
     ReadCb callback,
-    std::unique_ptr<media::CrossOriginDataSource> data_source) {
+    std::unique_ptr<media::DataSource> data_source) {
   auto stream_id = stream_id_generator_.GenerateNextId();
   auto it = data_source_map_.try_emplace(stream_id, std::move(data_source));
-  it.first->second->Initialize(
-      base::BindPostTaskToCurrentDefault(base::BindOnce(
-          &HlsDataSourceProviderImpl::DataSourceInitialized,
-          weak_factory_.GetWeakPtr(), stream_id, range, std::move(callback))));
+  // The factory may return a CrossOriginDataSource, which must be initialized.
+  // Other implementations of DataSource may not even have an Initialization
+  // method. In these cases, the factory should provide instances which are
+  // ready to use.
+  // TODO(crbug/1266991): Unify the `Initialize` method across DataSource
+  // implementations, and remove the check for CrossOriginDataSource here.
+  if (auto* cross_origin = it.first->second->GetAsCrossOriginDataSource()) {
+    cross_origin->Initialize(base::BindPostTaskToCurrentDefault(base::BindOnce(
+        &HlsDataSourceProviderImpl::DataSourceInitialized,
+        weak_factory_.GetWeakPtr(), stream_id, range, std::move(callback))));
+  } else {
+    DataSourceInitialized(stream_id, range, std::move(callback), true);
+  }
 }
 
 void HlsDataSourceProviderImpl::ReadFromUrl(
