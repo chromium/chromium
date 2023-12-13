@@ -25,6 +25,7 @@ import org.chromium.base.library_loader.LibraryLoader;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
+import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.cc.input.BrowserControlsState;
 import org.chromium.chrome.browser.back_press.BackPressManager;
@@ -94,6 +95,7 @@ public class CustomTabModalDialogTest {
     @Test
     @SmallTest
     @Features.EnableFeatures(ChromeFeatureList.CCT_TAB_MODAL_DIALOG)
+    @DisabledTest(message = "https://crbug.com/1511082")
     public void testShowAndDismissTabModalDialog() throws InterruptedException {
         Context context = getInstrumentation().getTargetContext().getApplicationContext();
         Intent intent = CustomTabsIntentTestUtils.createMinimalCustomTabIntent(context, mTestPage);
