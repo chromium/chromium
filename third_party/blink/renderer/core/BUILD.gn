@@ -1490,6 +1490,7 @@ source_set("unit_tests_v2") {
   sources += rebase_path(blink_core_tests_fullscreen, "", "fullscreen")
   sources += rebase_path(blink_core_tests_highlight, "", "highlight")
   sources += rebase_path(blink_core_tests_imagebitmap, "", "imagebitmap")
+  sources += rebase_path(blink_core_tests_input, "", "input")
   sources += rebase_path(blink_core_tests_inspector, "", "inspector")
   sources += rebase_path(blink_core_tests_intersection_observer,
                          "",
@@ -1621,6 +1622,10 @@ source_set("unit_test_support") {
     "css/css_test_helpers.cc",
     "css/css_test_helpers.h",
     "css/mock_css_paint_image_generator.h",
+    "editing/testing/editing_test_base.cc",
+    "editing/testing/editing_test_base.h",
+    "editing/testing/selection_sample.cc",
+    "editing/testing/selection_sample.h",
     "frame/frame_test_helpers.cc",
     "frame/frame_test_helpers.h",
     "html/media/html_media_test_helper.cc",
