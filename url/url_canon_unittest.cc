@@ -1778,6 +1778,103 @@ TEST(URLCanonTest, CanonicalizeStandardURL) {
   }
 }
 
+TEST(URLCanonTest, CanonicalizeNonSpecialURL) {
+  // The individual component canonicalize tests should have caught the cases
+  // for each of those components. Here, we just need to test that the various
+  // parts are included or excluded properly, and have the correct separators.
+  struct URLCase {
+    const std::string_view input;
+    const std::string_view expected;
+    bool expected_success;
+  } cases[] = {
+      // Basic cases.
+      {"git://host:80/path?a=b#ref", "git://host:80/path?a=b#ref", true},
+      {"git://host", "git://host", true},
+      {"git://host/", "git://host/", true},
+      {"git://HosT/", "git://HosT/", true},
+      {"git://..", "git://..", true},
+      {"git://../", "git://../", true},
+      {"git://../..", "git://../", true},
+
+      // Empty hosts.
+      {"git://", "git://", true},
+      {"git:///", "git:///", true},
+      {"git:////", "git:////", true},
+      {"git:///a", "git:///a", true},
+      {"git:///a/../b", "git:///b", true},
+      {"git:///..", "git:///", true},
+
+      // No hosts.
+      {"git:/", "git:/", true},
+      {"git:/a", "git:/a", true},
+      {"git:/a/../b", "git:/b", true},
+      {"git:/..", "git:/", true},
+      {"git:/../", "git:/", true},
+      {"git:/../..", "git:/", true},
+
+      // Users.
+      {"git://@host", "git://host", true},
+      {"git:// @host", "git://%20@host", true},
+      {"git://\\@host", "git://%5C@host", true},
+
+      // Paths.
+      {"git://host/path", "git://host/path", true},
+      {"git://host/p ath", "git://host/p%20ath", true},
+      {"git://host/a/../b", "git://host/b", true},
+      {"git://host/..", "git://host/", true},
+      {"git://host/../", "git://host/", true},
+      {"git://host/../..", "git://host/", true},
+      {"git://host/.", "git://host/", true},
+      {"git://host/./", "git://host/", true},
+      {"git://host/./.", "git://host/", true},
+      // Backslashes.
+      {"git://host/a\\..\\b", "git://host/a\\..\\b", true},
+
+      // IPv6.
+      {"git://[1:2:0:0:5:0:0:0]", "git://[1:2:0:0:5::]", true},
+      {"git://[1:2:0:0:5:0:0:0]/", "git://[1:2:0:0:5::]/", true},
+      {"git://[1:2:0:0:5:0:0:0]/path", "git://[1:2:0:0:5::]/path", true},
+
+      // IPv4 is unsupported.
+      {"git://127.00.0.1", "git://127.00.0.1", true},
+      {"git://127.1000.0.1", "git://127.1000.0.1", true},
+
+      // Invalid URLs.
+      {"git://@", "git://", false},
+      // Forbidden host code points.
+      {"git://<", "git://", false},
+      {"git:// /", "git:///", false},
+      // Backslashes cannot be used as host terminators.
+      {"git://host\\a/../b", "git://host/b", false},
+
+      // Opaque paths.
+      {"git:", "git:", true},
+      {"git:opaque", "git:opaque", true},
+      {"git:o p a q u e", "git:o p a q u e", true},
+      {"git: <", "git: <", true},
+      {"git:opaque/a/../b", "git:opaque/a/../b", true},
+      {"git:opaque\\a\\..\\b", "git:opaque\\a\\..\\b", true},
+      {"git:\\a", "git:\\a", true},
+      // Like URNs.
+      {"git:a:b:c:123", "git:a:b:c:123", true},
+  };
+
+  for (const auto& i : cases) {
+    SCOPED_TRACE(i.input);
+    Parsed parsed;
+    ParseNonSpecialURL(i.input.data(), i.input.size(), &parsed);
+    Parsed out_parsed;
+    std::string out_str;
+    StdStringCanonOutput output(&out_str);
+    bool success = CanonicalizeNonSpecialURL(
+        i.input.data(), i.input.size(), parsed,
+        /*query_converter=*/nullptr, output, out_parsed);
+    output.Complete();
+    EXPECT_EQ(success, i.expected_success);
+    EXPECT_EQ(out_str, i.expected);
+  }
+}
+
 // The codepath here is the same as for regular canonicalization, so we just
 // need to test that things are replaced or not correctly.
 TEST(URLCanonTest, ReplaceStandardURL) {

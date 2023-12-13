@@ -714,6 +714,22 @@ bool CanonicalizeStandardURL(const char16_t* spec,
                              CanonOutput* output,
                              Parsed* new_parsed);
 
+// Use for non-special URLs.
+COMPONENT_EXPORT(URL)
+bool CanonicalizeNonSpecialURL(const char* spec,
+                               int spec_len,
+                               const Parsed& parsed,
+                               CharsetConverter* query_converter,
+                               CanonOutput& output,
+                               Parsed& new_parsed);
+COMPONENT_EXPORT(URL)
+bool CanonicalizeNonSpecialURL(const char16_t* spec,
+                               int spec_len,
+                               const Parsed& parsed,
+                               CharsetConverter* query_converter,
+                               CanonOutput& output,
+                               Parsed& new_parsed);
+
 // Use for file URLs.
 COMPONENT_EXPORT(URL)
 bool CanonicalizeFileURL(const char* spec,

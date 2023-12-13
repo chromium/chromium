@@ -127,6 +127,8 @@ bool DoCanonicalizeFileURL(const URLComponentSource<CHAR>& source,
                            CharsetConverter* query_converter,
                            CanonOutput* output,
                            Parsed* new_parsed) {
+  DCHECK(!parsed.has_opaque_path);
+
   // Things we don't set in file: URLs.
   new_parsed->username = Component();
   new_parsed->password = Component();

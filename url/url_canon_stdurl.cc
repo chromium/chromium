@@ -20,6 +20,8 @@ bool DoCanonicalizeStandardURL(const URLComponentSource<CHAR>& source,
                                CharsetConverter* query_converter,
                                CanonOutput* output,
                                Parsed* new_parsed) {
+  DCHECK(!parsed.has_opaque_path);
+
   // Scheme: this will append the colon.
   bool success = CanonicalizeScheme(source.scheme, parsed.scheme,
                                     output, &new_parsed->scheme);
