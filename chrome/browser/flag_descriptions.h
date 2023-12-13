@@ -4438,11 +4438,6 @@ extern const char kDcheckIsFatalName[];
 extern const char kDcheckIsFatalDescription[];
 #endif  // BUILDFLAG(DCHECK_IS_CONFIGURABLE)
 
-#if BUILDFLAG(ENABLE_CARDBOARD)
-extern const char kEnableCardboardName[];
-extern const char kEnableCardboardDescription[];
-#endif  // ENABLE_CARDBOARD
-
 #if BUILDFLAG(ENABLE_NACL)
 extern const char kNaclName[];
 extern const char kNaclDescription[];

@@ -47,12 +47,6 @@ BASE_FEATURE(kWebXrSharedBuffers,
              base::FEATURE_ENABLED_BY_DEFAULT);
 #endif
 
-#if BUILDFLAG(ENABLE_CARDBOARD)
-// Controls WebXR support for the Cardboard SDK Runtime. Note that enabling
-// this will also disable the GVR runtime.
-BASE_FEATURE(kEnableCardboard, "Cardboard", base::FEATURE_ENABLED_BY_DEFAULT);
-#endif  // ENABLE_CARDBOARD
-
 #if BUILDFLAG(ENABLE_OPENXR)
 // Controls WebXR support for the OpenXR Runtime.
 BASE_FEATURE(kOpenXR,

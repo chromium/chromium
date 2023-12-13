@@ -156,8 +156,7 @@ content::XRProviderList ChromeXrIntegrationClient::GetAdditionalProviders() {
 #endif  // BUILDFLAG(ENABLE_OPENXR)
 #if BUILDFLAG(ENABLE_CARDBOARD)
   if (!preferred_vr_runtime_added &&
-      IsEnabled(command_line, switches::kWebXrRuntimeCardboard,
-                &device::features::kEnableCardboard)) {
+      IsEnabled(command_line, switches::kWebXrRuntimeCardboard)) {
     base::android::ScopedJavaLocalRef<jobject>
         j_vr_compositor_delegate_provider =
             vr::Java_VrCompositorDelegateProviderImpl_Constructor(

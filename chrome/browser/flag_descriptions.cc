@@ -7704,14 +7704,6 @@ const char kDcheckIsFatalDescription[] =
     "rather than crashing. If enabled, DCHECKs will crash the calling process.";
 #endif  // BUILDFLAG(DCHECK_IS_CONFIGURABLE)
 
-#if BUILDFLAG(ENABLE_CARDBOARD)
-const char kEnableCardboardName[] = "Enable Cardboard VR WebXR Runtime";
-const char kEnableCardboardDescription[] =
-    "Enables the use of the Cardboard SDK runtime for WebXR instead of the"
-    "Google VR Services (or GVR) runtime to start a WebXR-based immersive-vr"
-    "session.";
-#endif  // ENABLE_CARDBOARD
-
 #if BUILDFLAG(ENABLE_NACL)
 const char kNaclName[] = "Native Client";
 const char kNaclDescription[] =

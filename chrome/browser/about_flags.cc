@@ -302,10 +302,6 @@
 #include "chrome/browser/ui/cocoa/screentime/screentime_features.h"
 #endif  // BUILDFLAG(IS_MAC)
 
-#if BUILDFLAG(ENABLE_CARDBOARD)
-#include "device/vr/public/cpp/features.h"
-#endif  // ENABLE_CARDBOARD
-
 #if BUILDFLAG(ENABLE_EXTENSIONS)
 #include "chrome/browser/extensions/cws_info_service.h"
 #include "extensions/common/extension_features.h"
@@ -3976,11 +3972,6 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kVerboseLoggingInNaclDescription, kOsAll,
      MULTI_VALUE_TYPE(kVerboseLoggingInNaclChoices)},
 #endif  // ENABLE_NACL
-#if BUILDFLAG(ENABLE_CARDBOARD)
-    {"enable-cardboard", flag_descriptions::kEnableCardboardName,
-     flag_descriptions::kEnableCardboardDescription, kOsAndroid,
-     FEATURE_VALUE_TYPE(device::features::kEnableCardboard)},
-#endif  // ENABLE_CARDBOARD
 #if BUILDFLAG(ENABLE_EXTENSIONS)
     {"extensions-on-chrome-urls",
      flag_descriptions::kExtensionsOnChromeUrlsName,

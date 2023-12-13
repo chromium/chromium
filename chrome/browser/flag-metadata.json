@@ -2183,11 +2183,6 @@
     "expiry_milestone": 125
   },
   {
-    "name": "enable-cardboard",
-    "owners": [ "alcooper@chromium.org", "chrome-xr-eng@google.com"],
-    "expiry_milestone": 122
-  },
-  {
     "name": "enable-cast-streaming-av1",
     "owners": [ "jophba@chromium.org", "openscreen-eng@chromium.org" ],
     "expiry_milestone": 135
