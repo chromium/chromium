@@ -70,7 +70,13 @@ void AddFirmwareUpdateAppStrings(content::WebUIDataSource* source) {
       {"upToDate", IDS_FIRMWARE_UP_TO_DATE_TEXT},
       {"versionText", IDS_FIRMWARE_VERSION_TEXT},
       {"proceedConfirmationText", IDS_FIRMWARE_PROCEED_UPDATE_CONFIRMATION},
-      {"confirmationDisclaimer", IDS_FIRMWARE_CONFIRMATION_DISCLAIMER_TEXT}};
+      {"confirmationDisclaimer", IDS_FIRMWARE_CONFIRMATION_DISCLAIMER_TEXT},
+      {"requestIdRemoveReplug", IDS_FIRMWARE_REQUEST_ID_REMOVE_REPLUG},
+      {"requestIdRemoveUsbCable", IDS_FIRMWARE_REQUEST_ID_REMOVE_USB_CABLE},
+      {"requestIdInsertUsbCable", IDS_FIRMWARE_REQUEST_ID_INSERT_USB_CABLE},
+      {"requestIdPressUnlock", IDS_FIRMWARE_REQUEST_ID_PRESS_UNLOCK},
+      {"requestIdDoNotPowerOff", IDS_FIRMWARE_REQUEST_ID_DO_NOT_POWER_OFF},
+      {"requestIdReplugInstall", IDS_FIRMWARE_REQUEST_ID_REPLUG_INSTALL}};
 
   source->AddLocalizedStrings(kLocalizedStrings);
   source->UseStringsJs();
