@@ -31,6 +31,9 @@ BASE_FEATURE(kIPHCompanionSidePanelFeature,
 BASE_FEATURE(kIPHCompanionSidePanelRegionSearchFeature,
              "IPH_CompanionSidePanelRegionSearch",
              base::FEATURE_ENABLED_BY_DEFAULT);
+BASE_FEATURE(kIPHComposeMenuNewBadgeFeature,
+             "IPH_ComposeMenuNewBadgeFeature",
+             base::FEATURE_ENABLED_BY_DEFAULT);
 BASE_FEATURE(kIPHComposeNewBadgeFeature,
              "IPH_ComposeNewBadgeFeature",
              base::FEATURE_DISABLED_BY_DEFAULT);

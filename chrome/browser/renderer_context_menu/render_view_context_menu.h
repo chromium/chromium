@@ -18,6 +18,7 @@
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/ui/autofill/autofill_context_menu_manager.h"
+#include "chrome/browser/ui/user_education/scoped_new_badge_tracker.h"
 #include "components/compose/buildflags.h"
 #include "components/custom_handlers/protocol_handler_registry.h"
 #include "components/lens/buildflags.h"
@@ -541,6 +542,8 @@ class RenderViewContextMenu
 
   // Responsible for handling autofill related context menu items.
   autofill::AutofillContextMenuManager autofill_context_menu_manager_;
+
+  ScopedNewBadgeTracker new_badge_tracker_;
 
   base::WeakPtrFactory<RenderViewContextMenu> weak_pointer_factory_{this};
 };

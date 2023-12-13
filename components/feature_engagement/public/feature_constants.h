@@ -29,6 +29,7 @@ BASE_DECLARE_FEATURE(kIPHDummyFeature);
 BASE_DECLARE_FEATURE(kIPHBatterySaverModeFeature);
 BASE_DECLARE_FEATURE(kIPHCompanionSidePanelFeature);
 BASE_DECLARE_FEATURE(kIPHCompanionSidePanelRegionSearchFeature);
+BASE_DECLARE_FEATURE(kIPHComposeMenuNewBadgeFeature);
 BASE_DECLARE_FEATURE(kIPHComposeNewBadgeFeature);
 BASE_DECLARE_FEATURE(kIPHDesktopSharedHighlightingFeature);
 BASE_DECLARE_FEATURE(kIPHDesktopTabGroupsNewGroupFeature);

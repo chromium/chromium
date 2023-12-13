@@ -95,6 +95,8 @@ chromium-metrics-reviews@google.com.
   <variant name="IPH_CompanionSidePanelRegionSearch"
       summary="prompting users to use the region search feature in the
                companion side panel"/>
+  <variant name="IPH_ComposeMenuNewBadgeFeature"
+      summary="New badge shows on compose context menu item"/>
   <variant name="IPH_ComposeNewBadgeFeature"
       summary="New badge shows in Autofill popup entry"/>
   <variant name="IPH_ContextualPageActions_PriceTracking"

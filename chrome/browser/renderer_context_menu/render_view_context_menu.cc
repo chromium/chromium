@@ -132,8 +132,10 @@
 #include "components/autofill/core/common/password_generation_util.h"
 #include "components/autofill/core/common/unique_ids.h"
 #include "components/compose/buildflags.h"
+#include "components/compose/core/browser/compose_features.h"
 #include "components/custom_handlers/protocol_handler.h"
 #include "components/download/public/common/download_url_parameters.h"
+#include "components/feature_engagement/public/feature_constants.h"
 #include "components/feed/feed_feature_list.h"
 #include "components/google/core/common/google_util.h"
 #include "components/guest_view/browser/guest_view_base.h"
@@ -818,7 +820,8 @@ RenderViewContextMenu::RenderViewContextMenu(
       autofill_context_menu_manager_(
           autofill::PersonalDataManagerFactory::GetForProfile(GetProfile()),
           this,
-          &menu_model_) {
+          &menu_model_),
+      new_badge_tracker_(GetProfile()) {
   if (!g_custom_id_ranges_initialized) {
     g_custom_id_ranges_initialized = true;
     SetContentCustomCommandIdRange(IDC_CONTENT_CONTEXT_CUSTOM_FIRST,
@@ -2344,8 +2347,9 @@ void RenderViewContextMenu::AppendSpellingAndSearchSuggestionItems() {
       // TODO(b/303646344): Remove new feature tag when no longer new.
       menu_model_.SetIsNewFeatureAt(
           menu_model_.GetItemCount() - 1,
-          !content_type_->SupportsGroup(
-              ContextMenuContentType::ITEM_GROUP_LINK));
+          new_badge_tracker_.TryShowNewBadge(
+              feature_engagement::kIPHComposeMenuNewBadgeFeature,
+              &compose::features::kEnableCompose));
 
       render_separator = true;
     }
@@ -3391,6 +3395,7 @@ void RenderViewContextMenu::ExecuteCommand(int id, int event_flags) {
               autofill::FormRendererId(params_.form_renderer_id),
               autofill::FieldRendererId(params_.field_renderer_id),
               compose::ComposeManagerImpl::UiEntryPoint::kContextMenu);
+          new_badge_tracker_.ActionPerformed("compose_menu_item_activated");
         }
       }
       break;
