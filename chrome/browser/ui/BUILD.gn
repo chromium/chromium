@@ -4816,6 +4816,8 @@ static_library("ui") {
       "commerce/commerce_page_action_controller.h",
       "commerce/commerce_ui_tab_helper.cc",
       "commerce/commerce_ui_tab_helper.h",
+      "commerce/price_tracking_page_action_controller.cc",
+      "commerce/price_tracking_page_action_controller.h",
       "dialogs/outdated_upgrade_bubble.cc",
       "dialogs/outdated_upgrade_bubble.h",
       "plus_addresses/plus_address_creation_controller_desktop.h",
