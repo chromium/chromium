@@ -1822,6 +1822,7 @@
     ],
     "exclusive_tests": "ALL",
     "args": ["--enable-features=NoForcedFrameUpdatesForWebTests",
+             "--disable-features=KeepAliveInBrowserMigration",
              "--disable-threaded-compositing", "--disable-threaded-animation"],
     "expires": "Dec 1, 2024"
   },
@@ -2016,7 +2017,8 @@
     ],
     "exclusive_tests": "ALL",
     "args": [
-      "--enable-features=Prerender2InNewTab,Prerender2AllowActivationInBackground"
+      "--enable-features=Prerender2InNewTab,Prerender2AllowActivationInBackground",
+      "--disable-features=KeepAliveInBrowserMigration"
     ],
     "owners": ["nhiroki@chromium.org"],
     "expires": "Jul 1, 2024"
@@ -2274,7 +2276,7 @@
       "--disable-features=DeprecateUnload",
       "--disable-threaded-compositing", "--disable-threaded-animation"
     ],
-    "expires": "Dec 1, 2023"
+    "expires": "Apr 1, 2024"
   },
   {
     "prefix": "clone-for-branch2-disabled",
