@@ -71,6 +71,9 @@ class ChromeDevToolsManagerDelegate : public content::DevToolsManagerDelegate {
   // Closes browser soon, not in the current task.
   static void CloseBrowserSoon();
 
+  // Release browser keep alive allowing browser to close.
+  static void AllowBrowserToClose();
+
  private:
   friend class DevToolsManagerDelegateTest;
 
