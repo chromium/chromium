@@ -407,9 +407,9 @@ TabHoverCardBubbleView::TabHoverCardBubbleView(Tab* tab)
     footer_view_ = AddChildView(std::make_unique<FooterView>());
     footer_view_->SetProperty(
         views::kFlexBehaviorKey,
-        views::FlexSpecification(views::MinimumFlexSizeRule::kScaleToMinimum,
-                                 views::MaximumFlexSizeRule::kScaleToMaximum)
-            .WithOrder(2));
+        views::FlexSpecification(
+            footer_view_->flex_layout()->GetDefaultFlexRule())
+            .WithWeight(0));
   }
 
   // Set up layout.
@@ -558,11 +558,12 @@ void TabHoverCardBubbleView::UpdateCardContent(const Tab* tab) {
             : 0;
     show_footer =
         show_footer || show_discard_status || tab_memory_usage_in_bytes > 0;
-    const int hover_card_width = views::View::GetContentsBounds().width();
-    footer_view_->SetAlertData({alert_state_, hover_card_width});
+    footer_view_->SetAlertData({alert_state_});
+
     footer_view_->SetPerformanceData(
         {show_discard_status, tab_data.discarded_memory_savings_in_bytes,
-         tab_memory_usage_in_bytes, hover_card_width});
+         tab_memory_usage_in_bytes});
+
   } else {
     if (alert_state_ != old_alert_state) {
       std::unique_ptr<views::Label> alert_label =
@@ -625,8 +626,10 @@ std::optional<double> TabHoverCardBubbleView::GetPreviewImageCrossfadeStart() {
 }
 
 gfx::Size TabHoverCardBubbleView::CalculatePreferredSize() const {
-  gfx::Size preferred_size = GetLayoutManager()->GetPreferredSize(this);
-  preferred_size.set_width(tab_style_->GetPreviewImageSize().width());
+  const int width = tab_style_->GetPreviewImageSize().width();
+  const int height =
+      GetLayoutManager()->GetPreferredHeightForWidth(this, width);
+  const gfx::Size preferred_size(width, height);
   DCHECK(!preferred_size.IsEmpty());
   return preferred_size;
 }

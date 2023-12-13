@@ -10,20 +10,19 @@
 #include "chrome/browser/ui/tabs/tab_enums.h"
 #include "chrome/browser/ui/views/tabs/fade_view.h"
 #include "ui/base/metadata/metadata_header_macros.h"
+#include "ui/gfx/geometry/size.h"
 #include "ui/views/controls/image_view.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/layout/flex_layout.h"
 
 struct AlertFooterRowData {
   std::optional<TabAlertState> alert_state;
-  int footer_row_width = 0;
 };
 
 struct PerformanceRowData {
   bool should_show_discard_status = false;
   uint64_t memory_savings_in_bytes = 0;
   uint64_t memory_usage_in_bytes = 0;
-  int footer_row_width = 0;
 };
 
 template <typename T>
@@ -36,11 +35,12 @@ class FooterRow : public FadeWrapper<views::View, T> {
   ~FooterRow() override = default;
 
   virtual void SetContent(const ui::ImageModel& icon_image_model,
-                          std::u16string label_text,
-                          int max_footer_width);
+                          std::u16string label_text);
 
   // views::View:
   gfx::Size CalculatePreferredSize() const override;
+  gfx::Size GetMinimumSize() const override;
+  int GetHeightForWidth(int width) const override;
 
   // FadeWrapper:
   void SetFade(double percent) override;
@@ -127,8 +127,7 @@ class FooterView : public views::View {
     return performance_row_;
   }
 
-  // views::View:
-  gfx::Size GetMinimumSize() const override;
+  views::FlexLayout* flex_layout() { return flex_layout_; }
 
  private:
   raw_ptr<views::FlexLayout> flex_layout_ = nullptr;

@@ -20,6 +20,8 @@
 #include "ui/views/border.h"
 #include "ui/views/layout/flex_layout_types.h"
 #include "ui/views/layout/layout_provider.h"
+#include "ui/views/view.h"
+#include "ui/views/view_class_properties.h"
 
 namespace {
 constexpr int kIconLabelSpacing = 8;
@@ -74,31 +76,28 @@ FooterRow<T>::FooterRow(bool is_fade_out_view)
 
 template <typename T>
 void FooterRow<T>::SetContent(const ui::ImageModel& icon_image_model,
-                              std::u16string label_text,
-                              int max_footer_width) {
+                              std::u16string label_text) {
   footer_label_->SetText(label_text);
-  footer_label_->SetVisible(!label_text.empty());
   icon_->SetImage(icon_image_model);
-
-  // Need to set maximum width for the label so that enough space is allocated
-  // for the label to wrap properly
-  const int max_label_width =
-      max_footer_width - (2 * kFooterHorizontalMargins) -
-      icon_->CalculatePreferredSize().width() - kIconLabelSpacing;
-  footer_label_->SizeToFit(max_label_width);
-  views::View::InvalidateLayout();
 }
 
 template <typename T>
 gfx::Size FooterRow<T>::CalculatePreferredSize() const {
-  if (footer_label_->GetText().empty()) {
-    return gfx::Size();
-  }
+  return footer_label_->GetText().empty()
+             ? gfx::Size()
+             : views::View::CalculatePreferredSize();
+}
 
-  const gfx::Size label_size = footer_label_->GetPreferredSize();
-  const int width = icon_->GetPreferredSize().width() + label_size.width() +
-                    kIconLabelSpacing;
-  return gfx::Size(width, label_size.height());
+template <typename T>
+gfx::Size FooterRow<T>::GetMinimumSize() const {
+  return gfx::Size();
+}
+
+template <typename T>
+int FooterRow<T>::GetHeightForWidth(int width) const {
+  return footer_label_->GetText().empty()
+             ? 0
+             : views::View::GetHeightForWidth(width);
 }
 
 template <typename T>
@@ -133,10 +132,9 @@ void FadeAlertFooterRow::SetData(const AlertFooterRowData& data) {
   if (alert_state.has_value()) {
     SetContent(AlertIndicatorButton::GetTabAlertIndicatorImageForHoverCard(
                    alert_state.value()),
-               chrome::GetTabAlertStateText(alert_state.value()),
-               data.footer_row_width);
+               chrome::GetTabAlertStateText(alert_state.value()));
   } else {
-    SetContent(ui::ImageModel(), std::u16string(), data.footer_row_width);
+    SetContent(ui::ImageModel(), std::u16string());
   }
   data_ = data;
 }
@@ -178,7 +176,7 @@ void FadePerformanceFooterRow::SetData(const PerformanceRowData& data) {
                 kMemorySaverIcon, kColorHoverCardTabAlertAudioPlayingIcon,
                 GetLayoutConstant(TAB_ALERT_INDICATOR_ICON_WIDTH));
 
-  SetContent(icon_image_model, row_text, data.footer_row_width);
+  SetContent(icon_image_model, row_text);
   data_ = data;
 }
 
@@ -197,6 +195,7 @@ FooterView::FooterView() {
   flex_layout_ =
       views::View::SetLayoutManager(std::make_unique<views::FlexLayout>());
   flex_layout_->SetOrientation(views::LayoutOrientation::kVertical)
+      .SetMainAxisAlignment(views::LayoutAlignment::kStart)
       .SetCollapseMargins(true)
       .SetInteriorMargin(footer_margins)
       .SetDefault(views::kMarginsKey,
@@ -208,6 +207,18 @@ FooterView::FooterView() {
   performance_row_ = AddChildView(std::make_unique<PerformanceFadeView>(
       std::make_unique<FadePerformanceFooterRow>(/* is_fade_out_view =*/false),
       std::make_unique<FadePerformanceFooterRow>(/* is_fade_out_view =*/true)));
+
+  alert_row_->SetProperty(
+      views::kFlexBehaviorKey,
+      views::FlexSpecification(views::LayoutOrientation::kHorizontal,
+                               views::MinimumFlexSizeRule::kScaleToMinimum,
+                               views::MaximumFlexSizeRule::kUnbounded, true));
+
+  performance_row_->SetProperty(
+      views::kFlexBehaviorKey,
+      views::FlexSpecification(views::LayoutOrientation::kHorizontal,
+                               views::MinimumFlexSizeRule::kScaleToMinimum,
+                               views::MaximumFlexSizeRule::kUnbounded, true));
 
   SetBackground(
       views::CreateThemedSolidBackground(ui::kColorBubbleFooterBackground));
@@ -236,10 +247,6 @@ void FooterView::SetFade(double percent) {
 void FooterView::UpdateVisibility() {
   SetVisible(performance_row_->CalculatePreferredSize().height() > 0 ||
              alert_row_->CalculatePreferredSize().height() > 0);
-}
-
-gfx::Size FooterView::GetMinimumSize() const {
-  return gfx::Size();
 }
 
 using FadeWrapper_View_PerformanceRowData =
