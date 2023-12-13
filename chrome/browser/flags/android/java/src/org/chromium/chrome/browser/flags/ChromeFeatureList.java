@@ -747,8 +747,6 @@ public abstract class ChromeFeatureList {
             newMutableFlagWithSafeDefault(OMNIBOX_CACHE_SUGGESTION_RESOURCES, true);
     public static final MutableFlagWithSafeDefault sOmniboxHistoryClusterProvider =
             newMutableFlagWithSafeDefault(OMNIBOX_HISTORY_CLUSTER_PROVIDER, false);
-    public static final MutableFlagWithSafeDefault sOmniboxJourneysActionChipFlag =
-            newMutableFlagWithSafeDefault(OMNIBOX_HISTORY_CLUSTER_ACTION_CHIP, false);
     public static final MutableFlagWithSafeDefault sOmniboxNoopEditUrlSuggestionClicks =
             newMutableFlagWithSafeDefault(OMNIBOX_NOOP_EDIT_URL_SUGGESTION_CLICKS, false);
     public static final MutableFlagWithSafeDefault sOmniboxWarmRecycledViewPool =
@@ -761,8 +759,6 @@ public abstract class ChromeFeatureList {
             newMutableFlagWithSafeDefault(RECORD_SUPPRESSION_METRICS, true);
     public static final MutableFlagWithSafeDefault sSearchReadyOmniboxAllowQueryEdit =
             newMutableFlagWithSafeDefault(SEARCH_READY_OMNIBOX_ALLOW_QUERY_EDIT, false);
-    public static final MutableFlagWithSafeDefault sShortCircuitUnfocusAnimation =
-            newMutableFlagWithSafeDefault(SHORT_CIRCUIT_UNFOCUS_ANIMATION, false);
     public static final MutableFlagWithSafeDefault sSuppressionToolbarCaptures =
             newMutableFlagWithSafeDefault(SUPPRESS_TOOLBAR_CAPTURES, false);
     public static final MutableFlagWithSafeDefault sThumbnailPlaceholder =

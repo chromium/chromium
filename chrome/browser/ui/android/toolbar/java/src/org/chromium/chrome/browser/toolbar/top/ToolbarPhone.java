@@ -2438,9 +2438,8 @@ public class ToolbarPhone extends ToolbarLayout
                     }
                 });
         mUrlFocusLayoutAnimator.start();
-        if (!hasFocus && mLocationBar.shouldShortCircuitUnfocusAnimation()) {
+        if (!hasFocus) {
             TraceEvent.instant("ToolbarPhone.ShortCircuitUnfocusAnimation");
-            mLocationBar.onUnfocusAnimationShortCircuited();
             mUrlFocusLayoutAnimator.end();
         }
         TraceEvent.end("ToolbarPhone.triggerUrlFocusAnimation");

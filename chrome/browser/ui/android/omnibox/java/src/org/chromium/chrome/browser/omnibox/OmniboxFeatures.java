@@ -127,11 +127,6 @@ public class OmniboxFeatures {
         return ChromeFeatureList.sOmniboxMatchToolbarAndStatusBarColor.isEnabled();
     }
 
-    /** Whether Journeys suggestions should be shown as an action chip. */
-    public static boolean isJourneysActionChipEnabled() {
-        return ChromeFeatureList.sOmniboxJourneysActionChipFlag.isEnabled();
-    }
-
     /** Whether Journeys suggestions should be shown in a dedicated row. */
     public static boolean isJourneysRowUiEnabled() {
         return ChromeFeatureList.sOmniboxHistoryClusterProvider.isEnabled();
@@ -171,14 +166,6 @@ public class OmniboxFeatures {
      */
     public static boolean noopEditUrlSuggestionClicks() {
         return ChromeFeatureList.sOmniboxNoopEditUrlSuggestionClicks.isEnabled();
-    }
-
-    /**
-     * Whether the omnibox unfocus animation should be short-circuited when navigating to a
-     * suggestion in order to speed up navigation.
-     */
-    public static boolean shouldShortCircuitUnfocusAnimation() {
-        return ChromeFeatureList.sShortCircuitUnfocusAnimation.isEnabled();
     }
 
     /**
