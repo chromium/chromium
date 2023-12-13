@@ -201,7 +201,8 @@ bool AshBrowserTestStarter::PrepareEnvironmentForLacros() {
 void AshBrowserTestStarter::StartLacros(InProcessBrowserTest* test_class_obj) {
   DCHECK(HasLacrosArgument());
 
-  SetUpBrowserManager();
+  crosapi::BrowserManager::Get()->set_device_ownership_waiter_for_testing(
+      std::make_unique<crosapi::FakeDeviceOwnershipWaiter>());
 
   {
     NewLacrosWindowWatcher watcher;
@@ -212,13 +213,6 @@ void AshBrowserTestStarter::StartLacros(InProcessBrowserTest* test_class_obj) {
   initial_lacros_window_->AddObserver(this);  // For OnWindowDestroying.
 
   CHECK(crosapi::BrowserManager::Get()->IsRunning());
-}
-
-void AshBrowserTestStarter::SetUpBrowserManager() {
-  DCHECK(HasLacrosArgument());
-
-  crosapi::BrowserManager::Get()->set_device_ownership_waiter_for_testing(
-      std::make_unique<crosapi::FakeDeviceOwnershipWaiter>());
 }
 
 void AshBrowserTestStarter::OnWindowDestroying(aura::Window* window) {
