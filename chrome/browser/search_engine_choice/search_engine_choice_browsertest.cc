@@ -626,8 +626,9 @@ IN_PROC_BROWSER_TEST_F(SearchEngineChoiceBrowserTest,
   EXPECT_TRUE(service->IsShowingDialog(browser()));
 }
 
+// TODO(crbug.com/1505043): Enable and fix test flakiness.
 IN_PROC_BROWSER_TEST_F(SearchEngineChoiceBrowserTest,
-                       DialogNotShownOverSpecificBrowserTypes) {
+                       DISABLED_DialogNotShownOverSpecificBrowserTypes) {
   Profile* profile = browser()->profile();
   auto* search_engine_choice_service =
       static_cast<MockSearchEngineChoiceService*>(
