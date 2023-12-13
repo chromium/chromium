@@ -159,6 +159,19 @@ bool IsSystemAppURL(const GURL& url) {
   return kSystemURLsMap.contains(url.spec());
 }
 
+// Return converted `level`. It is converted to kBlock if it is `kWarn` and the
+// destination is a system app to avoid spamming the user with warning requests
+// for browsing a folder with warned (image) files.
+DlpRulesManager::Level ConvertSystemAppWarning(
+    DlpRulesManager::Level level,
+    const DlpFileDestination& destination) {
+  if (level == DlpRulesManager::Level::kWarn && destination.url() &&
+      IsSystemAppURL(*destination.url())) {
+    return DlpRulesManager::Level::kBlock;
+  }
+  return level;
+}
+
 }  // namespace
 
 // static
@@ -534,6 +547,8 @@ void DlpFilesControllerAsh::IsFilesTransferRestricted(
                          actual_dst, destination_pattern, rule_metadata, level);
       }
     }
+
+    level = ConvertSystemAppWarning(level, destination);
 
     switch (level) {
       case DlpRulesManager::Level::kBlock: {
