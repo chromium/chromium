@@ -57,7 +57,11 @@ absl::optional<BiddingAndAuctionResponse> BiddingAndAuctionResponse::TryParse(
     std::string* message = error_struct->FindString("message");
     if (message) {
       output.error = *message;
+    } else {
+      output.error = "Unknown server error";
     }
+    output.is_chaff = true;  // Mark it as a no-bid result.
+    return std::move(output);
   }
 
   absl::optional<bool> maybe_is_chaff = input_dict->FindBool("isChaff");

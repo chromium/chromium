@@ -4593,6 +4593,13 @@ bool InterestGroupAuction::OnParsedServerResponseImpl(
     errors_.push_back(base::StrCat({"runAdAuction(): ", *response->error}));
   }
 
+  if (response->is_chaff) {
+    // This is a place-holder response because there was no winner.
+    saved_response_.emplace();
+    saved_response_->result = AuctionResult::kNoBids;
+    return false;
+  }
+
   if (parent_) {
     // This is a multi-level auction.
     if (!response->top_level_seller) {
@@ -4621,12 +4628,6 @@ bool InterestGroupAuction::OnParsedServerResponseImpl(
     return false;
   }
 
-  if (response->is_chaff) {
-    // This is a place-holder response because there was no winner.
-    saved_response_.emplace();
-    saved_response_->result = AuctionResult::kNoBids;
-    return false;
-  }
   if (response->bid && !IsValidBid(*response->bid)) {
     errors_.push_back(base::StrCat({"runAdAuction(): Invalid bid value ",
                                     base::NumberToString(*response->bid)}));
