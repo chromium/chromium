@@ -38,8 +38,10 @@ bool ImageToBufferCopier::EnsureDestImage(const gfx::Size& size) {
     dest_shared_image_ = sii_->CreateSharedImage(
         viz::SinglePlaneFormat::kRGBA_8888, size, gfx::ColorSpace(),
         kTopLeft_GrSurfaceOrigin, kPremul_SkAlphaType,
-        gpu::SHARED_IMAGE_USAGE_GLES2, "ImageToBufferCopier",
-        gpu::kNullSurfaceHandle, gfx::BufferUsage::SCANOUT);
+        gpu::SHARED_IMAGE_USAGE_GLES2_READ |
+            gpu::SHARED_IMAGE_USAGE_GLES2_WRITE,
+        "ImageToBufferCopier", gpu::kNullSurfaceHandle,
+        gfx::BufferUsage::SCANOUT);
     CHECK(dest_shared_image_);
     gl_->WaitSyncTokenCHROMIUM(sii_->GenUnverifiedSyncToken().GetConstData());
   }

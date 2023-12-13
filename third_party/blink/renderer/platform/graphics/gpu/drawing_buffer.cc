@@ -1902,7 +1902,8 @@ scoped_refptr<DrawingBuffer::ColorBuffer> DrawingBuffer::CreateColorBuffer(
   GLenum texture_target = GL_TEXTURE_2D;
   GLuint texture_id = 0;
   std::unique_ptr<gfx::GpuMemoryBuffer> gpu_memory_buffer;
-  uint32_t usage = gpu::SHARED_IMAGE_USAGE_GLES2 |
+  uint32_t usage = gpu::SHARED_IMAGE_USAGE_GLES2_READ |
+                   gpu::SHARED_IMAGE_USAGE_GLES2_WRITE |
                    gpu::SHARED_IMAGE_USAGE_GLES2_FRAMEBUFFER_HINT |
                    gpu::SHARED_IMAGE_USAGE_DISPLAY_READ;
   if (initial_gpu_ == gl::GpuPreference::kHighPerformance)
