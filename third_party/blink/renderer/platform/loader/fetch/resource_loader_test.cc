@@ -164,7 +164,7 @@ TEST_F(ResourceLoaderTest, LoadResponseBody) {
   loader->DidReceiveResponse(WrappedResourceResponse(response),
                              std::move(consumer),
                              /*cached_metadata=*/absl::nullopt);
-  loader->DidFinishLoading(base::TimeTicks(), 0, 0, 0, false);
+  loader->DidFinishLoading(base::TimeTicks(), 0, 0, 0);
 
   uint32_t num_bytes = 2;
   result = producer->WriteData("he", &num_bytes, MOJO_WRITE_DATA_FLAG_NONE);

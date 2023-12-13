@@ -22102,11 +22102,13 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="4615" label="V8WasmMemory64"/>
   <int value="4616" label="V8WasmMultiMemory"/>
   <int value="4617" label="V8WasmGC"/>
-  <int value="4618" label="ORBBlockWithoutAnyEventHandler"/>
-  <int value="4619" label="ORBBlockWithOnErrorButWithoutOnLoadEventHandler"/>
-  <int value="4620" label="ORBBlockWithOnLoadButWithoutOnErrorEventHandler"/>
-  <int value="4621" label="ORBBlockWithOnLoadAndOnErrorEventHandler"/>
-  <int value="4622" label="ORBBlockWithAnyEventHandler"/>
+  <int value="4618" label="OBSOLETE_ORBBlockWithoutAnyEventHandler"/>
+  <int value="4619"
+      label="OBSOLETE_ORBBlockWithOnErrorButWithoutOnLoadEventHandler"/>
+  <int value="4620"
+      label="OBSOLETE_ORBBlockWithOnLoadButWithoutOnErrorEventHandler"/>
+  <int value="4621" label="OBSOLETE_ORBBlockWithOnLoadAndOnErrorEventHandler"/>
+  <int value="4622" label="OBSOLETE_ORBBlockWithAnyEventHandler"/>
   <int value="4623" label="V8RTCEncodedVideoFrame_SetMetadata_Method"/>
   <int value="4624" label="V8RTCEncodedVideoFrame_SetTimestamp_Method"/>
   <int value="4625" label="V8RTCEncodedAudioFrame_SetTimestamp_Method"/>

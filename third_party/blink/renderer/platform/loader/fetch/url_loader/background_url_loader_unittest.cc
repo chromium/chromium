@@ -280,8 +280,7 @@ class FakeURLLoaderClient : public URLLoaderClient {
   void DidFinishLoading(base::TimeTicks finishTime,
                         int64_t totalEncodedDataLength,
                         uint64_t totalEncodedBodyLength,
-                        int64_t totalDecodedBodyLength,
-                        bool should_report_corb_blocking) override {
+                        int64_t totalDecodedBodyLength) override {
     DCHECK(freezable_task_runner_->BelongsToCurrentThread());
     did_finish_ = true;
   }

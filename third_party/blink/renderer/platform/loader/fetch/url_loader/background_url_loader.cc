@@ -468,8 +468,7 @@ class BackgroundURLLoader::Context
                        encoded_body_size, status.decoded_body_length);
     } else {
       client_->DidFinishLoading(status.completion_time, total_transfer_size,
-                                encoded_body_size, status.decoded_body_length,
-                                status.should_report_corb_blocking);
+                                encoded_body_size, status.decoded_body_length);
     }
   }
 

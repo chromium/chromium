@@ -101,7 +101,7 @@ void SimRequestBase::Finish(bool body_loader_finished) {
     } else {
       client_->DidFinishLoading(
           base::TimeTicks::Now(), total_encoded_data_length_,
-          total_encoded_data_length_, total_encoded_data_length_, false);
+          total_encoded_data_length_, total_encoded_data_length_);
     }
   }
   Reset();
