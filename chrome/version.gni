@@ -53,6 +53,8 @@ if (is_mac) {
   # i.e. "riscv64" does not show up in this list, as it's a 64-bit-only target_cpu.
   if (target_cpu == "arm64" || target_cpu == "x64") {
     _version_dictionary_template +=
+        "chrome_32_version_code = \"@CHROME_32_VERSION_CODE@\" "
+    _version_dictionary_template +=
         "monochrome_32_version_code = \"@MONOCHROME_32_VERSION_CODE@\" "
     _version_dictionary_template +=
         "monochrome_32_64_version_code = \"@MONOCHROME_32_64_VERSION_CODE@\" "
@@ -64,8 +66,7 @@ if (is_mac) {
         "trichrome_32_version_code = \"@TRICHROME_32_VERSION_CODE@\" "
     _version_dictionary_template +=
         "trichrome_auto_32_version_code = \"@TRICHROME_AUTO_32_VERSION_CODE@\" "
-    _version_dictionary_template +=
-        "trichrome_auto_32_64_version_code = \"@TRICHROME_AUTO_32_64_VERSION_CODE@\" "
+    _version_dictionary_template += "trichrome_auto_32_64_version_code = \"@TRICHROME_AUTO_32_64_VERSION_CODE@\" "
     _version_dictionary_template +=
         "trichrome_32_64_version_code = \"@TRICHROME_32_64_VERSION_CODE@\" "
     _version_dictionary_template +=
@@ -148,6 +149,7 @@ if (is_mac) {
   forward_variables_from(_result,
                          [
                            "chrome_version_code",
+                           "chrome_32_version_code",
                            "monochrome_version_code",
                            "monochrome_32_version_code",
                            "monochrome_32_64_version_code",
@@ -216,7 +218,7 @@ if (is_android && current_toolchain == default_toolchain) {
     if (target_cpu == "arm64") {
       lines_to_write += [
         "TrichromeChrome6432High: $trichrome_64_32_high_version_code",
-        "TrichromeChromeAuto6432High: $trichrome_auto_64_32_high_version_code"
+        "TrichromeChromeAuto6432High: $trichrome_auto_64_32_high_version_code",
       ]
     }
     lines_to_write += [

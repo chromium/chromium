@@ -786,6 +786,7 @@ ci.builder(
     gn_args = gn_args.config(
         configs = [
             "android_builder",
+            "arm64",
             "chrome_with_codecs",
             "reclient",
             "minimal_symbols",

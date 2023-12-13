@@ -5,7 +5,7 @@
     platformBuildVersionCode="34"
     platformBuildVersionName="14"
     android:isolatedSplits="true"
-    android:versionCode="OFFSET=0"
+    android:versionCode="OFFSET=1"
     android:versionName="#.#.#.#">
   <uses-feature android:name="android.hardware.touchscreen" android:required="false"/>
   <uses-feature android:name="android.software.leanback" android:required="false"/>
@@ -21,7 +21,8 @@
       android:extractNativeLibs="false"
       android:icon="@$PACKAGE:drawable/icon_webview"
       android:label="Android System WebView"
-      android:multiArch="true">
+      android:multiArch="true"
+      android:use32bitAbi="true">
     <activity  # DIFF-ANCHOR: ea1a94af
         android:name="com.google.android.gms.common.api.GoogleApiActivity"
         android:exported="false"

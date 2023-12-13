@@ -5,7 +5,7 @@
     platformBuildVersionCode="34"
     platformBuildVersionName="14"
     android:isolatedSplits="true"
-    android:versionCode="OFFSET=20"
+    android:versionCode="OFFSET=21"
     android:versionName="#.#.#.#">
   <permission android:name="$PACKAGE.TOS_ACKED" android:protectionLevel="signatureOrSystem"/>
   <permission android:name="$PACKAGE.permission.C2D_MESSAGE" android:protectionLevel="signature"/>
@@ -92,6 +92,7 @@
       android:networkSecurityConfig="@xml/network_security_config"
       android:roundIcon="@drawable/ic_launcher_round"
       android:supportsRtl="true"
+      android:use32bitAbi="true"
       android:zygotePreloadName="org.chromium.content_public.app.ZygotePreload">
     <activity  # DIFF-ANCHOR: ea1a94af
         android:name="com.google.android.gms.common.api.GoogleApiActivity"
