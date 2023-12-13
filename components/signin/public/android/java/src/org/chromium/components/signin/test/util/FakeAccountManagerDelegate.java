@@ -59,18 +59,6 @@ public class FakeAccountManagerDelegate implements AccountManagerDelegate {
         mObserver = observer;
     }
 
-    @Deprecated
-    @Override
-    public Account[] getAccounts() {
-        ArrayList<Account> result = new ArrayList<>();
-        synchronized (mLock) {
-            for (AccountHolder ah : mAccounts) {
-                result.add(ah.getAccount());
-            }
-        }
-        return result.toArray(new Account[0]);
-    }
-
     @Override
     public Account[] getAccountsSynchronous() throws AccountManagerDelegateException {
         ArrayList<Account> result = new ArrayList<>();
