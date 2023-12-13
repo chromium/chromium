@@ -11,9 +11,12 @@ class IdentityManager;
 
 namespace drive {
 
+class DriveService;
+
 // Returns whether the Save to Drive entry point can be presented.
 bool IsSaveToDriveAvailable(bool is_incognito,
-                            signin::IdentityManager* identity_manager);
+                            signin::IdentityManager* identity_manager,
+                            drive::DriveService* drive_service);
 
 }  // namespace drive
 

@@ -27,6 +27,7 @@
 #import "ios/chrome/browser/dom_distiller/model/dom_distiller_service_factory.h"
 #import "ios/chrome/browser/download/model/background_service/background_download_service_factory.h"
 #import "ios/chrome/browser/download/model/browser_download_service_factory.h"
+#import "ios/chrome/browser/drive/model/drive_service_factory.h"
 #import "ios/chrome/browser/enterprise/model/idle/idle_service_factory.h"
 #import "ios/chrome/browser/favicon/favicon_service_factory.h"
 #import "ios/chrome/browser/favicon/ios_chrome_favicon_loader_factory.h"
@@ -70,6 +71,7 @@
 #import "ios/chrome/browser/segmentation_platform/model/segmentation_platform_service_factory.h"
 #import "ios/chrome/browser/sessions/session_restoration_service_factory.h"
 #import "ios/chrome/browser/shared/model/browser/browser_list_factory.h"
+#import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/signin/model/about_signin_internals_factory.h"
 #import "ios/chrome/browser/signin/model/account_consistency_service_factory.h"
 #import "ios/chrome/browser/signin/model/account_reconcilor_factory.h"
@@ -177,6 +179,9 @@ void EnsureBrowserStateKeyedServiceFactoriesBuilt() {
   OptimizationGuideServiceFactory::GetInstance();
   policy::UserPolicySigninServiceFactory::GetInstance();
   PhotosServiceFactory::GetInstance();
+  if (base::FeatureList::IsEnabled(kIOSSaveToDrive)) {
+    drive::DriveServiceFactory::GetInstance();
+  }
   TabsSearchServiceFactory::GetInstance();
   PushNotificationBrowserStateServiceFactory::GetInstance();
   SyncServiceFactory::GetInstance();

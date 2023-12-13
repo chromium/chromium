@@ -35,6 +35,11 @@ void DownloadManagerMediator::SetIdentityManager(
   identity_manager_ = identity_manager;
 }
 
+void DownloadManagerMediator::SetDriveService(
+    drive::DriveService* drive_service) {
+  drive_service_ = drive_service;
+}
+
 void DownloadManagerMediator::SetConsumer(
     id<DownloadManagerConsumer> consumer) {
   consumer_ = consumer;
@@ -85,9 +90,9 @@ void DownloadManagerMediator::UpdateConsumer() {
   if (base::FeatureList::IsEnabled(kIOSSaveToDrive) &&
       [consumer_
           respondsToSelector:@selector(setDownloadToDriveButtonVisible:)]) {
-    [consumer_
-        setDownloadToDriveButtonVisible:drive::IsSaveToDriveAvailable(
-                                            is_incognito_, identity_manager_)];
+    bool is_save_to_drive_available = drive::IsSaveToDriveAvailable(
+        is_incognito_, identity_manager_, drive_service_);
+    [consumer_ setDownloadToDriveButtonVisible:is_save_to_drive_available];
   }
 
   if (state == kDownloadManagerStateSucceeded) {

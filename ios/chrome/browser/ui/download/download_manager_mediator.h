@@ -12,6 +12,10 @@
 
 @protocol DownloadManagerConsumer;
 
+namespace drive {
+class DriveService;
+}
+
 namespace signin {
 class IdentityManager;
 }
@@ -36,6 +40,9 @@ class DownloadManagerMediator : public web::DownloadTaskObserver {
 
   // Sets the identity manager.
   void SetIdentityManager(signin::IdentityManager* identity_manager);
+
+  // Sets the Drive service.
+  void SetDriveService(drive::DriveService* drive_service);
 
   // Sets download manager consumer. Not retained by mediator.
   void SetConsumer(id<DownloadManagerConsumer> consumer);
@@ -76,6 +83,7 @@ class DownloadManagerMediator : public web::DownloadTaskObserver {
   void OnDownloadDestroyed(web::DownloadTask* task) override;
 
   raw_ptr<signin::IdentityManager> identity_manager_ = nullptr;
+  raw_ptr<drive::DriveService> drive_service_ = nullptr;
   bool is_incognito_;
   base::FilePath download_path_;
   raw_ptr<web::DownloadTask> task_ = nullptr;

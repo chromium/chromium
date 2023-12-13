@@ -28,6 +28,7 @@
 #import "ios/chrome/browser/download/model/download_manager_tab_helper.h"
 #import "ios/chrome/browser/download/model/external_app_util.h"
 #import "ios/chrome/browser/download/model/installation_notifier.h"
+#import "ios/chrome/browser/drive/model/drive_service_factory.h"
 #import "ios/chrome/browser/overlays/model/public/common/confirmation/confirmation_overlay_response.h"
 #import "ios/chrome/browser/overlays/model/public/overlay_callback_manager.h"
 #import "ios/chrome/browser/overlays/model/public/overlay_request_queue.h"
@@ -100,8 +101,11 @@
 
   if (base::FeatureList::IsEnabled(kIOSSaveToDrive)) {
     _mediator.SetIsIncognito(isIncognito);
-    _mediator.SetIdentityManager(IdentityManagerFactory::GetForBrowserState(
-        self.browser->GetBrowserState()));
+    ChromeBrowserState* browserState = self.browser->GetBrowserState();
+    _mediator.SetIdentityManager(
+        IdentityManagerFactory::GetForBrowserState(browserState));
+    _mediator.SetDriveService(
+        drive::DriveServiceFactory::GetForBrowserState(browserState));
   }
 
   _mediator.SetDownloadTask(_downloadTask);
@@ -119,6 +123,7 @@
 }
 
 - (void)stop {
+  _mediator.SetDriveService(nullptr);
   _mediator.SetIdentityManager(nullptr);
 
   if (_viewController) {
