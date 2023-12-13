@@ -2378,6 +2378,12 @@ std::string SerializeURTLookupResponse(const RTLookupResponse& response) {
   }
   response_dict.Set("threat_infos", std::move(threat_info_list));
 
+  base::Value::List url_categories_list;
+  for (const std::string& url_category : response.url_categories()) {
+    url_categories_list.Append(url_category);
+  }
+  response_dict.Set("url_categories", std::move(url_categories_list));
+
   std::string response_serialized;
   JSONStringValueSerializer serializer(&response_serialized);
   serializer.set_pretty_print(true);
