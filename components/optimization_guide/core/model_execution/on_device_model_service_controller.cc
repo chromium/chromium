@@ -12,6 +12,7 @@
 #include "components/optimization_guide/core/model_execution/on_device_model_execution_config_interpreter.h"
 #include "components/optimization_guide/core/model_execution/session_impl.h"
 #include "components/optimization_guide/core/model_util.h"
+#include "components/optimization_guide/core/optimization_guide_constants.h"
 #include "components/optimization_guide/core/optimization_guide_features.h"
 #include "components/optimization_guide/core/optimization_guide_switches.h"
 #include "components/optimization_guide/core/optimization_guide_util.h"
@@ -83,10 +84,15 @@ void OnDeviceModelServiceController::Init(
     const base::FilePath& model_path,
     std::unique_ptr<OnDeviceModelExecutionConfigInterpreter>
         config_interpreter) {
-  CHECK(model_path_.empty());
-  model_path_ = model_path;
+  CHECK(!model_paths_.has_value());
+  on_device_model::ModelAssetPaths model_paths;
+  model_paths.sp_model = model_path.Append(kSpModelFile);
+  model_paths.model = model_path.Append(kModelFile);
+  model_paths.weights = model_path.Append(kWeightsFile);
+  model_paths_ = std::move(model_paths);
+  // TODO(b/302395013): Add T&S model.
   config_interpreter_ = std::move(config_interpreter);
-  config_interpreter_->UpdateConfigWithFileDir(model_path_);
+  config_interpreter_->UpdateConfigWithFileDir(model_path);
 }
 
 void OnDeviceModelServiceController::Init() {
@@ -121,7 +127,7 @@ OnDeviceModelServiceController::CreateSession(
     logger.set_reason(OnDeviceModelEligibilityReason::kFeatureNotEnabled);
     return nullptr;
   }
-  if (model_path_.empty()) {
+  if (!model_paths_) {
     logger.set_reason(OnDeviceModelEligibilityReason::kModelNotAvailable);
     return nullptr;
   }
@@ -163,8 +169,7 @@ void OnDeviceModelServiceController::StartMojoSession(
     LaunchService();
     base::ThreadPool::PostTaskAndReplyWithResult(
         FROM_HERE, {base::MayBlock()},
-        base::BindOnce(&on_device_model::LoadModelAssets, model_path_,
-                       model_path_),
+        base::BindOnce(&on_device_model::LoadModelAssets, *model_paths_),
         base::BindOnce(&OnDeviceModelServiceController::OnModelAssetsLoaded,
                        weak_ptr_factory_.GetWeakPtr(),
                        model_remote_.BindNewPipeAndPassReceiver()));
@@ -203,7 +208,7 @@ void OnDeviceModelServiceController::OnModelAssetsLoaded(
 
 void OnDeviceModelServiceController::StateChanged(
     const OnDeviceModelComponentState* state) {
-  if (state && model_path_.empty()) {
+  if (state && !model_paths_) {
     Init();
   } else {
     // TODO(b/302327114): Support other cases. Decide how to handle:

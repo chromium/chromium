@@ -5,6 +5,7 @@
 #define COMPONENTS_OPTIMIZATION_GUIDE_CORE_MODEL_EXECUTION_ON_DEVICE_MODEL_SERVICE_CONTROLLER_H_
 
 #include <memory>
+#include <optional>
 #include <string_view>
 
 #include "base/memory/raw_ptr.h"
@@ -129,7 +130,7 @@ class OnDeviceModelServiceController
   std::unique_ptr<OnDeviceModelAccessController> access_controller_;
   base::WeakPtr<OnDeviceModelComponentStateManager>
       on_device_component_state_manager_;
-  base::FilePath model_path_;
+  std::optional<on_device_model::ModelAssetPaths> model_paths_;
   std::unique_ptr<OnDeviceModelExecutionConfigInterpreter> config_interpreter_;
   mojo::Remote<on_device_model::mojom::OnDeviceModelService> service_remote_;
   mojo::Remote<on_device_model::mojom::OnDeviceModel> model_remote_;

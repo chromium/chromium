@@ -8,6 +8,7 @@
 #include "base/files/scoped_temp_dir.h"
 #include "base/test/task_environment.h"
 #include "base/test/test.pb.h"
+#include "components/optimization_guide/core/optimization_guide_constants.h"
 #include "components/optimization_guide/core/optimization_guide_util.h"
 #include "components/optimization_guide/proto/features/compose.pb.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -42,8 +43,7 @@ class OnDeviceModelExecutionConfigInterpeterTest : public testing::Test {
 
   void UpdateInterpreterWithConfig(
       const proto::OnDeviceModelExecutionConfig& config) {
-    WriteConfigToFile(temp_dir().Append(FILE_PATH_LITERAL(
-                          "on_device_model_execution_config.pb")),
+    WriteConfigToFile(temp_dir().Append(kOnDeviceModelExecutionConfigFile),
                       config);
     interpreter()->UpdateConfigWithFileDir(temp_dir());
     RunUntilIdle();

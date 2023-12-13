@@ -13,6 +13,7 @@
 #include "base/task/thread_pool.h"
 #include "components/optimization_guide/core/model_execution/on_device_model_execution_proto_descriptors.h"
 #include "components/optimization_guide/core/model_execution/on_device_model_execution_proto_value_utils.h"
+#include "components/optimization_guide/core/optimization_guide_constants.h"
 
 namespace optimization_guide {
 
@@ -24,8 +25,7 @@ static constexpr int kMaxArgs = 32;
 std::unique_ptr<proto::OnDeviceModelExecutionConfig>
 ReadOnDeviceModelExecutionConfig(const base::FilePath& path) {
   // Unpack and verify model config file.
-  base::FilePath config_path =
-      path.Append(FILE_PATH_LITERAL("on_device_model_execution_config.pb"));
+  base::FilePath config_path = path.Append(kOnDeviceModelExecutionConfigFile);
   std::string binary_config_pb;
   if (!base::ReadFileToString(config_path, &binary_config_pb)) {
     return nullptr;

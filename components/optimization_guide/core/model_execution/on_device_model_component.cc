@@ -11,6 +11,7 @@
 #include "base/no_destructor.h"
 #include "base/time/time.h"
 #include "base/types/cxx23_to_underlying.h"
+#include "components/optimization_guide/core/optimization_guide_constants.h"
 #include "components/optimization_guide/core/optimization_guide_enums.h"
 #include "components/optimization_guide/core/optimization_guide_features.h"
 #include "components/optimization_guide/core/optimization_guide_prefs.h"
@@ -176,13 +177,9 @@ OnDeviceModelComponentStateManager::GetInstanceForTesting() {
 bool OnDeviceModelComponentStateManager::VerifyInstallation(
     const base::FilePath& install_dir,
     const base::Value::Dict& manifest) {
-  // TODO(b/302327114): Avoid having these file names duplicated. Either
-  // have OnDeviceModelComponentState provide the full path to each file,
-  // or add these names as constants in a shared place.
   for (const base::FilePath::CharType* file_name :
-       {FILE_PATH_LITERAL("spm.model"), FILE_PATH_LITERAL("weights.bin"),
-        FILE_PATH_LITERAL("model.pb"),
-        FILE_PATH_LITERAL("on_device_model_execution_config.pb")}) {
+       {kSpModelFile, kWeightsFile, kModelFile,
+        kOnDeviceModelExecutionConfigFile}) {
     if (!base::PathExists(install_dir.Append(file_name))) {
       return false;
     }
