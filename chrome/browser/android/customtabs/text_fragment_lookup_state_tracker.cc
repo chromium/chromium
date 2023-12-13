@@ -19,8 +19,6 @@ namespace customtabs {
 
 namespace {
 
-const size_t kMaxNumLookupPerPage = 45;
-
 // Notifies text fragment look up completion.
 // `state_key` is opaque id used by client to keep track of the request.
 // `lookup_results` is the mapping between the text fragments that were looked
@@ -46,11 +44,13 @@ void TextFragmentLookupStateTracker::LookupTextFragment(
     const std::string& state_key,
     const std::vector<std::string>& text_directives,
     OnResultCallback on_result_callback) {
+  CHECK(base::FeatureList::IsEnabled(
+      chrome::android::kCCTTextFragmentLookupApiEnabled));
   const std::vector<std::string> allowed_text_directives =
       ExtractAllowedTextDirectives(text_directives);
   // Increment lookup counter.
   lookup_count_ += allowed_text_directives.size();
-  DCHECK_LE(lookup_count_, kMaxNumLookupPerPage);
+  DCHECK_LE(lookup_count_, max_lookups_per_page());
 
   // Create and attach a `TextFinderManager` to the primary page.
   content::Page& page = web_contents()->GetPrimaryPage();
@@ -69,17 +69,17 @@ std::vector<std::string>
 TextFragmentLookupStateTracker::ExtractAllowedTextDirectives(
     const std::vector<std::string>& text_directives) const {
   // Check if the lookup counter exceeds the max number.
-  if (lookup_count_ >= kMaxNumLookupPerPage) {
+  if (lookup_count_ >= max_lookups_per_page()) {
     return {};
   }
 
   // Extract the first allowed number of text directives.
   size_t cur_num = text_directives.size();
-  if (lookup_count_ + cur_num <= kMaxNumLookupPerPage) {
+  if (lookup_count_ + cur_num <= max_lookups_per_page()) {
     return text_directives;
   } else {
     // Throttled.
-    size_t allowed_num = kMaxNumLookupPerPage - lookup_count_;
+    size_t allowed_num = max_lookups_per_page() - lookup_count_;
     return std::vector<std::string>(text_directives.begin(),
                                     text_directives.begin() + allowed_num);
   }
@@ -87,6 +87,9 @@ TextFragmentLookupStateTracker::ExtractAllowedTextDirectives(
 
 void TextFragmentLookupStateTracker::FindScrollAndHighlight(
     const std::string& text_directive) const {
+  CHECK(base::FeatureList::IsEnabled(
+      chrome::android::kCCTTextFragmentLookupApiEnabled));
+
   // Create and attach a `TextHighlighterManager` to the primary page.
   content::Page& page = web_contents()->GetPrimaryPage();
   companion::TextHighlighterManager* text_highlighter_manager =
@@ -100,6 +103,12 @@ void TextFragmentLookupStateTracker::FindScrollAndHighlight(
 void TextFragmentLookupStateTracker::PrimaryPageChanged(content::Page& page) {
   // Reset lookup counter.
   lookup_count_ = 0;
+}
+
+size_t TextFragmentLookupStateTracker::max_lookups_per_page() const {
+  return GetFieldTrialParamByFeatureAsInt(
+      chrome::android::kCCTTextFragmentLookupApiEnabled, "max_lookups_per_page",
+      45);
 }
 
 WEB_CONTENTS_USER_DATA_KEY_IMPL(TextFragmentLookupStateTracker);

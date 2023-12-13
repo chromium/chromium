@@ -48,6 +48,8 @@ class TextFragmentLookupStateTracker
   // Implements `content::WebContentsObserver`:
   void PrimaryPageChanged(content::Page& page) override;
 
+  size_t max_lookups_per_page() const;
+
   WEB_CONTENTS_USER_DATA_KEY_DECL();
 
   size_t lookup_count_ = 0;

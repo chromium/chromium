@@ -202,6 +202,7 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &kCCTResizableSideSheetForThirdParties,
     &kCCTResourcePrefetch,
     &kCCTTabModalDialog,
+    &kCCTTextFragmentLookupApiEnabled,
     &kDontAutoHideBrowserControls,
     &kCacheDeprecatedSystemLocationSetting,
     &kChromeSharingHub,
@@ -584,6 +585,10 @@ BASE_FEATURE(kCCTResourcePrefetch,
 
 BASE_FEATURE(kCCTTabModalDialog,
              "CCTTabModalDialog",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
+BASE_FEATURE(kCCTTextFragmentLookupApiEnabled,
+             "CCTTextFragmentLookupApiEnabled",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kDontAutoHideBrowserControls,

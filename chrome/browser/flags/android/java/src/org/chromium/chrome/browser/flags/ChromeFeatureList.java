@@ -196,6 +196,8 @@ public abstract class ChromeFeatureList {
             "CCTResizableSideSheetForThirdParties";
     public static final String CCT_RESOURCE_PREFETCH = "CCTResourcePrefetch";
     public static final String CCT_TAB_MODAL_DIALOG = "CCTTabModalDialog";
+    public static final String CCT_TEXT_FRAGMENT_LOOKUP_API_ENABLED =
+            "CCTTextFragmentLookupApiEnabled";
     public static final String CHROME_SHARING_HUB = "ChromeSharingHub";
     public static final String CHROME_SURVEY_NEXT_ANDROID = "ChromeSurveyNextAndroid";
     public static final String CLEAR_OMNIBOX_FOCUS_AFTER_NAVIGATION =
@@ -717,6 +719,8 @@ public abstract class ChromeFeatureList {
             newMutableFlagWithSafeDefault(ANDROID_IMPROVED_BOOKMARKS, false);
     public static final MutableFlagWithSafeDefault sCctRealTimeEngagementSignals =
             newMutableFlagWithSafeDefault(CCT_REAL_TIME_ENGAGEMENT_SIGNALS, false);
+    public static final MutableFlagWithSafeDefault sCctTextFragmentLookupApiEnabled =
+            newMutableFlagWithSafeDefault(CCT_TEXT_FRAGMENT_LOOKUP_API_ENABLED, false);
     public static final MutableFlagWithSafeDefault sDeferKeepScreenOnDuringGesture =
             newMutableFlagWithSafeDefault(DEFER_KEEP_SCREEN_ON_DURING_GESTURE, false);
     public static final MutableFlagWithSafeDefault sDeferNotifyInMotion =

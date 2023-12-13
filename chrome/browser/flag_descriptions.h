@@ -2294,6 +2294,9 @@ extern const char kCCTResizableSideSheetForThirdPartiesDescription[];
 extern const char kCCTRealTimeEngagementSignalsName[];
 extern const char kCCTRealTimeEngagementSignalsDescription[];
 
+extern const char kCCTTextFragmentLookupApiEnabledName[];
+extern const char kCCTTextFragmentLookupApiEnabledDescription[];
+
 extern const char kAccountReauthenticationRecentTimeWindowName[];
 extern const char kAccountReauthenticationRecentTimeWindowDescription[];
 extern const char kAccountReauthenticationRecentTimeWindowDefault[];
