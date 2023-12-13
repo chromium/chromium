@@ -751,16 +751,9 @@ IN_PROC_BROWSER_TEST_P(TabHoverCardFadeFooterInteractiveUiTest,
 
 // The hover card should stop showing memory usage data after navigating to
 // another site since the data is now out of date
-// TODO(crbug.com/1483255): Flaky on mac
-#if BUILDFLAG(IS_MAC)
-#define MAYBE_HoverCardStopShowingMemoryOnNavigation \
-  DISABLED_HoverCardStopShowingMemoryOnNavigation
-#else
-#define MAYBE_HoverCardStopShowingMemoryOnNavigation \
-  HoverCardStopShowingMemoryOnNavigation
-#endif
+// TODO(crbug.com/1483255): Re-enable after resolving flakiness.
 IN_PROC_BROWSER_TEST_P(TabHoverCardFadeFooterInteractiveUiTest,
-                       MAYBE_HoverCardStopShowingMemoryOnNavigation) {
+                       DISABLED_HoverCardStopShowingMemoryOnNavigation) {
   RunTestSequence(
       InstrumentTab(kFirstTabContents, 0),
       NavigateWebContents(kFirstTabContents, GetTestingURL("a.com")),
