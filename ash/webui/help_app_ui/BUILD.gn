@@ -74,7 +74,7 @@ mojom("mojo_bindings") {
   webui_module_path = "/"
 
   # Help app is still using JS + Closure Compiler.
-  use_typescript_sources = false
+  generate_webui_js_bindings = true
 }
 
 source_set("unit_tests") {

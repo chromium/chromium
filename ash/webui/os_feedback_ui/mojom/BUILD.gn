@@ -11,7 +11,7 @@ mojom("mojom") {
   sources = [ "os_feedback_ui.mojom" ]
 
   webui_module_path = "/"
-  use_typescript_sources = false
+  generate_webui_js_bindings = true
 
   public_deps = [
     "//mojo/public/mojom/base",
