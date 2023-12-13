@@ -55,18 +55,19 @@ std::vector<DlpConfidentialFile> GetFilesBlockedByReasons(
 }
 
 // Returns learn more links associated with the given `reasons`.
-std::set<GURL> GetLearnMoreLinks(
+std::vector<std::pair<GURL, std::u16string>> GetLearnMoreLinks(
     const std::vector<FilesPolicyDialog::BlockReason>& reasons,
     const std::map<FilesPolicyDialog::BlockReason, FilesPolicyDialog::Info>&
         dialog_info_map) {
-  std::set<GURL> links;
+  std::vector<std::pair<GURL, std::u16string>> links;
   for (FilesPolicyDialog::BlockReason reason : reasons) {
     auto it = dialog_info_map.find(reason);
     if (it == dialog_info_map.end() ||
         !it->second.GetLearnMoreURL().has_value()) {
       continue;
     }
-    links.insert(it->second.GetLearnMoreURL().value());
+    links.emplace_back(it->second.GetLearnMoreURL().value(),
+                       it->second.GetAccessibleLearnMoreLinkName());
   }
   return links;
 }
@@ -102,7 +103,7 @@ FilesPolicyErrorDialog::BlockedFilesSection::BlockedFilesSection(
     int view_id,
     const std::u16string& message,
     const std::vector<DlpConfidentialFile>& files,
-    const std::set<GURL>& learn_more_urls)
+    const std::vector<std::pair<GURL, std::u16string>>& learn_more_urls)
     : view_id(view_id),
       message(message),
       files(files),
@@ -127,9 +128,10 @@ void FilesPolicyErrorDialog::MaybeAddConfidentialRows() {
   // Single error dialog.
   if (sections_.size() == 1) {
     const auto& section = sections_.front();
-    for (const auto& url : section.learn_more_urls) {
+    for (const auto& [url, accessible_name] : section.learn_more_urls) {
       files_dialog_utils::AddLearnMoreLink(
-          l10n_util::GetStringUTF16(IDS_LEARN_MORE), url, upper_panel_);
+          l10n_util::GetStringUTF16(IDS_LEARN_MORE), accessible_name, url,
+          upper_panel_);
     }
     for (const auto& file : section.files) {
       AddConfidentialRow(file.icon, file.title);
@@ -260,7 +262,7 @@ void FilesPolicyErrorDialog::AddBlockedFilesSection(
           ash::TypographyToken::kCrosBody1));
 
   // Add the learn more link if provided.
-  for (const GURL& url : section.learn_more_urls) {
+  for (const auto& [url, accessible_name] : section.learn_more_urls) {
     views::View* learn_more_row =
         scroll_view_container_->AddChildView(std::make_unique<views::View>());
     learn_more_row->SetLayoutManager(std::make_unique<views::BoxLayout>(
@@ -268,7 +270,8 @@ void FilesPolicyErrorDialog::AddBlockedFilesSection(
         gfx::Insets::TLBR(0, 16, 10, 16), 0));
 
     files_dialog_utils::AddLearnMoreLink(
-        l10n_util::GetStringUTF16(IDS_LEARN_MORE), url, learn_more_row);
+        l10n_util::GetStringUTF16(IDS_LEARN_MORE), accessible_name, url,
+        learn_more_row);
   }
 
   for (const auto& file : section.files) {

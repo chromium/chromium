@@ -35,10 +35,11 @@ class FilesPolicyErrorDialog : public FilesPolicyDialog {
  private:
   // Holds all the information of a section of the dialog.
   struct BlockedFilesSection {
-    BlockedFilesSection(int view_id,
-                        const std::u16string& message,
-                        const std::vector<DlpConfidentialFile>& files,
-                        const std::set<GURL>& learn_more_urls);
+    BlockedFilesSection(
+        int view_id,
+        const std::u16string& message,
+        const std::vector<DlpConfidentialFile>& files,
+        const std::vector<std::pair<GURL, std::u16string>>& learn_more_urls);
     ~BlockedFilesSection();
 
     BlockedFilesSection(const BlockedFilesSection& other);
@@ -55,10 +56,10 @@ class FilesPolicyErrorDialog : public FilesPolicyDialog {
     // The blocked files.
     std::vector<DlpConfidentialFile> files;
 
-    // Learn more URLs displayed to the user. Because a section may hold files
-    // blocked for different reasons, each of which defining its own learn more
-    // URL, we use a set to collect distinct URLs only.
-    std::set<GURL> learn_more_urls;
+    // Learn more URLs displayed to the user and their accessible name read out
+    // by ChromeVox. A section may hold files blocked for different reasons,
+    // each of which defining its own learn more URL.
+    std::vector<std::pair<GURL, std::u16string>> learn_more_urls;
   };
 
   // PolicyDialogBase overrides:

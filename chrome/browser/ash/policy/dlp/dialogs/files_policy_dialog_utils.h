@@ -27,6 +27,7 @@ policy::FilesPolicyDialog::Info GetDialogInfoForEnterpriseConnectorsBlockReason(
 
 // Appends a learn more link to the given `view`.
 void AddLearnMoreLink(const std::u16string& text,
+                      const std::u16string& accessible_name,
                       const GURL& url,
                       views::View* view);
 
