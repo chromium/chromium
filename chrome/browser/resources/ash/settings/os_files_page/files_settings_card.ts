@@ -234,9 +234,15 @@ export class FilesSettingsCardElement extends FilesSettingsCardElementBase {
       return this.i18n('googleDriveNotSignedInSublabel');
     }
 
-    return (this.isBulkPinningEnabled_ && this.bulkPinningPrefEnabled_) ?
-        this.i18n('googleDriveFileSyncOnSublabel') :
-        this.i18n('googleDriveSignedInAs');
+    if (this.isBulkPinningEnabled_ && this.bulkPinningPrefEnabled_) {
+      return this.i18n('googleDriveFileSyncOnSublabel');
+    }
+
+    const tempEl = document.createElement('div');
+    tempEl.innerHTML =
+        this.i18nAdvanced('googleDriveSignedInAs', {attrs: ['id']});
+
+    return tempEl.innerText;
   }
 
   private computeOneDriveSignedInLabel_(): string {

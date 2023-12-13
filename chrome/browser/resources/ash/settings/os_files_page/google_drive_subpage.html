@@ -1,16 +1,14 @@
-<style include="settings-shared"></style>
+<style include="settings-shared">
+  /* This id is in the string returned from getDriveAccountStatusLabel_() */
+  #driveAccountEmail {
+    font: var(--cros-button-2-font);
+  }
+</style>
 
 <div class="settings-box two-line first">
-  <template is="dom-if" if="[[driveDisabled_]]" restamp>
-    <div class="start">
-      $i18nRaw{googleDriveReconnectAs}
-    </div>
-  </template>
-  <template is="dom-if" if="[[!driveDisabled_]]" restamp>
-    <div class="start">
-      $i18nRaw{googleDriveSignedInAs}
-    </div>
-  </template>
+  <div class="start"
+      inner-h-t-m-l="[[getDriveAccountStatusLabel_(driveDisabled_)]]">
+  </div>
   <controlled-button id="driveConnectDisconnect"
       on-click="onConnectDisconnectClick_"
       pref="{{prefs.gdata.disabled}}"
