@@ -4,6 +4,9 @@
 
 #include "chrome/browser/ui/ash/download_status/notification_display_client.h"
 
+#include <optional>
+#include <utility>
+
 #include "ash/constants/ash_features.h"
 #include "ash/constants/notifier_catalogs.h"
 #include "base/check.h"
@@ -93,7 +96,7 @@ void NotificationDisplayClient::AddOrUpdate(
   message_center::Notification notification(
       message_center::NOTIFICATION_TYPE_PROGRESS,
       GetNotificationIdFromGuid(guid),
-      /*title=*/std::u16string(),
+      display_metadata.text.value_or(std::u16string()),
       /*message=*/std::u16string(),
       /*icon=*/ui::ImageModel(),
       /*display_source=*/
@@ -110,15 +113,26 @@ void NotificationDisplayClient::AddOrUpdate(
   notification.set_fullscreen_visibility(
       message_center::FullscreenVisibility::OVER_USER);
 
+  // Set progress related properties.
+  const std::optional<int64_t>& received_bytes =
+      display_metadata.received_bytes;
+  const std::optional<int64_t>& total_bytes = display_metadata.total_bytes;
+  if (received_bytes >= 0 && total_bytes > 0) {
+    notification.set_progress(*received_bytes * 100.f / *total_bytes);
+  } else {
+    // A negative progress value shows an indeterminate progress bar.
+    notification.set_progress(-1);
+  }
+  notification.set_progress_status(
+      display_metadata.secondary_text.value_or(std::u16string()));
+
   NotificationDisplayService::GetForProfile(profile())->Display(
       NotificationHandler::Type::TRANSIENT, notification,
       /*metadata=*/nullptr);
 
   // TODO(http://b/306459683): Change this code after `DisplayMetadata` uses a
   // data structure to represent download progress.
-  if (const std::optional<int64_t>& received_bytes =
-          display_metadata.received_bytes;
-      received_bytes > 0 && received_bytes == display_metadata.total_bytes) {
+  if (received_bytes > 0 && received_bytes == total_bytes) {
     // The download associated with `guid` completes. We no longer anticipate
     // receiving download updates. Therefore, remove `guid` from the collection.
     notifications_closed_by_user_guids_.erase(guid);

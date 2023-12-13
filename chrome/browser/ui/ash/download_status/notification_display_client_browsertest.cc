@@ -43,9 +43,13 @@ namespace {
 
 // Alias -----------------------------------------------------------------------
 
+using ::testing::_;
+using ::testing::AllOf;
 using ::testing::Contains;
+using ::testing::Eq;
 using ::testing::Mock;
 using ::testing::Not;
+using ::testing::Property;
 using ::testing::WithArg;
 
 // MockNotificationDisplayServiceObserver --------------------------------------
@@ -150,19 +154,83 @@ IN_PROC_BROWSER_TEST_F(NotificationDisplayClientBrowserTest, CancelDownload) {
 // Verifies that when an in-progress download completes, its notification should
 // still show.
 IN_PROC_BROWSER_TEST_F(NotificationDisplayClientBrowserTest, CompleteDownload) {
+  Profile* const profile = ProfileManager::GetActiveUserProfile();
+  crosapi::mojom::DownloadStatusPtr download =
+      CreateInProgressDownloadStatus(profile, /*received_bytes=*/std::nullopt,
+                                     /*target_bytes=*/std::nullopt);
+  EXPECT_FALSE(download->target_file_path);
   std::string notification_id;
-  EXPECT_CALL(service_observer(), OnNotificationDisplayed)
+
+  // When the notification for `download` displays:
+  // 1. Check the notification's properties. Since the download target file path
+  //    is unavailable, the primary text should be the display name of the file
+  //    referenced by the full path.
+  // 2. Cache the notification ID.
+  EXPECT_CALL(
+      service_observer(),
+      OnNotificationDisplayed(
+          AllOf(
+              Property(&message_center::Notification::progress, Eq(-1)),
+              Property(&message_center::Notification::progress_status,
+                       Eq(std::u16string())),
+              Property(&message_center::Notification::title,
+                       Eq(download->full_path->BaseName().LossyDisplayName()))),
+          _))
       .WillOnce(WithArg<0>(
           [&notification_id](const message_center::Notification& notification) {
             notification_id = notification.id();
           }));
-  crosapi::mojom::DownloadStatusPtr download = CreateInProgressDownloadStatus(
-      ProfileManager::GetActiveUserProfile(), /*received_bytes=*/0,
-      /*target_bytes=*/1024);
   Update(download->Clone());
   Mock::VerifyAndClearExpectations(&service_observer());
 
+  // Update the download's received bytes and total bytes. Then check the
+  // notification's progress.
+  download->received_bytes = 0;
+  download->total_bytes = 1024;
+  EXPECT_CALL(
+      service_observer(),
+      OnNotificationDisplayed(
+          AllOf(
+              Property(&message_center::Notification::id, Eq(notification_id)),
+              Property(&message_center::Notification::progress, Eq(0))),
+          _));
+  Update(download->Clone());
+  Mock::VerifyAndClearExpectations(&service_observer());
+
+  // Update the download's:
+  // 1. Received bytes
+  // 2. Status text
+  // 3. Target file path
+  // Then check the notification's properties.
+  download->received_bytes = 512;
+  download->status_text = u"Random text";
+  download->target_file_path = test::CreateFile(profile);
+  EXPECT_NE(download->target_file_path, download->full_path);
+  EXPECT_CALL(
+      service_observer(),
+      OnNotificationDisplayed(
+          AllOf(
+              Property(&message_center::Notification::id, Eq(notification_id)),
+              Property(&message_center::Notification::progress, Eq(50)),
+              Property(&message_center::Notification::progress_status,
+                       Eq(u"Random text")),
+              Property(&message_center::Notification::title,
+                       Eq(download->target_file_path->BaseName()
+                              .LossyDisplayName()))),
+          _));
+  Update(download->Clone());
+  Mock::VerifyAndClearExpectations(&service_observer());
+
+  // Complete download and then check the notification.
+  download->received_bytes = download->total_bytes;
   download->state = crosapi::mojom::DownloadState::kComplete;
+  EXPECT_CALL(
+      service_observer(),
+      OnNotificationDisplayed(
+          AllOf(
+              Property(&message_center::Notification::id, Eq(notification_id)),
+              Property(&message_center::Notification::progress, Eq(100))),
+          _));
   Update(download->Clone());
   EXPECT_THAT(GetDisplayedNotificationIds(), Contains(notification_id));
 }
