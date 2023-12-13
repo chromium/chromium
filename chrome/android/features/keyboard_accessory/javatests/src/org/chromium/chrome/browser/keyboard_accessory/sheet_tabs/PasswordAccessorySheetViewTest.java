@@ -62,7 +62,7 @@ import java.util.concurrent.atomic.AtomicReference;
 /** View tests for the password accessory sheet. */
 @RunWith(ChromeJUnit4ClassRunner.class)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
-public class PasswordAccessorySheetModernViewTest {
+public class PasswordAccessorySheetViewTest {
     private AccessorySheetTabItemsModel mModel;
     private AtomicReference<RecyclerView> mView = new AtomicReference<>();
 
@@ -96,7 +96,7 @@ public class PasswordAccessorySheetModernViewTest {
                                                 mView.set((RecyclerView) view);
                                                 AccessorySheetTabViewBinder.initializeView(
                                                         mView.get(), null);
-                                                PasswordAccessorySheetModernViewBinder
+                                                PasswordAccessorySheetViewBinder
                                                         .initializeView(mView.get(), mModel);
                                             }
 

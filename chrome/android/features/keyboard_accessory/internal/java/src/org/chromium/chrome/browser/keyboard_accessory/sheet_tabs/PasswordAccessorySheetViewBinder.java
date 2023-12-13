@@ -28,7 +28,7 @@ import org.chromium.ui.modelutil.ListModel;
  * This stateless class provides methods to bind a {@link ListModel<AccessorySheetDataPiece>}
  * to the {@link RecyclerView} used as view of a tab for the accessory sheet component.
  */
-class PasswordAccessorySheetModernViewBinder {
+class PasswordAccessorySheetViewBinder {
     static ElementViewHolder create(ViewGroup parent, @AccessorySheetDataPiece.Type int viewType) {
         switch (viewType) {
             case AccessorySheetDataPiece.Type.PASSKEY_SECTION:
@@ -114,7 +114,7 @@ class PasswordAccessorySheetModernViewBinder {
     }
 
     static void initializeView(RecyclerView view, AccessorySheetTabItemsModel model) {
-        view.setAdapter(PasswordAccessorySheetCoordinator.createModernAdapter(model));
+        view.setAdapter(PasswordAccessorySheetCoordinator.createAdapter(model));
         view.addItemDecoration(new DynamicInfoViewBottomSpacer(PasswordAccessoryInfoView.class));
     }
 }
