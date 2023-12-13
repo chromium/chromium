@@ -476,6 +476,17 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="SafeBrowsing.CookieAgeHours2" units="hours"
+    expires_after="2024-06-30">
+  <owner>chlily@chromium.org</owner>
+  <owner>chrome-counter-abuse-alerts@google.com</owner>
+  <summary>
+    Records the age of the Safe Browsing cookie at profile startup or when a new
+    profile is created, if there is a cookie present. Recorded for regular or
+    incognito profiles.
+  </summary>
+</histogram>
+
 <histogram
     name="SafeBrowsing.Daily.BypassCountLast28Days.{UserState}.AllEvents"
     units="events" expires_after="2024-03-23">
@@ -1103,6 +1114,16 @@ chromium-metrics-reviews@google.com.
     introduced because SOCIAL_ENGINEERING is switched from 2 to 5.
   </summary>
   <token key="Protocol" variants="GmsSafeBrowsingApiProtocol"/>
+</histogram>
+
+<histogram name="SafeBrowsing.HasCookieAtStartup2" enum="Boolean"
+    expires_after="2024-06-30">
+  <owner>chlily@chromium.org</owner>
+  <owner>chrome-counter-abuse-alerts@google.com</owner>
+  <summary>
+    Records whether a Safe Browsing cookie exists at profile startup or when a
+    new profile is created. Recorded for regular or incognito profiles.
+  </summary>
 </histogram>
 
 <histogram name="SafeBrowsing.HitReport.IsSubresource"
