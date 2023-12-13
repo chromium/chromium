@@ -100,6 +100,8 @@ enum class FeatureResetMode {
   kResetForTesting,
 };
 
+const char kHistogramScanAndPreloadTime[] = "Blink.ScanAndPreloadTime2";
+
 bool ThreadedPreloadScannerEnabled(
     FeatureResetMode reset_mode = FeatureResetMode::kUseCached) {
   // Cache the feature value since checking for each parser regresses some micro
@@ -1346,12 +1348,27 @@ std::unique_ptr<HTMLPreloadScanner> HTMLDocumentParser::CreatePreloadScanner(
 
 void HTMLDocumentParser::ScanAndPreload(HTMLPreloadScanner* scanner) {
   TRACE_EVENT0("blink", "HTMLDocumentParser::ScanAndPreload");
-  DCHECK(preloader_);
-  base::ElapsedTimer timer;
-  ProcessPreloadData(scanner->Scan(GetDocument()->ValidBaseElementURL()));
+  CHECK(preloader_);
+  base::ElapsedTimer timer_before_scan;
+  std::unique_ptr<PendingPreloadData> preload_data =
+      scanner->Scan(GetDocument()->ValidBaseElementURL());
+  base::UmaHistogramMicrosecondsTimes(
+      base::StrCat(
+          {kHistogramScanAndPreloadTime, ".Scan", GetPreloadHistogramSuffix()}),
+      timer_before_scan.Elapsed());
+  base::ElapsedTimer timer_after_scan;
+  ProcessPreloadData(std::move(preload_data));
+  base::UmaHistogramMicrosecondsTimes(
+      base::StrCat({kHistogramScanAndPreloadTime, GetPreloadHistogramSuffix()}),
+      timer_before_scan.Elapsed());
+  // Keep old histogram until next expiry date.
   base::UmaHistogramTimes(
       base::StrCat({"Blink.ScanAndPreloadTime", GetPreloadHistogramSuffix()}),
-      timer.Elapsed());
+      timer_before_scan.Elapsed());
+  base::UmaHistogramMicrosecondsTimes(
+      base::StrCat({kHistogramScanAndPreloadTime, ".Preload",
+                    GetPreloadHistogramSuffix()}),
+      timer_after_scan.Elapsed());
 }
 
 void HTMLDocumentParser::ProcessPreloadData(

@@ -1916,19 +1916,24 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Blink.Fetch.RequestResourceTime2{Scheme}" units="microseconds"
-    expires_after="2023-05-02">
+<histogram name="Blink.Fetch.RequestResourceTime2{SchemeOrPreload}"
+    units="microseconds" expires_after="2024-03-12">
   <owner>cduvall@chromium.org</owner>
   <owner>csharrison@chromium.org</owner>
+  <owner>chrome-loading@google.com</owner>
   <summary>
     The total microseconds spent in ResourceFetcher::requestResource for
-    {Scheme}.
+    {SchemeOrPreload}.
 
     This histogram only records metrics on machines with high-resolution clocks.
+
+    Warning: this histogram was expired from 2023-05-02 to 2023-12-12; data may
+    be missing.
   </summary>
-  <token key="Scheme">
+  <token key="SchemeOrPreload">
     <variant name="" summary="all URLs"/>
     <variant name=".Data" summary="data URLs"/>
+    <variant name=".Preload" summary="preloaded URLs"/>
   </token>
 </histogram>
 
@@ -3181,13 +3186,29 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Blink.PreloadRequestStartDuration" units="microseconds"
+    expires_after="2024-03-12">
+  <owner>sisidovski@chromium.org</owner>
+  <owner>chrome-loading@google.com</owner>
+  <summary>
+    Measures the time from the time when PreloadRequest::Start is called to when
+    PreloadRequest::Start is finished.
+
+    This histogram only records metrics on machines with high-resolution clocks.
+  </summary>
+</histogram>
+
 <histogram name="Blink.PreloadRequestWaitTime" units="ms"
-    expires_after="2023-10-22">
+    expires_after="2024-03-12">
   <owner>cduvall@chromium.org</owner>
   <owner>swarm-team@google.com</owner>
+  <owner>chrome-loading@google.com</owner>
   <summary>
     Measures the time from the creation of a PreloadRequest to when
     PreloadRequest::Start is called. Logged for each PreloadRequest::Start call.
+
+    Warning: this histogram was expired from 2023-10-22 to 2023-12-12; data may
+    be missing.
   </summary>
 </histogram>
 
@@ -3308,6 +3329,9 @@ chromium-metrics-reviews@google.com.
   <owner>jam@chromium.org</owner>
   <owner>chrome-loading@google.com</owner>
   <summary>
+    Blink.ScanAndPreloadTime2 is the newer one of this histogram, which records
+    the time with microseconds.
+
     Measures the time it takes to scan and preload subresources for a document
     in a {FrameType}. Logged every time the {IsInitial} preload scan is
     performed.
@@ -3315,6 +3339,31 @@ chromium-metrics-reviews@google.com.
     Warning: this histogram was expired from 2023-05-29 to 2023-12-04; data may
     be missing.
   </summary>
+  <token key="FrameType">
+    <variant name="MainFrame"/>
+    <variant name="Subframe"/>
+  </token>
+  <token key="IsInitial">
+    <variant name="Initial"/>
+    <variant name="NonInitial"/>
+  </token>
+</histogram>
+
+<histogram name="Blink.ScanAndPreloadTime2{Task}.{FrameType}.{IsInitial}"
+    units="microseconds" expires_after="2024-03-13">
+  <owner>sisidovski@chromium.org</owner>
+  <owner>chrome-loading@google.com</owner>
+  <summary>
+    Measures the time it takes to {Task} for a document in a {FrameType}. Logged
+    every time the {IsInitial} preload scan is performed.
+
+    This histogram only records metrics on machines with high-resolution clocks.
+  </summary>
+  <token key="Task">
+    <variant name="" summary="scan and preload subresources"/>
+    <variant name=".Preload" summary="preload subresources"/>
+    <variant name=".Scan" summary="scan"/>
+  </token>
   <token key="FrameType">
     <variant name="MainFrame"/>
     <variant name="Subframe"/>

@@ -1075,7 +1075,7 @@ Resource* ResourceFetcher::RequestResource(FetchParameters& params,
       TRACE_ID_WITH_SCOPE("BlinkResourceID", TRACE_ID_LOCAL(identifier)), "url",
       resource_request.Url());
   base::ScopedClosureRunner timer(base::BindOnce(
-      [](base::TimeTicks start, bool is_data) {
+      [](base::TimeTicks start, bool is_data, bool is_preload_request) {
         base::TimeDelta elapsed = base::TimeTicks::Now() - start;
         base::UmaHistogramMicrosecondsTimes("Blink.Fetch.RequestResourceTime2",
                                             elapsed);
@@ -1083,8 +1083,13 @@ Resource* ResourceFetcher::RequestResource(FetchParameters& params,
           base::UmaHistogramMicrosecondsTimes(
               "Blink.Fetch.RequestResourceTime2.Data", elapsed);
         }
+        if (is_preload_request) {
+          base::UmaHistogramMicrosecondsTimes(
+              "Blink.Fetch.RequestResourceTime2.Preload", elapsed);
+        }
       },
-      base::TimeTicks::Now(), params.Url().ProtocolIsData()));
+      base::TimeTicks::Now(), params.Url().ProtocolIsData(),
+      params.IsSpeculativePreload() || params.IsLinkPreload()));
   TRACE_EVENT1("blink,blink.resource", "ResourceFetcher::requestResource",
                "url", params.Url().ElidedString().Utf8());
 
