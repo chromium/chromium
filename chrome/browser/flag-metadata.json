@@ -5326,17 +5326,17 @@
   {
     "name": "memory-saver-discard-exceptions-improvements",
     "owners": [ "chrome-performance-ui-team@google.com" ],
-    "expiry_milestone": 121
+    "expiry_milestone": 123
   },
   {
     "name": "memory-saver-discarded-tab-treatment",
     "owners": [ "chrome-performance-ui-team@google.com" ],
-    "expiry_milestone": 121
+    "expiry_milestone": 123
   },
   {
     "name": "memory-saver-memory-usage-in-hovercards",
     "owners": [ "chrome-performance-ui-team@google.com" ],
-    "expiry_milestone": 121
+    "expiry_milestone": 123
   },
   {
     "name": "memory-saver-multi-state-mode",
@@ -5346,7 +5346,7 @@
   {
     "name": "memory-saver-savings-reporting-improvements",
     "owners": [ "chrome-performance-ui-team@google.com" ],
-    "expiry_milestone": 121
+    "expiry_milestone": 123
   },
   {
     "name": "messages-for-android-ads-blocked",
