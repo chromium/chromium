@@ -45,88 +45,10 @@
       "Cast Android (dbg)": {
         "_default": "_default"
       },
-      "Dawn Linux x64 DEPS Builder": {
-        "_default": "_default"
-      },
-      "Dawn Linux x64 DEPS Release (Intel UHD 630)": {
-        "_default": "_default"
-      },
-      "Dawn Linux x64 DEPS Release (NVIDIA)": {
-        "_default": "_default"
-      },
-      "Dawn Mac x64 DEPS Builder": {
-        "_default": "_default"
-      },
-      "Dawn Mac x64 DEPS Release (AMD)": {
-        "_default": "_default"
-      },
-      "Dawn Mac x64 DEPS Release (Intel)": {
-        "_default": "_default"
-      },
-      "Dawn Win10 x64 DEPS Builder": {
-        "_default": "_default"
-      },
-      "Dawn Win10 x64 DEPS Release (Intel)": {
-        "_default": "_default"
-      },
-      "Dawn Win10 x64 DEPS Release (NVIDIA)": {
-        "_default": "_default"
-      },
-      "Dawn Win10 x86 DEPS Builder": {
-        "_default": "_default"
-      },
-      "Dawn Win10 x86 DEPS Release (Intel)": {
-        "_default": "_default"
-      },
-      "Dawn Win10 x86 DEPS Release (NVIDIA)": {
-        "_default": "_default"
-      },
-      "GPU Linux Builder": {
-        "_default": "_default"
-      },
-      "GPU Mac Builder": {
-        "_default": "_default"
-      },
-      "GPU Win x64 Builder": {
-        "_default": "_default"
-      },
-      "Linux Release (NVIDIA)": {
-        "_default": "_default"
-      },
-      "Mac Builder": {
-        "_default": "_default"
-      },
-      "Mac Builder (dbg)": {
-        "_default": "_default"
-      },
-      "Mac Release (Intel)": {
-        "_default": "_default"
-      },
-      "Mac Retina Release (AMD)": {
-        "_default": "_default"
-      },
-      "Mac10.15 Tests": {
-        "_default": "_default"
-      },
-      "Mac11 Tests": {
-        "_default": "_default"
-      },
-      "Mac12 Tests": {
-        "_default": "_default"
-      },
-      "Mac13 Tests": {
-        "_default": "_default"
-      },
-      "Mac13 Tests (dbg)": {
-        "_default": "_default"
-      },
       "Nougat Phone Tester": {
         "_default": "_default"
       },
       "Oreo Phone Tester": {
-        "_default": "_default"
-      },
-      "Win10 x64 Release (NVIDIA)": {
         "_default": "_default"
       },
       "android-12-x64-rel": {
@@ -260,15 +182,6 @@
           "p50_mins": 20
         }
       },
-      "fuchsia-official": {
-        "_default": "_default"
-      },
-      "ios-simulator": {
-        "_default": "_default"
-      },
-      "ios-simulator-full-configs": {
-        "_default": "_default"
-      },
       "lacros-amd64-generic-rel": {
         "build_time": {
           "p50_mins": 60
@@ -394,41 +307,6 @@
         "pending_time": {
           "p50_mins": 20
         }
-      },
-      "linux-official": {
-        "build_time": {
-          "p50_mins": 240
-        },
-        "fail_rate": {
-          "average": 0.2
-        },
-        "infra_fail_rate": {
-          "average": 0.05
-        },
-        "pending_time": {
-          "p50_mins": 20
-        }
-      },
-      "mac-arm64-rel": {
-        "_default": "_default"
-      },
-      "mac-official": {
-        "_default": "_default"
-      },
-      "mac11-arm64-rel-tests": {
-        "_default": "_default"
-      },
-      "mac12-arm64-rel-tests": {
-        "_default": "_default"
-      },
-      "mac13-arm64-rel-tests": {
-        "_default": "_default"
-      },
-      "win-official": {
-        "_default": "_default"
-      },
-      "win32-official": {
-        "_default": "_default"
       }
     }
   }
