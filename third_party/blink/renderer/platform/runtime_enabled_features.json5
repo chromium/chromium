@@ -1791,7 +1791,7 @@
     },
     {
       name: "FledgeNegativeTargeting",
-      status: "test",
+      status: "stable",
     },
     {
       name: "FledgeTrustedBiddingSignalsSlotSize",

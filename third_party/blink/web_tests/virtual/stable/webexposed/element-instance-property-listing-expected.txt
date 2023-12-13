@@ -644,6 +644,7 @@ html element html
     property version
 html element i
 html element iframe
+    property adAuctionHeaders
     property align
     property allow
     property allowFullscreen
