@@ -138,7 +138,6 @@ bool AddressInfo::IsAllLocalhostOfOneFamily() const {
         break;
       }
       default:
-        NOTREACHED();
         return false;
     }
   }
