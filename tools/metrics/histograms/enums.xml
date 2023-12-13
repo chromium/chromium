@@ -32239,6 +32239,7 @@ from previous Chrome versions.
   <int value="-412736561" label="EnableZeroStateMixedTypesRanker:enabled"/>
   <int value="-410852857" label="ImprovedA2HS:disabled"/>
   <int value="-408769228" label="ArcGraphicBuffersVisualizationTool:disabled"/>
+  <int value="-408180142" label="PassExplicitSyncPassphraseToGmsCore:disabled"/>
   <int value="-406850932" label="EnableEmojiContextMenu:enabled"/>
   <int value="-406475702"
       label="webview-disable-apps-package-names-allowlist-component"/>
@@ -34883,6 +34884,7 @@ from previous Chrome versions.
   <int value="842158411" label="PdfViewerDocumentProperties:enabled"/>
   <int value="842432903" label="CaptureThumbnailOnNavigatingAway:enabled"/>
   <int value="842789526" label="CloudPrinterHandler:disabled"/>
+  <int value="843857704" label="PassExplicitSyncPassphraseToGmsCore:enabled"/>
   <int value="843896452" label="UserActivationV2:enabled"/>
   <int value="844420869" label="PrintJobManagementApp:enabled"/>
   <int value="844587371"

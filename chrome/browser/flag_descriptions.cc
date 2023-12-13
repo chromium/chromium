@@ -4253,6 +4253,14 @@ const char kPageInfoHistoryDescription[] =
     "Enable a history sub page to the page info menu, and a button to forget "
     "a site, removing all preferences and history.";
 
+const char kPassExplicitSyncPassphraseToGmsCoreName[] =
+    "Pass explicit sync passphrase to GmsCore";
+const char kPassExplicitSyncPassphraseToGmsCoreDescription[] =
+    "If the user has an explicit sync passphrase and entered it in the browser,"
+    " this flag silently passes the (derived) passphrase to GmsCore. Then "
+    "GmsCore can decrypt synced data (mainly passwords) without the user "
+    "entering the passphrase a second time.";
+
 const char kPasswordGenerationBottomSheetName[] =
     "Password generation bottom sheet";
 const char kPasswordGenerationBottomSheetDescription[] =

@@ -345,6 +345,8 @@ public abstract class ChromeFeatureList {
     public static final String PASSKEY_MANAGEMENT_USING_ACCOUNT_SETTINGS_ANDROID =
             "PasskeyManagementUsingAccountSettingsAndroid";
     public static final String PASSWORD_GENERATION_BOTTOM_SHEET = "PasswordGenerationBottomSheet";
+    public static final String PASS_EXPLICIT_SYNC_PASSPHRASE_TO_GMS_CORE =
+            "PassExplicitSyncPassphraseToGmsCore";
     public static final String PERMISSION_PROMPT_SURVEY = "PermissionPromptSurvey";
     public static final String PORTALS = "Portals";
     public static final String PORTALS_CROSS_ORIGIN = "PortalsCrossOrigin";

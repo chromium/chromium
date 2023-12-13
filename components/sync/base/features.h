@@ -27,6 +27,14 @@ BASE_DECLARE_FEATURE(kIgnoreSyncEncryptionKeysLongMissing);
 inline constexpr base::FeatureParam<int> kMinGuResponsesToIgnoreKey{
     &kIgnoreSyncEncryptionKeysLongMissing, "MinGuResponsesToIgnoreKey", 3};
 
+#if BUILDFLAG(IS_ANDROID)
+// If the user has an explicit sync passphrase and entered it in the browser,
+// this flag silently passes the (derived) passphrase to GmsCore. Then GmsCore
+// can decrypt synced data (mainly passwords) without the user entering the
+// passphrase a second time.
+BASE_DECLARE_FEATURE(kPassExplicitSyncPassphraseToGmsCore);
+#endif
+
 // Enables adding, displaying and modifying extra notes to stored credentials.
 // When enabled, "PasswordViewPageInSettings" feature in the password manager
 // codebase is ignored and the new password view subpage is force enabled. When

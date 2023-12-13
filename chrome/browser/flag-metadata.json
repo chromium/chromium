@@ -6307,6 +6307,11 @@
     "expiry_milestone": 125
   },
   {
+    "name": "pass-explicit-sync-passphrase-to-gms-core",
+    "owners": [ "victorvianna@google.com", "chrome-sync-dev+finch@google.com" ],
+    "expiry_milestone": 124
+  },
+  {
     "name": "passpoint-arc-support",
     "owners": [ "cros-networking@google.com" ],
     "expiry_milestone": 121

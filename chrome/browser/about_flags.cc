@@ -11141,6 +11141,14 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(password_manager::features::kButterOnDesktopFollowup)},
 #endif
 
+#if BUILDFLAG(IS_ANDROID)
+    {"pass-explicit-sync-passphrase-to-gms-core",
+     flag_descriptions::kPassExplicitSyncPassphraseToGmsCoreName,
+     flag_descriptions::kPassExplicitSyncPassphraseToGmsCoreDescription,
+     kOsAndroid,
+     FEATURE_VALUE_TYPE(syncer::kPassExplicitSyncPassphraseToGmsCore)},
+#endif
+
     // NOTE: Adding a new flag requires adding a corresponding entry to enum
     // "LoginCustomFlags" in tools/metrics/histograms/enums.xml. See "Flag
     // Histograms" in tools/metrics/histograms/README.md (run the
