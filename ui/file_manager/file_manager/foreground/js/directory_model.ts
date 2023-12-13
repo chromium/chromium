@@ -1254,6 +1254,7 @@ export class DirectoryModel extends FilesEventTarget<DirectoryModelEventMap> {
           volumeChanged: (previousVolumeInfo !== currentVolumeInfo),
         },
       });
+      await currentVolumeInfo?.resolveDisplayRoot();
       this.dispatchEvent(event);
       if (previousDirEntry) {
         // If we changed from a directory to another directory always clear
