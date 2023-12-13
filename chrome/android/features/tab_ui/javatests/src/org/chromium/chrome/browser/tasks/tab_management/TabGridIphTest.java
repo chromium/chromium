@@ -52,6 +52,7 @@ import org.junit.runner.RunWith;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.DisabledTest;
+import org.chromium.base.test.util.DoNotBatch;
 import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.Restriction;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
@@ -94,6 +95,7 @@ import java.io.IOException;
 // TODO(https://crbug.com/1362059): The message cards aren't shown the first time when entering GTS
 // with Start surface enabled.
 @DisableFeatures({ChromeFeatureList.ARCHIVE_TAB_SERVICE, ChromeFeatureList.START_SURFACE_ANDROID})
+@DoNotBatch(reason = "Batching can cause message state to leak between tests.")
 public class TabGridIphTest {
     private ModalDialogManager mModalDialogManager;
     private Tracker mTracker;
@@ -134,6 +136,8 @@ public class TabGridIphTest {
     @After
     public void tearDown() {
         ActivityTestUtils.clearActivityOrientation(mActivityTestRule.getActivity());
+        TestThreadUtils.runOnUiThreadBlocking(
+                TabSwitcherCoordinator::resetHasAppendedMessagesForTesting);
     }
 
     @Test

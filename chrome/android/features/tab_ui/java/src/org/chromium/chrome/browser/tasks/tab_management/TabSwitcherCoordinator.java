@@ -423,6 +423,10 @@ public class TabSwitcherCoordinator
                 coordinator.getContext().getColor(R.color.omnibox_focused_fading_background_color));
     }
 
+    public static void resetHasAppendedMessagesForTesting() {
+        sAppendedMessagesForTesting = false;
+    }
+
     public static boolean hasAppendedMessagesForTesting() {
         return sAppendedMessagesForTesting;
     }
