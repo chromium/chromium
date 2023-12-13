@@ -410,14 +410,26 @@
       <message name="IDS_IOS_CONTENT_NOTIFICATION_FULL_PAGE_PROMO_TITLE" desc="Text for the Notifications promo title.">
           Get content that matters to you
       </message>
+      <message name="IDS_IOS_CONTENT_NOTIFICATIONS_PERMISSION_REDIRECT_ALERT_CANCEL" desc="The label for the alert's cancel button">
+        No, Thanks
+      </message>
+      <message name="IDS_IOS_CONTENT_NOTIFICATIONS_PERMISSION_REDIRECT_ALERT_REDIRECT" desc="The label for the alert's redirect to the iOS Settings.">
+        Go to Settings...
+      </message>
+      <message name="IDS_IOS_CONTENT_NOTIFICATIONS_SETTINGS_ALERT_TITLE" desc="Title for the Notifications UI Alert Prompt that redirects the user to the iOS push notifications permission page">
+        Turn on Notifications?
+      </message>
+      <message name="IDS_IOS_CONTENT_NOTIFICATIONS_SETTINGS_ALERT_MESSAGE" desc="Text for the Notifications UI Alert Prompt that redirects the user to the iOS push notifications permission page">
+        To get updates about content that matters to you, turn on notification in your iOS settings.
+      </message>
       <message name="IDS_IOS_CONTENT_NOTIFICATIONS_PROMO_TEXT" desc="Text for the Notifications promo.">
-          Would you like notifications for news, sports, and more based on your interests?
+        Would you like notifications for news, sports, and more based on your interests?
       </message>
       <message name="IDS_IOS_CONTENT_NOTIFICATIONS_PROMO_PRIMARY_BUTTON" desc="Text for the Notifications promo primary button.">
-          Yes, I'm in
+        Yes, I'm in
       </message>
       <message name="IDS_IOS_CONTENT_NOTIFICATIONS_PROMO_SECONDARY_BUTTON" desc="Text for the Notifications promo secondary button.">
-          No Thanks
+        No Thanks
       </message>
       <message name="IDS_IOS_COPY_LINK_ACTION_TITLE" desc="Title of the action used to copy a link to the pasteboard. [iOS only]">
         Copy Link

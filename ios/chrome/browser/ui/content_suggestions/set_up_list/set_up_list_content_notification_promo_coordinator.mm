@@ -144,15 +144,14 @@ using base::UserMetricsAction;
   if (@available(iOS 15.4, *)) {
     settingURL = UIApplicationOpenNotificationSettingsURLString;
   }
-  // TODO(b/304781544): Update the alert strings.
-  NSString* alertTitle =
-      l10n_util::GetNSString(IDS_IOS_PRICE_NOTIFICATIONS_SETTINGS_ALERT_TITLE);
+  NSString* alertTitle = l10n_util::GetNSString(
+      IDS_IOS_CONTENT_NOTIFICATIONS_SETTINGS_ALERT_TITLE);
   NSString* alertMessage = l10n_util::GetNSString(
-      IDS_IOS_PRICE_NOTIFICATIONS_SETTINGS_ALERT_MESSAGE);
+      IDS_IOS_CONTENT_NOTIFICATIONS_SETTINGS_ALERT_MESSAGE);
   NSString* cancelTitle = l10n_util::GetNSString(
-      IDS_IOS_PRICE_NOTIFICATIONS_PRICE_TRACK_PERMISSION_REDIRECT_ALERT_CANCEL);
+      IDS_IOS_CONTENT_NOTIFICATIONS_PERMISSION_REDIRECT_ALERT_CANCEL);
   NSString* settingsTitle = l10n_util::GetNSString(
-      IDS_IOS_PRICE_NOTIFICATIONS_PRICE_TRACK_PERMISSION_REDIRECT_ALERT_REDIRECT);
+      IDS_IOS_CONTENT_NOTIFICATIONS_PERMISSION_REDIRECT_ALERT_REDIRECT);
 
   __weak SetUpListContentNotificationPromoCoordinator* weakSelf = self;
   [self.alertCoordinator stop];
