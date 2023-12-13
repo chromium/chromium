@@ -33,7 +33,6 @@
 #include "components/prefs/testing_pref_service.h"
 #include "components/services/unzip/in_process_unzipper.h"
 #include "components/update_client/activity_data_service.h"
-#include "components/update_client/component_unpacker.h"
 #include "components/update_client/crx_downloader_factory.h"
 #include "components/update_client/crx_update_item.h"
 #include "components/update_client/features.h"

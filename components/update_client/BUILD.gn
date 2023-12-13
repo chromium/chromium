@@ -42,8 +42,6 @@ source_set("in_process_patcher") {
   deps = [
     ":update_client",
     "//base",
-    "//courgette:bsdiff",
-    "//courgette:courgette_lib",
     "//third_party/puffin:libpuffpatch",
   ]
   include_dirs = [ "//third_party/puffin/src/include" ]
@@ -92,12 +90,6 @@ static_library("update_client") {
     "command_line_config_policy.h",
     "component.cc",
     "component.h",
-    "component_patcher.cc",
-    "component_patcher.h",
-    "component_patcher_operation.cc",
-    "component_patcher_operation.h",
-    "component_unpacker.cc",
-    "component_unpacker.h",
     "configurator.h",
     "crx_cache.cc",
     "crx_cache.h",
@@ -170,7 +162,6 @@ static_library("update_client") {
     "//components/crx_file",
     "//components/prefs",
     "//components/version_info:version_info",
-    "//courgette:courgette_lib",
     "//crypto",
     "//third_party/zlib/google:compression_utils",
     "//url",
@@ -235,8 +226,6 @@ bundle_data("unit_tests_bundle_data") {
   visibility = [ ":unit_tests" ]
   testonly = true
   sources = [
-    "//components/test/data/update_client/binary_bsdiff_patch.bin",
-    "//components/test/data/update_client/binary_courgette_patch.bin",
     "//components/test/data/update_client/binary_input.bin",
     "//components/test/data/update_client/binary_output.bin",
     "//components/test/data/update_client/empty_file",
@@ -272,9 +261,6 @@ bundle_data("recovery_component_tests_bundle_data") {
 source_set("unit_tests") {
   testonly = true
   sources = [
-    "component_patcher_unittest.cc",
-    "component_patcher_unittest.h",
-    "component_unpacker_unittest.cc",
     "crx_cache_unittest.cc",
     "persisted_data_unittest.cc",
     "ping_manager_unittest.cc",
@@ -317,7 +303,6 @@ source_set("unit_tests") {
     "//components/services/patch:in_process",
     "//components/services/unzip:in_process",
     "//components/version_info:version_info",
-    "//courgette:courgette_lib",
     "//net:test_support",
     "//services/network:test_support",
     "//services/network/public/cpp:cpp",

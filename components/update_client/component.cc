@@ -27,7 +27,6 @@
 #include "base/task/thread_pool.h"
 #include "base/values.h"
 #include "components/update_client/action_runner.h"
-#include "components/update_client/component_unpacker.h"
 #include "components/update_client/configurator.h"
 #include "components/update_client/crx_cache.h"
 #include "components/update_client/crx_downloader_factory.h"

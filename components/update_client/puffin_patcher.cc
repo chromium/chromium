@@ -15,7 +15,6 @@
 #include "base/sequence_checker.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/task_runner.h"
-#include "components/update_client/component_patcher_operation.h"
 #include "components/update_client/patcher.h"
 #include "components/update_client/update_client.h"
 #include "components/update_client/update_client_errors.h"

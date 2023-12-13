@@ -15,7 +15,6 @@
 #include "base/memory/ref_counted.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/task/sequenced_task_runner.h"
-#include "components/update_client/component_patcher_operation.h"  // nogncheck
 #include "mojo/public/cpp/bindings/remote.h"
 
 namespace patch {
@@ -25,7 +24,7 @@ namespace {
 class PatchParams : public base::RefCounted<PatchParams> {
  public:
   PatchParams(mojo::PendingRemote<mojom::FilePatcher> file_patcher,
-              PatchCallback callback)
+              base::OnceCallback<void(int result)> callback)
       : file_patcher_(std::move(file_patcher)),
         callback_(std::move(callback)) {}
 
@@ -34,7 +33,7 @@ class PatchParams : public base::RefCounted<PatchParams> {
 
   mojo::Remote<mojom::FilePatcher>& file_patcher() { return file_patcher_; }
 
-  PatchCallback TakeCallback() { return std::move(callback_); }
+  base::OnceCallback<void(int)> TakeCallback() { return std::move(callback_); }
 
  private:
   friend class base::RefCounted<PatchParams>;
@@ -45,69 +44,23 @@ class PatchParams : public base::RefCounted<PatchParams> {
   // the callback runs.
   mojo::Remote<mojom::FilePatcher> file_patcher_;
 
-  PatchCallback callback_;
+  base::OnceCallback<void(int)> callback_;
 };
 
 void PatchDone(scoped_refptr<PatchParams> params, int result) {
   params->file_patcher().reset();
-  PatchCallback cb = params->TakeCallback();
+  base::OnceCallback<void(int)> cb = params->TakeCallback();
   if (!cb.is_null())
     std::move(cb).Run(result);
 }
 
 }  // namespace
 
-// TODO(crbug.com/1349158): Remove this function once PatchFilePuffPatch is
-// implemented as this becomes obsolete.
-void Patch(mojo::PendingRemote<mojom::FilePatcher> file_patcher,
-           const std::string& operation,
-           const base::FilePath& input_path,
-           const base::FilePath& patch_path,
-           const base::FilePath& output_path,
-           PatchCallback callback) {
-  DCHECK(!callback.is_null());
-
-  base::File input_file(input_path,
-                        base::File::FLAG_OPEN | base::File::FLAG_READ);
-  base::File patch_file(patch_path,
-                        base::File::FLAG_OPEN | base::File::FLAG_READ);
-  base::File output_file(output_path, base::File::FLAG_CREATE |
-                                          base::File::FLAG_WRITE |
-                                          base::File::FLAG_WIN_EXCLUSIVE_WRITE);
-
-  if (!input_file.IsValid() || !patch_file.IsValid() ||
-      !output_file.IsValid()) {
-    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
-        FROM_HERE, base::BindOnce(std::move(callback), /*result=*/-1));
-    return;
-  }
-
-  // In order to share |callback| between the connection error handler and the
-  // FilePatcher calls, we have to use a context object.
-  scoped_refptr<PatchParams> patch_params = base::MakeRefCounted<PatchParams>(
-      std::move(file_patcher), std::move(callback));
-
-  patch_params->file_patcher().set_disconnect_handler(
-      base::BindOnce(&PatchDone, patch_params, /*result=*/-1));
-
-  if (operation == update_client::kBsdiff) {
-    patch_params->file_patcher()->PatchFileBsdiff(
-        std::move(input_file), std::move(patch_file), std::move(output_file),
-        base::BindOnce(&PatchDone, patch_params));
-  } else if (operation == update_client::kCourgette) {
-    patch_params->file_patcher()->PatchFileCourgette(
-        std::move(input_file), std::move(patch_file), std::move(output_file),
-        base::BindOnce(&PatchDone, patch_params));
-  } else {
-    NOTREACHED();
-  }
-}
-
 void PuffPatch(mojo::PendingRemote<mojom::FilePatcher> file_patcher,
                base::File input_file,
                base::File patch_file,
                base::File output_file,
-               PatchCallback callback) {
+               base::OnceCallback<void(int)> callback) {
   // Use a context object to share callback.
   scoped_refptr<PatchParams> patch_params = base::MakeRefCounted<PatchParams>(
       std::move(file_patcher), std::move(callback));

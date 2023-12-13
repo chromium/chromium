@@ -32,7 +32,6 @@
 #include "components/component_updater/component_updater_paths.h"
 #include "components/component_updater/component_updater_service.h"
 #include "components/crx_file/crx_verifier.h"
-#include "components/update_client/component_unpacker.h"
 #include "components/update_client/update_client.h"
 #include "components/update_client/update_client_errors.h"
 #include "components/update_client/update_query_params.h"
