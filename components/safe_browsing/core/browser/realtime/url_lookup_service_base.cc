@@ -198,14 +198,14 @@ GURL RealTimeUrlLookupServiceBase::SanitizeURL(const GURL& url) {
 // static
 void RealTimeUrlLookupServiceBase::SanitizeReferrerChainEntries(
     ReferrerChain* referrer_chain,
-    base::Time min_allowed_timestamp,
+    absl::optional<base::Time> min_allowed_timestamp,
     bool should_remove_subresource_url) {
-  double min_allowed_timestamp_seconds =
-      min_allowed_timestamp.InSecondsFSinceUnixEpoch();
   for (ReferrerChainEntry& entry : *referrer_chain) {
     // Remove URLs in the entry if the referrer chain is collected
     // before the min_timestamp.
-    if (entry.navigation_time_msec() < min_allowed_timestamp_seconds) {
+    if (min_allowed_timestamp.has_value() &&
+        entry.navigation_time_msec() <
+            min_allowed_timestamp->InSecondsFSinceUnixEpoch()) {
       entry.clear_url();
       entry.clear_main_frame_url();
       entry.clear_referrer_url();

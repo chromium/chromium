@@ -162,8 +162,9 @@ class MockRealTimeUrlLookupService : public RealTimeUrlLookupServiceBase {
   }
   std::string GetMetricSuffix() const override { return ""; }
   bool ShouldIncludeCredentials() const override { return false; }
-  base::Time GetMinAllowedTimestampForReferrerChains() const override {
-    return base::Time();
+  absl::optional<base::Time> GetMinAllowedTimestampForReferrerChains()
+      const override {
+    return absl::nullopt;
   }
 
   base::flat_map<std::string, UrlDetail> url_details_;

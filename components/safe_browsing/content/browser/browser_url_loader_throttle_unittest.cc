@@ -160,8 +160,9 @@ class MockRealTimeUrlLookupService : public RealTimeUrlLookupServiceBase {
     return absl::nullopt;
   }
   bool ShouldIncludeCredentials() const override { return false; }
-  base::Time GetMinAllowedTimestampForReferrerChains() const override {
-    return base::Time();
+  absl::optional<base::Time> GetMinAllowedTimestampForReferrerChains()
+      const override {
+    return absl::nullopt;
   }
 };
 

@@ -107,7 +107,8 @@ class RealTimeUrlLookupService : public RealTimeUrlLookupServiceBase {
   absl::optional<std::string> GetDMTokenString() const override;
   bool ShouldIncludeCredentials() const override;
   void OnResponseUnauthorized(const std::string& invalid_access_token) override;
-  base::Time GetMinAllowedTimestampForReferrerChains() const override;
+  absl::optional<base::Time> GetMinAllowedTimestampForReferrerChains()
+      const override;
   void MaybeLogLastProtegoPingTimeToPrefs(bool sent_with_token) override;
 
   // Called when prefs that affect real time URL lookup are changed.
@@ -142,8 +143,9 @@ class RealTimeUrlLookupService : public RealTimeUrlLookupServiceBase {
   // |url_lookup_service| is an off the record profile.
   bool is_off_the_record_;
 
-  // The time that real time URL lookup is enabled.
-  base::Time url_lookup_enabled_timestamp_;
+  // The time that real time URL lookup is enabled. Not set if it is already
+  // enabled at startup.
+  absl::optional<base::Time> url_lookup_enabled_timestamp_ = absl::nullopt;
 
   // Unowned. For checking whether real-time checks can be enabled in a given
   // location.
