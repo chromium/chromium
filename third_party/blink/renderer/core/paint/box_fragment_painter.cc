@@ -1096,7 +1096,7 @@ void BoxFragmentPainter::PaintBoxDecorationBackgroundWithRect(
   }
 
   if (box.CanCompositeBackgroundAttachmentFixed() &&
-      BackgroundImageGeometry::HasBackgroundFixedToViewport(box)) {
+      BoxBackgroundPaintContext::HasBackgroundFixedToViewport(box)) {
     PaintCompositeBackgroundAttachmentFixed(paint_info, background_client,
                                             box_decoration_data);
     if (box_decoration_data.ShouldPaintBorder()) {

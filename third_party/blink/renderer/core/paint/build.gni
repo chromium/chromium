@@ -11,6 +11,8 @@ blink_core_sources_paint = [
   "block_flow_paint_invalidator.h",
   "block_paint_invalidator.cc",
   "block_paint_invalidator.h",
+  "box_background_paint_context.cc",
+  "box_background_paint_context.h",
   "box_border_painter.cc",
   "box_border_painter.h",
   "box_decoration_data.cc",

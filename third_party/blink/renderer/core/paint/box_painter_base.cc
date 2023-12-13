@@ -813,7 +813,7 @@ inline bool CanUseBottomLayerFastPath(const BoxPainterBase::FillLayerInfo& info,
   DCHECK(info.should_paint_color || info.should_paint_image);
 
   // Painting a background image from an ancestor onto a cell is a complex case.
-  if (geometry.CellUsingContainerBackground()) {
+  if (geometry.GetContext().CellUsingContainerBackground()) {
     return false;
   }
   // Complex cases not handled on the fast path.
@@ -1183,7 +1183,7 @@ void BoxPainterBase::PaintFillLayer(const PaintInfo& paint_info,
       composite_op = SkBlendMode::kSrcOver;
     }
 
-    const ComputedStyle& image_style = geometry.ImageStyle(style_);
+    const ComputedStyle& image_style = geometry.GetContext().ImageStyle(style_);
 
     // If the "image" referenced by the FillLayer is an SVG <mask> reference
     // (and this is a layer for a mask), then repeat, position, clip, origin and
@@ -1191,8 +1191,9 @@ void BoxPainterBase::PaintFillLayer(const PaintInfo& paint_info,
     if (bg_layer.GetType() == EFillLayerType::kMask) {
       if (const auto* mask_source =
               ToMaskSourceIfSVGMask(*fill_layer_info.image)) {
-        const PhysicalRect positioning_area = geometry.ComputePositioningArea(
-            paint_info, bg_layer, scrolled_paint_rect);
+        const PhysicalRect positioning_area =
+            geometry.GetContext().ComputePositioningArea(paint_info, bg_layer,
+                                                         scrolled_paint_rect);
         const gfx::RectF reference_box(gfx::SizeF(positioning_area.size));
         const float zoom = image_style.EffectiveZoom();
 
@@ -1201,15 +1202,18 @@ void BoxPainterBase::PaintFillLayer(const PaintInfo& paint_info,
         context.Translate(positioning_area.X().ToFloat(),
                           positioning_area.Y().ToFloat());
         SVGMaskPainter::PaintSVGMaskLayer(
-            context, *mask_source, geometry.ImageClient(), reference_box, zoom,
-            composite_op, bg_layer.MaskMode() == EFillMaskMode::kMatchSource);
+            context, *mask_source, geometry.GetContext().ImageClient(),
+            reference_box, zoom, composite_op,
+            bg_layer.MaskMode() == EFillMaskMode::kMatchSource);
         return;
       }
     }
+    DCHECK_GE(document_.Lifecycle().GetState(),
+              DocumentLifecycle::kPrePaintClean);
     geometry.Calculate(paint_info, bg_layer, scrolled_paint_rect);
 
-    image = fill_layer_info.image->GetImage(geometry.ImageClient(), document_,
-                                            image_style,
+    image = fill_layer_info.image->GetImage(geometry.GetContext().ImageClient(),
+                                            document_, image_style,
                                             gfx::SizeF(geometry.TileSize()));
 
     image_rendering_settings_context.emplace(context,
@@ -1235,12 +1239,12 @@ void BoxPainterBase::PaintFillLayer(const PaintInfo& paint_info,
 
   absl::optional<RoundedInnerRectClipper> clip_to_border;
   if (fill_layer_info.is_rounded_fill) {
-    DCHECK(!geometry.CanCompositeBackgroundAttachmentFixed());
+    DCHECK(!geometry.GetContext().CanCompositeBackgroundAttachmentFixed());
     clip_to_border.emplace(context, rect, border_rect);
   }
 
   if (bg_layer.Clip() == EFillBox::kText) {
-    DCHECK(!geometry.CanCompositeBackgroundAttachmentFixed());
+    DCHECK(!geometry.GetContext().CanCompositeBackgroundAttachmentFixed());
     PaintFillLayerTextFillBox(paint_info, fill_layer_info, image.get(),
                               composite_op, geometry, rect, scrolled_paint_rect,
                               object_has_multiple_boxes);
@@ -1249,7 +1253,7 @@ void BoxPainterBase::PaintFillLayer(const PaintInfo& paint_info,
 
   // We use BackgroundClip paint property when CanFastScrollFixedAttachment().
   absl::optional<GraphicsContextStateSaver> background_clip_state_saver;
-  if (!geometry.CanCompositeBackgroundAttachmentFixed()) {
+  if (!geometry.GetContext().CanCompositeBackgroundAttachmentFixed()) {
     switch (bg_layer.Clip()) {
       case EFillBox::kFillBox:
       // Spec: For elements with associated CSS layout box, the used values for
