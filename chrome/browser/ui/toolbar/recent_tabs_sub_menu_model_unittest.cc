@@ -53,6 +53,7 @@
 #include "content/public/test/test_utils.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/base/ui_base_features.h"
 
 using ::testing::ElementsAre;
 
@@ -615,43 +616,83 @@ TEST_P(RecentTabsSubMenuModelTest, MaxSessionsAndRecency) {
 
   RecentTabsSubMenuModel model(nullptr, browser());
 
-  // Expected menu items:
-  std::vector<ModelData> kData = {
-      {ui::MenuModel::TYPE_COMMAND, true},    // History
-      {ui::MenuModel::TYPE_SEPARATOR, true},  // <separator>
-      {ui::MenuModel::TYPE_COMMAND, false},   // Recently closed
-      {ui::MenuModel::TYPE_SEPARATOR, true},  // <separator>
-      {ui::MenuModel::TYPE_TITLE, false},     // <section header for session 3>
-      {ui::MenuModel::TYPE_COMMAND, true},    // <tab for session 3>
-      {ui::MenuModel::TYPE_SEPARATOR, true},  // <separator>
-      {ui::MenuModel::TYPE_TITLE, false},     // <section header for session 2>
-      {ui::MenuModel::TYPE_COMMAND, true},    // <tab for session 2>
-      {ui::MenuModel::TYPE_SEPARATOR, true},  // <separator>
-      {ui::MenuModel::TYPE_TITLE, false},     // <section header for session 1>
-      {ui::MenuModel::TYPE_COMMAND, true},    // <tab for session 1>
-      // max sessions is 3, so only the 3 most recent sessions will show.
-  };
+  std::vector<ModelData> kData;
+  // Once chrome refresh is launched this if condition can be removed.
+  if (!features::IsChromeRefresh2023()) {
+    kData = {
+        {ui::MenuModel::TYPE_COMMAND, true},    // History
+        {ui::MenuModel::TYPE_SEPARATOR, true},  // <separator>
+        {ui::MenuModel::TYPE_COMMAND, false},   // Recently closed
+        {ui::MenuModel::TYPE_SEPARATOR, true},  // <separator>
+        {ui::MenuModel::TYPE_TITLE, false},   // <section header for session 3>
+        {ui::MenuModel::TYPE_COMMAND, true},  // <tab for session 3>
+        {ui::MenuModel::TYPE_SEPARATOR, true},  // <separator>
+        {ui::MenuModel::TYPE_TITLE, false},   // <section header for session 2>
+        {ui::MenuModel::TYPE_COMMAND, true},  // <tab for session 2>
+        {ui::MenuModel::TYPE_SEPARATOR, true},  // <separator>
+        {ui::MenuModel::TYPE_TITLE, false},   // <section header for session 1>
+        {ui::MenuModel::TYPE_COMMAND, true},  // <tab for session 1>
+        // max sessions is 3, so only the 3 most recent sessions will show.
+    };
 
-  if (base::FeatureList::IsEnabled(features::kSidePanelPinning)) {
-    kData.insert(kData.begin() + 1,
-                 {ui::MenuModel::TYPE_COMMAND, true});  // History Cluster
-  }
+    if (base::FeatureList::IsEnabled(features::kSidePanelPinning)) {
+      kData.insert(kData.begin() + 1,
+                   {ui::MenuModel::TYPE_COMMAND, true});  // History Cluster
+    }
 
-  VerifyModel(model, kData);
+    VerifyModel(model, kData);
 
-  if (base::FeatureList::IsEnabled(features::kSidePanelPinning)) {
-    EXPECT_THAT(base::span<const std::u16string>(
-                    recent_tabs_builder.GetTabTitlesSortedByRecency())
-                    .subspan(0, 3),
-                ElementsAre(model.GetLabelAt(6), model.GetLabelAt(9),
-                            model.GetLabelAt(12)));
+    if (base::FeatureList::IsEnabled(features::kSidePanelPinning)) {
+      EXPECT_THAT(base::span<const std::u16string>(
+                      recent_tabs_builder.GetTabTitlesSortedByRecency())
+                      .subspan(0, 3),
+                  ElementsAre(model.GetLabelAt(6), model.GetLabelAt(9),
+                              model.GetLabelAt(12)));
+
+    } else {
+      EXPECT_THAT(base::span<const std::u16string>(
+                      recent_tabs_builder.GetTabTitlesSortedByRecency())
+                      .subspan(0, 3),
+                  ElementsAre(model.GetLabelAt(5), model.GetLabelAt(8),
+                              model.GetLabelAt(11)));
+    }
 
   } else {
-    EXPECT_THAT(base::span<const std::u16string>(
-                    recent_tabs_builder.GetTabTitlesSortedByRecency())
-                    .subspan(0, 3),
-                ElementsAre(model.GetLabelAt(5), model.GetLabelAt(8),
-                            model.GetLabelAt(11)));
+    kData = {{ui::MenuModel::TYPE_COMMAND, true},    // History
+             {ui::MenuModel::TYPE_SEPARATOR, true},  // <separator>
+             {ui::MenuModel::TYPE_COMMAND, false},   // Recently closed
+             {ui::MenuModel::TYPE_SEPARATOR, true},  // <separator>
+             {ui::MenuModel::TYPE_TITLE, false},     // Your devices
+             {ui::MenuModel::TYPE_SUBMENU, true},
+             {ui::MenuModel::TYPE_SUBMENU, true},
+             {ui::MenuModel::TYPE_SUBMENU, true},
+             {ui::MenuModel::TYPE_SUBMENU, true}};
+
+    if (base::FeatureList::IsEnabled(features::kSidePanelPinning)) {
+      kData.insert(kData.begin() + 1,
+                   {ui::MenuModel::TYPE_COMMAND, true});  // History Cluster
+    }
+
+    VerifyModel(model, kData);
+
+    if (base::FeatureList::IsEnabled(features::kSidePanelPinning)) {
+      EXPECT_THAT(base::span<const std::u16string>(
+                      recent_tabs_builder.GetTabTitlesSortedByRecency())
+                      .subspan(0, 4),
+                  ElementsAre(model.GetSubmenuModelAt(6)->GetLabelAt(0),
+                              model.GetSubmenuModelAt(7)->GetLabelAt(0),
+                              model.GetSubmenuModelAt(8)->GetLabelAt(0),
+                              model.GetSubmenuModelAt(9)->GetLabelAt(0)));
+
+    } else {
+      EXPECT_THAT(base::span<const std::u16string>(
+                      recent_tabs_builder.GetTabTitlesSortedByRecency())
+                      .subspan(0, 4),
+                  ElementsAre(model.GetSubmenuModelAt(5)->GetLabelAt(0),
+                              model.GetSubmenuModelAt(6)->GetLabelAt(0),
+                              model.GetSubmenuModelAt(7)->GetLabelAt(0),
+                              model.GetSubmenuModelAt(8)->GetLabelAt(0)));
+    }
   }
 }
 
