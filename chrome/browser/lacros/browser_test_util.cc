@@ -61,9 +61,11 @@ bool IsTestControllerAvailable(
 }
 
 bool WaitForWindow(const std::string& id, bool exists) {
-  CHECK(IsTestControllerAvailable(
-      crosapi::mojom::TestController::MethodMinVersions::
-          kDoesWindowExistMinVersion));
+  if (!IsTestControllerAvailable(
+          crosapi::mojom::TestController::MethodMinVersions::
+              kDoesWindowExistMinVersion)) {
+    return false;
+  }
   base::RunLoop outer_loop;
   bool actual_exists = false;
   auto wait_for_window = base::BindRepeating(
@@ -95,9 +97,11 @@ bool WaitForWindow(const std::string& id, bool exists) {
 }
 
 bool WaitForElement(const std::string& id, bool exists) {
-  CHECK(IsTestControllerAvailable(
-      crosapi::mojom::TestController::MethodMinVersions::
-          kDoesElementExistMinVersion));
+  if (!IsTestControllerAvailable(
+          crosapi::mojom::TestController::MethodMinVersions::
+              kDoesElementExistMinVersion)) {
+    return false;
+  }
   base::RunLoop outer_loop;
   bool actual_exists = false;
   auto wait_for_element = base::BindRepeating(
@@ -143,9 +147,11 @@ bool WaitForWindowDestruction(const std::string& id) {
 }
 
 bool WaitForShelfItem(const std::string& id, bool exists) {
-  CHECK(IsTestControllerAvailable(
-      crosapi::mojom::TestController::MethodMinVersions::
-          kDoesItemExistInShelfMinVersion));
+  if (!IsTestControllerAvailable(
+          crosapi::mojom::TestController::MethodMinVersions::
+              kDoesItemExistInShelfMinVersion)) {
+    return false;
+  }
   base::RunLoop outer_loop;
   bool actual_exists = false;
   auto wait_for_shelf_item = base::BindRepeating(
@@ -220,9 +226,11 @@ bool WaitForShelfItemState(const std::string& id,
 // |window|. The AuraObserver only waits for the up-event to start processing
 // before quitting the run loop.
 bool SendAndWaitForMouseClick(aura::Window* window) {
-  CHECK(
-      IsTestControllerAvailable(crosapi::mojom::TestController::
-                                    MethodMinVersions::kClickWindowMinVersion));
+  if (!IsTestControllerAvailable(
+          crosapi::mojom::TestController::MethodMinVersions::
+              kClickWindowMinVersion)) {
+    return false;
+  }
   DCHECK(window->IsRootWindow());
   std::string id = lacros_window_utility::GetRootWindowUniqueId(window);
 
