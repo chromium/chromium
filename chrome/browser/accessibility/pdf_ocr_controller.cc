@@ -197,6 +197,11 @@ void PdfOcrController::OnPdfOcrAlwaysActiveChanged() {
 }
 
 void PdfOcrController::SendPdfOcrAlwaysActiveToAll(bool is_always_active) {
+  if (is_always_active) {
+    CHECK_EQ(ScreenAIInstallState::GetInstance()->get_state(),
+             ScreenAIInstallState::State::kReady);
+  }
+
   std::vector<content::WebContents*> html_web_contents_vector =
       GetPdfHtmlWebContentses(profile_);
   // Iterate over all WebContentses associated with PDF Viewer Mimehandlers and
