@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Copyright 2023 The Chromium Authors. All rights reserved.
+     Use of this source code is governed by a BSD-style license that can be
+     found in the LICENSE file. -->
+
+<resources xmlns:tools="http://schemas.android.com/tools"
+    tools:ignore="UnusedResources">
+  <!-- Price change module dimens -->
+    <dimen name="price_change_module_background_color_elevation">@dimen/default_elevation_0</dimen>
+    <dimen name="price_change_module_background_radius">24dp</dimen>
+    <dimen name="price_change_module_favicon_background_radius">4dp</dimen>
+    <dimen name="price_change_module_favicon_image_size">24dp</dimen>
+    <dimen name="price_change_module_margin">20dp</dimen>
+    <dimen name="price_change_module_product_image_size">116dp</dimen>
+</resources>
