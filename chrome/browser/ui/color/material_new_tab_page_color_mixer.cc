@@ -70,4 +70,18 @@ void AddMaterialNewTabPageColorMixer(ui::ColorProvider* provider,
   mixer[kColorNewTabPagePromoBackground] = {ui::kColorSysBase};
   mixer[kColorNewTabPagePrimaryForeground] = {ui::kColorSysOnSurface};
   mixer[kColorNewTabPageSecondaryForeground] = {ui::kColorSysOnSurfaceSubtle};
+
+  if (base::FeatureList::IsEnabled(ntp_features::kRealboxCr23Theming) ||
+      base::FeatureList::IsEnabled(ntp_features::kRealboxCr23All)) {
+    // TODO(https://crbug.com/1502156): Add expanded state theming colors.
+    // TODO(https://crbug.com/1509456): Clean up kNtpComprehensiveThemeRealbox flag.
+
+    // Steady state theme colors
+    mixer[kColorRealboxBackground] = {kColorToolbarBackgroundSubtleEmphasis};
+    mixer[kColorRealboxBackgroundHovered] = {
+        kColorToolbarBackgroundSubtleEmphasisHovered};
+    mixer[kColorRealboxPlaceholder] = {kColorOmniboxTextDimmed};
+    mixer[kColorRealboxSearchIconBackground] = {kColorOmniboxResultsIcon};
+    mixer[kColorRealboxLensVoiceIconBackground] = {ui::kColorSysPrimary};
+  }
 }

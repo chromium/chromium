@@ -158,27 +158,35 @@
     width: var(--ntp-realbox-icon-width);
   }
 
-  :host([single-colored-icons]) #voiceSearchButton,
-  :host([single-colored-icons]) #lensSearchButton {
-    -webkit-mask-position: center;
-    -webkit-mask-repeat: no-repeat;
-    -webkit-mask-size: 21px 21px;
-    background-color: var(--color-new-tab-page-primary-foreground);
-  }
-
-  :host([single-colored-icons]) #voiceSearchButton {
-    -webkit-mask-image: url(icons/googlemic_clr_24px.svg);
-  }
-
-  :host(:not([single-colored-icons])) #voiceSearchButton {
+  :host(:not([realbox-chrome-refresh-theming])) #voiceSearchButton {
     background-image: url(icons/googlemic_clr_24px.svg);
   }
 
-  :host([single-colored-icons]) #lensSearchButton {
+  :host(:not([realbox-chrome-refresh-theming])) #lensSearchButton {
+    background-image: url(chrome://new-tab-page/icons/lens_icon.svg);
+  }
+
+  :host([realbox-chrome-refresh-theming]:not([color-source-is-baseline])) #voiceSearchButton,
+  :host([realbox-chrome-refresh-theming]:not([color-source-is-baseline])) #lensSearchButton {
+    -webkit-mask-position: center;
+    -webkit-mask-repeat: no-repeat;
+    -webkit-mask-size: 21px 21px;
+    background-color: var(--color-realbox-lens-voice-icon-background);
+  }
+
+  :host([realbox-chrome-refresh-theming]:not([color-source-is-baseline])) #voiceSearchButton {
+    -webkit-mask-image: url(icons/googlemic_clr_24px.svg);
+  }
+
+  :host([realbox-chrome-refresh-theming][color-source-is-baseline]) #voiceSearchButton {
+    background-image: url(icons/googlemic_clr_24px.svg);
+  }
+
+  :host([realbox-chrome-refresh-theming]:not([color-source-is-baseline])) #lensSearchButton {
     -webkit-mask-image: url(chrome://new-tab-page/icons/lens_icon.svg);
   }
 
-  :host(:not([single-colored-icons])) #lensSearchButton {
+  :host([realbox-chrome-refresh-theming][color-source-is-baseline]) #lensSearchButton {
     background-image: url(chrome://new-tab-page/icons/lens_icon.svg);
   }
 

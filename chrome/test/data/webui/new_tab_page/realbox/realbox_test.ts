@@ -235,17 +235,38 @@ suite('NewTabPageRealboxTest', () => {
     });
   });
 
-  test('Single colored voice search icon has masked image', async () => {
+  test('Color source baseline search icon has background image', async () => {
     // Arrange.
+    loadTimeData.overrideValues({realboxCr23Theming: true});
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
     realbox = document.createElement('ntp-realbox');
-    realbox.singleColoredIcons = true;
+    realbox.colorSourceIsBaseline = true;
+    document.body.appendChild(realbox);
+
+    // Assert.
+    assertStyle(
+        realbox.$.voiceSearchButton, 'background-image',
+        'url("chrome://new-tab-page/icons/googlemic_clr_24px.svg")');
+
+    // Restore.
+    loadTimeData.overrideValues({realboxCr23Theming: false});
+  });
+
+  test('Color source not baseline search icon has mask image', async () => {
+    // Arrange.
+    loadTimeData.overrideValues({realboxCr23Theming: true});
+    document.body.innerHTML = window.trustedTypes!.emptyHTML;
+    realbox = document.createElement('ntp-realbox');
+    realbox.colorSourceIsBaseline = false;
     document.body.appendChild(realbox);
 
     // Assert.
     assertStyle(
         realbox.$.voiceSearchButton, '-webkit-mask-image',
         'url("chrome://new-tab-page/icons/googlemic_clr_24px.svg")');
+
+    // Restore.
+    loadTimeData.overrideValues({realboxCr23Theming: false});
   });
 
   //============================================================================

@@ -189,6 +189,12 @@ export class AppElement extends AppElementBase {
         type: Object,
       },
 
+      // Used in ntp-realbox component via host-context.
+      colorSourceIsBaseline: {
+        type: Boolean,
+        computed: 'computeColorSourceIsBaseline(theme_)',
+      },
+
       customizeChromeEnabled_: {
         type: Boolean,
         value: () => loadTimeData.getBoolean('customizeChromeEnabled'),
@@ -654,6 +660,10 @@ export class AppElement extends AppElementBase {
       return null;
     }
     return this.theme_ && this.theme_.backgroundColor;
+  }
+
+  private computeColorSourceIsBaseline(): boolean {
+    return this.theme_.isBaseline;
   }
 
   private computeLogoColor_(): SkColor|null {

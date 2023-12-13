@@ -374,6 +374,7 @@
   E_CPONLY(kColorRealboxBackgroundHovered) \
   E_CPONLY(kColorRealboxBorder) \
   E_CPONLY(kColorRealboxForeground) \
+  E_CPONLY(kColorRealboxLensVoiceIconBackground) \
   E_CPONLY(kColorRealboxPlaceholder) \
   E_CPONLY(kColorRealboxResultsBackground) \
   E_CPONLY(kColorRealboxResultsBackgroundHovered) \

@@ -147,6 +147,7 @@ new_tab_page::mojom::ThemePtr MakeTheme(
           ? ntp_custom_background_service->GetCustomBackground()
           : std::nullopt;
   theme->background_color = color_provider.GetColor(kColorNewTabPageBackground);
+  theme->is_baseline = theme_service->GetIsBaseline();
   const bool theme_has_custom_image =
       theme_provider->HasCustomImage(IDR_THEME_NTP_BACKGROUND);
   SkColor text_color;

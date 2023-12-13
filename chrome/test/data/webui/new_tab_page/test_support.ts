@@ -71,6 +71,7 @@ export function createTheme(isDark: boolean = false): Theme {
     backgroundImageAttribution2: '',
     dailyRefreshEnabled: false,
     backgroundImageCollectionId: '',
+    isBaseline: true,
     isDark,
     mostVisited: mostVisited,
     textColor: {value: 0xff0000ff},

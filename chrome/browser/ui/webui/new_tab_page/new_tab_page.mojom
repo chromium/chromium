@@ -75,6 +75,8 @@ struct BackgroundImage {
 struct Theme {
   skia.mojom.SkColor text_color;
   skia.mojom.SkColor background_color;
+  // True if user color mode is baseline.
+  bool is_baseline;
   // True if the background is custom.
   bool is_custom_background;
   // True if daily refresh is enabled.

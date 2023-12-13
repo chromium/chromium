@@ -680,6 +680,10 @@ void RealboxHandler::SetupWebUIDataSource(content::WebUIDataSource* source,
       "realboxCr23HoverFillShape",
       base::FeatureList::IsEnabled(ntp_features::kRealboxCr23HoverFillShape) ||
           base::FeatureList::IsEnabled(ntp_features::kRealboxCr23All));
+  source->AddBoolean(
+      "realboxCr23Theming",
+      base::FeatureList::IsEnabled(ntp_features::kRealboxCr23Theming) ||
+          base::FeatureList::IsEnabled(ntp_features::kRealboxCr23All));
 }
 
 // static
