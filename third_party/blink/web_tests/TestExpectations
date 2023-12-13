@@ -1536,7 +1536,6 @@ crbug.com/1045672 fast/forms/select/listbox-tap.html [ Failure ]
 # See https://docs.google.com/document/d/1FH0iG8G8mEebjMpVA_zvSfHBWUhWqC92jRFctaGcxrc/edit#heading=h.pacsgp238vkn
 
 crbug.com/1488371 virtual/deprecate-unload/http/tests/history/history-replace-updates-current-item.html [ Failure Skip Timeout ]
-crbug.com/1488371 virtual/deprecate-unload/http/tests/navigation/image-load-in-subframe-unload-handler.html [ Failure Skip Timeout ]
 crbug.com/1488371 virtual/deprecate-unload/http/tests/navigation/image-load-in-unload-handler.html [ Failure Skip Timeout ]
 crbug.com/1488371 virtual/deprecate-unload/external/wpt/html/browsers/browsing-the-web/back-forward-cache/events.html [ Failure Skip Timeout ]
 crbug.com/1488371 virtual/deprecate-unload/external/wpt/html/browsers/browsing-the-web/unloading-documents/unload/009.html [ Failure Skip Timeout ]

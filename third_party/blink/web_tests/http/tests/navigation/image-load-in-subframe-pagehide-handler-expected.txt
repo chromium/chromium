@@ -1,0 +1,1 @@
+This test triggers an pagehide handler that starts an image load in a different frame (and deletes both frames), but ensures the main frame is not destroyed. We pass if we don't crash.
