@@ -25,10 +25,6 @@
 
 class SkBitmap;
 
-namespace content {
-struct OpenURLParams;
-}
-
 using DownscaleAndEncodeBitmapCallback = base::OnceCallback<void(
     const std::vector<unsigned char>& thumbnail_data,
     const std::string& content_type,
@@ -126,8 +122,6 @@ class CoreTabHelper : public content::WebContentsObserver,
   void NavigationEntriesDeleted() override;
   void OnWebContentsFocused(content::RenderWidgetHost*) override;
   void OnWebContentsLostFocus(content::RenderWidgetHost*) override;
-  void DidFinishNavigation(
-      content::NavigationHandle* navigation_handle) override;
 
   // Asynchronously downscales and encodes the image from the context node
   // before issuing an image search request for the image.
@@ -169,16 +163,10 @@ class CoreTabHelper : public content::WebContentsObserver,
 
   // Posts the bytes and content type to the specified URL If |use_side_panel|
   // is true, the content will open in a side panel, otherwise it will open in
-  // a new tab. If we are waiting for a Lens ping response, this will instead
-  // set stored_lens_search_settings_.
+  // a new tab.
   void PostContentToURL(TemplateURLRef::PostContent post_content,
                         GURL url,
                         bool use_side_panel);
-
-  // Opens |open_url_params|. If |use_side_panel| is true, the content will open
-  // in a side panel, otherwise it will open in a new tab.
-  void OpenOpenURLParams(content::OpenURLParams open_url_params,
-                         bool use_side_panel);
 
   // Creates a thumbnail to POST to search engine for the image that triggered
   // the context menu.  The |src_url| is passed to the search request and is
@@ -204,10 +192,6 @@ class CoreTabHelper : public content::WebContentsObserver,
   void MaybeSetSearchArgsForImageTranslate(
       TemplateURLRef::SearchTermsArgs& search_args);
 
-  // Triggers the Lens ping if needed, as indicated by the feature flag setting.
-  // This should be called before a Lens Standalone request is initiated.
-  void TriggerLensPingIfEnabled();
-
   // The time when we started to create the new tab page.  This time is from
   // before we created this WebContents.
   base::TimeTicks new_tab_start_time_;
@@ -215,26 +199,6 @@ class CoreTabHelper : public content::WebContentsObserver,
   // Content restrictions, used to disable print/copy etc based on content's
   // (full-page plugins for now only) permissions.
   int content_restrictions_ = 0;
-
-  // Stores the settings for opening a Lens search.
-  struct LensSearchSettings {
-    // Whether or not the search should occur in the side panel.
-    bool use_side_panel;
-
-    // The url params to open.
-    content::OpenURLParams url_params;
-  };
-
-  // If Lens pinging is enabled, and a sequential Lens ping is awaiting a
-  // response, this will be set.
-  bool awaiting_lens_ping_response_ = false;
-
-  // If sequential Lens pinging is enabled, this stores the Lens search settings
-  // if a Lens search is ready before the Lens ping response was received.
-  std::optional<LensSearchSettings> stored_lens_search_settings_;
-
-  // The time that the last Lens ping request was initiated.
-  base::TimeTicks lens_ping_start_time_;
 
   base::WeakPtrFactory<CoreTabHelper> weak_factory_{this};
 

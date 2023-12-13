@@ -727,19 +727,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Search.Lens.PingDuration" units="ms"
-    expires_after="2023-08-07">
-  <owner>hujasonx@google.com</owner>
-  <owner>lens-chrome-eng@google.com</owner>
-  <summary>
-    When the user performs a Lens search on Desktop, records the time elapsed
-    from when a Lens Ping was sent and the response was received. Recorded if
-    enable-lens-ping and ping-lens-sequentially are both true. If the ping was
-    never received, or was an unexpected type, such as a non 204 response code,
-    this event will not be logged.
-  </summary>
-</histogram>
-
 <histogram name="Search.Lens.ViewportDimensionsSent.Success" units="Boolean"
     expires_after="2024-06-02">
   <owner>mercerd@google.com</owner>

@@ -56,11 +56,6 @@ BASE_DECLARE_FEATURE(kLensImageFormatOptimizations);
 COMPONENT_EXPORT(LENS_FEATURES)
 BASE_DECLARE_FEATURE(EnableContextMenuInLensSidePanel);
 
-// Enables the ping for Lens Standalone, which is sent before the Standalone
-// request.
-COMPONENT_EXPORT(LENS_FEATURES)
-BASE_DECLARE_FEATURE(kEnableLensPing);
-
 // The base URL for Lens.
 COMPONENT_EXPORT(LENS_FEATURES)
 extern const base::FeatureParam<std::string> kHomepageURLForLens;
@@ -121,16 +116,6 @@ extern const base::FeatureParam<int> kEncodingQualityJpeg;
 // format.
 COMPONENT_EXPORT(LENS_FEATURES)
 extern const base::FeatureParam<int> kEncodingQualityWebp;
-
-// The URL to send pings for Lens Standalone.
-COMPONENT_EXPORT(LENS_FEATURES)
-extern const base::FeatureParam<std::string> kLensPingURL;
-
-// Enables sequential processing of the Lens Ping before performing the
-// Lens Standalone search. If false, the ping will occur in parallel to
-// the search.
-COMPONENT_EXPORT(LENS_FEATURES)
-extern const base::FeatureParam<bool> kPingLensSequentially;
 
 // Enables Latency logging for the LensStandalone feature.
 COMPONENT_EXPORT(LENS_FEATURES)
@@ -223,10 +208,6 @@ extern bool IsJpegForImageSearchEnabled();
 // Returns whether to enable the context menu in the Lens side panel.
 COMPONENT_EXPORT(LENS_FEATURES)
 extern bool GetEnableContextMenuInLensSidePanel();
-
-// Returns whether to ping Lens before sending a Standalone request.
-COMPONENT_EXPORT(LENS_FEATURES)
-extern bool GetEnableLensPing();
 
 // The URL for the Lens ping.
 COMPONENT_EXPORT(LENS_FEATURES)

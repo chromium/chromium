@@ -3025,11 +3025,6 @@
     "expiry_milestone": 125
   },
   {
-    "name": "enable-lens-ping",
-    "owners": [ "schechter@chromium.org", "hujasonx@chromium.org", "lens-chrome@google.com" ],
-    "expiry_milestone": 120
-  },
-  {
     "name": "enable-lens-region-search-static-page",
     "owners": ["juanmojica@google.com", "stanfield@google.com", "lens-chrome@google.com"],
     "expiry_milestone": 126

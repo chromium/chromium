@@ -2248,12 +2248,6 @@ const char kLensImageTranslateDescription[] =
     "Lens. The context menu item appears when the current page is being "
     "translated.";
 
-const char kEnableLensPingName[] =
-    "Enable the ping to Lens before Lens requests";
-const char kEnableLensPingDescription[] =
-    "Enables a ping to the Lens Standalone server before a request is sent. "
-    "This ping is used to proactively set cookies needed by Lens.";
-
 const char kCscCompanionEnablePageContentName[] = "CSC Page Contents";
 const char kCscCompanionEnablePageContentDescription[] =
     "Share the page contents with Chrome search companion.";
