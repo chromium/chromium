@@ -422,6 +422,9 @@ class Profile : public content::BrowserContext {
 
   // Returns whether it is an Incognito profile. An Incognito profile is an
   // off-the-record profile that is used for incognito mode.
+  //
+  // TODO(crbug.com/1348572): Also returns true for Lacros in a Ash guest
+  // profile.
   bool IsIncognitoProfile() const;
 
   // Returns true if this is a primary OffTheRecord profile, which covers the

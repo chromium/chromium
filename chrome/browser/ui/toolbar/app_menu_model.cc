@@ -1588,9 +1588,11 @@ void AppMenuModel::Build() {
   if (AddGlobalErrorMenuItems() || need_separator)
     AddSeparator(ui::NORMAL_SEPARATOR);
 
-  AddItemWithStringId(IDC_NEW_TAB, browser_->profile()->IsIncognitoProfile()
-                                       ? IDS_NEW_INCOGNITO_TAB
-                                       : IDS_NEW_TAB);
+  AddItemWithStringId(IDC_NEW_TAB,
+                      browser_->profile()->IsIncognitoProfile() &&
+                              !browser_->profile()->IsGuestSession()
+                          ? IDS_NEW_INCOGNITO_TAB
+                          : IDS_NEW_TAB);
   AddItemWithStringId(IDC_NEW_WINDOW, IDS_NEW_WINDOW);
 
   // This menu item is not visible in Guest Mode. If incognito mode is not
