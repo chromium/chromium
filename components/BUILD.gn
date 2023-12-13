@@ -915,6 +915,7 @@ if (use_blink) {
       "autofill/content/renderer/form_autofill_issues_browsertest.cc",
       "autofill/content/renderer/form_autofill_util_browsertest.cc",
       "autofill/content/renderer/form_cache_browsertest.cc",
+      "autofill/content/renderer/form_tracker_browsertest.cc",
       "autofill/content/renderer/html_based_username_detector_browsertest.cc",
       "autofill/content/renderer/password_form_conversion_utils_browsertest.cc",
       "browsing_data/content/browsing_data_helper_browsertest.h",
