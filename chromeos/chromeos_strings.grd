@@ -3885,6 +3885,9 @@
         <message name="IDS_FIRMWARE_RESTARTING_FOOTER_TEXT" desc="Label shown when a device is being restarted.">
           Restarting...
         </message>
+        <message name="IDS_FIRMWARE_WAITING_FOOTER_TEXT" desc="Label that displays what percentage of the update has been installed, shown while waiting for user action." translateable="false">
+          Paused (<ph name="PERCENTAGE_VALUE">$1<ex>94</ex></ph>% complete)
+        </message>
         <message name="IDS_FIRMWARE_UPDATE_FAILED_TITLE_TEXT" desc="Label shown when an update fails.">
           Can't update <ph name="DEVICE_NAME">$1<ex>Logitech keyboard</ex></ph>
         </message>

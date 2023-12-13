@@ -126,11 +126,11 @@ suite('FirmwareUpdateDialogTest', () => {
         getTextContent('#progress'),
         loadTimeData.getString('restartingFooterText'));
     // Check that the indeterminate progress is shown.
-    assertTrue(!!updateDialogElement.shadowRoot.querySelector(
-        '#indeterminateProgressBar'));
+    assertTrue(isVisible(updateDialogElement.shadowRoot.querySelector(
+        '#indeterminateProgressBar')));
     // No percentage progress bar.
-    assertFalse(
-        !!updateDialogElement.shadowRoot.querySelector('#updateProgressBar'));
+    assertFalse(isVisible(
+        updateDialogElement.shadowRoot.querySelector('#updateProgressBar')));
   });
 
   test('UpdateDialogContent', async () => {
@@ -171,11 +171,11 @@ suite('FirmwareUpdateDialogTest', () => {
         getTextContent('#progress'),
         loadTimeData.getString('restartingFooterText'));
     // Check that the indeterminate progress is shown.
-    assertTrue(!!updateDialogElement.shadowRoot.querySelector(
-        '#indeterminateProgressBar'));
+    assertTrue(isVisible(updateDialogElement.shadowRoot.querySelector(
+        '#indeterminateProgressBar')));
     // No percentage progress bar.
-    assertFalse(
-        !!updateDialogElement.shadowRoot.querySelector('#updateProgressBar'));
+    assertFalse(isVisible(
+        updateDialogElement.shadowRoot.querySelector('#updateProgressBar')));
   });
 
   test('ProgressBarAppears', async () => {
@@ -225,11 +225,11 @@ suite('FirmwareUpdateDialogTest', () => {
         getTextContent('#progress'),
         loadTimeData.getString('restartingFooterText'));
     // Check that the indeterminate progress is shown.
-    assertTrue(!!updateDialogElement.shadowRoot.querySelector(
-        '#indeterminateProgressBar'));
+    assertTrue(isVisible(updateDialogElement.shadowRoot.querySelector(
+        '#indeterminateProgressBar')));
     // No percentage progress bar.
-    assertFalse(
-        !!updateDialogElement.shadowRoot.querySelector('#updateProgressBar'));
+    assertFalse(isVisible(
+        updateDialogElement.shadowRoot.querySelector('#updateProgressBar')));
   });
 
   test('UpdateDialogContent_DeviceRequest_V2Disabled', async () => {
@@ -375,13 +375,20 @@ suite('FirmwareUpdateDialogTest', () => {
       assertEquals(
           getTextContent('#updateDialogBody'),
           loadTimeData.getString(expectedString));
+      assertEquals(
+          getTextContent('#progress'),
+          loadTimeData.getStringF('waitingFooterText', 70));
 
-      // Check that the indeterminate progress is shown.
-      assertTrue(!!updateDialogElement.shadowRoot.querySelector(
-          '#indeterminateProgressBar'));
-      // No percentage progress bar.
-      assertFalse(
-          !!updateDialogElement.shadowRoot.querySelector('#updateProgressBar'));
+      // Percentage progress should be shown when waiting for user action, but
+      // the bar should be disabled.
+      assertTrue(isVisible(
+          updateDialogElement.shadowRoot.querySelector('#updateProgressBar')));
+      assertTrue(
+          !!updateDialogElement.shadowRoot.querySelector('#updateProgressBar')!
+                .hasAttribute('disabled'));
+      // Indeterminate progress should not be shown.
+      assertFalse(isVisible(updateDialogElement.shadowRoot.querySelector(
+          '#indeterminateProgressBar')));
     }
   });
 });

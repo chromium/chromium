@@ -301,6 +301,7 @@ export class FirmwareUpdateDialogElement extends FirmwareUpdateDialogElementBase
   createRequestDialogContent(): DialogContent {
     assert(this.update);
     const {deviceName} = this.update;
+    const {percentage} = this.installationProgress;
     assert(this.lastDeviceRequestId !== null);
 
     const requestStringId =
@@ -310,7 +311,7 @@ export class FirmwareUpdateDialogElement extends FirmwareUpdateDialogElementBase
     return {
       title: this.i18n('updating', mojoString16ToString(deviceName)),
       body: this.i18n(requestStringId),
-      footer: '',
+      footer: this.i18n('waitingFooterText', percentage),
     };
   }
 
@@ -399,17 +400,16 @@ export class FirmwareUpdateDialogElement extends FirmwareUpdateDialogElementBase
 
   protected isInIndeterminateState(): boolean {
     if (this.installationProgress) {
-      // Show indeterminate state while waiting for user action.
-      if (this.isWaitingForUserAction()) {
-        return true;
-      }
-
       return this.inactiveDialogStates.includes(
                  this.installationProgress.state) ||
           this.isDeviceRestarting();
     }
 
     return false;
+  }
+
+  protected isProgressBarDisabled(): boolean {
+    return this.isWaitingForUserAction();
   }
 
   protected computeButtonText(): string {

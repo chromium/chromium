@@ -12,6 +12,10 @@
     border: none;
   }
 
+  #updateDialogBody {
+    min-height: 100px;
+  }
+
   #progress {
     display: inline-block;
     margin: 8px 0;
@@ -53,7 +57,8 @@
                 lastDeviceRequestId)]]" restamp>
         <paper-progress id="updateProgressBar"
             value="[[computePercentageValue(installationProgress.percentage)]]"
-            max="100">
+            max="100" disabled="[[isProgressBarDisabled(installationProgress.*,
+                                  lastDeviceRequestId)]]">
         </paper-progress>
       </template>
       <template is="dom-if"

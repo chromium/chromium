@@ -67,6 +67,7 @@ void AddFirmwareUpdateAppStrings(content::WebUIDataSource* source) {
       {"restartingBodyText", IDS_FIRMWARE_RESTARTING_BODY_TEXT},
       {"restartingFooterText", IDS_FIRMWARE_RESTARTING_FOOTER_TEXT},
       {"restartingTitleText", IDS_FIRMWARE_RESTARTING_TITLE_TEXT},
+      {"waitingFooterText", IDS_FIRMWARE_WAITING_FOOTER_TEXT},
       {"upToDate", IDS_FIRMWARE_UP_TO_DATE_TEXT},
       {"versionText", IDS_FIRMWARE_VERSION_TEXT},
       {"proceedConfirmationText", IDS_FIRMWARE_PROCEED_UPDATE_CONFIRMATION},
