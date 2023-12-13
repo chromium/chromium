@@ -28,14 +28,12 @@ import org.chromium.base.test.util.Feature;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
-import org.chromium.chrome.test.util.browser.Features.EnableFeatures;
 import org.chromium.components.payments.Address;
 import org.chromium.components.payments.ErrorStrings;
 import org.chromium.components.payments.IPaymentDetailsUpdateService;
 import org.chromium.components.payments.IPaymentDetailsUpdateServiceCallback;
 import org.chromium.components.payments.PaymentDetailsUpdateService;
 import org.chromium.components.payments.PaymentDetailsUpdateServiceHelper;
-import org.chromium.components.payments.PaymentFeatureList;
 import org.chromium.components.payments.PaymentRequestUpdateEventListener;
 import org.chromium.components.payments.intent.WebPaymentIntentHelperType.PaymentCurrencyAmount;
 import org.chromium.components.payments.intent.WebPaymentIntentHelperType.PaymentHandlerMethodData;
@@ -49,7 +47,6 @@ import java.util.List;
 
 /** Tests for PaymentDetailsUpdateServiceHelper. */
 @RunWith(ChromeJUnit4ClassRunner.class)
-@EnableFeatures(PaymentFeatureList.ANDROID_APP_PAYMENT_UPDATE_EVENTS)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
 public class PaymentDetailsUpdateServiceHelperTest {
     private static final int DECODER_STARTUP_TIMEOUT_IN_MS = 10000;

@@ -76,10 +76,6 @@ public class PaymentDetailsUpdateService extends Service {
 
     @Override
     public IBinder onBind(Intent intent) {
-        if (!PaymentFeatureList.isEnabledOrExperimentalFeaturesEnabled(
-                PaymentFeatureList.ANDROID_APP_PAYMENT_UPDATE_EVENTS)) {
-            return null;
-        }
         return mBinder;
     }
 }
