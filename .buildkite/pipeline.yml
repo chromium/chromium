@@ -135,6 +135,25 @@ steps:
       - replayio/buildevents#adb8a05: ~
     command: "be_cmd metabase-tests -- /home/ubuntu/chromium/src/replay_build_scripts/metabase.sh"
 
+  - label: "Trigger Devtools E2E Tests"
+    key: "devtools-test-suite"
+    soft_fail: true
+    depends_on: "build-chromium-linux-x86_64"
+    agents:
+      - "runtimeType=chromiumbuild"
+      - "os=linux"
+      - "queue=runtime"
+    plugins:
+      - thedyrt/skip-checkout#v0.1.1: ~
+      - seek-oss/aws-sm#v2.3.1:
+          region: us-east-2
+          env:
+            GITHUB_AUTH_SECRET: "prod/devtools-github-secret"
+            BUILDEVENT_APIKEY: honeycomb-api-key
+            BUILDEVENT_BUILDKITE_API_TOKEN: buildkite-api-token-honeycomb-build-events
+      - replayio/buildevents#adb8a05: ~
+    command: "be_cmd devtools-tests -- /home/ubuntu/chromium/src/replay_build_scripts/devtools-tests.sh"
+
   # wait for all steps above, but also continue if they fail
   - wait: ~
     continue_on_failure: true
