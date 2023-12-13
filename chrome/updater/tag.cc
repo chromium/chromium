@@ -14,9 +14,11 @@
 #include <vector>
 
 #include "base/containers/contains.h"
+#include "base/containers/span.h"
 #include "base/files/file.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
+#include "base/files/memory_mapped_file.h"
 #include "base/logging.h"
 #include "base/no_destructor.h"
 #include "base/strings/escape.h"
@@ -764,7 +766,7 @@ std::string ReadTag(std::vector<uint8_t>::const_iterator begin,
 
 std::unique_ptr<tagging::BinaryInterface> CreateBinary(
     const base::FilePath& file,
-    const std::vector<uint8_t>& contents) {
+    base::span<const uint8_t> contents) {
   if (file.MatchesExtension(FILE_PATH_LITERAL(".exe"))) {
     return CreatePEBinary(contents);
   } else if (file.MatchesExtension(FILE_PATH_LITERAL(".msi"))) {
@@ -784,10 +786,13 @@ std::string BinaryReadTagString(const base::FilePath& file) {
     return ParseTagBuffer(ReadFileTail(file));
   }
 
-  // TODO(crbug.com/1472820): Can we do similar for EXEs, or can we consider PE
-  // parsing to be a safer implementation?
-  const std::vector<uint8_t> contents = ReadEntireFile(file);
-  std::unique_ptr<tagging::BinaryInterface> bin = CreateBinary(file, contents);
+  base::MemoryMappedFile mapped_file;
+  if (!mapped_file.Initialize(file)) {
+    LOG(ERROR) << __func__ << ": Unknown or empty file: " << file;
+    return {};
+  }
+  std::unique_ptr<tagging::BinaryInterface> bin =
+      CreateBinary(file, mapped_file.bytes());
   if (!bin) {
     LOG(ERROR) << __func__ << ": Could not parse binary: " << file;
     return {};
