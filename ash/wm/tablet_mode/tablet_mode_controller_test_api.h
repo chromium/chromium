@@ -84,10 +84,6 @@ class TabletModeControllerTestApi {
     return tablet_mode_controller_->CanUseUnstableLidAngle();
   }
 
-  bool IsTabletModeStarted() const {
-    return tablet_mode_controller_->InTabletMode();
-  }
-
   bool AreEventsBlocked() const {
     return tablet_mode_controller_->AreInternalInputDeviceEventsBlocked();
   }
@@ -101,6 +97,10 @@ class TabletModeControllerTestApi {
   }
 
   float GetLidAngle() const { return tablet_mode_controller_->lid_angle(); }
+
+  // Deprecated. Use display::Screen::GetScreen()->InTabletMode() instead.
+  // TODO(crbug.com/1502114): Remove this.
+  bool IsTabletModeStarted() const;
 
  private:
   raw_ptr<TabletModeController, DanglingUntriaged | ExperimentalAsh>

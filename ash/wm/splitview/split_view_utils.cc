@@ -19,7 +19,6 @@
 #include "ash/wm/snap_group/snap_group_controller.h"
 #include "ash/wm/splitview/split_view_constants.h"
 #include "ash/wm/splitview/split_view_types.h"
-#include "ash/wm/tablet_mode/tablet_mode_controller.h"
 #include "ash/wm/window_positioning_utils.h"
 #include "ash/wm/window_restore/window_restore_controller.h"
 #include "ash/wm/window_state.h"
@@ -568,19 +567,13 @@ SnapPosition GetSnapPosition(aura::Window* root_window,
       vertical_edge_inset);
 }
 
-bool IsInTabletMode() {
-  TabletModeController* tablet_mode_controller =
-      Shell::Get()->tablet_mode_controller();
-  return tablet_mode_controller && tablet_mode_controller->InTabletMode();
-}
-
 bool IsLayoutHorizontal(aura::Window* window) {
   return IsLayoutHorizontal(
       display::Screen::GetScreen()->GetDisplayNearestWindow(window));
 }
 
 bool IsLayoutHorizontal(const display::Display& display) {
-  if (IsInTabletMode()) {
+  if (display::Screen::GetScreen()->InTabletMode()) {
     return IsCurrentScreenOrientationLandscape();
   }
 
@@ -595,7 +588,7 @@ bool IsLayoutPrimary(aura::Window* window) {
 }
 
 bool IsLayoutPrimary(const display::Display& display) {
-  if (IsInTabletMode()) {
+  if (display::Screen::GetScreen()->InTabletMode()) {
     return IsCurrentScreenOrientationPrimary();
   }
 
@@ -646,7 +639,7 @@ gfx::Rect CalculateSnappedWindowBoundsInScreen(
           root_window);
   const bool horizontal = IsLayoutHorizontal(root_window);
   const bool snap_left_or_top = IsPhysicalLeftOrTop(snap_position, root_window);
-  const bool in_tablet_mode = IsInTabletMode();
+  const bool in_tablet_mode = display::Screen::GetScreen()->InTabletMode();
   const int work_area_size = GetDividerPositionUpperLimit(root_window);
 
   // Edit `divider_position` if window restore is currently restoring a snapped

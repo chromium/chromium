@@ -547,10 +547,6 @@ void TabletModeController::RemoveObserver(TabletModeObserver* observer) {
   tablet_mode_observers_.RemoveObserver(observer);
 }
 
-bool TabletModeController::InTabletMode() const {
-  return display::Screen::GetScreen()->InTabletMode();
-}
-
 bool TabletModeController::ForceUiTabletModeState(std::optional<bool> enabled) {
   if (!enabled.has_value()) {
     tablet_mode_behavior_ = kDefault;

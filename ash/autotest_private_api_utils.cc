@@ -18,6 +18,7 @@
 #include "ui/compositor/layer.h"
 #include "ui/compositor/layer_animation_observer.h"
 #include "ui/compositor/layer_animator.h"
+#include "ui/display/screen.h"
 
 namespace ash {
 namespace {
@@ -153,8 +154,7 @@ std::vector<aura::Window*> GetAppWindowList() {
 
 bool WaitForLauncherState(AppListViewState target_state,
                           base::OnceClosure closure) {
-  const bool in_tablet_mode =
-      Shell::Get()->tablet_mode_controller()->InTabletMode();
+  const bool in_tablet_mode = display::Screen::GetScreen()->InTabletMode();
   if (in_tablet_mode) {
     // App-list can't enter kPeeking or kHalf state in tablet mode. Thus
     // |target_state| should be either kClosed, kFullscreenAllApps or

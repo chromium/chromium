@@ -52,14 +52,6 @@ class ASH_PUBLIC_EXPORT TabletMode {
   virtual void RemoveObserver(TabletModeObserver* observer) = 0;
 
   // Deprecated, do NOT use this. Please use
-  // display::Screen::GetScreen()->InTabletMode() instead. To override tablet
-  // state for testing, use display::Screen::OverrideTabletStateForTesting.
-  // TODO(crbug.com/1502114): Remove this.
-  //
-  // Returns true if the system is in tablet mode.
-  virtual bool InTabletMode() const = 0;
-
-  // Deprecated, do NOT use this. Please use
   // display::Screen::GetScreen()->InTabletMode() instead.
   // TODO(crbug.com/1502114): Remove this.
   //

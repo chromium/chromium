@@ -134,10 +134,6 @@ class ASH_EXPORT TabletModeController
   // TabletMode:
   void AddObserver(TabletModeObserver* observer) override;
   void RemoveObserver(TabletModeObserver* observer) override;
-  // We are considered in tablet mode when |tablet_mode_window_manager_| is
-  // about to be initialized. When it is about to be shutdown, we are considered
-  // out of tablet mode.
-  bool InTabletMode() const override;
   bool AreInternalInputDeviceEventsBlocked() const override;
   bool ForceUiTabletModeState(std::optional<bool> enabled) override;
   void SetEnabledForTest(bool enabled) override;

@@ -10,6 +10,7 @@
 #include "base/numerics/math_constants.h"
 #include "base/run_loop.h"
 #include "base/time/default_tick_clock.h"
+#include "ui/display/screen.h"
 #include "ui/events/devices/device_data_manager_test_api.h"
 #include "ui/events/devices/input_device.h"
 #include "ui/events/devices/touchpad_device.h"
@@ -146,6 +147,10 @@ void TabletModeControllerTestApi::SuspendImminent() {
 
 void TabletModeControllerTestApi::SuspendDone(base::TimeDelta sleep_duration) {
   tablet_mode_controller_->SuspendDone(sleep_duration);
+}
+
+bool TabletModeControllerTestApi::IsTabletModeStarted() const {
+  return display::Screen::GetScreen()->InTabletMode();
 }
 
 }  // namespace ash

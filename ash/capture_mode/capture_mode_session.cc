@@ -609,10 +609,9 @@ void CaptureModeSession::UpdateCursor(const gfx::Point& location_in_screen,
     return;
   }
 
-  // Hide mouse cursor in tablet mode.
-  auto* tablet_mode_controller = Shell::Get()->tablet_mode_controller();
-  if (tablet_mode_controller->InTabletMode() &&
-      !tablet_mode_controller->IsInDevTabletMode()) {
+  // Hide mouse cursor in tablet mode except for the dev tablet mode.
+  if (display::Screen::GetScreen()->InTabletMode() &&
+      !Shell::Get()->tablet_mode_controller()->IsInDevTabletMode()) {
     cursor_setter_->HideCursor();
     return;
   }
