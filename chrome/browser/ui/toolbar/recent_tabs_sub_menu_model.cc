@@ -78,15 +78,6 @@ ui::ImageModel CreateFavicon(const gfx::VectorIcon& icon) {
 
 }  // namespace
 
-enum RecentTabAction {
-  LOCAL_SESSION_TAB = 0,
-  OTHER_DEVICE_TAB,
-  RESTORE_WINDOW,
-  SHOW_MORE,
-  LIMIT_RECENT_TAB_ACTION,
-  RESTORE_GROUP
-};
-
 // An element in |RecentTabsSubMenuModel::local_tab_navigation_items_| or
 // |RecentTabsSubMenuModel::other_devices_tab_navigation_items_| that stores
 // the navigation information of a local or other devices' tab required to
@@ -218,8 +209,6 @@ bool RecentTabsSubMenuModel::GetAcceleratorForCommandId(
 
 void RecentTabsSubMenuModel::ExecuteCommand(int command_id, int event_flags) {
   if (command_id == IDC_SHOW_HISTORY) {
-    UMA_HISTOGRAM_ENUMERATION("WrenchMenu.RecentTabsSubMenu", SHOW_MORE,
-                              LIMIT_RECENT_TAB_ACTION);
     if (log_menu_metrics_callback_) {
       log_menu_metrics_callback_.Run(command_id);
     }
@@ -264,8 +253,6 @@ void RecentTabsSubMenuModel::ExecuteCommand(int command_id, int event_flags) {
       if (service && context) {
         base::RecordAction(
             base::UserMetricsAction("WrenchMenu_OpenRecentTabFromLocal"));
-        UMA_HISTOGRAM_ENUMERATION("WrenchMenu.RecentTabsSubMenu",
-                                  LOCAL_SESSION_TAB, LIMIT_RECENT_TAB_ACTION);
         service->RestoreEntryById(context, item.tab_id, disposition);
       }
     } else {  // Restore tab of session from other devices.
@@ -281,8 +268,6 @@ void RecentTabsSubMenuModel::ExecuteCommand(int command_id, int event_flags) {
       }
       base::RecordAction(
           base::UserMetricsAction("WrenchMenu_OpenRecentTabFromDevice"));
-      UMA_HISTOGRAM_ENUMERATION("WrenchMenu.RecentTabsSubMenu",
-                                OTHER_DEVICE_TAB, LIMIT_RECENT_TAB_ACTION);
       SessionRestore::RestoreForeignSessionTab(
           browser_->tab_strip_model()->GetActiveWebContents(), *tab,
           disposition);
@@ -291,15 +276,11 @@ void RecentTabsSubMenuModel::ExecuteCommand(int command_id, int event_flags) {
     if (service && context) {
       base::RecordAction(
           base::UserMetricsAction("WrenchMenu_OpenRecentWindow"));
-      UMA_HISTOGRAM_ENUMERATION("WrenchMenu.RecentTabsSubMenu", RESTORE_WINDOW,
-                                LIMIT_RECENT_TAB_ACTION);
       service->RestoreEntryById(context, local_window_items_.at(command_id),
                                 disposition);
     }
   } else if (IsGroupModelCommandId(command_id)) {
     base::RecordAction(base::UserMetricsAction("WrenchMenu_OpenRecentGroup"));
-    UMA_HISTOGRAM_ENUMERATION("WrenchMenu.RecentTabsSubMenu", RESTORE_GROUP,
-                              LIMIT_RECENT_TAB_ACTION);
     service->RestoreEntryById(context, local_group_items_.at(command_id),
                               disposition);
   } else {

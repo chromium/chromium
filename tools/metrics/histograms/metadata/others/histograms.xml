@@ -11870,15 +11870,6 @@ regressions. -->
   <summary>Number of times that each menu item is clicked.</summary>
 </histogram>
 
-<histogram name="WrenchMenu.RecentTabsSubMenu" enum="RecentTabsAction"
-    expires_after="M85">
-  <owner>rpop@chromium.org</owner>
-  <summary>
-    The number of times each tab or window restore option in the Recent Tabs
-    submenu is clicked.
-  </summary>
-</histogram>
-
 <histogram name="WrenchMenu.TimeToAction.{Action}" units="ms"
     expires_after="2024-10-01">
   <owner>ainslie@chromium.org</owner>
