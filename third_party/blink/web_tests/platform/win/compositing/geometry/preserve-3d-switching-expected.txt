@@ -15,14 +15,14 @@ transform: translateZ(-100px) rotateY(45deg);
       "transform": 1
     },
     {
-      "name": "LayoutNGBlockFlow (children-inline) DIV id='parent'",
+      "name": "LayoutNGBlockFlow DIV id='parent'",
       "bounds": [280, 280],
       "contentsOpaque": true,
       "backgroundColor": "#FFFF00",
       "transform": 4
     },
     {
-      "name": "LayoutNGBlockFlow (positioned, children-inline) DIV",
+      "name": "LayoutNGBlockFlow (positioned) DIV",
       "bounds": [200, 200],
       "contentsOpaque": true,
       "backgroundColor": "#008000",

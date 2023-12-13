@@ -587,9 +587,7 @@ TEST_P(InlineCursorTest, NextWithListItem) {
   InlineCursor cursor = SetupCursor("<ul><li id=root>abc</li></ul>");
   Vector<String> list = ToDebugStringList(cursor);
   EXPECT_THAT(
-      list,
-      ElementsAre("LayoutOutsideListMarker (inline, children-inline) ::marker",
-                  "#linebox", "abc"));
+      list, ElementsAre("LayoutOutsideListMarker ::marker", "#linebox", "abc"));
   EXPECT_EQ(GetLayoutObjectByElementId("root"), cursor.GetLayoutBlockFlow());
 }
 

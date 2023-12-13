@@ -1,4 +1,4 @@
-TEST
+CONSOLE MESSAGE: debug
 {
   "layers": [
     {
@@ -8,11 +8,18 @@ TEST
       "backgroundColor": "#FFFFFF"
     },
     {
-      "name": "LayoutNGBlockFlow DIV class='transform'",
-      "bounds": [100, 30],
+      "name": "LayoutNGBlockFlow (positioned) DIV id='container'",
+      "bounds": [100, 100],
       "contentsOpaque": true,
       "backgroundColor": "#0000FF",
       "transform": 1
+    },
+    {
+      "name": "LayoutNGBlockFlow (positioned) DIV class='fixed'",
+      "position": [50, 50],
+      "bounds": [75, 75],
+      "contentsOpaque": true,
+      "backgroundColor": "#008000"
     }
   ],
   "transforms": [
@@ -22,7 +29,7 @@ TEST
         [1, 0, 0, 0],
         [0, 1, 0, 0],
         [0, 0, 1, 0],
-        [8, 8, 0, 1]
+        [200, 100, 0, 1]
       ]
     }
   ]

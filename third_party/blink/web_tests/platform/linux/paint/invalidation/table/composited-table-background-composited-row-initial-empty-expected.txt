@@ -15,7 +15,7 @@
       "transform": 1
     },
     {
-      "name": "LayoutTableCell (children-inline) TD",
+      "name": "LayoutTableCell TD",
       "bounds": [59, 64],
       "transform": 2
     }

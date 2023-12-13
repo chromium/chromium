@@ -7,16 +7,22 @@
       "backgroundColor": "#FFFFFF"
     },
     {
-      "name": "LayoutNGBlockFlow (positioned, children-inline) DIV id='container'",
-      "bounds": [100, 100],
+      "name": "LayoutNGBlockFlow (positioned) DIV class='fixedpos'",
+      "position": [0, 50],
+      "bounds": [800, 550],
       "contentsOpaque": true,
-      "backgroundColor": "#0000FF",
+      "backgroundColor": "#ADD8E6"
+    },
+    {
+      "name": "LayoutNGBlockFlow (positioned) DIV class='compositedlayer'",
+      "bounds": [24, 100],
+      "contentsOpaque": true,
+      "backgroundColor": "#D3D3D3",
       "transform": 1
     },
     {
-      "name": "LayoutNGBlockFlow (positioned) DIV class='fixed'",
-      "position": [50, 50],
-      "bounds": [75, 75],
+      "name": "LayoutNGBlockFlow (positioned) DIV class='notsquashedelement'",
+      "bounds": [800, 60],
       "contentsOpaque": true,
       "backgroundColor": "#008000"
     }
@@ -28,7 +34,7 @@
         [1, 0, 0, 0],
         [0, 1, 0, 0],
         [0, 0, 1, 0],
-        [200, 100, 0, 1]
+        [400, 40, 0, 1]
       ]
     }
   ]
