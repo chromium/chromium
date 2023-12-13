@@ -122,9 +122,7 @@ DialogModel::Builder& DialogModel::Builder::SetInitiallyFocusedField(
 
 DialogModel::DialogModel(base::PassKey<Builder>,
                          std::unique_ptr<DialogModelDelegate> delegate)
-    : delegate_(std::move(delegate)),
-      contents_(base::BindRepeating(&DialogModel::OnFieldAdded,
-                                    base::Unretained(this))) {
+    : delegate_(std::move(delegate)) {
   if (delegate_)
     delegate_->set_dialog_model(this);
 }
@@ -245,12 +243,6 @@ void DialogModel::SetButtonLabel(DialogModelButton* button,
   if (host_) {
     host_->OnFieldChanged(button);
   }
-}
-
-void DialogModel::OnFieldAdded(DialogModelField* field) {
-  CHECK(field);
-  if (host_)
-    host_->OnFieldAdded(field);
 }
 
 }  // namespace ui

@@ -355,6 +355,12 @@ BubbleDialogModelHost::BubbleDialogModelHost(
     : BubbleDialogDelegate(anchor_view, arrow),
       model_(std::move(model)),
       contents_view_(SetAndGetContentsView(this, modal_type)),
+      contents_observation_(
+          // TODO(pbos): Move this into the ContentsView to make it responsible
+          // for all of contents.
+          model_->contents()->AddOnFieldAddedCallback(
+              base::BindRepeating(&BubbleDialogModelHost::OnFieldAdded,
+                                  base::Unretained(this)))),
       theme_observer_(this, contents_view_) {
   model_->set_host(GetPassKey(), this);
 

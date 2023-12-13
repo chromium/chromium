@@ -20,10 +20,6 @@ void DialogModelMenuModelAdapter::Close() {
   NOTREACHED_NORETURN();
 }
 
-void DialogModelMenuModelAdapter::OnFieldAdded(DialogModelField* field) {
-  NOTREACHED_NORETURN();
-}
-
 void DialogModelMenuModelAdapter::OnFieldChanged(DialogModelField* field) {
   NOTREACHED_NORETURN();
 }

@@ -383,17 +383,18 @@ DialogModelCustomField::DialogModelCustomField(
 
 DialogModelCustomField::~DialogModelCustomField() = default;
 
-DialogModelSection::DialogModelSection(
-    base::RepeatingCallback<void(DialogModelField*)> on_field_added)
+DialogModelSection::DialogModelSection()
     : DialogModelField(kSection,
                        ElementIdentifier(),
                        {},
-                       DialogModelField::Params()),
-      on_field_added_(on_field_added) {
-  CHECK(on_field_added_);
-}
+                       DialogModelField::Params()) {}
 
 DialogModelSection::~DialogModelSection() = default;
+
+base::CallbackListSubscription DialogModelSection::AddOnFieldAddedCallback(
+    base::RepeatingCallback<void(DialogModelField*)> on_field_added) {
+  return on_field_added_.Add(std::move(on_field_added));
+}
 
 void DialogModelSection::AddParagraph(const DialogModelLabel& label,
                                       std::u16string header,
@@ -453,7 +454,7 @@ void DialogModelSection::AddField(std::unique_ptr<DialogModelField> field) {
   CHECK_NE(field->type(), DialogModelField::kSection);
   auto* const field_ptr = field.get();
   fields_.push_back(std::move(field));
-  on_field_added_.Run(field_ptr);
+  on_field_added_.Notify(field_ptr);
 }
 
 }  // namespace ui

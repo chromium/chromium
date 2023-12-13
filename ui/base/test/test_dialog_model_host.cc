@@ -98,11 +98,6 @@ void TestDialogModelHost::Close() {
   NOTREACHED_NORETURN();
 }
 
-void TestDialogModelHost::OnFieldAdded(DialogModelField* field) {
-  // TODO(pbos): Figure out what to do here. :)
-  NOTREACHED_NORETURN();
-}
-
 void TestDialogModelHost::OnFieldChanged(DialogModelField* field) {
   NOTREACHED_NORETURN();
 }

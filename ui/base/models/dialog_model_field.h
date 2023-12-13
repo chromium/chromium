@@ -7,6 +7,7 @@
 
 #include <string>
 
+#include "base/callback_list.h"
 #include "base/component_export.h"
 #include "base/containers/flat_set.h"
 #include "base/functional/callback.h"
@@ -603,11 +604,13 @@ class COMPONENT_EXPORT(UI_BASE) DialogModelSection final
   // TODO(pbos): Params may make sense here? An optional title should be here?
   // TODO(pbos): We may also want to add on_field_added as a callback to that
   // Params struct once it exists.
-  explicit DialogModelSection(
-      base::RepeatingCallback<void(DialogModelField*)> on_field_added);
+  DialogModelSection();
   DialogModelSection(const DialogModelSection&) = delete;
   DialogModelSection& operator=(const DialogModelSection&) = delete;
   ~DialogModelSection() override;
+
+  [[nodiscard]] base::CallbackListSubscription AddOnFieldAddedCallback(
+      base::RepeatingCallback<void(DialogModelField*)> on_field_added);
 
   const std::vector<std::unique_ptr<DialogModelField>>& fields() const {
     return fields_;
@@ -658,7 +661,7 @@ class COMPONENT_EXPORT(UI_BASE) DialogModelSection final
  private:
   void AddField(std::unique_ptr<DialogModelField> field);
 
-  const base::RepeatingCallback<void(DialogModelField*)> on_field_added_;
+  base::RepeatingCallbackList<void(DialogModelField*)> on_field_added_;
 
   std::vector<std::unique_ptr<DialogModelField>> fields_;
 };

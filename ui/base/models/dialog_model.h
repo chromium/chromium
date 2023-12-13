@@ -493,6 +493,8 @@ class COMPONENT_EXPORT(UI_BASE) DialogModel final {
     return close_on_deactivate_;
   }
 
+  DialogModelSection* contents() { return &contents_; }
+
   // TODO(pbos): Replace this with a section() or something.
   const std::vector<std::unique_ptr<DialogModelField>>& fields(
       base::PassKey<DialogModelHost>) {
@@ -500,8 +502,6 @@ class COMPONENT_EXPORT(UI_BASE) DialogModel final {
   }
 
  private:
-  void OnFieldAdded(DialogModelField* field);
-
   // Runs the appropriate variant of the provided ButtonCallbackVariant and
   // returns whether the dialog should close as a result.
   static bool RunDialogModelButtonCallback(
