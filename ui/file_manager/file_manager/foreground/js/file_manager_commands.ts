@@ -37,7 +37,7 @@ import {type ActionsModel, CommonActionId, InternalActionId} from './actions_mod
 import {MenuCommandsForUma, recordMenuItemSelected} from './command_handler.js';
 import {canExecuteVisibleOnDriveInNormalAppModeOnly, containsNonInteractiveEntry, currentVolumeIsInteractive, getCommandEntries, getCommandEntry, getElementVolumeInfo, getEventEntry, getOnlyOneSelectedDirectory, getParentEntry, getSharesheetLaunchSource, hasCapability, isDriveEntries, isFromSelectionMenu, isOnlyMyDriveEntries, isOnTrashRoot, isRootEntry, shouldIgnoreEvents, shouldShowMenuItemsForEntry} from './file_manager_commands_util.js';
 import {PasteWithDestDirectoryEvent} from './file_transfer_controller.js';
-import {HoldingSpaceUtil} from './holding_space_util.js';
+import {getAllowedVolumeTypes, maybeStoreTimeOfFirstPin} from './holding_space_util.js';
 import {PathComponent} from './path_component.js';
 import {type CanExecuteEvent, Command, type CommandEvent} from './ui/command.js';
 import type {DirectoryItem, DirectoryTree} from './ui/directory_tree.js';
@@ -1419,7 +1419,7 @@ export class ToggleHoldingSpaceCommand extends FilesCommand {
     }
 
     // Filter out entries from unsupported volumes.
-    const allowedVolumeTypes = HoldingSpaceUtil.getAllowedVolumeTypes();
+    const allowedVolumeTypes = getAllowedVolumeTypes();
     const entries =
         fileManager.selectionHandler.selection.entries.filter(entry => {
           const volumeInfo = fileManager.volumeManager.getVolumeInfo(entry);
@@ -1431,7 +1431,7 @@ export class ToggleHoldingSpaceCommand extends FilesCommand {
         entries.map(unwrapEntry) as Entry[], this.addsItems_, () => {});
 
     if (this.addsItems_) {
-      HoldingSpaceUtil.maybeStoreTimeOfFirstPin();
+      maybeStoreTimeOfFirstPin();
     }
 
     recordMenuItemSelected(
@@ -1442,7 +1442,7 @@ export class ToggleHoldingSpaceCommand extends FilesCommand {
   override canExecute(event: CanExecuteEvent, fileManager: CommandHandlerDeps) {
     const command = event.command;
 
-    const allowedVolumeTypes = HoldingSpaceUtil.getAllowedVolumeTypes();
+    const allowedVolumeTypes = getAllowedVolumeTypes();
     const currentRootType = fileManager.directoryModel.getCurrentRootType();
     if (!isRecentRootType(currentRootType)) {
       const volumeInfo = fileManager.directoryModel.getCurrentVolumeInfo();
