@@ -2313,7 +2313,12 @@ void OmniboxEditModel::OpenMatch(OmniboxPopupSelection selection,
   bool is_open_tab_match =
       match.from_keyword &&
       match.provider->type() == AutocompleteProvider::TYPE_OPEN_TAB;
-  if (is_open_tab_match) {
+  // Also switch the window disposition for tab switch actions. The action
+  // itself will already open with SWITCH_TO_TAB disposition, but the change
+  // is needed earlier for metrics.
+  bool is_tab_switch_action =
+      action && action->ActionId() == OmniboxActionId::TAB_SWITCH;
+  if (is_open_tab_match || is_tab_switch_action) {
     disposition = WindowOpenDisposition::SWITCH_TO_TAB;
   }
 
