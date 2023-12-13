@@ -1378,6 +1378,12 @@ INSTANTIATE_TEST_SUITE_P(
          "defaultbrowser",
          true},
 
+        // empty tag string.
+        {"GUH-untagged.msi", "", true},
+
+        // already tagged.
+        {"GUH-brand-only.msi", "brand=QAQA", true},
+
         // unknown tag argument `unknowntagarg`.
         {"GUH-untagged.msi",
          "appguid={8A69D345-D564-463C-AFF1-A69D9E530F96}&iid={2D8C18E9-8D3A-"
@@ -1402,7 +1408,7 @@ TEST_P(MsiTagTestMsiWriteTagTest, TestCases) {
     ASSERT_EQ(tagging::BinaryWriteTag(msi_file, GetParam().tag_string, 8206,
                                       out_msi_file),
               GetParam().expected_success);
-    if (GetParam().expected_success) {
+    if (GetParam().expected_success && !GetParam().tag_string.empty()) {
       tagging::TagArgs tag_args;
       ASSERT_EQ(tagging::Parse(GetParam().tag_string, {}, &tag_args),
                 tagging::ErrorCode::kSuccess);
