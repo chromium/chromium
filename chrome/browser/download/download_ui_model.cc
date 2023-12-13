@@ -46,6 +46,7 @@
 #if !BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/ui/browser.h"
 #include "components/url_formatter/elide_url.h"
+#include "ui/gfx/text_elider.h"
 #include "ui/views/vector_icons.h"
 #endif
 
@@ -259,11 +260,15 @@ std::u16string DownloadUIModel::GetStatusTextForLabel(
   if (!ShouldPromoteOrigin()) {
     return GetStatusText();
   }
-  // TODO(crbug.com/1409167): Avoid calling the deprecated function.
-  const GURL url = GetOriginalURL().DeprecatedGetOriginAsURL();
-  return url.is_valid()
-             ? url_formatter::ElideUrl(url, font_list, available_pixel_width)
-             : GetStatusText();
+  if (const GURL url = GetOriginalURL(); url.is_valid()) {
+    std::u16string url_string = url_formatter::FormatUrlForSecurityDisplay(url);
+    // available_pixel_width can be 0 before the view is inflated.
+    return available_pixel_width <= 0
+               ? url_string
+               : gfx::ElideText(url_string, font_list, available_pixel_width,
+                                gfx::ELIDE_TAIL);
+  }
+  return GetStatusText();
 }
 #endif
 
