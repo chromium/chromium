@@ -246,7 +246,6 @@
 #include "chrome/browser/notifications/chime/android/features.h"
 #include "chrome/browser/push_messaging/push_messaging_features.h"
 #include "components/browser_ui/photo_picker/android/features.h"
-#include "components/content_creation/notes/core/note_features.h"
 #include "components/external_intents/android/external_intents_features.h"
 #include "components/messages/android/messages_feature.h"
 #include "components/translate/content/android/translate_message.h"

@@ -27,7 +27,6 @@
 #include "components/browser_sync/browser_sync_switches.h"
 #include "components/browser_ui/photo_picker/android/features.h"
 #include "components/commerce/core/commerce_feature_list.h"
-#include "components/content_creation/notes/core/note_features.h"
 #include "components/content_settings/core/common/features.h"
 #include "components/contextual_search/core/browser/contextual_search_field_trial.h"
 #include "components/download/public/common/download_features.h"
@@ -322,7 +321,6 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &kVoiceSearchAudioCapturePolicy,
     &kVoiceButtonInTopToolbar,
     &kWebOtpCrossDeviceSimpleString,
-    &content_creation::kWebNotesStylizeEnabled,
     &kWebApkAllowIconUpdate,
     &kWebApkBackupAndRestoreBackend,
     &kWebApkIconUpdateThreshold,

@@ -1,5 +1,0 @@
-monorail {
-  component: "UI>Browser>Creation"
-}
-
-team_email: "chrome-creation@google.com"

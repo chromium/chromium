@@ -257,17 +257,6 @@
     <issue
         id="WrongCommentType"
         message="This block comment looks like it was intended to be a javadoc comment"
-        errorLine1="     * @param activity The activity the share sheet belongs to."
-        errorLine2="       ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
-        <location
-            file="../../chrome/browser/content_creation/notes/internal/android/java/src/org/chromium/chrome/browser/content_creation/notes/NoteCreationDialog.java"
-            line="120"
-            column="8"/>
-    </issue>
-
-    <issue
-        id="WrongCommentType"
-        message="This block comment looks like it was intended to be a javadoc comment"
         errorLine1="             * @param dataType  The type of the data contained in the section."
         errorLine2="               ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
@@ -2280,17 +2269,6 @@
         <location
             file="../../chrome/browser/language/android/java/src/org/chromium/chrome/browser/language/settings/LanguageListBaseAdapter.java"
             line="202"
-            column="9"/>
-    </issue>
-
-    <issue
-        id="NotifyDataSetChanged"
-        message="It will always be more efficient to use more specific change events if you can. Rely on `notifyDataSetChanged` as a last resort."
-        errorLine1="        noteCarousel.getAdapter().notifyDataSetChanged();"
-        errorLine2="        ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
-        <location
-            file="../../chrome/browser/content_creation/notes/internal/android/java/src/org/chromium/chrome/browser/content_creation/notes/NoteCreationDialog.java"
-            line="113"
             column="9"/>
     </issue>
 

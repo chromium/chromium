@@ -245,7 +245,6 @@
 #include "chrome/browser/android/thin_webview/chrome_thin_webview_initializer.h"
 #include "chrome/browser/android/webapk/webapk_install_service_factory.h"
 #include "chrome/browser/commerce/merchant_viewer/merchant_viewer_data_manager_factory.h"
-#include "chrome/browser/content_creation/notes/internal/note_service_factory.h"
 #include "chrome/browser/fast_checkout/fast_checkout_capabilities_fetcher_factory.h"
 #include "chrome/browser/media/android/cdm/media_drm_origin_id_manager_factory.h"
 #include "chrome/browser/search_resumption/start_suggest_service_factory.h"
@@ -725,9 +724,6 @@ void ChromeBrowserMainExtraPartsProfiles::
 #endif
   commerce::ShoppingServiceFactory::GetInstance();
   ConsentAuditorFactory::GetInstance();
-#if BUILDFLAG(IS_ANDROID)
-  content_creation::NoteServiceFactory::GetInstance();
-#endif
   ContentIndexProviderFactory::GetInstance();
   CookieControlsServiceFactory::GetInstance();
   CookieSettingsFactory::GetInstance();

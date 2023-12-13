@@ -66,7 +66,6 @@ import org.chromium.base.test.util.JniMocker;
 import org.chromium.base.test.util.PayloadCallbackHelper;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.share.ChromeShareExtras;
@@ -84,7 +83,6 @@ import org.chromium.chrome.browser.ui.favicon.FaviconHelper;
 import org.chromium.chrome.browser.ui.favicon.FaviconHelperJni;
 import org.chromium.chrome.modules.image_editor.ImageEditorModuleProvider;
 import org.chromium.chrome.test.util.browser.Features;
-import org.chromium.chrome.test.util.browser.Features.DisableFeatures;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.device_lock.DeviceLockActivityLauncher;
 import org.chromium.components.browser_ui.share.ShareImageFileUtils;
@@ -105,7 +103,6 @@ import org.chromium.url.JUnitTestGURLs;
 
 /** Test for {@link AndroidShareSheetController} and {@link AndroidCustomActionProvider}. */
 @RunWith(BaseRobolectricTestRunner.class)
-@DisableFeatures({ChromeFeatureList.WEBNOTES_STYLIZE})
 @Config(shadows = {ShadowShareImageFileUtils.class, ShadowPostTask.class})
 public class AndroidShareSheetControllerUnitTest {
     private static final String KEY_CHOOSER_ACTION_ICON = "icon";

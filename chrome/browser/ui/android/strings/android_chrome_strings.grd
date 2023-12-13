@@ -5624,29 +5624,6 @@ To change this setting, <ph name="BEGIN_LINK">&lt;resetlink&gt;</ph>reset sync<p
         Verifying…
       </message>
 
-      <!-- Content Creation strings -->
-      <message name="IDS_CONTENT_CREATION_NOTE_TITLE_FOR_SHARE" desc="The title of the share sheet when sharing a stylized note. The date will be formatted according to the current locale.">
-        Stylized highlight <ph name="CURRENT_DATE">%1$s<ex>2020-09-16</ex></ph>
-      </message>
-      <message name="IDS_CONTENT_CREATION_NOTE_FILENAME_PREFIX" desc="Prefix used to name files when saving a Note's image representation. Underscores need to be used in place of whitespaces to avoid breaking the file path. Random numbers will be appended to this suffix to guarantee uniqueness.">
-        chrome_stylized_highlight_
-      </message>
-      <message name="IDS_CONTENT_CREATION_NOTE_TEMPLATE_SELECTED" desc="Announcment string for accessibility when selected template changes.">
-        <ph name="TEMPLATE_TITLE">%1$s<ex>Classic</ex></ph> template selected
-      </message>
-      <message name="IDS_CONTENT_CREATION_NOTE_DIALOG_DESCRIPTION" desc="Accessibility information for note template picking dialog.">
-        Select a template for your highlight.
-      </message>
-      <message name="IDS_CONTENT_CREATION_NOTE_SHORTENED_MESSAGE" desc="Toast message displayed when highlighted text is too long and is cropped to fit in the note.">
-        Highlight was shortened
-      </message>
-      <message name="IDS_QUOTATION_MARK_PREFIX" desc="String to put in front of other text to represent it as a quote start.">
-        “
-      </message>
-      <message name="IDS_QUOTATION_MARK_SUFFIX" desc="String to put after other text to represent it as a quote end.">
-        ”
-      </message>
-
       <!-- HTTPS-First Mode settings strings -->
       <message name="IDS_SETTINGS_HTTPS_FIRST_MODE_TITLE" desc="Text for the HTTPS-First Mode toggle in settings.">
         Always use secure connections
