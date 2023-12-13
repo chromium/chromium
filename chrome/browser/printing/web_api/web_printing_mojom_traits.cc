@@ -6,6 +6,7 @@
 
 #include "base/strings/utf_string_conversions.h"
 #include "mojo/public/cpp/bindings/type_converter.h"
+#include "printing/mojom/print.mojom-shared.h"
 #include "third_party/blink/public/mojom/printing/web_printing.mojom.h"
 
 namespace mojo {
@@ -18,6 +19,26 @@ using printing::mojom::DuplexMode;
 // multiple-document-handling:
 using MultipleDocumentHandling =
     blink::mojom::WebPrintingMultipleDocumentHandling;
+
+// print-color-mode:
+using PrintColorMode = blink::mojom::WebPrintColorMode;
+using printing::mojom::ColorModel;
+
+// This is not typemapped via EnumTraits<> due to issues with handling `auto`
+// PrintColorMode (which doesn't represent a color model and hence has to be
+// processed separately).
+// As for specializing a TypeConverter<> -- since this function is not exposed
+// publicly, we'd like to avoid potential ODR violations if someone decides to
+// implement a converter between these two types elsewhere.
+ColorModel PrintColorModeToColorModel(PrintColorMode print_color_mode) {
+  switch (print_color_mode) {
+    case PrintColorMode::kColor:
+      return ColorModel::kColorModeColor;
+    case PrintColorMode::kMonochrome:
+      return ColorModel::kColorModeMonochrome;
+  }
+}
+
 }  // namespace
 
 // static
@@ -85,6 +106,9 @@ bool StructTraits<blink::mojom::WebPrintJobTemplateAttributesDataView,
         settings->set_collate(false);
         break;
     }
+  }
+  if (auto print_color_mode = data.print_color_mode()) {
+    settings->set_color(PrintColorModeToColorModel(*print_color_mode));
   }
 
   *out = std::move(settings);

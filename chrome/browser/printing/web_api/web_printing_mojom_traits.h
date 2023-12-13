@@ -48,6 +48,10 @@ struct StructTraits<blink::mojom::WebPrintJobTemplateAttributesDataView,
       const std::unique_ptr<printing::PrintSettings>& ptr) {
     NOTREACHED_NORETURN();
   }
+  static const std::optional<blink::mojom::WebPrintColorMode>& print_color_mode(
+      const std::unique_ptr<printing::PrintSettings>& ptr) {
+    NOTREACHED_NORETURN();
+  }
   static const std::optional<blink::mojom::WebPrintingSides>& sides(
       const std::unique_ptr<printing::PrintSettings>& ptr) {
     NOTREACHED_NORETURN();

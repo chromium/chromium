@@ -5,6 +5,7 @@
 #include "third_party/blink/renderer/modules/printing/web_printing_type_converters.h"
 
 #include "third_party/blink/public/mojom/printing/web_printing.mojom-blink.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_web_print_color_mode.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_web_print_job_template_attributes.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_web_printer_attributes.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_web_printing_mime_media_type.h"
@@ -25,6 +26,10 @@ using MojomMultipleDocumentHandling =
 // state:
 using V8JobState = blink::V8WebPrintJobState;
 using MojomJobState = blink::mojom::blink::WebPrintJobState;
+
+// print-color-mode:
+using V8ColorMode = blink::V8WebPrintColorMode;
+using MojomColorMode = blink::mojom::blink::WebPrintColorMode;
 }  // namespace
 
 namespace mojo {
@@ -89,6 +94,30 @@ struct TypeConverter<MojomMultipleDocumentHandling,
   }
 };
 
+template <>
+struct TypeConverter<V8ColorMode, MojomColorMode> {
+  static V8ColorMode Convert(const MojomColorMode& color_mode) {
+    switch (color_mode) {
+      case MojomColorMode::kColor:
+        return V8ColorMode(V8ColorMode::Enum::kColor);
+      case MojomColorMode::kMonochrome:
+        return V8ColorMode(V8ColorMode::Enum::kMonochrome);
+    }
+  }
+};
+
+template <>
+struct TypeConverter<MojomColorMode, V8ColorMode> {
+  static MojomColorMode Convert(const V8ColorMode& color_mode) {
+    switch (color_mode.AsEnum()) {
+      case V8ColorMode::Enum::kColor:
+        return MojomColorMode::kColor;
+      case V8ColorMode::Enum::kMonochrome:
+        return MojomColorMode::kMonochrome;
+    }
+  }
+};
+
 }  // namespace mojo
 
 namespace blink {
@@ -124,14 +153,14 @@ void ProcessMultipleDocumentHandling(
           new_attributes.multiple_document_handling_supported));
 }
 
-void ProcessMultipleDocumentHandling(
-    const blink::WebPrintJobTemplateAttributes& pjt_attributes,
-    mojom::blink::WebPrintJobTemplateAttributes* attributes) {
-  if (pjt_attributes.hasMultipleDocumentHandling()) {
-    attributes->multiple_document_handling =
-        mojo::ConvertTo<MojomMultipleDocumentHandling>(
-            pjt_attributes.multipleDocumentHandling());
-  }
+void ProcessPrintColorMode(
+    const mojom::blink::WebPrinterAttributes& new_attributes,
+    WebPrinterAttributes* current_attributes) {
+  current_attributes->setPrintColorModeDefault(
+      mojo::ConvertTo<V8ColorMode>(new_attributes.print_color_mode_default));
+  current_attributes->setPrintColorModeSupported(
+      mojo::ConvertTo<Vector<V8ColorMode>>(
+          new_attributes.print_color_mode_supported));
 }
 
 void ProcessSides(const mojom::blink::WebPrinterAttributes& new_attributes,
@@ -143,13 +172,6 @@ void ProcessSides(const mojom::blink::WebPrinterAttributes& new_attributes,
   if (!new_attributes.sides_supported.empty()) {
     current_attributes->setSidesSupported(
         mojo::ConvertTo<Vector<V8Sides>>(new_attributes.sides_supported));
-  }
-}
-
-void ProcessSides(const blink::WebPrintJobTemplateAttributes& pjt_attributes,
-                  mojom::blink::WebPrintJobTemplateAttributes* attributes) {
-  if (pjt_attributes.hasSides()) {
-    attributes->sides = mojo::ConvertTo<MojomSides>(pjt_attributes.sides());
   }
 }
 
@@ -169,6 +191,7 @@ TypeConverter<blink::WebPrinterAttributes*,
   blink::ProcessCopies(*printer_attributes, attributes);
   blink::ProcessDocumentFormat(*printer_attributes, attributes);
   blink::ProcessMultipleDocumentHandling(*printer_attributes, attributes);
+  blink::ProcessPrintColorMode(*printer_attributes, attributes);
   blink::ProcessSides(*printer_attributes, attributes);
 
   return attributes;
@@ -181,8 +204,18 @@ TypeConverter<blink::mojom::blink::WebPrintJobTemplateAttributesPtr,
   auto attributes = blink::mojom::blink::WebPrintJobTemplateAttributes::New();
 
   attributes->copies = pjt_attributes->getCopiesOr(1);
-  blink::ProcessMultipleDocumentHandling(*pjt_attributes, attributes.get());
-  blink::ProcessSides(*pjt_attributes, attributes.get());
+  if (pjt_attributes->hasMultipleDocumentHandling()) {
+    attributes->multiple_document_handling =
+        mojo::ConvertTo<MojomMultipleDocumentHandling>(
+            pjt_attributes->multipleDocumentHandling());
+  }
+  if (pjt_attributes->hasPrintColorMode()) {
+    attributes->print_color_mode =
+        mojo::ConvertTo<MojomColorMode>(pjt_attributes->printColorMode());
+  }
+  if (pjt_attributes->hasSides()) {
+    attributes->sides = mojo::ConvertTo<MojomSides>(pjt_attributes->sides());
+  }
 
   return attributes;
 }

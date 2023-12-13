@@ -236,6 +236,8 @@ IN_PROC_BROWSER_TEST_F(WebPrintingBrowserTest, FetchAttributes) {
       "separate-documents-uncollated-copies",
       "separate-documents-collated-copies"
     ],
+    "printColorModeDefault": "monochrome",
+    "printColorModeSupported": [ "monochrome", "color" ],
     "printerName": "name",
     "sidesDefault": "one-sided",
     "sidesSupported": [ "one-sided" ]

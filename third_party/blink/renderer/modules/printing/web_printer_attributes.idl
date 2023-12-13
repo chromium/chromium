@@ -21,6 +21,7 @@ dictionary WebPrintJobTemplateAttributes {
   unsigned long copies;
 
   WebPrintingMultipleDocumentHandling multipleDocumentHandling;
+  WebPrintColorMode printColorMode;
   WebPrintQuality printQuality;
   WebPrintingSides sides;
 };
@@ -36,6 +37,9 @@ dictionary WebPrinterAttributes {
 
   WebPrintingMultipleDocumentHandling multipleDocumentHandlingDefault;
   sequence<WebPrintingMultipleDocumentHandling> multipleDocumentHandlingSupported;
+
+  WebPrintColorMode printColorModeDefault;
+  sequence<WebPrintColorMode> printColorModeSupported;
 
   WebPrintQuality printQualityDefault;
   sequence<WebPrintQuality> printQualitySupported;

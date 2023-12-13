@@ -16,6 +16,7 @@
 #include "content/public/browser/render_frame_host.h"
 #include "printing/backend/print_backend.h"
 #include "printing/metafile_skia.h"
+#include "printing/print_settings.h"
 #include "printing/printed_document.h"
 
 namespace printing {
@@ -35,6 +36,14 @@ std::optional<PrinterSemanticCapsAndDefaults> ExtractCapsAndDefaults(
   return response ? response->capabilities : std::nullopt;
 }
 
+bool IsDuplexModeKnown(mojom::DuplexMode duplex_mode) {
+  return duplex_mode != mojom::DuplexMode::kUnknownDuplexMode;
+}
+
+bool IsColorModelKnown(mojom::ColorModel color_model) {
+  return color_model != mojom::ColorModel::kUnknownColorModel;
+}
+
 bool ValidatePrintJobTemplateAttributesAgainstPrinterAttributes(
     const PrintSettings& pjt_attributes,
     const PrinterSemanticCapsAndDefaults& printer_attributes) {
@@ -45,12 +54,35 @@ bool ValidatePrintJobTemplateAttributesAgainstPrinterAttributes(
   if (pjt_attributes.collate() && !printer_attributes.collate_capable) {
     return false;
   }
-  if (pjt_attributes.duplex_mode() != mojom::DuplexMode::kUnknownDuplexMode &&
+  // Checks that printer supports color printing if requested so.
+  if (IsColorModelKnown(pjt_attributes.color()) &&
+      ::printing::IsColorModelSelected(pjt_attributes.color()).value() &&
+      !IsColorModelKnown(printer_attributes.color_model)) {
+    return false;
+  }
+  if (IsDuplexModeKnown(pjt_attributes.duplex_mode()) &&
       !base::Contains(printer_attributes.duplex_modes,
                       pjt_attributes.duplex_mode())) {
     return false;
   }
+  if (!IsDuplexModeKnown(pjt_attributes.duplex_mode()) &&
+      !IsDuplexModeKnown(printer_attributes.duplex_default)) {
+    return false;
+  }
   return true;
+}
+
+void UpdatePrintJobTemplateAttributesWithPrinterDefaults(
+    PrintSettings* pjt_attributes,
+    const PrinterSemanticCapsAndDefaults& printer_attributes) {
+  if (!IsDuplexModeKnown(pjt_attributes->duplex_mode())) {
+    pjt_attributes->set_duplex_mode(printer_attributes.duplex_default);
+  }
+  if (!IsColorModelKnown(pjt_attributes->color())) {
+    pjt_attributes->set_color(printer_attributes.color_default
+                                  ? mojom::ColorModel::kColorModeColor
+                                  : mojom::ColorModel::kColorModeMonochrome);
+  }
 }
 
 }  // namespace
@@ -129,6 +161,9 @@ void WebPrintingServiceChromeOS::OnPrinterAttributesRetrievedForPrint(
         blink::mojom::WebPrintError::kPrintJobTemplateAttributesMismatch));
     return;
   }
+  // Update selected fields to printer defaults if they're not specified.
+  UpdatePrintJobTemplateAttributesWithPrinterDefaults(pjt_attributes.get(),
+                                                      *printer_attributes);
 
   pdf_flattener_->ReadAndFlattenPdf(
       std::move(document),

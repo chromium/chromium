@@ -34,3 +34,8 @@ enum WebPrintQuality {
   "normal",
   "high",
 };
+
+enum WebPrintColorMode {
+  "color",
+  "monochrome",
+};
