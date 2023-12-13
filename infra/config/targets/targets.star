@@ -1199,11 +1199,6 @@ targets.generated_script(
 )
 
 targets.generated_script(
-    name = "ios_showcase_eg2tests_module",
-    label = "//ios/showcase:ios_showcase_eg2tests_module",
-)
-
-targets.generated_script(
     name = "ios_testing_unittests",
     label = "//ios/testing:ios_testing_unittests",
 )

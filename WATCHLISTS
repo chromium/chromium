@@ -1357,9 +1357,6 @@
     'ios_ntp': {
       'filepath': 'ios/chrome/browser/ui/ntp/',
     },
-    'ios_showcase': {
-      'filepath': 'ios/showcase/',
-    },
     'ios_web': {
       'filepath': 'ios/web(_view)?/',
     },
@@ -2942,8 +2939,6 @@
     'ios_credential_provider': ['rkgibson+watch@chromium.org'],
     'ios_flags': ['noyau+watch@chromium.org'],
     'ios_ntp': ['thegreenfrog+watch@chromium.org'],
-    'ios_showcase': ['ios-reviews+showcase@chromium.org',
-                     'marq+watch@chromium.org'],
     'ios_web': ['ios-reviews+web@chromium.org'],
     'ios_widget_kit': ['rkgibson+watch@chromium.org'],
     'ip_protection': ['djmitche@chromium.org',

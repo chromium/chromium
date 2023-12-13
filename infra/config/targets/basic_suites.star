@@ -4949,7 +4949,6 @@ targets.legacy_basic_suite(
                 shards = 2,
             ),
         ),
-        "ios_showcase_eg2tests_module": None,
     },
 )
 
