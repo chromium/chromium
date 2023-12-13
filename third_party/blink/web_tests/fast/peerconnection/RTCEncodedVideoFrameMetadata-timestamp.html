@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<title>Test RTCEncodedVideoFrame.capture_time_identifier_ms in a RTCPeerConnection</title>
+<title>Test RTCEncodedVideoFrameMetadata.timestamp matches a unencoded frame timestamp</title>
 <script src="../../resources/testharness.js"></script>
 <script src="../../resources/testharnessreport.js"></script>
 <script src="resources/RTCPeerConnection-helper.js"></script>
@@ -37,6 +37,6 @@ const transformer = new TransformStream({
 
 trackProcessor.readable.pipeThrough(transformer).pipeTo(trackGenerator.writable);
 const metadata = (await senderReader.read()).value.getMetadata();
-assert_equals(originalTimestamp, metadata.captureTimestamp);
-}, "captureTimestamp identifier is propagated from VideoFrame to RTCEncodedVideoFrame");
+assert_equals(originalTimestamp, metadata.timestamp);
+}, "timestamp identifier is propagated from VideoFrame to RTCEncodedVideoFrame");
 </script>

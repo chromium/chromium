@@ -34,7 +34,7 @@ dictionary RTCEncodedVideoFrameMetadata {
     octet payloadType;
     DOMString mimeType;
     [RuntimeEnabled=RTCEncodedVideoFrameAdditionalMetadata]
-    long long captureTimestamp;     // microseconds.
+    long long timestamp;     // Presentation timestamp, microseconds.
     [RuntimeEnabled=RTCEncodedFrameSetMetadata]
-    unsigned long rtpTimestamp;     // microseconds.
+    unsigned long rtpTimestamp;
 };
