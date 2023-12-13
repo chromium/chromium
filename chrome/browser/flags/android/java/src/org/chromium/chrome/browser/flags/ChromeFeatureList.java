@@ -742,14 +742,10 @@ public abstract class ChromeFeatureList {
             newMutableFlagWithSafeDefault(INCOGNITO_SCREENSHOT, false);
     public static final MutableFlagWithSafeDefault sNoVisibleHintForTablets =
             newMutableFlagWithSafeDefault(ANDROID_NO_VISIBLE_HINT_FOR_TABLETS, false);
-    public static final MutableFlagWithSafeDefault sOmniboxCacheSuggestionResources =
-            newMutableFlagWithSafeDefault(OMNIBOX_CACHE_SUGGESTION_RESOURCES, true);
     public static final MutableFlagWithSafeDefault sOmniboxHistoryClusterProvider =
             newMutableFlagWithSafeDefault(OMNIBOX_HISTORY_CLUSTER_PROVIDER, false);
     public static final MutableFlagWithSafeDefault sOmniboxNoopEditUrlSuggestionClicks =
             newMutableFlagWithSafeDefault(OMNIBOX_NOOP_EDIT_URL_SUGGESTION_CLICKS, false);
-    public static final MutableFlagWithSafeDefault sOmniboxWarmRecycledViewPool =
-            newMutableFlagWithSafeDefault(OMNIBOX_WARM_RECYCLED_VIEW_POOL, true);
     public static final MutableFlagWithSafeDefault sQuickDeleteForAndroid =
             newMutableFlagWithSafeDefault(QUICK_DELETE_FOR_ANDROID, false);
     public static final MutableFlagWithSafeDefault sReaderModeCct =

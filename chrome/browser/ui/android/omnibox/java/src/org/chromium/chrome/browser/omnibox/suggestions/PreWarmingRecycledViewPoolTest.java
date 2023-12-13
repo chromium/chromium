@@ -12,7 +12,6 @@ import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.verifyNoMoreInteractions;
 
 import android.content.Context;
 import android.os.Handler;
@@ -36,7 +35,6 @@ import org.mockito.junit.MockitoRule;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.test.util.browser.Features;
-import org.chromium.chrome.test.util.browser.Features.DisableFeatures;
 import org.chromium.chrome.test.util.browser.Features.EnableFeatures;
 import org.chromium.components.omnibox.suggestions.OmniboxSuggestionUiType;
 import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
@@ -111,22 +109,6 @@ public class PreWarmingRecycledViewPoolTest {
             assertNotNull(viewHolder);
             assertEquals(expectedView, viewHolder.itemView);
         }
-    }
-
-    @DisableFeatures(ChromeFeatureList.OMNIBOX_WARM_RECYCLED_VIEW_POOL)
-    @Test
-    public void testCreateViews_featureDisabled() {
-        doAnswer(
-                        (invocation -> {
-                            ((Runnable) invocation.getArgument(0)).run();
-                            return null;
-                        }))
-                .when(mHandler)
-                .postDelayed(any(Runnable.class), anyLong());
-        mPool.onNativeInitialized();
-
-        verifyNoMoreInteractions(mAdapter);
-        verifyNoMoreInteractions(mHandler);
     }
 
     @EnableFeatures(ChromeFeatureList.OMNIBOX_WARM_RECYCLED_VIEW_POOL)

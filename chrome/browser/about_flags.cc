@@ -5976,11 +5976,6 @@ const FeatureEntry kFeatureEntries[] = {
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 #if BUILDFLAG(IS_ANDROID)
-    {"omnibox-cache-suggestion-resources",
-     flag_descriptions::kOmniboxCacheSuggestionResourcesName,
-     flag_descriptions::kOmniboxCacheSuggestionResourcesDescription, kOsAndroid,
-     FEATURE_VALUE_TYPE(chrome::android::kOmniboxCacheSuggestionResources)},
-
     {"omnibox-match-toolbar-and-status-bar-color",
      flag_descriptions::kOmniboxMatchToolbarAndStatusBarColorName,
      flag_descriptions::kOmniboxMatchToolbarAndStatusBarColorDescription,
@@ -6007,11 +6002,6 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_WITH_PARAMS_VALUE_TYPE(omnibox::kQueryTilesInZPSOnNTP,
                                     kOmniboxQueryTilesVariations,
                                     "OmniboxQueryTilesInZPSOnNTP")},
-
-    {"omnibox-warm-recycled-view-pool",
-     flag_descriptions::kOmniboxWarmRecycledViewPoolName,
-     flag_descriptions::kOmniboxWarmRecycledViewPoolDescription, kOsAndroid,
-     FEATURE_VALUE_TYPE(chrome::android::kOmniboxWarmRecycledViewPool)},
 
     {"android-app-integration", flag_descriptions::kAndroidAppIntegrationName,
      flag_descriptions::kAndroidAppIntegrationDescription, kOsAndroid,

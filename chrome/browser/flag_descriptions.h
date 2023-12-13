@@ -1354,9 +1354,6 @@ extern const char kOmniboxActionsInSuggestDescription[];
 extern const char kOmniboxAdaptiveSuggestionsCountName[];
 extern const char kOmniboxAdaptiveSuggestionsCountDescription[];
 
-extern const char kOmniboxCacheSuggestionResourcesName[];
-extern const char kOmniboxCacheSuggestionResourcesDescription[];
-
 extern const char kOmniboxCalcProviderName[];
 extern const char kOmniboxCalcProviderDescription[];
 
@@ -1460,9 +1457,6 @@ extern const char kOmniboxQueryTilesInZPSOnNTPDesc[];
 extern const char kOmniboxSuppressClipboardSuggestionAfterFirstUsedName[];
 extern const char
     kOmniboxSuppressClipboardSuggestionAfterFirstUsedDescription[];
-
-extern const char kOmniboxWarmRecycledViewPoolName[];
-extern const char kOmniboxWarmRecycledViewPoolDescription[];
 
 extern const char kOmniboxRichAutocompletionPromisingName[];
 extern const char kOmniboxRichAutocompletionPromisingDescription[];

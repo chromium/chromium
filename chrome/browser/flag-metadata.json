@@ -5787,11 +5787,6 @@
     "expiry_milestone": 130
   },
   {
-    "name": "omnibox-cache-suggestion-resources",
-    "owners": ["pnoland@chromium.org", "chrome-omnibox-team@google.com"],
-    "expiry_milestone": 120
-  },
-  {
     "name": "omnibox-calc-provider",
     "owners": ["manukh@chromium.org", "chrome-omnibox-team@google.com"],
     "expiry_milestone": 125
@@ -6085,11 +6080,6 @@
   {
     "name": "omnibox-uniform-suggestion-height",
     "owners": [ "manukh@chromium.org", "chrome-omnibox-team@google.com"],
-    "expiry_milestone": 120
-  },
-  {
-    "name": "omnibox-warm-recycled-view-pool",
-    "owners": [ "pnoland@chromium.org", "chrome-omnibox-team@google.com" ],
     "expiry_milestone": 120
   },
   {

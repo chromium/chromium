@@ -133,18 +133,10 @@ public class OmniboxFeatures {
     }
 
     /**
-     * Returns whether suggestion resources should be cached directly instead of relying on Android
-     * system caching.
-     */
-    public static boolean shouldCacheSuggestionResources() {
-        return ChromeFeatureList.sOmniboxCacheSuggestionResources.isEnabled();
-    }
-
-    /**
      * Returns whether the omnibox's recycler view pool should be pre-warmed prior to initial use.
      */
     public static boolean shouldPreWarmRecyclerViewPool() {
-        return !isLowMemoryDevice() && ChromeFeatureList.sOmniboxWarmRecycledViewPool.isEnabled();
+        return !isLowMemoryDevice();
     }
 
     /**

@@ -255,9 +255,7 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &kBookmarksImprovedSaveFlow,
     &kOmahaMinSdkVersionAndroid,
     &kShortCircuitUnfocusAnimation,
-    &kOmniboxCacheSuggestionResources,
     &kOmniboxNoopEditUrlSuggestionClicks,
-    &kOmniboxWarmRecycledViewPool,
     &kPartnerCustomizationsUma,
     &kProbabilisticCryptidRenderer,
     &kQuickDeleteForAndroid,
@@ -801,17 +799,9 @@ BASE_FEATURE(kShortCircuitUnfocusAnimation,
              "ShortCircuitUnfocusAnimation",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-BASE_FEATURE(kOmniboxCacheSuggestionResources,
-             "OmniboxCacheSuggestionResources",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 BASE_FEATURE(kOmniboxNoopEditUrlSuggestionClicks,
              "OmniboxNoopEditUrlSuggestionClicks",
              base::FEATURE_DISABLED_BY_DEFAULT);
-
-BASE_FEATURE(kOmniboxWarmRecycledViewPool,
-             "OmniboxWarmRecycledViewPool",
-             base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kPartnerCustomizationsUma,
              "PartnerCustomizationsUma",

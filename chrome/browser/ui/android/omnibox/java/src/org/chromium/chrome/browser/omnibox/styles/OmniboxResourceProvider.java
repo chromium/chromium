@@ -48,16 +48,13 @@ public class OmniboxResourceProvider {
      */
     public static @NonNull Drawable getDrawable(Context context, @DrawableRes int res) {
         ThreadUtils.assertOnUiThread();
-        boolean cacheResources = OmniboxFeatures.shouldCacheSuggestionResources();
-        ConstantState constantState = cacheResources ? sDrawableCache.get(res, null) : null;
+        ConstantState constantState = sDrawableCache.get(res, null);
         if (constantState != null) {
             return constantState.newDrawable(context.getResources());
         }
 
         Drawable drawable = AppCompatResources.getDrawable(context, res);
-        if (cacheResources) {
-            sDrawableCache.put(res, drawable.getConstantState());
-        }
+        sDrawableCache.put(res, drawable.getConstantState());
         return drawable;
     }
 
@@ -69,13 +66,10 @@ public class OmniboxResourceProvider {
      */
     public static @NonNull String getString(Context context, @StringRes int res, Object... args) {
         ThreadUtils.assertOnUiThread();
-        boolean cacheResources = OmniboxFeatures.shouldCacheSuggestionResources();
-        String string = cacheResources ? sStringCache.get(res, null) : null;
+        String string = sStringCache.get(res, null);
         if (string == null) {
             string = context.getResources().getString(res);
-            if (cacheResources) {
-                sStringCache.put(res, string);
-            }
+            sStringCache.put(res, string);
         }
 
         return args.length == 0

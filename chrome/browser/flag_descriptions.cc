@@ -2372,12 +2372,6 @@ const char kOmniboxAdaptiveSuggestionsCountDescription[] =
     "flag to adjust the limit of offered suggestions. The number of shown "
     "suggestions will be no less than the platform default limit.";
 
-const char kOmniboxCacheSuggestionResourcesName[] =
-    "Omnibox cache suggestion resources";
-const char kOmniboxCacheSuggestionResourcesDescription[] =
-    "When enabled, the omnibox will cache frequently used drawables and "
-    "strings rather than loading them from Android every time they're needed.";
-
 const char kOmniboxCalcProviderName[] = "Omnibox calc provider";
 const char kOmniboxCalcProviderDescription[] =
     "When enabled, suggests recent calculator results in the omnibox.";
@@ -2498,12 +2492,6 @@ const char kOmniboxMostVisitedTilesHorizontalRenderGroupName[] =
 const char kOmniboxMostVisitedTilesHorizontalRenderGroupDescription[] =
     "Updates the logic constructing MV tiles to use horizontal render group. "
     "No user-facing changes expected.";
-
-const char kOmniboxWarmRecycledViewPoolName[] =
-    "Omnibox warm recycled view pool";
-const char kOmniboxWarmRecycledViewPoolDescription[] =
-    "Pre-warms the Android Omnibox's RecyclerView pool by inflating "
-    "views before the omnibox is focused.";
 
 const char kOmniboxZeroSuggestPrefetchingName[] =
     "Omnibox Zero Prefix Suggestion Prefetching on NTP";
