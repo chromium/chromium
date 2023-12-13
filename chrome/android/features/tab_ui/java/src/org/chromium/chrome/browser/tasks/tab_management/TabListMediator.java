@@ -38,6 +38,7 @@ import androidx.recyclerview.widget.RecyclerView.OnScrollListener;
 import org.chromium.base.Callback;
 import org.chromium.base.Log;
 import org.chromium.base.ResettersForTesting;
+import org.chromium.base.ValueChangedCallback;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.base.shared_preferences.SharedPreferencesManager;
@@ -320,7 +321,8 @@ class TabListMediator {
     private final ObservableSupplier<TabModelFilter> mCurrentTabModelFilterSupplier;
     // TODO(crbug/1505772): Refactor price drops so we don't need this.
     private final Supplier<TabModel> mRegularTabModelSupplier;
-    private final Callback<TabModelFilter> mOnTabModelFilterChanged = this::onTabModelFilterChanged;
+    private final ValueChangedCallback<TabModelFilter> mOnTabModelFilterChanged =
+            new ValueChangedCallback<>(this::onTabModelFilterChanged);
     private final TabActionListener mTabClosedListener;
     private final PseudoTab.TitleProvider mTitleProvider;
     private final SelectionDelegateProvider mSelectionDelegateProvider;
@@ -329,9 +331,6 @@ class TabListMediator {
     private final TabListFaviconProvider mTabListFaviconProvider;
     private final PriceWelcomeMessageController mPriceWelcomeMessageController;
 
-    // This could come from mCurrentTabModelFilterSupplier, but we need to cache it for updating
-    // observers.
-    private TabModelFilter mCurrentTabModelFilter;
     private Size mDefaultGridCardSize;
     private String mComponentName;
     private ThumbnailProvider mThumbnailProvider;
@@ -1121,7 +1120,7 @@ class TabListMediator {
     public void initWithNative() {
         mTabListFaviconProvider.initWithNative(Profile.getLastUsedRegularProfile());
 
-        onTabModelFilterChanged(
+        mOnTabModelFilterChanged.onResult(
                 mCurrentTabModelFilterSupplier.addObserver(mOnTabModelFilterChanged));
 
         mTabGroupTitleEditor =
@@ -1621,7 +1620,7 @@ class TabListMediator {
         if (mListObserver != null) {
             mModel.removeObserver(mListObserver);
         }
-        removeCurrentTabModelFilterObservers();
+        removeTabModelFilterObservers(mCurrentTabModelFilterSupplier.get());
         mCurrentTabModelFilterSupplier.removeObserver(mOnTabModelFilterChanged);
 
         if (mComponentCallbacks != null) {
@@ -2135,22 +2134,22 @@ class TabListMediator {
         ResettersForTesting.register(() -> mComponentName = oldValue);
     }
 
-    private void onTabModelFilterChanged(TabModelFilter filter) {
-        if (mCurrentTabModelFilter == filter) return;
+    private void onTabModelFilterChanged(
+            @Nullable TabModelFilter newFilter, @Nullable TabModelFilter oldFilter) {
+        removeTabModelFilterObservers(oldFilter);
 
-        removeCurrentTabModelFilterObservers();
-
-        filter.addObserver(mTabModelObserver);
-        if (filter instanceof TabGroupModelFilter groupFilter) {
-            groupFilter.addTabGroupObserver(mTabGroupObserver);
+        if (newFilter != null) {
+            newFilter.addObserver(mTabModelObserver);
+            if (newFilter instanceof TabGroupModelFilter newGroupFilter) {
+                newGroupFilter.addTabGroupObserver(mTabGroupObserver);
+            }
         }
-        mCurrentTabModelFilter = filter;
     }
 
-    private void removeCurrentTabModelFilterObservers() {
-        if (mCurrentTabModelFilter == null) return;
+    private void removeTabModelFilterObservers(@Nullable TabModelFilter filter) {
+        if (filter == null) return;
 
-        TabModel tabModel = mCurrentTabModelFilter.getTabModel();
+        TabModel tabModel = filter.getTabModel();
         if (tabModel != null) {
             // Observers are added when tabs are shown via addTabInfoToModel(). When switching
             // filters the TabObservers should be removed from all the tabs in the previous model.
@@ -2160,8 +2159,8 @@ class TabListMediator {
                 tabModel.getTabAt(i).removeObserver(mTabObserver);
             }
         }
-        mCurrentTabModelFilter.removeObserver(mTabModelObserver);
-        if (mCurrentTabModelFilter instanceof TabGroupModelFilter groupFilter) {
+        filter.removeObserver(mTabModelObserver);
+        if (filter instanceof TabGroupModelFilter groupFilter) {
             groupFilter.removeTabGroupObserver(mTabGroupObserver);
         }
     }
