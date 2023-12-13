@@ -96,7 +96,6 @@ import java.util.List;
 @RunWith(BaseRobolectricTestRunner.class)
 @EnableFeatures({
     ChromeFeatureList.WEB_FEED,
-    ChromeFeatureList.BOOKMARKS_REFRESH,
     UiAccessibilityFeatures.START_SURFACE_ACCESSIBILITY_CHECK
 })
 @DisableFeatures({ChromeFeatureList.SHOPPING_LIST})

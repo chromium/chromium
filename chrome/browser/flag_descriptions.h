@@ -1630,9 +1630,6 @@ extern const char kPdfXfaFormsDescription[];
 extern const char kBookmarksImprovedSaveFlowName[];
 extern const char kBookmarksImprovedSaveFlowDescription[];
 
-extern const char kBookmarksRefreshName[];
-extern const char kBookmarksRefreshDescription[];
-
 extern const char kAutoWebContentsDarkModeName[];
 extern const char kAutoWebContentsDarkModeDescription[];
 

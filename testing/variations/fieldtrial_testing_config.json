@@ -4011,9 +4011,6 @@
                     "params": {
                         "allow_bookmark_type_swapping": "true",
                         "autodismiss_enabled": "true",
-                        "bookmark_compact_visuals_enabled": "true",
-                        "bookmark_in_app_menu": "true",
-                        "bookmark_visuals_enabled": "true",
                         "enable_persisted_tab_data_maintenance": "true",
                         "enable_price_notification": "true",
                         "enable_price_tracking": "true",
@@ -4022,7 +4019,6 @@
                     },
                     "enable_features": [
                         "BookmarksImprovedSaveFlow",
-                        "BookmarksRefresh",
                         "CommercePriceTracking",
                         "OptimizationGuidePushNotifications",
                         "ReadLater",
@@ -4108,8 +4104,6 @@
                     "params": {
                         "autodismiss_enabled": "true",
                         "bookmark_compact_visuals_enabled": "true",
-                        "bookmark_in_app_menu": "true",
-                        "bookmark_visuals_enabled": "true",
                         "enable_persisted_tab_data_maintenance": "true",
                         "enable_price_notification": "true",
                         "enable_price_tracking": "true",
@@ -4118,7 +4112,6 @@
                     },
                     "enable_features": [
                         "BookmarksImprovedSaveFlow",
-                        "BookmarksRefresh",
                         "CommercePriceTracking",
                         "OptimizationGuidePushNotifications",
                         "ReadLater",
@@ -4144,8 +4137,6 @@
                         "allow_bookmark_type_swapping": "true",
                         "autodismiss_enabled": "true",
                         "bookmark_compact_visuals_enabled": "true",
-                        "bookmark_in_app_menu": "true",
-                        "bookmark_visuals_enabled": "true",
                         "enable_persisted_tab_data_maintenance": "true",
                         "enable_price_notification": "true",
                         "enable_price_tracking": "true",
@@ -4154,7 +4145,6 @@
                     },
                     "enable_features": [
                         "BookmarksImprovedSaveFlow",
-                        "BookmarksRefresh",
                         "CommercePriceTracking",
                         "OptimizationGuidePushNotifications",
                         "ReadLater",
@@ -4167,8 +4157,6 @@
                         "allow_bookmark_type_swapping": "true",
                         "autodismiss_enabled": "true",
                         "bookmark_compact_visuals_enabled": "true",
-                        "bookmark_in_app_menu": "true",
-                        "bookmark_visuals_enabled": "true",
                         "enable_persisted_tab_data_maintenance": "true",
                         "enable_price_notification": "true",
                         "enable_price_tracking": "true",
@@ -4178,7 +4166,6 @@
                     },
                     "enable_features": [
                         "BookmarksImprovedSaveFlow",
-                        "BookmarksRefresh",
                         "CommercePriceTracking",
                         "OptimizationGuidePushNotifications",
                         "ReadLater",

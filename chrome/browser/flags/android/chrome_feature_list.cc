@@ -253,7 +253,6 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &kPriceChangeModule,
     &kPwaRestoreUi,
     &kBookmarksImprovedSaveFlow,
-    &kBookmarksRefresh,
     &kOmahaMinSdkVersionAndroid,
     &kShortCircuitUnfocusAnimation,
     &kOmniboxCacheSuggestionResources,
@@ -780,10 +779,6 @@ BASE_FEATURE(kPwaRestoreUi, "PwaRestoreUi", base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kBookmarksImprovedSaveFlow,
              "BookmarksImprovedSaveFlow",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
-BASE_FEATURE(kBookmarksRefresh,
-             "BookmarksRefresh",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kBackGestureActivityTabProvider,

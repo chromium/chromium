@@ -3048,35 +3048,6 @@ constexpr char kEnableSuspendToDiskInternalName[] = "enable-suspend-to-disk";
 constexpr char kSeaPenInternalName[] = "sea-pen";
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
-#if BUILDFLAG(IS_ANDROID)
-const FeatureEntry::FeatureParam kBookmarksRefreshVisuals[] = {
-    {"bookmark_visuals_enabled", "true"}};
-const FeatureEntry::FeatureParam kBookmarksRefreshCompactVisuals[] = {
-    {"bookmark_visuals_enabled", "true"},
-    {"bookmark_compact_visuals_enabled", "true"}};
-const FeatureEntry::FeatureParam kBookmarksRefreshAppMenu[] = {
-    {"bookmark_in_app_menu", "true"}};
-const FeatureEntry::FeatureParam kBookmarksRefreshNormal[] = {
-    {"bookmark_visuals_enabled", "true"},
-    {"bookmark_in_app_menu", "true"}};
-const FeatureEntry::FeatureParam kBookmarksRefreshCompact[] = {
-    {"bookmark_visuals_enabled", "true"},
-    {"bookmark_compact_visuals_enabled", "true"},
-    {"bookmark_in_app_menu", "true"}};
-
-const FeatureEntry::FeatureVariation kBookmarksRefreshVariations[] = {
-    {"(enabled w/ visuals)", kBookmarksRefreshNormal,
-     std::size(kBookmarksRefreshNormal), nullptr},
-    {"(enabled w/ compact visuals)", kBookmarksRefreshCompact,
-     std::size(kBookmarksRefreshCompact), nullptr},
-    {"(visuals only)", kBookmarksRefreshVisuals,
-     std::size(kBookmarksRefreshVisuals), nullptr},
-    {"(compact visuals only)", kBookmarksRefreshCompactVisuals,
-     std::size(kBookmarksRefreshCompactVisuals), nullptr},
-    {"(app menu item only)", kBookmarksRefreshAppMenu,
-     std::size(kBookmarksRefreshAppMenu), nullptr}};
-#endif  // BUILDFLAG(IS_ANDROID)
-
 const FeatureEntry::FeatureParam kLargeFaviconFromGoogle96[] = {
     {"favicon_size_in_dip", "96"}};
 const FeatureEntry::FeatureParam kLargeFaviconFromGoogle128[] = {
@@ -9432,12 +9403,6 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kBookmarksImprovedSaveFlowName,
      flag_descriptions::kBookmarksImprovedSaveFlowDescription, kOsAndroid,
      FEATURE_VALUE_TYPE(chrome::android::kBookmarksImprovedSaveFlow)},
-
-    {"bookmarks-refresh", flag_descriptions::kBookmarksRefreshName,
-     flag_descriptions::kBookmarksRefreshDescription, kOsAndroid,
-     FEATURE_WITH_PARAMS_VALUE_TYPE(chrome::android::kBookmarksRefresh,
-                                    kBookmarksRefreshVariations,
-                                    "Collections")},
 #endif
 
     {"enable-tab-audio-muting", flag_descriptions::kTabAudioMutingName,

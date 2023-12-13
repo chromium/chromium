@@ -140,7 +140,6 @@ import java.util.function.Consumer;
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(shadows = {ShadowPostTask.class})
 @EnableFeatures({
-    ChromeFeatureList.BOOKMARKS_REFRESH,
     ChromeFeatureList.SHOPPING_LIST,
 })
 public class BookmarkManagerMediatorTest {

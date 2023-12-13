@@ -2888,10 +2888,6 @@ const char kBookmarksImprovedSaveFlowName[] = "Improved bookmarks save flow";
 const char kBookmarksImprovedSaveFlowDescription[] =
     "Enabled an improved save flow for bookmarks.";
 
-const char kBookmarksRefreshName[] = "Bookmarks refresh";
-const char kBookmarksRefreshDescription[] =
-    "Enable various changes to bookmarks.";
-
 const char kSpeculationRulesPrerenderingTargetHintName[] =
     "Speculation Rules API target hint";
 const char kSpeculationRulesPrerenderingTargetHintDescription[] =

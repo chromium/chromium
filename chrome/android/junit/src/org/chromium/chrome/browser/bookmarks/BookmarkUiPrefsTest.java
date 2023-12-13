@@ -63,7 +63,6 @@ public class BookmarkUiPrefsTest {
 
     @Test
     @DisableFeatures({ChromeFeatureList.ANDROID_IMPROVED_BOOKMARKS})
-    @EnableFeatures({ChromeFeatureList.BOOKMARKS_REFRESH})
     public void legacyVisualFlags() {
         ShoppingFeatures.setShoppingListEligibleForTesting(true);
 
@@ -75,7 +74,6 @@ public class BookmarkUiPrefsTest {
 
     @Test
     @DisableFeatures({ChromeFeatureList.ANDROID_IMPROVED_BOOKMARKS})
-    @EnableFeatures({ChromeFeatureList.BOOKMARKS_REFRESH})
     public void legacyVisualFlags_noShopping() {
         ShoppingFeatures.setShoppingListEligibleForTesting(false);
 
