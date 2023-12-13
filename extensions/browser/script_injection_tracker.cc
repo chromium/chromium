@@ -554,6 +554,9 @@ const Extension* FindExtensionByHostId(content::BrowserContext* browser_context,
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
   switch (host_id.type) {
+    // TODO(cmp): Investigate whether Controlled Frame support is needed in
+    // ScriptInjectionTracker.
+    case mojom::HostID::HostType::kControlledFrameEmbedder:
     case mojom::HostID::HostType::kWebUi:
       // ScriptInjectionTracker only tracks extensions.
       return nullptr;

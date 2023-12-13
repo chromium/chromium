@@ -62,6 +62,7 @@ const char kLocalStorageKey[] = "localStorage";
 const char kWebSQLKey[] = "webSQL";
 const char kSinceKey[] = "since";
 const char kLoadFileError[] = "Failed to load file: \"*\". ";
+const char kHostIDError[] = "Failed to generate HostID.";
 const char kViewInstanceIdError[] = "view_instance_id is missing.";
 const char kDuplicatedContentScriptNamesError[] =
     "The given content script name already exists.";
@@ -88,7 +89,7 @@ uint32_t MaskForKey(const char* key) {
   return 0;
 }
 
-extensions::mojom::HostID GenerateHostIDFromEmbedder(
+std::optional<extensions::mojom::HostID> GenerateHostIDFromEmbedder(
     const extensions::Extension* extension,
     content::RenderFrameHost* embedder_rfh) {
   if (extension) {
@@ -101,8 +102,15 @@ extensions::mojom::HostID GenerateHostIDFromEmbedder(
     return extensions::mojom::HostID(
         extensions::mojom::HostID::HostType::kWebUi, url.spec());
   }
-  NOTREACHED();
-  return extensions::mojom::HostID();
+
+  if (embedder_rfh->GetWebExposedIsolationLevel() >=
+      content::WebExposedIsolationLevel::kIsolatedApplication) {
+    const GURL& url = embedder_rfh->GetMainFrame()->GetLastCommittedURL();
+    return extensions::mojom::HostID(
+        extensions::mojom::HostID::HostType::kControlledFrameEmbedder,
+        url.spec());
+  }
+  return std::nullopt;
 }
 
 // Creates content script files when parsing InjectionItems of "js" or "css"
@@ -466,19 +474,13 @@ ExecuteCodeFunction::InitResult WebViewInternalExecuteCodeFunction::Init() {
 
   details_ = std::move(details);
 
-  if (extension()) {
-    set_host_id(extensions::mojom::HostID(
-        extensions::mojom::HostID::HostType::kExtensions, extension()->id()));
-    return set_init_result(SUCCESS);
+  std::optional<extensions::mojom::HostID> host_id =
+      GenerateHostIDFromEmbedder(extension(), render_frame_host());
+  if (!host_id) {
+    return set_init_result(VALIDATION_FAILURE);
   }
-
-  if (render_frame_host() && render_frame_host()->GetMainFrame()->GetWebUI()) {
-    const GURL& url = render_frame_host()->GetSiteInstance()->GetSiteURL();
-    set_host_id(extensions::mojom::HostID(
-        extensions::mojom::HostID::HostType::kWebUi, url.spec()));
-    return set_init_result(SUCCESS);
-  }
-  return set_init_result_error("");  // TODO(lazyboy): error?
+  set_host_id(std::move(*host_id));
+  return set_init_result(SUCCESS);
 }
 
 bool WebViewInternalExecuteCodeFunction::ShouldInsertCSS() const {
@@ -591,13 +593,16 @@ WebViewInternalAddContentScriptsFunction::Run() {
 
   GURL owner_base_url(
       render_frame_host()->GetSiteInstance()->GetSiteURL().GetWithEmptyPath());
-  extensions::mojom::HostID host_id =
+  std::optional<extensions::mojom::HostID> host_id =
       GenerateHostIDFromEmbedder(extension(), render_frame_host());
+  if (!host_id) {
+    return RespondNow(Error(kHostIDError));
+  }
   bool incognito_enabled = browser_context()->IsOffTheRecord();
 
   std::string error;
   std::unique_ptr<UserScriptList> result =
-      ParseContentScripts(params->content_script_list, extension(), host_id,
+      ParseContentScripts(params->content_script_list, extension(), *host_id,
                           incognito_enabled, owner_base_url, &error);
   if (!result)
     return RespondNow(Error(std::move(error)));
@@ -607,7 +612,8 @@ WebViewInternalAddContentScriptsFunction::Run() {
   DCHECK(manager);
 
   manager->AddContentScripts(source_process_id(), render_frame_host(),
-                             params->instance_id, host_id, std::move(*result));
+                             params->instance_id, std::move(*host_id),
+                             std::move(*result));
 
   return RespondNow(NoArguments());
 }
@@ -633,14 +639,17 @@ WebViewInternalRemoveContentScriptsFunction::Run() {
       WebViewContentScriptManager::Get(browser_context());
   DCHECK(manager);
 
-  extensions::mojom::HostID host_id =
+  std::optional<extensions::mojom::HostID> host_id =
       GenerateHostIDFromEmbedder(extension(), render_frame_host());
+  if (!host_id) {
+    return RespondNow(Error(kHostIDError));
+  }
 
   std::vector<std::string> script_name_list;
   if (params->script_name_list)
     script_name_list.swap(*params->script_name_list);
   manager->RemoveContentScripts(source_process_id(), params->instance_id,
-                                host_id, script_name_list);
+                                std::move(*host_id), script_name_list);
   return RespondNow(NoArguments());
 }
 

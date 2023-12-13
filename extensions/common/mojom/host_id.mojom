@@ -9,6 +9,7 @@ struct HostID {
   enum HostType {
     kExtensions,
     kWebUi,
+    kControlledFrameEmbedder,
   };
 
   HostType type = kExtensions; // The type of the host.

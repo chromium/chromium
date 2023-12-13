@@ -194,13 +194,18 @@ std::unique_ptr<ScriptInjection> UserScriptSet::GetInjectionForScript(
   std::unique_ptr<const InjectionHost> injection_host;
   blink::WebLocalFrame* web_frame = render_frame->GetWebFrame();
 
-  if (host_id_.type == mojom::HostID::HostType::kExtensions) {
-    injection_host = ExtensionInjectionHost::Create(host_id_.id);
-    if (!injection_host)
-      return injection;
-  } else {
-    DCHECK_EQ(host_id_.type, mojom::HostID::HostType::kWebUi);
-    injection_host = std::make_unique<WebUIInjectionHost>(host_id_);
+  switch (host_id_.type) {
+    case mojom::HostID::HostType::kExtensions:
+      injection_host = ExtensionInjectionHost::Create(host_id_.id);
+      if (!injection_host) {
+        return injection;
+      }
+      break;
+    case mojom::HostID::HostType::kControlledFrameEmbedder:
+      [[fallthrough]];
+    case mojom::HostID::HostType::kWebUi:
+      injection_host = std::make_unique<WebUIInjectionHost>(host_id_);
+      break;
   }
 
   GURL effective_document_url =
