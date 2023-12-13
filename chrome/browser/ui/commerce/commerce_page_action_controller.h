@@ -1,0 +1,48 @@
+// Copyright 2023 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#ifndef CHROME_BROWSER_UI_COMMERCE_COMMERCE_PAGE_ACTION_CONTROLLER_H_
+#define CHROME_BROWSER_UI_COMMERCE_COMMERCE_PAGE_ACTION_CONTROLLER_H_
+
+#include <optional>
+
+#include "base/functional/callback.h"
+
+class GURL;
+
+namespace commerce {
+
+class CommercePageActionController {
+ public:
+  explicit CommercePageActionController(
+      base::RepeatingCallback<void()> host_update_callback);
+  CommercePageActionController(const CommercePageActionController&) = delete;
+  CommercePageActionController& operator=(const CommercePageActionController&) =
+      delete;
+  virtual ~CommercePageActionController();
+
+  // Returns whether the UI should show for the current navigation. A nullopt
+  // implies that the UI does not have enough information to definitively
+  // respond true or false.
+  virtual std::optional<bool> ShouldShowForNavigation() = 0;
+
+  // Whether the page action wants to expand, based on its own rules.
+  virtual bool WantsExpandedUi() = 0;
+
+  // Automatically called when a relevant event on the active web contents
+  // happens.
+  virtual void ResetForNewNavigation(const GURL& url) = 0;
+
+ protected:
+  // Notify the host that is coordinating the icons that some state in the
+  // implementation has changed.
+  void NotifyHost();
+
+ private:
+  base::RepeatingCallback<void()> host_update_callback_;
+};
+
+}  // namespace commerce
+
+#endif  // CHROME_BROWSER_UI_COMMERCE_COMMERCE_PAGE_ACTION_CONTROLLER_H_

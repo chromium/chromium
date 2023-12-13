@@ -4812,6 +4812,8 @@ static_library("ui") {
       "autofill/save_update_address_profile_icon_controller.cc",
       "autofill/save_update_address_profile_icon_controller.h",
       "bubble_anchor_util.h",
+      "commerce/commerce_page_action_controller.cc",
+      "commerce/commerce_page_action_controller.h",
       "commerce/commerce_ui_tab_helper.cc",
       "commerce/commerce_ui_tab_helper.h",
       "dialogs/outdated_upgrade_bubble.cc",
