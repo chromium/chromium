@@ -1487,6 +1487,8 @@ source_set("unit_tests_v2") {
       rebase_path(blink_core_tests_content_capture, "", "content_capture")
   sources += rebase_path(blink_core_tests_display_lock, "", "display_lock")
   sources += rebase_path(blink_core_tests_events, "", "events")
+  sources +=
+      rebase_path(blink_core_tests_execution_context, "", "execution_context")
   sources += rebase_path(blink_core_tests_fullscreen, "", "fullscreen")
   sources += rebase_path(blink_core_tests_highlight, "", "highlight")
   sources += rebase_path(blink_core_tests_imagebitmap, "", "imagebitmap")
