@@ -17,9 +17,10 @@ import {assert} from 'chrome://resources/js/assert.js';
 import {mojoString16ToString} from 'chrome://resources/js/mojo_type_util.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {FirmwareUpdate, InstallationProgress, InstallControllerRemote, UpdateProgressObserverInterface, UpdateProgressObserverReceiver, UpdateState} from './firmware_update.mojom-webui.js';
+import {DeviceRequestObserverInterface, DeviceRequestObserverReceiver, FirmwareUpdate, InstallationProgress, InstallControllerRemote, UpdateProgressObserverInterface, UpdateProgressObserverReceiver, UpdateState} from './firmware_update.mojom-webui.js';
 import {getTemplate} from './firmware_update_dialog.html.js';
 import {DialogContent, OpenUpdateDialogEventDetail} from './firmware_update_types.js';
+import {isAppV2Enabled} from './firmware_update_utils.js';
 import {getUpdateProvider} from './mojo_interface_provider.js';
 
 // TODO(b/308669841): Handle kWaitingForUser separately depending on v2 flag.
@@ -46,7 +47,7 @@ const FirmwareUpdateDialogElementBase =
     I18nMixin(PolymerElement) as {new (): PolymerElement & I18nMixinInterface};
 
 export class FirmwareUpdateDialogElement extends FirmwareUpdateDialogElementBase
-    implements UpdateProgressObserverInterface {
+    implements UpdateProgressObserverInterface, DeviceRequestObserverInterface {
   static get is() {
     return 'firmware-update-dialog' as const;
   }
@@ -89,6 +90,8 @@ export class FirmwareUpdateDialogElement extends FirmwareUpdateDialogElementBase
   private installController: InstallControllerRemote|null = null;
   private updateProgressObserverReceiver: UpdateProgressObserverReceiver|null =
       null;
+  private deviceRequestObserverReceiver: DeviceRequestObserverReceiver|null =
+      null;
 
   override connectedCallback() {
     super.connectedCallback();
@@ -97,6 +100,14 @@ export class FirmwareUpdateDialogElement extends FirmwareUpdateDialogElementBase
         'open-update-dialog',
         (e) => this.onOpenUpdateDialog(
             e as CustomEvent<OpenUpdateDialogEventDetail>));
+  }
+
+  /** Implements DeviceRequestObserver.onDeviceRequest */
+  onDeviceRequest(): void {
+    // OnDeviceRequest should only be triggered when the v2 flag is enabled.
+    assert(isAppV2Enabled());
+    // Stub implementation.
+    // @TODO(cambickel): When a request is received, display the correct string.
   }
 
   /** Implements UpdateProgressObserver.onStatusChanged */
@@ -159,6 +170,14 @@ export class FirmwareUpdateDialogElement extends FirmwareUpdateDialogElementBase
     assert(this.installController);
     this.installController.addUpdateProgressObserver(
         this.updateProgressObserverReceiver.$.bindNewPipeAndPassRemote());
+
+    // Listen for device requests if v2 of the app is enabled.
+    if (isAppV2Enabled()) {
+      this.deviceRequestObserverReceiver =
+          new DeviceRequestObserverReceiver(this);
+      this.installController.addDeviceRequestObserver(
+          this.deviceRequestObserverReceiver.$.bindNewPipeAndPassRemote());
+    }
 
     // Only start new updates, inflight updates will be observed instead.
     if (!this.isInitiallyInflight) {

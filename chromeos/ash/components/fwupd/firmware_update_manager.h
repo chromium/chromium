@@ -74,6 +74,10 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_FWUPD) FirmwareUpdateManager
   void BeginUpdate(const std::string& device_id,
                    const base::FilePath& filepath) override;
 
+  void AddDeviceRequestObserver(
+      mojo::PendingRemote<firmware_update::mojom::DeviceRequestObserver>
+          observer) override;
+
   void AddUpdateProgressObserver(
       mojo::PendingRemote<firmware_update::mojom::UpdateProgressObserver>
           observer) override;
@@ -227,6 +231,11 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_FWUPD) FirmwareUpdateManager
   // list of firmware updates.
   mojo::RemoteSet<firmware_update::mojom::UpdateObserver>
       update_list_observers_;
+
+  // Remote for tracking observer that will be notified of incoming
+  // DeviceRequests.
+  mojo::Remote<firmware_update::mojom::DeviceRequestObserver>
+      device_request_observer_;
 
   // Remote for tracking observer that will be notified of changes to
   // the in-progress update.

@@ -10,6 +10,7 @@
 #include <string>
 
 #include "ash/system/firmware_update/firmware_update_notification_controller.h"
+#include "ash/webui/firmware_update_ui/mojom/firmware_update.mojom-forward.h"
 #include "ash/webui/firmware_update_ui/mojom/firmware_update.mojom.h"
 #include "base/files/file.h"
 #include "base/files/file_path.h"
@@ -128,6 +129,30 @@ class FakeUpdateProgressObserver
  private:
   ash::firmware_update::mojom::InstallationProgressPtr update_;
   mojo::Receiver<ash::firmware_update::mojom::UpdateProgressObserver> receiver_{
+      this};
+};
+
+class FakeDeviceRequestObserver
+    : public ash::firmware_update::mojom::DeviceRequestObserver {
+ public:
+  void OnDeviceRequest(
+      ash::firmware_update::mojom::DeviceRequestPtr request) override {
+    request_ = std::move(request);
+  }
+
+  mojo::PendingRemote<ash::firmware_update::mojom::DeviceRequestObserver>
+  pending_remote() {
+    return receiver_.BindNewPipeAndPassRemote();
+  }
+
+  const ash::firmware_update::mojom::DeviceRequestPtr& GetLatestRequest()
+      const {
+    return request_;
+  }
+
+ private:
+  ash::firmware_update::mojom::DeviceRequestPtr request_;
+  mojo::Receiver<ash::firmware_update::mojom::DeviceRequestObserver> receiver_{
       this};
 };
 
@@ -523,6 +548,12 @@ class FirmwareUpdateManagerTest : public testing::Test {
 
   void SetupProgressObserver(FakeUpdateProgressObserver* observer) {
     install_controller_remote_->AddUpdateProgressObserver(
+        observer->pending_remote());
+    base::RunLoop().RunUntilIdle();
+  }
+
+  void SetupDeviceRequestObserver(FakeDeviceRequestObserver* observer) {
+    install_controller_remote_->AddDeviceRequestObserver(
         observer->pending_remote());
     base::RunLoop().RunUntilIdle();
   }
@@ -1041,6 +1072,13 @@ TEST_F(FirmwareUpdateManagerTest, InternalDeviceFiltered) {
   base::RunLoop().RunUntilIdle();
   ASSERT_EQ(1U, updates.size());
   EXPECT_EQ(kFakeDeviceIdForTesting, updates[0]->device_id);
+}
+
+TEST_F(FirmwareUpdateManagerTest, SetupDeviceRequestObserver) {
+  // Simple test to ensure that binding the observer works.
+  EXPECT_TRUE(PrepareForUpdate(std::string(kFakeDeviceIdForTesting)));
+  FakeDeviceRequestObserver device_request_observer;
+  SetupDeviceRequestObserver(&device_request_observer);
 }
 
 }  // namespace ash

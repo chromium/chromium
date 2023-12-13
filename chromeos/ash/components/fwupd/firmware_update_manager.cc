@@ -343,6 +343,7 @@ void FirmwareUpdateManager::ObservePeripheralUpdates(
 void FirmwareUpdateManager::ResetInstallState() {
   install_controller_receiver_.reset();
   update_progress_observer_.reset();
+  device_request_observer_.reset();
 }
 
 void FirmwareUpdateManager::PrepareForUpdate(
@@ -723,6 +724,13 @@ void FirmwareUpdateManager::BeginUpdate(const std::string& device_id,
   }
 
   StartInstall(device_id, filepath, /**callback=*/base::DoNothing());
+}
+
+void FirmwareUpdateManager::AddDeviceRequestObserver(
+    mojo::PendingRemote<firmware_update::mojom::DeviceRequestObserver>
+        observer) {
+  device_request_observer_.reset();
+  device_request_observer_.Bind(std::move(observer));
 }
 
 void FirmwareUpdateManager::AddUpdateProgressObserver(
