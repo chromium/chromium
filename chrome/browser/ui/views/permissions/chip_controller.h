@@ -11,8 +11,6 @@
 #include "base/check_is_test.h"
 #include "base/functional/callback_helpers.h"
 #include "base/timer/timer.h"
-#include "chrome/browser/picture_in_picture/picture_in_picture_occlusion_observer.h"
-#include "chrome/browser/picture_in_picture/scoped_picture_in_picture_occlusion_observation.h"
 #include "chrome/browser/ui/views/location_bar/omnibox_chip_button.h"
 #include "components/permissions/permission_prompt.h"
 #include "components/permissions/permission_request_manager.h"
@@ -40,8 +38,7 @@ class BubbleOwnerDelegate {
 class ChipController : public permissions::PermissionRequestManager::Observer,
                        public views::WidgetObserver,
                        public BubbleOwnerDelegate,
-                       public OmniboxChipButton::Observer,
-                       public PictureInPictureOcclusionObserver {
+                       public OmniboxChipButton::Observer {
  public:
   ChipController(Browser* browser_, OmniboxChipButton* chip_view);
 
@@ -81,9 +78,6 @@ class ChipController : public permissions::PermissionRequestManager::Observer,
   void OnChipVisibilityChanged(bool is_visible) override;
   void OnExpandAnimationEnded() override;
   void OnCollapseAnimationEnded() override;
-
-  // PictureInPictureOcclusionObserver:
-  void OnOcclusionStateChanged(bool occluded) override;
 
   // Initializes the permission prompt model as well as the permission request
   // manager and observes the prompt bubble.
@@ -242,8 +236,6 @@ class ChipController : public permissions::PermissionRequestManager::Observer,
 
   base::ScopedObservation<OmniboxChipButton, OmniboxChipButton::Observer>
       observation_{this};
-
-  ScopedPictureInPictureOcclusionObservation occlusion_observation_{this};
 
   base::WeakPtrFactory<ChipController> weak_factory_{this};
 };
