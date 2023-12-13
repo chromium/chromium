@@ -59,8 +59,7 @@
 
 - (void)webState:(web::WebState*)webState
     handlePermissions:(NSArray<NSNumber*>*)permissions
-      decisionHandler:(web::WebStatePermissionDecisionHandler)decisionHandler
-    API_AVAILABLE(ios(15.0)) {
+      decisionHandler:(web::WebStatePermissionDecisionHandler)decisionHandler {
   _webState = webState;
   _permissionsRequestHandled = YES;
   decisionHandler(web::PermissionDecisionGrant);

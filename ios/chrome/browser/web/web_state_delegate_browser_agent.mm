@@ -314,7 +314,7 @@ WebStateDelegateBrowserAgent::GetJavaScriptDialogPresenter(
 void WebStateDelegateBrowserAgent::HandlePermissionsDecisionRequest(
     web::WebState* source,
     NSArray<NSNumber*>* permissions,
-    web::WebStatePermissionDecisionHandler handler) API_AVAILABLE(ios(15.0)) {
+    web::WebStatePermissionDecisionHandler handler) {
   ChromeBrowserState* chrome_browser_state =
       ChromeBrowserState::FromBrowserState(source->GetBrowserState());
   // For supervised users, sites can be denied permission to access camera or

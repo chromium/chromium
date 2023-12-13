@@ -13,8 +13,7 @@
 @protocol PermissionsDelegate;
 
 // InfobarPermissionsTableViewController represents the content for the
-// Permissionss InfobarModal.
-API_AVAILABLE(ios(15.0))
+// Permissions InfobarModal.
 @interface InfobarPermissionsTableViewController
     : LegacyChromeTableViewController <PermissionsConsumer>
 

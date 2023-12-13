@@ -402,8 +402,7 @@ const char kInfobarOverflowBadgeShownUserAction[] =
 #pragma mark - CRWWebStateObserver
 
 - (void)webState:(web::WebState*)webState
-    didChangeStateForPermission:(web::Permission)permission
-    API_AVAILABLE(ios(15.0)) {
+    didChangeStateForPermission:(web::Permission)permission {
   DCHECK_EQ(webState, self.webState);
   [self updateBadgesShownForWebState:webState];
 }

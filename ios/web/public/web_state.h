@@ -491,18 +491,17 @@ class WebState : public base::SupportsUserData {
 
   // Gets or sets the web state's permission for a specific type, for example
   // camera or microphone, on the device.
-  virtual PermissionState GetStateForPermission(Permission permission) const
-      API_AVAILABLE(ios(15.0)) = 0;
+  virtual PermissionState GetStateForPermission(
+      Permission permission) const = 0;
   virtual void SetStateForPermission(PermissionState state,
-                                     Permission permission)
-      API_AVAILABLE(ios(15.0)) = 0;
+                                     Permission permission) = 0;
 
   // Gets a mapping of all available permissions and their states.
   // Note that both key and value are in NSNumber format, and should be
   // translated to NSUInteger and casted to web::Permission or
   // web::PermissionState before use.
-  virtual NSDictionary<NSNumber*, NSNumber*>* GetStatesForAllPermissions() const
-      API_AVAILABLE(ios(15.0)) = 0;
+  virtual NSDictionary<NSNumber*, NSNumber*>* GetStatesForAllPermissions()
+      const = 0;
 
   // Downloads the displayed webview at `destination_file`. `handler`
   // is used to retrieve the CRWWebViewDownload, so the caller can manage the

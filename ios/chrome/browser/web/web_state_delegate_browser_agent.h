@@ -90,8 +90,7 @@ class WebStateDelegateBrowserAgent
   void HandlePermissionsDecisionRequest(
       web::WebState* source,
       NSArray<NSNumber*>* permissions,
-      web::WebStatePermissionDecisionHandler handler) override
-      API_AVAILABLE(ios(15.0));
+      web::WebStatePermissionDecisionHandler handler) override;
   void OnAuthRequired(web::WebState* source,
                       NSURLProtectionSpace* protection_space,
                       NSURLCredential* proposed_credential,

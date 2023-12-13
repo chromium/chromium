@@ -211,8 +211,7 @@ class WebStateImpl;
 
 // Gets and sets the web state's state of a permission; for example, the one to
 // use the camera on the device. Only works on iOS 15+.
-- (web::PermissionState)stateForPermission:(web::Permission)permission
-    API_AVAILABLE(ios(15.0));
+- (web::PermissionState)stateForPermission:(web::Permission)permission;
 - (void)setState:(web::PermissionState)state
     forPermission:(web::Permission)permission;
 

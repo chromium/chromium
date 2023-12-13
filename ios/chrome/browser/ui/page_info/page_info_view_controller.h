@@ -29,8 +29,7 @@
 @property(nonatomic, weak) id<PageInfoCommands> pageInfoCommandsHandler;
 
 // Delegate used to handle permission actions.
-@property(nonatomic, weak) id<PermissionsDelegate> permissionsDelegate
-    API_AVAILABLE(ios(15.0));
+@property(nonatomic, weak) id<PermissionsDelegate> permissionsDelegate;
 
 @end
 

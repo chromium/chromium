@@ -101,13 +101,11 @@ class FakeWebState : public WebState {
   bool SetSessionStateData(NSData* data) override;
   NSData* SessionStateData() override;
 
-  PermissionState GetStateForPermission(Permission permission) const override
-      API_AVAILABLE(ios(15.0));
+  PermissionState GetStateForPermission(Permission permission) const override;
   void SetStateForPermission(PermissionState state,
-                             Permission permission) override
-      API_AVAILABLE(ios(15.0));
+                             Permission permission) override;
   NSDictionary<NSNumber*, NSNumber*>* GetStatesForAllPermissions()
-      const override API_AVAILABLE(ios(15.0));
+      const override;
   void DownloadCurrentPage(NSString* destination_file,
                            id<CRWWebViewDownloadDelegate> delegate,
                            void (^handler)(id<CRWWebViewDownload>)) override;

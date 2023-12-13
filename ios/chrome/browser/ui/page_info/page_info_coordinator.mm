@@ -24,8 +24,7 @@
     TableViewNavigationController* navigationController;
 @property(nonatomic, strong) CommandDispatcher* dispatcher;
 @property(nonatomic, strong) PageInfoViewController* viewController;
-@property(nonatomic, strong)
-    PageInfoPermissionsMediator* permissionsMediator API_AVAILABLE(ios(15.0));
+@property(nonatomic, strong) PageInfoPermissionsMediator* permissionsMediator;
 
 @end
 

@@ -151,7 +151,7 @@ float kTitleLabelMinimumScaleFactor = 0.7f;
 }
 
 // Loads the "Permissions" section in this table view.
-- (void)loadPermissionsModel API_AVAILABLE(ios(15.0)) {
+- (void)loadPermissionsModel {
   [self.tableViewModel addSectionWithIdentifier:SectionIdentifierPermissions];
 
   TableViewTextHeaderFooterItem* permissionsHeaderItem =
