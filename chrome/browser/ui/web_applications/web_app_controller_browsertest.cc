@@ -141,7 +141,7 @@ content::WebContents* WebAppControllerBrowserTest::OpenWindow(
   EXPECT_TRUE(new_contents);
   WaitForLoadStop(new_contents);
 
-  EXPECT_EQ(url, new_contents->GetLastCommittedURL());
+  EXPECT_EQ(url, contents->GetController().GetLastCommittedEntry()->GetURL());
   EXPECT_EQ(
       content::PAGE_TYPE_NORMAL,
       new_contents->GetController().GetLastCommittedEntry()->GetPageType());
@@ -167,7 +167,7 @@ bool WebAppControllerBrowserTest::NavigateAndAwaitInstallabilityCheck(
     const GURL& url) {
   auto* manager = webapps::TestAppBannerManagerDesktop::FromWebContents(
       browser->tab_strip_model()->GetActiveWebContents());
-  NavigateToURLAndWait(browser, url);
+  EXPECT_TRUE(ui_test_utils::NavigateToURL(browser, url));
   return manager->WaitForInstallableCheck();
 }
 
