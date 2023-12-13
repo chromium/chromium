@@ -488,7 +488,7 @@ void AddContactChildSuggestions(ServerFieldType trigger_field_type,
 void AddFooterChildSuggestions(
     const AutofillProfile& profile,
     ServerFieldType trigger_field_type,
-    absl::optional<ServerFieldTypeSet> last_targeted_fields,
+    std::optional<ServerFieldTypeSet> last_targeted_fields,
     Suggestion& suggestion) {
   // If the trigger field is not classified as an address field, then the
   // filling was triggered from the context menu. In this scenario, the user
@@ -593,7 +593,7 @@ void AddCreditCardExpiryDateChildSuggestion(const CreditCard& credit_card,
 // When not present, we default to full form.
 // This function is called only for first-level popup.
 PopupItemId GetProfileSuggestionPopupItemId(
-    absl::optional<ServerFieldTypeSet> optional_last_targeted_fields,
+    absl::optional<ServerFieldTypeSet> last_targeted_fields,
     ServerFieldType trigger_field_type) {
   if (!base::FeatureList::IsEnabled(
           features::kAutofillGranularFillingAvailable)) {
@@ -612,7 +612,7 @@ PopupItemId GetProfileSuggestionPopupItemId(
       GroupTypeOfServerFieldType(trigger_field_type);
 
   // Lambda to return the expected `PopupItemId` when
-  // `optional_last_targeted_fields` matches one of the granular filling groups.
+  // `last_targeted_fields` matches one of the granular filling groups.
   auto get_popup_item_id_for_group_filling = [&] {
     switch (trigger_field_type_group) {
       case FieldTypeGroup::kName:
@@ -638,7 +638,7 @@ PopupItemId GetProfileSuggestionPopupItemId(
   };
 
   switch (GetFillingMethodFromTargetedFields(
-      optional_last_targeted_fields.value_or(kAllServerFieldTypes))) {
+      last_targeted_fields.value_or(kAllServerFieldTypes))) {
     case AutofillFillingMethod::kGroupFilling:
       return get_popup_item_id_for_group_filling();
     case AutofillFillingMethod::kFullForm:
@@ -680,6 +680,15 @@ GetNumberOfSuggestionMainTextAndGranularFillingLabelOcurrences(
   return main_text_and_granular_filling_label_count;
 }
 
+// Returns whether the `ADDRESS_HOME_LINE1` should be included in the granular
+// filling labels vector. This depends on whether `triggering_field_type` is a
+// field that will usually allow users to easily identify their address.
+bool ShouldAddAddressLine1ToGranularFillingLabels(
+    ServerFieldType triggering_field_type) {
+  static constexpr std::array kAddressRecognizingFields = {
+      ADDRESS_HOME_LINE1, ADDRESS_HOME_LINE2, ADDRESS_HOME_STREET_ADDRESS};
+  return !base::Contains(kAddressRecognizingFields, triggering_field_type);
+}
 // Creates a specific granular filling labels vector for each `AutofillProfile`
 // in `profiles` when the `last_filling_granularity` for a certain form was
 // group filling. This is done to give users feedback about the filling
@@ -687,11 +696,11 @@ GetNumberOfSuggestionMainTextAndGranularFillingLabelOcurrences(
 // applied for a profile.
 std::vector<std::vector<std::u16string>> GetGranularFillingLabels(
     const std::vector<const AutofillProfile*>& profiles,
-    absl::optional<ServerFieldTypeSet> optional_last_targeted_fields,
+    std::optional<ServerFieldTypeSet> last_targeted_fields,
     ServerFieldType triggering_field_type,
     const std::string& app_locale) {
-  if (!optional_last_targeted_fields ||
-      !AreFieldsGranularFillingGroup(*optional_last_targeted_fields)) {
+  if (!last_targeted_fields ||
+      !AreFieldsGranularFillingGroup(*last_targeted_fields)) {
     return std::vector<std::vector<std::u16string>>(profiles.size());
   }
   std::vector<std::vector<std::u16string>> labels;
@@ -703,25 +712,20 @@ std::vector<std::vector<std::u16string>> GetGranularFillingLabels(
             IDS_AUTOFILL_FILL_NAME_GROUP_POPUP_OPTION_SELECTED)});
         break;
       case FieldTypeGroup::kCompany:
-      case FieldTypeGroup::kAddress:
-        // Specifies fields that will usually allow users to easily identify a
-        // profile.
-        static constexpr std::array kAddressRecognizingFields = {
-            ADDRESS_HOME_LINE1, ADDRESS_HOME_LINE2, ADDRESS_HOME_ADDRESS,
-            ADDRESS_HOME_STREET_ADDRESS};
-        if (base::Contains(kAddressRecognizingFields, triggering_field_type)) {
-          labels.push_back({l10n_util::GetStringUTF16(
-              IDS_AUTOFILL_FILL_ADDRESS_GROUP_POPUP_OPTION_SELECTED)});
-        } else {
+      case FieldTypeGroup::kAddress: {
+        std::vector<std::u16string>& profile_labels = labels.emplace_back();
+        profile_labels.push_back(l10n_util::GetStringUTF16(
+            IDS_AUTOFILL_FILL_ADDRESS_GROUP_POPUP_OPTION_SELECTED));
+        if (ShouldAddAddressLine1ToGranularFillingLabels(
+                triggering_field_type)) {
           // If the triggering type does not contain information that is
           // useful to identify addresses, add `ADDRESS_HOME_LINE1` to
           // the differentiating labels list.
-          labels.push_back(
-              {l10n_util::GetStringUTF16(
-                   IDS_AUTOFILL_FILL_ADDRESS_GROUP_POPUP_OPTION_SELECTED),
-               profile->GetInfo(ADDRESS_HOME_LINE1, app_locale)});
+          profile_labels.push_back(
+              profile->GetInfo(ADDRESS_HOME_LINE1, app_locale));
         }
         break;
+      }
       case FieldTypeGroup::kNoGroup:
       case FieldTypeGroup::kPhone:
       case FieldTypeGroup::kEmail:
@@ -738,6 +742,48 @@ std::vector<std::vector<std::u16string>> GetGranularFillingLabels(
   return labels;
 }
 
+// Returns a `ServerFieldTypeSet` to be excluded from the differentiating labels
+// generation. The granular filling labels can contain information such
+// `ADDRESS_HOME_LINE1` depending on `triggering_field_type` and
+// `last_targeted_fields`, see `GetGranularFillingLabels()` for
+// details.
+ServerFieldTypeSet GetFieldTypesToExcludeFromDifferentiatingLabelsGeneration(
+    ServerFieldType triggering_field_type,
+    std::optional<ServerFieldTypeSet> last_targeted_fields) {
+  if (!last_targeted_fields ||
+      !AreFieldsGranularFillingGroup(*last_targeted_fields)) {
+    return {triggering_field_type};
+  }
+  switch (GroupTypeOfServerFieldType(triggering_field_type)) {
+    case FieldTypeGroup::kAddress:
+      if (ShouldAddAddressLine1ToGranularFillingLabels(triggering_field_type)) {
+        // In the case where the `ADDRESS_HOME_LINE1` was added to the granular
+        // filling labels, make sure to exclude fields that contain
+        // `ADDRESS_HOME_LINE1` from the field types to use when creating the
+        // differentiating label.
+        // For details on how `ADDRESS_HOME_LINE1` is added, see
+        // `GetGranularFillingLabels()`.
+        return {triggering_field_type, ADDRESS_HOME_LINE1,
+                ADDRESS_HOME_STREET_ADDRESS};
+      } else {
+        return {triggering_field_type};
+      }
+    case FieldTypeGroup::kName:
+    case FieldTypeGroup::kCompany:
+    case FieldTypeGroup::kNoGroup:
+    case FieldTypeGroup::kPhone:
+    case FieldTypeGroup::kEmail:
+    case FieldTypeGroup::kCreditCard:
+    case FieldTypeGroup::kPasswordField:
+    case FieldTypeGroup::kTransaction:
+    case FieldTypeGroup::kUsernameField:
+    case FieldTypeGroup::kUnfillable:
+    case FieldTypeGroup::kBirthdateField:
+    case FieldTypeGroup::kIban:
+      return {triggering_field_type};
+  }
+}
+
 // Returns for each profile in `profiles` a differentiating label string to be
 // used as a secondary text in the corresponding suggestion bubble.
 // `field_types` the types of the fields that will be filled by the suggestion.
@@ -745,7 +791,7 @@ std::vector<std::u16string> GetProfileSuggestionLabels(
     const std::vector<const AutofillProfile*>& profiles,
     const ServerFieldTypeSet& field_types,
     ServerFieldType trigger_field_type,
-    absl::optional<ServerFieldTypeSet> optional_last_targeted_fields,
+    std::optional<ServerFieldTypeSet> last_targeted_fields,
     const std::string& app_locale) {
   std::unique_ptr<LabelFormatter> formatter;
   bool use_formatter;
@@ -776,9 +822,11 @@ std::vector<std::u16string> GetProfileSuggestionLabels(
   } else if (formatter) {
     differentiating_labels = formatter->GetLabels();
   } else {
-    AutofillProfile::CreateInferredLabels(profiles, field_types,
-                                          {trigger_field_type}, 1, app_locale,
-                                          &differentiating_labels);
+    AutofillProfile::CreateInferredLabels(
+        profiles, field_types,
+        GetFieldTypesToExcludeFromDifferentiatingLabelsGeneration(
+            trigger_field_type, last_targeted_fields),
+        1, app_locale, &differentiating_labels);
   }
 
   if (use_formatter && !profiles.empty()) {
@@ -799,7 +847,7 @@ CreateSuggestionLabelsWithGranularFillingDetails(
     base::span<const Suggestion> suggestions,
     const std::vector<const AutofillProfile*>& profiles,
     const ServerFieldTypeSet& field_types,
-    absl::optional<ServerFieldTypeSet> last_targeted_fields,
+    std::optional<ServerFieldTypeSet> last_targeted_fields,
     ServerFieldType trigger_field_type,
     const std::string& app_locale) {
   const std::vector<std::vector<std::u16string>>
@@ -807,8 +855,6 @@ CreateSuggestionLabelsWithGranularFillingDetails(
           profiles, last_targeted_fields, trigger_field_type, app_locale);
   CHECK_EQ(suggestions_granular_filling_labels.size(), suggestions.size());
 
-  // TODO(crbug.com/1459990): Remove `ADDRESS_HOME_LINE1` when
-  // `granular_filling_labels` already contains it.
   const std::vector<std::u16string> suggestions_differentiating_labels =
       GetProfileSuggestionLabels(profiles, field_types, trigger_field_type,
                                  last_targeted_fields, app_locale);
@@ -1039,7 +1085,7 @@ std::u16string NormalizeForComparisonForType(const std::u16string& text,
   return AutofillProfileComparator::NormalizeForComparison(text);
 }
 
-absl::optional<Suggestion> GetSuggestionForTestAddresses(
+std::optional<Suggestion> GetSuggestionForTestAddresses(
     base::span<const AutofillProfile> test_addresses,
     const std::string& locale) {
   if (test_addresses.empty()) {
@@ -1076,7 +1122,7 @@ std::vector<Suggestion> AutofillSuggestionGenerator::GetSuggestionsForProfiles(
     const ServerFieldTypeSet& field_types,
     const FormFieldData& trigger_field,
     ServerFieldType trigger_field_type,
-    absl::optional<ServerFieldTypeSet> last_targeted_fields,
+    std::optional<ServerFieldTypeSet> last_targeted_fields,
     AutofillSuggestionTriggerSource trigger_source) {
   // If the user manually triggered suggestions from the context menu, all
   // available profiles should be shown. Selecting a suggestion overwrites the
@@ -1162,7 +1208,7 @@ std::vector<Suggestion>
 AutofillSuggestionGenerator::CreateSuggestionsFromProfiles(
     const std::vector<const AutofillProfile*>& profiles,
     const ServerFieldTypeSet& field_types,
-    absl::optional<ServerFieldTypeSet> last_targeted_fields,
+    std::optional<ServerFieldTypeSet> last_targeted_fields,
     ServerFieldType trigger_field_type,
     uint64_t trigger_field_max_length,
     const std::set<std::string>& previously_hidden_profiles_guid) {
@@ -1246,7 +1292,7 @@ AutofillSuggestionGenerator::CreateSuggestionsFromProfiles(
 
   // Add devtools test addresses suggestion if it exists. A suggestion will
   // exist if devtools is open and therefore test addresses were set.
-  if (absl::optional<Suggestion> test_addresses_suggestion =
+  if (std::optional<Suggestion> test_addresses_suggestion =
           GetSuggestionForTestAddresses(personal_data_->test_addresses(),
                                         app_locale)) {
     std::vector<Suggestion> suggestions_with_test_address;
@@ -1386,7 +1432,7 @@ void AutofillSuggestionGenerator::RemoveProfilesNotUsedSinceTimestamp(
 }
 
 void AutofillSuggestionGenerator::AddAddressGranularFillingChildSuggestions(
-    absl::optional<ServerFieldTypeSet> last_targeted_fields,
+    std::optional<ServerFieldTypeSet> last_targeted_fields,
     ServerFieldType trigger_field_type,
     const AutofillProfile& profile,
     Suggestion& suggestion) const {

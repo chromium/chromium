@@ -1195,11 +1195,13 @@ TEST_F(
 
   // `profile_1` and `profile_2` have the same `ADDRESS_HOME_ZIP`, which
   // will lead to the necessity of a differentiating label
-  // (`ADDRESS_HOME_HOUSE_NUMBER`).
+  // (`ADDRESS_HOME_HOUSE_NUMBER`). Note that even though `ADDRESS_HOME_LINE1`
+  // is part of the `field_types`, it is not added as a differentiating label
+  // because it is already part of the granular filling labels.
   std::vector<Suggestion> suggestions =
       suggestion_generator()->CreateSuggestionsFromProfiles(
           {&profile_1, &profile_2},
-          {ADDRESS_HOME_HOUSE_NUMBER, ADDRESS_HOME_ZIP},
+          {ADDRESS_HOME_LINE1, ADDRESS_HOME_HOUSE_NUMBER, ADDRESS_HOME_ZIP},
           GetAddressFieldsForGroupFilling(), ADDRESS_HOME_ZIP,
           /*trigger_field_max_length=*/0);
 
