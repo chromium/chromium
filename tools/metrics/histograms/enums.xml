@@ -28960,6 +28960,7 @@ from previous Chrome versions.
       label="SafeBrowsingPasswordProtectionForSignedInUsers:enabled"/>
   <int value="-1980328793" label="trace-upload-url"/>
   <int value="-1978625006" label="PcieBillboardNotification:disabled"/>
+  <int value="-1978116081" label="SeaPen:disabled"/>
   <int value="-1977496883" label="ViewPasswords:enabled"/>
   <int value="-1976050618" label="AppDeduplicationService:disabled"/>
   <int value="-1975970208" label="(Obsolete) TranslateSubFrames:disabled"/>
@@ -36048,6 +36049,7 @@ from previous Chrome versions.
   <int value="1373777956" label="disable-threaded-gpu-rasterization"/>
   <int value="1374350431" label="WebViewEmptyComponentLoaderPolicy:enabled"/>
   <int value="1375165388" label="LazyFrameLoading:enabled"/>
+  <int value="1376139800" label="SeaPen:enabled"/>
   <int value="1376279104" label="TrafficCountersEnabled:enabled"/>
   <int value="1376437124" label="show-cert-link"/>
   <int value="1377056573" label="browser-side-navigation:enabled"/>

@@ -7013,6 +7013,9 @@ const char kScanningAppJellyDescription[] =
 const char kScreencastV2Name[] = "Screencast V2";
 const char kScreencastV2Description[] = "Enable V2 features for Screencast app";
 
+const char kSeaPenName[] = "SeaPen";
+const char kSeaPenDescription[] = "Enable SeaPen Wallpaper";
+
 const char kSealKeyName[] = "Secret key for Seal feature";
 const char kSealKeyDescription[] = "Secret key for Seal feature.";
 

@@ -168,6 +168,7 @@
 #include "components/trusted_vault/features.h"
 #include "components/ui_devtools/switches.h"
 #include "components/variations/variations_switches.h"
+#include "components/version_info/channel.h"
 #include "components/version_info/version_info.h"
 #include "components/viz/common/features.h"
 #include "components/viz/common/switches.h"
@@ -3044,6 +3045,7 @@ constexpr char kClipboardHistoryUrlTitlesInternalName[] =
     "clipboard-history-url-titles";
 constexpr char kBluetoothUseFlossInternalName[] = "bluetooth-use-floss";
 constexpr char kEnableSuspendToDiskInternalName[] = "enable-suspend-to-disk";
+constexpr char kSeaPenInternalName[] = "sea-pen";
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 #if BUILDFLAG(IS_ANDROID)
@@ -8449,6 +8451,9 @@ const FeatureEntry kFeatureEntries[] = {
     {"scanning-app-jelly", flag_descriptions::kScanningAppJellyName,
      flag_descriptions::kScanningAppJellyDescription, kOsCrOS,
      FEATURE_VALUE_TYPE(ash::features::kScanningAppJelly)},
+    {kSeaPenInternalName, flag_descriptions::kSeaPenName,
+     flag_descriptions::kSeaPenDescription, kOsCrOS,
+     FEATURE_VALUE_TYPE(ash::features::kSeaPen)},
     {"shelf-auto-hide-separation",
      flag_descriptions::kShelfAutoHideSeparationName,
      flag_descriptions::kShelfAutoHideSeparationDescription, kOsCrOS,
@@ -11455,6 +11460,14 @@ bool ShouldSkipConditionalFeatureEntry(const flags_ui::FlagsStorage* storage,
   // Only show glanceables calendar view flag if channel is one of
   // Beta/Dev/Canary/Unknown.
   if (!strcmp(kGlanceablesV2CalendarViewInternalName, entry.internal_name)) {
+    return channel != version_info::Channel::BETA &&
+           channel != version_info::Channel::DEV &&
+           channel != version_info::Channel::CANARY &&
+           channel != version_info::Channel::UNKNOWN;
+  }
+
+  // Only show sea-pen flag if channel is one of Beta/Dev/Canary/Unknown.
+  if (!strcmp(kSeaPenInternalName, entry.internal_name)) {
     return channel != version_info::Channel::BETA &&
            channel != version_info::Channel::DEV &&
            channel != version_info::Channel::CANARY &&

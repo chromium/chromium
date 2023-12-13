@@ -4026,6 +4026,9 @@ extern const char kSecondaryGoogleAccountUsageDescription[];
 extern const char kSealKeyName[];
 extern const char kSealKeyDescription[];
 
+extern const char kSeaPenName[];
+extern const char kSeaPenDescription[];
+
 extern const char kShelfAutoHideSeparationName[];
 extern const char kShelfAutoHideSeparationDescription[];
 
