@@ -1629,8 +1629,11 @@ void WebAppPublisherHelper::Init() {
       HostContentSettingsMapFactory::GetForProfile(profile_));
 
 #if BUILDFLAG(IS_CHROMEOS)
-  notification_display_service_.Observe(
-      NotificationDisplayServiceFactory::GetForProfile(profile()));
+  // NotificationDisplayService could be null in some tests.
+  if (auto* notification_display_service =
+          NotificationDisplayServiceFactory::GetForProfile(profile())) {
+    notification_display_service_.Observe(notification_display_service);
+  }
 
   badge_manager_ = badging::BadgeManagerFactory::GetForProfile(profile());
   // badge_manager_ is nullptr in guest and incognito profiles.
