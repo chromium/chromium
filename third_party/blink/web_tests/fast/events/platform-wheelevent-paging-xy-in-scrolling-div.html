@@ -38,17 +38,13 @@ promise_test(async () => {
     var overflowElement = document.getElementById("overflow");
     overflowElement.addEventListener("mousewheel", mousewheelHandler, false);
     var ele_center = elementCenter(overflowElement);
+    const scrollendPromise = waitForScrollendEvent(overflowElement);
     // Wheel event will scroll by one page
     await smoothScrollWithXY(
       givenScrollLeft, givenScrollTop, ele_center.x, ele_center.y, source,
       SPEED_INSTANT, false, true
     );
-    await waitForAnimationEndTimeBased(() => {
-      return overflowElement.scrollLeft;
-    });
-    await waitForAnimationEndTimeBased(() => {
-      return overflowElement.scrollTop;
-    });
+    await scrollendPromise;
 
     // There is some minor inconsistency between main and compositor threads in
     // which direction they round so allow up to one pixel of slack.

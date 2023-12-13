@@ -33,29 +33,22 @@ function mousewheelHandler(e) {
 promise_test(async () => {
     document.body.addEventListener("mousewheel", mousewheelHandler, false);
 
+    const scrollend_promise = waitForScrollendEvent(document);
     // Wheel event will scroll by one page
     await smoothScrollWithXY(
       givenScrollDelta, givenScrollDelta, 100, 110, source,
       SPEED_INSTANT, false, true
     );
-    await waitForAnimationEndTimeBased(() => {
-      return document.scrollingElement.scrollLeft;
-    });
-    await waitForAnimationEndTimeBased(() => {
-      return document.scrollingElement.scrollTop;
-    });
+    await scrollend_promise;
 
     // There is some minor inconsistency between main and compositor threads in
     // which direction they round so allow up to one pixel of slack.
-    await conditionHolds(() => {
-      return (
-        approx_equals(
-          document.scrollingElement.scrollLeft, expectedScrollLeft, 1
-        ) &&
-        approx_equals(
-          document.scrollingElement.scrollTop, expectedScrollTop, 1
-      ));
-    });
+    assert_approx_equals(
+      document.scrollingElement.scrollLeft, expectedScrollLeft, 1
+    );
+    assert_approx_equals(
+      document.scrollingElement.scrollTop, expectedScrollTop, 1
+    );
 
     // When a user operates the device for scrolling to down, wheelDeltaX is negative, otherwise positive.
     // https://developer.mozilla.org/en-US/docs/Web/API/Element/mousewheel_event.
