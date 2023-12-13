@@ -86,7 +86,9 @@ class PageInfoMainView : public views::View,
     return toggle_rows_.size();
   }
 
-  const std::vector<PermissionToggleRowView*> GetToggleRowsForTesting() const;
+  const std::vector<PermissionToggleRowView*>& GetToggleRowsForTesting() const {
+    return toggle_rows_;
+  }
 
  protected:
   // TODO(olesiamarukhno): Was used for tests, will update it after redesigning

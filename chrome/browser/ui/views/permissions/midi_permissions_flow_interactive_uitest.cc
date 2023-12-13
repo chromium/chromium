@@ -113,7 +113,7 @@ IN_PROC_BROWSER_TEST_F(MidiPermissionsFlowInteractiveUITest,
               l10n_util::GetStringUTF16(IDS_MIDI_PERMISSION_FRAGMENT))));
 }
 
-// Display MIDI permission status in page info when denied.
+// Display MIDI permission state in page info when denied.
 IN_PROC_BROWSER_TEST_F(MidiPermissionsFlowInteractiveUITest,
                        BlockedMidiPermissionInPageInfo) {
   RunTestSequenceInContext(
@@ -125,19 +125,26 @@ IN_PROC_BROWSER_TEST_F(MidiPermissionsFlowInteractiveUITest,
           PageInfoMainView::kMainLayoutElementId,
           base::BindLambdaForTesting([](ui::TrackedElement* element) {
             bool includes_midi = false;
+            bool includes_midi_sysex = false;
             for (auto* permission_toggle_row :
                  AsView<PageInfoMainView>(element)->GetToggleRowsForTesting()) {
               if (permission_toggle_row->GetRowTitleForTesting() ==
                   l10n_util::GetStringUTF16(IDS_SITE_SETTINGS_TYPE_MIDI)) {
                 includes_midi = true;
-                break;
+                EXPECT_FALSE(
+                    permission_toggle_row->GetToggleButtonStateForTesting());
+              } else if (permission_toggle_row->GetRowTitleForTesting() ==
+                         l10n_util::GetStringUTF16(
+                             IDS_SITE_SETTINGS_TYPE_MIDI_SYSEX)) {
+                includes_midi_sysex = true;
               }
             }
-            EXPECT_EQ(includes_midi, true);
+            EXPECT_TRUE(includes_midi);
+            EXPECT_FALSE(includes_midi_sysex);
           })));
 }
 
-// Display MIDI permission status in page info when allowed.
+// Display MIDI permission state in page info when allowed.
 IN_PROC_BROWSER_TEST_F(MidiPermissionsFlowInteractiveUITest,
                        AllowedMidiPermissionInPageInfo) {
   RunTestSequenceInContext(
@@ -149,14 +156,21 @@ IN_PROC_BROWSER_TEST_F(MidiPermissionsFlowInteractiveUITest,
           PageInfoMainView::kMainLayoutElementId,
           base::BindLambdaForTesting([](ui::TrackedElement* element) {
             bool includes_midi = false;
+            bool includes_midi_sysex = false;
             for (auto* permission_toggle_row :
                  AsView<PageInfoMainView>(element)->GetToggleRowsForTesting()) {
               if (permission_toggle_row->GetRowTitleForTesting() ==
                   l10n_util::GetStringUTF16(IDS_SITE_SETTINGS_TYPE_MIDI)) {
                 includes_midi = true;
-                break;
+                EXPECT_TRUE(
+                    permission_toggle_row->GetToggleButtonStateForTesting());
+              } else if (permission_toggle_row->GetRowTitleForTesting() ==
+                         l10n_util::GetStringUTF16(
+                             IDS_SITE_SETTINGS_TYPE_MIDI_SYSEX)) {
+                includes_midi_sysex = true;
               }
             }
-            EXPECT_EQ(includes_midi, true);
+            EXPECT_TRUE(includes_midi);
+            EXPECT_FALSE(includes_midi_sysex);
           })));
 }

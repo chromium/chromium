@@ -280,8 +280,8 @@ void PermissionPromptBubbleBaseView::RunButtonCallback(int button_id) {
   NOTREACHED();
 }
 
-const std::u16string
-PermissionPromptBubbleBaseView::GetPermissionFragmentForTesting() const {
+std::u16string PermissionPromptBubbleBaseView::GetPermissionFragmentForTesting()
+    const {
   std::u16string origin =
       PermissionPromptBaseView::GetUrlIdentity(browser_, *delegate_).name;
   return accessible_window_title_.substr(accessible_window_title_.find(origin) +

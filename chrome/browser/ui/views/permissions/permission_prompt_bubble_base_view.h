@@ -86,7 +86,7 @@ class PermissionPromptBubbleBaseView : public PermissionPromptBaseView {
   // PermissionPromptBaseView:
   void RunButtonCallback(int button_id) override;
 
-  const std::u16string GetPermissionFragmentForTesting() const;
+  std::u16string GetPermissionFragmentForTesting() const;
 
  protected:
   void CreateWidget();
