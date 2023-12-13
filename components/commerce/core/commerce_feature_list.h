@@ -104,8 +104,6 @@ enum class DiscountDialogAutoPopupBehavior {
   kAlwaysAutoPopup = 1,
   kNoAutoPopup = 2
 };
-BASE_DECLARE_FEATURE(kShowDiscountOnNavigation);
-BASE_DECLARE_FEATURE(kShowDiscountOnNavigationRegionLaunched);
 BASE_DECLARE_FEATURE(kEnableDiscountInfoApi);
 BASE_DECLARE_FEATURE(kEnableDiscountInfoApiRegionLaunched);
 BASE_DECLARE_FEATURE(kDiscountDialogAutoPopupBehaviorSetting);

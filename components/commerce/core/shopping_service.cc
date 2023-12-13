@@ -746,8 +746,8 @@ bool ShoppingService::IsPriceInsightsInfoApiEnabled() {
 }
 
 bool ShoppingService::IsDiscountEligibleToShowOnNavigation() {
-  if (!IsRegionLockedFeatureEnabled(kShowDiscountOnNavigation,
-                                    kShowDiscountOnNavigationRegionLaunched,
+  if (!IsRegionLockedFeatureEnabled(kEnableDiscountInfoApi,
+                                    kEnableDiscountInfoApiRegionLaunched,
                                     country_on_startup_, locale_on_startup_)) {
     return false;
   }

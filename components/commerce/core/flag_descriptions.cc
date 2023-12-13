@@ -50,10 +50,6 @@ const char kParcelTrackingTestDataDescription[] =
 const char kPriceInsightsName[] = "Price Insights";
 const char kPriceInsightsDescription[] = "Enable price insights experiment.";
 
-const char kShowDiscountOnNavigationName[] = "Show discount on navigation";
-const char kShowDiscountOnNavigationDescription[] =
-    "Enable discount to show on navigation";
-
 const char kShoppingPageTypesName[] = "Shopping Page Types";
 const char kShoppingPageTypesDescription[] =
     "Enable shopping page types experiment.";

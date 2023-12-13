@@ -1299,8 +1299,7 @@ TEST_P(ShoppingServiceTest, TestIsShoppingPage) {
 }
 
 TEST_P(ShoppingServiceTest, TestDiscountInfoResponse) {
-  test_features_.InitWithFeatures(
-      {kShowDiscountOnNavigation, kEnableDiscountInfoApi}, {});
+  test_features_.InitWithFeatures({kEnableDiscountInfoApi}, {});
 
   std::vector<DiscountInfo> infos;
 
@@ -1375,8 +1374,7 @@ TEST_P(ShoppingServiceTest, TestDiscountInfoResponse) {
 }
 
 TEST_P(ShoppingServiceTest, TestDiscountInfoResponse_InfoWithoutId) {
-  test_features_.InitWithFeatures(
-      {kShowDiscountOnNavigation, kEnableDiscountInfoApi}, {});
+  test_features_.InitWithFeatures({kEnableDiscountInfoApi}, {});
 
   std::vector<DiscountInfo> infos;
 
@@ -1421,8 +1419,7 @@ TEST_P(ShoppingServiceTest, TestDiscountInfoResponse_InfoWithoutId) {
 }
 
 TEST_P(ShoppingServiceTest, TestDiscountInfoResponse_InfoWithoutTerms) {
-  test_features_.InitWithFeatures(
-      {kShowDiscountOnNavigation, kEnableDiscountInfoApi}, {});
+  test_features_.InitWithFeatures({kEnableDiscountInfoApi}, {});
 
   std::vector<DiscountInfo> infos;
 
@@ -1464,7 +1461,7 @@ TEST_P(ShoppingServiceTest, TestDiscountInfoResponse_InfoWithoutTerms) {
 }
 
 TEST_P(ShoppingServiceTest, TestDiscountInfoResponse_InfoWithoutDiscountCode) {
-  test_features_.InitAndEnableFeature(kShowDiscountOnNavigation);
+  test_features_.InitWithFeatures({kEnableDiscountInfoApi}, {});
 
   std::vector<DiscountInfo> infos;
 

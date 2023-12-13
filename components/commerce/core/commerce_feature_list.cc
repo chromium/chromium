@@ -46,7 +46,6 @@ const CountryLocaleMap& GetAllowedCountryToLocaleMap() {
     map[&kCommerceMerchantViewerRegionLaunched] = {{"us", {"en-us"}}};
     map[&kCommercePriceTrackingRegionLaunched] = {{"us", {"en-us"}}};
     map[&kPriceInsightsRegionLaunched] = {{"us", {"en-us"}}};
-    map[&kShowDiscountOnNavigationRegionLaunched] = {{"us", {"en-us"}}};
     map[&kEnableDiscountInfoApiRegionLaunched] = {{"us", {"en-us"}}};
     map[&kShoppingPageTypesRegionLaunched] = {{"us", {"en-us"}}};
     map[&kParcelTrackingRegionLaunched] = {{"us", {"en-us"}}};
@@ -207,22 +206,10 @@ BASE_FEATURE(kEnableDiscountInfoApi,
              base::FEATURE_DISABLED_BY_DEFAULT);
 #if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || \
     BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
-BASE_FEATURE(kShowDiscountOnNavigation,
-             "ShowDiscountOnNavigation",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-BASE_FEATURE(kShowDiscountOnNavigationRegionLaunched,
-             "ShowDiscountOnNavigationRegionLaunched",
-             base::FEATURE_ENABLED_BY_DEFAULT);
 BASE_FEATURE(kEnableDiscountInfoApiRegionLaunched,
              "EnableDiscountInfoApiRegionLaunched",
              base::FEATURE_ENABLED_BY_DEFAULT);
 #else
-BASE_FEATURE(kShowDiscountOnNavigation,
-             "ShowDiscountOnNavigation",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-BASE_FEATURE(kShowDiscountOnNavigationRegionLaunched,
-             "ShowDiscountOnNavigationRegionLaunched",
-             base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE(kEnableDiscountInfoApiRegionLaunched,
              "EnableDiscountInfoApiRegionLaunched",
              base::FEATURE_DISABLED_BY_DEFAULT);

@@ -214,16 +214,10 @@ INSTANTIATE_TEST_SUITE_P(
             "FreeListingCoupon_default",
             AutofillOfferData::OfferType::FREE_LISTING_COUPON_OFFER},
         OfferNotificationBubbleViewsInteractiveUiTestData{
-            "FreeListingCoupon_on_navigation",
+            "FreeListingCoupon_chrome_refresh_style",
             AutofillOfferData::OfferType::FREE_LISTING_COUPON_OFFER,
             std::make_optional<std::vector<base::test::FeatureRefAndParams>>(
-                {{commerce::kShowDiscountOnNavigation, {}}})},
-        OfferNotificationBubbleViewsInteractiveUiTestData{
-            "FreeListingCoupon_on_navigation_chrome_refresh_style",
-            AutofillOfferData::OfferType::FREE_LISTING_COUPON_OFFER,
-            std::make_optional<std::vector<base::test::FeatureRefAndParams>>(
-                {{commerce::kShowDiscountOnNavigation, {}},
-                 {::features::kChromeRefresh2023, {}}})}),
+                {{::features::kChromeRefresh2023, {}}})}),
     GetTestName);
 INSTANTIATE_TEST_SUITE_P(
     GPayPromoCode,
@@ -765,11 +759,6 @@ IN_PROC_BROWSER_TEST_P(OfferNotificationBubbleViewsInteractiveUiTest,
 IN_PROC_BROWSER_TEST_P(
     OfferNotificationBubbleViewsInteractiveUiTest,
     ShowShoppingServiceFreeListingOffer_WhenGPayPromoCodeOfferNotAvailable) {
-  // This test is for when commerce::kShowDiscountOnNavigation is enabled.
-  if (!base::FeatureList::IsEnabled(commerce::kShowDiscountOnNavigation)) {
-    return;
-  }
-
   constexpr char kDomainUrl[] = "www.merchantsite1.test";
   constexpr char kOfferDetail[] = "Discount description detail";
   constexpr char kDiscountCode[] = "freelisting-discount-code";
@@ -853,11 +842,6 @@ IN_PROC_BROWSER_TEST_P(
 IN_PROC_BROWSER_TEST_P(
     OfferNotificationBubbleViewsInteractiveUiTest,
     ShowShoppingServiceFreeListingOffer_RecordHistoryClusterUsageRelatedMetrics) {
-  // This test is for when commerce::kShowDiscountOnNavigation is enabled.
-  if (!base::FeatureList::IsEnabled(commerce::kShowDiscountOnNavigation)) {
-    return;
-  }
-
   const std::string non_merchant_wide_domain_url = "www.merchantsite1.test";
   const GURL with_non_merchant_wide_offer_url =
       GetUrl(non_merchant_wide_domain_url, "/first");

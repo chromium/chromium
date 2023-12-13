@@ -244,53 +244,48 @@ OfferNotificationBubbleViews::CreateFreeListingCouponOfferMainPageContent(
     }
   }
 
-  if (base::FeatureList::IsEnabled(commerce::kShowDiscountOnNavigation)) {
-    auto expiration_date_text = l10n_util::GetStringFUTF16(
-        IDS_DISCOUNT_EXPIRATION_DATE, TimeFormatShortDate(offer.GetExpiry()));
-    if (promo_code_value_prop_string.empty()) {
-      promo_code_value_prop_string = expiration_date_text;
-    } else {
-      promo_code_value_prop_string = l10n_util::GetStringFUTF16(
-          IDS_TWO_STRINGS_CONNECTOR, promo_code_value_prop_string,
-          expiration_date_text);
-    }
+  auto expiration_date_text = l10n_util::GetStringFUTF16(
+      IDS_DISCOUNT_EXPIRATION_DATE, TimeFormatShortDate(offer.GetExpiry()));
+  if (promo_code_value_prop_string.empty()) {
+    promo_code_value_prop_string = expiration_date_text;
+  } else {
+    promo_code_value_prop_string = l10n_util::GetStringFUTF16(
+        IDS_TWO_STRINGS_CONNECTOR, promo_code_value_prop_string,
+        expiration_date_text);
   }
 
-  if (!promo_code_value_prop_string.empty()) {
-    promo_code_value_prop_label_ = main_page_view->AddChildView(
-        views::Builder<views::StyledLabel>()
-            .SetDefaultTextStyle(views::style::STYLE_SECONDARY)
-            .SetTextContext(views::style::CONTEXT_DIALOG_BODY_TEXT)
-            .SetHorizontalAlignment(gfx::ALIGN_LEFT)
-            .Build());
+  promo_code_value_prop_label_ = main_page_view->AddChildView(
+      views::Builder<views::StyledLabel>()
+          .SetDefaultTextStyle(views::style::STYLE_SECONDARY)
+          .SetTextContext(views::style::CONTEXT_DIALOG_BODY_TEXT)
+          .SetHorizontalAlignment(gfx::ALIGN_LEFT)
+          .Build());
 
-    if (offer.GetTermsAndConditions().has_value() &&
-        !offer.GetTermsAndConditions().value().empty()) {
-      std::vector<size_t> offsets;
-      promo_code_value_prop_string = l10n_util::GetStringFUTF16(
-          IDS_TWO_STRINGS_CONNECTOR_WITH_SPACE, promo_code_value_prop_string,
-          l10n_util::GetStringUTF16(IDS_SEE_SELLER_TERMS_AND_CONDITIONS),
-          &offsets);
-      promo_code_value_prop_label_->SetText(promo_code_value_prop_string);
-      size_t terms_and_conditions_offset = offsets[1];
-      base::RepeatingCallback<void()> callback = base::BindRepeating(
-          &OfferNotificationBubbleViews::OpenTermsAndConditionsPage,
-          weak_factory_.GetWeakPtr(), offer, seller_domain);
-      views::StyledLabel::RangeStyleInfo terms_and_conditions_style_info =
-          views::StyledLabel::RangeStyleInfo::CreateForLink(
-              std::move(callback));
-      promo_code_value_prop_label_->AddStyleRange(
-          gfx::Range(terms_and_conditions_offset,
-                     promo_code_value_prop_string.length()),
-          terms_and_conditions_style_info);
-    } else {
-      promo_code_value_prop_label_->SetText(promo_code_value_prop_string);
-    }
+  if (offer.GetTermsAndConditions().has_value() &&
+      !offer.GetTermsAndConditions().value().empty()) {
+    std::vector<size_t> offsets;
+    promo_code_value_prop_string = l10n_util::GetStringFUTF16(
+        IDS_TWO_STRINGS_CONNECTOR_WITH_SPACE, promo_code_value_prop_string,
+        l10n_util::GetStringUTF16(IDS_SEE_SELLER_TERMS_AND_CONDITIONS),
+        &offsets);
+    promo_code_value_prop_label_->SetText(promo_code_value_prop_string);
+    size_t terms_and_conditions_offset = offsets[1];
+    base::RepeatingCallback<void()> callback = base::BindRepeating(
+        &OfferNotificationBubbleViews::OpenTermsAndConditionsPage,
+        weak_factory_.GetWeakPtr(), offer, seller_domain);
+    views::StyledLabel::RangeStyleInfo terms_and_conditions_style_info =
+        views::StyledLabel::RangeStyleInfo::CreateForLink(std::move(callback));
+    promo_code_value_prop_label_->AddStyleRange(
+        gfx::Range(terms_and_conditions_offset,
+                   promo_code_value_prop_string.length()),
+        terms_and_conditions_style_info);
+  } else {
+    promo_code_value_prop_label_->SetText(promo_code_value_prop_string);
+  }
 
-    if (!::features::IsChromeRefresh2023()) {
-      promo_code_value_prop_label_->SetProperty(views::kCrossAxisAlignmentKey,
-                                                views::LayoutAlignment::kStart);
-    }
+  if (!::features::IsChromeRefresh2023()) {
+    promo_code_value_prop_label_->SetProperty(views::kCrossAxisAlignmentKey,
+                                              views::LayoutAlignment::kStart);
   }
 
   UpdateButtonTooltipsAndAccessibleNames();

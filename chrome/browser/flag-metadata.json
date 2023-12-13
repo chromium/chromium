@@ -7325,11 +7325,6 @@
     "expiry_milestone": -1
   },
   {
-    "name": "show-discount-on-navigation",
-    "owners": [ "meiliang@chromium.org", "chrome-shopping-eng@google.com" ],
-    "expiry_milestone": 123
-  },
-  {
     "name": "show-force-respect-ui-gains-toggle",
     "owners": ["eddyhsu@chromium.org"],
     "expiry_milestone": 130
