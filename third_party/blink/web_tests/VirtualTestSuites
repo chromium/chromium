@@ -2504,7 +2504,7 @@
     "exclusive_tests": "ALL",
     "args": ["--enable-features=CookieDeprecationFacilitatedTesting:label/label_test",
              "--disable-threaded-compositing", "--disable-threaded-animation"],
-    "expires": "Dec 31, 2023"
+    "expires": "June 30, 2024"
   },
   {
     "prefix": "saa-beyond-cookies-disabled",
