@@ -155,6 +155,8 @@ template("rust_static_library") {
   # TODO(dcheng): Is there any value in allowing rust_shared_library() to also
   # set `is_gtest_unittest` to true?
   if (defined(invoker.is_gtest_unittests) && invoker.is_gtest_unittests) {
+    _output_dir = rebase_path(target_out_dir, root_build_dir)
+
     config("${_target_name}_alwayslink") {
       # Targets using the #[gtest(...)] proc macro register their tests with
       # static initializers. A rust library target generates a .rlib, which is
@@ -169,7 +171,7 @@ template("rust_static_library") {
       #
       # The library name is hardcoded here, since `get_target_outputs()` can't
       # be used with a target that doesn't exist yet!
-      _rlib_path = "lib${_target_name}.rlib"
+      _rlib_path = "${_output_dir}/lib${_target_name}.rlib"
       if (current_os == "aix") {
         # The AIX linker does not implement an option for this.
       } else if (is_win) {
