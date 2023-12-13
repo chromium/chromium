@@ -37,8 +37,7 @@ declare_args() {
   # all Rust features enabled.
   enable_all_rust_features = false
 
-  # Chromium provides a Rust toolchain in //third_party/rust-toolchain when
-  # checkout_rust is True (which is being rolled out by default over time).
+  # Chromium provides a Rust toolchain in //third_party/rust-toolchain.
   #
   # To use a custom toolchain instead, specify an absolute path to the root of
   # a Rust sysroot, which will have a 'bin' directory and others. Commonly

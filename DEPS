@@ -259,9 +259,6 @@ vars = {
   # instead of downloading the prebuilt pinned revision.
   'llvm_force_head_revision': False,
 
-  # Fetch Rust toolchain.
-  'checkout_rust': True,
-
   # Make Dawn skip its standalone dependencies
   'dawn_standalone': False,
 
@@ -4443,7 +4440,6 @@ hooks = [
     # Update prebuilt Rust toolchain.
     'name': 'rust-toolchain',
     'pattern': '.',
-    'condition': 'checkout_rust',
     'action': ['python3', 'src/tools/rust/update_rust.py'],
   },
   {
