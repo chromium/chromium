@@ -95,7 +95,7 @@ bool AreCollapsible(const AskForValuesToFillFieldLogEvent& event1,
 // Log the field that triggers the suggestion that the user selects to fill.
 struct TriggerFillFieldLogEvent {
   FillEventId fill_event_id = GetNextFillEventId();
-  // The type of filled data for the autofil event.
+  // The type of filled data for the Autofill event.
   FillDataType data_type = internal::IsRequired();
   // The country_code associated with the information filled. Only present for
   // autofill addresses (i.e. `AutofillEventType::kAutofillProfile`).
