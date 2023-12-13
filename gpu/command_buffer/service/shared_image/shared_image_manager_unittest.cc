@@ -29,7 +29,8 @@ std::unique_ptr<TestImageBacking> CreateImageBacking(size_t size_in_bytes) {
   auto color_space = gfx::ColorSpace::CreateSRGB();
   auto surface_origin = kTopLeft_GrSurfaceOrigin;
   auto alpha_type = kPremul_SkAlphaType;
-  uint32_t usage = SHARED_IMAGE_USAGE_GLES2;
+  uint32_t usage =
+      SHARED_IMAGE_USAGE_GLES2_READ | SHARED_IMAGE_USAGE_GLES2_WRITE;
 
   return std::make_unique<TestImageBacking>(mailbox, format, size, color_space,
                                             surface_origin, alpha_type, usage,
@@ -47,7 +48,8 @@ TEST(SharedImageManagerTest, BasicRefCounting) {
   auto color_space = gfx::ColorSpace::CreateSRGB();
   auto surface_origin = kTopLeft_GrSurfaceOrigin;
   auto alpha_type = kPremul_SkAlphaType;
-  uint32_t usage = SHARED_IMAGE_USAGE_GLES2;
+  uint32_t usage =
+      SHARED_IMAGE_USAGE_GLES2_READ | SHARED_IMAGE_USAGE_GLES2_WRITE;
 
   auto backing = std::make_unique<TestImageBacking>(
       mailbox, format, size, color_space, surface_origin, alpha_type, usage,
@@ -129,7 +131,8 @@ TEST(SharedImageManagerTest, TransferRefSameTracker) {
   auto color_space = gfx::ColorSpace::CreateSRGB();
   auto surface_origin = kTopLeft_GrSurfaceOrigin;
   auto alpha_type = kPremul_SkAlphaType;
-  uint32_t usage = SHARED_IMAGE_USAGE_GLES2;
+  uint32_t usage =
+      SHARED_IMAGE_USAGE_GLES2_READ | SHARED_IMAGE_USAGE_GLES2_WRITE;
 
   auto backing = std::make_unique<TestImageBacking>(
       mailbox, format, size, color_space, surface_origin, alpha_type, usage,
@@ -161,7 +164,8 @@ TEST(SharedImageManagerTest, TransferRefNewTracker) {
   auto color_space = gfx::ColorSpace::CreateSRGB();
   auto surface_origin = kTopLeft_GrSurfaceOrigin;
   auto alpha_type = kPremul_SkAlphaType;
-  uint32_t usage = SHARED_IMAGE_USAGE_GLES2;
+  uint32_t usage =
+      SHARED_IMAGE_USAGE_GLES2_READ | SHARED_IMAGE_USAGE_GLES2_WRITE;
 
   auto backing = std::make_unique<TestImageBacking>(
       mailbox, format, size, color_space, surface_origin, alpha_type, usage,
@@ -231,7 +235,8 @@ TEST(SharedImageManagerTest, TransferRefCrossThread) {
   auto color_space = gfx::ColorSpace::CreateSRGB();
   auto surface_origin = kTopLeft_GrSurfaceOrigin;
   auto alpha_type = kPremul_SkAlphaType;
-  uint32_t usage = SHARED_IMAGE_USAGE_GLES2;
+  uint32_t usage =
+      SHARED_IMAGE_USAGE_GLES2_READ | SHARED_IMAGE_USAGE_GLES2_WRITE;
 
   auto backing = std::make_unique<TestImageBacking>(
       mailbox, format, size, color_space, surface_origin, alpha_type, usage,
