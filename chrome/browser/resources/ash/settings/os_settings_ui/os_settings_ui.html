@@ -44,6 +44,10 @@
     position: relative;
   }
 
+  :host-context(body.revamp-wayfinding-enabled) #container {
+    padding-top: var(--settings-container-padding-top);
+  }
+
   #left,
   #main,
   #right {
@@ -54,12 +58,6 @@
     height: 100%;
     position: sticky;
     top: 0;
-  }
-
-  :host-context(body.revamp-wayfinding-enabled) #left {
-    --left-container-padding-top: 8px;
-    height: calc(100% - var(--left-container-padding-top));
-    padding-top: var(--left-container-padding-top);
   }
 
   #left os-settings-menu {
