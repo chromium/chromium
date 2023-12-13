@@ -91,7 +91,10 @@ class BookmarkBridgeTest : public testing::Test {
     EXPECT_TRUE(storage_ptr->TriggerLoadCompletion());
     // TODO(crbug.com/1501998): Add account reading list manager support.
     auto local_or_syncable_reading_list_manager =
-        std::make_unique<ReadingListManagerImpl>(reading_list_model_.get());
+        std::make_unique<ReadingListManagerImpl>(
+            reading_list_model_.get(),
+            base::BindRepeating([](int64_t* id) { return (*id)++; },
+                                base::Owned(std::make_unique<int64_t>(0))));
     local_or_syncable_reading_list_manager_ =
         local_or_syncable_reading_list_manager.get();
 

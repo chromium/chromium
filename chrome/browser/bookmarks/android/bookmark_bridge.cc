@@ -144,7 +144,9 @@ ScopedJavaLocalRef<jobject> JNI_BookmarkBridge_GetForProfile(
         PartnerBookmarksShim::BuildForBrowserContext(
             chrome::GetBrowserContextRedirectedInIncognito(profile)),
         std::make_unique<ReadingListManagerImpl>(
-            ReadingListModelFactory::GetForBrowserContext(profile)),
+            ReadingListModelFactory::GetForBrowserContext(profile),
+            base::BindRepeating([](int64_t* id) { return (*id)++; },
+                                base::Owned(std::make_unique<int64_t>(0)))),
         page_image_service::ImageServiceFactory::GetForBrowserContext(profile));
     model->SetUserData(kBookmarkBridgeUserDataKey,
                        base::WrapUnique(bookmark_bridge));
