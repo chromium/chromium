@@ -7644,7 +7644,7 @@
   {
     "name": "tab-drag-drop",
     "owners": [ "ranjithkagathi@google.com", "gurmeetk@google.com" ],
-    "expiry_milestone": 122
+    "expiry_milestone": 130
   },
   {
     "name": "tab-grid-compositional-layout",
