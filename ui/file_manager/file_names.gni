@@ -41,7 +41,6 @@ static_js_files = [
   "file_manager/foreground/js/metrics_start.js",
   "file_manager/foreground/js/mock_navigation_list_model.js",
   "file_manager/foreground/js/navigation_list_model.js",
-  "file_manager/foreground/js/selection_menu_controller.js",
 
   # Metadata:
   "file_manager/foreground/js/metadata/metadata_dispatcher.js",
@@ -185,9 +184,6 @@ ts_files = [
   # Don't remove this.
   # These lines will be removed at the end of the TS migration.
   # Foreground UI.
-  "file_manager/foreground/js/deferred_elements.ts",
-  "file_manager/foreground/js/directory_tree_naming_controller.ts",
-  "file_manager/foreground/js/task_history.ts",
   "file_manager/foreground/js/ui/dialogs.ts",
   "file_manager/foreground/js/ui/commandbutton.ts",
   "file_manager/foreground/js/ui/combobutton.ts",
@@ -275,15 +271,17 @@ ts_files = [
   # Don't remove this.
   # These lines will be removed at the end of the TS migration.
   # Foreground.
-  "file_manager/foreground/js/actions_model.ts",
   "file_manager/foreground/js/actions_controller.ts",
+  "file_manager/foreground/js/actions_model.ts",
   "file_manager/foreground/js/android_app_list_model.ts",
   "file_manager/foreground/js/banner_controller.ts",
   "file_manager/foreground/js/command_handler.ts",
   "file_manager/foreground/js/crossover_search_utils.ts",
+  "file_manager/foreground/js/deferred_elements.ts",
   "file_manager/foreground/js/dialog_action_controller.ts",
   "file_manager/foreground/js/directory_contents.ts",
   "file_manager/foreground/js/directory_model.ts",
+  "file_manager/foreground/js/directory_tree_naming_controller.ts",
   "file_manager/foreground/js/empty_folder_controller.ts",
   "file_manager/foreground/js/fake_android_app_list_model.ts",
   "file_manager/foreground/js/file_list_model.ts",
@@ -296,10 +294,10 @@ ts_files = [
   "file_manager/foreground/js/file_watcher.ts",
   "file_manager/foreground/js/guest_os_controller.ts",
   "file_manager/foreground/js/last_modified_controller.ts",
-  "file_manager/foreground/js/list_thumbnail_loader.ts",
   "file_manager/foreground/js/launch_param.ts",
-  "file_manager/foreground/js/main.ts",
+  "file_manager/foreground/js/list_thumbnail_loader.ts",
   "file_manager/foreground/js/main_window_component.ts",
+  "file_manager/foreground/js/main.ts",
   "file_manager/foreground/js/metadata_box_controller.ts",
   "file_manager/foreground/js/mock_actions_model.ts",
   "file_manager/foreground/js/mock_directory_model.ts",
@@ -311,9 +309,11 @@ ts_files = [
   "file_manager/foreground/js/quick_view_model.ts",
   "file_manager/foreground/js/quick_view_uma.ts",
   "file_manager/foreground/js/scan_controller.ts",
+  "file_manager/foreground/js/selection_menu_controller.ts",
   "file_manager/foreground/js/sort_menu_controller.ts",
   "file_manager/foreground/js/spinner_controller.ts",
   "file_manager/foreground/js/task_controller.ts",
+  "file_manager/foreground/js/task_history.ts",
   "file_manager/foreground/js/thumbnail_loader.ts",
   "file_manager/foreground/js/toolbar_controller.ts",
   "file_manager/foreground/js/uma_enums.gen.ts",
