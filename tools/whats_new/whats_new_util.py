@@ -164,6 +164,7 @@ def CopyAnimationFilesToResources(feature_dict: dict[str, str],
     DEST_DIR = os.path.join(
         BASE_DIR, '../ios/chrome/browser/ui/whats_new/data_source/resources',
         milestone)
+    os.makedirs(DEST_DIR, exist_ok=True)
     darkmode_src_file = os.path.join(path_to_milestone_folder, feature_name,
                                      animation_name_darkmode)
     new_darkmode_dst_file = os.path.join(DEST_DIR,

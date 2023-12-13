@@ -78,7 +78,8 @@ def _UploadChangesToCL(message: str) -> None:
         start = time.time()
         command_git = [
             'git', 'cl', 'upload', '--bypass-hooks', '--bypass-watchlists',
-            '--force', '--message', message, '--cq-dry-run', '--auto-submit'
+            '--force', '--message', message, '--cq-dry-run', '--auto-submit',
+            '-o', 'uploadvalidator~skip'
         ]
         subprocess.run(command_git, check=True)
         end = time.time()
@@ -137,6 +138,7 @@ def main():
     whats_new_util.CleanUpFeaturesPlist()
     features_name = []
     for index, feature_row in pd.DataFrame(xlsx_content).iterrows():
+        feature_row.fillna('', inplace=True)
         _AddFeature(index, feature_row, milestone_folder_absolute_path)
         features_name.append(feature_row['Feature name'])
 
