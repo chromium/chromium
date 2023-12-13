@@ -103,4 +103,12 @@ std::unique_ptr<ClientSharedImage::ScopedMapping> ClientSharedImage::Map() {
   return scoped_mapping;
 }
 
+#if BUILDFLAG(IS_APPLE)
+void ClientSharedImage::SetColorSpaceOnNativeBuffer(
+    const gfx::ColorSpace& color_space) {
+  CHECK(gpu_memory_buffer_);
+  gpu_memory_buffer_->SetColorSpace(color_space);
+}
+#endif
+
 }  // namespace gpu

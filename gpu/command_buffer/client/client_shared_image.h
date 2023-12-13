@@ -84,6 +84,14 @@ class GPU_EXPORT ClientSharedImage
     return gpu_memory_buffer_->CloneHandle();
   }
 
+#if BUILDFLAG(IS_APPLE)
+  // Sets the color space in which the native buffer backing this SharedImage
+  // should be interpreted when used as an overlay. Note that this will not
+  // impact texturing from the buffer. Used only for SharedImages backed by a
+  // client-accessible IOSurface.
+  void SetColorSpaceOnNativeBuffer(const gfx::ColorSpace& color_space);
+#endif
+
   base::trace_event::MemoryAllocatorDumpGuid GetGUIDForTracing() {
     return gpu::GetSharedImageGUIDForTracing(mailbox_);
   }
