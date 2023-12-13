@@ -1978,13 +1978,21 @@ scoped_refptr<DrawingBuffer::ColorBuffer> DrawingBuffer::CreateColorBuffer(
                 color_buffer_format_),
             buffer_usage, gpu::kNullSurfaceHandle, nullptr);
         if (gpu_memory_buffer) {
-#if BUILDFLAG(IS_MAC)
-          gpu_memory_buffer->SetColorSpace(color_space_);
-#endif
           auto client_shared_image = sii->CreateSharedImage(
               color_buffer_format_, size, color_space_, origin,
               back_buffer_alpha_type, usage | additional_usage_flags,
               "WebGLDrawingBuffer", gpu_memory_buffer->CloneHandle());
+#if BUILDFLAG(IS_MAC)
+          // Ensure that the backing IOSurface has its color space set to be the
+          // same as that of the just-created SharedImage (the former is used by
+          // CoreAnimation, while the latter is used by viz).
+          // TODO(crbug.com/924198): Explore moving to a CreateSharedImage()
+          // codepath that sets the color space of the IOSurface on the service
+          // side and eliminating the usage of GMB here altogether. Will require
+          // resolving issues with low-latency canvas tests that caused prior
+          // attempts to be reverted (crbug.com/1346737).
+          gpu_memory_buffer->SetColorSpace(color_space_);
+#endif
           CHECK(client_shared_image);
           back_buffer_mailbox = client_shared_image->mailbox();
 #if BUILDFLAG(IS_MAC)
