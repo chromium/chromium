@@ -84,7 +84,9 @@ UIFont* GetNavigationBarTitleFont() {
   // Disable buttons.
   self.identityButtonControl.enabled = NO;
   self.primaryButton.enabled = NO;
-  SetConfigurationTitle(self.primaryButton, @"");
+  // Text should not be empty, otherwise the top and bottom can’t apply to the
+  // text buttom and top line anymore.
+  SetConfigurationTitle(self.primaryButton, @" ");
 }
 
 - (void)stopSpinner {
