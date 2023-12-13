@@ -11,7 +11,11 @@
 #include "third_party/blink/renderer/bindings/modules/v8/v8_web_printing_mime_media_type.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_web_printing_multiple_document_handling.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_web_printing_range.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_web_printing_resolution.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_web_printing_resolution_units.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_web_printing_sides.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
+#include "third_party/blink/renderer/platform/resolution_units.h"
 
 namespace {
 // sides:
@@ -95,6 +99,40 @@ struct TypeConverter<MojomMultipleDocumentHandling,
 };
 
 template <>
+struct TypeConverter<gfx::Size, blink::WebPrintingResolution*> {
+  static gfx::Size Convert(
+      const blink::WebPrintingResolution* printer_resolution) {
+    CHECK(printer_resolution->hasCrossFeedDirectionResolution());
+    CHECK(printer_resolution->hasFeedDirectionResolution());
+    if (printer_resolution->hasUnits() &&
+        printer_resolution->units() ==
+            blink::V8WebPrintingResolutionUnits::Enum::kDotsPerCentimeter) {
+      return gfx::Size(printer_resolution->crossFeedDirectionResolution() *
+                           blink::kCentimetersPerInch,
+                       printer_resolution->feedDirectionResolution() *
+                           blink::kCentimetersPerInch);
+    }
+    return gfx::Size(printer_resolution->crossFeedDirectionResolution(),
+                     printer_resolution->feedDirectionResolution());
+  }
+};
+
+template <>
+struct TypeConverter<blink::WebPrintingResolution*, gfx::Size> {
+  static blink::WebPrintingResolution* Convert(
+      const gfx::Size& printer_resolution) {
+    auto* output_resolution =
+        blink::MakeGarbageCollected<blink::WebPrintingResolution>();
+    output_resolution->setCrossFeedDirectionResolution(
+        printer_resolution.width());
+    output_resolution->setFeedDirectionResolution(printer_resolution.height());
+    output_resolution->setUnits(
+        blink::V8WebPrintingResolutionUnits::Enum::kDotsPerInch);
+    return output_resolution;
+  }
+};
+
+template <>
 struct TypeConverter<V8ColorMode, MojomColorMode> {
   static V8ColorMode Convert(const MojomColorMode& color_mode) {
     switch (color_mode) {
@@ -153,6 +191,17 @@ void ProcessMultipleDocumentHandling(
           new_attributes.multiple_document_handling_supported));
 }
 
+void ProcessPrinterResolution(
+    const mojom::blink::WebPrinterAttributes& new_attributes,
+    WebPrinterAttributes* current_attributes) {
+  current_attributes->setPrinterResolutionDefault(
+      mojo::ConvertTo<blink::WebPrintingResolution*>(
+          new_attributes.printer_resolution_default));
+  current_attributes->setPrinterResolutionSupported(
+      mojo::ConvertTo<HeapVector<Member<blink::WebPrintingResolution>>>(
+          new_attributes.printer_resolution_supported));
+}
+
 void ProcessPrintColorMode(
     const mojom::blink::WebPrinterAttributes& new_attributes,
     WebPrinterAttributes* current_attributes) {
@@ -191,6 +240,7 @@ TypeConverter<blink::WebPrinterAttributes*,
   blink::ProcessCopies(*printer_attributes, attributes);
   blink::ProcessDocumentFormat(*printer_attributes, attributes);
   blink::ProcessMultipleDocumentHandling(*printer_attributes, attributes);
+  blink::ProcessPrinterResolution(*printer_attributes, attributes);
   blink::ProcessPrintColorMode(*printer_attributes, attributes);
   blink::ProcessSides(*printer_attributes, attributes);
 
@@ -208,6 +258,10 @@ TypeConverter<blink::mojom::blink::WebPrintJobTemplateAttributesPtr,
     attributes->multiple_document_handling =
         mojo::ConvertTo<MojomMultipleDocumentHandling>(
             pjt_attributes->multipleDocumentHandling());
+  }
+  if (pjt_attributes->hasPrinterResolution()) {
+    attributes->printer_resolution =
+        mojo::ConvertTo<gfx::Size>(pjt_attributes->printerResolution());
   }
   if (pjt_attributes->hasPrintColorMode()) {
     attributes->print_color_mode =

@@ -13,6 +13,7 @@
 #include "mojo/public/cpp/bindings/struct_traits.h"
 #include "printing/print_settings.h"
 #include "third_party/blink/public/mojom/printing/web_printing.mojom-forward.h"
+#include "ui/gfx/geometry/size.h"
 
 namespace mojo {
 
@@ -45,6 +46,10 @@ struct StructTraits<blink::mojom::WebPrintJobTemplateAttributesDataView,
   }
   static const std::optional<blink::mojom::WebPrintingMultipleDocumentHandling>&
   multiple_document_handling(
+      const std::unique_ptr<printing::PrintSettings>& ptr) {
+    NOTREACHED_NORETURN();
+  }
+  static const std::optional<gfx::Size>& printer_resolution(
       const std::unique_ptr<printing::PrintSettings>& ptr) {
     NOTREACHED_NORETURN();
   }

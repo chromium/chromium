@@ -236,6 +236,16 @@ IN_PROC_BROWSER_TEST_F(WebPrintingBrowserTest, FetchAttributes) {
       "separate-documents-uncollated-copies",
       "separate-documents-collated-copies"
     ],
+    "printerResolutionDefault": {
+      "crossFeedDirectionResolution": 300,
+      "feedDirectionResolution": 400,
+      "units": "dots-per-inch",
+    },
+    "printerResolutionSupported": [{
+      "crossFeedDirectionResolution": 300,
+      "feedDirectionResolution": 400,
+      "units": "dots-per-inch",
+    }],
     "printColorModeDefault": "monochrome",
     "printColorModeSupported": [ "monochrome", "color" ],
     "printerName": "name",

@@ -5,6 +5,7 @@
 module blink.mojom;
 
 import "third_party/blink/public/mojom/blob/blob.mojom";
+import "ui/gfx/geometry/mojom/geometry.mojom";
 
 enum WebPrintingMultipleDocumentHandling {
   kSeparateDocumentsCollatedCopies,
@@ -41,6 +42,9 @@ struct WebPrinterAttributes {
   WebPrintingMultipleDocumentHandling multiple_document_handling_default;
   array<WebPrintingMultipleDocumentHandling> multiple_document_handling_supported;
 
+  gfx.mojom.Size printer_resolution_default;
+  array<gfx.mojom.Size> printer_resolution_supported;
+
   WebPrintColorMode print_color_mode_default;
   array<WebPrintColorMode> print_color_mode_supported;
 
@@ -53,6 +57,7 @@ struct WebPrintJobTemplateAttributes {
 
   uint32 copies;
   WebPrintingMultipleDocumentHandling? multiple_document_handling;
+  gfx.mojom.Size? printer_resolution;
   WebPrintColorMode? print_color_mode;
   WebPrintingSides? sides;
 };

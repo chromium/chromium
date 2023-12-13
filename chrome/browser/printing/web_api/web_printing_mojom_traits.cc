@@ -107,6 +107,16 @@ bool StructTraits<blink::mojom::WebPrintJobTemplateAttributesDataView,
         break;
     }
   }
+  {
+    std::optional<gfx::Size> printer_resolution;
+    if (!data.ReadPrinterResolution(&printer_resolution)) {
+      return false;
+    }
+    if (printer_resolution) {
+      settings->set_dpi_xy(printer_resolution->width(),
+                           printer_resolution->height());
+    }
+  }
   if (auto print_color_mode = data.print_color_mode()) {
     settings->set_color(PrintColorModeToColorModel(*print_color_mode));
   }

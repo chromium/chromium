@@ -57,6 +57,12 @@ void ProcessMultipleDocumentHandling(
   }
 }
 
+void ProcessPrinterResolution(const PrinterSemanticCapsAndDefaults& caps,
+                              blink::mojom::WebPrinterAttributes* attributes) {
+  attributes->printer_resolution_default = caps.default_dpi;
+  attributes->printer_resolution_supported = caps.dpis;
+}
+
 void ProcessPrintColorMode(const PrinterSemanticCapsAndDefaults& caps,
                            blink::mojom::WebPrinterAttributes* attributes) {
   attributes->print_color_mode_default =
@@ -103,6 +109,7 @@ TypeConverter<blink::mojom::WebPrinterAttributesPtr,
 
   printing::ProcessCopies(capabilities, attributes.get());
   printing::ProcessMultipleDocumentHandling(capabilities, attributes.get());
+  printing::ProcessPrinterResolution(capabilities, attributes.get());
   printing::ProcessPrintColorMode(capabilities, attributes.get());
   printing::ProcessSides(capabilities, attributes.get());
 

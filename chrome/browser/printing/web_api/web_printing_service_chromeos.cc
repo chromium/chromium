@@ -69,6 +69,10 @@ bool ValidatePrintJobTemplateAttributesAgainstPrinterAttributes(
       !IsDuplexModeKnown(printer_attributes.duplex_default)) {
     return false;
   }
+  if (!pjt_attributes.dpi_size().IsZero() &&
+      !base::Contains(printer_attributes.dpis, pjt_attributes.dpi_size())) {
+    return false;
+  }
   return true;
 }
 
