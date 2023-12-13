@@ -412,6 +412,10 @@
     "META": {"sizes": {"includes": [20],}},
     "includes": [3860],
   },
+  "<(SHARED_INTERMEDIATE_DIR)/chrome/browser/resources/ash/inline_login/resources.grd": {
+    "META": {"sizes": {"includes": [20]}},
+    "includes": [3870],
+  },
   "<(SHARED_INTERMEDIATE_DIR)/chrome/browser/resources/ash/settings/resources.grd": {
     "META": {"sizes": {"includes": [1000],}},
     "includes": [3880],
@@ -674,7 +678,7 @@
     "includes": [5120],
   },
   "<(SHARED_INTERMEDIATE_DIR)/chrome/browser/resources/inline_login/resources.grd": {
-    "META": {"sizes": {"includes": [20]}},
+    "META": {"sizes": {"includes": [10]}},
     "includes": [5140],
   },
   "<(SHARED_INTERMEDIATE_DIR)/components/metrics/debug/resources.grd": {

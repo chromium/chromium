@@ -182,7 +182,7 @@ def isInAshFolder(path):
   ash_folders = [
       # Source code folders
       'ash/webui',
-      'chrome/browser/resources/ash/settings',
+      'chrome/browser/resources/ash',
       'chrome/browser/resources/chromeos',
       'chrome/browser/resources/nearby_share',
       'ui/file_manager',
@@ -211,12 +211,6 @@ def isDependencyAllowed(is_ash_target, raw_dep, target_path):
 def isMappingAllowed(is_ash_target, target_path, mapping_path):
   if is_ash_target:
     return True
-
-  # TODO(https://crbug.com/1506304): Remove these incorrect dependencies.
-  exceptions = [
-      'chrome/browser/resources/inline_login',
-      'chrome/test/data/webui/inline_login',
-  ]
 
   return not isInAshFolder(mapping_path) or target_path in exceptions
 

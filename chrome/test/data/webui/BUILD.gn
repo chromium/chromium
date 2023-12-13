@@ -101,6 +101,7 @@ source_set("browser_tests") {
       "chromeos/ash_common/webui_resource_browsertest.cc",
       "chromeos/enterprise_reporting/enterprise_reporting_browsertest.cc",
       "chromeos/firmware_update/firmware_update_browsertest.cc",
+      "chromeos/inline_login/inline_login_browsertest.cc",
       "chromeos/personalization_app/personalization_app_browsertest.cc",
       "chromeos/personalization_app/sea_pen_browsertest.cc",
       "chromeos/scanning/scanning_app_browsertest.cc",
@@ -114,7 +115,7 @@ source_set("browser_tests") {
     ]
   }
 
-  if (is_chromeos_ash || is_win || is_mac) {
+  if (is_win || is_mac) {
     sources += [ "inline_login/inline_login_browsertest.cc" ]
   }
 
@@ -486,6 +487,7 @@ generate_grd("build_grd") {
       "chromeos/emoji_picker:build_grdp",
       "chromeos/enterprise_reporting:build_grdp",
       "chromeos/firmware_update:build_grdp",
+      "chromeos/inline_login:build_grdp",
       "chromeos/manage_mirrorsync:build_grdp",
       "chromeos/office_fallback:build_grdp",
       "chromeos/parent_access:build_grdp",
@@ -509,6 +511,7 @@ generate_grd("build_grd") {
       "$target_gen_dir/chromeos/emoji_picker/resources.grdp",
       "$target_gen_dir/chromeos/enterprise_reporting/resources.grdp",
       "$target_gen_dir/chromeos/firmware_update/resources.grdp",
+      "$target_gen_dir/chromeos/inline_login/resources.grdp",
       "$target_gen_dir/chromeos/manage_mirrorsync/resources.grdp",
       "$target_gen_dir/chromeos/office_fallback/resources.grdp",
       "$target_gen_dir/chromeos/parent_access/resources.grdp",
@@ -539,7 +542,7 @@ generate_grd("build_grd") {
     ]
   }
 
-  if (is_chromeos_ash || is_win || is_mac) {
+  if (is_win || is_mac) {
     deps += [ "inline_login:build_grdp" ]
     grdp_files += [ "$target_gen_dir/inline_login/resources.grdp" ]
   }
