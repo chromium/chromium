@@ -78,6 +78,8 @@ static_library("test_support") {
     "test/mock_invalidation_tracker.h",
     "test/mock_model_type_change_processor.cc",
     "test/mock_model_type_change_processor.h",
+    "test/mock_model_type_controller_delegate.cc",
+    "test/mock_model_type_controller_delegate.h",
     "test/mock_model_type_processor.cc",
     "test/mock_model_type_processor.h",
     "test/mock_model_type_worker.cc",
