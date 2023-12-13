@@ -19160,10 +19160,8 @@
     "UseGpuSchedulerDfs": [
         {
             "platforms": [
-                "linux",
-                "mac",
-                "windows",
-                "chromeos"
+                "android",
+                "android_webview"
             ],
             "experiments": [
                 {
