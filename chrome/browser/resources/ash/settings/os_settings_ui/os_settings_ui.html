@@ -56,6 +56,12 @@
     top: 0;
   }
 
+  :host-context(body.revamp-wayfinding-enabled) #left {
+    --left-container-padding-top: 8px;
+    height: calc(100% - var(--left-container-padding-top));
+    padding-top: var(--left-container-padding-top);
+  }
+
   #left os-settings-menu {
     height: 100%;
     overflow: auto;
@@ -64,7 +70,7 @@
 
   :host-context(body.revamp-wayfinding-enabled) #left os-settings-menu {
     background-color: var(--cros-sys-surface3);
-    border-start-end-radius: 20px;
+    border-start-end-radius: 30px;
   }
 
   @media (prefers-color-scheme: dark) {
