@@ -571,11 +571,14 @@ class CreditCardAccessManagerTest : public testing::Test {
 // off.
 // - bool mandatory_reauth_response_is_success: Whether the response from the
 // mandatory re-auth is a success or failure.
-// - bool authentication_method_is_biometric: Whether the authentication method
-// is biometric. If false, it's using screen lock.
+// - bool authentication_method: The authentication method that is supported.
 class CreditCardAccessManagerMandatoryReauthTest
     : public CreditCardAccessManagerTest,
-      public testing::WithParamInterface<std::tuple<bool, bool, bool, bool>> {
+      public testing::WithParamInterface<
+          std::tuple<bool,
+                     bool,
+                     bool,
+                     payments::MandatoryReauthAuthenticationMethod>> {
  public:
   CreditCardAccessManagerMandatoryReauthTest() = default;
   ~CreditCardAccessManagerMandatoryReauthTest() override = default;
@@ -606,7 +609,15 @@ class CreditCardAccessManagerMandatoryReauthTest
     return std::get<2>(GetParam());
   }
 
-  bool isBiometric() const { return std::get<3>(GetParam()); }
+  bool HasAuthenticator() const {
+    return std::get<3>(GetParam()) !=
+           payments::MandatoryReauthAuthenticationMethod::kUnsupportedMethod;
+  }
+
+  payments::MandatoryReauthAuthenticationMethod GetAuthenticationMethod()
+      const {
+    return std::get<3>(GetParam());
+  }
 
   bool IsMandatoryReauthEnabled() {
 #if BUILDFLAG(IS_ANDROID)
@@ -618,15 +629,8 @@ class CreditCardAccessManagerMandatoryReauthTest
   }
 
   void SetUpDeviceAuthenticatorResponseMock() {
-    if (isBiometric()) {
-      ON_CALL(mandatory_reauth_manager(), GetAuthenticationMethod)
-          .WillByDefault(testing::Return(
-              payments::MandatoryReauthAuthenticationMethod::kBiometric));
-    } else {
-      ON_CALL(mandatory_reauth_manager(), GetAuthenticationMethod)
-          .WillByDefault(testing::Return(
-              payments::MandatoryReauthAuthenticationMethod::kScreenLock));
-    }
+    ON_CALL(mandatory_reauth_manager(), GetAuthenticationMethod)
+        .WillByDefault(testing::Return(GetAuthenticationMethod()));
 
     // We should only expect an AuthenticateWithMessage() call if the feature
     // flag is on and the pref is enabled, or if the device is automotive.
@@ -652,6 +656,20 @@ class CreditCardAccessManagerMandatoryReauthTest
                   Authenticate)
 #endif
           .Times(0);
+    }
+  }
+
+  std::string GetStringForAuthenticationMethod() const {
+    switch (GetAuthenticationMethod()) {
+      case payments::MandatoryReauthAuthenticationMethod::kUnsupportedMethod:
+        return ".UnsupportedMethod";
+      case payments::MandatoryReauthAuthenticationMethod::kBiometric:
+        return ".Biometric";
+      case payments::MandatoryReauthAuthenticationMethod::kScreenLock:
+        return ".ScreenLock";
+      case payments::MandatoryReauthAuthenticationMethod::kUnknown:
+        NOTIMPLEMENTED();
+        return "";
     }
   }
 
@@ -685,7 +703,8 @@ TEST_P(CreditCardAccessManagerMandatoryReauthTest,
 
   // The only time we should expect an error is if mandatory re-auth is
   // enabled, but the mandatory re-auth authentication was not successful.
-  if (IsMandatoryReauthEnabled() && !MandatoryReauthResponseIsSuccess()) {
+  if (IsMandatoryReauthEnabled() && HasAuthenticator() &&
+      !MandatoryReauthResponseIsSuccess()) {
     EXPECT_EQ(accessor_->result(), CreditCardFetchResult::kTransientError);
     EXPECT_TRUE(accessor_->number().empty());
   } else {
@@ -695,26 +714,36 @@ TEST_P(CreditCardAccessManagerMandatoryReauthTest,
   }
   std::string reauth_usage_histogram_name =
       "Autofill.PaymentMethods.CheckoutFlow.ReauthUsage.LocalCard";
-  reauth_usage_histogram_name += isBiometric() ? ".Biometric" : ".ScreenLock";
+  reauth_usage_histogram_name += GetStringForAuthenticationMethod();
   if (IsMandatoryReauthEnabled()) {
-    histogram_tester.ExpectBucketCount(
-        reauth_usage_histogram_name,
-        autofill_metrics::MandatoryReauthAuthenticationFlowEvent::kFlowStarted,
-        1);
-    histogram_tester.ExpectBucketCount(
-        reauth_usage_histogram_name,
-        MandatoryReauthResponseIsSuccess()
-            ? autofill_metrics::MandatoryReauthAuthenticationFlowEvent::
-                  kFlowSucceeded
-            : autofill_metrics::MandatoryReauthAuthenticationFlowEvent::
-                  kFlowFailed,
-        1);
-    histogram_tester.ExpectUniqueSample(
-        "Autofill.ServerCardUnmask.LocalCard.Result.DeviceUnlock",
-        MandatoryReauthResponseIsSuccess()
-            ? autofill_metrics::ServerCardUnmaskResult::kAuthenticationUnmasked
-            : autofill_metrics::ServerCardUnmaskResult::kAuthenticationError,
-        1);
+    if (HasAuthenticator()) {
+      histogram_tester.ExpectBucketCount(
+          reauth_usage_histogram_name,
+          autofill_metrics::MandatoryReauthAuthenticationFlowEvent::
+              kFlowStarted,
+          1);
+      histogram_tester.ExpectBucketCount(
+          reauth_usage_histogram_name,
+          MandatoryReauthResponseIsSuccess()
+              ? autofill_metrics::MandatoryReauthAuthenticationFlowEvent::
+                    kFlowSucceeded
+              : autofill_metrics::MandatoryReauthAuthenticationFlowEvent::
+                    kFlowFailed,
+          1);
+      histogram_tester.ExpectUniqueSample(
+          "Autofill.ServerCardUnmask.LocalCard.Result.DeviceUnlock",
+          MandatoryReauthResponseIsSuccess()
+              ? autofill_metrics::ServerCardUnmaskResult::
+                    kAuthenticationUnmasked
+              : autofill_metrics::ServerCardUnmaskResult::kAuthenticationError,
+          1);
+    } else {
+      histogram_tester.ExpectBucketCount(
+          reauth_usage_histogram_name,
+          autofill_metrics::MandatoryReauthAuthenticationFlowEvent::
+              kFlowSkipped,
+          1);
+    }
   } else {
     histogram_tester.ExpectBucketCount(
         reauth_usage_histogram_name,
@@ -756,7 +785,8 @@ TEST_P(CreditCardAccessManagerMandatoryReauthTest,
           AutofillClient::PaymentsRpcResult::kSuccess, response);
 
   // Ensure the accessor received the correct response.
-  if (IsMandatoryReauthEnabled() && !MandatoryReauthResponseIsSuccess()) {
+  if (IsMandatoryReauthEnabled() && HasAuthenticator() &&
+      !MandatoryReauthResponseIsSuccess()) {
     EXPECT_EQ(accessor_->result(), CreditCardFetchResult::kTransientError);
   } else {
     EXPECT_EQ(accessor_->result(), CreditCardFetchResult::kSuccess);
@@ -767,26 +797,36 @@ TEST_P(CreditCardAccessManagerMandatoryReauthTest,
   }
   std::string reauth_usage_histogram_name =
       "Autofill.PaymentMethods.CheckoutFlow.ReauthUsage.VirtualCard";
-  reauth_usage_histogram_name += isBiometric() ? ".Biometric" : ".ScreenLock";
+  reauth_usage_histogram_name += GetStringForAuthenticationMethod();
   if (IsMandatoryReauthEnabled()) {
-    histogram_tester.ExpectBucketCount(
-        reauth_usage_histogram_name,
-        autofill_metrics::MandatoryReauthAuthenticationFlowEvent::kFlowStarted,
-        1);
-    histogram_tester.ExpectBucketCount(
-        reauth_usage_histogram_name,
-        MandatoryReauthResponseIsSuccess()
-            ? autofill_metrics::MandatoryReauthAuthenticationFlowEvent::
-                  kFlowSucceeded
-            : autofill_metrics::MandatoryReauthAuthenticationFlowEvent::
-                  kFlowFailed,
-        1);
-    histogram_tester.ExpectUniqueSample(
-        "Autofill.ServerCardUnmask.VirtualCard.Result.DeviceUnlock",
-        MandatoryReauthResponseIsSuccess()
-            ? autofill_metrics::ServerCardUnmaskResult::kAuthenticationUnmasked
-            : autofill_metrics::ServerCardUnmaskResult::kAuthenticationError,
-        1);
+    if (HasAuthenticator()) {
+      histogram_tester.ExpectBucketCount(
+          reauth_usage_histogram_name,
+          autofill_metrics::MandatoryReauthAuthenticationFlowEvent::
+              kFlowStarted,
+          1);
+      histogram_tester.ExpectBucketCount(
+          reauth_usage_histogram_name,
+          MandatoryReauthResponseIsSuccess()
+              ? autofill_metrics::MandatoryReauthAuthenticationFlowEvent::
+                    kFlowSucceeded
+              : autofill_metrics::MandatoryReauthAuthenticationFlowEvent::
+                    kFlowFailed,
+          1);
+      histogram_tester.ExpectUniqueSample(
+          "Autofill.ServerCardUnmask.VirtualCard.Result.DeviceUnlock",
+          MandatoryReauthResponseIsSuccess()
+              ? autofill_metrics::ServerCardUnmaskResult::
+                    kAuthenticationUnmasked
+              : autofill_metrics::ServerCardUnmaskResult::kAuthenticationError,
+          1);
+    } else {
+      histogram_tester.ExpectBucketCount(
+          reauth_usage_histogram_name,
+          autofill_metrics::MandatoryReauthAuthenticationFlowEvent::
+              kFlowSkipped,
+          1);
+    }
   } else {
     histogram_tester.ExpectBucketCount(
         reauth_usage_histogram_name,
@@ -829,7 +869,8 @@ TEST_P(CreditCardAccessManagerMandatoryReauthTest,
           .with_card(card));
 
   // Ensure the accessor received the correct response.
-  if (IsMandatoryReauthEnabled() && !MandatoryReauthResponseIsSuccess()) {
+  if (IsMandatoryReauthEnabled() && HasAuthenticator() &&
+      !MandatoryReauthResponseIsSuccess()) {
     EXPECT_EQ(accessor_->result(), CreditCardFetchResult::kTransientError);
   } else {
     EXPECT_EQ(accessor_->result(), CreditCardFetchResult::kSuccess);
@@ -837,26 +878,36 @@ TEST_P(CreditCardAccessManagerMandatoryReauthTest,
   }
   std::string reauth_usage_histogram_name =
       "Autofill.PaymentMethods.CheckoutFlow.ReauthUsage.ServerCard";
-  reauth_usage_histogram_name += isBiometric() ? ".Biometric" : ".ScreenLock";
+  reauth_usage_histogram_name += GetStringForAuthenticationMethod();
   if (IsMandatoryReauthEnabled()) {
-    histogram_tester.ExpectBucketCount(
-        reauth_usage_histogram_name,
-        autofill_metrics::MandatoryReauthAuthenticationFlowEvent::kFlowStarted,
-        1);
-    histogram_tester.ExpectBucketCount(
-        reauth_usage_histogram_name,
-        MandatoryReauthResponseIsSuccess()
-            ? autofill_metrics::MandatoryReauthAuthenticationFlowEvent::
-                  kFlowSucceeded
-            : autofill_metrics::MandatoryReauthAuthenticationFlowEvent::
-                  kFlowFailed,
-        1);
-    histogram_tester.ExpectUniqueSample(
-        "Autofill.ServerCardUnmask.ServerCard.Result.DeviceUnlock",
-        MandatoryReauthResponseIsSuccess()
-            ? autofill_metrics::ServerCardUnmaskResult::kAuthenticationUnmasked
-            : autofill_metrics::ServerCardUnmaskResult::kAuthenticationError,
-        1);
+    if (HasAuthenticator()) {
+      histogram_tester.ExpectBucketCount(
+          reauth_usage_histogram_name,
+          autofill_metrics::MandatoryReauthAuthenticationFlowEvent::
+              kFlowStarted,
+          1);
+      histogram_tester.ExpectBucketCount(
+          reauth_usage_histogram_name,
+          MandatoryReauthResponseIsSuccess()
+              ? autofill_metrics::MandatoryReauthAuthenticationFlowEvent::
+                    kFlowSucceeded
+              : autofill_metrics::MandatoryReauthAuthenticationFlowEvent::
+                    kFlowFailed,
+          1);
+      histogram_tester.ExpectUniqueSample(
+          "Autofill.ServerCardUnmask.ServerCard.Result.DeviceUnlock",
+          MandatoryReauthResponseIsSuccess()
+              ? autofill_metrics::ServerCardUnmaskResult::
+                    kAuthenticationUnmasked
+              : autofill_metrics::ServerCardUnmaskResult::kAuthenticationError,
+          1);
+    } else {
+      histogram_tester.ExpectBucketCount(
+          reauth_usage_histogram_name,
+          autofill_metrics::MandatoryReauthAuthenticationFlowEvent::
+              kFlowSkipped,
+          1);
+    }
   } else {
     histogram_tester.ExpectBucketCount(
         reauth_usage_histogram_name,
@@ -865,12 +916,19 @@ TEST_P(CreditCardAccessManagerMandatoryReauthTest,
   }
 }
 
-INSTANTIATE_TEST_SUITE_P(,
-                         CreditCardAccessManagerMandatoryReauthTest,
-                         testing::Combine(testing::Bool(),
-                                          testing::Bool(),
-                                          testing::Bool(),
-                                          testing::Bool()));
+INSTANTIATE_TEST_SUITE_P(
+    ,
+    CreditCardAccessManagerMandatoryReauthTest,
+    testing::Combine(
+        testing::Bool(),
+        testing::Bool(),
+        testing::Bool(),
+        testing::Values(
+#if BUILDFLAG(IS_IOS)
+            payments::MandatoryReauthAuthenticationMethod::kUnsupportedMethod,
+#endif
+            payments::MandatoryReauthAuthenticationMethod::kBiometric,
+            payments::MandatoryReauthAuthenticationMethod::kScreenLock)));
 #endif  // BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_ANDROID) ||
         // BUILDFLAG(IS_IOS)
 

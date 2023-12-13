@@ -1574,6 +1574,25 @@ void CreditCardAccessManager::StartDeviceAuthenticationForFilling(
       client_->GetOrCreatePaymentsMandatoryReauthManager()
           ->GetAuthenticationMethod();
 
+#if BUILDFLAG(IS_IOS)
+  // If there is no supported auth method on the device, we should skip re-auth
+  // and fill the form. Otherwise the user removing authentication on the
+  // device will prevent them from using payments autofill. In the settings
+  // page, we signal to the user through various means that they need to turn
+  // the device's authentication on in order to use re-auth.
+  if (authentication_method ==
+          payments::MandatoryReauthAuthenticationMethod::kUnknown ||
+      authentication_method ==
+          payments::MandatoryReauthAuthenticationMethod::kUnsupportedMethod) {
+    LogMandatoryReauthCheckoutFlowUsageEvent(
+        card->record_type(), authentication_method,
+        autofill_metrics::MandatoryReauthAuthenticationFlowEvent::kFlowSkipped);
+    std::move(on_credit_card_fetched_callback_)
+        .Run(CreditCardFetchResult::kSuccess, card);
+    return;
+  }
+#endif
+
   autofill_metrics::LogMandatoryReauthCheckoutFlowUsageEvent(
       card->record_type(), authentication_method,
       autofill_metrics::MandatoryReauthAuthenticationFlowEvent::kFlowStarted);
