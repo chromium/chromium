@@ -590,9 +590,7 @@ base::Value::Dict ArcTracingGraphicsModel::Serialize() const {
   if (!app_icon_png_.empty()) {
     const std::string png_data_as_string(
         reinterpret_cast<const char*>(&app_icon_png_[0]), app_icon_png_.size());
-    std::string icon_content;
-    base::Base64Encode(png_data_as_string, &icon_content);
-    information.Set(kKeyIcon, icon_content);
+    information.Set(kKeyIcon, base::Base64Encode(png_data_as_string));
   }
   root.Set(kKeyInformation, std::move(information));
 

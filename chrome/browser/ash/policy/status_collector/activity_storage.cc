@@ -232,9 +232,7 @@ std::string ActivityStorage::MakeActivityPeriodPrefKey(
   if (activity_id.empty())
     return day_key;
 
-  std::string encoded_activity_id;
-  base::Base64Encode(activity_id, &encoded_activity_id);
-  return day_key + kActivityKeySeparator + encoded_activity_id;
+  return day_key + kActivityKeySeparator + base::Base64Encode(activity_id);
 }
 
 // static

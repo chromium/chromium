@@ -393,10 +393,8 @@ TEST_F(ConnectionTest, RequestWifiCredentials) {
 
   std::string shared_secret_str(kSecondarySharedSecret.begin(),
                                 kSecondarySharedSecret.end());
-  std::string shared_secret_base64;
-  base::Base64Encode(shared_secret_str, &shared_secret_base64);
   EXPECT_EQ(*wifi_request_payload.FindString("shared_secret"),
-            shared_secret_base64);
+            base::Base64Encode(shared_secret_str));
 
   const std::optional<mojom::WifiCredentials>& credentials = future.Get();
   ASSERT_TRUE(credentials.has_value());
@@ -618,9 +616,8 @@ TEST_F(ConnectionTest, NotifySourceOfUpdate_Success) {
 
   std::string shared_secret_str(kSecondarySharedSecret.begin(),
                                 kSecondarySharedSecret.end());
-  std::string shared_secret_base64;
-  base::Base64Encode(shared_secret_str, &shared_secret_base64);
-  EXPECT_EQ(*parsed_payload.FindString("shared_secret"), shared_secret_base64);
+  EXPECT_EQ(*parsed_payload.FindString("shared_secret"),
+            base::Base64Encode(shared_secret_str));
 
   EXPECT_TRUE(future.Get());
   TestMessageMetrics(

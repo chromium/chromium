@@ -729,10 +729,9 @@ api::autotest_private::WindowStateType ToWindowStateType(
 
 std::string GetPngDataAsString(scoped_refptr<base::RefCountedMemory> png_data) {
   // Base64 encode the result so we can return it as a string.
-  std::string base64Png(png_data->front(),
+  std::string base64_png(png_data->front(),
                         png_data->front() + png_data->size());
-  base::Base64Encode(base64Png, &base64Png);
-  return base64Png;
+  return base::Base64Encode(base64_png);
 }
 
 display::Display::Rotation ToRotation(

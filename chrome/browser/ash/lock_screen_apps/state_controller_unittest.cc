@@ -897,11 +897,8 @@ TEST_F(LockScreenAppStateTest,
 TEST_F(LockScreenAppStateTest,
        InitLockScreenDataLockScreenItemStorage_CryptoKeyExists) {
   std::string crypto_key_in_prefs = "0123456789ABCDEF0123456789ABCDEF";
-  std::string crypto_key_in_prefs_encoded;
-  base::Base64Encode(crypto_key_in_prefs, &crypto_key_in_prefs_encoded);
-
   profile()->GetPrefs()->SetString(kDataCryptoKeyPref,
-                                   crypto_key_in_prefs_encoded);
+                                   base::Base64Encode(crypto_key_in_prefs));
 
   SetPrimaryProfileAndWaitUntilReady();
   CreateLockScreenProfile();

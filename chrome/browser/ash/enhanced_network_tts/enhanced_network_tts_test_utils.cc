@@ -39,7 +39,7 @@ std::string CreateCorrectRequest(const std::string& input_text, float rate) {
 
 std::string CreateServerResponse(const std::vector<uint8_t>& expected_output) {
   std::string encoded_output(expected_output.begin(), expected_output.end());
-  base::Base64Encode(encoded_output, &encoded_output);
+  encoded_output = base::Base64Encode(encoded_output);
   return base::StringPrintf(kTemplateResponse, encoded_output.c_str());
 }
 

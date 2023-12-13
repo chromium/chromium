@@ -110,9 +110,7 @@ struct InstalledTestCert {
 std::string GetDerCert64(CERTCertificate* cert) {
   std::string der_cert;
   EXPECT_TRUE(net::x509_util::GetDEREncoded(cert, &der_cert));
-  std::string der_cert64;
-  base::Base64Encode(der_cert, &der_cert64);
-  return der_cert64;
+  return base::Base64Encode(der_cert);
 }
 
 class FakeArcCertInstaller : public ArcCertInstaller {

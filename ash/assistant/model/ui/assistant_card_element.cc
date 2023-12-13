@@ -57,8 +57,7 @@ class AssistantCardElement::Processor : public AshWebView::Observer {
     contents_view_->AddObserver(this);
 
     // Encode the html string to be URL-safe.
-    std::string encoded_html;
-    base::Base64Encode(card_element_->html(), &encoded_html);
+    std::string encoded_html = base::Base64Encode(card_element_->html());
 
     // Navigate to the data URL which represents the card.
     constexpr char kDataUriPrefix[] = "data:text/html;base64,";

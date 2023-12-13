@@ -286,10 +286,8 @@ std::optional<std::u16string> GetHtmlForBitmap(const SkBitmap& bitmap) {
   std::vector<unsigned char> image_data;
   if (gfx::PNGCodec::EncodeBGRASkBitmap(bitmap, /*discard_transparency=*/false,
                                         &image_data)) {
-    std::string encoded_data;
-    base::Base64Encode(
-        /*input=*/std::string(image_data.cbegin(), image_data.cend()),
-        &encoded_data);
+    std::string encoded_data = base::Base64Encode(
+        /*input=*/std::string(image_data.cbegin(), image_data.cend()));
     const std::string html = base::StrCat(
         {"<img src=\"data:image/png;base64,", encoded_data, "\"/>"});
     std::u16string html_in_u16;
