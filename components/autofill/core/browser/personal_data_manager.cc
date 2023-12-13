@@ -1438,7 +1438,8 @@ std::vector<const Iban*> PersonalDataManager::GetIbans() const {
 }
 
 std::vector<const Iban*> PersonalDataManager::GetIbansToSuggest() const {
-  std::vector<const Iban*> ibans_to_suggest = GetIbans();
+  std::vector<const Iban*> ibans_to_suggest =
+      ShouldSuggestServerPaymentMethods() ? GetIbans() : GetLocalIbans();
   // Remove any IBAN from the returned list if it's a local IBAN and its
   // prefix, suffix, and length matches any existing server IBAN.
   std::erase_if(ibans_to_suggest, [this](const Iban* iban) {
@@ -1593,7 +1594,7 @@ const std::vector<CreditCard*> PersonalDataManager::GetCreditCardsToSuggest()
   }
 
   std::vector<CreditCard*> credit_cards;
-  if (ShouldSuggestServerCards()) {
+  if (ShouldSuggestServerPaymentMethods()) {
     credit_cards = GetCreditCards();
   } else {
     credit_cards = GetLocalCreditCards();
@@ -1661,7 +1662,7 @@ bool PersonalDataManager::IsAutofillWalletImportEnabled() const {
       syncer::UserSelectableType::kPayments);
 }
 
-bool PersonalDataManager::ShouldSuggestServerCards() const {
+bool PersonalDataManager::ShouldSuggestServerPaymentMethods() const {
   if (!IsAutofillWalletImportEnabled())
     return false;
 
@@ -1674,15 +1675,15 @@ bool PersonalDataManager::ShouldSuggestServerCards() const {
   // TODO(crbug.com/1462552): Simplify once ConsentLevel::kSync and
   // SyncService::IsSyncFeatureEnabled() are deleted from the codebase.
   if (!sync_service_->IsSyncFeatureEnabled()) {
-    // For SyncTransport, only show server cards if the user has opted in to
-    // seeing them in the dropdown.
+    // For SyncTransport, only show server payment methods if the user has opted
+    // in to seeing them in the dropdown.
     if (!prefs::IsUserOptedInWalletSyncTransport(
             pref_service_, sync_service_->GetAccountInfo().account_id)) {
       return false;
     }
   }
 
-  // Server cards should be suggested if the sync service is active.
+  // Server payment methods should be suggested if the sync service is active.
   return sync_service_->GetActiveDataTypes().Has(syncer::AUTOFILL_WALLET_DATA);
 }
 

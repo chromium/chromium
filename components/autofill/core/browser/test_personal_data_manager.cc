@@ -257,7 +257,7 @@ bool TestPersonalDataManager::IsAutofillWalletImportEnabled() const {
   return PersonalDataManager::IsAutofillWalletImportEnabled();
 }
 
-bool TestPersonalDataManager::ShouldSuggestServerCards() const {
+bool TestPersonalDataManager::ShouldSuggestServerPaymentMethods() const {
   return IsAutofillPaymentMethodsEnabled() && IsAutofillWalletImportEnabled();
 }
 

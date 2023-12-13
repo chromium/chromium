@@ -809,8 +809,9 @@ class PersonalDataManager : public KeyedService,
   // addresses, credit card, offer and IBAN. On subsequent calls, does nothing.
   void LogStoredDataMetrics() const;
 
-  // Whether the server cards are enabled and should be suggested to the user.
-  virtual bool ShouldSuggestServerCards() const;
+  // Whether server cards or IBANs are enabled and should be suggested to the
+  // user.
+  virtual bool ShouldSuggestServerPaymentMethods() const;
 
   // Overrideable for testing.
   virtual std::string CountryCodeForCurrentTimezone() const;
