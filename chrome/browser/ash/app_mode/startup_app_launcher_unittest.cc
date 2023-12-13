@@ -26,6 +26,9 @@
 #include "base/test/scoped_command_line.h"
 #include "base/test/test_future.h"
 #include "base/version.h"
+#include "chrome/browser/apps/app_service/app_service_proxy.h"
+#include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
+#include "chrome/browser/apps/app_service/app_service_test.h"
 #include "chrome/browser/ash/app_mode/kiosk_app_launch_error.h"
 #include "chrome/browser/ash/app_mode/kiosk_chrome_app_manager.h"
 #include "chrome/browser/ash/app_mode/kiosk_system_session.h"
@@ -737,6 +740,9 @@ class StartupAppLauncherTest : public StartupAppLauncherNoCreateTest {
   // testing::Test:
   void SetUp() override {
     StartupAppLauncherNoCreateTest::SetUp();
+    // Some tests depend on AppService, so wait AppService to be ready.
+    WaitForAppServiceProxyReady(
+        apps::AppServiceProxyFactory::GetForProfile(profile()));
 
     startup_app_launcher_ = CreateStartupAppLauncher();
   }

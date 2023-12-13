@@ -35,8 +35,6 @@
 #include "chrome/common/chrome_features.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
 #include "chromeos/components/kiosk/kiosk_test_utils.h"
-#include "components/user_manager/fake_user_manager.h"
-#include "components/user_manager/scoped_user_manager.h"
 #include "components/webapps/browser/install_result_code.h"
 #include "content/public/test/test_utils.h"
 #include "ui/base/idle/idle.h"
@@ -1526,10 +1524,6 @@ class SystemWebAppManagerInKioskTest : public ChromeRenderViewHostTestHarness {
   void TearDown() override {
     ChromeRenderViewHostTestHarness::TearDown();
   }
-
- private:
-  user_manager::TypedScopedUserManager<user_manager::FakeUserManager>
-      user_manager_{std::make_unique<user_manager::FakeUserManager>()};
 };
 
 // Checks that SWA manager is not created in Kiosk sessions.
