@@ -14018,6 +14018,21 @@
             ]
         }
     ],
+    "PrivacySandboxAdsNoticeCCT": [
+        {
+            "platforms": [
+                "android"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "PrivacySandboxAdsNoticeCCT"
+                    ]
+                }
+            ]
+        }
+    ],
     "PrivacySandboxEnrollment": [
         {
             "platforms": [
