@@ -17,6 +17,7 @@
 #include "third_party/blink/renderer/modules/ml/webnn/ml_graph_builder_utils.h"
 #include "third_party/blink/renderer/modules/ml/webnn/ml_operand.h"
 #include "third_party/blink/renderer/platform/heap/persistent.h"
+#include "third_party/blink/renderer/platform/testing/task_environment.h"
 
 #if BUILDFLAG(BUILD_WEBNN_ON_CROS)
 #include "third_party/blink/renderer/modules/ml/webnn/ml_graph_test_cros.h"
@@ -84,6 +85,7 @@ class MLGraphTestBase : public ::testing::Test,
  private:
   // The execution mode for testing build and compute graph (e.g. async, sync.).
   ExecutionMode GetExecutionMode();
+  test::TaskEnvironment task_environment_;
 };
 
 // This class performs backend specific setup.

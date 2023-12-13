@@ -1015,6 +1015,7 @@ source_set("unit_tests_v2") {
     "//third_party/blink/renderer/modules/indexeddb:unit_tests",
     "//third_party/blink/renderer/modules/mediarecorder:buildflags",
     "//third_party/blink/renderer/modules/mediastream:test_support",
+    "//third_party/blink/renderer/modules/ml:unit_tests",
     "//third_party/blink/renderer/modules/peerconnection:test_support",
     "//third_party/blink/renderer/modules/storage:unit_tests",
     "//third_party/blink/renderer/modules/webgpu:unit_tests",
