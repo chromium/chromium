@@ -3374,8 +3374,6 @@ source_set("ash") {
     "system_web_apps/apps/personalization_app/personalization_app_wallpaper_provider_impl.h",
     "system_web_apps/apps/personalization_app/personalization_system_app_delegate.cc",
     "system_web_apps/apps/personalization_app/personalization_system_app_delegate.h",
-    "system_web_apps/apps/personalization_app/wallpaper_metrics_provider.cc",
-    "system_web_apps/apps/personalization_app/wallpaper_metrics_provider.h",
     "system_web_apps/apps/print_management_web_app_info.cc",
     "system_web_apps/apps/print_management_web_app_info.h",
     "system_web_apps/apps/projector_app/untrusted_projector_annotator_ui_config.cc",
