@@ -216,6 +216,10 @@ class PipelineIntegrationTestBase : public Pipeline::Client {
       uint8_t test_type,
       CreateAudioDecodersCB prepend_audio_decoders_cb);
 
+#if BUILDFLAG(ENABLE_HLS_DEMUXER)
+  PipelineStatus StartPipelineWithHlsManifest(const std::string& filename);
+#endif  // BUILDFLAG(ENABLE_HLS_DEMUXER)
+
   void OnSeeked(base::TimeDelta seek_time, PipelineStatus status);
   void OnStatusCallback(const base::RepeatingClosure& quit_run_loop_closure,
                         PipelineStatus status);
