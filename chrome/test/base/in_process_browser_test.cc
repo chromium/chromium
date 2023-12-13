@@ -155,7 +155,9 @@
 #include "base/threading/thread_restrictions.h"
 #include "base/uuid.h"
 #include "base/version.h"
+#include "chrome/browser/lacros/browser_test_util.h"
 #include "chrome/browser/lacros/cert/cert_db_initializer_factory.h"
+#include "chrome/browser/ui/lacros/window_utility.h"
 #include "chromeos/crosapi/mojom/crosapi.mojom.h"
 #include "chromeos/crosapi/mojom/test_controller.mojom-test-utils.h"
 #include "chromeos/lacros/lacros_service.h"
@@ -288,6 +290,28 @@ bool IsTestControllerAvailable() {
 
 void EnsureBrowserContextKeyedServiceFactoriesForTestingBuilt() {
   NotificationDisplayServiceTester::EnsureFactoryBuilt();
+}
+
+// TODO(neis): The name WaitForWindowCreation is a bit confusing. Technically,
+// we are waiting for the window to become visible (or minimized) in Ash.
+// Try to find a better name.
+bool WaitForWindowCreation(Browser* browser) {
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  // TODO(crbug.com/1508245): Get rid of the IsTestControllerAvailable condition
+  // by making it always true (when crosapi is enabled). Moreover, propagate the
+  // WaitForWindowCreation return value. This requires fixing some tests that
+  // improperly override init params.
+  if (IsCrosapiEnabled() && IsTestControllerAvailable()) {
+    // Wait for window creation to complete in Ash in order to avoid
+    // wayland-crosapi race conditions in subsequent test steps.
+    aura::Window* window = browser->window()->GetNativeWindow();
+    std::string id =
+        lacros_window_utility::GetRootWindowUniqueId(window->GetRootWindow());
+    std::ignore = browser_test_util::WaitForWindowCreation(id);
+    return true;
+  }
+#endif
+  return true;
 }
 
 InProcessBrowserTest* g_current_test;
@@ -875,6 +899,7 @@ void InProcessBrowserTest::AddBlankTabAndShow(Browser* browser) {
   observer.Wait();
 
   browser->window()->Show();
+  ASSERT_TRUE(WaitForWindowCreation(browser));
 }
 
 #if !BUILDFLAG(IS_MAC) && !BUILDFLAG(IS_CHROMEOS_LACROS)
@@ -955,8 +980,13 @@ void InProcessBrowserTest::PreRunTestOnMainThread() {
   // browser.
   content::RunAllPendingInMessageLoop();
 
-  if (browser_ && global_browser_set_up_function_)
-    ASSERT_TRUE(global_browser_set_up_function_(browser_));
+  if (browser_) {
+    ASSERT_TRUE(WaitForWindowCreation(browser_));
+
+    if (global_browser_set_up_function_) {
+      ASSERT_TRUE(global_browser_set_up_function_(browser_));
+    }
+  }
 
 #if BUILDFLAG(IS_MAC)
   autorelease_pool_->Recycle();

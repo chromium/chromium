@@ -34,22 +34,11 @@ IN_PROC_BROWSER_TEST_F(TabletModeBrowserTest, Smoke) {
     return;
   }
 
-  // Wait for the window to be visible.
-  aura::Window* main_window = browser()->window()->GetNativeWindow();
-  std::string main_id = lacros_window_utility::GetRootWindowUniqueId(
-      main_window->GetRootWindow());
-  ASSERT_TRUE(browser_test_util::WaitForWindowCreation(main_id));
-
   // Create an incognito window and make it visible.
   Browser* incognito_browser = Browser::Create(Browser::CreateParams(
       browser()->profile()->GetPrimaryOTRProfile(/*create_if_needed=*/true),
       true));
   AddBlankTabAndShow(incognito_browser);
-  aura::Window* incognito_window =
-      incognito_browser->window()->GetNativeWindow();
-  std::string incognito_id = lacros_window_utility::GetRootWindowUniqueId(
-      incognito_window->GetRootWindow());
-  ASSERT_TRUE(browser_test_util::WaitForWindowCreation(incognito_id));
 
   auto& test_controller =
       lacros_service->GetRemote<crosapi::mojom::TestController>();
@@ -62,6 +51,8 @@ IN_PROC_BROWSER_TEST_F(TabletModeBrowserTest, Smoke) {
 
   // Close the incognito window by closing all tabs and wait for it to stop
   // existing in ash.
+  std::string incognito_id = lacros_window_utility::GetRootWindowUniqueId(
+      incognito_browser->window()->GetNativeWindow()->GetRootWindow());
   incognito_browser->tab_strip_model()->CloseAllTabs();
   ASSERT_TRUE(browser_test_util::WaitForWindowDestruction(incognito_id));
 
