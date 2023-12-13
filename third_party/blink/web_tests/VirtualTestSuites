@@ -2116,7 +2116,8 @@
     "exclusive_tests": "ALL",
     "args": ["--enable-features=JavaScriptExperimentalSharedMemory",
              "--disable-threaded-compositing", "--disable-threaded-animation"],
-    "expires": "Jul 1, 2023"
+    "owners": ["syg@chromium.org"],
+    "expires": "Jul 1, 2025"
   },
   {
     "prefix": "fedcm-login-status",
