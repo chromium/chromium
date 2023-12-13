@@ -155,7 +155,7 @@ void AppInstallServiceAsh::InstallFromFetchedData(
                 base::BindOnce(
                     [](base::WeakPtr<ash::app_install::AppInstallDialog> dialog,
                        bool dialog_accepted) {
-                      dialog->SetInstallSuccess(true);
+                      dialog->SetInstallComplete(nullptr);
                     },
                     dialog));
             return AppInstallResult::kUnknown;

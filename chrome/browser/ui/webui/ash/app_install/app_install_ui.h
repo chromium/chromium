@@ -24,7 +24,7 @@ class AppInstallDialogUI : public ui::MojoWebDialogUI,
   void SetDialogArgs(mojom::DialogArgsPtr args);
   void SetDialogCallback(
       base::OnceCallback<void(bool accepted)> dialog_accepted_callback);
-  void SetInstallSuccess(bool success);
+  void SetInstallComplete(const std::string* app_id);
 
   // Instantiates the implementor of the mojom::PageHandlerFactory mojo
   // interface passing the pending receiver that will be internally bound.

@@ -26,8 +26,9 @@ class AppInstallDialog : public SystemWebDialogDelegate {
   void Show(gfx::NativeWindow parent,
             mojom::DialogArgsPtr args,
             base::OnceCallback<void(bool accepted)> dialog_accepted_callback);
-  // Callers must set whether the install was successful or not.
-  void SetInstallSuccess(bool success);
+  // Callers must call this once the install has finished, passing in the app_id
+  // if the installation succeeded or a nullptr if it failed.
+  void SetInstallComplete(const std::string* app_id);
 
   void OnDialogShown(content::WebUI* webui) override;
 

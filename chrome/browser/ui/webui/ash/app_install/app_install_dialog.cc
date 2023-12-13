@@ -37,9 +37,9 @@ void AppInstallDialog::Show(
   this->ShowSystemDialog(parent);
 }
 
-void AppInstallDialog::SetInstallSuccess(bool success) {
+void AppInstallDialog::SetInstallComplete(const std::string* app_id) {
   if (dialog_ui_) {
-    dialog_ui_->SetInstallSuccess(success);
+    dialog_ui_->SetInstallComplete(app_id);
   }
 }
 

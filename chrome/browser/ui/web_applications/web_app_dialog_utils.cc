@@ -106,7 +106,8 @@ void OnWebAppInstalledFromCrosDialog(
     WebAppInstalledCallback installed_callback,
     const webapps::AppId& app_id,
     webapps::InstallResultCode code) {
-  dialog_handle->SetInstallSuccess(webapps::IsSuccess(code));
+  dialog_handle->SetInstallComplete(webapps::IsSuccess(code) ? &app_id
+                                                             : nullptr);
 
   // If we receive an error code, there's a chance the dialog was never shown,
   // so we need to clean it up to avoid a memory leak.
