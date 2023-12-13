@@ -438,7 +438,8 @@ class PasswordFormManagerTest : public testing::Test,
     ON_CALL(*client_.GetPasswordFeatureManager(),
             ShouldShowAccountStorageBubbleUi)
         .WillByDefault(Return(true));
-    ON_CALL(mock_autofill_crowdsourcing_manager_, StartUploadRequest)
+    ON_CALL(mock_autofill_crowdsourcing_manager_,
+            StartUploadRequest(_, _, _, _, _, _, _))
         .WillByDefault(Return(true));
     ON_CALL(*client_.GetPasswordFeatureManager(), GetDefaultPasswordStore)
         .WillByDefault(Return(PasswordForm::Store::kProfileStore));
@@ -3327,7 +3328,8 @@ TEST_P(PasswordFormManagerTest, NegativeUsernameFirstFlowVotes) {
                                  ServerFieldTypeSet{NOT_USERNAME}, _, true,
                                  nullptr, /*observer=*/IsNull()));
 #else
-  EXPECT_CALL(mock_autofill_crowdsourcing_manager_, StartUploadRequest)
+  EXPECT_CALL(mock_autofill_crowdsourcing_manager_,
+              StartUploadRequest(_, _, _, _, _, _, _))
       .Times(0);
 #endif  // !BUILDFLAG(IS_ANDROID)
 

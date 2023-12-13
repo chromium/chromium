@@ -2019,8 +2019,10 @@ void BrowserAutofillManager::UploadVotesAndLogQuality(
   }
 
   client().GetCrowdsourcingManager()->StartUploadRequest(
-      *submitted_form, was_autofilled, non_empty_types,
-      /*login_form_signature=*/std::string(), observed_submission,
+      /*upload_contents=*/submitted_form->EncodeUploadRequest(
+          non_empty_types, was_autofilled,
+          /*login_form_signature=*/{}, observed_submission),
+      submitted_form->submission_source(), submitted_form->active_field_count(),
       client().GetPrefs(), GetWeakPtr());
 }
 

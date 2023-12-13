@@ -105,7 +105,8 @@ class VotesUploaderTest : public testing::Test {
     EXPECT_CALL(client_, GetAutofillCrowdsourcingManager())
         .WillRepeatedly(Return(&mock_autofill_crowdsourcing_manager_));
 
-    ON_CALL(mock_autofill_crowdsourcing_manager_, StartUploadRequest)
+    ON_CALL(mock_autofill_crowdsourcing_manager_,
+            StartUploadRequest(_, _, _, _, _, _, _))
         .WillByDefault(Return(true));
 
     // Create |fields| in |form_to_upload_| and |submitted_form_|. Only |name|
@@ -259,7 +260,8 @@ TEST_F(VotesUploaderTest, SendVotesOnSaveOverwrittenFlow) {
   // SendVotesOnSave should call UploadPasswordVote and StartUploadRequest
   // twice. The first call is not the one that should be tested.
   testing::Expectation first_call =
-      EXPECT_CALL(mock_autofill_crowdsourcing_manager_, StartUploadRequest);
+      EXPECT_CALL(mock_autofill_crowdsourcing_manager_,
+                  StartUploadRequest(_, _, _, _, _, _, _));
 
   EXPECT_CALL(
       mock_autofill_crowdsourcing_manager_,
@@ -636,7 +638,8 @@ TEST_F(VotesUploaderTest, GeneratePasswordAttributesVote_NonAsciiPassword) {
 
 TEST_F(VotesUploaderTest, NoSingleUsernameDataNoUpload) {
   VotesUploader votes_uploader(&client_, false);
-  EXPECT_CALL(mock_autofill_crowdsourcing_manager_, StartUploadRequest)
+  EXPECT_CALL(mock_autofill_crowdsourcing_manager_,
+              StartUploadRequest(_, _, _, _, _, _, _))
       .Times(0);
   base::HistogramTester histogram_tester;
   votes_uploader.set_should_send_username_first_flow_votes(true);
@@ -688,7 +691,8 @@ TEST_F(VotesUploaderTest, UploadSingleUsernameMultipleFieldsInUsernameForm) {
                   false, expected_types, std::string(), true,
                   /* pref_service= */ nullptr, /*observer=*/IsNull()));
 #else
-  EXPECT_CALL(mock_autofill_crowdsourcing_manager_, StartUploadRequest)
+  EXPECT_CALL(mock_autofill_crowdsourcing_manager_,
+              StartUploadRequest(_, _, _, _, _, _, _))
       .Times(0);
 #endif  // !BUILDFLAG(IS_ANDROID)
 
@@ -730,7 +734,8 @@ TEST_F(VotesUploaderTest, UploadNotSingleUsernameForWhitespaces) {
                   false, expected_types, std::string(), true,
                   /* pref_service= */ nullptr, /*observer=*/IsNull()));
 #else
-  EXPECT_CALL(mock_autofill_crowdsourcing_manager_, StartUploadRequest)
+  EXPECT_CALL(mock_autofill_crowdsourcing_manager_,
+              StartUploadRequest(_, _, _, _, _, _, _))
       .Times(0);
 #endif  // !BUILDFLAG(IS_ANDROID)
 
@@ -787,7 +792,8 @@ TEST_F(VotesUploaderTest, SingleUsernameValueSuggestedAndAccepted) {
                   /*pref_service=*/nullptr,
                   /*observer=*/IsNull()));
 #else
-  EXPECT_CALL(mock_autofill_crowdsourcing_manager_, StartUploadRequest)
+  EXPECT_CALL(mock_autofill_crowdsourcing_manager_,
+              StartUploadRequest(_, _, _, _, _, _, _))
       .Times(0);
 #endif  // !BUILDFLAG(IS_ANDROID)
 
@@ -843,7 +849,8 @@ TEST_F(VotesUploaderTest, SingleUsernameOtherValueSuggestedAndAccepted) {
                   /*pref_service=*/nullptr,
                   /*observer=*/IsNull()));
 #else
-  EXPECT_CALL(mock_autofill_crowdsourcing_manager_, StartUploadRequest)
+  EXPECT_CALL(mock_autofill_crowdsourcing_manager_,
+              StartUploadRequest(_, _, _, _, _, _, _))
       .Times(0);
 #endif  // !BUILDFLAG(IS_ANDROID)
 
@@ -898,7 +905,8 @@ TEST_F(VotesUploaderTest, SingleUsernameValueSetInPrompt) {
                   /*pref_service=*/nullptr,
                   /*observer=*/IsNull()));
 #else
-  EXPECT_CALL(mock_autofill_crowdsourcing_manager_, StartUploadRequest)
+  EXPECT_CALL(mock_autofill_crowdsourcing_manager_,
+              StartUploadRequest(_, _, _, _, _, _, _))
       .Times(0);
 #endif  // !BUILDFLAG(IS_ANDROID)
 
@@ -952,7 +960,8 @@ TEST_F(VotesUploaderTest, SingleUsernameValueDeletedInPrompt) {
                   /*pref_service=*/nullptr,
                   /*observer=*/IsNull()));
 #else
-  EXPECT_CALL(mock_autofill_crowdsourcing_manager_, StartUploadRequest)
+  EXPECT_CALL(mock_autofill_crowdsourcing_manager_,
+              StartUploadRequest(_, _, _, _, _, _, _))
       .Times(0);
 #endif  // !BUILDFLAG(IS_ANDROID)
 

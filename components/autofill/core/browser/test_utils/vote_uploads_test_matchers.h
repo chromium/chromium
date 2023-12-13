@@ -12,6 +12,7 @@
 #include "base/strings/string_number_conversions.h"
 #include "components/autofill/core/browser/form_structure.h"
 #include "components/autofill/core/browser/form_structure_test_api.h"
+#include "components/autofill/core/browser/proto/server.pb.h"
 #include "components/autofill/core/common/signatures.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -24,6 +25,56 @@ using ::testing::Contains;
 using ::testing::Field;
 using ::testing::Property;
 using ::testing::ResultOf;
+
+// Returns a container matcher that applies `matcher` to the first element of
+// the container.
+inline auto FirstElementIs(auto matcher) {
+  return ::testing::AllOf(
+      ::testing::SizeIs(::testing::Gt(0u)),
+      ResultOf([](const auto& container) { return container[0]; }, matcher));
+}
+
+// Matchers for `AutofillUploadContents`. These are in their own namespace to
+// make their names briefer.
+namespace upload_contents_matchers {
+
+// Creates a matcher for an `AutofillUploadContents`'s form_signature method
+// against `form_signature`.
+inline ::testing::Matcher<AutofillUploadContents> FormSignatureIs(
+    FormSignature form_signature) {
+  return Property("form_signature", &AutofillUploadContents::form_signature,
+                  form_signature.value());
+}
+
+// Creates a matcher that matches `matchers` against the fields of an
+// `AutofillUploadContents`. It requires that the match (and ordering) is exact.
+template <typename... Matchers>
+inline ::testing::Matcher<AutofillUploadContents> FieldsAre(
+    Matchers... matchers) {
+  return ::testing::Property("field", &AutofillUploadContents::field,
+                             ::testing::ElementsAre(matchers...));
+}
+
+inline ::testing::Matcher<AutofillUploadContents> ObservedSubmissionIs(
+    bool observed_submission) {
+  return ::testing::Property("submission", &AutofillUploadContents::submission,
+                             observed_submission);
+}
+
+// Matchers for `AutofillUploadContents::Field`.
+inline ::testing::Matcher<AutofillUploadContents::Field> FieldAutofillTypeIs(
+    ServerFieldTypeSet type_set) {
+  auto extract_types = [](const AutofillUploadContents::Field& field) {
+    ServerFieldTypeSet s;
+    for (auto type : field.autofill_type()) {
+      s.insert(ToSafeServerFieldType(type, ServerFieldType::NO_SERVER_DATA));
+    }
+    return s;
+  };
+  return ::testing::ResultOf(extract_types, ::testing::Eq(type_set));
+}
+
+}  // namespace upload_contents_matchers
 
 inline auto SignatureIsSameAs(const FormData& form) {
   return Property("form_signature", &FormStructure::form_signature,

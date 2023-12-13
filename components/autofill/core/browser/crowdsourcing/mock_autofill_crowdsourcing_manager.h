@@ -34,6 +34,15 @@ class MockAutofillCrowdsourcingManager : public AutofillCrowdsourcingManager {
 
   MOCK_METHOD(bool,
               StartUploadRequest,
+              (std::vector<AutofillUploadContents>,
+               mojom::SubmissionSource,
+               int,
+               PrefService*,
+               base::WeakPtr<Observer>),
+              (override));
+
+  MOCK_METHOD(bool,
+              StartUploadRequest,
               (const FormStructure&,
                bool,
                const ServerFieldTypeSet&,

@@ -281,7 +281,8 @@ class PasswordSaveManagerImplTestBase : public testing::Test {
 
     ON_CALL(client_, GetAutofillCrowdsourcingManager())
         .WillByDefault(Return(&mock_autofill_crowdsourcing_manager_));
-    ON_CALL(mock_autofill_crowdsourcing_manager_, StartUploadRequest)
+    ON_CALL(mock_autofill_crowdsourcing_manager_,
+            StartUploadRequest(_, _, _, _, _, _, _))
         .WillByDefault(Return(true));
     ON_CALL(*client_.GetPasswordFeatureManager(), GetDefaultPasswordStore)
         .WillByDefault(Return(PasswordForm::Store::kProfileStore));
@@ -891,7 +892,8 @@ TEST_P(PasswordSaveManagerImplTest, UpdatePasswordValueEmptyStore) {
 
   // TODO(https://crbug.com/928690): implement not sending incorrect votes and
   // check that StartUploadRequest is not called.
-  EXPECT_CALL(*mock_autofill_crowdsourcing_manager(), StartUploadRequest)
+  EXPECT_CALL(*mock_autofill_crowdsourcing_manager(),
+              StartUploadRequest(_, _, _, _, _, _, _))
       .Times(1);
   password_save_manager_impl()->Save(&observed_form_, parsed_submitted_form);
 }

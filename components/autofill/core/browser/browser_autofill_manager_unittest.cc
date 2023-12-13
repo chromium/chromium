@@ -141,6 +141,10 @@ using ::testing::Return;
 using ::testing::SaveArg;
 using ::testing::UnorderedElementsAre;
 using ::testing::VariantWith;
+using upload_contents_matchers::FieldAutofillTypeIs;
+using upload_contents_matchers::FieldsAre;
+using upload_contents_matchers::FormSignatureIs;
+using upload_contents_matchers::ObservedSubmissionIs;
 
 const std::string kArbitraryNickname = "Grocery Card";
 const std::u16string kArbitraryNickname16 = u"Grocery Card";
@@ -10785,7 +10789,8 @@ class BrowserAutofillManagerVotingTest : public BrowserAutofillManagerTest {
     BrowserAutofillManagerTest::SetUp();
 
     // All uploads should be expected explicitly.
-    EXPECT_CALL(*crowdsourcing_manager(), StartUploadRequest).Times(0);
+    EXPECT_CALL(*crowdsourcing_manager(), StartUploadRequest(_, _, _, _, _))
+        .Times(0);
 
     form_.name = u"MyForm";
     form_.url = GURL("https://myform.com/form.html");
@@ -10813,20 +10818,17 @@ class BrowserAutofillManagerVotingTest : public BrowserAutofillManagerTest {
 // Ensure that a vote is submitted after a regular form submission.
 TEST_F(BrowserAutofillManagerVotingTest, Submission) {
   SimulateTypingFirstNameIntoFirstField();
-
-  std::map<std::u16string, ServerFieldTypeSet> expected_vote_types = {
-      {u"firstname",
-       {ServerFieldType::NAME_FIRST, ServerFieldType::CREDIT_CARD_NAME_FIRST}},
-      {u"lastname", {ServerFieldType::EMPTY_TYPE}},
-  };
-
-  // Ensure that vote is submitted after form submission.
   EXPECT_CALL(
       *crowdsourcing_manager(),
-      StartUploadRequest(AllOf(SignatureIs(CalculateFormSignature(form_)),
-                               UploadedAutofillTypesAre(expected_vote_types)),
-                         _, _, _, /*observed_submission=*/true, _, _))
-      .Times(1);
+      StartUploadRequest(
+          FirstElementIs(AllOf(
+              FormSignatureIs(CalculateFormSignature(form_)),
+              FieldsAre(FieldAutofillTypeIs(
+                            {ServerFieldType::NAME_FIRST,
+                             ServerFieldType::CREDIT_CARD_NAME_FIRST}),
+                        FieldAutofillTypeIs({ServerFieldType::EMPTY_TYPE})),
+              ObservedSubmissionIs(true))),
+          _, _, _, _));
   FormSubmitted(form_);
 }
 
@@ -10847,19 +10849,19 @@ TEST_F(BrowserAutofillManagerVotingTest, DynamicFormSubmission) {
 
   // 4. Simulate removing the focus from the form, which generates a second blur
   // vote which should be sent.
-  std::map<std::u16string, ServerFieldTypeSet> expected_vote_types = {
-      {u"firstname",
-       {ServerFieldType::NAME_FIRST, ServerFieldType::CREDIT_CARD_NAME_FIRST}},
-      {u"lastname",
-       {ServerFieldType::NAME_LAST, ServerFieldType::CREDIT_CARD_NAME_LAST,
-        ServerFieldType::NAME_LAST_SECOND}},
-  };
-  EXPECT_CALL(
-      *crowdsourcing_manager(),
-      StartUploadRequest(AllOf(SignatureIs(first_form_signature),
-                               UploadedAutofillTypesAre(expected_vote_types)),
-                         _, _, _, /*observed_submission=*/false, _, _))
-      .Times(1);
+  EXPECT_CALL(*crowdsourcing_manager(),
+              StartUploadRequest(
+                  FirstElementIs(AllOf(
+                      FormSignatureIs(first_form_signature),
+                      FieldsAre(FieldAutofillTypeIs(
+                                    {ServerFieldType::NAME_FIRST,
+                                     ServerFieldType::CREDIT_CARD_NAME_FIRST}),
+                                FieldAutofillTypeIs(
+                                    {ServerFieldType::NAME_LAST,
+                                     ServerFieldType::CREDIT_CARD_NAME_LAST,
+                                     ServerFieldType::NAME_LAST_SECOND})),
+                      ObservedSubmissionIs(false))),
+                  _, _, _, _));
   browser_autofill_manager_->OnFocusNoLongerOnForm(true);
 
   // 5. Grow the form by one field, which changes the form signature.
@@ -10873,19 +10875,18 @@ TEST_F(BrowserAutofillManagerVotingTest, DynamicFormSubmission) {
   EXPECT_NE(first_form_signature, second_form_signature);
   // Because the next field after the two names is not a credit card field,
   // field disambiguation removes the credit card name votes.
-  expected_vote_types = {
-      {u"firstname", {ServerFieldType::NAME_FIRST}},
-      {u"lastname",
-       {ServerFieldType::NAME_LAST, ServerFieldType::NAME_LAST_SECOND}},
-      {u"zip", {ServerFieldType::EMPTY_TYPE}},
-  };
   EXPECT_CALL(
       *crowdsourcing_manager(),
-      StartUploadRequest(AllOf(SignatureIs(second_form_signature),
-                               UploadedAutofillTypesAre(expected_vote_types)),
-                         _, _, _,
-                         /*observed_submission=*/true, _, _))
-      .Times(1);
+      StartUploadRequest(
+          FirstElementIs(AllOf(
+              FormSignatureIs(second_form_signature),
+              FieldsAre(
+                  FieldAutofillTypeIs({ServerFieldType::NAME_FIRST}),
+                  FieldAutofillTypeIs({ServerFieldType::NAME_LAST,
+                                       ServerFieldType::NAME_LAST_SECOND}),
+                  FieldAutofillTypeIs({ServerFieldType::EMPTY_TYPE})),
+              ObservedSubmissionIs(true))),
+          _, _, _, _));
   FormSubmitted(form_);
 }
 
@@ -10894,17 +10895,17 @@ TEST_F(BrowserAutofillManagerVotingTest, BlurVoteOnNavigation) {
   SimulateTypingFirstNameIntoFirstField();
 
   // Simulate removing focus from form, which triggers a blur vote.
-  std::map<std::u16string, ServerFieldTypeSet> expected_vote_types = {
-      {u"firstname",
-       {ServerFieldType::NAME_FIRST, ServerFieldType::CREDIT_CARD_NAME_FIRST}},
-      {u"lastname", {ServerFieldType::EMPTY_TYPE}},
-  };
   EXPECT_CALL(
       *crowdsourcing_manager(),
-      StartUploadRequest(AllOf(SignatureIs(CalculateFormSignature(form_)),
-                               UploadedAutofillTypesAre(expected_vote_types)),
-                         _, _, _, /*observed_submission=*/false, _, _))
-      .Times(1);
+      StartUploadRequest(
+          FirstElementIs(AllOf(
+              FormSignatureIs(CalculateFormSignature(form_)),
+              FieldsAre(FieldAutofillTypeIs(
+                            {ServerFieldType::NAME_FIRST,
+                             ServerFieldType::CREDIT_CARD_NAME_FIRST}),
+                        FieldAutofillTypeIs({ServerFieldType::EMPTY_TYPE})),
+              ObservedSubmissionIs(false))),
+          _, _, _, _));
   browser_autofill_manager_->OnFocusNoLongerOnForm(true);
 
   // Simulate a navigation. This is when the vote is sent.
@@ -10916,22 +10917,20 @@ TEST_F(BrowserAutofillManagerVotingTest, BlurVoteOnNavigation) {
 TEST_F(BrowserAutofillManagerVotingTest, NoBlurVoteOnSubmission) {
   SimulateTypingFirstNameIntoFirstField();
 
-  std::map<std::u16string, ServerFieldTypeSet> expected_vote_types = {
-      {u"firstname",
-       {ServerFieldType::NAME_FIRST, ServerFieldType::CREDIT_CARD_NAME_FIRST}},
-      {u"lastname", {ServerFieldType::EMPTY_TYPE}},
-  };
-
   // Simulate removing focus from form, which enqueues a blur vote. The blur
   // vote will be ignored and only the submission will be sent.
   browser_autofill_manager_->OnFocusNoLongerOnForm(true);
-
   EXPECT_CALL(
       *crowdsourcing_manager(),
-      StartUploadRequest(AllOf(SignatureIs(CalculateFormSignature(form_)),
-                               UploadedAutofillTypesAre(expected_vote_types)),
-                         _, _, _, /*observed_submission=*/true, _, _))
-      .Times(1);
+      StartUploadRequest(
+          FirstElementIs(AllOf(
+              FormSignatureIs(CalculateFormSignature(form_)),
+              FieldsAre(FieldAutofillTypeIs(
+                            {ServerFieldType::NAME_FIRST,
+                             ServerFieldType::CREDIT_CARD_NAME_FIRST}),
+                        FieldAutofillTypeIs({ServerFieldType::EMPTY_TYPE})),
+              ObservedSubmissionIs(true))),
+          _, _, _, _));
   FormSubmitted(form_);
 }
 
