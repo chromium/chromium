@@ -429,8 +429,9 @@ bool ProfileSubMenuModel::BuildSyncSection() {
   const std::u16string signed_in_status =
       (IsSyncPaused(profile_) || account_info.IsEmpty())
           ? l10n_util::GetStringUTF16(IDS_PROFILES_LOCAL_PROFILE_STATE)
-          : l10n_util::GetStringFUTF16(IDS_PROFILE_ROW_SIGNED_IN_MESSAGE,
-                                       {base::UTF8ToUTF16(account_info.email)});
+          : l10n_util::GetStringFUTF16(
+                IDS_PROFILE_ROW_SIGNED_IN_MESSAGE_WITH_EMAIL,
+                {base::UTF8ToUTF16(account_info.email)});
 
   AddTitle(signed_in_status);
   signin::IdentityManager* const identity_manager =

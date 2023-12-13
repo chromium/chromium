@@ -1197,8 +1197,11 @@ are declared in tools/grit/grit_rule.gni.
           <message name="IDS_NEW_INCOGNITO_WINDOW" desc="The text label of a menu item for opening a new Incognito window">
             New &amp;Incognito window
           </message>
-          <message name="IDS_PROFILE_ROW_SIGNED_IN_MESSAGE" desc="Label that let's the user know what email they are signed into their profile as.">
+          <message name="IDS_PROFILE_ROW_SIGNED_IN_MESSAGE_WITH_EMAIL" desc="Label that lets the user know what email they are signed into their profile as.">
             Signed in as <ph name="EMAIL">$1<ex>user@gmail.com</ex></ph>
+          </message>
+          <message name="IDS_PROFILE_ROW_SIGNED_IN_MESSAGE" desc="A label to indicate that the profile is signed in.">
+            Signed in
           </message>
           <message name="IDS_PROFILE_ROW_SYNC_IS_ON" desc="The text label of a menu item that notifies the user that sync is on.">
             &amp;Sync is on
@@ -1337,8 +1340,11 @@ are declared in tools/grit/grit_rule.gni.
           <message name="IDS_NEW_INCOGNITO_WINDOW" desc="In Title Case: The text label of a menu item for opening a new Incognito window">
             New &amp;Incognito Window
           </message>
-          <message name="IDS_PROFILE_ROW_SIGNED_IN_MESSAGE" desc="In Title Case: Label that let's the user know what email they are signed into their profile as.">
+          <message name="IDS_PROFILE_ROW_SIGNED_IN_MESSAGE_WITH_EMAIL" desc="In Title Case: Label that lets the user know what email they are signed into their profile as.">
             Signed in as <ph name="EMAIL">$1<ex>user@gmail.com</ex></ph>
+          </message>
+          <message name="IDS_PROFILE_ROW_SIGNED_IN_MESSAGE" desc="In Title Case: A label to indicate that the profile is signed in.">
+            Signed in
           </message>
           <message name="IDS_PROFILE_ROW_SYNC_IS_ON" desc="In Title Case: The text label of a menu item that notifies the user that sync is on.">
             &amp;Sync is On
