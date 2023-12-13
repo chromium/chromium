@@ -13,6 +13,8 @@
 #include "base/functional/callback.h"
 #include "base/location.h"
 #include "base/logging.h"
+#include "base/metrics/histogram_functions.h"
+#include "base/metrics/histogram_macros.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
@@ -42,6 +44,82 @@ constexpr base::TimeDelta kOobeReadFailedRetryDelay = base::Minutes(60);
 
 // Number of times to retry before failing to report any device actives.
 constexpr int kNumberOfRetriesBeforeFail = 120;
+
+// Record the state transitions for the |ReportInitializer| class.
+void RecordInitializerState(ReportControllerInitializer::State state) {
+  base::UmaHistogramEnumeration("Ash.Report.InitializerState", state);
+}
+
+// Record minutes of startup delay before reporting.
+void RecordStartupDelay(int delay_minutes) {
+  base::UmaHistogramCustomCounts("Ash.Report.StartupDelay", delay_minutes,
+                                 /*min=*/0,
+                                 /*exclusive_max=*/60, /*buckets=*/61);
+}
+
+// Record whether oobe is completed.
+void RecordIsOobeCompleted(bool is_complete) {
+  base::UmaHistogramBoolean("Ash.Report.IsOobeCompleted", is_complete);
+}
+
+// Record the device trusted status enum when checking policy trusted status.
+void RecordTrustedStatus(CrosSettingsProvider::TrustedStatus status) {
+  ReportControllerInitializer::TrustedStatus status_mapped;
+  switch (status) {
+    case CrosSettingsProvider::TrustedStatus::PERMANENTLY_UNTRUSTED:
+      status_mapped =
+          ReportControllerInitializer::TrustedStatus::kPermanentlyUntrusted;
+      break;
+    case CrosSettingsProvider::TrustedStatus::TEMPORARILY_UNTRUSTED:
+      status_mapped =
+          ReportControllerInitializer::TrustedStatus::kTemporarilyUntrusted;
+      break;
+    case CrosSettingsProvider::TrustedStatus::TRUSTED:
+      status_mapped = ReportControllerInitializer::TrustedStatus::kTrusted;
+      break;
+  }
+
+  base::UmaHistogramEnumeration("Ash.Report.TrustedStatus", status_mapped);
+}
+
+// Record the device market segment after oobe completed and segment is ready.
+// @param market_segment Defined in fresnel_service.proto
+void RecordMarketSegment(report::MarketSegment market_segment) {
+  ReportControllerInitializer::MarketSegment market_segment_mapped;
+  switch (market_segment) {
+    case report::MarketSegment::MARKET_SEGMENT_UNSPECIFIED:
+      market_segment_mapped =
+          ReportControllerInitializer::MarketSegment::kUnspecified;
+      break;
+    case report::MarketSegment::MARKET_SEGMENT_UNKNOWN:
+      market_segment_mapped =
+          ReportControllerInitializer::MarketSegment::kUnspecified;
+      break;
+    case report::MarketSegment::MARKET_SEGMENT_CONSUMER:
+      market_segment_mapped =
+          ReportControllerInitializer::MarketSegment::kConsumer;
+      break;
+    case report::MarketSegment::MARKET_SEGMENT_ENTERPRISE_ENROLLED_BUT_UNKNOWN:
+      market_segment_mapped = ReportControllerInitializer::MarketSegment::
+          kEnterpriseEnrolledButUnknown;
+      break;
+    case report::MarketSegment::MARKET_SEGMENT_ENTERPRISE:
+      market_segment_mapped =
+          ReportControllerInitializer::MarketSegment::kEnterprise;
+      break;
+    case report::MarketSegment::MARKET_SEGMENT_EDUCATION:
+      market_segment_mapped =
+          ReportControllerInitializer::MarketSegment::kEducation;
+      break;
+    case report::MarketSegment::MARKET_SEGMENT_ENTERPRISE_DEMO:
+      market_segment_mapped =
+          ReportControllerInitializer::MarketSegment::kEnterpriseDemo;
+      break;
+  }
+
+  base::UmaHistogramEnumeration("Ash.Report.MarketSegment",
+                                market_segment_mapped);
+}
 
 // Determine market segment from the loaded ChromeOS device policies.
 report::MarketSegment GetMarketSegment(
@@ -98,7 +176,7 @@ report::MarketSegment GetMarketSegment(
 
 ReportControllerInitializer::ReportControllerInitializer() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  state_ = State::kWaitingForOwnership;
+  SetState(State::kWaitingForOwnership);
 
   // Adds observer for device ownership status changes in this class.
   device_settings_observation_.Observe(DeviceSettingsService::Get());
@@ -108,6 +186,11 @@ ReportControllerInitializer::ReportControllerInitializer() {
 
 ReportControllerInitializer::~ReportControllerInitializer() = default;
 
+void ReportControllerInitializer::SetState(State state) {
+  state_ = state;
+  RecordInitializerState(state_);
+}
+
 report::MarketSegment ReportControllerInitializer::GetMarketSegmentForTesting(
     const policy::DeviceMode& device_mode,
     const policy::MarketSegment& device_market_segment) {
@@ -116,17 +199,17 @@ report::MarketSegment ReportControllerInitializer::GetMarketSegmentForTesting(
 
 void ReportControllerInitializer::OwnershipStatusChanged() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  // Device should only get ownership taken at most once on a browser start up.
   if (state_ != State::kWaitingForOwnership) {
     return;
   }
 
+  // Device should only get ownership taken at most once on a browser start up.
   if (ash::DeviceSettingsService::Get()->GetOwnershipStatus() !=
       ash::DeviceSettingsService::OwnershipStatus::kOwnershipTaken) {
     return;
   }
 
-  state_ = State::kWaitingForStartupDelay;
+  SetState(State::kWaitingForStartupDelay);
 
   // Retrieve chrome first run sentinel time.
   base::ThreadPool::PostTaskAndReplyWithResult(
@@ -173,12 +256,13 @@ base::TimeDelta ReportControllerInitializer::DetermineStartUpDelay(
         chrome_first_run_ts + base::Hours(1) - current_ts;
   }
 
+  RecordStartupDelay(delay_on_first_chrome_run.InMinutes());
   return delay_on_first_chrome_run;
 }
 
 void ReportControllerInitializer::CheckOobeCompleted(
     base::RepeatingCallback<base::TimeDelta()> check_oobe_completed_callback) {
-  state_ = State::kWaitingForOobeCompleted;
+  SetState(State::kWaitingForOobeCompleted);
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   // We block if the oobe completed file is not written.
@@ -189,6 +273,7 @@ void ReportControllerInitializer::CheckOobeCompleted(
                << "1 minute after retrying 120 times. "
                << "There was a 60 minute wait between each retry and spanned "
                << "5 days.";
+    RecordIsOobeCompleted(false);
     return;
   }
 
@@ -221,6 +306,8 @@ void ReportControllerInitializer::OnOobeFileWritten(
                << time_since_oobe_file_written
                << ". Retry count = " << retry_oobe_completed_count_;
 
+    RecordIsOobeCompleted(false);
+
     base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
         FROM_HERE,
         base::BindOnce(&ReportControllerInitializer::CheckOobeCompleted,
@@ -231,11 +318,13 @@ void ReportControllerInitializer::OnOobeFileWritten(
     return;
   }
 
-  state_ = State::kWaitingForDeviceSettingsTrusted;
+  RecordIsOobeCompleted(true);
+
   CheckTrustedStatus();
 }
 
 void ReportControllerInitializer::CheckTrustedStatus() {
+  SetState(State::kWaitingForDeviceSettingsTrusted);
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK_EQ(state_, State::kWaitingForDeviceSettingsTrusted);
 
@@ -244,6 +333,9 @@ void ReportControllerInitializer::CheckTrustedStatus() {
       CrosSettings::Get()->PrepareTrustedValues(
           base::BindOnce(&ReportControllerInitializer::CheckTrustedStatus,
                          weak_factory_.GetWeakPtr()));
+
+  // Record histogram that indicates the status of the device policies.
+  RecordTrustedStatus(status);
 
   if (status == CrosSettingsProvider::TEMPORARILY_UNTRUSTED ||
       status == CrosSettingsProvider::PERMANENTLY_UNTRUSTED) {
@@ -267,7 +359,11 @@ void ReportControllerInitializer::CheckTrustedStatus() {
                            ->browser_policy_connector_ash()
                            ->GetEnterpriseMarketSegment());
 
-  state_ = State::kReportControllerInitialized;
+  // Record histogram after oobe is completed and the policies are in trusted
+  // status. At this point, the device market segment is known and assigned.
+  RecordMarketSegment(device_market_segment);
+
+  SetState(State::kReportControllerInitialized);
 
   // At this step we have checked for 3 conditions.
   // 1. The device is owned.

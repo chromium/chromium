@@ -86,9 +86,26 @@ base::OnceClosure CreateReport28DaCallback(
                         twenty_eight_day_weak_ptr, std::move(report_cohort_cb));
 }
 
-// UMA histogram names for preserved file write records.
-const char kHistogramsPreservedFileWritten[] =
-    "Ash.Report.PreservedFileWritten";
+// Record boolean indicating the preserved file has been written successfully.
+void RecordPreservedFileWritten(bool is_written) {
+  base::UmaHistogramBoolean("Ash.Report.PreservedFileWritten", is_written);
+}
+
+// Record boolean for whether the device is classified as for testing.
+void RecordIsTestDevice(bool is_test) {
+  base::UmaHistogramBoolean("Ash.Report.IsTestDevice", is_test);
+}
+
+// Record boolean for whether the psm stable secret key is read and parsed
+// successfully from the VPD file that is loaded to machine statistics.
+void RecordIsPsmSecretSet(bool is_set) {
+  base::UmaHistogramBoolean("Ash.Report.IsPsmSecretSet", is_set);
+}
+
+// Record boolean for if the system clock has been synced successfully or not.
+void RecordIsSystemClockSynced(bool is_synced) {
+  base::UmaHistogramBoolean("Ash.Report.IsSystemClockSynced", is_synced);
+}
 
 }  // namespace
 
@@ -194,9 +211,11 @@ void ReportController::OnPsmDeviceActiveSecretFetched(
   // secret must be retrieved successfully.
   if (psm_device_active_secret.empty()) {
     LOG(ERROR) << "PSM device secret is empty and could not be fetched.";
+    RecordIsPsmSecretSet(false);
     return;
   }
 
+  RecordIsPsmSecretSet(true);
   high_entropy_seed_ = psm_device_active_secret;
 
   // Continue when machine statistics are loaded, to avoid blocking.
@@ -211,8 +230,13 @@ void ReportController::OnMachineStatisticsLoaded() {
       statistics_provider_->IsCrosDebugMode()) {
     LOG(ERROR) << "Terminate - device is running in VM or with cros_debug mode "
                   "enabled.";
+    LOG(ERROR) << "VM = " << statistics_provider_->IsRunningOnVm()
+               << " and DEBUG = " << statistics_provider_->IsCrosDebugMode();
+    RecordIsTestDevice(true);
     return;
   }
+
+  RecordIsTestDevice(false);
 
   // Send DBus method to that reads preserved files for missing local state
   // prefs.
@@ -243,7 +267,7 @@ void ReportController::OnSaveLocalStateToPreservedFileComplete(
     LOG(ERROR) << "Failed to write to preserved file. "
                << "Error from DBus: " << response.error_message();
   }
-  base::UmaHistogramBoolean(kHistogramsPreservedFileWritten, write_success);
+  RecordPreservedFileWritten(write_success);
 
   // Device is done reporting after writing to preserved file.
   is_device_reporting_ = false;
@@ -302,6 +326,8 @@ void ReportController::OnNetworkOffline() {
 }
 
 void ReportController::OnSystemClockSyncResult(bool system_clock_synchronized) {
+  RecordIsSystemClockSynced(system_clock_synchronized);
+
   if (!system_clock_synchronized) {
     LOG(ERROR) << "System clock failed to be synchronized.";
     return;

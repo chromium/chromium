@@ -31,6 +31,28 @@ class ReportControllerInitializer : public DeviceSettingsService::Observer {
     kMaxValue = kReportControllerInitialized,
   };
 
+  // Enum class mapping CrosSettingsProvider::TrustedStatus to an enum class.
+  // Used for enumerating TrustedStatus UMA histograms.
+  enum class TrustedStatus {
+    kTrusted = 0,
+    kTemporarilyUntrusted = 1,
+    kPermanentlyUntrusted = 2,
+    kMaxValue = kPermanentlyUntrusted,
+  };
+
+  // Enum class mapping report::MarketSegment to an enum class.
+  // Used for enumerating MarketSegment UMA histograms.
+  enum class MarketSegment {
+    kUnspecified = 0,
+    kUnknown = 1,
+    kConsumer = 2,
+    kEnterpriseEnrolledButUnknown = 3,
+    kEnterprise = 4,
+    kEducation = 5,
+    kEnterpriseDemo = 6,
+    kMaxValue = kEnterpriseDemo,
+  };
+
   // Trigger checks for preconditions before construction of |ReportController|.
   ReportControllerInitializer();
   ReportControllerInitializer(const ReportControllerInitializer&) = delete;
@@ -41,6 +63,8 @@ class ReportControllerInitializer : public DeviceSettingsService::Observer {
  private:
   // Grant friend access for comprehensive testing of private/protected members.
   friend class ReportControllerInitializerValidateSegment;
+
+  void SetState(State state);
 
   // Method is used for testing:
   report::MarketSegment GetMarketSegmentForTesting(

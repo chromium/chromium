@@ -6,6 +6,7 @@
 
 #include "base/check.h"
 #include "base/logging.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/time/time.h"
 #include "chromeos/ash/components/report/utils/time_utils.h"
@@ -18,6 +19,11 @@ namespace {
 
 // day_of_week index for Monday in the base::Time::Exploded object.
 constexpr int kMondayDayOfWeekIndex = 1;
+
+// Record histogram for whether ActivateDate is read and parsed correctly.
+void RecordIsActivateDateSet(bool is_set) {
+  base::UmaHistogramBoolean("Ash.Report.IsActivateDateSet", is_set);
+}
 
 template <size_t N>
 int ConvertBitsetToInteger(std::bitset<N> bitset) {
@@ -329,6 +335,7 @@ std::optional<base::Time> ActiveStatus::GetFirstActiveWeek() const {
     LOG(ERROR)
         << "Failed to retrieve ActivateDate VPD field from machine statistics. "
         << "Leaving |first_active_week_| unset.";
+    RecordIsActivateDateSet(false);
     return std::nullopt;
   }
 
@@ -341,6 +348,7 @@ std::optional<base::Time> ActiveStatus::GetFirstActiveWeek() const {
       delimiter_index != expected_delimiter_index) {
     LOG(ERROR) << "ActivateDate was retrieved but is not formatted as YYYY-WW. "
                << "Received string : " << first_active_week_str;
+    RecordIsActivateDateSet(false);
     return std::nullopt;
   }
 
@@ -354,6 +362,7 @@ std::optional<base::Time> ActiveStatus::GetFirstActiveWeek() const {
   if (parsed_year.empty() || parsed_weeks.empty()) {
     LOG(ERROR) << "Failed to parse and convert the first active weeks string "
                << "year and weeks.";
+    RecordIsActivateDateSet(false);
     return std::nullopt;
   }
 
@@ -365,15 +374,18 @@ std::optional<base::Time> ActiveStatus::GetFirstActiveWeek() const {
   if (!success_year || !success_week) {
     LOG(ERROR) << "Failed to convert parsed_year or parsed_weeks: "
                << parsed_year << " and " << parsed_weeks;
+    RecordIsActivateDateSet(false);
     return std::nullopt;
   }
 
   auto iso8601_ts = Iso8601DateWeekAsTime(activate_year, activate_week_of_year);
   if (!iso8601_ts.has_value()) {
     LOG(ERROR) << "Failed to ISO8601 year and week of year as a timestamp.";
+    RecordIsActivateDateSet(false);
     return std::nullopt;
   }
 
+  RecordIsActivateDateSet(true);
   return iso8601_ts.value();
 }
 
