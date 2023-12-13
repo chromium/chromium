@@ -908,7 +908,7 @@ bool AXObject::IsMissingParent() const {
     // object, because hidden ones are purposely kept around without being in
     // the tree, and without a parent, for potential later reuse.
     bool is_missing = !IsRoot();
-    CHECK(!is_missing || !AXObjectCache().IsFrozen())
+    DUMP_WILL_BE_CHECK(!is_missing || !AXObjectCache().IsFrozen())
         << "Should not have missing parent in frozen tree: "
         << ToString(true, true);
     return is_missing;
@@ -5594,7 +5594,8 @@ AXObject* AXObject::ParentObject() const {
     return nullptr;
   }
 
-  CHECK(!IsMissingParent()) << "Missing parent: " << ToString(true, true);
+  DUMP_WILL_BE_CHECK(!IsMissingParent())
+      << "Missing parent: " << ToString(true, true);
 
   return parent_.Get();
 }

@@ -1375,7 +1375,8 @@ AXObject* AXObjectCacheImpl::GetOrCreate(Node* node,
     if (!obj->IsMissingParent()) {
       return obj;
     }
-    CHECK(parent_if_known) << "Missing parent: " << obj->ToString(true, true);
+    DUMP_WILL_BE_CHECK(parent_if_known)
+        << "Missing parent: " << obj->ToString(true, true);
 
     // The parent is provided when the object is being added to the parent.
     // This is expected when re-adding a child to a parent via
@@ -3372,7 +3373,7 @@ AXObject* AXObjectCacheImpl::TreeUpdateObjectIfRelevant(
     if (!ax_object || ax_object->IsDetached()) {
       return nullptr;
     }
-    CHECK(!ax_object->IsMissingParent())
+    DUMP_WILL_BE_CHECK(!ax_object->IsMissingParent())
         << "Missing parent: " << ax_object->ToString(true, true);
     // Update cached attributes for all changed nodes before serialization,
     // because updating ignored/included can cause tree structure changes, and
@@ -3408,9 +3409,9 @@ AXObject* AXObjectCacheImpl::TreeUpdateObjectIfRelevant(
   // TODO(accessibility) Try to get rid of repair situations by addressing
   // partial subtrees and mid-tree object removal directly when they occur.
   if (ax_object->IsMissingParent()) {
-    // TODO(accessibility) This should become a CHECK once we resolve remaining
-    // cases. Breaks on https://github.com/openui/open-ui/discussions/960.
-    DCHECK(false) << "Missing parent on: " << ax_object->ToString(true, true);
+    // TODO(accessibility) Convert to CHECK once we resolve remaining cases.
+    DUMP_WILL_BE_NOTREACHED_NORETURN()
+        << "Missing parent on: " << ax_object->ToString(true, true);
     if (!ax_object->GetNode()) {
       RemoveIncludedSubtree(ax_object, /* remove_root */ true);
       return nullptr;
