@@ -806,7 +806,7 @@ void ProfileMenuViewBase::BuildSyncInfoWithCallToAction(
           base::BindRepeating(&ProfileMenuViewBase::ButtonPressed,
                               base::Unretained(this), std::move(action)),
           button_text));
-  button->SetProminent(true);
+  button->SetStyle(ui::ButtonStyle::kProminent);
 
   // TODO(crbug.com/1422119): Remove `background_color_id` parameter after
   // Chrome Refresh 2023 is launched.

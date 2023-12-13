@@ -208,7 +208,7 @@ class ContinueButton : public views::MdTextButton {
         brand_text_color_(idp_metadata.brand_text_color) {
     SetCornerRadius(kButtonRadius);
     SetHorizontalAlignment(gfx::HorizontalAlignment::ALIGN_CENTER);
-    SetProminent(true);
+    SetStyle(ui::ButtonStyle::kProminent);
   }
 
   ContinueButton(const ContinueButton&) = delete;

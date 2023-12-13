@@ -209,7 +209,7 @@ void SecurityInformationView::AddPasswordReuseButtons(
     change_password_button = std::make_unique<views::MdTextButton>(
         std::move(change_password_callback),
         l10n_util::GetStringUTF16(change_password_template));
-    change_password_button->SetProminent(true);
+    change_password_button->SetStyle(ui::ButtonStyle::kProminent);
     change_password_button->SetID(
         PageInfoViewFactory::VIEW_ID_PAGE_INFO_BUTTON_CHANGE_PASSWORD);
   }

@@ -71,7 +71,7 @@ class ChromeLabsFooter : public views::View {
                      .SetCallback(restart_callback)
                      .SetText(l10n_util::GetStringUTF16(
                          IDS_CHROMELABS_RELAUNCH_BUTTON_LABEL))
-                     .SetProminent(true)
+                     .SetStyle(ui::ButtonStyle::kProminent)
                      .Build());
     SetBackground(
         views::CreateThemedSolidBackground(ui::kColorBubbleFooterBackground));

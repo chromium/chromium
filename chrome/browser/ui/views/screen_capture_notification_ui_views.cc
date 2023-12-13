@@ -172,7 +172,7 @@ ScreenCaptureNotificationUIViews::ScreenCaptureNotificationUIViews(
       base::BindRepeating(&ScreenCaptureNotificationUIViews::NotifyStopped,
                           base::Unretained(this)),
       stop_text);
-  stop_button->SetProminent(true);
+  stop_button->SetStyle(ui::ButtonStyle::kProminent);
   stop_button_ = AddChildView(std::move(stop_button));
 
   auto hide_link = std::make_unique<views::Link>(

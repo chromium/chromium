@@ -318,7 +318,7 @@ class PaymentSheetRowBuilder {
       bool button_enabled) {
     auto button = std::make_unique<views::MdTextButton>(GetPressedCallback(),
                                                         button_string);
-    button->SetProminent(true);
+    button->SetStyle(ui::ButtonStyle::kProminent);
     button->SetID(id_);
     button->SetFocusBehavior(views::View::FocusBehavior::ALWAYS);
     button->SetEnabled(button_enabled);
