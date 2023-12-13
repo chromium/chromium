@@ -279,6 +279,8 @@ struct GraphicsTablet {
   // "vendor_id:product_id" where the ids are 16-bit hex in lowercase.
   // Example: 5022:18d1.
   string device_key;
+  // Used to check customization restriction of the graphics tablet.
+  CustomizationRestriction customization_restriction;
   GraphicsTabletSettings settings;
 };
 

@@ -220,10 +220,12 @@ mojom::PointingStickPtr BuildMojomPointingStick(
 }
 
 mojom::GraphicsTabletPtr BuildMojomGraphicsTablet(
-    const ui::InputDevice& graphics_tablet) {
+    const ui::InputDevice& graphics_tablet,
+    mojom::CustomizationRestriction customization_restriction) {
   mojom::GraphicsTabletPtr mojom_graphics_tablet = mojom::GraphicsTablet::New();
   mojom_graphics_tablet->name = graphics_tablet.name;
   mojom_graphics_tablet->id = graphics_tablet.id;
+  mojom_graphics_tablet->customization_restriction = customization_restriction;
   mojom_graphics_tablet->device_key =
       Shell::Get()->input_device_key_alias_manager()->GetAliasedDeviceKey(
           graphics_tablet);
@@ -1580,7 +1582,8 @@ void InputDeviceSettingsControllerImpl::OnGraphicsTabletListUpdated(
     std::vector<ui::InputDevice> graphics_tablets_to_add,
     std::vector<DeviceId> graphics_tablet_ids_to_remove) {
   for (const auto& graphics_tablet : graphics_tablets_to_add) {
-    auto mojom_graphics_tablet = BuildMojomGraphicsTablet(graphics_tablet);
+    auto mojom_graphics_tablet = BuildMojomGraphicsTablet(
+        graphics_tablet, mojom::CustomizationRestriction::kAllowCustomizations);
     InitializeGraphicsTabletSettings(mojom_graphics_tablet.get());
     if (features::IsPeripheralNotificationEnabled()) {
       notification_controller_->NotifyGraphicsTabletFirstTimeConnected(
@@ -1778,13 +1781,15 @@ void InputDeviceSettingsControllerImpl::StartObservingButtons(DeviceId id) {
   }
 
   auto* graphics_tablet = FindGraphicsTablet(id);
-  if (graphics_tablet) {
+  if (graphics_tablet &&
+      graphics_tablet->customization_restriction !=
+          ash::mojom::CustomizationRestriction::kDisallowCustomizations) {
     const auto* duplicate_ids =
         duplicate_id_finder_->GetDuplicateDeviceIds(graphics_tablet->id);
     CHECK(duplicate_ids);
     for (const auto& duplicate_id : *duplicate_ids) {
       rewriter->StartObservingGraphicsTablet(
-          duplicate_id, mojom::CustomizationRestriction::kAllowCustomizations);
+          duplicate_id, graphics_tablet->customization_restriction);
     }
     return;
   }

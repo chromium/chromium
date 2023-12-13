@@ -37,6 +37,8 @@ const mojom::GraphicsTablet kGraphicsTablet2 = mojom::GraphicsTablet(
     /*name=*/"Wacom Intuos S",
     /*id=*/2,
     /*device_key=*/"fake-device-key2",
+    /*customization_restriction=*/
+    ::ash::mojom::CustomizationRestriction::kAllowCustomizations,
     mojom::GraphicsTabletSettings::New());
 
 int GetPrefNotificationCount(const char* pref_name) {

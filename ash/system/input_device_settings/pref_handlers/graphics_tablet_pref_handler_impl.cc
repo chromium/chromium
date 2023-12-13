@@ -41,10 +41,10 @@ void GraphicsTabletPrefHandlerImpl::InitializeGraphicsTabletSettings(
   if (tablet_button_remappings_list && pen_button_remappings_list) {
     settings->tablet_button_remappings = ConvertListToButtonRemappingArray(
         *tablet_button_remappings_list,
-        mojom::CustomizationRestriction::kAllowCustomizations);
+        graphics_tablet->customization_restriction);
     settings->pen_button_remappings = ConvertListToButtonRemappingArray(
         *pen_button_remappings_list,
-        mojom::CustomizationRestriction::kAllowCustomizations);
+        graphics_tablet->customization_restriction);
   }
   graphics_tablet->settings = std::move(settings);
   DCHECK(graphics_tablet->settings);
@@ -63,10 +63,10 @@ void GraphicsTabletPrefHandlerImpl::UpdateGraphicsTabletSettings(
   base::Value::List tablet_button_remappings =
       ConvertButtonRemappingArrayToList(
           settings.tablet_button_remappings,
-          mojom::CustomizationRestriction::kAllowCustomizations);
+          graphics_tablet.customization_restriction);
   base::Value::List pen_button_remappings = ConvertButtonRemappingArrayToList(
       settings.pen_button_remappings,
-      mojom::CustomizationRestriction::kAllowCustomizations);
+      graphics_tablet.customization_restriction);
 
   // Update tablet button remappings dict.
   base::Value::Dict tablet_button_remappings_dict =
@@ -115,10 +115,10 @@ void GraphicsTabletPrefHandlerImpl::InitializeLoginScreenGraphicsTabletSettings(
   if (tablet_button_remappings_list && pen_button_remappings_list) {
     settings->tablet_button_remappings = ConvertListToButtonRemappingArray(
         *tablet_button_remappings_list,
-        mojom::CustomizationRestriction::kAllowCustomizations);
+        graphics_tablet->customization_restriction);
     settings->pen_button_remappings = ConvertListToButtonRemappingArray(
         *pen_button_remappings_list,
-        mojom::CustomizationRestriction::kAllowCustomizations);
+        graphics_tablet->customization_restriction);
   }
   graphics_tablet->settings = std::move(settings);
 }
@@ -135,14 +135,14 @@ void GraphicsTabletPrefHandlerImpl::UpdateLoginScreenGraphicsTabletSettings(
           prefs::kGraphicsTabletLoginScreenTabletButtonRemappingListPref,
           std::make_optional<base::Value>(ConvertButtonRemappingArrayToList(
               graphics_tablet.settings->tablet_button_remappings,
-              mojom::CustomizationRestriction::kAllowCustomizations)));
+              graphics_tablet.customization_restriction)));
   user_manager::KnownUser(local_state)
       .SetPath(
           account_id,
           prefs::kGraphicsTabletLoginScreenPenButtonRemappingListPref,
           std::make_optional<base::Value>(ConvertButtonRemappingArrayToList(
               graphics_tablet.settings->pen_button_remappings,
-              mojom::CustomizationRestriction::kAllowCustomizations)));
+              graphics_tablet.customization_restriction)));
 }
 
 }  // namespace ash
