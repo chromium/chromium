@@ -2599,7 +2599,6 @@ crbug.com/1329290 virtual/threaded/external/wpt/requestidlecallback/deadline-max
 # *webaudio/* crashes observed on M1 Mac with debug builds.
 crbug.com/1446038 [ Debug Mac13-arm64 ] webaudio/AudioParam/worklet-warnings.html [ Crash ]
 crbug.com/1446038 [ Debug Mac13-arm64 ] webaudio/AudioWorkletProcessor/invalid-audioworkletprocessor-constructor.html [ Crash ]
-crbug.com/1446038 [ Debug Mac13-arm64 ] webaudio/internals/audioworkletnode-gc.https.html [ Crash ]
 crbug.com/1446038 [ Debug Mac13-arm64 ] webaudio/internals/audioworkletprocessor-gc.https.html [ Crash ]
 crbug.com/1446038 [ Debug Mac13-arm64 ] external/wpt/webaudio/idlharness.https.window.html [ Crash ]
 crbug.com/1446038 [ Debug Mac13-arm64 ] external/wpt/webaudio/the-audio-api/the-audiobuffersourcenode-interface/active-processing.https.html [ Crash ]
@@ -5276,6 +5275,7 @@ crbug.com/1307741 webaudio/AudioParam/audioparam-k-rate.html [ Timeout ]
 crbug.com/1312164 webaudio/internals/mediaelementaudiosourcenode-wrapper.html [ Failure Skip ]
 crbug.com/1312164 webaudio/internals/mediaelementaudiosourcenode-gc.html [ Failure Skip ]
 crbug.com/1312164 webaudio/internals/audiocontext-gc.html [ Failure Skip ]
+crbug.com/1312164 webaudio/internals/audioworkletnode-gc.https.html [ Failure Skip ]
 
 
 # Tests that need updates due to rounding math in layout
