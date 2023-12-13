@@ -2278,18 +2278,6 @@
     "expires": "Aug 1, 2023"
   },
   {
-    "prefix": "main-thread-high-priority-image-loading",
-    "platforms": ["Linux"],
-    "bases": [
-      "images/image-change-src.html"
-    ],
-    "args": [
-      "--disable-features=MainThreadHighPriorityImageLoading",
-      "--disable-threaded-compositing", "--disable-threaded-animation"
-    ],
-    "expires": "Dec 1, 2023"
-  },
-  {
     "prefix": "longtask-from-loaf",
     "platforms": ["Linux"],
     "bases": ["external/wpt/longtask-timing"],

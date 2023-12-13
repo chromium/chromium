@@ -1268,10 +1268,6 @@ const base::FeatureParam<std::string> kLowPriorityScriptLoadingDenyListParam{
 const base::FeatureParam<bool> kLowPriorityScriptLoadingMainFrameOnlyParam{
     &kLowPriorityScriptLoading, "low_pri_async_loading_main_frame_only", false};
 
-BASE_FEATURE(kMainThreadHighPriorityImageLoading,
-             "MainThreadHighPriorityImageLoading",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 // If enabled, the setTimeout(..., 0) will clamp to 4ms after a custom `nesting`
 // level.
 // Tracking bug: https://crbug.com/1108877.

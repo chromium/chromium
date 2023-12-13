@@ -756,9 +756,6 @@ BLINK_COMMON_EXPORT extern const base::FeatureParam<std::string>
 BLINK_COMMON_EXPORT extern const base::FeatureParam<bool>
     kLowPriorityScriptLoadingMainFrameOnlyParam;
 
-// If enabled, image loading tasks on visible pages have high priority.
-BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kMainThreadHighPriorityImageLoading);
-
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kMaxUnthrottledTimeoutNestingLevel);
 BLINK_COMMON_EXPORT extern const base::FeatureParam<int>
     kMaxUnthrottledTimeoutNestingLevelParam;

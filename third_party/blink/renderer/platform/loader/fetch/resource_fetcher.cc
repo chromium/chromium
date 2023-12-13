@@ -1387,9 +1387,7 @@ std::unique_ptr<URLLoader> ResourceFetcher::CreateURLLoader(
       }
     }
   } else if (request.GetRequestContext() ==
-                 mojom::blink::RequestContextType::IMAGE &&
-             base::FeatureList::IsEnabled(
-                 features::kMainThreadHighPriorityImageLoading)) {
+             mojom::blink::RequestContextType::IMAGE) {
     if (auto* frame_or_worker_scheduler = GetFrameOrWorkerScheduler()) {
       if (auto* frame_scheduler =
               frame_or_worker_scheduler->ToFrameScheduler()) {
