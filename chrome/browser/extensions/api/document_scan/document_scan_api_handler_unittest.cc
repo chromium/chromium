@@ -9,6 +9,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/auto_reset.h"
 #include "base/functional/bind.h"
 #include "base/memory/ref_counted.h"
 #include "base/test/test_future.h"
@@ -16,6 +17,8 @@
 #include "chrome/browser/extensions/api/document_scan/document_scan_api.h"
 #include "chrome/browser/extensions/api/document_scan/document_scan_test_utils.h"
 #include "chrome/browser/extensions/api/document_scan/fake_document_scan_ash.h"
+#include "chrome/browser/extensions/api/document_scan/scanner_discovery_runner.h"
+#include "chrome/browser/extensions/api/document_scan/start_scan_runner.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/common/chrome_constants.h"
 #include "chrome/common/pref_names.h"
@@ -45,6 +48,10 @@ using OpenScannerFuture =
     base::test::TestFuture<api::document_scan::OpenScannerResponse>;
 using CloseScannerFuture =
     base::test::TestFuture<api::document_scan::CloseScannerResponse>;
+using StartScanFuture =
+    base::test::TestFuture<api::document_scan::StartScanResponse>;
+using CancelScanFuture =
+    base::test::TestFuture<api::document_scan::CancelScanResponse>;
 
 // Fake extension info.
 constexpr char kExtensionId[] = "abcdefghijklmnopqrstuvwxyz123456";
@@ -108,20 +115,76 @@ class DocumentScanAPIHandlerTest : public testing::Test {
   // "Discover" a scanner and return its unguessable token.  After calling this,
   // a test can use the returned scanner ID to open a scanner for further
   // operations.
-  absl::optional<std::string> CreateScannerIdForExtension(
+  std::string CreateScannerIdForExtension(
       scoped_refptr<const Extension> extension) {
     GetDocumentScan().AddScanner(CreateTestScannerInfo());
-    MarkExtensionTrusted(extension->id());
+    ScannerDiscoveryRunner::SetDiscoveryConfirmationResultForTesting(true);
 
     GetScannerListFuture list_future;
     document_scan_api_handler_->GetScannerList(
         /*native_window=*/nullptr, extension, {}, list_future.GetCallback());
     const api::document_scan::GetScannerListResponse& list_response =
         list_future.Get();
-    if (list_response.scanners.empty()) {
-      return absl::nullopt;
-    }
+
+    CHECK(!list_response.scanners.empty());
+
     return list_response.scanners[0].scanner_id;
+  }
+
+  // "Discover" a scanner and open that given scanner, returning the scanner
+  // handle.  After calling this, a test can use the returned scanner handle for
+  // further operations.
+  std::string OpenScannerForExtension(
+      scoped_refptr<const Extension> extension) {
+    return OpenScannerWithId(extension, CreateScannerIdForExtension(extension));
+  }
+
+  // "Discover" and open a scanner, start a scan on that scanner, and return the
+  // job handle.  After calling this, a test can use the returned job handle for
+  // further operations.
+  std::string StartScanForExtension(scoped_refptr<const Extension> extension) {
+    return StartScanForScannerHandle(extension,
+                                     OpenScannerForExtension(extension));
+  }
+
+  // Open the scanner with the given `scanner_id`, returning the scanner handle.
+  // This requires that the scanner has already been added to the fake document
+  // scan object.  After calling this, a test can use the returned scanner
+  // handle for further operations.
+  std::string OpenScannerWithId(scoped_refptr<const Extension> extension,
+                                const std::string& scanner_id) {
+    if (scanner_id.empty()) {
+      return "";
+    }
+
+    OpenScannerFuture future;
+    document_scan_api_handler_->OpenScanner(extension, scanner_id,
+                                            future.GetCallback());
+    const api::document_scan::OpenScannerResponse& response = future.Get();
+    return response.scanner_handle.value_or("");
+  }
+
+  // Start a scan for the scanner given by `scanner_handle`, returning the job
+  // handle.  This requires that the scanner has already been added to the fake
+  // document scan object.  After calling this, a test can use the returned job
+  // handle for further operations.
+  std::string StartScanForScannerHandle(
+      scoped_refptr<const Extension> extension,
+      const std::string& scanner_handle) {
+    if (scanner_handle.empty()) {
+      return "";
+    }
+
+    base::AutoReset<std::optional<bool>> testing_scope =
+        StartScanRunner::SetStartScanConfirmationResultForTesting(true);
+    api::document_scan::StartScanOptions options;
+    StartScanFuture future;
+    document_scan_api_handler_->StartScan(
+        /*native_window=*/nullptr, extension, scanner_handle,
+        std::move(options), future.GetCallback());
+
+    const api::document_scan::StartScanResponse& response = future.Get();
+    return response.job.value_or("");
   }
 
  private:
@@ -298,7 +361,7 @@ TEST_F(DocumentScanAPIHandlerTest, OpenScanner_OpenBeforeListFails) {
 }
 
 TEST_F(DocumentScanAPIHandlerTest, OpenScanner_OpenInvalidFails) {
-  std::string scanner_id = CreateScannerIdForExtension(extension_).value_or("");
+  std::string scanner_id = CreateScannerIdForExtension(extension_);
   ASSERT_FALSE(scanner_id.empty());
 
   // Calling GetScannerList invalidates the previously returned ID.
@@ -317,7 +380,7 @@ TEST_F(DocumentScanAPIHandlerTest, OpenScanner_OpenInvalidFails) {
 }
 
 TEST_F(DocumentScanAPIHandlerTest, OpenScanner_ReopenValidIdSucceeds) {
-  std::string scanner_id = CreateScannerIdForExtension(extension_).value_or("");
+  std::string scanner_id = CreateScannerIdForExtension(extension_);
   ASSERT_FALSE(scanner_id.empty());
 
   // The first open succeeds because the scanner is not open.
@@ -348,7 +411,7 @@ TEST_F(DocumentScanAPIHandlerTest, OpenScanner_ReopenValidIdSucceeds) {
 }
 
 TEST_F(DocumentScanAPIHandlerTest, OpenScanner_ReopenSameScannerSucceeds) {
-  std::string scanner_id = CreateScannerIdForExtension(extension_).value_or("");
+  std::string scanner_id = CreateScannerIdForExtension(extension_);
   ASSERT_FALSE(scanner_id.empty());
 
   // The first open succeeds because the scanner is not open.
@@ -359,8 +422,7 @@ TEST_F(DocumentScanAPIHandlerTest, OpenScanner_ReopenSameScannerSucceeds) {
 
   // GetScannerList returns a new token that points to the same underlying
   // scanner created by CreateScannerId above.
-  std::string scanner_id2 =
-      CreateScannerIdForExtension(extension_).value_or("");
+  std::string scanner_id2 = CreateScannerIdForExtension(extension_);
   ASSERT_FALSE(scanner_id2.empty());
 
   // Opening the second ID succeeds because this is the same extension.
@@ -385,7 +447,7 @@ TEST_F(DocumentScanAPIHandlerTest, OpenScanner_ReopenSameScannerSucceeds) {
 }
 
 TEST_F(DocumentScanAPIHandlerTest, OpenScanner_SecondExtensionOpenFails) {
-  std::string scanner_id = CreateScannerIdForExtension(extension_).value_or("");
+  std::string scanner_id = CreateScannerIdForExtension(extension_);
   ASSERT_FALSE(scanner_id.empty());
 
   // The first open succeeds because the scanner is not open.
@@ -401,8 +463,7 @@ TEST_F(DocumentScanAPIHandlerTest, OpenScanner_SecondExtensionOpenFails) {
                         .SetID("extension2id")
                         .AddPermission(kExtensionPermissionName)
                         .Build();
-  std::string scanner_id2 =
-      CreateScannerIdForExtension(extension2).value_or("");
+  std::string scanner_id2 = CreateScannerIdForExtension(extension2);
   ASSERT_FALSE(scanner_id2.empty());
 
   // Opening the same scanner from a second extension fails because the scanner
@@ -440,7 +501,7 @@ TEST_F(DocumentScanAPIHandlerTest, CloseScanner_CloseBeforeOpenFails) {
 }
 
 TEST_F(DocumentScanAPIHandlerTest, CloseScanner_CloseInvalidHandleFails) {
-  std::string scanner_id = CreateScannerIdForExtension(extension_).value_or("");
+  std::string scanner_id = CreateScannerIdForExtension(extension_);
   ASSERT_FALSE(scanner_id.empty());
 
   OpenScannerFuture open_future;
@@ -479,7 +540,7 @@ TEST_F(DocumentScanAPIHandlerTest, CloseScanner_CloseInvalidHandleFails) {
 }
 
 TEST_F(DocumentScanAPIHandlerTest, CloseScanner_DoubleCloseHandleFails) {
-  std::string scanner_id = CreateScannerIdForExtension(extension_).value_or("");
+  std::string scanner_id = CreateScannerIdForExtension(extension_);
   ASSERT_FALSE(scanner_id.empty());
 
   OpenScannerFuture open_future;
@@ -509,6 +570,217 @@ TEST_F(DocumentScanAPIHandlerTest, CloseScanner_DoubleCloseHandleFails) {
   EXPECT_EQ(close_response2.scanner_handle, handle);
   EXPECT_EQ(close_response2.result,
             api::document_scan::OperationResult::kInvalid);
+}
+
+TEST_F(DocumentScanAPIHandlerTest, StartScan_PermissionDenied) {
+  // There is a check for a valid scanner handle even before the permissions
+  // check, so even though this test will simulate a deny permission, there has
+  // to be a valid scanner.
+  std::string scanner_handle = OpenScannerForExtension(extension_);
+  EXPECT_FALSE(scanner_handle.empty());
+
+  base::AutoReset<std::optional<bool>> testing_scope =
+      StartScanRunner::SetStartScanConfirmationResultForTesting(false);
+  api::document_scan::StartScanOptions options;
+  StartScanFuture future;
+  document_scan_api_handler_->StartScan(
+      /*native_window=*/nullptr, extension_, scanner_handle, std::move(options),
+      future.GetCallback());
+
+  const api::document_scan::StartScanResponse& response = future.Get();
+  EXPECT_EQ(response.result,
+            api::document_scan::OperationResult::kAccessDenied);
+  EXPECT_EQ(response.scanner_handle, scanner_handle);
+  EXPECT_FALSE(response.job.has_value());
+}
+
+TEST_F(DocumentScanAPIHandlerTest, StartScan_PermissionApproved) {
+  std::string scanner_handle = OpenScannerForExtension(extension_);
+  EXPECT_FALSE(scanner_handle.empty());
+
+  base::AutoReset<std::optional<bool>> testing_scope =
+      StartScanRunner::SetStartScanConfirmationResultForTesting(true);
+  api::document_scan::StartScanOptions options;
+  StartScanFuture future;
+  document_scan_api_handler_->StartScan(
+      /*native_window=*/nullptr, extension_, scanner_handle, std::move(options),
+      future.GetCallback());
+
+  const api::document_scan::StartScanResponse& response = future.Get();
+  EXPECT_EQ(response.result, api::document_scan::OperationResult::kSuccess);
+  EXPECT_EQ(response.scanner_handle, scanner_handle);
+  EXPECT_TRUE(response.job.has_value());
+}
+
+TEST_F(DocumentScanAPIHandlerTest,
+       StartScan_PermissionApprovedConfirmationSaved) {
+  std::string scanner_handle = OpenScannerForExtension(extension_);
+  EXPECT_FALSE(scanner_handle.empty());
+
+  base::AutoReset<std::optional<bool>> testing_scope =
+      StartScanRunner::SetStartScanConfirmationResultForTesting(true);
+  api::document_scan::StartScanOptions options;
+  StartScanFuture future;
+  document_scan_api_handler_->StartScan(
+      /*native_window=*/nullptr, extension_, scanner_handle, std::move(options),
+      future.GetCallback());
+
+  const api::document_scan::StartScanResponse& response = future.Get();
+  EXPECT_EQ(response.result, api::document_scan::OperationResult::kSuccess);
+  EXPECT_EQ(response.scanner_handle, scanner_handle);
+  EXPECT_TRUE(response.job.has_value());
+
+  // Set the confirmation result to false.  This shouldn't matter since this
+  // scanner is already approved.
+  base::AutoReset<std::optional<bool>> testing_scope2 =
+      StartScanRunner::SetStartScanConfirmationResultForTesting(false);
+  StartScanFuture future2;
+  document_scan_api_handler_->StartScan(
+      /*native_window=*/nullptr, extension_, scanner_handle, std::move(options),
+      future2.GetCallback());
+
+  const api::document_scan::StartScanResponse& response2 = future2.Get();
+  EXPECT_EQ(response2.result, api::document_scan::OperationResult::kSuccess);
+  EXPECT_EQ(response2.scanner_handle, scanner_handle);
+  EXPECT_TRUE(response2.job.has_value());
+}
+
+TEST_F(DocumentScanAPIHandlerTest, StartScan_ExtensionTrusted) {
+  std::string scanner_handle = OpenScannerForExtension(extension_);
+  EXPECT_FALSE(scanner_handle.empty());
+
+  MarkExtensionTrusted(kExtensionId);
+  // Confirmation will be denied, but it won't matter because the extension is
+  // trusted.
+  base::AutoReset<std::optional<bool>> testing_scope =
+      StartScanRunner::SetStartScanConfirmationResultForTesting(false);
+
+  api::document_scan::StartScanOptions options;
+  StartScanFuture future;
+  document_scan_api_handler_->StartScan(
+      /*native_window=*/nullptr, extension_, scanner_handle, std::move(options),
+      future.GetCallback());
+
+  const api::document_scan::StartScanResponse& response = future.Get();
+  EXPECT_EQ(response.result, api::document_scan::OperationResult::kSuccess);
+  EXPECT_EQ(response.scanner_handle, scanner_handle);
+  EXPECT_TRUE(response.job.has_value());
+}
+
+TEST_F(DocumentScanAPIHandlerTest, StartScan_HandleNotOpen) {
+  // If the scanner handle has not been opened, this will fail.
+  base::AutoReset<std::optional<bool>> testing_scope =
+      StartScanRunner::SetStartScanConfirmationResultForTesting(true);
+  api::document_scan::StartScanOptions options;
+  StartScanFuture future;
+  document_scan_api_handler_->StartScan(
+      /*native_window=*/nullptr, extension_, "scanner-handle",
+      std::move(options), future.GetCallback());
+
+  const api::document_scan::StartScanResponse& response = future.Get();
+  EXPECT_EQ(response.result, api::document_scan::OperationResult::kInvalid);
+  EXPECT_EQ(response.scanner_handle, "scanner-handle");
+  EXPECT_FALSE(response.job.has_value());
+}
+
+TEST_F(DocumentScanAPIHandlerTest, StartScan_HandleNotMine) {
+  MarkExtensionTrusted(kExtensionId);
+
+  std::string scanner_handle = OpenScannerForExtension(extension_);
+  EXPECT_FALSE(scanner_handle.empty());
+
+  // Trying to start a scan using extension2 will fail since that extension is
+  // not authorized to use the scanner handle opened for the first extension.
+  auto extension2 = ExtensionBuilder("extension2")
+                        .SetID("extension2id")
+                        .AddPermission(kExtensionPermissionName)
+                        .Build();
+
+  api::document_scan::StartScanOptions options;
+  StartScanFuture future;
+  document_scan_api_handler_->StartScan(
+      /*native_window=*/nullptr, extension2, scanner_handle, std::move(options),
+      future.GetCallback());
+
+  const api::document_scan::StartScanResponse& response = future.Get();
+  EXPECT_EQ(response.result, api::document_scan::OperationResult::kInvalid);
+  EXPECT_EQ(response.scanner_handle, scanner_handle);
+  EXPECT_FALSE(response.job.has_value());
+}
+
+TEST_F(DocumentScanAPIHandlerTest, CancelScan_InvalidJob) {
+  // Since this job-handle is not valid, an error should get returned.
+  CancelScanFuture future;
+  document_scan_api_handler_->CancelScan(extension_, "job-handle",
+                                         future.GetCallback());
+
+  const api::document_scan::CancelScanResponse& response = future.Get();
+  EXPECT_EQ(response.result, api::document_scan::OperationResult::kInvalid);
+  EXPECT_EQ(response.job, "job-handle");
+}
+
+TEST_F(DocumentScanAPIHandlerTest, CancelScan_ValidJob) {
+  // Start a scan so we can get a valid job handle, and then attempt to cancel
+  // the scan using that job handle.
+  std::string job_handle = StartScanForExtension(extension_);
+  EXPECT_FALSE(job_handle.empty());
+
+  CancelScanFuture cancel_future;
+  document_scan_api_handler_->CancelScan(extension_, job_handle,
+                                         cancel_future.GetCallback());
+
+  const api::document_scan::CancelScanResponse& cancel_response =
+      cancel_future.Get();
+  EXPECT_EQ(cancel_response.result,
+            api::document_scan::OperationResult::kSuccess);
+  EXPECT_EQ(cancel_response.job, job_handle);
+}
+
+TEST_F(DocumentScanAPIHandlerTest, CancelScan_HandleNotMine) {
+  std::string job_handle = StartScanForExtension(extension_);
+  EXPECT_FALSE(job_handle.empty());
+
+  auto extension2 = ExtensionBuilder("extension2")
+                        .SetID("extension2id")
+                        .AddPermission(kExtensionPermissionName)
+                        .Build();
+
+  // Trying to cancel the scan using extension2 will fail since that extension
+  // is not authorized to use the job handle opened for the first extension.
+  CancelScanFuture cancel_future;
+  document_scan_api_handler_->CancelScan(extension2, job_handle,
+                                         cancel_future.GetCallback());
+
+  const api::document_scan::CancelScanResponse& cancel_response =
+      cancel_future.Get();
+  EXPECT_EQ(cancel_response.result,
+            api::document_scan::OperationResult::kInvalid);
+  EXPECT_EQ(cancel_response.job, job_handle);
+}
+
+TEST_F(DocumentScanAPIHandlerTest, CancelScan_GetListMaintainsJob) {
+  // After a `GetScannerList`, the job handles should remain valid.
+  std::string job_handle = StartScanForExtension(extension_);
+  EXPECT_FALSE(job_handle.empty());
+
+  GetScannerListFuture list_future;
+  document_scan_api_handler_->GetScannerList(
+      /*native_window=*/nullptr, extension_, {}, list_future.GetCallback());
+  const api::document_scan::GetScannerListResponse& list_response =
+      list_future.Get();
+  EXPECT_EQ(list_response.result,
+            api::document_scan::OperationResult::kSuccess);
+
+  // This cancel should work even after the get list call.
+  CancelScanFuture cancel_future;
+  document_scan_api_handler_->CancelScan(extension_, job_handle,
+                                         cancel_future.GetCallback());
+
+  const api::document_scan::CancelScanResponse& cancel_response =
+      cancel_future.Get();
+  EXPECT_EQ(cancel_response.result,
+            api::document_scan::OperationResult::kSuccess);
+  EXPECT_EQ(cancel_response.job, job_handle);
 }
 
 }  // namespace

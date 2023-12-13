@@ -46,6 +46,27 @@ struct TypeConverter<extensions::api::document_scan::CloseScannerResponse,
       const crosapi::mojom::CloseScannerResponsePtr& input);
 };
 
+template <>
+struct TypeConverter<crosapi::mojom::StartScanOptionsPtr,
+                     extensions::api::document_scan::StartScanOptions> {
+  static crosapi::mojom::StartScanOptionsPtr Convert(
+      const extensions::api::document_scan::StartScanOptions& input);
+};
+
+template <>
+struct TypeConverter<extensions::api::document_scan::StartScanResponse,
+                     crosapi::mojom::StartPreparedScanResponsePtr> {
+  static extensions::api::document_scan::StartScanResponse Convert(
+      const crosapi::mojom::StartPreparedScanResponsePtr& input);
+};
+
+template <>
+struct TypeConverter<extensions::api::document_scan::CancelScanResponse,
+                     crosapi::mojom::CancelScanResponsePtr> {
+  static extensions::api::document_scan::CancelScanResponse Convert(
+      const crosapi::mojom::CancelScanResponsePtr& input);
+};
+
 // Test wrappers for type conversions that don't need to be done explicitly.
 // This lets them be tested in isolation without fully exposing the
 // TypeConverter instances.

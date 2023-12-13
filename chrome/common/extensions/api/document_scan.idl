@@ -326,6 +326,34 @@ namespace documentScan {
     OperationResult result;
   };
 
+  // Used to specify options for <code>startScan()</code>.
+  [nodoc] dictionary StartScanOptions {
+    // MIME type to return scanned data in.
+    DOMString format;
+  };
+
+  // The response from <code>startScan()</code>.
+  [nodoc] dictionary StartScanResponse {
+    // The same scanner handle that was passed to <code>startScan()</code>.
+    DOMString scannerHandle;
+
+    // The backend's start scan result.
+    OperationResult result;
+
+    // If <code>result</code> is <code>OperationResult.SUCCESS</code>, a handle
+    // that can be used to read scan data or cancel the job.
+    DOMString? job;
+  };
+
+  // The response from <code>cancelScan()</code>.
+  [nodoc] dictionary CancelScanResponse {
+    // The same job handle that was passed to <code>cancelScan()</code>.
+    DOMString job;
+
+    // The backend's cancel scan result.
+    OperationResult result;
+  };
+
   // Callback from the <code>scan</code> method.
   // |result| The results from the scan, if successful.
   // Otherwise will return null and set runtime.lastError.
@@ -345,6 +373,16 @@ namespace documentScan {
   // |response| The response from closing the scanner, if the call was valid.
   // Otherwise will return null and set runtime.lastError.
   [nodoc] callback CloseScannerCallback = void (CloseScannerResponse response);
+
+  // Callback from the <code>startScan</code> method.
+  // |response| The response from starting the scan, if the call was valid.
+  // Otherwise will return null and set runtime.lastError.
+  [nodoc] callback StartScanCallback = void (StartScanResponse response);
+
+  // Callback from the <code>cancelScan</code> method.
+  // |response| The response from canceling the scan, if the call was valid.
+  // Otherwise will return null and set runtime.lastError.
+  [nodoc] callback CancelScanCallback = void (CancelScanResponse response);
 
   interface Functions {
     // Performs a document scan.  On success, the PNG data will be

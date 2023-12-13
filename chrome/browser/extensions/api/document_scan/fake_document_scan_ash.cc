@@ -9,12 +9,21 @@
 #include "base/check.h"
 #include "base/containers/contains.h"
 #include "base/notreached.h"
+#include "base/strings/strcat.h"
 #include "chrome/browser/extensions/api/document_scan/document_scan_test_utils.h"
 
 namespace extensions {
 
 FakeDocumentScanAsh::FakeDocumentScanAsh() = default;
 FakeDocumentScanAsh::~FakeDocumentScanAsh() = default;
+
+FakeDocumentScanAsh::OpenScannerState::OpenScannerState() = default;
+FakeDocumentScanAsh::OpenScannerState::~OpenScannerState() = default;
+
+FakeDocumentScanAsh::OpenScannerState::OpenScannerState(
+    const std::string& client_id,
+    const std::string& connection_string)
+    : client_id(client_id), connection_string(connection_string) {}
 
 void FakeDocumentScanAsh::GetScannerNames(GetScannerNamesCallback callback) {
   std::move(callback).Run(scanner_names_);
@@ -84,10 +93,7 @@ void FakeDocumentScanAsh::OpenScanner(const std::string& client_id,
   crosapi::mojom::OpenScannerResponsePtr response =
       open_responses_[scanner_id].Clone();
   open_scanners_[response->scanner_handle.value_or(scanner_id + "-handle")] =
-      OpenScannerState{
-          .client_id = client_id,
-          .connection_string = scanner_id,
-      };
+      OpenScannerState(client_id, scanner_id);
   std::move(callback).Run(std::move(response));
 }
 
@@ -108,8 +114,20 @@ void FakeDocumentScanAsh::StartPreparedScan(
     const std::string& scanner_handle,
     crosapi::mojom::StartScanOptionsPtr options,
     StartPreparedScanCallback callback) {
-  // TODO(b/299489635): Implement this when adding the extension handler.
-  NOTIMPLEMENTED();
+  if (!base::Contains(open_scanners_, scanner_handle)) {
+    auto response = crosapi::mojom::StartPreparedScanResponse::New();
+    response->scanner_handle = scanner_handle;
+    response->result = crosapi::mojom::ScannerOperationResult::kInvalid;
+    std::move(callback).Run(std::move(response));
+    return;
+  }
+
+  auto response = crosapi::mojom::StartPreparedScanResponse::New();
+  response->scanner_handle = scanner_handle;
+  response->result = crosapi::mojom::ScannerOperationResult::kSuccess;
+  response->job_handle = base::StrCat({scanner_handle, "-job-handle"});
+  open_scanners_.at(scanner_handle).job_handle = response->job_handle;
+  std::move(callback).Run(std::move(response));
 }
 
 void FakeDocumentScanAsh::ReadScanData(const std::string& job_handle,
@@ -134,8 +152,26 @@ void FakeDocumentScanAsh::GetOptionGroups(const std::string& scanner_handle,
 
 void FakeDocumentScanAsh::CancelScan(const std::string& job_handle,
                                      CancelScanCallback callback) {
-  // TODO(b/299489635): Implement this when adding the extension handler.
-  NOTIMPLEMENTED();
+  auto response = crosapi::mojom::CancelScanResponse::New();
+  response->job_handle = job_handle;
+  // Explicitly set this to kAdfJammed instead of kInvalid since kAdfJammed is
+  // not used in the DocumentScanAPIHandler cancel methods.  If this was
+  // kInvalid the tests may not know if the kInvalid was returned from this fake
+  // (in which case, the test may not be testing what it is intended to test) or
+  // was returned from the DocumentScanAPIHandler object (as expected).
+  response->result = crosapi::mojom::ScannerOperationResult::kAdfJammed;
+
+  // Check all of our open scanners.  If any has this job, cancel it and return
+  // a success result.  If not, return a failure result.
+  for (auto& [scanner_handle, state] : open_scanners_) {
+    if (state.job_handle.value_or("") == job_handle) {
+      response->result = crosapi::mojom::ScannerOperationResult::kSuccess;
+      state.job_handle.reset();
+      break;
+    }
+  }
+
+  std::move(callback).Run(std::move(response));
 }
 
 void FakeDocumentScanAsh::SetGetScannerNamesResponse(

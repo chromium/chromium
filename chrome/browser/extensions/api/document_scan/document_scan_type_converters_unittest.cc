@@ -501,5 +501,56 @@ TEST(DocumentScanTypeConvertersTest, CloseScannerResponse_NonEmpty) {
   EXPECT_EQ(output.result, document_scan::OperationResult::kSuccess);
 }
 
+TEST(DocumentScanTypeConvertersTest, StartScanOptions_Empty) {
+  document_scan::StartScanOptions input;
+  auto output = mojom::StartScanOptions::From(input);
+  EXPECT_TRUE(output->format.empty());
+}
+
+TEST(DocumentScanTypeConvertersTest, StartScanOptions_Success) {
+  document_scan::StartScanOptions input;
+  input.format = "format";
+  auto output = mojom::StartScanOptions::From(input);
+  EXPECT_EQ(output->format, "format");
+}
+
+TEST(DocumentScanTypeConvertersTest, StartScanResponse_Empty) {
+  auto input = mojom::StartPreparedScanResponse::New();
+  auto output = input.To<document_scan::StartScanResponse>();
+  EXPECT_EQ(output.result, document_scan::OperationResult::kUnknown);
+  EXPECT_TRUE(output.scanner_handle.empty());
+  EXPECT_FALSE(output.job.has_value());
+}
+
+TEST(DocumentScanTypeConvertersTest, StartScanResponse_Success) {
+  auto input = mojom::StartPreparedScanResponse::New();
+  input->scanner_handle = "scanner-handle";
+  input->result = mojom::ScannerOperationResult::kSuccess;
+  input->job_handle = "job-handle";
+
+  auto output = input.To<document_scan::StartScanResponse>();
+  EXPECT_EQ(output.result, document_scan::OperationResult::kSuccess);
+  EXPECT_EQ(output.scanner_handle, "scanner-handle");
+  ASSERT_TRUE(output.job.has_value());
+  EXPECT_EQ(output.job.value(), "job-handle");
+}
+
+TEST(DocumentScanTypeConvertersTest, CancelScanResponse_Empty) {
+  auto input = mojom::CancelScanResponse::New();
+  auto output = input.To<document_scan::CancelScanResponse>();
+  EXPECT_EQ(output.result, document_scan::OperationResult::kUnknown);
+  EXPECT_TRUE(output.job.empty());
+}
+
+TEST(DocumentScanTypeConvertersTest, CancelScanResponse_Success) {
+  auto input = mojom::CancelScanResponse::New();
+  input->job_handle = "job-handle";
+  input->result = mojom::ScannerOperationResult::kSuccess;
+
+  auto output = input.To<document_scan::CancelScanResponse>();
+  EXPECT_EQ(output.result, document_scan::OperationResult::kSuccess);
+  EXPECT_EQ(output.job, "job-handle");
+}
+
 }  // namespace
 }  // namespace mojo

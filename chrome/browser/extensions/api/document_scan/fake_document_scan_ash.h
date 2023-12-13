@@ -57,8 +57,14 @@ class FakeDocumentScanAsh : public crosapi::mojom::DocumentScan {
 
  private:
   struct OpenScannerState {
+    OpenScannerState();
+    OpenScannerState(const std::string& client_id,
+                     const std::string& connection_string);
+    ~OpenScannerState();
+
     std::string client_id;
     std::string connection_string;
+    std::optional<std::string> job_handle;
   };
 
   std::vector<std::string> scanner_names_;

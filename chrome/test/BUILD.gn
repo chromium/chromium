@@ -3505,7 +3505,10 @@ if (!is_android) {
         "//ppapi/tests/extensions",
       ]
       if (is_chromeos) {
-        sources += [ "../browser/ui/views/extensions/document_scanner_discovery_confirmation_dialog_browsertest.cc" ]
+        sources += [
+          "../browser/ui/views/extensions/document_scanner_discovery_confirmation_dialog_browsertest.cc",
+          "../browser/ui/views/extensions/document_scanner_start_scan_confirmation_dialog_browsertest.cc",
+        ]
       }
       if (is_chromeos_ash) {
         data += [ "//ash/webui/common/resources/cr.js" ]

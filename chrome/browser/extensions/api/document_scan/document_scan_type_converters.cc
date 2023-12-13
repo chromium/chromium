@@ -369,4 +369,36 @@ TypeConverter<extensions::api::document_scan::CloseScannerResponse,
   return output;
 }
 
+crosapi::mojom::StartScanOptionsPtr
+TypeConverter<crosapi::mojom::StartScanOptionsPtr,
+              extensions::api::document_scan::StartScanOptions>::
+    Convert(const extensions::api::document_scan::StartScanOptions& input) {
+  auto output = crosapi::mojom::StartScanOptions::New();
+  output->format = input.format;
+  return output;
+}
+
+extensions::api::document_scan::StartScanResponse
+TypeConverter<extensions::api::document_scan::StartScanResponse,
+              crosapi::mojom::StartPreparedScanResponsePtr>::
+    Convert(const crosapi::mojom::StartPreparedScanResponsePtr& input) {
+  document_scan::StartScanResponse output;
+  output.scanner_handle = input->scanner_handle;
+  output.result = ConvertTo<document_scan::OperationResult>(input->result);
+  if (input->job_handle.has_value()) {
+    output.job = input->job_handle.value();
+  }
+  return output;
+}
+
+extensions::api::document_scan::CancelScanResponse
+TypeConverter<extensions::api::document_scan::CancelScanResponse,
+              crosapi::mojom::CancelScanResponsePtr>::
+    Convert(const crosapi::mojom::CancelScanResponsePtr& input) {
+  document_scan::CancelScanResponse output;
+  output.job = input->job_handle;
+  output.result = ConvertTo<document_scan::OperationResult>(input->result);
+  return output;
+}
+
 }  // namespace mojo

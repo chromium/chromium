@@ -1019,6 +1019,8 @@ static_library("extensions") {
       "api/document_scan/document_scan_type_converters.h",
       "api/document_scan/scanner_discovery_runner.cc",
       "api/document_scan/scanner_discovery_runner.h",
+      "api/document_scan/start_scan_runner.cc",
+      "api/document_scan/start_scan_runner.h",
       "api/enterprise_device_attributes/enterprise_device_attributes_api.cc",
       "api/enterprise_device_attributes/enterprise_device_attributes_api.h",
       "api/enterprise_networking_attributes/enterprise_networking_attributes_api.cc",

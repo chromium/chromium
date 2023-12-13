@@ -6560,6 +6560,18 @@ Keep your key file in a safe place. You will need it to create new versions of y
       <message name="IDS_EXTENSIONS_DOCUMENT_SCAN_API_DISCOVERY_REQUEST_DENY" desc="Text for the deny button on the document scanner discovery confirmation dialog">
         Deny
       </message>
+      <message name="IDS_EXTENSIONS_DOCUMENT_SCAN_API_START_SCAN_REQUEST_BUBBLE_TITLE" desc="Title of a bubble with start scan confirmation dialog triggered by chrome.documentScan API">
+        Start scan
+      </message>
+      <message name="IDS_EXTENSIONS_DOCUMENT_SCAN_API_START_SCAN_REQUEST_BUBBLE_HEADING" desc="Heading of a bubble with start scan confirmation dialog triggered by chrome.documentScan API">
+        "<ph name="EXTENSION_NAME">$1<ex>Scanner Forwarder</ex></ph>" wants to scan from "<ph name="SCANNER_NAME">$2<ex>Fancy Scanner</ex></ph>".
+      </message>
+      <message name="IDS_EXTENSIONS_DOCUMENT_SCAN_API_START_SCAN_REQUEST_ALLOW" desc="Text for the allow button on the document scanner start scan confirmation dialog">
+        Allow
+      </message>
+      <message name="IDS_EXTENSIONS_DOCUMENT_SCAN_API_START_SCAN_REQUEST_DENY" desc="Text for the deny button on the document scanner start scan confirmation dialog">
+        Deny
+      </message>
 
       <message name="IDS_EXTENSIONS_NTP_CONTROLLED_FIRST_LINE" desc="Text displayed as the first line in the NTP bubble when an extension has changed the new tab page.">
         An extension has changed what page is shown when you open a new tab.
