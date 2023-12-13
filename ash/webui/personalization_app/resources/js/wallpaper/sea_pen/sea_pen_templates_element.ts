@@ -12,8 +12,8 @@ import '../../../css/wallpaper.css.js';
 import {assert} from 'chrome://resources/js/assert.js';
 
 import {PersonalizationRouterElement} from '../../personalization_router_element.js';
-import {getSampleSeaPenTemplates, SeaPenTemplate} from '../utils.js';
 
+import {getSampleSeaPenTemplates, SeaPenTemplate} from './constants.js';
 import {WithSeaPenStore} from './sea_pen_store.js';
 import {getTemplate} from './sea_pen_templates_element.html.js';
 

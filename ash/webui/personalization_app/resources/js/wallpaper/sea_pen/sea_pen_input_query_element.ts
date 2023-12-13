@@ -19,8 +19,8 @@ import {assert} from 'chrome://resources/js/assert.js';
 
 import {MAXIMUM_SEARCH_WALLPAPER_TEXT_BYTES, SeaPenQuery} from '../../../sea_pen.mojom-webui.js';
 import {Paths, PersonalizationRouterElement} from '../../personalization_router_element.js';
-import {QUERY} from '../utils.js';
 
+import {QUERY} from './constants.js';
 import {searchSeaPenThumbnails} from './sea_pen_controller.js';
 import {getTemplate} from './sea_pen_input_query_element.html.js';
 import {getSeaPenProvider} from './sea_pen_interface_provider.js';

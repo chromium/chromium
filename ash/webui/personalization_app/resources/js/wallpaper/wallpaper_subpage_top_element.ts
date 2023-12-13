@@ -7,11 +7,11 @@
  * subpage.
  */
 
-import {isSeaPenEnabled, isSeaPenTextInputEnabled} from '../load_time_booleans.js';
 import {Paths} from '../personalization_router_element.js';
 import {WithPersonalizationStore} from '../personalization_store.js';
 
-import {QUERY} from './utils.js';
+import {QUERY} from './sea_pen/constants.js';
+import {isSeaPenEnabled, isSeaPenTextInputEnabled} from './sea_pen/load_time_booleans.js';
 import {getTemplate} from './wallpaper_subpage_top_element.html.js';
 
 export class WallpaperSubpageTopElement extends WithPersonalizationStore {

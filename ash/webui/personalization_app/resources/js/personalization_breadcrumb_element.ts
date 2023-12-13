@@ -27,7 +27,8 @@ import {getTemplate} from './personalization_breadcrumb_element.html.js';
 import {isPathValid, Paths, PersonalizationRouterElement} from './personalization_router_element.js';
 import {WithPersonalizationStore} from './personalization_store.js';
 import {inBetween, isNonEmptyArray} from './utils.js';
-import {findAlbumById, getSampleSeaPenTemplates, QUERY, SeaPenTemplate} from './wallpaper/utils.js';
+import {getSampleSeaPenTemplates, QUERY, SeaPenTemplate} from './wallpaper/sea_pen/constants.js';
+import {findAlbumById} from './wallpaper/utils.js';
 
 /** Event interface for dom-repeat. */
 interface RepeaterEvent extends CustomEvent {

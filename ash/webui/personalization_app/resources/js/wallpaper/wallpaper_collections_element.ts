@@ -22,12 +22,13 @@ import {IronListElement} from 'chrome://resources/polymer/v3_0/iron-list/iron-li
 import {afterNextRender} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {GooglePhotosEnablementState, WallpaperCollection, WallpaperImage} from '../../personalization_app.mojom-webui.js';
-import {isGooglePhotosIntegrationEnabled, isPersonalizationJellyEnabled, isSeaPenEnabled, isTimeOfDayWallpaperEnabled} from '../load_time_booleans.js';
+import {isGooglePhotosIntegrationEnabled, isPersonalizationJellyEnabled, isTimeOfDayWallpaperEnabled} from '../load_time_booleans.js';
 import {Paths, PersonalizationRouterElement} from '../personalization_router_element.js';
 import {WithPersonalizationStore} from '../personalization_store.js';
 import {getCountText, isImageDataUrl, isNonEmptyArray, isSelectionEvent} from '../utils.js';
 
 import {DefaultImageSymbol, kDefaultImageSymbol, kMaximumLocalImagePreviews} from './constants.js';
+import {isSeaPenEnabled} from './sea_pen/load_time_booleans.js';
 import {getLoadingPlaceholderAnimationDelay, getLoadingPlaceholders, getPathOrSymbol} from './utils.js';
 import {getTemplate} from './wallpaper_collections_element.html.js';
 import {fetchGooglePhotosEnabled, fetchLocalData, getDefaultImageThumbnail, initializeBackdropData} from './wallpaper_controller.js';

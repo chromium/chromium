@@ -14,8 +14,8 @@ import {assert} from 'chrome://resources/js/assert.js';
 import {SeaPenQuery, SeaPenTemplateChip, SeaPenTemplateId, SeaPenTemplateOption} from '../../../sea_pen.mojom-webui.js';
 import {Paths, PersonalizationRouterElement} from '../../personalization_router_element.js';
 import {isNonEmptyArray} from '../../utils.js';
-import {getSampleSeaPenTemplates, parseTemplateText, SeaPenOption, SeaPenTemplate} from '../utils.js';
 
+import {getSampleSeaPenTemplates, parseTemplateText, SeaPenOption, SeaPenTemplate} from './constants.js';
 import {searchSeaPenThumbnails} from './sea_pen_controller.js';
 import {getSeaPenProvider} from './sea_pen_interface_provider.js';
 import {WithSeaPenStore} from './sea_pen_store.js';
