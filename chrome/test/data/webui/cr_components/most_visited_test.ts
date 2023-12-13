@@ -1067,6 +1067,10 @@ function createDragAndDropSuite(singleRow: boolean, reflowOnOverflow: boolean) {
     }));
     await flushTasks();
     const reorderCalled = handler.whenCalled('reorderMostVisitedTile');
+    document.dispatchEvent(new DragEvent('drop', {
+      clientX: secondRect.x + 1,
+      clientY: secondRect.y + 1,
+    }));
     document.dispatchEvent(new DragEvent('dragend', {
       clientX: secondRect.x + 1,
       clientY: secondRect.y + 1,
@@ -1096,6 +1100,10 @@ function createDragAndDropSuite(singleRow: boolean, reflowOnOverflow: boolean) {
     }));
     await flushTasks();
     const reorderCalled = handler.whenCalled('reorderMostVisitedTile');
+    document.dispatchEvent(new DragEvent('drop', {
+      clientX: firstRect.x + 1,
+      clientY: firstRect.y + 1,
+    }));
     document.dispatchEvent(new DragEvent('dragend', {
       clientX: firstRect.x + 1,
       clientY: firstRect.y + 1,
@@ -1122,6 +1130,10 @@ function createDragAndDropSuite(singleRow: boolean, reflowOnOverflow: boolean) {
     first.dispatchEvent(new DragEvent('dragstart', {
       clientX: firstRect.x + firstRect.width / 2,
       clientY: firstRect.y + firstRect.height / 2,
+    }));
+    document.dispatchEvent(new DragEvent('drop', {
+      clientX: secondRect.x + 1,
+      clientY: secondRect.y + 1,
     }));
     document.dispatchEvent(new DragEvent('dragend', {
       clientX: secondRect.x + 1,
