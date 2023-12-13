@@ -198,10 +198,6 @@ extern const base::FeatureParam<int> kReferrerChainEventMaximumAgeSeconds;
 // The maximum number of navigation events we keep in memory.
 extern const base::FeatureParam<int> kReferrerChainEventMaximumCount;
 
-// Controls whether download Client Safe Browsing Reports are sent under the
-// new triggers
-BASE_DECLARE_FEATURE(kSafeBrowsingCsbrrNewDownloadTrigger);
-
 // Controls whether asynchronous real-time check is enabled. When enabled, the
 // navigation can be committed before real-time Safe Browsing check is
 // completed.

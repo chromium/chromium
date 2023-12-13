@@ -551,8 +551,7 @@ bool SafeBrowsingService::SendDownloadReport(
   if (!token.empty()) {
     report->set_token(token);
   }
-  if (IsExtendedReportingEnabled(*profile->GetPrefs()) &&
-      base::FeatureList::IsEnabled(kSafeBrowsingCsbrrNewDownloadTrigger)) {
+  if (IsExtendedReportingEnabled(*profile->GetPrefs())) {
     PopulateDownloadWarningActions(download, report.get());
   }
   return ChromePingManagerFactory::GetForBrowserContext(profile)

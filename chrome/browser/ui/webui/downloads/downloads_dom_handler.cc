@@ -242,12 +242,9 @@ void DownloadsDOMHandler::DiscardDangerous(const std::string& id) {
     // 2. Download is not canceled or completed, and
     // 3. Download URL is not empty, and
     // 4. User is not in incognito mode, and
-    // 5. The new CSBRR trigger feature is enabled.
     if (download->IsDangerous() && !download->IsDone() &&
         !download->GetURL().is_empty() &&
-        !GetMainNotifierManager()->GetBrowserContext()->IsOffTheRecord() &&
-        base::FeatureList::IsEnabled(
-            safe_browsing::kSafeBrowsingCsbrrNewDownloadTrigger)) {
+        !GetMainNotifierManager()->GetBrowserContext()->IsOffTheRecord()) {
       safe_browsing::SafeBrowsingService* sb_service =
           g_browser_process->safe_browsing_service();
       if (sb_service) {

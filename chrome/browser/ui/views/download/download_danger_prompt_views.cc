@@ -293,11 +293,8 @@ void DownloadDangerPromptViews::RunDone(Action action) {
             show_context_
                 ? ClientSafeBrowsingReportRequest::DANGEROUS_DOWNLOAD_BY_API
                 : ClientSafeBrowsingReportRequest::DANGEROUS_DOWNLOAD_RECOVERY;
-        // Do not send cancel report under the new trigger condition since it's
-        // not a terminal action.
-        if (!base::FeatureList::IsEnabled(
-                safe_browsing::kSafeBrowsingCsbrrNewDownloadTrigger) ||
-            accept) {
+        // Do not send cancel report since it's not a terminal action.
+        if (accept) {
           SendSafeBrowsingDownloadReport(report_type, accept, download_);
         }
       }

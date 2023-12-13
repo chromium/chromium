@@ -221,10 +221,6 @@ constexpr base::FeatureParam<int> kReferrerChainEventMaximumCount{
     &kReferrerChainParameters, "MaximumEventCount",
     /*default_value=*/100};
 
-BASE_FEATURE(kSafeBrowsingCsbrrNewDownloadTrigger,
-             "SafeBrowsingCsbrrNewDownloadTrigger",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 BASE_FEATURE(kSafeBrowsingAsyncRealTimeCheck,
              "SafeBrowsingAsyncRealTimeCheck",
              base::FEATURE_DISABLED_BY_DEFAULT);
@@ -385,7 +381,6 @@ constexpr struct {
     {&kMmapSafeBrowsingDatabase, true},
     {&kNestedArchives, true},
     {&kRedInterstitialFacelift, false},
-    {&kSafeBrowsingCsbrrNewDownloadTrigger, true},
     {&kSafeBrowsingAsyncRealTimeCheck, true},
     {&kSafeBrowsingLookupMechanismExperiment, true},
     {&kSafeBrowsingRemoveCookiesInAuthRequests, true},

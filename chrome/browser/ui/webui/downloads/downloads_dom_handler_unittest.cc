@@ -18,7 +18,6 @@
 #include "chrome/test/base/testing_profile.h"
 #include "components/download/public/common/mock_download_item.h"
 #include "components/prefs/pref_service.h"
-#include "components/safe_browsing/core/common/features.h"
 #include "components/safe_browsing/core/common/proto/csd.pb.h"
 #include "content/public/test/browser_task_environment.h"
 #include "content/public/test/mock_download_manager.h"
@@ -144,10 +143,7 @@ class DownloadsDOMHandlerWithFakeSafeBrowsingTest
  public:
   DownloadsDOMHandlerWithFakeSafeBrowsingTest()
       : test_safe_browsing_factory_(
-            new safe_browsing::TestSafeBrowsingServiceFactory()) {
-    feature_list_.InitAndDisableFeature(
-        safe_browsing::kSafeBrowsingCsbrrNewDownloadTrigger);
-  }
+            new safe_browsing::TestSafeBrowsingServiceFactory()) {}
 
   void SetUp() override {
     browser_process_ = TestingBrowserProcess::GetGlobal();
@@ -192,42 +188,9 @@ class DownloadsDOMHandlerWithFakeSafeBrowsingTest
   scoped_refptr<safe_browsing::SafeBrowsingService> sb_service_;
   GURL download_url_ = GURL(kTestDangerousDownloadUrl);
   testing::StrictMock<download::MockDownloadItem> dangerous_download_;
-
- private:
-  base::test::ScopedFeatureList feature_list_;
 };
 
 TEST_F(DownloadsDOMHandlerWithFakeSafeBrowsingTest, DiscardDangerous) {
-  SetUpDangerousDownload();
-
-  TestDownloadsDOMHandler handler(page_.BindAndGetRemote(), manager(),
-                                  web_ui());
-
-  // Dangerous items should be removed on DiscardDangerous.
-  EXPECT_CALL(dangerous_download_, Remove());
-  handler.DiscardDangerous("1");
-
-  // Verify that dangerous download report is not sent because the feature flag
-  // is disabled.
-  EXPECT_TRUE(test_safe_browsing_factory_->test_safe_browsing_service()
-                  ->serialized_download_report()
-                  .empty());
-}
-
-class DownloadsDOMHandlerWithFakeSafeBrowsingTestNewCsbrrTrigger
-    : public DownloadsDOMHandlerWithFakeSafeBrowsingTest {
- public:
-  DownloadsDOMHandlerWithFakeSafeBrowsingTestNewCsbrrTrigger() {
-    feature_list_.InitAndEnableFeature(
-        safe_browsing::kSafeBrowsingCsbrrNewDownloadTrigger);
-  }
-
- private:
-  base::test::ScopedFeatureList feature_list_;
-};
-
-TEST_F(DownloadsDOMHandlerWithFakeSafeBrowsingTestNewCsbrrTrigger,
-       DiscardDangerous) {
   SetUpDangerousDownload();
 
   TestDownloadsDOMHandler handler(page_.BindAndGetRemote(), manager(),
@@ -253,8 +216,7 @@ TEST_F(DownloadsDOMHandlerWithFakeSafeBrowsingTestNewCsbrrTrigger,
                 ->serialized_download_report());
 }
 
-TEST_F(DownloadsDOMHandlerWithFakeSafeBrowsingTestNewCsbrrTrigger,
-       DiscardDangerous_IsDone) {
+TEST_F(DownloadsDOMHandlerWithFakeSafeBrowsingTest, DiscardDangerous_IsDone) {
   SetUpDangerousDownload();
   EXPECT_CALL(dangerous_download_, IsDone())
       .WillRepeatedly(testing::Return(true));
@@ -272,8 +234,7 @@ TEST_F(DownloadsDOMHandlerWithFakeSafeBrowsingTestNewCsbrrTrigger,
                   .empty());
 }
 
-TEST_F(DownloadsDOMHandlerWithFakeSafeBrowsingTestNewCsbrrTrigger,
-       DiscardDangerous_EmptyURL) {
+TEST_F(DownloadsDOMHandlerWithFakeSafeBrowsingTest, DiscardDangerous_EmptyURL) {
   SetUpDangerousDownload();
   GURL empty_url = GURL();
   EXPECT_CALL(dangerous_download_, GetURL())
@@ -291,7 +252,7 @@ TEST_F(DownloadsDOMHandlerWithFakeSafeBrowsingTestNewCsbrrTrigger,
                   .empty());
 }
 
-TEST_F(DownloadsDOMHandlerWithFakeSafeBrowsingTestNewCsbrrTrigger,
+TEST_F(DownloadsDOMHandlerWithFakeSafeBrowsingTest,
        DiscardDangerous_Incognito) {
   SetUpDangerousDownload();
   TestingProfile::Builder otr_profile_builder;

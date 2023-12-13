@@ -185,12 +185,6 @@ void MaybeSendDownloadReport(const GURL& url,
                              bool did_proceed,
                              Profile* profile,
                              download::DownloadItem* download) {
-  // Dangerous download delete report is gated by the new trigger flag.
-  if (!base::FeatureList::IsEnabled(
-          safe_browsing::kSafeBrowsingCsbrrNewDownloadTrigger) &&
-      !did_proceed) {
-    return;
-  }
   // Only sends dangerous download report if :
   // 1. FULL_SAFE_BROWSING is enabled, and
   // 2. Download verdict is one of the dangerous types, and
