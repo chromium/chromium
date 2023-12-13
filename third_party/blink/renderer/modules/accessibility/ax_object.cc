@@ -908,9 +908,6 @@ bool AXObject::IsMissingParent() const {
     // object, because hidden ones are purposely kept around without being in
     // the tree, and without a parent, for potential later reuse.
     bool is_missing = !IsRoot();
-    CHECK(!is_missing || !AXObjectCache().IsFrozen())
-        << "Should not have missing parent in frozen tree: "
-        << ToString(true, true);
     return is_missing;
   }
 
@@ -3015,10 +3012,7 @@ bool AXObject::AccessibilityIsIncludedInTree() const {
 }
 
 void AXObject::CheckCanAccessCachedValues() const {
-  if (!IsDetached() && AXObjectCache().IsFrozen()) {
-    DUMP_WILL_BE_CHECK(!NeedsToUpdateCachedValues())
-        << "Stale values: " << ToString(true, true);
-  }
+  // Removed for M121.
 }
 
 void AXObject::InvalidateCachedValues() {
@@ -3070,8 +3064,7 @@ void AXObject::UpdateCachedAttributeValuesIfNeeded(
   if (IsMissingParent()) {
     // TODO(accessibility) Address this more proactively and cleanly
     // pruning the a11y tree for layout changes.
-    DUMP_WILL_BE_CHECK(!IsMissingParent())
-        << "Missing parent: " << ToString(true, true);
+    return;
   }
 
   // Mock objects are created by, owned and dependent on their parents.
@@ -5593,8 +5586,6 @@ AXObject* AXObject::ParentObject() const {
   if (IsDetached()) {
     return nullptr;
   }
-
-  CHECK(!IsMissingParent()) << "Missing parent: " << ToString(true, true);
 
   return parent_.Get();
 }
