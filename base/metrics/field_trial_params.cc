@@ -225,8 +225,16 @@ base::TimeDelta GetFieldTrialParamByFeatureAsTimeDelta(
 }
 
 std::string FeatureParam<std::string>::Get() const {
-  const std::string value = GetFieldTrialParamValueByFeature(*feature, name);
-  return value.empty() ? default_value : value;
+  // We don't use `GetFieldTrialParamValueByFeature()` to handle empty values in
+  // the map.
+  FieldTrialParams params;
+  if (GetFieldTrialParamsByFeature(*feature, &params)) {
+    auto it = params.find(name);
+    if (it != params.end()) {
+      return it->second;
+    }
+  }
+  return default_value;
 }
 
 double FeatureParam<double>::Get() const {

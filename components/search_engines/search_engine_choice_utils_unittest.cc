@@ -627,11 +627,14 @@ TEST_P(SearchEngineChoiceUtilsParamTest, Reprompt) {
                                          "FUTURE_VERSION",
                                          future_version.GetString());
 
+  std::string feature_param_value = param_dict.empty() ? "{}" : param_dict;
+
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitAndEnableFeatureWithParameters(
       switches::kSearchEngineChoiceTrigger,
-      {{switches::kSearchEngineChoiceTriggerRepromptParams.name, param_dict}});
-  ASSERT_EQ(param_dict.empty() ? "{}" : param_dict,
+      {{switches::kSearchEngineChoiceTriggerRepromptParams.name,
+        feature_param_value}});
+  ASSERT_EQ(feature_param_value,
             switches::kSearchEngineChoiceTriggerRepromptParams.Get());
 
   // Initialize the preference with some previous choice.
