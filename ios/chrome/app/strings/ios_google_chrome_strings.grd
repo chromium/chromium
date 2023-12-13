@@ -313,7 +313,7 @@ Only someone with your passphrase can read your encrypted data. The passphrase i
         Sign out of Chrome?
       </message>
       <message name="IDS_IOS_FACE_ID_USAGE_DESCRIPTION" desc="Specifies the reason for using the device's Face ID capabilities.">
-        Chrome uses Face ID to ensure authorized access to your passwords.
+        Chrome keeps your sensitive data secure with Face ID.
       </message>
       <message name="IDS_IOS_FIRST_RUN_DEFAULT_BROWSER_SCREEN_SUBTITLE" desc="Subtitle of the Default Browser screen on First run page explaining the default browser feature's utility. [iOS only]">
         You can now use Chrome anytime you tap links in messages, documents, and other apps.
