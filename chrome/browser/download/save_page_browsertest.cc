@@ -1732,6 +1732,7 @@ IN_PROC_BROWSER_TEST_F(SavePageBrowserTest, SaveHTMLWithDlp) {
   auto request = std::get<0>(add_file_cb.Take());
   EXPECT_EQ(1, request.add_file_requests().size());
   EXPECT_EQ(full_file_name.value(), request.add_file_requests(0).file_path());
+  EXPECT_EQ(request.add_file_requests(0).source_url(), url.spec());
 
   base::ScopedAllowBlockingForTesting allow_blocking;
   EXPECT_TRUE(base::PathExists(full_file_name));
@@ -1760,6 +1761,7 @@ IN_PROC_BROWSER_TEST_F(SavePageBrowserTest, SaveMHTMLWithDlp) {
   auto request = std::get<0>(add_file_cb.Take());
   EXPECT_EQ(1, request.add_file_requests().size());
   EXPECT_EQ(full_file_name.value(), request.add_file_requests(0).file_path());
+  EXPECT_EQ(request.add_file_requests(0).source_url(), url.spec());
 
   base::ScopedAllowBlockingForTesting allow_blocking;
   EXPECT_TRUE(base::PathExists(full_file_name));
