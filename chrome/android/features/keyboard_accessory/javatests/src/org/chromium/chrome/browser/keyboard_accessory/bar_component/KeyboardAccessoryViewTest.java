@@ -110,12 +110,12 @@ import java.util.concurrent.atomic.AtomicReference;
 @RunWith(ChromeJUnit4ClassRunner.class)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
 @SuppressWarnings("DoNotMock") // Mocks GURL
-public class KeyboardAccessoryModernViewTest {
+public class KeyboardAccessoryViewTest {
     private static final String CUSTOM_ICON_URL = "https://www.example.com/image.png";
     private static final Bitmap TEST_CARD_ART_IMAGE =
             Bitmap.createBitmap(100, 200, Bitmap.Config.ARGB_8888);
     private PropertyModel mModel;
-    private BlockingQueue<KeyboardAccessoryModernView> mKeyboardAccessoryView;
+    private BlockingQueue<KeyboardAccessoryView> mKeyboardAccessoryView;
 
     @Rule
     public ChromeTabbedActivityTestRule mActivityTestRule = new ChromeTabbedActivityTestRule();
@@ -236,10 +236,10 @@ public class KeyboardAccessoryModernViewTest {
                                     .findViewById(R.id.keyboard_accessory_stub);
 
                     mKeyboardAccessoryView = new ArrayBlockingQueue<>(1);
-                    ViewProvider<KeyboardAccessoryModernView> provider =
+                    ViewProvider<KeyboardAccessoryView> provider =
                             AsyncViewProvider.of(viewStub, R.id.keyboard_accessory);
                     LazyConstructionPropertyMcp.create(
-                            mModel, VISIBLE, provider, KeyboardAccessoryModernViewBinder::bind);
+                            mModel, VISIBLE, provider, KeyboardAccessoryViewBinder::bind);
                     provider.whenLoaded(mKeyboardAccessoryView::add);
                 });
     }
@@ -255,7 +255,7 @@ public class KeyboardAccessoryModernViewTest {
                 () -> {
                     mModel.set(VISIBLE, true);
                 });
-        KeyboardAccessoryModernView view = mKeyboardAccessoryView.take();
+        KeyboardAccessoryView view = mKeyboardAccessoryView.take();
         assertEquals(view.getVisibility(), View.VISIBLE);
 
         // After hiding the view, the view should still exist but be invisible.
@@ -391,7 +391,7 @@ public class KeyboardAccessoryModernViewTest {
                     mModel.set(VISIBLE, true);
                     mModel.get(BAR_ITEMS).set(createAutofillChipAndTab("John", null));
                 });
-        KeyboardAccessoryModernView view = mKeyboardAccessoryView.take();
+        KeyboardAccessoryView view = mKeyboardAccessoryView.take();
         CriteriaHelper.pollUiThread(
                 () -> view.mBarItemsView.isShown() && view.mBarItemsView.getChildAt(1) != null);
         CriteriaHelper.pollUiThread(viewsAreRightAligned(view, view.mBarItemsView.getChildAt(1)));
@@ -592,7 +592,7 @@ public class KeyboardAccessoryModernViewTest {
                     mModel.set(VISIBLE, true);
                     mModel.get(BAR_ITEMS).set(createAutofillChipAndTab("John", null));
                 });
-        KeyboardAccessoryModernView view = mKeyboardAccessoryView.take();
+        KeyboardAccessoryView view = mKeyboardAccessoryView.take();
         CriteriaHelper.pollUiThread(() -> view.mBarItemsView.getChildCount() > 0);
         assertThat(obfuscatedChildAt.get(), is(-1));
 
@@ -641,7 +641,7 @@ public class KeyboardAccessoryModernViewTest {
                     mModel.set(VISIBLE, true);
                     mModel.get(BAR_ITEMS).set(new BarItem[] {customIconItem, createSheetOpener()});
                 });
-        KeyboardAccessoryModernView view = mKeyboardAccessoryView.take();
+        KeyboardAccessoryView view = mKeyboardAccessoryView.take();
 
         CriteriaHelper.pollUiThread(() -> view.mBarItemsView.getChildCount() > 0);
         CriteriaHelper.pollUiThread(
@@ -677,7 +677,7 @@ public class KeyboardAccessoryModernViewTest {
                     mModel.set(VISIBLE, true);
                     mModel.get(BAR_ITEMS).set(new BarItem[] {customIconItem, createSheetOpener()});
                 });
-        KeyboardAccessoryModernView view = mKeyboardAccessoryView.take();
+        KeyboardAccessoryView view = mKeyboardAccessoryView.take();
 
         CriteriaHelper.pollUiThread(() -> view.mBarItemsView.getChildCount() > 0);
         CriteriaHelper.pollUiThread(
@@ -705,7 +705,7 @@ public class KeyboardAccessoryModernViewTest {
                     mModel.get(BAR_ITEMS)
                             .set(new BarItem[] {itemWithoutCustomIconUrl, createSheetOpener()});
                 });
-        KeyboardAccessoryModernView view = mKeyboardAccessoryView.take();
+        KeyboardAccessoryView view = mKeyboardAccessoryView.take();
 
         CriteriaHelper.pollUiThread(() -> view.mBarItemsView.getChildCount() > 0);
         CriteriaHelper.pollUiThread(

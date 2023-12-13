@@ -70,7 +70,7 @@ public class KeyboardAccessoryControllerTest {
     @Mock private ListObservable.ListObserver<Void> mMockActionListObserver;
     @Mock private KeyboardAccessoryCoordinator.BarVisibilityDelegate mMockBarVisibilityDelegate;
     @Mock private AccessorySheetCoordinator.SheetVisibilityDelegate mMockSheetVisibilityDelegate;
-    @Mock private KeyboardAccessoryModernView mMockView;
+    @Mock private KeyboardAccessoryView mMockView;
     @Mock private KeyboardAccessoryButtonGroupCoordinator mMockButtonGroup;
     @Mock private KeyboardAccessoryCoordinator.TabSwitchingDelegate mMockTabSwitchingDelegate;
     @Mock private AutofillDelegate mMockAutofillDelegate;
@@ -560,7 +560,7 @@ public class KeyboardAccessoryControllerTest {
     }
 
     @Test
-    public void testModelChangesUpdatesTheContentDescriptionInModernView() {
+    public void testModelChangesUpdatesTheContentDescription() {
         PropertyProvider<AutofillSuggestion[]> autofillSuggestionProvider =
                 new PropertyProvider<>(AUTOFILL_SUGGESTION);
 

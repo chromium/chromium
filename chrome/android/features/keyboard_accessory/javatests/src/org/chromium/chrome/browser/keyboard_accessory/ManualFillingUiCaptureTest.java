@@ -55,7 +55,7 @@ public class ManualFillingUiCaptureTest {
 
     @Test
     @MediumTest
-    @Feature({"KeyboardAccessoryModern", "LTR", "UiCatalogue"})
+    @Feature({"KeyboardAccessory", "LTR", "UiCatalogue"})
     public void testCaptureKeyboardAccessoryV2WithPasswords()
             throws InterruptedException, TimeoutException {
         mHelper.loadTestPage(false);
@@ -87,7 +87,7 @@ public class ManualFillingUiCaptureTest {
 
     @Test
     @MediumTest
-    @Feature({"KeyboardAccessoryModern", "RTL", "UiCatalogue"})
+    @Feature({"KeyboardAccessory", "RTL", "UiCatalogue"})
     public void testCaptureKeyboardAccessoryV2WithPasswordsRTL()
             throws InterruptedException, TimeoutException {
         mHelper.loadTestPage(true);

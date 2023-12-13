@@ -34,7 +34,7 @@ import org.chromium.ui.widget.ViewRectProvider;
  * The Accessory sitting above the keyboard and below the content area. It is used for autofill
  * suggestions and manual entry points assisting the user in filling forms.
  */
-class KeyboardAccessoryModernView extends LinearLayout {
+class KeyboardAccessoryView extends LinearLayout {
     private static final int ARRIVAL_ANIMATION_DURATION_MS = 300;
     private static final float ARRIVAL_ANIMATION_BOUNCE_LENGTH_DIP = 200f;
     private static final float ARRIVAL_ANIMATION_TENSION = 1f;
@@ -153,7 +153,7 @@ class KeyboardAccessoryModernView extends LinearLayout {
     }
 
     /** Constructor for inflating from XML. */
-    public KeyboardAccessoryModernView(Context context, AttributeSet attrs) {
+    public KeyboardAccessoryView(Context context, AttributeSet attrs) {
         super(context, attrs);
     }
 

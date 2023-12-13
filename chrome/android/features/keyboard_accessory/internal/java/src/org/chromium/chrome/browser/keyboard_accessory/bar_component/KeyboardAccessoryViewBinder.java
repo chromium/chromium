@@ -47,7 +47,7 @@ import org.chromium.ui.widget.RectProvider;
  * Observes {@link KeyboardAccessoryProperties} changes (like a newly available tab) and modifies
  * the view accordingly.
  */
-class KeyboardAccessoryModernViewBinder {
+class KeyboardAccessoryViewBinder {
     static BarItemViewHolder create(ViewGroup parent, @BarItem.Type int viewType) {
         switch (viewType) {
             case BarItem.Type.SUGGESTION:
@@ -55,7 +55,7 @@ class KeyboardAccessoryModernViewBinder {
             case BarItem.Type.TAB_LAYOUT:
                 return new SheetOpenerViewHolder(parent);
             case BarItem.Type.ACTION_BUTTON:
-                return new BarItemTextViewHolder(parent, R.layout.keyboard_accessory_action_modern);
+                return new BarItemTextViewHolder(parent, R.layout.keyboard_accessory_action);
             case BarItem.Type.ACTION_CHIP:
                 return new BarItemActionChipViewHolder(parent);
         }
@@ -241,11 +241,10 @@ class KeyboardAccessoryModernViewBinder {
      * Tries to bind the given property to the given view by using the value in the given model.
      *
      * @param model A {@link PropertyModel}.
-     * @param view A {@link KeyboardAccessoryModernView}.
+     * @param view A {@link KeyboardAccessoryView}.
      * @param propertyKey A {@link PropertyKey}.
      */
-    static void bind(
-            PropertyModel model, KeyboardAccessoryModernView view, PropertyKey propertyKey) {
+    static void bind(PropertyModel model, KeyboardAccessoryView view, PropertyKey propertyKey) {
         if (propertyKey == BAR_ITEMS) {
             view.setBarItemsAdapter(
                     KeyboardAccessoryCoordinator.createBarItemsAdapter(model.get(BAR_ITEMS)));

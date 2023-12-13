@@ -15,8 +15,8 @@ import androidx.viewpager.widget.ViewPager;
 import org.chromium.base.TraceEvent;
 import org.chromium.chrome.browser.keyboard_accessory.AccessoryTabType;
 import org.chromium.chrome.browser.keyboard_accessory.R;
-import org.chromium.chrome.browser.keyboard_accessory.bar_component.KeyboardAccessoryModernViewBinder.BarItemViewHolder;
 import org.chromium.chrome.browser.keyboard_accessory.bar_component.KeyboardAccessoryProperties.BarItem;
+import org.chromium.chrome.browser.keyboard_accessory.bar_component.KeyboardAccessoryViewBinder.BarItemViewHolder;
 import org.chromium.chrome.browser.keyboard_accessory.button_group_component.KeyboardAccessoryButtonGroupCoordinator;
 import org.chromium.chrome.browser.keyboard_accessory.data.KeyboardAccessoryData;
 import org.chromium.chrome.browser.keyboard_accessory.data.Provider;
@@ -40,7 +40,7 @@ public class KeyboardAccessoryCoordinator {
     private final KeyboardAccessoryMediator mMediator;
     private final KeyboardAccessoryButtonGroupCoordinator mButtonGroup;
     private final PropertyModel mModel;
-    private KeyboardAccessoryModernView mView;
+    private KeyboardAccessoryView mView;
 
     /**
      * The interface to notify consumers about keyboard accessories visibility. E.g: the animation
@@ -133,7 +133,7 @@ public class KeyboardAccessoryCoordinator {
             KeyboardAccessoryButtonGroupCoordinator buttonGroup,
             BarVisibilityDelegate barVisibilityDelegate,
             AccessorySheetCoordinator.SheetVisibilityDelegate sheetVisibilityDelegate,
-            ViewProvider<KeyboardAccessoryModernView> viewProvider) {
+            ViewProvider<KeyboardAccessoryView> viewProvider) {
         mButtonGroup = buttonGroup;
         mModel = KeyboardAccessoryProperties.defaultModelBuilder().build();
         mMediator =
@@ -147,7 +147,7 @@ public class KeyboardAccessoryCoordinator {
 
         mButtonGroup.setTabObserver(mMediator);
         LazyConstructionPropertyMcp.create(
-                mModel, VISIBLE, viewProvider, KeyboardAccessoryModernViewBinder::bind);
+                mModel, VISIBLE, viewProvider, KeyboardAccessoryViewBinder::bind);
         KeyboardAccessoryMetricsRecorder.registerKeyboardAccessoryModelMetricsObserver(mModel);
     }
 
@@ -165,7 +165,7 @@ public class KeyboardAccessoryCoordinator {
                         BarItem::getViewType,
                         BarItemViewHolder::bind,
                         BarItemViewHolder::recycle),
-                KeyboardAccessoryModernViewBinder::create);
+                KeyboardAccessoryViewBinder::create);
     }
 
     public void closeActiveTab() {
@@ -234,7 +234,7 @@ public class KeyboardAccessoryCoordinator {
         // TODO(fhorschig): Consider allow LazyConstructionPropertyMcp to propagate updates once the
         // view exists. Currently it doesn't, so we need this ugly explicit binding.
         if (mView != null) {
-            KeyboardAccessoryModernViewBinder.bind(mModel, mView, SKIP_CLOSING_ANIMATION);
+            KeyboardAccessoryViewBinder.bind(mModel, mView, SKIP_CLOSING_ANIMATION);
         }
     }
 

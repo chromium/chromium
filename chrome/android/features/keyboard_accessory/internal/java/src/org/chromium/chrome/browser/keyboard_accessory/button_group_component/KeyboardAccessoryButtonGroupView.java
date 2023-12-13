@@ -78,7 +78,7 @@ public class KeyboardAccessoryButtonGroupView extends LinearLayout {
     @Override
     protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
         super.onMeasure(widthMeasureSpec, heightMeasureSpec);
-        // The parent, which is KeyboardAccessoryModernView's recycler view may measure
+        // The parent, which is KeyboardAccessoryView's recycler view may measure
         // StickyLastItemDecoration offsets before the buttons are added. Notify the parent to
         // recalculate the offset during each measurement.
         // TODO(crbug.com/1424789): Find a better alternative.
