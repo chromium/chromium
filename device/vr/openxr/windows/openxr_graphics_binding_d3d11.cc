@@ -183,7 +183,8 @@ void OpenXrGraphicsBindingD3D11::CreateSharedImages(
         gfx::Size(texture2d_desc.Width, texture2d_desc.Height);
     const uint32_t shared_image_usage = gpu::SHARED_IMAGE_USAGE_SCANOUT |
                                         gpu::SHARED_IMAGE_USAGE_DISPLAY_READ |
-                                        gpu::SHARED_IMAGE_USAGE_GLES2;
+                                        gpu::SHARED_IMAGE_USAGE_GLES2_READ |
+                                        gpu::SHARED_IMAGE_USAGE_GLES2_WRITE;
 
     gpu::MailboxHolder& mailbox_holder = swap_chain_info.mailbox_holder;
     auto client_shared_image = sii->CreateSharedImage(
