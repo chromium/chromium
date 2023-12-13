@@ -424,7 +424,7 @@ void AppManagementPageHandler::SetPinned(const std::string& app_id,
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   shelf_delegate_.SetPinned(app_id, pinned);
 #else
-  NOTREACHED();
+  NOTIMPLEMENTED();
 #endif
 }
 
@@ -440,7 +440,7 @@ void AppManagementPageHandler::SetResizeLocked(const std::string& app_id,
   apps::AppServiceProxyFactory::GetForProfile(profile_)->SetResizeLocked(
       app_id, locked);
 #else
-  NOTREACHED();
+  NOTIMPLEMENTED();
 #endif
 }
 
@@ -523,17 +523,17 @@ void AppManagementPageHandler::SetWindowMode(const std::string& app_id,
   // On ChromeOS, apps should always open in a new window,
   // hence window mode changes are not allowed.
 #if BUILDFLAG(IS_CHROMEOS)
-  NOTREACHED();
+  NOTIMPLEMENTED();
 #else
   auto* provider = web_app::WebAppProvider::GetForLocalAppsUnchecked(profile_);
 
   // Changing window mode is not allowed for isolated web apps.
   if (provider->registrar_unsafe().IsIsolated(app_id)) {
-    NOTREACHED();
-  } else {
-    apps::AppServiceProxyFactory::GetForProfile(profile_)->SetWindowMode(
-        app_id, window_mode);
+    return;
   }
+
+  apps::AppServiceProxyFactory::GetForProfile(profile_)->SetWindowMode(
+      app_id, window_mode);
 #endif
 }
 
@@ -541,7 +541,7 @@ void AppManagementPageHandler::SetRunOnOsLoginMode(
     const std::string& app_id,
     apps::RunOnOsLoginMode run_on_os_login_mode) {
 #if BUILDFLAG(IS_CHROMEOS)
-  NOTREACHED();
+  NOTIMPLEMENTED();
 #else
   apps::AppServiceProxyFactory::GetForProfile(profile_)->SetRunOnOsLoginMode(
       app_id, run_on_os_login_mode);
@@ -807,7 +807,7 @@ void AppManagementPageHandler::SetAppLocale(const std::string& app_id,
   apps::AppServiceProxyFactory::GetForProfile(profile_)->SetAppLocale(
       app_id, locale_tag);
 #else
-  NOTREACHED();
+  NOTIMPLEMENTED();
 #endif
 }
 
