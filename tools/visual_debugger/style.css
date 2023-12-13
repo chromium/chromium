@@ -98,3 +98,28 @@ button#live {
   --mdc-theme-on-primary:black;
   opacity: 0.8;
 }
+
+.row {
+  display: flex;
+  justify-content: space-between;
+  padding-bottom: 10px;
+}
+
+#filter-container {
+  max-width: 450px;
+  min-width: 350px;
+  font-family: Roboto;
+  font-size: 10pt;
+  background-color: white;
+  padding: 10px;
+}
+
+#saveFilter {
+  margin: 20px 10px;
+  margin-right: 0px;
+}
+
+#opacityVal {
+  display: inline-block;
+  width: 30px;
+}

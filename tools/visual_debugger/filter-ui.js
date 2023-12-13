@@ -13,28 +13,6 @@ class FilterUI extends HTMLElement {
 
   connectedCallback() {
     this.innerHTML = `
-<style>
-.row {
-  display: flex;
-  justify-content: space-between;
-  padding-bottom: 10px;
-}
-
-#filter-container {
-  max-width: 400px;
-  min-width: 350px;
-  font-family: Roboto;
-  font-size: 10pt;
-  background-color: white;
-  padding: 10px;
-}
-
-#saveFilter {
-  margin: 20px 10px;
-  margin-right: 0px;
-}
-
-</style>
 <div id='filter-container'>
   <div class='sectionTitle' id='filter-ui-title'>Add Filter</div>
   <div class='section'>
@@ -72,21 +50,28 @@ class FilterUI extends HTMLElement {
       <div class='section'>
         <div>
           <form id="actionform">
-            <input type='radio' id='drawfilter' name='dowhat' value='drawfilter'/>Override
-            <input type='color' id='drawcolor' name='drawcolor' value='#000000'/>
-            opacity <input type='range' name='fillalpha' min='0' max='100'
-             step='10' value='50' list='alphastep'/>
+            <input type='radio' id='drawfilter' name='dowhat'
+              value='drawfilter'/>
+            <label for="drawfilter">Override</label>
+            <input type='color' id='drawcolor' name='drawcolor'
+              value='#000000'/>
+            Opacity: <span id="opacityVal"></span>
+            <input type='range' id="fillAlpha" name='fillalpha'
+              min='0' max='100' step='10' value='10' list='alphastep'/>
             <datalist id='alphastep'>
               <option>0</option><option>10</option><option>20</option>
               <option>30</option><option>40</option><option>50</option>
               <option>60</option> <option>70</option><option>80</option>
               <option>90</option><option>100</option>
             </datalist>
-            <input checked type='radio' name='dowhat' value='drawcaller'/>
-            Draw with caller color and opacity
             <br/>
-            <input type='radio' name='dowhat' value='skip'
-            title='Used as a discard filter'/>Do not draw
+            <input checked type='radio' id="drawCaller" name='dowhat'
+              value='drawcaller'/>
+            <label for="drawCaller">Draw with caller color and opacity</label>
+            <br/>
+            <input type='radio' id="drawSkip" name='dowhat' value='skip' />
+            <label for="drawSkip"
+              title='Used as a discard filter'/>Do not draw</label>
             <br/>
           </form>
         </div>
@@ -100,9 +85,22 @@ class FilterUI extends HTMLElement {
 
     // Event listener to check if custom color selected
     // to automatically select override button
-    document.getElementById('drawcolor').addEventListener("change",function(){
-      document.getElementById('drawfilter').checked = true;
+    let drawFilter = document.getElementById('drawfilter');
+    document.getElementById('drawcolor').addEventListener("input", function() {
+      drawFilter.checked = true;
     });
+
+    let fillAlpha = document.getElementById('fillAlpha');
+    fillAlpha.addEventListener('input', () => {
+      this.updateOpacityText();
+      drawFilter.checked = true;
+    });
+    this.updateOpacityText();
+  }
+
+  updateOpacityText() {
+    let opacityVal =  document.getElementById('opacityVal');
+    opacityVal.innerText = `${fillAlpha.value}%`;
   }
 
   setUpButtons_() {
@@ -368,6 +366,7 @@ function showEditFilterPopup(item) {
     filter.drawColor ? 'drawfilter' : 'drawcaller';
   actionform.drawcolor.value = filter.drawColor;
   actionform.fillalpha.value = filter.fillAlpha;
+  filterUi.updateOpacityText();
 }
 
 function deleteFilter(item) {
@@ -482,4 +481,3 @@ const FilterUIDefault = {
                  instance.selector_, instance.action_))
   }
 };
-
