@@ -4,6 +4,7 @@
 
 #include "gpu/command_buffer/service/shared_context_state.h"
 
+#include "base/debug/dump_without_crashing.h"
 #include "base/immediate_crash.h"
 #include "base/observer_list.h"
 #include "base/strings/stringprintf.h"
@@ -105,23 +106,31 @@ int32_t GetDawnMaxTextureSize(gpu::DawnContextProvider* context_provider) {
 
 namespace gpu {
 
-void SharedContextState::compileError(const char* shader, const char* errors) {
+void SharedContextState::compileError(const char* shader,
+                                      const char* errors,
+                                      bool shaderWasCached) {
   if (!context_lost()) {
-    LOG(ERROR) << "Skia shader compilation error\n"
+    LOG(ERROR) << "Skia shader compilation error (was cached = "
+               << shaderWasCached << ")" << "\n"
                << "------------------------\n"
                << shader << "\nErrors:\n"
                << errors;
 
     static crash_reporter::CrashKeyString<2048> error_key("skia-compile-error");
     error_key.Set(errors);
-    // https://crbug.com/1442633 Sometimes we would fail to compile a cached
-    // GLSL shader because of GL driver change. Increase shader cache shm
-    // count and crash the GPU process so that the browser process would clear
-    // the cache.
-    GpuProcessShmCount::ScopedIncrement increment(
-        use_shader_cache_shm_count_.get());
 
-    base::ImmediateCrash();
+    if (shaderWasCached) {
+      // https://crbug.com/1442633 Sometimes we would fail to compile a cached
+      // GLSL shader because of GL driver change. Increase shader cache shm
+      // count and crash the GPU process so that the browser process would clear
+      // the cache.
+      GpuProcessShmCount::ScopedIncrement increment(
+          use_shader_cache_shm_count_.get());
+
+      base::ImmediateCrash();
+    } else {
+      base::debug::DumpWithoutCrashing();
+    }
   }
 }
 
