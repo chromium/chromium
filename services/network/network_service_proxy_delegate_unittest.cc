@@ -701,7 +701,8 @@ TEST_F(NetworkServiceProxyDelegateTest,
 
   auto ipp_config_cache = std::make_unique<MockIpProtectionConfigCache>();
   ipp_config_cache->SetNextAuthToken(MakeAuthToken("Bearer: a-token"));
-  ipp_config_cache->SetProxyList({{"ippro-1"}, {"ippro-2"}});
+  ipp_config_cache->SetProxyList(
+      {{"ippro-1", "ippro-2"}, {"ippro-2", "ippro-2"}});
   delegate->SetIpProtectionConfigCache(std::move(ipp_config_cache));
 
   net::ProxyInfo result;
@@ -717,16 +718,17 @@ TEST_F(NetworkServiceProxyDelegateTest,
   expected_proxy_list.AddProxyServer(
       net::PacResultElementToProxyServer("PROXY bar"));
 
-  auto ip_protection_proxy_chain_1 =
-      net::ProxyChain(net::PacResultElementToProxyServer("HTTPS ippro-1"))
-          .ForIpProtection();
-  expected_proxy_list.AddProxyChain(std::move(ip_protection_proxy_chain_1));
+  const net::ProxyServer kProxyServer1{net::ProxyServer::SCHEME_HTTPS,
+                                       net::HostPortPair("ippro-1", 443)};
+  const net::ProxyServer kProxyServer2{net::ProxyServer::SCHEME_HTTPS,
+                                       net::HostPortPair("ippro-2", 443)};
+  const net::ProxyChain kIpProtectionChain1 =
+      net::ProxyChain({kProxyServer1, kProxyServer2}).ForIpProtection();
+  const net::ProxyChain kIpProtectionChain2 =
+      net::ProxyChain({kProxyServer2, kProxyServer2}).ForIpProtection();
 
-  auto ip_protection_proxy_chain_2 =
-      net::ProxyChain(net::PacResultElementToProxyServer("HTTPS ippro-2"))
-          .ForIpProtection();
-  expected_proxy_list.AddProxyChain(std::move(ip_protection_proxy_chain_2));
-
+  expected_proxy_list.AddProxyChain(std::move(kIpProtectionChain1));
+  expected_proxy_list.AddProxyChain(std::move(kIpProtectionChain2));
   expected_proxy_list.AddProxyServer(net::ProxyServer::Direct());
   expected_proxy_list.AddProxyServer(
       net::PacResultElementToProxyServer("PROXY weird"));

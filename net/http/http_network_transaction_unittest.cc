@@ -19870,6 +19870,7 @@ TEST_P(HttpNetworkTransactionTest, NoIPConnectionPoolingForProxyAndHostSpdy) {
                         NetLogWithSource::Make(NetLogSourceType::NONE));
   EXPECT_THAT(rv, IsError(ERR_IO_PENDING));
 
+  spdy_data.RunUntilPaused();
   base::RunLoop().RunUntilIdle();
   spdy_data.Resume();
 
@@ -20148,6 +20149,7 @@ TEST_P(HttpNetworkTransactionTest, NoIPConnectionPoolingForTwoProxiesSpdy) {
                         NetLogWithSource::Make(NetLogSourceType::NONE));
   EXPECT_THAT(rv, IsError(ERR_IO_PENDING));
 
+  spdy_data.RunUntilPaused();
   base::RunLoop().RunUntilIdle();
   spdy_data.Resume();
 
@@ -20226,6 +20228,7 @@ TEST_P(HttpNetworkTransactionTest, NoIPConnectionPoolingForTwoProxiesSpdy) {
                     NetLogWithSource::Make(NetLogSourceType::NONE));
   EXPECT_THAT(rv, IsError(ERR_IO_PENDING));
 
+  spdy_data2.RunUntilPaused();
   base::RunLoop().RunUntilIdle();
   spdy_data2.Resume();
 
