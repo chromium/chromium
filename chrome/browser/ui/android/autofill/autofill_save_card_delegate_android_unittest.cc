@@ -20,19 +20,31 @@ class TestDeviceLockBridge : public DeviceLockBridge {
   TestDeviceLockBridge(const TestDeviceLockBridge&) = delete;
   TestDeviceLockBridge& operator=(const TestDeviceLockBridge&) = delete;
 
-  void LaunchDeviceLockUiIfNeededBeforeRunningCallback(
+  bool ShouldShowDeviceLockUi() override { return should_show_device_lock_ui_; }
+
+  bool RequiresDeviceLock() override { return should_show_device_lock_ui_; }
+
+  void LaunchDeviceLockUiBeforeRunningCallback(
       ui::WindowAndroid* window_android,
-      DeviceLockRequirementMetCallback callback) override {
+      DeviceLockConfirmedCallback callback) override {
     callback_ = std::move(callback);
+    device_lock_ui_shown_count_++;
   }
 
-  void SimulateFinishedCheckingDeviceLockRequirements(
-      bool are_device_lock_requirements_met) {
-    std::move(callback_).Run(are_device_lock_requirements_met);
+  void SimulateDeviceLockComplete(bool is_device_lock_set) {
+    std::move(callback_).Run(is_device_lock_set);
   }
+
+  void SetShouldShowDeviceLockUi(bool should_show_device_lock_ui) {
+    should_show_device_lock_ui_ = should_show_device_lock_ui;
+  }
+
+  int device_lock_ui_shown_count() { return device_lock_ui_shown_count_; }
 
  private:
-  DeviceLockRequirementMetCallback callback_;
+  bool should_show_device_lock_ui_ = false;
+  int device_lock_ui_shown_count_ = 0;
+  DeviceLockConfirmedCallback callback_;
 };
 
 }  // namespace
@@ -76,35 +88,76 @@ class AutofillSaveCardDelegateAndroidTest
   }
 };
 
-// Tests that card is saved if device lock requirements are met.
-TEST_F(AutofillSaveCardDelegateAndroidTest, DeviceLockRequirementsMet) {
-  EXPECT_TRUE(save_card_decisions_.empty());
+// Tests that card is saved if device lock UI is shown and device lock is set.
+TEST_F(AutofillSaveCardDelegateAndroidTest, DeviceLockUiShown_DeviceLockSet) {
+  // Simulate user clicking save card button and not having previously set up a
+  // device lock.
+  test_bridge_->SetShouldShowDeviceLockUi(true);
   delegate_->OnUiAccepted();
 
-  // Simulate finishing checking the device lock requirements and the device
-  // lock requirements are met (ex device lock is required and user set a device
-  // lock).
-  test_bridge_->SimulateFinishedCheckingDeviceLockRequirements(
-      /*are_device_lock_requirements_met=*/true);
+  // Verify that device lock UI is shown but card is not saved yet.
+  EXPECT_EQ(1, test_bridge_->device_lock_ui_shown_count());
+  EXPECT_TRUE(save_card_decisions_.empty());
 
+  // Verify that card is saved after user sets a device lock.
+  test_bridge_->SimulateDeviceLockComplete(true);
   EXPECT_THAT(save_card_decisions_,
               testing::ElementsAre(
                   AutofillClient::SaveCardOfferUserDecision::kAccepted));
 }
 
-// Tests that card is not saved if device lock requirements are not met.
-TEST_F(AutofillSaveCardDelegateAndroidTest, DeviceLockRequirementsNotMet) {
-  EXPECT_TRUE(save_card_decisions_.empty());
+// Tests that card is not saved if device lock UI is shown but device lock is
+// not set.
+TEST_F(AutofillSaveCardDelegateAndroidTest,
+       DeviceLockUiShown_DeviceLockNotSet) {
+  // Simulate user clicking save card button and not having previously set up a
+  // device lock.
+  test_bridge_->SetShouldShowDeviceLockUi(true);
   delegate_->OnUiAccepted();
 
-  // Simulate finishing checking the device lock requirements and the device
-  // lock requirements are not met (ex device lock is required and user didn't
-  // set a device lock).
-  test_bridge_->SimulateFinishedCheckingDeviceLockRequirements(
-      /*are_device_lock_requirements_met=*/false);
+  // Verify that device lock UI is shown but card is not saved yet.
+  EXPECT_EQ(1, test_bridge_->device_lock_ui_shown_count());
+  EXPECT_TRUE(save_card_decisions_.empty());
+
+  // Verify that card not saved because user didn't set a device lock.
+  test_bridge_->SimulateDeviceLockComplete(false);
   EXPECT_THAT(save_card_decisions_,
               testing::ElementsAre(
                   AutofillClient::SaveCardOfferUserDecision::kIgnored));
+}
+
+// Tests that card is not saved if device lock UI is not shown because
+// WindowAndroid is null.
+TEST_F(AutofillSaveCardDelegateAndroidTest,
+       DeviceLockUiNotShown_WindowAndroidIsNull) {
+  // Set WindowAndroid to null.
+  window_.reset(nullptr);
+
+  // Simulate user clicking save card button and getting prompted to set a
+  // device lock.
+  test_bridge_->SetShouldShowDeviceLockUi(true);
+  delegate_->OnUiAccepted();
+
+  // Verify that device lock UI is not shown and card is not saved.
+  EXPECT_EQ(0, test_bridge_->device_lock_ui_shown_count());
+  EXPECT_THAT(save_card_decisions_,
+              testing::ElementsAre(
+                  AutofillClient::SaveCardOfferUserDecision::kIgnored));
+}
+
+// Tests that card is saved right away if device lock is already set.
+TEST_F(AutofillSaveCardDelegateAndroidTest,
+       DeviceLockUiNotShown_DeviceLockAlreadySet) {
+  // Simulate user clicking save card button and having previously set up a
+  // device lock.
+  test_bridge_->SetShouldShowDeviceLockUi(false);
+  delegate_->OnUiAccepted();
+
+  // Verify that device lock UI is not shown and card is saved.
+  EXPECT_EQ(0, test_bridge_->device_lock_ui_shown_count());
+  EXPECT_THAT(save_card_decisions_,
+              testing::ElementsAre(
+                  AutofillClient::SaveCardOfferUserDecision::kAccepted));
 }
 
 }  // namespace autofill
