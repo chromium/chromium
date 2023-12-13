@@ -48,7 +48,6 @@ template("generate_expired_histograms_array") {
       "//tools/metrics/histograms/metadata/ash_user_education/enums.xml",
       "//tools/metrics/histograms/metadata/ash_user_education/histograms.xml",
       "//tools/metrics/histograms/metadata/assistant/histograms.xml",
-      "//tools/metrics/histograms/metadata/auth/histograms.xml",
       "//tools/metrics/histograms/metadata/auto/histograms.xml",
       "//tools/metrics/histograms/metadata/autofill/histograms.xml",
       "//tools/metrics/histograms/metadata/background/histograms.xml",

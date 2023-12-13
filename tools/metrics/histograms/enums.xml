@@ -1826,67 +1826,6 @@ Unknown properties are collapsed to zero. -->
   <int value="5" label="Server-Parsed"/>
 </enum>
 
-<enum name="AuthPolicyErrorType">
-  <int value="0" label="Success"/>
-  <int value="1" label="Unspecified error"/>
-  <int value="2" label="Unspecified D-Bus error"/>
-  <int value="3" label="Badly formatted user principal name"/>
-  <int value="4" label="Auth failed because of bad user name"/>
-  <int value="5" label="Auth failed because of bad password"/>
-  <int value="6" label="Auth failed because of expired password"/>
-  <int value="7" label="Auth failed because of bad realm or network"/>
-  <int value="8" label="kinit exited with unspecified error"/>
-  <int value="9" label="net exited with unspecified error"/>
-  <int value="10" label="smbclient exited with unspecified error"/>
-  <int value="11" label="authpolicy_parser exited with unknown error"/>
-  <int value="12" label="Parsing GPOs failed"/>
-  <int value="13" label="GPO data is bad"/>
-  <int value="14" label="Some local IO operation failed"/>
-  <int value="15" label="Machine is not joined to AD domain yet"/>
-  <int value="16" label="User is not logged in yet"/>
-  <int value="17" label="Failed to send policy to Session Manager"/>
-  <int value="18"
-      label="User doesn't have the right to join machines to the domain"/>
-  <int value="19" label="General network problem"/>
-  <int value="20" label="Machine name contains restricted characters"/>
-  <int value="21" label="Machine name too long"/>
-  <int value="22" label="User joined maximum number of machines to the domain"/>
-  <int value="23"
-      label="kinit or smbclient failed to contact Key Distribution Center"/>
-  <int value="24" label="Kerberos credentials cache not found"/>
-  <int value="25" label="Kerberos ticket expired while renewing credentials"/>
-  <int value="26" label="klist exited with unspecified error"/>
-  <int value="27" label="kinit failed because of bad machine name."/>
-  <int value="28" label="New password was rejected during password change."/>
-  <int value="29"
-      label="Could not store device policy since install attributes are not
-             locked yet; stored policy in cache instead."/>
-  <int value="30"
-      label="Domain join failed because the computer organizational unit does
-             not exist."/>
-  <int value="31"
-      label="Domain join failed because the computer organizational unit is
-             invalid."/>
-  <int value="32"
-      label="Setting the computer organizational unit failed with
-             insufficient permissions."/>
-  <int value="33"
-      label="Setting the computer organizational unit failed with unspecified
-             error."/>
-  <int value="34"
-      label="Fetching user policy failed because device policy was
-             unavailable."/>
-  <int value="35"
-      label="Domain join failed because the device is already joined."/>
-  <int value="36"
-      label="Domain join failed because KDC does not support encryption
-             types."/>
-  <int value="37" label="kpasswd exited with unspecified error."/>
-  <int value="38"
-      label="Setting computer organizational unit failed with constraint
-             violation"/>
-</enum>
-
 <enum name="AutoclickActionType">
   <int value="0" label="Left click"/>
   <int value="1" label="Right click"/>
