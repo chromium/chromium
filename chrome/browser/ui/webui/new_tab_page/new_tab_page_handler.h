@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_UI_WEBUI_NEW_TAB_PAGE_NEW_TAB_PAGE_HANDLER_H_
 
 #include <string>
+#include <string_view>
 #include <unordered_map>
 #include <utility>
 #include <vector>
@@ -118,6 +119,7 @@ class NewTabPageHandler : public new_tab_page::mojom::PageHandler,
   void UpdateDisabledModules() override;
   void OnModulesLoadedWithData(
       const std::vector<std::string>& module_ids) override;
+  void OnModuleUsed(const std::string& module_id) override;
   void GetModulesIdNames(GetModulesIdNamesCallback callback) override;
   void SetModulesOrder(const std::vector<std::string>& module_ids) override;
   void GetModulesOrder(GetModulesOrderCallback callback) override;
@@ -148,7 +150,6 @@ class NewTabPageHandler : public new_tab_page::mojom::PageHandler,
                       const std::string& doodle_id,
                       const absl::optional<std::string>& share_id) override;
   void OnPromoLinkClicked() override;
-  void OnModulesUsed() override;
 
  private:
   // ui::NativeThemeObserver:
@@ -198,7 +199,21 @@ class NewTabPageHandler : public new_tab_page::mojom::PageHandler,
   bool IsCustomLinksEnabled() const;
   bool IsShortcutsVisible() const;
   void NotifyCustomizeChromeSidePanelVisibilityChanged(bool is_open);
+  void MaybeLaunchInteractionSurvey(std::string_view interaction,
+                                    const std::string& module_id,
+                                    int delay_time_ms = 0);
   void MaybeShowWebstoreToast();
+  void IncrementDictPrefKeyCount(const std::string& pref_name,
+                                 const std::string& key);
+
+  // Returns a HaTS trigger id associated with the given combination of user
+  // interaction and module id if one exists, or nullptr otherwise to indicate
+  // that there is no configured survey trigger id for such combination. The
+  // valid interaction names are defined in `kModuleInteractionNames`. The valid
+  // module id strings are listed in `ntp::MakeModuleIdNames`.
+  const std::string& GetSurveyTriggerIdForModuleAndInteraction(
+      std::string_view interaction,
+      const std::string& module_id);
 
   ChooseLocalCustomBackgroundCallback choose_local_custom_background_callback_;
   raw_ptr<NtpBackgroundService> ntp_background_service_;
@@ -235,6 +250,7 @@ class NewTabPageHandler : public new_tab_page::mojom::PageHandler,
   base::ScopedObservation<PromoService, PromoServiceObserver>
       promo_service_observation_{this};
   absl::optional<base::TimeTicks> promo_load_start_time_;
+  base::Value::Dict interaction_module_id_trigger_dict_;
 
   // These are located at the end of the list of member variables to ensure the
   // WebUI page is disconnected before other members are destroyed.

@@ -396,8 +396,14 @@ BASE_FEATURE(kNtpTabResumptionModule,
              "NtpTabResumptionModule",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+const char kNtpModuleIgnoredCriteriaThreshold[] =
+    "NtpModuleIgnoredCriteriaThreshold";
+const char kNtpModuleIgnoredHaTSDelayTimeParam[] =
+    "NtpModuleIgnoredHaTSDelayTimeParam";
 const char kNtpModulesEligibleForHappinessTrackingSurveyParam[] =
     "NtpModulesEligibleForHappinessTrackingSurveyParam";
+const char kNtpModulesInteractionBasedSurveyEligibleIdsParam[] =
+    "NtpModulesInteractionBasedSurveyEligibleIdsParam";
 const char kNtpModulesLoadTimeoutMillisecondsParam[] =
     "NtpModulesLoadTimeoutMillisecondsParam";
 const char kNtpModulesLoadedWithOtherModulesMaxInstanceCountParam[] =

@@ -2,15 +2,19 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+
+#include <array>
 #include <string>
 #include <utility>
 #include <vector>
 
+#include "base/json/json_writer.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/raw_ptr_exclusion.h"
 #include "base/memory/raw_ref.h"
 #include "base/memory/ref_counted_memory.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/strings/string_number_conversions.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/mock_callback.h"
 #include "base/test/scoped_feature_list.h"
@@ -252,6 +256,15 @@ std::unique_ptr<TestingProfile> MakeTestingProfile(
       profile.get(),
       base::BindRepeating(&TemplateURLServiceFactory::BuildInstanceFor));
   return profile;
+}
+
+int GetDictPrefKeyCount(Profile* profile,
+                        const std::string& pref_name,
+                        const std::string& key) {
+  const base::Value::Dict& counts_dict =
+      profile->GetPrefs()->GetDict(pref_name);
+  std::optional<int> count = counts_dict.FindInt(key);
+  return count.has_value() ? count.value() : 0;
 }
 
 }  // namespace
@@ -990,6 +1003,12 @@ TEST_F(NewTabPageHandlerTest, SurveyLaunchedEligibleModulesCriteria) {
       .Times(1);
   const std::vector<std::string> module_ids = {"recipe_tasks", "cart"};
   handler_->OnModulesLoadedWithData(module_ids);
+
+  for (const auto& module_id : module_ids) {
+    EXPECT_EQ(
+        1, GetDictPrefKeyCount(profile_.get(),
+                               prefs::kNtpModulesLoadedCountDict, module_id));
+  }
 }
 
 TEST_F(NewTabPageHandlerTest, SurveyLaunchSkippedEligibleModulesCriteria) {
@@ -1007,6 +1026,12 @@ TEST_F(NewTabPageHandlerTest, SurveyLaunchSkippedEligibleModulesCriteria) {
       .Times(0);
   const std::vector<std::string> module_ids = {"recipe_tasks"};
   handler_->OnModulesLoadedWithData(module_ids);
+
+  for (const auto& module_id : module_ids) {
+    EXPECT_EQ(
+        1, GetDictPrefKeyCount(profile_.get(),
+                               prefs::kNtpModulesLoadedCountDict, module_id));
+  }
 }
 
 TEST_F(NewTabPageHandlerTest, UpdateNtpModulesFreVisibility) {
@@ -1235,7 +1260,7 @@ TEST_F(NewTabPageHandlerTest,
   mock_page_.FlushForTesting();
 }
 
-TEST_F(NewTabPageHandlerTest, OnModulesUsedRecordFeatureUsageAndClosePromo) {
+TEST_F(NewTabPageHandlerTest, OnModuleUsedRecordFeatureUsageAndClosePromo) {
   EXPECT_CALL(
       *mock_feature_promo_helper_,
       RecordFeatureUsage(feature_engagement::events::kDesktopNTPModuleUsed,
@@ -1243,7 +1268,7 @@ TEST_F(NewTabPageHandlerTest, OnModulesUsedRecordFeatureUsageAndClosePromo) {
       .Times(1);
   EXPECT_CALL(*mock_feature_promo_helper_, CloseFeaturePromo).Times(1);
 
-  handler_->OnModulesUsed();
+  handler_->OnModuleUsed("module_id");
 }
 
 TEST_F(NewTabPageHandlerTest, ShowWebstoreToast) {
@@ -1258,4 +1283,128 @@ TEST_F(NewTabPageHandlerTest, DoNotShowWebstoreToastOnCountExceeded) {
 
   EXPECT_CALL(mock_page_, ShowWebstoreToast).Times(0);
   mock_page_.FlushForTesting();
+}
+
+class NewTabPageHandlerHaTSTest : public NewTabPageHandlerTest {
+ public:
+  static constexpr char kSampleModuleId[] = "sample_module_id";
+  static constexpr char kSampleTriggerId[] = "sample_trigger_id";
+  static constexpr int kSampleDelayTimeMs = 15000;
+  static constexpr int kSampleIgnoreCriteriaThreshold = 20;
+
+  NewTabPageHandlerHaTSTest() {
+    auto interaction_module_trigger_ids_dict = base::Value::Dict();
+    const auto kInteractionNames =
+        std::array<std::string, 4>{"disable", "dismiss", "ignore", "use"};
+    for (const auto& interaction_name : kInteractionNames) {
+      interaction_module_trigger_ids_dict.Set(
+          interaction_name,
+          base::Value::Dict().Set(kSampleModuleId, kSampleTriggerId));
+    }
+
+    base::test::ScopedFeatureList features;
+    feature_list_.InitWithFeaturesAndParameters(
+        {
+            {features::kHappinessTrackingSurveysForDesktopNtpModules,
+             {{ntp_features::kNtpModulesInteractionBasedSurveyEligibleIdsParam,
+               base::WriteJson(interaction_module_trigger_ids_dict).value()},
+              {ntp_features::kNtpModuleIgnoredHaTSDelayTimeParam,
+               base::NumberToString(kSampleDelayTimeMs)},
+              {ntp_features::kNtpModuleIgnoredCriteriaThreshold,
+               base::NumberToString(kSampleIgnoreCriteriaThreshold)}}},
+        },
+        {});
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+TEST_F(NewTabPageHandlerHaTSTest, ModuleInteractionTriggersHaTS) {
+  const auto& kSampleModuleId = NewTabPageHandlerHaTSTest::kSampleModuleId;
+  const size_t kInteractionNamesCount = 3;
+  const auto kInteractionNames =
+      std::array<std::string, kInteractionNamesCount>{"disable", "dismiss",
+                                                      "use"};
+  for (const auto& interaction : kInteractionNames) {
+    int timeout_ms;
+    std::optional<std::string_view> supplied_trigger_id;
+    EXPECT_CALL(*mock_hats_service(),
+                LaunchDelayedSurveyForWebContents(kHatsSurveyTriggerNtpModules,
+                                                  web_contents_.get(), _, _, _,
+                                                  _, _, _, _))
+        .Times(1)
+        .WillOnce(DoAll(SaveArg<2>(&timeout_ms),
+                        SaveArg<8>(&supplied_trigger_id),
+                        testing::Return(true)));
+
+    if (interaction == "disable") {
+      handler_->SetModuleDisabled(kSampleModuleId, true);
+    } else if (interaction == "dismiss") {
+      handler_->OnDismissModule(kSampleModuleId);
+    } else if (interaction == "use") {
+      handler_->OnModuleUsed(kSampleModuleId);
+    }
+
+    const int kExpectedTimeoutMs = 0;
+    EXPECT_EQ(kExpectedTimeoutMs, timeout_ms);
+    EXPECT_EQ(NewTabPageHandlerHaTSTest::kSampleTriggerId,
+              supplied_trigger_id.value());
+  }
+
+  EXPECT_EQ(
+      static_cast<int>(kInteractionNamesCount),
+      GetDictPrefKeyCount(profile_.get(), prefs::kNtpModulesInteractedCountDict,
+                          kSampleModuleId));
+}
+
+TEST_F(NewTabPageHandlerHaTSTest, IgnoredModuleTriggersHaTS) {
+  profile_->GetPrefs()->SetDict(
+      prefs::kNtpModulesLoadedCountDict,
+      base::Value::Dict().Set(
+          NewTabPageHandlerHaTSTest::kSampleModuleId,
+          NewTabPageHandlerHaTSTest::kSampleIgnoreCriteriaThreshold));
+  profile_->GetPrefs()->SetDict(
+      prefs::kNtpModulesInteractedCountDict,
+      base::Value::Dict().Set(NewTabPageHandlerHaTSTest::kSampleModuleId, 0));
+
+  int timeout_ms;
+  std::optional<std::string_view> supplied_trigger_id;
+  EXPECT_CALL(*mock_hats_service(),
+              LaunchDelayedSurveyForWebContents(kHatsSurveyTriggerNtpModules,
+                                                web_contents_.get(), _, _, _, _,
+                                                _, _, _))
+      .Times(1)
+      .WillOnce(DoAll(SaveArg<2>(&timeout_ms), SaveArg<8>(&supplied_trigger_id),
+                      testing::Return(true)));
+  const std::vector<std::string> module_ids = {
+      NewTabPageHandlerHaTSTest::kSampleModuleId};
+  handler_->OnModulesLoadedWithData(module_ids);
+  EXPECT_EQ(NewTabPageHandlerHaTSTest::kSampleDelayTimeMs, timeout_ms);
+  EXPECT_EQ(NewTabPageHandlerHaTSTest::kSampleTriggerId,
+            supplied_trigger_id.value());
+}
+
+TEST_F(NewTabPageHandlerHaTSTest, InteractedModuleDoesNotTriggerIgnoredHaTS) {
+  profile_->GetPrefs()->SetDict(
+      prefs::kNtpModulesLoadedCountDict,
+      base::Value::Dict().Set(
+          NewTabPageHandlerHaTSTest::kSampleModuleId,
+          NewTabPageHandlerHaTSTest::kSampleIgnoreCriteriaThreshold - 1));
+  profile_->GetPrefs()->SetDict(
+      prefs::kNtpModulesInteractedCountDict,
+      base::Value::Dict().Set(NewTabPageHandlerHaTSTest::kSampleModuleId, 1));
+
+  EXPECT_CALL(*mock_hats_service(),
+              LaunchDelayedSurveyForWebContents(kHatsSurveyTriggerNtpModules,
+                                                web_contents_.get(), _, _, _, _,
+                                                _, _, _))
+      .Times(0);
+  const std::vector<std::string> module_ids = {
+      NewTabPageHandlerHaTSTest::kSampleModuleId};
+  handler_->OnModulesLoadedWithData(module_ids);
+  EXPECT_EQ(
+      kSampleIgnoreCriteriaThreshold,
+      GetDictPrefKeyCount(profile_.get(), prefs::kNtpModulesLoadedCountDict,
+                          NewTabPageHandlerHaTSTest::kSampleModuleId));
 }
