@@ -2626,7 +2626,9 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Conversions.AggregatableReport.CreateReportStatus4"
-    enum="ConversionCreateAggregatableReportStatus" expires_after="2024-05-12">
+    enum="ConversionCreateAggregatableReportStatus" expires_after="never">
+<!-- expires-never: critical system health metric for monitoring -->
+
   <owner>linnan@chromium.org</owner>
   <owner>johnidel@chromium.org</owner>
   <owner>measurement-api-dev+metrics@google.com</owner>
@@ -2635,6 +2637,11 @@ chromium-metrics-reviews@google.com.
     and why. Recorded once for each trigger event processed by the attribution
     storage layer. `kNotRegistered` will be logged if the source or trigger
     doesn't declare aggregatable data.
+
+    This is a critical histogram monitored by alerts to
+    measurement-api-dev+alerts@google.com. Please make sure future versions of
+    this histogram are properly set up for alerting, but prefer not to version
+    the histogram if possible.
   </summary>
 </histogram>
 
@@ -2737,7 +2744,9 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Conversions.AggregatableReport.ReportSendOutcome2"
-    enum="ConversionReportSendOutcome" expires_after="2024-05-10">
+    enum="ConversionReportSendOutcome" expires_after="never">
+<!-- expires-never: critical system health metric for monitoring -->
+
   <owner>linnan@chromium.org</owner>
   <owner>johnidel@chromium.org</owner>
   <owner>measurement-api-dev+metrics@google.com</owner>
@@ -2745,6 +2754,11 @@ chromium-metrics-reviews@google.com.
     Records the high level request status of an aggregatable report. Recorded
     once per aggregatable report. For aggregatable report that has been retried,
     only the last retry will be counted.
+
+    This is a critical histogram monitored by alerts to
+    measurement-api-dev+alerts@google.com. Please make sure future versions of
+    this histogram are properly set up for alerting, but prefer not to version
+    the histogram if possible.
   </summary>
 </histogram>
 
@@ -2884,7 +2898,9 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Conversions.CreateReportStatus9"
-    enum="ConversionStorageCreateReportStatus" expires_after="2024-05-12">
+    enum="ConversionStorageCreateReportStatus" expires_after="never">
+<!-- expires-never: critical system health metric for monitoring -->
+
   <owner>tquintanilla@chromium.org</owner>
   <owner>apaseltiner@chromium.org</owner>
   <owner>measurement-api-dev+metrics@google.com</owner>
@@ -2892,6 +2908,11 @@ chromium-metrics-reviews@google.com.
     Measures how often event-level triggers are stored successfully or rejected
     and why. Recorded once for each conversion event processed by the
     attribution storage layer.
+
+    This is a critical histogram monitored by alerts to
+    measurement-api-dev+alerts@google.com. Please make sure future versions of
+    this histogram are properly set up for alerting, but prefer not to version
+    the histogram if possible.
   </summary>
 </histogram>
 
@@ -3196,7 +3217,9 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Conversions.OsRegistrationResult.{Type}"
-    enum="ConversionOsRegistrationResult" expires_after="2024-05-12">
+    enum="ConversionOsRegistrationResult" expires_after="never">
+<!-- expires-never: critical system health metric for monitoring -->
+
   <owner>linnan@chromium.org</owner>
   <owner>johnidel@chromium.org</owner>
   <owner>measurement-api-dev+metrics@google.com</owner>
@@ -3205,6 +3228,11 @@ chromium-metrics-reviews@google.com.
     with Android or failed and why. Only recorded on Android when the
     AttributionReportingCrossAppWeb feature is enabled. Recorded for each OS
     registration processed by the attribution manager layer.
+
+    This is a critical histogram monitored by alerts to
+    measurement-api-dev+alerts@google.com. Please make sure future versions of
+    this histogram are properly set up for alerting, but prefer not to version
+    the histogram if possible.
   </summary>
   <token key="Type">
     <variant name="Source"/>
@@ -3289,7 +3317,9 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Conversions.ReportSendOutcome3"
-    enum="ConversionReportSendOutcome" expires_after="2024-05-12">
+    enum="ConversionReportSendOutcome" expires_after="never">
+<!-- expires-never: critical system health metric for monitoring -->
+
   <owner>linnan@chromium.org</owner>
   <owner>johnidel@chromium.org</owner>
   <owner>measurement-api-dev+metrics@google.com</owner>
@@ -3297,6 +3327,11 @@ chromium-metrics-reviews@google.com.
     Records the high level request status of a conversion report. Recorded once
     per conversion report. For conversion report that has been retried, only the
     last retry will be counted.
+
+    This is a critical histogram monitored by alerts to
+    measurement-api-dev+alerts@google.com. Please make sure future versions of
+    this histogram are properly set up for alerting, but prefer not to version
+    the histogram if possible.
   </summary>
 </histogram>
 
@@ -3464,7 +3499,9 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Conversions.SourceStoredStatus8"
-    enum="ConversionStorageSourceStatus" expires_after="2024-05-19">
+    enum="ConversionStorageSourceStatus" expires_after="never">
+<!-- expires-never: critical system health metric for monitoring -->
+
   <owner>tquintanilla@chromium.org</owner>
   <owner>anthonygarant@chromium.org</owner>
   <owner>measurement-api-dev+metrics@google.com</owner>
@@ -3472,6 +3509,11 @@ chromium-metrics-reviews@google.com.
     Measures how often sources are stored successfully or rejected and why.
     Recorded once for each source event processed by the attribution storage
     layer.
+
+    This is a critical histogram monitored by alerts to
+    measurement-api-dev+alerts@google.com. Please make sure future versions of
+    this histogram are properly set up for alerting, but prefer not to version
+    the histogram if possible.
   </summary>
 </histogram>
 
