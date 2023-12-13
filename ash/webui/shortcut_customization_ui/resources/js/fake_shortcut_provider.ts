@@ -33,11 +33,11 @@ export class FakeShortcutProvider implements ShortcutProviderInterface {
   private preventProcessingAcceleratorsCallCount: number = 0;
   private addAcceleratorCallCount: number = 0;
   private removeAcceleratorCallCount: number = 0;
-  private lastRecordedUserAction: UserAction|undefined;
-  private lastRecordedMainCategory: AcceleratorCategory|undefined;
-  private lastRecoredEditDialogActions: EditDialogCompletedActions|undefined;
+  private lastRecordedUserAction: UserAction;
+  private lastRecordedMainCategory: AcceleratorCategory;
+  private lastRecoredEditDialogActions: EditDialogCompletedActions;
   private lastRecordedIsAdd: boolean = false;
-  private lastRecorededSubactions: Subactions|undefined;
+  private lastRecorededSubactions: Subactions;
 
   constructor() {
     this.methods = new FakeMethodResolver();
@@ -76,11 +76,6 @@ export class FakeShortcutProvider implements ShortcutProviderInterface {
     this.preventProcessingAcceleratorsCallCount = 0;
     this.addAcceleratorCallCount = 0;
     this.removeAcceleratorCallCount = 0;
-    this.lastRecordedUserAction = undefined;
-    this.lastRecordedMainCategory = undefined;
-    this.lastRecoredEditDialogActions = undefined;
-    this.lastRecordedIsAdd = false;
-    this.lastRecorededSubactions = undefined;
     this.observables = new FakeObservables();
     this.registerObservables();
   }
@@ -192,11 +187,11 @@ export class FakeShortcutProvider implements ShortcutProviderInterface {
     this.lastRecoredEditDialogActions = completed_actions;
   }
 
-  getLastEditDialogCompletedActions(): EditDialogCompletedActions|undefined {
+  getLastEditDialogCompletedActions(): EditDialogCompletedActions {
     return this.lastRecoredEditDialogActions;
   }
 
-  getLatestRecordedAction(): UserAction|undefined {
+  getLatestRecordedAction(): UserAction {
     return this.lastRecordedUserAction;
   }
 
@@ -204,7 +199,7 @@ export class FakeShortcutProvider implements ShortcutProviderInterface {
     this.lastRecordedMainCategory = category;
   }
 
-  getLatestMainCategoryNavigated(): AcceleratorCategory|undefined {
+  getLatestMainCategoryNavigated(): AcceleratorCategory {
     return this.lastRecordedMainCategory;
   }
 
@@ -217,7 +212,7 @@ export class FakeShortcutProvider implements ShortcutProviderInterface {
     return this.lastRecordedIsAdd;
   }
 
-  getLastRecordedSubactions(): Subactions|undefined {
+  getLastRecordedSubactions(): Subactions {
     return this.lastRecorededSubactions;
   }
 
