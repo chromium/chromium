@@ -93,4 +93,23 @@ void FakeDriver::DestroyBuffer(FakeBuffer::IdType id) {
   buffers_.DestroyObject(id);
 }
 
+void FakeDriver::CreateImage(const VAImageFormat& format,
+                             int width,
+                             int height,
+                             VAImage* va_image) {
+  images_.CreateObject(format, width, height, /*fake_driver=*/*this, va_image);
+}
+
+bool FakeDriver::ImageExists(FakeImage::IdType id) {
+  return images_.ObjectExists(id);
+}
+
+const FakeImage& FakeDriver::GetImage(FakeImage::IdType id) {
+  return images_.GetObject(id);
+}
+
+void FakeDriver::DestroyImage(FakeImage::IdType id) {
+  images_.DestroyObject(id);
+}
+
 }  // namespace media::internal

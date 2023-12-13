@@ -26,14 +26,7 @@ std::unique_ptr<VideoFrameMapper> VideoFrameMapperFactory::CreateMapper(
     VideoFrame::StorageType storage_type,
     bool must_support_intel_media_compressed_buffers) {
 #if BUILDFLAG(USE_VAAPI)
-  // TODO(b/307769458): the fake libva driver does not currently implement the
-  // VAImage functionality necessary to use the VaapiDmaBufVideoFrameMapper. For
-  // now, as a workaround, let's assume that when using that driver, buffers are
-  // already linear.
-  const bool force_linear_buffer_mapper =
-      (VaapiWrapper::GetImplementationType() ==
-       VAImplementation::kChromiumFakeDriver);
-  return CreateMapper(format, storage_type, force_linear_buffer_mapper,
+  return CreateMapper(format, storage_type, false,
                       must_support_intel_media_compressed_buffers);
 #else
   return CreateMapper(format, storage_type, true,
