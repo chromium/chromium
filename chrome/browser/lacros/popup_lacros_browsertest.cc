@@ -87,12 +87,16 @@ IN_PROC_BROWSER_TEST_F(PopupBrowserTest, LongPressOnTabOpensNonEmptyMenu) {
   // near the top of the screen.
   browser()->window()->Maximize();
 
+  // Wait for the window to be created.
+  aura::Window* window = browser()->window()->GetNativeWindow();
+  std::string window_id =
+      lacros_window_utility::GetRootWindowUniqueId(window->GetRootWindow());
+  ASSERT_TRUE(browser_test_util::WaitForWindowCreation(window_id));
+
   // Wait for the window to be globally positioned at 0,0. It will eventually
   // have this position because it is maximized. We cannot assert the position
   // lacros-side because Wayland clients do not know the position of their
   // windows on the display.
-  std::string window_id = lacros_window_utility::GetRootWindowUniqueId(
-      browser()->window()->GetNativeWindow()->GetRootWindow());
   WaitForWindowPositionInScreen(window_id, gfx::Point(0, 0));
 
   // Precondition: The browser is the only open widget.

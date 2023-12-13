@@ -284,6 +284,19 @@ class DownloadStatusUpdaterBrowserTest : public DownloadTestBase {
     item_ = nullptr;
   }
 
+  Browser* CreateAndWaitForBrowser(Profile* profile, bool otr = false) {
+    Browser* browser =
+        otr ? CreateIncognitoBrowser(profile) : CreateBrowser(profile);
+    std::string browser_window_id =
+        lacros_window_utility::GetRootWindowUniqueId(
+            BrowserView::GetBrowserViewForBrowser(browser)
+                ->frame()
+                ->GetNativeWindow()
+                ->GetRootWindow());
+    EXPECT_TRUE(browser_test_util::WaitForWindowCreation(browser_window_id));
+    return browser;
+  }
+
   void SetUpBrowserForTest(Browser* browser) {
     download_button(browser)->DisableAutoCloseTimerForTesting();
     download_button(browser)->DisableDownloadStartedAnimationForTesting();
@@ -536,7 +549,7 @@ IN_PROC_BROWSER_TEST_F(
     DownloadStatusUpdaterBrowserTest,
     ShowInBrowser_NormalDownload_PickMostRecentActiveBrowser) {
   // Open a different browser window and activate it.
-  Browser* browser2 = CreateBrowser(browser()->profile());
+  Browser* browser2 = CreateAndWaitForBrowser(browser()->profile());
   ActivateBrowser(browser2);
 
   DownloadStatusUpdaterClientAsyncWaiter client(
@@ -563,7 +576,7 @@ IN_PROC_BROWSER_TEST_F(
     DownloadStatusUpdaterBrowserTest,
     ShowInBrowser_DangerousDownload_PickMostRecentActiveBrowser) {
   // Open a different browser window and activate it.
-  Browser* browser2 = CreateBrowser(browser()->profile());
+  Browser* browser2 = CreateAndWaitForBrowser(browser()->profile());
   ActivateBrowser(browser2);
 
   DownloadStatusUpdaterClientAsyncWaiter client(
@@ -693,7 +706,8 @@ IN_PROC_BROWSER_TEST_F(
     DownloadStatusUpdaterBrowserTest,
     ShowInBrowser_NormalDownload_MatchBrowserForExactProfile) {
   // Open an incognito browser window.
-  Browser* otr_browser = CreateIncognitoBrowser(browser()->profile());
+  Browser* otr_browser =
+      CreateAndWaitForBrowser(browser()->profile(), /*otr=*/true);
 
   // Make the incognito window the last active browser. It should not be picked
   // even though it is the most recent active browser, because the profile is
@@ -724,7 +738,8 @@ IN_PROC_BROWSER_TEST_F(
     DownloadStatusUpdaterBrowserTest,
     ShowInBrowser_DangerousDownload_MatchBrowserForExactProfile) {
   // Open an incognito browser window.
-  Browser* otr_browser = CreateIncognitoBrowser(browser()->profile());
+  Browser* otr_browser =
+      CreateAndWaitForBrowser(browser()->profile(), /*otr=*/true);
 
   // Make the incognito window the last active browser. It should not be picked
   // even though it is the most recent active browser, because the profile is
@@ -754,7 +769,8 @@ IN_PROC_BROWSER_TEST_F(
 IN_PROC_BROWSER_TEST_F(DownloadStatusUpdaterBrowserTest,
                        ShowInBrowser_NormalDownload_IncognitoBrowser) {
   // Open an incognito browser window.
-  Browser* otr_browser = CreateIncognitoBrowser(browser()->profile());
+  Browser* otr_browser =
+      CreateAndWaitForBrowser(browser()->profile(), /*otr=*/true);
 
   // Make `browser()` the last active browser. It should not be picked even
   // though it is the most recent active browser, because the profile is
@@ -785,7 +801,8 @@ IN_PROC_BROWSER_TEST_F(DownloadStatusUpdaterBrowserTest,
 IN_PROC_BROWSER_TEST_F(DownloadStatusUpdaterBrowserTest,
                        ShowInBrowser_DangerousDownload_IncognitoBrowser) {
   // Open an incognito browser window.
-  Browser* otr_browser = CreateIncognitoBrowser(browser()->profile());
+  Browser* otr_browser =
+      CreateAndWaitForBrowser(browser()->profile(), /*otr=*/true);
 
   // Make `browser()` the last active browser. It should not be picked even
   // though it is the most recent active browser, because the profile is
