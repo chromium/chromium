@@ -118,7 +118,6 @@ import java.util.Map;
     ChromeFeatureList.SYNC_ANDROID_LIMIT_NTP_PROMO_IMPRESSIONS,
 })
 @EnableFeatures({
-    ChromeFeatureList.FEED_HEADER_STICK_TO_TOP,
     ChromeFeatureList.KID_FRIENDLY_CONTENT_FEED,
 })
 public class FeedSurfaceCoordinatorTest {
@@ -474,31 +473,6 @@ public class FeedSurfaceCoordinatorTest {
 
         mCoordinator.clearScrollableContainerDelegateForTesting();
         assertEquals(Integer.MAX_VALUE, mCoordinator.getFeedHeaderPosition());
-    }
-
-    @Test
-    public void testStartSurfaceScrollListener() {
-        FeedSurfaceCoordinator.StartSurfaceScrollListener listener =
-                mCoordinator.new StartSurfaceScrollListener();
-
-        // Our toolbar height is always set as 0.
-        when(mCoordinator.getFeedHeaderPosition()).thenReturn(-10);
-        listener.onHeaderOffsetChanged(0);
-        // Toolbar height is bigger than the header position, then the sticky header is visible.
-        assertEquals(
-                true,
-                mCoordinator
-                        .getSectionHeaderModelForTest()
-                        .get(SectionHeaderListProperties.STICKY_HEADER_VISIBLILITY_KEY));
-
-        when(mCoordinator.getFeedHeaderPosition()).thenReturn(10);
-        listener.onHeaderOffsetChanged(0);
-        // Toolbar height is smaller than the header position, so the sticky header is invisible.
-        assertEquals(
-                false,
-                mCoordinator
-                        .getSectionHeaderModelForTest()
-                        .get(SectionHeaderListProperties.STICKY_HEADER_VISIBLILITY_KEY));
     }
 
     @Test

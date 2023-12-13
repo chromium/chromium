@@ -134,7 +134,6 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &feed::kFeedBackToTop,
     &feed::kFeedDynamicColors,
     &feed::kFeedFollowUiUpdate,
-    &feed::kFeedHeaderStickToTop,
     &feed::kFeedImageMemoryCacheSizePercentage,
     &feed::kFeedLoadingPlaceholder,
     &feed::kFeedNoViewCache,

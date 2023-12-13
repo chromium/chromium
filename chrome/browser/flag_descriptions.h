@@ -2386,9 +2386,6 @@ extern const char kFeedBackToTopDescription[];
 extern const char kFeedFollowUiUpdateName[];
 extern const char kFeedFollowUiUpdateDescription[];
 
-extern const char kFeedHeaderStickToTopName[];
-extern const char kFeedHeaderStickToTopDescription[];
-
 extern const char kFeedLoadingPlaceholderName[];
 extern const char kFeedLoadingPlaceholderDescription[];
 

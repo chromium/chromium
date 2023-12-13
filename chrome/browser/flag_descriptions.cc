@@ -4109,10 +4109,6 @@ const char kFeedFollowUiUpdateName[] = "UI Update for the Following Feed";
 const char kFeedFollowUiUpdateDescription[] =
     "Enables showing the updated UI for the following feed.";
 
-const char kFeedHeaderStickToTopName[] = "Feed header stick to top";
-const char kFeedHeaderStickToTopDescription[] =
-    "Stick feed header to top on scroll.";
-
 const char kFeedLoadingPlaceholderName[] = "Feed loading placeholder";
 const char kFeedLoadingPlaceholderDescription[] =
     "Enables a placeholder UI in "

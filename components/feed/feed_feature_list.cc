@@ -50,9 +50,6 @@ BASE_FEATURE(kDiscoFeedEndpoint,
 BASE_FEATURE(kXsurfaceMetricsReporting,
              "XsurfaceMetricsReporting",
              base::FEATURE_DISABLED_BY_DEFAULT);
-BASE_FEATURE(kFeedHeaderStickToTop,
-             "FeedHeaderStickToTop",
-             base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE(kFeedLoadingPlaceholder,
              "FeedLoadingPlaceholder",
              base::FEATURE_DISABLED_BY_DEFAULT);
