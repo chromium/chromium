@@ -322,59 +322,6 @@ TEST_F(WebAppPublisherHelperTest, CreateIntentFiltersForWebApp_FileHandlers) {
   EXPECT_EQ(file_cond.condition_values[1]->value, ".txt");
 }
 
-// Verify that Adobe Express has its OEM install source overwritten as
-// InstallReason::kDefault.
-// TODO(b/300857328): Remove this workaround.
-TEST_F(WebAppPublisherHelperTest, PublishOemAdobeExpressAsDefault) {
-  const std::string name = "some app name";
-  const GURL start_url("https://example.com/start_url");
-
-  // Manually edit the database to create an app with the specific App ID but a
-  // non-matching start URL.
-  {
-    ScopedRegistryUpdate update = provider_->sync_bridge_unsafe().BeginUpdate();
-
-    auto new_app = std::make_unique<WebApp>(kAdobeExpressAppId);
-    new_app->SetStartUrl(start_url);
-    new_app->AddSource(WebAppManagement::Type::kOem);
-    new_app->SetName(name);
-
-    update->CreateApp(std::move(new_app));
-  }
-
-  const WebApp* web_app =
-      provider_->registrar_unsafe().GetAppById(kAdobeExpressAppId);
-
-  apps::AppPtr app = publisher_->CreateWebApp(web_app);
-  EXPECT_EQ(app->install_reason, apps::InstallReason::kDefault);
-}
-
-// Verify that the above behavior only applies when the app is OEM-installed.
-// TODO(b/300857328): Remove this workaround.
-TEST_F(WebAppPublisherHelperTest, PublishSyncAdobeExpressAsSync) {
-  const std::string name = "some app name";
-  const GURL start_url("https://example.com/start_url");
-
-  // Manually edit the database to create an app with the specific App ID but a
-  // non-matching start URL.
-  {
-    ScopedRegistryUpdate update = provider_->sync_bridge_unsafe().BeginUpdate();
-
-    auto new_app = std::make_unique<WebApp>(kAdobeExpressAppId);
-    new_app->SetStartUrl(start_url);
-    new_app->AddSource(WebAppManagement::Type::kSync);
-    new_app->SetName(name);
-
-    update->CreateApp(std::move(new_app));
-  }
-
-  const WebApp* web_app =
-      provider_->registrar_unsafe().GetAppById(kAdobeExpressAppId);
-
-  apps::AppPtr app = publisher_->CreateWebApp(web_app);
-  EXPECT_EQ(app->install_reason, apps::InstallReason::kSync);
-}
-
 #if BUILDFLAG(IS_CHROMEOS)
 TEST_F(WebAppPublisherHelperTest, UpdateShortcutDoesNotPublishDelta) {
   EnableCrosWebAppShortcutUiUpdate(true);

@@ -65,7 +65,6 @@
 #include "chrome/browser/web_applications/web_app_command_scheduler.h"
 #include "chrome/browser/web_applications/web_app_constants.h"
 #include "chrome/browser/web_applications/web_app_helpers.h"
-#include "chrome/browser/web_applications/web_app_id_constants.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/browser/web_applications/web_app_registrar.h"
 #include "chrome/browser/web_applications/web_app_sync_bridge.h"
@@ -211,14 +210,6 @@ apps::InstallReason GetHighestPriorityInstallReason(const WebApp* web_app) {
       DCHECK(!web_app->IsSystemApp());
       return apps::InstallReason::kOem;
     }
-  }
-
-  // On some devices, Adobe Express is installed through App Preload Service
-  // as an OEM app, but should not appear in the OEM folder.
-  // TODO(b/300857328): Remove this workaround.
-  if (web_app->GetHighestPrioritySource() == WebAppManagement::kOem &&
-      web_app->app_id() == web_app::kAdobeExpressAppId) {
-    return apps::InstallReason::kDefault;
   }
 
   switch (web_app->GetHighestPrioritySource()) {
