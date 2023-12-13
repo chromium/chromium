@@ -798,6 +798,48 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram
+    name="PageLoad.Clients.GoogleSearch.NavigationTiming.NavigationStartToFinalLoaderCallback"
+    units="ms" expires_after="2024-03-19">
+  <owner>nidhijaju@chromium.org</owner>
+  <owner>chrome-loading@google.com</owner>
+  <summary>
+    The time relative to navigation start that a callback for the navigation
+    loader is last invoked for the main resource of a main frame navigation, for
+    Google Search page loads. Only recorded for Search navigations that happen
+    entirely in the foreground. The metric is emitted when the navigation is
+    completed or the app is backgrounded on Android.
+  </summary>
+</histogram>
+
+<histogram
+    name="PageLoad.Clients.GoogleSearch.NavigationTiming.NavigationStartToFinalRequestStart"
+    units="ms" expires_after="2024-03-19">
+  <owner>nidhijaju@chromium.org</owner>
+  <owner>chrome-loading@google.com</owner>
+  <summary>
+    The time relative to navigation start that the final HTTP request is sent
+    for the main resource of a main frame navigation, for Google Search page
+    loads. Only recorded for Search navigations that happen entirely in the
+    foreground. The metric is emitted when the navigation is completed or the
+    app is backgrounded on Android.
+  </summary>
+</histogram>
+
+<histogram
+    name="PageLoad.Clients.GoogleSearch.NavigationTiming.NavigationStartToFinalResponseStart"
+    units="ms" expires_after="2024-03-19">
+  <owner>nidhijaju@chromium.org</owner>
+  <owner>chrome-loading@google.com</owner>
+  <summary>
+    The time relative to navigation start that the headers of the final HTTP
+    response is received for the main resource of a main frame navigation, for
+    Google Search page loads. Only recorded for Search navigations that happen
+    entirely in the foreground. The metric is emitted when the navigation is
+    completed or the app is backgrounded on Android.
+  </summary>
+</histogram>
+
+<histogram
     name="PageLoad.Clients.GoogleSearch.NavigationTiming.NavigationStartToFirstLoaderCallback"
     units="ms" expires_after="2024-03-19">
   <owner>kouhei@chromium.org</owner>
