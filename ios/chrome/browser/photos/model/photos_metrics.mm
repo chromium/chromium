@@ -14,3 +14,12 @@ const char kSaveToPhotosContextMenuActionsHistogram[] =
 
 const char kSaveToPhotosSettingsActionsHistogram[] =
     "IOS.SaveToPhotos.Settings";
+
+const char kSaveToPhotosUploadSuccessLatencyHistogram[] =
+    "IOS.SaveToPhotos.UploadSuccessLatency";
+
+const char kSaveToPhotosUploadFailureLatencyHistogram[] =
+    "IOS.SaveToPhotos.UploadFailureLatency";
+
+const char kSaveToPhotosUploadFailureTypeHistogram[] =
+    "IOS.SaveToPhotos.UploadFailureType";

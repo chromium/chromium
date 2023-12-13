@@ -2921,6 +2921,16 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="IOS.SaveToPhotos.UploadFailureType"
+    enum="IOSPhotosServiceUploadFailureType" expires_after="2024-06-02">
+  <owner>qpubert@chromium.org</owner>
+  <owner>djean@chromium.org</owner>
+  <summary>
+    Logged when the Photos service completes an image upload with failure. It
+    records the type of failure which occurred.
+  </summary>
+</histogram>
+
 <histogram name="IOS.SaveToPhotos.UploadSuccessLatency" units="ms"
     expires_after="2024-06-02">
   <owner>qpubert@chromium.org</owner>

@@ -508,6 +508,26 @@ chromium-metrics-reviews@google.com.
   <int value="2" label="Camera and Microphone permissions"/>
 </enum>
 
+<enum name="IOSPhotosServiceUploadFailureType">
+  <int value="0" label="None"/>
+  <int value="1" label="The service is already uploading."/>
+  <int value="10" label="Failure occurred while retrieving an existing album."/>
+  <int value="20" label="Failure occurred while creating a new album."/>
+  <int value="30"
+      label="Failure occurred during the first step of uploading a photo."/>
+  <int value="31"
+      label="Failure occurred during the first step of uploading a photo (no
+             data in response)."/>
+  <int value="32"
+      label="Failure occurred during the first step of uploading a photo
+             (response is not text)."/>
+  <int value="33"
+      label="Failure occurred during the first step of uploading a photo
+             (token could not be decoded)."/>
+  <int value="40"
+      label="Failure occurred during the second step of uploading a photo."/>
+</enum>
+
 <enum name="IOSPostRestoreDefaultBrowserActionOnPrompt">
   <int value="0" label="No Thanks"/>
   <int value="1" label="Go To Settings"/>

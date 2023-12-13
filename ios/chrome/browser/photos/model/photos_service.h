@@ -9,6 +9,7 @@
 
 #import "base/functional/callback.h"
 #import "components/keyed_service/core/keyed_service.h"
+#import "ios/chrome/browser/photos/model/photos_metrics.h"
 
 @protocol SystemIdentity;
 
@@ -29,6 +30,10 @@ class PhotosService : public KeyedService {
   struct UploadResult {
     // Whether the upload operation is successful.
     bool successful = false;
+    // If the upload operation failed, the type of failure.
+    PhotosServiceUploadFailureType failure_type{};
+    // If the upload operation failed, an error object may be provided here.
+    NSError* error = nil;
   };
 
   // Callback reporting progress of upload operation.
