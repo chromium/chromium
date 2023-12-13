@@ -210,7 +210,6 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &kCCTTextFragmentLookupApiEnabled,
     &kDontAutoHideBrowserControls,
     &kCacheDeprecatedSystemLocationSetting,
-    &kChromeNewDownloadTab,
     &kChromeSharingHub,
     &kChromeSurveyNextAndroid,
     &kCommandLineOnNonRooted,
@@ -613,10 +612,6 @@ BASE_FEATURE(kCacheDeprecatedSystemLocationSetting,
              "CacheDeprecatedSystemLocationSetting",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-BASE_FEATURE(kChromeNewDownloadTab,
-             "ChromeNewDownloadTab",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 BASE_FEATURE(kChromeSharingHub,
              "ChromeSharingHub",
              base::FEATURE_ENABLED_BY_DEFAULT);
@@ -699,10 +694,6 @@ BASE_FEATURE(kDelayTransitionsForAnimation,
 
 BASE_FEATURE(kDownloadAutoResumptionThrottling,
              "DownloadAutoResumptionThrottling",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
-BASE_FEATURE(kDownloadHomeForExternalApp,
-             "DownloadHomeForExternalApp",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kDragDropIntoOmnibox,

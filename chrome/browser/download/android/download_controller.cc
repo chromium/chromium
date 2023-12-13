@@ -236,10 +236,7 @@ void DownloadController::CloseTabIfEmpty(content::WebContents* web_contents,
   // Closing an empty page on external app download leaves a bad user experience
   // as user don't know whether a download is kicked off, or if Chrome just
   // ignores the URL. Show the download page instead.
-  if (base::FeatureList::IsEnabled(
-          chrome::android::kDownloadHomeForExternalApp) &&
-      !base::FeatureList::IsEnabled(chrome::android::kChromeNewDownloadTab) &&
-      tab_model->GetTabAt(tab_index)->GetLaunchType() ==
+  if (tab_model->GetTabAt(tab_index)->GetLaunchType() ==
           static_cast<int>(TabModel::TabLaunchType::FROM_EXTERNAL_APP)) {
     DownloadManagerService::GetInstance()->OpenDownloadsPage(
         Profile::FromBrowserContext(web_contents->GetBrowserContext()),
