@@ -5,8 +5,9 @@
 # List of files that don't need to be passed to html_to_wrapper().
 non_web_component_files =
     [
-      "record_replay.ts",
       "auth.ts",
+      "record_replay.ts",
+      "record_replay_api.ts",
     ]
 
 ts_files = non_web_component_files

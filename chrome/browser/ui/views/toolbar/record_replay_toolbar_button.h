@@ -31,7 +31,6 @@ class RecordReplayToolbarButton: public ToolbarButton {
   void RefreshIconState();
   void EnsurePostRecordingWebContents();
 
-
   const raw_ptr<Browser> browser_;
   content::WebContents* web_contents_;
   content::WebContents* post_recording_web_contents_;

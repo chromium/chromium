@@ -8,12 +8,20 @@ interface RecordReplayManagerHandler {
   // Registers the manager page.
   SetManager(pending_remote<RecordReplayManager> manager);
 
-  // Tells the browser that an API key has been received.
-  ApiKeyReceived(string apiKey);
+  // Tells the browser to open the default system browser
+  // to the given URL.
+  GetEnv(string key) => (string? value);
+  GetBuildId() => (string buildId);
+  GetReplayUserToken() => (string? token);
+  SetReplayUserToken(string? token);
+  GetReplayRefreshToken() => (string? token);
+  SetReplayRefreshToken(string? token);
+  ShowAuthenticationError(string message);
+  OpenExternalBrowser(string url);
 };
 
 // Interface implemented by the business logic WebContents.
 interface RecordReplayManager {
-  // Notifies the page that the state of the recording tab has changed!
-  HandleRecordingStateChanged(string newState);
+  // Notifies the page that the sign-in button has been clicked.
+  HandleSignInButtonClicked();
 };

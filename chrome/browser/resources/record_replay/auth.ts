@@ -1,34 +1,41 @@
-// external (c++-side) interface
-declare function getEnv(key: string): string | null;
-declare function getBuildId(): string;
-declare function getReplayUserToken(): string | null;
-declare function setReplayUserToken(token: string | null): void;
-declare function getReplayRefreshToken(): string | null;
-declare function setReplayRefreshToken(token: string | null): void;
-declare function showAuthenticationError(message: string): void;
-declare function openExternalBrowser(url: string): Promise<void>;
-declare function onSignInButtonClicked(callback: () => void): void;
+import {
+  getEnv,
+  getBuildId,
+  getReplayUserToken,
+  setReplayUserToken,
+  getReplayRefreshToken,
+  setReplayRefreshToken,
+  showAuthenticationError,
+  openExternalBrowser,
+  onSignInButtonClicked,
+} from "./record_replay_api.js";
 
-function getAuthHost() {
-  return getEnv("RECORD_REPLAY_AUTH_HOST") || "webreplay.us.auth0.com";
+async function getAuthHost(): Promise<string> {
+  const authHost = await getEnv("RECORD_REPLAY_AUTH_HOST");
+  return authHost || "webreplay.us.auth0.com";
 }
-function getAuthClientId() {
-  return getEnv("RECORD_REPLAY_AUTH_CLIENT_ID") || "4FvFnJJW4XlnUyrXQF8zOLw6vNAH1MAo";
+async function getAuthClientId(): Promise<string> {
+  const authClientId = await getEnv("RECORD_REPLAY_AUTH_CLIENT_ID");
+  return authClientId || "4FvFnJJW4XlnUyrXQF8zOLw6vNAH1MAo";
 }
-function getViewHost() {
-  return getEnv("RECORD_REPLAY_VIEW_HOST") || "https://app.replay.io";
+async function getViewHost(): Promise<string> {
+  const viewHost = await getEnv("RECORD_REPLAY_VIEW_HOST");
+  return viewHost || "https://app.replay.io";
 }
-function getAPIServer() {
-  return getEnv("RECORD_REPLAY_API_SERVER") || "https://api.replay.io/v1/graphql";
+async function getAPIServer(): Promise<string> {
+  const apiServer = await getEnv("RECORD_REPLAY_API_SERVER");
+  return apiServer || "https://api.replay.io/v1/graphql";
 }
-function getOriginalApiKey() {
-  return getEnv("RECORD_REPLAY_API_KEY");
+async function getOriginalApiKey(): Promise<string | null> {
+  const originalApiKey = await getEnv("RECORD_REPLAY_API_KEY");
+  return originalApiKey || null;
 }
 function getTelemetryUrl() {
   return "https://telemetry.replay.io";
 }
 function isTelemetryEnabled() {
-  return true;
+  // FIXME
+  return false;
 }
 
 // https://developer.mozilla.org/en-US/docs/Glossary/Base64#the_unicode_problem
@@ -43,7 +50,7 @@ function base64URLDecode(base64: string): Uint8Array {
   return bytes;
 }
 
-function pingTelemetry(source: string, name: string, data: Record<string, any>) {
+async function pingTelemetry(source: string, name: string, data: Record<string, any>) {
   const url = getTelemetryUrl();
   const enabled = isTelemetryEnabled();
 
@@ -52,7 +59,7 @@ function pingTelemetry(source: string, name: string, data: Record<string, any>) 
   }
 
   // fetch the user info to send in `Authorization` header.
-  const auth = getOriginalApiKey() || getReplayUserToken();
+  const auth = await getOriginalApiKey() || await getReplayUserToken();
 
   fetch(url, {
     method: 'POST',
@@ -60,7 +67,7 @@ function pingTelemetry(source: string, name: string, data: Record<string, any>) 
     body: JSON.stringify({
       ...data,
       event: 'Gecko',
-      build: getBuildId(),
+      build: await getBuildId(),
       ts: Date.now(),
       source,
       name,
@@ -99,7 +106,7 @@ function tokenExpiration(token: string) {
 }
 
 async function validateUserToken() {
-  const userToken = getReplayUserToken();
+  const userToken = await getReplayUserToken();
   if (!userToken) {
     return null;
   }
@@ -110,6 +117,8 @@ async function validateUserToken() {
   }
 
   const exp = tokenExpiration(userToken);
+  // TODO: For consistency with `scheduleRefreshTimer`, we probably should
+  // be comparing `exp` to `Date.now() + 60 * 1000` instead of `Date.now()`.
   if (exp && exp > Date.now()) {
     // The current token hasn't expired yet so schedule a refresh and return it
     scheduleRefreshTimer(exp - Date.now());
@@ -117,7 +126,7 @@ async function validateUserToken() {
     return userToken;
   }
 
-  if (!getReplayRefreshToken()) {
+  if (!await getReplayRefreshToken()) {
     pingTelemetry("browser", "auth-no-refresh-token", {
       expirationDate: exp && new Date(exp).toISOString(),
       authId: userTokenInfo["sub"],
@@ -144,16 +153,17 @@ function scheduleRefreshTimer(expiresInMs: number) {
 }
 
 async function refresh() {
-  const refresh_token = getReplayRefreshToken();
+  const refresh_token = await getReplayRefreshToken();
+  const auth_host = await getAuthHost();
   try {
-    const resp = await fetch(`https://${getAuthHost()}/oauth/token`, {
+    const resp = await fetch(`https://${auth_host}/oauth/token`, {
       method: "POST",
       headers: {"Content-Type": "application/json"},
       body: JSON.stringify({
         audience: "https://api.replay.io",
         scope: "openid profile offline_access",
         grant_type: "refresh_token",
-        client_id: getAuthClientId(),
+        client_id: await getAuthClientId(),
         refresh_token,
       })
     });
@@ -179,8 +189,8 @@ async function refresh() {
       };
     }
 
-    setReplayRefreshToken(json.refresh_token);
-    setReplayUserToken(json.access_token);
+    await setReplayRefreshToken(json.refresh_token);
+    await setReplayUserToken(json.access_token);
 
     scheduleRefreshTimer(json.expires_in * 1000);
 
@@ -190,20 +200,20 @@ async function refresh() {
 
     return json.access_token;
   } catch (e) {
-    setReplayRefreshToken(null);
-    setReplayUserToken(null);
+    await setReplayRefreshToken(null);
+    await setReplayUserToken(null);
     throw e;
   }
 }
 
-function openSignInPage() {
+async function openSignInPage() {
   const keyArray = new Uint8Array(32);
   crypto.getRandomValues(keyArray);
   const key = base64URLEncode(keyArray);
-  const viewHost = getViewHost();
+  const viewHost = await getViewHost();
   const url = `${viewHost}/api/browser/auth?key=${key}`;
 
-  openExternalBrowser(url);
+  await openExternalBrowser(url);
 
   let timedOut = false;
   Promise.race([
@@ -244,7 +254,7 @@ function openSignInPage() {
             const refreshToken = resp.data.closeAuthRequest.token;
             pingTelemetry("browser", "auth-request-success", {});
 
-            setReplayRefreshToken(refreshToken);
+            await setReplayRefreshToken(refreshToken);
 
             // refresh the token immediately to exchange it for an access token
             // and acquire a new refresh token
@@ -264,7 +274,7 @@ function openSignInPage() {
 }
 
 async function queryAPIServer(query: string, variables: Record<string, string> = {}, anonymous = false): Promise<any> {
-  const token = anonymous ? null : (getReplayUserToken() || getOriginalApiKey());
+  const token = anonymous ? null : (await getReplayUserToken() || await getOriginalApiKey());
 
   const headers: Record<string, string> = {
     "Content-Type": "application/json",
@@ -274,7 +284,7 @@ async function queryAPIServer(query: string, variables: Record<string, string> =
     headers["Authorization"] = `Bearer ${token}`;
   }
 
-  const resp = await fetch(getAPIServer(), {
+  const resp = await fetch(await getAPIServer(), {
     method: "POST",
     headers,
     body: JSON.stringify({
@@ -286,20 +296,20 @@ async function queryAPIServer(query: string, variables: Record<string, string> =
   return resp.json();
 }
 
-function handleAuthRequestFailed(e: any, extra = {}) {
+async function handleAuthRequestFailed(e: any, extra = {}) {
   const message = e?.id || "unexpected-internal-error";
   const errorMessage = e?.message;
 
   switch (message) {
     case 'timeout':
-      showAuthenticationError("The request timed out before authentication completed. Please try again.")
+      await showAuthenticationError("The request timed out before authentication completed. Please try again.")
       break;
     case 'unexpected-internal-error':
-      showAuthenticationError("An unexpected error occurred. Support has been notified. You may try again or contact support@replay.io for help.");
+      await showAuthenticationError("An unexpected error occurred. Support has been notified. You may try again or contact support@replay.io for help.");
       break;
   }
 
-  const userToken = getReplayUserToken();
+  const userToken = await getReplayUserToken();
   const authId = userToken ? tokenInfo(userToken)?.["sub"] : null;
 
   pingTelemetry("browser", "auth-request-failed", {
