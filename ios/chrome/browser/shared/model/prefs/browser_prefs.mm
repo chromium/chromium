@@ -667,6 +667,7 @@ void RegisterBrowserStatePrefs(user_prefs::PrefRegistrySyncable* registry) {
 
   registry->RegisterBooleanPref(prefs::kDetectUnitsEnabled, true);
 
+  registry->RegisterTimePref(prefs::kLastSigninTimestamp, base::Time());
   registry->RegisterListPref(kSigninLastAccounts);
   registry->RegisterBooleanPref(kSigninLastAccountsMigrated, false);
 

@@ -335,6 +335,7 @@ void AuthenticationService::SignIn(id<SystemIdentity> identity,
       identity_manager_->GetPrimaryAccountId(signin::ConsentLevel::kSignin);
   CHECK(!primary_account.empty());
   CHECK_EQ(account_id, primary_account);
+  pref_service_->SetTime(prefs::kLastSigninTimestamp, base::Time::Now());
   crash_keys::SetCurrentlySignedIn(true);
 }
 
