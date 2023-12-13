@@ -110,8 +110,6 @@ std::string FakeAssistantClient::GetDeviceId() {
   return assistant_manager()->GetDeviceId();
 }
 
-void FakeAssistantClient::SetDeviceAttributes(bool enable_dark_mode) {}
-
 void FakeAssistantClient::EnableListening(bool listening_enabled) {}
 
 void FakeAssistantClient::AddTimeToTimer(const std::string& id,

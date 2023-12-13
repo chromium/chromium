@@ -10,18 +10,16 @@
 
 #include "base/functional/callback_forward.h"
 #include "base/memory/raw_ref.h"
-#include "base/scoped_observation.h"
-#include "chromeos/ash/services/libassistant/grpc/assistant_client_v1.h"
+#include "chromeos/ash/services/libassistant/grpc/assistant_client.h"
 #include "chromeos/ash/services/libassistant/grpc/external_services/grpc_services_initializer.h"
 #include "chromeos/ash/services/libassistant/grpc/services_status_provider.h"
 
 namespace ash::libassistant {
 
 class GrpcLibassistantClient;
+class ServicesStatusObserver;
 
-// This class wraps the libassistant grpc client and exposes V2 APIs for
-// ChromeOS to use.
-class AssistantClientImpl : public AssistantClientV1 {
+class AssistantClientImpl : public AssistantClient {
  public:
   AssistantClientImpl(
       std::unique_ptr<assistant_client::AssistantManager> assistant_manager,
@@ -30,7 +28,7 @@ class AssistantClientImpl : public AssistantClientV1 {
 
   ~AssistantClientImpl() override;
 
-  // AssistantClientV1 overrides:
+  // AssistantClient:
   void StartServices(ServicesStatusObserver* services_status_observer) override;
   bool StartGrpcServices() override;
   void StartGrpcHttpConnectionClient(
@@ -49,9 +47,13 @@ class AssistantClientImpl : public AssistantClientV1 {
   void GetSpeakerIdEnrollmentInfo(
       const GetSpeakerIdEnrollmentInfoRequest& request,
       base::OnceCallback<void(bool user_model_exists)> on_done) override;
+  void ResetAllDataAndShutdown() override;
   void SendDisplayRequest(const OnDisplayRequestRequest& request) override;
   void AddDisplayEventObserver(
       GrpcServicesObserver<OnAssistantDisplayEventRequest>* observer) override;
+  void ResumeCurrentStream() override;
+  void PauseCurrentStream() override;
+  void SetExternalPlaybackState(const MediaStatus& status_proto) override;
   void AddDeviceStateEventObserver(
       GrpcServicesObserver<OnDeviceStateEventRequest>* observer) override;
   void AddMediaActionFallbackEventObserver(
@@ -81,11 +83,12 @@ class AssistantClientImpl : public AssistantClientV1 {
       override;
   void GetAssistantSettings(
       const ::assistant::ui::SettingsUiSelector& selector,
-      const std::string& use_id,
+      const std::string& user_id,
       base::OnceCallback<
           void(const ::assistant::api::GetAssistantSettingsResponse&)> on_done)
       override;
   void SetLocaleOverride(const std::string& locale) override;
+  std::string GetDeviceId() override;
 
   // Audio-related functionality:
   void EnableListening(bool listening_enabled) override;

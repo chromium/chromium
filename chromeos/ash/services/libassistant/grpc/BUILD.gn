@@ -19,8 +19,6 @@ source_set("assistant_client") {
     "assistant_client_impl.cc",
     "assistant_client_impl.h",
     "assistant_client_observer.h",
-    "assistant_client_v1.cc",
-    "assistant_client_v1.h",
   ]
 
   deps = [
@@ -140,7 +138,6 @@ source_set("http_connection_client") {
 source_set("unit_tests") {
   testonly = true
   sources = [
-    "assistant_client_v1_unittests.cc",
     "external_services/grpc_services_initializer_unittests.cc",
     "grpc_http_connection_client_unittests.cc",
   ]

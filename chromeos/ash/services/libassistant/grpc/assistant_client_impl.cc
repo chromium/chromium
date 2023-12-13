@@ -5,29 +5,32 @@
 #include "chromeos/ash/services/libassistant/grpc/assistant_client_impl.h"
 
 #include <memory>
+#include <string>
 
-#include "base/check.h"
-#include "base/containers/flat_set.h"
 #include "base/functional/bind.h"
-#include "base/functional/callback_forward.h"
-#include "base/functional/callback_helpers.h"
-#include "base/notreached.h"
+#include "base/functional/callback.h"
+#include "base/logging.h"
 #include "base/system/sys_info.h"
-#include "chromeos/ash/services/libassistant/callback_utils.h"
-#include "chromeos/ash/services/libassistant/grpc/assistant_client_v1.h"
+#include "base/time/time.h"
+#include "chromeos/ash/services/libassistant/grpc/assistant_client.h"
 #include "chromeos/ash/services/libassistant/grpc/external_services/action_service.h"
 #include "chromeos/ash/services/libassistant/grpc/grpc_libassistant_client.h"
 #include "chromeos/ash/services/libassistant/grpc/services_status_observer.h"
+#include "chromeos/ash/services/libassistant/grpc/utils/media_status_utils.h"
 #include "chromeos/ash/services/libassistant/grpc/utils/timer_utils.h"
+#include "chromeos/ash/services/libassistant/public/cpp/assistant_timer.h"
 #include "chromeos/assistant/internal/grpc_transport/request_utils.h"
 #include "chromeos/assistant/internal/internal_constants.h"
 #include "chromeos/assistant/internal/internal_util.h"
 #include "chromeos/assistant/internal/libassistant/shared_headers.h"
 #include "chromeos/assistant/internal/libassistant_util.h"
+#include "chromeos/assistant/internal/proto/shared/proto/settings_ui.pb.h"
 #include "chromeos/assistant/internal/proto/shared/proto/v2/alarm_timer_interface.pb.h"
 #include "chromeos/assistant/internal/proto/shared/proto/v2/audio_utils_interface.pb.h"
 #include "chromeos/assistant/internal/proto/shared/proto/v2/bootup_settings_interface.pb.h"
 #include "chromeos/assistant/internal/proto/shared/proto/v2/config_settings_interface.pb.h"
+#include "chromeos/assistant/internal/proto/shared/proto/v2/delegate/event_handler_interface.pb.h"
+#include "chromeos/assistant/internal/proto/shared/proto/v2/device_state_event.pb.h"
 #include "chromeos/assistant/internal/proto/shared/proto/v2/display_interface.pb.h"
 #include "chromeos/assistant/internal/proto/shared/proto/v2/experiment_interface.pb.h"
 #include "chromeos/assistant/internal/proto/shared/proto/v2/query_interface.pb.h"
@@ -39,8 +42,14 @@ namespace {
 
 using ::assistant::api::EnableListeningRequest;
 using ::assistant::api::EnableListeningResponse;
+using ::assistant::api::GetAssistantSettingsResponse;
+using ::assistant::api::OnAlarmTimerEventRequest;
+using ::assistant::api::OnDeviceStateEventRequest;
+using ::assistant::api::OnSpeakerIdEnrollmentEventRequest;
 using ::assistant::api::SetLocaleOverrideRequest;
 using ::assistant::api::SetLocaleOverrideResponse;
+using ::assistant::api::UpdateAssistantSettingsResponse;
+using ::assistant::ui::SettingsUiUpdate;
 
 // Rpc call config constants.
 constexpr int kMaxRpcRetries = 5;
@@ -82,7 +91,7 @@ AssistantClientImpl::AssistantClientImpl(
     std::unique_ptr<assistant_client::AssistantManager> assistant_manager,
     const std::string& libassistant_service_address,
     const std::string& assistant_service_address)
-    : AssistantClientV1(std::move(assistant_manager)),
+    : AssistantClient(std::move(assistant_manager)),
       grpc_services_(libassistant_service_address, assistant_service_address),
       libassistant_client_(grpc_services_.GrpcLibassistantClient()) {}
 
@@ -177,6 +186,10 @@ void AssistantClientImpl::GetSpeakerIdEnrollmentInfo(
       kDefaultStateConfig);
 }
 
+void AssistantClientImpl::ResetAllDataAndShutdown() {
+  assistant_manager()->ResetAllDataAndShutdown();
+}
+
 void AssistantClientImpl::SendDisplayRequest(
     const OnDisplayRequestRequest& request) {
   libassistant_client_->CallServiceMethod(
@@ -189,6 +202,22 @@ void AssistantClientImpl::SendDisplayRequest(
 void AssistantClientImpl::AddDisplayEventObserver(
     GrpcServicesObserver<OnAssistantDisplayEventRequest>* observer) {
   grpc_services_.AddAssistantDisplayEventObserver(observer);
+}
+
+void AssistantClientImpl::ResumeCurrentStream() {
+  assistant_manager()->GetMediaManager()->Resume();
+}
+
+void AssistantClientImpl::PauseCurrentStream() {
+  assistant_manager()->GetMediaManager()->Pause();
+}
+
+void AssistantClientImpl::SetExternalPlaybackState(
+    const MediaStatus& status_proto) {
+  assistant_client::MediaStatus media_status;
+  ConvertMediaStatusToV1FromV2(status_proto, &media_status);
+  assistant_manager()->GetMediaManager()->SetExternalPlaybackState(
+      media_status);
 }
 
 void AssistantClientImpl::AddDeviceStateEventObserver(
@@ -346,6 +375,10 @@ void AssistantClientImpl::SetLocaleOverride(const std::string& locale) {
   libassistant_client_->CallServiceMethod(
       request, GetLoggingCallback<SetLocaleOverrideResponse>(__func__),
       kDefaultStateConfig);
+}
+
+std::string AssistantClientImpl::GetDeviceId() {
+  return assistant_manager()->GetDeviceId();
 }
 
 void AssistantClientImpl::EnableListening(bool listening_enabled) {

@@ -80,7 +80,6 @@ class FakeAssistantClient : public AssistantClient {
           void(const ::assistant::api::GetAssistantSettingsResponse&)> on_done)
       override;
   void SetLocaleOverride(const std::string& locale) override;
-  void SetDeviceAttributes(bool enable_dark_mode) override;
   std::string GetDeviceId() override;
   void EnableListening(bool listening_enabled) override;
   void AddTimeToTimer(const std::string& id,

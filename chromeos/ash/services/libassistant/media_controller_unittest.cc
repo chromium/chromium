@@ -123,9 +123,6 @@ class AssistantMediaControllerTest : public testing::Test {
   void SetUp() override {
     service_tester_.Start();
     service_tester_.assistant_manager().SetMediaManager(&media_manager_);
-    service_tester_.assistant_manager()
-        .device_state_listener()
-        ->OnStartFinished();
     media_controller_->OnAssistantClientRunning(&assistant_client());
   }
 
