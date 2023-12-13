@@ -4033,7 +4033,7 @@ que pot incloure dades del programari instal·lat, de fitxers, del navegador i d
 <translation id="4175137578744761569">Porpra clar i blanc</translation>
 <translation id="4176463684765177261">Desactivat</translation>
 <translation id="4176864026061939326">Aquest és un dispositiu gestionat. L'administrador del dispositiu requereix un perfil nou per al compte <ph name="USER_EMAIL_ADDRESS" />.</translation>
-<translation id="4177501066905053472">Temes d'anuncis</translation>
+<translation id="4177501066905053472">Temes d'anunci</translation>
 <translation id="4177668342649553942">Obre <ph name="SHORTCUT_NAME" /> - <ph name="APP_NAME" /></translation>
 <translation id="4178220097446335546">A fi d'oblidar aquesta subscripció i les xarxes associades, ves a la pàgina de subscripció de Passpoint per suprimir la subscripció.</translation>
 <translation id="4180788401304023883">Voleu suprimir el certificat de CA "<ph name="CERTIFICATE_NAME" />"?</translation>
@@ -5014,7 +5014,7 @@ Fes servir Ctrl+Alt+disminueix la brillantor per reduir.</translation>
 <translation id="4992869834339068470">Ajuda a millorar les funcions i el rendiment de Chrome OS. Les dades són agregades i estan molt protegides.</translation>
 <translation id="4994426888044765950">Si mantens premuda una tecla, el caràcter de la tecla es repetirà</translation>
 <translation id="4994754230098574403">S'està configurant</translation>
-<translation id="4995293419989417004">Més informació sobre els temes d'anuncis</translation>
+<translation id="4995293419989417004">Més informació sobre els temes d'anunci</translation>
 <translation id="4995676741161760215">L'extensió està activada</translation>
 <translation id="4996851818599058005">{NUM_VMS,plural, =0{No s'ha trobat cap màquina virtual <ph name="VM_TYPE" />}=1{S'ha trobat una màquina virtual <ph name="VM_TYPE" />: <ph name="VM_NAME_LIST" />}other{S'han trobat {NUM_VMS} màquines virtuals <ph name="VM_TYPE" />: <ph name="VM_NAME_LIST" />}}</translation>
 <translation id="4997086284911172121">No hi ha connexió a Internet.</translation>
@@ -8210,7 +8210,7 @@ Tens # contrasenyes més en perill. El gestor de contrasenyes de Google recomana
 <translation id="7634337648687970851">Actualment no s'admet la recuperació de dades locals.</translation>
 <translation id="7634566076839829401">S'ha produït un error; torna-ho a provar.</translation>
 <translation id="7635048370253485243">Fixada per l'administrador</translation>
-<translation id="7635711411613274199">El fet que els anuncis que veus mentre navegues es personalitzin o no dependrà d'aquesta opció de configuració, dels <ph name="BEGIN_LINK1" />temes d'anuncis<ph name="LINK_END1" />, de la <ph name="BEGIN_LINK2" />configuració de galetes<ph name="LINK_END2" /> i de si el lloc web que estàs visitant personalitza els anuncis</translation>
+<translation id="7635711411613274199">El fet que els anuncis que veus mentre navegues es personalitzin o no dependrà d'aquesta opció de configuració, dels <ph name="BEGIN_LINK1" />temes d'anunci<ph name="LINK_END1" />, de la <ph name="BEGIN_LINK2" />configuració de galetes<ph name="LINK_END2" /> i de si el lloc web que estàs visitant personalitza els anuncis</translation>
 <translation id="7636346903338549690">Llocs web amb permís per utilitzar galetes de tercers</translation>
 <translation id="7636919061354591437">Instal·la en aquest dispositiu</translation>
 <translation id="7637253234491814483">Toca el sensor d'empremtes digitals que hi ha a l'extrem superior dret del teclat, al costat del botó d'engegada. Les dades de l'empremta digital s'emmagatzemen de manera segura i no surten mai del <ph name="DEVICE_TYPE" />.</translation>

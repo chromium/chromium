@@ -5867,7 +5867,7 @@ Dopuštenja koja ste već dali web-lokacijama i aplikacijama mogu se primijeniti
 <translation id="5711010025974903573">Zapisnici usluge</translation>
 <translation id="5711983031544731014">Otključavanje nije moguće. Unesite svoju zaporku.</translation>
 <translation id="5712153969432126546">Web-lokacije ponekad objavljuju PDF-ove, primjerice dokumente, ugovore i obrasce</translation>
-<translation id="571222594670061844">Web-lokacije mogu prikazivati upite za prijavu usluga za identitet</translation>
+<translation id="571222594670061844">Web-lokacije mogu prikazivati upite za prijavu s usluga za provjeru identiteta</translation>
 <translation id="5713033452812927234">Otvaranje prozora s prethodnog uređaja</translation>
 <translation id="5713158217420111469">Povezano s uređajem <ph name="DEVICE" /></translation>
 <translation id="5713960379473463904">Stil unosa razmaka</translation>
@@ -6076,7 +6076,7 @@ Dopuštenja koja ste već dali web-lokacijama i aplikacijama mogu se primijeniti
 <translation id="5876851302954717356">Nova kartica s desne strane</translation>
 <translation id="5877064549588274448">Kanal je promijenjen. Ponovo pokrenite uređaj za primjenu promjena.</translation>
 <translation id="5877584842898320529">Odabrani pisač nije dostupan ili nije ispravno instaliran. <ph name="BR" /> Provjerite pisač ili pokušajte odabrati neki drugi.</translation>
-<translation id="5878945009165002849">Blokiraj upite za prijavu usluga za identitet</translation>
+<translation id="5878945009165002849">Blokiraj upite za prijavu s usluga za provjeru identiteta</translation>
 <translation id="5881710783061958569">Ako jeste, uredite zaporku spremljenu na usluzi <ph name="BRAND" /> kako bi odgovarala vašoj novoj zaporki.</translation>
 <translation id="5882919346125742463">Poznate mreže</translation>
 <translation id="5883356647197510494">Automatski je blokirano sljedeće: <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /></translation>

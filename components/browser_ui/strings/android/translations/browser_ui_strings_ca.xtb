@@ -342,7 +342,7 @@
 <translation id="6992289844737586249">Pregunta abans de permetre que els llocs web utilitzin el micròfon (opció recomanada)</translation>
 <translation id="7000754031042624318">Desactivat a la configuració d'Android</translation>
 <translation id="7016516562562142042">Es permet al motor de cerca actual</translation>
-<translation id="702275896380648118">Aquest lloc web determina les coses que t'agraden i, a continuació, suggereix anuncis a altres llocs web. També obté de Chrome els teus temes d'anuncis per mostrar-te anuncis més rellevants.</translation>
+<translation id="702275896380648118">Aquest lloc web determina les coses que t'agraden i, a continuació, suggereix anuncis a altres llocs web. També obté de Chrome els teus temes d'anunci per mostrar-te anuncis més rellevants.</translation>
 <translation id="7053983685419859001">Bloqueja</translation>
 <translation id="7066151586745993502">{NUM_SELECTED,plural, =1{1 seleccionat}other{# seleccionats}}</translation>
 <translation id="7087918508125750058"><ph name="ITEM_COUNT" /> elements seleccionats. Hi ha opcions disponibles a prop de la part superior de la pantalla.</translation>
@@ -431,7 +431,7 @@
 <translation id="851751545965956758">Impedeix que els llocs web es connectin a dispositius</translation>
 <translation id="8525306231823319788">Pantalla completa</translation>
 <translation id="8528440122773422556">Aquesta acció esborrarà totes les dades i galetes emmagatzemades per tots els llocs web de <ph name="ORIGIN" /> o per la seva aplicació de la pantalla d'inici</translation>
-<translation id="8541410041357371550">Aquest lloc web obté de Chrome els teus temes d'anuncis per mostrar-te anuncis més rellevants</translation>
+<translation id="8541410041357371550">Aquest lloc web obté de Chrome els teus temes d'anunci per mostrar-te anuncis més rellevants</translation>
 <translation id="8564613706851221529">{COUNT,plural, =1{Es permeten les galetes per a <ph name="FPS_MEMBERS_COUNT" /> lloc web de <ph name="FPS_OWNER" />}other{Es permeten les galetes per a <ph name="FPS_MEMBERS_COUNT" /> llocs web de <ph name="FPS_OWNER" />}}</translation>
 <translation id="857943718398505171">Permès (opció recomanada)</translation>
 <translation id="8609465669617005112">Desplaça cap amunt</translation>

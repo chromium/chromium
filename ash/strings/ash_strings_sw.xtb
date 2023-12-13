@@ -3,7 +3,7 @@
 <translationbundle lang="sw">
 <translation id="1012876632442809908">Kifaa cha USB-C (mlango wa mbele)</translation>
 <translation id="1013598600051641573"><ph name="DISPLAY_NAME" /> imebadilika kuwa <ph name="RESOLUTION" /> (Hz <ph name="REFRESH_RATE" />). Bofya 'thibitisha' ili uhifadhi mabadiliko. Mipangilio ya awali itarejeshwa baada ya <ph name="TIMEOUT_SECONDS" />.</translation>
-<translation id="1013923882670373915">Kifaa cha Bluetooth cha "<ph name="DEVICE_NAME" />" kinaomba idhini ya kuoanisha. Tafadhali weka nambari hii ya PIN kwenye kifaa hicho: <ph name="PINCODE" /></translation>
+<translation id="1013923882670373915">Kifaa cha Bluetooth cha "<ph name="DEVICE_NAME" />" kinaomba idhini ya kuoanisha. Tafadhali weka namba hii ya PIN kwenye kifaa hicho: <ph name="PINCODE" /></translation>
 <translation id="1014722676793506285">Hatua hii huruhusu <ph name="APP_NAME" />, programu na tovuti zote zilizo na ruhusa ya mahali na ChromeOS kutumia data ya mahali ya Wi-Fi na mitandao ya simu.</translation>
 <translation id="1017556409696559990">Punguza dirisha la juu kukiwa hakuna historia ya kuvinjari kwenye Chrome</translation>
 <translation id="1024364763893396229">Hifadhi <ph name="NAME" /> yako</translation>

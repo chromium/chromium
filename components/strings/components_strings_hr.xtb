@@ -1168,7 +1168,7 @@ To će u suprotnom biti onemogućeno na temelju vaših postavki privatnosti. To 
 <translation id="3399952811970034796">Adresa za dostavu</translation>
 <translation id="3402261774528610252">Veza za učitavanje ove web-lokacije koristila je TLS 1.0 ili TLS 1.1, koji su obustavljeni i onemogućit će se. Nakon onemogućivanja korisnici neće moći učitati ovu web-lokaciju. Poslužitelj bi trebao omogućiti TLS 1.2 ili noviju verziju.</translation>
 <translation id="3405664148539009465">Prilagodi fontove</translation>
-<translation id="3407789382767355356">prijava treće strane</translation>
+<translation id="3407789382767355356">prijava putem treće strane</translation>
 <translation id="3409896703495473338">Upravljajte sigurnosnim postavkama</translation>
 <translation id="3414952576877147120">Veličina:</translation>
 <translation id="341513675006332771">Gumb Igraj igru s dinosaurom u Chromeu, aktivirajte ga da biste igrali igru Dino Run u Chromeu</translation>
@@ -1384,7 +1384,7 @@ To će u suprotnom biti onemogućeno na temelju vaših postavki privatnosti. To 
 <translation id="3823019343150397277">IBAN</translation>
 <translation id="3823402221513322552">Vašim preglednikom upravlja <ph name="BROWSER_DOMAIN" />, a vašim profilom upravlja <ph name="PROFILE_DOMAIN" /></translation>
 <translation id="382518646247711829">Ako upotrebljavate proxy poslužitelj...</translation>
-<translation id="3826050100957962900">Prijava za treće strane</translation>
+<translation id="3826050100957962900">Prijava putem treće strane</translation>
 <translation id="3827112369919217609">Apsolutno</translation>
 <translation id="3827666161959873541">Obiteljski filmovi</translation>
 <translation id="3828924085048779000">Prazne zaporke nisu dopuštene.</translation>
