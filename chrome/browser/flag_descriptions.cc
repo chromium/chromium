@@ -3964,11 +3964,6 @@ const char kCCTRealTimeEngagementSignalsDescription[] =
     "Enables sending real-time engagement signals (e.g. scroll) through "
     "CustomTabsCallback.";
 
-const char kCCTTextFragmentLookupApiEnabledName[] =
-    "Enable CCT API to lookup text fragments";
-const char kCCTTextFragmentLookupApiEnabledDescription[] =
-    "Enable CCT API to lookup text fragments";
-
 const char kAccountReauthenticationRecentTimeWindowName[] =
     "Account Reauthentication Recent Time Window";
 const char kAccountReauthenticationRecentTimeWindowDescription[] =
