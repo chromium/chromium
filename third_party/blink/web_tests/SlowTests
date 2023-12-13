@@ -916,7 +916,6 @@ crbug.com/886566 [ Mac12 ] http/tests/csspaint/invalidation-background-image.htm
 crbug.com/886566 [ Linux ] http/tests/csspaint/invalidation-content-image.html [ Slow ]
 crbug.com/886566 [ Mac11 Release ] http/tests/csspaint/invalidation-content-image.html [ Slow ]
 crbug.com/886566 [ Mac12 ] http/tests/csspaint/invalidation-content-image.html [ Slow ]
-crbug.com/886566 [ Mac12-arm64 Release ] http/tests/csspaint/invalidation-content-image.html [ Slow ]
 crbug.com/886566 [ Release Win ] http/tests/csspaint/invalidation-content-image.html [ Slow ]
 crbug.com/907412 [ Linux ] external/wpt/domxpath/xml_xpath_runner.html [ Slow ]
 crbug.com/907412 [ Mac11 Release ] external/wpt/domxpath/xml_xpath_runner.html [ Slow ]
