@@ -136,7 +136,6 @@ public final class ShareSheetCoordinatorTest {
                         null,
                         false,
                         null,
-                        null,
                         mProfile,
                         null);
     }

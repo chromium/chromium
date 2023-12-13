@@ -473,7 +473,6 @@ public class ChromeProvidedSharingOptionsProviderTest {
                         isIncognito,
                         /* shareStartTime= */ 0,
                         mShareSheetCoordinator,
-                        /* imageEditorModuleProvider= */ null,
                         mTracker,
                         URL,
                         linkGenerationStatus,

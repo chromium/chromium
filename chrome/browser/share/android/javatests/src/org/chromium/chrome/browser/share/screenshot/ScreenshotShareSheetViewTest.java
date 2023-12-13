@@ -37,7 +37,6 @@ public class ScreenshotShareSheetViewTest extends BlankUiTestActivityTestCase {
     private AtomicBoolean mCloseClicked = new AtomicBoolean();
     private AtomicBoolean mShareClicked = new AtomicBoolean();
     private AtomicBoolean mSaveClicked = new AtomicBoolean();
-    private AtomicBoolean mInstallClicked = new AtomicBoolean();
 
     private Callback<Integer> mMockNoArgListener =
             new Callback<Integer>() {
@@ -52,9 +51,6 @@ public class ScreenshotShareSheetViewTest extends BlankUiTestActivityTestCase {
                     } else if (ScreenshotShareSheetViewProperties.NoArgOperation.DELETE
                             == operation) {
                         mCloseClicked.set(true);
-                    } else if (ScreenshotShareSheetViewProperties.NoArgOperation.INSTALL
-                            == operation) {
-                        mInstallClicked.set(true);
                     }
                 }
             };
@@ -141,18 +137,6 @@ public class ScreenshotShareSheetViewTest extends BlankUiTestActivityTestCase {
         saveButton.performClick();
         Assert.assertTrue(mSaveClicked.get());
         mSaveClicked.set(false);
-    }
-
-    @Test
-    @MediumTest
-    @UiThreadTest
-    public void testClickToEdit() {
-        View installButton = mScreenshotView.findViewById(R.id.edit);
-
-        Assert.assertFalse(mInstallClicked.get());
-        installButton.performClick();
-        Assert.assertTrue(mInstallClicked.get());
-        mInstallClicked.set(false);
     }
 
     @Override

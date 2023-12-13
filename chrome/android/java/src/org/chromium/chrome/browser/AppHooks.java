@@ -26,7 +26,6 @@ import org.chromium.chrome.browser.sync.TrustedVaultClient;
 import org.chromium.chrome.browser.ui.signin.GoogleActivityController;
 import org.chromium.chrome.browser.usage_stats.DigitalWellbeingClient;
 import org.chromium.chrome.browser.webapps.GooglePlayWebApkInstallDelegate;
-import org.chromium.chrome.modules.image_editor.ImageEditorModuleProvider;
 import org.chromium.components.policy.AppRestrictionsProvider;
 import org.chromium.components.policy.CombinedPolicyProvider;
 import org.chromium.components.signin.AccountManagerDelegate;
@@ -188,10 +187,6 @@ public abstract class AppHooks {
     /** Returns a Chime Delegate if the chime module is defined. */
     public ChimeDelegate getChimeDelegate() {
         return new ChimeDelegate();
-    }
-
-    public @Nullable ImageEditorModuleProvider getImageEditorModuleProvider() {
-        return null;
     }
 
     public ChromeStartupDelegate createChromeStartupDelegate() {

@@ -35,7 +35,6 @@ import org.chromium.chrome.browser.share.link_to_text.LinkToTextMetricsHelper;
 import org.chromium.chrome.browser.share.share_sheet.ShareSheetLinkToggleCoordinator.LinkToggleState;
 import org.chromium.chrome.browser.share.share_sheet.ShareSheetLinkToggleMetricsHelper.LinkToggleMetricsDetails;
 import org.chromium.chrome.browser.tab.Tab;
-import org.chromium.chrome.modules.image_editor.ImageEditorModuleProvider;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetContent;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetObserver;
@@ -67,7 +66,6 @@ public class ShareSheetCoordinator
     private final ShareSheetPropertyModelBuilder mPropertyModelBuilder;
     private final Callback<Tab> mPrintTabCallback;
     private final boolean mIsIncognito;
-    private final ImageEditorModuleProvider mImageEditorModuleProvider;
     private final BottomSheetObserver mBottomSheetObserver;
     private final LargeIconBridge mIconBridge;
     private final Tracker mFeatureEngagementTracker;
@@ -101,7 +99,6 @@ public class ShareSheetCoordinator
      * @param tabProvider Supplier for the current activity tab.
      * @param modelBuilder The {@link ShareSheetPropertyModelBuilder} for the share sheet.
      * @param isIncognito Whether the share sheet was opened in incognito mode or not.
-     * @param imageEditorModuleProvider Image Editor module entry point if present in the APK.
      * @param profile The current profile of the User.
      * @param deviceLockActivityLauncher The launcher to start up the device lock page.
      */
@@ -113,7 +110,6 @@ public class ShareSheetCoordinator
             Callback<Tab> printTab,
             LargeIconBridge iconBridge,
             boolean isIncognito,
-            ImageEditorModuleProvider imageEditorModuleProvider,
             Tracker featureEngagementTracker,
             Profile profile,
             DeviceLockActivityLauncher deviceLockActivityLauncher) {
@@ -123,7 +119,6 @@ public class ShareSheetCoordinator
         mTabProvider = tabProvider;
         mPrintTabCallback = printTab;
         mIsIncognito = isIncognito;
-        mImageEditorModuleProvider = imageEditorModuleProvider;
         mBottomSheetObserver =
                 new EmptyBottomSheetObserver() {
                     @Override
@@ -355,7 +350,6 @@ public class ShareSheetCoordinator
                         mIsIncognito,
                         mShareStartTime,
                         this,
-                        mImageEditorModuleProvider,
                         mFeatureEngagementTracker,
                         getUrlToShare(shareParams, chromeShareExtras),
                         mLinkGenerationStatusForMetrics,

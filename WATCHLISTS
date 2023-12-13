@@ -1276,10 +1276,6 @@
       'filepath': 'base/i18n/|base/string|l10n|icu|'\
                   'locale_settings|encoding',
     },
-    'image_editor': {
-      'filepath': 'chrome/browser/image_editor'\
-                  '|chrome/android/modules/image_editor',
-    },
     'incident_reporting': {
       'filepath': 'chrome/browser/safe_browsing/incident_reporting',
     },
@@ -2908,10 +2904,6 @@
     'heap_mojo': ['chikamune+watch@chromium.org'],
     'holding_space': ['tote-eng+reviews@google.com'],
     'i18n': ['jshin+watch@chromium.org'],
-    'image_editor': ['chrome-sharing-eng+watch@google.com',
-                     'jeffreycohen+watch@chromium.org',
-                     'kristipark+watch@chromium.org',
-                     'tgupta+watch@chromium.org'],
     'incident_reporting': ['grt+watch@chromium.org'],
     'incognito': ['roagarwal+watch@chromium.org'],
     'indexed_db': ['jsbell+idb@chromium.org',

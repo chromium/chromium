@@ -81,7 +81,6 @@ import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.ui.favicon.FaviconHelper;
 import org.chromium.chrome.browser.ui.favicon.FaviconHelperJni;
-import org.chromium.chrome.modules.image_editor.ImageEditorModuleProvider;
 import org.chromium.chrome.test.util.browser.Features;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.device_lock.DeviceLockActivityLauncher;
@@ -868,8 +867,7 @@ public class AndroidShareSheetControllerUnitTest {
                 Tab tab,
                 String shareUrl,
                 ChromeOptionShareCallback chromeOptionShareCallback,
-                BottomSheetController sheetController,
-                ImageEditorModuleProvider imageEditorModuleProvider) {
+                BottomSheetController sheetController) {
             return sMockInstance;
         }
     }

@@ -20,7 +20,6 @@ import org.chromium.chrome.browser.share.link_to_text.LinkToTextCoordinator.Link
 import org.chromium.chrome.browser.share.long_screenshots.LongScreenshotsCoordinator;
 import org.chromium.chrome.browser.share.share_sheet.ShareSheetLinkToggleMetricsHelper.LinkToggleMetricsDetails;
 import org.chromium.chrome.browser.tab.Tab;
-import org.chromium.chrome.modules.image_editor.ImageEditorModuleProvider;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.device_lock.DeviceLockActivityLauncher;
 import org.chromium.components.browser_ui.share.ShareParams;
@@ -43,8 +42,6 @@ public class ChromeProvidedSharingOptionsProvider extends ChromeProvidedSharingO
 
     private final ShareSheetBottomSheetContent mBottomSheetContent;
     private final long mShareStartTime;
-    // TODO(crbug.com/1448589): Remove the image editor.
-    private final ImageEditorModuleProvider mImageEditorModuleProvider;
     private final @LinkGeneration int mLinkGenerationStatusForMetrics;
     private final LinkToggleMetricsDetails mLinkToggleMetricsDetails;
 
@@ -63,7 +60,6 @@ public class ChromeProvidedSharingOptionsProvider extends ChromeProvidedSharingO
      * @param shareStartTime The start time of the current share.
      * @param chromeOptionShareCallback A ChromeOptionShareCallback that can be used by
      * Chrome-provided sharing options.
-     * @param imageEditorModuleProvider Image Editor module entry point if present in the APK.
      * @param featureEngagementTracker feature engagement tracker.
      * @param url Url to share.
      * @param linkGenerationStatusForMetrics User action of sharing text from failed link-to-text
@@ -84,7 +80,6 @@ public class ChromeProvidedSharingOptionsProvider extends ChromeProvidedSharingO
             boolean isIncognito,
             long shareStartTime,
             ChromeOptionShareCallback chromeOptionShareCallback,
-            ImageEditorModuleProvider imageEditorModuleProvider,
             Tracker featureEngagementTracker,
             String url,
             @LinkGeneration int linkGenerationStatusForMetrics,
@@ -106,7 +101,6 @@ public class ChromeProvidedSharingOptionsProvider extends ChromeProvidedSharingO
                 deviceLockActivityLauncher);
         mBottomSheetContent = bottomSheetContent;
         mShareStartTime = shareStartTime;
-        mImageEditorModuleProvider = imageEditorModuleProvider;
         mLinkGenerationStatusForMetrics = linkGenerationStatusForMetrics;
         mLinkToggleMetricsDetails = linkToggleMetricsDetails;
 
@@ -182,8 +176,7 @@ public class ChromeProvidedSharingOptionsProvider extends ChromeProvidedSharingO
                                             mTabProvider.get(),
                                             mUrl,
                                             mChromeOptionShareCallback,
-                                            mBottomSheetController,
-                                            null);
+                                            mBottomSheetController);
                             mBottomSheetController.addObserver(coordinator);
                             mBottomSheetController.hideContent(mBottomSheetContent, true);
                         })

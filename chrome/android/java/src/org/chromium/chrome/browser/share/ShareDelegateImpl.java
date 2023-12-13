@@ -15,7 +15,6 @@ import androidx.core.os.BuildCompat;
 import org.chromium.base.Callback;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.supplier.Supplier;
-import org.chromium.chrome.browser.AppHooks;
 import org.chromium.chrome.browser.device_lock.DeviceLockActivityLauncherImpl;
 import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
@@ -338,7 +337,6 @@ public class ShareDelegateImpl implements ShareDelegate {
                                 printCallback,
                                 new LargeIconBridge(profile),
                                 isIncognito,
-                                AppHooks.get().getImageEditorModuleProvider(),
                                 TrackerFactory.getTrackerForProfile(profile),
                                 profile,
                                 DeviceLockActivityLauncherImpl.get());

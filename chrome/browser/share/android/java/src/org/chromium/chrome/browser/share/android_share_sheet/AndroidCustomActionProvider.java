@@ -163,8 +163,7 @@ class AndroidCustomActionProvider extends ChromeProvidedSharingOptionsProviderBa
                                             mTabProvider.get(),
                                             mUrl,
                                             mChromeOptionShareCallback,
-                                            mBottomSheetController,
-                                            null);
+                                            mBottomSheetController);
                             coordinator.captureScreenshot();
                         })
                 .build();

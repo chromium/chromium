@@ -5358,10 +5358,6 @@ To change this setting, <ph name="BEGIN_LINK">&lt;resetlink&gt;</ph>reset sync<p
       </message>
 
       <!-- Share Screenshot strings -->
-      <message name="IDS_SCREENSHOT_EDIT_TITLE" desc="The text shown on the share option for screenshots.">
-        Edit
-      </message>
-
       <message name="IDS_SCREENSHOT_DELETE_TITLE" desc="The text shown on the delete option for screenshots.">
         Delete
       </message>

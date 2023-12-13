@@ -11,7 +11,6 @@ import androidx.annotation.VisibleForTesting;
 import androidx.fragment.app.FragmentActivity;
 import androidx.fragment.app.FragmentManager;
 
-import org.chromium.base.Callback;
 import org.chromium.chrome.browser.share.share_sheet.ChromeOptionShareCallback;
 import org.chromium.ui.base.WindowAndroid;
 
@@ -29,7 +28,6 @@ public class ScreenshotShareSheetDialogCoordinator {
      * @param windowAndroid The {@link WindowAndroid} which contains the content to share.
      * @param shareUrl The URL associated with the screenshot.
      * @param shareCallback Callback called when falling back to the share sheet.
-     * @param installCallback Callback called when the image editor is installed and run.
      */
     public ScreenshotShareSheetDialogCoordinator(
             Activity activity,
@@ -37,11 +35,10 @@ public class ScreenshotShareSheetDialogCoordinator {
             Bitmap screenshot,
             WindowAndroid windowAndroid,
             String shareUrl,
-            ChromeOptionShareCallback shareCallback,
-            Callback<Runnable> installCallback) {
+            ChromeOptionShareCallback shareCallback) {
         mFragmentManager = ((FragmentActivity) activity).getSupportFragmentManager();
         mDialog = dialog;
-        mDialog.init(screenshot, windowAndroid, shareUrl, shareCallback, installCallback);
+        mDialog.init(screenshot, windowAndroid, shareUrl, shareCallback);
     }
 
     /** Show the main share sheet dialog. */

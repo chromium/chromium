@@ -13,7 +13,6 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
 import androidx.fragment.app.DialogFragment;
 
-import org.chromium.base.Callback;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.share.share_sheet.ChromeOptionShareCallback;
 import org.chromium.components.browser_ui.widget.FullscreenAlertDialog;
@@ -25,27 +24,24 @@ public class ScreenshotShareSheetDialog extends DialogFragment {
     private WindowAndroid mWindowAndroid;
     private String mShareUrl;
     private ChromeOptionShareCallback mChromeOptionShareCallback;
-    private @Nullable Callback<Runnable> mInstallCallback;
 
     /** The ScreenshotShareSheetDialog constructor. */
     public ScreenshotShareSheetDialog() {}
 
     /**
      * Initialize the dialog outside of the constructor as fragments require default constructor.
+     *
      * @param screenshot The screenshot image to show.
      * @param windowAndroid The associated {@link WindowAndroid}.
      * @param shareUrl The URL associated with the screenshot.
      * @param chromeOptionShareCallback the callback to trigger on share.
-     * @param installCallback the callback to trigger on install.
      */
     public void init(
             Bitmap screenshot,
             WindowAndroid windowAndroid,
             String shareUrl,
-            ChromeOptionShareCallback chromeOptionShareCallback,
-            @Nullable Callback<Runnable> installCallback) {
+            ChromeOptionShareCallback chromeOptionShareCallback) {
         mScreenshot = screenshot;
-        mInstallCallback = installCallback;
         mWindowAndroid = windowAndroid;
         mShareUrl = shareUrl;
         mChromeOptionShareCallback = chromeOptionShareCallback;
@@ -82,8 +78,7 @@ public class ScreenshotShareSheetDialog extends DialogFragment {
                 screenshotShareSheetView,
                 mWindowAndroid,
                 mShareUrl,
-                mChromeOptionShareCallback,
-                mInstallCallback);
+                mChromeOptionShareCallback);
         return builder.create();
     }
 }

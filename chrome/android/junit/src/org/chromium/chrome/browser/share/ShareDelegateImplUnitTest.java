@@ -48,7 +48,6 @@ import org.chromium.chrome.browser.share.android_share_sheet.AndroidShareSheetCo
 import org.chromium.chrome.browser.share.share_sheet.ShareSheetCoordinator;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
-import org.chromium.chrome.modules.image_editor.ImageEditorModuleProvider;
 import org.chromium.chrome.test.util.browser.Features;
 import org.chromium.chrome.test.util.browser.Features.DisableFeatures;
 import org.chromium.chrome.test.util.browser.Features.EnableFeatures;
@@ -373,7 +372,6 @@ public class ShareDelegateImplUnitTest {
                 Callback<Tab> printTab,
                 LargeIconBridge iconBridge,
                 boolean isIncognito,
-                ImageEditorModuleProvider imageEditorModuleProvider,
                 Tracker featureEngagementTracker,
                 Profile profile) {
             // Leave blank to avoid creating unnecessary objects.
