@@ -42,8 +42,11 @@ small_ctor = "0.1"
 static_assertions = "1"
 strum = "0.25.0"
 strum_macros = "0.25.3"
-tinyvec = "1.6.0"
 wycheproof = "0.4"
+
+[dependencies.tinyvec]
+version = "1.6.0"
+features = ["rustc_1_55"]
 
 [dependencies.cxxbridge-cmd]
 version = "1"

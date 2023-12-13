@@ -132,7 +132,8 @@ group = 'test'
 
 [crate.rustversion]
 allow_first_party_usage = false
-build_script_outputs = [ "version.rs" ]
+extra_build_script_src_roots = ['../build/rustc.rs']
+build_script_outputs = [ "version.expr" ]
 
 [crate.rustc-demangle-capi]
 shipped = false
