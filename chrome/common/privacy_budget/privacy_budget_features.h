@@ -343,26 +343,6 @@ constexpr double kMaxProbabilityPerSurface = 0.5;
 extern const base::FeatureParam<std::string>
     kIdentifiabilityStudyReidSurfaceBlocks;
 
-// Enable active sampling.
-//
-// Parameter name: "EnableActiveSampling"
-// Parameter type: boolean.
-//
-// Enable active sampling of supported surfaces. Whether the surfaces will
-// actually be reported depends on the other parameters.
-extern const base::FeatureParam<bool> kIdentifiabilityStudyEnableActiveSampling;
-
-// List of font families which will be actively sampled.
-//
-// Parameter name: "ActivelySampledFonts"
-// Parameter type: Comma separated list of font families.
-//
-// The Identifiability Study code will actively sample whether these font
-// families are available or not. Note that whether they will actually be
-// reported or not depends on the other parameters.
-extern const base::FeatureParam<std::string>
-    kIdentifiabilityStudyActivelySampledFonts;
-
 // Ranges for the random salts for the Reid Block hashes.
 //
 // Parameter name: "ReidBlocksSaltsRanges"

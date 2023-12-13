@@ -150,14 +150,6 @@ void ScopedPrivacyBudgetConfig::Apply(const Parameters& parameters) {
         {features::kIdentifiabilityStudySurfaceEquivalenceClasses.name,
          EncodeIdentifiabilityFieldTrialParam(parameters.equivalence_classes)});
   }
-  ftp.insert({features::kIdentifiabilityStudyEnableActiveSampling.name,
-              EncodeIdentifiabilityFieldTrialParam(
-                  parameters.enable_active_sampling)});
-  if (!parameters.actively_sampled_fonts.empty()) {
-    ftp.insert({features::kIdentifiabilityStudyActivelySampledFonts.name,
-                EncodeIdentifiabilityFieldTrialParam(
-                    parameters.actively_sampled_fonts)});
-  }
 
   scoped_feature_list_.InitAndEnableFeatureWithParameters(
       features::kIdentifiabilityStudy, ftp);

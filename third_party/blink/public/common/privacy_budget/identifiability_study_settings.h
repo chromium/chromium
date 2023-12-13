@@ -81,12 +81,6 @@ class BLINK_COMMON_EXPORT IdentifiabilityStudySettings {
   // ShouldSampleSurface for more detail.
   bool ShouldSampleWebFeature(mojom::WebFeature feature) const;
 
-  // Returns true if surfaces should be actively sampled.
-  bool ShouldActivelySample() const;
-
-  // Returns the font families which should be actively sampled.
-  std::vector<std::string> FontFamiliesToActivelySample() const;
-
   // Only used for testing. Resets internal state and violates API contracts
   // made above about the lifetime of IdentifiabilityStudySettings*.
   static void ResetStateForTesting();

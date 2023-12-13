@@ -69,8 +69,6 @@ class ScopedPrivacyBudgetConfig {
     std::vector<int> reid_bits;
     std::vector<double> reid_noise;
     std::vector<blink::IdentifiableSurface::Type> allowed_random_types;
-    bool enable_active_sampling = false;
-    std::vector<std::string> actively_sampled_fonts;
   };
 
   // Doesn't do anything until Apply() is called.

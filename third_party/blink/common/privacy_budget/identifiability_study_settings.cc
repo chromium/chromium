@@ -176,15 +176,4 @@ bool IdentifiabilityStudySettings::ShouldSampleAnything() const {
   return IsActive() || IdentifiabilityTracingEnabled();
 }
 
-bool IdentifiabilityStudySettings::ShouldActivelySample() const {
-  if (LIKELY(!IsActive()))
-    return false;
-  return provider_->ShouldActivelySample();
-}
-
-std::vector<std::string>
-IdentifiabilityStudySettings::FontFamiliesToActivelySample() const {
-  return provider_->FontFamiliesToActivelySample();
-}
-
 }  // namespace blink
