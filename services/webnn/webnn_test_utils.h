@@ -260,6 +260,33 @@ class GraphInfoBuilder final {
         std::move(layer_normalization)));
   }
 
+  // A `InstanceNormalizationAttributes` type should have the following members:
+  // struct InstanceNormalizationAttributes {
+  //  absl::optional<uint64_t> scale_operand_id;
+  //  absl::optional<uint64_t> bias_operand_id;
+  //  float epsilon = 1e-5;
+  //  mojom::InputOperandLayout input_layout;
+  // };
+  template <typename InstanceNormalizationAttributes>
+  void BuildInstanceNormalization(
+      uint64_t input_operand_id,
+      uint64_t output_operand_id,
+      const InstanceNormalizationAttributes& attributes) {
+    mojom::InstanceNormalizationPtr instance_normalization =
+        mojom::InstanceNormalization::New();
+    instance_normalization->input_operand_id = input_operand_id;
+    instance_normalization->output_operand_id = output_operand_id;
+
+    instance_normalization->scale_operand_id = attributes.scale_operand_id;
+    instance_normalization->bias_operand_id = attributes.bias_operand_id;
+    instance_normalization->layout = attributes.layout;
+    instance_normalization->epsilon = attributes.epsilon;
+
+    graph_info_->operations.push_back(
+        mojom::Operation::NewInstanceNormalization(
+            std::move(instance_normalization)));
+  }
+
   void BuildLeakyRelu(uint64_t input_operand_id,
                       uint64_t output_operand_id,
                       float alpha);

@@ -328,6 +328,28 @@ webnn::GemmAttributes ConvertToGemmAttributes(
   return component_attributes;
 }
 
+webnn::InstanceNormalizationAttributes ConvertToInstanceNormalizationAttributes(
+    const IdToOperandMap& id_to_operand_map,
+    const mojom::InstanceNormalizationPtr& instance_normalization) {
+  webnn::InstanceNormalizationAttributes component_attributes;
+  const auto& scale_operand_id = instance_normalization->scale_operand_id;
+  if (scale_operand_id) {
+    const mojom::OperandPtr& scale_operand =
+        id_to_operand_map.at(scale_operand_id.value());
+    component_attributes.scale = ConvertToComponentOperand(scale_operand.get());
+  }
+  const auto& bias_operand_id = instance_normalization->bias_operand_id;
+  if (bias_operand_id) {
+    const mojom::OperandPtr& bias_operand =
+        id_to_operand_map.at(bias_operand_id.value());
+    component_attributes.bias = ConvertToComponentOperand(bias_operand.get());
+  }
+  component_attributes.layout =
+      MojoInputOperandLayoutToComponent(instance_normalization->layout);
+
+  return component_attributes;
+}
+
 webnn::SliceAttributes ConvertToSliceAttributes(
     const webnn::mojom::SlicePtr& slice) {
   webnn::SliceAttributes component_attributes;
@@ -800,6 +822,46 @@ bool ValidateLeakyRelu(const IdToOperandMap& id_to_operand_map,
   return true;
 }
 
+bool ValidateInstanceNormalization(
+    const IdToOperandMap& id_to_operand_map,
+    const mojom::InstanceNormalizationPtr& instance_normalization) {
+  const auto* input = GetMojoOperand(id_to_operand_map,
+                                     instance_normalization->input_operand_id);
+  const auto* output = GetMojoOperand(
+      id_to_operand_map, instance_normalization->output_operand_id);
+  if (!input || !output || output == input) {
+    // The instanceNormalization operator is invalid.
+    return false;
+  }
+  const auto& scale_operand_id = instance_normalization->scale_operand_id;
+  if (scale_operand_id &&
+      (!id_to_operand_map.contains(scale_operand_id.value()) ||
+       scale_operand_id.value() == instance_normalization->output_operand_id)) {
+    // The scale operand is invalid.
+    return false;
+  }
+  const auto& bias_operand_id = instance_normalization->bias_operand_id;
+  if (bias_operand_id &&
+      (!id_to_operand_map.contains(bias_operand_id.value()) ||
+       bias_operand_id.value() == instance_normalization->output_operand_id)) {
+    // The bias operand is invalid.
+    return false;
+  }
+
+  const auto validated_output = ValidateInstanceNormalizationAndInferOutput(
+      ConvertToComponentOperand(input),
+      ConvertToInstanceNormalizationAttributes(id_to_operand_map,
+                                               instance_normalization));
+  if (!validated_output.has_value()) {
+    return false;
+  }
+  if (validated_output != ConvertToComponentOperand(output)) {
+    return false;
+  }
+
+  return true;
+}
+
 bool ValidateMatmul(const IdToOperandMap& id_to_operand_map,
                     const mojom::MatmulPtr& matmul) {
   auto* a = GetMojoOperand(id_to_operand_map, matmul->a_operand_id);
@@ -1170,6 +1232,9 @@ bool ValidateOperation(const IdToOperandMap& id_to_operand_map,
     case mojom::Operation::Tag::kLayerNormalization:
       return ValidateLayerNormalization(id_to_operand_map,
                                         operation->get_layer_normalization());
+    case mojom::Operation::Tag::kInstanceNormalization:
+      return ValidateInstanceNormalization(
+          id_to_operand_map, operation->get_instance_normalization());
     case mojom::Operation::Tag::kLeakyRelu:
       return ValidateLeakyRelu(id_to_operand_map, operation->get_leaky_relu());
     case mojom::Operation::Tag::kMatmul:

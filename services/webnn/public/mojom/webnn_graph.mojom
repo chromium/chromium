@@ -288,6 +288,29 @@ union PaddingMode {
   SymmetricPadding symmetric;
 };
 
+// This operator performs the following normalization, defined as:
+// Output = scale * (input - mean) / sqrt(variance + epsilon) + bias, where
+// mean and variance are computed per instance per channel. The specified
+// layout determines how to choose the channel.
+struct InstanceNormalization {
+  // The input operand (referenced by input_operand_id) must be distinct from
+  // the output operand (referenced by output_operand_id).
+  uint64 input_operand_id;
+  uint64 output_operand_id;
+
+  // The optional 1-D tensor of the scale values whose size is equal to the
+  // size of the feature dimension of the input.
+  uint64? scale_operand_id;
+  // The optional 1-D tensor of the bias values whose size is equal to the
+  // size of the feature dimension of the input.
+  uint64? bias_operand_id;
+  // A float scalar which specifies a small value to prevent computational
+  // error due to divide-by-zero.
+  float epsilon = 1e-5;
+  // The layout format of the input.
+  InputOperandLayout layout;
+};
+
 // Represents matmul operation which compute the matrix product of two input tensors.
 struct Matmul {
   // The id of `a` operand is used to get the `Operand` description from
@@ -724,6 +747,7 @@ union Operation {
   Gather gather;
   Gemm gemm;
   LayerNormalization layer_normalization;
+  InstanceNormalization instance_normalization;
   LeakyRelu leaky_relu;
   Matmul matmul;
   Pad pad;

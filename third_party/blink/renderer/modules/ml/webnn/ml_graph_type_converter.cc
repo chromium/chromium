@@ -13,6 +13,7 @@
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ml_elu_options.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ml_gather_options.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ml_gemm_options.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_ml_instance_normalization_options.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ml_layer_normalization_options.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ml_leaky_relu_options.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ml_pad_options.h"
@@ -664,6 +665,35 @@ base::expected<OperationPtr, String> CreateLayerNormalizationOperation(
       std::move(layer_normalization_mojo));
 }
 
+base::expected<OperationPtr, String> CreateInstanceNormalizationOperation(
+    const OperandToIdMap& operand_to_id_map,
+    const MLOperator* instance_normalization) {
+  auto instance_normalization_mojo =
+      webnn::mojom::blink::InstanceNormalization::New();
+  instance_normalization_mojo->input_operand_id =
+      GetOperatorInputId(instance_normalization, operand_to_id_map, 0);
+  instance_normalization_mojo->output_operand_id =
+      GetOperatorOutputId(instance_normalization, operand_to_id_map);
+
+  const auto* options = static_cast<const MLInstanceNormalizationOptions*>(
+      instance_normalization->Options());
+  CHECK(options);
+  if (options->hasScale()) {
+    instance_normalization_mojo->scale_operand_id =
+        operand_to_id_map.at(options->scale());
+  }
+  if (options->hasBias()) {
+    instance_normalization_mojo->bias_operand_id =
+        operand_to_id_map.at(options->bias());
+  }
+  instance_normalization_mojo->layout =
+      BlinkInputOperandLayoutToMojo(options->layout().AsEnum());
+  instance_normalization_mojo->epsilon = options->epsilon();
+
+  return webnn::mojom::blink::Operation::NewInstanceNormalization(
+      std::move(instance_normalization_mojo));
+}
+
 OperationPtr CreateMatmulOperation(const OperandToIdMap& operand_to_id_map,
                                    const MLOperator* matmul) {
   auto matmul_mojo = blink_mojom::Matmul::New();
@@ -1081,6 +1111,8 @@ base::expected<OperationPtr, String> ConvertToMojoOperation(
       return CreateGatherOperation(operand_to_id_map, op);
     case MLOperator::OperatorKind::kGemm:
       return CreateGemmOperation(operand_to_id_map, op);
+    case MLOperator::OperatorKind::kInstanceNormalization:
+      return CreateInstanceNormalizationOperation(operand_to_id_map, op);
     case MLOperator::OperatorKind::kLayerNormalization:
       return CreateLayerNormalizationOperation(operand_to_id_map, op);
     case MLOperator::OperatorKind::kLeakyRelu:
