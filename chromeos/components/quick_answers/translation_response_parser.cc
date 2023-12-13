@@ -63,7 +63,7 @@ void TranslationResponseParser::OnJsonParsed(
 
   std::unique_ptr<TranslationResult> translation_result =
       std::make_unique<TranslationResult>();
-  translation_result->translated_text = base::UTF8ToUTF16(translated_text);
+  translation_result->translated_text = translated_text;
   std::move(complete_callback_).Run(std::move(translation_result));
 }
 

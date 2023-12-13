@@ -111,8 +111,7 @@ void TranslationResultLoader::ProcessParsedResponse(
     return;
   }
 
-  translation_result->text_to_translate =
-      base::UTF8ToUTF16(intent_info.intent_text);
+  translation_result->text_to_translate = intent_info.intent_text;
   translation_result->source_locale = intent_info.source_language;
   translation_result->target_locale = intent_info.device_language;
 
@@ -122,7 +121,7 @@ void TranslationResultLoader::ProcessParsedResponse(
       BuildTranslationTitleText(intent_info)));
   quick_answer->first_answer_row.push_back(
       std::make_unique<QuickAnswerResultText>(
-          base::UTF16ToUTF8(translation_result->translated_text)));
+          translation_result->translated_text));
 
   std::unique_ptr<QuickAnswersSession> session =
       std::make_unique<QuickAnswersSession>();

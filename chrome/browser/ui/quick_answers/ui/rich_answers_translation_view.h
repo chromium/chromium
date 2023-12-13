@@ -31,6 +31,8 @@ class RichAnswersTranslationView : public RichAnswersView {
 
  private:
   void InitLayout();
+  void AddLanguageTitle(const std::string& locale, bool is_header_view);
+  void AddLanguageText(const std::string& language_text);
 
   raw_ptr<views::View> content_view_ = nullptr;
 

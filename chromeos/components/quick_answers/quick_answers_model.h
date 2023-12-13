@@ -259,9 +259,8 @@ struct TranslationResult {
   TranslationResult& operator=(const TranslationResult& other);
   ~TranslationResult();
 
-  // TODO(b/278929409): Migrate to `std::string` for strings in structs.
-  std::u16string text_to_translate;
-  std::u16string translated_text;
+  std::string text_to_translate;
+  std::string translated_text;
   std::string source_locale;
   std::string target_locale;
 };

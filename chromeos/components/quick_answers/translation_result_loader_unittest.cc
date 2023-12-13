@@ -125,9 +125,8 @@ TEST_F(TranslationResultLoaderTest, Success) {
   raw_ptr<TranslationResult> translation_result =
       session->structured_result->translation_result.get();
   EXPECT_EQ(kTestTranslationIntent.intent_text,
-            base::UTF16ToUTF8(translation_result->text_to_translate));
-  EXPECT_EQ(kTestTranslationResult,
-            base::UTF16ToUTF8(translation_result->translated_text));
+            translation_result->text_to_translate);
+  EXPECT_EQ(kTestTranslationResult, translation_result->translated_text);
   EXPECT_EQ(kTestTranslationIntent.device_language,
             translation_result->target_locale);
   EXPECT_EQ(kTestTranslationIntent.source_language,

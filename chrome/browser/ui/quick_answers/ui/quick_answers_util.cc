@@ -11,6 +11,8 @@
 #include "components/omnibox/browser/vector_icons.h"
 #include "components/vector_icons/vector_icons.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/chromeos/styles/cros_tokens_color_mappings.h"
+#include "ui/views/controls/separator.h"
 #include "ui/views/layout/fill_layout.h"
 #include "ui/views/layout/flex_layout.h"
 
@@ -113,6 +115,18 @@ View* AddFillLayoutChildView(View* container,
   child_view->SetLayoutManager(std::make_unique<views::FillLayout>());
 
   return child_view;
+}
+
+std::unique_ptr<views::Separator> CreateSeparatorView() {
+  std::unique_ptr<views::Separator> separator =
+      views::Builder<views::Separator>()
+          .SetOrientation(views::Separator::Orientation::kHorizontal)
+          .SetColorId(cros_tokens::kSeparatorColor)
+          .Build();
+  separator->SetProperty(
+      views::kMarginsKey,
+      gfx::Insets::TLBR(kContentDoubleSpacing, 0, kContentDoubleSpacing, 0));
+  return separator;
 }
 
 GURL GetDetailsUrlForQuery(const std::string& query) {

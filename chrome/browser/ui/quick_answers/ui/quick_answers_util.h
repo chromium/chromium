@@ -8,6 +8,7 @@
 #include "components/vector_icons/vector_icons.h"
 #include "ui/gfx/font.h"
 #include "ui/gfx/font_list.h"
+#include "ui/views/controls/separator.h"
 #include "ui/views/view.h"
 
 namespace quick_answers {
@@ -15,6 +16,10 @@ namespace quick_answers {
 // Constants.
 inline constexpr int kContentHeaderWidth = 252;
 inline constexpr int kContentTextWidth = 280;
+inline constexpr int kContentSingleSpacing = 8;
+inline constexpr int kContentDoubleSpacing = 16;
+inline constexpr gfx::Insets kUnderLineIndentation =
+    gfx::Insets::TLBR(0, 0, kContentSingleSpacing, 0);
 inline constexpr char kGoogleSansFont[] = "Google Sans";
 inline constexpr char kRobotoFont[] = "Roboto";
 
@@ -46,6 +51,9 @@ views::View* AddHorizontalViews(
 views::View* AddFillLayoutChildView(
     views::View* container,
     std::unique_ptr<views::View> view = std::make_unique<views::View>());
+
+// Creates a separator view with |kContentDoubleSpacing| vertical margins.
+std::unique_ptr<views::Separator> CreateSeparatorView();
 
 // Return the GURL that will link to the google search result for the
 // query text.

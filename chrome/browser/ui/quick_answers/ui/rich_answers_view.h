@@ -76,7 +76,8 @@ class RichAnswersView : public views::View {
 
   void AddSettingsButtonTo(views::View* container_view);
 
-  void AddHeaderViewsTo(views::View* container_view, std::string header_text);
+  void AddHeaderViewsTo(views::View* container_view,
+                        const std::string& header_text);
 
   // FocusSearch::GetFocusableViewsCallback to poll currently focusable views.
   std::vector<views::View*> GetFocusableViews();

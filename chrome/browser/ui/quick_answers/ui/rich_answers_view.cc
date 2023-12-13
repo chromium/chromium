@@ -276,8 +276,9 @@ void RichAnswersView::AddSettingsButtonTo(views::View* container_view) {
 }
 
 void RichAnswersView::AddHeaderViewsTo(views::View* container_view,
-                                       std::string header_text) {
+                                       const std::string& header_text) {
   auto* header_view = AddFillLayoutChildView(container_view);
+  header_view->SetProperty(views::kMarginsKey, kUnderLineIndentation);
   auto* header_label_container = header_view->AddChildView(
       views::Builder<views::FlexLayoutView>()
           .SetOrientation(views::LayoutOrientation::kHorizontal)
