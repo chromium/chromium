@@ -1,6 +1,12 @@
 # Profile-Guided Optimization (PGO)
 
-## Generating PGO Profiles
+## Generating PGO Profiles via Bots
+
+See [go/chrome-pgo-internal] (Googlers only).
+
+[go/chrome-pgo-internal]: https://goto.google.com/chrome-pgo-internal
+
+## Generating PGO Profiles Manually
 
 Normally devs don't need to worry about this and can use the default profile
 for official builds.  The default profile can be fetched by adding
