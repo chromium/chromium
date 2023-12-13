@@ -7,6 +7,7 @@
 #include <memory>
 #include <utility>
 
+#include "base/command_line.h"
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
 #include "base/strings/strcat.h"
@@ -183,6 +184,10 @@ class FCMInvalidationServiceTest : public testing::Test {
                             identity_provider_.get(), &pref_service_,
                             &url_loader_factory_),
         mock_instance_id_driver_.get(), &pref_service_, kSenderId);
+  }
+
+  bool IsInvalidationServiceStarted() {
+    return invalidation_service_->IsStarted();
   }
 
   void InitializeInvalidationService() { invalidation_service_->Init(); }
@@ -516,6 +521,31 @@ TEST_F(FCMInvalidationServiceTest, ObserverBasics) {
   EXPECT_TRUE(invalidation_service->HasObserver(&handler));
   invalidation_service->RemoveObserver(&handler);
   EXPECT_FALSE(invalidation_service->HasObserver(&handler));
+}
+
+TEST_F(FCMInvalidationServiceTest, StartsIfNotDisabledWithSwitch) {
+  // Create the invalidation service, but do not initialize it yet.
+  CreateUninitializedInvalidationService();
+  ASSERT_FALSE(IsInvalidationServiceStarted());
+
+  // Initialize the service.
+  InitializeInvalidationService();
+
+  EXPECT_TRUE(IsInvalidationServiceStarted());
+}
+
+TEST_F(FCMInvalidationServiceTest, DoesNotStartIfDisabledWithSwitch) {
+  // Set --disable-fcm-invalidations flag to disable invalidations.
+  base::CommandLine::ForCurrentProcess()->AppendSwitch(
+      "--disable-fcm-invalidations");
+  // Create the invalidation service, but do not initialize it yet.
+  CreateUninitializedInvalidationService();
+  ASSERT_FALSE(IsInvalidationServiceStarted());
+
+  // Initialize the service.
+  InitializeInvalidationService();
+
+  EXPECT_FALSE(IsInvalidationServiceStarted());
 }
 
 }  // namespace invalidation

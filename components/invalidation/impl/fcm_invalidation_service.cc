@@ -4,11 +4,14 @@
 
 #include "components/invalidation/impl/fcm_invalidation_service.h"
 
+#include "base/command_line.h"
 #include "base/sequence_checker.h"
 #include "build/build_config.h"
 #include "components/prefs/scoped_user_pref_update.h"
 
 namespace invalidation {
+
+constexpr char kDisableFcmInvalidationsSwitch[] = "disable-fcm-invalidations";
 
 FCMInvalidationService::FCMInvalidationService(
     IdentityProvider* identity_provider,
@@ -64,6 +67,12 @@ void FCMInvalidationService::OnActiveAccountLogout() {
 }
 
 bool FCMInvalidationService::IsReadyToStart() {
+  base::CommandLine* cmd_line = base::CommandLine::ForCurrentProcess();
+  if (cmd_line->HasSwitch(kDisableFcmInvalidationsSwitch)) {
+    DLOG(WARNING) << "FCM Invalidations are disabled via switch";
+    return false;
+  }
+
   bool valid_account_info_available =
       identity_provider_->IsActiveAccountWithRefreshToken();
 
