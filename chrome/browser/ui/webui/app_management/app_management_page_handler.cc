@@ -67,13 +67,13 @@
 #include "url/origin.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-#include "ash/components/arc/arc_features.h"
 #include "ash/components/arc/session/connection_holder.h"
 #include "chrome/browser/ash/app_list/arc/arc_app_utils.h"
 #include "chrome/browser/ash/apps/apk_web_app_service.h"
 #include "chrome/browser/ash/crosapi/crosapi_ash.h"
 #include "chrome/browser/ash/crosapi/crosapi_manager.h"
 #include "chrome/browser/ash/crosapi/web_app_service_ash.h"
+#include "chrome/browser/ui/webui/ash/settings/os_settings_features_util.h"
 #include "chromeos/crosapi/mojom/web_app_service.mojom.h"
 #endif
 
@@ -631,7 +631,7 @@ app_management::mojom::AppPtr AppManagementPageHandler::CreateUIAppPtr(
   app->resize_locked = update.ResizeLocked().value_or(false);
   app->hide_resize_locked = !update.ResizeLocked().has_value();
 
-  if (base::FeatureList::IsEnabled(arc::kPerAppLanguage)) {
+  if (ash::settings::IsPerAppLanguageEnabled(profile_)) {
     const std::string& system_locale =
         g_browser_process->GetApplicationLocale();
     // Translate supported locales.

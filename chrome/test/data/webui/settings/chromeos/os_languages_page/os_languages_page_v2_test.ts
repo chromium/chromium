@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 import {LanguageHelper, LanguagesBrowserProxyImpl, LanguagesMetricsProxyImpl, LanguagesPageInteraction, LanguageState, LifetimeBrowserProxyImpl, OsSettingsChangeDeviceLanguageDialogElement, OsSettingsLanguagesPageV2Element, SettingsLanguagesElement} from 'chrome://os-settings/lazy_load.js';
-import {CrActionMenuElement, CrCheckboxElement, CrPolicyIndicatorElement, CrSettingsPrefs, Router, routes, settingMojom, SettingsPrefsElement} from 'chrome://os-settings/os_settings.js';
+import {CrActionMenuElement, CrCheckboxElement, CrLinkRowElement, CrPolicyIndicatorElement, CrSettingsPrefs, Router, routes, settingMojom, SettingsPrefsElement} from 'chrome://os-settings/os_settings.js';
 import {assert} from 'chrome://resources/js/assert.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {getDeepActiveElement} from 'chrome://resources/js/util.js';
@@ -11,6 +11,7 @@ import {keyDownOn} from 'chrome://resources/polymer/v3_0/iron-test-helpers/mock-
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {assertDeepEquals, assertEquals, assertFalse, assertGE, assertGT, assertLT, assertNull, assertStringContains, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {fakeDataBind, waitAfterNextRender} from 'chrome://webui-test/polymer_test_util.js';
+import {isVisible} from 'chrome://webui-test/test_util.js';
 
 import {FakeLanguageSettingsPrivate, getFakeLanguagePrefs} from '../fake_language_settings_private.js';
 import {FakeSettingsPrivate} from '../fake_settings_private.js';
@@ -790,5 +791,51 @@ suite('change device language button', () => {
 
     assertNull(
         page.shadowRoot!.querySelector('#changeDeviceLanguagePolicyIndicator'));
+  });
+
+  suite('app languages settings', () => {
+    let page: OsSettingsLanguagesPageV2Element;
+
+    function createPage(): void {
+      page = document.createElement('os-settings-languages-page-v2');
+      document.body.appendChild(page);
+      flush();
+    }
+
+    setup(() => {
+      assert(window.trustedTypes);
+      document.body.innerHTML =
+          window.trustedTypes.emptyHTML as unknown as string;
+    });
+
+    teardown(() => {
+      page.remove();
+    });
+
+    test('Enable perAppLanguage flag, show app languages section', () => {
+      loadTimeData.overrideValues({
+        isPerAppLanguageEnabled: true,
+      });
+      createPage();
+      const appLanguagesSection =
+          page.shadowRoot!.querySelector<CrLinkRowElement>(
+              '#appLanguagesSection');
+      assertTrue(
+          isVisible(appLanguagesSection),
+          '#appLanguagesSection is not visible.');
+    });
+
+    test('Disable perAppLanguage flag, hide app languages section', () => {
+      loadTimeData.overrideValues({
+        isPerAppLanguageEnabled: false,
+      });
+      createPage();
+      const appLanguagesSection =
+          page.shadowRoot!.querySelector<CrLinkRowElement>(
+              '#appLanguagesSection');
+      assertFalse(
+          isVisible(appLanguagesSection),
+          '#appLanguagesSection is not hidden.');
+    });
   });
 });

@@ -58,4 +58,9 @@ bool IsAppRestoreAvailableForProfile(const Profile* profile) {
       IsFullRestoreAvailableForProfile(profile);
 }
 
+bool IsPerAppLanguageEnabled(const Profile* profile) {
+  return base::FeatureList::IsEnabled(arc::kPerAppLanguage) &&
+         arc::IsArcPlayStoreEnabledForProfile(profile);
+}
+
 }  // namespace ash::settings

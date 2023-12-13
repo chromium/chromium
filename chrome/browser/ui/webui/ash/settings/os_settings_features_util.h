@@ -29,6 +29,9 @@ bool IsExternalStorageEnabled(const Profile* profile);
 // Determines if app restore settings are available for `profile`.
 bool IsAppRestoreAvailableForProfile(const Profile* profile);
 
+// Determines if per-app language settings are available for `profile`.
+bool IsPerAppLanguageEnabled(const Profile* profile);
+
 }  // namespace ash::settings
 
 #endif  // CHROME_BROWSER_UI_WEBUI_ASH_SETTINGS_OS_SETTINGS_FEATURES_UTIL_H_

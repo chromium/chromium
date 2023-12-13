@@ -101,6 +101,9 @@ void AddLanguagesPageStringsV2(content::WebUIDataSource* html_source) {
        IDS_OS_SETTINGS_LANGUAGES_GOOGLE_ACCOUNT_LANGUAGE_DESCRIPTION},
       {"manageGoogleAccountLanguageLabel",
        IDS_OS_SETTINGS_LANGUAGES_MANAGE_GOOGLE_ACCOUNT_LANGUAGE_LABEL},
+      {"appLanguagesTitle", IDS_OS_SETTINGS_LANGUAGES_APP_LANGUAGES_TITLE},
+      {"appLanguagesDescription",
+       IDS_OS_SETTINGS_LANGUAGES_APP_LANGUAGES_DESCRIPTION},
   };
   html_source->AddLocalizedStrings(kLocalizedStrings);
 
@@ -166,6 +169,8 @@ void LanguagesSection::AddLoadTimeData(content::WebUIDataSource* html_source) {
       {"noSearchResults", IDS_SEARCH_NO_RESULTS},
   };
   html_source->AddLocalizedStrings(kLocalizedStrings);
+  html_source->AddBoolean("isPerAppLanguageEnabled",
+                          IsPerAppLanguageEnabled(profile()));
 
   AddLanguagesPageStringsV2(html_source);
 
