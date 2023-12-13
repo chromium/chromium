@@ -222,6 +222,62 @@ bool GenerateOptimizedSession(const base::FilePath& root,
           tab_info.opener_navigation_index);
     }
 
+    // Set the metadata into the WebStateListItemStorage.
+    *item_storage.mutable_metadata() = CreateWebStateMetadataStorage();
+
+    // Write the tab data file.
+    if (!ios::sessions::WriteProto(item_dir.Append(kWebStateStorageFilename),
+                                   CreateWebStateStorage())) {
+      return false;
+    }
+
+    // Create fake web session data for the tab. As the file contains
+    // opaque data from WebKit, the migration code does not care about
+    // the format.
+    if (tab_info.create_web_session) {
+      const base::FilePath filename = item_dir.Append(kWebStateSessionFilename);
+
+      NSData* data = [[NSString stringWithFormat:@"data %zu", index]
+          dataUsingEncoding:NSUTF8StringEncoding];
+      if (!ios::sessions::WriteFile(filename, data)) {
+        return false;
+      }
+    }
+  }
+
+  // Write the session metadata file.
+  const base::FilePath filename = session_dir.Append(kSessionMetadataFilename);
+  return ios::sessions::WriteProto(filename, storage);
+}
+
+// Creates an optimized session named `name` following `session_info` and
+// writes it to the expected location relative to `root`. It returns
+// whether the creation was a success. The format will be pre M-122.
+bool GenerateOptimizedSessionPreM122(const base::FilePath& root,
+                                     const std::string& name,
+                                     SessionInfo session_info) {
+  const base::FilePath session_dir = GetOptimizedSessionDir(root, name);
+
+  ios::proto::WebStateListStorage storage;
+  storage.set_active_index(session_info.active_index);
+  storage.set_pinned_item_count(session_info.pinned_tab_count);
+
+  // Create all the tabs for the session. Note that the WebStateList metadata
+  // is stored with the tab in the legacy format.
+  for (size_t index = 0; index < session_info.tabs.size(); ++index) {
+    const web::WebStateID identifier = web::WebStateID::NewUnique();
+    const base::FilePath item_dir =
+        GetOptimizedWebStateDir(session_dir, identifier);
+    const TabInfo& tab_info = session_info.tabs[index];
+
+    ios::proto::WebStateListItemStorage& item_storage = *storage.add_items();
+    item_storage.set_identifier(identifier.identifier());
+    if (tab_info.opener_index != -1 && tab_info.opener_navigation_index != -1) {
+      item_storage.mutable_opener()->set_index(tab_info.opener_index);
+      item_storage.mutable_opener()->set_navigation_index(
+          tab_info.opener_navigation_index);
+    }
+
     // Write the tab metadata file.
     if (!ios::sessions::WriteProto(
             item_dir.Append(kWebStateMetadataStorageFilename),
@@ -315,10 +371,9 @@ TEST_F(SessionMigrationTest, ToOptimized) {
     const base::FilePath item_dir = GetOptimizedWebStateDir(
         dest_dir, web::WebStateID::FromSerializedValue(item_info.identifier()));
 
-    // Load the tab metadata and check for correctness.
-    web::proto::WebStateMetadataStorage metadata;
-    EXPECT_TRUE(ios::sessions::ParseProto(
-        item_dir.Append(kWebStateMetadataStorageFilename), metadata));
+    // Check the tab metadata for correctness.
+    ASSERT_TRUE(item_info.has_metadata());
+    const web::proto::WebStateMetadataStorage& metadata = item_info.metadata();
 
     EXPECT_TRUE(metadata.has_active_page());
     EXPECT_EQ(metadata.navigation_item_count(), 1);
@@ -489,6 +544,90 @@ TEST_F(SessionMigrationTest, ToLegacy) {
 
   // Generate an optimized session.
   EXPECT_TRUE(GenerateOptimizedSession(root, kSessionName, kSessionInfo));
+
+  // Ask to migrate the session.
+  FakeTabRestoreService restore_service;
+  ios::sessions::MigrateNamedSessionToLegacy(root, kSessionName,
+                                             &restore_service);
+
+  // Check that the tabs have not been recorded.
+  EXPECT_EQ(restore_service.entries().size(), 0u);
+
+  // Check that the optimized session directory was deleted and its parent too
+  // since it was empty.
+  const base::FilePath from_dir = GetOptimizedSessionDir(root, kSessionName);
+  EXPECT_FALSE(ios::sessions::DirectoryExists(from_dir));
+  EXPECT_FALSE(ios::sessions::DirectoryExists(from_dir.DirName()));
+
+  // Check that an optimized session was created.
+  const base::FilePath dest_dir = GetLegacySessionDir(root, kSessionName);
+  EXPECT_TRUE(ios::sessions::DirectoryExists(dest_dir));
+
+  // Check that the directory containing the web sessions was also created
+  // and is not empty.
+  const base::FilePath web_sessions = root.Append(kLegacyWebSessionsDirname);
+  EXPECT_TRUE(ios::sessions::DirectoryExists(web_sessions));
+  EXPECT_FALSE(ios::sessions::DirectoryEmpty(web_sessions));
+
+  // Load the session and check that it agress with `kSessionInfo`.
+  SessionWindowIOS* session_window =
+      ios::sessions::ReadSessionWindow(dest_dir.Append(kLegacySessionFilename));
+  ASSERT_TRUE(session_window);
+
+  EXPECT_EQ(session_window.selectedIndex, kSessionInfo.active_index);
+
+  // Check that the information for each tab is correct.
+  ASSERT_EQ(session_window.sessions.count, kSessionInfo.tabs.size());
+  for (size_t index = 0; index < kSessionInfo.tabs.size(); ++index) {
+    CRWSessionStorage* session = session_window.sessions[index];
+    const TabInfo& tab_info = kSessionInfo.tabs[index];
+
+    CRWSessionUserData* user_data = session.userData;
+    if (tab_info.opener_index != -1 && tab_info.opener_navigation_index != -1) {
+      EXPECT_NSEQ(base::apple::ObjCCast<NSNumber>([user_data
+                      objectForKey:kLegacyWebStateListOpenerIndexKey]),
+                  @(tab_info.opener_index));
+      EXPECT_NSEQ(
+          base::apple::ObjCCast<NSNumber>([user_data
+              objectForKey:kLegacyWebStateListOpenerNavigationIndexKey]),
+          @(tab_info.opener_navigation_index));
+    }
+
+    if (index < kSessionInfo.pinned_tab_count) {
+      EXPECT_NSEQ(base::apple::ObjCCast<NSNumber>([user_data
+                      objectForKey:kLegacyWebStateListPinnedStateKey]),
+                  @YES);
+    }
+
+    // Check that a stable identifier was generated (randomized).
+    EXPECT_TRUE(session.stableIdentifier);
+
+    // Check the data for correctness.
+    EXPECT_EQ(session.lastCommittedItemIndex, 0);
+    EXPECT_NE(session.creationTime, base::Time());
+    ASSERT_EQ(session.itemStorages.count, 1u);
+
+    CRWNavigationItemStorage* navigation_item = session.itemStorages[0];
+    EXPECT_EQ(base::UTF16ToUTF8(navigation_item.title), kPageTitle);
+    EXPECT_EQ(navigation_item.virtualURL, GURL(kPageURL));
+
+    // Check that the web session file exists (if created).
+    EXPECT_EQ(ios::sessions::FileExists(GetLegacyWebSessionsFile(
+                  web_sessions, session.uniqueIdentifier)),
+              tab_info.create_web_session);
+  }
+}
+
+// Tests migrating a session from optimize (pre M-122) to legacy works
+// correctly.
+TEST_F(SessionMigrationTest, ToLegacyPreM122) {
+  base::ScopedTempDir scoped_temp_dir;
+  ASSERT_TRUE(scoped_temp_dir.CreateUniqueTempDir());
+  const base::FilePath root = scoped_temp_dir.GetPath();
+
+  // Generate an optimized session.
+  EXPECT_TRUE(
+      GenerateOptimizedSessionPreM122(root, kSessionName, kSessionInfo));
 
   // Ask to migrate the session.
   FakeTabRestoreService restore_service;

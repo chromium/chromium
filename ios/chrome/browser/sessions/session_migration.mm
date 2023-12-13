@@ -6,6 +6,8 @@
 
 #import <Foundation/Foundation.h>
 
+#import <optional>
+
 #import "base/apple/foundation_util.h"
 #import "base/files/file.h"
 #import "base/files/file_enumerator.h"
@@ -55,7 +57,6 @@
 //              session_metadata.pb
 //              ${WebStateID}/
 //                  data.pb
-//                  metadata.pb
 //                  state.pb
 //              ...
 //          ...
@@ -63,109 +64,264 @@
 namespace ios::sessions {
 namespace {
 
-// Directory containing WebState session for `identifier` relative to `path`.
-base::FilePath OptimizedWebStateDirectory(const base::FilePath& path,
-                                          web::WebStateID identifier) {
-  return path.Append(base::StringPrintf("%08x", identifier.identifier()));
+// Helper class used to simplify the conversion of session between legacy
+// and optimised format.
+class OptimizedSession {
+ public:
+  // Creates an instance from `legacy_session` in legacy format.
+  static std::optional<OptimizedSession> FromLegacy(
+      SessionWindowIOS* legacy_session);
+
+  // Creates an instance loading a session in optimized format from
+  // `session_dir`.
+  static std::optional<OptimizedSession> FromPath(
+      const base::FilePath& session_dir);
+
+  // Converts the session to legacy format.
+  SessionWindowIOS* ToLegacy() const;
+
+  // Saves the session in optimised format at `session_dir`. The native
+  // WKWebView session data can be found in `web_sessions`.
+  bool SaveTo(const base::FilePath& session_dir,
+              const base::FilePath& web_sessions) const;
+
+ private:
+  OptimizedSession(ios::proto::WebStateListStorage metadata_storage,
+                   std::vector<web::proto::WebStateStorage> storage);
+
+  explicit OptimizedSession(SessionWindowIOS* legacy_session);
+
+  // Helper adding an item to the current object from its legacy
+  // representation in `item`.
+  void AddItem(CRWSessionStorage* item);
+
+  ios::proto::WebStateListStorage metadata_storage_;
+  std::vector<web::proto::WebStateStorage> storage_;
+};
+
+// static
+std::optional<OptimizedSession> OptimizedSession::FromLegacy(
+    SessionWindowIOS* legacy_session) {
+  return OptimizedSession(legacy_session);
+}
+
+// static
+std::optional<OptimizedSession> OptimizedSession::FromPath(
+    const base::FilePath& session_dir) {
+  const base::FilePath session_path =
+      session_dir.Append(kSessionMetadataFilename);
+
+  ios::proto::WebStateListStorage metadata_storage;
+  if (!ParseProto(session_path, metadata_storage)) {
+    return std::nullopt;
+  }
+
+  const int count = metadata_storage.items_size();
+  std::vector<web::proto::WebStateStorage> storage;
+  storage.reserve(count);
+
+  for (int index = 0; index < count; ++index) {
+    const ios::proto::WebStateListItemStorage& item_storage =
+        metadata_storage.items(index);
+
+    const base::FilePath item_dir = session_dir.Append(
+        base::StringPrintf("%08x", item_storage.identifier()));
+
+    // While developing the optimised session storage, at some point, the
+    // metadata for WebStates were saved in individual files. As all those
+    // metadata files had to be loaded on startup, this resulted in many
+    // file loads for users with a large number of tabs. This code is here
+    // to convert those sessions to the new storage.
+    //
+    // Since saving in many individual files was never released to stable,
+    // nor enabled via finch, the only users that manually enabled it via
+    // chrome://flags may have the data in that state.
+    //
+    // Thus there is no need to keep this code for many releases (as the
+    // feature was not yet supported when enabled). This workaround can
+    // be removed as soon as M-123.
+    //
+    // TODO(crbug.com/1504753): cleanup when no longer required.
+    if (!item_storage.has_metadata()) {
+      const base::FilePath item_metadata_path =
+          item_dir.Append(kWebStateMetadataStorageFilename);
+
+      google::protobuf::RepeatedPtrField<ios::proto::WebStateListItemStorage>&
+          repeated_field = *metadata_storage.mutable_items();
+
+      web::proto::WebStateMetadataStorage& item_metadata =
+          *(repeated_field[index].mutable_metadata());
+
+      if (!ParseProto(item_metadata_path, item_metadata)) {
+        return std::nullopt;
+      }
+    }
+
+    const base::FilePath item_path = item_dir.Append(kWebStateStorageFilename);
+    if (!ParseProto(item_path, storage.emplace_back())) {
+      return std::nullopt;
+    }
+  }
+
+  return OptimizedSession(std::move(metadata_storage), std::move(storage));
+}
+
+SessionWindowIOS* OptimizedSession::ToLegacy() const {
+  DCHECK_EQ(metadata_storage_.items_size(), static_cast<int>(storage_.size()));
+  const int count = metadata_storage_.items_size();
+  const int pinned_count = metadata_storage_.pinned_item_count();
+
+  NSMutableArray<CRWSessionStorage*>* items = [[NSMutableArray alloc] init];
+  for (int index = 0; index < count; ++index) {
+    const ios::proto::WebStateListItemStorage& item_storage =
+        metadata_storage_.items(index);
+
+    web::proto::WebStateStorage item_data_storage = storage_[index];
+    *item_data_storage.mutable_metadata() = item_storage.metadata();
+
+    const web::WebStateID identifier =
+        web::WebStateID::FromSerializedValue(item_storage.identifier());
+
+    CRWSessionStorage* item =
+        [[CRWSessionStorage alloc] initWithProto:item_data_storage
+                                uniqueIdentifier:identifier
+                                stableIdentifier:[[NSUUID UUID] UUIDString]];
+
+    if (index < pinned_count || item_storage.has_opener()) {
+      CRWSessionUserData* user_data = [[CRWSessionUserData alloc] init];
+
+      if (index < pinned_count) {
+        [user_data setObject:@YES forKey:kLegacyWebStateListPinnedStateKey];
+      }
+
+      if (item_storage.has_opener()) {
+        const ios::proto::OpenerStorage& opener_storage = item_storage.opener();
+        [user_data setObject:@(opener_storage.index())
+                      forKey:kLegacyWebStateListOpenerIndexKey];
+        [user_data setObject:@(opener_storage.navigation_index())
+                      forKey:kLegacyWebStateListOpenerNavigationIndexKey];
+      }
+
+      item.userData = user_data;
+    }
+
+    [items addObject:item];
+  }
+
+  NSUInteger selected_index = NSNotFound;
+  const int active_index = metadata_storage_.active_index();
+  if (0 <= active_index && active_index < count) {
+    selected_index = static_cast<NSUInteger>(active_index);
+  }
+
+  return [[SessionWindowIOS alloc] initWithSessions:items
+                                      selectedIndex:selected_index];
+}
+
+bool OptimizedSession::SaveTo(const base::FilePath& session_dir,
+                              const base::FilePath& web_sessions) const {
+  DCHECK_EQ(metadata_storage_.items_size(), static_cast<int>(storage_.size()));
+  const int count = metadata_storage_.items_size();
+
+  // First write the individual WebState's data.
+  for (int index = 0; index < count; ++index) {
+    const ios::proto::WebStateListItemStorage& item_storage =
+        metadata_storage_.items(index);
+
+    const base::FilePath item_dir = session_dir.Append(
+        base::StringPrintf("%08x", item_storage.identifier()));
+
+    const base::FilePath item_path = item_dir.Append(kWebStateStorageFilename);
+
+    // Save the WebState data.
+    if (!WriteProto(item_path, storage_[index])) {
+      return false;
+    }
+
+    const base::FilePath item_native_data_path = web_sessions.Append(
+        base::StringPrintf("%08u", item_storage.identifier()));
+
+    // Copy the WebState WKWebView native data if it exists. It is okay if
+    // the copy fails, since loading the sessions accepts their absence.
+    if (FileExists(item_native_data_path)) {
+      std::ignore = ios::sessions::CopyFile(
+          item_native_data_path, item_dir.Append(kWebStateSessionFilename));
+    }
+  }
+
+  const base::FilePath session_path =
+      session_dir.Append(kSessionMetadataFilename);
+
+  // Save the session metadata.
+  if (!WriteProto(session_path, metadata_storage_)) {
+    return false;
+  }
+
+  return true;
+}
+
+OptimizedSession::OptimizedSession(
+    ios::proto::WebStateListStorage metadata_storage,
+    std::vector<web::proto::WebStateStorage> storage)
+    : metadata_storage_(std::move(metadata_storage)),
+      storage_(std::move(storage)) {}
+
+OptimizedSession::OptimizedSession(SessionWindowIOS* legacy_session) {
+  metadata_storage_.set_active_index(legacy_session.selectedIndex);
+  for (CRWSessionStorage* legacy_item in legacy_session.sessions) {
+    AddItem(legacy_item);
+  }
+}
+
+void OptimizedSession::AddItem(CRWSessionStorage* legacy_item) {
+  ios::proto::WebStateListItemStorage& item = *metadata_storage_.add_items();
+  item.set_identifier(legacy_item.uniqueIdentifier.identifier());
+
+  // Serialize the item to protobuf message format, and move the metadata
+  // to the WebStateListStorage (since is is where the optimised format
+  // stores the WebState's metadata).
+  [legacy_item serializeToProto:storage_.emplace_back()];
+  DCHECK(storage_.back().has_metadata());
+
+  std::unique_ptr<web::proto::WebStateMetadataStorage> item_metadata(
+      storage_.back().release_metadata());
+  DCHECK(!storage_.back().has_metadata());
+
+  item_metadata->Swap(item.mutable_metadata());
+  DCHECK(item.has_metadata());
+
+  // The legacy format stores some WebStateList metadata in `item`.
+  CRWSessionUserData* user_data = legacy_item.userData;
+  if (user_data) {
+    NSNumber* opener_index = base::apple::ObjCCast<NSNumber>(
+        [user_data objectForKey:kLegacyWebStateListOpenerIndexKey]);
+    NSNumber* opener_navigation_index = base::apple::ObjCCast<NSNumber>(
+        [user_data objectForKey:kLegacyWebStateListOpenerNavigationIndexKey]);
+
+    if (opener_index && opener_navigation_index) {
+      ios::proto::OpenerStorage& opener_storage = *item.mutable_opener();
+      opener_storage.set_index([opener_index intValue]);
+      opener_storage.set_navigation_index([opener_navigation_index intValue]);
+    }
+
+    NSNumber* is_pinned = base::apple::ObjCCast<NSNumber>(
+        [user_data objectForKey:kLegacyWebStateListPinnedStateKey]);
+    if (is_pinned && [is_pinned boolValue]) {
+      metadata_storage_.set_pinned_item_count(
+          metadata_storage_.pinned_item_count() + 1);
+    }
+  }
+
+  // Check the class invariants.
+  DCHECK_EQ(metadata_storage_.items_size(), static_cast<int>(storage_.size()));
+  DCHECK_LE(metadata_storage_.pinned_item_count(),
+            metadata_storage_.items_size());
 }
 
 // Name of the web session file for `identifier` relative to `path`.
 base::FilePath LegacyWebSessionFilename(const base::FilePath& path,
                                         web::WebStateID identifier) {
   return path.Append(base::StringPrintf("%08u", identifier.identifier()));
-}
-
-// Writes `session` in optimized format to `path` and returns whether the
-// operation was a success.
-[[nodiscard]] bool WriteSessionStorageOptimized(const base::FilePath& path,
-                                                CRWSessionStorage* session) {
-  // Convert `session` to proto.
-  web::proto::WebStateStorage storage;
-  [session serializeToProto:storage];
-
-  // Write the metadata first.
-  if (!WriteProto(path.Append(kWebStateMetadataStorageFilename),
-                  storage.metadata())) {
-    return false;
-  }
-
-  // Clear the metadata from `storage` and save the data. This is how the
-  // optimised file format save `data` and `metadata` in two separate files.
-  storage.clear_metadata();
-  return WriteProto(path.Append(kWebStateStorageFilename), storage);
-}
-
-// Loads optimized WebState's state from `path` and converts it to
-// CRWSessionStorage*.
-[[nodiscard]] CRWSessionStorage* LoadSessionStorageFromOptimized(
-    const base::FilePath& path,
-    web::WebStateID web_state_id) {
-  // Load the data and metadata.
-  web::proto::WebStateStorage storage;
-  if (!ParseProto(path.Append(kWebStateStorageFilename), storage)) {
-    return nil;
-  }
-
-  if (!ParseProto(path.Append(kWebStateMetadataStorageFilename),
-                  *storage.mutable_metadata())) {
-    return nil;
-  }
-
-  return [[CRWSessionStorage alloc] initWithProto:storage
-                                 uniqueIdentifier:web_state_id
-                                 stableIdentifier:[[NSUUID UUID] UUIDString]];
-}
-
-// Loads optimized session from `path` and converts it to SessionWindowIOS.
-[[nodiscard]] SessionWindowIOS* LoadSessionWindowFromOptimized(
-    const base::FilePath& path) {
-  // Load the optimized session metadata.
-  ios::proto::WebStateListStorage storage;
-  if (!ParseProto(path.Append(kSessionMetadataFilename), storage)) {
-    return nil;
-  }
-
-  // Capture the number of pinned tabs and allocate array to store the tabs.
-  const int32_t pinned_items = storage.pinned_item_count();
-  NSMutableArray<CRWSessionStorage*>* sessions = [[NSMutableArray alloc] init];
-
-  // Load all the individual tabs' state.
-  for (const auto& item : storage.items()) {
-    const int32_t index = static_cast<int32_t>(sessions.count);
-    const auto ident = web::WebStateID::FromSerializedValue(item.identifier());
-    const base::FilePath item_dir = OptimizedWebStateDirectory(path, ident);
-
-    CRWSessionStorage* session =
-        LoadSessionStorageFromOptimized(item_dir, ident);
-    if (!session) {
-      return nil;
-    }
-
-    CRWSessionUserData* user_data = nil;
-    if (item.has_opener() || index < pinned_items) {
-      user_data = [[CRWSessionUserData alloc] init];
-      if (item.has_opener()) {
-        const ios::proto::OpenerStorage& opener = item.opener();
-        [user_data setObject:@(opener.index())
-                      forKey:kLegacyWebStateListOpenerIndexKey];
-        [user_data setObject:@(opener.navigation_index())
-                      forKey:kLegacyWebStateListOpenerNavigationIndexKey];
-      }
-      if (index < pinned_items) {
-        [user_data setObject:@YES forKey:kLegacyWebStateListPinnedStateKey];
-      }
-    }
-
-    session.userData = user_data;
-    session.uniqueIdentifier = ident;
-    [sessions addObject:session];
-  }
-
-  const NSUInteger selected_index =
-      storage.active_index() != -1 ? storage.active_index() : NSNotFound;
-
-  return [[SessionWindowIOS alloc] initWithSessions:sessions
-                                      selectedIndex:selected_index];
 }
 
 // Deletes data for a legacy session. Ignores errors. Used for cleanup.
@@ -229,8 +385,8 @@ struct [[nodiscard]] MigrationResult {
     return MigrationResult{.status = Status::kSkipped};
   }
 
-  static MigrationResult Success() {
-    return MigrationResult{.status = Status::kSuccess};
+  static MigrationResult Success(NSArray<CRWSessionStorage*>* sessions) {
+    return MigrationResult{.status = Status::kSuccess, .sessions = sessions};
   }
 
   static MigrationResult Failure(NSArray<CRWSessionStorage*>* sessions) {
@@ -245,81 +401,26 @@ MigrationResult MigrateSessionToOptimizedInternal(
     const base::FilePath& from,
     const base::FilePath& dest,
     const base::FilePath& web_sessions) {
-  const base::FilePath session_path = from.Append(kLegacySessionFilename);
-  if (!FileExists(session_path)) {
+  const base::FilePath legacy_path = from.Append(kLegacySessionFilename);
+  if (!FileExists(legacy_path)) {
     return MigrationResult::Skipped();
   }
 
-  SessionWindowIOS* session = ReadSessionWindow(session_path);
-  if (!session) {
+  SessionWindowIOS* legacy = ReadSessionWindow(legacy_path);
+  if (!legacy) {
     // Can't load session. Can't migrate it, nor record the tabs as closed.
     // Delete the session, so that we don't try to convert it anymore.
     return MigrationResult::Failure(nil);
   }
 
-  for (CRWSessionStorage* item in session.sessions) {
-    // Write the item in optimized format.
-    const base::FilePath item_path =
-        OptimizedWebStateDirectory(dest, item.uniqueIdentifier);
-    if (!WriteSessionStorageOptimized(item_path, item)) {
-      return MigrationResult::Failure(session.sessions);
-    }
+  std::optional<OptimizedSession> optimized =
+      OptimizedSession::FromLegacy(legacy);
+
+  if (!optimized || !optimized->SaveTo(dest, web_sessions)) {
+    return MigrationResult::Failure(legacy.sessions);
   }
 
-  // Migrate the storage for the WebStateList.
-  ios::proto::WebStateListStorage storage;
-  storage.set_active_index(session.selectedIndex);
-  for (CRWSessionStorage* item in session.sessions) {
-    ios::proto::WebStateListItemStorage& item_storage = *storage.add_items();
-    item_storage.set_identifier(item.uniqueIdentifier.identifier());
-
-    // The legacy format stores some WebStateList metadata in the items.
-    // Restore it from there and populate the information in `storage`.
-    CRWSessionUserData* user_data = item.userData;
-    if (user_data) {
-      NSNumber* opener_index = base::apple::ObjCCast<NSNumber>(
-          [user_data objectForKey:kLegacyWebStateListOpenerIndexKey]);
-      NSNumber* opener_navigation_index = base::apple::ObjCCast<NSNumber>(
-          [user_data objectForKey:kLegacyWebStateListOpenerNavigationIndexKey]);
-
-      if (opener_index && opener_navigation_index) {
-        ios::proto::OpenerStorage& opener_storage =
-            *item_storage.mutable_opener();
-        opener_storage.set_index([opener_index intValue]);
-        opener_storage.set_navigation_index([opener_navigation_index intValue]);
-      }
-
-      NSNumber* is_pinned = base::apple::ObjCCast<NSNumber>(
-          [user_data objectForKey:kLegacyWebStateListPinnedStateKey]);
-      if (is_pinned && [is_pinned boolValue]) {
-        storage.set_pinned_item_count(storage.pinned_item_count() + 1);
-      }
-    }
-  }
-
-  // Write the session metadata.
-  const base::FilePath metadata_path = dest.Append(kSessionMetadataFilename);
-  if (!WriteProto(metadata_path, storage)) {
-    return MigrationResult::Failure(session.sessions);
-  }
-
-  // Migrate the web session files if possible.
-  for (CRWSessionStorage* item in session.sessions) {
-    const base::FilePath web_session_from_path =
-        LegacyWebSessionFilename(web_sessions, item.uniqueIdentifier);
-    if (!FileExists(web_session_from_path)) {
-      continue;
-    }
-
-    // Rename the web session file (failure is okay, the code can load
-    // the session even if the file is missing).
-    const base::FilePath web_session_dest_path =
-        OptimizedWebStateDirectory(dest, item.uniqueIdentifier)
-            .Append(kWebStateSessionFilename);
-    std::ignore = RenameFile(web_session_from_path, web_session_dest_path);
-  }
-
-  return MigrationResult::Success();
+  return MigrationResult::Success(legacy.sessions);
 }
 
 // Migrates session stored in `from` in optimized format to `dest` in legacy
@@ -334,36 +435,38 @@ MigrationResult MigrateSessionToLegacyInternal(
     return MigrationResult::Skipped();
   }
 
-  // Load the optimized session and convert it in memory to the legacy format.
-  SessionWindowIOS* session = LoadSessionWindowFromOptimized(from);
-  if (!session) {
-    // Can't load session. Can't migrate it, nor record the tabs as closed.
-    // Delete the session, so that we don't try to convert it anymore.
+  std::optional<OptimizedSession> optimized = OptimizedSession::FromPath(from);
+  if (!optimized) {
     return MigrationResult::Failure(nil);
   }
 
+  SessionWindowIOS* legacy = optimized->ToLegacy();
+  DCHECK(legacy);
+
   // Write the legacy session to destination.
-  if (!WriteSessionWindow(dest.Append(kLegacySessionFilename), session)) {
-    return MigrationResult::Failure(session.sessions);
+  if (!WriteSessionWindow(dest.Append(kLegacySessionFilename), legacy)) {
+    return MigrationResult::Failure(legacy.sessions);
   }
 
   // Migrate the web session files if possible.
-  for (CRWSessionStorage* item in session.sessions) {
-    const base::FilePath web_session_from_path =
-        OptimizedWebStateDirectory(from, item.uniqueIdentifier)
-            .Append(kWebStateSessionFilename);
-    if (!FileExists(web_session_from_path)) {
-      continue;
-    }
+  for (CRWSessionStorage* item in legacy.sessions) {
+    const base::FilePath item_dir = from.Append(
+        base::StringPrintf("%08x", item.uniqueIdentifier.identifier()));
 
-    // Rename the web session file (failure is okay, the code can load
-    // the session even if the file is missing).
-    const base::FilePath web_session_dest_path =
-        LegacyWebSessionFilename(web_sessions, item.uniqueIdentifier);
-    std::ignore = RenameFile(web_session_from_path, web_session_dest_path);
+    const base::FilePath item_native_data_path =
+        item_dir.Append(kWebStateSessionFilename);
+
+    // Copy the WebState WKWebView native data if it exists. It is okay if
+    // the copy fails, since loading the sessions accepts their absence.
+    if (FileExists(item_native_data_path)) {
+      std::ignore = ios::sessions::CopyFile(
+          item_native_data_path,
+          web_sessions.Append(
+              base::StringPrintf("%08u", item.uniqueIdentifier.identifier())));
+    }
   }
 
-  return MigrationResult::Success();
+  return MigrationResult::Success(legacy.sessions);
 }
 
 // Migrates session stored in `from` in legacy format to `dest` in optimized
