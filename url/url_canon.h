@@ -699,7 +699,6 @@ void CanonicalizeRef(const char16_t* spec,
 // Use for standard URLs with authorities and paths.
 COMPONENT_EXPORT(URL)
 bool CanonicalizeStandardURL(const char* spec,
-                             int spec_len,
                              const Parsed& parsed,
                              SchemeType scheme_type,
                              CharsetConverter* query_converter,
@@ -707,7 +706,6 @@ bool CanonicalizeStandardURL(const char* spec,
                              Parsed* new_parsed);
 COMPONENT_EXPORT(URL)
 bool CanonicalizeStandardURL(const char16_t* spec,
-                             int spec_len,
                              const Parsed& parsed,
                              SchemeType scheme_type,
                              CharsetConverter* query_converter,
@@ -749,14 +747,12 @@ bool CanonicalizeFileURL(const char16_t* spec,
 // Use for filesystem URLs.
 COMPONENT_EXPORT(URL)
 bool CanonicalizeFileSystemURL(const char* spec,
-                               int spec_len,
                                const Parsed& parsed,
                                CharsetConverter* query_converter,
                                CanonOutput* output,
                                Parsed* new_parsed);
 COMPONENT_EXPORT(URL)
 bool CanonicalizeFileSystemURL(const char16_t* spec,
-                               int spec_len,
                                const Parsed& parsed,
                                CharsetConverter* query_converter,
                                CanonOutput* output,

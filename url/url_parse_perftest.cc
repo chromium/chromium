@@ -66,21 +66,21 @@ TEST(URLParse, TypicalURLParseCanon) {
     url::ParseStandardURL(kTypicalUrl1.data(), kTypicalUrl1.size(), &parsed1);
     output.set_length(0);
     url::CanonicalizeStandardURL(
-        kTypicalUrl1.data(), kTypicalUrl1.size(), parsed1,
+        kTypicalUrl1.data(), parsed1,
         url::SCHEME_WITH_HOST_PORT_AND_USER_INFORMATION, nullptr, &output,
         &out_parsed);
 
     url::ParseStandardURL(kTypicalUrl2.data(), kTypicalUrl2.size(), &parsed2);
     output.set_length(0);
     url::CanonicalizeStandardURL(
-        kTypicalUrl2.data(), kTypicalUrl2.size(), parsed2,
+        kTypicalUrl2.data(), parsed2,
         url::SCHEME_WITH_HOST_PORT_AND_USER_INFORMATION, nullptr, &output,
         &out_parsed);
 
     url::ParseStandardURL(kTypicalUrl3.data(), kTypicalUrl3.size(), &parsed3);
     output.set_length(0);
     url::CanonicalizeStandardURL(
-        kTypicalUrl3.data(), kTypicalUrl3.size(), parsed3,
+        kTypicalUrl3.data(), parsed3,
         url::SCHEME_WITH_HOST_PORT_AND_USER_INFORMATION, nullptr, &output,
         &out_parsed);
   }
@@ -100,7 +100,7 @@ TEST(URLParse, TypicalURLParseCanonStdString) {
     std::string out1;
     url::StdStringCanonOutput output1(&out1);
     url::CanonicalizeStandardURL(
-        kTypicalUrl1.data(), kTypicalUrl1.size(), parsed1,
+        kTypicalUrl1.data(), parsed1,
         url::SCHEME_WITH_HOST_PORT_AND_USER_INFORMATION, nullptr, &output1,
         &out_parsed);
 
@@ -108,7 +108,7 @@ TEST(URLParse, TypicalURLParseCanonStdString) {
     std::string out2;
     url::StdStringCanonOutput output2(&out2);
     url::CanonicalizeStandardURL(
-        kTypicalUrl2.data(), kTypicalUrl2.size(), parsed2,
+        kTypicalUrl2.data(), parsed2,
         url::SCHEME_WITH_HOST_PORT_AND_USER_INFORMATION, nullptr, &output2,
         &out_parsed);
 
@@ -116,7 +116,7 @@ TEST(URLParse, TypicalURLParseCanonStdString) {
     std::string out3;
     url::StdStringCanonOutput output3(&out3);
     url::CanonicalizeStandardURL(
-        kTypicalUrl3.data(), kTypicalUrl3.size(), parsed3,
+        kTypicalUrl3.data(), parsed3,
         url::SCHEME_WITH_HOST_PORT_AND_USER_INFORMATION, nullptr, &output3,
         &out_parsed);
   }

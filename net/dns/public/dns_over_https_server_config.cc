@@ -30,10 +30,9 @@ absl::optional<std::string> GetHttpsHost(const std::string& url) {
   std::string canonical;
   url::StdStringCanonOutput output(&canonical);
   url::Parsed canonical_parsed;
-  bool is_valid =
-      url::CanonicalizeStandardURL(url.data(), url.size(), parsed,
-                                   url::SchemeType::SCHEME_WITH_HOST_AND_PORT,
-                                   nullptr, &output, &canonical_parsed);
+  bool is_valid = url::CanonicalizeStandardURL(
+      url.data(), parsed, url::SchemeType::SCHEME_WITH_HOST_AND_PORT, nullptr,
+      &output, &canonical_parsed);
   if (!is_valid)
     return absl::nullopt;
   const url::Component& scheme_range = canonical_parsed.scheme;

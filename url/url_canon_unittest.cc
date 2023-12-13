@@ -1769,8 +1769,8 @@ TEST(URLCanonTest, CanonicalizeStandardURL) {
     std::string out_str;
     StdStringCanonOutput output(&out_str);
     bool success = CanonicalizeStandardURL(
-        i.input, url_len, parsed, SCHEME_WITH_HOST_PORT_AND_USER_INFORMATION,
-        nullptr, &output, &out_parsed);
+        i.input, parsed, SCHEME_WITH_HOST_PORT_AND_USER_INFORMATION, nullptr,
+        &output, &out_parsed);
     output.Complete();
 
     EXPECT_EQ(i.expected_success, success);
@@ -2342,8 +2342,8 @@ TEST(URLCanonTest, CanonicalizeFileSystemURL) {
     Parsed out_parsed;
     std::string out_str;
     StdStringCanonOutput output(&out_str);
-    bool success = CanonicalizeFileSystemURL(i.input, url_len, parsed, nullptr,
-                                             &output, &out_parsed);
+    bool success = CanonicalizeFileSystemURL(i.input, parsed, nullptr, &output,
+                                             &out_parsed);
     output.Complete();
 
     EXPECT_EQ(i.expected_success, success);

@@ -55,7 +55,7 @@ bool CanonicalizeWebFacetURI(const std::string& input_uri,
   url::StdStringCanonOutput canonical_output(canonical_uri);
 
   bool canonicalization_succeeded = url::CanonicalizeStandardURL(
-      input_uri.c_str(), input_uri.size(), input_parsed,
+      input_uri.c_str(), input_parsed,
       url::SCHEME_WITH_HOST_PORT_AND_USER_INFORMATION, nullptr,
       &canonical_output, &canonical_parsed);
   canonical_output.Complete();
