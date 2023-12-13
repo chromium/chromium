@@ -267,7 +267,7 @@ void PuffinUnpackCompleteOnBlockingTaskRunner(
       DVLOG(2)
           << "Puffin Patches are disabled, proceeding without crx retention.";
     }
-    update_client::DeleteEmptyDirectory(crx_path.DirName());
+    update_client::DeleteFileAndEmptyParentDirectory(crx_path);
     base::ThreadPool::PostTask(
         FROM_HERE, kTaskTraits,
         base::BindOnce(&InstallOnBlockingTaskRunner, main_task_runner,
@@ -314,7 +314,7 @@ void StartPuffinInstallOnBlockingTaskRunner(
 void OnPuffPatchCompleteOnBlockingTaskRunner(
     scoped_refptr<base::SequencedTaskRunner> main_task_runner,
     const std::vector<uint8_t>& pk_hash,
-    const base::FilePath& src_crx_path,
+    const base::FilePath& patch_path,
     const base::FilePath& dest_crx_path,
     const std::string& id,
     const std::string& fingerprint,
@@ -327,8 +327,8 @@ void OnPuffPatchCompleteOnBlockingTaskRunner(
     InstallOnBlockingTaskRunnerCompleteCallback callback,
     UnpackerError error,
     int extra_code) {
+  update_client::DeleteFileAndEmptyParentDirectory(patch_path);
   if (error != UnpackerError::kNone) {
-    update_client::DeleteFileAndEmptyParentDirectory(src_crx_path);
     update_client::DeleteFileAndEmptyParentDirectory(dest_crx_path);
     main_task_runner->PostTask(
         FROM_HERE,
@@ -385,7 +385,7 @@ void StartPuffPatchOnBlockingTaskRunner(
       std::move(crx_file), std::move(puff_patch_file), std::move(dest_file),
       patcher_,
       base::BindOnce(&OnPuffPatchCompleteOnBlockingTaskRunner, main_task_runner,
-                     pk_hash, crx_path, dest_path, id, fingerprint,
+                     pk_hash, puff_patch_path, dest_path, id, fingerprint,
                      std::move(install_params), installer, std::move(unzipper_),
                      crx_cache, crx_format, progress_callback,
                      std::move(callback)));
