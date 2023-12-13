@@ -47,8 +47,8 @@ class AccessibilityTreeLinkageWinBrowserTest
       const AccessibilityTreeLinkageWinBrowserTest&) = delete;
 
   ~AccessibilityTreeLinkageWinBrowserTest() override {
-    dummy_ax_platform_node_->Destroy();
-    dummy_ax_platform_node_ = nullptr;
+    // Calling Destroy will delete `dummy_ax_platform_node_`.
+    dummy_ax_platform_node_.ExtractAsDangling()->Destroy();
   }
 
   void SetUpCommandLine(base::CommandLine* command_line) override {
@@ -73,7 +73,7 @@ class AccessibilityTreeLinkageWinBrowserTest
 
  protected:
   ui::AXPlatformNodeDelegate dummy_ax_node_;
-  raw_ptr<ui::AXPlatformNode, DanglingUntriaged> dummy_ax_platform_node_;
+  raw_ptr<ui::AXPlatformNode> dummy_ax_platform_node_;
 };
 
 IN_PROC_BROWSER_TEST_P(AccessibilityTreeLinkageWinBrowserTest, Linkage) {
