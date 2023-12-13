@@ -1199,6 +1199,9 @@ Additional details:
  <message name="IDS_POLICY_DLP_FILES_LEARN_MORE_ABOUT_SENSITIVE_DATA_PROTECTION_ACCESSIBLE_NAME" desc="The message is read to ChromeVox users when they focus a generic learn more link related to enterprise connector's sensitive data protection.">
     Learn more about Sensitive Data protection
   </message>
+  <message name="IDS_POLICY_DLP_FILES_JUSTIFICATION_TEXTAREA_ACCESSIBLE_DESCRIPTION" desc="The message is read to ChromeVox users when they focus the justification text area.">
+    Please enter a justification message having at most <ph name="MAX_CHAR_COUNT">$2<ex>280</ex></ph> characters. Used <ph name="ACTUAL_CHAR_COUNT">$1<ex>10</ex></ph> out of <ph name="MAX_CHAR_COUNT">$2<ex>280</ex></ph> characters.
+  </message>
   <message name="IDS_POLICY_DEVICE_SCHEDULED_REBOOT_TITLE" desc="The title for notification informing the user that the device will restart soon.">
     Device will restart very soon
   </message>

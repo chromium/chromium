@@ -338,6 +338,10 @@ void FilesPolicyWarnDialog::MaybeAddJustificationPanel() {
   justification_field_->SetID(
       PolicyDialogBase::kEnterpriseConnectorsJustificationTextareaId);
   justification_field_->SetAccessibleName(justification_label_text);
+  justification_field_->SetAccessibleDescription(l10n_util::GetStringFUTF16(
+      IDS_POLICY_DLP_FILES_JUSTIFICATION_TEXTAREA_ACCESSIBLE_DESCRIPTION,
+      base::NumberToString16(0),
+      base::NumberToString16(kMaxBypassJustificationLength)));
   justification_field_->SetController(this);
   justification_field_->SetBackgroundColor(SK_ColorTRANSPARENT);
   justification_field_->SetPreferredSize(
@@ -366,6 +370,10 @@ void FilesPolicyWarnDialog::ContentsChanged(
   if (justification_field_length_label_) {
     justification_field_length_label_->SetText(l10n_util::GetStringFUTF16(
         IDS_DEEP_SCANNING_DIALOG_BYPASS_JUSTIFICATION_TEXT_LIMIT_LABEL,
+        base::NumberToString16(new_contents.size()),
+        base::NumberToString16(kMaxBypassJustificationLength)));
+    justification_field_->SetAccessibleDescription(l10n_util::GetStringFUTF16(
+        IDS_POLICY_DLP_FILES_JUSTIFICATION_TEXTAREA_ACCESSIBLE_DESCRIPTION,
         base::NumberToString16(new_contents.size()),
         base::NumberToString16(kMaxBypassJustificationLength)));
   }
