@@ -667,7 +667,7 @@
     },
     {
       name: "ClipboardWellFormedHtmlSanitizationWrite",
-      status: "experimental",
+      status: "stable",
     },
     {
       // https://drafts.fxtf.org/css-masking/#typedef-geometry-box
