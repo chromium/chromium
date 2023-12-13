@@ -53,6 +53,7 @@ source_set("form_handler_feature") {
     "form_handlers_java_script_feature.mm",
   ]
   deps = [
+    ":child_frame_registrar",
     ":form_handlers_js",
     ":form_util",
     ":form_util_feature",
@@ -180,9 +181,24 @@ source_set("test_support") {
   ]
 }
 
+source_set("child_frame_registrar") {
+  sources = [
+    "child_frame_registrar.h",
+    "child_frame_registrar.mm",
+  ]
+  deps = [
+    "//base",
+    "//components/autofill/core/common",
+    "//components/autofill/ios/browser:util",
+    "//ios/web/public",
+    "//ios/web/public/js_messaging",
+  ]
+}
+
 source_set("unit_tests") {
   testonly = true
   sources = [
+    "child_frame_registrar_unittest.mm",
     "fill_js_unittest.mm",
     "form_activity_observer_bridge_unittest.mm",
     "form_activity_tab_helper_unittest.mm",
@@ -191,6 +207,7 @@ source_set("unit_tests") {
     "unique_id_data_tab_helper_unittest.mm",
   ]
   deps = [
+    ":child_frame_registrar",
     ":fill_js",
     ":form_handlers_js",
     ":form_js",
@@ -199,6 +216,7 @@ source_set("unit_tests") {
     ":test_support",
     "//base",
     "//base/test:test_support",
+    "//components/autofill/ios/browser:util",
     "//components/autofill/ios/form_util:form_handler_feature",
     "//ios/web/public/js_messaging",
     "//ios/web/public/test",

@@ -17,6 +17,7 @@
 #import "components/autofill/ios/browser/autofill_java_script_feature.h"
 #import "components/autofill/ios/browser/test_autofill_manager_injector.h"
 #import "components/autofill/ios/form_util/autofill_test_with_web_state.h"
+#import "components/autofill/ios/form_util/child_frame_registrar.h"
 #import "components/autofill/ios/form_util/form_handlers_java_script_feature.h"
 #import "components/autofill/ios/form_util/form_util_java_script_feature.h"
 #import "components/autofill/ios/form_util/unique_id_data_tab_helper.h"
@@ -201,6 +202,39 @@ TEST_F(AutofillAcrossIframesTest, WithChildFrames) {
   // valid (the bool cast checks this).
   EXPECT_THAT(remote_token1.token, VariantWith<RemoteFrameToken>(IsTrue()));
   EXPECT_THAT(remote_token2.token, VariantWith<RemoteFrameToken>(IsTrue()));
+
+  auto* registrar =
+      autofill::ChildFrameRegistrar::GetOrCreateForWebState(web_state());
+  ASSERT_TRUE(registrar);
+
+  // Get the frame tokens from the registrar. Wrap this in a block because the
+  // registrar receives these from each frame in a separate JS message.
+  __block absl::optional<LocalFrameToken> local_token1, local_token2;
+  ASSERT_TRUE(base::test::ios::WaitUntilConditionOrTimeout(
+      base::test::ios::kWaitForJSCompletionTimeout, ^bool {
+        local_token1 = registrar->LookupChildFrame(
+            absl::get<RemoteFrameToken>(remote_token1.token));
+        local_token2 = registrar->LookupChildFrame(
+            absl::get<RemoteFrameToken>(remote_token2.token));
+        return local_token1.has_value() && local_token2.has_value();
+      }));
+
+  web::WebFramesManager* frames_manager =
+      FormUtilJavaScriptFeature::GetInstance()->GetWebFramesManager(
+          web_state());
+
+  ASSERT_TRUE(frames_manager);
+
+  web::WebFrame* frame1 =
+      frames_manager->GetFrameWithId(local_token1->ToString());
+  EXPECT_TRUE(frame1);
+
+  web::WebFrame* frame2 =
+      frames_manager->GetFrameWithId(local_token2->ToString());
+  EXPECT_TRUE(frame2);
+
+  // TODO(crbug.com/1440471): Check contents of frames to make sure they're the
+  // right ones.
 }
 
 // Ensure that disabling the feature actually disables the feature.
@@ -219,6 +253,9 @@ TEST_F(AutofillAcrossIframesTest, FeatureDisabled) {
 
   const FormData& form = main_frame_manager().seen_forms()[0];
   EXPECT_EQ(form.child_frames.size(), 0u);
+
+  EXPECT_FALSE(
+      autofill::ChildFrameRegistrar::GetOrCreateForWebState(web_state()));
 }
 
 }  // namespace autofill

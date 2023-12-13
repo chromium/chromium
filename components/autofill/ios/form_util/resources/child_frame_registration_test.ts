@@ -6,7 +6,7 @@
  * @fileoverview Test access into the Child Frame Registration lib.
  */
 
-import {registerChildFrame} from '//components/autofill/ios/form_util/resources/child_frame_registration_lib.js';
+import {processChildFrameMessage, registerChildFrame} from '//components/autofill/ios/form_util/resources/child_frame_registration_lib.js';
 import {gCrWeb} from '//ios/web/public/js_messaging/resources/gcrweb.js';
 
 /**
@@ -21,6 +21,8 @@ function registerAllChildFrames(): string[] {
   }
   return ids;
 }
+
+window.addEventListener('message', processChildFrameMessage);
 
 gCrWeb.childFrameRegistrationTesting = {
   registerChildFrame,
