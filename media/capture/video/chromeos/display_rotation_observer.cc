@@ -63,9 +63,11 @@ void ScreenObserverDelegate::AddObserverOnDisplayThread() {
     return;
   }
   display_observer_.emplace(this);
-  display::Display display = screen->GetPrimaryDisplay();
-  if (display.IsInternal()) {
-    SendInternalDisplayRotation(display.rotation() * 90);
+  for (const auto& display : screen->GetAllDisplays()) {
+    if (display.IsInternal()) {
+      SendInternalDisplayRotation(display.rotation() * 90);
+      break;
+    }
   }
 }
 
