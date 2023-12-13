@@ -95,12 +95,6 @@ source_set("anonymous_tokens_pb_openssl_converters") {
 }
 
 proto_library("anonymous_tokens_cc_proto") {
-  visibility = [
-    ":*",
-    "//net/third_party/quiche:blind_sign_auth_proto",
-    "//net/third_party/quiche:blind_sign_auth_proto_gen",
-  ]
-
   sources = [ "src/anonymous_tokens/proto/anonymous_tokens.proto" ]
 
   component_build_force_source_set = true

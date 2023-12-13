@@ -859,8 +859,15 @@ proto_library("blind_sign_auth_proto") {
   proto_in_dir = "src"
 
   deps = [
-    "//base",
+    "//base"
+  ]
+
+  proto_deps = [
     "//third_party/anonymous_tokens:anonymous_tokens_cc_proto",
+  ]
+
+  proto_data_sources = [
+    "//third_party/anonymous_tokens/src/anonymous_tokens/proto/anonymous_tokens.proto",
   ]
 
   import_dirs = [ "//third_party/anonymous_tokens/src/" ]
