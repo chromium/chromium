@@ -979,15 +979,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="GPU.MaxMSAASampleCount" units="samples"
-    expires_after="2020-07-06">
-  <owner>senorblanco@chromium.org</owner>
-  <summary>
-    The maximum number of multisampled anti-aliasing (MSAA) samples per pixel
-    that the user's GPU can render.
-  </summary>
-</histogram>
-
 <histogram name="GPU.Memory.Device" units="MB" expires_after="2024-08-30">
   <owner>cduvall@chromium.org</owner>
   <owner>swarm-team@google.com</owner>
