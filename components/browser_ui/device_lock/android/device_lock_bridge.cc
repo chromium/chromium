@@ -22,10 +22,19 @@ DeviceLockBridge::~DeviceLockBridge() {
                                            java_object_);
 }
 
-void DeviceLockBridge::LaunchDeviceLockUiBeforeRunningCallback(
+void DeviceLockBridge::LaunchDeviceLockUiIfNeededBeforeRunningCallback(
     ui::WindowAndroid* window_android,
-    DeviceLockConfirmedCallback callback) {
-  CHECK(window_android) << "Can be null before creation and during clean-up";
+    DeviceLockRequirementMetCallback callback) {
+  if (!ShouldShowDeviceLockUi()) {
+    std::move(callback).Run(/*device_lock_requirement_met=*/true);
+    return;
+  }
+
+  if (!window_android) {
+    std::move(callback).Run(/*device_lock_requirement_met=*/false);
+    return;
+  }
+
   CHECK(callback);
   device_lock_confirmed_callback_ = std::move(callback);
   Java_DeviceLockBridge_launchDeviceLockUiBeforeRunningCallback(
@@ -35,7 +44,8 @@ void DeviceLockBridge::LaunchDeviceLockUiBeforeRunningCallback(
 
 void DeviceLockBridge::OnDeviceLockUiFinished(JNIEnv* env,
                                               bool is_device_lock_set) {
-  std::move(device_lock_confirmed_callback_).Run(is_device_lock_set);
+  std::move(device_lock_confirmed_callback_)
+      .Run(/*device_lock_requirement_met=*/is_device_lock_set);
 }
 
 bool DeviceLockBridge::ShouldShowDeviceLockUi() {
