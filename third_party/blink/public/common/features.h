@@ -1372,11 +1372,6 @@ BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kUACHOverrideBlank);
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(
     kEmulateLoadStartedForInspectorOncePerResource);
 
-// Kill switch for using a custom task runner in the blink scheduler that makes
-// DeleteSoon/ReleaseSoon less prone to memory leaks.
-BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(
-    kUseBlinkSchedulerTaskRunnerWithCustomDeleter);
-
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(
     kUseImageInsteadOfStorageForStagingBuffer);
 

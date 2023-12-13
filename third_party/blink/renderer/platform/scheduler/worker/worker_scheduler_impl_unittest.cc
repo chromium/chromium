@@ -623,24 +623,7 @@ TEST_F(NonMainThreadWebSchedulingTaskQueueTest,
 
 enum class DeleterTaskRunnerEnabled { kEnabled, kDisabled };
 
-class WorkerSchedulerImplTaskRunnerWithCustomDeleterTest
-    : public WorkerSchedulerImplTest,
-      public ::testing::WithParamInterface<DeleterTaskRunnerEnabled> {
- public:
-  WorkerSchedulerImplTaskRunnerWithCustomDeleterTest() {
-    feature_list_.Reset();
-    if (GetParam() == DeleterTaskRunnerEnabled::kEnabled) {
-      feature_list_.InitWithFeatures(
-          {blink::features::kUseBlinkSchedulerTaskRunnerWithCustomDeleter}, {});
-    } else {
-      feature_list_.InitWithFeatures(
-          {}, {blink::features::kUseBlinkSchedulerTaskRunnerWithCustomDeleter});
-    }
-  }
-};
-
-TEST_P(WorkerSchedulerImplTaskRunnerWithCustomDeleterTest,
-       DeleteSoonAfterDispose) {
+TEST_F(WorkerSchedulerImplTest, DeleteSoonAfterDispose) {
   scoped_refptr<base::SingleThreadTaskRunner> task_runner =
       worker_scheduler_->GetTaskRunner(TaskType::kInternalTest);
   int counter = 0;
@@ -665,33 +648,11 @@ TEST_P(WorkerSchedulerImplTaskRunnerWithCustomDeleterTest,
 
   std::unique_ptr<TestObject> test_object2 =
       std::make_unique<TestObject>(&counter);
-  TestObject* unowned_test_object2 = test_object2.get();
   task_runner->DeleteSoon(FROM_HERE, std::move(test_object2));
   EXPECT_EQ(counter, 1);
   RunUntilIdle();
-
-  // Without the custom task runner, this leaks.
-  if (GetParam() == DeleterTaskRunnerEnabled::kDisabled) {
-    EXPECT_EQ(counter, 1);
-    delete (unowned_test_object2);
-  } else {
-    EXPECT_EQ(counter, 2);
-  }
+  EXPECT_EQ(counter, 2);
 }
-
-INSTANTIATE_TEST_SUITE_P(
-    ,
-    WorkerSchedulerImplTaskRunnerWithCustomDeleterTest,
-    testing::Values(DeleterTaskRunnerEnabled::kEnabled,
-                    DeleterTaskRunnerEnabled::kDisabled),
-    [](const testing::TestParamInfo<DeleterTaskRunnerEnabled>& info) {
-      switch (info.param) {
-        case DeleterTaskRunnerEnabled::kEnabled:
-          return "Enabled";
-        case DeleterTaskRunnerEnabled::kDisabled:
-          return "Disabled";
-      }
-    });
 
 }  // namespace worker_scheduler_unittest
 }  // namespace scheduler

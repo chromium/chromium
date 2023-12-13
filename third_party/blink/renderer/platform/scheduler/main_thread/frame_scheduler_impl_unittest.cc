@@ -3327,17 +3327,7 @@ TEST_F(FrameSchedulerImplThrottleUnimportantFrameTimersEnabledTest,
                                    start + base::Milliseconds(200)));
 }
 
-class FrameSchedulerImplDeleterTaskRunnerEnabledTest
-    : public FrameSchedulerImplTest {
- public:
-  FrameSchedulerImplDeleterTaskRunnerEnabledTest()
-      : FrameSchedulerImplTest(
-            {blink::features::kUseBlinkSchedulerTaskRunnerWithCustomDeleter},
-            {}) {}
-};
-
-TEST_F(FrameSchedulerImplDeleterTaskRunnerEnabledTest,
-       DeleteSoonUsesBackupTaskRunner) {
+TEST_F(FrameSchedulerImplTest, DeleteSoonUsesBackupTaskRunner) {
   scoped_refptr<base::SingleThreadTaskRunner> task_runner =
       frame_scheduler_->GetTaskRunner(TaskType::kInternalTest);
   int counter = 0;
@@ -3359,26 +3349,7 @@ TEST_F(FrameSchedulerImplDeleterTaskRunnerEnabledTest,
   EXPECT_EQ(2, counter);
 }
 
-enum class DeleterTaskRunnerEnabled { kEnabled, kDisabled };
-
-class FrameSchedulerImplTaskRunnerWithCustomDeleterTest
-    : public FrameSchedulerImplTest,
-      public ::testing::WithParamInterface<DeleterTaskRunnerEnabled> {
- public:
-  FrameSchedulerImplTaskRunnerWithCustomDeleterTest() {
-    feature_list_.Reset();
-    if (GetParam() == DeleterTaskRunnerEnabled::kEnabled) {
-      feature_list_.InitWithFeatures(
-          {blink::features::kUseBlinkSchedulerTaskRunnerWithCustomDeleter}, {});
-    } else {
-      feature_list_.InitWithFeatures(
-          {}, {blink::features::kUseBlinkSchedulerTaskRunnerWithCustomDeleter});
-    }
-  }
-};
-
-TEST_P(FrameSchedulerImplTaskRunnerWithCustomDeleterTest,
-       DeleteSoonAfterShutdown) {
+TEST_F(FrameSchedulerImplTest, DeleteSoonAfterShutdown) {
   scoped_refptr<base::SingleThreadTaskRunner> task_runner =
       frame_scheduler_->GetTaskRunner(TaskType::kInternalTest);
   int counter = 0;
@@ -3404,33 +3375,11 @@ TEST_P(FrameSchedulerImplTaskRunnerWithCustomDeleterTest,
 
   std::unique_ptr<TestObject> test_object2 =
       std::make_unique<TestObject>(&counter);
-  TestObject* unowned_test_object2 = test_object2.get();
   task_runner->DeleteSoon(FROM_HERE, std::move(test_object2));
   EXPECT_EQ(counter, 2);
   base::RunLoop().RunUntilIdle();
-
-  // Without the custom task runner, this leaks.
-  if (GetParam() == DeleterTaskRunnerEnabled::kDisabled) {
-    EXPECT_EQ(counter, 2);
-    delete (unowned_test_object2);
-  } else {
-    EXPECT_EQ(counter, 3);
-  }
+  EXPECT_EQ(counter, 3);
 }
-
-INSTANTIATE_TEST_SUITE_P(
-    ,
-    FrameSchedulerImplTaskRunnerWithCustomDeleterTest,
-    testing::Values(DeleterTaskRunnerEnabled::kEnabled,
-                    DeleterTaskRunnerEnabled::kDisabled),
-    [](const testing::TestParamInfo<DeleterTaskRunnerEnabled>& info) {
-      switch (info.param) {
-        case DeleterTaskRunnerEnabled::kEnabled:
-          return "Enabled";
-        case DeleterTaskRunnerEnabled::kDisabled:
-          return "Disabled";
-      }
-    });
 
 }  // namespace frame_scheduler_impl_unittest
 }  // namespace scheduler

@@ -2186,16 +2186,6 @@
     "expires": "Oct 1, 2023"
   },
   {
-    "prefix": "webcodecs-without-task-runner-with-custom-deleter",
-    "platforms": ["Linux", "Mac", "Win"],
-    "bases": [
-      "external/wpt/webcodecs"
-    ],
-    "args": ["--disable-features=UseBlinkSchedulerTaskRunnerWithCustomDeleter",
-             "--disable-threaded-compositing", "--disable-threaded-animation"],
-    "expires": "Jul 1, 2023"
-  },
-  {
     "prefix": "option-label-only-in-no-quirks",
     "platforms": ["Linux"],
     "bases": [
