@@ -78,7 +78,10 @@ export class BorealisInstallerAppElement extends PolymerElement {
     this.listenerIds.push(
         this.router.onProgressUpdate.addListener(
             (progressFraction: number, progressLabel: string) => {
-              this.installerProgress = progressFraction * 100;
+              // Multiply by 100 to get percentage then round to 2 decimal
+              // places.
+              this.installerProgress =
+                  Math.round(progressFraction * 100 * 100) / 100;
               this.progressLabel = progressLabel;
             }),
         this.router.onInstallFinished.addListener(
