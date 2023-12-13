@@ -1471,6 +1471,7 @@ void AutofillAgent::HandleFocusChangeComplete(
             form_util::FindFormForContentEditable(focused_element)) {
       CHECK_EQ(form->fields.size(), 1u);
       if (auto* autofill_driver = unsafe_autofill_driver()) {
+        is_popup_possibly_visible_ = true;
         autofill_driver->AskForValuesToFill(
             *form, form->fields[0], form->fields[0].bounds,
             mojom::AutofillSuggestionTriggerSource::kContentEditableClicked);
