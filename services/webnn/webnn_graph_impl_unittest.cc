@@ -6,6 +6,7 @@
 
 #include <limits>
 
+#include "base/containers/contains.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/stringprintf.h"
@@ -1933,8 +1934,7 @@ class ElementWiseUnaryDataTypeFixture
     const bool expected =
         (inputDataType == outputDataType ||
          kOperatorsWithDissimilarDatatypeSupport.contains(kind)) &&
-        std::find(operator_trait.second.begin(), operator_trait.second.end(),
-                  inputDataType) != operator_trait.second.end();
+        base::Contains(operator_trait.second, inputDataType);
 
     ElementWiseUnaryTester{
         .kind = kind,
