@@ -28,6 +28,6 @@
     "rollup": "3.29.4",
     "svgo": "3.0.2",
     "terser": "5.20.0",
-    "typescript": "5.2.2"
+    "typescript": "5.3.3"
   }
 }
