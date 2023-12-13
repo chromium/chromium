@@ -881,6 +881,7 @@ IN_PROC_BROWSER_TEST_F(
   helper_.CheckWindowControlsOverlay(Site::kWco, IsOn::kOn);
 }
 
+// TODO(crbug/1481727): Flaky on lacros with version skew.
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
 #define MAYBE_WAI_32WcoWithShortcutWindowedWebApp_34Wco_112WcoShown_168_169 \
   DISABLED_WAI_32WcoWithShortcutWindowedWebApp_34Wco_112WcoShown_168_169

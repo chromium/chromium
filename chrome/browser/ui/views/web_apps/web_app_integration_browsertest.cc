@@ -158,7 +158,7 @@ IN_PROC_BROWSER_TEST_F(WebAppIntegration,
   helper_.CheckWindowControlsOverlay(Site::kWco, IsOn::kOn);
 }
 
-// Flaky on Lacros ASan. https://crbug.com/1492643.
+// TODO(crbug/1492029): Flaky on Lacros ASan.
 #if defined(ADDRESS_SANITIZER) && BUILDFLAG(IS_CHROMEOS_LACROS)
 #define MAYBE_SwitchIncognitoProfile DISABLED_SwitchIncognitoProfile
 #else
@@ -2507,7 +2507,7 @@ IN_PROC_BROWSER_TEST_F(
   helper_.CheckLaunchIconNotShown();
 }
 
-// TODO(crbug.com/1480429): Flaky on lacros
+// TODO(crbug.com/1492029): Flaky on Lacros.
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
 #define MAYBE_WAI_31Standalone_79StandaloneStandaloneOriginal_24_12Standalone_7Standalone_112StandaloneNotShown_73_37Standalone_19 \
   DISABLED_WAI_31Standalone_79StandaloneStandaloneOriginal_24_12Standalone_7Standalone_112StandaloneNotShown_73_37Standalone_19
@@ -3185,7 +3185,7 @@ IN_PROC_BROWSER_TEST_F(
   helper_.CheckLaunchIconNotShown();
 }
 
-// Flaky on Lacros. https://crbug.com/1492029.
+// TODO(crbug.com/1492029): Flaky on Lacros.
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
 #define MAYBE_WAI_47Standalone_79StandaloneStandaloneOriginal_24_12Standalone_7Standalone_112StandaloneNotShown_73_37Standalone_19 \
   DISABLED_WAI_47Standalone_79StandaloneStandaloneOriginal_24_12Standalone_7Standalone_112StandaloneNotShown_73_37Standalone_19
@@ -4455,7 +4455,7 @@ IN_PROC_BROWSER_TEST_F(
   helper_.CheckLaunchIconNotShown();
 }
 
-// TODO(crbug.com/1480429): Flaky on lacros
+// TODO(crbug.com/1492029): Flaky on Lacros.
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
 #define MAYBE_WAI_29StandaloneWindowed_79StandaloneStandaloneOriginal_24_12Standalone_7Standalone_112StandaloneNotShown_73_37Standalone_19 \
   DISABLED_WAI_29StandaloneWindowed_79StandaloneStandaloneOriginal_24_12Standalone_7Standalone_112StandaloneNotShown_73_37Standalone_19
