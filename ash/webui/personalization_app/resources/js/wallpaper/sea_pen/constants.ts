@@ -36,7 +36,7 @@ export interface SeaPenTemplate {
   options: Map<SeaPenTemplateChip, SeaPenOption[]>;
 }
 
-export function getSampleSeaPenTemplates(): SeaPenTemplate[] {
+export function getSeaPenTemplates(): SeaPenTemplate[] {
   const templates = [
     {
       id: SeaPenTemplateId.kFlower.toString(),

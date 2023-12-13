@@ -13,7 +13,7 @@ import {assert} from 'chrome://resources/js/assert.js';
 
 import {PersonalizationRouterElement} from '../../personalization_router_element.js';
 
-import {getSampleSeaPenTemplates, SeaPenTemplate} from './constants.js';
+import {getSeaPenTemplates, SeaPenTemplate} from './constants.js';
 import {WithSeaPenStore} from './sea_pen_store.js';
 import {getTemplate} from './sea_pen_templates_element.html.js';
 
@@ -40,7 +40,7 @@ export class SeaPenTemplatesElement extends WithSeaPenStore {
   private selected_: SeaPenTemplate;
 
   private computeSeaPenTemplates_(): SeaPenTemplate[] {
-    return getSampleSeaPenTemplates();
+    return getSeaPenTemplates();
   }
 
   private getAriaIndex_(i: number): number {

@@ -15,7 +15,7 @@ import {SeaPenQuery, SeaPenTemplateChip, SeaPenTemplateId, SeaPenTemplateOption}
 import {Paths, PersonalizationRouterElement} from '../../personalization_router_element.js';
 import {isNonEmptyArray} from '../../utils.js';
 
-import {getSampleSeaPenTemplates, parseTemplateText, SeaPenOption, SeaPenTemplate} from './constants.js';
+import {getSeaPenTemplates, parseTemplateText, SeaPenOption, SeaPenTemplate} from './constants.js';
 import {searchSeaPenThumbnails} from './sea_pen_controller.js';
 import {getSeaPenProvider} from './sea_pen_interface_provider.js';
 import {WithSeaPenStore} from './sea_pen_store.js';
@@ -110,7 +110,7 @@ export class SeaPenTemplateQueryElement extends WithSeaPenStore {
   templateId: string|null;
 
   private computeSeaPenTemplate_(templateId: string|null) {
-    const seaPenTemplates = getSampleSeaPenTemplates();
+    const seaPenTemplates = getSeaPenTemplates();
     const correctTemplate = seaPenTemplates.find(
         (seaPenTemplate) => seaPenTemplate.id === templateId);
     return correctTemplate as SeaPenTemplate;
