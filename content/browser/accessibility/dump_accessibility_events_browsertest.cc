@@ -184,7 +184,7 @@ struct DumpAccessibilityEventsTestPassToString {
 INSTANTIATE_TEST_SUITE_P(
     All,
     DumpAccessibilityEventsTest,
-    ::testing::ValuesIn(DumpAccessibilityTestBase::EventTestPassesExceptUIA()),
+    ::testing::ValuesIn(DumpAccessibilityTestBase::EventTestPasses()),
     DumpAccessibilityEventsTestPassToString());
 
 INSTANTIATE_TEST_SUITE_P(
@@ -271,7 +271,8 @@ IN_PROC_BROWSER_TEST_P(DumpAccessibilityEventsTest,
   RunEventTest(FILE_PATH_LITERAL("aria-haspopup-changed.html"));
 }
 
-IN_PROC_BROWSER_TEST_P(DumpAccessibilityEventsTest,
+// crbug.com/1511111 leaving disabled after re-enabling test suite.
+IN_PROC_BROWSER_TEST_P(DumpAccessibilityEventsTestExceptUIA,
                        AccessibilityEventsAriaHiddenChanged) {
   RunEventTest(FILE_PATH_LITERAL("aria-hidden-changed.html"));
 }
@@ -433,27 +434,27 @@ IN_PROC_BROWSER_TEST_P(DumpAccessibilityEventsTest,
 }
 
 // https://crbug.com/941919
-IN_PROC_BROWSER_TEST_P(DumpAccessibilityEventsTest,
+IN_PROC_BROWSER_TEST_P(DumpAccessibilityEventsTestExceptUIA,
                        DISABLED_AccessibilityEventsAddAlert) {
   RunEventTest(FILE_PATH_LITERAL("add-alert.html"));
 }
 
-IN_PROC_BROWSER_TEST_P(DumpAccessibilityEventsTest,
+IN_PROC_BROWSER_TEST_P(DumpAccessibilityEventsTestExceptUIA,
                        AccessibilityEventsAddAlertWithRoleChange) {
   RunEventTest(FILE_PATH_LITERAL("add-alert-with-role-change.html"));
 }
 
-IN_PROC_BROWSER_TEST_P(DumpAccessibilityEventsTest,
+IN_PROC_BROWSER_TEST_P(DumpAccessibilityEventsTestExceptUIA,
                        AccessibilityEventsAddAlertContent) {
   RunEventTest(FILE_PATH_LITERAL("add-alert-content.html"));
 }
 
-IN_PROC_BROWSER_TEST_P(DumpAccessibilityEventsTest,
+IN_PROC_BROWSER_TEST_P(DumpAccessibilityEventsTestExceptUIA,
                        AccessibilityEventsAddChild) {
   RunEventTest(FILE_PATH_LITERAL("add-child.html"));
 }
 
-IN_PROC_BROWSER_TEST_P(DumpAccessibilityEventsTest,
+IN_PROC_BROWSER_TEST_P(DumpAccessibilityEventsTestExceptUIA,
                        AccessibilityEventsAddChildOfBody) {
   RunEventTest(FILE_PATH_LITERAL("add-child-of-body.html"));
 }
@@ -464,7 +465,7 @@ IN_PROC_BROWSER_TEST_P(DumpAccessibilityEventsTest,
 #else
 #define MAYBE_AccessibilityEventsAddDialog AccessibilityEventsAddDialog
 #endif
-IN_PROC_BROWSER_TEST_P(DumpAccessibilityEventsTest,
+IN_PROC_BROWSER_TEST_P(DumpAccessibilityEventsTestExceptUIA,
                        MAYBE_AccessibilityEventsAddDialog) {
   RunEventTest(FILE_PATH_LITERAL("add-dialog.html"));
 }
@@ -477,7 +478,7 @@ IN_PROC_BROWSER_TEST_P(DumpAccessibilityEventsTest,
 #define MAYBE_AccessibilityEventsAddDialogDescribedBy \
   AccessibilityEventsAddDialogDescribedBy
 #endif
-IN_PROC_BROWSER_TEST_P(DumpAccessibilityEventsTest,
+IN_PROC_BROWSER_TEST_P(DumpAccessibilityEventsTestExceptUIA,
                        MAYBE_AccessibilityEventsAddDialogDescribedBy) {
   RunEventTest(FILE_PATH_LITERAL("add-dialog-described-by.html"));
 }
@@ -490,54 +491,55 @@ IN_PROC_BROWSER_TEST_P(DumpAccessibilityEventsTest,
 #define MAYBE_AccessibilityEventsAddDialogNoInfo \
   AccessibilityEventsAddDialogNoInfo
 #endif
-IN_PROC_BROWSER_TEST_P(DumpAccessibilityEventsTest,
+IN_PROC_BROWSER_TEST_P(DumpAccessibilityEventsTestExceptUIA,
                        MAYBE_AccessibilityEventsAddDialogNoInfo) {
   RunEventTest(FILE_PATH_LITERAL("add-dialog-no-info.html"));
 }
 
-IN_PROC_BROWSER_TEST_P(DumpAccessibilityEventsTest,
+IN_PROC_BROWSER_TEST_P(DumpAccessibilityEventsTestExceptUIA,
                        AccessibilityEventsAddHiddenAttribute) {
   RunEventTest(FILE_PATH_LITERAL("add-hidden-attribute.html"));
 }
 
-IN_PROC_BROWSER_TEST_P(DumpAccessibilityEventsTest,
+IN_PROC_BROWSER_TEST_P(DumpAccessibilityEventsTestExceptUIA,
                        AccessibilityEventsAddHiddenAttributeSubtree) {
   RunEventTest(FILE_PATH_LITERAL("add-hidden-attribute-subtree.html"));
 }
 
-IN_PROC_BROWSER_TEST_P(DumpAccessibilityEventsTest,
+IN_PROC_BROWSER_TEST_P(DumpAccessibilityEventsTestExceptUIA,
                        AccessibilityEventsAddSubtree) {
   RunEventTest(FILE_PATH_LITERAL("add-subtree.html"));
 }
 
-IN_PROC_BROWSER_TEST_P(DumpAccessibilityEventsTest,
+IN_PROC_BROWSER_TEST_P(DumpAccessibilityEventsTestExceptUIA,
                        AccessibilityEventsAnonymousBlockChildrenChanged) {
   RunEventTest(FILE_PATH_LITERAL("anonymous-block-children-changed.html"));
 }
 
-IN_PROC_BROWSER_TEST_P(DumpAccessibilityEventsTest,
+// crbug.com/1511111 leaving disabled after re-enabling test suite.
+IN_PROC_BROWSER_TEST_P(DumpAccessibilityEventsTestExceptUIA,
                        AccessibilityEventsChildrenChangedOnlyOnAncestor) {
   RunEventTest(FILE_PATH_LITERAL("children-changed-only-on-ancestor.html"));
 }
 
-IN_PROC_BROWSER_TEST_P(DumpAccessibilityEventsTest,
+IN_PROC_BROWSER_TEST_P(DumpAccessibilityEventsTestExceptUIA,
                        AccessibilityEventsCheckedStateChanged) {
   RunEventTest(FILE_PATH_LITERAL("checked-state-changed.html"));
 }
 
-IN_PROC_BROWSER_TEST_P(DumpAccessibilityEventsTest,
+IN_PROC_BROWSER_TEST_P(DumpAccessibilityEventsTestExceptUIA,
                        AccessibilityEventsCheckedMixedChanged) {
   RunEventTest(FILE_PATH_LITERAL("checked-mixed-changed.html"));
 }
 
 // http:/crbug.com/889013
-IN_PROC_BROWSER_TEST_P(DumpAccessibilityEventsTest,
+IN_PROC_BROWSER_TEST_P(DumpAccessibilityEventsTestExceptUIA,
                        DISABLED_AccessibilityEventsCaretHide) {
   RunEventTest(FILE_PATH_LITERAL("caret-hide.html"));
 }
 
 // http:/crbug.com/889013
-IN_PROC_BROWSER_TEST_P(DumpAccessibilityEventsTest,
+IN_PROC_BROWSER_TEST_P(DumpAccessibilityEventsTestExceptUIA,
                        DISABLED_AccessibilityEventsCaretMove) {
   RunEventTest(FILE_PATH_LITERAL("caret-move.html"));
 }
@@ -550,12 +552,12 @@ IN_PROC_BROWSER_TEST_P(DumpAccessibilityEventsTest,
 #define MAYBE_AccessibilityEventsCaretMoveHiddenInput \
   AccessibilityEventsCaretMoveHiddenInput
 #endif
-IN_PROC_BROWSER_TEST_P(DumpAccessibilityEventsTest,
+IN_PROC_BROWSER_TEST_P(DumpAccessibilityEventsTestExceptUIA,
                        MAYBE_AccessibilityEventsCaretMoveHiddenInput) {
   RunEventTest(FILE_PATH_LITERAL("caret-move-hidden-input.html"));
 }
 
-IN_PROC_BROWSER_TEST_P(DumpAccessibilityEventsTest,
+IN_PROC_BROWSER_TEST_P(DumpAccessibilityEventsTestExceptUIA,
                        AccessibilityEventsCheckboxValidity) {
   RunEventTest(FILE_PATH_LITERAL("checkbox-validity.html"));
 }
@@ -568,7 +570,7 @@ IN_PROC_BROWSER_TEST_P(DumpAccessibilityEventsTest,
 #define MAYBE_AccessibilityEventsCaretBrowsingEnabled \
   AccessibilityEventsCaretBrowsingEnabled
 #endif
-IN_PROC_BROWSER_TEST_P(DumpAccessibilityEventsTest,
+IN_PROC_BROWSER_TEST_P(DumpAccessibilityEventsTestExceptUIA,
                        MAYBE_AccessibilityEventsCaretBrowsingEnabled) {
   // This actually enables caret browsing without setting the pref.
   GetWebContents()->GetMutableRendererPrefs()->caret_browsing_enabled = true;
@@ -579,7 +581,7 @@ IN_PROC_BROWSER_TEST_P(DumpAccessibilityEventsTest,
   RunEventTest(FILE_PATH_LITERAL("caret-browsing-enabled.html"));
 }
 
-IN_PROC_BROWSER_TEST_P(DumpAccessibilityEventsTest,
+IN_PROC_BROWSER_TEST_P(DumpAccessibilityEventsTestExceptUIA,
                        AccessibilityEventsCaretBrowsingDisabled) {
   // Make sure command line switch that forces caret browsing on is not set.
   ASSERT_FALSE(base::CommandLine::ForCurrentProcess()->HasSwitch(
@@ -588,102 +590,105 @@ IN_PROC_BROWSER_TEST_P(DumpAccessibilityEventsTest,
   RunEventTest(FILE_PATH_LITERAL("caret-browsing-disabled.html"));
 }
 
-IN_PROC_BROWSER_TEST_P(DumpAccessibilityEventsTest,
+IN_PROC_BROWSER_TEST_P(DumpAccessibilityEventsTestExceptUIA,
                        AccessibilityEventsCSSDisplay) {
   RunEventTest(FILE_PATH_LITERAL("css-display.html"));
 }
 
-IN_PROC_BROWSER_TEST_P(DumpAccessibilityEventsTest,
+IN_PROC_BROWSER_TEST_P(DumpAccessibilityEventsTestExceptUIA,
                        AccessibilityEventsAriaExpandedAndCollapsed) {
   RunEventTest(FILE_PATH_LITERAL("aria-expanded-and-collapsed.html"));
 }
 
-IN_PROC_BROWSER_TEST_P(DumpAccessibilityEventsTest,
+IN_PROC_BROWSER_TEST_P(DumpAccessibilityEventsTestExceptUIA,
                        AccessibilityEventsAriaExpandedAndCollapsedReparenting) {
   RunEventTest(
       FILE_PATH_LITERAL("aria-expanded-and-collapsed-reparenting.html"));
 }
 
-IN_PROC_BROWSER_TEST_P(DumpAccessibilityEventsTest,
+// crbug.com/1511111 leaving disabled after re-enabling test suite.
+IN_PROC_BROWSER_TEST_P(DumpAccessibilityEventsTestExceptUIA,
                        AccessibilityEventsAriaHiddenDescendants) {
   RunEventTest(FILE_PATH_LITERAL("aria-hidden-descendants.html"));
 }
 
-IN_PROC_BROWSER_TEST_P(DumpAccessibilityEventsTest,
+// crbug.com/1511111 leaving disabled after re-enabling test suite.
+IN_PROC_BROWSER_TEST_P(DumpAccessibilityEventsTestExceptUIA,
                        AccessibilityEventsAriaHiddenSingleDescendant) {
   RunEventTest(FILE_PATH_LITERAL("aria-hidden-single-descendant.html"));
 }
 
 // crbug.com/1181414.
 IN_PROC_BROWSER_TEST_P(
-    DumpAccessibilityEventsTest,
+    DumpAccessibilityEventsTestExceptUIA,
     DISABLED_AccessibilityEventsAriaHiddenSingleDescendantDisplayNone) {
   RunEventTest(
       FILE_PATH_LITERAL("aria-hidden-single-descendant-display-none.html"));
 }
 
+// crbug.com/1511111 leaving disabled after re-enabling test suite.
 IN_PROC_BROWSER_TEST_P(
-    DumpAccessibilityEventsTest,
+    DumpAccessibilityEventsTestExceptUIA,
     AccessibilityEventsAriaHiddenSingleDescendantVisibilityHidden) {
   RunEventTest(FILE_PATH_LITERAL(
       "aria-hidden-single-descendant-visibility-hidden.html"));
 }
 
-IN_PROC_BROWSER_TEST_P(DumpAccessibilityEventsTest,
+IN_PROC_BROWSER_TEST_P(DumpAccessibilityEventsTestExceptUIA,
                        AccessibilityEventsAriaHiddenDescendantsAlreadyIgnored) {
   RunEventTest(
       FILE_PATH_LITERAL("aria-hidden-descendants-already-ignored.html"));
 }
 
-IN_PROC_BROWSER_TEST_P(DumpAccessibilityEventsTest,
+IN_PROC_BROWSER_TEST_P(DumpAccessibilityEventsTestExceptUIA,
                        AccessibilityEventsCSSDisplayDescendants) {
   RunEventTest(FILE_PATH_LITERAL("css-display-descendants.html"));
 }
 
-IN_PROC_BROWSER_TEST_P(DumpAccessibilityEventsTest,
+IN_PROC_BROWSER_TEST_P(DumpAccessibilityEventsTestExceptUIA,
                        AccessibilityEventsCSSFlexTextUpdate) {
   RunEventTest(FILE_PATH_LITERAL("css-flex-text-update.html"));
 }
 
-IN_PROC_BROWSER_TEST_P(DumpAccessibilityEventsTest,
+IN_PROC_BROWSER_TEST_P(DumpAccessibilityEventsTestExceptUIA,
                        AccessibilityEventsCSSVisibility) {
   RunEventTest(FILE_PATH_LITERAL("css-visibility.html"));
 }
 
-IN_PROC_BROWSER_TEST_P(DumpAccessibilityEventsTest,
+IN_PROC_BROWSER_TEST_P(DumpAccessibilityEventsTestExceptUIA,
                        AccessibilityEventsCSSVisibilityDescendants) {
   RunEventTest(FILE_PATH_LITERAL("css-visibility-descendants.html"));
 }
 
-IN_PROC_BROWSER_TEST_P(DumpAccessibilityEventsTest,
+IN_PROC_BROWSER_TEST_P(DumpAccessibilityEventsTestExceptUIA,
                        AccessibilityEventsCSSCollapse) {
   RunEventTest(FILE_PATH_LITERAL("css-visibility-collapse.html"));
 }
 
-IN_PROC_BROWSER_TEST_P(DumpAccessibilityEventsTest,
+IN_PROC_BROWSER_TEST_P(DumpAccessibilityEventsTestExceptUIA,
                        AccessibilityEventsDescriptionChange) {
   RunEventTest(FILE_PATH_LITERAL("description-change.html"));
 }
 
 // crbug.com/1046298.
-IN_PROC_BROWSER_TEST_P(DumpAccessibilityEventsTest,
+IN_PROC_BROWSER_TEST_P(DumpAccessibilityEventsTestExceptUIA,
                        DISABLED_AccessibilityEventsDescriptionChangeIndirect) {
   RunEventTest(FILE_PATH_LITERAL("description-change-indirect.html"));
 }
 
 // crbug.com/1046298.
 IN_PROC_BROWSER_TEST_P(
-    DumpAccessibilityEventsTest,
+    DumpAccessibilityEventsTestExceptUIA,
     DISABLED_AccessibilityEventsDescriptionChangeNoRelation) {
   RunEventTest(FILE_PATH_LITERAL("description-change-no-relation.html"));
 }
 
-IN_PROC_BROWSER_TEST_P(DumpAccessibilityEventsTest,
+IN_PROC_BROWSER_TEST_P(DumpAccessibilityEventsTestExceptUIA,
                        AccessibilityEventsDisabledStateChanged) {
   RunEventTest(FILE_PATH_LITERAL("disabled-state-changed.html"));
 }
 
-IN_PROC_BROWSER_TEST_P(DumpAccessibilityEventsTest,
+IN_PROC_BROWSER_TEST_P(DumpAccessibilityEventsTestExceptUIA,
                        AccessibilityEventsExpandedChanged) {
   RunEventTest(FILE_PATH_LITERAL("expanded-changed.html"));
 }
@@ -697,7 +702,7 @@ IN_PROC_BROWSER_TEST_P(DumpAccessibilityEventsTestExceptUIA,
 }
 
 // crbug.com/1047282: disabled due to flakiness.
-IN_PROC_BROWSER_TEST_P(DumpAccessibilityEventsTest,
+IN_PROC_BROWSER_TEST_P(DumpAccessibilityEventsTestExceptUIA,
                        DISABLED_AccessibilityEventsFormRequiredChanged) {
   RunEventTest(FILE_PATH_LITERAL("form-required-changed.html"));
 }
@@ -709,12 +714,12 @@ IN_PROC_BROWSER_TEST_P(DumpAccessibilityEventsTest,
 #else
 #define MAYBE_AccessibilityEventsFocusListbox AccessibilityEventsFocusListbox
 #endif
-IN_PROC_BROWSER_TEST_P(DumpAccessibilityEventsTest,
+IN_PROC_BROWSER_TEST_P(DumpAccessibilityEventsTestExceptUIA,
                        MAYBE_AccessibilityEventsFocusListbox) {
   RunEventTest(FILE_PATH_LITERAL("focus-listbox.html"));
 }
 
-IN_PROC_BROWSER_TEST_P(DumpAccessibilityEventsTest,
+IN_PROC_BROWSER_TEST_P(DumpAccessibilityEventsTestExceptUIA,
                        AccessibilityEventsFocusListboxMultiselect) {
   RunEventTest(FILE_PATH_LITERAL("focus-listbox-multiselect.html"));
 }
@@ -727,29 +732,29 @@ IN_PROC_BROWSER_TEST_P(DumpAccessibilityEventsTest,
 #define MAYBE_AccessibilityEventsIframeSrcChanged \
   AccessibilityEventsIframeSrcChanged
 #endif
-IN_PROC_BROWSER_TEST_P(DumpAccessibilityEventsTest,
+IN_PROC_BROWSER_TEST_P(DumpAccessibilityEventsTestExceptUIA,
                        MAYBE_AccessibilityEventsIframeSrcChanged) {
   RunEventTest(FILE_PATH_LITERAL("iframe-src-changed.html"));
 }
 
-IN_PROC_BROWSER_TEST_P(DumpAccessibilityEventsTest,
+IN_PROC_BROWSER_TEST_P(DumpAccessibilityEventsTestExceptUIA,
                        AccessibilityEventsIndividualNodesBecomeIgnored) {
   RunEventTest(FILE_PATH_LITERAL("individual-nodes-become-ignored.html"));
 }
 
 IN_PROC_BROWSER_TEST_P(
-    DumpAccessibilityEventsTest,
+    DumpAccessibilityEventsTestExceptUIA,
     AccessibilityEventsIndividualNodesBecomeIgnoredButIncluded) {
   RunEventTest(
       FILE_PATH_LITERAL("individual-nodes-become-ignored-but-included.html"));
 }
 
-IN_PROC_BROWSER_TEST_P(DumpAccessibilityEventsTest,
+IN_PROC_BROWSER_TEST_P(DumpAccessibilityEventsTestExceptUIA,
                        AccessibilityEventsInnerHtmlChange) {
   RunEventTest(FILE_PATH_LITERAL("inner-html-change.html"));
 }
 
-IN_PROC_BROWSER_TEST_P(DumpAccessibilityEventsTest,
+IN_PROC_BROWSER_TEST_P(DumpAccessibilityEventsTestExceptUIA,
                        AccessibilityEventsInputTypeTextValueChanged) {
   RunEventTest(FILE_PATH_LITERAL("input-type-text-value-changed.html"));
 }
@@ -761,12 +766,12 @@ IN_PROC_BROWSER_TEST_P(DumpAccessibilityEventsTest,
 #else
 #define MAYBE_AccessibilityEventsListboxFocus AccessibilityEventsListboxFocus
 #endif
-IN_PROC_BROWSER_TEST_P(DumpAccessibilityEventsTest,
+IN_PROC_BROWSER_TEST_P(DumpAccessibilityEventsTestExceptUIA,
                        MAYBE_AccessibilityEventsListboxFocus) {
   RunEventTest(FILE_PATH_LITERAL("listbox-focus.html"));
 }
 
-IN_PROC_BROWSER_TEST_P(DumpAccessibilityEventsTest,
+IN_PROC_BROWSER_TEST_P(DumpAccessibilityEventsTestExceptUIA,
                        AccessibilityEventsListboxNext) {
   RunEventTest(FILE_PATH_LITERAL("listbox-next.html"));
 }
@@ -778,17 +783,17 @@ IN_PROC_BROWSER_TEST_P(DumpAccessibilityEventsTest,
 #else
 #define MAYBE_AccessibilityEventsLiveRegionAdd AccessibilityEventsLiveRegionAdd
 #endif
-IN_PROC_BROWSER_TEST_P(DumpAccessibilityEventsTest,
+IN_PROC_BROWSER_TEST_P(DumpAccessibilityEventsTestExceptUIA,
                        MAYBE_AccessibilityEventsLiveRegionAdd) {
   RunEventTest(FILE_PATH_LITERAL("live-region-add.html"));
 }
 
-IN_PROC_BROWSER_TEST_P(DumpAccessibilityEventsTest,
+IN_PROC_BROWSER_TEST_P(DumpAccessibilityEventsTestExceptUIA,
                        AccessibilityEventsLiveRegionAddLiveAttribute) {
   RunEventTest(FILE_PATH_LITERAL("live-region-add-live-attribute.html"));
 }
 
-IN_PROC_BROWSER_TEST_P(DumpAccessibilityEventsTest,
+IN_PROC_BROWSER_TEST_P(DumpAccessibilityEventsTestExceptUIA,
                        AccessibilityEventsLiveRegionChange) {
   RunEventTest(FILE_PATH_LITERAL("live-region-change.html"));
 }
@@ -801,46 +806,46 @@ IN_PROC_BROWSER_TEST_P(DumpAccessibilityEventsTest,
 #define MAYBE_AccessibilityEventsLiveRegionCreate \
   AccessibilityEventsLiveRegionCreate
 #endif
-IN_PROC_BROWSER_TEST_P(DumpAccessibilityEventsTest,
+IN_PROC_BROWSER_TEST_P(DumpAccessibilityEventsTestExceptUIA,
                        MAYBE_AccessibilityEventsLiveRegionCreate) {
   RunEventTest(FILE_PATH_LITERAL("live-region-create.html"));
 }
 
-IN_PROC_BROWSER_TEST_P(DumpAccessibilityEventsTest,
+IN_PROC_BROWSER_TEST_P(DumpAccessibilityEventsTestExceptUIA,
                        AccessibilityEventsLiveRegionOff) {
   RunEventTest(FILE_PATH_LITERAL("live-region-off.html"));
 }
 
-IN_PROC_BROWSER_TEST_P(DumpAccessibilityEventsTest,
+IN_PROC_BROWSER_TEST_P(DumpAccessibilityEventsTestExceptUIA,
                        AccessibilityEventsLiveRegionElemReparent) {
   RunEventTest(FILE_PATH_LITERAL("live-region-elem-reparent.html"));
 }
 
 // TODO(aboxhall): Fix flakiness.
-IN_PROC_BROWSER_TEST_P(DumpAccessibilityEventsTest,
+IN_PROC_BROWSER_TEST_P(DumpAccessibilityEventsTestExceptUIA,
                        AccessibilityEventsLiveRegionIgnoresClick) {
   RunEventTest(FILE_PATH_LITERAL("live-region-ignores-click.html"));
 }
 
 // http:/crbug.com/786848
-IN_PROC_BROWSER_TEST_P(DumpAccessibilityEventsTest,
+IN_PROC_BROWSER_TEST_P(DumpAccessibilityEventsTestExceptUIA,
                        DISABLED_AccessibilityEventsLiveRegionRemove) {
   RunEventTest(FILE_PATH_LITERAL("live-region-remove.html"));
 }
 
 IN_PROC_BROWSER_TEST_P(
-    DumpAccessibilityEventsTest,
+    DumpAccessibilityEventsTestExceptUIA,
     AccessibilityEventsLiveRegionChangeOnFreshlyUnignoredNode) {
   RunEventTest(
       FILE_PATH_LITERAL("live-region-change-on-freshly-unignored-node.html"));
 }
 
-IN_PROC_BROWSER_TEST_P(DumpAccessibilityEventsTest,
+IN_PROC_BROWSER_TEST_P(DumpAccessibilityEventsTestExceptUIA,
                        AccessibilityEventsMenuListCollapse) {
   RunEventTest(FILE_PATH_LITERAL("menulist-collapse.html"));
 }
 
-IN_PROC_BROWSER_TEST_P(DumpAccessibilityEventsTest,
+IN_PROC_BROWSER_TEST_P(DumpAccessibilityEventsTestExceptUIA,
                        // TODO(crbug.com/1466801): Re-enable this test
                        DISABLED_AccessibilityEventsMenuListCollapseNext) {
   RunEventTest(FILE_PATH_LITERAL("menulist-collapse-next.html"));
@@ -867,12 +872,12 @@ IN_PROC_BROWSER_TEST_P(DumpAccessibilityEventsTest,
   AccessibilityEventsMenuWithOptgroupListNext
 #endif
 
-IN_PROC_BROWSER_TEST_P(DumpAccessibilityEventsTest,
+IN_PROC_BROWSER_TEST_P(DumpAccessibilityEventsTestExceptUIA,
                        MAYBE_AccessibilityEventsMenuListExpand) {
   RunEventTest(FILE_PATH_LITERAL("menulist-expand.html"));
 }
 
-IN_PROC_BROWSER_TEST_P(DumpAccessibilityEventsTest,
+IN_PROC_BROWSER_TEST_P(DumpAccessibilityEventsTestExceptUIA,
                        AccessibilityEventsMenuListFocus) {
   RunEventTest(FILE_PATH_LITERAL("menulist-focus.html"));
 }
@@ -888,7 +893,7 @@ IN_PROC_BROWSER_TEST_P(DumpAccessibilityEventsTestExceptUIA,
                        MAYBE_AccessibilityEventsMenuWithOptgroupListNext) {
   RunEventTest(FILE_PATH_LITERAL("menulist-with-optgroup-next.html"));
 }
-IN_PROC_BROWSER_TEST_P(DumpAccessibilityEventsTest,
+IN_PROC_BROWSER_TEST_P(DumpAccessibilityEventsTestExceptUIA,
                        AccessibilityEventsMultipleAriaPropertiesChanged) {
   RunEventTest(FILE_PATH_LITERAL("multiple-aria-properties-changed.html"));
 }
@@ -900,17 +905,17 @@ IN_PROC_BROWSER_TEST_P(DumpAccessibilityEventsTest,
 #else
 #define MAYBE_AccessibilityEventsNameChange AccessibilityEventsNameChange
 #endif
-IN_PROC_BROWSER_TEST_P(DumpAccessibilityEventsTest,
+IN_PROC_BROWSER_TEST_P(DumpAccessibilityEventsTestExceptUIA,
                        MAYBE_AccessibilityEventsNameChange) {
   RunEventTest(FILE_PATH_LITERAL("name-change.html"));
 }
 
-IN_PROC_BROWSER_TEST_P(DumpAccessibilityEventsTest,
+IN_PROC_BROWSER_TEST_P(DumpAccessibilityEventsTestExceptUIA,
                        AccessibilityEventsNameChangeIndirect) {
   RunEventTest(FILE_PATH_LITERAL("name-change-indirect.html"));
 }
 
-IN_PROC_BROWSER_TEST_P(DumpAccessibilityEventsTest,
+IN_PROC_BROWSER_TEST_P(DumpAccessibilityEventsTestExceptUIA,
                        AccessibilityEventsDocumentTitleChange) {
   RunEventTest(FILE_PATH_LITERAL("document-title-change.html"));
 }
@@ -952,23 +957,23 @@ IN_PROC_BROWSER_TEST_P(NavigationApiDumpAccessibilityEventsTest,
   RunEventTest(FILE_PATH_LITERAL("immediate-refresh.html"));
 }
 
-IN_PROC_BROWSER_TEST_P(DumpAccessibilityEventsTest,
+IN_PROC_BROWSER_TEST_P(DumpAccessibilityEventsTestExceptUIA,
                        AccessibilityEventsRemoveChild) {
   RunEventTest(FILE_PATH_LITERAL("remove-child.html"));
 }
 
-IN_PROC_BROWSER_TEST_P(DumpAccessibilityEventsTest,
+IN_PROC_BROWSER_TEST_P(DumpAccessibilityEventsTestExceptUIA,
                        AccessibilityEventsReparentElementWithActiveDescendant) {
   RunEventTest(
       FILE_PATH_LITERAL("reparent-element-with-active-descendant.html"));
 }
 
-IN_PROC_BROWSER_TEST_P(DumpAccessibilityEventsTest,
+IN_PROC_BROWSER_TEST_P(DumpAccessibilityEventsTestExceptUIA,
                        AccessibilityEventsRemoveHiddenAttribute) {
   RunEventTest(FILE_PATH_LITERAL("remove-hidden-attribute.html"));
 }
 
-IN_PROC_BROWSER_TEST_P(DumpAccessibilityEventsTest,
+IN_PROC_BROWSER_TEST_P(DumpAccessibilityEventsTestExceptUIA,
                        AccessibilityEventsRoleChanged) {
   RunEventTest(FILE_PATH_LITERAL("role-changed.html"));
 }
@@ -981,17 +986,17 @@ IN_PROC_BROWSER_TEST_P(DumpAccessibilityEventsTest,
 #define MAYBE_AccessibilityEventsReportValidityInvalidField \
   AccessibilityEventsReportValidityInvalidField
 #endif
-IN_PROC_BROWSER_TEST_P(DumpAccessibilityEventsTest,
+IN_PROC_BROWSER_TEST_P(DumpAccessibilityEventsTestExceptUIA,
                        MAYBE_AccessibilityEventsReportValidityInvalidField) {
   RunEventTest(FILE_PATH_LITERAL("report-validity-invalid-field.html"));
 }
 
-IN_PROC_BROWSER_TEST_P(DumpAccessibilityEventsTest,
+IN_PROC_BROWSER_TEST_P(DumpAccessibilityEventsTestExceptUIA,
                        AccessibilityEventsRemoveHiddenAttributeSubtree) {
   RunEventTest(FILE_PATH_LITERAL("remove-hidden-attribute-subtree.html"));
 }
 
-IN_PROC_BROWSER_TEST_P(DumpAccessibilityEventsTest,
+IN_PROC_BROWSER_TEST_P(DumpAccessibilityEventsTestExceptUIA,
                        AccessibilityEventsSamePageLinkNavigation) {
 #if BUILDFLAG(IS_WIN)
   if (!BrowserAccessibilityManagerWin::
@@ -1001,142 +1006,143 @@ IN_PROC_BROWSER_TEST_P(DumpAccessibilityEventsTest,
   RunEventTest(FILE_PATH_LITERAL("same-page-link-navigation.html"));
 }
 
-IN_PROC_BROWSER_TEST_P(DumpAccessibilityEventsTest,
+IN_PROC_BROWSER_TEST_P(DumpAccessibilityEventsTestExceptUIA,
                        AccessibilityEventsScrollHorizontalScrollPercentChange) {
   RunEventTest(
       FILE_PATH_LITERAL("scroll-horizontal-scroll-percent-change.html"));
 }
 
-IN_PROC_BROWSER_TEST_P(DumpAccessibilityEventsTest,
+IN_PROC_BROWSER_TEST_P(DumpAccessibilityEventsTestExceptUIA,
                        AccessibilityEventsScrollVerticalScrollPercentChange) {
   RunEventTest(FILE_PATH_LITERAL("scroll-vertical-scroll-percent-change.html"));
 }
 
-IN_PROC_BROWSER_TEST_P(DumpAccessibilityEventsTest,
+IN_PROC_BROWSER_TEST_P(DumpAccessibilityEventsTestExceptUIA,
                        AccessibilityEventsStyleChanged) {
   RunEventTest(FILE_PATH_LITERAL("style-changed.html"));
 }
 
-IN_PROC_BROWSER_TEST_P(DumpAccessibilityEventsTest,
+// crbug.com/1511111 leaving disabled after re-enabling test suite.
+IN_PROC_BROWSER_TEST_P(DumpAccessibilityEventsTestExceptUIA,
                        AccessibilityEventsSelectList) {
   base::CommandLine::ForCurrentProcess()->AppendSwitchASCII(
       switches::kEnableBlinkFeatures, "HTMLSelectListElement");
   RunEventTest(FILE_PATH_LITERAL("selectlist.html"));
 }
 
-IN_PROC_BROWSER_TEST_P(DumpAccessibilityEventsTest,
+IN_PROC_BROWSER_TEST_P(DumpAccessibilityEventsTestExceptUIA,
                        AccessibilityEventsSubtreeReparentedIgnoredChanged) {
   RunEventTest(FILE_PATH_LITERAL("subtree-reparented-ignored-changed.html"));
 }
 
 // TODO(crbug.com/1201313): Fix flakiness.
 IN_PROC_BROWSER_TEST_P(
-    DumpAccessibilityEventsTest,
+    DumpAccessibilityEventsTestExceptUIA,
     DISABLED_AccessibilityEventsSubtreeReparentedViaAppendChild) {
   RunEventTest(FILE_PATH_LITERAL("subtree-reparented-via-append-child.html"));
 }
 
-IN_PROC_BROWSER_TEST_P(DumpAccessibilityEventsTest,
+IN_PROC_BROWSER_TEST_P(DumpAccessibilityEventsTestExceptUIA,
                        AccessibilityEventsSubtreeReparentedViaAriaOwns) {
   RunEventTest(FILE_PATH_LITERAL("subtree-reparented-via-aria-owns.html"));
 }
-IN_PROC_BROWSER_TEST_P(DumpAccessibilityEventsTest,
+IN_PROC_BROWSER_TEST_P(DumpAccessibilityEventsTestExceptUIA,
                        AccessibilityEventsSubtreeReparentedViaAriaOwns2) {
   RunEventTest(FILE_PATH_LITERAL("subtree-reparented-via-aria-owns-2.html"));
 }
 
-IN_PROC_BROWSER_TEST_P(DumpAccessibilityEventsTest,
+IN_PROC_BROWSER_TEST_P(DumpAccessibilityEventsTestExceptUIA,
                        AccessibilityEventsTabindexAddedOnPlainDiv) {
   RunEventTest(FILE_PATH_LITERAL("tabindex-added-on-plain-div.html"));
 }
 
-IN_PROC_BROWSER_TEST_P(DumpAccessibilityEventsTest,
+IN_PROC_BROWSER_TEST_P(DumpAccessibilityEventsTestExceptUIA,
                        AccessibilityEventsTabindexAddedOnAriaHidden) {
   RunEventTest(FILE_PATH_LITERAL("tabindex-added-on-aria-hidden.html"));
 }
 
-IN_PROC_BROWSER_TEST_P(DumpAccessibilityEventsTest,
+IN_PROC_BROWSER_TEST_P(DumpAccessibilityEventsTestExceptUIA,
                        AccessibilityEventsTabindexRemovedOnPlainDiv) {
   RunEventTest(FILE_PATH_LITERAL("tabindex-removed-on-plain-div.html"));
 }
 
 IN_PROC_BROWSER_TEST_P(
-    DumpAccessibilityEventsTest,
+    DumpAccessibilityEventsTestExceptUIA,
     DISABLED_AccessibilityEventsTabindexRemovedOnAriaHidden) {
   RunEventTest(FILE_PATH_LITERAL("tabindex-removed-on-aria-hidden.html"));
 }
 
-IN_PROC_BROWSER_TEST_P(DumpAccessibilityEventsTest,
+IN_PROC_BROWSER_TEST_P(DumpAccessibilityEventsTestExceptUIA,
                        AccessibilityEventsRemoveSubtree) {
   RunEventTest(FILE_PATH_LITERAL("remove-subtree.html"));
 }
 
-IN_PROC_BROWSER_TEST_P(DumpAccessibilityEventsTest,
+IN_PROC_BROWSER_TEST_P(DumpAccessibilityEventsTestExceptUIA,
                        AccessibilityEventsTextAlignChanged) {
   RunEventTest(FILE_PATH_LITERAL("text-align-changed.html"));
 }
 
-IN_PROC_BROWSER_TEST_P(DumpAccessibilityEventsTest,
+IN_PROC_BROWSER_TEST_P(DumpAccessibilityEventsTestExceptUIA,
                        AccessibilityEventsTextChanged) {
   RunEventTest(FILE_PATH_LITERAL("text-changed.html"));
 }
 
-IN_PROC_BROWSER_TEST_P(DumpAccessibilityEventsTest,
+IN_PROC_BROWSER_TEST_P(DumpAccessibilityEventsTestExceptUIA,
                        AccessibilityEventsTextChangedContentEditable) {
   RunEventTest(FILE_PATH_LITERAL("text-changed-contenteditable.html"));
 }
 
-IN_PROC_BROWSER_TEST_P(DumpAccessibilityEventsTest,
+IN_PROC_BROWSER_TEST_P(DumpAccessibilityEventsTestExceptUIA,
                        AccessibilityEventsTextIndentChanged) {
   RunEventTest(FILE_PATH_LITERAL("text-indent-changed.html"));
 }
 
-IN_PROC_BROWSER_TEST_P(DumpAccessibilityEventsTest,
+IN_PROC_BROWSER_TEST_P(DumpAccessibilityEventsTestExceptUIA,
                        AccessibilityEventsTextSelectionChanged) {
   RunEventTest(FILE_PATH_LITERAL("text-selection-changed.html"));
 }
 
-IN_PROC_BROWSER_TEST_P(DumpAccessibilityEventsTest,
+IN_PROC_BROWSER_TEST_P(DumpAccessibilityEventsTestExceptUIA,
                        AccessibilityEventsTextSelectionInsideHiddenElement) {
   RunEventTest(FILE_PATH_LITERAL("text-selection-inside-hidden-element.html"));
 }
 
-IN_PROC_BROWSER_TEST_P(DumpAccessibilityEventsTest,
+IN_PROC_BROWSER_TEST_P(DumpAccessibilityEventsTestExceptUIA,
                        AccessibilityEventsTextSelectionInsideVideo) {
   RunEventTest(FILE_PATH_LITERAL("text-selection-inside-video.html"));
 }
 
-IN_PROC_BROWSER_TEST_P(DumpAccessibilityEventsTest,
+IN_PROC_BROWSER_TEST_P(DumpAccessibilityEventsTestExceptUIA,
                        AccessibilityEventsAriaCheckedChanged) {
   RunEventTest(FILE_PATH_LITERAL("aria-checked-changed.html"));
 }
 
-IN_PROC_BROWSER_TEST_P(DumpAccessibilityEventsTest,
+IN_PROC_BROWSER_TEST_P(DumpAccessibilityEventsTestExceptUIA,
                        AccessibilityEventsAriaMultiselectableChanged) {
   RunEventTest(FILE_PATH_LITERAL("aria-multiselectable-changed.html"));
 }
 
-IN_PROC_BROWSER_TEST_P(DumpAccessibilityEventsTest,
+IN_PROC_BROWSER_TEST_P(DumpAccessibilityEventsTestExceptUIA,
                        AccessibilityEventsAriaRequiredChanged) {
   RunEventTest(FILE_PATH_LITERAL("aria-required-changed.html"));
 }
 
-IN_PROC_BROWSER_TEST_P(DumpAccessibilityEventsTest,
+IN_PROC_BROWSER_TEST_P(DumpAccessibilityEventsTestExceptUIA,
                        AccessibilityEventsAriaPressedChanged) {
   RunEventTest(FILE_PATH_LITERAL("aria-pressed-changed.html"));
 }
 
-IN_PROC_BROWSER_TEST_P(DumpAccessibilityEventsTest,
+IN_PROC_BROWSER_TEST_P(DumpAccessibilityEventsTestExceptUIA,
                        AccessibilityEventsTheadFocus) {
   RunEventTest(FILE_PATH_LITERAL("thead-focus.html"));
 }
 
-IN_PROC_BROWSER_TEST_P(DumpAccessibilityEventsTest,
+IN_PROC_BROWSER_TEST_P(DumpAccessibilityEventsTestExceptUIA,
                        AccessibilityEventsTfootFocus) {
   RunEventTest(FILE_PATH_LITERAL("tfoot-focus.html"));
 }
 
-IN_PROC_BROWSER_TEST_P(DumpAccessibilityEventsTest,
+IN_PROC_BROWSER_TEST_P(DumpAccessibilityEventsTestExceptUIA,
                        AccessibilityEventsTbodyFocus) {
   RunEventTest(FILE_PATH_LITERAL("tbody-focus.html"));
 }
@@ -1149,61 +1155,67 @@ IN_PROC_BROWSER_TEST_P(DumpAccessibilityEventsTest,
 #define MAYBE_AccessibilityEventsVisibilityHiddenChanged \
   AccessibilityEventsVisibilityHiddenChanged
 #endif
-IN_PROC_BROWSER_TEST_P(DumpAccessibilityEventsTest,
+IN_PROC_BROWSER_TEST_P(DumpAccessibilityEventsTestExceptUIA,
                        MAYBE_AccessibilityEventsVisibilityHiddenChanged) {
   RunEventTest(FILE_PATH_LITERAL("visibility-hidden-changed.html"));
 }
 
-IN_PROC_BROWSER_TEST_P(DumpAccessibilityEventsTest,
+IN_PROC_BROWSER_TEST_P(DumpAccessibilityEventsTestExceptUIA,
                        AccessibilityEventsAriaSelectedChanged) {
   RunEventTest(FILE_PATH_LITERAL("aria-selected-changed.html"));
 }
 
-IN_PROC_BROWSER_TEST_P(DumpAccessibilityEventsTest,
+IN_PROC_BROWSER_TEST_P(DumpAccessibilityEventsTestExceptUIA,
                        AccessibilityEventsAriaSelectedChangedNewSubtree) {
   RunEventTest(FILE_PATH_LITERAL("aria-selected-changed-new-subtree.html"));
 }
 
-IN_PROC_BROWSER_TEST_P(DumpAccessibilityEventsTest,
+IN_PROC_BROWSER_TEST_P(DumpAccessibilityEventsTestExceptUIA,
                        AccessibilityEventsButtonClick) {
   RunEventTest(FILE_PATH_LITERAL("button-click.html"));
 }
 
-IN_PROC_BROWSER_TEST_P(DumpAccessibilityEventsTest,
+IN_PROC_BROWSER_TEST_P(DumpAccessibilityEventsTestExceptUIA,
                        AccessibilityEventsButtonRemoveChildren) {
   RunEventTest(FILE_PATH_LITERAL("button-remove-children.html"));
 }
 
-IN_PROC_BROWSER_TEST_P(DumpAccessibilityEventsTest,
+IN_PROC_BROWSER_TEST_P(DumpAccessibilityEventsTestExceptUIA,
                        RangeValueIsReadonlyChanged) {
   RunEventTest(FILE_PATH_LITERAL("range-value-is-readonly-changed.html"));
 }
 
-IN_PROC_BROWSER_TEST_P(DumpAccessibilityEventsTest, RangeValueMaximumChanged) {
+IN_PROC_BROWSER_TEST_P(DumpAccessibilityEventsTestExceptUIA,
+                       RangeValueMaximumChanged) {
   RunEventTest(FILE_PATH_LITERAL("range-value-maximum-changed.html"));
 }
 
-IN_PROC_BROWSER_TEST_P(DumpAccessibilityEventsTest, RangeValueMinimumChanged) {
+IN_PROC_BROWSER_TEST_P(DumpAccessibilityEventsTestExceptUIA,
+                       RangeValueMinimumChanged) {
   RunEventTest(FILE_PATH_LITERAL("range-value-minimum-changed.html"));
 }
 
-IN_PROC_BROWSER_TEST_P(DumpAccessibilityEventsTest, RangeValueStepChanged) {
+IN_PROC_BROWSER_TEST_P(DumpAccessibilityEventsTestExceptUIA,
+                       RangeValueStepChanged) {
   RunEventTest(FILE_PATH_LITERAL("range-value-step-changed.html"));
 }
 
-IN_PROC_BROWSER_TEST_P(DumpAccessibilityEventsTest, RangeValueValueChanged) {
+IN_PROC_BROWSER_TEST_P(DumpAccessibilityEventsTestExceptUIA,
+                       RangeValueValueChanged) {
   RunEventTest(FILE_PATH_LITERAL("range-value-value-changed.html"));
 }
 
-IN_PROC_BROWSER_TEST_P(DumpAccessibilityEventsTest, ValueIsReadOnlyChanged) {
+IN_PROC_BROWSER_TEST_P(DumpAccessibilityEventsTestExceptUIA,
+                       ValueIsReadOnlyChanged) {
   RunEventTest(FILE_PATH_LITERAL("value-is-readonly-changed.html"));
 }
 
-IN_PROC_BROWSER_TEST_P(DumpAccessibilityEventsTest, ValueValueChanged) {
+IN_PROC_BROWSER_TEST_P(DumpAccessibilityEventsTestExceptUIA,
+                       ValueValueChanged) {
   RunEventTest(FILE_PATH_LITERAL("value-value-changed.html"));
 }
 
-IN_PROC_BROWSER_TEST_P(DumpAccessibilityEventsTest,
+IN_PROC_BROWSER_TEST_P(DumpAccessibilityEventsTestExceptUIA,
                        AccessibilityEventsMenuOpenedClosed) {
   RunEventTest(FILE_PATH_LITERAL("menu-opened-closed.html"));
 }
@@ -1216,19 +1228,19 @@ IN_PROC_BROWSER_TEST_P(DumpAccessibilityEventsTest,
 #define MAYBE_AccessibilityEventsMenubarShowHideMenus \
   AccessibilityEventsMenubarShowHideMenus
 #endif
-IN_PROC_BROWSER_TEST_P(DumpAccessibilityEventsTest,
+IN_PROC_BROWSER_TEST_P(DumpAccessibilityEventsTestExceptUIA,
                        MAYBE_AccessibilityEventsMenubarShowHideMenus) {
   RunEventTest(FILE_PATH_LITERAL("menubar-show-hide-menus.html"));
 }
 
 // crbug.com/1047282: disabled due to flakiness.
-IN_PROC_BROWSER_TEST_P(DumpAccessibilityEventsTest,
+IN_PROC_BROWSER_TEST_P(DumpAccessibilityEventsTestExceptUIA,
                        DISABLED_AccessibilityEventsAriaFlowToChange) {
   RunEventTest(FILE_PATH_LITERAL("aria-flow-to.html"));
 }
 
 // crbug.com/1047282: disabled due to flakiness.
-IN_PROC_BROWSER_TEST_P(DumpAccessibilityEventsTest,
+IN_PROC_BROWSER_TEST_P(DumpAccessibilityEventsTestExceptUIA,
                        DISABLED_AccessibilityEventsSelectAddRemove) {
   RunEventTest(FILE_PATH_LITERAL("select-selected-add-remove.html"));
 }
@@ -1239,7 +1251,8 @@ IN_PROC_BROWSER_TEST_P(DumpAccessibilityEventsTest,
 #else
 #define MAYBE_DeleteSubtree DeleteSubtree
 #endif
-IN_PROC_BROWSER_TEST_P(DumpAccessibilityEventsTest, MAYBE_DeleteSubtree) {
+IN_PROC_BROWSER_TEST_P(DumpAccessibilityEventsTestExceptUIA,
+                       MAYBE_DeleteSubtree) {
   RunEventTest(FILE_PATH_LITERAL("delete-subtree.html"));
 }
 
