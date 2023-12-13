@@ -23,7 +23,6 @@
 #include "third_party/blink/renderer/modules/ml/webnn/ml_graph_test_base.h"
 #include "third_party/blink/renderer/modules/ml/webnn/ml_operand.h"
 #include "third_party/blink/renderer/modules/ml/webnn/ml_operator.h"
-#include "third_party/blink/renderer/platform/testing/task_environment.h"
 
 namespace blink {
 
@@ -34,7 +33,6 @@ class MLGraphBuilderTest : public testing::Test {
  public:
   MLGraphBuilderTest() = default;
   ~MLGraphBuilderTest() override = default;
-  test::TaskEnvironment task_environment_;
 };
 
 TEST_F(MLGraphBuilderTest, InputTest) {
