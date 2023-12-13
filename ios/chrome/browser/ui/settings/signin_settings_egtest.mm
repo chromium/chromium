@@ -157,8 +157,7 @@ using chrome_test_util::SettingsSignInRowMatcher;
   // Close settings.
   [[EarlGrey selectElementWithMatcher:chrome_test_util::SettingsDoneButton()]
       performAction:grey_tap()];
-  [SigninEarlGreyUI
-      signOutWithConfirmationChoice:SignOutConfirmationChoiceNotSyncing];
+  [SigninEarlGreyUI signOut];
   [ChromeEarlGreyUI openSettingsMenu];
   // Tap on sign-in cell.
   [[EarlGrey selectElementWithMatcher:SettingsSignInRowMatcher()]
@@ -218,8 +217,7 @@ using chrome_test_util::SettingsSignInRowMatcher;
   // Close settings.
   [[EarlGrey selectElementWithMatcher:chrome_test_util::SettingsDoneButton()]
       performAction:grey_tap()];
-  [SigninEarlGreyUI
-      signOutWithConfirmationChoice:SignOutConfirmationChoiceNotSyncing];
+  [SigninEarlGreyUI signOut];
   [ChromeEarlGreyUI openSettingsMenu];
   // Tap on sign-in cell.
   [[EarlGrey selectElementWithMatcher:SettingsSignInRowMatcher()]
@@ -583,8 +581,7 @@ using chrome_test_util::SettingsSignInRowMatcher;
   // Sign-out then forget fakeIdentity1.
   [[EarlGrey selectElementWithMatcher:chrome_test_util::SettingsDoneButton()]
       performAction:grey_tap()];
-  [SigninEarlGreyUI
-      signOutWithConfirmationChoice:SignOutConfirmationChoiceKeepData];
+  [SigninEarlGreyUI signOut];
   [SigninEarlGrey forgetFakeIdentity:fakeIdentity1];
 
   // Tap on sign-in cell in settings for fakeIdentity2.

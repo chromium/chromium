@@ -328,10 +328,7 @@ void SetSigninEnterprisePolicyValue(BrowserSigninMode signinMode) {
   [BookmarkEarlGrey
       setupStandardBookmarksInStorage:bookmarks::StorageType::kLocalOrSyncable];
 
-  // Confirmation choice is ignored when `kReplaceSyncPromosWithSignInPromos` is
-  // enabled.
-  [SigninEarlGreyUI
-      signOutWithConfirmationChoice:SignOutConfirmationChoiceKeepData];
+  [SigninEarlGreyUI signOut];
 
   // Sign in with fake supervised identity.
   [SigninEarlGreyUI signinWithFakeIdentity:fakeSupervisedIdentity];
@@ -367,9 +364,8 @@ void SetSigninEnterprisePolicyValue(BrowserSigninMode signinMode) {
   [BookmarkEarlGrey
       setupStandardBookmarksInStorage:bookmarks::StorageType::kLocalOrSyncable];
 
-  // Sign out from the supervised account with option to keep local data.
-  [SigninEarlGreyUI
-      signOutWithConfirmationChoice:SignOutConfirmationChoiceKeepData];
+  // Sign out from the supervised account.
+  [SigninEarlGreyUI signOut];
 
   // Verify bookmarks are available.
   [BookmarkEarlGreyUI openBookmarks];
@@ -393,9 +389,8 @@ void SetSigninEnterprisePolicyValue(BrowserSigninMode signinMode) {
       setupStandardBookmarksInStorage:bookmarks::StorageType::kAccount];
   [ChromeEarlGreyUI waitForAppToIdle];
 
-  // Sign out from the supervised account with option to clear local data.
-  [SigninEarlGreyUI
-      signOutWithConfirmationChoice:SignOutConfirmationChoiceClearData];
+  // Sign out from the supervised account.
+  [SigninEarlGreyUI signOut];
 
   // Verify bookmarks are cleared.
   [BookmarkEarlGreyUI openBookmarks];
@@ -423,9 +418,7 @@ void SetSigninEnterprisePolicyValue(BrowserSigninMode signinMode) {
   FakeSystemIdentity* fakeIdentity = [FakeSystemIdentity fakeIdentity1];
   [SigninEarlGreyUI signinWithFakeIdentity:fakeIdentity];
 
-  // Sign out.
-  [SigninEarlGreyUI
-      signOutWithConfirmationChoice:SignOutConfirmationChoiceKeepData];
+  [SigninEarlGreyUI signOut];
 }
 
 // Tests that signing out of a managed account from the Settings works
@@ -437,9 +430,7 @@ void SetSigninEnterprisePolicyValue(BrowserSigninMode signinMode) {
   ExpectSigninConsentHistogram(signin_metrics::SigninAccountType::kManaged);
   ExpectNoSyncConsentHistogram(signin_metrics::SigninAccountType::kManaged);
 
-  // Sign out.
-  [SigninEarlGreyUI
-      signOutWithConfirmationChoice:SignOutConfirmationChoiceClearData];
+  [SigninEarlGreyUI signOut];
 }
 
 // Opens the sign in screen and then cancel it by opening a new tab. Ensures

@@ -288,9 +288,7 @@ constexpr base::TimeDelta kSyncOperationTimeout = base::Seconds(10);
   [BookmarkEarlGrey
       setupStandardBookmarksInStorage:bookmarks::StorageType::kLocalOrSyncable];
 
-  // Sign out.
-  [SigninEarlGreyUI
-      signOutWithConfirmationChoice:SignOutConfirmationChoiceKeepData];
+  [SigninEarlGreyUI signOut];
 
   // Open the Bookmarks screen on the Tools menu.
   [BookmarkEarlGreyUI openBookmarks];
@@ -315,11 +313,7 @@ constexpr base::TimeDelta kSyncOperationTimeout = base::Seconds(10);
   [BookmarkEarlGrey
       setupStandardBookmarksInStorage:bookmarks::StorageType::kAccount];
 
-  // TODO(crbug.com/1509737) The parameter is ignored when
-  // kReplaceSyncPromosWithSignInPromos is enabled. Change the method to one
-  // that is more meaningful with Sign-in only Sign out.
-  [SigninEarlGreyUI
-      signOutWithConfirmationChoice:SignOutConfirmationChoiceClearData];
+  [SigninEarlGreyUI signOut];
 
   // Open the Bookmarks screen on the Tools menu.
   [BookmarkEarlGreyUI openBookmarks];
@@ -342,11 +336,7 @@ constexpr base::TimeDelta kSyncOperationTimeout = base::Seconds(10);
   [BookmarkEarlGrey
       setupStandardBookmarksInStorage:bookmarks::StorageType::kAccount];
 
-  // TODO(crbug.com/1509737) The parameter is ignored when
-  // kReplaceSyncPromosWithSignInPromos is enabled. Change the method to one
-  // that is more meaningful with Sign-in only Sign out.
-  [SigninEarlGreyUI
-      signOutWithConfirmationChoice:SignOutConfirmationChoiceClearData];
+  [SigninEarlGreyUI signOut];
 
   // Open the Bookmarks screen on the Tools menu.
   [BookmarkEarlGreyUI openBookmarks];
@@ -366,8 +356,7 @@ constexpr base::TimeDelta kSyncOperationTimeout = base::Seconds(10);
 
   [SigninEarlGreyUI signinWithFakeIdentity:fakeIdentity1];
   [SigninEarlGrey verifySignedInWithFakeIdentity:fakeIdentity1];
-  [SigninEarlGreyUI
-      signOutWithConfirmationChoice:SignOutConfirmationChoiceClearData];
+  [SigninEarlGreyUI signOut];
 
   [SigninEarlGreyUI signinWithFakeIdentity:fakeIdentity2];
   [SigninEarlGrey verifySignedInWithFakeIdentity:fakeIdentity2];
@@ -554,9 +543,7 @@ constexpr base::TimeDelta kSyncOperationTimeout = base::Seconds(10);
   [BookmarkEarlGrey
       setupStandardBookmarksInStorage:bookmarks::StorageType::kLocalOrSyncable];
 
-  // Sign out.
-  [SigninEarlGreyUI
-      signOutWithConfirmationChoice:SignOutConfirmationChoiceNotSyncing];
+  [SigninEarlGreyUI signOut];
 
   // Open the Bookmarks screen on the Tools menu.
   [BookmarkEarlGreyUI openBookmarks];
@@ -575,9 +562,7 @@ constexpr base::TimeDelta kSyncOperationTimeout = base::Seconds(10);
   [BookmarkEarlGrey
       setupStandardBookmarksInStorage:bookmarks::StorageType::kLocalOrSyncable];
 
-  // Sign out.
-  [SigninEarlGreyUI
-      signOutWithConfirmationChoice:SignOutConfirmationChoiceNotSyncing];
+  [SigninEarlGreyUI signOut];
 
   // Open the Bookmarks screen on the Tools menu.
   [BookmarkEarlGreyUI openBookmarks];

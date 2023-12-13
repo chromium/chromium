@@ -31,6 +31,11 @@ typedef NS_ENUM(NSInteger, SignOutConfirmationChoice) {
                     enableSync:(BOOL)enableSync;
 
 // Signs the primary account out of Chrome through the accounts list screen.
+// Taps the "Sign Out" button and dismisses the confirmation snackbar. Assumes
+// that sync sync is replaced by sign-in.
++ (void)signOut;
+
+// Signs the primary account out of Chrome through the accounts list screen.
 // Taps the "Sign Out" button, and then validated the confirmation dialog
 // according to `confirmation`.
 + (void)signOutWithConfirmationChoice:(SignOutConfirmationChoice)confirmation;

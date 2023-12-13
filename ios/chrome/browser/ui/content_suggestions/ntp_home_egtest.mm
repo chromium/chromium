@@ -1286,9 +1286,7 @@ id<GREYMatcher> mostlyNotVisible() {
   [[EarlGrey selectElementWithMatcher:chrome_test_util::FakeOmnibox()]
       assertWithMatcher:grey_sufficientlyVisible()];
 
-  // Sign out
-  [SigninEarlGreyUI
-      signOutWithConfirmationChoice:SignOutConfirmationChoiceClearData];
+  [SigninEarlGreyUI signOut];
 
   [[EarlGrey selectElementWithMatcher:chrome_test_util::NTPLogo()]
       assertWithMatcher:grey_sufficientlyVisible()];
@@ -1551,8 +1549,7 @@ id<GREYMatcher> mostlyNotVisible() {
   // Opens settings menu and ensures that Discover setting is not present.
   [self checkDiscoverSettingsToggleVisible:NO];
 
-  [SigninEarlGreyUI
-      signOutWithConfirmationChoice:SignOutConfirmationChoiceClearData];
+  [SigninEarlGreyUI signOut];
 
   // The feed label should be visible on sign-out.
   [self checkFeedLabelForFeedVisible:YES];

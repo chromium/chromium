@@ -172,6 +172,43 @@ void MaybeTapSigninBottomSheetAndHistoryConfirmationDialog(
                                    syncTimeout:base::Seconds(10)];
 }
 
++ (void)signOut {
+  CHECK([ChromeEarlGrey isReplaceSyncWithSigninEnabled]);
+  [ChromeEarlGreyUI openSettingsMenu];
+  [ChromeEarlGreyUI tapSettingsMenuButton:SettingsAccountButton()];
+  // With ReplaceSyncWithSignin, we're now in the "manage sync" view, and
+  // the signout button is at the very bottom. Scroll there.
+  id<GREYMatcher> scrollViewMatcher =
+      grey_accessibilityID(kManageSyncTableViewAccessibilityIdentifier);
+  [[EarlGrey selectElementWithMatcher:scrollViewMatcher]
+      performAction:grey_scrollToContentEdge(kGREYContentEdgeBottom)];
+
+  // Tap the "Sign out" button.
+  [[EarlGrey selectElementWithMatcher:
+                 grey_text(l10n_util::GetNSString(
+                     IDS_IOS_GOOGLE_ACCOUNT_SETTINGS_SIGN_OUT_ITEM))]
+      performAction:grey_tap()];
+  // Note that there's no confirmation of signout, so the `confirmation`
+  // param is ignored. However, there is a snackbar - close it, so that it
+  // can't obstruct other UI items.
+  NSString* snackbarLabel = l10n_util::GetNSString(
+      IDS_IOS_GOOGLE_ACCOUNT_SETTINGS_SIGN_OUT_SNACKBAR_MESSAGE);
+  // The tap checks the existence of the snackbar and also closes it.
+  [[EarlGrey selectElementWithMatcher:grey_accessibilityLabel(snackbarLabel)]
+      performAction:grey_tap()];
+
+  // Wait until the user is signed out. Use a longer timeout for cases where
+  // sign out also triggers a clear browsing data.
+  [ChromeEarlGrey
+      waitForUIElementToAppearWithMatcher:SettingsDoneButton()
+                                  timeout:base::test::ios::
+                                              kWaitForClearBrowsingDataTimeout];
+
+  [[EarlGrey selectElementWithMatcher:SettingsDoneButton()]
+      performAction:grey_tap()];
+  [SigninEarlGrey verifySignedOut];
+}
+
 + (void)signOutWithConfirmationChoice:(SignOutConfirmationChoice)confirmation {
   [ChromeEarlGreyUI openSettingsMenu];
   [ChromeEarlGreyUI tapSettingsMenuButton:SettingsAccountButton()];
