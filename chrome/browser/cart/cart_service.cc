@@ -495,9 +495,7 @@ void CartService::ShouldShowDiscountConsentCallback(
     for (auto proto_pair : proto_pairs) {
       auto cart_url = proto_pair.second.merchant_cart_url();
       should_show |= commerce::IsPartnerMerchant(GURL(cart_url));
-      should_show |=
-          (base::FeatureList::IsEnabled(commerce::kMerchantWidePromotion) &&
-           !commerce::IsNoDiscountMerchant(GURL(cart_url)));
+      should_show |= !commerce::IsNoDiscountMerchant(GURL(cart_url));
     }
 
     if (base::FeatureList::IsEnabled(commerce::kDiscountConsentV2)) {

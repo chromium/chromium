@@ -2236,13 +2236,11 @@ class CartServiceMerchantWideDiscountTest : public CartServiceTest {
   // order to avoid tsan data race error on FeatureList.
   CartServiceMerchantWideDiscountTest() {
     std::vector<base::test::FeatureRefAndParams> enabled_features;
-    base::FieldTrialParams cart_params, merchant_wide_params;
+    base::FieldTrialParams cart_params;
     cart_params[ntp_features::kNtpChromeCartModuleAbandonedCartDiscountParam] =
         "true";
     enabled_features.emplace_back(ntp_features::kNtpChromeCartModule,
                                   cart_params);
-    enabled_features.emplace_back(commerce::kMerchantWidePromotion,
-                                  merchant_wide_params);
 
     features_.InitWithFeaturesAndParameters(enabled_features, {});
   }

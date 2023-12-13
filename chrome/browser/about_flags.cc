@@ -1995,15 +1995,6 @@ const FeatureEntry::FeatureVariation kCodeBasedRBDVariations[] = {
      "t3362898"},
 };
 
-// The following is Merchant wide promotion variation.
-const flags_ui::FeatureEntry::FeatureParam kMerchantWideFetchEnabled[] = {
-    {commerce::kReadyToFetchMerchantWidePromotionParam, "true"}};
-
-const FeatureEntry::FeatureVariation kMerchantWidePromotionVariations[] = {
-    {"- Enable fetch", kMerchantWideFetchEnabled,
-     std::size(kMerchantWideFetchEnabled), nullptr},
-};
-
 const FeatureEntry::FeatureParam kNtpDriveModuleFakeData[] = {
     {ntp_features::kNtpDriveModuleDataParam, "fake"}};
 const FeatureEntry::FeatureParam kNtpDriveModuleManagedUsersOnly[] = {
@@ -9541,12 +9532,6 @@ const FeatureEntry kFeatureEntries[] = {
                                     kDiscountConsentV2Variations,
                                     "DiscountConsentV2")},
 
-    {"enable-merchant-wide-promotions",
-     flag_descriptions::kMerchantWidePromotionsName,
-     flag_descriptions::kMerchantWidePromotionsDescription, kOsDesktop,
-     FEATURE_WITH_PARAMS_VALUE_TYPE(commerce::kMerchantWidePromotion,
-                                    kMerchantWidePromotionVariations,
-                                    "MerchantWidePromotion")},
 #endif
 
     {"edit-context", flag_descriptions::kEditContextName,

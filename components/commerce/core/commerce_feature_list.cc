@@ -283,10 +283,6 @@ BASE_FEATURE(kCommerceHintAndroid,
              "CommerceHintAndroid",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-BASE_FEATURE(kMerchantWidePromotion,
-             "MerchantWidePromotion",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 BASE_FEATURE(kCodeBasedRBD, "CodeBasedRBD", base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kChromeCartDomBasedHeuristics,
@@ -411,11 +407,6 @@ const base::FeatureParam<bool> kContextualConsentShowOnSRP{
 
 const char kCommerceHintAndroidHeuristicsImprovementParam[] =
     "CommerceHintAndroidHeuristicsImprovementParam";
-
-const char kReadyToFetchMerchantWidePromotionParam[] = "ready-to-fetch";
-const base::FeatureParam<bool> kReadyToFetchMerchantWidePromotion{
-    &commerce::kMerchantWidePromotion, kReadyToFetchMerchantWidePromotionParam,
-    true};
 
 const char kCodeBasedRuleDiscountParam[] = "code-based-rbd";
 const base::FeatureParam<bool> kCodeBasedRuleDiscount{

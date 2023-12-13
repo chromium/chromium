@@ -889,11 +889,6 @@ const char kMediaSessionEnterPictureInPictureDescription[] =
     "Enables the 'enterpictureinpicture' MediaSessionAction to allow websites "
     "to register an action handler for entering picture-in-picture.";
 
-const char kMerchantWidePromotionsName[] = "Merchant wide promotions";
-const char kMerchantWidePromotionsDescription[] =
-    "Enables the discount consent for all merchants, and show merchant wide "
-    "promotions if they are available";
-
 const char kCodeBasedRBDName[] = "Code-based RBD";
 const char kCodeBasedRBDDescription[] = "Enables the Code-based RBD.";
 
