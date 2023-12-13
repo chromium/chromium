@@ -133,6 +133,8 @@ class ReadAnythingAppController
   void Draw();
   void DrawSelection();
 
+  void ExecuteJavaScript(std::string script);
+
   void UnserializeUpdates(std::vector<ui::AXTreeUpdate> updates,
                           const ui::AXTreeID& tree_id);
 
@@ -171,7 +173,7 @@ class ReadAnythingAppController
                           int line_spacing,
                           int letter_spacing);
 
-  content::RenderFrame* render_frame_;
+  const int render_frame_id_;
   std::unique_ptr<AXTreeDistiller> distiller_;
   mojo::Remote<read_anything::mojom::PageHandlerFactory> page_handler_factory_;
   mojo::Remote<read_anything::mojom::PageHandler> page_handler_;
