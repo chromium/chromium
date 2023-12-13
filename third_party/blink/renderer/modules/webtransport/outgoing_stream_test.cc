@@ -24,6 +24,7 @@
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/heap/persistent.h"
+#include "third_party/blink/renderer/platform/testing/task_environment.h"
 #include "third_party/blink/renderer/platform/testing/unit_test_helpers.h"
 #include "v8/include/v8.h"
 
@@ -120,6 +121,7 @@ class StreamCreator {
 };
 
 TEST(OutgoingStreamTest, Create) {
+  test::TaskEnvironment task_environment;
   V8TestingScope scope;
   StreamCreator stream_creator;
   auto* outgoing_stream = stream_creator.Create(scope);
@@ -129,6 +131,7 @@ TEST(OutgoingStreamTest, Create) {
 }
 
 TEST(OutgoingStreamTest, WriteArrayBuffer) {
+  test::TaskEnvironment task_environment;
   V8TestingScope scope;
   StreamCreator stream_creator;
   auto* outgoing_stream = stream_creator.Create(scope);
@@ -148,6 +151,7 @@ TEST(OutgoingStreamTest, WriteArrayBuffer) {
 }
 
 TEST(OutgoingStreamTest, WriteArrayBufferView) {
+  test::TaskEnvironment task_environment;
   V8TestingScope scope;
   StreamCreator stream_creator;
   auto* outgoing_stream = stream_creator.Create(scope);
@@ -173,6 +177,7 @@ bool IsAllNulls(base::span<const uint8_t> data) {
 }
 
 TEST(OutgoingStreamTest, AsyncWrite) {
+  test::TaskEnvironment task_environment;
   V8TestingScope scope;
   StreamCreator stream_creator;
   // Set a large pipe capacity, so any platform-specific excess is dwarfed in
@@ -232,6 +237,7 @@ TEST(OutgoingStreamTest, AsyncWrite) {
 
 // Writing immediately followed by closing should not lose data.
 TEST(OutgoingStreamTest, WriteThenClose) {
+  test::TaskEnvironment task_environment;
   V8TestingScope scope;
   StreamCreator stream_creator;
 
@@ -271,6 +277,7 @@ TEST(OutgoingStreamTest, WriteThenClose) {
 }
 
 TEST(OutgoingStreamTest, DataPipeClosed) {
+  test::TaskEnvironment task_environment;
   V8TestingScope scope;
   StreamCreator stream_creator;
 
@@ -315,6 +322,7 @@ TEST(OutgoingStreamTest, DataPipeClosed) {
 }
 
 TEST(OutgoingStreamTest, DataPipeClosedDuringAsyncWrite) {
+  test::TaskEnvironment task_environment;
   V8TestingScope scope;
   StreamCreator stream_creator;
 
@@ -365,6 +373,7 @@ TEST(OutgoingStreamTest, DataPipeClosedDuringAsyncWrite) {
 }
 
 TEST(OutgoingStreamTest, Abort) {
+  test::TaskEnvironment task_environment;
   V8TestingScope scope;
   StreamCreator stream_creator;
   ScriptState* script_state = scope.GetScriptState();
@@ -383,6 +392,7 @@ TEST(OutgoingStreamTest, Abort) {
 }
 
 TEST(OutgoingStreamTest, AbortWithWebTransportError) {
+  test::TaskEnvironment task_environment;
   V8TestingScope scope;
   StreamCreator stream_creator;
   ScriptState* script_state = scope.GetScriptState();
@@ -405,6 +415,7 @@ TEST(OutgoingStreamTest, AbortWithWebTransportError) {
 }
 
 TEST(OutgoingStreamTest, AbortWithWebTransportErrorWithCode) {
+  test::TaskEnvironment task_environment;
   V8TestingScope scope;
   StreamCreator stream_creator;
   ScriptState* script_state = scope.GetScriptState();
@@ -426,6 +437,7 @@ TEST(OutgoingStreamTest, AbortWithWebTransportErrorWithCode) {
 }
 
 TEST(OutgoingStreamTest, CloseAndConnectionError) {
+  test::TaskEnvironment task_environment;
   V8TestingScope scope;
   StreamCreator stream_creator;
   ScriptState* script_state = scope.GetScriptState();

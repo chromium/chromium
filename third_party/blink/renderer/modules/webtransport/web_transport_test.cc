@@ -52,6 +52,7 @@
 #include "third_party/blink/renderer/platform/bindings/exception_code.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/heap/persistent.h"
+#include "third_party/blink/renderer/platform/testing/task_environment.h"
 #include "third_party/blink/renderer/platform/testing/unit_test_helpers.h"
 #include "third_party/blink/renderer/platform/wtf/deque.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
@@ -332,6 +333,7 @@ class WebTransportTest : public ::testing::Test {
       pending_unidirectional_accept_callbacks_;
   WTF::Deque<AcceptBidirectionalStreamCallback>
       pending_bidirectional_accept_callbacks_;
+  test::TaskEnvironment task_environment_;
   WebTransportConnector connector_;
   std::unique_ptr<MockWebTransport> mock_web_transport_;
   mojo::Remote<network::mojom::blink::WebTransportClient> client_remote_;
