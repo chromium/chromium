@@ -328097,7 +328097,7 @@
        []
       ],
       "user-scroll-common.js": [
-       "2ccfb102a73f940fbb6b3232eb5d9b0c3bc85db3",
+       "6587aebd920ef5817267ebb906fc08406e5f0c78",
        []
       ]
      },
@@ -347124,7 +347124,7 @@
       []
      ],
      "delete.js": [
-      "5fad8c2678333c2f753d61c5d9c679e1b618d162",
+      "3c2855e28f535ec95ef3c870169d067cdb6efa23",
       []
      ],
      "fontname.js": [
@@ -347144,7 +347144,7 @@
       []
      ],
      "forwarddelete.js": [
-      "5119d6f50def051a6ffccf140283f392acd131e8",
+      "5e76ee898853bd77ab812566494dbed20b422f9d",
       []
      ],
      "hilitecolor.js": [
@@ -347184,7 +347184,7 @@
       []
      ],
      "inserttext.js": [
-      "ab73a2ac49c244f56ca5eea3e6971745af9c2298",
+      "8fa8127f2df30800abb2097096a60b4e5ad35326",
       []
      ],
      "insertunorderedlist.js": [
@@ -347216,7 +347216,7 @@
       []
      ],
      "multitest.js": [
-      "8ec4dfaf68be66ba6a264b4f9c3f6f549a873e0a",
+      "aeda7b2e7b6bc26eb851ed361f5a1338160b6dfc",
       []
      ],
      "outdent.js": [
@@ -347798,7 +347798,7 @@
       []
      ],
      "delete_7001-last-expected.txt": [
-      "2a89ec5de07b334a98563c0bda3929ebdfadea86",
+      "9423a9150f49647368ba713af5f8196c38460a22",
       []
      ],
      "fontname_1-1000-expected.txt": [
@@ -347882,7 +347882,7 @@
       []
      ],
      "forwarddelete_7001-last-expected.txt": [
-      "ded624506c658dfc0686b5317359ed0b1d79c7e8",
+      "50b5b3ddd83707c490ec12f283d4c3f5d135339b",
       []
      ],
      "hilitecolor-expected.txt": [
@@ -348054,7 +348054,7 @@
       []
      ],
      "multitest_9001-last-expected.txt": [
-      "788d7b6c20637ba26f21dd82a76fc26cd9a87ebb",
+      "c1b05d420e01dcdc0f865468dddff383fd99071b",
       []
      ],
      "outdent_1-1000-expected.txt": [
@@ -355753,10 +355753,6 @@
        ]
       },
       "unloading-documents": {
-       "001-expected.txt": [
-        "464a7c9cbe7db57ecac03fb3172adab709ba9346",
-        []
-       ],
        "004-expected.txt": [
         "87334f66b3cbc94e2f16a6e44fc400e92092b965",
         []
@@ -355853,7 +355849,7 @@
        ],
        "support": {
         "001-1.html": [
-         "72f41ae3e8da1c9375d6fd962bbe52ac8285415a",
+         "2a9cab4aa4dc0df74ce7baaac64258d2cad688a9",
          []
         ],
         "001a.html": [
@@ -386571,7 +386567,7 @@
          ]
         },
         "router-rules.js": [
-         "67871a2d4fd3fe2039e0b7f392caef72cee86eed",
+         "f8fe403298604c0b4bfc09202fa75053447d6081",
          []
         ],
         "simple-test-for-condition-main-resource.html": [
@@ -387881,7 +387877,7 @@
        []
       ],
       "utils.js": [
-       "687f6a43982d7ba18fc172079370a3beeb74117f",
+       "56ab603fdffb962062f75bace5f1cef45bf54f6b",
        []
       ],
       "wake-lock.https.html": [
@@ -394725,11 +394721,11 @@
      []
     ],
     "elementwise_unary.https.any-expected.txt": [
-     "91bcbcf3d4dd23303f03c67167cb1a720da7484a",
+     "9fdb626319cca2f172ef8179356dab207e64da0f",
      []
     ],
     "elementwise_unary.https.any.worker-expected.txt": [
-     "2fe086e8741e049e7e92a9ff32f5d30e4b3633a4",
+     "40d851efd058a1ed37ba820e91b638ca604c9eb6",
      []
     ],
     "elu.https.any-expected.txt": [
@@ -394738,6 +394734,14 @@
     ],
     "elu.https.any.worker-expected.txt": [
      "4a7df4cb8f8063762b6cf03def63255fa3687fca",
+     []
+    ],
+    "expand.https.any-expected.txt": [
+     "eecb000ba8324a93fef5185c1cb37bda704916fe",
+     []
+    ],
+    "expand.https.any.worker-expected.txt": [
+     "eecb000ba8324a93fef5185c1cb37bda704916fe",
      []
     ],
     "gemm.https.any-expected.txt": [
@@ -394797,11 +394801,11 @@
      []
     ],
     "pooling.https.any-expected.txt": [
-     "a3a110a3507c7603622d630328e6501a3fef4df8",
+     "f8e1a995b4cde94721f7455ac19dbcb9ae647c3e",
      []
     ],
     "pooling.https.any.worker-expected.txt": [
-     "f55c306ad276642b749d19528332216cbde8e5fc",
+     "2cdd5388ce72167e420f8db02bac48838c718fee",
      []
     ],
     "prelu.https.any-expected.txt": [
@@ -394839,7 +394843,7 @@
        []
       ],
       "average_pool2d.json": [
-       "badcfc888d8ae278407c05f668222f10b7d8cb53",
+       "802e0d764621707c0b00d6a05627d0c1eeba9233",
        []
       ],
       "batch_normalization.json": [
@@ -394880,6 +394884,10 @@
       ],
       "equal.json": [
        "8350a25d594de6086c8c71e5142df6c92aaec799",
+       []
+      ],
+      "erf.json": [
+       "8a9ae6e68c1c4ab61e2d4c4838b014653c9049c9",
        []
       ],
       "exp.json": [
@@ -395080,7 +395088,7 @@
       ]
      },
      "utils.js": [
-      "1e31886c9c53fc81b567504fbd719c563ba656e6",
+      "c3b10a7020182f1765cdd7890410766334bc6055",
       []
      ]
     },
@@ -395130,6 +395138,14 @@
     ],
     "transpose.https.any.worker-expected.txt": [
      "1a38628826754a3f56f71ad3e2707fd44ce8939e",
+     []
+    ],
+    "where.https.any-expected.txt": [
+     "056d0296554963f8ccefbb5ebf7b6b475966c3a2",
+     []
+    ],
+    "where.https.any.worker-expected.txt": [
+     "056d0296554963f8ccefbb5ebf7b6b475966c3a2",
      []
     ]
    },
@@ -456782,14 +456798,14 @@
        ]
       ],
       "snapchanged-on-programmatic-root-scroll.tentative.html": [
-       "d7cc409b5b06cda5896855f99bd613290fb02e9c",
+       "2e33c3c970f6595a614473aab4606df60e40e89c",
        [
         null,
         {}
        ]
       ],
       "snapchanged-on-programmatic-scroll.tentative.html": [
-       "eebe05704ecbd28fca1af04a02333d9b23ad6d88",
+       "6082e0901309dd9ea023c49ea90f3f377f0038b7",
        [
         null,
         {}
@@ -499242,7 +499258,7 @@
      ]
     ],
     "permission-geolocation.https.html": [
-     "98b5a72b3c60ba1f988b43a98d3caf654f6a96ec",
+     "e9ad53511b2cc52145deb24a89bde315448011e7",
      [
       null,
       {
@@ -529883,7 +529899,7 @@
        ]
       },
       "self-et-al.window.js": [
-       "1b0fa1211a701253b61d1eced344faa8763ad6ef",
+       "c42522803ab020961e21e8fc1455322ce377c458",
        [
         "html/browsers/the-window-object/self-et-al.window.html",
         {}
@@ -621924,14 +621940,14 @@
      "tentative": {
       "static-router": {
        "static-router-main-resource.https.html": [
-        "523ececf317edeea73f1c833787c28b7b60108aa",
+        "1673b97ca7b61e4c1c193ca548c92706868a56ff",
         [
          null,
          {}
         ]
        ],
        "static-router-subresource.https.html": [
-        "1fd3880bf26b8617f80d14580f9124874d2192a2",
+        "6154c38f2d7013150021a2903d9b8a7301dc7013",
         [
          null,
          {}
@@ -658954,7 +658970,7 @@
      ]
     ],
     "elementwise_unary.https.any.js": [
-     "27902a406fb1bc32798f2504b7e9d7b6c28bc391",
+     "4cdfee5bcb07f8ab011460f23564e081372267ac",
      [
       "webnn/elementwise_unary.https.any.html",
       {
@@ -659037,6 +659053,57 @@
         [
          "title",
          "test WebNN API elu operation"
+        ],
+        [
+         "global",
+         "window,dedicatedworker"
+        ],
+        [
+         "script",
+         "./resources/utils.js"
+        ],
+        [
+         "timeout",
+         "long"
+        ]
+       ],
+       "timeout": "long"
+      }
+     ]
+    ],
+    "expand.https.any.js": [
+     "11abb9baa89da3a819ca67f99a83109c433fc88e",
+     [
+      "webnn/expand.https.any.html",
+      {
+       "script_metadata": [
+        [
+         "title",
+         "test WebNN API expand operation"
+        ],
+        [
+         "global",
+         "window,dedicatedworker"
+        ],
+        [
+         "script",
+         "./resources/utils.js"
+        ],
+        [
+         "timeout",
+         "long"
+        ]
+       ],
+       "timeout": "long"
+      }
+     ],
+     [
+      "webnn/expand.https.any.worker.html",
+      {
+       "script_metadata": [
+        [
+         "title",
+         "test WebNN API expand operation"
         ],
         [
          "global",
@@ -659465,7 +659532,7 @@
       ]
      ],
      "elementwise_unary.https.any.js": [
-      "eff4631552909676ea69ee2dbbd8048c66c98c9b",
+      "45978f91ec4c5d7f0d00fd7d4abe4661788a38b8",
       [
        "webnn/gpu/elementwise_unary.https.any.html",
        {
@@ -659548,6 +659615,57 @@
          [
           "title",
           "test WebNN API elu operation"
+         ],
+         [
+          "global",
+          "window,dedicatedworker"
+         ],
+         [
+          "script",
+          "../resources/utils.js"
+         ],
+         [
+          "timeout",
+          "long"
+         ]
+        ],
+        "timeout": "long"
+       }
+      ]
+     ],
+     "expand.https.any.js": [
+      "82fa891a39933aa5420ce88e8d888e359732faa7",
+      [
+       "webnn/gpu/expand.https.any.html",
+       {
+        "script_metadata": [
+         [
+          "title",
+          "test WebNN API expand operation"
+         ],
+         [
+          "global",
+          "window,dedicatedworker"
+         ],
+         [
+          "script",
+          "../resources/utils.js"
+         ],
+         [
+          "timeout",
+          "long"
+         ]
+        ],
+        "timeout": "long"
+       }
+      ],
+      [
+       "webnn/gpu/expand.https.any.worker.html",
+       {
+        "script_metadata": [
+         [
+          "title",
+          "test WebNN API expand operation"
          ],
          [
           "global",
@@ -660636,6 +660754,57 @@
         "timeout": "long"
        }
       ]
+     ],
+     "where.https.any.js": [
+      "ec0c5530a044b4b44077743eede15f75fea0afe3",
+      [
+       "webnn/gpu/where.https.any.html",
+       {
+        "script_metadata": [
+         [
+          "title",
+          "test WebNN API where operation"
+         ],
+         [
+          "global",
+          "window,dedicatedworker"
+         ],
+         [
+          "script",
+          "../resources/utils.js"
+         ],
+         [
+          "timeout",
+          "long"
+         ]
+        ],
+        "timeout": "long"
+       }
+      ],
+      [
+       "webnn/gpu/where.https.any.worker.html",
+       {
+        "script_metadata": [
+         [
+          "title",
+          "test WebNN API where operation"
+         ],
+         [
+          "global",
+          "window,dedicatedworker"
+         ],
+         [
+          "script",
+          "../resources/utils.js"
+         ],
+         [
+          "timeout",
+          "long"
+         ]
+        ],
+        "timeout": "long"
+       }
+      ]
      ]
     },
     "hard_sigmoid.https.any.js": [
@@ -661699,6 +661868,57 @@
         [
          "title",
          "test WebNN API transpose operation"
+        ],
+        [
+         "global",
+         "window,dedicatedworker"
+        ],
+        [
+         "script",
+         "./resources/utils.js"
+        ],
+        [
+         "timeout",
+         "long"
+        ]
+       ],
+       "timeout": "long"
+      }
+     ]
+    ],
+    "where.https.any.js": [
+     "306128a814227550d3ce5de7d650d9d64ba67b60",
+     [
+      "webnn/where.https.any.html",
+      {
+       "script_metadata": [
+        [
+         "title",
+         "test WebNN API where operation"
+        ],
+        [
+         "global",
+         "window,dedicatedworker"
+        ],
+        [
+         "script",
+         "./resources/utils.js"
+        ],
+        [
+         "timeout",
+         "long"
+        ]
+       ],
+       "timeout": "long"
+      }
+     ],
+     [
+      "webnn/where.https.any.worker.html",
+      {
+       "script_metadata": [
+        [
+         "title",
+         "test WebNN API where operation"
         ],
         [
          "global",
