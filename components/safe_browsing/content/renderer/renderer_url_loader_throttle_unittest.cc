@@ -70,7 +70,6 @@ class MockThrottleDelegate : public blink::URLLoaderThrottle::Delegate {
 class SBRendererUrlLoaderThrottleTest : public ::testing::Test {
  protected:
   SBRendererUrlLoaderThrottleTest() : mojo_receiver_(&safe_browsing_) {
-    feature_list_.InitAndEnableFeature(kSafeBrowsingSkipSubresources);
     mojo_receiver_.Bind(safe_browsing_remote_.BindNewPipeAndPassReceiver());
     throttle_delegate_ = std::make_unique<MockThrottleDelegate>();
     throttle_ = std::make_unique<RendererURLLoaderThrottle>(
@@ -89,7 +88,6 @@ class SBRendererUrlLoaderThrottleTest : public ::testing::Test {
 
   base::test::TaskEnvironment message_loop_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
-  base::test::ScopedFeatureList feature_list_;
   FakeSafeBrowsing safe_browsing_;
   mojo::Receiver<mojom::SafeBrowsing> mojo_receiver_;
   mojo::Remote<mojom::SafeBrowsing> safe_browsing_remote_;
@@ -269,8 +267,7 @@ class SBRendererUrlLoaderThrottleDisableSkipSubresourcesTest
   SBRendererUrlLoaderThrottleDisableSkipSubresourcesTest() {
     feature_list_.InitWithFeatures(
         /*enabled_features=*/{},
-        /*disabled_features=*/{kSafeBrowsingSkipImageCssFont,
-                               kSafeBrowsingSkipSubresources});
+        /*disabled_features=*/{kSafeBrowsingSkipSubresources});
   }
 
  protected:
@@ -284,21 +281,6 @@ TEST_F(SBRendererUrlLoaderThrottleDisableSkipSubresourcesTest,
   bool defer = false;
   network::ResourceRequest request =
       GetResourceRequest(url, network::mojom::RequestDestination::kScript);
-  throttle_->WillStartRequest(&request, &defer);
-  message_loop_.RunUntilIdle();
-
-  auto response_head = network::mojom::URLResponseHead::New();
-  throttle_->WillProcessResponse(url, response_head.get(), &defer);
-  EXPECT_TRUE(defer);
-}
-
-TEST_F(SBRendererUrlLoaderThrottleDisableSkipSubresourcesTest,
-       DefersHttpsImageUrl) {
-  safe_browsing_.EnableDelayCallback();
-  GURL url("https://example.com/");
-  bool defer = false;
-  network::ResourceRequest request =
-      GetResourceRequest(url, network::mojom::RequestDestination::kImage);
   throttle_->WillStartRequest(&request, &defer);
   message_loop_.RunUntilIdle();
 

@@ -256,15 +256,6 @@ BASE_FEATURE(kSafeBrowsingRemoveCookiesInAuthRequests,
              "SafeBrowsingRemoveCookiesInAuthRequests",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-BASE_FEATURE(kSafeBrowsingSkipImageCssFont,
-             "SafeBrowsingSkipImageCssFont",
-#if BUILDFLAG(IS_ANDROID)
-             base::FEATURE_ENABLED_BY_DEFAULT
-#else
-             base::FEATURE_DISABLED_BY_DEFAULT
-#endif
-);
-
 BASE_FEATURE(kSafeBrowsingSkipSubresources,
              "SafeBrowsingSkipSubResources",
              base::FEATURE_ENABLED_BY_DEFAULT);
@@ -384,7 +375,6 @@ constexpr struct {
     {&kSafeBrowsingAsyncRealTimeCheck, true},
     {&kSafeBrowsingLookupMechanismExperiment, true},
     {&kSafeBrowsingRemoveCookiesInAuthRequests, true},
-    {&kSafeBrowsingSkipImageCssFont, true},
     {&kSafeBrowsingSkipSubresources, true},
     {&kSafeBrowsingSkipSubresources2, true},
     {&kSevenZipEvaluationEnabled, true},

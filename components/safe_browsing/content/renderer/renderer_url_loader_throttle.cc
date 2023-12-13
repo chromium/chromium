@@ -111,14 +111,15 @@ void RendererURLLoaderThrottle::WillStartRequest(
     return;
   }
 
+  // TODO(crbug.com/1486144): Remove request_destinations_to_skip together with
+  // kSafeBrowsingSkipSubresources.
   static const base::NoDestructor<
       std::unordered_set<network::mojom::RequestDestination>>
       request_destinations_to_skip{{network::mojom::RequestDestination::kStyle,
                                     network::mojom::RequestDestination::kImage,
                                     network::mojom::RequestDestination::kFont}};
   if (base::FeatureList::IsEnabled(kSafeBrowsingSkipSubresources) ||
-      (base::Contains(*request_destinations_to_skip, request->destination) &&
-       base::FeatureList::IsEnabled(kSafeBrowsingSkipImageCssFont))) {
+      (base::Contains(*request_destinations_to_skip, request->destination))) {
     VLOG(2) << __func__ << " : Skipping: " << request->url << " : "
             << request->destination;
     DCHECK_NE(request->destination,

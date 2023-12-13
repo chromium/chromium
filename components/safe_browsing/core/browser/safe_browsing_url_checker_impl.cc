@@ -443,8 +443,8 @@ void SafeBrowsingUrlCheckerImpl::ProcessUrlsAndMaybeDeleteSelf() {
       continue;
     }
 
-    // TODO(crbug.com/1420085): Remove this check when
-    // kSafeBrowsingSkipImageCssFont is launched.
+    // TODO(crbug.com/1486144): Remove this check when
+    // kSafeBrowsingSkipSubresources is launched.
     if (!database_manager_->CanCheckRequestDestination(request_destination_)) {
       UMA_HISTOGRAM_ENUMERATION("SB2.RequestDestination.Skipped",
                                 request_destination_);
