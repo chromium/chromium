@@ -26,17 +26,6 @@ chromium-metrics-reviews@google.com.
 
 <enums>
 
-<enum name="ActiveDirectoryDomainJoinType">
-  <summary>
-    This list corresponds to the ways device could be joined to the Active
-    Directory domain.
-  </summary>
-  <int value="0" label="Joined without streamline configuration"/>
-  <int value="1"
-      label="Had streamline configuration set but did not unlock it"/>
-  <int value="2" label="Joined using streamline configuration"/>
-</enum>
-
 <enum name="BooleanWarned">
   <int value="0" label="Not Warned"/>
   <int value="1" label="Warned"/>
