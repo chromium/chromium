@@ -11,7 +11,7 @@ export interface ComposeApiProxy {
   approveConsent(): void;
   closeUi(reason: CloseReason): void;
   compose(input: string, edited: boolean): void;
-  rewrite(style: StyleModifiers): void;
+  rewrite(style: StyleModifiers|null): void;
   getRouter(): ComposeDialogCallbackRouter;
   openBugReportingLink(): void;
   openFeedbackSurveyLink(): void;
@@ -68,7 +68,7 @@ export class ComposeApiProxyImpl implements ComposeApiProxy {
     this.composeSessionPageHandler.compose(input, edited);
   }
 
-  rewrite(style: StyleModifiers): void {
+  rewrite(style: StyleModifiers|null): void {
     this.composeSessionPageHandler.rewrite(style);
   }
 

@@ -246,6 +246,8 @@ void ComposeSession::Rewrite(compose::mojom::StyleModifiersPtr style) {
   } else if (style->is_length()) {
     request.mutable_rewrite_params()->set_length(
         optimization_guide::proto::ComposeLength(style->get_length()));
+  } else {
+    request.mutable_rewrite_params()->set_regenerate(true);
   }
   request.mutable_rewrite_params()->set_previous_response(
       most_recent_ok_state_->mojo_state()->response->result);

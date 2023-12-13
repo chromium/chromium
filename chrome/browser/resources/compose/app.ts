@@ -342,6 +342,10 @@ export class ComposeAppElement extends ComposeAppElementBase {
     }
   }
 
+  private onRefresh_() {
+    this.rewrite_(/*style=*/ null);
+  }
+
   private onSubmit_() {
     this.isSubmitEnabled_ = this.$.textarea.validate();
     if (!this.isSubmitEnabled_) {
@@ -428,7 +432,7 @@ export class ComposeAppElement extends ComposeAppElementBase {
     this.apiProxy_.compose(this.input_, inputEdited);
   }
 
-  private rewrite_(style: StyleModifiers) {
+  private rewrite_(style: StyleModifiers|null) {
     assert(this.$.textarea.validate());
     assert(this.submitted_);
     this.loading_ = true;

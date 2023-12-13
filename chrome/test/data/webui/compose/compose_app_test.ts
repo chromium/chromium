@@ -256,10 +256,10 @@ suite('ComposeApp', () => {
     assertTrue(
         isVisible(app.$.loading), 'Loading indicator should be visible.');
 
-    const args = await testProxy.whenCalled('compose');
+    const args = await testProxy.whenCalled('rewrite');
     await mockResponse('Refreshed output.');
 
-    assertEquals('Input to refresh.', args.input);
+    assertEquals(null, args.style);
 
     // Verify UI has updated with refreshed results.
     assertFalse(isVisible(app.$.loading));
