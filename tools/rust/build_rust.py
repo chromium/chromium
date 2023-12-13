@@ -749,6 +749,11 @@ def main():
                       '81cd7c5b11766ed1e3214a2233371fb6d72ed89c')
 
         # TODO: Remove once
+        # https://github.com/rust-lang/rust/pull/118610 has been merged.
+        GitCherryPick(RUST_SRC_DIR, 'https://github.com/rust-lang/rust.git',
+                      'b378059e6b2573c5356423fa31d184a89a3b6029')
+
+        # TODO: Remove once
         # https://github.com/rust-lang/rust/pull/118818 has been merged.
         GitCherryPick(RUST_SRC_DIR, 'https://github.com/rust-lang/rust.git',
                       'a0c5079889b1f86dd9e246d8863a5c8b44fbdb78')
