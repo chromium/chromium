@@ -137,9 +137,6 @@ inline constexpr char kChromeNativeScheme[] = "chrome-native";
 inline constexpr char16_t kChromeSafePageURL[] =
     u"https://www.google.com/chrome/#safe";
 
-// Pages under chrome-search.
-inline constexpr char kChromeSearchLocalNtpHost[] = "local-ntp";
-
 // Host and URL for most visited iframes used on the Instant Extended NTP.
 inline constexpr char kChromeSearchMostVisitedHost[] = "most-visited";
 inline constexpr char kChromeSearchMostVisitedUrl[] =

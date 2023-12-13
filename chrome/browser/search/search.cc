@@ -366,9 +366,7 @@ bool HandleNewTabURLRewrite(GURL* url,
   }
 
   if (!(url->SchemeIs(content::kChromeUIScheme) &&
-        url->host() == chrome::kChromeUINewTabHost) &&
-      !(url->SchemeIs(chrome::kChromeSearchScheme) &&
-        url->host_piece() == chrome::kChromeSearchLocalNtpHost)) {
+        url->host() == chrome::kChromeUINewTabHost)) {
     return false;
   }
 
