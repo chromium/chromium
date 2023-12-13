@@ -1109,7 +1109,16 @@ TEST_F(
    'OsSettingsSearchBox',
    'os_settings_search_box/os_settings_search_box_test.js'
  ],
- ['OsSettingsUi', 'os_settings_ui/os_settings_ui_test.js'],
+ [
+   'OsSettingsUi',
+   'os_settings_ui/os_settings_ui_test.js',
+   {disabled: ['ash::features::kOsSettingsRevampWayfinding']},
+ ],
+ [
+   'OsSettingsUiRevamp',
+   'os_settings_ui/os_settings_ui_test.js',
+   {enabled: ['ash::features::kOsSettingsRevampWayfinding']},
+ ],
  [
    'OsSettingsUiAboutPage',
    'os_settings_ui/os_settings_ui_about_page_test.js',
