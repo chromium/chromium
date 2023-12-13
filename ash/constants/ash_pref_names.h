@@ -1500,11 +1500,6 @@ inline constexpr char kProjectorDogfoodForFamilyLinkEnabled[] =
 inline constexpr char kProjectorSWAUIPrefsMigrated[] =
     "ash.projector.swa_ui_prefs_migrated_to_chrome_untrusted";
 
-// A boolean pref that indicates whether the migration of Chromad devices to
-// cloud management can be started.
-inline constexpr char kChromadToCloudMigrationEnabled[] =
-    "ash.chromad_to_cloud_migration_enabled";
-
 // List of Drive Folder Shortcuts in the Files app. Used to sync the shortcuts
 // across devices.
 inline constexpr char kFilesAppFolderShortcuts[] =

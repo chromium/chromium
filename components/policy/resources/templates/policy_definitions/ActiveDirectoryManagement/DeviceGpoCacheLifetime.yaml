@@ -1,4 +1,5 @@
 caption: GPO cache lifetime
+deprecated: true
 default: 25
 desc: |-
   Setting the policy specifies in hours the Group Policy Object (GPO) cache lifetime—the maximum duration GPOs can be reused before they're redownloaded. Instead of redownloading them on every policy fetch, the system reuses cached GPOs as long as their version doesn't change.
@@ -22,6 +23,6 @@ schema:
 supported_chrome_os_management:
 - active_directory
 supported_on:
-- chrome_os:73-
+- chrome_os:73-114
 tags: []
 type: int

@@ -820,19 +820,6 @@ void DecodeNetworkPolicies(const em::ChromeDeviceSettingsProto& policy,
                   base::Value(hostname), nullptr);
   }
 
-  if (policy.has_device_kerberos_encryption_types()) {
-    const em::DeviceKerberosEncryptionTypesProto& container(
-        policy.device_kerberos_encryption_types());
-    if (container.has_types()) {
-      std::unique_ptr<base::Value> value(DecodeIntegerValue(container.types()));
-      if (value) {
-        policies->Set(key::kDeviceKerberosEncryptionTypes,
-                      POLICY_LEVEL_MANDATORY, POLICY_SCOPE_MACHINE,
-                      POLICY_SOURCE_CLOUD, std::move(*value), nullptr);
-      }
-    }
-  }
-
   if (policy.has_system_proxy_settings()) {
     const em::SystemProxySettingsProto& settings_proto(
         policy.system_proxy_settings());
@@ -1890,19 +1877,6 @@ void DecodeGenericPolicies(const em::ChromeDeviceSettingsProto& policy,
     }
   }
 
-  if (policy.has_device_user_policy_loopback_processing_mode()) {
-    const em::DeviceUserPolicyLoopbackProcessingModeProto& container(
-        policy.device_user_policy_loopback_processing_mode());
-    if (container.has_mode()) {
-      std::unique_ptr<base::Value> value(DecodeIntegerValue(container.mode()));
-      if (value) {
-        policies->Set(key::kDeviceUserPolicyLoopbackProcessingMode,
-                      POLICY_LEVEL_MANDATORY, POLICY_SCOPE_MACHINE,
-                      POLICY_SOURCE_CLOUD, std::move(*value), nullptr);
-      }
-    }
-  }
-
   if (policy.has_virtual_machines_allowed()) {
     const em::VirtualMachinesAllowedProto& container(
         policy.virtual_machines_allowed());
@@ -1910,59 +1884,6 @@ void DecodeGenericPolicies(const em::ChromeDeviceSettingsProto& policy,
       policies->Set(key::kVirtualMachinesAllowed, POLICY_LEVEL_MANDATORY,
                     POLICY_SCOPE_MACHINE, POLICY_SOURCE_CLOUD,
                     base::Value(container.virtual_machines_allowed()), nullptr);
-    }
-  }
-
-  if (policy.has_device_machine_password_change_rate()) {
-    const em::DeviceMachinePasswordChangeRateProto& container(
-        policy.device_machine_password_change_rate());
-    if (container.has_rate_days()) {
-      std::unique_ptr<base::Value> value(
-          DecodeIntegerValue(container.rate_days()));
-      if (value) {
-        policies->Set(key::kDeviceMachinePasswordChangeRate,
-                      POLICY_LEVEL_MANDATORY, POLICY_SCOPE_MACHINE,
-                      POLICY_SOURCE_CLOUD, std::move(*value), nullptr);
-      }
-    }
-  }
-
-  if (policy.has_device_gpo_cache_lifetime()) {
-    const em::DeviceGpoCacheLifetimeProto& container(
-        policy.device_gpo_cache_lifetime());
-    if (container.has_lifetime_hours()) {
-      std::unique_ptr<base::Value> value(
-          DecodeIntegerValue(container.lifetime_hours()));
-      if (value) {
-        policies->Set(key::kDeviceGpoCacheLifetime, POLICY_LEVEL_MANDATORY,
-                      POLICY_SCOPE_MACHINE, POLICY_SOURCE_CLOUD,
-                      std::move(*value), nullptr);
-      }
-    }
-  }
-
-  if (policy.has_device_auth_data_cache_lifetime()) {
-    const em::DeviceAuthDataCacheLifetimeProto& container(
-        policy.device_auth_data_cache_lifetime());
-    if (container.has_lifetime_hours()) {
-      std::unique_ptr<base::Value> value(
-          DecodeIntegerValue(container.lifetime_hours()));
-      if (value) {
-        policies->Set(key::kDeviceAuthDataCacheLifetime, POLICY_LEVEL_MANDATORY,
-                      POLICY_SCOPE_MACHINE, POLICY_SOURCE_CLOUD,
-                      std::move(*value), nullptr);
-      }
-    }
-  }
-
-  if (policy.has_chromad_to_cloud_migration_enabled()) {
-    const em::BooleanPolicyProto& container(
-        policy.chromad_to_cloud_migration_enabled());
-    if (container.has_value()) {
-      policies->Set(key::kChromadToCloudMigrationEnabled,
-                    POLICY_LEVEL_MANDATORY, POLICY_SCOPE_MACHINE,
-                    POLICY_SOURCE_CLOUD, base::Value(container.value()),
-                    nullptr);
     }
   }
 

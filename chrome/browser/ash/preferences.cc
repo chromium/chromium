@@ -165,7 +165,6 @@ void Preferences::RegisterPrefs(PrefRegistrySimple* registry) {
   registry->RegisterBooleanPref(
       prefs::kLocalStateDevicePeripheralDataAccessEnabled, false);
   registry->RegisterBooleanPref(prefs::kDeviceI18nShortcutsEnabled, true);
-  registry->RegisterBooleanPref(prefs::kChromadToCloudMigrationEnabled, false);
   registry->RegisterBooleanPref(prefs::kLoginScreenWebUILazyLoading, false);
   registry->RegisterBooleanPref(::prefs::kConsumerAutoUpdateToggle, true);
   registry->RegisterBooleanPref(prefs::kDeviceEphemeralNetworkPoliciesEnabled,
