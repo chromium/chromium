@@ -6914,6 +6914,7 @@
         "test_id_prefix": "ninja://ui/views:views_unittests/"
       },
       {
+        "ci_only": true,
         "isolate_profile_data": true,
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"

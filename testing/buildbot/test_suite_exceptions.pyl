@@ -4534,6 +4534,9 @@
           '--test-launcher-filter-file=../../testing/buildbot/filters/fuchsia.debug.viz_unittests.filter',
         ],
       },
+      'linux-lacros-tester-rel': {
+        'ci_only': True, # https://crbug.com/1509573
+      },
     },
   },
   'vr_common_unittests': {
