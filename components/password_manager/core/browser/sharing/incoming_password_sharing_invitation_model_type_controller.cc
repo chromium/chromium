@@ -59,21 +59,7 @@ IncomingPasswordSharingInvitationModelTypeController::GetPreconditionState()
     return syncer::DataTypeController::PreconditionState::kMustStopAndClearData;
   }
 
-  // Return `kPreconditionsMet` while sync is not configured. Otherwise, there
-  // would be an additional sync cycle during browser startup due to
-  // reconfiruration.
-  if (sync_service_->GetTransportState() !=
-      syncer::SyncService::TransportState::ACTIVE) {
-    return syncer::DataTypeController::PreconditionState::kPreconditionsMet;
-  }
-
-  // All the types should be configured now, verify that Passwords are syncing.
-  if (!sync_service_->GetActiveDataTypes().Has(syncer::PASSWORDS)) {
-    // Passwords are not syncing, pause receiving and processing password
-    // sharing invitations.
-    return syncer::DataTypeController::PreconditionState::kMustStopAndKeepData;
-  }
-
+  // TODO(crbug.com/1445868): add a dependency on password data type.
   return syncer::DataTypeController::PreconditionState::kPreconditionsMet;
 }
 
