@@ -91,6 +91,7 @@
 #include "third_party/blink/renderer/platform/loader/fetch/resource_fetcher.h"
 #include "third_party/blink/renderer/platform/scheduler/public/agent_group_scheduler.h"
 #include "third_party/blink/renderer/platform/scheduler/public/frame_scheduler.h"
+#include "third_party/blink/renderer/platform/web_test_support.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/color/color_provider.h"
 #include "ui/color/color_provider_utils.h"
@@ -480,9 +481,22 @@ void Page::UpdateColorProviders(
   dark_color_provider_ = std::make_unique<ui::ColorProvider>(
       ui::CreateColorProviderFromRendererColorMap(
           color_provider_colors.dark_colors_map));
+  forced_colors_color_provider_ =
+      WebTestSupport::IsRunningWebTest()
+          ? std::make_unique<ui::ColorProvider>(
+                ui::CreateEmulatedForcedColorsColorProviderForTest())
+          : std::make_unique<ui::ColorProvider>(
+                ui::CreateColorProviderFromRendererColorMap(
+                    color_provider_colors.forced_colors_map));
+}
+
+void Page::UpdateColorProvidersForTest() {
+  light_color_provider_ = std::make_unique<ui::ColorProvider>(
+      ui::CreateColorProviderForBlinkTests(/*dark_mode=*/false));
+  dark_color_provider_ = std::make_unique<ui::ColorProvider>(
+      ui::CreateColorProviderForBlinkTests(/*dark_mode=*/true));
   forced_colors_color_provider_ = std::make_unique<ui::ColorProvider>(
-      ui::CreateColorProviderFromRendererColorMap(
-          color_provider_colors.forced_colors_map));
+      ui::CreateEmulatedForcedColorsColorProviderForTest());
 }
 
 const ui::ColorProvider* Page::GetColorProviderForPainting(

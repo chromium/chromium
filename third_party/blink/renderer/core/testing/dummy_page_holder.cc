@@ -107,6 +107,10 @@ DummyPageHolder::DummyPageHolder(
   if (setting_overrider)
     std::move(setting_overrider).Run(settings);
 
+  // Color providers are required for painting, so we ensure they are not null
+  // even in unittests.
+  page_->UpdateColorProvidersForTest();
+
   // DummyPageHolder doesn't provide a browser interface, so code caches cannot
   // be fetched. If testing for code caches provide a mock code cache host.
   DocumentLoader::DisableCodeCacheForTesting();

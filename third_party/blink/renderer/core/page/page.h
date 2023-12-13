@@ -164,6 +164,7 @@ class CORE_EXPORT Page final : public GarbageCollected<Page>,
 
   void UpdateColorProviders(
       const ColorProviderColorMaps& color_provider_colors);
+  void UpdateColorProvidersForTest();
   const ui::ColorProvider* GetColorProviderForPainting(
       mojom::blink::ColorScheme color_scheme,
       bool in_forced_colors) const;

@@ -69,6 +69,9 @@
 #include "third_party/blink/public/web/web_script_source.h"
 #include "third_party/blink/public/web/web_view.h"
 #include "ui/base/resource/resource_bundle.h"
+#include "ui/color/color_provider.h"
+#include "ui/color/color_provider_manager.h"
+#include "ui/color/color_provider_source.h"
 #include "ui/events/base_event_utils.h"
 #include "ui/events/keycodes/keyboard_codes.h"
 #include "ui/native_theme/native_theme_features.h"
@@ -142,6 +145,37 @@ class FailingURLLoaderFactory : public network::SharedURLLoaderFactory {
   mojo::ReceiverSet<network::mojom::URLLoaderFactory,
                     scoped_refptr<FailingURLLoaderFactory>>
       receivers_;
+};
+
+class MockColorProviderSource : public ui::ColorProviderSource {
+ public:
+  explicit MockColorProviderSource() { provider_.GenerateColorMap(); }
+  MockColorProviderSource(const MockColorProviderSource&) = delete;
+  MockColorProviderSource& operator=(const MockColorProviderSource&) = delete;
+  ~MockColorProviderSource() override = default;
+
+  // ui::ColorProviderSource:
+  const ui::ColorProvider* GetColorProvider() const override {
+    return &provider_;
+  }
+
+  const ui::RendererColorMap GetRendererColorMap(
+      ui::ColorProviderKey::ColorMode color_mode,
+      ui::ColorProviderKey::ForcedColors forced_colors) const override {
+    auto key = GetColorProviderKey();
+    key.color_mode = color_mode;
+    key.forced_colors = forced_colors;
+    ui::ColorProvider* color_provider =
+        ui::ColorProviderManager::Get().GetColorProviderFor(key);
+    CHECK(color_provider);
+    return ui::CreateRendererColorMap(*color_provider);
+  }
+
+  ui::ColorProviderKey GetColorProviderKey() const override { return key_; }
+
+ private:
+  ui::ColorProvider provider_;
+  ui::ColorProviderKey key_;
 };
 
 // Converts |ascii_character| into |key_code| and returns true on success.
@@ -434,11 +468,28 @@ void RenderViewTest::SetUp() {
 
   process_ = std::make_unique<RenderProcess>();
 
+  // This is used to get the renderer color maps for the purpose of creating the
+  // color providers in Blink::Page.
+  MockColorProviderSource mock_color_provider_source_ =
+      MockColorProviderSource();
+
+  blink::ColorProviderColorMaps color_maps = blink::ColorProviderColorMaps{
+      mock_color_provider_source_.GetRendererColorMap(
+          ui::ColorProviderKey::ColorMode::kLight,
+          ui::ColorProviderKey::ForcedColors::kNone),
+      mock_color_provider_source_.GetRendererColorMap(
+          ui::ColorProviderKey::ColorMode::kDark,
+          ui::ColorProviderKey::ForcedColors::kNone),
+      mock_color_provider_source_.GetRendererColorMap(
+          mock_color_provider_source_.GetColorMode(),
+          ui::ColorProviderKey::ForcedColors::kActive)};
+
   mojom::CreateViewParamsPtr view_params = mojom::CreateViewParams::New();
   view_params->opener_frame_token = absl::nullopt;
   view_params->window_was_opened_by_another_window = false;
   view_params->renderer_preferences = blink::RendererPreferences();
   view_params->web_preferences = blink::web_pref::WebPreferences();
+  view_params->color_provider_colors = color_maps;
   view_params->replication_state = blink::mojom::FrameReplicationState::New();
   view_params->blink_page_broadcast =
       page_broadcast_.BindNewEndpointAndPassDedicatedReceiver();
