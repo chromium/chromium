@@ -53,12 +53,27 @@ bool ReadHeader(const base::FilePath& name, char* header, int header_size) {
   return true;
 }
 
-int GetMajorVersionFromFile(const base::FilePath& name) {
+int GetMajorVersionFromIndexFile(const base::FilePath& name) {
   disk_cache::IndexHeader header;
   if (!ReadHeader(name, reinterpret_cast<char*>(&header), sizeof(header)))
     return 0;
+  if (header.magic != disk_cache::kIndexMagic) {
+    return 0;
+  }
+  return header.version;
+}
 
-  return header.version >> 16;
+int GetMajorVersionFromBlockFile(const base::FilePath& name) {
+  disk_cache::BlockFileHeader header;
+  if (!ReadHeader(name, reinterpret_cast<char*>(&header), sizeof(header))) {
+    return 0;
+  }
+
+  if (header.magic != disk_cache::kBlockMagic) {
+    return 0;
+  }
+
+  return header.version;
 }
 
 // Dumps the contents of the Stats record.
@@ -394,30 +409,24 @@ bool CanDump(disk_cache::CacheAddr addr) {
 
 // -----------------------------------------------------------------------
 
-int GetMajorVersion(const base::FilePath& input_path) {
+bool CheckFileVersion(const base::FilePath& input_path) {
   base::FilePath index_name(input_path.Append(kIndexName));
 
-  int version = GetMajorVersionFromFile(index_name);
-  if (!version)
-    return 0;
+  int index_version = GetMajorVersionFromIndexFile(index_name);
+  if (!index_version || index_version != disk_cache::kVersion3_0) {
+    return false;
+  }
 
-  base::FilePath data_name(input_path.Append(FILE_PATH_LITERAL("data_0")));
-  if (version != GetMajorVersionFromFile(data_name))
-    return 0;
-
-  data_name = input_path.Append(FILE_PATH_LITERAL("data_1"));
-  if (version != GetMajorVersionFromFile(data_name))
-    return 0;
-
-  data_name = input_path.Append(FILE_PATH_LITERAL("data_2"));
-  if (version != GetMajorVersionFromFile(data_name))
-    return 0;
-
-  data_name = input_path.Append(FILE_PATH_LITERAL("data_3"));
-  if (version != GetMajorVersionFromFile(data_name))
-    return 0;
-
-  return version;
+  constexpr int kCurrentBlockVersion = disk_cache::kBlockVersion2;
+  for (int i = 0; i < disk_cache::kFirstAdditionalBlockFile; i++) {
+    std::string data_name = "data_" + base::NumberToString(i);
+    auto data_path = input_path.AppendASCII(data_name);
+    int block_version = GetMajorVersionFromBlockFile(data_path);
+    if (!block_version || block_version != kCurrentBlockVersion) {
+      return false;
+    }
+  }
+  return true;
 }
 
 // Dumps the headers of all files.

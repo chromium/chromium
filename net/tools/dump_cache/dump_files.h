@@ -11,8 +11,8 @@
 
 #include "base/files/file_path.h"
 
-// Returns the major version of the specified cache.
-int GetMajorVersion(const base::FilePath& input_path);
+// Check file version of the specified cache.
+bool CheckFileVersion(const base::FilePath& input_path);
 
 // Dumps all entries from the cache.
 int DumpContents(const base::FilePath& input_path);
