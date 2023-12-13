@@ -1038,8 +1038,9 @@ void FederatedAuthRequestImpl::RequestUserInfo(
 
 void FederatedAuthRequestImpl::CancelTokenRequest() {
   if (!auth_request_token_callback_) {
-    mojo::ReportBadMessage(
-        "The abort controller must be used after initiating a token request.");
+    // TODO(crbug.com/1500499): this should only happen with a compromised
+    // renderer process but for some reason that is not the case. We should
+    // investigate what could go wrong about the abort controller.
     return;
   }
 
