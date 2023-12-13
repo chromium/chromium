@@ -95,7 +95,8 @@
 #include "ui/gfx/geometry/size.h"
 
 #if BUILDFLAG(ENABLE_HLS_DEMUXER)
-#include "third_party/blink/renderer/platform/media/hls_data_source_provider_impl.h"
+#include "media/filters/hls_data_source_provider_impl.h"
+#include "third_party/blink/renderer/platform/media/multi_buffer_data_source_factory.h"
 #endif  // BUILDFLAG(ENABLE_HLS_DEMUXER)
 
 #if BUILDFLAG(IS_ANDROID)
@@ -1585,7 +1586,7 @@ void WebMediaPlayerImpl::GetUrlData(
 base::SequenceBound<media::HlsDataSourceProvider>
 WebMediaPlayerImpl::GetHlsDataSourceProvider() {
   DCHECK(main_task_runner_->BelongsToCurrentThread());
-  return base::SequenceBound<HlsDataSourceProviderImpl>(
+  return base::SequenceBound<media::HlsDataSourceProviderImpl>(
       main_task_runner_,
       std::make_unique<MultiBufferDataSourceFactory>(
           media_log_.get(),

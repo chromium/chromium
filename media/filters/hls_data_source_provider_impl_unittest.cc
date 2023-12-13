@@ -14,11 +14,10 @@
 #include "media/base/mock_media_log.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/blink/renderer/platform/media/buffered_data_source_host_impl.h"
-#include "third_party/blink/renderer/platform/media/hls_data_source_provider_impl.h"
-#include "third_party/blink/renderer/platform/media/multi_buffer_data_source.h"
+#include "media/filters/hls_data_source_provider_impl.h"
+#include "media/base/cross_origin_data_source.h"
 
-namespace blink {
+namespace media {
 
 using base::test::RunOnceCallback;
 using testing::_;
@@ -37,7 +36,7 @@ using testing::StrictMock;
 
 namespace {
 
-class MockDataSource : public media::CrossOriginDataSource {
+class MockDataSource : public CrossOriginDataSource {
  public:
   // Mocked methods from CrossOriginDataSource
   MOCK_METHOD(bool, IsCorsCrossOrigin, (), (const, override));
@@ -65,7 +64,7 @@ class MockDataSource : public media::CrossOriginDataSource {
   MOCK_METHOD(int64_t, GetMemoryUsage, (), (override));
   MOCK_METHOD(void,
               SetPreload,
-              (media::DataSource::Preload preload),
+              (DataSource::Preload preload),
               (override));
   MOCK_METHOD(GURL, GetUrlAfterRedirects, (), (const, override));
   MOCK_METHOD(void,
@@ -141,7 +140,7 @@ TEST_F(HlsDataSourceProviderImplUnittest, TestReadFromUrlOnce) {
   factory_->AddReadExpectation(0, 16384, 16384);
   impl_->ReadFromUrl(
       GURL("example.com"), absl::nullopt,
-      base::BindOnce([](media::HlsDataSourceProvider::ReadResult result) {
+      base::BindOnce([](HlsDataSourceProvider::ReadResult result) {
         ASSERT_TRUE(result.has_value());
         auto stream = std::move(result).value();
         ASSERT_EQ(stream->read_position(), 16384lu);
@@ -155,7 +154,7 @@ TEST_F(HlsDataSourceProviderImplUnittest, TestReadFromUrlOnce) {
   factory_->AddReadExpectation(0, 16384, 400);
   impl_->ReadFromUrl(
       GURL("example.com"), absl::nullopt,
-      base::BindOnce([](media::HlsDataSourceProvider::ReadResult result) {
+      base::BindOnce([](HlsDataSourceProvider::ReadResult result) {
         ASSERT_TRUE(result.has_value());
         auto stream = std::move(result).value();
         ASSERT_EQ(stream->read_position(), 400lu);
@@ -169,8 +168,8 @@ TEST_F(HlsDataSourceProviderImplUnittest, TestReadFromUrlOnce) {
   // at an offset of 99. The read should be from 99, size of 4242.
   factory_->AddReadExpectation(99, 4242, 4242);
   impl_->ReadFromUrl(
-      GURL("example.com"), media::hls::types::ByteRange::Validate(4242, 99),
-      base::BindOnce([](media::HlsDataSourceProvider::ReadResult result) {
+      GURL("example.com"), hls::types::ByteRange::Validate(4242, 99),
+      base::BindOnce([](HlsDataSourceProvider::ReadResult result) {
         ASSERT_TRUE(result.has_value());
         auto stream = std::move(result).value();
         ASSERT_EQ(stream->read_position(), 4341lu);
@@ -189,7 +188,7 @@ TEST_F(HlsDataSourceProviderImplUnittest, TestReadFromUrlThenReadAgain) {
       GURL("example.com"), absl::nullopt,
       base::BindOnce(
           [](HlsDataSourceProviderImpl* impl_ptr,
-             media::HlsDataSourceProvider::ReadResult result) {
+             HlsDataSourceProvider::ReadResult result) {
             ASSERT_TRUE(result.has_value());
             auto stream = std::move(result).value();
             ASSERT_EQ(stream->read_position(), 16384lu);
@@ -200,7 +199,7 @@ TEST_F(HlsDataSourceProviderImplUnittest, TestReadFromUrlThenReadAgain) {
                 std::move(stream),
                 base::BindOnce(
                     [](HlsDataSourceProviderImpl* impl_ptr,
-                       media::HlsDataSourceProvider::ReadResult result) {
+                       HlsDataSourceProvider::ReadResult result) {
                       ASSERT_TRUE(result.has_value());
                       auto stream = std::move(result).value();
                       ASSERT_EQ(stream->read_position(), 32768lu);
@@ -210,7 +209,7 @@ TEST_F(HlsDataSourceProviderImplUnittest, TestReadFromUrlThenReadAgain) {
                       impl_ptr->ReadFromExistingStream(
                           std::move(stream),
                           base::BindOnce(
-                              [](media::HlsDataSourceProvider::ReadResult
+                              [](HlsDataSourceProvider::ReadResult
                                      result) {
                                 ASSERT_TRUE(result.has_value());
                                 auto stream = std::move(result).value();
@@ -233,10 +232,10 @@ TEST_F(HlsDataSourceProviderImplUnittest, TestAbortMidDownload) {
   EXPECT_CALL(*mock_data_source, Abort()).Times(0);
   EXPECT_CALL(*mock_data_source, Stop()).Times(0);
 
-  media::DataSource::ReadCB read_cb;
+  DataSource::ReadCB read_cb;
   EXPECT_CALL(*mock_data_source, Read(0, _, _, _))
       .WillOnce(
-          [&read_cb](int64_t, int, uint8_t*, media::DataSource::ReadCB cb) {
+          [&read_cb](int64_t, int, uint8_t*, DataSource::ReadCB cb) {
             read_cb = std::move(cb);
           });
 
@@ -245,7 +244,7 @@ TEST_F(HlsDataSourceProviderImplUnittest, TestAbortMidDownload) {
   impl_->ReadFromUrl(GURL("example.com"), absl::nullopt,
                      base::BindOnce(
                          [](bool* read_canary,
-                            media::HlsDataSourceProvider::ReadResult result) {
+                            HlsDataSourceProvider::ReadResult result) {
                            *read_canary = true;
                          },
                          &has_been_read));
@@ -278,7 +277,7 @@ TEST_F(HlsDataSourceProviderImplUnittest, AbortMidInit) {
   impl_->ReadFromUrl(GURL("example.com"), absl::nullopt,
                      base::BindOnce(
                          [](bool* read_canary,
-                            media::HlsDataSourceProvider::ReadResult result) {
+                            HlsDataSourceProvider::ReadResult result) {
                            *read_canary = true;
                          },
                          &has_been_read));

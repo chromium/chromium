@@ -104,8 +104,8 @@ component("media") {
 
   if (enable_hls_demuxer) {
     sources += [
-      "hls_data_source_provider_impl.cc",
-      "hls_data_source_provider_impl.h",
+      "multi_buffer_data_source_factory.cc",
+      "multi_buffer_data_source_factory.h",
     ]
   }
 }
@@ -148,10 +148,6 @@ source_set("unit_tests") {
     "//third_party/blink/public/platform/media",
     "//third_party/blink/renderer/platform:test_support",
   ]
-
-  if (enable_hls_demuxer) {
-    sources += [ "hls_data_source_provider_impl_unittest.cc" ]
-  }
 
   if (media_use_ffmpeg || !is_android) {
     sources += [
