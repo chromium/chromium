@@ -286,6 +286,7 @@ CGFloat const kSpacingAfterTitle = 4;
 - (void)confirmationAlertPrimaryAction {
   // Use password button
   __weak __typeof(self) weakSelf = self;
+  [self.delegate willSelectSuggestion];
   [self dismissViewControllerAnimated:NO
                            completion:^{
                              // Send a notification to fill the
