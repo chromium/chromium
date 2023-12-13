@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "base/test/run_until.h"
 #include "build/build_config.h"
 #include "chrome/browser/privacy_sandbox/mock_privacy_sandbox_service.h"
 #include "chrome/browser/privacy_sandbox/privacy_sandbox_service_factory.h"
@@ -39,10 +40,10 @@ class PrivacySandboxDialogViewBrowserTest : public DialogBrowserTest {
     PrivacySandboxService::PromptType prompt_type =
         PrivacySandboxService::PromptType::kNone;
     if (name == "Consent") {
-      prompt_type = PrivacySandboxService::PromptType::kConsent;
+      prompt_type = PrivacySandboxService::PromptType::kM1Consent;
     }
     if (name == "Notice") {
-      prompt_type = PrivacySandboxService::PromptType::kNotice;
+      prompt_type = PrivacySandboxService::PromptType::kM1NoticeROW;
     }
     if (name == "RestrictedNotice") {
       prompt_type = PrivacySandboxService::PromptType::kM1NoticeRestricted;
@@ -57,7 +58,23 @@ class PrivacySandboxDialogViewBrowserTest : public DialogBrowserTest {
         views::test::AnyWidgetTestPasskey{},
         PrivacySandboxDialogView::kViewClassName);
     ShowPrivacySandboxDialog(browser(), prompt_type);
-    waiter.WaitIfNeededAndGet();
+
+    auto* dialog_widget = static_cast<PrivacySandboxDialogView*>(
+        waiter.WaitIfNeededAndGet()->widget_delegate()->GetContentsView());
+
+    // TODO(crbug.com/1510925): Waiting for the document to exist before
+    // performing the scroll action fixes the flakiness but we should try find a
+    // better approach.
+    ASSERT_TRUE(base::test::RunUntil([&] {
+      return content::EvalJs(dialog_widget->GetWebContentsForTesting(),
+                             "!!document")
+          .ExtractBool();
+    }));
+
+    // Ensure dialog is fully scrolled, this is needed in order for the "*Shown"
+    // action to be fired.
+    auto scroll = content::EvalJs(dialog_widget->GetWebContentsForTesting(),
+                                  "scrollTo(0, 1500)");
 
     base::RunLoop().RunUntilIdle();
   }
