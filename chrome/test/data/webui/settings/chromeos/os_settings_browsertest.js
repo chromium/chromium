@@ -1154,7 +1154,16 @@ TEST_F(
    'OsSettingsUiScrollRestoration',
    'os_settings_ui/scroll_restoration_test.js',
  ],
- ['OsSettingsUiToolbar', 'os_settings_ui/os_settings_ui_toolbar_test.js'],
+ [
+   'OsSettingsUiToolbar',
+   'os_settings_ui/os_settings_ui_toolbar_test.js',
+   {disabled: ['ash::features::kOsSettingsRevampWayfinding']},
+ ],
+ [
+   'OsSettingsUiToolbarRevamp',
+   'os_settings_ui/os_settings_ui_toolbar_test.js',
+   {enabled: ['ash::features::kOsSettingsRevampWayfinding']},
+ ],
  [
    'OsSettingsUiUserActionRecorder',
    'os_settings_ui/user_action_recorder_test.js',
