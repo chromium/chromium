@@ -1,0 +1,39 @@
+// Copyright 2023 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#ifndef ASH_WM_WINDOW_RESTORE_PINE_CONTENTS_VIEW_H_
+#define ASH_WM_WINDOW_RESTORE_PINE_CONTENTS_VIEW_H_
+
+#include <memory>
+#include <string>
+#include <vector>
+
+#include "ui/base/metadata/metadata_header_macros.h"
+#include "ui/views/layout/box_layout_view.h"
+#include "ui/views/widget/widget.h"
+
+namespace ash {
+
+class PineContentsView : public views::BoxLayoutView {
+ public:
+  METADATA_HEADER(PineContentsView);
+
+  using AppIds = std::vector<std::string>;
+
+  explicit PineContentsView(const AppIds& app_ids);
+  PineContentsView(const PineContentsView&) = delete;
+  PineContentsView& operator=(const PineContentsView&) = delete;
+  ~PineContentsView() override;
+
+  static std::unique_ptr<views::Widget> Create(aura::Window* root);
+};
+
+BEGIN_VIEW_BUILDER(/* no export */, PineContentsView, views::BoxLayoutView)
+END_VIEW_BUILDER
+
+}  // namespace ash
+
+DEFINE_VIEW_BUILDER(/* no export */, ash::PineContentsView)
+
+#endif  // ASH_WM_WINDOW_RESTORE_PINE_CONTENTS_VIEW_H_

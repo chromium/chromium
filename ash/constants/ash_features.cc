@@ -1883,6 +1883,8 @@ BASE_FEATURE(kNotificationsInContextMenu,
              "NotificationsInContextMenu",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+BASE_FEATURE(kOak, "Oak", base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Controls whether to enable on-device grammar check service.
 BASE_FEATURE(kOnDeviceGrammarCheck,
              "OnDeviceGrammarCheck",
@@ -2158,6 +2160,8 @@ BASE_FEATURE(kPhoneHubPingOnBubbleOpen,
 // Maximum number of seconds to wait for ping response before disconnecting
 const base::FeatureParam<base::TimeDelta> kPhoneHubPingTimeout{
     &kPhoneHubPingOnBubbleOpen, "PhoneHubPingTimeout", base::Seconds(5)};
+
+BASE_FEATURE(kPine, "Pine", base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Enables the new picker feature.
 BASE_FEATURE(kPicker, "Picker", base::FEATURE_DISABLED_BY_DEFAULT);
@@ -3832,6 +3836,10 @@ bool IsNotificationsInContextMenuEnabled() {
   return base::FeatureList::IsEnabled(kNotificationsInContextMenu);
 }
 
+bool IsOakEnabled() {
+  return base::FeatureList::IsEnabled(kOak);
+}
+
 bool IsOobeChromeVoxHintEnabled() {
   return base::FeatureList::IsEnabled(kEnableOobeChromeVoxHint);
 }
@@ -4003,6 +4011,10 @@ bool IsPhoneHubCallNotificationEnabled() {
 
 bool IsPickerUpdateEnabled() {
   return base::FeatureList::IsEnabled(kPicker);
+}
+
+bool IsPineEnabled() {
+  return base::FeatureList::IsEnabled(kPine);
 }
 
 bool IsPinAutosubmitBackfillFeatureEnabled() {
