@@ -30,7 +30,6 @@ FillingProduct GetFillingProductFromPopupItemId(PopupItemId popup_item_id) {
     case PopupItemId::kPaymentsEntryNotSelectable:
       return FillingProduct::kCreditCard;
     case PopupItemId::kMerchantPromoCodeEntry:
-    case PopupItemId::kSeePromoCodeDetails:
       return FillingProduct::kMerchantPromoCode;
     case PopupItemId::kIbanEntry:
       return FillingProduct::kIban;
@@ -57,6 +56,7 @@ FillingProduct GetFillingProductFromPopupItemId(PopupItemId popup_item_id) {
     case PopupItemId::kFillExistingPlusAddress:
       return FillingProduct::kPlusAddresses;
     case PopupItemId::kAutofillOptions:
+    case PopupItemId::kSeePromoCodeDetails:
     case PopupItemId::kSeparator:
     case PopupItemId::kClearForm:
     case PopupItemId::kMixedFormMessage:

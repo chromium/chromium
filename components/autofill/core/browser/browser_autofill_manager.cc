@@ -252,6 +252,22 @@ void LogValuePatternsMetric(const FormData& form) {
   }
 }
 
+bool IsSingleFieldFormFillerFillingProduct(FillingProduct filling_product) {
+  switch (filling_product) {
+    case FillingProduct::kAutocomplete:
+    case FillingProduct::kIban:
+    case FillingProduct::kMerchantPromoCode:
+      return true;
+    case FillingProduct::kPlusAddresses:
+    case FillingProduct::kCompose:
+    case FillingProduct::kPasswordManager:
+    case FillingProduct::kCreditCard:
+    case FillingProduct::kAddress:
+    case FillingProduct::kNone:
+      return false;
+  }
+}
+
 FillDataType GetEventTypeFromSingleFieldSuggestionPopupItemId(
     PopupItemId popup_item_id) {
   switch (popup_item_id) {
@@ -1677,11 +1693,15 @@ void BrowserAutofillManager::OnSingleFieldSuggestionSelected(
   if (!autofill_trigger_field) {
     return;
   }
-  autofill_trigger_field->AppendLogEventIfNotRepeated(TriggerFillFieldLogEvent{
-      .data_type =
-          GetEventTypeFromSingleFieldSuggestionPopupItemId(popup_item_id),
-      .associated_country_code = "",
-      .timestamp = AutofillClock::Now()});
+  if (IsSingleFieldFormFillerFillingProduct(
+          GetFillingProductFromPopupItemId(popup_item_id))) {
+    autofill_trigger_field->AppendLogEventIfNotRepeated(
+        TriggerFillFieldLogEvent{
+            .data_type =
+                GetEventTypeFromSingleFieldSuggestionPopupItemId(popup_item_id),
+            .associated_country_code = "",
+            .timestamp = AutofillClock::Now()});
+  }
 }
 
 void BrowserAutofillManager::OnUserHideSuggestions(const FormData& form,

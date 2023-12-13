@@ -302,6 +302,7 @@ class AutofillExternalDelegateUnitTest : public testing::Test {
         .host_frame = form_id.frame_token,
         .unique_renderer_id = form_id.renderer_id,
     });
+    manager().OnFormsSeen({queried_form_}, {});
     external_delegate().OnQuery(queried_form_, queried_form_.fields[0],
                                 gfx::RectF(), trigger_source);
   }
@@ -1233,7 +1234,6 @@ TEST_P(FillingMethodMetricsUnitTest, RecordFillingMethodForPopupType) {
       params.popup_item_id == PopupItemId::kAddressFieldByFieldFilling
           ? CreateFieldByFieldFillingSuggestion(profile.guid(), NAME_FIRST)
           : test::CreateAutofillSuggestion(params.popup_item_id);
-  manager().OnFormsSeen({queried_form_}, {});
   base::HistogramTester histogram_tester;
   external_delegate().DidAcceptSuggestion(suggestion,
                                           SuggestionPosition{.row = 0});
@@ -1452,7 +1452,6 @@ TEST_F(AutofillExternalDelegateUnitTest,
   Suggestion suggestion =
       CreateFieldByFieldFillingSuggestion(profile.guid(), NAME_FIRST);
   IssueOnQuery();
-  manager().OnFormsSeen({queried_form_}, {});
   base::HistogramTester histogram_tester;
 
   external_delegate().DidAcceptSuggestion(
@@ -1470,7 +1469,6 @@ TEST_F(AutofillExternalDelegateUnitTest,
   Suggestion suggestion =
       CreateFieldByFieldFillingSuggestion(profile.guid(), NAME_FIRST);
   IssueOnQuery();
-  manager().OnFormsSeen({queried_form_}, {});
   base::HistogramTester histogram_tester;
 
   external_delegate().DidAcceptSuggestion(suggestion,
@@ -1488,7 +1486,6 @@ TEST_F(AutofillExternalDelegateUnitTest,
   Suggestion suggestion = CreateFieldByFieldFillingSuggestion(
       local_card.guid(), CREDIT_CARD_NAME_FULL);
   IssueOnQuery(AutofillSuggestionTriggerSource::kManualFallbackPayments);
-  manager().OnFormsSeen({queried_form_}, {});
 
   EXPECT_CALL(manager(),
               FillOrPreviewField(mojom::ActionPersistence::kPreview,
@@ -1506,7 +1503,6 @@ TEST_F(AutofillExternalDelegateUnitTest, FieldByFieldFilling_FillCreditCard) {
   Suggestion suggestion = CreateFieldByFieldFillingSuggestion(
       local_card.guid(), CREDIT_CARD_NAME_FULL);
   IssueOnQuery(AutofillSuggestionTriggerSource::kManualFallbackPayments);
-  manager().OnFormsSeen({queried_form_}, {});
 
   EXPECT_CALL(manager(),
               FillOrPreviewField(mojom::ActionPersistence::kFill,
@@ -1580,7 +1576,6 @@ TEST_P(GetLastFieldTypesToFillUnitTest, LastFieldTypesToFillForSection) {
   const AutofillProfile profile = test::GetFullProfile();
   pdm().AddProfile(profile);
   IssueOnQuery();
-  manager().OnFormsSeen({queried_form_}, {});
   ON_CALL(pdm(), IsAutofillProfileEnabled).WillByDefault(Return(true));
   const Suggestion suggestion =
       params.popup_item_id == PopupItemId::kAddressFieldByFieldFilling
@@ -1988,7 +1983,6 @@ TEST_F(AutofillExternalDelegateUnitTest,
   const AutofillProfile profile = test::GetFullProfile();
   pdm().AddProfile(profile);
   IssueOnQuery();
-  manager().OnFormsSeen({queried_form_}, {});
   Suggestion suggestion =
       CreateFieldByFieldFillingSuggestion(profile.guid(), NAME_FIRST);
   EXPECT_CALL(client(),
