@@ -362,10 +362,13 @@ bool BaseCondition::Set(const blink::ServiceWorkerRouterCondition& condition) {
     need_running_status_ = true;
   }
   if (url_pattern) {
+    RE2::Options options;
+    options.set_case_sensitive(!url_pattern->options.ignore_case);
+
 #define SET_PATTERN(type_name, type)                                         \
   do {                                                                       \
     auto regex = ConvertToRegex(*url_pattern, type);                         \
-    type_name##_pattern_ = std::make_unique<RE2>(regex, RE2::Options());     \
+    type_name##_pattern_ = std::make_unique<RE2>(regex, options);            \
     if (!type_name##_pattern_->ok()) {                                       \
       RecordSetupError(ServiceWorkerRouterEvaluatorErrorEnums::kParseError); \
       return false;                                                          \

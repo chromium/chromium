@@ -52,9 +52,6 @@ absl::optional<ServiceWorkerRouterCondition> RouterConditionToBlink(
   return false;
 }
 
-// TODO(crbug.com/1371756): Make URLPattern has a method to construct the
-// SafeURLPattern and remove the conversion from here.
-// The method should take a exception_state to raise on regex usage.
 absl::optional<SafeUrlPattern> RouterUrlPatternConditionToBlink(
     v8::Isolate* isolate,
     const V8URLPatternCompatible* url_pattern_compatible,
@@ -82,9 +79,6 @@ absl::optional<SafeUrlPattern> RouterUrlPatternConditionToBlink(
     CHECK(exception_state.HadException());
     return absl::nullopt;
   }
-  // TODO(crbug.com/1371756): support URLPatternOptions.
-  // Currently, URLPatternOptions are not included in URLPatternInit,
-  // and we do not pass the option to the browser side.
   return safe_url_pattern;
 }
 
