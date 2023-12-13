@@ -128,9 +128,10 @@ class GPU_EXPORT ClientSharedImageInterface : public SharedImageInterface {
   scoped_refptr<ClientSharedImage> NotifyMailboxAdded(const Mailbox& mailbox,
                                                       uint32_t usage) override;
 
-  void AddReferenceToSharedImage(const SyncToken& sync_token,
-                                 const Mailbox& mailbox,
-                                 uint32_t usage) override;
+  scoped_refptr<ClientSharedImage> AddReferenceToSharedImage(
+      const SyncToken& sync_token,
+      const Mailbox& mailbox,
+      uint32_t usage) override;
 
   const SharedImageCapabilities& GetCapabilities() override;
 

@@ -98,8 +98,9 @@ AcceleratedStaticBitmapImage::CreateFromExternalMailbox(
   if (!sii) {
     return nullptr;
   }
-  sii->AddReferenceToSharedImage(mailbox_holder.sync_token,
-                                 mailbox_holder.mailbox, usage);
+  scoped_refptr<gpu::ClientSharedImage> shared_image =
+      sii->AddReferenceToSharedImage(mailbox_holder.sync_token,
+                                     mailbox_holder.mailbox, usage);
   auto release_token = sii->GenVerifiedSyncToken();
   // No need to keep the original image after the new reference has been added.
   // Need to update the sync token, however.
@@ -107,8 +108,8 @@ AcceleratedStaticBitmapImage::CreateFromExternalMailbox(
 
   auto release_callback = WTF::BindOnce(
       [](base::WeakPtr<WebGraphicsContext3DProviderWrapper> context_provider,
-         const gpu::Mailbox& mailbox, const gpu::SyncToken& sync_token,
-         bool is_lost) {
+         scoped_refptr<gpu::ClientSharedImage> shared_image,
+         const gpu::SyncToken& sync_token, bool is_lost) {
         if (is_lost || !context_provider) {
           return;
         }
@@ -116,9 +117,9 @@ AcceleratedStaticBitmapImage::CreateFromExternalMailbox(
         if (!sii) {
           return;
         }
-        sii->DestroySharedImage(sync_token, mailbox);
+        sii->DestroySharedImage(sync_token, std::move(shared_image));
       },
-      shared_gpu_context, mailbox_holder.mailbox);
+      shared_gpu_context, std::move(shared_image));
 
   return base::AdoptRef(new AcceleratedStaticBitmapImage(
       mailbox_holder.mailbox, release_token, 0u, sk_image_info,

@@ -260,13 +260,15 @@ void ClientSharedImageInterface::DestroySharedImage(
   DestroySharedImage(sync_token, client_shared_image->mailbox());
 }
 
-void ClientSharedImageInterface::AddReferenceToSharedImage(
+scoped_refptr<ClientSharedImage>
+ClientSharedImageInterface::AddReferenceToSharedImage(
     const SyncToken& sync_token,
     const Mailbox& mailbox,
     uint32_t usage) {
   DCHECK(!mailbox.IsZero());
   AddMailbox(mailbox);
   proxy_->AddReferenceToSharedImage(sync_token, mailbox, usage);
+  return base::MakeRefCounted<ClientSharedImage>(mailbox);
 }
 
 uint32_t ClientSharedImageInterface::UsageForMailbox(const Mailbox& mailbox) {
