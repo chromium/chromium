@@ -76,6 +76,11 @@ BASE_FEATURE(kGlobalMediaControlsCastStartStop,
 #else
              base::FEATURE_ENABLED_BY_DEFAULT);
 #endif  // BUILDFLAG(IS_CHROMEOS)
+
+BASE_FEATURE(kCastSilentlyRemoveVcOnNavigation,
+             "CastSilentlyRemoveVcOnNavigation",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
 #endif  // !BUILDFLAG(IS_ANDROID)
 
 namespace {

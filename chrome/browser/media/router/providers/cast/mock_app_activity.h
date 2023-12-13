@@ -31,7 +31,9 @@ class MockAppActivity : public AppActivity {
   MOCK_METHOD2(StopSessionOnReceiver,
                void(const std::string& client_id,
                     cast_channel::ResultCallback callback));
-  MOCK_METHOD1(CloseConnectionOnReceiver, void(const std::string& client_id));
+  MOCK_METHOD2(CloseConnectionOnReceiver,
+               void(const std::string& client_id,
+                    blink::mojom::PresentationConnectionCloseReason reason));
   MOCK_METHOD1(SendStopSessionMessageToClients,
                void(const std::string& hash_token));
   MOCK_METHOD1(HandleLeaveSession, void(const std::string& client_id));

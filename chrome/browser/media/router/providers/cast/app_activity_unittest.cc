@@ -349,7 +349,22 @@ TEST_F(AppActivityTest, CloseConnectionOnReceiver) {
 
   EXPECT_CALL(message_handler_, CloseConnection(kChannelId, "theClientId1",
                                                 session_->destination_id()));
-  activity_->CloseConnectionOnReceiver("theClientId1");
+  activity_->CloseConnectionOnReceiver(
+      "theClientId1", blink::mojom::PresentationConnectionCloseReason::CLOSED);
+}
+
+TEST_F(AppActivityTest, RemoveConnectionOnReceiver) {
+  SetUpSession();
+  AddMockClient("theClientId1");
+
+  // If the close reason is not `CLOSED`, then we call RemoveConnection()
+  // instead of CloseConnection() to avoid sending a close request to the
+  // receiver.
+  EXPECT_CALL(message_handler_, RemoveConnection(kChannelId, "theClientId1",
+                                                 session_->destination_id()));
+  activity_->CloseConnectionOnReceiver(
+      "theClientId1",
+      blink::mojom::PresentationConnectionCloseReason::WENT_AWAY);
 }
 
 TEST_F(AppActivityTest, ForwardInternalMediaMessage) {

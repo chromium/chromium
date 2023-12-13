@@ -122,7 +122,7 @@ void CastSessionClientImpl::OnMessage(
 }
 
 void CastSessionClientImpl::DidClose(PresentationConnectionCloseReason reason) {
-  activity_->CloseConnectionOnReceiver(client_id());
+  activity_->CloseConnectionOnReceiver(client_id(), reason);
 }
 
 void CastSessionClientImpl::SendErrorCodeToClient(
@@ -272,7 +272,7 @@ void CastSessionClientImpl::CloseConnection(
   if (connection_remote_)
     connection_remote_->DidClose(close_reason);
   TearDownPresentationConnection();
-  activity_->CloseConnectionOnReceiver(client_id());
+  activity_->CloseConnectionOnReceiver(client_id(), close_reason);
 }
 
 void CastSessionClientImpl::TerminateConnection() {
