@@ -12,6 +12,7 @@
       "w3c-image-capture"
     ],
     "noUncheckedIndexedAccess": false,
-    "isolatedModules": true
+    "isolatedModules": true,
+    "useDefineForClassFields": false
   }
 }
