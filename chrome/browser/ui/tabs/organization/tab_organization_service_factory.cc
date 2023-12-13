@@ -5,10 +5,13 @@
 #include "chrome/browser/ui/tabs/organization/tab_organization_service_factory.h"
 
 #include "base/no_destructor.h"
+#include "chrome/browser/optimization_guide/optimization_guide_keyed_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/tabs/organization/tab_organization_service.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "components/keyed_service/core/keyed_service.h"
+#include "components/optimization_guide/core/model_quality/feature_type_map.h"
+#include "components/optimization_guide/core/optimization_guide_features.h"
 
 TabOrganizationServiceFactory::TabOrganizationServiceFactory()
     : ProfileKeyedServiceFactory(
@@ -16,7 +19,12 @@ TabOrganizationServiceFactory::TabOrganizationServiceFactory()
           ProfileSelections::Builder()
               .WithRegular(ProfileSelection::kOriginalOnly)
               .WithGuest(ProfileSelection::kOriginalOnly)
-              .Build()) {}
+              .Build()) {
+  if (base::FeatureList::IsEnabled(
+          optimization_guide::features::kOptimizationGuideModelExecution)) {
+    DependsOn(OptimizationGuideKeyedServiceFactory::GetInstance());
+  }
+}
 
 TabOrganizationServiceFactory::~TabOrganizationServiceFactory() = default;
 
