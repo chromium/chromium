@@ -78,7 +78,8 @@ class COMPONENT_EXPORT(GLOBAL_MEDIA_CONTROLS) MediaSessionItemProducer
   void OnRequestIdReleased(const base::UnguessableToken& request_id) override;
 
   // MediaItemUIObserver implementation.
-  void OnMediaItemUIClicked(const std::string& id) override;
+  void OnMediaItemUIClicked(const std::string& id,
+                            bool activate_original_media) override;
   void OnMediaItemUIDismissed(const std::string& id) override;
 
   void AddObserver(MediaSessionItemProducerObserver* observer);

@@ -161,7 +161,8 @@ void QuickSettingsMediaView::OnGestureEvent(ui::GestureEvent* event) {
     // A tap gesture is handled in the same way as a mouse click event. The
     // controller does not need to know the item id for now so we do not need to
     // record it.
-    controller_->OnMediaItemUIClicked(/*id=*/"");
+    controller_->OnMediaItemUIClicked(/*id=*/"",
+                                      /*activate_original_media=*/false);
     event->SetHandled();
   }
 }

@@ -22,8 +22,10 @@ class MediaItemUIObserver : public base::CheckedObserver {
   // Called when the action buttons in the item UI change.
   virtual void OnMediaItemUIActionsChanged() {}
 
-  // Called when the item UI is clicked.
-  virtual void OnMediaItemUIClicked(const std::string& id) {}
+  // Called when the item UI is clicked along with whether we want to activate
+  // the web contents for the original media.
+  virtual void OnMediaItemUIClicked(const std::string& id,
+                                    bool activate_original_media = true) {}
 
   // Called when the item UI is dismissed from the dialog.
   virtual void OnMediaItemUIDismissed(const std::string& id) {}

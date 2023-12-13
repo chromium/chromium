@@ -89,8 +89,7 @@ MediaItemUIView::MediaItemUIView(
     absl::optional<media_message_center::NotificationTheme> notification_theme,
     absl::optional<media_message_center::MediaColorTheme> media_color_theme,
     absl::optional<MediaDisplayPage> media_display_page)
-    : views::Button(base::BindRepeating(&MediaItemUIView::ContainerClicked,
-                                        base::Unretained(this))),
+    : views::Button(PressedCallback()),
       id_(id),
       has_notification_theme_(notification_theme.has_value()) {
   CHECK(item);
@@ -119,6 +118,21 @@ MediaItemUIView::MediaItemUIView(
         views::CreateEmptyBorder(kSwipeableContainerInsets));
   }
   swipeable_container_ = AddChildView(std::move(swipeable_container));
+
+  // Pressing callback for the updated quick settings media view will be handled
+  // in MediaNotificationViewAshImpl because it only wants to activate the
+  // original web contents when media labels are pressed, but it also relies on
+  // the button callback here to go to detailed media view.
+  if (use_cros_updated_ui_ &&
+      media_display_page == MediaDisplayPage::kQuickSettingsMediaView) {
+    SetCallback(base::BindRepeating(&MediaItemUIView::ContainerClicked,
+                                    base::Unretained(this),
+                                    /*activate_original_media=*/false));
+  } else {
+    SetCallback(base::BindRepeating(&MediaItemUIView::ContainerClicked,
+                                    base::Unretained(this),
+                                    /*activate_original_media=*/true));
+  }
 
   std::unique_ptr<media_message_center::MediaNotificationView> view;
   if (use_cros_updated_ui_) {
@@ -225,8 +239,14 @@ void MediaItemUIView::OnMouseExited(const ui::MouseEvent& event) {
 }
 
 void MediaItemUIView::OnGestureEvent(ui::GestureEvent* event) {
-  if (scroll_view_ && event->IsScrollGestureEvent())
+  // Tap gesture event should have the same behavior as a button click event, so
+  // the button callback may be triggered.
+  if (event->type() == ui::ET_GESTURE_TAP) {
+    views::Button::OnGestureEvent(event);
+  }
+  if (scroll_view_ && event->IsScrollGestureEvent()) {
     scroll_view_->OnGestureEvent(event);
+  }
 }
 
 void MediaItemUIView::OnDidChangeFocus(views::View* focused_before,
@@ -307,11 +327,11 @@ void MediaItemUIView::OnColorsChanged(SkColor foreground,
     device_selector_view_->OnColorsChanged(foreground, background);
 }
 
-void MediaItemUIView::OnHeaderClicked() {
+void MediaItemUIView::OnHeaderClicked(bool activate_original_media) {
   // Since we disable the expand button, nothing happens on the
   // MediaNotificationView when the header is clicked. Treat the click as if we
   // were clicked directly.
-  ContainerClicked();
+  ContainerClicked(activate_original_media);
 }
 
 void MediaItemUIView::OnShowCastingDevicesRequested() {
@@ -461,9 +481,10 @@ void MediaItemUIView::ForceExpandedState() {
   }
 }
 
-void MediaItemUIView::ContainerClicked() {
-  for (auto& observer : observers_)
-    observer.OnMediaItemUIClicked(id_);
+void MediaItemUIView::ContainerClicked(bool activate_original_media) {
+  for (auto& observer : observers_) {
+    observer.OnMediaItemUIClicked(id_, activate_original_media);
+  }
 }
 
 void MediaItemUIView::OnSizeChanged() {

@@ -103,7 +103,8 @@ void QuickSettingsMediaViewController::HideMediaItem(const std::string& id) {
 // global_media_controls::MediaItemUIObserver implementations:
 
 void QuickSettingsMediaViewController::OnMediaItemUIClicked(
-    const std::string& id) {
+    const std::string& id,
+    bool activate_original_media) {
   tray_controller_->ShowMediaControlsDetailedView(
       GlobalMediaControlsEntryPoint::kQuickSettingsMiniPlayer);
 }

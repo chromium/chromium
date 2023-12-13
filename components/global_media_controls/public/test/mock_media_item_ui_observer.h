@@ -21,7 +21,7 @@ class MockMediaItemUIObserver : public MediaItemUIObserver {
   MOCK_METHOD(void, OnMediaItemUISizeChanged, ());
   MOCK_METHOD(void, OnMediaItemUIMetadataChanged, ());
   MOCK_METHOD(void, OnMediaItemUIActionsChanged, ());
-  MOCK_METHOD(void, OnMediaItemUIClicked, (const std::string&));
+  MOCK_METHOD(void, OnMediaItemUIClicked, (const std::string&, bool));
   MOCK_METHOD(void, OnMediaItemUIDismissed, (const std::string&));
   MOCK_METHOD(void, OnMediaItemUIDestroyed, (const std::string&));
 };

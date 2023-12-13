@@ -278,6 +278,10 @@ void TestMediaController::ExitPictureInPicture() {
   // TODO(crbug.com/1040263): Implement ExitPictureInPicture.
 }
 
+void TestMediaController::Raise() {
+  ++raise_count_;
+}
+
 void TestMediaController::RequestMediaRemoting() {
   ++request_media_remoting_count_;
 }

@@ -326,17 +326,22 @@ void MediaSessionItemProducer::OnRequestIdReleased(
   RemoveItem(id);
 }
 
-void MediaSessionItemProducer::OnMediaItemUIClicked(const std::string& id) {
+void MediaSessionItemProducer::OnMediaItemUIClicked(
+    const std::string& id,
+    bool activate_original_media) {
   auto it = sessions_.find(id);
-  if (it == sessions_.end())
+  if (it == sessions_.end()) {
     return;
+  }
 
   it->second.OnSessionInteractedWith();
 
   base::UmaHistogramEnumeration("Media.Notification.Click",
                                 MediaNotificationClickSource::kMedia);
 
-  it->second.item()->Raise();
+  if (activate_original_media) {
+    it->second.item()->Raise();
+  }
 }
 
 void MediaSessionItemProducer::OnMediaItemUIDismissed(const std::string& id) {

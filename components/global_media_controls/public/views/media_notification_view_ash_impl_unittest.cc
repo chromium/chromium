@@ -52,7 +52,7 @@ class MockMediaNotificationContainer
                void(SkColor foreground,
                     SkColor foreground_disabled,
                     SkColor background));
-  MOCK_METHOD0(OnHeaderClicked, void());
+  MOCK_METHOD1(OnHeaderClicked, void(bool activate_original_media));
 };
 
 }  // namespace

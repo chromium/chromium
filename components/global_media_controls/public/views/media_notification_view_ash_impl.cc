@@ -24,6 +24,7 @@
 #include "ui/views/controls/image_view.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/layout/box_layout_view.h"
+#include "ui/views/layout/fill_layout.h"
 
 namespace global_media_controls {
 
@@ -58,6 +59,44 @@ constexpr gfx::Size kPlayPauseButtonSize = gfx::Size(48, 48);
 constexpr gfx::Size kControlsButtonSize = gfx::Size(32, 32);
 
 constexpr char kMediaDisplayPageHistogram[] = "Media.Notification.DisplayPage";
+
+class MediaLabelButton : public views::Button {
+ public:
+  METADATA_HEADER(MediaLabelButton);
+  MediaLabelButton(const views::Label::CustomFont& font,
+                   ui::ColorId text_color_id,
+                   ui::ColorId focus_ring_color_id)
+      : views::Button(PressedCallback()) {
+    SetAccessibilityProperties(
+        ax::mojom::Role::kLabelText,
+        l10n_util::GetStringUTF16(
+            IDS_MEDIA_MESSAGE_CENTER_MEDIA_NOTIFICATION_LABEL));
+    SetLayoutManager(std::make_unique<views::FillLayout>());
+    SetFocusBehavior(views::View::FocusBehavior::ALWAYS);
+    views::FocusRing::Get(this)->SetColorId(focus_ring_color_id);
+
+    // Hide the label button if the label text is empty.
+    SetEnabled(false);
+
+    label_ = AddChildView(
+        std::make_unique<views::Label>(base::EmptyString16(), font));
+    label_->SetLineHeight(kTextLineHeight);
+    label_->SetHorizontalAlignment(gfx::ALIGN_LEFT);
+    label_->SetEnabledColorId(text_color_id);
+  }
+
+  views::Label* label() { return label_; }
+  void SetText(std::u16string text) {
+    label_->SetText(text);
+    SetEnabled(!text.empty());
+  }
+
+ private:
+  raw_ptr<views::Label> label_;
+};
+
+BEGIN_METADATA(MediaLabelButton, views::Button)
+END_METADATA
 
 class MediaButton : public views::ImageButton {
  public:
@@ -184,6 +223,8 @@ MediaNotificationViewAshImpl::MediaNotificationViewAshImpl(
   media_info_column->SetOrientation(views::BoxLayout::Orientation::kVertical);
   media_info_column->SetInsideBorderInsets(kMediaInfoInsets);
   media_info_column->SetBetweenChildSpacing(kMediaInfoSeparator);
+  media_info_column->SetCrossAxisAlignment(
+      views::BoxLayout::CrossAxisAlignment::kStart);
   main_row->SetFlexForView(media_info_column, 1);
 
   const views::Label::CustomFont text_fonts = {
@@ -195,11 +236,12 @@ MediaNotificationViewAshImpl::MediaNotificationViewAshImpl(
       media_info_column->AddChildView(std::make_unique<views::BoxLayoutView>());
   source_row->SetInsideBorderInsets(kSourceRowInsets);
 
-  source_label_ = source_row->AddChildView(
-      std::make_unique<views::Label>(base::EmptyString16(), text_fonts));
-  source_label_->SetLineHeight(kTextLineHeight);
-  source_label_->SetHorizontalAlignment(gfx::ALIGN_LEFT);
-  source_label_->SetEnabledColorId(theme_.secondary_foreground_color_id);
+  source_label_ = source_row->AddChildView(std::make_unique<MediaLabelButton>(
+      text_fonts, theme_.secondary_foreground_color_id,
+      theme_.focus_ring_color_id));
+  source_label_->SetCallback(
+      base::BindRepeating(&MediaNotificationViewAshImpl::MediaLabelPressed,
+                          base::Unretained(this), source_label_));
   source_row->SetFlexForView(source_label_, 1);
 
   // Create the media title label.
@@ -208,11 +250,12 @@ MediaNotificationViewAshImpl::MediaNotificationViewAshImpl(
   title_row->SetCrossAxisAlignment(
       views::BoxLayout::CrossAxisAlignment::kCenter);
 
-  title_label_ = title_row->AddChildView(
-      std::make_unique<views::Label>(base::EmptyString16(), text_fonts));
-  title_label_->SetLineHeight(kTextLineHeight);
-  title_label_->SetHorizontalAlignment(gfx::ALIGN_LEFT);
-  title_label_->SetEnabledColorId(theme_.primary_foreground_color_id);
+  title_label_ = title_row->AddChildView(std::make_unique<MediaLabelButton>(
+      text_fonts, theme_.primary_foreground_color_id,
+      theme_.focus_ring_color_id));
+  title_label_->SetCallback(
+      base::BindRepeating(&MediaNotificationViewAshImpl::MediaLabelPressed,
+                          base::Unretained(this), title_label_));
   title_row->SetFlexForView(title_label_, 1);
 
   // Add a chevron right icon to the title if the media is displaying on the
@@ -227,11 +270,13 @@ MediaNotificationViewAshImpl::MediaNotificationViewAshImpl(
   }
 
   // Create the media artist label.
-  artist_label_ = media_info_column->AddChildView(
-      std::make_unique<views::Label>(base::EmptyString16(), text_fonts));
-  artist_label_->SetLineHeight(kTextLineHeight);
-  artist_label_->SetHorizontalAlignment(gfx::ALIGN_LEFT);
-  artist_label_->SetEnabledColorId(theme_.secondary_foreground_color_id);
+  artist_label_ =
+      media_info_column->AddChildView(std::make_unique<MediaLabelButton>(
+          text_fonts, theme_.secondary_foreground_color_id,
+          theme_.focus_ring_color_id));
+  artist_label_->SetCallback(
+      base::BindRepeating(&MediaNotificationViewAshImpl::MediaLabelPressed,
+                          base::Unretained(this), artist_label_));
 
   // |controls_column| inside |main_row| holds the play/pause button and the
   // dismiss button on the top right corner if it exists.
@@ -396,7 +441,7 @@ void MediaNotificationViewAshImpl::UpdateWithMediaSessionInfo(
 
 void MediaNotificationViewAshImpl::UpdateWithMediaMetadata(
     const media_session::MediaMetadata& metadata) {
-  source_label_->SetElideBehavior(gfx::ELIDE_HEAD);
+  source_label_->label()->SetElideBehavior(gfx::ELIDE_HEAD);
   source_label_->SetText(metadata.source_title);
   title_label_->SetText(metadata.title);
   artist_label_->SetText(metadata.artist);
@@ -472,6 +517,16 @@ void MediaNotificationViewAshImpl::GetAccessibleNodeData(
 ///////////////////////////////////////////////////////////////////////////////
 // MediaNotificationViewAshImpl implementations:
 
+void MediaNotificationViewAshImpl::MediaLabelPressed(MediaLabelButton* button) {
+  // Pressing any media info label on the quick settings media view will try to
+  // activate the original web contents if it is hidden, or go to detailed view
+  // if it is not. Pressing other places on the quick settings media view will
+  // only go to detailed view. The code for going to detailed view is in
+  // QuickSettingsMediaViewController. Meanwhile, pressing any media info label
+  // on other media views has the same effect as pressing other places.
+  container_->OnHeaderClicked(/*activate_original_media=*/true);
+}
+
 MediaButton* MediaNotificationViewAshImpl::CreateMediaButton(
     views::View* parent,
     int button_id,
@@ -485,7 +540,7 @@ MediaButton* MediaNotificationViewAshImpl::CreateMediaButton(
 
   if (button_id != kNotMediaActionButtonId) {
     button_ptr->SetCallback(
-        base::BindRepeating(&MediaNotificationViewAshImpl::ButtonPressed,
+        base::BindRepeating(&MediaNotificationViewAshImpl::MediaButtonPressed,
                             base::Unretained(this), button_ptr));
     action_buttons_.push_back(button_ptr);
   }
@@ -528,7 +583,7 @@ void MediaNotificationViewAshImpl::UpdateActionButtonsVisibility() {
   }
 }
 
-void MediaNotificationViewAshImpl::ButtonPressed(views::Button* button) {
+void MediaNotificationViewAshImpl::MediaButtonPressed(views::Button* button) {
   const auto action = static_cast<MediaSessionAction>(button->GetID());
   if (item_) {
     item_->OnMediaSessionActionButtonPressed(action);
@@ -631,15 +686,15 @@ views::ImageView* MediaNotificationViewAshImpl::GetArtworkViewForTesting() {
 }
 
 views::Label* MediaNotificationViewAshImpl::GetSourceLabelForTesting() {
-  return source_label_;
-}
-
-views::Label* MediaNotificationViewAshImpl::GetArtistLabelForTesting() {
-  return artist_label_;
+  return source_label_->label();
 }
 
 views::Label* MediaNotificationViewAshImpl::GetTitleLabelForTesting() {
-  return title_label_;
+  return title_label_->label();
+}
+
+views::Label* MediaNotificationViewAshImpl::GetArtistLabelForTesting() {
+  return artist_label_->label();
 }
 
 views::ImageView* MediaNotificationViewAshImpl::GetChevronIconForTesting() {
