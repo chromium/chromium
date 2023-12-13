@@ -4,6 +4,8 @@
 
 #include "content/browser/generic_sensor/frame_sensor_provider_proxy.h"
 
+#include <vector>
+
 #include "base/notreached.h"
 #include "content/browser/renderer_host/render_frame_host_impl.h"
 #include "content/public/browser/browser_context.h"
