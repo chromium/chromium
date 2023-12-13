@@ -18,6 +18,7 @@
 #include "third_party/blink/renderer/modules/webcodecs/codec_pressure_manager.h"
 #include "third_party/blink/renderer/modules/webcodecs/codec_pressure_manager_provider.h"
 #include "third_party/blink/renderer/modules/webcodecs/video_decoder.h"
+#include "third_party/blink/renderer/platform/testing/task_environment.h"
 #include "third_party/blink/renderer/platform/testing/testing_platform_support.h"
 #include "third_party/blink/renderer/platform/testing/unit_test_helpers.h"
 
@@ -38,6 +39,7 @@ class DecoderTemplateTest : public testing::Test {
                                    v8::Local<v8::Function> error_callback);
 
   T* CreateDecoder(ScriptState*, const typename T::InitType*, ExceptionState&);
+  test::TaskEnvironment task_environment_;
 };
 
 template <>

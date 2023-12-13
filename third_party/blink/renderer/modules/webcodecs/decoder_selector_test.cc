@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "third_party/blink/renderer/modules/webcodecs/decoder_selector.h"
+
 #include <vector>
 
 #include "media/base/demuxer_stream.h"
@@ -14,10 +16,9 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/platform/scheduler/test/renderer_scheduler_test_support.h"
+#include "third_party/blink/renderer/platform/testing/task_environment.h"
 #include "third_party/blink/renderer/platform/testing/testing_platform_support.h"
 #include "third_party/blink/renderer/platform/wtf/functional.h"
-
-#include "third_party/blink/renderer/modules/webcodecs/decoder_selector.h"
 
 using ::testing::_;
 using ::testing::IsNull;
@@ -194,6 +195,7 @@ class WebCodecsDecoderSelectorTest : public ::testing::Test {
 
   void RunUntilIdle() { platform_->RunUntilIdle(); }
 
+  test::TaskEnvironment task_environment_;
   ScopedTestingPlatformSupport<TestingPlatformSupport> platform_;
   media::NullMediaLog media_log_;
 

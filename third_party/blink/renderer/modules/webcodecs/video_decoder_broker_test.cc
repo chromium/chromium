@@ -2,12 +2,16 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "third_party/blink/renderer/modules/webcodecs/video_decoder_broker.h"
+
 #include <memory>
 #include <vector>
 
 #include "base/run_loop.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/threading/thread.h"
+#include "base/time/time.h"
 #include "build/build_config.h"
 #include "gpu/command_buffer/common/mailbox_holder.h"
 #include "media/base/decoder_buffer.h"
@@ -31,11 +35,8 @@
 #include "third_party/blink/public/common/thread_safe_browser_interface_broker_proxy.h"
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_testing.h"
+#include "third_party/blink/renderer/platform/testing/task_environment.h"
 #include "third_party/blink/renderer/platform/wtf/functional.h"
-
-#include "base/task/single_thread_task_runner.h"
-#include "base/time/time.h"
-#include "third_party/blink/renderer/modules/webcodecs/video_decoder_broker.h"
 using ::testing::_;
 using ::testing::Invoke;
 using ::testing::Return;
@@ -342,6 +343,7 @@ class VideoDecoderBrokerTest : public testing::Test {
   std::unique_ptr<FakeInterfaceFactory> interface_factory_;
 
   base::test::ScopedFeatureList feature_list_;
+  test::TaskEnvironment task_environment_;
 };
 
 TEST_F(VideoDecoderBrokerTest, Decode_Uninitialized) {

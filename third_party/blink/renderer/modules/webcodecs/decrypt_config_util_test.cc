@@ -8,18 +8,21 @@
 #include "third_party/blink/renderer/bindings/modules/v8/v8_encryption_pattern.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_subsample_entry.h"
 #include "third_party/blink/renderer/modules/webcodecs/test_helpers.h"
+#include "third_party/blink/renderer/platform/testing/task_environment.h"
 
 namespace blink {
 
 namespace {
 
 TEST(DecryptConfigUtilTest, BadScheme) {
+  test::TaskEnvironment task_environment;
   auto* js_config = MakeGarbageCollected<DecryptConfig>();
   js_config->setEncryptionScheme("test");
   EXPECT_EQ(nullptr, CreateMediaDecryptConfig(*js_config));
 }
 
 TEST(DecryptConfigUtilTest, WrongIVSize) {
+  test::TaskEnvironment task_environment;
   auto* js_config = MakeGarbageCollected<DecryptConfig>();
   js_config->setEncryptionScheme("cenc");
   js_config->setInitializationVector(StringToBuffer("1234567890"));
@@ -27,6 +30,7 @@ TEST(DecryptConfigUtilTest, WrongIVSize) {
 }
 
 TEST(DecryptConfigUtilTest, CreateCbcsWithoutPattern) {
+  test::TaskEnvironment task_environment;
   auto expected_media_config =
       CreateTestDecryptConfig(media::EncryptionScheme::kCbcs);
 
@@ -51,6 +55,7 @@ TEST(DecryptConfigUtilTest, CreateCbcsWithoutPattern) {
 }
 
 TEST(DecryptConfigUtilTest, CreateCbcsWithPattern) {
+  test::TaskEnvironment task_environment;
   const media::EncryptionPattern kPattern(1, 2);
 
   auto expected_media_config =
@@ -84,6 +89,7 @@ TEST(DecryptConfigUtilTest, CreateCbcsWithPattern) {
 }
 
 TEST(DecryptConfigUtilTest, CreateCenc) {
+  test::TaskEnvironment task_environment;
   auto expected_media_config =
       CreateTestDecryptConfig(media::EncryptionScheme::kCenc);
 

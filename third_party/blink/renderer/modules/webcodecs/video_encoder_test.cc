@@ -26,6 +26,7 @@
 #include "third_party/blink/renderer/modules/webcodecs/codec_pressure_manager_provider.h"
 #include "third_party/blink/renderer/modules/webcodecs/video_encoder.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
+#include "third_party/blink/renderer/platform/testing/task_environment.h"
 #include "third_party/blink/renderer/platform/testing/unit_test_helpers.h"
 
 namespace blink {
@@ -77,6 +78,7 @@ class VideoEncoderTest : public testing::Test {
  public:
   VideoEncoderTest() = default;
   ~VideoEncoderTest() override = default;
+  test::TaskEnvironment task_environment_;
 };
 
 constexpr gfx::Size kEncodeSize(80, 60);
