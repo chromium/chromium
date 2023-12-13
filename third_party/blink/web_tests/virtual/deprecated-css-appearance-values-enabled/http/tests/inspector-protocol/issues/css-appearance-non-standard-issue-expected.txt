@@ -18,82 +18,10 @@ Issue for appearance "inner-spin-button": {
         }
     }
 }
-Issue for appearance "media-slider": {
-    issue : {
-        code : DeprecationIssue
-        details : {
-            deprecationIssueDetails : {
-                affectedFrame : {
-                    frameId : <string>
-                }
-                sourceCodeLocation : {
-                    columnNumber : 14
-                    lineNumber : 6
-                    scriptId : <string>
-                    url : http://127.0.0.1:8000/inspector-protocol/resources/css-appearance-non-standard.html?appearance&media-slider
-                }
-                type : CSSValueAppearanceNonStandard
-            }
-        }
-    }
-}
-Issue for appearance "media-sliderthumb": {
-    issue : {
-        code : DeprecationIssue
-        details : {
-            deprecationIssueDetails : {
-                affectedFrame : {
-                    frameId : <string>
-                }
-                sourceCodeLocation : {
-                    columnNumber : 14
-                    lineNumber : 6
-                    scriptId : <string>
-                    url : http://127.0.0.1:8000/inspector-protocol/resources/css-appearance-non-standard.html?appearance&media-sliderthumb
-                }
-                type : CSSValueAppearanceNonStandard
-            }
-        }
-    }
-}
-Issue for appearance "media-volume-slider": {
-    issue : {
-        code : DeprecationIssue
-        details : {
-            deprecationIssueDetails : {
-                affectedFrame : {
-                    frameId : <string>
-                }
-                sourceCodeLocation : {
-                    columnNumber : 14
-                    lineNumber : 6
-                    scriptId : <string>
-                    url : http://127.0.0.1:8000/inspector-protocol/resources/css-appearance-non-standard.html?appearance&media-volume-slider
-                }
-                type : CSSValueAppearanceNonStandard
-            }
-        }
-    }
-}
-Issue for appearance "media-volume-sliderthumb": {
-    issue : {
-        code : DeprecationIssue
-        details : {
-            deprecationIssueDetails : {
-                affectedFrame : {
-                    frameId : <string>
-                }
-                sourceCodeLocation : {
-                    columnNumber : 14
-                    lineNumber : 6
-                    scriptId : <string>
-                    url : http://127.0.0.1:8000/inspector-protocol/resources/css-appearance-non-standard.html?appearance&media-volume-sliderthumb
-                }
-                type : CSSValueAppearanceNonStandard
-            }
-        }
-    }
-}
+appearance value "media-slider" did not generate issue.
+appearance value "media-sliderthumb" did not generate issue.
+appearance value "media-volume-slider" did not generate issue.
+appearance value "media-volume-sliderthumb" did not generate issue.
 Issue for appearance "push-button": {
     issue : {
         code : DeprecationIssue
@@ -132,82 +60,10 @@ Issue for appearance "searchfield-cancel-button": {
         }
     }
 }
-Issue for appearance "slider-horizontal": {
-    issue : {
-        code : DeprecationIssue
-        details : {
-            deprecationIssueDetails : {
-                affectedFrame : {
-                    frameId : <string>
-                }
-                sourceCodeLocation : {
-                    columnNumber : 14
-                    lineNumber : 6
-                    scriptId : <string>
-                    url : http://127.0.0.1:8000/inspector-protocol/resources/css-appearance-non-standard.html?appearance&slider-horizontal
-                }
-                type : CSSValueAppearanceNonStandard
-            }
-        }
-    }
-}
-Issue for appearance "sliderthumb-horizontal": {
-    issue : {
-        code : DeprecationIssue
-        details : {
-            deprecationIssueDetails : {
-                affectedFrame : {
-                    frameId : <string>
-                }
-                sourceCodeLocation : {
-                    columnNumber : 14
-                    lineNumber : 6
-                    scriptId : <string>
-                    url : http://127.0.0.1:8000/inspector-protocol/resources/css-appearance-non-standard.html?appearance&sliderthumb-horizontal
-                }
-                type : CSSValueAppearanceNonStandard
-            }
-        }
-    }
-}
-Issue for appearance "sliderthumb-vertical": {
-    issue : {
-        code : DeprecationIssue
-        details : {
-            deprecationIssueDetails : {
-                affectedFrame : {
-                    frameId : <string>
-                }
-                sourceCodeLocation : {
-                    columnNumber : 14
-                    lineNumber : 6
-                    scriptId : <string>
-                    url : http://127.0.0.1:8000/inspector-protocol/resources/css-appearance-non-standard.html?appearance&sliderthumb-vertical
-                }
-                type : CSSValueAppearanceNonStandard
-            }
-        }
-    }
-}
-Issue for appearance "square-button": {
-    issue : {
-        code : DeprecationIssue
-        details : {
-            deprecationIssueDetails : {
-                affectedFrame : {
-                    frameId : <string>
-                }
-                sourceCodeLocation : {
-                    columnNumber : 14
-                    lineNumber : 6
-                    scriptId : <string>
-                    url : http://127.0.0.1:8000/inspector-protocol/resources/css-appearance-non-standard.html?appearance&square-button
-                }
-                type : CSSValueAppearanceNonStandard
-            }
-        }
-    }
-}
+appearance value "slider-horizontal" did not generate issue.
+appearance value "sliderthumb-horizontal" did not generate issue.
+appearance value "sliderthumb-vertical" did not generate issue.
+appearance value "square-button" did not generate issue.
 appearance value "auto" did not generate issue.
 appearance value "none" did not generate issue.
 

@@ -2429,29 +2429,10 @@
       "http/tests/inspector-protocol/issues/css-webkit-appearance-non-standard-issue.js"
     ],
     "args": ["--enable-blink-features=NonStandardAppearanceValuesHighUsage",
-             "--enable-blink-features=NonStandardAppearanceValuesLowUsage",
              "--enable-blink-features=NonStandardAppearanceValueSliderVertical",
              "--disable-threaded-compositing", "--disable-threaded-animation"],
     "owners": ["dizhangg@chromium.org"],
-    "expires": "Dec 21, 2023"
-  },
-  {
-    "prefix": "vertical-form-controls-disabled",
-    "platforms": ["Linux", "Mac", "Win"],
-    "bases": [
-      "external/wpt/css/css-writing-modes/forms/progress-appearance-native-vertical.optional.html",
-      "external/wpt/css/css-writing-modes/forms/meter-appearance-native-vertical.optional.html",
-      "external/wpt/css/css-writing-modes/forms/button-appearance-native-vertical.optional.html",
-      "external/wpt/css/css-writing-modes/forms/select-multiple-appearance-native-vlr.optional.html",
-      "external/wpt/css/css-writing-modes/forms/color-input-appearance-native-vertical.optional.html",
-      "external/wpt/css/css-writing-modes/forms/range-input-appearance-native-vertical.optional.html",
-      "external/wpt/css/css-writing-modes/forms/date-input-appearance-native-vertical.optional.html",
-      "external/wpt/css/css-flexbox/flex-item-compressible-002.html"
-    ],
-    "args": ["--disable-features=FormControlsVerticalWritingModeSupport",
-             "--disable-threaded-compositing", "--disable-threaded-animation"],
-    "owners": ["dizhangg@chromium.org"],
-    "expires": "Dec 21, 2023"
+    "expires": "Jul 1, 2024"
   },
   {
     "prefix": "vertical-form-controls-text-disabled",
@@ -2464,7 +2445,7 @@
     "args": ["--disable-features=FormControlsVerticalWritingModeTextSupport",
              "--disable-threaded-compositing", "--disable-threaded-animation"],
     "owners": ["dizhangg@chromium.org"],
-    "expires": "Dec 21, 2023"
+    "expires": "Mar 1, 2023"
   },
   {
     "prefix": "url-non-special",
