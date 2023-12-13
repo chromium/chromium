@@ -26,13 +26,20 @@ class ReadAnythingAppModelTest : public ChromeRenderViewTest {
 
     // Create simple AXTreeUpdate with a root node and 3 children.
     ui::AXTreeUpdate snapshot;
-    snapshot.root_id = 1;
-    snapshot.nodes.resize(4);
-    snapshot.nodes[0].id = 1;
-    snapshot.nodes[0].child_ids = {2, 3, 4};
-    snapshot.nodes[1].id = 2;
-    snapshot.nodes[2].id = 3;
-    snapshot.nodes[3].id = 4;
+    ui::AXNodeData node1;
+    node1.id = 2;
+
+    ui::AXNodeData node2;
+    node2.id = 3;
+
+    ui::AXNodeData node3;
+    node3.id = 4;
+
+    ui::AXNodeData root;
+    root.id = 1;
+    root.child_ids = {node1.id, node2.id, node3.id};
+    snapshot.root_id = root.id;
+    snapshot.nodes = {root, node1, node2, node3};
     SetUpdateTreeID(&snapshot);
 
     AccessibilityEventReceived({snapshot});
@@ -50,17 +57,19 @@ class ReadAnythingAppModelTest : public ChromeRenderViewTest {
     // Send update for main web content with child tree (pdf web contents).
     ui::AXTreeUpdate main_web_contents_update;
     SetUpdateTreeID(&main_web_contents_update);
-    main_web_contents_update.nodes.resize(1);
-    main_web_contents_update.nodes[0].id = 1;
-    main_web_contents_update.nodes[0].AddChildTreeId(pdf_web_contents_tree_id);
+    ui::AXNodeData node;
+    node.id = 1;
+    node.AddChildTreeId(pdf_web_contents_tree_id);
+    main_web_contents_update.nodes = {node};
     AccessibilityEventReceived({main_web_contents_update});
 
     // Send update for pdf web contents with child tree (iframe).
     ui::AXTreeUpdate pdf_web_contents_update;
-    pdf_web_contents_update.nodes.resize(1);
-    pdf_web_contents_update.root_id = 1;
-    pdf_web_contents_update.nodes[0].id = 1;
-    pdf_web_contents_update.nodes[0].AddChildTreeId(pdf_iframe_tree_id);
+    ui::AXNodeData pdf_node;
+    pdf_node.id = 1;
+    pdf_node.AddChildTreeId(pdf_iframe_tree_id);
+    pdf_web_contents_update.root_id = pdf_node.id;
+    pdf_web_contents_update.nodes = {pdf_node};
     SetUpdateTreeID(&pdf_web_contents_update, pdf_web_contents_tree_id);
     AccessibilityEventReceived({pdf_web_contents_update});
 
@@ -264,13 +273,19 @@ TEST_F(ReadAnythingAppModelTest, Theme) {
 TEST_F(ReadAnythingAppModelTest, IsNodeIgnoredForReadAnything) {
   ui::AXTreeUpdate update;
   SetUpdateTreeID(&update);
-  update.nodes.resize(3);
-  update.nodes[0].id = 2;
-  update.nodes[1].id = 3;
-  update.nodes[2].id = 4;
-  update.nodes[0].role = ax::mojom::Role::kStaticText;
-  update.nodes[1].role = ax::mojom::Role::kComboBoxGrouping;
-  update.nodes[2].role = ax::mojom::Role::kButton;
+  ui::AXNodeData static_text_node;
+  static_text_node.id = 2;
+  static_text_node.role = ax::mojom::Role::kStaticText;
+
+  ui::AXNodeData combobox_node;
+  combobox_node.id = 3;
+  combobox_node.role = ax::mojom::Role::kComboBoxGrouping;
+
+  ui::AXNodeData button_node;
+  button_node.id = 4;
+  button_node.role = ax::mojom::Role::kButton;
+  update.nodes = {static_text_node, combobox_node, button_node};
+
   AccessibilityEventReceived({update});
   EXPECT_EQ(false, IsNodeIgnoredForReadAnything(2));
   EXPECT_EQ(true, IsNodeIgnoredForReadAnything(3));
@@ -281,13 +296,19 @@ TEST_F(ReadAnythingAppModelTest,
        IsNodeIgnoredForReadAnything_TextFieldsNotIgnored) {
   ui::AXTreeUpdate update;
   SetUpdateTreeID(&update);
-  update.nodes.resize(3);
-  update.nodes[0].id = 2;
-  update.nodes[1].id = 3;
-  update.nodes[2].id = 4;
-  update.nodes[0].role = ax::mojom::Role::kTree;
-  update.nodes[1].role = ax::mojom::Role::kTextFieldWithComboBox;
-  update.nodes[2].role = ax::mojom::Role::kTextField;
+  ui::AXNodeData tree_node;
+  tree_node.id = 2;
+  tree_node.role = ax::mojom::Role::kTree;
+
+  ui::AXNodeData textfield_with_combobox_node;
+  textfield_with_combobox_node.id = 3;
+  textfield_with_combobox_node.role = ax::mojom::Role::kTextFieldWithComboBox;
+
+  ui::AXNodeData textfield_node;
+  textfield_node.id = 4;
+  textfield_node.role = ax::mojom::Role::kTextField;
+  update.nodes = {tree_node, textfield_with_combobox_node, textfield_node};
+
   AccessibilityEventReceived({update});
   EXPECT_EQ(true, IsNodeIgnoredForReadAnything(2));
   EXPECT_EQ(false, IsNodeIgnoredForReadAnything(3));
@@ -302,23 +323,33 @@ TEST_F(ReadAnythingAppModelTest,
   // node child) to mark page start/end.
   ui::AXTreeUpdate update;
   SetUpdateTreeID(&update, pdf_iframe_tree_id);
-  update.root_id = 1;
-  update.nodes.resize(5);
-  update.nodes[0].id = 1;
-  update.nodes[0].child_ids = {2, 4};
-  update.nodes[1].id = 2;
-  update.nodes[2].id = 3;
-  update.nodes[3].id = 4;
-  update.nodes[4].id = 5;
-  update.nodes[1].child_ids = {3};
-  update.nodes[3].child_ids = {5};
-  update.nodes[0].role = ax::mojom::Role::kPdfRoot;
-  update.nodes[1].role = ax::mojom::Role::kBanner;
-  update.nodes[2].role = ax::mojom::Role::kStaticText;
-  update.nodes[2].SetNameChecked(string_constants::kPDFPageStart);
-  update.nodes[3].role = ax::mojom::Role::kContentInfo;
-  update.nodes[4].role = ax::mojom::Role::kStaticText;
-  update.nodes[4].SetNameChecked(string_constants::kPDFPageEnd);
+  ui::AXNodeData banner_node;
+  banner_node.id = 2;
+  banner_node.role = ax::mojom::Role::kBanner;
+
+  ui::AXNodeData static_text_start_node;
+  static_text_start_node.id = 3;
+  static_text_start_node.role = ax::mojom::Role::kStaticText;
+  static_text_start_node.SetNameChecked(string_constants::kPDFPageStart);
+  banner_node.child_ids = {static_text_start_node.id};
+
+  ui::AXNodeData content_info_node;
+  content_info_node.id = 4;
+  content_info_node.role = ax::mojom::Role::kContentInfo;
+
+  ui::AXNodeData static_text_end_node;
+  static_text_end_node.id = 5;
+  static_text_end_node.role = ax::mojom::Role::kStaticText;
+  static_text_end_node.SetNameChecked(string_constants::kPDFPageEnd);
+  content_info_node.child_ids = {static_text_end_node.id};
+
+  ui::AXNodeData root;
+  root.id = 1;
+  root.child_ids = {banner_node.id, content_info_node.id};
+  root.role = ax::mojom::Role::kPdfRoot;
+  update.root_id = root.id;
+  update.nodes = {root, banner_node, static_text_start_node, content_info_node,
+                  static_text_end_node};
 
   AccessibilityEventReceived({update});
   EXPECT_EQ(true, IsNodeIgnoredForReadAnything(2));
@@ -370,9 +401,10 @@ TEST_F(ReadAnythingAppModelTest, AddAndRemoveTrees) {
   for (int i = 0; i < 2; i++) {
     ui::AXTreeUpdate update;
     SetUpdateTreeID(&update, tree_ids[i]);
-    update.root_id = 1;
-    update.nodes.resize(1);
-    update.nodes[0].id = 1;
+    ui::AXNodeData node;
+    node.id = 1;
+    update.nodes = {node};
+    update.root_id = node.id;
     updates.push_back(update);
   }
 
@@ -411,9 +443,10 @@ TEST_F(ReadAnythingAppModelTest,
   ui::AXTreeID tree_id_2 = ui::AXTreeID::CreateNewAXTreeID();
   ui::AXTreeUpdate update_2;
   SetUpdateTreeID(&update_2, tree_id_2);
-  update_2.root_id = 1;
-  update_2.nodes.resize(1);
-  update_2.nodes[0].id = 1;
+  ui::AXNodeData node;
+  node.id = 1;
+  update_2.root_id = node.id;
+  update_2.nodes = {node};
 
   // Updates on inactive trees are processed immediately and are not marked as
   // pending.
@@ -446,12 +479,15 @@ TEST_F(ReadAnythingAppModelTest,
     ui::AXTreeUpdate update;
     SetUpdateTreeID(&update);
     update.root_id = 1;
-    update.nodes.resize(2);
-    update.nodes[0].id = 1;
-    update.nodes[0].child_ids = child_ids;
-    update.nodes[1].id = id;
-    update.nodes[1].role = ax::mojom::Role::kStaticText;
-    update.nodes[1].SetNameChecked(base::NumberToString(id));
+    ui::AXNodeData root;
+    root.id = 1;
+    root.child_ids = child_ids;
+
+    ui::AXNodeData node;
+    node.id = id;
+    node.role = ax::mojom::Role::kStaticText;
+    node.SetNameChecked(base::NumberToString(id));
+    update.nodes = {root, node};
     updates.push_back(update);
   }
 
@@ -498,13 +534,16 @@ TEST_F(ReadAnythingAppModelTest, OnTreeErased_ClearsPendingUpdates) {
 
     ui::AXTreeUpdate update;
     SetUpdateTreeID(&update);
-    update.root_id = 1;
-    update.nodes.resize(2);
-    update.nodes[0].id = 1;
-    update.nodes[0].child_ids = child_ids;
-    update.nodes[1].id = id;
-    update.nodes[1].role = ax::mojom::Role::kStaticText;
-    update.nodes[1].SetNameChecked(base::NumberToString(id));
+    ui::AXNodeData root;
+    root.id = 1;
+    root.child_ids = child_ids;
+
+    ui::AXNodeData node;
+    node.id = id;
+    node.role = ax::mojom::Role::kStaticText;
+    node.SetNameChecked(base::NumberToString(id));
+    update.root_id = root.id;
+    update.nodes = {root, node};
     updates.push_back(update);
   }
 
@@ -548,13 +587,16 @@ TEST_F(ReadAnythingAppModelTest,
 
     ui::AXTreeUpdate update;
     SetUpdateTreeID(&update);
-    update.root_id = 1;
-    update.nodes.resize(2);
-    update.nodes[0].id = 1;
-    update.nodes[0].child_ids = child_ids;
-    update.nodes[1].id = id;
-    update.nodes[1].role = ax::mojom::Role::kStaticText;
-    update.nodes[1].SetNameChecked(base::NumberToString(id));
+    ui::AXNodeData root;
+    root.id = 1;
+    root.child_ids = child_ids;
+
+    ui::AXNodeData node;
+    node.id = id;
+    node.role = ax::mojom::Role::kStaticText;
+    node.SetNameChecked(base::NumberToString(id));
+    update.root_id = root.id;
+    update.nodes = {root, node};
     updates.push_back(update);
   }
 
@@ -592,13 +634,16 @@ TEST_F(ReadAnythingAppModelTest, ClearPendingUpdates_DeletesPendingUpdates) {
 
     ui::AXTreeUpdate update;
     SetUpdateTreeID(&update);
-    update.root_id = 1;
-    update.nodes.resize(2);
-    update.nodes[0].id = 1;
-    update.nodes[0].child_ids = child_ids;
-    update.nodes[1].id = id;
-    update.nodes[1].role = ax::mojom::Role::kStaticText;
-    update.nodes[1].SetNameChecked(base::NumberToString(id));
+    ui::AXNodeData root;
+    root.id = 1;
+    root.child_ids = child_ids;
+
+    ui::AXNodeData node;
+    node.id = id;
+    node.role = ax::mojom::Role::kStaticText;
+    node.SetNameChecked(base::NumberToString(id));
+    update.root_id = root.id;
+    update.nodes = {root, node};
     updates.push_back(update);
   }
 
@@ -628,21 +673,25 @@ TEST_F(ReadAnythingAppModelTest, ChangeActiveTreeWithPendingUpdates_UnknownID) {
 
     ui::AXTreeUpdate update;
     SetUpdateTreeID(&update);
-    update.root_id = 1;
-    update.nodes.resize(2);
-    update.nodes[0].id = 1;
-    update.nodes[0].child_ids = child_ids;
-    update.nodes[1].id = id;
-    update.nodes[1].role = ax::mojom::Role::kStaticText;
-    update.nodes[1].SetNameChecked(base::NumberToString(id));
+    ui::AXNodeData root;
+    root.id = 1;
+    root.child_ids = child_ids;
+
+    ui::AXNodeData node;
+    node.id = id;
+    node.role = ax::mojom::Role::kStaticText;
+    node.SetNameChecked(base::NumberToString(id));
+    update.root_id = root.id;
+    update.nodes = {root, node};
     updates.push_back(update);
   }
 
   // Create an update which has no tree id.
   ui::AXTreeUpdate update;
-  update.nodes.resize(1);
-  update.nodes[0].id = 1;
-  update.nodes[0].role = ax::mojom::Role::kGenericContainer;
+  ui::AXNodeData node;
+  node.id = 1;
+  node.role = ax::mojom::Role::kGenericContainer;
+  update.nodes = {node};
   updates.push_back(update);
 
   // Add the three updates.
@@ -660,11 +709,17 @@ TEST_F(ReadAnythingAppModelTest, ChangeActiveTreeWithPendingUpdates_UnknownID) {
 TEST_F(ReadAnythingAppModelTest, DisplayNodeIdsContains_ContentNodes) {
   ui::AXTreeUpdate update;
   SetUpdateTreeID(&update);
-  update.nodes.resize(3);
-  update.nodes[0].id = 4;
-  update.nodes[0].child_ids = {5, 6};
-  update.nodes[1].id = 5;
-  update.nodes[2].id = 6;
+  ui::AXNodeData node1;
+  node1.id = 5;
+
+  ui::AXNodeData node2;
+  node2.id = 6;
+
+  ui::AXNodeData parent_node;
+  parent_node.id = 4;
+  parent_node.child_ids = {node1.id, node2.id};
+  update.nodes = {parent_node, node1, node2};
+
   // This update changes the structure of the tree. When the controller receives
   // it in AccessibilityEventReceived, it will re-distill the tree.
   AccessibilityEventReceived({update});
@@ -729,11 +784,17 @@ TEST_F(ReadAnythingAppModelTest, Reset_ResetsState) {
   // Initial state.
   ui::AXTreeUpdate update;
   SetUpdateTreeID(&update);
-  update.nodes.resize(3);
-  update.nodes[0].id = 4;
-  update.nodes[0].child_ids = {5, 6};
-  update.nodes[1].id = 5;
-  update.nodes[2].id = 6;
+  ui::AXNodeData node1;
+  node1.id = 5;
+
+  ui::AXNodeData node2;
+  node2.id = 6;
+
+  ui::AXNodeData root;
+  root.id = 4;
+  root.child_ids = {node1.id, node2.id};
+  update.nodes = {root, node1, node2};
+
   AccessibilityEventReceived({update});
   ProcessDisplayNodes({3, 4});
   SetDistillationInProgress(true);
@@ -857,21 +918,41 @@ TEST_F(ReadAnythingAppModelTest,
        StartAndEndNodesHaveDifferentParents_SelectionStateCorrect) {
   ui::AXTreeUpdate update;
   SetUpdateTreeID(&update);
-  update.nodes.resize(6);
-  update.nodes[0].id = 1;
-  update.nodes[1].id = 2;
-  update.nodes[2].id = 3;
-  update.nodes[3].id = 4;
-  update.nodes[4].id = 5;
-  update.nodes[5].id = 6;
-  update.nodes[0].child_ids = {2, 3, 4};
-  update.nodes[3].child_ids = {5, 6};
-  update.nodes[0].role = ax::mojom::Role::kStaticText;
-  update.nodes[1].role = ax::mojom::Role::kStaticText;
-  update.nodes[2].role = ax::mojom::Role::kStaticText;
-  update.nodes[3].role = ax::mojom::Role::kGenericContainer;
-  update.nodes[4].role = ax::mojom::Role::kStaticText;
-  update.nodes[5].role = ax::mojom::Role::kStaticText;
+
+  ui::AXNodeData static_text_node1;
+  static_text_node1.id = 2;
+  static_text_node1.role = ax::mojom::Role::kStaticText;
+
+  ui::AXNodeData static_text_node2;
+  static_text_node2.id = 3;
+  static_text_node2.role = ax::mojom::Role::kStaticText;
+
+  ui::AXNodeData generic_container_node;
+  generic_container_node.id = 4;
+  generic_container_node.role = ax::mojom::Role::kGenericContainer;
+
+  ui::AXNodeData static_text_child_node1;
+  static_text_child_node1.id = 5;
+  static_text_child_node1.role = ax::mojom::Role::kStaticText;
+
+  ui::AXNodeData static_text_child_node2;
+  static_text_child_node2.id = 6;
+  static_text_child_node2.role = ax::mojom::Role::kStaticText;
+
+  ui::AXNodeData parent_node;
+  parent_node.id = 1;
+  parent_node.child_ids = {static_text_node1.id, static_text_node2.id,
+                           generic_container_node.id};
+  parent_node.role = ax::mojom::Role::kStaticText;
+  generic_container_node.child_ids = {static_text_child_node1.id,
+                                      static_text_child_node2.id};
+  update.nodes = {parent_node,
+                  static_text_node1,
+                  static_text_node2,
+                  generic_container_node,
+                  static_text_child_node1,
+                  static_text_child_node2};
+
   AccessibilityEventReceived({update});
 
   update.tree_data.sel_anchor_object_id = 2;
@@ -903,21 +984,29 @@ TEST_F(ReadAnythingAppModelTest,
        SelectionParentIsLinkAndInlineBlock_SelectionStateCorrect) {
   ui::AXTreeUpdate update;
   SetUpdateTreeID(&update);
-  update.nodes.resize(4);
-  update.nodes[0].id = 1;
-  update.nodes[1].id = 2;
-  update.nodes[2].id = 3;
-  update.nodes[3].id = 4;
-  update.nodes[0].child_ids = {2, 3};
-  update.nodes[2].child_ids = {4};
-  update.nodes[0].role = ax::mojom::Role::kStaticText;
-  update.nodes[1].role = ax::mojom::Role::kStaticText;
-  update.nodes[2].role = ax::mojom::Role::kLink;
-  update.nodes[2].AddStringAttribute(ax::mojom::StringAttribute::kDisplay,
-                                     "block");
-  update.nodes[3].role = ax::mojom::Role::kStaticText;
-  update.nodes[3].AddStringAttribute(ax::mojom::StringAttribute::kDisplay,
-                                     "inline-block");
+
+  ui::AXNodeData static_text_node;
+  static_text_node.id = 2;
+  static_text_node.role = ax::mojom::Role::kStaticText;
+
+  ui::AXNodeData link_node;
+  link_node.id = 3;
+  link_node.role = ax::mojom::Role::kLink;
+  link_node.AddStringAttribute(ax::mojom::StringAttribute::kDisplay, "block");
+
+  ui::AXNodeData inline_block_node;
+  inline_block_node.id = 4;
+  inline_block_node.role = ax::mojom::Role::kStaticText;
+  inline_block_node.AddStringAttribute(ax::mojom::StringAttribute::kDisplay,
+                                       "inline-block");
+  link_node.child_ids = {inline_block_node.id};
+
+  ui::AXNodeData root;
+  root.id = 1;
+  root.child_ids = {static_text_node.id, link_node.id};
+  root.role = ax::mojom::Role::kStaticText;
+  update.nodes = {root, static_text_node, link_node, inline_block_node};
+
   AccessibilityEventReceived({update});
 
   update.tree_data.sel_anchor_object_id = 4;
@@ -942,21 +1031,30 @@ TEST_F(ReadAnythingAppModelTest,
        SelectionParentIsListItem_SelectionStateCorrect) {
   ui::AXTreeUpdate update;
   SetUpdateTreeID(&update);
-  update.nodes.resize(4);
-  update.nodes[0].id = 1;
-  update.nodes[1].id = 2;
-  update.nodes[2].id = 3;
-  update.nodes[3].id = 4;
-  update.nodes[0].child_ids = {2, 3};
-  update.nodes[2].child_ids = {4};
-  update.nodes[0].role = ax::mojom::Role::kStaticText;
-  update.nodes[1].role = ax::mojom::Role::kStaticText;
-  update.nodes[2].role = ax::mojom::Role::kLink;
-  update.nodes[2].AddStringAttribute(ax::mojom::StringAttribute::kDisplay,
-                                     "block");
-  update.nodes[3].role = ax::mojom::Role::kStaticText;
-  update.nodes[3].AddStringAttribute(ax::mojom::StringAttribute::kDisplay,
-                                     "list-item");
+
+  ui::AXNodeData static_text_node;
+  static_text_node.id = 2;
+  static_text_node.role = ax::mojom::Role::kStaticText;
+
+  ui::AXNodeData link_node;
+  link_node.id = 3;
+  link_node.role = ax::mojom::Role::kLink;
+  link_node.AddStringAttribute(ax::mojom::StringAttribute::kDisplay, "block");
+
+  ui::AXNodeData static_text_list_node;
+  static_text_list_node.id = 4;
+  static_text_list_node.role = ax::mojom::Role::kStaticText;
+  static_text_list_node.AddStringAttribute(ax::mojom::StringAttribute::kDisplay,
+                                           "list-item");
+  link_node.child_ids = {static_text_list_node.id};
+
+  ui::AXNodeData parent_node;
+  parent_node.id = 1;
+  parent_node.child_ids = {static_text_node.id, link_node.id};
+  parent_node.role = ax::mojom::Role::kStaticText;
+  update.nodes = {parent_node, static_text_node, link_node,
+                  static_text_list_node};
+
   AccessibilityEventReceived({update});
 
   update.tree_data.sel_anchor_object_id = 4;
@@ -981,21 +1079,29 @@ TEST_F(ReadAnythingAppModelTest,
        SelectionParentIsGenericContainerAndInline_SelectionStateCorrect) {
   ui::AXTreeUpdate update;
   SetUpdateTreeID(&update);
-  update.nodes.resize(4);
-  update.nodes[0].id = 1;
-  update.nodes[1].id = 2;
-  update.nodes[2].id = 3;
-  update.nodes[3].id = 4;
-  update.nodes[0].child_ids = {2, 3};
-  update.nodes[2].child_ids = {4};
-  update.nodes[0].role = ax::mojom::Role::kStaticText;
-  update.nodes[1].role = ax::mojom::Role::kStaticText;
-  update.nodes[2].role = ax::mojom::Role::kGenericContainer;
-  update.nodes[2].AddStringAttribute(ax::mojom::StringAttribute::kDisplay,
-                                     "block");
-  update.nodes[3].role = ax::mojom::Role::kStaticText;
-  update.nodes[3].AddStringAttribute(ax::mojom::StringAttribute::kDisplay,
-                                     "inline");
+  ui::AXNodeData static_text_node;
+  static_text_node.id = 2;
+  static_text_node.role = ax::mojom::Role::kStaticText;
+
+  ui::AXNodeData generic_container_node;
+  generic_container_node.id = 3;
+  generic_container_node.role = ax::mojom::Role::kGenericContainer;
+  generic_container_node.AddStringAttribute(
+      ax::mojom::StringAttribute::kDisplay, "block");
+  ui::AXNodeData inline_node;
+  inline_node.id = 4;
+  inline_node.role = ax::mojom::Role::kStaticText;
+  inline_node.AddStringAttribute(ax::mojom::StringAttribute::kDisplay,
+                                 "inline");
+  generic_container_node.child_ids = {inline_node.id};
+
+  ui::AXNodeData parent_node;
+  parent_node.id = 1;
+  parent_node.child_ids = {static_text_node.id, generic_container_node.id};
+  parent_node.role = ax::mojom::Role::kStaticText;
+  update.nodes = {parent_node, static_text_node, generic_container_node,
+                  inline_node};
+
   AccessibilityEventReceived({update});
 
   update.tree_data.sel_anchor_object_id = 4;
@@ -1020,19 +1126,31 @@ TEST_F(
     SelectionParentIsGenericContainerWithMultipleChildren_SelectionStateCorrect) {
   ui::AXTreeUpdate update;
   SetUpdateTreeID(&update);
-  update.nodes.resize(5);
-  update.nodes[0].id = 1;
-  update.nodes[1].id = 2;
-  update.nodes[2].id = 3;
-  update.nodes[3].id = 4;
-  update.nodes[4].id = 5;
-  update.nodes[0].child_ids = {2, 3};
-  update.nodes[2].child_ids = {4, 5};
-  update.nodes[0].role = ax::mojom::Role::kStaticText;
-  update.nodes[1].role = ax::mojom::Role::kStaticText;
-  update.nodes[2].role = ax::mojom::Role::kGenericContainer;
-  update.nodes[3].role = ax::mojom::Role::kStaticText;
-  update.nodes[4].role = ax::mojom::Role::kStaticText;
+  ui::AXNodeData static_text_node;
+  static_text_node.id = 2;
+  static_text_node.role = ax::mojom::Role::kStaticText;
+
+  ui::AXNodeData generic_container_node;
+  generic_container_node.role = ax::mojom::Role::kGenericContainer;
+  generic_container_node.id = 3;
+
+  ui::AXNodeData static_text_child_node1;
+  static_text_child_node1.id = 4;
+  static_text_child_node1.role = ax::mojom::Role::kStaticText;
+
+  ui::AXNodeData static_text_child_node2;
+  static_text_child_node2.id = 5;
+  static_text_child_node2.role = ax::mojom::Role::kStaticText;
+  generic_container_node.child_ids = {static_text_child_node1.id,
+                                      static_text_child_node2.id};
+
+  ui::AXNodeData parent_node;
+  parent_node.id = 1;
+  parent_node.role = ax::mojom::Role::kStaticText;
+  parent_node.child_ids = {static_text_node.id, generic_container_node.id};
+  update.nodes = {parent_node, static_text_node, generic_container_node,
+                  static_text_child_node1, static_text_child_node2};
+
   AccessibilityEventReceived({update});
 
   update.tree_data.sel_anchor_object_id = 4;
@@ -1163,9 +1281,10 @@ TEST_F(ReadAnythingAppModelTest, ValidPDF) {
 
   // Main web contents should have one child.
   ui::AXTreeUpdate update;
-  update.nodes.resize(1);
-  update.nodes[0].id = 1;
-  update.nodes[0].AddChildTreeId(pdf_web_contents_tree_id);
+  ui::AXNodeData node;
+  node.id = 1;
+  node.AddChildTreeId(pdf_web_contents_tree_id);
+  update.nodes = {node};
   SetUpdateTreeID(&update);
   AccessibilityEventReceived({update});
 
@@ -1174,19 +1293,21 @@ TEST_F(ReadAnythingAppModelTest, ValidPDF) {
   ASSERT_TRUE(IsPDFFormatted());
 
   // Pdf web contents should have one child.
-  update.nodes.resize(1);
-  update.root_id = 1;
-  update.nodes[0].id = 1;
-  update.nodes[0].AddChildTreeId(pdf_iframe_tree_id);
+  ui::AXNodeData root;
+  root.id = 1;
+  root.AddChildTreeId(pdf_iframe_tree_id);
+  update.root_id = root.id;
+  update.nodes = {root};
   SetUpdateTreeID(&update, pdf_web_contents_tree_id);
   AccessibilityEventReceived({update});
 
   ASSERT_TRUE(IsPDFFormatted());
 
   // Send pdf iframe tree to model.
-  update.nodes.resize(1);
-  update.root_id = 1;
-  update.nodes[0].id = 1;
+  ui::AXNodeData update_root;
+  update_root.id = 1;
+  update.root_id = update_root.id;
+  update.nodes = {update_root};
   SetUpdateTreeID(&update, pdf_iframe_tree_id);
   AccessibilityEventReceived({update});
 
@@ -1198,17 +1319,20 @@ TEST_F(ReadAnythingAppModelTest, InvalidPDFFormat) {
   // Main web contents should have one child, the pdf web contents.
   ui::AXTreeID pdf_web_contents_tree_id = ui::AXTreeID::CreateNewAXTreeID();
   ui::AXTreeUpdate update;
-  update.nodes.resize(1);
-  update.nodes[0].id = 1;
-  update.nodes[0].AddChildTreeId(pdf_web_contents_tree_id);
+  ui::AXNodeData node;
+  node.id = 1;
+  node.AddChildTreeId(pdf_web_contents_tree_id);
+  update.nodes = {node};
   SetUpdateTreeID(&update);
   AccessibilityEventReceived({update});
 
   // This pdf web contents has no children, so this is an invalid PDF.
   ui::AXTreeUpdate pdf_web_contents_update;
-  pdf_web_contents_update.nodes.resize(1);
-  pdf_web_contents_update.root_id = 1;
-  pdf_web_contents_update.nodes[0].id = 1;
+  ui::AXNodeData empty_root;
+  empty_root.id = 1;
+  pdf_web_contents_update.root_id = empty_root.id;
+  pdf_web_contents_update.nodes = {empty_root};
+
   SetUpdateTreeID(&pdf_web_contents_update, pdf_web_contents_tree_id);
   AccessibilityEventReceived({pdf_web_contents_update});
 
@@ -1221,22 +1345,26 @@ TEST_F(ReadAnythingAppModelTest, PdfEvents_SetRequiresDistillation) {
   ui::AXTreeUpdate initial_update;
   SetUpdateTreeID(&initial_update);
   initial_update.root_id = 1;
-  initial_update.nodes.resize(2);
-  initial_update.nodes[0].id = 1;
-  initial_update.nodes[1].id = 2;
-  initial_update.nodes[0].role = ax::mojom::Role::kPdfRoot;
-  initial_update.nodes[1].role = ax::mojom::Role::kEmbeddedObject;
-  initial_update.nodes[0].child_ids = {2};
+  ui::AXNodeData embedded_node;
+  embedded_node.id = 2;
+  embedded_node.role = ax::mojom::Role::kEmbeddedObject;
+
+  ui::AXNodeData pdf_root_node;
+  pdf_root_node.id = 1;
+  pdf_root_node.role = ax::mojom::Role::kPdfRoot;
+  pdf_root_node.child_ids = {embedded_node.id};
+  initial_update.nodes = {pdf_root_node, embedded_node};
   AccessibilityEventReceived({initial_update});
 
   // Update with no new nodes added to the tree.
   ui::AXTreeUpdate update;
   SetUpdateTreeID(&update);
   update.root_id = 1;
-  update.nodes.resize(1);
-  update.nodes[0].id = 1;
-  update.nodes[0].role = ax::mojom::Role::kPdfRoot;
-  update.nodes[0].SetNameChecked("example.pdf");
+  ui::AXNodeData node;
+  node.id = 1;
+  node.role = ax::mojom::Role::kPdfRoot;
+  node.SetNameChecked("example.pdf");
+  update.nodes = {node};
   AccessibilityEventReceived({update});
   ASSERT_FALSE(RequiresDistillation());
 
@@ -1244,15 +1372,21 @@ TEST_F(ReadAnythingAppModelTest, PdfEvents_SetRequiresDistillation) {
   ui::AXTreeUpdate update2;
   SetUpdateTreeID(&update2);
   update2.root_id = 1;
-  update2.nodes.resize(3);
-  update2.nodes[0].id = 1;
-  update2.nodes[1].id = 2;
-  update2.nodes[2].id = 3;
-  update2.nodes[0].role = ax::mojom::Role::kStaticText;
-  update2.nodes[1].role = ax::mojom::Role::kEmbeddedObject;
-  update2.nodes[2].role = ax::mojom::Role::kStaticText;
-  update2.nodes[0].child_ids = {2};
-  update2.nodes[1].child_ids = {3};
+  ui::AXNodeData static_text_node1;
+  static_text_node1.id = 1;
+  static_text_node1.role = ax::mojom::Role::kStaticText;
+
+  ui::AXNodeData updated_embedded_node;
+  updated_embedded_node.id = 2;
+  updated_embedded_node.role = ax::mojom::Role::kEmbeddedObject;
+  static_text_node1.child_ids = {updated_embedded_node.id};
+
+  ui::AXNodeData static_text_node2;
+  static_text_node2.id = 3;
+  static_text_node2.role = ax::mojom::Role::kStaticText;
+  updated_embedded_node.child_ids = {static_text_node2.id};
+  update2.nodes = {static_text_node1, updated_embedded_node, static_text_node2};
+
   AccessibilityEventReceived({update2});
   ASSERT_TRUE(RequiresDistillation());
 }
@@ -1263,19 +1397,21 @@ TEST_F(ReadAnythingAppModelTest, PdfEvents_DontSetRequiresDistillation) {
   ui::AXTreeUpdate initial_update;
   SetUpdateTreeID(&initial_update);
   initial_update.root_id = 1;
-  initial_update.nodes.resize(1);
-  initial_update.nodes[0].id = 1;
-  initial_update.nodes[0].role = ax::mojom::Role::kPdfRoot;
+  ui::AXNodeData node;
+  node.id = 1;
+  node.role = ax::mojom::Role::kPdfRoot;
+  initial_update.nodes = {node};
   AccessibilityEventReceived({initial_update});
 
   // Updates that don't create a new subtree, for example, a role change, should
   // not set requires_distillation_.
   ui::AXTreeUpdate update;
   SetUpdateTreeID(&update);
-  update.root_id = 1;
-  update.nodes.resize(1);
-  update.nodes[0].id = 1;
-  update.nodes[0].role = ax::mojom::Role::kStaticText;
+  ui::AXNodeData static_text_node;
+  static_text_node.id = 1;
+  static_text_node.role = ax::mojom::Role::kStaticText;
+  update.root_id = static_text_node.id;
+  update.nodes = {static_text_node};
   AccessibilityEventReceived({update});
   ASSERT_FALSE(RequiresDistillation());
 }
