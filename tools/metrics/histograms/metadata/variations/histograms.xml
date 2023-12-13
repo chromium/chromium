@@ -573,6 +573,24 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Variations.SeedFreshnessDiff" units="minutes"
+    expires_after="2024-03-03">
+  <owner>dogancanemek@chromium.org</owner>
+  <owner>src/android_webview/OWNERS</owner>
+  <summary>
+    Logs the difference between the age of the seed (Seed Freshness) and the
+    app's copy of the seed (App Seed Freshness). Seed Freshness is recorded when
+    seed is loaded for both regular and safe seeds and AppSeed Freshness is
+    recorded every time the browser process initializes. SeedFreshnessDiff is
+    recorded at the latter of these two events. In the case when a user's clock
+    is set incorrectly, or when a user changes their clock backwards in between
+    Chrome runs, the difference between the seed freshness and the app seed
+    freshness will be calculated and cached as long as both of them are greater
+    than 0. Nothing is emitted to this histogram if either seed freshness or app
+    seed freshness is zero or negative.
+  </summary>
+</histogram>
+
 <histogram name="Variations.SeedLoadBlockingTime" units="ms"
     expires_after="2024-11-01">
   <owner>ntfschr@chromium.org</owner>

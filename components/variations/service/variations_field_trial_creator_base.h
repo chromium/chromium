@@ -193,6 +193,9 @@ class VariationsFieldTrialCreatorBase {
   // overridden.
   void OverrideVariationsPlatform(Study::Platform platform_override);
 
+  // Calculates the Seed Freshness
+  base::Time CalculateSeedFreshness();
+
   // Returns the locale that was used for evaluating trials.
   const std::string& application_locale() const { return application_locale_; }
 
@@ -236,7 +239,7 @@ class VariationsFieldTrialCreatorBase {
   // older than the binary build time.
   //
   // Also, records a couple VariationsSeed-related metrics.
-  bool HasSeedExpired(bool is_safe_seed);
+  bool HasSeedExpired();
 
   // Returns true if the loaded VariationsSeed is for a future milestone (e.g.
   // if the client is on M92 and the seed was fetched with M93). A seed for a

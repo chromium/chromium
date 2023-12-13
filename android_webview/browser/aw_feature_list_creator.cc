@@ -256,6 +256,11 @@ void AwFeatureListCreator::SetUpFieldTrials() {
   // able to break seed downloads. See https://crbug.com/801771 for more info.
   variations::SafeSeedManager ignored_safe_seed_manager(local_state_.get());
 
+  base::Time fetchTime =
+      variations_field_trial_creator_->CalculateSeedFreshness();
+  long seedFreshnessMinutes = (base::Time::Now() - fetchTime).InMinutes();
+  CacheSeedFreshness(seedFreshnessMinutes);
+
   auto feature_list = std::make_unique<base::FeatureList>();
   std::vector<std::string> variation_ids =
       aw_feature_entries::RegisterEnabledFeatureEntries(feature_list.get());

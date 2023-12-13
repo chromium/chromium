@@ -498,21 +498,25 @@ void VariationsFieldTrialCreatorBase::ApplyFieldTrialTestingConfig(
 }
 #endif  // BUILDFLAG(FIELDTRIAL_TESTING_ENABLED)
 
-bool VariationsFieldTrialCreatorBase::HasSeedExpired(bool is_safe_seed) {
+base::Time VariationsFieldTrialCreatorBase::CalculateSeedFreshness() {
   // TODO(crbug/1462588): Consider comparing the server-provided fetch time with
   // the network time.
-  const base::Time fetch_time = is_safe_seed
-                                    ? GetSeedStore()->GetSafeSeedFetchTime()
-                                    : GetSeedStore()->GetLastFetchTime();
+  return seed_type_ == SeedType::kSafeSeed
+             ? GetSeedStore()->GetSafeSeedFetchTime()
+             : GetSeedStore()->GetLastFetchTime();
+}
 
+bool VariationsFieldTrialCreatorBase::HasSeedExpired() {
+  const base::Time fetch_time = CalculateSeedFreshness();
   // If the fetch time is null, skip the expiry check. If the seed is a regular
   // seed (i.e. not a safe seed) and the fetch time is missing, then this must
   // be the first run of Chrome. If the seed is a safe seed, the fetch time may
   // be missing because the pref was added about a milestone later than most of
   // the other safe seed prefs.
   if (fetch_time.is_null()) {
-    RecordSeedExpiry(is_safe_seed, VariationsSeedExpiry::kFetchTimeMissing);
-    if (!is_safe_seed) {
+    RecordSeedExpiry(seed_type_ == SeedType::kSafeSeed,
+                     VariationsSeedExpiry::kFetchTimeMissing);
+    if (seed_type_ != SeedType::kSafeSeed) {
       // Store the current time as the last fetch time for Chrome's first run.
       GetSeedStore()->RecordLastFetchTime(base::Time::Now());
       // Record freshness of "0", since we expect a first run seed to be fresh.
@@ -524,9 +528,9 @@ bool VariationsFieldTrialCreatorBase::HasSeedExpired(bool is_safe_seed) {
   if (!has_seed_expired) {
     RecordSeedFreshness(base::Time::Now() - fetch_time);
   }
-  RecordSeedExpiry(is_safe_seed, has_seed_expired
-                                     ? VariationsSeedExpiry::kExpired
-                                     : VariationsSeedExpiry::kNotExpired);
+  RecordSeedExpiry(seed_type_ == SeedType::kSafeSeed,
+                   has_seed_expired ? VariationsSeedExpiry::kExpired
+                                    : VariationsSeedExpiry::kNotExpired);
   return has_seed_expired;
 }
 
@@ -626,7 +630,7 @@ bool VariationsFieldTrialCreatorBase::CreateTrialsFromSeed(
                                   : SeedUsage::kUnloadableRegularSeedNotUsed);
     return false;
   }
-  if (HasSeedExpired(/*is_safe_seed=*/run_in_safe_mode)) {
+  if (HasSeedExpired()) {
     RecordVariationsSeedUsage(run_in_safe_mode
                                   ? SeedUsage::kExpiredSafeSeedNotUsed
                                   : SeedUsage::kExpiredRegularSeedNotUsed);
