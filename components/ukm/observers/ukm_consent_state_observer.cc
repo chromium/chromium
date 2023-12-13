@@ -141,9 +141,6 @@ void UkmConsentStateObserver::StartObserving(syncer::SyncService* sync_service,
 void UkmConsentStateObserver::UpdateUkmAllowedForAllProfiles(bool total_purge) {
   const UkmConsentState new_state = GetPreviousStatesForAllProfiles();
 
-  base::UmaHistogramBoolean("UKM.ConsentObserver.AllowedForAllProfiles",
-                            new_state.Has(MSBB));
-
   // Any change in profile states needs to call OnUkmAllowedStateChanged so that
   // the new settings take effect.
   if (total_purge || new_state != ukm_consent_state_) {

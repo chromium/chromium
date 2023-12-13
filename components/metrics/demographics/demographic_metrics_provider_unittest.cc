@@ -445,10 +445,6 @@ TEST(DemographicMetricsProviderTest,
   EXPECT_EQ(kTestBirthYear + kBirthYearOffset,
             report.user_demographics().birth_year());
   EXPECT_EQ(kTestGender, report.user_demographics().gender());
-
-  // Verify histograms.
-  histogram.ExpectUniqueSample("UKM.UserDemographics.Status",
-                               UserDemographicsStatus::kSuccess, 1);
 }
 
 }  // namespace
