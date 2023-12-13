@@ -2596,7 +2596,6 @@
       "external/wpt/html/browsers/history/the-history-interface/traverse_the_history_unload_1.html",
       "external/wpt/html/browsers/the-window-object/BarProp.window.js",
       "external/wpt/html/browsers/the-window-object/open-close/close_unload.html",
-      "external/wpt/html/browsers/the-window-object/self-et-al.window.js",
       "external/wpt/html/infrastructure/urls/base-url/document-base-url-window-initiator-is-not-opener.https.window.js",
       "external/wpt/html/webappapis/dynamic-markup-insertion/opening-the-input-stream/bailout-exception-vs-return-origin.sub.window.js",
       "external/wpt/html/webappapis/dynamic-markup-insertion/opening-the-input-stream/bailout-exception-vs-return-xml.window.js",
