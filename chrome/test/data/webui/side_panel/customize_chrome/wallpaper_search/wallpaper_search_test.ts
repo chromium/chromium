@@ -1110,7 +1110,7 @@ suite('WallpaperSearchTest', () => {
       wallpaperSearchElement.$.submitButton.click();
 
       assertEquals(
-          1, metrics.count('NewTabPage.CustomizeChromeSidePanelAction'));
+          2, metrics.count('NewTabPage.CustomizeChromeSidePanelAction'));
       assertEquals(
           1,
           metrics.count(
@@ -1134,7 +1134,7 @@ suite('WallpaperSearchTest', () => {
       assertTrue(!!result);
       (result as HTMLElement).click();
       assertEquals(
-          2, metrics.count('NewTabPage.CustomizeChromeSidePanelAction'));
+          3, metrics.count('NewTabPage.CustomizeChromeSidePanelAction'));
       assertEquals(
           1,
           metrics.count(
@@ -1177,7 +1177,7 @@ suite('WallpaperSearchTest', () => {
       // Set metric on thumbs down.
       updateCrFeedbackButtons(CrFeedbackOption.THUMBS_DOWN);
       assertEquals(
-          2, metrics.count('NewTabPage.CustomizeChromeSidePanelAction'));
+          3, metrics.count('NewTabPage.CustomizeChromeSidePanelAction'));
       assertEquals(
           1,
           metrics.count(
@@ -1187,12 +1187,91 @@ suite('WallpaperSearchTest', () => {
       // Set metric on thumbs up.
       updateCrFeedbackButtons(CrFeedbackOption.THUMBS_UP);
       assertEquals(
-          3, metrics.count('NewTabPage.CustomizeChromeSidePanelAction'));
+          4, metrics.count('NewTabPage.CustomizeChromeSidePanelAction'));
       assertEquals(
           1,
           metrics.count(
               'NewTabPage.CustomizeChromeSidePanelAction',
               CustomizeChromeAction.WALLPAPER_SEARCH_THUMBS_UP_SELECTED));
+    });
+
+    test('changing subject descriptor sets metric', async () => {
+      createWallpaperSearchElementWithDescriptors();
+      await flushTasks();
+
+      $$<HTMLElement>(
+          wallpaperSearchElement,
+          '#descriptorComboboxA .category-item')!.click();
+      await flushTasks();
+      $$<HTMLElement>(
+          wallpaperSearchElement,
+          '#descriptorComboboxA .dropdown-item')!.click();
+
+      assertEquals(
+          1, metrics.count('NewTabPage.CustomizeChromeSidePanelAction'));
+      assertEquals(
+          1,
+          metrics.count(
+              'NewTabPage.CustomizeChromeSidePanelAction',
+              CustomizeChromeAction
+                  .WALLPAPER_SEARCH_SUBJECT_DESCRIPTOR_UPDATED));
+    });
+
+    test('changing style descriptor sets metric', async () => {
+      createWallpaperSearchElementWithDescriptors();
+      await flushTasks();
+
+      $$<HTMLElement>(
+          wallpaperSearchElement,
+          '#descriptorComboboxB .dropdown-item')!.click();
+
+      assertEquals(
+          1, metrics.count('NewTabPage.CustomizeChromeSidePanelAction'));
+      assertEquals(
+          1,
+          metrics.count(
+              'NewTabPage.CustomizeChromeSidePanelAction',
+              CustomizeChromeAction.WALLPAPER_SEARCH_STYLE_DESCRIPTOR_UPDATED));
+    });
+
+    test('changing mood descriptor sets metric', async () => {
+      createWallpaperSearchElementWithDescriptors();
+      await flushTasks();
+
+      $$<HTMLElement>(
+          wallpaperSearchElement,
+          '#descriptorComboboxC .dropdown-item')!.click();
+
+      assertEquals(
+          1, metrics.count('NewTabPage.CustomizeChromeSidePanelAction'));
+      assertEquals(
+          1,
+          metrics.count(
+              'NewTabPage.CustomizeChromeSidePanelAction',
+              CustomizeChromeAction.WALLPAPER_SEARCH_MOOD_DESCRIPTOR_UPDATED));
+    });
+
+    test('changing color descriptor sets metric', async () => {
+      createWallpaperSearchElementWithDescriptors();
+      await flushTasks();
+
+      // Set a default color.
+      $$<HTMLElement>(
+          wallpaperSearchElement, '#descriptorMenuD button')!.click();
+
+      // Set a custom color.
+      wallpaperSearchElement.$.hueSlider.selectedHue = 10;
+      wallpaperSearchElement.$.hueSlider.dispatchEvent(
+          new Event('selected-hue-changed'));
+
+      // Should have 2 calls to color being changed.
+      assertEquals(
+          2, metrics.count('NewTabPage.CustomizeChromeSidePanelAction'));
+      assertEquals(
+          2,
+          metrics.count(
+              'NewTabPage.CustomizeChromeSidePanelAction',
+              CustomizeChromeAction.WALLPAPER_SEARCH_COLOR_DESCRIPTOR_UPDATED));
     });
   });
 });

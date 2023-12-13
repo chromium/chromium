@@ -146,6 +146,22 @@ export class WallpaperSearchElement extends WallpaperSearchElementBase {
         type: Number,
         value: CrFeedbackOption.UNSPECIFIED,
       },
+      selectedDescriptorA_: {
+        type: String,
+        observer: 'onSubjectDescriptorChange_',
+      },
+      selectedDescriptorB_: {
+        type: String,
+        observer: 'onStyleDescriptorChange_',
+      },
+      selectedDescriptorC_: {
+        type: String,
+        observer: 'onMoodDescriptorChange_',
+      },
+      selectedDescriptorD_: {
+        type: Object,
+        observer: 'onColorDescriptorChange_',
+      },
       selectedHue_: Number,
       status_: {
         type: WallpaperSearchStatus,
@@ -430,6 +446,26 @@ export class WallpaperSearchElement extends WallpaperSearchElementBase {
     this.selectedDescriptorD_ = {
       color: hexColorToSkColor(this.selectedDefaultColor_),
     };
+  }
+
+  private onColorDescriptorChange_() {
+    recordCustomizeChromeAction(
+        CustomizeChromeAction.WALLPAPER_SEARCH_COLOR_DESCRIPTOR_UPDATED);
+  }
+
+  private onMoodDescriptorChange_() {
+    recordCustomizeChromeAction(
+        CustomizeChromeAction.WALLPAPER_SEARCH_MOOD_DESCRIPTOR_UPDATED);
+  }
+
+  private onStyleDescriptorChange_() {
+    recordCustomizeChromeAction(
+        CustomizeChromeAction.WALLPAPER_SEARCH_STYLE_DESCRIPTOR_UPDATED);
+  }
+
+  private onSubjectDescriptorChange_() {
+    recordCustomizeChromeAction(
+        CustomizeChromeAction.WALLPAPER_SEARCH_SUBJECT_DESCRIPTOR_UPDATED);
   }
 
   private onFeedbackSelectedOptionChanged_(

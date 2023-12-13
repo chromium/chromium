@@ -40953,6 +40953,10 @@ Called by update_net_error_codes.py.-->
   <int value="8" label="First party collection theme selected."/>
   <int value="9" label="Wallpaper search thumbs up selected."/>
   <int value="10" label="Wallpaper search thumbs down selected."/>
+  <int value="11" label="Wallpaper search subject value changed."/>
+  <int value="12" label="Wallpaper search style value changed."/>
+  <int value="13" label="Wallpaper search mood value changed."/>
+  <int value="14" label="Wallpaper search color value changed."/>
 </enum>
 
 <enum name="NTPCustomizedFeatures">
