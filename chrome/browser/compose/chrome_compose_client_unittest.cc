@@ -175,6 +175,19 @@ class ChromeComposeClientTest : public BrowserWithTestWindowTest {
     }
   }
 
+  void EnableAutoCompose() {
+    scoped_feature_list_.Reset();
+    scoped_feature_list_.InitWithFeaturesAndParameters(
+        /*enabled_features=*/{{compose::features::kEnableCompose,
+                               {{"auto_submit_with_selection", "true"}}},
+                              {optimization_guide::features::
+                                   kOptimizationGuideModelExecution,
+                               {}}},
+        /*disabled_features=*/{});
+    // Needed for feature flags to apply.
+    compose::ResetConfigForTesting();
+  }
+
   void ShowDialogAndBindMojo(ComposeCallback callback = base::NullCallback()) {
     ShowDialogAndBindMojoWithFieldData(field_data_, std::move(callback));
   }
@@ -1365,6 +1378,7 @@ TEST_F(ChromeComposeClientTest, LoseFocusConsentHistogramTest) {
 }
 
 TEST_F(ChromeComposeClientTest, TestAutoCompose) {
+  EnableAutoCompose();
   base::test::TestFuture<void> execute_model_future;
   // Make model execution hang
   EXPECT_CALL(session(), ExecuteModel(_, _))
@@ -1392,6 +1406,7 @@ TEST_F(ChromeComposeClientTest, TestAutoCompose) {
 }
 
 TEST_F(ChromeComposeClientTest, TestAutoComposeTooLong) {
+  EnableAutoCompose();
   EXPECT_CALL(session(), ExecuteModel(_, _)).Times(0);
 
   std::u16string words(compose::GetComposeConfig().input_max_chars - 3, u'a');
@@ -1409,6 +1424,7 @@ TEST_F(ChromeComposeClientTest, TestAutoComposeTooLong) {
 }
 
 TEST_F(ChromeComposeClientTest, TestAutoComposeTooFewWords) {
+  EnableAutoCompose();
   EXPECT_CALL(session(), ExecuteModel(_, _)).Times(0);
   std::u16string words(40, u'a');
   words += u" b";
@@ -1422,6 +1438,7 @@ TEST_F(ChromeComposeClientTest, TestAutoComposeTooFewWords) {
 }
 
 TEST_F(ChromeComposeClientTest, TestAutoComposeTooManyWords) {
+  EnableAutoCompose();
   EXPECT_CALL(session(), ExecuteModel(_, _)).Times(0);
 
   std::u16string words = u"b";
@@ -1439,24 +1456,15 @@ TEST_F(ChromeComposeClientTest, TestAutoComposeTooManyWords) {
 }
 
 TEST_F(ChromeComposeClientTest, TestAutoComposeDisabled) {
+  // Auto compose is disabled by default.
   EXPECT_CALL(session(), ExecuteModel(_, _)).Times(0);
-
-  scoped_feature_list_.Reset();
-  scoped_feature_list_.InitWithFeaturesAndParameters(
-      /*enabled_features=*/{{compose::features::kEnableCompose,
-                             {{"auto_submit_with_selection", "false"}}},
-                            {optimization_guide::features::
-                                 kOptimizationGuideModelExecution,
-                             {}}},
-      /*disabled_features=*/{});
-  // Needed for feature flags to apply.
-  compose::ResetConfigForTesting();
 
   SetSelection(u"testing alpha bravo charlie");
   ShowDialogAndBindMojo();
 }
 
 TEST_F(ChromeComposeClientTest, TestNoAutoComposeWithPopup) {
+  EnableAutoCompose();
   EXPECT_CALL(session(), ExecuteModel(_, _)).Times(0);
   SetSelection(u"a");  // too short to cause auto compose.
 
@@ -1476,6 +1484,7 @@ TEST_F(ChromeComposeClientTest, TestNoAutoComposeWithPopup) {
 }
 
 TEST_F(ChromeComposeClientTest, TestAutoComposeWithRepeatedRightClick) {
+  EnableAutoCompose();
   base::test::TestFuture<void> execute_model_future;
   EXPECT_CALL(session(), ExecuteModel(_, _))
       .WillOnce(base::test::RunOnceClosure(execute_model_future.GetCallback()));
@@ -1503,6 +1512,7 @@ TEST_F(ChromeComposeClientTest, TestAutoComposeWithRepeatedRightClick) {
 }
 
 TEST_F(ChromeComposeClientTest, TestNoAutoComposeWithoutConsent) {
+  EnableAutoCompose();
   EXPECT_CALL(session(), ExecuteModel(_, _)).Times(0);
 
   SetPrefsForComposeConsentState(compose::mojom::ConsentState::kUnset);
