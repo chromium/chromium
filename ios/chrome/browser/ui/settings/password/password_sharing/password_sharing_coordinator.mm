@@ -31,6 +31,7 @@
 #import "ios/chrome/browser/ui/settings/password/password_sharing/recipient_info.h"
 #import "ios/chrome/browser/ui/settings/password/password_sharing/sharing_status_coordinator.h"
 #import "ios/chrome/browser/ui/settings/password/password_sharing/sharing_status_coordinator_delegate.h"
+#import "ios/chrome/grit/ios_branded_strings.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "services/network/public/cpp/shared_url_loader_factory.h"
 #import "ui/base/l10n/l10n_util.h"

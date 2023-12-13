@@ -47,6 +47,7 @@ source_set("unit_tests") {
     "//components/autofill/core/browser:test_support",
     "//components/autofill/core/common:features",
     "//components/strings:components_strings_grit",
+    "//ios/chrome/app/strings:ios_branded_strings_grit",
     "//ios/chrome/app/strings:ios_strings_grit",
     "//ios/chrome/browser/shared/ui/table_view",
     "//ios/chrome/browser/shared/ui/table_view:test_support",

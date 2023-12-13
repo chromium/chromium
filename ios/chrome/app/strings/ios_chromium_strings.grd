@@ -875,6 +875,173 @@ Things to consider:
       <message name="IDS_IOS_SETTINGS_SAFETY_CHECK_MAGIC_STACK_PAGE_HEADER" desc="Informational header at the top of the safety check page when opened via the Magic Stack">
         Chromium automatically runs Safety Check every day to keep you safe from data breaches, unsafe websites and more. You can find more about Safety Check in Settings.
       </message>
+      <message name="IDS_IOS_APPLICATION_SHORTCUT_SET_DEFAULT_BROWSER" desc="The title of the spotlight item to set Chrome as a default browser. [Length: unlimited] [iOS only]." meaning="Spotlight item title for setting default browser.">
+        Set Chromium as Default Browser
+      </message>
+      <message name="IDS_IOS_CALENDARS_USAGE_DESCRIPTION" desc="Specifies the reason for accessing the user's calendar while the app is in use [Length: unlimited] [iOS only].">
+        This will be used to create events in your Apple Calendar from Chromium and Google Lens.
+      </message>
+      <message name="IDS_IOS_FEED_CARD_SYNC_HALF_SHEET_DESC" desc="Description of the feed card sync half sheet. [iOS only]">
+        To personalize your Discover feed and Chromium, turn on sync.
+      </message>
+      <message name="IDS_IOS_FOLLOW_MANAGEMENT_EMPTY_TEXT" desc="The text of an empty following list.">
+        Visit a site and click Follow in the Chromium menu
+      </message>
+      <message name="IDS_IOS_GOOGLE_SERVICES_SETTINGS_AUTO_TRACK_PACKAGES_FOOTER" desc="Parcel tracking feature setting page footer detailing how the data is shared. [iOS only]">
+        Chromium will detect package tracking numbers on sites you visit and show you package updates on the New Tab page. Your data will be shared with Google to provide this feature and to improve Shopping for everyone.
+      </message>
+      <message name="IDS_IOS_INCOGNITO_INTERSTITIAL_OPEN_IN_CHROME_INCOGNITO" desc="Button to open a link from an external app in Incognito mode rather than a regular tab. [iOS only]">
+        Open in Chromium Incognito
+      </message>
+      <message name="IDS_IOS_INCOGNITO_INTERSTITIAL_OPEN_IN_CHROME" desc="Button to open a link from an external app in a regular tab rather than in Incognito mode. [iOS only]">
+        Open in Chromium
+      </message>
+      <message name="IDS_IOS_INTENTS_OPEN_IN_CHROME_INCOGNITO_TITLE" desc="Shortcut name to open URL in Chrome in Incognito [iOS only].">
+        Open URLs in Chromium in Incognito
+      </message>
+      <message name="IDS_IOS_INTENTS_OPEN_IN_CHROME_INCOGNITO_DESCRIPTION" desc="Shortcut description to open URLs in Chrome in Incognito [iOS only].">
+        Opens the inputted URLs in Chromium in Incognito.
+      </message>
+      <message name="IDS_IOS_INTENTS_SEARCH_IN_CHROME_DESCRIPTION" desc="Siri Shortcut for search in chrome description [iOS only].">
+        Start a search in a new Chromium tab.
+      </message>
+      <message name="IDS_IOS_INTENTS_SEARCH_IN_CHROME_INVOCATION_PHRASE" desc="Siri Shortcut, spoken suggestion for search in chrome [iOS only].">
+        Search in Chromium
+      </message>
+      <message name="IDS_IOS_INTENTS_SEARCH_IN_CHROME_TITLE" desc="Siri Shortcut for search in chrome title [iOS only].">
+          Search in Chromium
+      </message>
+      <message name="IDS_IOS_INTENTS_SEARCH_IN_CHROME_SUGGEST_TITLE" desc="Siri Shortcut for search in chrome title [iOS only].">
+        Search in Chromium
+      </message>
+      <message name="IDS_IOS_INTENTS_SEARCH_IN_CHROME_PARAMETER_COMBINATION_TITLE" desc="Apple Shortcuts App's format for displaying the user search phrase input, shown by the Siri Shortcut app when the
+          user is adding or editing a Search in Chromium shortcut[iOS only].">
+          Search ${searchPhrase} in Chromium
+      </message>
+      <message name="IDS_IOS_MANAGE_DATA_IN_YOUR_ACCOUNT_TITLE" desc="Title for the cell to open 'Review data in your account' web page where the user can control all their data data from sync.">
+        Chromium data in your account
+      </message>
+      <message name="IDS_IOS_MINI_MAP_CONSENT_SUBTITLE" desc="The subtitle of the consent screen for mini map [iOS only].">
+        Allow Chromium to use Google Maps to give you directions and local info on detected addresses.
+      </message>
+      <message name="IDS_IOS_PARCEL_TRACKING_OPT_IN_SUBTITLE" desc="Text for the subtitle string of the parcel tracking opt-in half-sheet screen.">
+        Chromium will detect tracking numbers on sites you visit and show you package updates on the New Tab page. Your data will be shared with Google to provide this feature and to improve Shopping for everyone. You can change this in <ph name="BEGIN_LINK">BEGIN_LINK</ph>Package Tracking Settings<ph name="END_LINK">END_LINK</ph>.
+      </message>
+      <message name="IDS_IOS_LOCKDOWN_MODE_INFO_BUTTON_SUMMARY_FOR_IPAD" desc="iPad summary for lockdown mode info button">
+        To disable Lockdown Mode in Chromium turn it off on your iPad.
+      </message>
+      <message name="IDS_IOS_LOCKDOWN_MODE_INFO_BUTTON_SUMMARY_FOR_IPHONE" desc="iPhone summary for lockdown mode info button">
+        To disable Lockdown Mode in Chromium turn it off on your iPhone.
+      </message>
+      <message name="IDS_IOS_PASSWORDS_ACCOUNT_STORAGE_NOTICE_SUBTITLE" desc="Subtitle of the sheet that notifies the user they are saving passwords to their Google Account. [Length: unlimited] [iOS only]">
+        When you're signed in to Chromium, passwords you save will go in your Google Account. To turn this off, <ph name="BEGIN_LINK">BEGIN_LINK</ph>go to settings<ph name="END_LINK">END_LINK</ph>.
+      </message>
+      <message name="IDS_IOS_POST_RESTORE_SIGN_IN_ALERT_PROMO_TITLE" desc="The title text of the alert post restore sign-in promo. [iOS only]">
+        Chromium is Signed Out
+      </message>
+      <message name="IDS_IOS_PASSWORD_SHARING_FAMILY_MEMBER_INELIGIBLE" desc="Info text in the recipient picker view of the password sharing flow explaining why one of the family members is not eligible to be a recipient. [iOS Only]">
+        Your family member can't receive passwords right now. Ask them to update Chromium and sync their passwords. <ph name="BEGIN_LINK">BEGIN_LINK</ph>Learn more<ph name="END_LINK">END_LINK</ph>
+      </message>
+      <message name="IDS_IOS_PASSWORD_SHARING_FETCHING_RECIPIENTS_ERROR" desc="Description on the alert view explaining an error in the password sharing flow. [iOS only]">
+        Your password wasn't shared. Check your internet connection and make sure you're signed in to Chromium. Then, try again.
+      </message>
+      <message name="IDS_IOS_ENTERPRISE_SYNC_DISABLED_MESSAGE_WITH_UNO" desc="Message displayed in a prompt when saving data (like bookmarks/reading list/passwords...) is disabled due to an enterprise policy. Related with IDS_IOS_ENTERPRISE_SYNC_DISABLED_TITLE_UNO.">
+        Your organization turned off the ability to use and save Chromium data in your Google Account. New bookmarks, passwords, and more will be saved only to this device.
+      </message>
+      <message name="IDS_IOS_AUTOFILL_ADDRESS_MIGRATE_IN_ACCOUNT_FOOTER" desc="Footer text shown in the address migration prompt to account. [iOS only]">
+          This address is currently saved to Chromium. To use it across Google products, save it in your Google Account, <ph name="USER_EMAIL">$1<ex>janedoe@google.com</ex></ph>.
+      </message>
+      <message name="IDS_IOS_SETTINGS_HEADER_TEXT" desc="Header of the Default Browser Settings page explaining the default browser feature's utility.">
+        You can open links in Chromium automatically by making it your Default Browser App.
+      </message>
+      <message name="IDS_IOS_SETTINGS_OPEN_CHROME_SETTINGS_BUTTON_TEXT" desc="Label of the button that opens the Chrome panel in Settings.app">
+          Open Chromium Settings
+      </message>
+      <message name="IDS_IOS_SETTINGS_OPEN_SETTINGS_STEP" desc="Text of the row indicating the first step of setting the default browser.">
+        1. Open Chromium Settings
+      </message>
+      <message name="IDS_IOS_SETTINGS_SELECT_CHROME_STEP" desc="Text of the row indicating the third step of setting the default browser.">
+        3. Select Chromium
+      </message>
+      <message name="IDS_SEND_TAB_TO_SELF_SIGN_IN_PROMO_LABEL" desc = "Text when a signed out user attempts to use send-tab-to-self, then sees a sign-in promo.">
+        To send this tab to another device, sign in to Chromium on both devices.
+      </message>
+      <message name="IDS_SEND_TAB_TO_SELF_NO_TARGET_DEVICE_LABEL" desc = "Text shown when a user with no available target devices attempts to use send-tab-to-self.">
+        To send this tab to another device, sign in to Chromium there.
+      </message>
+      <message name="IDS_IOS_WHATS_NEW_FEATURE_NEW_MENU_STEP_1" desc="Text of the row indicating the first step of New Menu in What's New. [iOS only]">
+        Open the Chromium Menu
+      </message>
+      <message name="IDS_IOS_WHATS_CHROME_TIP_CHROME_DEFAULT_TITLE" desc="Use Chrome By Default title displayed in What's New. [iOS only]">
+        Use Chromium By Default
+      </message>
+      <message name="IDS_IOS_WHATS_NEW_CHROME_TIP_CHROME_DEFAULT_SUBTITLE" desc="Use Chrome By Default subtitle displayed in What's New. [iOS only]">
+        You can now use Chromium anytime you browse or tap links in messages, documents, and other apps.
+      </message>
+      <message name="IDS_IOS_WHATS_NEW_CHROME_TIP_PASSWORDS_IN_OTHER_APPS_STEP_2" desc="Text of the row indicating the second step of Passwords In Other Apps in What's New. [iOS only]">
+        Select Chromium
+      </message>
+      <message name="IDS_IOS_WHATS_NEW_CHROME_ACTIONS_TITLE" desc="Chrome Actions title displayed in What's New. [iOS only]">
+        Use Chromium Actions on iOS
+      </message>
+      <message name="IDS_IOS_SIGNIN_ACCOUNT_NOTIFICATION_TITLE" desc="Notification title for the user's signed-in state [iOS only]">
+      Signed in to Chromium
+      </message>
+      <message name="IDS_IOS_SYNC_ENCRYPTION_PASSPHRASE_HINT" desc="The information text on how to reset encryption passphrase for sync, shown on the sync encryption settings [Length: 300em] [iOS only]">
+        Passphrase encryption doesn’t include payment methods and addresses from Google Pay.
+
+To change this setting, <ph name="BEGIN_LINK">BEGIN_LINK</ph>clear the Chromium data in your account<ph name="END_LINK">END_LINK</ph>.
+      </message>
+      <message name="IDS_IOS_NEW_SYNC_ENCRYPTION_PASSPHRASE_INFO" desc="The information text for encrypting sync using a passphrase, shown on the passphrase screen [iOS only]">
+        Payment methods and addresses from Google Pay won’t be encrypted. Browsing history from Chromium won’t sync.
+
+Only someone with your passphrase can read your encrypted data. The passphrase is not sent to or stored by Google. If you forget your passphrase or want to change this setting, <ph name="BEGIN_LINK">BEGIN_LINK</ph>clear the Chromium data in your account<ph name="END_LINK">END_LINK</ph>.
+      </message>
+      <message name="IDS_IOS_SYNC_ENTER_PASSPHRASE_BODY_WITH_EMAIL" desc="Instructions for the dialog where the user enters the passphrase.">
+        Signed in as <ph name="EMAIL">$1<ex>johndoe@gmail.com</ex></ph>.
+
+Your data is encrypted with your passphrase. Enter it to use and save Chromium data in your Google Account.
+      </message>
+      <message name="IDS_IOS_SYNC_ENTER_PASSPHRASE_BODY_WITH_EMAIL_AND_DATE" desc="Instructions for the dialog where the user enters the passphrase.">
+        Signed in as <ph name="EMAIL">$1<ex>johndoe@gmail.com</ex></ph>.
+
+Your data was encrypted with your passphrase on <ph name="TIME">$2<ex>Sept 1, 2012</ex></ph>. Enter it to use and save Chromium data in your Google Account.
+      </message>
+      <message name="IDS_IOS_SYNC_PASSPHRASE_RECOVER" desc="Message about how to recover from a lost passphrase. [Length:100em, may be multiple lines] [iOS only]">
+        If you forget your passphrase or want to change this setting, <ph name="BEGIN_LINK">BEGIN_LINK</ph>clear the Chromium data in your account<ph name="END_LINK">END_LINK</ph>.
+      </message>
+      <message name="IDS_IOS_OVERFLOW_MENU_SHARE_CHROME" desc="The iOS menu item for opening a share sheet with the URL to the Chrome app in the iOS app store" meaning="[In Title case] [iOS only] [Length: Unlimited]">
+        Share Chromium
+      </message>
+      <message name="IDS_IOS_OVERFLOW_MENU_SHARE_CHROME_TITLE" desc="The title displayed along with the app store link to Chrome, when sharing the chrome app" meaning="[In Title case] [iOS only] [Length: Unlimited]">
+        Chromium for iOS
+      </message>
+      <message name="IDS_IOS_OVERFLOW_MENU_SHARE_CHROME_DESC" desc="The description displayed along with the app store link to Chrome, when sharing the chrome app" meaning="[In Title case] [iOS only] [Length: Unlimited]">
+        Download Chromium here.
+      </message>
+      <message name="IDS_IOS_UI_BLOCKED_USE_OTHER_WINDOW_DESCRIPTION" desc="Explanatory text that appears when the user has multiple windows open, and one window is showing a dialog that has to be interacted with before any other window can be used. [iOS only]">
+          Finish what you were doing in your other open Chromium window.
+      </message>
+      <message name="IDS_IOS_WINDOW_COUNT_CHANGE" is_accessibility_with_no_ui="true" desc="VoiceOver text spoken when the count of visible windows changes -- note: this text is only spoken, never displayed on screen">
+        {count, plural,
+          =1 {Now showing 1 Chromium window}
+          other {Now showing {count} Chromium windows}}
+      </message>
+      <message name="IDS_IOS_WHATS_NEW_SECTION_CHROME_TIP_TITLE" desc="Title of a section in a table view to inform users about a chrome tip.">
+        Chromium Tip
+      </message>
+      <message name="IDS_IOS_SPOTLIGHT_CHROME_ACTIONS_LABEL" desc="Tag label title displayed for chrome actions spotlight items. [iOS only]">
+        Chromium Actions
+      </message>
+      <message name="IDS_IOS_SAFETY_CHECK_DESCRIPTION_UPDATE_CHROME" desc="Tag label description displayed for the Safety Check module in the Magic Stack when the Update Chrome check finds an issue. [iOS only]">
+        Chromium is out of date, update to the latest version to stay secure.
+      </message>
+      <message name="IDS_IOS_SAFETY_CHECK_COMPACT_DESCRIPTION_UPDATE_CHROME" desc="Tag label description displayed for the Safety Check module in the Magic Stack when the Update Chrome check finds an issue. [iOS only]">
+        Your Chromium is out of date.
+      </message>
+      <message name="IDS_IOS_WIDGET_PROMO_INSTRUCTIONS_STEP_3" desc="Third step of the instructions for the Password Manager widget's installation.">
+        In the Search Widgets box, enter Chromium
+      </message>
     </messages>
   </release>
 </grit>

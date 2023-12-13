@@ -44,6 +44,7 @@ source_set("unit_tests") {
     "//base",
     "//base/test:test_support",
     "//components/sync:test_support",
+    "//ios/chrome/app/strings:ios_branded_strings_grit",
     "//ios/chrome/browser/signin/model:signin_util",
     "//ios/chrome/test:test_support",
     "//third_party/ocmock",
