@@ -33789,7 +33789,6 @@ from previous Chrome versions.
   <int value="331770879" label="CrostiniAppSearch:disabled"/>
   <int value="331845034" label="enable-webgl-developer-extensions"/>
   <int value="332391072" label="cs-contextual-cards-bar-integration"/>
-  <int value="332722393" label="StartSurfaceDisabledFeedImprovement:enabled"/>
   <int value="332960119" label="PdfXfaSupport:disabled"/>
   <int value="333014953" label="NonBlockingCommit:enabled"/>
   <int value="334330083" label="WebAuthenticationConditionalUI:disabled"/>
@@ -36731,7 +36730,6 @@ from previous Chrome versions.
   <int value="1726474125"
       label="AccessibilityDictationKeyboardImprovements:disabled"/>
   <int value="1726578007" label="EnableFileBackedBlobFactory:disabled"/>
-  <int value="1729369067" label="StartSurfaceDisabledFeedImprovement:disabled"/>
   <int value="1730094138" label="enable-md-storage-manager"/>
   <int value="1730236697" label="force-device-scale-factor"/>
   <int value="1730416578" label="NTPCondensedLayout:enabled"/>

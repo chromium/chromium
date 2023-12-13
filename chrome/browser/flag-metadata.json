@@ -3513,11 +3513,6 @@
     "expiry_milestone": 140
   },
   {
-    "name": "enable-start-surface-disabled-feed-improvement",
-    "owners": [ "hanxi@chromium.org", "clank-start@chromium.org" ],
-    "expiry_milestone": 130
-  },
-  {
     "name": "enable-start-surface-on-tablet",
     "owners": [ "hanxi@chromium.org", "xinyiji@chromium.org", "clank-start@chromium.org" ],
     "expiry_milestone": 130

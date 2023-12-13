@@ -60,8 +60,6 @@ import org.chromium.chrome.browser.layouts.LayoutType;
 import org.chromium.chrome.browser.logo.LogoBridge;
 import org.chromium.chrome.browser.logo.LogoBridgeJni;
 import org.chromium.chrome.browser.logo.LogoView;
-import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
-import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.search_engines.TemplateUrlServiceFactory;
 import org.chromium.chrome.browser.tab.Tab;
@@ -78,7 +76,6 @@ import org.chromium.chrome.browser.util.ChromeAccessibilityUtil;
 import org.chromium.chrome.features.start_surface.StartSurfaceConfiguration;
 import org.chromium.chrome.features.start_surface.StartSurfaceState;
 import org.chromium.chrome.test.util.browser.Features;
-import org.chromium.chrome.test.util.browser.Features.DisableFeatures;
 import org.chromium.chrome.test.util.browser.Features.EnableFeatures;
 import org.chromium.components.browser_ui.styles.ChromeColors;
 import org.chromium.components.feature_engagement.Tracker;
@@ -532,7 +529,6 @@ public class StartSurfaceToolbarMediatorUnitTest {
     }
 
     @Test
-    @DisableFeatures(ChromeFeatureList.START_SURFACE_DISABLED_FEED_IMPROVEMENT)
     public void testLogoLoadOrDestroy() {
         createMediator(false);
         assertFalse(mMediator.isLogoVisibleForTesting());
@@ -549,28 +545,6 @@ public class StartSurfaceToolbarMediatorUnitTest {
         mMediator.onStartSurfaceStateChanged(
                 StartSurfaceState.SHOWN_HOMEPAGE, true, LayoutType.START_SURFACE);
         assertTrue(mMediator.isLogoVisibleForTesting());
-    }
-
-    @Test
-    @EnableFeatures(ChromeFeatureList.START_SURFACE_DISABLED_FEED_IMPROVEMENT)
-    public void testNotShowLogoWhenStartSurfaceDisabledFeedImprovementIsOn() {
-        ChromeSharedPreferences.getInstance()
-                .writeBoolean(ChromePreferenceKeys.FEED_ARTICLES_LIST_VISIBLE, false);
-        createMediator(false);
-        assertFalse(mMediator.isLogoVisibleForTesting());
-
-        mMediator.onStartSurfaceStateChanged(
-                StartSurfaceState.SHOWN_HOMEPAGE, true, LayoutType.START_SURFACE);
-        assertFalse(mMediator.isLogoVisibleForTesting());
-
-        mMediator.onStartSurfaceStateChanged(
-                StartSurfaceState.SHOWN_TABSWITCHER, true, LayoutType.TAB_SWITCHER);
-        assertFalse(mMediator.isLogoVisibleForTesting());
-        verify(mLogoBridge, times(0)).destroy(eq(1L), any());
-
-        mMediator.onStartSurfaceStateChanged(
-                StartSurfaceState.SHOWN_HOMEPAGE, true, LayoutType.START_SURFACE);
-        assertFalse(mMediator.isLogoVisibleForTesting());
     }
 
     @Test
@@ -636,14 +610,8 @@ public class StartSurfaceToolbarMediatorUnitTest {
 
     private void createMediator(boolean hideIncognitoSwitchWhenNoTabs) {
         boolean shouldCreateLogoInToolbar =
-                (!ChromeFeatureList.sStartSurfaceDisabledFeedImprovement.isEnabled()
-                                || ChromeSharedPreferences.getInstance()
-                                        .readBoolean(
-                                                ChromePreferenceKeys.FEED_ARTICLES_LIST_VISIBLE,
-                                                true))
-                        && !(ChromeFeatureList.sSurfacePolish.isEnabled()
-                                && StartSurfaceConfiguration.SURFACE_POLISH_MOVE_DOWN_LOGO
-                                        .getValue());
+                !(ChromeFeatureList.sSurfacePolish.isEnabled()
+                        && StartSurfaceConfiguration.SURFACE_POLISH_MOVE_DOWN_LOGO.getValue());
         mMediator =
                 new StartSurfaceToolbarMediator(
                         mActivity,

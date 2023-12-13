@@ -427,8 +427,6 @@ public abstract class ChromeFeatureList {
     public static final String SPLIT_CACHE_BY_NETWORK_ISOLATION_KEY =
             "SplitCacheByNetworkIsolationKey";
     public static final String START_SURFACE_ANDROID = "StartSurfaceAndroid";
-    public static final String START_SURFACE_DISABLED_FEED_IMPROVEMENT =
-            "StartSurfaceDisabledFeedImprovement";
     public static final String START_SURFACE_ON_TABLET = "StartSurfaceOnTablet";
     public static final String START_SURFACE_REFACTOR = "StartSurfaceRefactor";
     public static final String START_SURFACE_RETURN_TIME = "StartSurfaceReturnTime";
@@ -591,8 +589,6 @@ public abstract class ChromeFeatureList {
             new CachedFlag(SHOW_NTP_AT_STARTUP_ANDROID, false);
     public static final CachedFlag sStartSurfaceAndroid =
             new CachedFlag(START_SURFACE_ANDROID, true);
-    public static final CachedFlag sStartSurfaceDisabledFeedImprovement =
-            new CachedFlag(START_SURFACE_DISABLED_FEED_IMPROVEMENT, false);
     public static final CachedFlag sStartSurfaceOnTablet =
             new CachedFlag(START_SURFACE_ON_TABLET, true);
     public static final CachedFlag sStartSurfaceRefactor =
@@ -685,7 +681,6 @@ public abstract class ChromeFeatureList {
                     sSearchEngineChoice,
                     sShowNtpAtStartupAndroid,
                     sStartSurfaceAndroid,
-                    sStartSurfaceDisabledFeedImprovement,
                     sStartSurfaceOnTablet,
                     sStartSurfaceRefactor,
                     sStartSurfaceReturnTime,

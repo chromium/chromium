@@ -1385,8 +1385,7 @@ public class ToolbarManager
                         constraintsSupplier,
                         mCompositorViewHolder.getInMotionSupplier(),
                         mControlsVisibilityDelegate,
-                        !ReturnToChromeUtil.shouldImproveStartWhenFeedIsDisabled(mActivity)
-                                && !ReturnToChromeUtil.moveDownLogo(),
+                        !ReturnToChromeUtil.moveDownLogo(),
                         mFullscreenManager);
 
         mHomepageStateListener =

@@ -918,13 +918,6 @@ public final class ReturnToChromeUtil {
                 .readBoolean(ChromePreferenceKeys.FEED_ARTICLES_LIST_VISIBLE, true);
     }
 
-    /** Returns whether to improve Start surface when Feed is not visible. */
-    public static boolean shouldImproveStartWhenFeedIsDisabled(Context context) {
-        return ChromeFeatureList.sStartSurfaceDisabledFeedImprovement.isEnabled()
-                && !getFeedArticlesVisibility()
-                && isStartSurfaceEnabled(context);
-    }
-
     /** Returns whether to move logo out of toolbar from Start surface. */
     public static boolean moveDownLogo() {
         return ChromeFeatureList.sSurfacePolish.isEnabled()

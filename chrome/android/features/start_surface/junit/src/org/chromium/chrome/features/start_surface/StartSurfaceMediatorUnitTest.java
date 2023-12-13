@@ -47,15 +47,12 @@ import static org.chromium.chrome.features.tasks.TasksSurfaceProperties.IS_LENS_
 import static org.chromium.chrome.features.tasks.TasksSurfaceProperties.IS_SURFACE_BODY_VISIBLE;
 import static org.chromium.chrome.features.tasks.TasksSurfaceProperties.IS_TAB_CARD_VISIBLE;
 import static org.chromium.chrome.features.tasks.TasksSurfaceProperties.IS_VOICE_RECOGNITION_BUTTON_VISIBLE;
-import static org.chromium.chrome.features.tasks.TasksSurfaceProperties.MV_TILES_CONTAINER_LEFT_RIGHT_MARGIN;
 import static org.chromium.chrome.features.tasks.TasksSurfaceProperties.MV_TILES_CONTAINER_TOP_MARGIN;
 import static org.chromium.chrome.features.tasks.TasksSurfaceProperties.MV_TILES_VISIBLE;
-import static org.chromium.chrome.features.tasks.TasksSurfaceProperties.SINGLE_TAB_TOP_MARGIN;
 import static org.chromium.chrome.features.tasks.TasksSurfaceProperties.TASKS_SURFACE_BODY_TOP_MARGIN;
 import static org.chromium.chrome.features.tasks.TasksSurfaceProperties.VOICE_SEARCH_BUTTON_CLICK_LISTENER;
 
 import android.app.Activity;
-import android.content.Context;
 import android.content.res.Resources;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -101,8 +98,6 @@ import org.chromium.chrome.browser.ntp.NewTabPageLaunchOrigin;
 import org.chromium.chrome.browser.omnibox.OmniboxStub;
 import org.chromium.chrome.browser.omnibox.UrlFocusChangeListener;
 import org.chromium.chrome.browser.omnibox.voice.VoiceRecognitionHandler;
-import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
-import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.search_engines.TemplateUrlServiceFactory;
 import org.chromium.chrome.browser.tab.MockTab;
@@ -1297,33 +1292,8 @@ public class StartSurfaceMediatorUnitTest {
     }
 
     @Test
-    public void initializeStartSurfaceTopMargins() {
-        Resources resources = ContextUtils.getApplicationContext().getResources();
-        int tasksSurfaceBodyTopMargin =
-                resources.getDimensionPixelSize(R.dimen.tasks_surface_body_top_margin);
-        int mvTilesContainerTopMargin =
-                resources.getDimensionPixelSize(R.dimen.mv_tiles_container_top_margin);
-
-        createStartSurfaceMediatorWithoutInit(
-                /* isStartSurfaceEnabled= */ true,
-                /* isRefactorEnabled= */ false,
-                /* hadWarmStart= */ false,
-                /* useMagicSpace= */ false);
-        assertThat(
-                mPropertyModel.get(TASKS_SURFACE_BODY_TOP_MARGIN),
-                equalTo(tasksSurfaceBodyTopMargin));
-        assertThat(
-                mPropertyModel.get(MV_TILES_CONTAINER_TOP_MARGIN),
-                equalTo(mvTilesContainerTopMargin));
-
-        assertThat(mPropertyModel.get(MV_TILES_CONTAINER_LEFT_RIGHT_MARGIN), equalTo(0));
-        assertThat(mPropertyModel.get(SINGLE_TAB_TOP_MARGIN), equalTo(0));
-    }
-
-    @Test
     @EnableFeatures(ChromeFeatureList.SURFACE_POLISH)
     public void initializeStartSurfaceTopMargins_SurfacePolish() {
-        Resources resources = ContextUtils.getApplicationContext().getResources();
         int tasksSurfaceBodyTopMarginPolished = 0;
 
         createStartSurfaceMediatorWithoutInit(
@@ -1335,33 +1305,21 @@ public class StartSurfaceMediatorUnitTest {
                 mPropertyModel.get(TASKS_SURFACE_BODY_TOP_MARGIN),
                 equalTo(tasksSurfaceBodyTopMarginPolished));
         assertThat(mPropertyModel.get(MV_TILES_CONTAINER_TOP_MARGIN), equalTo(0));
-
-        assertThat(mPropertyModel.get(MV_TILES_CONTAINER_LEFT_RIGHT_MARGIN), equalTo(0));
-        assertThat(mPropertyModel.get(SINGLE_TAB_TOP_MARGIN), equalTo(0));
     }
 
     @Test
-    @EnableFeatures(ChromeFeatureList.START_SURFACE_DISABLED_FEED_IMPROVEMENT)
-    public void testStartSurfaceTopMarginsWhenFeedGoneImprovementEnabled() {
-        ChromeSharedPreferences.getInstance()
-                .writeBoolean(ChromePreferenceKeys.FEED_ARTICLES_LIST_VISIBLE, false);
-        Context context = ContextUtils.getApplicationContext();
-        Assert.assertTrue(ReturnToChromeUtil.shouldImproveStartWhenFeedIsDisabled(context));
+    public void testStartSurfaceTopMarginsWithSingleTabCardVisibility() {
         doReturn(TabSwitcherType.SINGLE)
                 .when(mSingleTabSwitcherModuleController)
                 .getTabSwitcherType();
 
-        Resources resources = context.getResources();
+        Resources resources = ContextUtils.getApplicationContext().getResources();
         int tasksSurfaceBodyTopMarginWithTab =
                 resources.getDimensionPixelSize(R.dimen.tasks_surface_body_top_margin);
         int tasksSurfaceBodyTopMarginWithoutTab =
                 resources.getDimensionPixelSize(R.dimen.tile_grid_layout_bottom_margin);
         int mvTilesContainerTopMargin =
-                resources.getDimensionPixelOffset(R.dimen.tile_grid_layout_top_margin)
-                        + resources.getDimensionPixelOffset(R.dimen.ntp_search_box_bottom_margin);
-        int singleTopMargin =
-                resources.getDimensionPixelSize(
-                        R.dimen.single_tab_view_top_margin_for_feed_improvement);
+                resources.getDimensionPixelSize(R.dimen.mv_tiles_container_top_margin);
 
         StartSurfaceMediator mediator =
                 createStartSurfaceMediatorWithoutInit(
@@ -1369,15 +1327,8 @@ public class StartSurfaceMediatorUnitTest {
                         /* isRefactorEnabled= */ false,
                         /* hadWarmStart= */ false,
                         /* useMagicSpace= */ false);
-        assertThat(
-                mPropertyModel.get(TASKS_SURFACE_BODY_TOP_MARGIN),
-                equalTo(tasksSurfaceBodyTopMarginWithTab));
-        assertThat(
-                mPropertyModel.get(MV_TILES_CONTAINER_TOP_MARGIN),
-                equalTo(mvTilesContainerTopMargin));
-        assertThat(mPropertyModel.get(SINGLE_TAB_TOP_MARGIN), equalTo(singleTopMargin));
 
-        // Tasks surface body top margin should be updated when tab carousel/single card visibility
+        // Tasks surface body top margin should be updated when tab single card visibility
         // is changed.
         doReturn(0).when(mNormalTabModel).getCount();
         doReturn(true).when(mTabModelSelector).isTabStateInitialized();
@@ -1393,6 +1344,9 @@ public class StartSurfaceMediatorUnitTest {
         assertThat(
                 mPropertyModel.get(TASKS_SURFACE_BODY_TOP_MARGIN),
                 equalTo(tasksSurfaceBodyTopMarginWithTab));
+        assertThat(
+                mPropertyModel.get(MV_TILES_CONTAINER_TOP_MARGIN),
+                equalTo(mvTilesContainerTopMargin));
     }
 
     @Test
@@ -1501,41 +1455,9 @@ public class StartSurfaceMediatorUnitTest {
     }
 
     @Test
-    @EnableFeatures(ChromeFeatureList.START_SURFACE_DISABLED_FEED_IMPROVEMENT)
-    public void testInitializeLogoWhenShownHomepageWithFeedDisabled() throws Exception {
+    public void testNotInitializeLogoWhenShownHomepage() {
         doReturn(mVoiceRecognitionHandler).when(mOmniboxStub).getVoiceRecognitionHandler();
-        ChromeSharedPreferences.getInstance()
-                .writeBoolean(ChromePreferenceKeys.FEED_ARTICLES_LIST_VISIBLE, false);
         when(mTemplateUrlService.doesDefaultSearchEngineHaveLogo()).thenReturn(true);
-
-        Assert.assertTrue(
-                ReturnToChromeUtil.shouldImproveStartWhenFeedIsDisabled(
-                        ContextUtils.getApplicationContext()));
-
-        StartSurfaceMediator mediator =
-                createStartSurfaceMediator(
-                        /* isStartSurfaceEnabled= */ true,
-                        /* isRefactorEnabled= */ false,
-                        /* hadWarmStart= */ false,
-                        /* useMagicSpace= */ false);
-        showHomepageAndVerify(mediator, StartSurfaceState.SHOWN_HOMEPAGE);
-
-        verify(mLogoContainerView).setVisibility(View.VISIBLE);
-        verify(mLogoBridge).getCurrentLogo(anyLong(), any(), any());
-        Assert.assertTrue(mediator.isLogoVisible());
-    }
-
-    @Test
-    @EnableFeatures(ChromeFeatureList.START_SURFACE_DISABLED_FEED_IMPROVEMENT)
-    public void testNotInitializeLogoWhenShownHomepageWithFeedEnabled() throws Exception {
-        doReturn(mVoiceRecognitionHandler).when(mOmniboxStub).getVoiceRecognitionHandler();
-        ChromeSharedPreferences.getInstance()
-                .writeBoolean(ChromePreferenceKeys.FEED_ARTICLES_LIST_VISIBLE, true);
-        when(mTemplateUrlService.doesDefaultSearchEngineHaveLogo()).thenReturn(true);
-
-        Assert.assertFalse(
-                ReturnToChromeUtil.shouldImproveStartWhenFeedIsDisabled(
-                        ContextUtils.getApplicationContext()));
 
         StartSurfaceMediator mediator =
                 createStartSurfaceMediator(

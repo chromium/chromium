@@ -2619,9 +2619,6 @@ extern const char kFeedPositionAndroidDescription[];
 extern const char kSearchResumptionModuleAndroidName[];
 extern const char kSearchResumptionModuleAndroidDescription[];
 
-extern const char kStartSurfaceDisabledFeedImprovementName[];
-extern const char kStartSurfaceDisabledFeedImprovementDescription[];
-
 extern const char kStartSurfaceOnTabletName[];
 extern const char kStartSurfaceOnTabletDescription[];
 

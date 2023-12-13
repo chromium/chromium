@@ -4477,11 +4477,6 @@ const char kSearchResumptionModuleAndroidName[] = "Search Resumption Module";
 const char kSearchResumptionModuleAndroidDescription[] =
     "Enable showing search suggestions on NTP";
 
-const char kStartSurfaceDisabledFeedImprovementName[] =
-    "Start Surface Disabled Feed Improvement";
-const char kStartSurfaceDisabledFeedImprovementDescription[] =
-    "Enable improving Start surface when Feed is disabled";
-
 const char kStartSurfaceOnTabletName[] = "Start Surface On Tablet";
 const char kStartSurfaceOnTabletDescription[] =
     "Enable Start Surface On Tablet.";

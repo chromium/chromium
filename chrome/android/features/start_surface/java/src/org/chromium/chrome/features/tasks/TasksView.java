@@ -338,27 +338,6 @@ public class TasksView extends CoordinatorLayoutForPointer {
         params.topMargin = topMargin;
     }
 
-    /**
-     * Set the left and right margin for the mv tiles container.
-     * @param margin The left and right margin to set.
-     */
-    void setMVTilesContainerLeftAndRightMargin(int margin) {
-        MarginLayoutParams params = (MarginLayoutParams) mMvTilesContainerLayout.getLayoutParams();
-        params.leftMargin = margin;
-        params.rightMargin = margin;
-    }
-
-    /**
-     * Set the top margin for the single tab card.
-     * @param topMargin The top margin to set.
-     */
-    void setSingleTabTopMargin(int topMargin) {
-        MarginLayoutParams params =
-                (MarginLayoutParams)
-                        mHeaderView.findViewById(R.id.single_tab_view).getLayoutParams();
-        params.topMargin = topMargin;
-    }
-
     /** Set the height of the top toolbar placeholder layout. */
     void setTopToolbarPlaceholderHeight(int height) {
         View topToolbarPlaceholder = findViewById(R.id.top_toolbar_placeholder);

@@ -23,12 +23,10 @@ import static org.chromium.chrome.features.tasks.TasksSurfaceProperties.IS_SURFA
 import static org.chromium.chrome.features.tasks.TasksSurfaceProperties.IS_TAB_CARD_VISIBLE;
 import static org.chromium.chrome.features.tasks.TasksSurfaceProperties.IS_VOICE_RECOGNITION_BUTTON_VISIBLE;
 import static org.chromium.chrome.features.tasks.TasksSurfaceProperties.LENS_BUTTON_CLICK_LISTENER;
-import static org.chromium.chrome.features.tasks.TasksSurfaceProperties.MV_TILES_CONTAINER_LEFT_RIGHT_MARGIN;
 import static org.chromium.chrome.features.tasks.TasksSurfaceProperties.MV_TILES_CONTAINER_TOP_MARGIN;
 import static org.chromium.chrome.features.tasks.TasksSurfaceProperties.MV_TILES_VISIBLE;
 import static org.chromium.chrome.features.tasks.TasksSurfaceProperties.QUERY_TILES_VISIBLE;
 import static org.chromium.chrome.features.tasks.TasksSurfaceProperties.RESET_TASK_SURFACE_HEADER_SCROLL_POSITION;
-import static org.chromium.chrome.features.tasks.TasksSurfaceProperties.SINGLE_TAB_TOP_MARGIN;
 import static org.chromium.chrome.features.tasks.TasksSurfaceProperties.TASKS_SURFACE_BODY_TOP_MARGIN;
 import static org.chromium.chrome.features.tasks.TasksSurfaceProperties.TOP_TOOLBAR_PLACEHOLDER_HEIGHT;
 import static org.chromium.chrome.features.tasks.TasksSurfaceProperties.VOICE_SEARCH_BUTTON_CLICK_LISTENER;
@@ -147,7 +145,6 @@ class StartSurfaceMediator
             new ObservableSupplierImpl<>();
     private final CallbackController mCallbackController = new CallbackController();
     private final View mLogoContainerView;
-    private final boolean mIsFeedGoneImprovementEnabled;
     private final boolean mMoveDownLogo;
     private final ActivityLifecycleDispatcher mActivityLifecycleDispatcher;
     private final TabCreatorManager mTabCreatorManager;
@@ -282,12 +279,6 @@ class StartSurfaceMediator
         mLogoContainerView = logoContainerView;
         mActivityLifecycleDispatcher = activityLifecycleDispatcher;
         mActivityLifecycleDispatcher.register(this);
-        // We need to check #shouldImproveStartWhenFeedIsDisabled and save it in the constructor
-        // here to keep consistent with toolbar's check. This cannot be moved to other places, since
-        // FEED_ARTICLES_LIST_VISIBLE may be changed after feed header is rendered, which then
-        // causes inconsistency with toolbar's check.
-        mIsFeedGoneImprovementEnabled =
-                ReturnToChromeUtil.shouldImproveStartWhenFeedIsDisabled(context);
         mMoveDownLogo = ReturnToChromeUtil.moveDownLogo();
         mIsStartSurfaceRefactorEnabled = ReturnToChromeUtil.isStartSurfaceRefactorEnabled(context);
         mTabSwitcherClickHandler = tabSwitcherClickHandler;
@@ -1479,7 +1470,7 @@ class StartSurfaceMediator
     }
 
     private void setLogoVisibility(boolean isVisible) {
-        if (!mIsFeedGoneImprovementEnabled && !mMoveDownLogo) return;
+        if (!mMoveDownLogo) return;
 
         if (isVisible && mLogoCoordinator == null) {
             mLogoCoordinator = initializeLogo();
@@ -1720,38 +1711,17 @@ class StartSurfaceMediator
     }
 
     private void tweakMarginsBetweenSections() {
-        Resources resources = mContext.getResources();
-        if (!mIsSurfacePolishEnabled) {
-            mPropertyModel.set(
-                    TASKS_SURFACE_BODY_TOP_MARGIN,
-                    resources.getDimensionPixelSize(R.dimen.tasks_surface_body_top_margin));
-        }
+        if (mIsSurfacePolishEnabled) return;
 
-        if (mIsSurfacePolishEnabled && !mIsFeedGoneImprovementEnabled) return;
+        Resources resources = mContext.getResources();
+        mPropertyModel.set(
+                TASKS_SURFACE_BODY_TOP_MARGIN,
+                resources.getDimensionPixelSize(R.dimen.tasks_surface_body_top_margin));
 
         // TODO(crbug.com/1315676): Clean up this code when the refactor is enabled.
         mPropertyModel.set(
                 MV_TILES_CONTAINER_TOP_MARGIN,
                 resources.getDimensionPixelSize(R.dimen.mv_tiles_container_top_margin));
-
-        // If improving Start surface when Feed is disabled is needed, mvt grid layout (two row) is
-        // shown.
-        if (mIsFeedGoneImprovementEnabled) {
-            mPropertyModel.set(
-                    MV_TILES_CONTAINER_TOP_MARGIN,
-                    resources.getDimensionPixelOffset(R.dimen.tile_grid_layout_top_margin)
-                            + resources.getDimensionPixelOffset(
-                                    R.dimen.ntp_search_box_bottom_margin));
-            mPropertyModel.set(
-                    MV_TILES_CONTAINER_LEFT_RIGHT_MARGIN,
-                    resources.getDimensionPixelSize(R.dimen.ntp_header_lateral_paddings_v2));
-            if (isSingleTabSwitcher()) {
-                mPropertyModel.set(
-                        SINGLE_TAB_TOP_MARGIN,
-                        resources.getDimensionPixelOffset(
-                                R.dimen.single_tab_view_top_margin_for_feed_improvement));
-            }
-        }
     }
 
     @Override

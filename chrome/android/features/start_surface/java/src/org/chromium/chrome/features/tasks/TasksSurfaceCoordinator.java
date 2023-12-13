@@ -42,7 +42,6 @@ import org.chromium.chrome.browser.suggestions.tile.TileGroupDelegateImpl;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.TabCreatorManager;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
-import org.chromium.chrome.browser.tasks.ReturnToChromeUtil;
 import org.chromium.chrome.browser.tasks.tab_management.RecyclerViewPosition;
 import org.chromium.chrome.browser.tasks.tab_management.TabManagementDelegate.TabSwitcherType;
 import org.chromium.chrome.browser.tasks.tab_management.TabManagementDelegateProvider;
@@ -160,8 +159,8 @@ public class TasksSurfaceCoordinator implements TasksSurface {
                                     dynamicResourceLoaderSupplier,
                                     snackbarManager,
                                     modalDialogManager,
-                                    incognitoReauthControllerSupplier, /*BackPressManager*/
-                                    null,
+                                    incognitoReauthControllerSupplier,
+                                    /* backPressManager= */ null,
                                     /* layoutStateProviderSupplier= */ null);
         } else if (tabSwitcherType == TabSwitcherType.SINGLE) {
             mTabSwitcher =
@@ -205,12 +204,6 @@ public class TasksSurfaceCoordinator implements TasksSurface {
                         incognitoCookieControlsManager);
 
         if (hasMVTiles) {
-            boolean isScrollableMVTEnabled =
-                    !ReturnToChromeUtil.shouldImproveStartWhenFeedIsDisabled(mActivity);
-            int maxRowsForGridMVT =
-                    getQueryTilesVisibility()
-                            ? QueryTileSection.getMaxRowsForMostVisitedTiles(activity)
-                            : MAX_TILE_ROWS_FOR_GRID_MVT;
             View mvTilesContainer = mView.findViewById(R.id.mv_tiles_container);
             mMostVisitedCoordinator =
                     new MostVisitedTilesCoordinator(
@@ -221,8 +214,8 @@ public class TasksSurfaceCoordinator implements TasksSurface {
                             TabUiFeatureUtilities.supportInstantStart(
                                     DeviceFormFactor.isNonMultiDisplayContextOnTablet(mActivity),
                                     mActivity),
-                            isScrollableMVTEnabled,
-                            isScrollableMVTEnabled ? Integer.MAX_VALUE : maxRowsForGridMVT,
+                            /* isScrollableMVTEnabled= */ true,
+                            Integer.MAX_VALUE,
                             /* snapshotTileGridChangedRunnable= */ null,
                             /* tileCountChangedRunnable= */ null);
         }

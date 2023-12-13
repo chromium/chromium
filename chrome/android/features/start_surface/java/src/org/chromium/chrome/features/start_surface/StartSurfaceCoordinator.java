@@ -1001,12 +1001,6 @@ public class StartSurfaceCoordinator implements StartSurface {
                             mTabContentManager,
                             null);
         }
-        boolean isScrollableMVTEnabled =
-                !ReturnToChromeUtil.shouldImproveStartWhenFeedIsDisabled(mActivity);
-        int maxRowsForGridMVT =
-                getQueryTilesVisibility()
-                        ? QueryTileSection.getMaxRowsForMostVisitedTiles(mActivity)
-                        : MAX_TILE_ROWS_FOR_GRID_MVT;
         View mvTilesContainer = mView.findViewById(R.id.mv_tiles_container);
         mMostVisitedCoordinator =
                 new MostVisitedTilesCoordinator(
@@ -1017,8 +1011,8 @@ public class StartSurfaceCoordinator implements StartSurface {
                         TabUiFeatureUtilities.supportInstantStart(
                                 DeviceFormFactor.isNonMultiDisplayContextOnTablet(mActivity),
                                 mActivity),
-                        isScrollableMVTEnabled,
-                        isScrollableMVTEnabled ? Integer.MAX_VALUE : maxRowsForGridMVT,
+                        /* isScrollableMVTEnabled= */ true,
+                        Integer.MAX_VALUE,
                         /* snapshotTileGridChangedRunnable= */ null,
                         /* tileCountChangedRunnable= */ null);
 
