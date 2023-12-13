@@ -11,8 +11,6 @@ import("//third_party/jni_zero/jni_zero.gni")
 android_library("java") {
   srcjar_deps = [ ":jni_headers" ]
   sources = [
-    "java/src/org/chromium/chrome/browser/feed/BackToTopBubble.java",
-    "java/src/org/chromium/chrome/browser/feed/BackToTopBubbleScrollListener.java",
     "java/src/org/chromium/chrome/browser/feed/CardMenuBottomSheetContent.java",
     "java/src/org/chromium/chrome/browser/feed/FeedActionDelegate.java",
     "java/src/org/chromium/chrome/browser/feed/FeedBubbleDelegate.java",
@@ -164,7 +162,6 @@ android_resources("feed_java_resources") {
     "java/res/color/menu_footer_chip_background_list.xml",
     "java/res/color/tab_layout_text_color_list.xml",
     "java/res/drawable-night/header_title_tab_selected_background_polished.xml",
-    "java/res/drawable/back_to_top_arrow.xml",
     "java/res/drawable/creator_content_unavailable_error_illustration.xml",
     "java/res/drawable/creator_general_error_illustration.xml",
     "java/res/drawable/header_title_section_tab_background.xml",
@@ -172,9 +169,7 @@ android_resources("feed_java_resources") {
     "java/res/drawable/header_title_tab_selected_background.xml",
     "java/res/drawable/header_title_tab_selected_background_polished.xml",
     "java/res/drawable/header_title_tab_selected_ripple.xml",
-    "java/res/drawable/rounded_corners.xml",
     "java/res/drawable/web_feed_post_follow_illustration.xml",
-    "java/res/layout/back_to_top_bubble.xml",
     "java/res/layout/creator_content_unavailable_error.xml",
     "java/res/layout/creator_general_error.xml",
     "java/res/layout/feed_management_activity.xml",
@@ -273,7 +268,6 @@ android_library("javatests") {
 
 robolectric_library("junit") {
   sources = [
-    "java/src/org/chromium/chrome/browser/feed/BackToTopBubbleScrollListenerTest.java",
     "java/src/org/chromium/chrome/browser/feed/FakeLinearLayoutManager.java",
     "java/src/org/chromium/chrome/browser/feed/FeedFeaturesTest.java",
     "java/src/org/chromium/chrome/browser/feed/FeedListContentManagerTest.java",

@@ -110,7 +110,6 @@ import java.util.Map;
     ChromeFeatureList.WEB_FEED_SORT,
     ChromeFeatureList.WEB_FEED_ONBOARDING,
     ChromeFeatureList.INTEREST_FEED_V2_AUTOPLAY,
-    ChromeFeatureList.FEED_BACK_TO_TOP,
     ChromeFeatureList.FEED_USER_INTERACTION_RELIABILITY_REPORT,
     // TODO(crbug.com/1353777): Disabling the feature explicitly, because native is not
     // available to provide a default value. This should be enabled if the feature is enabled by

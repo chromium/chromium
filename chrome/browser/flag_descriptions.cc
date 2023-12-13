@@ -4090,11 +4090,6 @@ const char kFeatureNotificationGuideSkipCheckForLowEngagedUsersName[] =
 const char kFeatureNotificationGuideSkipCheckForLowEngagedUsersDescription[] =
     "Skips check for low engaged users.";
 
-const char kFeedBackToTopName[] = "Back to top of the feeds";
-const char kFeedBackToTopDescription[] =
-    "Enables showing a callout to help users return to the top of the feeds "
-    "quickly.";
-
 const char kFeedFollowUiUpdateName[] = "UI Update for the Following Feed";
 const char kFeedFollowUiUpdateDescription[] =
     "Enables showing the updated UI for the following feed.";

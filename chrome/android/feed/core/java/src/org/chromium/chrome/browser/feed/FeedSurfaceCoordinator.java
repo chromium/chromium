@@ -88,7 +88,6 @@ public class FeedSurfaceCoordinator
         implements FeedSurfaceProvider,
                 FeedBubbleDelegate,
                 SwipeRefreshLayout.OnRefreshListener,
-                BackToTopBubbleScrollListener.ResultHandler,
                 SurfaceCoordinator,
                 HasContentListener,
                 FeedContentFirstLoadWatcher {
@@ -152,15 +151,12 @@ public class FeedSurfaceCoordinator
 
     private @Nullable HeaderIphScrollListener mHeaderIphScrollListener;
     private @Nullable RefreshIphScrollListener mRefreshIphScrollListener;
-    private @Nullable BackToTopBubbleScrollListener mBackToTopBubbleScrollListener;
     private @Nullable FeedReliabilityLogger mReliabilityLogger;
     private final PrivacyPreferencesManagerImpl mPrivacyPreferencesManager;
 
     private final Supplier<Toolbar> mToolbarSupplier;
 
     private FeedSwipeRefreshLayout mSwipeRefreshLayout;
-
-    private BackToTopBubble mBackToTopBubble;
 
     private boolean mWebFeedHasContent;
 
@@ -1031,11 +1027,6 @@ public class FeedSurfaceCoordinator
         return mSectionHeaderView;
     }
 
-    @VisibleForTesting
-    public BackToTopBubble getBackToTopBubble() {
-        return mBackToTopBubble;
-    }
-
     /**
      * Initializes things related to the bubbles which will start listening to scroll events to
      * determine whether a bubble should be triggered.
@@ -1057,9 +1048,6 @@ public class FeedSurfaceCoordinator
 
         createHeaderIphScrollListener();
         createRefreshIphScrollListener();
-        if (ChromeFeatureList.isEnabled(ChromeFeatureList.FEED_BACK_TO_TOP)) {
-            createBackToTopBubbleScrollListener();
-        }
     }
 
     private void createHeaderIphScrollListener() {
@@ -1088,11 +1076,6 @@ public class FeedSurfaceCoordinator
         mScrollableContainerDelegate.addScrollListener(mRefreshIphScrollListener);
     }
 
-    private void createBackToTopBubbleScrollListener() {
-        mBackToTopBubbleScrollListener = new BackToTopBubbleScrollListener(this, this);
-        mScrollableContainerDelegate.addScrollListener(mBackToTopBubbleScrollListener);
-    }
-
     /**
      * Stops and deletes things related to the bubbles. Must be called before tearing down feed
      * components, e.g., on #destroy. This also applies for the case where the feed stream is
@@ -1107,10 +1090,6 @@ public class FeedSurfaceCoordinator
             if (mRefreshIphScrollListener != null) {
                 mScrollableContainerDelegate.removeScrollListener(mRefreshIphScrollListener);
                 mRefreshIphScrollListener = null;
-            }
-            if (mBackToTopBubbleScrollListener != null) {
-                mScrollableContainerDelegate.removeScrollListener(mBackToTopBubbleScrollListener);
-                mBackToTopBubbleScrollListener = null;
             }
         }
         stopScrollTracking();
@@ -1167,11 +1146,6 @@ public class FeedSurfaceCoordinator
     }
 
     @Override
-    public boolean isShowingBackToTopBubble() {
-        return mBackToTopBubble != null && mBackToTopBubble.isShowing();
-    }
-
-    @Override
     public int getHeaderCount() {
         return mHeaderCount;
     }
@@ -1189,29 +1163,6 @@ public class FeedSurfaceCoordinator
     @Override
     public int getLastVisiblePosition() {
         return mHybridListRenderer.getListLayoutHelper().findLastVisibleItemPosition();
-    }
-
-    @Override
-    public void showBubble() {
-        if (mBackToTopBubble != null) return;
-        mBackToTopBubble =
-                new BackToTopBubble(
-                        mActivity,
-                        mRootView.getContext(),
-                        mRootView,
-                        () -> {
-                            mBackToTopBubble.dismiss();
-                            mBackToTopBubble = null;
-                            mRecyclerView.smoothScrollToPosition(0);
-                        });
-        mBackToTopBubble.show();
-    }
-
-    @Override
-    public void dismissBubble() {
-        if (mBackToTopBubble == null) return;
-        mBackToTopBubble.dismiss();
-        mBackToTopBubble = null;
     }
 
     @Override

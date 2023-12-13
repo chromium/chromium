@@ -6,7 +6,7 @@ package org.chromium.chrome.browser.feed;
 
 import org.chromium.components.feature_engagement.Tracker;
 
-/** Delegate to provide necessary checks for bubble (IPH or Back-to-top) triggering in feeds. */
+/** Delegate to provide necessary checks for bubble (IPH) triggering in feeds. */
 public interface FeedBubbleDelegate {
     /** Gets the feature engagement tracker. */
     Tracker getFeatureEngagementTracker();
@@ -31,9 +31,6 @@ public interface FeedBubbleDelegate {
 
     /** Returns true if the user can scroll up the page. */
     boolean canScrollUp();
-
-    /** Returns true if the "Back to top" bubble is shown. */
-    boolean isShowingBackToTopBubble();
 
     /** Returns the number of header items. */
     int getHeaderCount();

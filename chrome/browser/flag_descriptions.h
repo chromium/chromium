@@ -2374,9 +2374,6 @@ extern const char kFeatureNotificationGuideSkipCheckForLowEngagedUsersName[];
 extern const char
     kFeatureNotificationGuideSkipCheckForLowEngagedUsersDescription[];
 
-extern const char kFeedBackToTopName[];
-extern const char kFeedBackToTopDescription[];
-
 extern const char kFeedFollowUiUpdateName[];
 extern const char kFeedFollowUiUpdateDescription[];
 

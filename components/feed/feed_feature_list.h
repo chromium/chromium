@@ -51,10 +51,6 @@ extern const base::FeatureParam<bool>
 // percentage of the maximum size calculated for the device.
 BASE_DECLARE_FEATURE(kFeedImageMemoryCacheSizePercentage);
 
-// Feature that enables showing a callout to help users return to the top of the
-// feeds quickly.
-BASE_DECLARE_FEATURE(kFeedBackToTop);
-
 #if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
 // When enabled, causes the server to restrig the Sync Promo Banner for the
 // bottom of Feed to a Signin Promo.

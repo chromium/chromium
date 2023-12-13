@@ -59,9 +59,6 @@ const base::FeatureParam<bool>
 BASE_FEATURE(kFeedImageMemoryCacheSizePercentage,
              "FeedImageMemoryCacheSizePercentage",
              base::FEATURE_DISABLED_BY_DEFAULT);
-BASE_FEATURE(kFeedBackToTop,
-             "FeedBackToTop",
-             base::FEATURE_DISABLED_BY_DEFAULT);
 #if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
 BASE_FEATURE(kFeedBottomSyncStringRemoval,
              "FeedBottomSyncStringRemoval",

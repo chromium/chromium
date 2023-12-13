@@ -201,11 +201,6 @@ public final class RefreshIphScrollListenerTest {
                     }
 
                     @Override
-                    public boolean isShowingBackToTopBubble() {
-                        return false;
-                    }
-
-                    @Override
                     public int getHeaderCount() {
                         return 0;
                     }
