@@ -7,6 +7,7 @@
 
 #include "ash/components/arc/mojom/app.mojom.h"
 #include "ash/constants/ash_features.h"
+#include "base/containers/flat_map.h"
 #include "base/memory/raw_ptr.h"
 #include "base/scoped_multi_source_observation.h"
 #include "base/scoped_observation.h"
