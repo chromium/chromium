@@ -27,7 +27,8 @@ using Microsoft::WRL::ComPtr;
 // which the production versions cannot run in the context of the unittest.
 class StubClientSharedImageInterface : public gpu::ClientSharedImageInterface {
  public:
-  StubClientSharedImageInterface() : gpu::ClientSharedImageInterface(nullptr) {}
+  StubClientSharedImageInterface()
+      : gpu::ClientSharedImageInterface(nullptr, nullptr) {}
   gpu::SyncToken GenVerifiedSyncToken() override { return gpu::SyncToken(); }
 
   scoped_refptr<gpu::ClientSharedImage> CreateSharedImage(

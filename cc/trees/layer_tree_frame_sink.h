@@ -22,7 +22,7 @@
 #include "components/viz/common/gpu/context_provider.h"
 #include "components/viz/common/gpu/raster_context_provider.h"
 #include "components/viz/common/resources/returned_resource.h"
-#include "gpu/ipc/client/client_shared_image_interface.h"
+#include "gpu/ipc/client/gpu_channel_observer.h"
 #include "ui/gfx/color_space.h"
 
 namespace gpu {
@@ -46,7 +46,8 @@ class LayerTreeFrameSinkClient;
 // OpenGL resources (created with the context_provider()). If not, then
 // SharedMemory resources should be used.
 class CC_EXPORT LayerTreeFrameSink : public viz::SharedBitmapReporter,
-                                     public viz::ContextLostObserver {
+                                     public viz::ContextLostObserver,
+                                     public gpu::GpuChannelLostObserver {
  public:
   // Constructor for GL-based and/or software resources.
   //
@@ -149,6 +150,9 @@ class CC_EXPORT LayerTreeFrameSink : public viz::SharedBitmapReporter,
   // viz::ContextLostObserver:
   void OnContextLost() override;
 
+  // gpu::GpuChannelLostObserver override.
+  void OnGpuChannelLost() override;
+
   raw_ptr<LayerTreeFrameSinkClient> client_ = nullptr;
 
   scoped_refptr<viz::RasterContextProvider> context_provider_;
@@ -162,6 +166,9 @@ class CC_EXPORT LayerTreeFrameSink : public viz::SharedBitmapReporter,
   int64_t source_frame_number_;
 
  private:
+  // Called on the compositor thread or the browser main thread.
+  scoped_refptr<base::SingleThreadTaskRunner> client_task_runner_;
+
   THREAD_CHECKER(thread_checker_);
   base::WeakPtrFactory<LayerTreeFrameSink> weak_ptr_factory_{this};
 };

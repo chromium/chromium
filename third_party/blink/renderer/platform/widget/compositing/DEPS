@@ -6,6 +6,7 @@ include_rules = [
     "+cc",
     "+components/viz/client",
     "+components/viz/common",
+    "+gpu/ipc/client/client_shared_image_interface.h",
     "+services/metrics/public/cpp/mojo_ukm_recorder.h",
 ]
 

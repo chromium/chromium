@@ -21,6 +21,7 @@
 #include "components/viz/service/display/display.h"
 #include "components/viz/service/frame_sinks/frame_sink_manager_impl.h"
 #include "components/viz/service/surfaces/surface.h"
+#include "gpu/ipc/client/client_shared_image_interface.h"
 
 namespace ui {
 

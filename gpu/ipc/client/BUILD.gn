@@ -20,6 +20,7 @@ source_set("ipc_client_sources") {
     "command_buffer_proxy_impl.h",
     "gpu_channel_host.cc",
     "gpu_channel_host.h",
+    "gpu_channel_observer.h",
     "image_decode_accelerator_proxy.cc",
     "image_decode_accelerator_proxy.h",
     "shared_image_interface_proxy.cc",

@@ -204,7 +204,8 @@ void GpuChannelHost::TerminateGpuProcessForTesting() {
 
 std::unique_ptr<ClientSharedImageInterface>
 GpuChannelHost::CreateClientSharedImageInterface() {
-  return std::make_unique<ClientSharedImageInterface>(&shared_image_interface_);
+  return std::make_unique<ClientSharedImageInterface>(&shared_image_interface_,
+                                                      this);
 }
 
 GpuChannelHost::~GpuChannelHost() = default;
@@ -215,6 +216,29 @@ GpuChannelHost::ConnectionTracker::~ConnectionTracker() = default;
 
 void GpuChannelHost::ConnectionTracker::OnDisconnectedFromGpuProcess() {
   is_connected_.store(false);
+  NotifyGpuChannelLost();
+}
+
+void GpuChannelHost::ConnectionTracker::AddObserver(
+    GpuChannelLostObserver* obs) {
+  AutoLock lock(channel_obs_lock_);
+  observer_list_.AddObserver(obs);
+  DCHECK(!observer_list_.empty());
+}
+
+void GpuChannelHost::ConnectionTracker::RemoveObserver(
+    GpuChannelLostObserver* obs) {
+  AutoLock lock(channel_obs_lock_);
+  observer_list_.RemoveObserver(obs);
+}
+
+void GpuChannelHost::ConnectionTracker::NotifyGpuChannelLost() {
+  AutoLock lock(channel_obs_lock_);
+  for (auto& observer : observer_list_) {
+    observer.OnGpuChannelLost();
+  }
+  observer_list_.Clear();
+  DCHECK(observer_list_.empty());
 }
 
 GpuChannelHost::OrderingBarrierInfo::OrderingBarrierInfo() = default;
@@ -257,6 +281,14 @@ bool GpuChannelHost::Listener::OnMessageReceived(const IPC::Message& message) {
 void GpuChannelHost::Listener::OnChannelError() {
   AutoLock lock(lock_);
   channel_ = nullptr;
+}
+
+void GpuChannelHost::AddObserver(GpuChannelLostObserver* obs) {
+  connection_tracker_->AddObserver(obs);
+}
+
+void GpuChannelHost::RemoveObserver(GpuChannelLostObserver* obs) {
+  connection_tracker_->RemoveObserver(obs);
 }
 
 }  // namespace gpu
