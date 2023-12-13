@@ -63,6 +63,9 @@ enum MethodType {
 
   // Method corresponding to `CompanionPage.UpdatePageTitle`.
   kUpdatePageTitle = 35,
+
+  // Method corresponding to `CompanionPage.UpdateInnerHtml`.
+  kUpdateInnerHtml = 36,
 };
 
 // Types of promos shown in the companion UI.
@@ -304,4 +307,7 @@ interface CompanionPage {
 
   // Passes the title of the main page to the companion page.
   UpdatePageTitle(string page_title);
+
+  // Passes the innerHtml of the main page to the companion page.
+  UpdateInnerHtml(string inner_html);
 };

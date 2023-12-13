@@ -115,10 +115,6 @@ class CompanionPageHandler
   // subsequent navigations on the main frame.
   void NotifyURLChanged(bool is_full_reload);
 
-  // Notifies the companion side panel about the page title of the main frame
-  // using a postmessage() update.
-  void NotifyTitleChanged();
-
   // Registers a WebContentsModalDialogManager for our WebContents in order to
   // display web modal dialogs triggered by it.
   void RegisterModalDialogManager(Browser* browser);
@@ -142,6 +138,19 @@ class CompanionPageHandler
   // Method responsible for binding and sending VQS results to panel.
   void SendVisualQueryResult(
       const visual_query::VisualSuggestionsResults& results);
+
+  // The callback that handles the response to the request for the innerHTML of
+  // the main frame. Stores the response in |inner_html_| and sends it to the
+  // side panel if ready.
+  void HandleInnerHtmlResponse(const std::optional<std::string>& inner_html);
+
+  // Notifies the companion side panel about the innerHTML of the main frame
+  // using a postmessage() update.
+  void SendInnerHtml();
+
+  // Notifies the companion side panel about the page title of the main frame
+  // using a postmessage() update.
+  void SendPageTitle();
 
   mojo::Receiver<side_panel::mojom::CompanionPageHandler> receiver_;
   mojo::Remote<side_panel::mojom::CompanionPage> page_;
@@ -173,10 +182,24 @@ class CompanionPageHandler
 
   std::optional<base::TimeTicks> full_load_start_time_;
   std::optional<base::TimeTicks> reload_start_time_;
-  std::optional<base::TimeTicks> ui_loading_start_time_;
+  std::optional<base::TimeTicks> ui_ready_for_visual_queries_time_;
 
-  bool page_title_available_;
-  bool companion_ready_for_title_;
+  // Indicates that the kStartedLoading signal was received from side panel. The
+  // page content is sent to the side panel only if the side panel is ready.
+  // Otherwise, it is stored to be sent when the kStartedLoading signal is
+  // received from the side panel.
+  std::optional<base::TimeTicks> ui_ready_for_page_content_time_;
+  // Used to store the page content before the side panel is ready for it. This
+  // is untrustworthy content which will be sent to the webui for processing.
+  // TODO(1493364): Use an opaque mojo type to hold this data in the browser.
+  std::optional<std::string> inner_html_;
+  // Indicates that the kStartedLoading signal was received from side panel. The
+  // page title is sent to the side panel only if the side panel is ready.
+  // Otherwise, it is stored to be sent when the kStartedLoading signal is
+  // received from the side panel.
+  bool ui_ready_for_page_title_;
+  // Used to store the page title before the side panel is ready for it.
+  std::optional<std::string> page_title_;
 
   base::WeakPtrFactory<CompanionPageHandler> weak_ptr_factory_{this};
 };

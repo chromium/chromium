@@ -11,6 +11,8 @@
   lastReceivedLinkOpenedMetadata = null;
   // The page title received on last UpdatePageTitle postmessage.
   lastReceivedPageTitle = null;
+  // The innerHtml received on last UpdateInnerHtml postmessage.
+  lastReceivedInnerHtml = null;
 
   // Promise to be returned to for browser tests when the test needs to wait
   // for a postmessage call from the browser to be received by the companion
@@ -37,6 +39,9 @@
     } else if (event.data['type'] == 35) { // `MethodType.kUpdatePageTitle`
       window.lastReceivedPageTitle = event.data['pageTitle'];
       promiseResolve(event.data['pageTitle']);
+    } else if (event.data['type'] == 36) { // `MethodType.kUpdateInnerHtml`
+      window.lastReceivedInnerHtml = event.data['innerHtml'];
+      promiseResolve(event.data['innerHtml']);
     }
   }
 
@@ -56,6 +61,10 @@
 
   function getLastReceivedPageTitle() {
     return window.lastReceivedPageTitle;
+  }
+
+  function getLastReceivedInnerHtml() {
+    return window.lastReceivedInnerHtml;
   }
 
   function waitForMessage() {

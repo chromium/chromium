@@ -543,6 +543,14 @@ class CompanionPageBrowserTest : public InProcessBrowserTest {
     return eval_js_result.ExtractString();
   }
 
+  absl::optional<std::string> GetLastInnerHtmlFromPostMessage() {
+    content::EvalJsResult eval_js_result = EvalJs("getLastReceivedInnerHtml()");
+    if (!eval_js_result.error.empty() || !eval_js_result.value.is_string()) {
+      return absl::nullopt;
+    }
+    return eval_js_result.ExtractString();
+  }
+
   void EnableMsbb(bool enable_msbb) {
     auto* pref_service = browser()->profile()->GetPrefs();
     pref_service->SetBoolean(
@@ -1152,9 +1160,8 @@ IN_PROC_BROWSER_TEST_F(
             GetLastLinkOpenedMetadataFromPostMessage());
 }
 
-// TODO(crbug.com/1511189): Flaky test.
 IN_PROC_BROWSER_TEST_F(CompanionPageBrowserTest,
-                       DISABLED_PageTitleNotifiesViaPostMessage) {
+                       PageTitleNotifiesViaPostMessage) {
   EnablePco(true);
   ASSERT_TRUE(ui_test_utils::NavigateToURL(
       browser(), GURL("data:text/html;charset=utf-8,"
@@ -1172,6 +1179,28 @@ IN_PROC_BROWSER_TEST_F(CompanionPageBrowserTest,
 
   // Ensure browser sent post message
   EXPECT_EQ("Title of the page", GetLastPageTitleFromPostMessage());
+}
+
+IN_PROC_BROWSER_TEST_F(CompanionPageBrowserTest,
+                       InnerHtmlNotifiesViaPostMessage) {
+  EnablePco(true);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(), GURL("data:text/html;charset=utf-8,"
+                      "<body>Content of the page</body>")));
+  side_panel_coordinator()->Show(SidePanelEntry::Id::kSearchCompanion);
+
+  WaitForCompanionToBeLoaded();
+  EXPECT_EQ(side_panel_coordinator()->GetCurrentEntryId(),
+            SidePanelEntry::Id::kSearchCompanion);
+
+  CompanionScriptBuilder builder(MethodType::kCompanionLoadingState);
+  builder.loading_state = LoadingState::kStartedLoading;
+  builder.wait_for_message = true;
+  EXPECT_TRUE(ExecJs(builder.Build()));
+
+  // Ensure browser sent post message
+  EXPECT_EQ("<body>Content of the page</body>",
+            GetLastInnerHtmlFromPostMessage());
 }
 
 IN_PROC_BROWSER_TEST_F(CompanionPageBrowserTest,
