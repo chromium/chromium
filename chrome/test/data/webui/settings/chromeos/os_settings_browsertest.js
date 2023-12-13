@@ -1116,7 +1116,16 @@ TEST_F(
    'os_settings_ui/os_settings_ui_about_page_test.js',
    {disabled: ['ash::features::kOsSettingsRevampWayfinding']},
  ],
- ['OsSettingsUiMenu', 'os_settings_ui/os_settings_ui_menu_test.js'],
+ [
+   'OsSettingsUiMenu',
+   'os_settings_ui/os_settings_ui_menu_test.js',
+   {disabled: ['ash::features::kOsSettingsRevampWayfinding']},
+ ],
+ [
+   'OsSettingsUiMenuRevamp',
+   'os_settings_ui/os_settings_ui_menu_test.js',
+   {enabled: ['ash::features::kOsSettingsRevampWayfinding']},
+ ],
  [
    'OsSettingsUiPageAvailability',
    'os_settings_ui/os_settings_ui_page_availability_test.js',
