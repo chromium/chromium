@@ -31,9 +31,6 @@ var OSSettingsBrowserTest = class extends PolymerTest {
     return {
       enabled: [
         'ash::features::kEnableHostnameSetting',
-        // TODO(b/217560706): Remove this explicit enabled flag when rollout
-        // completed.
-        'ash::features::kDiacriticsOnPhysicalKeyboardLongpress',
       ],
     };
   }
