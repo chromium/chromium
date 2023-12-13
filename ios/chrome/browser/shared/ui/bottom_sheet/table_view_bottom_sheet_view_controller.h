@@ -5,12 +5,12 @@
 #ifndef IOS_CHROME_BROWSER_SHARED_UI_BOTTOM_SHEET_TABLE_VIEW_BOTTOM_SHEET_VIEW_CONTROLLER_H_
 #define IOS_CHROME_BROWSER_SHARED_UI_BOTTOM_SHEET_TABLE_VIEW_BOTTOM_SHEET_VIEW_CONTROLLER_H_
 
-#import "ios/chrome/common/ui/confirmation_alert/confirmation_alert_view_controller.h"
+#import "ios/chrome/browser/shared/ui/bottom_sheet/bottom_sheet_view_controller.h"
 
 // UI Base class for Bottom Sheets with a table view, such as Password or
 // Payments bottom sheets.
 @interface TableViewBottomSheetViewController
-    : ConfirmationAlertViewController <UITableViewDelegate>
+    : BottomSheetViewController <UITableViewDelegate>
 
 // Creates the table view which will display suggestions on the bottom sheet.
 - (UITableView*)createTableView;

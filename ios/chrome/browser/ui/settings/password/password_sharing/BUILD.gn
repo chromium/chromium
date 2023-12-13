@@ -104,7 +104,7 @@ source_set("password_sharing_ui") {
     "//components/strings",
     "//ios/chrome/app/strings",
     "//ios/chrome/browser/net:crurl",
-    "//ios/chrome/browser/shared/ui/bottom_sheet",
+    "//ios/chrome/browser/shared/ui/bottom_sheet:table_view_bottom_sheet_view_controller",
     "//ios/chrome/browser/shared/ui/symbols",
     "//ios/chrome/browser/shared/ui/table_view",
     "//ios/chrome/browser/shared/ui/util",
