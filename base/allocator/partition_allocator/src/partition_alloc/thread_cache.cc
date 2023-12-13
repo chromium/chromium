@@ -205,7 +205,7 @@ void ThreadCacheRegistry::ForcePurgeAllThreadAfterForkUnsafe() {
 }
 
 void ThreadCacheRegistry::SetLargestActiveBucketIndex(
-    uint8_t largest_active_bucket_index) {
+    uint16_t largest_active_bucket_index) {
   largest_active_bucket_index_ = largest_active_bucket_index;
 }
 

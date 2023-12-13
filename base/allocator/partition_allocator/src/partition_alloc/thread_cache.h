@@ -140,7 +140,7 @@ class PA_COMPONENT_EXPORT(PARTITION_ALLOC) ThreadCacheRegistry {
   // Controls the thread cache size, by setting the multiplier to a value above
   // or below |ThreadCache::kDefaultMultiplier|.
   void SetThreadCacheMultiplier(float multiplier);
-  void SetLargestActiveBucketIndex(uint8_t largest_active_bucket_index);
+  void SetLargestActiveBucketIndex(uint16_t largest_active_bucket_index);
 
   // Controls the thread cache purging configuration.
   void SetPurgingConfiguration(
@@ -184,7 +184,7 @@ class PA_COMPONENT_EXPORT(PARTITION_ALLOC) ThreadCacheRegistry {
   internal::base::TimeDelta periodic_purge_next_interval_;
   bool is_purging_configured_ = false;
 
-  uint8_t largest_active_bucket_index_ = internal::BucketIndexLookup::GetIndex(
+  uint16_t largest_active_bucket_index_ = internal::BucketIndexLookup::GetIndex(
       ThreadCacheLimits::kDefaultSizeThreshold);
 };
 
