@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "base/record_replay_driver.h"
 #include "chrome/browser/ui/webui/record_replay/record_replay_manager_handler.h"
 #include "components/record_replay/services/auth_token/public/cpp/auth_token_service_factory.h"
 #include <string>
@@ -36,7 +37,7 @@ void RecordReplayManagerHandler::GetEnv(const std::string& key, GetEnvCallback c
   std::move(callback).Run(absl::optional<std::string>());
 }
 void RecordReplayManagerHandler::GetBuildId(GetBuildIdCallback callback) {
-  std::move(callback).Run("FIXME-BUILD-ID");
+  std::move(callback).Run(RECORD_REPLAY_BUILD_ID);
 }
 void RecordReplayManagerHandler::GetReplayUserToken(GetReplayUserTokenCallback callback) {
   std::move(callback).Run(record_replay_user_token_);
