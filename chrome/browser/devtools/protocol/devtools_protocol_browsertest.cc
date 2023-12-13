@@ -72,6 +72,11 @@
 #include "third_party/boringssl/src/include/openssl/ssl.h"
 #include "url/origin.h"
 
+#if BUILDFLAG(IS_WIN)
+#include "base/base_paths_win.h"
+#include "base/test/scoped_path_override.h"
+#endif
+
 using DevToolsProtocolTest = DevToolsProtocolTestBase;
 using testing::AllOf;
 using testing::Contains;
@@ -934,6 +939,13 @@ class ExtensionProtocolTest : public DevToolsProtocolTest {
   extensions::ExtensionService* extension_service_;
   extensions::ExtensionRegistry* extension_registry_;
   content::WebContents* background_web_contents_;
+#if BUILDFLAG(IS_WIN)
+  // This is needed to stop ExtensionProtocolTestsfrom creating a
+  // shortcut in the Windows start menu. The override needs to last until the
+  // test is destroyed, because Windows shortcut tasks which create the shortcut
+  // can run after the test body returns.
+  base::ScopedPathOverride override_start_dir{base::DIR_START_MENU};
+#endif  // BUILDFLAG(IS_WIN
 };
 
 IN_PROC_BROWSER_TEST_F(ExtensionProtocolTest, ReloadTracedExtension) {
