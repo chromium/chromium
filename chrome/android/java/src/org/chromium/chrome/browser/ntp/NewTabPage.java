@@ -294,9 +294,6 @@ public class NewTabPage
         @Override
         public void onLoadingComplete() {
             if (mIsDestroyed) return;
-
-            long loadTimeMs = (System.nanoTime() - mConstructedTimeNs) / 1000000;
-            RecordHistogram.recordTimesHistogram("Tab.NewTabOnload", loadTimeMs);
             mIsLoaded = true;
             NewTabPageUma.recordNtpImpression(NewTabPageUma.NTP_IMPRESSION_REGULAR);
             // If not visible when loading completes, wait until onShown is received.

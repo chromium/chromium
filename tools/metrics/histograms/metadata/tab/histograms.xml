@@ -225,20 +225,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Tab.NewTabOnload{TabNewTabOnload}" units="ms"
-    expires_after="2021-03-07">
-  <owner>carlosk@chromium.org</owner>
-  <owner>harringtond@chromium.org</owner>
-  <summary>
-    The time for the new tab page to load. Only recorded on Android. Recorded
-    only once per tab, i.e. excluding back/forward navigations.
-    {TabNewTabOnload}
-  </summary>
-  <token key="TabNewTabOnload">
-    <variant name=""/>
-  </token>
-</histogram>
-
 <histogram name="Tab.PageLoadInPortrait" enum="DeviceOrientation"
     expires_after="M85">
   <owner>marq@chromium.org</owner>

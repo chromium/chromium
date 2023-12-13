@@ -279,11 +279,9 @@ IN_PROC_BROWSER_TEST_F(NewTabPageNavigationThrottleFencedFrameTest,
   CoreTabHelper* core_tab_helper =
       CoreTabHelper::FromWebContents(web_contents());
   core_tab_helper->set_new_tab_start_time(base::TimeTicks().Now());
-  histogram_tester.ExpectTotalCount("Tab.NewTabOnload.Other", 0);
 
   EXPECT_TRUE(ui_test_utils::NavigateToURL(browser(), ntp_url));
   EXPECT_TRUE(core_tab_helper->new_tab_start_time().is_null());
-  histogram_tester.ExpectTotalCount("Tab.NewTabOnload.Other", 1);
 
   core_tab_helper->set_new_tab_start_time(base::TimeTicks().Now());
   GURL fenced_frame_url =
@@ -293,7 +291,6 @@ IN_PROC_BROWSER_TEST_F(NewTabPageNavigationThrottleFencedFrameTest,
           web_contents()->GetPrimaryMainFrame(), fenced_frame_url);
   EXPECT_NE(nullptr, fenced_frame_host);
   EXPECT_FALSE(core_tab_helper->new_tab_start_time().is_null());
-  histogram_tester.ExpectTotalCount("Tab.NewTabOnload.Other", 1);
 }
 
 IN_PROC_BROWSER_TEST_F(NewTabPageNavigationThrottleFencedFrameTest,
