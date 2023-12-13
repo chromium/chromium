@@ -81,6 +81,7 @@ import java.lang.ref.WeakReference;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashSet;
+import java.util.Optional;
 
 /** Unit tests for {@link SafetyCheckMediator}. */
 @RunWith(ParameterizedRobolectricTestRunner.class)
@@ -204,7 +205,8 @@ public class SafetyCheckMediatorTest {
                                 return null;
                             })
                     .when(mPasswordCheckupHelper)
-                    .getBreachedCredentialsCount(anyInt(), any(), any(Callback.class), any());
+                    .getBreachedCredentialsCount(
+                            anyInt(), any(Optional.class), any(Callback.class), any());
             setPasswordCountOnStoreBridge(passwordCount);
         } else {
             doAnswer(
@@ -244,7 +246,7 @@ public class SafetyCheckMediatorTest {
                         })
                 .when(mPasswordCheckupHelper)
                 .getBreachedCredentialsCount(
-                        anyInt(), any(), any(Callback.class), any(Callback.class));
+                        anyInt(), any(Optional.class), any(Callback.class), any(Callback.class));
     }
 
     private void captureRunPasswordCheckCallback() {
@@ -257,7 +259,7 @@ public class SafetyCheckMediatorTest {
                         })
                 .when(mPasswordCheckupHelper)
                 .runPasswordCheckupInBackground(
-                        anyInt(), any(), any(Callback.class), any(Callback.class));
+                        anyInt(), any(Optional.class), any(Callback.class), any(Callback.class));
     }
 
     private void configureMockSyncService() {
