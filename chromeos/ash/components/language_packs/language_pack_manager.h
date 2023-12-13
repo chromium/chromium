@@ -15,6 +15,8 @@
 #include "base/scoped_observation.h"
 #include "base/strings/strcat.h"
 #include "chromeos/ash/components/dbus/dlcservice/dlcservice_client.h"
+#include "components/prefs/pref_change_registrar.h"
+#include "components/prefs/pref_service.h"
 #include "ui/base/ime/ash/input_method_util.h"
 
 class PrefService;
@@ -236,6 +238,9 @@ class LanguagePackManager : public DlcserviceClient::Observer {
   static void UpdatePacksForOobe(const std::string& locale,
                                  OnUpdatePacksForOobeCallback callback);
 
+  // Registers itself as an Observer of all the relevant languages Prefs.
+  void ObservePrefs(PrefService* pref_service);
+
   // Adds an observer to the observer list.
   void AddObserver(Observer* observer);
 
@@ -272,7 +277,7 @@ class LanguagePackManager : public DlcserviceClient::Observer {
   // Retrieves the list of installed DLCs and updates Packs accordingly.
   // This function should be called when LPM initializes and then each time
   // Prefs change.
-  static void CheckAndUpdateDlcsForInputMethods(PrefService* prefs);
+  static void CheckAndUpdateDlcsForInputMethods(PrefService* pref_service);
 
   // DlcserviceClient::Observer overrides.
   void OnDlcStateChanged(const dlcservice::DlcState& dlc_state) override;
@@ -285,6 +290,7 @@ class LanguagePackManager : public DlcserviceClient::Observer {
   base::ObserverList<Observer> observers_;
   base::ScopedObservation<DlcserviceClient, DlcserviceClient::Observer> obs_{
       this};
+  PrefChangeRegistrar pref_change_registrar_;
 };
 
 }  // namespace ash::language_packs
