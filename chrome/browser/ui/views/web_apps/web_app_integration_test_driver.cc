@@ -4569,7 +4569,9 @@ WebAppIntegrationTest::WebAppIntegrationTest() : helper_(this) {
   enabled_features.push_back(blink::features::kDesktopPWAsTabStrip);
   enabled_features.push_back(features::kDesktopPWAsTabStripSettings);
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  // TODO(crbug.com/1462253): Also test with Lacros flags enabled.
+  // WebAppIntegrationTest runs in Ash only when Lacros is disabled.
+  // If Lacros is enabled, WebAppIntegrationTest runs in Lacros with crosapi
+  // enabled.
   base::Extend(disabled_features, ash::standalone_browser::GetFeatureRefs());
 #endif
 #if BUILDFLAG(IS_CHROMEOS)
