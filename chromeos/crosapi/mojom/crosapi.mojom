@@ -61,6 +61,7 @@ import "chromeos/crosapi/mojom/idle_service.mojom";
 import "chromeos/crosapi/mojom/image_writer.mojom";
 import "chromeos/crosapi/mojom/kerberos_in_browser.mojom";
 import "chromeos/crosapi/mojom/keystore_service.mojom";
+import "chromeos/crosapi/mojom/lacros_shelf_item_tracker.mojom";
 import "chromeos/crosapi/mojom/launcher_search.mojom";
 import "chromeos/crosapi/mojom/local_printer.mojom";
 import "chromeos/crosapi/mojom/login.mojom";
@@ -152,8 +153,8 @@ struct BrowserInfo {
 // please note the milestone when you added it, to help us reason about
 // compatibility between the client applications and older ash-chrome binaries.
 //
-// Next version: 126
-// Next method id: 128
+// Next version: 127
+// Next method id: 129
 [Stable, Uuid="8b79c34f-2bf8-4499-979a-b17cac522c1e",
  RenamedFrom="crosapi.mojom.AshChromeService"]
 interface Crosapi {
@@ -462,6 +463,12 @@ interface Crosapi {
   // Binds the KeystoreService interface for challenging keys.
   // Added in M87.
   BindKeystoreService@2(pending_receiver<KeystoreService> receiver);
+
+  // Binds the LacrosShelfItemTracker interface for integrating ephemeral Lacros
+  // Windows with Ash Shelf.
+  [MinVersion=126]
+  BindLacrosShelfItemTracker@128(
+      pending_receiver<LacrosShelfItemTracker> receiver);
 
   // Binds the Lacros app publisher service, which allows Lacros to connect the
   // Lacros app to the app service.

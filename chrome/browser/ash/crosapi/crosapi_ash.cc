@@ -70,6 +70,7 @@
 #include "chrome/browser/ash/crosapi/kerberos_in_browser_ash.h"
 #include "chrome/browser/ash/crosapi/keystore_service_ash.h"
 #include "chrome/browser/ash/crosapi/kiosk_session_service_ash.h"
+#include "chrome/browser/ash/crosapi/lacros_shelf_item_tracker.h"
 #include "chrome/browser/ash/crosapi/local_printer_ash.h"
 #include "chrome/browser/ash/crosapi/login_ash.h"
 #include "chrome/browser/ash/crosapi/login_screen_storage_ash.h"
@@ -148,6 +149,7 @@
 #include "chromeos/crosapi/mojom/image_writer.mojom.h"
 #include "chromeos/crosapi/mojom/kerberos_in_browser.mojom.h"
 #include "chromeos/crosapi/mojom/keystore_service.mojom.h"
+#include "chromeos/crosapi/mojom/lacros_shelf_item_tracker.mojom.h"
 #include "chromeos/crosapi/mojom/local_printer.mojom.h"
 #include "chromeos/crosapi/mojom/message_center.mojom.h"
 #include "chromeos/crosapi/mojom/multi_capture_service.mojom.h"
@@ -260,6 +262,7 @@ CrosapiAsh::CrosapiAsh(CrosapiDependencyRegistry* registry)
       kerberos_in_browser_ash_(std::make_unique<KerberosInBrowserAsh>()),
       keystore_service_ash_(std::make_unique<KeystoreServiceAsh>()),
       kiosk_session_service_ash_(std::make_unique<KioskSessionServiceAsh>()),
+      lacros_shelf_item_tracker_(std::make_unique<LacrosShelfItemTracker>()),
       local_printer_ash_(std::make_unique<LocalPrinterAsh>()),
       login_ash_(std::make_unique<LoginAsh>()),
       login_screen_storage_ash_(std::make_unique<LoginScreenStorageAsh>()),
@@ -681,6 +684,11 @@ void CrosapiAsh::BindKeystoreService(
 void CrosapiAsh::BindKioskSessionService(
     mojo::PendingReceiver<mojom::KioskSessionService> receiver) {
   kiosk_session_service_ash_->BindReceiver(std::move(receiver));
+}
+
+void CrosapiAsh::BindLacrosShelfItemTracker(
+    mojo::PendingReceiver<mojom::LacrosShelfItemTracker> receiver) {
+  lacros_shelf_item_tracker_->BindReceiver(std::move(receiver));
 }
 
 void CrosapiAsh::BindLacrosAppPublisher(
