@@ -107,6 +107,7 @@ class ChromeRenderFrameObserver : public content::RenderFrameObserver,
 #endif
   void GetMediaFeedURL(GetMediaFeedURLCallback callback) override;
   void LoadBlockedPlugins(const std::string& identifier) override;
+  void SetSupportsAppRegion(bool supports_app_region) override;
 
   // Initialize a |phishing_classifier_delegate_|.
   void SetClientSidePhishingDetection();

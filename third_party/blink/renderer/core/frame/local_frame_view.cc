@@ -1747,8 +1747,10 @@ void LocalFrameView::NotifyPageThatContentAreaWillPaint() const {
 
 void LocalFrameView::UpdateDocumentAnnotatedRegions() const {
   Document* document = frame_->GetDocument();
-  if (!document->HasAnnotatedRegions())
+  if (!document->HasAnnotatedRegions() || !frame_->SupportsAppRegion()) {
     return;
+  }
+
   Vector<AnnotatedRegionValue> new_regions;
   CollectAnnotatedRegions(*(document->GetLayoutBox()), new_regions);
   if (new_regions == document->AnnotatedRegions())

@@ -3988,6 +3988,10 @@ bool WebViewImpl::IsFencedFrameRoot() const {
   return GetPage()->IsMainFrameFencedFrameRoot();
 }
 
+void WebViewImpl::SetSupportsAppRegion(bool supports_app_region) {
+  MainFrameImpl()->GetFrame()->SetSupportsAppRegion(supports_app_region);
+}
+
 void WebViewImpl::MojoDisconnected() {
 #if !(BUILDFLAG(IS_ANDROID) || \
       (BUILDFLAG(IS_CHROMEOS) && defined(ARCH_CPU_ARM64)))

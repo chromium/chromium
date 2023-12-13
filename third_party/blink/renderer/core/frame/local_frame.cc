@@ -3827,4 +3827,19 @@ const mojom::RendererContentSettingsPtr& LocalFrame::GetContentSettings() {
   return loader_.GetDocumentLoader()->GetContentSettings();
 }
 
+bool LocalFrame::SupportsAppRegion() {
+  return supports_app_region_;
+}
+
+void LocalFrame::SetSupportsAppRegion(bool supports_app_region) {
+  supports_app_region_ = supports_app_region;
+  if (supports_app_region) {
+    view_->UpdateDocumentAnnotatedRegions();
+  } else {
+    CHECK(GetDocument());
+    GetDocument()->SetAnnotatedRegions(Vector<AnnotatedRegionValue>());
+    Client()->AnnotatedRegionsChanged();
+  }
+}
+
 }  // namespace blink

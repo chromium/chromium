@@ -3002,6 +3002,10 @@ DOMRectList* Internals::nonDraggableRegions(Document* document,
   return AnnotatedRegions(document, false, exception_state);
 }
 
+void Internals::SetSupportsAppRegion(bool supports_app_region) {
+  GetFrame()->SetSupportsAppRegion(supports_app_region);
+}
+
 DOMRectList* Internals::AnnotatedRegions(Document* document,
                                          bool draggable,
                                          ExceptionState& exception_state) {

@@ -241,6 +241,7 @@ class CORE_EXPORT WebViewImpl final : public WebView,
   int32_t HistoryListLength() const { return history_list_length_; }
   const SessionStorageNamespaceId& GetSessionStorageNamespaceId() override;
   bool IsFencedFrameRoot() const override;
+  void SetSupportsAppRegion(bool supports_app_region) override;
 
   // Functions to add and remove observers for this object.
   void AddObserver(WebViewObserver* observer);

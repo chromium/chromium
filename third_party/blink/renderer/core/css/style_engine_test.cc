@@ -7034,6 +7034,7 @@ TEST_F(StyleEngineTest, UseCountCSSDeclarationAfterNestedRule) {
 }
 
 TEST_F(StyleEngineTest, EnsureAppRegionTriggersRelayout) {
+  GetDocument().GetFrame()->SetSupportsAppRegion(true);
   GetDocument().body()->setInnerHTML(R"HTML(
     <head>
     <style>

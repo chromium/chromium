@@ -925,6 +925,10 @@ class CORE_EXPORT LocalFrame final
   // Can only be called while the frame is not detached.
   const mojom::RendererContentSettingsPtr& GetContentSettings();
 
+  // Returns true if the frame supports app-region: drag/no-drag.
+  bool SupportsAppRegion();
+  void SetSupportsAppRegion(bool supports_app_region);
+
  private:
   friend class FrameNavigationDisabler;
   // LocalFrameMojoHandler is a part of LocalFrame.
@@ -1186,6 +1190,8 @@ class CORE_EXPORT LocalFrame final
 
   Member<v8_compile_hints::V8LocalCompileHintsProducer>
       v8_local_compile_hints_producer_;
+
+  bool supports_app_region_ = false;
 };
 
 inline FrameLoader& LocalFrame::Loader() const {

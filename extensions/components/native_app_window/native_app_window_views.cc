@@ -11,6 +11,8 @@
 #include "content/public/browser/render_widget_host_view.h"
 #include "content/public/browser/web_contents.h"
 #include "extensions/browser/app_window/app_window.h"
+#include "extensions/common/mojom/app_window.mojom.h"
+#include "services/service_manager/public/cpp/interface_provider.h"
 #include "third_party/skia/include/core/SkRegion.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/views/controls/webview/webview.h"
@@ -269,6 +271,13 @@ void NativeAppWindowViews::RenderFrameCreated(
     // background - to avoid a white flash while launching the app window,
     // initialize it with black background color.
     render_frame_host->GetView()->SetBackgroundColor(SK_ColorBLACK);
+  }
+
+  if (frameless_) {
+    mojo::Remote<extensions::mojom::AppWindow> app_window;
+    render_frame_host->GetRemoteInterfaces()->GetInterface(
+        app_window.BindNewPipeAndPassReceiver());
+    app_window->SetSupportsAppRegion(true);
   }
 }
 
