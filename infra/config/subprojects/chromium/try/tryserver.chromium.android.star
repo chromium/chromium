@@ -651,10 +651,7 @@ try_.builder(
     ],
     gn_args = gn_args.config(
         configs = [
-            "android_builder",
-            "debug_try_builder",
-            "reclient",
-            "arm64",
+            "ci/Android arm64 Builder (dbg)",
         ],
     ),
     builderless = False,
