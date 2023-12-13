@@ -150,16 +150,16 @@ bool CompareSpecificity(ServerFieldType type1, ServerFieldType type2) {
   return SpecificityForType(type1) < SpecificityForType(type2);
 }
 
-// Fills |distinguishing_fields| with a list of fields to use when creating
+// Fills `distinguishing_fields` with a list of fields to use when creating
 // labels that can help to distinguish between two profiles. Draws fields from
-// |suggested_fields| if it is non-NULL; otherwise returns a default list.
-// If |suggested_fields| is non-NULL, does not include |excluded_field| in the
-// list. Otherwise, |excluded_field| is ignored, and should be set to
-// |UNKNOWN_TYPE| by convention. The resulting list of fields is sorted in
+// `suggested_fields` if it is non-NULL; otherwise returns a default list.
+// If `suggested_fields` is non-NULL, does not include `excluded_fields` in the
+// list. Otherwise, `excluded_fields` is ignored, and should be set to
+// an empty list by convention. The resulting list of fields is sorted in
 // decreasing order of importance.
 void GetFieldsForDistinguishingProfiles(
     const std::vector<ServerFieldType>* suggested_fields,
-    ServerFieldType excluded_field,
+    ServerFieldTypeSet excluded_fields,
     std::vector<ServerFieldType>* distinguishing_fields) {
   static const ServerFieldType kDefaultDistinguishingFields[] = {
       NAME_FULL,
@@ -181,7 +181,7 @@ void GetFieldsForDistinguishingProfiles(
     default_fields.assign(
         kDefaultDistinguishingFields,
         kDefaultDistinguishingFields + std::size(kDefaultDistinguishingFields));
-    if (excluded_field == UNKNOWN_TYPE) {
+    if (excluded_fields.empty()) {
       distinguishing_fields->swap(default_fields);
       return;
     }
@@ -189,10 +189,12 @@ void GetFieldsForDistinguishingProfiles(
   }
 
   // Keep track of which fields we've seen so that we avoid duplicate entries.
-  // Always ignore fields of unknown type and the excluded field.
+  // Always ignore fields of unknown type and those part of `excluded_fields`.
   ServerFieldTypeSet seen_fields;
   seen_fields.insert(UNKNOWN_TYPE);
-  seen_fields.insert(GetStorableTypeCollapsingGroups(excluded_field));
+  for (ServerFieldType excluded_field : excluded_fields) {
+    seen_fields.insert(GetStorableTypeCollapsingGroups(excluded_field));
+  }
 
   distinguishing_fields->clear();
   for (const ServerFieldType& it : *suggested_fields) {
@@ -204,13 +206,18 @@ void GetFieldsForDistinguishingProfiles(
   std::sort(distinguishing_fields->begin(), distinguishing_fields->end(),
             CompareSpecificity);
 
-  // Special case: If the excluded field is a partial name (e.g. first name) and
-  // the suggested fields include other name fields, include |NAME_FULL| in the
-  // list of distinguishing fields as a last-ditch fallback. This allows us to
-  // distinguish between profiles that are identical except for the name.
-  ServerFieldType effective_excluded_type =
-      GetStorableTypeCollapsingGroups(excluded_field);
-  if (excluded_field != effective_excluded_type) {
+  // Special case: If one of the excluded fields is a partial name (e.g.
+  // `NAME_FIRST`) or phone number (e.g `PHONE_HOME_CITY_CODE`) and the
+  // suggested fields include other name or phone fields fields, include
+  // `NAME_FULL` or `PHONE_HOME_WHOLE_NUMBER` in the list of distinguishing
+  // fields as a last-ditch fallback. This allows us to distinguish between
+  // profiles that are identical except for the name or phone number.
+  for (ServerFieldType excluded_field : excluded_fields) {
+    ServerFieldType effective_excluded_type =
+        GetStorableTypeCollapsingGroups(excluded_field);
+    if (excluded_field == effective_excluded_type) {
+      continue;
+    }
     for (const ServerFieldType& it : *suggested_fields) {
       if (it != excluded_field &&
           GetStorableTypeCollapsingGroups(it) == effective_excluded_type) {
@@ -885,8 +892,8 @@ void AutofillProfile::CreateDifferentiatingLabels(
     const std::string& app_locale,
     std::vector<std::u16string>* labels) {
   const size_t kMinimalFieldsShown = 2;
-  CreateInferredLabels(profiles, absl::nullopt, UNKNOWN_TYPE,
-                       kMinimalFieldsShown, app_locale, labels);
+  CreateInferredLabels(profiles, absl::nullopt, {}, kMinimalFieldsShown,
+                       app_locale, labels);
   DCHECK_EQ(profiles.size(), labels->size());
 }
 
@@ -894,7 +901,7 @@ void AutofillProfile::CreateDifferentiatingLabels(
 void AutofillProfile::CreateInferredLabels(
     const std::vector<const AutofillProfile*>& profiles,
     const absl::optional<ServerFieldTypeSet>& suggested_fields,
-    ServerFieldType excluded_field,
+    ServerFieldTypeSet excluded_fields,
     size_t minimal_fields_shown,
     const std::string& app_locale,
     std::vector<std::u16string>* labels) {
@@ -904,7 +911,7 @@ void AutofillProfile::CreateInferredLabels(
           ? std::vector(suggested_fields->begin(), suggested_fields->end())
           : std::vector<ServerFieldType>();
   GetFieldsForDistinguishingProfiles(
-      suggested_fields ? &suggested_fields_types : nullptr, excluded_field,
+      suggested_fields ? &suggested_fields_types : nullptr, excluded_fields,
       &fields_to_use);
 
   // Construct the default label for each profile. Also construct a map that

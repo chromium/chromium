@@ -289,9 +289,8 @@ TEST(AutofillProfileTest, CreateInferredLabelsI18n_CH) {
 
   std::vector<std::u16string> labels;
   for (size_t i = 0; i < std::size(kExpectedLabels); ++i) {
-    AutofillProfile::CreateInferredLabels(ToRawPointerVector(profiles),
-                                          absl::nullopt, UNKNOWN_TYPE, i,
-                                          "en-US", &labels);
+    AutofillProfile::CreateInferredLabels(
+        ToRawPointerVector(profiles), absl::nullopt, {}, i, "en-US", &labels);
     ASSERT_FALSE(labels.empty());
     EXPECT_EQ(UTF8ToUTF16(kExpectedLabels[i]), labels.back());
   }
@@ -324,9 +323,8 @@ TEST(AutofillProfileTest, CreateInferredLabelsI18n_FR) {
 
   std::vector<std::u16string> labels;
   for (size_t i = 0; i < std::size(kExpectedLabels); ++i) {
-    AutofillProfile::CreateInferredLabels(ToRawPointerVector(profiles),
-                                          absl::nullopt, UNKNOWN_TYPE, i,
-                                          "en-US", &labels);
+    AutofillProfile::CreateInferredLabels(
+        ToRawPointerVector(profiles), absl::nullopt, {}, i, "en-US", &labels);
     ASSERT_FALSE(labels.empty());
     EXPECT_EQ(UTF8ToUTF16(kExpectedLabels[i]), labels.back());
   }
@@ -369,9 +367,8 @@ TEST(AutofillProfileTest, CreateInferredLabelsI18n_KR) {
 
   std::vector<std::u16string> labels;
   for (size_t i = 0; i < std::size(kExpectedLabels); ++i) {
-    AutofillProfile::CreateInferredLabels(ToRawPointerVector(profiles),
-                                          absl::nullopt, UNKNOWN_TYPE, i,
-                                          "en-US", &labels);
+    AutofillProfile::CreateInferredLabels(
+        ToRawPointerVector(profiles), absl::nullopt, {}, i, "en-US", &labels);
     ASSERT_FALSE(labels.empty());
     EXPECT_EQ(UTF8ToUTF16(kExpectedLabels[i]), labels.back());
   }
@@ -407,9 +404,8 @@ TEST(AutofillProfileTest, CreateInferredLabelsI18n_JP_Latn) {
 
   std::vector<std::u16string> labels;
   for (size_t i = 0; i < std::size(kExpectedLabels); ++i) {
-    AutofillProfile::CreateInferredLabels(ToRawPointerVector(profiles),
-                                          absl::nullopt, UNKNOWN_TYPE, i,
-                                          "en-US", &labels);
+    AutofillProfile::CreateInferredLabels(
+        ToRawPointerVector(profiles), absl::nullopt, {}, i, "en-US", &labels);
     ASSERT_FALSE(labels.empty());
     EXPECT_EQ(UTF8ToUTF16(kExpectedLabels[i]), labels.back());
   }
@@ -441,9 +437,8 @@ TEST(AutofillProfileTest, CreateInferredLabelsI18n_JP_ja) {
 
   std::vector<std::u16string> labels;
   for (size_t i = 0; i < std::size(kExpectedLabels); ++i) {
-    AutofillProfile::CreateInferredLabels(ToRawPointerVector(profiles),
-                                          absl::nullopt, UNKNOWN_TYPE, i,
-                                          "en-US", &labels);
+    AutofillProfile::CreateInferredLabels(
+        ToRawPointerVector(profiles), absl::nullopt, {}, i, "en-US", &labels);
     ASSERT_FALSE(labels.empty());
     EXPECT_EQ(UTF8ToUTF16(kExpectedLabels[i]), labels.back());
   }
@@ -464,15 +459,13 @@ TEST(AutofillProfileTest, CreateInferredLabels) {
   std::vector<std::u16string> labels;
   // Two fields at least - no filter.
   AutofillProfile::CreateInferredLabels(ToRawPointerVector(profiles),
-                                        absl::nullopt, UNKNOWN_TYPE, 2, "en-US",
-                                        &labels);
+                                        absl::nullopt, {}, 2, "en-US", &labels);
   EXPECT_EQ(u"John Doe, 666 Erebus St.", labels[0]);
   EXPECT_EQ(u"Jane Doe, 123 Letha Shore.", labels[1]);
 
   // Three fields at least - no filter.
   AutofillProfile::CreateInferredLabels(ToRawPointerVector(profiles),
-                                        absl::nullopt, UNKNOWN_TYPE, 3, "en-US",
-                                        &labels);
+                                        absl::nullopt, {}, 3, "en-US", &labels);
   EXPECT_EQ(u"John Doe, 666 Erebus St., Elysium", labels[0]);
   EXPECT_EQ(u"Jane Doe, 123 Letha Shore., Dis", labels[1]);
 
@@ -480,23 +473,21 @@ TEST(AutofillProfileTest, CreateInferredLabels) {
                                          ADDRESS_HOME_ZIP};
 
   // Two fields at least, from suggested fields - no filter.
-  AutofillProfile::CreateInferredLabels(ToRawPointerVector(profiles),
-                                        suggested_fields, UNKNOWN_TYPE, 2,
-                                        "en-US", &labels);
+  AutofillProfile::CreateInferredLabels(
+      ToRawPointerVector(profiles), suggested_fields, {}, 2, "en-US", &labels);
   EXPECT_EQ(u"Elysium 91111", labels[0]);
   EXPECT_EQ(u"Dis 91222", labels[1]);
 
   // Three fields at least, from suggested fields - no filter.
-  AutofillProfile::CreateInferredLabels(ToRawPointerVector(profiles),
-                                        suggested_fields, UNKNOWN_TYPE, 3,
-                                        "en-US", &labels);
+  AutofillProfile::CreateInferredLabels(
+      ToRawPointerVector(profiles), suggested_fields, {}, 3, "en-US", &labels);
   EXPECT_EQ(u"Elysium, CA 91111", labels[0]);
   EXPECT_EQ(u"Dis, CA 91222", labels[1]);
 
   // Three fields at least, from suggested fields - but filter reduces available
   // fields to two.
   AutofillProfile::CreateInferredLabels(ToRawPointerVector(profiles),
-                                        suggested_fields, ADDRESS_HOME_ZIP, 3,
+                                        suggested_fields, {ADDRESS_HOME_ZIP}, 3,
                                         "en-US", &labels);
   EXPECT_EQ(u"Elysium, CA", labels[0]);
   EXPECT_EQ(u"Dis, CA", labels[1]);
@@ -504,16 +495,15 @@ TEST(AutofillProfileTest, CreateInferredLabels) {
   // In our implementation we always display NAME_FULL for all NAME* fields...
   suggested_fields = {NAME_MIDDLE};
   // One field at least, from suggested fields - no filter.
-  AutofillProfile::CreateInferredLabels(ToRawPointerVector(profiles),
-                                        suggested_fields, UNKNOWN_TYPE, 1,
-                                        "en-US", &labels);
+  AutofillProfile::CreateInferredLabels(
+      ToRawPointerVector(profiles), suggested_fields, {}, 1, "en-US", &labels);
   EXPECT_EQ(u"John Doe", labels[0]);
   EXPECT_EQ(u"Jane Doe", labels[1]);
 
   // One field at least, from suggested fields - filter the same as suggested
   // field.
   AutofillProfile::CreateInferredLabels(ToRawPointerVector(profiles),
-                                        suggested_fields, NAME_MIDDLE, 1,
+                                        suggested_fields, {NAME_MIDDLE}, 1,
                                         "en-US", &labels);
   EXPECT_EQ(std::u16string(), labels[0]);
   EXPECT_EQ(std::u16string(), labels[1]);
@@ -521,9 +511,8 @@ TEST(AutofillProfileTest, CreateInferredLabels) {
   // In our implementation we always display NAME_FULL for NAME_MIDDLE_INITIAL
   suggested_fields = {NAME_MIDDLE};
   // One field at least, from suggested fields - no filter.
-  AutofillProfile::CreateInferredLabels(ToRawPointerVector(profiles),
-                                        suggested_fields, UNKNOWN_TYPE, 1,
-                                        "en-US", &labels);
+  AutofillProfile::CreateInferredLabels(
+      ToRawPointerVector(profiles), suggested_fields, {}, 1, "en-US", &labels);
   EXPECT_EQ(u"John Doe", labels[0]);
   EXPECT_EQ(u"Jane Doe", labels[1]);
 
@@ -531,14 +520,14 @@ TEST(AutofillProfileTest, CreateInferredLabels) {
   // unknown suggested field.
   suggested_fields = {UNKNOWN_TYPE, NAME_FULL, ADDRESS_HOME_LINE1};
   AutofillProfile::CreateInferredLabels(ToRawPointerVector(profiles),
-                                        suggested_fields, NAME_FULL, 1, "en-US",
-                                        &labels);
+                                        suggested_fields, {NAME_FULL}, 1,
+                                        "en-US", &labels);
   EXPECT_EQ(std::u16string(u"666 Erebus St."), labels[0]);
   EXPECT_EQ(std::u16string(u"123 Letha Shore."), labels[1]);
 
   // No suggested fields, but non-unknown excluded field.
   AutofillProfile::CreateInferredLabels(ToRawPointerVector(profiles),
-                                        absl::nullopt, NAME_FULL, 1, "en-US",
+                                        absl::nullopt, {NAME_FULL}, 1, "en-US",
                                         &labels);
   EXPECT_EQ(std::u16string(u"666 Erebus St."), labels[0]);
   EXPECT_EQ(std::u16string(u"123 Letha Shore."), labels[1]);
@@ -564,8 +553,8 @@ TEST(AutofillProfileTest, CreateInferredLabelsFallsBackToFullName) {
                                          EMAIL_ADDRESS};
   std::vector<std::u16string> labels;
   AutofillProfile::CreateInferredLabels(ToRawPointerVector(profiles),
-                                        suggested_fields, NAME_LAST, 1, "en-US",
-                                        &labels);
+                                        suggested_fields, {NAME_LAST}, 1,
+                                        "en-US", &labels);
   ASSERT_EQ(2U, labels.size());
   EXPECT_EQ(u"88 Nowhere Ave.", labels[0]);
   EXPECT_EQ(u"88 Nowhere Ave.", labels[1]);
@@ -573,8 +562,8 @@ TEST(AutofillProfileTest, CreateInferredLabelsFallsBackToFullName) {
   // Otherwise, we should.
   suggested_fields.insert(NAME_FIRST);
   AutofillProfile::CreateInferredLabels(ToRawPointerVector(profiles),
-                                        suggested_fields, NAME_LAST, 1, "en-US",
-                                        &labels);
+                                        suggested_fields, {NAME_LAST}, 1,
+                                        "en-US", &labels);
   ASSERT_EQ(2U, labels.size());
   EXPECT_EQ(u"88 Nowhere Ave., John Doe", labels[0]);
   EXPECT_EQ(u"88 Nowhere Ave., Johnny K Doe", labels[1]);
@@ -596,9 +585,8 @@ TEST(AutofillProfileTest, CreateInferredLabelsNoDuplicatedFields) {
   // should not fall back to the full name as a distinguishing field.
   ServerFieldTypeSet suggested_fields = {ADDRESS_HOME_LINE1, EMAIL_ADDRESS};
   std::vector<std::u16string> labels;
-  AutofillProfile::CreateInferredLabels(ToRawPointerVector(profiles),
-                                        suggested_fields, UNKNOWN_TYPE, 2,
-                                        "en-US", &labels);
+  AutofillProfile::CreateInferredLabels(
+      ToRawPointerVector(profiles), suggested_fields, {}, 2, "en-US", &labels);
   ASSERT_EQ(2U, labels.size());
   EXPECT_EQ(u"88 Nowhere Ave., doe@example.com", labels[0]);
   EXPECT_EQ(u"88 Nowhere Ave., dojo@example.com", labels[1]);
@@ -623,8 +611,7 @@ TEST(AutofillProfileTest, CreateInferredLabelsSkipsEmptyFields) {
 
   std::vector<std::u16string> labels;
   AutofillProfile::CreateInferredLabels(ToRawPointerVector(profiles),
-                                        absl::nullopt, UNKNOWN_TYPE, 3, "en-US",
-                                        &labels);
+                                        absl::nullopt, {}, 3, "en-US", &labels);
   ASSERT_EQ(3U, labels.size());
   EXPECT_EQ(u"John Doe, doe@example.com, Gogole", labels[0]);
   EXPECT_EQ(u"John Doe, doe@example.com, Ggoole", labels[1]);
@@ -634,8 +621,7 @@ TEST(AutofillProfileTest, CreateInferredLabelsSkipsEmptyFields) {
   // distinguishing field.
   profiles[1]->SetRawInfo(ADDRESS_HOME_LINE1, u"88 Nowhere Ave.");
   AutofillProfile::CreateInferredLabels(ToRawPointerVector(profiles),
-                                        absl::nullopt, UNKNOWN_TYPE, 1, "en-US",
-                                        &labels);
+                                        absl::nullopt, {}, 1, "en-US", &labels);
   ASSERT_EQ(3U, labels.size());
   EXPECT_EQ(u"John Doe, doe@example.com, Gogole", labels[0]);
   EXPECT_EQ(u"John Doe, 88 Nowhere Ave., doe@example.com, Ggoole", labels[1])
@@ -657,8 +643,8 @@ TEST(AutofillProfileTest, CreateInferredLabelsFlattensMultiLineValues) {
                                          ADDRESS_HOME_STREET_ADDRESS};
   std::vector<std::u16string> labels;
   AutofillProfile::CreateInferredLabels(ToRawPointerVector(profiles),
-                                        suggested_fields, NAME_FULL, 1, "en-US",
-                                        &labels);
+                                        suggested_fields, {NAME_FULL}, 1,
+                                        "en-US", &labels);
   ASSERT_EQ(1U, labels.size());
   EXPECT_EQ(u"88 Nowhere Ave., Apt. 42", labels[0]);
 }

@@ -777,7 +777,7 @@ std::vector<std::u16string> GetProfileSuggestionLabels(
     differentiating_labels = formatter->GetLabels();
   } else {
     AutofillProfile::CreateInferredLabels(profiles, field_types,
-                                          trigger_field_type, 1, app_locale,
+                                          {trigger_field_type}, 1, app_locale,
                                           &differentiating_labels);
   }
 

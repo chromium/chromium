@@ -198,17 +198,17 @@ class AutofillProfile : public AutofillDataModel {
       const std::string& app_locale,
       std::vector<std::u16string>* labels);
 
-  // Creates inferred labels for |profiles|, according to the rules above and
-  // stores them in |created_labels|. If |suggested_fields| is not NULL, the
-  // resulting label fields are drawn from |suggested_fields|, except excluding
-  // |excluded_field|. Otherwise, the label fields are drawn from a default set,
-  // and |excluded_field| is ignored; by convention, it should be of
-  // |UNKNOWN_TYPE| when |suggested_fields| is NULL. Each label includes at
-  // least |minimal_fields_shown| fields, if possible.
+  // Creates inferred labels for `profiles`, according to the rules above and
+  // stores them in `labels`. If `suggested_fields` is not nullopt, the
+  // resulting label fields are drawn from it minus those in
+  // `excluded_fields`. Otherwise, the label fields are drawn from a default
+  // set, and `excluded_fields` are ignored; by convention, it should be
+  // an empty set when `suggested_fields` is nullopt. Each label includes at
+  // least `minimal_fields_shown` fields, if possible.
   static void CreateInferredLabels(
       const std::vector<const AutofillProfile*>& profiles,
       const absl::optional<ServerFieldTypeSet>& suggested_fields,
-      ServerFieldType excluded_field,
+      ServerFieldTypeSet excluded_fields,
       size_t minimal_fields_shown,
       const std::string& app_locale,
       std::vector<std::u16string>* labels);

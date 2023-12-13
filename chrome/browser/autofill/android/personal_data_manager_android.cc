@@ -658,7 +658,7 @@ ScopedJavaLocalRef<jobjectArray> PersonalDataManagerAndroid::GetProfileLabels(
   AutofillProfile::CreateInferredLabels(
       std::vector<const AutofillProfile*>(profiles.begin(), profiles.end()),
       address_only ? absl::make_optional(suggested_fields) : absl::nullopt,
-      excluded_field, minimal_fields_shown,
+      {excluded_field}, minimal_fields_shown,
       g_browser_process->GetApplicationLocale(), &labels);
 
   return base::android::ToJavaArrayOfStrings(env, labels);
