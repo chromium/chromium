@@ -1152,8 +1152,9 @@ IN_PROC_BROWSER_TEST_F(
             GetLastLinkOpenedMetadataFromPostMessage());
 }
 
+// TODO(crbug.com/1511189): Flaky test.
 IN_PROC_BROWSER_TEST_F(CompanionPageBrowserTest,
-                       PageTitleNotifiesViaPostMessage) {
+                       DISABLED_PageTitleNotifiesViaPostMessage) {
   EnablePco(true);
   ASSERT_TRUE(ui_test_utils::NavigateToURL(
       browser(), GURL("data:text/html;charset=utf-8,"
