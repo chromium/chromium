@@ -69,12 +69,14 @@ void OnURLLoadComplete(
   if (active_url_loader->ResponseInfo() &&
       active_url_loader->ResponseInfo()->headers) {
     response_code = active_url_loader->ResponseInfo()->headers->response_code();
+
+    // Only record response code when there are headers.
+    base::UmaHistogramEnumeration(
+        "OptimizationGuide.ModelQualityLogsUploaderService.Status",
+        static_cast<net::HttpStatusCode>(response_code),
+        net::HTTP_VERSION_NOT_SUPPORTED);
   }
 
-  base::UmaHistogramEnumeration(
-      "OptimizationGuide.ModelQualityLogsUploaderService.Status",
-      static_cast<net::HttpStatusCode>(response_code),
-      net::HTTP_VERSION_NOT_SUPPORTED);
   // Net error codes are negative but histogram enums must be positive.
   base::UmaHistogramSparse(
       "OptimizationGuide.ModelQualityLogsUploaderService.NetErrorCode",
