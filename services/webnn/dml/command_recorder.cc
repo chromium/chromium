@@ -257,6 +257,9 @@ HRESULT CommandRecorder::InitializeOperator(
     command_resources_.push_back(persistent_resource);
   }
 
+  // DirectML may remove the device if invalid bindings are provided.
+  RETURN_IF_FAILED(dml_device_->GetDeviceRemovedReason());
+
   command_recorder_->RecordDispatch(command_list_.Get(), initializer.Get(),
                                     binding_table.Get());
 
@@ -368,6 +371,9 @@ HRESULT CommandRecorder::ExecuteOperator(
   binding_table->BindOutputs(
       base::checked_cast<uint32_t>(output_bindings.size()),
       output_bindings.data());
+
+  // DirectML may remove the device if invalid bindings are provided.
+  RETURN_IF_FAILED(dml_device_->GetDeviceRemovedReason());
 
   // The output resources should be kept alive until the operator has been
   // executed on the GPU.

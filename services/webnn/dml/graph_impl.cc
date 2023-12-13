@@ -1486,9 +1486,16 @@ void CreateNodeOutputForReshape(const IdToOperandMap& id_to_operand_map,
                                 IdToNodeOutputMap& id_to_node_output_map) {
   const NodeOutput* input =
       GetNodeOutputForOperand(id_to_node_output_map, reshape->input_operand_id);
+
+  // Ensure the output tensor description having the
+  // `DML_TENSOR_FLAG_OWNED_BY_DML` flag if its corresponding node is a constant
+  // graph input.
   uint64_t output_id = reshape->output_operand_id;
+  const OperandPtr& output_operand = id_to_operand_map.at(output_id);
+  const auto& input_tensor_desc = input->GetTensorDesc();
   auto output_tensor_desc =
-      CreateOutputTensorDesc(id_to_operand_map, output_id);
+      TensorDesc(input_tensor_desc.GetDataType(), input_tensor_desc.GetFlags(),
+                 output_operand->dimensions);
 
   const Node& input_node = input->GetNode();
 

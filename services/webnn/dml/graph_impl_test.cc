@@ -4463,6 +4463,90 @@ TEST_F(WebNNGraphDMLImplTest, BuildMultipleConstantsAppendingInputs) {
             std::vector<float>({30, 30, 70, 70}));
 }
 
+// Test building and computing a DML graph whose gemm operator takes a reshaped
+// constant operand c in the following topology:
+//                        [constant_c]
+//                         |
+//     [input_a] [input_b] reshape
+//             \    |     /
+//                 gemm
+// This test case could reproduce the issue of ResNetV2 50 model of WebNN image
+// classification sample:
+// https://bugs.chromium.org/p/chromium/issues/detail?id=1509747
+TEST_F(WebNNGraphDMLImplTest, BuildGemmWithReshapedConstantOperand) {
+  // DML_GEMM_OPERATOR_DESC support for 2 dimensions was introduced in
+  // DML_FEATURE_LEVEL_4_0.
+  SKIP_TEST_IF(!adapter_->IsDMLFeatureLevelSupported(DML_FEATURE_LEVEL_4_0));
+  // Build the mojom graph info.
+  GraphInfoBuilder builder;
+  uint64_t input_a_operand_id =
+      builder.BuildInput("input_a", {2, 2}, mojom::Operand::DataType::kFloat32);
+  uint64_t input_b_operand_id =
+      builder.BuildInput("input_b", {2, 2}, mojom::Operand::DataType::kFloat32);
+  std::vector<float> constant_data = {1, 1};
+  uint64_t constant_c_operand_id =
+      builder.BuildConstant({2}, mojom::Operand::DataType::kFloat32,
+                            base::as_bytes(base::make_span(constant_data)));
+  // Reshape constant_c from [2] to [1, 2] and use it as operand c for gemm.
+  uint64_t reshape_operand_id = builder.BuildIntermediateOperand(
+      {1, 2}, mojom::Operand::DataType::kFloat32);
+  builder.BuildReshape(constant_c_operand_id, reshape_operand_id);
+  GemmAttributes gemm_attributes;
+  gemm_attributes.c_operand_id = reshape_operand_id;
+  uint64_t output_operand_id =
+      builder.BuildOutput("output", {2, 2}, mojom::Operand::DataType::kFloat32);
+  builder.BuildGemm(input_a_operand_id, input_b_operand_id, output_operand_id,
+                    gemm_attributes);
+
+  base::flat_map<std::string, mojo_base::BigBuffer> named_inputs;
+  std::vector<float> input_data = {1, 2, 3, 4};
+  named_inputs.insert({"input_a", VectorToBigBuffer(input_data)});
+  named_inputs.insert({"input_b", VectorToBigBuffer(input_data)});
+  base::flat_map<std::string, mojo_base::BigBuffer> named_outputs;
+
+  BuildAndCompute(builder.CloneGraphInfo(), std::move(named_inputs),
+                  named_outputs);
+
+  EXPECT_EQ(BigBufferToVector<float>(std::move(named_outputs["output"])),
+            std::vector<float>({8, 11, 16, 23}));
+}
+
+// Test building a DML graph whose add operator takes a reshaped
+// constant operand b in the following topology:
+//              [constant_b]
+//                 |
+//    [input_a]  reshape
+//           \    /
+//            add
+TEST_F(WebNNGraphDMLImplTest, BuildAddWithReshapedConstantOperand) {
+  // Build the mojom graph info.
+  GraphInfoBuilder builder;
+  uint64_t input_a_operand_id = builder.BuildInput(
+      "input_a", {1, 1, 2, 2}, mojom::Operand::DataType::kFloat32);
+  std::vector<float> constant_data = {1, 1};
+  uint64_t constant_b_operand_id =
+      builder.BuildConstant({2}, mojom::Operand::DataType::kFloat32,
+                            base::as_bytes(base::make_span(constant_data)));
+  // Reshape constant_b from [2] to [1, 2] and use it as operand b for add.
+  uint64_t reshape_operand_id = builder.BuildIntermediateOperand(
+      {1, 2}, mojom::Operand::DataType::kFloat32);
+  builder.BuildReshape(constant_b_operand_id, reshape_operand_id);
+  uint64_t output_operand_id = builder.BuildOutput(
+      "output", {1, 1, 2, 2}, mojom::Operand::DataType::kFloat32);
+  builder.BuildElementWiseBinary(mojom::ElementWiseBinary::Kind::kAdd,
+                                 input_a_operand_id, reshape_operand_id,
+                                 output_operand_id);
+
+  base::flat_map<std::string, mojo_base::BigBuffer> named_inputs;
+  std::vector<float> input_data = {1, 1, 1, 1};
+  named_inputs.insert({"input_a", VectorToBigBuffer(input_data)});
+  base::flat_map<std::string, mojo_base::BigBuffer> named_outputs;
+  BuildAndCompute(builder.CloneGraphInfo(), std::move(named_inputs),
+                  named_outputs);
+  EXPECT_EQ(BigBufferToVector<float>(std::move(named_outputs["output"])),
+            std::vector<float>({2, 2, 2, 2}));
+}
+
 // Test building a DML graph in the following topology.
 //    [input_a] [input_b]
 //           \    /
