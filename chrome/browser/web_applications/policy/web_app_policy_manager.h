@@ -116,7 +116,7 @@ class WebAppPolicyManager {
       bool allow_close_and_relaunch = false);
 
  private:
-  friend class WebAppPolicyManagerTest;
+  friend class WebAppPolicyManagerTestBase;
 
   struct WebAppSetting {
     bool Parse(const base::Value::Dict& dict, bool for_default_settings);
