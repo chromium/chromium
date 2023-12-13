@@ -96,8 +96,10 @@
 #import "ios/chrome/browser/shared/public/commands/promos_manager_commands.h"
 #import "ios/chrome/browser/shared/public/commands/qr_generation_commands.h"
 #import "ios/chrome/browser/shared/public/commands/save_image_to_photos_command.h"
+#import "ios/chrome/browser/shared/public/commands/save_to_drive_commands.h"
 #import "ios/chrome/browser/shared/public/commands/save_to_photos_commands.h"
 #import "ios/chrome/browser/shared/public/commands/share_highlight_command.h"
+#import "ios/chrome/browser/shared/public/commands/show_save_to_drive_command.h"
 #import "ios/chrome/browser/shared/public/commands/show_signin_command.h"
 #import "ios/chrome/browser/shared/public/commands/text_zoom_commands.h"
 #import "ios/chrome/browser/shared/public/commands/toolbar_commands.h"
@@ -287,6 +289,7 @@ enum class ToolbarKind {
     RecentTabsCoordinatorDelegate,
     RepostFormCoordinatorDelegate,
     RepostFormTabHelperDelegate,
+    SaveToDriveCommands,
     SaveToPhotosCommands,
     SigninPresenter,
     SnapshotGeneratorDelegate,
@@ -843,6 +846,7 @@ enum class ToolbarKind {
     @protocol(PasswordsAccountStorageNoticeCommands),
     @protocol(PolicyChangeCommands),
     @protocol(PriceNotificationsCommands),
+    @protocol(SaveToDriveCommands),
     @protocol(SaveToPhotosCommands),
     @protocol(TextZoomCommands),
     @protocol(WebContentCommands),
@@ -2614,6 +2618,16 @@ enum class ToolbarKind {
                      [weakSelf showRestrictAccountSignedOutPrompt];
                    });
   }
+}
+
+#pragma mark - SaveToDriveCommands
+
+- (void)showSaveToDrive:(ShowSaveToDriveCommand*)command {
+  // TODO(crbug.com/1495352): Start SaveToDriveCoordinator.
+}
+
+- (void)hideSaveToDrive {
+  // TODO(crbug.com/1495352): Stop SaveToDriveCoordinator.
 }
 
 #pragma mark - SaveToPhotosCommands

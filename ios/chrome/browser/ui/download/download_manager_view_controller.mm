@@ -453,9 +453,15 @@ UIButtonConfiguration* CreateActionButtonConfiguration(NSString* title) {
     UIButtonConfiguration* downloadToDriveButtonConf =
         CreateDownloadButtonConfiguration(
             nil, DownloadDestinationIcon::kDriveIcon, true);
+    __weak __typeof(self) weakSelf = self;
+    UIAction* downloadToDriveAction =
+        [UIAction actionWithHandler:^(UIAction* action) {
+          [weakSelf.delegate
+              downloadManagerViewControllerDidStartDownloadToDrive:weakSelf];
+        }];
     _downloadToDriveButton =
         [UIButton buttonWithConfiguration:downloadToDriveButtonConf
-                            primaryAction:nil];
+                            primaryAction:downloadToDriveAction];
     [_downloadToDriveButton
         setContentHuggingPriority:UILayoutPriorityRequired
                           forAxis:UILayoutConstraintAxisHorizontal];

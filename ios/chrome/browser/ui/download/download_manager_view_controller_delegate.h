@@ -14,9 +14,14 @@
 // Called when close button was tapped. Delegate may dismiss presentation.
 - (void)downloadManagerViewControllerDidClose:(UIViewController*)controller;
 
-// Called when Download or Restart button was tapped. Delegate should start the
-// download.
+// Called when Download (to Files) or Restart button was tapped. Delegate should
+// start the download and eventually store the result in the Downloads folder.
 - (void)downloadManagerViewControllerDidStartDownload:
+    (UIViewController*)controller;
+
+// Called when Download (to Drive) button was tapped. Delegate should show the
+// Save to Drive UI.
+- (void)downloadManagerViewControllerDidStartDownloadToDrive:
     (UIViewController*)controller;
 
 // Called when "Open In.." button was tapped. Delegate should present system's
