@@ -18,12 +18,6 @@
 #include "media/capture/video/video_capture_device_descriptor.h"
 #include "media/capture/video_capture_types.h"
 
-namespace display {
-
-class Display;
-
-}  // namespace display
-
 namespace media {
 
 class CameraHalDelegate;
@@ -69,7 +63,7 @@ class CAPTURE_EXPORT VideoCaptureDeviceChromeOSDelegate final
   void CloseDevice(base::UnguessableToken unblock_suspend_token);
 
   // DisplayRotationDelegate implementation.
-  void SetDisplayRotation(const display::Display& display) final;
+  void SetInternalDisplayRotation(int rotation) final;
   void SetRotation(int rotation);
 
   const VideoCaptureDeviceDescriptor device_descriptor_;

@@ -344,11 +344,10 @@ void VideoCaptureDeviceChromeOSDelegate::CloseDevice(
     power_manager_client_proxy_->UnblockSuspend(unblock_suspend_token);
 }
 
-void VideoCaptureDeviceChromeOSDelegate::SetDisplayRotation(
-    const display::Display& display) {
+void VideoCaptureDeviceChromeOSDelegate::SetInternalDisplayRotation(
+    int rotation) {
   DCHECK(capture_task_runner_->BelongsToCurrentThread());
-  if (display.IsInternal())
-    SetRotation(display.rotation() * 90);
+  SetRotation(rotation);
 }
 
 void VideoCaptureDeviceChromeOSDelegate::SetRotation(int rotation) {

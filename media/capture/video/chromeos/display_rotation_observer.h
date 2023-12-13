@@ -16,7 +16,7 @@ namespace media {
 
 class DisplayRotationObserver {
  public:
-  virtual void SetDisplayRotation(const display::Display& display) = 0;
+  virtual void SetInternalDisplayRotation(int rotation) = 0;
 };
 
 // Registers itself as an observer at |display::Screen::GetScreen()| and
@@ -53,9 +53,10 @@ class ScreenObserverDelegate
   void AddObserverOnDisplayThread();
   void RemoveObserverOnDisplayThread();
 
-  // Post the screen rotation change from the display thread to capture thread
-  void SendDisplayRotation(const display::Display& display);
-  void SendDisplayRotationOnCaptureThread(const display::Display& display);
+  // Post the screen rotation change of the internal display from the display
+  // thread to capture thread.
+  void SendInternalDisplayRotation(int rotation);
+  void SendInternalDisplayRotationOnCaptureThread(int rotation);
 
   base::WeakPtr<DisplayRotationObserver> observer_;
 
