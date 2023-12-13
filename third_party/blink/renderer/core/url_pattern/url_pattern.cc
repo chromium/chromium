@@ -675,7 +675,7 @@ bool URLPattern::hasRegExpGroups() const {
                                                 hostname_, port_,     pathname_,
                                                 search_,   hash_};
   return base::ranges::any_of(components,
-                              &url_pattern::Component::HasRegexpGroups);
+                              &url_pattern::Component::HasRegExpGroups);
 }
 
 // static
@@ -718,7 +718,7 @@ std::optional<SafeUrlPattern> URLPattern::ToSafeUrlPattern(
           {search_, "search"},     {hash_, "hash"}};
   String components_with_regexp;
   for (auto [component, name] : components_with_names) {
-    if (component->HasRegexpGroups()) {
+    if (component->HasRegExpGroups()) {
       components_with_regexp = components_with_regexp +
                                (components_with_regexp.IsNull() ? "" : ", ") +
                                name + " (" +
