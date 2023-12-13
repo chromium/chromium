@@ -14,16 +14,24 @@ import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bu
 import {getTemplate} from './calibration_component_chip.html.js';
 import {modifyTabbableElement} from './shimless_rma_util.js';
 
+
+export type ClickCalibrationComponentButtonEvent = CustomEvent<number>;
+
+declare global {
+  interface HTMLElementEventMap {
+    'click-calibration-component-button': ClickCalibrationComponentButtonEvent;
+  }
+}
+
 /**
  * @fileoverview
  * 'calibration-component-chip' represents a single component chip that reports
  * status of last calibration attempt and can be marked to skip.
  */
 
-/** @polymer */
 export class CalibrationComponentChipElement extends PolymerElement {
   static get is() {
-    return 'calibration-component-chip';
+    return 'calibration-component-chip' as const;
   }
 
   static get template() {
@@ -32,7 +40,6 @@ export class CalibrationComponentChipElement extends PolymerElement {
 
   static get properties() {
     return {
-      /** @type {boolean} */
       checked: {
         notify: true,
         reflectToAttribute: true,
@@ -40,19 +47,15 @@ export class CalibrationComponentChipElement extends PolymerElement {
         value: false,
       },
 
-      /** @type {boolean} */
       failed: {type: Boolean, value: false},
 
-      /** @type {string} */
       componentName: {type: String, value: ''},
 
-      /** @type {boolean} */
       disabled: {
         type: Boolean,
         value: false,
       },
 
-      /** @type {boolean} */
       isFirstClickableComponent: {
         type: Boolean,
         value: false,
@@ -60,7 +63,6 @@ export class CalibrationComponentChipElement extends PolymerElement {
                       .onIsFirstClickableComponentChanged,
       },
 
-      /** @type {number} */
       uniqueId: {
         reflectToAttribute: true,
         type: Number,
@@ -69,49 +71,53 @@ export class CalibrationComponentChipElement extends PolymerElement {
     };
   }
 
-  /** @protected */
-  onComponentButtonClicked() {
+  checked: boolean;
+  failed: boolean;
+  componentName: string;
+  disabled: boolean;
+  isFirstClickableComponent: boolean;
+  uniqueId: number;
+
+  protected onComponentButtonClicked() {
     this.checked = !this.checked;
 
     // Notify the page that the component chip was clicked, so that the page can
     // put the focus on it.
-    this.dispatchEvent(new CustomEvent('click-calibration-component-button', {
+    this.dispatchEvent(new CustomEvent<number>('click-calibration-component-button', {
       bubbles: true,
       composed: true,
       detail: this.uniqueId,
     }));
   }
 
-  click() {
+  override click() {
     this.onComponentButtonClicked();
   }
 
   /**
    * Show the checked icon for disabled calibration components because if it's
    * disabled, that means it alerady passed calibration.
-   * @return {boolean}
-   * @protected
    */
-  shouldShowCheckIcon() {
+  protected shouldShowCheckIcon(): boolean {
     return this.checked || this.disabled;
   }
 
-  /** @private */
-  onIsFirstClickableComponentChanged() {
+  private onIsFirstClickableComponentChanged() {
     // Tab should go to the first non-disabled component in the list,
     // not individual component.
     modifyTabbableElement(
-        /** @type {!HTMLElement} */ (
-            this.shadowRoot.querySelector('#componentButton')),
+            this.shadowRoot!.querySelector('#componentButton') as HTMLElement,
         this.isFirstClickableComponent);
   }
 
-  /**
-   * @return {string}
-   * @protected
-   */
-  isAriaPressed() {
+  protected isAriaPressed(): string {
     return this.checked.toString();
+  }
+}
+
+declare global {
+  interface HTMLElementTagNameMap {
+    [CalibrationComponentChipElement.is]: CalibrationComponentChipElement;
   }
 }
 

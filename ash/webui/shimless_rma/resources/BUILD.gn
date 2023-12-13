@@ -36,7 +36,7 @@ build_webui("build") {
 
   web_component_files = [
     "base_page.js",
-    "calibration_component_chip.js",
+    "calibration_component_chip.ts",
     "critical_error_page.js",
     "hardware_error_page.js",
     "onboarding_choose_destination_page.js",
