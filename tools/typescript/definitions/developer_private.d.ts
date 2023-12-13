@@ -488,7 +488,6 @@ declare global {
           Promise<MatchingExtensionInfo[]>;
       export function updateSiteAccess(
           site: string, updates: ExtensionSiteAccessUpdate[]): Promise<void>;
-      export function dismissSafetyHubExtensionsMenuNotification(): void;
 
       export const onItemStateChanged: ChromeEvent<(data: EventData) => void>;
       export const onProfileStateChanged:

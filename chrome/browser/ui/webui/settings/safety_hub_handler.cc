@@ -377,15 +377,7 @@ void SafetyHubHandler::HandleDismissActiveMenuNotification(
 void SafetyHubHandler::HandleDismissPasswordMenuNotification(
     const base::Value::List& args) {
   SafetyHubMenuNotificationServiceFactory::GetForProfile(profile_)
-      ->DismissActiveNotificationOfModule(
-          safety_hub::SafetyHubModuleType::PASSWORDS);
-}
-
-void SafetyHubHandler::HandleDismissExtensionsMenuNotification(
-    const base::Value::List& args) {
-  SafetyHubMenuNotificationServiceFactory::GetForProfile(profile_)
-      ->DismissActiveNotificationOfModule(
-          safety_hub::SafetyHubModuleType::EXTENSIONS);
+      ->DismissPasswordNotification();
 }
 
 void SafetyHubHandler::HandleBlockNotificationPermissionForOrigins(
@@ -704,11 +696,6 @@ void SafetyHubHandler::RegisterMessages() {
       "dismissSafetyHubPasswordMenuNotification",
       base::BindRepeating(
           &SafetyHubHandler::HandleDismissPasswordMenuNotification,
-          base::Unretained(this)));
-  web_ui()->RegisterMessageCallback(
-      "dismissSafetyHubExtensionsMenuNotification",
-      base::BindRepeating(
-          &SafetyHubHandler::HandleDismissExtensionsMenuNotification,
           base::Unretained(this)));
   web_ui()->RegisterMessageCallback(
       "blockNotificationPermissionForOrigins",
