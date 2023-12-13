@@ -93,12 +93,10 @@ void AutofillMetricsBaseTest::SetUpHelper() {
   // Initialize the TestPersonalDataManager with some default data.
   CreateTestAutofillProfiles();
 
-#if BUILDFLAG(IS_ANDROID)
   // Mandatory re-auth is required for credit card autofill on automotive, so
   // the authenticator response needs to be properly mocked.
-  if (base::android::BuildInfo::GetInstance()->is_automotive()) {
-    autofill_client_->SetUpDeviceBiometricAuthenticatorSuccessResponseMock();
-  }
+#if BUILDFLAG(IS_ANDROID)
+  autofill_client_->SetUpDeviceBiometricAuthenticatorSuccessOnAutomotive();
 #endif
 }
 

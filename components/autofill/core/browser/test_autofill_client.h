@@ -67,6 +67,10 @@
 #include "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
 #include "services/network/test/test_url_loader_factory.h"
 
+#if BUILDFLAG(IS_ANDROID)
+#include "base/android/build_info.h"
+#endif
+
 #if !BUILDFLAG(IS_IOS)
 #include "components/autofill/core/browser/payments/test_internal_authenticator.h"
 #include "components/webauthn/core/browser/internal_authenticator.h"
@@ -300,7 +304,11 @@ class TestAutofillClientTemplate : public T {
 #if BUILDFLAG(IS_ANDROID)
   // Set up a mock to simulate successful mandatory reauth when autofilling
   // payment methods.
-  void SetUpDeviceBiometricAuthenticatorSuccessResponseMock() {
+  void SetUpDeviceBiometricAuthenticatorSuccessOnAutomotive() {
+    if (!base::android::BuildInfo::GetInstance()->is_automotive()) {
+      return;
+    }
+
     payments::MockMandatoryReauthManager& mandatory_reauth_manager =
         *GetOrCreatePaymentsMandatoryReauthManager();
 
