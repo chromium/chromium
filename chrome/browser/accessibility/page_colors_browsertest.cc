@@ -209,6 +209,15 @@ IN_PROC_BROWSER_TEST_F(PageColorsBrowserTest, PageColorsWithNativeTheme) {
   EXPECT_FALSE(native_theme_web->ShouldUseDarkColors());
   EXPECT_FALSE(native_theme_web->UserHasContrastPreference());
 
+  // Setting Page colors to 'kHighContrast' while forced colors is false should
+  // not affect any state.
+  browser()->profile()->GetPrefs()->SetBoolean(
+      prefs::kApplyPageColorsOnlyOnIncreasedContrast, false);
+  browser()->profile()->GetPrefs()->SetInteger(
+      prefs::kPageColors, ui::NativeTheme::PageColors::kHighContrast);
+  EXPECT_FALSE(native_theme_web->InForcedColorsMode());
+  EXPECT_FALSE(native_theme_web->UserHasContrastPreference());
+
 #if BUILDFLAG(IS_WIN)
   // On Windows, `kApplyPageColorsOnlyOnIncreasedContrast` is initially true, so
   // we enable forced colors and increased contrast to test this feature. If we
