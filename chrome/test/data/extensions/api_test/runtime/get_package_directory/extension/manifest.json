@@ -2,8 +2,5 @@
   "name": "chrome.runtime get package directory entry",
   "manifest_version": 2,
   "version": "0.1",
-  "description": "Test for chrome.runtime.getPackageDirectoryEntry.",
-  "background": {
-    "scripts": ["test/test.js"]
-  }
+  "description": "Test for chrome.runtime.getPackageDirectoryEntry."
 }

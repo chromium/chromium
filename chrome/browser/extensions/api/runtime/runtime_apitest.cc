@@ -186,10 +186,23 @@ IN_PROC_BROWSER_TEST_F(PlatformAppBrowserTest,
       << message_;
 }
 
-// Tests chrome.runtime.getPackageDirectory with an extension.
+// Tests chrome.runtime.getPackageDirectory with an MV2 extension.
 IN_PROC_BROWSER_TEST_F(ExtensionApiTest,
-                       ChromeRuntimeGetPackageDirectoryEntryExtension) {
-  ASSERT_TRUE(RunExtensionTest("runtime/get_package_directory/extension"))
+                       ChromeRuntimeGetPackageDirectoryEntryMV2Extension) {
+  ASSERT_TRUE(RunExtensionTest("runtime/get_package_directory/extension",
+                               {.extension_url = "test/test.html"}))
+      << message_;
+}
+
+// Tests chrome.runtime.getPackageDirectory with an MV3 extension. Note: we use
+// an html page in this test as getPackageDirectory isn't exposed on service
+// workers.
+IN_PROC_BROWSER_TEST_F(ExtensionApiTest,
+                       ChromeRuntimeGetPackageDirectoryEntryMV3Extension) {
+  SetCustomArg("run_promise_test");
+  ASSERT_TRUE(RunExtensionTest("runtime/get_package_directory/extension",
+                               {.extension_url = "test/test.html"},
+                               {.load_as_manifest_version_3 = true}))
       << message_;
 }
 

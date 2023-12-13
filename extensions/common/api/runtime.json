@@ -554,20 +554,18 @@
         "name": "getPackageDirectoryEntry",
         "type": "function",
         "description": "Returns a DirectoryEntry for the package directory.",
-        "parameters": [
-          {
-            "type": "function",
-            "name": "callback",
-            "parameters": [
-              {
-                "name": "directoryEntry",
-                "type": "object",
-                "additionalProperties": { "type": "any" },
-                "isInstanceOf": "DirectoryEntry"
-              }
-            ]
-          }
-        ]
+        "parameters": [],
+        "returns_async": {
+          "name": "callback",
+          "parameters": [
+            {
+              "name": "directoryEntry",
+              "type": "object",
+              "additionalProperties": { "type": "any" },
+              "isInstanceOf": "DirectoryEntry"
+            }
+          ]
+        }
       },
       {
         "name": "getContexts",

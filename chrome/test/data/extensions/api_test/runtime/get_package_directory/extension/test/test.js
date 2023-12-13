@@ -2,13 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-expectedDirectoryEntries = {
-  'manifest.json': true,
-  'test': {
-    'test.js': true
-  }
-};
-
 function checkTree(root, expectedEntries) {
   var directoryReader = root.createReader();
   var contents = [];
@@ -37,11 +30,30 @@ function checkTree(root, expectedEntries) {
   }));
 }
 
-chrome.test.runTests([
-  function getPackageDirectoryEntry() {
-    chrome.runtime.getPackageDirectoryEntry(chrome.test.callbackPass(
-        function(directoryEntry) {
+chrome.test.getConfig(async (config) => {
+  let testCases = [function getPackageDirectoryEntryCallback() {
+    let expectedDirectoryEntries = {
+      'manifest.json': true,
+      'test': {'test.html': true, 'test.js': true}
+    };
+    chrome.runtime.getPackageDirectoryEntry(
+        chrome.test.callbackPass(function(directoryEntry) {
+          checkTree(directoryEntry, expectedDirectoryEntries);
+        }));
+  }];
+
+  if (config.customArg == 'run_promise_test') {
+    testCases.push(async function getPackageDirectoryEntryPromise() {
+      // We have to redefine this for both tests as checkTree deletes the
+      // elements as it verifies them.
+      let expectedDirectoryEntries = {
+        'manifest.json': true,
+        'test': {'test.html': true, 'test.js': true}
+      };
+      let directoryEntry = await chrome.runtime.getPackageDirectoryEntry();
       checkTree(directoryEntry, expectedDirectoryEntries);
-    }));
+    });
   }
-]);
+
+  chrome.test.runTests(testCases);
+});
