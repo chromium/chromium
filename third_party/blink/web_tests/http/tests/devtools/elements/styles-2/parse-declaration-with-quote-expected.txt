@@ -2,7 +2,7 @@ Tests that CSSParser correctly parses declarations with unterminated strings. Bl
 
 [expanded] 
 element.style { ()
-/-- overloaded --/     color: red'foo;
+/-- overloaded --/     color: red ' foo;
 
 [expanded] 
 div { (user agent stylesheet)
