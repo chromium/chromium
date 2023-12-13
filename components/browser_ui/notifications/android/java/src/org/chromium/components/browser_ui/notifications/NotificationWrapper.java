@@ -26,7 +26,8 @@ public class NotificationWrapper {
 
     /**
      * Gets the notification metadata.
-     * @See {@link NotificationMetadata}.
+     *
+     * @see {@link NotificationMetadata}.
      */
     public NotificationMetadata getMetadata() {
         return mNotificationMetadata;

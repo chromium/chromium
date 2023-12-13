@@ -601,8 +601,8 @@ public class StripLayoutHelperManager implements SceneOverlay, PauseResumeWithNa
     }
 
     /**
-     * @Return The start padding needed for model selector button to ensure there is enough space
-     * for touch target.
+     * @return The start padding needed for model selector button to ensure there is enough space
+     *     for touch target.
      */
     private float getButtonStartPaddingForTouchTarget() {
         if (mModelSelectorButton.isVisible()) {

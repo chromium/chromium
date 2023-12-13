@@ -392,7 +392,7 @@ public class CompositorButton implements VirtualView {
     }
 
     /**
-     * @Return Whether the button is hovered on.
+     * @return Whether the button is hovered on.
      */
     public boolean isHovered() {
         return mIsHovered;
@@ -408,14 +408,14 @@ public class CompositorButton implements VirtualView {
     }
 
     /**
-     * @Return Whether the button is pressed from mouse.
+     * @return Whether the button is pressed from mouse.
      */
     public boolean isPressedFromMouse() {
         return mIsPressed && mIsPressedFromMouse;
     }
 
     /**
-     * @Return Whether hover background should be applied to the button.
+     * @return Whether hover background should be applied to the button.
      */
     public boolean getShouldApplyHoverBackground() {
         return isHovered() || isPressedFromMouse();

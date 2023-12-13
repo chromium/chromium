@@ -45,7 +45,8 @@ public abstract class ImageFetcher {
 
         /**
          * Creates image fetcher parameters. The image will not be resized.
-         * @See {@link #Params(String, String, int, int, boolean, int)}.
+         *
+         * @see {@link #Params(String, String, int, int, boolean, int)}.
          */
         public static Params create(final GURL url, String clientName) {
             return create(url.getSpec(), clientName);
@@ -53,7 +54,8 @@ public abstract class ImageFetcher {
 
         /**
          * Creates image fetcher parameters. The image will not be resized.
-         * @See {@link #Params(String, String, int, int, boolean, int)}.
+         *
+         * @see {@link #Params(String, String, int, int, boolean, int)}.
          */
         @Deprecated
         public static Params create(final String url, String clientName) {
@@ -63,7 +65,8 @@ public abstract class ImageFetcher {
 
         /**
          * Creates image fetcher parameters with image size specified.
-         * @See {@link #Params(String, String, int, int, boolean, int)}.
+         *
+         * @see {@link #Params(String, String, int, int, boolean, int)}.
          */
         public static Params create(final GURL url, String clientName, int width, int height) {
             return create(url.getSpec(), clientName, width, height);
@@ -71,7 +74,8 @@ public abstract class ImageFetcher {
 
         /**
          * Creates image fetcher parameters with image size specified.
-         * @See {@link #Params(String, String, int, int, boolean, int)}.
+         *
+         * @see {@link #Params(String, String, int, int, boolean, int)}.
          */
         @Deprecated
         public static Params create(final String url, String clientName, int width, int height) {
@@ -82,7 +86,8 @@ public abstract class ImageFetcher {
 
         /**
          * Creates image fetcher parameters with image size specified.
-         * @See {@link #Params(String, String, int, int, boolean, int)}.
+         *
+         * @see {@link #Params(String, String, int, int, boolean, int)}.
          */
         public static Params createNoResizing(
                 final GURL url, String clientName, int width, int height) {
@@ -98,7 +103,8 @@ public abstract class ImageFetcher {
         /**
          * Only used in rare cases. Creates image fetcher parameters that keeps the cache file for a
          * certain period of time.
-         * @See {@link #Params(String, String, int, int, boolean, int)}.
+         *
+         * @see {@link #Params(String, String, int, int, boolean, int)}.
          */
         public static Params createWithExpirationInterval(
                 final GURL url,

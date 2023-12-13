@@ -2052,8 +2052,9 @@ public abstract class ChromeActivity<C extends ChromeActivityComponent>
 
     /**
      * Gets the {@link TabContentManager} instance which holds snapshots of the tabs in this model.
+     *
      * @return The thumbnail cache, possibly null.
-     * @Deprecated in favor of getTabContentManagerSupplier().
+     * @deprecated in favor of getTabContentManagerSupplier().
      */
     @Deprecated
     public TabContentManager getTabContentManager() {

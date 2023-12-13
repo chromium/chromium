@@ -42,7 +42,9 @@ public class EdgeToEdgeControllerFactory {
         return new EdgeToEdgeControllerImpl(activity, tabObservableSupplier, null);
     }
 
-    /** @Return whether the feature is enabled or not. */
+    /**
+     * @return whether the feature is enabled or not.
+     */
     public static boolean isEnabled() {
         // Make sure we test SDK version before checking the Feature so Field Trials only collect
         // from qualifying devices.
