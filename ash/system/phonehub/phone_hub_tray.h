@@ -25,6 +25,7 @@
 #include "chromeos/ash/components/phonehub/icon_decoder.h"
 #include "chromeos/ash/components/phonehub/phone_hub_manager.h"
 #include "ui/base/metadata/metadata_header_macros.h"
+#include "ui/base/models/simple_menu_model.h"
 #include "ui/events/event.h"
 #include "ui/views/controls/button/image_button.h"
 
@@ -52,6 +53,7 @@ class ASH_EXPORT PhoneHubTray : public TrayBackgroundView,
                                 public OnboardingView::Delegate,
                                 public PhoneStatusView::Delegate,
                                 public PhoneHubUiController::Observer,
+                                public ui::SimpleMenuModel::Delegate,
                                 public SessionObserver,
                                 public WindowTreeHostManager::Observer,
                                 public phonehub::AppStreamManager::Observer {
@@ -76,6 +78,7 @@ class ASH_EXPORT PhoneHubTray : public TrayBackgroundView,
   void Initialize() override;
   void CloseBubble() override;
   void ShowBubble() override;
+  std::unique_ptr<ui::SimpleMenuModel> CreateContextMenuModel() override;
   TrayBubbleView* GetBubbleView() override;
   views::Widget* GetBubbleWidget() const override;
   const char* GetClassName() const override;
@@ -142,6 +145,9 @@ class ASH_EXPORT PhoneHubTray : public TrayBackgroundView,
   // SessionObserver:
   void OnSessionStateChanged(session_manager::SessionState state) override;
   void OnActiveUserSessionChanged(const AccountId& account_id) override;
+
+  // Ui::SimpleMenuModel::Delegate:
+  void ExecuteCommand(int command_id, int event_flags) override;
 
   // Updates the visibility of the tray in the shelf based on the feature is
   // enabled.

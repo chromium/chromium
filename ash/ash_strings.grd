@@ -2042,6 +2042,9 @@ Style notes:
       <message name="IDS_ASH_PHONE_HUB_NOTIFICATION_ACCESSIBLE_NAME" desc="Accessible name for notification received in Phone Hub from paired phone, containing app_name, notification_title, message, phone_name.">
         <ph name="APP_NAME">$1<ex>Chat</ex></ph>, <ph name="NOTIFICATION_TITLE">$2<ex>+1-111-111-1111</ex></ph>: <ph name="MESSAGE">$3<ex>Hello</ex></ph>, <ph name="PHONE_NAME">$4<ex>Pixel</ex></ph>
       </message>
+      <message name="IDS_ASH_PHONE_HUB_TRAY_ICON_DISMISS_TEXT" desc="The text that appears in the context menu when right click Phone Hub icon in the tray to dismiss the icon if feature is not set up.">
+        Remove Phone Hub from shelf
+      </message>
       <message name="IDS_ASH_STYLUS_BATTERY_LOW_LABEL" desc="The label next to the stylus battery indicator when the battery level is below 24%">
         Low
       </message>

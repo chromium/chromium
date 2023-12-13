@@ -35,6 +35,8 @@
 #include "ui/events/event.h"
 #include "ui/events/keycodes/keyboard_codes_posix.h"
 #include "ui/views/controls/button/button.h"
+#include "ui/views/controls/menu/menu_controller.h"
+#include "ui/views/controls/menu/menu_item_view.h"
 
 namespace ash {
 
@@ -153,24 +155,9 @@ class PhoneHubTrayTest : public AshTestBase {
     return bubble_view()->GetViewByID(PhoneHubViewID::kOnboardingMainView);
   }
 
-  views::View* onboarding_dismiss_prompt_view() {
-    return bubble_view()->GetViewByID(
-        PhoneHubViewID::kOnboardingDismissPromptView);
-  }
-
   views::Button* onboarding_get_started_button() {
     return static_cast<views::Button*>(bubble_view()->GetViewByID(
         PhoneHubViewID::kOnboardingGetStartedButton));
-  }
-
-  views::Button* onboarding_dismiss_button() {
-    return static_cast<views::Button*>(
-        bubble_view()->GetViewByID(PhoneHubViewID::kOnboardingDismissButton));
-  }
-
-  views::Button* onboarding_dismiss_ack_button() {
-    return static_cast<views::Button*>(bubble_view()->GetViewByID(
-        PhoneHubViewID::kOnboardingDismissAckButton));
   }
 
   views::Button* disconnected_refresh_button() {
@@ -560,59 +547,22 @@ TEST_F(PhoneHubTrayTest, StartOnboardingFlow) {
   EXPECT_EQ(1u, GetOnboardingUiTracker()->handle_get_started_call_count());
 }
 
-TEST_F(PhoneHubTrayTest, DismissOnboardingFlowByClickingAckButton) {
+TEST_F(PhoneHubTrayTest, DismissOnboardingFlowByRightClickIcon) {
   // Simulate a pending setup state to show the onboarding screen.
   GetFeatureStatusProvider()->SetStatus(
       phonehub::FeatureStatus::kEligiblePhoneButNotSetUp);
   GetOnboardingUiTracker()->SetShouldShowOnboardingUi(true);
 
-  ClickTrayButton();
-  EXPECT_TRUE(phone_hub_tray_->is_active());
-  EXPECT_EQ(PhoneHubViewID::kOnboardingView, content_view()->GetID());
-  // It should display the onboarding main view at first.
-  EXPECT_TRUE(onboarding_main_view());
-
-  // Simulate a click on the "Dismiss" button.
-  LeftClickOn(onboarding_dismiss_button());
-
-  // It should transit to show the dismiss prompt.
-  EXPECT_TRUE(onboarding_dismiss_prompt_view());
-  EXPECT_TRUE(onboarding_dismiss_prompt_view()->GetVisible());
-
-  // Simulate a click on the "OK, got it" button to ack.
-  LeftClickOn(onboarding_dismiss_ack_button());
+  RightClickOn(phone_hub_tray_);
+  EXPECT_TRUE(views::MenuController::GetActiveInstance());
+  views::MenuItemView* menu_item_view =
+      views::MenuController::GetActiveInstance()
+          ->GetSelectedMenuItem()
+          ->GetMenuItemByID(/*kHidePhoneHubIconCommandId*/ 1);
+  LeftClickOn(menu_item_view);
 
   // Clicking "Ok, got it" button should dismiss the bubble, hide the tray icon,
   // and disable the ability to show onboarding UI again.
-  EXPECT_FALSE(phone_hub_tray_->GetBubbleView());
-  EXPECT_FALSE(phone_hub_tray_->GetVisible());
-  EXPECT_FALSE(GetOnboardingUiTracker()->ShouldShowOnboardingUi());
-}
-
-TEST_F(PhoneHubTrayTest, DismissOnboardingFlowByClickingOutside) {
-  // Simulate a pending setup state to show the onboarding screen.
-  GetFeatureStatusProvider()->SetStatus(
-      phonehub::FeatureStatus::kEligiblePhoneButNotSetUp);
-  GetOnboardingUiTracker()->SetShouldShowOnboardingUi(true);
-
-  ClickTrayButton();
-  EXPECT_TRUE(phone_hub_tray_->is_active());
-  EXPECT_EQ(PhoneHubViewID::kOnboardingView, content_view()->GetID());
-  // It should display the onboarding main view at first.
-  EXPECT_TRUE(onboarding_main_view());
-
-  // Simulate a click on the "Dismiss" button.
-  LeftClickOn(onboarding_dismiss_button());
-
-  // It should transit to show the dismiss prompt.
-  EXPECT_TRUE(onboarding_dismiss_prompt_view());
-  EXPECT_TRUE(onboarding_dismiss_prompt_view()->GetVisible());
-
-  // Simulate a click outside the bubble.
-  phone_hub_tray_->ClickedOutsideBubble();
-
-  // Clicking outside should dismiss the bubble, hide the tray icon, and disable
-  // the ability to show onboarding UI again.
   EXPECT_FALSE(phone_hub_tray_->GetBubbleView());
   EXPECT_FALSE(phone_hub_tray_->GetVisible());
   EXPECT_FALSE(GetOnboardingUiTracker()->ShouldShowOnboardingUi());
