@@ -622,14 +622,16 @@ const base::TimeDelta kSetUpListHideAnimationDuration = base::Milliseconds(250);
         [self insertModuleIntoMagicStack:setUpListModule];
       }
     }
-    if (_magicStackRankReceived && shouldShowCompactedSetUpListModule) {
+    if (shouldShowCompactedSetUpListModule) {
       MultiRowContainerView* multiRowContainer = [[MultiRowContainerView alloc]
           initWithViews:_compactedSetUpListViews];
       _setUpListCompactedModule = [[MagicStackModuleContainer alloc]
           initWithContentView:multiRowContainer
                          type:ContentSuggestionsModuleType::kCompactedSetUpList
                      delegate:self];
-      [self insertModuleIntoMagicStack:_setUpListCompactedModule];
+      if (_magicStackRankReceived) {
+        [self insertModuleIntoMagicStack:_setUpListCompactedModule];
+      }
     }
   } else {
     SetUpListView* setUpListView =
