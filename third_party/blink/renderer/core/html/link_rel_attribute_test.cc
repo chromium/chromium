@@ -31,6 +31,7 @@
 #include "third_party/blink/renderer/core/html/link_rel_attribute.h"
 
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/renderer/platform/testing/task_environment.h"
 
 namespace blink {
 
@@ -57,6 +58,7 @@ static inline void TestLinkRelAttribute(const String& value,
 }
 
 TEST(LinkRelAttributeTest, Constructor) {
+  test::TaskEnvironment task_environment;
   TestLinkRelAttribute("stylesheet", true,
                        mojom::blink::FaviconIconType::kInvalid, false, false,
                        false);

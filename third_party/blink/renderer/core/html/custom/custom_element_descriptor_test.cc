@@ -7,6 +7,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/renderer/core/html/custom/custom_element_descriptor_hash.h"
 #include "third_party/blink/renderer/core/html/custom/custom_element_test_helpers.h"
+#include "third_party/blink/renderer/platform/testing/task_environment.h"
 #include "third_party/blink/renderer/platform/wtf/hash_set.h"
 #include "third_party/blink/renderer/platform/wtf/text/atomic_string.h"
 
@@ -15,6 +16,7 @@ namespace blink {
 class Element;
 
 TEST(CustomElementDescriptorTest, equal) {
+  test::TaskEnvironment task_environment;
   CustomElementDescriptor my_type_extension(AtomicString("my-button"),
                                             AtomicString("button"));
   CustomElementDescriptor again(AtomicString("my-button"),
@@ -24,6 +26,7 @@ TEST(CustomElementDescriptorTest, equal) {
 }
 
 TEST(CustomElementDescriptorTest, notEqual) {
+  test::TaskEnvironment task_environment;
   CustomElementDescriptor my_type_extension(AtomicString("my-button"),
                                             AtomicString("button"));
   CustomElementDescriptor colliding_new_type(AtomicString("my-button"),
@@ -33,6 +36,7 @@ TEST(CustomElementDescriptorTest, notEqual) {
 }
 
 TEST(CustomElementDescriptorTest, hashable) {
+  test::TaskEnvironment task_environment;
   HashSet<CustomElementDescriptor> descriptors;
   descriptors.insert(CustomElementDescriptor(AtomicString("foo-bar"),
                                              AtomicString("foo-bar")));
@@ -45,6 +49,7 @@ TEST(CustomElementDescriptorTest, hashable) {
 }
 
 TEST(CustomElementDescriptorTest, matches_autonomous) {
+  test::TaskEnvironment task_environment;
   CustomElementDescriptor descriptor(AtomicString("a-b"), AtomicString("a-b"));
   Element* element = CreateElement(AtomicString("a-b"));
   EXPECT_TRUE(descriptor.Matches(*element));
@@ -52,6 +57,7 @@ TEST(CustomElementDescriptorTest, matches_autonomous) {
 
 TEST(CustomElementDescriptorTest,
      matches_autonomous_shouldNotMatchCustomizedBuiltInElement) {
+  test::TaskEnvironment task_environment;
   CustomElementDescriptor descriptor(AtomicString("a-b"), AtomicString("a-b"));
   Element* element =
       CreateElement(AtomicString("futuretag")).WithIsValue(AtomicString("a-b"));
@@ -59,6 +65,7 @@ TEST(CustomElementDescriptorTest,
 }
 
 TEST(CustomElementDescriptorTest, matches_customizedBuiltIn) {
+  test::TaskEnvironment task_environment;
   CustomElementDescriptor descriptor(AtomicString("a-b"),
                                      AtomicString("button"));
   Element* element =
@@ -68,6 +75,7 @@ TEST(CustomElementDescriptorTest, matches_customizedBuiltIn) {
 
 TEST(CustomElementDescriptorTest,
      matches_customizedBuiltIn_shouldNotMatchAutonomousElement) {
+  test::TaskEnvironment task_environment;
   CustomElementDescriptor descriptor(AtomicString("a-b"),
                                      AtomicString("button"));
   Element* element = CreateElement(AtomicString("a-b"));
@@ -76,6 +84,7 @@ TEST(CustomElementDescriptorTest,
 
 TEST(CustomElementDescriptorTest,
      matches_elementNotInHTMLNamespaceDoesNotMatch) {
+  test::TaskEnvironment task_environment;
   CustomElementDescriptor descriptor(AtomicString("a-b"), AtomicString("a-b"));
   Element* element = CreateElement(AtomicString("a-b"))
                          .InNamespace(AtomicString("data:text/plain,foo"));

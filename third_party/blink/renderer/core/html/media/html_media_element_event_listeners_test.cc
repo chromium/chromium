@@ -334,13 +334,20 @@ class HTMLMediaElementWithMockSchedulerTest
   void SetUp() override {
     EnablePlatform();
 
-    // DocumentParserTiming has DCHECKS to make sure time > 0.0.
-    AdvanceClock(base::Seconds(1));
-
     s_platform_clock_ = GetTickClock();
 
-    time_overrides_ = std::make_unique<base::subtle::ScopedTimeClockOverrides>(
-        nullptr, &HTMLMediaElementWithMockSchedulerTest::Now, nullptr);
+    if (!task_environment()) {
+      time_overrides_ =
+          std::make_unique<base::subtle::ScopedTimeClockOverrides>(
+              nullptr, &HTMLMediaElementWithMockSchedulerTest::Now, nullptr);
+    }
+
+    // DocumentParserTiming has DCHECKS to make sure time > 0.0.
+    AdvanceClock(base::Seconds(1));
+    // Tests rely on start time being a multiple of 250ms.
+    auto start = base::TimeTicks::Now().SnappedToNextTick(base::TimeTicks(),
+                                                          base::Seconds(1));
+    AdvanceClock(start - base::TimeTicks::Now());
 
     HTMLMediaElementEventListenersTest::SetUp();
   }

@@ -13,6 +13,7 @@
 #include "third_party/blink/renderer/core/loader/empty_clients.h"
 #include "third_party/blink/renderer/core/testing/dummy_page_holder.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
+#include "third_party/blink/renderer/platform/testing/task_environment.h"
 #include "third_party/blink/renderer/platform/wtf/shared_buffer.h"
 
 namespace blink {
@@ -23,6 +24,7 @@ namespace blink {
 #if !BUILDFLAG(IS_ANDROID)
 
 TEST(InternalPopupMenuTest, ShowSelectDisplayNone) {
+  test::TaskEnvironment task_environment;
   auto dummy_page_holder_ =
       std::make_unique<DummyPageHolder>(gfx::Size(800, 600));
   Document& document = dummy_page_holder_->GetDocument();

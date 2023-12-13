@@ -9,10 +9,12 @@
 #include "third_party/blink/renderer/core/html/track/text_track.h"
 #include "third_party/blink/renderer/core/testing/dummy_page_holder.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
+#include "third_party/blink/renderer/platform/testing/task_environment.h"
 
 namespace blink {
 
 TEST(TextTrackListTest, InvalidateTrackIndexes) {
+  test::TaskEnvironment task_environment;
   // Create and fill the list
   auto* list = MakeGarbageCollected<TextTrackList>(
       MakeGarbageCollected<HTMLVideoElement>(

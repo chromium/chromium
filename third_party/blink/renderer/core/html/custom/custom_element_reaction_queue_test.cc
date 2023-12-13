@@ -5,16 +5,19 @@
 #include "third_party/blink/renderer/core/html/custom/custom_element_reaction_queue.h"
 
 #include <initializer_list>
+
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/renderer/core/html/custom/custom_element_reaction.h"
 #include "third_party/blink/renderer/core/html/custom/custom_element_reaction_test_helpers.h"
 #include "third_party/blink/renderer/core/html/custom/custom_element_test_helpers.h"
 #include "third_party/blink/renderer/platform/heap/persistent.h"
+#include "third_party/blink/renderer/platform/testing/task_environment.h"
 #include "third_party/blink/renderer/platform/wtf/functional.h"
 
 namespace blink {
 
 TEST(CustomElementReactionQueueTest, invokeReactions_one) {
+  test::TaskEnvironment task_environment;
   CustomElementTestingScope testing_scope;
   Vector<char> log;
   CustomElementReactionQueue* queue =
@@ -29,6 +32,7 @@ TEST(CustomElementReactionQueueTest, invokeReactions_one) {
 }
 
 TEST(CustomElementReactionQueueTest, invokeReactions_many) {
+  test::TaskEnvironment task_environment;
   CustomElementTestingScope testing_scope;
   Vector<char> log;
   CustomElementReactionQueue* queue =
@@ -55,6 +59,7 @@ TEST(CustomElementReactionQueueTest, invokeReactions_many) {
 }
 
 TEST(CustomElementReactionQueueTest, invokeReactions_recursive) {
+  test::TaskEnvironment task_environment;
   CustomElementTestingScope testing_scope;
   Vector<char> log;
   CustomElementReactionQueue* queue =
@@ -87,6 +92,7 @@ TEST(CustomElementReactionQueueTest, invokeReactions_recursive) {
 }
 
 TEST(CustomElementReactionQueueTest, clear_duringInvoke) {
+  test::TaskEnvironment task_environment;
   CustomElementTestingScope testing_scope;
   Vector<char> log;
   CustomElementReactionQueue* queue =

@@ -24,6 +24,7 @@
 #include "third_party/blink/renderer/core/testing/wait_for_event.h"
 #include "third_party/blink/renderer/platform/file_metadata.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
+#include "third_party/blink/renderer/platform/testing/task_environment.h"
 #include "third_party/blink/renderer/platform/wtf/date_math.h"
 
 namespace blink {
@@ -50,6 +51,7 @@ class WebKitDirectoryChromeClient : public EmptyChromeClient {
 }  // namespace
 
 TEST(FileInputTypeTest, createFileList) {
+  test::TaskEnvironment task_environment;
   FileChooserFileInfoList files;
 
   // Native file.
@@ -80,6 +82,7 @@ TEST(FileInputTypeTest, createFileList) {
 }
 
 TEST(FileInputTypeTest, ignoreDroppedNonNativeFiles) {
+  test::TaskEnvironment task_environment;
   ScopedNullExecutionContext execution_context;
   auto* document =
       Document::CreateForTest(execution_context.GetExecutionContext());
@@ -116,6 +119,7 @@ TEST(FileInputTypeTest, ignoreDroppedNonNativeFiles) {
 }
 
 TEST(FileInputTypeTest, setFilesFromPaths) {
+  test::TaskEnvironment task_environment;
   ScopedNullExecutionContext execution_context;
   auto* document =
       Document::CreateForTest(execution_context.GetExecutionContext());
@@ -150,6 +154,7 @@ TEST(FileInputTypeTest, setFilesFromPaths) {
 }
 
 TEST(FileInputTypeTest, DropTouchesNoPopupOpeningObserver) {
+  test::TaskEnvironment task_environment;
   ScopedNullExecutionContext execution_context;
   auto* chrome_client = MakeGarbageCollected<WebKitDirectoryChromeClient>();
   auto page_holder =
@@ -176,6 +181,7 @@ TEST(FileInputTypeTest, DropTouchesNoPopupOpeningObserver) {
 }
 
 TEST(FileInputTypeTest, BeforePseudoCrash) {
+  test::TaskEnvironment task_environment;
   std::unique_ptr<DummyPageHolder> page_holder =
       std::make_unique<DummyPageHolder>(gfx::Size(800, 600));
   Document& doc = page_holder->GetDocument();
@@ -216,6 +222,7 @@ TEST(FileInputTypeTest, BeforePseudoCrash) {
 }
 
 TEST(FileInputTypeTest, ChangeTypeDuringOpeningFileChooser) {
+  test::TaskEnvironment task_environment;
   // We use WebViewHelper instead of DummyPageHolder, in order to use
   // ChromeClientImpl.
   frame_test_helpers::WebViewHelper helper;
@@ -250,6 +257,7 @@ TEST(FileInputTypeTest, ChangeTypeDuringOpeningFileChooser) {
 
 // Tests selecting same file twice should fire cancel event second time.
 TEST(FileInputTypeTest, SetFilesFireCorrectEventsForSameFile) {
+  test::TaskEnvironment task_environment;
   ScopedNullExecutionContext execution_context;
 
   auto* document =
@@ -283,6 +291,7 @@ TEST(FileInputTypeTest, SetFilesFireCorrectEventsForSameFile) {
 
 // Tests selecting same files twice should fire cancel event second time.
 TEST(FileInputTypeTest, SetFilesFireCorrectEventsForSameFiles) {
+  test::TaskEnvironment task_environment;
   ScopedNullExecutionContext execution_context;
 
   auto* document =
@@ -322,6 +331,7 @@ TEST(FileInputTypeTest, SetFilesFireCorrectEventsForSameFiles) {
 // Tests selecting different file after first selection should fire change
 // event.
 TEST(FileInputTypeTest, SetFilesFireCorrectEventsForDifferentFile) {
+  test::TaskEnvironment task_environment;
   ScopedNullExecutionContext execution_context;
 
   auto* document =
@@ -356,6 +366,7 @@ TEST(FileInputTypeTest, SetFilesFireCorrectEventsForDifferentFile) {
 // Tests selecting different files after first selection should fire change
 // event.
 TEST(FileInputTypeTest, SetFilesFireCorrectEventsForDifferentFiles) {
+  test::TaskEnvironment task_environment;
   ScopedNullExecutionContext execution_context;
 
   auto* document =
@@ -393,6 +404,7 @@ TEST(FileInputTypeTest, SetFilesFireCorrectEventsForDifferentFiles) {
 // Tests clearing selection (click cancel in file chooser) after selection
 // should fire change event.
 TEST(FileInputTypeTest, SetFilesFireCorrectEventsCancelWithSelection) {
+  test::TaskEnvironment task_environment;
   ScopedNullExecutionContext execution_context;
 
   auto* document =
@@ -428,6 +440,7 @@ TEST(FileInputTypeTest, SetFilesFireCorrectEventsCancelWithSelection) {
 // Tests clearing selection (click cancel in file chooser) without selection
 // should fire cancel event.
 TEST(FileInputTypeTest, SetFilesFireCorrectEventsCancelWithoutSelection) {
+  test::TaskEnvironment task_environment;
   ScopedNullExecutionContext execution_context;
 
   auto* document =
