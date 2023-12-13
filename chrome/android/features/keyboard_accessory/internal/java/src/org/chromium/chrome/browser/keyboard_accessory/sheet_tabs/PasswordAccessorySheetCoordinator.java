@@ -73,22 +73,6 @@ public class PasswordAccessorySheetCoordinator extends AccessorySheetTabCoordina
     }
 
     /**
-     * Creates an adapter to an {@link PasswordAccessorySheetViewBinder} that is wired
-     * up to a model change processor listening to the {@link AccessorySheetTabItemsModel}.
-     * @param model the {@link AccessorySheetTabItemsModel} the adapter gets its data from.
-     * @return Returns a fully initialized and wired adapter to a PasswordAccessorySheetViewBinder.
-     */
-    static RecyclerViewAdapter<AccessorySheetTabViewBinder.ElementViewHolder, Void> createAdapter(
-            AccessorySheetTabItemsModel model) {
-        return new RecyclerViewAdapter<>(
-                new SimpleRecyclerViewMcp<>(
-                        model,
-                        AccessorySheetDataPiece::getType,
-                        AccessorySheetTabViewBinder.ElementViewHolder::bind),
-                PasswordAccessorySheetViewBinder::create);
-    }
-
-    /**
      * Creates an adapter to an {@link PasswordAccessorySheetModernViewBinder} that is wired up to
      * the model change processor which listens to the {@link AccessorySheetTabItemsModel}.
      * @param model the {@link AccessorySheetTabItemsModel} the adapter gets its data from.
