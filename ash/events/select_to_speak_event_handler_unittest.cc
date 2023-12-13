@@ -7,7 +7,7 @@
 #include <memory>
 #include <set>
 
-#include "ash/accessibility/accessibility_controller_impl.h"
+#include "ash/accessibility/accessibility_controller.h"
 #include "ash/public/cpp/select_to_speak_event_handler_delegate.h"
 #include "ash/shell.h"
 #include "ash/test/ash_test_base.h"

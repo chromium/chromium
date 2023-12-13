@@ -4,7 +4,7 @@
 
 #include "chrome/browser/ash/accessibility/service/user_interface_impl.h"
 
-#include "ash/accessibility/accessibility_controller_impl.h"
+#include "ash/accessibility/accessibility_controller.h"
 #include "ash/public/cpp/accessibility_focus_ring_info.h"
 #include "chrome/browser/ash/accessibility/accessibility_manager.h"
 #include "content/public/common/color_parser.h"

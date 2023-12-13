@@ -4,7 +4,7 @@
 
 #include "ash/accessibility/chromevox/key_accessibility_enabler.h"
 
-#include "ash/accessibility/accessibility_controller_impl.h"
+#include "ash/accessibility/accessibility_controller.h"
 #include "ash/accessibility/accessibility_observer.h"
 #include "ash/shell.h"
 #include "ash/test/ash_test_base.h"

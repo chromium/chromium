@@ -4,7 +4,7 @@
 
 #include "ash/wm/overview/overview_focus_cycler.h"
 
-#include "ash/accessibility/accessibility_controller_impl.h"
+#include "ash/accessibility/accessibility_controller.h"
 #include "ash/constants/ash_features.h"
 #include "ash/shell.h"
 #include "ash/style/close_button.h"

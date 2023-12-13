@@ -6,7 +6,7 @@
 
 #include <optional>
 
-#include "ash/accessibility/accessibility_controller_impl.h"
+#include "ash/accessibility/accessibility_controller.h"
 #include "ash/public/cpp/accessibility_controller_enums.h"
 #include "ash/test/ash_test_base.h"
 #include "base/time/time.h"

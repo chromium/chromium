@@ -4,7 +4,7 @@
 
 #include "ash/login/ui/local_authentication_request_view.h"
 
-#include "ash/accessibility/accessibility_controller_impl.h"
+#include "ash/accessibility/accessibility_controller.h"
 #include "ash/keyboard/ui/keyboard_ui_controller.h"
 #include "ash/login/ui/arrow_button_view.h"
 #include "ash/login/ui/local_authentication_request_widget.h"

@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef ASH_ACCESSIBILITY_ACCESSIBILITY_CONTROLLER_IMPL_H_
-#define ASH_ACCESSIBILITY_ACCESSIBILITY_CONTROLLER_IMPL_H_
+#ifndef ASH_ACCESSIBILITY_ACCESSIBILITY_CONTROLLER_H_
+#define ASH_ACCESSIBILITY_ACCESSIBILITY_CONTROLLER_H_
 
 #include <memory>
 #include <optional>
@@ -789,4 +789,4 @@ class ASH_EXPORT AccessibilityController : public SessionObserver,
 
 }  // namespace ash
 
-#endif  // ASH_ACCESSIBILITY_ACCESSIBILITY_CONTROLLER_IMPL_H_
+#endif  // ASH_ACCESSIBILITY_ACCESSIBILITY_CONTROLLER_H_

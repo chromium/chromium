@@ -11,7 +11,7 @@
 #include <vector>
 
 #include "ash/accelerators/ash_accelerator_configuration.h"
-#include "ash/accessibility/accessibility_controller_impl.h"
+#include "ash/accessibility/accessibility_controller.h"
 #include "ash/ash_element_identifiers.h"
 #include "ash/constants/ash_features.h"
 #include "ash/constants/notifier_catalogs.h"

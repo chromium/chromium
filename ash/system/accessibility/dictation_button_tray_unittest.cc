@@ -5,7 +5,7 @@
 #include "ash/system/accessibility/dictation_button_tray.h"
 #include <memory>
 
-#include "ash/accessibility/accessibility_controller_impl.h"
+#include "ash/accessibility/accessibility_controller.h"
 #include "ash/accessibility/test_accessibility_controller_client.h"
 #include "ash/constants/ash_features.h"
 #include "ash/display/window_tree_host_manager.h"

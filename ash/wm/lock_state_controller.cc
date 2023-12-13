@@ -8,7 +8,7 @@
 #include <string>
 #include <utility>
 
-#include "ash/accessibility/accessibility_controller_impl.h"
+#include "ash/accessibility/accessibility_controller.h"
 #include "ash/cancel_mode.h"
 #include "ash/constants/ash_pref_names.h"
 #include "ash/public/cpp/shell_window_ids.h"

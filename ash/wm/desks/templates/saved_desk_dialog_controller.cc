@@ -4,7 +4,7 @@
 
 #include "ash/wm/desks/templates/saved_desk_dialog_controller.h"
 
-#include "ash/accessibility/accessibility_controller_impl.h"
+#include "ash/accessibility/accessibility_controller.h"
 #include "ash/shell.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/style/system_dialog_delegate_view.h"

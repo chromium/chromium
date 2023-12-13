@@ -4,7 +4,7 @@
 
 #include "ash/accessibility/chromevox/spoken_feedback_enabler.h"
 
-#include "ash/accessibility/accessibility_controller_impl.h"
+#include "ash/accessibility/accessibility_controller.h"
 #include "ash/shell.h"
 #include "base/numerics/safe_conversions.h"
 #include "ui/events/base_event_utils.h"

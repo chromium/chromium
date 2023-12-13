@@ -4,7 +4,7 @@
 
 #include <string>
 
-#include "ash/accessibility/accessibility_controller_impl.h"
+#include "ash/accessibility/accessibility_controller.h"
 #include "ash/accessibility/dictation_nudge.h"
 #include "ash/accessibility/dictation_nudge_controller.h"
 #include "ash/constants/ash_features.h"

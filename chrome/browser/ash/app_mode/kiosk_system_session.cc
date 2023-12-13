@@ -6,7 +6,7 @@
 #include <memory>
 #include <optional>
 
-#include "ash/accessibility/accessibility_controller_impl.h"
+#include "ash/accessibility/accessibility_controller.h"
 #include "base/memory/weak_ptr.h"
 #include "base/notreached.h"
 #include "base/scoped_observation.h"
