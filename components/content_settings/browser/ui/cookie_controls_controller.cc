@@ -205,7 +205,10 @@ CookieControlsController::Status CookieControlsController::GetStatus(
             : CookieBlocking3pcdStatus::kLimited;
   }
   CookieControlsEnforcement enforcement;
-  if (info.source == SETTING_SOURCE_POLICY) {
+  if (info.source == SETTING_SOURCE_TPCD_GRANT &&
+      blocking_status == CookieBlocking3pcdStatus::kLimited) {
+    enforcement = CookieControlsEnforcement::kEnforcedByTpcdGrant;
+  } else if (info.source == SETTING_SOURCE_POLICY) {
     enforcement = CookieControlsEnforcement::kEnforcedByPolicy;
   } else if (info.source == SETTING_SOURCE_EXTENSION) {
     enforcement = CookieControlsEnforcement::kEnforcedByExtension;
@@ -214,9 +217,6 @@ CookieControlsController::Status CookieControlsController::GetStatus(
     // If the exception cannot be reset in-context because of the nature of the
     // setting, display as managed by setting.
     enforcement = CookieControlsEnforcement::kEnforcedByCookieSetting;
-  } else if (info.source == SETTING_SOURCE_TPCD_GRANT &&
-             blocking_status == CookieBlocking3pcdStatus::kLimited) {
-    enforcement = CookieControlsEnforcement::kEnforcedByTpcdGrant;
   } else {
     enforcement = CookieControlsEnforcement::kNoEnforcement;
   }
