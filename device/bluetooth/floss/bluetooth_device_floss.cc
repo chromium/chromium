@@ -262,6 +262,13 @@ void BluetoothDeviceFloss::OnSetConnectionLatency(base::OnceClosure callback,
     pending_set_connection_latency_ = absl::nullopt;
   }
 
+  // If there is no active connection, UpdateConnectionParameters succeeds
+  // silently and won't generates any callbacks. Run callback right here.
+  if (!IsConnected()) {
+    std::move(callback).Run();
+    return;
+  }
+
   pending_set_connection_latency_ =
       std::make_pair(std::move(callback), std::move(error_callback));
 }
