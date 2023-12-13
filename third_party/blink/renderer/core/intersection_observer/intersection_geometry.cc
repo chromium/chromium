@@ -165,6 +165,31 @@ bool ComputeIsVisible(const LayoutObject* target, const PhysicalRect& rect) {
   return false;
 }
 
+// Returns the transform that maps from object's local coordinates to the
+// containing view's coordinates. Note that this doesn't work if `object` has
+// multiple block fragments.
+gfx::Transform ObjectToViewTransform(const LayoutObject& object) {
+  // Use faster GeometryMapper when possible.
+  PropertyTreeStateOrAlias container_properties =
+      PropertyTreeState::Uninitialized();
+  const LayoutObject* property_container =
+      IntersectionGeometry::CanUseGeometryMapper(object)
+          ? object.GetPropertyContainer(nullptr, &container_properties)
+          : nullptr;
+  if (property_container) {
+    gfx::Transform transform = GeometryMapper::SourceToDestinationProjection(
+        container_properties.Transform(),
+        object.View()->FirstFragment().LocalBorderBoxProperties().Transform());
+    transform.Translate(gfx::Vector2dF(object.FirstFragment().PaintOffset()));
+    return transform;
+  }
+
+  // Fall back to MapLocalToAncestor.
+  TransformState transform_state(TransformState::kApplyTransformDirection);
+  object.MapLocalToAncestor(nullptr, transform_state, 0);
+  return transform_state.AccumulatedTransform();
+}
+
 static const unsigned kConstructorFlagsMask =
     IntersectionGeometry::kShouldReportRootBounds |
     IntersectionGeometry::kShouldComputeVisibility |
@@ -184,15 +209,19 @@ IntersectionGeometry::RootGeometry::RootGeometry(const LayoutObject* root,
   }
   zoom = root->StyleRef().EffectiveZoom();
   local_root_rect = InitializeRootRect(root, margin);
-  TransformState transform_state(TransformState::kApplyTransformDirection);
-  root->MapLocalToAncestor(nullptr, transform_state, 0);
-  root_to_document_transform = transform_state.AccumulatedTransform();
+  if (RuntimeEnabledFeatures::IntersectionOptimizationEnabled()) {
+    root_to_view_transform = ObjectToViewTransform(*root);
+  } else {
+    TransformState transform_state(TransformState::kApplyTransformDirection);
+    root->MapLocalToAncestor(nullptr, transform_state, 0);
+    root_to_view_transform = transform_state.AccumulatedTransform();
+  }
 }
 
 bool IntersectionGeometry::RootGeometry::operator==(
     const RootGeometry& other) const {
   return zoom == other.zoom && local_root_rect == other.local_root_rect &&
-         root_to_document_transform == other.root_to_document_transform;
+         root_to_view_transform == other.root_to_view_transform;
 }
 
 const LayoutObject* IntersectionGeometry::GetExplicitRootLayoutObject(
@@ -469,30 +498,8 @@ void IntersectionGeometry::ComputeGeometry(const RootGeometry& root_geometry,
       ClipToRoot(root_and_target, root_rect_, unclipped_intersection_rect_,
                  intersection_rect_, scroll_margin, cached_rects);
 
-  // Map 'target_rect_' to absolute coordinates for target's document.
-  // GeometryMapper is faster, so we use it when possible; otherwise, fall back
-  // to LocalToAncestorRect.
-  PropertyTreeStateOrAlias container_properties =
-      PropertyTreeState::Uninitialized();
-  const LayoutObject* property_container =
-      CanUseGeometryMapper(*target)
-          ? target->GetPropertyContainer(nullptr, &container_properties)
-          : nullptr;
-  gfx::Transform target_to_document_transform;
-  if (property_container) {
-    target_to_document_transform =
-        GeometryMapper::SourceToDestinationProjection(
-            container_properties.Transform(), target->View()
-                                                  ->FirstFragment()
-                                                  .LocalBorderBoxProperties()
-                                                  .Transform());
-    target_rect_.Offset(gfx::Vector2dF(target->FirstFragment().PaintOffset()));
-  } else {
-    TransformState transform_state(TransformState::kApplyTransformDirection);
-    target->MapLocalToAncestor(nullptr, transform_state, 0);
-    target_to_document_transform = transform_state.AccumulatedTransform();
-  }
-  target_rect_ = target_to_document_transform.MapRect(target_rect_);
+  gfx::Transform target_to_view_transform = ObjectToViewTransform(*target);
+  target_rect_ = target_to_view_transform.MapRect(target_rect_);
 
   if (does_intersect) {
     gfx::RectF unclipped_intersection_rect;
@@ -517,9 +524,9 @@ void IntersectionGeometry::ComputeGeometry(const RootGeometry& root_geometry,
       // absolute coordinates for target's containing document (which is the
       // same as root's document).
       intersection_rect_ =
-          root_geometry.root_to_document_transform.MapRect(intersection_rect_);
+          root_geometry.root_to_view_transform.MapRect(intersection_rect_);
       unclipped_intersection_rect =
-          root_geometry.root_to_document_transform.MapRect(
+          root_geometry.root_to_view_transform.MapRect(
               unclipped_intersection_rect);
     }
     unclipped_intersection_rect_ = unclipped_intersection_rect;
@@ -528,7 +535,7 @@ void IntersectionGeometry::ComputeGeometry(const RootGeometry& root_geometry,
   }
   // Map root_rect_ from root's coordinate system to absolute coordinates.
   root_rect_ =
-      root_geometry.root_to_document_transform.MapRect(gfx::RectF(root_rect_));
+      root_geometry.root_to_view_transform.MapRect(gfx::RectF(root_rect_));
 
   // Some corner cases for threshold index:
   //   - If target rect is zero area, because it has zero width and/or zero
@@ -588,8 +595,8 @@ void IntersectionGeometry::ComputeGeometry(const RootGeometry& root_geometry,
 
   if (cached_rects) {
     cached_rects->min_scroll_delta_to_update = ComputeMinScrollDeltaToUpdate(
-        root_and_target, target_to_document_transform,
-        root_geometry.root_to_document_transform, thresholds, scroll_margin);
+        root_and_target, target_to_view_transform,
+        root_geometry.root_to_view_transform, thresholds, scroll_margin);
     cached_rects->valid = true;
   }
 }
@@ -758,8 +765,8 @@ wtf_size_t IntersectionGeometry::FirstThresholdGreaterThan(
 
 gfx::Vector2dF IntersectionGeometry::ComputeMinScrollDeltaToUpdate(
     const RootAndTarget& root_and_target,
-    const gfx::Transform& target_to_document_transform,
-    const gfx::Transform& root_to_document_transform,
+    const gfx::Transform& target_to_view_transform,
+    const gfx::Transform& root_to_view_transform,
     const Vector<float>& thresholds,
     const Vector<Length>& scroll_margin) const {
   if (!RuntimeEnabledFeatures::IntersectionOptimizationEnabled()) {
@@ -789,8 +796,8 @@ gfx::Vector2dF IntersectionGeometry::ComputeMinScrollDeltaToUpdate(
     // and target_rect_ don't intersect.
     return gfx::Vector2dF();
   }
-  if (!target_to_document_transform.IsIdentityOr2dTranslation() ||
-      !root_to_document_transform.IsIdentityOr2dTranslation()) {
+  if (!target_to_view_transform.IsIdentityOr2dTranslation() ||
+      !root_to_view_transform.IsIdentityOr2dTranslation()) {
     return gfx::Vector2dF();
   }
   CHECK_GE(thresholds.size(), 1u);

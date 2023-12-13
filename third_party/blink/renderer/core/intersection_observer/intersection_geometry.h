@@ -63,7 +63,7 @@ class CORE_EXPORT IntersectionGeometry {
     float zoom = 1.0f;
     // The root object's content rect in the root object's own coordinate system
     gfx::RectF local_root_rect;
-    gfx::Transform root_to_document_transform;
+    gfx::Transform root_to_view_transform;
   };
 
   struct CachedRects {
@@ -212,8 +212,8 @@ class CORE_EXPORT IntersectionGeometry {
 
   gfx::Vector2dF ComputeMinScrollDeltaToUpdate(
       const RootAndTarget& root_and_target,
-      const gfx::Transform& target_to_document_transform,
-      const gfx::Transform& root_to_document_transform,
+      const gfx::Transform& target_to_view_transform,
+      const gfx::Transform& root_to_view_transform,
       const Vector<float>& thresholds,
       const Vector<Length>& scroll_margin) const;
 
