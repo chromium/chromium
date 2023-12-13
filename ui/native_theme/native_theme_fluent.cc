@@ -274,7 +274,7 @@ void NativeThemeFluent::PaintArrow(
   // despite the arrow direction.
   DCHECK(typeface_);
   SkFont font(typeface_, bounding_rect.width());
-  font.setEdging(SkFont::Edging::kSubpixelAntiAlias);
+  font.setEdging(SkFont::Edging::kAntiAlias);
   font.setSubpixel(true);
   flags.setAntiAlias(true);
   const char* arrow_code_point = GetArrowCodePointForScrollbarPart(part);
