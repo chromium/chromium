@@ -742,9 +742,7 @@ public class TabSwitcherCoordinator
             mPriceMessageService.invalidateMessage();
         }
         boolean showQuickly = mTabListCoordinator.resetWithListOfTabs(tabs, quickMode);
-        if (showQuickly) {
-            removeAllAppendedMessage();
-        }
+        removeAllAppendedMessage();
         if (tabs != null && tabs.size() > 0) {
             if (mPriceMessageService != null
                     && PriceTrackingUtilities.isPriceAlertsMessageCardEnabled(
