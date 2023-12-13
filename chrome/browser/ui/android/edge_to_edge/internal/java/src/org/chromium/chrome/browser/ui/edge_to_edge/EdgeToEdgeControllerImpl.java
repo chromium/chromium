@@ -9,7 +9,6 @@ import android.graphics.Color;
 import android.graphics.Rect;
 import android.os.Build.VERSION_CODES;
 import android.view.View;
-import android.view.WindowInsets;
 
 import androidx.annotation.CallSuper;
 import androidx.annotation.ColorInt;
@@ -19,6 +18,7 @@ import androidx.annotation.Px;
 import androidx.annotation.RequiresApi;
 import androidx.annotation.VisibleForTesting;
 import androidx.core.graphics.Insets;
+import androidx.core.view.WindowInsetsCompat;
 
 import org.chromium.base.Log;
 import org.chromium.base.supplier.ObservableSupplier;
@@ -197,7 +197,6 @@ public class EdgeToEdgeControllerImpl implements EdgeToEdgeController {
      * @param toEdge Whether to draw ToEdge.
      * @param webContents The {@link WebContents} to notify of inset env() changes.
      */
-    @SuppressWarnings("WrongConstant") // For WindowInsets.Type on U+
     private void drawToEdge(int viewId, boolean toEdge, @Nullable WebContents webContents) {
         if (toEdge == mIsActivityToEdge) return;
 
@@ -216,8 +215,8 @@ public class EdgeToEdgeControllerImpl implements EdgeToEdgeController {
                     (view, windowInsets) -> {
                         Insets newInsets =
                                 windowInsets.getInsets(
-                                        WindowInsets.Type.navigationBars()
-                                                + WindowInsets.Type.statusBars());
+                                        WindowInsetsCompat.Type.navigationBars()
+                                                + WindowInsetsCompat.Type.statusBars());
                         if (!newInsets.equals(mSystemInsets)) {
                             mSystemInsets = newInsets;
                             Log.w(TAG, "System Bar insets changed to: %s", mSystemInsets);
