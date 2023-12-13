@@ -6379,7 +6379,7 @@
   {
     "name": "pdf-use-skia-renderer",
     "owners": [ "nigi@chromium.org", "//pdf/OWNERS" ],
-    "expiry_milestone": 122
+    "expiry_milestone": 126
   },
   {
     "name": "pdf-xfa-forms",
@@ -6522,12 +6522,12 @@
   {
     "name": "print-with-postscript-type42-fonts",
     "owners": [ "thestig@chromium.org" ],
-    "expiry_milestone": 122
+    "expiry_milestone": 132
   },
   {
     "name": "print-with-reduced-rasterization",
     "owners": [ "thestig@chromium.org" ],
-    "expiry_milestone": 122
+    "expiry_milestone": 132
   },
   {
     "name": "printer-settings-printer-status",
