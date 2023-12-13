@@ -128,6 +128,14 @@
     position: relative;
   }
 
+  :host([enable-animations]) #heading h1,
+  :host([enable-animations]) #body,
+  :host([enable-animations]) #submitFooter .footer-text {
+    --compose-slide-in-distance: -8px;
+    animation: fade-in 100ms linear 100ms both,
+        slide-in 200ms var(--compose-standard-easing) both;
+  }
+
   #body {
     --results-background_: rgb(234, 240, 249);
     --scrollbar-width_: 4px;
@@ -306,6 +314,12 @@
   :host-context([chrome-refresh-2023], [is-editing-submitted-input_])
       #bodyAndFooter {
     min-height: 141px;
+  }
+
+  :host([enable-animations]) #submitButton {
+    --compose-slide-in-distance: 48px;
+    animation: slide-in 200ms var(--compose-standard-easing) both,
+        fade-in 100ms linear 100ms both;
   }
 
   #editContainer {
