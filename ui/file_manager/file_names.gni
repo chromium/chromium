@@ -32,7 +32,6 @@ static_js_files = [
   "file_manager/foreground/js/app_state_controller.js",
   "file_manager/foreground/js/constants.js",
   "file_manager/foreground/js/crostini_controller.js",
-  "file_manager/foreground/js/directory_tree_naming_controller.js",
   "file_manager/foreground/js/elements_importer.js",
   "file_manager/foreground/js/fake_file_selection_handler.js",
   "file_manager/foreground/js/file_manager.js",
@@ -188,6 +187,7 @@ ts_files = [
   # These lines will be removed at the end of the TS migration.
   # Foreground UI.
   "file_manager/foreground/js/deferred_elements.ts",
+  "file_manager/foreground/js/directory_tree_naming_controller.ts",
   "file_manager/foreground/js/task_history.ts",
   "file_manager/foreground/js/ui/dialogs.ts",
   "file_manager/foreground/js/ui/combobutton.ts",

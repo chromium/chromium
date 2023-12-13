@@ -16,21 +16,20 @@ import type {FileFilter} from './directory_contents.js';
 import type {DirectoryModel} from './directory_model.js';
 import {renameEntry, validateEntryName, validateFileName} from './file_rename.js';
 import type {FileSelectionHandler} from './file_selection.js';
+import type {WithContextMenu} from './ui/context_menu_handler.js';
 import type {ConfirmDialog} from './ui/dialogs.js';
 import {FilesAlertDialog} from './ui/files_alert_dialog.js';
 import {type ListContainer, ListType} from './ui/list_container.js';
 import type {ListItem} from './ui/list_item.js';
 import type {ListSelectionModel} from './ui/list_selection_model.js';
 import type {ListSingleSelectionModel} from './ui/list_single_selection_model.js';
-import type {Menu} from './ui/menu.js';
 
 
 // TODO(b/289003444): Fix this by using proper custom element.
 type XfRenameInput = HTMLInputElement&{
   currentEntry: Entry | FilesAppEntry | null,
   validation: boolean,
-  contextMenu: Menu,
-};
+}&WithContextMenu;
 
 /**
  * Controller to handle naming.

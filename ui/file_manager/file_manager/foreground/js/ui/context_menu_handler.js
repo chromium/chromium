@@ -389,6 +389,18 @@ class ContextMenuHandler extends EventTarget {
 }
 
 /**
+ * Use this interface to define an element that also might have a context menu
+ * attached, e.g. HTMLInputElement & WithContextMenu.
+ * @interface
+ */
+export class WithContextMenu {
+  constructor() {
+    /** @type {Menu|undefined} */
+    this.contextMenu = undefined;
+  }
+}
+
+/**
  * The singleton context menu handler.
  * @type {!ContextMenuHandler}
  */
