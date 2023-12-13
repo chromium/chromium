@@ -48668,20 +48668,6 @@ Called by update_net_error_codes.py.-->
   <int value="12" label="Extension Renderer"/>
 </enum>
 
-<enum name="ShowQueryTilesSegmentationResult">
-  <int value="0" label="Uninitialized"/>
-  <int value="1" label="Dont show Start surface"/>
-  <int value="2" label="Show Start surface"/>
-</enum>
-
-<enum name="ShowQueryTilesSegmentationResultComparison">
-  <int value="0" label="Uninitialized."/>
-  <int value="1" label="Segmentation enabled and logic enabled."/>
-  <int value="2" label="Segmentation enabled and logic disabled."/>
-  <int value="3" label="Segmentation disabled and logic enabled."/>
-  <int value="4" label="Segmentation disabled and logic disabled."/>
-</enum>
-
 <enum name="ShutdownReason">
   <summary>
     The reason that the Chrome OS power manager shut down or rebooted the

@@ -22,10 +22,6 @@ const char kAdaptiveToolbarUmaName[] = "AdaptiveToolbar";
 const char kChromeStartAndroidV2SegmentationKey[] = "chrome_start_android_v2";
 const char kChromeStartAndroidV2UmaName[] = "ChromeStartAndroidV2";
 
-// The key is used to decide whether to show query tiles.
-const char kQueryTilesSegmentationKey[] = "query_tiles";
-const char kQueryTilesUmaName[] = "QueryTiles";
-
 // The key is used to decide whether a user has low user engagement with chrome.
 // This is a generic model that can be used by multiple features targeting
 // low-engaged users. Typically low engaged users are active in chrome below a

@@ -714,7 +714,6 @@ public class ProcessInitializationHandler {
 
     private void refreshCachedSegmentationResult() {
         FeedPositionUtils.cacheSegmentationResult();
-        QueryTileUtils.cacheSegmentationResult();
     }
 
     private void startBindingManagementIfNeeded() {

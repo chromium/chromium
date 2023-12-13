@@ -167,8 +167,7 @@ void SegmentationUkmHelper::Initialize() {
         SegmentId::OPTIMIZATION_TARGET_SEGMENTATION_NEW_TAB,
         SegmentId::OPTIMIZATION_TARGET_SEGMENTATION_SHARE,
         SegmentId::OPTIMIZATION_TARGET_SEGMENTATION_VOICE,
-        SegmentId::OPTIMIZATION_TARGET_SEGMENTATION_DUMMY,
-        SegmentId::OPTIMIZATION_TARGET_SEGMENTATION_QUERY_TILES};
+        SegmentId::OPTIMIZATION_TARGET_SEGMENTATION_DUMMY};
   }
   sampling_rate_ = GetModelExecutionSamplingRate();
   DCHECK_GE(sampling_rate_, 0);

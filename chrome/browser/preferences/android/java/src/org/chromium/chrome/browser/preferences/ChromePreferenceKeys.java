@@ -657,10 +657,6 @@ public final class ChromePreferenceKeys {
      */
     public static final String PWA_RESTORE_PROMO_STAGE = "Chrome.PwaRestore.PromoStage";
 
-    /** The next timestamp to decide whether to show query tiles. */
-    public static final String QUERY_TILES_NEXT_DISPLAY_DECISION_TIME_MS =
-            "Chrome.Querytiles.NextDecisionTime";
-
     /** Whether query tiles should be shown on NTP. Default value is false. */
     public static final String QUERY_TILES_SHOW_ON_NTP = "Chrome.Querytiles.ShowOnNTP";
 
@@ -728,7 +724,6 @@ public final class ChromePreferenceKeys {
 
     // Segmentation platform related prefs.
     public static final String SEGMENTATION_FEED_ACTIVE_USER = "Chrome.Segmentation.FeedActiveUser";
-    public static final String SEGMENTATION_SHOW_QUERY_TILES = "Chrome.Segmentation.ShowQueryTiles";
 
     // Tracks which GUIDs there is an active notification for.
     public static final String SEND_TAB_TO_SELF_ACTIVE_NOTIFICATIONS =
@@ -1049,14 +1044,12 @@ public final class ChromePreferenceKeys {
                 PROMO_TIMES_SEEN.pattern(),
                 PWA_RESTORE_APPS_AVAILABLE,
                 PWA_RESTORE_PROMO_STAGE,
-                QUERY_TILES_NEXT_DISPLAY_DECISION_TIME_MS,
                 QUERY_TILES_SHOW_ON_NTP,
                 QUERY_TILES_SHOW_SEGMENTATION_RESULT,
                 QUERY_TILES_SHOWN_ON_START_SURFACE,
                 REGULAR_TAB_COUNT,
                 SEARCH_ENGINE_CHOICE_OS_CHOICE_APPLIED_TIMESTAMP,
                 SEGMENTATION_FEED_ACTIVE_USER,
-                SEGMENTATION_SHOW_QUERY_TILES,
                 SETTINGS_SAFETY_CHECK_LAST_RUN_TIMESTAMP,
                 SETTINGS_SAFETY_CHECK_RUN_COUNTER,
                 SHARING_LAST_SHARED_COMPONENT_NAME,

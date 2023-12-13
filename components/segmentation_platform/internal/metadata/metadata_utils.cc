@@ -601,10 +601,7 @@ bool SegmentUsesLegacyOutput(proto::SegmentId segment_id) {
   base::flat_set<SegmentId> segment_ids_use_legacy{
       SegmentId::OPTIMIZATION_TARGET_SEGMENTATION_NEW_TAB,
       SegmentId::OPTIMIZATION_TARGET_SEGMENTATION_SHARE,
-      SegmentId::OPTIMIZATION_TARGET_SEGMENTATION_VOICE,
-      SegmentId::OPTIMIZATION_TARGET_SEGMENTATION_CHROME_START_ANDROID,
-      SegmentId::OPTIMIZATION_TARGET_SEGMENTATION_QUERY_TILES,
-      SegmentId::OPTIMIZATION_TARGET_SEGMENTATION_CHROME_START_ANDROID_V2};
+      SegmentId::OPTIMIZATION_TARGET_SEGMENTATION_VOICE};
 
   return segment_ids_use_legacy.contains(segment_id);
 }
