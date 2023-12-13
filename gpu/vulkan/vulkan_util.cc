@@ -22,7 +22,6 @@
 
 #if BUILDFLAG(IS_ANDROID)
 #include "base/android/build_info.h"
-#include "gpu/config/gpu_finch_features.h"  //nogncheck
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
@@ -45,8 +44,6 @@ namespace gpu {
 
 namespace {
 
-#if BUILDFLAG(IS_ANDROID)
-
 bool IsDeviceBlocked(base::StringPiece field, base::StringPiece block_list) {
   auto disable_patterns = base::SplitString(
       block_list, "|", base::TRIM_WHITESPACE, base::SPLIT_WANT_ALL);
@@ -57,6 +54,8 @@ bool IsDeviceBlocked(base::StringPiece field, base::StringPiece block_list) {
   }
   return false;
 }
+
+#if BUILDFLAG(IS_ANDROID)
 
 int GetEMUIVersion() {
   const auto* build_info = base::android::BuildInfo::GetInstance();
@@ -409,9 +408,11 @@ VkResult VulkanQueuePresentKHRHook(VkQueue queue,
   return vkQueuePresentKHR(queue, pPresentInfo);
 }
 
-bool CheckVulkanCompabilities(const VulkanInfo& vulkan_info,
-                              const GPUInfo& gpu_info,
-                              std::string enable_by_device_name) {
+bool CheckVulkanCompatibilities(const VulkanInfo& vulkan_info,
+                                const GPUInfo& gpu_info,
+                                const std::string& enable_by_device_name,
+                                const std::string& disable_by_renderer,
+                                const std::string& disable_by_driver) {
 // Android uses AHB and SyncFD for interop. They are imported into GL with other
 // API.
 #if !BUILDFLAG(IS_ANDROID)
@@ -425,8 +426,16 @@ bool CheckVulkanCompabilities(const VulkanInfo& vulkan_info,
   constexpr char kMemoryObjectExtension[] = "GL_EXT_memory_object_fd";
   constexpr char kSemaphoreExtension[] = "GL_EXT_semaphore_fd";
 #endif
+  if (IsDeviceBlocked(gpu_info.gl_renderer, disable_by_renderer)) {
+    return false;
+  }
+
+  if (IsDeviceBlocked(gpu_info.gpu.driver_version, disable_by_driver)) {
+    return false;
+  }
+
   // If Chrome and ANGLE share the same VkQueue, they can share vulkan
-  // resource without those extensions. 
+  // resource without those extensions.
   if (!base::FeatureList::IsEnabled(features::kVulkanFromANGLE)) {
     // If both Vulkan and GL are using native GPU (non swiftshader), check
     // necessary extensions for GL and Vulkan interop.
@@ -462,17 +471,11 @@ bool CheckVulkanCompabilities(const VulkanInfo& vulkan_info,
       return true;
   }
 
-  const base::FeatureParam<std::string> disable_patterns(
-      &features::kVulkan, "disable_by_gl_renderer", "");
-
-  if (IsDeviceBlocked(gpu_info.gl_renderer, disable_patterns.Get())) {
+  if (IsDeviceBlocked(gpu_info.gl_renderer, disable_by_renderer)) {
     return false;
   }
 
-  const base::FeatureParam<std::string> disable_driver_patterns(
-      &features::kVulkan, "disable_by_gl_driver", "");
-  if (IsDeviceBlocked(gpu_info.gpu.driver_version,
-                      disable_driver_patterns.Get())) {
+  if (IsDeviceBlocked(gpu_info.gpu.driver_version, disable_by_driver)) {
     return false;
   }
 

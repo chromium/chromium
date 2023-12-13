@@ -148,7 +148,6 @@ if (enable_vulkan) {
 
     if (is_android) {
       sources += [ "vulkan_image_android.cc" ]
-      deps += [ "//gpu/config:config" ]
     }
 
     if (is_fuchsia) {

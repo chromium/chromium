@@ -1109,10 +1109,15 @@ bool GpuInit::InitializeVulkan() {
 
   const base::FeatureParam<std::string> enable_by_device_name(
       &features::kVulkan, "enable_by_device_name", "");
+  const base::FeatureParam<std::string> disable_by_renderer(
+      &features::kVulkan, "disable_by_gl_renderer", "");
+  const base::FeatureParam<std::string> disable_by_driver(
+      &features::kVulkan, "disable_by_gl_driver", "");
   if (!use_swiftshader && !forced_native &&
-      !CheckVulkanCompabilities(
+      !CheckVulkanCompatibilities(
           vulkan_implementation_->GetVulkanInstance()->vulkan_info(), gpu_info_,
-          enable_by_device_name.Get())) {
+          enable_by_device_name.Get(), disable_by_renderer.Get(),
+          disable_by_driver.Get())) {
     vulkan_implementation_.reset();
     return false;
   }
