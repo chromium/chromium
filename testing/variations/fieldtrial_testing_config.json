@@ -10866,6 +10866,28 @@
             ]
         }
     ],
+    "ModalMemorySaver": [
+        {
+            "platforms": [
+                "chromeos",
+                "chromeos_lacros",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "params": {
+                        "modal_memory_saver_mode": "2"
+                    },
+                    "enable_features": [
+                        "ModalMemorySaver"
+                    ]
+                }
+            ]
+        }
+    ],
     "MojoInlineMessagePayloads": [
         {
             "platforms": [
