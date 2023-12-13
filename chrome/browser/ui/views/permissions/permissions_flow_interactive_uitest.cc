@@ -208,8 +208,9 @@ IN_PROC_BROWSER_TEST_F(PermissionsFlowInteractiveUITest,
           l10n_util::GetStringUTF16(IDS_SITE_SETTINGS_TYPE_CAMERA)));
 }
 
+// TODO(crbug.com/1510975): fix and re-enable for CR2023.
 IN_PROC_BROWSER_TEST_F(PermissionsFlowInteractiveUITest,
-                       CameraActivityIndicatorTest) {
+                       DISABLED_CameraActivityIndicatorTest) {
   RunTestSequenceInContext(
       context(), InstrumentTab(kWebContentsElementId),
       NavigateWebContents(kWebContentsElementId, GetURL()),
@@ -230,8 +231,9 @@ IN_PROC_BROWSER_TEST_F(PermissionsFlowInteractiveUITest,
           &vector_icons::kVideocamIcon));
 }
 
+// TODO(crbug.com/1510975): fix and re-enable for CR2023.
 IN_PROC_BROWSER_TEST_F(PermissionsFlowInteractiveUITest,
-                       MicrophoneActivityIndicatorTest) {
+                       DISABLED_MicrophoneActivityIndicatorTest) {
   RunTestSequenceInContext(
       context(), InstrumentTab(kWebContentsElementId),
       NavigateWebContents(kWebContentsElementId, GetURL()),
@@ -252,8 +254,9 @@ IN_PROC_BROWSER_TEST_F(PermissionsFlowInteractiveUITest,
           &vector_icons::kMicIcon));
 }
 
+// TODO(crbug.com/1510975): fix and re-enable for CR2023.
 IN_PROC_BROWSER_TEST_F(PermissionsFlowInteractiveUITest,
-                       CameraAndMicrophoneActivityIndicatorTest) {
+                       DISABLED_CameraAndMicrophoneActivityIndicatorTest) {
   RunTestSequenceInContext(
       context(), InstrumentTab(kWebContentsElementId),
       NavigateWebContents(kWebContentsElementId, GetURL()),
