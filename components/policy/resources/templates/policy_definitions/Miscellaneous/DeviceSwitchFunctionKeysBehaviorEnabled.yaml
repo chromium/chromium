@@ -18,8 +18,6 @@ example_value: false
 features:
   dynamic_refresh: true
   per_profile: false
-future_on:
-- chrome_os
 items:
 - caption: The launcher/search key will be able to change the behavior of
     function keys, and this setting will not be changeable by users.
@@ -35,5 +33,7 @@ owners:
 - cros-peripherals@google.com
 schema:
   type: boolean
+supported_on:
+- chrome_os:121-
 tags: []
 type: main
