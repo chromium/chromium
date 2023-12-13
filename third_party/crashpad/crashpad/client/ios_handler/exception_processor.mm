@@ -43,7 +43,6 @@
 #include <type_traits>
 #include <typeinfo>
 
-#include "base/bit_cast.h"
 #include "base/format_macros.h"
 #include "base/logging.h"
 #include "base/memory/free_deleter.h"
