@@ -51,6 +51,9 @@ namespace {
 // change.
 constexpr int kDefaultCompositorLockTimeoutMs = 100;
 
+// Compositor lock timeout for slower changes (e.g. display scale change).
+constexpr int kSlowCompositorLockTimeoutMs = 500;
+
 gfx::Rect GetClientBoundsInScreen(views::Widget* widget) {
   gfx::Rect window_bounds = widget->GetWindowBoundsInScreen();
   // Account for popup windows not having a non-client view.
@@ -605,8 +608,23 @@ void ShellSurface::OnWindowBoundsChanged(aura::Window* window,
 
     // A window state change will send a configuration event. Avoid sending
     // two configuration events for the same change.
-    if (!window_state_is_changing_)
+    if (!window_state_is_changing_) {
+      if (!configure_callback_.is_null()) {
+        // Lock when the display scale changes and we are a maximized window to
+        // prevent flashes.
+        if (reason != ui::PropertyChangeReason::FROM_ANIMATION &&
+            ash::WindowState::Get(window)->IsMaximizedOrFullscreenOrPinned()) {
+          ui::Compositor* compositor =
+              widget_->GetNativeWindow()->layer()->GetCompositor();
+          // TODO(crbug.com/1399478): See if we can rid of the slow lock timeout
+          // by adjusting the order of resize of windows to top to bottom.
+          configure_compositor_lock_ = compositor->GetCompositorLock(
+              nullptr, base::Milliseconds(kSlowCompositorLockTimeoutMs));
+        }
+      }
+
       Configure();
+    }
   }
 }
 
