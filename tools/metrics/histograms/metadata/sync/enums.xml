@@ -828,6 +828,8 @@ chromium-metrics-reviews@google.com.
   <int value="3" label="Don't migrate, Sync-the-feature status undefined"/>
   <int value="4" label="Don't migrate, Sync-the-feature status initializing"/>
   <int value="5" label="Don't migrate, migration feature flag disabled"/>
+  <int value="6" label="Undo the migration"/>
+  <int value="7" label="Don't undo: already completed or not necessary"/>
 </enum>
 
 <enum name="SyncToSigninMigrationReadingListStep">

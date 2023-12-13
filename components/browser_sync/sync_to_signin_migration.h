@@ -15,7 +15,13 @@ class PrefService;
 
 namespace browser_sync {
 
+// If enabled, eligible users (i.e. those for which Sync-the-feature is active)
+// are migrated, at browser startup, to the signed-in non-syncing state.
 BASE_DECLARE_FEATURE(kMigrateSyncingUserToSignedIn);
+
+// If enabled, users who were migrated from syncing to signed-in via the above
+// flag are migrated back into the syncing state.
+BASE_DECLARE_FEATURE(kUndoMigrationOfSyncingUserToSignedIn);
 
 void MaybeMigrateSyncingUserToSignedIn(const base::FilePath& profile_path,
                                        PrefService* pref_service);
