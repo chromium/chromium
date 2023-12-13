@@ -32,32 +32,51 @@ import '//resources/cr_elements/cr_button/cr_button.js';
 import '//resources/cr_elements/cr_icons.css.js';
 import '//resources/cr_elements/cr_shared_style.css.js';
 import '../common_styles/oobe_common_styles.css.js';
-import '../hd_iron_icon.js';
 import '../oobe_vars/oobe_custom_vars.css.js';
+import '../hd_iron_icon.js';
 
-import {html} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import type {CrButtonElement} from '//resources/cr_elements/cr_button/cr_button.js';
+import {PolymerElementProperties} from '//resources/polymer/v3_0/polymer/interfaces.js';
+
+import type {HdIronIcon} from '../hd_iron_icon.js';
 
 import {OobeBaseButton} from './oobe_base_button.js';
+import {getTemplate} from './oobe_icon_button.html.js';
 
-/** @polymer */
+export interface OobeIconButton extends OobeBaseButton {
+  $: {
+    button: CrButtonElement,
+    icon: HdIronIcon,
+  };
+}
+
 export class OobeIconButton extends OobeBaseButton {
   static get is() {
-    return 'oobe-icon-button';
+    return 'oobe-icon-button' as const;
   }
 
-  static get template() {
-    return html`{__html_template__}`;
+  static get template(): HTMLTemplateElement {
+    return getTemplate();
   }
 
-  static get properties() {
+  static override get properties(): PolymerElementProperties {
     return {
-      icon1x: {type: String, observer: 'updateIconVisibility_'},
+      icon1x: {type: String, observer: 'updateIconVisibility'},
       icon2x: String,
     };
   }
 
-  updateIconVisibility_() {
+  icon1x: string;
+  icon2x: string;
+
+  private updateIconVisibility(): void {
     this.$.icon.hidden = (this.icon1x === undefined || this.icon1x.length == 0);
+  }
+}
+
+declare global {
+  interface HTMLElementTagNameMap {
+    [OobeIconButton.is]: OobeIconButton;
   }
 }
 

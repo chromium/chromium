@@ -67,7 +67,6 @@ js_library("factor_setup_success") {
     "../../components/behaviors:login_screen_behavior",
     "../../components/behaviors:oobe_dialog_host_behavior",
     "../../components/behaviors:oobe_i18n_behavior",
-    "../../components/buttons:oobe_text_button",
     "../../components/dialogs:oobe_adaptive_dialog",
   ]
   extra_deps = [ ":web_components" ]
@@ -81,7 +80,6 @@ js_library("fingerprint_setup") {
     "../../components/behaviors:login_screen_behavior",
     "../../components/behaviors:multi_step_behavior",
     "../../components/behaviors:oobe_i18n_behavior",
-    "../../components/buttons:oobe_text_button",
     "../../components/dialogs:oobe_adaptive_dialog",
     "//ash/webui/common/resources:load_time_data.m",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
@@ -99,8 +97,6 @@ js_library("gaia_password_changed") {
     "../../components/behaviors:login_screen_behavior",
     "../../components/behaviors:multi_step_behavior",
     "../../components/behaviors:oobe_i18n_behavior",
-    "../../components/buttons:oobe_next_button",
-    "../../components/buttons:oobe_text_button",
     "../../components/dialogs:oobe_adaptive_dialog",
     "../../components/dialogs:oobe_loading_dialog",
   ]
@@ -116,8 +112,6 @@ js_library("local_password_setup") {
     "../../components/behaviors:multi_step_behavior",
     "../../components/behaviors:oobe_dialog_host_behavior",
     "../../components/behaviors:oobe_i18n_behavior",
-    "../../components/buttons:oobe_back_button",
-    "../../components/buttons:oobe_next_button",
     "../../components/dialogs:oobe_adaptive_dialog",
     "../../components/dialogs:oobe_loading_dialog",
   ]
@@ -131,7 +125,6 @@ js_library("osauth_error") {
     "../../components/behaviors:login_screen_behavior",
     "../../components/behaviors:oobe_dialog_host_behavior",
     "../../components/behaviors:oobe_i18n_behavior",
-    "../../components/buttons:oobe_text_button",
     "../../components/dialogs:oobe_adaptive_dialog",
   ]
   extra_deps = [ ":web_components" ]
@@ -143,8 +136,6 @@ js_library("local_data_loss_warning") {
     "../../components/behaviors:login_screen_behavior",
     "../../components/behaviors:oobe_dialog_host_behavior",
     "../../components/behaviors:oobe_i18n_behavior",
-    "../../components/buttons:oobe_back_button",
-    "../../components/buttons:oobe_next_button",
     "../../components/dialogs:oobe_adaptive_dialog",
   ]
   extra_deps = [ ":web_components" ]
@@ -157,8 +148,6 @@ js_library("enter_old_password") {
     "../../components/behaviors:multi_step_behavior",
     "../../components/behaviors:oobe_dialog_host_behavior",
     "../../components/behaviors:oobe_i18n_behavior",
-    "../../components/buttons:oobe_back_button",
-    "../../components/buttons:oobe_next_button",
     "../../components/dialogs:oobe_adaptive_dialog",
     "../../components/dialogs:oobe_loading_dialog",
   ]
@@ -171,8 +160,6 @@ js_library("password_selection") {
     "../../components/behaviors:login_screen_behavior",
     "../../components/behaviors:oobe_dialog_host_behavior",
     "../../components/behaviors:oobe_i18n_behavior",
-    "../../components/buttons:oobe_back_button",
-    "../../components/buttons:oobe_next_button",
     "../../components/dialogs:oobe_adaptive_dialog",
   ]
   extra_deps = [ ":web_components" ]
@@ -186,9 +173,6 @@ js_library("pin_setup") {
     "../../components/behaviors:multi_step_behavior",
     "../../components/behaviors:oobe_dialog_host_behavior",
     "../../components/behaviors:oobe_i18n_behavior",
-    "../../components/buttons:oobe_back_button",
-    "../../components/buttons:oobe_next_button",
-    "../../components/buttons:oobe_text_button",
     "../../components/dialogs:oobe_adaptive_dialog",
     "//ash/webui/common/resources:cr.m",
   ]

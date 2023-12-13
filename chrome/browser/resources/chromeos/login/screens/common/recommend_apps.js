@@ -10,6 +10,7 @@
 import '//resources/cr_elements/cr_checkbox/cr_checkbox.js';
 import '//resources/polymer/v3_0/iron-icon/iron-icon.js';
 import '../../components/common_styles/oobe_dialog_host_styles.css.js';
+import '../../components/buttons/oobe_text_button.js';
 
 import {assert, assertNotReached} from '//resources/ash/common/assert.js';
 import {loadTimeData} from '//resources/ash/common/load_time_data.m.js';
@@ -19,7 +20,6 @@ import {LoginScreenBehavior, LoginScreenBehaviorInterface} from '../../component
 import {MultiStepBehavior, MultiStepBehaviorInterface} from '../../components/behaviors/multi_step_behavior.js';
 import {OobeDialogHostBehavior} from '../../components/behaviors/oobe_dialog_host_behavior.js';
 import {OobeI18nBehavior, OobeI18nBehaviorInterface} from '../../components/behaviors/oobe_i18n_behavior.js';
-import {OobeTextButton} from '../../components/buttons/oobe_text_button.js';
 import {OobeAdaptiveDialog} from '../../components/dialogs/oobe_adaptive_dialog.js';
 import {OOBE_UI_STATE} from '../../components/display_manager_types.js';
 import {OobeAppsList} from '../../components/oobe_apps_list.js';
@@ -60,7 +60,6 @@ const RecommendAppsElementBase = mixinBehaviors(
  *   appsDialog:  OobeAdaptiveDialog,
  *   appView:  WebView,
  *   appsList: OobeAppsList,
- *   installButton:  OobeTextButton,
  * }}
  */
 RecommendAppsElementBase.$;

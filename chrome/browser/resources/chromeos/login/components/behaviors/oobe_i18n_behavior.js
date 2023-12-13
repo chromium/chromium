@@ -52,7 +52,7 @@ export class OobeI18nBehaviorInterface extends I18nBehaviorInterface {
    * @param {...string|number} var_args
    * @return {string}
    */
-  i18n(id, var_args) {}
+  i18n(id, ...var_args) {}
   i18nUpdateLocale() {}
 
   /**

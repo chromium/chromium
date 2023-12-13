@@ -53,8 +53,6 @@ js_library("consumer_update") {
     "../../components/behaviors:login_screen_behavior",
     "../../components/behaviors:multi_step_behavior",
     "../../components/behaviors:oobe_i18n_behavior",
-    "../../components/buttons:oobe_back_button",
-    "../../components/buttons:oobe_next_button",
     "../../components/dialogs:oobe_adaptive_dialog",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
   ]
@@ -67,8 +65,6 @@ js_library("demo_preferences") {
     "../../components/behaviors:login_screen_behavior",
     "../../components/behaviors:oobe_dialog_host_behavior",
     "../../components/behaviors:oobe_i18n_behavior",
-    "../../components/buttons:oobe_back_button",
-    "../../components/buttons:oobe_text_button",
     "../../components/dialogs:oobe_adaptive_dialog",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
   ]
@@ -83,8 +79,6 @@ js_library("demo_setup") {
     "../../components/behaviors:multi_step_behavior",
     "../../components/behaviors:oobe_dialog_host_behavior",
     "../../components/behaviors:oobe_i18n_behavior",
-    "../../components/buttons:oobe_back_button",
-    "../../components/buttons:oobe_text_button",
     "../../components/dialogs:oobe_adaptive_dialog",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
   ]
@@ -97,7 +91,6 @@ js_library("enable_debugging") {
     "../../components/behaviors:login_screen_behavior",
     "../../components/behaviors:multi_step_behavior",
     "../../components/behaviors:oobe_i18n_behavior",
-    "../../components/buttons:oobe_text_button",
     "../../components/dialogs:oobe_adaptive_dialog",
     "../../components/dialogs:oobe_loading_dialog",
   ]
@@ -113,9 +106,6 @@ js_library("enterprise_enrollment") {
     "../../components:keyboard_utils_oobe",
     "../../components/behaviors:login_screen_behavior",
     "../../components/behaviors:multi_step_behavior",
-    "../../components/buttons:oobe_back_button",
-    "../../components/buttons:oobe_next_button",
-    "../../components/buttons:oobe_text_button",
     "../../components/dialogs:oobe_adaptive_dialog",
     "../../components/dialogs:oobe_loading_dialog",
     "../../components/dialogs:oobe_modal_dialog",
@@ -174,8 +164,6 @@ js_library("update") {
     "../../components/behaviors:login_screen_behavior",
     "../../components/behaviors:multi_step_behavior",
     "../../components/behaviors:oobe_i18n_behavior",
-    "../../components/buttons:oobe_back_button",
-    "../../components/buttons:oobe_next_button",
     "../../components/dialogs:oobe_adaptive_dialog",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
   ]
@@ -193,7 +181,6 @@ js_library("welcome") {
     "../../components/behaviors:login_screen_behavior",
     "../../components/behaviors:multi_step_behavior",
     "../../components/behaviors:oobe_i18n_behavior",
-    "../../components/buttons:oobe_text_button",
     "../../components/dialogs:oobe_adaptive_dialog",
     "../../components/dialogs:oobe_modal_dialog",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
@@ -212,8 +199,6 @@ js_library("welcome_dialog") {
     "../../components:oobe_cr_lottie",
     "../../components:quick_start_entry_point",
     "../../components/behaviors:oobe_i18n_behavior",
-    "../../components/buttons:oobe_icon_button",
-    "../../components/buttons:oobe_text_button",
     "../../components/dialogs:oobe_modal_dialog",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
   ]

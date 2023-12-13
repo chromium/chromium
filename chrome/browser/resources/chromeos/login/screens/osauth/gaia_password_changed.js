@@ -16,6 +16,7 @@ import '../../components/common_styles/oobe_common_styles.css.js';
 import '../../components/common_styles/oobe_dialog_host_styles.css.js';
 import '../../components/dialogs/oobe_adaptive_dialog.js';
 import '../../components/dialogs/oobe_loading_dialog.js';
+import '../../components/buttons/oobe_text_button.js';
 
 import {loadTimeData} from '//resources/ash/common/load_time_data.m.js';
 import {html, mixinBehaviors, PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
@@ -23,7 +24,6 @@ import {html, mixinBehaviors, PolymerElement} from '//resources/polymer/v3_0/pol
 import {LoginScreenBehavior, LoginScreenBehaviorInterface} from '../../components/behaviors/login_screen_behavior.js';
 import {MultiStepBehavior, MultiStepBehaviorInterface} from '../../components/behaviors/multi_step_behavior.js';
 import {OobeI18nBehavior, OobeI18nBehaviorInterface} from '../../components/behaviors/oobe_i18n_behavior.js';
-import {OobeTextButton} from '../../components/buttons/oobe_text_button.js';
 import {OOBE_UI_STATE} from '../../components/display_manager_types.js';
 import {addSubmitListener} from '../../login_ui_tools.js';
 
@@ -52,7 +52,6 @@ const GaiaPasswordChangedBase = mixinBehaviors(
 /**
  * @typedef {{
  *   oldPasswordInput:  CrInputElement,
- *   proceedAnyway:  OobeTextButton,
  * }}
  */
 GaiaPasswordChangedBase.$;

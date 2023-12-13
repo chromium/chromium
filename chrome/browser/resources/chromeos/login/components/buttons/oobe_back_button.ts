@@ -43,22 +43,21 @@ import '../common_styles/oobe_common_styles.css.js';
 import '../oobe_vars/oobe_custom_vars.css.js';
 import '../oobe_icons.html.js';
 
-import {html} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {PolymerElementProperties} from '//resources/polymer/v3_0/polymer/interfaces.js';
+import {getTemplate} from './oobe_back_button.html.js';
 
 import {OobeBaseButton} from './oobe_base_button.js';
 
-
-/** @polymer */
 export class OobeBackButton extends OobeBaseButton {
   static get is() {
-    return 'oobe-back-button';
+    return 'oobe-back-button' as const;
   }
 
-  static get template() {
-    return html`{__html_template__}`;
+  static get template(): HTMLTemplateElement {
+    return getTemplate();
   }
 
-  static get properties() {
+  static override get properties(): PolymerElementProperties {
     return {
       /* The ID of the localized string to be used as button text.
        */
@@ -67,6 +66,14 @@ export class OobeBackButton extends OobeBaseButton {
         value: 'back',
       },
     };
+  }
+
+  textKey: string;
+}
+
+declare global {
+  interface HTMLElementTagNameMap {
+    [OobeBackButton.is]: OobeBackButton;
   }
 }
 

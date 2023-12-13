@@ -16,13 +16,13 @@ import '../../components/common_styles/oobe_common_styles.css.js';
 import '../../components/common_styles/oobe_dialog_host_styles.css.js';
 import '../../components/dialogs/oobe_adaptive_dialog.js';
 import '../../components/dialogs/oobe_loading_dialog.js';
+import '../../components/buttons/oobe_text_button.js';
 
 import {mixinBehaviors, PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {LoginScreenBehavior, LoginScreenBehaviorInterface} from '../../components/behaviors/login_screen_behavior.js';
 import {MultiStepBehavior, MultiStepBehaviorInterface} from '../../components/behaviors/multi_step_behavior.js';
 import {OobeI18nBehavior, OobeI18nBehaviorInterface} from '../../components/behaviors/oobe_i18n_behavior.js';
-import {OobeTextButton} from '../../components/buttons/oobe_text_button.js';
 
 import {getTemplate} from './enable_debugging.html.js';
 
@@ -53,10 +53,7 @@ const EnableDebuggingBase = mixinBehaviors(
 
 /**
  * @typedef {{
- *   removeProtectionProceedButton:  OobeTextButton,
  *   password:  CrInputElement,
- *   okButton:  OobeTextButton,
- *   errorOkButton: OobeTextButton
  * }}
  */
  EnableDebuggingBase.$;

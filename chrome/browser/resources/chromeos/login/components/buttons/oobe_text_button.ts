@@ -36,34 +36,42 @@ import '//resources/polymer/v3_0/paper-styles/color.js';
 import '../common_styles/oobe_common_styles.css.js';
 import '../oobe_vars/oobe_custom_vars.css.js';
 
-import {html} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {PolymerElementProperties} from '//resources/polymer/v3_0/polymer/interfaces.js';
+import {getTemplate} from './oobe_text_button.html.js';
 
 import {OobeBaseButton} from './oobe_base_button.js';
 
-
-/** @polymer */
 export class OobeTextButton extends OobeBaseButton {
   static get is() {
-    return 'oobe-text-button';
+    return 'oobe-text-button' as const;
   }
 
-  static get template() {
-    return html`{__html_template__}`;
+  static get template(): HTMLTemplateElement {
+    return getTemplate();
   }
 
-  static get properties() {
+  static override get properties(): PolymerElementProperties {
     return {
       inverse: {
         type: Boolean,
-        observer: 'onInverseChanged_',
+        observer: 'onInverseChanged',
       },
 
       border: Boolean,
     };
   }
 
-  onInverseChanged_() {
+  inverse: boolean;
+  border: boolean;
+
+  private onInverseChanged(): void {
     this.$.button.classList.toggle('action-button', this.inverse);
+  }
+}
+
+declare global {
+  interface HTMLElementTagNameMap {
+    [OobeTextButton.is]: OobeTextButton;
   }
 }
 

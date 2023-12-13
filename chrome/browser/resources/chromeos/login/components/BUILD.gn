@@ -12,7 +12,6 @@ group("web_components") {
     ":html_wrapper_files",
     ":web_components_local",
     "./behaviors:copy_js",
-    "./buttons:copy_js",
     "./buttons:web_components",
     "./common_styles:css_wrapper_files",
     "./dialogs:web_components",
@@ -23,7 +22,6 @@ group("web_components") {
 group("closure_compile") {
   deps = [
     "behaviors:closure_compile",
-    "buttons:closure_compile",
     "common_styles:closure_compile",
     "dialogs:closure_compile",
     "oobe_vars:closure_compile",
@@ -98,8 +96,6 @@ js_library("gaia_dialog") {
     ":oobe_types",
     "./behaviors:oobe_dialog_host_behavior",
     "./behaviors:oobe_i18n_behavior",
-    "./buttons:oobe_back_button",
-    "./buttons:oobe_text_button",
     "./dialogs:oobe_content_dialog",
     "//ash/webui/common/resources:cr.m",
     "//ash/webui/common/resources:load_time_data.m",
@@ -288,7 +284,6 @@ js_library("quick_start_entry_point") {
   sources = [ "$root_gen_dir/chrome/browser/resources/chromeos/login/components/quick_start_entry_point.js" ]
   deps = [
     "./behaviors:oobe_i18n_behavior",
-    "./buttons:oobe_icon_button",
     "./dialogs:oobe_modal_dialog",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
   ]
