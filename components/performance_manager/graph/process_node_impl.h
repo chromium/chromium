@@ -216,13 +216,15 @@ class ProcessNodeImpl
           false};
 
   // Process priority information. This is aggregated from the priority of
-  // all workers and frames in a given process.
+  // all workers and frames in a given process by the ProcessPriorityAggregator.
+  // Initially high priority until the first execution context it hosts
+  // determine the right priority.
   ObservedProperty::NotifiesOnlyOnChangesWithPreviousValue<
       base::TaskPriority,
       base::TaskPriority,
       &ProcessNodeObserver::OnPriorityChanged>
       priority_ GUARDED_BY_CONTEXT(sequence_checker_){
-          base::TaskPriority::LOWEST};
+          base::TaskPriority::HIGHEST};
 
   // A bit field that indicates which type of content this process has hosted,
   // either currently or in the past.
