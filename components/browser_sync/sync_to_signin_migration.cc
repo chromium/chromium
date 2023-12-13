@@ -12,6 +12,7 @@
 #include "base/strings/strcat.h"
 #include "build/build_config.h"
 #include "components/bookmarks/common/bookmark_constants.h"
+#include "components/browser_sync/browser_sync_switches.h"
 #include "components/password_manager/core/browser/password_manager_constants.h"
 #include "components/prefs/pref_service.h"
 #include "components/signin/public/base/gaia_id_hash.h"
@@ -23,14 +24,6 @@
 #include "components/sync/service/sync_prefs.h"
 
 namespace browser_sync {
-
-BASE_FEATURE(kMigrateSyncingUserToSignedIn,
-             "MigrateSyncingUserToSignedIn",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
-BASE_FEATURE(kUndoMigrationOfSyncingUserToSignedIn,
-             "UndoMigrationOfSyncingUserToSignedIn",
-             base::FEATURE_DISABLED_BY_DEFAULT);
 
 namespace {
 
@@ -51,7 +44,8 @@ enum class SyncToSigninMigrationDecision {
 SyncToSigninMigrationDecision GetSyncToSigninMigrationDecision(
     const PrefService* pref_service) {
   // If the flag to undo the migration is set, that overrides anything else.
-  if (base::FeatureList::IsEnabled(kUndoMigrationOfSyncingUserToSignedIn)) {
+  if (base::FeatureList::IsEnabled(
+          switches::kUndoMigrationOfSyncingUserToSignedIn)) {
     if (pref_service
             ->GetString(prefs::kGoogleServicesSyncingGaiaIdMigratedToSignedIn)
             .empty()) {
@@ -97,7 +91,7 @@ SyncToSigninMigrationDecision GetSyncToSigninMigrationDecision(
 
   // Check the feature flag last, so that metrics can record all the other
   // reasons to not do the migration, even with the flag disabled.
-  if (!base::FeatureList::IsEnabled(kMigrateSyncingUserToSignedIn)) {
+  if (!base::FeatureList::IsEnabled(switches::kMigrateSyncingUserToSignedIn)) {
     return SyncToSigninMigrationDecision::kDontMigrateFlagDisabled;
   }
 

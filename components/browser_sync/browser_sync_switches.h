@@ -37,6 +37,14 @@ inline constexpr base::FeatureParam<base::TimeDelta> kSyncActiveDeviceMargin{
     &kSyncFilterOutInactiveDevicesForSingleClient, "SyncActiveDeviceMargin",
     base::Days(7)};
 
+// If enabled, eligible users (i.e. those for which Sync-the-feature is active)
+// are migrated, at browser startup, to the signed-in non-syncing state.
+BASE_DECLARE_FEATURE(kMigrateSyncingUserToSignedIn);
+
+// If enabled, users who were migrated from syncing to signed-in via the above
+// flag are migrated back into the syncing state.
+BASE_DECLARE_FEATURE(kUndoMigrationOfSyncingUserToSignedIn);
+
 }  // namespace switches
 
 #endif  // COMPONENTS_BROWSER_SYNC_BROWSER_SYNC_SWITCHES_H_

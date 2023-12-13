@@ -12,6 +12,7 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
+#include "components/browser_sync/browser_sync_switches.h"
 #include "components/prefs/testing_pref_service.h"
 #include "components/signin/public/base/signin_pref_names.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
@@ -31,9 +32,9 @@ class SyncToSigninMigrationTestBase {
  public:
   explicit SyncToSigninMigrationTestBase(bool migration_feature_enabled) {
     if (migration_feature_enabled) {
-      features_.InitAndEnableFeature(kMigrateSyncingUserToSignedIn);
+      features_.InitAndEnableFeature(switches::kMigrateSyncingUserToSignedIn);
     } else {
-      features_.InitAndDisableFeature(kMigrateSyncingUserToSignedIn);
+      features_.InitAndDisableFeature(switches::kMigrateSyncingUserToSignedIn);
     }
 
     signin::IdentityManager::RegisterProfilePrefs(pref_service_.registry());
@@ -306,7 +307,8 @@ TEST_F(SyncToSigninMigrationTest, SyncInitializing) {
 
 TEST_F(SyncToSigninMigrationTest, UndoFeaturePreventsMigration) {
   base::test::ScopedFeatureList undo_feature;
-  undo_feature.InitAndEnableFeature(kUndoMigrationOfSyncingUserToSignedIn);
+  undo_feature.InitAndEnableFeature(
+      switches::kUndoMigrationOfSyncingUserToSignedIn);
 
   // Everything is active.
   ASSERT_EQ(sync_service_.GetTransportState(),
@@ -962,7 +964,8 @@ class SyncToSigninMigrationUndoTest : public SyncToSigninMigrationTestBase,
     MaybeMigrateSyncingUserToSignedIn(fake_profile_dir_.GetPath(),
                                       &pref_service_);
 
-    undo_feature_.InitAndEnableFeature(kUndoMigrationOfSyncingUserToSignedIn);
+    undo_feature_.InitAndEnableFeature(
+        switches::kUndoMigrationOfSyncingUserToSignedIn);
   }
 
  private:
