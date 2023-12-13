@@ -16,6 +16,8 @@
 #import "ios/chrome/browser/ntp/model/set_up_list_item_type.h"
 #import "ios/chrome/browser/ntp/model/set_up_list_metrics.h"
 #import "ios/chrome/browser/ntp/model/set_up_list_prefs.h"
+#import "ios/chrome/browser/push_notification/model/constants.h"
+#import "ios/chrome/browser/shared/model/prefs/pref_names.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/signin/model/authentication_service.h"
 #import "ios/chrome/browser/sync/model/enterprise_utils.h"
@@ -35,8 +37,9 @@ bool GetIsItemComplete(SetUpListItemType type,
     case SetUpListItemType::kAutofill:
       return password_manager_util::IsCredentialProviderEnabledOnStartup(prefs);
     case SetUpListItemType::kContentNotification:
-      // TODO(b/311067444): check the content notification pref.
-      return false;
+      return prefs->GetDict(prefs::kFeaturePushNotificationPermissions)
+          .FindBool(kContentNotificationKey)
+          .value_or(false);
     case SetUpListItemType::kFollow:
     case SetUpListItemType::kAllSet:
       NOTREACHED_NORETURN();
