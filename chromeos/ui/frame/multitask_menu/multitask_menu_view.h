@@ -26,9 +26,9 @@ class SplitButtonView;
 class COMPONENT_EXPORT(CHROMEOS_UI_FRAME) MultitaskMenuView
     : public views::View,
       public aura::WindowObserver {
- public:
-  METADATA_HEADER(MultitaskMenuView);
+  METADATA_HEADER(MultitaskMenuView, views::View)
 
+ public:
   // Bitmask for the buttons to show on the multitask menu view.
   enum MultitaskButtons : uint8_t {
     kHalfSplit = 1 << 0,

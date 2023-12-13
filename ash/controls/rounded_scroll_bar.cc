@@ -281,7 +281,7 @@ void RoundedScrollBar::OnThumbBoundsChanged() {
   }
 }
 
-BEGIN_METADATA(RoundedScrollBar, ScrollBar)
+BEGIN_METADATA(RoundedScrollBar)
 END_METADATA
 
 }  // namespace ash

@@ -450,7 +450,7 @@ void MultitaskMenuView::FloatButtonPressed() {
   RecordMultitaskMenuActionType(MultitaskMenuActionType::kFloatButton);
 }
 
-BEGIN_METADATA(MultitaskMenuView, View)
+BEGIN_METADATA(MultitaskMenuView)
 END_METADATA
 
 }  // namespace chromeos

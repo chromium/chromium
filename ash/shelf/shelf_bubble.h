@@ -10,6 +10,7 @@
 #include "ash/shelf/shelf_background_animator.h"
 #include "ash/shelf/shelf_background_animator_observer.h"
 #include "ash/shell.h"
+#include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/bubble/bubble_dialog_delegate_view.h"
 
 namespace views {
@@ -21,6 +22,8 @@ namespace ash {
 // A base class for all shelf tooltip bubbles.
 class ASH_EXPORT ShelfBubble : public views::BubbleDialogDelegateView,
                                public ShelfBackgroundAnimatorObserver {
+  METADATA_HEADER(ShelfBubble, views::BubbleDialogDelegateView)
+
  public:
   ShelfBubble(views::View* anchor,
               ShelfAlignment alignment,

@@ -22,8 +22,9 @@ struct SharingHubAction;
 
 // A button representing an action in the Sharing Hub bubble.
 class SharingHubBubbleActionButton : public views::Button {
+  METADATA_HEADER(SharingHubBubbleActionButton, views::Button)
+
  public:
-  METADATA_HEADER(SharingHubBubbleActionButton);
   SharingHubBubbleActionButton(SharingHubBubbleViewImpl* bubble,
                                const SharingHubAction& action_info);
   SharingHubBubbleActionButton(const SharingHubBubbleActionButton&) = delete;

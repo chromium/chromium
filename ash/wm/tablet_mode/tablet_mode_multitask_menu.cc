@@ -57,9 +57,9 @@ constexpr base::TimeDelta kOpacityAnimationDurationMs = base::Milliseconds(150);
 
 // The contents view of the multitask menu.
 class TabletModeMultitaskMenuView : public views::View {
- public:
-  METADATA_HEADER(TabletModeMultitaskMenuView);
+  METADATA_HEADER(TabletModeMultitaskMenuView, views::View)
 
+ public:
   TabletModeMultitaskMenuView(aura::Window* window,
                               base::RepeatingClosure callback) {
     SetBackground(views::CreateThemedRoundedRectBackground(
@@ -144,7 +144,7 @@ class TabletModeMultitaskMenuView : public views::View {
   std::unique_ptr<SystemShadow> shadow_;
 };
 
-BEGIN_METADATA(TabletModeMultitaskMenuView, View)
+BEGIN_METADATA(TabletModeMultitaskMenuView)
 END_METADATA
 
 TabletModeMultitaskMenu::TabletModeMultitaskMenu(

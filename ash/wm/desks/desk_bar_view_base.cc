@@ -1692,7 +1692,7 @@ bool DeskBarViewBase::MaybeScrollByDraggedDesk() {
   return false;
 }
 
-BEGIN_METADATA(DeskBarViewBase, View)
+BEGIN_METADATA(DeskBarViewBase)
 END_METADATA
 
 }  // namespace ash

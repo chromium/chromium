@@ -28,6 +28,8 @@
   METADATA_PARENT_CLASS_INTERNAL(parent_class_name)
 
 #define _BEGIN_METADATA(class_name, parent_class_name)                         \
+  static_assert(!std::is_same_v<parent_class_name, class_name>,                \
+                "class and ancestor are the same");                            \
   BEGIN_METADATA_INTERNAL(                                                     \
       class_name, METADATA_CLASS_NAME_INTERNAL(class_name), parent_class_name) \
   METADATA_PARENT_CLASS_INTERNAL(parent_class_name)

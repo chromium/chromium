@@ -122,7 +122,7 @@ void SharingHubBubbleActionButton::UpdateColors() {
                                   : views::style::STYLE_PRIMARY);
 }
 
-BEGIN_METADATA(SharingHubBubbleActionButton, Button)
+BEGIN_METADATA(SharingHubBubbleActionButton)
 END_METADATA
 
 }  // namespace sharing_hub

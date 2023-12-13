@@ -27,9 +27,9 @@ namespace ash {
 // to show auth factors (e.g. Fingerprint, Smart Lock) in the
 // LoginAuthFactorsView.
 class ASH_EXPORT AuthIconView : public views::View {
- public:
-  METADATA_HEADER(AuthIconView);
+  METADATA_HEADER(AuthIconView, views::View)
 
+ public:
   enum class Status {
     kPrimary,
     kDisabled,

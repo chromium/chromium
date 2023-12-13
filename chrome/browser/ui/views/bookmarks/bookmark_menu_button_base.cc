@@ -28,5 +28,5 @@ BookmarkMenuButtonBase::CreateDefaultBorder() const {
   return bookmark_button_util::CreateBookmarkButtonBorder();
 }
 
-BEGIN_METADATA(BookmarkMenuButtonBase, MenuButton)
+BEGIN_METADATA(BookmarkMenuButtonBase)
 END_METADATA

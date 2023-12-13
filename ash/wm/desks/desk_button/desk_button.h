@@ -23,9 +23,9 @@ class DeskButtonWidget;
 
 // Buttons that can be clicked to switch to the left or right desk.
 class ASH_EXPORT DeskSwitchButton : public views::ImageButton {
- public:
-  METADATA_HEADER(DeskSwitchButton);
+  METADATA_HEADER(DeskSwitchButton, views::ImageButton)
 
+ public:
   explicit DeskSwitchButton(PressedCallback callback);
   DeskSwitchButton(const DeskSwitchButton&) = delete;
   DeskSwitchButton& operator=(const DeskSwitchButton&) = delete;
@@ -59,9 +59,9 @@ class ASH_EXPORT DeskSwitchButton : public views::ImageButton {
 class ASH_EXPORT DeskButton : public views::Button,
                               public DesksController::Observer,
                               public ShellObserver {
- public:
-  METADATA_HEADER(DeskButton);
+  METADATA_HEADER(DeskButton, views::Button)
 
+ public:
   explicit DeskButton(DeskButtonWidget* desk_button_widget);
   DeskButton(const DeskButton&) = delete;
   DeskButton& operator=(const DeskButton&) = delete;

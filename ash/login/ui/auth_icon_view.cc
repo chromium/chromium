@@ -337,7 +337,7 @@ void AuthIconView::CircleImageSource::Draw(gfx::Canvas* canvas) {
   canvas->DrawCircle(gfx::PointF(radius, radius), radius, flags);
 }
 
-BEGIN_METADATA(AuthIconView, View)
+BEGIN_METADATA(AuthIconView)
 END_METADATA
 
 }  // namespace ash

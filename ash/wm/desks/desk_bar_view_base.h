@@ -31,9 +31,9 @@ class DeskBarHoverObserver;
 // desk bar view for the desk button.
 class ASH_EXPORT DeskBarViewBase : public views::View,
                                    public DesksController::Observer {
- public:
-  METADATA_HEADER(DeskBarViewBase);
+  METADATA_HEADER(DeskBarViewBase, views::View)
 
+ public:
   enum class Type {
     kOverview,
     kDeskButton,

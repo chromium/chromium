@@ -33,6 +33,8 @@ class DownloadBubblePasswordPromptView;
 
 class DownloadBubbleSecurityView : public views::View,
                                    public download::DownloadItem::Observer {
+  METADATA_HEADER(DownloadBubbleSecurityView, views::View)
+
  public:
   // Interface allowing this to interact with the download item/model its was
   // created for.
@@ -75,7 +77,6 @@ class DownloadBubbleSecurityView : public views::View,
         const offline_items_collection::ContentId& id) = 0;
   };
 
-  METADATA_HEADER(DownloadBubbleSecurityView);
   DownloadBubbleSecurityView(
       Delegate* delegate,
       base::WeakPtr<DownloadBubbleNavigationHandler> navigation_handler,

@@ -11,8 +11,9 @@
 
 // Base class for menu hosting buttons used on the bookmark bar.
 class BookmarkMenuButtonBase : public views::MenuButton {
+  METADATA_HEADER(BookmarkMenuButtonBase, views::MenuButton)
+
  public:
-  METADATA_HEADER(BookmarkMenuButtonBase);
   explicit BookmarkMenuButtonBase(
       PressedCallback callback,
       const std::u16string& title = std::u16string());

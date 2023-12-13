@@ -101,8 +101,9 @@ bool HandleButtonClickWithDefaultClose(
 
 // This class encapsulates a piece of text broken into several paragraphs.
 class ParagraphsView : public views::View {
+  METADATA_HEADER(ParagraphsView, views::View)
+
  public:
-  METADATA_HEADER(ParagraphsView);
   ParagraphsView() {
     SetLayoutManager(std::make_unique<views::FlexLayout>())
         ->SetOrientation(views::LayoutOrientation::kVertical)
@@ -204,7 +205,7 @@ class ParagraphsView : public views::View {
   std::vector<views::StyledLabel*> paragraphs_;
 };
 
-BEGIN_METADATA(ParagraphsView, View)
+BEGIN_METADATA(ParagraphsView)
 END_METADATA
 
 bool DownloadBubbleSecurityView::IsInitialized() const {
@@ -929,5 +930,5 @@ bool DownloadBubbleSecurityView::ProcessLocalPasswordDecryptionClick() {
   return false;
 }
 
-BEGIN_METADATA(DownloadBubbleSecurityView, views::View)
+BEGIN_METADATA(DownloadBubbleSecurityView)
 END_METADATA

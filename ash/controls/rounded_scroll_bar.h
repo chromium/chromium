@@ -24,9 +24,9 @@ namespace ash {
 // - Draws the thumb with rounded ends
 // - Becomes brighter when the cursor is over the thumb
 class ASH_EXPORT RoundedScrollBar : public views::ScrollBar {
- public:
-  METADATA_HEADER(RoundedScrollBar);
+  METADATA_HEADER(RoundedScrollBar, views::ScrollBar)
 
+ public:
   explicit RoundedScrollBar(bool horizontal);
   RoundedScrollBar(const RoundedScrollBar&) = delete;
   RoundedScrollBar& operator=(const RoundedScrollBar&) = delete;

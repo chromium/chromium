@@ -45,9 +45,9 @@ class DownloadBubbleRowView : public views::View,
                               public views::ContextMenuController,
                               public views::FocusChangeListener,
                               public DownloadBubbleRowViewInfoObserver {
- public:
-  METADATA_HEADER(DownloadBubbleRowView);
+  METADATA_HEADER(DownloadBubbleRowView, views::View)
 
+ public:
   explicit DownloadBubbleRowView(
       const DownloadBubbleRowViewInfo& info,
       base::WeakPtr<DownloadBubbleUIController> bubble_controller,
