@@ -1393,15 +1393,6 @@ TEST_F(
   EXPECT_EQ(suggestions[0].icon, Suggestion::Icon::kLocation);
 }
 
-// Fallback to full form (PopupItemId::kAddressEntry) when the last targeted
-// fields are a group but the triggering field does not match any group.
-TEST_F(AutofillChildrenSuggestionsGenenarationTest,
-       CreateSuggestionsFromProfiles_LastTargetedFieldsAreGroup_Fallback) {
-  std::vector<Suggestion> suggestions = CreateSuggestionWithChildrenFromProfile(
-      profile(), kAllServerFieldTypes, CREDIT_CARD_TYPE);
-  EXPECT_EQ(suggestions[0].popup_item_id, PopupItemId::kAddressEntry);
-}
-
 // Asserts that when the triggering field is a phone field, the phone number
 // suggestion is of type `PopupItemId::kFillFullPhoneNumber`. In other
 // scenarios, phone number is of type `PopupItemId::kAddressFieldByFieldFilling`
@@ -1608,6 +1599,179 @@ TEST_F(
     return child.popup_item_id ==
            PopupItemId::kFillEverythingFromAddressProfile;
   }));
+}
+
+class AutofillNonAddressFieldsSuggestionsGenenarationTest
+    : public AutofillChildrenSuggestionsGenenarationTest {
+ public:
+  void SetUp() override {
+    AutofillChildrenSuggestionsGenenarationTest::SetUp();
+    scoped_feature_list_.InitWithFeatures(
+        /*enabled_features=*/{features::kAutofillGranularFillingAvailable,
+                              features::
+                                  kAutofillForUnclassifiedFieldsAvailable},
+        /*disabled_features=*/{});
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+TEST_F(AutofillNonAddressFieldsSuggestionsGenenarationTest,
+       AllProfilesGenerateSuggestions) {
+  personal_data()->AddProfile(test::GetFullProfile());
+  personal_data()->AddProfile(test::GetFullProfile2());
+
+  FormFieldData triggering_field;
+
+  EXPECT_EQ(suggestion_generator()
+                ->GetSuggestionsForProfiles(
+                    {UNKNOWN_TYPE}, triggering_field, UNKNOWN_TYPE,
+                    /*last_targeted_fields=*/absl::nullopt,
+                    AutofillSuggestionTriggerSource::kManualFallbackAddress)
+                .size(),
+            2u);
+}
+
+// Generally, a profile is displayed with name as main text and address as
+// label. But with incomplete profiles, it might be problematic. This test
+// creates various incomplete profiles and makes sure that a main text and a
+// label are always chosen from the available fields (or only main_text if the
+// profile has only one field).
+TEST_F(AutofillNonAddressFieldsSuggestionsGenenarationTest,
+       SuggestionsAreCorrectAndExpectedLabelsAreCreated) {
+  std::vector<AutofillProfile> profiles(
+      5, AutofillProfile(i18n_model_definition::kLegacyHierarchyCountryCode));
+  profiles[0].SetRawInfo(NAME_FULL, u"test0");
+  profiles[0].SetRawInfo(ADDRESS_HOME_STREET_ADDRESS, u"test0_label");
+  profiles[1].SetRawInfo(NAME_FULL, u"test1");
+  profiles[1].SetRawInfo(ADDRESS_HOME_CITY, u"test1_label");
+  profiles[2].SetRawInfo(ADDRESS_HOME_STREET_ADDRESS, u"test2");
+  profiles[2].SetRawInfo(ADDRESS_HOME_CITY, u"test2_label");
+  profiles[3].SetRawInfo(ADDRESS_HOME_CITY, u"test3");
+  profiles[3].SetRawInfo(EMAIL_ADDRESS, u"test3_label");
+  profiles[4].SetRawInfo(EMAIL_ADDRESS, u"test4");
+
+  std::vector<Suggestion> suggestions =
+      suggestion_generator()->CreateSuggestionsFromProfiles(
+          {&profiles[0], &profiles[1], &profiles[2], &profiles[3],
+           &profiles[4]},
+          {UNKNOWN_TYPE},
+          /*last_targeted_fields=*/absl::nullopt, UNKNOWN_TYPE,
+          /*trigger_field_max_length=*/0);
+
+  ASSERT_EQ(5u, suggestions.size());
+  EXPECT_THAT(
+      suggestions,
+      ElementsAre(AllOf(Field(&Suggestion::main_text,
+                              Suggestion::Text(
+                                  u"test0", Suggestion::Text::IsPrimary(true))),
+                        Field(&Suggestion::labels,
+                              std::vector<std::vector<Suggestion::Text>>{
+                                  {Suggestion::Text(u"test0_label")}}),
+                        Field(&Suggestion::popup_item_id,
+                              PopupItemId::kAddressEntryNotSelectable)),
+                  AllOf(Field(&Suggestion::main_text,
+                              Suggestion::Text(
+                                  u"test1", Suggestion::Text::IsPrimary(true))),
+                        Field(&Suggestion::labels,
+                              std::vector<std::vector<Suggestion::Text>>{
+                                  {Suggestion::Text(u"test1_label")}}),
+                        Field(&Suggestion::popup_item_id,
+                              PopupItemId::kAddressEntryNotSelectable)),
+                  AllOf(Field(&Suggestion::main_text,
+                              Suggestion::Text(
+                                  u"test2", Suggestion::Text::IsPrimary(true))),
+                        Field(&Suggestion::labels,
+                              std::vector<std::vector<Suggestion::Text>>{
+                                  {Suggestion::Text(u"test2_label")}}),
+                        Field(&Suggestion::popup_item_id,
+                              PopupItemId::kAddressEntryNotSelectable)),
+                  AllOf(Field(&Suggestion::main_text,
+                              Suggestion::Text(
+                                  u"test3", Suggestion::Text::IsPrimary(true))),
+                        Field(&Suggestion::labels,
+                              std::vector<std::vector<Suggestion::Text>>{
+                                  {Suggestion::Text(u"test3_label")}}),
+                        Field(&Suggestion::popup_item_id,
+                              PopupItemId::kAddressEntryNotSelectable)),
+                  AllOf(Field(&Suggestion::main_text,
+                              Suggestion::Text(
+                                  u"test4", Suggestion::Text::IsPrimary(true))),
+                        Field(&Suggestion::labels,
+                              std::vector<std::vector<Suggestion::Text>>{{}}),
+                        Field(&Suggestion::popup_item_id,
+                              PopupItemId::kAddressEntryNotSelectable))));
+}
+
+// Tests that a non-address field suggestion has all the profile fields as
+// children, and doesn't have children like "Fill full address" or "Fill full
+// name".
+TEST_F(AutofillNonAddressFieldsSuggestionsGenenarationTest,
+       SuggestionHasCorrectChildren) {
+  std::vector<Suggestion> suggestions = CreateSuggestionWithChildrenFromProfile(
+      profile(), absl::nullopt, UNKNOWN_TYPE);
+
+  // The child suggestions should be:
+  //
+  // 1. first name
+  // 2. middle name
+  // 3. family name
+  // 4. line separator
+  // 5. address line 1
+  // 6. address line 2
+  // 7. Zip
+  // 8. line separator
+  // 9. phone number
+  // 10. email
+  // 11. line separator
+  // 12. edit address
+  // 13. delete address
+  ASSERT_EQ(suggestions.size(), 1u);
+  ASSERT_EQ(13u, suggestions[0].children.size());
+
+  EXPECT_THAT(
+      suggestions[0].children,
+      ElementsAre(
+          EqualsFieldByFieldFillingSuggestion(
+              PopupItemId::kAddressFieldByFieldFilling,
+              profile().GetInfo(NAME_FIRST, app_locale()), NAME_FIRST,
+              Suggestion::Guid(profile().guid())),
+          EqualsFieldByFieldFillingSuggestion(
+              PopupItemId::kAddressFieldByFieldFilling,
+              profile().GetInfo(NAME_MIDDLE, app_locale()), NAME_MIDDLE,
+              Suggestion::Guid(profile().guid())),
+          EqualsFieldByFieldFillingSuggestion(
+              PopupItemId::kAddressFieldByFieldFilling,
+              profile().GetInfo(NAME_LAST, app_locale()), NAME_LAST,
+              Suggestion::Guid(profile().guid())),
+          EqualsSuggestion(PopupItemId::kSeparator),
+          EqualsFieldByFieldFillingSuggestion(
+              PopupItemId::kAddressFieldByFieldFilling,
+              profile().GetInfo(ADDRESS_HOME_LINE1, app_locale()),
+              ADDRESS_HOME_LINE1, Suggestion::Guid(profile().guid())),
+          EqualsFieldByFieldFillingSuggestion(
+              PopupItemId::kAddressFieldByFieldFilling,
+              profile().GetInfo(ADDRESS_HOME_LINE2, app_locale()),
+              ADDRESS_HOME_LINE2, Suggestion::Guid(profile().guid())),
+          EqualsFieldByFieldFillingSuggestion(
+              PopupItemId::kAddressFieldByFieldFilling,
+              profile().GetInfo(ADDRESS_HOME_ZIP, app_locale()),
+              ADDRESS_HOME_ZIP, Suggestion::Guid(profile().guid())),
+          EqualsSuggestion(PopupItemId::kSeparator),
+          // Triggering field is not a phone number, international phone number
+          // should be shown to the user.
+          EqualsFieldByFieldFillingSuggestion(
+              PopupItemId::kAddressFieldByFieldFilling,
+              GetFormattedInternationalNumber(), PHONE_HOME_WHOLE_NUMBER,
+              Suggestion::Guid(profile().guid())),
+          EqualsFieldByFieldFillingSuggestion(
+              PopupItemId::kAddressFieldByFieldFilling,
+              profile().GetInfo(EMAIL_ADDRESS, app_locale()), EMAIL_ADDRESS,
+              Suggestion::Guid(profile().guid())),
+          EqualsSuggestion(PopupItemId::kSeparator),
+          EqualsSuggestion(PopupItemId::kEditAddressProfile),
+          EqualsSuggestion(PopupItemId::kDeleteAddressProfile)));
 }
 
 // TODO(crbug.com/1477646): Investigate AssignLabelsAndDeduplicate and remove
