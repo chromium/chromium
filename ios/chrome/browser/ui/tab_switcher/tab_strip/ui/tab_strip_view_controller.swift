@@ -7,7 +7,7 @@ import UIKit
 /// View Controller displaying the TabStrip.
 @objcMembers
 class TabStripViewController: UIViewController, TabStripCellDelegate,
-  TabStripConsumer, UICollectionViewDelegate
+  TabStripConsumer
 {
 
   // The enum used by the data source to manage the sections.
@@ -79,13 +79,9 @@ class TabStripViewController: UIViewController, TabStripCellDelegate,
     var snapshot = NSDiffableDataSourceSnapshot<Section, TabSwitcherItem>()
     snapshot.appendSections([.tabs])
     snapshot.appendItems(items, toSection: .tabs)
-    diffableDataSource?.apply(snapshot)
-
-    guard let selectedItem = selectedItem, let diffableDataSource = diffableDataSource else {
-      return
-    }
-    let indexPath = diffableDataSource.indexPath(for: selectedItem)
-    collectionView.selectItem(at: indexPath, animated: true, scrollPosition: [])
+    applySnapshot(
+      diffableDataSource: diffableDataSource, snapshot: snapshot, animatingDifferences: true)
+    selectItem(selectedItem)
   }
 
   func selectItem(_ item: TabSwitcherItem?) {
@@ -94,11 +90,17 @@ class TabStripViewController: UIViewController, TabStripCellDelegate,
         collectionView.deselectItem(at: indexPath, animated: true)
       }
     }
-    guard let item = item, let diffableDataSource = diffableDataSource else {
-      return
-    }
-    let indexPath = diffableDataSource.indexPath(for: item)
-    collectionView.selectItem(at: indexPath, animated: true, scrollPosition: [])
+    guard
+      let item = item, let diffableDataSource = diffableDataSource,
+      let indexPath = diffableDataSource.indexPath(for: item)
+    else { return }
+
+    /// `.centeredHorizontally` is needed when the selected cell is not dequeued.
+    /// If the item is dequeued `.centeredVertically` will not update the layout.
+    let scrollPosition: UICollectionView.ScrollPosition =
+      collectionView.cellForItem(at: indexPath) != nil
+      ? .centeredVertically : .centeredHorizontally
+    collectionView.selectItem(at: indexPath, animated: true, scrollPosition: scrollPosition)
   }
 
   func reloadItem(_ item: TabSwitcherItem?) {
@@ -108,7 +110,8 @@ class TabStripViewController: UIViewController, TabStripCellDelegate,
 
     var snapshot = diffableDataSource.snapshot()
     snapshot.reconfigureItems([item])
-    diffableDataSource.apply(snapshot, animatingDifferences: false)
+    applySnapshot(
+      diffableDataSource: diffableDataSource, snapshot: snapshot, animatingDifferences: false)
   }
 
   func replaceItem(_ oldItem: TabSwitcherItem?, withItem newItem: TabSwitcherItem?) {
@@ -120,48 +123,8 @@ class TabStripViewController: UIViewController, TabStripCellDelegate,
     var snapshot = diffableDataSource.snapshot()
     snapshot.insertItems([newItem], beforeItem: oldItem)
     snapshot.deleteItems([oldItem])
-    diffableDataSource.apply(snapshot, animatingDifferences: false)
-  }
-
-  // MARK: - UICollectionViewDelegate
-
-  func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
-    if #available(iOS 16, *) {
-    } else {
-      self.collectionView(collectionView, performPrimaryActionForItemAt: indexPath)
-    }
-  }
-
-  func collectionView(
-    _ collectionView: UICollectionView, performPrimaryActionForItemAt indexPath: IndexPath
-  ) {
-    guard let item = diffableDataSource?.itemIdentifier(for: indexPath) else {
-      return
-    }
-    mutator?.activate(item)
-  }
-
-  func collectionView(
-    _ collectionView: UICollectionView,
-    contextMenuConfigurationForItemAt indexPath: IndexPath,
-    point: CGPoint
-  ) -> UIContextMenuConfiguration? {
-    return self.collectionView(
-      collectionView, contextMenuConfigurationForItemsAt: [indexPath], point: point)
-  }
-
-  func collectionView(
-    _ collectionView: UICollectionView, contextMenuConfigurationForItemsAt indexPaths: [IndexPath],
-    point: CGPoint
-  ) -> UIContextMenuConfiguration? {
-    if indexPaths.count != 1 {
-      return nil
-    }
-
-    weak var weakSelf = self
-    return UIContextMenuConfiguration(actionProvider: { suggestedActions in
-      return weakSelf?.contextMenuForIndexPath(indexPaths[0])
-    })
+    applySnapshot(
+      diffableDataSource: diffableDataSource, snapshot: snapshot, animatingDifferences: false)
   }
 
   // MARK: - TabStripCellDelegate
@@ -179,6 +142,17 @@ class TabStripViewController: UIViewController, TabStripCellDelegate,
   }
 
   // MARK: - Private
+
+  /// Applies `snapshot` to `diffableDataSource` and updates the collection view layout.
+  private func applySnapshot(
+    diffableDataSource: UICollectionViewDiffableDataSource<Section, TabSwitcherItem>?,
+    snapshot: NSDiffableDataSourceSnapshot<Section, TabSwitcherItem>,
+    animatingDifferences: Bool = false
+  ) {
+    layout.needsUpdate = true
+    diffableDataSource?.apply(snapshot, animatingDifferences: animatingDifferences)
+    layout.needsUpdate = false
+  }
 
   /// Creates the registrations of the different cells used in the collection view.
   private func createRegistrations() {
@@ -253,6 +227,59 @@ class TabStripViewController: UIViewController, TabStripCellDelegate,
   /// Called when the `newTabButton` has been tapped.
   @objc func newTabButtonTapped() {
     mutator?.addNewItem()
+  }
+
+}
+
+// MARK: - UICollectionViewDelegateFlowLayout
+
+extension TabStripViewController: UICollectionViewDelegateFlowLayout {
+
+  func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
+    if #available(iOS 16, *) {
+    } else {
+      self.collectionView(collectionView, performPrimaryActionForItemAt: indexPath)
+    }
+  }
+
+  func collectionView(
+    _ collectionView: UICollectionView, performPrimaryActionForItemAt indexPath: IndexPath
+  ) {
+    guard let item = diffableDataSource?.itemIdentifier(for: indexPath) else {
+      return
+    }
+    mutator?.activate(item)
+  }
+
+  func collectionView(
+    _ collectionView: UICollectionView,
+    contextMenuConfigurationForItemAt indexPath: IndexPath,
+    point: CGPoint
+  ) -> UIContextMenuConfiguration? {
+    return self.collectionView(
+      collectionView, contextMenuConfigurationForItemsAt: [indexPath], point: point)
+  }
+
+  func collectionView(
+    _ collectionView: UICollectionView, contextMenuConfigurationForItemsAt indexPaths: [IndexPath],
+    point: CGPoint
+  ) -> UIContextMenuConfiguration? {
+    if indexPaths.count != 1 {
+      return nil
+    }
+
+    weak var weakSelf = self
+    return UIContextMenuConfiguration(actionProvider: { suggestedActions in
+      return weakSelf?.contextMenuForIndexPath(indexPaths[0])
+    })
+  }
+
+  func collectionView(
+    _ collectionView: UICollectionView,
+    layout collectionViewLayout: UICollectionViewLayout,
+    sizeForItemAt indexPath: IndexPath
+  ) -> CGSize {
+    return layout.calculcateCellSize(indexPath: indexPath)
   }
 
 }

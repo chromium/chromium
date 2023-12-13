@@ -7,6 +7,15 @@ import Foundation
 /// Struct that contains constants used in the Tab Strip UI.
 struct TabStripConstants {
 
+  /// Tab item constants.
+  struct TabItem {
+    static let height: CGFloat = 39
+    static let minWidth: CGFloat = 80
+    static let maxWidth: CGFloat = 150
+    static let horizontalSpacing: CGFloat = 0
+    static let selectedZindex: Int = 10
+  }
+
   /// New tab button constants.
   struct NewTabButton {
     static let contentInset: CGFloat = 6
