@@ -113,11 +113,6 @@ LoginHandler::~LoginHandler() {
 
   if (!WasAuthHandled()) {
     auth_required_callback_.Reset();
-
-    // TODO(https://crbug.com/916315): Remove this line.
-    if (prompt_started_) {
-      NotifyAuthCancelled();
-    }
   }
 }
 
