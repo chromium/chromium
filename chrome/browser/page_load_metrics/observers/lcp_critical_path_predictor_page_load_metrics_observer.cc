@@ -4,6 +4,7 @@
 
 #include "chrome/browser/page_load_metrics/observers/lcp_critical_path_predictor_page_load_metrics_observer.h"
 
+#include "base/trace_event/base_tracing.h"
 #include "chrome/browser/predictors/loading_predictor.h"
 #include "chrome/browser/predictors/loading_predictor_factory.h"
 #include "chrome/browser/predictors/predictors_features.h"
@@ -202,6 +203,35 @@ void LcpCriticalPathPredictorPageLoadMetricsObserver::AppendFetchedFontUrl(
     return;
   }
   lcpp_data_inputs_->font_urls.push_back(font_url);
+}
+
+void LcpCriticalPathPredictorPageLoadMetricsObserver::
+    AppendFetchedSubresourceUrl(const GURL& subresource_url,
+                                const base::TimeDelta& subresource_load_start) {
+  if (!lcpp_data_inputs_) {
+    lcpp_data_inputs_.emplace();
+  }
+  if (lcpp_data_inputs_->subresource_urls.empty()) {
+    base::UmaHistogramMediumTimes(
+        "Blink.LCPP.NavigationToStartPreload.MainFrame.FirstSubresource.Time",
+        subresource_load_start);
+    const base::TimeTicks navigation_start = GetDelegate().GetNavigationStart();
+    TRACE_EVENT_NESTABLE_ASYNC_BEGIN_WITH_TIMESTAMP1(
+        "loading", "NavigationToStartFirstPreload", TRACE_ID_LOCAL(this),
+        navigation_start, "url", subresource_url);
+    TRACE_EVENT_NESTABLE_ASYNC_END_WITH_TIMESTAMP0(
+        "loading", "NavigationToStartFirstPreload", TRACE_ID_LOCAL(this),
+        navigation_start + subresource_load_start);
+  }
+  base::UmaHistogramMediumTimes(
+      "Blink.LCPP.NavigationToStartPreload.MainFrame.EachSubresource.Time",
+      subresource_load_start);
+  if (!lcpp_data_inputs_->subresource_urls.contains(subresource_url)) {
+    lcpp_data_inputs_->subresource_urls.emplace(subresource_url,
+                                                subresource_load_start);
+  }
+  // TODO(https://crbug.com/1501673): Save subresource_urls into the LCPP
+  // database.
 }
 
 void LcpCriticalPathPredictorPageLoadMetricsObserver::

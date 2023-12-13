@@ -50,6 +50,10 @@ struct LcppDataInputs {
   // This field keeps the number of font URLs without omitting due to
   // reaching `kLCPPFontURLPredictorMaxUrlCountPerOrigin` or deduplication.
   size_t font_url_count = 0;
+  // This field keeps the subresource URLs as a key, and the TimeDelta as a
+  // value. TimeDelta stores the duration from navigation start to resource
+  // loading start time.
+  std::map<GURL, base::TimeDelta> subresource_urls;
 };
 
 bool UpdateLcppDataWithLcppDataInputs(const LoadingPredictorConfig& config,

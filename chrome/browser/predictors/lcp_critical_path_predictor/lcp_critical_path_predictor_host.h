@@ -45,6 +45,9 @@ class LCPCriticalPathPredictorHost
   void SetLcpInfluencerScriptUrls(
       const std::vector<GURL>& lcp_influencer_scripts) override;
   void NotifyFetchedFont(const GURL& font_url) override;
+  void NotifyFetchedSubresource(
+      const GURL& subresource_url,
+      base::TimeDelta subresource_load_start) override;
 };
 
 }  // namespace predictors

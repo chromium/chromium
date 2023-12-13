@@ -2701,6 +2701,23 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram
+    name="Blink.LCPP.NavigationToStartPreload.MainFrame.{SubresourceType}.Time"
+    units="ms" expires_after="2024-02-01">
+  <owner>chikamune@chromium.org</owner>
+  <owner>yyanagisawa@chromium.org</owner>
+  <owner>kouhei@chromium.org</owner>
+  <summary>
+    Record when the page's main frame starts preloading {SubresourceType}.
+    Measures the duration between when the navigation starts, to when preloading
+    subresource is started.
+  </summary>
+  <token key="SubresourceType">
+    <variant name="EachSubresource" summary="each subresources"/>
+    <variant name="FirstSubresource" summary="the first subresource"/>
+  </token>
+</histogram>
+
 <histogram name="Blink.LCPP.PotentiallyLCPResourcePriorityBoosts" units="count"
     expires_after="2024-01-27">
   <owner>kouhei@chromium.org</owner>

@@ -228,8 +228,7 @@ void LCPCriticalPathPredictor::OnStartPreload(const KURL& url) {
       base::TimeTicks::Now() -
       document->Loader()->GetTiming().NavigationStart();
   CHECK_GE(resource_load_start, base::Seconds(0));
-  // TODO(chikamune): Send url and resource_load_start to browser.
-  NOTIMPLEMENTED();
+  GetHost().NotifyFetchedSubresource(url, resource_load_start);
 }
 
 mojom::blink::LCPCriticalPathPredictorHost&
