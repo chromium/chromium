@@ -13,6 +13,9 @@
 #include "printing/mojom/print.mojom.h"
 #include "skia/ext/font_utils.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/skia/include/codec/SkCodec.h"
+#include "third_party/skia/include/codec/SkPngDecoder.h"
+#include "third_party/skia/include/codec/SkJpegDecoder.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "third_party/skia/include/core/SkCanvas.h"
 #include "third_party/skia/include/core/SkFont.h"
@@ -25,9 +28,11 @@
 #include "third_party/skia/include/core/SkSerialProcs.h"
 #include "third_party/skia/include/core/SkSize.h"
 #include "third_party/skia/include/core/SkStream.h"
+#include "third_party/skia/include/core/SkSurface.h"
 #include "third_party/skia/include/core/SkSurfaceProps.h"
 #include "third_party/skia/include/core/SkTextBlob.h"
 #include "third_party/skia/include/core/SkTypeface.h"
+#include "third_party/skia/include/encode/SkJpegEncoder.h"
 
 namespace printing {
 
@@ -229,6 +234,66 @@ TEST(MetafileSkiaTest, MultiPictureDocumentTypefaces) {
     ASSERT_TRUE(SkPicture::MakeFromStream(metafile_stream, &procs));
     EXPECT_EQ(typefaces.size(), kNumTypefaces);
   }
+}
+
+TEST(MetafileSkiaTest, SerializeUnencodedRasterImageAsPNG) {
+    // Make raster surface
+    sk_sp<SkSurface> surface =
+            SkSurfaces::Raster(SkImageInfo::MakeN32(100, 50, kOpaque_SkAlphaType));
+    SkCanvas* canvas = surface->getCanvas();
+
+    // Draw to it
+    SkPaint paint;
+    paint.setColor(SK_ColorGREEN);
+    canvas->clear(SK_ColorYELLOW);
+    canvas->drawRect(SkRect::MakeSize(SkSize::Make(75, 25)), paint);
+
+    // Make sure that the image is not encoded
+    sk_sp<SkImage> image = surface->makeImageSnapshot();
+    ASSERT_FALSE(image->refEncodedData());
+
+    // Use the image serialization proc and assert that we get encoded data back
+    PictureSerializationContext subframes;
+    SkSerialProcs procs = SerializationProcs(&subframes, nullptr);
+
+    sk_sp<SkData> encoded_data = (*procs.fImageProc)(image.get(), nullptr);
+    ASSERT_TRUE(encoded_data);
+
+    // We expect unencoded images to be encoded as PNG.
+    ASSERT_TRUE(SkPngDecoder::IsPng(encoded_data->data(), encoded_data->size()));
+}
+
+TEST(MetafileSkiaTest, SkipEncodingAsPngWhenImageIsAlreadyEncoded) {
+    // Make raster surface
+    sk_sp<SkSurface> surface =
+            SkSurfaces::Raster(SkImageInfo::MakeN32(100, 50, kOpaque_SkAlphaType));
+    SkCanvas* canvas = surface->getCanvas();
+
+    // Draw to it
+    SkPaint paint;
+    paint.setColor(SK_ColorGREEN);
+    canvas->clear(SK_ColorYELLOW);
+    canvas->drawRect(SkRect::MakeSize(SkSize::Make(75, 25)), paint);
+
+    // Get an image that is not encoded
+    sk_sp<SkImage> unencoded_img = surface->makeImageSnapshot();
+    ASSERT_FALSE(unencoded_img->refEncodedData());
+
+    // Encode the image data as JPEG
+    SkCodecs::Register(SkJpegDecoder::Decoder());
+    sk_sp<SkData> jpeg_data =
+            SkJpegEncoder::Encode(nullptr, unencoded_img.get(), SkJpegEncoder::Options{});
+    sk_sp<SkImage> jpeg_img = SkImages::DeferredFromEncodedData(jpeg_data);
+    ASSERT_TRUE(jpeg_img->refEncodedData());
+
+    // Call serialization proc on the JPEG image
+    PictureSerializationContext subframes;
+    SkSerialProcs procs = SerializationProcs(&subframes, nullptr);
+    sk_sp<SkData> encoded_data = (*procs.fImageProc)(jpeg_img.get(), nullptr);
+    ASSERT_TRUE(encoded_data);
+
+    // Make sure the data is still encoded as JPEG
+    ASSERT_TRUE(SkJpegDecoder::IsJpeg(encoded_data->data(), encoded_data->size()));
 }
 
 }  // namespace printing

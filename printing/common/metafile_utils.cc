@@ -336,6 +336,11 @@ sk_sp<SkData> SerializeRasterImage(SkImage* img, void*) {
   if (!img) {
     return nullptr;
   }
+  // Skip the encoding step if the image is already encoded
+  if (sk_sp<SkData> data = img->refEncodedData()) {
+    return data;
+  }
+
   // TODO(crbug.com/1486503) Convert texture-backed images to raster
   // *before* they get this far if possible.
   if (img->isTextureBacked()) {
@@ -347,6 +352,7 @@ sk_sp<SkData> SerializeRasterImage(SkImage* img, void*) {
 
 sk_sp<SkImage> DeserializeRasterImage(const void* bytes, size_t length, void*) {
   auto data = SkData::MakeWithoutCopy(bytes, length);
+  //TODO(b/40045064): Explicitly decode other supported codecs
   auto codec = SkPngDecoder::Decode(data, nullptr);
   if (codec) {
     return std::get<0>(codec->getImage());
