@@ -293,17 +293,9 @@ const char* const kLearnMoreURL = "internal://choice-screen-learn-more";
 
 - (void)traitCollectionDidChange:(UITraitCollection*)previousTraitCollection {
   [super traitCollectionDidChange:previousTraitCollection];
-
   // Reset the title font to make sure that it is
   // properly scaled.
   _titleLabel.font = GetTitleFontWithTraitCollection(self.traitCollection);
-  if (previousTraitCollection.userInterfaceStyle !=
-      self.traitCollection.userInterfaceStyle) {
-    // Re-draw the fake empty omnibox in order to take color updates into
-    // account.
-    _fakeEmptyOmniboxView = [[FakeOmniboxView alloc] init];
-    [_fakeEmptyOmniboxView layoutIfNeeded];
-  }
 }
 
 #pragma mark - SearchEngineChoiceConsumer
