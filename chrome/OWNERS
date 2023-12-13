@@ -64,7 +64,6 @@ per-file browser/nearby_sharing/internal=*
 per-file browser/resources/chromeos/quickoffice=*
 per-file browser/resources/settings_internal=*
 per-file browser/spellchecker/internal=*
-per-file chrome_cleaner/internal=*
 per-file installer/mac/internal=*
 per-file test/data/firefox3_profile/searchplugins=*
 per-file test/data/firefox3_searchplugins=*

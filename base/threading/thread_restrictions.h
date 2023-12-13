@@ -210,10 +210,6 @@ bool IsCoreSchedulingAvailable();
 int NumberOfPhysicalCores();
 }  // namespace system
 }  // namespace chromeos
-namespace chrome_cleaner {
-class ResetShortcutsComponent;
-class SystemReportComponent;
-}  // namespace chrome_cleaner
 namespace content {
 class BrowserGpuChannelHostFactory;
 class BrowserMainLoop;
@@ -739,8 +735,6 @@ class BASE_EXPORT [[maybe_unused, nodiscard]] ScopedAllowBaseSyncPrimitives {
   friend class blink::scheduler::NonMainThreadImpl;
   friend class cc::CategorizedWorkerPoolImpl;
   friend class cc::CategorizedWorkerPoolJob;
-  friend class chrome_cleaner::ResetShortcutsComponent;
-  friend class chrome_cleaner::SystemReportComponent;
   friend class content::BrowserMainLoop;
   friend class content::BrowserProcessIOThread;
   friend class content::DWriteFontCollectionProxy;

@@ -48204,8 +48204,8 @@ Called by update_net_error_codes.py.-->
   <int value="2" label="Passwords, manage compromised passwords"/>
   <int value="3" label="Safe browsing, manage safe browsing"/>
   <int value="4" label="Extensions, review extensions"/>
-  <int value="5" label="Chrome cleaner, reboot"/>
-  <int value="6" label="Chrome cleaner, review infected state"/>
+  <int value="5" label="Deprecated (Chrome cleaner, reboot)"/>
+  <int value="6" label="Deprecated (Chrome cleaner, review infected state)"/>
   <int value="7" label="Passwords, caret navigation"/>
   <int value="8" label="Safe browsing, caret navigation"/>
   <int value="9" label="Extensions, caret navigation"/>

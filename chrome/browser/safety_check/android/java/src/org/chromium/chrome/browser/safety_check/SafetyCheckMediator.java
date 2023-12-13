@@ -132,7 +132,9 @@ class SafetyCheckMediator
         SafetyCheckInteractions.PASSWORDS_MANAGE,
         SafetyCheckInteractions.SAFE_BROWSING_MANAGE,
         SafetyCheckInteractions.EXTENSIONS_REVIEW,
+        // Deprecated in https://crrev.com/c/5113263
         SafetyCheckInteractions.CHROME_CLEANER_REBOOT,
+        // Deprecated in https://crrev.com/c/5113263
         SafetyCheckInteractions.CHROME_CLEANER_REVIEW,
         SafetyCheckInteractions.PASSWORDS_MANAGE_THROUGH_CARET_NAVIGATION,
         SafetyCheckInteractions.SAFE_BROWSING_MANAGE_THROUGH_CARET_NAVIGATION,
