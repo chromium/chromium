@@ -330,6 +330,11 @@ export class MostVisitedElement extends MostVisitedElementBase {
     return skColor ? skColorToRgba(skColor) : 'inherit';
   }
 
+  // Adds "force-hover" class to the tile element positioned at `index`.
+  private enableForceHover_(index: number) {
+    this.tileElements_[index].classList.add('force-hover');
+  }
+
   private clearForceHover_() {
     const forceHover = this.shadowRoot!.querySelector('.force-hover');
     if (forceHover) {
@@ -425,7 +430,7 @@ export class MostVisitedElement extends MostVisitedElementBase {
    * is done in the DOM and the by the |reorderMostVisitedTile()| call. This is
    * done to prevent flicking between the time when the tiles are moved back to
    * their original positions (by removing position absolute) and when the
-   * tiles are updated via a |setMostVisitedTiles()| call.
+   * tiles are updated via the |setMostVisitedInfo| handler.
    *
    * |reordering_| is not set to false when the tiles are reordered. The callers
    * will need to set it to false. This is necessary to handle a mouse drag
@@ -436,19 +441,24 @@ export class MostVisitedElement extends MostVisitedElementBase {
       this.reordering_ = false;
       return;
     }
+
     this.dragOffset_ = null;
+
     const dragElement =
         this.shadowRoot!.querySelector<HTMLElement>('.tile.dragging');
     if (!dragElement) {
       this.reordering_ = false;
       return;
     }
+
+    dragElement.classList.remove('dragging');
+
+    this.tileElements_.forEach(el => resetTilePosition(el));
+    resetTilePosition(this.$.addShortcut);
+
     const dragIndex = (this.$.tiles.modelForElement(dragElement) as unknown as {
                         index: number,
                       }).index;
-    dragElement.classList.remove('dragging');
-    this.tileElements_.forEach(el => resetTilePosition(el));
-    resetTilePosition(this.$.addShortcut);
     const dropIndex = getHitIndex(this.tileRects_, x, y);
     if (dragIndex !== dropIndex && dropIndex > -1) {
       const [draggingTile] = this.tiles_.splice(dragIndex, 1);
@@ -675,7 +685,7 @@ export class MostVisitedElement extends MostVisitedElementBase {
       this.dragEnd_(e.x, e.y);
       const dropIndex = getHitIndex(this.tileRects_, e.x, e.y);
       if (dropIndex !== -1) {
-        this.tileElements_[dropIndex].classList.add('force-hover');
+        this.enableForceHover_(dropIndex);
       }
       this.addEventListener('pointermove', () => {
         this.clearForceHover_();
