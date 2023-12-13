@@ -47,10 +47,12 @@ bool IsSecuritySensitiveVerdict(
     LoginReputationClientResponse::VerdictType verdict_type) {
   switch (verdict_type) {
     case LoginReputationClientResponse::SAFE:
+    // UNSPECIFIED is not considered sensitive because it is the default verdict
+    // if no ping is sent (e.g. timeout, allowlist hit).
+    case LoginReputationClientResponse::VERDICT_TYPE_UNSPECIFIED:
       return false;
     case LoginReputationClientResponse::LOW_REPUTATION:
     case LoginReputationClientResponse::PHISHING:
-    case LoginReputationClientResponse::VERDICT_TYPE_UNSPECIFIED:
       return true;
   }
   NOTREACHED() << "Unexpected verdict_type: " << verdict_type;
