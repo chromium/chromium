@@ -15633,8 +15633,7 @@
                 {
                     "name": "Enabled",
                     "enable_features": [
-                        "ShoppingCollection",
-                        "ShoppingListTrackByDefault"
+                        "ShoppingCollection"
                     ]
                 }
             ]

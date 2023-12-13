@@ -125,8 +125,7 @@ base::OnceCallback<void()> CreatePriceTrackingEmailCallback(
     views::View* anchor_view,
     content::WebContents* web_contents,
     const bookmarks::BookmarkNode* bookmark) {
-  if (!base::FeatureList::IsEnabled(commerce::kShoppingListTrackByDefault) ||
-      !profile ||
+  if (!profile ||
       commerce::IsEmailNotificationPrefSetByUser(profile->GetPrefs())) {
     return base::DoNothing();
   }

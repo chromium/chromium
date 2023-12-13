@@ -6559,12 +6559,6 @@ const FeatureEntry kFeatureEntries[] = {
      commerce::flag_descriptions::kShoppingListDescription,
      kOsAndroid | kOsDesktop, FEATURE_VALUE_TYPE(commerce::kShoppingList)},
 
-    {"shopping-list-track-by-default",
-     commerce::flag_descriptions::kShoppingListTrackByDefaultName,
-     commerce::flag_descriptions::kShoppingListTrackByDefaultDescription,
-     kOsAndroid | kOsDesktop,
-     FEATURE_VALUE_TYPE(commerce::kShoppingListTrackByDefault)},
-
     {"local-pdp-detection",
      commerce::flag_descriptions::kCommerceLocalPDPDetectionName,
      commerce::flag_descriptions::kCommerceLocalPDPDetectionDescription,

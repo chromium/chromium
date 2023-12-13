@@ -36,7 +36,7 @@ const char kTestURL[] = "about:blank";
 const uint64_t kProductClusterId = 12345L;
 }  // namespace
 
-class PriceTrackingViewTestBase : public BrowserWithTestWindowTest {
+class PriceTrackingViewTest : public BrowserWithTestWindowTest {
  public:
   void SetUp() override {
     BrowserWithTestWindowTest::SetUp();
@@ -137,24 +137,10 @@ class PriceTrackingViewTestBase : public BrowserWithTestWindowTest {
   std::unique_ptr<views::Widget> anchor_widget_;
 };
 
-class PriceTrackingViewTest : public PriceTrackingViewTestBase {
- public:
-  void SetUp() override {
-    PriceTrackingViewTestBase::SetUp();
-    test_features_.InitAndDisableFeature(commerce::kShoppingListTrackByDefault);
-  }
-};
-
 TEST_F(PriceTrackingViewTest, InitialPriceTrackEnabled) {
+  profile()->GetPrefs()->SetBoolean(commerce::kPriceEmailNotificationsEnabled,
+                                    true);
   const bool enabled = true;
-  CreateViewAndShow(enabled);
-  VerifyToggleState(enabled);
-  VerifyBodyMessage(l10n_util::GetStringUTF16(
-      IDS_BOOKMARK_STAR_DIALOG_TRACK_PRICE_DESCRIPTION));
-}
-
-TEST_F(PriceTrackingViewTest, InitialPriceTrackDisabled) {
-  const bool enabled = false;
   CreateViewAndShow(enabled);
   VerifyToggleState(enabled);
   VerifyBodyMessage(l10n_util::GetStringUTF16(
@@ -163,6 +149,8 @@ TEST_F(PriceTrackingViewTest, InitialPriceTrackDisabled) {
 
 TEST_F(PriceTrackingViewTest, ToggleSucceeded) {
   SetUpDependencies();
+  profile()->GetPrefs()->SetBoolean(commerce::kPriceEmailNotificationsEnabled,
+                                    true);
 
   const bool initial_enabled = false;
   CreateViewAndShow(initial_enabled);
@@ -182,6 +170,8 @@ TEST_F(PriceTrackingViewTest, ToggleSucceeded) {
 
 TEST_F(PriceTrackingViewTest, ToggleFailed) {
   SetUpDependencies();
+  profile()->GetPrefs()->SetBoolean(commerce::kPriceEmailNotificationsEnabled,
+                                    true);
 
   const bool initial_enabled = false;
   CreateViewAndShow(initial_enabled);
@@ -253,15 +243,7 @@ TEST_F(PriceTrackingViewTest, EmailTurnedOn) {
       IDS_BOOKMARK_STAR_DIALOG_TRACK_PRICE_DESCRIPTION));
 }
 
-class PriceTrackingViewTestTrackByDefault : public PriceTrackingViewTestBase {
- public:
-  void SetUp() override {
-    PriceTrackingViewTestBase::SetUp();
-    test_features_.InitAndEnableFeature(commerce::kShoppingListTrackByDefault);
-  }
-};
-
-TEST_F(PriceTrackingViewTestTrackByDefault, ToggleReactsToSubscriptionChanges) {
+TEST_F(PriceTrackingViewTest, ToggleReactsToSubscriptionChanges) {
   ASSERT_FALSE(profile()->GetPrefs()->GetBoolean(
       commerce::kPriceEmailNotificationsEnabled));
 
@@ -277,9 +259,7 @@ TEST_F(PriceTrackingViewTestTrackByDefault, ToggleReactsToSubscriptionChanges) {
       commerce::kPriceEmailNotificationsEnabled));
 }
 
-// The initial text will be different if the "track by default" experiment is
-// enabled.
-TEST_F(PriceTrackingViewTestTrackByDefault, InitialPriceTrackDisabled) {
+TEST_F(PriceTrackingViewTest, InitialPriceTrackDisabled) {
   const bool enabled = false;
   CreateViewAndShow(enabled);
   VerifyToggleState(enabled);

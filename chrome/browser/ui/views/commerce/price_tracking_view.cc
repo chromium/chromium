@@ -105,8 +105,7 @@ PriceTrackingView::PriceTrackingView(Profile* profile,
   bool email_pref_value =
       commerce::GetEmailNotificationPrefValue(profile_->GetPrefs());
 
-  if ((base::FeatureList::IsEnabled(commerce::kShoppingListTrackByDefault) &&
-       !email_pref_set_by_user) ||
+  if (!email_pref_set_by_user ||
       (email_pref_set_by_user && !email_pref_value)) {
     body_string_id = IDS_BOOKMARK_STAR_DIALOG_TRACK_PRICE_DESCRIPTION_EMAIL_OFF;
   }
@@ -215,8 +214,7 @@ void PriceTrackingView::UpdatePriceTrackingState(const GURL& url) {
 
   // If "track by default" is on, we'll show a dialog after saving to offer
   // email notifications.
-  if (!base::FeatureList::IsEnabled(commerce::kShoppingListTrackByDefault) &&
-      profile_ && is_price_track_enabled_) {
+  if (profile_ && is_price_track_enabled_) {
     commerce::MaybeEnableEmailNotifications(profile_->GetPrefs());
   }
 

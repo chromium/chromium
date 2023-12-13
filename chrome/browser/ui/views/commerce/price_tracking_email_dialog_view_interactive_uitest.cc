@@ -48,7 +48,6 @@ class PriceTrackingEmailDialogConsentViewInteractiveTest
     : public InteractiveBrowserTest {
  public:
   void SetUp() override {
-    test_features_.InitAndEnableFeature(commerce::kShoppingListTrackByDefault);
     test_iph_features_.InitForDemo(
         feature_engagement::kIPHPriceTrackingEmailConsentFeature);
 
