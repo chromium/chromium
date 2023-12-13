@@ -11189,6 +11189,11 @@ to ensure that the crash string is shown properly on the user-facing crash UI.
   <int value="3" label="Compliance not evaluated, build not timely"/>
 </enum>
 
+<enum name="CvcFillingFlowType">
+  <int value="0" label="CVC filled without any interactive authentication"/>
+  <int value="1" label="CVC filled by FIDO authentication"/>
+</enum>
+
 <enum name="DaemonError">
   <int value="132" label="SIGILL">
     MINIJAIL_ERR_SIG_BASE (128) + SIGILL (4) from libminijail

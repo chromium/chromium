@@ -206,6 +206,10 @@ void CreditCardAccessManager::LogMetricsAndFillFormForServerUnmaskFlows(
             AutofillClient::PaymentsRpcCardType::kVirtualCard,
             autofill_metrics::ServerCardUnmaskFlowType::kFidoOnly);
       }
+      if (!card_->cvc().empty()) {
+        autofill_metrics::LogCvcFilling(
+            autofill_metrics::CvcFillingFlowType::kFido, card_->record_type());
+      }
       break;
     case UnmaskAuthFlowType::kOtp:
       autofill_metrics::LogServerCardUnmaskResult(
@@ -1154,6 +1158,11 @@ void CreditCardAccessManager::FetchLocalOrFullServerCard() {
     // until the re-authentication flow is complete.
     StartDeviceAuthenticationForFilling(card_.get());
   } else {
+    if (!card_->cvc().empty()) {
+      autofill_metrics::LogCvcFilling(
+          autofill_metrics::CvcFillingFlowType::kNoInteractiveAuthentication,
+          card_->record_type());
+    }
     // Fill immediately if local card or full server card, as we do not need to
     // authenticate the user.
     std::move(on_credit_card_fetched_callback_)

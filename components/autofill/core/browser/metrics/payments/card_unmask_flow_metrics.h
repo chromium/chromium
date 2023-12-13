@@ -40,6 +40,16 @@ enum class ServerCardUnmaskResult {
   kMaxValue = kUnexpectedError,
 };
 
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+enum class CvcFillingFlowType {
+  // CVC filled without any interactive authentication.
+  kNoInteractiveAuthentication = 0,
+  // CVC filled with FIDO authentication.
+  kFido = 1,
+  kMaxValue = kFido,
+};
+
 enum class ServerCardUnmaskFlowType {
   // These values are persisted to logs. Entries should not be renumbered and
   // numeric values should never be reused.
@@ -61,7 +71,8 @@ enum class ServerCardUnmaskFlowType {
 };
 
 void LogServerCardUnmaskAttempt(AutofillClient::PaymentsRpcCardType card_type);
-
+void LogCvcFilling(CvcFillingFlowType flow_type,
+                   CreditCard::RecordType record_type);
 void LogServerCardUnmaskResult(
     ServerCardUnmaskResult unmask_result,
     absl::variant<AutofillClient::PaymentsRpcCardType, CreditCard::RecordType>,

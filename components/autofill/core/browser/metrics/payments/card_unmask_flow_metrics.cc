@@ -17,6 +17,15 @@ void LogServerCardUnmaskAttempt(AutofillClient::PaymentsRpcCardType card_type) {
       true);
 }
 
+void LogCvcFilling(CvcFillingFlowType flow_type,
+                   CreditCard::RecordType record_type) {
+  base::UmaHistogramEnumeration(
+      base::StrCat(
+          {"Autofill.CvcStorage.CvcFilling",
+           AutofillMetrics::GetHistogramStringForCardType(record_type)}),
+      flow_type);
+}
+
 void LogServerCardUnmaskResult(
     ServerCardUnmaskResult unmask_result,
     absl::variant<AutofillClient::PaymentsRpcCardType, CreditCard::RecordType>
