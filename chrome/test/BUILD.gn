@@ -1343,6 +1343,7 @@ if (is_android) {
       "../renderer/cart/commerce_hint_agent_renderer_browsertest.cc",
       "../renderer/commerce/commerce_web_extractor_browsertest.cc",
       "../renderer/safe_browsing/phishing_classifier_browsertest.cc",
+      "../renderer/wallet/boarding_pass_extractor_browsertest.cc",
       "android/browsertests_apk/android_browsertests_jni_onload.cc",
       "base/android/android_browser_test_browsertest_android.cc",
     ]

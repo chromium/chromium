@@ -7,8 +7,97 @@
 #include "chrome/common/chrome_isolated_world_ids.h"
 #include "content/public/renderer/render_frame.h"
 #include "third_party/blink/public/common/browser_interface_broker_proxy.h"
+#include "third_party/blink/public/platform/web_string.h"
+#include "third_party/blink/public/web/web_local_frame.h"
+#include "third_party/blink/public/web/web_script_source.h"
+#include "v8/include/v8-isolate.h"
 
 namespace wallet {
+
+namespace {
+const std::string GetDefaultExtractionScript() {
+  std::string script = R"###(
+    // Check if the str contains 'boarding pass'.
+    function containBoardingPass(str) {
+        return str.toLowerCase().replace(/\s+/g, '').includes('boardingpass');
+    }
+
+    // Scale up the base64 encoded image to be detectable by BarcodeDetector.
+    function scaleUpIfNeeded(img) {
+        if (img.src.startsWith('data:image/')
+            && (img.width < 500 || image.height < 500)) {
+            let canvas = new OffscreenCanvas(500, 500);
+            let ctx = canvas.getContext('2d');
+            ctx.ImageSmoothingEnabled = false;
+            ctx.drawImage(img, 0, 0, 500, 500);
+            return canvas;
+        }
+        return img;
+    }
+
+    // Check if the rawValue is a valid BCBP string.
+    function isValidBoardingPass(rawValue) {
+        return rawValue.length > 60 && /^M[1-9]/.test(rawValue);
+    }
+
+    // Detect and decode boarding passes on current web page.
+    async function detectBoardingPass() {
+        var results = [];
+        // Check if BarcodeDetector is supported by current browser.
+        if (!'BarcodeDetector' in window) {
+            return [];
+        }
+
+        // Check if current URL or page title contains 'boarding pass'.
+        if (!containBoardingPass(window.location.href)
+            && !containBoardingPass(document.title)) {
+            return [];
+        }
+
+        var detector;
+        try {
+            detector = new BarcodeDetector();
+        } catch (error) {
+            return [];
+        }
+        for (let i = 0; i < document.images.length; ++i) {
+            try {
+                const barcodes = await detector.detect(
+                    scaleUpIfNeeded(document.images[i]));
+                for (const barcode of barcodes) {
+                    // Check if it's a valid boarding pass
+                    if (barcode.rawValue
+                        && isValidBoardingPass(barcode.rawValue)) {
+                        results.push(barcode.rawValue);
+                    }
+                }
+            } catch (error) {
+            }
+        }
+        return results;
+    }
+
+    detected_results_promise = detectBoardingPass();
+  )###";
+  return script;
+}
+
+std::vector<std::string> ConvertResultsToStrings(base::Value& value) {
+  std::vector<std::string> results;
+
+  if (!value.is_list()) {
+    return results;
+  }
+
+  for (const auto& item : value.GetList()) {
+    if (!item.is_string()) {
+      continue;
+    }
+    results.push_back(item.GetString());
+  }
+  return results;
+}
+}  // namespace
 
 BoardingPassExtractor::BoardingPassExtractor(
     content::RenderFrame* render_frame,
@@ -35,7 +124,39 @@ void BoardingPassExtractor::OnDestruct() {
 
 void BoardingPassExtractor::ExtractBoardingPass(
     ExtractBoardingPassCallback callback) {
-  // TODO(crbug/1502408): Implement boarding pass extractor in render process
+  ExtractBoardingPassWithScript(GetDefaultExtractionScript(),
+                                std::move(callback));
+}
+
+void BoardingPassExtractor::ExtractBoardingPassWithScript(
+    const std::string& script,
+    ExtractBoardingPassCallback callback) {
+  blink::WebLocalFrame* main_frame = render_frame()->GetWebFrame();
+  v8::HandleScope handle_scope(v8::Isolate::GetCurrent());
+  blink::WebScriptSource source =
+      blink::WebScriptSource(blink::WebString::FromUTF8(script));
+
+  main_frame->RequestExecuteScript(
+      ISOLATED_WORLD_ID_CHROME_INTERNAL, base::make_span(&source, 1u),
+      blink::mojom::UserActivationOption::kDoNotActivate,
+      blink::mojom::EvaluationTiming::kAsynchronous,
+      blink::mojom::LoadEventBlockingOption::kDoNotBlock,
+      base::BindOnce(&BoardingPassExtractor::OnBoardingPassExtracted,
+                     base::Unretained(this), std::move(callback)),
+      blink::BackForwardCacheAware::kAllow,
+      blink::mojom::WantResultOption::kWantResult,
+      blink::mojom::PromiseResultOption::kAwait);
+}
+
+void BoardingPassExtractor::OnBoardingPassExtracted(
+    ExtractBoardingPassCallback callback,
+    absl::optional<base::Value> results,
+    base::TimeTicks start_time) {
+  if (results.has_value()) {
+    std::move(callback).Run(ConvertResultsToStrings(*results));
+  } else {
+    std::move(callback).Run(std::vector<std::string>());
+  }
 }
 
 }  // namespace wallet

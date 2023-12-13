@@ -5,6 +5,7 @@
 #ifndef CHROME_RENDERER_WALLET_BOARDING_PASS_EXTRACTOR_H_
 #define CHROME_RENDERER_WALLET_BOARDING_PASS_EXTRACTOR_H_
 
+#include "base/values.h"
 #include "chrome/common/wallet/boarding_pass_extractor.mojom.h"
 #include "content/public/renderer/render_frame_observer.h"
 #include "mojo/public/cpp/bindings/receiver.h"
@@ -24,12 +25,19 @@ class BoardingPassExtractor : public content::RenderFrameObserver,
   // mojom::BoardingPassExtractor
   void ExtractBoardingPass(ExtractBoardingPassCallback callback) override;
 
+  void ExtractBoardingPassWithScript(const std::string& script,
+                                     ExtractBoardingPassCallback callback);
+
   // content::RenderFrameObserver
   void OnDestruct() override;
 
  private:
   void BindReceiver(
       mojo::PendingReceiver<mojom::BoardingPassExtractor> receiver);
+
+  void OnBoardingPassExtracted(ExtractBoardingPassCallback callback,
+                               absl::optional<base::Value> results,
+                               base::TimeTicks start_time);
 
   mojo::Receiver<mojom::BoardingPassExtractor> receiver_{this};
 };
