@@ -138,10 +138,16 @@ void BrowserFrame::InitBrowserFrame() {
   Browser* browser = browser_view_->browser();
   if (browser->is_type_picture_in_picture()) {
     params.z_order = ui::ZOrderLevel::kFloatingWindow;
-    // This doesn't change anything visually, but has the side-effect of keeping
-    // the pip window in the tab order.
-    params.remove_standard_frame = true;
     params.visible_on_all_workspaces = true;
+#if !BUILDFLAG(IS_WIN)
+    // This has the side-effect of keeping the pip window in the tab order.
+    //
+    // On all platforms, except for Windows, this doesn't change anything
+    // visually. If this is set for the Windows platform, the UI will be
+    // affected. Specifically, the title bar will not render correctly, see
+    // https://crbug.com/1456231 for more details.
+    params.remove_standard_frame = true;
+#endif  // !BUILDFLAG(IS_WIN)
   }
 
 #if BUILDFLAG(IS_OZONE)
