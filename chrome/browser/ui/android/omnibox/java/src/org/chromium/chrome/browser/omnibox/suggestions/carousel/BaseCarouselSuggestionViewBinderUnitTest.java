@@ -142,13 +142,6 @@ public class BaseCarouselSuggestionViewBinderUnitTest {
 
     @Test
     @EnableFeatures(ChromeFeatureList.OMNIBOX_MODERNIZE_VISUAL_UPDATE)
-    public void customVisualAlignment_modernUi_smaller() {
-        OmniboxFeatures.MODERNIZE_VISUAL_UPDATE_SMALLER_MARGINS.setForTesting(true);
-        runCustomVisualAlignmentTest();
-    }
-
-    @Test
-    @EnableFeatures(ChromeFeatureList.OMNIBOX_MODERNIZE_VISUAL_UPDATE)
     public void customVisualAlignment_modernUi_smallest() {
         OmniboxFeatures.MODERNIZE_VISUAL_UPDATE_SMALLEST_MARGINS.setForTesting(true);
         runCustomVisualAlignmentTest();

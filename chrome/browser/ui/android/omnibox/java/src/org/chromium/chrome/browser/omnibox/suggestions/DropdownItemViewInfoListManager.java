@@ -177,8 +177,7 @@ class DropdownItemViewInfoListManager {
             previousItemWasHeader =
                     item.processor.getViewTypeId() == OmniboxSuggestionUiType.HEADER
                             && shouldShowModernizeVisualUpdate
-                            && (useSmallestMargins
-                                    || OmniboxFeatures.shouldShowSmallerMargins(mContext));
+                            && useSmallestMargins;
 
             suggestionsList.add(item);
         }
@@ -207,26 +206,17 @@ class DropdownItemViewInfoListManager {
      */
     private @Px int getSuggestionListTopMargin(@OmniboxSuggestionUiType int firstSuggestionUiType) {
         if (firstSuggestionUiType == OmniboxSuggestionUiType.EDIT_URL_SUGGESTION) {
-            return OmniboxFeatures.shouldShowSmallerMargins(mContext)
-                    ? mListActiveOmniboxTopSmallMargin
-                    : 0;
+            return 0;
         }
 
         if (OmniboxFeatures.shouldShowActiveColorOnOmnibox()) {
             if (OmniboxFeatures.shouldShowSmallestMargins(mContext)) {
                 return 0;
-            } else if (OmniboxFeatures.shouldShowSmallBottomMargin()
-                    || OmniboxFeatures.shouldShowSmallerMargins(mContext)) {
-                return mListActiveOmniboxTopSmallMargin;
             } else {
                 return mListActiveOmniboxTopBigMargin;
             }
         } else {
-            if (OmniboxFeatures.shouldShowSmallBottomMargin()) {
-                return mListNonActiveOmniboxTopSmallMargin;
-            } else {
-                return mListNonActiveOmniboxTopBigMargin;
-            }
+            return mListNonActiveOmniboxTopBigMargin;
         }
     }
 }

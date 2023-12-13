@@ -383,10 +383,7 @@ public class LocationBarLayout extends FrameLayout {
                 && DeviceFormFactor.isNonMultiDisplayContextOnTablet(getContext())) {
             return 0;
         }
-        int focusedPaddingDimen =
-                modernizeVisualUpdate && OmniboxFeatures.shouldShowSmallBottomMargin()
-                        ? R.dimen.location_bar_icon_end_padding_focused_smaller
-                        : R.dimen.location_bar_icon_end_padding_focused;
+        int focusedPaddingDimen = R.dimen.location_bar_icon_end_padding_focused;
         if (modernizeVisualUpdate && mLocationBarDataProvider.isIncognito()) {
             focusedPaddingDimen = R.dimen.location_bar_icon_end_padding_focused_incognito;
         }

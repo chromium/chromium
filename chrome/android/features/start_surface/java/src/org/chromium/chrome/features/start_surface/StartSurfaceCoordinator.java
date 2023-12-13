@@ -1207,7 +1207,6 @@ public class StartSurfaceCoordinator implements StartSurface {
                             + getPixelSize(R.dimen.status_view_highlight_size)
                             + getPixelSize(
                                     OmniboxFeatures.shouldShowModernizeVisualUpdate(mActivity)
-                                                    && OmniboxFeatures.shouldShowSmallBottomMargin()
                                             ? R.dimen.location_bar_icon_end_padding_focused_smaller
                                             : R.dimen.location_bar_icon_end_padding_focused)
                             - getPixelSize(R.dimen.fake_search_box_start_padding);
