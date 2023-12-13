@@ -15203,6 +15203,22 @@
             ]
         }
     ],
+    "RestartToGainAccessToKeychain": [
+        {
+            "platforms": [
+                "linux",
+                "mac"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "RestartToGainAccessToKeychain"
+                    ]
+                }
+            ]
+        }
+    ],
     "RestoreSyncedPlaceholderTabs": [
         {
             "platforms": [
