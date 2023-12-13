@@ -94,6 +94,7 @@
 #if BUILDFLAG(ENABLE_VULKAN)
 #include "components/viz/common/gpu/vulkan_context_provider.h"
 #include "gpu/vulkan/vulkan_device_queue.h"
+#include "gpu/vulkan/vulkan_util.h"
 #endif  // BUILDFLAG(ENABLE_VULKAN)
 
 #if BUILDFLAG(IS_WIN)
@@ -1304,6 +1305,24 @@ Capabilities RasterDecoderImpl::GetCapabilities() {
     caps.supports_yuv_rgb_conversion = true;
     caps.supports_yuv_readback = true;
   }
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  if (shared_context_state_->GrContextIsGL()) {
+    PopulateDRMCapabilities(&caps, feature_info());
+  }
+#if BUILDFLAG(ENABLE_VULKAN)
+  else if (shared_context_state_->GrContextIsVulkan()) {
+    auto* device_queue =
+        shared_context_state_->vk_context_provider()->GetDeviceQueue();
+    caps.drm_device_id = device_queue->drm_device_id();
+    gpu::PopulateVkDrmFormatsAndModifiers(device_queue,
+                                          caps.drm_formats_and_modifiers);
+  }
+#endif  // BUILDFLAG(ENABLE_VULKAN)
+  else {
+    NOTREACHED();
+  }
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
   return caps;
 }
