@@ -122,8 +122,14 @@ void FakeSkiaOutputSurface::MakePromiseSkImage(
     const gfx::ColorSpace& yuv_color_space) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
 
-  if (image_context->has_image())
+  if (image_context->has_image()) {
     return;
+  }
+
+  if (image_context->format().is_multi_plane()) {
+    NOTIMPLEMENTED();
+    return;
+  }
 
   GrBackendTexture backend_texture;
   if (!GetGrBackendTexture(*image_context, &backend_texture)) {
