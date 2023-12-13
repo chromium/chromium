@@ -20,21 +20,15 @@ bool ConvertTrustTokenToMojomAndCheckPermissions(
     const ExecutionContext* execution_context,
     ExceptionState* exception_state,
     network::mojom::blink::TrustTokenParams* out) {
-  DCHECK(in.hasOperation());  // field is required in IDL
+  // The current implementation always has these fields; the implementation
+  // always initializes them, and the hasFoo functions always return true. These
+  // DCHECKs serve as canaries for implementation changes.
+  DCHECK(in.hasOperation());
+  DCHECK(in.hasVersion());
 
-  // get token version
-  if (in.hasVersion()) {
-    // only version 1 is supported
-    if (in.version().AsEnum() == VersionType::k1) {
-      out->version =
-          network::mojom::blink::TrustTokenMajorVersion::kPrivateStateTokenV1;
-    } else {
-      exception_state->ThrowTypeError("privateToken: unknown token version.");
-      return false;
-    }
-  } else {
-    exception_state->ThrowTypeError(
-        "trustToken: token version is not specified.");
+  // only version 1 is supported
+  if (in.version().AsEnum() != VersionType::k1) {
+    exception_state->ThrowRangeError("privateToken: unknown token version.");
     return false;
   }
 

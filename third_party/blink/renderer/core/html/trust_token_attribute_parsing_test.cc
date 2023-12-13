@@ -12,14 +12,12 @@
 #include "third_party/blink/renderer/platform/weborigin/kurl.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 
-namespace blink {
-namespace internal {
+namespace blink::internal {
 namespace {
 
 network::mojom::blink::TrustTokenParamsPtr NetworkParamsToBlinkParams(
     network::mojom::TrustTokenParamsPtr params) {
   auto ret = network::mojom::blink::TrustTokenParams::New();
-  ret->version = params->version;
   ret->operation = params->operation;
   ret->refresh_policy = params->refresh_policy;
   for (const url::Origin& issuer : params->issuers) {
@@ -73,7 +71,6 @@ TEST_P(TrustTokenAttributeParsingSuccess, Roundtrip) {
   // well with the "issuers" field's members' type of
   // scoped_refptr<blink::SecurityOrigin>: in particular, the method does an
   // address-to-address comparison of the pointers.
-  EXPECT_EQ(result->version, expectation->version);
   EXPECT_EQ(result->operation, expectation->operation);
   EXPECT_EQ(result->refresh_policy, expectation->refresh_policy);
 
@@ -246,5 +243,4 @@ TEST(TrustTokenAttributeParsing, NonHttpNonHttpsIssuer) {
   ASSERT_FALSE(TrustTokenParamsFromJson(std::move(json)));
 }
 
-}  // namespace internal
-}  // namespace blink
+}  // namespace blink::internal

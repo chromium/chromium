@@ -6,6 +6,7 @@
 #define THIRD_PARTY_BLINK_RENDERER_CORE_FETCH_TRUST_TOKEN_TO_MOJOM_H_
 
 #include "services/network/public/mojom/trust_tokens.mojom-blink.h"
+#include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 
 namespace blink {
@@ -22,7 +23,7 @@ class ExecutionContext;
 // - remaining elements partitioned into groups of parameters used for specific
 // operations.
 //
-// The method sets |type|, |version|, |operation| and the fields corresponding
+// The method sets |type|, |operation| and the fields corresponding
 // to the operation specified by |operation|, namely
 // - for issuance, no additional fields;
 // - for redemption, |refresh_policy|;
@@ -33,7 +34,9 @@ class ExecutionContext;
 // - for signing, |issuer| must be provided and must be a valid HTTP(S) URL.
 // If this validation fails, throws a TypeError against |exception_state| and
 // returns false.
-bool ConvertTrustTokenToMojomAndCheckPermissions(
+//
+// Exported for unit testing.
+CORE_EXPORT bool ConvertTrustTokenToMojomAndCheckPermissions(
     const PrivateToken& in,
     const ExecutionContext* execution_context,
     ExceptionState* exception_state,
