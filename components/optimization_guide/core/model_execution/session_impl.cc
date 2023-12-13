@@ -283,11 +283,10 @@ void SessionImpl::OnResponse(const std::string& response) {
         base::TimeTicks::Now() - on_device_state_->start);
   }
   on_device_state_->current_response += response;
-  SendResponse(/*is_complete=*/false);
+  SendResponse(ResponseType::kPartial);
 }
 
 void SessionImpl::OnComplete(on_device_model::mojom::ResponseStatus status) {
-  on_device_state_->histogram_logger.reset();
   // TODO(b/302395507): Handle a retracted response.
   base::UmaHistogramMediumTimes(
       base::StrCat(
@@ -297,7 +296,9 @@ void SessionImpl::OnComplete(on_device_model::mojom::ResponseStatus status) {
   if (controller_) {
     controller_->access_controller(/*pass_key=*/{})->OnResponseCompleted();
   }
-  SendResponse(/*is_complete=*/true);
+  SendResponse(status == on_device_model::mojom::ResponseStatus::kOk
+                   ? ResponseType::kComplete
+                   : ResponseType::kCompleteUnsafeOutput);
   on_device_state_->ResetRequestState();
 }
 
@@ -345,9 +346,10 @@ void SessionImpl::CancelPendingResponse(ExecuteModelResult result,
   }
 }
 
-void SessionImpl::SendResponse(bool is_complete) {
+void SessionImpl::SendResponse(ResponseType response_type) {
   on_device_state_->timer_for_first_response.Stop();
   if (!on_device_state_->callback) {
+    on_device_state_->histogram_logger.get();
     return;
   }
 
@@ -366,14 +368,22 @@ void SessionImpl::SendResponse(bool is_complete) {
   }
 
   std::unique_ptr<ModelQualityLogEntry> log_entry;
-  if (is_complete && on_device_state_->log_ai_data_request) {
-    SetExecutionResponse(feature_, *(on_device_state_->log_ai_data_request),
-                         *output);
-    // Create corresponding log entry for `log_ai_data_request` to pass it with
-    // the callback.
-    log_entry = std::make_unique<ModelQualityLogEntry>(
-        std::move(on_device_state_->log_ai_data_request));
-    on_device_state_->log_ai_data_request.reset();
+  const bool is_complete = response_type != ResponseType::kPartial;
+  if (is_complete) {
+    if (response_type == ResponseType::kCompleteUnsafeOutput &&
+        on_device_state_->histogram_logger) {
+      on_device_state_->histogram_logger->set_result(
+          ExecuteModelResult::kUsedOnDeviceOutputUnsafe);
+    }
+    if (on_device_state_->log_ai_data_request) {
+      SetExecutionResponse(feature_, *(on_device_state_->log_ai_data_request),
+                           *output);
+      // Create corresponding log entry for `log_ai_data_request` to pass it
+      // with the callback.
+      log_entry = std::make_unique<ModelQualityLogEntry>(
+          std::move(on_device_state_->log_ai_data_request));
+      on_device_state_->log_ai_data_request.reset();
+    }
   }
 
   on_device_state_->callback.Run(
