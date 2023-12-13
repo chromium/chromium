@@ -11,7 +11,6 @@ import {TestBrowserProxy} from 'chrome://webui-test/test_browser_proxy.js';
  */
 export const HOST_DEVICE = 'Pixel XL';
 
-
 /**
  * Builds fake pageContentData for the specified mode. If it is a mode
  * corresponding to a set host, it will set the hostDeviceName to the provided

@@ -694,7 +694,16 @@ TEST_F(
      ],
    },
  ],
- ['MultidevicePage', 'multidevice_page/multidevice_page_test.js'],
+ [
+   'MultidevicePage',
+   'multidevice_page/multidevice_page_test.js',
+   {disabled: ['ash::features::kOsSettingsRevampWayfinding']},
+ ],
+ [
+   'MultidevicePageRevamp',
+   'multidevice_page/multidevice_page_test.js',
+   {enabled: ['ash::features::kOsSettingsRevampWayfinding']},
+ ],
  [
    'MultidevicePageMultideviceFeatureItem',
    'multidevice_page/multidevice_feature_item_test.js'

@@ -263,9 +263,7 @@ export class SettingsMultidevicePageElement extends
   }
 
   private getLabelText_(): string {
-    if (this.isRevampWayfindingEnabled_ &&
-        this.pageContentData.mode ===
-            MultiDeviceSettingsMode.HOST_SET_VERIFIED) {
+    if (this.isRevampWayfindingEnabled_) {
       return this.i18n('multideviceSetupItemHeading');
     }
 
