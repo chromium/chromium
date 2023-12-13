@@ -471,6 +471,22 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="LinkPreview.Experimental.ZoomUsage"
+    enum="LinkPreviewZoomUsage" expires_after="2024-03-08">
+  <owner>kenoss@chromium.org</owner>
+  <owner>toyoshim@chromium.org</owner>
+  <owner>chrome-prerendering@google.com</owner>
+  <summary>
+    Records whether zoom was used for link preview.
+
+    It is recorded when a preview window is (shown and) closed, regardless
+    preview is activated or not.
+
+    It will be used to determine we should implement persistency for zoom levels
+    for preview.
+  </summary>
+</histogram>
+
 <histogram name="Navigation.AnonymousIframeIsSandboxed" enum="Boolean"
     expires_after="2023-10-01">
   <owner>arthursonzogni@chromium.org</owner>

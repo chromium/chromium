@@ -88,6 +88,10 @@ class CONTENT_EXPORT HostZoomMapImpl : public HostZoomMap {
   void SetSystemFontScaleForTesting(float scale);
 #endif
 
+  double GetZoomLevelForPreviewAndHost(const std::string& host) override;
+  void SetZoomLevelForPreviewAndHost(const std::string& host,
+                                     double level) override;
+
  private:
   struct ZoomLevel {
     double level;
@@ -128,6 +132,8 @@ class CONTENT_EXPORT HostZoomMapImpl : public HostZoomMap {
   double default_zoom_level_;
 
   TemporaryZoomLevels temporary_zoom_levels_;
+
+  HostZoomLevels host_zoom_levels_for_preview_;
 
   raw_ptr<base::Clock> clock_;
 };

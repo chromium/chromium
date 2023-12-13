@@ -1896,6 +1896,8 @@ static_library("browser") {
       "preloading/preview/preview_manager.h",
       "preloading/preview/preview_tab.cc",
       "preloading/preview/preview_tab.h",
+      "preloading/preview/preview_zoom_controller.cc",
+      "preloading/preview/preview_zoom_controller.h",
       "privacy_sandbox/tracking_protection_notice_factory.cc",
       "privacy_sandbox/tracking_protection_notice_factory.h",
       "privacy_sandbox/tracking_protection_notice_service.cc",
