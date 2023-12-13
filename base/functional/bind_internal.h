@@ -972,34 +972,6 @@ struct Invoker<StorageType, R(UnboundArgs...)> {
   }
 };
 
-// Extracts necessary type info from Functor and BoundArgs.
-template <typename Functor, typename... BoundArgs>
-struct BindTypeHelper {
-  static constexpr size_t num_bounds = sizeof...(BoundArgs);
-  using FunctorTraits = MakeFunctorTraits<Functor>;
-
-  // Example:
-  //   When Functor is `double (Foo::*)(int, const std::string&)`, and BoundArgs
-  //   is a template pack of `Foo*` and `int16_t`:
-  //    - RunType is `double(Foo*, int, const std::string&)`,
-  //    - ReturnType is `double`,
-  //    - RunParamsList is `TypeList<Foo*, int, const std::string&>`,
-  //    - BoundParamsList is `TypeList<Foo*, int>`,
-  //    - UnboundParamsList is `TypeList<const std::string&>`,
-  //    - BoundArgsList is `TypeList<Foo*, int16_t>`,
-  //    - UnboundRunType is `double(const std::string&)`.
-  using RunType = typename FunctorTraits::RunType;
-  using ReturnType = ExtractReturnType<RunType>;
-
-  using RunParamsList = ExtractArgs<RunType>;
-  using BoundParamsList = TakeTypeListItem<num_bounds, RunParamsList>;
-  using UnboundParamsList = DropTypeListItem<num_bounds, RunParamsList>;
-
-  using BoundArgsList = TypeList<BoundArgs...>;
-
-  using UnboundRunType = MakeFunctionType<ReturnType, UnboundParamsList>;
-};
-
 template <typename Functor>
   requires(FunctorTraits<Functor>::is_nullable)
 constexpr bool IsNull(const Functor& functor) {
@@ -1734,28 +1706,77 @@ struct BindHelper {
  public:
   template <typename Functor, typename... Args>
   static auto Bind(Functor&& functor, Args&&... args) {
-    // This block checks if each of the |args| matches to the corresponding
-    // param of the target function. This check does not affect the behavior of
-    // Bind, but its error message should be more readable.
+    // There are a lot of variables and type aliases here. An example will be
+    // illustrative. Assume we call:
+    // ```
+    //   struct S {
+    //     double f(int, const std::string&);
+    //   } s;
+    //   int16_t i;
+    //   BindOnce(&S::f, Unretained(&s), i);
+    // ```
+    // This means our template params are:
+    // ```
+    //   template <typename> class CallbackT = OnceCallback
+    //   typename Functor = double (S::*)(int, const std::string&)
+    //   typename... Args =
+    //       UnretainedWrapper<S, unretained_traits::MayNotDangle>, int16_t
+    // ```
+    // And the implementation below is effectively:
+    // ```
+    //   static constexpr bool kIsOnce = true;
+    //   using FunctorTraits = struct {
+    //     using RunType = double(S*, int, const std::string&);
+    //     static constexpr bool is_method = true;
+    //     static constexpr bool is_nullable = true;
+    //     static constexpr bool is_callback = false;
+    //     static constexpr bool is_stateless = true;
+    //     ...
+    //   };
+    //   using UnwrappedArgsList = struct {
+    //     using Type = TypeList<S*, int16_t>;
+    //     static constexpr bool value = true;
+    //   };
+    //   using BoundArgsList = TypeList<S*, int16_t>;
+    //   using RunParamsList = TypeList<S*, int, const std::string&>;
+    //   using BoundParamsList = TypeList<S*, int>;
+    //   using BindStateType = struct {
+    //     using Type =
+    //         BindState<double (S::*)(int, const std::string&),
+    //                   UnretainedWrapper<S, unretained_traits::MayNotDangle>,
+    //                   int16_t>;
+    //     static constexpr bool value = true;
+    //   };
+    //   if constexpr (true) {
+    //     using UnboundRunType = double(const std::string&);
+    //     using CallbackType = OnceCallback<double(const std::string&)>;
+    //     ...
+    // ```
     static constexpr bool kIsOnce = IsOnceCallback<CallbackT<void()>>::value;
-    using Helper = BindTypeHelper<Functor, Args...>;
-    using FunctorTraits = typename Helper::FunctorTraits;
-    using BoundArgsList = typename Helper::BoundArgsList;
+    using FunctorTraits = MakeFunctorTraits<Functor>;
     using UnwrappedArgsList =
         MakeUnwrappedTypeList<kIsOnce, FunctorTraits::is_method, Args&&...>;
-    using BoundParamsList = typename Helper::BoundParamsList;
+    using BoundArgsList = TypeList<Args...>;
+    using RunParamsList = ExtractArgs<typename FunctorTraits::RunType>;
+    using BoundParamsList = TakeTypeListItem<sizeof...(Args), RunParamsList>;
     using BindStateType = MakeBindStateType<Functor, Args...>;
-    using UnboundRunType = Helper::UnboundRunType;
-    using CallbackType = CallbackT<UnboundRunType>;
+    // This conditional checks if each of the `args` matches to the
+    // corresponding param of the target function. This check does not affect
+    // the behavior of `Bind()`, but its error message should be more readable.
     if constexpr (std::conjunction_v<
                       NotFunctionRef<Functor>, IsStateless<Functor>,
                       UnwrappedArgsList,
                       ParamsCanBeBound<
                           FunctorTraits::is_method,
-                          std::make_index_sequence<Helper::num_bounds>,
+                          std::make_index_sequence<sizeof...(Args)>,
                           BoundArgsList, typename UnwrappedArgsList::Type,
                           BoundParamsList>,
                       BindStateType>) {
+      using UnboundRunType =
+          MakeFunctionType<ExtractReturnType<typename FunctorTraits::RunType>,
+                           DropTypeListItem<sizeof...(Args), RunParamsList>>;
+      using CallbackType = CallbackT<UnboundRunType>;
+
       // Store the invoke func into PolymorphicInvoke before casting it to
       // InvokeFuncStorage, so that we can ensure its type matches to
       // PolymorphicInvoke, to which CallbackType will cast back.

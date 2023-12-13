@@ -5,6 +5,7 @@
 #ifndef BASE_FUNCTIONAL_FUNCTION_REF_H_
 #define BASE_FUNCTIONAL_FUNCTION_REF_H_
 
+#include <concepts>
 #include <type_traits>
 #include <utility>
 
@@ -61,20 +62,14 @@ class FunctionRef;
 //   }([] { return 42; });
 template <typename R, typename... Args>
 class FunctionRef<R(Args...)> {
- private:
-  template <typename Functor,
-            typename FunctorReturnType =
-                typename internal::BindTypeHelper<Functor>::ReturnType,
-            typename FunctorArgsAsTypeList =
-                typename internal::BindTypeHelper<Functor>::RunParamsList>
-  using EnableIfCompatible = std::enable_if_t<
-      std::is_convertible_v<FunctorReturnType, R> &&
-      std::is_same_v<FunctorArgsAsTypeList, internal::TypeList<Args...>>>;
-
  public:
   // `ABSL_ATTRIBUTE_LIFETIME_BOUND` is important since `FunctionRef` retains
   // only a reference to `functor`, `functor` must outlive `this`.
-  template <typename Functor, typename = EnableIfCompatible<Functor>>
+  template <typename Functor,
+            typename RunType = internal::MakeFunctorTraits<Functor>::RunType>
+    requires std::convertible_to<internal::ExtractReturnType<RunType>, R> &&
+             std::same_as<internal::ExtractArgs<RunType>,
+                          internal::TypeList<Args...>>
   // NOLINTNEXTLINE(google-explicit-constructor)
   FunctionRef(const Functor& functor ABSL_ATTRIBUTE_LIFETIME_BOUND)
       : wrapped_func_ref_(functor) {}
