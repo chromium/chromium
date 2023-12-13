@@ -6,23 +6,32 @@
 
 import 'chrome://os-settings/os_settings.js';
 
-import {CrSettingsPrefs, CrToolbarSearchFieldElement, OsSettingsHatsBrowserProxyImpl, OsSettingsSearchBoxElement, OsSettingsUiElement, OsToolbarElement} from 'chrome://os-settings/os_settings.js';
+import {AccountManagerBrowserProxyImpl} from 'chrome://os-settings/lazy_load.js';
+import {CrSettingsPrefs, CrToolbarSearchFieldElement, OsSettingsHatsBrowserProxyImpl, OsSettingsSearchBoxElement, OsSettingsUiElement} from 'chrome://os-settings/os_settings.js';
 import {assert} from 'chrome://resources/js/assert.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {eventToPromise} from 'chrome://webui-test/test_util.js';
 
+import {TestAccountManagerBrowserProxy} from '../os_people_page/test_account_manager_browser_proxy.js';
+
 import {TestOsSettingsHatsBrowserProxy} from './test_os_settings_hats_browser_proxy.js';
 
-suite('OSSettingsUiHats', function() {
-  let browserProxy: TestOsSettingsHatsBrowserProxy|null = null;
+suite('<os-settings-ui> HaTS', () => {
+  let browserProxy: TestOsSettingsHatsBrowserProxy;
   let field: CrToolbarSearchFieldElement|null;
   let searchBox: OsSettingsSearchBoxElement|null;
-  let toolbar: OsToolbarElement|null;
   let ui: OsSettingsUiElement;
+  let testAccountManagerBrowserProxy: TestAccountManagerBrowserProxy;
 
-  suiteSetup(async function() {
+  suiteSetup(async () => {
     browserProxy = new TestOsSettingsHatsBrowserProxy();
     OsSettingsHatsBrowserProxyImpl.setInstanceForTesting(browserProxy);
+
+    // Setup fake accounts. There must be a device account available for the
+    // Accounts menu item in <os-settings-menu>.
+    testAccountManagerBrowserProxy = new TestAccountManagerBrowserProxy();
+    AccountManagerBrowserProxyImpl.setInstanceForTesting(
+        testAccountManagerBrowserProxy);
 
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
     ui = document.createElement('os-settings-ui');
@@ -31,11 +40,19 @@ suite('OSSettingsUiHats', function() {
     flush();
   });
 
+  suiteTeardown(() => {
+    ui.remove();
+  });
+
+  teardown(() => {
+    browserProxy.reset();
+    testAccountManagerBrowserProxy.reset();
+  });
+
   test(
       'sendSettingsHats is sent when user shifts focus off the Settings page',
       async () => {
         window.dispatchEvent(new Event('blur'));
-        assert(browserProxy);
         await browserProxy.whenCalled('sendSettingsHats');
       });
 
@@ -60,7 +77,7 @@ suite('OSSettingsUiHats', function() {
     }
 
     function retrieveSearchBox(): void {
-      toolbar = ui.shadowRoot!.querySelector('os-toolbar');
+      const toolbar = ui.shadowRoot!.querySelector('os-toolbar');
       assert(toolbar);
       searchBox = toolbar.shadowRoot!.querySelector('os-settings-search-box');
       assert(searchBox);
@@ -68,7 +85,7 @@ suite('OSSettingsUiHats', function() {
       assert(field);
     }
 
-    teardown(async function() {
+    teardown(async () => {
       await simulateSearch('');
     });
 
@@ -78,7 +95,6 @@ suite('OSSettingsUiHats', function() {
           retrieveSearchBox();
           const searchQuery = 'query 1';
           await simulateSearch(searchQuery);
-          assert(browserProxy);
           await browserProxy.whenCalled('settingsUsedSearch');
         });
   });

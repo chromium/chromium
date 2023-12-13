@@ -1085,7 +1085,6 @@ TEST_F(
    {disabled: ['ash::features::kOsSettingsRevampWayfinding']},
  ],
  ['OsSearchPageSearchSubpage', 'os_search_page/search_subpage_test.js'],
- ['OsSettingsHatsUi', 'os_settings_ui/os_settings_hats_ui_test.js'],
  [
    'OsSettingsMain',
    'os_settings_main/os_settings_main_test.js',
@@ -1115,6 +1114,16 @@ TEST_F(
    'OsSettingsUiAboutPage',
    'os_settings_ui/os_settings_ui_about_page_test.js',
    {disabled: ['ash::features::kOsSettingsRevampWayfinding']},
+ ],
+ [
+   'OsSettingsUiHats',
+   'os_settings_ui/os_settings_ui_hats_test.js',
+   {disabled: ['ash::features::kOsSettingsRevampWayfinding']},
+ ],
+ [
+   'OsSettingsUiHatsRevamp',
+   'os_settings_ui/os_settings_ui_hats_test.js',
+   {enabled: ['ash::features::kOsSettingsRevampWayfinding']},
  ],
  [
    'OsSettingsUiMenu',
