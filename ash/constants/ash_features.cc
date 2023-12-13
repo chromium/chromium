@@ -2793,11 +2793,6 @@ BASE_FEATURE(kVirtualKeyboardRoundCorners,
              "VirtualKeyboardRoundCorners",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// Enable or disable Nacl for virtual keyboard on ChromeOS.
-BASE_FEATURE(kVirtualKeyboardRemoveNacl,
-             "VirtualKeyboardRemoveNacl",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 // Controls whether to allow enabling wake on WiFi features in shill.
 BASE_FEATURE(kWakeOnWifiAllowed,
              "WakeOnWifiAllowed",
