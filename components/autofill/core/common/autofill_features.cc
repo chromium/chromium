@@ -734,12 +734,6 @@ BASE_FEATURE(kAutofillAndroidDisableSuggestionsOnJSFocus,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 #if BUILDFLAG(IS_ANDROID)
-// When enabled, Autofill suggestions are displayed in the keyboard accessory
-// instead of the regular popup.
-BASE_FEATURE(kAutofillKeyboardAccessory,
-             "AutofillKeyboardAccessory_LAUNCHED",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 // Controls whether the touch to fill surface is shown for credit cards on
 // Android.
 BASE_FEATURE(kAutofillTouchToFillForCreditCardsAndroid,

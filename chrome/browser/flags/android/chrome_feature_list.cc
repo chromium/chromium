@@ -82,7 +82,6 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &autofill::features::kAutofillEnableRankingFormulaAddressProfiles,
     &autofill::features::kAutofillEnableRankingFormulaCreditCards,
     &autofill::features::kAutofillEnableManualFallbackForVirtualCards,
-    &autofill::features::kAutofillKeyboardAccessory,
     &autofill::features::kAutofillEnableNewCardArtAndNetworkImages,
     &autofill::features::kAutofillEnableCardArtServerSideStretching,
     &autofill::features::kAutofillEnableSupportForHonorificPrefixes,
