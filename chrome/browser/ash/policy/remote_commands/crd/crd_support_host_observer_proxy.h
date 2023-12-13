@@ -9,6 +9,7 @@
 #include <memory>
 #include <optional>
 #include <string>
+#include <string_view>
 #include <vector>
 
 #include "base/observer_list.h"
@@ -56,7 +57,7 @@ class SupportHostObserverProxy : public remoting::mojom::SupportHostObserver {
   void OnInvalidDomainError() override;
 
   void ReportHostStopped(ExtendedStartCrdSessionResultCode result,
-                         const std::string& error_message);
+                         std::string_view error_message);
 
  private:
   void OnMojomConnectionDropped();

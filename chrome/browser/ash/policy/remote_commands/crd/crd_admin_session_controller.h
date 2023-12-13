@@ -86,7 +86,7 @@ class CrdAdminSessionController : private StartCrdSessionJobDelegate,
   StartCrdSessionJobDelegate& GetDelegate();
 
   void SetOAuthTokenForTesting(std::string_view token);
-  void ClearOAuthTokenForTesting();
+  void FailOAuthTokenFetchForTesting();
 
  private:
   class CrdHostSession;

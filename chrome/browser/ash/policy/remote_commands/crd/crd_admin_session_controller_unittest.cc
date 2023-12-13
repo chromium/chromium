@@ -408,6 +408,11 @@ class CrdAdminSessionControllerTest : public ash::AshTestBase {
   mojo::Remote<SupportHostObserver>& observer_remote() { return observer_; }
 
  private:
+  void SetUp() override {
+    AshTestBase::SetUp();
+    session_controller().SetOAuthTokenForTesting("test-oauth-token");
+  }
+
   void TearDown() override {
     session_controller_.Shutdown();
     AshTestBase::TearDown();
@@ -431,14 +436,13 @@ class CrdAdminSessionControllerTestWithBoolParams
       public testing::WithParamInterface<bool> {};
 
 TEST_F(CrdAdminSessionControllerTest, ShouldPassOAuthTokenToRemotingService) {
-  SessionParameters parameters;
-  parameters.oauth_token = "<the-oauth-token>";
+  session_controller().SetOAuthTokenForTesting("<the-oauth-token>");
 
   SupportSessionParamsPtr actual_parameters;
   EXPECT_CALL(remoting_service(), StartSession)
       .WillOnce(SaveParamAndInvokeCallback(&actual_parameters));
 
-  delegate().StartCrdHostAndGetCode(parameters, success_callback(),
+  delegate().StartCrdHostAndGetCode(SessionParameters{}, success_callback(),
                                     error_callback(),
                                     session_finished_callback());
 
@@ -603,6 +607,32 @@ TEST_F(CrdAdminSessionControllerTest, ShouldReturnAccessCode) {
   Response response = WaitForResponse();
   ASSERT_TRUE(response.HasAccessCode());
   EXPECT_EQ("the-access-code", response.access_code());
+}
+
+TEST_F(CrdAdminSessionControllerTest,
+       ShouldStartSessionIfAccessCodeFetchSucceeds) {
+  session_controller().SetOAuthTokenForTesting("test-oauth-token");
+
+  StartCrdHostAndBindObserver();
+
+  EXPECT_TRUE(delegate().HasActiveSession());
+}
+
+TEST_F(CrdAdminSessionControllerTest, ShouldReportErrorIfAccessCodeFetchFails) {
+  session_controller().FailOAuthTokenFetchForTesting();
+
+  EXPECT_NO_CALLS(remoting_service(), StartSession);
+
+  delegate().StartCrdHostAndGetCode(SessionParameters{}, success_callback(),
+                                    error_callback(),
+                                    session_finished_callback());
+
+  Response response = WaitForResponse();
+  ASSERT_TRUE(response.HasError());
+  EXPECT_EQ(ExtendedStartCrdSessionResultCode::kFailureNoOauthToken,
+            response.result_code());
+
+  EXPECT_FALSE(delegate().HasActiveSession());
 }
 
 TEST_F(CrdAdminSessionControllerTest, ShouldReportErrorWhenClientDisconnects) {
@@ -984,7 +1014,6 @@ class CrdAdminSessionControllerReconnectTest
       SessionId id = kValidSessionId) {
     EXPECT_CALL(remoting_service(), GetReconnectableSessionId)
         .WillOnce(ReplyWithSessionId(id));
-    controller.SetOAuthTokenForTesting("test-oauth-token");
     EXPECT_CALL(remoting_service(), ReconnectToSession)
         .WillOnce([&](remoting::SessionId, const std::string&,
                       StartSupportSessionCallback callback) {
@@ -1035,7 +1064,7 @@ TEST_F(CrdAdminSessionControllerReconnectTest,
        ShouldHandleOauthTokenFailureWhileReconnecting) {
   EnableFeature(kEnableCrdAdminRemoteAccessV2);
 
-  session_controller().ClearOAuthTokenForTesting();
+  session_controller().FailOAuthTokenFetchForTesting();
 
   // First we should query for the reconnectable session id.
   EXPECT_CALL(remoting_service(), GetReconnectableSessionId)
@@ -1148,7 +1177,7 @@ TEST_F(CrdAdminSessionControllerReconnectTest,
   EXPECT_CALL(remoting_service(), GetReconnectableSessionId)
       .WillOnce(ReplyWithSessionId(kValidSessionId));
 
-  session_controller().ClearOAuthTokenForTesting();
+  session_controller().FailOAuthTokenFetchForTesting();
 
   Init(session_controller());
   // The session is destroyed asynchronously.

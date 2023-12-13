@@ -20,7 +20,9 @@ class FakeStartCrdSessionJobDelegate : public StartCrdSessionJobDelegate {
   ~FakeStartCrdSessionJobDelegate() override;
 
   void SetHasActiveSession(bool value) { has_active_session_ = value; }
-  void MakeAccessCodeFetchFail() { access_code_success_ = false; }
+  void FailWithError(ExtendedStartCrdSessionResultCode error) {
+    error_ = error;
+  }
   void TerminateCrdSession(const base::TimeDelta& session_duration);
 
   // Returns if TerminateSession() was called to terminate the active session.
@@ -41,8 +43,8 @@ class FakeStartCrdSessionJobDelegate : public StartCrdSessionJobDelegate {
 
  private:
   bool has_active_session_ = false;
-  bool access_code_success_ = true;
   bool terminate_session_called_ = false;
+  std::optional<ExtendedStartCrdSessionResultCode> error_;
   std::optional<SessionParameters> received_session_parameters_;
   std::optional<SessionEndCallback> session_finished_callback_;
 };

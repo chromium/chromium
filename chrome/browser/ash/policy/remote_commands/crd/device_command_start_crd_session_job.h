@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_ASH_POLICY_REMOTE_COMMANDS_CRD_DEVICE_COMMAND_START_CRD_SESSION_JOB_H_
 #define CHROME_BROWSER_ASH_POLICY_REMOTE_COMMANDS_CRD_DEVICE_COMMAND_START_CRD_SESSION_JOB_H_
 
-#include <memory>
 #include <optional>
 #include <string>
 #include <string_view>
@@ -20,8 +19,6 @@
 
 namespace policy {
 
-class CrdOAuthTokenFetcher;
-
 // Remote command that would start Chrome Remote Desktop host and return auth
 // code. This command is usable only for devices running Kiosk sessions, for
 // Affiliated Users and for Managed Guest Sessions.
@@ -32,11 +29,8 @@ class DeviceCommandStartCrdSessionJob : public RemoteCommandJob {
   explicit DeviceCommandStartCrdSessionJob(Delegate& delegate);
   // Constructor used in unit tests. By using this constructor we avoid the need
   // for a `DeviceOAuth2TokenService` to exist.
-  // `oauth_token` will be used as the fetched OAuth token (or the fetch will
-  // fail if no value is provided).
   DeviceCommandStartCrdSessionJob(Delegate& delegate,
-                                  std::string_view robot_account_id,
-                                  std::optional<std::string> oauth_token);
+                                  std::string_view robot_account_id);
   ~DeviceCommandStartCrdSessionJob() override;
 
   DeviceCommandStartCrdSessionJob(const DeviceCommandStartCrdSessionJob&) =
@@ -51,12 +45,8 @@ class DeviceCommandStartCrdSessionJob : public RemoteCommandJob {
   void TerminateImpl() override;
 
  private:
-  using OAuthTokenCallback =
-      base::OnceCallback<void(std::optional<std::string>)>;
-
   void CheckManagedNetworkASync(base::OnceClosure on_success);
-  void FetchOAuthTokenASync(OAuthTokenCallback done_callback);
-  void StartCrdHostAndGetCode(std::optional<std::string> oauth_token);
+  void StartCrdHostAndGetCode();
   void FinishWithSuccess(const std::string& access_code);
   // Finishes command with error code and optional message.
   void FinishWithError(ExtendedStartCrdSessionResultCode result_code,
@@ -75,8 +65,6 @@ class DeviceCommandStartCrdSessionJob : public RemoteCommandJob {
   bool ShouldAllowFileTransfer() const;
 
   Delegate::ErrorCallback GetErrorCallback();
-
-  std::unique_ptr<CrdOAuthTokenFetcher> oauth_token_fetcher_;
 
   // The callback that will be called when the access code was successfully
   // obtained or when this command failed.
@@ -98,10 +86,6 @@ class DeviceCommandStartCrdSessionJob : public RemoteCommandJob {
   std::optional<std::string> admin_email_;
 
   // -- End of command parameters --
-
-  // Fake OAuth token that will be used once the next time we need to fetch an
-  // oauth token.
-  std::optional<std::string> oauth_token_for_test_;
 
   // The Delegate is used to interact with chrome services and CRD host.
   const raw_ref<Delegate> delegate_;

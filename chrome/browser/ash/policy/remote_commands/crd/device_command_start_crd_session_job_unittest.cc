@@ -21,8 +21,8 @@
 #include "chrome/browser/ash/app_mode/kiosk_chrome_app_manager.h"
 #include "chrome/browser/ash/app_mode/web_app/web_kiosk_app_manager.h"
 #include "chrome/browser/ash/policy/remote_commands/crd/crd_remote_command_utils.h"
-#include "chrome/browser/ash/policy/remote_commands/fake_cros_network_config.h"
 #include "chrome/browser/ash/policy/remote_commands/crd/fake_start_crd_session_job_delegate.h"
+#include "chrome/browser/ash/policy/remote_commands/fake_cros_network_config.h"
 #include "chrome/browser/ash/policy/remote_commands/user_session_type_test_util.h"
 #include "chrome/browser/ash/settings/device_settings_test_helper.h"
 #include "chrome/browser/prefs/browser_prefs.h"
@@ -60,7 +60,6 @@ constexpr char kResultLastActivityFieldName[] = "lastActivitySec";
 
 constexpr RemoteCommandJob::UniqueIDType kUniqueID = 123456789;
 
-constexpr char kTestOAuthToken[] = "test-oauth-token";
 // Common template used in all UMA histograms for session result logs.
 constexpr char kHistogramResultTemplate[] =
     "Enterprise.DeviceRemoteCommand.Crd.%s.%s.Result";
@@ -268,19 +267,14 @@ class DeviceCommandStartCrdSessionJobTest : public ash::DeviceSettingsTestBase {
     user_activity_detector_->set_last_activity_time_for_test(value);
   }
 
-  void SetOAuthToken(std::string_view value) { oauth_token_ = value; }
-
   void SetRobotAccountUserName(std::string_view user_name) {
     robot_account_id_ = user_name;
   }
 
-  void ClearOAuthToken() { oauth_token_ = std::nullopt; }
-
   FakeStartCrdSessionJobDelegate& delegate() { return delegate_; }
 
   DeviceCommandStartCrdSessionJob CreateJob() {
-    return DeviceCommandStartCrdSessionJob{delegate_, robot_account_id_,
-                                           oauth_token_};
+    return DeviceCommandStartCrdSessionJob{delegate_, robot_account_id_};
   }
 
   Result RunJobAndWaitForResult(const Payload& payload = Payload()) {
@@ -343,7 +337,6 @@ class DeviceCommandStartCrdSessionJobTest : public ash::DeviceSettingsTestBase {
 
   // Parameters passed to the constructor of `DeviceCommandStartCrdSessionJob`
   // when the job is created.
-  std::optional<std::string> oauth_token_ = kTestOAuthToken;
   std::string robot_account_id_ = "robot@account.com";
 
   // Automatically installed as a singleton upon creation.
@@ -394,15 +387,6 @@ Payload DeviceCommandStartCrdSessionJobTest::CreateNotIdlePayload(
       .Set(kResultCodeFieldName,
            static_cast<int>(StartCrdSessionResultCode::FAILURE_NOT_IDLE))
       .Set(kResultLastActivityFieldName, idle_time_in_sec);
-}
-
-TEST_F(DeviceCommandStartCrdSessionJobTest,
-       ShouldSucceedIfAccessTokenCanBeFetched) {
-  LogInAsKioskUser();
-
-  SetOAuthToken(kTestOAuthToken);
-
-  EXPECT_SUCCESS(RunJobAndWaitForResult());
 }
 
 TEST_F(DeviceCommandStartCrdSessionJobTest,
@@ -509,30 +493,14 @@ TEST_F(DeviceCommandStartCrdSessionJobTest,
                StartCrdSessionResultCode::FAILURE_UNSUPPORTED_USER_TYPE);
 }
 
-TEST_F(DeviceCommandStartCrdSessionJobTest,
-       ShouldFailIfWeCantFetchTheOAuthToken) {
-  LogInAsKioskUser();
-  ClearOAuthToken();
-
-  EXPECT_ERROR(RunJobAndWaitForResult(),
-               StartCrdSessionResultCode::FAILURE_NO_OAUTH_TOKEN, "");
-}
-
 TEST_F(DeviceCommandStartCrdSessionJobTest, ShouldFailIfCrdHostReportsAnError) {
   LogInAsKioskUser();
 
-  delegate().MakeAccessCodeFetchFail();
+  delegate().FailWithError(
+      ExtendedStartCrdSessionResultCode::kFailureCrdHostError);
 
   EXPECT_ERROR(RunJobAndWaitForResult(),
                StartCrdSessionResultCode::FAILURE_CRD_HOST_ERROR);
-}
-
-TEST_F(DeviceCommandStartCrdSessionJobTest, ShouldPassOAuthTokenToDelegate) {
-  LogInAsKioskUser();
-  SetOAuthToken("the-oauth-token");
-
-  EXPECT_SUCCESS(RunJobAndWaitForResult());
-  EXPECT_EQ("the-oauth-token", delegate().session_parameters().oauth_token);
 }
 
 TEST_F(DeviceCommandStartCrdSessionJobTest,
@@ -816,7 +784,8 @@ TEST_F(DeviceCommandStartCrdSessionJobTest,
   base::HistogramTester histogram_tester;
   LogInAsKioskUser();
 
-  ClearOAuthToken();
+  delegate().FailWithError(
+      ExtendedStartCrdSessionResultCode::kFailureNoOauthToken);
   RunJobAndWaitForResult();
 
   histogram_tester.ExpectUniqueSample(
@@ -834,7 +803,9 @@ TEST_F(DeviceCommandStartCrdSessionJobTest,
   base::HistogramTester histogram_tester;
   LogInAsKioskUser();
 
-  delegate().MakeAccessCodeFetchFail();
+  delegate().FailWithError(
+      ExtendedStartCrdSessionResultCode::kFailureCrdHostError);
+
   RunJobAndWaitForResult();
 
   histogram_tester.ExpectUniqueSample(

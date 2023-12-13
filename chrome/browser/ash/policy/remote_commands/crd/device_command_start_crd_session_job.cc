@@ -25,7 +25,6 @@
 #include "base/time/time.h"
 #include "base/values.h"
 #include "chrome/browser/ash/policy/remote_commands/crd/crd_logging.h"
-#include "chrome/browser/ash/policy/remote_commands/crd/crd_oauth_token_fetcher.h"
 #include "chrome/browser/ash/policy/remote_commands/crd/crd_remote_command_utils.h"
 #include "chrome/browser/ash/policy/remote_commands/crd/crd_uma_logger.h"
 #include "chrome/browser/device_identity/device_oauth2_token_service.h"
@@ -131,17 +130,6 @@ DeviceOAuth2TokenService* GetOAuthService() {
   return DeviceOAuth2TokenServiceFactory::Get();
 }
 
-std::unique_ptr<CrdOAuthTokenFetcher> CreateOAuthTokenFetcher(
-    DeviceOAuth2TokenService* service,
-    std::optional<std::string> oauth_token_for_test) {
-  if (service) {
-    return std::make_unique<RealCrdOAuthTokenFetcher>(CHECK_DEREF(service));
-  } else {
-    CHECK_IS_TEST();
-    return std::make_unique<FakeCrdOAuthTokenFetcher>(oauth_token_for_test);
-  }
-}
-
 std::string GetRobotAccountUserName(const DeviceOAuth2TokenService* service) {
   CoreAccountId account_id = CHECK_DEREF(service).GetRobotAccountId();
 
@@ -184,11 +172,8 @@ DeviceCommandStartCrdSessionJob::DeviceCommandStartCrdSessionJob(
 
 DeviceCommandStartCrdSessionJob::DeviceCommandStartCrdSessionJob(
     Delegate& delegate,
-    std::string_view robot_account_id,
-    std::optional<std::string> oauth_token)
-    : oauth_token_for_test_(oauth_token),
-      delegate_(delegate),
-      robot_account_id_(robot_account_id) {
+    std::string_view robot_account_id)
+    : delegate_(delegate), robot_account_id_(robot_account_id) {
   CHECK_IS_TEST();
 }
 
@@ -262,14 +247,9 @@ void DeviceCommandStartCrdSessionJob::RunImpl(
 
   // First perform managed network check,
   CheckManagedNetworkASync(
-      // Then fetch the OAuth token
-      base::BindOnce(
-          &DeviceCommandStartCrdSessionJob::FetchOAuthTokenASync,
-          weak_factory_.GetWeakPtr(),
-          // And finally start the CRD host.
-          base::BindOnce(
-              &DeviceCommandStartCrdSessionJob::StartCrdHostAndGetCode,
-              weak_factory_.GetWeakPtr())));
+      // Then start the CRD host.
+      base::BindOnce(&DeviceCommandStartCrdSessionJob::StartCrdHostAndGetCode,
+                     weak_factory_.GetWeakPtr()));
 }
 
 void DeviceCommandStartCrdSessionJob::CheckManagedNetworkASync(
@@ -295,25 +275,9 @@ void DeviceCommandStartCrdSessionJob::CheckManagedNetworkASync(
       std::move(on_success), GetErrorCallback()));
 }
 
-void DeviceCommandStartCrdSessionJob::FetchOAuthTokenASync(
-    OAuthTokenCallback done_callback) {
-  DCHECK_EQ(oauth_token_fetcher_, nullptr);
-
-  oauth_token_fetcher_ =
-      CreateOAuthTokenFetcher(GetOAuthService(), oauth_token_for_test_);
-  oauth_token_fetcher_->Start(std::move(done_callback));
-}
-
-void DeviceCommandStartCrdSessionJob::StartCrdHostAndGetCode(
-    std::optional<std::string> oauth_token) {
-  if (!oauth_token.has_value()) {
-    return FinishWithError(
-        ExtendedStartCrdSessionResultCode::kFailureNoOauthToken, "");
-  }
-
-  CRD_VLOG(1) << "Received OAuth token, now retrieving CRD access code";
+void DeviceCommandStartCrdSessionJob::StartCrdHostAndGetCode() {
+  CRD_VLOG(1) << "Starting CRD host and retrieving CRD access code";
   SessionParameters parameters;
-  parameters.oauth_token = std::move(oauth_token).value();
   parameters.user_name = robot_account_id_;
   parameters.terminate_upon_input = ShouldTerminateUponInput();
   parameters.show_confirmation_dialog = ShouldShowConfirmationDialog();

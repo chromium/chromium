@@ -34,7 +34,6 @@ class StartCrdSessionJobDelegate {
     SessionParameters(SessionParameters&&);
     SessionParameters& operator=(SessionParameters&&);
 
-    std::string oauth_token = "";
     std::string user_name = "";
     std::optional<std::string> admin_email;
     bool terminate_upon_input = false;
