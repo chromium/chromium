@@ -6,6 +6,7 @@
 
 #include <memory>
 #include <optional>
+#include <string>
 
 #include "base/metrics/histogram_functions.h"
 #include "base/notreached.h"
@@ -41,6 +42,8 @@
 
 DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(PermissionPromptBubbleBaseView,
                                       kMainViewId);
+DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(PermissionPromptBubbleBaseView,
+                                      kBlockButtonElementId);
 DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(PermissionPromptBubbleBaseView,
                                       kAllowButtonElementId);
 
@@ -118,6 +121,8 @@ PermissionPromptBubbleBaseView::PermissionPromptBubbleBaseView(
                             base::Unretained(this),
                             GetViewId(PermissionDialogButton::kDeny)),
         l10n_util::GetStringUTF16(block_message_id));
+    block_button->SetProperty(views::kElementIdentifierKey,
+                              kBlockButtonElementId);
     block_button->SetID(GetViewId(PermissionDialogButton::kDeny));
 
     if (features::IsChromeRefresh2023()) {
@@ -175,6 +180,8 @@ void PermissionPromptBubbleBaseView::CreateWidget() {
   views::Widget* widget = views::BubbleDialogDelegateView::CreateBubble(this);
 
   if (!is_one_time_permission_) {
+    GetCancelButton()->SetProperty(views::kElementIdentifierKey,
+                                   kBlockButtonElementId);
     GetOkButton()->SetProperty(views::kElementIdentifierKey,
                                kAllowButtonElementId);
   }
@@ -271,6 +278,14 @@ void PermissionPromptBubbleBaseView::RunButtonCallback(int button_id) {
       return;
   }
   NOTREACHED();
+}
+
+const std::u16string
+PermissionPromptBubbleBaseView::GetPermissionFragmentForTesting() const {
+  std::u16string origin =
+      PermissionPromptBaseView::GetUrlIdentity(browser_, *delegate_).name;
+  return accessible_window_title_.substr(accessible_window_title_.find(origin) +
+                                         origin.length());
 }
 
 // static

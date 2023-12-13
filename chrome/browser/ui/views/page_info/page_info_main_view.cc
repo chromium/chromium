@@ -502,6 +502,11 @@ void PageInfoMainView::OnChosenObjectDeleted(
   PreferredSizeChanged();
 }
 
+const std::vector<PermissionToggleRowView*>
+PageInfoMainView::GetToggleRowsForTesting() const {
+  return toggle_rows_;
+}
+
 std::unique_ptr<views::View> PageInfoMainView::CreateContainerView() {
   return std::make_unique<ContainerView>();
 }

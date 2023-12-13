@@ -12,6 +12,7 @@
 #include "chrome/browser/ui/url_identity.h"
 #include "chrome/browser/ui/views/permissions/permission_prompt_base_view.h"
 #include "chrome/browser/ui/views/permissions/permission_prompt_style.h"
+#include "chrome/grit/generated_resources.h"
 #include "components/permissions/permission_prompt.h"
 #include "components/permissions/permission_util.h"
 #include "ui/base/metadata/metadata_header_macros.h"
@@ -41,6 +42,7 @@ class PermissionPromptBubbleBaseView : public PermissionPromptBaseView {
  public:
   METADATA_HEADER(PermissionPromptBubbleBaseView);
   DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kMainViewId);
+  DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kBlockButtonElementId);
   DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kAllowButtonElementId);
   PermissionPromptBubbleBaseView(
       Browser* browser,
@@ -83,6 +85,8 @@ class PermissionPromptBubbleBaseView : public PermissionPromptBaseView {
 
   // PermissionPromptBaseView:
   void RunButtonCallback(int button_id) override;
+
+  const std::u16string GetPermissionFragmentForTesting() const;
 
  protected:
   void CreateWidget();

@@ -546,7 +546,7 @@ size_t Label::GetRequiredLines() const {
   return full_text_->GetNumLines();
 }
 
-std::u16string Label::GetDisplayTextForTesting() {
+const std::u16string Label::GetDisplayTextForTesting() const {
   MaybeBuildDisplayText();
   return display_text_ ? display_text_->GetDisplayText() : std::u16string();
 }
