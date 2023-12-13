@@ -1,6 +1,6 @@
 Name: @BugPattern annotation
 Short Name: error_prone_annotation
-URL: https://errorprone.info/
+URL: https://github.com/google/error-prone/tree/master/annotation
 Version: 2.19.1
 License: Apache 2.0
 License File: LICENSE
@@ -9,7 +9,7 @@ Security Critical: no
 Shipped: no
 
 Description:
-
+ErrorProne Annotations.
 
 Local Modifications:
 No modifications.
