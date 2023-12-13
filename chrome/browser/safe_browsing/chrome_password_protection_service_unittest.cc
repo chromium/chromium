@@ -7,6 +7,7 @@
 #include <memory>
 #include <utility>
 
+#include "base/command_line.h"
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
@@ -39,7 +40,6 @@
 #include "components/password_manager/core/browser/password_manager_test_utils.h"
 #include "components/password_manager/core/browser/password_reuse_detector.h"
 #include "components/password_manager/core/browser/password_store/mock_password_store_interface.h"
-#include "components/password_manager/core/common/password_manager_pref_names.h"
 #include "components/prefs/pref_service.h"
 #include "components/prefs/scoped_user_pref_update.h"
 #include "components/safe_browsing/content/browser/password_protection/password_protection_commit_deferring_condition.h"
@@ -62,6 +62,10 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/l10n/l10n_util.h"
+
+#if BUILDFLAG(IS_ANDROID)
+#include "chrome/browser/password_manager/android/password_manager_android_util.h"
+#endif
 
 // All tests related to extension is disabled on Android, because enterprise
 // reporting extension is not supported.
@@ -253,18 +257,6 @@ class ChromePasswordProtectionServiceTest
 
     if (base::FeatureList::IsEnabled(
             password_manager::features::kEnablePasswordsAccountStorage)) {
-#if BUILDFLAG(IS_ANDROID)
-      // TODO(crbug.com/1495626): Remove once SetUsesSplitStoresAndUPMForLocal()
-      // is implemented.
-      if (base::FeatureList::IsEnabled(
-              password_manager::features::
-                  kUnifiedPasswordManagerLocalPasswordsAndroidNoMigration)) {
-        profile()->GetPrefs()->SetInteger(
-            password_manager::prefs::kPasswordsUseUPMLocalAndSeparateStores,
-            static_cast<int>(password_manager::prefs::
-                                 UseUpmLocalAndSeparateStoresState::kOn));
-      }
-#endif
       account_password_store_ = base::WrapRefCounted(
           static_cast<password_manager::MockPasswordStoreInterface*>(
               AccountPasswordStoreFactory::GetInstance()
@@ -1550,6 +1542,9 @@ class ChromePasswordProtectionServiceWithAccountPasswordStoreTest
          password_manager::features::
              kUnifiedPasswordManagerLocalPasswordsAndroidNoMigration},
         {});
+    base::CommandLine::ForCurrentProcess()->AppendSwitch(
+        password_manager_android_util::
+            kSkipLocalUpmGmsCoreVersionCheckForTesting);
 #else
     feature_list_.InitAndEnableFeature(
         password_manager::features::kEnablePasswordsAccountStorage);

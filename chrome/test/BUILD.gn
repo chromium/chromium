@@ -7545,6 +7545,7 @@ test("unit_tests") {
       "//chrome/browser/optimization_guide/android:native_java_unittests",
       "//chrome/browser/password_check/android:unit_tests",
       "//chrome/browser/password_manager/android:unit_tests",
+      "//chrome/browser/password_manager/android:utils",
       "//chrome/browser/reading_list/android:reading_list",
       "//chrome/browser/reading_list/android:unit_tests",
       "//chrome/browser/share",

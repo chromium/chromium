@@ -169,14 +169,11 @@ void UndoSyncToSigninMigration(PrefService* pref_service) {
       syncer::prefs::internal::kMigrateReadingListFromLocalToAccount);
 }
 
-// These values are persisted to logs. Entries should not be renumbered and
-// numeric values should never be reused.
-enum class SyncToSigninMigrationDataTypeDecision {
-  kMigrate = 0,
-  kDontMigrateTypeDisabled = 1,
-  kDontMigrateTypeNotActive = 2,
-  kMaxValue = kDontMigrateTypeNotActive
-};
+const char* GetHistogramMigratingOrNotInfix(bool doing_migration) {
+  return doing_migration ? "Migration." : "DryRun.";
+}
+
+}  // namespace
 
 SyncToSigninMigrationDataTypeDecision GetSyncToSigninMigrationDataTypeDecision(
     const PrefService* pref_service,
@@ -207,12 +204,6 @@ SyncToSigninMigrationDataTypeDecision GetSyncToSigninMigrationDataTypeDecision(
 
   return SyncToSigninMigrationDataTypeDecision::kMigrate;
 }
-
-const char* GetHistogramMigratingOrNotInfix(bool doing_migration) {
-  return doing_migration ? "Migration." : "DryRun.";
-}
-
-}  // namespace
 
 void MaybeMigrateSyncingUserToSignedIn(const base::FilePath& profile_path,
                                        PrefService* pref_service) {
