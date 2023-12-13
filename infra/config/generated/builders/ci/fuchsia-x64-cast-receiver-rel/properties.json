@@ -63,6 +63,6 @@
   "builder_group": "chromium.fuchsia",
   "recipe": "chromium",
   "sheriff_rotations": [
-    "chrome_browser_release"
+    "fuchsia"
   ]
 }

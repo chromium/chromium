@@ -15,69 +15,6 @@
   },
   "thresholds": {
     "ci": {
-      "Dawn Mac x64 DEPS Builder": {
-        "_default": "_default"
-      },
-      "Dawn Mac x64 DEPS Release (AMD)": {
-        "_default": "_default"
-      },
-      "Dawn Mac x64 DEPS Release (Intel)": {
-        "_default": "_default"
-      },
-      "Dawn Win10 x64 DEPS Builder": {
-        "_default": "_default"
-      },
-      "Dawn Win10 x64 DEPS Release (Intel)": {
-        "_default": "_default"
-      },
-      "Dawn Win10 x64 DEPS Release (NVIDIA)": {
-        "_default": "_default"
-      },
-      "Dawn Win10 x86 DEPS Builder": {
-        "_default": "_default"
-      },
-      "Dawn Win10 x86 DEPS Release (Intel)": {
-        "_default": "_default"
-      },
-      "Dawn Win10 x86 DEPS Release (NVIDIA)": {
-        "_default": "_default"
-      },
-      "GPU Mac Builder": {
-        "_default": "_default"
-      },
-      "GPU Win x64 Builder": {
-        "_default": "_default"
-      },
-      "Mac Builder": {
-        "_default": "_default"
-      },
-      "Mac Builder (dbg)": {
-        "_default": "_default"
-      },
-      "Mac Release (Intel)": {
-        "_default": "_default"
-      },
-      "Mac Retina Release (AMD)": {
-        "_default": "_default"
-      },
-      "Mac10.15 Tests": {
-        "_default": "_default"
-      },
-      "Mac11 Tests": {
-        "_default": "_default"
-      },
-      "Mac12 Tests": {
-        "_default": "_default"
-      },
-      "Mac13 Tests": {
-        "_default": "_default"
-      },
-      "Mac13 Tests (dbg)": {
-        "_default": "_default"
-      },
-      "Win10 x64 Release (NVIDIA)": {
-        "_default": "_default"
-      },
       "chromeos-amd64-generic-dbg": {
         "build_time": {
           "p50_mins": 60
@@ -290,27 +227,6 @@
         "pending_time": {
           "p50_mins": 20
         }
-      },
-      "mac-arm64-rel": {
-        "_default": "_default"
-      },
-      "mac-official": {
-        "_default": "_default"
-      },
-      "mac11-arm64-rel-tests": {
-        "_default": "_default"
-      },
-      "mac12-arm64-rel-tests": {
-        "_default": "_default"
-      },
-      "mac13-arm64-rel-tests": {
-        "_default": "_default"
-      },
-      "win-official": {
-        "_default": "_default"
-      },
-      "win32-official": {
-        "_default": "_default"
       }
     }
   }
