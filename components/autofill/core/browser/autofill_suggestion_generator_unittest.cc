@@ -1222,7 +1222,7 @@ TEST_F(AutofillChildrenSuggestionGeneratorTest,
   std::vector<Suggestion> suggestions = CreateSuggestionWithChildrenFromProfile(
       profile(),
       /*last_targeted_fields=*/
-      GetServerFieldTypesOfGroup(FieldTypeGroup::kName), NAME_FIRST);
+      GetFieldTypesOfGroup(FieldTypeGroup::kName), NAME_FIRST);
 
   ASSERT_EQ(suggestions.size(), 1u);
   EXPECT_EQ(suggestions[0].labels,
@@ -1246,7 +1246,7 @@ TEST_F(
   std::vector<Suggestion> suggestions =
       suggestion_generator()->CreateSuggestionsFromProfiles(
           {&profile_1, &profile_2}, {NAME_FIRST, NAME_MIDDLE},
-          GetServerFieldTypesOfGroup(FieldTypeGroup::kName), NAME_FIRST,
+          GetFieldTypesOfGroup(FieldTypeGroup::kName), NAME_FIRST,
           /*trigger_field_max_length=*/0);
 
   ASSERT_EQ(suggestions.size(), 2u);

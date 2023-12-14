@@ -456,7 +456,7 @@ std::string_view FieldTypeToDeveloperRepresentationString(FieldType type) {
   NOTREACHED_NORETURN();
 }
 
-FieldTypeSet GetServerFieldTypesOfGroup(FieldTypeGroup group) {
+FieldTypeSet GetFieldTypesOfGroup(FieldTypeGroup group) {
   FieldTypeSet fields_matching_group;
   for (FieldType server_field_type : kAllFieldTypes) {
     if (GroupTypeOfServerFieldType(server_field_type) == group) {

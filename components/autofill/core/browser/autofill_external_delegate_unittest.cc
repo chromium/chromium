@@ -1278,13 +1278,13 @@ class GroupFillingUnitTest
       public ::testing::WithParamInterface<GroupFillingTestParams> {};
 
 const GroupFillingTestParams kGroupFillingTestCases[] = {
-    {.field_types_to_fill = GetServerFieldTypesOfGroup(FieldTypeGroup::kName),
+    {.field_types_to_fill = GetFieldTypesOfGroup(FieldTypeGroup::kName),
      .popup_item_id = PopupItemId::kFillFullName,
      .test_name = "_NameFields"},
-    {.field_types_to_fill = GetServerFieldTypesOfGroup(FieldTypeGroup::kPhone),
+    {.field_types_to_fill = GetFieldTypesOfGroup(FieldTypeGroup::kPhone),
      .popup_item_id = PopupItemId::kFillFullPhoneNumber,
      .test_name = "_PhoneFields"},
-    {.field_types_to_fill = GetServerFieldTypesOfGroup(FieldTypeGroup::kEmail),
+    {.field_types_to_fill = GetFieldTypesOfGroup(FieldTypeGroup::kEmail),
      .popup_item_id = PopupItemId::kFillFullEmail,
      .test_name = "_EmailAddressFields"},
     {.field_types_to_fill = GetAddressFieldsForGroupFilling(),

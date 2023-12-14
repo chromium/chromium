@@ -425,8 +425,7 @@ void AutofillExternalDelegate::DidSelectSuggestion(
           suggestion.GetPayload<Suggestion::BackendId>(), /*is_preview=*/true,
           {.trigger_source =
                TriggerSourceFromSuggestionTriggerSource(trigger_source_),
-           .field_types_to_fill =
-               GetServerFieldTypesOfGroup(FieldTypeGroup::kName)});
+           .field_types_to_fill = GetFieldTypesOfGroup(FieldTypeGroup::kName)});
       break;
     case PopupItemId::kFillFullPhoneNumber:
       FillAutofillFormData(
@@ -435,7 +434,7 @@ void AutofillExternalDelegate::DidSelectSuggestion(
           {.trigger_source =
                TriggerSourceFromSuggestionTriggerSource(trigger_source_),
            .field_types_to_fill =
-               GetServerFieldTypesOfGroup(FieldTypeGroup::kPhone)});
+               GetFieldTypesOfGroup(FieldTypeGroup::kPhone)});
       break;
     case PopupItemId::kFillFullEmail:
       FillAutofillFormData(
@@ -444,7 +443,7 @@ void AutofillExternalDelegate::DidSelectSuggestion(
           {.trigger_source =
                TriggerSourceFromSuggestionTriggerSource(trigger_source_),
            .field_types_to_fill =
-               GetServerFieldTypesOfGroup(FieldTypeGroup::kEmail)});
+               GetFieldTypesOfGroup(FieldTypeGroup::kEmail)});
       break;
     case PopupItemId::kAutocompleteEntry:
     case PopupItemId::kIbanEntry:
@@ -567,8 +566,7 @@ void AutofillExternalDelegate::DidAcceptSuggestion(
           suggestion.GetPayload<Suggestion::BackendId>(), /*is_preview=*/false,
           {.trigger_source =
                TriggerSourceFromSuggestionTriggerSource(trigger_source_),
-           .field_types_to_fill =
-               GetServerFieldTypesOfGroup(FieldTypeGroup::kName)});
+           .field_types_to_fill = GetFieldTypesOfGroup(FieldTypeGroup::kName)});
       break;
     case PopupItemId::kFillFullPhoneNumber:
       autofill_metrics::LogFillingMethodUsed(
@@ -580,7 +578,7 @@ void AutofillExternalDelegate::DidAcceptSuggestion(
           {.trigger_source =
                TriggerSourceFromSuggestionTriggerSource(trigger_source_),
            .field_types_to_fill =
-               GetServerFieldTypesOfGroup(FieldTypeGroup::kPhone)});
+               GetFieldTypesOfGroup(FieldTypeGroup::kPhone)});
       break;
     case PopupItemId::kFillFullEmail:
       autofill_metrics::LogFillingMethodUsed(
@@ -591,7 +589,7 @@ void AutofillExternalDelegate::DidAcceptSuggestion(
           {.trigger_source =
                TriggerSourceFromSuggestionTriggerSource(trigger_source_),
            .field_types_to_fill =
-               GetServerFieldTypesOfGroup(FieldTypeGroup::kEmail)});
+               GetFieldTypesOfGroup(FieldTypeGroup::kEmail)});
       break;
     case PopupItemId::kAutocompleteEntry:
       AutofillMetrics::LogAutocompleteSuggestionAcceptedIndex(position.row);
