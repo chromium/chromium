@@ -844,15 +844,20 @@ void GpuChannelManager::PerformImmediateCleanup() {
 
 #if BUILDFLAG(ENABLE_VULKAN)
   if (shared_context_state_->GrContextIsVulkan()) {
-    DCHECK(vulkan_context_provider_);
-    auto* fence_helper =
-        vulkan_context_provider_->GetDeviceQueue()->GetFenceHelper();
-    fence_helper->PerformImmediateCleanup();
-
     // TODO(lizeb): Also perform this on GL devices.
     if (auto* context = shared_context_state_->gr_context()) {
       context->flushAndSubmit(GrSyncCpu::kYes);
     }
+
+    DCHECK(vulkan_context_provider_);
+    auto* fence_helper =
+        vulkan_context_provider_->GetDeviceQueue()->GetFenceHelper();
+
+    // PerformImmediateCleanup will ensure that all GPU work that was submitted
+    // before is finished before releasing resoucres, but skia might have
+    // recorded and not yet submitted work that reference them, so this must be
+    // called after GrContext::submit (or flushAndSubmit).
+    fence_helper->PerformImmediateCleanup();
   }
 #endif
 }
