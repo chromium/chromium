@@ -12,6 +12,16 @@ repositories {
     mavenCentral()
 }
 
+dependencies.constraints {
+    // This exists to resolve an ambiguous dependency onto 2 versions of this library. "androidJvm"
+    // seemed like the more correct one to use. See crbug.com/1511597.
+    compile("androidx.sqlite:sqlite") {
+        attributes {
+            attribute(Attribute.of("org.jetbrains.kotlin.platform.type", String), "androidJvm")
+        }
+    }
+}
+
 dependencies {
     // Note about the configuration names: they are defined in buildSrc/ChromiumPlugin
 
