@@ -11,7 +11,7 @@ import {ContentMetadataProvider} from './content_metadata_provider.js';
 import {DlpMetadataProvider} from './dlp_metadata_provider.js';
 import {ExternalMetadataProvider} from './external_metadata_provider.js';
 import {FileSystemMetadataProvider} from './file_system_metadata_provider.js';
-import {MetadataCacheSet} from './metadata_cache_set.js';
+import {MetadataCacheSet, MetadataModelMap} from './metadata_cache_set.js';
 import {MetadataItem, MetadataKey} from './metadata_item.js';
 import {MetadataProvider} from './metadata_provider.js';
 import {MultiMetadataProvider} from './multi_metadata_provider.js';
@@ -231,20 +231,16 @@ export class MetadataModel {
     return this.stats_;
   }
 
-  /**
-   * Adds event listener to internal cache object.
-   */
-  addEventListener(type: string, callback: (event: Event) => void) {
-    this.cache_.addEventListener(type, callback);
+  /** Adds event listener to internal cache object. */
+  addEventListener<K extends keyof MetadataModelMap>(
+      type: K, listener: (event: MetadataModelMap[K]) => void): void {
+    this.cache_.addEventListener(type, listener);
   }
 
-  /**
-   * Removes event listener from internal cache object.
-   * @param type Name of the event to removed.
-   * @param callback Event listener.
-   */
-  removeEventListener(type: string, callback: (event: Event) => void) {
-    this.cache_.removeEventListener(type, callback);
+  /** Removes event listener from internal cache object. */
+  removeEventListener<K extends keyof MetadataModelMap>(
+      type: K, listener: (event: MetadataModelMap[K]) => void): void {
+    this.cache_.removeEventListener(type, listener);
   }
 }
 
