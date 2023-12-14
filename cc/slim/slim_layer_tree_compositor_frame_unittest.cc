@@ -154,7 +154,8 @@ TEST_F(SlimLayerTreeCompositorFrameTest, CompositorFrameMetadataBasics) {
   layer_tree_->SetViewportRectAndScale(viewport_, /*device_scale_factor=*/2.0f,
                                        local_surface_id_);
   layer_tree_->set_background_color(SkColors::kBlue);
-  layer_tree_->set_display_transform_hint(gfx::OVERLAY_TRANSFORM_ROTATE_90);
+  layer_tree_->set_display_transform_hint(
+      gfx::OVERLAY_TRANSFORM_ROTATE_CLOCKWISE_90);
   layer_tree_->UpdateTopControlsVisibleHeight(5.0f);
   {
     viz::CompositorFrame frame = ProduceFrame();
@@ -164,7 +165,7 @@ TEST_F(SlimLayerTreeCompositorFrameTest, CompositorFrameMetadataBasics) {
     EXPECT_EQ(sequence_id_, metadata.begin_frame_ack.frame_id.sequence_number);
     EXPECT_EQ(2.0f, metadata.device_scale_factor);
     EXPECT_EQ(SkColors::kBlue, metadata.root_background_color);
-    EXPECT_EQ(gfx::OVERLAY_TRANSFORM_ROTATE_90,
+    EXPECT_EQ(gfx::OVERLAY_TRANSFORM_ROTATE_CLOCKWISE_90,
               metadata.display_transform_hint);
     EXPECT_EQ(5.0f, metadata.top_controls_visible_height);
   }

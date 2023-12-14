@@ -990,11 +990,11 @@ public class WindowAndroid implements AndroidPermissionDelegate, DisplayAndroidO
                 case Surface.ROTATION_0:
                     return OverlayTransform.NONE;
                 case Surface.ROTATION_90:
-                    return OverlayTransform.ROTATE_90;
+                    return OverlayTransform.ROTATE_CLOCKWISE_90;
                 case Surface.ROTATION_180:
-                    return OverlayTransform.ROTATE_180;
+                    return OverlayTransform.ROTATE_CLOCKWISE_180;
                 case Surface.ROTATION_270:
-                    return OverlayTransform.ROTATE_270;
+                    return OverlayTransform.ROTATE_CLOCKWISE_270;
                 default:
                     return OverlayTransform.NONE;
             }

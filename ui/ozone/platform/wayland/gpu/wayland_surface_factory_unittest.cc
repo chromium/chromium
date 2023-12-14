@@ -1374,7 +1374,8 @@ TEST_P(WaylandSurfaceFactoryCompositorV3, SurfaceDamageTest) {
     presenter->ScheduleOverlayPlane(
         fake_overlay_image[0]->GetNativePixmap(), nullptr,
         gfx::OverlayPlaneData(
-            INT32_MIN, gfx::OverlayTransform::OVERLAY_TRANSFORM_ROTATE_270,
+            INT32_MIN,
+            gfx::OverlayTransform::OVERLAY_TRANSFORM_ROTATE_CLOCKWISE_270,
             gfx::RectF(window_->GetBoundsInPixels()), crop_uv, false,
             surface_damage_rect, 1.0f, gfx::OverlayPriorityHint::kNone,
             gfx::RRectF(), gfx::ColorSpace::CreateSRGB(), absl::nullopt));

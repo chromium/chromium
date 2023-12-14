@@ -255,9 +255,9 @@ void WindowTreeHost::UpdateCompositorScaleAndSize(
     const gfx::Size& new_size_in_pixels) {
   gfx::Rect new_bounds(new_size_in_pixels);
   if (compositor_->display_transform_hint() ==
-          gfx::OVERLAY_TRANSFORM_ROTATE_90 ||
+          gfx::OVERLAY_TRANSFORM_ROTATE_CLOCKWISE_90 ||
       compositor_->display_transform_hint() ==
-          gfx::OVERLAY_TRANSFORM_ROTATE_270) {
+          gfx::OVERLAY_TRANSFORM_ROTATE_CLOCKWISE_270) {
     new_bounds.Transpose();
   }
 

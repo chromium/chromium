@@ -1604,7 +1604,8 @@ TEST_P(HardwareDisplayPlaneManagerAtomicTest, OriginalModifiersSupportOnly) {
         DrmFramebuffer::AddFramebuffer(fake_drm_, buffer.get(),
                                        kDefaultBufferSize, {}, true);
     assigns.emplace_back(framebuffer_original, nullptr);
-    assigns.back().plane_transform = gfx::OVERLAY_TRANSFORM_ROTATE_270;
+    assigns.back().plane_transform =
+        gfx::OVERLAY_TRANSFORM_ROTATE_CLOCKWISE_270;
 
     fake_drm_->plane_manager()->BeginFrame(&state_);
     // Rotation should be supported for this buffer as it is the original buffer
@@ -1631,7 +1632,8 @@ TEST_P(HardwareDisplayPlaneManagerAtomicTest, OriginalModifiersSupportOnly) {
         DrmFramebuffer::AddFramebuffer(fake_drm_, buffer.get(),
                                        kDefaultBufferSize, {}, false);
     assigns.emplace_back(framebuffer_non_original, nullptr);
-    assigns.back().plane_transform = gfx::OVERLAY_TRANSFORM_ROTATE_270;
+    assigns.back().plane_transform =
+        gfx::OVERLAY_TRANSFORM_ROTATE_CLOCKWISE_270;
     EXPECT_FALSE(fake_drm_->plane_manager()->AssignOverlayPlanes(
         &state_, assigns, fake_drm_->crtc_property(0).id));
   }

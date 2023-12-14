@@ -76,11 +76,11 @@ gfx::OverlayTransform GetOverlayTransform(const gfx::Transform& quad_transform,
   else if (x_to == AXIS_POS_X && y_to == AXIS_NEG_Y)
     return gfx::OVERLAY_TRANSFORM_FLIP_VERTICAL;
   else if (x_to == AXIS_NEG_Y && y_to == AXIS_POS_X)
-    return gfx::OVERLAY_TRANSFORM_ROTATE_270;
+    return gfx::OVERLAY_TRANSFORM_ROTATE_CLOCKWISE_270;
   else if (x_to == AXIS_NEG_X && y_to == AXIS_NEG_Y)
-    return gfx::OVERLAY_TRANSFORM_ROTATE_180;
+    return gfx::OVERLAY_TRANSFORM_ROTATE_CLOCKWISE_180;
   else if (x_to == AXIS_POS_Y && y_to == AXIS_NEG_X)
-    return gfx::OVERLAY_TRANSFORM_ROTATE_90;
+    return gfx::OVERLAY_TRANSFORM_ROTATE_CLOCKWISE_90;
   else
     return gfx::OVERLAY_TRANSFORM_INVALID;
 }

@@ -132,11 +132,11 @@ wl_output_transform ToWaylandTransform(gfx::OverlayTransform transform) {
     // directions relative to each other, so swap 90 and 270.
     // TODO(rivr): Currently all wl_buffers are created without y inverted, so
     // this may need to be revisited if that changes.
-    case gfx::OVERLAY_TRANSFORM_ROTATE_90:
+    case gfx::OVERLAY_TRANSFORM_ROTATE_CLOCKWISE_90:
       return WL_OUTPUT_TRANSFORM_270;
-    case gfx::OVERLAY_TRANSFORM_ROTATE_180:
+    case gfx::OVERLAY_TRANSFORM_ROTATE_CLOCKWISE_180:
       return WL_OUTPUT_TRANSFORM_180;
-    case gfx::OVERLAY_TRANSFORM_ROTATE_270:
+    case gfx::OVERLAY_TRANSFORM_ROTATE_CLOCKWISE_270:
       return WL_OUTPUT_TRANSFORM_90;
     default:
       break;

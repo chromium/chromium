@@ -4446,16 +4446,16 @@ TEST_F(DisplayTest, DisplayTransformHint) {
       // Output size is always the display size when output surface does not
       // support display transform hint.
       {false, gfx::OVERLAY_TRANSFORM_NONE, kSize},
-      {false, gfx::OVERLAY_TRANSFORM_ROTATE_90, kSize},
-      {false, gfx::OVERLAY_TRANSFORM_ROTATE_180, kSize},
-      {false, gfx::OVERLAY_TRANSFORM_ROTATE_270, kSize},
+      {false, gfx::OVERLAY_TRANSFORM_ROTATE_CLOCKWISE_90, kSize},
+      {false, gfx::OVERLAY_TRANSFORM_ROTATE_CLOCKWISE_180, kSize},
+      {false, gfx::OVERLAY_TRANSFORM_ROTATE_CLOCKWISE_270, kSize},
 
       // Output size is transposed on 90/270 degree rotation when output surface
       // supports display transform hint.
       {true, gfx::OVERLAY_TRANSFORM_NONE, kSize},
-      {true, gfx::OVERLAY_TRANSFORM_ROTATE_90, kTransposedSize},
-      {true, gfx::OVERLAY_TRANSFORM_ROTATE_180, kSize},
-      {true, gfx::OVERLAY_TRANSFORM_ROTATE_270, kTransposedSize},
+      {true, gfx::OVERLAY_TRANSFORM_ROTATE_CLOCKWISE_90, kTransposedSize},
+      {true, gfx::OVERLAY_TRANSFORM_ROTATE_CLOCKWISE_180, kSize},
+      {true, gfx::OVERLAY_TRANSFORM_ROTATE_CLOCKWISE_270, kTransposedSize},
   };
 
   size_t expected_frame_sent = 0u;

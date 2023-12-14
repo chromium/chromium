@@ -30,11 +30,11 @@ uint32_t OverlayTransformToDrmRotationPropertyValue(
     // Driver code swaps 90 and 270 to be compliant with how xrandr uses these
     // values, so we need to invert them here as well to get them back to the
     // proper value.
-    case gfx::OVERLAY_TRANSFORM_ROTATE_90:
+    case gfx::OVERLAY_TRANSFORM_ROTATE_CLOCKWISE_90:
       return DRM_MODE_ROTATE_270;
-    case gfx::OVERLAY_TRANSFORM_ROTATE_180:
+    case gfx::OVERLAY_TRANSFORM_ROTATE_CLOCKWISE_180:
       return DRM_MODE_ROTATE_180;
-    case gfx::OVERLAY_TRANSFORM_ROTATE_270:
+    case gfx::OVERLAY_TRANSFORM_ROTATE_CLOCKWISE_270:
       return DRM_MODE_ROTATE_90;
     default:
       NOTREACHED();
@@ -53,8 +53,8 @@ uint32_t OverlayTransformToDrmRotationPropertyValue(
 bool IsRotationTransformSupported(gfx::OverlayTransform transform,
                                   uint32_t format_fourcc,
                                   bool is_original_buffer) {
-  if ((transform == gfx::OVERLAY_TRANSFORM_ROTATE_90) ||
-      (transform == gfx::OVERLAY_TRANSFORM_ROTATE_270) ||
+  if ((transform == gfx::OVERLAY_TRANSFORM_ROTATE_CLOCKWISE_90) ||
+      (transform == gfx::OVERLAY_TRANSFORM_ROTATE_CLOCKWISE_270) ||
       (transform == gfx::OVERLAY_TRANSFORM_FLIP_HORIZONTAL)) {
     if (is_original_buffer && (format_fourcc == DRM_FORMAT_NV12 ||
                                format_fourcc == DRM_FORMAT_P010)) {
