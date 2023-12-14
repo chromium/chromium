@@ -362,7 +362,7 @@ class AutocompleteController : public AutocompleteProviderListener,
   void NotifyChanged();
 
   // Invokes `NotifyChanged()` through `notify_changed_debouncer_`.
-  void DelayedNotifyChanged(bool notify_default_match);
+  void DelayedNotifyChanged(bool notify_default_match, bool immediate);
 
   // Cancels any pending `NotifyChanged()` invocation through
   // `notify_changed_debouncer_`.

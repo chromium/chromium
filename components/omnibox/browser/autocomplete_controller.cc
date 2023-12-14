@@ -598,9 +598,10 @@ void AutocompleteController::Stop(bool clear_result,
   if (clear_result && !internal_result_.empty()) {
     internal_result_.Reset();
 
-    // Pass false to clear only the popup and not the edit. Passing true would,
-    // e.g., discard the selected suggestion when closing the omnibox.
-    DelayedNotifyChanged(false);
+    // Pass `notify_default_match` as false to clear only the popup and not the
+    // edit. Passing true would, e.g., discard the selected suggestion when
+    // closing the omnibox.
+    DelayedNotifyChanged(/*notify_default_match=*/false, /*immediate=*/true);
   }
 }
 
@@ -1158,8 +1159,11 @@ void AutocompleteController::SortCullAndAnnotateResult(
         metrics::OmniboxEventProto_Feature_RICH_AUTOCOMPLETION);
   }
 
-  DelayedNotifyChanged(force_notify_default_match_changed ||
-                       notify_default_match);
+  const bool ignore_document_provider =
+      omnibox_feature_configs::DocumentProvider::Get().ignore_when_debouncing;
+  DelayedNotifyChanged(
+      force_notify_default_match_changed || notify_default_match,
+      !sync_pass_done_ || CheckIfDone(ignore_document_provider));
 }
 
 void AutocompleteController::AttachActions() {
@@ -1502,19 +1506,14 @@ void AutocompleteController::NotifyChanged() {
   CancelDelayedNotifyChanged();
 }
 
-void AutocompleteController::DelayedNotifyChanged(bool notify_default_match) {
+void AutocompleteController::DelayedNotifyChanged(bool notify_default_match,
+                                                  bool immediate) {
   if (notify_default_match)
     notify_changed_default_match_ = true;
-
-  const bool ignore_document_provider =
-      omnibox_feature_configs::DocumentProvider::Get().ignore_when_debouncing;
-  if (!sync_pass_done_ || CheckIfDone(ignore_document_provider)) {
-    notify_changed_debouncer_.ResetTimeLastRun();
-    NotifyChanged();
-  } else {
-    notify_changed_debouncer_.RequestRun(base::BindOnce(
-        &AutocompleteController::NotifyChanged, base::Unretained(this)));
-  }
+  notify_changed_debouncer_.RequestRun(base::BindOnce(
+      &AutocompleteController::NotifyChanged, base::Unretained(this)));
+  if (immediate)
+    notify_changed_debouncer_.FlushRequest();
 }
 
 void AutocompleteController::CancelDelayedNotifyChanged() {
