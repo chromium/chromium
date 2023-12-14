@@ -805,11 +805,6 @@ PasswordFormManager* PasswordManager::ProvisionallySaveForm(
         client_->GetLogManager());
     logger->LogMessage(Logger::STRING_PROVISIONALLY_SAVE_FORM_METHOD);
   }
-  if (!client_->IsSavingAndFillingEnabled(submitted_form.url)) {
-    RecordProvisionalSaveFailure(
-        PasswordManagerMetricsRecorder::SAVING_DISABLED, submitted_form.url);
-    return nullptr;
-  }
 
   if (store_password_called_)
     return nullptr;
@@ -1129,8 +1124,6 @@ void PasswordManager::OnLoginSuccessful() {
       submitted_form->federation_origin,
       submitted_manager->GetPendingCredentials().username_value);
   client_->NotifyOnSuccessfulLogin(submitted_form->username_value);
-  if (!client_->IsSavingAndFillingEnabled(submitted_form->url))
-    return;
 
   // Check for leaks only if there are no muted credentials and it is not a
   // single username submission (a leak warning may offer an automated password
@@ -1182,6 +1175,10 @@ void PasswordManager::OnLoginSuccessful() {
 
   // If the form is eligible only for saving fallback, it shouldn't go here.
   CHECK(!submitted_manager->GetPendingCredentials().only_for_fallback);
+
+  if (!submitted_manager->IsSavingAllowed()) {
+    return;
+  }
 
   if (ShouldPromptUserToSavePassword(*submitted_manager)) {
     if (logger)

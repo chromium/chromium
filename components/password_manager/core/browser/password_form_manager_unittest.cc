@@ -157,6 +157,10 @@ class MockPasswordManagerDriver : public StubPasswordManagerDriver {
 
 class MockPasswordManagerClient : public StubPasswordManagerClient {
  public:
+  MOCK_METHOD(bool,
+              IsSavingAndFillingEnabled,
+              (const GURL&),
+              (const, override));
   MOCK_METHOD(bool, IsOffTheRecord, (), (const, override));
   MOCK_METHOD(autofill::AutofillCrowdsourcingManager*,
               GetAutofillCrowdsourcingManager,
@@ -766,6 +770,20 @@ TEST_P(PasswordFormManagerTest, SetSubmitted) {
       form_manager_->ProvisionallySave(another_form, &driver_, nullptr));
   EXPECT_TRUE(form_manager_->is_submitted());
 #endif
+}
+
+TEST_P(PasswordFormManagerTest, TestSaveFormAllowedNegative) {
+  EXPECT_CALL(client_, IsSavingAndFillingEnabled(submitted_form_.url))
+      .WillRepeatedly(Return(false));
+  form_manager_->ProvisionallySave(submitted_form_, &driver_, nullptr);
+  EXPECT_FALSE(form_manager_->IsSavingAllowed());
+}
+
+TEST_P(PasswordFormManagerTest, TestSaveFormAllowed) {
+  EXPECT_CALL(client_, IsSavingAndFillingEnabled(submitted_form_.url))
+      .WillRepeatedly(Return(true));
+  form_manager_->ProvisionallySave(submitted_form_, &driver_, nullptr);
+  EXPECT_TRUE(form_manager_->IsSavingAllowed());
 }
 
 TEST_P(PasswordFormManagerTest, SetSubmittedMultipleTimes) {

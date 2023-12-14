@@ -29,6 +29,7 @@
 #include "components/password_manager/core/browser/password_form_manager_for_ui.h"
 #include "components/password_manager/core/browser/password_form_metrics_recorder.h"
 #include "components/password_manager/core/browser/password_form_prediction_waiter.h"
+#include "components/password_manager/core/browser/password_manager_metrics_recorder.h"
 #include "components/password_manager/core/browser/password_save_manager.h"
 #include "components/password_manager/core/browser/possible_username_data.h"
 #include "components/password_manager/core/browser/votes_uploader.h"
@@ -106,6 +107,8 @@ class PasswordFormManager : public PasswordFormManagerForUI,
 
   bool is_submitted() { return is_submitted_; }
   void set_not_submitted() { is_submitted_ = false; }
+
+  bool IsSavingAllowed() const { return is_saving_allowed_; }
 
   // Returns true if |*this| manages http authentication.
   bool IsHttpAuth() const;
@@ -379,6 +382,12 @@ class PasswordFormManager : public PasswordFormManagerForUI,
   // Returns non-empty, lower case stored usernames based on `GetBestMatches()`.
   base::flat_set<std::u16string> GetStoredUsernames() const;
 
+  // Records provisional save failure using current |client_| and
+  // |main_frame_url_|.
+  void RecordProvisionalSaveFailure(
+      PasswordManagerMetricsRecorder::ProvisionalSaveFailure failure,
+      const GURL& form_origin);
+
   // The client which implements embedder-specific PasswordManager operations.
   const raw_ptr<PasswordManagerClient> client_;
 
@@ -441,6 +450,11 @@ class PasswordFormManager : public PasswordFormManagerForUI,
 
   // Used to transform FormData into PasswordForms.
   FormDataParser parser_;
+
+  // Used to indicate if password can be offered for saving.
+  // The decision is captured at the provisional save time while it can be
+  // already different for the landing page.
+  bool is_saving_allowed_ = true;
 };
 
 // Returns whether `form_data` differs from the form observed by `form_manager`

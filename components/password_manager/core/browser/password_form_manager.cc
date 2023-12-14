@@ -852,13 +852,26 @@ void PasswordFormManager::CreatePendingCredentials() {
       IsCredentialAPISave());
 }
 
+void PasswordFormManager::RecordProvisionalSaveFailure(
+    PasswordManagerMetricsRecorder::ProvisionalSaveFailure failure,
+    const GURL& form_origin) {
+  std::unique_ptr<BrowserSavePasswordProgressLogger> logger;
+  if (password_manager_util::IsLoggingActive(client_)) {
+    logger = std::make_unique<BrowserSavePasswordProgressLogger>(
+        client_->GetLogManager());
+  }
+  if (client_->GetMetricsRecorder()) {
+    client_->GetMetricsRecorder()->RecordProvisionalSaveFailure(
+        failure, form_origin, form_origin, logger.get());
+  }
+}
+
 bool PasswordFormManager::ProvisionallySave(
     const FormData& submitted_form,
     const PasswordManagerDriver* driver,
     const base::LRUCache<PossibleUsernameFieldIdentifier, PossibleUsernameData>*
         possible_usernames) {
   DCHECK(DoesManage(submitted_form.unique_renderer_id, driver));
-  DCHECK(client_->IsSavingAndFillingEnabled(submitted_form.url));
   auto [parsed_submitted_form, in_form_username_detection_method] =
       ParseFormAndMakeLogging(submitted_form, FormDataParser::Mode::kSaving);
   RecordMetricOnReadonly(parser_.readonly_status(), !!parsed_submitted_form,
@@ -867,6 +880,12 @@ bool PasswordFormManager::ProvisionallySave(
     metrics_recorder_->CalculateParsingDifferenceOnSavingAndFilling(
         *parsed_submitted_form.get());
     CalculateFillingAssistanceMetric(*parsed_submitted_form);
+  }
+
+  if (!client_->IsSavingAndFillingEnabled(submitted_form.url)) {
+    RecordProvisionalSaveFailure(
+        PasswordManagerMetricsRecorder::SAVING_DISABLED, submitted_form.url);
+    is_saving_allowed_ = false;
   }
 
   bool have_password_to_save =

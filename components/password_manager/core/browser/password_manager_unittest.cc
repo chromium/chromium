@@ -2761,7 +2761,7 @@ TEST_F(PasswordManagerTest, SaveOtherGaiaPasswordHash) {
   task_environment_.RunUntilIdle();
   // Submit form and finish navigation.
   EXPECT_CALL(client_, IsSavingAndFillingEnabled(form_data.url))
-      .WillRepeatedly(Return(true));
+      .WillRepeatedly(Return(false));
 
   ON_CALL(*client_.GetStoreResultFilter(), ShouldSaveGaiaPasswordHash(_))
       .WillByDefault(Return(true));
@@ -3371,12 +3371,13 @@ TEST_F(PasswordManagerTest, ReportMissingFormManager) {
           .expected_metric_value = std::nullopt,
       },
       {
-          .description = "Not enabled, no report.",
+          .description = "Not enabled, got report.",
           .saving = MissingFormManagerTestCase::Saving::Disabled,
           .save_signal = MissingFormManagerTestCase::Signal::Automatic,
           .parsed_forms_data = {form_data},
           .processed_form_data = {form_data},
-          .expected_metric_value = std::nullopt,
+          .expected_metric_value = MetricValue(
+              PasswordManagerMetricsRecorder::FormManagerAvailable::kSuccess),
       },
   };
 
