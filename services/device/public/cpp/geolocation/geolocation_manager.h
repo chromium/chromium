@@ -38,6 +38,8 @@ class COMPONENT_EXPORT(GEOLOCATION) GeolocationManager {
   void TrackGeolocationAttempted();
   void TrackGeolocationRelinquished();
   void RequestSystemPermission();
+  // Opens appropriate system preferences/setting page.
+  void OpenSystemPermissionSetting();
 
 #if !BUILDFLAG(IS_APPLE) && \
     !BUILDFLAG(OS_LEVEL_GEOLOCATION_PERMISSION_SUPPORTED)

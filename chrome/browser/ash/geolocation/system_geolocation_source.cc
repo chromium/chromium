@@ -7,8 +7,10 @@
 #include <utility>
 
 #include "ash/constants/ash_pref_names.h"
+#include "ash/public/cpp/system_tray_client.h"
 #include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
+#include "ash/system/model/system_tray_model.h"
 #include "ash/system/privacy_hub/privacy_hub_controller.h"
 #include "ash/system/privacy_hub/sensor_disabled_notification_delegate.h"
 #include "base/check.h"
@@ -61,6 +63,10 @@ void SystemGeolocationSource::TrackGeolocationRelinquished() {
   // Use the default name for the browser.
   ash::privacy_hub_util::TrackGeolocationRelinquished(
       l10n_util::GetStringUTF8(IDS_SHORT_PRODUCT_NAME));
+}
+
+void SystemGeolocationSource::OpenSystemPermissionSetting() {
+  Shell::Get()->system_tray_model()->client()->ShowPrivacyHubSettings();
 }
 
 void SystemGeolocationSource::OnActiveUserPrefServiceChanged(

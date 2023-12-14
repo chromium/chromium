@@ -54,7 +54,7 @@
 #include "third_party/blink/public/mojom/mediastream/media_stream.mojom.h"
 #include "ui/base/l10n/l10n_util.h"
 
-#if BUILDFLAG(IS_MAC)
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_CHROMEOS)
 #include "services/device/public/cpp/geolocation/geolocation_manager.h"
 #include "services/device/public/cpp/geolocation/location_system_permission_status.h"
 #include "services/device/public/cpp/test/fake_geolocation_manager.h"
@@ -528,7 +528,7 @@ TEST_F(ContentSettingBubbleModelTest, AccumulateMediastreamMicAndCamera) {
 }
 
 TEST_F(ContentSettingBubbleModelTest, Geolocation) {
-#if BUILDFLAG(IS_MAC)
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_CHROMEOS)
   auto fake_geolocation_manager =
       std::make_unique<device::FakeGeolocationManager>();
   device::FakeGeolocationManager* geolocation_manager =
@@ -549,7 +549,7 @@ TEST_F(ContentSettingBubbleModelTest, Geolocation) {
                                          CONTENT_SETTING_ALLOW);
   content_settings->OnContentAllowed(ContentSettingsType::GEOLOCATION);
 
-#if BUILDFLAG(IS_MAC)
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_CHROMEOS)
   // System-level geolocation permission is blocked.
   {
     auto content_setting_bubble_model =
@@ -559,8 +559,13 @@ TEST_F(ContentSettingBubbleModelTest, Geolocation) {
         FakeOwner::Create(*content_setting_bubble_model, 0);
     const auto& bubble_content = content_setting_bubble_model->bubble_content();
 
+#if BUILDFLAG(IS_MAC)
     EXPECT_EQ(bubble_content.title,
               l10n_util::GetStringUTF16(IDS_GEOLOCATION_TURNED_OFF_IN_MACOS));
+#else
+    EXPECT_EQ(bubble_content.title,
+              l10n_util::GetStringUTF16(IDS_GEOLOCATION_TURNED_OFF_IN_OS));
+#endif
     EXPECT_TRUE(bubble_content.message.empty());
     EXPECT_EQ(bubble_content.radio_group.radio_items.size(), 0U);
 
@@ -581,8 +586,13 @@ TEST_F(ContentSettingBubbleModelTest, Geolocation) {
     geolocation_manager->SetSystemPermission(
         device::LocationSystemPermissionStatus::kAllowed);
 
+#if BUILDFLAG(IS_MAC)
     EXPECT_EQ(bubble_content.title,
               l10n_util::GetStringUTF16(IDS_GEOLOCATION_TURNED_OFF_IN_MACOS));
+#else
+    EXPECT_EQ(bubble_content.title,
+              l10n_util::GetStringUTF16(IDS_GEOLOCATION_TURNED_OFF_IN_OS));
+#endif
     EXPECT_TRUE(bubble_content.message.empty());
     EXPECT_EQ(bubble_content.radio_group.radio_items.size(), 0U);
 

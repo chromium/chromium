@@ -9,6 +9,7 @@
 #include <memory>
 
 #include "base/functional/callback_helpers.h"
+#include "base/mac/mac_util.h"
 #include "base/sequence_checker.h"
 #include "build/build_config.h"
 
@@ -110,6 +111,11 @@ void SystemGeolocationSourceMac::TrackGeolocationAttempted() {
 #if BUILDFLAG(IS_IOS)
   RequestPermission();
 #endif
+}
+
+void SystemGeolocationSourceMac::OpenSystemPermissionSetting() {
+  base::mac::OpenSystemSettingsPane(
+      base::mac::SystemSettingsPane::kPrivacySecurity_LocationServices);
 }
 
 void SystemGeolocationSourceMac::RequestPermission() {

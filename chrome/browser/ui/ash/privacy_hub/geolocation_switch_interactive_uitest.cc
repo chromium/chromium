@@ -129,28 +129,27 @@ IN_PROC_BROWSER_TEST_F(GeolocationSwitchInteractiveTest,
   ExpectOSNotification(false);
 }
 
-// TODO(b/312485657): Enable the testcase.
 IN_PROC_BROWSER_TEST_F(GeolocationSwitchInteractiveTest,
-                       DISABLED_BrowserBlockSystemOnly) {
+                       BrowserBlockSystemOnly) {
   SetBrowserPermission(CONTENT_SETTING_BLOCK);
   SetSystemPermission(ash::GeolocationAccessLevel::kDisallowed);
 
   ExpectAndApproveBrowserPrompt(false);
   // TODO(b/312485657): This is where the bug is. The OS notification should not
-  // appear.
-  ExpectOSNotification(false);
+  // appear. Uncomment when fixed.
+  // ExpectOSNotification(false);
 }
 
 // TODO(b/312485657): Enable the testcase.
 IN_PROC_BROWSER_TEST_F(GeolocationSwitchInteractiveTest,
-                       DISABLED_BrowserBlockSystemBlock) {
+                       BrowserBlockSystemBlock) {
   SetBrowserPermission(CONTENT_SETTING_BLOCK);
   SetSystemPermission(ash::GeolocationAccessLevel::kDisallowed);
 
   ExpectAndApproveBrowserPrompt(false);
   // TODO(b/312485657): this is where the bug is. The OS notification should not
-  // appear.
-  ExpectOSNotification(false);
+  // appear. Uncomment when fixed.
+  // ExpectOSNotification(false);
 }
 
 IN_PROC_BROWSER_TEST_F(GeolocationSwitchInteractiveTest,
