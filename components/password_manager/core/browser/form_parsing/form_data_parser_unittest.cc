@@ -1305,6 +1305,34 @@ TEST_F(FormParserTest, ServerPredictionsForClearTextPasswordFields) {
   });
 }
 
+// Checks that passwords of length one can only be saved on manual fallback.
+TEST_F(FormParserTest, PasswordsWithLengthOneAreSavedOnlyOnManualFallback) {
+  base::test::ScopedFeatureList feature_list(
+      password_manager::features::kUseServerPredictionsOnSaveParsing);
+  CheckTestData({{
+      .description_for_logging =
+          "Passwords of length 1 can be saved only on manual fallback.",
+      .fields =
+          {
+              {.role = ElementRole::CURRENT_PASSWORD,
+               .value = u"1",
+               .form_control_type = FormControlType::kInputPassword,
+               .prediction = {.type = autofill::PASSWORD}},
+              {.role = ElementRole::NEW_PASSWORD,
+               .value = u"2",
+               .form_control_type = FormControlType::kInputPassword,
+               .prediction = {.type = autofill::ACCOUNT_CREATION_PASSWORD}},
+              {.role = ElementRole::CONFIRMATION_PASSWORD,
+               .value = u"3",
+               .form_control_type = FormControlType::kInputPassword,
+               .prediction = {.type = autofill::CONFIRMATION_PASSWORD}},
+              {.value = u"4",
+               .form_control_type = FormControlType::kInputPassword},
+          },
+      .fallback_only = true,
+  }});
+}
+
 TEST_F(FormParserTest, InferConfirmationPasswordField) {
   CheckTestData({
       {
@@ -1598,15 +1626,15 @@ TEST_F(FormParserTest, Interactability) {
 
 TEST_F(FormParserTest, AllAlternativePasswords) {
   const AlternativeElementVector kPasswords = {
-      {AlternativeElement::Value(u"a"), autofill::FieldRendererId(10),
+      {AlternativeElement::Value(u"password1"), autofill::FieldRendererId(10),
        AlternativeElement::Name(u"p1")},
-      {AlternativeElement::Value(u"b"), autofill::FieldRendererId(22),
+      {AlternativeElement::Value(u"password2"), autofill::FieldRendererId(22),
        AlternativeElement::Name(u"p3")},
   };
   const AlternativeElementVector kUsernames = {
-      {AlternativeElement::Value(u"b"), autofill::FieldRendererId(12),
+      {AlternativeElement::Value(u"username1"), autofill::FieldRendererId(12),
        AlternativeElement::Name(u"chosen")},
-      {AlternativeElement::Value(u"a"), autofill::FieldRendererId(17),
+      {AlternativeElement::Value(u"username2"), autofill::FieldRendererId(17),
        AlternativeElement::Name(u"first")},
   };
   CheckTestData({
@@ -1616,27 +1644,27 @@ TEST_F(FormParserTest, AllAlternativePasswords) {
                                      "value",
           .fields =
               {
-                  {.value = u"a",
-                   .name = u"p1",
+                  {.value = kPasswords[0].value,
+                   .name = kPasswords[0].name,
                    .form_control_type = FormControlType::kInputPassword},
                   {.role = ElementRole::USERNAME,
                    .autocomplete_attribute = "username",
-                   .value = u"b",
-                   .name = u"chosen",
+                   .value = kUsernames[0].value,
+                   .name = kUsernames[0].name,
                    .form_control_type = FormControlType::kInputText},
                   {.role = ElementRole::CURRENT_PASSWORD,
                    .autocomplete_attribute = "current-password",
-                   .value = u"a",
+                   .value = kPasswords[0].value,
                    .form_control_type = FormControlType::kInputPassword},
-                  {.value = u"a",
-                   .name = u"first",
+                  {.value = kUsernames[1].value,
+                   .name = kUsernames[1].name,
                    .form_control_type = FormControlType::kInputText},
-                  {.value = u"a",
+                  {.value = kUsernames[1].value,
                    .form_control_type = FormControlType::kInputText},
-                  {.value = u"b",
-                   .name = u"p3",
+                  {.value = kPasswords[1].value,
+                   .name = kPasswords[1].name,
                    .form_control_type = FormControlType::kInputPassword},
-                  {.value = u"b",
+                  {.value = kPasswords[1].value,
                    .form_control_type = FormControlType::kInputPassword},
               },
           .number_of_all_alternative_passwords = 2,
