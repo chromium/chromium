@@ -31,6 +31,18 @@ declare_args() {
   # into their project to enable CXX there.
   enable_cxx = build_with_chromium
 
+  # The chromium prelude crate provides the `chromium::import!` macro which
+  # is needed to depend on first-party rust libraries. Third-party libraries
+  # are specified with cargo_crate and do not get imported through this macro.
+  #
+  # The macro requires //third_party/rust for syn, quote, and proc_macro2.
+  # Downstream projects that want to use //build for the rust GN templates but
+  # don't want to enable the chromium prelude can disable it here, and should
+  # specify a globally unique `crate_name` in their rust library GN rules
+  # instead. Note that using a `crate_name` is strongly discouraged inside
+  # Chromium, and is also discouraged for downstream projects when possible.
+  enable_chromium_prelude = build_with_chromium
+
   # As we incrementally enable Rust on mainstream builders, we want to enable
   # the toolchain (by switching 'enable_rust' to true) while still disabling
   # almost all Rust features). Yet we still want to have some builders with

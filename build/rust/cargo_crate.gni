@@ -229,6 +229,9 @@ template("cargo_crate") {
       crate_type = "rlib"
     }
 
+    # Don't import the `chromium` crate into third-party code.
+    no_chromium_prelude = true
+
     rustc_metadata = _rustc_metadata
 
     # TODO(crbug.com/1422745): don't default to true. This requires changes to
@@ -414,6 +417,9 @@ template("cargo_crate") {
         if (defined(invoker.build_script_inputs)) {
           inputs = invoker.build_script_inputs
         }
+
+        # Don't import the `chromium` crate into third-party code.
+        no_chromium_prelude = true
 
         # The ${_build_script_name}_output target looks for the exe in this
         # location. Due to how the Windows component build works, this has to

@@ -266,6 +266,15 @@ template("rust_target") {
     _rust_public_deps = _public_deps
     _cxx_deps = _deps
 
+    # Include the `chromium` crate in all first-party code. Third-party code
+    # (and the `chromium` crate itself) opts out by setting
+    # `no_chromium_prelude`.
+    if (!defined(invoker.no_chromium_prelude) || !invoker.no_chromium_prelude) {
+      if (enable_chromium_prelude) {
+        _rust_deps += [ "//build/rust/chromium_prelude" ]
+      }
+    }
+
     # The Rust target (and unit tests) need the Cxx crate when using it to
     # generate bindings.
     if (_cxx_bindings != []) {
