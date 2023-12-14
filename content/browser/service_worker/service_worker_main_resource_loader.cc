@@ -575,9 +575,11 @@ bool ServiceWorkerMainResourceLoader::StartRaceNetworkRequest(
 
   // If the initial state is not kWaitForBody, that means creating data pipes
   // failed. Do not start RaceNetworkRequest this case.
-  if (race_network_request_url_loader_client_->state() !=
-      ServiceWorkerRaceNetworkRequestURLLoaderClient::State::kWaitForBody) {
-    return false;
+  switch (race_network_request_url_loader_client_->state()) {
+    case ServiceWorkerRaceNetworkRequestURLLoaderClient::State::kWaitForBody:
+      break;
+    default:
+      return false;
   }
 
   mojo::PendingRemote<network::mojom::URLLoaderFactory> remote_factory;
@@ -732,9 +734,21 @@ void ServiceWorkerMainResourceLoader::DidDispatchFetchEvent(
             base::TimeTicks::Now(), /*is_fallback=*/is_fallback);
   }
 
+  bool is_race_network_request_aborted = false;
+  if (race_network_request_url_loader_client_) {
+    switch (race_network_request_url_loader_client_->state()) {
+      case ServiceWorkerRaceNetworkRequestURLLoaderClient::State::kAborted:
+        is_race_network_request_aborted = true;
+        break;
+      default:
+        break;
+    }
+  }
+
   // Transition the state if the fetch result is fallback. This is a special
-  // treatment for RaceNetworkRequest and AutoPreload.
-  if (is_fallback) {
+  // treatment for the case when RaceNetworkRequest and AutoPreload successfully
+  // dispatced the network request.
+  if (is_fallback && !is_race_network_request_aborted) {
     switch (commit_responsibility()) {
       case FetchResponseFrom::kNoResponseYet:
         // If the RaceNetworkRequest or AutoPreload is triggered but the
