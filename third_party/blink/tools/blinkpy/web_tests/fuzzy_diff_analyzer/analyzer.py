@@ -7,6 +7,9 @@ from typing import List
 
 from blinkpy.web_tests.fuzzy_diff_analyzer import data_types as dt
 
+MAX_BUILDER_NUM = 5
+AVG_DURATION_THRESHOLD = 0.75
+
 
 class ImageMatchingAnalyzer:
     """Abstract base class for all analyzers."""
@@ -137,4 +140,74 @@ class FuzzyMatchingAnalyzer(ImageMatchingAnalyzer):
                self._image_diff_num_threshold)
         des += ('distinct_diff_num_threshold of %d' %
                 self._distinct_diff_num_threshold)
+        return des
+
+
+class SlowTestAnalyzer:
+    def __init__(self,
+                 slow_result_ratio_threshold: float = 0.9,
+                 timeout_result_threshold: int = 0):
+        """Class for the slow test analyzer for web tests.
+
+        Args: (Both thresholds must be hit for a test to be considered slow)
+          slow_result_ratio_threshold: A float denoting what fraction
+            of results need to be slow for a test to be considered slow.
+          timeout_result_threshold: An int denoting the number of timeout
+            results necessary for a test to be considered slow.
+        """
+        assert slow_result_ratio_threshold >= 0
+        assert slow_result_ratio_threshold <= 1
+        assert timeout_result_threshold >= 0
+        self._slow_result_ratio_threshold = slow_result_ratio_threshold
+        self._timeout_result_threshold = timeout_result_threshold
+
+    def run_analyzer(
+        self, test_results: List[dt.TestSlownessTupleType]
+    ) -> dt.TestAnalysisResultType:
+        """Analyze the input test slowness data to show a statistics and
+        suggestion.
+
+        Args:
+          test_results: list of slowness data per builder.
+
+        Returns:
+          A test analysis result representing the analyzer's statistics and
+            suggestion for the slow test.
+        """
+        # Filter slowness data per builder
+        slow_tests = []
+        for result in test_results:
+            if (result.timeout_count >= self._timeout_result_threshold
+                    and result.avg_duration >=
+                    result.timeout * AVG_DURATION_THRESHOLD):
+                total_non_timeout_count = result.slow_count + result.non_slow_count
+                slow_ratio = (result.slow_count / total_non_timeout_count
+                              if total_non_timeout_count else 0)
+                if slow_ratio >= self._slow_result_ratio_threshold:
+                    slow_tests.append(
+                        dt.TestSlownessData(result.builder, result.slow_count,
+                                            slow_ratio, result.timeout_count,
+                                            result.avg_duration))
+
+        # No slowness data meet the threshold, return no result.
+        if not slow_tests:
+            return dt.TestAnalysisResultType(
+                False, 'Test does not meet threshold in all builders.')
+
+        sorted(slow_tests, key=lambda x: x.slow_ratio)
+        count = min(MAX_BUILDER_NUM, len(slow_tests))
+        result = 'Test is slow in the below list of builders:\n'
+        for i in range(count):
+            test = slow_tests[i]
+            result += '%s : timeout count: %d, ' % (test.builder,
+                                                    test.timeout_count)
+            result += 'slow count: %d, ' % test.slow_count
+            result += 'slow ratio: %.2f, ' % test.slow_ratio
+            result += 'avg duration: %.2f\n' % test.avg_duration
+        return dt.TestAnalysisResultType(True, result)
+
+    def description(self) -> str:
+        des = (f'Slow test analyzer with slow_result_ration_threshold of '
+               f'{self._slow_result_ratio_threshold} and '
+               f'timeout_result_threshold of {self._timeout_result_threshold}')
         return des

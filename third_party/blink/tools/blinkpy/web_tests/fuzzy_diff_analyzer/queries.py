@@ -9,6 +9,7 @@ import subprocess
 from typing import Optional
 
 from flake_suppressor_common import common_typing as ct
+from flake_suppressor_common import queries as queries_module
 from unexpected_passes_common import queries as upc_queries
 
 # Gets all image comparison failures from the past |sample_period| days from CI
@@ -66,6 +67,57 @@ WHERE
   image_diff_total_pixels IS NOT NULL
 """
 
+# Gets overall test slowness from the past |sample_period| days from CI
+# bots.
+# List of data selected from the database:
+# test_name      - the full test name, like external/wpt/rendering/test1
+# builder        - name of the builder that runs the test
+# slow_count     - total number of pass and failed test runs that are slow
+# non_slow_count - total number of pass and failed test runs that are not slow
+# avg_duration   - average runtime of slow and non-slow tests
+# timeout_count  - total number of timeout test runs
+CI_TESTS_OVERALL_SLOWNESS_QUERY = """\
+WITH
+  {sheriff_rotations_ci_builds}
+  tests_slowness AS (
+  SELECT
+    test_metadata.name as test_name,
+    CAST((SELECT value FROM tr.tags
+     WHERE key = "web_tests_base_timeout") AS float64) as timeout,
+    (SELECT value FROM tr.variant
+     WHERE key = "test_suite") as test_suite,
+    (SELECT value FROM tr.variant
+     WHERE key = "builder") as builder,
+    CAST((
+          SELECT value
+          FROM tr.tags
+          WHERE key = "web_tests_test_was_slow") AS bool) as test_was_slow,
+    duration,
+    status,
+  FROM `chrome-luci-data.chromium.blink_web_tests_ci_test_results` tr
+  WHERE
+    (status = "ABORT" OR status = "PASS" OR status = "FAIL") AND
+    {test_path_selector}
+    exported.realm = "chromium:ci" AND
+    partition_time > TIMESTAMP_SUB(CURRENT_TIMESTAMP(),
+                                   INTERVAL @sample_period DAY)
+)
+SELECT
+  test_name,
+  builder,
+  timeout,
+  SUM(CASE WHEN test_was_slow = true THEN 1 ELSE 0 END) AS slow_count,
+  SUM(CASE WHEN test_was_slow = false THEN 1 ELSE 0 END) AS non_slow_count,
+  AVG(CASE WHEN status = "ABORT" THEN NULL ELSE duration END) AS avg_duration,
+  SUM(CASE WHEN status = "ABORT" THEN 1 ELSE 0 END) AS timeout_count,
+FROM tests_slowness
+WHERE
+   (REGEXP_CONTAINS(test_suite, "blink_w(pt|eb)_tests")
+    AND NOT REGEXP_CONTAINS(test_suite, "^webgpu"))
+  {builder_selector}
+GROUP BY test_name, builder, timeout
+"""
+
 # Gets all web test flaky bugs and their flaky tests from the past |sample_period|
 # days.
 # List of data selected from the database:
@@ -98,9 +150,9 @@ WITH
 """
 
 
-class FuzzyDiffAnalyzerQuerier:
+class Querier:
     def __init__(self, sample_period: int, billing_project: str):
-        """Class for making calls to BigQuery for Fuzzy Diff Analyzer.
+        """Class for making calls to BigQuery.
 
         Args:
           sample_period: An int denoting the number of days that data should be
@@ -131,6 +183,45 @@ class FuzzyDiffAnalyzerQuerier:
         return self._get_json_results(
             CI_FAILED_IMAGE_COMPARISON_TEST_QUERY.format(
                 test_path_selector=test_path_selector))
+
+    def get_overall_slowness_ci_tests(
+            self,
+            test_path: Optional[str] = None,
+            only_check_sheriff_builds: Optional[bool] = True
+    ) -> ct.QueryJsonType:
+        """Gets overall test slowness data from CI under the test path.
+
+        Args:
+          test_path: A string of test path that contains the tests to do
+              analysis. If the value is empty, this will check all tests.
+          only_check_sheriff_builds: A bool var to indicate if only
+              check sheriff builders or all builders.
+
+        Returns:
+          A JSON representation of the BigQuery results containing all found
+          overall test slowness that came from CI bots under the test path.
+        """
+        if test_path:
+            test_path_selector = ('STARTS_WITH(test_metadata.name, "%s") AND' %
+                                  test_path)
+        else:
+            test_path_selector = ''
+
+        if only_check_sheriff_builds:
+            chromium_builds = queries_module.SHERIFF_ROTATIONS_CI_BUILDS_TEMPLATE
+            sheriff_rotations_ci_builds = \
+                f'sheriff_rotations_ci_builds AS ({chromium_builds}),'
+            builder_selector = ('AND builder IN (SELECT builder '
+                                'FROM sheriff_rotations_ci_builds)')
+        else:
+            sheriff_rotations_ci_builds = ''
+            builder_selector = ''
+
+        return self._get_json_results(
+            CI_TESTS_OVERALL_SLOWNESS_QUERY.format(
+                sheriff_rotations_ci_builds=sheriff_rotations_ci_builds,
+                test_path_selector=test_path_selector,
+                builder_selector=builder_selector))
 
     def get_web_test_flaky_bugs(self) -> ct.QueryJsonType:
         """Gets all web test flaky bugs from the database.

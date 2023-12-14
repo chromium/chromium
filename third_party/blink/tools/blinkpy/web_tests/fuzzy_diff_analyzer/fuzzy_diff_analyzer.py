@@ -80,8 +80,7 @@ def ParseArgs() -> argparse.Namespace:
 def main() -> int:
     args = ParseArgs()
 
-    querier_instance = queries.FuzzyDiffAnalyzerQuerier(
-        args.sample_period, args.project)
+    querier_instance = queries.Querier(args.sample_period, args.project)
     results_processor = results.ResultProcessor()
     matching_analyzer = analyzer.FuzzyMatchingAnalyzer(
         args.image_diff_num_threshold, args.distinct_diff_num_threshold)

@@ -27,6 +27,22 @@ AggregatedResultsType = Dict[str, TestToTypTagsType]
 TestAnalysisResultType = namedtuple('TestAnalysisResultType',
                                     ['is_analyzed', 'analysis_result'])
 
+# Test slowness data, example: ['builder1', 5, 100, 2.1, 10, 6]
+# Sample:
+# {
+#   'test_name': [ ('builder1', 5, 100, 2.1, 1, 6),
+#                  ('builder2', 10, 5, 5.1, 20, 6), ]
+# }
+TestSlownessTupleType = namedtuple('TestSlownessTupleType', [
+    'builder', 'slow_count', 'non_slow_count', 'avg_duration', 'timeout_count',
+    'timeout'
+])
+AggregatedSlownessResultsType = Dict[str, List[TestSlownessTupleType]]
+
+TestSlownessData = namedtuple(
+    'TestSlownessData',
+    ['builder', 'slow_count', 'slow_ratio', 'timeout_count', 'avg_duration'])
+
 
 class Result:
     """Container for an image diff test result.

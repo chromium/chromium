@@ -149,3 +149,75 @@ class FuzzyMatchingAnalyzerTest(unittest.TestCase):
             analyzer.FuzzyMatchingAnalyzer(
                 fuzzy_match_image_diff_num_threshold=0,
                 fuzzy_match_distinct_diff_num_threshold=-1)
+
+
+class SlowTestAnalyzerTest(unittest.TestCase):
+    def test_run_analyzer_in_bad_slow_ratio_threshold(self) -> None:
+        slow_test_analyzer = analyzer.SlowTestAnalyzer(0.95, 0)
+
+        test_data = \
+        [
+            dt.TestSlownessTupleType('builder1', 1, 30, 1.1, 2, 6),
+            dt.TestSlownessTupleType('builder2', 30, 5, 3.1, 5, 6),
+        ]
+        actual_result = slow_test_analyzer.run_analyzer(
+            test_data).analysis_result
+        expected_result = 'Test does not meet threshold in all builders.'
+        self.assertEqual(actual_result, expected_result)
+
+    def test_run_analyzer_in_good_slow_ratio_threshold(self) -> None:
+        slow_test_analyzer = analyzer.SlowTestAnalyzer(0.9, 0)
+
+        test_data = \
+        [
+            dt.TestSlownessTupleType('builder1', 1, 30, 1.1, 2, 6),
+            dt.TestSlownessTupleType('builder2', 30, 3, 4.9, 5, 6),
+        ]
+        actual_result = slow_test_analyzer.run_analyzer(
+            test_data).analysis_result
+        expected_result = 'Test is slow in the below list of builders:\n' \
+                          'builder2 : timeout count: 5, slow count: 30, ' \
+                          'slow ratio: 0.91, avg duration: 4.90\n'
+        self.assertEqual(actual_result, expected_result)
+
+    def test_run_analyzer_in_bad_timeout_count_threshold(self) -> None:
+        slow_test_analyzer = analyzer.SlowTestAnalyzer(0.9, 10)
+
+        test_data = \
+        [
+            dt.TestSlownessTupleType('builder1', 20, 1, 5.1, 2, 6),
+            dt.TestSlownessTupleType('builder2', 30, 1, 3.1, 5, 6),
+        ]
+        actual_result = slow_test_analyzer.run_analyzer(
+            test_data).analysis_result
+        expected_result = 'Test does not meet threshold in all builders.'
+        self.assertEqual(actual_result, expected_result)
+
+    def test_run_analyzer_in_good_timeout_count_threshold(self) -> None:
+        slow_test_analyzer = analyzer.SlowTestAnalyzer(0.9, 4)
+
+        test_data = \
+        [
+            dt.TestSlownessTupleType('builder1', 20, 1, 3.1, 6, 6),
+            dt.TestSlownessTupleType('builder2', 30, 1, 5.1, 5, 6),
+        ]
+        actual_result = slow_test_analyzer.run_analyzer(
+            test_data).analysis_result
+        expected_result = 'Test is slow in the below list of builders:\n' \
+                          'builder2 : timeout count: 5, slow count: 30, ' \
+                          'slow ratio: 0.97, avg duration: 5.10\n'
+        self.assertEqual(actual_result, expected_result)
+
+    def test_invalid_args(self) -> None:
+        # Test negative number.
+        with self.assertRaises(AssertionError):
+            analyzer.SlowTestAnalyzer(slow_result_ratio_threshold=-1,
+                                      timeout_result_threshold=0)
+        # Test number greater than 1.
+        with self.assertRaises(AssertionError):
+            analyzer.SlowTestAnalyzer(slow_result_ratio_threshold=1.1,
+                                      timeout_result_threshold=0)
+        # Test negative number.
+        with self.assertRaises(AssertionError):
+            analyzer.SlowTestAnalyzer(slow_result_ratio_threshold=0,
+                                      timeout_result_threshold=-1)

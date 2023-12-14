@@ -39,10 +39,26 @@ QUERY_DATA_2 = [{
     'test_ids': ['testC', 'testD', 'testE'],
 }]
 
+QUERY_DATA_3 = [{
+    'name': 'foo/bar/windows',
+    'builder': 'windows_builder',
+    'slow_count': 5,
+    'non_slow_count': 100,
+    'avg_duration': 2.1,
+    'timeout_count': 3,
+}, {
+    'name': 'foo/bar/mac',
+    'builder': 'mac_builder',
+    'slow_count': 30,
+    'non_slow_count': 2,
+    'avg_duration': 5.5,
+    'timeout_count': 20,
+}]
+
 
 class FuzzyDiffAnalyzerQueriesUnittest(unittest.TestCase):
     def setUp(self) -> None:
-        self._querier_instance = queries.FuzzyDiffAnalyzerQuerier(1, 'project')
+        self._querier_instance = queries.Querier(1, 'project')
         self._subprocess_patcher = mock.patch(
             'flake_suppressor_common.queries.subprocess.run')
         self._subprocess_mock = self._subprocess_patcher.start()
@@ -55,8 +71,7 @@ class FuzzyDiffAnalyzerQueriesUnittest(unittest.TestCase):
             self.assertEqual(
                 query,queries.CI_FAILED_IMAGE_COMPARISON_TEST_QUERY.format(
                     test_path_selector=''))
-            query_result = QUERY_DATA
-            return uu.FakeProcess(stdout=json.dumps(query_result))
+            return uu.FakeProcess(stdout=json.dumps(QUERY_DATA))
 
         self._subprocess_mock.side_effect = side_effect
         result_query = \
@@ -69,11 +84,29 @@ class FuzzyDiffAnalyzerQueriesUnittest(unittest.TestCase):
         def side_effect(*_, **kwargs) -> uu.FakeProcess:
             query = kwargs['input']
             self.assertEqual(query, queries.WEB_TEST_FLAKY_BUGS_QUERY)
-            query_result = QUERY_DATA_2
-            return uu.FakeProcess(stdout=json.dumps(query_result))
+            return uu.FakeProcess(stdout=json.dumps(QUERY_DATA_2))
 
         self._subprocess_mock.side_effect = side_effect
         result_query = \
             self._querier_instance.get_web_test_flaky_bugs()
         self.assertEqual(result_query, QUERY_DATA_2)
+        self.assertEqual(self._subprocess_mock.call_count, 1)
+
+    def testGetOverallTestSlowness(self) -> None:
+        """Tests that the query instance is sending the sql."""
+        def side_effect(*_, **kwargs) -> uu.FakeProcess:
+            query = kwargs['input']
+            self.assertEqual(
+                query,
+                queries.CI_TESTS_OVERALL_SLOWNESS_QUERY.format(
+                    test_path_selector='',
+                    sheriff_rotations_ci_builds='',
+                    builder_selector=''))
+            return uu.FakeProcess(stdout=json.dumps(QUERY_DATA_3))
+
+        self._subprocess_mock.side_effect = side_effect
+        result_query = \
+            self._querier_instance.get_overall_slowness_ci_tests(
+                only_check_sheriff_builds=False)
+        self.assertEqual(result_query, QUERY_DATA_3)
         self.assertEqual(self._subprocess_mock.call_count, 1)

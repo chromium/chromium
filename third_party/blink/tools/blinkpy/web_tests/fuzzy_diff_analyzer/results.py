@@ -56,3 +56,32 @@ class ResultProcessor:
             object_results.append(
                 dt.Result(r['name'], typ_tags, image_diff_tag, build_id))
         return object_results
+
+    def aggregate_test_slowness_results(
+            self,
+            results: ct.QueryJsonType) -> dt.AggregatedSlownessResultsType:
+        """Aggregates BigQuery results for test slowness data.
+
+        Args:
+          results: Parsed JSON test results from a BigQuery query.
+
+        Returns:
+          A map in the following format:
+          {
+            'test_name': {
+              'typ_tags_as_tuple': [ ('builder1', 5, 100, 2.1, 1),
+                                     ('builder2', 10, 5, 5.1, 20), ]
+            },
+          }
+        """
+        aggregated_results = defaultdict(lambda: [])
+        for r in results:
+            avg_duration = float(r['avg_duration']) if r['avg_duration'] else 0
+            slowness_data = dt.TestSlownessTupleType(r['builder'],
+                                                     int(r['slow_count']),
+                                                     int(r['non_slow_count']),
+                                                     avg_duration,
+                                                     int(r['timeout_count']),
+                                                     float(r['timeout']))
+            aggregated_results[r['test_name']].append(slowness_data)
+        return aggregated_results
