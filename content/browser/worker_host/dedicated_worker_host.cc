@@ -817,6 +817,22 @@ void DedicatedWorkerHost::GetFileSystemAccessManager(
       std::move(receiver));
 }
 
+void DedicatedWorkerHost::BindPressureService(
+    mojo::PendingReceiver<device::mojom::PressureManager> receiver) {
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+
+  if (!network::IsOriginPotentiallyTrustworthy(creator_origin_)) {
+    return;
+  }
+
+  if (!pressure_service_) {
+    pressure_service_ =
+        std::make_unique<PressureServiceForWorker<DedicatedWorkerHost>>(this);
+  }
+
+  pressure_service_->BindReceiver(std::move(receiver));
+}
+
 void DedicatedWorkerHost::ObserveNetworkServiceCrash(
     StoragePartitionImpl* storage_partition_impl) {
   DCHECK(base::FeatureList::IsEnabled(blink::features::kPlzDedicatedWorker));

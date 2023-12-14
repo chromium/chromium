@@ -12,6 +12,7 @@
 #include "build/build_config.h"
 #include "content/browser/browser_interface_broker_impl.h"
 #include "content/browser/buckets/bucket_context.h"
+#include "content/browser/compute_pressure/pressure_service_for_worker.h"
 #include "content/browser/renderer_host/code_cache_host_impl.h"
 #include "content/public/browser/dedicated_worker_creator.h"
 #include "content/public/browser/global_routing_id.h"
@@ -23,6 +24,7 @@
 #include "mojo/public/cpp/bindings/remote.h"
 #include "mojo/public/cpp/bindings/unique_receiver_set.h"
 #include "net/base/isolation_info.h"
+#include "services/device/public/mojom/pressure_manager.mojom.h"
 #include "services/network/public/cpp/url_loader_completion_status.h"
 #include "services/network/public/mojom/client_security_state.mojom.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -154,6 +156,8 @@ class DedicatedWorkerHost final
       mojo::PendingReceiver<blink::mojom::BucketManagerHost> receiver);
   void GetFileSystemAccessManager(
       mojo::PendingReceiver<blink::mojom::FileSystemAccessManager> receiver);
+  void BindPressureService(
+      mojo::PendingReceiver<device::mojom::PressureManager> receiver);
 
 #if !BUILDFLAG(IS_ANDROID)
   void BindSerialService(
@@ -376,6 +380,9 @@ class DedicatedWorkerHost final
   mojo::Remote<blink::mojom::DedicatedWorkerHostFactoryClient> client_;
 
   std::unique_ptr<ServiceWorkerMainResourceHandle> service_worker_handle_;
+
+  std::unique_ptr<PressureServiceForWorker<DedicatedWorkerHost>>
+      pressure_service_;
 
   // BrowserInterfaceBroker implementation through which this
   // DedicatedWorkerHost exposes worker-scoped Mojo services to the

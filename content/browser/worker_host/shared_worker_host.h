@@ -17,6 +17,7 @@
 #include "base/unguessable_token.h"
 #include "content/browser/browser_interface_broker_impl.h"
 #include "content/browser/buckets/bucket_context.h"
+#include "content/browser/compute_pressure/pressure_service_for_worker.h"
 #include "content/browser/renderer_host/code_cache_host_impl.h"
 #include "content/browser/renderer_host/policy_container_host.h"
 #include "content/common/content_export.h"
@@ -31,6 +32,7 @@
 #include "mojo/public/cpp/bindings/remote.h"
 #include "mojo/public/cpp/bindings/unique_receiver_set.h"
 #include "net/base/network_isolation_key.h"
+#include "services/device/public/mojom/pressure_manager.mojom.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
 #include "services/network/public/cpp/cross_origin_embedder_policy.h"
 #include "services/network/public/mojom/url_loader_factory.mojom-forward.h"
@@ -143,6 +145,8 @@ class CONTENT_EXPORT SharedWorkerHost : public blink::mojom::SharedWorkerHost,
       mojo::PendingReceiver<blink::mojom::BlobURLStore> receiver);
   void CreateBucketManagerHost(
       mojo::PendingReceiver<blink::mojom::BucketManagerHost> receiver);
+  void BindPressureService(
+      mojo::PendingReceiver<device::mojom::PressureManager> receiver);
 
   // Causes this instance to be deleted, which will terminate the worker. May
   // be done based on a UI action.
@@ -317,6 +321,8 @@ class CONTENT_EXPORT SharedWorkerHost : public blink::mojom::SharedWorkerHost,
   std::set<blink::mojom::WebFeature> used_features_;
 
   std::unique_ptr<SharedWorkerContentSettingsProxyImpl> content_settings_;
+
+  std::unique_ptr<PressureServiceForWorker<SharedWorkerHost>> pressure_service_;
 
   // This is kept alive during the lifetime of the shared worker, since it's
   // associated with Mojo interfaces (ServiceWorkerContainer and

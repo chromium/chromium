@@ -456,22 +456,6 @@ BindWorkerReceiver(
       base::Unretained(host), method);
 }
 
-template <typename WorkerHost>
-base::RepeatingCallback<
-    void(const url::Origin&,
-         mojo::PendingReceiver<device::mojom::PressureManager>)>
-BindPressureManagerWorkerForOrigin(WorkerHost* host) {
-  return base::BindRepeating(
-      [](WorkerHost* host, const url::Origin& origin,
-         mojo::PendingReceiver<device::mojom::PressureManager> receiver) {
-        if (!network::IsOriginPotentiallyTrustworthy(origin)) {
-          return;
-        }
-        GetDeviceService().BindPressureManager(std::move(receiver));
-      },
-      base::Unretained(host));
-}
-
 template <typename WorkerHost, typename Interface>
 base::RepeatingCallback<void(const url::Origin&,
                              mojo::PendingReceiver<Interface>)>
@@ -1346,6 +1330,10 @@ void PopulateDedicatedWorkerBinders(DedicatedWorkerHost* host,
   map->Add<blink::mojom::FileSystemAccessManager>(
       base::BindRepeating(&DedicatedWorkerHost::GetFileSystemAccessManager,
                           base::Unretained(host)));
+  if (base::FeatureList::IsEnabled(blink::features::kComputePressure)) {
+    map->Add<device::mojom::PressureManager>(base::BindRepeating(
+        &DedicatedWorkerHost::BindPressureService, base::Unretained(host)));
+  }
 
   // RenderProcessHost binders
   map->Add<media::mojom::VideoDecodePerfHistory>(BindWorkerReceiver(
@@ -1381,13 +1369,6 @@ void PopulateBinderMapWithContext(
       &RenderProcessHostImpl::CreatePaymentManagerForOrigin, host));
   map->Add<blink::mojom::PermissionService>(BindWorkerReceiverForOrigin(
       &RenderProcessHostImpl::CreatePermissionService, host));
-
-  // BindPressureManagerWorkerForOrigin() does not use RenderProcessHost,
-  // but also needs an origin for its checks.
-  if (base::FeatureList::IsEnabled(blink::features::kComputePressure)) {
-    map->Add<device::mojom::PressureManager>(
-        BindPressureManagerWorkerForOrigin(host));
-  }
   map->Add<blink::mojom::FileBackedBlobFactory>(BindWorkerReceiverForOrigin(
       &RenderProcessHostImpl::BindFileBackedBlobFactory, host));
 }
@@ -1448,6 +1429,10 @@ void PopulateSharedWorkerBinders(SharedWorkerHost* host, mojo::BinderMap* map) {
       &CreateReportingServiceProxyForSharedWorker, base::Unretained(host)));
   map->Add<blink::mojom::BucketManagerHost>(base::BindRepeating(
       &SharedWorkerHost::CreateBucketManagerHost, base::Unretained(host)));
+  if (base::FeatureList::IsEnabled(blink::features::kComputePressure)) {
+    map->Add<device::mojom::PressureManager>(base::BindRepeating(
+        &SharedWorkerHost::BindPressureService, base::Unretained(host)));
+  }
 
   // RenderProcessHost binders
   map->Add<media::mojom::VideoDecodePerfHistory>(BindWorkerReceiver(
@@ -1483,13 +1468,6 @@ void PopulateBinderMapWithContext(
       &RenderProcessHostImpl::CreatePaymentManagerForOrigin, host));
   map->Add<blink::mojom::PermissionService>(BindWorkerReceiverForOrigin(
       &RenderProcessHostImpl::CreatePermissionService, host));
-
-  // BindPressureManagerWorkerForOrigin() does not use RenderProcessHost,
-  // but also needs an origin for its checks.
-  if (base::FeatureList::IsEnabled(blink::features::kComputePressure)) {
-    map->Add<device::mojom::PressureManager>(
-        BindPressureManagerWorkerForOrigin(host));
-  }
   map->Add<blink::mojom::FileBackedBlobFactory>(BindWorkerReceiverForOrigin(
       &RenderProcessHostImpl::BindFileBackedBlobFactory, host));
 }

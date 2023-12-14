@@ -565,6 +565,22 @@ void SharedWorkerHost::CreateBucketManagerHost(
   GetProcessHost()->BindBucketManagerHost(AsWeakPtr(), std::move(receiver));
 }
 
+void SharedWorkerHost::BindPressureService(
+    mojo::PendingReceiver<device::mojom::PressureManager> receiver) {
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+
+  if (!network::IsOriginPotentiallyTrustworthy(GetStorageKey().origin())) {
+    return;
+  }
+
+  if (!pressure_service_) {
+    pressure_service_ =
+        std::make_unique<PressureServiceForWorker<SharedWorkerHost>>(this);
+  }
+
+  pressure_service_->BindReceiver(std::move(receiver));
+}
+
 void SharedWorkerHost::CreateCodeCacheHost(
     mojo::PendingReceiver<blink::mojom::CodeCacheHost> receiver) {
   // Create a new CodeCacheHostImpl and bind it to the given receiver.
