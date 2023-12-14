@@ -105,7 +105,7 @@ struct TestNodeWrapper<FrameNodeImpl>::Factory {
       ProcessNodeImpl* process_node,
       PageNodeImpl* page_node,
       FrameNodeImpl* parent_frame_node,
-      FrameNodeImpl* fenced_frame_embedder_frame_node,
+      FrameNodeImpl* outer_document_for_fenced_frame,
       int render_frame_id,
       const blink::LocalFrameToken& frame_token = blink::LocalFrameToken(),
       content::BrowsingInstanceId browsing_instance_id =
@@ -114,7 +114,7 @@ struct TestNodeWrapper<FrameNodeImpl>::Factory {
       bool is_current = true) {
     return std::make_unique<FrameNodeImpl>(
         process_node, page_node, parent_frame_node,
-        fenced_frame_embedder_frame_node, render_frame_id, frame_token,
+        outer_document_for_fenced_frame, render_frame_id, frame_token,
         browsing_instance_id, site_instance_id, is_current);
   }
 };

@@ -654,7 +654,7 @@ content::GlobalRenderFrameHostId TestFrameNodeSource::CreateFrameNode(
                                                         frame_id);
   auto frame_node = PerformanceManagerImpl::CreateFrameNode(
       process_node, page_node_.get(), /*parent_frame_node=*/nullptr,
-      /*fenced_frame_embedder_frame_node*/ nullptr, frame_id,
+      /*outer_document_for_fenced_frame*/ nullptr, frame_id,
       blink::LocalFrameToken(), content::BrowsingInstanceId(0),
       content::SiteInstanceId(0), /*is_current=*/true);
 
