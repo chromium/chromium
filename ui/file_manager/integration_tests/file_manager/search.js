@@ -284,9 +284,7 @@ testcase.searchQueryLaunchParam = async () => {
   //        directory that contains query-matched files (*.gdoc).
   const directoryTree = await DirectoryTreePageObject.create(appId, remoteCall);
   await directoryTree.waitForSelectedItemByLabel('My Drive');
-  // Focus on the tree before using ":focus" to check the tree item focus.
-  await directoryTree.focusTree();
-  await directoryTree.waitForFocusedItemByLabel('My Drive');
+  await directoryTree.waitForFocusableItemByLabel('My Drive');
 
   // Check: Query-matched files should be shown in the files list.
   await remoteCall.waitForFiles(appId, TestEntryInfo.getExpectedRows([

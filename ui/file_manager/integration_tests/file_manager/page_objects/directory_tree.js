@@ -137,6 +137,24 @@ export class DirectoryTreePageObject {
   }
 
   /**
+   * Wait for the tree item with the label to be focusable (aka "selected" in
+   * the old tree implementation).
+   *
+   * @param {string} label Label of the tree item
+   * @return {!Promise<!ElementObject>}
+   */
+  async waitForFocusableItemByLabel(label) {
+    if (this.isNewTree) {
+      return this.remoteCall_.waitForElement(
+          // Go inside shadow DOM to check tabindex.
+          this.appId_,
+          [this.selectors_.itemByLabel(label), 'li[tabindex="0"]']);
+    }
+    return this.remoteCall_.waitForElement(
+        this.appId_, this.selectors_.itemByLabel(label, {focused: true}));
+  }
+
+  /**
    * Wait for the tree item with the type to have focused (aka "selected" in the
    * old tree implementation) state.
    *

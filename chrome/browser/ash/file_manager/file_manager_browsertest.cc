@@ -1925,9 +1925,7 @@ WRAPPED_INSTANTIATE_TEST_SUITE_P(
     Recents, /* recents.js */
     FilesAppBrowserTest,
     ::testing::Values(
-#if !defined(ADDRESS_SANITIZER) && !defined(LEAK_SANITIZER)
         TestCase("recentsNested").NewDirectoryTree(),
-#endif
         TestCase("recentsFilterResetToAll").NewDirectoryTree(),
         TestCase("recentsA11yMessages")
             .NewDirectoryTree()
