@@ -664,9 +664,10 @@ void BubbleFrameView::SetBubbleBorder(std::unique_ptr<BubbleBorder> border) {
   if (footnote_container_)
     footnote_container_->SetCornerRadius(border->corner_radius());
 
+  // Update the background, which relies on the border. First set it to null to
+  // avoid dangling pointers, and then update it.
+  SetBackground(nullptr);
   SetBorder(std::move(border));
-
-  // Update the background, which relies on the border.
   SetBackground(std::make_unique<views::BubbleBackground>(bubble_border_));
 }
 

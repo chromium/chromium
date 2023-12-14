@@ -345,7 +345,7 @@ class VIEWS_EXPORT BubbleBackground : public Background {
   void Paint(gfx::Canvas* canvas, View* view) const override;
 
  private:
-  raw_ptr<BubbleBorder, DanglingUntriaged> border_;
+  const raw_ptr<BubbleBorder> border_;
 };
 
 }  // namespace views
