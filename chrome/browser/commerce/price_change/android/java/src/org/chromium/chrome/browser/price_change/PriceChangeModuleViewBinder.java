@@ -30,6 +30,9 @@ class PriceChangeModuleViewBinder implements ViewBinder<PropertyModel, View, Pro
         } else if (PriceChangeModuleProperties.MODULE_DOMAIN_STRING == propertyKey) {
             moduleView.setPriceChangeDomain(
                     model.get(PriceChangeModuleProperties.MODULE_DOMAIN_STRING));
+        } else if (PriceChangeModuleProperties.MODULE_PRODUCT_IMAGE_BITMAP == propertyKey) {
+            moduleView.setProductImage(
+                    model.get(PriceChangeModuleProperties.MODULE_PRODUCT_IMAGE_BITMAP));
         } else {
             assert false : "Unhandled property detected in PriceChangeModuleViewBinder!";
         }

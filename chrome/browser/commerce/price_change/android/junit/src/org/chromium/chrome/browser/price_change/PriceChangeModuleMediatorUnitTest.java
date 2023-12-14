@@ -56,6 +56,8 @@ import org.chromium.chrome.browser.ui.favicon.FaviconHelper;
 import org.chromium.chrome.browser.ui.favicon.FaviconHelper.FaviconImageCallback;
 import org.chromium.components.embedder_support.util.UrlUtilities;
 import org.chromium.components.embedder_support.util.UrlUtilitiesJni;
+import org.chromium.components.image_fetcher.ImageFetcher;
+import org.chromium.components.image_fetcher.ImageFetcher.Params;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.url.GURL;
 
@@ -85,6 +87,8 @@ public class PriceChangeModuleMediatorUnitTest {
     @Mock private FaviconHelper mFaviconHelper;
     @Mock private UrlUtilities.Natives mUrlUtilitiesJniMock;
     @Mock private Bitmap mFaviconBitmap;
+    @Mock private Bitmap mProductImageBitmap;
+    @Mock private ImageFetcher mImageFetcher;
 
     private PriceChangeModuleMediator mMediator;
     private SharedPreferencesManager mSharedPreferenceManager;
@@ -112,7 +116,12 @@ public class PriceChangeModuleMediatorUnitTest {
         mModel = new PropertyModel(PriceChangeModuleProperties.ALL_KEYS);
         mMediator =
                 new PriceChangeModuleMediator(
-                        mContext, mModel, mProfile, mTabModelSelector, mFaviconHelper);
+                        mContext,
+                        mModel,
+                        mProfile,
+                        mTabModelSelector,
+                        mFaviconHelper,
+                        mImageFetcher);
         mSharedPreferenceManager = ChromeSharedPreferences.getInstance();
 
         Map<String, Boolean> featureOverride = new HashMap<>();
@@ -195,5 +204,15 @@ public class PriceChangeModuleMediatorUnitTest {
         faviconCallbackCaptor.getValue().onFaviconAvailable(mFaviconBitmap, new GURL(""));
 
         assertEquals(mFaviconBitmap, mModel.get(PriceChangeModuleProperties.MODULE_FAVICON_BITMAP));
+
+        // Mock return value of ImageFetcher.
+        ArgumentCaptor<Callback<Bitmap>> productImageCallbackCaptor =
+                ArgumentCaptor.forClass(Callback.class);
+        verify(mImageFetcher).fetchImage(any(Params.class), productImageCallbackCaptor.capture());
+        productImageCallbackCaptor.getValue().onResult(mProductImageBitmap);
+
+        assertEquals(
+                mProductImageBitmap,
+                mModel.get(PriceChangeModuleProperties.MODULE_PRODUCT_IMAGE_BITMAP));
     }
 }

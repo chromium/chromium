@@ -21,6 +21,8 @@ interface PriceChangeModuleProperties {
             new PropertyModel.WritableObjectPropertyKey<>();
     PropertyModel.WritableObjectPropertyKey<String> MODULE_CURRENT_PRICE_STRING =
             new PropertyModel.WritableObjectPropertyKey<>();
+    PropertyModel.WritableObjectPropertyKey<Bitmap> MODULE_PRODUCT_IMAGE_BITMAP =
+            new PropertyModel.WritableObjectPropertyKey<>();
 
     PropertyKey[] ALL_KEYS =
             new PropertyKey[] {
@@ -28,6 +30,7 @@ interface PriceChangeModuleProperties {
                 MODULE_PRODUCT_NAME_STRING,
                 MODULE_DOMAIN_STRING,
                 MODULE_PREVIOUS_PRICE_STRING,
-                MODULE_CURRENT_PRICE_STRING
+                MODULE_CURRENT_PRICE_STRING,
+                MODULE_PRODUCT_IMAGE_BITMAP,
             };
 }

@@ -124,4 +124,15 @@ public class PriceChangeModuleBinderTest {
 
         assertEquals(PRODUCT_URL_DOMAIN, domainView.getText());
     }
+
+    @Test
+    @SmallTest
+    public void testSetProductImage() {
+        ImageView productImageView = mView.findViewById(R.id.product_image);
+        assertNull(productImageView.getDrawable());
+
+        mModel.set(PriceChangeModuleProperties.MODULE_PRODUCT_IMAGE_BITMAP, mBitmap);
+
+        assertNotNull(productImageView.getDrawable());
+    }
 }

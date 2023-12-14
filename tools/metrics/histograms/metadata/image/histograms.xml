@@ -81,6 +81,9 @@ chromium-metrics-reviews@google.com.
   <variant name=".PasswordSharing"
       summary="Profile image fetcher of potential password recipients in the
                Password Sharing flow."/>
+  <variant name=".PriceChangeModule"
+      summary="Images fetched and used to render price change module on NTP
+               or StartSurface."/>
   <variant name=".PriceDropNotification"
       summary="Images fetched for the icon of price drop notification."/>
   <variant name=".QueryTiles" summary="Showing Query tiles images."/>

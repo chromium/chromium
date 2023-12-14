@@ -12,11 +12,13 @@ import org.chromium.base.shared_preferences.SharedPreferencesManager;
 import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.chrome.browser.tab.state.ShoppingPersistedTabData;
 import org.chromium.chrome.browser.tab.state.ShoppingPersistedTabDataService;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.tabmodel.TabModelUtils;
 import org.chromium.chrome.browser.ui.favicon.FaviconHelper;
 import org.chromium.components.embedder_support.util.UrlUtilities;
+import org.chromium.components.image_fetcher.ImageFetcher;
 import org.chromium.ui.modelutil.PropertyModel;
 
 import java.util.HashSet;
@@ -33,19 +35,22 @@ public class PriceChangeModuleMediator {
     private final PropertyModel mModel;
     private final int mFaviconSize;
     private final Profile mProfile;
+    private final ImageFetcher mImageFetcher;
 
     PriceChangeModuleMediator(
             Context context,
             PropertyModel model,
             Profile profile,
             TabModelSelector tabModelSelector,
-            FaviconHelper faviconHelper) {
+            FaviconHelper faviconHelper,
+            ImageFetcher imageFetcher) {
         mModel = model;
         mProfile = profile;
         mShoppingPersistedTabDataService = ShoppingPersistedTabDataService.getForProfile(profile);
         mFaviconHelper = faviconHelper;
         mTabModelSelector = tabModelSelector;
         mFaviconSize = context.getResources().getDimensionPixelSize(R.dimen.default_favicon_size);
+        mImageFetcher = imageFetcher;
     }
 
     /** Show the price change module. */
@@ -68,15 +73,16 @@ public class PriceChangeModuleMediator {
                     if (res.size() == 0) {
                         return;
                     }
+                    ShoppingPersistedTabData data = res.get(0).getData();
                     mModel.set(
                             PriceChangeModuleProperties.MODULE_PRODUCT_NAME_STRING,
-                            res.get(0).getData().getProductTitle());
+                            data.getProductTitle());
                     mModel.set(
                             PriceChangeModuleProperties.MODULE_CURRENT_PRICE_STRING,
-                            res.get(0).getData().getPriceDrop().price);
+                            data.getPriceDrop().price);
                     mModel.set(
                             PriceChangeModuleProperties.MODULE_PREVIOUS_PRICE_STRING,
-                            res.get(0).getData().getPriceDrop().previousPrice);
+                            data.getPriceDrop().previousPrice);
                     mModel.set(
                             PriceChangeModuleProperties.MODULE_DOMAIN_STRING,
                             UrlUtilities.getDomainAndRegistry(
@@ -89,6 +95,18 @@ public class PriceChangeModuleMediator {
                             (image, iconUrl) -> {
                                 mModel.set(
                                         PriceChangeModuleProperties.MODULE_FAVICON_BITMAP, image);
+                            });
+
+                    ImageFetcher.Params params =
+                            ImageFetcher.Params.create(
+                                    data.getProductImageUrl(),
+                                    ImageFetcher.PRICE_CHANGE_MODULE_NAME);
+                    mImageFetcher.fetchImage(
+                            params,
+                            image -> {
+                                mModel.set(
+                                        PriceChangeModuleProperties.MODULE_PRODUCT_IMAGE_BITMAP,
+                                        image);
                             });
                 });
     }

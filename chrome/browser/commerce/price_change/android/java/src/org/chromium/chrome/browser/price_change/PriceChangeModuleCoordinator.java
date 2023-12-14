@@ -9,6 +9,9 @@ import android.view.ViewStub;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.ui.favicon.FaviconHelper;
+import org.chromium.components.browser_ui.util.GlobalDiscardableReferencePool;
+import org.chromium.components.image_fetcher.ImageFetcherConfig;
+import org.chromium.components.image_fetcher.ImageFetcherFactory;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
 
@@ -30,7 +33,15 @@ public class PriceChangeModuleCoordinator {
                 PropertyModelChangeProcessor.create(model, view, new PriceChangeModuleViewBinder());
         mMediator =
                 new PriceChangeModuleMediator(
-                        view.getContext(), model, profile, tabModelSelector, new FaviconHelper());
+                        view.getContext(),
+                        model,
+                        profile,
+                        tabModelSelector,
+                        new FaviconHelper(),
+                        ImageFetcherFactory.createImageFetcher(
+                                ImageFetcherConfig.IN_MEMORY_WITH_DISK_CACHE,
+                                profile.getProfileKey(),
+                                GlobalDiscardableReferencePool.getReferencePool()));
     }
 
     /** Show price change module. */
