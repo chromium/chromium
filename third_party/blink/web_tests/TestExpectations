@@ -6889,9 +6889,6 @@ crbug.com/1509073 external/wpt/clipboard-apis/async-navigator-clipboard-write-mu
 fast/events/download-on-alt-click.html [ Pass Timeout ]
 fast/events/simulated-click-by-alt-enter.html [ Failure Pass ]
 
-# Need to support math functions with % resolution in ConsumeNumberOrPercent
-crbug.com/1505817 external/wpt/css/css-values/progress-computed.tentative.html [ Crash ]
-
 # Failing on WebKit Linux MSAN
 crbug.com/1510005 [ Linux ] external/wpt/css/filter-effects/backdrop-filter-svg.html [ Crash Failure Pass Timeout ]
 crbug.com/1510005 [ Linux ] virtual/scalefactor200/external/wpt/css/filter-effects/backdrop-filter-svg.html [ Crash Failure Pass Timeout ]

@@ -2550,17 +2550,14 @@ scoped_refptr<ScaleTransformOperation> StyleBuilderConverter::ConvertScale(
 
   const auto& list = To<CSSValueList>(value);
   DCHECK_LE(list.length(), 3u);
-  double sx = To<CSSPrimitiveValue>(list.Item(0))
-                  .ComputeNumber(state.CssToLengthConversionData());
+  double sx = To<CSSPrimitiveValue>(list.Item(0)).GetDoubleValue();
   double sy = sx;
   double sz = 1;
   if (list.length() >= 2) {
-    sy = To<CSSPrimitiveValue>(list.Item(1))
-             .ComputeNumber(state.CssToLengthConversionData());
+    sy = To<CSSPrimitiveValue>(list.Item(1)).GetDoubleValue();
   }
   if (list.length() == 3) {
-    sz = To<CSSPrimitiveValue>(list.Item(2))
-             .ComputeNumber(state.CssToLengthConversionData());
+    sz = To<CSSPrimitiveValue>(list.Item(2)).GetDoubleValue();
   }
 
   return ScaleTransformOperation::Create(sx, sy, sz,
