@@ -1864,9 +1864,6 @@ const PolicyToPreferenceMapEntry kSimplePolicyMap[] = {
   { key::kRemoteAccessHostAllowEnterpriseRemoteSupportConnections,
     prefs::kRemoteAccessHostAllowEnterpriseRemoteSupportConnections,
     base::Value::Type::BOOLEAN },
-  { key::kSafeBrowsingExtensionProtectionAllowed,
-    prefs::kSafeBrowsingExtensionProtectionAllowedByPolicy,
-    base::Value::Type::BOOLEAN },
   // We avoid checking for BUILDFLAG(ENABLE_NACL) since we may want the policy
   // to exist (deprecated) even if NACL is no longer being built.
   { key::kNativeClientForceAllowed,

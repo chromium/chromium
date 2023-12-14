@@ -1096,7 +1096,7 @@ policies:
   1095: InsecureHashesInTLSHandshakesEnabled
   1096: DeviceLoginScreenGeolocationAccessLevel
   1097: DeviceReportNetworkEvents
-  1098: SafeBrowsingExtensionProtectionAllowed
+  1098: ''
   1099: ShowDisplaySizeScreenEnabled
   1100: EssentialSearchEnabled
   1101: LegacyTechReportAllowlist

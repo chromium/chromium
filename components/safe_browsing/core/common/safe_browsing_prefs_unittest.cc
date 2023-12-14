@@ -35,8 +35,6 @@ class SafeBrowsingPrefsTest : public ::testing::Test {
         prefs::kSafeBrowsingExtendedReportingOptInAllowed, true);
     prefs_.registry()->RegisterListPref(prefs::kSafeBrowsingAllowlistDomains);
     prefs_.registry()->RegisterBooleanPref(
-        prefs::kSafeBrowsingExtensionProtectionAllowedByPolicy, true);
-    prefs_.registry()->RegisterBooleanPref(
         prefs::kHashPrefixRealTimeChecksAllowedByPolicy, true);
   }
 
@@ -224,13 +222,6 @@ TEST_F(SafeBrowsingPrefsTest, VerifyIsURLAllowlistedByPolicy) {
 
   GURL not_allowlisted_url("https://www.bar.com");
   EXPECT_FALSE(IsURLAllowlistedByPolicy(not_allowlisted_url, prefs_));
-}
-
-TEST_F(SafeBrowsingPrefsTest, VerifySafeBrowsingExtensionProtectionAllowed) {
-  EXPECT_TRUE(IsSafeBrowsingExtensionProtectionAllowed(prefs_));
-  prefs_.SetBoolean(prefs::kSafeBrowsingExtensionProtectionAllowedByPolicy,
-                    false);
-  EXPECT_FALSE(IsSafeBrowsingExtensionProtectionAllowed(prefs_));
 }
 
 TEST_F(SafeBrowsingPrefsTest, VerifyHashPrefixRealTimeChecksAllowedByPolicy) {

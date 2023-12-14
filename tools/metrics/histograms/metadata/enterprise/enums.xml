@@ -1898,7 +1898,6 @@ chromium-metrics-reviews@google.com.
   <int value="1095" label="InsecureHashesInTLSHandshakesEnabled"/>
   <int value="1096" label="DeviceLoginScreenGeolocationAccessLevel"/>
   <int value="1097" label="DeviceReportNetworkEvents"/>
-  <int value="1098" label="SafeBrowsingExtensionProtectionAllowed"/>
   <int value="1099" label="ShowDisplaySizeScreenEnabled"/>
   <int value="1100" label="EssentialSearchEnabled"/>
   <int value="1101" label="LegacyTechReportAllowlist"/>
