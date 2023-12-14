@@ -37,6 +37,7 @@ import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.HistogramWatcher;
+import org.chromium.base.test.util.Restriction;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
@@ -52,6 +53,7 @@ import org.chromium.chrome.test.util.browser.signin.AccountManagerTestRule;
 import org.chromium.components.browser_ui.widget.RecyclerViewTestUtils;
 import org.chromium.components.signin.base.CoreAccountInfo;
 import org.chromium.components.signin.metrics.SigninAccessPoint;
+import org.chromium.ui.test.util.DeviceRestriction;
 
 /** Tests for the personalized signin promo on the Bookmarks page. */
 @RunWith(ChromeJUnit4ClassRunner.class)
@@ -121,6 +123,9 @@ public class BookmarkPersonalizedSigninPromoTest {
 
     @Test
     @MediumTest
+    // Signing in with a non-default account is disabled on automotive, which only supports one
+    // account per OS profile.
+    @Restriction(DeviceRestriction.RESTRICTION_TYPE_NON_AUTO)
     public void testSigninButtonNotDefaultAccount() {
         var continuedHistogram =
                 HistogramWatcher.newSingleRecordWatcher(CONTINUED_HISTOGRAM_NAME, 1);
@@ -157,6 +162,16 @@ public class BookmarkPersonalizedSigninPromoTest {
                         any(Activity.class), eq(SigninAccessPoint.BOOKMARK_MANAGER));
     }
 
+    // Get the activity that hosts the bookmark UI - on phones, this is a BookmarkActivity, on
+    // tablets this is a native page.
+    private Activity getBookmarkHostActivity() {
+        if (sActivityTestRule.getActivity().isTablet()) {
+            return sActivityTestRule.getActivity();
+        } else {
+            return mBookmarkTestRule.getBookmarkActivity();
+        }
+    }
+
     private void showBookmarkManagerAndCheckSigninPromoIsDisplayed() {
         var shownHistogram = HistogramWatcher.newSingleRecordWatcher(SHOWN_HISTOGRAM_NAME, 1);
         mBookmarkTestRule.showBookmarkManager(sActivityTestRule.getActivity());
@@ -165,9 +180,7 @@ public class BookmarkPersonalizedSigninPromoTest {
         // TODO(https://cbug.com/1383638): If this stops the flakes, consider removing
         // activeInRecyclerView.
         RecyclerView recyclerView =
-                mBookmarkTestRule
-                        .getBookmarkActivity()
-                        .findViewById(R.id.selectable_list_recycler_view);
+                getBookmarkHostActivity().findViewById(R.id.selectable_list_recycler_view);
         Assert.assertNotNull(recyclerView);
         RecyclerViewTestUtils.waitForStableRecyclerView(recyclerView);
 
