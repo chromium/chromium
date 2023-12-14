@@ -12,7 +12,6 @@
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/link_capturing/apps_intent_picker_delegate.h"
 #include "chrome/browser/apps/link_capturing/intent_picker_info.h"
-#include "components/webapps/common/web_app_id.h"
 #include "url/gurl.h"
 
 namespace content {
@@ -36,9 +35,9 @@ class ChromeOsAppsIntentPickerDelegate : public AppsIntentPickerDelegate {
   bool ShouldShowIntentPickerWithApps() override;
   void FindAllAppsForUrl(const GURL& url,
                          IntentPickerAppsCallback apps_callback) override;
-  bool IsPreferredAppForSupportedLinks(const webapps::AppId& app_id) override;
-  void LoadSingleAppIcon(apps::AppType app_type,
-                         const webapps::AppId& app_id,
+  bool IsPreferredAppForSupportedLinks(const std::string& app_id) override;
+  void LoadSingleAppIcon(PickerEntryType entry_type,
+                         const std::string& app_id,
                          int size_in_dep,
                          IconLoadedCallback icon_loaded_callback) override;
   void RecordIntentPickerIconEvent(apps::IntentPickerIconEvent event) override;

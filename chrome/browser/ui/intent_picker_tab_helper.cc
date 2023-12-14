@@ -45,25 +45,6 @@
 
 namespace {
 
-apps::AppType GetAppType(apps::PickerEntryType picker_entry_type) {
-  apps::AppType app_type = apps::AppType::kUnknown;
-  switch (picker_entry_type) {
-    case apps::PickerEntryType::kUnknown:
-    case apps::PickerEntryType::kDevice:
-      break;
-    case apps::PickerEntryType::kArc:
-      app_type = apps::AppType::kArc;
-      break;
-    case apps::PickerEntryType::kWeb:
-      app_type = apps::AppType::kWeb;
-      break;
-    case apps::PickerEntryType::kMacOs:
-      app_type = apps::AppType::kMacOs;
-      break;
-  }
-  return app_type;
-}
-
 web_app::WebAppRegistrar* MaybeGetWebAppRegistrar(
     content::WebContents* web_contents) {
   // Profile for web contents might not contain a web app provider. eg. kiosk
@@ -214,7 +195,7 @@ void IntentPickerTabHelper::MaybeShowIconForApps(
               current_app_id_);
 
       intent_picker_delegate_->LoadSingleAppIcon(
-          GetAppType(apps[0].type), current_app_id_,
+          apps[0].type, current_app_id_,
           GetLayoutConstant(LOCATION_BAR_ICON_SIZE),
           base::BindOnce(&IntentPickerTabHelper::OnAppIconLoadedForChip,
                          per_navigation_weak_factory_.GetWeakPtr(),
@@ -273,7 +254,7 @@ void IntentPickerTabHelper::LoadAppIcon(
   }
 
   const std::string& app_id = apps[index].launch_name;
-  auto app_type = GetAppType(apps[index].type);
+  auto app_type = apps[index].type;
 
   intent_picker_delegate_->LoadSingleAppIcon(
       app_type, app_id, GetIntentPickerBubbleIconSize(),

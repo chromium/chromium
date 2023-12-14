@@ -39,9 +39,9 @@ class WebAppsIntentPickerDelegate : public AppsIntentPickerDelegate {
   bool ShouldShowIntentPickerWithApps() override;
   void FindAllAppsForUrl(const GURL& url,
                          IntentPickerAppsCallback apps_callback) override;
-  bool IsPreferredAppForSupportedLinks(const webapps::AppId& app_id) override;
-  void LoadSingleAppIcon(apps::AppType app_type,
-                         const webapps::AppId& app_id,
+  bool IsPreferredAppForSupportedLinks(const std::string& app_id) override;
+  void LoadSingleAppIcon(PickerEntryType entry_type,
+                         const std::string& app_id,
                          int size_in_dep,
                          IconLoadedCallback icon_loaded_callback) override;
   void RecordIntentPickerIconEvent(apps::IntentPickerIconEvent event) override;
