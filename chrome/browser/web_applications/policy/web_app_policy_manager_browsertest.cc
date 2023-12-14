@@ -43,6 +43,11 @@
 #include "components/user_manager/user_names.h"
 #endif
 
+#if BUILDFLAG(IS_WIN)
+#include "base/base_paths_win.h"
+#include "base/test/scoped_path_override.h"
+#endif
+
 namespace web_app {
 
 namespace {
@@ -450,6 +455,13 @@ class WebAppPolicyManagerGuestModeTest : public InProcessBrowserTest {
     command_line->AppendSwitch(switches::kIncognito);
 #endif
   }
+#if BUILDFLAG(IS_WIN)
+  // This is needed to stop WebAppPolicyManagerGuestModeTests creating a
+  // shortcut in the Windows start menu. The override needs to last until the
+  // test is destroyed, because Windows shortcut tasks which create the shortcut
+  // can run after the test body returns.
+  base::ScopedPathOverride override_start_dir{base::DIR_START_MENU};
+#endif  // BUILDFLAG(IS_WIN
 };
 
 IN_PROC_BROWSER_TEST_F(WebAppPolicyManagerGuestModeTest,
