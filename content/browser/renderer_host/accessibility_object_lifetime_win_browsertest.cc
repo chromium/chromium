@@ -130,6 +130,7 @@ class AccessibilityTeardownTestMessageFilter : public ui::HWNDMessageFilter {
       // Verify that the legacy window does not crash when asked for an
       // accessibility object.
       legacy_render_widget_host_HWND_->GetOrCreateWindowRootAccessible(false);
+      legacy_render_widget_host_HWND_ = nullptr;
 
       // Remove ourselves as a subclass.
       ui::HWNDSubclass::RemoveFilterFromAllTargets(this);
@@ -139,8 +140,7 @@ class AccessibilityTeardownTestMessageFilter : public ui::HWNDMessageFilter {
   }
 
  private:
-  raw_ptr<LegacyRenderWidgetHostHWND, DanglingUntriaged>
-      legacy_render_widget_host_HWND_;
+  raw_ptr<LegacyRenderWidgetHostHWND> legacy_render_widget_host_HWND_;
 };
 
 IN_PROC_BROWSER_TEST_F(AccessibilityObjectLifetimeWinBrowserTest,
