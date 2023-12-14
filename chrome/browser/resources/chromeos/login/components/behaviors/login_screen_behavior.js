@@ -135,4 +135,9 @@ export class LoginScreenBehaviorInterface {
   get EXTERNAL_API() {}
   /** @return {Object} */
   get defaultControl() {}
+  /** @param {boolean} isInTabletMode */
+  setTabletModeState(isInTabletMode) {}
+  updateLocalizedContent() {}
+  /** @param {!OobeTypes.OobeConfiguration} configuration */
+  updateOobeConfiguration(configuration) {}
 }
