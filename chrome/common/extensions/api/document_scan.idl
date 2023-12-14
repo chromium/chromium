@@ -354,6 +354,28 @@ namespace documentScan {
     OperationResult result;
   };
 
+  // The response from <code>readScanData()</code>.
+  [nodoc] dictionary ReadScanDataResponse {
+    // Same job handle passed to <code>readScanData()</code>.
+    DOMString job;
+
+    // The backend result of reading data.  If this is
+    // <code>OperationResult.SUCCESS</code>, <code>data</code> will contain the
+    // next (possibly zero-length) chunk of image data that was ready for
+    // reading.  If this is <code>OperationResult.EOF</code>, <code>data</code>
+    // will contain the final chunk of image data.
+    OperationResult result;
+
+    // If result is <code>OperationResult.SUCCESS</code>, the next chunk of
+    // scanned image data.
+    ArrayBuffer? data;
+
+    // If result is <code>OperationResult.SUCCESS</code>, an estimate of how
+    // much of the total scan data has been delivered so far, in the range
+    // 0-100.
+    long? estimatedCompletion;
+  };
+
   // Callback from the <code>scan</code> method.
   // |result| The results from the scan, if successful.
   // Otherwise will return null and set runtime.lastError.
@@ -383,6 +405,12 @@ namespace documentScan {
   // |response| The response from canceling the scan, if the call was valid.
   // Otherwise will return null and set runtime.lastError.
   [nodoc] callback CancelScanCallback = void (CancelScanResponse response);
+
+  // Callback from the <code>readScanData</code> method.
+  // |response| The response from reading the next chunk of scanned image data,
+  // if the call was valid.  Otherwise will return null and set
+  // runtime.lastError.
+  [nodoc] callback ReadScanDataCallback = void (ReadScanDataResponse response);
 
   interface Functions {
     // Performs a document scan.  On success, the PNG data will be

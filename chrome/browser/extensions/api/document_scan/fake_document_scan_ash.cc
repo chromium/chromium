@@ -132,8 +132,21 @@ void FakeDocumentScanAsh::StartPreparedScan(
 
 void FakeDocumentScanAsh::ReadScanData(const std::string& job_handle,
                                        ReadScanDataCallback callback) {
-  // TODO(b/299489635): Implement this when adding the extension handler.
-  NOTIMPLEMENTED();
+  // The API handler just passes through responses from this function, so always
+  // returning a hardcoded value for valid job handles shouldn't matter.  For
+  // invalid job handles, report them as cancelled.
+  auto response = crosapi::mojom::ReadScanDataResponse::New();
+  response->job_handle = job_handle;
+  response->result = crosapi::mojom::ScannerOperationResult::kCancelled;
+  for (auto& [scanner_handle, state] : open_scanners_) {
+    if (state.job_handle.value_or("") == job_handle) {
+      response->result = crosapi::mojom::ScannerOperationResult::kSuccess;
+      response->data.emplace(std::vector<int8_t>{'i', 'm', 'g'});
+      response->estimated_completion = 12;
+      break;
+    }
+  }
+  std::move(callback).Run(std::move(response));
 }
 
 void FakeDocumentScanAsh::SetOptions(

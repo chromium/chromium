@@ -52,6 +52,8 @@ using StartScanFuture =
     base::test::TestFuture<api::document_scan::StartScanResponse>;
 using CancelScanFuture =
     base::test::TestFuture<api::document_scan::CancelScanResponse>;
+using ReadScanDataFuture =
+    base::test::TestFuture<api::document_scan::ReadScanDataResponse>;
 
 // Fake extension info.
 constexpr char kExtensionId[] = "abcdefghijklmnopqrstuvwxyz123456";
@@ -781,6 +783,74 @@ TEST_F(DocumentScanAPIHandlerTest, CancelScan_GetListMaintainsJob) {
   EXPECT_EQ(cancel_response.result,
             api::document_scan::OperationResult::kSuccess);
   EXPECT_EQ(cancel_response.job, job_handle);
+}
+
+TEST_F(DocumentScanAPIHandlerTest, ReadScanData_ReadBeforeStartFails) {
+  MarkExtensionTrusted(kExtensionId);
+
+  ReadScanDataFuture future;
+  document_scan_api_handler_->ReadScanData(extension_, "job-handle",
+                                           future.GetCallback());
+
+  const api::document_scan::ReadScanDataResponse& response = future.Get();
+  EXPECT_EQ(response.result, api::document_scan::OperationResult::kInvalid);
+  EXPECT_EQ(response.job, "job-handle");
+  EXPECT_FALSE(response.data.has_value());
+  EXPECT_FALSE(response.estimated_completion.has_value());
+}
+
+TEST_F(DocumentScanAPIHandlerTest, ReadScanData_ReadFromOpenHandleSucceeds) {
+  MarkExtensionTrusted(kExtensionId);
+
+  std::string scanner_handle = OpenScannerForExtension(extension_);
+  EXPECT_FALSE(scanner_handle.empty());
+  std::string job_handle =
+      StartScanForScannerHandle(extension_, scanner_handle);
+  EXPECT_FALSE(job_handle.empty());
+
+  // First read succeeds because the job is open.
+  ReadScanDataFuture read_future1;
+  document_scan_api_handler_->ReadScanData(extension_, job_handle,
+                                           read_future1.GetCallback());
+  const api::document_scan::ReadScanDataResponse& read_response1 =
+      read_future1.Get();
+
+  EXPECT_EQ(read_response1.result,
+            api::document_scan::OperationResult::kSuccess);
+  EXPECT_EQ(read_response1.job, job_handle);
+  EXPECT_TRUE(read_response1.data.has_value());
+  EXPECT_TRUE(read_response1.estimated_completion.has_value());
+
+  // Second read succeeds because the job is still open.
+  ReadScanDataFuture read_future2;
+  document_scan_api_handler_->ReadScanData(extension_, job_handle,
+                                           read_future2.GetCallback());
+  const api::document_scan::ReadScanDataResponse& read_response2 =
+      read_future2.Get();
+
+  EXPECT_EQ(read_response2.result,
+            api::document_scan::OperationResult::kSuccess);
+  EXPECT_EQ(read_response2.job, job_handle);
+  EXPECT_TRUE(read_response2.data.has_value());
+  EXPECT_TRUE(read_response2.estimated_completion.has_value());
+
+  // Canceling the job closes the handle.
+  document_scan_api_handler_->CancelScan(extension_, job_handle,
+                                         base::DoNothing());
+
+  // Third read gets a cancelled status because the job is cancelled but still
+  // valid.
+  ReadScanDataFuture read_future3;
+  document_scan_api_handler_->ReadScanData(extension_, job_handle,
+                                           read_future3.GetCallback());
+  const api::document_scan::ReadScanDataResponse& read_response3 =
+      read_future3.Get();
+
+  EXPECT_EQ(read_response3.result,
+            api::document_scan::OperationResult::kCancelled);
+  EXPECT_EQ(read_response3.job, job_handle);
+  EXPECT_FALSE(read_response3.data.has_value());
+  EXPECT_FALSE(read_response3.estimated_completion.has_value());
 }
 
 }  // namespace

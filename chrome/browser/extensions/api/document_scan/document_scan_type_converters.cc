@@ -401,4 +401,20 @@ TypeConverter<extensions::api::document_scan::CancelScanResponse,
   return output;
 }
 
+extensions::api::document_scan::ReadScanDataResponse
+TypeConverter<extensions::api::document_scan::ReadScanDataResponse,
+              crosapi::mojom::ReadScanDataResponsePtr>::
+    Convert(const crosapi::mojom::ReadScanDataResponsePtr& input) {
+  document_scan::ReadScanDataResponse output;
+  output.job = input->job_handle;
+  output.result = ConvertTo<document_scan::OperationResult>(input->result);
+  if (input->data.has_value()) {
+    output.data.emplace(input->data->begin(), input->data->end());
+  }
+  if (input->estimated_completion.has_value()) {
+    output.estimated_completion = input->estimated_completion.value();
+  }
+  return output;
+}
+
 }  // namespace mojo

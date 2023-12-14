@@ -53,6 +53,8 @@ class DocumentScanAPIHandler : public BrowserContextKeyedAPI {
       base::OnceCallback<void(api::document_scan::StartScanResponse)>;
   using CancelScanCallback =
       base::OnceCallback<void(api::document_scan::CancelScanResponse)>;
+  using ReadScanDataCallback =
+      base::OnceCallback<void(api::document_scan::ReadScanDataResponse)>;
 
   static std::unique_ptr<DocumentScanAPIHandler> CreateForTesting(
       content::BrowserContext* browser_context,
@@ -123,6 +125,13 @@ class DocumentScanAPIHandler : public BrowserContextKeyedAPI {
   void CancelScan(scoped_refptr<const Extension> extension,
                   const std::string& job_handle,
                   CancelScanCallback callback);
+
+  // Given `job_handle` previously returned from `StartScan`, requests the next
+  // available chunk of scanned image data.  The result from the backend will be
+  // passed to `callback`.
+  void ReadScanData(scoped_refptr<const Extension> extension,
+                    const std::string& job_handle,
+                    ReadScanDataCallback callback);
 
  private:
   // Needed for BrowserContextKeyedAPI implementation.
@@ -200,6 +209,8 @@ class DocumentScanAPIHandler : public BrowserContextKeyedAPI {
   void OnCancelScanResponse(const ExtensionId& extension_id,
                             CancelScanCallback callback,
                             crosapi::mojom::CancelScanResponsePtr response);
+  void OnReadScanDataResponse(ReadScanDataCallback callback,
+                              crosapi::mojom::ReadScanDataResponsePtr response);
 
   raw_ptr<content::BrowserContext> browser_context_;
   raw_ptr<crosapi::mojom::DocumentScan> document_scan_;

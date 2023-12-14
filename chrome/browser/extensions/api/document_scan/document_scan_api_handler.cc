@@ -434,6 +434,33 @@ void DocumentScanAPIHandler::OnCancelScanResponse(
   std::move(callback).Run(std::move(api_response));
 }
 
+void DocumentScanAPIHandler::ReadScanData(
+    scoped_refptr<const Extension> extension,
+    const std::string& job_handle,
+    ReadScanDataCallback callback) {
+  // Ensure this job is allocated to this extension.
+  ExtensionState& state = extension_state_[extension->id()];
+  if (!state.active_job_handles.contains(job_handle)) {
+    auto response = crosapi::mojom::ReadScanDataResponse::New();
+    response->job_handle = job_handle;
+    response->result = crosapi::mojom::ScannerOperationResult::kInvalid;
+    OnReadScanDataResponse(std::move(callback), std::move(response));
+    return;
+  }
+
+  document_scan_->ReadScanData(
+      job_handle,
+      base::BindOnce(&DocumentScanAPIHandler::OnReadScanDataResponse,
+                     weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
+}
+
+void DocumentScanAPIHandler::OnReadScanDataResponse(
+    ReadScanDataCallback callback,
+    crosapi::mojom::ReadScanDataResponsePtr response) {
+  std::move(callback).Run(
+      response.To<api::document_scan::ReadScanDataResponse>());
+}
+
 template <>
 KeyedService*
 BrowserContextKeyedAPIFactory<DocumentScanAPIHandler>::BuildServiceInstanceFor(
