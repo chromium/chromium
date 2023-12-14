@@ -56,7 +56,7 @@ public class ManualFillingUiCaptureTest {
     @Test
     @MediumTest
     @Feature({"KeyboardAccessory", "LTR", "UiCatalogue"})
-    public void testCaptureKeyboardAccessoryV2WithPasswords()
+    public void testCaptureKeyboardAccessoryWithPasswords()
             throws InterruptedException, TimeoutException {
         mHelper.loadTestPage(false);
         ManualFillingTestHelper.createAutofillTestProfiles();
@@ -67,7 +67,7 @@ public class ManualFillingUiCaptureTest {
 
         waitForActionsInAccessory();
         waitForUnrelatedChromeUi();
-        mScreenShooter.shoot("AccessoryBarV2");
+        mScreenShooter.shoot("AccessoryBar");
 
         whenDisplayed(withId(R.id.bar_items_view))
                 .perform(
@@ -78,17 +78,17 @@ public class ManualFillingUiCaptureTest {
 
         waitForSuggestionsInSheet();
         waitForUnrelatedChromeUi();
-        mScreenShooter.shoot("AccessorySheetPasswordsV2");
+        mScreenShooter.shoot("AccessorySheetPasswords");
 
         whenDisplayed(withId(R.id.passwords_sheet)).perform(scrollToLastElement());
         waitForUnrelatedChromeUi();
-        mScreenShooter.shoot("AccessorySheetPasswordsV2Scrolled");
+        mScreenShooter.shoot("AccessorySheetPasswordsScrolled");
     }
 
     @Test
     @MediumTest
     @Feature({"KeyboardAccessory", "RTL", "UiCatalogue"})
-    public void testCaptureKeyboardAccessoryV2WithPasswordsRTL()
+    public void testCaptureKeyboardAccessoryWithPasswordsRTL()
             throws InterruptedException, TimeoutException {
         mHelper.loadTestPage(true);
         ManualFillingTestHelper.createAutofillTestProfiles();
@@ -99,7 +99,7 @@ public class ManualFillingUiCaptureTest {
 
         waitForActionsInAccessory();
         waitForUnrelatedChromeUi();
-        mScreenShooter.shoot("AccessoryBarV2RTL");
+        mScreenShooter.shoot("AccessoryBarRTL");
 
         whenDisplayed(withId(R.id.bar_items_view))
                 .perform(
@@ -110,11 +110,11 @@ public class ManualFillingUiCaptureTest {
 
         waitForSuggestionsInSheet();
         waitForUnrelatedChromeUi();
-        mScreenShooter.shoot("AccessorySheetPasswordsV2RTL");
+        mScreenShooter.shoot("AccessorySheetPasswordsRTL");
 
         whenDisplayed(withId(R.id.passwords_sheet)).perform(scrollToLastElement());
         waitForUnrelatedChromeUi();
-        mScreenShooter.shoot("AccessorySheetPasswordsV2ScrolledRTL");
+        mScreenShooter.shoot("AccessorySheetPasswordsScrolledRTL");
     }
 
     private void waitForUnrelatedChromeUi() throws InterruptedException {

@@ -252,10 +252,9 @@ class KeyboardAccessoryView extends LinearLayout {
                 getContext()
                         .getString(
                                 hasSuggestions
-                                        ? R.string
-                                                .autofill_keyboard_accessory_modern_content_description
+                                        ? R.string.autofill_keyboard_accessory_content_description
                                         : R.string
-                                                .autofill_keyboard_accessory_modern_content_fallback_description));
+                                                .autofill_keyboard_accessory_content_fallback_description));
     }
 
     void setBarItemsAdapter(RecyclerView.Adapter adapter) {
