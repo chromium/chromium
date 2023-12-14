@@ -545,6 +545,11 @@ void WallpaperSearchHandler::OnWallpaperSearchResultsRetrieved(
     }
   }
   if (log_entry) {
+    // Clear out images in response to save bytes for logging.
+    log_entry->log_ai_data_request()
+        ->mutable_wallpaper_search()
+        ->mutable_response_data()
+        ->clear_images();
     log_entries_.emplace_back(std::move(log_entry), absl::nullopt);
   }
   if (!log_entries_.empty()) {

@@ -583,6 +583,13 @@ TEST_F(WallpaperSearchHandlerTest, GetWallpaperSearchResults_Success) {
             EXPECT_TRUE(log_entry->log_ai_data_request()
                             ->mutable_wallpaper_search()
                             ->has_quality_data());
+            // Images should be cleared for logging.
+            EXPECT_EQ(log_entry->log_ai_data_request()
+                          ->mutable_wallpaper_search()
+                          ->mutable_response_data()
+                          ->images_size(),
+                      0);
+
             qualities.push_back(
                 std::make_unique<
                     optimization_guide::proto::WallpaperSearchQuality>(
