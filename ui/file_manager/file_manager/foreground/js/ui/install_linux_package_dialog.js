@@ -85,7 +85,7 @@ export class InstallLinuxPackageDialog extends FileManagerDialogBase {
 
     const title = str('INSTALL_LINUX_PACKAGE_TITLE');
     const message = str('INSTALL_LINUX_PACKAGE_DESCRIPTION');
-    const show = super.showOkCancelDialog(title, message, null, null);
+    const show = super.showOkCancelDialog(title, message);
 
     if (!show) {
       console.warn('InstallLinuxPackageDialog can\'t be shown.');
