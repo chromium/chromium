@@ -20,17 +20,18 @@ import type {ICdpClient} from '../../../cdp/CdpClient.js';
 import type {ICdpConnection} from '../../../cdp/CdpConnection.js';
 import {
   BrowsingContext,
-  type EmptyResult,
   InvalidArgumentException,
+  type EmptyResult,
 } from '../../../protocol/protocol.js';
 import {CdpErrorConstants} from '../../../utils/CdpErrorConstants.js';
-import {type LoggerFn, LogType} from '../../../utils/log.js';
+import {LogType, type LoggerFn} from '../../../utils/log.js';
 import type {EventManager} from '../events/EventManager.js';
 import type {NetworkStorage} from '../network/NetworkStorage.js';
 import type {PreloadScriptStorage} from '../script/PreloadScriptStorage.js';
+import {Realm} from '../script/Realm.js';
 import type {RealmStorage} from '../script/RealmStorage.js';
 
-import {BrowsingContextImpl} from './BrowsingContextImpl.js';
+import {BrowsingContextImpl, serializeOrigin} from './BrowsingContextImpl.js';
 import type {BrowsingContextStorage} from './BrowsingContextStorage.js';
 import {CdpTarget} from './CdpTarget.js';
 
@@ -335,20 +336,7 @@ export class BrowsingContextProcessor {
     parentSessionCdpClient: ICdpClient
   ) {
     const {sessionId, targetInfo} = params;
-
     const targetCdpClient = this.#cdpConnection.getCdpClient(sessionId);
-
-    if (!this.#isValidTarget(targetInfo)) {
-      // DevTools or some other not supported by BiDi target. Just release
-      // debugger  and ignore them.
-      targetCdpClient
-        .sendCommand('Runtime.runIfWaitingForDebugger')
-        .then(() =>
-          parentSessionCdpClient.sendCommand('Target.detachFromTarget', params)
-        )
-        .catch((error) => this.#logger?.(LogType.debugError, error));
-      return;
-    }
 
     this.#logger?.(
       LogType.debugInfo,
@@ -356,68 +344,128 @@ export class BrowsingContextProcessor {
       params
     );
 
-    this.#setEventListeners(targetCdpClient);
+    switch (targetInfo.type) {
+      case 'page':
+      case 'iframe': {
+        if (targetInfo.targetId === this.#selfTargetId) {
+          break;
+        }
 
-    const maybeContext = this.#browsingContextStorage.findContext(
-      targetInfo.targetId
-    );
+        this.#setEventListeners(targetCdpClient);
 
-    const cdpTarget = CdpTarget.create(
-      targetInfo.targetId,
-      targetCdpClient,
-      this.#browserCdpClient,
-      sessionId,
-      this.#realmStorage,
-      this.#eventManager,
-      this.#preloadScriptStorage,
-      this.#networkStorage,
-      this.#acceptInsecureCerts
-    );
+        const cdpTarget = CdpTarget.create(
+          targetInfo.targetId,
+          targetCdpClient,
+          this.#browserCdpClient,
+          sessionId,
+          this.#realmStorage,
+          this.#eventManager,
+          this.#preloadScriptStorage,
+          this.#networkStorage,
+          this.#acceptInsecureCerts
+        );
 
-    if (maybeContext) {
-      // OOPiF.
-      maybeContext.updateCdpTarget(cdpTarget);
-    } else {
-      // New context.
-      BrowsingContextImpl.create(
-        cdpTarget,
+        const maybeContext = this.#browsingContextStorage.findContext(
+          targetInfo.targetId
+        );
+        if (maybeContext) {
+          // OOPiF.
+          maybeContext.updateCdpTarget(cdpTarget);
+        } else {
+          // New context.
+          BrowsingContextImpl.create(
+            cdpTarget,
+            this.#realmStorage,
+            targetInfo.targetId,
+            null,
+            this.#eventManager,
+            this.#browsingContextStorage,
+            this.#logger
+          );
+        }
+        return;
+      }
+      case 'worker': {
+        this.#setEventListeners(targetCdpClient);
+
+        const cdpTarget = CdpTarget.create(
+          targetInfo.targetId,
+          targetCdpClient,
+          this.#browserCdpClient,
+          sessionId,
+          this.#realmStorage,
+          this.#eventManager,
+          this.#preloadScriptStorage,
+          this.#networkStorage,
+          this.#acceptInsecureCerts
+        );
+
+        this.#handleWorkerTarget(cdpTarget);
+        return;
+      }
+    }
+
+    // DevTools or some other not supported by BiDi target. Just release
+    // debugger and ignore them.
+    targetCdpClient
+      .sendCommand('Runtime.runIfWaitingForDebugger')
+      .then(() =>
+        parentSessionCdpClient.sendCommand('Target.detachFromTarget', params)
+      )
+      .catch((error) => this.#logger?.(LogType.debugError, error));
+  }
+
+  #workers = new Map<string, Realm>();
+  #handleWorkerTarget(cdpTarget: CdpTarget) {
+    cdpTarget.cdpClient.on('Runtime.executionContextCreated', (params) => {
+      const {uniqueId, id, origin} = params.context;
+      const realm = new Realm(
         this.#realmStorage,
-        targetInfo.targetId,
-        null,
-        this.#eventManager,
         this.#browsingContextStorage,
+        uniqueId,
+        cdpTarget.targetId,
+        id,
+        serializeOrigin(origin),
+        'dedicated-worker',
+        undefined,
+        cdpTarget.cdpClient,
+        this.#eventManager,
         this.#logger
       );
-    }
+      this.#workers.set(cdpTarget.cdpSessionId, realm);
+    });
   }
 
   #handleDetachedFromTargetEvent(
     params: Protocol.Target.DetachedFromTargetEvent
   ) {
-    // XXX: params.targetId is deprecated. Update this class to track using
-    // params.sessionId instead.
-    // https://github.com/GoogleChromeLabs/chromium-bidi/issues/60
-    const contextId = params.targetId!;
-    this.#browsingContextStorage.findContext(contextId)?.dispose();
+    const context = this.#browsingContextStorage
+      .getAllContexts()
+      .find((context) => context.cdpTarget.cdpSessionId === params.sessionId);
+    if (context) {
+      context.dispose();
+      this.#preloadScriptStorage
+        .find({targetId: context.id})
+        .map((preloadScript) => preloadScript.dispose(context.id));
+      return;
+    }
 
-    this.#preloadScriptStorage
-      .find({targetId: contextId})
-      .map((preloadScript) => preloadScript.dispose(contextId));
+    const worker = this.#workers.get(params.sessionId);
+    if (worker) {
+      this.#realmStorage.deleteRealms({
+        cdpSessionId: worker.cdpClient.sessionId,
+      });
+    }
   }
 
   #handleTargetInfoChangedEvent(
     params: Protocol.Target.TargetInfoChangedEvent
   ) {
-    const contextId = params.targetInfo.targetId;
-    this.#browsingContextStorage
-      .findContext(contextId)
-      ?.onTargetInfoChanged(params);
-  }
-
-  #isValidTarget(target: Protocol.Target.TargetInfo) {
-    if (target.targetId === this.#selfTargetId) {
-      return false;
+    const context = this.#browsingContextStorage.findContext(
+      params.targetInfo.targetId
+    );
+    if (context) {
+      context.onTargetInfoChanged(params);
     }
-    return ['page', 'iframe'].includes(target.type);
   }
 }

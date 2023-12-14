@@ -16,7 +16,7 @@
 import pytest
 from anys import ANY_STR
 from test_helpers import (execute_command, read_JSON_message,
-                          send_JSON_command, subscribe)
+                          send_JSON_command, subscribe, wait_for_event)
 
 
 @pytest.mark.asyncio
@@ -149,3 +149,53 @@ async def test_realm_realmDestroyed_sandbox(websocket, context_id):
             "realm": ANY_STR,
         }
     } == response
+
+
+@pytest.mark.asyncio
+async def test_realm_worker(websocket, context_id, html):
+    worker_url = 'data:application/javascript,while(true){}'
+    url = html(f"<script>window.w = new Worker('{worker_url}');</script>")
+
+    await subscribe(websocket,
+                    ["script.realmDestroyed", "script.realmCreated"])
+
+    await send_JSON_command(
+        websocket, {
+            "method": "browsingContext.navigate",
+            "params": {
+                "context": context_id,
+                "url": url,
+                "wait": "complete",
+            }
+        })
+
+    # Wait for worker to be created
+    while True:
+        message = await wait_for_event(websocket, "script.realmCreated")
+        if message["params"] == {
+                "realm": ANY_STR,
+                "origin": worker_url,
+                "context": ANY_STR,
+                "type": "dedicated-worker"
+        }:
+            realm = message["params"]["realm"]
+            break
+
+    # Then demolish it!
+    await send_JSON_command(
+        websocket, {
+            "method": "script.evaluate",
+            "params": {
+                "target": {
+                    "context": context_id
+                },
+                "expression": "window.w.terminate()",
+                "awaitPromise": True
+            }
+        })
+
+    # Wait for confirmation that worker was destroyed
+    while True:
+        message = await wait_for_event(websocket, "script.realmDestroyed")
+        if message["params"] == {"realm": realm}:
+            break
