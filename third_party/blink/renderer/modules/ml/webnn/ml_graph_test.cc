@@ -692,7 +692,9 @@ template <typename T>
 struct ReduceTester {
   ReduceKind kind;
   OperandInfo<T> input;
+  bool keep_dimensions = false;
   Vector<T> expected;
+  Vector<uint32_t> expected_output_shape;
 
   void Test(MLGraphTest& helper,
             V8TestingScope& scope,
@@ -703,8 +705,10 @@ struct ReduceTester {
     auto* input_operand =
         BuildInput(builder, "input", input.dimensions, input.data_type,
                    scope.GetExceptionState());
+    options->setKeepDimensions(keep_dimensions);
     auto* output_operand =
         BuildReduce(scope, builder, kind, input_operand, options);
+    EXPECT_EQ(output_operand->Dimensions(), expected_output_shape);
     auto [graph, build_exception] =
         helper.BuildGraph(scope, builder, {{"output", output_operand}});
     EXPECT_NE(graph, nullptr);
@@ -733,11 +737,25 @@ TEST_P(MLGraphTest, ReduceTest) {
         .input = {.data_type = V8MLOperandDataType::Enum::kFloat32,
                   .dimensions = {1, 2, 2, 1},
                   .values = {1.0, 2.0, 3.0, 4.0}},
-        .expected = {2.5}}
+        .expected = {2.5},
+        .expected_output_shape = {}}
         .Test(*this, scope, options);
   }
   {
-    // Test reduceMean operator with axes = {1}.
+    // Test reduceMean operator with keep_dimensions = true.
+    auto* options = MLReduceOptions::Create();
+    ReduceTester<float>{
+        .kind = ReduceKind::kMean,
+        .input = {.data_type = V8MLOperandDataType::Enum::kFloat32,
+                  .dimensions = {1, 2, 2, 1},
+                  .values = {1.0, 2.0, 3.0, 4.0}},
+        .keep_dimensions = true,
+        .expected = {2.5},
+        .expected_output_shape = {1, 1, 1, 1}}
+        .Test(*this, scope, options);
+  }
+  {
+    // Test reduceMean operator with axes = {1} and keep_dimensions = false.
     auto* options = MLReduceOptions::Create();
     options->setAxes({1});
     ReduceTester<float>{
@@ -745,7 +763,22 @@ TEST_P(MLGraphTest, ReduceTest) {
         .input = {.data_type = V8MLOperandDataType::Enum::kFloat32,
                   .dimensions = {2, 2},
                   .values = {1.0, 2.0, 3.0, 4.0}},
-        .expected = {1.5, 3.5}}
+        .expected = {1.5, 3.5},
+        .expected_output_shape = {2}}
+        .Test(*this, scope, options);
+  }
+  {
+    // Test reduceMean operator with axes = {1} and keep_dimensions = true.
+    auto* options = MLReduceOptions::Create();
+    options->setAxes({1});
+    ReduceTester<float>{
+        .kind = ReduceKind::kMean,
+        .input = {.data_type = V8MLOperandDataType::Enum::kFloat32,
+                  .dimensions = {2, 2},
+                  .values = {1.0, 2.0, 3.0, 4.0}},
+        .keep_dimensions = true,
+        .expected = {1.5, 3.5},
+        .expected_output_shape = {2, 1}}
         .Test(*this, scope, options);
   }
 }

@@ -1382,10 +1382,6 @@ xnn_status DefineXnnNodeForReduce(xnn_subgraph_t subgraph,
     return base::checked_cast<size_t>(value);
   });
 
-  if (options->keepDimensions()) {
-    error_message = "XNNPACK can't support keep dimensions.";
-    return xnn_status_unsupported_parameter;
-  }
   const uint32_t flags = 0;
   switch (reduce->Kind()) {
     case MLOperator::OperatorKind::kReduceMean: {
