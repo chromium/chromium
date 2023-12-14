@@ -13,28 +13,21 @@ import '//resources/cr_elements/cr_shared_style.css.js';
 import '//resources/polymer/v3_0/iron-list/iron-list.js';
 import '//resources/cr_components/localized_link/localized_link.js';
 
-import {CrScrollableBehavior, CrScrollableBehaviorInterface} from '//resources/ash/common/cr_scrollable_behavior.js';
-import {I18nBehavior, I18nBehaviorInterface} from '//resources/ash/common/i18n_behavior.js';
-import {afterNextRender, html, mixinBehaviors, PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {CrScrollableMixin} from '//resources/cr_elements/cr_scrollable_mixin.js';
+import {I18nMixin} from '//resources/cr_elements/i18n_mixin.js';
+import {afterNextRender, PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {BluetoothDeviceProperties} from 'chrome://resources/mojo/chromeos/ash/services/bluetooth_config/public/mojom/cros_bluetooth_config.mojom-webui.js';
 
 import {getTemplate} from './bluetooth_pairing_device_selection_page.html.js';
 import {ButtonBarState, ButtonState, DeviceItemState} from './bluetooth_types.js';
 
-/**
- * @constructor
- * @extends {PolymerElement}
- * @implements {CrScrollableBehaviorInterface}
- * @implements {I18nBehaviorInterface}
- */
 const SettingsBluetoothPairingDeviceSelectionPageElementBase =
-    mixinBehaviors([CrScrollableBehavior, I18nBehavior], PolymerElement);
+    I18nMixin(CrScrollableMixin(PolymerElement));
 
-/** @polymer */
 export class SettingsBluetoothPairingDeviceSelectionPageElement extends
     SettingsBluetoothPairingDeviceSelectionPageElementBase {
   static get is() {
-    return 'bluetooth-pairing-device-selection-page';
+    return 'bluetooth-pairing-device-selection-page' as const;
   }
 
   static get template() {
@@ -43,9 +36,6 @@ export class SettingsBluetoothPairingDeviceSelectionPageElement extends
 
   static get properties() {
     return {
-      /**
-       * @type {!Array<!BluetoothDeviceProperties>}
-       */
       devices: {
         type: Array,
         value: [],
@@ -54,23 +44,18 @@ export class SettingsBluetoothPairingDeviceSelectionPageElement extends
 
       /**
        * Id of a device who's pairing attempt failed.
-       * @type {string}
        */
       failedPairingDeviceId: {
         type: String,
         value: '',
       },
 
-      /**
-       * @type {?BluetoothDeviceProperties}
-       */
       devicePendingPairing: {
         type: Object,
         value: null,
         observer: 'onDevicePendingPairingChanged_',
       },
 
-      /** @type {boolean} */
       isBluetoothEnabled: {
         type: Boolean,
         value: false,
@@ -86,7 +71,6 @@ export class SettingsBluetoothPairingDeviceSelectionPageElement extends
         value: false,
       },
 
-      /** @private {!ButtonBarState} */
       buttonBarState_: {
         type: Object,
         value: {
@@ -97,24 +81,31 @@ export class SettingsBluetoothPairingDeviceSelectionPageElement extends
 
       /**
        * Used by FocusRowBehavior to track the last focused element on a row.
-       * @private
        */
       lastFocused_: Object,
 
       /**
        * Used by FocusRowBehavior to track if the list has been blurred.
-       * @private
        */
       listBlurred_: Boolean,
     };
   }
 
+  devices: BluetoothDeviceProperties[];
+  failedPairingDeviceId: string;
+  devicePendingPairing: BluetoothDeviceProperties;
+  isBluetoothEnabled: boolean;
+  shouldOmitLinks: boolean;
+  private buttonBarState_: ButtonBarState;
+  private lastFocused_?: HTMLElement;
+  private listBlurred_: boolean;
+  private lastSelectedDevice_: BluetoothDeviceProperties | null;
+
   constructor() {
     super();
 
     /**
-     * The last device that was selected for pairing.
-     * @private {?BluetoothDeviceProperties}
+     * The last device that was selected for pairing
      */
     this.lastSelectedDevice_ = null;
   }
@@ -122,20 +113,20 @@ export class SettingsBluetoothPairingDeviceSelectionPageElement extends
   /**
    * Attempts to focus the item corresponding to |lastSelectedDevice_|.
    */
-  attemptFocusLastSelectedItem() {
+  attemptFocusLastSelectedItem(): void {
     if (!this.lastSelectedDevice_) {
       return;
     }
 
     const index = this.devices.findIndex(
-        device => device.id === this.lastSelectedDevice_.id);
+        device => device.id === this.lastSelectedDevice_!.id);
     if (index < 0) {
       return;
     }
 
-    afterNextRender(this, function() {
+    afterNextRender(this, ()=> {
       const items =
-          this.shadowRoot.querySelectorAll('bluetooth-pairing-device-item');
+          this.shadowRoot!.querySelectorAll('bluetooth-pairing-device-item');
       if (index >= items.length) {
         return;
       }
@@ -144,8 +135,7 @@ export class SettingsBluetoothPairingDeviceSelectionPageElement extends
     });
   }
 
-  /** @private */
-  onDevicesChanged_() {
+  private onDevicesChanged_(): void {
     // CrScrollableBehaviorInterface method required for list items to be
     // properly rendered when devices updates. This is because iron-list size
     // is not fixed, if this is not called iron-list container would not be
@@ -153,8 +143,7 @@ export class SettingsBluetoothPairingDeviceSelectionPageElement extends
     this.updateScrollableContents();
   }
 
-  /** @private */
-  onDevicePendingPairingChanged_() {
+  private onDevicePendingPairingChanged_(): void {
     // If |devicePendingPairing_| has changed to a defined value, it was the
     // last selected device. |devicePendingPairing_| gets reset to null whenever
     // we move back to this page after a pairing attempt fails or cancels. In
@@ -167,19 +156,11 @@ export class SettingsBluetoothPairingDeviceSelectionPageElement extends
     this.lastSelectedDevice_ = this.devicePendingPairing;
   }
 
-  /**
-   * @private
-   * @return {boolean}
-   */
-  shouldShowDeviceList_() {
+  private shouldShowDeviceList_(): boolean {
     return this.isBluetoothEnabled && this.devices && this.devices.length > 0;
   }
 
-  /**
-   * @private
-   * @return {string}
-   */
-  getDeviceListTitle_() {
+  private getDeviceListTitle_(): string {
     if (!this.isBluetoothEnabled) {
       return this.i18n('bluetoothDisabled');
     }
@@ -204,12 +185,7 @@ export class SettingsBluetoothPairingDeviceSelectionPageElement extends
     return this.i18n('bluetoothNoAvailableDevices');
   }
 
-  /**
-   * @param {?BluetoothDeviceProperties} device
-   * @return {!DeviceItemState}
-   * @private
-   */
-  getDeviceItemState_(device) {
+  private getDeviceItemState_(device: BluetoothDeviceProperties): DeviceItemState {
     if (!device) {
       return DeviceItemState.DEFAULT;
     }
@@ -224,6 +200,13 @@ export class SettingsBluetoothPairingDeviceSelectionPageElement extends
     }
 
     return DeviceItemState.DEFAULT;
+  }
+}
+
+declare global {
+  interface HTMLElementTagNameMap {
+    [SettingsBluetoothPairingDeviceSelectionPageElement.is]:
+    SettingsBluetoothPairingDeviceSelectionPageElement;
   }
 }
 

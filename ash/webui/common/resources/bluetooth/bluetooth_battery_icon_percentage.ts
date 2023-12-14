@@ -12,9 +12,9 @@
 import '//resources/cr_elements/cr_shared_style.css.js';
 import './bluetooth_icons.html.js';
 
-import {I18nBehavior, I18nBehaviorInterface} from '//resources/ash/common/i18n_behavior.js';
-import {assert} from '//resources/ash/common/assert.js';
-import {html, mixinBehaviors, PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {assert} from 'chrome://resources/js/assert.js';
+import {PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
 import {BluetoothDeviceProperties} from 'chrome://resources/mojo/chromeos/ash/services/bluetooth_config/public/mojom/cros_bluetooth_config.mojom-webui.js';
 
 import {getTemplate} from './bluetooth_battery_icon_percentage.html.js';
@@ -24,17 +24,15 @@ import {getBatteryPercentage} from './bluetooth_utils.js';
 /**
  * The threshold percentage where any battery percentage lower is considered
  * 'low battery'.
- * @type {number}
  */
-const LOW_BATTERY_THRESHOLD_PERCENTAGE = 25;
+const LOW_BATTERY_THRESHOLD_PERCENTAGE: number = 25;
 
 /**
  * Ranges for each battery icon, where the value of the first index is the
  * minimum battery percentage in the range (inclusive), and the second index is
  * the maximum battery percentage in the range (inclusive).
- * @type {Array<Array<number>>}
  */
-const BATTERY_ICONS_RANGES = [
+const BATTERY_ICONS_RANGES: number[][] = [
   [0, 7],
   [8, 14],
   [15, 21],
@@ -51,19 +49,12 @@ const BATTERY_ICONS_RANGES = [
   [93, 100],
 ];
 
-/**
- * @constructor
- * @extends {PolymerElement}
- * @implements {I18nBehaviorInterface}
- */
-const BluetoothBatteryIconPercentageElementBase =
-    mixinBehaviors([I18nBehavior], PolymerElement);
+const BluetoothBatteryIconPercentageElementBase = I18nMixin(PolymerElement);
 
-/** @polymer */
 export class BluetoothBatteryIconPercentageElement extends
     BluetoothBatteryIconPercentageElementBase {
   static get is() {
-    return 'bluetooth-battery-icon-percentage';
+    return 'bluetooth-battery-icon-percentage' as const;
   }
 
   static get template() {
@@ -72,17 +63,12 @@ export class BluetoothBatteryIconPercentageElement extends
 
   static get properties() {
     return {
-      /**
-       * @type {!BluetoothDeviceProperties}
-       */
       device: {
         type: Object,
       },
 
       /**
        * The BatteryType of this component.
-       *
-       * @type {!BatteryType}
        */
       batteryType: {
         type: Object,
@@ -91,19 +77,15 @@ export class BluetoothBatteryIconPercentageElement extends
       /**
        * Boolean used to reflect whether the percentage should be labeled
        * with the battery type, e.g. (Left).
-       *
-       * @type {!boolean}
        */
       isTypeLabeled: {type: Boolean, default: false},
 
-      /** @protected {boolean} */
       isLowBattery_: {
         reflectToAttribute: true,
         type: Boolean,
         computed: 'computeIsLowBattery_(device, batteryType)',
       },
 
-      /** @protected {boolean} */
       isMultipleBattery_: {
         reflectToAttribute: true,
         type: Boolean,
@@ -112,14 +94,14 @@ export class BluetoothBatteryIconPercentageElement extends
     };
   }
 
-  /**
-   * @param {!BluetoothDeviceProperties}
-   *     device
-   * @param {!BatteryType} batteryType
-   * @return {boolean}
-   * @private
-   */
-  computeIsLowBattery_(device, batteryType) {
+  device: BluetoothDeviceProperties;
+  batteryType: BatteryType;
+  isTypeLabeled: boolean;
+  private isLowBattery_: boolean;
+  private isMultipleBattery_: boolean;
+
+  private computeIsLowBattery_(device: BluetoothDeviceProperties,
+      batteryType: BatteryType): boolean {
     const batteryPercentage = getBatteryPercentage(device, batteryType);
     if (batteryPercentage === undefined) {
       return false;
@@ -127,12 +109,8 @@ export class BluetoothBatteryIconPercentageElement extends
     return batteryPercentage < LOW_BATTERY_THRESHOLD_PERCENTAGE;
   }
 
-  /**
-   * @param {!BatteryType} batteryType
-   * @return {boolean}
-   * @private
-   */
-  computeIsMultipleBattery_(batteryType) {
+
+  private computeIsMultipleBattery_(batteryType: BatteryType): boolean {
     switch (batteryType) {
       case BatteryType.LEFT_BUD:
       case BatteryType.CASE:
@@ -144,14 +122,8 @@ export class BluetoothBatteryIconPercentageElement extends
     }
   }
 
-  /**
-   * @param {!BluetoothDeviceProperties}
-   *     device
-   * @param {!BatteryType} batteryType
-   * @return {string}
-   * @private
-   */
-  getBatteryPercentageString_(device, batteryType) {
+  private getBatteryPercentageString_(device: BluetoothDeviceProperties,
+      batteryType: BatteryType): string {
     const batteryPercentage = getBatteryPercentage(device, batteryType);
     if (batteryPercentage === undefined) {
       return '';
@@ -180,18 +152,10 @@ export class BluetoothBatteryIconPercentageElement extends
             'bluetoothPairedDeviceItemRightBudTrueWirelessBatteryPercentage',
             batteryPercentage);
     }
-
-    return '';
   }
 
-  /**
-   * @param {!BluetoothDeviceProperties}
-   *     device
-   * @param {!BatteryType} batteryType
-   * @return {string}
-   * @private
-   */
-  getBatteryIcon_(device, batteryType) {
+  private getBatteryIcon_(device: BluetoothDeviceProperties,
+      batteryType: BatteryType): string {
     const batteryPercentage = getBatteryPercentage(device, batteryType);
     if (batteryPercentage === undefined) {
       return '';
@@ -208,10 +172,16 @@ export class BluetoothBatteryIconPercentageElement extends
     return 'bluetooth:battery-' + range[0] + '-' + range[1];
   }
 
-  /** @return {boolean} */
-  getIsLowBatteryForTest() {
+  getIsLowBatteryForTest(): boolean {
     return this.isLowBattery_;
   }
+}
+
+declare global {
+    interface HTMLElementTagNameMap {
+      [BluetoothBatteryIconPercentageElement.is]:
+      BluetoothBatteryIconPercentageElement;
+    }
 }
 
 customElements.define(

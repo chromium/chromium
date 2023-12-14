@@ -12,9 +12,9 @@ import './bluetooth_base_page.js';
 import '//resources/cr_elements/cr_shared_style.css.js';
 import '//resources/polymer/v3_0/iron-flex-layout/iron-flex-layout-classes.js';
 
-import {I18nBehavior, I18nBehaviorInterface} from '//resources/ash/common/i18n_behavior.js';
-import {assert} from '//resources/ash/common/assert.js';
-import {html, mixinBehaviors, PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
+import {assert} from 'chrome://resources/js/assert.js';
+import {PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {getTemplate} from './bluetooth_pairing_enter_code_page.html.js';
 import {ButtonBarState, ButtonState} from './bluetooth_types.js';
@@ -22,20 +22,14 @@ import {ButtonBarState, ButtonState} from './bluetooth_types.js';
 // Pairing passkey can be a maximum of 16 characters while pairing code a max
 // of  6 digits. This is used to check that the passed code is less than or
 // equal to the max possible value.
-const MAX_CODE_LENGTH = 16;
-/**
- * @constructor
- * @extends {PolymerElement}
- * @implements {I18nBehaviorInterface}
- */
-const SettingsBluetoothPairingEnterCodeElementBase =
-    mixinBehaviors([I18nBehavior], PolymerElement);
+const MAX_CODE_LENGTH: number = 16;
 
-/** @polymer */
+const SettingsBluetoothPairingEnterCodeElementBase = I18nMixin(PolymerElement);
+
 export class SettingsBluetoothPairingEnterCodeElement extends
     SettingsBluetoothPairingEnterCodeElementBase {
   static get is() {
-    return 'bluetooth-pairing-enter-code-page';
+    return 'bluetooth-pairing-enter-code-page' as const;
   }
 
   static get template() {
@@ -44,27 +38,21 @@ export class SettingsBluetoothPairingEnterCodeElement extends
 
   static get properties() {
     return {
-      /**
-       * @type {string}
-       */
       deviceName: {
         type: String,
         value: '',
       },
 
-      /** @type {string} */
       code: {
         type: String,
         value: '',
       },
 
-      /** @type {number} */
       numKeysEntered: {
         type: Number,
         value: 0,
       },
 
-      /** @private {!ButtonBarState} */
       buttonBarState_: {
         type: Object,
         value: {
@@ -73,10 +61,6 @@ export class SettingsBluetoothPairingEnterCodeElement extends
         },
       },
 
-      /**
-       * Array representation of |code|.
-       * @private {!Array<string>}
-       */
       keys_: {
         type: Array,
         computed: 'computeKeys_(code)',
@@ -84,11 +68,13 @@ export class SettingsBluetoothPairingEnterCodeElement extends
     };
   }
 
-  /**
-   * @return {!Array<string>}
-   * @private
-   */
-  computeKeys_() {
+  deviceName: string;
+  code: string;
+  numKeysEntered: number;
+  private buttonBarState_: ButtonBarState;
+  private keys_: string[];
+
+  private computeKeys_(): string[] {
     if (!this.code) {
       return [];
     }
@@ -97,20 +83,11 @@ export class SettingsBluetoothPairingEnterCodeElement extends
     return this.code.split('');
   }
 
-  /**
-   * @param {number} index
-   * @return {string}
-   */
-  getKeyAt_(index) {
+  private getKeyAt_(index: number): string {
     return this.keys_[index];
   }
 
-  /**
-   * @param {number} index
-   * @return {string}
-   * @private
-   */
-  getKeyClass_(index) {
+  private getKeyClass_(index: number): string {
     if (!this.keys_ || !this.numKeysEntered) {
       return '';
     }
@@ -124,11 +101,7 @@ export class SettingsBluetoothPairingEnterCodeElement extends
     return '';
   }
 
-  /**
-   * @return {string}
-   * @private
-   */
-  getEnterClass_() {
+  private getEnterClass_(): string {
     if (!this.keys_ || !this.numKeysEntered) {
       return '';
     }
@@ -140,12 +113,14 @@ export class SettingsBluetoothPairingEnterCodeElement extends
     return '';
   }
 
-  /**
-   * @private
-   * @return {string}
-   */
-  getMessage_() {
+  private getMessage_(): string {
     return this.i18n('bluetoothPairingEnterKeys', this.deviceName);
+  }
+}
+
+declare global {
+  interface HTMLElementTagNameMap {
+    [SettingsBluetoothPairingEnterCodeElement.is]: SettingsBluetoothPairingEnterCodeElement;
   }
 }
 

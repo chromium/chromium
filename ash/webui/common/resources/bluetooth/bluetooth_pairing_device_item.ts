@@ -10,29 +10,29 @@
 import '//resources/cr_elements/cr_shared_style.css.js';
 import './bluetooth_icon.js';
 
-import {assertNotReached} from '//resources/ash/common/assert.js';
-import {FocusRowBehavior} from '//resources/ash/common/focus_row_behavior.js';
-import {I18nBehavior, I18nBehaviorInterface} from '//resources/ash/common/i18n_behavior.js';
-import {html, mixinBehaviors, PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {assertNotReached} from 'chrome://resources/js/assert.js';
+import {FocusRowMixin} from 'chrome://resources/cr_elements/focus_row_mixin.js';
+import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
+import {PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {mojoString16ToString} from 'chrome://resources/js/mojo_type_util.js';
 import {BluetoothDeviceProperties, DeviceType} from 'chrome://resources/mojo/chromeos/ash/services/bluetooth_config/public/mojom/cros_bluetooth_config.mojom-webui.js';
 
 import {getTemplate} from './bluetooth_pairing_device_item.html.js';
 import {DeviceItemState} from './bluetooth_types.js';
 
-/**
- * @constructor
- * @implements {I18nBehaviorInterface}
- * @extends {PolymerElement}
- */
-const SettingsBluetoothPairingDeviceItemElementBase =
-    mixinBehaviors([I18nBehavior, FocusRowBehavior], PolymerElement);
+const SettingsBluetoothPairingDeviceItemElementBase = FocusRowMixin(I18nMixin(PolymerElement));
 
-/** @polymer */
+
+export interface SettingsBluetoothPairingDeviceItemElement {
+  $: {
+    container: HTMLDivElement,
+  };
+}
+
 export class SettingsBluetoothPairingDeviceItemElement extends
     SettingsBluetoothPairingDeviceItemElementBase {
   static get is() {
-    return 'bluetooth-pairing-device-item';
+    return 'bluetooth-pairing-device-item'as const;
   }
 
   static get template() {
@@ -41,12 +41,8 @@ export class SettingsBluetoothPairingDeviceItemElement extends
 
   static get properties() {
     return {
-      /**
-       * @type {?BluetoothDeviceProperties}
-       */
       device: Object,
 
-      /** @type {DeviceItemState} */
       deviceItemState: {
         type: Object,
         value: DeviceItemState.DEFAULT,
@@ -61,13 +57,11 @@ export class SettingsBluetoothPairingDeviceItemElement extends
        */
       listSize: Number,
 
-      /** @private {string} */
       secondaryLabel_: {
         type: String,
         computed: 'computeSecondaryLabel_(deviceItemState)',
       },
 
-      /** @private {boolean} */
       pairingFailed_: {
         reflectToAttribute: true,
         type: Boolean,
@@ -76,8 +70,14 @@ export class SettingsBluetoothPairingDeviceItemElement extends
     };
   }
 
-  /** @override */
-  focus() {
+  device: BluetoothDeviceProperties;
+  deviceItemState: DeviceItemState;
+  itemIndex: number;
+  listSize: number;
+  private secondaryLabel_: string;
+  private pairingFailed_: boolean;
+
+  override focus(): void {
     // Prevent scroll stops iron list from trying to bring this element to view,
     // if it is the |lastFocused| element and scrolled out of view. This can
     // happen if this element is tabbed to or selected and then scrolled out of
@@ -86,39 +86,23 @@ export class SettingsBluetoothPairingDeviceItemElement extends
     this.$.container.focus({preventScroll: true});
   }
 
-  /**
-   * @return {boolean}
-   * @private
-   */
-  computePairingFailed_() {
+  private computePairingFailed_(): boolean {
     return this.deviceItemState === DeviceItemState.FAILED;
   }
 
-  /**
-   * @return {string}
-   * @private
-   */
-  getDeviceName_() {
+  private getDeviceName_(): string {
     if (!this.device) {
       return '';
     }
     return mojoString16ToString(this.device.publicName);
   }
 
-  /**
-   * @param {!Event} event
-   * @private
-   */
-  onSelected_(event) {
+  private onSelected_(event: Event): void {
     this.dispatchPairDeviceEvent_();
     event.stopPropagation();
   }
 
-  /**
-   * @param {!KeyboardEvent} event
-   * @private
-   */
-  onKeydown_(event) {
+  private onKeydown_(event: KeyboardEvent): void {
     if (event.key !== 'Enter' && event.key !== ' ') {
       return;
     }
@@ -127,11 +111,7 @@ export class SettingsBluetoothPairingDeviceItemElement extends
     event.stopPropagation();
   }
 
-  /**
-   * @return {string}
-   * @private
-   */
-  computeSecondaryLabel_() {
+  private computeSecondaryLabel_(): string {
     switch (this.deviceItemState) {
       case DeviceItemState.FAILED:
         return this.i18n('bluetoothPairingFailed');
@@ -140,12 +120,11 @@ export class SettingsBluetoothPairingDeviceItemElement extends
       case DeviceItemState.DEFAULT:
         return '';
       default:
-        assertNotReached();
+        return '';
     }
   }
 
-  /** @private */
-  dispatchPairDeviceEvent_() {
+  private dispatchPairDeviceEvent_(): void {
     this.dispatchEvent(new CustomEvent('pair-device', {
       bubbles: true,
       composed: true,
@@ -153,11 +132,7 @@ export class SettingsBluetoothPairingDeviceItemElement extends
     }));
   }
 
-  /**
-   * @return {string}
-   * @private
-   */
-  getAriaLabel_() {
+  private getAriaLabel_(): string {
     if (!this.device) {
       return '';
     }
@@ -168,11 +143,7 @@ export class SettingsBluetoothPairingDeviceItemElement extends
         ' ' + this.i18n(this.getA11yDeviceTypeTextName_());
   }
 
-  /**
-   * @return {string}
-   * @private
-   */
-  getA11yDeviceTypeTextName_() {
+  private getA11yDeviceTypeTextName_(): string  {
     switch (this.device.deviceType) {
       case DeviceType.kUnknown:
         return 'bluetoothA11yDeviceTypeUnknown';
@@ -195,15 +166,11 @@ export class SettingsBluetoothPairingDeviceItemElement extends
       case DeviceType.kTablet:
         return 'bluetoothA11yDeviceTypeTablet';
       default:
-        assertNotReached();
+        return '';
     }
   }
 
-  /**
-   * @return {string}
-   * @private
-   */
-  getSecondaryAriaLabel_() {
+  private getSecondaryAriaLabel_(): string|undefined {
     const deviceName = this.getDeviceName_();
     switch (this.deviceItemState) {
       case DeviceItemState.FAILED:
@@ -217,6 +184,12 @@ export class SettingsBluetoothPairingDeviceItemElement extends
       default:
         assertNotReached();
     }
+  }
+}
+
+declare global {
+  interface HTMLElementTagNameMap {
+    [SettingsBluetoothPairingDeviceItemElement.is]: SettingsBluetoothPairingDeviceItemElement;
   }
 }
 

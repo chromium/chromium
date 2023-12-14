@@ -10,22 +10,14 @@ import {CrosBluetoothConfig, CrosBluetoothConfigInterface} from 'chrome://resour
  * CrosBluetoothConfig implementation for tests.
  */
 
-/** @type {?CrosBluetoothConfigInterface} */
-let bluetoothConfig = null;
+let bluetoothConfig: CrosBluetoothConfigInterface|undefined;
 
-/**
- * @param {?CrosBluetoothConfigInterface}
- *     testBluetoothConfig The CrosBluetoothConfig implementation used for
- *                         testing. Passing null reverses the override.
- */
-export function setBluetoothConfigForTesting(testBluetoothConfig) {
+export function setBluetoothConfigForTesting(
+    testBluetoothConfig?: CrosBluetoothConfigInterface): void {
   bluetoothConfig = testBluetoothConfig;
 }
 
-/**
- * @return {!CrosBluetoothConfigInterface}
- */
-export function getBluetoothConfig() {
+export function getBluetoothConfig(): CrosBluetoothConfigInterface {
   if (bluetoothConfig) {
     return bluetoothConfig;
   }

@@ -17,10 +17,9 @@ import {BluetoothDeviceProperties} from 'chrome://resources/mojo/chromeos/ash/se
 import {BatteryType} from './bluetooth_types.js';
 import {getBatteryPercentage, hasAnyDetailedBatteryInfo} from './bluetooth_utils.js';
 
-/** @polymer */
 export class BluetoothDeviceBatteryInfoElement extends PolymerElement {
   static get is() {
-    return 'bluetooth-device-battery-info';
+    return 'bluetooth-device-battery-info' as const;
   }
 
   static get template() {
@@ -29,9 +28,6 @@ export class BluetoothDeviceBatteryInfoElement extends PolymerElement {
 
   static get properties() {
     return {
-      /**
-       * @type {!BluetoothDeviceProperties}
-       */
       device: {
         type: Object,
       },
@@ -40,15 +36,12 @@ export class BluetoothDeviceBatteryInfoElement extends PolymerElement {
        * Enum used as an ID for specific UI elements.
        * A BatteryType is passed between html and JS for
        * certain UI elements to determine their state.
-       *
-       * @type {!BatteryType}
        */
       BatteryType: {
         type: Object,
         value: BatteryType,
       },
 
-      /** @protected {boolean} */
       showMultipleBatteries_: {
         type: Boolean,
         computed: 'computeShowMultipleBatteries_(device)',
@@ -56,27 +49,26 @@ export class BluetoothDeviceBatteryInfoElement extends PolymerElement {
     };
   }
 
-  /**
-   * @param {!BluetoothDeviceProperties}
-   *     device
-   * @return {boolean}
-   * @private
-   */
-  computeShowMultipleBatteries_(device) {
+  device: BluetoothDeviceProperties;
+  private showMultipleBatteries_: boolean;
+
+  private computeShowMultipleBatteries_(device: BluetoothDeviceProperties): boolean {
     return hasAnyDetailedBatteryInfo(device);
   }
 
-  /**
-   * @param {!BluetoothDeviceProperties}
-   *     device
-   * @param {!BatteryType} batteryType
-   * @return {boolean}
-   * @private
-   */
-  shouldShowBattery_(device, batteryType) {
+  private shouldShowBattery_(device: BluetoothDeviceProperties,
+      batteryType: BatteryType): boolean {
     return getBatteryPercentage(device, batteryType) !== undefined;
   }
 }
 
+declare global {
+  interface HTMLElementTagNameMap {
+    [BluetoothDeviceBatteryInfoElement.is]:
+    BluetoothDeviceBatteryInfoElement;
+  }
+}
+
 customElements.define(
-    BluetoothDeviceBatteryInfoElement.is, BluetoothDeviceBatteryInfoElement);
+    BluetoothDeviceBatteryInfoElement.is,
+    BluetoothDeviceBatteryInfoElement);

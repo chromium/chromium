@@ -16,10 +16,9 @@ import {BluetoothDeviceProperties, DeviceType} from 'chrome://resources/mojo/chr
 import {getTemplate} from './bluetooth_icon.html.js';
 import {hasDefaultImage} from './bluetooth_utils.js';
 
-/** @polymer */
 export class SettingsBluetoothIconElement extends PolymerElement {
   static get is() {
-    return 'bluetooth-icon';
+    return 'bluetooth-icon' as const;
   }
 
   static get template() {
@@ -28,20 +27,15 @@ export class SettingsBluetoothIconElement extends PolymerElement {
 
   static get properties() {
     return {
-      /**
-       * @type {!BluetoothDeviceProperties}
-       */
       device: {
         type: Object,
       },
     };
   }
 
-  /**
-   * @return {string}
-   * @private
-   */
-  getIcon_() {
+  device: BluetoothDeviceProperties;
+
+  private getIcon_(): string {
     if (!this.device) {
       return 'default';
     }
@@ -69,24 +63,23 @@ export class SettingsBluetoothIconElement extends PolymerElement {
     }
   }
 
-  /**
-   * @return {boolean}
-   * @private
-   */
-  hasDefaultImage_() {
+  private hasDefaultImage_(): boolean {
     return hasDefaultImage(this.device);
   }
 
-  /**
-   * @return {string}
-   * @private
-   */
-  getDefaultImageSrc_() {
+  private getDefaultImageSrc_(): string {
     if (!this.hasDefaultImage_()) {
       return '';
     }
-    return this.device.imageInfo.defaultImageUrl.url;
+    return this.device!.imageInfo!.defaultImageUrl!.url;
   }
 }
+
+declare global {
+  interface HTMLElementTagNameMap {
+    [SettingsBluetoothIconElement.is]: SettingsBluetoothIconElement;
+  }
+}
+
 customElements.define(
     SettingsBluetoothIconElement.is, SettingsBluetoothIconElement);

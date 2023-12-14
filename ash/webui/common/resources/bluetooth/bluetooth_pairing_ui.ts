@@ -14,34 +14,30 @@ import './bluetooth_pairing_request_code_page.js';
 import './bluetooth_pairing_confirm_code_page.js';
 import './bluetooth_spinner_page.js';
 
-import {assert, assertNotReached} from '//resources/ash/common/assert.js';
+import {assert, assertNotReached} from 'chrome://resources/js/assert.js';
 import {PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {mojoString16ToString} from 'chrome://resources/js/mojo_type_util.js';
-import {BluetoothDeviceProperties, BluetoothDiscoveryDelegateInterface, BluetoothDiscoveryDelegateReceiver, BluetoothSystemState, DevicePairingDelegateInterface, DevicePairingDelegateReceiver, DevicePairingHandlerInterface, KeyEnteredHandlerInterface, KeyEnteredHandlerPendingReceiver, KeyEnteredHandlerReceiver, PairingResult, SystemPropertiesObserverInterface, SystemPropertiesObserverReceiver} from 'chrome://resources/mojo/chromeos/ash/services/bluetooth_config/public/mojom/cros_bluetooth_config.mojom-webui.js';
+import {BluetoothSystemProperties, BluetoothDeviceProperties, BluetoothDiscoveryDelegateInterface, BluetoothDiscoveryDelegateReceiver, BluetoothSystemState, DevicePairingDelegateInterface, DevicePairingDelegateReceiver, DevicePairingHandlerInterface, KeyEnteredHandlerInterface, KeyEnteredHandlerPendingReceiver, KeyEnteredHandlerReceiver, PairingResult, SystemPropertiesObserverInterface, SystemPropertiesObserverReceiver} from 'chrome://resources/mojo/chromeos/ash/services/bluetooth_config/public/mojom/cros_bluetooth_config.mojom-webui.js';
 
 import {getTemplate} from './bluetooth_pairing_ui.html.js';
 import {PairingAuthType} from './bluetooth_types.js';
 import {getBluetoothConfig} from './cros_bluetooth_config.js';
 
-/** @implements {KeyEnteredHandlerInterface} */
-class KeyEnteredHandler {
-  /**
-   * @param {!SettingsBluetoothPairingUiElement} page
-   * @param {!KeyEnteredHandlerPendingReceiver}
-   *     keyEnteredHandlerReceiver
-   */
-  constructor(page, keyEnteredHandlerReceiver) {
-    /** @private {!SettingsBluetoothPairingUiElement} */
+class KeyEnteredHandler implements KeyEnteredHandlerInterface {
+
+  private page_: SettingsBluetoothPairingUiElement;
+  private keyEnteredHandlerReceiver_: KeyEnteredHandlerReceiver;
+
+  constructor(page: SettingsBluetoothPairingUiElement,
+      keyEnteredHandlerReceiver: KeyEnteredHandlerPendingReceiver) {
     this.page_ = page;
 
-    /** @private {!KeyEnteredHandlerReceiver} */
     this.keyEnteredHandlerReceiver_ = new KeyEnteredHandlerReceiver(this);
     this.keyEnteredHandlerReceiver_.$.bindHandle(
         keyEnteredHandlerReceiver.handle);
   }
 
-  /** @override */
-  handleKeyEntered(numKeysEntered) {
+  handleKeyEntered(numKeysEntered: number) {
     this.page_.handleKeyEntered(numKeysEntered);
   }
 
@@ -50,41 +46,31 @@ class KeyEnteredHandler {
   }
 }
 
-/** @enum {string} */
-const BluetoothPairingSubpageId = {
-  DEVICE_SELECTION_PAGE: 'deviceSelectionPage',
-  DEVICE_ENTER_CODE_PAGE: 'deviceEnterCodePage',
-  DEVICE_REQUEST_CODE_PAGE: 'deviceRequestCodePage',
-  DEVICE_CONFIRM_CODE_PAGE: 'deviceConfirmCodePage',
-  SPINNER_PAGE: 'spinnerPage',
-};
+enum BluetoothPairingSubpageId {
+  DEVICE_SELECTION_PAGE = 'deviceSelectionPage',
+  DEVICE_ENTER_CODE_PAGE  = 'deviceEnterCodePage',
+  DEVICE_REQUEST_CODE_PAGE = 'deviceRequestCodePage',
+  DEVICE_CONFIRM_CODE_PAGE = 'deviceConfirmCodePage',
+  SPINNER_PAGE = 'spinnerPage',
+}
 
-/**
- * @typedef {{
- *  resolve: ?function(string),
- *  reject: ?function(),
- * }}
- */
-let RequestCodeCallback;
+interface RequestCodeCallback {
+  resolve: ((param: string) => void)|null;
+  reject: (() => void)|null;
+}
 
-/**
- * @typedef {{
- *  resolve: ?function(),
- *  reject: ?function(),
- * }}
- */
-let ConfirmCodeCallback;
+interface ConfirmCodeCallback {
+  resolve: (() => void)|null;
+  reject: (() => void)|null;
+}
 
-/**
- * @implements {SystemPropertiesObserverInterface}
- * @implements {BluetoothDiscoveryDelegateInterface}
- * @implements {DevicePairingDelegateInterface}
- * @implements {KeyEnteredHandlerInterface}
- * @polymer
- */
-export class SettingsBluetoothPairingUiElement extends PolymerElement {
+export class SettingsBluetoothPairingUiElement extends PolymerElement
+    implements SystemPropertiesObserverInterface,
+                BluetoothDiscoveryDelegateInterface,
+                DevicePairingDelegateInterface,
+                KeyEnteredHandlerInterface {
   static get is() {
-    return 'bluetooth-pairing-ui';
+    return 'bluetooth-pairing-ui' as const;
   }
 
   static get template() {
@@ -99,7 +85,6 @@ export class SettingsBluetoothPairingUiElement extends PolymerElement {
        * be paired with and the user will be allowed to select a device to pair
        * with. This is set when the dialog is opened if the purpose of the
        * dialog is to pair with a specific device.
-       * @type {?string}
        */
       pairingDeviceAddress: {
         type: String,
@@ -118,7 +103,6 @@ export class SettingsBluetoothPairingUiElement extends PolymerElement {
 
       /**
        * Id of the currently selected Bluetooth pairing subpage.
-       * @private {!BluetoothPairingSubpageId}
        */
       selectedPageId_: {
         type: String,
@@ -126,9 +110,6 @@ export class SettingsBluetoothPairingUiElement extends PolymerElement {
         observer: 'onSelectedPageIdChanged_',
       },
 
-      /**
-       * @private {Array<!BluetoothDeviceProperties>}
-       */
       discoveredDevices_: {
         type: Array,
         value: [],
@@ -137,26 +118,22 @@ export class SettingsBluetoothPairingUiElement extends PolymerElement {
       /**
        * This can be null if no pairing attempt was started or a pairing attempt
        * was cancelled by user.
-       * @private {?BluetoothDeviceProperties}
        */
       devicePendingPairing_: {
         type: Object,
         value: null,
       },
 
-      /** @private {?PairingAuthType} */
       pairingAuthType_: {
         type: Object,
         value: null,
       },
 
-      /** @private {string} */
       pairingCode_: {
         type: String,
         value: '',
       },
 
-      /** @private {number} */
       numKeysEntered_: {
         type: Number,
         value: 0,
@@ -164,14 +141,12 @@ export class SettingsBluetoothPairingUiElement extends PolymerElement {
 
       /**
        * Id of a device who's pairing attempt failed.
-       * @private {string}
        */
       lastFailedPairingDeviceId_: {
         type: String,
         value: '',
       },
 
-      /** @private {boolean} */
       isBluetoothEnabled_: {
         type: Boolean,
         value: false,
@@ -179,7 +154,6 @@ export class SettingsBluetoothPairingUiElement extends PolymerElement {
 
       /**
        * Used to access |BluetoothPairingSubpageId| type in HTML.
-       * @private {!BluetoothPairingSubpageId}
        */
       SubpageId: {
         type: Object,
@@ -188,60 +162,47 @@ export class SettingsBluetoothPairingUiElement extends PolymerElement {
     };
   }
 
+  pairingDeviceAddress: string|null;
+  shouldOmitLinks: boolean;
+  private selectedPageId_: BluetoothPairingSubpageId;
+  private discoveredDevices_: BluetoothDeviceProperties[];
+  private devicePendingPairing_: BluetoothDeviceProperties|null;
+  private pairingAuthType_: PairingAuthType|null;
+  private pairingCode_: string;
+  private numKeysEntered_: number;
+  private lastFailedPairingDeviceId_: string;
+  private isBluetoothEnabled_: boolean;
+  private systemPropertiesObserverReceiver_: SystemPropertiesObserverReceiver;
+  private bluetoothDiscoveryDelegateReceiver_: BluetoothDiscoveryDelegateReceiver;
+  private devicePairingHandler_: DevicePairingHandlerInterface|null;
+  /**
+   * The device to be paired with after the current pairDevice_() request has
+   * finished.
+   */
+  private queuedDevicePendingPairing_: BluetoothDeviceProperties|null;
+
+  /**
+   * The Mojo receiver of the current ongoing pairing. If null indicates no
+   * pairing is occurring.
+   */
+  private pairingDelegateReceiver_: DevicePairingDelegateReceiver|null = null;
+  private requestCodeCallback_: RequestCodeCallback|null = null;
+  private keyEnteredReceiver_: KeyEnteredHandler|null = null;
+  private confirmCodeCallback_: ConfirmCodeCallback|null = null;
+  private onBluetoothDiscoveryStartedCallbackForTest_:  (() => void)|null = null;
+  private handlePairDeviceResultCallbackForTest_: (() => void)|null = null;
+
   constructor() {
     super();
-    /**
-     * @private {!SystemPropertiesObserverReceiver}
-     */
-    this.systemPropertiesObserverReceiver_ =
-        new SystemPropertiesObserverReceiver(
-            /**
-             * @type {!SystemPropertiesObserverInterface}
-             */
-            (this));
 
-    /**
-     * @private {!BluetoothDiscoveryDelegateReceiver}
-     */
+    this.systemPropertiesObserverReceiver_ =
+        new SystemPropertiesObserverReceiver(this);
+
     this.bluetoothDiscoveryDelegateReceiver_ =
         new BluetoothDiscoveryDelegateReceiver(this);
-
-    /**
-     * @private {?DevicePairingHandlerInterface}
-     */
-    this.devicePairingHandler_;
-
-    /**
-     * The device to be paired with after the current pairDevice_() request has
-     * finished.
-     * @private {?BluetoothDeviceProperties}
-     */
-    this.queuedDevicePendingPairing_;
-
-    /**
-     * The Mojo receiver of the current ongoing pairing. If null indicates no
-     * pairing is occurring.
-     * @private {?DevicePairingDelegateReceiver}
-     */
-    this.pairingDelegateReceiver_ = null;
-
-    /** @private {?RequestCodeCallback} */
-    this.requestCodeCallback_ = null;
-
-    /** @private {?KeyEnteredHandler} */
-    this.keyEnteredReceiver_ = null;
-
-    /** @private {?ConfirmCodeCallback} */
-    this.confirmCodeCallback_ = null;
-
-    /** @private {?function()} */
-    this.onBluetoothDiscoveryStartedCallbackForTest_ = null;
-
-    /** @private {?function()} */
-    this.handlePairDeviceResultCallbackForTest_ = null;
   }
 
-  ready() {
+  override ready(): void {
     super.ready();
 
     // If there's a specific device to pair with, immediately go to the spinner
@@ -251,14 +212,14 @@ export class SettingsBluetoothPairingUiElement extends PolymerElement {
     }
   }
 
-  connectedCallback() {
+  override connectedCallback(): void {
     super.connectedCallback();
 
     getBluetoothConfig().observeSystemProperties(
         this.systemPropertiesObserverReceiver_.$.bindNewPipeAndPassRemote());
   }
 
-  disconnectedCallback() {
+  override disconnectedCallback(): void {
     super.disconnectedCallback();
 
     if (this.systemPropertiesObserverReceiver_) {
@@ -275,8 +236,7 @@ export class SettingsBluetoothPairingUiElement extends PolymerElement {
     }
   }
 
-  /** @override */
-  onPropertiesUpdated(properties) {
+  onPropertiesUpdated(properties: BluetoothSystemProperties): void {
     const wasBluetoothEnabled = this.isBluetoothEnabled_;
     this.isBluetoothEnabled_ =
         properties.systemState === BluetoothSystemState.kEnabled;
@@ -292,8 +252,8 @@ export class SettingsBluetoothPairingUiElement extends PolymerElement {
     }
   }
 
-  /** @override */
-  onDiscoveredDevicesListChanged(discoveredDevices) {
+  onDiscoveredDevicesListChanged(
+      discoveredDevices: BluetoothDeviceProperties[]): void {
     this.discoveredDevices_ = discoveredDevices;
 
     this.updateLastFailedPairingDeviceId_(discoveredDevices);
@@ -314,21 +274,17 @@ export class SettingsBluetoothPairingUiElement extends PolymerElement {
     this.attemptPairDeviceByAddress_();
   }
 
-  /**
-   * @param {Array<!BluetoothDeviceProperties>}
-   *     devices
-   * @private
-   */
-  updateLastFailedPairingDeviceId_(devices) {
-    if (devices.some(device => device.id === this.lastFailedPairingDeviceId_)) {
+  private updateLastFailedPairingDeviceId_(
+      devices: BluetoothDeviceProperties[]):void {
+    if (devices.some(device =>
+          device.id === this.lastFailedPairingDeviceId_)) {
       return;
     }
 
     this.lastFailedPairingDeviceId_ = '';
   }
 
-  /** @override */
-  onBluetoothDiscoveryStarted(handler) {
+  onBluetoothDiscoveryStarted(handler: DevicePairingHandlerInterface): void {
     this.devicePairingHandler_ = handler;
 
     // Inform tests that onBluetoothDiscoveryStarted() has been called. This is
@@ -339,8 +295,7 @@ export class SettingsBluetoothPairingUiElement extends PolymerElement {
     }
   }
 
-  /** @override */
-  onBluetoothDiscoveryStopped() {
+  onBluetoothDiscoveryStopped(): void {
     // Discovery will stop if Bluetooth disables. Reset the UI back to the
     // selection page.
     this.bluetoothDiscoveryDelegateReceiver_.$.close();
@@ -351,9 +306,8 @@ export class SettingsBluetoothPairingUiElement extends PolymerElement {
   /**
    * Returns a promise that will be resolved the next time
    * onBluetoothDiscoveryStarted() is called.
-   * @return {Promise}
    */
-  waitForOnBluetoothDiscoveryStartedForTest() {
+  private waitForOnBluetoothDiscoveryStartedForTest(): Promise<void> {
     return new Promise((resolve) => {
       this.onBluetoothDiscoveryStartedCallbackForTest_ = resolve;
     });
@@ -362,20 +316,15 @@ export class SettingsBluetoothPairingUiElement extends PolymerElement {
   /**
    * Returns a promise that will be resolved the next time
    * handlePairDeviceResult_() is called.
-   * @return {Promise}
    */
-  waitForHandlePairDeviceResultForTest() {
+  private waitForHandlePairDeviceResultForTest(): Promise<void> {
     return new Promise((resolve) => {
       this.handlePairDeviceResultCallbackForTest_ = resolve;
     });
   }
 
-  /**
-   * @param {!CustomEvent<!{device:
-   *     BluetoothDeviceProperties}>} event
-   * @private
-   */
-  onPairDevice_(event) {
+  private onPairDevice_(event: CustomEvent<{device:BluetoothDeviceProperties}>)
+      : void {
     if (!event.detail.device) {
       return;
     }
@@ -393,9 +342,8 @@ export class SettingsBluetoothPairingUiElement extends PolymerElement {
   /**
    * Searches for the device with address |this.pairingDeviceAddress| in
    * |this.discoveredDevices| and attempts to pair with it.
-   * @private
    */
-  attemptPairDeviceByAddress_() {
+  private attemptPairDeviceByAddress_(): void {
     assert(this.pairingDeviceAddress);
     assert(!this.pairingDelegateReceiver_);
 
@@ -417,11 +365,7 @@ export class SettingsBluetoothPairingUiElement extends PolymerElement {
         });
   }
 
-  /**
-   * @param {!BluetoothDeviceProperties} device
-   * @private
-   */
-  pairDevice_(device) {
+  private pairDevice_(device: BluetoothDeviceProperties): void {
     assert(
         this.devicePairingHandler_, 'devicePairingHandler_ has not been set.');
 
@@ -446,11 +390,7 @@ export class SettingsBluetoothPairingUiElement extends PolymerElement {
         });
   }
 
-  /**
-   * @param {!PairingResult} result
-   * @private
-   */
-  handlePairDeviceResult_(result) {
+  private handlePairDeviceResult_(result: PairingResult): void {
     if (this.pairingDelegateReceiver_) {
       this.pairingDelegateReceiver_.$.close();
     }
@@ -494,22 +434,15 @@ export class SettingsBluetoothPairingUiElement extends PolymerElement {
     }
   }
 
-  /** @override */
-  requestPinCode() {
+  requestPinCode(): Promise<{pinCode: string}>{
     return this.requestCode_(PairingAuthType.REQUEST_PIN_CODE);
   }
 
-  /** @override */
-  requestPasskey() {
+  requestPasskey(): Promise<{passkey: string}> {
     return this.requestCode_(PairingAuthType.REQUEST_PASSKEY);
   }
 
-  /**
-   * @param {!PairingAuthType} authType
-   * @return {!Promise<{pinCode: !string}> | !Promise<{passkey: !string}>}
-   * @private
-   */
-  requestCode_(authType) {
+  private requestCode_(authType: PairingAuthType): Promise<any> {
     this.pairingAuthType_ = authType;
     this.selectedPageId_ = BluetoothPairingSubpageId.DEVICE_REQUEST_CODE_PAGE;
     this.requestCodeCallback_ = {
@@ -517,8 +450,8 @@ export class SettingsBluetoothPairingUiElement extends PolymerElement {
       resolve: null,
     };
 
-    const promise = new Promise((resolve, reject) => {
-      this.requestCodeCallback_.resolve = (code) => {
+    const promise: Promise<any> = new Promise((resolve, reject) => {
+      this.requestCodeCallback_!.resolve = (code: string) => {
         if (authType === PairingAuthType.REQUEST_PIN_CODE) {
           resolve({'pinCode': code});
           return;
@@ -531,55 +464,41 @@ export class SettingsBluetoothPairingUiElement extends PolymerElement {
 
         assertNotReached();
       };
-      this.requestCodeCallback_.reject = reject;
+      this.requestCodeCallback_!.reject = reject;
     });
 
-    return promise;
+    return promise ;
   }
 
-  /**
-   * @param {!CustomEvent<!{code: string}>} event
-   * @private
-   */
-  onRequestCodeEntered_(event) {
+  private onRequestCodeEntered_(event: CustomEvent<{code: string}>): void {
     this.selectedPageId_ = BluetoothPairingSubpageId.SPINNER_PAGE;
     event.stopPropagation();
     assert(this.pairingAuthType_);
-    assert(this.requestCodeCallback_.resolve);
+    assert(this.requestCodeCallback_&& this.requestCodeCallback_.resolve);
     this.requestCodeCallback_.resolve(event.detail.code);
   }
 
-  /** @override */
-  displayPinCode(pinCode, handler) {
+  displayPinCode(pinCode: string, handler: KeyEnteredHandlerPendingReceiver)
+      : void {
     this.displayCode_(handler, pinCode);
   }
 
-  /** @override */
-  displayPasskey(passkey, handler) {
+  displayPasskey(passkey: string, handler: KeyEnteredHandlerPendingReceiver) {
     this.displayCode_(handler, passkey);
   }
 
-  /**s
-   * @param {!KeyEnteredHandlerPendingReceiver}
-   *     handler
-   * @param {string} code
-   * @private
-   */
-  displayCode_(handler, code) {
+  private displayCode_(handler: KeyEnteredHandlerPendingReceiver, code: string)
+      : void {
     this.pairingCode_ = code;
     this.selectedPageId_ = BluetoothPairingSubpageId.DEVICE_ENTER_CODE_PAGE;
     this.keyEnteredReceiver_ = new KeyEnteredHandler(this, handler);
   }
 
-  /**
-   * @param {number} numKeysEntered
-   */
-  handleKeyEntered(numKeysEntered) {
+  handleKeyEntered(numKeysEntered: number): void {
     this.numKeysEntered_ = numKeysEntered;
   }
 
-  /** @override */
-  confirmPasskey(passkey) {
+  confirmPasskey(passkey: string): Promise<{confirmed: boolean}> {
     this.pairingAuthType_ = PairingAuthType.CONFIRM_PASSKEY;
     this.selectedPageId_ = BluetoothPairingSubpageId.DEVICE_CONFIRM_CODE_PAGE;
     this.pairingCode_ = passkey;
@@ -590,44 +509,31 @@ export class SettingsBluetoothPairingUiElement extends PolymerElement {
     };
 
     return new Promise((resolve, reject) => {
-      this.confirmCodeCallback_.resolve = () => {
+      this.confirmCodeCallback_!.resolve = () => {
         resolve({'confirmed': true});
       };
-      this.confirmCodeCallback_.reject = reject;
+      this.confirmCodeCallback_!.reject = reject;
     });
   }
 
-  /**
-   * @param {!Event} event
-   * @private
-   */
-  onConfirmCode_(event) {
+  private onConfirmCode_(event: Event): void {
     this.selectedPageId_ = BluetoothPairingSubpageId.SPINNER_PAGE;
     event.stopPropagation();
     assert(this.pairingAuthType_);
-    assert(this.confirmCodeCallback_);
+    assert(this.confirmCodeCallback_&& this.confirmCodeCallback_.resolve);
     this.confirmCodeCallback_.resolve();
   }
 
-  /** @override */
-  authorizePairing() {
+  authorizePairing(): Promise<{ confirmed: boolean }> {
     // TODO(crbug.com/1010321): Implement this function.
+    return new Promise(() => {});
   }
 
-  /**
-   * @param {!BluetoothPairingSubpageId} subpageId
-   * @return {boolean}
-   * @private
-   */
-  shouldShowSubpage_(subpageId) {
+  private shouldShowSubpage_(subpageId: BluetoothPairingSubpageId): boolean {
     return this.selectedPageId_ === subpageId;
   }
 
-  /**
-   * @param {!Event} event
-   * @private
-   */
-  onCancelClick_(event) {
+  private onCancelClick_(event: Event): void {
     event.stopPropagation();
     this.devicePendingPairing_ = null;
     if (this.pairingDelegateReceiver_) {
@@ -643,16 +549,15 @@ export class SettingsBluetoothPairingUiElement extends PolymerElement {
     this.closeDialog_();
   }
 
-  /** @private */
-  closeDialog_() {
+
+  private closeDialog_(): void {
     this.dispatchEvent(new CustomEvent('finished', {
       bubbles: true,
       composed: true,
     }));
   }
 
-  /** @private */
-  onSelectedPageIdChanged_() {
+  private onSelectedPageIdChanged_(): void {
     // If the current page changes to the device selection page, focus the item
     // corresponding to the last device attempted to be paired with.
     if (this.selectedPageId_ !==
@@ -660,8 +565,8 @@ export class SettingsBluetoothPairingUiElement extends PolymerElement {
       return;
     }
 
-    const deviceSelectionPage =
-        this.shadowRoot.querySelector('#deviceSelectionPage');
+    const deviceSelectionPage: any =
+        this.shadowRoot!.querySelector('#deviceSelectionPage');
     if (!deviceSelectionPage) {
       return;
     }
@@ -669,9 +574,8 @@ export class SettingsBluetoothPairingUiElement extends PolymerElement {
     deviceSelectionPage.attemptFocusLastSelectedItem();
   }
 
-  /** @private */
-  finishPendingCallbacksForTest_() {
-    if (this.requestCodeCallback_) {
+  private finishPendingCallbacksForTest_(): void {
+    if (this.requestCodeCallback_ && this.requestCodeCallback_.reject) {
       // |requestCodeCallback_| promise is held by FakeDevicePairingHandler
       // in test. This does not get resolved for the test case where user
       // cancels request while in request code page. Calling reject is
@@ -679,20 +583,16 @@ export class SettingsBluetoothPairingUiElement extends PolymerElement {
       this.requestCodeCallback_.reject();
     }
 
-    if (this.confirmCodeCallback_) {
-      // |confirmCodeCallback_| promise is held by FakeDevicePairingHandler
-      // in test. This does not get resolved for the test case where user
-      // cancels request while in request code page. Calling reject is
-      // necessary here to make sure the promise is resolved.
+    // |confirmCodeCallback_| promise is held by FakeDevicePairingHandler
+    // in test. This does not get resolved for the test case where user
+    // cancels request while in request code page. Calling reject is
+    // necessary here to make sure the promise is resolved.
+    if (this.confirmCodeCallback_ && this.confirmCodeCallback_.reject) {
       this.confirmCodeCallback_.reject();
     }
   }
 
-  /**
-   * @return {string}
-   * @private
-   */
-  getDeviceName_() {
+  private getDeviceName_(): string {
     if (!this.devicePendingPairing_) {
       return '';
     }
@@ -700,5 +600,10 @@ export class SettingsBluetoothPairingUiElement extends PolymerElement {
   }
 }
 
+declare global {
+  interface HTMLElementTagNameMap {
+    [SettingsBluetoothPairingUiElement.is]: SettingsBluetoothPairingUiElement;
+  }
+}
 customElements.define(
     SettingsBluetoothPairingUiElement.is, SettingsBluetoothPairingUiElement);

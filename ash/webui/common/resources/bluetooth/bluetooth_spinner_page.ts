@@ -14,10 +14,9 @@ import {PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.m
 import {getTemplate} from './bluetooth_spinner_page.html.js';
 import {ButtonBarState, ButtonState} from './bluetooth_types.js';
 
-/** @polymer */
 export class SettingsBluetoothSpinnerPageElement extends PolymerElement {
   static get is() {
-    return 'bluetooth-spinner-page';
+    return 'bluetooth-spinner-page' as const;
   }
 
   static get template() {
@@ -26,7 +25,6 @@ export class SettingsBluetoothSpinnerPageElement extends PolymerElement {
 
   static get properties() {
     return {
-      /** @private {!ButtonBarState} */
       buttonBarState_: {
         type: Object,
         value: {
@@ -35,6 +33,14 @@ export class SettingsBluetoothSpinnerPageElement extends PolymerElement {
         },
       },
     };
+  }
+
+  private buttonBarState_: ButtonBarState;
+}
+
+declare global {
+  interface HTMLElementTagNameMap {
+    [SettingsBluetoothSpinnerPageElement.is]: SettingsBluetoothSpinnerPageElement;
   }
 }
 

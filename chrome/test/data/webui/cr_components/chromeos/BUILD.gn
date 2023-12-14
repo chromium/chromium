@@ -113,7 +113,6 @@ generate_grd("build_grdp") {
 
 group("closure_compile") {
   deps = [
-    "bluetooth:closure_compile",
     "network_health:closure_compile",
     "traffic_counters:closure_compile",
   ]

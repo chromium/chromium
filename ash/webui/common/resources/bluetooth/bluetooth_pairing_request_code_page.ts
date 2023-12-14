@@ -12,9 +12,10 @@ import './bluetooth_base_page.js';
 import '//resources/cr_elements/cr_shared_style.css.js';
 import '//resources/cr_elements/cr_input/cr_input.js';
 
-import {I18nBehavior, I18nBehaviorInterface} from '//resources/ash/common/i18n_behavior.js';
-import {afterNextRender, html, mixinBehaviors, PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
+import {afterNextRender, PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {mojoString16ToString} from 'chrome://resources/js/mojo_type_util.js';
+import {CrInputElement} from 'chrome://resources/cr_elements/cr_input/cr_input.js';
 import {BluetoothDeviceProperties} from 'chrome://resources/mojo/chromeos/ash/services/bluetooth_config/public/mojom/cros_bluetooth_config.mojom-webui.js';
 
 import {getTemplate} from './bluetooth_pairing_request_code_page.html.js';
@@ -22,29 +23,26 @@ import {ButtonBarState, ButtonState, PairingAuthType} from './bluetooth_types.js
 
 /**
  * Maximum length of a PIN code, it can range from 1 to 6 digits.
- * @type {number}
  */
-const PIN_CODE_MAX_LENGTH = 6;
+const PIN_CODE_MAX_LENGTH: number = 6;
 
 /**
  * Maximum length of a passkey, it can range from 1 to 16 characters.
- * @type {number}
  */
-const PASSKEY_MAX_LENGTH = 16;
+const PASSKEY_MAX_LENGTH: number = 16;
 
-/**
- * @constructor
- * @extends {PolymerElement}
- * @implements {I18nBehaviorInterface}
- */
-const SettingsBluetoothPairingRequestCodePageElementBase =
-    mixinBehaviors([I18nBehavior], PolymerElement);
+export interface SettingsBluetoothRequestCodePageElement {
+  $: {
+    pin: CrInputElement,
+  };
+}
 
-/** @polymer */
+const SettingsBluetoothPairingRequestCodePageElementBase = I18nMixin(PolymerElement);
+
 export class SettingsBluetoothRequestCodePageElement extends
     SettingsBluetoothPairingRequestCodePageElementBase {
   static get is() {
-    return 'bluetooth-pairing-request-code-page';
+    return 'bluetooth-pairing-request-code-page' as const;
   }
 
   static get template() {
@@ -53,27 +51,21 @@ export class SettingsBluetoothRequestCodePageElement extends
 
   static get properties() {
     return {
-      /**
-       * @type {?BluetoothDeviceProperties}
-       */
       device: {
         type: Object,
         value: null,
       },
 
-      /** @type {?PairingAuthType} */
       authType: {
         type: Object,
         value: null,
       },
 
-      /** @private {!ButtonBarState} */
       buttonBarState_: {
         type: Object,
         computed: 'computeButtonBarState_(pinCode_)',
       },
 
-      /** @private {string} */
       pinCode_: {
         type: String,
         value: '',
@@ -81,27 +73,23 @@ export class SettingsBluetoothRequestCodePageElement extends
     };
   }
 
-  /** @override */
-  connectedCallback() {
+  device: BluetoothDeviceProperties|null;
+  authType: PairingAuthType|null;
+  private buttonBarState_: ButtonBarState;
+  private pinCode_: string;
+
+  override connectedCallback(): void {
     super.connectedCallback();
     afterNextRender(this, () => {
       this.$.pin.focus();
     });
   }
 
-  /**
-   * @private
-   * @return {string}
-   */
-  getMessage_() {
+  private getMessage_(): string {
     return this.i18n('bluetoothEnterPin', this.getDeviceName_());
   }
 
-  /**
-   * @private
-   * @return {string}
-   */
-  getDeviceName_() {
+  private getDeviceName_(): string {
     if (!this.device) {
       return '';
     }
@@ -109,11 +97,7 @@ export class SettingsBluetoothRequestCodePageElement extends
     return mojoString16ToString(this.device.publicName);
   }
 
-  /**
-   * @return {!ButtonBarState}
-   * @private
-   */
-  computeButtonBarState_() {
+  private computeButtonBarState_(): ButtonBarState {
     const pairButtonState =
         !this.pinCode_ ? ButtonState.DISABLED : ButtonState.ENABLED;
 
@@ -123,11 +107,7 @@ export class SettingsBluetoothRequestCodePageElement extends
     };
   }
 
-  /**
-   * @param {!Event} event
-   * @private
-   */
-  onPairClicked_(event) {
+  private onPairClicked_(event: Event): void {
     event.stopPropagation();
 
     // TODO(crbug.com/1010321): Show spinner while pairing.
@@ -142,16 +122,18 @@ export class SettingsBluetoothRequestCodePageElement extends
     }));
   }
 
-  /**
-   * @private
-   * @return {number}
-   */
-  getMaxlength_() {
+  private getMaxlength_(): number {
     if (this.authType === PairingAuthType.REQUEST_PIN_CODE) {
       return PIN_CODE_MAX_LENGTH;
     }
 
     return PASSKEY_MAX_LENGTH;
+  }
+}
+
+declare global {
+  interface HTMLElementTagNameMap {
+    [SettingsBluetoothRequestCodePageElement.is]: SettingsBluetoothRequestCodePageElement;
   }
 }
 

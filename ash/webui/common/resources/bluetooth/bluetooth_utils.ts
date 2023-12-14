@@ -7,11 +7,7 @@ import {BluetoothDeviceProperties, PairedBluetoothDeviceProperties} from 'chrome
 
 import {BatteryType} from './bluetooth_types.js';
 
-/**
- * @param {?PairedBluetoothDeviceProperties} device
- * @return {string}
- */
-export function getDeviceName(device) {
+export function getDeviceName(device: PairedBluetoothDeviceProperties | null): string {
   if (!device) {
     return '';
   }
@@ -29,11 +25,9 @@ export function getDeviceName(device) {
  * the battery type, or the battery percentage is out of bounds. Clients that
  * call this method should explicitly check if the return value is undefined to
  * differentiate it from a return value of 0.
- * @param {!BluetoothDeviceProperties} device
- * @param {!BatteryType} batteryType
- * @return {number|undefined}
  */
-export function getBatteryPercentage(device, batteryType) {
+export function getBatteryPercentage(device: BluetoothDeviceProperties,
+      batteryType: BatteryType) : number|undefined {
   if (!device) {
     return undefined;
   }
@@ -73,10 +67,8 @@ export function getBatteryPercentage(device, batteryType) {
 
 /**
  * Returns true if the the device contains any multiple battery information.
- * @param {!BluetoothDeviceProperties} device
- * @return {boolean}
  */
-export function hasAnyDetailedBatteryInfo(device) {
+export function hasAnyDetailedBatteryInfo(device: BluetoothDeviceProperties): boolean {
   return getBatteryPercentage(device, BatteryType.LEFT_BUD) !== undefined ||
       getBatteryPercentage(device, BatteryType.CASE) !== undefined ||
       getBatteryPercentage(device, BatteryType.RIGHT_BUD) !== undefined;
@@ -84,20 +76,16 @@ export function hasAnyDetailedBatteryInfo(device) {
 
 /**
  * Returns true if the device contains the default image URL.
- * @param {!BluetoothDeviceProperties} device
- * @return {boolean}
  */
-export function hasDefaultImage(device) {
+export function hasDefaultImage(device: BluetoothDeviceProperties): boolean {
   return !!device && !!device.imageInfo && !!device.imageInfo.defaultImageUrl &&
       !!device.imageInfo.defaultImageUrl.url;
 }
 
 /**
  * Returns true if the device contains True Wireless Images.
- * @param {!BluetoothDeviceProperties} device
- * @return {boolean}
  */
-export function hasTrueWirelessImages(device) {
+export function hasTrueWirelessImages(device: BluetoothDeviceProperties): boolean {
   const imageInfo = device.imageInfo;
   if (!imageInfo) {
     return false;

@@ -12,25 +12,19 @@ import './bluetooth_base_page.js';
 import '//resources/cr_elements/cr_shared_style.css.js';
 import '//resources/cr_elements/cr_input/cr_input.js';
 
-import {I18nBehavior, I18nBehaviorInterface} from '//resources/ash/common/i18n_behavior.js';
-import {html, mixinBehaviors, PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
+import {PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {getTemplate} from './bluetooth_pairing_confirm_code_page.html.js';
 import {ButtonBarState, ButtonState} from './bluetooth_types.js';
 
-/**
- * @constructor
- * @extends {PolymerElement}
- * @implements {I18nBehaviorInterface}
- */
 const SettingsBluetoothPairingConfirmCodePageElementBase =
-    mixinBehaviors([I18nBehavior], PolymerElement);
+    I18nMixin(PolymerElement);
 
-/** @polymer */
 export class SettingsBluetoothPairingConfirmCodePageElement extends
     SettingsBluetoothPairingConfirmCodePageElementBase {
   static get is() {
-    return 'bluetooth-pairing-confirm-code-page';
+    return 'bluetooth-pairing-confirm-code-page' as const;
   }
 
   static get template() {
@@ -39,13 +33,11 @@ export class SettingsBluetoothPairingConfirmCodePageElement extends
 
   static get properties() {
     return {
-      /** @type {string} */
       code: {
         type: String,
         value: '',
       },
 
-      /** @private {!ButtonBarState} */
       buttonBarState_: {
         type: Object,
         value: {
@@ -56,16 +48,22 @@ export class SettingsBluetoothPairingConfirmCodePageElement extends
     };
   }
 
-  /**
-   * @param {!Event} event
-   * @private
-   */
-  onPairClicked_(event) {
+  code: string;
+  private buttonBarState_: ButtonBarState;
+
+  private onPairClicked_(event: Event): void {
     event.stopPropagation();
     this.dispatchEvent(new CustomEvent('confirm-code', {
       bubbles: true,
       composed: true,
     }));
+  }
+}
+
+declare global {
+  interface HTMLElementTagNameMap {
+    [SettingsBluetoothPairingConfirmCodePageElement.is]:
+    SettingsBluetoothPairingConfirmCodePageElement;
   }
 }
 
