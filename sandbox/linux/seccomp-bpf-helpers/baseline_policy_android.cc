@@ -18,6 +18,7 @@
 
 #include "build/build_config.h"
 #include "sandbox/linux/bpf_dsl/bpf_dsl.h"
+#include "sandbox/linux/seccomp-bpf-helpers/sigsys_handlers.h"
 #include "sandbox/linux/seccomp-bpf-helpers/syscall_parameters_restrictions.h"
 #include "sandbox/linux/seccomp-bpf-helpers/syscall_sets.h"
 #include "sandbox/linux/system_headers/linux_syscalls.h"
@@ -123,6 +124,20 @@ ResultExpr RestrictAndroidIoctl(bool allow_userfaultfd_ioctls) {
       .Default(RestrictIoctl());
 }
 
+ResultExpr RestrictCloneParameters() {
+  const Arg<unsigned long> flags(0);
+
+  const uint64_t kForkFlags =
+      CLONE_CHILD_SETTID | CLONE_CHILD_CLEARTID | SIGCHLD;
+  const uint64_t kPthreadCreateFlags =
+      CLONE_VM | CLONE_FS | CLONE_FILES | CLONE_SIGHAND | CLONE_THREAD |
+      CLONE_SYSVSEM | CLONE_SETTLS | CLONE_PARENT_SETTID | CLONE_CHILD_CLEARTID;
+
+  const BoolExpr is_fork_or_pthread =
+      AnyOf(flags == kForkFlags, flags == kPthreadCreateFlags);
+  return If(is_fork_or_pthread, Allow()).Else(CrashSIGSYSClone());
+}
+
 bool IsBaselinePolicyAllowed(int sysno) {
   // The following syscalls are used in the renderer policy on Android but still
   // need to be allowed on Android and should not be filtered out of other
@@ -130,8 +145,6 @@ bool IsBaselinePolicyAllowed(int sysno) {
   // fsync, getrlimit, ugetrlimit, setrlimit.
 
   switch (sysno) {
-    // TODO(rsesek): restrict clone parameters.
-    case __NR_clone:
     case __NR_epoll_pwait:
     case __NR_fdatasync:
     case __NR_flock:
@@ -222,6 +235,12 @@ BaselinePolicyAndroid::BaselinePolicyAndroid(const RuntimeOptions& options)
 BaselinePolicyAndroid::~BaselinePolicyAndroid() = default;
 
 ResultExpr BaselinePolicyAndroid::EvaluateSyscall(int sysno) const {
+  if (sysno == __NR_clone) {
+    if (options_.should_restrict_clone_params) {
+      return RestrictCloneParameters();
+    }
+    return Allow();
+  }
   if (sysno == __NR_sched_setaffinity || sysno == __NR_sched_getaffinity) {
     return Error(EPERM);
   }
