@@ -352,6 +352,7 @@ NSAttributedString* TextForTabCount(int count, CGFloat font_size) {
                                          }];
 }
 
+#if !defined(__IPHONE_16_0) || __IPHONE_OS_VERSION_MIN_REQUIRED < __IPHONE_16_0
 void RegisterEditMenuItem(UIMenuItem* item) {
   UIMenuController* menu = [UIMenuController sharedMenuController];
   NSArray<UIMenuItem*>* items = [menu menuItems];
@@ -366,6 +367,7 @@ void RegisterEditMenuItem(UIMenuItem* item) {
 
   [menu setMenuItems:items];
 }
+#endif
 
 UIView* ViewHierarchyRootForView(UIView* view) {
   if (view.window) {
