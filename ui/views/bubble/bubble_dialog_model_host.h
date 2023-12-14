@@ -143,6 +143,9 @@ class VIEWS_EXPORT BubbleDialogModelHost : public BubbleDialogDelegate,
     raw_ptr<View, DanglingUntriaged> focusable_view = nullptr;
   };
 
+  [[nodiscard]] ContentsView* InitContentsView(
+      ui::DialogModelSection* contents);
+
   void OnFieldAdded(ui::DialogModelField* field);
 
   void OnWindowClosing();
@@ -192,7 +195,6 @@ class VIEWS_EXPORT BubbleDialogModelHost : public BubbleDialogDelegate,
 
   std::unique_ptr<ui::DialogModel> model_;
   const raw_ptr<ContentsView> contents_view_;
-  const base::CallbackListSubscription contents_observation_;
   ThemeChangedObserver theme_observer_;
 
   std::vector<DialogModelHostField> fields_;

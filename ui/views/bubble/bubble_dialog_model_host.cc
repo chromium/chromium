@@ -44,33 +44,6 @@ namespace {
 // Extra margin to be added to contents view when it's inside a scroll view.
 constexpr int kScrollViewVerticalMargin = 2;
 
-BubbleDialogModelHost::ContentsView* SetAndGetContentsView(
-    BubbleDialogModelHost* parent,
-    ui::ModalType modal_type) {
-  const bool is_modal_dialog = modal_type != ui::MODAL_TYPE_NONE;
-  auto contents_view_unique =
-      std::make_unique<BubbleDialogModelHost::ContentsView>(is_modal_dialog);
-  BubbleDialogModelHost::ContentsView* contents_view =
-      contents_view_unique.get();
-
-  // TODO(crbug.com/1348165): Non modal dialogs size is not dependent on its
-  // content. Thus, the content has to be manually set by the view inside a
-  // scroll view. Modal dialogs handle their own size via constrained windows,
-  // so we can add a scroll view to the DialogModel directly.
-  if (is_modal_dialog) {
-    constexpr int kMaxDialogHeight = 448;
-    auto scroll_view = std::make_unique<views::ScrollView>();
-    scroll_view->ClipHeightTo(0, kMaxDialogHeight);
-    scroll_view->SetHorizontalScrollBarMode(
-        views::ScrollView::ScrollBarMode::kDisabled);
-    scroll_view->SetContents(std::move(contents_view_unique));
-    parent->SetContentsView(std::move(scroll_view));
-  } else {
-    parent->SetContentsView(std::move(contents_view_unique));
-  }
-  return contents_view;
-}
-
 BubbleDialogModelHost::FieldType GetFieldTypeForField(
     ui::DialogModelField* field,
     base::PassKey<ui::DialogModelHost> pass_key) {
@@ -225,26 +198,51 @@ std::unique_ptr<View> BubbleDialogModelHost::CustomView::TransferView() {
 
 // TODO(pbos): Migrate most code that calls contents_view_->(some View method)
 // into this class. This was done in steps to limit the size of the diff.
-class BubbleDialogModelHost::ContentsView : public BoxLayoutView {
+class BubbleDialogModelHost::ContentsView final : public BoxLayoutView {
+  METADATA_HEADER(ContentsView, BoxLayoutView)
+
  public:
-  explicit ContentsView(bool is_modal_dialog) {
+  // TODO(pbos): Break this dependency on BubbleDialogModelHost once most of
+  // OnFieldAdded etc. has moved into this class.
+  ContentsView(BubbleDialogModelHost* parent, ui::DialogModelSection* contents)
+      : parent_(parent),
+        contents_(contents),
+        on_field_added_subscription_(contents->AddOnFieldAddedCallback(
+            base::BindRepeating(&ContentsView::OnFieldAdded,
+                                base::Unretained(this)))) {
     // Note that between-child spacing is manually handled using kMarginsKey.
     SetOrientation(views::BoxLayout::Orientation::kVertical);
-    // Margins are added directly in the dialog. When the dialog is modal, these
-    // contents are wrapped by a scroll view and margins are added outside of it
-    // (instead of outside this contents). This causes some items (e.g
-    // emphasized buttons) to be cut by the scroll view margins (see
-    // crbug.com/1360772). Since we do want the margins outside the scroll view
-    // (so they are always present when scrolling), we add
-    // `kScrollViewVerticalMargin` inside the contents view and later remove it
-    // from the dialog margins.
-    // TODO(crbug.com/1348165): Remove this workaround when contents view
-    // directly supports a scroll view.
-    if (is_modal_dialog) {
-      SetInsideBorderInsets(gfx::Insets::VH(kScrollViewVerticalMargin, 0));
-    }
   }
+
+  // TODO(pbos): Move (most) of the host's OnFieldAdded stuff into here. If
+  // anything remains try to have BubbleDialogModelHost observe it directly.
+  void OnFieldAdded(ui::DialogModelField* field) {
+    CHECK(parent_);
+    parent_->OnFieldAdded(field);
+  }
+
+  // TODO(pbos): Remove the need for this method by making sure the host always
+  // outlives us. Currently we do outlive them. Widget, WidgetDelegate and
+  // RootView lifetimes are complicated.
+  void Detach() {
+    RemoveAllChildViews();
+    parent_ = nullptr;
+    contents_ = nullptr;
+  }
+
+ public:
+  // TODO(pbos): These should be const as we should never outlive our parent or
+  // DialogModelSection. Currently this isn't true because WidgetDelegate gets
+  // destroyed by Widget in OnNativeWidgetDestroyed before the content gets
+  // destroyed inside DestroyRootView in ~Widget.
+  raw_ptr<BubbleDialogModelHost> parent_;
+  raw_ptr<ui::DialogModelSection> contents_;
+
+  const base::CallbackListSubscription on_field_added_subscription_;
 };
+
+BEGIN_METADATA(BubbleDialogModelHost, ContentsView, BoxLayoutView)
+END_METADATA
 
 class BubbleDialogModelHost::LayoutConsensusView : public View {
   METADATA_HEADER(LayoutConsensusView, View)
@@ -354,19 +352,12 @@ BubbleDialogModelHost::BubbleDialogModelHost(
     ui::ModalType modal_type)
     : BubbleDialogDelegate(anchor_view, arrow),
       model_(std::move(model)),
-      contents_view_(SetAndGetContentsView(this, modal_type)),
-      contents_observation_(
-          // TODO(pbos): Move this into the ContentsView to make it responsible
-          // for all of contents.
-          model_->contents()->AddOnFieldAddedCallback(
-              base::BindRepeating(&BubbleDialogModelHost::OnFieldAdded,
-                                  base::Unretained(this)))),
+      // Make sure the modal type is set before calling InitContentsView which
+      // uses IsModalDialog().
+      contents_view_(
+          (SetModalType(modal_type), InitContentsView(model_->contents()))),
       theme_observer_(this, contents_view_) {
   model_->set_host(GetPassKey(), this);
-
-  // Note that this needs to be called before IsModalDialog() is called later in
-  // this constructor.
-  SetModalType(modal_type);
 
   // Dialog callbacks can safely refer to |model_|, they can't be called after
   // Widget::Close() calls WidgetWillClose() synchronously so there shouldn't
@@ -497,8 +488,9 @@ BubbleDialogModelHost::BubbleDialogModelHost(
 }
 
 BubbleDialogModelHost::~BubbleDialogModelHost() {
-  // Remove children as they may refer to the soon-to-be-destructed model.
-  contents_view_->RemoveAllChildViews();
+  // Detach ContentsView as it's referring to state that's about to be
+  // destroyed.
+  contents_view_->Detach();
 }
 
 std::unique_ptr<BubbleDialogModelHost> BubbleDialogModelHost::CreateModal(
@@ -582,12 +574,50 @@ void BubbleDialogModelHost::Close() {
   // Widget::Close)
   model_->OnDialogDestroying(GetPassKey());
 
-  // TODO(pbos): Consider turning this into for-each-field remove field.
-  // TODO(pbos): Move this into a better-named call inside contents_view_ to
-  // make it clear that the model_ is about to be destroyed.
-  contents_view_->RemoveAllChildViews();
+  // Detach ContentsView as it's referring to state that's about to be
+  // destroyed.
+  contents_view_->Detach();
   fields_.clear();
   model_.reset();
+}
+
+BubbleDialogModelHost::ContentsView* BubbleDialogModelHost::InitContentsView(
+    ui::DialogModelSection* contents) {
+  auto contents_view_unique =
+      std::make_unique<BubbleDialogModelHost::ContentsView>(this, contents);
+
+  BubbleDialogModelHost::ContentsView* const contents_view =
+      contents_view_unique.get();
+
+  if (IsModalDialog()) {
+    // Margins are added directly in the dialog. When the dialog is modal, these
+    // contents are wrapped by a scroll view and margins are added outside of it
+    // (instead of outside this contents). This causes some items (e.g
+    // emphasized buttons) to be cut by the scroll view margins (see
+    // crbug.com/1360772). Since we do want the margins outside the scroll view
+    // (so they are always present when scrolling), we add
+    // `kScrollViewVerticalMargin` inside the contents view and later remove it
+    // from the dialog margins.
+    // TODO(crbug.com/1348165): Remove this workaround when contents view
+    // directly supports a scroll view.
+    contents_view_unique->SetInsideBorderInsets(
+        gfx::Insets::VH(kScrollViewVerticalMargin, 0));
+
+    // TODO(crbug.com/1348165): Non modal dialogs size is not dependent on its
+    // content. Thus, the content has to be manually set by the view inside a
+    // scroll view. Modal dialogs handle their own size via constrained windows,
+    // so we can add a scroll view to the DialogModel directly.
+    constexpr int kMaxDialogHeight = 448;
+    auto scroll_view = std::make_unique<views::ScrollView>();
+    scroll_view->ClipHeightTo(0, kMaxDialogHeight);
+    scroll_view->SetHorizontalScrollBarMode(
+        views::ScrollView::ScrollBarMode::kDisabled);
+    scroll_view->SetContents(std::move(contents_view_unique));
+    SetContentsView(std::move(scroll_view));
+  } else {
+    SetContentsView(std::move(contents_view_unique));
+  }
+  return contents_view;
 }
 
 void BubbleDialogModelHost::OnFieldAdded(ui::DialogModelField* field) {
