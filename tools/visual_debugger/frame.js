@@ -62,6 +62,7 @@ class DrawFrame {
     this.logs_ = json.logs;
     this.drawCalls_ = json.drawcalls.map(c => new DrawCall(c));
     this.buffer_map = json.buff_map;
+    this.resetFilter();
 
     this.threadMapping_ = {}
 
@@ -82,7 +83,6 @@ class DrawFrame {
                                            threadAlpha: "10"};
     });
 
-    this.submissionFreezeIndex_ = -1;
     if (json.new_sources) {
       for (const s of json.new_sources) {
         new Source(s);
@@ -136,11 +136,6 @@ class DrawFrame {
 
   submissionCount() {
     return this.drawCalls_.length + this.logs_.length;
-  }
-
-  submissionFreezeIndex() {
-    return this.submissionFreezeIndex_ >= 0 ? (this.submissionFreezeIndex_) :
-      (this.submissionCount() - 1);
   }
 
   updateCanvasSize(canvas, context, scale, orientationDeg) {
@@ -219,11 +214,13 @@ class DrawFrame {
     context.translate(-this.size_.width / 2, -this.size_.height / 2);
 
     for (const call of this.drawCalls_) {
-
       // Assumed to be a positional text call.
-      if(call.text) continue;
-
-      if (call.drawIndex_ > this.submissionFreezeIndex()) break;
+      if (call.text) {
+        continue;
+      }
+      if (!this.withinFilter(call.drawIndex_)) {
+        continue;
+      }
 
       // If thread not enabled, then skip draw call from this thread.
       if (!this.threadMapping_[call.threadId_].threadEnabled) {
@@ -252,14 +249,16 @@ class DrawFrame {
 
     for (const text of this.drawCalls_) {
       // Not a positional text call.
-      if(!text.text) continue;
-
+      if (!text.text) {
+        continue;
+      }
       // If thread not enabled, then skip text calls from this thread.
       if (!this.threadMapping_[text.threadId_].threadEnabled) {
         continue;
       }
-
-      if (text.drawIndex_ > this.submissionFreezeIndex()) break;
+      if (!this.withinFilter(text.drawIndex_)) {
+        continue;
+      }
 
       var color;
       // If thread is overriding, take thread color.
@@ -322,7 +321,9 @@ class DrawFrame {
 
   appendLogs(logContainer) {
     for (const log of this.logs_) {
-      if (log.drawindex > this.submissionFreezeIndex()) break;
+      if (!this.withinFilter(log.drawindex)) {
+        continue;
+      }
 
       if (!('thread_id' in log)) {
         log.thread_id = DrawFrame.demo_thread.thread_id;
@@ -356,12 +357,26 @@ class DrawFrame {
     }
   }
 
-  unfreeze() {
-    this.submissionFreezeIndex_ = -1;
+  resetFilter() {
+    this.filter(-1, -1);
   }
 
-  freeze(index) {
-    this.submissionFreezeIndex_ = index;
+  filter(minIndex, maxIndex) {
+    this.minIndex_ = minIndex === -1 ? 0 : minIndex;
+    this.maxIndex_ = maxIndex === -1 ? this.submissionCount() : maxIndex;
+  }
+
+  minIndex() {
+    return this.minIndex_;
+  }
+
+  maxIndex() {
+    return this.maxIndex_;
+  }
+
+  // True iff drawIndex is in [minIndex_, maxIndex).
+  withinFilter(drawIndex) {
+    return drawIndex >= this.minIndex_ && drawIndex < this.maxIndex_;
   }
 
   toJSON() {
@@ -448,17 +463,19 @@ class Viewer {
     this.viewOrientation = orientationAsInt;
   }
 
-  freezeFrame(frameIndex, drawIndex) {
+  freezeFrame(frameIndex, minIndex, maxIndex) {
     if (DrawFrame.get(frameIndex)) {
       this.currentFrameIndex_ = frameIndex;
-      this.getCurrentFrame().freeze(drawIndex);
+      this.getCurrentFrame().filter(minIndex, maxIndex);
       this.updateCurrentFrame();
     }
   }
 
   unfreeze() {
     const frame = this.getCurrentFrame();
-    if (frame) frame.unfreeze();
+    if (frame) {
+      frame.resetFilter();
+    }
   }
 
   zoomToMouse(currentMouseX, currentMouseY, delta) {
@@ -537,10 +554,10 @@ class Player {
 
   // Pauses after drawing at most |drawIndex| number of calls of the
   // |frameIndex|-th frame.
-  // Draws all calls if |drawIndex| is not set.
-  freezeFrame(frameIndex, drawIndex = -1) {
+  // Draws all calls if |minIndex| and |maxIndex| are not set.
+  freezeFrame(frameIndex, minIndex = -1, maxIndex = -1) {
     this.pause();
-    this.viewer_.freezeFrame(parseInt(frameIndex), parseInt(drawIndex));
+    this.viewer_.freezeFrame(frameIndex, minIndex, maxIndex);
     this.didDrawNewFrame_();
   }
 
