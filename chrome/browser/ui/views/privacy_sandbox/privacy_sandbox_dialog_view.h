@@ -12,10 +12,6 @@
 
 class Browser;
 
-namespace content {
-class WebContents;
-}
-
 namespace views {
 class WebView;
 }
@@ -35,8 +31,6 @@ class PrivacySandboxDialogView : public views::View {
   void ShowNativeView();
   void OpenPrivacySandboxSettings();
   void OpenPrivacySandboxAdMeasurementSettings();
-  friend class PrivacySandboxDialogViewBrowserTest;
-  content::WebContents* GetWebContentsForTesting();
 
   raw_ptr<views::WebView> web_view_;
   raw_ptr<Browser> browser_;

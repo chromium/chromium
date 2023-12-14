@@ -162,6 +162,10 @@ class PrivacySandboxPromptHelperTestWithParam
     switch (test_prompt_type_) {
       case PrivacySandboxService::PromptType::kNone:
         [[fallthrough]];
+      case PrivacySandboxService::PromptType::kNotice:
+        [[fallthrough]];
+      case PrivacySandboxService::PromptType::kConsent:
+        NOTREACHED_NORETURN();
       case PrivacySandboxService::PromptType::kM1Consent:
         [[fallthrough]];
       case PrivacySandboxService::PromptType::kM1NoticeROW:
