@@ -447,7 +447,8 @@
     <cr-button class="floating-button"
         hidden="[[hideAddTabButton_(editing_)]]"
         on-click="onAddTabClicked_"
-        disabled="[[!canAddCurrentUrl_(activeFolderPath_.*, currentUrl_)]]">
+        disabled="[[!canAddCurrentUrl_(
+                    activeFolderPath_.*, currentUrl_, hasLoadedData_)]]">
       <iron-icon slot="prefix-icon" icon="bookmarks:add-tab"></iron-icon>
       $i18n{addCurrentTab}
     </cr-button>
