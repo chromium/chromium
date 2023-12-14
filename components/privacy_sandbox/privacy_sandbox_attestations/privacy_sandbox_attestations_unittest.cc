@@ -67,6 +67,9 @@ TEST_F(PrivacySandboxAttestationsTestBase, AddOverride) {
 
 TEST_F(PrivacySandboxAttestationsTestBase,
        SiteDefaultNotAttestedWithFeatureDefaultEnabled) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndDisableFeature(
+      kDefaultAllowPrivacySandboxAttestations);
   // Enrollment feature should be enabled by default.
   ASSERT_TRUE(base::FeatureList::IsEnabled(
       privacy_sandbox::kEnforcePrivacySandboxAttestations));

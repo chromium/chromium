@@ -381,10 +381,10 @@ class BrowsingDataModelBrowserTest
   base::ScopedPathOverride override_start_dir_{base::DIR_START_MENU};
 #endif  // BUILDFLAG(IS_WIN)
 
-  base::test::ScopedFeatureList feature_list_;
   std::unique_ptr<net::EmbeddedTestServer> https_server_;
   privacy_sandbox::PrivacySandboxAttestationsMixin
       privacy_sandbox_attestations_mixin_{&mixin_host_};
+  base::test::ScopedFeatureList feature_list_;
 };
 
 IN_PROC_BROWSER_TEST_P(BrowsingDataModelBrowserTest,

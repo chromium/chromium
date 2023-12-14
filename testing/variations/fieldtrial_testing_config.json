@@ -6761,42 +6761,6 @@
             ]
         }
     ],
-    "EnforcePrivacySandboxAttestations": [
-        {
-            "platforms": [
-                "android",
-                "chromeos",
-                "chromeos_lacros",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "DefaultDeny",
-                    "enable_features": [
-                        "EnforcePrivacySandboxAttestations"
-                    ],
-                    "disable_features": [
-                        "DefaultAllowPrivacySandboxAttestations"
-                    ]
-                },
-                {
-                    "name": "DefaultAllow",
-                    "enable_features": [
-                        "DefaultAllowPrivacySandboxAttestations",
-                        "EnforcePrivacySandboxAttestations"
-                    ]
-                },
-                {
-                    "name": "DisableAttestations",
-                    "disable_features": [
-                        "EnforcePrivacySandboxAttestations"
-                    ]
-                }
-            ]
-        }
-    ],
     "EnterpriseReportingConnectorExtensionEvents": [
         {
             "platforms": [

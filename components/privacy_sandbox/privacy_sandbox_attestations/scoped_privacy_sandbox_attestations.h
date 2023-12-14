@@ -17,6 +17,9 @@ namespace privacy_sandbox {
 // singleton to the given |attestations| and tears it down again on destruction.
 // If the singleton had already been initialized, its previous value is restored
 // after tearing down |attestations|.
+// TODO(crbug/1511477): Tests on Privacy Sandbox Attestation should disable
+// default-allow feature. The default-allow behavior is only a temporary
+// fix. The desired behavior is default-deny.
 class ScopedPrivacySandboxAttestations {
  public:
   explicit ScopedPrivacySandboxAttestations(
