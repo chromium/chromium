@@ -4093,6 +4093,7 @@ enum WebFeature {
   kMouseDragOnCancelledMouseMove = 4754,
   kFedCmDomainHint = 4755,
   kLCPImageWasLazy = 4756,
+  kEventTargetOnObservable = 4757,
 
   // Add new features immediately above this line. Don't change assigned
   // numbers of any item, and don't reuse removed slots.

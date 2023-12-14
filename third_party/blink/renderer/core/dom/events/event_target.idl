@@ -29,5 +29,5 @@
     [ImplementedAs=dispatchEventForBindings, RaisesException, RuntimeCallStatsCounter=EventTargetDispatchEvent] boolean dispatchEvent(Event event);
     // TODO(crbug.com/1485981): Add `ObservableEventListenerOptions`.
     // TODO(crbug.com/1485981): Add a use-counter.
-    [RuntimeEnabled=ObservableAPI] Observable on(DOMString type);
+    [MeasureAs=EventTargetOnObservable, RuntimeEnabled=ObservableAPI] Observable on(DOMString type);
 };
