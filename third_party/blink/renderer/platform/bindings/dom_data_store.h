@@ -143,17 +143,15 @@ class DOMDataStore final : public GarbageCollected<DOMDataStore> {
     return result.is_new_entry;
   }
 
-  bool UnsetSpecificWrapperIfSet(
-      ScriptWrappable* object,
-      const v8::TracedReference<v8::Object>& handle) {
+  template <typename HandleType>
+  bool ClearWrapperIfEqualTo(ScriptWrappable* object,
+                             const HandleType& handle) {
     DCHECK(!is_main_world_);
     const auto& it = wrapper_map_.find(object);
-    if (it != wrapper_map_.end()) {
-      if (it->value == handle) {
-        it->value.Reset();
-        wrapper_map_.erase(it);
-        return true;
-      }
+    if (it != wrapper_map_.end() && it->value == handle) {
+      it->value.Reset();
+      wrapper_map_.erase(it);
+      return true;
     }
     return false;
   }

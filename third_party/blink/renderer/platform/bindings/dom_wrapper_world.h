@@ -172,17 +172,20 @@ class PLATFORM_EXPORT DOMWrapperWorld : public RefCounted<DOMWrapperWorld> {
   }
 
   // Clear the reference pointing from |object| to |handle| in any world.
-  static bool UnsetSpecificWrapperIfSet(
-      ScriptWrappable* object,
-      const v8::TracedReference<v8::Object>& handle);
+  template <typename HandleType>
+  inline static bool ClearWrapperIfEqualTo(ScriptWrappable* object,
+                                           const HandleType& handle);
 
-  // Clear the reference pointing from |object| to |handle| in any world.
-  static bool UnsetMainWorldWrapperIfSet(
-      ScriptWrappable* object,
-      const v8::TracedReference<v8::Object>& handle);
+  // Clear the reference pointing from |object| to |handle| in the main world.
+  template <typename HandleType>
+  inline static bool ClearMainWorldWrapperIfEqualTo(ScriptWrappable* object,
+                                                    const HandleType& handle);
 
  private:
-  static bool UnsetNonMainWorldWrapperIfSet(
+  static bool ClearNonMainWorldWrapperIfEqualTo(
+      ScriptWrappable* object,
+      const v8::Local<v8::Object>& handle);
+  static bool ClearNonMainWorldWrapperIfEqualTo(
       ScriptWrappable* object,
       const v8::TracedReference<v8::Object>& handle);
 
@@ -202,23 +205,21 @@ class PLATFORM_EXPORT DOMWrapperWorld : public RefCounted<DOMWrapperWorld> {
 };
 
 // static
-inline bool DOMWrapperWorld::UnsetMainWorldWrapperIfSet(
-    ScriptWrappable* object,
-    const v8::TracedReference<v8::Object>& handle) {
-  return object->UnsetMainWorldWrapperIfSet(handle);
+template <typename HandleType>
+bool DOMWrapperWorld::ClearMainWorldWrapperIfEqualTo(ScriptWrappable* object,
+                                                     const HandleType& handle) {
+  return object->ClearMainWorldWrapperIfEqualTo(handle);
 }
 
 // static
-inline bool DOMWrapperWorld::UnsetSpecificWrapperIfSet(
-    ScriptWrappable* object,
-    const v8::TracedReference<v8::Object>& handle) {
-  // Fast path for main world.
-  if (UnsetMainWorldWrapperIfSet(object, handle)) {
+template <typename HandleType>
+bool DOMWrapperWorld::ClearWrapperIfEqualTo(ScriptWrappable* object,
+                                            const HandleType& handle) {
+  if (ClearMainWorldWrapperIfEqualTo(object, handle)) {
     return true;
   }
-
   // Slow path: |object| may point to |handle| in any non-main DOM world.
-  return DOMWrapperWorld::UnsetNonMainWorldWrapperIfSet(object, handle);
+  return DOMWrapperWorld::ClearNonMainWorldWrapperIfEqualTo(object, handle);
 }
 
 }  // namespace blink

@@ -114,14 +114,14 @@ void LocalWindowProxy::DisposeContext(Lifecycle next_status,
   if (next_status == Lifecycle::kV8MemoryIsForciblyPurged ||
       next_status == Lifecycle::kGlobalObjectIsDetached) {
     // Clean up state on the global proxy, which will be reused.
+    v8::Local<v8::Object> global = context->Global();
     if (!global_proxy_.IsEmpty()) {
-      CHECK(global_proxy_ == context->Global());
-      CHECK_EQ(ToScriptWrappable(context->Global()),
-               ToScriptWrappable(
-                   context->Global()->GetPrototype().As<v8::Object>()));
-      global_proxy_.SetWrapperClassId(0);
+      CHECK(global_proxy_ == global);
+      CHECK_EQ(ToScriptWrappable(global),
+               ToScriptWrappable(global->GetPrototype().As<v8::Object>()));
     }
-    V8DOMWrapper::ClearNativeInfo(GetIsolate(), context->Global());
+    V8DOMWrapper::ClearNativeInfo(GetIsolate(), global);
+    DOMWrapperWorld::ClearWrapperIfEqualTo(GetFrame()->DomWindow(), global);
     script_state_->DetachGlobalObject();
 
 #if DCHECK_IS_ON()
@@ -293,11 +293,15 @@ void LocalWindowProxy::SetupWindowPrototypeChain() {
   // The global proxy object.  Note this is not the global object.
   v8::Local<v8::Object> global_proxy = context->Global();
   CHECK(global_proxy_ == global_proxy);
+  // Use the global proxy as window wrapper object.
   V8DOMWrapper::SetNativeInfo(GetIsolate(), global_proxy, wrapper_type_info,
                               window);
   // Mark the handle to be traced by Oilpan, since the global proxy has a
   // reference to the DOMWindow.
-  global_proxy_.SetWrapperClassId(wrapper_type_info->wrapper_class_id);
+  // global_proxy_.SetWrapperClassId(wrapper_type_info->wrapper_class_id);
+  CHECK(global_proxy_ == window->AssociateWithWrapper(GetIsolate(), world_,
+                                                      wrapper_type_info,
+                                                      global_proxy));
 
   // The global object, aka window wrapper object.
   v8::Local<v8::Object> window_wrapper =

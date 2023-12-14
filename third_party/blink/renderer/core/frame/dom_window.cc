@@ -40,6 +40,7 @@
 #include "third_party/blink/renderer/core/page/page.h"
 #include "third_party/blink/renderer/core/probe/core_probes.h"
 #include "third_party/blink/renderer/platform/bindings/source_location.h"
+#include "third_party/blink/renderer/platform/bindings/v8_dom_wrapper.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
 #include "third_party/blink/renderer/platform/weborigin/kurl.h"
@@ -84,6 +85,9 @@ v8::MaybeLocal<v8::Value> DOMWindow::Wrap(ScriptState* script_state) {
   // TODO(yukishiino): Make this function always return the non-empty handle
   // even if the frame is detached because the global proxy must always exist
   // per spec.
+  //
+  // Getting the proxy also results in initializing it and eventually yields in
+  // `SetupWindowPrototypeChain()` calls for the window proxy.
   return frame->GetWindowProxy(script_state->World())
       ->GlobalProxyIfNotDetached();
 }
@@ -92,8 +96,21 @@ v8::Local<v8::Object> DOMWindow::AssociateWithWrapper(
     v8::Isolate*,
     const WrapperTypeInfo*,
     v8::Local<v8::Object> wrapper) {
-  NOTREACHED();
-  return v8::Local<v8::Object>();
+  NOTREACHED_NORETURN();
+}
+
+v8::Local<v8::Object> DOMWindow::AssociateWithWrapper(
+    v8::Isolate* isolate,
+    scoped_refptr<DOMWrapperWorld> world,
+    const WrapperTypeInfo* wrapper_type_info,
+    v8::Local<v8::Object> wrapper) {
+  // Using the world directly avoids fetching it from a potentially
+  // half-initialized context.
+  if (world->DomDataStore().Set(isolate, this, wrapper_type_info, wrapper)) {
+    V8DOMWrapper::SetNativeInfo(isolate, wrapper, wrapper_type_info, this);
+    DCHECK(V8DOMWrapper::HasInternalFieldsSet(wrapper));
+  }
+  return wrapper;
 }
 
 const AtomicString& DOMWindow::InterfaceName() const {

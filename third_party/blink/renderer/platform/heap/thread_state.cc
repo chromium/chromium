@@ -50,7 +50,7 @@ class BlinkRootsHandler final : public v8::EmbedderRootsHandler {
     DCHECK(handle.WrapperClassId() == WrapperTypeInfo::kNodeClassId ||
            handle.WrapperClassId() == WrapperTypeInfo::kObjectClassId);
     const v8::TracedReference<v8::Object>& traced = handle.As<v8::Object>();
-    bool success = DOMWrapperWorld::UnsetSpecificWrapperIfSet(
+    bool success = DOMWrapperWorld::ClearWrapperIfEqualTo(
         ToScriptWrappable(traced), traced);
     // Since V8 found a handle, Blink needs to find it as well when trying to
     // remove it.
@@ -61,7 +61,7 @@ class BlinkRootsHandler final : public v8::EmbedderRootsHandler {
     DCHECK(handle.WrapperClassId() == WrapperTypeInfo::kNodeClassId ||
            handle.WrapperClassId() == WrapperTypeInfo::kObjectClassId);
     const v8::TracedReference<v8::Object>& traced = handle.As<v8::Object>();
-    return DOMWrapperWorld::UnsetMainWorldWrapperIfSet(
+    return DOMWrapperWorld::ClearMainWorldWrapperIfEqualTo(
         ToScriptWrappable(traced), traced);
   }
 };
