@@ -1746,9 +1746,6 @@ void FederatedAuthRequestImpl::OnAccountsResponseReceived(
     }
     case IdpNetworkRequestManager::ParseStatus::kSuccess: {
       FilterAccountsWithLoginHint(idp_info->provider->login_hint, accounts);
-      if (IsFedCmDomainHintEnabled()) {
-        FilterAccountsWithDomainHint(idp_info->provider->domain_hint, accounts);
-      }
       if (accounts.empty()) {
         render_frame_host().AddMessageToConsole(
             blink::mojom::ConsoleMessageLevel::kError,
@@ -1761,6 +1758,22 @@ void FederatedAuthRequestImpl::OnAccountsResponseReceived(
             FederatedAuthRequestResult::kErrorFetchingAccountsListEmpty,
             TokenStatus::kAccountsListEmpty);
         return;
+      }
+      if (IsFedCmDomainHintEnabled()) {
+        FilterAccountsWithDomainHint(idp_info->provider->domain_hint, accounts);
+        if (accounts.empty()) {
+          render_frame_host().AddMessageToConsole(
+              blink::mojom::ConsoleMessageLevel::kError,
+              "Accounts were received, but none matched the domainHint.");
+          // If there are no accounts after filtering based on the domain hint,
+          // treat this exactly the same as if we had received an empty accounts
+          // list, i.e. IdpNetworkRequestManager::ParseStatus::kEmptyListError.
+          HandleAccountsFetchFailure(
+              std::move(idp_info), old_idp_signin_status,
+              FederatedAuthRequestResult::kErrorFetchingAccountsListEmpty,
+              TokenStatus::kAccountsListEmpty);
+          return;
+        }
       }
       ComputeLoginStateAndReorderAccounts(
           url::Origin::Create(idp_info->provider->config->config_url),

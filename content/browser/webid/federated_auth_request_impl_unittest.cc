@@ -112,6 +112,9 @@ constexpr char kEmptyToken[] = "";
 constexpr char kLoginHintNoMatchMessage[] =
     "Accounts were received, but none matched the loginHint.";
 
+constexpr char kDomainHintNoMatchMessage[] =
+    "Accounts were received, but none matched the domainHint.";
+
 static const std::vector<IdentityRequestAccount> kSingleAccount{{
     kAccountId,                  // id
     kEmail,                      // email
@@ -4514,7 +4517,7 @@ TEST_F(FederatedAuthRequestImplTest, DomainHintSingleAccountStarNoMatch) {
   const RequestExpectations expectations = {
       RequestTokenStatus::kError,
       FederatedAuthRequestResult::kErrorFetchingAccountsListEmpty,
-      {kLoginHintNoMatchMessage},
+      {kDomainHintNoMatchMessage},
       /*selected_idp_config_url=*/absl::nullopt};
 
   MockConfiguration configuration = kConfigurationValid;
@@ -4537,7 +4540,7 @@ TEST_F(FederatedAuthRequestImplTest, DomainHintSingleAccountNoMatch) {
   const RequestExpectations expectations = {
       RequestTokenStatus::kError,
       FederatedAuthRequestResult::kErrorFetchingAccountsListEmpty,
-      {kLoginHintNoMatchMessage},
+      {kDomainHintNoMatchMessage},
       /*selected_idp_config_url=*/absl::nullopt};
 
   MockConfiguration configuration = kConfigurationValid;
@@ -4562,7 +4565,7 @@ TEST_F(FederatedAuthRequestImplTest, DomainHintNoMatch) {
   const RequestExpectations expectations = {
       RequestTokenStatus::kError,
       FederatedAuthRequestResult::kErrorFetchingAccountsListEmpty,
-      {kLoginHintNoMatchMessage},
+      {kDomainHintNoMatchMessage},
       /*selected_idp_config_url=*/absl::nullopt};
 
   RunAuthTest(parameters, expectations, kConfigurationValid);
@@ -4647,7 +4650,7 @@ TEST_F(FederatedAuthRequestImplTest, DomainHintMultipleAccountsNoMatch) {
   const RequestExpectations expectations = {
       RequestTokenStatus::kError,
       FederatedAuthRequestResult::kErrorFetchingAccountsListEmpty,
-      {kLoginHintNoMatchMessage},
+      {kDomainHintNoMatchMessage},
       /*selected_idp_config_url=*/absl::nullopt};
 
   MockConfiguration configuration = kConfigurationValid;
