@@ -49,6 +49,7 @@ build_webui_tests("build") {
     "test_util.ts",
     "toggle_row_test.ts",
     "url_util_test.ts",
+    "test_extension_hats_browser_proxy.ts",
   ]
 
   if (is_chromeos_ash) {
