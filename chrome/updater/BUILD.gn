@@ -537,6 +537,7 @@ if (is_win || is_mac || is_linux) {
     sources = [
       "certificate_tag.cc",
       "certificate_tag.h",
+      "certificate_tag_internal.h",
       "tag.cc",
       "tag.h",
     ]
