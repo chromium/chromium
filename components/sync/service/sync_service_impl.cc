@@ -204,7 +204,7 @@ SyncServiceImpl::InitParams::~InitParams() = default;
 SyncServiceImpl::SyncServiceImpl(InitParams init_params)
     : sync_client_(std::move(init_params.sync_client)),
       sync_prefs_(sync_client_->GetPrefService()),
-      identity_manager_(init_params.identity_manager),
+      identity_manager_(std::move(init_params.identity_manager)),
       auth_manager_(std::make_unique<SyncAuthManager>(
           identity_manager_,
           base::BindRepeating(&SyncServiceImpl::AccountStateChanged,
@@ -212,12 +212,13 @@ SyncServiceImpl::SyncServiceImpl(InitParams init_params)
           base::BindRepeating(&SyncServiceImpl::CredentialsChanged,
                               base::Unretained(this)))),
       channel_(init_params.channel),
-      debug_identifier_(init_params.debug_identifier),
+      debug_identifier_(std::move(init_params.debug_identifier)),
       sync_service_url_(
           GetSyncServiceURL(*base::CommandLine::ForCurrentProcess(), channel_)),
       crypto_(this, sync_client_->GetTrustedVaultClient()),
       url_loader_factory_(std::move(init_params.url_loader_factory)),
-      network_connection_tracker_(init_params.network_connection_tracker),
+      network_connection_tracker_(
+          std::move(init_params.network_connection_tracker)),
       create_http_post_provider_factory_cb_(
           base::BindRepeating(&CreateHttpBridgeFactory)),
       sync_poll_immediately_on_every_startup_(
