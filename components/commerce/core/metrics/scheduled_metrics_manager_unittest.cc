@@ -88,6 +88,8 @@ TEST_F(ScheduledMetricsManagerTest, EmailNotification_NoTrackedProducts) {
   // Assume the user has enabled notifications but has no tracked products.
   pref_service_->SetBoolean(kPriceEmailNotificationsEnabled, true);
 
+  shopping_service_->SetGetAllSubscriptionsCallbackValue(
+      std::vector<CommerceSubscription>());
   CreateUpdateManagerAndWait();
 
   histogram_tester.ExpectUniqueSample(

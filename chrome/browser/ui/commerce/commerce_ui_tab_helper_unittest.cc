@@ -159,6 +159,7 @@ TEST_F(CommerceUiTabHelperTest, TestSubscriptionEventsUpdateState) {
   std::optional<ProductInfo> info =
       CreateProductInfo(kClusterId, GURL(kProductImageUrl));
 
+  shopping_service_->SetIsShoppingListEligible(true);
   shopping_service_->SetResponseForGetProductInfoForUrl(info);
   shopping_service_->SetIsSubscribedCallbackValue(true);
 
@@ -220,6 +221,7 @@ TEST_F(CommerceUiTabHelperTest,
 
   shopping_service_->SetIsShoppingListEligible(true);
   shopping_service_->SetResponseForGetProductInfoForUrl(info);
+  shopping_service_->SetIsSubscribedCallbackValue(true);
 
   SimulateNavigationCommitted(GURL(kProductUrl));
 

@@ -39,7 +39,11 @@ TEST_F(BrowsingDataHistoryObserverServiceTest,
           .AddTestingFactory(
               commerce::ShoppingServiceFactory::GetInstance(),
               base::BindRepeating([](content::BrowserContext* context) {
-                return commerce::MockShoppingService::Build();
+                std::unique_ptr<KeyedService> service =
+                    commerce::MockShoppingService::Build();
+                static_cast<commerce::MockShoppingService*>(service.get())
+                    ->SetIsMerchantViewerEnabled(true);
+                return service;
               }))
           .Build();
   BrowsingDataHistoryObserverService service(profile.get());
@@ -69,7 +73,11 @@ TEST_F(BrowsingDataHistoryObserverServiceTest,
           .AddTestingFactory(
               commerce::ShoppingServiceFactory::GetInstance(),
               base::BindRepeating([](content::BrowserContext* context) {
-                return commerce::MockShoppingService::Build();
+                std::unique_ptr<KeyedService> service =
+                    commerce::MockShoppingService::Build();
+                static_cast<commerce::MockShoppingService*>(service.get())
+                    ->SetIsMerchantViewerEnabled(true);
+                return service;
               }))
           .Build();
   BrowsingDataHistoryObserverService service(profile.get());

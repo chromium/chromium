@@ -197,6 +197,7 @@ TEST_F(BookmarkBubbleViewTest, PriceTrackingViewIsVisible) {
   commerce::MockShoppingService* mock_shopping_service =
       static_cast<commerce::MockShoppingService*>(
           commerce::ShoppingServiceFactory::GetForBrowserContext(profile()));
+  mock_shopping_service->SetIsShoppingListEligible(true);
 
   SimulateProductImageIsAvailable(/*with_valid_image=*/true);
 
@@ -226,6 +227,8 @@ TEST_F(BookmarkBubbleViewTest, PriceTrackingViewIsHidden_ImageNotAvailable) {
   commerce::MockShoppingService* mock_shopping_service =
       static_cast<commerce::MockShoppingService*>(
           commerce::ShoppingServiceFactory::GetForBrowserContext(profile()));
+  mock_shopping_service->SetIsShoppingListEligible(true);
+
   mock_shopping_service->SetResponseForGetProductInfoForUrl(
       commerce::ProductInfo());
   SimulateProductImageIsAvailable(/*with_valid_image=*/false);
@@ -245,10 +248,13 @@ TEST_F(BookmarkBubbleViewTest, PriceTrackingViewWithToggleOn) {
   commerce::MockShoppingService* mock_shopping_service =
       static_cast<commerce::MockShoppingService*>(
           commerce::ShoppingServiceFactory::GetForBrowserContext(profile()));
+  mock_shopping_service->SetIsShoppingListEligible(true);
+
   commerce::ProductInfo info;
   info.product_cluster_id.emplace(12345L);
   mock_shopping_service->SetResponseForGetProductInfoForUrl(info);
   SimulateProductImageIsAvailable(/*with_valid_image=*/true);
+  mock_shopping_service->SetIsSubscribedCallbackValue(true);
 
   CreateBubbleView();
   auto* price_tracking_view = GetPriceTrackingView();

@@ -11,7 +11,7 @@ namespace commerce {
 
 // static
 std::unique_ptr<KeyedService> MockShoppingService::Build() {
-  return std::make_unique<MockShoppingService>();
+  return std::make_unique<testing::NiceMock<MockShoppingService>>();
 }
 
 MockShoppingService::MockShoppingService()
@@ -29,8 +29,11 @@ MockShoppingService::MockShoppingService()
                                 nullptr,
                                 nullptr,
                                 nullptr,
-                                nullptr) {
-  // Set up some defaults so tests don't have to explicitly set up each.
+                                nullptr) {}
+
+MockShoppingService::~MockShoppingService() = default;
+
+void MockShoppingService::SetupPermissiveMock() {
   SetIsReady(true);
   SetResponseForGetProductInfoForUrl(absl::nullopt);
   SetResponsesForGetUpdatedProductInfoForBookmarks(
@@ -54,8 +57,6 @@ MockShoppingService::MockShoppingService()
   SetResponseForGetPriceInsightsInfoForUrl(absl::nullopt);
   SetGetAllParcelStatusesCallbackValue(std::vector<ParcelTrackingStatus>());
 }
-
-MockShoppingService::~MockShoppingService() = default;
 
 void MockShoppingService::SetResponseForGetProductInfoForUrl(
     absl::optional<commerce::ProductInfo> product_info) {

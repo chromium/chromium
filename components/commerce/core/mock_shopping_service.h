@@ -24,6 +24,7 @@ namespace commerce {
 // A mock ShoppingService that allows us to decide the response.
 class MockShoppingService : public commerce::ShoppingService {
  public:
+  // Produces a testing::NiceMock of the MockShoppingService.
   static std::unique_ptr<KeyedService> Build();
 
   MockShoppingService();
@@ -117,6 +118,10 @@ class MockShoppingService : public commerce::ShoppingService {
               (const std::string& tracking_id,
                base::OnceCallback<void(bool)> callback),
               (override));
+
+  // Make this mock permissive for all features but default to providing empty
+  // data for all accessors of shopping data.
+  void SetupPermissiveMock();
 
   void SetResponseForGetProductInfoForUrl(
       absl::optional<commerce::ProductInfo> product_info);
