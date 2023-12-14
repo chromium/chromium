@@ -232,7 +232,8 @@
   --cr-input-placeholder-color: var(--cros-sys-secondary);
 }
 
-:host-context([cros][chrome-refresh-2023]) cr-input {
+:host-context([cros][chrome-refresh-2023]) cr-input,
+:host-context([cros][chrome-refresh-2023]) cr-search-field::part(searchInput) {
   --cr-input-background-color: var(--cros-sys-input_field_on_base);
   --cr-input-border: none;
   --cr-input-border-bottom: none;
@@ -242,6 +243,8 @@
   --cr-input-padding-end: 16px;
   --cr-input-placeholder-color: var(--cros-sys-secondary);
   --cr-input-underline-display: none;
+
+  font: var(--cros-body-2-font);
 
   /* Focused state */
   --cr-input-focus-color: var(--cros-sys-primary);
@@ -352,6 +355,25 @@
   --cr-search-field-search-icon-inline-display: block;
   --cr-search-field-search-icon-inline-margin-start: 6px;
   border-radius: 4px;
+}
+
+:host-context([cros][chrome-refresh-2023]) cr-search-field {
+  /* Search icon */
+  --cr-search-field-search-icon-fill: var(--cros-sys-secondary);
+  --cr-search-field-search-icon-inline-margin-start: 0;
+
+  /* Clear icon */
+  --cr-search-field-clear-icon-fill: var(--cros-sys-secondary);
+  --cr-search-field-clear-icon-margin-end: 6px;
+  --cr-search-field-clear-icon-size: 16px;
+}
+
+:host-context([cros][chrome-refresh-2023]) cr-search-field::part(searchInput) {
+  /* Modify the styles defined in "Input and Textarea" above. */
+  --cr-input-padding-bottom: 10px;
+  --cr-input-padding-end: 28px;
+  --cr-input-padding-start: 8px;
+  --cr-input-padding-top: 10px;
 }
 
 /* Slider */
