@@ -129,9 +129,6 @@ BrowserAccessibilityStateImpl::BrowserAccessibilityStateImpl()
     }
   }
 
-  // Hook ourselves up to observe ax mode changes.
-  ax_mode_observation_.Observe(&ax_platform_);
-
   if (disallow_changes) {
     DisallowAXModeChanges();
   }
@@ -323,10 +320,6 @@ void BrowserAccessibilityStateImpl::UpdateAccessibilityActivityTask() {
   accessibility_update_task_pending_ = false;
 }
 
-void BrowserAccessibilityStateImpl::OnAXModeAdded(ui::AXMode mode) {
-  AddAccessibilityModeFlags(mode);
-}
-
 ui::AXMode BrowserAccessibilityStateImpl::GetAccessibilityMode() {
   return accessibility_mode_;
 }
@@ -421,7 +414,6 @@ void BrowserAccessibilityStateImpl::AddAccessibilityModeFlags(ui::AXMode mode) {
   // toggles accessibility flags in chrome://accessibility.
   OnAccessibilityApiUsage();
 
-  const ui::AXMode previous_mode = accessibility_mode_;
   const ui::AXMode new_mode = accessibility_mode_ | mode;
 
   // Form controls mode is restrictive. There are other modes that should not be
@@ -446,24 +438,16 @@ void BrowserAccessibilityStateImpl::AddAccessibilityModeFlags(ui::AXMode mode) {
     }
   }
 
-  // Update accessibility_mode_ via the old AXPlatformNode API so that its
-  // observers are notified.
+  // Update accessibility_mode_ via the old AXPlatformNode API so that observers
+  // are notified. Note that AXPlatformNode::NotifyAddAXModeFlags() will defer
+  // to AXPlatform::SetMode() to update the global set of flags. AXPlatform,
+  // itself, defers to its AXPlatform::Delegate. BrowserAccessibilityStateImpl
+  // is that delegate, so processing continues below in SetProcessMode(). This
+  // ensures that calls to AddAccessibilityModeFlags() and direct calls to
+  // AXPlatformNode::NotifyAddAXModeFlags() down in //ui each follow the same
+  // codepath to set the global mode flags, notify observers, dispatch to
+  // WebContents, and record metrics.
   ui::AXPlatformNode::NotifyAddAXModeFlags(new_mode);
-
-  ui::RecordAccessibilityModeHistograms(ui::AXHistogramPrefix::kNone,
-                                        accessibility_mode_, previous_mode);
-
-  NotifyWebContentsToAddAXMode(accessibility_mode_);
-
-  // Add a crash key with the ax_mode, to enable searching for top crashes that
-  // occur when accessibility is turned on. This adds it for the browser
-  // process, and elsewhere the same key is added to renderer processes.
-  static auto* ax_mode_crash_key = base::debug::AllocateCrashKeyString(
-      "ax_mode", base::debug::CrashKeySize::Size64);
-  if (ax_mode_crash_key) {
-    base::debug::SetCrashKeyString(ax_mode_crash_key,
-                                   accessibility_mode_.ToString());
-  }
 }
 
 void BrowserAccessibilityStateImpl::RemoveAccessibilityModeFlags(
@@ -501,6 +485,21 @@ void BrowserAccessibilityStateImpl::SetProcessMode(ui::AXMode new_mode) {
   // Broadcast the new mode flags, if any, to the AXModeObservers.
   if (const auto additions = new_mode & ~old_mode; !additions.is_mode_off()) {
     ax_platform_.NotifyModeAdded(additions);
+  }
+
+  ui::RecordAccessibilityModeHistograms(ui::AXHistogramPrefix::kNone,
+                                        accessibility_mode_, old_mode);
+
+  NotifyWebContentsToAddAXMode(accessibility_mode_);
+
+  // Add a crash key with the ax_mode, to enable searching for top crashes that
+  // occur when accessibility is turned on. This adds it for the browser
+  // process, and elsewhere the same key is added to renderer processes.
+  static auto* ax_mode_crash_key = base::debug::AllocateCrashKeyString(
+      "ax_mode", base::debug::CrashKeySize::Size64);
+  if (ax_mode_crash_key) {
+    base::debug::SetCrashKeyString(ax_mode_crash_key,
+                                   accessibility_mode_.ToString());
   }
 }
 

@@ -92,6 +92,41 @@ IN_PROC_BROWSER_TEST_F(AccessibilityModeTest, AccessibilityModeComplete) {
   EXPECT_NE(nullptr, GetManager());
 }
 
+// Tests that adding kAXModeComplete via ui::AXPlatformNode gives the flags
+// to an active WebContents.
+IN_PROC_BROWSER_TEST_F(AccessibilityModeTest,
+                       AccessibilityModeCompleteViaNode) {
+  EXPECT_TRUE(NavigateToURL(shell(), GURL(kMinimalPageDataURL)));
+  auto accessibility_mode = web_contents()->GetAccessibilityMode();
+  // Strip off kNativeAPIs, which may be set in some situations.
+  accessibility_mode.set_mode(ui::AXMode::kNativeAPIs, false);
+  ASSERT_TRUE(accessibility_mode.is_mode_off());
+
+  AccessibilityNotificationWaiter waiter(shell()->web_contents());
+  ui::AXPlatformNode::NotifyAddAXModeFlags(ui::kAXModeComplete);
+  ASSERT_TRUE(waiter.WaitForNotification());
+  EXPECT_EQ(web_contents()->GetAccessibilityMode(), ui::kAXModeComplete);
+  EXPECT_NE(nullptr, GetManager());
+}
+
+// Tests that adding kAXModeComplete via BrowserAccessibilityState gives the
+// flags to an active WebContents.
+IN_PROC_BROWSER_TEST_F(AccessibilityModeTest,
+                       AccessibilityModeCompleteViaContent) {
+  EXPECT_TRUE(NavigateToURL(shell(), GURL(kMinimalPageDataURL)));
+  auto accessibility_mode = web_contents()->GetAccessibilityMode();
+  // Strip off kNativeAPIs, which may be set in some situations.
+  accessibility_mode.set_mode(ui::AXMode::kNativeAPIs, false);
+  ASSERT_TRUE(accessibility_mode.is_mode_off());
+
+  AccessibilityNotificationWaiter waiter(shell()->web_contents());
+  content::BrowserAccessibilityState::GetInstance()->AddAccessibilityModeFlags(
+      ui::kAXModeComplete);
+  ASSERT_TRUE(waiter.WaitForNotification());
+  EXPECT_EQ(web_contents()->GetAccessibilityMode(), ui::kAXModeComplete);
+  EXPECT_NE(nullptr, GetManager());
+}
+
 IN_PROC_BROWSER_TEST_F(AccessibilityModeTest,
                        AccessibilityModeWebContentsOnly) {
   EXPECT_TRUE(NavigateToURL(shell(), GURL(kMinimalPageDataURL)));

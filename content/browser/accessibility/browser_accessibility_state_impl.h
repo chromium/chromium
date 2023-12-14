@@ -8,14 +8,12 @@
 #include <memory>
 #include <vector>
 
-#include "base/scoped_observation.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "components/metrics/metrics_provider.h"
 #include "content/common/content_export.h"
 #include "content/public/browser/browser_accessibility_state.h"
 #include "ui/accessibility/ax_mode.h"
-#include "ui/accessibility/ax_mode_observer.h"
 #include "ui/accessibility/platform/ax_platform.h"
 
 namespace content {
@@ -41,7 +39,6 @@ struct FocusedNodeDetails;
 // mechanism).
 class CONTENT_EXPORT BrowserAccessibilityStateImpl
     : public BrowserAccessibilityState,
-      public ui::AXModeObserver,
       public ui::AXPlatform::Delegate {
  public:
   BrowserAccessibilityStateImpl(const BrowserAccessibilityStateImpl&) = delete;
@@ -94,9 +91,6 @@ class CONTENT_EXPORT BrowserAccessibilityStateImpl
   // Returns whether caret browsing is enabled for the most recently
   // used profile.
   bool IsCaretBrowsingEnabled() const;
-
-  // ui::AXModeObserver:
-  void OnAXModeAdded(ui::AXMode mode) override;
 
   // ui::AXPlatform::Delegate:
   ui::AXMode GetProcessMode() override;
@@ -158,9 +152,6 @@ class CONTENT_EXPORT BrowserAccessibilityStateImpl
 
   // The process's single AXPlatform instance.
   ui::AXPlatform ax_platform_{*this};
-
-  base::ScopedObservation<ui::AXPlatform, ui::AXModeObserver>
-      ax_mode_observation_{this};
 
   base::TimeDelta histogram_delay_;
 
