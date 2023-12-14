@@ -4,6 +4,7 @@
 
 //! Paths and helpers for running within a Chromium checkout.
 
+use itertools::Itertools;
 use std::env;
 use std::io;
 use std::path::{Path, PathBuf};
@@ -77,8 +78,8 @@ impl ChromiumPaths {
     pub fn to_gn_abs_path<'a>(
         &self,
         path: &'a Path,
-    ) -> Result<std::borrow::Cow<'a, str>, std::path::StripPrefixError> {
-        Ok(path.strip_prefix(&self.root)?.to_string_lossy())
+    ) -> Result<String, std::path::StripPrefixError> {
+        Ok(normalize_unix_path_separator(path.strip_prefix(&self.root)?))
     }
 
     /// Modifies the file name in a path from `foo.bar.template` to `foo.bar`.
@@ -103,6 +104,24 @@ fn check_path<'a>(root: &Path, p_str: &'a str) -> io::Result<&'a Path> {
     }
 
     Ok(p)
+}
+
+/// Replace all path separators with `/` and return it as a String. The
+/// resulting path is suitable for use in GN files.
+pub fn normalize_unix_path_separator<'a>(path: &'a Path) -> String {
+    // `Path`s on windows use `\` separators and we need to use `/` in GN strings.
+    path.iter().map(|comp| comp.to_str().expect(&format!("non-UTF-8 in path {:?}", path))).join("/")
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn test_normalize() {
+        assert_eq!(normalize_unix_path_separator(Path::new("rel")), "rel");
+        assert_eq!(normalize_unix_path_separator(&Path::new("a").join("b")), "a/b");
+    }
 }
 
 static RUST_THIRD_PARTY_DIR: &str = "third_party/rust";
