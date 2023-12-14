@@ -22,6 +22,7 @@
 #include "components/autofill/core/common/autofill_payments_features.h"
 #include "components/commerce/core/commerce_feature_list.h"
 #include "components/strings/grit/components_strings.h"
+#include "components/url_formatter/elide_url.h"
 #include "net/base/registry_controlled_domains/registry_controlled_domain.h"
 #include "ui/base/clipboard/clipboard_buffer.h"
 #include "ui/base/clipboard/scoped_clipboard_writer.h"
@@ -155,9 +156,7 @@ void OfferNotificationBubbleViews::InitWithFreeListingCouponOfferContent() {
   SetLayoutManager(std::make_unique<views::FillLayout>());
 
   GURL url = web_contents()->GetLastCommittedURL();
-  std::string seller_domain =
-      net::registry_controlled_domains::GetDomainAndRegistry(
-          url, net::registry_controlled_domains::INCLUDE_PRIVATE_REGISTRIES);
+  std::string seller_domain = url.spec();
 
   free_listing_coupon_page_container_ =
       AddChildView(std::make_unique<PageSwitcherView>(
@@ -377,10 +376,15 @@ void OfferNotificationBubbleViews::OpenTermsAndConditionsPage(
     AutofillOfferData offer,
     std::string seller_domain) {
   ResetPointersToFreeListingCouponOfferMainPageContent();
+  auto bubble_width = views::LayoutProvider::Get()->GetDistanceMetric(
+      views::DISTANCE_BUBBLE_PREFERRED_WIDTH);
 
-  auto footer_message =
-      l10n_util::GetStringFUTF16(IDS_SELLER_TERMS_AND_CONDITIONS_DIALOG_FOOTER,
-                                 base::ASCIIToUTF16(seller_domain));
+  gfx::FontList font_list = views::TypographyProvider::Get().GetFont(
+      views::style::CONTEXT_LABEL, views::style::STYLE_PRIMARY);
+
+  auto footer_message = l10n_util::GetStringFUTF16(
+      IDS_SELLER_TERMS_AND_CONDITIONS_DIALOG_FOOTER,
+      url_formatter::ElideHost(GURL(seller_domain), font_list, bubble_width));
   free_listing_coupon_page_container_->SwitchToPage(
       views::Builder<SubpageView>(
           std::make_unique<SubpageView>(
@@ -400,13 +404,10 @@ void OfferNotificationBubbleViews::OpenTermsAndConditionsPage(
                   .Build())
           .SetHeaderView(nullptr)
           .SetFootnoteView(
-              // TODO(b:289240484): Need to elide the front of the seller_domain
-              // if needed.
               views::Builder<views::Label>()
                   .SetText(footer_message)
                   .SetHorizontalAlignment(gfx::HorizontalAlignment::ALIGN_LEFT)
                   .SetMultiLine(true)
-                  .SetMaxLines(2)
                   .SetAllowCharacterBreak(true)
                   .Build())
           .Build());
