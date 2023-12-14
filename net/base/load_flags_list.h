@@ -62,8 +62,9 @@ LOAD_FLAG(BYPASS_PROXY, 1 << 7)
 // page is loaded.
 LOAD_FLAG(MAIN_FRAME_DEPRECATED, 1 << 8)
 
-// Indicates that this load was motivated by the rel=prefetch feature,
-// and is (in theory) not intended for the current frame.
+// Indicates that this load was motivated by the rel=prefetch feature, or the
+// speculationrules prefetch feature, and is (in theory) not intended for the
+// current frame.
 LOAD_FLAG(PREFETCH, 1 << 9)
 
 // Indicates that this load could cause deadlock if it has to wait for another
