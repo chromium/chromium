@@ -177,6 +177,9 @@ void DownloadBubbleUIController::OnDownloadItemUpdated(
   bool is_done = item->IsDone() ||
                  (item->GetState() == download::DownloadItem::IN_PROGRESS &&
                   !IsItemInProgress(item));
+  if (model.IsDangerous()) {
+    RecordDangerousDownloadShownToUser();
+  }
   display_controller_->OnUpdatedItem(is_done, may_show_details);
 }
 
@@ -377,6 +380,13 @@ void DownloadBubbleUIController::RecordDownloadBubbleInteraction() {
       feature_engagement::TrackerFactory::GetForBrowserContext(
           browser_->profile());
   tracker->NotifyEvent("download_bubble_interaction");
+}
+
+void DownloadBubbleUIController::RecordDangerousDownloadShownToUser() {
+  feature_engagement::Tracker* tracker =
+      feature_engagement::TrackerFactory::GetForBrowserContext(
+          browser_->profile());
+  tracker->NotifyEvent("download_bubble_dangerous_download_detected");
 }
 
 base::WeakPtr<DownloadBubbleUIController>

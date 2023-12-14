@@ -473,6 +473,27 @@ absl::optional<FeatureConfig> GetClientSideFeatureConfig(
     return config;
   }
 
+  if (kIPHDownloadEsbPromoFeature.name == feature->name) {
+    absl::optional<FeatureConfig> config = FeatureConfig();
+    config->valid = true;
+    config->availability = Comparator(ANY, 0);
+    config->session_rate = Comparator(EQUAL, 0);
+    SessionRateImpact session_rate_impact;
+    session_rate_impact.type = SessionRateImpact::Type::NONE;
+    config->session_rate_impact = session_rate_impact;
+    // Don't show if user has already seen an IPH this session.
+    // Show the promo max once a year if the user hasn't interacted with
+    // a dangerous download within the last 21 days.
+    config->trigger = EventConfig("download_bubble_esb_iph_trigger",
+                                  Comparator(EQUAL, 0), 360, 360);
+    config->used = EventConfig("enable_enhanced_protection",
+                               Comparator(EQUAL, 0), 21, 360);
+    config->event_configs.insert(
+        EventConfig("download_bubble_dangerous_download_detected",
+                    Comparator(GREATER_THAN_OR_EQUAL, 1), 21, 360));
+    return config;
+  }
+
   if (kIPHDownloadToolbarButtonFeature.name == feature->name) {
     absl::optional<FeatureConfig> config = FeatureConfig();
     config->valid = true;
