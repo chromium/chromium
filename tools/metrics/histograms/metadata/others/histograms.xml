@@ -11979,13 +11979,6 @@ regressions. -->
   </token>
 </histogram>
 
-<histogram name="WrenchMenu.TouchDuration" units="ms" expires_after="M85">
-  <owner>kkimlabs@chromium.org</owner>
-  <summary>
-    Time difference between touch down and touch up on Android wrench button.
-  </summary>
-</histogram>
-
 <histogram name="XHR.Async.PageDismissal" enum="XHRPageDismissalState"
     expires_after="M81">
   <owner>panicker@chromium.org</owner>
