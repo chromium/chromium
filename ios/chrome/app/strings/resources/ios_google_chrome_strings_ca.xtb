@@ -170,7 +170,6 @@ Només les persones que sàpiguen la teva frase de contrasenya podran llegir les
 <translation id="7124339256045485976">Mantén Chrome actualitzat</translation>
 <translation id="7161390184744336561">Google Chrome no està actualitzat</translation>
 <translation id="7165736900384873061">Comença a utilitzar l'escàner QR de Google Chrome</translation>
-<translation id="7173660919484573146">Chrome utilitza Face ID per garantir l'accés autoritzat a les contrasenyes.</translation>
 <translation id="7187993566681480880">Et protegeix a Chrome i és possible que s'utilitzi per millorar la teva seguretat en altres aplicacions de Google quan tinguis la sessió iniciada.</translation>
 <translation id="7200524487407690471">Chrome executa automàticament la funció Comprovació de seguretat cada dia per protegir-te de violacions de les dades, de llocs web no segurs i més. Pots obtenir més informació sobre Comprovació de seguretat a Configuració.</translation>
 <translation id="72119412072970160">Pots utilitzar les contrasenyes que has desat al gestor de contrasenyes de Google en altres aplicacions de l'iPad.</translation>
@@ -190,6 +189,7 @@ Només les persones que sàpiguen la teva frase de contrasenya podran llegir les
 <translation id="7698568245838009292">Chrome sol·licita accés a la càmera</translation>
 <translation id="7754633291442704733">La teva organització (<ph name="DOMAIN" />) tindrà accés a les teves dades, les adreces d'interès, l'historial, les contrasenyes i altres opcions de configuració de Chrome que emmagatzemis en aquest compte. Quan tanquis la sessió, les teves dades s'esborraran d'aquest dispositiu,  però continuaran emmagatzemades al teu Compte de Google gestionat i estaran disponibles per a la teva organització. L'organització també pot definir polítiques dels usuaris específiques del compte que poden canviar el comportament de Chrome.</translation>
 <translation id="7780154209050837198">Per treure el màxim profit de Chrome, inicia-hi la sessió amb el teu Compte de Google.</translation>
+<translation id="7792140019572081272">Chrome protegeix les teves dades sensibles amb Face ID.</translation>
 <translation id="7855730255114109580">Google Chrome està actualitzat</translation>
 <translation id="7897703007638178753">Mostra les pestanyes recents de Chrome</translation>
 <translation id="7925119591961387184">Selecciona Chrome.</translation>

@@ -616,6 +616,7 @@ Es posible que se apliquen a esta cuenta los permisos que otorgaste a apps. Pued
 <translation id="1478340334823509079">Detalles: <ph name="FILE_NAME" /></translation>
 <translation id="1478607704480248626">La instalación no está habilitada</translation>
 <translation id="1480663089572535854">Puedes volver para cambiar la asignación de "Seleccionar". En Configuración, podrás desactivar el escaneo automático en cualquier momento.</translation>
+<translation id="1481001611315487791">Obtén más información para crear temas con IA.</translation>
 <translation id="1481537595330271162">Se produjo un error al cambiar el tamaño del disco</translation>
 <translation id="1482626744466814421">Agregar esta pestaña a favoritos…</translation>
 <translation id="1482772681918035149">editar contraseñas</translation>
@@ -807,6 +808,7 @@ Es posible que se apliquen a esta cuenta los permisos que otorgaste a apps. Pued
 <translation id="1615433306336820465">Administra los datos de acceso almacenados en la llave de seguridad.</translation>
 <translation id="1616206807336925449">Esta extensión no requiere permisos especiales.</translation>
 <translation id="1616298854599875024">No se puede importar la extensión "<ph name="IMPORT_NAME" />" porque no es un módulo compartido</translation>
+<translation id="161654560322394775">Imagen <ph name="INDEX" /> de <ph name="A" />, en el estilo <ph name="B" />, con el estado de ánimo <ph name="C" />.</translation>
 <translation id="1617765145568323981">{NUM_FILES,plural, =0{Controlando los datos respecto de las políticas de seguridad de tu organización…}=1{Controlando el archivo respecto de las políticas de seguridad de tu organización…}other{Controlando los archivos respecto de las políticas de seguridad de tu organización…}}</translation>
 <translation id="1618102204889321535"><ph name="CURRENT_CHARACTER_COUNT" />/<ph name="MAX_CHARACTER_COUNT" /></translation>
 <translation id="1618268899808219593">C&amp;entro de ayuda</translation>
@@ -1690,6 +1692,7 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="2291452790265535215">Usa el panel lateral para favoritos, recorridos y más</translation>
 <translation id="229182044471402145">No se encontraron fuentes coincidentes.</translation>
 <translation id="2292848386125228270">Inicia <ph name="PRODUCT_NAME" /> como usuario normal. Si necesitas ejecutarlo como administrador para su desarrollo, vuelve a ejecutarlo con la marca --no-sandbox.</translation>
+<translation id="2292862094862078674">Revisa tu conexión a Internet y vuelve a intentarlo. Aún puedes seleccionar uno de los temas generados anteriormente a continuación.</translation>
 <translation id="2294081976975808113">Privacidad de pantalla</translation>
 <translation id="2294358108254308676">¿Deseas instalar <ph name="PRODUCT_NAME" />?</translation>
 <translation id="229477815107578534">Revisa la configuración</translation>
@@ -3031,6 +3034,7 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="3325804108816646710">Buscando perfiles disponibles…</translation>
 <translation id="3325910708063135066">La cámara y el micrófono están desactivados en las Preferencias del Sistema de Mac</translation>
 <translation id="3325930488268995856">Se conectó Microsoft OneDrive</translation>
+<translation id="3325995804968971809">Estilo</translation>
 <translation id="3327050066667856415">Las Chromebooks están diseñadas para ser seguras. Tu dispositivo cuenta con una protección automática contra software malicioso, por lo que no necesitas una protección adicional.</translation>
 <translation id="3328489342742826322">Si implementas una copia de seguridad, se borrarán los datos y apps de Linux existentes en tu carpeta de archivos de Linux.</translation>
 <translation id="3331321258768829690">(<ph name="UTCOFFSET" />) <ph name="LONGTZNAME" /> (<ph name="EXEMPLARCITY" />)</translation>
@@ -3307,6 +3311,7 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="3561201631376780358">Abrir el panel lateral para ver todos los favoritos</translation>
 <translation id="3562423906127931518">Este proceso puede demorar unos minutos. Se está configurando el contenedor de Linux.</translation>
 <translation id="3562655211539199254">Accede a las pestañas recientes de Chrome de tu teléfono.</translation>
+<translation id="3563392617245068355">Ánimo</translation>
 <translation id="3563432852173030730">No se pudo descargar la aplicación del kiosco.</translation>
 <translation id="3563558822383875692">Se está configurando el DLC.</translation>
 <translation id="3564334271939054422">La red Wi-Fi que estás usando (<ph name="NETWORK_ID" />) podría exigir que visites la página de acceso.</translation>
@@ -4190,6 +4195,7 @@ Esto puede incluir información sobre el software instalado, los archivos, el na
 <translation id="4250229828105606438">Captura de pantalla</translation>
 <translation id="4250680216510889253">No</translation>
 <translation id="4251377547188244181">Inscripción del dispositivo en el modo de kiosko o señalización</translation>
+<translation id="4252141040239557279">Imagen <ph name="INDEX" /> de <ph name="A" /></translation>
 <translation id="4252899949534773101">Bluetooth está inhabilitado</translation>
 <translation id="4252996741873942488"><ph name="WINDOW_TITLE" />: Se compartió el contenido de la pestaña</translation>
 <translation id="4253168017788158739">Nota</translation>
@@ -4568,6 +4574,7 @@ Esto puede incluir información sobre el software instalado, los archivos, el na
 <translation id="4548858987594081919">Para ayudar al Administrador de contraseñas de Google a guardar tu información de acceso, agrega tu nombre de usuario en este sitio</translation>
 <translation id="4549791035683739768">Tu llave de seguridad no tiene huellas digitales almacenadas</translation>
 <translation id="4550926046134589611">Algunos vínculos compatibles se seguirán abriendo en <ph name="APP_NAME" />.</translation>
+<translation id="4551379727767354516">Tus temas de IA recientes</translation>
 <translation id="4551763574344810652">Presiona <ph name="MODIFIER_KEY_DESCRIPTION" /> para deshacer</translation>
 <translation id="4553526521109675518">Para cambiar el idioma del dispositivo, debes reiniciar la Chromebook. <ph name="BEGIN_LINK_LEARN_MORE" />Más información<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="4554591392113183336">La versión de la extensión externa es igual o anterior a la actual.</translation>
@@ -5892,6 +5899,7 @@ Es posible que se apliquen a esta cuenta los permisos que otorgaste a sitios web
 <translation id="5620568081365989559">DevTools solicita acceso completo a <ph name="FOLDER_PATH" />. Asegúrate de no revelar información confidencial.</translation>
 <translation id="5620612546311710611">estadísticas de uso</translation>
 <translation id="5621272825308610394">Sin nombre visible</translation>
+<translation id="5621350029086078628">Esta es una función de IA experimental.</translation>
 <translation id="562250930904332809">&amp;Inhabilitar Subtitulado instantáneo</translation>
 <translation id="5623282979409330487">Este sitio accede a tus sensores de movimiento.</translation>
 <translation id="5623842676595125836">Registro</translation>
@@ -6010,6 +6018,7 @@ Es posible que se apliquen a esta cuenta los permisos que otorgaste a sitios web
 <translation id="572328651809341494">Pestañas recientes</translation>
 <translation id="5723508132121499792">No se ejecutan aplicaciones de fondo</translation>
 <translation id="5723967018671998714">En el modo Incógnito, se bloquean las cookies de terceros</translation>
+<translation id="5725112283692663422">Envía comentarios sobre Crear tema con IA</translation>
 <translation id="5727728807527375859">Las extensiones, las aplicaciones y los temas pueden dañar tu computadora. ¿Estás seguro de que deseas continuar?</translation>
 <translation id="5728290366864286776">Es posible que esta extensión lea y cambie la información del sitio, o se ejecute en segundo plano</translation>
 <translation id="5728450728039149624">Opciones del bloqueo de pantalla con Smart Lock</translation>
@@ -8421,6 +8430,7 @@ Tienes # contraseñas hackeadas más. El Administrador de contraseñas de Go
 <translation id="7657090467145778067">Ahorro: bajo</translation>
 <translation id="7657218410916651670">Es posible que se guarden <ph name="BEGIN_LINK_GOOGLE" />otras formas de actividad<ph name="END_LINK_GOOGLE" /> en tu Cuenta de Google cuando accedes. Podrás borrarlas en cualquier momento.</translation>
 <translation id="7658239707568436148">Cancelar</translation>
+<translation id="7658727964021657194">Tema de IA reciente: <ph name="TILE_INDEX" /></translation>
 <translation id="7659154729610375585">¿Deseas salir del modo Incógnito de todas formas?</translation>
 <translation id="7659336857671800422">Consultar la guía de privacidad</translation>
 <translation id="7659584679870740384">No tienes autorización para utilizar este dispositivo. Para obtener permiso de acceso, comunícate con el administrador.</translation>
@@ -8642,6 +8652,7 @@ Presiona un interruptor o tecla que ya esté asignado para quitar la asignación
 <translation id="7807711621188256451">Permitir siempre que <ph name="HOST" /> acceda a la cámara</translation>
 <translation id="7810202088502699111">Se bloquearon las ventanas emergentes en esta página.</translation>
 <translation id="7810367892333449285">El formato de tu entrada debe ser <ph name="LPA_0" />$<ph name="LPA_1" />dirección SM-DP+<ph name="LPA_2" />$<ph name="LPA_3" />ID para coincidencias opcional<ph name="LPA_4" /></translation>
+<translation id="7811263553491007091">Vuelve a intentarlo o selecciona uno de los temas generados anteriormente a continuación.</translation>
 <translation id="7814458197256864873">&amp;Copiar</translation>
 <translation id="7814857791038398352">Microsoft OneDrive</translation>
 <translation id="7815583197273433531">Editar el acceso directo <ph name="SHORTCUT" /> para <ph name="EXTENSION_NAME" /></translation>
@@ -8746,6 +8757,7 @@ Presiona un interruptor o tecla que ya esté asignado para quitar la asignación
 <translation id="789722939441020330">No permitir que los sitios descarguen varios archivos automáticamente</translation>
 <translation id="7897900149154324287">En el futuro, asegúrate de quitar el dispositivo extraíble desde la aplicación Archivos antes de desconectarlo. De lo contario, es posible que pierdas datos.</translation>
 <translation id="7898725031477653577">Traducir siempre</translation>
+<translation id="7899324822972399722">Imagen <ph name="INDEX" /> de <ph name="A" />, en el estilo <ph name="B" /></translation>
 <translation id="7901405293566323524">Phone Hub</translation>
 <translation id="7903290522161827520">¿Buscas los componentes del navegador? Visita</translation>
 <translation id="7903429136755645827">Haz clic para personalizar los controles de juego</translation>
@@ -9007,6 +9019,7 @@ Mantén el archivo de clave en un lugar seguro. Debes crear las nuevas versiones
 <translation id="8089547136368562137">Recibe la mejor protección de Google</translation>
 <translation id="8090234456044969073">Leer una lista de los sitios web que visitas con más frecuencia</translation>
 <translation id="8090513782447872344">Puedes volver en cualquier momento para echar un vistazo</translation>
+<translation id="8090686009202681725">Crea un tema con IA</translation>
 <translation id="8093359998839330381"><ph name="PLUGIN_NAME" /> no responde</translation>
 <translation id="8094536695728193970">Albaricoque</translation>
 <translation id="8095105960962832018"><ph name="BEGIN_PARAGRAPH1" />Crea una copia de seguridad en Google Drive. Restablece fácilmente tus datos o cambia de dispositivo en cualquier momento. Tu copia de seguridad incluye datos de las apps.<ph name="END_PARAGRAPH1" />
@@ -9023,6 +9036,7 @@ Mantén el archivo de clave en un lugar seguro. Debes crear las nuevas versiones
 <translation id="8098616321286360457">Se requiere una conexión de red</translation>
 <translation id="8100230553590752325">Usa las contraseñas guardadas en cualquier dispositivo</translation>
 <translation id="810068641062493918">Se seleccionó <ph name="LANGUAGE" />. Presiona la tecla de búsqueda+barra espaciadora para anular la selección del idioma.</translation>
+<translation id="8100725874569949614">Imagen <ph name="INDEX" /> de <ph name="A" />, con el estado de ánimo <ph name="C" />.</translation>
 <translation id="8101409298456377967">Crea, guarda y administra tus contraseñas para acceder fácilmente a sitios y apps. <ph name="BEGIN_LINK" />Más información<ph name="END_LINK" /></translation>
 <translation id="810185532889603849">Color personalizado</translation>
 <translation id="8101987792947961127">Se requiere Powerwash en el siguiente reinicio</translation>
@@ -9033,6 +9047,7 @@ Mantén el archivo de clave en un lugar seguro. Debes crear las nuevas versiones
 <translation id="810728361871746125">Resolución de la pantalla</translation>
 <translation id="8108526232944491552">{COUNT,plural, =0{No hay cookies de terceros}=1{Se bloqueó 1 cookie de terceros}other{Se bloquearon # cookies de terceros}}</translation>
 <translation id="8109109153262930486">Avatar predeterminado</translation>
+<translation id="8109991406044913868">Tema creado con IA</translation>
 <translation id="8110393529211831722">La suscripción solo está instalada en este dispositivo y no está sincronizada con otros dispositivos de tu cuenta. <ph name="LINK_BEGIN" />Más información<ph name="LINK_END" /></translation>
 <translation id="8110489095782891123">Descargando la lista de contactos…</translation>
 <translation id="8115139559594092084">De tu Google Drive</translation>

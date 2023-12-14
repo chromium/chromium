@@ -617,6 +617,7 @@
 <translation id="1478340334823509079">વિગતો: <ph name="FILE_NAME" /></translation>
 <translation id="1478607704480248626">ઇન્સ્ટૉલેશન ચાલુ કર્યું નથી</translation>
 <translation id="1480663089572535854">“પસંદ કરો”ની સોંપણીમાં ફેરફાર કરવા તમે પાછા જઈ શકો છો. તમે સેટિંગમાં કોઈપણ સમયે ઑટો-સ્કૅનની સુવિધા બંધ કરી શકો છો.</translation>
+<translation id="1481001611315487791">AI વડે થીમ બનાવવા વિશે વધુ જાણો.</translation>
 <translation id="1481537595330271162">ડિસ્કનું કદ બદલવામાં ભૂલ આવી</translation>
 <translation id="1482626744466814421">આ ટૅબને બુકમાર્ક કરો...</translation>
 <translation id="1482772681918035149">પાસવર્ડમાં ફેરફાર કરો</translation>
@@ -807,6 +808,7 @@
 <translation id="1615433306336820465">તમારી સિક્યુરિટી કી પર સ્ટોર કરેલા સાઇન-ઇન ડેટાને મેનેજ કરો</translation>
 <translation id="1616206807336925449">આ એક્સટેન્શનને કોઈ વિશિષ્ટ પરવાનગીઓની જરૂર નથી.</translation>
 <translation id="1616298854599875024">એક્સટેંશન "<ph name="IMPORT_NAME" />" આયાત કરવામાં અસમર્થ કારણ કે તે કોઈ શેર કરેલ મૉડ્યૂલ નથી</translation>
+<translation id="161654560322394775"><ph name="B" /> શૈલીમાં, <ph name="C" /> મૂડવાળી, <ph name="A" />માંથી <ph name="INDEX" /> છબી.</translation>
 <translation id="1617765145568323981">{NUM_FILES,plural, =0{આ ડેટાને તમારી સંસ્થાની સુરક્ષા પૉલિસીઓના પાલન સંબંધે ચેક કરીએ છીએ...}=1{આ ફાઇલને તમારી સંસ્થાની સુરક્ષા પૉલિસીઓના પાલન સંબંધે ચેક કરીએ છીએ...}one{આ ફાઇલને તમારી સંસ્થાની સુરક્ષા પૉલિસીઓના પાલન સંબંધે ચેક કરીએ છીએ...}other{આ ફાઇલોને તમારી સંસ્થાની સુરક્ષા પૉલિસીઓના પાલન સંબંધે ચેક કરીએ છીએ...}}</translation>
 <translation id="1618102204889321535"><ph name="CURRENT_CHARACTER_COUNT" />/<ph name="MAX_CHARACTER_COUNT" /></translation>
 <translation id="1618268899808219593">સ&amp;હાય કેન્દ્ર</translation>
@@ -1691,6 +1693,7 @@
 <translation id="2291452790265535215">બુકમાર્ક અને પ્રવાસ જેવી બીજી ઘણી બાબતો માટે, બાજુની પૅનલનો ઉપયોગ અજમાવી જુઓ</translation>
 <translation id="229182044471402145">કોઈ મેળ ખાતો ફૉન્ટ મળ્યો નથી.</translation>
 <translation id="2292848386125228270">કૃપા કરીને એક સામાન્ય વપરાશકર્તા તરીકે <ph name="PRODUCT_NAME" /> શરૂ કરો. જો તમને ડેવલપમેન્ટ માટે રૂટ તરીકે ચલાવવાની જરૂર હોય, તો --no-sandbox ચિહ્ન સાથે ફરીથી ચલાવો.</translation>
+<translation id="2292862094862078674">તમારું ઇન્ટરનેટ ચેક કરો અને ફરી પ્રયાસ કરો. તમે નીચેનામાંથી અગાઉ જનરેટ કરેલી થીમમાંથી કોઈ એક હજી પણ પસંદ કરી શકો છો.</translation>
 <translation id="2294081976975808113">સ્ક્રીનની પ્રાઇવસી</translation>
 <translation id="2294358108254308676">શું તમે <ph name="PRODUCT_NAME" /> ઇન્સ્ટોલ કરવા માંગો છો?</translation>
 <translation id="229477815107578534">તમારા સેટિંગનો રિવ્યૂ કરો</translation>
@@ -3032,6 +3035,7 @@
 <translation id="3325804108816646710">ઉપલબ્ધ પ્રોફાઇલ શોધી રહ્યાં છીએ…</translation>
 <translation id="3325910708063135066">Mac સિસ્ટમ પસંદગીઓમાં કૅમેરા અને માઇક્રોફોન બંધ છે</translation>
 <translation id="3325930488268995856">Microsoft OneDrive કનેક્ટેડ</translation>
+<translation id="3325995804968971809">શૈલી</translation>
 <translation id="3327050066667856415">Chromebooksની ડિઝાઇન જ સુરક્ષાને ધ્યાનમાં રાખીને કરવામાં આવી છે. તમારું ડિવાઇસ માલવેરથી ઑટોમૅટિક રીતે જ સુરક્ષિત રહે છે – આના માટે કોઈ વધારાનું સૉફ્ટવેર જરૂરી નથી.</translation>
 <translation id="3328489342742826322">કોઈ બૅકઅપમાંથી રિસ્ટોર કરવાથી હાલની બધી Linux ઍપ્લિકેશનો અને તમારા Linux ફાઇલો ફોલ્ડરમાંનો ડેટા ડિલીટ થઈ જશે.</translation>
 <translation id="3331321258768829690">(<ph name="UTCOFFSET" />) <ph name="LONGTZNAME" /> (<ph name="EXEMPLARCITY" />)</translation>
@@ -3308,6 +3312,7 @@
 <translation id="3561201631376780358">તમામ બુકમાર્ક જોવા માટે બાજુની પૅનલ ખોલો</translation>
 <translation id="3562423906127931518">આ પ્રક્રિયામાં થોડો સમય લાગી શકે છે. Linux કન્ટેનર સેટઅપ કરી રહ્યાં છીએ.</translation>
 <translation id="3562655211539199254">તમારા ફોનમાંની તાજેતરની Chrome ટૅબ જુઓ</translation>
+<translation id="3563392617245068355">મૂડ</translation>
 <translation id="3563432852173030730">કિઓસ્ક ઍપ્લિકેશન ડાઉનલોડ કરી શકાઈ નથી.</translation>
 <translation id="3563558822383875692">DLCની ગોઠવણી કરી રહ્યાં છીએ.</translation>
 <translation id="3564334271939054422">તમે ઉપયોગમાં લઈ રહ્યા છો તે વાઇ-ફાઇ નેટવર્ક <ph name="NETWORK_ID" /> માટે, તમારે તેના લોગિન પેજની મુલાકાત લેવાની જરૂર હોઈ શકે છે.</translation>
@@ -4191,6 +4196,7 @@
 <translation id="4250229828105606438">સ્ક્રીનશૉટ</translation>
 <translation id="4250680216510889253">નહીં</translation>
 <translation id="4251377547188244181">કિઓસ્ક કે સાઇનેજ ડિવાઇસની નોંધણી</translation>
+<translation id="4252141040239557279"><ph name="A" />માંથી <ph name="INDEX" /> છબી</translation>
 <translation id="4252899949534773101">બ્લૂટૂથ બંધ છે</translation>
 <translation id="4252996741873942488"><ph name="WINDOW_TITLE" /> - ટૅબની સામગ્રી શેર કરી</translation>
 <translation id="4253168017788158739">નોંધ</translation>
@@ -4569,6 +4575,7 @@
 <translation id="4548858987594081919">Google Password Managerને તમારી સાઇન-ઇન માહિતી સાચવવામાં સહાય કરવા માટે, આ સાઇટ માટેનું તમારું વપરાશકર્તાનું નામ ઉમેરો</translation>
 <translation id="4549791035683739768">તમારી સિક્યુરિટી કીમાં કોઈ ફિંગરપ્રિન્ટ સંગ્રહિત નથી</translation>
 <translation id="4550926046134589611">અમુક સપોર્ટેડ લિંક હજી પણ <ph name="APP_NAME" />માં ખૂલશે.</translation>
+<translation id="4551379727767354516">તમારી તાજેતરની AI થીમ</translation>
 <translation id="4551763574344810652">છેલ્લો ફેરફાર રદ કરવા માટે <ph name="MODIFIER_KEY_DESCRIPTION" /> દબાવો</translation>
 <translation id="4553526521109675518">ડિવાઇસની ભાષા બદલવા માટે તમારે તમારું Chromebook ફરી ચાલુ કરવું જરૂરી છે. <ph name="BEGIN_LINK_LEARN_MORE" />વધુ જાણો<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="4554591392113183336">બાહ્ય એક્સ્ટેંશન હાલના એક્સ્ટેંશનની સરખામણીએ સમાન અથવા નીચલા વર્ઝન પર છે.</translation>
@@ -5894,6 +5901,7 @@
 ખાતરી કરો કે તમે કોઈપણ સંવેદનશીલ માહિતીને ખુલ્લી કરી નથી.</translation>
 <translation id="5620612546311710611">ઉપયોગનાં આંકડા</translation>
 <translation id="5621272825308610394">કોઈ ડિસ્પ્લે નામ નથી</translation>
+<translation id="5621350029086078628">આ પ્રાયોગિક AI સુવિધા છે.</translation>
 <translation id="562250930904332809">અને લાઇવ કૅપ્શન બંધ કરો</translation>
 <translation id="5623282979409330487">આ સાઇટ તમારા મોશન સેન્સરને ઍક્સેસ કરી રહી છે.</translation>
 <translation id="5623842676595125836">લૉગ</translation>
@@ -6012,6 +6020,7 @@
 <translation id="572328651809341494">તાજેતરના ટેબ્સ</translation>
 <translation id="5723508132121499792">કોઈપણ બૅકગ્રાઉન્ડ ઍપ ચાલી રહી નથી</translation>
 <translation id="5723967018671998714">છૂપા મોડમાં ત્રીજા પક્ષની કુકી બ્લૉક કરવામાં આવી છે</translation>
+<translation id="5725112283692663422">AI વડે થીમ બનાવવા માટે પ્રતિસાદ મોકલો</translation>
 <translation id="5727728807527375859">એક્સટેન્શન્સ, ઍપ્લિકેશન અને થીમ્સ તમારા કમ્પ્યુટરને નુકસાન પહોંચાડી શકે છે. શું તમે ખરેખર આગળ વધવા માંગો છો?</translation>
 <translation id="5728290366864286776">આ એક્સ્ટેન્શન સાઇટની માહિતી વાંચી કે બદલી શકે છે અથવા તે બૅકગ્રાઉન્ડમાં ચાલી શકે છે</translation>
 <translation id="5728450728039149624">સ્ક્રીન લૉકને સરળતાથી અનલૉક કરવાના Smart Lockના વિકલ્પોના સેટિંગ</translation>
@@ -8426,6 +8435,7 @@ USB ડિવાઇસ</translation>
 <translation id="7657090467145778067">ઓછા પ્રમાણમાં મેમરી બચત</translation>
 <translation id="7657218410916651670">જ્યારે તમે સાઇન ઇન કર્યુ હોય, ત્યારે તમારા Google એકાઉન્ટમાં <ph name="BEGIN_LINK_GOOGLE" />પ્રવૃત્તિના અન્ય પ્રકારો<ph name="END_LINK_GOOGLE" /> સાચવવામાં આવી શકે છે. તમે તેમને કોઈપણ સમયે ડિલીટ કરી શકો છો.</translation>
 <translation id="7658239707568436148">રદ કરો</translation>
+<translation id="7658727964021657194">તાજેતરની AI થીમ <ph name="TILE_INDEX" /></translation>
 <translation id="7659154729610375585">છૂપો મોડ બંધ કરી જ દઈએ?</translation>
 <translation id="7659336857671800422">પ્રાઇવસી સંબંધિત માર્ગદર્શિકાનો રિવ્યૂ કરો</translation>
 <translation id="7659584679870740384">તમે આ ઉપકરણ વાપરવા માટે અધિકૃત નથી. કૃપા કરીને સાઇન ઇન કરવાની પરવાનગી માટે વ્યવસ્થાપકનો સંપર્ક કરો.</translation>
@@ -8646,6 +8656,7 @@ USB ડિવાઇસ</translation>
 <translation id="7807711621188256451"><ph name="HOST" />ને હંમેશા તમારા કૅમેરાને ઍક્સેસ કરવાની મંજૂરી આપો</translation>
 <translation id="7810202088502699111">આ પેજ પરનાં પૉપ-અપ બ્લૉક હતા.</translation>
 <translation id="7810367892333449285">તમારી એન્ટ્રી આ ફૉર્મેટમાં હોવી જોઈએ <ph name="LPA_0" />$<ph name="LPA_1" />SM-DP+ ઍડ્રેસ<ph name="LPA_2" />$<ph name="LPA_3" />વૈકલ્પિક મેળ ખાતું ID<ph name="LPA_4" /></translation>
+<translation id="7811263553491007091">ફરીથી પ્રયાસ કરો અથવા નીચેનામાંથી અગાઉ જનરેટ કરેલી થીમમાંથી કોઈ એક પસંદ કરો.</translation>
 <translation id="7814458197256864873">&amp;કૉપિ કરો</translation>
 <translation id="7814857791038398352">Microsoft OneDrive</translation>
 <translation id="7815583197273433531"><ph name="EXTENSION_NAME" /> માટે <ph name="SHORTCUT" /> શૉર્ટકટમાં ફેરફાર કરો</translation>
@@ -8750,6 +8761,7 @@ USB ડિવાઇસ</translation>
 <translation id="789722939441020330">સાઇટને ઑટોમૅટિક રીતે એક કરતાં વધુ ફાઇલો ડાઉનલોડ કરવાની મંજૂરી આપશો નહીં</translation>
 <translation id="7897900149154324287">ભવિષ્યમાં, તમારા કાઢવા યોગ્ય ડિવાઇસને અનપ્લગ કરતાં પહેલાં Files ઍપમાંથી તેને કાઢવાનું યાદ રાખો. અન્યથા, તમે ડેટા ગુમાવી શકો છો.</translation>
 <translation id="7898725031477653577">હંમેશાં અનુવાદ કરો</translation>
+<translation id="7899324822972399722"><ph name="B" /> શૈલીમાં, <ph name="A" />માંથી <ph name="INDEX" /> છબી</translation>
 <translation id="7901405293566323524">ફોન હબ</translation>
 <translation id="7903290522161827520">બ્રાઉઝરના ઘટકો શોધી રહ્યાં છો? મુલાકાત લો</translation>
 <translation id="7903429136755645827">તમરા ગેમના નિયંત્રણો કસ્ટમાઇઝ કરવા માટે ક્લિક કરો</translation>
@@ -9006,6 +9018,7 @@ USB ડિવાઇસ</translation>
 <translation id="8089547136368562137">Googleની શ્રેષ્ઠ ટેક્નોલોજી દ્વારા તે સુરક્ષિત છે</translation>
 <translation id="8090234456044969073">તમારી મોટાભાગની અવારનાવર મુલાકાત લીધેલ વેબસાઇટ્સની સૂચિ વાંચો</translation>
 <translation id="8090513782447872344">તમે ફરીથી જોવા માટે કોઈપણ સમયે પાછા આવી શકો છો</translation>
+<translation id="8090686009202681725">AI વડે થીમ બનાવો</translation>
 <translation id="8093359998839330381"><ph name="PLUGIN_NAME" /> પ્રતિસાદ આપી રહ્યું નથી</translation>
 <translation id="8094536695728193970">એપ્રિકૉટ</translation>
 <translation id="8095105960962832018"><ph name="BEGIN_PARAGRAPH1" />Google Driveમાં બૅકઅપ લો. કોઈપણ સમયે તમારો ડેટા સરળતાથી પાછો મેળવો અથવા ડિવાઇસ સ્વિચ કરો. તમારા બૅકઅપમાં ઍપનો ડેટા શામેલ હોય છે.<ph name="END_PARAGRAPH1" />
@@ -9022,6 +9035,7 @@ USB ડિવાઇસ</translation>
 <translation id="8098616321286360457">નેટવર્ક કનેક્શન આવશ્યક છે</translation>
 <translation id="8100230553590752325">કોઈપણ ડિવાઇસ પર સાચવેલા પાસવર્ડનો ઉપયોગ કરો</translation>
 <translation id="810068641062493918"><ph name="LANGUAGE" /> પસંદ કરી છે. નાપસંદ કરવા માટે Search અને Space દબાવો.</translation>
+<translation id="8100725874569949614"><ph name="C" /> મૂડવાળી, <ph name="A" />માંથી <ph name="INDEX" /> છબી.</translation>
 <translation id="8101409298456377967">તમારા પાસવર્ડ બનાવો, સાચવો અને મેનેજ કરો, જેથી તમે સાઇટ અને ઍપમાં સરળતાથી સાઇન ઇન કરી શકો. <ph name="BEGIN_LINK" />વધુ જાણો<ph name="END_LINK" /></translation>
 <translation id="810185532889603849">કસ્ટમ રંગ</translation>
 <translation id="8101987792947961127">આગલા રીબૂટ પર Powerwash આવશ્યક છે</translation>
@@ -9032,6 +9046,7 @@ USB ડિવાઇસ</translation>
 <translation id="810728361871746125">ડિસ્પ્લેનું રિઝોલ્યુશન</translation>
 <translation id="8108526232944491552">{COUNT,plural, =0{ત્રીજા પક્ષની કોઈ કુકી નથી}=1{ત્રીજા પક્ષની 1 કુકી બ્લૉક કરવામાં આવી છે}one{ત્રીજા પક્ષની # કુકી બ્લૉક કરવામાં આવી છે}other{ત્રીજા પક્ષની # કુકી બ્લૉક કરવામાં આવી છે}}</translation>
 <translation id="8109109153262930486">ડિફૉલ્ટ અવતાર</translation>
+<translation id="8109991406044913868">AI વડે બનાવેલી થીમ</translation>
 <translation id="8110393529211831722">સબ્સ્ક્રિપ્શન ફક્ત આ ડિવાઇસ પર ઇન્સ્ટૉલ કરેલું છે અને તેને તમારા એકાઉન્ટ હેઠળના અન્ય ડિવાઇસ સાથે સિંક કરવામાં આવ્યું નથી. <ph name="LINK_BEGIN" />વધુ જાણો<ph name="LINK_END" /></translation>
 <translation id="8110489095782891123">સંપર્ક સૂચિ ડાઉનલોડ કરી રહ્યાં છીએ...</translation>
 <translation id="8115139559594092084">તમારી Google Driveમાંથી</translation>

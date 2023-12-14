@@ -170,7 +170,6 @@ Only someone with your passphrase can read your encrypted data. The passphrase i
 <translation id="7124339256045485976">Keep Chrome up to date</translation>
 <translation id="7161390184744336561">Google Chrome is out of date</translation>
 <translation id="7165736900384873061">Start Using Google Chrome QR Scanner</translation>
-<translation id="7173660919484573146">Chrome uses Face ID to ensure authorised access to your passwords.</translation>
 <translation id="7187993566681480880">Keeps you safe on Chrome and may be used to improve your security in other Google apps when you are signed in.</translation>
 <translation id="7200524487407690471">Chrome automatically runs Safety Check every day to keep you safe from data breaches, unsafe websites and more. You can find more about Safety Check in Settings.</translation>
 <translation id="72119412072970160">You can use the passwords that you saved to Google Password Manager in other apps on your iPad.</translation>
@@ -190,6 +189,7 @@ Only someone with your passphrase can read your encrypted data. The passphrase i
 <translation id="7698568245838009292">Chrome would like to access the camera</translation>
 <translation id="7754633291442704733">Your organisation <ph name="DOMAIN" /> will have access to your Chrome data, bookmarks, history, passwords and other settings that you store in this account. When you sign out, your data will be cleared from this device.  However, your data will remain stored in your managed Google Account and be available to your organisation. Your organisation can also set user policies specific to that account that can change the behaviour of Chrome.</translation>
 <translation id="7780154209050837198">To get the most out of Chrome, sign in to Chrome with your Google Account.</translation>
+<translation id="7792140019572081272">Chrome keeps your sensitive data secure with Face ID.</translation>
 <translation id="7855730255114109580">Google Chrome is up to date</translation>
 <translation id="7897703007638178753">See Chrome Recent Tabs</translation>
 <translation id="7925119591961387184">Select "Chrome."</translation>

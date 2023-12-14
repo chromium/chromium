@@ -620,6 +620,7 @@
 <translation id="1478340334823509079">Детали: <ph name="FILE_NAME" /></translation>
 <translation id="1478607704480248626">Не е овозможена инсталација</translation>
 <translation id="1480663089572535854">Може да се вратите назад за да го промените доделувањето за „Избери“. Секогаш може да го исклучите автоматското скенирање во „Поставки“.</translation>
+<translation id="1481001611315487791">Дознајте повеќе за создавањето теми со AI.</translation>
 <translation id="1481537595330271162">Грешка при менувањето големина на дискот</translation>
 <translation id="1482626744466814421">Обележете ја картичкава…</translation>
 <translation id="1482772681918035149">ги измени лозинките</translation>
@@ -814,6 +815,7 @@
 <translation id="1615433306336820465">Управувајте со податоците за најавување зачувани на вашиот безбедносен клуч</translation>
 <translation id="1616206807336925449">Оваа наставка не бара специјални дозволи.</translation>
 <translation id="1616298854599875024">Екстензијата „<ph name="IMPORT_NAME" />" не може да се увезе бидејќи не е споделен модул</translation>
+<translation id="161654560322394775">Слика <ph name="INDEX" /> од <ph name="A" />, во <ph name="B" /> стил, со <ph name="C" /> расположение.</translation>
 <translation id="1617765145568323981">{NUM_FILES,plural, =0{Ги проверуваме податоциве согласно безбедносните правила на организацијата…}=1{Ја проверуваме датотекава согласно безбедносните правила на организацијата…}one{Ги проверуваме датотекиве согласно безбедносните правила на организацијата…}other{Ги проверуваме датотекиве согласно безбедносните правила на организацијата…}}</translation>
 <translation id="1618102204889321535"><ph name="CURRENT_CHARACTER_COUNT" />/<ph name="MAX_CHARACTER_COUNT" /></translation>
 <translation id="1618268899808219593">Центар за п&amp;омош</translation>
@@ -1709,6 +1711,7 @@
 <translation id="2291452790265535215">Пробајте да ја користите страничната табла за обележувачи, патувања и друго</translation>
 <translation id="229182044471402145">Не е најден фонт што се совпаѓа</translation>
 <translation id="2292848386125228270">Стартувајте го <ph name="PRODUCT_NAME" /> како нормален корисник. Ако треба да го активирате како администратор за развој, повторно стартувајте го со знамето --no-sandbox.</translation>
+<translation id="2292862094862078674">Проверете ја интернет-врската и обидете се повторно. Сѐ уште може да изберете некоја од веќе генерираните теми подолу.</translation>
 <translation id="2294081976975808113">Приватност на екранот</translation>
 <translation id="2294358108254308676">Дали сакате да инсталирате <ph name="PRODUCT_NAME" />?</translation>
 <translation id="229477815107578534">Прегледајте ги поставките</translation>
@@ -3050,6 +3053,7 @@
 <translation id="3325804108816646710">Се бараат достапни профили…</translation>
 <translation id="3325910708063135066">Камерата и микрофонот се исклучени во поставките за системот Mac</translation>
 <translation id="3325930488268995856">Microsoft OneDrive е поврзан</translation>
+<translation id="3325995804968971809">Стил</translation>
 <translation id="3327050066667856415">Уредите Chromebook се дизајнирани за безбедност. Вашиот уред е заштитен од злонамерен софтвер, нема потреба од дополнителен софтвер.</translation>
 <translation id="3328489342742826322">Враќањето од бекап ќе ги избрише сите постојни апликации на Linux и податоците во папката со датотеки на Linux.</translation>
 <translation id="3331321258768829690">(<ph name="UTCOFFSET" />) <ph name="LONGTZNAME" /> (<ph name="EXEMPLARCITY" />)</translation>
@@ -3326,6 +3330,7 @@
 <translation id="3561201631376780358">Отворете ја страничната табла за да ги видите сите обележувачи</translation>
 <translation id="3562423906127931518">Процесов можеби ќе потрае неколку минути. Се поставува контејнерот на Linux.</translation>
 <translation id="3562655211539199254">Прегледувајте ги картичките на Chrome од телефонот</translation>
+<translation id="3563392617245068355">Расположение</translation>
 <translation id="3563432852173030730">Киоск-апликацијата не може да се преземе.</translation>
 <translation id="3563558822383875692">Се конфигурира DLC.</translation>
 <translation id="3564334271939054422">Wi-Fi мрежата што ја користите (<ph name="NETWORK_ID" />) може да бара да ја посетите страницата за најавување.</translation>
@@ -4209,6 +4214,7 @@
 <translation id="4250229828105606438">Слика од екран</translation>
 <translation id="4250680216510889253">Не</translation>
 <translation id="4251377547188244181">Регистрирација на киоск или уред за сигнализација</translation>
+<translation id="4252141040239557279">Слика <ph name="INDEX" /> од <ph name="A" /></translation>
 <translation id="4252899949534773101">Bluetooth е оневозможен</translation>
 <translation id="4252996741873942488"><ph name="WINDOW_TITLE" /> - содржината на картичката е споделена</translation>
 <translation id="4253168017788158739">Забелешка</translation>
@@ -4588,6 +4594,7 @@
 <translation id="4548858987594081919">За да му помогнете на Google Password Manager да ги зачува вашите податоци за најавување, додајте го вашето корисничко име за сајтов</translation>
 <translation id="4549791035683739768">Вашиот безбедносен клуч нема складирани отпечатоци</translation>
 <translation id="4550926046134589611">Некои поддржани линкови сѐ уште ќе се отвораат во <ph name="APP_NAME" />.</translation>
+<translation id="4551379727767354516">Вашите неодамнешни AI-теми</translation>
 <translation id="4551763574344810652">Притиснете <ph name="MODIFIER_KEY_DESCRIPTION" /> за да се врати</translation>
 <translation id="4553526521109675518">Треба да го рестартирате вашиот Chromebook за да го промените јазикот на уредот. <ph name="BEGIN_LINK_LEARN_MORE" />Дознајте повеќе<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="4554591392113183336">Надворешната наставка е иста или пониска верзија споредена со постоечката.</translation>
@@ -5912,6 +5919,7 @@
 <translation id="5620568081365989559">DevTools бара целосен пристап до <ph name="FOLDER_PATH" />. Погрижете се да не откривате чувствителни информации.</translation>
 <translation id="5620612546311710611">статистика на користење</translation>
 <translation id="5621272825308610394">Нема име за приказ</translation>
+<translation id="5621350029086078628">Ова е експериментална AI-функција.</translation>
 <translation id="562250930904332809">&amp;Оневозможете „Автоматски титлови“</translation>
 <translation id="5623282979409330487">Овој сајт пристапува до вашите сензори за движење.</translation>
 <translation id="5623842676595125836">Дневник</translation>
@@ -6030,6 +6038,7 @@
 <translation id="572328651809341494">Неодамнешни картички</translation>
 <translation id="5723508132121499792">Нема активни апликации во заднина</translation>
 <translation id="5723967018671998714">Колачињата од трети страни се блокирани во режим инкогнито</translation>
+<translation id="5725112283692663422">Испратете повратни информации за „Создајте тема со AI“</translation>
 <translation id="5727728807527375859">Наставки, апликации и теми може да му наштетат на вашиот компјутер. Дали сте сигурни дека сакате да продолжите?</translation>
 <translation id="5728290366864286776">Можно е екстензијава да ги чита и променува податоците за сајтовите или да се извршува во заднина</translation>
 <translation id="5728450728039149624">Опции за заклучување на екранот со Smart Lock</translation>
@@ -8443,6 +8452,7 @@
 <translation id="7657090467145778067">Мали заштеди</translation>
 <translation id="7657218410916651670"><ph name="BEGIN_LINK_GOOGLE" />Други форми на активност<ph name="END_LINK_GOOGLE" /> може да се зачувуваат во вашата сметка на Google кога сте најавени. Може да ги избришете во секое време.</translation>
 <translation id="7658239707568436148">Откажи</translation>
+<translation id="7658727964021657194">Неодамнешна AI-тема: <ph name="TILE_INDEX" /></translation>
 <translation id="7659154729610375585">Сепак да се излезе од режимот „Инкогнито“?</translation>
 <translation id="7659336857671800422">Прегледајте го водичот за приватност</translation>
 <translation id="7659584679870740384">Немате дозвола да го користите овој уред. Контактирајте го администраторот за дозвола за пријавување.</translation>
@@ -8664,6 +8674,7 @@
 <translation id="7807711621188256451">Секогаш дозволувај <ph name="HOST" /> да пристапи до камерата</translation>
 <translation id="7810202088502699111">На оваа страница се блокирани појавни прозорци.</translation>
 <translation id="7810367892333449285">Вашиот код треба да биде во следниов формат: <ph name="LPA_0" />$<ph name="LPA_1" />SM-DP+ address<ph name="LPA_2" />$<ph name="LPA_3" />optional matching id<ph name="LPA_4" /></translation>
+<translation id="7811263553491007091">Обидете се повторно или изберете некоја од веќе генерираните теми подолу.</translation>
 <translation id="7814458197256864873">&amp;Копирај</translation>
 <translation id="7814857791038398352">Microsoft OneDrive</translation>
 <translation id="7815583197273433531">Изменете ја кратенката <ph name="SHORTCUT" /> за <ph name="EXTENSION_NAME" /></translation>
@@ -8768,6 +8779,7 @@
 <translation id="789722939441020330">Не им дозволувај на сајтовите автоматски да преземаат повеќе датотеки</translation>
 <translation id="7897900149154324287">Во иднина, погрижете се да го извадите преносливиот уред во апликацијата Датотеки пред да го исклучите. Во спротивно, може да изгубите податоци.</translation>
 <translation id="7898725031477653577">Секогаш преведувај</translation>
+<translation id="7899324822972399722">Слика <ph name="INDEX" /> од <ph name="A" />, во <ph name="B" /> стил</translation>
 <translation id="7901405293566323524">Phone Hub</translation>
 <translation id="7903290522161827520">Барате компоненти на прелистувач? Оди</translation>
 <translation id="7903429136755645827">Кликнете за да ги приспособите контролите за игри</translation>
@@ -9028,6 +9040,7 @@
 <translation id="8089547136368562137">Заштитено со најдобрите технологии на Google</translation>
 <translation id="8090234456044969073">Прочитај листа со најчесто посетувани веб-локации</translation>
 <translation id="8090513782447872344">Може да се вратите во секое време за да погледнете повторно</translation>
+<translation id="8090686009202681725">Создајте тема со AI</translation>
 <translation id="8093359998839330381"><ph name="PLUGIN_NAME" /> не реагира</translation>
 <translation id="8094536695728193970">Apricot</translation>
 <translation id="8095105960962832018"><ph name="BEGIN_PARAGRAPH1" />Направете бекап на Google Drive. Лесно враќајте ги податоците или менувајте ги уредите во секое време. Бекапот опфаќа податоци за апликациите.<ph name="END_PARAGRAPH1" />
@@ -9044,6 +9057,7 @@
 <translation id="8098616321286360457">Потребна е мрежна врска</translation>
 <translation id="8100230553590752325">Користење зачувани лозинки на кој било уред</translation>
 <translation id="810068641062493918">Избран е <ph name="LANGUAGE" />. Притиснете „Пребарувај“ и Space за да го поништите изборот.</translation>
+<translation id="8100725874569949614">Слика <ph name="INDEX" /> од <ph name="A" />, со <ph name="C" /> расположение.</translation>
 <translation id="8101409298456377967">Создавајте, зачувувајте и управувајте со лозинки за лесно најавување на сајтови и апликации. <ph name="BEGIN_LINK" />Дознајте повеќе<ph name="END_LINK" /></translation>
 <translation id="810185532889603849">Приспособена боја</translation>
 <translation id="8101987792947961127">Потребно е фабричко ресетирање на следното рестартирање</translation>
@@ -9054,6 +9068,7 @@
 <translation id="810728361871746125">Резолуција на екранот</translation>
 <translation id="8108526232944491552">{COUNT,plural, =0{Нема колачиња од трети страни}=1{Блокирано е 1 колаче од трета страна}one{Блокирано е # колаче од трети страни}other{Блокирани се # колачиња од трети страни}}</translation>
 <translation id="8109109153262930486">Стандарден аватар</translation>
+<translation id="8109991406044913868">Тема создадена со AI</translation>
 <translation id="8110393529211831722">Претплатата е инсталирана само на уредов и не е синхронизирана со други уреди на вашата сметка. <ph name="LINK_BEGIN" />Дознајте повеќе<ph name="LINK_END" /></translation>
 <translation id="8110489095782891123">Се презема списокот со контакти…</translation>
 <translation id="8115139559594092084">Од вашиот Google Drive</translation>

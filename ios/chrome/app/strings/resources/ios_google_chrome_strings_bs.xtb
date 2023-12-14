@@ -170,7 +170,6 @@ Vaše šifrirane podatke može čitati samo osoba koja ima vaš pristupni izraz.
 <translation id="7124339256045485976">Redovno ažurirajte Chrome</translation>
 <translation id="7161390184744336561">Google Chrome je zastario</translation>
 <translation id="7165736900384873061">Uključite QR skener u Google Chromeu</translation>
-<translation id="7173660919484573146">Chrome koristi Face ID za odobravanje pristupa vašim lozinkama.</translation>
 <translation id="7187993566681480880">Štiti vas u Chromeu i može se koristiti da poboljša vašu sigurnost u drugim Googleovim aplikacijama kada ste prijavljeni.</translation>
 <translation id="7200524487407690471">Chrome automatski pokreće sigurnosnu provjeru svakog dana da vas zaštiti od narušavanja podataka, nesigurnih web lokacija i drugog. U Postavkama možete pronaći više informacija o sigurnosnoj provjeri.</translation>
 <translation id="72119412072970160">Možete koristiti lozinke koje ste sačuvali u Googleovom Upravitelju lozinki u drugim aplikacijama na iPadu.</translation>
@@ -190,6 +189,7 @@ Vaše šifrirane podatke može čitati samo osoba koja ima vaš pristupni izraz.
 <translation id="7698568245838009292">Chrome želi pristup kameri</translation>
 <translation id="7754633291442704733">Vaša organizacija <ph name="DOMAIN" /> će imati pristup podacima Chromea, oznakama, historiji, lozinkama i drugim postavkama koje pohranjujete na ovom računu Kada se odjavite, vaši podaci će biti obrisani s ovog uređaja.  Međutim, vaši podaci će ostati pohranjeni na vašem upravljanom Google računu i bit će dostupni vašoj organizaciji. Vaša organizacija također može postaviti pravila za korisnike koja su specifična za taj račun koja mogu promijeniti ponašanje Chromea.</translation>
 <translation id="7780154209050837198">Da iskoristite sve prednosti Chromea, prijavite se na Chrome pomoću Google računa.</translation>
+<translation id="7792140019572081272">Chrome štiti vaše osjetljive podatke putem Face ID-a.</translation>
 <translation id="7855730255114109580">Google Chrome je ažuriran</translation>
 <translation id="7897703007638178753">Pogledajte nedavne kartice u Chromeu</translation>
 <translation id="7925119591961387184">Odaberite "Chrome".</translation>

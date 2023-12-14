@@ -170,7 +170,6 @@ Dim ond rhywun sydd â'ch cyfrinymadrodd all ddarllen eich data sydd wedi'u hamg
 <translation id="7124339256045485976">Cadwch Chrome yn gyfoes</translation>
 <translation id="7161390184744336561">Mae Google Chrome yn hen</translation>
 <translation id="7165736900384873061">Dechreuwch ddefnyddio sganiwr codau QR Google Chrome</translation>
-<translation id="7173660919484573146">Mae Chrome yn defnyddio Face ID i sicrhau mynediad awdurdodedig at eich cyfrineiriau.</translation>
 <translation id="7187993566681480880">Yn eich cadw'n ddiogel ar Chrome a gellir ei ddefnyddio i wella'ch diogelwch mewn apiau Google eraill pan fyddwch wedi'ch mewngofnodi.</translation>
 <translation id="7200524487407690471">Mae Chrome yn cynnal Gwiriad Diogelwch yn awtomatig bob dydd i'ch cadw'n ddiogel rhag toriadau data, gwefannau anniogel a rhagor. Gallwch ddysgu rhagor am Wiriad Diogelwch yn y Gosodiadau.</translation>
 <translation id="72119412072970160">Gallwch ddefnyddio'r cyfrineiriau a gadwyd gennych i Reolwr Cyfrineiriau Google mewn apiau eraill ar eich iPad.</translation>
@@ -190,6 +189,7 @@ Dim ond rhywun sydd â'ch cyfrinymadrodd all ddarllen eich data sydd wedi'u hamg
 <translation id="7698568245838009292">Hoffai Chrome gael mynediad at y Camera</translation>
 <translation id="7754633291442704733">Bydd gan <ph name="DOMAIN" /> eich sefydliad fynediad at eich data Chrome, nodau tudalen, hanes, cyfrineiriau a gosodiadau eraill rydych yn eu storio yn y cyfrif hwn. Pan fyddwch yn allgofnodi, bydd eich data yn cael eu clirio o'r ddyfais hon.  Fodd bynnag, bydd eich data yn parhau i gael ei storio yn eich Cyfrif Google a reolir a bydd ar gael i'ch sefydliad. Gall eich sefydliad hefyd osod polisïau defnyddwyr sy'n benodol i'r cyfrif hwnnw a all newid ymddygiad Chrome.</translation>
 <translation id="7780154209050837198">I gael y gorau o Chrome, mewngofnodwch i Chrome â'ch Cyfrif Google.</translation>
+<translation id="7792140019572081272">Mae Chrome yn cadw'ch data sensitif yn ddiogel gyda Face ID.</translation>
 <translation id="7855730255114109580">Mae Google Chrome yn gyfoes</translation>
 <translation id="7897703007638178753">Gweld Tabiau Diweddar Chrome</translation>
 <translation id="7925119591961387184">Dewiswch "Chrome."</translation>

@@ -170,7 +170,6 @@ Salattua dataa voi lukea vain tunnuslauseen avulla. Tunnuslausetta ei lähetetä
 <translation id="7124339256045485976">Pidä Chrome ajan tasalla</translation>
 <translation id="7161390184744336561">Google Chrome on vanhentunut</translation>
 <translation id="7165736900384873061">Aloita Google Chromen QR-lukijan käyttö</translation>
-<translation id="7173660919484573146">Chrome varmistaa Face ID:llä, että sinulla on lupa käyttää salasanoja.</translation>
 <translation id="7187993566681480880">Pitää sinut turvassa Chromessa ja voi parantaa suojaustasi muissa Google-sovelluksissa, kun olet sisäänkirjautuneena.</translation>
 <translation id="7200524487407690471">Chrome tekee turvatarkistuksen automaattisesti joka päivä suojatakseen sinua esimerkiksi tietosuojaloukkauksilta ja riskialttiilta verkkosivustoilta. Asetuksista löytyy lisätietoa turvatarkistuksesta.</translation>
 <translation id="72119412072970160">Voit käyttää Googlen Salasanojen ylläpitoon tallennettuja salasanoja muissa iPadisi sovelluksissa.</translation>
@@ -190,6 +189,7 @@ Salattua dataa voi lukea vain tunnuslauseen avulla. Tunnuslausetta ei lähetetä
 <translation id="7698568245838009292">Chrome pyytää kameran käyttöoikeutta</translation>
 <translation id="7754633291442704733">Organisaatiosi <ph name="DOMAIN" /> saa pääsyn Chrome-dataasi, kirjanmerkkeihisi, historiaasi, salasanoihisi ja muihin asetuksiisi, jotka olet tallentanut tälle tilille. Kun kirjaudut ulos, datasi tyhjennetään tältä laitteelta.  Data säilyy kuitenkin hallinnoidulla Google-tililläsi ja on organisaation saatavilla. Organisaatiosi voi myös asettaa tilikohtaisia käyttäjäkäytäntöjä, jotka voivat muuttaa Chromen toimintaa.</translation>
 <translation id="7780154209050837198">Kirjaudu sisään Chromeen Google-tililläsi, jotta saat parhaan hyödyn Chromesta.</translation>
+<translation id="7792140019572081272">Chrome pitää arkaluontoiset tietosi turvassa Face ID:n avulla.</translation>
 <translation id="7855730255114109580">Google Chrome on ajan tasalla</translation>
 <translation id="7897703007638178753">Näytä Chromen viimeaikaiset välilehdet</translation>
 <translation id="7925119591961387184">Valitse Chrome.</translation>

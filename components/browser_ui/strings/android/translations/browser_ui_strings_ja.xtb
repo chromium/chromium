@@ -304,7 +304,7 @@
 <translation id="6171020522141473435">オンにすると、サイトは Bluetooth デバイスの使用を要求できます。オフにすると、サイトは Bluetooth デバイスを使用できません。</translation>
 <translation id="6177111841848151710">現在の検索エンジンに対してはブロック</translation>
 <translation id="6177128806592000436">このサイトへの接続は保護されていません</translation>
-<translation id="6181444274883918285">サイトの例外を追加</translation>
+<translation id="6181444274883918285">例外のサイトを追加</translation>
 <translation id="6192792657125177640">例外</translation>
 <translation id="6194967801833346599">{DAYS,plural, =1{明日、Chrome で Cookie を再びブロックします}other{# 日後に、Chrome で Cookie を再びブロックします}}</translation>
 <translation id="6195163219142236913">サードパーティ Cookie が制限されています</translation>

@@ -616,6 +616,7 @@ Pode que se lle apliquen a esta conta os permisos que xa lles concedeses ás apl
 <translation id="1478340334823509079">Detalles: <ph name="FILE_NAME" /></translation>
 <translation id="1478607704480248626">A instalación non está activada</translation>
 <translation id="1480663089572535854">Podes ir atrás para cambiar a asignación da acción Seleccionar. Sempre podes desactivar a exploración automática en Configuración.</translation>
+<translation id="1481001611315487791">Máis información sobre como crear temas con IA.</translation>
 <translation id="1481537595330271162">Produciuse un erro ao cambiar o tamaño do disco</translation>
 <translation id="1482626744466814421">Engadir esta pestana aos marcadores…</translation>
 <translation id="1482772681918035149">editar os contrasinais</translation>
@@ -809,6 +810,7 @@ Pode que se lle apliquen a esta conta os permisos que xa lles concedeses ás apl
 <translation id="1615433306336820465">Xestiona os datos de inicio de sesión almacenados na túa chave de seguranza</translation>
 <translation id="1616206807336925449">Esta extensión non necesita permisos especiais.</translation>
 <translation id="1616298854599875024">Non se puido importar a extensión "<ph name="IMPORT_NAME" />" porque non é un módulo compartido</translation>
+<translation id="161654560322394775">Imaxe <ph name="INDEX" /> de <ph name="A" />. Estilo: <ph name="B" />, estado de ánimo: <ph name="C" /></translation>
 <translation id="1617765145568323981">{NUM_FILES,plural, =0{Comprobando que estes datos cumpran as políticas de seguranza da túa organización…}=1{Comprobando que este ficheiro cumpra as políticas de seguranza da túa organización…}other{Comprobando que estes ficheiros cumpran as políticas de seguranza da túa organización…}}</translation>
 <translation id="1618102204889321535"><ph name="CURRENT_CHARACTER_COUNT" />/<ph name="MAX_CHARACTER_COUNT" /></translation>
 <translation id="1618268899808219593">C&amp;entro de axuda</translation>
@@ -1692,6 +1694,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="2291452790265535215">Proba a usar o panel lateral para os marcadores e os percorridos, entre outras cousas</translation>
 <translation id="229182044471402145">Non se atopou ningún tipo de letra que cumpra os requisitos.</translation>
 <translation id="2292848386125228270">Inicia <ph name="PRODUCT_NAME" /> como usuario normal. Se precisas executalo como raíz para o desenvolvemento, volve executalo coa función experimental --no-sandbox.</translation>
+<translation id="2292862094862078674">Comproba a túa conexión a Internet e téntao de novo. Máis abaixo podes seleccionar un dos temas xerados anteriormente.</translation>
 <translation id="2294081976975808113">Privacidade da pantalla</translation>
 <translation id="2294358108254308676">Queres instalar <ph name="PRODUCT_NAME" />?</translation>
 <translation id="229477815107578534">Revisa a configuración</translation>
@@ -3033,6 +3036,7 @@ Podes xestionar a configuración desde o menú da tarxeta ou ver máis opcións 
 <translation id="3325804108816646710">Buscando perfís dispoñibles...</translation>
 <translation id="3325910708063135066">A cámara e o micrófono están desactivados nas preferencias do sistema de Mac</translation>
 <translation id="3325930488268995856">Microsoft OneDrive conectado</translation>
+<translation id="3325995804968971809">Estilo</translation>
 <translation id="3327050066667856415">Os Chromebooks están deseñados para que sexan seguros. O teu dispositivo está protexido contra software malicioso automaticamente e non precisa software adicional.</translation>
 <translation id="3328489342742826322">Ao restaurar os datos dunha copia de seguranza, eliminaranse as aplicacións e datos de Linux que haxa no cartafol de ficheiros de Linux.</translation>
 <translation id="3331321258768829690">(<ph name="UTCOFFSET" />) <ph name="LONGTZNAME" /> (<ph name="EXEMPLARCITY" />)</translation>
@@ -3309,6 +3313,7 @@ Podes xestionar a configuración desde o menú da tarxeta ou ver máis opcións 
 <translation id="3561201631376780358">Abrir panel lateral para ver todos os marcadores</translation>
 <translation id="3562423906127931518">Este proceso pode tardar uns minutos. Estase configurando o contedor de Linux.</translation>
 <translation id="3562655211539199254">Accede ás pestanas recentes de Chrome desde o teléfono</translation>
+<translation id="3563392617245068355">Estado de ánimo</translation>
 <translation id="3563432852173030730">Non se puido descargar a aplicación de quiosco.</translation>
 <translation id="3563558822383875692">Configurando DLC.</translation>
 <translation id="3564334271939054422">É posible que a rede wifi que utilizas (<ph name="NETWORK_ID" />) solicite o acceso á súa páxina de inicio de sesión.</translation>
@@ -4195,6 +4200,7 @@ Podes xestionar a configuración desde o menú da tarxeta ou ver máis opcións 
 <translation id="4250229828105606438">Captura de pantalla</translation>
 <translation id="4250680216510889253">Non</translation>
 <translation id="4251377547188244181">Inscrición do dispositivo coa actualización de quiosco e de sinalización</translation>
+<translation id="4252141040239557279">Imaxe <ph name="INDEX" /> de <ph name="A" /></translation>
 <translation id="4252899949534773101">O Bluetooth está desactivado</translation>
 <translation id="4252996741873942488"><ph name="WINDOW_TITLE" />: compartindo o contido da pestana</translation>
 <translation id="4253168017788158739">Nota</translation>
@@ -4573,6 +4579,7 @@ Podes xestionar a configuración desde o menú da tarxeta ou ver máis opcións 
 <translation id="4548858987594081919">Para axudar ao xestor de contrasinais de Google a gardar a túa información de inicio de sesión, engade o teu nome de usuario para este sitio</translation>
 <translation id="4549791035683739768">A túa chave de seguranza non ten impresións dixitais almacenadas</translation>
 <translation id="4550926046134589611">Algunhas ligazóns compatibles seguirán abríndose na aplicación <ph name="APP_NAME" />.</translation>
+<translation id="4551379727767354516">Os teus temas de IA recentes</translation>
 <translation id="4551763574344810652">Preme <ph name="MODIFIER_KEY_DESCRIPTION" /> para desfacer a acción</translation>
 <translation id="4553526521109675518">Para cambiar o idioma do teu Chromebook, debes reiniciar o dispositivo. <ph name="BEGIN_LINK_LEARN_MORE" />Máis información<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="4554591392113183336">A extensión externa ten a mesma versión ou unha inferior en comparación coa existente.</translation>
@@ -5895,6 +5902,7 @@ Pódense aplicar a esta conta os permisos que xa lles concedeses aos sitios web 
 <translation id="5620568081365989559">DevTools solicita acceso completo a <ph name="FOLDER_PATH" />. Asegúrate de non revelar información confidencial.</translation>
 <translation id="5620612546311710611">estatísticas de uso</translation>
 <translation id="5621272825308610394">Ningún nome visible</translation>
+<translation id="5621350029086078628">Esta función de IA é experimental.</translation>
 <translation id="562250930904332809">&amp;Desactivar Subtítulos instantáneos</translation>
 <translation id="5623282979409330487">Este sitio accede aos teus sensores de movemento.</translation>
 <translation id="5623842676595125836">Rexistro</translation>
@@ -6013,6 +6021,7 @@ Pódense aplicar a esta conta os permisos que xa lles concedeses aos sitios web 
 <translation id="572328651809341494">Pestanas recentes</translation>
 <translation id="5723508132121499792">Non hai ningunha aplicación executándose en segundo plano</translation>
 <translation id="5723967018671998714">As cookies de terceiros bloquéanse no modo de incógnito</translation>
+<translation id="5725112283692663422">Envía comentarios sobre Crear un tema con IA</translation>
 <translation id="5727728807527375859">As extensións, aplicacións e temas poden danar o teu ordenador. Seguro que queres continuar?</translation>
 <translation id="5728290366864286776">Esta extensión poderá ler e cambiar a información do sitio ou executarse en segundo plano</translation>
 <translation id="5728450728039149624">Opcións de bloqueo de pantalla de Smart Lock</translation>
@@ -8422,6 +8431,7 @@ Podes xestionar a configuración desde o menú da tarxeta ou ver máis opcións 
 <translation id="7657090467145778067">Aforro reducido</translation>
 <translation id="7657218410916651670">Cando teñas a sesión iniciada, é posible que se garden na túa Conta de Google <ph name="BEGIN_LINK_GOOGLE" />outros datos da túa actividade<ph name="END_LINK_GOOGLE" />. Podes eliminalos en calquera momento.</translation>
 <translation id="7658239707568436148">Cancelar</translation>
+<translation id="7658727964021657194">Tema de IA recente <ph name="TILE_INDEX" /></translation>
 <translation id="7659154729610375585">Queres saír do modo de incógnito de todas formas?</translation>
 <translation id="7659336857671800422">Le a Guía de privacidade</translation>
 <translation id="7659584679870740384">Non estás autorizado a usar este dispositivo. Para obter permisos para iniciar sesión, ponte en contacto co administrador.</translation>
@@ -8643,6 +8653,7 @@ Podes xestionar a configuración desta tarxeta desde o menú correspondente ou v
 <translation id="7807711621188256451">Permitir sempre a <ph name="HOST" /> acceder á túa cámara</translation>
 <translation id="7810202088502699111">Bloqueáronse as ventás emerxentes nesta páxina.</translation>
 <translation id="7810367892333449285">Os datos introducidos deberían ter o formato <ph name="LPA_0" />$<ph name="LPA_1" />enderezo de SM-DP+<ph name="LPA_2" />$<ph name="LPA_3" />código de coincidencia opcional<ph name="LPA_4" /></translation>
+<translation id="7811263553491007091">Téntao de novo ou selecciona máis abaixo un dos temas xerados anteriormente.</translation>
 <translation id="7814458197256864873">&amp;Copiar</translation>
 <translation id="7814857791038398352">Microsoft OneDrive</translation>
 <translation id="7815583197273433531">Editar atallo <ph name="SHORTCUT" /> para <ph name="EXTENSION_NAME" /></translation>
@@ -8747,6 +8758,7 @@ Podes xestionar a configuración desta tarxeta desde o menú correspondente ou v
 <translation id="789722939441020330">Non permitir que os sitios descarguen varios ficheiros de forma automática</translation>
 <translation id="7897900149154324287">A próxima vez, non esquezas expulsar o teu dispositivo extraíble na aplicación de ficheiros antes de desconectalo. Do contrario, é posible que perdas datos.</translation>
 <translation id="7898725031477653577">Traducir sempre</translation>
+<translation id="7899324822972399722">Imaxe <ph name="INDEX" /> de <ph name="A" />. Estilo: <ph name="B" /></translation>
 <translation id="7901405293566323524">Phone Hub</translation>
 <translation id="7903290522161827520">Buscas os compoñentes do navegador? Visita</translation>
 <translation id="7903429136755645827">Fai clic para personalizar os controis de xogo</translation>
@@ -8761,7 +8773,7 @@ Podes xestionar a configuración desta tarxeta desde o menú correspondente ou v
 <translation id="7908835530772972485">Eliminar os datos cando peches todas as ventás</translation>
 <translation id="7909324225945368569">Cambiar nome de perfil</translation>
 <translation id="7909969815743704077">Descargouse no modo de incógnito</translation>
-<translation id="7909986151924474987">Non poderás volver instalar este perfil</translation>
+<translation id="7909986151924474987">É posible que non poidas volver instalar este perfil</translation>
 <translation id="7910725946105920830">Usar a túa conta persoal de Google</translation>
 <translation id="7910768399700579500">&amp;Novo cartafol</translation>
 <translation id="7911118814695487383">Linux</translation>
@@ -9007,6 +9019,7 @@ Mantén o ficheiro de clave nun lugar seguro, xa que o precisarás para crear no
 <translation id="8089547136368562137">Estará protexido pola mellor tecnoloxía de Google</translation>
 <translation id="8090234456044969073">Ler unha lista dos sitios web que visitas con máis frecuencia</translation>
 <translation id="8090513782447872344">Podes volver cando queiras para botarlle outra ollada</translation>
+<translation id="8090686009202681725">Crear un tema con IA</translation>
 <translation id="8093359998839330381">O complemento <ph name="PLUGIN_NAME" /> non responde</translation>
 <translation id="8094536695728193970">Albaricoque</translation>
 <translation id="8095105960962832018"><ph name="BEGIN_PARAGRAPH1" />Crear copia de seguranza en Google Drive. Restaura facilmente os teus datos ou cambia de dispositivo en calquera momento. A copia de seguranza inclúe os datos das aplicacións.<ph name="END_PARAGRAPH1" />
@@ -9023,6 +9036,7 @@ Mantén o ficheiro de clave nun lugar seguro, xa que o precisarás para crear no
 <translation id="8098616321286360457">Necesítase conexión de rede</translation>
 <translation id="8100230553590752325">Usa desde calquera dispositivo os contrasinais gardados</translation>
 <translation id="810068641062493918"><ph name="LANGUAGE" /> seleccionado. Preme Buscar e Espazo para anular a selección.</translation>
+<translation id="8100725874569949614">Imaxe <ph name="INDEX" /> de <ph name="A" />. Estado de ánimo: <ph name="C" />.</translation>
 <translation id="8101409298456377967">Crea, garda e xestiona os teus contrasinais para que poidas iniciar sesión facilmente nos sitios e nas aplicacións. <ph name="BEGIN_LINK" />Máis información<ph name="END_LINK" /></translation>
 <translation id="810185532889603849">Cor personalizada</translation>
 <translation id="8101987792947961127">No seguinte reinicio é necesario un Powerwash</translation>
@@ -9033,6 +9047,7 @@ Mantén o ficheiro de clave nun lugar seguro, xa que o precisarás para crear no
 <translation id="810728361871746125">Resolución da pantalla</translation>
 <translation id="8108526232944491552">{COUNT,plural, =0{Non hai ningunha cookie de terceiros}=1{Bloqueouse 1 cookie de terceiros}other{Bloqueáronse # cookies de terceiros}}</translation>
 <translation id="8109109153262930486">Avatar predeterminado</translation>
+<translation id="8109991406044913868">Tema creado con IA</translation>
 <translation id="8110393529211831722">A subscrición só está instalada neste dispositivo e non se sincroniza cos outros dispositivos da túa conta. <ph name="LINK_BEGIN" />Máis información<ph name="LINK_END" /></translation>
 <translation id="8110489095782891123">Descargando lista de contactos…</translation>
 <translation id="8115139559594092084">Da túa conta de Google Drive</translation>

@@ -170,7 +170,6 @@ Vaše šifrirane podatke lahko bere samo oseba, ki ima vaše geslo. Geslo ni pos
 <translation id="7124339256045485976">Posodobitev Chroma</translation>
 <translation id="7161390184744336561">Google Chrome je zastarel</translation>
 <translation id="7165736900384873061">Začetek uporabe bralnika kod QR Google Chroma</translation>
-<translation id="7173660919484573146">Chrome uporablja funkcijo Face ID za zagotavljanje pooblaščenega dostopa do vaših gesel.</translation>
 <translation id="7187993566681480880">Skrbi za vašo varnost v Chromu in ga je mogoče uporabiti za okrepitev varnosti v drugih Googlovih aplikacijah, ko ste prijavljeni.</translation>
 <translation id="7200524487407690471">Chrome vsak dan samodejno zažene varnostno preverjanje, da vas varuje pred podatkovnimi kršitvami, spletnimi mesti, ki niso varna, in drugim. Več o varnostnem preverjanju lahko preberete v nastavitvah.</translation>
 <translation id="72119412072970160">Gesla, ki ste jih shranili v Googlovem upravitelju gesel, lahko uporabite v drugih aplikacijah v iPadu.</translation>
@@ -190,6 +189,7 @@ Vaše šifrirane podatke lahko bere samo oseba, ki ima vaše geslo. Geslo ni pos
 <translation id="7698568245838009292">Chrome želi dostopati do fotoaparata</translation>
 <translation id="7754633291442704733">Vaša organizacija <ph name="DOMAIN" /> bo imela dostop do podatkov Chroma, zaznamkov, zgodovine, gesel in drugih nastavitev, ki jih shranite v tem računu. Ko se odjavite, bodo podatki izbrisani iz te naprave.  Vaši podatki bodo kljub temu še naprej shranjeni v upravljanem računu Google in bodo na voljo vaši organizaciji. Vaša organizacija lahko nastavi tudi uporabniške pravilnike, specifične za ta račun, to pa lahko spremeni način delovanja Chroma.</translation>
 <translation id="7780154209050837198">Če želite kar najbolje izkoristiti Chrome, se prijavite vanj z računom Google.</translation>
+<translation id="7792140019572081272">Chrome zagotavlja varnost občutljivih podatkov s funkcijo Face ID.</translation>
 <translation id="7855730255114109580">Google Chrome je posodobljen</translation>
 <translation id="7897703007638178753">Ogled nedavnih zavihkov v Chromu</translation>
 <translation id="7925119591961387184">Izberite »Chrome«.</translation>

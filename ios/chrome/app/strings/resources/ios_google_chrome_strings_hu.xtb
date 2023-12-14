@@ -170,7 +170,6 @@ Csak az Ön összetett jelszava ismeretében tudja bárki is megtekinteni a titk
 <translation id="7124339256045485976">Chrome böngészője legyen mindig naprakész</translation>
 <translation id="7161390184744336561">A Google Chrome elavult</translation>
 <translation id="7165736900384873061">A Google Chrome QR-olvasójának használata</translation>
-<translation id="7173660919484573146">A Chrome a Face ID segítségével ellenőrzi a jogosultságot a jelszavakhoz való hozzáféréshez.</translation>
 <translation id="7187993566681480880">Gondoskodik a biztonságáról a Chrome-ban, és használható a biztonság növelésére más Google-alkalmazásokban olyankor, amikor Ön be van jelentkezve.</translation>
 <translation id="7200524487407690471">A Chrome automatikusan futtat egy biztonsági ellenőrzést mindennap, hogy megvédje Önt az adatvédelmi incidensektől, a nem biztonságos webhelyektől és még sok mástól. A biztonsági ellenőrzésről a Beállításokban találhat további információt.</translation>
 <translation id="72119412072970160">A Google Jelszókezelőbe mentett jelszavakat használhatja más alkalmazásokban iPad eszközén.</translation>
@@ -190,6 +189,7 @@ Csak az Ön összetett jelszava ismeretében tudja bárki is megtekinteni a titk
 <translation id="7698568245838009292">A Chrome hozzá szeretne férni a kamerához</translation>
 <translation id="7754633291442704733">Szervezete (<ph name="DOMAIN" />) hozzáfér majd az Ön Chrome-adataihoz, -könyvjelzőihez, -előzményeihez, -jelszavaihoz és az ebben a fiókban tárolt egyéb beállításaihoz. Kijelentkezéskor az adatai törlődnek erről az eszközről.  Az adatok azonban továbbra is megmaradnak a felügyelt Google-fiókban, és hozzáférhetők lesznek szervezete számára. Szervezete felhasználói házirendeket is beállíthat erre a fiókra vonatkozóan, amelyek módosíthatják a Chrome viselkedését.</translation>
 <translation id="7780154209050837198">Annak érdekében, hogy a legtöbbet hozhassa ki a Chrome-ból, jelentkezzen be Google-fiókjával a Chrome-ba.</translation>
+<translation id="7792140019572081272">A Chrome biztonságban tartja az Ön bizalmas adatait a Face ID segítségével.</translation>
 <translation id="7855730255114109580">A Google Chrome naprakész</translation>
 <translation id="7897703007638178753">Legutóbbi Chrome-lapok megtekintése</translation>
 <translation id="7925119591961387184">Válassza a „Chrome” lehetőséget.</translation>

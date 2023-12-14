@@ -639,7 +639,7 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="2213606439339815911">Recuperando entradas…</translation>
 <translation id="2213612003795704869">Se imprime la página</translation>
 <translation id="2215632862494199917">Exhibiciones de vehículos</translation>
-<translation id="2215727959747642672">Edición de archivo</translation>
+<translation id="2215727959747642672">Edición de archivos</translation>
 <translation id="2215963164070968490">Perros</translation>
 <translation id="2218879909401188352">Es posible que los atacantes que se encuentran actualmente en <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" /> instalen apps peligrosas que dañen tu dispositivo, agreguen cargos ocultos en la factura de tu servicio móvil o roben tu información personal. <ph name="BEGIN_LEARN_MORE_LINK" />Más información<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="2219658597883514593">Reiniciar el tutorial</translation>
@@ -1197,7 +1197,7 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="3384522979010096022">Tu organización no te permite ver este sitio</translation>
 <translation id="3387261909427947069">Formas de pago</translation>
 <translation id="3391030046425686457">Dirección de entrega</translation>
-<translation id="3391482648489541560">edición de archivo</translation>
+<translation id="3391482648489541560">edición de archivos</translation>
 <translation id="3392028486601120379">El patrón de URL "<ph name="URL_PATTERN" />" tiene una ruta especificada. Esta clave no admite rutas. Quítalas y vuelve a intentarlo. P. ej., *://example.com/ =&gt; *://example.com",</translation>
 <translation id="3395827396354264108">Método de retiro</translation>
 <translation id="3399952811970034796">Dirección de entrega</translation>

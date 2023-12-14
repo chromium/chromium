@@ -619,7 +619,7 @@
 <translation id="1478340334823509079">詳情：<ph name="FILE_NAME" /></translation>
 <translation id="1478607704480248626">未啟用安裝功能</translation>
 <translation id="1480663089572535854">您可以返回變更「選取」的指派設定，亦可隨時在「設定」中關閉自動掃瞄。</translation>
-<translation id="1481001611315487791">進一步瞭解如何運用 AI 製作主題。</translation>
+<translation id="1481001611315487791">進一步了解點樣以 AI 製作主題。</translation>
 <translation id="1481537595330271162">調整磁碟大小時發生錯誤</translation>
 <translation id="1482626744466814421">將此分頁加入書籤…</translation>
 <translation id="1482772681918035149">編輯密碼</translation>
@@ -814,7 +814,7 @@
 <translation id="1615433306336820465">管理儲存在安全密鑰上的登入資料</translation>
 <translation id="1616206807336925449">這個擴充功能不需任何特殊權限。</translation>
 <translation id="1616298854599875024">「<ph name="IMPORT_NAME" />」擴充程式並非共用模組，因此無法匯入。</translation>
-<translation id="161654560322394775"><ph name="A" />的第 <ph name="INDEX" /> 張圖片，樣式為<ph name="B" />，情境為<ph name="C" />。</translation>
+<translation id="161654560322394775"><ph name="A" />嘅第 <ph name="INDEX" /> 張圖，樣式係<ph name="B" />，情境係<ph name="C" />。</translation>
 <translation id="1617765145568323981">{NUM_FILES,plural, =0{正在檢查此資料是否符合您機構的安全性政策…}=1{正在檢查此檔案是否符合您機構的安全性政策…}other{正在檢查這些檔案是否符合您機構的安全性政策…}}</translation>
 <translation id="1618102204889321535"><ph name="CURRENT_CHARACTER_COUNT" />/<ph name="MAX_CHARACTER_COUNT" /></translation>
 <translation id="1618268899808219593">說明中心(&amp;E)</translation>
@@ -1710,7 +1710,7 @@
 <translation id="2291452790265535215">嘗試透過在側面板上使用書籤、瀏覽歷程及其他功能</translation>
 <translation id="229182044471402145">找不到相符的字型。</translation>
 <translation id="2292848386125228270">請以一般使用者身分啟動 <ph name="PRODUCT_NAME" />。如要以 root 身份作開發用途，請使用「--no-sandbox」標籤重新執行 Chrome。</translation>
-<translation id="2292862094862078674">請檢查網際網路連線，然後再試一次。你還是可以選取下方其中一個先前生成的主題。</translation>
+<translation id="2292862094862078674">請檢查互聯網連線，然後再試一次。你仍可選取以下其中一個先前生成的主題。</translation>
 <translation id="2294081976975808113">螢幕私隱設定</translation>
 <translation id="2294358108254308676">您要安裝「<ph name="PRODUCT_NAME" />」嗎？</translation>
 <translation id="229477815107578534">查看您的設定</translation>
@@ -3052,7 +3052,7 @@
 <translation id="3325804108816646710">正在尋找可用的設定檔…</translation>
 <translation id="3325910708063135066">已關閉 Mac 系統偏好設定中的相機和麥克風</translation>
 <translation id="3325930488268995856">已連線至 Microsoft OneDrive</translation>
-<translation id="3325995804968971809">風格</translation>
+<translation id="3325995804968971809">樣式</translation>
 <translation id="3327050066667856415">Chromebook 專為提升安全性而設。您的裝置會自動防範惡意軟件，無需安裝額外軟件。</translation>
 <translation id="3328489342742826322">還原備份內容時，系統將刪除 Linux 檔案資料夾中的現有 Linux 應用程式和資料。</translation>
 <translation id="3331321258768829690">(<ph name="UTCOFFSET" />) <ph name="LONGTZNAME" /> (<ph name="EXEMPLARCITY" />)</translation>
@@ -4209,7 +4209,7 @@
 <translation id="4250229828105606438">螢幕截圖</translation>
 <translation id="4250680216510889253">否</translation>
 <translation id="4251377547188244181">註冊 Kiosk 或標牌裝置</translation>
-<translation id="4252141040239557279"><ph name="A" />的第 <ph name="INDEX" /> 張圖片</translation>
+<translation id="4252141040239557279"><ph name="A" />嘅第 <ph name="INDEX" /> 張圖</translation>
 <translation id="4252899949534773101">已停用藍牙</translation>
 <translation id="4252996741873942488"><ph name="WINDOW_TITLE" /> - 已分享分頁內容</translation>
 <translation id="4253168017788158739">注意事項</translation>
@@ -4589,7 +4589,7 @@
 <translation id="4548858987594081919">請新增你在此網站的使用者名稱，「Google 密碼管理工具」才能儲存登入資料</translation>
 <translation id="4549791035683739768">您的安全密鑰並未儲存任何指紋</translation>
 <translation id="4550926046134589611">部分支援連結將仍會在 <ph name="APP_NAME" /> 中開啟。</translation>
-<translation id="4551379727767354516">你最近的 AI 主題</translation>
+<translation id="4551379727767354516">你最近嘅 AI 主題</translation>
 <translation id="4551763574344810652">按下 <ph name="MODIFIER_KEY_DESCRIPTION" /> 即可復原</translation>
 <translation id="4553526521109675518">您需要重新啟動 Chromebook 才能變更裝置語言。<ph name="BEGIN_LINK_LEARN_MORE" />瞭解詳情<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="4554591392113183336">外部擴充功能與現有擴充功能的版本相同或較低。</translation>
@@ -5912,7 +5912,7 @@
 <translation id="5620568081365989559">DevTools 要求全權存取 <ph name="FOLDER_PATH" />。請務必小心，不要透露任何敏感資料。</translation>
 <translation id="5620612546311710611">使用統計資料</translation>
 <translation id="5621272825308610394">沒有顯示名稱</translation>
-<translation id="5621350029086078628">這是實驗性的 AI 功能。</translation>
+<translation id="5621350029086078628">這是實驗版 AI 功能。</translation>
 <translation id="562250930904332809">&amp;停用即時字幕</translation>
 <translation id="5623282979409330487">此網站正在存取您的動作感應器。</translation>
 <translation id="5623842676595125836">記錄</translation>
@@ -6031,7 +6031,7 @@
 <translation id="572328651809341494">最近開啟的分頁</translation>
 <translation id="5723508132121499792">沒有執行中的背景應用程式</translation>
 <translation id="5723967018671998714">已封鎖無痕模式中的第三方 Cookie</translation>
-<translation id="5725112283692663422">提供你對「使用 AI 建立主題」的意見</translation>
+<translation id="5725112283692663422">提供你對「以 AI 製作主題」的意見</translation>
 <translation id="5727728807527375859">擴充功能、應用程式及主題可能損害您的電腦，確定要繼續嗎？</translation>
 <translation id="5728290366864286776">此擴充程式可讀取及變更網站資料，或在背景中執行</translation>
 <translation id="5728450728039149624">Smart Lock 螢幕鎖定選項</translation>
@@ -8769,7 +8769,7 @@
 <translation id="789722939441020330">不允許網站自動下載多個檔案</translation>
 <translation id="7897900149154324287">以後請務必先從「檔案」應用程式中退出卸除式裝置，然後再拔出，以免遺失數據。</translation>
 <translation id="7898725031477653577">永遠翻譯</translation>
-<translation id="7899324822972399722"><ph name="A" />的第 <ph name="INDEX" /> 張圖片，樣式為<ph name="B" /></translation>
+<translation id="7899324822972399722"><ph name="A" />嘅第 <ph name="INDEX" /> 張圖，樣式係<ph name="B" /></translation>
 <translation id="7901405293566323524">Phone Hub</translation>
 <translation id="7903290522161827520">要查看瀏覽器組件嗎？請前往</translation>
 <translation id="7903429136755645827">按一下即可自訂遊戲控制項</translation>
@@ -9031,7 +9031,7 @@
 <translation id="8089547136368562137">採用 Google 最嚴密的安全保護功能</translation>
 <translation id="8090234456044969073">讀取最常瀏覽的網站清單</translation>
 <translation id="8090513782447872344">您日後可隨時返回查看</translation>
-<translation id="8090686009202681725">使用 AI 建立主題</translation>
+<translation id="8090686009202681725">以 AI 製作主題</translation>
 <translation id="8093359998839330381"><ph name="PLUGIN_NAME" /> 沒有回應</translation>
 <translation id="8094536695728193970">杏色</translation>
 <translation id="8095105960962832018"><ph name="BEGIN_PARAGRAPH1" />備份至「Google 雲端硬碟」。您可隨時輕鬆還原資料或轉用其他裝置。備份包含應用程式資料。<ph name="END_PARAGRAPH1" />
@@ -9048,7 +9048,7 @@
 <translation id="8098616321286360457">需要網絡連線</translation>
 <translation id="8100230553590752325">在任何裝置上使用已儲存的密碼</translation>
 <translation id="810068641062493918">揀咗「<ph name="LANGUAGE" />」。㩒搜尋鍵加空白鍵就可以取消選取揀咗嘅語言。</translation>
-<translation id="8100725874569949614"><ph name="A" />的第 <ph name="INDEX" /> 張圖片，情境為<ph name="C" />。</translation>
+<translation id="8100725874569949614"><ph name="A" />嘅第 <ph name="INDEX" /> 張圖，情境係<ph name="C" />。</translation>
 <translation id="8101409298456377967">建立、儲存及管理密碼，讓您輕鬆登入網站和應用程式。<ph name="BEGIN_LINK" />瞭解詳情<ph name="END_LINK" /></translation>
 <translation id="810185532889603849">自訂顏色</translation>
 <translation id="8101987792947961127">必須在下次重新啟動時執行 Powerwash</translation>
@@ -9059,7 +9059,7 @@
 <translation id="810728361871746125">螢幕解像度</translation>
 <translation id="8108526232944491552">{COUNT,plural, =0{沒有第三方 Cookie}=1{已封鎖 1 個第三方 Cookie}other{已封鎖 # 個第三方 Cookie}}</translation>
 <translation id="8109109153262930486">預設圖片</translation>
-<translation id="8109991406044913868">AI 製作的主題</translation>
+<translation id="8109991406044913868">以 AI 製作的主題</translation>
 <translation id="8110393529211831722">訂閱項目只會在此裝置上安裝，不會同步至帳戶中的其他裝置。<ph name="LINK_BEGIN" />瞭解詳情<ph name="LINK_END" /></translation>
 <translation id="8110489095782891123">正在下載通訊錄…</translation>
 <translation id="8115139559594092084">來自您的「Google 雲端硬碟」</translation>

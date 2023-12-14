@@ -170,7 +170,6 @@
 <translation id="7124339256045485976">Chromeን እንደተዘመነ ያቆዩት</translation>
 <translation id="7161390184744336561">Google Chrome ቀኑ አልፎበታል</translation>
 <translation id="7165736900384873061">የGoogle Chrome QR መቃኛን መጠቀም ይጀምሩ</translation>
-<translation id="7173660919484573146">Chrome ፈቀዳ ያለው የይለፍ ቃላትዎ መዳረሻ ለማረጋገጥ የመልክ መታወቂያን ይጠቀማል።</translation>
 <translation id="7187993566681480880">በChrome ላይ ደህንነትዎን ይጠብቃል፣ እና በመለያ በገቡባቸው ሌሎች የGoogle መተግበሪያዎች ላይ ደህንነትዎን ለማሻሻል ሥራ ላይ ሊውል ይችላል።</translation>
 <translation id="7200524487407690471">Chrome እርስዎን ከውሂብ ጥሰቶች፣ ደህንነታቸው ካልተጠበቁ ድር ጣቢያዎች እና ሌሎችም ደህንነትዎ እንደተጠበቀ ለማቆየት በየቀኑ የደህንነት ፍተሻን በራስ-ሰር ያሄዳል። ስለ የደህንነት ፍተሻ በቅንብሮች ውስጥ የበለጠ ማግኘት ይችላሉ።</translation>
 <translation id="72119412072970160">በእርስዎ iPad ላይ ባሉ ሌሎች መተግበሪያዎች ውስጥ ወደ የGoogle የይለፍ ቃል አስተዳዳሪ ያስቀመጧቸውን የይለፍ ቃላት መጠቀም ይችላሉ።</translation>
@@ -190,6 +189,7 @@
 <translation id="7698568245838009292">Chrome ካሜራውን መድረስ ይፈልጋል</translation>
 <translation id="7754633291442704733">ድርጅትዎ <ph name="DOMAIN" /> በዚህ መለያ ወደሚያከማቹት የእርስዎ Chrome ውሂብ፣ እልባቶች፣ ታሪክ፣ የይለፍ ቃላት እና ሌሎች ቅንብሮች መድረስ ይችላል። ዘግተው በሚወጡበት ጊዜ፣ ውሂብዎ ከዚህ መሣሪያ ላይ ይጸዳል።  ሆኖም፣ ውሂብዎ በሚተዳደር የGoogle መለያዎ እንደተከማቸ የሚቆይ እና ለድርጅትዎ የሚገኝ ይሆናል። እንዲሁም ድርጅትዎ የChromeን ባህሪ መቀየር የሚችሉ ለዚያ መለያ የተወሰኑ የተጠቃሚ መመሪያዎችን ማቀናበር ይችላል።</translation>
 <translation id="7780154209050837198">ከChrome የበለጠ ለማግኘት በGoogle መለያዎ ወደ Chrome ይግቡ።</translation>
+<translation id="7792140019572081272">Chrome አደጋ ሊያስከትል የሚችል ውሂብዎን በፊት መታወቂያ ደህንነቱን ይጠብቃል።</translation>
 <translation id="7855730255114109580">Google Chrome የተዘመነ ነው</translation>
 <translation id="7897703007638178753">የChrome የቅርብ ጊዜ ትሮችን ይመልከቱ</translation>
 <translation id="7925119591961387184">«Chrome» የሚለውን ይምረጡ።</translation>

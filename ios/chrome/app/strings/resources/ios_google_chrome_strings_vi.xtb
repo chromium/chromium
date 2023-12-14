@@ -170,7 +170,6 @@ Chỉ những người có cụm mật khẩu mới đọc được dữ liệu 
 <translation id="7124339256045485976">Giữ cho Chrome luôn cập nhật</translation>
 <translation id="7161390184744336561">Google Chrome đã lỗi thời</translation>
 <translation id="7165736900384873061">Bắt đầu dùng trình quét QR của Chrome</translation>
-<translation id="7173660919484573146">Chrome sử dụng Face ID để đảm bảo chỉ những người được ủy quyền mới có thể truy cập vào mật khẩu của bạn.</translation>
 <translation id="7187993566681480880">Giúp bạn an toàn trên Chrome và có thể dùng để tăng cường bảo mật cho bạn trong các ứng dụng khác của Google sau khi đăng nhập.</translation>
 <translation id="7200524487407690471">Chrome tự động chạy tính năng Kiểm tra an toàn hằng ngày để bảo vệ bạn trước các sự cố rò rỉ dữ liệu, trang web không an toàn và những vấn đề khác. Bạn có thể tìm thêm thông tin về tính năng Kiểm tra an toàn trong phần Cài đặt.</translation>
 <translation id="72119412072970160">Bạn có thể sử dụng mật khẩu đã lưu vào Trình quản lý mật khẩu của Google trong ứng dụng khác trên iPad.</translation>
@@ -190,6 +189,7 @@ Chỉ những người có cụm mật khẩu mới đọc được dữ liệu 
 <translation id="7698568245838009292">Chrome muốn truy cập vào máy ảnh</translation>
 <translation id="7754633291442704733">Tổ chức của bạn (<ph name="DOMAIN" />) sẽ có quyền truy cập vào dữ liệu của bạn trên Chrome, dấu trang, nhật ký, mật khẩu và các chế độ cài đặt khác mà bạn lưu trữ trong tài khoản này. Khi bạn đăng xuất, dữ liệu của bạn sẽ bị xoá khỏi thiết bị này.  Tuy nhiên, dữ liệu vẫn được lưu trữ trong Tài khoản Google được quản lý của bạn và tổ chức có thể sử dụng dữ liệu này. Tổ chức của bạn cũng có thể thiết lập chính sách người dùng dành riêng cho tài khoản đó và việc này có thể làm thay đổi hành vi của Chrome.</translation>
 <translation id="7780154209050837198">Để khai thác tối đa Chrome, hãy đăng nhập vào Chrome bằng Tài khoản Google của bạn.</translation>
+<translation id="7792140019572081272">Chrome bảo vệ dữ liệu nhạy cảm của bạn bằng Face ID.</translation>
 <translation id="7855730255114109580">Google Chrome đã được cập nhật</translation>
 <translation id="7897703007638178753">Xem các thẻ gần đây trong Chrome</translation>
 <translation id="7925119591961387184">Chọn "Chrome".</translation>

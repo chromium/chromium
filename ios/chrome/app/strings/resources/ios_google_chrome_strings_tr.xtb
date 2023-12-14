@@ -170,7 +170,6 @@ Sadece parolanıza sahip olan kişiler şifrelenmiş verilerinizi okuyabilir. Pa
 <translation id="7124339256045485976">Chrome'u güncel tutun</translation>
 <translation id="7161390184744336561">Google Chrome güncel değil</translation>
 <translation id="7165736900384873061">Google Chrome QR tarayıcısını kullanmaya başlayın</translation>
-<translation id="7173660919484573146">Chrome, şifrelerinize yetkili erişim sağlanması için Face ID kullanır.</translation>
 <translation id="7187993566681480880">Chrome'da güvende kalmanızı sağlar ve oturum açtığınızda diğer Google uygulamalarındaki güvenliğinizi artırmak için kullanılabilir.</translation>
 <translation id="7200524487407690471">Chrome; veri ihlalleri, güvenli olmayan web siteleri ve diğer risklere karşı güvenliğinizi sağlamak için Güvenlik Kontrolü'nü her gün otomatik olarak çalıştırır. Güvenlik Kontrolü hakkında daha fazla bilgiyi Ayarlar'da bulabilirsiniz.</translation>
 <translation id="72119412072970160">Google Şifre Yöneticisi'ne kaydettiğiniz şifreleri iPad'inizdeki diğer uygulamalarda kullanabilirsiniz.</translation>
@@ -190,6 +189,7 @@ Sadece parolanıza sahip olan kişiler şifrelenmiş verilerinizi okuyabilir. Pa
 <translation id="7698568245838009292">Chrome, Kameraya Erişmek İstiyor</translation>
 <translation id="7754633291442704733">Chrome verilerinize, yer işaretlerinize, geçmişinize, şifrelerinize ve bu hesapta sakladığınız diğer ayarlara kuruluşunuz <ph name="DOMAIN" /> erişebilir. Oturumunuzu kapattığınızda verileriniz bu cihazdan silinir.  Ancak verileriniz, yönetilen Google Hesabınızda saklanır ve kuruluşunuzun kullanımına açıktır. Kuruluşunuz ayrıca, söz konusu hesaba özel olup Chrome'un davranışını değiştirebilecek kullanıcı politikaları belirleyebilir.</translation>
 <translation id="7780154209050837198">Chrome'dan en iyi şekilde yararlanmak için Google Hesabı'nızla Chrome'da oturum açın.</translation>
+<translation id="7792140019572081272">Chrome, Face ID ile hassas verilerinizi güvende tutar.</translation>
 <translation id="7855730255114109580">Google Chrome güncel durumda</translation>
 <translation id="7897703007638178753">Chrome'daki Son Sekmeleri Göster</translation>
 <translation id="7925119591961387184">"Chrome"u seçin.</translation>

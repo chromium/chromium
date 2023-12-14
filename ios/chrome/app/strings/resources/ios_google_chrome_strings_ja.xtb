@@ -170,7 +170,6 @@
 <translation id="7124339256045485976">Chrome を最新の状態に維持します</translation>
 <translation id="7161390184744336561">Google Chrome は古いバージョンです</translation>
 <translation id="7165736900384873061">Google Chrome の QR スキャナの使用を開始する</translation>
-<translation id="7173660919484573146">Chrome では Face ID の使用により、パスワードへの認証されたアクセスのみが許可されます。</translation>
 <translation id="7187993566681480880">ログイン時に、Chrome を安全に利用できるようにするほか、他の Google アプリのセキュリティ強化に使用されることがあります。</translation>
 <translation id="7200524487407690471">Chrome では、データ侵害や安全でないウェブサイトなどからユーザーを保護するため、1 日 1 回、安全チェックを自動的に実行します。安全チェックの詳細は [設定] で確認できます。</translation>
 <translation id="72119412072970160">iPad の他のアプリで Google パスワード マネージャーに保存したパスワードを使用できます。</translation>
@@ -190,6 +189,7 @@
 <translation id="7698568245838009292">Chrome がカメラへのアクセス許可を求めています</translation>
 <translation id="7754633291442704733">このアカウントで保存した Chrome のデータ、ブックマーク、履歴、パスワード、その他の設定は、組織（<ph name="DOMAIN" />）からアクセス可能となります。ログアウトすると、データはこのデバイスから消去されますが、管理対象の Google アカウントには保存されたままで、組織はこれを使用できます。また、組織はこのアカウント専用のユーザー ポリシーを設定して、Chrome の動作を変更することも可能です。</translation>
 <translation id="7780154209050837198">Chrome を最大限に活用するには、Google アカウントで Chrome にログインしてください。</translation>
+<translation id="7792140019572081272">Chrome では、Face ID を使用してセンシティブ データを保護します。</translation>
 <translation id="7855730255114109580">Google Chrome は最新版です</translation>
 <translation id="7897703007638178753">Chrome で最近使ったタブを表示</translation>
 <translation id="7925119591961387184">[Chrome] を選択します。</translation>

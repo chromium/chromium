@@ -170,7 +170,6 @@
 <translation id="7124339256045485976">取得 Chrome 最新版本</translation>
 <translation id="7161390184744336561">Google Chrome 版本過舊</translation>
 <translation id="7165736900384873061">開始使用 Google Chrome QR 掃描器</translation>
-<translation id="7173660919484573146">Chrome 會使用 Face ID 來確保只有經過授權的使用者才能存取你的密碼。</translation>
 <translation id="7187993566681480880">在已登入帳戶的狀態下，能確保你持續享有安全無虞的 Chrome 使用體驗，也有助於提升其他 Google 應用程式的安全機制。</translation>
 <translation id="7200524487407690471">Chrome 每天都會自動執行安全檢查，防範資料侵害或不安全網站等等。你可以前往「設定」進一步瞭解安全檢查功能。</translation>
 <translation id="72119412072970160">你可以在 iPad 上的其他應用程式，使用儲存至 Google 密碼管理員的密碼。</translation>
@@ -190,6 +189,7 @@
 <translation id="7698568245838009292">Chrome 要求存取你的相機</translation>
 <translation id="7754633291442704733">貴機構 <ph name="DOMAIN" /> 將可存取你儲存在這個帳戶中的 Chrome 資料、書籤、歷史記錄、密碼和其他設定。登出帳戶後，系統會清除這部裝置中的資料。不過，你的資料仍會儲存在受管理 Google 帳戶中，並可供貴機構使用。貴機構也可以設定該帳戶專屬的使用者政策，這些政策可以變更 Chrome 的行為。</translation>
 <translation id="7780154209050837198">如要充分運用 Chrome 的各項功能，請透過 Google 帳戶登入 Chrome。</translation>
+<translation id="7792140019572081272">Chrome 會使用 Face ID 保護你的私密資料。</translation>
 <translation id="7855730255114109580">Google Chrome 目前是最新版本</translation>
 <translation id="7897703007638178753">查看最近使用 Chrome 開啟的分頁</translation>
 <translation id="7925119591961387184">選取「Chrome」。</translation>

@@ -621,6 +621,7 @@
 <translation id="1478340334823509079">פרטים: <ph name="FILE_NAME" /></translation>
 <translation id="1478607704480248626">ההתקנה אינה מופעלת</translation>
 <translation id="1480663089572535854">יש לך אפשרות לחזור ולשנות את ההקצאה לפעולה "בחירה". תמיד תהיה לך אפשרות להשבית את הסריקה האוטומטית ב'הגדרות'.</translation>
+<translation id="1481001611315487791">‏מידע נוסף על יצירת עיצובים באמצעות AI</translation>
 <translation id="1481537595330271162">אירעה שגיאה במהלך שינוי גודל הכונן</translation>
 <translation id="1482626744466814421">הוספת הכרטיסייה הזו לסימניות...</translation>
 <translation id="1482772681918035149">לערוך את הסיסמאות</translation>
@@ -812,6 +813,7 @@
 <translation id="1615433306336820465">ניהול פרטי הכניסה המאוחסנים במפתח האבטחה</translation>
 <translation id="1616206807336925449">אין צורך בהרשאות מיוחדות כדי להשתמש בתוסף זה.</translation>
 <translation id="1616298854599875024">לא ניתן לייבא את התוסף "<ph name="IMPORT_NAME" />" כי הוא לא מודול משותף</translation>
+<translation id="161654560322394775">תמונה <ph name="INDEX" /> של <ph name="A" />, בסגנון <ph name="B" />, באווירה <ph name="C" />.</translation>
 <translation id="1617765145568323981">{NUM_FILES,plural, =0{המערכת בודקת אם הנתונים האלה מצייתים למדיניות האבטחה של הארגון שלך...}=1{המערכת בודקת אם הקובץ הזה מציית למדיניות האבטחה של הארגון שלך...}one{המערכת בודקת אם הקבצים האלה מצייתים למדיניות האבטחה של הארגון שלך...}two{המערכת בודקת אם הקבצים האלה מצייתים למדיניות האבטחה של הארגון שלך...}other{המערכת בודקת אם הקבצים האלה מצייתים למדיניות האבטחה של הארגון שלך...}}</translation>
 <translation id="1618102204889321535"><ph name="MAX_CHARACTER_COUNT" />/<ph name="CURRENT_CHARACTER_COUNT" /></translation>
 <translation id="1618268899808219593">מרכז עזרה</translation>
@@ -1707,6 +1709,7 @@
 <translation id="2291452790265535215">אפשר לנסות להיעזר בחלונית הצדדית לשמירת סימניות, תהליכים ועוד</translation>
 <translation id="229182044471402145">לא נמצא גופן תואם.</translation>
 <translation id="2292848386125228270">‏הפעלת <ph name="PRODUCT_NAME" /> כמשתמש רגיל. אם ברצונך להפעיל כבסיס לצורך פיתוח, יש להפעיל מחדש עם הסימון ‎--no-sandbox.</translation>
+<translation id="2292862094862078674">צריך לבדוק את החיבור לאינטרנט ולנסות שוב. עדיין אפשר לבחור מתוך העיצובים הקודמים שיצרת שמוצגים למטה.</translation>
 <translation id="2294081976975808113">פרטיות המסך</translation>
 <translation id="2294358108254308676">האם ברצונך להתקין את <ph name="PRODUCT_NAME" />?</translation>
 <translation id="229477815107578534">כדאי לבדוק את ההגדרות</translation>
@@ -3049,6 +3052,7 @@
 <translation id="3325804108816646710">מתבצע חיפוש של פרופילים זמינים…</translation>
 <translation id="3325910708063135066">‏המצלמה והמיקרופון מושבתים בהעדפות המערכת של Mac</translation>
 <translation id="3325930488268995856">‏Microsoft OneDrive מחובר</translation>
+<translation id="3325995804968971809">סגנון</translation>
 <translation id="3327050066667856415">‏אבטחת המכשיר מתוכננת ב-Chromebook באופן מובנה. המכשיר שלך מוגן מתוכנות זדוניות באופן אוטומטי, ולא נדרשות בו תוכנות נוספות.</translation>
 <translation id="3328489342742826322">‏שחזור מגיבוי יביא למחיקת האפליקציות והנתונים הקיימים של Linux בתיקיית קובצי Linux.</translation>
 <translation id="3331321258768829690">(<ph name="UTCOFFSET" />) <ph name="LONGTZNAME" /> (<ph name="EXEMPLARCITY" />)</translation>
@@ -3325,6 +3329,7 @@
 <translation id="3561201631376780358">פתיחת החלונית הצדדית להצגת כל הסימניות</translation>
 <translation id="3562423906127931518">‏התהליך הזה עשוי להימשך כמה דקות. מתבצעת הגדרה של מאגר Linux.</translation>
 <translation id="3562655211539199254">‏הצגת כרטיסיות Chrome אחרונות בטלפון</translation>
+<translation id="3563392617245068355">אווירה</translation>
 <translation id="3563432852173030730">לא ניתן היה להוריד את יישום הקיוסק.</translation>
 <translation id="3563558822383875692">‏DLC בתהליך הגדרה.</translation>
 <translation id="3564334271939054422">‏ייתכן שיהיה צורך להיכנס לדף ההתחברות של רשת ה-Wi-Fi שבה בחרת להשתמש (<ph name="NETWORK_ID" />).</translation>
@@ -4208,6 +4213,7 @@
 <translation id="4250229828105606438">צילום מסך</translation>
 <translation id="4250680216510889253">לא</translation>
 <translation id="4251377547188244181">רישום של מכשיר שילוט וקיוסק</translation>
+<translation id="4252141040239557279">תמונה <ph name="INDEX" /> של <ph name="A" /></translation>
 <translation id="4252899949534773101">‏Bluetooth מושבת</translation>
 <translation id="4252996741873942488"><ph name="WINDOW_TITLE" /> - תוכן הכרטיסייה שותף</translation>
 <translation id="4253168017788158739">הערה</translation>
@@ -4588,6 +4594,7 @@
 <translation id="4548858987594081919">‏עליך להוסיף את שם המשתמש שלך באתר הזה כדי לעזור למנהל הסיסמאות של Google לשמור את פרטי הכניסה</translation>
 <translation id="4549791035683739768">לא נשמרו טביעות אצבעות במפתח האבטחה</translation>
 <translation id="4550926046134589611">חלק מהקישורים הנתמכים ימשיכו להיפתח ב-<ph name="APP_NAME" />.</translation>
+<translation id="4551379727767354516">‏העיצובים האחרונים שיצרת באמצעות AI</translation>
 <translation id="4551763574344810652">אפשר לבטל את הפעולה בהקשה על <ph name="MODIFIER_KEY_DESCRIPTION" /></translation>
 <translation id="4553526521109675518">‏כדי לשנות את שפת המכשיר, עליך להפעיל את Chromebook מחדש. <ph name="BEGIN_LINK_LEARN_MORE" />מידע נוסף<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="4554591392113183336">התוסף החיצוני הוא מגרסה זהה או קודמת לזו של התוסף הקיים.</translation>
@@ -5912,6 +5919,7 @@
 <translation id="5620568081365989559">‏DevTools מבקש גישה מלאה אל <ph name="FOLDER_PATH" />. יש להקפיד שלא לחשוף מידע רגיש.</translation>
 <translation id="5620612546311710611">נתונים סטטיסטיים של שימוש</translation>
 <translation id="5621272825308610394">אין שם מוצג</translation>
+<translation id="5621350029086078628">‏זוהי תכונה ניסיונית שמבוססת על AI.</translation>
 <translation id="562250930904332809">&amp;כיבוי הכתוביות המיידיות</translation>
 <translation id="5623282979409330487">האתר הזה ניגש לחיישני התנועה.</translation>
 <translation id="5623842676595125836">יומן</translation>
@@ -6030,6 +6038,7 @@
 <translation id="572328651809341494">כרטיסיות אחרונות</translation>
 <translation id="5723508132121499792">אין יישומים פועלים ברקע</translation>
 <translation id="5723967018671998714">‏קובצי cookie של צד שלישי חסומים במצב אנונימי</translation>
+<translation id="5725112283692663422">‏שליחת משוב בנושא יצירת עיצוב באמצעות AI</translation>
 <translation id="5727728807527375859">‏תוספים, Google Apps ועיצובים עלולים לפגוע במחשב שלך. להמשיך?</translation>
 <translation id="5728290366864286776">לתוסף הזה יש הרשאה לקרוא ולשנות פרטי אתרים או לפעול ברקע</translation>
 <translation id="5728450728039149624">‏אפשרויות נעילת מסך ב-Smart Lock</translation>
@@ -8445,6 +8454,7 @@
 <translation id="7657090467145778067">חיסכון של נפח קטן</translation>
 <translation id="7657218410916651670">‏<ph name="BEGIN_LINK_GOOGLE" />סוגי פעילות אחרים<ph name="END_LINK_GOOGLE" /> יכולים להישמר בחשבון Google אחרי שנכנסים. אפשר למחוק אותם בכל שלב.</translation>
 <translation id="7658239707568436148">ביטול</translation>
+<translation id="7658727964021657194">‏עיצוב אחרון שנוצר באמצעות AI‏ <ph name="TILE_INDEX" /></translation>
 <translation id="7659154729610375585">לצאת מהמצב האנונימי בכל זאת?</translation>
 <translation id="7659336857671800422">כניסה למדריך בנושא פרטיות</translation>
 <translation id="7659584679870740384">אין לך אישור להשתמש במכשיר הזה. יש ליצור קשר עם מנהל המערכת כדי לקבל הרשאה לכניסה.</translation>
@@ -8665,6 +8675,7 @@
 <translation id="7807711621188256451">התרה תמיד ל-<ph name="HOST" /> לגשת למצלמה שלך</translation>
 <translation id="7810202088502699111">חלונות קופצים נחסמו בדף זה.</translation>
 <translation id="7810367892333449285">‏הפורמט של הרשומה צריך להיות <ph name="LPA_0" />$<ph name="LPA_1" />SM-DP+ address<ph name="LPA_2" />$<ph name="LPA_3" />מזהה תואם אופציונלי<ph name="LPA_4" /></translation>
+<translation id="7811263553491007091">אפשר לנסות שוב או לבחור מתוך העיצובים הקודמים שמוצגים למטה.</translation>
 <translation id="7814458197256864873">&amp;העתקה</translation>
 <translation id="7814857791038398352">Microsoft OneDrive</translation>
 <translation id="7815583197273433531">עריכת קיצור הדרך <ph name="SHORTCUT" /> עבור <ph name="EXTENSION_NAME" /></translation>
@@ -8769,6 +8780,7 @@
 <translation id="789722939441020330">לא לאפשר לאתרים להוריד באופן אוטומטי קבצים מרובים</translation>
 <translation id="7897900149154324287">בעתיד, יש להקפיד ללחוץ על סמל הניתוק עבור ההתקן הנשלף דרך אפליקציית 'קבצים' לפני שמנתקים אותו פיזית. אם לא עושים זאת, אפשר לאבד נתונים.</translation>
 <translation id="7898725031477653577">ברצוני לקבל תרגום תמיד</translation>
+<translation id="7899324822972399722">תמונה <ph name="INDEX" /> של <ph name="A" />, בסגנון <ph name="B" /></translation>
 <translation id="7901405293566323524">מרכז טלפוני</translation>
 <translation id="7903290522161827520">רוצה לאתר את רכיבי הדפדפן? יש לעבור לכתובת</translation>
 <translation id="7903429136755645827">ניתן ללחוץ כדי להתאים אישית את פקדי המשחקים</translation>
@@ -9030,6 +9042,7 @@
 <translation id="8089547136368562137">‏מוגנת על ידי אמצעי האבטחה הטובים ביותר של Google</translation>
 <translation id="8090234456044969073">עיון ברשימת אתרי האינטרנט שאליהם נכנסת בתדירות גבוהה</translation>
 <translation id="8090513782447872344">אפשר לחזור לכאן בכל שלב כדי לקרוא שוב</translation>
+<translation id="8090686009202681725">‏יצירת עיצוב באמצעות AI</translation>
 <translation id="8093359998839330381"><ph name="PLUGIN_NAME" /> לא מגיב</translation>
 <translation id="8094536695728193970">משמש</translation>
 <translation id="8095105960962832018">‏<ph name="BEGIN_PARAGRAPH1" />גיבוי ב-Google Drive. אפשר לשחזר נתונים או להחליף מכשיר בקלות מתי שרוצים. הגיבוי כולל נתוני אפליקציות.<ph name="END_PARAGRAPH1" />
@@ -9048,6 +9061,7 @@
 <translation id="8098616321286360457">נדרש חיבור לאינטרנט</translation>
 <translation id="8100230553590752325">שימוש בסיסמאות השמורות בכל מכשיר</translation>
 <translation id="810068641062493918"><ph name="LANGUAGE" /> נבחרה. כדי לבטל את הבחירה, יש ללחוץ על 'חיפוש' ועל מקש הרווח.</translation>
+<translation id="8100725874569949614">תמונה <ph name="INDEX" /> של <ph name="A" />, באווירה <ph name="C" />.</translation>
 <translation id="8101409298456377967">ניתן ליצור, לנהל ולשמור סיסמאות כדי להיכנס בקלות לאתרים ולאפליקציות. <ph name="BEGIN_LINK" />מידע נוסף<ph name="END_LINK" /></translation>
 <translation id="810185532889603849">צבע מותאם אישית</translation>
 <translation id="8101987792947961127">‏יש לבצע Powerwash באתחול הבא</translation>
@@ -9058,6 +9072,7 @@
 <translation id="810728361871746125">רזולוציית מסך</translation>
 <translation id="8108526232944491552">{COUNT,plural, =0{‏אין קובצי cookie של צד שלישי}=1{‏קובץ cookie אחד של צד שלישי נחסם}one{‏# קובצי cookie של צד שלישי נחסמו}two{‏# קובצי cookie של צד שלישי נחסמו}other{‏# קובצי cookie של צד שלישי נחסמו}}</translation>
 <translation id="8109109153262930486">דמות ברירת מחדל</translation>
+<translation id="8109991406044913868">‏עיצוב שנוצר באמצעות AI</translation>
 <translation id="8110393529211831722">המינוי מותקן רק במכשיר הזה ולא מסונכרן עם מכשירים אחרים שרשומים בחשבון שלך. <ph name="LINK_BEGIN" />מידע נוסף<ph name="LINK_END" /></translation>
 <translation id="8110489095782891123">מתבצעת הורדה של רשימת אנשי קשר…</translation>
 <translation id="8115139559594092084">‏מ-Google Drive שלך</translation>
