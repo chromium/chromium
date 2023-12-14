@@ -57,6 +57,10 @@
 #include "ui/gl/init/gl_factory.h"
 #include "ui/gl/test/gl_surface_test_support.h"
 
+#if BUILDFLAG(IS_OZONE)
+#include "ui/ozone/public/ozone_platform.h"
+#endif
+
 #define MM21_TILE_WIDTH 32
 #define MM21_TILE_HEIGHT 16
 
@@ -935,6 +939,13 @@ int main(int argc, char** argv) {
   auto* const test_environment = new media::test::VideoTestEnvironment;
   media::g_env = reinterpret_cast<media::test::VideoTestEnvironment*>(
       testing::AddGlobalTestEnvironment(test_environment));
+
+// TODO(b/316374371) Try to remove Ozone and replace with EGL and GL.
+#if BUILDFLAG(IS_OZONE)
+  ui::OzonePlatform::InitParams ozone_param;
+  ozone_param.single_process = true;
+  ui::OzonePlatform::InitializeForGPU(ozone_param);
+#endif
 
 #if BUILDFLAG(USE_V4L2_CODEC)
   gl::GLSurfaceTestSupport::InitializeOneOffImplementation(
