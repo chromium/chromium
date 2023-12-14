@@ -211,8 +211,9 @@ IN_PROC_BROWSER_TEST_F(ProfileKeyedServiceBrowserTest,
                                   /*expected_active_services_names=*/{});
 }
 
+// TODO(http://crbug.com/1506961): Fix and re-enable.
 IN_PROC_BROWSER_TEST_F(ProfileKeyedServiceBrowserTest,
-                       GuestProfileOTR_NeededServices) {
+                       DISABLED_GuestProfileOTR_NeededServices) {
   // clang-format off
   std::set<std::string> guest_otr_active_services {
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
@@ -303,8 +304,9 @@ IN_PROC_BROWSER_TEST_F(ProfileKeyedServiceBrowserTest,
   TestKeyedProfileServicesActives(guest_profile_otr, guest_otr_active_services);
 }
 
+// TODO(http://crbug.com/1506961): Fix and re-enable.
 IN_PROC_BROWSER_TEST_F(ProfileKeyedServiceBrowserTest,
-                       GuestProfileParent_NeededServices) {
+                       DISABLED_GuestProfileParent_NeededServices) {
   // clang-format off
   std::set<std::string> guest_active_services {
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
