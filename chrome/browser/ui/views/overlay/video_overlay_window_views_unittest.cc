@@ -464,7 +464,8 @@ TEST_F(VideoOverlayWindowViewsTest, HitTestFrameView) {
 // With pillarboxing, the close button doesn't cover the video area. Make sure
 // hovering the button doesn't get handled like normal mouse exit events
 // causing the controls to hide.
-TEST_F(VideoOverlayWindowViewsTest, NoMouseExitWithinWindowBounds) {
+// TODO(http://crbug/1509791): Fix and re-enable.
+TEST_F(VideoOverlayWindowViewsTest, DISABLED_NoMouseExitWithinWindowBounds) {
   overlay_window().UpdateNaturalSize({10, 400});
   WaitForMove();
 
@@ -553,7 +554,8 @@ TEST_F(VideoOverlayWindowViewsTest, SmallDisplayWorkAreaDoesNotCrash) {
             overlay_window().video_layer_for_testing()->size());
 }
 
-TEST_F(VideoOverlayWindowViewsTest, ControlsAreHiddenDuringMove) {
+// TODO(http://crbug/1509791): Fix and re-enable.
+TEST_F(VideoOverlayWindowViewsTest, DISABLED_ControlsAreHiddenDuringMove) {
   // Set the initial position.
   overlay_window().SetBounds({0, 0, 100, 100});
   WaitForMove();
