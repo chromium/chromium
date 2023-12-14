@@ -335,7 +335,7 @@ void TaskManagerView::Init() {
 
   // Create the table view.
   auto tab_table = std::make_unique<views::TableView>(
-      nullptr, columns_, views::ICON_AND_TEXT, false);
+      nullptr, columns_, views::TableType::kIconAndText, false);
   tab_table_ = tab_table.get();
   table_model_ = std::make_unique<TaskManagerTableModel>(this);
   tab_table->SetModel(table_model_.get());

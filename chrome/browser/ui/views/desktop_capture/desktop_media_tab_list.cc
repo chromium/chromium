@@ -241,8 +241,8 @@ DesktopMediaTabList::DesktopMediaTabList(DesktopMediaListController* controller,
       controller_, selection_changed_callback);
 
   auto table = std::make_unique<views::TableView>(
-      model_.get(), std::vector<ui::TableColumn>(1), views::ICON_AND_TEXT,
-      true);
+      model_.get(), std::vector<ui::TableColumn>(1),
+      views::TableType::kIconAndText, true);
   table->set_observer(view_observer_.get());
   table->GetViewAccessibility().OverrideName(accessible_name);
   table_ = table.get();

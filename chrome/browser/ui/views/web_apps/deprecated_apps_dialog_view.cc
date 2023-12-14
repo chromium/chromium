@@ -234,7 +234,8 @@ void DeprecatedAppsDialogView::InitDialog() {
   columns.emplace_back(ui::TableColumn());
 
   auto table = std::make_unique<views::TableView>(
-      deprecated_apps_table_model_.get(), columns, views::ICON_AND_TEXT,
+      deprecated_apps_table_model_.get(), columns,
+      views::TableType::kIconAndText,
       /*single_selection=*/true);
   deprecated_apps_table_view_ = table.get();
   table->SetID(DEPRECATED_APPS_TABLE);

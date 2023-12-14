@@ -66,8 +66,9 @@ DeviceChooserContentView::DeviceChooserContentView(
   std::vector<ui::TableColumn> table_columns = {ui::TableColumn()};
   auto table_view = std::make_unique<views::TableView>(
       this, table_columns,
-      chooser_controller_->ShouldShowIconBeforeText() ? views::ICON_AND_TEXT
-                                                      : views::TEXT_ONLY,
+      chooser_controller_->ShouldShowIconBeforeText()
+          ? views::TableType::kIconAndText
+          : views::TableType::kTextOnly,
       !chooser_controller_->AllowMultipleSelection() /* single_selection */);
   table_view_ = table_view.get();
   table_view->SetSelectOnRemove(false);

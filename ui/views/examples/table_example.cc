@@ -93,7 +93,7 @@ void TableExample::CreateExampleView(View* container) {
                        TestTableColumn(1, u"Color"),
                        TestTableColumn(2, u"Origin"),
                        TestTableColumn(3, u"Price", ui::TableColumn::RIGHT)})
-                  .SetTableType(ICON_AND_TEXT)
+                  .SetTableType(TableType::kIconAndText)
                   .SetModel(this)
                   .SetGrouper(this)
                   .SetObserver(this))

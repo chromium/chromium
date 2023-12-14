@@ -228,8 +228,9 @@ void CertificateSelector::InitWithText(
   for (auto& column : columns) {
     column.sortable = true;
   }
-  auto table = std::make_unique<views::TableView>(
-      model_.get(), columns, views::TEXT_ONLY, true /* single_selection */);
+  auto table = std::make_unique<views::TableView>(model_.get(), columns,
+                                                  views::TableType::kTextOnly,
+                                                  true /* single_selection */);
   table_ = table.get();
   table->set_observer(this);
 

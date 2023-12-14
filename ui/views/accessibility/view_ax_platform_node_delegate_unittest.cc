@@ -227,8 +227,8 @@ class ViewAXPlatformNodeDelegateTableTest
     columns.push_back(TestTableColumn(3, "Price"));
 
     model_ = std::make_unique<TestTableModel>();
-    auto table =
-        std::make_unique<TableView>(model_.get(), columns, TEXT_ONLY, true);
+    auto table = std::make_unique<TableView>(model_.get(), columns,
+                                             TableType::kIconAndText, true);
     table_ = table.get();
     widget_->GetRootView()->AddChildView(
         TableView::CreateScrollViewWithTable(std::move(table)));
