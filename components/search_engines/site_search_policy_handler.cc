@@ -40,8 +40,8 @@ bool IsSiteSearchPolicyEnabled() {
 
 // Converts a site search policy entry `policy_dict` into a dictionary to be
 // saved to prefs, with fields corresponding to `TemplateURLData`.
-base::Value SiteSearchDictFromPolicyValue(
-    const base::Value::Dict& policy_dict) {
+base::Value SiteSearchDictFromPolicyValue(const base::Value::Dict& policy_dict,
+                                          bool featured) {
   base::Value::Dict dict;
 
   const std::string* name =
@@ -52,16 +52,15 @@ base::Value SiteSearchDictFromPolicyValue(
   const std::string* shortcut =
       policy_dict.FindString(SiteSearchPolicyHandler::kShortcut);
   CHECK(shortcut);
-  dict.Set(DefaultSearchManager::kKeyword, *shortcut);
+  dict.Set(DefaultSearchManager::kKeyword,
+           featured ? "@" + *shortcut : *shortcut);
 
   const std::string* url =
       policy_dict.FindString(SiteSearchPolicyHandler::kUrl);
   CHECK(url);
   dict.Set(DefaultSearchManager::kURL, *url);
 
-  dict.Set(
-      DefaultSearchManager::kFeaturedByPolicy,
-      policy_dict.FindBool(SiteSearchPolicyHandler::kFeatured).value_or(false));
+  dict.Set(DefaultSearchManager::kFeaturedByPolicy, featured);
 
   dict.Set(DefaultSearchManager::kCreatedByPolicy,
            static_cast<int>(TemplateURLData::CreatedByPolicy::kSiteSearch));
@@ -353,7 +352,14 @@ void SiteSearchPolicyHandler::ApplyPolicySettings(const PolicyMap& policies,
   for (const base::Value& item : policy_value->GetList()) {
     const std::string& shortcut = GetShortcut(item);
     if (ignored_shortcuts_.find(shortcut) == ignored_shortcuts_.end()) {
-      providers.Append(SiteSearchDictFromPolicyValue(item.GetDict()));
+      const base::Value::Dict& policy_dict = item.GetDict();
+      providers.Append(
+          SiteSearchDictFromPolicyValue(policy_dict, /*featured=*/false));
+      if (policy_dict.FindBool(SiteSearchPolicyHandler::kFeatured)
+              .value_or(false)) {
+        providers.Append(SiteSearchDictFromPolicyValue(policy_dict,
+                                                       /*featured=*/true));
+      }
     }
   }
 
