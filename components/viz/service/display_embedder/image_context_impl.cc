@@ -174,8 +174,11 @@ void ImageContextImpl::CreateFallbackImage(
   // allocated. Skia will skip drawing a null GrPromiseImageTexture, do nothing
   // and leave it null.
   const auto& formats = backend_formats();
-  if (formats.empty() || formats[0].textureType() == GrTextureType::kExternal)
+  // Return early if SIFormat prefers external sampler.
+  if (formats.empty() || formats[0].textureType() == GrTextureType::kExternal ||
+      format().PrefersExternalSampler()) {
     return;
+  }
 
   DCHECK(!fallback_context_state_);
   fallback_context_state_ = context_state;
