@@ -175,6 +175,8 @@ class ChromeAuthenticatorRequestDelegate
       base::span<const device::CableDiscoveryData> pairings_from_extension,
       bool is_enclave_authenticator_available,
       device::FidoDiscoveryFactory* discovery_factory) override;
+  void SetHints(
+      const AuthenticatorRequestClientDelegate::Hints& hints) override;
   void SelectAccount(
       std::vector<device::AuthenticatorGetAssertionResponse> responses,
       base::OnceCallback<void(device::AuthenticatorGetAssertionResponse)>

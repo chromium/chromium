@@ -67,6 +67,13 @@ enum AuthenticatorTransport {
   INTERNAL,
 };
 
+// See https://w3c.github.io/webauthn/#enum-hints
+enum Hint {
+  SECURITY_KEY,
+  CLIENT_DEVICE,
+  HYBRID,
+};
+
 // Credential information returned by both Authenticator::MakeCredential
 // and Authenticator::GetAssertion.
 struct CommonCredentialInfo {
@@ -365,6 +372,9 @@ struct PublicKeyCredentialRequestOptions {
   // accept as the signing credential.
   array<PublicKeyCredentialDescriptor> allow_credentials;
 
+  // https://w3c.github.io/webauthn/#enumdef-publickeycredentialhints
+  array<Hint> hints;
+
   // Indicates the relying party's need for a user-verifying authenticator.
   UserVerificationRequirement user_verification;
 
@@ -496,6 +506,9 @@ struct PublicKeyCredentialCreationOptions {
 
   // Specify the relying party's authenticator attribute requirements.
   AuthenticatorSelectionCriteria? authenticator_selection;
+
+  // https://w3c.github.io/webauthn/#enumdef-publickeycredentialhints
+  array<Hint> hints;
 
   // Specifies whether the RP wants attestation information for the created
   // credential.

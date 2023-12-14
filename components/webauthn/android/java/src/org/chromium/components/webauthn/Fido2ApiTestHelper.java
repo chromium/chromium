@@ -479,6 +479,7 @@ public class Fido2ApiTestHelper {
             throws Exception {
         PublicKeyCredentialCreationOptions options = new PublicKeyCredentialCreationOptions();
         options.challenge = "climb a mountain".getBytes("UTF8");
+        options.hints = new int[0];
 
         options.relyingParty = new PublicKeyCredentialRpEntity();
         options.relyingParty.id = "subdomain.example.test";
@@ -536,6 +537,7 @@ public class Fido2ApiTestHelper {
         options.timeout = new TimeDelta();
         options.timeout.microseconds = TimeUnit.MILLISECONDS.toMicros(TIMEOUT_MS);
         options.relyingPartyId = "subdomain.example.test";
+        options.hints = new int[0];
 
         PublicKeyCredentialDescriptor descriptor = new PublicKeyCredentialDescriptor();
         descriptor.type = 0;

@@ -161,6 +161,8 @@ void AuthenticatorRequestClientDelegate::ConfigureDiscoveries(
     bool is_enclave_authenticator_available,
     device::FidoDiscoveryFactory* fido_discovery_factory) {}
 
+void AuthenticatorRequestClientDelegate::SetHints(const Hints& hints) {}
+
 void AuthenticatorRequestClientDelegate::SelectAccount(
     std::vector<device::AuthenticatorGetAssertionResponse> responses,
     base::OnceCallback<void(device::AuthenticatorGetAssertionResponse)>

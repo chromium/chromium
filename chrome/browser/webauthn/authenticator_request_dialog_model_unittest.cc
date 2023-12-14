@@ -180,6 +180,9 @@ enum class TransportAvailabilityParam {
   kCreateInICloudKeychain,
   kNoTouchId,
   kUVRequired,
+  kHintSecurityKeys,
+  kHintHybrid,
+  kHintClientDevice,
 };
 
 base::StringPiece TransportAvailabilityParamToString(
@@ -235,6 +238,12 @@ base::StringPiece TransportAvailabilityParamToString(
       return "kNoTouchId";
     case TransportAvailabilityParam::kUVRequired:
       return "kUVRequired";
+    case TransportAvailabilityParam::kHintSecurityKeys:
+      return "kHintSecurityKeys";
+    case TransportAvailabilityParam::kHintHybrid:
+      return "kHintHybrid";
+    case TransportAvailabilityParam::kHintClientDevice:
+      return "kHintClientDevice";
   }
 }
 
@@ -364,6 +373,9 @@ TEST_F(AuthenticatorRequestDialogModelTest, Mechanisms) {
   const auto att_xplat = TransportAvailabilityParam::kAttachmentCrossPlatform;
   const auto ble_off = TransportAvailabilityParam::kBleDisabled;
   const auto ble_denied = TransportAvailabilityParam::kBleAccessDenied;
+  const auto hint_sk = TransportAvailabilityParam::kHintSecurityKeys;
+  const auto hint_hybrid = TransportAvailabilityParam::kHintHybrid;
+  const auto hint_plat = TransportAvailabilityParam::kHintClientDevice;
   [[maybe_unused]] const auto has_ickc =
       TransportAvailabilityParam::kHasICloudKeychain;
   [[maybe_unused]] const auto create_ickc =
@@ -1092,6 +1104,105 @@ TEST_F(AuthenticatorRequestDialogModelTest, Mechanisms) {
        {ickc, t(internal)},
        mss},
 #endif
+
+       // Tests for RP hints.
+       //
+       // create(): Security key hint should show security key UI.
+       {L, mc, {usb, internal, cable}, {rk, hint_sk}, {},
+        {add, t(internal), t(usb)}, usb_ui},
+       // But not if USB isn't a valid transport.
+       {L, mc, {internal, cable}, {rk, hint_sk}, {}, {add, t(internal)},
+#if BUILDFLAG(IS_MAC)
+         create_pk,
+#else
+         qr,
+#endif
+       },
+       // If webauthn.dll is present, jump to it.
+       {L, mc, {cable}, {has_winapi, rk, hint_sk}, {}, {winapi, add}, plat_ui},
+
+       // create(): Hybrid hint should show QR.
+       {L, mc, {usb, internal, cable}, {rk, hint_hybrid}, {},
+        {add, t(internal)}, qr},
+       // Unless there are paired phones, in which case show the MSS.
+       {L, mc, {usb, internal, cable}, {rk, hint_hybrid}, {psync("a")}, {p("a"),
+        add, t(internal)}, mss},
+       // But not if Hybrid isn't a valid transport.
+       {L, mc, {usb, internal}, {rk, hint_hybrid}, {}, {t(internal), t(usb)},
+#if BUILDFLAG(IS_MAC)
+         create_pk,
+#else
+         mss,
+#endif
+       },
+       // If older webauthn.dll is present, don't jump to it since it doesn't do
+       // hybrid.
+       {L, mc, {cable}, {has_winapi, rk, hint_hybrid}, {}, {winapi, add}, qr},
+#if BUILDFLAG(IS_WIN)
+       // ... but do if it supports hybrid.
+       {L, mc, {cable}, {has_winapi, win_hybrid, rk, hint_hybrid}, {}, {winapi},
+        plat_ui},
+#endif
+
+       // create(): Client device hint should jump to the platform
+       // authenticator.
+       {L, mc, {usb, internal, cable}, {rk, hint_plat}, {}, {add, t(internal)},
+#if BUILDFLAG(IS_MAC)
+         create_pk,
+#else
+         plat_ui,
+#endif
+       },
+       // But not if there isn't a platform authenticator.
+       {L, mc, {usb, cable}, {rk, hint_plat}, {}, {add}, qr},
+       // If webauthn.dll is present, jump to it.
+       {L, mc, {cable}, {has_winapi, rk, hint_plat}, {}, {winapi, add},
+        plat_ui},
+       // Or if there's iCloud Keychain.
+       {L, mc, {cable}, {has_ickc, create_ickc, rk, hint_plat}, {}, {ickc, add},
+        plat_ui},
+
+       // get(): Security key hint should show security key UI.
+       {L, ga, {usb, internal, cable}, {rk, hint_sk}, {}, {add, t(usb)},
+        usb_ui},
+       // But not if USB isn't a valid transport.
+       {L, ga, {internal, cable}, {rk, hint_sk}, {}, {add}, qr},
+       // If credentials are found on a platform authenticator, they are still
+       // shown.
+       {L, ga, {usb, internal, cable}, {one_cred, rk, hint_sk}, {},
+        {c(cred1), add, t(usb)}, mss},
+       // If webauthn.dll is present, jump to it.
+       {L, ga, {cable}, {has_winapi, rk, hint_sk}, {}, {add, winapi}, plat_ui},
+
+       // get(): Hybrid hint should show QR.
+       {L, ga, {usb, internal, cable}, {rk, hint_hybrid}, {}, {add}, qr},
+       // Unless there are paired phones listed, in which case show the MSS
+       {L, ga, {usb, internal, cable}, {rk, hint_hybrid}, {psync("a")},
+        {p("a"), add}, mss},
+       // But not if hybrid isn't available.
+       {L, ga, {usb, internal}, {rk, hint_hybrid}, {}, {t(usb)}, usb_ui},
+       // If older webauthn.dll is present, don't jump to it since it doesn't do
+       // hybrid.
+       {L, ga, {cable}, {has_winapi, rk, hint_hybrid}, {}, {add, winapi}, qr},
+#if BUILDFLAG(IS_WIN)
+       // ... but do if it supports hybrid.
+       {L, ga, {cable}, {has_winapi, win_hybrid, rk, hint_hybrid}, {}, {winapi},
+        plat_ui},
+#endif
+       // If credentials are found on a platform authenticator, they are still
+       // shown.
+       {L, ga, {usb, internal, cable}, {one_cred, rk, hint_hybrid}, {},
+        {c(cred1), add}, mss},
+
+       // get(): Client device hint should trigger webauthn.dll, if it exists.
+       {L, ga, {cable}, {rk, has_winapi, hint_plat}, {}, {add, winapi},
+        plat_ui},
+       // But not if there's a credential match.
+       {L, ga, {usb, cable, internal}, {one_cred, has_winapi, rk, hint_plat},
+        {}, {c(wincred1), add, winapi}, mss},
+       // And otherwise it doesn't do anything because we generally assume that
+       // we can enumerate platform authenticators and do a good job.
+       {L, ga, {usb, cable, internal}, {rk, hint_plat}, {}, {add}, qr},
   };
 
   Test kListSyncedPasskeysTests_Windows[] {
@@ -1326,6 +1437,28 @@ TEST_F(AuthenticatorRequestDialogModelTest, Mechanisms) {
       model.set_local_biometrics_override_for_testing(true);
     }
 #endif
+
+    absl::optional<device::FidoTransportProtocol> hint_transport;
+    if (base::Contains(test.params,
+                       TransportAvailabilityParam::kHintSecurityKeys)) {
+      CHECK(!hint_transport.has_value());
+      hint_transport = device::FidoTransportProtocol::kUsbHumanInterfaceDevice;
+    }
+    if (base::Contains(test.params, TransportAvailabilityParam::kHintHybrid)) {
+      CHECK(!hint_transport.has_value());
+      hint_transport = device::FidoTransportProtocol::kHybrid;
+    }
+    if (base::Contains(test.params,
+                       TransportAvailabilityParam::kHintClientDevice)) {
+      CHECK(!hint_transport.has_value());
+      hint_transport = device::FidoTransportProtocol::kInternal;
+    }
+
+    if (hint_transport.has_value()) {
+      content::AuthenticatorRequestClientDelegate::Hints hints;
+      hints.transport = hint_transport;
+      model.SetHints(hints);
+    }
 
     model.SetAccountPreselectedCallback(
         base::BindRepeating([](device::PublicKeyCredentialDescriptor cred) {}));

@@ -73,6 +73,7 @@ using blink::mojom::blink::DigitalCredentialProvider;
 using blink::mojom::blink::DigitalCredentialProviderPtr;
 using blink::mojom::blink::DigitalCredentialSelector;
 using blink::mojom::blink::DigitalCredentialSelectorPtr;
+using blink::mojom::blink::Hint;
 using blink::mojom::blink::IdentityCredentialDisconnectOptions;
 using blink::mojom::blink::IdentityCredentialDisconnectOptionsPtr;
 using blink::mojom::blink::IdentityProvider;
@@ -590,6 +591,8 @@ TypeConverter<PublicKeyCredentialCreationOptionsPtr,
         AuthenticatorSelectionCriteria::From(*options.authenticatorSelection());
   }
 
+  mojo_options->hints = ConvertTo<Vector<Hint>>(options.hints());
+
   mojo_options->attestation = AttestationConveyancePreference::NONE;
   if (options.hasAttestation()) {
     absl::optional<AttestationConveyancePreference> attestation =
@@ -753,6 +756,8 @@ TypeConverter<PublicKeyCredentialRequestOptionsPtr,
       mojo_options->user_verification = *user_verification;
     }
   }
+
+  mojo_options->hints = ConvertTo<Vector<Hint>>(options.hints());
 
   if (options.hasExtensions()) {
     mojo_options->extensions =
@@ -1076,6 +1081,24 @@ TypeConverter<IdentityCredentialDisconnectOptionsPtr,
 
   mojo_disconnect_options->account_hint = options.accountHint();
   return mojo_disconnect_options;
+}
+
+Vector<Hint> TypeConverter<Vector<Hint>, Vector<String>>::Convert(
+    const Vector<String>& hints) {
+  Vector<Hint> ret;
+
+  for (const String& hint : hints) {
+    if (hint == "security-key") {
+      ret.push_back(Hint::SECURITY_KEY);
+    } else if (hint == "client-device") {
+      ret.push_back(Hint::CLIENT_DEVICE);
+    } else if (hint == "hybrid") {
+      ret.push_back(Hint::HYBRID);
+    }
+    // Unrecognised values are ignored.
+  }
+
+  return ret;
 }
 
 }  // namespace mojo

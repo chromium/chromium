@@ -903,6 +903,11 @@ void ChromeAuthenticatorRequestDelegate::ConfigureDiscoveries(
 #endif
 }
 
+void ChromeAuthenticatorRequestDelegate::SetHints(
+    const AuthenticatorRequestClientDelegate::Hints& hints) {
+  dialog_model_->SetHints(hints);
+}
+
 void ChromeAuthenticatorRequestDelegate::SelectAccount(
     std::vector<device::AuthenticatorGetAssertionResponse> responses,
     base::OnceCallback<void(device::AuthenticatorGetAssertionResponse)>

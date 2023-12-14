@@ -331,6 +331,11 @@ class AuthenticatorRequestDialogModel
   // Valid action when at step: kNotStarted.
   void StartGuidedFlowForMostLikelyTransportOrShowMechanismSelection();
 
+  bool HaveCredentialMechanisms() const;
+  bool StartGuidedFlowForMakeCredentialFromHint(
+      AuthenticatorTransport transport);
+  bool StartGuidedFlowForGetAssertionFromHint(AuthenticatorTransport transport);
+
   // Proceeds straight to the platform authenticator prompt. If `type` is
   // `nullopt` then it actives the default platform authenticator. Otherwise it
   // actives the platform authenticator of the given type.
@@ -629,6 +634,11 @@ class AuthenticatorRequestDialogModel
     is_enclave_authenticator_available_ = available;
   }
 
+  void SetHints(
+      const content::AuthenticatorRequestClientDelegate::Hints& hints) {
+    hints_ = hints;
+  }
+
   void set_cable_transport_info(
       absl::optional<bool> extension_is_v2,
       std::vector<std::unique_ptr<device::cablev2::Pairing>> paired_phones,
@@ -912,6 +922,10 @@ class AuthenticatorRequestDialogModel
   // attachment=platform should default to iCloud Keychain rather than the
   // profile authenticator.
   bool should_create_in_icloud_keychain_ = false;
+
+  // The RP's hints. See
+  // https://w3c.github.io/webauthn/#enumdef-publickeycredentialhints
+  content::AuthenticatorRequestClientDelegate::Hints hints_;
 
 #if BUILDFLAG(IS_MAC)
   // did_record_macos_start_histogram_ is set to true if a histogram record of
