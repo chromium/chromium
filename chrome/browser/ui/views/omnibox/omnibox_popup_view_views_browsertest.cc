@@ -638,9 +638,14 @@ IN_PROC_BROWSER_TEST_F(OmniboxPopupViewViewsTest, DeleteSuggestion) {
   EXPECT_EQ(OmniboxPopupSelection(1), edit_model()->GetPopupSelection());
 }
 
-// TODO(https://crbug.com/1511356): Disabled due to flakiness.
+// Flaky on Mac: https://crbug.com/1511356
+#if BUILDFLAG(IS_MAC)
+#define MAYBE_SpaceEntersKeywordMode DISABLED_SpaceEntersKeywordMode
+#else
+#define MAYBE_SpaceEntersKeywordMode SpaceEntersKeywordMode
+#endif
 IN_PROC_BROWSER_TEST_F(OmniboxPopupViewViewsTest,
-                       DISABLED_SpaceEntersKeywordMode) {
+                       MAYBE_SpaceEntersKeywordMode) {
   CreatePopupForTestQuery();
   EXPECT_TRUE(popup_view()->IsOpen());
 
