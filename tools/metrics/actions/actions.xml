@@ -13004,6 +13004,23 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
+<action name="IOS.InsecureFormCancel">
+  <owner>meacer@chromium.org</owner>
+  <owner>trusty-transport@chromium.org</owner>
+  <description>
+    Reported when an insecure form submission is cancelled. iOS only.
+  </description>
+</action>
+
+<action name="IOS.InsecureFormSendAnyway">
+  <owner>meacer@chromium.org</owner>
+  <owner>trusty-transport@chromium.org</owner>
+  <description>
+    Reported when an insecure form is submitted anyway despite the warning. iOS
+    only.
+  </description>
+</action>
+
 <action name="IOS.NTP.Doodle.Tapped">
   <owner>gambard@chromium.org</owner>
   <owner>justincohen@chromium.org</owner>

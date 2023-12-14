@@ -20,6 +20,12 @@ using alert_overlays::ButtonConfig;
 
 namespace {
 
+// Name of UMA User Action logged when user taps Cancel button.
+const char kInsecureFormCancelActionName[] = "IOS.InsecureFormCancel";
+
+// Name of UMA User Action logged when user taps Send Anyway button.
+const char kInsecureFormSendAnywayActionName[] = "IOS.InsecureFormSendAnyway";
+
 // The dialog shows Cancel and Allow buttons. This index is zero based.
 const size_t kAllowSendButtonIndex = 1;
 
@@ -54,8 +60,9 @@ void InsecureFormOverlayRequestConfig::CreateAuxiliaryData(
   // Configure buttons.
   std::vector<std::vector<ButtonConfig>> button_configs{
       {ButtonConfig(l10n_util::GetNSString(IDS_CANCEL),
-                    UIAlertActionStyleCancel),
-       ButtonConfig(l10n_util::GetNSString(IDS_INSECURE_FORM_SUBMIT_BUTTON))}};
+                    kInsecureFormCancelActionName, UIAlertActionStyleCancel),
+       ButtonConfig(l10n_util::GetNSString(IDS_INSECURE_FORM_SUBMIT_BUTTON),
+                    kInsecureFormSendAnywayActionName)}};
   // Create the alert config with the buttons and other information.
   AlertRequest::CreateForUserData(
       user_data, alert_title, alert_message,
