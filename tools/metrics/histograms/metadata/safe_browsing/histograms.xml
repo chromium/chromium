@@ -2315,6 +2315,25 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="SafeBrowsing.RT.Request.HadCookie.{RequestType}{UserType}"
+    units="BooleanPresent" expires_after="2024-06-30">
+  <owner>chlily@chromium.org</owner>
+  <owner>chrome-counter-abuse-alerts@google.com</owner>
+  <summary>
+    Logs whether the Safe Browsing real time request had a cookie, recorded for
+    {RequestType} upon completion of the URL request. Logged for {UserType}.
+  </summary>
+  <token key="RequestType">
+    <variant name="FirstRequest"
+        summary="the first request after service startup"/>
+    <variant name="SubsequentRequest" summary="any subsequent request"/>
+  </token>
+  <token key="UserType">
+    <variant name="" summary="any user"/>
+    <variant name=".SignedOutEsbUser" summary="only signed-out ESB users"/>
+  </token>
+</histogram>
+
 <histogram name="SafeBrowsing.RT.Request.ReferrerChainLength{UserCategory}"
     units="units" expires_after="2024-05-05">
   <owner>xinghuilu@chromium.org</owner>

@@ -36,6 +36,8 @@ constexpr int kDefaultRealTimeUrlLookupReferrerLength = 2;
 // Probability for sending protego requests for urls on the allowlist
 const float kProbabilityForSendingSampledRequests = 0.01;
 
+constexpr char kCookieHistogramPrefix[] = "SafeBrowsing.RT.Request.HadCookie";
+
 }  // namespace
 
 namespace safe_browsing {
@@ -244,6 +246,23 @@ void RealTimeUrlLookupService::MaybeLogLastProtegoPingTimeToPrefs(
             ? prefs::kSafeBrowsingEsbProtegoPingWithTokenLastLogTime
             : prefs::kSafeBrowsingEsbProtegoPingWithoutTokenLastLogTime,
         base::Time::Now());
+  }
+}
+
+void RealTimeUrlLookupService::MaybeLogProtegoPingCookieHistograms(
+    bool request_had_cookie,
+    bool was_first_request,
+    bool sent_with_token) {
+  std::string histogram_name = kCookieHistogramPrefix;
+  base::StrAppend(&histogram_name,
+                  {was_first_request ? ".FirstRequest" : ".SubsequentRequest"});
+  base::UmaHistogramBoolean(histogram_name, request_had_cookie);
+  // `pref_service_` can be null in tests.
+  // This histogram variant is only logged for signed-out ESB users.
+  if (!sent_with_token && pref_service_ &&
+      IsEnhancedProtectionEnabled(*pref_service_)) {
+    base::StrAppend(&histogram_name, {".SignedOutEsbUser"});
+    base::UmaHistogramBoolean(histogram_name, request_had_cookie);
   }
 }
 

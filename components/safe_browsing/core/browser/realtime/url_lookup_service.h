@@ -110,6 +110,9 @@ class RealTimeUrlLookupService : public RealTimeUrlLookupServiceBase {
   absl::optional<base::Time> GetMinAllowedTimestampForReferrerChains()
       const override;
   void MaybeLogLastProtegoPingTimeToPrefs(bool sent_with_token) override;
+  void MaybeLogProtegoPingCookieHistograms(bool request_had_cookie,
+                                           bool was_first_request,
+                                           bool sent_with_token) override;
 
   // Called when prefs that affect real time URL lookup are changed.
   void OnPrefChanged();
