@@ -4,4 +4,5 @@ include_rules = [
   "+components/sync_preferences/testing_pref_service_syncable.h",
   "+components/user_manager",
   "+device/bluetooth",
+  "+third_party/re2",
 ]

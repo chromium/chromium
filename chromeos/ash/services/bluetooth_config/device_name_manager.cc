@@ -6,6 +6,12 @@
 
 namespace ash::bluetooth_config {
 
+const char DeviceNameManager::kDeviceIdToNicknameMapPrefName[] =
+    "bluetooth.floss_device_id_to_nickname_map";
+
+const char DeviceNameManager::kDeviceIdToNicknameMapPrefNameLegacy[] =
+    "bluetooth.device_id_to_nickname_map";
+
 DeviceNameManager::DeviceNameManager() = default;
 
 DeviceNameManager::~DeviceNameManager() = default;
