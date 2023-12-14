@@ -7,6 +7,7 @@
 
 #include "base/compiler_specific.h"
 #include "build/build_config.h"
+#include "third_party/blink/renderer/platform/heap/heap_buildflags.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
 
 // On component builds, always hide the thread_local variable behind a call.
@@ -27,7 +28,7 @@
 
 // The call is still cheaper than multiple calls through WTF/base/pthread*
 // layers.
-#if defined(COMPONENT_BUILD)
+#if BUILDFLAG(BLINK_HEAP_INSIDE_SHARED_LIBRARY)
 #define BLINK_HEAP_HIDE_THREAD_LOCAL_IN_LIBRARY 1
 #else
 #define BLINK_HEAP_HIDE_THREAD_LOCAL_IN_LIBRARY 0
