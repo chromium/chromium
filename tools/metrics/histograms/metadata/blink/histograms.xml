@@ -1798,6 +1798,23 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Blink.FencedFrame.BeaconReportingHttpResult"
+    enum="FencedFrameBeaconReportingResult" expires_after="2024-12-13">
+  <owner>averge@chromium.org</owner>
+  <owner>gtanzer@chromium.org</owner>
+  <owner>chrome-fenced-frames-core@google.com</owner>
+  <summary>
+    If a fenced frame sends a beacon over the network for event-level reporting,
+    this records the HTTP response status of the beacon request immediately
+    after the request completes. For each beacon type, there is a
+    &quot;success&quot; and &quot;failure&quot; enum indicating 200 vs. non-200
+    HTTP response code, and an &quot;invalid&quot; enum indicating that the
+    request is invalid or did not complete successfully. Fenced frames can send
+    beacons on navigation, user actions, or both, and can send them to multiple
+    locations, so numerous requests can occur over the life of the frame.
+  </summary>
+</histogram>
+
 <histogram name="Blink.FencedFrame.CreationOrNavigationOutcome"
     enum="FencedFrameCreationOutcome" expires_after="2024-08-08">
   <owner>shivanisha@chromium.org</owner>

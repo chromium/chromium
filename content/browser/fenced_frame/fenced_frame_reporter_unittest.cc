@@ -13,6 +13,7 @@
 
 #include "base/memory/scoped_refptr.h"
 #include "base/strings/string_piece.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "content/browser/attribution_reporting/attribution_manager.h"
 #include "content/browser/attribution_reporting/test/mock_attribution_data_host_manager.h"
@@ -36,6 +37,7 @@
 #include "services/network/test/test_url_loader_factory.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/public/common/fenced_frame/fenced_frame_utils.h"
 #include "third_party/blink/public/common/fenced_frame/redacted_fenced_frame_config.h"
 #include "third_party/blink/public/mojom/private_aggregation/aggregatable_report.mojom.h"
 #include "url/gurl.h"
@@ -143,7 +145,7 @@ class FencedFrameReporterTest : public RenderViewHostTestHarness {
       return;
     }
 
-    // Checks specific to DestinationEnum events.
+    // Checks specific to DestinationEnum + AutomaticBeacon events.
     EXPECT_EQ(request.request_initiator, report_url_declarer_origin_);
     EXPECT_EQ(request.method, net::HttpRequestHeaders::kPostMethod);
 
@@ -165,6 +167,10 @@ class FencedFrameReporterTest : public RenderViewHostTestHarness {
  protected:
   RenderFrameHostImpl* main_rfh_impl() {
     return static_cast<RenderFrameHostImpl*>(main_rfh());
+  }
+
+  const base::HistogramTester& histogram_tester() const {
+    return histogram_tester_;
   }
 
   void ShutDownAttributionManager() {
@@ -199,6 +205,7 @@ class FencedFrameReporterTest : public RenderViewHostTestHarness {
 
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
+  base::HistogramTester histogram_tester_;
 };
 
 // ReportingDestination has no map.
@@ -1382,6 +1389,223 @@ TEST_F(FencedFrameReporterTest, AttributionManagerShutDown_NoCrash) {
 
   EXPECT_TRUE(test_url_loader_factory_.SimulateResponseForPendingRequest(
       report_destination_.spec(), ""));
+}
+
+// Histogram tests. Separate from existing tests because we need to account
+// for HTTP request failures, and actually simulate HTTP responses instead of
+// just leaving them pending.
+
+TEST_F(FencedFrameReporterTest, SendReportsRecordHistogramsEnum) {
+  scoped_refptr<FencedFrameReporter> reporter =
+      FencedFrameReporter::CreateForSharedStorage(
+          shared_url_loader_factory(), browser_context(),
+          report_url_declarer_origin_,
+          /*reporting_url_map=*/
+          {{"event_type", report_destination_},
+           {"event_type2", report_destination2_}});
+
+  std::string error_message;
+  blink::mojom::ConsoleMessageLevel console_message_level =
+      blink::mojom::ConsoleMessageLevel::kError;
+
+  // Make an enum report that succeeds.
+  EXPECT_TRUE(reporter->SendReport(
+      DestinationEnumEvent("event_type", "event_data"),
+      blink::FencedFrame::ReportingDestination::kSharedStorageSelectUrl,
+      main_rfh_impl(), network::AttributionReportingRuntimeFeatures(),
+      error_message, console_message_level));
+  EXPECT_EQ(test_url_loader_factory_.NumPending(), 1);
+  ValidateRequest((*test_url_loader_factory_.pending_requests())[0].request,
+                  report_destination_, "event_data");
+
+  test_url_loader_factory_.SimulateResponseForPendingRequest(
+      report_destination_.spec(), "");
+  EXPECT_EQ(test_url_loader_factory_.NumPending(), 0);
+
+  histogram_tester().ExpectTotalCount(
+      blink::kFencedFrameBeaconReportingHttpResultUMA, 1);
+  histogram_tester().ExpectBucketCount(
+      blink::kFencedFrameBeaconReportingHttpResultUMA,
+      blink::FencedFrameBeaconReportingResult::kDestinationEnumSuccess, 1);
+
+  // Make an enum report that fails due to HTTP status 404.
+  EXPECT_TRUE(reporter->SendReport(
+      DestinationEnumEvent("event_type", "event_data"),
+      blink::FencedFrame::ReportingDestination::kSharedStorageSelectUrl,
+      main_rfh_impl(), network::AttributionReportingRuntimeFeatures(),
+      error_message, console_message_level));
+  EXPECT_EQ(test_url_loader_factory_.NumPending(), 1);
+  ValidateRequest((*test_url_loader_factory_.pending_requests())[0].request,
+                  report_destination_, "event_data");
+
+  test_url_loader_factory_.SimulateResponseForPendingRequest(
+      report_destination_.spec(), "", net::HTTP_NOT_FOUND);
+  EXPECT_EQ(test_url_loader_factory_.NumPending(), 0);
+
+  histogram_tester().ExpectTotalCount(
+      blink::kFencedFrameBeaconReportingHttpResultUMA, 2);
+  histogram_tester().ExpectBucketCount(
+      blink::kFencedFrameBeaconReportingHttpResultUMA,
+      blink::FencedFrameBeaconReportingResult::kDestinationEnumSuccess, 1);
+  histogram_tester().ExpectBucketCount(
+      blink::kFencedFrameBeaconReportingHttpResultUMA,
+      blink::FencedFrameBeaconReportingResult::kDestinationEnumFailure, 1);
+}
+
+TEST_F(FencedFrameReporterTest, SendReportsRecordHistogramsURL) {
+  scoped_refptr<FencedFrameReporter> reporter =
+      FencedFrameReporter::CreateForFledge(
+          shared_url_loader_factory(), browser_context(),
+          /*direct_seller_is_seller=*/false, &private_aggregation_manager_,
+          main_frame_origin_,
+          /*winner_origin=*/report_destination_origin_,
+          /*winner_aggregation_coordinator_origin=*/absl::nullopt,
+          /*allowed_reporting_origins=*/{{report_destination_origin_}});
+
+  // Receive all mappings.
+  reporter->OnUrlMappingReady(
+      blink::FencedFrame::ReportingDestination::kSeller,
+      report_url_declarer_origin_,
+      /*reporting_url_map=*/{{"event_type", report_destination_}});
+  reporter->OnUrlMappingReady(
+      blink::FencedFrame::ReportingDestination::kComponentSeller,
+      report_url_declarer_origin_,
+      /*reporting_url_map=*/{{"event_type", report_destination2_}});
+  reporter->OnUrlMappingReady(
+      blink::FencedFrame::ReportingDestination::kBuyer,
+      report_url_declarer_origin_,
+      /*reporting_url_map=*/{{"event_type", report_destination3_}},
+      /*reporting_ad_macros=*/FencedFrameReporter::ReportingMacros());
+  EXPECT_EQ(test_url_loader_factory_.NumPending(), 0);
+
+  std::string error_message;
+  blink::mojom::ConsoleMessageLevel console_message_level =
+      blink::mojom::ConsoleMessageLevel::kError;
+
+  // Make a URL report that succeeds.
+  EXPECT_TRUE(reporter->SendReport(
+      DestinationURLEvent(report_destination_),
+      blink::FencedFrame::ReportingDestination::kBuyer, main_rfh_impl(),
+      network::AttributionReportingRuntimeFeatures(), error_message,
+      console_message_level));
+  EXPECT_EQ(test_url_loader_factory_.NumPending(), 1);
+  ValidateRequest((*test_url_loader_factory_.pending_requests())[0].request,
+                  report_destination_, absl::nullopt);
+
+  test_url_loader_factory_.SimulateResponseForPendingRequest(
+      report_destination_.spec(), "");
+  EXPECT_EQ(test_url_loader_factory_.NumPending(), 0);
+
+  histogram_tester().ExpectTotalCount(
+      blink::kFencedFrameBeaconReportingHttpResultUMA, 1);
+  histogram_tester().ExpectBucketCount(
+      blink::kFencedFrameBeaconReportingHttpResultUMA,
+      blink::FencedFrameBeaconReportingResult::kDestinationUrlSuccess, 1);
+
+  // Make a URL report that fails with HTTP status 404.
+  EXPECT_TRUE(reporter->SendReport(
+      DestinationURLEvent(report_destination_),
+      blink::FencedFrame::ReportingDestination::kBuyer, main_rfh_impl(),
+      network::AttributionReportingRuntimeFeatures(), error_message,
+      console_message_level));
+  EXPECT_EQ(test_url_loader_factory_.NumPending(), 1);
+  ValidateRequest((*test_url_loader_factory_.pending_requests())[0].request,
+                  report_destination_, absl::nullopt);
+
+  test_url_loader_factory_.SimulateResponseForPendingRequest(
+      report_destination_.spec(), "", net::HTTP_NOT_FOUND);
+  EXPECT_EQ(test_url_loader_factory_.NumPending(), 0);
+
+  histogram_tester().ExpectTotalCount(
+      blink::kFencedFrameBeaconReportingHttpResultUMA, 2);
+  histogram_tester().ExpectBucketCount(
+      blink::kFencedFrameBeaconReportingHttpResultUMA,
+      blink::FencedFrameBeaconReportingResult::kDestinationUrlSuccess, 1);
+  histogram_tester().ExpectBucketCount(
+      blink::kFencedFrameBeaconReportingHttpResultUMA,
+      blink::FencedFrameBeaconReportingResult::kDestinationUrlFailure, 1);
+}
+
+TEST_F(FencedFrameReporterTest, SendReportsRecordHistogramsAutomaticBeacon) {
+  scoped_refptr<FencedFrameReporter> reporter =
+      FencedFrameReporter::CreateForFledge(
+          shared_url_loader_factory(), browser_context(),
+          /*direct_seller_is_seller=*/false, &private_aggregation_manager_,
+          main_frame_origin_,
+          /*winner_origin=*/report_destination_origin_,
+          /*winner_aggregation_coordinator_origin=*/absl::nullopt,
+          /*allowed_reporting_origins=*/{{report_destination_origin_}});
+
+  // Receive all mappings.
+  reporter->OnUrlMappingReady(
+      blink::FencedFrame::ReportingDestination::kSeller,
+      report_url_declarer_origin_,
+      /*reporting_url_map=*/
+      {{blink::kFencedFrameTopNavigationStartBeaconType, report_destination_}});
+  reporter->OnUrlMappingReady(
+      blink::FencedFrame::ReportingDestination::kComponentSeller,
+      report_url_declarer_origin_,
+      /*reporting_url_map=*/
+      {{blink::kFencedFrameTopNavigationStartBeaconType,
+        report_destination2_}});
+  reporter->OnUrlMappingReady(
+      blink::FencedFrame::ReportingDestination::kBuyer,
+      report_url_declarer_origin_,
+      /*reporting_url_map=*/
+      {{blink::kFencedFrameTopNavigationStartBeaconType, report_destination3_}},
+      /*reporting_ad_macros=*/FencedFrameReporter::ReportingMacros());
+  EXPECT_EQ(test_url_loader_factory_.NumPending(), 0);
+
+  std::string error_message;
+  blink::mojom::ConsoleMessageLevel console_message_level =
+      blink::mojom::ConsoleMessageLevel::kError;
+
+  // Make an automatic beacon report that succeeds.
+  EXPECT_TRUE(reporter->SendReport(
+      AutomaticBeaconEvent(
+          blink::mojom::AutomaticBeaconType::kTopNavigationStart,
+          "event_data3"),
+      blink::FencedFrame::ReportingDestination::kBuyer, main_rfh_impl(),
+      network::AttributionReportingRuntimeFeatures(), error_message,
+      console_message_level));
+  EXPECT_EQ(test_url_loader_factory_.NumPending(), 1);
+  ValidateRequest((*test_url_loader_factory_.pending_requests())[0].request,
+                  report_destination3_, "event_data3");
+
+  test_url_loader_factory_.SimulateResponseForPendingRequest(
+      report_destination3_.spec(), "");
+  EXPECT_EQ(test_url_loader_factory_.NumPending(), 0);
+
+  histogram_tester().ExpectTotalCount(
+      blink::kFencedFrameBeaconReportingHttpResultUMA, 1);
+  histogram_tester().ExpectBucketCount(
+      blink::kFencedFrameBeaconReportingHttpResultUMA,
+      blink::FencedFrameBeaconReportingResult::kAutomaticSuccess, 1);
+
+  // Make an automatic beacon report that fails with HTTP status 404.
+  EXPECT_TRUE(reporter->SendReport(
+      AutomaticBeaconEvent(
+          blink::mojom::AutomaticBeaconType::kTopNavigationStart,
+          "event_data3"),
+      blink::FencedFrame::ReportingDestination::kBuyer, main_rfh_impl(),
+      network::AttributionReportingRuntimeFeatures(), error_message,
+      console_message_level));
+  EXPECT_EQ(test_url_loader_factory_.NumPending(), 1);
+  ValidateRequest((*test_url_loader_factory_.pending_requests())[0].request,
+                  report_destination3_, "event_data3");
+
+  test_url_loader_factory_.SimulateResponseForPendingRequest(
+      report_destination3_.spec(), "", net::HTTP_NOT_FOUND);
+  EXPECT_EQ(test_url_loader_factory_.NumPending(), 0);
+
+  histogram_tester().ExpectTotalCount(
+      blink::kFencedFrameBeaconReportingHttpResultUMA, 2);
+  histogram_tester().ExpectBucketCount(
+      blink::kFencedFrameBeaconReportingHttpResultUMA,
+      blink::FencedFrameBeaconReportingResult::kAutomaticSuccess, 1);
+  histogram_tester().ExpectBucketCount(
+      blink::kFencedFrameBeaconReportingHttpResultUMA,
+      blink::FencedFrameBeaconReportingResult::kAutomaticFailure, 1);
 }
 
 }  // namespace

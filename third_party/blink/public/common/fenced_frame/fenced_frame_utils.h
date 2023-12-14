@@ -46,6 +46,9 @@ inline constexpr char kAutomaticBeaconOutcomeHistogram[] =
 inline constexpr char kAutomaticBeaconEventTypeHistogram[] =
     "Navigation.FencedFrameAutomaticBeaconEventType";
 
+inline constexpr char kFencedFrameBeaconReportingHttpResultUMA[] =
+    "Blink.FencedFrame.BeaconReportingHttpResult";
+
 // Corresponds to the "FencedFrameCreationOutcome" histogram enumeration type in
 // tools/metrics/histograms/enums.xml.
 //
@@ -82,6 +85,22 @@ enum class FencedFrameNavigationState {
   kBegin = 0,
   kCommit = 1,
   kMaxValue = kCommit
+};
+
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+enum class FencedFrameBeaconReportingResult {
+  kUnknownResult = 0,
+  kDestinationEnumInvalid = 1,
+  kDestinationEnumSuccess = 2,
+  kDestinationEnumFailure = 3,
+  kDestinationUrlInvalid = 4,
+  kDestinationUrlSuccess = 5,
+  kDestinationUrlFailure = 6,
+  kAutomaticInvalid = 7,
+  kAutomaticSuccess = 8,
+  kAutomaticFailure = 9,
+  kMaxValue = kAutomaticFailure
 };
 
 // Whether or not a fenced frame is allowed to be navigated to `url`. For now

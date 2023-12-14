@@ -231,10 +231,14 @@ class CONTENT_EXPORT FencedFrameReporter
   // * a `DestinationEnumEvent`, which contains a `type` and `data`
   //   * Sends a POST to the url specified by `type` in the ReportingUrlMap,
   //     with `data` attached.
-  //   * If there's no matching `type`, no beacon is sent. sent.
+  //   * If there's no matching `type`, no beacon is sent.
   // * a `DestinationURLEvent`, which contains a `url`
   //   * Sends a GET to `url`.
   //   * Substitutes macros from the ReportingMacros.
+  // * an `AutomaticBeaconEvent`, which contains a `type` and `data`
+  //   * Like the enum variant, the data is sent as a POST to the url specified
+  //     by `type`. However, given that these events are triggered automatically
+  //     by the browser, they are semantically different from enum events.
   //
   // Returns false and populated `error_message` and `console_message_level` if
   // no network request was attempted, unless the reporting URL map for
