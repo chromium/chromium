@@ -817,16 +817,19 @@ TEST_F(RealTimeUrlLookupServiceTest, TestReferrerChain_ReferrerChainAttached) {
                         "example.test/",
                         RTLookupResponse::ThreatInfo::COVERING_MATCH);
   ReferrerChain returned_referrer_chain;
-  double current_ts = base::Time::Now().InSecondsFSinceUnixEpoch();
+  double navigation_time_msec =
+      base::Time::Now().InMillisecondsSinceUnixEpoch();
   returned_referrer_chain.Add()->Swap(
       CreateReferrerChainEntry(kTestUrl, /*main_frame_url=*/"",
                                /*referrer_url=*/"",
-                               /*referrer_main_frame_url=*/"", current_ts)
+                               /*referrer_main_frame_url=*/"",
+                               navigation_time_msec)
           .get());
   returned_referrer_chain.Add()->Swap(
       CreateReferrerChainEntry(kTestReferrerUrl, /*main_frame_url=*/"",
                                /*referrer_url=*/"",
-                               /*referrer_main_frame_url=*/"", current_ts)
+                               /*referrer_main_frame_url=*/"",
+                               navigation_time_msec)
           .get());
   EXPECT_CALL(*referrer_chain_provider_,
               IdentifyReferrerChainByPendingEventURL(
@@ -861,16 +864,18 @@ TEST_F(RealTimeUrlLookupServiceTest,
                         "example.test/",
                         RTLookupResponse::ThreatInfo::COVERING_MATCH);
   ReferrerChain returned_referrer_chain;
-  double current_ts = base::Time::Now().InSecondsFSinceUnixEpoch();
+  double navigation_time_msec =
+      base::Time::Now().InMillisecondsSinceUnixEpoch();
   returned_referrer_chain.Add()->Swap(
       CreateReferrerChainEntry(kTestSubframeUrl, kTestUrl,
                                kTestSubframeReferrerUrl, kTestReferrerUrl,
-                               current_ts)
+                               navigation_time_msec)
           .get());
   returned_referrer_chain.Add()->Swap(
       CreateReferrerChainEntry(kTestReferrerUrl, /*main_frame_url=*/"",
                                /*referrer_url=*/"",
-                               /*referrer_main_frame_url=*/"", current_ts)
+                               /*referrer_main_frame_url=*/"",
+                               navigation_time_msec)
           .get());
   EXPECT_CALL(*referrer_chain_provider_,
               IdentifyReferrerChainByPendingEventURL(
@@ -926,16 +931,18 @@ TEST_F(RealTimeUrlLookupServiceTest,
                         "example.test/",
                         RTLookupResponse::ThreatInfo::COVERING_MATCH);
   ReferrerChain returned_referrer_chain;
-  double current_ts = base::Time::Now().InSecondsFSinceUnixEpoch();
+  double navigation_time_msec =
+      base::Time::Now().InMillisecondsSinceUnixEpoch();
   returned_referrer_chain.Add()->Swap(
       CreateReferrerChainEntry(kTestSubframeUrl, kTestUrl,
                                kTestSubframeReferrerUrl, kTestReferrerUrl,
-                               current_ts)
+                               navigation_time_msec)
           .get());
   returned_referrer_chain.Add()->Swap(
       CreateReferrerChainEntry(kTestSubframeReferrerUrl, kTestReferrerUrl,
                                /*referrer_url=*/"",
-                               /*referrer_main_frame_url=*/"", current_ts)
+                               /*referrer_main_frame_url=*/"",
+                               navigation_time_msec)
           .get());
   EXPECT_CALL(*referrer_chain_provider_,
               IdentifyReferrerChainByPendingEventURL(
@@ -984,7 +991,7 @@ TEST_F(RealTimeUrlLookupServiceTest,
   returned_referrer_chain.Add()->Swap(
       CreateReferrerChainEntry(kTestSubframeUrl, kTestUrl,
                                kTestSubframeReferrerUrl, kTestReferrerUrl,
-                               base::Time::Now().InSecondsFSinceUnixEpoch())
+                               base::Time::Now().InMillisecondsSinceUnixEpoch())
           .get());
 
   task_environment_.FastForwardBy(base::Minutes(1));
@@ -998,7 +1005,7 @@ TEST_F(RealTimeUrlLookupServiceTest,
       CreateReferrerChainEntry(kTestSubframeReferrerUrl, kTestReferrerUrl,
                                /*referrer_url=*/"",
                                /*referrer_main_frame_url=*/"",
-                               base::Time::Now().InSecondsFSinceUnixEpoch())
+                               base::Time::Now().InMillisecondsSinceUnixEpoch())
           .get());
   EXPECT_CALL(*referrer_chain_provider_,
               IdentifyReferrerChainByPendingEventURL(

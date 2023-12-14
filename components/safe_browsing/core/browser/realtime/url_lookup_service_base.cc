@@ -205,7 +205,7 @@ void RealTimeUrlLookupServiceBase::SanitizeReferrerChainEntries(
     // before the min_timestamp.
     if (min_allowed_timestamp.has_value() &&
         entry.navigation_time_msec() <
-            min_allowed_timestamp->InSecondsFSinceUnixEpoch()) {
+            min_allowed_timestamp->InMillisecondsSinceUnixEpoch()) {
       entry.clear_url();
       entry.clear_main_frame_url();
       entry.clear_referrer_url();
