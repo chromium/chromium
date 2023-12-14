@@ -1,8 +1,8 @@
-# Unless you have a specific reason to ask review to individual owners listed
-# below, please assign your CL to: assistive-code-review@google.com. It will
-# automatically assign your CL to reviewers.
+# Please use this reviewer queue instead of specifying an individual reviewer
+# unless there is a specific reason for it.
+assistive-code-review@google.com
 
-angelaxiao@chromium.org
-wutao@chromium.org
-xiaohuic@chromium.org
-yawano@google.com
+angelaxiao@chromium.org #{LAST_RESORT_SUGGESTION}
+wutao@chromium.org #{LAST_RESORT_SUGGESTION}
+xiaohuic@chromium.org #{LAST_RESORT_SUGGESTION}
+yawano@google.com #{LAST_RESORT_SUGGESTION}
