@@ -82,6 +82,10 @@ std::vector<SupportedVideoDecoderConfig> GetSupportedConfigsInternal(
           !can_use_builtin_software_decoder ||
           allow_media_codec_software_decoder;
       if (info.is_software_codec && !is_os_software_decoder_allowed) {
+        supported_configs.emplace_back(info.profile, info.profile,
+                                       info.coded_size_min, info.coded_size_max,
+                                       kAllowEncrypted,
+                                       /*require_encrypted=*/true);
         continue;
       }
 

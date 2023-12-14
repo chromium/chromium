@@ -350,9 +350,21 @@ TEST_P(MediaCodecVideoDecoderH264Test, H264IsSupported) {
   ASSERT_TRUE(Initialize(TestVideoConfig::NormalH264()));
 }
 
+// Ensures that we always report support for low resolution encrypted content
+// since Android guarantees support for these codecs.
+TEST_P(MediaCodecVideoDecoderTest, SoftwareDecodersSupportEncrypted) {
+  auto configs = MediaCodecVideoDecoder::GetSupportedConfigs();
+  for (const auto& c : configs) {
+    if (c.Matches(TestVideoConfig::NormalEncrypted(GetParam()))) {
+      return;
+    }
+  }
+  FAIL() << "No encrypted config found for " << GetCodecName(GetParam());
+}
+
 TEST_P(MediaCodecVideoDecoderVp8Test, SmallVp8IsRejected) {
   auto configs = MediaCodecVideoDecoder::GetSupportedConfigs();
-  auto small_vp8_config = TestVideoConfig::Normal();
+  auto small_vp8_config = TestVideoConfig::Normal(VideoCodec::kVP8);
   for (const auto& c : configs)
     ASSERT_FALSE(c.Matches(small_vp8_config));
 }
