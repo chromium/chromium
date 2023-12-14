@@ -356,17 +356,18 @@ size_t OctreeColorQuantizer::FindColorIndexInternal(
     return node->palette_index_;
   }
 
+  // We found that the colors look better when we start searching backwards
+  // first starting at `index`.
   const auto index = GetColorIndexAtLevel(color, level);
-
-  // Search forward starting at `index` then search backward.
-  for (uint8_t i = index; i < kNumBitsPerColorChannel; ++i) {
+  for (int8_t i = index; i >= 0; --i) {
     if (const auto& child = node->child_nodes_[i]) {
       return FindColorIndexInternal(child.get(), level + 1, color);
     }
   }
 
-  for (uint8_t i = index; i > 0; --i) {
-    if (const auto& child = node->child_nodes_[i - 1]) {
+  // Search forward starting at `index + 1`.
+  for (uint8_t i = index + 1; i < kNumBitsPerColorChannel; ++i) {
+    if (const auto& child = node->child_nodes_[i]) {
       return FindColorIndexInternal(child.get(), level + 1, color);
     }
   }

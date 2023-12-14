@@ -17,14 +17,23 @@ RgbVideoFrame::RgbVideoFrame(const SkBitmap& bitmap)
       data_(new RgbColor[width_ * height_]) {
   DCHECK_EQ(kN32_SkColorType, bitmap.colorType());
 
-  // Note that we don't use `bitmap.rowBytesAsPixels()` or `bitmap.rowBytes()`
-  // since the values returned from these can contain padding at the end of each
-  // row. We're only interested in the real pixel data.
-  const size_t num_pixels_per_row = width_;
   const size_t bytes_per_pixel = bitmap.bytesPerPixel();
+  DCHECK_EQ(bytes_per_pixel, sizeof(RgbColor));
+
+  // Some bitmaps may contain padding pixels at the end of each row. In this
+  // case the returned value of `rowBytesAsPixels()` will be larger than
+  // `width_`. If there are no padding pixels, then we can copy the whole buffer
+  // in a 1-shot `memcpy()` call.
+  if (width_ == bitmap.rowBytesAsPixels()) {
+    const size_t num_bytes = num_pixels() * bytes_per_pixel;
+    std::memcpy(&data_[0], bitmap.getPixels(), num_bytes);
+    return;
+  }
+
+  // Otherwise, we have to copy it row by row.
+  const size_t num_pixels_per_row = width_;
   const size_t bytes_per_row = num_pixels_per_row * bytes_per_pixel;
 
-  DCHECK_EQ(bytes_per_pixel, sizeof(RgbColor));
   DCHECK_EQ(num_pixels() * sizeof(RgbColor), bytes_per_row * height_);
   DCHECK_EQ(width_ * sizeof(RgbColor), bytes_per_row);
 
