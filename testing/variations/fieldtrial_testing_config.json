@@ -17196,45 +17196,6 @@
             ]
         }
     ],
-    "SharedHighlightingTimeout": [
-        {
-            "platforms": [
-                "chromeos",
-                "chromeos_lacros",
-                "fuchsia",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled_600",
-                    "params": {
-                        "TimeoutLengthMs": "600"
-                    },
-                    "enable_features": [
-                        "PreemptiveLinkToTextGeneration"
-                    ]
-                }
-            ]
-        },
-        {
-            "platforms": [
-                "android"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled_120",
-                    "params": {
-                        "TimeoutLengthMs": "120"
-                    },
-                    "enable_features": [
-                        "PreemptiveLinkToTextGeneration"
-                    ]
-                }
-            ]
-        }
-    ],
     "SharingHubDesktopScreenshots": [
         {
             "platforms": [

@@ -346,8 +346,6 @@ public abstract class ChromeFeatureList {
     public static final String PLUS_ADDRESSES_ENABLED = "PlusAddressesEnabled";
     public static final String PORTALS = "Portals";
     public static final String PORTALS_CROSS_ORIGIN = "PortalsCrossOrigin";
-    public static final String PREEMPTIVE_LINK_TO_TEXT_GENERATION =
-            "PreemptiveLinkToTextGeneration";
     public static final String PRERENDER2 = "Prerender2";
     public static final String PRECONNECT_ON_TAB_CREATION = "PreconnectOnTabCreation";
     public static final String PRICE_CHANGE_MODULE = "PriceChangeModule";

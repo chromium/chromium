@@ -13,7 +13,6 @@ import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskTraits;
 import org.chromium.blink.mojom.TextFragmentReceiver;
 import org.chromium.chrome.R;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.share.ChromeShareExtras;
 import org.chromium.chrome.browser.share.share_sheet.ChromeOptionShareCallback;
 import org.chromium.chrome.browser.share.share_sheet.ShareSheetLinkToggleCoordinator.LinkToggleState;
@@ -170,7 +169,7 @@ public class LinkToTextCoordinator extends EmptyTabObserver {
             }
         }
 
-        PostTask.postDelayedTask(TaskTraits.UI_DEFAULT, () -> timeout(), getTimeout());
+        PostTask.postDelayedTask(TaskTraits.UI_DEFAULT, () -> timeout(), TIMEOUT_MS);
         requestSelector();
     }
 
@@ -182,7 +181,7 @@ public class LinkToTextCoordinator extends EmptyTabObserver {
             return;
         }
 
-        PostTask.postDelayedTask(TaskTraits.UI_DEFAULT, () -> timeout(), getTimeout());
+        PostTask.postDelayedTask(TaskTraits.UI_DEFAULT, () -> timeout(), TIMEOUT_MS);
         mRemoteRequestStatus = RemoteRequestStatus.REQUESTED;
         LinkToTextHelper.extractTextFragmentsMatches(
                 mProducer,
@@ -389,13 +388,6 @@ public class LinkToTextCoordinator extends EmptyTabObserver {
         }
         cancel();
         cleanup();
-    }
-
-    private int getTimeout() {
-        return ChromeFeatureList.getFieldTrialParamByFeatureAsInt(
-                ChromeFeatureList.PREEMPTIVE_LINK_TO_TEXT_GENERATION,
-                "TimeoutLengthMs",
-                TIMEOUT_MS);
     }
 
     @VisibleForTesting

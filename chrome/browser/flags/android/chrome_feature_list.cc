@@ -113,7 +113,6 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &features::kBlockMidiByDefault,
     &features::kBoardingPassDetector,
     &features::kNetworkServiceInProcess,
-    &shared_highlighting::kPreemptiveLinkToTextGeneration,
     &features::kElasticOverscroll,
     &features::kPrivacyGuideAndroid,
     &features::kPrivacyGuideAndroid3,
