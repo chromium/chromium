@@ -133,11 +133,15 @@ group("gn_all") {
     }
 
     if (!is_ios && !is_android && !is_castos) {
+      if (!is_fuchsia) {
+        deps += [
+          "//chrome",
+          "//chrome/browser/ui/actions:dump_actions",
+          "//chrome/browser/ui/color:dump_colors",
+          "//chrome/test:browser_tests",
+        ]
+      }
       deps += [
-        "//chrome",
-        "//chrome/browser/ui/actions:dump_actions",
-        "//chrome/browser/ui/color:dump_colors",
-        "//chrome/test:browser_tests",
         "//components/subresource_filter/tools:subresource_filter_tools",
         "//components/zucchini:zucchini",
         "//gpu/gles2_conform_support:gles2_conform_test",
@@ -152,7 +156,7 @@ group("gn_all") {
       ]
     }
 
-    if (!is_castos) {
+    if (!is_castos && !is_fuchsia) {
       deps += [ "//chrome/installer" ]
     }
 
@@ -172,10 +176,10 @@ group("gn_all") {
     }
 
     if (!is_ios && !is_castos) {
-      deps += [
-        "//chrome/test:unit_tests",
-        "//ui/accessibility:accessibility_unittests",
-      ]
+      if (!is_fuchsia) {
+        deps += [ "//chrome/test:unit_tests" ]
+      }
+      deps += [ "//ui/accessibility:accessibility_unittests" ]
     }
 
     if (use_blink) {
@@ -241,7 +245,7 @@ group("gn_all") {
         "//third_party/catapult/telemetry:bitmaptools($host_toolchain)",
       ]
       if (!is_android) {
-        if (!is_castos) {
+        if (!is_castos && !is_fuchsia) {
           deps += [ "//chrome/test:telemetry_perf_unittests" ]
         }
       } else {
@@ -527,7 +531,7 @@ group("gn_all") {
         ]
       }
 
-      if (!is_android && !is_castos && !is_ios) {
+      if (!is_android && !is_castos && !is_ios && !is_fuchsia) {
         deps += [
           "//chrome/test:load_library_perf_tests",
           "//chrome/test:sync_performance_tests",
@@ -1614,8 +1618,6 @@ group("chromium_builder_perf") {
 
   if (!is_ios && !is_android && !is_castos && !is_cronet_build) {
     data_deps = [
-      "//chrome/test:load_library_perf_tests",
-      "//chrome/test:performance_test_suite",
       "//components/tracing:tracing_perftests",
       "//gpu:command_buffer_perftests",
       "//gpu:gpu_perftests",
@@ -1623,7 +1625,14 @@ group("chromium_builder_perf") {
       "//tools/perf/chrome_telemetry_build:telemetry_chrome_test",
     ]
 
-    if (!is_chromeos_ash && !(is_fuchsia && optimize_for_size)) {
+    if (!is_fuchsia) {
+      data_deps += [
+        "//chrome/test:load_library_perf_tests",
+        "//chrome/test:performance_test_suite",
+      ]
+    }
+
+    if (!is_chromeos_ash && !is_fuchsia) {
       data_deps += [ "//chrome/test:performance_browser_tests" ]
     }
 
@@ -1651,13 +1660,6 @@ group("chromium_builder_perf") {
       "//third_party/angle/src/tests:angle_perftests",
     ]
   }
-
-  # An `if (is_fuchsia)` condition in //chrome/test/BUILD.gn prevents this
-  # target from being defined.
-  # TODO(crbug.com/1310086): Resolve that and remove this exception.
-  if (is_fuchsia) {
-    data_deps -= [ "//chrome/test:performance_test_suite" ]
-  }
 }
 
 if (!is_ios && !is_android && !is_castos && !is_cronet_build) {
@@ -1665,11 +1667,13 @@ if (!is_ios && !is_android && !is_castos && !is_cronet_build) {
     testonly = true
 
     deps = [
-      "//chrome:chrome",
       "//content/shell:content_shell",
       "//third_party/blink/public/mojom:mojom_modules_js",
       "//v8:d8",
     ]
+    if (!is_fuchsia) {
+      deps += [ "//chrome:chrome" ]
+    }
     if (!is_win) {
       deps += [ "//skia:filter_fuzz_stub" ]
     }

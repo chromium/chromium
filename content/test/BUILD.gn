@@ -823,9 +823,6 @@ if (is_fuchsia) {
       "//testing:run_perf_test",
       "//tools/perf/:perf",
     ]
-    if (!optimize_for_size) {
-      data_deps += [ "//chrome/test:sync_performance_tests" ]
-    }
   }
   group("fuchsia_telemetry_test_data") {
     testonly = true

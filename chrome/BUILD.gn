@@ -106,7 +106,7 @@ group("assert_no_deps") {
 
   if (is_android) {
     deps += [ "//chrome/android:chrome_public_apk" ]
-  } else {
+  } else if (!is_fuchsia) {
     deps += [ ":chrome" ]
   }
 
@@ -129,7 +129,7 @@ group("assert_no_deps") {
   }
 }
 
-if (!is_android && !is_mac) {
+if (!is_android && !is_mac && !is_fuchsia) {
   group("chrome") {
     public_deps = [ ":chrome_initial" ]
     data_deps = [ ":chrome_initial" ]
