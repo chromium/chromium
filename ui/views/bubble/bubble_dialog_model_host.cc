@@ -183,6 +183,24 @@ class CheckboxControl : public Checkbox {
 BEGIN_METADATA(CheckboxControl)
 END_METADATA
 
+struct DialogModelHostField {
+  raw_ptr<ui::DialogModelField> dialog_model_field = nullptr;
+
+  // View representing the entire field.
+  raw_ptr<View, DanglingUntriaged> field_view = nullptr;
+
+  // Child view to |field_view|, if any, that's used for focus. For instance,
+  // a textfield row would be a container that contains both a
+  // views::Textfield and a descriptive label. In this case |focusable_view|
+  // would refer to the views::Textfield which is also what would gain focus.
+  raw_ptr<View, DanglingUntriaged> focusable_view = nullptr;
+};
+
+View* GetTargetView(const DialogModelHostField& field_view_info) {
+  return field_view_info.focusable_view ? field_view_info.focusable_view.get()
+                                        : field_view_info.field_view.get();
+}
+
 }  // namespace
 
 BubbleDialogModelHost::CustomView::CustomView(std::unique_ptr<View> view,
@@ -228,9 +246,70 @@ class BubbleDialogModelHost::ContentsView final : public BoxLayoutView {
     RemoveAllChildViews();
     parent_ = nullptr;
     contents_ = nullptr;
+    fields_.clear();
   }
 
- public:
+  void AddDialogModelHostField(std::unique_ptr<View> view,
+                               const DialogModelHostField& field_view_info) {
+    CHECK(parent_);
+    DCHECK_EQ(view.get(), field_view_info.field_view);
+
+    AddChildView(std::move(view));
+    AddDialogModelHostFieldForExistingView(field_view_info);
+  }
+
+  // TODO(pbos): Remove BubbleDialogModelHost direct dependency on this method
+  // then merge with AddDialogModelHostField, and presumably make private. Also
+  // remove calls to parent_ (due to buttons being hosted in the parent), they
+  // should be handled separately by BubbleDialogModelHost.
+  void AddDialogModelHostFieldForExistingView(
+      const DialogModelHostField& field_view_info) {
+    DCHECK(field_view_info.dialog_model_field);
+    DCHECK(field_view_info.field_view);
+    DCHECK(Contains(field_view_info.field_view) ||
+           field_view_info.field_view == parent_->GetOkButton() ||
+           field_view_info.field_view == parent_->GetCancelButton() ||
+           field_view_info.field_view == parent_->GetExtraView());
+#if DCHECK_IS_ON()
+    // Make sure none of the info is already in use.
+    for (const auto& info : fields_) {
+      DCHECK_NE(info.field_view, field_view_info.field_view);
+      DCHECK_NE(info.dialog_model_field, field_view_info.dialog_model_field);
+      if (info.focusable_view) {
+        DCHECK_NE(info.focusable_view, field_view_info.focusable_view);
+      }
+    }
+#endif  // DCHECK_IS_ON()
+    fields_.push_back(field_view_info);
+    View* const target = GetTargetView(field_view_info);
+    target->SetProperty(kElementIdentifierKey,
+                        field_view_info.dialog_model_field->id(GetPassKey()));
+    for (const auto& accelerator :
+         field_view_info.dialog_model_field->accelerators(GetPassKey())) {
+      target->AddAccelerator(accelerator);
+    }
+  }
+
+  DialogModelHostField FindDialogModelHostField(ui::DialogModelField* field) {
+    for (const auto& info : fields_) {
+      if (info.dialog_model_field == field) {
+        return info;
+      }
+    }
+    // TODO(pbos): `field` could correspond to a button.
+    return {};
+  }
+
+  DialogModelHostField FindDialogModelHostField(View* view) {
+    for (const auto& info : fields_) {
+      if (info.field_view == view) {
+        return info;
+      }
+    }
+    NOTREACHED_NORETURN();
+  }
+
+ private:
   // TODO(pbos): These should be const as we should never outlive our parent or
   // DialogModelSection. Currently this isn't true because WidgetDelegate gets
   // destroyed by Widget in OnNativeWidgetDestroyed before the content gets
@@ -239,6 +318,8 @@ class BubbleDialogModelHost::ContentsView final : public BoxLayoutView {
   raw_ptr<ui::DialogModelSection> contents_;
 
   const base::CallbackListSubscription on_field_added_subscription_;
+
+  std::vector<DialogModelHostField> fields_;
 };
 
 BEGIN_METADATA(BubbleDialogModelHost, ContentsView, BoxLayoutView)
@@ -519,25 +600,25 @@ View* BubbleDialogModelHost::GetInitiallyFocusedView() {
   if (!unique_id)
     return BubbleDialogDelegate::GetInitiallyFocusedView();
 
-  return GetTargetView(
-      FindDialogModelHostField(model_->GetFieldByUniqueId(unique_id)));
+  return GetTargetView(contents_view_->FindDialogModelHostField(
+      model_->GetFieldByUniqueId(unique_id)));
 }
 
 void BubbleDialogModelHost::OnWidgetInitialized() {
   // Dialog buttons are added on dialog initialization.
   if (GetOkButton()) {
-    AddDialogModelHostFieldForExistingView(
+    contents_view_->AddDialogModelHostFieldForExistingView(
         {model_->ok_button(GetPassKey()), GetOkButton(), nullptr});
   }
 
   if (GetCancelButton()) {
-    AddDialogModelHostFieldForExistingView(
+    contents_view_->AddDialogModelHostFieldForExistingView(
         {model_->cancel_button(GetPassKey()), GetCancelButton(), nullptr});
   }
 
   if (model_->extra_button(GetPassKey())) {
     DCHECK(GetExtraView());
-    AddDialogModelHostFieldForExistingView(
+    contents_view_->AddDialogModelHostFieldForExistingView(
         {model_->extra_button(GetPassKey()), GetExtraView(), nullptr});
   }
 
@@ -577,7 +658,6 @@ void BubbleDialogModelHost::Close() {
   // Detach ContentsView as it's referring to state that's about to be
   // destroyed.
   contents_view_->Detach();
-  fields_.clear();
   model_.reset();
 }
 
@@ -654,7 +734,7 @@ void BubbleDialogModelHost::OnFieldAdded(ui::DialogModelField* field) {
       DCHECK(view);
       view->SetProperty(kElementIdentifierKey, field->id(GetPassKey()));
       DialogModelHostField info{field, view.get(), nullptr};
-      AddDialogModelHostField(std::move(view), info);
+      contents_view_->AddDialogModelHostField(std::move(view), info);
       break;
   }
   UpdateSpacingAndMargins();
@@ -727,7 +807,7 @@ void BubbleDialogModelHost::UpdateSpacingAndMargins() {
 
   for (View* const view : children) {
     ui::DialogModelField* const field =
-        FindDialogModelHostField(view).dialog_model_field;
+        contents_view_->FindDialogModelHostField(view).dialog_model_field;
 
     FieldType field_type = GetFieldTypeForField(field, GetPassKey());
 
@@ -768,7 +848,8 @@ void BubbleDialogModelHost::UpdateSpacingAndMargins() {
 }
 
 void BubbleDialogModelHost::UpdateFieldVisibility(ui::DialogModelField* field) {
-  DialogModelHostField host_field = FindDialogModelHostField(field);
+  DialogModelHostField host_field =
+      contents_view_->FindDialogModelHostField(field);
 
   if (host_field.field_view) {
     host_field.field_view->SetVisible(field->is_visible());
@@ -795,7 +876,7 @@ void BubbleDialogModelHost::AddOrUpdateParagraph(
                                              model_field->header(GetPassKey()));
   DialogModelHostField info{model_field, view.get(), nullptr};
   view->SetProperty(kElementIdentifierKey, model_field->id(GetPassKey()));
-  AddDialogModelHostField(std::move(view), info);
+  contents_view_->AddDialogModelHostField(std::move(view), info);
 }
 
 void BubbleDialogModelHost::AddOrUpdateCheckbox(
@@ -825,7 +906,7 @@ void BubbleDialogModelHost::AddOrUpdateCheckbox(
       model_field, GetPassKey(), checkbox.get()));
 
   DialogModelHostField info{model_field, checkbox.get(), nullptr};
-  AddDialogModelHostField(std::move(checkbox), info);
+  contents_view_->AddDialogModelHostField(std::move(checkbox), info);
 }
 
 void BubbleDialogModelHost::AddOrUpdateCombobox(
@@ -884,7 +965,7 @@ void BubbleDialogModelHost::AddOrUpdateMenuItem(
   item->SetProperty(kElementIdentifierKey, model_field->id(GetPassKey()));
 
   DialogModelHostField info{model_field, item.get(), nullptr};
-  AddDialogModelHostField(std::move(item), info);
+  contents_view_->AddDialogModelHostField(std::move(item), info);
 }
 
 void BubbleDialogModelHost::AddOrUpdateSeparator(
@@ -894,7 +975,7 @@ void BubbleDialogModelHost::AddOrUpdateSeparator(
 
   auto separator = std::make_unique<Separator>();
   DialogModelHostField info{model_field, separator.get(), nullptr};
-  AddDialogModelHostField(std::move(separator), info);
+  contents_view_->AddDialogModelHostField(std::move(separator), info);
 }
 
 void BubbleDialogModelHost::AddOrUpdateTextfield(
@@ -940,7 +1021,7 @@ void BubbleDialogModelHost::UpdateButton(ui::DialogModelButton* model_field) {
     SetButtonLabel(ui::DIALOG_BUTTON_CANCEL, label);
   } else if (model_field == model_->extra_button(GetPassKey())) {
     static_cast<MdTextButton*>(
-        GetTargetView(FindDialogModelHostField(model_field)))
+        GetTargetView(contents_view_->FindDialogModelHostField(model_field)))
         ->SetText(label);
   } else {
     NOTIMPLEMENTED();
@@ -970,68 +1051,7 @@ void BubbleDialogModelHost::AddViewForLabelAndField(
           &textfield_second_column_group_, std::move(field))),
       1);
 
-  AddDialogModelHostField(std::move(box_layout), info);
-}
-
-void BubbleDialogModelHost::AddDialogModelHostField(
-    std::unique_ptr<View> view,
-    const DialogModelHostField& field_view_info) {
-  DCHECK_EQ(view.get(), field_view_info.field_view);
-
-  contents_view_->AddChildView(std::move(view));
-  AddDialogModelHostFieldForExistingView(field_view_info);
-}
-
-void BubbleDialogModelHost::AddDialogModelHostFieldForExistingView(
-    const DialogModelHostField& field_view_info) {
-  DCHECK(field_view_info.dialog_model_field);
-  DCHECK(field_view_info.field_view);
-  DCHECK(contents_view_->Contains(field_view_info.field_view) ||
-         field_view_info.field_view == GetOkButton() ||
-         field_view_info.field_view == GetCancelButton() ||
-         field_view_info.field_view == GetExtraView());
-#if DCHECK_IS_ON()
-  // Make sure none of the info is already in use.
-  for (const auto& info : fields_) {
-    DCHECK_NE(info.field_view, field_view_info.field_view);
-    DCHECK_NE(info.dialog_model_field, field_view_info.dialog_model_field);
-    if (info.focusable_view)
-      DCHECK_NE(info.focusable_view, field_view_info.focusable_view);
-  }
-#endif  // DCHECK_IS_ON()
-  fields_.push_back(field_view_info);
-  View* const target = GetTargetView(field_view_info);
-  target->SetProperty(kElementIdentifierKey,
-                      field_view_info.dialog_model_field->id(GetPassKey()));
-  for (const auto& accelerator :
-       field_view_info.dialog_model_field->accelerators(GetPassKey())) {
-    target->AddAccelerator(accelerator);
-  }
-}
-
-BubbleDialogModelHost::DialogModelHostField
-BubbleDialogModelHost::FindDialogModelHostField(ui::DialogModelField* field) {
-  for (const auto& info : fields_) {
-    if (info.dialog_model_field == field)
-      return info;
-  }
-  // TODO(pbos): `field` could correspond to a button.
-  return {};
-}
-
-BubbleDialogModelHost::DialogModelHostField
-BubbleDialogModelHost::FindDialogModelHostField(View* view) {
-  for (const auto& info : fields_) {
-    if (info.field_view == view)
-      return info;
-  }
-  NOTREACHED_NORETURN();
-}
-
-View* BubbleDialogModelHost::GetTargetView(
-    const DialogModelHostField& field_view_info) {
-  return field_view_info.focusable_view ? field_view_info.focusable_view.get()
-                                        : field_view_info.field_view.get();
+  contents_view_->AddDialogModelHostField(std::move(box_layout), info);
 }
 
 bool BubbleDialogModelHost::DialogModelLabelRequiresStyledLabel(

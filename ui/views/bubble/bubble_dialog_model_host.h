@@ -130,19 +130,6 @@ class VIEWS_EXPORT BubbleDialogModelHost : public BubbleDialogDelegate,
     base::ScopedObservation<View, ViewObserver> observation_{this};
   };
 
-  struct DialogModelHostField {
-    raw_ptr<ui::DialogModelField> dialog_model_field = nullptr;
-
-    // View representing the entire field.
-    raw_ptr<View, DanglingUntriaged> field_view = nullptr;
-
-    // Child view to |field_view|, if any, that's used for focus. For instance,
-    // a textfield row would be a container that contains both a
-    // views::Textfield and a descriptive label. In this case |focusable_view|
-    // would refer to the views::Textfield which is also what would gain focus.
-    raw_ptr<View, DanglingUntriaged> focusable_view = nullptr;
-  };
-
   [[nodiscard]] ContentsView* InitContentsView(
       ui::DialogModelSection* contents);
 
@@ -180,24 +167,12 @@ class VIEWS_EXPORT BubbleDialogModelHost : public BubbleDialogDelegate,
       const ui::DialogModelLabel& dialog_label,
       const std::u16string header);
 
-  void AddDialogModelHostField(std::unique_ptr<View> view,
-                               const DialogModelHostField& field_view_info);
-  void AddDialogModelHostFieldForExistingView(
-      const DialogModelHostField& field_view_info);
-
-  DialogModelHostField FindDialogModelHostField(
-      ui::DialogModelField* model_field);
-  DialogModelHostField FindDialogModelHostField(View* view);
-
-  static View* GetTargetView(const DialogModelHostField& field_view_info);
-
   bool IsModalDialog() const;
 
   std::unique_ptr<ui::DialogModel> model_;
   const raw_ptr<ContentsView> contents_view_;
   ThemeChangedObserver theme_observer_;
 
-  std::vector<DialogModelHostField> fields_;
   std::vector<base::CallbackListSubscription> property_changed_subscriptions_;
 
   LayoutConsensusGroup textfield_first_column_group_;
