@@ -11172,19 +11172,6 @@ regressions. -->
   <summary>The interval between ViewResourceAdapter#getBitmap calls.</summary>
 </histogram>
 
-<histogram name="VirtualKeyboard.ControllerStateTransition"
-    enum="VirtualKeyboardControllerStateTransition" expires_after="M85">
-  <owner>oka@chromium.org</owner>
-  <summary>
-    An integer representing a state transition from x to y in the form of x *
-    1000 + y. If the transition is not expected, the value is negated. For
-    example an expected transition from SHOWING (= 2) to SHOWN (= 1) is denoted
-    as 2001, and an unexpected transition from SHOWING to SHOWING is denoted as
-    -2002. See KeyboardControllerState for the correspondence between the number
-    and the enum.
-  </summary>
-</histogram>
-
 <histogram name="VoiceInteraction.AudioPermissionEvent{Timing}"
     enum="AudioPermissionState" expires_after="2023-07-05">
   <owner>basiaz@google.com</owner>

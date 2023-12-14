@@ -42,19 +42,6 @@ bool IsAllowedStateTransition(KeyboardUIState from, KeyboardUIState to) {
   }
 }
 
-// Records a state transition for metrics.
-void RecordStateTransition(KeyboardUIState prev, KeyboardUIState next) {
-  const bool valid_transition = IsAllowedStateTransition(prev, next);
-
-  // Use negative hash values to indicate invalid transitions.
-  const int hash = GetStateTransitionHash(prev, next);
-  base::UmaHistogramSparse("VirtualKeyboard.ControllerStateTransition",
-                           valid_transition ? hash : -hash);
-
-  DCHECK(valid_transition) << "State: " << StateToStr(prev) << " -> "
-                           << StateToStr(next) << " Unexpected transition";
-}
-
 }  // namespace
 
 std::string StateToStr(KeyboardUIState state) {
@@ -77,7 +64,9 @@ std::string StateToStr(KeyboardUIState state) {
 KeyboardUIModel::KeyboardUIModel() = default;
 
 void KeyboardUIModel::ChangeState(KeyboardUIState new_state) {
-  RecordStateTransition(state_, new_state);
+  DCHECK(IsAllowedStateTransition(state_, new_state))
+      << "State: " << StateToStr(state_) << " -> " << StateToStr(new_state)
+      << " Unexpected transition";
 
   if (new_state == state_)
     return;
