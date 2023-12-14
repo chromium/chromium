@@ -42,11 +42,11 @@ public class ShoppingPersistedTabDataService {
      * Class for a price change item when externtal components ask for price changes from this
      * service.
      */
-    public class PriceChangeItem {
+    public static class PriceChangeItem {
         private Tab mTab;
         private ShoppingPersistedTabData mData;
 
-        PriceChangeItem(Tab tab, ShoppingPersistedTabData data) {
+        public PriceChangeItem(Tab tab, ShoppingPersistedTabData data) {
             mTab = tab;
             mData = data;
         }
@@ -212,7 +212,7 @@ public class ShoppingPersistedTabDataService {
     }
 
     /** Sets the {@link ShoppingPersistedTabDataService} for testing. */
-    protected static void setServiceForTesting(ShoppingPersistedTabDataService service) {
+    public static void setServiceForTesting(ShoppingPersistedTabDataService service) {
         sServiceForTesting = service;
     }
 
