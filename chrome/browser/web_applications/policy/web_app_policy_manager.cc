@@ -764,6 +764,7 @@ bool WebAppPolicyManager::IsPreventCloseEnabled(
 #if BUILDFLAG(IS_CHROMEOS)
   if (!base::FeatureList::IsEnabled(
           features::kDesktopPWAsEnforceWebAppSettingsPolicy) ||
+      !base::FeatureList::IsEnabled(features::kDesktopPWAsRunOnOsLogin) ||
       !base::FeatureList::IsEnabled(features::kDesktopPWAsPreventClose)) {
     return false;
   }

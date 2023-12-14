@@ -5,6 +5,7 @@
 #include "chrome/browser/web_applications/policy/web_app_policy_manager.h"
 
 #include <memory>
+#include <tuple>
 #include <utility>
 #include <vector>
 
@@ -1463,7 +1464,9 @@ INSTANTIATE_TEST_SUITE_P(WebAppPolicyManagerTestWithParams,
 
 class WebAppPolicyManagerPreventCloseTest
     : public WebAppPolicyManagerTestBase,
-      public testing::WithParamInterface<bool> {
+      public testing::WithParamInterface<
+          std::tuple<bool /*prevent_close_enabled*/,
+                     bool /*run_on_os_login_enabled*/>> {
  public:
   WebAppPolicyManagerPreventCloseTest() = default;
   WebAppPolicyManagerPreventCloseTest(
@@ -1477,17 +1480,25 @@ class WebAppPolicyManagerPreventCloseTest
     WebAppPolicyManagerTestBase::SetUp();
   }
 
-  bool PreventCloseEnabledParam() const { return GetParam(); }
+  bool prevent_close_enabled() const { return std::get<0>(GetParam()); }
+
+  bool run_on_os_login_enabled() const { return std::get<1>(GetParam()); }
 
  private:
   void BuildAndInitFeatureList() {
     std::vector<base::test::FeatureRef> enabled_features;
     std::vector<base::test::FeatureRef> disabled_features;
 
-    if (PreventCloseEnabledParam()) {
+    if (prevent_close_enabled()) {
       enabled_features.push_back(features::kDesktopPWAsPreventClose);
     } else {
       disabled_features.push_back(features::kDesktopPWAsPreventClose);
+    }
+
+    if (run_on_os_login_enabled()) {
+      enabled_features.push_back(features::kDesktopPWAsRunOnOsLogin);
+    } else {
+      disabled_features.push_back(features::kDesktopPWAsRunOnOsLogin);
     }
 
     scoped_feature_list_.InitWithFeatures(enabled_features, disabled_features);
@@ -1547,7 +1558,7 @@ TEST_P(WebAppPolicyManagerPreventCloseTest, WebAppSettingsPreventClose) {
 
   bool expected_windowed_url_status = false;
 #if BUILDFLAG(IS_CHROMEOS)
-  if (PreventCloseEnabledParam()) {
+  if (prevent_close_enabled() && run_on_os_login_enabled()) {
     expected_windowed_url_status = true;
   }
 #endif  // BUILDFLAG(IS_CHROMEOS)
@@ -1555,20 +1566,29 @@ TEST_P(WebAppPolicyManagerPreventCloseTest, WebAppSettingsPreventClose) {
   EXPECT_EQ(IsPreventCloseEnabled(kWindowedUrl), expected_windowed_url_status);
 }
 
-INSTANTIATE_TEST_SUITE_P(WebAppPolicyManagerPreventCloseTestWithParams,
-                         WebAppPolicyManagerPreventCloseTest,
-                         testing::Bool(),
-                         [](const ::testing::TestParamInfo<bool>& info) {
-                           std::string test_name = "Test_";
+INSTANTIATE_TEST_SUITE_P(
+    WebAppPolicyManagerPreventCloseTestWithParams,
+    WebAppPolicyManagerPreventCloseTest,
+    testing::Combine(testing::Bool(), testing::Bool()),
+    [](const ::testing::TestParamInfo<
+        std::tuple<bool /*prevent_close_enabled*/,
+                   bool /*run_on_os_login_enabled*/>>& info) {
+      std::string test_name = "Test_";
 
-                           if (info.param) {
-                             test_name.append("PreventCloseEnabled");
-                           } else {
-                             test_name.append("PreventCloseDisabled");
-                           }
+      if (std::get<0>(info.param)) {
+        test_name.append("PreventCloseEnabled_");
+      } else {
+        test_name.append("PreventCloseDisabled_");
+      }
 
-                           return test_name;
-                         });
+      if (std::get<1>(info.param)) {
+        test_name.append("RunOnOsLoginEnabled");
+      } else {
+        test_name.append("RunOnOsLoginDisabled");
+      }
+
+      return test_name;
+    });
 
 class WebAppPolicyForceUnregistrationTest : public WebAppTest {
  public:
