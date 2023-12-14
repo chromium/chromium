@@ -187,6 +187,7 @@ v8::Local<v8::Object> SerializeNodeToV8Object(
   static const char kBackendNodeId[] = "backendNodeId";
   static const char kChildren[] = "children";
   static const char kChildNodeCount[] = "childNodeCount";
+  static const char kLoaderId[] = "loaderId";
   static const char kLocalName[] = "localName";
   static const char kNamespaceURI[] = "namespaceURI";
   static const char kNode[] = "node";
@@ -215,6 +216,10 @@ v8::Local<v8::Object> SerializeNodeToV8Object(
   DOMNodeId backend_node_id = node->GetDomNodeId();
   serialized_value_keys.push_back(V8String(isolate, kBackendNodeId));
   serialized_value_values.push_back(v8::Number::New(isolate, backend_node_id));
+
+  serialized_value_keys.push_back(V8String(isolate, kLoaderId));
+  serialized_value_values.push_back(V8String(
+      isolate, IdentifiersFactory::LoaderId(node->GetDocument().Loader())));
 
   if (node->IsAttributeNode()) {
     Attr* attribute = To<Attr>(node);

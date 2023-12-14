@@ -8,6 +8,7 @@ Testing 'document.querySelector("body > div")' with {"serialization":"deep"}
         }
         backendNodeId : <number>
         childNodeCount : 2
+        loaderId : <string>
         localName : div
         namespaceURI : http://www.w3.org/1999/xhtml
         nodeType : 1
@@ -23,6 +24,7 @@ Testing 'document.querySelector("body > div")' with {"serialization":"deep","add
         }
         backendNodeId : <number>
         childNodeCount : 2
+        loaderId : <string>
         localName : div
         namespaceURI : http://www.w3.org/1999/xhtml
         nodeType : 1
@@ -56,6 +58,7 @@ Testing 'document.querySelector("body > div")' with {"serialization":"deep","add
         }
         backendNodeId : <number>
         childNodeCount : 2
+        loaderId : <string>
         localName : div
         namespaceURI : http://www.w3.org/1999/xhtml
         nodeType : 1
@@ -77,6 +80,7 @@ Testing 'document.querySelector("body > div")' with {"serialization":"deep","add
                 value : {
                     backendNodeId : <number>
                     childNodeCount : 0
+                    loaderId : <string>
                     nodeType : 3
                     nodeValue : some text
                 }
@@ -88,6 +92,7 @@ Testing 'document.querySelector("body > div")' with {"serialization":"deep","add
                     }
                     backendNodeId : <number>
                     childNodeCount : 1
+                    loaderId : <string>
                     localName : h2
                     namespaceURI : http://www.w3.org/1999/xhtml
                     nodeType : 1
@@ -95,6 +100,7 @@ Testing 'document.querySelector("body > div")' with {"serialization":"deep","add
                 }
             }
         ]
+        loaderId : <string>
         localName : div
         namespaceURI : http://www.w3.org/1999/xhtml
         nodeType : 1
@@ -118,6 +124,7 @@ Testing 'document.querySelector("body > div")' with {"serialization":"deep","add
                     childNodeCount : 0
                     children : [
                     ]
+                    loaderId : <string>
                     nodeType : 3
                     nodeValue : some text
                 }
@@ -137,11 +144,13 @@ Testing 'document.querySelector("body > div")' with {"serialization":"deep","add
                                 childNodeCount : 0
                                 children : [
                                 ]
+                                loaderId : <string>
                                 nodeType : 3
                                 nodeValue : some another text
                             }
                         }
                     ]
+                    loaderId : <string>
                     localName : h2
                     namespaceURI : http://www.w3.org/1999/xhtml
                     nodeType : 1
@@ -149,6 +158,7 @@ Testing 'document.querySelector("body > div")' with {"serialization":"deep","add
                 }
             }
         ]
+        loaderId : <string>
         localName : div
         namespaceURI : http://www.w3.org/1999/xhtml
         nodeType : 1
@@ -172,6 +182,7 @@ Testing 'document.querySelector("body > div")' with {"serialization":"deep","add
                     childNodeCount : 0
                     children : [
                     ]
+                    loaderId : <string>
                     nodeType : 3
                     nodeValue : some text
                 }
@@ -191,11 +202,13 @@ Testing 'document.querySelector("body > div")' with {"serialization":"deep","add
                                 childNodeCount : 0
                                 children : [
                                 ]
+                                loaderId : <string>
                                 nodeType : 3
                                 nodeValue : some another text
                             }
                         }
                     ]
+                    loaderId : <string>
                     localName : h2
                     namespaceURI : http://www.w3.org/1999/xhtml
                     nodeType : 1
@@ -203,6 +216,7 @@ Testing 'document.querySelector("body > div")' with {"serialization":"deep","add
                 }
             }
         ]
+        loaderId : <string>
         localName : div
         namespaceURI : http://www.w3.org/1999/xhtml
         nodeType : 1
@@ -226,6 +240,7 @@ Testing 'document.querySelector("body > div")' with {"serialization":"deep","add
                     childNodeCount : 0
                     children : [
                     ]
+                    loaderId : <string>
                     nodeType : 3
                     nodeValue : some text
                 }
@@ -245,11 +260,13 @@ Testing 'document.querySelector("body > div")' with {"serialization":"deep","add
                                 childNodeCount : 0
                                 children : [
                                 ]
+                                loaderId : <string>
                                 nodeType : 3
                                 nodeValue : some another text
                             }
                         }
                     ]
+                    loaderId : <string>
                     localName : h2
                     namespaceURI : http://www.w3.org/1999/xhtml
                     nodeType : 1
@@ -257,6 +274,7 @@ Testing 'document.querySelector("body > div")' with {"serialization":"deep","add
                 }
             }
         ]
+        loaderId : <string>
         localName : div
         namespaceURI : http://www.w3.org/1999/xhtml
         nodeType : 1
@@ -272,6 +290,7 @@ Testing 'document.querySelector("body > div")' with {"serialization":"deep","add
         }
         backendNodeId : <number>
         childNodeCount : 2
+        loaderId : <string>
         localName : div
         namespaceURI : http://www.w3.org/1999/xhtml
         nodeType : 1
@@ -287,6 +306,7 @@ Testing 'document.querySelector("body > div")' with {"serialization":"deep","add
         }
         backendNodeId : <number>
         childNodeCount : 2
+        loaderId : <string>
         localName : div
         namespaceURI : http://www.w3.org/1999/xhtml
         nodeType : 1
@@ -308,6 +328,7 @@ Testing 'document.querySelector("body > div")' with {"serialization":"deep","add
                 value : {
                     backendNodeId : <number>
                     childNodeCount : 0
+                    loaderId : <string>
                     nodeType : 3
                     nodeValue : some text
                 }
@@ -319,6 +340,7 @@ Testing 'document.querySelector("body > div")' with {"serialization":"deep","add
                     }
                     backendNodeId : <number>
                     childNodeCount : 1
+                    loaderId : <string>
                     localName : h2
                     namespaceURI : http://www.w3.org/1999/xhtml
                     nodeType : 1
@@ -326,6 +348,7 @@ Testing 'document.querySelector("body > div")' with {"serialization":"deep","add
                 }
             }
         ]
+        loaderId : <string>
         localName : div
         namespaceURI : http://www.w3.org/1999/xhtml
         nodeType : 1
@@ -349,6 +372,7 @@ Testing 'document.querySelector("body > div")' with {"serialization":"deep","add
                     childNodeCount : 0
                     children : [
                     ]
+                    loaderId : <string>
                     nodeType : 3
                     nodeValue : some text
                 }
@@ -368,11 +392,13 @@ Testing 'document.querySelector("body > div")' with {"serialization":"deep","add
                                 childNodeCount : 0
                                 children : [
                                 ]
+                                loaderId : <string>
                                 nodeType : 3
                                 nodeValue : some another text
                             }
                         }
                     ]
+                    loaderId : <string>
                     localName : h2
                     namespaceURI : http://www.w3.org/1999/xhtml
                     nodeType : 1
@@ -380,6 +406,7 @@ Testing 'document.querySelector("body > div")' with {"serialization":"deep","add
                 }
             }
         ]
+        loaderId : <string>
         localName : div
         namespaceURI : http://www.w3.org/1999/xhtml
         nodeType : 1
@@ -395,6 +422,7 @@ Testing 'document.querySelector("body > div").childNodes' with {"serialization":
             value : {
                 backendNodeId : <number>
                 childNodeCount : 0
+                loaderId : <string>
                 nodeType : 3
                 nodeValue : some text
             }
@@ -406,6 +434,7 @@ Testing 'document.querySelector("body > div").childNodes' with {"serialization":
                 }
                 backendNodeId : <number>
                 childNodeCount : 1
+                loaderId : <string>
                 localName : h2
                 namespaceURI : http://www.w3.org/1999/xhtml
                 nodeType : 1
@@ -423,6 +452,7 @@ Testing 'document.querySelector("body > div").childNodes' with {"serialization":
             value : {
                 backendNodeId : <number>
                 childNodeCount : 0
+                loaderId : <string>
                 nodeType : 3
                 nodeValue : some text
             }
@@ -434,6 +464,7 @@ Testing 'document.querySelector("body > div").childNodes' with {"serialization":
                 }
                 backendNodeId : <number>
                 childNodeCount : 1
+                loaderId : <string>
                 localName : h2
                 namespaceURI : http://www.w3.org/1999/xhtml
                 nodeType : 1
@@ -469,6 +500,7 @@ Testing 'document.querySelector("body > div").childNodes' with {"serialization":
             value : {
                 backendNodeId : <number>
                 childNodeCount : 0
+                loaderId : <string>
                 nodeType : 3
                 nodeValue : some text
             }
@@ -480,6 +512,7 @@ Testing 'document.querySelector("body > div").childNodes' with {"serialization":
                 }
                 backendNodeId : <number>
                 childNodeCount : 1
+                loaderId : <string>
                 localName : h2
                 namespaceURI : http://www.w3.org/1999/xhtml
                 nodeType : 1
@@ -499,6 +532,7 @@ Testing 'document.querySelector("body > div").childNodes' with {"serialization":
                 childNodeCount : 0
                 children : [
                 ]
+                loaderId : <string>
                 nodeType : 3
                 nodeValue : some text
             }
@@ -516,11 +550,13 @@ Testing 'document.querySelector("body > div").childNodes' with {"serialization":
                         value : {
                             backendNodeId : <number>
                             childNodeCount : 0
+                            loaderId : <string>
                             nodeType : 3
                             nodeValue : some another text
                         }
                     }
                 ]
+                loaderId : <string>
                 localName : h2
                 namespaceURI : http://www.w3.org/1999/xhtml
                 nodeType : 1
@@ -540,6 +576,7 @@ Testing 'document.querySelector("body > div").childNodes' with {"serialization":
                 childNodeCount : 0
                 children : [
                 ]
+                loaderId : <string>
                 nodeType : 3
                 nodeValue : some text
             }
@@ -559,11 +596,13 @@ Testing 'document.querySelector("body > div").childNodes' with {"serialization":
                             childNodeCount : 0
                             children : [
                             ]
+                            loaderId : <string>
                             nodeType : 3
                             nodeValue : some another text
                         }
                     }
                 ]
+                loaderId : <string>
                 localName : h2
                 namespaceURI : http://www.w3.org/1999/xhtml
                 nodeType : 1
@@ -583,6 +622,7 @@ Testing 'document.querySelector("body > div").childNodes' with {"serialization":
                 childNodeCount : 0
                 children : [
                 ]
+                loaderId : <string>
                 nodeType : 3
                 nodeValue : some text
             }
@@ -602,11 +642,13 @@ Testing 'document.querySelector("body > div").childNodes' with {"serialization":
                             childNodeCount : 0
                             children : [
                             ]
+                            loaderId : <string>
                             nodeType : 3
                             nodeValue : some another text
                         }
                     }
                 ]
+                loaderId : <string>
                 localName : h2
                 namespaceURI : http://www.w3.org/1999/xhtml
                 nodeType : 1
@@ -626,6 +668,7 @@ Testing 'document.querySelector("body > div").childNodes' with {"serialization":
                 childNodeCount : 0
                 children : [
                 ]
+                loaderId : <string>
                 nodeType : 3
                 nodeValue : some text
             }
@@ -645,11 +688,13 @@ Testing 'document.querySelector("body > div").childNodes' with {"serialization":
                             childNodeCount : 0
                             children : [
                             ]
+                            loaderId : <string>
                             nodeType : 3
                             nodeValue : some another text
                         }
                     }
                 ]
+                loaderId : <string>
                 localName : h2
                 namespaceURI : http://www.w3.org/1999/xhtml
                 nodeType : 1
@@ -667,6 +712,7 @@ Testing 'document.querySelector("body > div").childNodes' with {"serialization":
             value : {
                 backendNodeId : <number>
                 childNodeCount : 0
+                loaderId : <string>
                 nodeType : 3
                 nodeValue : some text
             }
@@ -678,6 +724,7 @@ Testing 'document.querySelector("body > div").childNodes' with {"serialization":
                 }
                 backendNodeId : <number>
                 childNodeCount : 1
+                loaderId : <string>
                 localName : h2
                 namespaceURI : http://www.w3.org/1999/xhtml
                 nodeType : 1
@@ -695,6 +742,7 @@ Testing 'document.querySelector("body > div").childNodes' with {"serialization":
             value : {
                 backendNodeId : <number>
                 childNodeCount : 0
+                loaderId : <string>
                 nodeType : 3
                 nodeValue : some text
             }
@@ -706,6 +754,7 @@ Testing 'document.querySelector("body > div").childNodes' with {"serialization":
                 }
                 backendNodeId : <number>
                 childNodeCount : 1
+                loaderId : <string>
                 localName : h2
                 namespaceURI : http://www.w3.org/1999/xhtml
                 nodeType : 1
@@ -725,6 +774,7 @@ Testing 'document.querySelector("body > div").childNodes' with {"serialization":
                 childNodeCount : 0
                 children : [
                 ]
+                loaderId : <string>
                 nodeType : 3
                 nodeValue : some text
             }
@@ -742,11 +792,13 @@ Testing 'document.querySelector("body > div").childNodes' with {"serialization":
                         value : {
                             backendNodeId : <number>
                             childNodeCount : 0
+                            loaderId : <string>
                             nodeType : 3
                             nodeValue : some another text
                         }
                     }
                 ]
+                loaderId : <string>
                 localName : h2
                 namespaceURI : http://www.w3.org/1999/xhtml
                 nodeType : 1
@@ -766,6 +818,7 @@ Testing 'document.querySelector("body > div").childNodes' with {"serialization":
                 childNodeCount : 0
                 children : [
                 ]
+                loaderId : <string>
                 nodeType : 3
                 nodeValue : some text
             }
@@ -785,11 +838,13 @@ Testing 'document.querySelector("body > div").childNodes' with {"serialization":
                             childNodeCount : 0
                             children : [
                             ]
+                            loaderId : <string>
                             nodeType : 3
                             nodeValue : some another text
                         }
                     }
                 ]
+                loaderId : <string>
                 localName : h2
                 namespaceURI : http://www.w3.org/1999/xhtml
                 nodeType : 1
@@ -810,6 +865,7 @@ Testing 'document.getElementsByTagName("div")' with {"serialization":"deep"}
                 }
                 backendNodeId : <number>
                 childNodeCount : 2
+                loaderId : <string>
                 localName : div
                 namespaceURI : http://www.w3.org/1999/xhtml
                 nodeType : 1
@@ -823,6 +879,7 @@ Testing 'document.getElementsByTagName("div")' with {"serialization":"deep"}
                 }
                 backendNodeId : <number>
                 childNodeCount : 0
+                loaderId : <string>
                 localName : div
                 namespaceURI : http://www.w3.org/1999/xhtml
                 nodeType : 1
@@ -831,6 +888,7 @@ Testing 'document.getElementsByTagName("div")' with {"serialization":"deep"}
                     value : {
                         backendNodeId : <number>
                         childNodeCount : 1
+                        loaderId : <string>
                         mode : open
                         nodeType : 11
                     }
@@ -844,6 +902,7 @@ Testing 'document.getElementsByTagName("div")' with {"serialization":"deep"}
                 }
                 backendNodeId : <number>
                 childNodeCount : 0
+                loaderId : <string>
                 localName : div
                 namespaceURI : http://www.w3.org/1999/xhtml
                 nodeType : 1
@@ -852,6 +911,7 @@ Testing 'document.getElementsByTagName("div")' with {"serialization":"deep"}
                     value : {
                         backendNodeId : <number>
                         childNodeCount : 1
+                        loaderId : <string>
                         mode : closed
                         nodeType : 11
                     }
@@ -872,6 +932,7 @@ Testing 'document.getElementsByTagName("div")' with {"serialization":"deep","add
                 }
                 backendNodeId : <number>
                 childNodeCount : 2
+                loaderId : <string>
                 localName : div
                 namespaceURI : http://www.w3.org/1999/xhtml
                 nodeType : 1
@@ -885,6 +946,7 @@ Testing 'document.getElementsByTagName("div")' with {"serialization":"deep","add
                 }
                 backendNodeId : <number>
                 childNodeCount : 0
+                loaderId : <string>
                 localName : div
                 namespaceURI : http://www.w3.org/1999/xhtml
                 nodeType : 1
@@ -893,6 +955,7 @@ Testing 'document.getElementsByTagName("div")' with {"serialization":"deep","add
                     value : {
                         backendNodeId : <number>
                         childNodeCount : 1
+                        loaderId : <string>
                         mode : open
                         nodeType : 11
                     }
@@ -906,6 +969,7 @@ Testing 'document.getElementsByTagName("div")' with {"serialization":"deep","add
                 }
                 backendNodeId : <number>
                 childNodeCount : 0
+                loaderId : <string>
                 localName : div
                 namespaceURI : http://www.w3.org/1999/xhtml
                 nodeType : 1
@@ -914,6 +978,7 @@ Testing 'document.getElementsByTagName("div")' with {"serialization":"deep","add
                     value : {
                         backendNodeId : <number>
                         childNodeCount : 1
+                        loaderId : <string>
                         mode : closed
                         nodeType : 11
                     }
@@ -952,6 +1017,7 @@ Testing 'document.getElementsByTagName("div")' with {"serialization":"deep","add
                 }
                 backendNodeId : <number>
                 childNodeCount : 2
+                loaderId : <string>
                 localName : div
                 namespaceURI : http://www.w3.org/1999/xhtml
                 nodeType : 1
@@ -965,6 +1031,7 @@ Testing 'document.getElementsByTagName("div")' with {"serialization":"deep","add
                 }
                 backendNodeId : <number>
                 childNodeCount : 0
+                loaderId : <string>
                 localName : div
                 namespaceURI : http://www.w3.org/1999/xhtml
                 nodeType : 1
@@ -973,6 +1040,7 @@ Testing 'document.getElementsByTagName("div")' with {"serialization":"deep","add
                     value : {
                         backendNodeId : <number>
                         childNodeCount : 1
+                        loaderId : <string>
                         mode : open
                         nodeType : 11
                     }
@@ -986,6 +1054,7 @@ Testing 'document.getElementsByTagName("div")' with {"serialization":"deep","add
                 }
                 backendNodeId : <number>
                 childNodeCount : 0
+                loaderId : <string>
                 localName : div
                 namespaceURI : http://www.w3.org/1999/xhtml
                 nodeType : 1
@@ -994,6 +1063,7 @@ Testing 'document.getElementsByTagName("div")' with {"serialization":"deep","add
                     value : {
                         backendNodeId : <number>
                         childNodeCount : 1
+                        loaderId : <string>
                         mode : closed
                         nodeType : 11
                     }
@@ -1020,6 +1090,7 @@ Testing 'document.getElementsByTagName("div")' with {"serialization":"deep","add
                         value : {
                             backendNodeId : <number>
                             childNodeCount : 0
+                            loaderId : <string>
                             nodeType : 3
                             nodeValue : some text
                         }
@@ -1031,6 +1102,7 @@ Testing 'document.getElementsByTagName("div")' with {"serialization":"deep","add
                             }
                             backendNodeId : <number>
                             childNodeCount : 1
+                            loaderId : <string>
                             localName : h2
                             namespaceURI : http://www.w3.org/1999/xhtml
                             nodeType : 1
@@ -1038,6 +1110,7 @@ Testing 'document.getElementsByTagName("div")' with {"serialization":"deep","add
                         }
                     }
                 ]
+                loaderId : <string>
                 localName : div
                 namespaceURI : http://www.w3.org/1999/xhtml
                 nodeType : 1
@@ -1053,6 +1126,7 @@ Testing 'document.getElementsByTagName("div")' with {"serialization":"deep","add
                 childNodeCount : 0
                 children : [
                 ]
+                loaderId : <string>
                 localName : div
                 namespaceURI : http://www.w3.org/1999/xhtml
                 nodeType : 1
@@ -1061,6 +1135,7 @@ Testing 'document.getElementsByTagName("div")' with {"serialization":"deep","add
                     value : {
                         backendNodeId : <number>
                         childNodeCount : 1
+                        loaderId : <string>
                         mode : open
                         nodeType : 11
                     }
@@ -1076,6 +1151,7 @@ Testing 'document.getElementsByTagName("div")' with {"serialization":"deep","add
                 childNodeCount : 0
                 children : [
                 ]
+                loaderId : <string>
                 localName : div
                 namespaceURI : http://www.w3.org/1999/xhtml
                 nodeType : 1
@@ -1084,6 +1160,7 @@ Testing 'document.getElementsByTagName("div")' with {"serialization":"deep","add
                     value : {
                         backendNodeId : <number>
                         childNodeCount : 1
+                        loaderId : <string>
                         mode : closed
                         nodeType : 11
                     }
@@ -1112,6 +1189,7 @@ Testing 'document.getElementsByTagName("div")' with {"serialization":"deep","add
                             childNodeCount : 0
                             children : [
                             ]
+                            loaderId : <string>
                             nodeType : 3
                             nodeValue : some text
                         }
@@ -1131,11 +1209,13 @@ Testing 'document.getElementsByTagName("div")' with {"serialization":"deep","add
                                         childNodeCount : 0
                                         children : [
                                         ]
+                                        loaderId : <string>
                                         nodeType : 3
                                         nodeValue : some another text
                                     }
                                 }
                             ]
+                            loaderId : <string>
                             localName : h2
                             namespaceURI : http://www.w3.org/1999/xhtml
                             nodeType : 1
@@ -1143,6 +1223,7 @@ Testing 'document.getElementsByTagName("div")' with {"serialization":"deep","add
                         }
                     }
                 ]
+                loaderId : <string>
                 localName : div
                 namespaceURI : http://www.w3.org/1999/xhtml
                 nodeType : 1
@@ -1158,6 +1239,7 @@ Testing 'document.getElementsByTagName("div")' with {"serialization":"deep","add
                 childNodeCount : 0
                 children : [
                 ]
+                loaderId : <string>
                 localName : div
                 namespaceURI : http://www.w3.org/1999/xhtml
                 nodeType : 1
@@ -1166,6 +1248,7 @@ Testing 'document.getElementsByTagName("div")' with {"serialization":"deep","add
                     value : {
                         backendNodeId : <number>
                         childNodeCount : 1
+                        loaderId : <string>
                         mode : open
                         nodeType : 11
                     }
@@ -1181,6 +1264,7 @@ Testing 'document.getElementsByTagName("div")' with {"serialization":"deep","add
                 childNodeCount : 0
                 children : [
                 ]
+                loaderId : <string>
                 localName : div
                 namespaceURI : http://www.w3.org/1999/xhtml
                 nodeType : 1
@@ -1189,6 +1273,7 @@ Testing 'document.getElementsByTagName("div")' with {"serialization":"deep","add
                     value : {
                         backendNodeId : <number>
                         childNodeCount : 1
+                        loaderId : <string>
                         mode : closed
                         nodeType : 11
                     }
@@ -1217,6 +1302,7 @@ Testing 'document.getElementsByTagName("div")' with {"serialization":"deep","add
                             childNodeCount : 0
                             children : [
                             ]
+                            loaderId : <string>
                             nodeType : 3
                             nodeValue : some text
                         }
@@ -1236,11 +1322,13 @@ Testing 'document.getElementsByTagName("div")' with {"serialization":"deep","add
                                         childNodeCount : 0
                                         children : [
                                         ]
+                                        loaderId : <string>
                                         nodeType : 3
                                         nodeValue : some another text
                                     }
                                 }
                             ]
+                            loaderId : <string>
                             localName : h2
                             namespaceURI : http://www.w3.org/1999/xhtml
                             nodeType : 1
@@ -1248,6 +1336,7 @@ Testing 'document.getElementsByTagName("div")' with {"serialization":"deep","add
                         }
                     }
                 ]
+                loaderId : <string>
                 localName : div
                 namespaceURI : http://www.w3.org/1999/xhtml
                 nodeType : 1
@@ -1263,6 +1352,7 @@ Testing 'document.getElementsByTagName("div")' with {"serialization":"deep","add
                 childNodeCount : 0
                 children : [
                 ]
+                loaderId : <string>
                 localName : div
                 namespaceURI : http://www.w3.org/1999/xhtml
                 nodeType : 1
@@ -1271,6 +1361,7 @@ Testing 'document.getElementsByTagName("div")' with {"serialization":"deep","add
                     value : {
                         backendNodeId : <number>
                         childNodeCount : 1
+                        loaderId : <string>
                         mode : open
                         nodeType : 11
                     }
@@ -1286,6 +1377,7 @@ Testing 'document.getElementsByTagName("div")' with {"serialization":"deep","add
                 childNodeCount : 0
                 children : [
                 ]
+                loaderId : <string>
                 localName : div
                 namespaceURI : http://www.w3.org/1999/xhtml
                 nodeType : 1
@@ -1294,6 +1386,7 @@ Testing 'document.getElementsByTagName("div")' with {"serialization":"deep","add
                     value : {
                         backendNodeId : <number>
                         childNodeCount : 1
+                        loaderId : <string>
                         mode : closed
                         nodeType : 11
                     }
@@ -1322,6 +1415,7 @@ Testing 'document.getElementsByTagName("div")' with {"serialization":"deep","add
                             childNodeCount : 0
                             children : [
                             ]
+                            loaderId : <string>
                             nodeType : 3
                             nodeValue : some text
                         }
@@ -1341,11 +1435,13 @@ Testing 'document.getElementsByTagName("div")' with {"serialization":"deep","add
                                         childNodeCount : 0
                                         children : [
                                         ]
+                                        loaderId : <string>
                                         nodeType : 3
                                         nodeValue : some another text
                                     }
                                 }
                             ]
+                            loaderId : <string>
                             localName : h2
                             namespaceURI : http://www.w3.org/1999/xhtml
                             nodeType : 1
@@ -1353,6 +1449,7 @@ Testing 'document.getElementsByTagName("div")' with {"serialization":"deep","add
                         }
                     }
                 ]
+                loaderId : <string>
                 localName : div
                 namespaceURI : http://www.w3.org/1999/xhtml
                 nodeType : 1
@@ -1368,6 +1465,7 @@ Testing 'document.getElementsByTagName("div")' with {"serialization":"deep","add
                 childNodeCount : 0
                 children : [
                 ]
+                loaderId : <string>
                 localName : div
                 namespaceURI : http://www.w3.org/1999/xhtml
                 nodeType : 1
@@ -1392,11 +1490,13 @@ Testing 'document.getElementsByTagName("div")' with {"serialization":"deep","add
                                                 childNodeCount : 0
                                                 children : [
                                                 ]
+                                                loaderId : <string>
                                                 nodeType : 3
                                                 nodeValue : element in open shadow DOM
                                             }
                                         }
                                     ]
+                                    loaderId : <string>
                                     localName : div
                                     namespaceURI : http://www.w3.org/1999/xhtml
                                     nodeType : 1
@@ -1404,6 +1504,7 @@ Testing 'document.getElementsByTagName("div")' with {"serialization":"deep","add
                                 }
                             }
                         ]
+                        loaderId : <string>
                         mode : open
                         nodeType : 11
                     }
@@ -1419,6 +1520,7 @@ Testing 'document.getElementsByTagName("div")' with {"serialization":"deep","add
                 childNodeCount : 0
                 children : [
                 ]
+                loaderId : <string>
                 localName : div
                 namespaceURI : http://www.w3.org/1999/xhtml
                 nodeType : 1
@@ -1427,6 +1529,7 @@ Testing 'document.getElementsByTagName("div")' with {"serialization":"deep","add
                     value : {
                         backendNodeId : <number>
                         childNodeCount : 1
+                        loaderId : <string>
                         mode : closed
                         nodeType : 11
                     }
@@ -1447,6 +1550,7 @@ Testing 'document.getElementsByTagName("div")' with {"serialization":"deep","add
                 }
                 backendNodeId : <number>
                 childNodeCount : 2
+                loaderId : <string>
                 localName : div
                 namespaceURI : http://www.w3.org/1999/xhtml
                 nodeType : 1
@@ -1460,6 +1564,7 @@ Testing 'document.getElementsByTagName("div")' with {"serialization":"deep","add
                 }
                 backendNodeId : <number>
                 childNodeCount : 0
+                loaderId : <string>
                 localName : div
                 namespaceURI : http://www.w3.org/1999/xhtml
                 nodeType : 1
@@ -1468,6 +1573,7 @@ Testing 'document.getElementsByTagName("div")' with {"serialization":"deep","add
                     value : {
                         backendNodeId : <number>
                         childNodeCount : 1
+                        loaderId : <string>
                         mode : open
                         nodeType : 11
                     }
@@ -1481,6 +1587,7 @@ Testing 'document.getElementsByTagName("div")' with {"serialization":"deep","add
                 }
                 backendNodeId : <number>
                 childNodeCount : 0
+                loaderId : <string>
                 localName : div
                 namespaceURI : http://www.w3.org/1999/xhtml
                 nodeType : 1
@@ -1489,6 +1596,7 @@ Testing 'document.getElementsByTagName("div")' with {"serialization":"deep","add
                     value : {
                         backendNodeId : <number>
                         childNodeCount : 1
+                        loaderId : <string>
                         mode : closed
                         nodeType : 11
                     }
@@ -1509,6 +1617,7 @@ Testing 'document.getElementsByTagName("div")' with {"serialization":"deep","add
                 }
                 backendNodeId : <number>
                 childNodeCount : 2
+                loaderId : <string>
                 localName : div
                 namespaceURI : http://www.w3.org/1999/xhtml
                 nodeType : 1
@@ -1522,6 +1631,7 @@ Testing 'document.getElementsByTagName("div")' with {"serialization":"deep","add
                 }
                 backendNodeId : <number>
                 childNodeCount : 0
+                loaderId : <string>
                 localName : div
                 namespaceURI : http://www.w3.org/1999/xhtml
                 nodeType : 1
@@ -1530,6 +1640,7 @@ Testing 'document.getElementsByTagName("div")' with {"serialization":"deep","add
                     value : {
                         backendNodeId : <number>
                         childNodeCount : 1
+                        loaderId : <string>
                         mode : open
                         nodeType : 11
                     }
@@ -1543,6 +1654,7 @@ Testing 'document.getElementsByTagName("div")' with {"serialization":"deep","add
                 }
                 backendNodeId : <number>
                 childNodeCount : 0
+                loaderId : <string>
                 localName : div
                 namespaceURI : http://www.w3.org/1999/xhtml
                 nodeType : 1
@@ -1551,6 +1663,7 @@ Testing 'document.getElementsByTagName("div")' with {"serialization":"deep","add
                     value : {
                         backendNodeId : <number>
                         childNodeCount : 1
+                        loaderId : <string>
                         mode : closed
                         nodeType : 11
                     }
@@ -1577,6 +1690,7 @@ Testing 'document.getElementsByTagName("div")' with {"serialization":"deep","add
                         value : {
                             backendNodeId : <number>
                             childNodeCount : 0
+                            loaderId : <string>
                             nodeType : 3
                             nodeValue : some text
                         }
@@ -1588,6 +1702,7 @@ Testing 'document.getElementsByTagName("div")' with {"serialization":"deep","add
                             }
                             backendNodeId : <number>
                             childNodeCount : 1
+                            loaderId : <string>
                             localName : h2
                             namespaceURI : http://www.w3.org/1999/xhtml
                             nodeType : 1
@@ -1595,6 +1710,7 @@ Testing 'document.getElementsByTagName("div")' with {"serialization":"deep","add
                         }
                     }
                 ]
+                loaderId : <string>
                 localName : div
                 namespaceURI : http://www.w3.org/1999/xhtml
                 nodeType : 1
@@ -1610,6 +1726,7 @@ Testing 'document.getElementsByTagName("div")' with {"serialization":"deep","add
                 childNodeCount : 0
                 children : [
                 ]
+                loaderId : <string>
                 localName : div
                 namespaceURI : http://www.w3.org/1999/xhtml
                 nodeType : 1
@@ -1626,6 +1743,7 @@ Testing 'document.getElementsByTagName("div")' with {"serialization":"deep","add
                                     }
                                     backendNodeId : <number>
                                     childNodeCount : 1
+                                    loaderId : <string>
                                     localName : div
                                     namespaceURI : http://www.w3.org/1999/xhtml
                                     nodeType : 1
@@ -1633,6 +1751,7 @@ Testing 'document.getElementsByTagName("div")' with {"serialization":"deep","add
                                 }
                             }
                         ]
+                        loaderId : <string>
                         mode : open
                         nodeType : 11
                     }
@@ -1648,6 +1767,7 @@ Testing 'document.getElementsByTagName("div")' with {"serialization":"deep","add
                 childNodeCount : 0
                 children : [
                 ]
+                loaderId : <string>
                 localName : div
                 namespaceURI : http://www.w3.org/1999/xhtml
                 nodeType : 1
@@ -1664,6 +1784,7 @@ Testing 'document.getElementsByTagName("div")' with {"serialization":"deep","add
                                     }
                                     backendNodeId : <number>
                                     childNodeCount : 1
+                                    loaderId : <string>
                                     localName : div
                                     namespaceURI : http://www.w3.org/1999/xhtml
                                     nodeType : 1
@@ -1671,6 +1792,7 @@ Testing 'document.getElementsByTagName("div")' with {"serialization":"deep","add
                                 }
                             }
                         ]
+                        loaderId : <string>
                         mode : closed
                         nodeType : 11
                     }
@@ -1699,6 +1821,7 @@ Testing 'document.getElementsByTagName("div")' with {"serialization":"deep","add
                             childNodeCount : 0
                             children : [
                             ]
+                            loaderId : <string>
                             nodeType : 3
                             nodeValue : some text
                         }
@@ -1718,11 +1841,13 @@ Testing 'document.getElementsByTagName("div")' with {"serialization":"deep","add
                                         childNodeCount : 0
                                         children : [
                                         ]
+                                        loaderId : <string>
                                         nodeType : 3
                                         nodeValue : some another text
                                     }
                                 }
                             ]
+                            loaderId : <string>
                             localName : h2
                             namespaceURI : http://www.w3.org/1999/xhtml
                             nodeType : 1
@@ -1730,6 +1855,7 @@ Testing 'document.getElementsByTagName("div")' with {"serialization":"deep","add
                         }
                     }
                 ]
+                loaderId : <string>
                 localName : div
                 namespaceURI : http://www.w3.org/1999/xhtml
                 nodeType : 1
@@ -1745,6 +1871,7 @@ Testing 'document.getElementsByTagName("div")' with {"serialization":"deep","add
                 childNodeCount : 0
                 children : [
                 ]
+                loaderId : <string>
                 localName : div
                 namespaceURI : http://www.w3.org/1999/xhtml
                 nodeType : 1
@@ -1769,11 +1896,13 @@ Testing 'document.getElementsByTagName("div")' with {"serialization":"deep","add
                                                 childNodeCount : 0
                                                 children : [
                                                 ]
+                                                loaderId : <string>
                                                 nodeType : 3
                                                 nodeValue : element in open shadow DOM
                                             }
                                         }
                                     ]
+                                    loaderId : <string>
                                     localName : div
                                     namespaceURI : http://www.w3.org/1999/xhtml
                                     nodeType : 1
@@ -1781,6 +1910,7 @@ Testing 'document.getElementsByTagName("div")' with {"serialization":"deep","add
                                 }
                             }
                         ]
+                        loaderId : <string>
                         mode : open
                         nodeType : 11
                     }
@@ -1796,6 +1926,7 @@ Testing 'document.getElementsByTagName("div")' with {"serialization":"deep","add
                 childNodeCount : 0
                 children : [
                 ]
+                loaderId : <string>
                 localName : div
                 namespaceURI : http://www.w3.org/1999/xhtml
                 nodeType : 1
@@ -1820,11 +1951,13 @@ Testing 'document.getElementsByTagName("div")' with {"serialization":"deep","add
                                                 childNodeCount : 0
                                                 children : [
                                                 ]
+                                                loaderId : <string>
                                                 nodeType : 3
                                                 nodeValue : element in closed shadow DOM
                                             }
                                         }
                                     ]
+                                    loaderId : <string>
                                     localName : div
                                     namespaceURI : http://www.w3.org/1999/xhtml
                                     nodeType : 1
@@ -1832,6 +1965,7 @@ Testing 'document.getElementsByTagName("div")' with {"serialization":"deep","add
                                 }
                             }
                         ]
+                        loaderId : <string>
                         mode : closed
                         nodeType : 11
                     }
@@ -2005,6 +2139,7 @@ Testing 'window.openShadowContainer' with {"serialization":"deep"}
         }
         backendNodeId : <number>
         childNodeCount : 0
+        loaderId : <string>
         localName : div
         namespaceURI : http://www.w3.org/1999/xhtml
         nodeType : 1
@@ -2013,6 +2148,7 @@ Testing 'window.openShadowContainer' with {"serialization":"deep"}
             value : {
                 backendNodeId : <number>
                 childNodeCount : 1
+                loaderId : <string>
                 mode : open
                 nodeType : 11
             }
@@ -2027,6 +2163,7 @@ Testing 'window.openShadowContainer' with {"serialization":"deep","additionalPar
         }
         backendNodeId : <number>
         childNodeCount : 0
+        loaderId : <string>
         localName : div
         namespaceURI : http://www.w3.org/1999/xhtml
         nodeType : 1
@@ -2035,6 +2172,7 @@ Testing 'window.openShadowContainer' with {"serialization":"deep","additionalPar
             value : {
                 backendNodeId : <number>
                 childNodeCount : 1
+                loaderId : <string>
                 mode : open
                 nodeType : 11
             }
@@ -2067,6 +2205,7 @@ Testing 'window.openShadowContainer' with {"serialization":"deep","additionalPar
         }
         backendNodeId : <number>
         childNodeCount : 0
+        loaderId : <string>
         localName : div
         namespaceURI : http://www.w3.org/1999/xhtml
         nodeType : 1
@@ -2075,6 +2214,7 @@ Testing 'window.openShadowContainer' with {"serialization":"deep","additionalPar
             value : {
                 backendNodeId : <number>
                 childNodeCount : 1
+                loaderId : <string>
                 mode : open
                 nodeType : 11
             }
@@ -2091,6 +2231,7 @@ Testing 'window.openShadowContainer' with {"serialization":"deep","additionalPar
         childNodeCount : 0
         children : [
         ]
+        loaderId : <string>
         localName : div
         namespaceURI : http://www.w3.org/1999/xhtml
         nodeType : 1
@@ -2099,6 +2240,7 @@ Testing 'window.openShadowContainer' with {"serialization":"deep","additionalPar
             value : {
                 backendNodeId : <number>
                 childNodeCount : 1
+                loaderId : <string>
                 mode : open
                 nodeType : 11
             }
@@ -2115,6 +2257,7 @@ Testing 'window.openShadowContainer' with {"serialization":"deep","additionalPar
         childNodeCount : 0
         children : [
         ]
+        loaderId : <string>
         localName : div
         namespaceURI : http://www.w3.org/1999/xhtml
         nodeType : 1
@@ -2123,6 +2266,7 @@ Testing 'window.openShadowContainer' with {"serialization":"deep","additionalPar
             value : {
                 backendNodeId : <number>
                 childNodeCount : 1
+                loaderId : <string>
                 mode : open
                 nodeType : 11
             }
@@ -2139,6 +2283,7 @@ Testing 'window.openShadowContainer' with {"serialization":"deep","additionalPar
         childNodeCount : 0
         children : [
         ]
+        loaderId : <string>
         localName : div
         namespaceURI : http://www.w3.org/1999/xhtml
         nodeType : 1
@@ -2147,6 +2292,7 @@ Testing 'window.openShadowContainer' with {"serialization":"deep","additionalPar
             value : {
                 backendNodeId : <number>
                 childNodeCount : 1
+                loaderId : <string>
                 mode : open
                 nodeType : 11
             }
@@ -2163,6 +2309,7 @@ Testing 'window.openShadowContainer' with {"serialization":"deep","additionalPar
         childNodeCount : 0
         children : [
         ]
+        loaderId : <string>
         localName : div
         namespaceURI : http://www.w3.org/1999/xhtml
         nodeType : 1
@@ -2187,11 +2334,13 @@ Testing 'window.openShadowContainer' with {"serialization":"deep","additionalPar
                                         childNodeCount : 0
                                         children : [
                                         ]
+                                        loaderId : <string>
                                         nodeType : 3
                                         nodeValue : element in open shadow DOM
                                     }
                                 }
                             ]
+                            loaderId : <string>
                             localName : div
                             namespaceURI : http://www.w3.org/1999/xhtml
                             nodeType : 1
@@ -2199,6 +2348,7 @@ Testing 'window.openShadowContainer' with {"serialization":"deep","additionalPar
                         }
                     }
                 ]
+                loaderId : <string>
                 mode : open
                 nodeType : 11
             }
@@ -2213,6 +2363,7 @@ Testing 'window.openShadowContainer' with {"serialization":"deep","additionalPar
         }
         backendNodeId : <number>
         childNodeCount : 0
+        loaderId : <string>
         localName : div
         namespaceURI : http://www.w3.org/1999/xhtml
         nodeType : 1
@@ -2221,6 +2372,7 @@ Testing 'window.openShadowContainer' with {"serialization":"deep","additionalPar
             value : {
                 backendNodeId : <number>
                 childNodeCount : 1
+                loaderId : <string>
                 mode : open
                 nodeType : 11
             }
@@ -2235,6 +2387,7 @@ Testing 'window.openShadowContainer' with {"serialization":"deep","additionalPar
         }
         backendNodeId : <number>
         childNodeCount : 0
+        loaderId : <string>
         localName : div
         namespaceURI : http://www.w3.org/1999/xhtml
         nodeType : 1
@@ -2243,6 +2396,7 @@ Testing 'window.openShadowContainer' with {"serialization":"deep","additionalPar
             value : {
                 backendNodeId : <number>
                 childNodeCount : 1
+                loaderId : <string>
                 mode : open
                 nodeType : 11
             }
@@ -2259,6 +2413,7 @@ Testing 'window.openShadowContainer' with {"serialization":"deep","additionalPar
         childNodeCount : 0
         children : [
         ]
+        loaderId : <string>
         localName : div
         namespaceURI : http://www.w3.org/1999/xhtml
         nodeType : 1
@@ -2275,6 +2430,7 @@ Testing 'window.openShadowContainer' with {"serialization":"deep","additionalPar
                             }
                             backendNodeId : <number>
                             childNodeCount : 1
+                            loaderId : <string>
                             localName : div
                             namespaceURI : http://www.w3.org/1999/xhtml
                             nodeType : 1
@@ -2282,6 +2438,7 @@ Testing 'window.openShadowContainer' with {"serialization":"deep","additionalPar
                         }
                     }
                 ]
+                loaderId : <string>
                 mode : open
                 nodeType : 11
             }
@@ -2298,6 +2455,7 @@ Testing 'window.openShadowContainer' with {"serialization":"deep","additionalPar
         childNodeCount : 0
         children : [
         ]
+        loaderId : <string>
         localName : div
         namespaceURI : http://www.w3.org/1999/xhtml
         nodeType : 1
@@ -2322,11 +2480,13 @@ Testing 'window.openShadowContainer' with {"serialization":"deep","additionalPar
                                         childNodeCount : 0
                                         children : [
                                         ]
+                                        loaderId : <string>
                                         nodeType : 3
                                         nodeValue : element in open shadow DOM
                                     }
                                 }
                             ]
+                            loaderId : <string>
                             localName : div
                             namespaceURI : http://www.w3.org/1999/xhtml
                             nodeType : 1
@@ -2334,6 +2494,7 @@ Testing 'window.openShadowContainer' with {"serialization":"deep","additionalPar
                         }
                     }
                 ]
+                loaderId : <string>
                 mode : open
                 nodeType : 11
             }
@@ -2348,6 +2509,7 @@ Testing 'window.closedShadowContainer' with {"serialization":"deep"}
         }
         backendNodeId : <number>
         childNodeCount : 0
+        loaderId : <string>
         localName : div
         namespaceURI : http://www.w3.org/1999/xhtml
         nodeType : 1
@@ -2356,6 +2518,7 @@ Testing 'window.closedShadowContainer' with {"serialization":"deep"}
             value : {
                 backendNodeId : <number>
                 childNodeCount : 1
+                loaderId : <string>
                 mode : closed
                 nodeType : 11
             }
@@ -2370,6 +2533,7 @@ Testing 'window.closedShadowContainer' with {"serialization":"deep","additionalP
         }
         backendNodeId : <number>
         childNodeCount : 0
+        loaderId : <string>
         localName : div
         namespaceURI : http://www.w3.org/1999/xhtml
         nodeType : 1
@@ -2378,6 +2542,7 @@ Testing 'window.closedShadowContainer' with {"serialization":"deep","additionalP
             value : {
                 backendNodeId : <number>
                 childNodeCount : 1
+                loaderId : <string>
                 mode : closed
                 nodeType : 11
             }
@@ -2410,6 +2575,7 @@ Testing 'window.closedShadowContainer' with {"serialization":"deep","additionalP
         }
         backendNodeId : <number>
         childNodeCount : 0
+        loaderId : <string>
         localName : div
         namespaceURI : http://www.w3.org/1999/xhtml
         nodeType : 1
@@ -2418,6 +2584,7 @@ Testing 'window.closedShadowContainer' with {"serialization":"deep","additionalP
             value : {
                 backendNodeId : <number>
                 childNodeCount : 1
+                loaderId : <string>
                 mode : closed
                 nodeType : 11
             }
@@ -2434,6 +2601,7 @@ Testing 'window.closedShadowContainer' with {"serialization":"deep","additionalP
         childNodeCount : 0
         children : [
         ]
+        loaderId : <string>
         localName : div
         namespaceURI : http://www.w3.org/1999/xhtml
         nodeType : 1
@@ -2442,6 +2610,7 @@ Testing 'window.closedShadowContainer' with {"serialization":"deep","additionalP
             value : {
                 backendNodeId : <number>
                 childNodeCount : 1
+                loaderId : <string>
                 mode : closed
                 nodeType : 11
             }
@@ -2458,6 +2627,7 @@ Testing 'window.closedShadowContainer' with {"serialization":"deep","additionalP
         childNodeCount : 0
         children : [
         ]
+        loaderId : <string>
         localName : div
         namespaceURI : http://www.w3.org/1999/xhtml
         nodeType : 1
@@ -2466,6 +2636,7 @@ Testing 'window.closedShadowContainer' with {"serialization":"deep","additionalP
             value : {
                 backendNodeId : <number>
                 childNodeCount : 1
+                loaderId : <string>
                 mode : closed
                 nodeType : 11
             }
@@ -2482,6 +2653,7 @@ Testing 'window.closedShadowContainer' with {"serialization":"deep","additionalP
         childNodeCount : 0
         children : [
         ]
+        loaderId : <string>
         localName : div
         namespaceURI : http://www.w3.org/1999/xhtml
         nodeType : 1
@@ -2490,6 +2662,7 @@ Testing 'window.closedShadowContainer' with {"serialization":"deep","additionalP
             value : {
                 backendNodeId : <number>
                 childNodeCount : 1
+                loaderId : <string>
                 mode : closed
                 nodeType : 11
             }
@@ -2506,6 +2679,7 @@ Testing 'window.closedShadowContainer' with {"serialization":"deep","additionalP
         childNodeCount : 0
         children : [
         ]
+        loaderId : <string>
         localName : div
         namespaceURI : http://www.w3.org/1999/xhtml
         nodeType : 1
@@ -2514,6 +2688,7 @@ Testing 'window.closedShadowContainer' with {"serialization":"deep","additionalP
             value : {
                 backendNodeId : <number>
                 childNodeCount : 1
+                loaderId : <string>
                 mode : closed
                 nodeType : 11
             }
@@ -2528,6 +2703,7 @@ Testing 'window.closedShadowContainer' with {"serialization":"deep","additionalP
         }
         backendNodeId : <number>
         childNodeCount : 0
+        loaderId : <string>
         localName : div
         namespaceURI : http://www.w3.org/1999/xhtml
         nodeType : 1
@@ -2536,6 +2712,7 @@ Testing 'window.closedShadowContainer' with {"serialization":"deep","additionalP
             value : {
                 backendNodeId : <number>
                 childNodeCount : 1
+                loaderId : <string>
                 mode : closed
                 nodeType : 11
             }
@@ -2550,6 +2727,7 @@ Testing 'window.closedShadowContainer' with {"serialization":"deep","additionalP
         }
         backendNodeId : <number>
         childNodeCount : 0
+        loaderId : <string>
         localName : div
         namespaceURI : http://www.w3.org/1999/xhtml
         nodeType : 1
@@ -2558,6 +2736,7 @@ Testing 'window.closedShadowContainer' with {"serialization":"deep","additionalP
             value : {
                 backendNodeId : <number>
                 childNodeCount : 1
+                loaderId : <string>
                 mode : closed
                 nodeType : 11
             }
@@ -2574,6 +2753,7 @@ Testing 'window.closedShadowContainer' with {"serialization":"deep","additionalP
         childNodeCount : 0
         children : [
         ]
+        loaderId : <string>
         localName : div
         namespaceURI : http://www.w3.org/1999/xhtml
         nodeType : 1
@@ -2590,6 +2770,7 @@ Testing 'window.closedShadowContainer' with {"serialization":"deep","additionalP
                             }
                             backendNodeId : <number>
                             childNodeCount : 1
+                            loaderId : <string>
                             localName : div
                             namespaceURI : http://www.w3.org/1999/xhtml
                             nodeType : 1
@@ -2597,6 +2778,7 @@ Testing 'window.closedShadowContainer' with {"serialization":"deep","additionalP
                         }
                     }
                 ]
+                loaderId : <string>
                 mode : closed
                 nodeType : 11
             }
@@ -2613,6 +2795,7 @@ Testing 'window.closedShadowContainer' with {"serialization":"deep","additionalP
         childNodeCount : 0
         children : [
         ]
+        loaderId : <string>
         localName : div
         namespaceURI : http://www.w3.org/1999/xhtml
         nodeType : 1
@@ -2637,11 +2820,13 @@ Testing 'window.closedShadowContainer' with {"serialization":"deep","additionalP
                                         childNodeCount : 0
                                         children : [
                                         ]
+                                        loaderId : <string>
                                         nodeType : 3
                                         nodeValue : element in closed shadow DOM
                                     }
                                 }
                             ]
+                            loaderId : <string>
                             localName : div
                             namespaceURI : http://www.w3.org/1999/xhtml
                             nodeType : 1
@@ -2649,6 +2834,7 @@ Testing 'window.closedShadowContainer' with {"serialization":"deep","additionalP
                         }
                     }
                 ]
+                loaderId : <string>
                 mode : closed
                 nodeType : 11
             }
