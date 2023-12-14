@@ -16,8 +16,12 @@ CommerceInternalsUIBase::~CommerceInternalsUIBase() = default;
 
 void CommerceInternalsUIBase::BindInterface(
     mojo::PendingReceiver<mojom::CommerceInternalsHandlerFactory> receiver) {
-  page_factory_receiver_.reset();
-  page_factory_receiver_.Bind(std::move(receiver));
+  if (page_factory_receiver_.is_bound()) {
+    page_factory_receiver_.reset();
+  }
+  if (receiver.is_valid()) {
+    page_factory_receiver_.Bind(std::move(receiver));
+  }
 }
 
 void CommerceInternalsUIBase::CreateCommerceInternalsHandler(
