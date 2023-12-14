@@ -10,7 +10,7 @@ import {FocusRow} from '//resources/js/focus_row.js';
 import {focusWithoutInk} from '//resources/js/focus_without_ink.js';
 import {isMac, isWindows} from '//resources/js/platform.js';
 import {getDeepActiveElement} from '//resources/js/util.js';
-import {FlattenedNodesObserver, PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {getTemplate} from './cr_action_menu.html.js';
 
@@ -158,7 +158,6 @@ export class CrActionMenuElement extends PolymerElement {
   roleDescription: string;
 
   private boundClose_: (() => void)|null = null;
-  private contentObserver_: FlattenedNodesObserver|null = null;
   private resizeObserver_: ResizeObserver|null = null;
   private hasMousemoveListener_: boolean = false;
   private anchorElement_: HTMLElement|null = null;
@@ -193,10 +192,6 @@ export class CrActionMenuElement extends PolymerElement {
   private removeListeners_() {
     window.removeEventListener('resize', this.boundClose_!);
     window.removeEventListener('popstate', this.boundClose_!);
-    if (this.contentObserver_) {
-      this.contentObserver_.disconnect();
-      this.contentObserver_ = null;
-    }
 
     if (this.resizeObserver_) {
       this.resizeObserver_.disconnect();
@@ -456,6 +451,15 @@ export class CrActionMenuElement extends PolymerElement {
     this.$.dialog.style.top = menuTop + 'px';
   }
 
+  private onSlotchange_() {
+    for (const node of this.$.contentNode.assignedElements({flatten: true})) {
+      if (node.classList.contains(DROPDOWN_ITEM_CLASS) &&
+          !node.getAttribute('role')) {
+        node.setAttribute('role', 'menuitem');
+      }
+    }
+  }
+
   private addListeners_() {
     this.boundClose_ = this.boundClose_ || (() => {
                          if (this.$.dialog.open) {
@@ -464,17 +468,6 @@ export class CrActionMenuElement extends PolymerElement {
                        });
     window.addEventListener('resize', this.boundClose_);
     window.addEventListener('popstate', this.boundClose_);
-
-    this.contentObserver_ = new FlattenedNodesObserver(
-        this.$.contentNode, (info: {addedNodes: Element[]}) => {
-          info.addedNodes.forEach(node => {
-            if (node.classList &&
-                node.classList.contains(DROPDOWN_ITEM_CLASS) &&
-                !node.getAttribute('role')) {
-              node.setAttribute('role', 'menuitem');
-            }
-          });
-        });
 
     if (this.autoReposition) {
       this.resizeObserver_ = new ResizeObserver(() => {
