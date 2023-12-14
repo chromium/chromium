@@ -780,7 +780,7 @@ BASE_FEATURE(kEnableKeyboardBacklightToggle,
 // When enabled, it will make login WebUI loaded only before showing it.
 BASE_FEATURE(kEnableLazyLoginWebUILoading,
              "EnableLazyLoginWebUILoading",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Enables LocalSearchService to be initialized.
 BASE_FEATURE(kEnableLocalSearchService,
