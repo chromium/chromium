@@ -41,6 +41,12 @@ BASE_FEATURE(kCustomizeChromeWallpaperSearch,
              "CustomizeChromeWallpaperSearch",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// If enabled, shows inspiration card in Customize Chrome Side Panel Wallpaper
+// Search.
+BASE_FEATURE(kCustomizeChromeWallpaperSearchInspirationCard,
+             "CustomizeChromeWallpaperSearchInspirationCard",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Forces a dark Google logo for a specific subset of Chrome Web Store themes
 // (see crbug.com/1329552). This is enabled by default to allow finch to disable
 // this NTP treatment in the case of unexpected regressions.

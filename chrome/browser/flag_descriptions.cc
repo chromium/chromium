@@ -225,6 +225,12 @@ const char kCustomizeChromeWallpaperSearchName[] =
 const char kCustomizeChromeWallpaperSearchDescription[] =
     "Enables wallpaper search in Customize Chrome Side Panel.";
 
+const char kCustomizeChromeWallpaperSearchInspirationCardName[] =
+    "Customize Chrome Wallpaper Search Inspiration Card";
+const char kCustomizeChromeWallpaperSearchInspirationCardDescription[] =
+    "Shows inspiration card in Customize Chrome Side Panel Wallpaper Search. "
+    "Requires #customize-chrome-wallpaper-search to be enabled too.";
+
 const char kWallpaperSearchSettingsVisibilityName[] =
     "Wallpaper Search Settings Visibility";
 const char kWallpaperSearchSettingsVisibilityDescription[] =

@@ -31483,6 +31483,8 @@ from previous Chrome versions.
   <int value="-781625651"
       label="DisruptiveNotificationPermissionRevocation:enabled"/>
   <int value="-780798969" label="disable-single-click-autofill"/>
+  <int value="-780646596"
+      label="CustomizeChromeWallpaperSearchInspirationCard:enabled"/>
   <int value="-778126349" label="DownloadsLocationChange:enabled"/>
   <int value="-778098896" label="EnableAggregatedMlSearchRanking:disabled"/>
   <int value="-778047974" label="CrostiniUseBusterImage:disabled"/>
@@ -32466,6 +32468,8 @@ from previous Chrome versions.
       label="BrokerFileOperationsOnDiskCacheInNetworkService:enabled"/>
   <int value="-313812707" label="VideoTutorials:disabled"/>
   <int value="-312144677" label="TFLiteLanguageDetectionEnabled:disabled"/>
+  <int value="-311509777"
+      label="CustomizeChromeWallpaperSearchInspirationCard:disabled"/>
   <int value="-311148335" label="v8-pac-mojo-out-of-process"/>
   <int value="-310908854" label="new-wallpaper-picker"/>
   <int value="-310615515" label="EnableSuggestedFiles:disabled"/>
