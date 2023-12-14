@@ -43,6 +43,9 @@
   "Dawn Android arm DEPS Release (Pixel 4)": {
     "gtest_tests": [
       {
+        "android_swarming": {
+          "shards": 2
+        },
         "args": [
           "--enable-implicit-device-sync",
           "--gs-results-bucket=chromium-result-details",
@@ -93,6 +96,9 @@
         "test_id_prefix": "ninja://third_party/dawn/src/dawn/tests:dawn_end2end_tests/"
       },
       {
+        "android_swarming": {
+          "shards": 2
+        },
         "args": [
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices",
@@ -265,6 +271,9 @@
   "Dawn Android arm Release (Pixel 4)": {
     "gtest_tests": [
       {
+        "android_swarming": {
+          "shards": 2
+        },
         "args": [
           "--enable-implicit-device-sync",
           "--gs-results-bucket=chromium-result-details",
@@ -315,6 +324,9 @@
         "test_id_prefix": "ninja://third_party/dawn/src/dawn/tests:dawn_end2end_tests/"
       },
       {
+        "android_swarming": {
+          "shards": 2
+        },
         "args": [
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices",
@@ -448,6 +460,9 @@
   "Dawn Android arm64 DEPS Release (Pixel 6)": {
     "gtest_tests": [
       {
+        "android_swarming": {
+          "shards": 2
+        },
         "args": [
           "--enable-implicit-device-sync",
           "--gs-results-bucket=chromium-result-details",
@@ -498,6 +513,9 @@
         "test_id_prefix": "ninja://third_party/dawn/src/dawn/tests:dawn_end2end_tests/"
       },
       {
+        "android_swarming": {
+          "shards": 2
+        },
         "args": [
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices",
@@ -631,6 +649,9 @@
   "Dawn Android arm64 Release (Pixel 6)": {
     "gtest_tests": [
       {
+        "android_swarming": {
+          "shards": 2
+        },
         "args": [
           "--enable-implicit-device-sync",
           "--gs-results-bucket=chromium-result-details",
@@ -681,6 +702,9 @@
         "test_id_prefix": "ninja://third_party/dawn/src/dawn/tests:dawn_end2end_tests/"
       },
       {
+        "android_swarming": {
+          "shards": 2
+        },
         "args": [
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices",
@@ -814,6 +838,9 @@
   "Dawn Linux TSAN Release": {
     "gtest_tests": [
       {
+        "android_swarming": {
+          "shards": 2
+        },
         "args": [
           "--enable-implicit-device-sync",
           "--no-xvfb",
@@ -841,6 +868,9 @@
         "test_id_prefix": "ninja://third_party/dawn/src/dawn/tests:dawn_end2end_tests/"
       },
       {
+        "android_swarming": {
+          "shards": 2
+        },
         "args": [
           "--enable-toggles=skip_validation",
           "--no-xvfb",
@@ -867,6 +897,9 @@
         "test_id_prefix": "ninja://third_party/dawn/src/dawn/tests:dawn_end2end_tests/"
       },
       {
+        "android_swarming": {
+          "shards": 2
+        },
         "args": [
           "--no-xvfb",
           "--use-gpu-in-tests",
@@ -892,6 +925,9 @@
         "test_id_prefix": "ninja://third_party/dawn/src/dawn/tests:dawn_end2end_tests/"
       },
       {
+        "android_swarming": {
+          "shards": 2
+        },
         "args": [
           "--use-wire",
           "--no-xvfb",
@@ -924,6 +960,9 @@
   "Dawn Linux x64 DEPS Release (Intel UHD 630)": {
     "gtest_tests": [
       {
+        "android_swarming": {
+          "shards": 2
+        },
         "args": [
           "--enable-implicit-device-sync",
           "--no-xvfb",
@@ -951,6 +990,9 @@
         "test_id_prefix": "ninja://third_party/dawn/src/dawn/tests:dawn_end2end_tests/"
       },
       {
+        "android_swarming": {
+          "shards": 2
+        },
         "args": [
           "--enable-toggles=skip_validation",
           "--no-xvfb",
@@ -977,6 +1019,9 @@
         "test_id_prefix": "ninja://third_party/dawn/src/dawn/tests:dawn_end2end_tests/"
       },
       {
+        "android_swarming": {
+          "shards": 2
+        },
         "args": [
           "--no-xvfb",
           "--use-gpu-in-tests",
@@ -1002,6 +1047,9 @@
         "test_id_prefix": "ninja://third_party/dawn/src/dawn/tests:dawn_end2end_tests/"
       },
       {
+        "android_swarming": {
+          "shards": 2
+        },
         "args": [
           "--enable-backend-validation",
           "--no-xvfb",
@@ -1028,6 +1076,9 @@
         "test_id_prefix": "ninja://third_party/dawn/src/dawn/tests:dawn_end2end_tests/"
       },
       {
+        "android_swarming": {
+          "shards": 2
+        },
         "args": [
           "--use-wire",
           "--no-xvfb",
@@ -1473,6 +1524,9 @@
   "Dawn Linux x64 DEPS Release (NVIDIA)": {
     "gtest_tests": [
       {
+        "android_swarming": {
+          "shards": 2
+        },
         "args": [
           "--enable-implicit-device-sync",
           "--no-xvfb",
@@ -1500,6 +1554,9 @@
         "test_id_prefix": "ninja://third_party/dawn/src/dawn/tests:dawn_end2end_tests/"
       },
       {
+        "android_swarming": {
+          "shards": 2
+        },
         "args": [
           "--enable-toggles=skip_validation",
           "--no-xvfb",
@@ -1526,6 +1583,9 @@
         "test_id_prefix": "ninja://third_party/dawn/src/dawn/tests:dawn_end2end_tests/"
       },
       {
+        "android_swarming": {
+          "shards": 2
+        },
         "args": [
           "--no-xvfb",
           "--use-gpu-in-tests",
@@ -1551,6 +1611,9 @@
         "test_id_prefix": "ninja://third_party/dawn/src/dawn/tests:dawn_end2end_tests/"
       },
       {
+        "android_swarming": {
+          "shards": 2
+        },
         "args": [
           "--enable-backend-validation",
           "--no-xvfb",
@@ -1577,6 +1640,9 @@
         "test_id_prefix": "ninja://third_party/dawn/src/dawn/tests:dawn_end2end_tests/"
       },
       {
+        "android_swarming": {
+          "shards": 2
+        },
         "args": [
           "--use-wire",
           "--no-xvfb",
@@ -2018,6 +2084,9 @@
   "Dawn Linux x64 Release (Intel UHD 630)": {
     "gtest_tests": [
       {
+        "android_swarming": {
+          "shards": 2
+        },
         "args": [
           "--enable-implicit-device-sync",
           "--no-xvfb",
@@ -2045,6 +2114,9 @@
         "test_id_prefix": "ninja://third_party/dawn/src/dawn/tests:dawn_end2end_tests/"
       },
       {
+        "android_swarming": {
+          "shards": 2
+        },
         "args": [
           "--enable-toggles=skip_validation",
           "--no-xvfb",
@@ -2071,6 +2143,9 @@
         "test_id_prefix": "ninja://third_party/dawn/src/dawn/tests:dawn_end2end_tests/"
       },
       {
+        "android_swarming": {
+          "shards": 2
+        },
         "args": [
           "--no-xvfb",
           "--use-gpu-in-tests",
@@ -2096,6 +2171,9 @@
         "test_id_prefix": "ninja://third_party/dawn/src/dawn/tests:dawn_end2end_tests/"
       },
       {
+        "android_swarming": {
+          "shards": 2
+        },
         "args": [
           "--enable-backend-validation",
           "--no-xvfb",
@@ -2122,6 +2200,9 @@
         "test_id_prefix": "ninja://third_party/dawn/src/dawn/tests:dawn_end2end_tests/"
       },
       {
+        "android_swarming": {
+          "shards": 2
+        },
         "args": [
           "--use-wire",
           "--no-xvfb",
@@ -2567,6 +2648,9 @@
   "Dawn Linux x64 Release (NVIDIA)": {
     "gtest_tests": [
       {
+        "android_swarming": {
+          "shards": 2
+        },
         "args": [
           "--enable-implicit-device-sync",
           "--no-xvfb",
@@ -2594,6 +2678,9 @@
         "test_id_prefix": "ninja://third_party/dawn/src/dawn/tests:dawn_end2end_tests/"
       },
       {
+        "android_swarming": {
+          "shards": 2
+        },
         "args": [
           "--enable-toggles=skip_validation",
           "--no-xvfb",
@@ -2620,6 +2707,9 @@
         "test_id_prefix": "ninja://third_party/dawn/src/dawn/tests:dawn_end2end_tests/"
       },
       {
+        "android_swarming": {
+          "shards": 2
+        },
         "args": [
           "--no-xvfb",
           "--use-gpu-in-tests",
@@ -2645,6 +2735,9 @@
         "test_id_prefix": "ninja://third_party/dawn/src/dawn/tests:dawn_end2end_tests/"
       },
       {
+        "android_swarming": {
+          "shards": 2
+        },
         "args": [
           "--enable-backend-validation",
           "--no-xvfb",
@@ -2671,6 +2764,9 @@
         "test_id_prefix": "ninja://third_party/dawn/src/dawn/tests:dawn_end2end_tests/"
       },
       {
+        "android_swarming": {
+          "shards": 2
+        },
         "args": [
           "--use-wire",
           "--no-xvfb",
@@ -3112,6 +3208,9 @@
   "Dawn Mac arm64 DEPS Release (Apple M2)": {
     "gtest_tests": [
       {
+        "android_swarming": {
+          "shards": 2
+        },
         "args": [
           "--enable-implicit-device-sync",
           "--use-gpu-in-tests",
@@ -3142,6 +3241,9 @@
         "test_id_prefix": "ninja://third_party/dawn/src/dawn/tests:dawn_end2end_tests/"
       },
       {
+        "android_swarming": {
+          "shards": 2
+        },
         "args": [
           "--enable-toggles=skip_validation",
           "--use-gpu-in-tests",
@@ -3171,6 +3273,9 @@
         "test_id_prefix": "ninja://third_party/dawn/src/dawn/tests:dawn_end2end_tests/"
       },
       {
+        "android_swarming": {
+          "shards": 2
+        },
         "args": [
           "--use-gpu-in-tests",
           "--exclusive-device-type-preference=discrete,integrated",
@@ -3199,6 +3304,9 @@
         "test_id_prefix": "ninja://third_party/dawn/src/dawn/tests:dawn_end2end_tests/"
       },
       {
+        "android_swarming": {
+          "shards": 2
+        },
         "args": [
           "--enable-backend-validation",
           "--use-gpu-in-tests",
@@ -3228,6 +3336,9 @@
         "test_id_prefix": "ninja://third_party/dawn/src/dawn/tests:dawn_end2end_tests/"
       },
       {
+        "android_swarming": {
+          "shards": 2
+        },
         "args": [
           "--use-wire",
           "--use-gpu-in-tests",
@@ -3678,6 +3789,9 @@
   "Dawn Mac arm64 Release (Apple M2)": {
     "gtest_tests": [
       {
+        "android_swarming": {
+          "shards": 2
+        },
         "args": [
           "--enable-implicit-device-sync",
           "--use-gpu-in-tests",
@@ -3708,6 +3822,9 @@
         "test_id_prefix": "ninja://third_party/dawn/src/dawn/tests:dawn_end2end_tests/"
       },
       {
+        "android_swarming": {
+          "shards": 2
+        },
         "args": [
           "--enable-toggles=skip_validation",
           "--use-gpu-in-tests",
@@ -3737,6 +3854,9 @@
         "test_id_prefix": "ninja://third_party/dawn/src/dawn/tests:dawn_end2end_tests/"
       },
       {
+        "android_swarming": {
+          "shards": 2
+        },
         "args": [
           "--use-gpu-in-tests",
           "--exclusive-device-type-preference=discrete,integrated",
@@ -3765,6 +3885,9 @@
         "test_id_prefix": "ninja://third_party/dawn/src/dawn/tests:dawn_end2end_tests/"
       },
       {
+        "android_swarming": {
+          "shards": 2
+        },
         "args": [
           "--enable-backend-validation",
           "--use-gpu-in-tests",
@@ -3794,6 +3917,9 @@
         "test_id_prefix": "ninja://third_party/dawn/src/dawn/tests:dawn_end2end_tests/"
       },
       {
+        "android_swarming": {
+          "shards": 2
+        },
         "args": [
           "--use-wire",
           "--use-gpu-in-tests",
@@ -4246,6 +4372,9 @@
   "Dawn Mac x64 DEPS Release (AMD)": {
     "gtest_tests": [
       {
+        "android_swarming": {
+          "shards": 2
+        },
         "args": [
           "--enable-implicit-device-sync",
           "--use-gpu-in-tests",
@@ -4275,6 +4404,9 @@
         "test_id_prefix": "ninja://third_party/dawn/src/dawn/tests:dawn_end2end_tests/"
       },
       {
+        "android_swarming": {
+          "shards": 2
+        },
         "args": [
           "--enable-toggles=skip_validation",
           "--use-gpu-in-tests",
@@ -4303,6 +4435,9 @@
         "test_id_prefix": "ninja://third_party/dawn/src/dawn/tests:dawn_end2end_tests/"
       },
       {
+        "android_swarming": {
+          "shards": 2
+        },
         "args": [
           "--use-gpu-in-tests",
           "--exclusive-device-type-preference=discrete,integrated",
@@ -4330,6 +4465,9 @@
         "test_id_prefix": "ninja://third_party/dawn/src/dawn/tests:dawn_end2end_tests/"
       },
       {
+        "android_swarming": {
+          "shards": 2
+        },
         "args": [
           "--enable-backend-validation",
           "--use-gpu-in-tests",
@@ -4358,6 +4496,9 @@
         "test_id_prefix": "ninja://third_party/dawn/src/dawn/tests:dawn_end2end_tests/"
       },
       {
+        "android_swarming": {
+          "shards": 2
+        },
         "args": [
           "--use-wire",
           "--use-gpu-in-tests",
@@ -4795,6 +4936,9 @@
   "Dawn Mac x64 DEPS Release (Intel)": {
     "gtest_tests": [
       {
+        "android_swarming": {
+          "shards": 2
+        },
         "args": [
           "--enable-implicit-device-sync",
           "--use-gpu-in-tests",
@@ -4822,6 +4966,9 @@
         "test_id_prefix": "ninja://third_party/dawn/src/dawn/tests:dawn_end2end_tests/"
       },
       {
+        "android_swarming": {
+          "shards": 2
+        },
         "args": [
           "--enable-toggles=skip_validation",
           "--use-gpu-in-tests",
@@ -4848,6 +4995,9 @@
         "test_id_prefix": "ninja://third_party/dawn/src/dawn/tests:dawn_end2end_tests/"
       },
       {
+        "android_swarming": {
+          "shards": 2
+        },
         "args": [
           "--use-gpu-in-tests",
           "--exclusive-device-type-preference=discrete,integrated",
@@ -4873,6 +5023,9 @@
         "test_id_prefix": "ninja://third_party/dawn/src/dawn/tests:dawn_end2end_tests/"
       },
       {
+        "android_swarming": {
+          "shards": 2
+        },
         "args": [
           "--enable-backend-validation",
           "--use-gpu-in-tests",
@@ -4899,6 +5052,9 @@
         "test_id_prefix": "ninja://third_party/dawn/src/dawn/tests:dawn_end2end_tests/"
       },
       {
+        "android_swarming": {
+          "shards": 2
+        },
         "args": [
           "--use-wire",
           "--use-gpu-in-tests",
@@ -5382,6 +5538,9 @@
   "Dawn Mac x64 Release (AMD)": {
     "gtest_tests": [
       {
+        "android_swarming": {
+          "shards": 2
+        },
         "args": [
           "--enable-implicit-device-sync",
           "--use-gpu-in-tests",
@@ -5411,6 +5570,9 @@
         "test_id_prefix": "ninja://third_party/dawn/src/dawn/tests:dawn_end2end_tests/"
       },
       {
+        "android_swarming": {
+          "shards": 2
+        },
         "args": [
           "--enable-toggles=skip_validation",
           "--use-gpu-in-tests",
@@ -5439,6 +5601,9 @@
         "test_id_prefix": "ninja://third_party/dawn/src/dawn/tests:dawn_end2end_tests/"
       },
       {
+        "android_swarming": {
+          "shards": 2
+        },
         "args": [
           "--use-gpu-in-tests",
           "--exclusive-device-type-preference=discrete,integrated",
@@ -5466,6 +5631,9 @@
         "test_id_prefix": "ninja://third_party/dawn/src/dawn/tests:dawn_end2end_tests/"
       },
       {
+        "android_swarming": {
+          "shards": 2
+        },
         "args": [
           "--enable-backend-validation",
           "--use-gpu-in-tests",
@@ -5494,6 +5662,9 @@
         "test_id_prefix": "ninja://third_party/dawn/src/dawn/tests:dawn_end2end_tests/"
       },
       {
+        "android_swarming": {
+          "shards": 2
+        },
         "args": [
           "--use-wire",
           "--use-gpu-in-tests",
@@ -5931,6 +6102,9 @@
   "Dawn Mac x64 Release (Intel)": {
     "gtest_tests": [
       {
+        "android_swarming": {
+          "shards": 2
+        },
         "args": [
           "--enable-implicit-device-sync",
           "--use-gpu-in-tests",
@@ -5958,6 +6132,9 @@
         "test_id_prefix": "ninja://third_party/dawn/src/dawn/tests:dawn_end2end_tests/"
       },
       {
+        "android_swarming": {
+          "shards": 2
+        },
         "args": [
           "--enable-toggles=skip_validation",
           "--use-gpu-in-tests",
@@ -5984,6 +6161,9 @@
         "test_id_prefix": "ninja://third_party/dawn/src/dawn/tests:dawn_end2end_tests/"
       },
       {
+        "android_swarming": {
+          "shards": 2
+        },
         "args": [
           "--use-gpu-in-tests",
           "--exclusive-device-type-preference=discrete,integrated",
@@ -6009,6 +6189,9 @@
         "test_id_prefix": "ninja://third_party/dawn/src/dawn/tests:dawn_end2end_tests/"
       },
       {
+        "android_swarming": {
+          "shards": 2
+        },
         "args": [
           "--enable-backend-validation",
           "--use-gpu-in-tests",
@@ -6035,6 +6218,9 @@
         "test_id_prefix": "ninja://third_party/dawn/src/dawn/tests:dawn_end2end_tests/"
       },
       {
+        "android_swarming": {
+          "shards": 2
+        },
         "args": [
           "--use-wire",
           "--use-gpu-in-tests",
@@ -6447,6 +6633,9 @@
   "Dawn Win10 x64 ASAN Release (Intel)": {
     "gtest_tests": [
       {
+        "android_swarming": {
+          "shards": 2
+        },
         "args": [
           "--enable-implicit-device-sync",
           "--use-gpu-in-tests",
@@ -6474,6 +6663,9 @@
         "test_id_prefix": "ninja://third_party/dawn/src/dawn/tests:dawn_end2end_tests/"
       },
       {
+        "android_swarming": {
+          "shards": 2
+        },
         "args": [
           "--disable-toggles=use_dxc",
           "--use-gpu-in-tests",
@@ -6500,6 +6692,9 @@
         "test_id_prefix": "ninja://third_party/dawn/src/dawn/tests:dawn_end2end_tests/"
       },
       {
+        "android_swarming": {
+          "shards": 2
+        },
         "args": [
           "--enable-toggles=skip_validation",
           "--use-gpu-in-tests",
@@ -6526,6 +6721,9 @@
         "test_id_prefix": "ninja://third_party/dawn/src/dawn/tests:dawn_end2end_tests/"
       },
       {
+        "android_swarming": {
+          "shards": 2
+        },
         "args": [
           "--use-gpu-in-tests",
           "--exclusive-device-type-preference=discrete,integrated",
@@ -6551,6 +6749,9 @@
         "test_id_prefix": "ninja://third_party/dawn/src/dawn/tests:dawn_end2end_tests/"
       },
       {
+        "android_swarming": {
+          "shards": 2
+        },
         "args": [
           "--use-wire",
           "--use-gpu-in-tests",
@@ -6845,6 +7046,9 @@
   "Dawn Win10 x64 ASAN Release (NVIDIA)": {
     "gtest_tests": [
       {
+        "android_swarming": {
+          "shards": 2
+        },
         "args": [
           "--enable-implicit-device-sync",
           "--use-gpu-in-tests",
@@ -6872,6 +7076,9 @@
         "test_id_prefix": "ninja://third_party/dawn/src/dawn/tests:dawn_end2end_tests/"
       },
       {
+        "android_swarming": {
+          "shards": 2
+        },
         "args": [
           "--disable-toggles=use_dxc",
           "--use-gpu-in-tests",
@@ -6898,6 +7105,9 @@
         "test_id_prefix": "ninja://third_party/dawn/src/dawn/tests:dawn_end2end_tests/"
       },
       {
+        "android_swarming": {
+          "shards": 2
+        },
         "args": [
           "--enable-toggles=skip_validation",
           "--use-gpu-in-tests",
@@ -6924,6 +7134,9 @@
         "test_id_prefix": "ninja://third_party/dawn/src/dawn/tests:dawn_end2end_tests/"
       },
       {
+        "android_swarming": {
+          "shards": 2
+        },
         "args": [
           "--use-gpu-in-tests",
           "--exclusive-device-type-preference=discrete,integrated",
@@ -6949,6 +7162,9 @@
         "test_id_prefix": "ninja://third_party/dawn/src/dawn/tests:dawn_end2end_tests/"
       },
       {
+        "android_swarming": {
+          "shards": 2
+        },
         "args": [
           "--use-wire",
           "--use-gpu-in-tests",
@@ -7245,6 +7461,9 @@
   "Dawn Win10 x64 DEPS Release (Intel)": {
     "gtest_tests": [
       {
+        "android_swarming": {
+          "shards": 2
+        },
         "args": [
           "--enable-implicit-device-sync",
           "--use-gpu-in-tests",
@@ -7272,6 +7491,9 @@
         "test_id_prefix": "ninja://third_party/dawn/src/dawn/tests:dawn_end2end_tests/"
       },
       {
+        "android_swarming": {
+          "shards": 2
+        },
         "args": [
           "--disable-toggles=use_dxc",
           "--use-gpu-in-tests",
@@ -7298,6 +7520,9 @@
         "test_id_prefix": "ninja://third_party/dawn/src/dawn/tests:dawn_end2end_tests/"
       },
       {
+        "android_swarming": {
+          "shards": 2
+        },
         "args": [
           "--disable-toggles=use_dxc",
           "--enable-backend-validation",
@@ -7325,6 +7550,9 @@
         "test_id_prefix": "ninja://third_party/dawn/src/dawn/tests:dawn_end2end_tests/"
       },
       {
+        "android_swarming": {
+          "shards": 2
+        },
         "args": [
           "--enable-toggles=skip_validation",
           "--use-gpu-in-tests",
@@ -7351,6 +7579,9 @@
         "test_id_prefix": "ninja://third_party/dawn/src/dawn/tests:dawn_end2end_tests/"
       },
       {
+        "android_swarming": {
+          "shards": 2
+        },
         "args": [
           "--use-gpu-in-tests",
           "--exclusive-device-type-preference=discrete,integrated",
@@ -7376,6 +7607,9 @@
         "test_id_prefix": "ninja://third_party/dawn/src/dawn/tests:dawn_end2end_tests/"
       },
       {
+        "android_swarming": {
+          "shards": 2
+        },
         "args": [
           "--enable-backend-validation",
           "--use-gpu-in-tests",
@@ -7402,6 +7636,9 @@
         "test_id_prefix": "ninja://third_party/dawn/src/dawn/tests:dawn_end2end_tests/"
       },
       {
+        "android_swarming": {
+          "shards": 2
+        },
         "args": [
           "--use-wire",
           "--use-gpu-in-tests",
@@ -7783,6 +8020,9 @@
   "Dawn Win10 x64 DEPS Release (NVIDIA)": {
     "gtest_tests": [
       {
+        "android_swarming": {
+          "shards": 2
+        },
         "args": [
           "--enable-implicit-device-sync",
           "--use-gpu-in-tests",
@@ -7810,6 +8050,9 @@
         "test_id_prefix": "ninja://third_party/dawn/src/dawn/tests:dawn_end2end_tests/"
       },
       {
+        "android_swarming": {
+          "shards": 2
+        },
         "args": [
           "--disable-toggles=use_dxc",
           "--use-gpu-in-tests",
@@ -7836,6 +8079,9 @@
         "test_id_prefix": "ninja://third_party/dawn/src/dawn/tests:dawn_end2end_tests/"
       },
       {
+        "android_swarming": {
+          "shards": 2
+        },
         "args": [
           "--disable-toggles=use_dxc",
           "--enable-backend-validation",
@@ -7863,6 +8109,9 @@
         "test_id_prefix": "ninja://third_party/dawn/src/dawn/tests:dawn_end2end_tests/"
       },
       {
+        "android_swarming": {
+          "shards": 2
+        },
         "args": [
           "--enable-toggles=skip_validation",
           "--use-gpu-in-tests",
@@ -7889,6 +8138,9 @@
         "test_id_prefix": "ninja://third_party/dawn/src/dawn/tests:dawn_end2end_tests/"
       },
       {
+        "android_swarming": {
+          "shards": 2
+        },
         "args": [
           "--use-gpu-in-tests",
           "--exclusive-device-type-preference=discrete,integrated",
@@ -7914,6 +8166,9 @@
         "test_id_prefix": "ninja://third_party/dawn/src/dawn/tests:dawn_end2end_tests/"
       },
       {
+        "android_swarming": {
+          "shards": 2
+        },
         "args": [
           "--enable-backend-validation",
           "--use-gpu-in-tests",
@@ -7940,6 +8195,9 @@
         "test_id_prefix": "ninja://third_party/dawn/src/dawn/tests:dawn_end2end_tests/"
       },
       {
+        "android_swarming": {
+          "shards": 2
+        },
         "args": [
           "--use-wire",
           "--use-gpu-in-tests",
@@ -8465,6 +8723,9 @@
   "Dawn Win10 x64 Release (Intel)": {
     "gtest_tests": [
       {
+        "android_swarming": {
+          "shards": 2
+        },
         "args": [
           "--enable-implicit-device-sync",
           "--use-gpu-in-tests",
@@ -8492,6 +8753,9 @@
         "test_id_prefix": "ninja://third_party/dawn/src/dawn/tests:dawn_end2end_tests/"
       },
       {
+        "android_swarming": {
+          "shards": 2
+        },
         "args": [
           "--disable-toggles=use_dxc",
           "--use-gpu-in-tests",
@@ -8518,6 +8782,9 @@
         "test_id_prefix": "ninja://third_party/dawn/src/dawn/tests:dawn_end2end_tests/"
       },
       {
+        "android_swarming": {
+          "shards": 2
+        },
         "args": [
           "--disable-toggles=use_dxc",
           "--enable-backend-validation",
@@ -8545,6 +8812,9 @@
         "test_id_prefix": "ninja://third_party/dawn/src/dawn/tests:dawn_end2end_tests/"
       },
       {
+        "android_swarming": {
+          "shards": 2
+        },
         "args": [
           "--enable-toggles=skip_validation",
           "--use-gpu-in-tests",
@@ -8571,6 +8841,9 @@
         "test_id_prefix": "ninja://third_party/dawn/src/dawn/tests:dawn_end2end_tests/"
       },
       {
+        "android_swarming": {
+          "shards": 2
+        },
         "args": [
           "--use-gpu-in-tests",
           "--exclusive-device-type-preference=discrete,integrated",
@@ -8596,6 +8869,9 @@
         "test_id_prefix": "ninja://third_party/dawn/src/dawn/tests:dawn_end2end_tests/"
       },
       {
+        "android_swarming": {
+          "shards": 2
+        },
         "args": [
           "--enable-backend-validation",
           "--use-gpu-in-tests",
@@ -8622,6 +8898,9 @@
         "test_id_prefix": "ninja://third_party/dawn/src/dawn/tests:dawn_end2end_tests/"
       },
       {
+        "android_swarming": {
+          "shards": 2
+        },
         "args": [
           "--use-wire",
           "--use-gpu-in-tests",
@@ -9003,6 +9282,9 @@
   "Dawn Win10 x64 Release (NVIDIA)": {
     "gtest_tests": [
       {
+        "android_swarming": {
+          "shards": 2
+        },
         "args": [
           "--enable-implicit-device-sync",
           "--use-gpu-in-tests",
@@ -9030,6 +9312,9 @@
         "test_id_prefix": "ninja://third_party/dawn/src/dawn/tests:dawn_end2end_tests/"
       },
       {
+        "android_swarming": {
+          "shards": 2
+        },
         "args": [
           "--disable-toggles=use_dxc",
           "--use-gpu-in-tests",
@@ -9056,6 +9341,9 @@
         "test_id_prefix": "ninja://third_party/dawn/src/dawn/tests:dawn_end2end_tests/"
       },
       {
+        "android_swarming": {
+          "shards": 2
+        },
         "args": [
           "--disable-toggles=use_dxc",
           "--enable-backend-validation",
@@ -9083,6 +9371,9 @@
         "test_id_prefix": "ninja://third_party/dawn/src/dawn/tests:dawn_end2end_tests/"
       },
       {
+        "android_swarming": {
+          "shards": 2
+        },
         "args": [
           "--enable-toggles=skip_validation",
           "--use-gpu-in-tests",
@@ -9109,6 +9400,9 @@
         "test_id_prefix": "ninja://third_party/dawn/src/dawn/tests:dawn_end2end_tests/"
       },
       {
+        "android_swarming": {
+          "shards": 2
+        },
         "args": [
           "--use-gpu-in-tests",
           "--exclusive-device-type-preference=discrete,integrated",
@@ -9134,6 +9428,9 @@
         "test_id_prefix": "ninja://third_party/dawn/src/dawn/tests:dawn_end2end_tests/"
       },
       {
+        "android_swarming": {
+          "shards": 2
+        },
         "args": [
           "--enable-backend-validation",
           "--use-gpu-in-tests",
@@ -9160,6 +9457,9 @@
         "test_id_prefix": "ninja://third_party/dawn/src/dawn/tests:dawn_end2end_tests/"
       },
       {
+        "android_swarming": {
+          "shards": 2
+        },
         "args": [
           "--use-wire",
           "--use-gpu-in-tests",
@@ -9652,6 +9952,9 @@
   "Dawn Win10 x86 DEPS Release (Intel)": {
     "gtest_tests": [
       {
+        "android_swarming": {
+          "shards": 2
+        },
         "args": [
           "--enable-implicit-device-sync",
           "--use-gpu-in-tests",
@@ -9679,6 +9982,9 @@
         "test_id_prefix": "ninja://third_party/dawn/src/dawn/tests:dawn_end2end_tests/"
       },
       {
+        "android_swarming": {
+          "shards": 2
+        },
         "args": [
           "--enable-toggles=skip_validation",
           "--use-gpu-in-tests",
@@ -9705,6 +10011,9 @@
         "test_id_prefix": "ninja://third_party/dawn/src/dawn/tests:dawn_end2end_tests/"
       },
       {
+        "android_swarming": {
+          "shards": 2
+        },
         "args": [
           "--use-gpu-in-tests",
           "--exclusive-device-type-preference=discrete,integrated",
@@ -9730,6 +10039,9 @@
         "test_id_prefix": "ninja://third_party/dawn/src/dawn/tests:dawn_end2end_tests/"
       },
       {
+        "android_swarming": {
+          "shards": 2
+        },
         "args": [
           "--enable-backend-validation",
           "--use-gpu-in-tests",
@@ -9756,6 +10068,9 @@
         "test_id_prefix": "ninja://third_party/dawn/src/dawn/tests:dawn_end2end_tests/"
       },
       {
+        "android_swarming": {
+          "shards": 2
+        },
         "args": [
           "--use-wire",
           "--use-gpu-in-tests",
@@ -10085,6 +10400,9 @@
   "Dawn Win10 x86 DEPS Release (NVIDIA)": {
     "gtest_tests": [
       {
+        "android_swarming": {
+          "shards": 2
+        },
         "args": [
           "--enable-implicit-device-sync",
           "--use-gpu-in-tests",
@@ -10112,6 +10430,9 @@
         "test_id_prefix": "ninja://third_party/dawn/src/dawn/tests:dawn_end2end_tests/"
       },
       {
+        "android_swarming": {
+          "shards": 2
+        },
         "args": [
           "--enable-toggles=skip_validation",
           "--use-gpu-in-tests",
@@ -10138,6 +10459,9 @@
         "test_id_prefix": "ninja://third_party/dawn/src/dawn/tests:dawn_end2end_tests/"
       },
       {
+        "android_swarming": {
+          "shards": 2
+        },
         "args": [
           "--use-gpu-in-tests",
           "--exclusive-device-type-preference=discrete,integrated",
@@ -10163,6 +10487,9 @@
         "test_id_prefix": "ninja://third_party/dawn/src/dawn/tests:dawn_end2end_tests/"
       },
       {
+        "android_swarming": {
+          "shards": 2
+        },
         "args": [
           "--enable-backend-validation",
           "--use-gpu-in-tests",
@@ -10189,6 +10516,9 @@
         "test_id_prefix": "ninja://third_party/dawn/src/dawn/tests:dawn_end2end_tests/"
       },
       {
+        "android_swarming": {
+          "shards": 2
+        },
         "args": [
           "--use-wire",
           "--use-gpu-in-tests",
@@ -10593,6 +10923,9 @@
   "Dawn Win10 x86 Release (Intel)": {
     "gtest_tests": [
       {
+        "android_swarming": {
+          "shards": 2
+        },
         "args": [
           "--enable-implicit-device-sync",
           "--use-gpu-in-tests",
@@ -10620,6 +10953,9 @@
         "test_id_prefix": "ninja://third_party/dawn/src/dawn/tests:dawn_end2end_tests/"
       },
       {
+        "android_swarming": {
+          "shards": 2
+        },
         "args": [
           "--enable-toggles=skip_validation",
           "--use-gpu-in-tests",
@@ -10646,6 +10982,9 @@
         "test_id_prefix": "ninja://third_party/dawn/src/dawn/tests:dawn_end2end_tests/"
       },
       {
+        "android_swarming": {
+          "shards": 2
+        },
         "args": [
           "--use-gpu-in-tests",
           "--exclusive-device-type-preference=discrete,integrated",
@@ -10671,6 +11010,9 @@
         "test_id_prefix": "ninja://third_party/dawn/src/dawn/tests:dawn_end2end_tests/"
       },
       {
+        "android_swarming": {
+          "shards": 2
+        },
         "args": [
           "--enable-backend-validation",
           "--use-gpu-in-tests",
@@ -10697,6 +11039,9 @@
         "test_id_prefix": "ninja://third_party/dawn/src/dawn/tests:dawn_end2end_tests/"
       },
       {
+        "android_swarming": {
+          "shards": 2
+        },
         "args": [
           "--use-wire",
           "--use-gpu-in-tests",
@@ -11026,6 +11371,9 @@
   "Dawn Win10 x86 Release (NVIDIA)": {
     "gtest_tests": [
       {
+        "android_swarming": {
+          "shards": 2
+        },
         "args": [
           "--enable-implicit-device-sync",
           "--use-gpu-in-tests",
@@ -11053,6 +11401,9 @@
         "test_id_prefix": "ninja://third_party/dawn/src/dawn/tests:dawn_end2end_tests/"
       },
       {
+        "android_swarming": {
+          "shards": 2
+        },
         "args": [
           "--enable-toggles=skip_validation",
           "--use-gpu-in-tests",
@@ -11079,6 +11430,9 @@
         "test_id_prefix": "ninja://third_party/dawn/src/dawn/tests:dawn_end2end_tests/"
       },
       {
+        "android_swarming": {
+          "shards": 2
+        },
         "args": [
           "--use-gpu-in-tests",
           "--exclusive-device-type-preference=discrete,integrated",
@@ -11104,6 +11458,9 @@
         "test_id_prefix": "ninja://third_party/dawn/src/dawn/tests:dawn_end2end_tests/"
       },
       {
+        "android_swarming": {
+          "shards": 2
+        },
         "args": [
           "--enable-backend-validation",
           "--use-gpu-in-tests",
@@ -11130,6 +11487,9 @@
         "test_id_prefix": "ninja://third_party/dawn/src/dawn/tests:dawn_end2end_tests/"
       },
       {
+        "android_swarming": {
+          "shards": 2
+        },
         "args": [
           "--use-wire",
           "--use-gpu-in-tests",
