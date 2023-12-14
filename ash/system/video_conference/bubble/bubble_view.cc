@@ -147,7 +147,7 @@ void BubbleView::AddedToWidget() {
   scroll_view->SetBackgroundColor(std::nullopt);
 
   // TODO(b/262930924): Use the correct max_height.
-  scroll_view->ClipHeightTo(/*min_height=*/0, /*max_height=*/300);
+  scroll_view->ClipHeightTo(/*min_height=*/0, /*max_height=*/400);
   scroll_view->SetDrawOverflowIndicator(false);
   scroll_view->SetVerticalScrollBarMode(
       views::ScrollView::ScrollBarMode::kHiddenButEnabled);
@@ -175,7 +175,7 @@ void BubbleView::AddedToWidget() {
 
   if (features::IsVcBackgroundReplaceEnabled()) {
     set_camera_background_view_ = scroll_contents_view->AddChildView(
-        std::make_unique<SetCameraBackgroundView>());
+        std::make_unique<SetCameraBackgroundView>(this));
     set_camera_background_view_->SetVisible(
         GetCameraEffectsController()->GetCameraEffects()->replace_enabled);
   }

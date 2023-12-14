@@ -10,13 +10,14 @@
 #include "ui/views/view.h"
 
 namespace ash::video_conference {
+class BubbleView;
 
 // View that is responsible for setting background image from the sysui.
 class ASH_EXPORT SetCameraBackgroundView : public views::View {
   METADATA_HEADER(SetCameraBackgroundView, views::View)
 
  public:
-  SetCameraBackgroundView();
+  explicit SetCameraBackgroundView(BubbleView* bubble_view);
   SetCameraBackgroundView(const SetCameraBackgroundView&) = delete;
   SetCameraBackgroundView& operator=(const SetCameraBackgroundView&) = delete;
   ~SetCameraBackgroundView() override = default;
