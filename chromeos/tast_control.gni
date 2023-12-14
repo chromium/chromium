@@ -133,6 +133,9 @@ tast_disabled_tests_from_chrome_all = [
   # b/314779670, waiting for LKGM including the revert
   "platform.Resourced.baseline",
 
+  # b/316256224
+  "arc.Clipboard@betty-pi-arc",
+
   # READ COMMENT AT TOP BEFORE ADDING NEW TESTS HERE.
 ]
 
