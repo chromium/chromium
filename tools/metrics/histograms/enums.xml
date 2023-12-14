@@ -30594,6 +30594,7 @@ from previous Chrome versions.
   <int value="-1559789642" label="RunAllFlashInAllowMode:enabled"/>
   <int value="-1559616006" label="DefaultANGLEVulkan:enabled"/>
   <int value="-1559292789" label="SideSearch:disabled"/>
+  <int value="-1559133637" label="ReadAloudPlayback:disabled"/>
   <int value="-1558734415" label="ArcHostVpn:enabled"/>
   <int value="-1558082361" label="ContinuousOverviewScrollAnimation:enabled"/>
   <int value="-1557747651" label="FractionalScrollOffsets:disabled"/>
@@ -32857,6 +32858,7 @@ from previous Chrome versions.
   <int value="-496989565"
       label="DesktopPWAsFlashAppNameInsteadOfOrigin:disabled"/>
   <int value="-496879081" label="disable-ip-privacy-proxy"/>
+  <int value="-496551818" label="ReadAloudPlayback:enabled"/>
   <int value="-496119023" label="WebXR:enabled"/>
   <int value="-495991146" label="CustomizeChromeSidePanel:disabled"/>
   <int value="-495585885" label="enable-spdy-proxy-dev-auth-origin"/>

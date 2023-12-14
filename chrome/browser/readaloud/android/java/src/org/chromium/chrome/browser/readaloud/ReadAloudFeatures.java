@@ -29,6 +29,11 @@ public final class ReadAloudFeatures {
                 && UnifiedConsentServiceBridge.isUrlKeyedAnonymizedDataCollectionEnabled(profile);
     }
 
+    /** Returns true if playback is enabled. */
+    public static boolean isPlaybackEnabled() {
+        return ChromeFeatureList.isEnabled(ChromeFeatureList.READALOUD_PLAYBACK);
+    }
+
     /** Returns the API key override feature param if present, or null otherwise. */
     @Nullable
     public static String getApiKeyOverride() {
