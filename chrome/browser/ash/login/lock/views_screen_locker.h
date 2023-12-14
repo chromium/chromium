@@ -41,13 +41,6 @@ class ViewsScreenLocker : public LoginScreenClientImpl::Delegate,
 
   void Init();
 
-  // Shows the given error message.
-  void ShowErrorMessage(int error_msg_id,
-                        HelpAppLauncher::HelpTopic help_topic_id);
-
-  // Closes any displayed error messages.
-  void ClearErrors();
-
   // Called by ScreenLocker to notify that ash lock animation finishes.
   void OnAshLockAnimationFinished();
 

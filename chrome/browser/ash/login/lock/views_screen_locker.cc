@@ -92,17 +92,6 @@ void ViewsScreenLocker::Init() {
   lock_screen_apps::StateController::Get()->SetFocusCyclerDelegate(this);
 }
 
-void ViewsScreenLocker::ShowErrorMessage(
-    int error_msg_id,
-    HelpAppLauncher::HelpTopic help_topic_id) {
-  // TODO(xiaoyinh): Complete the implementation here.
-  NOTIMPLEMENTED();
-}
-
-void ViewsScreenLocker::ClearErrors() {
-  NOTIMPLEMENTED();
-}
-
 void ViewsScreenLocker::OnAshLockAnimationFinished() {
   SessionControllerClientImpl::Get()->NotifyChromeLockAnimationsComplete();
 }

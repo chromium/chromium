@@ -126,7 +126,7 @@ class ScreenLockObserver : public SessionManagerClient::StubDelegate,
     // Only set MarkStrongAuth for the first time session becomes active, which
     // is when user first sign-in.
     // For unlocking case which state changes from active->lock->active, it
-    // should be handled in OnPasswordAuthSuccess.
+    // should be handled in OnAuthSuccess.
     if (session_started_ ||
         session_manager::SessionManager::Get()->session_state() !=
             session_manager::SessionState::ACTIVE) {
@@ -250,15 +250,6 @@ void ScreenLocker::OnAuthFailure(const AuthFailure& error) {
   session_manager::SessionManager::Get()->NotifyUnlockAttempt(
       /*success*/ false, TransformUnlockType());
 
-  EnableInput();
-  // Don't enable signout button here as we're showing
-  // MessageBubble.
-
-  views_screen_locker_->ShowErrorMessage(
-      incorrect_passwords_count_++ ? IDS_LOGIN_ERROR_AUTHENTICATING_2ND_TIME
-                                   : IDS_LOGIN_ERROR_AUTHENTICATING,
-      HelpAppLauncher::HELP_CANT_ACCESS_ACCOUNT);
-
   if (auth_status_consumer_)
     auth_status_consumer_->OnAuthFailure(error);
 
@@ -337,17 +328,6 @@ void ScreenLocker::OnAuthSuccess(const UserContext& user_context) {
 
   VLOG(1) << "Hiding the lock screen.";
   ScreenLocker::Hide();
-}
-
-void ScreenLocker::OnPasswordAuthSuccess(
-    std::unique_ptr<UserContext> user_context) {
-  // The user has signed in using their password, so reset the PIN timeout.
-  quick_unlock::QuickUnlockStorage* quick_unlock_storage =
-      quick_unlock::QuickUnlockFactory::GetForAccountId(
-          user_context->GetAccountId());
-  if (quick_unlock_storage)
-    quick_unlock_storage->MarkStrongAuth();
-  SaveSyncPasswordHash(std::move(user_context));
 }
 
 void ScreenLocker::ReenableAuthForUser(const AccountId& account_id) {
@@ -528,31 +508,6 @@ void ScreenLocker::OnStartLockCallback(bool locked) {
 
   AccessibilityManager::Get()->PlayEarcon(
       Sound::kLock, PlaySoundOption::kOnlyIfSpokenFeedbackEnabled);
-}
-
-void ScreenLocker::ClearErrors() {
-  views_screen_locker_->ClearErrors();
-}
-
-void ScreenLocker::Signout() {
-  views_screen_locker_->ClearErrors();
-  base::RecordAction(UserMetricsAction("ScreenLocker_Signout"));
-  // We expect that this call will not wait for any user input.
-  // If it changes at some point, we will need to force exit.
-  chrome::AttemptUserExit();
-
-  // Don't hide yet the locker because the chrome screen may become visible
-  // briefly.
-}
-
-void ScreenLocker::EnableInput() {
-  // TODO(crbug.com/927498): Remove this.
-}
-
-void ScreenLocker::ShowErrorMessage(int error_msg_id,
-                                    HelpAppLauncher::HelpTopic help_topic_id,
-                                    bool sign_out_only) {
-  views_screen_locker_->ShowErrorMessage(error_msg_id, help_topic_id);
 }
 
 user_manager::UserList ScreenLocker::GetUsersToShow() const {
@@ -754,8 +709,6 @@ ScreenLocker::~ScreenLocker() {
   if (authenticator_)
     authenticator_->SetConsumer(nullptr);
 
-  ClearErrors();
-
   screen_locker_ = nullptr;
 
   g_clock_for_testing_ = nullptr;
@@ -956,9 +909,6 @@ void ScreenLocker::OnFingerprintAuthFailure(const user_manager::User& user) {
               << " unlock attempt.";
       LoginScreen::Get()->GetModel()->SetFingerprintState(
           user.GetAccountId(), FingerprintState::DISABLED_FROM_ATTEMPTS);
-      views_screen_locker_->ShowErrorMessage(
-          IDS_LOGIN_ERROR_FINGERPRINT_MAX_ATTEMPT,
-          HelpAppLauncher::HELP_CANT_ACCESS_ACCOUNT);
     }
   }
 

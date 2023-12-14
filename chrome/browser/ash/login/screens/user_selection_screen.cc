@@ -732,12 +732,7 @@ void UserSelectionScreen::NotifySmartLockAuthResult(const AccountId& account_id,
 }
 
 void UserSelectionScreen::EnableInput() {
-  // If Easy Unlock fails to unlock the screen, re-enable the password input.
-  // This is only necessary on the lock screen, because the error handling for
-  // the sign-in screen uses a different code path.
-  if (ScreenLocker::default_screen_locker()) {
-    ScreenLocker::default_screen_locker()->EnableInput();
-  }
+  // TODO(b/271261286): Remove this.
 }
 
 void UserSelectionScreen::Unlock(const AccountId& account_id) {

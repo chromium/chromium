@@ -69,10 +69,6 @@ class ScreenLocker
   void OnAuthFailure(const AuthFailure& error) override;
   void OnAuthSuccess(const UserContext& user_context) override;
 
-  // Called when an account password (not PIN/quick unlock) has been used to
-  // unlock the device.
-  void OnPasswordAuthSuccess(std::unique_ptr<UserContext> user_context);
-
   // Disables authentication for the user with `account_id`. Notifies lock
   // screen UI. `auth_disabled_data` is used to display information in the UI.
   void TemporarilyDisableAuthForUser(
@@ -91,25 +87,6 @@ class ScreenLocker
   // authentication against a security token.
   void AuthenticateWithChallengeResponse(const AccountId& account_id,
                                          AuthenticateCallback callback);
-
-  // Close message bubble to clear error messages.
-  void ClearErrors();
-
-  // Exit the chrome, which will sign out the current session.
-  void Signout();
-
-  // (Re)enable input field.
-  void EnableInput();
-
-  // Disables all UI needed and shows error bubble with `message`.
-  // If `sign_out_only` is true then all other input except "Sign Out"
-  // button is blocked.
-  void ShowErrorMessage(int error_msg_id,
-                        HelpAppLauncher::HelpTopic help_topic_id,
-                        bool sign_out_only);
-
-  // Returns the users to authenticate.
-  const user_manager::UserList& users() const { return users_; }
 
   // Returns the users to show on the lock screen UI. Will be a subset of
   // `users()`.
