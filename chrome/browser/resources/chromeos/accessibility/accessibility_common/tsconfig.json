@@ -7,6 +7,11 @@
   "include": [
     ".",
     "../common",
-    "../definitions"
+    "../definitions",
+    "../../../../../../tools/typescript/definitions"
+  ],
+  "exclude": [
+    "../../../../../../tools/typescript/definitions/i18n.d.ts",
+    "../../../../../../tools/typescript/definitions/accessibility_features.d.ts"
   ]
 }

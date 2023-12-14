@@ -10,57 +10,55 @@ import {Dictation} from './dictation/dictation.js';
 import {FaceGaze} from './facegaze/facegaze.js';
 import {Magnifier} from './magnifier/magnifier.js';
 
+declare global {
+  var accessibilityCommon: AccessibilityCommon;
+}
+
 /**
  * Class to manage loading resources depending on which Accessibility features
  * are enabled.
  */
 export class AccessibilityCommon {
+  private autoclick_: Autoclick|null = null;
+  private magnifier_: Magnifier|null = null;
+  private dictation_: Dictation|null = null;
+  private faceGaze_: FaceGaze|null = null;
+
+  // For tests.
+  private autoclickLoadCallbackForTest_: Function|null = null;
+  // TODO(b:315990318): Migrate these callbacks to Function after
+  // setOnLoadDesktopCallbackForTest() is migrated to typescript.
+  private magnifierLoadCallbackForTest_: (() => void)|null = null;
+  private dictationLoadCallbackForTest_: Function|null = null;
+
+  static readonly FACEGAZE_PREF_NAME = 'settings.a11y.face_gaze.enabled';
+
+
   constructor() {
-    /** @private {Autoclick} */
-    this.autoclick_ = null;
-    /** @private {Magnifier} */
-    this.magnifier_ = null;
-    /** @private {Dictation} */
-    this.dictation_ = null;
-    /** @private {FaceGaze} */
-    this.faceGaze_ = null;
-
-    // For tests.
-    /** @private {?function()} */
-    this.autoclickLoadCallbackForTest_ = null;
-    /** @private {?function()} */
-    this.magnifierLoadCallbackForTest_ = null;
-    /** @private {?function()} */
-    this.dictationLoadCallbackForTest_ = null;
-
     this.init_();
   }
 
-  static async init() {
+  static async init(): Promise<void> {
     await Flags.init();
     globalThis.accessibilityCommon = new AccessibilityCommon();
   }
 
-  /** @return {Autoclick} */
-  getAutoclickForTest() {
+  getAutoclickForTest(): Autoclick|null {
     return this.autoclick_;
   }
 
-  /** @return {FaceGaze} */
-  getFaceGazeForTest() {
+  getFaceGazeForTest(): FaceGaze|null {
     return this.faceGaze_;
   }
 
-  /** @return {Magnifier} */
-  getMagnifierForTest() {
+  getMagnifierForTest(): Magnifier|null {
     return this.magnifier_;
   }
 
   /**
    * Initializes the AccessibilityCommon extension.
-   * @private
    */
-  init_() {
+  private init_(): void {
     chrome.accessibilityFeatures.autoclick.get(
         {}, details => this.onAutoclickUpdated_(details));
     chrome.accessibilityFeatures.autoclick.onChange.addListener(
@@ -114,10 +112,9 @@ export class AccessibilityCommon {
 
   /**
    * Called when the autoclick feature is enabled or disabled.
-   * @param {*} details
-   * @private
    */
-  onAutoclickUpdated_(details) {
+  private onAutoclickUpdated_(
+      details: chrome.accessibilityFeatures.ChromeSettingsResponse): void {
     if (details.value && !this.autoclick_) {
       // Initialize the Autoclick extension.
       this.autoclick_ = new Autoclick();
@@ -136,10 +133,8 @@ export class AccessibilityCommon {
 
   /**
    * Called when the FaceGaze feature is fetched enabled or disabled.
-   * @param {*} details
-   * @private
    */
-  onFaceGazeUpdated_(details) {
+  private onFaceGazeUpdated_(details: chrome.settingsPrivate.PrefObject): void {
     if (details.value && !this.faceGaze_) {
       // Initialize the FaceGaze extension.
       this.faceGaze_ = new FaceGaze();
@@ -150,11 +145,11 @@ export class AccessibilityCommon {
   }
 
   /**
-   * @param {!Magnifier.Type} type
-   * @param {*} details
-   * @private
+   * Called when the magnifier feature is fetched enabled or disabled.
    */
-  onMagnifierUpdated_(type, details) {
+  private onMagnifierUpdated_(
+      type: Magnifier.Type,
+      details: chrome.accessibilityFeatures.ChromeSettingsResponse): void {
     if (details.value && !this.magnifier_) {
       this.magnifier_ = new Magnifier(type);
       if (this.magnifierLoadCallbackForTest_) {
@@ -171,10 +166,9 @@ export class AccessibilityCommon {
 
   /**
    * Called when the dictation feature is enabled or disabled.
-   * @param {*} details
-   * @private
    */
-  onDictationUpdated_(details) {
+  private onDictationUpdated_(
+      details: chrome.accessibilityFeatures.ChromeSettingsResponse): void {
     if (details.value && !this.dictation_) {
       this.dictation_ = new Dictation();
       if (this.dictationLoadCallbackForTest_) {
@@ -190,10 +184,8 @@ export class AccessibilityCommon {
   /**
    * Used by C++ tests to ensure a feature load is completed.
    * Set on AccessibilityCommon in case the feature has not started up yet.
-   * @param {string} feature The feature name.
-   * @param {!function()} callback Callback for feature JS load complete.
    */
-  setFeatureLoadCallbackForTest(feature, callback) {
+  setFeatureLoadCallbackForTest(feature: string, callback: () => void): void {
     if (feature === 'autoclick') {
       if (!this.autoclick_) {
         this.autoclickLoadCallbackForTest_ = callback;
@@ -219,7 +211,6 @@ export class AccessibilityCommon {
   }
 }
 
-AccessibilityCommon.FACEGAZE_PREF_NAME = 'settings.a11y.face_gaze.enabled';
 
 InstanceChecker.closeExtraInstances();
 // Initialize the AccessibilityCommon extension.
