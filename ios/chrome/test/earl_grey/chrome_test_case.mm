@@ -356,7 +356,7 @@ void ResetAuthentication() {
   // Make sure any data on the fake sync server is cleared between tests, or
   // when explicitly resetting app data. This should happen after signout (to
   // avoid lots of "data was deleted" invalidations arriving on the client).
-  [ChromeEarlGrey clearSyncServerData];
+  [ChromeEarlGrey clearFakeSyncServerData];
   [ChromeEarlGrey tearDownFakeSyncServer];
   // Switch from FakeChromeIdentityService to ChromeIdentityServiceImpl.
   TearDownMockAuthentication();

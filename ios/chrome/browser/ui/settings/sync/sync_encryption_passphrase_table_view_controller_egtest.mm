@@ -57,7 +57,7 @@ int GetInfoBarEnterPassphraseButtonLabelId() {
   [ChromeEarlGrey
       waitForSyncEngineInitialized:NO
                        syncTimeout:syncher::kSyncUKMOperationsTimeout];
-  [ChromeEarlGrey clearSyncServerData];
+  [ChromeEarlGrey clearFakeSyncServerData];
 
   [super tearDown];
 }

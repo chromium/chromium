@@ -73,7 +73,7 @@ void SignOut() {
   [SigninEarlGrey signOut];
   [ChromeEarlGrey waitForSyncEngineInitialized:NO
                                    syncTimeout:kSyncOperationTimeout];
-  [ChromeEarlGrey clearSyncServerData];
+  [ChromeEarlGrey clearFakeSyncServerData];
 }
 
 // Makes sure at least one tab is opened and opens the recent tab panel.

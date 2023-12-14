@@ -801,10 +801,6 @@ id<GREYAction> grey_longPressWithDuration(base::TimeDelta duration) {
 
 #pragma mark - Sync Utilities (EG2)
 
-- (void)clearSyncServerData {
-  [ChromeEarlGreyAppInterface clearSyncServerData];
-}
-
 - (void)signInWithoutSyncWithIdentity:(FakeSystemIdentity*)identity {
   [ChromeEarlGreyAppInterface signInWithoutSyncWithIdentity:identity];
 }
@@ -848,6 +844,10 @@ id<GREYAction> grey_longPressWithDuration(base::TimeDelta duration) {
 
 - (void)tearDownFakeSyncServer {
   [ChromeEarlGreyAppInterface tearDownFakeSyncServer];
+}
+
+- (void)clearFakeSyncServerData {
+  [ChromeEarlGreyAppInterface clearFakeSyncServerData];
 }
 
 - (int)numberOfSyncEntitiesWithType:(syncer::ModelType)type {

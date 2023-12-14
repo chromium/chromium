@@ -66,7 +66,7 @@ void WaitForAutofillProfileLocallyPresent(const std::string& guid,
   [BookmarkEarlGrey waitForBookmarkModelsLoaded];
   [BookmarkEarlGrey clearBookmarks];
 
-  [ChromeEarlGrey clearSyncServerData];
+  [ChromeEarlGrey clearFakeSyncServerData];
 
   WaitForEntitiesOnFakeServer(0, syncer::AUTOFILL_PROFILE);
   WaitForEntitiesOnFakeServer(0, syncer::BOOKMARKS);
@@ -80,7 +80,7 @@ void WaitForAutofillProfileLocallyPresent(const std::string& guid,
 
   GREYAssertTrue(self.testServer->Start(), @"Server did not start.");
 
-  [ChromeEarlGrey clearSyncServerData];
+  [ChromeEarlGrey clearFakeSyncServerData];
 
   WaitForEntitiesOnFakeServer(0, syncer::AUTOFILL_PROFILE);
   WaitForEntitiesOnFakeServer(0, syncer::BOOKMARKS);

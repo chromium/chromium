@@ -107,19 +107,19 @@ void TearDownFakeSyncServer() {
   OverrideSyncNetwork(syncer::CreateHttpPostProviderFactory());
 }
 
+void ClearFakeSyncServerData() {
+  // Allow the caller to preventively clear server data.
+  if (gSyncFakeServer) {
+    gSyncFakeServer->ClearServerData();
+  }
+}
+
 void TriggerSyncCycle(syncer::ModelType type) {
   ChromeBrowserState* browser_state =
       chrome_test_util::GetOriginalBrowserState();
   syncer::SyncService* sync_service =
       SyncServiceFactory::GetForBrowserState(browser_state);
   sync_service->TriggerRefresh({type});
-}
-
-void ClearSyncServerData() {
-  // Allow the caller to preventively clear server data.
-  if (gSyncFakeServer) {
-    gSyncFakeServer->ClearServerData();
-  }
 }
 
 int GetNumberOfSyncEntities(syncer::ModelType type) {

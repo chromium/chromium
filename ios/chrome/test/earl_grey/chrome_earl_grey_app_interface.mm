@@ -925,10 +925,6 @@ base::RepeatingClosure ExpectNCall(uint32_t n, base::RepeatingClosure closure) {
   chrome_test_util::SignInWithoutSync(identity);
 }
 
-+ (void)clearSyncServerData {
-  chrome_test_util::ClearSyncServerData();
-}
-
 + (NSError*)waitForSyncEngineInitialized:(BOOL)isInitialized
                              syncTimeout:(base::TimeDelta)timeout {
   bool success = WaitUntilConditionOrTimeout(timeout, ^{
@@ -1011,6 +1007,10 @@ base::RepeatingClosure ExpectNCall(uint32_t n, base::RepeatingClosure closure) {
 
 + (void)tearDownFakeSyncServer {
   chrome_test_util::TearDownFakeSyncServer();
+}
+
++ (void)clearFakeSyncServerData {
+  chrome_test_util::ClearFakeSyncServerData();
 }
 
 + (NSError*)verifyNumberOfSyncEntitiesWithType:(NSUInteger)type

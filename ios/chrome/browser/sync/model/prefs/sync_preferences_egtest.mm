@@ -79,14 +79,14 @@ void WaitForPreferenceValue(int pref_value) {
 
   GREYAssertTrue(self.testServer->Start(), @"Server did not start.");
 
-  [ChromeEarlGrey clearSyncServerData];
+  [ChromeEarlGrey clearFakeSyncServerData];
   WaitForEntitiesOnFakeServer(0);
 }
 
 - (void)tearDown {
   [ChromeEarlGreyAppInterface
       clearUserPrefWithName:base::SysUTF8ToNSString(kTestSyncablePref)];
-  [ChromeEarlGrey clearSyncServerData];
+  [ChromeEarlGrey clearFakeSyncServerData];
 
   WaitForEntitiesOnFakeServer(0);
 

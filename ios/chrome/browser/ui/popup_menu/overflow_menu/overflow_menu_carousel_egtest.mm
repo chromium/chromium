@@ -121,7 +121,7 @@ void ResolvePassphraseErrorFromOverflowMenu() {
   [ChromeEarlGrey
       waitForSyncEngineInitialized:NO
                        syncTimeout:syncher::kSyncUKMOperationsTimeout];
-  [ChromeEarlGrey clearSyncServerData];
+  [ChromeEarlGrey clearFakeSyncServerData];
 
   CleanupDestinationsHighlightFeaturesData();
 

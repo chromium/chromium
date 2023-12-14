@@ -191,9 +191,6 @@ id<GREYAction> grey_longPressWithDuration(base::TimeDelta duration);
 
 #pragma mark - Sync Utilities (EG2)
 
-// Clears fake sync server data if the server is running.
-- (void)clearSyncServerData;
-
 // Signs in with `identity` without sync consent.
 - (void)signInWithoutSyncWithIdentity:(FakeSystemIdentity*)identity;
 
@@ -226,6 +223,9 @@ id<GREYAction> grey_longPressWithDuration(base::TimeDelta duration);
 // Tears down the fake sync server used by the SyncServiceImpl and restores the
 // real one.
 - (void)tearDownFakeSyncServer;
+
+// Clears fake sync server data if the server is running.
+- (void)clearFakeSyncServerData;
 
 // Gets the number of entities of the given `type`.
 - (int)numberOfSyncEntitiesWithType:(syncer::ModelType)type [[nodiscard]];

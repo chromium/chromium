@@ -216,7 +216,7 @@ void DismissScreensAfterSigninAndSync() {
   [ChromeEarlGrey
       waitForSyncEngineInitialized:NO
                        syncTimeout:syncher::kSyncUKMOperationsTimeout];
-  [ChromeEarlGrey clearSyncServerData];
+  [ChromeEarlGrey clearFakeSyncServerData];
 
   // Clear sync prefs for data types.
   [ChromeEarlGreyAppInterface
