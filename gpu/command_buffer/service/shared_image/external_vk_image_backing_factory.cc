@@ -92,7 +92,7 @@ base::flat_map<VkFormat, VkImageUsageFlags> CreateImageUsageCache(
 bool IsFormatSupported(viz::SharedImageFormat format,
                        gfx::GpuMemoryBufferType gmb_type,
                        uint32_t usage) {
-  if (usage & SHARED_IMAGE_USAGE_GLES2 ||
+  if (HasGLES2ReadOrWriteUsage(usage) ||
       usage & SHARED_IMAGE_USAGE_GLES2_FRAMEBUFFER_HINT) {
     if (format.IsLegacyMultiplanar() || format.PrefersExternalSampler()) {
       // GL interop does not work with external sampler. Also, see

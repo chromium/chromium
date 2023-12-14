@@ -158,7 +158,7 @@ bool AngleVulkanImageBackingFactory::CanUseAngleVulkanImageBacking(
   // contain GLES2, unless it is created from GPU memory buffer.
   // TODO(penghuang): use AngleVulkan backing for non GL & Vulkan interop usage?
   if (gmb_type == gfx::EMPTY_BUFFER)
-    return usage & SHARED_IMAGE_USAGE_GLES2;
+    return HasGLES2ReadOrWriteUsage(usage);
 
   return true;
 }

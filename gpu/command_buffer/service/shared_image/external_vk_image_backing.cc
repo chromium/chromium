@@ -185,7 +185,7 @@ std::unique_ptr<ExternalVkImageBacking> ExternalVkImageBacking::Create(
   // Must request all available image usage flags if aliasing GL texture. This
   // is a spec requirement per EXT_memory_object. However, if
   // ANGLE_memory_object_flags is supported, usage flags can be arbitrary.
-  bool request_all_flags = is_external && (usage & SHARED_IMAGE_USAGE_GLES2) &&
+  bool request_all_flags = is_external && (HasGLES2ReadOrWriteUsage(usage)) &&
                            !UseMinimalUsageFlags(context_state.get());
 
   VkImageCreateFlags vk_create = 0;

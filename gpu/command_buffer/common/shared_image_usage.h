@@ -93,6 +93,10 @@ inline constexpr uint32_t SHARED_IMAGE_USAGE_GLES2 =
 // Returns true if usage is a valid client usage.
 GPU_EXPORT bool IsValidClientUsage(uint32_t usage);
 
+// Returns true iff usage includes SHARED_IMAGE_USAGE_GLES2_READ or
+// SHARED_IMAGE_USAGE_GLES2_WRITE.
+GPU_EXPORT bool HasGLES2ReadOrWriteUsage(uint32_t usage);
+
 // Create a string to label SharedImageUsage.
 GPU_EXPORT std::string CreateLabelForSharedImageUsage(uint32_t usage);
 

@@ -118,7 +118,7 @@ class ExternalVkImageBacking final : public ClearTrackingSharedImageBacking {
       return true;
     }
 
-    if (usage() & SHARED_IMAGE_USAGE_GLES2) {
+    if (HasGLES2ReadOrWriteUsage(usage())) {
       return !use_separate_gl_texture() && !gl_textures_.empty();
     }
 

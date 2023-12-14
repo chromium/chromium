@@ -461,7 +461,7 @@ OzoneImageBacking::OzoneImageBacking(
   bool used_by_skia = (usage & SHARED_IMAGE_USAGE_RASTER) ||
                       (usage & SHARED_IMAGE_USAGE_DISPLAY_READ);
   bool used_by_gl =
-      (usage & SHARED_IMAGE_USAGE_GLES2) ||
+      (HasGLES2ReadOrWriteUsage(usage)) ||
       (used_by_skia && context_state_->gr_context_type() == GrContextType::kGL);
   bool used_by_vulkan = used_by_skia && context_state_->gr_context_type() ==
                                             GrContextType::kVulkan;

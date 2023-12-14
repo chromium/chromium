@@ -16,6 +16,11 @@ bool IsValidClientUsage(uint32_t usage) {
   return 0 < usage && usage <= kClientMax;
 }
 
+bool HasGLES2ReadOrWriteUsage(uint32_t usage) {
+  return (usage & SHARED_IMAGE_USAGE_GLES2_READ) ||
+         (usage & SHARED_IMAGE_USAGE_GLES2_WRITE);
+}
+
 std::string CreateLabelForSharedImageUsage(uint32_t usage) {
   if (!usage)
     return {};

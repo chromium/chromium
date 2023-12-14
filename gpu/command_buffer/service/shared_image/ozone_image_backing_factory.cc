@@ -285,7 +285,7 @@ bool OzoneImageBackingFactory::IsSupported(
   bool used_by_vulkan =
       used_by_skia && gr_context_type == GrContextType::kVulkan;
   bool used_by_webgpu = usage & SHARED_IMAGE_USAGE_WEBGPU;
-  bool used_by_gl = (usage & SHARED_IMAGE_USAGE_GLES2) ||
+  bool used_by_gl = (HasGLES2ReadOrWriteUsage(usage)) ||
                     (used_by_skia && gr_context_type == GrContextType::kGL);
   if (used_by_vulkan && !CanImportNativePixmapToVulkan()) {
     return false;

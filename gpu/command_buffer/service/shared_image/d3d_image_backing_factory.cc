@@ -360,7 +360,7 @@ std::unique_ptr<SharedImageBacking> D3DImageBackingFactory::CreateSharedImage(
   }
   // D3D doesn't support mappable+default shared resource or YUV textures.
   const bool has_webgpu_usage = usage & SHARED_IMAGE_USAGE_WEBGPU;
-  const bool has_gl_usage = usage & SHARED_IMAGE_USAGE_GLES2;
+  const bool has_gl_usage = HasGLES2ReadOrWriteUsage(usage);
   const bool needs_shared_handle =
       has_webgpu_usage ||
       (has_gl_usage && (d3d11_device_ != angle_d3d11_device_));

@@ -895,7 +895,7 @@ bool AHardwareBufferImageBackingFactory::IsSupported(
   bool used_by_skia = (usage & SHARED_IMAGE_USAGE_RASTER) ||
                       (usage & SHARED_IMAGE_USAGE_DISPLAY_READ) ||
                       (usage & SHARED_IMAGE_USAGE_DISPLAY_WRITE);
-  bool used_by_gl = (usage & SHARED_IMAGE_USAGE_GLES2) ||
+  bool used_by_gl = (HasGLES2ReadOrWriteUsage(usage)) ||
                     (used_by_skia && gr_context_type == GrContextType::kGL);
 
   // If usage flags indicated this backing can be used as a GL texture, then
