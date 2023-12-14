@@ -89,8 +89,9 @@ void OnDeviceModelServiceController::Init(
   model_paths.sp_model = model_path.Append(kSpModelFile);
   model_paths.model = model_path.Append(kModelFile);
   model_paths.weights = model_path.Append(kWeightsFile);
+  model_paths.ts_data = model_path.Append(kTsDataFile);
+  model_paths.ts_sp_model = model_path.Append(kTsSpModelFile);
   model_paths_ = std::move(model_paths);
-  // TODO(b/302395013): Add T&S model.
   config_interpreter_ = std::move(config_interpreter);
   config_interpreter_->UpdateConfigWithFileDir(model_path);
 }

@@ -289,7 +289,6 @@ void SessionImpl::OnResponse(const std::string& response) {
 }
 
 void SessionImpl::OnComplete(on_device_model::mojom::ResponseStatus status) {
-  // TODO(b/302395507): Handle a retracted response.
   base::UmaHistogramMediumTimes(
       base::StrCat(
           {"OptimizationGuide.ModelExecution.OnDeviceResponseCompleteTime.",
@@ -372,11 +371,6 @@ void SessionImpl::SendResponse(ResponseType response_type) {
   std::unique_ptr<ModelQualityLogEntry> log_entry;
   const bool is_complete = response_type != ResponseType::kPartial;
   if (is_complete) {
-    if (response_type == ResponseType::kCompleteUnsafeOutput &&
-        on_device_state_->histogram_logger) {
-      on_device_state_->histogram_logger->set_result(
-          ExecuteModelResult::kUsedOnDeviceOutputUnsafe);
-    }
     if (on_device_state_->log_ai_data_request) {
       SetExecutionResponse(feature_, *(on_device_state_->log_ai_data_request),
                            *output);
@@ -385,6 +379,18 @@ void SessionImpl::SendResponse(ResponseType response_type) {
       log_entry = std::make_unique<ModelQualityLogEntry>(
           std::move(on_device_state_->log_ai_data_request));
       on_device_state_->log_ai_data_request.reset();
+    }
+    if (response_type == ResponseType::kCompleteUnsafeOutput) {
+      if (on_device_state_->histogram_logger) {
+        on_device_state_->histogram_logger->set_result(
+            ExecuteModelResult::kUsedOnDeviceOutputUnsafe);
+      }
+      if (features::GetOnDeviceModelRetractUnsafeContent()) {
+        on_device_state_->current_response.clear();
+        CancelPendingResponse(ExecuteModelResult::kUsedOnDeviceOutputUnsafe,
+                              ModelExecutionError::kFiltered);
+        return;
+      }
     }
   }
 

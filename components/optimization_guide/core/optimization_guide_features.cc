@@ -1025,5 +1025,13 @@ base::TimeDelta GetOnDeviceModelRetentionTime() {
       base::Days(30));
 }
 
+bool GetOnDeviceModelRetractUnsafeContent() {
+  static const base::FeatureParam<bool>
+      kOnDeviceModelShouldRetractUnsafeContent{
+          &kOptimizationGuideOnDeviceModel, "on_device_retract_unsafe_content",
+          false};
+  return kOnDeviceModelShouldRetractUnsafeContent.Get();
+}
+
 }  // namespace features
 }  // namespace optimization_guide

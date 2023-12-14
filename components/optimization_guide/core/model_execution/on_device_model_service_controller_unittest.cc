@@ -1020,4 +1020,23 @@ TEST_F(OnDeviceModelServiceControllerTest, UsedOnDeviceOutputUnsafe) {
       ExecuteModelResult::kUsedOnDeviceOutputUnsafe, 1);
 }
 
+TEST_F(OnDeviceModelServiceControllerTest, RetractUnsafeContent) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeatureWithParameters(
+      features::kOptimizationGuideOnDeviceModel,
+      {{"on_device_retract_unsafe_content", "true"}});
+  g_on_complete_response_type =
+      on_device_model::mojom::ResponseStatus::kRetracted;
+  auto session =
+      test_controller_->CreateSession(kFeature, base::DoNothing(), &logger_);
+  ASSERT_TRUE(session);
+  ExecuteModel(*session, "foo");
+  task_environment_.RunUntilIdle();
+  EXPECT_FALSE(response_received_);
+  ASSERT_TRUE(response_error_);
+  EXPECT_EQ(
+      *response_error_,
+      OptimizationGuideModelExecutionError::ModelExecutionError::kFiltered);
+}
+
 }  // namespace optimization_guide

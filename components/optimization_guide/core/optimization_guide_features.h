@@ -556,6 +556,10 @@ bool IsOnDeviceExecutionEnabled();
 COMPONENT_EXPORT(OPTIMIZATION_GUIDE_FEATURES)
 base::TimeDelta GetOnDeviceModelRetentionTime();
 
+// Returns true if unsafe content should be removed.
+COMPONENT_EXPORT(OPTIMIZATION_GUIDE_FEATURES)
+bool GetOnDeviceModelRetractUnsafeContent();
+
 }  // namespace features
 }  // namespace optimization_guide
 
