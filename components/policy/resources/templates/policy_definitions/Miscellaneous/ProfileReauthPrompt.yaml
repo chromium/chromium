@@ -8,9 +8,8 @@ example_value: 1
 features:
   dynamic_refresh: true
   per_profile: true
-future_on:
-- fuchsia
-- chrome.*
+supported_on:
+- chrome.*:121-
 items:
 - caption: Do not prompt for reauth
   name: DoNotPrompt
