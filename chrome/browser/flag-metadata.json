@@ -1181,7 +1181,10 @@
   {
     "name": "chrome-labs",
     "owners": ["elainechien@chromium.org", "robliao@chromium.org"],
-    "expiry_milestone": 122
+    // Never expires. The Chrome Labs features is rolled out to 99% of
+    // pre-stable users which is its full launch. Because we are not
+    // launching to stable we want to keep this flag.
+    "expiry_milestone": -1
   },
   {
     "name": "chrome-refresh-2023",
