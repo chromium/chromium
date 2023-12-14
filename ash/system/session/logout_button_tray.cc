@@ -44,7 +44,7 @@ LogoutButtonTray::LogoutButtonTray(Shelf* shelf)
           base::BindRepeating(&LogoutButtonTray::ButtonPressed,
                               base::Unretained(this)),
           std::u16string(), CONTEXT_LAUNCHER_BUTTON));
-  button_->SetProminent(true);
+  button_->SetStyle(ui::ButtonStyle::kProminent);
   set_use_bounce_in_animation(false);
 
   SetFocusBehavior(FocusBehavior::NEVER);

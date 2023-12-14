@@ -261,7 +261,7 @@ views::LabelButton* TrayPopupUtils::CreateTrayPopupButton(
     const std::u16string& text) {
   auto button =
       std::make_unique<views::MdTextButton>(std::move(callback), text);
-  button->SetProminent(true);
+  button->SetStyle(ui::ButtonStyle::kProminent);
   return button.release();
 }
 
