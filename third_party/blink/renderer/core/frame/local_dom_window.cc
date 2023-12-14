@@ -758,14 +758,6 @@ LocalDOMWindow::GetAgentGroupSchedulerCompositorTaskRunner() {
   return frame_scheduler->GetAgentGroupScheduler()->CompositorTaskRunner();
 }
 
-void LocalDOMWindow::AddInspectorIssue(
-    mojom::blink::InspectorIssueInfoPtr info) {
-  if (GetFrame()) {
-    GetFrame()->GetPage()->GetInspectorIssueStorage().AddInspectorIssue(
-        this, std::move(info));
-  }
-}
-
 void LocalDOMWindow::AddInspectorIssue(AuditsIssue issue) {
   if (GetFrame()) {
     GetFrame()->GetPage()->GetInspectorIssueStorage().AddInspectorIssue(

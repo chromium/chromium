@@ -54,7 +54,6 @@ class FakeLocalFrame : public blink::mojom::LocalFrame {
   void AddMessageToConsole(blink::mojom::ConsoleMessageLevel level,
                            const std::string& message,
                            bool discard_duplicates) override;
-  void AddInspectorIssue(blink::mojom::InspectorIssueInfoPtr info) override;
   void SwapInImmediately() override;
   void CheckCompleted() override;
   void StopLoading() override;

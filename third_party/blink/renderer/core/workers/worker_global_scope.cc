@@ -397,12 +397,6 @@ void WorkerGlobalScope::AddConsoleMessageImpl(ConsoleMessage* console_message,
       this, console_message, discard_duplicates);
 }
 
-void WorkerGlobalScope::AddInspectorIssue(
-    mojom::blink::InspectorIssueInfoPtr info) {
-  GetThread()->GetInspectorIssueStorage()->AddInspectorIssue(this,
-                                                             std::move(info));
-}
-
 void WorkerGlobalScope::AddInspectorIssue(AuditsIssue issue) {
   GetThread()->GetInspectorIssueStorage()->AddInspectorIssue(this,
                                                              std::move(issue));

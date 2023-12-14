@@ -94,6 +94,8 @@ enum class ClientHintIssueReason {
 //     would have to be included in various cc files.
 class CORE_EXPORT AuditsIssue {
  public:
+  explicit AuditsIssue(std::unique_ptr<protocol::Audits::InspectorIssue> issue);
+
   AuditsIssue() = delete;
   AuditsIssue(const AuditsIssue&) = delete;
   AuditsIssue& operator=(const AuditsIssue&) = delete;
@@ -200,7 +202,6 @@ class CORE_EXPORT AuditsIssue {
       const String& failureMessage);
 
  private:
-  explicit AuditsIssue(std::unique_ptr<protocol::Audits::InspectorIssue> issue);
 
   std::unique_ptr<protocol::Audits::InspectorIssue> issue_;
 };

@@ -118,6 +118,9 @@
 #include "third_party/blink/renderer/core/html_names.h"
 #include "third_party/blink/renderer/core/input/event_handler.h"
 #include "third_party/blink/renderer/core/input/keyboard_event_manager.h"
+#include "third_party/blink/renderer/core/inspector/inspector_audits_issue.h"
+#include "third_party/blink/renderer/core/inspector/inspector_issue.h"
+#include "third_party/blink/renderer/core/inspector/inspector_issue_conversion.h"
 #include "third_party/blink/renderer/core/inspector/main_thread_debugger.h"
 #include "third_party/blink/renderer/core/intersection_observer/intersection_observer.h"
 #include "third_party/blink/renderer/core/layout/layout_object.h"
@@ -2381,7 +2384,9 @@ void Internals::triggerTestInspectorIssue(Document* document) {
   auto info = mojom::blink::InspectorIssueInfo::New(
       mojom::InspectorIssueCode::kCookieIssue,
       mojom::blink::InspectorIssueDetails::New());
-  document->GetFrame()->AddInspectorIssue(std::move(info));
+  document->GetFrame()->AddInspectorIssue(
+      AuditsIssue(ConvertInspectorIssueToProtocolFormat(
+          InspectorIssue::Create(std::move(info)))));
 }
 
 AtomicString Internals::htmlNamespace() {

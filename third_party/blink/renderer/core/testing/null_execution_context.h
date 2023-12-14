@@ -48,7 +48,6 @@ class NullExecutionContext : public GarbageCollected<NullExecutionContext>,
 
   void AddConsoleMessageImpl(ConsoleMessage*,
                              bool discard_duplicates) override {}
-  void AddInspectorIssue(mojom::blink::InspectorIssueInfoPtr) override {}
   void AddInspectorIssue(AuditsIssue) override {}
   void ExceptionThrown(ErrorEvent*) override {}
 

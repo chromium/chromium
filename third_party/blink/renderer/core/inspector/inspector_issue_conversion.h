@@ -11,7 +11,7 @@ namespace blink {
 
 class InspectorIssue;
 
-std::unique_ptr<protocol::Audits::InspectorIssue>
+CORE_EXPORT std::unique_ptr<protocol::Audits::InspectorIssue>
 ConvertInspectorIssueToProtocolFormat(InspectorIssue*);
 
 }  // namespace blink

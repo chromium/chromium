@@ -221,6 +221,8 @@
 #include "third_party/blink/renderer/core/input/event_handler.h"
 #include "third_party/blink/renderer/core/inspector/console_message.h"
 #include "third_party/blink/renderer/core/inspector/inspector_audits_issue.h"
+#include "third_party/blink/renderer/core/inspector/inspector_issue.h"
+#include "third_party/blink/renderer/core/inspector/inspector_issue_conversion.h"
 #include "third_party/blink/renderer/core/layout/hit_test_result.h"
 #include "third_party/blink/renderer/core/layout/layout_embedded_content.h"
 #include "third_party/blink/renderer/core/layout/layout_object.h"
@@ -3046,12 +3048,15 @@ void WebLocalFrameImpl::AddMessageToConsoleImpl(
       discard_duplicates);
 }
 
+// This is only triggered by test_runner.cc
 void WebLocalFrameImpl::AddInspectorIssueImpl(
     mojom::blink::InspectorIssueCode code) {
   DCHECK(GetFrame());
   auto info = mojom::blink::InspectorIssueInfo::New(
       code, mojom::blink::InspectorIssueDetails::New());
-  GetFrame()->AddInspectorIssue(std::move(info));
+  GetFrame()->AddInspectorIssue(
+      AuditsIssue(ConvertInspectorIssueToProtocolFormat(
+          InspectorIssue::Create(std::move(info)))));
 }
 
 void WebLocalFrameImpl::AddGenericIssueImpl(
