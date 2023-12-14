@@ -1273,7 +1273,7 @@ class ToplevelWindowEventHandlerDragTest : public AshTestBase {
 // dragged.
 TEST_F(ToplevelWindowEventHandlerDragTest,
        NonResizableWindowsCannotBeDraggedInClamshellMode) {
-  ASSERT_FALSE(TabletModeControllerTestApi().IsTabletModeStarted());
+  ASSERT_FALSE(display::Screen::GetScreen()->InTabletMode());
 
   dragged_window_->SetProperty(aura::client::kResizeBehaviorKey,
                                aura::client::kResizeBehaviorNone);

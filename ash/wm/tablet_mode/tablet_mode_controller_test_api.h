@@ -98,10 +98,6 @@ class TabletModeControllerTestApi {
 
   float GetLidAngle() const { return tablet_mode_controller_->lid_angle(); }
 
-  // Deprecated. Use display::Screen::GetScreen()->InTabletMode() instead.
-  // TODO(crbug.com/1502114): Remove this.
-  bool IsTabletModeStarted() const;
-
  private:
   raw_ptr<TabletModeController, DanglingUntriaged | ExperimentalAsh>
       tablet_mode_controller_;

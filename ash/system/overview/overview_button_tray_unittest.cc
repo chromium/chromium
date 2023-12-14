@@ -36,6 +36,7 @@
 #include "ui/compositor/scoped_animation_duration_scale_mode.h"
 #include "ui/display/display_switches.h"
 #include "ui/display/manager/display_manager.h"
+#include "ui/display/screen.h"
 #include "ui/events/devices/device_data_manager_test_api.h"
 #include "ui/events/devices/input_device.h"
 #include "ui/events/devices/keyboard_device.h"
@@ -423,11 +424,11 @@ TEST_F(OverviewButtonTrayTest, LeaveTabletModeBecauseExternalMouse) {
   TabletModeControllerTestApi().DetachAllMice();
 
   TabletModeControllerTestApi().OpenLidToAngle(315.0f);
-  EXPECT_TRUE(TabletModeControllerTestApi().IsTabletModeStarted());
+  EXPECT_TRUE(display::Screen::GetScreen()->InTabletMode());
   ASSERT_TRUE(GetTray()->GetVisible());
 
   TabletModeControllerTestApi().AttachExternalMouse();
-  EXPECT_FALSE(TabletModeControllerTestApi().IsTabletModeStarted());
+  EXPECT_FALSE(display::Screen::GetScreen()->InTabletMode());
   EXPECT_TRUE(GetTray()->GetVisible());
 }
 
@@ -438,12 +439,12 @@ TEST_F(OverviewButtonTrayTest, ForDevTabletModeForcesTheButtonShown) {
   TabletModeControllerTestApi().DetachAllMice();
 
   Shell::Get()->tablet_mode_controller()->SetEnabledForDev(true);
-  EXPECT_TRUE(TabletModeControllerTestApi().IsTabletModeStarted());
+  EXPECT_TRUE(display::Screen::GetScreen()->InTabletMode());
   EXPECT_FALSE(TabletModeControllerTestApi().AreEventsBlocked());
   EXPECT_TRUE(GetTray()->GetVisible());
 
   Shell::Get()->tablet_mode_controller()->SetEnabledForDev(false);
-  EXPECT_FALSE(TabletModeControllerTestApi().IsTabletModeStarted());
+  EXPECT_FALSE(display::Screen::GetScreen()->InTabletMode());
   EXPECT_FALSE(GetTray()->GetVisible());
 
   // When there is a window, a screenshot will be taken and entering tablet mode
@@ -454,12 +455,12 @@ TEST_F(OverviewButtonTrayTest, ForDevTabletModeForcesTheButtonShown) {
 
   EXPECT_FALSE(GetTray()->GetVisible());
   Shell::Get()->tablet_mode_controller()->SetEnabledForDev(true);
-  EXPECT_TRUE(TabletModeControllerTestApi().IsTabletModeStarted());
+  EXPECT_TRUE(display::Screen::GetScreen()->InTabletMode());
   EXPECT_TRUE(GetTray()->GetVisible());
 
   // Disabling tablet mode is always synchronous.
   Shell::Get()->tablet_mode_controller()->SetEnabledForDev(false);
-  EXPECT_FALSE(TabletModeControllerTestApi().IsTabletModeStarted());
+  EXPECT_FALSE(display::Screen::GetScreen()->InTabletMode());
   EXPECT_FALSE(GetTray()->GetVisible());
 }
 
