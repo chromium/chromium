@@ -1080,7 +1080,7 @@ if (is_chromeos_ash) {
 
     # Generate WebUI bindings in JavaScript instead of TypeScript. This is
     # necessary since this target is intentionally testing JS WebUI bindings.
-    use_typescript_sources = false
+    generate_webui_js_bindings = true
   }
 }
 
