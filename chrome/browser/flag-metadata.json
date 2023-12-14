@@ -378,7 +378,7 @@
   {
     "name": "arc-touchscreen-emulation",
     "owners": [ "yhanada@chromium.org" ],
-    "expiry_milestone": 122
+    "expiry_milestone": 132
   },
   {
     "name": "arc-vm-memory-size",
