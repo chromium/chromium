@@ -27,6 +27,64 @@
     border-radius: var(--personalization-app-grid-item-border-radius);
     height: 100%;
   }
+
+  .feedback-icon-container {
+    align-items: flex-end;
+    bottom: 10px;
+    display: flex;
+    justify-content: flex-end;
+    height: 48px;
+    position: absolute;
+    right: 10px;
+    width: 88px;
+    z-index: 1;
+  }
+
+  .feedback-icon-container-inner {
+    align-items: flex-end;
+    background-color: var(--cros-bg-color);
+    border-top-left-radius: 24px;
+    bottom: 0;
+    display: flex;
+    gap: 16px;
+    height: 36px;
+    justify-content: flex-end;
+    position: absolute;
+    right: 0;
+    width: 76px;
+  }
+
+  div[class^="feedback-icon-container-shadow"] {
+    height: 12px;
+    overflow: hidden;
+    position: absolute;
+    width: 12px;
+  }
+
+  div[class^="feedback-icon-container-shadow"]::before {
+    border-bottom-right-radius: 100%;
+    bottom: 0;
+    box-shadow: 0px 12px 0px 12px var(--cros-bg-color);
+    content: '';
+    height: 100%;
+    position: absolute;
+    right: 0;
+    width: 100%;
+  }
+
+  .feedback-icon-container-shadow-left {
+    right: 76px;
+  }
+
+  .feedback-icon-container-shadow-top {
+    bottom: 36px;
+  }
+
+  .thumb-icon-button {
+    --cr-icon-button-size: 24px;
+    background-color: var(--cros-bg-color);
+    margin-inline: 0;
+  }
 </style>
 <!-- TODO(b/308200616): Add real text -->
 <h2 class="wallpaper-collections-heading">TBD Wallpapers</h2>
@@ -57,6 +115,18 @@
       role="listbox">
     <template>
       <div class="thumbnail-item-container">
+        <div class="feedback-icon-container">
+          <div class="feedback-icon-container-inner">
+            <cr-icon-button class="thumb-icon-button" iron-icon="cr:thumbs-up"
+                role="button" on-click="onClickThumbsUp_">
+            </cr-icon-button>
+            <cr-icon-button class="thumb-icon-button" iron-icon="cr:thumbs-down"
+                role="button" on-click="onClickThumbsDown_">
+            </cr-icon-button>
+          </div>
+          <div class="feedback-icon-container-shadow-left"></div>
+          <div class="feedback-icon-container-shadow-top"></div>
+        </div>
         <wallpaper-grid-item
             class="sea-pen-image"
             index="[[index]]"

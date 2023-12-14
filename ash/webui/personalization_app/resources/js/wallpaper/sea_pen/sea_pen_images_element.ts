@@ -8,6 +8,8 @@
  */
 
 import 'chrome://resources/cr_elements/cr_auto_img/cr_auto_img.js';
+import 'chrome://resources/cr_elements/cr_icon_button/cr_icon_button.js';
+import 'chrome://resources/cr_elements/icons.html.js';
 import '../../../css/common.css.js';
 import './sparkle_placeholder_element.js';
 import '../../../css/sea_pen.css.js';
@@ -92,6 +94,14 @@ export class SeaPenImagesElement extends WithSeaPenStore {
   private isThumbnailSelected_(
       thumbnail: SeaPenThumbnail, pendingSelected: SeaPenThumbnail|null) {
     return thumbnail === pendingSelected;
+  }
+
+  private onClickThumbsUp_() {
+    // TODO(b/313667113): Implement thumbs up.
+  }
+
+  private onClickThumbsDown_() {
+    // TODO(b/313667113): Implement thumbs down.
   }
 }
 

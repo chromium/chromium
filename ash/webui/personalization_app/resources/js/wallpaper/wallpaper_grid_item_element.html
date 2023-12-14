@@ -126,7 +126,7 @@
   }
 
   :host([data-is-promoted-tile]) #text,
-  :host([data-sea-pen]) #text {
+  :host([data-sea-pen-image]) #text {
     position: relative;
     top: 8px;
   }
@@ -163,9 +163,13 @@
 
   :host([data-is-promoted-tile]) .primary-text,
   :host([data-is-promoted-tile]) ::slotted(.primary-text),
-  :host([data-sea-pen]) .primary-text,
-  :host([data-sea-pen]) ::slotted(.primary-text) {
+  :host([data-sea-pen-image]) .primary-text,
+  :host([data-sea-pen-image]) ::slotted(.primary-text) {
     font: var(--cros-display-6_regular-font);
+  }
+
+  :host([data-sea-pen-image]) .wallpaper-grid-item-border {
+    visibility: hidden;
   }
 
   p.primary-text:last-of-type,

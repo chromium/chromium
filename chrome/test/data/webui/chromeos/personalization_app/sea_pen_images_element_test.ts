@@ -6,6 +6,7 @@ import 'chrome://personalization/strings.m.js';
 import 'chrome://webui-test/chromeos/mojo_webui_test_support.js';
 
 import {SeaPenImagesElement, SparklePlaceholderElement, WallpaperGridItemElement} from 'chrome://personalization/js/personalization_app.js';
+import {CrIconButtonElement} from 'chrome://resources/cr_elements/cr_icon_button/cr_icon_button.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {waitAfterNextRender} from 'chrome://webui-test/polymer_test_util.js';
 
@@ -99,5 +100,21 @@ suite('SeaPenImagesElementTest', function() {
     assertEquals(
         seaPenProvider.images[0]!.id, id, 'id sent for first SeaPenThumbnail');
     assertTrue(thumbnails[0]!.getAttribute('aria-selected') === 'true');
+  });
+
+  test('display feedback buttons', async () => {
+    personalizationStore.data.wallpaper.seaPen.loading.thumbnails = false;
+    personalizationStore.data.wallpaper.seaPen.thumbnails =
+        seaPenProvider.images;
+
+    seaPenImagesElement = initElement(SeaPenImagesElement);
+    await waitAfterNextRender(seaPenImagesElement);
+
+    const feedbackButtons: CrIconButtonElement[] = Array.from(
+        seaPenImagesElement.shadowRoot!.querySelectorAll<CrIconButtonElement>(
+            `div:not([hidden]).thumbnail-item-container .thumb-icon-button`));
+    assertEquals(
+        8, feedbackButtons!.length,
+        'should be 2 feedback buttons per thumbnail');
   });
 });

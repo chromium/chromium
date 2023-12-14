@@ -28,14 +28,14 @@
   .menu-icon-container {
     background-color: var(--cros-bg-color);
     border-top-left-radius: 50%;
-    bottom: 0px;
+    bottom: 0;
     padding: 8px;
     position: absolute;
-    right: 0px;
+    right: 0;
     z-index: 2;
   }
 
-  .menu-icon-container:before {
+  .menu-icon-container::before {
     border-bottom-right-radius: 50%;
     bottom: 8px;
     box-shadow: 0 8px 0 0 var(--cros-bg-color);
@@ -46,10 +46,10 @@
     width: 16px;
   }
 
-  .menu-icon-container:after {
+  .menu-icon-container::after {
     border-bottom-right-radius: 50%;
     bottom: 36px;
-    box-shadow: 8px 0px 0 0 var(--cros-bg-color);
+    box-shadow: 8px 0 0 0 var(--cros-bg-color);
     content: "";
     height: 16px;
     position: absolute;
@@ -59,7 +59,7 @@
 
   .menu-icon-button {
     --cr-icon-button-size: 20px;
-    background-color: var(--cros-sys-app_base_shaded);
+    background-color: var(--cros-bg-color);
     margin-inline: 0;
   }
 </style>
