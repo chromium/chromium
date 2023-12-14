@@ -20,18 +20,14 @@ if (REPLAY_LOCAL_DRIVER_DIR && process.env.DRIVER_REVISION) {
   );
 }
 
-const buildArm = !!process.env.REPLAY_BUILD_ARM;
+const buildArm = process.env.REPLAY_BUILD_ARM == true;
 const outdir = buildArm ? "out/Release-ARM" : "out/Release";
 
 // Ensure that the git repository is "trusted", otherwise we'll get errors like:
 // fatal: unsafe repository ('/chromium/src' is owned by someone else)
-spawnChecked("git", [
-  "config",
-  "--global",
-  "--add",
-  "safe.directory",
-  __dirname,
-], { stdio: "inherit" });
+spawnChecked("git", ["config", "--global", "--add", "safe.directory", __dirname], {
+  stdio: "inherit",
+});
 
 if (currentPlatform() == "macOS") {
   // Make sure the main executable gets rebuilt with the new build ID.
@@ -54,17 +50,11 @@ if (!REPLAY_LOCAL_DRIVER_DIR) {
       );
     }
     driverRevisionOverride = driverRevisionOverride.substring(0, 12);
-    downloadArchive = `${currentPlatform()}-recordreplay-${
-      driverRevisionOverride
-    }${archSuffix}.tgz`;
+    downloadArchive = `${currentPlatform()}-recordreplay-${driverRevisionOverride}${archSuffix}.tgz`;
   }
   spawnChecked(
     "curl",
-    [
-      `https://static.replay.io/downloads/${downloadArchive}`,
-      "-o",
-      driverArchive,
-    ],
+    [`https://static.replay.io/downloads/${downloadArchive}`, "-o", driverArchive],
     { stdio: "inherit" }
   );
   spawnChecked("tar", ["xf", driverArchive], { stdio: "inherit" });
@@ -102,8 +92,7 @@ for (let i = 0; i < driverContents.length; i++) {
 driverString = driverString.join("");
 
 const buildSuffix =
-  process.env["BUILDKITE_BRANCH"] !==
-  process.env["BUILDKITE_PIPELINE_DEFAULT_BRANCH"]
+  process.env["BUILDKITE_BRANCH"] !== process.env["BUILDKITE_PIPELINE_DEFAULT_BRANCH"]
     ? "-dev"
     : process.env["LOCAL_DEVELOPER_BUILD_EXTENSION"] || "";
 const buildId = `${computeBuildId(driverDate, driverRevision)}${buildSuffix}`;
@@ -143,8 +132,7 @@ const gn = currentPlatform() == "windows" ? "gn.bat" : "gn";
 spawnChecked(gn, ["gen", outdir], { stdio: "inherit" });
 
 console.log(`Building...`);
-const autoninja =
-  currentPlatform() == "windows" ? "autoninja.bat" : "autoninja";
+const autoninja = currentPlatform() == "windows" ? "autoninja.bat" : "autoninja";
 spawnChecked(autoninja, ["-C", outdir, "chrome"], { stdio: "inherit" });
 
 console.log(`Build finished.`);
