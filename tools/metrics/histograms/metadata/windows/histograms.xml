@@ -161,17 +161,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Windows.OOPSelectFileDialog.ProcessError" enum="BooleanError"
-    expires_after="M82">
-  <owner>pmonette@chromium.org</owner>
-  <summary>
-    Indicates whether a connection error occured between the browser and the
-    shell handler process. This is usually caused by a crash in the utility
-    process. This is logged every time SelectFile() function is called and the
-    WinOOPSelectFileDialog feature is enabled.
-  </summary>
-</histogram>
-
 <histogram name="Windows.ParallelDllLoadingEnabled" enum="BooleanEnabled"
     expires_after="never">
 <!-- expires-never: Needed to measure third party incompatibilities on Windows which could happen at any time. -->
