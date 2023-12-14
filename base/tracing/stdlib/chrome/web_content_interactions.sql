@@ -37,7 +37,7 @@ SELECT
   EXTRACT_ARG(arg_set_id, 'web_content_interaction.type') AS interaction_type,
   EXTRACT_ARG(
     arg_set_id,
-    'web_content_intaraction.total_duration_ms'
+    'web_content_interaction.total_duration_ms'
   ) AS total_duration_ms,
   upid AS renderer_upid
 FROM process_slice
