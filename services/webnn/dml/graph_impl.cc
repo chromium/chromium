@@ -14,6 +14,7 @@
 #include "base/notreached.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/strings/stringprintf.h"
 #include "base/task/thread_pool.h"
 #include "base/trace_event/trace_event.h"
 #include "base/types/expected.h"
@@ -1737,44 +1738,46 @@ base::expected<void, mojom::ErrorPtr> CreateOperatorNodeForGemm(
   return base::ok();
 }
 
-base::expected<void, mojom::ErrorPtr> CreateOperatorNodeForLayerNormalization(
+template <typename NormalizationPtr>
+base::expected<void, mojom::ErrorPtr>
+CreateOperatorNodeForMeanVarianceNormalization(
     const IdToOperandMap& id_to_operand_map,
-    const mojom::LayerNormalizationPtr& layer_normalization,
+    const NormalizationPtr& normalization,
     GraphBuilder& graph_builder,
-    IdToNodeOutputMap& id_to_node_output_map) {
+    IdToNodeOutputMap& id_to_node_output_map,
+    base::span<const uint32_t> mean_variance_axes,
+    base::span<const uint32_t> scale_bias_broadcast_axes,
+    mojom::Operation::Tag op) {
   const NodeOutput* input = GetNodeOutputForOperand(
-      id_to_node_output_map, layer_normalization->input_operand_id);
+      id_to_node_output_map, normalization->input_operand_id);
   const auto& input_tensor_desc = input->GetTensorDesc();
   size_t input_rank = input_tensor_desc.GetDimensions().size();
 
   const NodeOutput* scale =
-      layer_normalization->scale_operand_id.has_value()
-          ? GetNodeOutputForOperand(
-                id_to_node_output_map,
-                layer_normalization->scale_operand_id.value())
+      normalization->scale_operand_id.has_value()
+          ? GetNodeOutputForOperand(id_to_node_output_map,
+                                    normalization->scale_operand_id.value())
           : nullptr;
   const NodeOutput* bias =
-      layer_normalization->bias_operand_id.has_value()
-          ? GetNodeOutputForOperand(
-                id_to_node_output_map,
-                layer_normalization->bias_operand_id.value())
+      normalization->bias_operand_id.has_value()
+          ? GetNodeOutputForOperand(id_to_node_output_map,
+                                    normalization->bias_operand_id.value())
           : nullptr;
 
   // `scale` and `bias` should be both given or not given when DML_FEATURE_LEVEL
   // is less than DML_FEATURE_LEVEL_5_2.
   // https://learn.microsoft.com/en-us/windows/win32/api/directml/ns-directml-dml_mean_variance_normalization1_operator_desc
   if ((scale && !bias) || (!scale && bias)) {
-    return base::unexpected(
-        CreateError(mojom::Error::Code::kNotSupportedError,
-                    "The scale and bias of layerNormalization must be both "
-                    "given or not given."));
+    return base::unexpected(CreateError(mojom::Error::Code::kNotSupportedError,
+                                        OpTagToString(op) +
+                                            ": The scale and bias must be both "
+                                            "given or not given."));
   }
 
-  const auto& axes = layer_normalization->axes;
-  if (!base::MakeCheckedNum(axes.size()).IsValid<uint32_t>()) {
+  if (!base::MakeCheckedNum(mean_variance_axes.size()).IsValid<uint32_t>()) {
     return base::unexpected(
         CreateError(mojom::Error::Code::kUnknownError,
-                    "The axes rank of layerNormalization is too large."));
+                    OpTagToString(op) + ": The axes rank is too large."));
   }
 
   std::vector<const NodeOutput*> inputs = {input};
@@ -1786,22 +1789,24 @@ base::expected<void, mojom::ErrorPtr> CreateOperatorNodeForLayerNormalization(
     scale_tensor_desc = scale->GetTensorDesc();
     // The scale tensor should have the same rank as the input tensor required
     // by DML_MEAN_VARIANCE_NORMALIZATION1_OPERATOR_DESC.
-    scale_tensor_desc->MakeBroadcastCompatible(input_rank, axes);
+    scale_tensor_desc->MakeBroadcastCompatible(input_rank,
+                                               scale_bias_broadcast_axes);
   }
   if (bias) {
     inputs.push_back(bias);
     bias_tensor_desc = bias->GetTensorDesc();
     // The bias tensor should have the same rank as the input tensor required by
     // DML_MEAN_VARIANCE_NORMALIZATION1_OPERATOR_DESC.
-    bias_tensor_desc->MakeBroadcastCompatible(input_rank, axes);
+    bias_tensor_desc->MakeBroadcastCompatible(input_rank,
+                                              scale_bias_broadcast_axes);
   }
 
-  uint64_t output_id = layer_normalization->output_operand_id;
+  uint64_t output_id = normalization->output_operand_id;
   const auto output_tensor_desc =
       CreateOutputTensorDesc(id_to_operand_map, output_id);
 
   DML_MEAN_VARIANCE_NORMALIZATION1_OPERATOR_DESC
-  layer_normalization_operator_desc{
+  normalization_operator_desc{
       .InputTensor = &input_tensor_desc.GetDMLTensorDesc(),
       .ScaleTensor = scale_tensor_desc.has_value()
                          ? &scale_tensor_desc->GetDMLTensorDesc()
@@ -1810,25 +1815,25 @@ base::expected<void, mojom::ErrorPtr> CreateOperatorNodeForLayerNormalization(
                         ? &bias_tensor_desc->GetDMLTensorDesc()
                         : nullptr,
       .OutputTensor = &output_tensor_desc.GetDMLTensorDesc(),
-      .AxisCount = base::checked_cast<uint32_t>(axes.size()),
-      .Axes = axes.data(),
-      // The layer normalization includes variance.
+      .AxisCount = base::checked_cast<uint32_t>(mean_variance_axes.size()),
+      .Axes = mean_variance_axes.data(),
+      // The layer normalization and instance normalization includes variance.
       .NormalizeVariance = true,
-      .Epsilon = layer_normalization->epsilon,
+      .Epsilon = normalization->epsilon,
       .FusedActivation = nullptr};
 
-  const OperatorNode* layer_normalization_node =
-      graph_builder.CreateOperatorNode(
-          DML_OPERATOR_MEAN_VARIANCE_NORMALIZATION1,
-          &layer_normalization_operator_desc, inputs);
-  if (!layer_normalization_node) {
+  const OperatorNode* normalization_node = graph_builder.CreateOperatorNode(
+      DML_OPERATOR_MEAN_VARIANCE_NORMALIZATION1, &normalization_operator_desc,
+      inputs);
+  if (!normalization_node) {
     return base::unexpected(
         CreateError(mojom::Error::Code::kUnknownError,
-                    "Failed to create layerNormalization operator."));
+                    base::StringPrintf("Failed to create %s operator.",
+                                       OpTagToString(op).c_str())));
   }
 
   const NodeOutput* output = graph_builder.CreateNodeOutput(
-      layer_normalization_node, std::move(output_tensor_desc));
+      normalization_node, std::move(output_tensor_desc));
   // The output id must be unique in the map.
   CHECK(id_to_node_output_map.try_emplace(output_id, output).second);
 
@@ -2539,10 +2544,36 @@ void GraphImpl::CreateAndBuild(
                                       graph_builder, id_to_node_output_map);
         break;
       }
+      case Operation::Tag::kInstanceNormalization: {
+        // The axes along which to calculate the Mean and Variance.
+        std::array<uint32_t, 2> mean_variance_axes;
+        std::array<uint32_t, 1> scale_bias_broadcast_axes;
+        const auto& instance_normalization =
+            operation->get_instance_normalization();
+        switch (instance_normalization->layout) {
+          case mojom::InputOperandLayout::kChannelsFirst: {
+            mean_variance_axes = {2, 3};
+            scale_bias_broadcast_axes = {1};
+            break;
+          }
+          case mojom::InputOperandLayout::kChannelsLast:
+            mean_variance_axes = {1, 2};
+            scale_bias_broadcast_axes = {3};
+            break;
+        }
+        create_operator_result = CreateOperatorNodeForMeanVarianceNormalization(
+            id_to_operand_map, instance_normalization, graph_builder,
+            id_to_node_output_map, mean_variance_axes,
+            scale_bias_broadcast_axes, Operation::Tag::kInstanceNormalization);
+        break;
+      }
       case Operation::Tag::kLayerNormalization: {
-        create_operator_result = CreateOperatorNodeForLayerNormalization(
-            id_to_operand_map, operation->get_layer_normalization(),
-            graph_builder, id_to_node_output_map);
+        const auto& layer_normalization = operation->get_layer_normalization();
+        const auto axes = layer_normalization->axes;
+        create_operator_result = CreateOperatorNodeForMeanVarianceNormalization(
+            id_to_operand_map, layer_normalization, graph_builder,
+            id_to_node_output_map, axes, axes,
+            Operation::Tag::kLayerNormalization);
         break;
       }
       case Operation::Tag::kLeakyRelu: {
