@@ -115,7 +115,7 @@ export class ExceptionListElement extends
   static get observers() {
     return [
       `onPrefsChanged_(prefs.${TAB_DISCARD_EXCEPTIONS_PREF}.value.*,` +
-          `prefs.${TAB_DISCARD_EXCEPTIONS_PREF}.value.*)`,
+          `prefs.${TAB_DISCARD_EXCEPTIONS_MANAGED_PREF}.value.*)`,
     ];
   }
 
