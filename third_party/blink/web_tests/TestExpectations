@@ -1280,8 +1280,6 @@ crbug.com/750992 [ Win ] external/wpt/css/css-writing-modes/sizing-orthog-vlr-in
 crbug.com/750992 external/wpt/css/css-writing-modes/sizing-orthog-vrl-in-htb-008.xht [ Failure ]
 crbug.com/750992 [ Linux ] external/wpt/css/css-writing-modes/sizing-orthog-vrl-in-htb-020.xht [ Failure ]
 crbug.com/750992 [ Win ] external/wpt/css/css-writing-modes/sizing-orthog-vrl-in-htb-020.xht [ Failure ]
-crbug.com/1432009 external/wpt/css/css-writing-modes/forms/range-input-appearance-native-vertical-rtl.optional.html [ Failure ]
-crbug.com/1432009 external/wpt/css/css-writing-modes/forms/range-input-appearance-none-vertical-rtl.optional.html [ Failure ]
 
 # These tests are mismatch tests which means they will only pass if the rendered page is not the
 # same between vertical and horizontal writing mode. Failing the tests is equivalent to testing

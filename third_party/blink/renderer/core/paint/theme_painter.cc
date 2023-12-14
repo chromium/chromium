@@ -367,6 +367,11 @@ void ThemePainter::PaintSliderTicks(const LayoutObject& o,
     tick_region_width = track_bounds.height() - thumb_size.height();
   }
   HTMLDataListOptionsCollection* options = data_list->options();
+  bool flip_tick_direction =
+      (is_horizontal && o.StyleRef().IsLeftToRightDirection()) ||
+      (RuntimeEnabledFeatures::
+           FormControlsVerticalWritingModeDirectionSupportEnabled() &&
+       !is_horizontal && o.StyleRef().IsLeftToRightDirection());
   for (unsigned i = 0; HTMLOptionElement* option_element = options->Item(i);
        i++) {
     String value = option_element->value();
@@ -377,9 +382,8 @@ void ThemePainter::PaintSliderTicks(const LayoutObject& o,
     double parsed_value =
         ParseToDoubleForNumberType(input->SanitizeValue(value));
     double tick_fraction = (parsed_value - min) / (max - min);
-    double tick_ratio = is_horizontal && o.StyleRef().IsLeftToRightDirection()
-                            ? tick_fraction
-                            : 1.0 - tick_fraction;
+    double tick_ratio =
+        flip_tick_direction ? tick_fraction : 1.0 - tick_fraction;
     double tick_position =
         round(tick_region_side_margin + tick_region_width * tick_ratio);
     if (is_horizontal)

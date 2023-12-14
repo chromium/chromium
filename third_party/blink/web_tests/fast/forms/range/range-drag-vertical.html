@@ -2,7 +2,7 @@
 <html>
 <script src="../../../resources/testharness.js"></script>
 <script src="../../../resources/testharnessreport.js"></script>
-<title>Test for input type date arrow key operations.</title>
+<title>Test for input type range drag slider thumb.</title>
 <style>
 input {
   writing-mode: vertical-lr;
@@ -22,8 +22,6 @@ async_test(t => {
   if (!window.eventSender)
         return;
 
-  // TODO(crbug.com/1432009): Update LTR case when direction becomes supported for input type range.
-  // If direction LTR is supported, value 0 should be at the top and 100 at the bottom.
   for (const dir of ['rtl', 'ltr']) {
     for (const app of ['none', 'auto']) {
       let range = document.createElement('input');
@@ -40,10 +38,17 @@ async_test(t => {
       const topY = range.offsetTop;
       const bottomY = range.offsetTop + range.offsetHeight;
 
-      dragMouse(centerX, centerY, topY);
-      assert_equals(range.value, '100', 'drag slider thumb up will increase value.');
-      dragMouse(centerX, topY, bottomY);
-      assert_equals(range.value, '0', 'drag slider thumb down will decrease value.');
+      if (dir == 'rtl') {
+        dragMouse(centerX, centerY, topY);
+        assert_equals(range.value, '100', 'drag slider thumb up will increase value.');
+        dragMouse(centerX, topY, bottomY);
+        assert_equals(range.value, '0', 'drag slider thumb down will decrease value.');
+      } else {
+        dragMouse(centerX, centerY, topY);
+        assert_equals(range.value, '0', 'drag slider thumb up will decrease value.');
+        dragMouse(centerX, topY, bottomY);
+        assert_equals(range.value, '100', 'drag slider thumb down will increase value.');
+      }
 
       let currentValue = range.value;
       range.disabled = true;
@@ -52,7 +57,7 @@ async_test(t => {
     }
   }
   t.done();
-}, 'All input[range] with vertical writing mode should change value on drag, increasing when drag up and decreasing when drag down.');
+}, 'All input[range] with vertical writing mode should change value on drag.');
 </script>
 </body>
 </html>

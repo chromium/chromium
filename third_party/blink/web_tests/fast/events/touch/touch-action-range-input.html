@@ -21,7 +21,7 @@
 </table>
 <div><input type='range' id='slider1' min = '0' max = '100' step = '10'></input></div>
 <div><input type='range' id='slider2' min = '0' max = '100' step = '10' style='touch-action:none;'></div>
-<div><input type='range' id='slider3' min='0' max='100' step='10' style='writing-mode:vertical-lr;'></div>
+<div><input type='range' id='slider3' min='0' max='100' step='10' style='writing-mode:vertical-lr; direction:rtl;'></div>
 <table id = 'table2'><tbody /></table>
 
 <script>
@@ -211,11 +211,11 @@ function testTouchAction() {
     assert_equals(getComputedStyle(container3).touchAction, 'pan-x');
     assert_equals(getComputedStyle(slider2).touchAction, 'none');
 
-    slider1.style='-webkit-appearance: slider-vertical;';
+    slider1.style='writing-mode: vertical-lr;';
     slider3.style='';
     forceLayoutUpdate();
     assert_equals(getComputedStyle(container1).touchAction, 'pan-x');
     assert_equals(getComputedStyle(container3).touchAction, 'pan-y');
-  }, 'Tests that each <input range="type"> has the correct pan-x or pan-y touch-action inside its shadow element: container. This touch-action is under the user-specified touch-action, and will update with the -webkit-appearance.');
+  }, 'Tests that each <input range="type"> has the correct pan-x or pan-y touch-action inside its shadow element: container. This touch-action is under the user-specified touch-action, and will update with the writing-mode.');
 }
 </script>

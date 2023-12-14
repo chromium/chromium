@@ -1900,7 +1900,10 @@
       name: "FormControlRestoreStateIfAutocompleteOff",
     },
     {
+      // TODO(crbug.com/1432009) Allow form controls with vertical writing mode
+      // to have direction affect the flow of the control.
       name: "FormControlsVerticalWritingModeDirectionSupport",
+      status: "experimental",
     },
     {
       // Allow these form controls to have vertical writing mode: select, meter,
