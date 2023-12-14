@@ -461,6 +461,14 @@ chromium-metrics-reviews@google.com.
   <int value="909" label="SERVICE_INVALID_PACKAGED_DEVICE_FOR_KIOSK"/>
 </enum>
 
+<enum name="EnterpriseDlpFileAccessDefaultAction">
+  <summary>Type of action triggering a default file access behaviour.</summary>
+  <int value="0" label="Creating file access in MyFiles"/>
+  <int value="1" label="Not creating file access in MyFiles"/>
+  <int value="2" label="Creating file access outside of MyFiles"/>
+  <int value="3" label="Not creating file access outside of MyFiles"/>
+</enum>
+
 <enum name="EnterpriseDlpPolicyCrOSAdaptorError">
   <summary>
     Type of errors triggered by the adaptor usage in the ChromeOS Data Leak

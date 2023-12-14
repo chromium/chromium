@@ -38,6 +38,15 @@ class COMPONENT_EXPORT(FILE_ACCESS) ScopedFileAccessDelegate {
       base::RepeatingCallback<void(const std::vector<base::FilePath>&,
                                    base::OnceCallback<void(ScopedFileAccess)>,
                                    bool check_default)>;
+  // When new entries are added, EnterpriseDlpFilesDefaultAccess enum in
+  // histograms/enums.xml should be updated.
+  enum class DefaultAccess {
+    kMyFilesAllow = 0,
+    kMyFilesDeny = 1,
+    kSystemFilesAllow = 2,
+    kSystemFilesDeny = 3,
+    kMaxValue = kSystemFilesDeny
+  };
 
   ScopedFileAccessDelegate(const ScopedFileAccessDelegate&) = delete;
   ScopedFileAccessDelegate& operator=(const ScopedFileAccessDelegate&) = delete;

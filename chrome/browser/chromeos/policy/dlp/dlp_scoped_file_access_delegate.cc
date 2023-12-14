@@ -7,11 +7,14 @@
 #include "base/files/file_path.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_forward.h"
+#include "base/path_service.h"
 #include "base/process/process_handle.h"
 #include "base/task/bind_post_task.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_file_access_copy_or_move_delegate_factory.h"
+#include "chrome/common/chrome_paths.h"
 #include "chromeos/constants/chromeos_features.h"
 #include "chromeos/dbus/dlp/dlp_client.h"
+#include "components/enterprise/data_controls/dlp_histogram_helper.h"
 #include "components/file_access/scoped_file_access.h"
 #include "components/file_access/scoped_file_access_delegate.h"
 #include "content/public/browser/browser_task_traits.h"
@@ -20,7 +23,6 @@
 namespace policy {
 
 namespace {
-
 dlp::RequestFileAccessRequest PrepareBaseRequestFileAccessRequest(
     const std::vector<base::FilePath>& files) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
@@ -51,6 +53,43 @@ void RequestFileAccessForSystem(
     content::GetIOThreadTaskRunner({})->PostTask(
         FROM_HERE, base::BindOnce(std::move(callback),
                                   file_access::ScopedFileAccess::Allowed()));
+  }
+}
+
+// Returns true if `file_path` is in My Files directory.
+bool IsInLocalFileSystem(const base::FilePath& file_path) {
+  base::FilePath my_files_folder;
+  base::PathService::Get(chrome::DIR_USER_DOCUMENTS, &my_files_folder);
+  if (my_files_folder == file_path || my_files_folder.IsParent(file_path)) {
+    return true;
+  }
+  return false;
+}
+
+void ReportDefaultFileAccessUMA(bool is_deny,
+                                const std::vector<base::FilePath>& files) {
+  for (const auto& file : files) {
+    if (IsInLocalFileSystem(file)) {
+      if (is_deny) {
+        data_controls::DlpHistogramEnumeration(
+            data_controls::dlp::kFilesDefaultFileAccess,
+            DlpScopedFileAccessDelegate::DefaultAccess::kMyFilesDeny);
+      } else {
+        data_controls::DlpHistogramEnumeration(
+            data_controls::dlp::kFilesDefaultFileAccess,
+            DlpScopedFileAccessDelegate::DefaultAccess::kMyFilesAllow);
+      }
+    } else {
+      if (is_deny) {
+        data_controls::DlpHistogramEnumeration(
+            data_controls::dlp::kFilesDefaultFileAccess,
+            DlpScopedFileAccessDelegate::DefaultAccess::kSystemFilesDeny);
+      } else {
+        data_controls::DlpHistogramEnumeration(
+            data_controls::dlp::kFilesDefaultFileAccess,
+            DlpScopedFileAccessDelegate::DefaultAccess::kSystemFilesAllow);
+      }
+    }
   }
 }
 
@@ -135,14 +174,16 @@ void DlpScopedFileAccessDelegate::RequestDefaultFilesAccess(
     const std::vector<base::FilePath>& files,
     base::OnceCallback<void(file_access::ScopedFileAccess)> callback) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  // TODO(b/306617373): Add UMA when default access is used.
+
   if (chromeos::features::IsDataControlsFileAccessDefaultDenyEnabled()) {
     // With is_allowed set the caller will not deny anything themself but the
     // daemon will block the access as no request was sent to it.
     std::move(callback).Run(file_access::ScopedFileAccess::Allowed());
+    ReportDefaultFileAccessUMA(/*is_deny=*/true, files);
     return;
   }
   RequestFilesAccessForSystem(files, std::move(callback));
+  ReportDefaultFileAccessUMA(/*is_deny=*/false, files);
 }
 
 DlpScopedFileAccessDelegate::RequestFilesAccessIOCallback

@@ -1429,6 +1429,16 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Enterprise.Dlp.FilesDefaultFileAccess"
+    enum="EnterpriseDlpFileAccessDefaultAction" expires_after="2024-12-01">
+  <owner>brinky@chromium.org</owner>
+  <owner>chromeos-dlp@google.com</owner>
+  <summary>
+    Record if we were not able to pin a source URL to a file open request and
+    have to fallback on the default behaviour.
+  </summary>
+</histogram>
+
 <histogram name="Enterprise.Dlp.FilesUnknownAccessLevel"
     units="DlpEnterprisePolicyLevel" expires_after="2024-10-01">
   <owner>poromov@google.com</owner>
