@@ -16,6 +16,7 @@ specific_include_rules = {
   "desktop_media_list_ash\.cc": [
     "+ash/shell.h",
     "+ash/wm/desks/desks_util.h",
+    "+ash/wm/window_properties.h",
   ],
   "media_stream_focus_delegate.cc": [
     "+modules/desktop_capture/desktop_capture_options.h",
