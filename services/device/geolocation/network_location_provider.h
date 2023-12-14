@@ -31,7 +31,7 @@ namespace device {
 class PositionCache;
 
 class NetworkLocationProvider : public LocationProvider
-#if BUILDFLAG(IS_APPLE)
+#if BUILDFLAG(IS_APPLE) || BUILDFLAG(IS_CHROMEOS)
     ,
                                 public GeolocationManager::PermissionObserver
 #endif
@@ -65,7 +65,7 @@ class NetworkLocationProvider : public LocationProvider
   const mojom::GeopositionResult* GetPosition() override;
   void OnPermissionGranted() override;
 
-#if BUILDFLAG(IS_APPLE)
+#if BUILDFLAG(IS_APPLE) || BUILDFLAG(IS_CHROMEOS)
   // GeolocationPermissionObserver implementation.
   void OnSystemPermissionUpdated(
       LocationSystemPermissionStatus new_status) override;
@@ -97,7 +97,7 @@ class NetworkLocationProvider : public LocationProvider
 
   WifiDataProviderHandle::WifiDataUpdateCallback wifi_data_update_callback_;
 
-#if BUILDFLAG(IS_APPLE)
+#if BUILDFLAG(IS_APPLE) || BUILDFLAG(IS_CHROMEOS)
   // Used to keep track of macOS System Permission changes. Also, ensures
   // lifetime of PermissionObserverList as the BrowserProcess may destroy its
   // reference on the UI Thread before we destroy this provider.
@@ -129,7 +129,7 @@ class NetworkLocationProvider : public LocationProvider
 
   base::ThreadChecker thread_checker_;
 
-#if BUILDFLAG(IS_APPLE)
+#if BUILDFLAG(IS_APPLE) || BUILDFLAG(IS_CHROMEOS)
   bool is_system_permission_granted_ = false;
 
   bool is_awaiting_initial_permission_status_ = true;

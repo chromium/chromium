@@ -16,6 +16,7 @@
 #include "content/public/common/content_client.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "services/device/device_service.h"
+#include "services/device/public/cpp/geolocation/geolocation_manager.h"
 #include "services/network/public/cpp/cross_thread_pending_shared_url_loader_factory.h"
 #include "services/network/public/mojom/network_service_test.mojom.h"
 #include "services/network/public/mojom/url_loader.mojom.h"
@@ -108,8 +109,7 @@ void BindDeviceServiceReceiver(
   params->custom_location_provider_callback =
       base::BindRepeating(&ContentBrowserClient::OverrideSystemLocationProvider,
                           base::Unretained(GetContentClient()->browser()));
-  params->geolocation_manager =
-      GetContentClient()->browser()->GetGeolocationManager();
+  params->geolocation_manager = device::GeolocationManager::GetInstance();
 
 #if BUILDFLAG(IS_ANDROID)
   JNIEnv* env = base::android::AttachCurrentThread();

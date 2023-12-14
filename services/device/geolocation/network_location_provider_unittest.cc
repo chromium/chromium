@@ -42,7 +42,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
-#if BUILDFLAG(IS_APPLE)
+#if BUILDFLAG(IS_APPLE) || BUILDFLAG(IS_CHROMEOS)
 #include "services/device/public/cpp/test/fake_geolocation_manager.h"
 #endif
 
@@ -84,6 +84,13 @@ struct LocationUpdateListener {
 // Main test fixture
 class GeolocationNetworkProviderTest : public testing::Test {
  public:
+#if BUILDFLAG(IS_APPLE) || BUILDFLAG(IS_CHROMEOS)
+  void SetUp() override {
+    auto fake_manager = std::make_unique<FakeGeolocationManager>();
+    fake_geolocation_manager_ = fake_manager.get();
+    device::GeolocationManager::SetInstance(std::move(fake_manager));
+  }
+#endif
   void TearDown() override {
     WifiDataProviderHandle::ResetFactoryForTesting();
     grant_system_permission_by_default_ = true;
@@ -92,11 +99,10 @@ class GeolocationNetworkProviderTest : public testing::Test {
   std::unique_ptr<LocationProvider> CreateProvider(
       bool set_permission_granted,
       const std::string& api_key = std::string()) {
-#if BUILDFLAG(IS_APPLE)
-    fake_geolocation_manager_ = std::make_unique<FakeGeolocationManager>();
+#if BUILDFLAG(IS_APPLE) || BUILDFLAG(IS_CHROMEOS)
     auto provider = std::make_unique<NetworkLocationProvider>(
         test_url_loader_factory_.GetSafeWeakWrapper(),
-        fake_geolocation_manager_.get(),
+        fake_geolocation_manager_,
         base::SingleThreadTaskRunner::GetCurrentDefault(), api_key,
         &position_cache_, /*internals_updated_closure=*/base::DoNothing(),
         network_request_callback_.Get(), network_response_callback_.Get());
@@ -127,8 +133,8 @@ class GeolocationNetworkProviderTest : public testing::Test {
   NiceMock<base::MockCallback<NetworkLocationProvider::NetworkResponseCallback>>
       network_response_callback_;
 
-#if BUILDFLAG(IS_APPLE)
-  std::unique_ptr<FakeGeolocationManager> fake_geolocation_manager_;
+#if BUILDFLAG(IS_APPLE) || BUILDFLAG(IS_CHROMEOS)
+  raw_ptr<FakeGeolocationManager> fake_geolocation_manager_;
 #endif
 
  protected:
