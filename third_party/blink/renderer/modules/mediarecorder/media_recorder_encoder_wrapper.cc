@@ -66,6 +66,9 @@ MediaRecorderEncoderWrapper::MediaRecorderEncoderWrapper(
   options_.content_hint = is_screencast
                               ? media::VideoEncoder::ContentHint::Screen
                               : media::VideoEncoder::ContentHint::Camera;
+  if (codec_ == media::VideoCodec::kH264) {
+    options_.avc.produce_annexb = true;
+  }
 }
 
 MediaRecorderEncoderWrapper::~MediaRecorderEncoderWrapper() {
