@@ -521,19 +521,6 @@ class SafeBrowsingUrlCheckerTest : public PlatformTest {
         hash_real_time_selection);
   }
 
-  // This can be used as the CheckUrl callback in cases where it's a local check
-  // but it is not safe synchronously. Since the database manager is mocked out,
-  // this is only relevant for unsafe URL checks that are interrupted by a
-  // timeout, which ends up making them conclude the check is safe and call the
-  // slow check notifier callback.
-  void OnCheckUrlCallbackSettingSlowCheckNotifier(
-      SafeBrowsingUrlCheckerImpl::NativeUrlCheckNotifier* slow_check_notifier,
-      bool proceed,
-      bool showed_interstitial,
-      SafeBrowsingUrlCheckerImpl::PerformedCheck performed_check) {
-    *slow_check_notifier = slow_check_notifier_callback_.Get();
-  }
-
  protected:
   void CheckHashRealTimeMetrics(
       absl::optional<bool> expected_local_match_result,
@@ -611,8 +598,6 @@ class SafeBrowsingUrlCheckerTest : public PlatformTest {
   scoped_refptr<MockUrlCheckerDelegate> url_checker_delegate_;
   std::unique_ptr<MockRealTimeUrlLookupService> url_lookup_service_;
   std::unique_ptr<MockHashRealTimeService> hash_realtime_service_;
-  base::MockCallback<SafeBrowsingUrlCheckerImpl::NativeUrlCheckNotifier>
-      slow_check_notifier_callback_;
   base::test::ScopedFeatureList scoped_feature_list_;
   base::HistogramTester histogram_tester_;
 };
@@ -657,10 +642,7 @@ TEST_F(SafeBrowsingUrlCheckerTest, CheckUrl_DangerousUrl) {
 
   base::MockCallback<SafeBrowsingUrlCheckerImpl::NativeCheckUrlCallback>
       callback;
-  EXPECT_CALL(
-      callback,
-      Run(_, /*proceed=*/false, /*showed_interstitial=*/false,
-          SafeBrowsingUrlCheckerImpl::PerformedCheck::kHashDatabaseCheck));
+  EXPECT_CALL(callback, Run(_, _, _, _)).Times(0);
   EXPECT_CALL(*url_checker_delegate_,
               StartDisplayingBlockingPageHelper(
                   IsSameThreatSource(ThreatSource::UNKNOWN), _, _, _, _))
@@ -721,10 +703,7 @@ TEST_F(SafeBrowsingUrlCheckerTest,
 
   base::MockCallback<SafeBrowsingUrlCheckerImpl::NativeCheckUrlCallback>
       origin_callback;
-  EXPECT_CALL(
-      origin_callback,
-      Run(_, /*proceed=*/false, /*showed_interstitial=*/false,
-          SafeBrowsingUrlCheckerImpl::PerformedCheck::kHashDatabaseCheck));
+  EXPECT_CALL(origin_callback, Run(_, _, _, _)).Times(0);
   // Not displayed yet, because the callback is not returned.
   EXPECT_CALL(*url_checker_delegate_,
               StartDisplayingBlockingPageHelper(_, _, _, _, _))
@@ -1196,10 +1175,7 @@ TEST_F(SafeBrowsingUrlCheckerTest, CheckUrl_CancelCheckOnDestruct) {
                                            /*delayed_callback=*/false);
 
     base::MockCallback<SafeBrowsingUrlCheckerImpl::NativeCheckUrlCallback> cb;
-    EXPECT_CALL(
-        cb,
-        Run(_, /*proceed=*/false, /*showed_interstitial=*/false,
-            SafeBrowsingUrlCheckerImpl::PerformedCheck::kHashDatabaseCheck));
+    EXPECT_CALL(cb, Run(_, _, _, _)).Times(0);
     safe_browsing_url_checker->CheckUrl(url, "GET", cb.Get());
     EXPECT_FALSE(database_manager_->HasCalledCancelCheck());
     safe_browsing_url_checker.reset();
@@ -1251,15 +1227,13 @@ TEST_F(SafeBrowsingUrlCheckerTest, CheckUrl_CancelCheckOnTimeout) {
     database_manager_->SetThreatTypeForUrl(url, SB_THREAT_TYPE_URL_PHISHING,
                                            /*delayed_callback=*/true);
 
-    SafeBrowsingUrlCheckerImpl::NativeCheckUrlCallback callback =
-        base::BindOnce(&SafeBrowsingUrlCheckerTest::
-                           OnCheckUrlCallbackSettingSlowCheckNotifier,
-                       base::Unretained(this));
+    base::MockCallback<SafeBrowsingUrlCheckerImpl::NativeCheckUrlCallback>
+        callback;
     EXPECT_CALL(
-        slow_check_notifier_callback_,
-        Run(/*proceed=*/true, /*showed_interstitial=*/false,
+        callback,
+        Run(_, /*proceed=*/true, /*showed_interstitial=*/false,
             SafeBrowsingUrlCheckerImpl::PerformedCheck::kHashDatabaseCheck));
-    safe_browsing_url_checker->CheckUrl(url, "GET", std::move(callback));
+    safe_browsing_url_checker->CheckUrl(url, "GET", callback.Get());
     EXPECT_FALSE(database_manager_->HasCalledCancelCheck());
     task_environment_.FastForwardBy(base::Seconds(5));
     EXPECT_TRUE(database_manager_->HasCalledCancelCheck());

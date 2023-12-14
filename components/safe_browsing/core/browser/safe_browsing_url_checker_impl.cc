@@ -500,20 +500,6 @@ void SafeBrowsingUrlCheckerImpl::ProcessUrlsAndMaybeDeleteSelf() {
 
     state_ = STATE_CHECKING_URL;
 
-    // Only send out notification of starting a slow check if the database
-    // manager actually supports fast checks (i.e., synchronous checks) but is
-    // not able to complete the check synchronously in this case and we're doing
-    // hash-based database checks.
-    // Don't send out notification if the database manager doesn't support
-    // synchronous checks at all (e.g., on mobile), or if performing a real-time
-    // check since we don't want to block resource fetch while we perform that.
-    // Note that we won't parse the response until the Safe Browsing check is
-    // complete and return SAFE, so there's no Safe Browsing bypass risk here.
-    if (result.performed_check == PerformedCheck::kHashDatabaseCheck &&
-        !database_manager_->ChecksAreAlwaysAsync()) {
-      urls_[next_index_].notifier.OnStartSlowCheck(result.performed_check);
-    }
-
     break;
   }
 }

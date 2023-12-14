@@ -566,15 +566,6 @@ IN_PROC_BROWSER_TEST_P(ChromeKeepAliveURLSafeBrowsingBrowserTestNoTestingConfig,
   // Try to wait such that KeepAliveURLLoader can process the redirect and
   // reject it.
   loaders_observer().WaitForTotalOnReceiveRedirectProcessed(1);
-  // The redirect request may or may not be executed as the SB throttle's
-  // request to pause may happens earlier than the loader calls
-  // FollowRedirect(). Hence, it's flaky to call
-  // request_handlers[1]->WaitForRequest().
-  // However, the response should not be executed.
-
-  // The malware redirect target must cause SafeBrowsing throttle to pause, and
-  // eventually cancels the request.
-  loaders_observer().WaitForTotalPauseReadingBodyFromNetProcessed(1);
   loaders_observer().WaitForTotalOnCompleteProcessed({net::ERR_ABORTED});
 }
 
