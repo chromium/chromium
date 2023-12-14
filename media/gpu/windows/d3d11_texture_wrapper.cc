@@ -237,7 +237,8 @@ DefaultTexture2DWrapper::GpuResources::GpuResources(
   // Usage flags to allow the display compositor to draw from it, video to
   // decode, and allow webgl/canvas access.
   uint32_t usage =
-      gpu::SHARED_IMAGE_USAGE_VIDEO_DECODE | gpu::SHARED_IMAGE_USAGE_GLES2 |
+      gpu::SHARED_IMAGE_USAGE_VIDEO_DECODE |
+      gpu::SHARED_IMAGE_USAGE_GLES2_READ | gpu::SHARED_IMAGE_USAGE_GLES2_WRITE |
       gpu::SHARED_IMAGE_USAGE_RASTER | gpu::SHARED_IMAGE_USAGE_DISPLAY_READ |
       gpu::SHARED_IMAGE_USAGE_SCANOUT;
 

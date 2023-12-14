@@ -33,7 +33,8 @@ namespace {
 constexpr uint32_t kSharedImageUsage =
     gpu::SHARED_IMAGE_USAGE_DISPLAY_READ | gpu::SHARED_IMAGE_USAGE_SCANOUT |
     gpu::SHARED_IMAGE_USAGE_MACOS_VIDEO_TOOLBOX |
-    gpu::SHARED_IMAGE_USAGE_RASTER | gpu::SHARED_IMAGE_USAGE_GLES2;
+    gpu::SHARED_IMAGE_USAGE_RASTER | gpu::SHARED_IMAGE_USAGE_GLES2_READ |
+    gpu::SHARED_IMAGE_USAGE_GLES2_WRITE;
 
 constexpr char kSharedImageDebugLabel[] = "VideoToolboxVideoDecoder";
 

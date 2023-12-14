@@ -98,7 +98,8 @@ scoped_refptr<VideoFrame> CreateSharedImageRGBAFrame(
   auto shared_image = sii->CreateSharedImage(
       viz::SinglePlaneFormat::kRGBA_8888, coded_size, gfx::ColorSpace(),
       kTopLeft_GrSurfaceOrigin, kPremul_SkAlphaType,
-      gpu::SHARED_IMAGE_USAGE_GLES2, "RGBAVideoFrame", pixels);
+      gpu::SHARED_IMAGE_USAGE_GLES2_READ | gpu::SHARED_IMAGE_USAGE_GLES2_WRITE,
+      "RGBAVideoFrame", pixels);
 
   return CreateSharedImageFrame(
       std::move(context_provider), VideoPixelFormat::PIXEL_FORMAT_ABGR,
@@ -145,16 +146,19 @@ scoped_refptr<VideoFrame> CreateSharedImageI420Frame(
   auto* sii = context_provider->SharedImageInterface();
   auto y_shared_image = sii->CreateSharedImage(
       plane_format, coded_size, gfx::ColorSpace(), kTopLeft_GrSurfaceOrigin,
-      kPremul_SkAlphaType, gpu::SHARED_IMAGE_USAGE_GLES2, "I420Frame_Y",
-      y_pixels);
+      kPremul_SkAlphaType,
+      gpu::SHARED_IMAGE_USAGE_GLES2_READ | gpu::SHARED_IMAGE_USAGE_GLES2_WRITE,
+      "I420Frame_Y", y_pixels);
   auto u_shared_image = sii->CreateSharedImage(
       plane_format, uv_size, gfx::ColorSpace(), kTopLeft_GrSurfaceOrigin,
-      kPremul_SkAlphaType, gpu::SHARED_IMAGE_USAGE_GLES2, "I420Frame_U",
-      u_pixels);
+      kPremul_SkAlphaType,
+      gpu::SHARED_IMAGE_USAGE_GLES2_READ | gpu::SHARED_IMAGE_USAGE_GLES2_WRITE,
+      "I420Frame_U", u_pixels);
   auto v_shared_image = sii->CreateSharedImage(
       plane_format, uv_size, gfx::ColorSpace(), kTopLeft_GrSurfaceOrigin,
-      kPremul_SkAlphaType, gpu::SHARED_IMAGE_USAGE_GLES2, "I420Frame_V",
-      v_pixels);
+      kPremul_SkAlphaType,
+      gpu::SHARED_IMAGE_USAGE_GLES2_READ | gpu::SHARED_IMAGE_USAGE_GLES2_WRITE,
+      "I420Frame_V", v_pixels);
 
   return CreateSharedImageFrame(
       std::move(context_provider), VideoPixelFormat::PIXEL_FORMAT_I420,
@@ -203,11 +207,13 @@ scoped_refptr<VideoFrame> CreateSharedImageNV12Frame(
   auto y_shared_image = sii->CreateSharedImage(
       viz::SinglePlaneFormat::kR_8, coded_size, gfx::ColorSpace(),
       kTopLeft_GrSurfaceOrigin, kPremul_SkAlphaType,
-      gpu::SHARED_IMAGE_USAGE_GLES2, "NV12Frame_Y", y_pixels);
+      gpu::SHARED_IMAGE_USAGE_GLES2_READ | gpu::SHARED_IMAGE_USAGE_GLES2_WRITE,
+      "NV12Frame_Y", y_pixels);
   auto uv_shared_image = sii->CreateSharedImage(
       viz::SinglePlaneFormat::kRG_88, uv_size, gfx::ColorSpace(),
       kTopLeft_GrSurfaceOrigin, kPremul_SkAlphaType,
-      gpu::SHARED_IMAGE_USAGE_GLES2, "NV12Frame_UV", uv_pixels);
+      gpu::SHARED_IMAGE_USAGE_GLES2_READ | gpu::SHARED_IMAGE_USAGE_GLES2_WRITE,
+      "NV12Frame_UV", uv_pixels);
   return CreateSharedImageFrame(
       std::move(context_provider), VideoPixelFormat::PIXEL_FORMAT_NV12,
       {y_shared_image, uv_shared_image}, {}, GL_TEXTURE_2D, coded_size,

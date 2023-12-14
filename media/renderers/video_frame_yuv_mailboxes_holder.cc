@@ -155,7 +155,8 @@ void VideoFrameYUVMailboxesHolder::VideoFrameToMailboxes(
     mailbox_usage = gpu::SHARED_IMAGE_USAGE_RASTER |
                     gpu::SHARED_IMAGE_USAGE_OOP_RASTERIZATION;
   } else {
-    mailbox_usage = gpu::SHARED_IMAGE_USAGE_GLES2;
+    mailbox_usage = gpu::SHARED_IMAGE_USAGE_GLES2_READ |
+                    gpu::SHARED_IMAGE_USAGE_GLES2_WRITE;
   }
 
   // Enabled with flags UseWritePixelsYUV and

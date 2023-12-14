@@ -1837,7 +1837,8 @@ bool PaintCanvasVideoRenderer::CopyVideoFrameYUVDataToGLTexture(
     yuv_cache_.raster_context_provider = raster_context_provider;
     yuv_cache_.size = video_frame->coded_size();
 
-    uint32_t usage = gpu::SHARED_IMAGE_USAGE_GLES2;
+    uint32_t usage = gpu::SHARED_IMAGE_USAGE_GLES2_READ |
+                     gpu::SHARED_IMAGE_USAGE_GLES2_WRITE;
     if (raster_context_provider->ContextCapabilities().gpu_rasterization) {
       usage |= gpu::SHARED_IMAGE_USAGE_RASTER |
                gpu::SHARED_IMAGE_USAGE_OOP_RASTERIZATION;
@@ -2065,8 +2066,9 @@ bool PaintCanvasVideoRenderer::UpdateLastImage(
         auto* sii = raster_context_provider->SharedImageInterface();
         // TODO(nazabris): Sort out what to do when GLES2 is needed but the
         // cached shared image is created without it.
-        uint32_t flags =
-            gpu::SHARED_IMAGE_USAGE_GLES2 | gpu::SHARED_IMAGE_USAGE_RASTER;
+        uint32_t flags = gpu::SHARED_IMAGE_USAGE_GLES2_READ |
+                         gpu::SHARED_IMAGE_USAGE_GLES2_WRITE |
+                         gpu::SHARED_IMAGE_USAGE_RASTER;
         if (gpu_rasterization) {
           flags |= gpu::SHARED_IMAGE_USAGE_OOP_RASTERIZATION;
         }
