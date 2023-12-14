@@ -11,6 +11,10 @@ import android.os.Bundle;
 import androidx.test.core.app.ApplicationProvider;
 import androidx.test.platform.app.InstrumentationRegistry;
 
+import org.chromium.base.test.util.CallbackHelper;
+import org.chromium.chrome.browser.browsing_data.BrowsingDataBridge;
+import org.chromium.chrome.browser.browsing_data.BrowsingDataType;
+import org.chromium.chrome.browser.browsing_data.TimePeriod;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.settings.SettingsActivity;
 import org.chromium.chrome.browser.settings.SettingsLauncherImpl;
@@ -30,6 +34,8 @@ import org.chromium.components.browser_ui.widget.RadioButtonWithDescription;
 import org.chromium.components.browser_ui.widget.RadioButtonWithDescriptionAndAuxButton;
 import org.chromium.components.content_settings.CookieControlsMode;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
+
+import java.util.concurrent.TimeoutException;
 
 /** Util functions for testing SiteSettings functionality. */
 public class SiteSettingsTestUtils {
@@ -134,5 +140,20 @@ public class SiteSettingsTestUtils {
         RadioButtonWithDescription button = cookiePage.getButton(cookieControlsMode);
 
         return ((RadioButtonWithDescriptionAndAuxButton) button);
+    }
+
+    public static void cleanUpCookiesAndPermissions() throws TimeoutException {
+        CallbackHelper helper = new CallbackHelper();
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    BrowsingDataBridge.getInstance()
+                            .clearBrowsingData(
+                                    helper::notifyCalled,
+                                    new int[] {
+                                        BrowsingDataType.COOKIES, BrowsingDataType.SITE_SETTINGS
+                                    },
+                                    TimePeriod.ALL_TIME);
+                });
+        helper.waitForCallback(0);
     }
 }
