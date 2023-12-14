@@ -2,16 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// TODO(b:283833590): Rename this file since it serves for all shopping features
-// now.
 import {String16} from 'chrome://resources/mojo/mojo/public/mojom/base/string16.mojom-webui.js';
 import {Url} from 'chrome://resources/mojo/url/mojom/url.mojom-webui.js';
 
 import {BookmarkProductInfo, PageCallbackRouter, PriceInsightsInfo, ProductInfo, ShoppingListHandlerFactory, ShoppingListHandlerRemote} from '../shopping_list.mojom-webui.js';
 
-let instance: ShoppingListApiProxy|null = null;
+let instance: ShoppingServiceApiProxy|null = null;
 
-export interface ShoppingListApiProxy {
+export interface ShoppingServiceApiProxy {
   getAllPriceTrackedBookmarkProductInfo():
       Promise<{productInfos: BookmarkProductInfo[]}>;
   getAllShoppingBookmarkProductInfo():
@@ -33,7 +31,7 @@ export interface ShoppingListApiProxy {
   getCallbackRouter(): PageCallbackRouter;
 }
 
-export class ShoppingListApiProxyImpl implements ShoppingListApiProxy {
+export class ShoppingServiceApiProxyImpl implements ShoppingServiceApiProxy {
   handler: ShoppingListHandlerRemote;
   callbackRouter: PageCallbackRouter;
 
@@ -112,11 +110,11 @@ export class ShoppingListApiProxyImpl implements ShoppingListApiProxy {
     return this.callbackRouter;
   }
 
-  static getInstance(): ShoppingListApiProxy {
-    return instance || (instance = new ShoppingListApiProxyImpl());
+  static getInstance(): ShoppingServiceApiProxy {
+    return instance || (instance = new ShoppingServiceApiProxyImpl());
   }
 
-  static setInstance(obj: ShoppingListApiProxy) {
+  static setInstance(obj: ShoppingServiceApiProxy) {
     instance = obj;
   }
 }

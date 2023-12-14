@@ -9,7 +9,7 @@ import 'chrome://resources/cr_elements/icons.html.js';
 import '//resources/polymer/v3_0/iron-icon/iron-icon.js';
 import '../strings.m.js';
 
-import {ShoppingListApiProxy, ShoppingListApiProxyImpl} from '//shopping-insights-side-panel.top-chrome/shared/commerce/shopping_list_api_proxy.js';
+import {ShoppingServiceApiProxy, ShoppingServiceApiProxyImpl} from '//shopping-insights-side-panel.top-chrome/shared/commerce/shopping_service_api_proxy.js';
 import {PriceInsightsInfo, PriceInsightsInfo_PriceBucket} from '//shopping-insights-side-panel.top-chrome/shared/shopping_list.mojom-webui.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
@@ -31,8 +31,8 @@ export class CatalogAttributesRow extends PolymerElement {
   }
 
   priceInsightsInfo: PriceInsightsInfo;
-  private shoppingApi_: ShoppingListApiProxy =
-      ShoppingListApiProxyImpl.getInstance();
+  private shoppingApi_: ShoppingServiceApiProxy =
+      ShoppingServiceApiProxyImpl.getInstance();
 
   private openJackpot_() {
     this.shoppingApi_.openUrlInNewTab(this.priceInsightsInfo.jackpot);

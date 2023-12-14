@@ -17,7 +17,7 @@ import {ColorChangeUpdater} from '//resources/cr_components/color_change_listene
 import {loadTimeData} from '//resources/js/load_time_data.js';
 import {listenOnce} from '//resources/js/util.js';
 import {PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-import {ShoppingListApiProxy, ShoppingListApiProxyImpl} from '//shopping-insights-side-panel.top-chrome/shared/commerce/shopping_list_api_proxy.js';
+import {ShoppingServiceApiProxy, ShoppingServiceApiProxyImpl} from '//shopping-insights-side-panel.top-chrome/shared/commerce/shopping_service_api_proxy.js';
 import {PriceInsightsInfo, ProductInfo} from '//shopping-insights-side-panel.top-chrome/shared/shopping_list.mojom-webui.js';
 
 import {getTemplate} from './app.html.js';
@@ -51,8 +51,8 @@ export class ShoppingInsightsAppElement extends PolymerElement {
   productInfo: ProductInfo;
   priceInsightsInfo: PriceInsightsInfo;
   private isProductTrackable_: boolean;
-  private shoppingApi_: ShoppingListApiProxy =
-      ShoppingListApiProxyImpl.getInstance();
+  private shoppingApi_: ShoppingServiceApiProxy =
+      ShoppingServiceApiProxyImpl.getInstance();
 
   constructor() {
     super();
