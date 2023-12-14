@@ -8504,6 +8504,9 @@ TEST_F(AutofillMetricsFromLogEventsTest, AutofillFieldInfoMetricsFieldType) {
            {.label = u"Email",
             .name = u"email",
             .autocomplete_attribute = "garbage"},
+           {.label = u"Password",
+            .name = u"password",
+            .autocomplete_attribute = "new-password"},
        }});
 
   auto form_structure = std::make_unique<FormStructure>(form);
@@ -8527,7 +8530,7 @@ TEST_F(AutofillMetricsFromLogEventsTest, AutofillFieldInfoMetricsFieldType) {
       // No autocomplete, server predicts a type from majority voting.
       NAME_MIDDLE,
       // Server response will have no data.
-      NO_SERVER_DATA, EMAIL_ADDRESS};
+      NO_SERVER_DATA, EMAIL_ADDRESS, NO_SERVER_DATA};
   // Set suggestions from server for the form.
   for (size_t i = 0; i < server_types.size(); ++i) {
     AddFieldPredictionToForm(form.fields[i], server_types[i], form_suggestion);
@@ -8550,24 +8553,27 @@ TEST_F(AutofillMetricsFromLogEventsTest, AutofillFieldInfoMetricsFieldType) {
 
   auto entries =
       test_ukm_recorder().GetEntriesByName(UkmFieldInfoType::kEntryName);
-  ASSERT_EQ(5u, entries.size());
+  ASSERT_EQ(6u, entries.size());
   // The heuristic type of each field. The local heuristic prediction does not
   // predict the type for the fourth field.
   std::vector<ServerFieldType> heuristic_types{
-      NAME_LAST, NAME_FIRST, ADDRESS_HOME_LINE1, UNKNOWN_TYPE, EMAIL_ADDRESS};
+      NAME_LAST,    NAME_FIRST,    ADDRESS_HOME_LINE1,
+      UNKNOWN_TYPE, EMAIL_ADDRESS, UNKNOWN_TYPE};
   // Field types as per the autocomplete attribute in the input.
   std::vector<HtmlFieldType> html_field_types{
-      HtmlFieldType::kFamilyName, HtmlFieldType::kAdditionalName,
+      HtmlFieldType::kFamilyName,   HtmlFieldType::kAdditionalName,
       HtmlFieldType::kUnrecognized, HtmlFieldType::kPostalCode,
-      HtmlFieldType::kUnrecognized};
-  std::vector<ServerFieldType> overall_types{
-      NAME_LAST, NAME_MIDDLE, NAME_MIDDLE, ADDRESS_HOME_ZIP, EMAIL_ADDRESS};
+      HtmlFieldType::kUnrecognized, HtmlFieldType::kUnrecognized};
+  std::vector<ServerFieldType> overall_types{NAME_LAST,     NAME_MIDDLE,
+                                             NAME_MIDDLE,   ADDRESS_HOME_ZIP,
+                                             EMAIL_ADDRESS, UNKNOWN_TYPE};
   std::vector<AutofillMetrics::AutocompleteState> autocomplete_states{
       AutofillMetrics::AutocompleteState::kValid,
       AutofillMetrics::AutocompleteState::kValid,
       AutofillMetrics::AutocompleteState::kOff,
       AutofillMetrics::AutocompleteState::kValid,
-      AutofillMetrics::AutocompleteState::kGarbage};
+      AutofillMetrics::AutocompleteState::kGarbage,
+      AutofillMetrics::AutocompleteState::kPassword};
   int field_log_events_count = 0;
   // Verify FieldInfo UKM event for every field.
   for (size_t i = 0; i < entries.size(); ++i) {
@@ -8644,7 +8650,7 @@ TEST_F(AutofillMetricsFromLogEventsTest, AutofillFieldInfoMetricsFieldType) {
   auto submission_entries = test_ukm_recorder().GetEntriesByName(
       UkmFieldInfoAfterSubmissionType::kEntryName);
   // Form submission triggers uploading votes once.
-  ASSERT_EQ(5u, submission_entries.size());
+  ASSERT_EQ(6u, submission_entries.size());
   for (size_t i = 0; i < submission_entries.size(); ++i) {
     SCOPED_TRACE(testing::Message() << i);
     using UFIAST = UkmFieldInfoAfterSubmissionType;
@@ -8698,11 +8704,11 @@ TEST_F(AutofillMetricsFromLogEventsTest, AutofillFieldInfoMetricsFieldType) {
   histogram_tester.ExpectBucketCount("Autofill.LogEvent.FillEvent", 0, 1);
   histogram_tester.ExpectBucketCount("Autofill.LogEvent.TypingEvent", 0, 1);
   histogram_tester.ExpectBucketCount(
-      "Autofill.LogEvent.AutocompleteAttributeEvent", 4, 1);
+      "Autofill.LogEvent.AutocompleteAttributeEvent", 5, 1);
   histogram_tester.ExpectBucketCount("Autofill.LogEvent.ServerPredictionEvent",
-                                     5, 1);
+                                     6, 1);
   histogram_tester.ExpectBucketCount("Autofill.LogEvent.RationalizationEvent",
-                                     10, 1);
+                                     12, 1);
 #if BUILDFLAG(USE_INTERNAL_AUTOFILL_PATTERNS)
   histogram_tester.ExpectBucketCount(
       "Autofill.LogEvent.HeuristicPredictionEvent", 16, 1);
@@ -8710,7 +8716,7 @@ TEST_F(AutofillMetricsFromLogEventsTest, AutofillFieldInfoMetricsFieldType) {
 #else
   histogram_tester.ExpectBucketCount(
       "Autofill.LogEvent.HeuristicPredictionEvent", 4, 1);
-  histogram_tester.ExpectBucketCount("Autofill.LogEvent.All", 23, 1);
+  histogram_tester.ExpectBucketCount("Autofill.LogEvent.All", 27, 1);
 #endif
 }
 

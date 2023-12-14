@@ -622,7 +622,8 @@ class AutofillMetrics {
     kValid = 1,
     kGarbage = 2,
     kOff = 3,
-    kMaxValue = kOff
+    kPassword = 4,
+    kMaxValue = kPassword
   };
 
   // The autofill statuses of a field that are recorded into UKM to help us

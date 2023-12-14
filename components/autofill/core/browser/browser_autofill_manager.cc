@@ -350,6 +350,11 @@ AutofillMetrics::AutocompleteState AutocompleteStateForSubmittedField(
         field.parsed_autocomplete->field_type != HtmlFieldType::kUnrecognized
             ? AutofillMetrics::AutocompleteState::kValid
             : AutofillMetrics::AutocompleteState::kGarbage;
+
+    if (field.autocomplete_attribute == "new-password" ||
+        field.autocomplete_attribute == "current-password") {
+      autocomplete_state = AutofillMetrics::AutocompleteState::kPassword;
+    }
   }
 
   return autocomplete_state;

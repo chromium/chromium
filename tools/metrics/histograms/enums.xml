@@ -2004,6 +2004,7 @@ Unknown properties are collapsed to zero. -->
   <int value="1" label="Valid"/>
   <int value="2" label="Garbage"/>
   <int value="3" label="Off"/>
+  <int value="4" label="Password"/>
 </enum>
 
 <enum name="AutofillAwGSuggestionAvailability">

@@ -3077,6 +3077,9 @@ void AutofillMetrics::LogAutocompletePredictionCollisionTypes(
     case AutocompleteState::kOff:
       autocomplete_suffix = "Off";
       break;
+    case AutocompleteState::kPassword:
+      autocomplete_suffix = "Password";
+      break;
     default:
       NOTREACHED();
   }
