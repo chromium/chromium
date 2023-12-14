@@ -22336,6 +22336,7 @@ Called by update_permissions_policy_enum.py.-->
   <int value="113" label="WebPrinting"/>
   <int value="114" label="UsbUnrestricted"/>
   <int value="115" label="CapturedSurfaceControl"/>
+  <int value="116" label="SubApps"/>
 </enum>
 
 <enum name="FedCmAccountsResponseInvalidReason">

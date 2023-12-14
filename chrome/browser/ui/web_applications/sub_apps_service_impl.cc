@@ -154,12 +154,14 @@ bool IsInstalledNonChildApp(content::RenderFrameHost& render_frame_host) {
   return (web_app && !web_app->IsSubAppInstalledApp());
 }
 
-// Verify that the calling app is an installed IWA that is not a sub app
-// itself. This check is called from `CreateIfAllowed` and from each of the APIs
-// to avoid a potential race between the parent app calling an API while being
-// uninstalled.
+// Verify that the calling app has the SubApps permissions policy set and that
+// it is an installed IWA that is not a sub app itself. This check is called
+// from `CreateIfAllowed` and from each of the APIs entry points to avoid a
+// potential race between the parent app calling an API while being uninstalled.
 bool CanAccessSubAppsApi(content::RenderFrameHost& render_frame_host) {
-  return content::HasIsolatedContextCapability(&render_frame_host) &&
+  return render_frame_host.IsFeatureEnabled(
+             blink::mojom::PermissionsPolicyFeature::kSubApps) &&
+         content::HasIsolatedContextCapability(&render_frame_host) &&
          IsInstalledNonChildApp(render_frame_host);
 }
 

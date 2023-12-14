@@ -69,6 +69,7 @@ shared-storage
 shared-storage-select-url
 smart-card
 storage-access
+sub-apps
 sync-xhr
 unload
 usb

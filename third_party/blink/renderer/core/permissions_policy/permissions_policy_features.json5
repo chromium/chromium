@@ -389,6 +389,11 @@
       depends_on: ["StorageAccessAPI"],
     },
     {
+      name: "SubApps",
+      permissions_policy_name: "sub-apps",
+      depends_on: ["DesktopPWAsSubApps"],
+    },
+    {
       name: "SyncXHR",
       feature_default: "EnableForAll",
       permissions_policy_name: "sync-xhr",
