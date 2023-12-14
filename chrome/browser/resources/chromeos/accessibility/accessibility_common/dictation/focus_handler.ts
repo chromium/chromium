@@ -2,45 +2,29 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-const AutomationNode = chrome.automation.AutomationNode;
-const AutomationEvent = chrome.automation.AutomationEvent;
-const EventType = chrome.automation.EventType;
+type AutomationNode = chrome.automation.AutomationNode;
+type AutomationEvent = chrome.automation.AutomationEvent;
+import EventType = chrome.automation.EventType;
 
 import {AutomationPredicate} from '../../common/automation_predicate.js';
 import {AsyncUtil} from '../../common/async_util.js';
 import {EventHandler} from '../../common/event_handler.js';
 
 export class FocusHandler {
-  constructor() {
-    /** @private {boolean} */
-    this.active_ = false;
-
-    /**
-     * The currently focused editable node.
-     * @private {?AutomationNode}
-     */
-    this.editableNode_ = null;
-
-    /** @private {?number} */
-    this.deactivateTimeoutId_ = null;
-
-    /** @private {?EventHandler} */
-    this.eventHandler_ = null;
-
-    /** @private {?function(): void} */
-    this.onActiveChangedForTesting_ = null;
-    /** @private {?function(): void} */
-    this.onEditableNodeChangedForTesting_ = null;
-    /** @private {?function(): void} */
-    this.onFocusChangedForTesting_ = null;
-  }
+  private active_ = false;
+  /** The currently focused editable node. */
+  private editableNode_: AutomationNode|null = null;
+  private deactivateTimeoutId_: number|null = null;
+  private eventHandler_: EventHandler|null = null;
+  private onActiveChangedForTesting_: (() => void)|null = null;
+  private onEditableNodeChangedForTesting_: (() => void)|null = null;
+  private onFocusChangedForTesting_: (() => void)|null = null;
 
   /**
    * Starts listening to focus events and sets a timeout to deactivate after
    * a certain amount of inactivity.
-   * @return {!Promise}
    */
-  async refresh() {
+  async refresh(): Promise<void> {
     if (this.deactivateTimeoutId_ !== null) {
       clearTimeout(this.deactivateTimeoutId_);
     }
@@ -50,12 +34,8 @@ export class FocusHandler {
     await this.activate_();
   }
 
-  /**
-   * Gets the current focus and starts listening for focus events.
-   * @private
-   * @return {!Promise}
-   */
-  async activate_() {
+  /** Gets the current focus and starts listening for focus events. */
+  private async activate_(): Promise<void> {
     if (this.active_) {
       return;
     }
@@ -76,20 +56,16 @@ export class FocusHandler {
     this.setActive_(true);
   }
 
-  /** @private */
-  deactivate_() {
-    this.eventHandler_.stop();
+  private deactivate_(): void {
+    // TODO(b/314203187): Determine if not null assertion is acceptable.
+    this.eventHandler_!.stop();
     this.eventHandler_ = null;
     this.setActive_(false);
     this.setEditableNode_(null);
   }
 
-  /**
-   * Saves the focused node if it's an editable.
-   * @param {!AutomationEvent} event
-   * @private
-   */
-  onFocusChanged_(event) {
+  /** Saves the focused node if it's an editable. */
+  private onFocusChanged_(event: AutomationEvent): void {
     const node = event.target;
     if (!node || !AutomationPredicate.editText(node)) {
       this.setEditableNode_(null);
@@ -103,45 +79,30 @@ export class FocusHandler {
     }
   }
 
-  /** @return {?AutomationNode} */
-  getEditableNode() {
+  getEditableNode(): AutomationNode|null {
     return this.editableNode_;
   }
 
-  /**
-   * @param {boolean} value
-   * @private
-   */
-  setActive_(value) {
+  private setActive_(value: boolean): void {
     this.active_ = value;
     if (this.onActiveChangedForTesting_) {
       this.onActiveChangedForTesting_();
     }
   }
 
-  /**
-   * @param {AutomationNode} node
-   * @private
-   */
-  setEditableNode_(node) {
+  private setEditableNode_(node: AutomationNode|null): void {
     this.editableNode_ = node;
     if (this.onEditableNodeChangedForTesting_) {
       this.onEditableNodeChangedForTesting_();
     }
   }
 
-  /**
-   * @param {string} expectedClassName
-   * @return {boolean}
-   */
-  isReadyForTesting(expectedClassName) {
+  isReadyForTesting(expectedClassName: string): boolean {
     return this.active_ && this.editableNode_ !== null &&
         this.editableNode_.className === expectedClassName;
   }
 }
 
-/**
- * @const {number}
- * @private
- */
-FocusHandler.DEACTIVATE_TIMEOUT_MS_ = 45 * 1000;
+export namespace FocusHandler {
+  export const DEACTIVATE_TIMEOUT_MS_ = 45 * 1000;
+}

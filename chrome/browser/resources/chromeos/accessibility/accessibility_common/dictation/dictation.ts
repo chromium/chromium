@@ -555,6 +555,8 @@ export class Dictation {
       case Context.NO_PREVIOUS_MACRO:
         return chrome.i18n.getMessage(
             'dictation_context_error_reason_no_previous_macro');
+      default:
+        break;
     }
 
     throw new Error(

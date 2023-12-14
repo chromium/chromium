@@ -16,15 +16,12 @@ export class EditingUtil {
    * text to the left of the text caret. If multiple instances of `deletePhrase`
    * are present, this function will operate on the one closest one to the text
    * caret.
-   * @param {string} value The current value of the text field.
-   * @param {number} caretIndex
-   * @param {string} deletePhrase The phrase to be deleted.
-   * @return {?{
-   *  newIndex: number,
-   *  deleteLength: number,
-   * }}
+   * @param value The current value of the text field.
+   * @param deletePhrase The phrase to be deleted.
    */
-  static getReplacePhraseData(value, caretIndex, deletePhrase) {
+  static getReplacePhraseData(
+      value: string, caretIndex: number,
+      deletePhrase: string): {newIndex: number, deleteLength: number}|null {
     const leftOfCaret = value.substring(0, caretIndex);
     deletePhrase = deletePhrase.trim();
 
@@ -76,12 +73,10 @@ export class EditingUtil {
    * operates on the text to the left of the text caret. If multiple instances
    * of `beforePhrase` are present, this function will operate on the one
    * closest one to the text caret.
-   * @param {string} value The current value of the text field.
-   * @param {number} caretIndex
-   * @param {string} beforePhrase
-   * @return {number}
+   * @param value The current value of the text field.
    */
-  static getInsertBeforeIndex(value, caretIndex, beforePhrase) {
+  static getInsertBeforeIndex(
+      value: string, caretIndex: number, beforePhrase: string): number {
     const result =
         EditingUtil.getReplacePhraseData(value, caretIndex, beforePhrase);
     return result ? result.newIndex : -1;
@@ -92,13 +87,11 @@ export class EditingUtil {
    * (inclusive). The function operates on the text to the left of the text
    * caret. If multiple instances of `startPhrase` or `endPhrase` are present,
    * the function will use the ones closest to the text caret.
-   * @param {string} value The current value of the text field.
-   * @param {number} caretIndex
-   * @param {string} startPhrase
-   * @param {string} endPhrase
-   * @return {{start: number, end: number}|null}
+   * @param value The current value of the text field.
    */
-  static selectBetween(value, caretIndex, startPhrase, endPhrase) {
+  static selectBetween(
+      value: string, caretIndex: number, startPhrase: string,
+      endPhrase: string): {start: number, end: number}|null {
     const leftOfCaret = value.substring(0, caretIndex);
     startPhrase = startPhrase.trim();
     endPhrase = endPhrase.trim();
@@ -133,11 +126,9 @@ export class EditingUtil {
    * Indices are relative to `value`. Assumes that sentences are separated by
    * punctuation specified in `EditingUtil.END_OF_SENTENCE_REGEX_`. If no next
    * sentence can be found, returns `value.length`.
-   * @param {string} value The current value of the text field.
-   * @param {number} caretIndex
-   * @return {number}
+   * @param value The current value of the text field.
    */
-  static navNextSent(value, caretIndex) {
+  static navNextSent(value: string, caretIndex: number): number {
     const rightOfCaret = value.substring(caretIndex);
     const index = rightOfCaret.search(EditingUtil.END_OF_SENTENCE_REGEX_);
     if (index === -1) {
@@ -154,11 +145,9 @@ export class EditingUtil {
    * are relative to `value`. Assumes that sentences are separated by
    * punctuation specified in `EditingUtil.END_OF_SENTENCE_REGEX_`. If no
    * previous sentence can be found, returns 0.
-   * @param {string} value The current value of the text field.
-   * @param {number} caretIndex
-   * @return {number}
+   * @param value The current value of the text field.
    */
-  static navPrevSent(value, caretIndex) {
+  static navPrevSent(value: string, caretIndex: number): number {
     let encounteredText = false;
     if (caretIndex === value.length) {
       --caretIndex;
@@ -190,12 +179,10 @@ export class EditingUtil {
    * TODO(https://crbug.com/1331351): Add RTL support.
    * This function analyzes the context and adjusts the spacing of `commitText`
    * to maintain proper spacing between text.
-   * @param {string} value The current value of the text field.
-   * @param {number} caretIndex
-   * @param {string} commitText
-   * @return {string}
+   * @param value The current value of the text field.
    */
-  static smartSpacing(value, caretIndex, commitText) {
+  static smartSpacing(value: string, caretIndex: number, commitText: string):
+      string {
     // There is currently a bug in SODA (b/213934503) where final speech results
     // do not start with a space. This results in a Dictation bug
     // (crbug.com/1294050), where final speech results are not separated by a
@@ -234,12 +221,10 @@ export class EditingUtil {
    * `commitText` as needed. See below for sample input and output: value:
    * 'Hello world.' caretIndex: value.length commitText: 'goodnight world'
    * return value: 'Goodnight world'
-   * @param {string} value The current value of the text field.
-   * @param {number} caretIndex
-   * @param {string} commitText
-   * @return {string}
+   * @param value The current value of the text field.
    */
-  static smartCapitalization(value, caretIndex, commitText) {
+  static smartCapitalization(
+      value: string, caretIndex: number, commitText: string): string {
     if (EditingUtil.BEGINS_WITH_PUNCTUATION_REGEX_.test(commitText)) {
       // If `commitText` begins with punctuation, then it's assumed that it's
       // already correctly capitalized.
@@ -260,23 +245,13 @@ export class EditingUtil {
         EditingUtil.lowercase_(commitText);
   }
 
-  /**
-   * Returns a string where the first character is capitalized.
-   * @param {string} text
-   * @return {string}
-   * @private
-   */
-  static capitalize_(text) {
+  /** Returns a string where the first character is capitalized. */
+  private static capitalize_(text: string): string {
     return text.charAt(0).toUpperCase() + text.substring(1);
   }
 
-  /**
-   * Returns a string where the first character is lowercase.
-   * @param {string} text
-   * @return {string}
-   * @private
-   */
-  static lowercase_(text) {
+  /** Returns a string where the first character is lowercase. */
+  private static lowercase_(text: string): string {
     return text.charAt(0).toLowerCase() + text.substring(1);
   }
 
@@ -285,93 +260,49 @@ export class EditingUtil {
    * Returns a RegExp that matches on the right-most occurrence of a phrase.
    * The returned RegExp is case insensitive and requires that `phrase` is
    * separated by word boundaries.
-   * @param {string} phrase
-   * @return {!RegExp}
-   * @private
    */
-  static getPhraseRegex_(phrase) {
+  private static getPhraseRegex_(phrase: string): RegExp {
     return new RegExp(`(\\b${phrase}\\b)(?!.*\\b\\1\\b)`, 'i');
   }
 
   /**
    * Similar to above, but doesn't include word boundaries. This is useful for
    * languages that don't use spaces e.g. Japanese.
-   * @param {string} phrase
-   * @return {!RegExp}
-   * @private
    */
-  static getPhraseRegexNoWordBoundaries_(phrase) {
+  private static getPhraseRegexNoWordBoundaries_(phrase: string): RegExp {
     return new RegExp(`(${phrase})(?!.*\\1)`, 'i');
   }
 
-  /**
-   * Similar to above, but accounts for a leading space.
-   * @param {string} phrase
-   * @return {!RegExp}
-   * @private
-   */
-  static getPhraseRegexLeadingSpace_(phrase) {
+  /** Similar to above, but accounts for a leading space. */
+  private static getPhraseRegexLeadingSpace_(phrase: string): RegExp {
     return new RegExp(`( \\b${phrase}\\b)(?!.*\\b\\1\\b)`, 'i');
   }
 
-  /**
-   * Similar to above, but accounts for a trailing space.
-   * @param {string} phrase
-   * @return {!RegExp}
-   * @private
-   */
-  static getPhraseRegexTrailingSpace_(phrase) {
+  /** Similar to above, but accounts for a trailing space. */
+  private static getPhraseRegexTrailingSpace_(phrase: string): RegExp {
     return new RegExp(`(\\b${phrase}\\b )(?!.*\\b\\1\\b)`, 'i');
   }
 
-  /**
-   * @param {!RegExp} re
-   * @param {string} str
-   * @return {number}
-   * @private
-   */
-  static getIndexFromRegex_(re, str) {
+  private static getIndexFromRegex_(re: RegExp, str: string): number {
     const result = re.exec(str);
     return result ? result.index : -1;
   }
 }
 
-/**
- * Includes full-width symbols that are commonly used in Japanese.
- * @private {!RegExp}
- * @const
- */
-EditingUtil.END_OF_SENTENCE_REGEX_ = /[;!.?。．？！]/;
+export namespace EditingUtil {
+  /** Includes full-width symbols that are commonly used in Japanese. */
+  export const END_OF_SENTENCE_REGEX_ = /[;!.?。．？！]/;
 
-/**
- * Similar to above, but looks for a match at the end of a string.
- * @private {!RegExp}
- * @const
- */
-EditingUtil.ENDS_WITH_END_OF_SENTENCE_REGEX_ = /[;!.?。．？！]$/;
+  /** Similar to above, but looks for a match at the end of a string. */
+  export const ENDS_WITH_END_OF_SENTENCE_REGEX_ = /[;!.?。．？！]$/;
 
-/**
- * @private {!RegExp}
- * @const
- */
-EditingUtil.BEGINS_WITH_WHITESPACE_REGEX_ = /^\s/;
+  export const BEGINS_WITH_WHITESPACE_REGEX_ = /^\s/;
 
-/**
- * @private {!RegExp}
- * @const
- */
-EditingUtil.ENDS_WITH_WHITESPACE_REGEX_ = /\s$/;
+  export const ENDS_WITH_WHITESPACE_REGEX_ = /\s$/;
 
-/**
- * @private {!RegExp}
- * @const
- */
-EditingUtil.PUNCTUATION_REGEX_ =
-    /[-$#"()*;:<>\\\/\{\}\[\]+='~`!@_.,?%。．？！\u2022\u25e6\u25a0]/g;
+  export const PUNCTUATION_REGEX_ =
+      /[-$#"()*;:<>\\\/\{\}\[\]+='~`!@_.,?%。．？！\u2022\u25e6\u25a0]/g;
 
-/**
- * @private {!RegExp}
- * @const
- */
-EditingUtil.BEGINS_WITH_PUNCTUATION_REGEX_ =
-    /^[-$#"()*;:<>\\\/\{\}\[\]+='~`!@_.,?%。．？！\u2022\u25e6\u25a0]/;
+  export const BEGINS_WITH_PUNCTUATION_REGEX_ =
+      /^[-$#"()*;:<>\\\/\{\}\[\]+='~`!@_.,?%。．？！\u2022\u25e6\u25a0]/;
+}

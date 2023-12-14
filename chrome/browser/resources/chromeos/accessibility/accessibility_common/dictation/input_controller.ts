@@ -8,42 +8,32 @@ import {EditingUtil} from './editing_util.js';
 import {FocusHandler} from './focus_handler.js';
 import {LocaleInfo} from './locale_info.js';
 
-const AutomationNode = chrome.automation.AutomationNode;
-const EventType = chrome.automation.EventType;
-const PositionType = chrome.automation.PositionType;
-const RoleType = chrome.automation.RoleType;
-const StateType = chrome.automation.StateType;
+type AutomationNode = chrome.automation.AutomationNode;
+import EventType = chrome.automation.EventType;
+import PositionType = chrome.automation.PositionType;
+import StateType = chrome.automation.StateType;
 
-/**
- * @typedef {{
- * anchor: number,
- * focus: number,
- * offset: number,
- * text: string,
- * }}
- */
-let SurroundingInfo;
+interface SurroundingInfo {
+  anchor: number;
+  focus: number;
+  offset: number;
+  text: string;
+}
 
-/**
- * @typedef {{
- * node: !AutomationNode,
- * value: string,
- * selStart: number,
- * selEnd: number,
- * }}
- */
-let EditableNodeData;
+interface EditableNodeData {
+  node: AutomationNode;
+  value: string;
+  selStart: number;
+  selEnd: number;
+}
 
 /** A helper class that waits for automation and IME events. */
 class AutomationImeEventWaiter {
-  /**
-   * @param {!AutomationNode} node
-   * @param {!EventType} event
-   */
-  constructor(node, event) {
-    /** @private {!AutomationNode} */
+  private node_: AutomationNode;
+  private event_: EventType;
+
+  constructor(node: AutomationNode, event: EventType) {
     this.node_ = node;
-    /** @private {!EventType} */
     this.event_ = event;
   }
 
@@ -52,14 +42,12 @@ class AutomationImeEventWaiter {
    * chrome.input.ime.onSurroundingTextChanged event. We need to wait for both
    * since we use the automation and IME APIs to retrieve the editable node
    * data.
-   * @param {!function(): void} doAction
-   * @return {!Promise}
    */
-  async doActionAndWait(doAction) {
+  async doActionAndWait(doAction: () => void): Promise<void> {
     let surroundingTextChanged = false;
     let eventSeen = false;
     return new Promise(resolve => {
-      const onSurroundingTextChanged = () => {
+      const onSurroundingTextChanged: () => void = () => {
         surroundingTextChanged = true;
         chrome.input.ime.onSurroundingTextChanged.removeListener(
             onSurroundingTextChanged);
@@ -68,14 +56,16 @@ class AutomationImeEventWaiter {
         }
       };
 
-      let handler = new EventHandler([this.node_], this.event_, () => {
-        eventSeen = true;
-        handler.stop();
-        handler = null;
-        if (surroundingTextChanged) {
-          resolve();
-        }
-      });
+      let handler: EventHandler|null =
+          new EventHandler([this.node_], this.event_, () => {
+            eventSeen = true;
+            // TODO(b/314203187): Determine if not null assertion is acceptable.
+            handler!.stop();
+            handler = null;
+            if (surroundingTextChanged) {
+              resolve();
+            }
+          });
 
       handler.start();
       chrome.input.ime.onSurroundingTextChanged.addListener(
@@ -88,55 +78,35 @@ class AutomationImeEventWaiter {
 
 /** InputController handles interaction with input fields for Dictation. */
 export class InputController {
-  constructor(stopDictationCallback, focusHandler) {
-    /** @private {number} */
-    this.activeImeContextId_ = InputController.NO_ACTIVE_IME_CONTEXT_ID_;
-
-    /** @private {!FocusHandler} */
-    this.focusHandler_ = focusHandler;
-
-    /**
-     * The engine ID of the previously active IME input method. Used to
-     * restore the previous IME after Dictation is deactivated.
-     * @private {string}
-     */
-    this.previousImeEngineId_ = '';
-
-    /** @private {function():void} */
+  private stopDictationCallback_: () => void;
+  private focusHandler_: FocusHandler;
+  private activeImeContextId_: number =
+      InputController.NO_ACTIVE_IME_CONTEXT_ID_;
+  private onConnectCallback_: (() => void)|null = null;
+  private onFocusListener_:
+      ((context: chrome.input.ime.InputContext) => void)|null = null;
+  private onBlurListener_: ((contextId: number) => void)|null = null;
+  /** A listener for chrome.input.ime.onSurroundingTextChanged events. */
+  private onSurroundingTextChangedListener_:
+      ((engineID: string,
+        surroundingInfo: SurroundingInfo) => void)|null = null;
+  private surroundingInfo_: SurroundingInfo|null = null;
+  private onSurroundingTextChangedForTesting_: (() => void)|null = null;
+  private onSelectionChangedForTesting_: (() => void)|null = null;
+  /**
+   * The engine ID of the previously active IME input method. Used to
+   * restore the previous IME after Dictation is deactivated.
+   */
+  private previousImeEngineId_ = '';
+  constructor(stopDictationCallback: () => void, focusHandler: FocusHandler) {
     this.stopDictationCallback_ = stopDictationCallback;
-
-    /** @private {?function():void} */
-    this.onConnectCallback_ = null;
-
-    /** @private {?function(chrome.input.ime.InputContext):void} */
-    this.onFocusListener_ = null;
-
-    /** @private {?function(number):void} */
-    this.onBlurListener_ = null;
-
-    /**
-     * A listener for chrome.input.ime.onSurroundingTextChanged events.
-     * @private {?function(string, !SurroundingInfo):void}
-     */
-    this.onSurroundingTextChangedListener_ = null;
-
-    /** @private {?SurroundingInfo} */
-    this.surroundingInfo_ = null;
-
-    /** @private {?function(): void} */
-    this.onSurroundingTextChangedForTesting_ = null;
-
-    /** @private {?function(): void} */
-    this.onSelectionChangedForTesting_ = null;
+    this.focusHandler_ = focusHandler;
 
     this.initialize_();
   }
 
-  /**
-   * Sets up Dictation's various IME listeners.
-   * @private
-   */
-  initialize_() {
+  /** Sets up Dictation's various IME listeners. */
+  private initialize_(): void {
     this.onFocusListener_ = context => this.onImeFocus_(context);
     this.onBlurListener_ = contextId => this.onImeBlur_(contextId);
     this.onSurroundingTextChangedListener_ = (engineID, surroundingInfo) =>
@@ -148,7 +118,7 @@ export class InputController {
   }
 
   /** Removes IME listeners. */
-  removeListeners() {
+  removeListeners(): void {
     if (this.onFocusListener_) {
       chrome.input.ime.onFocus.removeListener(this.onFocusListener_);
     }
@@ -161,21 +131,17 @@ export class InputController {
     }
   }
 
-  /**
-   * Whether this is the active IME and has a focused input.
-   * @return {boolean}
-   */
-  isActive() {
+  /** Whether this is the active IME and has a focused input. */
+  isActive(): boolean {
     return this.activeImeContextId_ !==
         InputController.NO_ACTIVE_IME_CONTEXT_ID_;
   }
 
   /**
    * Connect as the active Input Method Manager.
-   * @param {function():void} callback The callback to run after IME is
-   *     connected.
+   * @param callback The callback to run after IME is connected.
    */
-  connect(callback) {
+  connect(callback: () => void): void {
     this.onConnectCallback_ = callback;
     chrome.inputMethodPrivate.getCurrentInputMethod(
         method => this.saveCurrentInputMethodAndStart_(method));
@@ -185,10 +151,9 @@ export class InputController {
    * Called when InputController has received the current input method. We save
    * the current method to reset when InputController toggles off, then continue
    * with starting up Dictation after the input gets focus (onImeFocus_()).
-   * @param {string} method The currently active IME ID.
-   * @private
+   * @param method The currently active IME ID.
    */
-  saveCurrentInputMethodAndStart_(method) {
+  private saveCurrentInputMethodAndStart_(method: string): void {
     this.previousImeEngineId_ = method;
     // Add AccessibilityCommon as an input method and activate it.
     chrome.languageSettingsPrivate.addInputMethod(
@@ -201,7 +166,7 @@ export class InputController {
    * Disconnects as the active Input Method Manager. If any text was being
    * composed, commits it.
    */
-  disconnect() {
+  disconnect(): void {
     // Clean up IME state and reset to the previous IME method.
     this.activeImeContextId_ = InputController.NO_ACTIVE_IME_CONTEXT_ID_;
     chrome.inputMethodPrivate.setCurrentInputMethod(this.previousImeEngineId_);
@@ -211,9 +176,9 @@ export class InputController {
 
   /**
    * Commits the given text to the active IME context.
-   * @param {string} text The text to commit
+   * @param text The text to commit
    */
-  commitText(text) {
+  commitText(text: string): void {
     if (!this.isActive() || !text) {
       return;
     }
@@ -221,7 +186,7 @@ export class InputController {
     const data = this.getEditableNodeData();
     if (LocaleInfo.allowSmartCapAndSpacing() &&
         this.checkEditableNodeData_(data)) {
-      const {value, selStart, selEnd} = data;
+      const {value, selStart} = data as EditableNodeData;
       text = EditingUtil.smartCapitalization(value, selStart, text);
       text = EditingUtil.smartSpacing(value, selStart, text);
     }
@@ -234,10 +199,9 @@ export class InputController {
    * finish starting speech recognition if needed. This needs to be done
    * before starting recognition in order for browser tests to know that
    * Dictation is already set up as an IME.
-   * @param {chrome.input.ime.InputContext} context Input field context.
-   * @private
+   * @param context Input field context.
    */
-  onImeFocus_(context) {
+  private onImeFocus_(context: chrome.input.ime.InputContext): void {
     this.activeImeContextId_ = context.contextID;
     if (this.onConnectCallback_) {
       this.onConnectCallback_();
@@ -248,10 +212,8 @@ export class InputController {
   /**
    * chrome.input.ime.onFocus callback. Stops Dictation if the active
    * context ID lost focus.
-   * @param {number} contextId
-   * @private
    */
-  onImeBlur_(contextId) {
+  private onImeBlur_(contextId: number): void {
     if (contextId === this.activeImeContextId_) {
       // Clean up context ID immediately. We can no longer use this context.
       this.activeImeContextId_ = InputController.NO_ACTIVE_IME_CONTEXT_ID_;
@@ -263,11 +225,9 @@ export class InputController {
   /**
    * Called when the editable string around the caret is changed or when the
    * caret position is moved.
-   * @param {string} engineID
-   * @param {!SurroundingInfo} surroundingInfo
-   * @private
    */
-  onSurroundingTextChanged_(engineID, surroundingInfo) {
+  private onSurroundingTextChanged_(
+      engineID: string, surroundingInfo: SurroundingInfo): void {
     if (engineID !== InputController.ON_SURROUNDING_TEXT_CHANGED_ENGINE_ID) {
       return;
     }
@@ -283,32 +243,31 @@ export class InputController {
    * middle of a sentence, it will delete a portion of the sentence it
    * intersects.
    */
-  deletePrevSentence() {
+  deletePrevSentence(): void {
     const data = this.getEditableNodeData();
     if (!this.checkEditableNodeData_(data)) {
       return;
     }
 
-    const {value, selStart, selEnd} = data;
+    const {value, selStart} = data as EditableNodeData;
     const prevSentenceStart = EditingUtil.navPrevSent(value, selStart);
     const length = selStart - prevSentenceStart;
     this.deleteSurroundingText_(length, -length);
   }
 
   /**
-   * @param {number} length The number of characters to be deleted.
-   * @param {number} offset The offset from the caret position where deletion
-   * will start. This value can be negative.
-   * @return {!Promise}
-   * @private
+   * @param length The number of characters to be deleted.
+   * @param offset The offset from the caret position where deletion will start.
+   *     This value can be negative.
    */
-  async deleteSurroundingText_(length, offset) {
+  private async deleteSurroundingText_(length: number, offset: number):
+      Promise<void> {
     const editableNode = this.focusHandler_.getEditableNode();
     if (!editableNode) {
       throw new Error('deleteSurroundingText_ requires a valid editable node');
     }
 
-    const deleteSurroundingText = () => {
+    const deleteSurroundingText: () => void = () => {
       chrome.input.ime.deleteSurroundingText({
         contextID: this.activeImeContextId_,
         engineID: InputController.IME_ENGINE_ID,
@@ -326,9 +285,9 @@ export class InputController {
   /**
    * Deletes a phrase to the left of the text caret. If multiple instances of
    * `phrase` are present, it deletes the one closest to the text caret.
-   * @param {string} phrase The phrase to be deleted.
+   * @param phrase The phrase to be deleted.
    */
-  deletePhrase(phrase) {
+  deletePhrase(phrase: string): void {
     this.replacePhrase(phrase, '');
   }
 
@@ -336,17 +295,17 @@ export class InputController {
    * Replaces a phrase to the left of the text caret with another phrase. If
    * multiple instances of `deletePhrase` are present, this function will
    * replace the one closest to the text caret.
-   * @param {string} deletePhrase The phrase to be deleted.
-   * @param {string} insertPhrase The phrase to be inserted.
-   * @return {!Promise}
+   * @param deletePhrase The phrase to be deleted.
+   * @param insertPhrase The phrase to be inserted.
    */
-  async replacePhrase(deletePhrase, insertPhrase) {
+  async replacePhrase(deletePhrase: string, insertPhrase: string):
+      Promise<void> {
     const data = this.getEditableNodeData();
     if (!this.checkEditableNodeData_(data)) {
       return;
     }
 
-    const {value, selStart} = data;
+    const {value, selStart} = data as EditableNodeData;
     const replacePhraseData =
         EditingUtil.getReplacePhraseData(value, selStart, deletePhrase);
     if (!replacePhraseData) {
@@ -365,12 +324,8 @@ export class InputController {
    * Sets the selection within the editable node. `selStart` and `selEnd` are
    * relative to the value of the editable node. Works in all types of text
    * fields, including content editables.
-   * @param {number} selStart
-   * @param {number} selEnd
-   * @return {!Promise}
-   * @private
    */
-  async setSelection_(selStart, selEnd) {
+  private async setSelection_(selStart: number, selEnd: number): Promise<void> {
     const editableNode = this.focusHandler_.getEditableNode();
     if (!editableNode) {
       return;
@@ -381,7 +336,8 @@ export class InputController {
     let focusObject = editableNode;
     let focusOffset = selEnd;
 
-    const isContentEditable = editableNode.state[StateType.RICHLY_EDITABLE];
+    // TODO(b/314203187): Determine if not null assertion is acceptable.
+    const isContentEditable = editableNode.state![StateType.RICHLY_EDITABLE];
     if (isContentEditable) {
       // Contenteditables can contain multiple inline text nodes, so we need to
       // translate `selStart` and `selEnd` to a node and index within the
@@ -398,7 +354,7 @@ export class InputController {
       }
     }
 
-    const setDocumentSelection = () => {
+    const setDocumentSelection: () => void = () => {
       chrome.automation.setDocumentSelection(
           {anchorObject, anchorOffset, focusObject, focusOffset});
     };
@@ -417,17 +373,15 @@ export class InputController {
    * with a space). This function operates on the text to the left of the caret.
    * If multiple instances of `beforePhrase` are present, this function will
    * use the one closest to the text caret.
-   * @param {string} insertPhrase
-   * @param {string} beforePhrase
-   * @return {!Promise}
    */
-  async insertBefore(insertPhrase, beforePhrase) {
+  async insertBefore(insertPhrase: string, beforePhrase: string):
+      Promise<void> {
     const data = this.getEditableNodeData();
     if (!this.checkEditableNodeData_(data)) {
       return;
     }
 
-    const {value, selStart} = data;
+    const {value, selStart} = data as EditableNodeData;
     const newIndex =
         EditingUtil.getInsertBeforeIndex(value, selStart, beforePhrase);
     if (newIndex === -1) {
@@ -443,16 +397,14 @@ export class InputController {
    * (inclusive). The function operates on the text to the left of the text
    * caret. If multiple instances of `startPhrase` or `endPhrase` are present,
    * the function will use the ones closest to the text caret.
-   * @param {string} startPhrase
-   * @param {string} endPhrase
    */
-  selectBetween(startPhrase, endPhrase) {
+  selectBetween(startPhrase: string, endPhrase: string): void {
     const data = this.getEditableNodeData();
     if (!this.checkEditableNodeData_(data)) {
       return;
     }
 
-    const {node, value, selStart, selEnd} = data;
+    const {value, selStart} = data as EditableNodeData;
     const selection =
         EditingUtil.selectBetween(value, selStart, startPhrase, endPhrase);
     if (!selection) {
@@ -462,32 +414,26 @@ export class InputController {
     this.setSelection_(selection.start, selection.end);
   }
 
-  /**
-   * Moves the text caret to the next sentence.
-   * @return {!Promise}
-   */
-  async navNextSent() {
+  /** Moves the text caret to the next sentence. */
+  async navNextSent(): Promise<void> {
     const data = this.getEditableNodeData();
     if (!this.checkEditableNodeData_(data)) {
       return;
     }
 
-    const {value, selStart} = data;
+    const {value, selStart} = data as EditableNodeData;
     const newCaretIndex = EditingUtil.navNextSent(value, selStart);
     await this.setSelection_(newCaretIndex, newCaretIndex);
   }
 
-  /**
-   * Moves the text caret to the previous sentence.
-   * @return {!Promise}
-   */
-  async navPrevSent() {
+  /** Moves the text caret to the previous sentence. */
+  async navPrevSent(): Promise<void> {
     const data = this.getEditableNodeData();
     if (!this.checkEditableNodeData_(data)) {
       return;
     }
 
-    const {value, selStart} = data;
+    const {value, selStart} = data as EditableNodeData;
     const newCaretIndex = EditingUtil.navPrevSent(value, selStart);
     await this.setSelection_(newCaretIndex, newCaretIndex);
   }
@@ -496,9 +442,8 @@ export class InputController {
    * Returns the editable node, its value, the selection start, and the
    * selection end.
    * TODO(crbug.com/1353871): Only return text that is visible on-screen.
-   * @return {?EditableNodeData}
    */
-  getEditableNodeData() {
+  getEditableNodeData(): EditableNodeData|null {
     const node = this.focusHandler_.getEditableNode();
     if (!node) {
       return null;
@@ -507,7 +452,8 @@ export class InputController {
     let value;
     let selStart;
     let selEnd;
-    const isContentEditable = node.state[StateType.RICHLY_EDITABLE];
+    // TODO(b/314203187): Determine if not null assertion is acceptable.
+    const isContentEditable = node.state![StateType.RICHLY_EDITABLE];
     if (isContentEditable && this.surroundingInfo_) {
       const info = this.surroundingInfo_;
       // Use IME data only in contenteditables.
@@ -536,11 +482,8 @@ export class InputController {
   /**
    * Returns whether or not `data` meets the prerequisites for performing an
    * editing command.
-   * @param {?EditableNodeData} data
-   * @return {boolean}
-   * @private
    */
-  checkEditableNodeData_(data) {
+  private checkEditableNodeData_(data: EditableNodeData|null): boolean {
     if (!data || data.selStart !== data.selEnd) {
       // TODO(b:259353226): Move this selection check into checkContext()
       // method.
@@ -554,13 +497,12 @@ export class InputController {
    * Translates `index`, which is relative to the editable's value, to an inline
    * text node and index within the editable. Only returns valid data when the
    * editable node is a contenteditable.
-   * @param {number} index
-   * @return {?{node: !AutomationNode, index: number}}
-   * @private
    */
-  textNodeAndIndex_(index) {
+  private textNodeAndIndex_(index: number):
+      {node: AutomationNode, index: number}|null {
     const editableNode = this.focusHandler_.getEditableNode();
-    if (!editableNode || !editableNode.state[StateType.RICHLY_EDITABLE]) {
+    // TODO(b/314203187): Determine if not null assertion is acceptable.
+    if (!editableNode || !editableNode.state![StateType.RICHLY_EDITABLE]) {
       throw new Error('textNodeAndIndex_ requires a content editable node');
     }
 
@@ -577,22 +519,16 @@ export class InputController {
   }
 }
 
-/**
- * The IME engine ID for AccessibilityCommon.
- * @const {string}
- */
-InputController.IME_ENGINE_ID =
-    '_ext_ime_egfdjlfmgnehecnclamagfafdccgfndpdictation';
+export namespace InputController {
+  /** The IME engine ID for AccessibilityCommon. */
+  export const IME_ENGINE_ID =
+      '_ext_ime_egfdjlfmgnehecnclamagfafdccgfndpdictation';
 
-/**
- * The engine ID that is passed into `onSurroundingTextChanged_` when Dictation
- * modifies the text field.
- * @const {string}
- */
-InputController.ON_SURROUNDING_TEXT_CHANGED_ENGINE_ID = 'dictation';
+  /**
+   * The engine ID that is passed into `onSurroundingTextChanged_` when
+   * Dictation modifies the text field.
+   */
+  export const ON_SURROUNDING_TEXT_CHANGED_ENGINE_ID = 'dictation';
 
-/**
- * @private {number}
- * @const
- */
-InputController.NO_ACTIVE_IME_CONTEXT_ID_ = -1;
+  export const NO_ACTIVE_IME_CONTEXT_ID_ = -1;
+}

@@ -4,36 +4,29 @@
 
 import {InputController} from './input_controller.js';
 
-/** @enum {number} */
-export const Context = {
-  INACTIVE_INPUT_CONTROLLER: 1,
-  EMPTY_EDITABLE: 2,
-  NO_SELECTION: 3,
-  INVALID_INPUT: 4,
-  NO_PREVIOUS_MACRO: 5,
-};
+export enum Context {
+  INACTIVE_INPUT_CONTROLLER = 1,
+  EMPTY_EDITABLE = 2,
+  NO_SELECTION = 3,
+  INVALID_INPUT = 4,
+  NO_PREVIOUS_MACRO = 5,
+}
 
 /** A class that can be used to specify and check contexts. */
 export class ContextChecker {
-  /** @param {!InputController} inputController */
-  constructor(inputController) {
-    /** @private {!InputController} */
+  private inputController_: InputController;
+  private invalidContexts_: Context[] = [];
+  constructor(inputController: InputController) {
     this.inputController_ = inputController;
-    /** @private {!Array<!Context>} */
-    this.invalidContexts_ = [];
   }
 
-  /**
-   * @param {!Context} context
-   * @return {!ContextChecker} |this| for chaining
-   */
-  add(context) {
+  /** @return |this| for chaining */
+  add(context: Context): ContextChecker {
     this.invalidContexts_.push(context);
     return this;
   }
 
-  /** @return {?Context} */
-  getFailedContext() {
+  getFailedContext(): Context|null {
     if (!this.inputController_.isActive()) {
       return Context.INACTIVE_INPUT_CONTROLLER;
     }
@@ -47,12 +40,7 @@ export class ContextChecker {
     return null;
   }
 
-  /**
-   * @param {!Context} context
-   * @return {boolean} Whether or not the context is met.
-   * @private
-   */
-  check_(context) {
+  private check_(context: Context): boolean {
     const data = this.inputController_.getEditableNodeData();
     if (!data) {
       return false;
