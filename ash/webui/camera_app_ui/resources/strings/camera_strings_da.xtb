@@ -78,6 +78,7 @@
 <translation id="4705093842003735294">Fuld opløsning</translation>
 <translation id="4864143361253542638">Liste over scannede sider</translation>
 <translation id="4890010094662541459">3x3</translation>
+<translation id="4892746741161549733">Kopiér linkadresse <ph name="URL" /></translation>
 <translation id="491895758387112773">Videooptagelse med flere streams</translation>
 <translation id="495170559598752135">Handlinger</translation>
 <translation id="4984613436295737187">Quad HD (1440p)</translation>
@@ -130,6 +131,7 @@ Hvis din feedback omhandler billed- eller videokvalitet, bedes du vedhæfte et b
 <translation id="7450541714075000668">Teksten blev kopieret</translation>
 <translation id="7488619942230388918">Optag gifvideo</translation>
 <translation id="7557677699350329807">Skift til næste kamera</translation>
+<translation id="7562584071994185503">Kopiér tekst <ph name="TEXT" /></translation>
 <translation id="7607002721634913082">Sat på pause</translation>
 <translation id="7608223098072244877">4 gange 4</translation>
 <translation id="761421184377987513">Flyttes nedad og mod venstre</translation>
@@ -151,6 +153,7 @@ Hvis din feedback omhandler billed- eller videokvalitet, bedes du vedhæfte et b
 <translation id="8346544573713510785">Skaler billeder med kamera-HAL</translation>
 <translation id="8425673304802773841">Drej nedad</translation>
 <translation id="8428213095426709021">Indstillinger</translation>
+<translation id="8609951387004618906">Åbn <ph name="URL" /></translation>
 <translation id="8629662593426079630">360p</translation>
 <translation id="8711011893539266636">Slå mikrofonen til eller fra. Lyden er slået fra</translation>
 <translation id="8730621377337864115">Udfør</translation>

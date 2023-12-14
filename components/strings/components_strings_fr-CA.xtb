@@ -39,6 +39,7 @@
 <translation id="1060136083665017312">Systèmes de jeux et consoles</translation>
 <translation id="1060320201901229167">Enveloppe Kaku nᵒ 5</translation>
 <translation id="10614374240317010">Jamais enregistrés</translation>
+<translation id="1062407476771304334">Remplacer</translation>
 <translation id="1064054731605354900">A3 x 5</translation>
 <translation id="106701514854093668">Favoris d'ordinateur de bureau</translation>
 <translation id="1068672505746868501">Ne jamais traduire les pages en <ph name="SOURCE_LANGUAGE" /></translation>
@@ -133,7 +134,6 @@
 <translation id="1240347957665416060">Le nom de votre appareil</translation>
 <translation id="124116460088058876">Plus de langues</translation>
 <translation id="1243027604378859286">Auteur :</translation>
-<translation id="1246424317317450637">Gras</translation>
 <translation id="1247030632403369975">Aluminium</translation>
 <translation id="1252209483516427155">Vêtements d'extérieur</translation>
 <translation id="1253921432148366685"><ph name="TYPE_1" />, <ph name="TYPE_2" /> (synchronisés)</translation>
@@ -933,7 +933,6 @@
 <translation id="2858134430383535011">200 mm x 300 mm</translation>
 <translation id="2859806420264540918">Ce site diffuse des annonces intrusives ou trompeuses.</translation>
 <translation id="28618371182701850">Véhicules électriques et hybrides rechargeables</translation>
-<translation id="287596039013813457">Amical</translation>
 <translation id="28761159517501904">Films</translation>
 <translation id="2876489322757410363">Vous devez désactiver le mode de navigation privée pour effectuer un paiement par l'intermédiaire d'une application externe. Continuer?</translation>
 <translation id="2876949457278336305"><ph name="MANAGE_SECURITY_SETTINGS_FOCUSED_FRIENDLY_MATCH_TEXT" />, appuyez sur la touche Tabulation, puis sur la touche Entrée pour gérer votre navigation sécurisée et plus dans les paramètres de Chrome</translation>
@@ -1126,7 +1125,6 @@
 <translation id="3240791268468473923">La zone de contenu dans le bas de l'écran indiquant qu'aucun authentifiant ne correspond au paiement sécurisé est ouverte</translation>
 <translation id="324180406144491771">Les liens de « <ph name="HOST_NAME" /> » sont bloqués</translation>
 <translation id="3249151924975132674">Prêts aux étudiants et financement des études supérieures</translation>
-<translation id="3249845759089040423">Pimpant</translation>
 <translation id="3250640885957938546">Annonces et marketing</translation>
 <translation id="3252772880526154546">Architecture</translation>
 <translation id="3254301855501243548">18 po x 22 po</translation>
@@ -1222,6 +1220,7 @@
 <translation id="3432601291244612633">Fermer la page</translation>
 <translation id="3433111389595862568">Logiciels de collaboration et de conférence</translation>
 <translation id="3433144818443565002">Clavardage audio et vidéo</translation>
+<translation id="3434025015623587566">Le gestionnaire de mots de passe Google demande davantage d'accès</translation>
 <translation id="343474037147570563">Les fichiers que vous téléversez ou joignez sont envoyés à Google Cloud ou à des tiers afin d'être analysés. Par exemple, ils peuvent être analysés pour déterminer s'ils contiennent des données confidentielles ou des logiciels malveillants et peuvent être stockés en fonction des politiques de l'entreprise et être visibles pour votre administrateur.</translation>
 <translation id="3435557549311968410">Continu (court)</translation>
 <translation id="3435738964857648380">Sécurité</translation>
@@ -1809,7 +1808,6 @@
 <translation id="4598556348158889687">Gestion du stockage</translation>
 <translation id="4600084978141515058">Cuisine végétalienne</translation>
 <translation id="4602465984861132303">Quilles</translation>
-<translation id="4606870351894164739">Remarquable</translation>
 <translation id="4607608436550361748">Afficher les astuces de Chrome</translation>
 <translation id="460848736049414407">Bloqué par l'administrateur</translation>
 <translation id="4610279718074907952">Ce site fait partie d'un groupe défini par <ph name="SET_OWNER" />, qui peut voir votre activité</translation>
@@ -1923,13 +1921,11 @@
 <translation id="4819347708020428563">Modifier les annotations dans la vue par défaut?</translation>
 <translation id="4822493756793346865">Les prix habituels sont obtenus en fonction des magasins sur le Web au cours des trois derniers mois.</translation>
 <translation id="4825496307559726072"><ph name="CREATE_GOOGLE_SHEET_FOCUSED_FRIENDLY_MATCH_TEXT" />, appuyez sur Tabulation, puis sur Entrée pour rapidement créer une feuille Google</translation>
-<translation id="4825507807291741242">Puissant</translation>
 <translation id="4826588772550366629">caméra et microphone</translation>
 <translation id="4827283332383516812">Supprimer la carte</translation>
 <translation id="4831993743164297314">Papier de création d'images</translation>
 <translation id="483241715238664915">Activer les avertissements</translation>
 <translation id="4834250788637067901">Modes de paiement, offres et adresses utilisant Google Pay</translation>
-<translation id="4838327282952368871">Rêveur</translation>
 <translation id="4839087176073128681">Payez plus rapidement la prochaine fois et protégez votre carte grâce à la sécurité de pointe de Google.</translation>
 <translation id="4840250757394056958">Afficher votre historique de Chrome</translation>
 <translation id="484462545196658690">Auto</translation>
@@ -1974,6 +1970,7 @@
 <translation id="4918221908152712722">Installer <ph name="APP_NAME" /> (aucun téléchargement nécessaire)</translation>
 <translation id="4920457992177678649">Locations de vacances et séjours de courte durée</translation>
 <translation id="4920710383559189047">Manchon</translation>
+<translation id="4922104989726031751">Pour utiliser le gestionnaire de mots de passe avec votre système d'exploitation, relancez Chromium et autorisez l'accès au gestionnaire de mots de passe de votre ordinateur. Vos onglets s'ouvriront à nouveau après la relance.</translation>
 <translation id="4923459931733593730">Paiement</translation>
 <translation id="4926049483395192435">Cette valeur est requise.</translation>
 <translation id="4926159001844873046"><ph name="SITE" /> indique</translation>
@@ -2500,7 +2497,6 @@
 <translation id="6005659677094197001">Continu</translation>
 <translation id="6005765687956866568">Les renseignements remplis automatiquement ont été effacés du formulaire</translation>
 <translation id="6006365096047131769">3 po x 5 po</translation>
-<translation id="6006484371116297560">Classique</translation>
 <translation id="6008122969617370890">Ordre N sur 1</translation>
 <translation id="6008256403891681546">JCB</translation>
 <translation id="6014139350017893009">Réparation et entretien de véhicules</translation>
@@ -2615,6 +2611,7 @@
 <translation id="6234122620015464377">Couper après chaque document</translation>
 <translation id="6236290670123303279">Gérer les paramètres</translation>
 <translation id="6240447795304464094">Logo de Google Pay</translation>
+<translation id="6240964651812394252">Pour utiliser le gestionnaire de mots de passe Google avec votre système d'exploitation, relancez Chrome et autorisez l'accès au gestionnaire de mots de passe de votre ordinateur. Vos onglets s'ouvriront à nouveau après la relance.</translation>
 <translation id="6241121617266208201">Masquer les suggestions</translation>
 <translation id="624499991300733384">Service de composition d'impression</translation>
 <translation id="6251906504834538140">{0,plural, =1{Le déplacement du fichier a été bloqué}one{Le déplacement de <ph name="FILE_COUNT" /> fichier a été bloqué}other{Le déplacement de <ph name="FILE_COUNT" /> fichiers a été bloqué}}</translation>
@@ -2625,6 +2622,7 @@
 <translation id="6263376278284652872">Favoris de <ph name="DOMAIN" /></translation>
 <translation id="6264376385120300461">Télécharger quand même</translation>
 <translation id="6264485186158353794">Retour à la sécurité</translation>
+<translation id="6264636978858465832">Le gestionnaire de mots de passe demande davantage d'accès</translation>
 <translation id="6265794661083428563">Copier la valeur de la politique <ph name="POLICY_NAME" /></translation>
 <translation id="6266934640124581640">Bleu sarcelle clair</translation>
 <translation id="6270066318535733958">Navigation de plaisance</translation>
@@ -3214,7 +3212,6 @@ Détails supplémentaires :
       &lt;li&gt;Consultez le &lt;a href="https://support.google.com/chrome/answer/6098869"&gt;Centre d'aide de Chrome&lt;/a&gt; pour apprendre à supprimer définitivement le logiciel de votre ordinateur
       &lt;/ol&gt;</translation>
 <translation id="7408613996403626141">Jouets</translation>
-<translation id="7410471291937727359">Précieux</translation>
 <translation id="741204030948306876">Oui, j'accepte</translation>
 <translation id="7416351320495623771">Gérer les mots de passe…</translation>
 <translation id="7418620734632363981">Programmation</translation>
@@ -4046,7 +4043,6 @@ Détails supplémentaires :
 <translation id="9023536760430404133">Roues et pneus pour véhicules</translation>
 <translation id="9025348182339809926">(Non valide)</translation>
 <translation id="902590795160480390">Chargement du fichier PDF en cours…</translation>
-<translation id="9030265603405983977">Monochrome</translation>
 <translation id="9035022520814077154">Erreur liée à la sécurité</translation>
 <translation id="9035824888276246493">Enregistrer les codes de sécurité</translation>
 <translation id="9036306139374661733">Autoriser l'accès au microphone?</translation>
@@ -4090,7 +4086,6 @@ Détails supplémentaires :
 <translation id="9114524666733003316">Confirmation de la carte en cours…</translation>
 <translation id="9114581008513152754">Ce navigateur n'est pas géré par une entreprise ou une organisation. L'activité sur cet appareil peut être gérée à l'extérieur de Chrome. <ph name="BEGIN_LINK" />En savoir plus<ph name="END_LINK" /></translation>
 <translation id="9116548361133462832">En savoir plus sur les annonces dans Chrome</translation>
-<translation id="9117930699067497412">Frais</translation>
 <translation id="9118692854637641831"><ph name="HISTORY_CLUSTERS_SEARCH_FOCUSED_FRIENDLY_MATCH_TEXT" />, appuyez sur la touche Tabulation, puis sur la touche Entrée pour reprendre votre recherche et voir l'activité pertinente dans votre historique de Chrome</translation>
 <translation id="9119042192571987207">Téléversé</translation>
 <translation id="9122954576417194280">Opérations sur marchandises et transactions à terme</translation>

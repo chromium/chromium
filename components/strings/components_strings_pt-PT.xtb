@@ -39,6 +39,7 @@
 <translation id="1060136083665017312">Sistemas e consolas de jogos</translation>
 <translation id="1060320201901229167">Envelope Kaku 5</translation>
 <translation id="10614374240317010">Nunca guardadas</translation>
+<translation id="1062407476771304334">Substituir</translation>
 <translation id="1064054731605354900">A3x5</translation>
 <translation id="106701514854093668">Marcadores do Ambiente de Trabalho</translation>
 <translation id="1068672505746868501">Nunca traduzir páginas em <ph name="SOURCE_LANGUAGE" /></translation>
@@ -134,7 +135,6 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="1240347957665416060">O nome do dispositivo</translation>
 <translation id="124116460088058876">Mais idiomas</translation>
 <translation id="1243027604378859286">Autor:</translation>
-<translation id="1246424317317450637">Negrito</translation>
 <translation id="1247030632403369975">Alumínio</translation>
 <translation id="1252209483516427155">Vestuário para exterior</translation>
 <translation id="1253921432148366685"><ph name="TYPE_1" />, <ph name="TYPE_2" /> (sincronizados)</translation>
@@ -934,7 +934,6 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="2858134430383535011">200 x 300 mm</translation>
 <translation id="2859806420264540918">Este site apresenta anúncios intrusivos ou enganadores.</translation>
 <translation id="28618371182701850">Veículos elétricos e recarregáveis</translation>
-<translation id="287596039013813457">Amigável</translation>
 <translation id="28761159517501904">Filmes</translation>
 <translation id="2876489322757410363">Está a sair do Modo de navegação anónima para pagar através de uma aplicação externa. Quer continuar?</translation>
 <translation id="2876949457278336305"><ph name="MANAGE_SECURITY_SETTINGS_FOCUSED_FRIENDLY_MATCH_TEXT" />, prima Tab e, em seguida, Enter para gerir a Navegação segura e muito mais nas Definições do Chrome</translation>
@@ -1127,7 +1126,6 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="3240791268468473923">A página de credenciais de pagamento seguro sem correspondência com as credenciais está aberta</translation>
 <translation id="324180406144491771">Os links do anfitrião "<ph name="HOST_NAME" />" estão bloqueados</translation>
 <translation id="3249151924975132674">Empréstimos para estudantes e financiamento do ensino superior</translation>
-<translation id="3249845759089040423">Descontraído</translation>
 <translation id="3250640885957938546">Publicidade e marketing</translation>
 <translation id="3252772880526154546">Arquitetura</translation>
 <translation id="3254301855501243548">18 x 22 pol.</translation>
@@ -1811,7 +1809,6 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="4598556348158889687">Gestão de armazenamento</translation>
 <translation id="4600084978141515058">Cozinha vegana</translation>
 <translation id="4602465984861132303">Bowling</translation>
-<translation id="4606870351894164739">Impactante</translation>
 <translation id="4607608436550361748">Ver sugestões do Chrome</translation>
 <translation id="460848736049414407">Bloqueado pelo administrador</translation>
 <translation id="4610279718074907952">Este site está num grupo, definido por <ph name="SET_OWNER" />, que pode ver a sua atividade</translation>
@@ -1925,13 +1922,11 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="4819347708020428563">Quer editar anotações na vista predefinida?</translation>
 <translation id="4822493756793346865">Os preços habituais baseiam-se em lojas na Web nos últimos 90 dias.</translation>
 <translation id="4825496307559726072"><ph name="CREATE_GOOGLE_SHEET_FOCUSED_FRIENDLY_MATCH_TEXT" />, prima Tab e, em seguida, Enter para criar rapidamente uma nova Folha de cálculo do Google Sheets</translation>
-<translation id="4825507807291741242">Potente</translation>
 <translation id="4826588772550366629">câmara e microfone</translation>
 <translation id="4827283332383516812">Elimine o cartão</translation>
 <translation id="4831993743164297314">Papel para imagesetter</translation>
 <translation id="483241715238664915">Ativar avisos</translation>
 <translation id="4834250788637067901">Métodos de pagamento, ofertas e endereços com o Google Pay</translation>
-<translation id="4838327282952368871">Sonhador</translation>
 <translation id="4839087176073128681">Pague mais rápido da próxima vez e proteja o seu cartão com a segurança líder da indústria da Google.</translation>
 <translation id="4840250757394056958">Ver o Histórico do Chrome</translation>
 <translation id="484462545196658690">Auto</translation>
@@ -2503,7 +2498,6 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="6005659677094197001">Contínuo</translation>
 <translation id="6005765687956866568">As informações preenchidas automaticamente foram limpas do formulário</translation>
 <translation id="6006365096047131769">3 x 5 pol.</translation>
-<translation id="6006484371116297560">Clássico</translation>
 <translation id="6008122969617370890">Ordem de N para 1</translation>
 <translation id="6008256403891681546">JCB</translation>
 <translation id="6014139350017893009">Manutenção e reparação de veículos</translation>
@@ -3220,7 +3214,6 @@ Detalhes adicionais:
       &lt;li&gt;Clique em &lt;strong&gt;Aplicar&lt;/strong&gt; e, de seguida, em &lt;strong&gt;OK&lt;/strong&gt;.
       &lt;li&gt;Visite o &lt;a href="https://support.google.com/chrome/answer/6098869"&gt;Centro de Ajuda do Chrome&lt;/a&gt; para saber como remover permanentemente o software do computador.      &lt;/ol&gt;</translation>
 <translation id="7408613996403626141">Brinquedos</translation>
-<translation id="7410471291937727359">Adorável</translation>
 <translation id="741204030948306876">Sim, aceito</translation>
 <translation id="7416351320495623771">Gerir palavras-passe…</translation>
 <translation id="7418620734632363981">Programação</translation>
@@ -4053,7 +4046,6 @@ Detalhes adicionais:
 <translation id="9023536760430404133">Rodas e pneus para veículos</translation>
 <translation id="9025348182339809926">(Inválido)</translation>
 <translation id="902590795160480390">A carregar PDF</translation>
-<translation id="9030265603405983977">Monocromático</translation>
 <translation id="9035022520814077154">Erro de segurança</translation>
 <translation id="9035824888276246493">Guardar códigos de segurança</translation>
 <translation id="9036306139374661733">Permitir o acesso ao microfone?</translation>
@@ -4097,7 +4089,6 @@ Detalhes adicionais:
 <translation id="9114524666733003316">A confirmar o cartão…</translation>
 <translation id="9114581008513152754">Este navegador não é gerido por uma empresa ou outra entidade. A atividade neste dispositivo pode ser gerida fora do Chrome. <ph name="BEGIN_LINK" />Saiba mais<ph name="END_LINK" /></translation>
 <translation id="9116548361133462832">Mais sobre os anúncios no Chrome</translation>
-<translation id="9117930699067497412">Moderno</translation>
 <translation id="9118692854637641831"><ph name="HISTORY_CLUSTERS_SEARCH_FOCUSED_FRIENDLY_MATCH_TEXT" />, prima Tab e, em seguida, Enter para retomar o percurso e ver atividade relevante no Histórico do Chrome</translation>
 <translation id="9119042192571987207">Carregado</translation>
 <translation id="9122954576417194280">Negociação de futuros e mercadorias</translation>

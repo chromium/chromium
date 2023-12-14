@@ -2382,7 +2382,6 @@ Diese Aktion wirkt sich nicht auf Lesezeichen, Passwörter und den Verlauf aus.<
 <translation id="2794522004398861033">Zur Einrichtung von eSIM mit WLAN oder Ethernet verbinden</translation>
 <translation id="2794977172822818797">Aktuelle Websites hinzufügen</translation>
 <translation id="2795716239552913152">Websites verwenden deinen Standort normalerweise für relevante Funktionen oder Informationen, wie etwa Lokalnachrichten oder Geschäfte in deiner Nähe</translation>
-<translation id="2795950023277268902">Verknüpfe <ph name="BEGIN_BOLD" /><ph name="DRIVE_ACCOUNT_EMAIL" /><ph name="END_BOLD" />, um in der App „Dateien“ auf deine Drive-Dateien zuzugreifen</translation>
 <translation id="2798347533012571708">Updates behalten</translation>
 <translation id="2799223571221894425">Neu starten</translation>
 <translation id="2800309299477632167">Benutzerdefinierte Tastaturbelegung</translation>
@@ -2629,6 +2628,7 @@ Servernachricht: <ph name="SERVER_MSG" /></translation>
 <translation id="2990313168615879645">Google-Konto hinzufügen</translation>
 <translation id="2990375978470734995">Damit diese Änderung wirksam wird, musst du das externe Zubehör wieder anschließen.</translation>
 <translation id="2990583317361835189">Websites dürfen keine Bewegungssensoren verwenden</translation>
+<translation id="2991182900092497283">Bitte gib einen Grund für das Einfügen dieser Daten an:</translation>
 <translation id="2992931425024192067">Gesamten Benachrichtigungsinhalt anzeigen</translation>
 <translation id="2993517869960930405">App-Info</translation>
 <translation id="2996108796702395498">Die Seriennummer des Geräts lautet <ph name="SERIAL_NUMBER" />. Diese Nummer kann zur Aktivierung des Diensts verwendet werden.</translation>
@@ -3144,6 +3144,7 @@ Servernachricht: <ph name="SERVER_MSG" /></translation>
 <translation id="3432762828853624962">Shared Workers</translation>
 <translation id="3433507769937235446">Beim Verlassen sperren</translation>
 <translation id="3433621910545056227">Hoppla! Das System konnte die Attributsperre für die Installationszeit des Geräts nicht einrichten.</translation>
+<translation id="3434025015623587566">Der Google Passwortmanager benötigt einen umfassenderen Zugriff</translation>
 <translation id="3434107140712555581"><ph name="BATTERY_PERCENTAGE" /> %</translation>
 <translation id="3434272557872943250">Wenn die Einstellung "Zusätzliche Web- &amp; App-Aktivitäten" für dein Kind aktiviert ist, werden diese Daten möglicherweise in seinem Google-Konto gespeichert. Unter families.google.com findest du weitere Informationen zu dieser Einstellung. Dort erfährst du auch, wie du sie ändern kannst.</translation>
 <translation id="3434475275396485144">Diese Einstellung wird vom Administrator deines Smartphones verwaltet</translation>
@@ -3358,6 +3359,7 @@ Servernachricht: <ph name="SERVER_MSG" /></translation>
 <translation id="3605156246402033687">{COUNT,plural, =1{{COUNT} Konto mit demselben Passwort}other{{COUNT} Konten mit demselben Passwort}}</translation>
 <translation id="3605780360466892872">Hemdträger</translation>
 <translation id="3607671391978830431">Für ein Kind</translation>
+<translation id="3608460311600621471">Bitte gib einen Grund für das Drucken dieser Daten an:</translation>
 <translation id="3608730769702025110">Schritt 3 von 4: Personenidentifizierbare Informationen prüfen</translation>
 <translation id="3609277884604412258">Schnellsuche</translation>
 <translation id="3610241585790874201">Speichern von Daten auf deinem Gerät nicht genehmigt</translation>
@@ -5043,6 +5045,7 @@ Zum Herauszoomen drücke Strg + Alt + „Helligkeit verringern“.</translatio
 <translation id="4918134162946436591">Hinweis-Overlay anzeigen</translation>
 <translation id="4918762404810341788">Kopieren und öffnen</translation>
 <translation id="4921348630401250116">Sprachausgabe</translation>
+<translation id="4922104989726031751">Wenn du den Passwortmanager mit deinem Betriebssystem verwenden möchtest, starte Chromium neu und erlaube den Zugriff auf den Passwortmanager deines Computers. Deine Tabs werden nach dem Neustart wieder geöffnet.</translation>
 <translation id="492299503953721473">Android-Apps entfernen</translation>
 <translation id="492363500327720082"><ph name="APP_NAME" /> wird deinstalliert…</translation>
 <translation id="4924002401726507608">Feedback geben</translation>
@@ -6659,6 +6662,7 @@ Berechtigungen, die du Websites und Apps bereits gewährt hast, gelten mögliche
 <translation id="6238982280403036866">Dürfen JavaScript verwenden</translation>
 <translation id="6239558157302047471">&amp;Frame neu laden</translation>
 <translation id="6240821072888636753">Jedes Mal fragen</translation>
+<translation id="6240964651812394252">Wenn du den Google Passwortmanager mit deinem Betriebssystem verwenden möchtest, starte Chrome neu und erlaube den Zugriff auf den Passwortmanager deines Computers. Deine Tabs werden nach dem Neustart wieder geöffnet.</translation>
 <translation id="6241530762627360640">Informationen zu mit deinem System gekoppelten Bluetooth-Geräten abrufen und Bluetooth-Geräte in der Nähe finden</translation>
 <translation id="6241844896329831164">Kein Zugriff erforderlich</translation>
 <translation id="6242574558232861452">Dieser Download wird auf die Einhaltung der Sicherheitsrichtlinien deines Unternehmens geprüft.</translation>
@@ -6693,6 +6697,7 @@ Berechtigungen, die du Websites und Apps bereits gewährt hast, gelten mögliche
 <translation id="6264365405983206840">&amp;Alles auswählen</translation>
 <translation id="6264376385120300461">Trotzdem herunterladen</translation>
 <translation id="6264520534872750757">Gerät weiterhin verwenden</translation>
+<translation id="6264636978858465832">Der Passwortmanager benötigt einen umfassenderen Zugriff</translation>
 <translation id="6265159465845424232">Vor dem Kopieren oder Verschieben von Microsoft-Dateien in bzw. nach Microsoft OneDrive fragen</translation>
 <translation id="6265687851677020761">Port entfernen</translation>
 <translation id="6266532094411434237">Verbindung zu <ph name="DEVICE" /> wird hergestellt</translation>
@@ -8320,6 +8325,7 @@ Du hast # weitere gehackte Passwörter. Der Google Passwortmanager empfiehlt, d
 <translation id="7576976045740938453">Ein Problem mit dem Konto für den Demomodus ist aufgetreten.</translation>
 <translation id="7578137152457315135">Einstellungen für Fingerabdruck</translation>
 <translation id="7578692661782707876">Gib deinen Bestätigungscode ein.</translation>
+<translation id="757941033127302446">Angemeldet</translation>
 <translation id="7581007437437492586">Richtlinien sind korrekt konfiguriert</translation>
 <translation id="7581462281756524039">Ein Bereinigungstool</translation>
 <translation id="7582582252461552277">Dieses Netzwerk bevorzugen</translation>

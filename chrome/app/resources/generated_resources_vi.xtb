@@ -2400,7 +2400,6 @@ Bạn có thể quản lý các tùy chọn cài đặt của tài khoản này 
 <translation id="2794522004398861033">Hãy kết nối Wi-Fi hoặc Ethernet để thiết lập eSIM</translation>
 <translation id="2794977172822818797">Thêm các trang web hiện tại</translation>
 <translation id="2795716239552913152">Các trang web thường sử dụng thông tin vị trí của bạn cho các tính năng hoặc thông tin liên quan, như tin tức địa phương hoặc cửa hàng lân cận</translation>
-<translation id="2795950023277268902">Kết nối <ph name="BEGIN_BOLD" /><ph name="DRIVE_ACCOUNT_EMAIL" /><ph name="END_BOLD" /> để truy cập vào các tệp trên Drive của bạn trong ứng dụng Files</translation>
 <translation id="2798347533012571708">Duy trì cập nhật</translation>
 <translation id="2799223571221894425">Chạy lại</translation>
 <translation id="2800309299477632167">Sơ đồ bàn phím tuỳ chỉnh</translation>
@@ -8348,6 +8347,7 @@ Bạn còn # mật khẩu bị lộ nữa. Trình quản lý mật khẩu của 
 <translation id="7576976045740938453">Đã xảy ra lỗi với tài khoản chế độ minh họa.</translation>
 <translation id="7578137152457315135">Các tùy chọn xác thực bằng vân tay</translation>
 <translation id="7578692661782707876">Vui lòng nhập mã xác nhận của bạn.</translation>
+<translation id="757941033127302446">Đã đăng nhập</translation>
 <translation id="7581007437437492586">Các chính sách phải được định cấu hình đúng cách</translation>
 <translation id="7581462281756524039">Công cụ làm sạch</translation>
 <translation id="7582582252461552277">Thích mạng này</translation>

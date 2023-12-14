@@ -39,6 +39,7 @@
 <translation id="1060136083665017312">Гульнявыя сістэмы і прыстаўкі</translation>
 <translation id="1060320201901229167">Канверт Kaku 5</translation>
 <translation id="10614374240317010">Ніколі не захоўваліся</translation>
+<translation id="1062407476771304334">Замяніць</translation>
 <translation id="1064054731605354900">A3x5</translation>
 <translation id="106701514854093668">Закладкі на працоўным стале</translation>
 <translation id="1068672505746868501">Ніколі не перакладаць старонкі на наступнай мове: <ph name="SOURCE_LANGUAGE" /></translation>
@@ -133,7 +134,6 @@
 <translation id="1240347957665416060">Назва вашай прылады</translation>
 <translation id="124116460088058876">Іншыя мовы</translation>
 <translation id="1243027604378859286">Аўтар:</translation>
-<translation id="1246424317317450637">Паўтлусты</translation>
 <translation id="1247030632403369975">Алюміній</translation>
 <translation id="1252209483516427155">Вопратка</translation>
 <translation id="1253921432148366685"><ph name="TYPE_1" />, <ph name="TYPE_2" /> (сінхранізаваныя)</translation>
@@ -933,7 +933,6 @@
 <translation id="2858134430383535011">200 x 300 мм</translation>
 <translation id="2859806420264540918">Гэты сайт паказвае назойлівую рэкламу або рэкламу, якая ўводзіць у зман.</translation>
 <translation id="28618371182701850">Электрычныя і гібрыдныя аўтамабілі</translation>
-<translation id="287596039013813457">Таварыскі</translation>
 <translation id="28761159517501904">Фільмы</translation>
 <translation id="2876489322757410363">Адбудзецца выхад з рэжыму інкогніта для плацяжу праз знешнюю праграму. Працягнуць?</translation>
 <translation id="2876949457278336305"><ph name="MANAGE_SECURITY_SETTINGS_FOCUSED_FRIENDLY_MATCH_TEXT" />. Каб кіраваць параметрамі Бяспечнага прагляду і выконваць іншыя дзеянні праз налады Chrome, націсніце Tab, затым Enter</translation>
@@ -1126,7 +1125,6 @@
 <translation id="3240791268468473923">Быў адкрыты аркуш, які паказваецца пры адсутнасці супадзення ўліковых даных для бяспечных плацяжоў</translation>
 <translation id="324180406144491771">Спасылкі "<ph name="HOST_NAME" />" заблакіраваны</translation>
 <translation id="3249151924975132674">Крэдыты на навучанне</translation>
-<translation id="3249845759089040423">Стыльны</translation>
 <translation id="3250640885957938546">Рэклама і маркетынг</translation>
 <translation id="3252772880526154546">Архітэктура</translation>
 <translation id="3254301855501243548">18 x 22 цалі</translation>
@@ -1222,6 +1220,7 @@
 <translation id="3432601291244612633">Закрыць старонку</translation>
 <translation id="3433111389595862568">Праграмнае забеспячэнне для сумеснай працы і канферэнцый</translation>
 <translation id="3433144818443565002">Галасавы і відэачат</translation>
+<translation id="3434025015623587566">Менеджару пароляў Google патрабуюцца шырэйшыя правы доступу</translation>
 <translation id="343474037147570563">Запампаваныя і далучаныя файлы перасылаюцца для аналізу ў Google Cloud або трэцім бакам. У прыватнасці, яны могуць быць правераны на наяўнасць канфідэнцыяльных даных або шкодных праграм альбо адпраўлены на захоўванне ў адпаведнасці з палітыкамі кампаніі і іх зможа пабачыць адміністратар.</translation>
 <translation id="3435557549311968410">Ролевая папера (злучаная па кароткім краі)</translation>
 <translation id="3435738964857648380">Бяспека</translation>
@@ -1808,7 +1807,6 @@
 <translation id="4598556348158889687">Кіраванне сховішчам</translation>
 <translation id="4600084978141515058">Веганская кухня</translation>
 <translation id="4602465984861132303">Боўлінг</translation>
-<translation id="4606870351894164739">Уражальны</translation>
 <translation id="4607608436550361748">Паказаць парады адносна Chrome</translation>
 <translation id="460848736049414407">Заблакіравана адміністратарам</translation>
 <translation id="4610279718074907952">Гэты сайт належыць да вызначанай даменам <ph name="SET_OWNER" /> групы сайтаў, якія маюць доступ да звестак пра вашы дзеянні</translation>
@@ -1922,13 +1920,11 @@
 <translation id="4819347708020428563">Збіраецеся змяняць анатацыі ў стандартным выглядзе?</translation>
 <translation id="4822493756793346865">Звесткі пра звычайныя цэны грунтуюцца на даных з крам у інтэрнэце за мінулыя 90 дзён.</translation>
 <translation id="4825496307559726072"><ph name="CREATE_GOOGLE_SHEET_FOCUSED_FRIENDLY_MATCH_TEXT" />. Каб хутка стварыць новую табліцу Google, націсніце Tab, затым Enter</translation>
-<translation id="4825507807291741242">Моцны</translation>
 <translation id="4826588772550366629">камеру і мікрафон</translation>
 <translation id="4827283332383516812">Выдаленне карткі</translation>
 <translation id="4831993743164297314">Папера для фотанаборнай машыны</translation>
 <translation id="483241715238664915">Уключыць папярэджанні</translation>
 <translation id="4834250788637067901">Спосабы аплаты, прапановы і адрасы, якія выкарыстоўваюць Google Pay</translation>
-<translation id="4838327282952368871">Летуценны</translation>
 <translation id="4839087176073128681">Плаціце карткай хутчэй і абараняйце яе даныя з дапамогай перадавых тэхналогій бяспекі Google.</translation>
 <translation id="4840250757394056958">Праглядзець гісторыю Chrome</translation>
 <translation id="484462545196658690">Аўтаматычна</translation>
@@ -1973,6 +1969,7 @@
 <translation id="4918221908152712722">Усталюйце праграму "<ph name="APP_NAME" />" (спампоўка не патрабуецца)</translation>
 <translation id="4920457992177678649">Жыллё для адпачынку і кароткачасовага прабывання</translation>
 <translation id="4920710383559189047">Чахол у выглядзе канверта</translation>
+<translation id="4922104989726031751">Каб выкарыстоўваць Менеджар пароляў з вашай аперацыйнай сістэмай, перазапусціце Chromium і дайце доступ да менеджара пароляў на вашым камп'ютары. Пасля перазапуску ўкладкі будуць адкрыты паўторна.</translation>
 <translation id="4923459931733593730">Плацеж</translation>
 <translation id="4926049483395192435">Трэба вызначыць.</translation>
 <translation id="4926159001844873046">Паведамленне на старонцы <ph name="SITE" /></translation>
@@ -2499,7 +2496,6 @@
 <translation id="6005659677094197001">Ролевая папера</translation>
 <translation id="6005765687956866568">Унесеная з дапамогай функцыі аўтазапаўнення інфармацыя выдалена з формы</translation>
 <translation id="6006365096047131769">3 x 5 цаляў</translation>
-<translation id="6006484371116297560">Класічная</translation>
 <translation id="6008122969617370890">Парадак "ад N да 1"</translation>
 <translation id="6008256403891681546">JCB</translation>
 <translation id="6014139350017893009">Рамонт і абслугоўванне аўтамабіляў</translation>
@@ -2614,6 +2610,7 @@
 <translation id="6234122620015464377">Абрэзка пасля кожнага дакумента</translation>
 <translation id="6236290670123303279">Кіраваць наладамі</translation>
 <translation id="6240447795304464094">Лагатып Google Pay</translation>
+<translation id="6240964651812394252">Каб выкарыстоўваць Менеджар пароляў з вашай аперацыйнай сістэмай, перазапусціце Chrome і дайце доступ да менеджара пароляў на вашым камп'ютары. Пасля перазапуску ўкладкі будуць адкрыты паўторна.</translation>
 <translation id="6241121617266208201">Схаваць прапановы</translation>
 <translation id="624499991300733384">Сэрвіс стварэння заданняў для друку</translation>
 <translation id="6251906504834538140">{0,plural, =1{Файл не можа быць перамешчаны па прычыне блакіроўкі}one{<ph name="FILE_COUNT" /> файл не можа быць перамешчаны па прычыне блакіроўкі}few{<ph name="FILE_COUNT" /> файлы не могуць быць перамешчаны па прычыне блакіроўкі}many{<ph name="FILE_COUNT" /> файлаў не могуць быць перамешчаны па прычыне блакіроўкі}other{<ph name="FILE_COUNT" /> файла не могуць быць перамешчаны па прычыне блакіроўкі}}</translation>
@@ -2624,6 +2621,7 @@
 <translation id="6263376278284652872">Закладкі <ph name="DOMAIN" /></translation>
 <translation id="6264376385120300461">Усё роўна спампаваць</translation>
 <translation id="6264485186158353794">Назад да бяспечнага карыстання</translation>
+<translation id="6264636978858465832">Менеджару пароляў патрабуюцца шырэйшыя правы доступу</translation>
 <translation id="6265794661083428563">Скапіраваць значэнне палітыкі "<ph name="POLICY_NAME" />"</translation>
 <translation id="6266934640124581640">Светла-сіне-зялёны</translation>
 <translation id="6270066318535733958">Лодачны спорт</translation>
@@ -3214,7 +3212,6 @@
       &lt;li&gt;Каб даведацца, як назаўжды выдаліць гэта праграмнае забеспячэнне з вашага камп'ютара, наведайце старонку &lt;a href="https://support.google.com/chrome/answer/6098869"&gt;Даведачны цэнтр Chrome&lt;/a&gt;.
       &lt;/ol&gt;</translation>
 <translation id="7408613996403626141">Цацкі</translation>
-<translation id="7410471291937727359">Мілы</translation>
 <translation id="741204030948306876">Так, я згаджаюся</translation>
 <translation id="7416351320495623771">Кіраваць паролямі…</translation>
 <translation id="7418620734632363981">Праграмаванне</translation>
@@ -4046,7 +4043,6 @@
 <translation id="9023536760430404133">Аўтамабільныя колы і шыны</translation>
 <translation id="9025348182339809926">(Несапраўдны)</translation>
 <translation id="902590795160480390">Ідзе загрузка PDF</translation>
-<translation id="9030265603405983977">Манахромны</translation>
 <translation id="9035022520814077154">Памылка бяспекі</translation>
 <translation id="9035824888276246493">Захоўваць коды бяспекі</translation>
 <translation id="9036306139374661733">Дазволіць доступ да мікрафона?</translation>
@@ -4090,7 +4086,6 @@
 <translation id="9114524666733003316">Пацвярджаюцца даныя карткі...</translation>
 <translation id="9114581008513152754">Гэты браўзер не знаходзіцца пад кіраваннем кампаніі або іншай арганізацыі. Аднак сама прылада можа знаходзіцца пад знешнім кіраваннем. <ph name="BEGIN_LINK" />Даведацца больш<ph name="END_LINK" /></translation>
 <translation id="9116548361133462832">Падрабязней пра рэкламу ў браўзеры Chrome</translation>
-<translation id="9117930699067497412">Свежы</translation>
 <translation id="9118692854637641831"><ph name="HISTORY_CLUSTERS_SEARCH_FOCUSED_FRIENDLY_MATCH_TEXT" />. Каб пашукаць звязаныя дзеянні ў гісторыі праглядаў Chrome, націсніце Tab, затым Enter</translation>
 <translation id="9119042192571987207">Запампавана</translation>
 <translation id="9122954576417194280">Гандаль таварамі і ф'ючарсамі</translation>

@@ -78,6 +78,7 @@
 <translation id="4705093842003735294">Hög upplösning</translation>
 <translation id="4864143361253542638">Lista över skannade sidor</translation>
 <translation id="4890010094662541459">3 × 3</translation>
+<translation id="4892746741161549733">Kopiera länkadress <ph name="URL" /></translation>
 <translation id="491895758387112773">Multistream-videoinspelning</translation>
 <translation id="495170559598752135">Åtgärder</translation>
 <translation id="4984613436295737187">Quad HD (1440p)</translation>
@@ -129,6 +130,7 @@ Om din feedback handlar om bild- eller videokvalitet bifogar du en exempelbild e
 <translation id="7450541714075000668">Texten har kopierats</translation>
 <translation id="7488619942230388918">Spela in GIF-video</translation>
 <translation id="7557677699350329807">Byt till nästa kamera</translation>
+<translation id="7562584071994185503">Kopiera text <ph name="TEXT" /></translation>
 <translation id="7607002721634913082">Pausad</translation>
 <translation id="7608223098072244877">Fyra gånger fyra</translation>
 <translation id="761421184377987513">Flyttas nedåt åt vänster</translation>
@@ -150,6 +152,7 @@ Om din feedback handlar om bild- eller videokvalitet bifogar du en exempelbild e
 <translation id="8346544573713510785">Skala bildrutor efter kamerans MAL</translation>
 <translation id="8425673304802773841">Vrid nedåt</translation>
 <translation id="8428213095426709021">Inställningar</translation>
+<translation id="8609951387004618906">Öppna <ph name="URL" /></translation>
 <translation id="8629662593426079630">360p</translation>
 <translation id="8711011893539266636">Aktivera eller inaktivera Ljud av för mikrofonen. Ljud av aktiverat för mikrofonen</translation>
 <translation id="8730621377337864115">Klart</translation>

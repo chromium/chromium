@@ -2400,7 +2400,6 @@ Para gerenciar as configurações dessa conta, instale o app Family Link no seu 
 <translation id="2794522004398861033">Conecte-se a uma rede Wi-Fi ou Ethernet para configurar o eSIM</translation>
 <translation id="2794977172822818797">Adicionar sites atuais</translation>
 <translation id="2795716239552913152">Os sites geralmente usam sua localização para recursos ou informações relevantes, como notícias locais ou lojas por perto</translation>
-<translation id="2795950023277268902">Conecte-se à conta <ph name="BEGIN_BOLD" /><ph name="DRIVE_ACCOUNT_EMAIL" /><ph name="END_BOLD" /> para acessar seus arquivos do Drive no app Arquivos</translation>
 <translation id="2798347533012571708">Manter atualizações</translation>
 <translation id="2799223571221894425">Reiniciar</translation>
 <translation id="2800309299477632167">Mapa de atalhos personalizado</translation>
@@ -2647,6 +2646,7 @@ Para gerenciar as configurações dessa conta, instale o app Family Link no seu 
 <translation id="2990313168615879645">Adicionar Conta do Google</translation>
 <translation id="2990375978470734995">Para que essa mudança seja aplicada, reconecte os acessórios externos.</translation>
 <translation id="2990583317361835189">Não permitir que os sites usem os sensores de movimento</translation>
+<translation id="2991182900092497283">Informe um motivo para colar esses dados:</translation>
 <translation id="2992931425024192067">Mostrar todo o conteúdo de notificações</translation>
 <translation id="2993517869960930405">Informações sobre o aplicativo</translation>
 <translation id="2996108796702395498">O número de série do dispositivo é <ph name="SERIAL_NUMBER" />. Esse número pode ser usado para ativar o serviço.</translation>
@@ -3163,6 +3163,7 @@ Para gerenciar as configurações dessa conta, instale o app Family Link no seu 
 <translation id="3432762828853624962">Shared Workers</translation>
 <translation id="3433507769937235446">Bloquear ao sair</translation>
 <translation id="3433621910545056227">Ops! O sistema falhou ao estabelecer o bloqueio de atributos da hora de instalação do dispositivo.</translation>
+<translation id="3434025015623587566">O Gerenciador de senhas do Google precisa de mais acesso</translation>
 <translation id="3434107140712555581"><ph name="BATTERY_PERCENTAGE" />%</translation>
 <translation id="3434272557872943250">Se a configuração "Atividade na Web e de apps adicional" estiver ativada para a criança, esses dados poderão ser salvos na Conta do Google dela. Saiba mais sobre essas configurações e como ajustá-las em families.google.com.</translation>
 <translation id="3434475275396485144">Esta configuração é gerenciada pelo administrador do smartphone</translation>
@@ -3377,6 +3378,7 @@ Para gerenciar as configurações dessa conta, instale o app Family Link no seu 
 <translation id="3605156246402033687">{COUNT,plural, =1{{COUNT} conta usando a mesma senha}one{{COUNT} conta usando a mesma senha}other{{COUNT} contas usando a mesma senha}}</translation>
 <translation id="3605780360466892872">Esporte fino</translation>
 <translation id="3607671391978830431">Para uma criança</translation>
+<translation id="3608460311600621471">Informe um motivo para imprimir esses dados:</translation>
 <translation id="3608730769702025110">Etapa 3 de 4: confira as informações de identificação pessoal</translation>
 <translation id="3609277884604412258">Pesquisa rápida</translation>
 <translation id="3610241585790874201">Sem permissão para salvar dados no dispositivo</translation>
@@ -5063,6 +5065,7 @@ Use Ctrl + Alt + Diminuir brilho para diminuir o zoom.</translation>
 <translation id="4918134162946436591">Mostrar dica sobreposta</translation>
 <translation id="4918762404810341788">Copiar e abrir</translation>
 <translation id="4921348630401250116">Conversão de texto em voz</translation>
+<translation id="4922104989726031751">Para usar o Gerenciador de senhas com seu sistema operacional, reinicie o Chromium e permita o acesso ao gerenciador de senhas do computador. Suas guias serão reabertas após a reinicialização.</translation>
 <translation id="492299503953721473">Remover apps Android</translation>
 <translation id="492363500327720082">Desinstalando <ph name="APP_NAME" />…</translation>
 <translation id="4924002401726507608">Enviar feedback</translation>
@@ -6683,6 +6686,7 @@ Não exponha nenhuma informação confidencial.</translation>
 <translation id="6238982280403036866">Permitir o uso do JavaScript</translation>
 <translation id="6239558157302047471">Atualizar &amp;frame</translation>
 <translation id="6240821072888636753">Perguntar sempre</translation>
+<translation id="6240964651812394252">Para usar o Gerenciador de senhas do Google com seu sistema operacional, reinicie o Chrome e permita o acesso ao gerenciador de senhas do computador. Suas guias serão reabertas após a reinicialização.</translation>
 <translation id="6241530762627360640">Acessar informações sobre dispositivos Bluetooth pareados com seu sistema e descobrir dispositivos Bluetooth nas proximidades.</translation>
 <translation id="6241844896329831164">Nenhum acesso necessário</translation>
 <translation id="6242574558232861452">Verificando com as políticas de segurança da sua organização.</translation>
@@ -6717,6 +6721,7 @@ Não exponha nenhuma informação confidencial.</translation>
 <translation id="6264365405983206840">Selecionar &amp;tudo</translation>
 <translation id="6264376385120300461">Fazer o download mesmo assim</translation>
 <translation id="6264520534872750757">Continuar usando o dispositivo</translation>
+<translation id="6264636978858465832">O Gerenciador de senhas precisa de mais acesso</translation>
 <translation id="6265159465845424232">Perguntar antes de copiar ou mover arquivos da Microsoft para o Microsoft OneDrive</translation>
 <translation id="6265687851677020761">Remover porta</translation>
 <translation id="6266532094411434237">Conectando ao <ph name="DEVICE" /></translation>
@@ -8346,6 +8351,7 @@ Há # outras senhas comprometidas. O Gerenciador de senhas do Google recomenda q
 <translation id="7576976045740938453">Ocorreu um problema com a conta do modo de demonstração.</translation>
 <translation id="7578137152457315135">Configurações de impressão digital</translation>
 <translation id="7578692661782707876">Informe o código de confirmação.</translation>
+<translation id="757941033127302446">Conectado</translation>
 <translation id="7581007437437492586">As políticas estão configuradas corretamente</translation>
 <translation id="7581462281756524039">Uma ferramenta de limpeza</translation>
 <translation id="7582582252461552277">Preferir esta rede</translation>

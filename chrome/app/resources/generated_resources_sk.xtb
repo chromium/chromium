@@ -2387,7 +2387,6 @@ Ak chcete spravovať nastavenia tohto účtu, nainštalujte si do zariadenia apl
 <translation id="2794522004398861033">Ak chcete nastaviť kartu eSIM, pripojte sa k sieti Wi‑Fi alebo ethernetu</translation>
 <translation id="2794977172822818797">Pridať aktuálne weby</translation>
 <translation id="2795716239552913152">Weby zvyčajne používajú vašu polohu, aby mohli poskytovať relevantné funkcie či informácie, napríklad miestne správy alebo predajne v okolí</translation>
-<translation id="2795950023277268902">Ak chcete získať prístup k svojim súborom na Disku v aplikácii Súbory, pripojte účet <ph name="BEGIN_BOLD" /><ph name="DRIVE_ACCOUNT_EMAIL" /><ph name="END_BOLD" /></translation>
 <translation id="2798347533012571708">Dostávať aktualizácie</translation>
 <translation id="2799223571221894425">Znova spustiť</translation>
 <translation id="2800309299477632167">Vlastná mapa klávesov</translation>
@@ -8337,6 +8336,7 @@ Máte ešte # ďalších. Správca hesiel Google odporúča okamžite dané hes
 <translation id="7576976045740938453">Vyskytol sa problém s účtom režimu ukážky.</translation>
 <translation id="7578137152457315135">Nastavenia odtlačku prsta</translation>
 <translation id="7578692661782707876">Zadajte potvrdzovací kód.</translation>
+<translation id="757941033127302446">Prihlásili ste sa</translation>
 <translation id="7581007437437492586">Pravidlá sú nakonfigurované správne</translation>
 <translation id="7581462281756524039">Nástroj na čistenie</translation>
 <translation id="7582582252461552277">Preferovať túto sieť</translation>

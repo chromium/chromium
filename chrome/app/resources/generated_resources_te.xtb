@@ -1655,6 +1655,7 @@
 <translation id="2249111429176737533">ట్యాబ్ చేసిన విండో లాగా తెరువు</translation>
 <translation id="2249605167705922988">ఉదా. 1-5, 8, 11-13</translation>
 <translation id="2249635629516220541">మీకు యాడ్‌లను చూపడం కోసం సైట్‌లు ఉపయోగించిన సమాచారాన్ని అనుకూలంగా మార్చవచ్చు</translation>
+<translation id="2250624716625396929">ఈ ట్యాబ్ మీ కెమెరా, మైక్రోఫోన్‌ను ఉపయోగిస్తోంది</translation>
 <translation id="2251218783371366160">సిస్టమ్ వ్యూయర్‌తో తెరువు</translation>
 <translation id="225163402930830576">నెట్‌వర్క్‌లను రిఫ్రెష్ చేయండి</translation>
 <translation id="2251809247798634662">కొత్త అజ్ఞాత విండో</translation>
@@ -2398,7 +2399,6 @@
 <translation id="2794522004398861033">eSIMను సెటప్ చేయడానికి Wi-Fi లేదా ఈథర్‌నెట్‌కు కనెక్ట్ చేయండి</translation>
 <translation id="2794977172822818797">ప్రస్తుత సైట్‌లను జోడించండి</translation>
 <translation id="2795716239552913152">స్థానిక వార్తలు లేదా సమీపంలోని షాప్‌లు వంటి సందర్భోచిత ఫీచర్‌ల కోసం సాధారణంగా సైట్‌లు లొకేషన్‌ను ఉపయోగించుకుంటాయి</translation>
-<translation id="2795950023277268902">Files యాప్‌లో మీ Drive ఫైళ్లను యాక్సెస్ చేయడానికి <ph name="BEGIN_BOLD" /><ph name="DRIVE_ACCOUNT_EMAIL" /><ph name="END_BOLD" />‌ను కనెక్ట్ చేయండి</translation>
 <translation id="2798347533012571708">అప్‌డేట్‌లను ఉంచుకోండి</translation>
 <translation id="2799223571221894425">మళ్లీ ప్రారంభించండి</translation>
 <translation id="2800309299477632167">అనుకూల కీమ్యాప్</translation>
@@ -6636,6 +6636,7 @@
 <translation id="6202304368170870640">మీరు మీ పిన్‌ని ఉపయోగించి మీ పరికరంలో సైన్ ఇన్ చేయవచ్చు లేదా అన్‌లాక్ చేయవచ్చు.</translation>
 <translation id="6203247599828309566">ఈ సైట్‌లో పాస్‌వర్డ్‌కు సంబంధించి మీరు ఒక గమనికను జోడించారు. దానిని చూడటానికి, కీ చిహ్నాన్ని క్లిక్ చేయండి.</translation>
 <translation id="6205314730813004066">యాడ్‌ల విషయంలో గోప్యత</translation>
+<translation id="6205993460077903908"><ph name="WINDOW_TITLE" /> - మైక్రోఫోన్ రికార్డింగ్</translation>
 <translation id="6206199626856438589">తెరిచిన ట్యాబ్‌లతో సహా ప్రదర్శించబడిన సైట్‌ల నుండి మీరు సైన్ అవుట్ చేయబడతారు</translation>
 <translation id="6206311232642889873">చిత్రాన్ని కా&amp;పీ చేయండి</translation>
 <translation id="6207200176136643843">డిఫాల్ట్ జూమ్ స్థాయికి రీసెట్ చేయండి</translation>
@@ -7187,6 +7188,7 @@
 <translation id="6657585470893396449">పాస్‌వర్డ్</translation>
 <translation id="6659213950629089752">ఈ పేజీ "<ph name="NAME" />" ఎక్స్‌టెన్షన్‌ ద్వారా జూమ్ చేయబడింది</translation>
 <translation id="6659594942844771486">బ్రౌజర్ ట్యాబ్</translation>
+<translation id="6660099350750552197"><ph name="WINDOW_TITLE" /> - కెమెరా రికార్డింగ్</translation>
 <translation id="6660819301598582123">దేశ భాషలందు తెలుగు లెస్స</translation>
 <translation id="666099631117081440">ప్రింట్ సర్వర్‌లు</translation>
 <translation id="6662931079349804328">ఎంటర్‌ప్రైజ్ పాలసీ మార్చబడింది. టూల్‌బార్ నుండి ప్రయోగాల బటన్ తీసివేయబడింది.</translation>
@@ -8346,6 +8348,7 @@
 <translation id="7576976045740938453">డెమో మోడ్ ఖాతాకు సంబంధించి ఒక సమస్య ఏర్పడింది.</translation>
 <translation id="7578137152457315135">వేలిముద్ర సెట్టింగ్‌లు</translation>
 <translation id="7578692661782707876">దయచేసి మీ నిర్ధారణ కోడ్‌ను ఎంటర్ చేయండి.</translation>
+<translation id="757941033127302446">సైన్ ఇన్ చేయబడింది</translation>
 <translation id="7581007437437492586">పాలసీలు సరిగానే కాన్ఫిగ‌ర్ చేయబడ్డాయి</translation>
 <translation id="7581462281756524039">క్లీన్‌అప్ సాధనం</translation>
 <translation id="7582582252461552277">ఈ నెట్‌వర్క్‌ను ప్రాధాన్యపరచు</translation>
@@ -8995,6 +8998,7 @@
 <translation id="8059417245945632445">&amp;పరికరాలను పర్యవేక్షించు</translation>
 <translation id="8059456211585183827">సేవ్ చేయాల్సిన ప్రింటర్‌లు ఏవీ అందుబాటులో లేవు.</translation>
 <translation id="8061091456562007989">దీనిని తిరిగి మార్చు</translation>
+<translation id="8061244502316511332">ఈ ట్యాబ్ మీ మైక్రోఫోన్‌ను ఉపయోగిస్తోంది</translation>
 <translation id="8061970399284390013">అక్షరక్రమం, వ్యాకరణ చెక్</translation>
 <translation id="8061991877177392872">మీరు ఇప్పటికే మరో పరికరంలో మీ Assistantతో వాయిస్ మ్యాచ్‌ను సెటప్ చేసినట్టుగా అనిపిస్తోంది. ఈ పరికరంలో వాయిస్ నమూనాను రూపొందించడం కోసం ఈ మునుపటి రికార్డింగ్‌లు ఉపయోగించబడ్డాయి.</translation>
 <translation id="8062844841289846053">{COUNT,plural, =1{1 పేపర్ షీట్}other{{COUNT} పేపర్ షీట్‌లు}}</translation>
@@ -9476,6 +9480,7 @@
 <translation id="844063558976952706">ఎల్లప్పుడూ ఈ సైట్‌లో</translation>
 <translation id="8441313165929432954">టెథరింగ్‌ను ఎనేబుల్/డిజేబుల్ చేయండి</translation>
 <translation id="8443986842926457191">URLలో 2048 కంటే ఎక్కువ అక్షరాలు ఉన్నాయి</translation>
+<translation id="8445281870900174108">ఈ ట్యాబ్ మీ కెమెరాను ఉపయోగిస్తోంది</translation>
 <translation id="8446884382197647889">మరింత తెలుసుకోండి</translation>
 <translation id="8447409163267621480">Ctrl లేదా Altను చేర్చండి</translation>
 <translation id="844850004779619592">కమాండ్‌లు ఏవీ కనుగొనబడలేదు</translation>
@@ -10550,6 +10555,7 @@
 <translation id="981121421437150478">ఆఫ్‌లైన్</translation>
 <translation id="983192555821071799">అన్ని ట్యాబ్‌లను మూసివేయి</translation>
 <translation id="983511809958454316">VRలో ఈ ఫీచర్‌కు మద్దతు లేదు</translation>
+<translation id="983531994960412650"><ph name="WINDOW_TITLE" /> - కెమెరా, మైక్రోఫోన్ రికార్డింగ్</translation>
 <translation id="984275831282074731">పేమెంట్ ఆప్షన్‌లు</translation>
 <translation id="984705303330760860">స్పెల్ చెక్ భాషలను జోడించండి</translation>
 <translation id="98515147261107953">సమతలదిశ</translation>

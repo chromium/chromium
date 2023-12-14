@@ -1643,6 +1643,7 @@
 <translation id="2249111429176737533">Отвори као прозор са картицама</translation>
 <translation id="2249605167705922988">нпр. 1–5, 8, 11–13</translation>
 <translation id="2249635629516220541">Прилагодите информације које сајтови користе да би вам приказивали огласе</translation>
+<translation id="2250624716625396929">Ова картица користи камеру и микрофон</translation>
 <translation id="2251218783371366160">Отвори помоћу системског приказивача</translation>
 <translation id="225163402930830576">Освежи мреже</translation>
 <translation id="2251809247798634662">Нови прозор без архивирања</translation>
@@ -2383,7 +2384,6 @@
 <translation id="2794522004398861033">Повежите се на WiFi или етернет да бисте подесили eSIM</translation>
 <translation id="2794977172822818797">Додајте актуелне сајтове</translation>
 <translation id="2795716239552913152">Сајтови обично користе вашу локацију за релевантне функције или информације, попут локалних вести или продавница у близини</translation>
-<translation id="2795950023277268902">Повежите <ph name="BEGIN_BOLD" /><ph name="DRIVE_ACCOUNT_EMAIL" /><ph name="END_BOLD" /> да бисте приступали фајловима на Диску у апликацији Фајлови</translation>
 <translation id="2798347533012571708">Задржи ажурирања</translation>
 <translation id="2799223571221894425">Поново покрени</translation>
 <translation id="2800309299477632167">Прилагођена мапа тастера</translation>
@@ -2630,6 +2630,7 @@
 <translation id="2990313168615879645">Додајте Google налог</translation>
 <translation id="2990375978470734995">Да би ова промена ступила на снагу, поново повежите спољну додатну опрему.</translation>
 <translation id="2990583317361835189">Не дозвољавај сајтовима да користе сензоре покрета</translation>
+<translation id="2991182900092497283">Унесите разлог за налепљивање ових података:</translation>
 <translation id="2992931425024192067">Прикажи сав садржај обавештења</translation>
 <translation id="2993517869960930405">Информације о апликацији</translation>
 <translation id="2996108796702395498">Серијски број уређаја је <ph name="SERIAL_NUMBER" />. Помоћу овог броја можете да активирате услугу.</translation>
@@ -3145,6 +3146,7 @@
 <translation id="3432762828853624962">Дељени ресурси</translation>
 <translation id="3433507769937235446">Закључај при одласку</translation>
 <translation id="3433621910545056227">Упс! Систем није успео да одреди закључавање атрибута за време инсталације уређаја.</translation>
+<translation id="3434025015623587566">Google менаџеру лозинки треба додатни приступ</translation>
 <translation id="3434107140712555581"><ph name="BATTERY_PERCENTAGE" />%</translation>
 <translation id="3434272557872943250">Ако за дете укључите подешавање додатне активности на вебу и у апликацијама, ти подаци ће се можда чувати на Google налогу детета. Сазнајте више о овим подешавањима и о томе како да их прилагодите на families.google.com</translation>
 <translation id="3434475275396485144">Овим подешавањем управља администратор телефона</translation>
@@ -3359,6 +3361,7 @@
 <translation id="3605156246402033687">{COUNT,plural, =1{{COUNT} налог користи исту лозинку}one{{COUNT} налог користи исту лозинку}few{{COUNT} налога користе исту лозинку}other{{COUNT} налога користи исту лозинку}}</translation>
 <translation id="3605780360466892872">Јапи</translation>
 <translation id="3607671391978830431">За дете</translation>
+<translation id="3608460311600621471">Унесите разлог за штампање ових података:</translation>
 <translation id="3608730769702025110">3. корак од 4: Прегледајте податке који могу да открију идентитет</translation>
 <translation id="3609277884604412258">Брза претрага</translation>
 <translation id="3610241585790874201">Чување података на уређају није дозвољено</translation>
@@ -5044,6 +5047,7 @@
 <translation id="4918134162946436591">Прикажи преклопни савет</translation>
 <translation id="4918762404810341788">Копирај и отвори</translation>
 <translation id="4921348630401250116">Претварање текста у говор</translation>
+<translation id="4922104989726031751">Да бисте користили Менаџер лозинки са оперативним системом, поново покрените Chromium и омогућите приступ менаџеру лозинки на рачунару. Картице ће се поново отворити после поновног покретања.</translation>
 <translation id="492299503953721473">Уклони Android апликације</translation>
 <translation id="492363500327720082">Деинсталира се <ph name="APP_NAME" />…</translation>
 <translation id="4924002401726507608">Пошаљите повратне информације</translation>
@@ -6616,6 +6620,7 @@
 <translation id="6202304368170870640">Можете да користите PIN за пријављивање на уређај или за откључавање уређаја.</translation>
 <translation id="6203247599828309566">Сачували сте напомену за лозинку на овом сајту. Да бисте је видели, кликните на икону кључа.</translation>
 <translation id="6205314730813004066">Приватност са огласима</translation>
+<translation id="6205993460077903908"><ph name="WINDOW_TITLE" /> – Микрофон снима</translation>
 <translation id="6206199626856438589">Одјавићете се са приказаних сајтова, укључујући и оне на отвореним картицама</translation>
 <translation id="6206311232642889873">Коп&amp;ирај слику</translation>
 <translation id="6207200176136643843">Ресетуј на подразумевани ниво зумирања</translation>
@@ -6663,6 +6668,7 @@
 <translation id="6238982280403036866">Дозвољено им је да користе JavaScript</translation>
 <translation id="6239558157302047471">Поново учитај &amp;оквир</translation>
 <translation id="6240821072888636753">Увек питај</translation>
+<translation id="6240964651812394252">Да бисте користили Google менаџер лозинки са оперативним системом, поново покрените Chrome и дозволите приступ менаџеру лозинки на рачунару. Картице ће се поново отворити после поновног покретања.</translation>
 <translation id="6241530762627360640">Приступање информацијама о Bluetooth уређајима упареним са вашим системом и откривање оближњих Bluetooth уређаја.</translation>
 <translation id="6241844896329831164">Приступ није потребан</translation>
 <translation id="6242574558232861452">Проверава се да ли је у складу са безбедносним смерницама организације.</translation>
@@ -6697,6 +6703,7 @@
 <translation id="6264365405983206840">Изабери &amp;све</translation>
 <translation id="6264376385120300461">Ипак преузми</translation>
 <translation id="6264520534872750757">Настави да користиш уређај</translation>
+<translation id="6264636978858465832">Менаџеру лозинки треба додатни приступ</translation>
 <translation id="6265159465845424232">Питај пре копирања или премештања Microsoft фајлова у Microsoft OneDrive</translation>
 <translation id="6265687851677020761">Уклони порт</translation>
 <translation id="6266532094411434237">Повезује се са уређајем <ph name="DEVICE" /></translation>
@@ -7169,6 +7176,7 @@
 <translation id="6657585470893396449">Лозинка</translation>
 <translation id="6659213950629089752">Ову страницу је зумирао додатак „<ph name="NAME" />“</translation>
 <translation id="6659594942844771486">Картица</translation>
+<translation id="6660099350750552197"><ph name="WINDOW_TITLE" /> – Камера снима</translation>
 <translation id="6660819301598582123">Реците жељу и биће — мађија џиновског духа из флаше почиње.</translation>
 <translation id="666099631117081440">Сервери за штампање</translation>
 <translation id="6662931079349804328">Смернице за предузећа су промењене. Дугме за експерименте је уклоњено из траке с алаткама.</translation>
@@ -8328,6 +8336,7 @@
 <translation id="7576976045740938453">Дошло је до проблема са налогом за режим демонстрације.</translation>
 <translation id="7578137152457315135">Подешавања отиска прста</translation>
 <translation id="7578692661782707876">Унесите кôд за потврду.</translation>
+<translation id="757941033127302446">Пријављени сте</translation>
 <translation id="7581007437437492586">Смернице су исправно конфигурисане</translation>
 <translation id="7581462281756524039">Алатка за чишћење</translation>
 <translation id="7582582252461552277">Подеси као приоритетну мрежу</translation>
@@ -8981,6 +8990,7 @@
 <translation id="8059417245945632445">&amp;Испитај уређаје</translation>
 <translation id="8059456211585183827">Нема доступних штампача за чување.</translation>
 <translation id="8061091456562007989">Поништи измене</translation>
+<translation id="8061244502316511332">Ова картица користи микрофон</translation>
 <translation id="8061970399284390013">Провера правописа и граматике</translation>
 <translation id="8061991877177392872">Изгледа да сте већ подесили Voice Match са Помоћником на другом уређају. Ови претходни снимци су коришћени за прављење гласовног модела на овом уређају.</translation>
 <translation id="8062844841289846053">{COUNT,plural, =1{1 лист папира}one{{COUNT} лист папира}few{{COUNT} листа папира}other{{COUNT} листова папира}}</translation>
@@ -9462,6 +9472,7 @@
 <translation id="844063558976952706">Увек на овом сајту</translation>
 <translation id="8441313165929432954">Омогућавање или онемогућавање привезивања</translation>
 <translation id="8443986842926457191">URL има више од 2048 знакова</translation>
+<translation id="8445281870900174108">Ова картица користи камеру</translation>
 <translation id="8446884382197647889">Сазнајте више</translation>
 <translation id="8447409163267621480">Користите или Ctrl или Alt</translation>
 <translation id="844850004779619592">Није пронађена ниједна команда</translation>
@@ -10538,6 +10549,7 @@
 <translation id="981121421437150478">Офлајн</translation>
 <translation id="983192555821071799">Затвори све картице</translation>
 <translation id="983511809958454316">Ова функција није подржана у ВР-у</translation>
+<translation id="983531994960412650"><ph name="WINDOW_TITLE" /> – Камера и микрофон снимају</translation>
 <translation id="984275831282074731">Начини плаћања</translation>
 <translation id="984705303330760860">Додајте језике за проверу правописа</translation>
 <translation id="98515147261107953">Хоризонтално</translation>

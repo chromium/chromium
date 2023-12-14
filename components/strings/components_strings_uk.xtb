@@ -39,6 +39,7 @@
 <translation id="1060136083665017312">Ігрові системи й консолі</translation>
 <translation id="1060320201901229167">Конверт Kaku 5</translation>
 <translation id="10614374240317010">Ніколи не зберігалося</translation>
+<translation id="1062407476771304334">Замінити</translation>
 <translation id="1064054731605354900">A3x5</translation>
 <translation id="106701514854093668">Закладки на комп’ютері</translation>
 <translation id="1068672505746868501">Ніколи не перекладати сторінки такою мовою: <ph name="SOURCE_LANGUAGE" /></translation>
@@ -133,7 +134,6 @@
 <translation id="1240347957665416060">Назва пристрою</translation>
 <translation id="124116460088058876">Інші мови</translation>
 <translation id="1243027604378859286">Автор:</translation>
-<translation id="1246424317317450637">Жирний</translation>
 <translation id="1247030632403369975">Алюміній</translation>
 <translation id="1252209483516427155">Верхній одяг</translation>
 <translation id="1253921432148366685"><ph name="TYPE_1" />, <ph name="TYPE_2" /> (синхронізовано)</translation>
@@ -933,7 +933,6 @@
 <translation id="2858134430383535011">200 x 300 мм</translation>
 <translation id="2859806420264540918">Цей сайт показує нав’язливі чи оманливі оголошення.</translation>
 <translation id="28618371182701850">Електричні й гібридні автомобілі</translation>
-<translation id="287596039013813457">Приязний</translation>
 <translation id="28761159517501904">Фільми</translation>
 <translation id="2876489322757410363">Щоб оплатити в зовнішньому додатку, ви вийдете з режиму анонімного перегляду. Продовжити?</translation>
 <translation id="2876949457278336305"><ph name="MANAGE_SECURITY_SETTINGS_FOCUSED_FRIENDLY_MATCH_TEXT" />; натисніть Tab, а потім – Enter, щоб керувати Безпечним переглядом і виконувати інші дії в налаштуваннях Chrome</translation>
@@ -1126,7 +1125,6 @@
 <translation id="3240791268468473923">Відкрито нижній екран невідповідності облікових даних для безпечних платежів</translation>
 <translation id="324180406144491771">Посилання <ph name="HOST_NAME" /> заблоковано</translation>
 <translation id="3249151924975132674">Студентські кредити й фінансування освіти</translation>
-<translation id="3249845759089040423">Чудовий</translation>
 <translation id="3250640885957938546">Реклама та маркетинг</translation>
 <translation id="3252772880526154546">Архітектура</translation>
 <translation id="3254301855501243548">18 x 22 дюйм.</translation>
@@ -1810,7 +1808,6 @@
 <translation id="4598556348158889687">Керування пам’яттю</translation>
 <translation id="4600084978141515058">Веганська кухня</translation>
 <translation id="4602465984861132303">Боулінг</translation>
-<translation id="4606870351894164739">Вражаючий</translation>
 <translation id="4607608436550361748">Переглянути поради щодо Chrome</translation>
 <translation id="460848736049414407">Заблоковано адміністратором</translation>
 <translation id="4610279718074907952">Цей сайт належить до групи, визначеної сайтом-власником <ph name="SET_OWNER" />, і інші сайти-учасники можуть бачити ваші дії</translation>
@@ -1924,13 +1921,11 @@
 <translation id="4819347708020428563">Редагувати примітки в режимі перегляду за умовчанням?</translation>
 <translation id="4822493756793346865">Звичайні ціни на основі даних з онлайн-магазинів за останні 90 днів.</translation>
 <translation id="4825496307559726072"><ph name="CREATE_GOOGLE_SHEET_FOCUSED_FRIENDLY_MATCH_TEXT" />; натисніть Tab, а потім – Enter, щоб швидко створити нову таблицю Google</translation>
-<translation id="4825507807291741242">Потужний</translation>
 <translation id="4826588772550366629">камеру та мікрофон</translation>
 <translation id="4827283332383516812">Видалити картку</translation>
 <translation id="4831993743164297314">Папір для іміджсетера</translation>
 <translation id="483241715238664915">Увімкнути попередження</translation>
 <translation id="4834250788637067901">Способи оплати, пропозиції й адреси з Google Pay</translation>
-<translation id="4838327282952368871">Мрійливий</translation>
 <translation id="4839087176073128681">Швидше оплачуйте покупки й захистіть свою картку за допомогою провідних галузевих технологій безпеки Google.</translation>
 <translation id="4840250757394056958">Переглянути історію Chrome</translation>
 <translation id="484462545196658690">Автоматично</translation>
@@ -2502,7 +2497,6 @@
 <translation id="6005659677094197001">Безперервний друк</translation>
 <translation id="6005765687956866568">Автоматично заповнену інформацію було вилучено з форми</translation>
 <translation id="6006365096047131769">3 x 5 дюйм.</translation>
-<translation id="6006484371116297560">Класична</translation>
 <translation id="6008122969617370890">Порядок від N до 1</translation>
 <translation id="6008256403891681546">JCB</translation>
 <translation id="6014139350017893009">Обслуговування й ремонт транспортних засобів</translation>
@@ -3218,7 +3212,6 @@
       &lt;li&gt;Відвідайте &lt;a href="https://support.google.com/chrome/answer/6098869"&gt;Довідковий центр Chrome&lt;/a&gt;, щоб дізнатися, як повністю видалити програмне забезпечення з комп’ютера
       &lt;/ol&gt;</translation>
 <translation id="7408613996403626141">Іграшки</translation>
-<translation id="7410471291937727359">Милий</translation>
 <translation id="741204030948306876">Увімкнути</translation>
 <translation id="7416351320495623771">Керувати паролями…</translation>
 <translation id="7418620734632363981">Програмування</translation>
@@ -4051,7 +4044,6 @@
 <translation id="9023536760430404133">Автомобільні колеса й шини</translation>
 <translation id="9025348182339809926">(Недійсний)</translation>
 <translation id="902590795160480390">Завантаження файлу PDF</translation>
-<translation id="9030265603405983977">Монохромний</translation>
 <translation id="9035022520814077154">Помилка системи безпеки</translation>
 <translation id="9035824888276246493">Зберігати коди безпеки</translation>
 <translation id="9036306139374661733">Дозволити доступ до мікрофона?</translation>
@@ -4095,7 +4087,6 @@
 <translation id="9114524666733003316">Підтверджуються дані картки…</translation>
 <translation id="9114581008513152754">Цим веб-переглядачем не керує адміністратор компанії чи іншої організації. Діями на цьому пристрої можна керувати за межами Chrome. <ph name="BEGIN_LINK" />Докладніше<ph name="END_LINK" /></translation>
 <translation id="9116548361133462832">Докладніше про рекламу в Chrome</translation>
-<translation id="9117930699067497412">Свіжий</translation>
 <translation id="9118692854637641831"><ph name="HISTORY_CLUSTERS_SEARCH_FOCUSED_FRIENDLY_MATCH_TEXT" />; натисніть Tab, а потім – Enter, щоб відновити пошук і переглянути релевантні дії в історії Chrome</translation>
 <translation id="9119042192571987207">Завантажено</translation>
 <translation id="9122954576417194280">Торгівля біржовими товарами й ф’ючерсами</translation>

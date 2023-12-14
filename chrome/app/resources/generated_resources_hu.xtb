@@ -1656,6 +1656,7 @@ Ha kezelni szeretné a fiók beállításait, telepítse eszközére a Family Li
 <translation id="2249111429176737533">Megnyitás ablakként (lapokkal)</translation>
 <translation id="2249605167705922988">pl. 1-5, 8, 11-13</translation>
 <translation id="2249635629516220541">Megszabhatja, hogy a webhelyek milyen adatokat használhassanak, amikor hirdetéseket jelenítnek meg Önnek</translation>
+<translation id="2250624716625396929">Ez a lap használja a kamerát és a mikrofont</translation>
 <translation id="2251218783371366160">Megnyitás a rendszer megtekintőjével</translation>
 <translation id="225163402930830576">Hálózatok frissítése</translation>
 <translation id="2251809247798634662">Új Inkognitóablak</translation>
@@ -2399,7 +2400,6 @@ Ha kezelni szeretné a fiók beállításait, telepítse eszközére a Family Li
 <translation id="2794522004398861033">Csatlakozzon Wi-Fi- vagy Ethernet-hálózathoz az eSIM beállításához</translation>
 <translation id="2794977172822818797">Aktuális webhelyek hozzáadása</translation>
 <translation id="2795716239552913152">A webhelyek általában arra használják az Ön helyadatait, hogy releváns szolgáltatásokat vagy információkat biztosítsanak (például helyi hírekről vagy közeli üzletekről)</translation>
-<translation id="2795950023277268902">Kapcsolja össze a(z) <ph name="BEGIN_BOLD" /><ph name="DRIVE_ACCOUNT_EMAIL" /><ph name="END_BOLD" /> fiókot, hogy hozzáférhessen a Drive-fájlokhoz a Fájlok alkalmazásban</translation>
 <translation id="2798347533012571708">Frissítések megőrzése</translation>
 <translation id="2799223571221894425">Újraindítás</translation>
 <translation id="2800309299477632167">Egyéni billentyűzetkiosztás</translation>
@@ -2646,6 +2646,7 @@ A(z) <ph name="DOMAIN" /> megköveteli, hogy ne távolítsa el az intelligens k�
 <translation id="2990313168615879645">Google-fiók felvétele</translation>
 <translation id="2990375978470734995">A módosítás életbe léptetéséhez csatlakoztassa újra a külső tartozékokat.</translation>
 <translation id="2990583317361835189">A webhelyek nem használhatnak mozgásérzékelőket</translation>
+<translation id="2991182900092497283">Adja meg az adat beillesztésének okát:</translation>
 <translation id="2992931425024192067">Az értesítések teljes tartalma jelenjen meg</translation>
 <translation id="2993517869960930405">Alkalmazásadatok</translation>
 <translation id="2996108796702395498">Az eszköz sorozatszáma: <ph name="SERIAL_NUMBER" />. Ez a szám a szolgáltatás aktiválására használható.</translation>
@@ -3161,6 +3162,7 @@ A(z) <ph name="DOMAIN" /> megköveteli, hogy ne távolítsa el az intelligens k�
 <translation id="3432762828853624962">Shared workers</translation>
 <translation id="3433507769937235446">Zárolás távozáskor</translation>
 <translation id="3433621910545056227">Hoppá! A rendszer nem tudta létrehozni az eszköz telepítésiidő-attribútumainak zárolását.</translation>
+<translation id="3434025015623587566">A Google Jelszókezelőnek további hozzáférésre van szüksége</translation>
 <translation id="3434107140712555581"><ph name="BATTERY_PERCENTAGE" />%</translation>
 <translation id="3434272557872943250">Ha az Internetes és alkalmazástevékenységek beállítás is be van kapcsolva a gyermekénél, akkor a rendszer ezeket az adatokat mentheti a gyermek Google-fiókjába. Ezekről a funkciókról és beállításuk módjáról a families.google.com oldalon találhat további információt.</translation>
 <translation id="3434475275396485144">Ezt a beállítást a telefon rendszergazdája kezeli</translation>
@@ -3375,6 +3377,7 @@ A(z) <ph name="DOMAIN" /> megköveteli, hogy ne távolítsa el az intelligens k�
 <translation id="3605156246402033687">{COUNT,plural, =1{{COUNT} fiók használja ugyanazt a jelszót}other{{COUNT} fiók használja ugyanazt a jelszót}}</translation>
 <translation id="3605780360466892872">Üzletember</translation>
 <translation id="3607671391978830431">Gyermeknek</translation>
+<translation id="3608460311600621471">Adja meg az adat nyomtatásának okát:</translation>
 <translation id="3608730769702025110">4/3. lépés: A személyazonosításra alkalmas adatok áttekintése</translation>
 <translation id="3609277884604412258">Gyorskeresés</translation>
 <translation id="3610241585790874201">Nem menthet adatokat az eszközre</translation>
@@ -5060,6 +5063,7 @@ kicsinyítéshez pedig a Ctrl + Alt + Fényerő csökkentése billentyűpara
 <translation id="4918134162946436591">Tipp megjelenítésének fedvénye</translation>
 <translation id="4918762404810341788">Másolás és megnyitás</translation>
 <translation id="4921348630401250116">Szövegfelolvasás</translation>
+<translation id="4922104989726031751">Ha az operációs rendszerrel szeretné használni a Jelszókezelőt, indítsa újra a Chromiumot, és engedélyezze a számítógép jelszókezelőjéhez való hozzáférést. Megnyitott lapjai az újraindítás után újra meg fognak nyílni.</translation>
 <translation id="492299503953721473">Android-alkalmazások eltávolítása</translation>
 <translation id="492363500327720082"><ph name="APP_NAME" /> eltávolítása…</translation>
 <translation id="4924002401726507608">Visszajelzés küldése</translation>
@@ -6633,6 +6637,7 @@ Győződjön meg arról, hogy nem ad ki bizalmas adatokat.</translation>
 <translation id="6202304368170870640">PIN-kódjával bejelentkezhet, és feloldhatja eszköze zárolását.</translation>
 <translation id="6203247599828309566">Jelszóra vonatkozó megjegyzést mentett ezen a webhelyen. A megtekintéséhez kattintson a kulcs ikonra.</translation>
 <translation id="6205314730813004066">Hirdetésekhez kapcsolódó adatvédelem</translation>
+<translation id="6205993460077903908"><ph name="WINDOW_TITLE" /> – A mikrofon felvételt készít</translation>
 <translation id="6206199626856438589">A rendszer kijelentkezteti a megjelenített webhelyekről (a megnyitott lapok esetében is)</translation>
 <translation id="6206311232642889873">Ké&amp;p másolása</translation>
 <translation id="6207200176136643843">Visszaállítás az alapértelmezett nagyítási szintre</translation>
@@ -6680,6 +6685,7 @@ Győződjön meg arról, hogy nem ad ki bizalmas adatokat.</translation>
 <translation id="6238982280403036866">Használhatnak JavaScriptet</translation>
 <translation id="6239558157302047471">&amp;Keret újratöltése</translation>
 <translation id="6240821072888636753">Mindig kérdezzen rá</translation>
+<translation id="6240964651812394252">Ha az operációs rendszerrel szeretné használni a Jelszókezelőt, indítsa újra a Chrome-ot, és engedélyezze a számítógép jelszókezelőjéhez való hozzáférést. Megnyitott lapjai az újraindítás után újra meg fognak nyílni.</translation>
 <translation id="6241530762627360640">A rendszerrel párosított Bluetooth-eszközökkel kapcsolatos információk elérése és a közeli Bluetooth-eszközök felderítése.</translation>
 <translation id="6241844896329831164">Nincs szükség hozzáférésre</translation>
 <translation id="6242574558232861452">Folyamatban van annak ellenőrzése, hogy sérültek-e a szervezete biztonsági szabályai.</translation>
@@ -6714,6 +6720,7 @@ Győződjön meg arról, hogy nem ad ki bizalmas adatokat.</translation>
 <translation id="6264365405983206840">Össz&amp;es kiválasztása</translation>
 <translation id="6264376385120300461">Letöltés mindenképpen</translation>
 <translation id="6264520534872750757">Az eszköz használatának folytatása</translation>
+<translation id="6264636978858465832">A Jelszókezelőnek további hozzáférésre van szüksége</translation>
 <translation id="6265159465845424232">Kérdezzen rá a Microsoft-fájlok Microsoft OneDrive-ba való másolása vagy áthelyezése előtt</translation>
 <translation id="6265687851677020761">Port eltávolítása</translation>
 <translation id="6266532094411434237">Csatlakozás a következőhöz: <ph name="DEVICE" /></translation>
@@ -7182,6 +7189,7 @@ A(z) <ph name="DOMAIN" /> megköveteli, hogy ne távolítsa el az intelligens k�
 <translation id="6657585470893396449">Jelszó</translation>
 <translation id="6659213950629089752">Az oldal nagyítását a(z) „<ph name="NAME" />” bővítmény hajtotta végre</translation>
 <translation id="6659594942844771486">Lap</translation>
+<translation id="6660099350750552197"><ph name="WINDOW_TITLE" /> – A kamera felvételt készít</translation>
 <translation id="6660819301598582123">Egy hűtlen vejét fülöncsípő, dühös mexikói úr Wesselényinél mázol Quitóban</translation>
 <translation id="666099631117081440">Nyomtatószerverek</translation>
 <translation id="6662931079349804328">A vállalati házirend módosult. A Kísérletek gombot a rendszer eltávolította az eszköztárból.</translation>
@@ -8340,6 +8348,7 @@ A(z) <ph name="DOMAIN" /> megköveteli, hogy ne távolítsa el az intelligens k�
 <translation id="7576976045740938453">Gond adódott a demó módban lévő fiókkal.</translation>
 <translation id="7578137152457315135">Ujjlenyomat-beállítások</translation>
 <translation id="7578692661782707876">Kérjük, adja meg a megerősítő kódot.</translation>
+<translation id="757941033127302446">Bejelentkezve</translation>
 <translation id="7581007437437492586">A házirendek megfelelően vannak beállítva</translation>
 <translation id="7581462281756524039">Egy karbantartó eszköz</translation>
 <translation id="7582582252461552277">Ezt a hálózatot részesítse előnyben</translation>
@@ -8993,6 +9002,7 @@ A kulcsfájlt tartsa biztonságos helyen. Szüksége lesz rá ahhoz, hogy új ve
 <translation id="8059417245945632445">&amp;Eszközök vizsgálata</translation>
 <translation id="8059456211585183827">Nincsenek menthető nyomtatók.</translation>
 <translation id="8061091456562007989">Visszaállítás</translation>
+<translation id="8061244502316511332">Ez a lap használja a mikrofont</translation>
 <translation id="8061970399284390013">Helyesírási és nyelvi ellenőrzés</translation>
 <translation id="8061991877177392872">Úgy tűnik, hogy Google Segédjéhez már beállította a Voice Match funkciót valamelyik másik eszközön. Korábbi felvételeiből ezen az eszközön is létrehozott hangmintát.</translation>
 <translation id="8062844841289846053">{COUNT,plural, =1{1 papírlap}other{{COUNT} papírlap}}</translation>
@@ -9474,6 +9484,7 @@ A kulcsfájlt tartsa biztonságos helyen. Szüksége lesz rá ahhoz, hogy új ve
 <translation id="844063558976952706">Ezen a webhelyen mindig</translation>
 <translation id="8441313165929432954">Internetmegosztás engedélyezése/letiltása</translation>
 <translation id="8443986842926457191">Az URL több mint 2048 karakterből áll</translation>
+<translation id="8445281870900174108">Ez a lap használja a kamerát</translation>
 <translation id="8446884382197647889">További információ</translation>
 <translation id="8447409163267621480">Használja a Ctrl vagy az Alt gombot</translation>
 <translation id="844850004779619592">Nem találhatók parancsok</translation>
@@ -10548,6 +10559,7 @@ A webhelyek és alkalmazások számára már megadott engedélyek erre a fiókra
 <translation id="981121421437150478">Offline</translation>
 <translation id="983192555821071799">Az összes lap bezárása</translation>
 <translation id="983511809958454316">Ez a funkció nem támogatott VR-módban</translation>
+<translation id="983531994960412650"><ph name="WINDOW_TITLE" /> – A kamera és a mikrofon felvételt készít</translation>
 <translation id="984275831282074731">Fizetési módok</translation>
 <translation id="984705303330760860">Helyesírás-ellenőrzésnél használt nyelvek felvétele</translation>
 <translation id="98515147261107953">Fekvő</translation>

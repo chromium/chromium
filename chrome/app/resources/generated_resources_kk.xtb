@@ -2382,7 +2382,6 @@
 <translation id="2794522004398861033">eSIM параметрлерін реттеу үшін Wi-Fi немесе Ethernet желісіне қосылыңыз.</translation>
 <translation id="2794977172822818797">Қолданыстағы сайттарды қосу</translation>
 <translation id="2795716239552913152">Сайттар әдетте қажетті функциялар немесе ақпарат (мысалы, жергілікті жаңалықтар не маңайдағы дүкендер) алу үшін геодерегіңізді пайдаланады.</translation>
-<translation id="2795950023277268902">Files қолданбасында Drive файлдарына кіру үшін <ph name="BEGIN_BOLD" /><ph name="DRIVE_ACCOUNT_EMAIL" /><ph name="END_BOLD" /> аккаунтына қосылу</translation>
 <translation id="2798347533012571708">Жаңартып тұру</translation>
 <translation id="2799223571221894425">Қайта іске қосу</translation>
 <translation id="2800309299477632167">Арнаулы пернелер картасы</translation>
@@ -8324,6 +8323,7 @@
 <translation id="7576976045740938453">Демо режиміндегі аккаунтқа қатысты ақау орын алды.</translation>
 <translation id="7578137152457315135">Саусақ ізі параметрлері</translation>
 <translation id="7578692661782707876">Растау кодыңызды енгізіңіз.</translation>
+<translation id="757941033127302446">Аккаунтқа кірген</translation>
 <translation id="7581007437437492586">Саясаттар дұрыс конфигурацияланған.</translation>
 <translation id="7581462281756524039">Тазалау құралы</translation>
 <translation id="7582582252461552277">Осы желіні таңдау</translation>

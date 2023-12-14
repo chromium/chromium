@@ -861,6 +861,7 @@
 <translation id="4479639480957787382">ایتھرنیٹ</translation>
 <translation id="4481530544597605423">جوڑا ختم کیے ہوئے آلات</translation>
 <translation id="4485506555414638855">اپنے فون کی حالیہ تصاویر، میڈیا، اطلاعات اور ایپس دیکھنے کے سیٹ اپ کو برخاست کریں</translation>
+<translation id="4491109536499578614">تصویر</translation>
 <translation id="450584155212756404">‏Dev چینل</translation>
 <translation id="4513946894732546136">تاثرات</translation>
 <translation id="4516212064498225455">‏موجودہ ڈیسک: <ph name="CURRENT_DESK_NAME" />، تمام ڈیسک مینو کو کھولنے کے لیے Search+Space استعمال کریں۔</translation>
@@ -1137,6 +1138,7 @@
 <translation id="5577281275355252094">فون ہب استعمال کرنے کیلئے چیک کریں کہ آپ کے فون پر بلوٹوتھ فعال ہے</translation>
 <translation id="5578188167649348993">میموری</translation>
 <translation id="5580000943347215299">لائبریری</translation>
+<translation id="5587506661873751671">ڈاؤن لوڈ ہو رہی ہے <ph name="DOWNLOAD_PERCENT" />%</translation>
 <translation id="558849140439112033">کیپچر کرنے کے لئے کسی علاقے کو منتخب کرنے کیلئے گھسیٹیں</translation>
 <translation id="5590609058453685222">'یاد دہانی خاموش کریں' آن ہے۔ اگر آپ خاموش وضع میں رہتے ہوئے بات کرتے ہیں تو آپ کو مطلع کر دیا جائے گا۔</translation>
 <translation id="5596627076506792578">مزید اختیارات</translation>
@@ -1273,6 +1275,7 @@
 <translation id="6095425951508823973"><ph name="PROVIDER" /> کے ساتھ کنکشن شامل کریں</translation>
 <translation id="6099678161144790572">گزشتہ مہینے میں ترمیم کی</translation>
 <translation id="6103838137565245112">سسٹم</translation>
+<translation id="6108952804512516814">‏AI کے ساتھ تخلیق کریں</translation>
 <translation id="6114505516289286752"><ph name="LANGUAGE" /> کی اسپیچ فائلز ڈاؤن لوڈ ہو گئی</translation>
 <translation id="6119360623251949462"><ph name="CHARGING_STATE" />۔ <ph name="BATTERY_SAVER_STATE" /></translation>
 <translation id="6119972796024789243">رنگ کی اصلاح</translation>
@@ -1795,6 +1798,7 @@
 <translation id="830868413617744215">بی ٹا</translation>
 <translation id="8314772463905284467">‏Caps Lock آن ہے</translation>
 <translation id="8315514906653279104">آن ہو رہا ہے…</translation>
+<translation id="8331351032546853669">ڈاؤن لوڈ زير التوا ہے</translation>
 <translation id="8341451174107936385"><ph name="UNLOCK_MORE_FEATURES" />  <ph name="GET_STARTED" /></translation>
 <translation id="8345019317483336363"><ph name="WINDOW_TITLE" /> ونڈو کا انتخاب کیا گیا</translation>
 <translation id="8349826889576450703">لانچر</translation>

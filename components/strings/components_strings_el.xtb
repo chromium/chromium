@@ -39,6 +39,7 @@
 <translation id="1060136083665017312">Συστήματα παιχνιδιών και κονσόλες</translation>
 <translation id="1060320201901229167">Φάκελος Kaku 5</translation>
 <translation id="10614374240317010">Δεν έχει αποθηκευθεί ποτέ</translation>
+<translation id="1062407476771304334">Αντικατάσταση</translation>
 <translation id="1064054731605354900">A3x5</translation>
 <translation id="106701514854093668">Σελιδοδείκτες επιτραπέζιου υπολογιστή</translation>
 <translation id="1068672505746868501">Να μην γίνεται μετάφραση σελίδων στα <ph name="SOURCE_LANGUAGE" /></translation>
@@ -133,7 +134,6 @@
 <translation id="1240347957665416060">Το όνομα της συσκευής σας</translation>
 <translation id="124116460088058876">Περισσότερες γλώσσες</translation>
 <translation id="1243027604378859286">Συντάκτης:</translation>
-<translation id="1246424317317450637">Έντονη γραφή</translation>
 <translation id="1247030632403369975">Αλουμίνιο</translation>
 <translation id="1252209483516427155">Πανωφόρια</translation>
 <translation id="1253921432148366685"><ph name="TYPE_1" />, <ph name="TYPE_2" /> (συγχρονισμένο)</translation>
@@ -349,6 +349,7 @@
 <translation id="1633941398432788136">Σχεδιασμός εκδηλώσεων</translation>
 <translation id="1634828734222219955">Σύνολο</translation>
 <translation id="163669211644121865">Προετοιμασία και προγραμματισμός φόρου</translation>
+<translation id="163826442096818926">Μικρότερο</translation>
 <translation id="1639239467298939599">Φόρτωση</translation>
 <translation id="1640180200866533862">Πολιτικές χρηστών</translation>
 <translation id="1640244768702815859">Δοκιμάστε να <ph name="BEGIN_LINK" />επισκεφτείτε την αρχική σελίδα του ιστότοπου<ph name="END_LINK" />.</translation>
@@ -724,6 +725,7 @@
 <translation id="238459632961158867">Ιστότοπος</translation>
 <translation id="2385809941344967209">Ενημερώστε το Chrome από τις ρυθμίσεις του Chrome,</translation>
 <translation id="2386255080630008482">Το πιστοποιητικό του διακομιστή ανακλήθηκε.</translation>
+<translation id="239203817277685015">Σύνθετο</translation>
 <translation id="239293030466334554">Υβριδικά οχήματα</translation>
 <translation id="2392959068659972793">Εμφάνιση πολιτικών χωρίς τιμή που να έχει οριστεί.</translation>
 <translation id="239429038616798445">Αυτός ο τρόπος αποστολής δεν είναι διαθέσιμος. Δοκιμάστε έναν άλλο τρόπο.</translation>
@@ -931,7 +933,6 @@
 <translation id="2858134430383535011">200 x 300 χιλ.</translation>
 <translation id="2859806420264540918">Αυτός ο ιστότοπος εμφανίζει παρεμβατικές ή παραπλανητικές διαφημίσεις.</translation>
 <translation id="28618371182701850">Ηλεκτροκίνητα και φορτιζόμενα οχήματα</translation>
-<translation id="287596039013813457">Φιλικό</translation>
 <translation id="28761159517501904">Ταινίες</translation>
 <translation id="2876489322757410363">Έξοδος από την κατάσταση ανώνυμης περιήγησης για πληρωμή μέσω εξωτερικής εφαρμογής. Θέλετε να συνεχίστε;</translation>
 <translation id="2876949457278336305"><ph name="MANAGE_SECURITY_SETTINGS_FOCUSED_FRIENDLY_MATCH_TEXT" />, πατήστε το πλήκτρο Tab και έπειτα το πλήκτρο Enter για να διαχειριστείτε την Ασφαλή περιήγηση και άλλες επιλογές από τις ρυθμίσεις του Chrome</translation>
@@ -971,6 +972,7 @@
 <translation id="2938225289965773019">Άνοιγμα συνδέσμων <ph name="PROTOCOL" /></translation>
 <translation id="2941878205777356567">Φάκελος 9 x 12 ίντσες</translation>
 <translation id="2941952326391522266">Ο διακομιστής δεν μπόρεσε να αποδείξει ότι είναι <ph name="DOMAIN" />. Το πιστοποιητικό ασφαλείας του είναι από το <ph name="DOMAIN2" />. Αυτό μπορεί να οφείλεται σε λανθασμένη ρύθμιση ή σε κάποιον τρίτο που επιτίθεται στη σύνδεσή σας.</translation>
+<translation id="2942492342931589800">Απλό</translation>
 <translation id="2942515540157583425">Θέσεις εργασίας για IT και τεχνικούς</translation>
 <translation id="2943895734390379394">Ώρα μεταφόρτωσης:</translation>
 <translation id="2945026002409061480">Διαδικτυακές κοινότητες</translation>
@@ -1123,7 +1125,6 @@
 <translation id="3240791268468473923">Έχει ανοίξει το φύλλο μη αντιστοίχισης διαπιστευτηρίων με τα διαπιστευτήρια ασφαλούς πληρωμής</translation>
 <translation id="324180406144491771">Οι σύνδεσμοι <ph name="HOST_NAME" /> έχουν αποκλειστεί</translation>
 <translation id="3249151924975132674">Φοιτητικά δάνεια και χρηματοδότηση σπουδών</translation>
-<translation id="3249845759089040423">Μοδάτο</translation>
 <translation id="3250640885957938546">Διαφήμιση και μάρκετινγκ</translation>
 <translation id="3252772880526154546">Αρχιτεκτονική</translation>
 <translation id="3254301855501243548">18 x 22 ίντσες</translation>
@@ -1232,6 +1233,7 @@
 <translation id="3447661539832366887">Ο κάτοχος αυτής της συσκευής απενεργοποίησε το παιχνίδι με τους δεινοσαύρους.</translation>
 <translation id="3447884698081792621">Εμφάνιση πιστοποιητικού (εκδόθηκε από <ph name="ISSUER" />)</translation>
 <translation id="3450323514459570273">Μπορεί να ζητήσει να ελέγξει και να επαναπρογραμματίσει τις συσκευές MIDI</translation>
+<translation id="3452151267620065789">Η πρόοδος αποθηκεύτηκε</translation>
 <translation id="3452404311384756672">Διάστημα ανάκτησης:</translation>
 <translation id="3453962258458347894">Αριθμός επαναλήψεων</translation>
 <translation id="3461266716147554923">Το <ph name="URL" /> θέλει να δει κείμενο και εικόνες που αντιγράφηκαν στο πρόχειρο</translation>
@@ -1315,6 +1317,7 @@
 <translation id="361438452008624280">Καταχώριση λίστας "<ph name="LANGUAGE_ID" />": Άγνωστη ή μη υποστηριζόμενη γλώσσα.</translation>
 <translation id="3614934205542186002"><ph name="RUN_CHROME_SAFETY_CHECK_FOCUSED_FRIENDLY_MATCH_TEXT" />, πατήστε το πλήκτρο Tab και έπειτα το πλήκτρο Enter για εκτέλεση του ελέγχου ασφαλείας στις ρυθμίσεις του Chrome</translation>
 <translation id="3615309852743236517">Μανικιούρ και πεντικιούρ</translation>
+<translation id="3617072447978270288">Επαναδημιουργία</translation>
 <translation id="3620239073311576716">Φόρμες και στολές εργασίας</translation>
 <translation id="36224234498066874">Διαγραφή δεδομένων περιήγησης…</translation>
 <translation id="362276910939193118">Εμφάνιση πλήρους ιστορικού</translation>
@@ -1337,6 +1340,7 @@
 <translation id="3650594806107685466">Για να διατηρήσετε ασφαλή την κάρτα σας, εισαγάγετε το CVC που εμφανίζεται στην <ph name="SIDE_OF_CARD" /></translation>
 <translation id="3650917416636556301">Περπάτημα και κατασκήνωση</translation>
 <translation id="3653033846669030038">Θεματικά πάρκα</translation>
+<translation id="3654980960391973513">Δημιουργία</translation>
 <translation id="3655241534245626312">Μετάβαση στις ρυθμίσεις άδειας</translation>
 <translation id="3655670868607891010">Αν αυτό το μήνυμα εμφανίζεται συχνά, μπορείτε να βρείτε βοήθεια εδώ <ph name="HELP_LINK" />.</translation>
 <translation id="365641980390710834">Καθημερινή ένδυση</translation>
@@ -1805,7 +1809,6 @@
 <translation id="4598556348158889687">Διαχείριση αποθηκευτικού χώρου</translation>
 <translation id="4600084978141515058">Vegan κουζίνα</translation>
 <translation id="4602465984861132303">Μπόουλινγκ</translation>
-<translation id="4606870351894164739">Εμφατικό</translation>
 <translation id="4607608436550361748">Εμφάνιση συμβουλών Chrome</translation>
 <translation id="460848736049414407">Αποκλείστηκε από τον διαχειριστή</translation>
 <translation id="4610279718074907952">Αυτός ο ιστότοπος ανήκει σε μια ομάδα που καθορίζεται από τον τομέα <ph name="SET_OWNER" />, ο οποίος μπορεί να βλέπει τη δραστηριότητά σας</translation>
@@ -1919,13 +1922,11 @@
 <translation id="4819347708020428563">Επεξεργασία σχολιασμών στην προεπιλεγμένη προβολή;</translation>
 <translation id="4822493756793346865">Οι συνήθεις τιμές βασίζονται σε πληροφορίες των τελευταίων 90 ημερών από καταστήματα στον ιστό.</translation>
 <translation id="4825496307559726072"><ph name="CREATE_GOOGLE_SHEET_FOCUSED_FRIENDLY_MATCH_TEXT" />, πατήστε το πλήκτρο Tab και έπειτα το πλήκτρο Enter για να δημιουργήσετε γρήγορα ένα νέο Φύλλο Google</translation>
-<translation id="4825507807291741242">Ισχυρό</translation>
 <translation id="4826588772550366629">κάμερα και μικρόφωνο</translation>
 <translation id="4827283332383516812">Διαγραφή κάρτας</translation>
 <translation id="4831993743164297314">Χαρτί φωτοστοιχειοθετικής μηχανής</translation>
 <translation id="483241715238664915">Ενεργοποίηση ειδοποιήσεων</translation>
 <translation id="4834250788637067901">Τρόποι πληρωμής, προσφορές και διευθύνσεις μέσω Google Pay</translation>
-<translation id="4838327282952368871">Ονειρικό</translation>
 <translation id="4839087176073128681">Πληρώστε ταχύτερα την επόμενη φορά και προστατέψτε την κάρτα σας με την κορυφαία ασφάλεια της Google.</translation>
 <translation id="4840250757394056958">Προβολή του ιστορικού Chrome</translation>
 <translation id="484462545196658690">Αυτόματα</translation>
@@ -2497,7 +2498,6 @@
 <translation id="6005659677094197001">Συνεχές</translation>
 <translation id="6005765687956866568">Οι πληροφορίες αυτόματης συμπλήρωσης διαγράφηκαν από τη φόρμα</translation>
 <translation id="6006365096047131769">3 x 5 ίντσες</translation>
-<translation id="6006484371116297560">Κλασικό</translation>
 <translation id="6008122969617370890">Σειρά N προς 1</translation>
 <translation id="6008256403891681546">JCB</translation>
 <translation id="6014139350017893009">Επισκευή και συντήρηση οχημάτων</translation>
@@ -2574,6 +2574,7 @@
 <translation id="6157754950574419155">Κατάργηση όλων από το ιστορικό</translation>
 <translation id="6157877588268064908">Για να δείτε τρόπους και απαιτήσεις αποστολής, επιλέξτε μια διεύθυνση</translation>
 <translation id="6159554577634054750">Καταπολέμηση επιβλαβών οργανισμών</translation>
+<translation id="6159908896951210943">Επίσημο</translation>
 <translation id="6160391204859821737">Ενεργοποίηση λειτουργίας απορρήτου διαφημίσεων</translation>
 <translation id="6165508094623778733">Μάθετε περισσότερα</translation>
 <translation id="6167577165590485365">Τελευταία προσπάθεια λήψης:</translation>
@@ -3212,7 +3213,6 @@
     &lt;li&gt;Επισκεφτείτε το &lt;a href="https://support.google.com/chrome/answer/6098869"&gt;Κέντρο βοήθειας του Chrome&lt;/a&gt;, για να μάθετε πώς μπορείτε να καταργήσετε οριστικά το λογισμικό από τον υπολογιστή σας
     &lt;/ol&gt;</translation>
 <translation id="7408613996403626141">Παιχνίδια</translation>
-<translation id="7410471291937727359">Αξιαγάπητο</translation>
 <translation id="741204030948306876">Ναι, συμφωνώ</translation>
 <translation id="7416351320495623771">Διαχείριση κωδικών πρόσβασης…</translation>
 <translation id="7418620734632363981">Προγραμματισμός</translation>
@@ -3221,6 +3221,7 @@
 <translation id="7422347648202898039">Ετικέτες (Ασφάλειας)</translation>
 <translation id="7423283032694727565">Κουμπί Διαχείριση cookie, ενεργοποιήστε το για να διαχειριστείτε τις προτιμήσεις για τα cookie από τις ρυθμίσεις του Chrome</translation>
 <translation id="7424421098814895617">Ορίστηκε η επιλογή για τη διαγραφή της διεύθυνσης</translation>
+<translation id="7425037327577270384">Βοήθησέ με να γράψω</translation>
 <translation id="7427366580982928791">Ασφάλεια παιδιών στο διαδίκτυο</translation>
 <translation id="7429429656042611765">Executive</translation>
 <translation id="7432774160230062882">Επαληθεύστε την ταυτότητά σας για να μπορέσει το Chromium να συμπληρώσει τα στοιχεία πληρωμής.</translation>
@@ -3287,6 +3288,7 @@
 <translation id="7529884293139707752">Σχολική εκπαίδευση στο σπίτι</translation>
 <translation id="7534987659046836932">Φάκελος C7</translation>
 <translation id="7535087603100972091">Τιμή</translation>
+<translation id="753556296624075801">Με την υποστήριξη της Google</translation>
 <translation id="7537536606612762813">Υποχρεωτική</translation>
 <translation id="7542995811387359312">Η αυτόματη συμπλήρωση πιστωτικής κάρτας έχει απενεργοποιηθεί, επειδή αυτή η φόρμα δεν χρησιμοποιεί ασφαλή σύνδεση.</translation>
 <translation id="7543525346216957623">Ζήτησε την άδεια του γονέα σου</translation>
@@ -3470,6 +3472,7 @@
 <translation id="7871445724586827387">Αλλαγή του κωδικού πρόσβασης του Λογαριασμού σας Google</translation>
 <translation id="7877007680666472091">προστατευμένα αναγνωριστικά περιεχομένου</translation>
 <translation id="7878562273885520351">Ο κωδικός πρόσβασής σας μπορεί να έχει παραβιαστεί</translation>
+<translation id="7878966190323222027">Ανοίξτε το ξανά για να συνεχίσετε</translation>
 <translation id="7880146494886811634">Αποθήκευση διεύθυνσης</translation>
 <translation id="7882421473871500483">Καφέ</translation>
 <translation id="7882995332186050355">Φορτηγά και τρέιλερ φορτίου</translation>
@@ -4000,6 +4003,7 @@
 <translation id="8942355029279167844">Ο διαχειριστής επέτρεψε στην εφαρμογή <ph name="APP_NAME" /> να συλλέγει διαγνωστικά στοιχεία για τη βελτίωση της εμπειρίας του προϊόντος. Ανατρέξτε στη διεύθυνση <ph name="BEGIN_LINK" />https://www.parallels.com/pcep<ph name="END_LINK" /> για περισσότερες πληροφορίες.</translation>
 <translation id="8943282376843390568">Λάιμ</translation>
 <translation id="8944485226638699751">Περιορισμένα</translation>
+<translation id="8949410982325929394">Τόνος</translation>
 <translation id="8949493680961858543">A1x4</translation>
 <translation id="8951415078585015151">Νομοθεσία και κυβέρνηση</translation>
 <translation id="8954252855949068147">Ενδύματα</translation>
@@ -4041,7 +4045,6 @@
 <translation id="9023536760430404133">Τροχοί και ελαστικά οχημάτων</translation>
 <translation id="9025348182339809926">(Μη έγκυρο)</translation>
 <translation id="902590795160480390">Φόρτωση PDF</translation>
-<translation id="9030265603405983977">Μονόχρωμο</translation>
 <translation id="9035022520814077154">Σφάλμα ασφάλειας</translation>
 <translation id="9035824888276246493">Αποθήκευση κωδικών ασφαλείας</translation>
 <translation id="9036306139374661733">Να επιτρέπεται το μικρόφωνο;</translation>
@@ -4085,7 +4088,6 @@
 <translation id="9114524666733003316">Επιβεβαίωση κάρτας…</translation>
 <translation id="9114581008513152754">Αυτός ο ιστότοπος δεν είναι διαχειριζόμενος από κάποια εταιρεία ή άλλον οργανισμό. Η διαχείριση της δραστηριότητας σε αυτήν τη συσκευή μπορεί να πραγματοποιηθεί εκτός Chrome. <ph name="BEGIN_LINK" />Μάθετε περισσότερα<ph name="END_LINK" /></translation>
 <translation id="9116548361133462832">Περισσότερα σχετικά με τις διαφημίσεις στο Chrome</translation>
-<translation id="9117930699067497412">Φρέσκο</translation>
 <translation id="9118692854637641831"><ph name="HISTORY_CLUSTERS_SEARCH_FOCUSED_FRIENDLY_MATCH_TEXT" />, πατήστε Tab και, στη συνέχεια, Enter για να συνεχίσετε τη διαδρομή σας και να δείτε σχετική δραστηριότητα στο Ιστορικό Chrome.</translation>
 <translation id="9119042192571987207">Έγινε μεταφόρτωση</translation>
 <translation id="9122954576417194280">Εμπόριο προϊόντων και συμβολαίων μελλοντικής εκπλήρωσης</translation>

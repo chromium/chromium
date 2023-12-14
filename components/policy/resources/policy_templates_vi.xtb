@@ -386,8 +386,6 @@ Chính sách này sẽ thay thế chính sách <ph name="DEFAULT_WINDOW_PLACEMEN
 <translation id="1305400589435476516">Nếu bạn đặt chính sách này thành Bật, người dùng có thể sử dụng tính năng chuyển vùng dữ liệu trên thiết bị.
 
       Nếu bạn không đặt hoặc đặt chính sách này thành Tắt, thì người dùng không thể sử dụng tính năng chuyển vùng dữ liệu.</translation>
-<translation id="1307454923744766368">Nguồn gốc hoặc mẫu tên máy chủ mà các hạn chế đối với
-      nguồn gốc không an toàn không được áp dụng</translation>
 <translation id="1308526987406924874">Khi đặt chính sách này, bạn có thể tạo danh sách các mẫu URL để chỉ định những trang web không được phép yêu cầu người dùng cấp quyền truy cập vào một cổng nối tiếp.
 
       Khi bạn không đặt chính sách này, <ph name="DEFAULT_SERIAL_GUARD_SETTING_POLICY_NAME" /> (nếu được đặt) sẽ áp dụng cho tất cả trang web. Nếu không, tùy chọn cài đặt cá nhân của người dùng sẽ được áp dụng.
@@ -7362,11 +7360,6 @@ Nếu bạn không đặt chính sách này, thì các trang web có thể hiể
 
       Bạn cần thực hiện các thao tác thiết lập bổ sung để chính sách này có hiệu lực. Vui lòng truy cập https://support.google.com/chrome/a?p=chrome_enterprise_connector_policies_setting để biết thêm thông tin.</translation>
 <translation id="7032813174556919004">Tắt chế độ DNS qua HTTPS</translation>
-<translation id="7033778618670823541">Khi bạn đặt chính sách này, hệ thống sẽ chỉ định một danh sách nguồn gốc (URL) hoặc mẫu tên máy chủ (chẳng hạn như *.example.com) mà các hạn chế về bảo mật đối với nguồn gốc không an toàn sẽ không áp dụng. Các tổ chức có thể chỉ định những nguồn gốc cho các ứng dụng cũ không thể triển khai TLS (Bảo mật tầng truyền tải), hoặc thiết lập một máy chủ thử nghiệm để phát triển web nội bộ. Nhờ vậy, các nhà phát triển có thể thử nghiệm những tính năng cần có bối cảnh bảo mật mà không phải triển khai TLS trên máy chủ thử nghiệm này. Ngoài ra, chính sách này cũng không cho gắn nhãn nguồn gốc này là "Không bảo mật" trong thanh địa chỉ.
-
-      Việc lập danh sách URL trong chính sách này có tác dụng tương tự như việc đặt cờ hiệu dòng lệnh --unsafely-treat-insecure-origin-as-secure thành một danh sách được phân tách bằng dấu phẩy gồm các URL tương tự. Chính sách này ghi đè cờ hiệu dòng lệnh và UnsafelyTreatInsecureOriginAsSecure, nếu có.
-
-      Để biết thêm thông tin về bối cảnh bảo mật, hãy xem trang Bối cảnh bảo mật (https://www.w3.org/TR/secure-contexts).</translation>
 <translation id="703672323011778742">Chính sách này không còn dùng trong M88 và Chrome không hỗ trợ Flash nữa. Nếu đặt chính sách này thành 1, bạn có thể thiết lập để tất cả trang web có thể tự động chạy trình bổ trợ <ph name="FLASH_PLUGIN_NAME" /> hay không. Nếu bạn đặt chính sách thành 2, trình bổ trợ này sẽ không được tự động chạy trên tất cả trang web. Tùy chọn Nhấp để phát cho phép chạy trình bổ trợ <ph name="FLASH_PLUGIN_NAME" />. Tuy nhiên, người dùng phải nhấp vào trình giữ chỗ để bắt đầu phát.
 
       Nếu bạn không đặt chính sách nói trên, <ph name="BLOCK_PLUGINS_POLICY_NAME" /> sẽ áp dụng và cho phép người dùng thay đổi tùy chọn cài đặt này.
@@ -8800,19 +8793,6 @@ Nếu bạn tắt chính sách, thì trang sẽ bị chặn.</translation>
 
       Nếu bạn không đặt chính sách này, thì các trang web có thể yêu cầu quyền truy cập nhưng người dùng được quyền thay đổi tùy chọn cài đặt này.</translation>
 <translation id="8267520984570984190">Thao tác đổi kích thước bàn phím ảo mặc định chưa được sửa đổi</translation>
-<translation id="8267887696930711948">Không còn dùng trong M69. Thay vào đó, hãy sử dụng
-      OverrideSecurityRestrictionsOnInsecureOrigin.
-
-      Chính sách này xác định danh sách nguồn gốc (các URL) hoặc mẫu tên máy chủ (chẳng hạn như "*.example.com") mà các hạn chế về bảo mật đối với nguồn gốc không an toàn sẽ không áp dụng.
-
-      Mục đích là nhằm cho phép tổ chức chấp nhận các nguồn gốc cho những ứng dụng cũ không thể triển khai TLS, hoặc thiết lập một máy chủ thử nghiệm cho hoạt động phát triển web nội bộ sao cho các nhà phát triển có thể thử nghiệm các tính năng yêu cầu bối cảnh an toàn mà không phải triển khai TLS trên máy chủ thử nghiệm đó. Ngoài ra, chính sách này sẽ ngăn gắn nhãn nguồn gốc này là "Không bảo mật" trên thanh địa chỉ.
-
-      Việc thiết lập một danh sách URL trong chính sách này có tác dụng tương tự như việc đặt cờ hiệu dòng lệnh "--unsafely-treat-insecure-origin-as-secure" cho một danh sách các URL tương tự được phân tách bằng dấu phẩy. Nếu bạn đặt chính sách này, thì chính sách này sẽ ghi đè cờ hiệu dòng lệnh.
-
-      Chính sách này không còn được dùng trong M69 và đã bị thay bằng OverrideSecurityRestrictionsOnInsecureOrigin. Nếu cả hai chính sách đều hiện diện, thì OverrideSecurityRestrictionsOnInsecureOrigin sẽ ghi đè chính sách này.
-
-      Để biết thêm thông tin về bối cảnh an toàn, hãy truy cập vào https://www.w3.org/TR/secure-contexts/
-      </translation>
 <translation id="8269238942896230153">Tài khoản được quản lý phải là tài khoản chính và người dùng có thể nhập dữ liệu duyệt web hiện có tại thời điểm tạo hồ sơ</translation>
 <translation id="8270320981823560179">Drive</translation>
 <translation id="827054846390793641">Bật giao diện người dùng liên quan đến kết nối trên màn hình máy chủ khi đang có kết nối</translation>

@@ -1,10 +1,16 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="ur">
+<translation id="1085696779717592361">‏بطور ڈیفالٹ Chrome کا استعمال کریں</translation>
 <translation id="1105362920864247682">‏Chrome میں براؤزنگ ڈیٹا صاف کریں۔</translation>
+<translation id="1113057722807951993">‏پاس فریز کی مرموز کاری میں Google Pay سے ادائیگی کے طریقے اور پتے شامل نہیں ہیں۔
+
+اس ترتیب کو تبدیل کرنے کے لیے، <ph name="BEGIN_LINK" />اپنے اکاؤنٹ میں موجود Chrome ڈیٹا کو صاف کریں<ph name="END_LINK" />۔</translation>
 <translation id="1143896152279775643">‏آپ کا پاس ورڈ <ph name="EMAIL" /> کے لیے Google پاس ورڈ مینیجر میں محفوظ کیا جائے گا۔</translation>
+<translation id="1177414119866731261">‏Chrome مینیو کھولیں</translation>
 <translation id="1180362651362502943">‏اپنے Google اکاؤنٹ میں Chrome ڈیٹا استعمال کرتے رہیں۔</translation>
 <translation id="1200396280085622191">‏جب بھی آپ پیغامات اور دیگر ایپس میں لنکس پر تھپتھپائیں تو Chrome استعمال کریں۔</translation>
+<translation id="1229222343402087523">‏Chrome میں {searchPhrase}$ تلاش کریں</translation>
 <translation id="1282031177488366470">‏Chrome کی خصوصیات اور کارکردگی کو بہتر بنانے میں مدد کریں</translation>
 <translation id="1320619893013575407">‏آپ نے Chrome سائن ان آف کر دیا۔</translation>
 <translation id="1333745675627230582">‏Chrome ڈائنوسار گیم کھیلیں</translation>
@@ -34,13 +40,19 @@
 <translation id="1682483655351012182">‏اپنے Chrome ڈیٹا کو مطابقت پذیر بنائیں</translation>
 <translation id="1759842336958782510">Chrome</translation>
 <translation id="1790080846677398234">‏Chrome میں آپ کے بُک مارکس میں داخل کردہ URLs کو شامل کرتا ہے۔</translation>
+<translation id="1830634592642484976">‏یہ پتہ فی الحال Chrome پر محفوظ ہے۔ اسے تمام Google پروڈکٹس میں استعمال کرنے کے لیے، اسے اپنے Google اکاؤنٹ <ph name="USER_EMAIL" /> میں محفوظ کریں۔</translation>
 <translation id="1843217788865538014">‏جب آپ پیغامات، دستاویزات اور دیگر ایپس پر لنکس کو تھپتھپاتے ہیں تو خودکار طور پر Chrome کا استعمال کریں۔</translation>
+<translation id="1910975740091000991">‏Chrome برائے iOS</translation>
 <translation id="1917964099031477364">‏اس اکاؤنٹ اور کسی بھی غیر محفوظ ڈیٹا کو اس آلہ پر Chrome اور دیگر Google ایپس سے ہٹا دیا جائے گا۔</translation>
+<translation id="1965935827552890526">‏اپنی دوسری کھلی ہوئی Chrome ونڈو میں آپ کیا کر رہے تھے مکمل کریں۔</translation>
 <translation id="1987779152850321833">‏Chrome سے بھرپور فائدہ اٹھانے کے لیے ذیل میں تجویز کردہ ان کارروائیوں کو مکمل کریں۔</translation>
+<translation id="2008357574463816229">‏اگر آپ اپنی پاس فریز بھول گئے ہیں یا اس ترتیب کو تبدیل کرنا چاہتے ہیں تو <ph name="BEGIN_LINK" />اپنے اکاؤنٹ میں موجود Chrome ڈیٹا کو صاف کریں<ph name="END_LINK" />۔</translation>
 <translation id="2056123005618757196">‏ایک آسان، محفوظ اور پہلے سے کہیں زیادہ تیز Chrome کے ساتھ مزید کام کریں۔</translation>
 <translation id="2120238739383482109">‏Chrome بُک مارکس کھولتا ہے۔</translation>
 <translation id="2147651015520127414">‏Chrome نے توثیق کی ہے کہ <ph name="ISSUER" /> نے اس ویب سائٹ کا سرٹیفیکیٹ جاری کیا ہے۔</translation>
+<translation id="2155145621546387786">‏Chrome کا اشتراک کریں</translation>
 <translation id="2199719347983604670">‏Chrome Sync کا ڈیٹا</translation>
+<translation id="2213327331203157297">‏Chrome میں لاک ڈاؤن وضع کو غیر فعال کرنے کیلئے اسے اپنے iPhone پر آف کریں۔</translation>
 <translation id="2242467532204595597">‏جب بھی آپ پیغامات، دستاویزات اور دیگر ایپس میں لنکس پر تھپتھپاتے ہیں تو Chrome استعمال کریں۔</translation>
 <translation id="2311240109311056604">‏Chrome ڈائنو گیم کھلتی ہے۔</translation>
 <translation id="2339201583852607431">‏آپ کا پاس ورڈ آپ کے Google اکاؤنٹ (<ph name="EMAIL" />) میں محفوظ ہو جائے گا۔</translation>
@@ -65,27 +77,39 @@
 <translation id="2868822340714096138">‏Chrome میں براؤزنگ ڈیٹا صاف کریں</translation>
 <translation id="2869959624320573933">‏Chrome میں سائن ان کریں</translation>
 <translation id="2876628302275096482">‏اس بارے میں مزید جانیں کہ <ph name="BEGIN_LINK" />Chrome آپ کے ڈیٹا کو کس طرح نجی رکھتا ہے<ph name="END_LINK" /></translation>
+<translation id="2952581218264071393">‏1۔ Chrome کی ترتیبات کھولیں</translation>
 <translation id="2957447865124070833">‏<ph name="BEGIN_BOLD" />Chrome<ph name="END_BOLD" /> منتخب کریں</translation>
+<translation id="2988274366244053197">‏Google Pay سے ادائیگی کے طریقے اور پتے اینکرپٹ نہیں ہوں گے۔ Chrome سے براؤزنگ کی سرگزشت سِنک نہیں ہوگی۔
+
+صرف پاس فریز کا حامل شخص ہی آپ کے اینکرپٹ کردہ ڈیٹا کو پڑھ سکتا ہے۔ پاس فریز Google کو نہیں بھیجا جاتا، نہ ہی وہ اسے اسٹور کرتا ہے۔ اگر آپ اپنا پاس فریز بھول جاتے ہیں یا اس ترتیب کو تبدیل کرنا چاہتے ہیں تو <ph name="BEGIN_LINK" />اپنے اکاؤنٹ میں موجود Chrome ڈیٹا کو صاف کریں<ph name="END_LINK" />۔</translation>
 <translation id="3030414234702425231">‏چونکہ آپ <ph name="SIGNOUT_MANAGED_DOMAIN" /> کے زیر انتظام ایک اکاؤنٹ سے سائن آؤٹ کر رہے ہیں، لہذا آپ کا Chrome ڈیٹا اس آلہ سے حذف ہو جائے گا۔ آپ کا ڈیٹا آپ کے Google اکاؤنٹ میں رہے گا۔</translation>
 <translation id="309672519329227863">‏دیگر ایپس پر اپنے Chrome پاس ورڈز وغیرہ تک رسائی حاصل کریں۔</translation>
+<translation id="3146109040683991651">‏Chrome کو ڈيفالٹ براؤزر کے بطور سیٹ کریں</translation>
 <translation id="3167189358072330585">‏آپ کا اکاؤنٹ Google Chrome پر کام نہیں کرتا ہے۔ سائن ان کرنے کیلئے براہ کرم اپنے ڈومین کے منتظم سے رابطہ کریں یا ایک مستقل Google اکاؤنٹ استعمال کریں۔</translation>
 <translation id="3173834708294760622">‏Google Chrome صفحہ</translation>
 <translation id="322254490661677575">‏اپنے Google اکاؤنٹ میں Chrome ڈیٹا کا استعمال اور اسے محفوظ کرنے کیلئے، اپنا پاس فریز درج کریں۔</translation>
 <translation id="3282568296779691940">‏Chrome میں سائن ان کریں</translation>
+<translation id="3340938510625667914">‏Chrome ایکشنز</translation>
 <translation id="3345341804167540816">‏Chrome کو ہر جگہ استعمال کریں</translation>
+<translation id="3399930248910934354">‏Chrome کی ترتیبات کھولیں</translation>
 <translation id="3472587960215700950">‏Chrome پتا لگائے گئے پتوں پر آپ کو ڈائریکشنز اور مقامی معلومات فراہم کرنے کے لیے Google Maps کا استعمال کرتا ہے۔</translation>
 <translation id="3503014945441706099">‏اس Chrome پروفائل کے لیے بھی بہتر کردہ محفوظ براؤزنگ حاصل کریں</translation>
 <translation id="3522659714780527202">‏اپنے ٹیبز کو دیکھنے کے لئے جہاں بھی آپ Chrome استعمال کرتے ہیں، سِنک کو آن کریں</translation>
 <translation id="3577555362230509265">‏دیگر ایپس میں Chrome کا استعمال کریں۔</translation>
 <translation id="3594076341410558780">‏"Chrome سے زیادہ سے زیادہ فائدہ اٹھائیں" کو چھپائیں</translation>
+<translation id="364480321352456989">‏آپ کا Chrome پرانا ہے۔</translation>
+<translation id="3646736009628185125">‏آپ کا فیملی ممبر ابھی پاس ورڈز موصول نہیں کر سکتا۔ ان سے Chrome اپ ڈیٹ کرنے اور پاس ورڈز کو مطابقت پذیر کرنے کے لیے کہیں۔ <ph name="BEGIN_LINK" />مزید جانیں<ph name="END_LINK" /></translation>
 <translation id="3655656110921623717">‏اس کا مطلب ہے کہ Chrome ہر بار موبائل سائٹ کی درخواست کرے گا۔</translation>
 <translation id="3720541637541300822">‏جب آپ Chrome بند کرتے ہیں تب پوشیدگی ٹیبز کو مقفل کریں</translation>
+<translation id="3740397331642243698">‏درج کردہ URLs کو Google Chrome میں پوشیدگی میں کھولتا ہے۔</translation>
 <translation id="3741995255368156336">‏Chrome کی پڑھنے کی فہرست کھولتا ہے۔</translation>
 <translation id="3744018071945602754">‏Chrome میں پاس ورڈز کا نظم کریں</translation>
 <translation id="3827545470516145620">آپ کو اس آلے پر معیاری حفاظتی تحفظ حاصل ہو رہا ہے</translation>
 <translation id="384394811301901750">‏Google Chrome ابھی آپ کا کیمرا استعمال نہیں کر سکتا ہے</translation>
 <translation id="3863841106411295595">‏Chrome میں آپ کی پڑھنے کی فہرست میں داخل کردہ URLs کو شامل کرتا ہے۔</translation>
+<translation id="387280738075653372">‏یہاں Chrome ڈاؤن لوڈ کریں۔</translation>
 <translation id="3901001113120561395">‏Chrome سے زیادہ سے زیادہ فائدہ اٹھائیں۔</translation>
+<translation id="3913386780052199712">‏Chrome میں سائن ان ہے</translation>
 <translation id="3967382818307165056">‏Chrome میں ادائیگی کے طریقوں کا نظم کریں</translation>
 <translation id="3980220367029651214">‏آپ مطابقت پذیری اکاؤنٹس کو <ph name="USER_EMAIL1" /> سے <ph name="USER_EMAIL2" /> پر سوئچ کر رہے ہیں۔ آپ کا موجودہ Chrome ڈیٹا <ph name="DOMAIN" /> کے زیر انتظام ہے۔ اس سے آپ کا ڈیٹا اس آلہ سے حذف ہو جائے گا، لیکن آپ کا ڈیٹا <ph name="USER_EMAIL1" /> میں باقی رہے گا۔</translation>
 <translation id="3984746313391923992">‏آپ کی تنظیم کا تقاضہ ہے کہ آپ Chrome سے سائن آؤٹ رہیں۔</translation>
@@ -107,18 +131,22 @@
 <translation id="4831642696589369971">‏آپ کا کچھ Chrome ڈیٹا ابھی تک آپ کے Google اکاؤنٹ میں محفوظ نہیں ہوا ہے۔
 
         سائن آؤٹ کرنے سے پہلے چند منٹ انتظار کرنے کی کوشش کریں۔ اگر آپ ابھی سائن آؤٹ کرتے ہیں تو یہ ڈیٹا حذف ہو جائے گا۔</translation>
+<translation id="4834499902900503484">‏آپ کے Chrome میں سائن ان کرنے پر آپ جو پاس ورڈز محفوظ کریں گے وہ آپ کے Google اکاؤنٹ میں چلے جائیں گے۔ اسے آف کرنے کے لیے، <ph name="BEGIN_LINK" />ترتیبات پر جائیں<ph name="END_LINK" />۔</translation>
 <translation id="484033449593719797">‏Chrome بی ٹا پر تعاون یافتہ نہیں ہے</translation>
 <translation id="4840404732697892756">‏جب آپ اپنے Google اکاؤنٹ سے سائن ان ہوتے ہیں تو Google پاس ورڈ مینیجر آپ کے پاس ورڈز کو چیک کر سکتا ہے۔</translation>
 <translation id="4860330141789125848">{COUNT,plural, =1{‏Chrome نئے ٹیب صفحہ پر اس پیکیج کو ٹریک کرنے میں آپ کی مدد کر سکتا ہے۔}other{‏Chrome نئے ٹیب صفحہ پر ان پیکیجز کو ٹریک کرنے میں آپ کی مدد کر سکتا ہے۔}}</translation>
 <translation id="4903674399067644695">‏یہ کارڈ آپ کو Chrome سے زیادہ سے زیادہ فائدہ اٹھانے کے بارے میں تجاویز دکھاتا ہے۔</translation>
 <translation id="49200511069271369">‏آپ کی تنظیم، <ph name="DOMAIN" />، اس اکاؤنٹ کا نظم کرتی ہے جس میں آپ سائن ان کر رہے ہیں اور اس بات کا نظم کرتی ہے کہ Chrome کو کیسے استعمال کیا جا سکتا ہے۔ آپ کا منتظم بعض خصوصیات سیٹ اپ کر سکتا یا ان پر پابندی عائد کر سکتا ہے۔</translation>
+<translation id="498985224078955265">‏اس ٹیب کو دوسرے آلے پر بھیجنے کے لیے دونوں آلات پر Chrome میں سائن ان کریں۔</translation>
 <translation id="5030102366287574140">‏Chrome آپ کو ڈیٹا کی خلاف ورزیوں، غیر محفوظ ویب سائٹوں اور مزید بہت کچھ سے محفوظ رکھنے میں مدد کر سکتا ہے</translation>
 <translation id="5108659628347594808">‏Chrome کو بہتر بنائیں</translation>
 <translation id="5112925986883715005">‏Chrome کی پڑھنے کی فہرست دیکھیں</translation>
 <translation id="5119391094379141756">‏Chrome منتخب کریں</translation>
 <translation id="5156818928311866442">‏Chrome کو بطور ڈیفالٹ براؤزر سیٹ کرنے کیلئے، Chrome کی ترتیب کھلتی ہے۔</translation>
 <translation id="5162467219239570114">‏Chrome پرانا ہے۔ اگر کوئی اپ ڈیٹ <ph name="BEGIN_LINK" />App اسٹور<ph name="END_LINK" /> میں دستیاب نہیں ہے تو یہ ممکن ہے کہ آپ کا آلہ مزید Chrome کے نئے ورژنز کو سپورٹ نہیں کرتا ہے۔</translation>
+<translation id="5184329579814168207">‏Chrome میں کھولیں</translation>
 <translation id="5190139289262548459">‏آپ کی تنظیم، <ph name="DOMAIN" />، اس اکاؤنٹ کا نظم کرتا ہے جس میں آپ سائن ان ہیں اور اس بات کا نظم کرتا ہے کہ Chrome کا استعمال کیسے کیا جاتا ہے۔</translation>
+<translation id="5256908199795498284">‏Chrome آپ کی ملاحظہ کردہ سائٹس پر پیکیج ٹریکنگ نمبروں کا پتہ لگائے گا اور نئے ٹیب کے صفحہ پر آپ کو پیکیج اپ ڈیٹس دکھائے گا۔ یہ خصوصیت فراہم کرنے اور ہر کسی کے لیے خریداری کو بہتر بنانے کے لیے آپ کے ڈیٹا کا اشتراک Google کے ساتھ کیا جائے گا۔</translation>
 <translation id="5278862365980079760">‏جب آپ Chrome چھوڑتے ہیں یا کسی مختلف ایپ پر سوئچ کرتے ہیں تو اپنے پوشیدگی ٹیبز کو مقفل کریں۔</translation>
 <translation id="5389212809648216794">‏Google Chrome آپ کا کیمرا استعمال نہیں کر سکتا ہے کیونکہ یہ کسی دوسری ایپلیکیشن کے زیر استعمال ہے</translation>
 <translation id="5395376160638294582">‏یقینی بنائیں کہ آپ ہمیشہ اپنے Google اکاؤنٹ میں Chrome ڈیٹا استعمال کر سکتے ہیں</translation>
@@ -127,27 +155,37 @@
 <translation id="5460571915754665838">‏4۔ Chrome منتخب کریں</translation>
 <translation id="546541279759910616">{COUNT,plural, =1{‏Chrome نئے ٹیب صفحہ پر اس پیکیج کو ٹریک کرنے میں مدد کرے گا۔}other{‏Chrome نئے ٹیب صفحہ پر ان پیکیجز کو ٹریک کرنے میں مدد کرے گا۔}}</translation>
 <translation id="5492504007368565877">‏Google پاس ورڈ مینیجر آپ کے پاس ورڈز چیک نہیں کر سکتا۔</translation>
+<translation id="5525095647255982834">‏اس ٹیب کو کسی اور آلے میں بھیجنے کے لیے وہاں Chrome میں سائن ان کریں۔</translation>
 <translation id="5527026824954593399">‏"Chrome پر Google Maps کے ساتھ دیکھیں" پر تھپتھپائیں۔</translation>
 <translation id="5552137475244467770">‏Chrome وقفے وقفے سے ان فہرستوں کے خلاف پاس ورڈز چیک کرتا ہے جو آن لائن شائع ہوئی ہیں۔ ایسا کرتے وقت، آپ کے پاس ورڈز اور صارف نام مرموزکردہ ہو جاتے ہیں، تاکہ وہ Google سمیت کسی بھی شخص کے ذریعے نہ پڑھے جا سکیں۔</translation>
 <translation id="5554520618550346933">‏آپ کے پاس ورڈ استعمال کرنے پر، Chrome آپ کو پاس ورڈ آن لائن شائع ہونے پر متنبہ کرتا ہے۔ ایسا کرتے وقت، آپ کے پاس ورڈز اور صارف نام مرموز ہوتے ہیں، تاکہ Google سمیت کوئی بھی انہیں پڑھ نہ سکے۔</translation>
 <translation id="5639704535586432836">‏ترتیبات &gt; رازداری &gt; کیمرا &gt; Google Chrome کھولیں اور کیمرا آن کریں۔</translation>
 <translation id="5642200033778930880">‏Google Chrome تقسیم کے منظر کی وضع میں آپ کا کیمرا استعمال نہیں کر سکتا ہے</translation>
 <translation id="5661521615548540542">‏Google پاس ورڈ مینیجر تمام پاس ورڈز کو چیک نہیں کر سکتا۔ بعد میں دوبارہ کوشش کریں۔</translation>
+<translation id="5690398455483874150">{count,plural, =1{‏ابھی 1 Chrome ونڈو نظر آ رہا ہے}other{‏ابھی {count} Chrome ونڈوز نظر آ رہے ہیں}}</translation>
 <translation id="5690427481109656848">Google LLC</translation>
 <translation id="571296537125272375">‏آف لائن، Chrome اپ ڈیٹس چیک نہیں کر سکتا ہے۔</translation>
 <translation id="5716154293141027663">‏جب بھی آپ دیگر ایپس میں لنکس پر تھپتھپائیں تو انہیں Chrome میں کھولیں</translation>
+<translation id="5733084997078800044">‏Chrome کی تجویز</translation>
 <translation id="5808435672482059465">‏اپنے Chrome کی سرگزشت دیکھیں</translation>
 <translation id="589695154992054845">‏Chrome میں پاس ورڈ مینیجر کھولتا ہے۔</translation>
 <translation id="5998675059699164418">‏آپ کی تنظیم چاہتی ہے کہ آپ Chrome استعمال کرنے کیلئے سائن ان کریں۔</translation>
 <translation id="6054613632208573261">‏بطور ڈیفالٹ Chrome کا استعمال کریں</translation>
 <translation id="6063091872902370735">‏Chrome میں سائن ان کرنے کی اجازت دیں</translation>
 <translation id="6110625574506755980">‏Chrome کی کچھ خصوصیات اب دستیاب نہیں ہوں گی۔</translation>
+<translation id="6177442314419606057">‏Chrome میں تلاش کریں</translation>
 <translation id="6181930887571472871">‏Chrome پر سوئچ کریں</translation>
 <translation id="6238746320622508509">‏Chrome کو اپنے پوشیدگی ٹیبز مقفل کرنے دیں۔</translation>
 <translation id="6247557882553405851">‏Google پاس ورڈ مینیجر</translation>
+<translation id="630693926528731525">‏آپ کے پاس ورڈ کا اشتراک نہیں کیا گیا۔ اپنا انٹرنیٹ کنکشن چیک کریں اور یقینی بنائیں کہ آپ Chrome میں سائن ان ہیں۔ پھر، دوبارہ کوشش کریں۔</translation>
 <translation id="6348855835728304880">‏اس آلے پر موجود دیگر ایپس پر اپنے Chrome پاس ورڈز اور مزید تک رسائی حاصل کریں۔</translation>
 <translation id="6412673304250309937">‏Chrome میں اسٹور کردہ غیر محفوظ سائٹس کی فہرست کے URLs چیک کرتا ہے۔ اگر کوئی سائٹ آپ کا پاس ورڈ چرانے کی کوشش کرتی ہے یا جب آپ نقصان دہ فائل ڈاؤن لوڈ کرتے ہیں تو Chrome محفوظ براؤزنگ پر صفحہ کے مواد کے بائٹس سمیت URLs بھیجتا ہے۔</translation>
 <translation id="6427126399757991875">‏آپ کی تنظیم Chrome کو سیٹ اپ کر رہی ہے...</translation>
+<translation id="6484712497741564393">‏<ph name="EMAIL" /> کے بطور سائن ان کردہ۔
+
+آپ کا ڈیٹا آپ کی پاس فریز کے ساتھ مرموز کردہ ہے۔ اپنے Google اکاؤنٹ میں Chrome ڈیٹا کو استعمال کرنے اور محفوظ کرنے کے لیے اسے درج کریں۔</translation>
+<translation id="6497850081273517953">‏Chrome پرانا ہے، محفوظ رہنے کے لیے تازہ ترین ورژن پر اپ ڈیٹ کریں۔</translation>
+<translation id="6540120577248033958">‏کسی سائٹ پر جائیں اور Chrome مینیو میں پیروی کریں پر کلک کریں</translation>
 <translation id="6545449117344801102">‏Chrome پتوں کا پتا لگاتا ہے اور آپ کو ڈائریکشنز اور مقامی معلومات دینے کے لیے Google Maps کا استعمال کرتا ہے۔</translation>
 <translation id="6600954340915313787">‏Chrome پر کاپی کر دیا گیا</translation>
 <translation id="6634107063912726160">‏آپ کے سائن آؤٹ کرنے پر، Chrome کوئی بھی ڈیٹا آپ کے Google اکاؤنٹ کے ساتھ سِنک نہیں کرے گا۔ پہلے کا سِنک کردہ ڈیٹا اکاؤنٹ میں باقی رہے گا۔</translation>
@@ -160,6 +198,7 @@
 
 صرف پاس فریز کا حامل شخص ہی آپ کے مرموز کردہ ڈیٹا کو پڑھ سکتا ہے۔ پاس فریز Google کو نہیں بھیجا جاتا، نہ ہی وہ اسے اسٹور کرتا ہے۔ اگر آپ اپنا پاس فریز بھول جاتے ہیں یا اس ترتیب کو تبدیل کرنا چاہتے ہیں تو <ph name="BEGIN_LINK" />اپنے اکاؤنٹ میں موجود Chrome ڈیٹا کو صاف کریں<ph name="END_LINK" />۔</translation>
 <translation id="6851982868877411675">‏iOS میں Chrome کی ترتیبات کھولیں، پھر "ڈیفالٹ براؤزر ایپ" پر تھپتھپائیں اور Chrome کو منتخب کریں۔</translation>
+<translation id="687586529977635009">‏Chrome ان سائٹس پر ٹریکنگ نمبروں کا پتہ لگائے گا جو آپ ملاحظہ کرتے ہیں اور نئے ٹیب کے صفحہ پر آپ کو پیکیج اپ ڈیٹس دکھائے گا۔ یہ خصوصیت فراہم کرنے اور ہر کسی کے لیے خریداری کو بہتر بنانے کے لیے آپ کے ڈیٹا کا اشتراک Google کے ساتھ کیا جائے گا۔ آپ اسے <ph name="BEGIN_LINK" />پیکیج ٹریکنگ کی ترتیبات<ph name="END_LINK" /> میں تبدیل کر سکتے ہیں۔</translation>
 <translation id="6916015246697034114">‏Chrome میں آواز سے تلاش کریں</translation>
 <translation id="6964931465519938134">‏اب جب بھی آپ پیغامات، دستاویزات اور دیگر ایپس میں لنکس پر تھپتھپائیں تو آپ Chrome استعمال کر سکتے ہیں۔</translation>
 <translation id="6975725306479268850">‏Chrome برائے آٹو فل کا انتخاب کریں</translation>
@@ -177,17 +216,23 @@
 <translation id="7261678641327190792">‏Chrome آپ کے پاس ورڈز چیک نہیں کر سکتا ہے</translation>
 <translation id="7272930098487145294">‏تصاویر محفوظ کرنے کے لیے، Chrome کو اپنی تصاویر شامل کرنے دینے کے لیے ترتیبات پر تھپتھپائیں</translation>
 <translation id="7275945473750112644">‏آپ کا اکاؤنٹ <ph name="HOSTED_DOMAIN" /> کے زیر انتظام ہے، اسلئے آپ کا Chrome ڈیٹا اس آلے سے صاف کر دیا جائے گا</translation>
+<translation id="7349129508108954623">‏Chrome کو Google Maps کا استعمال کرنے کی اجازت دیں تاکہ شناخت کردہ پتوں کے بارے میں آپ کو ڈائریکشنز اور مقامی معلومات مل سکے۔</translation>
 <translation id="7394108421562933108">‏Chrome میں Maps</translation>
 <translation id="7400722733683201933">‏Google Chrome کے بارے میں</translation>
+<translation id="7466693328838535498">‏تلاش کے ویجیٹس باکس میں، Chrome درج کریں</translation>
+<translation id="746684838091935575">‏3۔ Chrome منتخب کریں</translation>
+<translation id="7492574581995589075">‏آپ کی تنظیم نے آپ کے Google اکاؤنٹ میں Chrome ڈیٹا کو استعمال کرنے اور محفوظ کرنے کی اہلیت کو بند کر دیا ہے۔ نئے بُک مارکس، پاس ورڈز اور بہت کچھ کو صرف اس آلہ میں محفوظ کیا جائے گا۔</translation>
 <translation id="7501046334262221972">‏Chrome کو اپنا ڈیفالٹ براؤزر بنانے کے لئے، ترتیبات کھولیں۔ ڈیفالٹ براؤزر ایپ پر تھپتھپائیں اور پھر Chrome منتخب کریں۔</translation>
 <translation id="756809126120519699">‏Chrome ڈیٹا صاف کر دیا گیا</translation>
 <translation id="7581063337314642333">‏Chrome میں ٹیب گرِڈ ملاحظہ کریں</translation>
 <translation id="7662994914830945754">‏اپنے ٹیبز کو دیکھنے کے لئے جہاں کہیں بھی آپ Chrome استعمال کرتے ہیں، سائن ان کریں اور سِنک کو آن کریں</translation>
 <translation id="7669869107155339016">‏Chrome کی ترتیبات پر جائیں۔</translation>
+<translation id="769104993356536261">‏iOS پر Chrome ایکشنز استعمال کریں</translation>
 <translation id="7693590760643069321">‏اب جب بھی آپ پیغامات، دستاویزات اور دیگر ایپس میں لنکس کو تھپتھپائیں تو آپ Chrome کا استعمال کر سکتے ہیں۔</translation>
 <translation id="7698568245838009292">‏Chrome کیمرے تک رسائی حاصل کرنا چاہے گا</translation>
 <translation id="7754633291442704733">‏آپ کی تنظیم کے <ph name="DOMAIN" /> کو آپ کے Chrome ڈیٹا، بُک مارکس، سرگزشت، پاس ورڈز اور دیگر ترتیبات تک رسائی حاصل ہوگی جنہیں آپ اس اکاؤنٹ میں اسٹور کرتے ہیں۔ آپ کے سائن آؤٹ کرنے پر، اس آلے سے آپ کا ڈیٹا صاف کر دیا جائے گا۔  تاہم، آپ کا ڈیٹا آپ کے نظم کردہ Google اکاؤنٹ میں اسٹور رہے گا اور آپ کی تنظیم کے لیے دستیاب رہے گا۔ آپ کی تنظیم اس اکاؤنٹ کے لیے مخصوص صارف کی پالیسیاں بھی سیٹ کر سکتی ہے جو Chrome کے رویے کو تبدلی کر سکتی ہیں۔</translation>
 <translation id="7780154209050837198">‏Chrome سے بھرپور فائدہ اٹھانے کے لیے اپنے Google اکاؤنٹ کے ساتھ Chrome میں سائن ان کریں۔</translation>
+<translation id="778855399387580014">‏نئے Chrome ٹیب میں تلاش شروع کریں۔</translation>
 <translation id="7792140019572081272">‏Chrome آپ کے حساس ڈیٹا کو Face ID کے ساتھ محفوظ رکھتا ہے۔</translation>
 <translation id="7855730255114109580">‏Google Chrome اپ ٹو ڈیٹ ہے</translation>
 <translation id="7897703007638178753">‏Chrome کے حالیہ ٹیبز دیکھیں</translation>
@@ -195,8 +240,10 @@
 <translation id="7933491483529363150">‏Chrome میں میرا تازہ ترین ٹیب کھولیں۔</translation>
 <translation id="8022947259858476807">‏لنکس کھولنے، ویجیٹس سے تلاش کرنے اور دیگر ایپس میں پاس ورڈز کو آٹو فل کرنے کیلئے، Chrome کا بطور ڈیفالٹ استعمال کریں</translation>
 <translation id="804638182476029347">‏قیمت میں کمی کے الرٹس موصول کرنے کے لیے Chrome اطلاعات کی اجازت دیں</translation>
+<translation id="8065292699993359127">‏URLs کو Chrome میں پوشیدگی میں کھولیں</translation>
 <translation id="8069507567842347179">‏اس پیکیج کو پہلے ہی Chrome پر ٹریک کیا جا چکا ہے۔</translation>
 <translation id="81358522153858150">‏Chrome اب آپ کے نظم کردہ اکاؤنٹ کے لیے صارف کی پالیسیوں کو سپورٹ کرتا ہے</translation>
+<translation id="8136856065410661948">‏اس کا استعمال Chrome اور Google لینز سے آپ کے Apple کیلنڈر میں ایونٹس تخلیق کرنے کے لیے کیا جائے گا۔</translation>
 <translation id="8160472928944011082">‏Chrome اپ ڈیٹ نہیں کیا جا سکتا</translation>
 <translation id="8174679664544842874">‏Chrome میں ایک نیا ٹیب کھلتا ہے۔</translation>
 <translation id="8213758103105806860">‏Chrome بُک مارکس دیکھیں</translation>
@@ -208,11 +255,15 @@
 <translation id="8414886616817913619">‏آپ کی تنظیم چاہتی ہے کہ آپ Chrome استعمال کرنے کیلئے سائن ان کریں۔ <ph name="BEGIN_LINK" />مزید جانیں<ph name="END_LINK" /></translation>
 <translation id="84594714173170813">‏اپنے Google اکاؤنٹ میں Chrome ڈیٹا استعمال کرتے رہیں</translation>
 <translation id="8459495907675268833">‏Chrome اور مطابقت پذیر آلات سے منتخب ڈیٹا کو ہٹا دیا گیا ہے۔ ممکن ہے کہ history.google.com پر آپ کے Google اکاؤنٹ میں دیگر Google سروسز سے تلاشیں اور سرگرمی جیسی براؤزنگ کی سرگزشت کی دیگر شکلیں موجود ہوں۔l</translation>
+<translation id="8491300088149538575">‏<ph name="EMAIL" /> کے بطور سائن ان کردہ۔
+
+آپ کا ڈیٹا آپ کی پاس فریز کے ساتھ <ph name="TIME" /> کو مرموز کیا گیا تھا۔ اپنے Google اکاؤنٹ میں Chrome ڈیٹا کو استعمال کرنے اور محفوظ کرنے کے لیے اسے درج کریں۔</translation>
 <translation id="850555388806794946">‏Chrome کو اپنا ڈیفالٹ بنانے کیلئے:
   1۔ ترتیبات کھولیں
   2۔ ڈیفالٹ براؤزر ایپ پر تھپتھپائیں
   3۔ Chrome منتخب کریں۔</translation>
 <translation id="8540666473246803645">Google Chrome</translation>
+<translation id="8558480467877843976">‏اب آپ کسی بھی وقت پیغامات، دستاویزات اور دیگر ایپس میں موجود لنکس کو براؤز یا تھپتھپاتے وقت Chrome استعمال کر سکتے ہیں۔</translation>
 <translation id="8577978202917232774">‏تجاویز آپ کے دیگر آلات پر آپ کی براؤزنگ سرگرمی پر مبنی ہیں۔ تجاویز حاصل کرنے کے لیے، اپنے تمام آلات پر Chrome میں سائن ان کریں۔</translation>
 <translation id="8587647598504233556">‏"Chrome" پھر "ڈیفالٹ براؤزر ایپ" پر تھپتھپائیں۔</translation>
 <translation id="8603022514504485810">‏Google پاس ورڈ مینیجر تمام پاس ورڈز کو چیک نہیں کر سکتا۔ آئندہ کل دوبارہ کوشش کریں یا <ph name="BEGIN_LINK" />اپنے Google اکاؤنٹ میں پاس ورڈز چیک کریں۔<ph name="END_LINK" /></translation>
@@ -223,10 +274,13 @@
 <translation id="8772179140489533211">‏Chrome میں سائن ان کرنے کے لیے پرامپٹس دکھاتا ہے۔</translation>
 <translation id="8788269841521769222">‏آپ کو یہ پاس ورڈ یاد رکھنے کی ضرورت نہیں ہوگی۔ اسے Google پاس ورڈ مینیجر میں <ph name="EMAIL" /> کے لیے محفوظ کیا جائے گا</translation>
 <translation id="8808828119384186784">‏Chrome کی ترتیبات</translation>
+<translation id="8855781063981781621">‏Chrome میں لاک ڈاؤن وضع کو غیر فعال کرنے کیلئے اسے اپنے iPad پر آف کریں۔</translation>
 <translation id="8856877214925961642">‏پاس فریز کی مرموز کاری میں ادائیگی کے طریقے اور پتے شامل نہیں ہیں۔
 
 اس ترتیب کو تبدیل کرنے کے لیے، <ph name="BEGIN_LINK" />اپنے اکاؤنٹ میں موجود Chrome ڈیٹا کو صاف کریں<ph name="END_LINK" />۔</translation>
 <translation id="8857676124663337448">‏Google پاس ورڈ مینیجر تمام پاس ورڈز کو چیک نہیں کر سکتا۔ کل دوبارہ کوشش کریں۔</translation>
+<translation id="8865415417596392024">‏آپ کے اکاؤنٹ میں Chrome کا ڈیٹا</translation>
+<translation id="8891935667620843985">‏آپ Chrome میں لنکس کو اپنی ڈیفالٹ براؤزر ایپ بنا کر خودکار طور پر اسے کھول سکتے ہیں۔</translation>
 <translation id="8897749957032330183">‏پاس ورڈز اس آلہ پر Google پاس ورڈ مینیجر میں محفوظ کیے جاتے ہیں۔</translation>
 <translation id="8949681853939555434">‏Chrome کو اپنے ڈیفالٹ براؤزر کے طور پر سیٹ کریں</translation>
 <translation id="8969290730818637510">‏آن ہونے پر:
@@ -236,9 +290,12 @@
 <ph name="BEGIN_INDENT" />  • آپ کے Chrome کے استعمال کے بارے میں معلومات Google کو بھیجی جاتی ہے، لیکن یہ آپ سے منسلک نہیں ہے۔
   • اگر Chrome کریش ہو جاتا ہے تو کریش کی تفصیلات میں کچھ ذاتی معلومات شامل ہو سکتی ہیں۔
   • اگر آپ مطابقت پذیری کو آن کرتے ہیں تو میٹرکس میں ان URLs کے بارے میں معلومات بھی شامل ہو سکتی ہیں جنہیں آپ ملاحظہ کرتے ہیں۔<ph name="END_INDENT" /></translation>
+<translation id="9043368763795653245">‏اپنی Discover فیڈ اور Chrome کو ذاتی نوعیت کا بنانے کے لیے، مطابقت پذیری کو آن کریں۔</translation>
+<translation id="9068336935206019333">‏Chrome پوشیدگی میں کھولیں</translation>
 <translation id="9071207983537882274">‏Chrome میں ترتیبات کھولتا ہے۔</translation>
 <translation id="9112744793181547300">‏Chrome کو ڈیفالٹ کے بطور سیٹ کریں؟</translation>
 <translation id="9122931302567044771">‏اس کا مطلب ہے کہ Chrome ہر بار ڈیسک ٹاپ سائٹ کی درخواست کرے گا۔</translation>
 <translation id="9181628561061032322">‏Chrome کے حالیہ ٹیبز کھلتے ہیں۔</translation>
+<translation id="953008885340860025">‏Chrome سے سائن آوٹ ہو گئے</translation>
 <translation id="97300214378190234">‏جب بھی آپ دوسری ایپس میں لنک پر تھپتھپائیں تو Chrome کا استعمال کریں۔</translation>
 </translationbundle>

@@ -2395,7 +2395,6 @@ Du kan administrere innstillingene for denne kontoen ved å installere Family Li
 <translation id="2794522004398861033">Koble til wifi eller Ethernet for å konfigurere eSIM</translation>
 <translation id="2794977172822818797">Legg til nåværende nettsteder</translation>
 <translation id="2795716239552913152">Nettsteder bruker vanligvis posisjonen din for å kunne tilby relevante funksjoner eller opplysninger, som lokalnyheter eller butikker i nærheten</translation>
-<translation id="2795950023277268902">Koble til <ph name="BEGIN_BOLD" /><ph name="DRIVE_ACCOUNT_EMAIL" /><ph name="END_BOLD" /> for å få tilgang til Disk-filene dine i Filer-appen</translation>
 <translation id="2798347533012571708">Behold oppdateringer</translation>
 <translation id="2799223571221894425">Start på nytt</translation>
 <translation id="2800309299477632167">Spesialtilpasset tastaturoppsett</translation>
@@ -8339,6 +8338,7 @@ Du har # passord til som er utsatt for sikkerhetsbrudd. Google Passordlagring an
 <translation id="7576976045740938453">Det oppsto et problem med kontoen for demomodus.</translation>
 <translation id="7578137152457315135">Innstillinger for fingeravtrykk</translation>
 <translation id="7578692661782707876">Skriv inn bekreftelseskoden.</translation>
+<translation id="757941033127302446">Pålogget</translation>
 <translation id="7581007437437492586">Reglene er konfigurert riktig</translation>
 <translation id="7581462281756524039">Et opprydningsverktøy</translation>
 <translation id="7582582252461552277">Foretrekk dette nettverket</translation>

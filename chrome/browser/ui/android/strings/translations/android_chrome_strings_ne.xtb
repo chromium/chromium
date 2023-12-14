@@ -20,7 +20,6 @@
 <translation id="1103142993930332957">Chrome को गुणस्तर सुधार्न सघाउने हो?</translation>
 <translation id="1105960400813249514">स्क्रिन क्याप्चर</translation>
 <translation id="1108938384783527433">ब्राउजिङ इतिहास सिंक गरियोस्</translation>
-<translation id="1110914759170138831">हाइलाइट गरिएको पाठ छोट्याइएको छ</translation>
 <translation id="1111673857033749125">तपाईँका अन्य डिभाइसमा सुरक्षित गरिएका पुस्तक चिन्हहरू यहाँ देखिनेछन्।</translation>
 <translation id="1113597929977215864">सरलीकृत दृश्य देखाउनुहोस्</translation>
 <translation id="1126013303640354461">Google Pay मा भएका भुक्तानी विधि र ठेगानाहरू इन्क्रिप्ट गरिने छैन। Chrome को ब्राउजिङ हिस्ट्री सिंक गरिने छैन।
@@ -68,7 +67,6 @@
 <translation id="1298077576058087471">६०% सम्म डेटा बचत गर्नुहोस्, आजको समाचार पढ्नुहोस्</translation>
 <translation id="1303339473099049190">उक्त पासवर्ड फेला पार्न सकिएन। आफ्नो हिज्जेको जाँच गरी फेरि प्रयास गर्नुहोस्।</translation>
 <translation id="1303507811548703290"><ph name="DOMAIN" /> - <ph name="DEVICE_NAME" /> बाट पठाइएको</translation>
-<translation id="1316212908214730110">chrome_stylized_highlight_</translation>
 <translation id="1320912611264252795">बुकमार्क सेभ गर्ने फ्लोका फोल्डरहरू स्क्रिनको पूरा भाग ओगट्ने गरी खोलिएको छ</translation>
 <translation id="1327257854815634930">नेभिगेसनको इतिहास खोलियो</translation>
 <translation id="1331212799747679585">Chrome अद्यावधिक गर्न सकिँदैन। थप विकल्पहरू</translation>
@@ -393,7 +391,6 @@
 <translation id="3098745985164956033">तपाईंलाई उपलब्ध गराइने वर्णनको गुणस्तर सुधार गर्न केही फोटोहरू Google मा पठाइन्छन्</translation>
 <translation id="3114507951000454849">आजको समाचार पढ्नुहोस् <ph name="NEWS_ICON" /></translation>
 <translation id="3123734510202723619">घोषणाहरू</translation>
-<translation id="3134784203083076891">”</translation>
 <translation id="314939179385989105">Chrome को गृहपृष्ठ</translation>
 <translation id="3158667104057012316">म्यानुअल तरिकाले क्रमबद्ध गर्नुहोस्</translation>
 <translation id="3166827708714933426">ट्याब र विन्डोका सर्टकटहरू</translation>
@@ -429,7 +426,6 @@
 <translation id="3303414029551471755">सामग्री डाउनलोड गर्न अगाडि बढ्ने हो?</translation>
 <translation id="3305130791745726624">डिभाइसहरूमा पठाउनुहोस्</translation>
 <translation id="3305795716056605962">"थप विकल्पहरू" बटनमा गई पेजहरू अनुवाद गर्नुहोस्</translation>
-<translation id="3324393723900507254"><ph name="TEMPLATE_TITLE" /> टेम्प्लेट चयन गरिएको छ</translation>
 <translation id="3334729583274622784">फाइलको एक्स्टेन्सन परिवर्तन गर्ने हो?</translation>
 <translation id="3341262203274374114">अनफलो गर्न सकिएन। कुनै समस्या आयो।</translation>
 <translation id="3359667936385849800">तपाईंको हालको सेवा प्रदायक प्रयोग गर्नुहोस्</translation>
@@ -530,7 +526,6 @@
 <translation id="3928666092801078803">मेरो डेटालाई संयोजन गर्नुहोस्</translation>
 <translation id="3931947361983910192">पछिल्लो ४ हप्ता</translation>
 <translation id="3932390316856284148">साइन इन गर्ने पुछारको पाना पूरै स्क्रिनमा खोलिएको छ।</translation>
-<translation id="3934366560681368531">“</translation>
 <translation id="393697183122708255">कुनैपनि सक्षम गरिएको आवाज खोजी उपलब्ध छैन</translation>
 <translation id="395377504920307820">खातामा लग इन नगरिकन चलाउनुहोस्</translation>
 <translation id="3958287878205277013">तपाईंले आफ्नो डिभाइसमा इन्कोग्निटो मोडमा ब्राउजर चलाउँदा खोलिएका वेबसाइट तथा वेबपेजहरूको विवरण मेटाउन सबै इन्कोग्निटो ट्याब बन्द गर्नुहोस्।</translation>
@@ -1176,7 +1171,6 @@
 <translation id="7221869452894271364">यस पृष्ठलाई रिलोड गर्नुहोस्</translation>
 <translation id="7227218174981371415">{FILE_COUNT,plural, =1{१ डाउनलोड विचारधीन छ}other{# डाउनलोडहरू विचारधीन छन्}}</translation>
 <translation id="72415438529550637">पासवर्ड सिफारिस गर्ने सुविधा बन्द गरिएको छ।</translation>
-<translation id="7242755609445462077">शैलीबद्ध हाइलाइट <ph name="CURRENT_DATE" /></translation>
 <translation id="7248069434667874558"><ph name="TARGET_DEVICE_NAME" /> को Chrome मा सिंक सुविधा सक्रिय गरिएको छ भन्ने कुरा सुनिश्चित गर्नुहोस्</translation>
 <translation id="7252076891734325316">आफ्नो फोन कम्प्युटरको छेउमा राख्नुहोस्</translation>
 <translation id="7260367682327802201">तपाईंको Android डिभाइसमा यस्तै सेटिङ हुन सक्छ। Chrome र तपाईंको Android डिभाइसमा विज्ञापनको पर्फर्मेन्स मापन गर्ने सुविधा अन गरिएको छ भने कुनै पनि कम्पनी तपाईंले खोल्ने वेबसाइट र तपाईंले प्रयोग गर्ने एपहरूमा देखाइने विज्ञापनको प्रभावकारिता मापन गर्न सक्षम हुन सक्छन्।</translation>
@@ -1260,7 +1254,6 @@
 <translation id="7605594153474022051">सिंकले काम गरिरहेको छैन</translation>
 <translation id="7612619742409846846">यस रूपमा Google मा साइन इन गरियो</translation>
 <translation id="7612989789287281429">साइन इन गरिँदै छ…</translation>
-<translation id="7616551326690708776">आफूले हाइलाइट गरेको पाठका लागि टेम्प्लेट चयन गर्नुहोस्।</translation>
 <translation id="7619072057915878432"><ph name="FILE_NAME" /> डाउनलोड नेटवर्क असफलताका कारणले असफल भयो।</translation>
 <translation id="7626032353295482388">Chrome मा स्वागत छ</translation>
 <translation id="7630202231528827509">सेवा प्रदायकको URL</translation>
@@ -1526,7 +1519,6 @@
 <translation id="893938492099608175">तपाईंले तय गरेका सेटिङका आधारमा Chrome ले कुकी, तपाईंको हालको URL र तपाईंको लोकेसन पनि पठाउन सक्छ</translation>
 <translation id="8942627711005830162">अर्को विन्डोमा खोल्नुहोस्</translation>
 <translation id="8945143127965743188"><ph name="LANG" /> - यो भाषा डाउनलोड गर्न सकिएन। पछि फेरि प्रयास गर्नुहोस्।</translation>
-<translation id="8955719471735800169">सबैभन्दा माथि फर्कनुहोस्</translation>
 <translation id="8964479563882643397">तपाईं नयाँ इन्कोग्निटो ट्याब खोल्न चाहनुहुन्छ भने मेनु खोल्नुहोस्</translation>
 <translation id="8965591936373831584">विचाराधीन</translation>
 <translation id="8968085728801125376">{TAB_COUNT,plural, =1{<ph name="INCOGNITO_TAB_COUNT" /> वटा इन्कोग्निटो ट्याबका साथै अर्को <ph name="TAB_COUNT_ONE" /> ट्याब बन्द गरिने छन्}other{<ph name="INCOGNITO_TAB_COUNT" /> वटा इन्कोग्निटो ट्याबका साथै अरू <ph name="TAB_COUNT_MANY" /> वटा ट्याब बन्द गरिने छन्}}</translation>

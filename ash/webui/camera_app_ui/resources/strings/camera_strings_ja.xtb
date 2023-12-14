@@ -78,6 +78,7 @@
 <translation id="4705093842003735294">解像度: 高</translation>
 <translation id="4864143361253542638">スキャンしたページのリスト</translation>
 <translation id="4890010094662541459">3x3</translation>
+<translation id="4892746741161549733">リンクのアドレス <ph name="URL" /> をコピー</translation>
 <translation id="491895758387112773">マルチストリーム動画の録画</translation>
 <translation id="495170559598752135">操作</translation>
 <translation id="4984613436295737187">クアッド HD（1440p）</translation>
@@ -129,6 +130,7 @@
 <translation id="7450541714075000668">テキストをコピーしました</translation>
 <translation id="7488619942230388918">GIF 動画を録画する</translation>
 <translation id="7557677699350329807">次のカメラに切り替え</translation>
+<translation id="7562584071994185503">テキスト <ph name="TEXT" /> をコピー</translation>
 <translation id="7607002721634913082">一時停止中</translation>
 <translation id="7608223098072244877">4x4</translation>
 <translation id="761421184377987513">左下に移動しています</translation>
@@ -150,6 +152,7 @@
 <translation id="8346544573713510785">Camera HAL でフレームをスケーリング</translation>
 <translation id="8425673304802773841">下にティルト</translation>
 <translation id="8428213095426709021">設定</translation>
+<translation id="8609951387004618906"><ph name="URL" /> を開く</translation>
 <translation id="8629662593426079630">360p</translation>
 <translation id="8711011893539266636">マイクのミュートを切り替えます。ミュートはオンです</translation>
 <translation id="8730621377337864115">完了</translation>

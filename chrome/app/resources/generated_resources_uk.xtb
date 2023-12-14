@@ -2403,7 +2403,6 @@
 <translation id="2794522004398861033">Щоб налаштувати eSIM-карту, підключіться до Wi-Fi або Ethernet</translation>
 <translation id="2794977172822818797">Додати поточні сайти</translation>
 <translation id="2795716239552913152">Сайти зазвичай використовують геодані для роботи пов'язаних функцій чи показу відомостей, як-от місцеві новини або дані про магазини поблизу</translation>
-<translation id="2795950023277268902">Щоб користуватися файлами з Диска в додатку Файли, підключіть обліковий запис <ph name="BEGIN_BOLD" /><ph name="DRIVE_ACCOUNT_EMAIL" /><ph name="END_BOLD" /></translation>
 <translation id="2798347533012571708">Оновлювати автоматично</translation>
 <translation id="2799223571221894425">Перезапустити</translation>
 <translation id="2800309299477632167">Власна карта клавіш</translation>
@@ -8353,6 +8352,7 @@
 <translation id="7576976045740938453">Виникла проблема з обліковим записом демо-режиму.</translation>
 <translation id="7578137152457315135">Налаштування відбитка</translation>
 <translation id="7578692661782707876">Введіть код підтвердження.</translation>
+<translation id="757941033127302446">Ви ввійшли</translation>
 <translation id="7581007437437492586">Правила налаштовані правильно</translation>
 <translation id="7581462281756524039">Інструмент очищення</translation>
 <translation id="7582582252461552277">Віддавати перевагу цій мережі</translation>

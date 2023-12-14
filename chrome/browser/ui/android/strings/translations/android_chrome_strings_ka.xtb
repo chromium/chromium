@@ -20,7 +20,6 @@
 <translation id="1103142993930332957">გსურთ, ხელი შეუწყოთ Chrome-ის გაუმჯობესებას?</translation>
 <translation id="1105960400813249514">ეკრანის აღბეჭდვა</translation>
 <translation id="1108938384783527433">ისტორიის სინქრონიზაცია</translation>
-<translation id="1110914759170138831">მონიშნული ტექსტი შემოკლდა</translation>
 <translation id="1111673857033749125">თქვენს სხვა მოწყობილობებზე შენახული ჩანართები აქ გამოჩნდება.</translation>
 <translation id="1113597929977215864">გამარტივებული ხედის ჩვენება</translation>
 <translation id="1126013303640354461">Google Pay-ში არსებული გადახდის მეთოდები და მისამართები არ დაიშიფრება. Chrome-ში არსებული დათვალიერების ისტორია არ სინქრონიზდება.
@@ -68,7 +67,6 @@
 <translation id="1298077576058087471">დაზოგეთ მონაცემების 60%-მდე — გაეცანით დღის სიახლეებს</translation>
 <translation id="1303339473099049190">ეს პაროლი ვერ მოიძებნა. შეამოწმეთ მართლწერა და ცადეთ ხელახლა.</translation>
 <translation id="1303507811548703290"><ph name="DOMAIN" /> — გამოგზავნილია <ph name="DEVICE_NAME" />-დან</translation>
-<translation id="1316212908214730110">chrome_stylized_highlight_</translation>
 <translation id="1320912611264252795">სანიშნეების შენახვის ნაკადის საქაღალდეები გახსნილია სრულ სიმაღლეზე</translation>
 <translation id="1327257854815634930">ნავიგაციის ისტორია გახსნილია</translation>
 <translation id="1331212799747679585">Chrome-ის განახლება ვერ მოხერხდა. დამატებითი ვარიანტები</translation>
@@ -393,7 +391,6 @@
 <translation id="3098745985164956033">ზოგიერთი სურათი გაეგზავნება Google-ს, უკეთესი აღწერილობები რომ შემოგთავაზოთ</translation>
 <translation id="3114507951000454849">გაეცანით დღის სიახლეებს <ph name="NEWS_ICON" /></translation>
 <translation id="3123734510202723619">განცხადებები</translation>
-<translation id="3134784203083076891">“</translation>
 <translation id="314939179385989105">Chrome-ის მთავარი გვერდი</translation>
 <translation id="3158667104057012316">ხელით არჩეული მიმდევრობით დალაგება</translation>
 <translation id="3166827708714933426">ჩანართებისა და ფანჯრების მალსახმობები</translation>
@@ -429,7 +426,6 @@
 <translation id="3303414029551471755">გაგრძელდეს შინაარსის ჩამოტვირთვა?</translation>
 <translation id="3305130791745726624">მოწყობილობებზე გაგზავნა</translation>
 <translation id="3305795716056605962">თარგმნეთ გვერდები „სხვა ვარიანტების“ ღილაკის მეშვეობით</translation>
-<translation id="3324393723900507254">არჩეულია <ph name="TEMPLATE_TITLE" /> შაბლონი</translation>
 <translation id="3334729583274622784">გსურთ ფაილის გაფართოების შეცვლა?</translation>
 <translation id="3341262203274374114">თვალის მიდევნების გაუქმება ვერ მოხერხდა. წარმოიქმნა შეფერხება.</translation>
 <translation id="3359667936385849800">სერვისის ამჟამინდელი პროვაიდერის გამოყენება</translation>
@@ -530,7 +526,6 @@
 <translation id="3928666092801078803">ჩემი მონაცემების კომბინირება</translation>
 <translation id="3931947361983910192">ბოლო 4 კვირა</translation>
 <translation id="3932390316856284148">სისტემაში შესვლის ქვედა ფურცელი გახსნილია სრულ სიმაღლეზე.</translation>
-<translation id="3934366560681368531">„</translation>
 <translation id="393697183122708255">ჩართული ხმოვანი ძიება მიუწვდომელია</translation>
 <translation id="395377504920307820">ანგარიშის გარეშე გამოყენება</translation>
 <translation id="3958287878205277013">თქვენი მოწყობილობიდან ინკოგნიტო რეჟიმში დათვალიერების ისტორია რომ წაშალოთ, დახურეთ ყველა ინკოგნიტო ჩანართი.</translation>
@@ -1177,7 +1172,6 @@
 <translation id="7221869452894271364">ამ გვერდის ხელახლა ჩატვირთვა</translation>
 <translation id="7227218174981371415">{FILE_COUNT,plural, =1{1 ჩამოტვირთვა მოლოდინის რეჟიმშია}other{# ჩამოტვირთვა მოლოდინის რეჟიმშია}}</translation>
 <translation id="72415438529550637">პაროლის შემოთავაზება დახურულია.</translation>
-<translation id="7242755609445462077">სტილიზებული გამოყოფილი კონტენტი — <ph name="CURRENT_DATE" /></translation>
 <translation id="7248069434667874558">დარწმუნდით, რომ <ph name="TARGET_DEVICE_NAME" />-ისთვის Chrome-ში ჩართულია სინქრონიზაცია</translation>
 <translation id="7252076891734325316">მოათავსეთ ტელეფონი კომპიუტერთან უფრო ახლოს</translation>
 <translation id="7260367682327802201">თქვენს Android მოწყობილობას, შესაძლოა, ჰქონდეს მსგავსი პარამეტრი. თუ რეკლამის ეფექტურობის გაზომვა ჩართულია როგორც Chrome-ში, ისე თქვენს Android მოწყობილობაზე, შესაბამისი კომპანია შეძლებს რეკლამის ეფექტურობის გაზომვას თქვენ მიერ მონახულებული ვებსაიტებისა და გამოყენებული აპების მასშტაბით.</translation>
@@ -1261,7 +1255,6 @@
 <translation id="7605594153474022051">სინქრონიზაცია არ მუშაობს</translation>
 <translation id="7612619742409846846">Google-ში შესულია:</translation>
 <translation id="7612989789287281429">მიმდინარეობს შესვლა…</translation>
-<translation id="7616551326690708776">აირჩიეთ შაბლონი მონიშნულისთვის.</translation>
 <translation id="7619072057915878432"><ph name="FILE_NAME" /> ვერ ჩამოიტვირთა ქსელთან დაკავშირებული პრობლემების გამო.</translation>
 <translation id="7626032353295482388">მოგესალმებათ Chrome!</translation>
 <translation id="7630202231528827509">მიუთითეთ URL</translation>
@@ -1527,7 +1520,6 @@
 <translation id="893938492099608175">თქვენი პარამეტრების მიხედვით, Chrome-მა, შესაძლოა, გაგზავნოს ქუქი-ჩანაწერები, თქვენი ამჟამინდელი URL და თქვენი მდებარეობაც</translation>
 <translation id="8942627711005830162">სხვა ფანჯარაში გახსნა</translation>
 <translation id="8945143127965743188"><ph name="LANG" /> — ამ ენის ჩამოტვირთვა ვერ მოხერხდა. ცადეთ მოგვიანებით.</translation>
-<translation id="8955719471735800169">გვერდის დასაწყისში</translation>
 <translation id="8964479563882643397">ახალი ინკოგნიტო ჩანართის გასახსნელად გახსენით მენიუ</translation>
 <translation id="8965591936373831584">მომლოდინე</translation>
 <translation id="8968085728801125376">{TAB_COUNT,plural, =1{<ph name="INCOGNITO_TAB_COUNT" /> ინკოგნიტო და <ph name="TAB_COUNT_ONE" /> სხვა ჩანართი დაიხურება}other{<ph name="INCOGNITO_TAB_COUNT" /> ინკოგნიტო და <ph name="TAB_COUNT_MANY" /> სხვა ჩანართი დაიხურება}}</translation>

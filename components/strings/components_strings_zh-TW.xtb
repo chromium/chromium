@@ -39,6 +39,7 @@
 <translation id="1060136083665017312">遊戲系統與主機</translation>
 <translation id="1060320201901229167">Envelope Kaku 5</translation>
 <translation id="10614374240317010">一律不儲存</translation>
+<translation id="1062407476771304334">取代</translation>
 <translation id="1064054731605354900">A3 x 5</translation>
 <translation id="106701514854093668">電腦版書籤</translation>
 <translation id="1068672505746868501">一律不翻譯<ph name="SOURCE_LANGUAGE" />網頁</translation>
@@ -133,7 +134,6 @@
 <translation id="1240347957665416060">你的裝置名稱</translation>
 <translation id="124116460088058876">更多語言</translation>
 <translation id="1243027604378859286">作者：</translation>
-<translation id="1246424317317450637">粗體</translation>
 <translation id="1247030632403369975">鋁</translation>
 <translation id="1252209483516427155">外衣</translation>
 <translation id="1253921432148366685"><ph name="TYPE_1" />、<ph name="TYPE_2" /> (已同步)</translation>
@@ -349,6 +349,7 @@
 <translation id="1633941398432788136">活動規劃</translation>
 <translation id="1634828734222219955">全部</translation>
 <translation id="163669211644121865">稅務準備與規劃</translation>
+<translation id="163826442096818926">精簡</translation>
 <translation id="1639239467298939599">載入中</translation>
 <translation id="1640180200866533862">使用者政策</translation>
 <translation id="1640244768702815859">請嘗試<ph name="BEGIN_LINK" />造訪網站首頁<ph name="END_LINK" />。</translation>
@@ -724,6 +725,7 @@
 <translation id="238459632961158867">前往網站</translation>
 <translation id="2385809941344967209">前往 Chrome 設定更新 Chrome</translation>
 <translation id="2386255080630008482">伺服器憑證已遭撤銷。</translation>
+<translation id="239203817277685015">詳述</translation>
 <translation id="239293030466334554">敞篷車</translation>
 <translation id="2392959068659972793">顯示尚未設定任何值的政策</translation>
 <translation id="239429038616798445">不支援所選的運送方式，請改選其他方式。</translation>
@@ -931,7 +933,6 @@
 <translation id="2858134430383535011">200 x 300 公釐</translation>
 <translation id="2859806420264540918">這個網站會顯示干擾性或誤導性的廣告。</translation>
 <translation id="28618371182701850">電動與充電式交通工具</translation>
-<translation id="287596039013813457">友善</translation>
 <translation id="28761159517501904">電影</translation>
 <translation id="2876489322757410363">即將退出無痕模式，改為使用外部應用程式付款，要繼續嗎？</translation>
 <translation id="2876949457278336305"><ph name="MANAGE_SECURITY_SETTINGS_FOCUSED_FRIENDLY_MATCH_TEXT" />；按下 Tab 鍵再按下 Enter 鍵即可在 Chrome 設定中管理安全瀏覽等功能</translation>
@@ -971,6 +972,7 @@
 <translation id="2938225289965773019">開啟<ph name="PROTOCOL" />連結</translation>
 <translation id="2941878205777356567">Envelope 9 x 12 in</translation>
 <translation id="2941952326391522266">伺服器無法證明其屬於 <ph name="DOMAIN" /> 網域；其安全性憑證來自 <ph name="DOMAIN2" /> 網域。這可能是因為設定錯誤，或有攻擊者攔截你的連線所致。</translation>
+<translation id="2942492342931589800">非正式</translation>
 <translation id="2942515540157583425">資訊科技與技術相關工作</translation>
 <translation id="2943895734390379394">上傳時間：</translation>
 <translation id="2945026002409061480">網路社群</translation>
@@ -1122,7 +1124,6 @@
 <translation id="3240791268468473923">無相符安全付款憑證表已開啟</translation>
 <translation id="324180406144491771">「<ph name="HOST_NAME" />」連結已遭到封鎖</translation>
 <translation id="3249151924975132674">學生貸款與大專助學金</translation>
-<translation id="3249845759089040423">時髦</translation>
 <translation id="3250640885957938546">廣告與行銷</translation>
 <translation id="3252772880526154546">建築</translation>
 <translation id="3254301855501243548">18 x 22 吋</translation>
@@ -1231,6 +1232,7 @@
 <translation id="3447661539832366887">這個裝置的擁有者已關閉恐龍遊戲。</translation>
 <translation id="3447884698081792621">顯示憑證 (核發者：<ph name="ISSUER" />)</translation>
 <translation id="3450323514459570273">可以要求控制 MIDI 裝置並重設程式</translation>
+<translation id="3452151267620065789">已儲存進度</translation>
 <translation id="3452404311384756672">擷取間隔：</translation>
 <translation id="3453962258458347894">重試次數</translation>
 <translation id="3461266716147554923"><ph name="URL" /> 要求讀取已複製到剪貼簿的文字和圖片</translation>
@@ -1314,6 +1316,7 @@
 <translation id="361438452008624280">清單項目「<ph name="LANGUAGE_ID" />」：不明或不支援的語言。</translation>
 <translation id="3614934205542186002"><ph name="RUN_CHROME_SAFETY_CHECK_FOCUSED_FRIENDLY_MATCH_TEXT" />；按下 Tab 鍵再按下 Enter 鍵即可在 Chrome 設定中執行安全檢查</translation>
 <translation id="3615309852743236517">美甲與美足保養</translation>
+<translation id="3617072447978270288">重新生成</translation>
 <translation id="3620239073311576716">制服與工作服</translation>
 <translation id="36224234498066874">清除瀏覽資料...</translation>
 <translation id="362276910939193118">顯示完整記錄</translation>
@@ -1336,6 +1339,7 @@
 <translation id="3650594806107685466">為確保信用卡安全，請輸入<ph name="SIDE_OF_CARD" />的信用卡驗證碼</translation>
 <translation id="3650917416636556301">遠足與露營</translation>
 <translation id="3653033846669030038">主題樂園</translation>
+<translation id="3654980960391973513">產生</translation>
 <translation id="3655241534245626312">前往權限設定</translation>
 <translation id="3655670868607891010">如果你經常看到這個頁面，請參考這些說明：<ph name="HELP_LINK" />。</translation>
 <translation id="365641980390710834">休閒服飾</translation>
@@ -1803,7 +1807,6 @@
 <translation id="4598556348158889687">儲存空間管理</translation>
 <translation id="4600084978141515058">全素料理</translation>
 <translation id="4602465984861132303">保齡球</translation>
-<translation id="4606870351894164739">深具影響力</translation>
 <translation id="4607608436550361748">查看 Chrome 提示</translation>
 <translation id="460848736049414407">已遭管理員封鎖</translation>
 <translation id="4610279718074907952">這個網站屬於由 <ph name="SET_OWNER" /> 定義的群組，群組擁有者可以查看你的活動</translation>
@@ -1917,13 +1920,11 @@
 <translation id="4819347708020428563">要在預設檢視中編輯註解嗎？</translation>
 <translation id="4822493756793346865">一般價格的依據是過去 90 天各網路商店的資料。</translation>
 <translation id="4825496307559726072"><ph name="CREATE_GOOGLE_SHEET_FOCUSED_FRIENDLY_MATCH_TEXT" />；按下 Tab 鍵再按下 Enter 鍵即可快速建立新的 Google 試算表</translation>
-<translation id="4825507807291741242">強大</translation>
 <translation id="4826588772550366629">攝影機和麥克風</translation>
 <translation id="4827283332383516812">刪除卡片</translation>
 <translation id="4831993743164297314">影像排版機用紙</translation>
 <translation id="483241715238664915">開啟警告</translation>
 <translation id="4834250788637067901">儲存在 Google Pay 的付款方式、優惠和地址資訊</translation>
-<translation id="4838327282952368871">夢幻</translation>
 <translation id="4839087176073128681">透過 Google 領先業界的安全防護機制，加快下次結帳速度並保護你的卡片。</translation>
 <translation id="4840250757394056958">查看 Chrome 歷史記錄</translation>
 <translation id="484462545196658690">自動</translation>
@@ -2495,7 +2496,6 @@
 <translation id="6005659677094197001">連續</translation>
 <translation id="6005765687956866568">已清除表單中自動填入的資訊</translation>
 <translation id="6006365096047131769">3 x 5 吋</translation>
-<translation id="6006484371116297560">傳統版</translation>
 <translation id="6008122969617370890">N 到 1 的順序</translation>
 <translation id="6008256403891681546">JCB</translation>
 <translation id="6014139350017893009">交通工具維修保養</translation>
@@ -2572,6 +2572,7 @@
 <translation id="6157754950574419155">移除歷史記錄中的所有項目</translation>
 <translation id="6157877588268064908">如要查看運送方式和相關規定，請選取一個地址</translation>
 <translation id="6159554577634054750">病蟲害防治</translation>
+<translation id="6159908896951210943">正式</translation>
 <translation id="6160391204859821737">開啟廣告隱私權功能</translation>
 <translation id="6165508094623778733">瞭解詳情</translation>
 <translation id="6167577165590485365">上次擷取時間：</translation>
@@ -3210,7 +3211,6 @@
       &lt;li&gt;前往 &lt;a href="https://support.google.com/chrome/answer/6098869"&gt;Chrome 說明中心&lt;/a&gt;瞭解如何將該軟體從電腦上永久移除
       &lt;/ol&gt;</translation>
 <translation id="7408613996403626141">玩具</translation>
-<translation id="7410471291937727359">可愛</translation>
 <translation id="741204030948306876">是，我要啟用</translation>
 <translation id="7416351320495623771">管理密碼…</translation>
 <translation id="7418620734632363981">程式設計</translation>
@@ -3219,6 +3219,7 @@
 <translation id="7422347648202898039">標籤 (安全紙)</translation>
 <translation id="7423283032694727565">「管理 Cookie」按鈕，啟動後即可在 Chrome 設定中管理 Cookie 偏好設定</translation>
 <translation id="7424421098814895617">已選取「刪除地址」選項</translation>
+<translation id="7425037327577270384">幫我寫</translation>
 <translation id="7427366580982928791">兒童網際網路安全</translation>
 <translation id="7429429656042611765">Executive</translation>
 <translation id="7432774160230062882">先驗證你的身分，Chromium 才能填入付款資訊。</translation>
@@ -3285,6 +3286,7 @@
 <translation id="7529884293139707752">在家自學</translation>
 <translation id="7534987659046836932">Envelope C7</translation>
 <translation id="7535087603100972091">值</translation>
+<translation id="753556296624075801">Google 技術提供</translation>
 <translation id="7537536606612762813">強制</translation>
 <translation id="7542995811387359312">由於這個表單並未採用加密連線方式，所以信用卡自動填入功能已停用。</translation>
 <translation id="7543525346216957623">請徵求家長同意</translation>
@@ -3468,6 +3470,7 @@
 <translation id="7871445724586827387">變更 Google 帳戶密碼</translation>
 <translation id="7877007680666472091">受保護的內容 ID</translation>
 <translation id="7878562273885520351">你的密碼可能已經外洩</translation>
+<translation id="7878966190323222027">重新開啟即可繼續</translation>
 <translation id="7880146494886811634">儲存地址</translation>
 <translation id="7882421473871500483">棕色</translation>
 <translation id="7882995332186050355">貨櫃卡車與拖車</translation>
@@ -3997,6 +4000,7 @@
 <translation id="8942355029279167844">系統管理員已允許 <ph name="APP_NAME" /> 收集診斷資料以改善產品使用體驗。詳情請參閱 <ph name="BEGIN_LINK" />https://www.parallels.com/pcep<ph name="END_LINK" />。</translation>
 <translation id="8943282376843390568">萊姆綠</translation>
 <translation id="8944485226638699751">限制使用</translation>
+<translation id="8949410982325929394">語氣</translation>
 <translation id="8949493680961858543">A1 x 4</translation>
 <translation id="8951415078585015151">法律與政府</translation>
 <translation id="8954252855949068147">服飾</translation>
@@ -4038,7 +4042,6 @@
 <translation id="9023536760430404133">交通工具輪圈與輪胎</translation>
 <translation id="9025348182339809926">(無效)</translation>
 <translation id="902590795160480390">正在載入 PDF</translation>
-<translation id="9030265603405983977">單色</translation>
 <translation id="9035022520814077154">安全性錯誤</translation>
 <translation id="9035824888276246493">儲存安全碼</translation>
 <translation id="9036306139374661733">要授予麥克風權限嗎？</translation>
@@ -4082,7 +4085,6 @@
 <translation id="9114524666733003316">正在驗證信用卡...</translation>
 <translation id="9114581008513152754">這個瀏覽器未受到任何公司或其他機構管理。這部裝置上的活動可透過 Chrome 以外的服務管理。<ph name="BEGIN_LINK" />瞭解詳情<ph name="END_LINK" /></translation>
 <translation id="9116548361133462832">進一步瞭解 Chrome 中的廣告</translation>
-<translation id="9117930699067497412">新鮮</translation>
 <translation id="9118692854637641831"><ph name="HISTORY_CLUSTERS_SEARCH_FOCUSED_FRIENDLY_MATCH_TEXT" />；按下 Tab 鍵再按下 Enter 鍵即可繼續歷程，查看 Chrome 歷史記錄中的相關活動</translation>
 <translation id="9119042192571987207">已上傳</translation>
 <translation id="9122954576417194280">商品與期貨交易</translation>

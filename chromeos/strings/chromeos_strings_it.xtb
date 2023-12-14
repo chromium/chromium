@@ -378,6 +378,7 @@
 <translation id="3866249974567520381">Descrizione</translation>
 <translation id="387301095347517405">Il numero di cicli di ricarica completi della batteria</translation>
 <translation id="3885327323343477505">Cambia salvaschermo</translation>
+<translation id="3892148308691398805">Copia testo</translation>
 <translation id="391412459402535266">Impossibile testare il dispositivo. Passa alla modalità laptop per testarlo.</translation>
 <translation id="3916998944874125962">acquisisci screenshot</translation>
 <translation id="3923184630988645767">Utilizzo dei dati</translation>
@@ -1041,7 +1042,7 @@
 <translation id="8855781559874488009">Impossibile collegarti tramite il firewall ai siti web HTTP</translation>
 <translation id="885701979325669005">Dati memorizzati dai siti</translation>
 <translation id="885704831271383379">Tastiera più scura</translation>
-<translation id="8863170912498892583">Abilita il tema scuro</translation>
+<translation id="8863170912498892583">Attiva tema scuro</translation>
 <translation id="8863888432376731307">Ricevi <ph name="INTENT" /> per "<ph name="QUERY" />" e non solo</translation>
 <translation id="8864415976656252616">Nessun contenuto suggerito. Visualizza i contenuti Help principali.</translation>
 <translation id="8868741746785112895">GUID</translation>

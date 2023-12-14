@@ -1,10 +1,16 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="mr">
+<translation id="1085696779717592361">बाय डीफॉल्ट Chrome वापरा</translation>
 <translation id="1105362920864247682">Chrome मधील ब्राउझिंग डेटा साफ करा.</translation>
+<translation id="1113057722807951993">पासफ्रेझ एंक्रिप्शनमध्ये Google Pay वरील पेमेंट पद्धतींचा आणि पत्त्यांचा समावेश नसतो.
+
+हे सेटिंग बदलण्यासाठी, <ph name="BEGIN_LINK" />तुमच्या खात्यामधील Chrome डेटा साफ करा<ph name="END_LINK" />.</translation>
 <translation id="1143896152279775643"><ph name="EMAIL" /> साठी तुमचा पासवर्ड हा Google पासवर्ड व्यवस्थापक यामध्ये सेव्ह केला जाईल.</translation>
+<translation id="1177414119866731261">Chrome मेनू उघडा</translation>
 <translation id="1180362651362502943">तुमच्या Google खाते मधील Chrome डेटा वापरणे सुरू ठेवा.</translation>
 <translation id="1200396280085622191">तुम्ही मेसेज आणि इतर ॲप्समध्ये लिंकवर टॅप करता, तेव्हा कधीही Chrome वापरा.</translation>
+<translation id="1229222343402087523">Chrome मध्ये ${searchPhrase} शोधा</translation>
 <translation id="1282031177488366470">Chrome ची वैशिष्ट्ये आणि परफॉर्मन्स सुधारण्यात मदत करा</translation>
 <translation id="1320619893013575407">तुम्ही Chrome साइन-इन बंद केले आहे.</translation>
 <translation id="1333745675627230582">Chrome Dino गेम खेळा</translation>
@@ -34,13 +40,19 @@
 <translation id="1682483655351012182">तुमचा Chrome डेटा सिंक करा</translation>
 <translation id="1759842336958782510">Chrome</translation>
 <translation id="1790080846677398234">Chrome मधील तुमच्या बुकमार्कमध्ये इनपुट केलेल्या URLs जोडते.</translation>
+<translation id="1830634592642484976">हा पत्ता सध्या Chrome वर सेव्ह केला आहे. तो सर्व Google उत्पादनांवर वापरण्यासाठी, तुमच्या Google खाते <ph name="USER_EMAIL" /> मध्ये सेव्ह करा.</translation>
 <translation id="1843217788865538014">तुम्ही मेसेज, दस्तऐवज आणि इतर अ‍ॅप्समधील लिंकवर टॅप करता, तेव्हा आपोआप Chrome वापरा.</translation>
+<translation id="1910975740091000991">iOS साठी Chrome</translation>
 <translation id="1917964099031477364">हे खाते आणि कोणताही सेव्ह न केलेला डेटा Chrome आणि या डिव्हाइसवरील इतर Google अ‍ॅप्समधून काढून टाकला जाईल.</translation>
+<translation id="1965935827552890526">तुम्ही इतर उघड्या Chrome विंडोमध्ये काय करत होतात ते पूर्ण करा.</translation>
 <translation id="1987779152850321833">Chrome चा पुरेपूर वापर करण्यासाठी या सुचवलेल्या कृती पूर्ण करा.</translation>
+<translation id="2008357574463816229">तुम्ही तुमचा पासफ्रेझ विसरल्यास किंवा हे सेटिंग्ज बदलायचे असल्यास, <ph name="BEGIN_LINK" />तुमच्या खात्यामधील Chrome डेटा साफ करा<ph name="END_LINK" />.</translation>
 <translation id="2056123005618757196">सोपे, सुरक्षित आणि पूर्वीपेक्षा अधिक जलद Google Chrome वापरून आणखी बरेच काही करा.</translation>
 <translation id="2120238739383482109">Chrome बुकमार्क उघडते.</translation>
 <translation id="2147651015520127414"><ph name="ISSUER" /> ने या वेबसाइटचे सर्टिफिकेट जारी केले हे Chrome ने पडताळले.</translation>
+<translation id="2155145621546387786">Chrome शेअर करा</translation>
 <translation id="2199719347983604670">Chrome सिंक मधील डेटा</translation>
+<translation id="2213327331203157297">Chrome मध्ये लॉकडाउन मोड बंद करण्यासाठी तो तुमच्या iPhone वर बंद करा.</translation>
 <translation id="2242467532204595597">तुम्ही मेसेज, दस्तऐवज आणि इतर ॲप्समध्ये लिंकवर टॅप करता, तेव्हा कधीही Chrome वापरा.</translation>
 <translation id="2311240109311056604">Chrome Dino गेम उघडते.</translation>
 <translation id="2339201583852607431">तुमचा पासवर्ड तुमचे Google खाते (<ph name="EMAIL" />) मध्ये सेव्ह केला जाईल.</translation>
@@ -65,27 +77,39 @@
 <translation id="2868822340714096138">Chrome मधील ब्राउझिंग डेटा साफ करा</translation>
 <translation id="2869959624320573933">Chrome वर साइन इन करा</translation>
 <translation id="2876628302275096482"><ph name="BEGIN_LINK" />Chrome तुमचा डेटा खाजगी कसा ठेवते<ph name="END_LINK" /> याविषयी अधिक जाणून घ्या</translation>
+<translation id="2952581218264071393">१. Chrome सेटिंग्ज उघडा</translation>
 <translation id="2957447865124070833"><ph name="BEGIN_BOLD" />Chrome<ph name="END_BOLD" /> निवडा</translation>
+<translation id="2988274366244053197">Google Pay वरील पेमेंट पद्धती आणि पत्ते एंक्रिप्ट केले जाणार नाहीत. Chrome वरील ब्राउझिंग इतिहास सिंक होणार नाही.
+
+फक्त तुमचा पासफ्रेझ असलेली कोणतीही व्यक्ती तुमचा एंक्रिप्ट केलेला डेटा वाचू शकते. पासफ्रेझ Google कडे पाठवला किंवा त्याद्वारे स्टोअर केलेला नाही. तुम्ही तुमचा पासफ्रेझ विसरल्यास किंवा हे सेटिंग बदलायचे असल्यास, <ph name="BEGIN_LINK" />तुमच्या खात्यामधील Chrome डेटा साफ करणे<ph name="END_LINK" /> हे करा.</translation>
 <translation id="3030414234702425231">तुम्ही <ph name="SIGNOUT_MANAGED_DOMAIN" /> द्वारे व्यवस्थापित केलेल्या खात्यातून साइन आउट केले आहे, तुमचा Chrom डेटा या डिव्हाइसवरून हटवला जाईल. तुमचा डेटा तुमच्या Google खाते मध्ये असेल</translation>
 <translation id="309672519329227863">इतर सर्व अ‍ॅप्सवर तुमचे Chrome पासवर्ड आणि आणखी बरेच काही ॲक्सेस करा.</translation>
+<translation id="3146109040683991651">Chrome ला डीफॉल्ट ब्राउझर म्हणून सेट करा</translation>
 <translation id="3167189358072330585">तुमचे खाते Google Chrome वर काम करत नाही. कृपया तुमच्या डोमेन ॲडमिनिस्ट्रेटरशी संपर्क साधा किंवा साइन इन करण्यासाठी एक नियमित Google खाते वापरा.</translation>
 <translation id="3173834708294760622">Google Chrome पेज</translation>
 <translation id="322254490661677575">तुमच्या Google खाते मधील Chrome डेटा वापरण्यासाठी आणि तो सेव्ह करण्यासाठी, तुमची पासफ्रेझ वापरा.</translation>
 <translation id="3282568296779691940">Chrome वर साइन इन करा</translation>
+<translation id="3340938510625667914">Chrome अ‍ॅक्शन्स</translation>
 <translation id="3345341804167540816">Chrome सर्वत्र वापरा</translation>
+<translation id="3399930248910934354">Chrome सेटिंग्ज उघडा</translation>
 <translation id="3472587960215700950">तुम्हाला डिटेक्ट केलेल्या पत्त्यांवर दिशानिर्देश आणि स्थानिक माहिती देण्यासाठी Chrome हे Google Maps वापरते.</translation>
 <translation id="3503014945441706099">या Chrome प्रोफाइलसाठीदेखील वर्धित केलेले सुरक्षित ब्राउझिंग मिळवा</translation>
 <translation id="3522659714780527202">तुम्ही जेथून Chrome वापरत असाल तेथून तुमचे टॅब पाहण्यासाठी, सिंक सुरू करा</translation>
 <translation id="3577555362230509265">इतर अ‍ॅप्समध्ये Chrome वापरा.</translation>
 <translation id="3594076341410558780">“Chrome चा पुरेपूर वापर करा” लपवा</translation>
+<translation id="364480321352456989">तुमचे Chrome कालबाह्य झाले आहे.</translation>
+<translation id="3646736009628185125">तुमच्या कुटुंबातील सदस्याला सध्या पासवर्ड मिळू शकत नाहीत. त्यांना Chrome अपडेट आणि त्यांचे पासवर्ड सिंक करण्यास सांगा. <ph name="BEGIN_LINK" />अधिक जाणून घ्या<ph name="END_LINK" /></translation>
 <translation id="3655656110921623717">याचा अर्थ असा, की Chrome हे प्रत्येक वेळी मोबाइल साइटची विनंती करेल.</translation>
 <translation id="3720541637541300822">तुम्ही Chrome बंद करता तेव्हा गुप्त टॅब लॉक करा</translation>
+<translation id="3740397331642243698">इनपुट केलेल्या URL ना Google Chrome मध्ये गुप्त मोड मध्ये उघडते.</translation>
 <translation id="3741995255368156336">Chrome वाचन सूची उघडते.</translation>
 <translation id="3744018071945602754">Chrome मध्ये पासवर्ड व्यवस्थापित करा</translation>
 <translation id="3827545470516145620">तुम्हाला या डिव्हाइसवर साधारण सुरक्षा संरक्षण मिळत आहे</translation>
 <translation id="384394811301901750">Google Chrome आत्ता तुमचा कॅमेरा वापरू शकत नाही</translation>
 <translation id="3863841106411295595">इनपुट केलेल्या URLs या Chrome मधील तुमच्या वाचन सूचीमध्ये जोडते.</translation>
+<translation id="387280738075653372">Chrome येथे डाउनलोड करा.</translation>
 <translation id="3901001113120561395">Chrome चा पुरेपूर वापर करा.</translation>
+<translation id="3913386780052199712">Chrome मध्ये साइन इन केले</translation>
 <translation id="3967382818307165056">Chrome मध्ये पेमेंट पद्धती व्यवस्थापित करा</translation>
 <translation id="3980220367029651214">तुम्ही संकालित केलेली खाती <ph name="USER_EMAIL1" /> वरून <ph name="USER_EMAIL2" /> वर स्विच करीत आहात. तुमचा विद्यमान Chrome डेटा <ph name="DOMAIN" /> द्वारे व्यवस्थापित केला आहे. हे तुमचा डेटा या डिव्हाइस वरून हटवेल परंतु तुमचा डेटा <ph name="USER_EMAIL1" /> मध्ये असेल.</translation>
 <translation id="3984746313391923992">तुमच्या संस्थेनुसार, तुम्ही Chrome मधून साइन आउट केलेले राहणे आवश्यक आहे.</translation>
@@ -107,18 +131,22 @@
 <translation id="4831642696589369971">तुमचा काही Chrome डेटा अद्याप तुमच्या Google खाते मध्ये सेव्ह केला गेलेला नाही.
 
         साइन आउट करण्यापूर्वी काही मिनिटे प्रतीक्षा करून पहा. तुम्ही आता साइन आउट केल्यास, हा डेटा हटवला जाईल.</translation>
+<translation id="4834499902900503484">तुम्ही Chrome मध्ये साइन इन केलेले असते, तेव्हा सेव्ह केलेले पासवर्ड तुमच्या Google खाते मध्ये सेव्ह होतील. हे बंद करण्यासाठी <ph name="BEGIN_LINK" />सेटिंग्ज वर जा<ph name="END_LINK" />.</translation>
 <translation id="484033449593719797">Chrome बीटा वर सपोर्ट नाही</translation>
 <translation id="4840404732697892756">तुम्ही तुमचे Google खाते वापरून साइन इन करता तेव्हा, Google Password Manager तुमचे पासवर्ड तपासू शकते.</translation>
 <translation id="4860330141789125848">{COUNT,plural, =1{Chrome तुम्हाला नवीन टॅब पेज यावर या पॅकेजचा माग ठेवण्यात मदत करू शकते.}other{Chrome तुम्हाला नवीन टॅब पेज यावर या पॅकेजचा माग ठेवण्यात मदत करू शकते.}}</translation>
 <translation id="4903674399067644695">हे कार्ड तुम्हाला Chrome चा पुरेपूर वापर कसा करावा याविषयीच्या सूचना दाखवते.</translation>
 <translation id="49200511069271369">तुमची संस्था, <ph name="DOMAIN" />, तुम्ही साइन इन करत असलेले खाते आणि Chrome कसे वापरले जाऊ शकते हे व्यवस्थापित करते. तुमचा अ‍ॅडमिनिस्ट्रेटर काही वैशिष्ट्ये सेट करू शकतो किंवा प्रतिबंधित करू शकतो.</translation>
+<translation id="498985224078955265">हा टॅब दुसर्‍या डिव्हाइसवर पाठवण्यासाठी, दोन्ही डिव्हाइसवर Chrome मध्ये साइन इन करा.</translation>
 <translation id="5030102366287574140">Chrome तुम्हाला डेटा भंग, असुरक्षित वेबसाइट आणि आणखी बर्‍याच गोष्टींपासून सुरक्षित ठेवण्यात मदत करू शकते.</translation>
 <translation id="5108659628347594808">Chrome मध्ये सुधारणा करा</translation>
 <translation id="5112925986883715005">Chrome वाचन सूची पहा</translation>
 <translation id="5119391094379141756">Chrome निवडा</translation>
 <translation id="5156818928311866442">डीफॉल्ट ब्राउझर म्हणून Chrome सेट करण्यासाठी Chrome सेटिंग उघडते.</translation>
 <translation id="5162467219239570114">Chrome कालबाह्य झाले आहे. <ph name="BEGIN_LINK" />App Store<ph name="END_LINK" /> मध्ये अपडेट उपलब्ध नसल्यास, तुमचे डिव्हाइस यापुढे Chrome च्या नवीन आवृत्तींना सपोर्ट करत नाही याची शक्यता आहे.</translation>
+<translation id="5184329579814168207">Chrome मध्ये उघडा</translation>
 <translation id="5190139289262548459">तुमची संस्था, <ph name="DOMAIN" />, तुम्ही साइन इन केलेले खाते आणि Chrome कसे वापरले जाते हे व्यवस्थापित करते.</translation>
+<translation id="5256908199795498284">Chrome हे तुम्ही भेट दिलेल्या साइटवरील पॅकेज ट्रॅकिंग क्रमांक डिटेक्ट करेल आणि तुम्हाला नवीन टॅब पेजवर पॅकेजसंबंधित अपडेट दाखवेल. हे वैशिष्‍ट्य पुरवण्यासाठी आणि प्रत्येकासाठी Shopping मध्ये सुधारणा करण्याकरिता तुमचा डेटा Google सह शेअर केला जाईल.</translation>
 <translation id="5278862365980079760">तुम्ही Chrome मधून बाहेर पडता किंवा वेगळ्या ॲपवर स्विच करता, तेव्हा तुमचा गुप्त टॅब लॉक करा.</translation>
 <translation id="5389212809648216794">Google Chrome तुमचा कॅमेरा वापरू शकत नाही कारण दुसरे ॲप्स सध्या तो वापरत आहे.</translation>
 <translation id="5395376160638294582">तुम्ही तुमच्या Google खाते मधील Chrome डेटा कधीही वापरू शकता याची खात्री करा</translation>
@@ -127,27 +155,37 @@
 <translation id="5460571915754665838">४. Chrome निवडा</translation>
 <translation id="546541279759910616">{COUNT,plural, =1{Chrome नवीन टॅब पेज यावर या पॅकेजचा माग ठेवण्यात मदत करेल.}other{Chrome नवीन टॅब पेज यावर या पॅकेजचा माग ठेवण्यात मदत करेल.}}</translation>
 <translation id="5492504007368565877">Google Password Manager तुमचे पासवर्ड तपासू शकत नाही.</translation>
+<translation id="5525095647255982834">हा टॅब दुसर्‍या डिव्हाइसवर पाठवण्यासाठी, तेथे Chrome मध्ये साइन इन करा.</translation>
 <translation id="5527026824954593399">“Chrome वर Google Maps सह पहा” वर टॅप करा.</translation>
 <translation id="5552137475244467770">ऑनलाइन प्रकाशित केलेल्या सूचींनुसार Chrome ठरावीक काळाने तुमचे पासवर्ड तपासते. हे करत असताना, तुमचे पासवर्ड आणि वापरकर्ता नावे एंक्रिप्ट केली जातात जेणेकरून Google च्या समावेशासह इतर कोणाकडून ती वाचली जाऊ नयेत.</translation>
 <translation id="5554520618550346933">तुम्ही पासवर्ड वापरता, तेव्हा तो ऑनलाइन प्रकाशित झाला असल्यास Chrome तुम्हाला चेतावणी देते. हे करत असताना, तुमचे पासवर्ड आणि वापरकर्ता नावे या गोष्टी एंक्रिप्ट केल्या जातात, जेणेकरून Google च्या समावेशासह इतर कोणीही त्या वाचू शकणार नाही.</translation>
 <translation id="5639704535586432836">सेटिंग्ज &gt; गोपनीयता &gt; कॅमेरा &gt; Google Chrome उघडा आणि कॅमेरा सुरू करा.</translation>
 <translation id="5642200033778930880">विभाजित दृश्य मोडमध्ये Google Chrome तुमचा कॅमेरा वापरू शकत नाही</translation>
 <translation id="5661521615548540542">Google Password Manager ला सर्व पासवर्ड तपासता आले नाहीत. नंतर पुन्हा प्रयत्न करा.</translation>
+<translation id="5690398455483874150">{count,plural, =1{आता एक Chrome विंडो दाखवत आहे}other{आता {count} Chrome विंडो दाखवत आहे}}</translation>
 <translation id="5690427481109656848">Google LLC</translation>
 <translation id="571296537125272375">ऑफलाइन, Chrome अपडेट तपासू शकत नाही</translation>
 <translation id="5716154293141027663">तुम्ही इतर अ‍ॅप्सवरील लिंकवर जेव्हा टॅप करता तेव्हा Chrome उघडा</translation>
+<translation id="5733084997078800044">Chrome शी संबंधित टीप</translation>
 <translation id="5808435672482059465">तुमचा Chrome इतिहास पहा</translation>
 <translation id="589695154992054845">Chrome मध्ये Password Manager उघडते.</translation>
 <translation id="5998675059699164418">Chrome वापरण्यासाठी तुमच्या संस्थेनुसार तुम्ही साइन इन करणे आवश्यक आहे.</translation>
 <translation id="6054613632208573261">बाय डीफॉल्ट Chrome वापरा</translation>
 <translation id="6063091872902370735">Chrome मध्ये साइन-इन करण्यासाठी अनुमती द्या</translation>
 <translation id="6110625574506755980">काही Chrome वैशिष्ट्ये यापुढे उपलब्ध असणार नाहीत.</translation>
+<translation id="6177442314419606057">Chrome मध्ये शोधा</translation>
 <translation id="6181930887571472871">Chrome वर स्विच करा</translation>
 <translation id="6238746320622508509">Chrome ला तुमचे गुप्त टॅब लॉक करू द्या.</translation>
 <translation id="6247557882553405851">Google Password Manager</translation>
+<translation id="630693926528731525">तुमचा पासवर्ड शेअर केला नाही. तुमचे इंटरनेट कनेक्शन तपासा आणि तुम्ही Chrome मध्ये साइन इन केले असल्याची खात्री करा. त्यानंतर, पुन्हा प्रयत्न करा.</translation>
 <translation id="6348855835728304880">डिव्हाइसवरील इतर सर्व अ‍ॅप्सवर तुमचे Chrome पासवर्ड आणि आणखी बरेच काही ॲक्सेस करा.</translation>
 <translation id="6412673304250309937">Chrome मध्ये स्टोअर केलेल्या असुरक्षित साइटच्या सूचीमध्ये URL तपासतो. साइटने तुमचा पासवर्ड चोरण्याचा प्रयत्न केल्यास किंवा तुम्ही हानीकारक फाइल डाउनलोड केल्यावर, Chrome, पेज आशयाच्या भागांसह, URL सुरक्षित ब्राउझिंग कडे पाठवू शकतो.</translation>
 <translation id="6427126399757991875">तुमची संस्था Chrome सेट करत आहे...</translation>
+<translation id="6484712497741564393"><ph name="EMAIL" /> म्हणून साइन इन केले आहे.
+
+तुमचा डेटा हा तुमच्या पासफ्रेझसह एंक्रिप्ट केलेला आहे. तुमच्या Google खाते मधील Chrome डेटा वापरण्यासाठी आणि सेव्ह करण्यासाठी तो एंटर करा.</translation>
+<translation id="6497850081273517953">Chrome कालबाह्य झाले आहे, सुरक्षित राहण्यासाठी नवीनतम आवृत्तीवर अपडेट करा.</translation>
+<translation id="6540120577248033958">साइटला भेट द्या आणि Chrome मेनूमध्ये फॉलो करा वर क्लिक करा</translation>
 <translation id="6545449117344801102">Chrome हे पत्ते डिटेक्ट करते आणि तुम्हाला दिशानिर्देश व स्थानिक माहिती देण्यासाठी Google Maps वापरते.</translation>
 <translation id="6600954340915313787">Chrome वर कॉपी केले</translation>
 <translation id="6634107063912726160">तुम्ही साइन आउट करता तेव्हा, Chrome तुमच्या Google खाते मध्ये कोणताही नवीन डेटा सिंक करणार नाही. याआधी सिंक केलेला डेटा खात्यामध्ये राहील.</translation>
@@ -160,6 +198,7 @@
 
 फक्त तुमचा पासफ्रेझ असलेली कोणतीही व्यक्ती तुमचा एन्क्रिप्ट केलेला डेटा वाचू शकते. पासफ्रेझ Google कडे पाठवला किंवा त्याद्वारे स्टोअर केलेला नाही. तुम्ही तुमचा पासफ्रेझ विसरल्यास किंवा हे सेटिंग बदलायचे असल्यास, <ph name="BEGIN_LINK" />तुमच्या खात्यामधील Chrome डेटा साफ करणे<ph name="END_LINK" /> हे करा.</translation>
 <translation id="6851982868877411675">iOS मध्ये Chrome सेटिंग्ज उघडा, त्यानंतर "डीफॉल्ट ब्राउझर ॲप" वर टॅप करा आणि Chrome निवडा.</translation>
+<translation id="687586529977635009">Chrome हे तुम्ही भेट दिलेल्या साइटवरील ट्रॅकिंग क्रमांक डिटेक्ट करेल आणि तुम्हाला नवीन टॅब पेजवर पॅकेजसंबंधित अपडेट दाखवेल. हे वैशिष्‍ट्य पुरवण्यासाठी आणि प्रत्येकासाठी Shopping मध्ये सुधारणा करण्याकरिता तुमचा डेटा Google सह शेअर केला जाईल. तुम्ही हे <ph name="BEGIN_LINK" />पॅकेज ट्रॅकिंग सेटिंग्ज<ph name="END_LINK" /> मध्ये बदलू शकता.</translation>
 <translation id="6916015246697034114">Chrome मध्ये आवाज वापरून शोधा</translation>
 <translation id="6964931465519938134">तुम्ही आता केव्हाही मेसेज, दस्तऐवज आणि इतर अ‍ॅप्समध्ये लिंकवर टॅप केल्यास, Chrome वापरू शकता.</translation>
 <translation id="6975725306479268850">ऑटोफिल साठी Chrome निवडा</translation>
@@ -177,17 +216,23 @@
 <translation id="7261678641327190792">Chrome तुमचे पासवर्ड तपासू शकत नाही</translation>
 <translation id="7272930098487145294">इमेज सेव्ह करण्यासाठी, तुमच्या फोटोंमध्ये Chrome ला जोडण्यासाठी सेटिंग्ज वर टॅप करा</translation>
 <translation id="7275945473750112644">तुमचे खाते <ph name="HOSTED_DOMAIN" /> द्वारे व्यवस्थापित केले जात असल्याने, या डिव्हाइसवरून तुमचा Chrome डेटा साफ केला जाईल</translation>
+<translation id="7349129508108954623">डिटेक्ट केलेल्या पत्त्यांनुसार तुम्हाला दिशा आणि स्थानिक माहिती देण्यासाठी Chrome ला Google Maps वापरण्याची अनुमती द्या.</translation>
 <translation id="7394108421562933108">Chrome मध्ये Maps</translation>
 <translation id="7400722733683201933">Google Chrome बद्दल</translation>
+<translation id="7466693328838535498">शोध विजेट बॉक्समध्ये, Chrome एंटर करा</translation>
+<translation id="746684838091935575">३. Chrome निवडा</translation>
+<translation id="7492574581995589075">तुमच्या संस्थेने तुमच्या Google खाते मधील Chrome डेटा वापरण्याची आणि सेव्ह करण्याची क्षमता बंद केली आहे. नवीन बुकमार्क, पासवर्ड आणि आणखी बऱ्याच गोष्टी फक्त या डिव्हाइसवर सेव्ह केल्या जातील.</translation>
 <translation id="7501046334262221972">Chrome ला तुमचे डीफॉल्ट ब्राउझर करण्यासाठी, सेटिंग्ज उघडा. डीफॉल्ट ब्राउझर अ‍ॅपवर टॅप करा आणि त्यानंतर Chrome निवडा.</translation>
 <translation id="756809126120519699">Chrome डेटा साफ केला</translation>
 <translation id="7581063337314642333">Chrome मधील टॅब ग्रिडला भेट द्या</translation>
 <translation id="7662994914830945754">तुम्ही जेथून Chrome वापरत असाल तेथून तुमचे टॅब पाहण्यासाठी, साइन इन करा आणि सिंक सुरू करा</translation>
 <translation id="7669869107155339016">Chrome सेटिंग्ज वर जा.</translation>
+<translation id="769104993356536261">iOS वर Chrome अ‍ॅक्शन्स वापरा</translation>
 <translation id="7693590760643069321">तुम्ही आता कधीही मेसेज, दस्तऐवज आणि इतर अ‍ॅप्समधील लिंकवर टॅप करता तेव्हा, Chrome वापरू शकता.</translation>
 <translation id="7698568245838009292">Chrome ला कॅमेरा ॲक्सेस करायचा आहे</translation>
 <translation id="7754633291442704733">तुमच्या संस्थेच्या <ph name="DOMAIN" /> ला तुमचा Chrome डेटा, बुकमार्क, इतिहास, पासवर्ड आणि तुम्ही या खात्यामध्ये स्टोअर केलेल्या इतर सेटिंग्जचा ॲक्सेस असेल. तुम्ही साइन आउट करता, तेव्हा तुमचा डेटा या डिव्हाइसवरून साफ केला जाईल.  तरीही, तुमचा डेटा तुमचे व्यवस्थापित केलेले Google खाते मध्ये स्टोअर केलेला राहील आणि तुमच्या संस्थेसाठी उपलब्ध असेल. तुमची संस्था त्या खात्यासाठी विशिष्ट वापरकर्ता धोरणेदेखील सेट करू शकते, ज्यांमुळे Chrome चे वर्तन बदलू शकते.</translation>
 <translation id="7780154209050837198">Chrome चा पुरेपूर वापर करण्यासाठी, तुमचे Google खाते वापरून Chrome मध्ये साइन इन करा.</translation>
+<translation id="778855399387580014">एका नवीन Chrome टॅबमध्ये शोध सुरू करा.</translation>
 <translation id="7792140019572081272">Chrome हे फेस आयडी वापरून तुमचा संवेदनशील डेटा सुरक्षित ठेवते.</translation>
 <translation id="7855730255114109580">Google Chrome अपडेट झाले आहे</translation>
 <translation id="7897703007638178753">Chrome चे अलीकडील टॅब पहा</translation>
@@ -195,8 +240,10 @@
 <translation id="7933491483529363150">Chrome मध्ये माझा नवीनतम टॅब उघडा.</translation>
 <translation id="8022947259858476807">लिंक उघडण्यासाठी, विजेटमध्ये शोधण्यासाठी आणि इतर ॲप्समध्ये पासवर्ड ऑटोफिल करण्यासाठी बाय डीफॉल्ट Chrome वापरा</translation>
 <translation id="804638182476029347">Chrome सूचनांना किंमत कमी होण्याच्या सूचना मिळवण्याची अनुमती द्या</translation>
+<translation id="8065292699993359127">URL ना Chrome मध्ये गुप्त मोड मध्ये उघडा</translation>
 <translation id="8069507567842347179">हे पॅकेज आधीच Chrome वर ट्रॅक केले आहे.</translation>
 <translation id="81358522153858150">Chrome आता तुमच्या व्यवस्थापित केलेल्या खात्यासाठी वापरकर्ता धोरणांना सपोर्ट करते</translation>
+<translation id="8136856065410661948">हे Chrome आणि Google Lens वरून तुमच्या Apple Calendar मध्ये इव्हेंट तयार करण्यासाठी वापरले जाईल.</translation>
 <translation id="8160472928944011082">Chrome अपडेट करू शकत नाही</translation>
 <translation id="8174679664544842874">Chrome मध्ये नवीन टॅब उघडते.</translation>
 <translation id="8213758103105806860">Chrome बुकमार्क पहा</translation>
@@ -208,11 +255,15 @@
 <translation id="8414886616817913619">तुमच्या संस्थेनुसार Chrome वापरण्यासाठी तुम्ही साइन इन करणे आवश्यक आहे. <ph name="BEGIN_LINK" />अधिक जाणून घ्या<ph name="END_LINK" /></translation>
 <translation id="84594714173170813">तुमच्या Google खाते मधील Chrome डेटा वापरणे सुरू ठेवा</translation>
 <translation id="8459495907675268833">निवडलेला डेटा Chrome आणि सिंक केलेल्या डिव्हाइसमधून काढला गेला आहे. तुमच्या Google खात्यामध्ये history.google.com येथे ब्राउझिंग इतिहासाची Google च्या इतर सेवांमधील शोध आणि ॲक्टिव्हिटी यासारखी इतर स्वरूपे असू शकतात.</translation>
+<translation id="8491300088149538575"><ph name="EMAIL" /> म्हणून साइन इन केले आहे.
+
+<ph name="TIME" /> रोजी तुमचा डेटा हा तुमच्या पासफ्रेझसह एंक्रिप्ट केला गेला होता. तुमच्या Google खाते मधील Chrome डेटा वापरण्यासाठी आणि सेव्ह करण्यासाठी तो एंटर करा.</translation>
 <translation id="850555388806794946">Chrome ला तुमचे डीफॉल्ट करण्यासाठी:
   १. सेटिंग्ज उघडा
   २. डीफॉल्ट ब्राउझर अ‍ॅप वर टॅप करा
   ३. Chrome निवडा.</translation>
 <translation id="8540666473246803645">Google Chrome</translation>
+<translation id="8558480467877843976">तुम्ही आता मेसेज, दस्तऐवज आणि इतर अ‍ॅप्समधील लिंक ब्राउझ करता किंवा त्यावर टॅप करता, तेव्हा Chrome कधीही वापरू शकता.</translation>
 <translation id="8577978202917232774">सूचना या तुमच्या इतर डिव्हाइसवरील तुमच्या ब्राउझिंग ॲक्टिव्हिटीवर आधारित असतात. सूचना मिळवण्यासाठी, तुमच्या सर्व डिव्हाइसवर Chrome मध्ये साइन इन करा.</translation>
 <translation id="8587647598504233556">"Chrome", त्यानंतर "डीफॉल्ट ब्राउझर ॲप" वर टॅप करा.</translation>
 <translation id="8603022514504485810">Google Password Manager ला सर्व पासवर्ड तपासता आले नाहीत. उद्या पुन्हा प्रयत्न करा किंवा <ph name="BEGIN_LINK" />तुमच्या Google खाते मध्ये पासवर्ड तपासा.<ph name="END_LINK" /></translation>
@@ -223,10 +274,13 @@
 <translation id="8772179140489533211">Chrome मध्ये साइन इन करण्यासाठी सूचना दाखवते.</translation>
 <translation id="8788269841521769222">तुम्ही हा पासवर्ड लक्षात ठेवण्याची आवश्यकता नाही. तो <ph name="EMAIL" /> साठी Google पासवर्ड व्यवस्थापक यामध्ये सेव्ह केला जाईल</translation>
 <translation id="8808828119384186784">Chrome सेटिंग्ज</translation>
+<translation id="8855781063981781621">Chrome मध्ये लॉकडाउन मोड बंद करण्यासाठी तो तुमच्या iPad वर बंद करा.</translation>
 <translation id="8856877214925961642">पासफ्रेझ एन्क्रिप्शनमध्ये पेमेंट पद्धती आणि पत्ते समाविष्ट नसतात.
 
 हे सेटिंग बदलण्यासाठी, <ph name="BEGIN_LINK" />तुमच्या खात्यामधील Chrome डेटा साफ करणे<ph name="END_LINK" /> हे करा.</translation>
 <translation id="8857676124663337448">Google Password Manager ला सर्व पासवर्ड तपासता आले नाहीत. उद्या पुन्हा प्रयत्न करा.</translation>
+<translation id="8865415417596392024">तुमच्या खात्यामधील Chrome डेटा</translation>
+<translation id="8891935667620843985">तुम्ही Chrome ला तुमचे डीफॉल्ट ब्राउझर अ‍ॅप सेट करून त्यामध्ये आपोआप लिंक उघडू शकता.</translation>
 <translation id="8897749957032330183">पासवर्ड हे Google Password Manager यामध्ये या डिव्हाइसवर सेव्ह केले जातात.</translation>
 <translation id="8949681853939555434">तुमचा डीफॉल्ट ब्राउझर म्हणून Chrome सेट करा</translation>
 <translation id="8969290730818637510">सुरू असल्यास:
@@ -238,9 +292,12 @@
   • Chrome क्रॅश झाल्यास, क्रॅशसंबंधित तपशिलांमध्ये कदाचित काही वैयक्तिक माहितीचा समावेश असू शकतो.
 
   • तुम्ही सिंक सुरू केल्यास, मेट्रिकमध्ये कदाचित तुम्ही भेट दिलेल्या URLs संबंधित माहितीचादेखील समावेश असू शकतो.<ph name="END_INDENT" /></translation>
+<translation id="9043368763795653245">तुमचे Discover फीड आणि Chrome पर्सनलाइझ करण्यासाठी सिंक सुरू करा.</translation>
+<translation id="9068336935206019333">Chrome गुप्त मोडमध्ये उघडा</translation>
 <translation id="9071207983537882274">Chrome मध्ये सेटिंग्ज उघडते.</translation>
 <translation id="9112744793181547300">Chrome ला डीफॉल्ट म्हणून सेट करायचे आहे का?</translation>
 <translation id="9122931302567044771">याचा अर्थ असा, की Chrome हे प्रत्येक वेळी साइटच्या डेस्कटॉप आवृत्तीची विनंती करेल.</translation>
 <translation id="9181628561061032322">Chrome चे अलीकडील टॅब उघडते.</translation>
+<translation id="953008885340860025">Chrome साइन आउट केले आहे</translation>
 <translation id="97300214378190234">तुम्ही इतर अ‍ॅप्समधील लिंक टॅप करता, तेव्हा कधीही Chrome वापरा.</translation>
 </translationbundle>

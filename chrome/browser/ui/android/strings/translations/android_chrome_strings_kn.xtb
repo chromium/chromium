@@ -20,7 +20,6 @@
 <translation id="1103142993930332957">Chrome ಸುಧಾರಿಸಲು ಸಹಾಯ ಮಾಡಬೇಕೇ?</translation>
 <translation id="1105960400813249514">ಪರದೆ ಕ್ಯಾಪ್ಚರ್</translation>
 <translation id="1108938384783527433">ಇತಿಹಾಸ ಸಿಂಕ್</translation>
-<translation id="1110914759170138831">ಹೈಲೈಟ್ ಅನ್ನು ಸಂಕುಚಿಸಲಾಗಿದೆ</translation>
 <translation id="1111673857033749125">ನಿಮ್ಮ ಇತರ ಸಾಧನಗಳಲ್ಲಿ ಉಳಿಸಲಾದ ಬುಕ್‌ಮಾರ್ಕ್‌ಗಳು ಇಲ್ಲಿ ಗೋಚರಿಸುತ್ತವೆ.</translation>
 <translation id="1113597929977215864">ಸರಳೀಕೃತ ವೀಕ್ಷಣೆಯನ್ನು ತೋರಿಸಿ</translation>
 <translation id="1126013303640354461">Google Pay ನಲ್ಲಿನ ಪಾವತಿ ವಿಧಾನಗಳು ಮತ್ತು ವಿಳಾಸಗಳನ್ನು ಎನ್‌ಕ್ರಿಪ್ಟ್ ಮಾಡಲಾಗುವುದಿಲ್ಲ. Chrome ನ ಬ್ರೌಸಿಂಗ್ ಇತಿಹಾಸವು ಸಿಂಕ್ ಆಗುವುದಿಲ್ಲ.
@@ -68,7 +67,6 @@
 <translation id="1298077576058087471">ಶೇಕಡಾ 60 ರಷ್ಟು ಡೇಟಾವನ್ನು ಉಳಿಸಿ, ಇಂದಿನ ಸುದ್ದಿಗಳನ್ನು ಓದಿ</translation>
 <translation id="1303339473099049190">ಆ ಪಾಸ್‌ವರ್ಡ್ ಅನ್ನು ಕಂಡುಹಿಡಿಯಲು ಸಾಧ್ಯವಾಗುತ್ತಿಲ್ಲ. ಬರೆದಿರುವುದು ಸರಿ ಇದೆಯೇ ಎಂದು ಪರಿಶೀಲಿಸಿ ಹಾಗೂ ಮತ್ತೊಮ್ಮೆ ಪ್ರಯತ್ನಿಸಿ.</translation>
 <translation id="1303507811548703290"><ph name="DOMAIN" /> - <ph name="DEVICE_NAME" /> ಸಾಧನದಿಂದ ಕಳುಹಿಸಲಾಗಿದೆ</translation>
-<translation id="1316212908214730110">chrome_stylized_highlight_</translation>
 <translation id="1320912611264252795">ಬುಕ್‌ಮಾರ್ಕ್ ಉಳಿಸಿ ಫ್ಲೋ ಫೋಲ್ಡರ್‌ಗಳನ್ನು ಪೂರ್ಣ ಎತ್ತರದಲ್ಲಿ ತೆರೆಯಲಾಗಿದೆ</translation>
 <translation id="1327257854815634930">ನ್ಯಾವಿಗೇಶನ್ ಇತಿಹಾಸ ತೆರೆದಿದೆ</translation>
 <translation id="1331212799747679585">Chrome ಅಪ್‌ಡೇಟ್ ಮಾಡಲು ಸಾಧ್ಯವಿಲ್ಲ. ಇನ್ನಷ್ಟು ಆಯ್ಕೆಗಳು</translation>
@@ -393,7 +391,6 @@
 <translation id="3098745985164956033">ನಿಮಗಾಗಿ ವಿವರಣೆಗಳನ್ನು ಸುಧಾರಿಸಲು, ಕೆಲವು ಚಿತ್ರಗಳನ್ನು Google ಗೆ ಕಳುಹಿಸಲಾಗಿದೆ</translation>
 <translation id="3114507951000454849">ಇಂದಿನ ಸುದ್ದಿಗಳನ್ನು ಓದಿ <ph name="NEWS_ICON" /></translation>
 <translation id="3123734510202723619">ಪ್ರಕಟಣೆಗಳು</translation>
-<translation id="3134784203083076891">”</translation>
 <translation id="314939179385989105">Chrome ನ ಮುಖಪುಟ</translation>
 <translation id="3158667104057012316">ಹಸ್ತಚಾಲಿತ ಕ್ರಮದ ಪ್ರಕಾರವಾಗಿ ವಿಂಗಡಿಸುವುದು</translation>
 <translation id="3166827708714933426">ಟ್ಯಾಬ್ ಮತ್ತು ವಿಂಡೋ ಶಾರ್ಟ್‌ಕಟ್‌ಗಳು</translation>
@@ -429,7 +426,6 @@
 <translation id="3303414029551471755">ವಿಷಯವನ್ನು ಡೌನ್‌ಲೊಡ್‌ ಮಾಡಲು ಮುಂದುವರಿಯುವುದೇ?</translation>
 <translation id="3305130791745726624">ಸಾಧನಕ್ಕೆ ಕಳುಹಿಸಿ</translation>
 <translation id="3305795716056605962">ಇನ್ನಷ್ಟು ಆಯ್ಕೆಗಳ ಬಟನ್‌ನಿಂದ ಪುಟಗಳನ್ನು ಅನುವಾದಿಸಿ</translation>
-<translation id="3324393723900507254"><ph name="TEMPLATE_TITLE" /> ಟೆಂಪ್ಲೇಟ್ ಅನ್ನು ಆಯ್ಕೆ ಮಾಡಲಾಗಿದೆ</translation>
 <translation id="3334729583274622784">ಫೈಲ್ ವಿಸ್ತರಣೆಯನ್ನು ಬದಲಿಸುವುದೇ?</translation>
 <translation id="3341262203274374114">ಅನುಸರಿಸುವುದನ್ನು ರದ್ದುಗೊಳಿಸಲು ಸಾಧ್ಯವಿಲ್ಲ. ಏನೋ ತಪ್ಪಾಗಿದೆ.</translation>
 <translation id="3359667936385849800">ನಿಮ್ಮ ಪ್ರಸ್ತುತ ಸೇವೆ ಒದಗಿಸುವವರನ್ನು ಬಳಸಿ</translation>
@@ -530,7 +526,6 @@
 <translation id="3928666092801078803">ನನ್ನ ಡೇಟಾ ಒಂದುಗೂಡಿಸಿ</translation>
 <translation id="3931947361983910192">ಕಳೆದ 4 ವಾರಗಳು</translation>
 <translation id="3932390316856284148">ಸೈನ್ ಇನ್ ಮಾಡುವ ಕೆಳಭಾಗದ ಶೀಟ್ ಪೂರ್ಣ ಎತ್ತರದಲ್ಲಿ ತೆರೆದಿದೆ.</translation>
-<translation id="3934366560681368531">“</translation>
 <translation id="393697183122708255">ಯಾವುದೇ ಸಕ್ರಿಯಗೊಳಿಸಿದ ಧ್ವನಿ ಹುಡುಕಾಟ ಲಭ್ಯವಿಲ್ಲ</translation>
 <translation id="395377504920307820">ಖಾತೆಯಿಲ್ಲದೆ ಬಳಸಿ</translation>
 <translation id="3958287878205277013">ನಿಮ್ಮ ಸಾಧನದಿಂದ ಅಜ್ಞಾತ ಬ್ರೌಸಿಂಗ್ ಇತಿಹಾಸವನ್ನು ತೆರವುಗೊಳಿಸಲು, ಎಲ್ಲಾ ಅಜ್ಞಾತ ಟ್ಯಾಬ್‌ಗಳನ್ನು ಮುಚ್ಚಿ.</translation>
@@ -1176,7 +1171,6 @@
 <translation id="7221869452894271364">ಈ ಪುಟವನ್ನು ರೀಲೋಡ್ ಮಾಡಿ</translation>
 <translation id="7227218174981371415">{FILE_COUNT,plural, =1{1 ಡೌನ್‌ಲೋಡ್ ಬಾಕಿ ಉಳಿದಿದೆ}one{# ಡೌನ್‌ಲೋಡ್‌ಗಳು ಬಾಕಿ ಉಳಿದಿವೆ}other{# ಡೌನ್‌ಲೋಡ್‌ಗಳು ಬಾಕಿ ಉಳಿದಿವೆ}}</translation>
 <translation id="72415438529550637">ಪಾಸ್‌ವರ್ಡ್ ಸಲಹೆಯನ್ನು ಮುಚ್ಚಲಾಗಿದೆ.</translation>
-<translation id="7242755609445462077">ಸ್ಟೈಲೈಸ್ ಮಾಡಲಾದ ಹೈಲೈಟ್ <ph name="CURRENT_DATE" /></translation>
 <translation id="7248069434667874558">Chrome ನಲ್ಲಿ <ph name="TARGET_DEVICE_NAME" /> ಸಾಧನದ ಸಿಂಕ್ ಆನ್ ಆಗಿದೆಯೇ ಎಂದು ಖಚಿತಪಡಿಸಿಕೊಳ್ಳಿ</translation>
 <translation id="7252076891734325316">ನಿಮ್ಮ ಫೋನ್ ಅನ್ನು ಕಂಪ್ಯೂಟರ್‌ನ ಹತ್ತಿರ ಇರಿಸಿ</translation>
 <translation id="7260367682327802201">ನಿಮ್ಮ Android ಸಾಧನವು ಇದೇ ರೀತಿಯ ಸೆಟ್ಟಿಂಗ್ ಅನ್ನು ಒಳಗೊಂಡಿರಬಹುದು. Chrome ನಲ್ಲಿ ಮತ್ತು ನಿಮ್ಮ Android ಸಾಧನದಲ್ಲಿ ಜಾಹೀರಾತು ಮಾಪನವನ್ನು ಆನ್ ಮಾಡಿದ್ದರೆ, ನೀವು ಭೇಟಿ ನೀಡುವ ವೆಬ್‌ಸೈಟ್‌ಗಳು ಮತ್ತು ನೀವು ಬಳಸುವ ಆ್ಯಪ್‌ಗಳಾದ್ಯಂತ ಜಾಹೀರಾತುಗಳ ಪರಿಣಾಮವನ್ನು ಕಂಪನಿಯು ಅಳೆಯಬಹುದು.</translation>
@@ -1260,7 +1254,6 @@
 <translation id="7605594153474022051">ಸಿಂಕ್ ಕಾರ್ಯನಿರ್ವಹಿಸುತ್ತಿಲ್ಲ</translation>
 <translation id="7612619742409846846">ಇದರಂತೆ Google ಗೆ ಸೈನ್ ಇನ್ ಮಾಡಿ</translation>
 <translation id="7612989789287281429">ನಿಮ್ಮನ್ನು ಸೈನ್ ಇನ್ ಮಾಡಲಾಗುತ್ತಿದೆ…</translation>
-<translation id="7616551326690708776">ನಿಮ್ಮ ಹೈಲೈಟ್‌ಗಾಗಿ ಟೆಂಪ್ಲೇಟ್‌‌ ಆಯ್ಕೆಮಾಡಿ.</translation>
 <translation id="7619072057915878432">ನೆಟ್‌ವರ್ಕ್ ವೈಫಲ್ಯಗಳ ಕಾರಣದಿಂದ <ph name="FILE_NAME" /> ಡೌನ್‌ಲೋಡ್ ವಿಫಲವಾಗಿದೆ.</translation>
 <translation id="7626032353295482388">Chrome ಗೆ ಸ್ವಾಗತ</translation>
 <translation id="7630202231528827509">ಪೂರೈಕೆದಾರರ URL</translation>
@@ -1526,7 +1519,6 @@
 <translation id="893938492099608175">ನಿಮ್ಮ ಸೆಟ್ಟಿಂಗ್‌ಗಳನ್ನು ಆಧರಿಸಿ, Chrome ಕುಕೀಗಳು, ನಿಮ್ಮ ಪ್ರಸ್ತುತ URL ಮತ್ತು ನಿಮ್ಮ ಸ್ಥಳವನ್ನು ಸಹ ಕಳುಹಿಸಬಹುದು</translation>
 <translation id="8942627711005830162">ಇತರ ವಿಂಡೋದಲ್ಲಿ ತೆರೆಯಿರಿ</translation>
 <translation id="8945143127965743188"><ph name="LANG" /> - ಈ ಭಾಷೆಯನ್ನು ಡೌನ್‌ಲೋಡ್ ಮಾಡಲು ಸಾಧ್ಯವಾಗಲಿಲ್ಲ. ನಂತರ ಪುನಃ ಪ್ರಯತ್ನಿಸಿ.</translation>
-<translation id="8955719471735800169">ಮೇಲಕ್ಕೆ ಹಿಂತಿರುಗಿ</translation>
 <translation id="8964479563882643397">ಹೊಸ ಅಜ್ಞಾತ ಮೋಡ್ ಟ್ಯಾಬ್ ಅನ್ನು ತೆರೆಯಲು, ಮೆನು ತೆರೆಯಿರಿ</translation>
 <translation id="8965591936373831584">ಬಾಕಿ ಉಳಿದಿರುವುದು</translation>
 <translation id="8968085728801125376">{TAB_COUNT,plural, =1{<ph name="INCOGNITO_TAB_COUNT" /> ಅಜ್ಞಾತ ಮತ್ತು ಇನ್ನೂ <ph name="TAB_COUNT_ONE" /> ಟ್ಯಾಬ್ ಅನ್ನು ಮುಚ್ಚಲಾಗುತ್ತದೆ}one{<ph name="INCOGNITO_TAB_COUNT" /> ಅಜ್ಞಾತ ಮತ್ತು ಇನ್ನೂ <ph name="TAB_COUNT_MANY" /> ಟ್ಯಾಬ್‌ಗಳನ್ನು ಮುಚ್ಚಲಾಗುತ್ತದೆ}other{<ph name="INCOGNITO_TAB_COUNT" /> ಅಜ್ಞಾತ ಮತ್ತು ಇನ್ನೂ <ph name="TAB_COUNT_MANY" /> ಟ್ಯಾಬ್‌ಗಳನ್ನು ಮುಚ್ಚಲಾಗುತ್ತದೆ}}</translation>

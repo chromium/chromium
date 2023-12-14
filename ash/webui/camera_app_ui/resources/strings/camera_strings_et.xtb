@@ -78,6 +78,7 @@
 <translation id="4705093842003735294">Täiseraldusvõime</translation>
 <translation id="4864143361253542638">Skannitud lehtede loend</translation>
 <translation id="4890010094662541459">3 x 3</translation>
+<translation id="4892746741161549733">Kopeeri lingi aadress <ph name="URL" /></translation>
 <translation id="491895758387112773">Mitmevooline videosalvestus</translation>
 <translation id="495170559598752135">Toimingud</translation>
 <translation id="4984613436295737187">Quad HD (1440p)</translation>
@@ -129,6 +130,7 @@ Kui teie tagasiside on seotud pildi- või videokvaliteediga, lisage manusena nä
 <translation id="7450541714075000668">Tekst on kopeeritud</translation>
 <translation id="7488619942230388918">GIF-video salvestamine</translation>
 <translation id="7557677699350329807">Vaheta järgmisele kaamerale</translation>
+<translation id="7562584071994185503">Kopeeri tekst <ph name="TEXT" /></translation>
 <translation id="7607002721634913082">Peatatud</translation>
 <translation id="7608223098072244877">4 korda 4</translation>
 <translation id="761421184377987513">Liigub vasakule alla</translation>
@@ -150,6 +152,7 @@ Kui teie tagasiside on seotud pildi- või videokvaliteediga, lisage manusena nä
 <translation id="8346544573713510785">Kaadreid skaleerib kaamera HAL</translation>
 <translation id="8425673304802773841">Kalluta alla</translation>
 <translation id="8428213095426709021">Seaded</translation>
+<translation id="8609951387004618906">Ava <ph name="URL" /></translation>
 <translation id="8629662593426079630">360p</translation>
 <translation id="8711011893539266636">Mikrofoni vaigistuse sisse-/väljalülitamine. Vaigistus on sisse lülitatud</translation>
 <translation id="8730621377337864115">Valmis</translation>

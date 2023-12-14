@@ -2386,7 +2386,6 @@ Pode gerir as definições desta conta ao instalar a aplicação Family Link no 
 <translation id="2794522004398861033">Estabeleça ligação ao Wi-Fi ou à Ethernet para configurar o eSIM</translation>
 <translation id="2794977172822818797">Adicionar sites atuais</translation>
 <translation id="2795716239552913152">Normalmente, os sites utilizam a sua localização para funcionalidades ou informações relevantes, como notícias locais ou lojas próximas.</translation>
-<translation id="2795950023277268902">Associar a conta <ph name="BEGIN_BOLD" /><ph name="DRIVE_ACCOUNT_EMAIL" /><ph name="END_BOLD" /> para aceder aos seus ficheiros do Drive na app Files</translation>
 <translation id="2798347533012571708">Manter atualizações</translation>
 <translation id="2799223571221894425">Reiniciar</translation>
 <translation id="2800309299477632167">Mapa de teclas personalizado</translation>
@@ -8337,6 +8336,7 @@ Tem mais # palavras-passe comprometidas. O Gestor de Palavras-passe da Google re
 <translation id="7576976045740938453">Ocorreu um problema com a conta no modo de demonstração.</translation>
 <translation id="7578137152457315135">Definições da impressão digital</translation>
 <translation id="7578692661782707876">Introduza o seu código de validação.</translation>
+<translation id="757941033127302446">Com sessão iniciada</translation>
 <translation id="7581007437437492586">As políticas estão configuradas corretamente</translation>
 <translation id="7581462281756524039">Uma ferramenta de limpeza</translation>
 <translation id="7582582252461552277">Preferir esta rede</translation>

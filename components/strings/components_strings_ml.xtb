@@ -39,6 +39,7 @@
 <translation id="1060136083665017312">ഗെയിം സിസ്റ്റങ്ങളും കൺസോളുകളും</translation>
 <translation id="1060320201901229167">Envelope Kaku 5</translation>
 <translation id="10614374240317010">ഒരിക്കലും സംരക്ഷിച്ചില്ല</translation>
+<translation id="1062407476771304334">മാറ്റിസ്ഥാപിക്കുക</translation>
 <translation id="1064054731605354900">A3x5</translation>
 <translation id="106701514854093668">ഡെസ്‌ക്‌ടോപ്പ് ബുക്ക്‌മാർക്കുകൾ</translation>
 <translation id="1068672505746868501"><ph name="SOURCE_LANGUAGE" /> ഭാഷയിലുള്ള പേജുകൾ ഒരിക്കലും വിവർത്തനം ചെയ്യരുത്</translation>
@@ -133,7 +134,6 @@
 <translation id="1240347957665416060">നിങ്ങളുടെ ഉപകരണത്തിൻ്റെ പേര്</translation>
 <translation id="124116460088058876">കൂടുതൽ ഭാഷകൾ</translation>
 <translation id="1243027604378859286">രചയിതാവ്:</translation>
-<translation id="1246424317317450637">ബോള്‍ഡ്</translation>
 <translation id="1247030632403369975">അലുമിനിയം</translation>
 <translation id="1252209483516427155">ഔട്ടർവെയർ</translation>
 <translation id="1253921432148366685"><ph name="TYPE_1" />, <ph name="TYPE_2" /> (സമന്വയിപ്പിച്ചു)</translation>
@@ -933,7 +933,6 @@
 <translation id="2858134430383535011">200 x 300 മി.മീ</translation>
 <translation id="2859806420264540918">ഈ സൈറ്റ്, അനാവശ്യമോ തെറ്റിദ്ധരിപ്പിക്കുന്നതോ ആയ പരസ്യങ്ങൾ കാണിക്കുന്നു.</translation>
 <translation id="28618371182701850">ഇലക്‌ട്രിക്, പ്ലഗ്-ഇൻ വാഹനങ്ങൾ</translation>
-<translation id="287596039013813457">സൗഹാർദ്ദപരം</translation>
 <translation id="28761159517501904">സിനിമകൾ</translation>
 <translation id="2876489322757410363">ബാഹ്യ ആപ്പ് വഴി പണമടയ്‌ക്കാൻ അദൃശ്യ മോഡിൽ നിന്ന് പുറത്തുകടക്കുന്നു. തുടരണോ?</translation>
 <translation id="2876949457278336305"><ph name="MANAGE_SECURITY_SETTINGS_FOCUSED_FRIENDLY_MATCH_TEXT" />, Chrome ക്രമീകരണത്തിൽ നിങ്ങളുടെ സുരക്ഷിത ബ്രൗസിംഗും മറ്റും മാനേജ് ചെയ്യാൻ Tab അമർത്തുക, തുടർന്ന് Enter അമർത്തുക</translation>
@@ -1125,7 +1124,6 @@
 <translation id="3240791268468473923">സുരക്ഷിതമായ പേയ്‌മെന്റ് ക്രെഡൻഷ്യലുമായി പൊരുത്തമില്ലാത്ത ക്രെഡൻഷ്യൽ ഷീറ്റ് തുറന്നു</translation>
 <translation id="324180406144491771">“<ph name="HOST_NAME" />” ലിങ്കുകൾ ബ്ലോക്ക് ചെയ്തിരിക്കുന്നു</translation>
 <translation id="3249151924975132674">വിദ്യാർത്ഥി വായ്പകളും കോളേജ് ഫിനാൻസിംഗും</translation>
-<translation id="3249845759089040423">ഗ്രൂവി</translation>
 <translation id="3250640885957938546">പരസ്യം ചെയ്യലും മാർക്കറ്റിംഗും</translation>
 <translation id="3252772880526154546">ആർക്കിടെക്ച്ചർ</translation>
 <translation id="3254301855501243548">18 x 22 ഇഞ്ച്</translation>
@@ -1809,7 +1807,6 @@
 <translation id="4598556348158889687">സ്‌റ്റോറേജ് മാനേജ്‌മെന്റ്</translation>
 <translation id="4600084978141515058">വീഗൻ ഭക്ഷണം</translation>
 <translation id="4602465984861132303">ബൗളിംഗ്</translation>
-<translation id="4606870351894164739">ഫലപ്രദമായത്</translation>
 <translation id="4607608436550361748">Chrome നുറുങ്ങുകൾ കാണുക</translation>
 <translation id="460848736049414407">അഡ്‌മിൻ ബ്ലോക്ക് ചെയ്‌തിരിക്കുന്നു</translation>
 <translation id="4610279718074907952"><ph name="SET_OWNER" /> നിർവചിച്ചിരിക്കുന്ന ഗ്രൂപ്പിലാണ് ഈ സൈറ്റുള്ളത്, അതിന് നിങ്ങളുടെ ആക്റ്റിവിറ്റി കാണാം</translation>
@@ -1923,13 +1920,11 @@
 <translation id="4819347708020428563">ഡിഫോൾട്ട് കാഴ്‌ചയിൽ കുറിപ്പുകൾ എഡിറ്റ് ചെയ്യണോ?</translation>
 <translation id="4822493756793346865">വെബിൽ ഉടനീളമുള്ള സ്റ്റോറുകളിലെ കഴിഞ്ഞ 90 ദിവസത്തെ നിരക്കുകൾ അടിസ്ഥാനമാക്കിയുള്ളതാണ് 'സാധാരണ നിരക്കുകൾ'.</translation>
 <translation id="4825496307559726072"><ph name="CREATE_GOOGLE_SHEET_FOCUSED_FRIENDLY_MATCH_TEXT" />, പുതിയൊരു Google Sheet വേഗത്തിൽ സൃഷ്ടിക്കാൻ Tab അമർത്തുക, തുടർന്ന് Enter അമർത്തുക</translation>
-<translation id="4825507807291741242">ശക്തമായത്</translation>
 <translation id="4826588772550366629">ക്യാമറയും മൈക്രോഫോണും</translation>
 <translation id="4827283332383516812">കാർഡ് ഇല്ലാതാക്കുക</translation>
 <translation id="4831993743164297314">ഇമേജ് സെറ്റർ പേപ്പർ</translation>
 <translation id="483241715238664915">മുന്നറിയിപ്പുകൾ ഓണാക്കുക</translation>
 <translation id="4834250788637067901">Google Pay ഉപയോഗിക്കുന്ന പേയ്മെന്റ് രീതികളും ഓഫറുകളും വിലാസങ്ങളും</translation>
-<translation id="4838327282952368871">മനോരാജ്യത്തിൽ മുഴുകിയത്</translation>
 <translation id="4839087176073128681">അടുത്ത തവണ കൂടുതൽ വേഗത്തിൽ പണമടയ്ക്കുകയും Google-ന്റെ, വിപണിയിൽ ലഭ്യമായ ഏറ്റവും മികച്ച സുരക്ഷ ഉപയോഗിച്ച് കാർഡ് പരിരക്ഷിക്കുകയും ചെയ്യുക.</translation>
 <translation id="4840250757394056958">നിങ്ങളുടെ Chrome ചരിത്രം കാണുക</translation>
 <translation id="484462545196658690">സ്വയമേവ</translation>
@@ -2501,7 +2496,6 @@
 <translation id="6005659677094197001">തുടർച്ചയായ</translation>
 <translation id="6005765687956866568">സ്വയമേവ പൂരിപ്പിച്ച വിവരങ്ങൾ ഫോമിൽ നിന്ന് മായ്‌ച്ചു</translation>
 <translation id="6006365096047131769">3 x 5 ഇഞ്ച്</translation>
-<translation id="6006484371116297560">ക്ലാസിക്</translation>
 <translation id="6008122969617370890">N-1 ക്രമത്തിൽ</translation>
 <translation id="6008256403891681546">JCB</translation>
 <translation id="6014139350017893009">വാഹന റിപ്പയറും അറ്റകുറ്റപ്പണിയും</translation>
@@ -3215,7 +3209,6 @@
       
 നിങ്ങളുടെ കമ്പ്യൂട്ടറിൽ നിന്ന് എങ്ങനെയാണ് സോഫ്റ്റ്‌വെയർ ശാശ്വതമായി നീക്കംചെയ്യുന്നത് എന്നറിയാൻ &lt;a href="https://support.google.com/chrome/answer/6098869"&gt;Chrome സഹായ കേന്ദ്രം&lt;/a&gt; സന്ദർശിക്കുക &lt;/ol&gt;</translation>
 <translation id="7408613996403626141">കളിപ്പാട്ടങ്ങൾ</translation>
-<translation id="7410471291937727359">മനോഹരമായത്</translation>
 <translation id="741204030948306876">ഞാൻ തയ്യാറാണ്</translation>
 <translation id="7416351320495623771">പാസ്‌വേഡുകൾ മാനേജ് ചെയ്യുക…</translation>
 <translation id="7418620734632363981">പ്രോഗ്രാമിംഗ്</translation>
@@ -4047,7 +4040,6 @@
 <translation id="9023536760430404133">വാഹനങ്ങളുടെ വീലുകളും ടയറുകളും</translation>
 <translation id="9025348182339809926">(അസാധുവാണ്)</translation>
 <translation id="902590795160480390">PDF ലോഡ് ചെയ്യുന്നു</translation>
-<translation id="9030265603405983977">മോണോക്രോം</translation>
 <translation id="9035022520814077154">സുരക്ഷാ പിശക്</translation>
 <translation id="9035824888276246493">സുരക്ഷാ കോഡുകൾ സംരക്ഷിക്കുക</translation>
 <translation id="9036306139374661733">മൈക്രോഫോൺ അനുമതി നൽകണോ?</translation>
@@ -4091,7 +4083,6 @@
 <translation id="9114524666733003316">കാർഡ് സ്ഥിരീകരിക്കുന്നു...</translation>
 <translation id="9114581008513152754">കമ്പനിയോ മറ്റേതെങ്കിലും സ്ഥാപനമോ മാനേജ് ചെയ്യുന്നതല്ല ഈ ബ്രൗസർ. ഈ ഉപകരണത്തിലെ ആക്‌റ്റിവിറ്റി Chrome-ന് പുറത്ത് മാനേജ് ചെയ്തേക്കാം. <ph name="BEGIN_LINK" />കൂടുതലറിയുക<ph name="END_LINK" /></translation>
 <translation id="9116548361133462832">Chrome-ലെ പരസ്യങ്ങളെ കുറിച്ച് കൂടുതലറിയുക</translation>
-<translation id="9117930699067497412">പുതിയത്</translation>
 <translation id="9118692854637641831"><ph name="HISTORY_CLUSTERS_SEARCH_FOCUSED_FRIENDLY_MATCH_TEXT" />, ടാബ് അമർത്തുക, തുടർന്ന് നിങ്ങളുടെ Chrome ചരിത്രത്തിൽ പ്രസക്തമായ ആക്റ്റിവിറ്റി കാണാനും തിരയൽ പുനരാരംഭിക്കാനും Enter അമർത്തുക</translation>
 <translation id="9119042192571987207">അപ്‌ലോഡ് ചെയ്തു</translation>
 <translation id="9122954576417194280">കമ്മോഡിറ്റികളും ഫ്യൂച്ചേഴ്‌സ് ട്രേഡിംഗും</translation>

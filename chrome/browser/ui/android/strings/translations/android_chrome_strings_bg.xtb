@@ -20,7 +20,6 @@
 <translation id="1103142993930332957">Искате ли да помогнете за подобряването на Chrome?</translation>
 <translation id="1105960400813249514">Заснемане на екрана</translation>
 <translation id="1108938384783527433">Синхронизиране на историята</translation>
-<translation id="1110914759170138831">Откроеният текст е съкратен</translation>
 <translation id="1111673857033749125">Тук ще се показват отметките, които сте запазили на другите си устройства.</translation>
 <translation id="1113597929977215864">Показване на опростения изглед</translation>
 <translation id="1126013303640354461">Начините на плащане и адресите от Google Pay няма да бъдат шифровани. Историята на сърфиране от Chrome няма да се синхронизира.
@@ -68,7 +67,6 @@
 <translation id="1298077576058087471">Спестете до 60% данни – прочетете днешните новини</translation>
 <translation id="1303339473099049190">Тази парола не бе намерена. Проверете дали е написана правилно и опитайте отново.</translation>
 <translation id="1303507811548703290"><ph name="DOMAIN" /> – Изпратено от <ph name="DEVICE_NAME" /></translation>
-<translation id="1316212908214730110">chrome_stylized_highlight_</translation>
 <translation id="1320912611264252795">Папките за потока за запазване на отметка са отворени на пълната височина</translation>
 <translation id="1327257854815634930">Историята на навигацията е отворена</translation>
 <translation id="1331212799747679585">Chrome не може да се актуализира. Още опции</translation>
@@ -393,7 +391,6 @@
 <translation id="3098745985164956033">Някои изображения се изпращат до Google с цел подобряване на описанията за вас</translation>
 <translation id="3114507951000454849">Прочетете днешните новини <ph name="NEWS_ICON" /></translation>
 <translation id="3123734510202723619">Съобщения</translation>
-<translation id="3134784203083076891">“</translation>
 <translation id="314939179385989105">Началната страница на Chrome</translation>
 <translation id="3158667104057012316">Сортиране по ръчен ред</translation>
 <translation id="3166827708714933426">Комбинации за раздели и прозорци</translation>
@@ -429,7 +426,6 @@
 <translation id="3303414029551471755">Искате ли да продължите с изтеглянето на съдържанието?</translation>
 <translation id="3305130791745726624">Изпращане до устройства</translation>
 <translation id="3305795716056605962">Превеждайте страници от бутона „Още опции“</translation>
-<translation id="3324393723900507254">Избран е шаблон: <ph name="TEMPLATE_TITLE" /></translation>
 <translation id="3334729583274622784">Да се промени ли файловото разширение?</translation>
 <translation id="3341262203274374114">Прекратяването на следенето не е възможно. Нещо се обърка.</translation>
 <translation id="3359667936385849800">Използване на текущия ви доставчик на услуги</translation>
@@ -530,7 +526,6 @@
 <translation id="3928666092801078803">Комбиниране на данните ми</translation>
 <translation id="3931947361983910192">последните 4 седмици</translation>
 <translation id="3932390316856284148">Долният лист за вход в профила е отворен на пълната височина.</translation>
-<translation id="3934366560681368531">„</translation>
 <translation id="393697183122708255">Не е налице активирано гласово търсене</translation>
 <translation id="395377504920307820">Използване без профил</translation>
 <translation id="3958287878205277013">За да изчистите историята на сърфиране в режим „инкогнито“ на устройството си, затворете всички раздели.</translation>
@@ -1177,7 +1172,6 @@
 <translation id="7221869452894271364">Зарежда повторно тази страница</translation>
 <translation id="7227218174981371415">{FILE_COUNT,plural, =1{Предстои 1 изтегляне}other{Предстоят # изтегляния}}</translation>
 <translation id="72415438529550637">Долният лист с предложение за парола е затворен.</translation>
-<translation id="7242755609445462077">Стилизирано открояване – <ph name="CURRENT_DATE" /></translation>
 <translation id="7248069434667874558">Уверете се, че синхронизирането в Chrome е включено за <ph name="TARGET_DEVICE_NAME" /></translation>
 <translation id="7252076891734325316">Поставете телефона си близо до компютъра</translation>
 <translation id="7260367682327802201">Възможно е устройството ви с Android да има подобна настройка. Ако функцията за измерване на рекламите е включена в Chrome и на устройството ви с Android, дадена компания може да измерва ефективността на рекламите в посещаваните от вас уебсайтове и използваните от вас приложения.</translation>
@@ -1261,7 +1255,6 @@
 <translation id="7605594153474022051">Синхронизирането не работи</translation>
 <translation id="7612619742409846846">Влезли сте в Google като</translation>
 <translation id="7612989789287281429">Влизате в профила си…</translation>
-<translation id="7616551326690708776">Изберете шаблон за открояването.</translation>
 <translation id="7619072057915878432">Изтеглянето на „<ph name="FILE_NAME" />“ не бе успешно поради грешки в мрежата.</translation>
 <translation id="7626032353295482388">Добре дошли в Chrome</translation>
 <translation id="7630202231528827509">URL адрес на доставчика</translation>
@@ -1527,7 +1520,6 @@
 <translation id="893938492099608175">В зависимост от настройките ви Chrome може също да изпраща „бисквитки“, текущия ви URL адрес и местоположението ви</translation>
 <translation id="8942627711005830162">Отваряне в другия прозорец</translation>
 <translation id="8945143127965743188"><ph name="LANG" /> – този език не бе изтеглен. Опитайте отново по-късно.</translation>
-<translation id="8955719471735800169">Обратно в началото</translation>
 <translation id="8964479563882643397">За да отворите нов раздел в режим „инкогнито“, използвайте менюто</translation>
 <translation id="8965591936373831584">изчаква</translation>
 <translation id="8968085728801125376">{TAB_COUNT,plural, =1{Следните раздели ще бъдат затворени: <ph name="INCOGNITO_TAB_COUNT" /> в режим „инкогнито“ и още <ph name="TAB_COUNT_ONE" />}other{Следните раздели ще бъдат затворени: <ph name="INCOGNITO_TAB_COUNT" /> в режим „инкогнито“ и още <ph name="TAB_COUNT_MANY" />}}</translation>
