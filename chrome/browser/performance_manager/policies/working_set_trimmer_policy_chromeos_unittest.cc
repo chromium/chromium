@@ -310,16 +310,6 @@ class WorkingSetTrimmerPolicyChromeOSTest : public GraphTestHarness {
     run_loop()->Quit();
   }
 
-  size_t GetArcVmTrimCountForFinalReport(
-      size_t current_arcvm_trim_count,
-      const base::TimeDelta& time_since_last_arcvm_trim_metric_report,
-      const base::TimeDelta& arcvm_trim_backoff_time,
-      const base::TimeDelta& arcvm_trim_metric_report_delay) {
-    return policy()->GetArcVmTrimCountForFinalReport(
-        current_arcvm_trim_count, time_since_last_arcvm_trim_metric_report,
-        arcvm_trim_backoff_time, arcvm_trim_metric_report_delay);
-  }
-
   // Creates a new policy and runs the |callback| with the policy before passing
   // it to the graph().
   void RecreatePolicy(
@@ -1221,85 +1211,6 @@ TEST_F(WorkingSetTrimmerPolicyChromeOSTest, ArcVmTrimProcessesForceTrim) {
   policy()->listener().SimulatePressureNotification(
       base::MemoryPressureListener::MEMORY_PRESSURE_LEVEL_CRITICAL);
   run_loop()->Run();
-}
-
-// Tests that the UMA reporting is done every 30 minutes.
-TEST_F(WorkingSetTrimmerPolicyChromeOSTest, ReportArcVmTrimMetric) {
-  base::HistogramTester tester;
-
-  // Crates the policy _after_ ARCVM trimming is enabled. This is necessary to
-  // start the time for UMA reporting.
-  RecreatePolicy(base::BindLambdaForTesting(
-      [](MockWorkingSetTrimmerPolicyChromeOS* policy) {
-        policy->trim_arcvm_on_memory_pressure(true);
-      }));
-
-  FastForwardBy(base::Minutes(15));
-  run_loop()->RunUntilIdle();
-  tester.ExpectTotalCount("Memory.WorkingSetTrim.ArcVmTrimCountPer30Mins", 0);
-
-  FastForwardBy(base::Minutes(15));
-  run_loop()->RunUntilIdle();
-  tester.ExpectTotalCount("Memory.WorkingSetTrim.ArcVmTrimCountPer30Mins", 1);
-
-  FastForwardBy(base::Minutes(30));
-  run_loop()->RunUntilIdle();
-  tester.ExpectTotalCount("Memory.WorkingSetTrim.ArcVmTrimCountPer30Mins", 2);
-
-  TakePolicyFromGraph();
-}
-
-// Tests that the final UMA reporting is done when the policy is detached from
-// the graph.
-TEST_F(WorkingSetTrimmerPolicyChromeOSTest, ReportArcVmTrimMetricOnDestrution) {
-  base::HistogramTester tester;
-
-  // Crates the policy _after_ ARCVM trimming is enabled. This is necessary to
-  // start the time for UMA reporting.
-  RecreatePolicy(base::BindLambdaForTesting(
-      [](MockWorkingSetTrimmerPolicyChromeOS* policy) {
-        policy->trim_arcvm_on_memory_pressure(true);
-      }));
-
-  FastForwardBy(base::Minutes(30));
-  run_loop()->RunUntilIdle();
-  tester.ExpectTotalCount("Memory.WorkingSetTrim.ArcVmTrimCountPer30Mins", 1);
-
-  FastForwardBy(base::Minutes(15));
-  run_loop()->RunUntilIdle();
-  tester.ExpectTotalCount("Memory.WorkingSetTrim.ArcVmTrimCountPer30Mins", 1);
-
-  TakePolicyFromGraph();
-  tester.ExpectTotalCount("Memory.WorkingSetTrim.ArcVmTrimCountPer30Mins", 2);
-}
-
-// Tests that the |arcvm_trim_count_| calculation for the final report is
-// properly done.
-TEST_F(WorkingSetTrimmerPolicyChromeOSTest, GetArcVmTrimCountForFinalReport) {
-  constexpr base::TimeDelta kBackoffTime = base::Minutes(15);
-  constexpr base::TimeDelta kMetricReportDelay = base::Minutes(30);
-
-  // If 0 trim has been done in the last 15 minutes, 0 should be reported.
-  EXPECT_EQ(0u, GetArcVmTrimCountForFinalReport(
-                    0, base::Minutes(15), kBackoffTime, kMetricReportDelay));
-
-  // If 1 trim has been done in the last 28 minutes, 1 should be reported.
-  EXPECT_EQ(1u, GetArcVmTrimCountForFinalReport(
-                    1, base::Minutes(28), kBackoffTime, kMetricReportDelay));
-
-  // If 1 trim has been done in the last 15 minutes, 2 should be reported.
-  EXPECT_EQ(2u, GetArcVmTrimCountForFinalReport(
-                    1, base::Minutes(15), kBackoffTime, kMetricReportDelay));
-
-  // If 2 trims have been done in the last 28 minutes, 2 should be reported.
-  EXPECT_EQ(2u, GetArcVmTrimCountForFinalReport(
-                    2, base::Minutes(28), kBackoffTime, kMetricReportDelay));
-
-  // If 2 trims has been done in the last 15 minutes, 3 should be reported.
-  // This is not 4 because of |kBackoffTime|. Only 3 trims are possible within
-  // |kMetricReportDelay|.
-  EXPECT_EQ(3u, GetArcVmTrimCountForFinalReport(
-                    2, base::Minutes(15), kBackoffTime, kMetricReportDelay));
 }
 
 }  // namespace policies
