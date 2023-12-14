@@ -15,7 +15,6 @@ import androidx.annotation.Nullable;
 
 import org.chromium.base.ContextUtils;
 import org.chromium.base.metrics.RecordHistogram;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.share.ShareContentTypeHelper.ContentType;
 import org.chromium.chrome.browser.share.ShareHelper;
@@ -42,8 +41,6 @@ import java.util.Set;
 class ShareSheetPropertyModelBuilder {
     public static final int MAX_NUM_APPS = 7;
     // Variations parameter name for the comma-separated list of third-party activity names.
-    private static final String PARAM_SHARING_HUB_THIRD_PARTY_APPS = "sharing-hub-third-party-apps";
-
     private static final ArrayList<String> FALLBACK_ACTIVITIES =
             new ArrayList<>(
                     Arrays.asList(
@@ -115,7 +112,7 @@ class ShareSheetPropertyModelBuilder {
             long shareStartTime,
             @LinkGeneration int linkGenerationStatusForMetrics,
             LinkToggleMetricsDetails linkToggleMetricsDetails) {
-        List<String> thirdPartyActivityNames = getThirdPartyActivityNames();
+        List<String> thirdPartyActivityNames = FALLBACK_ACTIVITIES;
         List<ResolveInfo> resolveInfoList =
                 getCompatibleApps(contentTypes, params.getFileContentType());
         List<ResolveInfo> thirdPartyActivities = new ArrayList<>();
@@ -247,15 +244,5 @@ class ShareSheetPropertyModelBuilder {
                     ShareSheetItemViewProperties.CONTENT_DESCRIPTION, accessibilityDescription);
         }
         return builder.build();
-    }
-
-    private List<String> getThirdPartyActivityNames() {
-        String param =
-                ChromeFeatureList.getFieldTrialParamByFeature(
-                        ChromeFeatureList.CHROME_SHARING_HUB, PARAM_SHARING_HUB_THIRD_PARTY_APPS);
-        if (param.isEmpty()) {
-            return FALLBACK_ACTIVITIES;
-        }
-        return new ArrayList<>(Arrays.asList(param.split(",")));
     }
 }

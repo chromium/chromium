@@ -67,7 +67,6 @@ BASE_DECLARE_FEATURE(kCCTTextFragmentLookupApiEnabled);
 BASE_DECLARE_FEATURE(kDontAutoHideBrowserControls);
 BASE_DECLARE_FEATURE(kCacheDeprecatedSystemLocationSetting);
 BASE_DECLARE_FEATURE(kChromeShareScreenshot);
-BASE_DECLARE_FEATURE(kChromeSharingHub);
 BASE_DECLARE_FEATURE(kChromeSharingHubLaunchAdjacent);
 BASE_DECLARE_FEATURE(kChromeSurveyNextAndroid);
 BASE_DECLARE_FEATURE(kCommandLineOnNonRooted);

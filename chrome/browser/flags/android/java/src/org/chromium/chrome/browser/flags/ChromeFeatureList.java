@@ -196,7 +196,6 @@ public abstract class ChromeFeatureList {
     public static final String CCT_TAB_MODAL_DIALOG = "CCTTabModalDialog";
     public static final String CCT_TEXT_FRAGMENT_LOOKUP_API_ENABLED =
             "CCTTextFragmentLookupApiEnabled";
-    public static final String CHROME_SHARING_HUB = "ChromeSharingHub";
     public static final String CHROME_SURVEY_NEXT_ANDROID = "ChromeSurveyNextAndroid";
     public static final String CLEAR_OMNIBOX_FOCUS_AFTER_NAVIGATION =
             "ClearOmniboxFocusAfterNavigation";

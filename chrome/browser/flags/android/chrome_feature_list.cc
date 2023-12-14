@@ -204,7 +204,6 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &kCCTTextFragmentLookupApiEnabled,
     &kDontAutoHideBrowserControls,
     &kCacheDeprecatedSystemLocationSetting,
-    &kChromeSharingHub,
     &kChromeSurveyNextAndroid,
     &kCommandLineOnNonRooted,
     &kContextMenuEnableLensShoppingAllowlist,
@@ -596,10 +595,6 @@ BASE_FEATURE(kDontAutoHideBrowserControls,
 
 BASE_FEATURE(kCacheDeprecatedSystemLocationSetting,
              "CacheDeprecatedSystemLocationSetting",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
-BASE_FEATURE(kChromeSharingHub,
-             "ChromeSharingHub",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kChromeSurveyNextAndroid,
