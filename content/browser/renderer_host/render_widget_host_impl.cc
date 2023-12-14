@@ -3047,6 +3047,24 @@ void RenderWidgetHostImpl::SetMouseCapture(bool capture) {
   delegate_->GetInputEventRouter()->SetMouseCaptureTarget(GetView(), capture);
 }
 
+void RenderWidgetHostImpl::SetAutoscrollSelectionActiveInMainFrame(
+    bool autoscroll_selection) {
+  // If there is no |owner_delegate|, this is not a main frame.
+  if (!owner_delegate()) {
+    mojo::ReportBadMessage(
+        "|SetAutoscrollSelectionActiveInMainFrame| should only be invoked on "
+        "main frame's RenderWidgetHost");
+    return;
+  }
+
+  if (!delegate_ || !delegate_->GetInputEventRouter()) {
+    return;
+  }
+
+  delegate_->GetInputEventRouter()->RootViewReceivesMouseUpIfNecessary(
+      autoscroll_selection);
+}
+
 void RenderWidgetHostImpl::RequestMouseLock(
     bool from_user_gesture,
     bool unadjusted_movement,

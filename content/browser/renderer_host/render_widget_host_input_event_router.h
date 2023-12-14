@@ -158,6 +158,10 @@ class CONTENT_EXPORT RenderWidgetHostInputEventRouter final
   void SetMouseCaptureTarget(RenderWidgetHostViewBase* target,
                              bool captures_dragging);
 
+  // Toggle if mouse up event should be dispatched to root RenderWidgetHostView
+  // in addition to the target RenderWidgethostView.
+  void RootViewReceivesMouseUpIfNecessary(bool root_view_receives_mouse_up);
+
   std::vector<RenderWidgetHostView*> GetRenderWidgetHostViewsForTests() const;
   RenderWidgetTargeter* GetRenderWidgetTargeterForTests();
 
@@ -200,6 +204,9 @@ class CONTENT_EXPORT RenderWidgetHostInputEventRouter final
   FRIEND_TEST_ALL_PREFIXES(
       BrowserSideFlingBrowserTest,
       DISABLED_InertialGSUBubblingStopsWhenParentCannotScroll);
+  FRIEND_TEST_ALL_PREFIXES(
+      WebContentsImplBrowserTest,
+      MouseUpInOOPIframeShouldCancelMainFrameAutoscrollSelection);
 
   using FrameSinkIdOwnerMap =
       std::unordered_map<viz::FrameSinkId,
@@ -374,6 +381,14 @@ class CONTENT_EXPORT RenderWidgetHostInputEventRouter final
   RAW_PTR_EXCLUSION RenderWidgetHostViewBase* wheel_target_ = nullptr;
   // Maintains the same target between mouse down and mouse up.
   raw_ptr<RenderWidgetHostViewBase> mouse_capture_target_ = nullptr;
+  // There is no mouse capture set if a mouse down event dispatches to main
+  // frame. The subsequent mouse events might not be delivered to the main frame
+  // if mouse is moved over to an OOP iframe. There is caches mouse state in
+  // main frame such as autoscroll selection. In this case we should dispatch an
+  // additional mouse up event to the main frame to clear any cached mouse
+  // state. This flag indicates the state is active and mouse up event will be
+  // dispatched to main frame in addition to the target frame.
+  bool root_view_receive_additional_mouse_up_ = false;
 
   // Tracked for the purpose of generating MouseEnter and MouseLeave events.
   raw_ptr<RenderWidgetHostViewBase> last_mouse_move_target_;

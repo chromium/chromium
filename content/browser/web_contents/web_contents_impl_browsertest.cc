@@ -4512,6 +4512,125 @@ IN_PROC_BROWSER_TEST_F(WebContentsImplBrowserTest,
   ASSERT_EQ(url_a, web_contents->GetLastCommittedURL());
 }
 
+#if !BUILDFLAG(IS_ANDROID)
+// https://crbug.com/1402816. This test verifies that when mouse down is on main
+// frame and mouse up is on OOF iframe, the mouse up event is delivered to the
+// main frame as well to clear cached mouse states including autoscroll
+// selection state.
+IN_PROC_BROWSER_TEST_F(
+    WebContentsImplBrowserTest,
+    MouseUpInOOPIframeShouldCancelMainFrameAutoscrollSelection) {
+  ASSERT_TRUE(embedded_test_server()->Start());
+  WebContentsImpl* web_contents =
+      static_cast<WebContentsImpl*>(shell()->web_contents());
+
+  GURL data_url(R"HTML(
+    data:text/html,
+    <!DOCTYPE html>
+    <html lang='en'>
+    <head>
+    <style>
+      %23parentDiv {
+        display: flex;
+      }
+      %23input1 {
+        border: 1px solid black;
+        margin: 20px;
+      }
+      %23iframe1 {
+        height: 200vh;
+      }
+    </style>
+    </head>
+    <body>
+      <div id='parentDiv'>
+        <iframe src='https://b.com/title1.html' id='iframe1'></iframe>
+        <div>
+          <input type='text' id='input1'>
+        </div>
+      </div>
+      </body>
+      </html>)HTML");
+
+  EXPECT_TRUE(NavigateToURL(shell(), data_url));
+  WaitForLoadStop(web_contents);
+
+  const double input_center_y =
+      EvalJs(web_contents,
+             "document.getElementById('input1').offsetTop + "
+             "document.getElementById('input1').offsetHeight / 2")
+          .ExtractDouble();
+  const double input_center_x =
+      EvalJs(web_contents,
+             "document.getElementById('input1').offsetLeft + "
+             "document.getElementById('input1').offsetWidth / 2")
+          .ExtractDouble();
+
+  // Click the input element and start typing.
+  SimulateMouseClickAt(web_contents, 0, blink::WebMouseEvent::Button::kLeft,
+                       gfx::Point(input_center_x, input_center_y));
+  SimulateKeyPress(web_contents, ui::DomKey::FromCharacter('A'),
+                   ui::DomCode::US_A, ui::VKEY_A, false, false, false, false);
+  SimulateKeyPress(web_contents, ui::DomKey::FromCharacter('B'),
+                   ui::DomCode::US_B, ui::VKEY_B, false, false, false, false);
+  RunUntilInputProcessed(web_contents->GetRenderWidgetHostWithPageFocus());
+  EXPECT_EQ("AB",
+            EvalJs(web_contents, "document.getElementById('input1').value")
+                .ExtractString());
+
+  EXPECT_TRUE(ExecJs(web_contents,
+                     "document.addEventListener('mouseup', () => { "
+                     "window.receivedMouseUp = true; });"));
+
+  // Now, start the drag from input element to the OOP iframe.
+  SimulateMouseEvent(web_contents, blink::WebMouseEvent::Type::kMouseDown,
+                     blink::WebMouseEvent::Button::kLeft,
+                     gfx::Point(input_center_x, input_center_y));
+  SimulateMouseEvent(web_contents, blink::WebMouseEvent::Type::kMouseMove,
+                     blink::WebMouseEvent::Button::kLeft,
+                     gfx::Point(input_center_x - 5, input_center_y));
+  SimulateMouseEvent(web_contents, blink::WebMouseEvent::Type::kMouseMove,
+                     blink::WebMouseEvent::Button::kLeft,
+                     gfx::Point(input_center_x - 10, input_center_y));
+
+  const double iframe_center_x =
+      EvalJs(web_contents,
+             "document.getElementById('iframe1').offsetLeft + "
+             "document.getElementById('iframe1').offsetWidth / 2")
+          .ExtractDouble();
+
+  SimulateMouseEvent(web_contents, blink::WebMouseEvent::Type::kMouseMove,
+                     blink::WebMouseEvent::Button::kLeft,
+                     gfx::Point(iframe_center_x, input_center_y));
+  RunUntilInputProcessed(web_contents->GetRenderWidgetHostWithPageFocus());
+
+  EXPECT_TRUE(web_contents->GetInputEventRouter()
+                  ->root_view_receive_additional_mouse_up_);
+
+  SimulateMouseEvent(web_contents, blink::WebMouseEvent::Type::kMouseUp,
+                     blink::WebMouseEvent::Button::kLeft,
+                     gfx::Point(iframe_center_x, input_center_y));
+  RunUntilInputProcessed(web_contents->GetRenderWidgetHostWithPageFocus());
+
+  EXPECT_FALSE(web_contents->GetInputEventRouter()
+                   ->root_view_receive_additional_mouse_up_);
+
+  // Main frame should receive mouse up event.
+  EXPECT_TRUE(EvalJs(web_contents, "window.receivedMouseUp").ExtractBool());
+
+  // Type again in input element, insert text should be left to right.
+  SimulateKeyPress(web_contents, ui::DomKey::FromCharacter('E'),
+                   ui::DomCode::US_E, ui::VKEY_E, false, false, false, false);
+  SimulateKeyPress(web_contents, ui::DomKey::FromCharacter('F'),
+                   ui::DomCode::US_F, ui::VKEY_F, false, false, false, false);
+  RunUntilInputProcessed(web_contents->GetRenderWidgetHostWithPageFocus());
+
+  EXPECT_EQ("EF",
+            EvalJs(web_contents, "document.getElementById('input1').value")
+                .ExtractString());
+}
+#endif  // !BUILDFLAG(IS_ANDROID)
+
 IN_PROC_BROWSER_TEST_F(WebContentsImplBrowserTest, FrameCount) {
   ASSERT_TRUE(embedded_test_server()->Start());
   base::HistogramTester histogram_tester;

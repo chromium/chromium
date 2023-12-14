@@ -399,6 +399,11 @@ void InputRouterImpl::SetMouseCapture(bool capture) {
   client_->SetMouseCapture(capture);
 }
 
+void InputRouterImpl::SetAutoscrollSelectionActiveInMainFrame(
+    bool autoscroll_selection) {
+  client_->SetAutoscrollSelectionActiveInMainFrame(autoscroll_selection);
+}
+
 void InputRouterImpl::RequestMouseLock(bool from_user_gesture,
                                        bool unadjusted_movement,
                                        RequestMouseLockCallback response) {

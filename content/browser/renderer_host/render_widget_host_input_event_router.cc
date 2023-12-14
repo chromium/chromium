@@ -678,6 +678,11 @@ void RenderWidgetHostInputEventRouter::DispatchMouseEvent(
   }
 
   target->ProcessMouseEvent(event, latency);
+
+  if (root_view_receive_additional_mouse_up_ && target != root_view &&
+      mouse_event.GetType() == blink::WebInputEvent::Type::kMouseUp) {
+    root_view->ProcessMouseEvent(event, latency);
+  }
 }
 
 void RenderWidgetHostInputEventRouter::RouteMouseWheelEvent(
@@ -2022,6 +2027,11 @@ void RenderWidgetHostInputEventRouter::SetMouseCaptureTarget(
 
   if (mouse_capture_target_ == target)
     mouse_capture_target_ = nullptr;
+}
+
+void RenderWidgetHostInputEventRouter::RootViewReceivesMouseUpIfNecessary(
+    bool root_view_receives_mouse_up) {
+  root_view_receive_additional_mouse_up_ = root_view_receives_mouse_up;
 }
 
 void RenderWidgetHostInputEventRouter::SetAutoScrollInProgress(

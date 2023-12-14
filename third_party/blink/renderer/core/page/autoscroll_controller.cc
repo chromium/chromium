@@ -31,6 +31,7 @@
 
 #include "third_party/blink/renderer/core/dom/node_computed_style.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
+#include "third_party/blink/renderer/core/frame/local_frame_client.h"
 #include "third_party/blink/renderer/core/frame/local_frame_view.h"
 #include "third_party/blink/renderer/core/frame/visual_viewport.h"
 #include "third_party/blink/renderer/core/html/html_frame_owner_element.h"
@@ -132,6 +133,7 @@ void AutoscrollController::StartAutoscrollForSelection(
   pressed_layout_object_ = DynamicTo<LayoutBox>(layout_object);
   autoscroll_type_ = kAutoscrollForSelection;
   autoscroll_layout_object_ = scrollable;
+  UpdateCachedAutoscrollForSelectionState(true);
   ScheduleMainThreadAnimation();
 }
 
@@ -141,6 +143,7 @@ void AutoscrollController::StopAutoscroll() {
       pressed_layout_object_->GetNode()->StopAutoscroll();
     pressed_layout_object_ = nullptr;
   }
+  UpdateCachedAutoscrollForSelectionState(false);
   autoscroll_layout_object_ = nullptr;
   autoscroll_type_ = kNoAutoscroll;
 }
@@ -163,6 +166,7 @@ void AutoscrollController::StopAutoscrollIfNeeded(LayoutObject* layout_object) {
 
   if (autoscroll_layout_object_ != layout_object)
     return;
+  UpdateCachedAutoscrollForSelectionState(false);
   autoscroll_layout_object_ = nullptr;
   autoscroll_type_ = kNoAutoscroll;
 }
@@ -484,6 +488,19 @@ void AutoscrollController::Animate() {
 void AutoscrollController::ScheduleMainThreadAnimation() {
   page_->GetChromeClient().ScheduleAnimation(
       autoscroll_layout_object_->GetFrame()->View());
+}
+
+void AutoscrollController::UpdateCachedAutoscrollForSelectionState(
+    bool autoscroll_selection) {
+  if (!autoscroll_layout_object_ || !autoscroll_layout_object_->GetFrame() ||
+      !autoscroll_layout_object_->GetFrame()->IsAttached() ||
+      !autoscroll_layout_object_->GetFrame()->IsOutermostMainFrame()) {
+    return;
+  }
+  autoscroll_layout_object_->GetFrame()
+      ->LocalFrameRoot()
+      .Client()
+      ->NotifyAutoscrollForSelectionInMainFrame(autoscroll_selection);
 }
 
 bool AutoscrollController::IsAutoscrolling() const {

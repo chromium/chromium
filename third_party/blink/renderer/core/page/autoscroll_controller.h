@@ -106,6 +106,11 @@ class CORE_EXPORT AutoscrollController final
 
   // Selection and drag-and-drop autoscroll.
   void ScheduleMainThreadAnimation();
+
+  // Notify browser process input event router that main frame started drag
+  // selection. Any mouse up event in OOF child frames should also dispatch
+  // mouse up event in the main frame when the state is active.
+  void UpdateCachedAutoscrollForSelectionState(bool autoscroll_selection);
   Member<LayoutBox> autoscroll_layout_object_ = nullptr;
   Member<LayoutBox> pressed_layout_object_ = nullptr;
 

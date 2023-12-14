@@ -46,6 +46,8 @@ class MockInputRouterClient : public InputRouterClient,
   bool IsWheelScrollInProgress() override;
   bool IsAutoscrollInProgress() override;
   void SetMouseCapture(bool capture) override {}
+  void SetAutoscrollSelectionActiveInMainFrame(
+      bool autoscroll_selection) override {}
   void RequestMouseLock(
       bool user_gesture,
       bool unadjusted_movement,

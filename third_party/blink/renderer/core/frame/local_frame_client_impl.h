@@ -283,6 +283,9 @@ class CORE_EXPORT LocalFrameClientImpl final : public LocalFrameClient {
 
   void SetMouseCapture(bool capture) override;
 
+  void NotifyAutoscrollForSelectionInMainFrame(
+      bool autoscroll_selection) override;
+
   bool UsePrintingLayout() const override;
 
   std::unique_ptr<blink::ResourceLoadInfoNotifierWrapper>

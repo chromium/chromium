@@ -614,6 +614,9 @@ class CORE_EXPORT WebFrameWidgetImpl
   // Called when the widget should get targeting input.
   void SetMouseCapture(bool capture);
 
+  // Called when the widget's main frame has ongoing autoscroll selection.
+  void NotifyAutoscrollForSelectionInMainFrame(bool autoscroll_selection);
+
   // Sets the current page scale factor and minimum / maximum limits. Both
   // limits are initially 1 (no page scale allowed).
   void SetPageScaleStateAndLimits(float page_scale_factor,

@@ -791,6 +791,8 @@ class CONTENT_EXPORT RenderWidgetHostImpl
   bool IsWheelScrollInProgress() override;
   bool IsAutoscrollInProgress() override;
   void SetMouseCapture(bool capture) override;
+  void SetAutoscrollSelectionActiveInMainFrame(
+      bool autoscroll_selection) override;
   void RequestMouseLock(
       bool from_user_gesture,
       bool unadjusted_movement,

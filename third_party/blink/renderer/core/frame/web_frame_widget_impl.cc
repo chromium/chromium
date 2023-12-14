@@ -3847,6 +3847,15 @@ void WebFrameWidgetImpl::SetMouseCapture(bool capture) {
   }
 }
 
+void WebFrameWidgetImpl::NotifyAutoscrollForSelectionInMainFrame(
+    bool autoscroll_selection) {
+  if (mojom::blink::WidgetInputHandlerHost* host =
+          widget_base_->widget_input_handler_manager()
+              ->GetWidgetInputHandlerHost()) {
+    host->SetAutoscrollSelectionActiveInMainFrame(autoscroll_selection);
+  }
+}
+
 gfx::Range WebFrameWidgetImpl::CompositionRange() {
   WebLocalFrame* focused_frame = FocusedWebLocalFrameInWidget();
   if (!focused_frame || ShouldDispatchImeEventsToPlugin())

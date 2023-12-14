@@ -1124,6 +1124,9 @@ void TestWidgetInputHandlerHost::ImeCompositionRangeChanged(
 
 void TestWidgetInputHandlerHost::SetMouseCapture(bool capture) {}
 
+void TestWidgetInputHandlerHost::SetAutoscrollSelectionActiveInMainFrame(
+    bool autoscroll_selection) {}
+
 void TestWidgetInputHandlerHost::RequestMouseLock(
     bool from_user_gesture,
     bool unadjusted_movement,

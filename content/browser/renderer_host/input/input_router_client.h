@@ -83,6 +83,10 @@ class InputRouterClient {
   // Called to toggle whether the RenderWidgetHost should capture all mouse
   // input.
   virtual void SetMouseCapture(bool capture) = 0;
+  // Called to toggle whether mouse up event should be dispatched to the root
+  // RenderWidgetHost in addition to the target RenderWidgetHost.
+  virtual void SetAutoscrollSelectionActiveInMainFrame(
+      bool autoscroll_selection) = 0;
   virtual void RequestMouseLock(
       bool from_user_gesture,
       bool unadjusted_movement,
