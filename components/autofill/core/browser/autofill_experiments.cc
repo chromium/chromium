@@ -5,6 +5,7 @@
 #include "components/autofill/core/browser/autofill_experiments.h"
 
 #include <string>
+#include <string_view>
 #include <vector>
 
 #include "base/check.h"
@@ -50,7 +51,7 @@
 namespace autofill {
 namespace {
 
-void LogCardUploadDisabled(LogManager* log_manager, base::StringPiece context) {
+void LogCardUploadDisabled(LogManager* log_manager, std::string_view context) {
   LOG_AF(log_manager) << LoggingScope::kCreditCardUploadStatus
                       << LogMessage::kCreditCardUploadDisabled << context
                       << CTag{};

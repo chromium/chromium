@@ -5,8 +5,9 @@
 #ifndef COMPONENTS_AUTOFILL_CORE_BROWSER_FORM_PARSING_REGEX_PATTERNS_H_
 #define COMPONENTS_AUTOFILL_CORE_BROWSER_FORM_PARSING_REGEX_PATTERNS_H_
 
+#include <string_view>
+
 #include "base/containers/span.h"
-#include "base/strings/string_piece.h"
 #include "components/autofill/core/browser/field_types.h"
 #include "components/autofill/core/browser/form_parsing/autofill_parsing_utils.h"
 #include "components/autofill/core/browser/form_parsing/buildflags.h"
@@ -104,7 +105,7 @@ absl::optional<PatternSource> GetActivePatternSource();
 // The returned patterns are sorted by their MatchingPattern::positive_score in
 // decreasing order.
 base::span<const MatchPatternRef> GetMatchPatterns(
-    base::StringPiece name,
+    std::string_view name,
     absl::optional<LanguageCode> language_code,
     PatternSource pattern_source);
 

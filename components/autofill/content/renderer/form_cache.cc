@@ -8,6 +8,7 @@
 #include <functional>
 #include <set>
 #include <string>
+#include <string_view>
 #include <utility>
 
 #include "base/check_op.h"
@@ -17,7 +18,6 @@
 #include "base/numerics/safe_conversions.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
-#include "base/strings/string_piece.h"
 #include "base/strings/string_split.h"
 #include "base/strings/utf_string_conversions.h"
 #include "components/autofill/content/renderer/form_autofill_util.h"
@@ -58,7 +58,7 @@ using form_util::ExtractOption;
 namespace {
 
 blink::FormElementPiiType MapTypePredictionToFormElementPiiType(
-    base::StringPiece type) {
+    std::string_view type) {
   if (type == "NO_SERVER_DATA" || type == "UNKNOWN_TYPE" ||
       type == "EMPTY_TYPE" || type == "") {
     return blink::FormElementPiiType::kUnknown;

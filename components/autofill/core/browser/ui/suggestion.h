@@ -7,10 +7,10 @@
 
 #include <ostream>
 #include <string>
+#include <string_view>
 
 #include "base/logging.h"
 #include "base/notreached.h"
-#include "base/strings/string_piece.h"
 #include "base/types/cxx23_to_underlying.h"
 #include "base/types/strong_alias.h"
 #include "build/build_config.h"
@@ -104,17 +104,17 @@ struct Suggestion {
   Suggestion(std::u16string main_text, PopupItemId popup_item_id);
   // Constructor for unit tests. It will convert the strings from UTF-8 to
   // UTF-16.
-  Suggestion(base::StringPiece main_text,
-             base::StringPiece label,
+  Suggestion(std::string_view main_text,
+             std::string_view label,
              Icon icon,
              PopupItemId popup_item_id);
-  Suggestion(base::StringPiece main_text,
+  Suggestion(std::string_view main_text,
              std::vector<std::vector<Text>> labels,
              Icon icon,
              PopupItemId popup_item_id);
-  Suggestion(base::StringPiece main_text,
-             base::StringPiece minor_text,
-             base::StringPiece label,
+  Suggestion(std::string_view main_text,
+             std::string_view minor_text,
+             std::string_view label,
              Icon icon,
              PopupItemId popup_item_id);
   Suggestion(const Suggestion& other);

@@ -4,6 +4,8 @@
 
 #include "components/autofill/core/browser/payments/payments_requests/unmask_card_request.h"
 
+#include <string_view>
+
 #include "base/json/json_writer.h"
 #include "base/strings/escape.h"
 #include "base/strings/string_number_conversions.h"
@@ -250,7 +252,7 @@ std::string UnmaskCardRequest::GetRequestContent() {
           base::NumberToString(request_details_.selected_challenge_option
                                    ->challenge_input_length));
 
-      base::StringPiece cvc_position = "CVC_POSITION_UNKNOWN";
+      std::string_view cvc_position = "CVC_POSITION_UNKNOWN";
       switch (request_details_.selected_challenge_option->cvc_position) {
         case autofill::CvcPosition::kFrontOfCard:
           cvc_position = "CVC_POSITION_FRONT";

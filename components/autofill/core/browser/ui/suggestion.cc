@@ -41,8 +41,8 @@ Suggestion::Suggestion(std::u16string main_text, PopupItemId popup_item_id)
     : popup_item_id(popup_item_id),
       main_text(std::move(main_text), Text::IsPrimary(true)) {}
 
-Suggestion::Suggestion(base::StringPiece main_text,
-                       base::StringPiece label,
+Suggestion::Suggestion(std::string_view main_text,
+                       std::string_view label,
                        Icon icon,
                        PopupItemId popup_item_id)
     : popup_item_id(popup_item_id),
@@ -52,7 +52,7 @@ Suggestion::Suggestion(base::StringPiece main_text,
     this->labels = {{Text(base::UTF8ToUTF16(label))}};
 }
 
-Suggestion::Suggestion(base::StringPiece main_text,
+Suggestion::Suggestion(std::string_view main_text,
                        std::vector<std::vector<Text>> labels,
                        Icon icon,
                        PopupItemId popup_item_id)
@@ -61,9 +61,9 @@ Suggestion::Suggestion(base::StringPiece main_text,
       labels(std::move(labels)),
       icon(icon) {}
 
-Suggestion::Suggestion(base::StringPiece main_text,
-                       base::StringPiece minor_text,
-                       base::StringPiece label,
+Suggestion::Suggestion(std::string_view main_text,
+                       std::string_view minor_text,
+                       std::string_view label,
                        Icon icon,
                        PopupItemId popup_item_id)
     : popup_item_id(popup_item_id),

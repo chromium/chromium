@@ -7,7 +7,6 @@
 
 #include <type_traits>
 
-#include "base/strings/string_piece.h"
 #include "base/types/cxx23_to_underlying.h"
 #include "components/autofill/core/common/dense_set.h"
 #include "components/autofill/core/common/html_field_types.h"

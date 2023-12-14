@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <string_view>
+
 #include "base/test/scoped_feature_list.h"
 
 #include "base/memory/raw_ptr.h"
@@ -45,7 +47,7 @@ auto HasId(FormRendererId expected_id) {
                expected_id);
 }
 
-auto HasName(base::StringPiece expected_name) {
+auto HasName(std::string_view expected_name) {
   return Field("name", &FormData::name, base::ASCIIToUTF16(expected_name));
 }
 
@@ -56,7 +58,7 @@ auto IsToken(FrameToken expected_token, int expected_predecessor) {
 }
 
 const FormData* GetFormByName(const std::vector<FormData>& forms,
-                              base::StringPiece name) {
+                              std::string_view name) {
   for (const FormData& form : forms) {
     if (form.name == ASCIIToUTF16(name))
       return &form;

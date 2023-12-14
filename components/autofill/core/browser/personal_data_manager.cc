@@ -6,11 +6,7 @@
 
 #include <stddef.h>
 
-#include <list>
 #include <map>
-#include <memory>
-#include <string>
-#include <string_view>
 #include <utility>
 
 #include "base/containers/contains.h"
@@ -897,7 +893,7 @@ bool PersonalDataManager::IsEligibleForAddressAccountStorage() const {
 }
 
 bool PersonalDataManager::IsCountryEligibleForAccountStorage(
-    base::StringPiece country_code) const {
+    std::string_view country_code) const {
   constexpr char const* kUnsupportedCountries[] = {"CU", "IR", "KP", "SD",
                                                    "SY"};
   return !base::Contains(kUnsupportedCountries, country_code);

@@ -6,10 +6,10 @@
 #define COMPONENTS_AUTOFILL_CORE_BROWSER_GEO_AUTOFILL_COUNTRY_H_
 
 #include <string>
+#include <string_view>
 
 #include "base/containers/span.h"
 #include "base/feature_list.h"
-#include "base/strings/string_piece.h"
 #include "components/autofill/core/browser/field_types.h"
 #include "components/autofill/core/browser/geo/country_data.h"
 #include "components/autofill/core/common/autofill_features.h"
@@ -52,7 +52,7 @@ class AutofillCountry {
     int label_id;
     ServerFieldType placed_after;
     // Usually " " or "\n". Should not be empty.
-    base::StringPiece separator_before_label;
+    std::string_view separator_before_label;
     bool large_sized;
   };
 

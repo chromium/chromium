@@ -4,6 +4,8 @@
 
 #include "components/autofill/core/browser/address_profile_save_manager.h"
 
+#include <string_view>
+
 #include "base/strings/strcat.h"
 #include "base/strings/string_piece.h"
 #include "base/test/metrics/histogram_tester.h"
@@ -233,9 +235,10 @@ class AddressProfileSaveManagerTest
 
 // Expects that none of the histograms `names` has any samples.
 void ExpectEmptyHistograms(const base::HistogramTester& histogram_tester,
-                           const std::vector<base::StringPiece>& names) {
-  for (base::StringPiece name : names)
+                           const std::vector<std::string_view>& names) {
+  for (std::string_view name : names) {
     histogram_tester.ExpectTotalCount(name, 0);
+  }
 }
 
 void AddressProfileSaveManagerTest::TestImportScenario(
@@ -356,9 +359,9 @@ void AddressProfileSaveManagerTest::VerifyUMAMetricsCollection(
   // - The `edits` made by user.
   // - The `num_of_edits`.
   struct ImportHistogramNames {
-    base::StringPiece decision;
-    base::StringPiece edits;
-    base::StringPiece num_of_edits;
+    std::string_view decision;
+    std::string_view edits;
+    std::string_view num_of_edits;
     void ExpectAllEmpty(const base::HistogramTester& tester) const {
       ExpectEmptyHistograms(tester, {decision, edits, num_of_edits});
     }

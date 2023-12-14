@@ -4,8 +4,6 @@
 
 #include "components/autofill/core/browser/metrics/fallback_autocomplete_unrecognized_metrics.h"
 
-#include <string_view>
-
 #include "base/check_op.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/strcat.h"

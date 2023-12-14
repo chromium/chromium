@@ -8,7 +8,6 @@
 
 #include <algorithm>
 #include <numeric>
-#include <string_view>
 #include <vector>
 
 #include "base/command_line.h"
@@ -116,7 +115,7 @@ void SetCheckStatus(FormFieldData* form_field_data,
 }
 
 std::vector<std::string> LowercaseAndTokenizeAttributeString(
-    base::StringPiece attribute) {
+    std::string_view attribute) {
   return base::SplitString(base::ToLowerASCII(attribute),
                            base::kWhitespaceASCII, base::TRIM_WHITESPACE,
                            base::SPLIT_WANT_NONEMPTY);

@@ -7,6 +7,7 @@
 
 #include <memory>
 #include <string>
+#include <string_view>
 #include <utility>
 #include <vector>
 
@@ -211,7 +212,7 @@ class FormField {
                                 FieldCandidatesMap& field_candidates);
 
   // Returns true iff |type| matches |match_type|.
-  static bool MatchesFormControlType(base::StringPiece type,
+  static bool MatchesFormControlType(std::string_view type,
                                      DenseSet<MatchFieldType> match_type);
 
  protected:

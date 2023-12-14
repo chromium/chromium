@@ -14,6 +14,7 @@
 #include "base/containers/flat_set.h"
 #include "base/logging.h"
 #include "base/ranges/ranges.h"
+#include "base/strings/string_piece.h"
 #include "base/strings/utf_string_conversions.h"
 #include "components/autofill/core/browser/form_parsing/buildflags.h"
 #include "components/autofill/core/browser/form_parsing/regex_patterns_inl.h"
@@ -61,7 +62,7 @@ MatchPatternRefTestApi test_api(MatchPatternRef p) {
 auto Matches(base::StringPiece16 regex) {
   icu::RegexPattern regex_pattern = *CompileRegex(regex);
   return ::testing::Truly(
-      [regex_pattern = std::move(regex_pattern)](base::StringPiece actual) {
+      [regex_pattern = std::move(regex_pattern)](std::string_view actual) {
         return MatchesRegex(base::UTF8ToUTF16(actual), regex_pattern);
       });
 }

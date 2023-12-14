@@ -6,9 +6,6 @@
 
 #include <algorithm>
 #include <set>
-#include <string_view>
-#include <utility>
-#include <vector>
 
 #include "base/check.h"
 #include "base/check_deref.h"

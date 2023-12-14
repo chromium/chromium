@@ -11,6 +11,7 @@
 #include <memory>
 #include <set>
 #include <string>
+#include <string_view>
 #include <utility>
 #include <vector>
 
@@ -114,7 +115,7 @@ class FormStructure {
   std::vector<AutofillUploadContents> EncodeUploadRequest(
       const ServerFieldTypeSet& available_field_types,
       bool form_was_autofilled,
-      const base::StringPiece& login_form_signature,
+      const std::string_view& login_form_signature,
       bool observed_submission) const;
 
   // Encodes the proto |query| request for the list of |forms| and their fields
@@ -130,7 +131,7 @@ class FormStructure {
   // Parses `payload` as AutofillQueryResponse proto and calls
   // ProcessQueryResponse().
   static void ParseApiQueryResponse(
-      base::StringPiece payload,
+      std::string_view payload,
       const std::vector<FormStructure*>& forms,
       const std::vector<FormSignature>& queried_form_signatures,
       AutofillMetrics::FormInteractionsUkmLogger*,

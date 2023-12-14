@@ -4,6 +4,7 @@
 
 #include "components/autofill/content/renderer/form_autofill_issues.h"
 
+#include <string_view>
 #include <vector>
 
 #include "base/check_op.h"
@@ -43,15 +44,15 @@ namespace {
 
 constexpr size_t kMaxNumberOfDevtoolsIssuesEmitted = 100;
 
-constexpr base::StringPiece kFor = "for";
-constexpr base::StringPiece kAriaLabelledBy = "aria-labelledby";
-constexpr base::StringPiece kName = "name";
-constexpr base::StringPiece kId = "id";
-constexpr base::StringPiece kLabel = "label";
-constexpr base::StringPiece kAutocomplete = "autocomplete";
+constexpr std::string_view kFor = "for";
+constexpr std::string_view kAriaLabelledBy = "aria-labelledby";
+constexpr std::string_view kName = "name";
+constexpr std::string_view kId = "id";
+constexpr std::string_view kLabel = "label";
+constexpr std::string_view kAutocomplete = "autocomplete";
 
 // Wrapper for frequently used WebString constants.
-template <const base::StringPiece& string>
+template <const std::string_view& string>
 const WebString& GetWebString() {
   static const base::NoDestructor<WebString> web_string(
       WebString::FromUTF8(string));

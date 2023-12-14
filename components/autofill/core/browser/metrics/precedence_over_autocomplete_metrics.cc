@@ -4,6 +4,8 @@
 
 #include "components/autofill/core/browser/metrics/precedence_over_autocomplete_metrics.h"
 
+#include <string_view>
+
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/strcat.h"
 #include "components/autofill/core/browser/field_type_utils.h"
@@ -41,17 +43,17 @@ void LogHtmlTypesForAutofilledFieldWithStreetNameOrHouseNumberPredictions(
       break;
   }
   auto emit_histogram = [&](const ServerFieldType current_field_type,
-                            const base::StringPiece current_prediction_type) {
+                            const std::string_view current_prediction_type) {
     if (!IsStreetNameOrHouseNumberType(current_field_type)) {
       return;
     }
-    base::StringPiece current_field_type_str =
+    std::string_view current_field_type_str =
         current_field_type == ADDRESS_HOME_STREET_NAME ? "StreetName"
                                                        : "HouseNumber";
-    for (auto field_type : {base::StringPiece("StreetNameOrHouseNumber"),
+    for (auto field_type : {std::string_view("StreetNameOrHouseNumber"),
                             current_field_type_str}) {
       for (auto prediction_type :
-           {base::StringPiece("HeuristicOrServer"), current_prediction_type}) {
+           {std::string_view("HeuristicOrServer"), current_prediction_type}) {
         base::UmaHistogramEnumeration(
             base::StrCat({"Autofill.AutocompleteAttributeForFieldsWith.",
                           field_type, ".", prediction_type, ".Prediction"}),

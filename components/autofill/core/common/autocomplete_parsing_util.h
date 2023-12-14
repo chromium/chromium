@@ -6,8 +6,8 @@
 #define COMPONENTS_AUTOFILL_CORE_COMMON_AUTOCOMPLETE_PARSING_UTIL_H_
 
 #include <string>
+#include <string_view>
 
-#include "base/strings/string_piece.h"
 #include "components/autofill/core/common/html_field_types.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
@@ -42,17 +42,17 @@ bool operator!=(const AutocompleteParsingResult& a,
                 const AutocompleteParsingResult& b);
 
 absl::optional<AutocompleteParsingResult> ParseAutocompleteAttribute(
-    base::StringPiece autocomplete_attribute);
+    std::string_view autocomplete_attribute);
 
 // Checks if `autocomplete_attribute` could not be recognized but was
 // nonetheless found as well intended. This will therefore return true for
 // values such as "first-name", "last-name" and "password".
 bool IsAutocompleteTypeWrongButWellIntended(
-    base::StringPiece autocomplete_attribute);
+    std::string_view autocomplete_attribute);
 
 // Checks if `autocomplete` is one of "on", "off" or "false". These values are
 // currently ignored by Autofill.
-bool ShouldIgnoreAutocompleteAttribute(base::StringPiece autocomplete);
+bool ShouldIgnoreAutocompleteAttribute(std::string_view autocomplete);
 
 // Parses `value` as an HTML field type and converts it to the corresponding
 // HtmlFieldType, if it is supposed by Autofill.

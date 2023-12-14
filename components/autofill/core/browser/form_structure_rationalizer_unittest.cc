@@ -4,11 +4,11 @@
 
 #include "components/autofill/core/browser/form_structure_rationalizer.h"
 
+#include <string_view>
 #include <tuple>
 #include <utility>
 
 #include "base/base64.h"
-#include "base/strings/string_piece.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/scoped_feature_list.h"
 #include "components/autofill/core/browser/autofill_test_utils.h"
@@ -43,15 +43,15 @@ std::string SerializeAndEncode(const AutofillQueryResponse& response) {
 // The key information from which we build FormFieldData objects and an
 // AutofillQueryResponse for tests.
 struct FieldTemplate {
-  base::StringPiece label;
-  base::StringPiece name;
+  std::string_view label;
+  std::string_view name;
   // This is a field type we assume the autofill server would provide for
   // the given field.
   // TODO(crbug.com/1441057) Rename field_type to server_type to clarify what
   // it represents. Also change to server_type_is_override below.
   ServerFieldType field_type = UNKNOWN_TYPE;
   // Section name of a field.
-  base::StringPiece section = "";
+  std::string_view section = "";
   FormControlType form_control_type = FormControlType::kInputText;
   absl::optional<AutocompleteParsingResult> parsed_autocomplete = absl::nullopt;
   bool is_focusable = true;

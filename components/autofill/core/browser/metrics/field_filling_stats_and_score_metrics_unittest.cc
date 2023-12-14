@@ -4,6 +4,8 @@
 
 #include "components/autofill/core/browser/metrics/field_filling_stats_and_score_metrics.h"
 
+#include <string_view>
+
 #include "base/test/metrics/histogram_tester.h"
 #include "components/autofill/core/browser/autofill_granular_filling_utils.h"
 #include "components/autofill/core/browser/autofill_test_utils.h"
@@ -69,7 +71,7 @@ std::vector<test::FieldDescription> GetTestFormDataFields(
 // `histogram_name_suffix`. The histogram bucket count defaults to 1.
 void ExpectFieldFillingStatsUniqueSample(
     const base::HistogramTester& histogram_tester,
-    base::StringPiece histogram_name_suffix,
+    std::string_view histogram_name_suffix,
     int sample) {
   histogram_tester.ExpectUniqueSample(
       base::StrCat({"Autofill.FieldFillingStats.", histogram_name_suffix}),

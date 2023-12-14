@@ -8,6 +8,7 @@
 
 #include <list>
 #include <memory>
+#include <string_view>
 #include <utility>
 #include <vector>
 
@@ -154,7 +155,7 @@ bool GetAutofillPageResourceQueryRequestFromRequest(
   return true;
 }
 
-bool DeserializeAutofillPageQueryRequest(base::StringPiece serialized_content,
+bool DeserializeAutofillPageQueryRequest(std::string_view serialized_content,
                                          AutofillPageQueryRequest* request) {
   std::string decoded_content;
   if (!base::Base64UrlDecode(serialized_content,
@@ -181,7 +182,7 @@ class AutofillCrowdsourcingManagerWithCustomPayloadSize
   ~AutofillCrowdsourcingManagerWithCustomPayloadSize() override = default;
 
  protected:
-  size_t GetPayloadLength(base::StringPiece payload) const override {
+  size_t GetPayloadLength(std::string_view payload) const override {
     return length_;
   }
 

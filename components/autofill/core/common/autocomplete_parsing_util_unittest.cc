@@ -16,7 +16,7 @@ namespace autofill {
 // Tests that parsing a field with autocomplete=`autocomplete` and
 // maxlength=`max_length` results in `expected_result`.
 struct AutocompleteAttributeTestcase {
-  base::StringPiece autocomplete;
+  std::string_view autocomplete;
   absl::optional<AutocompleteParsingResult> expected_result;
 };
 

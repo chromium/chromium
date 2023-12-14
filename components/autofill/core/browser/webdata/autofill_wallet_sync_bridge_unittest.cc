@@ -7,6 +7,7 @@
 #include <stddef.h>
 
 #include <memory>
+#include <string_view>
 #include <utility>
 
 #include "base/files/scoped_temp_dir.h"
@@ -139,7 +140,7 @@ std::string WalletBankAccountDetailsAsDebugString(
 
 std::string WalletPaymentInstrumentSupportedRailAsDebugString(
     const sync_pb::PaymentInstrument payment_instrument) {
-  std::vector<base::StringPiece> supported_rails;
+  std::vector<std::string_view> supported_rails;
   for (int supported_rail : payment_instrument.supported_rails()) {
     supported_rails.push_back(
         sync_pb::PaymentInstrument::SupportedRail_Name(supported_rail));

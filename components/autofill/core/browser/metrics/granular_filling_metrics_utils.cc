@@ -33,7 +33,7 @@ AutofillFillingMethod GetLastFieldAutofillFillingMethod(
 
 }  // namespace
 
-base::StringPiece AutofillFillingMethodToStringPiece(
+std::string_view AutofillFillingMethodToStringView(
     AutofillFillingMethod filling_method) {
   switch (filling_method) {
     case AutofillFillingMethod::kFullForm:

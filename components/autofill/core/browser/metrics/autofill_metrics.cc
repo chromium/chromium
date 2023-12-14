@@ -15,7 +15,6 @@
 #include "base/metrics/histogram_macros.h"
 #include "base/metrics/user_metrics.h"
 #include "base/strings/strcat.h"
-#include "base/strings/string_piece.h"
 #include "base/time/time.h"
 #include "base/types/cxx23_to_underlying.h"
 #include "components/autofill/core/browser/autofill_data_util.h"
@@ -57,7 +56,7 @@ using autofill_metrics::FormGroupFillingStats;
 // Translates structured name types into simple names that are used for
 // naming histograms.
 constexpr auto kStructuredNameTypeToNameMap =
-    base::MakeFixedFlatMap<ServerFieldType, base::StringPiece>(
+    base::MakeFixedFlatMap<ServerFieldType, std::string_view>(
         {{NAME_FULL, "Full"},
          {NAME_FIRST, "First"},
          {NAME_MIDDLE, "Middle"},
@@ -68,7 +67,7 @@ constexpr auto kStructuredNameTypeToNameMap =
 // Translates structured address types into simple names that are used for
 // naming histograms.
 constexpr auto kStructuredAddressTypeToNameMap =
-    base::MakeFixedFlatMap<ServerFieldType, base::StringPiece>(
+    base::MakeFixedFlatMap<ServerFieldType, std::string_view>(
         {{ADDRESS_HOME_STREET_ADDRESS, "StreetAddress"},
          {ADDRESS_HOME_STREET_NAME, "StreetName"},
          {ADDRESS_HOME_HOUSE_NUMBER, "HouseNumber"},
@@ -1693,7 +1692,7 @@ void AutofillMetrics::LogNumberOfEditedAutofilledFields(
 
 void AutofillMetrics::LogSectioningMetrics(
     const base::flat_map<Section, size_t>& fields_per_section) {
-  constexpr base::StringPiece kBaseHistogramName = "Autofill.Sectioning.";
+  constexpr std::string_view kBaseHistogramName = "Autofill.Sectioning.";
   UMA_HISTOGRAM_COUNTS_100(
       base::StrCat({kBaseHistogramName, "NumberOfSections"}),
       fields_per_section.size());
@@ -1887,7 +1886,7 @@ void AutofillMetrics::LogCreditCardSeamlessnessAtFillTime(
     return CreditCardSeamlessness(autofilled_types);
   };
 
-  auto RecordUma = [](base::StringPiece infix, CreditCardSeamlessness s) {
+  auto RecordUma = [](std::string_view infix, CreditCardSeamlessness s) {
     std::string prefix = base::StrCat({"Autofill.CreditCard.Seamless", infix});
     base::UmaHistogramEnumeration(prefix, s.QualitativeMetric());
     base::UmaHistogramExactLinear(prefix + ".Bitmask", s.BitmaskMetric(),
@@ -2906,7 +2905,7 @@ void AutofillMetrics::LogFieldParsingPageTranslationStatusMetric(bool metric) {
 
 // static
 void AutofillMetrics::LogFieldParsingTranslatedFormLanguageMetric(
-    base::StringPiece locale) {
+    std::string_view locale) {
   base::UmaHistogramSparse(
       "Autofill.ParsedFieldTypesUsingTranslatedPageLanguage",
       language::LanguageUsageMetrics::ToLanguageCodeHash(locale));
@@ -2977,7 +2976,7 @@ void AutofillMetrics::LogPhoneNumberGrammarMatched(int grammar_id,
 
 void AutofillMetrics::LogVerificationStatusOfNameTokensOnProfileUsage(
     const AutofillProfile& profile) {
-  constexpr base::StringPiece base_histogram_name =
+  constexpr std::string_view base_histogram_name =
       "Autofill.NameTokenVerificationStatusAtProfileUsage.";
 
   for (const auto& [type, name] : kStructuredNameTypeToNameMap) {
@@ -2996,7 +2995,7 @@ void AutofillMetrics::LogVerificationStatusOfNameTokensOnProfileUsage(
 
 void AutofillMetrics::LogVerificationStatusOfAddressTokensOnProfileUsage(
     const AutofillProfile& profile) {
-  constexpr base::StringPiece base_histogram_name =
+  constexpr std::string_view base_histogram_name =
       "Autofill.AddressTokenVerificationStatusAtProfileUsage.";
 
   for (const auto& [type, name] : kStructuredAddressTypeToNameMap) {

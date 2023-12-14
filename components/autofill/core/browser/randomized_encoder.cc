@@ -79,7 +79,7 @@ const RandomizedEncoder::EncodingInfo* GetEncodingInfo(
 // Get the |i|-th bit of |s| where |i| counts up from the 0-bit of the first
 // character in |s|. It is expected that the caller guarantees that |i| is a
 // valid bit-offset into |s|
-inline uint8_t GetBit(base::StringPiece s, size_t i) {
+inline uint8_t GetBit(std::string_view s, size_t i) {
   DCHECK_LT(i / kBitsPerByte, s.length());
   return static_cast<bool>((s[i / kBitsPerByte]) & (1 << (i % kBitsPerByte)));
 }
@@ -101,11 +101,11 @@ inline void SetBit(size_t i, uint8_t bit_value, std::string* s) {
 // Returns a pseudo-random value of length |encoding_length_in_bytes| that is
 // derived from |secret|, |purpose|, |form_signature|, |field_signature| and
 // |data_type|.
-std::string GetPseudoRandomBits(base::StringPiece secret,
-                                base::StringPiece purpose,
+std::string GetPseudoRandomBits(std::string_view secret,
+                                std::string_view purpose,
                                 FormSignature form_signature,
                                 FieldSignature field_signature,
-                                base::StringPiece data_type,
+                                std::string_view data_type,
                                 int encoding_length_in_bytes) {
   // The purpose and data_type strings are expect to be small semantic
   // identifiers: "noise", "coins", "css_class", "html-name", "html_id", etc.
@@ -214,8 +214,8 @@ RandomizedEncoder::RandomizedEncoder(
 
 std::string RandomizedEncoder::Encode(FormSignature form_signature,
                                       FieldSignature field_signature,
-                                      base::StringPiece data_type,
-                                      base::StringPiece data_value) const {
+                                      std::string_view data_type,
+                                      std::string_view data_value) const {
   if (!encoding_info_) {
     NOTREACHED();
     return std::string();
@@ -289,7 +289,7 @@ std::string RandomizedEncoder::Encode(FormSignature form_signature,
 std::string RandomizedEncoder::EncodeForTesting(
     FormSignature form_signature,
     FieldSignature field_signature,
-    base::StringPiece data_type,
+    std::string_view data_type,
     base::StringPiece16 data_value) const {
   return Encode(form_signature, field_signature, data_type,
                 base::UTF16ToUTF8(data_value));
@@ -297,7 +297,7 @@ std::string RandomizedEncoder::EncodeForTesting(
 
 std::string RandomizedEncoder::GetCoins(FormSignature form_signature,
                                         FieldSignature field_signature,
-                                        base::StringPiece data_type,
+                                        std::string_view data_type,
                                         int encoding_length_in_bytes) const {
   return GetPseudoRandomBits(seed_, "coins", form_signature, field_signature,
                              data_type, encoding_length_in_bytes);
@@ -306,14 +306,14 @@ std::string RandomizedEncoder::GetCoins(FormSignature form_signature,
 // Get the pseudo-random string to use at the noise bit-field.
 std::string RandomizedEncoder::GetNoise(FormSignature form_signature,
                                         FieldSignature field_signature,
-                                        base::StringPiece data_type,
+                                        std::string_view data_type,
                                         int encoding_length_in_bytes) const {
   return GetPseudoRandomBits(seed_, "noise", form_signature, field_signature,
                              data_type, encoding_length_in_bytes);
 }
 
-int RandomizedEncoder::GetChunkCount(base::StringPiece data_value,
-                                     base::StringPiece data_type) const {
+int RandomizedEncoder::GetChunkCount(std::string_view data_value,
+                                     std::string_view data_type) const {
   if (data_type == RandomizedEncoder::FORM_URL) {
     // ceil(data_value.length / kEncodedChunkLengthInBytes).
     int chunks = (data_value.length() + kEncodedChunkLengthInBytes - 1) /

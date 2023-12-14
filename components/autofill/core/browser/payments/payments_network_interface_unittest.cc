@@ -4,6 +4,7 @@
 
 #include <set>
 #include <string>
+#include <string_view>
 #include <utility>
 #include <vector>
 
@@ -11,7 +12,6 @@
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
 #include "base/strings/string_number_conversions.h"
-#include "base/strings/string_piece.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
@@ -594,13 +594,13 @@ class PaymentsNetworkInterfaceTest : public testing::Test {
     return profiles;
   }
 
-  AutofillProfile BuildProfile(base::StringPiece first_name,
-                               base::StringPiece last_name,
-                               base::StringPiece address_line,
-                               base::StringPiece city,
-                               base::StringPiece state,
-                               base::StringPiece zip,
-                               base::StringPiece phone_number) {
+  AutofillProfile BuildProfile(std::string_view first_name,
+                               std::string_view last_name,
+                               std::string_view address_line,
+                               std::string_view city,
+                               std::string_view state,
+                               std::string_view zip,
+                               std::string_view phone_number) {
     AutofillProfile profile(i18n_model_definition::kLegacyHierarchyCountryCode);
 
     profile.SetInfo(NAME_FIRST, base::ASCIIToUTF16(first_name), "en-US");

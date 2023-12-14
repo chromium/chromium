@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include <memory>
+#include <string_view>
 #include <utility>
 
 #include "base/functional/bind.h"
@@ -173,7 +174,7 @@ class ContentAutofillDriverFactoryTest
     content::RenderViewHostTestHarness::TearDown();
   }
 
-  void NavigateMainFrame(base::StringPiece url) {
+  void NavigateMainFrame(std::string_view url) {
     content::NavigationSimulator::CreateBrowserInitiated(GURL(url),
                                                          web_contents())
         ->Commit();
@@ -202,7 +203,7 @@ TEST_F(ContentAutofillDriverFactoryTest, MainDriver) {
 class ContentAutofillDriverFactoryTest_WithTwoFrames
     : public ContentAutofillDriverFactoryTest {
  public:
-  void NavigateChildFrame(base::StringPiece url) {
+  void NavigateChildFrame(std::string_view url) {
     CHECK(main_rfh());
     if (!child_rfh()) {
       child_rfh_id_ = content::RenderFrameHostTester::For(main_rfh())

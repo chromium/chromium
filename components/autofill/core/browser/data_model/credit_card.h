@@ -11,7 +11,6 @@
 #include <utility>
 
 #include "base/gtest_prod_util.h"
-#include "base/strings/string_piece.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "components/autofill/core/browser/data_model/autofill_data_model.h"
@@ -181,7 +180,7 @@ class CreditCard : public AutofillDataModel {
 
   // Network issuer strings are defined at the bottom of this file, e.g.
   // kVisaCard.
-  void SetNetworkForMaskedCard(base::StringPiece network);
+  void SetNetworkForMaskedCard(std::string_view network);
 
   // AutofillDataModel:
   AutofillMetadata GetMetadata() const override;

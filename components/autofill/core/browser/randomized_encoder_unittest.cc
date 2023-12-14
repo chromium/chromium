@@ -2,9 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <string_view>
+
 #include "components/autofill/core/browser/randomized_encoder.h"
 #include "base/numerics/safe_conversions.h"
-#include "base/strings/string_piece.h"
 #include "base/strings/stringprintf.h"
 #include "components/autofill/core/common/signatures.h"
 #include "components/unified_consent/pref_names.h"
@@ -21,7 +22,7 @@ constexpr size_t kEncodedChunkLengthInBits =
 // Get the |i|-th bit of |s| where |i| counts up from the 0-bit of the first
 // character in |s|. It is expected that the caller guarantees that |i| is a
 // valid bit-offset into |s|
-bool GetBit(base::StringPiece s, size_t i) {
+bool GetBit(std::string_view s, size_t i) {
   DCHECK_LT(i / kBitsPerByte, s.length());
   return static_cast<bool>((s[i / kBitsPerByte]) & (1 << (i % kBitsPerByte)));
 }
@@ -29,9 +30,9 @@ bool GetBit(base::StringPiece s, size_t i) {
 // This is a reference encoder implementation. This implementation performs the
 // all bits encoding one full byte at a time and then packs the selected bits
 // into a final output buffer.
-std::string ReferenceEncodeImpl(base::StringPiece coins,
-                                base::StringPiece noise,
-                                base::StringPiece value,
+std::string ReferenceEncodeImpl(std::string_view coins,
+                                std::string_view noise,
+                                std::string_view value,
                                 size_t bit_offset,
                                 size_t bit_stride) {
   // Encode all of the bits.
@@ -282,7 +283,7 @@ TEST(RandomizedEncoderTest, GetChunkCount) {
   TestRandomizedEncoder encoder(
       "secret", autofill::AutofillRandomizedValue_EncodingType_ALL_BITS, true);
 
-  base::StringPiece url_type = TestRandomizedEncoder::FORM_URL;
+  std::string_view url_type = TestRandomizedEncoder::FORM_URL;
   EXPECT_EQ(encoder.GetChunkCount("", url_type), 0);
   EXPECT_EQ(encoder.GetChunkCount("1", url_type), 1);
   EXPECT_EQ(encoder.GetChunkCount(std::string(33, '-'), url_type), 1);
@@ -292,7 +293,7 @@ TEST(RandomizedEncoderTest, GetChunkCount) {
   EXPECT_EQ(encoder.GetChunkCount(std::string(513, '-'), url_type), 8);
   EXPECT_EQ(encoder.GetChunkCount(std::string(1000, '-'), url_type), 8);
 
-  base::StringPiece name_type = TestRandomizedEncoder::FORM_NAME;
+  std::string_view name_type = TestRandomizedEncoder::FORM_NAME;
   EXPECT_EQ(encoder.GetChunkCount("", name_type), 1);
   EXPECT_EQ(encoder.GetChunkCount("1", name_type), 1);
   EXPECT_EQ(encoder.GetChunkCount(std::string(33, '-'), name_type), 1);
@@ -301,13 +302,13 @@ TEST(RandomizedEncoderTest, GetChunkCount) {
 }
 
 TEST_P(RandomizedDecoderTest, Decode) {
-  static const base::StringPiece prefixes[] = {
+  static const std::string_view prefixes[] = {
       "This is the common prefix to encode and recover",
 
       "This is the longer common prefix to encode and recover to test input "
       "|data_type==FORM_URL| values can be up to 8 * 64 bytes.",
   };
-  for (base::StringPiece common_prefix : prefixes) {
+  for (std::string_view common_prefix : prefixes) {
     static const autofill::FormSignature form_signature(0x8765432187654321);
     static const autofill::FieldSignature field_signature(0xDEADBEEF);
     static const std::string data_type = TestRandomizedEncoder::FORM_URL;

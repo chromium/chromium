@@ -13,6 +13,7 @@
 #include <optional>
 #include <set>
 #include <string>
+#include <string_view>
 #include <tuple>
 #include <unordered_map>
 #include <utility>
@@ -36,7 +37,6 @@
 #include "base/path_service.h"
 #include "base/ranges/algorithm.h"
 #include "base/strings/string_number_conversions.h"
-#include "base/strings/string_piece.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
@@ -1795,7 +1795,7 @@ void BrowserAutofillManager::MaybeTriggerRefillForExpirationDate(
   // dates: If we filled the expiration date in a format "05/2023" and the
   // website turned it into "05 / 20" (i.e. it broke the year by cutting the
   // last two digits instead of stripping the first two digits).
-  constexpr size_t kSupportedLength = base::StringPiece("MM/YYYY").size();
+  constexpr size_t kSupportedLength = std::string_view("MM/YYYY").size();
   if (old_value.length() != kSupportedLength)
     return;
   if (old_value == field.value)

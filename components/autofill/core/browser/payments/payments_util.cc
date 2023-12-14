@@ -4,8 +4,9 @@
 
 #include "components/autofill/core/browser/payments/payments_util.h"
 
+#include <string_view>
+
 #include "base/strings/string_number_conversions.h"
-#include "base/strings/string_piece.h"
 #include "components/autofill/core/browser/payments/payments_customer_data.h"
 #include "components/autofill/core/browser/personal_data_manager.h"
 
@@ -24,7 +25,7 @@ int64_t GetBillingCustomerId(PersonalDataManager* personal_data_manager) {
       personal_data_manager->GetPaymentsCustomerData();
   if (customer_data && !customer_data->customer_id.empty()) {
     int64_t billing_customer_id = 0;
-    if (base::StringToInt64(base::StringPiece(customer_data->customer_id),
+    if (base::StringToInt64(std::string_view(customer_data->customer_id),
                             &billing_customer_id)) {
       return billing_customer_id;
     }

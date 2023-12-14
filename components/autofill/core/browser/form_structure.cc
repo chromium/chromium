@@ -184,8 +184,8 @@ void EncodePasswordAttributesVote(
 void EncodeRandomizedValue(const RandomizedEncoder& encoder,
                            FormSignature form_signature,
                            FieldSignature field_signature,
-                           base::StringPiece data_type,
-                           base::StringPiece data_value,
+                           std::string_view data_type,
+                           std::string_view data_value,
                            bool include_checksum,
                            AutofillRandomizedValue* output) {
   DCHECK(output);
@@ -201,7 +201,7 @@ void EncodeRandomizedValue(const RandomizedEncoder& encoder,
 void EncodeRandomizedValue(const RandomizedEncoder& encoder,
                            FormSignature form_signature,
                            FieldSignature field_signature,
-                           base::StringPiece data_type,
+                           std::string_view data_type,
                            base::StringPiece16 data_value,
                            bool include_checksum,
                            AutofillRandomizedValue* output) {
@@ -540,7 +540,7 @@ void FormStructure::DetermineHeuristicTypes(
 std::vector<AutofillUploadContents> FormStructure::EncodeUploadRequest(
     const ServerFieldTypeSet& available_field_types,
     bool form_was_autofilled,
-    const base::StringPiece& login_form_signature,
+    const std::string_view& login_form_signature,
     bool observed_submission) const {
   DCHECK_EQ(FirstNonCapturedType(*this, available_field_types),
             MAX_VALID_FIELD_TYPE);
@@ -682,7 +682,7 @@ bool FormStructure::EncodeQueryRequest(
 
 // static
 void FormStructure::ParseApiQueryResponse(
-    base::StringPiece payload,
+    std::string_view payload,
     const std::vector<FormStructure*>& forms,
     const std::vector<FormSignature>& queried_form_signatures,
     AutofillMetrics::FormInteractionsUkmLogger* form_interactions_ukm_logger,

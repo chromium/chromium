@@ -5,6 +5,7 @@
 #include "components/autofill/core/browser/manual_testing_import.h"
 
 #include <string>
+#include <string_view>
 
 #include "base/check.h"
 #include "base/command_line.h"
@@ -14,7 +15,6 @@
 #include "base/functional/bind.h"
 #include "base/json/json_reader.h"
 #include "base/location.h"
-#include "base/strings/string_piece.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
@@ -39,15 +39,15 @@ struct AutofillProfilesAndCreditCards {
   absl::optional<std::vector<CreditCard>> credit_cards;
 };
 
-constexpr base::StringPiece kKeyProfiles = "profiles";
-constexpr base::StringPiece kKeyCreditCards = "credit-cards";
-constexpr base::StringPiece kKeySource = "source";
-constexpr base::StringPiece kKeyNickname = "nickname";
+constexpr std::string_view kKeyProfiles = "profiles";
+constexpr std::string_view kKeyCreditCards = "credit-cards";
+constexpr std::string_view kKeySource = "source";
+constexpr std::string_view kKeyNickname = "nickname";
 constexpr auto kSourceMapping =
-    base::MakeFixedFlatMap<base::StringPiece, AutofillProfile::Source>(
+    base::MakeFixedFlatMap<std::string_view, AutofillProfile::Source>(
         {{"account", AutofillProfile::Source::kAccount},
          {"localOrSyncable", AutofillProfile::Source::kLocalOrSyncable}});
-constexpr base::StringPiece kKeyInitialCreatorId = "initial_creator_id";
+constexpr std::string_view kKeyInitialCreatorId = "initial_creator_id";
 
 // Checks if the `profile` is changed by `FinalizeAfterImport()`. See
 // documentation of `AutofillProfilesFromJSON()` for a rationale.

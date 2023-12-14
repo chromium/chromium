@@ -58,7 +58,7 @@ void AppendChildToLastNode(std::vector<base::Value::Dict>* buffer,
 // If the last child of the element in buffer is a text node, append |text| to
 // it and return true (successful coalescing). Otherwise return false.
 bool TryCoalesceString(std::vector<base::Value::Dict>* buffer,
-                       base::StringPiece text) {
+                       std::string_view text) {
   if (buffer->empty())
     return false;
   base::Value::Dict& parent = buffer->back();
@@ -162,7 +162,7 @@ LogBuffer& operator<<(LogBuffer& buf, Br&& tag) {
   return buf << Tag{"br"} << CTag{};
 }
 
-LogBuffer& operator<<(LogBuffer& buf, base::StringPiece text) {
+LogBuffer& operator<<(LogBuffer& buf, std::string_view text) {
   if (!buf.active())
     return buf;
 
@@ -257,7 +257,7 @@ LogBuffer HighlightValueInternal(T haystack, T needle) {
 }
 }  // namespace
 
-LogBuffer HighlightValue(base::StringPiece haystack, base::StringPiece needle) {
+LogBuffer HighlightValue(std::string_view haystack, std::string_view needle) {
   return HighlightValueInternal(haystack, needle);
 }
 

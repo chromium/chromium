@@ -10,6 +10,7 @@
 #include <memory>
 #include <set>
 #include <string>
+#include <string_view>
 #include <unordered_map>
 #include <unordered_set>
 #include <vector>
@@ -283,7 +284,7 @@ class PersonalDataManager : public KeyedService,
   // Users based in unsupported countries and profiles with a country value set
   // to an unsupported country are not eligible for account storage. This
   // function determines if the `country_code` is eligible.
-  bool IsCountryEligibleForAccountStorage(base::StringPiece country_code) const;
+  bool IsCountryEligibleForAccountStorage(std::string_view country_code) const;
 
   // Migrates a given kLocalOrSyncable `profile` to source kAccount. This has
   // multiple side-effects for the profile:

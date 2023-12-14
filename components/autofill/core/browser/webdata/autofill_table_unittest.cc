@@ -8,6 +8,7 @@
 #include <memory>
 #include <set>
 #include <string>
+#include <string_view>
 #include <utility>
 
 #include "base/command_line.h"
@@ -167,8 +168,8 @@ class AutofillTableTest : public testing::Test {
 
   // Get date_modifed `column` of `table_name` with specific `instrument_id` or
   // `guid`.
-  time_t GetDateModified(base::StringPiece table_name,
-                         base::StringPiece column,
+  time_t GetDateModified(std::string_view table_name,
+                         std::string_view column,
                          absl::variant<std::string, int64_t> id) {
     sql::Statement s(db_->GetSQLConnection()->GetUniqueStatement(
         base::StrCat({"SELECT ", column, " FROM ", table_name, " WHERE ",
@@ -218,7 +219,7 @@ class AutofillTableProfileTest
 
   // Depending on the `profile_source()`, the AutofillProfiles are stored in a
   // different master table.
-  base::StringPiece GetProfileTable() const {
+  std::string_view GetProfileTable() const {
     return profile_source() == AutofillProfile::Source::kLocalOrSyncable
                ? "local_addresses"
                : "contact_info";

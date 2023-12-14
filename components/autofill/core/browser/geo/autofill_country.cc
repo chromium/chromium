@@ -5,14 +5,13 @@
 #include "components/autofill/core/browser/geo/autofill_country.h"
 
 #include <stddef.h>
+
 #include <array>
 
 #include "base/containers/contains.h"
 #include "base/containers/fixed_flat_map.h"
 #include "base/containers/fixed_flat_set.h"
-
 #include "base/feature_list.h"
-#include "base/strings/string_piece.h"
 #include "base/strings/string_util.h"
 #include "components/autofill/core/browser/geo/address_i18n.h"
 #include "components/autofill/core/browser/geo/country_data.h"
@@ -53,7 +52,7 @@ constexpr auto kRequiredFieldMapping =
 // Set of countries where the current autofill country-specific address import
 // requirements differ from the updated ones.
 constexpr auto kAddressRequirementExceptionCountries =
-    base::MakeFixedFlatSet<base::StringPiece>(
+    base::MakeFixedFlatSet<std::string_view>(
         {"AF", "AI", "AL", "AM", "AR", "AZ", "BA", "BB", "BD", "BG", "BH", "BM",
          "BN", "BS", "BT", "CC", "CL", "CO", "CR", "CV", "CX", "CY", "DO", "DZ",
          "EC", "EH", "ET", "FO", "GE", "GN", "GT", "GW", "HM", "HR", "HT", "ID",

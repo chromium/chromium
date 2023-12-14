@@ -9,12 +9,12 @@
 #include <list>
 #include <memory>
 #include <string>
+#include <string_view>
 #include <tuple>
 #include <vector>
 
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
-#include "base/strings/string_piece.h"
 #include "base/time/time.h"
 #include "components/autofill/core/browser/autofill_type.h"
 #include "components/autofill/core/browser/form_structure.h"
@@ -154,7 +154,7 @@ class AutofillCrowdsourcingManager {
   // Gets the length of the payload from request data. Used to simulate
   // different payload sizes when testing without the need for data. Do not use
   // this when the length is needed to read/write a buffer.
-  virtual size_t GetPayloadLength(base::StringPiece payload) const;
+  virtual size_t GetPayloadLength(std::string_view payload) const;
 
  private:
   friend class AutofillCrowdsourcingManagerTestApi;

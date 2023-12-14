@@ -9,6 +9,7 @@
 #include <memory>
 #include <set>
 #include <string>
+#include <string_view>
 #include <utility>
 #include <vector>
 
@@ -16,7 +17,6 @@
 #include "base/containers/flat_set.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/raw_ref.h"
-#include "base/strings/string_piece.h"
 #include "base/time/time.h"
 #include "components/autofill/core/browser/autofill_client.h"
 #include "components/autofill/core/browser/autofill_progress_dialog_type.h"
@@ -1263,7 +1263,7 @@ class AutofillMetrics {
   static void LogFieldParsingPageTranslationStatusMetric(bool metric);
 
   // Records the visible page language upon form submission.
-  static void LogFieldParsingTranslatedFormLanguageMetric(base::StringPiece);
+  static void LogFieldParsingTranslatedFormLanguageMetric(std::string_view);
 
   static const char* GetMetricsSyncStateSuffix(PaymentsSigninState sync_state);
 

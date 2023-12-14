@@ -5,9 +5,6 @@
 #include "components/autofill/core/browser/data_model/autofill_structured_address_utils.h"
 
 #include <algorithm>
-#include <map>
-#include <string>
-#include <string_view>
 #include <utility>
 
 #include "base/check.h"
@@ -219,14 +216,14 @@ std::string GetPlaceholderToken(std::string_view value) {
 
 std::string CaptureTypeWithPattern(
     const ServerFieldType& type,
-    std::initializer_list<base::StringPiece> pattern_span_initializer_list) {
+    std::initializer_list<std::string_view> pattern_span_initializer_list) {
   return CaptureTypeWithPattern(type, pattern_span_initializer_list,
                                 CaptureOptions());
 }
 
 std::string CaptureTypeWithPattern(
     const ServerFieldType& type,
-    std::initializer_list<base::StringPiece> pattern_span_initializer_list,
+    std::initializer_list<std::string_view> pattern_span_initializer_list,
     const CaptureOptions& options) {
   return CaptureTypeWithPattern(
       type, base::StrCat(base::make_span(pattern_span_initializer_list)),

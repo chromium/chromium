@@ -58,7 +58,7 @@ void SetCheckStatus(FormFieldData* form_field_data,
 // Considers any ASCII whitespace character as a possible separator.
 // Also ignores empty tokens, resulting in a collapsing of whitespace.
 std::vector<std::string> LowercaseAndTokenizeAttributeString(
-    base::StringPiece attribute);
+    std::string_view attribute);
 
 // Returns `value` stripped from its whitespaces.
 std::u16string RemoveWhitespace(const std::u16string& value);

@@ -6,8 +6,7 @@
 #define COMPONENTS_AUTOFILL_CORE_BROWSER_VALIDATION_H_
 
 #include <string>
-
-#include "base/strings/string_piece.h"
+#include <string_view>
 
 namespace base {
 class Time;
@@ -52,7 +51,7 @@ bool PassesLuhnCheck(const std::u16string& number);
 // Returns true if |code| looks like a valid credit card security code
 // for the given credit card network.
 bool IsValidCreditCardSecurityCode(const std::u16string& code,
-                                   const base::StringPiece card_network,
+                                   const std::string_view card_network,
                                    CvcType cvc_type = CvcType::kRegularCvc);
 
 // Returns true if |text| looks like a valid e-mail address.
@@ -76,7 +75,7 @@ bool IsValidZip(const std::u16string& text);
 bool IsSSN(const std::u16string& text);
 
 // Returns the expected CVC length based on the |card_network|.
-size_t GetCvcLengthForCardNetwork(const base::StringPiece card_network,
+size_t GetCvcLengthForCardNetwork(const std::string_view card_network,
                                   CvcType cvc_type = CvcType::kRegularCvc);
 
 // Returns true if |value| appears to be a UPI Virtual Payment Address.

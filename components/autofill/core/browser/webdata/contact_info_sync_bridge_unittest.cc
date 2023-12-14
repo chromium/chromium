@@ -5,10 +5,10 @@
 #include "components/autofill/core/browser/webdata/contact_info_sync_bridge.h"
 
 #include <memory>
+#include <string_view>
 
 #include "base/files/scoped_temp_dir.h"
 #include "base/run_loop.h"
-#include "base/strings/string_piece.h"
 #include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
@@ -64,7 +64,7 @@ std::vector<AutofillProfile> ExtractAutofillProfilesFromDataBatch(
   return profiles;
 }
 
-AutofillProfile TestProfile(base::StringPiece guid) {
+AutofillProfile TestProfile(std::string_view guid) {
   return AutofillProfile(std::string(guid), AutofillProfile::Source::kAccount,
                          i18n_model_definition::kLegacyHierarchyCountryCode);
 }

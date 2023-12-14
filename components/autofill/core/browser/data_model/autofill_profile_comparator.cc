@@ -202,7 +202,7 @@ ServerFieldTypeSet GetUserVisibleTypes() {
 }
 
 AutofillProfileComparator::AutofillProfileComparator(
-    const base::StringPiece& app_locale)
+    const std::string_view& app_locale)
     : app_locale_(app_locale.data(), app_locale.size()) {}
 
 AutofillProfileComparator::~AutofillProfileComparator() = default;

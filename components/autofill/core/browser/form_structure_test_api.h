@@ -6,10 +6,10 @@
 #define COMPONENTS_AUTOFILL_CORE_BROWSER_FORM_STRUCTURE_TEST_API_H_
 
 #include <string>
+#include <string_view>
 
 #include "base/containers/contains.h"
 #include "base/memory/raw_ref.h"
-#include "base/strings/string_piece.h"
 #include "components/autofill/core/browser/form_structure.h"
 
 namespace autofill {
@@ -20,7 +20,7 @@ class FormStructureTestApi {
   using ShouldBeParsedParams = FormStructure::ShouldBeParsedParams;
 
   static void ParseApiQueryResponse(
-      base::StringPiece payload,
+      std::string_view payload,
       const std::vector<FormStructure*>& forms,
       const std::vector<FormSignature>& queried_form_signatures,
       AutofillMetrics::FormInteractionsUkmLogger* ukm_logger,

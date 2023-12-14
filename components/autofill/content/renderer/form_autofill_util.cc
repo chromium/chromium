@@ -130,73 +130,73 @@ constexpr int kMaxConsecutiveInFourDigitCombinationMatches = 2;
 constexpr size_t kMaxFourDigitCombinationMatches = 5;
 
 // Constants to be passed to GetWebString<kConstant>().
-constexpr base::StringPiece kAnchor = "a";
-constexpr base::StringPiece kAutocomplete = "autocomplete";
-constexpr base::StringPiece kAriaDescribedBy = "aria-describedby";
-constexpr base::StringPiece kAriaLabel = "aria-label";
-constexpr base::StringPiece kAriaLabelledBy = "aria-labelledby";
-constexpr base::StringPiece kBold = "b";
-constexpr base::StringPiece kBreak = "br";
-constexpr base::StringPiece kButton = "button";
-constexpr base::StringPiece kClass = "class";
-constexpr base::StringPiece kColspan = "colspan";
-constexpr base::StringPiece kDefinitionDescriptionTag = "dd";
-constexpr base::StringPiece kDefinitionTermTag = "dt";
-constexpr base::StringPiece kDiv = "div";
-constexpr base::StringPiece kFieldset = "fieldset";
-constexpr base::StringPiece kFont = "font";
-constexpr base::StringPiece kFor = "for";
-constexpr base::StringPiece kForm = "form";
-constexpr base::StringPiece kFormControlSelector = "input, select, textarea";
-constexpr base::StringPiece kId = "id";
-constexpr base::StringPiece kIframe = "iframe";
-constexpr base::StringPiece kImage = "img";
-constexpr base::StringPiece kInput = "input";
-constexpr base::StringPiece kLabel = "label";
-constexpr base::StringPiece kListItem = "li";
-constexpr base::StringPiece kMeta = "meta";
-constexpr base::StringPiece kName = "name";
-constexpr base::StringPiece kNoScript = "noscript";
-constexpr base::StringPiece kOption = "option";
-constexpr base::StringPiece kParagraph = "p";
-constexpr base::StringPiece kPlaceholder = "placeholder";
-constexpr base::StringPiece kRole = "role";
-constexpr base::StringPiece kScript = "script";
-constexpr base::StringPiece kSpan = "span";
-constexpr base::StringPiece kStrong = "strong";
-constexpr base::StringPiece kSubmit = "submit";
-constexpr base::StringPiece kTable = "table";
-constexpr base::StringPiece kTableCell = "td";
-constexpr base::StringPiece kTableHeader = "th";
-constexpr base::StringPiece kTableRow = "tr";
-constexpr base::StringPiece kTitle = "title";
-constexpr base::StringPiece kType = "type";
-constexpr base::StringPiece kValue = "value";
+constexpr std::string_view kAnchor = "a";
+constexpr std::string_view kAutocomplete = "autocomplete";
+constexpr std::string_view kAriaDescribedBy = "aria-describedby";
+constexpr std::string_view kAriaLabel = "aria-label";
+constexpr std::string_view kAriaLabelledBy = "aria-labelledby";
+constexpr std::string_view kBold = "b";
+constexpr std::string_view kBreak = "br";
+constexpr std::string_view kButton = "button";
+constexpr std::string_view kClass = "class";
+constexpr std::string_view kColspan = "colspan";
+constexpr std::string_view kDefinitionDescriptionTag = "dd";
+constexpr std::string_view kDefinitionTermTag = "dt";
+constexpr std::string_view kDiv = "div";
+constexpr std::string_view kFieldset = "fieldset";
+constexpr std::string_view kFont = "font";
+constexpr std::string_view kFor = "for";
+constexpr std::string_view kForm = "form";
+constexpr std::string_view kFormControlSelector = "input, select, textarea";
+constexpr std::string_view kId = "id";
+constexpr std::string_view kIframe = "iframe";
+constexpr std::string_view kImage = "img";
+constexpr std::string_view kInput = "input";
+constexpr std::string_view kLabel = "label";
+constexpr std::string_view kListItem = "li";
+constexpr std::string_view kMeta = "meta";
+constexpr std::string_view kName = "name";
+constexpr std::string_view kNoScript = "noscript";
+constexpr std::string_view kOption = "option";
+constexpr std::string_view kParagraph = "p";
+constexpr std::string_view kPlaceholder = "placeholder";
+constexpr std::string_view kRole = "role";
+constexpr std::string_view kScript = "script";
+constexpr std::string_view kSpan = "span";
+constexpr std::string_view kStrong = "strong";
+constexpr std::string_view kSubmit = "submit";
+constexpr std::string_view kTable = "table";
+constexpr std::string_view kTableCell = "td";
+constexpr std::string_view kTableHeader = "th";
+constexpr std::string_view kTableRow = "tr";
+constexpr std::string_view kTitle = "title";
+constexpr std::string_view kType = "type";
+constexpr std::string_view kValue = "value";
 
 // Wrapper for frequently used WebString constants.
-template <const base::StringPiece& string>
+template <const std::string_view& string>
 const WebString& GetWebString() {
   static const base::NoDestructor<WebString> web_string(
       WebString::FromUTF8(string));
   return *web_string;
 }
 
-template <const base::StringPiece& tag_name>
+template <const std::string_view& tag_name>
 bool HasTagName(const WebElement& element) {
   return element.HasHTMLTagName(GetWebString<tag_name>());
 }
 
-template <const base::StringPiece& tag_name>
+template <const std::string_view& tag_name>
 bool HasTagName(const WebNode& node) {
   return node.IsElementNode() && HasTagName<tag_name>(node.To<WebElement>());
 }
 
-template <const base::StringPiece& attribute>
+template <const std::string_view& attribute>
 bool HasAttribute(const WebElement& element) {
   return element.HasAttribute(GetWebString<attribute>());
 }
 
-template <const base::StringPiece& attribute>
+template <const std::string_view& attribute>
 WebString GetAttribute(const WebElement& element) {
   return element.GetAttribute(GetWebString<attribute>());
 }

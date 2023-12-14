@@ -7,10 +7,7 @@
 #include <algorithm>
 #include <cstddef>
 #include <iterator>
-#include <memory>
 #include <numeric>
-#include <string>
-#include <utility>
 
 #include "base/feature_list.h"
 #include "base/strings/string_piece.h"
@@ -566,7 +563,7 @@ bool FormField::Match(const AutofillField* field,
                       MatchParams match_type,
                       const RegExLogging& logging) {
   bool found_match = false;
-  base::StringPiece match_type_string;
+  std::string_view match_type_string;
   base::StringPiece16 value;
   std::vector<std::u16string> matches;
   std::vector<std::u16string>* capture_destination =
@@ -650,7 +647,7 @@ void FormField::ParseFormFieldsPass(ParseFunction parse,
 }
 
 // static
-bool FormField::MatchesFormControlType(base::StringPiece type,
+bool FormField::MatchesFormControlType(std::string_view type,
                                        DenseSet<MatchFieldType> match_type) {
   if (match_type.contains(MatchFieldType::kText) && type == "text")
     return true;

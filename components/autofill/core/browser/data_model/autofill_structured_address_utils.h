@@ -195,14 +195,14 @@ std::string GetPlaceholderToken(std::string_view value);
 // string representation of |type| and respects |options|.
 std::string CaptureTypeWithPattern(
     const ServerFieldType& type,
-    std::initializer_list<base::StringPiece> pattern_span_initializer_list,
+    std::initializer_list<std::string_view> pattern_span_initializer_list,
     const CaptureOptions& options);
 
 // Same as |CaptureTypeWithPattern(type, pattern_span_initializer_list,
 // options)| but uses default options.
 std::string CaptureTypeWithPattern(
     const ServerFieldType& type,
-    std::initializer_list<base::StringPiece> pattern_span_initializer_list);
+    std::initializer_list<std::string_view> pattern_span_initializer_list);
 
 // A pattern that is used to capture tokens that are not supposed to be
 // associated into a type.

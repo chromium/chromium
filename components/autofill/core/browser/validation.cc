@@ -12,7 +12,6 @@
 #include "base/containers/adapters.h"
 #include "base/notreached.h"
 #include "base/strings/string_number_conversions.h"
-#include "base/strings/string_piece.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
@@ -111,7 +110,7 @@ bool PassesLuhnCheck(const std::u16string& number) {
 }
 
 bool IsValidCreditCardSecurityCode(const std::u16string& code,
-                                   const base::StringPiece card_network,
+                                   const std::string_view card_network,
                                    CvcType cvc_type) {
   return code.length() == GetCvcLengthForCardNetwork(card_network, cvc_type) &&
          base::ContainsOnlyChars(code, u"0123456789");
@@ -199,7 +198,7 @@ bool IsSSN(const std::u16string& text) {
   return true;
 }
 
-size_t GetCvcLengthForCardNetwork(const base::StringPiece card_network,
+size_t GetCvcLengthForCardNetwork(const std::string_view card_network,
                                   CvcType cvc_type) {
   if (card_network == kAmericanExpressCard &&
       cvc_type == CvcType::kRegularCvc) {

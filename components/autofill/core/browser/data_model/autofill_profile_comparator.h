@@ -8,6 +8,7 @@
 #include <memory>
 #include <set>
 #include <string>
+#include <string_view>
 
 #include "base/containers/flat_map.h"
 #include "base/strings/string_piece.h"
@@ -33,7 +34,7 @@ ServerFieldTypeSet GetUserVisibleTypes();
 // A utility class to assist in the comparison of AutofillProfile data.
 class AutofillProfileComparator {
  public:
-  explicit AutofillProfileComparator(const base::StringPiece& app_locale);
+  explicit AutofillProfileComparator(const std::string_view& app_locale);
 
   AutofillProfileComparator(const AutofillProfileComparator&) = delete;
   AutofillProfileComparator& operator=(const AutofillProfileComparator&) =

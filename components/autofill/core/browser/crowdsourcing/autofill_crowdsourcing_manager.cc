@@ -7,7 +7,6 @@
 #include <algorithm>
 #include <functional>
 #include <optional>
-#include <string_view>
 #include <utility>
 #include <vector>
 
@@ -474,8 +473,8 @@ std::optional<std::string> GetUploadPayloadForApi(
 // * GetAPIMethodUrl(REQUEST_QUERY, "1234", "POST") will return "/v1/pages:get".
 // * GetAPIMethodUrl(REQUEST_UPLOAD, "", "POST") will return "/v1/forms:vote".
 std::string GetAPIMethodUrl(AutofillCrowdsourcingManager::RequestType type,
-                            base::StringPiece resource_id,
-                            base::StringPiece method) {
+                            std::string_view resource_id,
+                            std::string_view method) {
   const char* api_method_url = [&] {
     switch (type) {
       case AutofillCrowdsourcingManager::REQUEST_QUERY:
@@ -775,7 +774,7 @@ void AutofillCrowdsourcingManager::ClearUploadHistory(PrefService* pref_service)
 }
 
 size_t AutofillCrowdsourcingManager::GetPayloadLength(
-    base::StringPiece payload) const {
+    std::string_view payload) const {
   return payload.length();
 }
 

@@ -10,7 +10,6 @@
 
 #include <algorithm>
 #include <ostream>
-#include <string>
 
 #include "base/check_op.h"
 #include "base/i18n/rtl.h"
@@ -546,7 +545,7 @@ bool CreditCard::IsLocalCard(const CreditCard* card) {
   return card && card->record_type() == CreditCard::RecordType::kLocalCard;
 }
 
-void CreditCard::SetNetworkForMaskedCard(base::StringPiece network) {
+void CreditCard::SetNetworkForMaskedCard(std::string_view network) {
   DCHECK_EQ(RecordType::kMaskedServerCard, record_type());
   network_ = std::string(network);
 }
