@@ -14,7 +14,9 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
+#include "base/time/time.h"
 #include "components/sync/engine/model_type_processor.h"
+#include "components/sync/model/data_type_activation_request.h"
 #include "components/sync/model/model_type_controller_delegate.h"
 #include "components/sync/model/wipe_model_upon_sync_disabled_behavior.h"
 #include "components/sync_bookmarks/synced_bookmark_tracker.h"
@@ -152,6 +154,9 @@ class BookmarkModelTypeProcessor : public syncer::ModelTypeProcessor,
   // ModelReadyToSync().
   StartCallback start_callback_;
 
+  // The request context passed in as part of OnSyncStarting().
+  syncer::DataTypeActivationRequest activation_request_;
+
   // The bookmark model we are processing local changes from and forwarding
   // remote changes to. It is set during ModelReadyToSync(), which is called
   // during startup, as part of the bookmark-loading process.
@@ -204,8 +209,6 @@ class BookmarkModelTypeProcessor : public syncer::ModelTypeProcessor,
   // UUID string that identifies the sync client and is received from the sync
   // engine.
   std::string cache_uuid_;
-
-  syncer::ModelErrorHandler error_handler_;
 
   std::unique_ptr<BookmarkModelObserverImpl> bookmark_model_observer_;
 

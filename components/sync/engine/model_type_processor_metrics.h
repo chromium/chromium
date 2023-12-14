@@ -7,8 +7,16 @@
 
 #include "base/time/time.h"
 #include "components/sync/base/model_type.h"
+#include "components/sync/base/sync_mode.h"
 
 namespace syncer {
+
+// Logs histograms representing the duration of the initial setup (, i.e. the
+// time from the start of the configuration of sync until the data type receives
+// all its sync data and the data is ready for the user.
+void LogModelTypeConfigurationTime(ModelType model_type,
+                                   SyncMode mode,
+                                   base::Time configuration_start_time);
 
 // Logs histograms representing the number of updates that an implementations of
 // ModelTypeProcessor receive via OnUpdateReceived().

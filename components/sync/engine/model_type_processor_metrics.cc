@@ -8,8 +8,26 @@
 
 #include "base/metrics/histogram_base.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/strings/stringprintf.h"
 
 namespace syncer {
+
+void LogModelTypeConfigurationTime(ModelType model_type,
+                                   SyncMode mode,
+                                   base::Time configuration_start_time) {
+  const base::TimeDelta configuration_duration =
+      base::Time::Now() - configuration_start_time;
+
+  base::UmaHistogramCustomTimes(
+      base::StringPrintf(
+          "Sync.ModelTypeConfigurationTime.%s.%s",
+          (mode == SyncMode::kTransportOnly) ? "Ephemeral" : "Persistent",
+          ModelTypeToHistogramSuffix(model_type)),
+      configuration_duration,
+      /*min=*/base::Milliseconds(1),
+      /*max=*/base::Seconds(60),
+      /*buckets=*/50);
+}
 
 void LogUpdatesReceivedByProcessorHistogram(ModelType model_type,
                                             bool is_initial_sync,

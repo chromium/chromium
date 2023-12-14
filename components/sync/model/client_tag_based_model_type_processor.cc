@@ -14,7 +14,6 @@
 #include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
-#include "base/strings/stringprintf.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/trace_event/memory_usage_estimator.h"
 #include "base/trace_event/trace_event.h"
@@ -821,19 +820,8 @@ void ClientTagBasedModelTypeProcessor::OnUpdateReceived(
   }
 
   if (is_initial_sync) {
-    base::TimeDelta configuration_duration =
-        base::Time::Now() - activation_request_.configuration_start_time;
-    base::UmaHistogramCustomTimes(
-        base::StringPrintf(
-            "Sync.ModelTypeConfigurationTime.%s.%s",
-            (activation_request_.sync_mode == SyncMode::kTransportOnly)
-                ? "Ephemeral"
-                : "Persistent",
-            ModelTypeToHistogramSuffix(type_)),
-        configuration_duration,
-        /*min=*/base::Milliseconds(1),
-        /*max=*/base::Seconds(60),
-        /*buckets=*/50);
+    LogModelTypeConfigurationTime(type_, activation_request_.sync_mode,
+                                  activation_request_.configuration_start_time);
   }
 
   DCHECK(entity_tracker_);

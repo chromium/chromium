@@ -202,7 +202,7 @@ void BookmarkModelTypeProcessor::OnUpdateReceived(
     absl::optional<sync_pb::GarbageCollectionDirective> gc_directive) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(!model_type_state.cache_guid().empty());
-  DCHECK_EQ(model_type_state.cache_guid(), cache_uuid_);
+  CHECK_EQ(model_type_state.cache_guid(), activation_request_.cache_guid);
   DCHECK(syncer::IsInitialSyncDone(model_type_state.initial_sync_state()));
   DCHECK(start_callback_.is_null());
   // Processor should never connect if
@@ -244,7 +244,7 @@ void BookmarkModelTypeProcessor::OnUpdateReceived(
     // Local changes continue to be tracked in order to allow users to delete
     // bookmarks and recover upon restart.
     DisconnectSync();
-    error_handler_.Run(
+    activation_request_.error_handler.Run(
         syncer::ModelError(FROM_HERE, "Local bookmarks count exceed limit."));
     return;
   }
@@ -403,7 +403,7 @@ size_t BookmarkModelTypeProcessor::EstimateMemoryUsage() const {
   if (bookmark_tracker_) {
     memory_usage += bookmark_tracker_->EstimateMemoryUsage();
   }
-  memory_usage += EstimateMemoryUsage(cache_uuid_);
+  memory_usage += EstimateMemoryUsage(activation_request_.cache_guid);
   return memory_usage;
 }
 
@@ -417,17 +417,16 @@ void BookmarkModelTypeProcessor::OnSyncStarting(
     const syncer::DataTypeActivationRequest& request,
     StartCallback start_callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK(start_callback);
+  CHECK(start_callback);
+  CHECK(request.IsValid());
+  CHECK(!request.cache_guid.empty());
   // `favicon_service_` should have been set by now.
-  DCHECK(favicon_service_);
+  CHECK(favicon_service_);
   DVLOG(1) << "Sync is starting for Bookmarks";
 
-  cache_uuid_ = request.cache_guid;
   start_callback_ = std::move(start_callback);
-  error_handler_ = request.error_handler;
+  activation_request_ = request;
 
-  DCHECK(!cache_uuid_.empty());
-  DCHECK(error_handler_);
   ConnectIfReady();
 }
 
@@ -441,7 +440,7 @@ void BookmarkModelTypeProcessor::ConnectIfReady() {
     return;
   }
 
-  DCHECK(error_handler_);
+  DCHECK(activation_request_.error_handler);
   // ConnectSync() should not have been called by now.
   DCHECK(!worker_);
 
@@ -452,7 +451,7 @@ void BookmarkModelTypeProcessor::ConnectIfReady() {
     // case and thus tracker should be empty.
     DCHECK(!bookmark_tracker_);
     start_callback_.Reset();
-    error_handler_.Run(
+    activation_request_.error_handler.Run(
         syncer::ModelError(FROM_HERE,
                            "Latest remote bookmarks count exceeded limit. Turn "
                            "off and turn on sync to retry."));
@@ -471,15 +470,15 @@ void BookmarkModelTypeProcessor::ConnectIfReady() {
     // to be tracked in order order to allow users to delete bookmarks and
     // recover upon restart.
     start_callback_.Reset();
-    error_handler_.Run(
+    activation_request_.error_handler.Run(
         syncer::ModelError(FROM_HERE, "Local bookmarks count exceed limit."));
     return;
   }
 
-  DCHECK(!cache_uuid_.empty());
+  DCHECK(!activation_request_.cache_guid.empty());
 
-  if (bookmark_tracker_ &&
-      bookmark_tracker_->model_type_state().cache_guid() != cache_uuid_) {
+  if (bookmark_tracker_ && bookmark_tracker_->model_type_state().cache_guid() !=
+                               activation_request_.cache_guid) {
     // In case of a cache uuid mismatch, treat it as a corrupted metadata and
     // start clean.
     StopTrackingMetadataAndResetTracker();
@@ -494,7 +493,7 @@ void BookmarkModelTypeProcessor::ConnectIfReady() {
     sync_pb::ModelTypeState model_type_state;
     model_type_state.mutable_progress_marker()->set_data_type_id(
         GetSpecificsFieldNumberFromModelType(syncer::BOOKMARKS));
-    model_type_state.set_cache_guid(cache_uuid_);
+    model_type_state.set_cache_guid(activation_request_.cache_guid);
     activation_context->model_type_state = model_type_state;
   }
   activation_context->type_processor =
@@ -513,7 +512,8 @@ void BookmarkModelTypeProcessor::OnSyncStopping(
   DCHECK(bookmark_model_);
   DCHECK(!start_callback_);
 
-  cache_uuid_.clear();
+  activation_request_ = syncer::DataTypeActivationRequest{};
+
   worker_.reset();
 
   switch (metadata_fate) {
@@ -544,15 +544,16 @@ void BookmarkModelTypeProcessor::NudgeForCommitIfNeeded() {
   DCHECK(bookmark_tracker_);
 
   // Issue error and stop sync if the number of local bookmarks exceed limit.
-  // If `error_handler_` is not set, the check is ignored because this gets
-  // re-evaluated in ConnectIfReady().
-  if (error_handler_ && bookmark_tracker_->TrackedBookmarksCount() >
-                            max_bookmarks_till_sync_enabled_) {
+  // If `activation_request_.error_handler` is not set, the check is ignored
+  // because this gets re-evaluated in ConnectIfReady().
+  if (activation_request_.error_handler &&
+      bookmark_tracker_->TrackedBookmarksCount() >
+          max_bookmarks_till_sync_enabled_) {
     // Local changes continue to be tracked in order to allow users to delete
     // bookmarks and recover upon restart.
     DisconnectSync();
     start_callback_.Reset();
-    error_handler_.Run(
+    activation_request_.error_handler.Run(
         syncer::ModelError(FROM_HERE, "Local bookmarks count exceed limit."));
     return;
   }
@@ -583,7 +584,7 @@ void BookmarkModelTypeProcessor::OnInitialUpdateReceived(
     const sync_pb::ModelTypeState& model_type_state,
     syncer::UpdateResponseDataList updates) {
   DCHECK(!bookmark_tracker_);
-  DCHECK(error_handler_);
+  DCHECK(activation_request_.error_handler);
 
   TRACE_EVENT0("sync", "BookmarkModelTypeProcessor::OnInitialUpdateReceived");
 
@@ -598,7 +599,7 @@ void BookmarkModelTypeProcessor::OnInitialUpdateReceived(
   if (updates.size() > max_initial_updates_count) {
     DisconnectSync();
     last_initial_merge_remote_updates_exceeded_limit_ = true;
-    error_handler_.Run(
+    activation_request_.error_handler.Run(
         syncer::ModelError(FROM_HERE, "Remote bookmarks count exceed limit."));
     schedule_save_closure_.Run();
     return;
@@ -626,12 +627,16 @@ void BookmarkModelTypeProcessor::OnInitialUpdateReceived(
           bookmark_model_->mobile_node())) {
     DisconnectSync();
     StopTrackingMetadataAndResetTracker();
-    error_handler_.Run(
+    activation_request_.error_handler.Run(
         syncer::ModelError(FROM_HERE, "Permanent bookmark entities missing"));
     return;
   }
 
   bookmark_tracker_->CheckAllNodesTracked(bookmark_model_);
+
+  LogModelTypeConfigurationTime(syncer::BOOKMARKS,
+                                activation_request_.sync_mode,
+                                activation_request_.configuration_start_time);
 
   schedule_save_closure_.Run();
   NudgeForCommitIfNeeded();
@@ -775,7 +780,7 @@ void BookmarkModelTypeProcessor::ClearMetadataIfStopped() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   // If Sync is not actually stopped, ignore this call.
-  if (!cache_uuid_.empty()) {
+  if (!activation_request_.cache_guid.empty()) {
     return;
   }
 
