@@ -142,9 +142,15 @@ class MODULES_EXPORT MLGraphBuilder final : public ScriptWrappable {
   MLOperand* greater(const MLOperand* a,
                      const MLOperand* b,
                      ExceptionState& exception_state);
+  MLOperand* greaterOrEqual(const MLOperand* a,
+                            const MLOperand* b,
+                            ExceptionState& exception_state);
   MLOperand* lesser(const MLOperand* a,
                     const MLOperand* b,
                     ExceptionState& exception_state);
+  MLOperand* lesserOrEqual(const MLOperand* a,
+                           const MLOperand* b,
+                           ExceptionState& exception_state);
 
   // Element-wise unary operations
   MLOperand* abs(const MLOperand* input, ExceptionState& exception_state);

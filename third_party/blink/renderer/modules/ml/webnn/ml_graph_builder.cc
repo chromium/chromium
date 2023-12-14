@@ -425,7 +425,9 @@ absl::optional<Vector<uint32_t>> BroadcastShapes(
 constexpr bool IsLogicalBinaryOperator(MLOperator::OperatorKind kind) {
   return kind == MLOperator::OperatorKind::kEqual ||
          kind == MLOperator::OperatorKind::kGreater ||
-         kind == MLOperator::OperatorKind::kLesser;
+         kind == MLOperator::OperatorKind::kLesser ||
+         kind == MLOperator::OperatorKind::kLesserOrEqual ||
+         kind == MLOperator::OperatorKind::kGreaterOrEqual;
 }
 
 MLOperand* BuildArgMinMax(MLGraphBuilder* builder,
@@ -858,7 +860,9 @@ BUILD_ELEMENTWISE_BINARY_OP(max, kMax)
 BUILD_ELEMENTWISE_BINARY_OP(pow, kPow)
 BUILD_ELEMENTWISE_BINARY_OP(equal, kEqual)
 BUILD_ELEMENTWISE_BINARY_OP(greater, kGreater)
+BUILD_ELEMENTWISE_BINARY_OP(greaterOrEqual, kGreaterOrEqual)
 BUILD_ELEMENTWISE_BINARY_OP(lesser, kLesser)
+BUILD_ELEMENTWISE_BINARY_OP(lesserOrEqual, kLesserOrEqual)
 
 #define BUILD_ELEMENTWISE_UNARY_OP(op, op_kind, data_type_constraint) \
   MLOperand* MLGraphBuilder::op(const MLOperand* input,               \

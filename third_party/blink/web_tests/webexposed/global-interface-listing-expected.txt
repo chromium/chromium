@@ -5646,6 +5646,7 @@ interface MLGraphBuilder
     method gather
     method gemm
     method greater
+    method greaterOrEqual
     method hardSwish
     method identity
     method input
@@ -5653,6 +5654,7 @@ interface MLGraphBuilder
     method layerNormalization
     method leakyRelu
     method lesser
+    method lesserOrEqual
     method linear
     method log
     method logicalNot

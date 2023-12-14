@@ -98,7 +98,9 @@ enum class ElementWiseBinaryKind {
   kPow,
   kEqual,
   kGreater,
-  kLesser
+  kGreaterOrEqual,
+  kLesser,
+  kLesserOrEqual,
 };
 
 MLOperand* BuildElementWiseBinary(V8TestingScope& scope,

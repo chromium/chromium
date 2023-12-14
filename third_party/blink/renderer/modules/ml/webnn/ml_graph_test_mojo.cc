@@ -25,6 +25,7 @@
 #include "third_party/blink/renderer/modules/ml/webnn/ml_graph_builder_test.h"
 #include "third_party/blink/renderer/modules/ml/webnn/ml_graph_mojo.h"
 #include "third_party/blink/renderer/modules/ml/webnn/ml_graph_test_base.h"
+#include "third_party/blink/renderer/modules/ml/webnn/ml_graph_type_converter.h"
 
 namespace blink {
 
@@ -1451,10 +1452,7 @@ TEST_P(MLGraphTestMojo, Conv2dTest) {
 struct ElementWiseBinaryTester {
   OperandInfoBlink lhs;
   OperandInfoBlink rhs;
-  OperandInfoMojo expected_in;
-  // If expected_out is not explicitly defined in the initializer, the output is
-  // expected to the be same as the input.
-  OperandInfoMojo expected_out = expected_in;
+  OperandInfoMojo expected_out;
 
   void Test(MLGraphTestMojo& helper,
             V8TestingScope& scope,
@@ -1473,7 +1471,9 @@ struct ElementWiseBinaryTester {
                              MLGraphBuilder* builder) {
     Test(helper, scope, builder, ElementWiseBinaryKind::kEqual);
     Test(helper, scope, builder, ElementWiseBinaryKind::kGreater);
+    Test(helper, scope, builder, ElementWiseBinaryKind::kGreaterOrEqual);
     Test(helper, scope, builder, ElementWiseBinaryKind::kLesser);
+    Test(helper, scope, builder, ElementWiseBinaryKind::kLesserOrEqual);
   }
 
   void Test(MLGraphTestMojo& helper,
@@ -1501,7 +1501,8 @@ struct ElementWiseBinaryTester {
     ASSERT_TRUE(lhs_operand_iter != graph_info->id_to_operand_map.end());
     EXPECT_EQ(lhs_operand_iter->value->kind,
               blink_mojom::Operand::Kind::kInput);
-    EXPECT_EQ(lhs_operand_iter->value->data_type, expected_in.data_type);
+    EXPECT_EQ(lhs_operand_iter->value->data_type,
+              mojo::BlinkOperandTypeToMojo(lhs.data_type));
     EXPECT_EQ(lhs_operand_iter->value->dimensions, lhs.dimensions);
     EXPECT_EQ(lhs_operand_iter->value->name, "lhs");
     // Verify the right `mojo::Operand`.
@@ -1510,7 +1511,8 @@ struct ElementWiseBinaryTester {
     ASSERT_TRUE(rhs_operand_iter != graph_info->id_to_operand_map.end());
     EXPECT_EQ(rhs_operand_iter->value->kind,
               blink_mojom::Operand::Kind::kInput);
-    EXPECT_EQ(rhs_operand_iter->value->data_type, expected_in.data_type);
+    EXPECT_EQ(rhs_operand_iter->value->data_type,
+              mojo::BlinkOperandTypeToMojo(rhs.data_type));
     EXPECT_EQ(rhs_operand_iter->value->dimensions, rhs.dimensions);
     EXPECT_EQ(rhs_operand_iter->value->name, "rhs");
     // Verify the output `mojo::Operand`.
@@ -1558,8 +1560,14 @@ struct ElementWiseBinaryTester {
       case ElementWiseBinaryKind::kGreater:
         binary_kind = blink_mojom::ElementWiseBinary::Kind::kGreater;
         break;
+      case ElementWiseBinaryKind::kGreaterOrEqual:
+        binary_kind = blink_mojom::ElementWiseBinary::Kind::kGreaterOrEqual;
+        break;
       case ElementWiseBinaryKind::kLesser:
         binary_kind = blink_mojom::ElementWiseBinary::Kind::kLesser;
+        break;
+      case ElementWiseBinaryKind::kLesserOrEqual:
+        binary_kind = blink_mojom::ElementWiseBinary::Kind::kLesserOrEqual;
         break;
     }
     EXPECT_EQ(binary_mojo->kind, binary_kind);
@@ -1568,6 +1576,87 @@ struct ElementWiseBinaryTester {
     EXPECT_EQ(binary_mojo->output_operand, output_operand_id);
   }
 };
+
+TEST_P(MLGraphTestMojo, ElementWiseBinaryLogicalTest) {
+  V8TestingScope scope;
+  // Bind fake WebNN Context in the service for testing.
+  ScopedWebNNServiceBinder scoped_setup_binder(*this, scope);
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(
+      webnn::features::kWebMachineLearningNeuralNetwork);
+  auto* options = MLContextOptions::Create();
+  // Create WebNN Context with GPU device type.
+  options->setDeviceType(V8MLDeviceType::Enum::kGpu);
+  auto* builder = CreateGraphBuilder(scope, options);
+  ASSERT_NE(builder, nullptr);
+
+  {
+    // Test element-wise operators for two 0-D scalars.
+    ElementWiseBinaryTester{
+        .lhs = {.data_type = V8MLOperandDataType::Enum::kFloat32,
+                .dimensions = {}},
+        .rhs = {.data_type = V8MLOperandDataType::Enum::kFloat32,
+                .dimensions = {}},
+        .expected_out = {.data_type = blink_mojom::Operand::DataType::kUint8,
+                         .dimensions = {}}}
+        .TestLogicalComparison(*this, scope, builder);
+  }
+  {
+    // Test element-wise operators for two 1-D tensors.
+    ElementWiseBinaryTester{
+        .lhs = {.data_type = V8MLOperandDataType::Enum::kFloat32,
+                .dimensions = {2}},
+        .rhs = {.data_type = V8MLOperandDataType::Enum::kFloat32,
+                .dimensions = {2}},
+        .expected_out = {.data_type = blink_mojom::Operand::DataType::kUint8,
+                         .dimensions = {2}}}
+        .TestLogicalComparison(*this, scope, builder);
+  }
+  {
+    // Test element-wise operators for two 2-D tensors.
+    ElementWiseBinaryTester{
+        .lhs = {.data_type = V8MLOperandDataType::Enum::kFloat16,
+                .dimensions = {3, 7}},
+        .rhs = {.data_type = V8MLOperandDataType::Enum::kFloat16,
+                .dimensions = {3, 7}},
+        .expected_out = {.data_type = blink_mojom::Operand::DataType::kUint8,
+                         .dimensions = {3, 7}}}
+        .TestLogicalComparison(*this, scope, builder);
+  }
+  {
+    // Test element-wise operators for broadcasting to 2-D tensor.
+    ElementWiseBinaryTester{
+        .lhs = {.data_type = V8MLOperandDataType::Enum::kInt32,
+                .dimensions = {5, 3}},
+        .rhs = {.data_type = V8MLOperandDataType::Enum::kInt32,
+                .dimensions = {5, 1}},
+        .expected_out = {.data_type = blink_mojom::Operand::DataType::kUint8,
+                         .dimensions = {5, 3}}}
+        .TestLogicalComparison(*this, scope, builder);
+  }
+  {
+    // Test element-wise operators for broadcasting to 3-D tensor.
+    ElementWiseBinaryTester{
+        .lhs = {.data_type = V8MLOperandDataType::Enum::kInt8,
+                .dimensions = {4, 2, 1}},
+        .rhs = {.data_type = V8MLOperandDataType::Enum::kInt8,
+                .dimensions = {4}},
+        .expected_out = {.data_type = blink_mojom::Operand::DataType::kUint8,
+                         .dimensions = {4, 2, 4}}}
+        .TestLogicalComparison(*this, scope, builder);
+  }
+  {
+    // Test element-wise operators for broadcasting to 4-D tensors.
+    ElementWiseBinaryTester{
+        .lhs = {.data_type = V8MLOperandDataType::Enum::kUint8,
+                .dimensions = {8, 1, 6, 1}},
+        .rhs = {.data_type = V8MLOperandDataType::Enum::kUint8,
+                .dimensions = {7, 1, 5}},
+        .expected_out = {.data_type = blink_mojom::Operand::DataType::kUint8,
+                         .dimensions = {8, 7, 6, 5}}}
+        .TestLogicalComparison(*this, scope, builder);
+  }
+}
 
 TEST_P(MLGraphTestMojo, ElementWiseBinaryTest) {
   V8TestingScope scope;
@@ -1588,19 +1677,9 @@ TEST_P(MLGraphTestMojo, ElementWiseBinaryTest) {
                 .dimensions = {}},
         .rhs = {.data_type = V8MLOperandDataType::Enum::kFloat32,
                 .dimensions = {}},
-        .expected_in = {.data_type = blink_mojom::Operand::DataType::kFloat32,
-                        .dimensions = {}}}
-        .Test(*this, scope, builder);
-    ElementWiseBinaryTester{
-        .lhs = {.data_type = V8MLOperandDataType::Enum::kFloat32,
-                .dimensions = {}},
-        .rhs = {.data_type = V8MLOperandDataType::Enum::kFloat32,
-                .dimensions = {}},
-        .expected_in = {.data_type = blink_mojom::Operand::DataType::kFloat32,
-                        .dimensions = {}},
-        .expected_out = {.data_type = blink_mojom::Operand::DataType::kUint8,
+        .expected_out = {.data_type = blink_mojom::Operand::DataType::kFloat32,
                          .dimensions = {}}}
-        .TestLogicalComparison(*this, scope, builder);
+        .Test(*this, scope, builder);
   }
   {
     // Test element-wise operators for two 1-D tensors.
@@ -1609,19 +1688,9 @@ TEST_P(MLGraphTestMojo, ElementWiseBinaryTest) {
                 .dimensions = {2}},
         .rhs = {.data_type = V8MLOperandDataType::Enum::kFloat32,
                 .dimensions = {2}},
-        .expected_in = {.data_type = blink_mojom::Operand::DataType::kFloat32,
-                        .dimensions = {2}}}
-        .Test(*this, scope, builder);
-    ElementWiseBinaryTester{
-        .lhs = {.data_type = V8MLOperandDataType::Enum::kFloat32,
-                .dimensions = {2}},
-        .rhs = {.data_type = V8MLOperandDataType::Enum::kFloat32,
-                .dimensions = {2}},
-        .expected_in = {.data_type = blink_mojom::Operand::DataType::kFloat32,
-                        .dimensions = {2}},
-        .expected_out = {.data_type = blink_mojom::Operand::DataType::kUint8,
+        .expected_out = {.data_type = blink_mojom::Operand::DataType::kFloat32,
                          .dimensions = {2}}}
-        .TestLogicalComparison(*this, scope, builder);
+        .Test(*this, scope, builder);
   }
   {
     // Test element-wise operators for two 2-D tensors.
@@ -1630,19 +1699,9 @@ TEST_P(MLGraphTestMojo, ElementWiseBinaryTest) {
                 .dimensions = {3, 7}},
         .rhs = {.data_type = V8MLOperandDataType::Enum::kFloat16,
                 .dimensions = {3, 7}},
-        .expected_in = {.data_type = blink_mojom::Operand::DataType::kFloat16,
-                        .dimensions = {3, 7}}}
-        .Test(*this, scope, builder);
-    ElementWiseBinaryTester{
-        .lhs = {.data_type = V8MLOperandDataType::Enum::kFloat16,
-                .dimensions = {3, 7}},
-        .rhs = {.data_type = V8MLOperandDataType::Enum::kFloat16,
-                .dimensions = {3, 7}},
-        .expected_in = {.data_type = blink_mojom::Operand::DataType::kFloat16,
-                        .dimensions = {3, 7}},
-        .expected_out = {.data_type = blink_mojom::Operand::DataType::kUint8,
+        .expected_out = {.data_type = blink_mojom::Operand::DataType::kFloat16,
                          .dimensions = {3, 7}}}
-        .TestLogicalComparison(*this, scope, builder);
+        .Test(*this, scope, builder);
   }
   {
     // Test element-wise operators for broadcasting to 2-D tensor.
@@ -1651,19 +1710,9 @@ TEST_P(MLGraphTestMojo, ElementWiseBinaryTest) {
                 .dimensions = {5, 3}},
         .rhs = {.data_type = V8MLOperandDataType::Enum::kInt32,
                 .dimensions = {5, 1}},
-        .expected_in = {.data_type = blink_mojom::Operand::DataType::kInt32,
-                        .dimensions = {5, 3}}}
-        .Test(*this, scope, builder);
-    ElementWiseBinaryTester{
-        .lhs = {.data_type = V8MLOperandDataType::Enum::kInt32,
-                .dimensions = {5, 3}},
-        .rhs = {.data_type = V8MLOperandDataType::Enum::kInt32,
-                .dimensions = {5, 1}},
-        .expected_in = {.data_type = blink_mojom::Operand::DataType::kInt32,
-                        .dimensions = {5, 3}},
-        .expected_out = {.data_type = blink_mojom::Operand::DataType::kUint8,
+        .expected_out = {.data_type = blink_mojom::Operand::DataType::kInt32,
                          .dimensions = {5, 3}}}
-        .TestLogicalComparison(*this, scope, builder);
+        .Test(*this, scope, builder);
   }
   {
     // Test element-wise operators for broadcasting to 3-D tensor.
@@ -1672,19 +1721,9 @@ TEST_P(MLGraphTestMojo, ElementWiseBinaryTest) {
                 .dimensions = {4, 2, 1}},
         .rhs = {.data_type = V8MLOperandDataType::Enum::kInt8,
                 .dimensions = {4}},
-        .expected_in = {.data_type = blink_mojom::Operand::DataType::kInt8,
-                        .dimensions = {4, 2, 4}}}
-        .Test(*this, scope, builder);
-    ElementWiseBinaryTester{
-        .lhs = {.data_type = V8MLOperandDataType::Enum::kInt8,
-                .dimensions = {4, 2, 1}},
-        .rhs = {.data_type = V8MLOperandDataType::Enum::kInt8,
-                .dimensions = {4}},
-        .expected_in = {.data_type = blink_mojom::Operand::DataType::kInt8,
-                        .dimensions = {4, 2, 4}},
-        .expected_out = {.data_type = blink_mojom::Operand::DataType::kUint8,
+        .expected_out = {.data_type = blink_mojom::Operand::DataType::kInt8,
                          .dimensions = {4, 2, 4}}}
-        .TestLogicalComparison(*this, scope, builder);
+        .Test(*this, scope, builder);
   }
   {
     // Test element-wise operators for broadcasting to 4-D tensors.
@@ -1693,17 +1732,9 @@ TEST_P(MLGraphTestMojo, ElementWiseBinaryTest) {
                 .dimensions = {8, 1, 6, 1}},
         .rhs = {.data_type = V8MLOperandDataType::Enum::kUint8,
                 .dimensions = {7, 1, 5}},
-        .expected_in = {.data_type = blink_mojom::Operand::DataType::kUint8,
-                        .dimensions = {8, 7, 6, 5}}}
+        .expected_out = {.data_type = blink_mojom::Operand::DataType::kUint8,
+                         .dimensions = {8, 7, 6, 5}}}
         .Test(*this, scope, builder);
-    ElementWiseBinaryTester{
-        .lhs = {.data_type = V8MLOperandDataType::Enum::kUint8,
-                .dimensions = {8, 1, 6, 1}},
-        .rhs = {.data_type = V8MLOperandDataType::Enum::kUint8,
-                .dimensions = {7, 1, 5}},
-        .expected_in = {.data_type = blink_mojom::Operand::DataType::kUint8,
-                        .dimensions = {8, 7, 6, 5}}}
-        .TestLogicalComparison(*this, scope, builder);
   }
 }
 

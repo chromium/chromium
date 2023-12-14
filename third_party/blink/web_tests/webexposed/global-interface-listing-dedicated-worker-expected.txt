@@ -1201,6 +1201,7 @@ Starting worker: resources/global-interface-listing-worker.js
 [Worker]     method gather
 [Worker]     method gemm
 [Worker]     method greater
+[Worker]     method greaterOrEqual
 [Worker]     method hardSwish
 [Worker]     method identity
 [Worker]     method input
@@ -1208,6 +1209,7 @@ Starting worker: resources/global-interface-listing-worker.js
 [Worker]     method layerNormalization
 [Worker]     method leakyRelu
 [Worker]     method lesser
+[Worker]     method lesserOrEqual
 [Worker]     method linear
 [Worker]     method log
 [Worker]     method logicalNot
