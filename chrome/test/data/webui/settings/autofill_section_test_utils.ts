@@ -226,6 +226,6 @@ export async function deleteAddress(
 
 export function getAddressFieldValue(
     address: chrome.autofillPrivate.AddressEntry,
-    type: chrome.autofillPrivate.ServerFieldType): string|undefined {
+    type: chrome.autofillPrivate.FieldType): string|undefined {
   return address.fields.find(entry => entry.type === type)?.value;
 }

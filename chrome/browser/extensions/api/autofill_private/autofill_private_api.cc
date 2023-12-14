@@ -193,7 +193,7 @@ ExtensionFunction::ResponseAction AutofillPrivateSaveAddressFunction::Run() {
           address->fields.begin(), address->fields.end(),
           [](const auto& field) {
             return field.type ==
-                   autofill_private::ServerFieldType::kAddressHomeCountry;
+                   autofill_private::FieldType::kAddressHomeCountry;
           });
       it != address->fields.end()) {
     country_code = it->value;
@@ -205,7 +205,7 @@ ExtensionFunction::ResponseAction AutofillPrivateSaveAddressFunction::Run() {
   // TODO(crbug.com/1441904): Fields not visible for the autofill profile's
   // country must be reset.
   for (const api::autofill_private::AddressField& field : address->fields) {
-    if (field.type == autofill_private::ServerFieldType::kNameFull) {
+    if (field.type == autofill_private::FieldType::kNameFull) {
       profile.SetInfoWithVerificationStatus(
           autofill::AutofillType(autofill::NAME_FULL),
           base::UTF8ToUTF16(field.value),

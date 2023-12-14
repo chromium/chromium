@@ -11,12 +11,12 @@ function isValueEmpty(value: string|undefined): boolean {
  * property, which is how interface controls (e.g. input) communicate with it.
  */
 export class AddressComponentUi {
-  private readonly fieldType_: chrome.autofillPrivate.ServerFieldType;
+  private readonly fieldType_: chrome.autofillPrivate.FieldType;
   private readonly originalValue_?: string;
   private readonly existingAddress_: boolean;
   private readonly skipValidation_: boolean;
   private addressFields_:
-      Map<chrome.autofillPrivate.ServerFieldType, string|undefined>;
+      Map<chrome.autofillPrivate.FieldType, string|undefined>;
   private isValidatable_: boolean;
   readonly isTextarea: boolean;
   readonly isRequired: boolean;
@@ -24,12 +24,10 @@ export class AddressComponentUi {
   readonly additionalClassName: string;
 
   constructor(
-      addressFields:
-          Map<chrome.autofillPrivate.ServerFieldType, string|undefined>,
-      originalFields:
-          Map<chrome.autofillPrivate.ServerFieldType, string|undefined>|
+      addressFields: Map<chrome.autofillPrivate.FieldType, string|undefined>,
+      originalFields: Map<chrome.autofillPrivate.FieldType, string|undefined>|
       undefined,
-      fieldType: chrome.autofillPrivate.ServerFieldType,
+      fieldType: chrome.autofillPrivate.FieldType,
       label: string,
       additionalClassName: string = '',
       isTextarea: boolean = false,
@@ -96,7 +94,7 @@ export class AddressComponentUi {
     return !isValueEmpty(this.value);
   }
 
-  get fieldType(): chrome.autofillPrivate.ServerFieldType {
+  get fieldType(): chrome.autofillPrivate.FieldType {
     return this.fieldType_;
   }
 

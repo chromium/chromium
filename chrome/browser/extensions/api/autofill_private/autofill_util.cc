@@ -72,8 +72,8 @@ autofill_private::AddressEntry ProfileToAddressEntry(
       autofill::GetDatabaseStoredTypesOfAutofillProfile(),
       back_inserter(address.fields), [&profile](auto field_type) {
         autofill_private::AddressField field;
-        field.type = autofill_private::ParseServerFieldType(
-            FieldTypeToStringView(field_type));
+        field.type =
+            autofill_private::ParseFieldType(FieldTypeToStringView(field_type));
         field.value = GetStringFromProfile(profile, field_type);
         return field;
       });
