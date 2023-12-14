@@ -168,6 +168,12 @@ class CORE_EXPORT IntersectionGeometry {
       kScrollableByRootOnly,
     };
     Relationship relationship = kInvalid;
+    // Whether `root` scrolls `target` directly or indirectly. This is false if
+    // - `root` is not a scroll container,
+    // - `root` doesn't have any scrollable overflow, or
+    // - `root` is the LayoutView and `target` is contained by a fixed-position
+    //   element that is fixed to the viewport.
+    bool root_scrolls_target = false;
     // This is used only when relationship is kScrollable*.
     bool has_filter = false;
     // This is collected only if has_scroll_margin is true.
@@ -205,6 +211,7 @@ class CORE_EXPORT IntersectionGeometry {
                  gfx::RectF& intersection_rect,
                  const Vector<Length>& scroll_margin,
                  bool ignore_local_clip_path,
+                 bool root_scrolls_target,
                  CachedRects* cached_rects);
 
   unsigned FirstThresholdGreaterThan(float ratio,
