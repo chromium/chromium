@@ -306,10 +306,13 @@
 #include "chrome/browser/chromeos/enterprise/cloud_storage/one_drive_pref_observer.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_download_observer_factory.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_rules_manager_factory.h"
-#include "chrome/browser/policy/messaging_layer/util/manual_test_heartbeat_event_factory.h"
 #include "chrome/browser/policy/networking/policy_cert_service_factory.h"
 #include "chrome/browser/policy/networking/user_network_configuration_updater_factory.h"
 #include "chromeos/constants/chromeos_features.h"
+#endif
+
+#if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_WIN)
+#include "chrome/browser/policy/messaging_layer/util/manual_test_heartbeat_event_factory.h"
 #endif
 
 #if BUILDFLAG(IS_WIN)
@@ -1061,7 +1064,7 @@ void ChromeBrowserMainExtraPartsProfiles::
 #endif
   ReduceAcceptLanguageFactory::GetInstance();
   RendererUpdaterFactory::GetInstance();
-#if BUILDFLAG(IS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_WIN)
   reporting::ManualTestHeartbeatEventFactory::GetInstance();
 #endif
 #if BUILDFLAG(IS_CHROMEOS_LACROS)

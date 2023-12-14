@@ -317,7 +317,6 @@ IN_PROC_BROWSER_TEST_F(ProfileKeyedServiceBrowserTest,
 #if BUILDFLAG(ENABLE_EXTENSIONS)
     "ImageWriterControllerLacros",
 #endif
-    "ManualTestHeartbeatEvent",
     "MediaNotificationService",
     "SessionStateChangedEventDispatcher",
 #else // !BUILDFLAG(IS_CHROMEOS_LACROS)
@@ -340,6 +339,9 @@ IN_PROC_BROWSER_TEST_F(ProfileKeyedServiceBrowserTest,
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
     "AppShortcutManager",
 #endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)|| BUILDFLAG(IS_WIN)
+    "ManualTestHeartbeatEvent",
+#endif // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)|| BUILDFLAG(IS_WIN)
     "AppTerminationObserver",
     "AppWindowRegistry",
     "AudioAPI",

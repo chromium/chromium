@@ -5762,10 +5762,6 @@ static_library("browser") {
       "performance_manager/policies/oom_score_policy_chromeos.h",
       "performance_manager/policies/report_page_processes_policy.cc",
       "performance_manager/policies/report_page_processes_policy.h",
-      "policy/messaging_layer/util/manual_test_heartbeat_event.cc",
-      "policy/messaging_layer/util/manual_test_heartbeat_event.h",
-      "policy/messaging_layer/util/manual_test_heartbeat_event_factory.cc",
-      "policy/messaging_layer/util/manual_test_heartbeat_event_factory.h",
       "policy/restricted_mgs_policy_provider.cc",
       "policy/restricted_mgs_policy_provider.h",
       "policy/system_features_disable_list_policy_handler.cc",
@@ -6815,6 +6811,15 @@ static_library("browser") {
       "obsolete_system/obsolete_system_linux.cc",
       "themes/theme_service_aura_linux.cc",
       "themes/theme_service_aura_linux.h",
+    ]
+  }
+
+  if (is_win || is_linux || is_chromeos) {
+    sources += [
+      "policy/messaging_layer/util/manual_test_heartbeat_event.cc",
+      "policy/messaging_layer/util/manual_test_heartbeat_event.h",
+      "policy/messaging_layer/util/manual_test_heartbeat_event_factory.cc",
+      "policy/messaging_layer/util/manual_test_heartbeat_event_factory.h",
     ]
   }
 
