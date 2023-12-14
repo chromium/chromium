@@ -304,7 +304,8 @@ class VideoTrackRecorder : public TrackRecorder<MediaStreamVideoSink> {
   virtual void Pause() = 0;
   virtual void Resume() = 0;
   virtual void OnVideoFrameForTesting(scoped_refptr<media::VideoFrame> frame,
-                                      base::TimeTicks capture_time) {}
+                                      base::TimeTicks capture_time,
+                                      bool allow_vea_encoder) {}
   virtual void OnEncodedVideoFrameForTesting(
       base::TimeTicks now,
       scoped_refptr<EncodedVideoFrame> frame,
@@ -354,7 +355,8 @@ class MODULES_EXPORT VideoTrackRecorderImpl : public VideoTrackRecorder {
   void Pause() override;
   void Resume() override;
   void OnVideoFrameForTesting(scoped_refptr<media::VideoFrame> frame,
-                              base::TimeTicks capture_time) override;
+                              base::TimeTicks capture_time,
+                              bool allow_vea_encoder) override;
   void ForceKeyFrameForNextFrameForTesting();
 
  private:

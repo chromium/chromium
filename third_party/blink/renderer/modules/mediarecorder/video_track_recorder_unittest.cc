@@ -273,11 +273,12 @@ class VideoTrackRecorderTest : public VideoTrackRecorderTestBase {
   }
 
   void Encode(scoped_refptr<media::VideoFrame> frame,
-              base::TimeTicks capture_time) {
+              base::TimeTicks capture_time,
+              bool allow_vea_encoder = true) {
     EXPECT_TRUE(scheduler::GetSingleThreadTaskRunnerForTesting()
                     ->BelongsToCurrentThread());
-    video_track_recorder_->OnVideoFrameForTesting(std::move(frame),
-                                                  capture_time);
+    video_track_recorder_->OnVideoFrameForTesting(
+        std::move(frame), capture_time, allow_vea_encoder);
   }
 
   void OnFailed() { FAIL(); }
@@ -843,6 +844,61 @@ TEST_P(VideoTrackRecorderTestMediaVideoEncoderParam, HandlesOnError) {
   Mock::VerifyAndClearExpectations(this);
 }
 
+// Hardware encoder fails and fallbacks a software encoder.
+TEST_P(VideoTrackRecorderTestMediaVideoEncoderParam,
+       HandleSoftwareEncoderFallback) {
+  // Skip this test case with VEAEncoder.
+  // VEAEncoder drops frames until RequireBitstreamBufferReady() is dropped.
+  // It is tricky to pass this test with VEAEncoder due to the issue.
+  if (!GetParam()) {
+    GTEST_SKIP();
+  }
+  media::MockGpuVideoAcceleratorFactories mock_gpu_factories(nullptr);
+  EXPECT_CALL(*platform_, GetGpuFactories())
+      .WillRepeatedly(Return(&mock_gpu_factories));
+  EXPECT_CALL(mock_gpu_factories, NotifyEncoderSupportKnown)
+      .WillRepeatedly(base::test::RunOnceClosure<0>());
+  EXPECT_CALL(mock_gpu_factories, GetTaskRunner)
+      .WillRepeatedly(Return(scheduler::GetSingleThreadTaskRunnerForTesting()));
+  EXPECT_CALL(mock_gpu_factories, GetVideoEncodeAcceleratorSupportedProfiles)
+      .WillRepeatedly(
+          Return(std::vector<media::VideoEncodeAccelerator::SupportedProfile>{
+              media::VideoEncodeAccelerator::SupportedProfile(
+                  media::VideoCodecProfile::VP8PROFILE_ANY,
+                  gfx::Size(1920, 1080)),
+          }));
+  EXPECT_CALL(mock_gpu_factories, DoCreateVideoEncodeAccelerator)
+      .WillRepeatedly([]() {
+        return new media::FakeVideoEncodeAccelerator(
+            scheduler::GetSingleThreadTaskRunnerForTesting());
+      });
+  InitializeRecorder(VideoTrackRecorder::CodecId::kVp8);
+
+  const gfx::Size& frame_size =
+      gfx::Size(kVEAEncoderMinResolutionWidth, kVEAEncoderMinResolutionHeight);
+  const scoped_refptr<media::VideoFrame> video_frame =
+      media::VideoFrame::CreateBlackFrame(frame_size);
+
+  InSequence s;
+  base::RunLoop run_loop1;
+  EXPECT_CALL(*mock_callback_interface_, OnEncodedVideo)
+      .WillOnce(RunClosure(run_loop1.QuitClosure()));
+  Encode(video_frame, base::TimeTicks::Now());
+  run_loop1.Run();
+
+  EXPECT_TRUE(HasEncoderInstance());
+  OnError();
+  EXPECT_FALSE(HasEncoderInstance());
+  base::RunLoop run_loop2;
+  EXPECT_CALL(*mock_callback_interface_, OnEncodedVideo)
+      .WillOnce(RunClosure(run_loop2.QuitClosure()));
+  // Create a software video encoder by setting |allow_vea_encoder| to false.
+  Encode(video_frame, base::TimeTicks::Now(), /*allow_vea_encoder=*/false);
+  run_loop2.Run();
+
+  Mock::VerifyAndClearExpectations(this);
+}
+
 // Inserts a frame for encode and makes sure that it is released.
 TEST_P(VideoTrackRecorderTestMediaVideoEncoderParam, ReleasesFrame) {
   InitializeRecorder(VideoTrackRecorder::CodecId::kVp8);
@@ -866,7 +922,7 @@ TEST_P(VideoTrackRecorderTestMediaVideoEncoderParam, WaitForEncoderSupport) {
   EXPECT_CALL(*platform_, GetGpuFactories())
       .WillRepeatedly(Return(&mock_gpu_factories));
 
-  EXPECT_CALL(mock_gpu_factories, NotifyEncoderSupportKnown(_))
+  EXPECT_CALL(mock_gpu_factories, NotifyEncoderSupportKnown)
       .WillOnce(base::test::RunOnceClosure<0>());
   InitializeRecorder(VideoTrackRecorder::CodecId::kVp8);
 

@@ -938,8 +938,10 @@ void MediaRecorderHandler::OnSourceReadyStateChanged() {
 void MediaRecorderHandler::OnVideoFrameForTesting(
     scoped_refptr<media::VideoFrame> frame,
     const TimeTicks& timestamp) {
-  for (const auto& recorder : video_recorders_)
-    recorder->OnVideoFrameForTesting(frame, timestamp);
+  for (const auto& recorder : video_recorders_) {
+    recorder->OnVideoFrameForTesting(frame, timestamp,
+                                     /*allow_vea_encoder=*/true);
+  }
 }
 
 void MediaRecorderHandler::OnEncodedVideoFrameForTesting(
