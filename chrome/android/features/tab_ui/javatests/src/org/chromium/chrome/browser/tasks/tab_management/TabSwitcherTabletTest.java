@@ -507,13 +507,26 @@ public class TabSwitcherTabletTest {
     }
 
     private void retrieveTabListDelegate() {
-        Layout layout = sActivityTestRule.getActivity().getLayoutManager().getOverviewLayout();
-        assertTrue(layout instanceof TabSwitcherAndStartSurfaceLayout);
-        TabSwitcherAndStartSurfaceLayout mTabSwitcherAndStartSurfaceLayout =
-                (TabSwitcherAndStartSurfaceLayout) layout;
+        Layout overviewLayout =
+                sActivityTestRule.getActivity().getLayoutManager().getOverviewLayout();
+
+        if (overviewLayout == null) {
+            Layout tabSwitcherLayout =
+                sActivityTestRule.getActivity().getLayoutManager().getTabSwitcherLayoutForTesting();
+            assertTrue("Layout not instance of TabSwitcherLayout -" + tabSwitcherLayout,
+                tabSwitcherLayout instanceof TabSwitcherLayout);
+            mTabListDelegate =
+                ((TabSwitcherLayout) tabSwitcherLayout)
+                    .getTabSwitcherForTesting()
+                    .getTabListDelegate();
+            return;
+        }
+
+        assertTrue("Layout not instance of TabSwitcherAndStartSurfaceLayout" + overviewLayout,
+            overviewLayout instanceof TabSwitcherAndStartSurfaceLayout);
 
         mTabListDelegate =
-                mTabSwitcherAndStartSurfaceLayout
+            ((TabSwitcherAndStartSurfaceLayout) overviewLayout)
                         .getStartSurfaceForTesting()
                         .getGridTabListDelegate();
     }
