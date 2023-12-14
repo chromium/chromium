@@ -436,7 +436,6 @@ chrome_java_resources = [
   "java/res/layout/autofill_billing_address_dropdown.xml",
   "java/res/layout/autofill_card_name_and_number.xml",
   "java/res/layout/autofill_card_unmask_prompt.xml",
-  "java/res/layout/autofill_card_unmask_prompt_new.xml",
   "java/res/layout/autofill_cc_details.xml",
   "java/res/layout/autofill_cc_details_new.xml",
   "java/res/layout/autofill_expiration_date_fix_flow.xml",

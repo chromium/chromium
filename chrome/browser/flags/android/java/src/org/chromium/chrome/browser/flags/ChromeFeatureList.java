@@ -156,8 +156,6 @@ public abstract class ChromeFeatureList {
             "AutofillEnableUpdateVirtualCardEnrollment";
     public static final String AUTOFILL_ENABLE_VIRTUAL_CARD_METADATA =
             "AutofillEnableVirtualCardMetadata";
-    public static final String AUTOFILL_TOUCH_TO_FILL_FOR_CREDIT_CARDS_ANDROID =
-            "AutofillTouchToFillForCreditCardsAndroid";
     public static final String AUTOFILL_VIRTUAL_VIEW_STRUCTURE_ANDROID =
             "AutofillVirtualViewStructureAndroid";
     public static final String AVOID_SELECTED_TAB_FOCUS_ON_LAYOUT_DONE_SHOWING =

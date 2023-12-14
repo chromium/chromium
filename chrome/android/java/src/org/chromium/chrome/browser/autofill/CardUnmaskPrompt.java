@@ -6,13 +6,9 @@ package org.chromium.chrome.browser.autofill;
 
 import android.app.Activity;
 import android.content.Context;
-import android.graphics.drawable.Drawable;
 import android.os.Handler;
 import android.text.Editable;
 import android.text.InputFilter;
-import android.text.Spannable;
-import android.text.SpannableString;
-import android.text.style.ImageSpan;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -26,12 +22,10 @@ import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
-import android.widget.TextView.BufferType;
 
 import androidx.annotation.IntDef;
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
-import androidx.appcompat.content.res.AppCompatResources;
 import androidx.core.view.ViewCompat;
 
 import org.chromium.base.ResettersForTesting;
@@ -39,7 +33,6 @@ import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.task.AsyncTask;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.autofill.AutofillUiUtils.ErrorType;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.ui.modaldialog.DialogDismissalCause;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.ui.modaldialog.ModalDialogProperties;
@@ -187,26 +180,21 @@ public class CardUnmaskPrompt
         mIsVirtualCard = isVirtualCard;
 
         LayoutInflater inflater = LayoutInflater.from(context);
-        if (ChromeFeatureList.isEnabled(
-                ChromeFeatureList.AUTOFILL_TOUCH_TO_FILL_FOR_CREDIT_CARDS_ANDROID)) {
-            mMainView = inflater.inflate(R.layout.autofill_card_unmask_prompt_new, null);
-            AutofillUiUtils.addCardDetails(
-                    context,
-                    mMainView,
-                    cardName,
-                    cardLastFourDigits,
-                    cardExpiration,
-                    cardArtUrl,
-                    cardIconId,
-                    AutofillUiUtils.CardIconSize.LARGE,
-                    R.dimen.card_unmask_dialog_credit_card_icon_end_margin,
-                    /* cardNameAndNumberTextAppearance= */ R.style.TextAppearance_TextLarge_Primary,
-                    /* cardLabelTextAppearance= */ R.style.TextAppearance_TextMedium_Secondary,
-                    /* showCustomIcon= */ AutofillUiUtils.shouldShowCustomIcon(
-                            cardArtUrl, /* isVirtualCard= */ isVirtualCard));
-        } else {
-            mMainView = inflater.inflate(R.layout.autofill_card_unmask_prompt, null);
-        }
+        mMainView = inflater.inflate(R.layout.autofill_card_unmask_prompt, null);
+        AutofillUiUtils.addCardDetails(
+                context,
+                mMainView,
+                cardName,
+                cardLastFourDigits,
+                cardExpiration,
+                cardArtUrl,
+                cardIconId,
+                AutofillUiUtils.CardIconSize.LARGE,
+                R.dimen.card_unmask_dialog_credit_card_icon_end_margin,
+                /* cardNameAndNumberTextAppearance= */ R.style.TextAppearance_TextLarge_Primary,
+                /* cardLabelTextAppearance= */ R.style.TextAppearance_TextMedium_Secondary,
+                /* showCustomIcon= */ AutofillUiUtils.shouldShowCustomIcon(
+                        cardArtUrl, /* isVirtualCard= */ isVirtualCard));
 
         updateTitleForCustomView(title, context);
         mInstructions = (TextView) mMainView.findViewById(R.id.instructions);
@@ -346,29 +334,7 @@ public class CardUnmaskPrompt
 
     private void updateTitleForCustomView(String title, Context context) {
         TextView titleView = (TextView) mMainView.findViewById(R.id.title);
-        if (ChromeFeatureList.isEnabled(
-                ChromeFeatureList.AUTOFILL_TOUCH_TO_FILL_FOR_CREDIT_CARDS_ANDROID)) {
-            titleView.setText(title);
-        } else {
-            Drawable mInlineTitleIcon =
-                    AppCompatResources.getDrawable(context, mGooglePayDrawableId);
-            // The first character will be replaced by the logo, and the consecutive spaces after
-            // are used as padding.
-            SpannableString titleWithLogo = new SpannableString("   " + title);
-            // How much the original logo should scale up in size to match height of text.
-            float scaleFactor = titleView.getTextSize() / mInlineTitleIcon.getIntrinsicHeight();
-            mInlineTitleIcon.setBounds(
-                    /* left= */ 0,
-                    /* top= */ 0,
-                    /* right */ (int) (scaleFactor * mInlineTitleIcon.getIntrinsicWidth()),
-                    /* bottom */ (int) (scaleFactor * mInlineTitleIcon.getIntrinsicHeight()));
-            titleWithLogo.setSpan(
-                    new ImageSpan(mInlineTitleIcon, ImageSpan.ALIGN_CENTER),
-                    /* start= */ 0,
-                    /* end= */ 1,
-                    /* flags= */ Spannable.SPAN_INCLUSIVE_EXCLUSIVE);
-            titleView.setText(titleWithLogo, BufferType.SPANNABLE);
-        }
+        titleView.setText(title);
     }
 
     public void dismiss(@DialogDismissalCause int dismissalCause) {
