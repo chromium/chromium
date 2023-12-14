@@ -5,7 +5,6 @@
 #ifndef UI_DISPLAY_MANAGER_TEST_TEST_DISPLAY_LAYOUT_MANAGER_H_
 #define UI_DISPLAY_MANAGER_TEST_TEST_DISPLAY_LAYOUT_MANAGER_H_
 
-#include <memory>
 #include <vector>
 
 #include "ui/display/manager/display_configurator.h"
@@ -15,17 +14,16 @@ namespace display::test {
 
 class TestDisplayLayoutManager : public DisplayLayoutManager {
  public:
-  TestDisplayLayoutManager(
-      std::vector<std::unique_ptr<DisplaySnapshot>> displays,
-      MultipleDisplayState display_state);
+  TestDisplayLayoutManager(const std::vector<DisplaySnapshot*>& displays,
+                           MultipleDisplayState display_state);
 
   TestDisplayLayoutManager(const TestDisplayLayoutManager&) = delete;
   TestDisplayLayoutManager& operator=(const TestDisplayLayoutManager&) = delete;
 
   ~TestDisplayLayoutManager() override;
 
-  void set_displays(std::vector<std::unique_ptr<DisplaySnapshot>> displays) {
-    displays_ = std::move(displays);
+  void set_displays(const std::vector<DisplaySnapshot*>& displays) {
+    displays_ = displays;
   }
 
   void set_display_state(MultipleDisplayState display_state) {
@@ -49,7 +47,7 @@ class TestDisplayLayoutManager : public DisplayLayoutManager {
   bool IsMirroring() const override;
 
  private:
-  std::vector<std::unique_ptr<DisplaySnapshot>> displays_;
+  std::vector<DisplaySnapshot*> displays_;
   MultipleDisplayState display_state_;
 };
 

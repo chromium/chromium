@@ -4,17 +4,14 @@
 
 #include "ui/display/manager/test/test_display_layout_manager.h"
 
-#include <utility>
-
-#include "base/ranges/algorithm.h"
 #include "ui/display/types/display_snapshot.h"
 
 namespace display::test {
 
 TestDisplayLayoutManager::TestDisplayLayoutManager(
-    std::vector<std::unique_ptr<DisplaySnapshot>> displays,
+    const std::vector<DisplaySnapshot*>& displays,
     MultipleDisplayState display_state)
-    : displays_(std::move(displays)), display_state_(display_state) {}
+    : displays_(displays), display_state_(display_state) {}
 
 TestDisplayLayoutManager::~TestDisplayLayoutManager() {}
 
@@ -50,10 +47,7 @@ bool TestDisplayLayoutManager::GetDisplayLayout(
 
 std::vector<DisplaySnapshot*> TestDisplayLayoutManager::GetDisplayStates()
     const {
-  std::vector<DisplaySnapshot*> snapshots(displays_.size());
-  base::ranges::transform(displays_, snapshots.begin(),
-                          &std::unique_ptr<DisplaySnapshot>::get);
-  return snapshots;
+  return displays_;
 }
 
 bool TestDisplayLayoutManager::IsMirroring() const {

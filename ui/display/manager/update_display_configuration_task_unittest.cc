@@ -186,11 +186,11 @@ class UpdateDisplayConfigurationTaskTest : public testing::Test {
   ~UpdateDisplayConfigurationTaskTest() override = default;
 
   void UpdateDisplays(size_t count) {
-    std::vector<DisplaySnapshot*> displays;
+    std::vector<std::unique_ptr<DisplaySnapshot>> displays;
     for (size_t i = 0; i < count; ++i)
-      displays.push_back(displays_[i].get());
+      displays.push_back(displays_[i]->Clone());
 
-    delegate_.set_outputs(displays);
+    delegate_.SetOutputs(std::move(displays));
   }
 
   void ResponseCallback(

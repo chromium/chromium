@@ -106,7 +106,7 @@ DisplaySnapshot::DisplaySnapshot(
 
 DisplaySnapshot::~DisplaySnapshot() {}
 
-std::unique_ptr<DisplaySnapshot> DisplaySnapshot::Clone() {
+std::unique_ptr<DisplaySnapshot> DisplaySnapshot::Clone() const {
   DisplayModeList clone_modes;
   const DisplayMode* cloned_current_mode = nullptr;
   const DisplayMode* cloned_native_mode = nullptr;

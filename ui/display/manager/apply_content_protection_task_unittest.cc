@@ -64,7 +64,8 @@ class ApplyContentProtectionTaskTest : public testing::Test {
 TEST_F(ApplyContentProtectionTaskTest, ApplyHdcpToInternalDisplay) {
   std::vector<std::unique_ptr<DisplaySnapshot>> displays;
   displays.push_back(CreateDisplaySnapshot(DISPLAY_CONNECTION_TYPE_INTERNAL));
-  TestDisplayLayoutManager layout_manager(std::move(displays),
+  display_delegate_.SetOutputs(std::move(displays));
+  TestDisplayLayoutManager layout_manager(display_delegate_.GetOutputs(),
                                           MULTIPLE_DISPLAY_STATE_SINGLE);
 
   ContentProtectionManager::ContentProtections request;
@@ -82,7 +83,8 @@ TEST_F(ApplyContentProtectionTaskTest, ApplyHdcpToInternalDisplay) {
 TEST_F(ApplyContentProtectionTaskTest, ApplyHdcpToExternalDisplay) {
   std::vector<std::unique_ptr<DisplaySnapshot>> displays;
   displays.push_back(CreateDisplaySnapshot(DISPLAY_CONNECTION_TYPE_HDMI));
-  TestDisplayLayoutManager layout_manager(std::move(displays),
+  display_delegate_.SetOutputs(std::move(displays));
+  TestDisplayLayoutManager layout_manager(display_delegate_.GetOutputs(),
                                           MULTIPLE_DISPLAY_STATE_SINGLE);
 
   ContentProtectionManager::ContentProtections request;
@@ -103,7 +105,8 @@ TEST_F(ApplyContentProtectionTaskTest, ApplyHdcpToExternalDisplay) {
 TEST_F(ApplyContentProtectionTaskTest, ApplyHdcpToUnknownDisplay) {
   std::vector<std::unique_ptr<DisplaySnapshot>> displays;
   displays.push_back(CreateDisplaySnapshot(DISPLAY_CONNECTION_TYPE_UNKNOWN));
-  TestDisplayLayoutManager layout_manager(std::move(displays),
+  display_delegate_.SetOutputs(std::move(displays));
+  TestDisplayLayoutManager layout_manager(display_delegate_.GetOutputs(),
                                           MULTIPLE_DISPLAY_STATE_SINGLE);
 
   ContentProtectionManager::ContentProtections request;
@@ -121,7 +124,8 @@ TEST_F(ApplyContentProtectionTaskTest, ApplyHdcpToUnknownDisplay) {
 TEST_F(ApplyContentProtectionTaskTest, ApplyHdcpToDisplayThatCannotGetHdcp) {
   std::vector<std::unique_ptr<DisplaySnapshot>> displays;
   displays.push_back(CreateDisplaySnapshot(DISPLAY_CONNECTION_TYPE_HDMI));
-  TestDisplayLayoutManager layout_manager(std::move(displays),
+  display_delegate_.SetOutputs(std::move(displays));
+  TestDisplayLayoutManager layout_manager(display_delegate_.GetOutputs(),
                                           MULTIPLE_DISPLAY_STATE_SINGLE);
   display_delegate_.set_get_hdcp_state_expectation(false);
 
@@ -140,7 +144,8 @@ TEST_F(ApplyContentProtectionTaskTest, ApplyHdcpToDisplayThatCannotGetHdcp) {
 TEST_F(ApplyContentProtectionTaskTest, ApplyHdcpToDisplayThatCannotSetHdcp) {
   std::vector<std::unique_ptr<DisplaySnapshot>> displays;
   displays.push_back(CreateDisplaySnapshot(DISPLAY_CONNECTION_TYPE_HDMI));
-  TestDisplayLayoutManager layout_manager(std::move(displays),
+  display_delegate_.SetOutputs(std::move(displays));
+  TestDisplayLayoutManager layout_manager(display_delegate_.GetOutputs(),
                                           MULTIPLE_DISPLAY_STATE_SINGLE);
   display_delegate_.set_set_hdcp_state_expectation(false);
 
@@ -162,7 +167,8 @@ TEST_F(ApplyContentProtectionTaskTest, ApplyHdcpToDisplayThatCannotSetHdcp) {
 TEST_F(ApplyContentProtectionTaskTest, ApplyNoProtectionToExternalDisplay) {
   std::vector<std::unique_ptr<DisplaySnapshot>> displays;
   displays.push_back(CreateDisplaySnapshot(DISPLAY_CONNECTION_TYPE_HDMI));
-  TestDisplayLayoutManager layout_manager(std::move(displays),
+  display_delegate_.SetOutputs(std::move(displays));
+  TestDisplayLayoutManager layout_manager(display_delegate_.GetOutputs(),
                                           MULTIPLE_DISPLAY_STATE_SINGLE);
   display_delegate_.set_hdcp_state(HDCP_STATE_UNDESIRED);
 
@@ -185,7 +191,8 @@ TEST_F(ApplyContentProtectionTaskTest, ApplyHdcpWhileConfiguringDisplays) {
 
   std::vector<std::unique_ptr<DisplaySnapshot>> displays;
   displays.push_back(CreateDisplaySnapshot(DISPLAY_CONNECTION_TYPE_HDMI));
-  TestDisplayLayoutManager layout_manager(std::move(displays),
+  display_delegate_.SetOutputs(std::move(displays));
+  TestDisplayLayoutManager layout_manager(display_delegate_.GetOutputs(),
                                           MULTIPLE_DISPLAY_STATE_SINGLE);
 
   ContentProtectionManager::ContentProtections request;
@@ -213,8 +220,9 @@ TEST_F(ApplyContentProtectionTaskTest, ApplyHdcpToMultipleMonitors) {
       CreateDisplaySnapshot(DISPLAY_CONNECTION_TYPE_HDMI, kDisplayId1));
   displays.push_back(
       CreateDisplaySnapshot(DISPLAY_CONNECTION_TYPE_HDMI, kDisplayId2));
+  display_delegate_.SetOutputs(std::move(displays));
   TestDisplayLayoutManager layout_manager(
-      std::move(displays), MULTIPLE_DISPLAY_STATE_MULTI_EXTENDED);
+      display_delegate_.GetOutputs(), MULTIPLE_DISPLAY_STATE_MULTI_EXTENDED);
 
   ContentProtectionManager::ContentProtections request;
   request[kDisplayId1] = CONTENT_PROTECTION_METHOD_HDCP_TYPE_0;
@@ -243,7 +251,8 @@ TEST_F(ApplyContentProtectionTaskTest, ApplyHdcpToMirroredMonitors) {
       CreateDisplaySnapshot(DISPLAY_CONNECTION_TYPE_HDMI, kDisplayId1));
   displays.push_back(
       CreateDisplaySnapshot(DISPLAY_CONNECTION_TYPE_HDMI, kDisplayId2));
-  TestDisplayLayoutManager layout_manager(std::move(displays),
+  display_delegate_.SetOutputs(std::move(displays));
+  TestDisplayLayoutManager layout_manager(display_delegate_.GetOutputs(),
                                           MULTIPLE_DISPLAY_STATE_MULTI_MIRROR);
 
   ContentProtectionManager::ContentProtections request;
