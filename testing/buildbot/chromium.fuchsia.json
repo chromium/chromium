@@ -3,6 +3,7 @@
   "AAAAA2 See generate_buildbot_json.py to make changes": {},
   "fuchsia-arm64-cast-receiver-rel": {
     "additional_compile_targets": [
+      "all",
       "cast_test_lists"
     ],
     "gtest_tests": [
@@ -1947,6 +1948,7 @@
   },
   "fuchsia-x64-cast-receiver-rel": {
     "additional_compile_targets": [
+      "all",
       "cast_test_lists"
     ],
     "gtest_tests": [
