@@ -28,6 +28,7 @@
 
 #include <memory>
 
+#include "base/containers/flat_set.h"
 #include "third_party/blink/renderer/platform/image-decoders/image_decoder.h"
 
 #include "third_party/skia/include/codec/SkCodec.h"
@@ -76,12 +77,20 @@ class PLATFORM_EXPORT GIFImageDecoder final : public ImageDecoder {
   // If no frame is found, it returns kNotFound.
   wtf_size_t GetViableReferenceFrameIndex(wtf_size_t) const;
 
+  // Calls the index of the failed frames during decoding. If all frames fail to
+  // decode, call GIFImageDecoder::SetFailed.
+  void SetFailedFrameIndex(wtf_size_t index);
+
+  // Returns whether decoding of the current frame has failed.
+  bool IsFailedFrameIndex(wtf_size_t index) const;
+
   std::unique_ptr<SkCodec> codec_;
   // |codec_| owns the SegmentStream, but we need access to it to append more
   // data as it arrives.
   raw_ptr<SegmentStream> segment_stream_ = nullptr;
   mutable int repetition_count_ = kAnimationLoopOnce;
   int prior_frame_ = SkCodec::kNoFrame;
+  base::flat_set<wtf_size_t> decode_failed_frames_;
 };
 
 }  // namespace blink

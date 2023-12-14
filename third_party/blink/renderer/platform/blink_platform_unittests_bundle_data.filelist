@@ -478,6 +478,7 @@
 image-decoders/testing/bad-code.gif
 image-decoders/testing/bad-initial-code.gif
 image-decoders/testing/broken.gif
+image-decoders/testing/error_frame.gif
 image-decoders/testing/first-frame-has-greater-size-than-screen-size.gif
 image-decoders/testing/green-exif-ifd-last.jpg
 image-decoders/testing/invalid-disposal-method.gif
