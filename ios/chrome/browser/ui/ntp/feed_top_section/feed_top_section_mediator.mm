@@ -119,12 +119,34 @@
 
 - (void)signinPromoViewMediatorCloseButtonWasTapped:
     (SigninPromoViewMediator*)mediator {
+  [self updateFeedTopSectionWhenClosed];
+}
+
+#pragma mark - FeedTopSectionMutator
+
+- (void)notificationsPromoViewCloseButtonWasTapped {
+  [self updateFeedTopSectionWhenClosed];
+  // Update prefs that save the dismissed times if the promo conditions are not
+  // being overriden.
+  if (!experimental_flags::ShouldForceContentNotificationsPromo()) {
+    int notificationsPromoTimesDismissed =
+        self.prefService->GetInteger(prefs::kNotificationsPromoTimesDismissed);
+    self.prefService->SetTime(prefs::kNotificationsPromoLastDismissed,
+                              base::Time::Now());
+    self.prefService->SetInteger(prefs::kNotificationsPromoTimesDismissed,
+                                 notificationsPromoTimesDismissed + 1);
+  }
+}
+
+#pragma mark - Private
+
+// Handles closing the promo, and the NTP and Feed Top Section layout when the
+// promo is closed.
+- (void)updateFeedTopSectionWhenClosed {
   [self.NTPDelegate handleFeedTopSectionClosed];
   [self.consumer hidePromo];
   [self.NTPDelegate updateFeedLayout];
 }
-
-#pragma mark - Private
 
 - (BOOL)isUserSignedIn {
   auto consent =

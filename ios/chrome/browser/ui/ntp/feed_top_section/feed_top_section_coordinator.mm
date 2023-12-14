@@ -100,6 +100,8 @@
 
   self.feedTopSectionMediator.NTPDelegate = self.NTPDelegate;
   self.feedTopSectionViewController.delegate = self.feedTopSectionMediator;
+  self.feedTopSectionViewController.feedTopSectionMutator =
+      self.feedTopSectionMediator;
   self.feedTopSectionViewController.NTPDelegate = self.NTPDelegate;
   [self.feedTopSectionMediator setUp];
 }

@@ -7,6 +7,7 @@
 
 #import <UIKit/UIKit.h>
 #import "ios/chrome/browser/ui/authentication/cells/signin_promo_view_consumer.h"
+#import "ios/chrome/browser/ui/ntp/feed_top_section/feed_top_section_mutator.h"
 #import "ios/chrome/browser/ui/ntp/feed_top_section/feed_top_section_view_controller_delegate.h"
 
 class AuthenticationService;
@@ -21,7 +22,9 @@ class IdentityManager;
 
 // Mediator for the NTP Feed top section, handling the interactions.
 @interface FeedTopSectionMediator
-    : NSObject <FeedTopSectionViewControllerDelegate, SigninPromoViewConsumer>
+    : NSObject <FeedTopSectionMutator,
+                FeedTopSectionViewControllerDelegate,
+                SigninPromoViewConsumer>
 
 - (instancetype)initWithConsumer:(id<FeedTopSectionConsumer>)consumer
                  identityManager:(signin::IdentityManager*)identityManager

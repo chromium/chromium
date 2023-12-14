@@ -139,6 +139,11 @@ NSArray<NSLayoutConstraint*>* SameConstraintsWithInsets(
 
 #pragma mark - Properties
 
+- (void)setFeedTopSectionMutator:(id<FeedTopSectionMutator>)mutator {
+  _feedTopSectionMutator = mutator;
+  self.notificationsPromoView.mutator = _feedTopSectionMutator;
+}
+
 - (void)setSigninPromoDelegate:(id<SigninPromoViewDelegate>)delegate {
   _signinPromoDelegate = delegate;
   self.signinPromoView.delegate = _signinPromoDelegate;
@@ -210,6 +215,7 @@ NSArray<NSLayoutConstraint*>* SameConstraintsWithInsets(
   NotificationsPromoView* promoView =
       [[NotificationsPromoView alloc] initWithFrame:CGRectZero];
   promoView.translatesAutoresizingMaskIntoConstraints = NO;
+  promoView.mutator = self.feedTopSectionMutator;
   return promoView;
 }
 

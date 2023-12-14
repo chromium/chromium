@@ -54,6 +54,7 @@ source_set("feed_top_section") {
 
 source_set("feed_top_section_promos_ui") {
   sources = [
+    "feed_top_section_mutator.h",
     "notifications_promo_view.h",
     "notifications_promo_view.mm",
   ]

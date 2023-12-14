@@ -8,6 +8,7 @@
 #import "base/ios/ios_util.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
+#import "ios/chrome/browser/ui/ntp/feed_top_section/feed_top_section_mutator.h"
 #import "ios/chrome/browser/ui/ntp/feed_top_section/notifications_promo_view_constants.h"
 #import "ios/chrome/common/button_configuration_util.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
@@ -214,10 +215,12 @@ constexpr CGFloat kButtonTextFontSize = 17.0;
 
 // Handles the secondary button action.
 - (void)onSecondaryButtonAction:(id)unused {
+  [self.mutator notificationsPromoViewCloseButtonWasTapped];
 }
 
 // Handles close button action.
 - (void)onCloseButtonAction:(id)unused {
+  [self.mutator notificationsPromoViewCloseButtonWasTapped];
 }
 
 @end

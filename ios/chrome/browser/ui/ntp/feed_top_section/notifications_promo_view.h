@@ -9,7 +9,11 @@
 
 #import "ios/chrome/browser/ui/ntp/feed_top_section/notifications_promo_view_constants.h"
 
+@protocol FeedTopSectionMutator;
+
 @interface NotificationsPromoView : UIView
+
+@property(nonatomic, weak) id<FeedTopSectionMutator> mutator;
 
 // Designated initializer.
 - (instancetype)initWithFrame:(CGRect)frame NS_DESIGNATED_INITIALIZER;
