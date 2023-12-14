@@ -128,6 +128,7 @@ static_library("browser") {
     "data_model/autofill_i18n_parsing_expression_components.cc",
     "data_model/autofill_i18n_parsing_expression_components.h",
     "data_model/autofill_i18n_parsing_expressions.h",
+    "data_model/autofill_i18n_stopwords.h",
     "data_model/autofill_metadata.cc",
     "data_model/autofill_metadata.h",
     "data_model/autofill_offer_data.cc",
