@@ -60,13 +60,13 @@
       }
 
       .tab-indicator {
-        background: var(--cr-tabs-selected-color, var(--google-blue-600));
+        background: var(--cr-tabs-unselected-color, var(--google-blue-600));
         border-top-left-radius: var(--cr-tabs-selection-bar-width, 2px);
         border-top-right-radius: var(--cr-tabs-selection-bar-width, 2px);
         bottom: 0;
         height: var(--cr-tabs-selection-bar-width, 2px);
         left: var(--cr-tabs-tab-inline-padding, 0);
-        opacity: 0;
+        opacity: var(--cr-tabs-selection-bar-unselected-opacity, 0);
         position: absolute;
         right: var(--cr-tabs-tab-inline-padding, 0);
         transform-origin: left center;
@@ -74,6 +74,7 @@
       }
 
       .selected .tab-indicator {
+        background: var(--cr-tabs-selected-color, var(--google-blue-600));
         opacity: 1;
       }
 
