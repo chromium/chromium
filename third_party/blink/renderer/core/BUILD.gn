@@ -1509,6 +1509,9 @@ source_set("unit_tests_v2") {
       rebase_path(blink_core_tests_permissions_policy, "", "permissions_policy")
   sources +=
       rebase_path(blink_core_tests_resize_observer, "", "resize_observer")
+  sources += rebase_path(blink_core_tests_scheduler_integration_tests,
+                         "",
+                         "scheduler_integration_tests")
   sources += rebase_path(blink_core_tests_script, "", "script")
   sources +=
       rebase_path(blink_core_tests_speculation_rules, "", "speculation_rules")
