@@ -1011,7 +1011,7 @@ Bestela, pribatutasun-ezarpenek blokeatu egingo dute baimen hori. Baimen honekin
             <ph name="LIST_ITEM" />bilaketa-historia<ph name="END_LIST_ITEM" />
             <ph name="LIST_ITEM" />inprimakietan idatzitako informazioa<ph name="END_LIST_ITEM" />
           <ph name="END_LIST" /></translation>
-<translation id="3105172416063519923">Erreproduzigaiaren identifikatzailea:</translation>
+<translation id="3105172416063519923">Erreproduzigai-identifikatzailea:</translation>
 <translation id="3107591622054137333"><ph name="BEGIN_LINK" />DNS konfigurazio segurua egiaztatzen<ph name="END_LINK" /></translation>
 <translation id="3108943290502734357">Erdiko erretilua</translation>
 <translation id="3109728660330352905">Ez duzu baimenik orri hau ikusteko.</translation>
@@ -1301,7 +1301,7 @@ Bestela, pribatutasun-ezarpenek blokeatu egingo dute baimen hori. Baimen honekin
 <translation id="3672568546897166916">Errorea (<ph name="ERROR_PATH" />): <ph name="ERROR_MESSAGE" /></translation>
 <translation id="3674751419374947706">Sare-ekipamendua</translation>
 <translation id="3675563144891642599">Hirugarren arrabola</translation>
-<translation id="3676592649209844519">Gailuaren identifikatzailea:</translation>
+<translation id="3676592649209844519">Gailu-identifikatzailea:</translation>
 <translation id="3677008721441257057">&lt;a href="#" id="dont-proceed-link"&gt;<ph name="DOMAIN" />&lt;/a&gt; esan nahi al zenuen?</translation>
 <translation id="3678029195006412963">Ezin izan da sinatu eskaera</translation>
 <translation id="3678529606614285348">Ireki orria ezkutuko moduko leiho berri batean (Ktrl-Maius-N)</translation>
@@ -1642,7 +1642,7 @@ Bestela, pribatutasun-ezarpenek blokeatu egingo dute baimen hori. Baimen honekin
 <translation id="4333295216031073611">Erosketa-zerrenda</translation>
 <translation id="4333561522337981382">Kudeatu leihoak pantaila guztietan</translation>
 <translation id="4340575312453649552">Iragarki honek gailuko baliabide gehiegi erabili ditu; ondorioz, Chrome-k kendu egin du.</translation>
-<translation id="4340810192899866471">Inportatu JSON fitxategi batetik</translation>
+<translation id="4340810192899866471">Inportatu JSON batetik</translation>
 <translation id="4340982228985273705">Ordenagailu hau ez da enpresak kudeatzen duen gailu gisa hauteman; beraz, Chrome Webstore dendan ostatatutako luzapenak soilik instala daitezke automatikoki gidalerroaren bidez. Honako hau da Chrome Webstore denda eguneratzeko URLa: "<ph name="CWS_UPDATE_URL" />".</translation>
 <translation id="4348834659292907206"><ph name="SITE" /> webgunerako konexioa ez da segurua</translation>
 <translation id="4349365535725594680">Ezin da partekatu isilpeko edukia</translation>
@@ -1852,7 +1852,7 @@ Bestela, pribatutasun-ezarpenek blokeatu egingo dute baimen hori. Baimen honekin
 <translation id="4791134497475588553">Instalatutako Linux-erako aplikazioak eta azken erabiltze-data</translation>
 <translation id="4792686369684665359">Bidaltzear zauden informazioa ez da segurua</translation>
 <translation id="4793219378458250238">27,94 × 30,48 cm (11 × 12 in)</translation>
-<translation id="4796594887379589189">Laneko kontuaren identifikatzailea</translation>
+<translation id="4796594887379589189">Laneko kontu-identifikatzailea</translation>
 <translation id="4798078619018708837"><ph name="CREDIT_CARD" /> txartelaren xehetasunak eguneratzeko, idatzi iraungitze-data eta CVCa. Datuok berresten dituzunean, webgune honekin partekatuko dira Google-ko kontuarekin lotutako txartelaren xehetasunak.</translation>
 <translation id="4798269756263412078">Jaso alertak webguneren batean prezioa jaisten bada. Helbide elektronikora bidaliko dira alertak.</translation>
 <translation id="4800132727771399293">Egiaztatu CVCa eta saiatu berriro</translation>
@@ -3167,7 +3167,7 @@ Xehetasun gehiago:
           <ph name="LIST_ITEM" />inprimakietan idatzitako informazioa
         <ph name="END_LIST" /></translation>
 <translation id="7507075214339298899">Gutun-azala 9</translation>
-<translation id="7508255263130623398">Itzuli den gidalerroaren gailuaren identifikatzailea hutsik dago edo ez dator bat gailuaren identifikatzailearekin</translation>
+<translation id="7508255263130623398">Itzuli den gidalerroaren gailu-identifikatzailea hutsik dago edo ez dator bat gailu-identifikatzailearekin</translation>
 <translation id="7508577201115425418">Dokumentuak eta inprimaketa-zerbitzuak</translation>
 <translation id="7508870219247277067">Ahuakatea</translation>
 <translation id="7510225383966760306"><ph name="BEGIN_BOLD" />Nola erabiltzen dituzte webguneek datu horiek?<ph name="END_BOLD" /> Zure interesei eta gustuei buruzko informazioa gorde dezakete webguneek Chrome-n. Adibidez, demagun maratoietarako entrenamenduei buruzko webgune batera joan zarela. Hala bada, korrika egiteko oinetakoak interesatzen zaizkizula erabakiko du agian webgune horrek. Horregatik, gero beste webgune batera joaten zarenean, baliteke korrika egiteko oinetakoen iragarki bat agertzea, lehen webguneak iradokita.</translation>
