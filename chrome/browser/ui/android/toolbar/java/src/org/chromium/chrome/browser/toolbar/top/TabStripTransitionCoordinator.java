@@ -148,6 +148,10 @@ public class TabStripTransitionCoordinator implements ComponentCallbacks {
     }
 
     private void maybeUpdateTabStripVisibility(int windowWidth) {
+        // Invalid width will be ignored. This can happen when the mControlContainer are created
+        // hidden after theme changes. See crbug.com/1511599.
+        if (windowWidth <= 0) return;
+
         boolean showTabStrip = windowWidth >= mTabStripTransitionThreshold;
         if (showTabStrip == mTabStripVisible) return;
 
