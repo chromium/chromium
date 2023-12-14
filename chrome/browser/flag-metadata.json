@@ -1120,11 +1120,6 @@
     "expiry_milestone": 120
   },
   {
-    "name": "cct-real-time-engagement-signals-alternative-impl",
-    "owners": ["sinansahin@google.com"],
-    "expiry_milestone": 120
-  },
-  {
     "name": "cct-resizable-90-maximum-height",
     "owners": ["jinsukkim@chromium.org", "twellington@chromium.org"],
     "expiry_milestone": 110
