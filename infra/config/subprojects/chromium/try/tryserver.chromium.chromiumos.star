@@ -169,7 +169,6 @@ try_.orchestrator_builder(
     experiments = {
         # go/nplus1shardsproposal
         "chromium.add_one_test_shard": 10,
-        "chromium.skip_successful_tests": 50,
     },
     main_list_view = "try",
     tryjob = try_.job(),
@@ -271,9 +270,6 @@ try_.builder(
         ],
     ),
     builderless = not settings.is_main,
-    experiments = {
-        "chromium.skip_successful_tests": 50,
-    },
     main_list_view = "try",
     tryjob = try_.job(),
 )
@@ -301,9 +297,6 @@ Lacros builder that runs Tast tests and gtests on ChromeOS devices via Skylab"""
     ),
     compilator = "lacros-amd64-generic-rel-compilator",
     contact_team_email = "chrome-desktop-engprod@google.com",
-    experiments = {
-        "chromium.skip_successful_tests": 50,
-    },
     main_list_view = "try",
     tryjob = try_.job(),
 )
@@ -355,9 +348,6 @@ try_.builder(
         ],
     ),
     builderless = not settings.is_main,
-    experiments = {
-        "chromium.skip_successful_tests": 50,
-    },
     main_list_view = "try",
     tryjob = try_.job(),
 )
@@ -416,9 +406,6 @@ try_.builder(
         ],
     ),
     builderless = not settings.is_main,
-    experiments = {
-        "chromium.skip_successful_tests": 50,
-    },
     main_list_view = "try",
     reclient_jobs = reclient.jobs.HIGH_JOBS_FOR_CQ,
     tryjob = try_.job(),
@@ -519,7 +506,6 @@ try_.orchestrator_builder(
     experiments = {
         # go/nplus1shardsproposal
         "chromium.add_one_test_shard": 10,
-        "chromium.skip_successful_tests": 50,
     },
     main_list_view = "try",
     tryjob = try_.job(),
@@ -568,7 +554,6 @@ try_.orchestrator_builder(
     experiments = {
         # go/nplus1shardsproposal
         "chromium.add_one_test_shard": 10,
-        "chromium.skip_successful_tests": 50,
     },
     main_list_view = "try",
     tryjob = try_.job(),

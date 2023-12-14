@@ -264,9 +264,6 @@ try_.builder(
     branch_selector = branches.selector.LINUX_BRANCHES,
     executable = "recipe:chromium/fuzz",
     builderless = not settings.is_main,
-    experiments = {
-        "chromium.skip_successful_tests": 50,
-    },
     main_list_view = "try",
     tryjob = try_.job(),
 )
@@ -317,7 +314,6 @@ try_.orchestrator_builder(
     experiments = {
         # go/nplus1shardsproposal
         "chromium.add_one_test_shard": 10,
-        "chromium.skip_successful_tests": 50,
     },
     main_list_view = "try",
     tryjob = try_.job(),
@@ -446,9 +442,6 @@ try_.builder(
         ],
     ),
     builderless = not settings.is_main,
-    experiments = {
-        "chromium.skip_successful_tests": 50,
-    },
     main_list_view = "try",
     reclient_jobs = reclient.jobs.HIGH_JOBS_FOR_CQ,
     siso_enabled = True,
@@ -516,7 +509,6 @@ try_.orchestrator_builder(
         # go/nplus1shardsproposal
         "chromium.add_one_test_shard": 10,
         "chromium.compilator_can_outlive_parent": 100,
-        "chromium.skip_successful_tests": 50,
     },
     main_list_view = "try",
     tryjob = try_.job(),
@@ -651,9 +643,6 @@ try_.builder(
             path = "linux_debug",
         ),
     ],
-    experiments = {
-        "chromium.skip_successful_tests": 50,
-    },
     main_list_view = "try",
     reclient_jobs = reclient.jobs.HIGH_JOBS_FOR_CQ,
     tryjob = try_.job(),
@@ -763,7 +752,6 @@ try_.orchestrator_builder(
     experiments = {
         # go/nplus1shardsproposal
         "chromium.add_one_test_shard": 10,
-        "chromium.skip_successful_tests": 50,
     },
     main_list_view = "try",
     tryjob = try_.job(),

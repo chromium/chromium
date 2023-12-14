@@ -96,7 +96,6 @@ try_.orchestrator_builder(
     experiments = {
         # go/nplus1shardsproposal
         "chromium.add_one_test_shard": 10,
-        "chromium.skip_successful_tests": 50,
     },
     main_list_view = "try",
     tryjob = try_.job(),
@@ -175,7 +174,6 @@ try_.orchestrator_builder(
         # go/nplus1shardsproposal
         "chromium.add_one_test_shard": 10,
         "chromium.compilator_can_outlive_parent": 100,
-        "chromium.skip_successful_tests": 50,
     },
     main_list_view = "try",
     tryjob = try_.job(),
@@ -833,7 +831,6 @@ try_.orchestrator_builder(
     coverage_test_types = ["unit", "overall"],
     experiments = {
         "chromium.add_one_test_shard": 10,
-        "chromium.skip_successful_tests": 50,
     },
     main_list_view = "try",
     tryjob = try_.job(),
@@ -928,9 +925,6 @@ try_.builder(
         ],
     ),
     builderless = not settings.is_main,
-    experiments = {
-        "chromium.skip_successful_tests": 50,
-    },
     main_list_view = "try",
     siso_enabled = True,
     tryjob = try_.job(),
@@ -958,9 +952,6 @@ try_.builder(
     builderless = not settings.is_main,
     cores = 32 if settings.is_main else 16,
     ssd = True,
-    experiments = {
-        "chromium.skip_successful_tests": 50,
-    },
     main_list_view = "try",
     reclient_jobs = reclient.jobs.HIGH_JOBS_FOR_CQ,
     siso_enabled = True,
@@ -1075,9 +1066,6 @@ try_.builder(
     ),
     builderless = not settings.is_main,
     contact_team_email = "cronet-team@google.com",
-    experiments = {
-        "chromium.skip_successful_tests": 50,
-    },
     main_list_view = "try",
     siso_enabled = True,
     tryjob = try_.job(),

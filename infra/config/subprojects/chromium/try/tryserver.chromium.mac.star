@@ -167,7 +167,6 @@ try_.orchestrator_builder(
     experiments = {
         # go/nplus1shardsproposal
         "chromium.add_one_test_shard": 10,
-        "chromium.skip_successful_tests": 50,
     },
     main_list_view = "try",
     tryjob = try_.job(),
@@ -444,9 +443,6 @@ try_.builder(
             "ci/Mac Builder (dbg)",
         ],
     ),
-    experiments = {
-        "chromium.skip_successful_tests": 50,
-    },
     main_list_view = "try",
     reclient_jobs = reclient.jobs.LOW_JOBS_FOR_CQ,
     tryjob = try_.job(),
@@ -592,7 +588,6 @@ try_.orchestrator_builder(
     experiments = {
         # go/nplus1shardsproposal
         "chromium.add_one_test_shard": 10,
-        "chromium.skip_successful_tests": 50,
     },
     main_list_view = "try",
     tryjob = try_.job(),
