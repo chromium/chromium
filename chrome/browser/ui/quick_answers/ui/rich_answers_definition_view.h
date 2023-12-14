@@ -20,7 +20,7 @@ class RichAnswersDefinitionView : public RichAnswersView {
 
   RichAnswersDefinitionView(const gfx::Rect& anchor_view_bounds,
                             base::WeakPtr<QuickAnswersUiController> controller,
-                            DefinitionResult& definition_result);
+                            const DefinitionResult& definition_result);
 
   RichAnswersDefinitionView(const RichAnswersDefinitionView&) = delete;
   RichAnswersDefinitionView& operator=(const RichAnswersDefinitionView&) =

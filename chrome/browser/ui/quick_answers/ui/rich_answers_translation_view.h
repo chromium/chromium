@@ -10,6 +10,7 @@
 #include "chrome/browser/ui/quick_answers/ui/rich_answers_view.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/events/event_handler.h"
+#include "ui/views/controls/webview/webview.h"
 #include "ui/views/view.h"
 
 namespace quick_answers {
@@ -21,7 +22,7 @@ class RichAnswersTranslationView : public RichAnswersView {
 
   RichAnswersTranslationView(const gfx::Rect& anchor_view_bounds,
                              base::WeakPtr<QuickAnswersUiController> controller,
-                             TranslationResult& translation_result);
+                             const TranslationResult& translation_result);
 
   RichAnswersTranslationView(const RichAnswersTranslationView&) = delete;
   RichAnswersTranslationView& operator=(const RichAnswersTranslationView&) =
@@ -32,11 +33,18 @@ class RichAnswersTranslationView : public RichAnswersView {
  private:
   void InitLayout();
   void AddLanguageTitle(const std::string& locale, bool is_header_view);
-  void AddLanguageText(const std::string& language_text);
+  views::FlexLayoutView* AddLanguageText(const std::string& language_text,
+                                         bool may_append_buttons);
+  void AddReadAndCopyButtons(views::FlexLayoutView* translated_text_view);
+  void OnReadButtonPressed(const std::string& read_text,
+                           const std::string& locale);
+  void OnCopyButtonPressed(const std::string& copy_text);
 
   raw_ptr<views::View> content_view_ = nullptr;
+  raw_ptr<views::WebView> tts_audio_web_view_ = nullptr;
 
   TranslationResult translation_result_;
+  bool should_append_buttons_ = false;
 
   base::WeakPtrFactory<RichAnswersTranslationView> weak_factory_{this};
 };

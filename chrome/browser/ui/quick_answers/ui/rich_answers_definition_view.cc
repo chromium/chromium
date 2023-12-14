@@ -21,7 +21,7 @@ namespace quick_answers {
 RichAnswersDefinitionView::RichAnswersDefinitionView(
     const gfx::Rect& anchor_view_bounds,
     base::WeakPtr<QuickAnswersUiController> controller,
-    DefinitionResult& definition_result)
+    const DefinitionResult& definition_result)
     : RichAnswersView(anchor_view_bounds,
                       controller,
                       ResultType::kDefinitionResult),

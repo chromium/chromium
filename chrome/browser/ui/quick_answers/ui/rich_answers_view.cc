@@ -59,7 +59,7 @@ constexpr int kMaximumRichCardHeight = 600;
 constexpr int kContentViewWidth = 300;
 
 // View dimensions.
-constexpr auto kMainViewInsets = gfx::Insets::TLBR(20, 20, 20, 20);
+constexpr auto kMainViewInsets = gfx::Insets::TLBR(20, 20, 8, 20);
 constexpr auto kContentViewInsets = gfx::Insets::TLBR(0, 16, 0, 0);
 
 // Buttons view.
@@ -68,11 +68,6 @@ constexpr int kSettingsButtonSizeDip = 20;
 
 // Border corner radius.
 constexpr int kBorderCornerRadius = 12;
-
-// Result type icons.
-constexpr int kResultTypeIconContainerRadius = 24;
-constexpr int kResultTypeIconSizeDip = 16;
-constexpr auto kResultTypeIconContainerInsets = gfx::Insets::TLBR(4, 4, 4, 4);
 
 // Google search link.
 constexpr auto kSearchLinkViewInsets = gfx::Insets::TLBR(6, 60, 20, 20);
@@ -241,15 +236,15 @@ void RichAnswersView::AddResultTypeIcon() {
   auto* vector_icon_container =
       main_view_->AddChildView(std::make_unique<views::FlexLayoutView>());
   vector_icon_container->SetBackground(views::CreateThemedRoundedRectBackground(
-      cros_tokens::kCrosSysPrimary, kResultTypeIconContainerRadius));
+      cros_tokens::kCrosSysPrimary, kRichAnswersIconContainerRadius));
   vector_icon_container->SetBorder(
-      views::CreateEmptyBorder(kResultTypeIconContainerInsets));
+      views::CreateEmptyBorder(kRichAnswersIconBorderDip));
 
   vector_icon_ =
       vector_icon_container->AddChildView(std::make_unique<views::ImageView>());
   vector_icon_->SetImage(ui::ImageModel::FromVectorIcon(
       GetResultTypeIcon(result_type_), cros_tokens::kCrosSysSystemBaseElevated,
-      /*icon_size=*/kResultTypeIconSizeDip));
+      /*icon_size=*/kRichAnswersIconSizeDip));
 }
 
 void RichAnswersView::AddSettingsButtonTo(views::View* container_view) {
@@ -278,7 +273,6 @@ void RichAnswersView::AddSettingsButtonTo(views::View* container_view) {
 void RichAnswersView::AddHeaderViewsTo(views::View* container_view,
                                        const std::string& header_text) {
   auto* header_view = AddFillLayoutChildView(container_view);
-  header_view->SetProperty(views::kMarginsKey, kUnderLineIndentation);
   auto* header_label_container = header_view->AddChildView(
       views::Builder<views::FlexLayoutView>()
           .SetOrientation(views::LayoutOrientation::kHorizontal)
