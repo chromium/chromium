@@ -260,9 +260,16 @@ bool CanvasRenderingContext2D::WritePixels(const SkImageInfo& orig_info,
                                                          row_bytes, x, y);
 }
 
-void CanvasRenderingContext2D::WillOverwriteCanvas() {
-  if (IsPaintable())
-    canvas()->GetCanvas2DLayerBridge()->WillOverwriteCanvas();
+void CanvasRenderingContext2D::SkipQueuedDrawCommands() {
+  if (Host() && Host()->ResourceProvider()) {
+    Host()->ResourceProvider()->SkipQueuedDrawCommands();
+  }
+}
+
+void CanvasRenderingContext2D::RestartRecording() {
+  if (Host() && Host()->ResourceProvider()) {
+    Host()->ResourceProvider()->RestartRecording();
+  }
 }
 
 void CanvasRenderingContext2D::Reset() {

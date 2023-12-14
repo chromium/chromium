@@ -164,9 +164,6 @@ void Canvas2DLayerBridge::LoseContext() {
     return;
   }
 
-  SkipQueuedDrawCommands();
-  DCHECK(!resource_host_->ResourceProvider()->HasRecordedDrawOps());
-
   // Frees canvas resource.
   lose_context_in_background_ = true;
   ResetResourceProvider();
@@ -315,13 +312,15 @@ bool Canvas2DLayerBridge::WritePixels(const SkImageInfo& orig_info,
                                       int x,
                                       int y) {
   CHECK(resource_host_);
-  if (!GetOrCreateResourceProvider())
+  CanvasResourceProvider* provider = GetOrCreateResourceProvider();
+  if (provider == nullptr) {
     return false;
+  }
 
   if (x <= 0 && y <= 0 &&
       x + orig_info.width() >= resource_host_->Size().width() &&
       y + orig_info.height() >= resource_host_->Size().height()) {
-    SkipQueuedDrawCommands();
+    provider->SkipQueuedDrawCommands();
   } else {
     FlushRecording(FlushReason::kWritePixels);
     if (!GetOrCreateResourceProvider())
@@ -329,10 +328,6 @@ bool Canvas2DLayerBridge::WritePixels(const SkImageInfo& orig_info,
   }
 
   return ResourceProvider()->WritePixels(orig_info, pixels, row_bytes, x, y);
-}
-
-void Canvas2DLayerBridge::SkipQueuedDrawCommands() {
-  ResourceProvider()->SkipQueuedDrawCommands();
 }
 
 void Canvas2DLayerBridge::FlushRecording(FlushReason reason) {
@@ -440,10 +435,6 @@ scoped_refptr<StaticBitmapImage> Canvas2DLayerBridge::NewImageSnapshot(
   if (!GetOrCreateResourceProvider())
     return nullptr;
   return ResourceProvider()->Snapshot(reason);
-}
-
-void Canvas2DLayerBridge::WillOverwriteCanvas() {
-  SkipQueuedDrawCommands();
 }
 
 void Canvas2DLayerBridge::Logger::ReportHibernationEvent(

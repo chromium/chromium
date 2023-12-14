@@ -1717,15 +1717,35 @@ scoped_refptr<CanvasResource> CanvasResourceProvider::GetImportedResource()
 }
 
 void CanvasResourceProvider::SkipQueuedDrawCommands() {
-  // Note that this function only gets called when canvas needs a full repaint,
-  // so always update the |mode_| to discard the old copy of canvas content.
+  // Notify the provider that the recording has been cleared.
+  RecordingCleared();
+
+  // If no draw calls have been recorded, we have nothing to skip. The recoding
+  // could still contain layers or matrix clip stack levels. As an optimization,
+  // we can early abort as there is no need to discard the layer matrix clip
+  // stack just to rebuild it again.
+  if (!HasRecordedDrawOps()) {
+    return;
+  }
+
+  // Discards the whole recording and rebuilds the layer and matrix clip stack.
+  recorder_.finishRecordingAsPicture();
+}
+
+void CanvasResourceProvider::RestartRecording() {
+  // Notify the provider that the recording has been cleared.
+  RecordingCleared();
+  // Discard the whole recording and re-initialize it.
+  recorder_.finishRecordingAsPicture();
+}
+
+void CanvasResourceProvider::RecordingCleared() {
+  // The recording was cleared from any draw command it might have had.
+  // It's now safe to update `mode_` to discard the old copy of canvas content.
   mode_ = SkSurface::kDiscard_ContentChangeMode;
   clear_frame_ = true;
   last_flush_reason_ = FlushReason::kNone;
   printing_fallback_reason_ = FlushReason::kNone;
-  if (!HasRecordedDrawOps())
-    return;
-  recorder_.finishRecordingAsPicture();
 }
 
 void CanvasResourceProvider::RestoreBackBuffer(const cc::PaintImage& image) {

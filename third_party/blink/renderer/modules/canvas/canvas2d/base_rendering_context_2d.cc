@@ -434,23 +434,18 @@ void BaseRenderingContext2D::ResetInternal() {
   state_stack_.front() = MakeGarbageCollected<CanvasRenderingContext2DState>();
   layer_count_ = 0;
   SetIsTransformInvertible(true);
-  Clear();
+  CanvasPath::Clear();
+  RestartRecording();
+
+  // Clear the frame in case a flush previously drew to the canvas surface.
   if (cc::PaintCanvas* c = GetPaintCanvas()) {
-    // The canvas should always have an initial/unbalanced save frame, which
-    // we use to reset the top level matrix and clip here.
-    c->restoreToCount(1);
-    // Save once, to match the first entry in `state_stack_`.
-    c->save();
-    DCHECK(c->getLocalToDevice() == SkM44());
-#if DCHECK_IS_ON()
-    SkIRect clip_bounds;
-    DCHECK(c->getDeviceClipBounds(&clip_bounds));
-    DCHECK(clip_bounds == c->imageInfo().bounds());
-#endif
-    // We only want to clear the backing buffer if the surface exists because
-    // this function is also used when the context is lost.
-    clearRect(0, 0, Width(), Height(), /*for_reset=*/true);
+    int width = Width();  // Keeping results to avoid repetitive virtual calls.
+    int height = Height();
+    WillDraw(SkIRect::MakeXYWH(0, 0, width, height),
+             CanvasPerformanceMonitor::DrawType::kOther);
+    c->drawRect(SkRect::MakeXYWH(0.0f, 0.0f, width, height), GetClearFlags());
   }
+
   ValidateStateStack();
   origin_tainted_by_content_ = false;
 }
@@ -1432,11 +1427,21 @@ bool BaseRenderingContext2D::IsPointInStrokeInternal(const Path& path,
   return path.StrokeContains(transformed_point, stroke_data, ctm);
 }
 
+cc::PaintFlags BaseRenderingContext2D::GetClearFlags() const {
+  cc::PaintFlags clear_flags;
+  clear_flags.setStyle(cc::PaintFlags::kFill_Style);
+  if (HasAlpha()) {
+    clear_flags.setBlendMode(SkBlendMode::kClear);
+  } else {
+    clear_flags.setColor(SK_ColorBLACK);
+  }
+  return clear_flags;
+}
+
 void BaseRenderingContext2D::clearRect(double x,
                                        double y,
                                        double width,
-                                       double height,
-                                       bool for_reset) {
+                                       double height) {
   if (!ValidateRectForCanvas(x, y, width, height))
     return;
 
@@ -1455,13 +1460,7 @@ void BaseRenderingContext2D::clearRect(double x,
                                                 width, height);
   }
 
-  cc::PaintFlags clear_flags;
-  clear_flags.setStyle(cc::PaintFlags::kFill_Style);
-  if (HasAlpha()) {
-    clear_flags.setBlendMode(SkBlendMode::kClear);
-  } else {
-    clear_flags.setColor(SK_ColorBLACK);
-  }
+  cc::PaintFlags clear_flags = GetClearFlags();
 
   // clamp to float to avoid float cast overflow when used as SkScalar
   AdjustRectForCanvas(x, y, width, height);
@@ -1472,15 +1471,8 @@ void BaseRenderingContext2D::clearRect(double x,
 
   gfx::RectF rect(fx, fy, fwidth, fheight);
   if (RectContainsTransformedRect(rect, clip_bounds)) {
-    if (for_reset) {
-      // In the reset case, we can use kUntransformedUnclippedFill because we
-      // know the state state was reset.
-      CheckOverdraw(&clear_flags, CanvasRenderingContext2DState::kNoImage,
-                    OverdrawOp::kContextReset);
-    } else {
-      CheckOverdraw(&clear_flags, CanvasRenderingContext2DState::kNoImage,
-                    OverdrawOp::kClearRect);
-    }
+    CheckOverdraw(&clear_flags, CanvasRenderingContext2DState::kNoImage,
+                  OverdrawOp::kClearRect);
     WillDraw(clip_bounds, CanvasPerformanceMonitor::DrawType::kOther);
     c->drawRect(gfx::RectFToSkRect(rect), clear_flags);
   } else {
@@ -2549,7 +2541,7 @@ void BaseRenderingContext2D::WillOverwriteCanvas(
     }
   }
 
-  WillOverwriteCanvas();
+  SkipQueuedDrawCommands();
 }
 
 void BaseRenderingContext2D::WillUseCurrentFont() const {

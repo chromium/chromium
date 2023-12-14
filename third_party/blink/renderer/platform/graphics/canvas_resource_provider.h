@@ -243,7 +243,17 @@ class PLATFORM_EXPORT CanvasResourceProvider
 
   FlushReason printing_fallback_reason() { return printing_fallback_reason_; }
 
+  // Drops all draw ops from the recording while preserving the layer and matrix
+  // clip stack. This is done by discarding the whole recording and rebuilding
+  // the layer and matrix clip stack. If the recording contains no draw calls,
+  // the flush and stack rebuild is optimized out.
   void SkipQueuedDrawCommands();
+  // Restarts the whole recording. This will rebuild the layer and matrix clip
+  // stack, but since this function is meant to be called after resetting the
+  // canvas state stack, the matrix clip stack should be rebuilt to it's default
+  // initial state.
+  void RestartRecording();
+
   void RestoreBackBuffer(const cc::PaintImage&);
 
   ResourceProviderType GetType() const { return type_; }
@@ -352,6 +362,9 @@ class PLATFORM_EXPORT CanvasResourceProvider
   void EnsureSkiaCanvas();
 
   void Clear();
+
+  // Called after the recording was cleared from any draw ops it might have had.
+  void RecordingCleared();
 
   base::WeakPtr<WebGraphicsContext3DProviderWrapper> context_provider_wrapper_;
   base::WeakPtr<CanvasResourceDispatcher> resource_dispatcher_;

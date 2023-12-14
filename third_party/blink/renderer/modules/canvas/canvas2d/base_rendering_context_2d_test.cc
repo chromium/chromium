@@ -136,7 +136,8 @@ class TestRenderingContext2D final
     return PredefinedColorSpace::kSRGB;
   }
 
-  void WillOverwriteCanvas() override {}
+  void SkipQueuedDrawCommands() override { RestartRecording(); }
+  void RestartRecording() override { recorder_.finishRecordingAsPicture(); }
 
   HTMLCanvasElement* HostAsHTMLCanvasElement() const override {
     return host_canvas_element_;

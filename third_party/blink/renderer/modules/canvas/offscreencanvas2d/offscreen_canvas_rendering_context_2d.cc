@@ -364,8 +364,18 @@ bool OffscreenCanvasRenderingContext2D::WritePixels(
       orig_info, pixels, row_bytes, x, y);
 }
 
-void OffscreenCanvasRenderingContext2D::WillOverwriteCanvas() {
-  GetCanvasResourceProvider()->SkipQueuedDrawCommands();
+void OffscreenCanvasRenderingContext2D::SkipQueuedDrawCommands() {
+  if (CanvasResourceProvider* provider = GetCanvasResourceProvider();
+      provider != nullptr) {
+    provider->SkipQueuedDrawCommands();
+  }
+}
+
+void OffscreenCanvasRenderingContext2D::RestartRecording() {
+  if (CanvasResourceProvider* provider = GetCanvasResourceProvider();
+      provider != nullptr) {
+    provider->RestartRecording();
+  }
 }
 
 bool OffscreenCanvasRenderingContext2D::ResolveFont(const String& new_font) {
