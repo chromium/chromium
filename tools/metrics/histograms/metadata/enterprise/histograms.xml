@@ -2033,6 +2033,18 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Enterprise.InstallAttributes.ValidOnEnrolledDevice"
+    enum="Boolean" expires_after="2024-12-07">
+  <owner>igorcov@chromium.org</owner>
+  <owner>emaxx@chromium.org</owner>
+  <owner>chromeos-commercial-remote-management@google.com</owner>
+  <summary>
+    Whether the install attributes are valid on the enrolled device. Device is
+    determined to be enrolled based on the device policy. The check is performed
+    at device boot.
+  </summary>
+</histogram>
+
 <histogram name="Enterprise.InvalidDevicePolicyFilesStatus"
     enum="InvalidDevicePolicyFilesStatus" expires_after="2024-04-28">
   <owner>emaxx@chromium.org</owner>
