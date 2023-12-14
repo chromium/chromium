@@ -155,26 +155,23 @@ LayoutObject* HTMLVideoElement::CreateLayoutObject(const ComputedStyle&) {
 
 void HTMLVideoElement::AttachLayoutTree(AttachContext& context) {
   HTMLMediaElement::AttachLayoutTree(context);
-  UpdatePosterImage();
+  // Initiate loading of the poster image if a default poster image is
+  // specified and no poster has been loaded (=> no ImageLoader created).
+  if (!default_poster_url_.empty() && !image_loader_) {
+    UpdatePosterImage();
+  }
+  if (image_loader_ && GetLayoutObject()) {
+    LayoutImageResource* layout_image_resource =
+        To<LayoutImage>(*GetLayoutObject()).ImageResource();
+    layout_image_resource->SetImageResource(image_loader_->GetContent());
+  }
 }
 
 void HTMLVideoElement::UpdatePosterImage() {
-  ImageResourceContent* image_content = nullptr;
-
-  // Load the poster if set, |VideoLayout| will decide whether to draw it.
-  if (!PosterImageURL().IsEmpty()) {
-    if (!image_loader_)
-      image_loader_ = MakeGarbageCollected<HTMLImageLoader>(this);
-    image_loader_->UpdateFromElement();
-    image_content = image_loader_->GetContent();
+  if (!image_loader_) {
+    image_loader_ = MakeGarbageCollected<HTMLImageLoader>(this);
   }
-
-  if (GetLayoutObject()) {
-    To<LayoutImage>(GetLayoutObject())
-        ->ImageResource()
-        ->SetImageResource(image_content);
-    UpdateLayoutObject();
-  }
+  image_loader_->UpdateFromElement();
 }
 
 void HTMLVideoElement::CollectStyleForPresentationAttribute(
@@ -206,12 +203,16 @@ bool HTMLVideoElement::IsPresentationAttribute(
 void HTMLVideoElement::ParseAttribute(
     const AttributeModificationParams& params) {
   if (params.name == html_names::kPosterAttr) {
-    UpdatePosterImage();
-
+    const KURL poster_image_url = PosterImageURL();
+    // Load the poster if set, |VideoPainter| will decide whether to draw
+    // it. Only create an ImageLoader if a non-empty URL is seen.
+    if (image_loader_ || !poster_image_url.IsEmpty()) {
+      UpdatePosterImage();
+    }
     // Notify the player when the poster image URL changes.
-    if (GetWebMediaPlayer())
-      GetWebMediaPlayer()->SetPoster(PosterImageURL());
-
+    if (GetWebMediaPlayer()) {
+      GetWebMediaPlayer()->SetPoster(poster_image_url);
+    }
     // Media remoting and picture in picture doesn't show the original poster
     // image, instead, it shows a grayscaled and blurred copy.
     if (remoting_interstitial_)
@@ -489,6 +490,9 @@ void HTMLVideoElement::DidMoveToNewDocument(Document& old_document) {
 
   wake_lock_->ElementDidMoveToNewDocument();
   HTMLMediaElement::DidMoveToNewDocument(old_document);
+  if (image_loader_) {
+    image_loader_->UpdateFromElement();
+  }
 }
 
 unsigned HTMLVideoElement::webkitDecodedFrameCount() const {

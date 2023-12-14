@@ -731,7 +731,7 @@ bool ImageLoader::ShouldLoadImmediately(const KURL& url) const {
   }
 
   return (IsA<HTMLObjectElement>(*element_) ||
-          IsA<HTMLEmbedElement>(*element_));
+          IsA<HTMLEmbedElement>(*element_) || IsA<HTMLVideoElement>(*element_));
 }
 
 void ImageLoader::ImageChanged(ImageResourceContent* content,
