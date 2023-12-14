@@ -7,6 +7,7 @@
 #include <ostream>
 
 #include "base/check_op.h"
+#include "base/compiler_specific.h"
 #include "base/debug/crash_logging.h"
 #include "base/lazy_instance.h"
 #include "base/memory/ptr_util.h"
@@ -160,14 +161,17 @@ void SampleVectorBase::Accumulate(Sample value, Count count) {
   }
 
   // Handle the multi-sample case.
-  Count new_value =
+  Count new_bucket_count =
       subtle::NoBarrier_AtomicIncrement(&counts()[bucket_index], count);
   IncreaseSumAndCount(strict_cast<int64_t>(count) * value, count);
 
   // TODO(bcwhite) Remove after crbug.com/682680.
-  Count old_value = new_value - count;
-  if ((new_value >= 0) != (old_value >= 0) && count > 0)
+  Count old_bucket_count = new_bucket_count - count;
+  bool record_negative_sample =
+      (new_bucket_count >= 0) != (old_bucket_count >= 0) && count > 0;
+  if (UNLIKELY(record_negative_sample)) {
     RecordNegativeSample(SAMPLES_ACCUMULATE_OVERFLOW, count);
+  }
 }
 
 Count SampleVectorBase::GetCount(Sample value) const {
