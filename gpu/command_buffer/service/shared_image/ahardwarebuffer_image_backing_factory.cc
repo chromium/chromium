@@ -175,7 +175,8 @@ unsigned int AHardwareBufferFormat(viz::SharedImageFormat format) {
 }
 
 constexpr uint32_t kSupportedUsage =
-    SHARED_IMAGE_USAGE_GLES2 | SHARED_IMAGE_USAGE_GLES2_FRAMEBUFFER_HINT |
+    SHARED_IMAGE_USAGE_GLES2_READ | SHARED_IMAGE_USAGE_GLES2_WRITE |
+    SHARED_IMAGE_USAGE_GLES2_FRAMEBUFFER_HINT |
     SHARED_IMAGE_USAGE_DISPLAY_WRITE | SHARED_IMAGE_USAGE_DISPLAY_READ |
     SHARED_IMAGE_USAGE_RASTER | SHARED_IMAGE_USAGE_OOP_RASTERIZATION |
     SHARED_IMAGE_USAGE_SCANOUT | SHARED_IMAGE_USAGE_WEBGPU |
@@ -677,9 +678,9 @@ AHardwareBufferImageBackingFactory::AHardwareBufferImageBackingFactory(
   // backing for import into GL)? We may use an AHardwareBuffer exclusively
   // with Vulkan, where there is no need to require that a GL context is
   // current. Maybe we can lazy init this if someone tries to create an
-  // AHardwareBuffer with SHARED_IMAGE_USAGE_GLES2 ||
-  // !gpu_preferences.enable_vulkan. When in Vulkan mode, we should only need
-  // this with GLES2.
+  // AHardwareBuffer with SHARED_IMAGE_USAGE_GLES2_READ |
+  // SHARED_IMAGE_USAGE_GLES2_WRITE || !gpu_preferences.enable_vulkan. When in
+  // Vulkan mode, we should only need this with GLES2.
   gl::GLApi* api = gl::g_current_gl_context;
   api->glGetIntegervFn(GL_MAX_TEXTURE_SIZE, &max_gl_texture_size_);
 
