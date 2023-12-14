@@ -432,8 +432,7 @@ IN_PROC_BROWSER_TEST_F(FindInPageTest, FocusRestoreOnTabSwitch) {
   RunTestSequence(
       // Open tab A and search for 'a'.
       InstrumentTab(kTabId), NavigateWebContents(kTabId, page_a),
-      WaitForWebContentsReady(kTabId),
-      ObserveState(views::test::kCurrentWidgetFocus), ShowFindBar(),
+      WaitForWebContentsReady(kTabId), ShowFindBar(),
       EnterText(FindBarView::kTextField, kSearchA),
       CheckViewProperty(FindBarView::kElementId, &FindBarView::GetFindText,
                         kSearchA),
@@ -454,42 +453,26 @@ IN_PROC_BROWSER_TEST_F(FindInPageTest, FocusRestoreOnTabSwitch) {
       CheckViewProperty(kOmniboxElementId, &views::View::HasFocus, true));
 }
 
-IN_PROC_BROWSER_TEST_F(LegacyFindInPageTest, FocusRestoreOnTabSwitchDismiss) {
-  ASSERT_TRUE(ui_test_utils::BringBrowserWindowToFront(browser()));
-  ASSERT_TRUE(embedded_test_server()->Start());
+IN_PROC_BROWSER_TEST_F(FindInPageTest, FocusRestoreOnTabSwitchDismiss) {
+  const GURL page_a = embedded_test_server()->GetURL("/a.html");
+  const GURL page_b = embedded_test_server()->GetURL("/b.html");
 
-  // First we navigate to our test page (tab A).
-  GURL url = embedded_test_server()->GetURL(kSimplePage);
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
-
-  chrome::Find(browser());
-  EXPECT_TRUE(IsViewFocused(browser(), VIEW_ID_FIND_IN_PAGE_TEXT_FIELD));
-
-  auto* contents =
-      chrome::AddSelectedTabWithURL(browser(), url, ui::PAGE_TRANSITION_TYPED);
-  content::WaitForLoadStop(contents);
-
-  // Make sure Find box is not open when starting the new tab.
-  EXPECT_FALSE(IsViewFocused(browser(), VIEW_ID_FIND_IN_PAGE_TEXT_FIELD));
-
-  // Select tab A. Find bar should get focus.
-  browser()->tab_strip_model()->ActivateTabAt(
-      0, TabStripUserGestureDetails(
-             TabStripUserGestureDetails::GestureType::kOther));
-  EXPECT_TRUE(IsViewFocused(browser(), VIEW_ID_FIND_IN_PAGE_TEXT_FIELD));
-
-  // Dismiss the Find box. Focus should go to the content view.
-  ASSERT_TRUE(ui_test_utils::SendKeyPressSync(browser(), ui::VKEY_ESCAPE, false,
-                                              false, false, false));
-
-  // Wait until the focus settles.
-  content::RunUntilInputProcessed(browser()
-                                      ->tab_strip_model()
-                                      ->GetActiveWebContents()
-                                      ->GetRenderWidgetHostView()
-                                      ->GetRenderWidgetHost());
-  ASSERT_FALSE(IsFindBarVisible());
-  EXPECT_TRUE(IsViewFocused(browser(), VIEW_ID_TAB_CONTAINER));
+  RunTestSequence(
+      // Open tab A and show the Find bar.
+      InstrumentTab(kTabId), NavigateWebContents(kTabId, page_a), ShowFindBar(),
+      EnsurePresent(FindBarView::kElementId),
+      CheckViewProperty(FindBarView::kTextField, &views::View::HasFocus, true),
+      // // Open tab B.
+      AddInstrumentedTab(kTabBId, page_b),
+      EnsureNotPresent(FindBarView::kElementId),
+      // Switch to tab A, the Find bar should get focus.
+      SelectTab(kTabStripElementId, 0), EnsurePresent(FindBarView::kElementId),
+      CheckViewProperty(FindBarView::kTextField, &views::View::HasFocus, true),
+      // Dismiss the Find bar, the content view should get focus.
+      SendKeyPress(ui::VKEY_ESCAPE, false, false),
+      EnsureNotPresent(FindBarView::kElementId),
+      CheckViewProperty(ContentsWebView::kContentsWebViewElementId,
+                        &views::View::HasFocus, true));
 }
 
 // FindInPage on Mac doesn't use prepopulated values. Search there is global.
