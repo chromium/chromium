@@ -403,10 +403,11 @@ LogBuffer& operator<<(LogBuffer& out, const AutofillUploadContents& upload) {
   return out;
 }
 
-// Returns true if an upload of `form` triggered by `form.submission_source()`
-// can be throttled/suppressed. This is true if `prefs` indicates that this
-// upload has already happened within the last update window. Updates `prefs`
-// account for the upload for `form`.
+// Returns true if an upload of a form with `form_signature`, triggered by
+// `form_submission_source` can be throttled/suppressed. This is true if
+// `pref_service` indicates that this upload has already happened within the
+// last update window. Updates `pref_service` account for the upload of a form
+// with `form_signature`.
 bool CanThrottleUpload(FormSignature form_signature,
                        mojom::SubmissionSource form_submission_source,
                        base::TimeDelta throttle_reset_period,
