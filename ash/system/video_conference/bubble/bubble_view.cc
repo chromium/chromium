@@ -7,11 +7,14 @@
 #include <memory>
 
 #include "ash/resources/vector_icons/vector_icons.h"
+#include "ash/shell.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/style/typography.h"
+#include "ash/system/camera/camera_effects_controller.h"
 #include "ash/system/tray/tray_bubble_view.h"
 #include "ash/system/video_conference/bubble/bubble_view_ids.h"
 #include "ash/system/video_conference/bubble/return_to_app_panel.h"
+#include "ash/system/video_conference/bubble/set_camera_background_view.h"
 #include "ash/system/video_conference/bubble/set_value_effects_view.h"
 #include "ash/system/video_conference/bubble/toggle_effects_view.h"
 #include "ash/system/video_conference/effects/video_conference_tray_effects_manager.h"
@@ -19,6 +22,7 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "chromeos/crosapi/mojom/video_conference.mojom.h"
+#include "media/capture/video/chromeos/mojom/effects_pipeline.mojom.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/models/image_model.h"
@@ -40,6 +44,10 @@ namespace {
 constexpr int kLinuxAppWarningViewTopPadding = 12;
 constexpr int kLinuxAppWarningViewSpacing = 1;
 constexpr int kLinuxAppWarningIconSize = 16;
+
+CameraEffectsController* GetCameraEffectsController() {
+  return Shell::Get()->camera_effects_controller();
+}
 
 // Check if there's a linux app in the given `apps`.
 bool HasLinuxApps(const MediaApps& apps) {
@@ -164,6 +172,13 @@ void BubbleView::AddedToWidget() {
     scroll_contents_view->AddChildView(
         std::make_unique<SetValueEffectsView>(controller_));
   }
+
+  if (features::IsVcBackgroundReplaceEnabled()) {
+    set_camera_background_view_ = scroll_contents_view->AddChildView(
+        std::make_unique<SetCameraBackgroundView>());
+    set_camera_background_view_->SetVisible(
+        GetCameraEffectsController()->GetCameraEffects()->replace_enabled);
+  }
 }
 
 void BubbleView::ChildPreferredSizeChanged(View* child) {
@@ -173,6 +188,14 @@ void BubbleView::ChildPreferredSizeChanged(View* child) {
 
 bool BubbleView::CanActivate() const {
   return true;
+}
+
+void BubbleView::SetBackgroundReplaceUiVisible(bool visible) {
+  CHECK(features::IsVcBackgroundReplaceEnabled() && set_camera_background_view_)
+      << "Can't show set_camera_background_view before it is constructed.";
+
+  set_camera_background_view_->SetVisible(visible);
+  ChildPreferredSizeChanged(set_camera_background_view_);
 }
 
 BEGIN_METADATA(BubbleView, TrayBubbleView)

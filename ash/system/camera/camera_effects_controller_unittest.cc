@@ -280,10 +280,7 @@ TEST_F(CameraEffectsControllerTest, BackgroundBlurOnEffectControlActivated) {
   }
 
   // Invalid background blur effect state should set the state to kOff.
-  SetBackgroundBlurEffectState(
-      static_cast<int>(
-          CameraEffectsController::BackgroundBlurPrefValue::kMaximum) +
-      1);
+  SetBackgroundBlurEffectState(100);
   EXPECT_EQ(GetBackgroundBlurPref(),
             CameraEffectsController::BackgroundBlurPrefValue::kOff);
   EXPECT_EQ(GetBackgroundBlurEffectState(),
@@ -500,6 +497,9 @@ TEST_F(CameraEffectsControllerTest, CameraFramingToggle) {
 }
 
 TEST_F(CameraEffectsControllerTest, SetBackgroundImageWithFileExists) {
+  base::test::ScopedFeatureList scoped_feature_list{
+      features::kVcBackgroundReplace};
+
   SimulateUserLogin(kTestAccount);
   camera_effects_controller()->set_camera_background_img_dir_for_testing(
       camera_background_img_dir_);
@@ -545,6 +545,9 @@ TEST_F(CameraEffectsControllerTest, SetBackgroundImageWithFileExists) {
 }
 
 TEST_F(CameraEffectsControllerTest, SetBackgroundImageWithFileDoesNotExist) {
+  base::test::ScopedFeatureList scoped_feature_list{
+      features::kVcBackgroundReplace};
+
   SimulateUserLogin(kTestAccount);
   camera_effects_controller()->set_camera_background_img_dir_for_testing(
       camera_background_img_dir_);
@@ -572,6 +575,9 @@ TEST_F(CameraEffectsControllerTest, SetBackgroundImageWithFileDoesNotExist) {
 }
 
 TEST_F(CameraEffectsControllerTest, SetBackgroundImageFromContent) {
+  base::test::ScopedFeatureList scoped_feature_list{
+      features::kVcBackgroundReplace};
+
   SimulateUserLogin(kTestAccount);
   camera_effects_controller()->set_camera_background_img_dir_for_testing(
       camera_background_img_dir_);

@@ -167,6 +167,10 @@ class ASH_EXPORT VideoConferenceTray
   // to the state in `VideoConferenceTrayController`.
   void UpdateTrayAndIconsState();
 
+  // Sets the visibility of the view `SetCameraBackgroundView' in the
+  // 'BubbleView`.
+  void SetBackgroundReplaceUiVisible(bool visible);
+
   IconButton* GetToggleBubbleButtonForTest();
 
  private:

@@ -17,6 +17,8 @@ aggregate_vector_icons("ash_vector_icons") {
     "adaptive_charging_nudge_light.icon",
     "add_cellular_network.icon",
     "add_cellular_network_rtl.icon",
+    "ai_image.icon",
+    "ai_wand.icon",
     "always_show_shelf.icon",
     "app_compat_resizable.icon",
     "auto_hide.icon",

@@ -48,6 +48,7 @@ class ASH_EXPORT CameraEffectsController : public AutozoomObserver,
     kMedium = 2,
     kHeavy = 3,
     kMaximum = 4,
+    kImage = 5
   };
 
   // This enum contains all the state of the background blur effect. This enum
@@ -62,7 +63,8 @@ class ASH_EXPORT CameraEffectsController : public AutozoomObserver,
     kMedium = 3,
     kHeavy = 4,
     kMaximum = 5,
-    kMaxValue = kMaximum
+    kImage = 6,
+    kMaxValue = kImage
   };
 
   // Information of a single background image file used in the ui.

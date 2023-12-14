@@ -2273,6 +2273,8 @@ component("ash") {
     "system/video_conference/bubble/return_to_app_button_base.h",
     "system/video_conference/bubble/return_to_app_panel.cc",
     "system/video_conference/bubble/return_to_app_panel.h",
+    "system/video_conference/bubble/set_camera_background_view.cc",
+    "system/video_conference/bubble/set_camera_background_view.h",
     "system/video_conference/bubble/set_value_effects_view.cc",
     "system/video_conference/bubble/set_value_effects_view.h",
     "system/video_conference/bubble/toggle_effects_view.cc",

@@ -45,6 +45,7 @@
 #include "ui/gfx/scoped_canvas.h"
 #include "ui/views/controls/button/button_controller.h"
 #include "ui/views/controls/highlight_path_generator.h"
+#include "ui/views/view_utils.h"
 
 namespace ash {
 
@@ -541,6 +542,14 @@ void VideoConferenceTray::ConstructBubbleWithMediaApps(MediaApps apps) {
   bubble_->ShowBubble(std::move(bubble_view));
 
   toggle_bubble_button_->SetToggled(true);
+}
+
+void VideoConferenceTray::SetBackgroundReplaceUiVisible(bool visible) {
+  auto* bubble_view = GetBubbleView();
+  if (bubble_view) {
+    views::AsViewClass<video_conference::BubbleView>(bubble_view)
+        ->SetBackgroundReplaceUiVisible(visible);
+  }
 }
 
 BEGIN_METADATA(VideoConferenceTray, TrayBackgroundView)
