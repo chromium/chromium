@@ -3453,87 +3453,82 @@ const FeatureEntry::FeatureVariation
          std::size(kTPCPhaseOutFacilitatedTestingForceControl2), nullptr},
 };
 
-const FeatureEntry::FeatureParam kTpcdHeuristicsGrantsControl[] = {
-    {content_settings::features::kTpcdReadHeuristicsGrantsName, "false"}};
-const FeatureEntry::FeatureParam kTpcdHeuristicsGrantsCurrentInteraction[] = {
-    {content_settings::features::kTpcdReadHeuristicsGrantsName, "true"},
-    {tpcd::experiment::kTpcdWritePopupCurrentInteractionHeuristicsGrantsName,
-     "30d"}};
 const FeatureEntry::FeatureParam
-    kTpcdHeuristicsGrantsCurrentInteractionWithBackfill[] = {
-        {content_settings::features::kTpcdReadHeuristicsGrantsName, "true"},
-        {tpcd::experiment::
-             kTpcdWritePopupCurrentInteractionHeuristicsGrantsName,
-         "30d"},
-        {tpcd::experiment::kTpcdBackfillPopupHeuristicsGrantsName, "30d"}};
+    kTpcdHeuristicsGrants_CurrentInteraction_ShortRedirect_MainFrameInitiator
+        [] = {
+            {content_settings::features::kTpcdReadHeuristicsGrantsName, "true"},
+            {tpcd::experiment::
+                 kTpcdWritePopupCurrentInteractionHeuristicsGrantsName,
+             "30d"},
+            {tpcd::experiment::kTpcdBackfillPopupHeuristicsGrantsName, "30d"},
+            {tpcd::experiment::kTpcdPopupHeuristicEnableForIframeInitiatorName,
+             "none"},
+            {tpcd::experiment::kTpcdWriteRedirectHeuristicGrantsName, "15m"},
+            {tpcd::experiment::kTpcdRedirectHeuristicRequireABAFlowName,
+             "true"},
+            {tpcd::experiment::
+                 kTpcdRedirectHeuristicRequireCurrentInteractionName,
+             "true"}};
 const FeatureEntry::FeatureParam
-    kTpcdHeuristicsGrantsCurrentInteractionAndShortRedirect[] = {
-        {content_settings::features::kTpcdReadHeuristicsGrantsName, "true"},
-        {tpcd::experiment::
-             kTpcdWritePopupCurrentInteractionHeuristicsGrantsName,
-         "30d"},
-        {tpcd::experiment::kTpcdWriteRedirectHeuristicGrantsName, "15m"},
-        {tpcd::experiment::kTpcdRedirectHeuristicRequireABAFlowName, "true"},
-        {tpcd::experiment::kTpcdRedirectHeuristicRequireCurrentInteractionName,
-         "true"}};
+    kTpcdHeuristicsGrants_CurrentInteraction_LongRedirect_MainFrameInitiator[] =
+        {{content_settings::features::kTpcdReadHeuristicsGrantsName, "true"},
+         {tpcd::experiment::
+              kTpcdWritePopupCurrentInteractionHeuristicsGrantsName,
+          "30d"},
+         {tpcd::experiment::kTpcdBackfillPopupHeuristicsGrantsName, "30d"},
+         {tpcd::experiment::kTpcdPopupHeuristicEnableForIframeInitiatorName,
+          "none"},
+         {tpcd::experiment::kTpcdWriteRedirectHeuristicGrantsName, "30d"},
+         {tpcd::experiment::kTpcdRedirectHeuristicRequireABAFlowName, "true"},
+         {tpcd::experiment::kTpcdRedirectHeuristicRequireCurrentInteractionName,
+          "true"}};
 const FeatureEntry::FeatureParam
-    kTpcdHeuristicsGrantsCurrentInteractionAndLongRedirect[] = {
-        {content_settings::features::kTpcdReadHeuristicsGrantsName, "true"},
-        {tpcd::experiment::
-             kTpcdWritePopupCurrentInteractionHeuristicsGrantsName,
-         "30d"},
-        {tpcd::experiment::kTpcdWriteRedirectHeuristicGrantsName, "30d"},
-        {tpcd::experiment::kTpcdRedirectHeuristicRequireABAFlowName, "true"},
-        {tpcd::experiment::kTpcdRedirectHeuristicRequireCurrentInteractionName,
-         "true"}};
+    kTpcdHeuristicsGrants_CurrentInteraction_ShortRedirect_AllFrameInitiator[] =
+        {{content_settings::features::kTpcdReadHeuristicsGrantsName, "true"},
+         {tpcd::experiment::
+              kTpcdWritePopupCurrentInteractionHeuristicsGrantsName,
+          "30d"},
+         {tpcd::experiment::kTpcdBackfillPopupHeuristicsGrantsName, "30d"},
+         {tpcd::experiment::kTpcdPopupHeuristicEnableForIframeInitiatorName,
+          "all"},
+         {tpcd::experiment::kTpcdWriteRedirectHeuristicGrantsName, "15m"},
+         {tpcd::experiment::kTpcdRedirectHeuristicRequireABAFlowName, "true"},
+         {tpcd::experiment::kTpcdRedirectHeuristicRequireCurrentInteractionName,
+          "true"}};
 const FeatureEntry::FeatureParam
-    kTpcdHeuristicsGrantsCurrentInteractionWithBackfillAndShortRedirect[] = {
-        {content_settings::features::kTpcdReadHeuristicsGrantsName, "true"},
-        {tpcd::experiment::
-             kTpcdWritePopupCurrentInteractionHeuristicsGrantsName,
-         "30d"},
-        {tpcd::experiment::kTpcdBackfillPopupHeuristicsGrantsName, "30d"},
-        {tpcd::experiment::kTpcdWriteRedirectHeuristicGrantsName, "15m"},
-        {tpcd::experiment::kTpcdRedirectHeuristicRequireABAFlowName, "true"},
-        {tpcd::experiment::kTpcdRedirectHeuristicRequireCurrentInteractionName,
-         "true"}};
-const FeatureEntry::FeatureParam
-    kTpcdHeuristicsGrantsCurrentInteractionWithBackfillAndLongRedirect[] = {
-        {content_settings::features::kTpcdReadHeuristicsGrantsName, "true"},
-        {tpcd::experiment::
-             kTpcdWritePopupCurrentInteractionHeuristicsGrantsName,
-         "30d"},
-        {tpcd::experiment::kTpcdBackfillPopupHeuristicsGrantsName, "30d"},
-        {tpcd::experiment::kTpcdWriteRedirectHeuristicGrantsName, "30d"},
-        {tpcd::experiment::kTpcdRedirectHeuristicRequireABAFlowName, "true"},
-        {tpcd::experiment::kTpcdRedirectHeuristicRequireCurrentInteractionName,
-         "true"}};
+    kTpcdHeuristicsGrants_CurrentInteraction_LongRedirect_AllFrameInitiator[] =
+        {{content_settings::features::kTpcdReadHeuristicsGrantsName, "true"},
+         {tpcd::experiment::
+              kTpcdWritePopupCurrentInteractionHeuristicsGrantsName,
+          "30d"},
+         {tpcd::experiment::kTpcdBackfillPopupHeuristicsGrantsName, "30d"},
+         {tpcd::experiment::kTpcdPopupHeuristicEnableForIframeInitiatorName,
+          "all"},
+         {tpcd::experiment::kTpcdWriteRedirectHeuristicGrantsName, "30d"},
+         {tpcd::experiment::kTpcdRedirectHeuristicRequireABAFlowName, "true"},
+         {tpcd::experiment::kTpcdRedirectHeuristicRequireCurrentInteractionName,
+          "true"}};
 
 const FeatureEntry::FeatureVariation kTpcdHeuristicsGrantsVariations[] = {
-    {"Control", kTpcdHeuristicsGrantsControl,
-     std::size(kTpcdHeuristicsGrantsControl), nullptr},
-    {"Current Interaction", kTpcdHeuristicsGrantsCurrentInteraction,
-     std::size(kTpcdHeuristicsGrantsCurrentInteraction), nullptr},
-    {"Current Interaction With Backfill",
-     kTpcdHeuristicsGrantsCurrentInteractionWithBackfill,
-     std::size(kTpcdHeuristicsGrantsCurrentInteractionWithBackfill), nullptr},
-    {"Current Interaction And Short Redirect",
-     kTpcdHeuristicsGrantsCurrentInteractionAndShortRedirect,
-     std::size(kTpcdHeuristicsGrantsCurrentInteractionAndShortRedirect),
-     nullptr},
-    {"Current Interaction And Long Redirect",
-     kTpcdHeuristicsGrantsCurrentInteractionAndLongRedirect,
-     std::size(kTpcdHeuristicsGrantsCurrentInteractionAndLongRedirect),
-     nullptr},
-    {"Current Interaction With Backfill And Short Redirect",
-     kTpcdHeuristicsGrantsCurrentInteractionWithBackfillAndShortRedirect,
+    {"CurrentInteraction_ShortRedirect_MainFrameInitiator",
+     kTpcdHeuristicsGrants_CurrentInteraction_ShortRedirect_MainFrameInitiator,
      std::size(
-         kTpcdHeuristicsGrantsCurrentInteractionWithBackfillAndShortRedirect),
+         kTpcdHeuristicsGrants_CurrentInteraction_ShortRedirect_MainFrameInitiator),
      nullptr},
-    {"Current Interaction With Backfill And Long Redirect",
-     kTpcdHeuristicsGrantsCurrentInteractionWithBackfillAndLongRedirect,
+    {"CurrentInteraction_LongRedirect_MainFrameInitiator",
+     kTpcdHeuristicsGrants_CurrentInteraction_LongRedirect_MainFrameInitiator,
      std::size(
-         kTpcdHeuristicsGrantsCurrentInteractionWithBackfillAndLongRedirect),
+         kTpcdHeuristicsGrants_CurrentInteraction_LongRedirect_MainFrameInitiator),
+     nullptr},
+    {"CurrentInteraction_ShortRedirect_AllFrameInitiator",
+     kTpcdHeuristicsGrants_CurrentInteraction_ShortRedirect_AllFrameInitiator,
+     std::size(
+         kTpcdHeuristicsGrants_CurrentInteraction_ShortRedirect_AllFrameInitiator),
+     nullptr},
+    {"CurrentInteraction_LongRedirect_AllFrameInitiator",
+     kTpcdHeuristicsGrants_CurrentInteraction_LongRedirect_AllFrameInitiator,
+     std::size(
+         kTpcdHeuristicsGrants_CurrentInteraction_LongRedirect_AllFrameInitiator),
      nullptr}};
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
