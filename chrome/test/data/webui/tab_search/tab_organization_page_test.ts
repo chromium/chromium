@@ -405,7 +405,30 @@ suite('TabOrganizationPageTest', () => {
     assertTrue(!!accountRowUnsynced);
   });
 
-  test('Tip action starts tutorial', async () => {
+  test('Check now action activates on Enter', async () => {
+    await tabOrganizationPageSetup();
+
+    testApiProxy.getCallbackRouterRemote().tabOrganizationSessionUpdated(
+        createSession({
+          state: TabOrganizationState.kFailure,
+          error: TabOrganizationError.kGeneric,
+        }));
+
+    assertEquals(0, testApiProxy.getCallCount('resetSession'));
+
+    const failure = tabOrganizationPage.shadowRoot!.querySelector(
+        'tab-organization-failure');
+    assertTrue(!!failure);
+    const checkNowAction = failure.shadowRoot!.querySelector<HTMLElement>(
+        '.tab-organization-link');
+    assertTrue(!!checkNowAction);
+    checkNowAction.dispatchEvent(new KeyboardEvent('keydown', {key: 'Enter'}));
+    await flushTasks();
+
+    assertEquals(1, testApiProxy.getCallCount('resetSession'));
+  });
+
+  test('Tip action activates on Enter', async () => {
     loadTimeData.overrideValues({
       showTabOrganizationFRE: true,
     });
@@ -427,7 +450,7 @@ suite('TabOrganizationPageTest', () => {
         '.tab-organization-link');
     assertEquals(2, links.length);
     const tipAction = links[1]!;
-    tipAction.click();
+    tipAction.dispatchEvent(new KeyboardEvent('keydown', {key: 'Enter'}));
     await flushTasks();
 
     assertEquals(1, testApiProxy.getCallCount('startTabGroupTutorial'));

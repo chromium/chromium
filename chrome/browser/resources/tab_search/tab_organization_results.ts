@@ -197,6 +197,12 @@ export class TabOrganizationResultsElement extends PolymerElement {
     }));
   }
 
+  private onLearnMoreKeyDown_(event: KeyboardEvent) {
+    if (event.key === 'Enter') {
+      this.onLearnMoreClick_();
+    }
+  }
+
   private onFeedbackSelectedOptionChanged_(
       event: CustomEvent<{value: CrFeedbackOption}>) {
     this.dispatchEvent(new CustomEvent('feedback', {

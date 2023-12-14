@@ -82,11 +82,23 @@ export class TabOrganizationFailureElement extends PolymerElement {
     }));
   }
 
+  private onCheckNowKeyDown_(event: KeyboardEvent) {
+    if (event.key === 'Enter') {
+      this.onCheckNow_();
+    }
+  }
+
   private onTipClick_() {
     this.dispatchEvent(new CustomEvent('tip-click', {
       bubbles: true,
       composed: true,
     }));
+  }
+
+  private onTipKeyDown_(event: KeyboardEvent) {
+    if (event.key === 'Enter') {
+      this.onTipClick_();
+    }
   }
 }
 
