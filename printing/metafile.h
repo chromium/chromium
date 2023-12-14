@@ -111,7 +111,6 @@ class COMPONENT_EXPORT(PRINTING_METAFILE) Metafile : public MetafilePlayer {
   virtual bool Init() = 0;
 
   // Initializes the metafile with `data`. Returns true on success.
-  // Note: It should only be called from within the browser process.
   virtual bool InitFromData(base::span<const uint8_t> data) = 0;
 
   // Prepares a context for rendering a new page with the given `page_size`,
