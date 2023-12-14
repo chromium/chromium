@@ -157,6 +157,10 @@ class AccountSelectionBubbleView : public views::BubbleDialogDelegateView,
       const IdentityProviderDisplayData& idp_display_data,
       bool should_hover);
 
+  // Creates the "Use other account" button.
+  std::unique_ptr<views::View> CreateUseOtherAccountButton(
+      const content::IdentityProviderMetadata& idp_metadata);
+
   // Updates the header title, the header icon visibility and the header back
   // button visibiltiy. `idp_metadata` is not null when we need to set a header
   // image based on the IDP.

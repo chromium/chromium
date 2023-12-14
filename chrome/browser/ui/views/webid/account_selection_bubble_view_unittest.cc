@@ -597,7 +597,7 @@ TEST_F(AccountSelectionBubbleViewTest, MultipleAccounts) {
                        /*expect_idp_row=*/false);
 }
 
-TEST_F(AccountSelectionBubbleViewTest, AddAccount) {
+TEST_F(AccountSelectionBubbleViewTest, UseDifferentAccount) {
   const std::vector<std::string> kAccountSuffixes = {"0"};
   CreateMultiAccountPicker(kAccountSuffixes, true);
 
@@ -605,13 +605,13 @@ TEST_F(AccountSelectionBubbleViewTest, AddAccount) {
   ASSERT_EQ(children.size(), 3u);
 
   views::ScrollView* scroll_view = static_cast<views::ScrollView*>(children[2]);
-  ASSERT_EQ(scroll_view->contents()->children().size(), 2u);
+  ASSERT_EQ(scroll_view->contents()->children().size(), 3u);
 
-  // Check the "Add Account" button.
-  views::MdTextButton* button =
-      static_cast<views::MdTextButton*>(scroll_view->contents()->children()[1]);
+  // Check the "Use a different account" button.
+  HoverButton* button =
+      static_cast<HoverButton*>(scroll_view->contents()->children()[2]);
   ASSERT_TRUE(button);
-  EXPECT_EQ(button->GetText(), u"Add Account");
+  EXPECT_EQ(button->GetText(), u"Use a different account");
 }
 
 TEST_F(AccountSelectionBubbleViewTest, ReturningAccount) {

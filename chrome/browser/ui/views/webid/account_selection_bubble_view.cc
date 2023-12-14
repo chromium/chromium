@@ -10,6 +10,7 @@
 #include "base/feature_list.h"
 #include "base/i18n/case_conversion.h"
 #include "base/memory/weak_ptr.h"
+#include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/browser/accessibility/accessibility_state_utils.h"
 #include "chrome/browser/image_fetcher/image_decoder_impl.h"
 #include "chrome/browser/ui/monogram_utils.h"
@@ -57,6 +58,8 @@ constexpr int kBubbleWidth = 375;
 constexpr int kDesiredAvatarSize = 30;
 // The desired size of the icon of the identity provider.
 constexpr int kDesiredIdpIconSize = 20;
+// The desired size of the icon for the "Use another account" button.
+constexpr int kDesiredUseOtherAccountIconSize = 20;
 // The size of the padding used at the top and bottom of the bubble.
 constexpr int kTopBottomPadding = 4;
 // The size of the horizontal padding between the bubble content and the edge of
@@ -1023,13 +1026,8 @@ AccountSelectionBubbleView::CreateMultipleAccountChooser(
   const content::IdentityProviderMetadata& idp_metadata =
       idp_display_data_list[0].idp_metadata;
   if (idp_metadata.supports_add_account) {
-    auto button = std::make_unique<ContinueButton>(
-        base::BindRepeating(&Observer::OnLoginToIdP,
-                            base::Unretained(observer_),
-                            idp_metadata.idp_login_url),
-        l10n_util::GetStringUTF16(IDS_ACCOUNT_SELECTION_ADD_ACCOUNT), this,
-        idp_metadata);
-    row->AddChildView(std::move(button));
+    row->AddChildView(std::make_unique<views::Separator>());
+    row->AddChildView(CreateUseOtherAccountButton(idp_metadata));
   }
 
   // The maximum height that the multi-account-picker can have. This value was
@@ -1116,6 +1114,21 @@ std::unique_ptr<views::View> AccountSelectionBubbleView::CreateAccountRow(
   account_email->SetHorizontalAlignment(gfx::HorizontalAlignment::ALIGN_LEFT);
 
   return row;
+}
+
+std::unique_ptr<views::View>
+AccountSelectionBubbleView::CreateUseOtherAccountButton(
+    const content::IdentityProviderMetadata& idp_metadata) {
+  auto button = std::make_unique<HoverButton>(
+      base::BindRepeating(&Observer::OnLoginToIdP, base::Unretained(observer_),
+                          idp_metadata.idp_login_url),
+      ui::ImageModel::FromVectorIcon(kOpenInNewIcon, ui::kColorMenuIcon,
+                                     kDesiredUseOtherAccountIconSize),
+      l10n_util::GetStringUTF16(IDS_ACCOUNT_SELECTION_USE_OTHER_ACCOUNT));
+  button->SetBorder(views::CreateEmptyBorder(gfx::Insets::TLBR(
+      /*top=*/2 * kVerticalSpacing, /*left=*/kLeftRightPadding, /*bottom=*/0,
+      /*right=*/kLeftRightPadding)));
+  return button;
 }
 
 void AccountSelectionBubbleView::UpdateHeader(
