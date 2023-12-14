@@ -330,15 +330,23 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Download.DownloadDangerPrompt"
+<histogram
+    name="Download.DownloadDangerPrompt.{DownloadDangerTypeString}.{Action}"
     enum="SBClientDownloadExtensions" expires_after="2024-05-19">
   <owner>vakh@chromium.org</owner>
   <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
-    Records when user is shown the download danger prompt while attempting to
-    recover a blocked download from chrome://downloads, grouped by the type of
-    file.
+    Records when user {Action} while attempting to recover a blocked download
+    from chrome://downloads, for a file of type {DownloadDangerTypeString}. This
+    is logged from both old the native UI DownloadDangerPrompt as well as its
+    replacement WebUI prompt DownloadBypassWarningConfirmationDialog (under the
+    ImprovedDownloadPageWarnings feature).
   </summary>
+  <token key="Action">
+    <variant name="Proceed" summary="decided to bypass warning and proceed"/>
+    <variant name="Shown" summary="was shown the dialog"/>
+  </token>
+  <token key="DownloadDangerTypeString" variants="DownloadDangerTypeString"/>
 </histogram>
 
 <histogram base="true" name="Download.DownloadSize" units="KB"

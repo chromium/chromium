@@ -448,7 +448,7 @@ suite('item tests', function() {
     flush();
     // The mojo handler is called directly, no event for the dialog is fired.
     const id = await testDownloadsProxy.handler.whenCalled(
-        'saveDangerousRequiringGesture');
+        'saveSuspiciousRequiringGesture');
     assertEquals('itemId', id);
   });
 

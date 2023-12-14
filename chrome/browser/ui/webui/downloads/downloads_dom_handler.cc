@@ -30,6 +30,7 @@
 #include "chrome/browser/download/download_item_warning_data.h"
 #include "chrome/browser/download/download_prefs.h"
 #include "chrome/browser/download/download_query.h"
+#include "chrome/browser/download/download_ui_safe_browsing_util.h"
 #include "chrome/browser/download/drag_download_item.h"
 #include "chrome/browser/download/offline_item_utils.h"
 #include "chrome/browser/platform_util.h"
@@ -70,10 +71,15 @@ using content::BrowserThread;
 
 namespace {
 
+using WarningAction = DownloadItemWarningData::WarningAction;
+using WarningSurface = DownloadItemWarningData::WarningSurface;
+
 enum DownloadsDOMEvent {
   DOWNLOADS_DOM_EVENT_GET_DOWNLOADS = 0,
   DOWNLOADS_DOM_EVENT_OPEN_FILE = 1,
   DOWNLOADS_DOM_EVENT_DRAG = 2,
+  // This is obsoleted by ImprovedDownloadPageWarnings.
+  // TODO(chlily): Clean up the value.
   DOWNLOADS_DOM_EVENT_SAVE_DANGEROUS = 3,
   DOWNLOADS_DOM_EVENT_DISCARD_DANGEROUS = 4,
   DOWNLOADS_DOM_EVENT_SHOW = 5,
@@ -88,6 +94,7 @@ enum DownloadsDOMEvent {
   DOWNLOADS_DOM_EVENT_REVIEW_DANGEROUS = 14,
   DOWNLOADS_DOM_EVENT_DEEP_SCAN = 15,
   DOWNLOADS_DOM_EVENT_BYPASS_DEEP_SCAN = 16,
+  DOWNLOADS_DOM_EVENT_SAVE_SUSPICIOUS = 17,
   DOWNLOADS_DOM_EVENT_MAX
 };
 
@@ -108,6 +115,70 @@ void PromptForScanningInBubble(content::WebContents* web_contents,
       ->GetDownloadDisplayController()
       ->OpenSecuritySubpage(
           OfflineItemUtils::GetContentIdForDownload(download));
+}
+
+// Records DownloadItemWarningData and maybe sends the Safe Browsing report.
+// This should be called when the user takes a bypass action (either proceed or
+// cancel).
+void MaybeReportBypassAction(download::DownloadItem* file,
+                             WarningSurface surface,
+                             WarningAction action) {
+  CHECK(file);
+  CHECK(file->IsDangerous());
+  CHECK(!file->IsDone());
+  CHECK(surface == WarningSurface::DOWNLOADS_PAGE ||
+        surface == WarningSurface::DOWNLOAD_PROMPT);
+  CHECK(action == WarningAction::PROCEED || action == WarningAction::CANCEL ||
+        action == WarningAction::DISCARD);
+  // If this is called from the DOWNLOADS_PAGE, the action must be proceed or
+  // discard. There is no cancellation action on the page, because there's no
+  // prompt to cancel.
+  CHECK(surface != WarningSurface::DOWNLOADS_PAGE ||
+        action != WarningAction::CANCEL);
+
+  // The warning action event needs to be added before Safe Browsing report is
+  // sent, because this event should be included in the report.
+  DownloadItemWarningData::AddWarningActionEvent(file, surface, action);
+
+  if (!file->GetURL().is_valid()) {
+    return;
+  }
+  if (content::BrowserContext* browser_context =
+          content::DownloadItemUtils::GetBrowserContext(file);
+      browser_context && browser_context->IsOffTheRecord()) {
+    return;
+  }
+  // Do not send cancel report since it's not a terminal action.
+  if (action != WarningAction::PROCEED && action != WarningAction::DISCARD) {
+    return;
+  }
+  SendSafeBrowsingDownloadReport(
+      safe_browsing::ClientSafeBrowsingReportRequest::
+          DANGEROUS_DOWNLOAD_RECOVERY,
+      /*did_proceed=*/action == WarningAction::PROCEED, file);
+}
+
+// Triggers a Trust and Safety sentiment survey (if enabled). Should be called
+// when the user takes an explicit action to save or discard a
+// suspicious/dangerous file. Not called when the prompt is merely shown.
+void MaybeTriggerTrustSafetySurvey(download::DownloadItem* file,
+                                   WarningSurface surface,
+                                   WarningAction action) {
+  CHECK(file);
+  CHECK(surface == WarningSurface::DOWNLOADS_PAGE ||
+        surface == WarningSurface::DOWNLOAD_PROMPT);
+  CHECK(action == WarningAction::PROCEED || action == WarningAction::DISCARD);
+  if (Profile* profile = Profile::FromBrowserContext(
+          content::DownloadItemUtils::GetBrowserContext(file));
+      profile &&
+      safe_browsing::IsSafeBrowsingSurveysEnabled(*profile->GetPrefs())) {
+    TrustSafetySentimentService* trust_safety_sentiment_service =
+        TrustSafetySentimentServiceFactory::GetForProfile(profile);
+    if (trust_safety_sentiment_service) {
+      trust_safety_sentiment_service->InteractedWithDownloadWarningUI(surface,
+                                                                      action);
+    }
+  }
 }
 
 }  // namespace
@@ -208,53 +279,51 @@ void DownloadsDOMHandler::SaveDangerousRequiringGesture(const std::string& id) {
   }
 }
 
+// "Suspicious" in this context applies to insecure as well as dangerous
+// downloads of certain danger types.
+void DownloadsDOMHandler::SaveSuspiciousRequiringGesture(
+    const std::string& id) {
+  CHECK(base::FeatureList::IsEnabled(
+      safe_browsing::kImprovedDownloadPageWarnings));
+  if (!GetWebUIWebContents()->HasRecentInteraction()) {
+    LOG(ERROR) << "SaveSuspiciousRequiringGesture received without recent "
+                  "user interaction";
+    return;
+  }
+
+  CountDownloadsDOMEvents(DOWNLOADS_DOM_EVENT_SAVE_SUSPICIOUS);
+  download::DownloadItem* file = GetDownloadByStringId(id);
+  if (!file || file->IsDone()) {
+    return;
+  }
+
+  // If a download is insecure, validate that first. Is most cases, insecure
+  // download warnings will occur first, but in the worst case scenario, we show
+  // a dangerous warning twice. That's better than showing an insecure download
+  // warning, then dismissing the dangerous download warning. Since insecure
+  // downloads triggering the UI are temporary and rare to begin with, this
+  // should very rarely occur.
+  if (file->IsInsecure()) {
+    // `file` is potentially deleted.
+    file->ValidateInsecureDownload();
+  } else if (file->IsDangerous()) {
+    MaybeReportBypassAction(file, WarningSurface::DOWNLOADS_PAGE,
+                            WarningAction::PROCEED);
+    MaybeTriggerTrustSafetySurvey(file, WarningSurface::DOWNLOADS_PAGE,
+                                  WarningAction::PROCEED);
+    // `file` is potentially deleted.
+    file->ValidateDangerousDownload();
+  }
+}
+
 void DownloadsDOMHandler::DiscardDangerous(const std::string& id) {
   CountDownloadsDOMEvents(DOWNLOADS_DOM_EVENT_DISCARD_DANGEROUS);
   download::DownloadItem* download = GetDownloadByStringId(id);
-  if (download) {
-    content::DownloadManager* manager = GetMainNotifierManager();
-    if (manager) {
-      Profile* profile =
-          Profile::FromBrowserContext(manager->GetBrowserContext());
-      if (profile &&
-          safe_browsing::IsSafeBrowsingSurveysEnabled(*(profile->GetPrefs()))) {
-        TrustSafetySentimentService* trust_safety_sentiment_service =
-            TrustSafetySentimentServiceFactory::GetForProfile(profile);
-        if (trust_safety_sentiment_service) {
-          // Survey triggered on DISCARD action only. If the user clicks to
-          // PROCEED in the downloads page, their choice is not confirmed until
-          // they PROCEED within the dangerous download prompt.
-          trust_safety_sentiment_service->InteractedWithDownloadWarningUI(
-              DownloadItemWarningData::WarningSurface::DOWNLOADS_PAGE,
-              DownloadItemWarningData::WarningAction::DISCARD);
-        }
-      }
-    }
-    // The warning action event needs to be added before Safe Browsing report is
-    // sent, because this event should be included in the report.
-    DownloadItemWarningData::AddWarningActionEvent(
-        download, DownloadItemWarningData::WarningSurface::DOWNLOADS_PAGE,
-        DownloadItemWarningData::WarningAction::DISCARD);
-    // If this download is no longer dangerous, is already canceled or
-    // completed, don't send any report.
-    // Only sends dangerous download discard report if :
-    // 1. Download is dangerous, and
-    // 2. Download is not canceled or completed, and
-    // 3. Download URL is not empty, and
-    // 4. User is not in incognito mode, and
-    if (download->IsDangerous() && !download->IsDone() &&
-        !download->GetURL().is_empty() &&
-        !GetMainNotifierManager()->GetBrowserContext()->IsOffTheRecord()) {
-      safe_browsing::SafeBrowsingService* sb_service =
-          g_browser_process->safe_browsing_service();
-      if (sb_service) {
-        sb_service->SendDownloadReport(
-            download,
-            safe_browsing::ClientSafeBrowsingReportRequest::
-                DANGEROUS_DOWNLOAD_RECOVERY,
-            /*did_proceed=*/false, /*show_download_in_folder=*/std::nullopt);
-      }
-    }
+  if (download && !download->IsDone() && download->IsDangerous()) {
+    MaybeReportBypassAction(download, WarningSurface::DOWNLOADS_PAGE,
+                            WarningAction::DISCARD);
+    MaybeTriggerTrustSafetySurvey(download, WarningSurface::DOWNLOADS_PAGE,
+                                  WarningAction::DISCARD);
   }
   RemoveDownloadInArgs(id);
 }
@@ -543,6 +612,8 @@ void DownloadsDOMHandler::FinalizeRemovals() {
   }
 }
 
+// TODO(chlily): This is obsoleted by ImprovedDownloadPageWarnings. Clean this
+// up.
 void DownloadsDOMHandler::ShowDangerPrompt(
     download::DownloadItem* dangerous_item) {
   DownloadDangerPrompt* danger_prompt = DownloadDangerPrompt::Create(
@@ -553,6 +624,8 @@ void DownloadsDOMHandler::ShowDangerPrompt(
   DCHECK(danger_prompt);
 }
 
+// TODO(chlily): This is obsoleted by ImprovedDownloadPageWarnings. Clean this
+// up.
 void DownloadsDOMHandler::DangerPromptDone(
     int download_id,
     DownloadDangerPrompt::Action action) {

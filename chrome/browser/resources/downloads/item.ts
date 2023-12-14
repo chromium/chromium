@@ -931,15 +931,29 @@ export class DownloadsItemElement extends DownloadsItemElementBase {
   }
 
   private onSaveDangerousClick_() {
-    if (this.improvedDownloadWarningsUx_) {
-      this.getMoreActionsMenu().close();
-      // TODO(crbug.com/1465966): Suspicious downloads should validate directly.
-      if (this.displayType_ === DisplayType.DANGEROUS) {
-        this.notifySaveDangerousClick_();
-        return;
-      }
+    if (!this.improvedDownloadWarningsUx_) {
+      // TODO(chlily): Clean up old paths that show the DownloadDangerPrompt.
+      assert(!!this.mojoHandler_);
+      this.mojoHandler_.saveDangerousRequiringGesture(this.data.id);
+      return;
     }
-    this.mojoHandler_!.saveDangerousRequiringGesture(this.data.id);
+
+    this.getMoreActionsMenu().close();
+
+    if (this.displayType_ === DisplayType.DANGEROUS) {
+      this.notifySaveDangerousClick_();
+      return;
+    }
+
+    // "Suspicious" types which show up in grey can be validated directly.
+    const SAVED_FROM_PAGE_TYPES = [
+      DisplayType.SUSPICIOUS,
+      DisplayType.UNVERIFIED,
+      DisplayType.INSECURE,
+    ];
+    assert(SAVED_FROM_PAGE_TYPES.includes(this.displayType_));
+    assert(!!this.mojoHandler_);
+    this.mojoHandler_.saveSuspiciousRequiringGesture(this.data.id);
   }
 
   private onShowClick_() {

@@ -12848,6 +12848,7 @@ Called by update_document_policy_enum.py.-->
   <int value="14" label="ReviewDangerous"/>
   <int value="15" label="DeepScan"/>
   <int value="16" label="BypassDeepScan"/>
+  <int value="17" label="SaveSuspicious"/>
 </enum>
 
 <enum name="DownloadedFileAction">

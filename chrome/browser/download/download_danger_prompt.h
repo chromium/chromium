@@ -23,6 +23,10 @@ class DownloadItem;
 // to accept a dangerous download from script without user intervention. This
 // step is necessary to prevent a malicious script form abusing such a
 // privilege.
+// After ImprovedDownloadPageWarnings:
+// This is only used for extensions API downloads. The chrome://downloads page
+// prompt is implemented in WebUI.
+// TODO(chlily): Clean up this comment.
 class DownloadDangerPrompt {
  public:
   // Actions resulting from showing the danger prompt.
@@ -53,23 +57,7 @@ class DownloadDangerPrompt {
   // respective button click handler.
   virtual void InvokeActionForTesting(Action action) = 0;
 
-  // Sends download recovery report to safe browsing backend.
-  // Since it only records download url (DownloadItem::GetURL()), user's
-  // action (click through or not) and its download danger type, it isn't gated
-  // by user's extended reporting preference (i.e.
-  // prefs::kSafeBrowsingExtendedReportingEnabled). We should not put any extra
-  // information in this report.
-  static void SendSafeBrowsingDownloadReport(
-      safe_browsing::ClientSafeBrowsingReportRequest::ReportType report_type,
-      bool did_proceed,
-      download::DownloadItem* download);
-
  protected:
-  // Records UMA stats for a download danger prompt event.
-  static void RecordDownloadDangerPrompt(
-      bool did_proceed,
-      const download::DownloadItem& download);
-
   // Records warning action event consumed by Safe Browsing reports.
   static void RecordDownloadWarningEvent(Action action,
                                          download::DownloadItem* download);

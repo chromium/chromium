@@ -1706,7 +1706,7 @@ message ClientSafeBrowsingReportRequest {
       // Applicable actions: PROCEED, DISCARD, DISMISS, CLOSE, BACK,
       // PROCEED_DEEP_SCAN, OPEN_LEARN_MORE_LINK
       BUBBLE_SUBPAGE = 2;
-      // Applicable actions: DISCARD, KEEP
+      // Applicable actions: DISCARD, KEEP, PROCEED
       DOWNLOADS_PAGE = 3;
       // Applicable actions: PROCEED, CANCEL, CLOSE
       DOWNLOAD_PROMPT = 4;

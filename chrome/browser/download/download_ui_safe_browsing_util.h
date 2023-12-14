@@ -5,6 +5,14 @@
 #ifndef CHROME_BROWSER_DOWNLOAD_DOWNLOAD_UI_SAFE_BROWSING_UTIL_H_
 #define CHROME_BROWSER_DOWNLOAD_DOWNLOAD_UI_SAFE_BROWSING_UTIL_H_
 
+#include "components/safe_browsing/buildflags.h"
+
+#include <string>
+
+#if BUILDFLAG(FULL_SAFE_BROWSING)
+#include "components/safe_browsing/core/common/proto/csd.pb.h"
+#endif
+
 class Profile;
 
 namespace download {
@@ -26,5 +34,27 @@ bool ShouldShowWarningForNoSafeBrowsing(Profile* profile);
 // Whether the user is capable of turning on Safe Browsing, e.g. it is not
 // controlled by a policy.
 bool CanUserTurnOnSafeBrowsing(Profile* profile);
+
+// Utilities for recording actions taken on Safe Browsing-flagged downloads.
+
+// Records UMA metrics for taking an action on the chrome://downloads warning
+// bypass prompt. Logs to Download.DownloadDangerPrompt with the suffix, which
+// can be "Proceed" or "Shown".
+void RecordDownloadDangerPromptHistogram(
+    const std::string& proceed_or_shown_suffix,
+    const download::DownloadItem& item);
+
+#if BUILDFLAG(FULL_SAFE_BROWSING)
+// Sends download recovery report to safe browsing backend.
+// Since it only records download url (DownloadItem::GetURL()), user's
+// action (click through or not) and its download danger type, it isn't gated
+// by user's extended reporting preference (i.e.
+// prefs::kSafeBrowsingExtendedReportingEnabled). We should not put any extra
+// information in this report.
+void SendSafeBrowsingDownloadReport(
+    safe_browsing::ClientSafeBrowsingReportRequest::ReportType report_type,
+    bool did_proceed,
+    download::DownloadItem* item);
+#endif  // BUILDFLAG(FULL_SAFE_BROWSING)
 
 #endif  // CHROME_BROWSER_DOWNLOAD_DOWNLOAD_UI_SAFE_BROWSING_UTIL_H_

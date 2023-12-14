@@ -1344,69 +1344,6 @@ chromium-metrics-reviews@google.com.
   <affected-histogram name="Download.Service.TaskScheduler.Status"/>
 </histogram_suffixes>
 
-<histogram_suffixes name="DownloadDangerPromptResponse" separator=".">
-  <suffix name="Proceed"
-      label="The user clicked through and recovered the download."/>
-  <suffix name="Shown" label="The user was shown the prompt."/>
-  <affected-histogram
-      name="Download.DownloadDangerPrompt.AsyncLocalPasswordScanning"/>
-  <affected-histogram name="Download.DownloadDangerPrompt.AsyncScanning"/>
-  <affected-histogram
-      name="Download.DownloadDangerPrompt.BlockedPasswordProtected"/>
-  <affected-histogram name="Download.DownloadDangerPrompt.BlockedTooLarge"/>
-  <affected-histogram
-      name="Download.DownloadDangerPrompt.BlockedUnsupportedFiletype"/>
-  <affected-histogram
-      name="Download.DownloadDangerPrompt.DangerousAccountCompromise"/>
-  <affected-histogram name="Download.DownloadDangerPrompt.DangerousContent"/>
-  <affected-histogram name="Download.DownloadDangerPrompt.DangerousFile"/>
-  <affected-histogram name="Download.DownloadDangerPrompt.DangerousHost"/>
-  <affected-histogram name="Download.DownloadDangerPrompt.DangerousURL"/>
-  <affected-histogram
-      name="Download.DownloadDangerPrompt.DeepScannedOpenedDangerous"/>
-  <affected-histogram name="Download.DownloadDangerPrompt.DeepScannedSafe"/>
-  <affected-histogram name="Download.DownloadDangerPrompt.PotentiallyUnwanted"/>
-  <affected-histogram
-      name="Download.DownloadDangerPrompt.PromptForLocalPasswordScanning"/>
-  <affected-histogram name="Download.DownloadDangerPrompt.PromptForScanning"/>
-  <affected-histogram
-      name="Download.DownloadDangerPrompt.SensitiveContentBlock"/>
-  <affected-histogram
-      name="Download.DownloadDangerPrompt.SensitiveContentWarning"/>
-  <affected-histogram name="Download.DownloadDangerPrompt.UncommonContent"/>
-</histogram_suffixes>
-
-<histogram_suffixes name="DownloadDangerPromptType" separator=".">
-  <suffix name="AsyncLocalPasswordScanning"
-      label="File marked ASYNC_LOCAL_PASSWORD_SCANNING"/>
-  <suffix name="AsyncScanning" label="File marked ASYNC_SCANNING"/>
-  <suffix name="BlockedPasswordProtected"
-      label="File marked BLOCKED_PASSWORD_PROTECTED"/>
-  <suffix name="BlockedTooLarge" label="File marked BLOCKED_TOO_LARGE"/>
-  <suffix name="BlockedUnsupportedFiletype"
-      label="File marked BLOCKED_UNSUPPORTED_FILETYPE"/>
-  <suffix name="DangerousAccountCompromise"
-      label="File marked DANGEROUS_ACCOUNT_COMPROMISE"/>
-  <suffix name="DangerousContent" label="File marked DANGEROUS_CONTENT"/>
-  <suffix name="DangerousFile" label="File marked DANGEROUS_FILE"/>
-  <suffix name="DangerousHost" label="File marked DANGEROUS_HOST"/>
-  <suffix name="DangerousURL" label="File marked DANGEROUS_URL"/>
-  <suffix name="DeepScannedFailed" label="File marked DEEP_SCANNED_FAILED"/>
-  <suffix name="DeepScannedOpenedDangerous"
-      label="File marked DEEP_SCANNED_OPENED_DANGEROUS"/>
-  <suffix name="DeepScannedSafe" label="File marked DEEP_SCANNED_SAFE"/>
-  <suffix name="PotentiallyUnwanted" label="File marked POTENTIALLY_UNWANTED"/>
-  <suffix name="PromptForLocalPasswordScanning"
-      label="File marked PROMPT_FOR_LOCAL_PASSWORD_SCANNING"/>
-  <suffix name="PromptForScanning" label="File marked PROMPT_FOR_SCANNING"/>
-  <suffix name="SensitiveContentBlock"
-      label="File marked SENSITIVE_CONTENT_BLOCK"/>
-  <suffix name="SensitiveContentWarning"
-      label="File marked SENSITIVE_CONTENT_WARNING"/>
-  <suffix name="UncommonContent" label="File marked UNCOMMON_CONTENT"/>
-  <affected-histogram name="Download.DownloadDangerPrompt"/>
-</histogram_suffixes>
-
 <histogram_suffixes name="DownloadDialogSource" separator=".">
   <suffix name="DownloadHome" label="Download home."/>
   <suffix name="Infobar" label="Download infobar."/>
