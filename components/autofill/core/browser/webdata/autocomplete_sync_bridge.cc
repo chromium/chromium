@@ -482,7 +482,7 @@ void AutocompleteSyncBridge::ActOnLocalChanges(
 
 void AutocompleteSyncBridge::LoadMetadata() {
   if (!web_data_backend_ || !web_data_backend_->GetDatabase() ||
-      !GetSyncMetadataStore()) {
+      !GetAutocompleteTable() || !GetSyncMetadataStore()) {
     change_processor()->ReportError(
         {FROM_HERE, "Failed to load AutofillWebDatabase."});
     return;
