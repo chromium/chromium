@@ -14,6 +14,7 @@
 #include "base/task/thread_pool.h"
 #include "build/build_config.h"
 #include "components/autofill/core/browser/webdata/autocomplete_sync_bridge.h"
+#include "components/autofill/core/browser/webdata/autocomplete_table.h"
 #include "components/autofill/core/browser/webdata/autofill_profile_sync_bridge.h"
 #include "components/autofill/core/browser/webdata/autofill_table.h"
 #include "components/autofill/core/browser/webdata/autofill_wallet_credential_sync_bridge.h"
@@ -116,6 +117,7 @@ WebDataServiceWrapper::WebDataServiceWrapper(
 
   // All tables objects that participate in managing the database must
   // be added here.
+  profile_database_->AddTable(std::make_unique<autofill::AutocompleteTable>());
   profile_database_->AddTable(std::make_unique<autofill::AutofillTable>());
   profile_database_->AddTable(std::make_unique<KeywordTable>());
   profile_database_->AddTable(std::make_unique<TokenServiceTable>());

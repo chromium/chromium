@@ -33,15 +33,12 @@ class MetadataBatch;
 
 namespace autofill {
 
-class AutocompleteChange;
-class AutocompleteEntry;
 struct AutofillMetadata;
 class AutofillOfferData;
 class AutofillTableEncryptor;
 class BankAccount;
 class CreditCard;
 struct CreditCardCloudTokenData;
-struct FormFieldData;
 class Iban;
 struct PaymentsCustomerData;
 class VirtualCardUsageData;
@@ -87,19 +84,6 @@ struct PaymentInstrumentFields {
 // passed to the constructor. It expects the following schemas:
 //
 // Note: The database stores time in seconds, UTC.
-//
-// autofill             This table contains autocomplete history data (not
-//                      structured information).
-//
-//   name               The name of the input as specified in the html.
-//   value              The literal contents of the text field.
-//   value_lower        The contents of the text field made lower_case.
-//   date_created       The date on which the user first entered the string
-//                      |value| into a field of name |name|.
-//   date_last_used     The date on which the user last entered the string
-//                      |value| into a field of name |name|.
-//   count              How many times the user has entered the string |value|
-//                      in a field of name |name|.
 //
 // DEPRECATED. Use local_addresses instead.
 // autofill_profiles    This table contains Autofill profile data added by the
@@ -639,57 +623,6 @@ class AutofillTable : public WebDatabaseTable,
   bool CreateTablesIfNecessary() override;
   bool MigrateToVersion(int version, bool* update_compatible_version) override;
 
-  // Records the form elements in |elements| in the database in the
-  // autofill table.  A list of all added and updated autofill entries
-  // is returned in the changes out parameter.
-  bool AddFormFieldValues(const std::vector<FormFieldData>& elements,
-                          std::vector<AutocompleteChange>* changes);
-
-  // Retrieves a vector of all values which have been recorded in the autofill
-  // table as the value in a form element with name |name| and which start with
-  // |prefix|. The comparison of the prefix is case insensitive.
-  bool GetFormValuesForElementName(const std::u16string& name,
-                                   const std::u16string& prefix,
-                                   int limit,
-                                   std::vector<AutocompleteEntry>& entries);
-
-  // Removes rows from the autofill table if they were created on or after
-  // |delete_begin| and last used strictly before |delete_end|. For rows where
-  // the time range [date_created, date_last_used] overlaps with [delete_begin,
-  // delete_end), but is not entirely contained within the latter range, updates
-  // the rows so that their resulting time range [new_date_created,
-  // new_date_last_used] lies entirely outside of [delete_begin, delete_end),
-  // updating the count accordingly. A list of all changed keys and whether
-  // each was updater or removed is returned in the changes out parameter.
-  bool RemoveFormElementsAddedBetween(const base::Time& delete_begin,
-                                      const base::Time& delete_end,
-                                      std::vector<AutocompleteChange>& changes);
-
-  // Removes rows from the autofill table if they were last accessed strictly
-  // before |AutocompleteEntry::ExpirationTime()|.
-  bool RemoveExpiredFormElements(std::vector<AutocompleteChange>& changes);
-
-  // Removes the row from the autofill table for the given |name| |value| pair.
-  bool RemoveFormElement(const std::u16string& name,
-                         const std::u16string& value);
-
-  // Returns the number of unique values such that for all autocomplete entries
-  // with that value, the interval between creation date and last usage is
-  // entirely contained between [|begin|, |end|).
-  int GetCountOfValuesContainedBetween(base::Time begin, base::Time end);
-
-  // Retrieves all of the entries in the autofill table.
-  bool GetAllAutocompleteEntries(std::vector<AutocompleteEntry>* entries);
-
-  // Retrieves a single entry from the autofill table.
-  std::optional<AutocompleteEntry> GetAutocompleteEntry(
-      const std::u16string& name,
-      const std::u16string& value);
-
-  // Replaces existing autocomplete entries with the entries supplied in
-  // the argument. If the entry does not already exist, it will be added.
-  bool UpdateAutocompleteEntries(const std::vector<AutocompleteEntry>& entries);
-
   // Records a single Autofill profile in the autofill_profiles table.
   virtual bool AddAutofillProfile(const AutofillProfile& profile);
 
@@ -985,10 +918,6 @@ class AutofillTable : public WebDatabaseTable,
   static const size_t kMaxDataLength;
 
  private:
-  bool AddFormFieldValueTime(const FormFieldData& element,
-                             base::Time time,
-                             std::vector<AutocompleteChange>* changes);
-
   bool SupportsMetadataForModelType(syncer::ModelType model_type) const;
   int GetKeyValueForModelType(syncer::ModelType model_type) const;
 
@@ -997,9 +926,6 @@ class AutofillTable : public WebDatabaseTable,
 
   bool GetModelTypeState(syncer::ModelType model_type,
                          sync_pb::ModelTypeState* state);
-
-  // Insert a single AutocompleteEntry into the autofill table.
-  bool InsertAutocompleteEntry(const AutocompleteEntry& entry);
 
   // Adds to |masked_credit_cards| and updates |server_card_metadata|.
   // Must already be in a transaction.
@@ -1046,7 +972,6 @@ class AutofillTable : public WebDatabaseTable,
   // successful.This method should be called from within an sql transaction.
   bool RemovePaymentInstrument(const PaymentInstrument& payment_instrument);
 
-  bool InitMainTable();
   bool InitCreditCardsTable();
   bool InitLocalIbansTable();
   bool InitLegacyProfilesTable();

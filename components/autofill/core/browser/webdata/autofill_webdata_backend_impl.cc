@@ -23,6 +23,7 @@
 #include "components/autofill/core/browser/geo/autofill_country.h"
 #include "components/autofill/core/browser/payments/payments_customer_data.h"
 #include "components/autofill/core/browser/webdata/autocomplete_entry.h"
+#include "components/autofill/core/browser/webdata/autocomplete_table.h"
 #include "components/autofill/core/browser/webdata/autofill_change.h"
 #include "components/autofill/core/browser/webdata/autofill_table.h"
 #include "components/autofill/core/browser/webdata/autofill_webdata_service.h"
@@ -174,7 +175,8 @@ std::unique_ptr<WDTypedResult>
 AutofillWebDataBackendImpl::RemoveExpiredAutocompleteEntries(WebDatabase* db) {
   DCHECK(owning_task_runner()->RunsTasksInCurrentSequence());
   AutocompleteChangeList changes;
-  if (AutofillTable::FromWebDatabase(db)->RemoveExpiredFormElements(changes)) {
+  if (AutocompleteTable::FromWebDatabase(db)->RemoveExpiredFormElements(
+          changes)) {
     if (!changes.empty()) {
       // Post the notifications including the list of affected keys.
       // This is sent here so that work resulting from this notification
@@ -241,8 +243,8 @@ WebDatabase::State AutofillWebDataBackendImpl::AddFormElements(
     WebDatabase* db) {
   DCHECK(owning_task_runner()->RunsTasksInCurrentSequence());
   AutocompleteChangeList changes;
-  if (!AutofillTable::FromWebDatabase(db)->AddFormFieldValues(fields,
-                                                              &changes)) {
+  if (!AutocompleteTable::FromWebDatabase(db)->AddFormFieldValues(fields,
+                                                                  &changes)) {
     ReportResult(Result::kAddFormElements_Failure);
     return WebDatabase::COMMIT_NOT_NEEDED;
   }
@@ -265,7 +267,7 @@ AutofillWebDataBackendImpl::GetFormValuesForElementName(
     WebDatabase* db) {
   DCHECK(owning_task_runner()->RunsTasksInCurrentSequence());
   std::vector<AutocompleteEntry> entries;
-  AutofillTable::FromWebDatabase(db)->GetFormValuesForElementName(
+  AutocompleteTable::FromWebDatabase(db)->GetFormValuesForElementName(
       name, prefix, limit, entries);
   return std::make_unique<WDResult<std::vector<AutocompleteEntry>>>(
       AUTOFILL_VALUE_RESULT, entries);
@@ -277,7 +279,7 @@ WebDatabase::State AutofillWebDataBackendImpl::RemoveFormElementsAddedBetween(
     WebDatabase* db) {
   DCHECK(owning_task_runner()->RunsTasksInCurrentSequence());
   AutocompleteChangeList changes;
-  if (AutofillTable::FromWebDatabase(db)->RemoveFormElementsAddedBetween(
+  if (AutocompleteTable::FromWebDatabase(db)->RemoveFormElementsAddedBetween(
           delete_begin, delete_end, changes)) {
     if (!changes.empty()) {
       // Post the notifications including the list of affected keys.
@@ -299,7 +301,7 @@ WebDatabase::State AutofillWebDataBackendImpl::RemoveFormValueForElementName(
     WebDatabase* db) {
   DCHECK(owning_task_runner()->RunsTasksInCurrentSequence());
 
-  if (AutofillTable::FromWebDatabase(db)->RemoveFormElement(name, value)) {
+  if (AutocompleteTable::FromWebDatabase(db)->RemoveFormElement(name, value)) {
     AutocompleteChangeList changes;
     changes.push_back(AutocompleteChange(AutocompleteChange::REMOVE,
                                          AutocompleteKey(name, value)));
@@ -438,7 +440,7 @@ AutofillWebDataBackendImpl::GetCountOfValuesContainedBetween(
     WebDatabase* db) {
   DCHECK(owning_task_runner()->RunsTasksInCurrentSequence());
   int value =
-      AutofillTable::FromWebDatabase(db)->GetCountOfValuesContainedBetween(
+      AutocompleteTable::FromWebDatabase(db)->GetCountOfValuesContainedBetween(
           begin, end);
   return std::unique_ptr<WDTypedResult>(
       new WDResult<int>(AUTOFILL_VALUE_RESULT, value));
@@ -448,7 +450,7 @@ WebDatabase::State AutofillWebDataBackendImpl::UpdateAutocompleteEntries(
     const std::vector<AutocompleteEntry>& autocomplete_entries,
     WebDatabase* db) {
   DCHECK(owning_task_runner()->RunsTasksInCurrentSequence());
-  if (!AutofillTable::FromWebDatabase(db)->UpdateAutocompleteEntries(
+  if (!AutocompleteTable::FromWebDatabase(db)->UpdateAutocompleteEntries(
           autocomplete_entries)) {
     ReportResult(Result::kUpdateAutocompleteEntries_Failure);
     return WebDatabase::COMMIT_NOT_NEEDED;

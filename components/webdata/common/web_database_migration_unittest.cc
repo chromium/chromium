@@ -17,6 +17,7 @@
 #include "components/autofill/core/browser/data_model/autofill_profile.h"
 #include "components/autofill/core/browser/data_model/credit_card.h"
 #include "components/autofill/core/browser/geo/autofill_country.h"
+#include "components/autofill/core/browser/webdata/autocomplete_table.h"
 #include "components/autofill/core/browser/webdata/autofill_change.h"
 #include "components/autofill/core/browser/webdata/autofill_table.h"
 #include "components/autofill/core/common/autofill_constants.h"
@@ -76,11 +77,13 @@ class WebDatabaseMigrationTest : public testing::Test {
   // Load the database via the WebDatabase class and migrate the database to
   // the current version.
   void DoMigration() {
+    autofill::AutocompleteTable autocomplete_table;
     AutofillTable autofill_table;
     KeywordTable keyword_table;
     TokenServiceTable token_service_table;
 
     WebDatabase db;
+    db.AddTable(&autocomplete_table);
     db.AddTable(&autofill_table);
     db.AddTable(&keyword_table);
     db.AddTable(&token_service_table);

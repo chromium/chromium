@@ -12,6 +12,7 @@
 #include "base/scoped_observation.h"
 #include "base/sequence_checker.h"
 #include "base/supports_user_data.h"
+#include "components/autofill/core/browser/webdata/autocomplete_table.h"
 #include "components/autofill/core/browser/webdata/autofill_change.h"
 #include "components/autofill/core/browser/webdata/autofill_webdata_backend.h"
 #include "components/autofill/core/browser/webdata/autofill_webdata_service_observer.h"
@@ -68,7 +69,11 @@ class AutocompleteSyncBridge
 
  private:
   // Returns the table associated with the |web_data_backend_|.
-  AutofillTable* GetAutofillTable() const;
+  AutocompleteTable* GetAutocompleteTable();
+
+  // AutofillTable acts as the metadata storage for all components/autofill-
+  // related sync code.
+  AutofillTable* GetSyncMetadataStore();
 
   // Respond to local autocomplete entries changing by notifying sync of the
   // changes.

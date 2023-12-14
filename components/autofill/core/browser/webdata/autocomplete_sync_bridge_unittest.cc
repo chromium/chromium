@@ -20,6 +20,7 @@
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
 #include "components/autofill/core/browser/webdata/autocomplete_entry.h"
+#include "components/autofill/core/browser/webdata/autocomplete_table.h"
 #include "components/autofill/core/browser/webdata/autofill_table.h"
 #include "components/autofill/core/browser/webdata/mock_autofill_webdata_backend.h"
 #include "components/sync/base/client_tag_hash.h"
@@ -154,6 +155,7 @@ class AutocompleteSyncBridgeTest : public testing::Test {
   void SetUp() override {
     ASSERT_TRUE(temp_dir_.CreateUniqueTempDir());
     db_.AddTable(&table_);
+    db_.AddTable(&sync_metadata_table_);
     db_.Init(temp_dir_.GetPath().AppendASCII("SyncTestWebDatabase"));
     ON_CALL(*backend(), GetDatabase()).WillByDefault(Return(&db_));
     ResetProcessor();
@@ -301,7 +303,8 @@ class AutocompleteSyncBridgeTest : public testing::Test {
     return mock_processor_;
   }
 
-  AutofillTable* table() { return &table_; }
+  AutocompleteTable* table() { return &table_; }
+  AutofillTable* sync_metadata_table() { return &sync_metadata_table_; }
 
   MockAutofillWebDataBackend* backend() { return &backend_; }
 
@@ -309,7 +312,8 @@ class AutocompleteSyncBridgeTest : public testing::Test {
   ScopedTempDir temp_dir_;
   base::test::SingleThreadTaskEnvironment task_environment_;
   testing::NiceMock<MockAutofillWebDataBackend> backend_;
-  AutofillTable table_;
+  AutocompleteTable table_;
+  AutofillTable sync_metadata_table_;
   WebDatabase db_;
   std::unique_ptr<AutocompleteSyncBridge> bridge_;
   testing::NiceMock<MockModelTypeChangeProcessor> mock_processor_;
@@ -649,12 +653,13 @@ TEST_F(AutocompleteSyncBridgeTest, LocalEntryExpired) {
   const std::string storage_key = GetStorageKey(expired_specifics);
 
   // Let's add the sync metadata
-  ASSERT_TRUE(table()->UpdateEntityMetadata(syncer::AUTOFILL, storage_key,
-                                            EntityMetadata()));
+  ASSERT_TRUE(sync_metadata_table()->UpdateEntityMetadata(
+      syncer::AUTOFILL, storage_key, EntityMetadata()));
 
   // Validate that it was added.
   syncer::MetadataBatch batch;
-  ASSERT_TRUE(table()->GetAllSyncMetadata(syncer::AUTOFILL, &batch));
+  ASSERT_TRUE(
+      sync_metadata_table()->GetAllSyncMetadata(syncer::AUTOFILL, &batch));
   ASSERT_EQ(1U, batch.TakeAllMetadata().size());
 
   EXPECT_CALL(mock_processor(), UntrackEntityForStorageKey(storage_key));
@@ -666,7 +671,8 @@ TEST_F(AutocompleteSyncBridgeTest, LocalEntryExpired) {
       {AutocompleteChange(AutocompleteChange::EXPIRE, expired_entry.key())});
 
   // Expect metadata to have been cleaned up.
-  EXPECT_TRUE(table()->GetAllSyncMetadata(syncer::AUTOFILL, &batch));
+  EXPECT_TRUE(
+      sync_metadata_table()->GetAllSyncMetadata(syncer::AUTOFILL, &batch));
   EXPECT_EQ(0U, batch.TakeAllMetadata().size());
 }
 
@@ -674,10 +680,10 @@ TEST_F(AutocompleteSyncBridgeTest, LoadMetadataCalled) {
   ModelTypeState model_type_state;
   model_type_state.set_initial_sync_state(
       sync_pb::ModelTypeState_InitialSyncState_INITIAL_SYNC_DONE);
-  EXPECT_TRUE(
-      table()->UpdateModelTypeState(syncer::AUTOFILL, model_type_state));
-  EXPECT_TRUE(
-      table()->UpdateEntityMetadata(syncer::AUTOFILL, "key", EntityMetadata()));
+  EXPECT_TRUE(sync_metadata_table()->UpdateModelTypeState(syncer::AUTOFILL,
+                                                          model_type_state));
+  EXPECT_TRUE(sync_metadata_table()->UpdateEntityMetadata(
+      syncer::AUTOFILL, "key", EntityMetadata()));
 
   ResetProcessor();
   EXPECT_CALL(mock_processor(), ModelReadyToSync(MetadataBatchContains(

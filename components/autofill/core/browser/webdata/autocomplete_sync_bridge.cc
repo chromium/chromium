@@ -19,6 +19,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
 #include "components/autofill/core/browser/proto/autofill_sync.pb.h"
+#include "components/autofill/core/browser/webdata/autocomplete_table.h"
 #include "components/autofill/core/browser/webdata/autofill_table.h"
 #include "components/autofill/core/browser/webdata/autofill_webdata_service.h"
 #include "components/sync/model/client_tag_based_model_type_processor.h"
@@ -131,7 +132,7 @@ AutocompleteEntry CreateAutocompleteEntry(
 // directions.
 class SyncDifferenceTracker {
  public:
-  explicit SyncDifferenceTracker(AutofillTable* table) : table_(table) {}
+  explicit SyncDifferenceTracker(AutocompleteTable* table) : table_(table) {}
 
   SyncDifferenceTracker(const SyncDifferenceTracker&) = delete;
   SyncDifferenceTracker& operator=(const SyncDifferenceTracker&) = delete;
@@ -264,7 +265,7 @@ class SyncDifferenceTracker {
     return true;
   }
 
-  const raw_ptr<AutofillTable> table_;
+  const raw_ptr<AutocompleteTable> table_;
 
   // This class attempts to lazily load data from |table_|. This field tracks
   // if that has happened or not yet. To facilitate this, the first usage of
@@ -337,7 +338,7 @@ std::unique_ptr<MetadataChangeList>
 AutocompleteSyncBridge::CreateMetadataChangeList() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return std::make_unique<syncer::SyncMetadataStoreChangeList>(
-      GetAutofillTable(), syncer::AUTOFILL,
+      GetSyncMetadataStore(), syncer::AUTOFILL,
       base::BindRepeating(&syncer::ModelTypeChangeProcessor::ReportError,
                           change_processor()->GetWeakPtr()));
 }
@@ -347,7 +348,7 @@ std::optional<syncer::ModelError> AutocompleteSyncBridge::MergeFullSyncData(
     EntityChangeList entity_data) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  SyncDifferenceTracker tracker(GetAutofillTable());
+  SyncDifferenceTracker tracker(GetAutocompleteTable());
   for (const auto& change : entity_data) {
     DCHECK(change->data().specifics.has_autofill());
     RETURN_IF_ERROR(tracker.IncorporateRemoteSpecifics(
@@ -367,7 +368,7 @@ std::optional<ModelError> AutocompleteSyncBridge::ApplyIncrementalSyncChanges(
     EntityChangeList entity_changes) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  SyncDifferenceTracker tracker(GetAutofillTable());
+  SyncDifferenceTracker tracker(GetAutocompleteTable());
   for (const std::unique_ptr<EntityChange>& change : entity_changes) {
     if (change->type() == EntityChange::ACTION_DELETE) {
       RETURN_IF_ERROR(tracker.IncorporateRemoteDelete(change->storage_key()));
@@ -391,7 +392,7 @@ void AutocompleteSyncBridge::AutocompleteSyncBridge::GetData(
     DataCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   std::vector<AutocompleteEntry> entries;
-  if (!GetAutofillTable()->GetAllAutocompleteEntries(&entries)) {
+  if (!GetAutocompleteTable()->GetAllAutocompleteEntries(&entries)) {
     change_processor()->ReportError(
         {FROM_HERE, "Failed to load entries from table."});
     return;
@@ -413,7 +414,7 @@ void AutocompleteSyncBridge::GetAllDataForDebugging(DataCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   std::vector<AutocompleteEntry> entries;
-  if (!GetAutofillTable()->GetAllAutocompleteEntries(&entries)) {
+  if (!GetAutocompleteTable()->GetAllAutocompleteEntries(&entries)) {
     change_processor()->ReportError(
         {FROM_HERE, "Failed to load entries from table."});
     return;
@@ -440,8 +441,8 @@ void AutocompleteSyncBridge::ActOnLocalChanges(
       case AutocompleteChange::ADD:
       case AutocompleteChange::UPDATE: {
         std::optional<AutocompleteEntry> entry =
-            GetAutofillTable()->GetAutocompleteEntry(change.key().name(),
-                                                     change.key().value());
+            GetAutocompleteTable()->GetAutocompleteEntry(change.key().name(),
+                                                         change.key().value());
         if (!entry) {
           change_processor()->ReportError(
               {FROM_HERE, "Failed reading autofill entry from WebDatabase."});
@@ -458,8 +459,8 @@ void AutocompleteSyncBridge::ActOnLocalChanges(
       case AutocompleteChange::EXPIRE: {
         // For expired entries, unlink and delete the sync metadata.
         // That way we are not sending tombstone updates to the sync servers.
-        bool success = GetAutofillTable()->ClearEntityMetadata(syncer::AUTOFILL,
-                                                               storage_key);
+        bool success = GetSyncMetadataStore()->ClearEntityMetadata(
+            syncer::AUTOFILL, storage_key);
         if (!success) {
           change_processor()->ReportError(
               {FROM_HERE,
@@ -481,14 +482,15 @@ void AutocompleteSyncBridge::ActOnLocalChanges(
 
 void AutocompleteSyncBridge::LoadMetadata() {
   if (!web_data_backend_ || !web_data_backend_->GetDatabase() ||
-      !GetAutofillTable()) {
+      !GetSyncMetadataStore()) {
     change_processor()->ReportError(
         {FROM_HERE, "Failed to load AutofillWebDatabase."});
     return;
   }
 
   auto batch = std::make_unique<syncer::MetadataBatch>();
-  if (!GetAutofillTable()->GetAllSyncMetadata(syncer::AUTOFILL, batch.get())) {
+  if (!GetSyncMetadataStore()->GetAllSyncMetadata(syncer::AUTOFILL,
+                                                  batch.get())) {
     change_processor()->ReportError(
         {FROM_HERE, "Failed reading autofill metadata from WebDatabase."});
     return;
@@ -522,7 +524,11 @@ void AutocompleteSyncBridge::AutocompleteEntriesChanged(
   ActOnLocalChanges(changes);
 }
 
-AutofillTable* AutocompleteSyncBridge::GetAutofillTable() const {
+AutocompleteTable* AutocompleteSyncBridge::GetAutocompleteTable() {
+  return AutocompleteTable::FromWebDatabase(web_data_backend_->GetDatabase());
+}
+
+AutofillTable* AutocompleteSyncBridge::GetSyncMetadataStore() {
   return AutofillTable::FromWebDatabase(web_data_backend_->GetDatabase());
 }
 
