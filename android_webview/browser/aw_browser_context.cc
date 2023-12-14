@@ -704,68 +704,6 @@ AwBrowserContext::GetServiceWorkerIoThreadClientThreadSafe() {
   return nullptr;
 }
 
-jboolean JNI_AwBrowserContext_CheckNamedContextExists(
-    JNIEnv* const env,
-    const base::android::JavaParamRef<jstring>& jname) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  return AwBrowserContextStore::GetInstance()->Exists(
-      base::android::ConvertJavaStringToUTF8(env, jname));
-}
-
-base::android::ScopedJavaLocalRef<jobject>
-JNI_AwBrowserContext_GetNamedContextJava(
-    JNIEnv* const env,
-    const base::android::JavaParamRef<jstring>& jname,
-    jboolean create_if_needed) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  AwBrowserContext* context = AwBrowserContextStore::GetInstance()->Get(
-      base::android::ConvertJavaStringToUTF8(env, jname), create_if_needed);
-  return context ? context->GetJavaBrowserContext() : nullptr;
-}
-
-jboolean JNI_AwBrowserContext_DeleteNamedContext(
-    JNIEnv* const env,
-    const base::android::JavaParamRef<jstring>& jname) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  const std::string name = base::android::ConvertJavaStringToUTF8(env, jname);
-  AwBrowserContextStore::DeletionResult result =
-      AwBrowserContextStore::GetInstance()->Delete(name);
-  switch (result) {
-    case AwBrowserContextStore::DeletionResult::kDeleted:
-      return true;
-    case AwBrowserContextStore::DeletionResult::kDoesNotExist:
-      return false;
-    case AwBrowserContextStore::DeletionResult::kInUse:
-      const std::string error_message =
-          base::StrCat({"Cannot delete in-use profile ", name});
-      env->ThrowNew(env->FindClass("java/lang/IllegalStateException"),
-                    error_message.c_str());
-      return false;
-  }
-}
-
-base::android::ScopedJavaLocalRef<jstring>
-JNI_AwBrowserContext_GetNamedContextPathForTesting(  // IN-TEST
-    JNIEnv* const env,
-    const base::android::JavaParamRef<jstring>& jname) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  std::string name = base::android::ConvertJavaStringToUTF8(env, jname);
-  AwBrowserContextStore* store = AwBrowserContextStore::GetInstance();
-  if (!store->Exists(name)) {
-    return nullptr;
-  }
-  base::FilePath path = store->GetRelativePathForTesting(name);  // IN-TEST
-  return base::android::ConvertUTF8ToJavaString(env, path.value());
-}
-
-base::android::ScopedJavaLocalRef<jobjectArray>
-JNI_AwBrowserContext_ListAllContexts(JNIEnv* env) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  const std::vector<std::string> names =
-      AwBrowserContextStore::GetInstance()->List();
-  return base::android::ToJavaArrayOfStrings(env, names);
-}
-
 // static
 base::FilePath AwBrowserContext::BuildStoragePath(
     const base::FilePath& relative_path) {

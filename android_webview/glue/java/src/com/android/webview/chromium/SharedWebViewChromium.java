@@ -7,7 +7,7 @@ package com.android.webview.chromium;
 import android.webkit.WebChromeClient;
 import android.webkit.WebViewClient;
 
-import org.chromium.android_webview.AwBrowserContext;
+import org.chromium.android_webview.AwBrowserContextStore;
 import org.chromium.android_webview.AwContents;
 import org.chromium.android_webview.AwRenderProcess;
 import org.chromium.android_webview.ScriptHandler;
@@ -190,7 +190,7 @@ public class SharedWebViewChromium {
             mRunQueue.addTask(() -> setProfile(profileName));
             return;
         }
-        mAwContents.setBrowserContext(AwBrowserContext.getNamedContext(profileName, true));
+        mAwContents.setBrowserContext(AwBrowserContextStore.getNamedContext(profileName, true));
     }
 
     public Profile getProfile() {

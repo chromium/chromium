@@ -16,7 +16,7 @@ import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 import org.junit.runners.Parameterized.UseParametersRunnerFactory;
 
-import org.chromium.android_webview.AwBrowserContext;
+import org.chromium.android_webview.AwBrowserContextStore;
 import org.chromium.android_webview.AwContents;
 import org.chromium.android_webview.AwCookieManager;
 import org.chromium.base.FileUtils;
@@ -113,7 +113,8 @@ public class OnDiskFileTest extends AwParameterizedTest {
         mActivityTestRule.runOnUiThread(
                 () -> {
                     Assert.assertEquals(
-                            "Default", AwBrowserContext.getNamedContextPathForTesting("Default"));
+                            "Default",
+                            AwBrowserContextStore.getNamedContextPathForTesting("Default"));
                 });
 
         // Check NonDefaults use "Profile 1", "Profile 2", ...
@@ -134,11 +135,12 @@ public class OnDiskFileTest extends AwParameterizedTest {
                     () -> {
                         contextPath.delete();
 
-                        AwBrowserContext.getNamedContext(contextName, /* createIfNeeded= */ true);
+                        AwBrowserContextStore.getNamedContext(
+                                contextName, /* createIfNeeded= */ true);
 
                         Assert.assertEquals(
                                 relativePath,
-                                AwBrowserContext.getNamedContextPathForTesting(contextName));
+                                AwBrowserContextStore.getNamedContextPathForTesting(contextName));
                         Assert.assertTrue(contextPath.isDirectory());
                     });
         }
