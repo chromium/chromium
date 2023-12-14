@@ -464,22 +464,7 @@ PA_ALWAYS_INLINE PartitionRefCount* PartitionRefCountPointer(
 
 #else  // BUILDFLAG(PUT_REF_COUNT_IN_PREVIOUS_SLOT)
 
-// Allocate extra space for the reference count to satisfy the alignment
-// requirement.
-static constexpr size_t kInSlotRefCountBufferSize = kAlignment;
-constexpr size_t kPartitionRefCountOffsetAdjustment = kInSlotRefCountBufferSize;
-
-// This is for adjustment of pointers right past the allocation, which may point
-// to the next slot. First subtract 1 to bring them to the intended slot, and
-// only then we'll be able to find ref-count in that slot.
-constexpr size_t kPartitionPastAllocationAdjustment = 1;
-
-PA_ALWAYS_INLINE PartitionRefCount* PartitionRefCountPointer(
-    uintptr_t slot_start) {
-  // Have to MTE-tag, because the address is untagged, but lies within a slot
-  // area, which is protected by MTE.
-  return static_cast<PartitionRefCount*>(TagAddr(slot_start));
-}
+static_assert(false, "Not implemented.");
 
 #endif  // BUILDFLAG(PUT_REF_COUNT_IN_PREVIOUS_SLOT)
 

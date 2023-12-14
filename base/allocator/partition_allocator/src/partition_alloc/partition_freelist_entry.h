@@ -39,9 +39,9 @@ static_assert(kSmallestBucket >= sizeof(PoolOffsetFreelistEntry),
 
 #if BUILDFLAG(PUT_REF_COUNT_IN_PREVIOUS_SLOT)
 
-// The smallest bucket actually used. Note that the smallest request is 1 (if
-// it's 0, it gets patched to 1), and ref-count gets added to it.
 namespace {
+// The smallest bucket that is actually used. Note that the smallest request is
+// 1 (if it's 0, it gets patched to 1), and ref-count gets added to it.
 constexpr size_t kSmallestUsedBucket =
     base::bits::AlignUp(1 + sizeof(PartitionRefCount), kSmallestBucket);
 }

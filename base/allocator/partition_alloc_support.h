@@ -47,7 +47,6 @@ class BASE_EXPORT PartitionAllocSupport {
     bool enable_brp = false;
     bool enable_brp_for_ash = false;
     bool split_main_partition = false;
-    bool use_dedicated_aligned_partition = false;
     bool process_affected_by_brp_flag = false;
     size_t ref_count_size = 0;
   };

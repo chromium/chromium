@@ -172,6 +172,8 @@ struct PartitionOptions {
   // This option determines whether it is supported for the partition.
   // Allowing AlignedAlloc() comes at a cost of disallowing extras in front
   // of the allocation.
+  // TODO(bartekn): Remove. We no longer have a need for partitions that don't
+  // support aligned alloc.
   AllowToggle aligned_alloc = kDisallowed;
 
   EnableToggle thread_cache = kDisabled;

@@ -146,15 +146,14 @@ static_assert(sizeof(void*) != 8, "");
 // Enable free list shadow entry to strengthen hardening as much as possible.
 // The shadow entry is an inversion (bitwise-NOT) of the encoded `next` pointer.
 //
-// Disabled when ref-count is placed in the previous slot, as it will overlap
-// with the shadow for the smallest slots.
+// Disabled when BRP is used, because ref-count is placed at the end of a slot,
+// and it will overlap with the shadow for the smallest slots.
 //
 // Disabled on Big Endian CPUs, because encoding is also a bitwise-NOT there,
 // making the shadow entry equal to the original, valid pointer to the next
 // slot. In case Use-after-Free happens, we'd rather not hand out a valid,
 // ready-to-use pointer.
-#if !BUILDFLAG(PUT_REF_COUNT_IN_PREVIOUS_SLOT) && \
-    defined(ARCH_CPU_LITTLE_ENDIAN)
+#if !BUILDFLAG(ENABLE_BACKUP_REF_PTR_SUPPORT) && defined(ARCH_CPU_LITTLE_ENDIAN)
 #define PA_CONFIG_HAS_FREELIST_SHADOW_ENTRY() 1
 #else
 #define PA_CONFIG_HAS_FREELIST_SHADOW_ENTRY() 0

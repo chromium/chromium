@@ -198,6 +198,7 @@ using EnableMemoryTagging =
 using SplitMainPartition =
     partition_alloc::internal::base::StrongAlias<class SplitMainPartitionTag,
                                                  bool>;
+// TODO(bartekn): Remove once PDFium stops using it.
 using UseDedicatedAlignedPartition = partition_alloc::internal::base::
     StrongAlias<class UseDedicatedAlignedPartitionTag, bool>;
 enum class BucketDistribution : uint8_t { kNeutral, kDenser };
@@ -216,7 +217,6 @@ void ConfigurePartitions(
     EnableMemoryTagging enable_memory_tagging,
     partition_alloc::TagViolationReportingMode memory_tagging_reporting_mode,
     SplitMainPartition split_main_partition,
-    UseDedicatedAlignedPartition use_dedicated_aligned_partition,
     size_t ref_count_size,
     BucketDistribution distribution,
     SchedulerLoopQuarantine scheduler_loop_quarantine,
@@ -227,11 +227,12 @@ void ConfigurePartitions(
 // If |thread_cache_on_non_quarantinable_partition| is specified, the
 // thread-cache will be enabled on the non-quarantinable partition. The
 // thread-cache on the main (malloc) partition will be disabled.
+//
 // This is the deprecated version of ConfigurePartitions, kept for compatibility
 // with pdfium's test setup, see
 // third_party/pdfium/testing/allocator_shim_config.cpp.
-// TODO(crbug.com/1137393): Remove this functions once pdfium has switched to
-// the new version.
+// TODO(bartekn): Remove this functions once pdfium has switched to
+// ConfigurePartitionsForPdfiumTesting().
 PA_COMPONENT_EXPORT(ALLOCATOR_SHIM)
 void ConfigurePartitions(
     EnableBrp enable_brp,
@@ -240,6 +241,17 @@ void ConfigurePartitions(
     UseDedicatedAlignedPartition use_dedicated_aligned_partition,
     size_t ref_count_size,
     BucketDistribution distribution);
+
+// Provide a `ConfigurePartitions` helper for PDFium, so that its signature
+// changes don't require cross-repo changes.
+PA_ALWAYS_INLINE void ConfigurePartitionsForPdfiumTesting(
+    EnableBrp enable_brp,
+    EnableMemoryTagging enable_memory_tagging,
+    SplitMainPartition split_main_partition) {
+  ConfigurePartitions(enable_brp, enable_memory_tagging, split_main_partition,
+                      UseDedicatedAlignedPartition(true), 0,
+                      BucketDistribution::kNeutral);
+}
 
 PA_COMPONENT_EXPORT(ALLOCATOR_SHIM) uint32_t GetMainPartitionRootExtrasSize();
 

@@ -320,7 +320,7 @@ SlotSpanMetadata* PartitionDirectMap(PartitionRoot* root,
                               PageAccessibilityConfiguration::kReadWrite),
                           PageAccessibilityDisposition::kRequireUpdate);
     }
-#endif
+#endif  // BUILDFLAG(PUT_REF_COUNT_IN_PREVIOUS_SLOT)
 
 #if PA_CONFIG(ENABLE_SHADOW_METADATA)
     {
@@ -803,7 +803,7 @@ PartitionBucket::InitializeSuperPage(PartitionRoot* root,
                             PageAccessibilityConfiguration::kReadWrite),
                         PageAccessibilityDisposition::kRequireUpdate);
   }
-#endif
+#endif  // BUILDFLAG(PUT_REF_COUNT_IN_PREVIOUS_SLOT)
 
 #if PA_CONFIG(ENABLE_SHADOW_METADATA)
   {

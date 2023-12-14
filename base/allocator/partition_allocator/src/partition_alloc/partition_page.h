@@ -32,10 +32,6 @@
 #include "partition_alloc/starscan/state_bitmap.h"
 #endif
 
-#if BUILDFLAG(PUT_REF_COUNT_IN_PREVIOUS_SLOT)
-#include "partition_alloc/partition_ref_count.h"
-#endif
-
 #if BUILDFLAG(PA_DCHECK_IS_ON)
 #include "partition_alloc/tagging.h"
 #endif

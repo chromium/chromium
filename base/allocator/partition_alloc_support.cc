@@ -856,7 +856,6 @@ PartitionAllocSupport::GetBrpConfiguration(const std::string& process_type) {
   bool enable_brp = false;
   bool enable_brp_for_ash = false;
   bool split_main_partition = false;
-  bool use_dedicated_aligned_partition = false;
   bool process_affected_by_brp_flag = false;
   size_t ref_count_size = 0;
 
@@ -903,17 +902,6 @@ PartitionAllocSupport::GetBrpConfiguration(const std::string& process_type) {
       case base::features::BackupRefPtrMode::kEnabled:
         enable_brp = true;
         split_main_partition = true;
-#if !BUILDFLAG(PUT_REF_COUNT_IN_PREVIOUS_SLOT)
-        // AlignedAlloc relies on natural alignment offered by the allocator
-        // (see the comment inside PartitionRoot::AlignedAllocFlags). Any extras
-        // in front of the allocation will mess up that alignment. Such extras
-        // are used when BackupRefPtr is on, in which case, we need a separate
-        // partition, dedicated to handle only aligned allocations, where those
-        // extras are disabled. However, if the "previous slot" variant is used,
-        // no dedicated partition is needed, as the extras won't interfere with
-        // the alignment requirements.
-        use_dedicated_aligned_partition = true;
-#endif
         break;
     }
 
@@ -947,11 +935,8 @@ PartitionAllocSupport::GetBrpConfiguration(const std::string& process_type) {
 #endif
 
   return {
-      enable_brp,
-      enable_brp_for_ash,
-      split_main_partition,
-      use_dedicated_aligned_partition,
-      process_affected_by_brp_flag,
+      enable_brp,           enable_brp_for_ash,
+      split_main_partition, process_affected_by_brp_flag,
       ref_count_size,
   };
 }
@@ -1174,8 +1159,6 @@ void PartitionAllocSupport::ReconfigureAfterFeatureListInit(
       memory_tagging_reporting_mode,
       allocator_shim::SplitMainPartition(brp_config.split_main_partition ||
                                          enable_memory_tagging),
-      allocator_shim::UseDedicatedAlignedPartition(
-          brp_config.use_dedicated_aligned_partition),
       brp_config.ref_count_size, bucket_distribution,
       allocator_shim::SchedulerLoopQuarantine(scheduler_loop_quarantine),
       scheduler_loop_quarantine_capacity_in_bytes,

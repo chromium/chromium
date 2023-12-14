@@ -315,32 +315,6 @@ struct RawPtrBackupRefImpl {
   PA_ALWAYS_INLINE static T* VerifyAndPoisonPointerAfterAdvanceOrRetreat(
       T* unpoisoned_ptr,
       T* new_ptr) {
-    // In the "before allocation" mode, on 32-bit, we can run into a problem
-    // that the end-of-allocation address could fall outside of
-    // PartitionAlloc's pools, if this is the last slot of the super page,
-    // thus pointing to the guard page. This means the ref-count won't be
-    // decreased when the pointer is released (leak).
-    //
-    // We could possibly solve it in a few different ways:
-    // - Add the trailing guard page to the pool, but we'd have to think very
-    //   hard if this doesn't create another hole.
-    // - Add an address adjustment to "is in pool?" check, similar as the one in
-    //   PartitionAllocGetSlotStartInBRPPool(), but that seems fragile, not to
-    //   mention adding an extra instruction to an inlined hot path.
-    // - Let the leak happen, since it should a very rare condition.
-    // - Go back to the previous solution of rewrapping the pointer, but that
-    //   had an issue of losing BRP protection in case the pointer ever gets
-    //   shifted back before the end of allocation.
-    //
-    // We decided to cross that bridge once we get there... if we ever get
-    // there. Currently there are no plans to switch back to the "before
-    // allocation" mode.
-    //
-    // This problem doesn't exist in the "previous slot" mode, or any mode that
-    // involves putting extras after the allocation, because the
-    // end-of-allocation address belongs to the same slot.
-    static_assert(BUILDFLAG(PUT_REF_COUNT_IN_PREVIOUS_SLOT));
-
     // First check if the new address didn't migrate in/out the BRP pool, and
     // that it lands within the same allocation. An end-of-allocation address is
     // ok, too, and that may lead to the pointer being poisoned if the relevant
@@ -354,6 +328,15 @@ struct RawPtrBackupRefImpl {
     // ref-count to go to 0 upon this pointer's destruction, even though there
     // may be another pointer still pointing to it, thus making it lose the BRP
     // protection prematurely.
+    //
+    // Note 2, if we ever need to restore the "before allocation" mode, we can
+    // run into a problem on 32-bit that the end-of-allocation address could
+    // fall outside of PartitionAlloc's pools, if this is the last slot of the
+    // super page, thus pointing to the guard page. This means the ref-count
+    // won't be decreased when the pointer is released (leak). This problem
+    // doesn't exist in the modes that involve putting extras after the
+    // allocation, because the end-of-allocation address belongs to the same
+    // slot.
     const uintptr_t before_addr = partition_alloc::UntagPtr(unpoisoned_ptr);
     const uintptr_t after_addr = partition_alloc::UntagPtr(new_ptr);
     // TODO(bartekn): Consider adding support for non-BRP pools too (without

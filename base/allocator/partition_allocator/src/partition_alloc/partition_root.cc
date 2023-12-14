@@ -1034,14 +1034,6 @@ void PartitionRoot::Init(PartitionOptions opts) {
     settings.thread_isolation = opts.thread_isolation;
 #endif  // BUILDFLAG(ENABLE_THREAD_ISOLATION)
 
-    // Ref-count messes up alignment needed for AlignedAlloc, making this
-    // option incompatible. However, except in the
-    // PUT_REF_COUNT_IN_PREVIOUS_SLOT case.
-#if BUILDFLAG(ENABLE_BACKUP_REF_PTR_SUPPORT) && \
-    !BUILDFLAG(PUT_REF_COUNT_IN_PREVIOUS_SLOT)
-    PA_CHECK(!settings.allow_aligned_alloc || !settings.brp_enabled_);
-#endif
-
 #if PA_CONFIG(EXTRAS_REQUIRED)
     settings.extras_size = 0;
     settings.extras_offset = 0;

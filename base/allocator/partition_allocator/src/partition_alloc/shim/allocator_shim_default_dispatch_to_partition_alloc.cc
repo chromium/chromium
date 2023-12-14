@@ -183,6 +183,8 @@ class AlignedPartitionConstructor {
   }
 };
 
+// TODO(bartekn): Remove. Main partition now always supports aligned alloc, so
+// no need for dedicated partition.
 LeakySingleton<partition_alloc::PartitionRoot, AlignedPartitionConstructor>
     g_aligned_root PA_CONSTINIT = {};
 
@@ -530,7 +532,6 @@ void ConfigurePartitions(
     EnableMemoryTagging enable_memory_tagging,
     partition_alloc::TagViolationReportingMode memory_tagging_reporting_mode,
     SplitMainPartition split_main_partition,
-    UseDedicatedAlignedPartition use_dedicated_aligned_partition,
     size_t ref_count_size,
     BucketDistribution distribution,
     SchedulerLoopQuarantine scheduler_loop_quarantine,
@@ -541,11 +542,6 @@ void ConfigurePartitions(
   // the "before allocation" mode, it can't be enabled without further splitting
   // out the aligned partition.
   PA_CHECK(!enable_brp || split_main_partition);
-#if !BUILDFLAG(PUT_REF_COUNT_IN_PREVIOUS_SLOT)
-  PA_CHECK(!enable_brp || use_dedicated_aligned_partition);
-#endif
-  // Can't split out the aligned partition, without splitting the main one.
-  PA_CHECK(!use_dedicated_aligned_partition || split_main_partition);
 
   // Calling Get() is actually important, even if the return values weren't
   // used, because it has a side effect of initializing the variables, if they
@@ -564,7 +560,6 @@ void ConfigurePartitions(
         break;
     }
     PA_DCHECK(!enable_brp);
-    PA_DCHECK(!use_dedicated_aligned_partition);
     PA_DCHECK(!current_root->settings.with_thread_cache);
     PA_CHECK(!g_roots_finalized.exchange(true));  // Ensure configured once.
     return;
@@ -580,10 +575,7 @@ void ConfigurePartitions(
       partition_alloc::PartitionAllocator>
       new_main_allocator([&]() {
         partition_alloc::PartitionOptions opts;
-        opts.aligned_alloc =
-            !use_dedicated_aligned_partition
-                ? partition_alloc::PartitionOptions::kAllowed
-                : partition_alloc::PartitionOptions::kDisallowed;
+        opts.aligned_alloc = partition_alloc::PartitionOptions::kAllowed;
         opts.thread_cache = partition_alloc::PartitionOptions::kDisabled;
         opts.star_scan_quarantine = partition_alloc::PartitionOptions::kAllowed;
         opts.backup_ref_ptr =
@@ -611,30 +603,10 @@ void ConfigurePartitions(
       }());
   partition_alloc::PartitionRoot* new_root = new_main_allocator->root();
 
-  partition_alloc::PartitionRoot* new_aligned_root;
-  if (use_dedicated_aligned_partition) {
-    // TODO(bartekn): Use the original root instead of creating a new one. It'd
-    // result in one less partition, but come at a cost of commingling types.
-    static partition_alloc::internal::base::NoDestructor<
-        partition_alloc::PartitionAllocator>
-        new_aligned_allocator([&]() {
-          partition_alloc::PartitionOptions opts;
-          opts.aligned_alloc = partition_alloc::PartitionOptions::kAllowed;
-          opts.thread_cache = partition_alloc::PartitionOptions::kDisabled;
-          opts.star_scan_quarantine =
-              partition_alloc::PartitionOptions::kAllowed;
-          opts.backup_ref_ptr = partition_alloc::PartitionOptions::kDisabled;
-          return opts;
-        }());
-    new_aligned_root = new_aligned_allocator->root();
-  } else {
-    // The new main root can also support AlignedAlloc.
-    new_aligned_root = new_root;
-  }
-
   // Now switch traffic to the new partitions.
+  // The new main root can also support AlignedAlloc.
   g_original_root = current_root;
-  g_aligned_root.Replace(new_aligned_root);
+  g_aligned_root.Replace(new_root);
   g_root.Replace(new_root);
 
   // No need for g_original_aligned_root, because in cases where g_aligned_root
@@ -652,9 +624,6 @@ void ConfigurePartitions(
       break;
     case BucketDistribution::kDenser:
       new_root->SwitchToDenserBucketDistribution();
-      if (new_aligned_root != new_root) {
-        new_aligned_root->SwitchToDenserBucketDistribution();
-      }
       break;
   }
 
@@ -687,9 +656,8 @@ void ConfigurePartitions(
 
   ConfigurePartitions(
       enable_brp, enable_memory_tagging, memory_tagging_reporting_mode,
-      split_main_partition, use_dedicated_aligned_partition, ref_count_size,
-      distribution, scheduler_loop_quarantine,
-      scheduler_loop_quarantine_capacity_in_bytes,
+      split_main_partition, ref_count_size, distribution,
+      scheduler_loop_quarantine, scheduler_loop_quarantine_capacity_in_bytes,
       scheduler_loop_quarantine_capacity_count, zapping_by_free_flags);
 }
 
