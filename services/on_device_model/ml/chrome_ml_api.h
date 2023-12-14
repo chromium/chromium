@@ -116,6 +116,7 @@ struct ChromeMLExecuteOptions {
   int context_mode = ContextMode::kNone;
   uint32_t max_tokens = 0;
   uint32_t token_offset = 0;
+  uint32_t max_output_tokens = 0;
   const ChromeMLOutputFn* output_fn = nullptr;
   const ChromeMLContextSavedFn* context_saved_fn = nullptr;
   const ChromeMLCompletionFn* completion_fn = nullptr;

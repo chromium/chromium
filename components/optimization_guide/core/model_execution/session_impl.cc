@@ -75,7 +75,8 @@ class SessionImpl::ContextProcessor
     }
     session_->GetOrCreateSession().AddContext(
         on_device_model::mojom::InputOptions::New(
-            input_, num_tokens, tokens_processed_, /*ignore_context=*/false),
+            input_, num_tokens, tokens_processed_, /*ignore_context=*/false,
+            /*max_output_tokens=*/std::nullopt),
         client_.BindNewPipeAndPassRemote());
   }
 
@@ -266,7 +267,8 @@ void SessionImpl::ExecuteModel(
   GetOrCreateSession().Execute(
       on_device_model::mojom::InputOptions::New(
           input->input_string, features::GetOnDeviceModelMaxTokensForExecute(),
-          /*token_offset=*/std::nullopt, input->should_ignore_input_context),
+          /*token_offset=*/std::nullopt, input->should_ignore_input_context,
+          features::GetOnDeviceModelMaxTokensForOutput()),
       on_device_state_->receiver.BindNewPipeAndPassRemote());
   on_device_state_->receiver.set_disconnect_handler(
       base::BindOnce(&SessionImpl::OnDisconnect, base::Unretained(this)));

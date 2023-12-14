@@ -53,6 +53,11 @@ struct InputOptions {
   // context for this input. Note that this is less efficient than running on
   // top of the current context, so only use when necessary.
   bool ignore_context;
+
+  // The maximum number of tokens that should be output from a call to
+  // Execute(). If not set, will output tokens until an end token or the maximum
+  // sequence length.
+  uint32? max_output_tokens;
 };
 
 // A session for a model that allows adding context and then executing an input
