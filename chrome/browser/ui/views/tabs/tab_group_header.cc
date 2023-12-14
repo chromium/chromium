@@ -126,6 +126,8 @@ TabGroupHeader::TabGroupHeader(TabSlotController& tab_slot_controller,
   if (features::IsChromeRefresh2023() &&
       base::FeatureList::IsEnabled(features::kChromeRefresh2023TopChromeFont)) {
     title_->SetTextStyle(views::style::STYLE_BODY_4_EMPHASIS);
+  } else {
+    title_->SetTextStyle(views::style::STYLE_BODY_4);
   }
 
   // Enable keyboard focus.
