@@ -1617,6 +1617,8 @@ static_library("ui") {
       "user_notes/user_notes_controller.h",
       "views/eye_dropper/eye_dropper.cc",
       "views/eye_dropper/eye_dropper.h",
+      "views/file_system_access/file_system_access_scroll_panel.cc",
+      "views/file_system_access/file_system_access_scroll_panel.h",
       "webui/access_code_cast/access_code_cast_dialog.cc",
       "webui/access_code_cast/access_code_cast_dialog.h",
       "webui/access_code_cast/access_code_cast_handler.cc",
