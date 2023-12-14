@@ -13,7 +13,6 @@
 
 #include "ash/calendar/calendar_client.h"
 #include "ash/calendar/calendar_controller.h"
-#include "ash/constants/ash_features.h"
 #include "ash/constants/ash_pref_names.h"
 #include "ash/public/cpp/session/session_controller.h"
 #include "ash/public/cpp/session/session_types.h"
@@ -27,7 +26,6 @@
 #include "base/ranges/algorithm.h"
 #include "base/run_loop.h"
 #include "base/test/metrics/histogram_tester.h"
-#include "base/test/scoped_feature_list.h"
 #include "base/time/time.h"
 #include "chromeos/ash/components/settings/scoped_timezone_settings.h"
 #include "components/user_manager/user_type.h"
@@ -153,16 +151,10 @@ TEST_F(CalendarModelUtilsTest, SurroundingMonths) {
   EXPECT_TRUE(base::Contains(months, start_of_next_month_3));
 }
 
-class CalendarModelTest
-    : public AshTestBase,
-      public testing::WithParamInterface</*glanceables_v2_enabled=*/bool> {
+class CalendarModelTest : public AshTestBase {
  public:
   CalendarModelTest()
-      : AshTestBase(base::test::TaskEnvironment::TimeSource::MOCK_TIME) {
-    scoped_feature_list_.InitWithFeatureStates(
-        {{features::kGlanceablesV2, AreGlanceablesV2Enabled()},
-         {features::kGlanceablesV2CalendarView, AreGlanceablesV2Enabled()}});
-  }
+      : AshTestBase(base::test::TaskEnvironment::TimeSource::MOCK_TIME) {}
 
   CalendarModelTest(const CalendarModelTest& other) = delete;
   CalendarModelTest& operator=(const CalendarModelTest& other) = delete;
@@ -191,8 +183,6 @@ class CalendarModelTest
 
     AshTestBase::TearDown();
   }
-
-  bool AreGlanceablesV2Enabled() { return GetParam(); }
 
   int EventsNumberOfDay(const char* day, SingleDayEventList* events) {
     base::Time day_base = calendar_test_utils::GetTimeFromString(day);
@@ -355,15 +345,12 @@ class CalendarModelTest
 
   std::unique_ptr<base::subtle::ScopedTimeClockOverrides> time_overrides_;
 
-  base::test::ScopedFeatureList scoped_feature_list_;
   std::unique_ptr<CalendarModel> calendar_model_;
   std::unique_ptr<calendar_test_utils::CalendarClientTestImpl> calendar_client_;
   base::Time now_;
 };
 
-INSTANTIATE_TEST_SUITE_P(GlanceablesV2, CalendarModelTest, testing::Bool());
-
-TEST_P(CalendarModelTest, FetchingSuccessfullyWithOneEvent) {
+TEST_F(CalendarModelTest, FetchingSuccessfullyWithOneEvent) {
   // All events will be distributed by the system timezone. If no timezone is
   // set, the test will run with the local default timezone which might cause a
   // test failure. So here sets the timezone to "GMT", and the same for all the
@@ -420,7 +407,7 @@ TEST_P(CalendarModelTest, FetchingSuccessfullyWithOneEvent) {
             calendar_model()->FindFetchingStatus(start_of_month));
 }
 
-TEST_P(CalendarModelTest, FetchingSuccessfullyWithMultiEvents) {
+TEST_F(CalendarModelTest, FetchingSuccessfullyWithMultiEvents) {
   // Sets the timezone to "GMT".
   ash::system::ScopedTimezoneSettings timezone_settings(u"GMT");
 
@@ -513,7 +500,7 @@ TEST_P(CalendarModelTest, FetchingSuccessfullyWithMultiEvents) {
             calendar_model()->FindFetchingStatus(start_of_month0));
 }
 
-TEST_P(CalendarModelTest, ChangeTimeDifference) {
+TEST_F(CalendarModelTest, ChangeTimeDifference) {
   // Sets the timezone to "America/Los_Angeles".
   ash::system::ScopedTimezoneSettings timezone_settings(u"America/Los_Angeles");
   calendar_test_utils::ScopedLibcTimeZone scoped_libc_timezone(
@@ -621,7 +608,7 @@ TEST_P(CalendarModelTest, ChangeTimeDifference) {
 }
 
 // Test for pruning of events.
-TEST_P(CalendarModelTest, PruneEvents) {
+TEST_F(CalendarModelTest, PruneEvents) {
   // Sets the timezone to "GMT".
   ash::system::ScopedTimezoneSettings timezone_settings(u"GMT");
 
@@ -694,7 +681,7 @@ TEST_P(CalendarModelTest, PruneEvents) {
   EXPECT_EQ((int)event_months().size(), kNumEvents + 1);
 }
 
-TEST_P(CalendarModelTest, RecordFetchResultHistogram_Success) {
+TEST_F(CalendarModelTest, RecordFetchResultHistogram_Success) {
   // Sets the timezone to "GMT".
   ash::system::ScopedTimezoneSettings timezone_settings(u"GMT");
 
@@ -721,7 +708,7 @@ TEST_P(CalendarModelTest, RecordFetchResultHistogram_Success) {
       /*expected_count=*/calendar_utils::kMaxNumNonPrunableMonths);
 }
 
-TEST_P(CalendarModelTest, RecordFetchResultHistogram_Failure) {
+TEST_F(CalendarModelTest, RecordFetchResultHistogram_Failure) {
   // Sets the timezone to "GMT".
   ash::system::ScopedTimezoneSettings timezone_settings(u"GMT");
 
@@ -770,7 +757,7 @@ TEST_P(CalendarModelTest, RecordFetchResultHistogram_Failure) {
                                      /*expected_count=*/2);
 }
 
-TEST_P(CalendarModelTest, SessionStateChange) {
+TEST_F(CalendarModelTest, SessionStateChange) {
   // Sets the timezone to "GMT".
   ash::system::ScopedTimezoneSettings timezone_settings(u"GMT");
 
@@ -807,7 +794,7 @@ TEST_P(CalendarModelTest, SessionStateChange) {
   EXPECT_TRUE(events.empty());
 }
 
-TEST_P(CalendarModelTest, ActiveUserChange) {
+TEST_F(CalendarModelTest, ActiveUserChange) {
   // Sets the timezone to "GMT".
   ash::system::ScopedTimezoneSettings timezone_settings(u"GMT");
 
@@ -854,7 +841,7 @@ TEST_P(CalendarModelTest, ActiveUserChange) {
   EXPECT_TRUE(event_months().empty());
 }
 
-TEST_P(CalendarModelTest, ActiveChildUserChange) {
+TEST_F(CalendarModelTest, ActiveChildUserChange) {
   // Sets the timezone to "GMT".
   ash::system::ScopedTimezoneSettings timezone_settings(u"GMT");
 
@@ -901,7 +888,7 @@ TEST_P(CalendarModelTest, ActiveChildUserChange) {
   EXPECT_TRUE(event_months().empty());
 }
 
-TEST_P(CalendarModelTest, ClearEvents) {
+TEST_F(CalendarModelTest, ClearEvents) {
   // Sets the timezone to "GMT".
   ash::system::ScopedTimezoneSettings timezone_settings(u"GMT");
 
@@ -976,7 +963,7 @@ TEST_P(CalendarModelTest, ClearEvents) {
 
 // Test for filtering of events based on their statuses. Cancelled or declined
 // events shouldn't be inserted in a month.
-TEST_P(CalendarModelTest, ShouldFilterEvents) {
+TEST_F(CalendarModelTest, ShouldFilterEvents) {
   // Sets the timezone to "GMT".
   ash::system::ScopedTimezoneSettings timezone_settings(u"GMT");
 
@@ -1039,7 +1026,7 @@ TEST_P(CalendarModelTest, ShouldFilterEvents) {
                   "confirmed+needs_action", "confirmed+tentative"}));
 }
 
-TEST_P(CalendarModelTest, EdgeOfMonthEvent) {
+TEST_F(CalendarModelTest, EdgeOfMonthEvent) {
   // Will add event that's in the same month as kNow using PDT (UTC-7),
   // so the times will translate to next day (and month) on UTC.
   ash::system::ScopedTimezoneSettings timezone_settings(u"America/Los_Angeles");
@@ -1086,7 +1073,7 @@ TEST_P(CalendarModelTest, EdgeOfMonthEvent) {
   EXPECT_TRUE(next_month_map->second.empty());
 }
 
-TEST_P(CalendarModelTest, MultiDayEvents) {
+TEST_F(CalendarModelTest, MultiDayEvents) {
   // Set timezone and fake now.
   const char* kNow = "10 Nov 2022 13:00 GMT";
   ash::system::ScopedTimezoneSettings timezone_settings(u"GMT");
@@ -1160,7 +1147,7 @@ TEST_P(CalendarModelTest, MultiDayEvents) {
   TestMultiDayEvent(events, kMultiYearStartTime, kMultiYearEndTime);
 }
 
-TEST_P(CalendarModelTest, MultiAllDayEvents) {
+TEST_F(CalendarModelTest, MultiAllDayEvents) {
   // Set timezone and fake now. We set this to be GMT+n as we previously
   // had a bug where all day events overflowed into the day after they were set
   // to end for GMT+ timezones.
@@ -1209,7 +1196,7 @@ TEST_P(CalendarModelTest, MultiAllDayEvents) {
   EXPECT_EQ(0, EventsNumberOfDay(kMultiAllDayEventEndTime, &events));
 }
 
-TEST_P(CalendarModelTest, FindFetchingStatus) {
+TEST_F(CalendarModelTest, FindFetchingStatus) {
   // Sets the timezone to "GMT".
   ash::system::ScopedTimezoneSettings timezone_settings(u"GMT");
 
@@ -1277,7 +1264,7 @@ TEST_P(CalendarModelTest, FindFetchingStatus) {
                 calendar_utils::GetStartOfMonthUTC(fetching_date)));
 }
 
-TEST_P(CalendarModelTest, FindEventsSplitByMultiDayAndSameDay) {
+TEST_F(CalendarModelTest, FindEventsSplitByMultiDayAndSameDay) {
   // Set timezone and fake now.
   const char* kNow = "10 Nov 2022 13:00 GMT+5";
   ash::system::ScopedTimezoneSettings timezone_settings(u"GMT+5");
@@ -1319,7 +1306,7 @@ TEST_P(CalendarModelTest, FindEventsSplitByMultiDayAndSameDay) {
   EXPECT_EQ(same_day_events.back().id(), kSameDayId);
 }
 
-TEST_P(CalendarModelTest, FindUpcomingEvents_SameDay) {
+TEST_F(CalendarModelTest, FindUpcomingEvents_SameDay) {
   // Set timezone and fake now.
   const char* kNow = "10 Nov 2022 13:00 GMT";
   ash::system::ScopedTimezoneSettings timezone_settings(u"GMT");
@@ -1394,10 +1381,11 @@ TEST_P(CalendarModelTest, FindUpcomingEvents_SameDay) {
 }
 
 // If time now is 23:55 and we have an upcoming event starting at 00:05 the
-// following day, then we should also get upcoming events from the next day
-// back.
-// For GlanceablesV2: we should only show today's events.
-TEST_P(CalendarModelTest, FindUpcomingEvents_NextDay) {
+// following day, we should only show today's events. This test is needed after
+// we made the change to the logic of showing the up next view. Before the
+// change, we would show the events starting in 10 mins even if it's in the next
+// day. Now it shouldn't be shown.
+TEST_F(CalendarModelTest, FindUpcomingEvents_NextDay) {
   // Set timezone and fake now.
   const char* kNow = "10 Nov 2022 23:55 GMT";
   ash::system::ScopedTimezoneSettings timezone_settings(u"GMT");
@@ -1426,19 +1414,13 @@ TEST_P(CalendarModelTest, FindUpcomingEvents_NextDay) {
     return base::Contains(event_list, id, &CalendarEvent::id);
   };
 
-  if (AreGlanceablesV2Enabled()) {
-    EXPECT_EQ(events.size(), size_t(0));
-    EXPECT_FALSE(
-        event_list_contains(events, kEventStartingInTenMinsTomorrowId));
-  } else {
-    EXPECT_EQ(events.size(), size_t(1));
-    EXPECT_TRUE(event_list_contains(events, kEventStartingInTenMinsTomorrowId));
-  }
+  EXPECT_EQ(events.size(), size_t(0));
+  EXPECT_FALSE(event_list_contains(events, kEventStartingInTenMinsTomorrowId));
 }
 
 // If time now is 00:10 and we have an event that started <1 hour ago, then we
 // should get in progress events from the previous day back.
-TEST_P(CalendarModelTest, FindUpcomingEvents_PreviousDay) {
+TEST_F(CalendarModelTest, FindUpcomingEvents_PreviousDay) {
   // Set timezone and fake now.
   const char* kNow = "10 Nov 2022 00:10 GMT";
   ash::system::ScopedTimezoneSettings timezone_settings(u"GMT");
@@ -1471,10 +1453,9 @@ TEST_P(CalendarModelTest, FindUpcomingEvents_PreviousDay) {
   EXPECT_TRUE(event_list_contains(events, kEventInProgressStartedYesterdayId));
 }
 
-// If the next event doesn't start in the next 10 mins, do not show it.
-// For GlanceablesV2: we'll show the next event for today even if it starts
-// later than 10 mins away.
-TEST_P(CalendarModelTest, FindUpcomingEvents_ShowTheNextEvent) {
+// If the next event doesn't start in the next 10 mins, we'll still show it.
+// This is needed after we changed the logic of showing the up next view.
+TEST_F(CalendarModelTest, FindUpcomingEvents_ShowTheNextEvent) {
   // Set timezone and fake now.
   const char* kNow = "10 Nov 2022 13:00 GMT";
   ash::system::ScopedTimezoneSettings timezone_settings(u"GMT");
@@ -1504,21 +1485,15 @@ TEST_P(CalendarModelTest, FindUpcomingEvents_ShowTheNextEvent) {
     return base::Contains(event_list, id, &CalendarEvent::id);
   };
 
-  // For GlanceablesV2: we should show the event starting in thirty mins.
-  if (AreGlanceablesV2Enabled()) {
-    EXPECT_EQ(events.size(), size_t(1));
-    EXPECT_TRUE(event_list_contains(events, kEventStartingInThirtyMinsId));
-  } else {
-    EXPECT_EQ(events.size(), size_t(0));
-    EXPECT_FALSE(event_list_contains(events, kEventStartingInThirtyMinsId));
-  }
+  EXPECT_EQ(events.size(), size_t(1));
+  EXPECT_TRUE(event_list_contains(events, kEventStartingInThirtyMinsId));
 }
 
 // If two events start at the same time, show the one finishing earlier first.
 // Returns:
 // First event: 13:00 - 13:45
 // Second event: 13:00 - 14:00
-TEST_P(CalendarModelTest, EventsSortingWithSameStartTime) {
+TEST_F(CalendarModelTest, EventsSortingWithSameStartTime) {
   // Set timezone and fake now.
   const char* kNow = "10 Nov 2022 13:00 GMT";
   ash::system::ScopedTimezoneSettings timezone_settings(u"GMT");
@@ -1555,14 +1530,9 @@ TEST_P(CalendarModelTest, EventsSortingWithSameStartTime) {
   EXPECT_EQ(kSecondEventId, events.back().id());
 }
 
-// If one event starts later but finishes earlier than another, show the one
-// that started earlier first.
-// Returns:
-// Second event: 13:00 - 14:00
-// First event: 13:05 - 13:45
-// For GlanceablesV2: only show the kSecondEventId since this one is the next
-// event.
-TEST_P(CalendarModelTest, EventsSortingWithDifferentStartTime) {
+// If one event starts later but finishes earlier than another, only show the
+// kSecondEventId since this one is the next event.
+TEST_F(CalendarModelTest, EventsSortingWithDifferentStartTime) {
   // Set timezone and fake now.
   const char* kNow = "10 Nov 2022 13:00 GMT";
   ash::system::ScopedTimezoneSettings timezone_settings(u"GMT");
@@ -1598,14 +1568,8 @@ TEST_P(CalendarModelTest, EventsSortingWithDifferentStartTime) {
     return base::Contains(event_list, id, &CalendarEvent::id);
   };
 
-  if (AreGlanceablesV2Enabled()) {
-    EXPECT_EQ(events.size(), size_t(1));
-    EXPECT_TRUE(event_list_contains(events, kSecondEventId));
-  } else {
-    EXPECT_EQ(events.size(), size_t(2));
-    EXPECT_EQ(kSecondEventId, events.front().id());
-    EXPECT_EQ(kFirstEventId, events.back().id());
-  }
+  EXPECT_EQ(events.size(), size_t(1));
+  EXPECT_TRUE(event_list_contains(events, kSecondEventId));
 }
 
 }  // namespace ash
