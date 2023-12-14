@@ -139,11 +139,6 @@ class AndroidAutofillManager : public AutofillManager,
   void OnAfterProcessParsedForms(
       const DenseSet<FormType>& form_types) override {}
 
-  void OnServerRequestError(
-      FormSignature form_signature,
-      AutofillCrowdsourcingManager::RequestType request_type,
-      int http_error) override;
-
  private:
   // AutofillManager::Observer:
   void OnFieldTypesDetermined(AutofillManager& manager,

@@ -99,7 +99,7 @@ public class AwAutofillTest extends AwParameterizedTest {
     public static final int AUTOFILL_COMMIT = 3;
     public static final int AUTOFILL_CANCEL = 4;
     public static final int AUTOFILL_SESSION_STARTED = 5;
-    public static final int AUTOFILL_QUERY_DONE = 6;
+    public static final int AUTOFILL_PREDICTIONS_AVAILABLE = 6;
     public static final int AUTOFILL_EVENT_MAX = 7;
 
     public static final String[] EVENT = {
@@ -193,10 +193,10 @@ public class AwAutofillTest extends AwParameterizedTest {
         }
 
         @Override
-        public void onQueryDone(boolean success) {
-            mQuerySucceed = success;
-            if (DEBUG) Log.i(TAG, "onQueryDone " + success);
-            mEventQueue.add(AUTOFILL_QUERY_DONE);
+        public void onServerPredictionsAvailable() {
+            mQuerySucceed = true;
+            if (DEBUG) Log.i(TAG, "onServerPredictionsAvailable");
+            mEventQueue.add(AUTOFILL_PREDICTIONS_AVAILABLE);
             mCallbackHelper.notifyCalled();
         }
     }
@@ -2942,7 +2942,7 @@ public class AwAutofillTest extends AwParameterizedTest {
                                             {9 /* EMAIL_ADDRESS */}
                                         }));
 
-        cnt += waitForCallbackAndVerifyTypes(cnt, new Integer[] {AUTOFILL_QUERY_DONE});
+        cnt += waitForCallbackAndVerifyTypes(cnt, new Integer[] {AUTOFILL_PREDICTIONS_AVAILABLE});
         assertTrue(mTestAutofillManagerWrapper.isQuerySucceed());
         autofillHintsServiceTestHelper.waitForCallbackInvoked();
         List<ViewType> viewTypes = autofillHintsServiceTestHelper.getViewTypes();
@@ -3038,7 +3038,7 @@ public class AwAutofillTest extends AwParameterizedTest {
                                         new String[] {"text1", "text2"},
                                         new int[] {86 /* USERNAME */, 9 /* EMAIL_ADDRESS */}));
 
-        cnt += waitForCallbackAndVerifyTypes(cnt, new Integer[] {AUTOFILL_QUERY_DONE});
+        cnt += waitForCallbackAndVerifyTypes(cnt, new Integer[] {AUTOFILL_PREDICTIONS_AVAILABLE});
         assertTrue(mTestAutofillManagerWrapper.isQuerySucceed());
         autofillHintsServiceTestHelper.waitForCallbackInvoked();
         List<ViewType> viewTypes = autofillHintsServiceTestHelper.getViewTypes();
@@ -3129,7 +3129,7 @@ public class AwAutofillTest extends AwParameterizedTest {
                                             {9 /* EMAIL_ADDRESS */}
                                         }));
 
-        cnt += waitForCallbackAndVerifyTypes(cnt, new Integer[] {AUTOFILL_QUERY_DONE});
+        cnt += waitForCallbackAndVerifyTypes(cnt, new Integer[] {AUTOFILL_PREDICTIONS_AVAILABLE});
         assertTrue(mTestAutofillManagerWrapper.isQuerySucceed());
 
         IBinder binder = viewStructure.getExtras().getBinder("AUTOFILL_HINTS_SERVICE");
@@ -3150,88 +3150,6 @@ public class AwAutofillTest extends AwParameterizedTest {
         assertEquals("EMAIL_ADDRESS", viewTypes.get(1).mServerType);
         assertEquals("HTML_TYPE_EMAIL", viewTypes.get(1).mComputedType);
         assertArrayEquals(new String[] {"EMAIL_ADDRESS"}, viewTypes.get(1).getServerPredictions());
-    }
-
-    @Test
-    @SmallTest
-    @Feature({"AndroidWebView"})
-    public void testServerQueryFailedAfterAutofillStart() throws Throwable {
-        final String data =
-                """
-                    <html>
-                    <head></head>
-                    <body>
-                        <form action='a.html' name='formname'>
-                            <input type='text' id='text1' name='username'>
-                            <input type='text' name='email' id='text2' autocomplete='email' />
-                        </form>
-                    </body>
-                    </html>""";
-        final String url = mWebServer.setResponse(FILE, data, null);
-        loadUrlSync(url);
-
-        int cnt = 0;
-        executeJavaScriptAndWaitForResult("document.getElementById('text1').select();");
-        dispatchDownAndUpKeyEvents(KeyEvent.KEYCODE_A);
-
-        cnt +=
-                waitForCallbackAndVerifyTypes(
-                        cnt,
-                        new Integer[] {
-                            AUTOFILL_CANCEL,
-                            AUTOFILL_VIEW_ENTERED,
-                            AUTOFILL_SESSION_STARTED,
-                            AUTOFILL_VALUE_CHANGED
-                        });
-
-        invokeOnProvideAutoFillVirtualStructure();
-        TestViewStructure viewStructure = mTestValues.testViewStructure;
-        assertNotNull(viewStructure);
-        assertEquals(2, viewStructure.getChildCount());
-        assertEquals(
-                "NO_SERVER_DATA",
-                viewStructure
-                        .getChild(0)
-                        .getHtmlInfo()
-                        .getAttribute("crowdsourcing-autofill-hints"));
-        assertEquals(
-                "UNKNOWN_TYPE",
-                viewStructure.getChild(0).getHtmlInfo().getAttribute("computed-autofill-hints"));
-        assertNull(
-                viewStructure
-                        .getChild(0)
-                        .getHtmlInfo()
-                        .getAttribute("crowdsourcing-predictions-autofill-hints"));
-        assertEquals(
-                "NO_SERVER_DATA",
-                viewStructure
-                        .getChild(1)
-                        .getHtmlInfo()
-                        .getAttribute("crowdsourcing-autofill-hints"));
-        assertEquals(
-                "HTML_TYPE_EMAIL",
-                viewStructure.getChild(1).getHtmlInfo().getAttribute("computed-autofill-hints"));
-        assertNull(
-                viewStructure
-                        .getChild(1)
-                        .getHtmlInfo()
-                        .getAttribute("crowdsourcing-predictions-autofill-hints"));
-        IBinder binder = viewStructure.getExtras().getBinder("AUTOFILL_HINTS_SERVICE");
-        assertNotNull(binder);
-        AutofillHintsServiceTestHelper autofillHintsServiceTestHelper =
-                new AutofillHintsServiceTestHelper();
-        autofillHintsServiceTestHelper.registerViewTypeService(binder);
-
-        TestThreadUtils.runOnUiThreadBlocking(
-                () ->
-                        AutofillProviderTestHelper.simulateMainFrameAutofillQueryFailedForTesting(
-                                mAwContents.getWebContents()));
-
-        cnt += waitForCallbackAndVerifyTypes(cnt, new Integer[] {AUTOFILL_QUERY_DONE});
-        assertFalse(mTestAutofillManagerWrapper.isQuerySucceed());
-
-        autofillHintsServiceTestHelper.waitForCallbackInvoked();
-        assertTrue(autofillHintsServiceTestHelper.isQueryFailed());
     }
 
     @Test

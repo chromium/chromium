@@ -240,8 +240,8 @@ public class AutofillManagerWrapper {
         if (isLoggable()) log("Session starts, has server prediction = " + hasServerPrediction);
     }
 
-    public void onQueryDone(boolean success) {
-        if (isLoggable()) log("Query " + (success ? "succeed" : "failed"));
+    public void onServerPredictionsAvailable() {
+        if (isLoggable()) log("Server predictions available");
     }
 
     /** Always check isLoggable() before call this method. */

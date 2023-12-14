@@ -491,24 +491,7 @@ void AutofillProviderAndroid::OnServerPredictionsAvailable(
     return;
   }
   form_->UpdateFieldTypes(*form_structure);
-  bridge_->OnServerPredictionQueryDone(/*success=*/true);
-}
-
-void AutofillProviderAndroid::OnServerQueryRequestError(
-    AndroidAutofillManager* manager,
-    FormSignature form_signature) {
-  if (!IsLinkedManager(manager) || !form_.get()) {
-    return;
-  }
-
-  if (auto* form_structure =
-          manager_->FindCachedFormById(form_->form().global_id())) {
-    if (form_structure->form_signature() != form_signature) {
-      return;
-    }
-
-    bridge_->OnServerPredictionQueryDone(/*success=*/false);
-  }
+  bridge_->OnServerPredictionsAvailable();
 }
 
 void AutofillProviderAndroid::OnManagerResetOrDestroyed(

@@ -164,7 +164,7 @@ class MockAutofillProviderAndroidBridge : public AutofillProviderAndroidBridge {
               StartAutofillSession,
               (FormDataAndroid&, const FieldInfo&, bool),
               (override));
-  MOCK_METHOD(void, OnServerPredictionQueryDone, (bool success), (override));
+  MOCK_METHOD(void, OnServerPredictionsAvailable, (), (override));
   MOCK_METHOD(void,
               ShowDatalistPopup,
               (base::span<const SelectOption>, bool),

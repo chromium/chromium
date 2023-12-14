@@ -70,7 +70,7 @@ class AutofillProviderAndroidBridge {
                                     bool has_server_predictions) = 0;
 
   // Informs the Java side that the server prediction request is completed.
-  virtual void OnServerPredictionQueryDone(bool success) = 0;
+  virtual void OnServerPredictionsAvailable() = 0;
 
   // Shows a Datalist popup.
   virtual void ShowDatalistPopup(

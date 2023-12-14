@@ -163,14 +163,6 @@ void AndroidAutofillManager::OnFormProcessed(
   }
 }
 
-void AndroidAutofillManager::OnServerRequestError(
-    FormSignature form_signature,
-    AutofillCrowdsourcingManager::RequestType request_type,
-    int http_error) {
-  if (auto* provider = GetAutofillProvider())
-    provider->OnServerQueryRequestError(this, form_signature);
-}
-
 void AndroidAutofillManager::Reset() {
   // Inform the provider before resetting state in case it needs to access it.
   if (auto* rfh =
