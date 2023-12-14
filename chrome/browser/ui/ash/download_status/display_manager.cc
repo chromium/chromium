@@ -150,6 +150,15 @@ DisplayMetadata DisplayManager::CalculateDisplayMetadata(
                             /*callback=*/base::DoNothing()),
         &kPauseIcon, IDS_ASH_DOWNLOAD_COMMAND_TEXT_PAUSE, CommandType::kPause);
   }
+  if (download_status.resumable.value_or(false)) {
+    command_infos.emplace_back(
+        base::BindRepeating(&crosapi::DownloadStatusUpdaterAsh::Resume,
+                            base::Unretained(download_status_updater_),
+                            download_status.guid,
+                            /*callback=*/base::DoNothing()),
+        &kResumeIcon, IDS_ASH_DOWNLOAD_COMMAND_TEXT_RESUME,
+        CommandType::kResume);
+  }
   display_metadata.command_infos = std::move(command_infos);
 
   display_metadata.file_path = *download_status.full_path;

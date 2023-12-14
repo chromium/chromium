@@ -30,6 +30,8 @@ HoldingSpaceCommandId ConvertCommandTypeToId(CommandType type) {
       return HoldingSpaceCommandId::kCancelItem;
     case CommandType::kPause:
       return HoldingSpaceCommandId::kPauseItem;
+    case CommandType::kResume:
+      return HoldingSpaceCommandId::kResumeItem;
   }
 }
 

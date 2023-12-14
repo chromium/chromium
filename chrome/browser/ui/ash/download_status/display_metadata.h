@@ -25,6 +25,7 @@ namespace ash::download_status {
 enum class CommandType {
   kCancel,
   kPause,
+  kResume,
 };
 
 // The metadata to display a download command.

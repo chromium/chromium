@@ -420,7 +420,7 @@ IN_PROC_BROWSER_TEST_F(HoldingSpaceDisplayClientBrowserTest,
 }
 
 IN_PROC_BROWSER_TEST_F(HoldingSpaceDisplayClientBrowserTest,
-                       PauseDownloadViaContextMenu) {
+                       PauseAndResumeDownloadViaContextMenu) {
   crosapi::mojom::DownloadStatusPtr download = CreateInProgressDownloadStatus(
       ProfileManager::GetActiveUserProfile(), /*received_bytes=*/0,
       /*target_bytes=*/1024);
@@ -440,22 +440,44 @@ IN_PROC_BROWSER_TEST_F(HoldingSpaceDisplayClientBrowserTest,
 
   // Press ENTER to execute the "Pause" command and then check that the download
   // is paused.
-  base::RunLoop run_loop;
+  auto run_loop = std::make_unique<base::RunLoop>();
   EXPECT_CALL(download_status_updater_client(), Pause(download->guid, _))
       .WillOnce([&](const std::string& guid,
                     crosapi::MockDownloadStatusUpdaterClient::PauseCallback
                         callback) {
         download->pausable = false;
+        download->resumable = true;
         Update(download->Clone());
         std::move(callback).Run(/*handled=*/true);
-        run_loop.Quit();
+        run_loop->Quit();
       });
   PressAndReleaseKey(ui::VKEY_RETURN);
-  run_loop.Run();
+  run_loop->Run();
+
+  // Right click the download chip. Because the underlying download is paused,
+  // the context menu should contain a "Resume" command.
+  RightClick(download_chips[0]);
+  EXPECT_TRUE(SelectMenuItemWithCommandId(HoldingSpaceCommandId::kResumeItem));
+
+  // Press ENTER to execute the "Resume" command and then check that the
+  // download is resumed.
+  run_loop = std::make_unique<base::RunLoop>();
+  EXPECT_CALL(download_status_updater_client(), Resume(download->guid, _))
+      .WillOnce([&](const std::string& guid,
+                    crosapi::MockDownloadStatusUpdaterClient::ResumeCallback
+                        callback) {
+        download->pausable = true;
+        download->resumable = false;
+        Update(download->Clone());
+        std::move(callback).Run(/*handled=*/true);
+        run_loop->Quit();
+      });
+  PressAndReleaseKey(ui::VKEY_RETURN);
+  run_loop->Run();
 }
 
 IN_PROC_BROWSER_TEST_F(HoldingSpaceDisplayClientBrowserTest,
-                       PauseDownloadViaSecondaryAction) {
+                       PauseAndResumeDownloadViaSecondaryAction) {
   crosapi::mojom::DownloadStatusPtr download = CreateInProgressDownloadStatus(
       ProfileManager::GetActiveUserProfile(), /*received_bytes=*/0,
       /*target_bytes=*/1024);
@@ -480,18 +502,41 @@ IN_PROC_BROWSER_TEST_F(HoldingSpaceDisplayClientBrowserTest,
   ViewDrawnWaiter().Wait(pause_button);
 
   // Press `pause_button` and then check that the download is paused.
-  base::RunLoop run_loop;
+  auto run_loop = std::make_unique<base::RunLoop>();
   EXPECT_CALL(download_status_updater_client(), Pause(download->guid, _))
       .WillOnce([&](const std::string& guid,
                     crosapi::MockDownloadStatusUpdaterClient::PauseCallback
                         callback) {
         download->pausable = false;
+        download->resumable = true;
         Update(download->Clone());
         std::move(callback).Run(/*handled=*/true);
-        run_loop.Quit();
+        run_loop->Quit();
       });
   test::Click(pause_button);
-  run_loop.Run();
+  run_loop->Run();
+
+  // Move mouse to `download_chip` and wait until `resume_button` shows.
+  test::MoveMouseTo(download_chip, /*count=*/10);
+  auto* const resume_button =
+      secondary_action_container->GetViewByID(kHoldingSpaceItemResumeButtonId);
+  ASSERT_TRUE(resume_button);
+  ViewDrawnWaiter().Wait(resume_button);
+
+  // Press `resume_button` and then check that the download is resumed.
+  run_loop = std::make_unique<base::RunLoop>();
+  EXPECT_CALL(download_status_updater_client(), Resume(download->guid, _))
+      .WillOnce([&](const std::string& guid,
+                    crosapi::MockDownloadStatusUpdaterClient::ResumeCallback
+                        callback) {
+        download->pausable = true;
+        download->resumable = false;
+        Update(download->Clone());
+        std::move(callback).Run(/*handled=*/true);
+        run_loop->Quit();
+      });
+  test::Click(resume_button);
+  run_loop->Run();
 }
 
 IN_PROC_BROWSER_TEST_F(HoldingSpaceDisplayClientBrowserTest, SecondaryLabel) {
