@@ -15,6 +15,9 @@
 
 extern "C" {
 
+// A function used to handle fatal errors.
+using ChromeMLFatalErrorFn = void (*)(const char* msg);
+
 // A scheduling function used to run arbitrary async tasks. Given to
 // CreateModelExecutor() and called into by ChromeML as needed. When called, the
 // value of `context` is the same value given to CreateModelExecutor().
@@ -152,6 +155,9 @@ struct ChromeMLAPI {
   // Initializes the Dawn proc table. This must be called before any other
   // functions.
   void (*InitDawnProcs)(const DawnProcTable& procs);
+
+  // Sets an error handling function for fatal errors.
+  void (*SetFatalErrorFn)(ChromeMLFatalErrorFn error_fn) = nullptr;
 
   // Creates a new ChromeML model instance as described by `model`. The returned
   // object can be destroyed by passing it to DestroyModel(). `context` is

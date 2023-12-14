@@ -55,6 +55,10 @@ void LogGpuBlocked(GpuBlockedReason reason) {
   base::UmaHistogramEnumeration("OnDeviceModel.GpuBlockedReason", reason);
 }
 
+void FatalErrorFn(const char* msg) {
+  CHECK(false) << "ChromeML Error: " << msg;
+}
+
 }  // namespace
 
 ChromeML::ChromeML(base::PassKey<ChromeML>,
@@ -115,6 +119,9 @@ std::unique_ptr<ChromeML> ChromeML::Create() {
   }
 
   api->InitDawnProcs(dawn::native::GetProcs());
+  if (api->SetFatalErrorFn) {
+    api->SetFatalErrorFn(&FatalErrorFn);
+  }
   return std::make_unique<ChromeML>(base::PassKey<ChromeML>(),
                                     std::move(scoped_library), api);
 }
