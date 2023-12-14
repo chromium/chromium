@@ -92,7 +92,7 @@ void OpenExternal(const GURL& url) {
 
   // https://crbug.com/1504165
   static auto* const crash_key = base::debug::AllocateCrashKeyString(
-      "platform_util::OpenExternal()", base::debug::CrashKeySize::Size64);
+      "platform_util_OpenExternal()", base::debug::CrashKeySize::Size64);
   NSUInteger length = [ns_url absoluteString].length;
   NSString* lengthString = [NSString stringWithFormat:@"%lu", length];
   base::debug::ScopedCrashKeyString(crash_key,
