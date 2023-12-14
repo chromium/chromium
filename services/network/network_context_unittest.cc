@@ -30,6 +30,7 @@
 #include "base/run_loop.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_split.h"
+#include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/synchronization/lock.h"
@@ -185,6 +186,8 @@ using net::CreateTestURLRequestContextBuilder;
 using ::testing::Optional;
 
 constexpr char kMockHost[] = "mock.host";
+constexpr char kTopFrameOriginForFetchRequest[] = "https://abc.com";
+constexpr char kFrameOriginForFetchRequest[] = "https://xyz.com";
 
 #if BUILDFLAG(ENABLE_REPORTING)
 const base::FilePath::CharType kFilename[] =
@@ -242,8 +245,9 @@ std::unique_ptr<TestURLLoaderClient> FetchRequest(
   if (request.site_for_cookies.IsNull()) {
     params->isolation_info = net::IsolationInfo::Create(
         net::IsolationInfo::RequestType::kOther,
-        url::Origin::Create(GURL("https://abc.com")),
-        url::Origin::Create(GURL("https://xyz.com")), request.site_for_cookies);
+        url::Origin::Create(GURL(kTopFrameOriginForFetchRequest)),
+        url::Origin::Create(GURL(kFrameOriginForFetchRequest)),
+        request.site_for_cookies);
   } else {
     params->isolation_info = net::IsolationInfo::CreateForInternalRequest(
         url::Origin::Create(request.site_for_cookies.RepresentativeUrl()));
@@ -7848,6 +7852,166 @@ TEST_F(NetworkContextTest, DeleteStoredTrustTokensReentrant) {
   EXPECT_THAT(
       delete_status_bar,
       Optional(mojom::DeleteStoredTrustTokensStatus::kSuccessTokensDeleted));
+}
+
+// Verify authorizer fails for a specific top frame origin when it is blocked
+// through content settings.
+TEST_F(NetworkContextTest,
+       RejectsTrustTokenBearingRequestWhenStorageForTopFrameOriginIsBlocked) {
+  net::EmbeddedTestServer test_server(net::EmbeddedTestServer::TYPE_HTTPS);
+  test_server.AddDefaultHandlers(
+      base::FilePath(FILE_PATH_LITERAL("services/test/data")));
+  // PST requires a secure context. This adds certificate for a.test.
+  // See net/data/ssl/scripts/ee.cnf
+  test_server.SetSSLConfig(net::EmbeddedTestServer::CERT_TEST_NAMES);
+  ASSERT_TRUE(test_server.Start());
+
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(features::kPrivateStateTokens);
+
+  std::unique_ptr<NetworkContext> network_context =
+      CreateContextWithParams(CreateNetworkContextParamsForTesting());
+
+  // Allow the store time to initialize asynchronously.
+  {
+    base::RunLoop run_loop;
+    network_context->trust_token_store()->ExecuteOrEnqueue(
+        base::BindLambdaForTesting(
+            [&run_loop](TrustTokenStore* unused) { run_loop.Quit(); }));
+    run_loop.Run();
+  }
+
+  // Set key commitments.
+  {
+    base::RunLoop run_loop;
+    const std::string test_origin = test_server.GetOrigin("a.test").Serialize();
+    const std::string key_commitment =
+        base::ReplaceStringPlaceholders(R"( {"$1": { "PrivateStateTokenV3PMB": {
+          "protocol_version": "PrivateStateTokenV3PMB", "id": 1,
+          "batchsize": 5 } } } )",
+                                        {test_origin}, /*offset=*/nullptr);
+    network_service_->SetTrustTokenKeyCommitments(
+        key_commitment,
+        base::BindLambdaForTesting([&run_loop]() { run_loop.Quit(); }));
+    run_loop.Run();
+  }
+
+  network_context->SetBlockTrustTokens(false);
+
+  ResourceRequest my_request;
+  my_request.url = test_server.GetURL("a.test", "/empty.html");
+  my_request.trust_token_params =
+      OptionalTrustTokenParams(mojom::TrustTokenParams::New());
+  my_request.trust_token_params->version =
+      mojom::TrustTokenMajorVersion::kPrivateStateTokenV1;
+  my_request.trust_token_params->operation =
+      mojom::TrustTokenOperationType::kIssuance;
+
+  std::unique_ptr<TestURLLoaderClient> client = FetchRequest(
+      my_request, network_context.get(), mojom::kURLLoadOptionNone,
+      mojom::kBrowserProcessId, mojom::URLLoaderFactoryParams::New());
+  // Operation status should be kOk.
+  EXPECT_EQ(client->completion_status().trust_token_operation_status,
+            mojom::TrustTokenOperationStatus::kOk);
+
+  // Block kTopFrameOriginForFetchRequest url in content settings.
+  // kTopFrameOriginForFetchRequest is top frame origin set in FetchRequest
+  // function.
+  base::RunLoop content_settings_run_loop;
+  network_context->cookie_manager()->SetContentSettings(
+      ContentSettingsType::COOKIES,
+      {ContentSettingPatternSource(
+          ContentSettingsPattern::FromURL(GURL(kTopFrameOriginForFetchRequest)),
+          ContentSettingsPattern::Wildcard(),
+          base::Value(CONTENT_SETTING_BLOCK), std::string(), false)},
+      content_settings_run_loop.QuitClosure());
+  content_settings_run_loop.Run();
+
+  client = FetchRequest(my_request, network_context.get(),
+                        mojom::kURLLoadOptionNone, mojom::kBrowserProcessId,
+                        mojom::URLLoaderFactoryParams::New());
+  // Authorizer should fail since kTopFrameOriginForFetchRequest is blocked
+  // through content settings.
+  EXPECT_EQ(client->completion_status().trust_token_operation_status,
+            mojom::TrustTokenOperationStatus::kUnauthorized);
+}
+
+TEST_F(NetworkContextTest,
+       RejectsTrustTokenBearingRequestWhenStorageForIssuerIsBlocked) {
+  net::EmbeddedTestServer test_server(net::EmbeddedTestServer::TYPE_HTTPS);
+  test_server.AddDefaultHandlers(
+      base::FilePath(FILE_PATH_LITERAL("services/test/data")));
+  // PST requires a secure context. This adds certificate for a.test.
+  // See net/data/ssl/scripts/ee.cnf
+  test_server.SetSSLConfig(net::EmbeddedTestServer::CERT_TEST_NAMES);
+  ASSERT_TRUE(test_server.Start());
+
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(features::kPrivateStateTokens);
+
+  std::unique_ptr<NetworkContext> network_context =
+      CreateContextWithParams(CreateNetworkContextParamsForTesting());
+
+  // Allow the store time to initialize asynchronously.
+  {
+    base::RunLoop run_loop;
+    network_context->trust_token_store()->ExecuteOrEnqueue(
+        base::BindLambdaForTesting(
+            [&run_loop](TrustTokenStore* unused) { run_loop.Quit(); }));
+    run_loop.Run();
+  }
+
+  // Set key commitments.
+  {
+    base::RunLoop run_loop;
+    const std::string test_origin = test_server.GetOrigin("a.test").Serialize();
+    const std::string key_commitment =
+        base::ReplaceStringPlaceholders(R"( {"$1": { "PrivateStateTokenV3PMB": {
+          "protocol_version": "PrivateStateTokenV3PMB", "id": 1,
+          "batchsize": 5 } } } )",
+                                        {test_origin}, /*offset=*/nullptr);
+    network_service_->SetTrustTokenKeyCommitments(
+        key_commitment,
+        base::BindLambdaForTesting([&run_loop]() { run_loop.Quit(); }));
+    run_loop.Run();
+  }
+
+  network_context->SetBlockTrustTokens(false);
+
+  ResourceRequest my_request;
+  my_request.url = test_server.GetURL("a.test", "/empty.html");
+  my_request.trust_token_params =
+      OptionalTrustTokenParams(mojom::TrustTokenParams::New());
+  my_request.trust_token_params->version =
+      mojom::TrustTokenMajorVersion::kPrivateStateTokenV1;
+  my_request.trust_token_params->operation =
+      mojom::TrustTokenOperationType::kIssuance;
+
+  std::unique_ptr<TestURLLoaderClient> client = FetchRequest(
+      my_request, network_context.get(), mojom::kURLLoadOptionNone,
+      mojom::kBrowserProcessId, mojom::URLLoaderFactoryParams::New());
+  // Operation status should be kOk.
+  EXPECT_EQ(client->completion_status().trust_token_operation_status,
+            mojom::TrustTokenOperationStatus::kOk);
+
+  // Block a.test in content settings. a.test is the issuer origin.
+  base::RunLoop content_settings_run_loop;
+  network_context->cookie_manager()->SetContentSettings(
+      ContentSettingsType::COOKIES,
+      {ContentSettingPatternSource(
+          ContentSettingsPattern::FromURL(
+              test_server.GetURL("a.test", "/empty.html")),
+          ContentSettingsPattern::Wildcard(),
+          base::Value(CONTENT_SETTING_BLOCK), std::string(), false)},
+      content_settings_run_loop.QuitClosure());
+  content_settings_run_loop.Run();
+
+  client = FetchRequest(my_request, network_context.get(),
+                        mojom::kURLLoadOptionNone, mojom::kBrowserProcessId,
+                        mojom::URLLoaderFactoryParams::New());
+  // Authorizer should fail since a.test is blocked through content settings.
+  EXPECT_EQ(client->completion_status().trust_token_operation_status,
+            mojom::TrustTokenOperationStatus::kUnauthorized);
 }
 
 #if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_LINUX)

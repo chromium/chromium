@@ -149,6 +149,15 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) CookieSettings
       net::CookieAccessResultList& maybe_included_cookies,
       net::CookieAccessResultList& excluded_cookies) const;
 
+  // Check content settings to decide whether to allow PST operations from a
+  // given top level site. PST for specific origins can be disabled through
+  // content settings.
+  bool ArePrivateStateTokensAllowed(const GURL& primary_url) const {
+    ContentSetting setting = GetContentSetting(primary_url, primary_url,
+                                               ContentSettingsType::COOKIES);
+    return (setting == CONTENT_SETTING_ALLOW);
+  }
+
  private:
   // content_settings::CookieSettingsBase:
   bool ShouldAlwaysAllowCookies(const GURL& url,
