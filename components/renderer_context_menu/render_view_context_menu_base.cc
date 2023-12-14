@@ -321,14 +321,6 @@ void RenderViewContextMenuBase::RemoveSeparatorBeforeMenuItem(int command_id) {
     toolkit_delegate_->RebuildMenu();
 }
 
-// TODO(crbug.com/1393234): This method returns the RenderViewHost associated
-// with the primary main frame. Using this in the presence of out of process
-// iframes is generally incorrect, and the use of RenderViewHost itself is
-// deprecated. Callers should use GetRenderFrameHost() instead.
-RenderViewHost* RenderViewContextMenuBase::GetRenderViewHost() const {
-  return source_web_contents_->GetPrimaryMainFrame()->GetRenderViewHost();
-}
-
 WebContents* RenderViewContextMenuBase::GetWebContents() const {
   return source_web_contents_;
 }
