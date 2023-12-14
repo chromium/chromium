@@ -89,11 +89,9 @@ export class GearMenu {
 
     /**
      * Promise to be resolved with volume space info.
-     * @type {Promise<SpaceInfo|undefined>}
+     * @type {Promise<SpaceInfo|undefined>|null}
      * @private
      */
-    // @ts-ignore: error TS2322: Type 'null' is not assignable to type
-    // 'Promise<SpaceInfo | undefined>'.
     this.spaceInfoPromise_ = null;
 
     // Initialize attributes.
@@ -109,7 +107,7 @@ export class GearMenu {
   }
 
   /**
-   * @param {Promise<SpaceInfo|undefined>} spaceInfoPromise Promise to be
+   * @param {Promise<SpaceInfo|undefined>|null} spaceInfoPromise Promise to be
    *     fulfilled with space info.
    * @param {boolean} showLoadingCaption Whether to show the loading caption or
    *     not.

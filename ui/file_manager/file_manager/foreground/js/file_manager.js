@@ -738,8 +738,7 @@ export class FileManager extends EventTarget {
         this.ui_.gearButton, this.ui_.gearMenu, this.ui_.providersMenu,
         // @ts-ignore: error TS2345: Argument of type 'DirectoryModel | null' is
         // not assignable to parameter of type 'DirectoryModel'.
-        this.directoryModel_, this.commandHandler_,
-        assert(this.providersModel_));
+        this.directoryModel_, assert(this.providersModel_));
     this.selectionMenuController_ = new SelectionMenuController(
         // @ts-ignore: error TS2531: Object is possibly 'null'.
         this.ui_.selectionMenuButton,
