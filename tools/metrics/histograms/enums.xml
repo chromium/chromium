@@ -41168,6 +41168,12 @@ Called by update_net_error_codes.py.-->
   </int>
 </enum>
 
+<enum name="NtpWallpaperSearchError">
+  <int value="1" label="Generic error"/>
+  <int value="2" label="Request throttled"/>
+  <int value="3" label="Offline"/>
+</enum>
+
 <enum name="NTSTATUS">
   <int value="-1073741818" label="0xC0000006 - STATUS_IN_PAGE_ERROR"/>
   <int value="-1073741810" label="0xC000000E - STATUS_NO_SUCH_DEVICE"/>

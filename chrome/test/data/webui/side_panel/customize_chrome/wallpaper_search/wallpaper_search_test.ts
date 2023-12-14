@@ -1273,5 +1273,25 @@ suite('WallpaperSearchTest', () => {
               'NewTabPage.CustomizeChromeSidePanelAction',
               CustomizeChromeAction.WALLPAPER_SEARCH_COLOR_DESCRIPTOR_UPDATED));
     });
+
+    [WallpaperSearchStatus.kError,
+     WallpaperSearchStatus.kRequestThrottled,
+     WallpaperSearchStatus.kOffline,
+    ].forEach((status) => {
+      test(`error ${status} sets metric`, async () => {
+        handler.setResultFor(
+            'getWallpaperSearchResults',
+            Promise.resolve({status: status, results: []}));
+        createWallpaperSearchElementWithDescriptors();
+        await flushTasks();
+
+        wallpaperSearchElement.$.submitButton.click();
+        await waitAfterNextRender(wallpaperSearchElement);
+
+        assertEquals(1, metrics.count('NewTabPage.WallpaperSearch.Error'));
+        assertEquals(
+            1, metrics.count('NewTabPage.WallpaperSearch.Error', status));
+      });
+    });
   });
 });

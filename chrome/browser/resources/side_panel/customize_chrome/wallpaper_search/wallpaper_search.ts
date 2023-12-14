@@ -561,6 +561,9 @@ export class WallpaperSearchElement extends WallpaperSearchElementBase {
       this.$.wallpaperSearch.focus();
     } else {
       this.$.error.focus();
+      chrome.metricsPrivate.recordEnumerationValue(
+          'NewTabPage.WallpaperSearch.Error', this.status_,
+          WallpaperSearchStatus.MAX_VALUE);
     }
   }
 
