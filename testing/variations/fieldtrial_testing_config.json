@@ -8593,12 +8593,48 @@
             ],
             "experiments": [
                 {
-                    "name": "Enabled",
+                    "name": "ControlWith10000MetadataGrants",
                     "params": {
-                        "MetadataGrantsThreshold": "1"
+                        "Metadata": "H4sIAHAre2UC/wMAAAAAAAAAAAA="
                     },
                     "enable_features": [
+                        "TpcdMetadataGrants"
+                    ],
+                    "disable_features": [
                         "HostIndexedMetadataGrants"
+                    ]
+                },
+                {
+                    "name": "EnabledWith100MetadataGrants",
+                    "params": {
+                        "Metadata": "H4sIAHAre2UC/wMAAAAAAAAAAAA=",
+                        "MetadataGrantsThreshold": "100"
+                    },
+                    "enable_features": [
+                        "HostIndexedMetadataGrants",
+                        "TpcdMetadataGrants"
+                    ]
+                },
+                {
+                    "name": "EnabledWith1000MetadataGrants",
+                    "params": {
+                        "Metadata": "H4sIAHAre2UC/wMAAAAAAAAAAAA=",
+                        "MetadataGrantsThreshold": "1000"
+                    },
+                    "enable_features": [
+                        "HostIndexedMetadataGrants",
+                        "TpcdMetadataGrants"
+                    ]
+                },
+                {
+                    "name": "EnabledWith10000MetadataGrants",
+                    "params": {
+                        "Metadata": "H4sIAHAre2UC/wMAAAAAAAAAAAA=",
+                        "MetadataGrantsThreshold": "10000"
+                    },
+                    "enable_features": [
+                        "HostIndexedMetadataGrants",
+                        "TpcdMetadataGrants"
                     ]
                 }
             ]
