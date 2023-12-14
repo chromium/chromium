@@ -18,8 +18,7 @@
 namespace {
 
 // Just counts the number of tabs in the browser.
-float MVPScoringFunction(float sensitivity_threshold,
-                         TabStripModel* const model) {
+float ScoringFunction(float sensitivity_threshold, TabStripModel* const model) {
   // Feature may be disabled in tests, in which case GetForProfile will CHECK.
   const TabOrganizationService* const service =
       base::FeatureList::IsEnabled(features::kTabOrganization)
@@ -65,21 +64,24 @@ bool TabOrganizationTrigger::ShouldTrigger(
   return policy_->ShouldTrigger(score);
 }
 
-TriggerScoringFunction GetDefaultTriggerScoringFunction() {
-  return base::BindRepeating(&MVPScoringFunction,
-                             GetDefaultSensitivityThreshold());
+TriggerScoringFunction GetTriggerScoringFunction() {
+  return base::BindRepeating(&ScoringFunction, GetSensitivityThreshold());
 }
 
-float GetDefaultTriggerScoreThreshold() {
+float GetTriggerScoreThreshold() {
   return features::kTabOrganizationTriggerThreshold.Get();
 }
 
-float GetDefaultSensitivityThreshold() {
+float GetSensitivityThreshold() {
   return features::kTabOrganizationTriggerSensitivityThreshold.Get();
 }
 
-std::unique_ptr<TriggerPolicy> GetDefaultTriggerPolicy(
+std::unique_ptr<TriggerPolicy> GetTriggerPolicy(
     std::unique_ptr<BackoffLevelProvider> backoff_level_provider) {
+  if (features::KTabOrganizationTriggerDemoMode.Get()) {
+    return std::make_unique<DemoTriggerPolicy>();
+  }
+
   return std::make_unique<TargetFrequencyTriggerPolicy>(
       std::make_unique<UsageTickClock>(base::DefaultTickClock::GetInstance()),
       features::kTabOrganizationTriggerPeriod.Get(),
@@ -87,9 +89,9 @@ std::unique_ptr<TriggerPolicy> GetDefaultTriggerPolicy(
       std::move(backoff_level_provider));
 }
 
-std::unique_ptr<TabOrganizationTrigger> MakeMVPTrigger(
+std::unique_ptr<TabOrganizationTrigger> MakeTrigger(
     std::unique_ptr<BackoffLevelProvider> backoff_level_provider) {
   return std::make_unique<TabOrganizationTrigger>(
-      GetDefaultTriggerScoringFunction(), GetDefaultTriggerScoreThreshold(),
-      GetDefaultTriggerPolicy(std::move(backoff_level_provider)));
+      GetTriggerScoringFunction(), GetTriggerScoreThreshold(),
+      GetTriggerPolicy(std::move(backoff_level_provider)));
 }

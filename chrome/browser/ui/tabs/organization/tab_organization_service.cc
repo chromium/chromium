@@ -44,7 +44,7 @@ TabOrganizationService::TabOrganizationService(
   trigger_observer_ = std::make_unique<TabOrganizationTriggerObserver>(
       base::BindRepeating(&TabOrganizationService::OnTriggerOccured,
                           base::Unretained(this)),
-      browser_context, MakeMVPTrigger(std::move(trigger_backoff)));
+      browser_context, MakeTrigger(std::move(trigger_backoff)));
 }
 TabOrganizationService::~TabOrganizationService() = default;
 

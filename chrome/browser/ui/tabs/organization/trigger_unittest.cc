@@ -52,10 +52,10 @@ class TriggerTest : public testing::Test {
   const std::unique_ptr<TabStripModel> tab_strip_model_;
 };
 
-TEST_F(TriggerTest, MVPTriggerHappyPath) {
+TEST_F(TriggerTest, TriggerHappyPath) {
   auto trigger = std::make_unique<TabOrganizationTrigger>(
-      GetDefaultTriggerScoringFunction(), GetDefaultTriggerScoreThreshold(),
-      std::make_unique<GreedyTriggerPolicy>());
+      GetTriggerScoringFunction(), GetTriggerScoreThreshold(),
+      std::make_unique<DemoTriggerPolicy>());
 
   // Should not trigger under the score threshold.
   EXPECT_FALSE(trigger->ShouldTrigger(tab_strip_model()));
@@ -66,6 +66,6 @@ TEST_F(TriggerTest, MVPTriggerHappyPath) {
   }
   EXPECT_TRUE(trigger->ShouldTrigger(tab_strip_model()));
 
-  // Should trigger only once (because GreedyTriggerPolicy).
-  EXPECT_FALSE(trigger->ShouldTrigger(tab_strip_model()));
+  // Should trigger every time (because DemoTriggerPolicy).
+  EXPECT_TRUE(trigger->ShouldTrigger(tab_strip_model()));
 }

@@ -123,8 +123,8 @@ class TargetFrequencyTriggerPolicy final : public TriggerPolicy {
   bool has_triggered_ = false;
 };
 
-// Trigger only first time a trigger moment occurs.
-class GreedyTriggerPolicy final : public TriggerPolicy {
+// Trigger every time. Very spammy, but suitable for testing or demoing.
+class DemoTriggerPolicy final : public TriggerPolicy {
  public:
   bool ShouldTrigger(float score) override;
 

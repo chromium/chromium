@@ -270,6 +270,9 @@ const base::FeatureParam<double> kTabOrganizationTriggerThreshold{
 const base::FeatureParam<double> kTabOrganizationTriggerSensitivityThreshold{
     &kTabOrganization, "trigger_sensitivity_threshold", 0.5};
 
+const base::FeatureParam<bool> KTabOrganizationTriggerDemoMode{
+    &kTabOrganization, "trigger_demo_mode", false};
+
 BASE_FEATURE(kTabOrganizationRefreshButton,
              "TabOrganizationRefreshButton",
              base::FEATURE_DISABLED_BY_DEFAULT);
