@@ -4746,6 +4746,11 @@ const char kReadAnythingOmniboxIconDescription[] =
     "Show the reading mode icon in the omnibox. Click the icon to open reading "
     "mode.";
 
+const char kReadAnythingLocalSidePanelName[] =
+    "Reading Mode with Local Side Panel";
+const char kReadAnythingLocalSidePanelDescription[] =
+    "Keep the Reading Mode side panel separate and local to each tab.";
+
 const char kEnableWebHidOnExtensionServiceWorkerName[] =
     "Enable WebHID on extension service workers";
 const char kEnableWebHidOnExtensionServiceWorkerDescription[] =

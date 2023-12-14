@@ -2741,6 +2741,9 @@ extern const char kReadAnythingReadAloudDescription[];
 extern const char kReadAnythingOmniboxIconName[];
 extern const char kReadAnythingOmniboxIconDescription[];
 
+extern const char kReadAnythingLocalSidePanelName[];
+extern const char kReadAnythingLocalSidePanelDescription[];
+
 extern const char kEnableWebHidOnExtensionServiceWorkerName[];
 extern const char kEnableWebHidOnExtensionServiceWorkerDescription[];
 

@@ -7181,6 +7181,11 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kReadAnythingOmniboxIconDescription, kOsDesktop,
      FEATURE_VALUE_TYPE(features::kReadAnythingOmniboxIcon)},
 
+    {"read-anything-local-side-panel",
+     flag_descriptions::kReadAnythingLocalSidePanelName,
+     flag_descriptions::kReadAnythingLocalSidePanelDescription, kOsDesktop,
+     FEATURE_VALUE_TYPE(features::kReadAnythingLocalSidePanel)},
+
     {"support-tool", flag_descriptions::kSupportTool,
      flag_descriptions::kSupportToolDescription, kOsDesktop,
      FEATURE_VALUE_TYPE(features::kSupportTool)},

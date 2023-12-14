@@ -32886,6 +32886,7 @@ from previous Chrome versions.
   <int value="-114807608" label="TerminalSystemApp:disabled"/>
   <int value="-114768488" label="ImmersiveFullscreen:enabled"/>
   <int value="-113855291" label="RelatedSearchesUi:enabled"/>
+  <int value="-113406427" label="ReadAnythingLocalSidePanel:enabled"/>
   <int value="-112971292" label="ShortcutCustomizationJelly:disabled"/>
   <int value="-112758607" label="ShowDiscountOnNavigation:disabled"/>
   <int value="-112707644" label="pervasive-system-accent-color"/>
@@ -33741,6 +33742,7 @@ from previous Chrome versions.
   <int value="294150128" label="RelatedSearchesSimplifiedUx:enabled"/>
   <int value="294194537" label="ChromeOSAmbientModeAnimation:disabled"/>
   <int value="294946885" label="WebViewThrottleBackgroundBeginFrame:disabled"/>
+  <int value="295094635" label="ReadAnythingLocalSidePanel:disabled"/>
   <int value="295661985" label="video-capture-use-gpu-memory-buffer"/>
   <int value="296066418" label="CCTResizableForThirdParties:disabled"/>
   <int value="296215399" label="WindowsMixedReality:disabled"/>
