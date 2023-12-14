@@ -8962,6 +8962,21 @@
             ]
         }
     ],
+    "IOSInsecureFormSubmissionInterstitial": [
+        {
+            "platforms": [
+                "ios"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "InsecureFormSubmissionInterstitial"
+                    ]
+                }
+            ]
+        }
+    ],
     "IOSKeepsRenderProcessAlive": [
         {
             "platforms": [
