@@ -14,6 +14,13 @@
 #import "ios/chrome/grit/ios_strings.h"
 #import "ui/base/l10n/l10n_util_mac.h"
 
+namespace {
+
+/// Leading and trailing padding for the `addressBarView`.
+constexpr CGFloat kAddressViewHorizontalPadding = 11;
+
+}  // namespace
+
 @implementation OmniboxPositionChoiceViewController {
   /// The view for the top address bar preference option.
   AddressBarOptionView* _topAddressBar;
@@ -46,16 +53,23 @@
   // TODO(crbug.com/1503638): Implement this and remove placeholder text.
   self.view.accessibilityIdentifier =
       first_run::kFirstRunOmniboxPositionChoiceScreenAccessibilityIdentifier;
+
   self.bannerName = @"default_browser_screen_banner";
-  self.titleText = @"**Tailor to Your Needs**";
-  self.subtitleText = @"**Decide the position of the search bar to tailor your "
-                      @"needs and browsing habits**";
+
+  self.titleHorizontalMargin = 0;
+  self.titleText = l10n_util::GetNSString(IDS_IOS_OMNIBOX_POSITION_PROMO_TITLE);
+  self.primaryActionString =
+      l10n_util::GetNSString(IDS_IOS_OMNIBOX_POSITION_PROMO_VALIDATE);
   if (_isFirstRun) {
-    self.primaryActionString = @"**Finish**";
-    self.secondaryActionString = @"**Skip**";
+    self.subtitleText =
+        l10n_util::GetNSString(IDS_IOS_OMNIBOX_POSITION_PROMO_FRE_SUBTITLE);
+    self.secondaryActionString =
+        l10n_util::GetNSString(IDS_IOS_OMNIBOX_POSITION_PROMO_SKIP);
   } else {
-    self.primaryActionString = @"**Confirm**";
-    self.secondaryActionString = @"**No, thanks**";
+    self.subtitleText =
+        l10n_util::GetNSString(IDS_IOS_OMNIBOX_POSITION_PROMO_IPH_SUBTITLE);
+    self.secondaryActionString =
+        l10n_util::GetNSString(IDS_IOS_OMNIBOX_POSITION_PROMO_DISCARD);
   }
 
   [_topAddressBar addTarget:self
@@ -77,9 +91,11 @@
   addressBarView.distribution = UIStackViewDistributionFillEqually;
   [self.specificContentView addSubview:addressBarView];
 
-  AddSameConstraintsToSides(
-      self.specificContentView, addressBarView,
-      LayoutSides::kTop | LayoutSides::kLeading | LayoutSides::kTrailing);
+  AddSameConstraintsToSidesWithInsets(
+      addressBarView, self.specificContentView,
+      LayoutSides::kTop | LayoutSides::kLeading | LayoutSides::kTrailing,
+      NSDirectionalEdgeInsetsMake(0, kAddressViewHorizontalPadding, 0,
+                                  kAddressViewHorizontalPadding));
 
   [NSLayoutConstraint activateConstraints:@[
     [self.specificContentView.bottomAnchor

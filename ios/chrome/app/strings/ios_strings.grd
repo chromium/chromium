@@ -2089,6 +2089,24 @@ See your search engine’s instructions for deleting your search history, if app
       <message name="IDS_IOS_OMNIBOX_PEDAL_SUBTITLE_VIEW_CHROME_HISTORY" desc="Subtitle for the View Your Chrome History acceleration pedal in the omnibox that should correspond to the path to History">
        Menu → History
       </message>
+      <message name="IDS_IOS_OMNIBOX_POSITION_PROMO_TITLE" desc="Title for the omnibox position choice promo screen. (Title case)">
+       Address Bar Position
+      </message>
+      <message name="IDS_IOS_OMNIBOX_POSITION_PROMO_IPH_SUBTITLE" desc="Subtitle for the omnibox position choice screen in a fullscreen promo.">
+       Switch your address bar from the top to the bottom for a customized browsing experience.
+      </message>
+      <message name="IDS_IOS_OMNIBOX_POSITION_PROMO_FRE_SUBTITLE" desc="Subtitle for the omnibox position choice screen in the first run experience.">
+       Switch your address bar to the top or bottom for a customized browsing experience.
+      </message>
+      <message name="IDS_IOS_OMNIBOX_POSITION_PROMO_VALIDATE" desc="Text in the validation button of the omnibox position choice screen promo. (Title case)">
+       Set Position
+      </message>
+      <message name="IDS_IOS_OMNIBOX_POSITION_PROMO_DISCARD" desc="Text in the discard button of the omnibox position choice screen promo. (Title case)">
+       No Thanks
+      </message>
+      <message name="IDS_IOS_OMNIBOX_POSITION_PROMO_SKIP" desc="Text in the skip button of the omnibox position choice screen promo. (Title case)">
+       Skip
+      </message>
       <message name="IDS_IOS_OPEN_TABS_LAST_USED" desc="Last used timestamp label [Length: 20em] [iOS only]">
         Last synced: <ph name="LAST_USED_TIME">$1<ex>3 mins ago</ex></ph>
       </message>
