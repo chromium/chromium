@@ -866,11 +866,6 @@ crbug.com/1093853 [ Mac11 Release ] external/wpt/dom/ranges/Range-surroundConten
 crbug.com/1093853 [ Mac12 Release ] external/wpt/dom/ranges/Range-surroundContents.html [ Slow ]
 crbug.com/1093853 [ Release Win ] external/wpt/dom/ranges/Range-surroundContents.html [ Slow ]
 crbug.com/1093478 external/wpt/quirks/unitless-length/limited-quirks.html [ Slow ]
-crbug.com/1133836 [ Linux ] external/wpt/scroll-to-text-fragment/redirects.html [ Slow ]
-crbug.com/1133836 [ Mac10.15 Release ] external/wpt/scroll-to-text-fragment/redirects.html [ Slow ]
-crbug.com/1133836 [ Mac11-arm64 Release ] external/wpt/scroll-to-text-fragment/redirects.html [ Slow ]
-crbug.com/1133836 [ Mac12 ] external/wpt/scroll-to-text-fragment/redirects.html [ Slow ]
-crbug.com/1133836 [ Release Win ] external/wpt/scroll-to-text-fragment/redirects.html [ Slow ]
 crbug.com/1134580 http/tests/eye-dropper/color-picker-show-eye-dropper.php [ Slow ]
 crbug.com/1145716 fast/forms/calendar-picker/datetimelocal-picker-open-to-focused-field.html [ Slow ]
 
@@ -1299,13 +1294,6 @@ crbug.com/1381545 [ Mac11 Release ] virtual/wasm-code-caching/http/tests/wasm/ca
 crbug.com/1381545 [ Mac12 ] virtual/wasm-code-caching/http/tests/wasm/caching/code-cache.html [ Slow ]
 crbug.com/1381545 [ Mac12-arm64 Release ] virtual/wasm-code-caching/http/tests/wasm/caching/code-cache.html [ Slow ]
 crbug.com/1381545 [ Release Win ] virtual/wasm-code-caching/http/tests/wasm/caching/code-cache.html [ Slow ]
-
-crbug.com/1293315 [ Debug ] external/wpt/scroll-to-text-fragment/force-load-at-top.html [ Slow ]
-crbug.com/1293315 [ Linux Release ] external/wpt/scroll-to-text-fragment/force-load-at-top.html [ Slow ]
-crbug.com/1293315 [ Mac11 Release ] external/wpt/scroll-to-text-fragment/force-load-at-top.html [ Slow ]
-crbug.com/1293315 [ Mac12 Release ] external/wpt/scroll-to-text-fragment/force-load-at-top.html [ Slow ]
-crbug.com/1293315 [ Mac13 Release ] external/wpt/scroll-to-text-fragment/force-load-at-top.html [ Slow ]
-crbug.com/1293315 [ Release Win ] external/wpt/scroll-to-text-fragment/force-load-at-top.html [ Slow ]
 
 crbug.com/1410608 http/tests/inspector-protocol/storage/dom-storage-set-items-by-storage-key.js [ Slow ]
 
