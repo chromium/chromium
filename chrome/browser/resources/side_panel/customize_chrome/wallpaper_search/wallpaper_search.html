@@ -481,6 +481,14 @@
     </div>
   </div>
 </div>
+<template is="dom-if" if="[[inspirationCardEnabled_]]">
+  <hr class="sp-cards-separator">
+  <div class="sp-card" id="inspirationCard">
+    <sp-heading hide-back-button>
+      <h2 slot="heading">$i18n{wallpaperSearchInspirationHeader}</h2>
+    </sp-heading>
+  </div>
+</template>
 <hr class="sp-cards-separator" hidden$="[[!shouldShowHistory_(history_)]]">
 <div class="sp-card" id="historyCard"
     hidden$="[[!shouldShowHistory_(history_)]]">

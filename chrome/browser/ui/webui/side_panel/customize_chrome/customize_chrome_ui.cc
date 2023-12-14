@@ -183,7 +183,8 @@ CustomizeChromeUI::CustomizeChromeUI(content::WebUI* web_ui)
       {"thumbsUp", IDS_THUMBS_UP_RESULTS_A11Y_LABEL},
       {"wallpaperSearchPageHeader", IDS_NTP_WALLPAPER_SEARCH_PAGE_HEADER},
       {"wallpaperSearchTileLabel", IDS_NTP_WALLPAPER_SEARCH_TILE_LABEL},
-  };
+      {"wallpaperSearchInspirationHeader",
+       IDS_NTP_WALLPAPER_SEARCH_INSPIRATION_HEADER}};
   source->AddLocalizedStrings(kLocalizedStrings);
 
   source->AddBoolean(
@@ -220,6 +221,11 @@ CustomizeChromeUI::CustomizeChromeUI(content::WebUI* web_ui)
                    optimization_guide::proto::ModelExecutionFeature::
                        MODEL_EXECUTION_FEATURE_WALLPAPER_SEARCH)));
 
+  source->AddBoolean(
+      "wallpaperSearchInspirationCardEnabled",
+      wallpaper_search_flags_enabled &&
+          base::FeatureList::IsEnabled(
+              ntp_features::kCustomizeChromeWallpaperSearchInspirationCard));
   webui::SetupChromeRefresh2023(source);
 
   webui::SetupWebUIDataSource(

@@ -140,6 +140,11 @@ export class WallpaperSearchElement extends WallpaperSearchElementBase {
         value: false,
       },
       history_: Object,
+      inspirationCardEnabled_: {
+        type: Boolean,
+        value: () =>
+            loadTimeData.getBoolean('wallpaperSearchInspirationCardEnabled'),
+      },
       resultsDescriptors_: Object,
       results_: Object,
       selectedFeedbackOption_: {
@@ -183,6 +188,7 @@ export class WallpaperSearchElement extends WallpaperSearchElementBase {
   private errorState_: ErrorState|null = null;
   private expandedCategories_: {[categoryIndex: number]: boolean} = {};
   private history_: WallpaperSearchResult[] = [];
+  private inspirationCardEnabled_: boolean;
   private loading_: boolean;
   private results_: WallpaperSearchResult[] = [];
   private resultsDescriptors_: ResultsDescriptors = {};

@@ -1294,4 +1294,30 @@ suite('WallpaperSearchTest', () => {
       });
     });
   });
+
+  suite('Inspiration', () => {
+    test(
+        'inspiration card is not shown if inspiration is disabled',
+        async () => {
+          loadTimeData.overrideValues(
+              {wallpaperSearchInspirationCardEnabled: false});
+
+          createWallpaperSearchElementWithDescriptors();
+          await flushTasks();
+
+          assertFalse(!!wallpaperSearchElement.shadowRoot!.querySelector(
+              '#inspirationCard'));
+        });
+
+    test('inspiration card shows if inspiration is enabled', async () => {
+      loadTimeData.overrideValues(
+          {wallpaperSearchInspirationCardEnabled: true});
+
+      createWallpaperSearchElementWithDescriptors();
+      await flushTasks();
+
+      assertTrue(!!wallpaperSearchElement.shadowRoot!.querySelector(
+          '#inspirationCard'));
+    });
+  });
 });
