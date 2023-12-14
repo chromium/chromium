@@ -88304,6 +88304,32 @@
        {}
       ]
      ],
+     "table-cell-background-local-002.html": [
+      "5398ce8eff737f3c808c0286958e426250b76c31",
+      [
+       null,
+       [
+        [
+         "/css/css-backgrounds/reference/table-cell-background-local-002-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "table-cell-background-local-003.html": [
+      "e2662bec1fa75049c07cbc07c24449e37c4c56a7",
+      [
+       null,
+       [
+        [
+         "/css/css-backgrounds/reference/table-cell-background-local-003-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
      "table-cell-background-local.html": [
       "e52aa26ef209dccb54f0362ca4a30964904ce7b0",
       [
@@ -305035,6 +305061,14 @@
        "d2c2722627e38d7a9ca1b3cbf1eda45e0eef62f7",
        []
       ],
+      "table-cell-background-local-002-ref.html": [
+       "3fbb9f848cacdf305e86a85a0533824c4aafc8da",
+       []
+      ],
+      "table-cell-background-local-003-ref.html": [
+       "6708df44ce4ea99cc390ab851e11376df0af18ec",
+       []
+      ],
       "ttwf-reftest-borderRadius-ref.html": [
        "dcb590dfea60d956f7c945519396d2434e21d298",
        []
@@ -394882,7 +394916,7 @@
      []
     ],
     "elementwise_logical.https.any-expected.txt": [
-     "a95cfaec61809696e7dda2a5abafe6159a22af4d",
+     "93219adb62b025428ca2b5497d7694b6e494a8ae",
      []
     ],
     "elementwise_unary.https.any-expected.txt": [
@@ -394982,11 +395016,11 @@
      []
     ],
     "reduction.https.any-expected.txt": [
-     "9e26889c7150075835afe9951bad816d07f0168c",
+     "9d33c4841def0ae9257f63afea8f1f67b98819ed",
      []
     ],
     "reduction.https.any.worker-expected.txt": [
-     "92187d8489b63f90b22de16c0de6286798ddc50f",
+     "cd831c113b8e583c1d15205e317bd28f4098ed6a",
      []
     ],
     "relu.https.any.worker-expected.txt": [
