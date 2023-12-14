@@ -22,7 +22,7 @@ class Connection;
 COMPONENT_EXPORT(X11) Atom GetAtom(const char* atom_name);
 
 // Pre-caches all Atoms on first use to minimize round trips to the X11
-// server. GetAtom() will DUMP_WILL_BE_CHECK() that atoms accessed
+// server. GetAtom() will CHECK() that atoms accessed
 // through GetAtom() are not predefined.
 class AtomCache {
  public:

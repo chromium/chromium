@@ -69,9 +69,9 @@ Event& Event::operator=(Event&& event) {
 Event::~Event() = default;
 
 void Event::Parse(void* event, Parser parser, Deleter deleter) {
-  DUMP_WILL_BE_CHECK(type_id_);
-  DUMP_WILL_BE_CHECK(!event_);
-  DUMP_WILL_BE_CHECK(raw_event_);
+  CHECK(type_id_);
+  CHECK(!event_);
+  CHECK(raw_event_);
   ReadBuffer read_buffer(raw_event_);
   parser(event, &read_buffer);
   event_ = {event, deleter};

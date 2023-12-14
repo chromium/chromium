@@ -311,9 +311,9 @@ class COMPONENT_EXPORT(X11) Connection final : public XProto,
   Future<void> SendEvent(const T& event, Window target, EventMask mask) {
     static_assert(T::type_id > 0, "T must be an *Event type");
     auto write_buffer = Write(event);
-    DUMP_WILL_BE_CHECK_EQ(write_buffer.GetBuffers().size(), 1ul);
+    CHECK_EQ(write_buffer.GetBuffers().size(), 1ul);
     auto& first_buffer = write_buffer.GetBuffers()[0];
-    DUMP_WILL_BE_CHECK_LE(first_buffer->size(), 32ul);
+    CHECK_LE(first_buffer->size(), 32ul);
     std::vector<uint8_t> event_bytes(32);
     memcpy(event_bytes.data(), first_buffer->data(), first_buffer->size());
 
@@ -348,8 +348,8 @@ class COMPONENT_EXPORT(X11) Connection final : public XProto,
       return false;
     }
 
-    DUMP_WILL_BE_CHECK_EQ(response->format / CHAR_BIT * response->value_len,
-                          response->value->size());
+    CHECK_EQ(response->format / CHAR_BIT * response->value_len,
+             response->value->size());
     value->resize(response->value_len);
     if (response->value_len > 0) {
       memcpy(value->data(), response->value->data(), response->value->size());

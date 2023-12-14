@@ -39,12 +39,12 @@ void InitXlib() {
     return;
   }
 
-  DUMP_WILL_BE_CHECK(xlib_loader->Load("libX11.so.6"));
+  CHECK(xlib_loader->Load("libX11.so.6"));
 
   auto* xlib_xcb_loader = GetXlibXcbLoader();
-  DUMP_WILL_BE_CHECK(xlib_xcb_loader->Load("libX11-xcb.so.1"));
+  CHECK(xlib_xcb_loader->Load("libX11-xcb.so.1"));
 
-  DUMP_WILL_BE_CHECK(xlib_loader->XInitThreads());
+  CHECK(xlib_loader->XInitThreads());
 
   // The default Xlib error handler calls exit(1), which we don't want.  This
   // shouldn't happen in the browser process since only XProto requests are
@@ -82,7 +82,7 @@ XlibDisplay::~XlibDisplay() {
   // Events are not processed on |display_|, so if any client asks to receive
   // events, they will just queue up and leak memory.  This check makes sure
   // |display_| never had any pending events before it is closed.
-  DUMP_WILL_BE_CHECK(!loader->XPending(display_));
+  CHECK(!loader->XPending(display_));
   // ExtractAsDangling clears the underlying pointer and returns another raw_ptr
   // instance that is allowed to dangle.
   loader->XCloseDisplay(display_.ExtractAsDangling());

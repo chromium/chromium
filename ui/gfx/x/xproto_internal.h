@@ -198,7 +198,7 @@ auto SwitchVar(T enum_val, bool condition, bool is_bitcase, T* switch_var) {
   if (is_bitcase) {
     *switch_var = static_cast<T>(switch_int | static_cast<EnumInt>(enum_val));
   } else {
-    DUMP_WILL_BE_CHECK(!switch_int);
+    CHECK(!switch_int);
     *switch_var = enum_val;
   }
 }

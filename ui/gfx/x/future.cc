@@ -42,11 +42,11 @@ void FutureImpl::OnResponse(ResponseCallback callback) {
 
 void FutureImpl::UpdateRequestHandler(ResponseCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(connection_->sequence_checker_);
-  DUMP_WILL_BE_CHECK(callback);
+  CHECK(callback);
 
   auto* request = connection_->GetRequestForFuture(this);
   // Make sure we haven't processed this request yet.
-  DUMP_WILL_BE_CHECK(request->callback);
+  CHECK(request->callback);
 
   request->callback = std::move(callback);
 }
@@ -55,8 +55,8 @@ void FutureImpl::ProcessResponse() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(connection_->sequence_checker_);
 
   auto* request = connection_->GetRequestForFuture(this);
-  DUMP_WILL_BE_CHECK(request->callback);
-  DUMP_WILL_BE_CHECK(request->have_response);
+  CHECK(request->callback);
+  CHECK(request->have_response);
 
   std::move(request->callback)
       .Run(std::move(request->reply), std::move(request->error));
@@ -67,8 +67,8 @@ void FutureImpl::TakeResponse(RawReply* raw_reply,
   DCHECK_CALLED_ON_VALID_SEQUENCE(connection_->sequence_checker_);
 
   auto* request = connection_->GetRequestForFuture(this);
-  DUMP_WILL_BE_CHECK(request->callback);
-  DUMP_WILL_BE_CHECK(request->have_response);
+  CHECK(request->callback);
+  CHECK(request->have_response);
 
   *raw_reply = std::move(request->reply);
   *error = std::move(request->error);

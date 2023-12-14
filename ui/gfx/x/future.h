@@ -159,7 +159,7 @@ inline Response<void> Future<void>::Sync() {
   RawReply raw_reply;
   std::unique_ptr<Error> error;
   impl()->Sync(&raw_reply, &error);
-  DUMP_WILL_BE_CHECK(!raw_reply);
+  CHECK(!raw_reply);
   return Response<void>(std::move(error));
 }
 
@@ -175,7 +175,7 @@ inline void Future<void>::OnResponse(Callback callback) {
   // this wrapper is necessary.
   auto wrapper = [](Callback callback, RawReply reply,
                     std::unique_ptr<Error> error) {
-    DUMP_WILL_BE_CHECK(!reply);
+    CHECK(!reply);
     std::move(callback).Run(Response<void>{std::move(error)});
   };
   impl()->OnResponse(base::BindOnce(wrapper, std::move(callback)));
