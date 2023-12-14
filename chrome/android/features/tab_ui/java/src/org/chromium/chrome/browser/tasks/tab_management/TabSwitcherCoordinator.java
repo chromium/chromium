@@ -452,7 +452,7 @@ public class TabSwitcherCoordinator
                                     .getCurrentTabModelFilterSupplier();
                     mTabSuggestionsOrchestrator =
                             new TabSuggestionsOrchestrator(
-                                    mActivity, currentTabModelFilterSupplier, mLifecycleDispatcher);
+                                    mActivity, currentTabModelFilterSupplier);
                     mTabSuggestionMessageService =
                             new TabSuggestionMessageService(
                                     mActivity,

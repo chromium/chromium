@@ -19,8 +19,6 @@ import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
-import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
-import org.chromium.chrome.browser.lifecycle.DestroyObserver;
 import org.chromium.chrome.browser.tabmodel.TabModelFilter;
 import org.chromium.chrome.browser.tasks.tab_management.suggestions.TabSuggestion.TabSuggestionAction;
 
@@ -32,10 +30,10 @@ import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
 /**
- * Represents the entry point for the TabSuggestions component. Responsible for
- * registering and invoking the different {@link TabSuggestionsFetcher}.
+ * Represents the entry point for the TabSuggestions component. Responsible for registering and
+ * invoking the different {@link TabSuggestionsFetcher}.
  */
-public class TabSuggestionsOrchestrator implements TabSuggestions, DestroyObserver {
+public class TabSuggestionsOrchestrator implements TabSuggestions {
     public static final String TAB_SUGGESTIONS_UMA_PREFIX = "TabSuggestionsOrchestrator";
     private static final String LAST_TIMESTAMP_KEY = "LastTimestamp";
     private static final String BACKOFF_COUNT_KEY = "BackoffCountKey";
@@ -58,7 +56,6 @@ public class TabSuggestionsOrchestrator implements TabSuggestions, DestroyObserv
     private static final int MIN_TIME_BETWEEN_PREFETCHES_DEFAULT_MS = 30000;
 
     protected TabSuggestionFeedback mTabSuggestionFeedback;
-    private final ActivityLifecycleDispatcher mActivityLifecycleDispatcher;
     private final SharedPreferences mSharedPreferences;
     private List<TabSuggestionsFetcher> mTabSuggestionsFetchers;
     private List<TabSuggestion> mPrefetchedResults = new LinkedList<>();
@@ -70,13 +67,10 @@ public class TabSuggestionsOrchestrator implements TabSuggestions, DestroyObserv
     private int mMinTimeBetweenPrefetchesMs = MIN_TIME_BETWEEN_PREFETCHES_DEFAULT_MS;
 
     public TabSuggestionsOrchestrator(
-            Context context,
-            Supplier<TabModelFilter> currentTabModelFilterSupplier,
-            ActivityLifecycleDispatcher activityLifecycleDispatcher) {
+            Context context, Supplier<TabModelFilter> currentTabModelFilterSupplier) {
         this(
                 context,
                 currentTabModelFilterSupplier,
-                activityLifecycleDispatcher,
                 ContextUtils.getApplicationContext()
                         .getSharedPreferences(SHARED_PREFERENCES_ID, Context.MODE_PRIVATE));
     }
@@ -85,14 +79,11 @@ public class TabSuggestionsOrchestrator implements TabSuggestions, DestroyObserv
     TabSuggestionsOrchestrator(
             Context context,
             Supplier<TabModelFilter> currentTabModelFilterSupplier,
-            ActivityLifecycleDispatcher activityLifecycleDispatcher,
             SharedPreferences sharedPreferences) {
         mCurrentTabModelFilterSupplier = currentTabModelFilterSupplier;
         mTabSuggestionsFetchers = new LinkedList<>();
         mTabSuggestionsFetchers.add(new TabSuggestionsClientFetcher());
         mTabSuggestionsObservers = new ObserverList<>();
-        mActivityLifecycleDispatcher = activityLifecycleDispatcher;
-        activityLifecycleDispatcher.register(this);
         mSharedPreferences = sharedPreferences;
     }
 
@@ -121,11 +112,6 @@ public class TabSuggestionsOrchestrator implements TabSuggestions, DestroyObserv
         // TODO(crbug.com/1085452): Sort the suggestion based on priority.
         Collections.sort(aggregated, (t1, t2) -> Integer.compare(t1.getAction(), t2.getAction()));
         return aggregated;
-    }
-
-    @Override
-    public void onDestroy() {
-        mActivityLifecycleDispatcher.unregister(this);
     }
 
     /**
