@@ -174,6 +174,11 @@ using testing::Return;
 #include "chrome/browser/chrome_browser_application_mac.h"
 #endif
 
+#if BUILDFLAG(IS_WIN)
+#include "base/base_paths_win.h"
+#include "base/test/scoped_path_override.h"
+#endif  // BUILDFLAG(IS_WIN)
+
 using extensions::Extension;
 using testing::_;
 using web_app::WebAppProvider;
@@ -2759,6 +2764,13 @@ class StartupBrowserWebAppProtocolHandlingTest : public InProcessBrowserTest {
   }
 
   base::test::ScopedFeatureList scoped_feature_list_;
+#if BUILDFLAG(IS_WIN)
+  // This is needed to stop StartupBrowserWebAppProtocolHandlingTests creating a
+  // shortcut in the Windows start menu. The override needs to last until the
+  // test is destroyed, because Windows shortcut tasks which create the shortcut
+  // can run after the test body returns.
+  base::ScopedPathOverride override_start_dir{base::DIR_START_MENU};
+#endif  // BUILDFLAG(IS_WIN)
 };
 
 IN_PROC_BROWSER_TEST_F(
