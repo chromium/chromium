@@ -99,7 +99,6 @@ group("closure_compile") {
     "emulator:closure_compile",
     "gaia_action_buttons:closure_compile",
     "internet_config_dialog:closure_compile",
-    "internet_detail_dialog:closure_compile",
     "login:closure_compile",
     "multidevice_internals:closure_compile",
     "multidevice_setup:closure_compile",

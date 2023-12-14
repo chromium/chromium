@@ -8,55 +8,44 @@
  * to interact with the browser.
  */
 
-/** @interface */
-export class InternetDetailDialogBrowserProxy {
+export interface InternetDetailDialogBrowserProxy {
   /**
-   * Returns the guid and network type as a JSON string.
-   * @return {?string}
+   * @return The guid and network type as a JSON string.
    */
-  getDialogArguments() {}
+  getDialogArguments(): string;
 
   /**
    * Signals C++ that the dialog is closed.
    */
-  closeDialog() {}
+  closeDialog(): void;
 
   /**
    * Shows the Portal Signin.
-   * @param {string} guid
    */
-  showPortalSignin(guid) {}
+  showPortalSignin(guid: string): void;
 }
 
-/**
- * @implements {InternetDetailDialogBrowserProxy}
- */
-export class InternetDetailDialogBrowserProxyImpl {
-  /** @override */
+export class InternetDetailDialogBrowserProxyImpl implements
+    InternetDetailDialogBrowserProxy {
   getDialogArguments() {
     return chrome.getVariableValue('dialogArguments');
   }
 
-  /** @override */
-  showPortalSignin(guid) {
+  showPortalSignin(guid: string) {
     chrome.send('showPortalSignin', [guid]);
   }
 
-  /** @override */
   closeDialog() {
     chrome.send('dialogClose');
   }
 
-  /** @return {!InternetDetailDialogBrowserProxy} */
-  static getInstance() {
+  static getInstance(): InternetDetailDialogBrowserProxy {
     return instance || (instance = new InternetDetailDialogBrowserProxyImpl());
   }
 
-  /** @param {!InternetDetailDialogBrowserProxy} obj */
-  static setInstance(obj) {
+  static setInstance(obj: InternetDetailDialogBrowserProxy) {
     instance = obj;
   }
 }
 
-/** @type {?InternetDetailDialogBrowserProxy} */
-let instance = null;
+let instance: InternetDetailDialogBrowserProxy|null = null;
