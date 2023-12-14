@@ -5991,14 +5991,20 @@ class SSLClientSocketAlpsTest
     : public SSLClientSocketTest,
       public ::testing::WithParamInterface<std::tuple<bool, bool, bool>> {
  public:
-  SSLClientSocketAlpsTest()
-      : client_alps_enabled_(std::get<0>(GetParam())),
-        server_alps_enabled_(std::get<1>(GetParam())),
-        client_use_new_alps_(std::get<2>(GetParam())) {}
-  ~SSLClientSocketAlpsTest() override = default;
-  const bool client_alps_enabled_;
-  const bool server_alps_enabled_;
-  const bool client_use_new_alps_;
+  SSLClientSocketAlpsTest() {
+    if (client_use_new_alps()) {
+      feature_list_.InitAndEnableFeature(features::kUseNewAlpsCodepointHttp2);
+    } else {
+      feature_list_.InitAndDisableFeature(features::kUseNewAlpsCodepointHttp2);
+    }
+  }
+
+  bool client_alps_enabled() const { return std::get<0>(GetParam()); }
+  bool server_alps_enabled() const { return std::get<1>(GetParam()); }
+  bool client_use_new_alps() const { return std::get<2>(GetParam()); }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
 };
 
 INSTANTIATE_TEST_SUITE_P(All,
@@ -6011,7 +6017,7 @@ TEST_P(SSLClientSocketAlpsTest, Alps) {
 
   SSLServerConfig server_config;
   server_config.alpn_protos = {kProtoHTTP2};
-  if (server_alps_enabled_) {
+  if (server_alps_enabled()) {
     server_config.application_settings[kProtoHTTP2] =
         std::vector<uint8_t>(server_data.begin(), server_data.end());
   }
@@ -6033,15 +6039,7 @@ TEST_P(SSLClientSocketAlpsTest, Alps) {
 
   SSLConfig client_config;
   client_config.alpn_protos = {kProtoHTTP2};
-
-  base::test::ScopedFeatureList feature_list;
-  if (client_use_new_alps_) {
-    feature_list.InitAndEnableFeature(features::kUseNewAlpsCodepointHttp2);
-  } else {
-    feature_list.InitAndDisableFeature(features::kUseNewAlpsCodepointHttp2);
-  }
-
-  if (client_alps_enabled_) {
+  if (client_alps_enabled()) {
     client_config.application_settings[kProtoHTTP2] =
         std::vector<uint8_t>(client_data.begin(), client_data.end());
   }
@@ -6061,12 +6059,52 @@ TEST_P(SSLClientSocketAlpsTest, Alps) {
   // ALPS is negotiated only if ALPS is enabled both on client and server.
   const auto alps_data_received_by_client = sock_->GetPeerApplicationSettings();
 
-  if (client_alps_enabled_ && server_alps_enabled_) {
+  if (client_alps_enabled() && server_alps_enabled()) {
     ASSERT_TRUE(alps_data_received_by_client.has_value());
     EXPECT_EQ(server_data, alps_data_received_by_client.value());
   } else {
     EXPECT_FALSE(alps_data_received_by_client.has_value());
   }
+}
+
+// Test that unused protocols in `application_settings` are ignored.
+TEST_P(SSLClientSocketAlpsTest, UnusedProtocols) {
+  if (!client_alps_enabled() || !server_alps_enabled()) {
+    return;
+  }
+
+  SSLConfig client_config;
+  client_config.alpn_protos = {kProtoHTTP2};
+  client_config.application_settings[kProtoHTTP2] = {};
+  client_config.application_settings[kProtoHTTP11] = {};
+
+  // Configure the server to check the ClientHello is as we expected.
+  SSLServerConfig server_config;
+  server_config.client_hello_callback_for_testing =
+      base::BindLambdaForTesting([&](const SSL_CLIENT_HELLO* client_hello) {
+        const uint8_t* data;
+        size_t len;
+        if (!SSL_early_callback_ctx_extension_get(
+                client_hello,
+                client_use_new_alps() ? TLSEXT_TYPE_application_settings
+                                      : TLSEXT_TYPE_application_settings_old,
+                &data, &len)) {
+          return false;
+        }
+        // The client should only have sent "h2" in the extension. Note there
+        // are two length prefixes. A two-byte length prefix (0x0003) followed
+        // by a one-byte length prefix (0x02). See
+        // https://www.ietf.org/archive/id/draft-vvv-tls-alps-01.html#section-4
+        EXPECT_EQ(std::vector<uint8_t>(data, data + len),
+                  std::vector<uint8_t>({0x00, 0x03, 0x02, 'h', '2'}));
+        return true;
+      });
+  ASSERT_TRUE(
+      StartEmbeddedTestServer(EmbeddedTestServer::CERT_OK, server_config));
+
+  int rv;
+  ASSERT_TRUE(CreateAndConnectSSLClientSocket(client_config, &rv));
+  EXPECT_THAT(rv, IsOk());
 }
 
 }  // namespace net

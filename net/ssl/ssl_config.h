@@ -119,8 +119,10 @@ struct NET_EXPORT SSLConfig {
   // The list of application-level protocols to enable renegotiation for.
   NextProtoVector renego_allowed_for_protos;
 
-  // ALPS TLS extension is enabled and corresponding data is sent to server
-  // for each NextProto in |application_settings|.  Data might be empty.
+  // ALPS data for each supported protocol in |alpn_protos|. Specifying a
+  // protocol in this map offers ALPS for that protocol and uses the
+  // corresponding value as the client settings string. The value may be empty.
+  // Keys which do not appear in |alpn_protos| are ignored.
   ApplicationSettings application_settings;
 
   // If the PartitionSSLSessionsByNetworkIsolationKey feature is enabled, the

@@ -865,15 +865,18 @@ int SSLClientSocketImpl::Init() {
     std::vector<uint8_t> wire_protos =
         SerializeNextProtos(ssl_config_.alpn_protos);
     SSL_set_alpn_protos(ssl_.get(), wire_protos.data(), wire_protos.size());
-  }
 
-  for (const auto& alps : ssl_config_.application_settings) {
-    const char* proto_string = NextProtoToString(alps.first);
-    const auto& data = alps.second;
-    if (!SSL_add_application_settings(
-            ssl_.get(), reinterpret_cast<const uint8_t*>(proto_string),
-            strlen(proto_string), data.data(), data.size())) {
-      return ERR_UNEXPECTED;
+    for (NextProto proto : ssl_config_.alpn_protos) {
+      auto iter = ssl_config_.application_settings.find(proto);
+      if (iter != ssl_config_.application_settings.end()) {
+        const char* proto_string = NextProtoToString(proto);
+        if (!SSL_add_application_settings(
+                ssl_.get(), reinterpret_cast<const uint8_t*>(proto_string),
+                strlen(proto_string), iter->second.data(),
+                iter->second.size())) {
+          return ERR_UNEXPECTED;
+        }
+      }
     }
   }
 
