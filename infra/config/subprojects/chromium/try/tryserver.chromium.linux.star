@@ -593,6 +593,9 @@ try_.builder(
         "ci/Linux Chromium OS ASan LSan Tests (1)",
     ],
     gn_args = "ci/Linux Chromium OS ASan LSan Builder",
+    # TODO(crbug.com/1510339): Remove this when memory consumption during links
+    # is reduced.
+    cores = 16,
     ssd = True,
     # TODO(crbug/1144484): Remove this timeout once we figure out the
     # regression in compiler or toolchain.
