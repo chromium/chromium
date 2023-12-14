@@ -5,6 +5,7 @@
 #ifndef COMPONENTS_METRICS_STRUCTURED_KEY_DATA_H_
 #define COMPONENTS_METRICS_STRUCTURED_KEY_DATA_H_
 
+#include <optional>
 #include <string>
 
 #include "base/files/file_path.h"
@@ -14,7 +15,6 @@
 #include "base/task/sequenced_task_runner.h"
 #include "components/metrics/structured/lib/proto/key.pb.h"
 #include "components/metrics/structured/persistent_proto.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace metrics::structured {
 
@@ -91,11 +91,11 @@ class KeyData {
 
   // Returns when the key for |project_name_hash| was last rotated, in days
   // since epoch. Returns nullopt if the key doesn't exist.
-  absl::optional<int> LastKeyRotation(uint64_t project_name_hash) const;
+  std::optional<int> LastKeyRotation(uint64_t project_name_hash) const;
 
   // Return the age of the key for |project_name_hash| since the last rotation,
   // in weeks.
-  absl::optional<int> GetKeyAgeInWeeks(uint64_t project_name_hash) const;
+  std::optional<int> GetKeyAgeInWeeks(uint64_t project_name_hash) const;
 
   // Clears all key data from memory and from disk. If this is called before the
   // underlying proto has been read from disk, the purge will be performed once
@@ -119,8 +119,8 @@ class KeyData {
   // a string of size |kKeySize| or absl::nullopt, which indicates an error. If
   // a key doesn't exist OR if the key needs to be rotated, then a new key with
   // |key_rotation_period| will be created.
-  absl::optional<std::string> ValidateAndGetKey(uint64_t project_name_hash,
-                                                int key_rotation_period);
+  std::optional<std::string> ValidateAndGetKey(uint64_t project_name_hash,
+                                               int key_rotation_period);
 
   // Regenerate |key|, also updating the |last_key_rotation| and
   // |key_rotation_period|. This triggers a save.

@@ -24,20 +24,20 @@ ProjectValidator::ProjectValidator(uint64_t project_hash,
 
 ProjectValidator::~ProjectValidator() = default;
 
-absl::optional<const EventValidator*> ProjectValidator::GetEventValidator(
+std::optional<const EventValidator*> ProjectValidator::GetEventValidator(
     base::StringPiece event_name) const {
   const auto it = event_validators_.find(event_name);
   if (it == event_validators_.end()) {
-    return absl::nullopt;
+    return std::nullopt;
   }
   return it->second.get();
 }
 
-absl::optional<base::StringPiece> ProjectValidator::GetEventName(
+std::optional<base::StringPiece> ProjectValidator::GetEventName(
     uint64_t event_name_hash) const {
   const auto it = event_name_map_.find(event_name_hash);
   if (it == event_name_map_.end()) {
-    return absl::nullopt;
+    return std::nullopt;
   }
   return it->second;
 }

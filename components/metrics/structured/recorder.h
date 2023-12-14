@@ -14,7 +14,6 @@
 #include "components/metrics/structured/event.h"
 #include "components/metrics/structured/structured_metrics_client.h"
 #include "components/metrics/structured/structured_metrics_validator.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace base {
 class FilePath;

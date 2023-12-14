@@ -91,12 +91,12 @@ void KeyData::WriteNowForTest() {
 // Key management
 //---------------
 
-absl::optional<std::string> KeyData::ValidateAndGetKey(
+std::optional<std::string> KeyData::ValidateAndGetKey(
     const uint64_t project_name_hash,
     int key_rotation_period) {
   if (!is_initialized_) {
     NOTREACHED();
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   const int now = NowInDays();
@@ -132,7 +132,7 @@ absl::optional<std::string> KeyData::ValidateAndGetKey(
   const std::string key_string = key.key();
   if (key_string.size() != kKeySize) {
     LogInternalError(StructuredMetricsError::kWrongKeyLength);
-    return absl::nullopt;
+    return std::nullopt;
   }
   return key_string;
 }
@@ -155,7 +155,7 @@ uint64_t KeyData::Id(const uint64_t project_name_hash,
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   // Retrieve the key for |project_name_hash|.
-  const absl::optional<std::string> key =
+  const std::optional<std::string> key =
       ValidateAndGetKey(project_name_hash, key_rotation_period);
   if (!key) {
     NOTREACHED();
@@ -175,7 +175,7 @@ uint64_t KeyData::HmacMetric(const uint64_t project_name_hash,
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   // Retrieve the key for |project_name_hash|.
-  const absl::optional<std::string> key =
+  const std::optional<std::string> key =
       ValidateAndGetKey(project_name_hash, key_rotation_period);
   if (!key) {
     NOTREACHED();
@@ -199,21 +199,20 @@ uint64_t KeyData::HmacMetric(const uint64_t project_name_hash,
 // Misc
 //-----
 
-absl::optional<int> KeyData::LastKeyRotation(
+std::optional<int> KeyData::LastKeyRotation(
     const uint64_t project_name_hash) const {
   const auto& keys = proto_.get()->get()->keys();
   const auto& it = keys.find(project_name_hash);
   if (it != keys.end()) {
     return it->second.last_rotation();
   }
-  return absl::nullopt;
+  return std::nullopt;
 }
 
-absl::optional<int> KeyData::GetKeyAgeInWeeks(
-    uint64_t project_name_hash) const {
-  absl::optional<int> last_rotation = LastKeyRotation(project_name_hash);
+std::optional<int> KeyData::GetKeyAgeInWeeks(uint64_t project_name_hash) const {
+  std::optional<int> last_rotation = LastKeyRotation(project_name_hash);
   if (!last_rotation.has_value()) {
-    return absl::nullopt;
+    return std::nullopt;
   }
   const int now = NowInDays();
   const int days_since_rotation = now - *last_rotation;

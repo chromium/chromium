@@ -6,6 +6,7 @@
 
 #include <deque>
 #include <memory>
+#include <optional>
 
 #include "base/containers/enum_set.h"
 #include "base/containers/flat_set.h"
@@ -181,7 +182,7 @@ class StructuredMetricsRecorder : public Recorder::RecorderImpl,
   bool IsProfileEvent(const Event& event) const;
 
   // Helper function to get the validators for |event|.
-  absl::optional<std::pair<const ProjectValidator*, const EventValidator*>>
+  std::optional<std::pair<const ProjectValidator*, const EventValidator*>>
   GetEventValidators(const Event& event) const;
 
   void SetOnReadyToRecord(base::OnceClosure callback);

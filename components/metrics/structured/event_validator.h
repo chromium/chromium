@@ -6,11 +6,11 @@
 #define COMPONENTS_METRICS_STRUCTURED_EVENT_VALIDATOR_H_
 
 #include <cstdint>
+#include <optional>
 #include <string>
 
 #include "components/metrics/structured/enums.h"
 #include "components/metrics/structured/event.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace metrics::structured {
 
@@ -33,10 +33,10 @@ class EventValidator {
   // Returns the event validator if |metric_name| is a valid metric for this
   // event. This method is virtual because a static constexpr map will be
   // defined within each event validator implementation.
-  absl::optional<MetricMetadata> GetMetricMetadata(
+  std::optional<MetricMetadata> GetMetricMetadata(
       const std::string& metric_name) const;
 
-  absl::optional<base::StringPiece> GetMetricName(
+  std::optional<base::StringPiece> GetMetricName(
       uint64_t metric_name_hash) const;
 
   uint64_t event_hash() const;

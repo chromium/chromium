@@ -299,7 +299,7 @@ void StructuredMetricsRecorder::InitializeEventProto(
   // Set the ID for this event, if any.
   switch (project_validator.id_type()) {
     case IdType::kProjectId: {
-      absl::optional<uint64_t> primary_id =
+      std::optional<uint64_t> primary_id =
           key_data_provider_->GetId(event.project_name());
       if (primary_id.has_value()) {
         proto->set_profile_event_id(primary_id.value());
@@ -332,7 +332,7 @@ void StructuredMetricsRecorder::AddMetricsToProto(
     // Validate that both name and metric type are valid structured metrics.
     // If a metric is invalid, then ignore the metric so that other valid
     // metrics are added to the proto.
-    absl::optional<EventValidator::MetricMetadata> metadata =
+    std::optional<EventValidator::MetricMetadata> metadata =
         event_validator.GetMetricMetadata(metric_name);
 
     // Checks that the metrics defined are valid. If not valid, then the
@@ -435,7 +435,7 @@ bool StructuredMetricsRecorder::CanForceRecord(const Event& event) const {
   return validators->second->can_force_record();
 }
 
-absl::optional<std::pair<const ProjectValidator*, const EventValidator*>>
+std::optional<std::pair<const ProjectValidator*, const EventValidator*>>
 StructuredMetricsRecorder::GetEventValidators(const Event& event) const {
   auto maybe_project_validator =
       validator::Validators::Get()->GetProjectValidator(event.project_name());
