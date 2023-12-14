@@ -311,7 +311,6 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &kStartSurfaceWithAccessibility,
     &kSurfacePolish,
     &kUmaBackgroundSessions,
-    &kUpdateNotificationScheduleServiceImmediateShowOption,
     &kUseLibunwindstackNativeUnwinderAndroid,
     &kVerticalAutomotiveBackButtonToolbar,
     &kVoiceSearchAudioCapturePolicy,
@@ -1036,10 +1035,6 @@ BASE_FEATURE(kSurfacePolish,
 BASE_FEATURE(kUmaBackgroundSessions,
              "UMABackgroundSessions",
              base::FEATURE_ENABLED_BY_DEFAULT);
-
-BASE_FEATURE(kUpdateNotificationScheduleServiceImmediateShowOption,
-             "UpdateNotificationScheduleServiceImmediateShowOption",
-             base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Use the LibunwindstackNativeUnwinderAndroid for only browser main thread, and
 // only on Android.
