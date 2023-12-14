@@ -34,9 +34,9 @@ regular intervals, and for straddling between sequences to meet
 the platform-specific code's requirements. This interface is also
 a dependency injection point for tests.
 
-`content::PressureServiceImpl` is the bridge between the renderer and the
-services sides. Each instance is owned by a `content::RenderFrameHostImpl`.
-This class maintains `content::PressureClientImpl` instances per source type.
+`content::PressureService*` is the bridge between the renderer and the
+services sides. This class maintains `content::PressureClientImpl` instances
+per source type.
 
 `content::PressureClientImpl` implements the `device::mojom::PressureClient`
 interface to receive `device::mojom::PressureUpdate` from
@@ -47,7 +47,7 @@ interface to receive `device::mojom::PressureUpdate` from
 interface. There can be more than one PressureObserver per frame.
 
 `blink::PressureObserverManager` keeps track of `blink::PressureClientImpl` and
-the connection to the `content::PressureServiceImpl` instance. The class is
+the connection to the `content::PressureService*` instance. The class is
 responsible for handling the communication between the renderer and browser
 sides.
 

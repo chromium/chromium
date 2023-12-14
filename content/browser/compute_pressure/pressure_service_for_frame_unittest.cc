@@ -13,7 +13,7 @@
 #include "base/test/test_future.h"
 #include "base/time/time.h"
 #include "content/browser/compute_pressure/pressure_client_impl.h"
-#include "content/browser/compute_pressure/pressure_service_impl.h"
+#include "content/browser/compute_pressure/pressure_service_for_frame.h"
 #include "content/browser/renderer_host/render_frame_host_impl.h"
 #include "content/public/test/navigation_simulator.h"
 #include "content/test/test_render_frame_host.h"
@@ -136,19 +136,20 @@ class FakePressureClient : public device::mojom::PressureClient {
 
 }  // namespace
 
-class PressureServiceImplTest : public RenderViewHostImplTestHarness {
+class PressureServiceForFrameTest : public RenderViewHostImplTestHarness {
  public:
-  PressureServiceImplTest() = default;
-  ~PressureServiceImplTest() override = default;
+  PressureServiceForFrameTest() = default;
+  ~PressureServiceForFrameTest() override = default;
 
-  PressureServiceImplTest(const PressureServiceImplTest&) = delete;
-  PressureServiceImplTest& operator=(const PressureServiceImplTest&) = delete;
+  PressureServiceForFrameTest(const PressureServiceForFrameTest&) = delete;
+  PressureServiceForFrameTest& operator=(const PressureServiceForFrameTest&) =
+      delete;
 
   void SetUp() override {
     RenderViewHostImplTestHarness::SetUp();
     NavigateAndCommit(kTestUrl);
 
-    SetPressureServiceImpl();
+    SetPressureServiceForFrame();
   }
 
   void TearDown() override {
@@ -159,7 +160,7 @@ class PressureServiceImplTest : public RenderViewHostImplTestHarness {
     RenderViewHostImplTestHarness::TearDown();
   }
 
-  void SetPressureServiceImpl() {
+  void SetPressureServiceForFrame() {
     pressure_manager_overrider_ =
         std::make_unique<device::ScopedPressureManagerOverrider>();
     pressure_manager_.reset();
@@ -184,7 +185,7 @@ class PressureServiceImplTest : public RenderViewHostImplTestHarness {
       pressure_manager_overrider_;
 };
 
-TEST_F(PressureServiceImplTest, AddClient) {
+TEST_F(PressureServiceForFrameTest, AddClient) {
   FakePressureClient client;
   ASSERT_EQ(pressure_manager_sync_->AddClient(client.BindNewPipeAndPassRemote(),
                                               PressureSource::kCpu),
@@ -198,7 +199,7 @@ TEST_F(PressureServiceImplTest, AddClient) {
   EXPECT_EQ(client.updates()[0], update);
 }
 
-TEST_F(PressureServiceImplTest, AddClientNotSupported) {
+TEST_F(PressureServiceForFrameTest, AddClientNotSupported) {
   pressure_manager_overrider_->set_is_supported(false);
 
   FakePressureClient client;
@@ -207,13 +208,13 @@ TEST_F(PressureServiceImplTest, AddClientNotSupported) {
             PressureStatus::kNotSupported);
 
   const auto& pressure_client =
-      PressureServiceImpl::GetOrCreateForCurrentDocument(
+      PressureServiceForFrame::GetOrCreateForCurrentDocument(
           contents()->GetPrimaryMainFrame())
           ->GetPressureClientForTesting(PressureSource::kCpu);
   EXPECT_FALSE(pressure_client.IsClientReceiverBoundForTesting());
 }
 
-TEST_F(PressureServiceImplTest, AddClientTwice) {
+TEST_F(PressureServiceForFrameTest, AddClientTwice) {
   FakePressureClient client1;
   ASSERT_EQ(pressure_manager_sync_->AddClient(
                 client1.BindNewPipeAndPassRemote(), PressureSource::kCpu),
@@ -228,12 +229,13 @@ TEST_F(PressureServiceImplTest, AddClientTwice) {
   EXPECT_EQ(bad_message_observer.WaitForBadMessage(),
             "PressureClientImpl is already connected.");
 
-  auto* pressure_service = PressureServiceImpl::GetOrCreateForCurrentDocument(
-      contents()->GetPrimaryMainFrame());
+  auto* pressure_service =
+      PressureServiceForFrame::GetOrCreateForCurrentDocument(
+          contents()->GetPrimaryMainFrame());
   EXPECT_FALSE(pressure_service->IsManagerReceiverBoundForTesting());
 }
 
-TEST_F(PressureServiceImplTest, DisconnectFromBlink) {
+TEST_F(PressureServiceForFrameTest, DisconnectFromBlink) {
   FakePressureClient client;
   ASSERT_EQ(pressure_manager_sync_->AddClient(client.BindNewPipeAndPassRemote(),
                                               PressureSource::kCpu),
@@ -244,8 +246,9 @@ TEST_F(PressureServiceImplTest, DisconnectFromBlink) {
   pressure_manager_.reset();
   task_environment()->RunUntilIdle();
 
-  auto* pressure_service = PressureServiceImpl::GetOrCreateForCurrentDocument(
-      contents()->GetPrimaryMainFrame());
+  auto* pressure_service =
+      PressureServiceForFrame::GetOrCreateForCurrentDocument(
+          contents()->GetPrimaryMainFrame());
   const auto& pressure_client =
       pressure_service->GetPressureClientForTesting(PressureSource::kCpu);
   EXPECT_FALSE(pressure_service->IsManagerReceiverBoundForTesting());
@@ -253,14 +256,14 @@ TEST_F(PressureServiceImplTest, DisconnectFromBlink) {
   EXPECT_TRUE(pressure_client.IsClientReceiverBoundForTesting());
 }
 
-TEST_F(PressureServiceImplTest, InsecureOrigin) {
+TEST_F(PressureServiceForFrameTest, InsecureOrigin) {
   NavigateAndCommit(kInsecureUrl);
 
-  SetPressureServiceImpl();
+  SetPressureServiceForFrame();
   EXPECT_EQ(1, process()->bad_msg_count());
 }
 
-TEST_F(PressureServiceImplTest, PermissionsPolicyBlock) {
+TEST_F(PressureServiceForFrameTest, PermissionsPolicyBlock) {
   // Make compute pressure blocked by permissions policy and it can only be
   // made once on page load, so we refresh the page to simulate that.
   RenderFrameHost* rfh =
@@ -273,7 +276,7 @@ TEST_F(PressureServiceImplTest, PermissionsPolicyBlock) {
   navigation_simulator->SetPermissionsPolicyHeader(permissions_policy);
   navigation_simulator->Commit();
 
-  SetPressureServiceImpl();
+  SetPressureServiceForFrame();
   EXPECT_EQ(1, process()->bad_msg_count());
 }
 
@@ -297,16 +300,16 @@ class InterceptingFakePressureManager : public device::FakePressureManager {
   base::OnceClosure interception_callback_;
 };
 
-// Test for https://crbug.com/1355662: destroying PressureServiceImplTest
-// between calling PressureServiceImpl::AddClient() and its |manager_remote_|
-// invoking the callback it receives does not crash.
-TEST_F(PressureServiceImplTest, DestructionOrderWithOngoingCallback) {
+// Test for https://crbug.com/1355662: destroying PressureServiceForFrameTest
+// between calling PressureServiceForFrame::AddClient() and its
+// |manager_remote_| invoking the callback it receives does not crash.
+TEST_F(PressureServiceForFrameTest, DestructionOrderWithOngoingCallback) {
   auto intercepting_fake_pressure_manager =
       std::make_unique<InterceptingFakePressureManager>(
           base::BindLambdaForTesting([&]() {
             // Delete the current WebContents and consequently trigger
-            // PressureServiceImpl's destruction between calling
-            // PressureServiceImpl::AddClient() and its |manager_remote_|
+            // PressureServiceForFrame's destruction between calling
+            // PressureServiceForFrame::AddClient() and its |manager_remote_|
             // invoking the callback it receives.
             DeleteContents();
           }));
@@ -324,13 +327,14 @@ TEST_F(PressureServiceImplTest, DestructionOrderWithOngoingCallback) {
   run_loop.Run();
 }
 
-class PressureServiceImplFencedFrameTest : public PressureServiceImplTest {
+class PressureServiceForFrameFencedFrameTest
+    : public PressureServiceForFrameTest {
  public:
-  PressureServiceImplFencedFrameTest() {
+  PressureServiceForFrameFencedFrameTest() {
     scoped_feature_list_.InitAndEnableFeatureWithParameters(
         blink::features::kFencedFrames, {{"implementation_type", "mparch"}});
   }
-  ~PressureServiceImplFencedFrameTest() override = default;
+  ~PressureServiceForFrameFencedFrameTest() override = default;
 
  protected:
   RenderFrameHost* CreateFencedFrame(RenderFrameHost* parent) {
@@ -343,7 +347,7 @@ class PressureServiceImplFencedFrameTest : public PressureServiceImplTest {
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
-TEST_F(PressureServiceImplFencedFrameTest, AccessFromFencedFrame) {
+TEST_F(PressureServiceForFrameFencedFrameTest, AccessFromFencedFrame) {
   auto* fenced_frame_rfh = CreateFencedFrame(contents()->GetPrimaryMainFrame());
   // Secure origin check will fail if the RenderFrameHost* passed to it has
   // not navigated to a secure origin, so we need to create a navigation here.

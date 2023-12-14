@@ -2,26 +2,26 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "content/browser/compute_pressure/pressure_service_impl.h"
+#include "content/browser/compute_pressure/pressure_service_base.h"
 
 #include <utility>
 
 #include "content/public/browser/device_service.h"
-#include "content/public/browser/render_frame_host.h"
 #include "mojo/public/cpp/bindings/message.h"
 
 namespace content {
 
-PressureServiceImpl::PressureServiceImpl(RenderFrameHost* render_frame_host)
-    : DocumentUserData<PressureServiceImpl>(render_frame_host) {
-  CHECK(render_frame_host);
-}
+PressureServiceBase::PressureServiceBase() = default;
 
-PressureServiceImpl::~PressureServiceImpl() {
+PressureServiceBase::~PressureServiceBase() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 }
 
-void PressureServiceImpl::BindReceiver(
+bool PressureServiceBase::CanCallAddClient() const {
+  return true;
+}
+
+void PressureServiceBase::BindReceiver(
     mojo::PendingReceiver<device::mojom::PressureManager> receiver) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
@@ -34,18 +34,17 @@ void PressureServiceImpl::BindReceiver(
   // be called after `manager_receiver_` is deallocated, and `manager_receiver_`
   // is owned by this class.
   manager_receiver_.set_disconnect_handler(
-      base::BindRepeating(&PressureServiceImpl::OnPressureManagerDisconnected,
+      base::BindRepeating(&PressureServiceBase::OnPressureManagerDisconnected,
                           base::Unretained(this)));
 }
 
-void PressureServiceImpl::AddClient(
+void PressureServiceBase::AddClient(
     mojo::PendingRemote<device::mojom::PressureClient> client,
     device::mojom::PressureSource source,
     AddClientCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  if (!render_frame_host().IsActive() ||
-      render_frame_host().IsNestedWithinFencedFrame()) {
+  if (!CanCallAddClient()) {
     std::move(callback).Run(device::mojom::PressureStatus::kNotSupported);
     return;
   }
@@ -63,7 +62,7 @@ void PressureServiceImpl::AddClient(
     // be called after `manager_remote_` is deallocated, and `manager_remote_`
     // is owned by this class.
     manager_remote_.set_disconnect_handler(
-        base::BindRepeating(&PressureServiceImpl::OnPressureManagerDisconnected,
+        base::BindRepeating(&PressureServiceBase::OnPressureManagerDisconnected,
                             base::Unretained(this)));
     GetDeviceService().BindPressureManager(std::move(receiver));
   }
@@ -75,13 +74,11 @@ void PressureServiceImpl::AddClient(
 // Disconnection handler for |manager_receiver_| and |manager_remote_|. If
 // either of the connections breaks, we should disconnect all connections and
 // let //services know we do not need more updates.
-void PressureServiceImpl::OnPressureManagerDisconnected() {
+void PressureServiceBase::OnPressureManagerDisconnected() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   manager_receiver_.reset();
   manager_remote_.reset();
 }
-
-DOCUMENT_USER_DATA_KEY_IMPL(PressureServiceImpl);
 
 }  // namespace content

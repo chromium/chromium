@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CONTENT_BROWSER_COMPUTE_PRESSURE_PRESSURE_SERVICE_IMPL_H_
-#define CONTENT_BROWSER_COMPUTE_PRESSURE_PRESSURE_SERVICE_IMPL_H_
+#ifndef CONTENT_BROWSER_COMPUTE_PRESSURE_PRESSURE_SERVICE_BASE_H_
+#define CONTENT_BROWSER_COMPUTE_PRESSURE_PRESSURE_SERVICE_BASE_H_
 
 #include <array>
 
@@ -12,29 +12,28 @@
 #include "base/thread_annotations.h"
 #include "content/browser/compute_pressure/pressure_client_impl.h"
 #include "content/common/content_export.h"
-#include "content/public/browser/document_user_data.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "services/device/public/mojom/pressure_manager.mojom.h"
 
 namespace content {
 
-class RenderFrameHost;
-
-// Serves all the Compute Pressure API mojo requests for a document.
+// This class holds common functions for both frame and workers. It serves all
+// the Compute Pressure API mojo requests.
 //
 // This class is not thread-safe, so each instance must be used on one sequence.
-class CONTENT_EXPORT PressureServiceImpl
-    : public device::mojom::PressureManager,
-      public DocumentUserData<PressureServiceImpl> {
+class CONTENT_EXPORT PressureServiceBase
+    : public device::mojom::PressureManager {
  public:
-  ~PressureServiceImpl() override;
+  ~PressureServiceBase() override;
 
-  PressureServiceImpl(const PressureServiceImpl&) = delete;
-  PressureServiceImpl& operator=(const PressureServiceImpl&) = delete;
+  PressureServiceBase(const PressureServiceBase&) = delete;
+  PressureServiceBase& operator=(const PressureServiceBase&) = delete;
 
   void BindReceiver(
       mojo::PendingReceiver<device::mojom::PressureManager> receiver);
+
+  virtual bool CanCallAddClient() const;
 
   // device::mojom::PressureManager implementation.
   void AddClient(mojo::PendingRemote<device::mojom::PressureClient> client,
@@ -54,9 +53,10 @@ class CONTENT_EXPORT PressureServiceImpl
     return source_to_client_[static_cast<size_t>(source)];
   }
 
- private:
-  explicit PressureServiceImpl(RenderFrameHost* render_frame_host);
+ protected:
+  PressureServiceBase();
 
+ private:
   void OnPressureManagerDisconnected();
 
   SEQUENCE_CHECKER(sequence_checker_);
@@ -75,11 +75,8 @@ class CONTENT_EXPORT PressureServiceImpl
   std::array<PressureClientImpl,
              static_cast<size_t>(device::mojom::PressureSource::kMaxValue) + 1>
       source_to_client_ GUARDED_BY_CONTEXT(sequence_checker_);
-
-  friend DocumentUserData;
-  DOCUMENT_USER_DATA_KEY_DECL();
 };
 
 }  // namespace content
 
-#endif  // CONTENT_BROWSER_COMPUTE_PRESSURE_PRESSURE_SERVICE_IMPL_H_
+#endif  // CONTENT_BROWSER_COMPUTE_PRESSURE_PRESSURE_SERVICE_BASE_H_
