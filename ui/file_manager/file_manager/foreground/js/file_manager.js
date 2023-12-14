@@ -1326,7 +1326,7 @@ export class FileManager extends EventTarget {
         this.ui_.listContainer, assert(this.ui_.alertDialog),
         // @ts-ignore: error TS2531: Object is possibly 'null'.
         assert(this.ui_.confirmDialog), this.directoryModel_,
-        assert(this.fileFilter_), this.selectionHandler_);
+        /** @type {!FileFilter} */ (this.fileFilter_), this.selectionHandler_);
 
     // Create task controller.
     this.taskController_ = new TaskController(

@@ -686,7 +686,7 @@ export class DeleteCommand extends FilesCommand {
           strf('CONFIRM_PERMANENTLY_DELETE_SOME_DESC', entries.length);
 
       dialog.setOkLabel(str('PERMANENTLY_DELETE_FOREVER'));
-      dialog.showWithTitle(title, message, deleteAction, cancelAction, null);
+      dialog.showWithTitle(title, message, deleteAction, cancelAction);
       return;
     }
 
