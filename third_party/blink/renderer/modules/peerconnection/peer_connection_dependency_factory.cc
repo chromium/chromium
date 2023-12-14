@@ -443,8 +443,8 @@ PeerConnectionDependencyFactory::PeerConnectionDependencyFactory(
   context.GetBrowserInterfaceBroker().GetInterface(
       perf_recorder.InitWithNewPipeAndPassReceiver());
 
-  webrtc_video_perf_reporter_ = MakeGarbageCollected<WebrtcVideoPerfReporter>(
-      context.GetTaskRunner(TaskType::kInternalMedia), &context,
+  webrtc_video_perf_reporter_.Initialize(
+      context.GetTaskRunner(TaskType::kInternalMedia),
       std::move(perf_recorder));
 }
 
@@ -636,16 +636,14 @@ void PeerConnectionDependencyFactory::InitializeSignalingThread(
   std::unique_ptr<webrtc::VideoEncoderFactory> webrtc_encoder_factory =
       blink::CreateWebrtcVideoEncoderFactory(
           gpu_factories, std::move(video_encoder_metrics_provider_factory),
-          base::BindRepeating(
-              &WebrtcVideoPerfReporter::StoreWebrtcVideoStats,
-              WrapPersistent(webrtc_video_perf_reporter_.Get())));
+          base::BindRepeating(&WebrtcVideoPerfReporter::StoreWebrtcVideoStats,
+                              base::Unretained(&webrtc_video_perf_reporter_)));
   std::unique_ptr<webrtc::VideoDecoderFactory> webrtc_decoder_factory =
       blink::CreateWebrtcVideoDecoderFactory(
           gpu_factories, media_decoder_factory, std::move(media_task_runner),
           render_color_space,
-          base::BindRepeating(
-              &WebrtcVideoPerfReporter::StoreWebrtcVideoStats,
-              WrapPersistent(webrtc_video_perf_reporter_.Get())));
+          base::BindRepeating(&WebrtcVideoPerfReporter::StoreWebrtcVideoStats,
+                              base::Unretained(&webrtc_video_perf_reporter_)));
 
   // Enable Multiplex codec in SDP optionally.
   if (base::FeatureList::IsEnabled(blink::features::kWebRtcMultiplexCodec)) {
@@ -905,6 +903,7 @@ void PeerConnectionDependencyFactory::ContextDestroyed() {
 void PeerConnectionDependencyFactory::CleanupPeerConnectionFactory() {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   DVLOG(1) << "PeerConnectionDependencyFactory::CleanupPeerConnectionFactory()";
+  webrtc_video_perf_reporter_.Shutdown();
   socket_factory_ = nullptr;
   // Not obtaining `signaling_thread` using GetWebRtcSignalingTaskRunner()
   // because that method triggers EnsureInitialized() and we're trying to
@@ -1014,6 +1013,5 @@ void PeerConnectionDependencyFactory::Trace(Visitor* visitor) const {
   Supplement<ExecutionContext>::Trace(visitor);
   ExecutionContextLifecycleObserver::Trace(visitor);
   visitor->Trace(p2p_socket_dispatcher_);
-  visitor->Trace(webrtc_video_perf_reporter_);
 }
 }  // namespace blink

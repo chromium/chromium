@@ -46,15 +46,15 @@ class WebrtcVideoPerfReporterTest : public ::testing::Test {
  public:
   WebrtcVideoPerfReporterTest() {
     mock_recorder_ = std::make_unique<MockWebrtcVideoPerfRecorder>();
-    reporter_ = MakeGarbageCollected<WebrtcVideoPerfReporter>(
+    reporter_.Initialize(
         blink::scheduler::GetSingleThreadTaskRunnerForTesting(),
-        /* notifier */ nullptr, mock_recorder_->CreatePendingRemote());
+        mock_recorder_->CreatePendingRemote());
   }
 
  protected:
   test::TaskEnvironment task_environment_;
   std::unique_ptr<MockWebrtcVideoPerfRecorder> mock_recorder_;
-  Persistent<WebrtcVideoPerfReporter> reporter_;
+  WebrtcVideoPerfReporter reporter_;
 };
 
 TEST_F(WebrtcVideoPerfReporterTest, StoreWebrtcVideoStats) {
@@ -78,7 +78,7 @@ TEST_F(WebrtcVideoPerfReporterTest, StoreWebrtcVideoStats) {
         EXPECT_EQ(kExpectedFeaturesA, *features);
         EXPECT_EQ(kExpectedVideoStats, *video_stats);
       });
-  reporter_->StoreWebrtcVideoStats(kStatsKeyA, kVideoStats);
+  reporter_.StoreWebrtcVideoStats(kStatsKeyA, kVideoStats);
   base::RunLoop().RunUntilIdle();
 
   // Toggle the booleans.
@@ -97,7 +97,7 @@ TEST_F(WebrtcVideoPerfReporterTest, StoreWebrtcVideoStats) {
         EXPECT_EQ(kExpectedFeaturesB, *features);
         EXPECT_EQ(kExpectedVideoStats, *video_stats);
       });
-  reporter_->StoreWebrtcVideoStats(kStatsKeyB, kVideoStats);
+  reporter_.StoreWebrtcVideoStats(kStatsKeyB, kVideoStats);
   base::RunLoop().RunUntilIdle();
 }
 
