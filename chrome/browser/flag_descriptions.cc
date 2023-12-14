@@ -420,12 +420,6 @@ const char kUseDnsHttpsSvcbAlpnDescription[] =
     "When enabled, Chrome may try QUIC on the first connection using the ALPN"
     " information in the DNS HTTPS record.";
 
-const char kEncryptedClientHelloName[] = "Encrypted ClientHello";
-const char kEncryptedClientHelloDescription[] =
-    "When enabled, Chrome will enable Encrypted ClientHello support. This will "
-    "encrypt TLS ClientHello if the server enables the extension via the HTTPS "
-    "DNS record.";
-
 const char kIsolatedSandboxedIframesName[] = "Isolated sandboxed iframes";
 const char kIsolatedSandboxedIframesDescription[] =
     "When enabled, applies process isolation to iframes with the 'sandbox' "

@@ -525,9 +525,6 @@ extern const char kUseDnsHttpsSvcbAlpnDescription[];
 extern const char kEditContextName[];
 extern const char kEditContextDescription[];
 
-extern const char kEncryptedClientHelloName[];
-extern const char kEncryptedClientHelloDescription[];
-
 extern const char kIsolatedSandboxedIframesName[];
 extern const char kIsolatedSandboxedIframesDescription[];
 

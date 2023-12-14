@@ -153,8 +153,7 @@ class ECHPolicyTest : public SSLPolicyTest {
   ECHPolicyTest() : ech_server_{net::EmbeddedTestServer::TYPE_HTTPS} {
     scoped_feature_list_.InitWithFeaturesAndParameters(
         /*enabled_features=*/
-        {{net::features::kEncryptedClientHello, {}},
-         {net::features::kUseDnsHttpsSvcb,
+        {{net::features::kUseDnsHttpsSvcb,
           {{"UseDnsHttpsSvcbEnforceSecureResponse", "true"}}}},
         /*disabled_features=*/{});
   }

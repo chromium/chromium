@@ -24,9 +24,6 @@ struct NET_EXPORT SSLContextConfig {
 
   bool operator==(const SSLContextConfig&) const;
 
-  // EncryptedClientHelloEnabled returns whether ECH is enabled.
-  bool EncryptedClientHelloEnabled() const;
-
   // Returns whether insecure hashes are allowed in TLS handshakes.
   bool InsecureHashesInTLSHandshakesEnabled() const;
 
@@ -55,9 +52,7 @@ struct NET_EXPORT SSLContextConfig {
   // flags.
   absl::optional<bool> post_quantum_override;
 
-  // If false, disables TLS Encrypted ClientHello (ECH). If true, the feature
-  // may be enabled or disabled, depending on feature flags. If querying whether
-  // ECH is enabled, use `EncryptedClientHelloEnabled` instead.
+  // Controls whether ECH is enabled.
   bool ech_enabled = true;
 
   // If specified, controls whether insecure hashes are allowed in TLS

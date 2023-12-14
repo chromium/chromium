@@ -6069,15 +6069,6 @@ TEST_F(HttpStreamFactoryJobControllerDnsHttpsAlpnTest, PreconnectNoDnsAlpnH3) {
   EXPECT_TRUE(HttpStreamFactoryPeer::IsJobControllerDeleted(factory_));
 }
 
-class HttpStreamFactoryJobControllerDnsHttpsAlpnEchTest
-    : public HttpStreamFactoryJobControllerDnsHttpsAlpnTest {
- public:
-  HttpStreamFactoryJobControllerDnsHttpsAlpnEchTest()
-      : HttpStreamFactoryJobControllerDnsHttpsAlpnTest(
-            {features::kEncryptedClientHello,
-             features::kEncryptedClientHelloQuic}) {}
-};
-
 // Test that, when an Alt-Svc-based preconnect fails with
 // `ERR_DNS_NO_MATCHING_SUPPORTED_ALPN`, the job controller handles it
 // correctly. This is a regression test for https://crbug.com/1420202.
@@ -6086,7 +6077,7 @@ class HttpStreamFactoryJobControllerDnsHttpsAlpnEchTest
 // was no A/AAAA route. However, we do not implement HTTPS-RR in full yet (see
 // https://crbug.com/1417033), so instead this is only possible in a corner case
 // with ECH.
-TEST_F(HttpStreamFactoryJobControllerDnsHttpsAlpnEchTest,
+TEST_F(HttpStreamFactoryJobControllerDnsHttpsAlpnTest,
        PreconnectAlternateNoDnsAlpn) {
   const char kAlternateHost[] = "alt.example.com";
 

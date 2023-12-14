@@ -902,11 +902,12 @@ int SSLClientSocketImpl::Init() {
         host_and_port_, &client_cert_, &client_private_key_);
   }
 
-  if (context_->config().EncryptedClientHelloEnabled()) {
+  if (context_->config().ech_enabled) {
+    // TODO(https://crbug.com/1509597): Enable this unconditionally.
     SSL_set_enable_ech_grease(ssl_.get(), 1);
   }
   if (!ssl_config_.ech_config_list.empty()) {
-    DCHECK(context_->config().EncryptedClientHelloEnabled());
+    DCHECK(context_->config().ech_enabled);
     net_log_.AddEvent(NetLogEventType::SSL_ECH_CONFIG_LIST, [&] {
       base::Value::Dict dict;
       dict.Set("bytes", NetLogBinaryValue(ssl_config_.ech_config_list));

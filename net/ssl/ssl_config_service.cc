@@ -22,11 +22,6 @@ SSLContextConfig& SSLContextConfig::operator=(const SSLContextConfig&) =
 SSLContextConfig& SSLContextConfig::operator=(SSLContextConfig&&) = default;
 bool SSLContextConfig::operator==(const SSLContextConfig&) const = default;
 
-bool SSLContextConfig::EncryptedClientHelloEnabled() const {
-  return ech_enabled &&
-         base::FeatureList::IsEnabled(features::kEncryptedClientHello);
-}
-
 bool SSLContextConfig::InsecureHashesInTLSHandshakesEnabled() const {
   return insecure_hash_override.value_or(false);
 }

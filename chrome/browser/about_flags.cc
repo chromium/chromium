@@ -7927,10 +7927,6 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(ash::features::kSettingsAppNotificationSettings)},
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
-    {"encrypted-client-hello", flag_descriptions::kEncryptedClientHelloName,
-     flag_descriptions::kEncryptedClientHelloDescription, kOsAll,
-     FEATURE_VALUE_TYPE(net::features::kEncryptedClientHello)},
-
     {"use-dns-https-svcb-alpn", flag_descriptions::kUseDnsHttpsSvcbAlpnName,
      flag_descriptions::kUseDnsHttpsSvcbAlpnDescription,
      kOsLinux | kOsMac | kOsWin | kOsCrOS | kOsAndroid,

@@ -3907,11 +3907,6 @@
     "expiry_milestone": 130
   },
   {
-    "name": "encrypted-client-hello",
-    "owners": [ "davidben@chromium.org", "trusty-transport@chromium.org" ],
-    "expiry_milestone": 122
-  },
-  {
     "name": "enforce-ash-extension-keeplist",
     "owners": ["jennyz@chromium.org", "erikchen@chromium.org"],
     "expiry_milestone": 130

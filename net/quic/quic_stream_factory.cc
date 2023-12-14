@@ -427,9 +427,7 @@ class QuicStreamFactory::Job {
     // If SVCB/HTTPS resolution succeeded, the client supports ECH, and all
     // routes support ECH, disable the A/AAAA fallback. See Section 10.1 of
     // draft-ietf-dnsop-svcb-https-11.
-    if (!factory_->ssl_config_service_->GetSSLContextConfig()
-             .EncryptedClientHelloEnabled() ||
-        !base::FeatureList::IsEnabled(features::kEncryptedClientHelloQuic)) {
+    if (!factory_->ssl_config_service_->GetSSLContextConfig().ech_enabled) {
       return true;  // ECH is not supported for this request.
     }
 

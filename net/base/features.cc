@@ -83,14 +83,6 @@ BASE_FEATURE(kEnableTLS13EarlyData,
              "EnableTLS13EarlyData",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-BASE_FEATURE(kEncryptedClientHello,
-             "EncryptedClientHello",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
-BASE_FEATURE(kEncryptedClientHelloQuic,
-             "EncryptedClientHelloQuic",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 BASE_FEATURE(kRSAKeyUsageForLocalAnchors,
              "RSAKeyUsageForLocalAnchors",
              base::FEATURE_ENABLED_BY_DEFAULT);

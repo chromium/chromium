@@ -102,17 +102,6 @@ NET_EXPORT BASE_DECLARE_FEATURE(kEnableIPv6ReachabilityOverride);
 // Enables TLS 1.3 early data.
 NET_EXPORT BASE_DECLARE_FEATURE(kEnableTLS13EarlyData);
 
-// Enables the TLS Encrypted ClientHello feature.
-// https://datatracker.ietf.org/doc/html/draft-ietf-tls-esni-13
-NET_EXPORT BASE_DECLARE_FEATURE(kEncryptedClientHello);
-
-// Enables the TLS Encrypted ClientHello feature for QUIC. Only takes effect if
-// kEncryptedClientHello is also enabled.
-//
-// TODO(crbug.com/1287248): Remove this flag when ECH for QUIC is fully
-// implemented. This flag is just a temporary mechanism for now.
-NET_EXPORT BASE_DECLARE_FEATURE(kEncryptedClientHelloQuic);
-
 // Enables checking the X.509 keyUsage extension in TLS 1.2 for RSA server
 // certificates that chain to a local trust anchor.
 //
