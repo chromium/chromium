@@ -35,7 +35,8 @@ class AudioIOStreamClient {
                                      size_t desired_buffer_size) = 0;
 #if BUILDFLAG(IS_MAC)
   virtual base::TimeDelta GetDeferStreamStartTimeout() const = 0;
-  virtual base::SingleThreadTaskRunner* GetTaskRunner() const = 0;
+  virtual base::SingleThreadTaskRunner* GetTaskRunnerForStreamClient()
+      const = 0;
   virtual void StopAmplitudePeakTrace() = 0;
 #endif
 };

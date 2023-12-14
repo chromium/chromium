@@ -57,6 +57,7 @@
 #include "media/base/audio_parameters.h"
 
 namespace media {
+class AudioManagerApple;
 
 class MEDIA_EXPORT AUAudioInputStream
     : public AgcAudioStream<AudioInputStream> {
@@ -64,7 +65,7 @@ class MEDIA_EXPORT AUAudioInputStream
   // The ctor takes all the usual parameters, plus |manager| which is the
   // the audio manager who is creating this object.
   AUAudioInputStream(
-      AudioManagerMac* manager,
+      AudioManagerApple* manager,
       const AudioParameters& input_params,
       AudioDeviceID audio_device_id,
       const AudioManager::LogCallback& log_callback,
@@ -165,7 +166,7 @@ class MEDIA_EXPORT AUAudioInputStream
   THREAD_CHECKER(thread_checker_);
 
   // Our creator, the audio manager needs to be notified when we close.
-  const raw_ptr<AudioManagerMac> manager_;
+  const raw_ptr<AudioManagerApple> manager_;
 
   // The audio parameters requested when creating the stream.
   const AudioParameters input_params_;

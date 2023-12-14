@@ -525,7 +525,7 @@ class AudioManagerMac::AudioPowerObserver : public base::PowerSuspendObserver {
 
 AudioManagerMac::AudioManagerMac(std::unique_ptr<AudioThread> audio_thread,
                                  AudioLogFactory* audio_log_factory)
-    : AudioManagerBase(std::move(audio_thread), audio_log_factory),
+    : AudioManagerApple(std::move(audio_thread), audio_log_factory),
       current_sample_rate_(0),
       current_output_device_(kAudioDeviceUnknown),
       in_shutdown_(false),
@@ -1049,12 +1049,34 @@ base::TimeDelta AudioManagerMac::GetDeferStreamStartTimeout() const {
   return base::TimeDelta();
 }
 
-base::SingleThreadTaskRunner* AudioManagerMac::GetTaskRunner() const {
+base::SingleThreadTaskRunner* AudioManagerMac::GetTaskRunnerForStreamClient()
+    const {
   return AudioManagerBase::GetTaskRunner();
 }
 
 void AudioManagerMac::StopAmplitudePeakTrace() {
   TraceAmplitudePeak(/*trace_start=*/false);
+}
+
+double AudioManagerMac::GetMaxInputVolume(AudioDeviceID device_id) {
+  // Verify that we have a valid device.
+  if (device_id == kAudioObjectUnknown) {
+    LOG(ERROR) << "Device ID is unknown";
+    return 0.0;
+  }
+
+  // The master channel is 0, Left and right are channels 1 and 2.
+  // Query if any of the master, left or right channels has volume control.
+  for (int channel = 0; channel <= GetNumberOfChannelsForDevice(device_id);
+       ++channel) {
+    // If the volume is settable, the  valid volume range is [0.0, 1.0].
+    if (IsVolumeSettableOnChannel(device_id, channel)) {
+      return 1.0;
+    }
+  }
+
+  // Volume control is not available for the audio stream.
+  return 0.0;
 }
 
 bool AudioManagerMac::IsOnBatteryPower() const {
@@ -1324,29 +1346,6 @@ bool AudioManagerMac::IsVolumeSettableOnChannel(AudioDeviceID device_id,
   return (result == noErr) ? is_settable : false;
 }
 
-// static
-double AudioManagerMac::GetMaxInputVolume(AudioDeviceID device_id) {
-  // Verify that we have a valid device.
-  if (device_id == kAudioObjectUnknown) {
-    LOG(ERROR) << "Device ID is unknown";
-    return 0.0;
-  }
-
-  // The master channel is 0, Left and right are channels 1 and 2.
-  // Query if any of the master, left or right channels has volume control.
-  for (int channel = 0; channel <= GetNumberOfChannelsForDevice(device_id);
-       ++channel) {
-    // If the volume is settable, the  valid volume range is [0.0, 1.0].
-    if (IsVolumeSettableOnChannel(device_id, channel)) {
-      return 1.0;
-    }
-  }
-
-  // Volume control is not available for the audio stream.
-  return 0.0;
-}
-
-// static
 void AudioManagerMac::SetInputVolume(AudioDeviceID device_id, double volume) {
   CHECK_GE(volume, 0.0);
   CHECK_LE(volume, 1.0);
@@ -1393,7 +1392,6 @@ void AudioManagerMac::SetInputVolume(AudioDeviceID device_id, double volume) {
       << "Failed to set volume to " << volume_float32;
 }
 
-// static
 double AudioManagerMac::GetInputVolume(AudioDeviceID device_id) {
   // Verify that we have a valid device.
   if (device_id == kAudioObjectUnknown) {
@@ -1445,8 +1443,7 @@ double AudioManagerMac::GetInputVolume(AudioDeviceID device_id) {
   return 0.0;
 }
 
-// static
-bool AudioManagerMac::IsMuted(AudioDeviceID device_id) {
+bool AudioManagerMac::IsInputMuted(AudioDeviceID device_id) {
   // Verify that we have a valid device.
   DCHECK_NE(device_id, kAudioObjectUnknown) << "Device ID is unknown";
 

@@ -209,7 +209,7 @@ void AUHALStream::Start(AudioSourceCallback* callback) {
     // actually runs, we can cancel the pending start.
     deferred_start_cb_.Reset(
         base::BindOnce(&AUHALStream::Start, base::Unretained(this), callback));
-    client_->GetTaskRunner()->PostDelayedTask(
+    client_->GetTaskRunnerForStreamClient()->PostDelayedTask(
         FROM_HERE, deferred_start_cb_.callback(), defer_start);
     return;
   }

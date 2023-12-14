@@ -15,6 +15,7 @@
 #include "base/compiler_specific.h"
 #include "base/memory/weak_ptr.h"
 #include "media/audio/apple/audio_io_stream_client.h"
+#include "media/audio/apple/audio_manager_apple.h"
 #include "media/audio/audio_manager_base.h"
 #include "media/audio/fake_audio_manager.h"
 #include "media/audio/mac/audio_auhal_mac.h"
@@ -27,8 +28,7 @@ class AUHALStream;
 // to the audio output and only internal users can call methods not exposed by
 // the AudioManager class.
 // TODO(crbug.com/1413450): Fill this implementation out.
-class MEDIA_EXPORT AudioManagerIOS : public AudioManagerBase,
-                                     public AudioIOStreamClient {
+class MEDIA_EXPORT AudioManagerIOS : public AudioManagerApple {
  public:
   AudioManagerIOS(std::unique_ptr<AudioThread> audio_thread,
                   AudioLogFactory* audio_log_factory);
@@ -78,6 +78,29 @@ class MEDIA_EXPORT AudioManagerIOS : public AudioManagerBase,
                              AudioUnitElement element,
                              size_t desired_buffer_size) override;
 
+  // Implementation of AudioManagerApple
+  // Handle device capability ambient noise reduction. Currently, iOS is not
+  // supported.
+  bool DeviceSupportsAmbientNoiseReduction(AudioDeviceID device_id) override;
+  bool SuppressNoiseReduction(AudioDeviceID device_id) override;
+  void UnsuppressNoiseReduction(AudioDeviceID device_id) override;
+
+  // Returns the maximum microphone analog volume or 0.0 if device does not
+  // have volume control.
+  double GetMaxInputVolume(AudioDeviceID device_id) override;
+
+  // Sets the microphone analog volume, with range [0.0, 1.0] inclusive.
+  double GetInputVolume(AudioDeviceID device_id) override;
+
+  // Returns the microphone analog volume, with range [0.0, 1.0] inclusive.
+  void SetInputVolume(AudioDeviceID device_id, double volume) override;
+
+  // Returns the current muting state for the microphone.
+  bool IsInputMuted(AudioDeviceID device_id) override;
+
+  // Check if delayed start for stream is needed.
+  bool ShouldDeferStreamStart() const override;
+
   // Hardware information
   double HardwareSampleRate();
   double HardwareIOBufferDuration();
@@ -85,9 +108,6 @@ class MEDIA_EXPORT AudioManagerIOS : public AudioManagerBase,
   long GetDeviceChannels(bool is_input);
 
   // Gain
-  float GetInputGain();
-  bool SetInputGain(float volume);
-  bool IsInputMuted();
   bool IsInputGainSettable();
 
  protected:

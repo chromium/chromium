@@ -17,6 +17,7 @@
 #include "base/compiler_specific.h"
 #include "base/memory/weak_ptr.h"
 #include "media/audio/apple/audio_io_stream_client.h"
+#include "media/audio/apple/audio_manager_apple.h"
 #include "media/audio/audio_manager_base.h"
 #include "media/audio/mac/audio_auhal_mac.h"
 #include "media/audio/mac/audio_device_listener_mac.h"
@@ -36,8 +37,7 @@ class AUHALStream;
 // Mac OS X implementation of the AudioManager singleton. This class is internal
 // to the audio output and only internal users can call methods not exposed by
 // the AudioManager class.
-class MEDIA_EXPORT AudioManagerMac : public AudioManagerBase,
-                                     public AudioIOStreamClient {
+class MEDIA_EXPORT AudioManagerMac : public AudioManagerApple {
  public:
   AudioManagerMac(std::unique_ptr<AudioThread> audio_thread,
                   AudioLogFactory* audio_log_factory);
@@ -100,27 +100,29 @@ class MEDIA_EXPORT AudioManagerMac : public AudioManagerBase,
                              AudioUnitElement element,
                              size_t desired_buffer_size) override;
   base::TimeDelta GetDeferStreamStartTimeout() const override;
-  base::SingleThreadTaskRunner* GetTaskRunner() const override;
+  base::SingleThreadTaskRunner* GetTaskRunnerForStreamClient() const override;
   void StopAmplitudePeakTrace() override;
+
+  // Implementation of AudioManagerApple
+
+  // Returns the maximum microphone analog volume or 0.0 if device does not
+  // have volume control.
+  double GetMaxInputVolume(AudioDeviceID device_id) override;
+
+  // Sets the microphone analog volume, with range [0.0, 1.0] inclusive.
+  void SetInputVolume(AudioDeviceID device_id, double volume) override;
+
+  // Returns the microphone analog volume, with range [0.0, 1.0] inclusive.
+  double GetInputVolume(AudioDeviceID device_id) override;
+
+  // Returns the current muting state for the microphone.
+  bool IsInputMuted(AudioDeviceID device_id) override;
 
   static int HardwareSampleRateForDevice(AudioDeviceID device_id);
   static bool GetDefaultInputDevice(AudioDeviceID* input_device);
   static bool GetDefaultOutputDevice(AudioDeviceID* output_device);
   static AudioDeviceID GetAudioDeviceIdByUId(bool is_input,
                                              const std::string& device_id);
-
-  // Returns the maximum microphone analog volume or 0.0 if device does not
-  // have volume control.
-  static double GetMaxInputVolume(AudioDeviceID device_id);
-
-  // Sets the microphone analog volume, with range [0.0, 1.0] inclusive.
-  static void SetInputVolume(AudioDeviceID device_id, double volume);
-
-  // Returns the microphone analog volume, with range [0.0, 1.0] inclusive.
-  static double GetInputVolume(AudioDeviceID device_id);
-
-  // Returns the current muting state for the microphone.
-  static bool IsMuted(AudioDeviceID device_id);
 
   // Finds the first subdevice, in an aggregate device, with output streams.
   static AudioDeviceID FindFirstOutputSubdevice(
@@ -149,7 +151,7 @@ class MEDIA_EXPORT AudioManagerMac : public AudioManagerBase,
   // TODO(henrika): track UMA statistics related to defer start to come up with
   // a suitable delay value.
   enum { kStartDelayInSecsForPowerEvents = 5 };
-  bool ShouldDeferStreamStart() const;
+  bool ShouldDeferStreamStart() const override;
 
   // True if the device is on battery power.
   bool IsOnBatteryPower() const;
@@ -167,9 +169,11 @@ class MEDIA_EXPORT AudioManagerMac : public AudioManagerBase,
   }
   size_t basic_input_streams() const { return basic_input_streams_.size(); }
 
-  bool DeviceSupportsAmbientNoiseReduction(AudioDeviceID device_id);
-  bool SuppressNoiseReduction(AudioDeviceID device_id);
-  void UnsuppressNoiseReduction(AudioDeviceID device_id);
+  // Manage device capabilities for ambient noise reduction. These functionality
+  // currently implemented on the Mac platform.
+  bool DeviceSupportsAmbientNoiseReduction(AudioDeviceID device_id) override;
+  bool SuppressNoiseReduction(AudioDeviceID device_id) override;
+  void UnsuppressNoiseReduction(AudioDeviceID device_id) override;
 
   // The state of a single device for which we've tried to disable Ambient Noise
   // Reduction. If the device initially has ANR enabled, it will be turned off

@@ -6,6 +6,7 @@
 
 #include <memory>
 
+#include "media/audio/apple/audio_manager_apple.h"
 #include "media/audio/ios/audio_session_manager_ios.h"
 #include "media/audio/mac/audio_auhal_mac.h"
 #include "media/audio/mac/audio_input_mac.h"
@@ -24,7 +25,7 @@ std::unique_ptr<media::AudioManager> CreateAudioManager(
 
 AudioManagerIOS::AudioManagerIOS(std::unique_ptr<AudioThread> audio_thread,
                                  AudioLogFactory* audio_log_factory)
-    : AudioManagerBase(std::move(audio_thread), audio_log_factory) {
+    : AudioManagerApple(std::move(audio_thread), audio_log_factory) {
   AudioSessionManagerIOS::GetInstance().SetActive(true);
 }
 
@@ -149,6 +150,28 @@ bool AudioManagerIOS::MaybeChangeBufferSize(AudioDeviceID device_id,
   return true;
 }
 
+bool AudioManagerIOS::DeviceSupportsAmbientNoiseReduction(
+    AudioDeviceID device_id) {
+  return false;
+}
+
+bool AudioManagerIOS::SuppressNoiseReduction(AudioDeviceID device_id) {
+  return false;
+}
+
+void AudioManagerIOS::UnsuppressNoiseReduction(AudioDeviceID device_id) {
+  NOTIMPLEMENTED();
+}
+
+double AudioManagerIOS::GetMaxInputVolume(AudioDeviceID device_id) {
+  return 1.0;
+}
+
+bool AudioManagerIOS::ShouldDeferStreamStart() const {
+  return false;
+}
+
+// static
 double AudioManagerIOS::HardwareSampleRate() {
   return AudioSessionManagerIOS::GetInstance().HardwareSampleRate();
 }
@@ -165,15 +188,17 @@ long AudioManagerIOS::GetDeviceChannels(bool is_input) {
   return AudioSessionManagerIOS::GetInstance().GetDeviceChannels(is_input);
 }
 
-float AudioManagerIOS::GetInputGain() {
-  return AudioSessionManagerIOS::GetInstance().GetInputGain();
+double AudioManagerIOS::GetInputVolume(AudioDeviceID device_id) {
+  return static_cast<double>(
+      AudioSessionManagerIOS::GetInstance().GetInputGain());
 }
 
-bool AudioManagerIOS::SetInputGain(float volume) {
-  return AudioSessionManagerIOS::GetInstance().SetInputGain(volume);
+void AudioManagerIOS::SetInputVolume(AudioDeviceID device_id, double volume) {
+  AudioSessionManagerIOS::GetInstance().SetInputGain(
+      static_cast<float>(volume));
 }
 
-bool AudioManagerIOS::IsInputMuted() {
+bool AudioManagerIOS::IsInputMuted(AudioDeviceID device_id) {
   return AudioSessionManagerIOS::GetInstance().IsInputMuted();
 }
 
