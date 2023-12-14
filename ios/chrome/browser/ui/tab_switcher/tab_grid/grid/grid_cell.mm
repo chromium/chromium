@@ -661,11 +661,6 @@ void PositionView(UIView* view, CGPoint point) {
 }
 
 - (void)setMainTabView:(UIView*)mainTabView {
-  if (!mainTabView) {
-    // TODO(crbug.com/1506555): Temporary investigation to see if there is a
-    // misconfiguration in the transition.
-    base::debug::DumpWithoutCrashing();
-  }
   DCHECK(!_mainTabView) << "mainTabView should only be set once.";
   if (!mainTabView.superview)
     [self.contentView addSubview:mainTabView];

@@ -639,6 +639,13 @@ bool FindNavigatorShouldBePresentedInBrowser(Browser* browser) {
                                          animationEnabled:(BOOL)animationEnabled
                                                completion:
                                                    (ProceduralBlock)completion {
+  if (!self.bvcContainer) {
+    // It is possible that the Grid is presented twice in a row. Because the
+    // detection of "the Browser is visible" is based on a null check of
+    // `self.bvcContainer` which is nullified at the end of the animation, so
+    // two animations could be started in a short sequence.
+    return;
+  }
   self.legacyTransitionHandler =
       [self createTransitionHanlderWithAnimationEnabled:animationEnabled];
   [self.legacyTransitionHandler transitionFromBrowser:self.bvcContainer
