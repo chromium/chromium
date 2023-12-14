@@ -4984,8 +4984,6 @@ crbug.com/1249176 [ Mac11-arm64 ] compositing/overflow/rotate-then-clip.html [ F
 crbug.com/1249176 [ Mac12-arm64 ] compositing/overflow/rotate-then-clip.html [ Failure ]
 crbug.com/1249176 [ Mac11-arm64 ] media/video-replaces-poster.html [ Crash Failure Pass Timeout ]
 crbug.com/1249176 [ Mac12-arm64 ] media/video-replaces-poster.html [ Crash Failure Pass Timeout ]
-crbug.com/1249176 [ Mac11-arm64 ] virtual/gpu-rasterization/images/color-jpeg-with-color-profile.html [ Failure ]
-crbug.com/1249176 [ Mac12-arm64 ] virtual/gpu-rasterization/images/color-jpeg-with-color-profile.html [ Failure ]
 crbug.com/1249176 [ Mac11-arm64 ] media/controls/overflow-menu-focus.html [ Failure Pass ]
 crbug.com/1249176 [ Mac12-arm64 ] media/controls/overflow-menu-focus.html [ Failure Pass ]
 
