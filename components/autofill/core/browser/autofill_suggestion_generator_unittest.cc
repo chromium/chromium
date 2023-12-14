@@ -1092,7 +1092,7 @@ TEST_F(AutofillSuggestionGeneratorTest,
 }
 #endif  // if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
 
-class AutofillChildrenSuggestionsGenenarationTest
+class AutofillChildrenSuggestionGeneratorTest
     : public AutofillSuggestionGeneratorTest {
  public:
   std::vector<Suggestion> CreateSuggestionWithChildrenFromProfile(
@@ -1140,7 +1140,7 @@ class AutofillChildrenSuggestionsGenenarationTest
 // Test that only "Fill full address" is added when the target field is
 // ADDRESS_HOME_LINE1 and no other suggestion exist with the same
 // `Suggestion::main_text` and granular filling label.
-TEST_F(AutofillChildrenSuggestionsGenenarationTest,
+TEST_F(AutofillChildrenSuggestionGeneratorTest,
        CreateSuggestionsFromProfiles_GroupFillingLabels_AddOnlyFillAddress) {
   std::vector<Suggestion> suggestions = CreateSuggestionWithChildrenFromProfile(
       profile(),
@@ -1158,7 +1158,7 @@ TEST_F(AutofillChildrenSuggestionsGenenarationTest,
 // Test that the differentiating label is added when the `Suggestion::main_text`
 // and granular filling label are not unique across suggestions.
 TEST_F(
-    AutofillChildrenSuggestionsGenenarationTest,
+    AutofillChildrenSuggestionGeneratorTest,
     CreateSuggestionsFromProfiles_GroupFillingLabels_AddFillAddressAndDifferentiatingLabel) {
   AutofillProfile profile_1 = test::GetFullProfile();
   profile_1.SetRawInfo(ADDRESS_HOME_ZIP, u"1234");
@@ -1185,7 +1185,7 @@ TEST_F(
 // the targeting field does not contain street address related information
 // (ADDRESS_LINE1, ADDRESS_LINE2, ADRRESS_STREET_NAME and ADDRESS_HOME_ADDRESS).
 TEST_F(
-    AutofillChildrenSuggestionsGenenarationTest,
+    AutofillChildrenSuggestionGeneratorTest,
     CreateSuggestionsFromProfiles_GroupFillingLabels_AddFillAddressAddressLine1AndDifferentiatingLabel) {
   AutofillProfile profile_1 = test::GetFullProfile();
   profile_1.SetRawInfo(ADDRESS_HOME_HOUSE_NUMBER, u"42");
@@ -1217,7 +1217,7 @@ TEST_F(
 
 // When there is no differentiating label, we add only the granular filling
 // label, either "Fill full name" or "Fill full address".
-TEST_F(AutofillChildrenSuggestionsGenenarationTest,
+TEST_F(AutofillChildrenSuggestionGeneratorTest,
        CreateSuggestionsFromProfiles_GroupFillingLabels_AddOnlyFillName) {
   std::vector<Suggestion> suggestions = CreateSuggestionWithChildrenFromProfile(
       profile(),
@@ -1233,7 +1233,7 @@ TEST_F(AutofillChildrenSuggestionsGenenarationTest,
 // Test that the differentiating label is added when the suggestion main text
 // and granular filling label are not unique across suggestions.
 TEST_F(
-    AutofillChildrenSuggestionsGenenarationTest,
+    AutofillChildrenSuggestionGeneratorTest,
     CreateSuggestionsFromProfiles_GroupFillingLabels_AddFillNameAndDifferentiatingLabel) {
   AutofillProfile profile_1 = test::GetFullProfile();
   profile_1.SetRawInfo(NAME_FULL, u"Cersei Lannister");
@@ -1255,7 +1255,7 @@ TEST_F(
                 {{Suggestion::Text(u"Fill full name - Cersei Lannister")}}));
 }
 
-TEST_F(AutofillChildrenSuggestionsGenenarationTest,
+TEST_F(AutofillChildrenSuggestionGeneratorTest,
        CreateSuggestionsFromProfiles_FirstLevelChildrenSuggestions) {
   std::vector<Suggestion> suggestions = CreateSuggestionWithChildrenFromProfile(
       profile(),
@@ -1331,7 +1331,7 @@ TEST_F(AutofillChildrenSuggestionsGenenarationTest,
           EqualsSuggestion(PopupItemId::kDeleteAddressProfile)));
 }
 
-TEST_F(AutofillChildrenSuggestionsGenenarationTest,
+TEST_F(AutofillChildrenSuggestionGeneratorTest,
        CreateSuggestionsFromProfiles_SecondLevelChildrenSuggestions) {
   std::vector<Suggestion> suggestions = CreateSuggestionWithChildrenFromProfile(
       profile(),
@@ -1358,7 +1358,7 @@ TEST_F(AutofillChildrenSuggestionsGenenarationTest,
 }
 
 TEST_F(
-    AutofillChildrenSuggestionsGenenarationTest,
+    AutofillChildrenSuggestionGeneratorTest,
     CreateSuggestionsFromProfiles_LastTargetedFieldsIsSingleField_FieldByFieldFilling) {
   std::vector<Suggestion> suggestions = CreateSuggestionWithChildrenFromProfile(
       profile(), absl::optional<ServerFieldTypeSet>({NAME_LAST}), NAME_FIRST);
@@ -1371,7 +1371,7 @@ TEST_F(
                   Suggestion::Guid(profile().guid()), {{}}));
 }
 
-TEST_F(AutofillChildrenSuggestionsGenenarationTest,
+TEST_F(AutofillChildrenSuggestionGeneratorTest,
        CreateSuggestionsFromProfiles_LastTargetedFieldsIsGroup_GroupFilling) {
   std::vector<Suggestion> suggestions = CreateSuggestionWithChildrenFromProfile(
       profile(),
@@ -1385,7 +1385,7 @@ TEST_F(AutofillChildrenSuggestionsGenenarationTest,
 
 // Note that only full form filling has an icon.
 TEST_F(
-    AutofillChildrenSuggestionsGenenarationTest,
+    AutofillChildrenSuggestionGeneratorTest,
     CreateSuggestionsFromProfiles_LastTargetedFieldsAreAllServerFields_FullForm) {
   std::vector<Suggestion> suggestions = CreateSuggestionWithChildrenFromProfile(
       profile(), kAllServerFieldTypes, NAME_FIRST, {NAME_FIRST, NAME_LAST});
@@ -1401,7 +1401,7 @@ TEST_F(
 // as the user expressed intent to use their phone number their phone number on
 // a "random" field.
 TEST_F(
-    AutofillChildrenSuggestionsGenenarationTest,
+    AutofillChildrenSuggestionGeneratorTest,
     CreateSuggestionsFromProfiles_ChildrenSuggestionsPhoneField_Intenational) {
   std::vector<Suggestion> suggestions = CreateSuggestionWithChildrenFromProfile(
       profile(), kAllServerFieldTypes, PHONE_HOME_WHOLE_NUMBER);
@@ -1437,7 +1437,7 @@ TEST_F(
 // scenarios, phone number is of type `PopupItemId::kAddressFieldByFieldFilling`
 // as the user expressed intent to use their phone number on a "random" field.
 TEST_F(
-    AutofillChildrenSuggestionsGenenarationTest,
+    AutofillChildrenSuggestionGeneratorTest,
     CreateSuggestionsFromProfiles_ChildrenSuggestionsPhoneField_CountryCode) {
   std::vector<Suggestion> suggestions = CreateSuggestionWithChildrenFromProfile(
       profile(), kAllServerFieldTypes, PHONE_HOME_COUNTRY_CODE);
@@ -1473,7 +1473,7 @@ TEST_F(
 // scenarios, phone number is of type `PopupItemId::kAddressFieldByFieldFilling`
 // as the user expressed intent to use their phone number their phone number on
 // a "random" field.
-TEST_F(AutofillChildrenSuggestionsGenenarationTest,
+TEST_F(AutofillChildrenSuggestionGeneratorTest,
        CreateSuggestionsFromProfiles_ChildrenSuggestionsPhoneField_Local) {
   std::vector<Suggestion> suggestions = CreateSuggestionWithChildrenFromProfile(
       profile(), kAllServerFieldTypes, PHONE_HOME_CITY_AND_NUMBER);
@@ -1504,7 +1504,7 @@ TEST_F(AutofillChildrenSuggestionsGenenarationTest,
 }
 
 // Same as above but for email fields.
-TEST_F(AutofillChildrenSuggestionsGenenarationTest,
+TEST_F(AutofillChildrenSuggestionGeneratorTest,
        CreateSuggestionsFromProfiles_ChildrenSuggestionsEmailField) {
   std::vector<Suggestion> suggestions = CreateSuggestionWithChildrenFromProfile(
       profile(), kAllServerFieldTypes, EMAIL_ADDRESS);
@@ -1529,7 +1529,7 @@ TEST_F(AutofillChildrenSuggestionsGenenarationTest,
               Field(&Suggestion::popup_item_id, PopupItemId::kFillFullEmail));
 }
 
-TEST_F(AutofillChildrenSuggestionsGenenarationTest,
+TEST_F(AutofillChildrenSuggestionGeneratorTest,
        CreateSuggestionsFromProfiles_ChildrenSuggestionsAddressField) {
   std::vector<Suggestion> suggestions = CreateSuggestionWithChildrenFromProfile(
       profile(), kAllServerFieldTypes, ADDRESS_HOME_LINE1);
@@ -1557,7 +1557,7 @@ TEST_F(AutofillChildrenSuggestionsGenenarationTest,
 }
 
 TEST_F(
-    AutofillChildrenSuggestionsGenenarationTest,
+    AutofillChildrenSuggestionGeneratorTest,
     CreateSuggestionsFromProfiles_ChildrenSuggestions_HouseNumberAndStreetNameCanBeNestedUnderDifferentAddressLines) {
   AutofillProfile profile(i18n_model_definition::kLegacyHierarchyCountryCode);
   // Update the profile to have house number and street name information in
@@ -1588,7 +1588,7 @@ TEST_F(
 }
 
 TEST_F(
-    AutofillChildrenSuggestionsGenenarationTest,
+    AutofillChildrenSuggestionGeneratorTest,
     CreateSuggestionsFromProfiles_GranularityNotFullForm_FillEverythingChildSuggestion) {
   // We set only a name field as `last_targeted_fields` to denote that the user
   // chose field by field filling.
@@ -1603,11 +1603,11 @@ TEST_F(
   }));
 }
 
-class AutofillNonAddressFieldsSuggestionsGenenarationTest
-    : public AutofillChildrenSuggestionsGenenarationTest {
+class AutofillNonAddressFieldsSuggestionGeneratorTest
+    : public AutofillChildrenSuggestionGeneratorTest {
  public:
   void SetUp() override {
-    AutofillChildrenSuggestionsGenenarationTest::SetUp();
+    AutofillChildrenSuggestionGeneratorTest::SetUp();
     scoped_feature_list_.InitWithFeatures(
         /*enabled_features=*/{features::kAutofillGranularFillingAvailable,
                               features::
@@ -1619,7 +1619,7 @@ class AutofillNonAddressFieldsSuggestionsGenenarationTest
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
-TEST_F(AutofillNonAddressFieldsSuggestionsGenenarationTest,
+TEST_F(AutofillNonAddressFieldsSuggestionGeneratorTest,
        AllProfilesGenerateSuggestions) {
   personal_data()->AddProfile(test::GetFullProfile());
   personal_data()->AddProfile(test::GetFullProfile2());
@@ -1640,7 +1640,7 @@ TEST_F(AutofillNonAddressFieldsSuggestionsGenenarationTest,
 // creates various incomplete profiles and makes sure that a main text and a
 // label are always chosen from the available fields (or only main_text if the
 // profile has only one field).
-TEST_F(AutofillNonAddressFieldsSuggestionsGenenarationTest,
+TEST_F(AutofillNonAddressFieldsSuggestionGeneratorTest,
        SuggestionsAreCorrectAndExpectedLabelsAreCreated) {
   std::vector<AutofillProfile> profiles(
       5, AutofillProfile(i18n_model_definition::kLegacyHierarchyCountryCode));
@@ -1709,7 +1709,7 @@ TEST_F(AutofillNonAddressFieldsSuggestionsGenenarationTest,
 // Tests that a non-address field suggestion has all the profile fields as
 // children, and doesn't have children like "Fill full address" or "Fill full
 // name".
-TEST_F(AutofillNonAddressFieldsSuggestionsGenenarationTest,
+TEST_F(AutofillNonAddressFieldsSuggestionGeneratorTest,
        SuggestionHasCorrectChildren) {
   std::vector<Suggestion> suggestions = CreateSuggestionWithChildrenFromProfile(
       profile(), absl::nullopt, UNKNOWN_TYPE);
