@@ -37,6 +37,7 @@ absl_cc_library(
     absl::inlined_vector
     absl::memory
     absl::no_destructor
+    absl::nullability
     absl::optional
     absl::raw_logging_internal
     absl::span
@@ -76,6 +77,7 @@ absl_cc_library(
     absl::base
     absl::config
     absl::core_headers
+    absl::nullability
     absl::raw_logging_internal
     absl::status
     absl::strings

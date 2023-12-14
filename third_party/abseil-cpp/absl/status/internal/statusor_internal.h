@@ -18,6 +18,7 @@
 #include <utility>
 
 #include "absl/base/attributes.h"
+#include "absl/base/nullability.h"
 #include "absl/meta/type_traits.h"
 #include "absl/status/status.h"
 #include "absl/utility/utility.h"
@@ -123,7 +124,7 @@ using IsForwardingAssignmentValid = absl::disjunction<
 class Helper {
  public:
   // Move type-agnostic error handling to the .cc.
-  static void HandleInvalidStatusCtorArg(Status*);
+  static void HandleInvalidStatusCtorArg(absl::Nonnull<Status*>);
   ABSL_ATTRIBUTE_NORETURN static void Crash(const absl::Status& status);
 };
 
@@ -131,7 +132,8 @@ class Helper {
 // the constructor.
 // This abstraction is here mostly for the gcc performance fix.
 template <typename T, typename... Args>
-ABSL_ATTRIBUTE_NONNULL(1) void PlacementNew(void* p, Args&&... args) {
+ABSL_ATTRIBUTE_NONNULL(1)
+void PlacementNew(absl::Nonnull<void*> p, Args&&... args) {
   new (p) T(std::forward<Args>(args)...);
 }
 

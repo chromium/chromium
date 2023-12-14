@@ -30,6 +30,7 @@
 #include <ostream>
 #include <random>
 #include <string>
+#include <tuple>
 #include <type_traits>
 #include <unordered_map>
 #include <unordered_set>
@@ -299,7 +300,7 @@ TEST(Group, CountLeadingEmptyOrDeleted) {
   }
 }
 
-template <class T>
+template <class T, bool kTransferable = false>
 struct ValuePolicy {
   using slot_type = T;
   using key_type = T;
@@ -317,10 +318,11 @@ struct ValuePolicy {
   }
 
   template <class Allocator>
-  static void transfer(Allocator* alloc, slot_type* new_slot,
-                       slot_type* old_slot) {
+  static std::integral_constant<bool, kTransferable> transfer(
+      Allocator* alloc, slot_type* new_slot, slot_type* old_slot) {
     construct(alloc, new_slot, std::move(*old_slot));
     destroy(alloc, old_slot);
+    return {};
   }
 
   static T& element(slot_type* slot) { return *slot; }
@@ -336,6 +338,8 @@ struct ValuePolicy {
 
 using IntPolicy = ValuePolicy<int64_t>;
 using Uint8Policy = ValuePolicy<uint8_t>;
+
+using TranferableIntPolicy = ValuePolicy<int64_t, /*kTransferable=*/true>;
 
 class StringPolicy {
   template <class F, class K, class V,
@@ -409,15 +413,18 @@ struct StringTable
   using Base::Base;
 };
 
-template <typename T>
-struct ValueTable : raw_hash_set<ValuePolicy<T>, hash_default_hash<T>,
-                                 std::equal_to<T>, std::allocator<T>> {
+template <typename T, bool kTransferable = false>
+struct ValueTable
+    : raw_hash_set<ValuePolicy<T, kTransferable>, hash_default_hash<T>,
+                   std::equal_to<T>, std::allocator<T>> {
   using Base = typename ValueTable::raw_hash_set;
   using Base::Base;
 };
 
 using IntTable = ValueTable<int64_t>;
 using Uint8Table = ValueTable<uint8_t>;
+
+using TransferableIntTable = ValueTable<int64_t, /*kTransferable=*/true>;
 
 template <typename T>
 struct CustomAlloc : std::allocator<T> {
@@ -652,6 +659,68 @@ TEST(Table, InsertWithinCapacity) {
   EXPECT_THAT(t.capacity(), original_capacity);
   EXPECT_THAT(addr(0), original_addr_0);
 }
+
+template <class TableType>
+class SmallTableResizeTest : public testing::Test {};
+
+TYPED_TEST_SUITE_P(SmallTableResizeTest);
+
+TYPED_TEST_P(SmallTableResizeTest, InsertIntoSmallTable) {
+  TypeParam t;
+  for (int i = 0; i < 32; ++i) {
+    t.insert(i);
+    ASSERT_EQ(t.size(), i + 1);
+    for (int j = 0; j < i + 1; ++j) {
+      EXPECT_TRUE(t.find(j) != t.end());
+      EXPECT_EQ(*t.find(j), j);
+    }
+  }
+}
+
+TYPED_TEST_P(SmallTableResizeTest, ResizeGrowSmallTables) {
+  TypeParam t;
+  for (size_t source_size = 0; source_size < 32; ++source_size) {
+    for (size_t target_size = source_size; target_size < 32; ++target_size) {
+      for (bool rehash : {false, true}) {
+        for (size_t i = 0; i < source_size; ++i) {
+          t.insert(static_cast<int>(i));
+        }
+        if (rehash) {
+          t.rehash(target_size);
+        } else {
+          t.reserve(target_size);
+        }
+        for (size_t i = 0; i < source_size; ++i) {
+          EXPECT_TRUE(t.find(static_cast<int>(i)) != t.end());
+          EXPECT_EQ(*t.find(static_cast<int>(i)), static_cast<int>(i));
+        }
+      }
+    }
+  }
+}
+
+TYPED_TEST_P(SmallTableResizeTest, ResizeReduceSmallTables) {
+  TypeParam t;
+  for (size_t source_size = 0; source_size < 32; ++source_size) {
+    for (size_t target_size = 0; target_size <= source_size; ++target_size) {
+      size_t inserted_count = std::min<size_t>(source_size, 5);
+      for (size_t i = 0; i < inserted_count; ++i) {
+        t.insert(static_cast<int>(i));
+      }
+      t.rehash(target_size);
+      for (size_t i = 0; i < inserted_count; ++i) {
+        EXPECT_TRUE(t.find(static_cast<int>(i)) != t.end());
+        EXPECT_EQ(*t.find(static_cast<int>(i)), static_cast<int>(i));
+      }
+    }
+  }
+}
+
+REGISTER_TYPED_TEST_SUITE_P(SmallTableResizeTest, InsertIntoSmallTable,
+                            ResizeGrowSmallTables, ResizeReduceSmallTables);
+using SmallTableTypes = ::testing::Types<IntTable, TransferableIntTable>;
+INSTANTIATE_TYPED_TEST_SUITE_P(InstanceSmallTableResizeTest,
+                               SmallTableResizeTest, SmallTableTypes);
 
 TEST(Table, LazyEmplace) {
   StringTable t;
@@ -1071,7 +1140,7 @@ TEST(Table, Erase) {
 TEST(Table, EraseMaintainsValidIterator) {
   IntTable t;
   const int kNumElements = 100;
-  for (int i = 0; i < kNumElements; i ++) {
+  for (int i = 0; i < kNumElements; i++) {
     EXPECT_TRUE(t.emplace(i).second);
   }
   EXPECT_EQ(t.size(), kNumElements);
@@ -2258,20 +2327,33 @@ TEST(RawHashSamplerTest, DoNotSampleCustomAllocators) {
 }
 
 #ifdef ABSL_HAVE_ADDRESS_SANITIZER
-TEST(Sanitizer, PoisoningUnused) {
-  IntTable t;
-  t.reserve(5);
-  // Insert something to force an allocation.
-  int64_t& v1 = *t.insert(0).first;
+template <class TableType>
+class SanitizerTest : public testing::Test {};
 
-  // Make sure there is something to test.
-  ASSERT_GT(t.capacity(), 1);
+TYPED_TEST_SUITE_P(SanitizerTest);
 
-  int64_t* slots = RawHashSetTestOnlyAccess::GetSlots(t);
-  for (size_t i = 0; i < t.capacity(); ++i) {
-    EXPECT_EQ(slots + i != &v1, __asan_address_is_poisoned(slots + i));
+TYPED_TEST_P(SanitizerTest, PoisoningUnused) {
+  TypeParam t;
+  for (size_t reserve_size = 2; reserve_size < 1024;
+       reserve_size = reserve_size * 3 / 2) {
+    t.reserve(reserve_size);
+    // Insert something to force an allocation.
+    int64_t& v = *t.insert(0).first;
+
+    // Make sure there is something to test.
+    ASSERT_GT(t.capacity(), 1);
+
+    int64_t* slots = RawHashSetTestOnlyAccess::GetSlots(t);
+    for (size_t i = 0; i < t.capacity(); ++i) {
+      EXPECT_EQ(slots + i != &v, __asan_address_is_poisoned(slots + i)) << i;
+    }
   }
 }
+
+REGISTER_TYPED_TEST_SUITE_P(SanitizerTest, PoisoningUnused);
+using SanitizerTableTypes = ::testing::Types<IntTable, TransferableIntTable>;
+INSTANTIATE_TYPED_TEST_SUITE_P(InstanceSanitizerTest, SanitizerTest,
+                               SanitizerTableTypes);
 
 TEST(Sanitizer, PoisoningOnErase) {
   IntTable t;

@@ -20,6 +20,7 @@
 #include <unordered_set>
 
 #include "absl/base/config.h"
+#include "absl/base/nullability.h"
 #include "absl/strings/internal/cord_data_edge.h"
 #include "absl/strings/internal/cord_internal.h"
 #include "absl/strings/internal/cord_rep_btree.h"
@@ -38,13 +39,15 @@ enum class Mode { kFairShare, kTotal, kTotalMorePrecise };
 template <Mode mode>
 struct CordRepRef {
   // Instantiates a CordRepRef instance.
-  explicit CordRepRef(const CordRep* r) : rep(r) {}
+  explicit CordRepRef(absl::Nonnull<const CordRep*> r) : rep(r) {}
 
   // Creates a child reference holding the provided child.
   // Overloaded to add cumulative reference count for kFairShare.
-  CordRepRef Child(const CordRep* child) const { return CordRepRef(child); }
+  CordRepRef Child(absl::Nonnull<const CordRep*> child) const {
+    return CordRepRef(child);
+  }
 
-  const CordRep* rep;
+  absl::Nonnull<const CordRep*> rep;
 };
 
 // RawUsage holds the computed total number of bytes.
@@ -63,7 +66,7 @@ template <>
 struct RawUsage<Mode::kTotalMorePrecise> {
   size_t total = 0;
   // TODO(b/289250880): Replace this with a flat_hash_set.
-  std::unordered_set<const CordRep*> counted;
+  std::unordered_set<absl::Nonnull<const CordRep*>> counted;
 
   void Add(size_t size, CordRepRef<Mode::kTotalMorePrecise> repref) {
     if (counted.insert(repref.rep).second) {
@@ -87,15 +90,15 @@ double MaybeDiv(double d, refcount_t refcount) {
 template <>
 struct CordRepRef<Mode::kFairShare> {
   // Creates a CordRepRef with the provided rep and top (parent) fraction.
-  explicit CordRepRef(const CordRep* r, double frac = 1.0)
+  explicit CordRepRef(absl::Nonnull<const CordRep*> r, double frac = 1.0)
       : rep(r), fraction(MaybeDiv(frac, r->refcount.Get())) {}
 
   // Returns a CordRepRef with a fraction of `this->fraction / child.refcount`
-  CordRepRef Child(const CordRep* child) const {
+  CordRepRef Child(absl::Nonnull<const CordRep*> child) const {
     return CordRepRef(child, fraction);
   }
 
-  const CordRep* rep;
+  absl::Nonnull<const CordRep*> rep;
   double fraction;
 };
 
@@ -147,7 +150,7 @@ void AnalyzeBtree(CordRepRef<mode> rep, RawUsage<mode>& raw_usage) {
 }
 
 template <Mode mode>
-size_t GetEstimatedUsage(const CordRep* rep) {
+size_t GetEstimatedUsage(absl::Nonnull<const CordRep*> rep) {
   // Zero initialized memory usage totals.
   RawUsage<mode> raw_usage;
 
@@ -176,15 +179,15 @@ size_t GetEstimatedUsage(const CordRep* rep) {
 
 }  // namespace
 
-size_t GetEstimatedMemoryUsage(const CordRep* rep) {
+size_t GetEstimatedMemoryUsage(absl::Nonnull<const CordRep*> rep) {
   return GetEstimatedUsage<Mode::kTotal>(rep);
 }
 
-size_t GetEstimatedFairShareMemoryUsage(const CordRep* rep) {
+size_t GetEstimatedFairShareMemoryUsage(absl::Nonnull<const CordRep*> rep) {
   return GetEstimatedUsage<Mode::kFairShare>(rep);
 }
 
-size_t GetMorePreciseMemoryUsage(const CordRep* rep) {
+size_t GetMorePreciseMemoryUsage(absl::Nonnull<const CordRep*> rep) {
   return GetEstimatedUsage<Mode::kTotalMorePrecise>(rep);
 }
 

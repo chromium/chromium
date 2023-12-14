@@ -27,6 +27,7 @@
 #include "absl/base/attributes.h"
 #include "absl/base/config.h"
 #include "absl/base/macros.h"
+#include "absl/base/nullability.h"
 #include "absl/debugging/stacktrace.h"
 #include "absl/debugging/symbolize.h"
 #include "absl/memory/memory.h"
@@ -187,7 +188,7 @@ bool StatusRep::operator==(const StatusRep& other) const {
   return true;
 }
 
-StatusRep* StatusRep::CloneAndUnref() const {
+absl::Nonnull<StatusRep*> StatusRep::CloneAndUnref() const {
   // Optimization: no need to create a clone if we already have a refcount of 1.
   if (ref_.load(std::memory_order_acquire) == 1) {
     // All StatusRep instances are heap allocated and mutable, therefore this
@@ -233,8 +234,9 @@ absl::StatusCode MapToLocalCode(int value) {
   }
 }
 
-std::string* MakeCheckFailString(const absl::Status* status,
-                                 const char* prefix) {
+absl::Nonnull<std::string*> MakeCheckFailString(
+    absl::Nonnull<const absl::Status*> status,
+    absl::Nonnull<const char*> prefix) {
   return new std::string(
       absl::StrCat(prefix, " (",
                    status->ToString(StatusToStringMode::kWithEverything), ")"));

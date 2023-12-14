@@ -115,6 +115,7 @@ absl_cc_library(
   DEPS
     absl::algorithm
     absl::core_headers
+    absl::nullability
     absl::throw_delegate
     absl::type_traits
   PUBLIC
@@ -175,6 +176,7 @@ absl_cc_library(
     absl::config
     absl::core_headers
     absl::memory
+    absl::nullability
     absl::type_traits
     absl::utility
   PUBLIC
@@ -284,6 +286,7 @@ absl_cc_library(
   COPTS
     ${ABSL_DEFAULT_COPTS}
   DEPS
+    absl::config
     absl::core_headers
     absl::type_traits
   PUBLIC

@@ -54,6 +54,7 @@
 #include "absl/log/check.h"
 #include "absl/log/internal/test_helpers.h"
 #include "absl/log/log.h"
+#include "absl/status/status.h"
 #include "absl/strings/escaping.h"
 #include "absl/strings/str_format.h"
 #include "absl/strings/string_view.h"
@@ -405,6 +406,90 @@ TEST_F(StrippingTest, Check) {
 
   std::unique_ptr<FILE, std::function<void(FILE*)>> exe = OpenTestExecutable();
   ASSERT_THAT(exe, NotNull());
+  if (absl::LogSeverity::kFatal >= kAbslMinLogLevel) {
+    EXPECT_THAT(exe.get(), FileHasSubstr(var_needle));
+    EXPECT_THAT(exe.get(), FileHasSubstr(msg_needle));
+  } else {
+    EXPECT_THAT(exe.get(), Not(FileHasSubstr(var_needle)));
+    EXPECT_THAT(exe.get(), Not(FileHasSubstr(msg_needle)));
+  }
+}
+
+TEST_F(StrippingTest, CheckOp) {
+  // See `StrippingTest.Check` for some hairy implementation notes.
+  const std::string var_needle1 =
+      absl::Base64Escape("StrippingTestCheckOpVar1");
+  const std::string var_needle2 =
+      absl::Base64Escape("StrippingTestCheckOpVar2");
+  const std::string msg_needle = absl::Base64Escape("StrippingTest.CheckOp");
+  volatile int U3RyaXBwaW5nVGVzdENoZWNrT3BWYXIx = 0xFEED;
+  volatile int U3RyaXBwaW5nVGVzdENoZWNrT3BWYXIy = 0xCAFE;
+  if (kReallyDie) {
+    CHECK_EQ(U3RyaXBwaW5nVGVzdENoZWNrT3BWYXIx, U3RyaXBwaW5nVGVzdENoZWNrT3BWYXIy)
+        << "U3RyaXBwaW5nVGVzdC5DaGVja09w";
+  }
+
+  std::unique_ptr<FILE, std::function<void(FILE*)>> exe = OpenTestExecutable();
+  ASSERT_THAT(exe, NotNull());
+
+  if (absl::LogSeverity::kFatal >= kAbslMinLogLevel) {
+    EXPECT_THAT(exe.get(), FileHasSubstr(var_needle1));
+    EXPECT_THAT(exe.get(), FileHasSubstr(var_needle2));
+    EXPECT_THAT(exe.get(), FileHasSubstr(msg_needle));
+  } else {
+    EXPECT_THAT(exe.get(), Not(FileHasSubstr(var_needle1)));
+    EXPECT_THAT(exe.get(), Not(FileHasSubstr(var_needle2)));
+    EXPECT_THAT(exe.get(), Not(FileHasSubstr(msg_needle)));
+  }
+}
+
+TEST_F(StrippingTest, CheckStrOp) {
+  // See `StrippingTest.Check` for some hairy implementation notes.
+  const std::string var_needle1 =
+      absl::Base64Escape("StrippingTestCheckStrOpVar1");
+  const std::string var_needle2 =
+      absl::Base64Escape("StrippingTestCheckStrOpVar2");
+  const std::string msg_needle = absl::Base64Escape("StrippingTest.CheckStrOp");
+  const char *volatile U3RyaXBwaW5nVGVzdENoZWNrU3RyT3BWYXIx = "FEED";
+  const char *volatile U3RyaXBwaW5nVGVzdENoZWNrU3RyT3BWYXIy = "CAFE";
+  if (kReallyDie) {
+    CHECK_STREQ(U3RyaXBwaW5nVGVzdENoZWNrU3RyT3BWYXIx,
+                U3RyaXBwaW5nVGVzdENoZWNrU3RyT3BWYXIy)
+        << "U3RyaXBwaW5nVGVzdC5DaGVja1N0ck9w";
+  }
+
+  std::unique_ptr<FILE, std::function<void(FILE*)>> exe = OpenTestExecutable();
+  ASSERT_THAT(exe, NotNull());
+
+  if (absl::LogSeverity::kFatal >= kAbslMinLogLevel) {
+    EXPECT_THAT(exe.get(), FileHasSubstr(var_needle1));
+    EXPECT_THAT(exe.get(), FileHasSubstr(var_needle2));
+    EXPECT_THAT(exe.get(), FileHasSubstr(msg_needle));
+  } else {
+    EXPECT_THAT(exe.get(), Not(FileHasSubstr(var_needle1)));
+    EXPECT_THAT(exe.get(), Not(FileHasSubstr(var_needle2)));
+    EXPECT_THAT(exe.get(), Not(FileHasSubstr(msg_needle)));
+  }
+}
+
+TEST_F(StrippingTest, CheckOk) {
+  // See `StrippingTest.Check` for some hairy implementation notes.
+  const std::string var_needle = absl::Base64Escape("StrippingTestCheckOkVar1");
+  const std::string msg_needle = absl::Base64Escape("StrippingTest.CheckOk");
+  volatile bool x = false;
+  auto U3RyaXBwaW5nVGVzdENoZWNrT2tWYXIx = absl::OkStatus();
+  if (x) {
+    U3RyaXBwaW5nVGVzdENoZWNrT2tWYXIx =
+        absl::InvalidArgumentError("Stripping this is not my job!");
+  }
+  if (kReallyDie) {
+    CHECK_OK(U3RyaXBwaW5nVGVzdENoZWNrT2tWYXIx)
+        << "U3RyaXBwaW5nVGVzdC5DaGVja09r";
+  }
+
+  std::unique_ptr<FILE, std::function<void(FILE*)>> exe = OpenTestExecutable();
+  ASSERT_THAT(exe, NotNull());
+
   if (absl::LogSeverity::kFatal >= kAbslMinLogLevel) {
     EXPECT_THAT(exe.get(), FileHasSubstr(var_needle));
     EXPECT_THAT(exe.get(), FileHasSubstr(msg_needle));

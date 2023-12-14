@@ -37,6 +37,7 @@ absl_source_set("span") {
   public_deps = [
     "//third_party/abseil-cpp/absl/algorithm",
     "//third_party/abseil-cpp/absl/base:core_headers",
+    "//third_party/abseil-cpp/absl/base:nullability",
     "//third_party/abseil-cpp/absl/base:throw_delegate",
     "//third_party/abseil-cpp/absl/meta:type_traits",
   ]
@@ -50,6 +51,7 @@ absl_source_set("optional") {
     "//third_party/abseil-cpp/absl/base:base_internal",
     "//third_party/abseil-cpp/absl/base:config",
     "//third_party/abseil-cpp/absl/base:core_headers",
+    "//third_party/abseil-cpp/absl/base:nullability",
     "//third_party/abseil-cpp/absl/memory",
     "//third_party/abseil-cpp/absl/meta:type_traits",
     "//third_party/abseil-cpp/absl/utility",
@@ -86,6 +88,7 @@ absl_source_set("variant") {
 absl_source_set("compare") {
   public = [ "compare.h" ]
   public_deps = [
+    "//third_party/abseil-cpp/absl/base:config",
     "//third_party/abseil-cpp/absl/base:core_headers",
     "//third_party/abseil-cpp/absl/meta:type_traits",
   ]

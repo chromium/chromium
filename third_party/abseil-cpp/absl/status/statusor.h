@@ -44,6 +44,7 @@
 #include <utility>
 
 #include "absl/base/attributes.h"
+#include "absl/base/nullability.h"
 #include "absl/base/call_once.h"
 #include "absl/meta/type_traits.h"
 #include "absl/status/internal/statusor_internal.h"
@@ -88,7 +89,7 @@ class BadStatusOrAccess : public std::exception {
   //
   // The pointer of this string is guaranteed to be valid until any non-const
   // function is invoked on the exception object.
-  const char* what() const noexcept override;
+  absl::Nonnull<const char*> what() const noexcept override;
 
   // BadStatusOrAccess::status()
   //
@@ -750,13 +751,13 @@ T&& StatusOr<T>::operator*() && {
 }
 
 template <typename T>
-const T* StatusOr<T>::operator->() const {
+absl::Nonnull<const T*> StatusOr<T>::operator->() const {
   this->EnsureOk();
   return &this->data_;
 }
 
 template <typename T>
-T* StatusOr<T>::operator->() {
+absl::Nonnull<T*> StatusOr<T>::operator->() {
   this->EnsureOk();
   return &this->data_;
 }

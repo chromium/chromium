@@ -53,6 +53,14 @@
 //   * .NoPrefix()
 //     Omits the prefix from this line.  The prefix includes metadata about the
 //     logged data such as source code location and timestamp.
+//   * .WithVerbosity(int verbose_level)
+//     Sets the verbosity field of the logged message as if it was logged by
+//     `VLOG(verbose_level)`.  Unlike `VLOG`, this method does not affect
+//     evaluation of the statement when the specified `verbose_level` has been
+//     disabled.  The only effect is on `LogSink` implementations which make use
+//     of the `absl::LogSink::verbosity()` value.  The value
+//     `absl::LogEntry::kNoVerbosityLevel` can be specified to mark the message
+//     not verbose.
 //   * .WithTimestamp(absl::Time timestamp)
 //     Uses the specified timestamp instead of one collected at the time of
 //     execution.
@@ -190,6 +198,7 @@
 #define ABSL_LOG_LOG_H_
 
 #include "absl/log/internal/log_impl.h"
+#include "absl/log/vlog_is_on.h"  // IWYU pragma: export
 
 // LOG()
 //
@@ -213,11 +222,32 @@
 // terminate the program if `NDEBUG` is defined.
 #define DLOG(severity) ABSL_LOG_INTERNAL_DLOG_IMPL(_##severity)
 
+// `VLOG` uses numeric levels to provide verbose logging that can configured at
+// runtime, including at a per-module level.  `VLOG` statements are logged at
+// `INFO` severity if they are logged at all; the numeric levels are on a
+// different scale than the proper severity levels.  Positive levels are
+// disabled by default.  Negative levels should not be used.
+// Example:
+//
+//   VLOG(1) << "I print when you run the program with --v=1 or higher";
+//   VLOG(2) << "I print when you run the program with --v=2 or higher";
+//
+// See vlog_is_on.h for further documentation, including the usage of the
+// --vmodule flag to log at different levels in different source files.
+#define VLOG(severity) ABSL_LOG_INTERNAL_VLOG_IMPL(severity)
+
+// `DVLOG` behaves like `VLOG` in debug mode (i.e. `#ifndef NDEBUG`).
+// Otherwise, it compiles away and does nothing.
+#define DVLOG(severity) ABSL_LOG_INTERNAL_DVLOG_IMPL(severity)
+
 // `LOG_IF` and friends add a second argument which specifies a condition.  If
 // the condition is false, nothing is logged.
 // Example:
 //
 //   LOG_IF(INFO, num_cookies > 10) << "Got lots of cookies";
+//
+// There is no `VLOG_IF` because the order of evaluation of the arguments is
+// ambiguous and the alternate spelling with an `if`-statement is trivial.
 #define LOG_IF(severity, condition) \
   ABSL_LOG_INTERNAL_LOG_IF_IMPL(_##severity, condition)
 #define PLOG_IF(severity, condition) \
@@ -284,6 +314,15 @@
   ABSL_LOG_INTERNAL_DLOG_EVERY_POW_2_IMPL(_##severity)
 #define DLOG_EVERY_N_SEC(severity, n_seconds) \
   ABSL_LOG_INTERNAL_DLOG_EVERY_N_SEC_IMPL(_##severity, n_seconds)
+
+#define VLOG_EVERY_N(severity, n) \
+  ABSL_LOG_INTERNAL_VLOG_EVERY_N_IMPL(severity, n)
+#define VLOG_FIRST_N(severity, n) \
+  ABSL_LOG_INTERNAL_VLOG_FIRST_N_IMPL(severity, n)
+#define VLOG_EVERY_POW_2(severity) \
+  ABSL_LOG_INTERNAL_VLOG_EVERY_POW_2_IMPL(severity)
+#define VLOG_EVERY_N_SEC(severity, n_seconds) \
+  ABSL_LOG_INTERNAL_VLOG_EVERY_N_SEC_IMPL(severity, n_seconds)
 
 // `LOG_IF_EVERY_N` and friends behave as the corresponding `LOG_EVERY_N`
 // but neither increment a counter nor log a message if condition is false (as

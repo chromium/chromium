@@ -284,6 +284,7 @@ cc_library(
         ":cycleclock_internal",
         ":dynamic_annotations",
         ":log_severity",
+        ":nullability",
         ":raw_logging_internal",
         ":spinlock_wait",
         "//absl/meta:type_traits",
@@ -546,6 +547,7 @@ cc_library(
         ":base",
         ":config",
         ":core_headers",
+        ":nullability",
     ],
 )
 

@@ -179,6 +179,7 @@ absl_source_set("base") {
     ":cycleclock_internal",
     ":dynamic_annotations",
     ":log_severity",
+    ":nullability",
     ":raw_logging_internal",
     ":spinlock_wait",
     "//third_party/abseil-cpp/absl/meta:type_traits",
@@ -256,6 +257,7 @@ absl_source_set("endian") {
     ":base",
     ":config",
     ":core_headers",
+    ":nullability",
   ]
 }
 

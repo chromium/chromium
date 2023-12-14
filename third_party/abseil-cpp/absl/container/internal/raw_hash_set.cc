@@ -17,11 +17,13 @@
 #include <atomic>
 #include <cassert>
 #include <cstddef>
+#include <cstdint>
 #include <cstring>
 
 #include "absl/base/attributes.h"
 #include "absl/base/config.h"
 #include "absl/base/dynamic_annotations.h"
+#include "absl/container/internal/container_memory.h"
 #include "absl/hash/hash.h"
 
 namespace absl {
@@ -124,14 +126,6 @@ template FindInfo find_first_non_full(const CommonFields&, size_t);
 FindInfo find_first_non_full_outofline(const CommonFields& common,
                                        size_t hash) {
   return find_first_non_full(common, hash);
-}
-
-// Returns the address of the ith slot in slots where each slot occupies
-// slot_size.
-static inline void* SlotAddress(void* slot_array, size_t slot,
-                                size_t slot_size) {
-  return reinterpret_cast<void*>(reinterpret_cast<uintptr_t>(slot_array) +
-                                 (slot * slot_size));
 }
 
 // Returns the address of the slot just after slot assuming each slot has the
@@ -254,6 +248,7 @@ void ClearBackingArray(CommonFields& c, const PolicyFunctions& policy,
   c.set_size(0);
   if (reuse) {
     ResetCtrl(c, policy.slot_size);
+    ResetGrowthLeft(c);
     c.infoz().RecordStorageChanged(0, c.capacity());
   } else {
     // We need to record infoz before calling dealloc, which will unregister
@@ -266,6 +261,109 @@ void ClearBackingArray(CommonFields& c, const PolicyFunctions& policy,
     c.set_slots(nullptr);
     c.set_capacity(0);
   }
+}
+
+void HashSetResizeHelper::GrowIntoSingleGroupShuffleControlBytes(
+    ctrl_t* new_ctrl, size_t new_capacity) const {
+  assert(is_single_group(new_capacity));
+  constexpr size_t kHalfWidth = Group::kWidth / 2;
+  assert(old_capacity_ < kHalfWidth);
+
+  const size_t half_old_capacity = old_capacity_ / 2;
+
+  // NOTE: operations are done with compile time known size = kHalfWidth.
+  // Compiler optimizes that into single ASM operation.
+
+  // Copy second half of bytes to the beginning.
+  // We potentially copy more bytes in order to have compile time known size.
+  // Mirrored bytes from the old_ctrl_ will also be copied.
+  // In case of old_capacity_ == 3, we will copy 1st element twice.
+  // Examples:
+  // old_ctrl = 0S0EEEEEEE...
+  // new_ctrl = S0EEEEEEEE...
+  //
+  // old_ctrl = 01S01EEEEE...
+  // new_ctrl = 1S01EEEEEE...
+  //
+  // old_ctrl = 0123456S0123456EE...
+  // new_ctrl = 456S0123?????????...
+  std::memcpy(new_ctrl, old_ctrl_ + half_old_capacity + 1, kHalfWidth);
+  // Clean up copied kSentinel from old_ctrl.
+  new_ctrl[half_old_capacity] = ctrl_t::kEmpty;
+
+  // Clean up damaged or uninitialized bytes.
+
+  // Clean bytes after the intended size of the copy.
+  // Example:
+  // new_ctrl = 1E01EEEEEEE????
+  // *new_ctrl= 1E0EEEEEEEE????
+  // position      /
+  std::memset(new_ctrl + old_capacity_ + 1, static_cast<int8_t>(ctrl_t::kEmpty),
+              kHalfWidth);
+  // Clean non-mirrored bytes that are not initialized.
+  // For small old_capacity that may be inside of mirrored bytes zone.
+  // Examples:
+  // new_ctrl = 1E0EEEEEEEE??????????....
+  // *new_ctrl= 1E0EEEEEEEEEEEEE?????....
+  // position           /
+  //
+  // new_ctrl = 456E0123???????????...
+  // *new_ctrl= 456E0123EEEEEEEE???...
+  // position           /
+  std::memset(new_ctrl + kHalfWidth, static_cast<int8_t>(ctrl_t::kEmpty),
+              kHalfWidth);
+  // Clean last mirrored bytes that are not initialized
+  // and will not be overwritten by mirroring.
+  // Examples:
+  // new_ctrl = 1E0EEEEEEEEEEEEE????????
+  // *new_ctrl= 1E0EEEEEEEEEEEEEEEEEEEEE
+  // position           S       /
+  //
+  // new_ctrl = 456E0123EEEEEEEE???????????????
+  // *new_ctrl= 456E0123EEEEEEEE???????EEEEEEEE
+  // position                  S       /
+  std::memset(new_ctrl + new_capacity + kHalfWidth,
+              static_cast<int8_t>(ctrl_t::kEmpty), kHalfWidth);
+
+  // Create mirrored bytes. old_capacity_ < kHalfWidth
+  // Example:
+  // new_ctrl = 456E0123EEEEEEEE???????EEEEEEEE
+  // *new_ctrl= 456E0123EEEEEEEE456E0123EEEEEEE
+  // position                  S/
+  ctrl_t g[kHalfWidth];
+  std::memcpy(g, new_ctrl, kHalfWidth);
+  std::memcpy(new_ctrl + new_capacity + 1, g, kHalfWidth);
+
+  // Finally set sentinel to its place.
+  new_ctrl[new_capacity] = ctrl_t::kSentinel;
+}
+
+void HashSetResizeHelper::GrowIntoSingleGroupShuffleTransferableSlots(
+    void* old_slots, void* new_slots, size_t slot_size) const {
+  assert(old_capacity_ > 0);
+  const size_t half_old_capacity = old_capacity_ / 2;
+
+  SanitizerUnpoisonMemoryRegion(old_slots, slot_size * old_capacity_);
+  std::memcpy(new_slots,
+              SlotAddress(old_slots, half_old_capacity + 1, slot_size),
+              slot_size * half_old_capacity);
+  std::memcpy(SlotAddress(new_slots, half_old_capacity + 1, slot_size),
+              old_slots, slot_size * (half_old_capacity + 1));
+}
+
+void HashSetResizeHelper::GrowSizeIntoSingleGroupTransferable(
+    CommonFields& c, void* old_slots, size_t slot_size) {
+  assert(old_capacity_ < Group::kWidth / 2);
+  assert(is_single_group(c.capacity()));
+  assert(IsGrowingIntoSingleGroupApplicable(old_capacity_, c.capacity()));
+
+  GrowIntoSingleGroupShuffleControlBytes(c.control(), c.capacity());
+  GrowIntoSingleGroupShuffleTransferableSlots(old_slots, c.slot_array(),
+                                              slot_size);
+
+  // We poison since GrowIntoSingleGroupShuffleTransferableSlots
+  // may leave empty slots unpoisoned.
+  PoisonSingleGroupEmptySlots(c, slot_size);
 }
 
 }  // namespace container_internal

@@ -19,6 +19,7 @@
 #include <string>
 
 #include "absl/base/config.h"
+#include "absl/base/nullability.h"
 
 namespace absl {
 ABSL_NAMESPACE_BEGIN
@@ -174,7 +175,8 @@ constexpr bool AsciiInAZRange(unsigned char c) {
 }
 
 template <bool ToUpper>
-constexpr void AsciiStrCaseFold(char* p, char* end) {
+constexpr void AsciiStrCaseFold(absl::Nonnull<char*> p,
+                                absl::Nonnull<char*> end) {
   // The upper- and lowercase versions of ASCII characters differ by only 1 bit.
   // When we need to flip the case, we can xor with this bit to achieve the
   // desired result. Note that the choice of 'a' and 'A' here is arbitrary. We
@@ -215,17 +217,17 @@ static_assert(ValidateAsciiCasefold() == 0, "error in case conversion");
 
 }  // namespace ascii_internal
 
-void AsciiStrToLower(std::string* s) {
+void AsciiStrToLower(absl::Nonnull<std::string*> s) {
   char* p = &(*s)[0];  // Guaranteed to be valid for empty strings
   return ascii_internal::AsciiStrCaseFold<false>(p, p + s->size());
 }
 
-void AsciiStrToUpper(std::string* s) {
+void AsciiStrToUpper(absl::Nonnull<std::string*> s) {
   char* p = &(*s)[0];  // Guaranteed to be valid for empty strings
   return ascii_internal::AsciiStrCaseFold<true>(p, p + s->size());
 }
 
-void RemoveExtraAsciiWhitespace(std::string* str) {
+void RemoveExtraAsciiWhitespace(absl::Nonnull<std::string*> str) {
   auto stripped = StripAsciiWhitespace(*str);
 
   if (stripped.empty()) {
