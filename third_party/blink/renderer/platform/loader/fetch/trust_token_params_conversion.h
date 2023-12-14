@@ -9,9 +9,14 @@
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/platform/web_common.h"
 
-namespace network::mojom::blink {
+namespace network {
+namespace mojom {
+namespace blink {
 class TrustTokenParams;
-}  // namespace network::mojom::blink
+
+}  // namespace blink
+}  // namespace mojom
+}  // namespace network
 
 namespace blink {
 
