@@ -6632,6 +6632,7 @@ static_library("ui") {
     deps += [
       "//chrome/browser/pdf",
       "//components/pdf/browser",
+      "//pdf:features",
     ]
   }
 

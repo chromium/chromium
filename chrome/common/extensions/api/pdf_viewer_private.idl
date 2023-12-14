@@ -77,5 +77,9 @@ namespace pdfViewerPrivate {
     // Fired when a pref value for PDF OCR has changed.
     // |value| The pref value that changed.
     static void onPdfOcrPrefChanged(boolean value);
+
+    // Fired when the browser wants the listener to perform a save.
+    // `streamUrl`: Unique ID for the instance that should perform the save.
+    static void onSave(DOMString streamUrl);
   };
 };

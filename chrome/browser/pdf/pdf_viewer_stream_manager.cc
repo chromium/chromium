@@ -150,6 +150,27 @@ PdfViewerStreamManager::GetStreamContainer(
   return stream_info->stream()->GetWeakPtr();
 }
 
+bool PdfViewerStreamManager::PluginCanSave(
+    content::RenderFrameHost* embedder_host) {
+  auto* stream_info = GetClaimedStreamInfo(embedder_host);
+  if (!stream_info) {
+    return false;
+  }
+
+  return stream_info->plugin_can_save();
+}
+
+void PdfViewerStreamManager::SetPluginCanSave(
+    content::RenderFrameHost* embedder_host,
+    bool plugin_can_save) {
+  auto* stream_info = GetClaimedStreamInfo(embedder_host);
+  if (!stream_info) {
+    return;
+  }
+
+  stream_info->set_plugin_can_save(plugin_can_save);
+}
+
 void PdfViewerStreamManager::RenderFrameDeleted(
     content::RenderFrameHost* render_frame_host) {
   // If this is an unrelated host, ignore.

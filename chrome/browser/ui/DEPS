@@ -27,6 +27,7 @@ include_rules = [
   "+components/user_education/test",
   "+components/user_education/webui",
   "+components/user_notes",
+  "+pdf/pdf_features.h",
   "+services/content/public",
   "+services/device/public/mojom",
 ]

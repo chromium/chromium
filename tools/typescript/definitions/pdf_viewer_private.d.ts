@@ -40,6 +40,7 @@ declare global {
 
       type PdfOcrPrefCallback = ((isPdfOcrAlwaysActive: boolean) => void)|null;
       export const onPdfOcrPrefChanged: ChromeEvent<PdfOcrPrefCallback>;
+      export const onSave: ChromeEvent<(url: string) => void>;
     }
   }
 }
