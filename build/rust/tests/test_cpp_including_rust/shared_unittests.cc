@@ -29,3 +29,7 @@ TEST(RustSharedTest, RustComponentUsesPartitionAlloc) {
                 reinterpret_cast<uintptr_t>(cpp_allocated_int.get())));
   rust::Box<SomeStruct>::from_raw(rust_allocated_ptr);
 }
+
+TEST(RustSharedTest, AllocAligned) {
+  alloc_aligned();
+}
