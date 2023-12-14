@@ -152,7 +152,7 @@ async def test_realm_realmDestroyed_sandbox(websocket, context_id):
 
 
 @pytest.mark.asyncio
-async def test_realm_worker(websocket, context_id, html):
+async def test_realm_dedicated_worker(websocket, context_id, html):
     worker_url = 'data:application/javascript,while(true){}'
     url = html(f"<script>window.w = new Worker('{worker_url}');</script>")
 
@@ -175,7 +175,6 @@ async def test_realm_worker(websocket, context_id, html):
         if message["params"] == {
                 "realm": ANY_STR,
                 "origin": worker_url,
-                "context": ANY_STR,
                 "type": "dedicated-worker"
         }:
             realm = message["params"]["realm"]

@@ -224,8 +224,10 @@ export class Realm {
 
   get navigableId(): string {
     return (
-      this.#browsingContextStorage.findContext(this.#browsingContextId)
-        ?.navigableId ?? 'UNKNOWN'
+      (this.browsingContextId &&
+        this.#browsingContextStorage.findContext(this.browsingContextId)
+          ?.navigableId) ??
+      'UNKNOWN'
     );
   }
 
@@ -250,13 +252,22 @@ export class Realm {
   }
 
   get realmInfo(): Script.RealmInfo {
-    return {
-      realm: this.realmId,
-      origin: this.origin,
-      type: this.type,
-      context: this.browsingContextId,
-      ...(this.sandbox === undefined ? {} : {sandbox: this.sandbox}),
-    };
+    switch (this.type) {
+      case 'window':
+        return {
+          realm: this.realmId,
+          origin: this.origin,
+          type: this.type,
+          context: this.browsingContextId,
+          ...(this.sandbox === undefined ? {} : {sandbox: this.sandbox}),
+        };
+      default:
+        return {
+          realm: this.realmId,
+          origin: this.origin,
+          type: this.type,
+        };
+    }
   }
 
   async evaluate(

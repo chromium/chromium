@@ -400,7 +400,17 @@ export class BrowsingContextProcessor {
           this.#acceptInsecureCerts
         );
 
-        this.#handleWorkerTarget(cdpTarget);
+        const browsingContext =
+          parentSessionCdpClient.sessionId &&
+          this.#browsingContextStorage.findContextBySession(
+            parentSessionCdpClient.sessionId
+          );
+        // If there is no browsing context, this worker is already terminated.
+        if (!browsingContext) {
+          break;
+        }
+
+        this.#handleWorkerTarget(cdpTarget, browsingContext.id);
         return;
       }
     }
@@ -416,14 +426,14 @@ export class BrowsingContextProcessor {
   }
 
   #workers = new Map<string, Realm>();
-  #handleWorkerTarget(cdpTarget: CdpTarget) {
+  #handleWorkerTarget(cdpTarget: CdpTarget, browsingContextId: string) {
     cdpTarget.cdpClient.on('Runtime.executionContextCreated', (params) => {
       const {uniqueId, id, origin} = params.context;
       const realm = new Realm(
         this.#realmStorage,
         this.#browsingContextStorage,
         uniqueId,
-        cdpTarget.targetId,
+        browsingContextId,
         id,
         serializeOrigin(origin),
         'dedicated-worker',
@@ -439,9 +449,9 @@ export class BrowsingContextProcessor {
   #handleDetachedFromTargetEvent(
     params: Protocol.Target.DetachedFromTargetEvent
   ) {
-    const context = this.#browsingContextStorage
-      .getAllContexts()
-      .find((context) => context.cdpTarget.cdpSessionId === params.sessionId);
+    const context = this.#browsingContextStorage.findContextBySession(
+      params.sessionId
+    );
     if (context) {
       context.dispose();
       this.#preloadScriptStorage

@@ -84,6 +84,15 @@ export class BrowsingContextStorage {
     return this.findTopLevelContextId(parentId);
   }
 
+  findContextBySession(sessionId: string): BrowsingContextImpl | undefined {
+    for (const context of this.#contexts.values()) {
+      if (context.cdpTarget.cdpSessionId === sessionId) {
+        return context;
+      }
+    }
+    return;
+  }
+
   /** Gets the context with the given ID, if any, otherwise throws. */
   getContext(id: BrowsingContext.BrowsingContext): BrowsingContextImpl {
     const result = this.findContext(id);

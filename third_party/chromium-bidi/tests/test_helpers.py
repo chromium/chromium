@@ -79,10 +79,14 @@ async def execute_command(websocket, command: dict) -> dict:
     logger.info(
         f"Executing command with method '{command['method']}' and params '{command['params']}'..."
     )
+    return await wait_for_command(websocket, command["id"])
+
+
+async def wait_for_command(websocket, command_id: int) -> dict:
     while True:
         # Wait for the command to be finished.
         resp = await read_JSON_message(websocket)
-        if "id" in resp and resp["id"] == command["id"]:
+        if "id" in resp and resp["id"] == command_id:
             if "result" in resp:
                 return resp["result"]
             raise Exception({

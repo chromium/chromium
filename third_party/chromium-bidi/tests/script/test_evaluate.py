@@ -16,7 +16,9 @@ from unittest.mock import ANY
 
 import pytest
 from anys import ANY_STR
-from test_helpers import execute_command, get_tree
+from syrupy.filters import props
+from test_helpers import (execute_command, get_tree, send_JSON_command,
+                          subscribe, wait_for_command, wait_for_event)
 
 
 @pytest.mark.asyncio
@@ -395,3 +397,63 @@ async def test_scriptEvaluate_realm(websocket, context_id):
         "exceptionDetails": ANY,
         "realm": realm
     } == result
+
+
+@pytest.mark.asyncio
+async def test_scriptEvaluate_dedicated_worker(websocket, context_id, html,
+                                               snapshot):
+    worker_url = 'data:application/javascript,'
+    url = html(f"<script>window.w = new Worker('{worker_url}');</script>")
+
+    await subscribe(websocket, ["script.realmCreated"])
+
+    await send_JSON_command(
+        websocket, {
+            "method": "browsingContext.navigate",
+            "params": {
+                "context": context_id,
+                "url": url,
+                "wait": "complete",
+            }
+        })
+
+    # Wait for worker to be created
+    while True:
+        message = await wait_for_event(websocket, "script.realmCreated")
+        if message["params"] == {
+                "realm": ANY_STR,
+                "origin": worker_url,
+                "type": "dedicated-worker"
+        }:
+            realm = message["params"]["realm"]
+            break
+
+    # Set up a listener on the page.
+    command_id = await send_JSON_command(
+        websocket, {
+            "method": "script.evaluate",
+            "params": {
+                "target": {
+                    "context": context_id
+                },
+                "expression": "new Promise(resolve => window.w.addEventListener('message', ({data}) => resolve(data), {once: true}))",
+                "awaitPromise": True
+            }
+        })
+
+    # Post a message from the worker.
+    await send_JSON_command(
+        websocket, {
+            "method": "script.evaluate",
+            "params": {
+                "target": {
+                    "realm": realm
+                },
+                "expression": "self.postMessage('hello world')",
+                "awaitPromise": True
+            }
+        })
+
+    # Check the promise
+    assert await wait_for_command(
+        websocket, command_id) == snapshot(exclude=props("realm"))

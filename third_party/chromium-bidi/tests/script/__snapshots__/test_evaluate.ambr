@@ -1,0 +1,10 @@
+# serializer version: 1
+# name: test_scriptEvaluate_dedicated_worker[websocket0]
+  dict({
+    'result': dict({
+      'type': 'string',
+      'value': 'hello world',
+    }),
+    'type': 'success',
+  })
+# ---
