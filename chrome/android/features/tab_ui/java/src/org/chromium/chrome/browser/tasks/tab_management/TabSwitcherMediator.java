@@ -38,6 +38,7 @@ import org.chromium.base.supplier.LazyOneshotSupplier;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.supplier.OneshotSupplier;
+import org.chromium.base.supplier.TransitiveObservableSupplier;
 import org.chromium.chrome.browser.back_press.BackPressManager;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
 import org.chromium.chrome.browser.compositor.layouts.content.TabContentManager;
@@ -64,6 +65,7 @@ import org.chromium.chrome.browser.tabmodel.TabModelUtils;
 import org.chromium.chrome.browser.tasks.ReturnToChromeUtil;
 import org.chromium.chrome.browser.tasks.pseudotab.PseudoTab;
 import org.chromium.chrome.browser.tasks.tab_management.TabListCoordinator.TabListMode;
+import org.chromium.chrome.browser.tasks.tab_management.TabListEditorCoordinator.TabListEditorController;
 import org.chromium.chrome.browser.tasks.tab_management.TabManagementDelegate.TabSwitcherType;
 import org.chromium.chrome.browser.tasks.tab_management.TabSwitcher.TabSwitcherViewObserver;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
@@ -153,7 +155,9 @@ class TabSwitcherMediator
             };
 
     private CallbackController mCallbackController;
-    private TabListEditorCoordinator.TabListEditorController mTabListEditorController;
+    private @Nullable ObservableSupplier<TabListEditorController> mTabListEditorControllerSupplier;
+    private @Nullable TransitiveObservableSupplier<TabListEditorController, Boolean>
+            mCurrentTabListEditorControllerBackSupplier;
     private TabSwitcher.OnTabSelectingListener mOnTabSelectingListener;
     private PriceMessageService mPriceMessageService;
 
@@ -590,18 +594,21 @@ class TabSwitcherMediator
     }
 
     /**
-     * Initialization of the {@link TabListEditorCoordinator}.
-     *
-     * @param controller the controller to use.
+     * @param tabListEditorControllerSupplier The supllier for the controller of the tab list
+     *     editor.
      */
-    public void setTabListEditorController(
-            @Nullable TabListEditorCoordinator.TabListEditorController tabListEditorController) {
-        if (tabListEditorController != null) {
-            mTabListEditorController = tabListEditorController;
-            mTabListEditorController
-                    .getHandleBackPressChangedSupplier()
-                    .addObserver(mNotifyBackPressedCallback);
-        }
+    public void setTabListEditorControllerSupplier(
+            @NonNull ObservableSupplier<TabListEditorController> tabListEditorControllerSupplier) {
+        assert mTabListEditorControllerSupplier == null
+                : "setTabListEditorControllerSupplier should be called only once.";
+        mTabListEditorControllerSupplier = tabListEditorControllerSupplier;
+        mCurrentTabListEditorControllerBackSupplier =
+                new TransitiveObservableSupplier<>(
+                        tabListEditorControllerSupplier,
+                        tabListEditorController -> {
+                            return tabListEditorController.getHandleBackPressChangedSupplier();
+                        });
+        mCurrentTabListEditorControllerBackSupplier.addObserver(mNotifyBackPressedCallback);
     }
 
     private void setVisibility(boolean isVisible) {
@@ -881,7 +888,8 @@ class TabSwitcherMediator
     private boolean onBackPressedInternal() {
         // The TabListEditor dialog can be shown on the Start surface without showing the Grid
         // Tab switcher, so skip the check of visibility of mContainerViewModel here.
-        if (mTabListEditorController != null && mTabListEditorController.handleBackPressed()) {
+        TabListEditorController editorController = getTabListEditorController();
+        if (editorController != null && editorController.handleBackPressed()) {
             return true;
         }
 
@@ -937,7 +945,8 @@ class TabSwitcherMediator
 
     @Override
     public boolean isDialogVisible() {
-        if (mTabListEditorController != null && mTabListEditorController.isVisible()) {
+        TabListEditorController editorController = getTabListEditorController();
+        if (editorController != null && editorController.isVisible()) {
             return true;
         }
 
@@ -1068,10 +1077,8 @@ class TabSwitcherMediator
 
     /** Destroy any members that needs clean up. */
     public void destroy() {
-        if (mTabListEditorController != null) {
-            mTabListEditorController
-                    .getHandleBackPressChangedSupplier()
-                    .removeObserver(mNotifyBackPressedCallback);
+        if (mCurrentTabListEditorControllerBackSupplier != null) {
+            mCurrentTabListEditorControllerBackSupplier.removeObserver(mNotifyBackPressedCallback);
         }
 
         if (mTabGridDialogControllerSupplier.hasValue()) {
@@ -1249,5 +1256,11 @@ class TabSwitcherMediator
 
     public void setLastActiveLayoutTypeForTesting(@LayoutType int lastActiveLayoutType) {
         mLastActiveLayoutType = lastActiveLayoutType;
+    }
+
+    private TabListEditorController getTabListEditorController() {
+        return mTabListEditorControllerSupplier == null
+                ? null
+                : mTabListEditorControllerSupplier.get();
     }
 }

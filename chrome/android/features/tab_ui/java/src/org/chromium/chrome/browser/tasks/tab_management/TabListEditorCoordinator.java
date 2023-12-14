@@ -8,7 +8,6 @@ import static org.chromium.chrome.browser.tasks.tab_management.TabListEditorProp
 import static org.chromium.chrome.browser.tasks.tab_management.TabListModel.CardProperties.CARD_TYPE;
 import static org.chromium.chrome.browser.tasks.tab_management.TabListModel.CardProperties.ModelType.OTHERS;
 
-import android.app.Activity;
 import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.ViewGroup;
@@ -132,7 +131,7 @@ class TabListEditorCoordinator {
         }
     }
 
-    private final Activity mActivity;
+    private final Context mContext;
     private final ViewGroup mParentView;
     private final BrowserControlsStateProvider mBrowserControlsStateProvider;
     private final @NonNull ObservableSupplier<TabModelFilter> mCurrentTabModelFilterSupplier;
@@ -146,7 +145,7 @@ class TabListEditorCoordinator {
     private MultiThumbnailCardProvider mMultiThumbnailCardProvider;
 
     public TabListEditorCoordinator(
-            Activity activity,
+            Context context,
             ViewGroup parentView,
             BrowserControlsStateProvider browserControlsStateProvider,
             @NonNull ObservableSupplier<TabModelFilter> currentTabModelFilterSupplier,
@@ -159,7 +158,7 @@ class TabListEditorCoordinator {
             SnackbarManager snackbarManager,
             @UiType int itemType) {
         try (TraceEvent e = TraceEvent.scoped("TabListEditorCoordinator.constructor")) {
-            mActivity = activity;
+            mContext = context;
             mParentView = parentView;
             mBrowserControlsStateProvider = browserControlsStateProvider;
             mCurrentTabModelFilterSupplier = currentTabModelFilterSupplier;
@@ -168,7 +167,7 @@ class TabListEditorCoordinator {
                     || mode == TabListCoordinator.TabListMode.LIST;
 
             mTabListEditorLayout =
-                    LayoutInflater.from(activity)
+                    LayoutInflater.from(context)
                             .inflate(R.layout.tab_list_editor_layout, parentView, false)
                             .findViewById(R.id.selectable_list);
 
@@ -182,7 +181,7 @@ class TabListEditorCoordinator {
             mTabListCoordinator =
                     new TabListCoordinator(
                             mode,
-                            activity,
+                            context,
                             mBrowserControlsStateProvider,
                             currentTabModelFilterSupplier,
                             regularTabModelSupplier,
@@ -292,7 +291,7 @@ class TabListEditorCoordinator {
             // parentViews in a stack to avoid contention and using new snackbar managers.
             mTabListEditorMediator =
                     new TabListEditorMediator(
-                            mActivity,
+                            mContext,
                             mCurrentTabModelFilterSupplier,
                             mTabListCoordinator,
                             resetHandler,
@@ -344,7 +343,7 @@ class TabListEditorCoordinator {
         if (displayGroups) {
             mMultiThumbnailCardProvider =
                     new MultiThumbnailCardProvider(
-                            mActivity,
+                            mContext,
                             mBrowserControlsStateProvider,
                             tabContentManager,
                             mCurrentTabModelFilterSupplier);

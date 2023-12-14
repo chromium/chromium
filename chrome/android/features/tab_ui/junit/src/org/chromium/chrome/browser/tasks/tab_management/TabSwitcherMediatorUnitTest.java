@@ -9,6 +9,8 @@ import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.notNullValue;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.anyInt;
@@ -33,6 +35,7 @@ import android.view.View;
 
 import androidx.test.filters.SmallTest;
 
+import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Rule;
@@ -70,6 +73,7 @@ import org.chromium.chrome.browser.tabmodel.TabModelFilterProvider;
 import org.chromium.chrome.browser.tabmodel.TabModelObserver;
 import org.chromium.chrome.browser.tabmodel.TabModelSelectorImpl;
 import org.chromium.chrome.browser.tabmodel.TabModelSelectorObserver;
+import org.chromium.chrome.browser.tasks.tab_management.TabListEditorCoordinator.TabListEditorController;
 import org.chromium.chrome.browser.tasks.tab_management.TabSwitcher.TabSwitcherViewObserver;
 import org.chromium.chrome.tab_ui.R;
 import org.chromium.chrome.test.util.browser.Features;
@@ -113,44 +117,48 @@ public class TabSwitcherMediatorUnitTest {
     private LazyOneshotSupplier<TabGridDialogMediator.DialogController>
             mTabGridDialogControllerSupplier;
 
-    @Mock TabSwitcherMediator.ResetHandler mResetHandler;
-    @Mock Runnable mTabSwitcherVisibilityDelegate;
-    @Mock TabContentManager mTabContentManager;
-    @Mock TabModelSelectorImpl mTabModelSelector;
-    @Mock TabModel mTabModel;
-    @Mock TabModelFilter mTabModelFilter;
-    @Mock TabModelFilterProvider mTabModelFilterProvider;
-    @Mock Context mContext;
-    @Mock Resources mResources;
-    @Mock BrowserControlsStateProvider mBrowserControlsStateProvider;
-    @Mock PropertyObservable.PropertyObserver<PropertyKey> mPropertyObserver;
-    @Mock TabSwitcherViewObserver mTabSwitcherViewObserver;
-    @Mock CompositorViewHolder mCompositorViewHolder;
-    @Mock TabSwitcher.OnTabSelectingListener mOnTabSelectingListener;
-    @Mock TabGridDialogMediator.DialogController mTabGridDialogController;
-    @Mock TabSwitcherMediator.MessageItemsController mMessageItemsController;
-    @Mock TabSwitcherMediator.PriceWelcomeMessageController mPriceWelcomeMessageController;
-    @Mock MultiWindowModeStateDispatcher mMultiWindowModeStateDispatcher;
-    @Mock PriceMessageService mPriceMessageService;
-    @Mock IncognitoReauthController mIncognitoReauthController;
-    @Mock View mCustomViewMock;
+    @Mock private TabSwitcherMediator.ResetHandler mResetHandler;
+    @Mock private Runnable mTabSwitcherVisibilityDelegate;
+    @Mock private TabContentManager mTabContentManager;
+    @Mock private TabModelSelectorImpl mTabModelSelector;
+    @Mock private TabModel mTabModel;
+    @Mock private TabModelFilter mTabModelFilter;
+    @Mock private TabModelFilterProvider mTabModelFilterProvider;
+    @Mock private Context mContext;
+    @Mock private Resources mResources;
+    @Mock private BrowserControlsStateProvider mBrowserControlsStateProvider;
+    @Mock private PropertyObservable.PropertyObserver<PropertyKey> mPropertyObserver;
+    @Mock private TabSwitcherViewObserver mTabSwitcherViewObserver;
+    @Mock private CompositorViewHolder mCompositorViewHolder;
+    @Mock private TabSwitcher.OnTabSelectingListener mOnTabSelectingListener;
+    @Mock private TabGridDialogMediator.DialogController mTabGridDialogController;
+    @Mock private TabSwitcherMediator.MessageItemsController mMessageItemsController;
+    @Mock private TabSwitcherMediator.PriceWelcomeMessageController mPriceWelcomeMessageController;
+    @Mock private MultiWindowModeStateDispatcher mMultiWindowModeStateDispatcher;
+    @Mock private PriceMessageService mPriceMessageService;
+    @Mock private IncognitoReauthController mIncognitoReauthController;
+    @Mock private View mCustomViewMock;
+    @Mock private TabListEditorController mEditorController;
 
-    @Captor ArgumentCaptor<TabModelObserver> mTabModelObserverCaptor;
-    @Captor ArgumentCaptor<TabModelSelectorObserver> mTabModelSelectorObserverCaptor;
+    @Captor private ArgumentCaptor<TabModelObserver> mTabModelObserverCaptor;
+    @Captor private ArgumentCaptor<TabModelSelectorObserver> mTabModelSelectorObserverCaptor;
 
     @Captor
     private ArgumentCaptor<BrowserControlsStateProvider.Observer>
             mBrowserControlsStateProviderObserverCaptor;
 
     @Captor
-    ArgumentCaptor<MultiWindowModeStateDispatcher.MultiWindowModeObserver>
+    private ArgumentCaptor<MultiWindowModeStateDispatcher.MultiWindowModeObserver>
             mMultiWindowModeObserverCaptor;
 
     @Captor
     private ArgumentCaptor<IncognitoReauthManager.IncognitoReauthCallback>
             mIncognitoReauthCallbackArgumentCaptor;
 
-    @Mock private TabListEditorCoordinator.TabListEditorController mEditorController;
+    private final ObservableSupplierImpl<Boolean> mEditorControllerBackPressChangedSupplier =
+            new ObservableSupplierImpl<>();
+    private final ObservableSupplierImpl<TabListEditorController> mEditorControllerSupplier =
+            new ObservableSupplierImpl<>();
 
     private Tab mTab1;
     private Tab mTab2;
@@ -212,7 +220,7 @@ public class TabSwitcherMediatorUnitTest {
         doReturn(true)
                 .when(mMultiWindowModeStateDispatcher)
                 .addObserver(mMultiWindowModeObserverCaptor.capture());
-        doReturn(new ObservableSupplierImpl<Boolean>())
+        doReturn(mEditorControllerBackPressChangedSupplier)
                 .when(mEditorController)
                 .getHandleBackPressChangedSupplier();
         doReturn(new ObservableSupplierImpl<Boolean>())
@@ -246,11 +254,21 @@ public class TabSwitcherMediatorUnitTest {
                         null);
 
         mMediator.initWithNative(null);
-        mMediator.setTabListEditorController(mEditorController);
+        mEditorControllerSupplier.set(mEditorController);
+        mMediator.setTabListEditorControllerSupplier(mEditorControllerSupplier);
         mMediator.addTabSwitcherViewObserver(mTabSwitcherViewObserver);
         mMediator.setOnTabSelectingListener(mOnTabSelectingListener);
         verify(mIncognitoReauthController, times(1))
                 .addIncognitoReauthCallback(mIncognitoReauthCallbackArgumentCaptor.capture());
+        assertTrue(mEditorControllerSupplier.hasObservers());
+        assertTrue(mEditorControllerBackPressChangedSupplier.hasObservers());
+    }
+
+    @After
+    public void tearDown() {
+        mMediator.destroy();
+        assertFalse(mEditorControllerSupplier.hasObservers());
+        assertFalse(mEditorControllerBackPressChangedSupplier.hasObservers());
     }
 
     @Test
@@ -1243,6 +1261,15 @@ public class TabSwitcherMediatorUnitTest {
         assertThat(
                 mModel.get(TabListContainerProperties.FOCUS_TAB_INDEX_FOR_ACCESSIBILITY),
                 equalTo(TAB_MODEL_FILTER_INDEX));
+    }
+
+    @Test
+    @SmallTest
+    public void testChangeEditorController() {
+        mEditorControllerSupplier.set(null);
+        assertFalse(mEditorControllerBackPressChangedSupplier.hasObservers());
+        mEditorControllerSupplier.set(mEditorController);
+        assertTrue(mEditorControllerBackPressChangedSupplier.hasObservers());
     }
 
     private void initAndAssertAllProperties() {
