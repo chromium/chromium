@@ -93,11 +93,9 @@ export class UnmountCommand extends FilesCommand {
   private async executeImpl_(event: Event, fileManager: CommandHandlerDeps) {
     const errorCallback = (volumeType?: VolumeType) => {
       if (volumeType === VolumeType.REMOVABLE) {
-        fileManager.ui.alertDialog.showHtml(
-            '', str('UNMOUNT_FAILED'), null, null, null);
+        fileManager.ui.alertDialog.showHtml('', str('UNMOUNT_FAILED'));
       } else {
-        fileManager.ui.alertDialog.showHtml(
-            '', str('UNMOUNT_PROVIDED_FAILED'), null, null, null);
+        fileManager.ui.alertDialog.showHtml('', str('UNMOUNT_PROVIDED_FAILED'));
       }
     };
 
@@ -2513,7 +2511,7 @@ export class SetWallpaperCommand extends FilesCommand {
         })
         .catch(() => {
           fileManager.ui.alertDialog.showHtml(
-              '', str('ERROR_INVALID_WALLPAPER'), null, null, null);
+              '', str('ERROR_INVALID_WALLPAPER'));
         });
   }
 

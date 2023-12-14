@@ -243,7 +243,7 @@ export class BaseDialog {
     this.show_(title, onOk, onCancel, onShow);
   }
 
-  private show_(
+  protected show_(
       title: string, onOk?: VoidCallback, onCancel?: VoidCallback,
       onShow?: VoidCallback) {
     this.showing_ = true;

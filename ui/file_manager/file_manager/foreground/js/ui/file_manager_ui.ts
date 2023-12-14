@@ -731,7 +731,7 @@ export class FileManagerUI {
               displayName, response.currentProfileId);
 
           // Show the dialog.
-          this.alertDialog.showWithTitle(title, message, null, null, null);
+          this.alertDialog.showWithTitle(title, message);
         });
   }
 
