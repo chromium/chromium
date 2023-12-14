@@ -259,10 +259,8 @@ export class NavigationListModel extends EventTarget {
     /**
      * Root folder for crostini Linux files.
      * This field will be modified when crostini is enabled/disabled.
-     * @private @type {NavigationModelFakeItem}
+     * @private @type {?NavigationModelFakeItem}
      */
-    // @ts-ignore: error TS2322: Type 'null' is not assignable to type
-    // 'NavigationModelFakeItem'.
     this.linuxFilesItem_ = null;
 
     /**
@@ -514,7 +512,7 @@ export class NavigationListModel extends EventTarget {
 
   /**
    * Set the crostini Linux files root and reorder items.
-   * @param {NavigationModelFakeItem} item Linux files root.
+   * @param {?NavigationModelFakeItem} item Linux files root.
    */
   set linuxFilesItem(item) {
     this.linuxFilesItem_ = item;

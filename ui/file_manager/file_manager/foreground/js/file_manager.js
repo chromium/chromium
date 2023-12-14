@@ -1482,7 +1482,7 @@ export class FileManager extends EventTarget {
     this.crostiniController_ = new CrostiniController(
         // @ts-ignore: error TS2345: Argument of type 'Crostini | null' is not
         // assignable to parameter of type 'Crostini'.
-        assert(this.crostini_), assert(this.directoryModel_),
+        assert(this.crostini_),
         // TODO(b/285977941): `DirectoryTree` is only used when FileExperimental
         // flag is off, remove it after the tree replacement.
         // @ts-ignore: error TS2531: Object is possibly 'null'.
