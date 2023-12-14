@@ -76,7 +76,6 @@ android_library("java") {
     "//chrome/browser/commerce/android:java",
     "//chrome/browser/commerce/price_tracking/android:java",
     "//chrome/browser/contextmenu:java",
-    "//chrome/browser/endpoint_fetcher:java",
     "//chrome/browser/flags:java",
     "//chrome/browser/optimization_guide/android:java",
     "//chrome/browser/preferences:java",

@@ -21,7 +21,6 @@ import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.ArgumentMatchers.contains;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.doNothing;
@@ -92,9 +91,6 @@ import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.JniMocker;
 import org.chromium.build.BuildConfig;
 import org.chromium.chrome.browser.compositor.layouts.content.TabContentManager;
-import org.chromium.chrome.browser.endpoint_fetcher.EndpointFetcher;
-import org.chromium.chrome.browser.endpoint_fetcher.EndpointFetcherJni;
-import org.chromium.chrome.browser.endpoint_fetcher.EndpointResponse;
 import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.optimization_guide.OptimizationGuideBridge;
@@ -271,7 +267,6 @@ public class TabListMediatorUnitTest {
     ArgumentCaptor<TemplateUrlService.TemplateUrlServiceObserver> mTemplateUrlServiceObserver;
 
     @Captor ArgumentCaptor<RecyclerView.OnScrollListener> mOnScrollListenerCaptor;
-    @Mock EndpointFetcher.Natives mEndpointFetcherJniMock;
     @Mock private Resources mResources;
 
     private final ObservableSupplierImpl<TabModelFilter> mCurrentTabModelFilterSupplier =
@@ -302,7 +297,6 @@ public class TabListMediatorUnitTest {
     public void setUp() {
         MockitoAnnotations.initMocks(this);
         mMocker.mock(UrlUtilitiesJni.TEST_HOOKS, mUrlUtilitiesJniMock);
-        mMocker.mock(EndpointFetcherJni.TEST_HOOKS, mEndpointFetcherJniMock);
         mMocker.mock(OptimizationGuideBridgeJni.TEST_HOOKS, mOptimizationGuideBridgeJniMock);
         // Ensure native pointer is initialized
         doReturn(1L).when(mOptimizationGuideBridgeJniMock).init();
@@ -3248,32 +3242,6 @@ public class TabListMediatorUnitTest {
         for (Tab tab : tabs) {
             when(mTabGroupModelFilter.getRelatedTabList(tab.getId())).thenReturn(tabs);
             when(tab.getRootId()).thenReturn(rootId);
-        }
-    }
-
-    private void mockEndpointResponse(Map<String, String> responses) {
-        for (Map.Entry<String, String> entry : responses.entrySet()) {
-            doAnswer(
-                            new Answer<Void>() {
-                                @Override
-                                public Void answer(InvocationOnMock invocation) {
-                                    Callback callback = (Callback) invocation.getArguments()[8];
-                                    callback.onResult(new EndpointResponse(entry.getValue()));
-                                    return null;
-                                }
-                            })
-                    .when(mEndpointFetcherJniMock)
-                    .nativeFetchOAuth(
-                            any(Profile.class),
-                            anyString(),
-                            contains(entry.getKey()),
-                            anyString(),
-                            anyString(),
-                            any(String[].class),
-                            anyString(),
-                            anyLong(),
-                            anyInt(),
-                            any(Callback.class));
         }
     }
 

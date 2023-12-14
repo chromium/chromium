@@ -21,8 +21,6 @@ import org.robolectric.annotation.Config;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.JniMocker;
 import org.chromium.chrome.browser.commerce.ShoppingServiceFactory;
-import org.chromium.chrome.browser.endpoint_fetcher.EndpointFetcher;
-import org.chromium.chrome.browser.endpoint_fetcher.EndpointFetcherJni;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.test.util.browser.Features;
 import org.chromium.components.commerce.core.ShoppingService;
@@ -39,8 +37,6 @@ public class CommerceSubscriptionsServiceFactoryUnitTest {
 
     @Mock private Profile mProfileTwo;
 
-    @Mock EndpointFetcher.Natives mEndpointFetcherJniMock;
-
     @Mock ShoppingService mShoppingService;
 
     @Before
@@ -48,7 +44,6 @@ public class CommerceSubscriptionsServiceFactoryUnitTest {
         MockitoAnnotations.initMocks(this);
         doReturn(false).when(mProfileOne).isOffTheRecord();
         doReturn(false).when(mProfileTwo).isOffTheRecord();
-        mMocker.mock(EndpointFetcherJni.TEST_HOOKS, mEndpointFetcherJniMock);
         ShoppingServiceFactory.setShoppingServiceForTesting(mShoppingService);
     }
 
