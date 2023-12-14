@@ -17,10 +17,11 @@ import org.chromium.base.ObserverList;
 import org.chromium.base.ResettersForTesting;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.metrics.RecordUserAction;
+import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.lifecycle.DestroyObserver;
-import org.chromium.chrome.browser.tabmodel.TabModelSelector;
+import org.chromium.chrome.browser.tabmodel.TabModelFilter;
 import org.chromium.chrome.browser.tasks.tab_management.suggestions.TabSuggestion.TabSuggestionAction;
 
 import java.util.Collections;
@@ -62,7 +63,7 @@ public class TabSuggestionsOrchestrator implements TabSuggestions, DestroyObserv
     private List<TabSuggestionsFetcher> mTabSuggestionsFetchers;
     private List<TabSuggestion> mPrefetchedResults = new LinkedList<>();
     private TabContext mPrefetchedTabContext;
-    private TabModelSelector mTabModelSelector;
+    private Supplier<TabModelFilter> mCurrentTabModelFilterSupplier;
     private ObserverList<TabSuggestionsObserver> mTabSuggestionsObservers;
     private int mRemainingFetchers;
     private long mNextPrefetchTime;
@@ -70,11 +71,11 @@ public class TabSuggestionsOrchestrator implements TabSuggestions, DestroyObserv
 
     public TabSuggestionsOrchestrator(
             Context context,
-            TabModelSelector selector,
+            Supplier<TabModelFilter> currentTabModelFilterSupplier,
             ActivityLifecycleDispatcher activityLifecycleDispatcher) {
         this(
                 context,
-                selector,
+                currentTabModelFilterSupplier,
                 activityLifecycleDispatcher,
                 ContextUtils.getApplicationContext()
                         .getSharedPreferences(SHARED_PREFERENCES_ID, Context.MODE_PRIVATE));
@@ -83,10 +84,10 @@ public class TabSuggestionsOrchestrator implements TabSuggestions, DestroyObserv
     @VisibleForTesting
     TabSuggestionsOrchestrator(
             Context context,
-            TabModelSelector selector,
+            Supplier<TabModelFilter> currentTabModelFilterSupplier,
             ActivityLifecycleDispatcher activityLifecycleDispatcher,
             SharedPreferences sharedPreferences) {
-        mTabModelSelector = selector;
+        mCurrentTabModelFilterSupplier = currentTabModelFilterSupplier;
         mTabSuggestionsFetchers = new LinkedList<>();
         mTabSuggestionsFetchers.add(new TabSuggestionsClientFetcher());
         mTabSuggestionsObservers = new ObserverList<>();
@@ -150,7 +151,8 @@ public class TabSuggestionsOrchestrator implements TabSuggestions, DestroyObserv
 
     @VisibleForTesting
     protected void performPrefetch() {
-        TabContext tabContext = TabContext.createCurrentContext(mTabModelSelector);
+        TabContext tabContext =
+                TabContext.createCurrentContext(mCurrentTabModelFilterSupplier.get());
         synchronized (mPrefetchedResults) {
             mRemainingFetchers = 0;
             mPrefetchedTabContext = tabContext;

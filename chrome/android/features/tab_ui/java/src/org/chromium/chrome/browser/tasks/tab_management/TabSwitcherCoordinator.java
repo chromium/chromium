@@ -446,13 +446,17 @@ public class TabSwitcherCoordinator
 
             if (mMode == TabListCoordinator.TabListMode.GRID) {
                 if (ChromeFeatureList.sArchiveTabService.isEnabled()) {
+                    var currentTabModelFilterSupplier =
+                            mTabModelSelector
+                                    .getTabModelFilterProvider()
+                                    .getCurrentTabModelFilterSupplier();
                     mTabSuggestionsOrchestrator =
                             new TabSuggestionsOrchestrator(
-                                    mActivity, mTabModelSelector, mLifecycleDispatcher);
+                                    mActivity, currentTabModelFilterSupplier, mLifecycleDispatcher);
                     mTabSuggestionMessageService =
                             new TabSuggestionMessageService(
                                     mActivity,
-                                    mTabModelSelector,
+                                    currentTabModelFilterSupplier,
                                     () -> {
                                         // TODO(crbug/1504606): Migrate to a separate manager
                                         // instance that uses closable tabs and make this method
