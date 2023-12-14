@@ -19,6 +19,7 @@
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_split.h"
+#include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "components/autofill/content/renderer/form_autofill_util.h"
 #include "components/autofill/content/renderer/page_form_analyser_logger.h"
@@ -384,8 +385,11 @@ bool FormCache::ShowPredictions(const FormDataPredictions& form,
       constexpr size_t kMaxLabelSize = 100;
       // TODO(crbug/1165780): Use `parseable_label()` once the feature is
       // launched.
-      const std::u16string truncated_label =
+      std::u16string truncated_label =
           field_data.label.substr(0, kMaxLabelSize);
+      // The label may be derived from the placeholder attribute and may contain
+      // line wraps which are normalized here.
+      base::ReplaceChars(truncated_label, u"\n", u"|", &truncated_label);
 
       std::string form_id =
           base::NumberToString(form.data.unique_renderer_id.value());
