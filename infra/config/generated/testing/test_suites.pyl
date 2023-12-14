@@ -388,7 +388,6 @@
 
     'chrome_finch_smoke_tests': {
       'variations_desktop_smoke_tests': {
-        'test': 'variations_desktop_smoke_tests',
         'mixins': [
           'skia_gold_test',
           'has_native_resultdb_integration',
@@ -412,7 +411,6 @@
         },
       },
       'variations_smoke_tests': {
-        'test': 'variations_smoke_tests',
         'mixins': [
           'skia_gold_test',
         ],
@@ -607,13 +605,11 @@
     },
 
     'chromeos_device_only_gtests': {
-      'base_unittests': {
-      },
+      'base_unittests': {},
     },
 
     'chromeos_integration_tests': {
-      'chromeos_integration_tests': {
-      },
+      'chromeos_integration_tests': {},
     },
 
     'chromeos_isolated_scripts': {
@@ -1454,7 +1450,6 @@
 
     'chromium_webkit_isolated_scripts': {
       'blink_web_tests': {
-        'test': 'blink_web_tests',
         'results_handler': 'layout tests',
         'mixins': [
           'has_native_resultdb_integration',
@@ -1474,7 +1469,6 @@
         },
       },
       'blink_wpt_tests': {
-        'test': 'blink_wpt_tests',
         'results_handler': 'layout tests',
         'mixins': [
           'has_native_resultdb_integration',
@@ -1509,7 +1503,6 @@
 
     'chromium_wpt_tests_isolated_scripts': {
       'chrome_wpt_tests': {
-        'test': 'chrome_wpt_tests',
         'results_handler': 'layout tests',
         'mixins': [
           'has_native_resultdb_integration',
@@ -1861,7 +1854,6 @@
         },
       },
       'blink_web_tests': {
-        'test': 'blink_web_tests',
         'results_handler': 'layout tests',
         'mixins': [
           'has_native_resultdb_integration',
@@ -1881,7 +1873,6 @@
         },
       },
       'blink_wpt_tests': {
-        'test': 'blink_wpt_tests',
         'results_handler': 'layout tests',
         'mixins': [
           'has_native_resultdb_integration',
@@ -1978,7 +1969,6 @@
 
     'devtools_webkit_and_tab_target_isolated_scripts': {
       'blink_web_tests': {
-        'test': 'blink_web_tests',
         'results_handler': 'layout tests',
         'mixins': [
           'has_native_resultdb_integration',
@@ -2020,7 +2010,6 @@
         },
       },
       'blink_wpt_tests': {
-        'test': 'blink_wpt_tests',
         'results_handler': 'layout tests',
         'mixins': [
           'has_native_resultdb_integration',
@@ -2043,7 +2032,6 @@
 
     'devtools_webkit_isolated_scripts': {
       'blink_web_tests': {
-        'test': 'blink_web_tests',
         'results_handler': 'layout tests',
         'mixins': [
           'has_native_resultdb_integration',
@@ -2063,7 +2051,6 @@
         },
       },
       'blink_wpt_tests': {
-        'test': 'blink_wpt_tests',
         'results_handler': 'layout tests',
         'mixins': [
           'has_native_resultdb_integration',
@@ -2666,7 +2653,6 @@
 
     'gpu_dawn_webgpu_blink_web_tests': {
       'webgpu_blink_web_tests': {
-        'test': 'webgpu_blink_web_tests',
         'mixins': [
           'has_native_resultdb_integration',
           'webgpu_cts',
@@ -2825,7 +2811,6 @@
 
     'gpu_default_and_optional_win_specific_gtests': {
       'xr_browser_tests': {
-        'test': 'xr_browser_tests',
         'args': [
           '--ignore-runtime-requirements=*',
         ],
@@ -4065,7 +4050,6 @@
       'capture_unittests': {},
       'cast_unittests': {},
       'cc_unittests': {
-        'test': 'cc_unittests',
         'args': [
           '--test-launcher-bot-mode',
           '--test-launcher-filter-file=testing/buildbot/filters/ios.cc_unittests.filter',
@@ -4074,14 +4058,12 @@
       },
       'components_browsertests': {},
       'components_unittests': {
-        'test': 'components_unittests',
         'args': [
           '--test-launcher-bot-mode',
           '--test-launcher-filter-file=testing/buildbot/filters/ios.use_blink.components_unittests.filter',
         ],
       },
       'compositor_unittests': {
-        'test': 'compositor_unittests',
         'args': [
           '--test-launcher-bot-mode',
           '--test-launcher-filter-file=testing/buildbot/filters/ios.compositor_unittests.filter',
@@ -4100,7 +4082,6 @@
         },
       },
       'content_unittests': {
-        'test': 'content_unittests',
         'args': [
           '--test-launcher-bot-mode',
           '--test-launcher-filter-file=testing/buildbot/filters/ios.content_unittests.filter',
@@ -4164,7 +4145,6 @@
       'ui_unittests': {},
       'url_unittests': {},
       'viz_unittests': {
-        'test': 'viz_unittests',
         'args': [
           '--test-launcher-bot-mode',
           '--test-launcher-filter-file=testing/buildbot/filters/ios.viz_unittests.filter',
@@ -4474,7 +4454,6 @@
 
     'linux_lacros_chrome_browsertests_non_version_skew': {
       'lacros_chrome_browsertests': {
-        'test': 'lacros_chrome_browsertests',
         'args': [
           '--test-launcher-filter-file=../../testing/buildbot/filters/linux-lacros.lacros_chrome_browsertests.filter',
         ],
@@ -4497,7 +4476,6 @@
 
     'linux_lacros_chrome_interactive_ui_tests_version_skew': {
       'interactive_ui_tests': {
-        'test': 'interactive_ui_tests',
         'args': [
           '--test-launcher-filter-file=../../testing/buildbot/filters/linux-lacros.interactive_ui_tests.filter;../../testing/buildbot/filters/linux-lacros.interactive_ui_tests.skew.filter',
         ],
@@ -4577,9 +4555,7 @@
     },
 
     'linux_specific_xr_gtests': {
-      'xr_browser_tests': {
-        'test': 'xr_browser_tests',
-      },
+      'xr_browser_tests': {},
     },
 
     'mac_lsan_fyi_gtests': {
@@ -4604,9 +4580,7 @@
       'power_sampler_unittests': {},
       'sandbox_unittests': {},
       'updater_tests': {},
-      'xr_browser_tests': {
-        'test': 'xr_browser_tests',
-      },
+      'xr_browser_tests': {},
     },
 
     'mac_specific_isolated_scripts': {
@@ -4986,18 +4960,12 @@
       'mojo_rust_integration_unittests': {},
       'mojo_rust_unittests': {},
       'rust_gtest_interop_unittests': {},
-      'test_cpp_including_rust_unittests': {
-        'test': 'test_cpp_including_rust_unittests',
-      },
-      'test_serde_json_lenient': {
-        'test': 'test_serde_json_lenient',
-      },
+      'test_cpp_including_rust_unittests': {},
+      'test_serde_json_lenient': {},
     },
 
     'rust_native_tests': {
-      'build_rust_tests': {
-        'test': 'build_rust_tests',
-      },
+      'build_rust_tests': {},
     },
 
     'site_isolation_android_fyi_gtests': {
@@ -5261,7 +5229,6 @@
 
     'telemetry_perf_unittests_isolated_scripts_android': {
       'telemetry_perf_unittests_android_chrome': {
-        'test': 'telemetry_perf_unittests_android_chrome',
         'args': [
           '--extra-browser-args=--enable-crashpad',
         ],
@@ -5487,7 +5454,6 @@
 
     'webrtc_chromium_wpt_tests': {
       'blink_wpt_tests': {
-        'test': 'blink_wpt_tests',
         'results_handler': 'layout tests',
         'mixins': [
           'has_native_resultdb_integration',

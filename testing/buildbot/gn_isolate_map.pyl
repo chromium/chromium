@@ -1,6 +1,6 @@
 # THIS IS A GENERATED FILE DO NOT EDIT!!!
 # Instead:
-# 1. Modify //infra/config/targets/targets.star
+# 1. Modify //infra/config/targets/binaries.star and/or //infra/config/targets/tests.star (for tests defined using targets.tests.junit_test)
 # 2. Run //infra/config/main.star
 # 3. Run //infra/config/scripts/sync-pyl-files.py
 
