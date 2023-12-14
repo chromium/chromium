@@ -102,14 +102,6 @@ enum class BackupRefPtrMode {
   // partitions (if enabled in Renderer at all).
   // This entails splitting the main partition.
   kEnabled,
-
-  // BRP is disabled, but the main partition is split out, as if BRP was enabled
-  // in the "previous slot" mode.
-  kDisabledButSplitPartitions2Way,
-
-  // BRP is disabled, but the main partition *and* aligned partition are split
-  // out, as if BRP was enabled in the "before allocation" mode.
-  kDisabledButSplitPartitions3Way,
 };
 
 // Decides the amount of memory uses for BRP ref-count. The actual ref-count may

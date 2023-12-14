@@ -915,15 +915,6 @@ PartitionAllocSupport::GetBrpConfiguration(const std::string& process_type) {
         use_dedicated_aligned_partition = true;
 #endif
         break;
-
-      case base::features::BackupRefPtrMode::kDisabledButSplitPartitions2Way:
-        split_main_partition = true;
-        break;
-
-      case base::features::BackupRefPtrMode::kDisabledButSplitPartitions3Way:
-        split_main_partition = true;
-        use_dedicated_aligned_partition = true;
-        break;
     }
 
     if (enable_brp) {
