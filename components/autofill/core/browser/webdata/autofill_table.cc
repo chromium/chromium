@@ -1160,7 +1160,7 @@ std::unique_ptr<AutofillProfile> AutofillTable::GetAutofillProfile(
   std::string country_code;
   // As `SelectByGuid()` already calls `s.Step()`, do-while is used here.
   do {
-    ServerFieldType type = ToSafeServerFieldType(s.ColumnInt(0), UNKNOWN_TYPE);
+    ServerFieldType type = ToSafeFieldType(s.ColumnInt(0), UNKNOWN_TYPE);
     if (type == UNKNOWN_TYPE) {
       // This is possible in two cases:
       // - The database was tampered with by external means.

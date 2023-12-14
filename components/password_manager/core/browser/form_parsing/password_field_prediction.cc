@@ -21,7 +21,7 @@ using autofill::FieldGlobalId;
 using autofill::FieldSignature;
 using autofill::FormData;
 using autofill::ServerFieldType;
-using autofill::ToSafeServerFieldType;
+using autofill::ToSafeFieldType;
 
 namespace password_manager {
 
@@ -42,8 +42,8 @@ ServerFieldType GetServerType(
 
   // 2. If there is password related prediction returns it.
   for (const auto& server_predictions : prediction.server_predictions) {
-    ServerFieldType type = ToSafeServerFieldType(
-        server_predictions.type(), ServerFieldType::NO_SERVER_DATA);
+    ServerFieldType type = ToSafeFieldType(server_predictions.type(),
+                                           ServerFieldType::NO_SERVER_DATA);
     if (DeriveFromServerFieldType(type) != CredentialFieldType::kNone) {
       return type;
     }

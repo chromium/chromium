@@ -67,7 +67,7 @@ inline ::testing::Matcher<AutofillUploadContents::Field> FieldAutofillTypeIs(
   auto extract_types = [](const AutofillUploadContents::Field& field) {
     ServerFieldTypeSet s;
     for (auto type : field.autofill_type()) {
-      s.insert(ToSafeServerFieldType(type, ServerFieldType::NO_SERVER_DATA));
+      s.insert(ToSafeFieldType(type, ServerFieldType::NO_SERVER_DATA));
     }
     return s;
   };

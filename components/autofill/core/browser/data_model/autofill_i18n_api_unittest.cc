@@ -182,7 +182,7 @@ TEST_F(AutofillI18nApiTest, IsTypeEnabledForCountry) {
 
     for (std::underlying_type_t<ServerFieldType> i = 0;
          i < MAX_VALID_FIELD_TYPE; ++i) {
-      ServerFieldType field_type = ToSafeServerFieldType(i, NO_SERVER_DATA);
+      ServerFieldType field_type = ToSafeFieldType(i, NO_SERVER_DATA);
       if (field_type == NO_SERVER_DATA) {
         continue;
       }

@@ -514,9 +514,8 @@ FieldType HtmlFieldTypeToBestCorrespondingServerFieldType(
 // Returns |raw_value| if it corresponds to a non-deprecated enumeration
 // constant of ServerFieldType other than MAX_VALID_FIELD_TYPE. Otherwise,
 // returns |fallback_value|.
-constexpr FieldType ToSafeServerFieldType(
-    std::underlying_type_t<FieldType> raw_value,
-    FieldType fallback_value) {
+constexpr FieldType ToSafeFieldType(std::underlying_type_t<FieldType> raw_value,
+                                    FieldType fallback_value) {
   auto IsValid = [](std::underlying_type_t<FieldType> t) {
     return NO_SERVER_DATA <= t && t < MAX_VALID_FIELD_TYPE &&
            // Work phone numbers (values [15,19]) are deprecated.
@@ -563,7 +562,7 @@ constexpr HtmlFieldType ToSafeHtmlFieldType(
 constexpr inline FieldTypeSet kAllServerFieldTypes = [] {
   FieldTypeSet fields;
   for (std::underlying_type_t<FieldType> i = 0; i < MAX_VALID_FIELD_TYPE; ++i) {
-    if (FieldType field_type = ToSafeServerFieldType(i, NO_SERVER_DATA);
+    if (FieldType field_type = ToSafeFieldType(i, NO_SERVER_DATA);
         field_type != NO_SERVER_DATA) {
       fields.insert(field_type);
     }

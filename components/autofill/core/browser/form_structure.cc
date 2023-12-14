@@ -379,7 +379,7 @@ std::string ServerTypesToString(const AutofillField* field) {
       buffer << ", ";
     }
     ServerFieldType server_type =
-        ToSafeServerFieldType(field_prediction.type(), NO_SERVER_DATA);
+        ToSafeFieldType(field_prediction.type(), NO_SERVER_DATA);
     buffer << FieldTypeToStringView(server_type);
   }
   return "[" + buffer.str() + "]";
@@ -390,7 +390,7 @@ bool HasPasswordManagerPrediction(const FieldSuggestion& field_suggestion) {
   return base::ranges::any_of(
       field_suggestion.predictions(), [](const auto& prediction) {
         auto group_type = GroupTypeOfServerFieldType(
-            ToSafeServerFieldType(prediction.type(), NO_SERVER_DATA));
+            ToSafeFieldType(prediction.type(), NO_SERVER_DATA));
         return group_type == FieldTypeGroup::kPasswordField ||
                group_type == FieldTypeGroup::kUsernameField;
       });
@@ -404,7 +404,7 @@ void MergePasswordManagerPredictions(
   CHECK_NE(&merge_to_predictions, &merge_from_predictions);
   for (const auto& prediction : merge_from_predictions.predictions()) {
     FieldTypeGroup group_type = GroupTypeOfServerFieldType(
-        ToSafeServerFieldType(prediction.type(), NO_SERVER_DATA));
+        ToSafeFieldType(prediction.type(), NO_SERVER_DATA));
     // Only add predictions relevant for PasswordManager.
     if (group_type == FieldTypeGroup::kPasswordField ||
         group_type == FieldTypeGroup::kUsernameField) {
@@ -897,8 +897,8 @@ void FormStructure::ProcessQueryResponse(
                                     : field->server_predictions()[0].source(),
           .server_type2 =
               field->server_predictions().size() >= 2
-                  ? ToSafeServerFieldType(field->server_predictions()[1].type(),
-                                          NO_SERVER_DATA)
+                  ? ToSafeFieldType(field->server_predictions()[1].type(),
+                                    NO_SERVER_DATA)
                   : NO_SERVER_DATA,
           .prediction_source2 = field->server_predictions().size() >= 2
                                     ? field->server_predictions()[1].source()

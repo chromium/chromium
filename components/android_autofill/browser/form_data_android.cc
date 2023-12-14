@@ -104,7 +104,7 @@ void FormDataAndroid::UpdateFieldTypes(const FormStructure& form_structure) {
       std::vector<AutofillType> server_predictions;
       for (const auto& prediction : autofill_field->server_predictions()) {
         server_predictions.emplace_back(
-            ToSafeServerFieldType(prediction.type(), NO_SERVER_DATA));
+            ToSafeFieldType(prediction.type(), NO_SERVER_DATA));
       }
       form_field_data_android->UpdateAutofillTypes(
           FormFieldDataAndroid::FieldTypes(

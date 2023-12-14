@@ -40,8 +40,7 @@ AutofillType::ServerPrediction::~ServerPrediction() = default;
 ServerFieldType AutofillType::ServerPrediction::server_type() const {
   return server_predictions.empty()
              ? NO_SERVER_DATA
-             : ToSafeServerFieldType(server_predictions[0].type(),
-                                     NO_SERVER_DATA);
+             : ToSafeFieldType(server_predictions[0].type(), NO_SERVER_DATA);
 }
 
 bool AutofillType::ServerPrediction::is_override() const {
@@ -49,7 +48,7 @@ bool AutofillType::ServerPrediction::is_override() const {
 }
 
 AutofillType::AutofillType(ServerFieldType field_type)
-    : server_type_(ToSafeServerFieldType(field_type, UNKNOWN_TYPE)) {}
+    : server_type_(ToSafeFieldType(field_type, UNKNOWN_TYPE)) {}
 
 AutofillType::AutofillType(HtmlFieldType field_type) : html_type_(field_type) {}
 

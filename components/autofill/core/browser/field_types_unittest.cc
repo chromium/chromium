@@ -15,7 +15,7 @@ TEST(FieldTypesTest, TypeStringConversion) {
             NO_SERVER_DATA);
   for (int i = 0; i < MAX_VALID_FIELD_TYPE; ++i) {
     if (FieldType raw_value = static_cast<FieldType>(i);
-        ToSafeServerFieldType(raw_value, NO_SERVER_DATA) != NO_SERVER_DATA) {
+        ToSafeFieldType(raw_value, NO_SERVER_DATA) != NO_SERVER_DATA) {
       EXPECT_EQ(TypeNameToFieldType(FieldTypeToStringView(raw_value)),
                 raw_value);
     }
@@ -122,21 +122,21 @@ TEST(FieldTypesTest, IsValidFieldType) {
   ASSERT_FALSE(kValidFieldTypes.count(kInvalidValue));
   for (int i = -10; i < MAX_VALID_FIELD_TYPE + 10; ++i) {
     FieldType raw_value = static_cast<FieldType>(i);
-    EXPECT_EQ(ToSafeServerFieldType(raw_value, kInvalidValue),
+    EXPECT_EQ(ToSafeFieldType(raw_value, kInvalidValue),
               kValidFieldTypes.count(raw_value) ? raw_value : kInvalidValue);
   }
 }
 
 TEST(FieldTypesTest, TestWith2DigitExpirationYear) {
   FieldType assumed_field_type =
-      ToSafeServerFieldType(CREDIT_CARD_EXP_2_DIGIT_YEAR, NO_SERVER_DATA);
+      ToSafeFieldType(CREDIT_CARD_EXP_2_DIGIT_YEAR, NO_SERVER_DATA);
   size_t result = DetermineExpirationYearLength(assumed_field_type);
   EXPECT_EQ(result, static_cast<size_t>(2));
 }
 
 TEST(FieldTypesTest, TestWith4DigitExpirationYear) {
   FieldType assumed_field_type =
-      ToSafeServerFieldType(CREDIT_CARD_EXP_4_DIGIT_YEAR, NO_SERVER_DATA);
+      ToSafeFieldType(CREDIT_CARD_EXP_4_DIGIT_YEAR, NO_SERVER_DATA);
   size_t result = DetermineExpirationYearLength(assumed_field_type);
   EXPECT_EQ(result, static_cast<size_t>(4));
 }

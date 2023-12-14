@@ -44,7 +44,7 @@ ServerFieldType FieldCandidates::BestHeuristicType() const {
   const auto* best_type_iter = base::ranges::max_element(type_scores);
   const size_t index = std::distance(type_scores.cbegin(), best_type_iter);
 
-  return ToSafeServerFieldType(index, NO_SERVER_DATA);
+  return ToSafeFieldType(index, NO_SERVER_DATA);
 }
 
 }  // namespace autofill

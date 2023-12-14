@@ -253,8 +253,7 @@ ServerFieldType AutofillField::heuristic_type(HeuristicSource s) const {
 ServerFieldType AutofillField::server_type() const {
   return server_predictions_.empty()
              ? NO_SERVER_DATA
-             : ToSafeServerFieldType(server_predictions_[0].type(),
-                                     NO_SERVER_DATA);
+             : ToSafeFieldType(server_predictions_[0].type(), NO_SERVER_DATA);
 }
 
 bool AutofillField::server_type_prediction_is_override() const {
@@ -290,8 +289,7 @@ void AutofillField::set_server_predictions(
   overall_type_ = AutofillType(NO_SERVER_DATA);
   // Ensures that AutofillField::server_type() is a valid enum value.
   for (auto& prediction : predictions) {
-    prediction.set_type(
-        ToSafeServerFieldType(prediction.type(), NO_SERVER_DATA));
+    prediction.set_type(ToSafeFieldType(prediction.type(), NO_SERVER_DATA));
   }
 
   server_predictions_.clear();

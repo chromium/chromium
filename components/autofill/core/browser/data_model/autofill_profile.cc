@@ -367,7 +367,7 @@ AutofillProfile AutofillProfile::CreateFromJavaObject(
 
   for (int int_field_type : field_types) {
     ServerFieldType field_type =
-        ToSafeServerFieldType(int_field_type, NO_SERVER_DATA);
+        ToSafeFieldType(int_field_type, NO_SERVER_DATA);
     CHECK(field_type != NO_SERVER_DATA);
     VerificationStatus status = static_cast<VerificationStatus>(
         Java_AutofillProfile_getInfoStatus(env, jprofile, field_type));
