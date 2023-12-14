@@ -11,21 +11,20 @@ import {MacroName} from './macro_names.js';
  * Similar to MacroError::ErrorType in
  * google3/intelligence/dbw/proto/actuator/errors/macro_error.proto, but
  * only with fields used by Chrome OS.
- * @enum {number}
  */
-export const MacroError = {
-  UNKNOWN: 0,
+export enum MacroError {
+  UNKNOWN,
   // User intent was poorly formed. For example, a numerical field was set
   // to a string value.
-  INVALID_USER_INTENT: 1,
+  INVALID_USER_INTENT,
   // Returned when the context is invalid for a macro execution,
   // for example selecting the word "cat" when there is no word "cat" in
   // the text area.
-  BAD_CONTEXT: 2,
+  BAD_CONTEXT,
   // Actuation would fail to be successful. For example, the text area might
   // no longer be active, or the action cannot be taken in the given context.
-  FAILED_ACTUATION: 3,
-};
+  FAILED_ACTUATION,
+}
 
 /**
  * Results of checking whether the macro is able to execute in the current
@@ -35,24 +34,22 @@ export const MacroError = {
  * google3/intelligence/dbw/proto/macros/results/check_context_result.proto.
  * TODO(crbug.com/1264544): Information for disambiguation, like a list of
  * matched nodes, could be added here.
- * @typedef {{
- *   canTryAction: boolean,
- *   error: (MacroError|undefined),
- *   failedContext: (!Context|undefined),
- * }}
  */
-let CheckContextResult;
+export interface CheckContextResult {
+  canTryAction: boolean;
+  error?: MacroError;
+  failedContext?: Context;
+}
 
 /**
  * Results of trying to run a macro.
  * Similar to RunMacroResult in
  * google3/intelligence/dbw/proto/macros/results/run_macro_result.proto.
- * @typedef {{
- *   isSuccess: boolean,
- *   error: (MacroError|undefined),
- * }}
  */
-let RunMacroResult;
+export interface RunMacroResult {
+  isSuccess: boolean;
+  error?: MacroError;
+}
 
 /**
  * An interface for a Dictation Macro, which can determine if intents are
@@ -60,41 +57,30 @@ let RunMacroResult;
  * @abstract
  */
 export class Macro {
-  /**
-   * @param {MacroName} macroName The name of this macro.
-   * @param {!ContextChecker=} checker
-   */
-  constructor(macroName, checker) {
-    /** @private {MacroName} */
+  private macroName_: MacroName;
+  private checker_: ContextChecker|undefined;
+
+  /** @param macroName The name of this macro. */
+  constructor(macroName: MacroName, checker?: ContextChecker) {
     this.macroName_ = macroName;
-    /** @private {!ContextChecker|undefined} */
     this.checker_ = checker;
   }
 
-  /**
-   * Gets the description of the macro the user intends to execute.
-   * @return {MacroName}
-   */
-  getName() {
+  /** Gets the description of the macro the user intends to execute. */
+  getName(): MacroName {
     return this.macroName_;
   }
 
-  /**
-   * Gets the human-readable description of the macro. Useful for debugging.
-   * @return {string}
-   */
-  getNameAsString() {
-    const name =
-        Object.keys(MacroName).find(key => MacroName[key] === this.macroName_);
-    return name ? name : 'UNKNOWN';
+  /** Gets the human-readable description of the macro. Useful for debugging. */
+  getNameAsString(): string {
+    return MacroName[this.macroName_];
   }
 
   /**
    * Checks whether a macro can attempt to run in the current context.
    * If this macro has several steps, just checks the first step.
-   * @return {!CheckContextResult}
    */
-  checkContext() {
+  checkContext(): CheckContextResult {
     if (!this.checker_) {
       // Unable to check context.
       return this.createSuccessCheckContextResult_();
@@ -110,46 +96,34 @@ export class Macro {
   }
 
   /**
-   * Attempts to execute a macro in the current context.
-   * @return {RunMacroResult}
-   * @abstract
+   * Attempts to execute a macro in the current context. This base method
+   * should be overridden by each subclass.
    */
-  run() {}
+  run(): RunMacroResult {
+    throw new Error(`The run() function must be implemented by each subclass.`);
+  }
 
-  /**
-   * Protected helper method to create a CheckContextResult with an error.
-   * @param {MacroError} error
-   * @param {!Context} failedContext
-   * @return {!CheckContextResult}
-   * @protected
-   */
-  createFailureCheckContextResult_(error, failedContext) {
+  /** Protected helper method to create a CheckContextResult with an error. */
+  protected createFailureCheckContextResult_(
+      error: MacroError, failedContext: Context): CheckContextResult {
     return {canTryAction: false, error, failedContext};
   }
 
   /**
    * Protected helper method to create a CheckContextResult representing
    * success.
-   * @return {!CheckContextResult}
-   * @protected
    */
-  createSuccessCheckContextResult_() {
+  protected createSuccessCheckContextResult_(): CheckContextResult {
     return {canTryAction: true};
   }
 
-  /**
-   * Protected helper method to create a RunMacroResult.
-   * @param {boolean} isSuccess
-   * @param {MacroError=} error
-   * @return {RunMacroResult}
-   * @protected
-   */
-  createRunMacroResult_(isSuccess, error) {
+  /** Protected helper method to create a RunMacroResult. */
+  protected createRunMacroResult_(isSuccess: boolean, error?: MacroError):
+      RunMacroResult {
     return {isSuccess, error};
   }
 
-  /** @return {boolean} */
-  isSmart() {
+  isSmart(): boolean {
     return false;
   }
 }

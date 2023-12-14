@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {Macro} from './macro.js';
+import {Macro, RunMacroResult} from './macro.js';
 import {MacroName} from './macro_names.js';
 
 /** Class that implements a macro to stop Dictation. */
@@ -11,8 +11,7 @@ export class StopListeningMacro extends Macro {
     super(MacroName.STOP_LISTENING);
   }
 
-  /** @override */
-  run() {
+  override run(): RunMacroResult {
     chrome.accessibilityPrivate.toggleDictation();
     return this.createRunMacroResult_(/*isSuccess=*/ true);
   }

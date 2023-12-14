@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {Macro} from './macro.js';
+import {Macro, RunMacroResult} from './macro.js';
 import {MacroName} from './macro_names.js';
 
 /**
@@ -14,8 +14,7 @@ export class ListCommandsMacro extends Macro {
     super(MacroName.LIST_COMMANDS);
   }
 
-  /** @override */
-  run() {
+  override run(): RunMacroResult {
     // Note that this will open a new tab, ending the current Dictation session
     // by changing the input focus.
     globalThis.open(

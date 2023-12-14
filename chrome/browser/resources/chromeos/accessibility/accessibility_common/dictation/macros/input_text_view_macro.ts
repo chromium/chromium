@@ -5,30 +5,25 @@
 import {ContextChecker} from '../context_checker.js';
 import {InputController} from '../input_controller.js';
 
-import {Macro, MacroError} from './macro.js';
+import {Macro, MacroError, RunMacroResult} from './macro.js';
 import {MacroName} from './macro_names.js';
 
 /**
  * Macro that inputs text at the current cursor position.
  */
 export class InputTextViewMacro extends Macro {
-  /**
-   * @param {string} text
-   * @param {!InputController} inputController
-   * @param {MacroName=} macroName
-   */
-  constructor(text, inputController, macroName = MacroName.INPUT_TEXT_VIEW) {
+  private text_: string;
+  private inputController_: InputController;
+
+  constructor(
+      text: string, inputController: InputController,
+      macroName: MacroName = MacroName.INPUT_TEXT_VIEW) {
     super(macroName, new ContextChecker(inputController));
-
-    /** @private {string} */
     this.text_ = text;
-
-    /** @private {!InputController} */
     this.inputController_ = inputController;
   }
 
-  /** @override */
-  run() {
+  override run(): RunMacroResult {
     if (!this.inputController_.isActive()) {
       return this.createRunMacroResult_(
           /*isSuccess=*/ false, MacroError.FAILED_ACTUATION);
@@ -38,12 +33,9 @@ export class InputTextViewMacro extends Macro {
   }
 }
 
-/**
- * Macro to type a new line character.
- */
+/** Macro to type a new line character. */
 export class NewLineMacro extends InputTextViewMacro {
-  /** @param {!InputController} inputController */
-  constructor(inputController) {
+  constructor(inputController: InputController) {
     super('\n', inputController, MacroName.NEW_LINE);
   }
 }

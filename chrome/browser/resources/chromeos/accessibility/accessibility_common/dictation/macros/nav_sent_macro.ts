@@ -5,22 +5,21 @@
 import {Context, ContextChecker} from '../context_checker.js';
 import {InputController} from '../input_controller.js';
 
-import {Macro, MacroError} from './macro.js';
+import {Macro, MacroError, RunMacroResult} from './macro.js';
 import {MacroName} from './macro_names.js';
 
 /** Implements a macro that moves the text caret to the next sentence. */
 export class NavNextSentMacro extends Macro {
-  /** @param {!InputController} inputController */
-  constructor(inputController) {
+  private inputController_: InputController;
+
+  constructor(inputController: InputController) {
     super(
         MacroName.NAV_NEXT_SENT,
         new ContextChecker(inputController).add(Context.EMPTY_EDITABLE));
-    /** @private {!InputController} */
     this.inputController_ = inputController;
   }
 
-  /** @override */
-  run() {
+  override run(): RunMacroResult {
     if (!this.inputController_.isActive()) {
       return this.createRunMacroResult_(
           /*isSuccess=*/ false, MacroError.FAILED_ACTUATION);
@@ -29,25 +28,23 @@ export class NavNextSentMacro extends Macro {
     return this.createRunMacroResult_(/*isSuccess=*/ true);
   }
 
-  /** @override */
-  isSmart() {
+  override isSmart(): boolean {
     return true;
   }
 }
 
 /** Implements a macro that moves the text caret to the previous sentence. */
 export class NavPrevSentMacro extends Macro {
-  /** @param {!InputController} inputController */
-  constructor(inputController) {
+  private inputController_: InputController;
+
+  constructor(inputController: InputController) {
     super(
         MacroName.NAV_PREV_SENT,
         new ContextChecker(inputController).add(Context.EMPTY_EDITABLE));
-    /** @private {!InputController} */
     this.inputController_ = inputController;
   }
 
-  /** @override */
-  run() {
+  override run(): RunMacroResult {
     if (!this.inputController_.isActive()) {
       return this.createRunMacroResult_(
           /*isSuccess=*/ false, MacroError.FAILED_ACTUATION);
@@ -56,8 +53,7 @@ export class NavPrevSentMacro extends Macro {
     return this.createRunMacroResult_(/*isSuccess=*/ true);
   }
 
-  /** @override */
-  isSmart() {
+  override isSmart(): boolean {
     return true;
   }
 }

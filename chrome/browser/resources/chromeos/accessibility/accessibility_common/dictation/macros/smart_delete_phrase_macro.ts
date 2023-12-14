@@ -5,27 +5,23 @@
 import {Context, ContextChecker} from '../context_checker.js';
 import {InputController} from '../input_controller.js';
 
-import {Macro, MacroError} from './macro.js';
+import {Macro, MacroError, RunMacroResult} from './macro.js';
 import {MacroName} from './macro_names.js';
 
 /** Implements a macro that deletes a provided word or phrase. */
 export class SmartDeletePhraseMacro extends Macro {
-  /**
-   * @param {!InputController} inputController
-   * @param {string} phrase
-   */
-  constructor(inputController, phrase) {
+  private inputController_: InputController;
+  private phrase_: string;
+
+  constructor(inputController: InputController, phrase: string) {
     super(
         MacroName.SMART_DELETE_PHRASE,
         new ContextChecker(inputController).add(Context.EMPTY_EDITABLE));
-    /** @private {!InputController} */
     this.inputController_ = inputController;
-    /** @private {string} */
     this.phrase_ = phrase;
   }
 
-  /** @override */
-  run() {
+  override run(): RunMacroResult {
     if (!this.inputController_.isActive()) {
       return this.createRunMacroResult_(
           /*isSuccess=*/ false, MacroError.FAILED_ACTUATION);
@@ -34,8 +30,7 @@ export class SmartDeletePhraseMacro extends Macro {
     return this.createRunMacroResult_(/*isSuccess=*/ true);
   }
 
-  /** @override */
-  isSmart() {
+  override isSmart(): boolean {
     return true;
   }
 }

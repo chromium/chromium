@@ -4,7 +4,7 @@
 
 import {Context} from '../context_checker.js';
 
-import {Macro, MacroError} from './macro.js';
+import {Macro, MacroError, CheckContextResult} from './macro.js';
 import {MacroName} from './macro_names.js';
 
 /** Implements a macro that repeats the last executed macro. */
@@ -17,9 +17,8 @@ export class RepeatMacro extends Macro {
    * This always returns a failure because RepeatMacro is never actually run,
    * it's just a placeholder that is swapped out for the previously executed
    * macro.
-   * @override
    */
-  checkContext() {
+  override checkContext(): CheckContextResult {
     return this.createFailureCheckContextResult_(
         MacroError.BAD_CONTEXT, Context.NO_PREVIOUS_MACRO);
   }

@@ -5,43 +5,39 @@
 import {Context, ContextChecker} from '../context_checker.js';
 import {InputController} from '../input_controller.js';
 
-import {Macro, MacroError} from './macro.js';
+import {Macro, MacroError, RunMacroResult} from './macro.js';
 import {MacroName} from './macro_names.js';
 
 /**
- * Implements a macro that replaces a word or phrase with another word or
+ * Implements a macro that inserts a word or phrase before another word or
  * phrase
  */
-export class SmartReplacePhraseMacro extends Macro {
-  /**
-   * @param {!InputController} inputController
-   * @param {string} deletePhrase
-   * @param {string} insertPhrase
-   */
-  constructor(inputController, deletePhrase, insertPhrase) {
+export class SmartInsertBeforeMacro extends Macro {
+  private inputController_: InputController;
+  private insertPhrase_: string;
+  private beforePhrase_: string;
+
+  constructor(
+      inputController: InputController, insertPhrase: string,
+      beforePhrase: string) {
     super(
-        MacroName.SMART_REPLACE_PHRASE,
+        MacroName.SMART_INSERT_BEFORE,
         new ContextChecker(inputController).add(Context.EMPTY_EDITABLE));
-    /** @private {!InputController} */
     this.inputController_ = inputController;
-    /** @private {string} */
-    this.deletePhrase_ = deletePhrase;
-    /** @private {string} */
     this.insertPhrase_ = insertPhrase;
+    this.beforePhrase_ = beforePhrase;
   }
 
-  /** @override */
-  run() {
+  override run(): RunMacroResult {
     if (!this.inputController_.isActive()) {
       return this.createRunMacroResult_(
           /*isSuccess=*/ false, MacroError.FAILED_ACTUATION);
     }
-    this.inputController_.replacePhrase(this.deletePhrase_, this.insertPhrase_);
+    this.inputController_.insertBefore(this.insertPhrase_, this.beforePhrase_);
     return this.createRunMacroResult_(/*isSuccess=*/ true);
   }
 
-  /** @override */
-  isSmart() {
+  override isSmart(): boolean {
     return true;
   }
 }

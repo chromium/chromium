@@ -5,23 +5,22 @@
 import {Context, ContextChecker} from '../context_checker.js';
 import {InputController} from '../input_controller.js';
 
-import {Macro, MacroError} from './macro.js';
+import {Macro, MacroError, RunMacroResult} from './macro.js';
 import {MacroName} from './macro_names.js';
 
 /** Class that implements a macro that deletes the previous sentence. */
 export class DeletePrevSentMacro extends Macro {
-  /** @param {!InputController} inputController */
-  constructor(inputController) {
+  private inputController_: InputController;
+
+  constructor(inputController: InputController) {
     super(
         MacroName.DELETE_PREV_SENT,
         new ContextChecker(inputController).add(Context.EMPTY_EDITABLE));
 
-    /** @private {!InputController} */
     this.inputController_ = inputController;
   }
 
-  /** @override */
-  run() {
+  override run(): RunMacroResult {
     if (!this.inputController_.isActive()) {
       return this.createRunMacroResult_(
           /*isSuccess=*/ false, MacroError.FAILED_ACTUATION);
@@ -30,8 +29,7 @@ export class DeletePrevSentMacro extends Macro {
     return this.createRunMacroResult_(/*isSuccess=*/ true);
   }
 
-  /** @override */
-  isSmart() {
+  override isSmart(): boolean {
     return true;
   }
 }
