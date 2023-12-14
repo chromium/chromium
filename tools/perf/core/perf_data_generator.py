@@ -927,7 +927,7 @@ BUILDERS = {
             # that we can be informed if this
             # version ever changes or becomes inconsistent. It is important
             # that bots are homogeneous. See crbug.com/988045 for history.
-            'os': 'Windows-10-19043.1052',
+            'os': 'Windows-10-19043',
             'gpu': '1002:1638-30.0.13033.1000',
             'synthetic_product_name': 'OMEN by HP Laptop 16-c0xxx [ ] (HP)',
         },
@@ -951,7 +951,7 @@ BUILDERS = {
             # that we can be informed if this
             # version ever changes or becomes inconsistent. It is important
             # that bots are homogeneous. See crbug.com/988045 for history.
-            'os': 'Windows-10-19043.1052',
+            'os': 'Windows-10-19043',
             'gpu': '1002:1638-30.0.13033.1000',
             'synthetic_product_name': 'OMEN by HP Laptop 16-c0xxx [ ] (HP)',
         },

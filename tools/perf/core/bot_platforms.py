@@ -697,11 +697,11 @@ WIN_10_PGO = PerfPlatform(
     pinpoint_only=True)
 WIN_10_AMD_LAPTOP = PerfPlatform('win-10_amd_laptop-perf',
                                  'Windows 10 Laptop with AMD chipset.',
-                                 _WIN_10_AMD_LAPTOP_BENCHMARK_CONFIGS, 5, 'win')
+                                 _WIN_10_AMD_LAPTOP_BENCHMARK_CONFIGS, 3, 'win')
 WIN_10_AMD_LAPTOP_PGO = PerfPlatform('win-10_amd_laptop-perf-pgo',
                                      'Windows 10 Laptop with AMD chipset.',
                                      _WIN_10_AMD_LAPTOP_BENCHMARK_CONFIGS,
-                                     5,
+                                     3,
                                      'win',
                                      pinpoint_only=True)
 

@@ -1658,7 +1658,7 @@
           "can_use_on_swarming_builders": true,
           "dimensions": {
             "gpu": "1002:1638-30.0.13033.1000",
-            "os": "Windows-10-19043.1052",
+            "os": "Windows-10-19043",
             "pool": "chrome.tests.perf",
             "synthetic_product_name": "OMEN by HP Laptop 16-c0xxx [ ] (HP)"
           },
@@ -1666,7 +1666,7 @@
           "hard_timeout": 21600,
           "io_timeout": 21600,
           "service_account": "chrome-tester@chops-service-accounts.iam.gserviceaccount.com",
-          "shards": 5
+          "shards": 3
         },
         "test": "performance_test_suite",
         "trigger_script": {
@@ -1702,7 +1702,7 @@
           "can_use_on_swarming_builders": true,
           "dimensions": {
             "gpu": "1002:1638-30.0.13033.1000",
-            "os": "Windows-10-19043.1052",
+            "os": "Windows-10-19043",
             "pool": "chrome.tests.perf",
             "synthetic_product_name": "OMEN by HP Laptop 16-c0xxx [ ] (HP)"
           },
@@ -1710,7 +1710,7 @@
           "hard_timeout": 21600,
           "io_timeout": 21600,
           "service_account": "chrome-tester@chops-service-accounts.iam.gserviceaccount.com",
-          "shards": 5
+          "shards": 3
         },
         "test": "performance_test_suite",
         "trigger_script": {
