@@ -6811,10 +6811,6 @@ const FeatureEntry kFeatureEntries[] = {
                                     kNtpSafeBrowsingModuleVariations,
                                     "DesktopNtpModules")},
 
-    {"ntp-desktop-lens", flag_descriptions::kNtpDesktopLensName,
-     flag_descriptions::kNtpDesktopLensDescription, kOsDesktop,
-     FEATURE_VALUE_TYPE(ntp_features::kNtpRealboxLensSearch)},
-
     {"ntp-tab-resumption-module",
      flag_descriptions::kNtpTabResumptionModuleName,
      flag_descriptions::kNtpTabResumptionModuleDescription, kOsDesktop,

@@ -4836,10 +4836,6 @@ const char kNtpComprehensiveThemeRealboxName[] =
 const char kNtpComprehensiveThemeRealboxDescription[] =
     "Applies theme based colors to the NTP Realbox element";
 
-const char kNtpDesktopLensName[] = "NTP Desktop Lens Entrypoint";
-const char kNtpDesktopLensDescription[] =
-    "Shows a Lens entrypoint and upload dialog in desktop NTP when enabled.";
-
 const char kNtpDriveModuleName[] = "NTP Drive Module";
 const char kNtpDriveModuleDescription[] =
     "Shows the Google Drive module on the New Tab Page";

@@ -2786,9 +2786,6 @@ extern const char kNtpChromeCartModuleDescription[];
 extern const char kNtpComprehensiveThemeRealboxName[];
 extern const char kNtpComprehensiveThemeRealboxDescription[];
 
-extern const char kNtpDesktopLensName[];
-extern const char kNtpDesktopLensDescription[];
-
 extern const char kNtpDriveModuleName[];
 extern const char kNtpDriveModuleDescription[];
 

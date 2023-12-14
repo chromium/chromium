@@ -276,11 +276,6 @@ BASE_FEATURE(kNtpFeedModule,
              "NtpFeedModule",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// If enabled, Google Lens image search will be shown in the NTP Realbox.
-BASE_FEATURE(kNtpRealboxLensSearch,
-             "NtpRealboxLensSearch",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 // If enabled, Google Lens image search will call Lens v3 direct upload
 // endpoint instead of uploading to Scotty.
 BASE_FEATURE(kNtpLensDirectUpload,
