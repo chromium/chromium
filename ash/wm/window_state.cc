@@ -843,12 +843,6 @@ void WindowState::SetAndClearRestoreBounds() {
 
 WindowState::WindowState(aura::Window* window)
     : window_(window),
-      bounds_changed_by_user_(false),
-      unminimize_to_restore_bounds_(false),
-      hide_shelf_when_fullscreen_(true),
-      autohide_shelf_when_maximized_or_fullscreen_(false),
-      cached_z_order_(ui::ZOrderLevel::kNormal),
-      ignore_property_change_(false),
       current_state_(
           new DefaultState(chromeos::ToWindowStateType(GetShowState()))) {
   window_->AddObserver(this);

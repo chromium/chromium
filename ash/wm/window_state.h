@@ -601,14 +601,13 @@ class ASH_EXPORT WindowState : public aura::WindowObserver {
   raw_ptr<aura::Window, ExperimentalAsh> window_;
   std::unique_ptr<WindowStateDelegate> delegate_;
 
-  bool bounds_changed_by_user_;
+  bool bounds_changed_by_user_ = false;
   std::unique_ptr<DragDetails> drag_details_;
 
-  bool unminimize_to_restore_bounds_;
+  bool unminimize_to_restore_bounds_ = false;
   bool ignore_keyboard_bounds_change_ = false;
-  bool hide_shelf_when_fullscreen_;
-  bool autohide_shelf_when_maximized_or_fullscreen_;
-  ui::ZOrderLevel cached_z_order_;
+  bool autohide_shelf_when_maximized_or_fullscreen_ = false;
+  ui::ZOrderLevel cached_z_order_ = ui::ZOrderLevel::kNormal;
   bool allow_set_bounds_direct_ = false;
   bool is_moving_to_another_display_ = false;
 
@@ -650,7 +649,7 @@ class ASH_EXPORT WindowState : public aura::WindowObserver {
 
   // True to ignore a property change event to avoid reentrance in
   // UpdateWindowStateType()
-  bool ignore_property_change_;
+  bool ignore_property_change_ = false;
 
   std::unique_ptr<State> current_state_;
 
