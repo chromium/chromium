@@ -12,6 +12,7 @@
 #include "ash/public/cpp/shelf_types.h"
 #include "base/memory/raw_ptr.h"
 #include "chrome/browser/ui/extensions/extension_enable_flow_delegate.h"
+#include "components/services/app_service/public/cpp/shortcut/shortcut.h"
 
 class ArcAppListPrefs;
 class ExtensionEnableFlow;
@@ -91,6 +92,12 @@ class ShelfControllerHelper : public ExtensionEnableFlowDelegate {
 
   // Check whether this item is an app service shortcut.
   static bool IsAppServiceShortcut(Profile* profile, const std::string& id);
+
+  // Get the accessible label that should be announced by the scrrenreader for
+  // the specific app service shortcut shelf item.
+  static std::u16string GetAppServiceShortcutAccessibleLabel(
+      Profile* profile,
+      const apps::ShortcutId& shortcut_id);
 
   // Returns true if |id| is valid for the currently active profile.
   // Used during restore to ignore no longer valid extensions.

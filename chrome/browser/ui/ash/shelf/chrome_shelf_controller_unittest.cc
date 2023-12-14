@@ -6638,7 +6638,7 @@ class ChromeShelfControllerShortcutTest : public ChromeShelfControllerTest {
 
 TEST_F(ChromeShelfControllerShortcutTest, UpdateTitle) {
   apps::ShortcutPtr shortcut =
-      std::make_unique<apps::Shortcut>("app_id", "local_id");
+      std::make_unique<apps::Shortcut>(app_constants::kChromeAppId, "local_id");
   apps::ShortcutId shortcut_id = shortcut->shortcut_id;
   shortcut->name = "Name";
   cache()->UpdateShortcut(std::move(shortcut));
@@ -6652,16 +6652,20 @@ TEST_F(ChromeShelfControllerShortcutTest, UpdateTitle) {
   ash::ShelfID id(shortcut_id.value());
   const ash::ShelfItem* item = shelf_controller_->GetItem(id);
   EXPECT_EQ(item->title, std::u16string(u"Name"));
+  EXPECT_EQ(item->accessible_name,
+            u"Name, " + l10n_util::GetStringUTF16(IDS_PRODUCT_NAME));
 
   // Update shortcut title.
   apps::ShortcutPtr update =
-      std::make_unique<apps::Shortcut>("app_id", "local_id");
+      std::make_unique<apps::Shortcut>(app_constants::kChromeAppId, "local_id");
   update->name = "NewName";
   cache()->UpdateShortcut(std::move(update));
 
   // Verify that the shelf item has updated details.
   const ash::ShelfItem* item_after_update = shelf_controller_->GetItem(id);
   EXPECT_EQ(item_after_update->title, std::u16string(u"NewName"));
+  EXPECT_EQ(item->accessible_name,
+            u"NewName, " + l10n_util::GetStringUTF16(IDS_PRODUCT_NAME));
 }
 
 TEST_F(ChromeShelfControllerShortcutTest, ShortcutRemoved) {
@@ -6690,6 +6694,7 @@ TEST_F(ChromeShelfControllerShortcutTest, LoadIcon) {
 
   apps::ShortcutPtr shortcut =
       std::make_unique<apps::Shortcut>("app_id", "local_id");
+  shortcut->name = "Name";
   apps::ShortcutId shortcut_id = shortcut->shortcut_id;
   shortcut->icon_key = apps::IconKey();
   shortcut->icon_key->update_version = false;

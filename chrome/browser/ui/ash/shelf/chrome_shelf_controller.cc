@@ -1179,6 +1179,14 @@ void ChromeShelfController::OnShortcutUpdated(
     item.title = title;
     model_->Set(index, item);
   }
+
+  std::u16string accessible_name =
+      ShelfControllerHelper::GetAppServiceShortcutAccessibleLabel(
+          latest_active_profile_, update.ShortcutId());
+  if (accessible_name != item.accessible_name) {
+    item.accessible_name = accessible_name;
+    model_->Set(index, item);
+  }
 }
 
 void ChromeShelfController::OnShortcutRemoved(const apps::ShortcutId& id) {
@@ -1800,6 +1808,17 @@ void ChromeShelfController::ShelfItemAdded(int index) {
           ShelfControllerHelper::GetPromiseAppAccessibleName(
               latest_active_profile_, id.app_id);
       if (is_promise_app && accessible_name != item.accessible_name) {
+        needs_update = true;
+        item.accessible_name = accessible_name;
+      }
+    }
+
+    if (ShelfControllerHelper::IsAppServiceShortcut(latest_active_profile_,
+                                                    id.app_id)) {
+      std::u16string accessible_name =
+          ShelfControllerHelper::GetAppServiceShortcutAccessibleLabel(
+              latest_active_profile_, apps::ShortcutId(id.app_id));
+      if (accessible_name != item.accessible_name) {
         needs_update = true;
         item.accessible_name = accessible_name;
       }
