@@ -1,0 +1,11 @@
+Document
+++List
+++++ListItem Name='Kirk'
+++++++Text Name='1. ' IsControlElement=false
+++++++Text Name='Kirk' IsControlElement=false
+++++ListItem Name='Picard'
+++++++Text Name='2. ' IsControlElement=false
+++++++Text Name='Picard' IsControlElement=false
+++++ListItem Name='Janeway'
+++++++Text Name='3. ' IsControlElement=false
+++++++Text Name='Janeway' IsControlElement=false

@@ -1,0 +1,18 @@
+rootWebArea name='Hello World'
+++genericContainer ignored
+++++genericContainer ignored
+++++++heading name='Heading'
+++++++++staticText name='Heading'
+++++++++++inlineTextBox name='Heading'
+++++++paragraph
+++++++++staticText name='Paragraph'
+++++++++++inlineTextBox name='Paragraph'
+++++++genericContainer
+++++++++textField
+++++++++++genericContainer
+++++++button name='c'
+++++++++staticText name='D'
+++++++++++inlineTextBox name='D'
+++++++button name='Click'
+++++++++staticText name='Click'
+++++++++++inlineTextBox name='Click'

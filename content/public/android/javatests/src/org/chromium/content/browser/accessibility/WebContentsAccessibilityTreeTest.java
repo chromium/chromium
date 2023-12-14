@@ -598,6 +598,12 @@ public class WebContentsAccessibilityTreeTest {
 
     @Test
     @SmallTest
+    public void test_ariaLabelAugmentInnerText() {
+        performAriaTest("aria-label-augment-inner-text.html");
+    }
+
+    @Test
+    @SmallTest
     public void test_ariaLabelledbyHeading() {
         performAriaTest("aria-labelledby-heading.html");
     }
@@ -1624,6 +1630,12 @@ public class WebContentsAccessibilityTreeTest {
 
     @Test
     @SmallTest
+    public void test_htmlAttributesAndTagNames() {
+        performHtmlTest("html-attributes-and-tag-names.html");
+    }
+
+    @Test
+    @SmallTest
     public void test_i() {
         performHtmlTest("i.html");
     }
@@ -1811,6 +1823,12 @@ public class WebContentsAccessibilityTreeTest {
     @SmallTest
     public void test_inputNumber() {
         performHtmlTest("input-number.html");
+    }
+
+    @Test
+    @SmallTest
+    public void test_inputPasswordObscured() {
+        performHtmlTest("input-password-obscured.html");
     }
 
     @Test
@@ -2225,6 +2243,12 @@ public class WebContentsAccessibilityTreeTest {
 
     @Test
     @SmallTest
+    public void test_staticList() {
+        performHtmlTest("static-list.html");
+    }
+
+    @Test
+    @SmallTest
     public void test_strong() {
         performHtmlTest("strong.html");
     }
@@ -2377,6 +2401,13 @@ public class WebContentsAccessibilityTreeTest {
     @SmallTest
     public void test_textAlign() {
         performHtmlTest("text-align.html");
+    }
+
+    @Test
+    @SmallTest
+    @DisableIf.Build(supported_abis_includes = "x86", message = "https://crbug.com/1224422")
+    public void test_textColorsAndStyles() {
+        performHtmlTest("text-colors-and-styles.html");
     }
 
     @Test

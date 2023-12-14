@@ -1,0 +1,9 @@
+AXWebArea AXTitle='Hello World'
+++AXHeading AXTitle='Heading' AXValue=1
+++++AXStaticText AXValue='Heading'
+++AXGroup
+++++AXStaticText AXValue='Paragraph'
+++AXGroup
+++++AXTextField
+++AXButton AXDescription='c'
+++AXButton AXTitle='Click'

@@ -1,0 +1,9 @@
+[document web] name='Hello World'
+++[heading] name='Heading'
+++++[static] name='Heading'
+++[paragraph]
+++++[static] name='Paragraph'
+++[section]
+++++[entry] selectable-text
+++[push button] name='c'
+++[push button] name='Click'
