@@ -677,7 +677,6 @@ public class BookmarkTest {
 
     @Test
     @MediumTest
-    @DisableFeatures({ChromeFeatureList.SHOPPING_LIST})
     public void testSearchBookmarks_DeleteFolderWithChildrenInResults() throws Exception {
         BookmarkPromoHeader.forcePromoStateForTesting(SyncPromoState.NO_PROMO);
         BookmarkId testFolder = addFolder(TEST_FOLDER_TITLE);
@@ -1423,7 +1422,6 @@ public class BookmarkTest {
 
     @Test
     @MediumTest
-    @DisableFeatures({ChromeFeatureList.SHOPPING_LIST})
     public void testTopLevelFolderUpdateAfterSync() throws Exception {
         // Set up the test and open the bookmark manager to the Mobile Bookmarks folder.
         BookmarkTestUtil.readPartnerBookmarks(mActivityTestRule);
