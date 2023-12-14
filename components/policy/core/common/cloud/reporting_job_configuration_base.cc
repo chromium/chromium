@@ -90,7 +90,7 @@ ReportingJobConfigurationBase::DeviceDictionaryBuilder::GetNamePath() {
 // static
 std::string
 ReportingJobConfigurationBase::DeviceDictionaryBuilder::GetStringPath(
-    base::StringPiece leaf_name) {
+    std::string_view leaf_name) {
   return base::JoinString({kDeviceKey, leaf_name}, ".");
 }
 
@@ -157,7 +157,7 @@ std::string ReportingJobConfigurationBase::BrowserDictionaryBuilder::
 // static
 std::string
 ReportingJobConfigurationBase::BrowserDictionaryBuilder::GetStringPath(
-    base::StringPiece leaf_name) {
+    std::string_view leaf_name) {
   return base::JoinString({kBrowserKey, leaf_name}, ".");
 }
 

@@ -11,7 +11,6 @@
 
 #include "base/functional/bind.h"
 #include "base/observer_list.h"
-#include "base/strings/string_piece.h"
 #include "components/policy/core/browser/browser_policy_connector_base.h"
 #include "components/policy/core/browser/configuration_policy_handler_list.h"
 #include "components/policy/core/browser/policy_conversions_client.h"
@@ -79,7 +78,7 @@ bool ConfigurationPolicyPrefStore::IsInitializationComplete() const {
   return policy_service_->IsInitializationComplete(POLICY_DOMAIN_CHROME);
 }
 
-bool ConfigurationPolicyPrefStore::GetValue(base::StringPiece key,
+bool ConfigurationPolicyPrefStore::GetValue(std::string_view key,
                                             const base::Value** value) const {
   const base::Value* stored_value = nullptr;
   if (!prefs_ || !prefs_->GetValue(key, &stored_value))

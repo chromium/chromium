@@ -23,7 +23,7 @@ DMToken DMToken::CreateEmptyToken() {
   return DMToken(Status::kEmpty, "");
 }
 
-DMToken::DMToken(Status status, const base::StringPiece value)
+DMToken::DMToken(Status status, const std::string_view value)
     : status_(status), value_(value) {}
 
 const std::string& DMToken::value() const {

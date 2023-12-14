@@ -81,7 +81,7 @@ class POLICY_EXPORT ConfigurationPolicyHandler {
 // subclassed to handle policies that have a name.
 class POLICY_EXPORT NamedPolicyHandler : public ConfigurationPolicyHandler {
  public:
-  // TODO: migrate named policy handlers from char* to base::StringPiece
+  // TODO: migrate named policy handlers from char* to std::string_view
   explicit NamedPolicyHandler(const char* policy_name);
   ~NamedPolicyHandler() override;
   NamedPolicyHandler(const NamedPolicyHandler&) = delete;

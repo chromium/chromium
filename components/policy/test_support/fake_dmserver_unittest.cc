@@ -7,6 +7,7 @@
 #include <memory>
 #include <set>
 #include <string>
+#include <string_view>
 #include <utility>
 #include <vector>
 
@@ -48,7 +49,7 @@ namespace fakedms {
 
 namespace {
 
-constexpr base::StringPiece kRawExtensionPolicyPayload =
+constexpr std::string_view kRawExtensionPolicyPayload =
     R"({
       "VisibleStringPolicy": {
         "Value": "notsecret"
@@ -69,7 +70,7 @@ constexpr base::StringPiece kRawExtensionPolicyPayload =
         }
       }
     })";
-constexpr base::StringPiece kPolicyBlobForExternalPolicy =
+constexpr std::string_view kPolicyBlobForExternalPolicy =
     R"(
     {
       "managed_users" : [ "*" ],
@@ -90,7 +91,7 @@ constexpr base::StringPiece kPolicyBlobForExternalPolicy =
       ]
     }
   )";
-constexpr base::StringPiece kSHA256HashForExtensionPolicyPayload(
+constexpr std::string_view kSHA256HashForExtensionPolicyPayload(
     "\x1e\x95\xf3\xeb\x42\xcc\x72\x2c\x83\xdb\x2d\x1c\xb1\xca\xfa\x2b\x78\x1e"
     "\x4b\x91\x2b\x73\x1a\x5c\x85\x72\xa8\xf2\x87\x4a\xbc\x44",
     32);

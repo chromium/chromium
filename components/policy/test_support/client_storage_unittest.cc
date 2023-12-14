@@ -4,7 +4,8 @@
 
 #include "components/policy/test_support/client_storage.h"
 
-#include "base/strings/string_piece.h"
+#include <string_view>
+
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -23,11 +24,11 @@ constexpr const char kNonExistingDeviceToken[] = "non-existing-device-token";
 constexpr const uint64_t kModulus = 3;
 constexpr const uint64_t kRemainder = 2;
 // Following SHA256 hashes produce |kRemainder| when divided by |kModulus|.
-constexpr base::StringPiece kSHA256HashForStateKey1(
+constexpr std::string_view kSHA256HashForStateKey1(
     "\x3e\x74\x4b\x9d\xc3\x93\x89\xba\xf0\xc5\xa0\x66\x05\x89\xb8\x40\x2f\x3d"
     "\xbb\x49\xb8\x9b\x3e\x75\xf2\xc9\x35\x58\x52\xa3\xc6\x77",
     32);
-constexpr base::StringPiece kSHA256HashForStateKey4(
+constexpr std::string_view kSHA256HashForStateKey4(
     "\x64\xda\xa4\x4a\xd4\x93\xff\x28\xa9\x6e\xff\xab\x6e\x77\xf1\x73\x2a\x3d"
     "\x97\xd8\x32\x41\x58\x1b\x37\xdb\xd7\x0a\x7a\x49\x00\xfe",
     32);

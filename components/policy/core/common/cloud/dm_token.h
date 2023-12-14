@@ -6,8 +6,8 @@
 #define COMPONENTS_POLICY_CORE_COMMON_CLOUD_DM_TOKEN_H_
 
 #include <string>
+#include <string_view>
 
-#include "base/strings/string_piece.h"
 #include "components/policy/policy_export.h"
 
 namespace policy {
@@ -48,7 +48,7 @@ class POLICY_EXPORT DMToken {
  private:
   enum class Status { kValid, kInvalid, kEmpty };
 
-  DMToken(Status status, const base::StringPiece value);
+  DMToken(Status status, const std::string_view value);
 
   Status status_;
   std::string value_;
