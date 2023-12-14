@@ -615,6 +615,8 @@ void AXPlatformNodeWin::Dispose() {
 }
 
 void AXPlatformNodeWin::Destroy() {
+  destroy_was_called_ = true;
+
   RemoveAlertTarget();
 
   // This will end up calling Dispose() which may result in deleting this object
@@ -7680,6 +7682,14 @@ ULONG AXPlatformNodeWin::InternalRelease() {
   if (ref_count == 1) {
     OnDereferenced();
   }
+
+  // `AXPlatformNodeWin` holds a reference to itself that is released when its
+  // owner calls `AXPlatformNode::Destroy()`. If the refcount ever reaches zero
+  // without `AXPlatformNode::Destroy()` having been called, there is a double-
+  // free somewhere; either in an accessibility tool's code, or in the browser.
+  // Crash fast if this happens to expose the last true reference holder (which
+  // is not necessarily the holder that committed the double-free).
+  CHECK(ref_count != 0 || destroy_was_called_);
   return ref_count;
 }
 
