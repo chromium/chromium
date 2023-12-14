@@ -756,6 +756,7 @@ ios_builder(
         ],
     ),
     builderless = True,
+    cpu = cpu.ARM64,
     execution_timeout = 20 * time.hour,
 )
 

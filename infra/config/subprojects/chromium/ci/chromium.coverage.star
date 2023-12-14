@@ -4,7 +4,7 @@
 
 load("//lib/branches.star", "branches")
 load("//lib/builder_config.star", "builder_config")
-load("//lib/builders.star", "os", "reclient", "xcode")
+load("//lib/builders.star", "cpu", "os", "reclient", "xcode")
 load("//lib/ci.star", "ci")
 load("//lib/consoles.star", "consoles")
 load("//lib/gn_args.star", "gn_args")
@@ -282,6 +282,7 @@ coverage_builder(
     builderless = True,
     cores = None,
     os = os.MAC_DEFAULT,
+    cpu = cpu.ARM64,
     console_view_entry = [
         consoles.console_view_entry(
             category = "ios",
