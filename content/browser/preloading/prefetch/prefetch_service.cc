@@ -935,6 +935,7 @@ PrefetchService::PopNextPrefetchContainer() {
 
 void PrefetchService::OnPrefetchTimeout(
     base::WeakPtr<PrefetchContainer> prefetch_container) {
+  prefetch_container->SetPrefetchStatus(PrefetchStatus::kPrefetchIsStale);
   ResetPrefetch(prefetch_container);
 
   if (PrefetchNewLimitsEnabled() &&

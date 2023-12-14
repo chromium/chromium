@@ -113,6 +113,7 @@ absl::optional<PreloadingTriggeringOutcome> TriggeringOutcomeFromStatus(
     case PrefetchStatus::kPrefetchResponseUsed:
       return PreloadingTriggeringOutcome::kSuccess;
     case PrefetchStatus::kPrefetchIsPrivacyDecoy:
+    case PrefetchStatus::kPrefetchIsStale:
     case PrefetchStatus::kPrefetchFailedNetError:
     case PrefetchStatus::kPrefetchFailedNon2XX:
     case PrefetchStatus::kPrefetchFailedMIMENotSupported:
@@ -146,6 +147,48 @@ absl::optional<PreloadingTriggeringOutcome> TriggeringOutcomeFromStatus(
   return absl::nullopt;
 }
 
+// Returns true if SetPrefetchStatus(|status|) can be called after a prefetch
+// has already been marked as failed. We ignore such status updates as they
+// may end up overwriting the initial failure reason.
+bool StatusUpdateIsPossibleAfterFailure(PrefetchStatus status) {
+  switch (status) {
+    case PrefetchStatus::kPrefetchEvictedAfterCandidateRemoved:
+    case PrefetchStatus::kPrefetchIsStale:
+      return true;
+    case PrefetchStatus::kPrefetchNotFinishedInTime:
+    case PrefetchStatus::kPrefetchSuccessful:
+    case PrefetchStatus::kPrefetchResponseUsed:
+    case PrefetchStatus::kPrefetchIsPrivacyDecoy:
+    case PrefetchStatus::kPrefetchFailedNetError:
+    case PrefetchStatus::kPrefetchFailedNon2XX:
+    case PrefetchStatus::kPrefetchFailedMIMENotSupported:
+    case PrefetchStatus::kPrefetchFailedInvalidRedirect:
+    case PrefetchStatus::kPrefetchFailedIneligibleRedirect:
+    case PrefetchStatus::kPrefetchFailedPerPageLimitExceeded:
+    case PrefetchStatus::kPrefetchIneligibleUserHasServiceWorker:
+    case PrefetchStatus::kPrefetchIneligibleSchemeIsNotHttps:
+    case PrefetchStatus::kPrefetchIneligibleNonDefaultStoragePartition:
+    case PrefetchStatus::kPrefetchIneligibleHostIsNonUnique:
+    case PrefetchStatus::kPrefetchIneligibleDataSaverEnabled:
+    case PrefetchStatus::kPrefetchIneligibleBatterySaverEnabled:
+    case PrefetchStatus::kPrefetchIneligiblePreloadingDisabled:
+    case PrefetchStatus::kPrefetchIneligibleExistingProxy:
+    case PrefetchStatus::kPrefetchIneligibleUserHasCookies:
+    case PrefetchStatus::kPrefetchIneligibleRetryAfter:
+    case PrefetchStatus::kPrefetchNotUsedCookiesChanged:
+    case PrefetchStatus::kPrefetchNotUsedProbeFailed:
+    case PrefetchStatus::kPrefetchIneligibleBrowserContextOffTheRecord:
+    case PrefetchStatus::
+        kPrefetchIneligibleSameSiteCrossOriginPrefetchRequiredProxy:
+    case PrefetchStatus::kPrefetchHeldback:
+    case PrefetchStatus::kPrefetchAllowed:
+    case PrefetchStatus::kPrefetchNotStarted:
+    case PrefetchStatus::kPrefetchIneligiblePrefetchProxyNotAvailable:
+    case PrefetchStatus::kPrefetchEvictedForNewerPrefetch:
+      return false;
+  }
+}
+
 // Please follow go/preloading-dashboard-updates if a new outcome enum or a
 // failure reason enum is added.
 void SetTriggeringOutcomeAndFailureReasonFromStatus(
@@ -161,16 +204,17 @@ void SetTriggeringOutcomeAndFailureReasonFromStatus(
   }
 
   if (old_prefetch_status &&
-      (new_prefetch_status ==
-           PrefetchStatus::kPrefetchEvictedAfterCandidateRemoved ||
-       new_prefetch_status ==
-           PrefetchStatus::kPrefetchEvictedForNewerPrefetch)) {
+      TriggeringOutcomeFromStatus(old_prefetch_status.value()) ==
+          PreloadingTriggeringOutcome::kFailure) {
+    CHECK(StatusUpdateIsPossibleAfterFailure(new_prefetch_status))
+        << "old_prefetch_status: "
+        << static_cast<int>(old_prefetch_status.value())
+        << " -> new_prefetch_status: " << static_cast<int>(new_prefetch_status);
+    CHECK(TriggeringOutcomeFromStatus(new_prefetch_status) ==
+          PreloadingTriggeringOutcome::kFailure);
     // Skip this update if the triggering outcome has already been updated to
     // kFailure.
-    if (TriggeringOutcomeFromStatus(old_prefetch_status.value()) ==
-        PreloadingTriggeringOutcome::kFailure) {
       return;
-    }
   }
 
   if (attempt) {
@@ -213,6 +257,7 @@ void SetTriggeringOutcomeAndFailureReasonFromStatus(
       // PreloadingTriggerOutcome for eviction.
       case PrefetchStatus::kPrefetchEvictedAfterCandidateRemoved:
       case PrefetchStatus::kPrefetchEvictedForNewerPrefetch:
+      case PrefetchStatus::kPrefetchIsStale:
         attempt->SetFailureReason(
             ToPreloadingFailureReason(new_prefetch_status));
         break;
