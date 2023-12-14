@@ -61,7 +61,9 @@ LayoutRubyAsInline::LayoutRubyAsInline(Element* element)
       ruby_container_(RuntimeEnabledFeatures::RubySimplePairingEnabled()
                           ? MakeGarbageCollected<RubyContainer>(*this)
                           : nullptr) {
-  UseCounter::Count(GetDocument(), WebFeature::kRenderRuby);
+  if (element) {
+    UseCounter::Count(GetDocument(), WebFeature::kRenderRuby);
+  }
 }
 
 LayoutRubyAsInline::~LayoutRubyAsInline() = default;
