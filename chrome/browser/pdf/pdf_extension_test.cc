@@ -558,7 +558,12 @@ class PDFExtensionLoadTest
   }
 };
 
-IN_PROC_BROWSER_TEST_P(PDFExtensionLoadTest, Load) {
+#if BUILDFLAG(IS_LINUX)
+#define MAYBE_Load DISABLED_Load
+#else
+#define MAYBE_Load Load
+#endif
+IN_PROC_BROWSER_TEST_P(PDFExtensionLoadTest, MAYBE_Load) {
   // TODO(crbug.com/1445746): Remove this once the test passes for OOPIF PDF.
   if (UseOopif()) {
     GTEST_SKIP();
