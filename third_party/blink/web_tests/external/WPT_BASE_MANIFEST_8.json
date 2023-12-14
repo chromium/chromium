@@ -19509,6 +19509,69 @@
        {}
       ]
      ],
+     "page-orientation-on-landscape-001-print.html": [
+      "6832a5537d96aed1b37ec72e18ef6aa102646471",
+      [
+       null,
+       [
+        [
+         "/css/css-page/page-orientation-portrait-ref.html",
+         "=="
+        ]
+       ],
+       {
+        "page_ranges": {
+         "/css/css-page/page-orientation-on-landscape-001-print.html": [
+          [
+           2
+          ]
+         ]
+        }
+       }
+      ]
+     ],
+     "page-orientation-on-portrait-001-print.html": [
+      "5ab3e1edfd1a260c8fa9c516d1357ed3a4238147",
+      [
+       null,
+       [
+        [
+         "/css/css-page/page-orientation-landscape-ref.html",
+         "=="
+        ]
+       ],
+       {
+        "page_ranges": {
+         "/css/css-page/page-orientation-on-portrait-001-print.html": [
+          [
+           2
+          ]
+         ]
+        }
+       }
+      ]
+     ],
+     "page-orientation-on-square-001-print.html": [
+      "06e4f00d3c43fed651f958d6ccf578e4ca717f99",
+      [
+       null,
+       [
+        [
+         "/css/css-page/page-orientation-square-ref.html",
+         "=="
+        ]
+       ],
+       {
+        "page_ranges": {
+         "/css/css-page/page-orientation-on-square-001-print.html": [
+          [
+           2
+          ]
+         ]
+        }
+       }
+      ]
+     ],
      "page-rule-specificity-001-print.html": [
       "dc28ad75db381a3297080bd867397a0f51a30220",
       [
@@ -105014,6 +105077,19 @@
        {}
       ]
      ],
+     "at-supports-048.html": [
+      "dc0ed9dc425595f7da0066ff8036954d27d65a4c",
+      [
+       null,
+       [
+        [
+         "/css/css-conditional/at-supports-048-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
      "at-supports-content-001.html": [
       "19c99f504be7766978dc3816d186e7c2dabe126e",
       [
@@ -120365,7 +120441,7 @@
       ]
      ],
      "flexbox-align-self-horiz-001-table.xhtml": [
-      "1785ca8dfc0a8bf5b52a0e870e4605902b8f2685",
+      "c168c822e998771c82c87fe82975f2743ba00aa3",
       [
        null,
        [
@@ -307208,6 +307284,10 @@
       "9d1fbaaf47b97cb82dc3003ffd2d46268100774e",
       []
      ],
+     "at-supports-048-ref.html": [
+      "414d9bf6f4c83876f604d2f47bd4cfc462d314bf",
+      []
+     ],
      "at-supports-selector-detecting-invalid-in-logical-combinations-ref.html": [
       "3e1f9b6a78416bd7c74759c5ad859001f101081e",
       []
@@ -326026,6 +326106,18 @@
      ],
      "page-name-zero-height-001-print-ref.html": [
       "e78cb65df988abff25061a58d96f2ce2525248f7",
+      []
+     ],
+     "page-orientation-landscape-ref.html": [
+      "caa7542dac9a8ceeccc0a3eb22377c5a85f56777",
+      []
+     ],
+     "page-orientation-portrait-ref.html": [
+      "c545c3163c7a713020465332888ca972cb47c45f",
+      []
+     ],
+     "page-orientation-square-ref.html": [
+      "9eacc3e092124218d4dc7fe44ee68611816b1876",
       []
      ],
      "page-orientation.tentative-expected.txt": [
@@ -479048,9 +479140,20 @@
        ]
       ],
       "observable-constructor.window.js": [
-       "34776f8fc56b5b2ed69b407db6b66ce18b7792e8",
+       "d2b597c819054f2b4c186d24f1e908bf5d46d2a2",
        [
         "dom/observable/tentative/observable-constructor.window.html",
+        {}
+       ]
+      ],
+      "observable-event-target.any.js": [
+       "0f7ace2acc0794a96dae575f33a23a47cb287d8b",
+       [
+        "dom/observable/tentative/observable-event-target.any.html",
+        {}
+       ],
+       [
+        "dom/observable/tentative/observable-event-target.any.worker.html",
         {}
        ]
       ]
@@ -638553,7 +638656,7 @@
      ]
     ],
     "trusted-types-event-handlers.html": [
-     "57f8d3d90c4162949832ec0b48f62c0511007c93",
+     "9dd7133cbb0b5b75b4bc04b8e05762e7981ad864",
      [
       null,
       {}
@@ -701178,7 +701281,7 @@
        },
        "response_started": {
         "response_started.py": [
-         "c4e3710c6c1e7f91ba51f8c73fc870342bb064a7",
+         "c4e9c653a7867f2f0e1061cd940607665aae6320",
          [
           null,
           {}

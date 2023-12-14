@@ -583,6 +583,9 @@ crbug.com/1507050 external/wpt/html/semantics/scripting-1/the-script-element/mov
 crbug.com/1507050 external/wpt/html/semantics/scripting-1/the-script-element/moving-between-documents/after-prepare-iframe-success-inline-classic.html [ Failure Pass ]
 
 # ====== New tests from wpt-importer added here ======
+crbug.com/626703 external/wpt/css/css-page/page-orientation-on-landscape-001-print.html [ Failure ]
+crbug.com/626703 external/wpt/css/css-page/page-orientation-on-portrait-001-print.html [ Failure ]
+crbug.com/626703 external/wpt/css/css-page/page-orientation-on-square-001-print.html [ Failure ]
 crbug.com/626703 external/wpt/css/css-backgrounds/table-cell-background-local-003.html [ Failure ]
 crbug.com/626703 external/wpt/css/css-scroll-snap-2/snapchanging/snapchanging-after-layout-change.tentative.html [ Crash ]
 crbug.com/626703 external/wpt/dom/events/scrolling/overscroll-event-fired-to-scrolled-element.html [ Crash ]

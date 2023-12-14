@@ -220,11 +220,11 @@ async def test_www_authenticate(
     events = network_events[RESPONSE_STARTED_EVENT]
 
     on_response_started = wait_for_event(RESPONSE_STARTED_EVENT)
-
-    # Note that here we explicitly do not navigate to the auth_url and instead
-    # simply do a fetch, because otherwise Firefox fails to cleanly cancel the
-    # authentication prompt on test teardown.
-    asyncio.ensure_future(fetch(auth_url, context=new_tab, method="GET"))
+    await bidi_session.browsing_context.navigate(
+        context=new_tab["context"],
+        url=auth_url,
+        wait="none",
+    )
 
     await wait_for_future_safe(on_response_started)
 
