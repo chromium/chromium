@@ -10,16 +10,16 @@
 #include <vector>
 
 #include "base/values.h"
-#include "chrome/browser/ui/webui/print_preview/print_preview_handler.h"
 #include "printing/backend/print_backend.h"
+#include "printing/mojom/print.mojom-forward.h"
 #include "printing/print_settings.h"
 #include "ui/gfx/geometry/size.h"
 
-namespace printing {
+namespace content {
+class WebContents;
+}  // namespace content
 
-namespace mojom {
-enum class PrinterType;
-}
+namespace printing {
 
 extern const char kDummyPrinterName[];
 constexpr int kTestPrinterDpi = 600;
@@ -52,5 +52,12 @@ std::unique_ptr<PrintSettings> MakeUserModifiedPrintSettings(
     const std::string& printer_name);
 
 }  // namespace printing
+
+// Simpler version of StartPrint() provided for convenience with the common
+// defaults:
+// - null `print_renderer`
+// - `print_preview_disabled` set to false
+// - `has_selection` set to false
+void StartPrint(content::WebContents* web_contents);
 
 #endif  // CHROME_BROWSER_PRINTING_PRINT_TEST_UTILS_H_

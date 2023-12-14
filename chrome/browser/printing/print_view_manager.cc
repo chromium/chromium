@@ -436,11 +436,10 @@ void PrintViewManager::OnScriptedPrintPreviewCallback(
   if (web_contents()->IsFullscreen())
     web_contents()->ExitFullscreen(true);
 
-  dialog_controller->PrintPreview(web_contents());
   mojom::RequestPrintPreviewParams params;
   params.is_modifiable = source_is_modifiable;
-  PrintPreviewUI::SetInitialParams(
-      dialog_controller->GetPrintPreviewForContents(web_contents()), params);
+  dialog_controller->PrintPreview(web_contents(), params);
+
   PrintPreviewAllowedForTesting();
 }
 
@@ -477,9 +476,8 @@ void PrintViewManager::OnRequestPrintPreviewCallback(
   if (params->webnode_only)
     PrintPreviewForWebNode(render_frame_host);
 
-  dialog_controller->PrintPreview(web_contents());
-  PrintPreviewUI::SetInitialParams(
-      dialog_controller->GetPrintPreviewForContents(web_contents()), *params);
+  dialog_controller->PrintPreview(web_contents(), *params);
+
   PrintPreviewAllowedForTesting();
 }
 

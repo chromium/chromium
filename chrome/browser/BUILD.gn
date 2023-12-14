@@ -6627,12 +6627,12 @@ static_library("browser") {
       "//components/printing/browser",
       "//components/printing/browser/headless",
       "//components/printing/browser/print_to_pdf",
-      "//components/printing/common:mojo_interfaces",
       "//components/services/print_compositor/public/cpp",
       "//components/services/print_compositor/public/mojom",
       "//printing",
       "//printing/backend",
     ]
+    public_deps += [ "//components/printing/common:mojo_interfaces" ]
 
     if (is_win) {
       sources += [
