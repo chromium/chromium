@@ -5,7 +5,7 @@
 import {Store as CrUiStore} from 'chrome://resources/js/store.js';
 
 import {reduceAction} from './reducers.js';
-import {BookmarksPageState} from './types.js';
+import type {BookmarksPageState} from './types.js';
 import {createEmptyState} from './util.js';
 
 /**

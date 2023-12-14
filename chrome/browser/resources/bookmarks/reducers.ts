@@ -10,10 +10,10 @@
  */
 
 import {assert} from 'chrome://resources/js/assert.js';
-import {Action} from 'chrome://resources/js/store.js';
+import type {Action} from 'chrome://resources/js/store.js';
 
-import {ChangeFolderOpenAction, CreateBookmarkAction, EditBookmarkAction, FinishSearchAction, MoveBookmarkAction, RefreshNodesAction, RemoveBookmarkAction, ReorderChildrenAction, SelectFolderAction, SelectItemsAction, SetPrefAction, StartSearchAction, UpdateAnchorAction} from './actions.js';
-import {BookmarkNode, BookmarksPageState, FolderOpenState, NodeMap, PreferencesState, SearchState, SelectionState} from './types.js';
+import type {ChangeFolderOpenAction, CreateBookmarkAction, EditBookmarkAction, FinishSearchAction, MoveBookmarkAction, RefreshNodesAction, RemoveBookmarkAction, ReorderChildrenAction, SelectFolderAction, SelectItemsAction, SetPrefAction, StartSearchAction, UpdateAnchorAction} from './actions.js';
+import type {BookmarkNode, BookmarksPageState, FolderOpenState, NodeMap, PreferencesState, SearchState, SelectionState} from './types.js';
 import {removeIdsFromMap, removeIdsFromObject, removeIdsFromSet} from './util.js';
 
 function selectItems(

@@ -2,11 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {makeStoreClientMixin, StoreClientInterface} from 'chrome://resources/cr_elements/store_client/store_client.js';
-import {Action} from 'chrome://resources/js/store.js';
+import type {StoreClientInterface} from 'chrome://resources/cr_elements/store_client/store_client.js';
+import {makeStoreClientMixin} from 'chrome://resources/cr_elements/store_client/store_client.js';
+import type {Action} from 'chrome://resources/js/store.js';
 
 import {Store} from './store.js';
-import {BookmarksPageState} from './types.js';
+import type {BookmarksPageState} from './types.js';
 
 // A Bookmarks specific specialization of `StoreClientInterface`.
 export interface StoreClientMixinInterface extends
