@@ -7,11 +7,13 @@
 #include "third_party/blink/renderer/core/css/css_test_helpers.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/testing/null_execution_context.h"
+#include "third_party/blink/renderer/platform/testing/task_environment.h"
 
 namespace blink {
 
 TEST(StylePendingImageTest, IsEqual) {
   using css_test_helpers::ParseValue;
+  test::TaskEnvironment task_environment_;
   ScopedNullExecutionContext execution_context;
   auto* document =
       Document::CreateForTest(execution_context.GetExecutionContext());
