@@ -57,6 +57,7 @@ FederatedProviderFetcher::~FederatedProviderFetcher() = default;
 
 void FederatedProviderFetcher::Start(
     const std::set<GURL>& identity_provider_config_urls,
+    blink::mojom::RpMode rp_mode,
     int icon_ideal_size,
     int icon_minimum_size,
     RequesterCallback callback) {
@@ -80,7 +81,7 @@ void FederatedProviderFetcher::Start(
         base::BindOnce(&FederatedProviderFetcher::OnWellKnownFetched,
                        weak_ptr_factory_.GetWeakPtr(), std::ref(fetch_result)));
     network_manager_->FetchConfig(
-        fetch_result.identity_provider_config_url, icon_ideal_size,
+        fetch_result.identity_provider_config_url, rp_mode, icon_ideal_size,
         icon_minimum_size,
         base::BindOnce(&FederatedProviderFetcher::OnConfigFetched,
                        weak_ptr_factory_.GetWeakPtr(), std::ref(fetch_result)));

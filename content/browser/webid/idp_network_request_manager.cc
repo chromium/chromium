@@ -32,6 +32,7 @@
 #include "services/network/public/mojom/client_security_state.mojom.h"
 #include "services/network/public/mojom/url_response_head.mojom.h"
 #include "third_party/blink/public/common/manifest/manifest_icon_selector.h"
+#include "third_party/blink/public/mojom/webid/federated_auth_request.mojom.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "ui/gfx/color_utils.h"
 #include "url/origin.h"
@@ -69,7 +70,14 @@ constexpr char kIdAssertionEndpoint[] = "id_assertion_endpoint";
 constexpr char kClientMetadataEndpointKey[] = "client_metadata_endpoint";
 constexpr char kMetricsEndpoint[] = "metrics_endpoint";
 constexpr char kDisconnectEndpoint[] = "disconnect_endpoint";
-constexpr char kSupportsAddAccountKey[] = "supports_add_account";
+constexpr char kModesKey[] = "modes";
+
+// Keys in the 'modes' dictionary.
+constexpr char kButtonModeKey[] = "button";
+constexpr char kWidgetModeKey[] = "widget";
+
+// Keys in the specific mode dictionary.
+constexpr char kSupportsUseOtherAccountKey[] = "supports_use_other_account";
 
 // Shared between the well-known files and config files
 constexpr char kAccountsEndpointKey[] = "accounts_endpoint";
@@ -500,6 +508,7 @@ void OnWellKnownParsed(
 }
 
 void OnConfigParsed(const GURL& provider,
+                    blink::mojom::RpMode rp_mode,
                     int idp_brand_icon_ideal_size,
                     int idp_brand_icon_minimum_size,
                     IdpNetworkRequestManager::FetchConfigCallback callback,
@@ -535,8 +544,25 @@ void OnConfigParsed(const GURL& provider,
   idp_metadata.idp_login_url =
       ExtractEndpoint(provider, response, kLoginUrlKey);
   if (IsFedCmAddAccountEnabled()) {
-    idp_metadata.supports_add_account =
-        response.FindBool(kSupportsAddAccountKey).value_or(false);
+    const base::Value::Dict* modes_dict = response.FindDict(kModesKey);
+    const base::Value::Dict* selected_mode_dict = nullptr;
+    if (modes_dict) {
+      switch (rp_mode) {
+        case blink::mojom::RpMode::kWidget:
+          selected_mode_dict = modes_dict->FindDict(kWidgetModeKey);
+          break;
+        case blink::mojom::RpMode::kButton:
+          selected_mode_dict = modes_dict->FindDict(kButtonModeKey);
+          break;
+      };
+    }
+    std::optional<bool> supports_add_account =
+        selected_mode_dict
+            ? selected_mode_dict->FindBool(kSupportsUseOtherAccountKey)
+            : std::nullopt;
+    if (supports_add_account) {
+      idp_metadata.supports_add_account = *supports_add_account;
+    }
   }
   std::move(callback).Run({ParseStatus::kSuccess, fetch_status.response_code},
                           endpoints, std::move(idp_metadata));
@@ -896,6 +922,7 @@ void IdpNetworkRequestManager::FetchWellKnown(const GURL& provider,
 }
 
 void IdpNetworkRequestManager::FetchConfig(const GURL& provider,
+                                           blink::mojom::RpMode rp_mode,
                                            int idp_brand_icon_ideal_size,
                                            int idp_brand_icon_minimum_size,
                                            FetchConfigCallback callback) {
@@ -905,8 +932,9 @@ void IdpNetworkRequestManager::FetchConfig(const GURL& provider,
   DownloadJsonAndParse(
       std::move(resource_request),
       /*url_encoded_post_data=*/absl::nullopt,
-      base::BindOnce(&OnConfigParsed, provider, idp_brand_icon_ideal_size,
-                     idp_brand_icon_minimum_size, std::move(callback)),
+      base::BindOnce(&OnConfigParsed, provider, rp_mode,
+                     idp_brand_icon_ideal_size, idp_brand_icon_minimum_size,
+                     std::move(callback)),
       maxResponseSizeInKiB * 1024);
 }
 

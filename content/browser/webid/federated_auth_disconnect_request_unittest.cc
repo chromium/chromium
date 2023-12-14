@@ -136,6 +136,7 @@ class TestIdpNetworkRequestManager : public MockIdpNetworkRequestManager {
   }
 
   void FetchConfig(const GURL& provider,
+                   blink::mojom::RpMode rp_mode,
                    int idp_brand_icon_ideal_size,
                    int idp_brand_icon_minimum_size,
                    FetchConfigCallback callback) override {

@@ -1163,7 +1163,7 @@ void FederatedAuthRequestImpl::FetchEndpointsForIdps(
   provider_fetcher_ = std::make_unique<FederatedProviderFetcher>(
       render_frame_host(), network_manager_.get());
   provider_fetcher_->Start(
-      fetch_data_.pending_idps, icon_ideal_size, icon_minimum_size,
+      fetch_data_.pending_idps, rp_mode_, icon_ideal_size, icon_minimum_size,
       base::BindOnce(&FederatedAuthRequestImpl::OnAllConfigAndWellKnownFetched,
                      weak_ptr_factory_.GetWeakPtr()));
 }

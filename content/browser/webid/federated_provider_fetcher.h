@@ -62,6 +62,7 @@ class CONTENT_EXPORT FederatedProviderFetcher {
   // Starts fetch of config and well-known files. Start() should be called at
   // most once per FederatedProviderFetcher instance.
   void Start(const std::set<GURL>& identity_provider_config_urls,
+             blink::mojom::RpMode rp_mode,
              int icon_ideal_size,
              int icon_minimum_size,
              RequesterCallback callback);

@@ -256,6 +256,7 @@ class CONTENT_EXPORT IdpNetworkRequestManager {
 
   // Attempt to fetch the IDP's FedCM parameters from the config file.
   virtual void FetchConfig(const GURL& provider,
+                           blink::mojom::RpMode rp_mode,
                            int idp_brand_icon_ideal_size,
                            int idp_brand_icon_minimum_size,
                            FetchConfigCallback);

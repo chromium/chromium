@@ -443,6 +443,7 @@ class TestIdpNetworkRequestManager : public MockIdpNetworkRequestManager {
   }
 
   void FetchConfig(const GURL& provider,
+                   blink::mojom::RpMode rp_mode,
                    int idp_brand_icon_ideal_size,
                    int idp_brand_icon_minimum_size,
                    FetchConfigCallback callback) override {
@@ -3574,6 +3575,7 @@ class ParseStatusOverrideIdpNetworkRequestManager
       const ParseStatusOverrideIdpNetworkRequestManager&) = delete;
 
   void FetchConfig(const GURL& provider,
+                   blink::mojom::RpMode rp_mode,
                    int idp_brand_icon_ideal_size,
                    int idp_brand_icon_minimum_size,
                    FetchConfigCallback callback) override {
@@ -3588,8 +3590,8 @@ class ParseStatusOverrideIdpNetworkRequestManager
       return;
     }
     TestIdpNetworkRequestManager::FetchConfig(
-        provider, idp_brand_icon_ideal_size, idp_brand_icon_minimum_size,
-        std::move(callback));
+        provider, rp_mode, idp_brand_icon_ideal_size,
+        idp_brand_icon_minimum_size, std::move(callback));
   }
 
   void SendAccountsRequest(const GURL& accounts_url,

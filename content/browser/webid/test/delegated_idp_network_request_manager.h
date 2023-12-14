@@ -7,6 +7,7 @@
 
 #include "base/memory/raw_ptr.h"
 #include "content/browser/webid/test/mock_idp_network_request_manager.h"
+#include "third_party/blink/public/mojom/webid/federated_auth_request.mojom.h"
 
 namespace content {
 
@@ -27,6 +28,7 @@ class DelegatedIdpNetworkRequestManager : public MockIdpNetworkRequestManager {
   void FetchWellKnown(const GURL& provider,
                       FetchWellKnownCallback callback) override;
   void FetchConfig(const GURL& provider,
+                   blink::mojom::RpMode rp_mode,
                    int idp_brand_icon_ideal_size,
                    int idp_brand_icon_minimum_size,
                    FetchConfigCallback callback) override;
