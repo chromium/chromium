@@ -164,14 +164,17 @@ class PressureServiceForFrameTest : public RenderViewHostImplTestHarness {
     pressure_manager_overrider_ =
         std::make_unique<device::ScopedPressureManagerOverrider>();
     pressure_manager_.reset();
-    RenderFrameHostImpl* rfh =
-        static_cast<RenderFrameHostImpl*>(contents()->GetPrimaryMainFrame());
+    auto* rfh = contents()->GetPrimaryMainFrame();
     mojo::Receiver<blink::mojom::BrowserInterfaceBroker>& bib =
         rfh->browser_interface_broker_receiver_for_testing();
     blink::mojom::BrowserInterfaceBroker* broker = bib.internal_state()->impl();
     broker->GetInterface(pressure_manager_.BindNewPipeAndPassReceiver());
     pressure_manager_sync_ =
         std::make_unique<PressureManagerSync>(pressure_manager_.get());
+    // Focus on the page and frame to make HasImplicitFocus() return true
+    // by default.
+    rfh->GetRenderWidgetHost()->Focus();
+    FocusWebContentsOnMainFrame();
     task_environment()->RunUntilIdle();
   }
 

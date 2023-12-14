@@ -25,6 +25,7 @@ class CONTENT_EXPORT PressureServiceForFrame
 
   // PressureServiceBase override.
   bool CanCallAddClient() const override;
+  bool ShouldDeliverUpdate() const override;
 
  private:
   explicit PressureServiceForFrame(RenderFrameHost* render_frame_host);

@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html>
+   <head>
+      <title>Compute Pressure Browser Test</title>
+   </head>
+   <body>
+      <iframe src="valid_token.html" id="same-origin"></iframe>
+      <iframe src="/cross-site/b.com/title1.html" id="cross-origin"></iframe>
+      <video src="../media/tulip2.webm" id="video"></video>
+
+      <script>
+         const samples = [];
+         const same_origin_iframe = document.getElementById('same-origin');
+         const cross_origin_iframe = document.getElementById('cross-origin');
+         const video = document.getElementById('video');
+         let pendingResolve = null;
+         let stream = null;
+
+         const observer = new PressureObserver((records) => {
+            for (const record of records) {
+               samples.push(record);
+            }
+            if (pendingResolve !== null) {
+               pendingResolve();
+               pendingResolve = null;
+            }
+         });
+
+         // Returns a promise that will resolve when update is received.
+         function waitForUpdate(num) {
+            if (samples.length == num) {
+               return Promise.resolve();
+            }
+            return new Promise((resolve) => {
+               pendingResolve = resolve;
+            });
+         }
+
+         async function startCapturing() {
+            stream = await navigator.mediaDevices.getUserMedia({video: true, audio: true});
+         }
+
+         function stopCapturing() {
+            stream.getTracks().forEach(track => track.stop());
+         }
+      </script>
+   </body>
+</html>

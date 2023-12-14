@@ -5747,6 +5747,7 @@ data/clipboard/small.jpg
 data/color-scheme-2.html
 data/color-scheme-dark.html
 data/color-scheme.html
+data/compute_pressure/deliver_update_test.html
 data/compute_pressure/no_token.html
 data/compute_pressure/valid_token.html
 data/content-disposition-attachment.html

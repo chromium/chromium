@@ -402,8 +402,7 @@
   {
     "prefix": "compute-pressure",
     "platforms": ["Linux", "Mac", "Win"],
-    "bases": ["external/wpt/compute-pressure",
-              "wpt_internal/compute-pressure"],
+    "bases": ["external/wpt/compute-pressure"],
     "exclusive_tests": "ALL",
     "args": ["--enable-features=ComputePressure",
              "--disable-threaded-compositing", "--disable-threaded-animation"],

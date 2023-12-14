@@ -29,6 +29,14 @@ class CONTENT_EXPORT PressureServiceForWorker : public PressureServiceBase {
   PressureServiceForWorker(const PressureServiceForWorker&) = delete;
   PressureServiceForWorker& operator=(const PressureServiceForWorker&) = delete;
 
+  // PressureServiceBase override.
+  bool ShouldDeliverUpdate() const override {
+    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+    // TODO(crbug.com/1425053): Check for active needed worker.
+    return true;
+  }
+
  private:
   SEQUENCE_CHECKER(sequence_checker_);
 

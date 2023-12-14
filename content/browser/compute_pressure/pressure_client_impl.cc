@@ -4,11 +4,13 @@
 
 #include "content/browser/compute_pressure/pressure_client_impl.h"
 
+#include "content/browser/compute_pressure/pressure_service_base.h"
 #include "services/device/public/mojom/pressure_update.mojom.h"
 
 namespace content {
 
-PressureClientImpl::PressureClientImpl() = default;
+PressureClientImpl::PressureClientImpl(PressureServiceBase* service)
+    : service_(service) {}
 
 PressureClientImpl::~PressureClientImpl() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -18,7 +20,9 @@ void PressureClientImpl::OnPressureUpdated(
     device::mojom::PressureUpdatePtr update) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  client_remote_->OnPressureUpdated(std::move(update));
+  if (service_->ShouldDeliverUpdate()) {
+    client_remote_->OnPressureUpdated(std::move(update));
+  }
 }
 
 void PressureClientImpl::AddClient(

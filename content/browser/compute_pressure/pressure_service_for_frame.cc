@@ -21,6 +21,10 @@ bool PressureServiceForFrame::CanCallAddClient() const {
          !render_frame_host().IsNestedWithinFencedFrame();
 }
 
+bool PressureServiceForFrame::ShouldDeliverUpdate() const {
+  return HasImplicitFocus(&render_frame_host());
+}
+
 DOCUMENT_USER_DATA_KEY_IMPL(PressureServiceForFrame);
 
 }  // namespace content

@@ -62,9 +62,6 @@ class MODULES_EXPORT PressureClientImpl final
   void Trace(Visitor*) const override;
 
  private:
-  // Verifies if the data should be delivered according to privacy status.
-  bool PassesPrivacyTest() const;
-
   WeakMember<PressureObserverManager> manager_;
 
   HeapMojoReceiver<device::mojom::blink::PressureClient, PressureClientImpl>

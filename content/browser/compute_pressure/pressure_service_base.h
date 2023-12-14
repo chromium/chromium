@@ -18,6 +18,8 @@
 
 namespace content {
 
+class RenderFrameHost;
+
 // This class holds common functions for both frame and workers. It serves all
 // the Compute Pressure API mojo requests.
 //
@@ -30,6 +32,9 @@ class CONTENT_EXPORT PressureServiceBase
   PressureServiceBase(const PressureServiceBase&) = delete;
   PressureServiceBase& operator=(const PressureServiceBase&) = delete;
 
+  // https://www.w3.org/TR/compute-pressure/#dfn-document-has-implicit-focus
+  static bool HasImplicitFocus(RenderFrameHost* render_frame_host);
+
   void BindReceiver(
       mojo::PendingReceiver<device::mojom::PressureManager> receiver);
 
@@ -39,6 +44,9 @@ class CONTENT_EXPORT PressureServiceBase
   void AddClient(mojo::PendingRemote<device::mojom::PressureClient> client,
                  device::mojom::PressureSource source,
                  AddClientCallback callback) override;
+
+  // Verifies if the data should be delivered according to focus status.
+  virtual bool ShouldDeliverUpdate() const = 0;
 
   bool IsManagerReceiverBoundForTesting() const {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);

@@ -15,6 +15,8 @@
 
 namespace content {
 
+class PressureServiceBase;
+
 // PressureServiceImpl owns instances of this class for different
 // PressureSources.
 //
@@ -25,7 +27,7 @@ namespace content {
 // This class is not thread-safe, so each instance must be used on one sequence.
 class CONTENT_EXPORT PressureClientImpl : public device::mojom::PressureClient {
  public:
-  PressureClientImpl();
+  explicit PressureClientImpl(PressureServiceBase* service);
   ~PressureClientImpl() override;
 
   PressureClientImpl(const PressureClientImpl&) = delete;
@@ -62,6 +64,9 @@ class CONTENT_EXPORT PressureClientImpl : public device::mojom::PressureClient {
 
  private:
   SEQUENCE_CHECKER(sequence_checker_);
+
+  // This is safe because PressureServiceBase owns this class.
+  raw_ptr<PressureServiceBase> GUARDED_BY_CONTEXT(sequence_checker_) service_;
 
   // Services side.
   mojo::Receiver<device::mojom::PressureClient> GUARDED_BY_CONTEXT(
