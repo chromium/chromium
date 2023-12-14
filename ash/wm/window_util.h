@@ -153,6 +153,13 @@ void SendBackKeyEvent(aura::Window* root_window);
 WindowTransientDescendantIteratorRange GetVisibleTransientTreeIterator(
     aura::Window* window);
 
+// Applies the `transform` to `window` and all of its transient children,
+// except those with `kExcludeFromTransientTreeTransformKey` set to true.
+// Note `transform` is the transform that is applied to `window` and needs to be
+// adjusted for the transient child windows.
+ASH_EXPORT void SetTransform(aura::Window* window,
+                             const gfx::Transform& transform);
+
 // Calculates the bounds of the |transformed_window|. Those bounds are a union
 // of all regular (normal and panel) windows in the |transformed_window|'s
 // transient hierarchy. The returned Rect is in screen coordinates. The returned

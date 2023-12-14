@@ -281,7 +281,7 @@ void ScopedOverviewTransformWindow::RestoreWindow(bool reset_transform,
     // from the shelf.
     ScopedOverviewAnimationSettings animation_settings(OVERVIEW_ANIMATION_NONE,
                                                        window_);
-    SetTransform(window_, gfx::Transform());
+    window_util::SetTransform(window_, gfx::Transform());
     SetClipping(gfx::Rect(original_clip_rect_.size()));
     return;
   }
@@ -301,7 +301,7 @@ void ScopedOverviewTransformWindow::RestoreWindow(bool reset_transform,
 
     // Use identity transform directly to reset window's transform when exiting
     // overview.
-    SetTransform(window_, gfx::Transform());
+    window_util::SetTransform(window_, gfx::Transform());
 
     // Add requests to cache render surface and perform trilinear filtering for
     // the exit animation of overview mode. The requests will be removed when

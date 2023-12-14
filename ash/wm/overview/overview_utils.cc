@@ -151,22 +151,6 @@ gfx::RectF GetUnionScreenBoundsForWindow(aura::Window* window) {
   return bounds;
 }
 
-void SetTransform(aura::Window* window, const gfx::Transform& transform) {
-  const gfx::PointF target_origin(
-      GetUnionScreenBoundsForWindow(window).origin());
-  for (auto* window_iter :
-       window_util::GetVisibleTransientTreeIterator(window)) {
-    aura::Window* parent_window = window_iter->parent();
-    gfx::RectF original_bounds(window_iter->GetTargetBounds());
-    ::wm::TranslateRectToScreen(parent_window, &original_bounds);
-    const gfx::Transform new_transform = TransformAboutPivot(
-        gfx::PointF(target_origin.x() - original_bounds.x(),
-                    target_origin.y() - original_bounds.y()),
-        transform);
-    window_iter->SetTransform(new_transform);
-  }
-}
-
 void MaximizeIfSnapped(aura::Window* window) {
   auto* window_state = WindowState::Get(window);
   if (window_state && window_state->IsSnapped()) {

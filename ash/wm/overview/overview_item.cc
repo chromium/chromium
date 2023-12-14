@@ -797,7 +797,7 @@ void OverviewItem::OnOverviewItemContinuousScroll(
   } else {
     gfx::Transform transform = gfx::Tween::TransformValueBetween(
         scroll_ratio, gfx::Transform(), target_transform);
-    SetTransform(window, transform);
+    window_util::SetTransform(window, transform);
   }
 }
 
@@ -1187,7 +1187,7 @@ void OverviewItem::PerformItemSpawnedAnimation(
   // window.
   gfx::Transform initial_transform = target_transform;
   initial_transform.Scale(kInitialScaler, kInitialScaler);
-  SetTransform(window, initial_transform);
+  window_util::SetTransform(window, initial_transform);
   transform_window_.SetOpacity(kInitialScaler);
 
   ScopedOverviewTransformWindow::ScopedAnimationSettings animation_settings;
@@ -1204,7 +1204,7 @@ void OverviewItem::PerformItemSpawnedAnimation(
         base::BindOnce(&OverviewItem::OnItemSpawnedAnimationCompleted,
                        weak_ptr_factory_.GetWeakPtr())});
   }
-  SetTransform(window, target_transform);
+  window_util::SetTransform(window, target_transform);
   transform_window_.SetOpacity(kTargetScaler);
 
   if (cannot_snap_widget_) {
@@ -1264,7 +1264,7 @@ void OverviewItem::SetItemBounds(const gfx::RectF& target_bounds,
         base::BindOnce(&OverviewItem::OnItemBoundsAnimationEnded,
                        weak_ptr_factory_.GetWeakPtr())});
   }
-  SetTransform(window, transform);
+  window_util::SetTransform(window, transform);
   transform_window_.SetClipping(clip_rect);
 }
 

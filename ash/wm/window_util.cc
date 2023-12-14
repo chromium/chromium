@@ -573,6 +573,25 @@ WindowTransientDescendantIteratorRange GetVisibleTransientTreeIterator(
   return GetTransientTreeIterator(window, base::BindRepeating(hide_predicate));
 }
 
+void SetTransform(aura::Window* window, const gfx::Transform& transform) {
+  const gfx::PointF target_origin(
+      GetUnionScreenBoundsForWindow(window).origin());
+  for (auto* window_iter :
+       window_util::GetVisibleTransientTreeIterator(window)) {
+    if (window_iter->GetProperty(kExcludeFromTransientTreeTransformKey)) {
+      continue;
+    }
+    aura::Window* parent_window = window_iter->parent();
+    gfx::RectF original_bounds(window_iter->GetTargetBounds());
+    ::wm::TranslateRectToScreen(parent_window, &original_bounds);
+    const gfx::Transform new_transform = TransformAboutPivot(
+        gfx::PointF(target_origin.x() - original_bounds.x(),
+                    target_origin.y() - original_bounds.y()),
+        transform);
+    window_iter->SetTransform(new_transform);
+  }
+}
+
 gfx::RectF GetTransformedBounds(aura::Window* transformed_window,
                                 int top_inset) {
   gfx::RectF bounds;
@@ -597,7 +616,7 @@ gfx::RectF GetTransformedBounds(aura::Window* transformed_window,
       header_bounds = new_transform.MapRect(header_bounds);
       window_bounds.Inset(gfx::InsetsF::TLBR(header_bounds.height(), 0, 0, 0));
     }
-    ::wm::TranslateRectToScreen(window->parent(), &window_bounds);
+    wm::TranslateRectToScreen(window->parent(), &window_bounds);
     bounds.Union(window_bounds);
   }
   return bounds;

@@ -230,11 +230,6 @@ bool IsSnapGroupEnabledInClamshellMode();
 // current screen orientation for resizing purpose.
 int GetWindowComponentForResize(aura::Window* window);
 
-// Returns the widget init params needed to create the widget.
-views::Widget::InitParams CreateWidgetInitParams(
-    aura::Window* parent_window,
-    const std::string& widget_name);
-
 // Builds the full histogram that records whether the window layout completes on
 // `SplitViewOverviewSession` exit. The full histogram is shown in the example
 // below:

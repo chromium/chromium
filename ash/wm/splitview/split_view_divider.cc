@@ -8,6 +8,7 @@
 #include <memory>
 
 #include "ash/display/screen_orientation_controller.h"
+#include "ash/public/cpp/window_properties.h"
 #include "ash/screen_util.h"
 #include "ash/shell.h"
 #include "ash/wm/desks/desks_util.h"
@@ -48,6 +49,23 @@ gfx::Point GetBoundedPosition(const gfx::Point& location_in_screen,
 gfx::Rect GetWorkAreaBoundsInScreen(aura::Window* window) {
   return screen_util::GetDisplayWorkAreaBoundsInScreenForActiveDeskContainer(
       window);
+}
+
+// Returns the widget init params needed to create the widget.
+views::Widget::InitParams CreateWidgetInitParams(
+    aura::Window* parent_window,
+    const std::string& widget_name) {
+  views::Widget::InitParams params(views::Widget::InitParams::TYPE_POPUP);
+  params.opacity = views::Widget::InitParams::WindowOpacity::kOpaque;
+  params.activatable = views::Widget::InitParams::Activatable::kNo;
+  params.parent = parent_window;
+  params.init_properties_container.SetProperty(kHideInDeskMiniViewKey, true);
+  // Exclude the divider from getting transformed with its transient parent
+  // window when we are resizing. The divider will set its own transforms.
+  params.init_properties_container.SetProperty(
+      kExcludeFromTransientTreeTransformKey, true);
+  params.name = widget_name;
+  return params;
 }
 
 }  // namespace

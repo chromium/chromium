@@ -743,18 +743,6 @@ int GetWindowComponentForResize(aura::Window* window) {
                                                                   : HTLEFT;
 }
 
-views::Widget::InitParams CreateWidgetInitParams(
-    aura::Window* parent_window,
-    const std::string& widget_name) {
-  views::Widget::InitParams params(views::Widget::InitParams::TYPE_POPUP);
-  params.opacity = views::Widget::InitParams::WindowOpacity::kOpaque;
-  params.activatable = views::Widget::InitParams::Activatable::kNo;
-  params.parent = parent_window;
-  params.init_properties_container.SetProperty(kHideInDeskMiniViewKey, true);
-  params.name = widget_name;
-  return params;
-}
-
 ASH_EXPORT std::string BuildWindowLayoutCompleteOnSessionExitHistogram() {
   std::string histogram_name(kHistogramPrefix);
   histogram_name.append(kWindowLayoutCompleteOnSessionExitRootWord);

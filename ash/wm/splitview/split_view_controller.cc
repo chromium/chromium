@@ -2377,7 +2377,7 @@ void SplitViewController::SetWindowsTransformDuringResizing() {
       left_or_top_transform.Translate(horizontal ? distance : 0,
                                       horizontal ? 0 : distance);
     }
-    SetTransform(left_or_top_window, left_or_top_transform);
+    window_util::SetTransform(left_or_top_window, left_or_top_transform);
   }
 
   gfx::Transform right_or_bottom_transform;
@@ -2390,18 +2390,20 @@ void SplitViewController::SetWindowsTransformDuringResizing() {
       right_or_bottom_transform.Translate(horizontal ? -distance : 0,
                                           horizontal ? 0 : -distance);
     }
-    SetTransform(right_or_bottom_window, right_or_bottom_transform);
+    window_util::SetTransform(right_or_bottom_window,
+                              right_or_bottom_transform);
   }
 }
 
 void SplitViewController::RestoreWindowsTransformAfterResizing() {
   DCHECK(InSplitViewMode());
   if (primary_window_)
-    SetTransform(primary_window_, gfx::Transform());
+    window_util::SetTransform(primary_window_, gfx::Transform());
   if (secondary_window_)
-    SetTransform(secondary_window_, gfx::Transform());
-  if (black_scrim_layer_.get())
+    window_util::SetTransform(secondary_window_, gfx::Transform());
+  if (black_scrim_layer_.get()) {
     black_scrim_layer_->SetTransform(gfx::Transform());
+  }
 }
 
 void SplitViewController::SetTransformWithAnimation(

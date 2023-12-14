@@ -610,7 +610,7 @@ void DragWindowFromShelfController::UpdateDraggedWindow(
         0, (bounds.bottom() - transformed_bounds.bottom()) / scale);
   }
 
-  SetTransform(window_, transform);
+  window_util::SetTransform(window_, transform);
 
   if (other_window_copy_) {
     // When we have dragged 1/8th of the display height, the copy should be
