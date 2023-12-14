@@ -494,7 +494,8 @@ bool VideoCaptureImpl::VideoFrameBufferPreparer::IsVideoFrameBound() const {
 // the VideoFrame can access the data either through mailboxes (e.g. display)
 // or through the DMA-buf FDs (e.g. video encoder).
 bool VideoCaptureImpl::VideoFrameBufferPreparer::BindVideoFrameOnMediaThread(
-    media::GpuVideoAcceleratorFactories* gpu_factories) {
+    media::GpuVideoAcceleratorFactories* gpu_factories,
+    base::OnceCallback<void()> on_gmb_not_supported) {
   DCHECK(gpu_factories);
   DCHECK(!IsVideoFrameBound());
   DCHECK_EQ(frame_info_->pixel_format, media::PIXEL_FORMAT_NV12);
@@ -514,8 +515,7 @@ bool VideoCaptureImpl::VideoFrameBufferPreparer::BindVideoFrameOnMediaThread(
       gpu_factories->SharedImageInterface();
   if (!shared_image_interface ||
       !shared_image_interface->GetCapabilities().shared_image_d3d) {
-    video_capture_impl_->RequirePremappedFrames();
-    video_capture_impl_->gmb_not_supported_ = true;
+    std::move(on_gmb_not_supported).Run();
     return false;
   }
 #endif
@@ -1052,6 +1052,9 @@ void VideoCaptureImpl::OnBufferReady(
                        base::BindPostTask(
                            main_task_runner_,
                            base::BindOnce(&VideoCaptureImpl::OnGpuContextLost,
+                                          weak_factory_.GetWeakPtr())),
+                       base::BindPostTaskToCurrentDefault(
+                           base::BindOnce(&VideoCaptureImpl::OnGmbNotSupported,
                                           weak_factory_.GetWeakPtr()))));
     return;
   }
@@ -1064,11 +1067,13 @@ void VideoCaptureImpl::BindVideoFrameOnMediaThread(
     std::unique_ptr<VideoFrameBufferPreparer> frame_preparer,
     base::OnceCallback<void(std::unique_ptr<VideoFrameBufferPreparer>)>
         on_frame_ready_callback,
-    base::OnceCallback<void()> on_gpu_context_lost) {
+    base::OnceCallback<void()> on_gpu_context_lost,
+    base::OnceCallback<void()> on_gmb_not_supported) {
   // This method should only be called when binding is needed, i.e. the frame is
   // a GPU frame.
   CHECK(!frame_preparer->IsVideoFrameBound());
-  if (!frame_preparer->BindVideoFrameOnMediaThread(gpu_factories)) {
+  if (!frame_preparer->BindVideoFrameOnMediaThread(
+          gpu_factories, std::move(on_gmb_not_supported))) {
     // Bind failed.
     std::move(on_gpu_context_lost).Run();
     // Proceed to invoke |on_frame_ready_callback| even though we failed - it
@@ -1305,7 +1310,14 @@ void VideoCaptureImpl::ProcessFeedback(
   feedback_ = feedback;
 }
 
+void VideoCaptureImpl::OnGmbNotSupported() {
+  DCHECK_CALLED_ON_VALID_THREAD(io_thread_checker_);
+  RequirePremappedFrames();
+  gmb_not_supported_ = true;
+}
+
 void VideoCaptureImpl::RequirePremappedFrames() {
+  DCHECK_CALLED_ON_VALID_THREAD(io_thread_checker_);
   require_premapped_frames_ = true;
 }
 

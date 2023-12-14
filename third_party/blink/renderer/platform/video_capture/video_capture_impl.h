@@ -167,7 +167,8 @@ class PLATFORM_EXPORT VideoCaptureImpl
     // Returns false if the video frame could not be bound because the GPU
     // context was lost.
     bool BindVideoFrameOnMediaThread(
-        media::GpuVideoAcceleratorFactories* gpu_factories);
+        media::GpuVideoAcceleratorFactories* gpu_factories,
+        base::OnceCallback<void()> on_gmb_not_supported);
     // Adds destruction observers and finalizes the color spaces.
     // Called from OnVideoFrameReady() prior to frame delivery after deciding to
     // use the media::VideoFrame.
@@ -200,7 +201,8 @@ class PLATFORM_EXPORT VideoCaptureImpl
       std::unique_ptr<VideoFrameBufferPreparer> frame_preparer,
       base::OnceCallback<void(std::unique_ptr<VideoFrameBufferPreparer>)>
           on_frame_ready_callback,
-      base::OnceCallback<void()> on_gpu_context_lost);
+      base::OnceCallback<void()> on_gpu_context_lost,
+      base::OnceCallback<void()> on_gmb_not_supported);
   void OnVideoFrameReady(
       base::TimeTicks reference_time,
       std::unique_ptr<VideoFrameBufferPreparer> frame_preparer);
@@ -246,6 +248,8 @@ class PLATFORM_EXPORT VideoCaptureImpl
   void SetGpuFactoriesHandleOnIOTaskRunner(
       media::GpuVideoAcceleratorFactories* gpu_factories);
 
+  // Performs RequirePremappedFrames() and sets `gmb_not_supported_`.
+  void OnGmbNotSupported();
   // Sets fallback mode which will make it always request
   // premapped frames from the capturer.
   void RequirePremappedFrames();
