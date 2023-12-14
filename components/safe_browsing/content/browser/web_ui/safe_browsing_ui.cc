@@ -1563,9 +1563,6 @@ std::string SerializeCSBRR(const ClientSafeBrowsingReportRequest& report) {
       case ClientSafeBrowsingReportRequest::URL_CLIENT_SIDE_PHISHING:
         report_type = "URL_CLIENT_SIDE_PHISHING";
         break;
-      case ClientSafeBrowsingReportRequest::URL_CLIENT_SIDE_MALWARE:
-        report_type = "URL_CLIENT_SIDE_MALWARE";
-        break;
       case ClientSafeBrowsingReportRequest::DANGEROUS_DOWNLOAD_RECOVERY:
         report_type = "DANGEROUS_DOWNLOAD_RECOVERY";
         break;
@@ -1607,6 +1604,11 @@ std::string SerializeCSBRR(const ClientSafeBrowsingReportRequest& report) {
         break;
       case ClientSafeBrowsingReportRequest::WARNING_SHOWN:
         report_type = "WARNING_SHOWN";
+        break;
+      case ClientSafeBrowsingReportRequest::URL_CLIENT_SIDE_MALWARE:
+        // Deprecated!
+        NOTREACHED();
+        report_type = "";
         break;
     }
     report_request.Set("type", report_type);

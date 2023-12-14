@@ -28,10 +28,9 @@ bool UnsafeResource::IsMainPageLoadBlocked() const {
     return false;
 
   switch (threat_type) {
-    // Client-side phishing/malware detection interstitials never block the main
+    // Client-side phishing detection interstitials never block the main
     // frame load, since they happen after the page is finished loading.
     case safe_browsing::SB_THREAT_TYPE_URL_CLIENT_SIDE_PHISHING:
-    case safe_browsing::SB_THREAT_TYPE_URL_CLIENT_SIDE_MALWARE:
     // Malicious ad activity reporting happens in the background.
     case safe_browsing::SB_THREAT_TYPE_BLOCKED_AD_POPUP:
     case safe_browsing::SB_THREAT_TYPE_BLOCKED_AD_REDIRECT:

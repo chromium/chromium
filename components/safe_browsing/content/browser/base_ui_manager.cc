@@ -130,7 +130,6 @@ ThreatSeverity GetThreatSeverity(safe_browsing::SBThreatType threat_type) {
       return 1;
     case safe_browsing::SB_THREAT_TYPE_API_ABUSE:
     case safe_browsing::SB_THREAT_TYPE_URL_CLIENT_SIDE_PHISHING:
-    case safe_browsing::SB_THREAT_TYPE_URL_CLIENT_SIDE_MALWARE:
     case safe_browsing::SB_THREAT_TYPE_SUBRESOURCE_FILTER:
       return 2;
     case safe_browsing::SB_THREAT_TYPE_CSD_ALLOWLIST:

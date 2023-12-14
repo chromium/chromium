@@ -305,8 +305,6 @@ CreateSafeBrowsingBlockingPage(content::WebContents* web_contents) {
       threat_type = safe_browsing::SB_THREAT_TYPE_URL_PHISHING;
     } else if (type_param == "unwanted") {
       threat_type = safe_browsing::SB_THREAT_TYPE_URL_UNWANTED;
-    } else if (type_param == "clientside_malware") {
-      threat_type = safe_browsing::SB_THREAT_TYPE_URL_CLIENT_SIDE_MALWARE;
     } else if (type_param == "clientside_phishing") {
       threat_type = safe_browsing::SB_THREAT_TYPE_URL_CLIENT_SIDE_PHISHING;
     } else if (type_param == "billing") {

@@ -1637,8 +1637,7 @@ bool ChromePasswordProtectionService::UserClickedThroughSBInterstitial(
   return current_threat_type == SB_THREAT_TYPE_URL_PHISHING ||
          current_threat_type == SB_THREAT_TYPE_URL_MALWARE ||
          current_threat_type == SB_THREAT_TYPE_URL_UNWANTED ||
-         current_threat_type == SB_THREAT_TYPE_URL_CLIENT_SIDE_PHISHING ||
-         current_threat_type == SB_THREAT_TYPE_URL_CLIENT_SIDE_MALWARE;
+         current_threat_type == SB_THREAT_TYPE_URL_CLIENT_SIDE_PHISHING;
 }
 
 AccountInfo ChromePasswordProtectionService::GetAccountInfo() const {

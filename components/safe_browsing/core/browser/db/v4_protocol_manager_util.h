@@ -160,9 +160,9 @@ enum SBThreatType {
   // The Chrome extension or app (given by its ID) is malware.
   SB_THREAT_TYPE_EXTENSION = 7,
 
-  // Url detected by the client-side malware IP list. This IP list is part
-  // of the client side detection model.
-  SB_THREAT_TYPE_URL_CLIENT_SIDE_MALWARE = 8,
+  // DEPRECATED. Url detected by the client-side malware IP list. This IP list
+  // is part of the client side detection model.
+  DEPRECATED_SB_THREAT_TYPE_URL_CLIENT_SIDE_MALWARE = 8,
 
   // Url leads to a blocklisted resource script. Note that no warnings should be
   // shown on this threat type, but an incident report might be sent.

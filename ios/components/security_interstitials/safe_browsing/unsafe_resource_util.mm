@@ -28,7 +28,6 @@ GetUnsafeResourceInterstitialReason(const UnsafeResource& resource) {
     case safe_browsing::SB_THREAT_TYPE_BILLING:
       return BaseSafeBrowsingErrorUI::SB_REASON_BILLING;
     case safe_browsing::SB_THREAT_TYPE_URL_MALWARE:
-    case safe_browsing::SB_THREAT_TYPE_URL_CLIENT_SIDE_MALWARE:
       return BaseSafeBrowsingErrorUI::SB_REASON_MALWARE;
     case safe_browsing::SB_THREAT_TYPE_URL_UNWANTED:
       return BaseSafeBrowsingErrorUI::SB_REASON_HARMFUL;

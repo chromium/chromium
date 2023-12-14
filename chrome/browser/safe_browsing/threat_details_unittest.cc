@@ -1859,7 +1859,7 @@ TEST_F(ThreatDetailsTest, HTTPCacheNoEntries) {
       ->NavigateAndCommit(GURL(kLandingURL));
 
   UnsafeResource resource;
-  InitResource(SB_THREAT_TYPE_URL_CLIENT_SIDE_MALWARE,
+  InitResource(SB_THREAT_TYPE_URL_CLIENT_SIDE_PHISHING,
                ThreatSource::LOCAL_PVER4, true /* is_subresource */,
                GURL(kThreatURL), &resource);
 
@@ -1892,7 +1892,7 @@ TEST_F(ThreatDetailsTest, HTTPCacheNoEntries) {
   actual.ParseFromString(serialized);
 
   ClientSafeBrowsingReportRequest expected;
-  expected.set_type(ClientSafeBrowsingReportRequest::URL_CLIENT_SIDE_MALWARE);
+  expected.set_type(ClientSafeBrowsingReportRequest::URL_CLIENT_SIDE_PHISHING);
   expected.mutable_client_properties()->set_url_api_type(
       ClientSafeBrowsingReportRequest::PVER4_NATIVE);
   expected.set_url(kThreatURL);

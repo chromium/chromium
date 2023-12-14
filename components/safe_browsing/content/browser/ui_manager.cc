@@ -338,7 +338,6 @@ std::string SafeBrowsingUIManager::GetThreatTypeStringForInterstitial(
     case safe_browsing::SB_THREAT_TYPE_URL_CLIENT_SIDE_PHISHING:
       return "SOCIAL_ENGINEERING";
     case safe_browsing::SB_THREAT_TYPE_URL_MALWARE:
-    case safe_browsing::SB_THREAT_TYPE_URL_CLIENT_SIDE_MALWARE:
       return "MALWARE";
     case safe_browsing::SB_THREAT_TYPE_URL_UNWANTED:
       return "UNWANTED_SOFTWARE";
@@ -358,6 +357,7 @@ std::string SafeBrowsingUIManager::GetThreatTypeStringForInterstitial(
     case safe_browsing::SB_THREAT_TYPE_CSD_ALLOWLIST:
     case safe_browsing::
         DEPRECATED_SB_THREAT_TYPE_URL_PASSWORD_PROTECTION_PHISHING:
+    case safe_browsing::DEPRECATED_SB_THREAT_TYPE_URL_CLIENT_SIDE_MALWARE:
     case safe_browsing::SB_THREAT_TYPE_SAVED_PASSWORD_REUSE:
     case safe_browsing::SB_THREAT_TYPE_SIGNED_IN_SYNC_PASSWORD_REUSE:
     case safe_browsing::SB_THREAT_TYPE_SIGNED_IN_NON_SYNC_PASSWORD_REUSE:

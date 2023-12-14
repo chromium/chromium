@@ -325,8 +325,7 @@ GURL PingManager::SafeBrowsingHitUrl(
          hit_report->threat_type == SB_THREAT_TYPE_URL_PHISHING ||
          hit_report->threat_type == SB_THREAT_TYPE_URL_UNWANTED ||
          hit_report->threat_type == SB_THREAT_TYPE_URL_BINARY_MALWARE ||
-         hit_report->threat_type == SB_THREAT_TYPE_URL_CLIENT_SIDE_PHISHING ||
-         hit_report->threat_type == SB_THREAT_TYPE_URL_CLIENT_SIDE_MALWARE);
+         hit_report->threat_type == SB_THREAT_TYPE_URL_CLIENT_SIDE_PHISHING);
   std::string url =
       GetReportUrl(config_, "report", &hit_report->extended_reporting_level,
                    hit_report->is_enhanced_protection);
@@ -346,9 +345,6 @@ GURL PingManager::SafeBrowsingHitUrl(
       break;
     case SB_THREAT_TYPE_URL_CLIENT_SIDE_PHISHING:
       threat_list = "phishcsdhit";
-      break;
-    case SB_THREAT_TYPE_URL_CLIENT_SIDE_MALWARE:
-      threat_list = "malcsdhit";
       break;
     default:
       NOTREACHED();

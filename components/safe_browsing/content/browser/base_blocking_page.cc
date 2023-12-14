@@ -201,8 +201,7 @@ BaseBlockingPage::GetInterstitialReason(
     if (threat_type == SB_THREAT_TYPE_BILLING)
       return BaseSafeBrowsingErrorUI::SB_REASON_BILLING;
 
-    if (threat_type == SB_THREAT_TYPE_URL_MALWARE ||
-        threat_type == SB_THREAT_TYPE_URL_CLIENT_SIDE_MALWARE) {
+    if (threat_type == SB_THREAT_TYPE_URL_MALWARE) {
       return BaseSafeBrowsingErrorUI::SB_REASON_MALWARE;
     }
 
@@ -332,7 +331,6 @@ void BaseBlockingPage::OnDontProceedDone() {
 // static
 bool BaseBlockingPage::ShouldReportThreatDetails(SBThreatType threat_type) {
   return threat_type == SB_THREAT_TYPE_BILLING ||
-         threat_type == SB_THREAT_TYPE_URL_CLIENT_SIDE_MALWARE ||
          threat_type == SB_THREAT_TYPE_URL_CLIENT_SIDE_PHISHING ||
          threat_type == SB_THREAT_TYPE_URL_MALWARE ||
          threat_type == SB_THREAT_TYPE_URL_PHISHING ||

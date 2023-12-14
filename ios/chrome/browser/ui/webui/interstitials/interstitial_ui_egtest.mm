@@ -110,19 +110,6 @@
   [ChromeEarlGrey waitForWebStateContainingText:"Dangerous site"];
 }
 
-// Tests that chrome://interstitials/safe_browsing?type=clientside_malware loads
-// correctly.
-- (void)testLoadSafeBrowsingClientsideMalwareInterstitialUI {
-  GURL safeBrowsingURL = GURL(kChromeUIIntersitialsURL)
-                             .Resolve(kChromeInterstitialSafeBrowsingPath);
-  safeBrowsingURL = net::AppendQueryParameter(
-      safeBrowsingURL, kChromeInterstitialSafeBrowsingTypeQueryKey,
-      kChromeInterstitialSafeBrowsingTypeClientsideMalwareValue);
-  [ChromeEarlGrey loadURL:safeBrowsingURL];
-
-  [ChromeEarlGrey waitForWebStateContainingText:"Dangerous site"];
-}
-
 // Tests that chrome://interstitials/safe_browsing?type=clientside_phishing
 // loads correctly.
 - (void)testLoadSafeBrowsingClientsidePhishingInterstitialUI {
