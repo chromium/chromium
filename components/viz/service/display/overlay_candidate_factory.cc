@@ -112,32 +112,11 @@ OverlayCandidate::CandidateStatus GetReasonForTransformNotAxisAligned(
 
 // Returns true if the overlay candidate bounds rect overlap with at least one
 // of the rounded corners bounding rects.
-//
-// TODO(crbug.com/1462171): This method shares some logic with
-// DirectRenderer::ShouldApplyRoundedCorner(). Try to move it
-// to a shared location.
 bool ShouldApplyRoundedCorner(OverlayCandidate& candidate,
-                              const SharedQuadState* sqs) {
-  const gfx::MaskFilterInfo& mask_filter_info = sqs->mask_filter_info;
-  if (!mask_filter_info.HasRoundedCorners()) {
-    return false;
-  }
-
-  const gfx::RRectF& rounded_corner_bounds =
-      mask_filter_info.rounded_corner_bounds();
-
+                              const DrawQuad* quad) {
   const gfx::RectF target_rect =
       OverlayCandidate::DisplayRectInTargetSpace(candidate);
-
-  const gfx::RRectF::Corner corners[] = {
-      gfx::RRectF::Corner::kUpperLeft, gfx::RRectF::Corner::kUpperRight,
-      gfx::RRectF::Corner::kLowerRight, gfx::RRectF::Corner::kLowerLeft};
-  for (auto c : corners) {
-    if (rounded_corner_bounds.CornerBoundingRect(c).Intersects(target_rect)) {
-      return true;
-    }
-  }
-  return false;
+  return QuadRoundedCornersBoundsIntersects(quad, target_rect);
 }
 
 }  // namespace
@@ -215,7 +194,7 @@ OverlayCandidate::CandidateStatus OverlayCandidateFactory::FromDrawQuad(
   // TODO(https://crbug.com/1462171): Consider moving this code to
   // FromDrawQuadResource() that covers all of delegated compositing.
   if (context_.disable_wire_size_optimization ||
-      ShouldApplyRoundedCorner(candidate, sqs)) {
+      ShouldApplyRoundedCorner(candidate, quad)) {
     if (!context_.supports_mask_filter) {
       return CandidateStatus::kFailMaskFilterNotSupported;
     }
