@@ -843,8 +843,6 @@ class BrowserView::AccessibilityModeObserver : public ui::AXModeObserver {
                                     browser_view_->GetAsWeakPtr()));
 
 #if BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
-      // TODO(crbug.com/1442928): Check if PdfOcrController is correctly
-      // created on windows, macOS, and linux when screen reader is on.
       if (features::IsPdfOcrEnabled()) {
         screen_ai::PdfOcrControllerFactory::GetForProfile(
             browser_view_->GetProfile());

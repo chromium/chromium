@@ -575,9 +575,6 @@ void UpdateStatusNodeLiveRegionAttributes(ui::AXNodeData* node,
   }
 }
 
-// TODO(crbug.com/1442928): Need to test this status node with screen readers
-// on other desktop platforms, such as Windows, macOS, and Linux, as well as in
-// the embedded PDF case.
 std::unique_ptr<ui::AXNodeData> CreateStatusNode(
     content::RenderAccessibility* render_accessibility,
     ui::AXNodeData* parent_node) {

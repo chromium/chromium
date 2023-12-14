@@ -5013,11 +5013,8 @@ source_set("unit_tests") {
     "../ui/webui/ash/login/oobe_display_chooser_unittest.cc",
     "../ui/webui/ash/login/signin_userlist_unittest.cc",
     "../ui/webui/ash/settings/calculator/size_calculator_test_api.h",
-    "../ui/webui/ash/settings/pages/a11y/accessibility_handler_unittest.cc",
-
-    # TODO(crbug.com/1442928): Move to under `enable_screen_ai_service`
-    # when PDF OCR becomes available on windows, macOS, and linux.
     "../ui/webui/ash/settings/os_settings_features_util_unittest.cc",
+    "../ui/webui/ash/settings/pages/a11y/accessibility_handler_unittest.cc",
     "../ui/webui/ash/settings/pages/a11y/pdf_ocr_handler_unittest.cc",
     "../ui/webui/ash/settings/pages/about/device_name_handler_unittest.cc",
     "../ui/webui/ash/settings/pages/apps/app_notification_handler_unittest.cc",
