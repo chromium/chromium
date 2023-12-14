@@ -583,7 +583,8 @@ class SkiaRenderer::ScopedSkImageBuilder {
                        SkAlphaType alpha_type = kPremul_SkAlphaType,
                        GrSurfaceOrigin origin = kTopLeft_GrSurfaceOrigin,
                        sk_sp<SkColorSpace> override_color_space = nullptr,
-                       bool raw_draw_if_possible = false);
+                       bool raw_draw_if_possible = false,
+                       bool force_rgbx = false);
 
   ScopedSkImageBuilder(const ScopedSkImageBuilder&) = delete;
   ScopedSkImageBuilder& operator=(const ScopedSkImageBuilder&) = delete;
@@ -607,7 +608,8 @@ SkiaRenderer::ScopedSkImageBuilder::ScopedSkImageBuilder(
     SkAlphaType alpha_type,
     GrSurfaceOrigin origin,
     sk_sp<SkColorSpace> override_color_space,
-    bool raw_draw_if_possible) {
+    bool raw_draw_if_possible,
+    bool force_rgbx) {
   if (!resource_id)
     return;
   auto* resource_provider = skia_renderer->resource_provider();
@@ -628,7 +630,7 @@ SkiaRenderer::ScopedSkImageBuilder::ScopedSkImageBuilder(
   // We need the original TransferableResource.color_space for YUV => RGB
   // conversion.
   skia_renderer->skia_output_surface_->MakePromiseSkImage(
-      image_context, resource_provider->GetColorSpace(resource_id));
+      image_context, resource_provider->GetColorSpace(resource_id), force_rgbx);
   paint_op_buffer_ = image_context->paint_op_buffer();
   clear_color_ = image_context->clear_color();
   sk_image_ = image_context->image();
@@ -2557,7 +2559,7 @@ void SkiaRenderer::DrawTextureQuad(const TextureDrawQuad* quad,
       this, quad->resource_id(), /*maybe_concurrent_reads=*/true,
       quad->premultiplied_alpha ? kPremul_SkAlphaType : kUnpremul_SkAlphaType,
       quad->y_flipped ? kBottomLeft_GrSurfaceOrigin : kTopLeft_GrSurfaceOrigin,
-      override_color_space);
+      override_color_space, false, quad->force_rgbx);
   const SkImage* image = builder.sk_image();
   if (!image)
     return;

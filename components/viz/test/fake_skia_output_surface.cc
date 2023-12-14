@@ -119,7 +119,8 @@ SkCanvas* FakeSkiaOutputSurface::BeginPaintCurrentFrame() {
 
 void FakeSkiaOutputSurface::MakePromiseSkImage(
     ImageContext* image_context,
-    const gfx::ColorSpace& yuv_color_space) {
+    const gfx::ColorSpace& yuv_color_space,
+    bool force_rgbx) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
 
   if (image_context->has_image()) {

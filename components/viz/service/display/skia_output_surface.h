@@ -77,7 +77,8 @@ class VIZ_SERVICE_EXPORT SkiaOutputSurface : public OutputSurface,
   // original color space needed for yuv to rgb conversion.
   virtual void MakePromiseSkImage(
       ExternalUseClient::ImageContext* image_context,
-      const gfx::ColorSpace& yuv_color_space) = 0;
+      const gfx::ColorSpace& yuv_color_space,
+      bool force_rgbx) = 0;
 
   // Make a promise SkImage from the given |contexts| and |image_color_space|.
   // The number of contexts provided should match the number of planes indicated

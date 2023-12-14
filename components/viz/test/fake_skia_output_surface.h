@@ -82,7 +82,8 @@ class FakeSkiaOutputSurface : public SkiaOutputSurface {
       const gfx::Rect& update_rect,
       bool is_overlay) override;
   void MakePromiseSkImage(ImageContext* image_context,
-                          const gfx::ColorSpace& yuv_color_space) override;
+                          const gfx::ColorSpace& yuv_color_space,
+                          bool force_rgbx) override;
   sk_sp<SkImage> MakePromiseSkImageFromRenderPass(
       const AggregatedRenderPassId& id,
       const gfx::Size& size,
