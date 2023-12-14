@@ -1791,6 +1791,13 @@ public class RootUiCoordinator
     }
 
     /**
+     * @return The {@link EdgeToEdgeController} controlling the edge-to-edge state.
+     */
+    public @Nullable EdgeToEdgeController getEdgeToEdgeController() {
+        return mE2eController;
+    }
+
+    /**
      * @return {@link ComposedBrowserControlsVisibilityDelegate} object for tabbed activity.
      */
     public ComposedBrowserControlsVisibilityDelegate getAppBrowserControlsVisibilityDelegate() {
@@ -1802,8 +1809,9 @@ public class RootUiCoordinator
 
     /**
      * Gets the browser controls manager, creates it unless already created.
+     *
      * @deprecated Instead, inject this directly to your constructor. If that's not possible, then
-     *         use {@link BrowserControlsManagerSupplier}.
+     *     use {@link BrowserControlsManagerSupplier}.
      */
     @NonNull
     @Deprecated

@@ -10,10 +10,10 @@ import org.chromium.base.lifetime.Destroyable;
 import org.chromium.chrome.browser.tab.Tab;
 
 /**
- * Control drawing using the Android Edge to Edge Feature.
- * This allows drawing under Android System Bars.
+ * Control drawing using the Android Edge to Edge Feature. This allows drawing under Android System
+ * Bars.
  */
-public interface EdgeToEdgeController extends Destroyable {
+public interface EdgeToEdgeController extends Destroyable, EdgeToEdgeSupplier {
     /**
      * Notifies the controller that a different tab is under observation.<br>
      * @param tab The tab that the observer is now observing. This can be {@code null}.

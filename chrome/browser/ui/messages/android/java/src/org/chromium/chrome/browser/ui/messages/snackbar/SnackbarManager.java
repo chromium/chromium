@@ -20,20 +20,26 @@ import org.chromium.base.UnownedUserData;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.ObservableSupplierImpl;
+import org.chromium.chrome.browser.ui.edge_to_edge.EdgeToEdgeSupplier;
+import org.chromium.components.browser_ui.widget.InsetObserver;
 import org.chromium.ui.accessibility.AccessibilityState;
 import org.chromium.ui.base.WindowAndroid;
 
 /**
  * Manager for the snackbar showing at the bottom of activity. There should be only one
  * SnackbarManager and one snackbar in the activity.
- * <p/>
- * When action button is clicked, this manager will call {@link SnackbarController#onAction(Object)}
- * in corresponding listener, and show the next entry. Otherwise if no action is taken by user
- * during {@link #DEFAULT_SNACKBAR_DURATION_MS} milliseconds, it will call
- * {@link SnackbarController#onDismissNoAction(Object)}. Note, snackbars of
- * {@link Snackbar#TYPE_PERSISTENT} do not get automatically dismissed after a timeout.
+ *
+ * <p>When action button is clicked, this manager will call {@link
+ * SnackbarController#onAction(Object)} in corresponding listener, and show the next entry.
+ * Otherwise if no action is taken by user during {@link #DEFAULT_SNACKBAR_DURATION_MS}
+ * milliseconds, it will call {@link SnackbarController#onDismissNoAction(Object)}. Note, snackbars
+ * of {@link Snackbar#TYPE_PERSISTENT} do not get automatically dismissed after a timeout.
  */
-public class SnackbarManager implements OnClickListener, ActivityStateListener, UnownedUserData {
+public class SnackbarManager
+        implements OnClickListener,
+                ActivityStateListener,
+                UnownedUserData,
+                InsetObserver.WindowInsetObserver {
     /** Interface that shows the ability to provide a snackbar manager. */
     public interface SnackbarManageable {
         /**
@@ -77,7 +83,10 @@ public class SnackbarManager implements OnClickListener, ActivityStateListener, 
     private boolean mIsDisabledForTesting;
     private ViewGroup mSnackbarParentView;
     private ViewGroup mSnackbarTemporaryParentView;
+    // Keyboard inset handling is independent of the EdgeToEdge handling.
+    private int mKeyboardInset;
     private final WindowAndroid mWindowAndroid;
+    private @Nullable EdgeToEdgeSupplier mEdgeToEdgeSupplier;
     private final Runnable mHideRunnable =
             new Runnable() {
                 @Override
@@ -91,10 +100,11 @@ public class SnackbarManager implements OnClickListener, ActivityStateListener, 
 
     /**
      * Constructs a SnackbarManager to show snackbars in the given window.
+     *
      * @param activity The embedding activity.
      * @param snackbarParentView The ViewGroup used to display this snackbar.
      * @param windowAndroid The WindowAndroid used for starting animation. If it is null,
-     *                      Animator#start is called instead.
+     *     Animator#start is called instead.
      */
     public SnackbarManager(
             Activity activity,
@@ -249,6 +259,20 @@ public class SnackbarManager implements OnClickListener, ActivityStateListener, 
     }
 
     /**
+     * @param supplier The supplier publishes the changes of the edge-to-edge state and the expected
+     *     bottom paddings when edge-to-edge is on.
+     */
+    public void setEdgeToEdgeSupplier(@Nullable EdgeToEdgeSupplier supplier) {
+        mEdgeToEdgeSupplier = supplier;
+    }
+
+    @Override
+    public void onKeyboardInsetChanged(int inset) {
+        mKeyboardInset = inset;
+        updateView();
+    }
+
+    /**
      * Updates the {@link SnackbarView} to reflect the value of mSnackbars.currentSnackbar(), which
      * may be null. This might show, change, or hide the view.
      */
@@ -270,7 +294,9 @@ public class SnackbarManager implements OnClickListener, ActivityStateListener, 
                                 this,
                                 currentSnackbar,
                                 mSnackbarParentView,
-                                mWindowAndroid);
+                                mWindowAndroid,
+                                mEdgeToEdgeSupplier);
+                mView.updateKeyboardInset(mKeyboardInset);
                 mView.show();
 
                 // If there is a temporary parent set, reparent accordingly. We override here
@@ -280,6 +306,7 @@ public class SnackbarManager implements OnClickListener, ActivityStateListener, 
                     mView.overrideParent(mSnackbarTemporaryParentView);
                 }
             } else {
+                mView.updateKeyboardInset(mKeyboardInset);
                 viewChanged = mView.update(currentSnackbar);
             }
 

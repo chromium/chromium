@@ -710,8 +710,8 @@ public abstract class ChromeActivity<C extends ChromeActivityComponent>
 
             mBottomContainer = (BottomContainer) findViewById(R.id.bottom_container);
 
-            // TODO(crbug.com/1199776): Move this to the RootUiCoordinator.
             mSnackbarManager = new SnackbarManager(this, mBottomContainer, getWindowAndroid());
+            mInsetObserverViewSupplier.get().addObserver(mSnackbarManager);
             SnackbarManagerProvider.attach(getWindowAndroid(), mSnackbarManager);
 
             // Make the activity listen to policy change events
@@ -1747,7 +1747,11 @@ public abstract class ChromeActivity<C extends ChromeActivityComponent>
             mStylusWritingCoordinator = null;
         }
 
-        // Destroy spare tab on activitiy destruction.
+        if (mInsetObserverViewSupplier.get() != null) {
+            mInsetObserverViewSupplier.get().removeObserver(mSnackbarManager);
+        }
+
+        // Destroy spare tab on activity destruction.
         WarmupManager warmupManager = WarmupManager.getInstance();
         warmupManager.destroySpareTab();
 

@@ -21,6 +21,7 @@ import androidx.core.graphics.Insets;
 import androidx.core.view.WindowInsetsCompat;
 
 import org.chromium.base.Log;
+import org.chromium.base.ObserverList;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.blink.mojom.ViewportFit;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
@@ -47,6 +48,7 @@ public class EdgeToEdgeControllerImpl implements EdgeToEdgeController {
 
     private final @NonNull Activity mActivity;
     private final @NonNull TabSupplierObserver mTabSupplierObserver;
+    private final ObserverList<EdgeToEdgePadAdjuster> mPadAdjusters = new ObserverList<>();
     private final @NonNull TabObserver mTabObserver;
 
     /** Multiplier to convert from pixels to DPs. */
@@ -144,6 +146,17 @@ public class EdgeToEdgeControllerImpl implements EdgeToEdgeController {
         // and whether the Gesture Navigation is appropriately enabled or not.
         if (alwaysDrawToEdgeForTabKind(tab)) return true;
         return wantsToEdge;
+    }
+
+    @Override
+    public void registerAdjuster(EdgeToEdgePadAdjuster adjuster) {
+        mPadAdjusters.addObserver(adjuster);
+        adjuster.adjustToEdge(mIsActivityToEdge, mSystemInsets.bottom);
+    }
+
+    @Override
+    public void unregisterAdjuster(EdgeToEdgePadAdjuster adjuster) {
+        mPadAdjusters.removeObserver(adjuster);
     }
 
     /**
@@ -253,6 +266,10 @@ public class EdgeToEdgeControllerImpl implements EdgeToEdgeController {
                 mSystemInsets.top,
                 mSystemInsets.right,
                 bottomInset);
+
+        for (var adjuster : mPadAdjusters) {
+            adjuster.adjustToEdge(toEdge, mSystemInsets.bottom);
+        }
 
         // We only make the Nav Bar transparent because it's the only thing we want to draw
         // underneath.

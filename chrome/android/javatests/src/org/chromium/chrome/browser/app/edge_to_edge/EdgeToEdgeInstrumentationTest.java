@@ -16,8 +16,10 @@ import android.os.Build;
 import android.view.View;
 
 import androidx.test.filters.MediumTest;
+import androidx.test.platform.app.InstrumentationRegistry;
 
 import org.junit.After;
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.ClassRule;
 import org.junit.Rule;
@@ -36,11 +38,15 @@ import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.ui.edge_to_edge.EdgeToEdgeControllerImpl;
 import org.chromium.chrome.browser.ui.edge_to_edge.EdgeToEdgeOSWrapperImpl;
+import org.chromium.chrome.browser.ui.messages.snackbar.Snackbar;
+import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.chrome.test.batch.BlankCTATabInitialStateRule;
 import org.chromium.chrome.test.util.ActivityTestUtils;
 import org.chromium.chrome.test.util.browser.Features.EnableFeatures;
+import org.chromium.content_public.browser.test.util.TestThreadUtils;
+import org.chromium.content_public.browser.test.util.UiUtils;
 import org.chromium.net.test.EmbeddedTestServer;
 import org.chromium.ui.test.util.DeviceRestriction;
 import org.chromium.ui.test.util.UiRestriction;
@@ -237,5 +243,52 @@ public class EdgeToEdgeInstrumentationTest {
                         + " thinking we're ToEdge!",
                 TO_EDGE_PADDING,
                 mTestOsWrapper.getNextPadding());
+    }
+
+    @Test
+    @MediumTest
+    public void testSnackbar() throws InterruptedException {
+        activateFeatureToEdge();
+        goToNormal();
+        var snackbarManager = mActivity.getSnackbarManager();
+        snackbarManager.setEdgeToEdgeSupplier(mEdgeToEdgeController);
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    snackbarManager.showSnackbar(
+                            Snackbar.make(
+                                    "Test",
+                                    new SnackbarManager.SnackbarController() {},
+                                    Snackbar.TYPE_PERSISTENT,
+                                    Snackbar.UMA_TEST_SNACKBAR));
+                });
+
+        UiUtils.settleDownUI(InstrumentationRegistry.getInstrumentation());
+
+        var adjuster =
+                snackbarManager
+                        .getCurrentSnackbarViewForTesting()
+                        .getEdgeToEdgePadAdjusterForTesting();
+        Assert.assertNotNull("Pad Adjuster should be created", adjuster);
+
+        int heightOnAuto =
+                snackbarManager.getCurrentSnackbarViewForTesting().getViewForTesting().getHeight();
+        int padding = mTestOsWrapper.getNextPadding();
+
+        goToEdge();
+        int heightOnCover =
+                snackbarManager.getCurrentSnackbarViewForTesting().getViewForTesting().getHeight();
+
+        Assert.assertEquals(
+                "New padding has been added when viewport-fit=cover.",
+                padding,
+                heightOnCover - heightOnAuto);
+
+        goToNormal();
+        heightOnAuto =
+                snackbarManager.getCurrentSnackbarViewForTesting().getViewForTesting().getHeight();
+        Assert.assertEquals(
+                "Padding has been removed when viewport-fit=auto.",
+                padding,
+                heightOnCover - heightOnAuto);
     }
 }

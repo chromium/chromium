@@ -8,7 +8,6 @@ import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.animation.ObjectAnimator;
 import android.app.Activity;
-import android.graphics.Rect;
 import android.graphics.drawable.Drawable;
 import android.graphics.drawable.GradientDrawable;
 import android.text.TextUtils;
@@ -27,8 +26,12 @@ import android.widget.TextView;
 import androidx.annotation.Nullable;
 
 import org.chromium.base.ApiCompatibilityUtils;
+import org.chromium.chrome.browser.ui.edge_to_edge.EdgeToEdgeControllerFactory;
+import org.chromium.chrome.browser.ui.edge_to_edge.EdgeToEdgePadAdjuster;
+import org.chromium.chrome.browser.ui.edge_to_edge.EdgeToEdgeSupplier;
 import org.chromium.chrome.ui.messages.R;
 import org.chromium.components.browser_ui.styles.SemanticColorUtils;
+import org.chromium.components.browser_ui.widget.InsetObserver;
 import org.chromium.components.browser_ui.widget.text.TemplatePreservingTextView;
 import org.chromium.ui.base.DeviceFormFactor;
 import org.chromium.ui.base.WindowAndroid;
@@ -40,7 +43,7 @@ import org.chromium.ui.interpolators.Interpolators;
  */
 // TODO (jianli): Change this class and its methods back to package protected after the offline
 // indicator experiment is done.
-public class SnackbarView {
+public class SnackbarView implements InsetObserver.WindowInsetObserver {
     private static final int MAX_LINES = 5;
 
     private final WindowAndroid mWindowAndroid;
@@ -51,16 +54,19 @@ public class SnackbarView {
     private final ImageView mProfileImageView;
     private final int mAnimationDuration;
     private final boolean mIsTablet;
+    @Nullable private final EdgeToEdgeSupplier mEdgeToEdgeSupplier;
+    @Nullable private final EdgeToEdgePadAdjuster mEdgeToEdgePadAdjuster;
     private ViewGroup mOriginalParent;
     protected ViewGroup mParent;
     protected Snackbar mSnackbar;
     private View mRootContentView;
 
     // Variables used to calculate the virtual keyboard's height.
-    private Rect mCurrentVisibleRect = new Rect();
-    private Rect mPreviousVisibleRect = new Rect();
-    private int[] mTempLocation = new int[2];
+    private int mPreviousKeyboardInset;
+    private int mKeyboardInset;
 
+    // Extra inset when edge to edge is on.
+    private int mEdgeInset;
     private OnLayoutChangeListener mLayoutListener =
             new OnLayoutChangeListener() {
                 @Override
@@ -80,13 +86,14 @@ public class SnackbarView {
 
     /**
      * Creates an instance of the {@link SnackbarView}.
+     *
      * @param activity The activity that displays the snackbar.
      * @param listener An {@link OnClickListener} that will be called when the action button is
-     *                 clicked.
+     *     clicked.
      * @param snackbar The snackbar to be displayed.
      * @param parentView The ViewGroup used to display this snackbar.
      * @param windowAndroid The WindowAndroid used for starting animation. If it is null,
-     *                      Animator#start is called instead.
+     *     Animator#start is called instead.
      */
     public SnackbarView(
             Activity activity,
@@ -94,6 +101,29 @@ public class SnackbarView {
             Snackbar snackbar,
             ViewGroup parentView,
             @Nullable WindowAndroid windowAndroid) {
+        this(activity, listener, snackbar, parentView, windowAndroid, null);
+    }
+
+    /**
+     * Creates an instance of the {@link SnackbarView}.
+     *
+     * @param activity The activity that displays the snackbar.
+     * @param listener An {@link OnClickListener} that will be called when the action button is
+     *     clicked.
+     * @param snackbar The snackbar to be displayed.
+     * @param parentView The ViewGroup used to display this snackbar.
+     * @param windowAndroid The WindowAndroid used for starting animation. If it is null,
+     *     Animator#start is called instead.
+     * @param edgeToEdgeSupplier The supplier publishes the changes of the edge-to-edge state and
+     *     the expected bottom paddings when edge-to-edge is on.
+     */
+    public SnackbarView(
+            Activity activity,
+            OnClickListener listener,
+            Snackbar snackbar,
+            ViewGroup parentView,
+            @Nullable WindowAndroid windowAndroid,
+            @Nullable EdgeToEdgeSupplier edgeToEdgeSupplier) {
         mIsTablet = DeviceFormFactor.isNonMultiDisplayContextOnTablet(activity);
         mOriginalParent = parentView;
         mWindowAndroid = windowAndroid;
@@ -111,6 +141,11 @@ public class SnackbarView {
         mActionButtonView = (TextView) mContainerView.findViewById(R.id.snackbar_button);
         mActionButtonView.setOnClickListener(listener);
         mProfileImageView = (ImageView) mContainerView.findViewById(R.id.snackbar_profile_image);
+        mEdgeToEdgeSupplier = edgeToEdgeSupplier;
+        mEdgeToEdgePadAdjuster =
+                edgeToEdgeSupplier != null
+                        ? EdgeToEdgeControllerFactory.createForView(mSnackbarView)
+                        : null;
 
         updateInternal(snackbar, false);
     }
@@ -131,6 +166,7 @@ public class SnackbarView {
                             int oldRight,
                             int oldBottom) {
                         mContainerView.removeOnLayoutChangeListener(this);
+
                         mContainerView.setTranslationY(getYPositionForMoveAnimation());
                         Animator animator =
                                 ObjectAnimator.ofFloat(mContainerView, View.TRANSLATION_Y, 0);
@@ -139,6 +175,9 @@ public class SnackbarView {
                         startAnimatorOnSurfaceView(animator);
                     }
                 });
+        if (mEdgeToEdgeSupplier != null) {
+            mEdgeToEdgeSupplier.registerAdjuster(mEdgeToEdgePadAdjuster);
+        }
     }
 
     public void dismiss() {
@@ -156,17 +195,20 @@ public class SnackbarView {
                     public void onAnimationEnd(Animator animation) {
                         mRootContentView.removeOnLayoutChangeListener(mLayoutListener);
                         mParent.removeView(mContainerView);
+
                     }
                 });
         startAnimatorOnSurfaceView(moveAnimator);
+        if (mEdgeToEdgeSupplier != null) {
+            mEdgeToEdgeSupplier.unregisterAdjuster(mEdgeToEdgePadAdjuster);
+        }
     }
 
     /** Adjusts the position of the snackbar on top of the soft keyboard, if any. */
     void adjustViewPosition() {
-        mParent.getWindowVisibleDisplayFrame(mCurrentVisibleRect);
         // Only update if the visible frame has changed, otherwise there will be a layout loop.
-        if (!mCurrentVisibleRect.equals(mPreviousVisibleRect)) {
-            mPreviousVisibleRect.set(mCurrentVisibleRect);
+        if (mKeyboardInset != mPreviousKeyboardInset) {
+            mPreviousKeyboardInset = mKeyboardInset;
 
             FrameLayout.LayoutParams lp = getLayoutParams();
 
@@ -184,7 +226,6 @@ public class SnackbarView {
                 lp.width = Math.min(width, mParent.getWidth() - 2 * margin);
                 lp.gravity = Gravity.CENTER_HORIZONTAL | Gravity.BOTTOM;
             }
-
             if (prevBottomMargin != lp.bottomMargin
                     || prevWidth != lp.width
                     || prevGravity != lp.gravity) {
@@ -193,21 +234,28 @@ public class SnackbarView {
         }
     }
 
+    void updateKeyboardInset(int inset) {
+        mKeyboardInset = inset;
+        adjustViewPosition();
+    }
+
+    void updateEdgeInset(int inset) {
+        mEdgeInset = inset;
+        adjustViewPosition();
+    }
+
     protected int getYPositionForMoveAnimation() {
         return mContainerView.getHeight() + getLayoutParams().bottomMargin;
     }
 
     protected int getBottomMarginForLayout() {
-        mParent.getLocationInWindow(mTempLocation);
-        int keyboardHeight = mParent.getHeight() + mTempLocation[1] - mCurrentVisibleRect.bottom;
-        return Math.max(0, keyboardHeight);
+        return mKeyboardInset;
     }
 
     /**
      * @see SnackbarManager#overrideParent(ViewGroup)
      */
     void overrideParent(ViewGroup overridingParent) {
-        mRootContentView.removeOnLayoutChangeListener(mLayoutListener);
         mParent = overridingParent == null ? mOriginalParent : overridingParent;
         if (mContainerView.getParent() != null) {
             ((ViewGroup) mContainerView.getParent()).removeView(mContainerView);
@@ -264,12 +312,6 @@ public class SnackbarView {
 
     private void addToParent() {
         mParent.addView(mContainerView);
-
-        // Why setting listener on parent? It turns out that if we force a relayout in the layout
-        // change listener of the view itself, the force layout flag will be reset to 0 when
-        // layout() returns. Therefore we have to do request layout on one level above the requested
-        // view.
-        mRootContentView.addOnLayoutChangeListener(mLayoutListener);
     }
 
     // TODO(fgorski): Start using color ID, to remove the view from arguments.
@@ -396,5 +438,13 @@ public class SnackbarView {
         } else {
             view.setText(text);
         }
+    }
+
+    public ViewGroup getViewForTesting() {
+        return mSnackbarView;
+    }
+
+    public EdgeToEdgePadAdjuster getEdgeToEdgePadAdjusterForTesting() {
+        return mEdgeToEdgePadAdjuster;
     }
 }

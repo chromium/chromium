@@ -7,6 +7,7 @@ package org.chromium.chrome.browser.ui.edge_to_edge;
 import android.app.Activity;
 import android.os.Build;
 import android.os.Build.VERSION_CODES;
+import android.view.View;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -40,6 +41,10 @@ public class EdgeToEdgeControllerFactory {
             Activity activity, @NonNull ObservableSupplier<Tab> tabObservableSupplier) {
         if (Build.VERSION.SDK_INT < VERSION_CODES.R) return null;
         return new EdgeToEdgeControllerImpl(activity, tabObservableSupplier, null);
+    }
+
+    public static EdgeToEdgePadAdjuster createForView(View view) {
+        return new SimpleEdgeToEdgePadAdjuster(view);
     }
 
     /**

@@ -1112,6 +1112,9 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
             }
 
             mInactivityTracker.setLastVisibleTimeMsAndRecord(System.currentTimeMillis());
+
+            getSnackbarManager()
+                    .setEdgeToEdgeSupplier(mRootUiCoordinator.getEdgeToEdgeController());
         }
     }
 
