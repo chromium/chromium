@@ -18,7 +18,6 @@ namespace password_manager {
 class PasswordStoreAndroidBackendBridgeHelper {
  public:
   using JobId = PasswordStoreAndroidBackendReceiverBridge::JobId;
-  using Account = PasswordStoreAndroidBackendReceiverBridge::Account;
   using Consumer = PasswordStoreAndroidBackendReceiverBridge::Consumer;
 
   virtual ~PasswordStoreAndroidBackendBridgeHelper() = default;
@@ -51,24 +50,25 @@ class PasswordStoreAndroidBackendBridgeHelper {
   // Password store backend dispatcher bridge operations. Each operation is
   // executed asynchronously and could be uniquely identified within the bridge
   // helper instance using the returned JobId.
-  [[nodiscard]] virtual JobId GetAllLogins(Account account) = 0;
-  [[nodiscard]] virtual JobId GetAllLoginsWithBrandingInfo(Account account) = 0;
-  [[nodiscard]] virtual JobId GetAutofillableLogins(Account account) = 0;
+  [[nodiscard]] virtual JobId GetAllLogins(std::string account) = 0;
+  [[nodiscard]] virtual JobId GetAllLoginsWithBrandingInfo(
+      std::string Account) = 0;
+  [[nodiscard]] virtual JobId GetAutofillableLogins(std::string account) = 0;
   [[nodiscard]] virtual JobId GetLoginsForSignonRealm(
       const std::string& signon_realm,
-      Account account) = 0;
+      std::string account) = 0;
   [[nodiscard]] virtual JobId GetAffiliatedLoginsForSignonRealm(
       const std::string& signon_realm,
-      Account account) = 0;
+      std::string account) = 0;
   [[nodiscard]] virtual JobId AddLogin(
       const password_manager::PasswordForm& form,
-      Account account) = 0;
+      std::string account) = 0;
   [[nodiscard]] virtual JobId UpdateLogin(
       const password_manager::PasswordForm& form,
-      Account account) = 0;
+      std::string account) = 0;
   [[nodiscard]] virtual JobId RemoveLogin(
       const password_manager::PasswordForm& form,
-      Account account) = 0;
+      std::string account) = 0;
 };
 
 }  // namespace password_manager

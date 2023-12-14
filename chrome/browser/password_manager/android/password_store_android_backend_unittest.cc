@@ -92,23 +92,6 @@ MATCHER_P2(ExpectError, error_type, recovery_type, "") {
              absl::get<PasswordStoreBackendError>(arg).recovery_type;
 }
 
-MATCHER_P(ExpectSyncingAccount, expectation, "") {
-  return absl::holds_alternative<
-             PasswordStoreAndroidBackendDispatcherBridge::SyncingAccount>(
-             arg) &&
-         expectation ==
-             absl::get<
-                 PasswordStoreAndroidBackendDispatcherBridge::SyncingAccount>(
-                 arg)
-                 .value();
-}
-
-MATCHER(ExpectLocalAccount, "") {
-  return absl::holds_alternative<PasswordStoreOperationTarget>(arg) &&
-         (PasswordStoreOperationTarget::kLocalStorage ==
-          absl::get<PasswordStoreOperationTarget>(arg));
-}
-
 PasswordForm CreateEntry(const std::string& username,
                          const std::string& password,
                          const GURL& origin_url,
@@ -185,19 +168,25 @@ class MockPasswordStoreAndroidBackendBridgeHelper
   MOCK_METHOD(bool, CanUseGetAllLoginsWithBrandingInfoAPI, (), (override));
   MOCK_METHOD(bool, CanRemoveUnenrollment, (), (override));
   MOCK_METHOD(void, SetConsumer, (base::WeakPtr<Consumer>), (override));
-  MOCK_METHOD(JobId, GetAllLogins, (Account), (override));
-  MOCK_METHOD(JobId, GetAllLoginsWithBrandingInfo, (Account), (override));
-  MOCK_METHOD(JobId, GetAutofillableLogins, (Account), (override));
+  MOCK_METHOD(JobId, GetAllLogins, (std::string), (override));
+  MOCK_METHOD(JobId, GetAllLoginsWithBrandingInfo, (std::string), (override));
+  MOCK_METHOD(JobId, GetAutofillableLogins, (std::string), (override));
   MOCK_METHOD(JobId,
               GetLoginsForSignonRealm,
-              (const std::string&, Account),
+              (const std::string&, std::string),
               (override));
-  MOCK_METHOD(JobId, AddLogin, (const PasswordForm&, Account), (override));
-  MOCK_METHOD(JobId, UpdateLogin, (const PasswordForm&, Account), (override));
-  MOCK_METHOD(JobId, RemoveLogin, (const PasswordForm&, Account), (override));
+  MOCK_METHOD(JobId, AddLogin, (const PasswordForm&, std::string), (override));
+  MOCK_METHOD(JobId,
+              UpdateLogin,
+              (const PasswordForm&, std::string),
+              (override));
+  MOCK_METHOD(JobId,
+              RemoveLogin,
+              (const PasswordForm&, std::string),
+              (override));
   MOCK_METHOD(JobId,
               GetAffiliatedLoginsForSignonRealm,
-              (const std::string&, Account),
+              (const std::string&, std::string),
               (override));
 };
 
@@ -326,8 +315,7 @@ TEST_F(PasswordStoreAndroidBackendTest, CallsBridgeForLogins) {
   backend().OnSyncServiceInitialized(sync_service());
 
   base::MockCallback<LoginsOrErrorReply> mock_reply;
-  EXPECT_CALL(*bridge_helper(),
-              GetAllLogins(ExpectSyncingAccount(kTestAccount)))
+  EXPECT_CALL(*bridge_helper(), GetAllLogins(kTestAccount))
       .WillOnce(Return(kJobId));
   backend().GetAllLoginsAsync(mock_reply.Get());
 
@@ -516,7 +504,7 @@ TEST_F(PasswordStoreAndroidBackendTest, CallsBridgeForRemoveLogin) {
 
   PasswordForm form =
       CreateTestLogin(kTestUsername, kTestPassword, kTestUrl, kTestDateCreated);
-  EXPECT_CALL(*bridge_helper(), RemoveLogin(form, ExpectLocalAccount()))
+  EXPECT_CALL(*bridge_helper(), RemoveLogin(form, /*account=*/""))
       .WillOnce(Return(kRemoveLoginJobId));
   backend().RemoveLoginAsync(form, mock_reply.Get());
 
@@ -642,8 +630,7 @@ TEST_F(PasswordStoreAndroidBackendTest, CallsBridgeForAddLogin) {
   base::MockCallback<PasswordChangesOrErrorReply> mock_reply;
   PasswordForm form =
       CreateTestLogin(kTestUsername, kTestPassword, kTestUrl, kTestDateCreated);
-  EXPECT_CALL(*bridge_helper(),
-              AddLogin(form, ExpectSyncingAccount(kTestAccount)))
+  EXPECT_CALL(*bridge_helper(), AddLogin(form, kTestAccount))
       .WillOnce(Return(kAddLoginJobId));
   backend().AddLoginAsync(form, mock_reply.Get());
 
@@ -665,7 +652,7 @@ TEST_F(PasswordStoreAndroidBackendTest, CallsBridgeForUpdateLogin) {
   base::MockCallback<PasswordChangesOrErrorReply> mock_reply;
   PasswordForm form =
       CreateTestLogin(kTestUsername, kTestPassword, kTestUrl, kTestDateCreated);
-  EXPECT_CALL(*bridge_helper(), UpdateLogin(form, ExpectLocalAccount()))
+  EXPECT_CALL(*bridge_helper(), UpdateLogin(form, /*account=*/""))
       .WillOnce(Return(kUpdateLoginJobId));
   backend().UpdateLoginAsync(form, mock_reply.Get());
 
@@ -1158,9 +1145,9 @@ TEST_F(PasswordStoreAndroidBackendTest, DisableAutoSignInForOrigins) {
 
   const JobId kUpdateJobId1{13388};
   // Forms are updated in reverse order.
-  EXPECT_CALL(*bridge_helper(),
-              UpdateLogin(FormWithDisabledAutoSignIn(form_to_update2),
-                          ExpectSyncingAccount(kTestAccount)))
+  EXPECT_CALL(
+      *bridge_helper(),
+      UpdateLogin(FormWithDisabledAutoSignIn(form_to_update2), kTestAccount))
       .WillOnce(Return(kUpdateJobId1));
 
   consumer().OnCompleteWithLogins(
@@ -1179,9 +1166,9 @@ TEST_F(PasswordStoreAndroidBackendTest, DisableAutoSignInForOrigins) {
       PasswordStoreChange(PasswordStoreChange::UPDATE,
                           FormWithDisabledAutoSignIn(form_to_update2)));
   const JobId kUpdateJobId2{13389};
-  EXPECT_CALL(*bridge_helper(),
-              UpdateLogin(FormWithDisabledAutoSignIn(form_to_update1),
-                          ExpectSyncingAccount(kTestAccount)))
+  EXPECT_CALL(
+      *bridge_helper(),
+      UpdateLogin(FormWithDisabledAutoSignIn(form_to_update1), kTestAccount))
       .WillOnce(Return(kUpdateJobId2));
   consumer().OnLoginsChanged(kUpdateJobId1, change1);
   RunUntilIdle();

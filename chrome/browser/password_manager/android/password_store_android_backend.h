@@ -225,21 +225,19 @@ class PasswordStoreAndroidBackend
   // that invoked this method and |delay| is the amount of time by which the
   // call to this method was delayed. Returns the complete list of PasswordForms
   // (regardless of their blocklist status) for |account| with a |delay|.
-  void GetAllLoginsForAccountInternal(
-      PasswordStoreAndroidBackendDispatcherBridge::Account account,
-      LoginsOrErrorReply callback,
-      PasswordStoreOperation operation,
-      base::TimeDelta delay);
+  void GetAllLoginsForAccountInternal(std::string account,
+                                      LoginsOrErrorReply callback,
+                                      PasswordStoreOperation operation,
+                                      base::TimeDelta delay);
 
   // Removes |form| from |account|.
   // |operation| is the PasswordStoreOperation  that invoked this method and
   // |delay| is the amount of time by which the call to this method was delayed.
-  void RemoveLoginForAccountInternal(
-      const PasswordForm& form,
-      PasswordStoreAndroidBackendDispatcherBridge::Account account,
-      PasswordChangesOrErrorReply callback,
-      PasswordStoreOperation operation,
-      base::TimeDelta delay);
+  void RemoveLoginForAccountInternal(const PasswordForm& form,
+                                     std::string account,
+                                     PasswordChangesOrErrorReply callback,
+                                     PasswordStoreOperation operation,
+                                     base::TimeDelta delay);
 
   // Implements the retry mechanism for the operations that are safe to retry.
   // The given |delay| comes from the previous attempt to run the operation.
@@ -314,9 +312,7 @@ class PasswordStoreAndroidBackend
 
   // Returns the complete list of PasswordForms (regardless of their blocklist
   // status) for |account|.
-  void GetAllLoginsForAccount(
-      PasswordStoreAndroidBackendDispatcherBridge::Account account,
-      LoginsOrErrorReply callback);
+  void GetAllLoginsForAccount(std::string account, LoginsOrErrorReply callback);
 
   // Invoked synchronously by `lifecycle_helper_` when Chrome is foregrounded.
   // This should not cover the initial startup since the registration for the

@@ -30,18 +30,14 @@ constexpr int kGMSCoreMinVersionForGetAllLoginsWithBrandingAPI = 233812000;
 constexpr int kGMSCoreVersionWithFewerErrors = 225012000;
 
 base::android::ScopedJavaLocalRef<jstring> GetJavaStringFromAccount(
-    PasswordStoreAndroidBackendDispatcherBridgeImpl::Account account) {
-  if (absl::holds_alternative<PasswordStoreOperationTarget>(account)) {
-    DCHECK(PasswordStoreOperationTarget::kLocalStorage ==
-           absl::get<PasswordStoreOperationTarget>(account));
+    std::string account) {
+  if (account.empty()) {
+    // TODO(crbug.com/1511194): Ensure java is consistent with C++ in
+    // interpreting the empty string instead of relying on nullptr.
     return nullptr;
   }
   return base::android::ConvertUTF8ToJavaString(
-      base::android::AttachCurrentThread(),
-      absl::get<
-          PasswordStoreAndroidBackendDispatcherBridgeImpl::SyncingAccount>(
-          account)
-          .value());
+      base::android::AttachCurrentThread(), std::move(account));
 }
 
 }  // namespace
@@ -126,7 +122,7 @@ void PasswordStoreAndroidBackendDispatcherBridgeImpl::Init(
 
 void PasswordStoreAndroidBackendDispatcherBridgeImpl::GetAllLogins(
     JobId job_id,
-    Account account) {
+    std::string account) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   Java_PasswordStoreAndroidBackendDispatcherBridgeImpl_getAllLogins(
       base::android::AttachCurrentThread(), java_object_, job_id.value(),
@@ -134,7 +130,7 @@ void PasswordStoreAndroidBackendDispatcherBridgeImpl::GetAllLogins(
 }
 
 void PasswordStoreAndroidBackendDispatcherBridgeImpl::
-    GetAllLoginsWithBrandingInfo(JobId job_id, Account account) {
+    GetAllLoginsWithBrandingInfo(JobId job_id, std::string account) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   Java_PasswordStoreAndroidBackendDispatcherBridgeImpl_getAllLoginsWithBrandingInfo(
       base::android::AttachCurrentThread(), java_object_, job_id.value(),
@@ -143,7 +139,7 @@ void PasswordStoreAndroidBackendDispatcherBridgeImpl::
 
 void PasswordStoreAndroidBackendDispatcherBridgeImpl::GetAutofillableLogins(
     JobId job_id,
-    Account account) {
+    std::string account) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   Java_PasswordStoreAndroidBackendDispatcherBridgeImpl_getAutofillableLogins(
       base::android::AttachCurrentThread(), java_object_, job_id.value(),
@@ -153,7 +149,7 @@ void PasswordStoreAndroidBackendDispatcherBridgeImpl::GetAutofillableLogins(
 void PasswordStoreAndroidBackendDispatcherBridgeImpl::GetLoginsForSignonRealm(
     JobId job_id,
     const std::string& signon_realm,
-    Account account) {
+    std::string account) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   Java_PasswordStoreAndroidBackendDispatcherBridgeImpl_getLoginsForSignonRealm(
       base::android::AttachCurrentThread(), java_object_, job_id.value(),
@@ -165,7 +161,7 @@ void PasswordStoreAndroidBackendDispatcherBridgeImpl::GetLoginsForSignonRealm(
 void PasswordStoreAndroidBackendDispatcherBridgeImpl::
     GetAffiliatedLoginsForSignonRealm(JobId job_id,
                                       const std::string& signon_realm,
-                                      Account account) {
+                                      std::string account) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   Java_PasswordStoreAndroidBackendDispatcherBridgeImpl_getAffiliatedLoginsForSignonRealm(
       base::android::AttachCurrentThread(), java_object_, job_id.value(),
@@ -177,7 +173,7 @@ void PasswordStoreAndroidBackendDispatcherBridgeImpl::
 void PasswordStoreAndroidBackendDispatcherBridgeImpl::AddLogin(
     JobId job_id,
     const password_manager::PasswordForm& form,
-    Account account) {
+    std::string account) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   password_manager::PasswordWithLocalData data =
       PasswordWithLocalDataFromPassword(form);
@@ -191,7 +187,7 @@ void PasswordStoreAndroidBackendDispatcherBridgeImpl::AddLogin(
 void PasswordStoreAndroidBackendDispatcherBridgeImpl::UpdateLogin(
     JobId job_id,
     const password_manager::PasswordForm& form,
-    Account account) {
+    std::string account) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   password_manager::PasswordWithLocalData data =
       PasswordWithLocalDataFromPassword(form);
@@ -205,7 +201,7 @@ void PasswordStoreAndroidBackendDispatcherBridgeImpl::UpdateLogin(
 void PasswordStoreAndroidBackendDispatcherBridgeImpl::RemoveLogin(
     JobId job_id,
     const password_manager::PasswordForm& form,
-    Account account) {
+    std::string account) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   sync_pb::PasswordSpecificsData data =
       SpecificsDataFromPassword(form, /*base_password_data=*/{});
