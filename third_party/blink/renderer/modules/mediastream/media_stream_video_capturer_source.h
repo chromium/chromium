@@ -99,6 +99,9 @@ class MODULES_EXPORT MediaStreamVideoCapturerSource
       base::OnceCallback<void(bool, const String&)> callback) override;
   void GetZoomLevel(base::OnceCallback<void(absl::optional<int>, const String&)>
                         callback) override;
+  void SetZoomLevel(
+      int zoom_level,
+      base::OnceCallback<void(bool, const String&)> callback) override;
   void ApplySubCaptureTarget(
       media::mojom::blink::SubCaptureTargetType type,
       const base::Token& sub_capture_target,

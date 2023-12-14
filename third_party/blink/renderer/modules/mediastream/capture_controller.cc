@@ -56,6 +56,18 @@ bool ShouldFocusCapturedSurface(V8CaptureStartFocusBehavior focus_behavior) {
   }
   NOTREACHED_NORETURN();
 }
+
+void OnCapturedSurfaceControlResult(ScriptPromiseResolver* resolver,
+                                    bool success,
+                                    const String& error) {
+  if (success) {
+    resolver->Resolve();
+  } else {
+    resolver->Reject(MakeGarbageCollected<DOMException>(
+        DOMExceptionCode::kUnknownError, error));
+  }
+}
+
 #endif  // !BUILDFLAG(IS_ANDROID)
 
 }  // namespace
@@ -115,36 +127,15 @@ ScriptPromise CaptureController::sendWheel(ScriptState* script_state,
       MakeGarbageCollected<ScriptPromiseResolver>(script_state);
 
   const ScriptPromise promise = resolver->Promise();
-
 #if BUILDFLAG(IS_ANDROID)
   resolver->Reject(MakeGarbageCollected<DOMException>(
       DOMExceptionCode::kNotSupportedError, "Unsupported."));
   return promise;
 #else
-
-  if (!is_bound_) {
-    resolver->Reject(MakeGarbageCollected<DOMException>(
-        DOMExceptionCode::kInvalidStateError,
-        "getDisplayMedia() not called yet."));
-    return promise;
-  }
-
-  if (!video_track_) {
-    resolver->Reject(MakeGarbageCollected<DOMException>(
-        DOMExceptionCode::kInvalidStateError, "Capture-session not started."));
-    return promise;
-  }
-
-  if (video_track_->readyState() == "ended") {
-    resolver->Reject(MakeGarbageCollected<DOMException>(
-        DOMExceptionCode::kInvalidStateError, "Video track ended."));
-    return promise;
-  }
-
-  if (!IsCaptureType(video_track_, {SurfaceType::BROWSER})) {
-    resolver->Reject(MakeGarbageCollected<DOMException>(
-        DOMExceptionCode::kNotSupportedError,
-        "Action only supported for tab-capture."));
+  std::pair<bool, DOMException*> validation_result =
+      ValidateCapturedSurfaceControlCall();
+  if (!validation_result.first) {
+    resolver->Reject(validation_result.second);
     return promise;
   }
 
@@ -154,18 +145,8 @@ ScriptPromise CaptureController::sendWheel(ScriptState* script_state,
     return promise;
   }
 
-  base::OnceCallback<void(bool, const String&)> callback = WTF::BindOnce(
-      [](ScriptPromiseResolver* resolver, bool success, const String& error) {
-        if (success) {
-          resolver->Resolve();
-        } else {
-          resolver->Reject(MakeGarbageCollected<DOMException>(
-              DOMExceptionCode::kUnknownError, error));
-        }
-      },
-      WrapPersistent(resolver));
-
-  video_track_->SendWheel(action, std::move(callback));
+  video_track_->SendWheel(action, WTF::BindOnce(&OnCapturedSurfaceControlResult,
+                                                WrapPersistent(resolver)));
 
   return promise;
 #endif  // !BUILDFLAG(IS_ANDROID)
@@ -192,36 +173,15 @@ ScriptPromise CaptureController::getZoomLevel(ScriptState* script_state) {
       MakeGarbageCollected<ScriptPromiseResolver>(script_state);
 
   const ScriptPromise promise = resolver->Promise();
-
 #if BUILDFLAG(IS_ANDROID)
   resolver->Reject(MakeGarbageCollected<DOMException>(
       DOMExceptionCode::kNotSupportedError, "Unsupported."));
   return promise;
 #else
-
-  if (!is_bound_) {
-    resolver->Reject(MakeGarbageCollected<DOMException>(
-        DOMExceptionCode::kInvalidStateError,
-        "getDisplayMedia() not called yet."));
-    return promise;
-  }
-
-  if (!video_track_) {
-    resolver->Reject(MakeGarbageCollected<DOMException>(
-        DOMExceptionCode::kInvalidStateError, "Capture-session not started."));
-    return promise;
-  }
-
-  if (video_track_->readyState() == "ended") {
-    resolver->Reject(MakeGarbageCollected<DOMException>(
-        DOMExceptionCode::kInvalidStateError, "Video track ended."));
-    return promise;
-  }
-
-  if (!IsCaptureType(video_track_, {SurfaceType::BROWSER})) {
-    resolver->Reject(MakeGarbageCollected<DOMException>(
-        DOMExceptionCode::kNotSupportedError,
-        "Action only supported for tab-capture."));
+  std::pair<bool, DOMException*> validation_result =
+      ValidateCapturedSurfaceControlCall();
+  if (!validation_result.first) {
+    resolver->Reject(validation_result.second);
     return promise;
   }
 
@@ -244,10 +204,37 @@ ScriptPromise CaptureController::getZoomLevel(ScriptState* script_state) {
 #endif  // !BUILDFLAG(IS_ANDROID)
 }
 
-ScriptPromise CaptureController::setZoomLevel(int zoom_level) {
-  // TODO(crbug.com/1466247): Implement.
-  NOTIMPLEMENTED();
-  return ScriptPromise();
+ScriptPromise CaptureController::setZoomLevel(ScriptState* script_state,
+                                              int zoom_level) {
+  DCHECK(IsMainThread());
+
+  ScriptPromiseResolver* const resolver =
+      MakeGarbageCollected<ScriptPromiseResolver>(script_state);
+
+  const ScriptPromise promise = resolver->Promise();
+#if BUILDFLAG(IS_ANDROID)
+  resolver->Reject(MakeGarbageCollected<DOMException>(
+      DOMExceptionCode::kNotSupportedError, "Unsupported."));
+  return promise;
+#else
+  std::pair<bool, DOMException*> validation_result =
+      ValidateCapturedSurfaceControlCall();
+  if (!validation_result.first) {
+    resolver->Reject(validation_result.second);
+    return promise;
+  }
+
+  if (zoom_level < getMinZoomLevel() || getMaxZoomLevel() < zoom_level) {
+    resolver->Reject(MakeGarbageCollected<DOMException>(
+        DOMExceptionCode::kInvalidStateError, "Invalid zoom_level."));
+    return promise;
+  }
+
+  video_track_->SetZoomLevel(
+      zoom_level,
+      WTF::BindOnce(&OnCapturedSurfaceControlResult, WrapPersistent(resolver)));
+  return promise;
+#endif  // !BUILDFLAG(IS_ANDROID)
 }
 
 void CaptureController::SetVideoTrack(MediaStreamTrack* video_track,
@@ -304,6 +291,34 @@ void CaptureController::Trace(Visitor* visitor) const {
   visitor->Trace(video_track_);
   EventTarget::Trace(visitor);
   ExecutionContextClient::Trace(visitor);
+}
+
+std::pair<bool, DOMException*>
+CaptureController::ValidateCapturedSurfaceControlCall() const {
+  if (!is_bound_) {
+    return std::make_pair(false, MakeGarbageCollected<DOMException>(
+                                     DOMExceptionCode::kInvalidStateError,
+                                     "getDisplayMedia() not called yet."));
+  }
+
+  if (!video_track_) {
+    return std::make_pair(false, MakeGarbageCollected<DOMException>(
+                                     DOMExceptionCode::kInvalidStateError,
+                                     "Capture-session not started."));
+  }
+
+  if (video_track_->readyState() == "ended") {
+    return std::make_pair(
+        false, MakeGarbageCollected<DOMException>(
+                   DOMExceptionCode::kInvalidStateError, "Video track ended."));
+  }
+
+  if (!IsCaptureType(video_track_, {SurfaceType::BROWSER})) {
+    return std::make_pair(false, MakeGarbageCollected<DOMException>(
+                                     DOMExceptionCode::kNotSupportedError,
+                                     "Action only supported for tab-capture."));
+  }
+  return std::make_pair(true, nullptr);
 }
 
 }  // namespace blink

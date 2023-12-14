@@ -326,6 +326,12 @@ void TransferredMediaStreamTrack::GetZoomLevel(
     base::OnceCallback<void(absl::optional<int>, const String&)> callback) {
   NOTREACHED_NORETURN();
 }
+
+void TransferredMediaStreamTrack::SetZoomLevel(
+    int zoom_level,
+    base::OnceCallback<void(bool, const String&)> callback) {
+  std::move(callback).Run(false, "Unsupported.");
+}
 #endif
 
 // EventTarget

@@ -918,6 +918,12 @@ void MediaStreamTrackImpl::GetZoomLevel(
     base::OnceCallback<void(absl::optional<int>, const String&)> callback) {
   std::move(callback).Run(absl::nullopt, "Unsupported.");
 }
+
+void MediaStreamTrackImpl::SetZoomLevel(
+    int zoom_level,
+    base::OnceCallback<void(bool, const String&)> callback) {
+  std::move(callback).Run(false, "Unsupported.");
+}
 #endif
 
 bool MediaStreamTrackImpl::HasPendingActivity() const {

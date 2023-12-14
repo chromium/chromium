@@ -130,6 +130,8 @@ class MockMediaStreamTrack : public blink::MediaStreamTrack {
       GetZoomLevel,
       void(base::OnceCallback<void(absl::optional<int>, const String&)>));
   MOCK_METHOD0(CloseFocusWindowOfOpportunity, void());
+  MOCK_METHOD2(SetZoomLevel,
+               void(int, base::OnceCallback<void(bool, const String&)>));
 #endif
 
   MOCK_METHOD1(AddObserver, void(Observer*));

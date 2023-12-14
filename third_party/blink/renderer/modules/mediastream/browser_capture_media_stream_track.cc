@@ -107,6 +107,32 @@ void ResolveApplySubCaptureTargetPromiseHelper(
 
   NOTREACHED();
 }
+
+MediaStreamVideoSource* GetNativeVideoSource(
+    MediaStreamComponent* const component,
+    String& error) {
+  if (!component) {
+    error = "Missing component.";
+    return nullptr;
+  }
+
+  MediaStreamSource* const source = component->Source();
+  if (!source) {
+    error = "Missing source.";
+    return nullptr;
+  }
+
+  CHECK_EQ(source->GetType(), MediaStreamSource::kTypeVideo);
+
+  MediaStreamVideoSource* const native_source =
+      MediaStreamVideoSource::GetVideoSource(source);
+  if (!native_source) {
+    error = "Missing native source.";
+    return nullptr;
+  }
+  return native_source;
+}
+
 #endif  // !BUILDFLAG(IS_ANDROID)
 
 }  // namespace
@@ -139,56 +165,39 @@ void BrowserCaptureMediaStreamTrack::Trace(Visitor* visitor) const {
 void BrowserCaptureMediaStreamTrack::SendWheel(
     CapturedWheelAction* action,
     base::OnceCallback<void(bool, const String&)> callback) {
-  MediaStreamComponent* const component = Component();
-  if (!component) {
-    std::move(callback).Run(false, "Missing component.");
-    return;
-  }
-
-  MediaStreamSource* const source = component->Source();
-  if (!source) {
-    std::move(callback).Run(false, "Missing source.");
-    return;
-  }
-
-  // SendWheel() may only be called for video tracks.
-  CHECK_EQ(source->GetType(), MediaStreamSource::kTypeVideo);
-
+  String error;
   MediaStreamVideoSource* const native_source =
-      MediaStreamVideoSource::GetVideoSource(source);
+      GetNativeVideoSource(Component(), error);
   if (!native_source) {
-    std::move(callback).Run(false, "Missing native source.");
+    std::move(callback).Run(false, error);
     return;
   }
-
   native_source->SendWheel(action, std::move(callback));
 }
 
 void BrowserCaptureMediaStreamTrack::GetZoomLevel(
     base::OnceCallback<void(absl::optional<int>, const String&)> callback) {
-  MediaStreamComponent* const component = Component();
-  if (!component) {
-    std::move(callback).Run(false, "Missing component.");
-    return;
-  }
-
-  MediaStreamSource* const source = component->Source();
-  if (!source) {
-    std::move(callback).Run(false, "Missing source.");
-    return;
-  }
-
-  // GetZoomLevel() may only be called for video tracks.
-  CHECK_EQ(source->GetType(), MediaStreamSource::kTypeVideo);
-
+  String error;
   MediaStreamVideoSource* const native_source =
-      MediaStreamVideoSource::GetVideoSource(source);
+      GetNativeVideoSource(Component(), error);
   if (!native_source) {
-    std::move(callback).Run(false, "Missing native source.");
+    std::move(callback).Run(false, error);
     return;
   }
-
   native_source->GetZoomLevel(std::move(callback));
+}
+
+void BrowserCaptureMediaStreamTrack::SetZoomLevel(
+    int zoom_level,
+    base::OnceCallback<void(bool, const String&)> callback) {
+  String error;
+  MediaStreamVideoSource* const native_source =
+      GetNativeVideoSource(Component(), error);
+  if (!native_source) {
+    std::move(callback).Run(false, error);
+    return;
+  }
+  native_source->SetZoomLevel(zoom_level, std::move(callback));
 }
 
 #endif  // !BUILDFLAG(IS_ANDROID)

@@ -188,6 +188,18 @@ class BLINK_MODULES_EXPORT MediaStreamVideoSource
       base::OnceCallback<void(absl::optional<int> zoom_level,
                               const String& error)> callback);
 
+  // Sets the zoom level for the captured tab.
+  //
+  // `zoom_level` is the requested zoom level and must be at least
+  // getMinZoomLevel() and at most getMaxZoomLevel()
+  //
+  // `callback` is used to report the result.
+  // `callback.success` reports back success/failure.
+  // `callback.error` has the error message upon failure. (Empty otherwise.)
+  virtual void SetZoomLevel(
+      int zoom_level,
+      base::OnceCallback<void(bool success, const String& error)> callback);
+
   // Start/stop cropping or restricting the video track.
   //
   // Non-empty |sub_capture_target_id| sets (or changes) the target.
