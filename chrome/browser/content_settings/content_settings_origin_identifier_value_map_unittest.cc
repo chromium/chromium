@@ -47,6 +47,35 @@ TEST(OriginIdentifierValueMapTest, SetGetValue) {
                                   ContentSettingsType::POPUPS));
 }
 
+TEST(OriginIdentifierValueMapTest, SetValueReturnsChanges) {
+  content_settings::OriginIdentifierValueMap map;
+  base::AutoLock lock(map.GetLock());
+
+  // Initial call return true.
+  EXPECT_TRUE(map.SetValue(ContentSettingsPattern::FromString("[*.]google.com"),
+                           ContentSettingsPattern::FromString("[*.]google.com"),
+                           ContentSettingsType::COOKIES, base::Value(1), {}));
+
+  // An identical call return false.
+  EXPECT_FALSE(
+      map.SetValue(ContentSettingsPattern::FromString("[*.]google.com"),
+                   ContentSettingsPattern::FromString("[*.]google.com"),
+                   ContentSettingsType::COOKIES, base::Value(1), {}));
+
+  // A change in value returns true.
+  EXPECT_TRUE(map.SetValue(ContentSettingsPattern::FromString("[*.]google.com"),
+                           ContentSettingsPattern::FromString("[*.]google.com"),
+                           ContentSettingsType::COOKIES, base::Value(2), {}));
+
+  // A change in metadata returns true.
+  content_settings::RuleMetaData metadata;
+  metadata.set_session_model(content_settings::SessionModel::OneTime);
+  EXPECT_TRUE(map.SetValue(ContentSettingsPattern::FromString("[*.]google.com"),
+                           ContentSettingsPattern::FromString("[*.]google.com"),
+                           ContentSettingsType::COOKIES, base::Value(2),
+                           metadata));
+}
+
 TEST(OriginIdentifierValueMapTest, SetDeleteValue) {
   content_settings::OriginIdentifierValueMap map;
   base::AutoLock lock(map.GetLock());
@@ -71,9 +100,10 @@ TEST(OriginIdentifierValueMapTest, SetDeleteValue) {
                                   GURL("http://www.google.com"),
                                   ContentSettingsType::NOTIFICATIONS));
   // Delete non-existing value.
-  map.DeleteValue(ContentSettingsPattern::FromString("[*.]google.com"),
-                  ContentSettingsPattern::FromString("[*.]google.com"),
-                  ContentSettingsType::NOTIFICATIONS);
+  EXPECT_FALSE(
+      map.DeleteValue(ContentSettingsPattern::FromString("[*.]google.com"),
+                      ContentSettingsPattern::FromString("[*.]google.com"),
+                      ContentSettingsType::NOTIFICATIONS));
   EXPECT_EQ(nullptr, map.GetValue(GURL("http://www.google.com"),
                                   GURL("http://www.google.com"),
                                   ContentSettingsType::NOTIFICATIONS));
@@ -86,9 +116,10 @@ TEST(OriginIdentifierValueMapTest, SetDeleteValue) {
   }
 
   // Delete existing value.
-  map.DeleteValue(ContentSettingsPattern::FromString("[*.]google.com"),
-                  ContentSettingsPattern::FromString("[*.]google.com"),
-                  ContentSettingsType::GEOLOCATION);
+  EXPECT_TRUE(
+      map.DeleteValue(ContentSettingsPattern::FromString("[*.]google.com"),
+                      ContentSettingsPattern::FromString("[*.]google.com"),
+                      ContentSettingsType::GEOLOCATION));
 
   EXPECT_EQ(nullptr, map.GetValue(GURL("http://www.google.com"),
                                   GURL("http://www.google.com"),
