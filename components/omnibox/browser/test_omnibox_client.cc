@@ -28,7 +28,8 @@ TestOmniboxClient::TestOmniboxClient()
           std::make_unique<AutocompleteController>(
               CreateAutocompleteProviderClient(),
               AutocompleteClassifier::DefaultOmniboxProviders()),
-          std::make_unique<TestSchemeClassifier>()) {}
+          std::make_unique<TestSchemeClassifier>()),
+      last_log_disposition_(WindowOpenDisposition::UNKNOWN) {}
 
 TestOmniboxClient::~TestOmniboxClient() {
   template_url_service_ = nullptr;
@@ -105,4 +106,8 @@ gfx::Image TestOmniboxClient::GetSizedIcon(
   SkBitmap bitmap;
   bitmap.allocN32Pixels(16, 16);
   return gfx::Image(gfx::ImageSkia::CreateFrom1xBitmap(bitmap));
+}
+
+void TestOmniboxClient::OnURLOpenedFromOmnibox(OmniboxLog* log) {
+  last_log_disposition_ = log->disposition;
 }

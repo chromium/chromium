@@ -12,9 +12,11 @@
 #include "components/omnibox/browser/autocomplete_match.h"
 #include "components/omnibox/browser/autocomplete_provider_client.h"
 #include "components/omnibox/browser/omnibox_client.h"
+#include "components/omnibox/browser/omnibox_log.h"
 #include "components/omnibox/browser/test_scheme_classifier.h"
 #include "components/sessions/core/session_id.h"
 #include "testing/gmock/include/gmock/gmock.h"
+#include "ui/base/window_open_disposition.h"
 #include "ui/gfx/image/image.h"
 
 class AutocompleteSchemeClassifier;
@@ -41,6 +43,7 @@ class TestOmniboxClient : public testing::NiceMock<OmniboxClient> {
   bool IsUsingFakeHttpsForHttpsUpgradeTesting() const override;
   gfx::Image GetSizedIcon(const gfx::VectorIcon& vector_icon_type,
                           SkColor vector_icon_color) const override;
+  void OnURLOpenedFromOmnibox(OmniboxLog* log) override;
 
   MOCK_METHOD(gfx::Image,
               GetFaviconForPageUrl,
@@ -64,11 +67,16 @@ class TestOmniboxClient : public testing::NiceMock<OmniboxClient> {
   MOCK_METHOD(bookmarks::BookmarkModel*, GetBookmarkModel, ());
   MOCK_METHOD(PrefService*, GetPrefs, ());
 
+  WindowOpenDisposition last_log_disposition() const {
+    return last_log_disposition_;
+  }
+
  private:
   SessionID session_id_;
   raw_ptr<TemplateURLService, DanglingUntriaged> template_url_service_;
   TestSchemeClassifier scheme_classifier_;
   AutocompleteClassifier autocomplete_classifier_;
+  WindowOpenDisposition last_log_disposition_;
 };
 
 #endif  // COMPONENTS_OMNIBOX_BROWSER_TEST_OMNIBOX_CLIENT_H_
