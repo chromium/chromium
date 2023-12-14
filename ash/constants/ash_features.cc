@@ -40,12 +40,6 @@ BASE_FEATURE(kAdaptiveChargingForTesting,
              "AdaptiveChargingForTesting",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// Adjusts portrait mode split view to avoid the input field in the bottom
-// window being occluded by the virtual keyboard.
-BASE_FEATURE(kAdjustSplitViewForVK,
-             "AdjustSplitViewForVK",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 // Controls whether the advanced documentScan APIs for document scanners
 // are available.
 BASE_FEATURE(kAdvancedDocumentScanAPI,
@@ -3062,10 +3056,6 @@ bool IsAdaptiveChargingEnabled() {
 
 bool IsAdaptiveChargingForTestingEnabled() {
   return base::FeatureList::IsEnabled(kAdaptiveChargingForTesting);
-}
-
-bool IsAdjustSplitViewForVKEnabled() {
-  return base::FeatureList::IsEnabled(kAdjustSplitViewForVK);
 }
 
 bool IsAdvancedDocumentScanAPIEnabled() {

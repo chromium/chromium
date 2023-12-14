@@ -670,9 +670,8 @@ void SplitViewController::OnSnapEvent(
 
   const bool in_overview = IsInOverviewSession();
 
-  // In clamshell mode, only if overview is active on window snapped or when the
-  // feature flag `kSnapGroup` is enabled and the feature param
-  // `kAutomaticallyLockGroup` is true, the window should be managed by
+  // In clamshell mode, only if overview is active on window snapped or when
+  // `IsSnapGroupEnabledInClamshellMode`, the window should be managed by
   // `SplitViewController`. Otherwise, the window should be snapped normally and
   // should be managed by `WindowState`.
   if (split_view_type_ == SplitViewType::kClamshellType &&
@@ -737,10 +736,8 @@ void SplitViewController::AttachToBeSnappedWindow(
     // Add observers when the split view mode starts.
     shell->AddShellObserver(this);
     OverviewController::Get()->AddObserver(this);
-    if (features::IsAdjustSplitViewForVKEnabled()) {
       keyboard::KeyboardUIController::Get()->AddObserver(this);
       shell->activation_client()->AddObserver(this);
-    }
 
     if (!window_util::IsFasterSplitScreenOrSnapGroupEnabledInClamshell()) {
       // AutoSnapController will end overview in clamshell split view if a
@@ -1030,10 +1027,8 @@ void SplitViewController::EndSplitView(EndReason end_reason) {
   Shell* shell = Shell::Get();
   shell->RemoveShellObserver(this);
   shell->overview_controller()->RemoveObserver(this);
-  if (features::IsAdjustSplitViewForVKEnabled()) {
     keyboard::KeyboardUIController::Get()->RemoveObserver(this);
     shell->activation_client()->RemoveObserver(this);
-  }
 
   auto_snap_controller_.reset();
 
@@ -1180,7 +1175,7 @@ SnapPosition SplitViewController::ComputeSnapPosition(
 bool SplitViewController::BoundsChangeIsFromVKAndAllowed(
     aura::Window* window) const {
   // Make sure that it is the bottom window who is requiring bounds change.
-  return features::IsAdjustSplitViewForVKEnabled() && changing_bounds_by_vk_ &&
+  return changing_bounds_by_vk_ &&
          window == (IsLayoutPrimary(window) ? secondary_window_.get()
                                             : primary_window_.get());
 }
@@ -1569,9 +1564,6 @@ void SplitViewController::OnAccessibilityControllerShutdown() {
 
 void SplitViewController::OnKeyboardOccludedBoundsChanged(
     const gfx::Rect& screen_bounds) {
-  if (!features::IsAdjustSplitViewForVKEnabled())
-    return;
-
   // The window only needs to be moved if it is in the portrait mode.
   if (IsLayoutHorizontal(root_window_))
     return;
@@ -1640,10 +1632,6 @@ void SplitViewController::OnKeyboardOccludedBoundsChanged(
 void SplitViewController::OnWindowActivated(ActivationReason reason,
                                             aura::Window* gained_active,
                                             aura::Window* lost_active) {
-  if (!features::IsAdjustSplitViewForVKEnabled()) {
-    return;
-  }
-
   // If the bottom window is moved for the virtual keyboard (the split view
   // divider bar is unadjustable), when the bottom window lost active, restore
   // to the original layout.
@@ -1959,9 +1947,7 @@ void SplitViewController::UpdateSnappedWindowsAndDividerBounds() {
     split_view_divider_->UpdateDividerBounds();
 
     // Make the split view divider adjustable.
-    if (features::IsAdjustSplitViewForVKEnabled()) {
       split_view_divider_->SetAdjustable(true);
-    }
   }
 }
 
@@ -2244,9 +2230,8 @@ void SplitViewController::OnSnappedWindowDetached(aura::Window* window,
   // End the Split View mode for the following two cases:
   // 1. If there is no snapped window at this moment. Note that this will update
   // overview window grid bounds if the overview mode is active at the moment;
-  // 2.  When `kSnapGroup` is enabled and feature param
-  // `kAutomaticallyLockGroup` is true, `SplitViewController` will no longer
-  // manage the window(s) on one window detached.
+  // 2.  When `IsSnapGroupEnabledInClamshellMode`, `SplitViewController` will no
+  // longer manage the window(s) on one window detached.
   if ((!primary_window_ && !secondary_window_) ||
       (IsSnapGroupEnabledInClamshellMode() &&
        (!primary_window_ || !secondary_window_))) {

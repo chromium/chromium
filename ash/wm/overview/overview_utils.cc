@@ -215,8 +215,8 @@ gfx::Rect GetGridBoundsInScreen(
 
   // We should show partial overview for the following use cases:
   // 1. In tablet split view mode;
-  // 2. On one window snapped in clamshell mode with feature flag `kSnapGroup`
-  // is enabled and feature param `kAutomaticallyLockGroup` is true;
+  // 2. On one window snapped in clamshell mode with
+  // `IsFasterSplitScreenOrSnapGroupEnabledInClamshell()` enabled;
   // 3. On one window snapped in clamshell in overview session.
 
   // When `kFasterSplitScreenSetup` or `kSnapGroup` is enabled, we would only

@@ -329,14 +329,12 @@ bool ShouldExcludeForCycleList(const aura::Window* window) {
 
 bool ShouldExcludeForOverview(const aura::Window* window) {
   // If we're currently in tablet splitview or in clamshell mode with
-  // `IsArm1AutomaticallyLockEnabled()` (see SnapGroupController for more
-  // details), remove the default snapped window from the window list. The
-  // default snapped window occupies one side of the screen, while the other
-  // windows occupy the other side of the screen in overview mode. The default
-  // snap position is the position where the window was first snapped. See
-  // `default_snap_position_` in SplitViewController for more details.
-  auto* split_view_controller =
-      SplitViewController::Get(window->GetRootWindow());
+  // `IsFasterSplitScreenOrSnapGroupEnabledInClamshell()`, remove the default
+  // snapped window from the window list. The default snapped window occupies
+  // one side of the screen, while the other windows occupy the other side of
+  // the screen in overview mode. The default snap position is the position
+  // where the window was first snapped. See `default_snap_position_` in
+  // SplitViewController for more details.
 
   // A window should be excluded from being shown in overview when:
   // 1. In tablet split view mode on one window snapped;
@@ -369,7 +367,8 @@ bool ShouldExcludeForOverview(const aura::Window* window) {
   }
 
   return display::Screen::GetScreen()->InTabletMode()
-             ? (window == split_view_controller->GetDefaultSnappedWindow())
+             ? (window == SplitViewController::Get(window->GetRootWindow())
+                              ->GetDefaultSnappedWindow())
              : should_exclude_in_clamshell();
 }
 

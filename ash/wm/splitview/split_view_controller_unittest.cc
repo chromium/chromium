@@ -3748,13 +3748,9 @@ TEST_F(SplitViewControllerTest,
 // virtual keyboard improvement and the virtual keyboard.
 class SplitViewKeyboardTest : public SplitViewControllerTest {
  public:
-  SplitViewKeyboardTest() {
-    scoped_feature_list_.InitAndEnableFeature(features::kAdjustSplitViewForVK);
-  }
-
+  SplitViewKeyboardTest() = default;
   SplitViewKeyboardTest(const SplitViewKeyboardTest&) = delete;
   SplitViewKeyboardTest& operator=(const SplitViewKeyboardTest&) = delete;
-
   ~SplitViewKeyboardTest() override = default;
 
   // SplitViewControllerTest:
