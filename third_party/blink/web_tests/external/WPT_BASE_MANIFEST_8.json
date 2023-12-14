@@ -208142,6 +208142,32 @@
         {}
        ]
       ],
+      "transform-percent-with-width-and-height-separate.html": [
+       "d03ba24f9366d71424c50a5db0fbda8c67612457",
+       [
+        null,
+        [
+         [
+          "/css/css-transforms/animation/transform-percent-with-width-and-height-separate-ref.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "transform-percent-with-width-and-height.html": [
+       "a207435db402c70aaab2e22d46179915df7f4d86",
+       [
+        null,
+        [
+         [
+          "/css/css-transforms/animation/transform-percent-with-width-and-height-ref.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
       "translate-animation-on-svg.html": [
        "e5cc697360ca7548702c6f73dc7615a7a897e76c",
        [
@@ -208149,6 +208175,32 @@
         [
          [
           "/css/css-transforms/animation/translate-animation-on-svg-ref.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "translate-percent-with-width-and-height-separate.html": [
+       "bfd5d483feee54e27cecdffcdd5dec03ff044c27",
+       [
+        null,
+        [
+         [
+          "/css/css-transforms/animation/translate-percent-with-width-and-height-separate-ref.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "translate-percent-with-width-and-height.html": [
+       "fa7ea844630692437cbb626958e0643253177318",
+       [
+        null,
+        [
+         [
+          "/css/css-transforms/animation/translate-percent-with-width-and-height-ref.html",
           "=="
          ]
         ],
@@ -335315,8 +335367,24 @@
        "2fee6f7c1fc46593f450fac606a651a12403ff72",
        []
       ],
+      "transform-percent-with-width-and-height-ref.html": [
+       "8025539309f04590fe103ddd6f35346febbd7a1c",
+       []
+      ],
+      "transform-percent-with-width-and-height-separate-ref.html": [
+       "8025539309f04590fe103ddd6f35346febbd7a1c",
+       []
+      ],
       "translate-animation-on-svg-ref.html": [
        "d503f3385115a4c758bea25bd299c81ba8eb7675",
+       []
+      ],
+      "translate-percent-with-width-and-height-ref.html": [
+       "ddd7d01b6917368481ac459484535aeeb39cdbeb",
+       []
+      ],
+      "translate-percent-with-width-and-height-separate-ref.html": [
+       "62ec4d9b3d4305684bb16f6707149911d158f63c",
        []
       ]
      },
@@ -357090,6 +357158,10 @@
        ],
        "close_beforeunload-1.html": [
         "6f44d8a83ecade23c4b02707c56981d25ed62811",
+        []
+       ],
+       "close_pagehide-1.html": [
+        "5631b539a6af1ffee4f77b265b03eed3255f364f",
         []
        ],
        "close_script_defer-1.html": [
@@ -425558,33 +425630,6 @@
       }
      ]
     ],
-    "compute_pressure_cross_origin_focus_control.tentative.https.window.js": [
-     "950334d6fc57f324b61cede416920534ccce76aa",
-     [
-      "compute-pressure/compute_pressure_cross_origin_focus_control.tentative.https.window.html",
-      {
-       "script_metadata": [
-        [
-         "timeout",
-         "long"
-        ],
-        [
-         "script",
-         "/common/get-host-info.sub.js"
-        ],
-        [
-         "script",
-         "/resources/test-only-api.js"
-        ],
-        [
-         "script",
-         "resources/pressure-helpers.js"
-        ]
-       ],
-       "timeout": "long"
-      }
-     ]
-    ],
     "compute_pressure_detached_iframe.tentative.https.html": [
      "5511a147048d610125a0d0d485367b88e4e5a70e",
      [
@@ -426024,53 +426069,6 @@
       }
      ]
     ],
-    "compute_pressure_privacy_test.tentative.https.window.js": [
-     "113f4bdf79be9325df22f859c819558ab37429f5",
-     [
-      "compute-pressure/compute_pressure_privacy_test.tentative.https.window.html",
-      {
-       "script_metadata": [
-        [
-         "timeout",
-         "long"
-        ],
-        [
-         "script",
-         "/common/get-host-info.sub.js"
-        ],
-        [
-         "script",
-         "/common/media.js"
-        ],
-        [
-         "script",
-         "/mediacapture-streams/permission-helper.js"
-        ],
-        [
-         "script",
-         "/picture-in-picture/resources/picture-in-picture-helpers.js"
-        ],
-        [
-         "script",
-         "/resources/testdriver.js"
-        ],
-        [
-         "script",
-         "/resources/testdriver-vendor.js"
-        ],
-        [
-         "script",
-         "/resources/test-only-api.js"
-        ],
-        [
-         "script",
-         "resources/pressure-helpers.js"
-        ]
-       ],
-       "timeout": "long"
-      }
-     ]
-    ],
     "compute_pressure_rate_obfuscation_mitigation_not_triggered.tentative.https.window.js": [
      "9fd549d2db9ba69a26071cfe33e0857a8d8aef82",
      [
@@ -426119,29 +426117,6 @@
         [
          "global",
          "window,dedicatedworker,sharedworker"
-        ]
-       ],
-       "timeout": "long"
-      }
-     ]
-    ],
-    "compute_pressure_same_origin_focus_control.tentative.https.window.js": [
-     "7df0be5c47d161fe4cadcba937f875a0a0cba320",
-     [
-      "compute-pressure/compute_pressure_same_origin_focus_control.tentative.https.window.html",
-      {
-       "script_metadata": [
-        [
-         "timeout",
-         "long"
-        ],
-        [
-         "script",
-         "/resources/test-only-api.js"
-        ],
-        [
-         "script",
-         "resources/pressure-helpers.js"
         ]
        ],
        "timeout": "long"
@@ -529877,6 +529852,13 @@
       "open-close": {
        "close_beforeunload.html": [
         "dcb8830ab68d5dacc701105eb01f6084aeec9507",
+        [
+         null,
+         {}
+        ]
+       ],
+       "close_pagehide.html": [
+        "4d726437c235d16a03dda3ae277026e0b71298ae",
         [
          null,
          {}
