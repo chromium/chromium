@@ -73,7 +73,8 @@ class BrowserAction {
       int32_t active_tab_index,
       int32_t first_non_pinned_tab_index,
       base::StringPiece app_name,
-      int32_t restore_window_id);
+      int32_t restore_window_id,
+      uint64_t lacros_profile_id);
   static std::unique_ptr<BrowserAction> OpenProfileManager();
 
   // Returns the initial action for the automatic start of Lacros.

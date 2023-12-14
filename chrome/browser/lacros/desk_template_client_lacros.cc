@@ -8,6 +8,8 @@
 #include "base/trace_event/trace_event.h"
 #include "chrome/browser/apps/icon_standardizer.h"
 #include "chrome/browser/favicon/favicon_service_factory.h"
+#include "chrome/browser/lacros/profile_loader.h"
+#include "chrome/browser/lacros/profile_util.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/ui/browser.h"
@@ -144,25 +146,16 @@ void ConvertTabGroupsToTabGroupInfos(
   }
 }
 
-}  // namespace
-
-// DeskTemplateClientLacros
-DeskTemplateClientLacros::DeskTemplateClientLacros() {
-  auto* const lacros_service = chromeos::LacrosService::Get();
-  if (lacros_service->IsAvailable<crosapi::mojom::DeskTemplate>()) {
-    lacros_service->GetRemote<crosapi::mojom::DeskTemplate>()
-        ->AddDeskTemplateClient(receiver_.BindNewPipeAndPassRemote());
-  }
-}
-
-DeskTemplateClientLacros::~DeskTemplateClientLacros() = default;
-
-void DeskTemplateClientLacros::CreateBrowserWithRestoredData(
+void CreateBrowserWithProfile(
     const gfx::Rect& bounds,
     const ui::WindowShowState show_state,
-    crosapi::mojom::DeskTemplateStatePtr additional_state) {
-  Profile* profile = ProfileManager::GetLastUsedProfileAllowedByPolicy();
-  DCHECK(profile) << "No last used profile is found.";
+    crosapi::mojom::DeskTemplateStatePtr additional_state,
+    Profile* profile) {
+  profile = ProfileManager::MaybeForceOffTheRecordMode(profile);
+  if (!profile) {
+    // If we failed to load the profile, we should not try to proceed.
+    return;
+  }
 
   const absl::optional<std::string>& browser_app_name =
       additional_state->browser_app_name;
@@ -207,6 +200,36 @@ void DeskTemplateClientLacros::CreateBrowserWithRestoredData(
   }
 }
 
+}  // namespace
+
+// DeskTemplateClientLacros
+DeskTemplateClientLacros::DeskTemplateClientLacros() {
+  auto* const lacros_service = chromeos::LacrosService::Get();
+  if (lacros_service->IsAvailable<crosapi::mojom::DeskTemplate>()) {
+    lacros_service->GetRemote<crosapi::mojom::DeskTemplate>()
+        ->AddDeskTemplateClient(receiver_.BindNewPipeAndPassRemote());
+  }
+}
+
+DeskTemplateClientLacros::~DeskTemplateClientLacros() = default;
+
+void DeskTemplateClientLacros::CreateBrowserWithRestoredData(
+    const gfx::Rect& bounds,
+    const ui::WindowShowState show_state,
+    crosapi::mojom::DeskTemplateStatePtr additional_state) {
+  if (additional_state->lacros_profile_id) {
+    uint64_t profile_id = additional_state->lacros_profile_id;
+    LoadProfileWithId(base::BindOnce(&CreateBrowserWithProfile, bounds,
+                                     show_state, std::move(additional_state)),
+                      /*can_trigger_fre=*/false, profile_id);
+    return;
+  }
+
+  LoadMainProfile(base::BindOnce(&CreateBrowserWithProfile, bounds, show_state,
+                                 std::move(additional_state)),
+                  /*can_trigger_fre=*/false);
+}
+
 void DeskTemplateClientLacros::GetBrowserInformation(
     uint32_t serial,
     const std::string& window_unique_id,
@@ -248,6 +271,9 @@ void DeskTemplateClientLacros::GetBrowserInformation(
     ConvertTabGroupsToTabGroupInfos(tab_strip_model->group_model(),
                                     state.get());
   }
+
+  state->lacros_profile_id =
+      HashProfilePathToProfileId(browser->profile()->GetPath());
 
   std::move(callback).Run(serial, window_unique_id, std::move(state));
 }

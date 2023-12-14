@@ -767,10 +767,12 @@ void BrowserManager::CreateBrowserWithRestoredData(
     int32_t active_tab_index,
     int32_t first_non_pinned_tab_index,
     const std::string& app_name,
-    int32_t restore_window_id) {
+    int32_t restore_window_id,
+    uint64_t lacros_profile_id) {
   PerformOrEnqueue(BrowserAction::CreateBrowserWithRestoredData(
       urls, bounds, tab_group_infos, show_state, active_tab_index,
-      first_non_pinned_tab_index, app_name, restore_window_id));
+      first_non_pinned_tab_index, app_name, restore_window_id,
+      lacros_profile_id));
 }
 
 void BrowserManager::OpenProfileManager() {

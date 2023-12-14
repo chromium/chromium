@@ -335,7 +335,7 @@ void DesksTemplatesAppLaunchHandler::MaybeLaunchLacrosBrowsers() {
           // Values of 0 will be ignored, other type constraints are
           // enforced on the browser side.
           app_restore_data->first_non_pinned_tab_index.value_or(0), app_name,
-          restore_window_id);
+          restore_window_id, app_restore_data->lacros_profile_id.value_or(0));
     }
     // TODO(crbug.com/1442076): Remove after issue is root caused.
     LOG(ERROR) << windows_count

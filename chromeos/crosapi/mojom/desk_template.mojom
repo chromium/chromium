@@ -57,6 +57,9 @@ struct DeskTemplateState {
 
   // List of tab groups associated with this browser.
   [MinVersion=4] array<TabGroup>? groups@5;
+
+  // The lacros profile ID for this browser.
+  [MinVersion=5] uint64 lacros_profile_id@6;
 };
 
 // Interface for desk template clients.  Implemented by lacros-chrome.

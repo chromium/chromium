@@ -3207,7 +3207,7 @@ IN_PROC_BROWSER_TEST_F(DesksTemplatesClientLacrosTest,
       {GURL(kExampleUrl1)}, {0, 0, 256, 256}, {},
       ui::WindowShowState::SHOW_STATE_DEFAULT,
       /*active_tab_index=*/0, /*first_non_pinned_tab_index=*/0, kTestAppName,
-      kTestWindowId);
+      kTestWindowId, /*lacros_profile_id=*/0);
   LacrosWindowWaiter waiter;
   aura::Window::Windows launched_windows = waiter.Wait(/*expected_count=*/1u);
   ASSERT_EQ(1u, launched_windows.size());

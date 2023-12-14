@@ -242,7 +242,8 @@ class BrowserManager : public session_manager::SessionManagerObserver,
       int32_t active_tab_index,
       int32_t first_non_pinned_tab_index,
       const std::string& app_name,
-      int32_t restore_window_id);
+      int32_t restore_window_id,
+      uint64_t lacros_profile_id);
 
   // Opens the profile manager window in lacros-chrome.
   void OpenProfileManager();

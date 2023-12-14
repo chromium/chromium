@@ -508,6 +508,9 @@ void ChromeSavedDeskDelegate::OnLacrosChromeInfoReturned(
     app_launch_info->app_name = state->browser_app_name.value();
     app_launch_info->app_type_browser = true;
   }
+  if (state->lacros_profile_id != 0) {
+    app_launch_info->lacros_profile_id = state->lacros_profile_id;
+  }
 
   std::move(callback).Run(std::move(app_launch_info));
 }
