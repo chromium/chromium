@@ -353,6 +353,7 @@ suite(`CookiesSubpage`, function() {
 suite(`TrackingProtectionSubpage`, function() {
   let page: SettingsPrivacyPageElement;
   let settingsPrefs: SettingsPrefsElement;
+  let metricsBrowserProxy: TestMetricsBrowserProxy;
 
   suiteSetup(function() {
     loadTimeData.overrideValues({
@@ -365,11 +366,17 @@ suite(`TrackingProtectionSubpage`, function() {
   });
 
   setup(function() {
+    metricsBrowserProxy = new TestMetricsBrowserProxy();
+    MetricsBrowserProxyImpl.setInstance(metricsBrowserProxy);
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
     page = document.createElement('settings-privacy-page');
     page.prefs = settingsPrefs.prefs!;
     document.body.appendChild(page);
     return flushTasks();
+  });
+
+  teardown(function() {
+    Router.getInstance().resetRouteForTesting();
   });
 
   test('trackingProtectionSubpageAttributes', async function() {
@@ -388,6 +395,22 @@ suite(`TrackingProtectionSubpage`, function() {
         trackingProtectionSubpage.get('associatedControl');
     assertTrue(!!associatedControl);
     assertEquals('trackingProtectionLinkRow', associatedControl.id);
+  });
+
+  test('clickTrackingProtectionRow', async function() {
+    const trackingProtectionLinkRow =
+        page.shadowRoot!.querySelector<HTMLElement>(
+            '#trackingProtectionLinkRow');
+    assertTrue(!!trackingProtectionLinkRow);
+    trackingProtectionLinkRow.click();
+    // Ensure UMA is logged.
+    assertEquals(
+        'Settings.TrackingProtection.OpenedFromPrivacyPage',
+        await metricsBrowserProxy.whenCalled('recordAction'));
+    // Ensure we navigate to the correct page.
+    await flushTasks();
+    assertEquals(
+        routes.TRACKING_PROTECTION, Router.getInstance().getCurrentRoute());
   });
 });
 

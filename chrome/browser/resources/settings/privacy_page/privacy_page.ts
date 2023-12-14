@@ -431,7 +431,8 @@ export class SettingsPrivacyPageElement extends SettingsPrivacyPageElementBase {
 
   private onTrackingProtectionClick_() {
     this.interactedWithPage_();
-
+    this.metricsBrowserProxy_.recordAction(
+        'Settings.TrackingProtection.OpenedFromPrivacyPage');
     Router.getInstance().navigateTo(routes.TRACKING_PROTECTION);
   }
 

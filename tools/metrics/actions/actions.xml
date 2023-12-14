@@ -32068,6 +32068,15 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
+<action name="Settings.TrackingProtection.OpenedFromPrivacyPage">
+  <owner>alvingo@google.com</owner>
+  <owner>koilos@google.com</owner>
+  <description>
+    Reported when user navigates to Tracking Protection Settings via the
+    Tracking Protection link row in the Privacy Page.
+  </description>
+</action>
+
 <action name="Settings.VoiceSearch">
   <owner>rohitrao@chromium.org</owner>
   <owner>sczs@chromium.org</owner>
