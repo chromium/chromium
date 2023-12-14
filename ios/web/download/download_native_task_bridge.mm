@@ -45,8 +45,7 @@ void DownloadDidFinishWithSize(
 @interface DownloadNativeTaskBridge ()
 
 @property(nonatomic, readwrite, strong) NSData* resumeData;
-@property(nonatomic, readwrite, strong)
-    WKDownload* download API_AVAILABLE(ios(15));
+@property(nonatomic, readwrite, strong) WKDownload* download;
 
 @end
 

@@ -52,8 +52,7 @@ UIImage* MakeSymbolMonochrome(UIImage* symbol);
 UIImage* MakeSymbolMulticolor(UIImage* symbol);
 
 // Returns the given `symbol`, with the palette of `colors` applied.
-UIImage* SymbolWithPalette(UIImage* symbol, NSArray<UIColor*>* colors)
-    API_AVAILABLE(ios(15.0));
+UIImage* SymbolWithPalette(UIImage* symbol, NSArray<UIColor*>* colors);
 
 // Returns a SF symbol named `symbol_name` configured for the Settings root
 // screen.

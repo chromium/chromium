@@ -308,15 +308,13 @@ class WebState : public base::SupportsUserData {
   // Loads the web content from the HTML you provide as if the HTML were the
   // response to the request.
   virtual void LoadSimulatedRequest(const GURL& url,
-                                    NSString* response_html_string)
-      API_AVAILABLE(ios(15.0)) = 0;
+                                    NSString* response_html_string) = 0;
 
   // Loads the web content from the data you provide as if the data were the
   // response to the request.
   virtual void LoadSimulatedRequest(const GURL& url,
                                     NSData* response_data,
-                                    NSString* mime_type)
-      API_AVAILABLE(ios(15.0)) = 0;
+                                    NSString* mime_type) = 0;
 
   // Stops any pending navigation.
   virtual void Stop() = 0;

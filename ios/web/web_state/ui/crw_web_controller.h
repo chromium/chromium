@@ -142,8 +142,7 @@ class WebStateImpl;
 // if `URL` matches the current page's URL. This method creates a new navigation
 // entry if `URL` differs from the current page's URL.
 - (void)loadSimulatedRequest:(const GURL&)URL
-          responseHTMLString:(NSString*)responseHTMLString
-    API_AVAILABLE(ios(15.0));
+          responseHTMLString:(NSString*)responseHTMLString;
 
 // Loads the web content from the data you provide as if the data were the
 // response to the request. This method does not create a new navigation entry
@@ -151,7 +150,7 @@ class WebStateImpl;
 // entry if `URL` differs from the current page's URL.
 - (void)loadSimulatedRequest:(const GURL&)URL
                 responseData:(NSData*)responseData
-                    MIMEType:(NSString*)MIMEType API_AVAILABLE(ios(15.0));
+                    MIMEType:(NSString*)MIMEType;
 
 // Stops loading the page.
 - (void)stopLoading;
