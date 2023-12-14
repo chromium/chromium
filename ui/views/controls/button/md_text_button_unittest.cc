@@ -39,7 +39,7 @@ TEST_F(MdTextButtonTest, BackgroundColorChangesWithWidgetActivation) {
   std::unique_ptr<Widget> widget = CreateTestWidget();
   auto* button = widget->SetContentsView(
       std::make_unique<MdTextButton>(Button::PressedCallback(), u" "));
-  button->SetProminent(true);
+  button->SetStyle(ui::ButtonStyle::kProminent);
   button->SetBounds(0, 0, 70, 20);
   widget->LayoutRootViewIfNecessary();
 

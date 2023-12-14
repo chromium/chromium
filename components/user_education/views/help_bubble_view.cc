@@ -142,7 +142,7 @@ class MdIPHBubbleButton : public views::MdTextButton {
       ink_drop->SetHighlightOpacity(absl::nullopt);
     } else {
       // Prominent style gives a button hover highlight.
-      SetProminent(true);
+      SetStyle(ui::ButtonStyle::kProminent);
       // Focus ring rendering varies significantly between pre- and post-refresh
       // Chrome. The pre-refresh tactic of setting the focus color to background
       // is actually a hack; the post-refresh approach is more "correct".
