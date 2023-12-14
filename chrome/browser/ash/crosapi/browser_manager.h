@@ -11,7 +11,6 @@
 #include <utility>
 #include <vector>
 
-#include "base/feature_list.h"
 #include "base/files/file_path.h"
 #include "base/functional/callback.h"
 #include "base/gtest_prod_util.h"
@@ -83,9 +82,6 @@ namespace crosapi {
 namespace mojom {
 class Crosapi;
 }  // namespace mojom
-
-// Enable pre-launching Lacros at login screen.
-BASE_DECLARE_FEATURE(kLacrosLaunchAtLoginScreen);
 
 class BrowserLoader;
 class DeviceOwnershipWaiter;
@@ -334,30 +330,6 @@ class BrowserManager : public session_manager::SessionManagerObserver,
 
   void set_relaunch_requested_for_testing(bool relaunch_requested);
 
-  // Parameters used to launch Lacros that are calculated on a background
-  // sequence. Public so that it can be used from private static functions.
-  struct LaunchParamsFromBackground {
-   public:
-    LaunchParamsFromBackground();
-    LaunchParamsFromBackground(LaunchParamsFromBackground&&);
-    LaunchParamsFromBackground(const LaunchParamsFromBackground&) = delete;
-    LaunchParamsFromBackground& operator=(const LaunchParamsFromBackground&) =
-        delete;
-    ~LaunchParamsFromBackground();
-
-    // An fd for a log file.
-    base::ScopedFD logfd;
-
-    // Set true if Lacros uses resource file sharing.
-    bool enable_resource_file_sharing = false;
-
-    // Set true if Lacros uses a shared components directory.
-    bool enable_shared_components_dir = false;
-
-    // Any additional args to start lacros with.
-    std::vector<std::string> lacros_additional_args;
-  };
-
   // Disable most of BrowserManager's functionality such that it never tries to
   // launch Lacros. This is used e.g. by test_ash_chrome.
   static void DisableForTesting();
@@ -588,7 +560,7 @@ class BrowserManager : public session_manager::SessionManagerObserver,
   // Starts the lacros-chrome process and redirects stdout/err to file pointed
   // by |params.logfd|.
   void StartWithLogFile(bool launching_at_login_screen,
-                        LaunchParamsFromBackground params);
+                        BrowserLauncher::LaunchParamsFromBackground params);
 
   // ash::SessionManagerClient::Observer:
   void EmitLoginPromptVisibleCalled() override;
@@ -645,8 +617,9 @@ class BrowserManager : public session_manager::SessionManagerObserver,
                                         bool launching_at_login_screen);
 
   // Called as soon as `LaunchParamsFromBackground` are fetched.
-  void OnLaunchParamsFetched(bool launching_at_login_screens,
-                             LaunchParamsFromBackground params);
+  void OnLaunchParamsFetched(
+      bool launching_at_login_screens,
+      BrowserLauncher::LaunchParamsFromBackground params);
 
   // Launch "Go to files" if the migration error page was clicked.
   void HandleGoToFiles();
