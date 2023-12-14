@@ -697,7 +697,7 @@ TEST_F(FeatureListTest, SetEarlyAccessInstance_AllowList) {
   auto early_access_feature_list = std::make_unique<FeatureList>();
   early_access_feature_list->InitFromCommandLine("OffByDefault", "OnByDefault");
   FeatureList::SetEarlyAccessInstance(std::move(early_access_feature_list),
-                                      {"OnByDefault"});
+                                      {"DcheckIsFatal", "OnByDefault"});
   EXPECT_FALSE(FeatureList::IsEnabled(kFeatureOnByDefault));
   EXPECT_FALSE(FeatureList::IsEnabled(kFeatureOffByDefault));
   EXPECT_EQ(&kFeatureOffByDefault,
@@ -711,8 +711,9 @@ TEST_F(FeatureListTest, SetEarlyAccessInstance_ReplaceByRealList) {
 
   auto early_access_feature_list = std::make_unique<FeatureList>();
   early_access_feature_list->InitFromCommandLine("OffByDefault", "OnByDefault");
-  FeatureList::SetEarlyAccessInstance(std::move(early_access_feature_list),
-                                      {"OffByDefault", "OnByDefault"});
+  FeatureList::SetEarlyAccessInstance(
+      std::move(early_access_feature_list),
+      {"DcheckIsFatal", "OffByDefault", "OnByDefault"});
   EXPECT_FALSE(FeatureList::IsEnabled(kFeatureOnByDefault));
   EXPECT_TRUE(FeatureList::IsEnabled(kFeatureOffByDefault));
 
