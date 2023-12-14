@@ -276,9 +276,11 @@ void ServiceWorkerMainResourceLoader::StartRequest(
     CHECK(active_worker->router_evaluator()->IsValid());
     auto eval_result = active_worker->router_evaluator()->Evaluate(
         resource_request_, active_worker->running_status());
-    // TODO(crbug.com/1371756) In some cases the router is evaluated only in the
-    // renderer side. The same mechanism is needed in the subresource loader
-    // as well.
+    // ServiceWorkerStaticRouter_Evaluate is counted only here.
+    // That is because when the static routing API is used, this code will
+    // always be executed even for no fetch handler case and an empty fetch
+    // handler case.  Otherwise, the static routing API won't be applied for
+    // them not only here but also in the subresource load.
     active_worker->CountFeature(
         blink::mojom::WebFeature::kServiceWorkerStaticRouter_Evaluate);
     if (eval_result) {  // matched the rule.
