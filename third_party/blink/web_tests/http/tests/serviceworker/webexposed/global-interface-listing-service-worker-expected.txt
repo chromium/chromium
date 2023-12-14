@@ -456,6 +456,7 @@ interface EventTarget
     method addEventListener
     method constructor
     method dispatchEvent
+    method on
     method removeEventListener
 interface ExtendableCookieChangeEvent : ExtendableEvent
     attribute @@toStringTag

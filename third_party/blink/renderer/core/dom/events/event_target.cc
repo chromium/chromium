@@ -46,6 +46,9 @@
 #include "third_party/blink/renderer/core/dom/events/event.h"
 #include "third_party/blink/renderer/core/dom/events/event_dispatch_forbidden_scope.h"
 #include "third_party/blink/renderer/core/dom/events/event_target_impl.h"
+#include "third_party/blink/renderer/core/dom/events/native_event_listener.h"
+#include "third_party/blink/renderer/core/dom/observable.h"
+#include "third_party/blink/renderer/core/dom/subscriber.h"
 #include "third_party/blink/renderer/core/editing/editor.h"
 #include "third_party/blink/renderer/core/events/event_util.h"
 #include "third_party/blink/renderer/core/events/pointer_event.h"
@@ -213,6 +216,151 @@ void CountFiringEventListeners(const Event& event,
   }
 }
 
+// See documentation for `ObservableSubscribeDelegate` below.
+class ObservableEventListener final : public NativeEventListener {
+ public:
+  ObservableEventListener(Subscriber*,
+                          ScriptState*,
+                          const AtomicString&,
+                          EventTarget*);
+
+  // NativeEventListener overrides:
+  void Invoke(ExecutionContext*, Event*) final;
+
+  void Trace(Visitor*) const override;
+
+ private:
+  // The `Subscriber` that `this` forwards events to when `Invoke()` is called.
+  const Member<Subscriber> subscriber_;
+  // This is the `ScriptState` associated with the subscription. We store it
+  // here so that asynchronously later, when `Invoke()` is called (i.e., when
+  // the `EventTarget` that `this` is listening to starts firing events), we can
+  // transform the events into `ScriptValue` objects (which requires a
+  // `ScriptState`) and forward them to `subscriber_` above.
+  const Member<ScriptState> script_state_;
+};
+
+ObservableEventListener::ObservableEventListener(Subscriber* subscriber,
+                                                 ScriptState* script_state,
+                                                 const AtomicString& event_type,
+                                                 EventTarget* event_target)
+    : subscriber_(subscriber), script_state_(script_state) {
+  // `event_target_` is non-null here. If the event target were null (i.e.,
+  // garbage collected before this gets called), then this constructor would not
+  // be invoked with it.
+  CHECK(event_target);
+
+  event_target->addEventListener(
+      event_type, this,
+      // TODO(crbug.com/1485981): For now we're just using a default-constructed
+      // `AddEventListenerOptionsResolved` here. Eventually we'll consume an
+      // `ObservableEventListenerOptions` dictionary [1], and convert *this*
+      // into a properly-resolved `AddEventListenerOptionsResolved`.
+      //
+      // [1]:
+      // https://wicg.github.io/observable/#dictdef-observableeventlisteneroptions
+      MakeGarbageCollected<AddEventListenerOptionsResolved>());
+  // TODO(crbug.com/1485981): Introduce
+  // `ObservableRemoveEventListenerAbortAlgorithm` and use this AbortSignal
+  // algorithm to remove this event listener from `event_target_` when the
+  // subscription closes (observable via `subscriber_->signal()`).
+}
+
+void ObservableEventListener::Invoke(ExecutionContext* execution_context,
+                                     Event* event) {
+  // The `script_state_` will always be valid here, because
+  // `EventTarget::FireEventListeners()` early-returns if its `ExecutionContext`
+  // is detached.
+  DCHECK(script_state_->ContextIsValid());
+  ScriptState::Scope scope(script_state_);
+  ScriptValue script_value = ScriptValue::From(script_state_, event);
+
+  subscriber_->next(script_value);
+}
+
+void ObservableEventListener::Trace(Visitor* visitor) const {
+  visitor->Trace(subscriber_);
+  visitor->Trace(script_state_);
+
+  NativeEventListener::Trace(visitor);
+}
+
+// This is the synthetic subscribe callback that we construct `Observable`s with
+// that are created by `EventTarget#on()`. `OnSubscribe()` adds a brand new
+// `ObservableEventListener` as a new event listener for events named
+// `event_type_`. When events are received, they are propagated directly to
+// `Subscriber`.
+class ObservableSubscribeDelegate final : public Observable::SubscribeDelegate {
+ public:
+  ObservableSubscribeDelegate(EventTarget*, const AtomicString&);
+
+  // Observable::SubscribeDelegate overrides:
+  void OnSubscribe(Subscriber*, ScriptState*) final;
+
+  void Trace(Visitor*) const override;
+
+ private:
+  // This is the event target for which we will vend per-subscriber event
+  // listeners. The typical flow here looks like this:
+  //   1.) `EventTarget::on()` is called, returning an observable whose
+  //       subscribe callback is `this` (instead of a JS-provided v8
+  //       callback).
+  //   2.) `Observable::subscribe()` is called by JS, and thus `OnSubscribe()`
+  //       is invoked on `this`.
+  //   3.) `OnSubscribe()` creates a new `ObservableEventListener` just for
+  //       the new subscriber, listening for events named `event_type_` from
+  //       `event_target_`.
+  //   4.) The `ObservableEventListener` keeps a pointer to the subscriber,
+  //       and when events are dispatched to the listener, they are forwarded
+  //       to `Subscriber::next()`.
+  const WeakMember<EventTarget> event_target_;
+  AtomicString event_type_;
+};
+
+ObservableSubscribeDelegate::ObservableSubscribeDelegate(
+    EventTarget* event_target,
+    const AtomicString& event_type)
+    : event_target_(event_target), event_type_(event_type) {}
+
+void ObservableSubscribeDelegate::OnSubscribe(Subscriber* subscriber,
+                                              ScriptState* script_state) {
+  // This should have already been checked by `Observable::subscribe()` before
+  // getting here.
+  CHECK(script_state->ContextIsValid());
+
+  // If the subscriber is already aborted, early return because there is no use
+  // in adding the event listener, since it will never be able to removed again.
+  // It is possible for the subscriber to be aborted at this point if
+  // `Observable#subscribe()` is called with an already-aborted signal in
+  // `SubscribeOptions`.
+  //
+  // TODO(crbug.com/1485981): Once we agree on proper spec text for this, quote
+  // it here.
+  if (subscriber->signal()->aborted()) {
+    return;
+  }
+
+  // The weak `event_target_` could be null at this point, if the target has
+  // been garbage collected by the time `this`'s associated Observable has been
+  // subscribed to. We early return in this case, as to avoid setting up the
+  // entire event listener / abort signal mechanism.
+  if (!event_target_) {
+    return;
+  }
+
+  // This freshly-created event listener immediately gets owned by
+  // `event_target_`'s event listener vector. `this` does not need to hold onto
+  // any of the event listeners created here.
+  MakeGarbageCollected<ObservableEventListener>(subscriber, script_state,
+                                                event_type_, event_target_);
+}
+
+void ObservableSubscribeDelegate::Trace(Visitor* visitor) const {
+  visitor->Trace(event_target_);
+
+  Observable::SubscribeDelegate::Trace(visitor);
+}
+
 }  // namespace
 
 EventTargetData::EventTargetData() = default;
@@ -354,6 +502,13 @@ void EventTarget::SetDefaultAddEventListenerOptions(
         GetExecutionContext(), PerformanceMonitor::kDiscouragedAPIUse,
         message_text, base::TimeDelta(), nullptr);
   }
+}
+
+Observable* EventTarget::on(const AtomicString& event_type) {
+  DCHECK(RuntimeEnabledFeatures::ObservableAPIEnabled());
+  return MakeGarbageCollected<Observable>(
+      GetExecutionContext(),
+      MakeGarbageCollected<ObservableSubscribeDelegate>(this, event_type));
 }
 
 bool EventTarget::addEventListener(const AtomicString& event_type,

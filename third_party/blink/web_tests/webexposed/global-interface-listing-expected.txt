@@ -2677,6 +2677,7 @@ interface EventTarget
     method addEventListener
     method constructor
     method dispatchEvent
+    method on
     method removeEventListener
 interface External
     attribute @@toStringTag
