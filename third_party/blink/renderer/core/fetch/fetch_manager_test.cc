@@ -39,6 +39,7 @@
 #include "third_party/blink/renderer/platform/loader/fetch/resource.h"
 #include "third_party/blink/renderer/platform/loader/fetch/resource_load_priority.h"
 #include "third_party/blink/renderer/platform/mojo/heap_mojo_associated_receiver.h"
+#include "third_party/blink/renderer/platform/testing/task_environment.h"
 #include "third_party/blink/renderer/platform/testing/unit_test_helpers.h"
 #include "third_party/blink/renderer/platform/testing/url_loader_mock_factory.h"
 #include "third_party/blink/renderer/platform/testing/url_test_helpers.h"
@@ -298,6 +299,7 @@ class FetchLaterTest : public testing::Test {
   const base::HistogramTester& Histogram() const { return histogram_; }
 
  private:
+  test::TaskEnvironment task_environment;
   base::test::ScopedFeatureList feature_list_;
   scoped_refptr<base::TestMockTimeTaskRunner> task_runner_;
   Persistent<FakeLocalFrameClient> frame_client_;
@@ -554,6 +556,7 @@ TEST_F(FetchLaterTest, ForcedSendingWithBackgroundSyncOff) {
 // The default priority for FetchLater request without FetchPriorityHint or
 // RenderBlockingBehavior should be kHigh.
 TEST(FetchLaterLoadPriorityTest, DefaultHigh) {
+  test::TaskEnvironment task_environment;
   V8TestingScope scope;
   ResourceLoaderOptions options(scope.GetExecutionContext()->GetCurrentWorld());
 
@@ -569,6 +572,7 @@ TEST(FetchLaterLoadPriorityTest, DefaultHigh) {
 // The priority for FetchLater request with FetchPriorityHint::kAuto should be
 // kHigh.
 TEST(FetchLaterLoadPriorityTest, WithFetchPriorityHintAuto) {
+  test::TaskEnvironment task_environment;
   V8TestingScope scope;
   ResourceLoaderOptions options(scope.GetExecutionContext()->GetCurrentWorld());
 
@@ -585,6 +589,7 @@ TEST(FetchLaterLoadPriorityTest, WithFetchPriorityHintAuto) {
 // The priority for FetchLater request with FetchPriorityHint::kLow should be
 // kLow.
 TEST(FetchLaterLoadPriorityTest, WithFetchPriorityHintLow) {
+  test::TaskEnvironment task_environment;
   V8TestingScope scope;
   ResourceLoaderOptions options(scope.GetExecutionContext()->GetCurrentWorld());
 
@@ -602,6 +607,7 @@ TEST(FetchLaterLoadPriorityTest, WithFetchPriorityHintLow) {
 // should be kHigh.
 TEST(FetchLaterLoadPriorityTest,
      WithFetchPriorityHintLowAndRenderBlockingBehaviorBlocking) {
+  test::TaskEnvironment task_environment;
   V8TestingScope scope;
   ResourceLoaderOptions options(scope.GetExecutionContext()->GetCurrentWorld());
 

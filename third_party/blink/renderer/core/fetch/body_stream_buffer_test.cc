@@ -5,6 +5,7 @@
 #include "third_party/blink/renderer/core/fetch/body_stream_buffer.h"
 
 #include <memory>
+
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -35,6 +36,7 @@
 #include "third_party/blink/renderer/platform/network/encoded_form_data.h"
 #include "third_party/blink/renderer/platform/scheduler/test/fake_task_runner.h"
 #include "third_party/blink/renderer/platform/testing/runtime_enabled_features_test_helpers.h"
+#include "third_party/blink/renderer/platform/testing/task_environment.h"
 #include "third_party/blink/renderer/platform/testing/unit_test_helpers.h"
 
 namespace blink {
@@ -97,6 +99,7 @@ class BodyStreamBufferTest : public testing::Test,
   }
 
  private:
+  test::TaskEnvironment task_environment;
   ScopedByobFetchForTest byob_fetch_feature_;
 };
 

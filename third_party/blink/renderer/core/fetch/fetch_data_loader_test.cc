@@ -22,6 +22,7 @@
 #include "third_party/blink/renderer/platform/loader/testing/bytes_consumer_test_reader.h"
 #include "third_party/blink/renderer/platform/loader/testing/replaying_bytes_consumer.h"
 #include "third_party/blink/renderer/platform/scheduler/test/fake_task_runner.h"
+#include "third_party/blink/renderer/platform/testing/task_environment.h"
 
 namespace blink {
 
@@ -107,6 +108,7 @@ class FetchDataLoaderTest : public testing::Test {
     Member<BytesConsumer> destination_;
     Member<DataPipeBytesConsumer::CompletionNotifier> completion_notifier_;
   };
+  test::TaskEnvironment task_environment_;
 };
 
 class FetchDataLoaderBlobTest : public FetchDataLoaderTest {

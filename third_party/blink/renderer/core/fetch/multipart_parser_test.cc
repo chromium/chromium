@@ -11,6 +11,7 @@
 #include "base/numerics/safe_conversions.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/renderer/platform/network/http_names.h"
+#include "third_party/blink/renderer/platform/testing/task_environment.h"
 
 namespace blink {
 
@@ -66,6 +67,7 @@ constexpr char kBytes[] =
     "epilogue";
 
 TEST(MultipartParserTest, AppendDataInChunks) {
+  test::TaskEnvironment task_environment;
   const size_t sizes[] = {1u, 2u, strlen(kBytes)};
 
   Vector<char> boundary;
@@ -103,6 +105,7 @@ TEST(MultipartParserTest, AppendDataInChunks) {
 }
 
 TEST(MultipartParserTest, Epilogue) {
+  test::TaskEnvironment task_environment;
   constexpr size_t ends[] = {
       0u,   // Non-empty epilogue in the end.
       8u,   // Empty epilogue in the end.
@@ -156,6 +159,7 @@ TEST(MultipartParserTest, Epilogue) {
 }
 
 TEST(MultipartParserTest, NoEndBoundary) {
+  test::TaskEnvironment task_environment;
   constexpr char bytes[] =
       "--boundary\r\ncontent-type: application/xhtml+xml\r\n\r\n1";
 
@@ -177,6 +181,7 @@ TEST(MultipartParserTest, NoEndBoundary) {
 }
 
 TEST(MultipartParserTest, NoStartBoundary) {
+  test::TaskEnvironment task_environment;
   constexpr char bytes[] =
       "content-type: application/xhtml+xml\r\n\r\n1\r\n--boundary--\r\n";
 
@@ -193,6 +198,7 @@ TEST(MultipartParserTest, NoStartBoundary) {
 }
 
 TEST(MultipartParserTest, NoStartNorEndBoundary) {
+  test::TaskEnvironment task_environment;
   constexpr char bytes[] = "content-type: application/xhtml+xml\r\n\r\n1";
 
   Vector<char> boundary;
@@ -216,6 +222,7 @@ constexpr size_t kStarts[] = {
 };
 
 TEST(MultipartParserTest, Preamble) {
+  test::TaskEnvironment task_environment;
   Vector<char> boundary;
   boundary.Append("boundary", 8u);
   for (const size_t start : kStarts) {
@@ -276,6 +283,7 @@ TEST(MultipartParserTest, Preamble) {
 }
 
 TEST(MultipartParserTest, PreambleWithMalformedBoundary) {
+  test::TaskEnvironment task_environment;
   Vector<char> boundary;
   boundary.Append("--boundary", 10u);
   for (const size_t start : kStarts) {
