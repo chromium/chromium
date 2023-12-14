@@ -569,6 +569,8 @@ void AppBrowserController::AddColorMixers(
 
   mixer[kColorInfoBarBackground] = {kColorPwaToolbarBackground};
   mixer[kColorInfoBarForeground] = {kColorPwaToolbarButtonIcon};
+  mixer[kColorInfoBarButtonIcon] = {kColorPwaToolbarButtonIcon};
+  mixer[kColorInfoBarButtonIconDisabled] = {kColorPwaToolbarButtonIconDisabled};
 
   // Page info icon colors in PWA windows are used both for the LocationIconView
   // in the CustomTabBarView as well as page action and info icons in the title
