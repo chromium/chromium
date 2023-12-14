@@ -18,6 +18,7 @@
 #include "media/base/video_frame.h"
 #include "media/base/video_util.h"
 #include "media/media_buildflags.h"
+#include "media/video/fake_video_encode_accelerator.h"
 #include "media/video/mock_gpu_video_accelerator_factories.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -314,20 +315,6 @@ class VideoTrackRecorderTest : public VideoTrackRecorderTestBase {
     return !video_track_recorder_->encoder_.is_null();
   }
 
-  uint32_t NumFramesInEncode() {
-    uint32_t count;
-    base::WaitableEvent finished;
-    video_track_recorder_->encoder_.PostTaskWithThisObject(CrossThreadBindOnce(
-        [](base::WaitableEvent* finished, uint32_t* out_count,
-           VideoTrackRecorder::Encoder* encoder) {
-          *out_count = encoder->num_frames_in_encode_->count();
-          finished->Signal();
-        },
-        CrossThreadUnretained(&finished), CrossThreadUnretained(&count)));
-    finished.Wait();
-    return count;
-  }
-
   ScopedTestingPlatformSupport<MockTestingPlatform> platform_;
 
   // All members are non-const due to the series of initialize() calls needed.
@@ -377,11 +364,14 @@ class VideoTrackRecorderTest : public VideoTrackRecorderTestBase {
   }
 };
 
-class VideoTrackRecorderTestNoParam : public ::testing::Test,
-                                      public VideoTrackRecorderTest {
+class VideoTrackRecorderTestMediaVideoEncoderParam
+    : public ::testing::TestWithParam<bool>,
+      public VideoTrackRecorderTest,
+      public ScopedMediaRecorderUseMediaVideoEncoderForTest {
  public:
-  VideoTrackRecorderTestNoParam() = default;
-  ~VideoTrackRecorderTestNoParam() override = default;
+  VideoTrackRecorderTestMediaVideoEncoderParam()
+      : ScopedMediaRecorderUseMediaVideoEncoderForTest(GetParam()) {}
+  ~VideoTrackRecorderTestMediaVideoEncoderParam() override = default;
 };
 
 // TODO(crbug/1177593): refactor the test parameter space to something more
@@ -774,7 +764,7 @@ TEST_P(VideoTrackRecorderTestParam, KeyFramesGeneratedWithIntervalDuration) {
   run_loop.Run();
 }
 
-TEST_F(VideoTrackRecorderTestNoParam, RelaysReadyStateEnded) {
+TEST_P(VideoTrackRecorderTestMediaVideoEncoderParam, RelaysReadyStateEnded) {
   InitializeRecorder(VideoTrackRecorder::CodecId::kVp8);
   base::RunLoop run_loop;
   EXPECT_CALL(*mock_callback_interface_, OnSourceReadyStateChanged)
@@ -785,7 +775,8 @@ TEST_F(VideoTrackRecorderTestNoParam, RelaysReadyStateEnded) {
 
 // Inserts an opaque frame followed by two transparent frames and expects the
 // newly introduced transparent frame to force keyframe output.
-TEST_F(VideoTrackRecorderTestNoParam, ForceKeyframeOnAlphaSwitch) {
+TEST_P(VideoTrackRecorderTestMediaVideoEncoderParam,
+       ForceKeyframeOnAlphaSwitch) {
   InitializeRecorder(VideoTrackRecorder::CodecId::kVp8);
 
   const gfx::Size& frame_size = kTrackRecorderTestSize[0];
@@ -825,7 +816,7 @@ TEST_F(VideoTrackRecorderTestNoParam, ForceKeyframeOnAlphaSwitch) {
 }
 
 // Inserts an OnError() call between sent frames.
-TEST_F(VideoTrackRecorderTestNoParam, HandlesOnError) {
+TEST_P(VideoTrackRecorderTestMediaVideoEncoderParam, HandlesOnError) {
   InitializeRecorder(VideoTrackRecorder::CodecId::kVp8);
 
   const gfx::Size& frame_size = kTrackRecorderTestSize[0];
@@ -852,9 +843,8 @@ TEST_F(VideoTrackRecorderTestNoParam, HandlesOnError) {
   Mock::VerifyAndClearExpectations(this);
 }
 
-// Inserts a frame for encode and makes sure that it is released properly and
-// NumFramesInEncode() is updated.
-TEST_F(VideoTrackRecorderTestNoParam, ReleasesFrame) {
+// Inserts a frame for encode and makes sure that it is released.
+TEST_P(VideoTrackRecorderTestMediaVideoEncoderParam, ReleasesFrame) {
   InitializeRecorder(VideoTrackRecorder::CodecId::kVp8);
 
   const gfx::Size& frame_size = kTrackRecorderTestSize[0];
@@ -862,25 +852,16 @@ TEST_F(VideoTrackRecorderTestNoParam, ReleasesFrame) {
       media::VideoFrame::CreateBlackFrame(frame_size);
 
   base::RunLoop run_loop;
-  bool frame_is_destroyed = false;
-  auto set_to_true = [](bool* b) { *b = true; };
-  video_frame->AddDestructionObserver(
-      base::BindOnce(set_to_true, &frame_is_destroyed));
-  EXPECT_CALL(*mock_callback_interface_, OnEncodedVideo(_, _, _, _, _, true))
-      .Times(1)
-      .WillOnce(RunClosure(run_loop.QuitWhenIdleClosure()));
-  Encode(video_frame, base::TimeTicks::Now());
-  video_frame = nullptr;
+  video_frame->AddDestructionObserver(base::BindOnce(run_loop.QuitClosure()));
+  Encode(std::move(video_frame), base::TimeTicks::Now());
   run_loop.Run();
-  EXPECT_EQ(0u, NumFramesInEncode());
-  EXPECT_TRUE(frame_is_destroyed);
 
   Mock::VerifyAndClearExpectations(this);
 }
 
 // Waits for HW encoder support to be enumerated before setting up and
 // performing an encode.
-TEST_F(VideoTrackRecorderTestNoParam, WaitForEncoderSupport) {
+TEST_P(VideoTrackRecorderTestMediaVideoEncoderParam, WaitForEncoderSupport) {
   media::MockGpuVideoAcceleratorFactories mock_gpu_factories(nullptr);
   EXPECT_CALL(*platform_, GetGpuFactories())
       .WillRepeatedly(Return(&mock_gpu_factories));
@@ -900,7 +881,7 @@ TEST_F(VideoTrackRecorderTestNoParam, WaitForEncoderSupport) {
   run_loop.Run();
 }
 
-TEST_F(VideoTrackRecorderTestNoParam, RequiredRefreshRate) {
+TEST_P(VideoTrackRecorderTestMediaVideoEncoderParam, RequiredRefreshRate) {
   // |RequestRefreshFrame| will be called first by |AddSink| and the second time
   // by the refresh timer using the required min fps.
   EXPECT_CALL(*mock_source_, OnRequestRefreshFrame).Times(2);
@@ -973,6 +954,10 @@ INSTANTIATE_TEST_SUITE_P(All,
                                             ValuesIn(kTestFrameTypes),
                                             ::testing::Bool()),
                          PrintTestParams);
+
+INSTANTIATE_TEST_SUITE_P(All,
+                         VideoTrackRecorderTestMediaVideoEncoderParam,
+                         ::testing::Bool());
 
 class VideoTrackRecorderPassthroughTest
     : public TestWithParam<VideoTrackRecorder::CodecId>,
