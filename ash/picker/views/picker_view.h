@@ -22,6 +22,7 @@ namespace ash {
 
 class PickerSearchFieldView;
 class PickerUserEducationView;
+class PickerZeroStateView;
 class PickerContentsView;
 
 // View for the Picker widget.
@@ -61,6 +62,7 @@ class ASH_EXPORT PickerView : public views::WidgetDelegateView {
   raw_ptr<PickerSearchFieldView> search_field_view_ = nullptr;
   raw_ptr<PickerContentsView> contents_view_ = nullptr;
   raw_ptr<AshWebView> web_view_ = nullptr;
+  raw_ptr<PickerZeroStateView> zero_state_view_ = nullptr;
   raw_ptr<PickerUserEducationView> user_education_view_ = nullptr;
 };
 

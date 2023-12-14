@@ -9,6 +9,7 @@
 #include "ash/picker/views/picker_contents_view.h"
 #include "ash/picker/views/picker_search_field_view.h"
 #include "ash/picker/views/picker_user_education_view.h"
+#include "ash/picker/views/picker_zero_state_view.h"
 #include "ash/public/cpp/ash_web_view.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/ui_base_types.h"
@@ -71,6 +72,7 @@ PickerView::PickerView(std::unique_ptr<Delegate> delegate,
   // Automatically focus on the search field.
   SetInitiallyFocusedView(search_field_view_);
 
+  zero_state_view_ = AddChildView(std::make_unique<PickerZeroStateView>());
   contents_view_ = AddChildView(std::make_unique<PickerContentsView>());
   contents_view_->SetProperty(
       views::kFlexBehaviorKey,

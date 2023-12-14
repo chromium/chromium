@@ -946,6 +946,8 @@ component("ash") {
     "picker/views/picker_user_education_view.h",
     "picker/views/picker_view.cc",
     "picker/views/picker_view.h",
+    "picker/views/picker_zero_state_view.cc",
+    "picker/views/picker_zero_state_view.h",
     "policy/policy_recommendation_restorer.cc",
     "policy/policy_recommendation_restorer.h",
     "power/hid_battery_util.cc",
