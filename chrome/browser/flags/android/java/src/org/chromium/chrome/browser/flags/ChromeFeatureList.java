@@ -343,6 +343,7 @@ public abstract class ChromeFeatureList {
     public static final String PASS_EXPLICIT_SYNC_PASSPHRASE_TO_GMS_CORE =
             "PassExplicitSyncPassphraseToGmsCore";
     public static final String PERMISSION_PROMPT_SURVEY = "PermissionPromptSurvey";
+    public static final String PLUS_ADDRESSES_ENABLED = "PlusAddressesEnabled";
     public static final String PORTALS = "Portals";
     public static final String PORTALS_CROSS_ORIGIN = "PortalsCrossOrigin";
     public static final String PREEMPTIVE_LINK_TO_TEXT_GENERATION =

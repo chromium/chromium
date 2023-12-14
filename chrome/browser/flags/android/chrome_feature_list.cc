@@ -47,6 +47,7 @@
 #include "components/password_manager/core/browser/features/password_features.h"
 #include "components/password_manager/core/common/password_manager_features.h"
 #include "components/permissions/features.h"
+#include "components/plus_addresses/features.h"
 #include "components/policy/core/common/features.h"
 #include "components/privacy_sandbox/privacy_sandbox_features.h"
 #include "components/query_tiles/switches.h"
@@ -351,6 +352,7 @@ const base::Feature* const kFeaturesExposedToJava[] = {
         kUnifiedPasswordManagerLocalPasswordsMigrationWarning,
     &permissions::features::kPermissionsPromptSurvey,
     &privacy_sandbox::kPrivacySandboxAdsNoticeCCT,
+    &plus_addresses::kFeature,
     &privacy_sandbox::kPrivacySandboxFirstPartySetsUI,
     &privacy_sandbox::kPrivacySandboxSettings4,
     &privacy_sandbox::kPrivacySandboxProactiveTopicsBlocking,

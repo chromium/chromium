@@ -10,6 +10,7 @@ import static androidx.test.espresso.action.ViewActions.click;
 import static androidx.test.espresso.assertion.ViewAssertions.doesNotExist;
 import static androidx.test.espresso.assertion.ViewAssertions.matches;
 import static androidx.test.espresso.contrib.RecyclerViewActions.scrollTo;
+import static androidx.test.espresso.intent.Intents.intended;
 import static androidx.test.espresso.matcher.PreferenceMatchers.withKey;
 import static androidx.test.espresso.matcher.ViewMatchers.hasDescendant;
 import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
@@ -34,6 +35,8 @@ import android.view.View;
 
 import androidx.annotation.Nullable;
 import androidx.preference.Preference;
+import androidx.test.espresso.intent.Intents;
+import androidx.test.espresso.intent.matcher.IntentMatchers;
 import androidx.test.filters.LargeTest;
 import androidx.test.filters.MediumTest;
 import androidx.test.filters.SmallTest;
@@ -163,6 +166,7 @@ public class MainSettingsFragmentTest {
         SyncConsentActivityLauncherImpl.setLauncherForTest(mMockSyncConsentActivityLauncher);
         DeveloperSettings.setIsEnabledForTests(true);
         NightModeUtils.setNightModeSupportedForTesting(true);
+        Intents.init();
     }
 
     @After
@@ -173,6 +177,7 @@ public class MainSettingsFragmentTest {
                                 SigninAccessPoint.SETTINGS));
         ChromeSharedPreferences.getInstance()
                 .removeKey(ChromePreferenceKeys.SYNC_PROMO_TOTAL_SHOW_COUNT);
+        Intents.release();
     }
 
     @Test
@@ -609,6 +614,45 @@ public class MainSettingsFragmentTest {
                 mMainSettings
                         .findPreference(MainSettings.PREF_PASSWORDS)
                         .getOnPreferenceClickListener());
+    }
+
+    @Test
+    @SmallTest
+    @DisableFeatures(ChromeFeatureList.PLUS_ADDRESSES_ENABLED)
+    public void testPlusAddressesHiddenWhenNotEnabled() {
+        Assert.assertFalse(ChromeFeatureList.isEnabled(ChromeFeatureList.PLUS_ADDRESSES_ENABLED));
+        launchSettingsActivity();
+        Assert.assertNull(mMainSettings.findPreference(MainSettings.PREF_PLUS_ADDRESSES));
+    }
+
+    @Test
+    @SmallTest
+    public void testPlusAddressesHiddenWhenLabelIsEmpty() {
+        Assert.assertTrue(
+                ChromeFeatureList.getFieldTrialParamByFeature(
+                                ChromeFeatureList.PLUS_ADDRESSES_ENABLED, "suggestion-label")
+                        .isEmpty());
+        launchSettingsActivity();
+        Assert.assertNull(mMainSettings.findPreference(MainSettings.PREF_PLUS_ADDRESSES));
+    }
+
+    @Test
+    @SmallTest
+    @CommandLineFlags.Add({
+        "enable-features=PlusAddressesEnabled:"
+                + "suggestion-label/PlusAddressesTestTitle/"
+                + "manage-url/https%3A%2F%2Ftest.plusaddresses.google.com"
+    })
+    public void testPlusAddressesEnabled() {
+        launchSettingsActivity();
+        Preference preference = mMainSettings.findPreference(MainSettings.PREF_PLUS_ADDRESSES);
+        Assert.assertNotNull(preference);
+        Assert.assertTrue(preference.isVisible());
+        Assert.assertEquals(preference.getTitle(), "PlusAddressesTestTitle");
+        onView(withId(R.id.recycler_view))
+                .perform(scrollTo(hasDescendant(withText("PlusAddressesTestTitle"))));
+        onView(withText("PlusAddressesTestTitle")).perform(click());
+        intended(IntentMatchers.hasData("https://test.plusaddresses.google.com"));
     }
 
     private void launchSettingsActivity() {

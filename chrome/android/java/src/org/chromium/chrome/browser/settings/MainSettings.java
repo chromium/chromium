@@ -23,6 +23,7 @@ import org.chromium.chrome.R;
 import org.chromium.chrome.browser.autofill.options.AutofillOptionsFragment;
 import org.chromium.chrome.browser.autofill.options.AutofillOptionsFragment.AutofillOptionsReferrer;
 import org.chromium.chrome.browser.autofill.settings.SettingsLauncherHelper;
+import org.chromium.chrome.browser.customtabs.CustomTabActivity;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.homepage.HomepageManager;
 import org.chromium.chrome.browser.night_mode.NightModeMetrics.ThemeSettingsEntry;
@@ -89,6 +90,7 @@ public class MainSettings extends ChromeBaseSettingsFragment
     public static final String PREF_AUTOFILL_OPTIONS = "autofill_options";
     public static final String PREF_AUTOFILL_ADDRESSES = "autofill_addresses";
     public static final String PREF_AUTOFILL_PAYMENTS = "autofill_payment_methods";
+    public static final String PREF_PLUS_ADDRESSES = "plus_addresses";
 
     private final Map<String, Preference> mAllPreferences = new HashMap<>();
 
@@ -197,6 +199,7 @@ public class MainSettings extends ChromeBaseSettingsFragment
         cachePreferences();
 
         updateAutofillPreferences();
+        updatePlusAddressesPreference();
 
         // TODO(crbug.com/1373451): Remove the passwords managed subtitle for local and UPM
         // unenrolled users who can see it directly in the context of the setting.
@@ -281,6 +284,7 @@ public class MainSettings extends ChromeBaseSettingsFragment
         updateManageSyncPreference();
         updateSearchEnginePreference();
         updateAutofillPreferences();
+        updatePlusAddressesPreference();
 
         Preference homepagePref = addPreferenceIfAbsent(PREF_HOMEPAGE);
         setOnOffSummary(homepagePref, HomepageManager.isHomepageEnabled());
@@ -410,6 +414,29 @@ public class MainSettings extends ChromeBaseSettingsFragment
                                     /* managePasskeys= */ false);
                             return true;
                         });
+    }
+
+    private void updatePlusAddressesPreference() {
+        // TODO(crbug.com/1467623): Replace with a static string once name is finalized.
+        String title =
+                ChromeFeatureList.getFieldTrialParamByFeature(
+                        ChromeFeatureList.PLUS_ADDRESSES_ENABLED, "suggestion-label");
+        if (ChromeFeatureList.isEnabled(ChromeFeatureList.PLUS_ADDRESSES_ENABLED)
+                && !title.isEmpty()) {
+            addPreferenceIfAbsent(PREF_PLUS_ADDRESSES);
+            Preference preference = findPreference(PREF_PLUS_ADDRESSES);
+            preference.setTitle(title);
+            preference.setOnPreferenceClickListener(
+                    unused -> {
+                        String url =
+                                ChromeFeatureList.getFieldTrialParamByFeature(
+                                        ChromeFeatureList.PLUS_ADDRESSES_ENABLED, "manage-url");
+                        CustomTabActivity.showInfoPage(getContext(), url);
+                        return true;
+                    });
+        } else {
+            removePreferenceIfPresent(PREF_PLUS_ADDRESSES);
+        }
     }
 
     private void setOnOffSummary(Preference pref, boolean isOn) {
