@@ -33,7 +33,7 @@ ServerFieldTypeSet GetServerFieldsForFieldGroup(FieldTypeGroup group) {
       // If `group` is not one of the groups we offer group filling for
       // (name, address and phone field), we default back to fill full form
       // behaviour/pre-granular filling.
-      return kAllServerFieldTypes;
+      return kAllFieldTypes;
   }
 }
 
@@ -41,7 +41,7 @@ ServerFieldTypeSet GetServerFieldsForFieldGroup(FieldTypeGroup group) {
 
 AutofillFillingMethod GetFillingMethodFromTargetedFields(
     const ServerFieldTypeSet& targeted_field_types) {
-  if (targeted_field_types == kAllServerFieldTypes) {
+  if (targeted_field_types == kAllFieldTypes) {
     return AutofillFillingMethod::kFullForm;
   }
   if (AreFieldsGranularFillingGroup(targeted_field_types)) {
@@ -75,7 +75,7 @@ ServerFieldTypeSet GetTargetServerFieldsForTypeAndLastTargetedFields(
       return GetServerFieldsForFieldGroup(
           GroupTypeOfServerFieldType(triggering_field_type));
     case AutofillFillingMethod::kFullForm:
-      return kAllServerFieldTypes;
+      return kAllFieldTypes;
     case AutofillFillingMethod::kFieldByFieldFilling:
       return {triggering_field_type};
     case AutofillFillingMethod::kNone:

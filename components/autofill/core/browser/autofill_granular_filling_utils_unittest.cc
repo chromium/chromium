@@ -86,19 +86,19 @@ TEST(
   // filling.
   EXPECT_EQ(GetTargetServerFieldsForTypeAndLastTargetedFields(
                 GetAddressFieldsForGroupFilling(), CREDIT_CARD_NAME_FULL),
-            kAllServerFieldTypes);
+            kAllFieldTypes);
 }
 
 TEST(
     AutofillGranularFillingUtilsTest,
     GetTargetServerFieldsForTypeAndLastTargetedFields_AllServerTypes_ReturnsAllServerTypes) {
   // Regardless of the triggering field, if the last targeted fields were
-  // kAllServerFieldTypes, i.e full form, we will also return
-  // kAllServerFieldTypes, so that the user stays in the full form granularity
+  // kAllFieldTypes, i.e full form, we will also return
+  // kAllFieldTypes, so that the user stays in the full form granularity
   // level.
-  EXPECT_EQ(GetTargetServerFieldsForTypeAndLastTargetedFields(
-                kAllServerFieldTypes, NAME_FIRST),
-            kAllServerFieldTypes);
+  EXPECT_EQ(GetTargetServerFieldsForTypeAndLastTargetedFields(kAllFieldTypes,
+                                                              NAME_FIRST),
+            kAllFieldTypes);
 }
 
 }  // namespace autofill

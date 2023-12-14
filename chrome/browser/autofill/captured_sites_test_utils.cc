@@ -136,8 +136,7 @@ absl::optional<autofill::ServerFieldType> StringToFieldType(
     const std::string& str) {
   static auto map = []() {
     std::map<std::string, autofill::ServerFieldType> map;
-    for (autofill::ServerFieldType field_type :
-         autofill::kAllServerFieldTypes) {
+    for (autofill::ServerFieldType field_type : autofill::kAllFieldTypes) {
       map[autofill::AutofillType(field_type).ToString()] = field_type;
     }
     for (autofill::HtmlFieldType html_field_type :

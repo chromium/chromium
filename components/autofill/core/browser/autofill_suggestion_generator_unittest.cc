@@ -1259,7 +1259,7 @@ TEST_F(AutofillChildrenSuggestionGeneratorTest,
        CreateSuggestionsFromProfiles_FirstLevelChildrenSuggestions) {
   std::vector<Suggestion> suggestions = CreateSuggestionWithChildrenFromProfile(
       profile(),
-      /*last_targeted_fields=*/kAllServerFieldTypes, NAME_FIRST);
+      /*last_targeted_fields=*/kAllFieldTypes, NAME_FIRST);
 
   ASSERT_EQ(1U, suggestions.size());
   // Test root suggestion
@@ -1388,7 +1388,7 @@ TEST_F(
     AutofillChildrenSuggestionGeneratorTest,
     CreateSuggestionsFromProfiles_LastTargetedFieldsAreAllServerFields_FullForm) {
   std::vector<Suggestion> suggestions = CreateSuggestionWithChildrenFromProfile(
-      profile(), kAllServerFieldTypes, NAME_FIRST, {NAME_FIRST, NAME_LAST});
+      profile(), kAllFieldTypes, NAME_FIRST, {NAME_FIRST, NAME_LAST});
 
   ASSERT_EQ(1U, suggestions.size());
   EXPECT_EQ(suggestions[0].popup_item_id, PopupItemId::kAddressEntry);
@@ -1404,7 +1404,7 @@ TEST_F(
     AutofillChildrenSuggestionGeneratorTest,
     CreateSuggestionsFromProfiles_ChildrenSuggestionsPhoneField_Intenational) {
   std::vector<Suggestion> suggestions = CreateSuggestionWithChildrenFromProfile(
-      profile(), kAllServerFieldTypes, PHONE_HOME_WHOLE_NUMBER);
+      profile(), kAllFieldTypes, PHONE_HOME_WHOLE_NUMBER);
 
   ASSERT_EQ(1U, suggestions.size());
   // The child suggestions should be:
@@ -1440,7 +1440,7 @@ TEST_F(
     AutofillChildrenSuggestionGeneratorTest,
     CreateSuggestionsFromProfiles_ChildrenSuggestionsPhoneField_CountryCode) {
   std::vector<Suggestion> suggestions = CreateSuggestionWithChildrenFromProfile(
-      profile(), kAllServerFieldTypes, PHONE_HOME_COUNTRY_CODE);
+      profile(), kAllFieldTypes, PHONE_HOME_COUNTRY_CODE);
 
   ASSERT_EQ(1U, suggestions.size());
   // The child suggestions should be:
@@ -1476,7 +1476,7 @@ TEST_F(
 TEST_F(AutofillChildrenSuggestionGeneratorTest,
        CreateSuggestionsFromProfiles_ChildrenSuggestionsPhoneField_Local) {
   std::vector<Suggestion> suggestions = CreateSuggestionWithChildrenFromProfile(
-      profile(), kAllServerFieldTypes, PHONE_HOME_CITY_AND_NUMBER);
+      profile(), kAllFieldTypes, PHONE_HOME_CITY_AND_NUMBER);
 
   ASSERT_EQ(1U, suggestions.size());
   // The child suggestions should be:
@@ -1507,7 +1507,7 @@ TEST_F(AutofillChildrenSuggestionGeneratorTest,
 TEST_F(AutofillChildrenSuggestionGeneratorTest,
        CreateSuggestionsFromProfiles_ChildrenSuggestionsEmailField) {
   std::vector<Suggestion> suggestions = CreateSuggestionWithChildrenFromProfile(
-      profile(), kAllServerFieldTypes, EMAIL_ADDRESS);
+      profile(), kAllFieldTypes, EMAIL_ADDRESS);
 
   // The child suggestions should be:
   //
@@ -1532,7 +1532,7 @@ TEST_F(AutofillChildrenSuggestionGeneratorTest,
 TEST_F(AutofillChildrenSuggestionGeneratorTest,
        CreateSuggestionsFromProfiles_ChildrenSuggestionsAddressField) {
   std::vector<Suggestion> suggestions = CreateSuggestionWithChildrenFromProfile(
-      profile(), kAllServerFieldTypes, ADDRESS_HOME_LINE1);
+      profile(), kAllFieldTypes, ADDRESS_HOME_LINE1);
 
   // The child suggestions should be:
   //
@@ -2635,7 +2635,7 @@ TEST_F(AutofillSuggestionGeneratorTest, TestAddressSuggestion) {
   std::vector<Suggestion> suggestions =
       suggestion_generator()->CreateSuggestionsFromProfiles(
           {&profile}, /*field_types=*/{NAME_FIRST},
-          /*last_targeted_fields=*/kAllServerFieldTypes, NAME_FIRST,
+          /*last_targeted_fields=*/kAllFieldTypes, NAME_FIRST,
           /*trigger_field_max_length=*/0);
 
   // Therere should be test address suggestion and one regular profile

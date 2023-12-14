@@ -559,7 +559,7 @@ constexpr HtmlFieldType ToSafeHtmlFieldType(
                             : fallback_value;
 }
 
-constexpr inline FieldTypeSet kAllServerFieldTypes = [] {
+constexpr inline FieldTypeSet kAllFieldTypes = [] {
   FieldTypeSet fields;
   for (std::underlying_type_t<FieldType> i = 0; i < MAX_VALID_FIELD_TYPE; ++i) {
     if (FieldType field_type = ToSafeFieldType(i, NO_SERVER_DATA);

@@ -1535,8 +1535,8 @@ const GetLastServerTypesToFillForSectionTestParams
     kGetLastServerTypesToFillForSectionTesCases[] = {
         // Tests that when `PopupItemId::kAddressEntry` is accepted and
         // therefore the user wanted to fill the whole form. Autofill
-        // stores the last targeted fields as `kAllServerFieldTypes`.
-        {.expected_last_field_types_to_fill_for_section = kAllServerFieldTypes,
+        // stores the last targeted fields as `kAllFieldTypes`.
+        {.expected_last_field_types_to_fill_for_section = kAllFieldTypes,
          .popup_item_id = PopupItemId::kAddressEntry,
          .test_name = "_AllServerFields"},
         // Tests that when `PopupItemId::kAddressFieldByFieldFilling`

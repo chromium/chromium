@@ -498,8 +498,7 @@ void AddFooterChildSuggestions(
   // the user to go back to filling the whole form once in a more fine grained
   // filling experience.
   if (IsAddressType(trigger_field_type) &&
-      (!last_targeted_fields ||
-       *last_targeted_fields != kAllServerFieldTypes)) {
+      (!last_targeted_fields || *last_targeted_fields != kAllFieldTypes)) {
     suggestion.children.push_back(GetFillEverythingFromAddressProfileSuggestion(
         Suggestion::Guid(profile.guid())));
   }
@@ -638,7 +637,7 @@ PopupItemId GetProfileSuggestionPopupItemId(
   };
 
   switch (GetFillingMethodFromTargetedFields(
-      last_targeted_fields.value_or(kAllServerFieldTypes))) {
+      last_targeted_fields.value_or(kAllFieldTypes))) {
     case AutofillFillingMethod::kGroupFilling:
       return get_popup_item_id_for_group_filling();
     case AutofillFillingMethod::kFullForm:

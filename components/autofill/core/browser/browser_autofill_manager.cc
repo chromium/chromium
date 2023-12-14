@@ -2761,7 +2761,7 @@ std::vector<Suggestion> BrowserAutofillManager::GetProfileSuggestions(
                     ? GetTargetServerFieldsForTypeAndLastTargetedFields(
                           *last_address_fields_to_fill_for_section,
                           autofill_field.Type().GetStorableType())
-                    : kAllServerFieldTypes,
+                    : kAllFieldTypes,
                 /*optional_type_groups_originally_filled=*/nullptr,
                 /*skip_unrecognized_autocomplete_fields=*/trigger_source !=
                     AutofillSuggestionTriggerSource::kManualFallbackAddress,

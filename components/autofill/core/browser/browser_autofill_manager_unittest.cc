@@ -6034,7 +6034,7 @@ TEST_F(BrowserAutofillManagerWithLogEventsTest,
   FillAutofillFormDataAndGetResults(
       form, form.fields[0], MakeGuid(1),
       {.trigger_source = AutofillTriggerSource::kPopup,
-       .field_types_to_fill = kAllServerFieldTypes});
+       .field_types_to_fill = kAllFieldTypes});
   const std::vector<AutofillField::FieldLogEventType>& fill_field_log_events =
       browser_autofill_manager_->GetAutofillField(form, form.fields[0])
           ->field_log_events();
