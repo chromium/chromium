@@ -84,7 +84,6 @@ struct TestParam {
   bool use_dark_theme = false;
   bool use_right_to_left_language = false;
   bool show_search_engine_omnibox = false;
-  bool with_marketing_snippets = false;
   gfx::Size dialog_dimensions = gfx::Size(988, 900);
 };
 
@@ -99,14 +98,8 @@ std::string ParamToTestSuffix(const ::testing::TestParamInfo<TestParam>& info) {
 const TestParam kTestParams[] = {
 #if BUILDFLAG(IS_WIN)
     {.test_suffix = "Default"},
-    {.test_suffix = "WithMarketingSnippets", .with_marketing_snippets = true},
-    {.test_suffix = "WithMarketingSnippetsDarkTheme",
-     .use_dark_theme = true,
-     .with_marketing_snippets = true},
+    {.test_suffix = "DarkTheme", .use_dark_theme = true},
     {.test_suffix = "RightToLeft", .use_right_to_left_language = true},
-    {.test_suffix = "WithMarketingSnippetsRightToLeft",
-     .use_right_to_left_language = true,
-     .with_marketing_snippets = true},
     {.test_suffix = "ShowSearchEngineOmnibox",
      .show_search_engine_omnibox = true},
     {.test_suffix = "MediumSize", .dialog_dimensions = gfx::Size(800, 700)},
@@ -158,11 +151,8 @@ class SearchEngineChoiceUIPixelTest
         pixel_test_mixin_(&mixin_host_,
                           GetParam().use_dark_theme,
                           GetParam().use_right_to_left_language) {
-    const std::string featureParam =
-        GetParam().with_marketing_snippets ? "true" : "false";
     feature_list_.InitAndEnableFeatureWithParameters(
-        switches::kSearchEngineChoice,
-        {{"with-marketing-snippets", featureParam}});
+        switches::kSearchEngineChoice, {{"with-forced-scroll", "true"}});
   }
 
   ~SearchEngineChoiceUIPixelTest() override = default;

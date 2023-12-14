@@ -432,20 +432,15 @@
           <div class="choice">
             <div class="choice-icon"
                 style$="background-image: [[item.iconPath]];"></div>
-            <template is="dom-if" if="[[!withMarketingSnippets_]]">
-              <div class="choice-title">[[item.name]]</div>
-            </template>
-            <template is="dom-if" if="[[withMarketingSnippets_]]">
-              <div class="choice-text">
-                <cr-expand-button expanded="{{item.showMarketingSnippet}}"
-                    no-hover>
-                  <div class="choice-title">[[item.name]]</div>
-                </cr-expand-button>
-                <iron-collapse opened="[[item.showMarketingSnippet]]">
-                  [[item.marketingSnippet]]
-                </iron-collapse>
-              </div>
-            </template>
+            <div class="choice-text">
+              <cr-expand-button expanded="{{item.showMarketingSnippet}}"
+                  no-hover>
+                <div class="choice-title">[[item.name]]</div>
+              </cr-expand-button>
+              <iron-collapse opened="[[item.showMarketingSnippet]]">
+                [[item.marketingSnippet]]
+              </iron-collapse>
+            </div>
           </div>
         </cr-radio-button>
     </template>

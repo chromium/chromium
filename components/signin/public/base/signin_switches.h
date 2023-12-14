@@ -76,9 +76,6 @@ COMPONENT_EXPORT(SIGNIN_SWITCHES)
 BASE_DECLARE_FEATURE(kTangibleSync);
 
 COMPONENT_EXPORT(SIGNIN_SWITCHES)
-extern const base::FeatureParam<bool> kWithSearchEngineMarketingSnippets;
-
-COMPONENT_EXPORT(SIGNIN_SWITCHES)
 extern const base::FeatureParam<bool> kWithForcedScrollEnabled;
 
 COMPONENT_EXPORT(SIGNIN_SWITCHES)
