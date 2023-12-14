@@ -8,6 +8,7 @@
 #include <stddef.h>
 
 #include <compare>
+#include <concepts>
 #include <iosfwd>
 #include <type_traits>
 #include <utility>
@@ -63,24 +64,24 @@ constexpr Tag GetRefCountPreference() {
 template <typename T, typename U, typename V>
 constexpr bool IsRefCountPreferenceOverridden(const T*,
                                               const RefCounted<U, V>*) {
-  return !std::is_same_v<std::decay_t<decltype(GetRefCountPreference<T>())>,
-                         std::decay_t<decltype(GetRefCountPreference<U>())>>;
+  return !std::same_as<std::decay_t<decltype(GetRefCountPreference<T>())>,
+                       std::decay_t<decltype(GetRefCountPreference<U>())>>;
 }
 
 template <typename T, typename U, typename V>
 constexpr bool IsRefCountPreferenceOverridden(
     const T*,
     const RefCountedThreadSafe<U, V>*) {
-  return !std::is_same_v<std::decay_t<decltype(GetRefCountPreference<T>())>,
-                         std::decay_t<decltype(GetRefCountPreference<U>())>>;
+  return !std::same_as<std::decay_t<decltype(GetRefCountPreference<T>())>,
+                       std::decay_t<decltype(GetRefCountPreference<U>())>>;
 }
 
 template <typename T, typename U>
 constexpr bool IsRefCountPreferenceOverridden(
     const T*,
     const RefCountedDeleteOnSequence<U>*) {
-  return !std::is_same_v<std::decay_t<decltype(GetRefCountPreference<T>())>,
-                         std::decay_t<decltype(GetRefCountPreference<U>())>>;
+  return !std::same_as<std::decay_t<decltype(GetRefCountPreference<T>())>,
+                       std::decay_t<decltype(GetRefCountPreference<U>())>>;
 }
 
 constexpr bool IsRefCountPreferenceOverridden(...) {
@@ -89,7 +90,7 @@ constexpr bool IsRefCountPreferenceOverridden(...) {
 
 template <typename T, typename U, typename V>
 constexpr void AssertRefCountBaseMatches(const T*, const RefCounted<U, V>*) {
-  static_assert(std::is_base_of_v<U, T>,
+  static_assert(std::derived_from<T, U>,
                 "T implements RefCounted<U>, but U is not a base of T.");
 }
 
@@ -97,7 +98,7 @@ template <typename T, typename U, typename V>
 constexpr void AssertRefCountBaseMatches(const T*,
                                          const RefCountedThreadSafe<U, V>*) {
   static_assert(
-      std::is_base_of_v<U, T>,
+      std::derived_from<T, U>,
       "T implements RefCountedThreadSafe<U>, but U is not a base of T.");
 }
 
@@ -105,7 +106,7 @@ template <typename T, typename U>
 constexpr void AssertRefCountBaseMatches(const T*,
                                          const RefCountedDeleteOnSequence<U>*) {
   static_assert(
-      std::is_base_of_v<U, T>,
+      std::derived_from<T, U>,
       "T implements RefCountedDeleteOnSequence<U>, but U is not a base of T.");
 }
 
@@ -119,7 +120,7 @@ constexpr void AssertRefCountBaseMatches(...) {}
 template <typename T>
 scoped_refptr<T> AdoptRef(T* obj) {
   using Tag = std::decay_t<decltype(subtle::GetRefCountPreference<T>())>;
-  static_assert(std::is_same_v<subtle::StartRefCountFromOneTag, Tag>,
+  static_assert(std::same_as<subtle::StartRefCountFromOneTag, Tag>,
                 "Use AdoptRef only if the reference count starts from one.");
 
   DCHECK(obj);
@@ -247,8 +248,8 @@ class TRIVIAL_ABI scoped_refptr {
   scoped_refptr(const scoped_refptr& r) : scoped_refptr(r.ptr_) {}
 
   // Copy conversion constructor.
-  template <typename U,
-            typename = std::enable_if_t<std::is_convertible_v<U*, T*>>>
+  template <typename U>
+    requires(std::convertible_to<U*, T*>)
   scoped_refptr(const scoped_refptr<U>& r) : scoped_refptr(r.ptr_) {}
 
   // Move constructor. This is required in addition to the move conversion
@@ -256,8 +257,8 @@ class TRIVIAL_ABI scoped_refptr {
   scoped_refptr(scoped_refptr&& r) noexcept : ptr_(r.ptr_) { r.ptr_ = nullptr; }
 
   // Move conversion constructor.
-  template <typename U,
-            typename = std::enable_if_t<std::is_convertible_v<U*, T*>>>
+  template <typename U>
+    requires(std::convertible_to<U*, T*>)
   scoped_refptr(scoped_refptr<U>&& r) noexcept : ptr_(r.ptr_) {
     r.ptr_ = nullptr;
   }

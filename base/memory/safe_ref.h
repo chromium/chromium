@@ -5,11 +5,12 @@
 #ifndef BASE_MEMORY_SAFE_REF_H_
 #define BASE_MEMORY_SAFE_REF_H_
 
+#include <concepts>
+#include <utility>
+
 #include "base/check.h"
 #include "base/memory/safe_ref_traits.h"
 #include "base/memory/weak_ptr.h"
-
-#include <utility>
 
 namespace base {
 
@@ -82,8 +83,8 @@ class SafeRef {
   }
 
   // Copy conversion from SafeRef<U>.
-  template <typename U,
-            typename = std::enable_if_t<std::is_convertible_v<U*, T*>>>
+  template <typename U>
+    requires(std::convertible_to<U*, T*>)
   // NOLINTNEXTLINE(google-explicit-constructor)
   SafeRef(const SafeRef<U>& other)
       : ref_(other.ref_),
