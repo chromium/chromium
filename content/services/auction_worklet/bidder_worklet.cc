@@ -1263,7 +1263,12 @@ BidderWorklet::V8State::GenerateSingleBid(
                      bidder_worklet_non_shared_params.update_url->spec())) ||
       (trusted_bidding_signals_url_ &&
        !SetTrustedBiddingSignalsUrl(isolate, interest_group_object,
-                                    trusted_bidding_signals_url_->spec()))) {
+                                    trusted_bidding_signals_url_->spec())) ||
+      !interest_group_dict.Set(
+          "trustedBiddingSignalsSlotSizeMode",
+          blink::InterestGroup::TrustedBiddingSignalsSlotSizeModeToString(
+              bidder_worklet_non_shared_params
+                  .trusted_bidding_signals_slot_size_mode))) {
     return absl::nullopt;
   }
 

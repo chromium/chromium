@@ -62,6 +62,9 @@ struct KAnonKey {
 struct BidderWorkletNonSharedParams {
   string name;
 
+  blink.mojom.InterestGroup.TrustedBiddingSignalsSlotSizeMode
+      trusted_bidding_signals_slot_size_mode;
+
   bool enable_bidding_signals_prioritization;
   map<string, double>? priority_vector;
 

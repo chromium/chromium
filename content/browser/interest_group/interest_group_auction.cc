@@ -1328,6 +1328,7 @@ class InterestGroupAuction::BuyerHelper
     bid_state->worklet_handle->GetBidderWorklet()->BeginGenerateBid(
         auction_worklet::mojom::BidderWorkletNonSharedParams::New(
             interest_group.name,
+            interest_group.trusted_bidding_signals_slot_size_mode,
             interest_group.enable_bidding_signals_prioritization,
             interest_group.priority_vector, interest_group.execution_mode,
             interest_group.update_url,

@@ -619,6 +619,7 @@ class BidderWorkletTest : public testing::Test {
     }
     return mojom::BidderWorkletNonSharedParams::New(
         interest_group_name_,
+        blink::InterestGroup::TrustedBiddingSignalsSlotSizeMode::kNone,
         interest_group_enable_bidding_signals_prioritization_,
         interest_group_priority_vector_, execution_mode_, update_url_,
         interest_group_trusted_bidding_signals_keys_,

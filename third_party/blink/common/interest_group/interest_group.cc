@@ -379,6 +379,18 @@ bool InterestGroup::IsEqualForTesting(const InterestGroup& other) const {
                   other.aggregation_coordinator_origin);
 }
 
+std::string_view InterestGroup::TrustedBiddingSignalsSlotSizeModeToString(
+    TrustedBiddingSignalsSlotSizeMode slot_size_mode) {
+  switch (slot_size_mode) {
+    case TrustedBiddingSignalsSlotSizeMode::kNone:
+      return "none";
+    case TrustedBiddingSignalsSlotSizeMode::kSlotSize:
+      return "slot-size";
+    case TrustedBiddingSignalsSlotSizeMode::kAllSlotsRequestedSizes:
+      return "all-slots-requested-sizes";
+  }
+}
+
 std::string KAnonKeyForAdBid(const InterestGroup& group, const GURL& ad_url) {
   return KAnonKeyForAdBid(group, blink::AdDescriptor(ad_url));
 }
