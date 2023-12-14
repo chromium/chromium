@@ -286,15 +286,19 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="SBClientDownload.ServerRequestsDeepScanningPrompt"
+<histogram name="SBClientDownload.ServerRequestsDeepScanningPrompt{Encryption}"
     enum="BooleanRequested" expires_after="2024-04-28">
   <owner>drubery@chromium.org</owner>
   <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
     Records how often users in a population consented to deep scanning are
-    actually prompted for deep scanning. This is logged once per download by an
-    eligible user.
+    actually prompted for deep scanning of {Encryption}. This is logged once per
+    download by an eligible user.
   </summary>
+  <token key="Encryption">
+    <variant name="" summary="any file"/>
+    <variant name="PasswordProtected" summary="encrypted archives"/>
+  </token>
 </histogram>
 
 <histogram name="SBClientDownload.ServerRequestsLocalDecryptionPrompt"

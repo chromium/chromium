@@ -165,8 +165,8 @@ class CheckClientDownloadRequestBase {
   // |client_download_request_| with their origin.
   void SanitizeRequest();
 
-  // Called when a deep scanning prompt is about to be shown.
-  virtual void LogDeepScanningPrompt() const = 0;
+  // Called when we decide whether or not to show a deep scanning prompt
+  virtual void LogDeepScanningPrompt(bool did_prompt) const = 0;
 
   // Returns whether we should skip sending a ping to Safe Browsing because the
   // provided password was incorrect.

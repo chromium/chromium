@@ -314,15 +314,12 @@ void CheckClientDownloadRequestBase::GetAdditionalPromptResult(
     // Otherwise, client Safe Browsing reports may be missed when the
     // verdict is SAFE. See https://crbug.com/1485218.
     *token = response.token();
-    LogDeepScanningPrompt();
   }
 
   // Only record the UMA metric if we're in a population that potentially
   // could prompt for deep scanning.
   if (ShouldPromptForDeepScanning(/*server_requests_prompt=*/true)) {
-    base::UmaHistogramBoolean(
-        "SBClientDownload.ServerRequestsDeepScanningPrompt",
-        deep_scanning_prompt);
+    LogDeepScanningPrompt(deep_scanning_prompt);
   }
 }
 
