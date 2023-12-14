@@ -6,15 +6,11 @@ import {EventHandler} from '../../common/event_handler.js';
 
 /**
  * The hex color for the focus rings.
- * @private {string}
- * @const
  */
 const AUTOCLICK_FOCUS_RING_COLOR = '#aac9fa';
 
 /**
  * The amount of time to wait before hiding the focus rings from the display.
- * @private {number}
- * @const
  */
 const AUTOCLICK_FOCUS_RING_DISPLAY_TIME_MS = 250;
 
@@ -22,45 +18,43 @@ const AUTOCLICK_FOCUS_RING_DISPLAY_TIME_MS = 250;
  * Class to manage Automatic Clicks' interaction with the accessibility tree.
  */
 export class Autoclick {
+  /**
+   * Whether to blink the focus rings. Disabled during tests due to
+   * complications with callbacks.
+   */
+  private blinkFocusRings_: boolean = true;
+
+  private desktop_: chrome.automation.AutomationNode|null = null;
+
+  private scrollableBoundsListener_:
+      ((x: number, y: number) => void)|null = null;
+
+  private hitTestHandler_: EventHandler;
+
+  private onLoadDesktopCallbackForTest_: Function|null = null;
+
+
   constructor() {
-    /**
-     * Whether to blink the focus rings. Disabled during tests due to
-     * complications with callbacks.
-     * @private {boolean}
-     */
-    this.blinkFocusRings_ = true;
-
-    /**
-     * @private {chrome.automation.AutomationNode}
-     */
-    this.desktop_;
-
-    /**
-     * @private {?function(number, number)}
-     */
-    this.scrollableBoundsListener_ = null;
-
-    /**
-     * @private {!EventHandler}
-     */
     this.hitTestHandler_ = new EventHandler(
         [], chrome.automation.EventType.MOUSE_PRESSED,
-        event => this.onAutomationHitTestResult_(event), {capture: true});
-
-    /** @private {?function()} */
-    this.onLoadDesktopCallbackForTest_ = null;
+        event => this.onAutomationHitTestResult_(event), {
+          capture: true,
+          exactMatch: false,
+          listenOnce: false,
+          predicate: undefined,
+        });
 
     this.init_();
   }
 
-  setNoBlinkFocusRingsForTest() {
+  setNoBlinkFocusRingsForTest(): void {
     this.blinkFocusRings_ = false;
   }
 
   /**
    * Destructor to remove any listeners.
    */
-  onAutoclickDisabled() {
+  onAutoclickDisabled(): void {
     if (this.scrollableBoundsListener_) {
       chrome.accessibilityPrivate.onScrollableBoundsForPointRequested
           .removeListener(this.scrollableBoundsListener_);
@@ -72,10 +66,9 @@ export class Autoclick {
 
   /**
    * Initializes Autoclick.
-   * @private
    */
-  init_() {
-    this.scrollableBoundsListener_ = (x, y) =>
+  private init_(): void {
+    this.scrollableBoundsListener_ = (x: number, y: number) =>
         this.findScrollingContainerForPoint_(x, y);
 
     chrome.automation.getDesktop(desktop => {
@@ -98,10 +91,9 @@ export class Autoclick {
 
   /**
    * Sets the focus ring to |rects|.
-   * @param {!Array<!chrome.accessibilityPrivate.ScreenRect>} rects
-   * @private
    */
-  setFocusRings_(rects) {
+  private setFocusRings_(rects: chrome.accessibilityPrivate.ScreenRect[]):
+      void {
     // TODO(katie): Add a property to FocusRingInfo to set FocusRingBehavior
     // to fade out.
     chrome.accessibilityPrivate.setFocusRings(
@@ -116,28 +108,25 @@ export class Autoclick {
 
   /**
    * Calculates whether a node should be highlighted as scrollable.
-   * @param {!chrome.automation.AutomationNode} node
-   * @return {boolean} True if the node should be highlighted as scrollable.
-   * @private
+   * Returns True  if the node should be highlighted as scrollable.
    */
-  shouldHighlightAsScrollable_(node) {
+  private shouldHighlightAsScrollable_(node: chrome.automation.AutomationNode):
+      boolean {
     if (node.scrollable === undefined || !node.scrollable) {
       return false;
     }
 
     // Check that the size of the scrollable area is larger than the node's
     // location. If it is not larger, then scrollbars are not shown.
-    return node.scrollXMax - node.scrollXMin > node.location.width ||
-        node.scrollYMax - node.scrollYMin > node.location.height;
+    return node.scrollXMax! - node.scrollXMin! > node.location.width ||
+        node.scrollYMax! - node?.scrollYMin! > node.location.height;
   }
 
   /**
    * Processes an automation hit test result.
-   * @param {!chrome.automation.AutomationEvent} event The hit test result
-   *     event.
-   * @private
    */
-  onAutomationHitTestResult_(event) {
+  private onAutomationHitTestResult_(event: chrome.automation.AutomationEvent):
+      void {
     // Walk up to the nearest scrollale area containing the point.
     let node = event.target;
     while (node.parent && node.role !== chrome.automation.RoleType.WINDOW &&
@@ -177,23 +166,20 @@ export class Autoclick {
   }
 
   /**
-   * Initiates finidng the nearest scrolling container for the given point.
-   * @param {number} x
-   * @param {number} y
-   * @private
+   * Initiates finding the nearest scrolling container for the given point.
    */
-  findScrollingContainerForPoint_(x, y) {
-    // The hit test will come back through onAutmoationHitTestResult_,
+  private findScrollingContainerForPoint_(x: number, y: number): void {
+    // The hit test will come back through onAutomationHitTestResult_,
     // which will do the logic for finding the scrolling container.
-    this.desktop_.hitTest(x, y, chrome.automation.EventType.MOUSE_PRESSED);
+    this.desktop_!.hitTest(x, y, chrome.automation.EventType.MOUSE_PRESSED);
   }
 
   /**
    * Used by C++ tests to ensure Autoclick JS load is completed.
-   * @param {!function()} callback Callback for when desktop is loaded from
+   * `callback` Callback for when desktop is loaded from
    * automation.
    */
-  setOnLoadDesktopCallbackForTest(callback) {
+  setOnLoadDesktopCallbackForTest(callback: Function): void {
     if (!this.desktop_) {
       this.onLoadDesktopCallbackForTest_ = callback;
       return;
