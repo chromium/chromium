@@ -53,7 +53,7 @@ class BookmarkBridge {
     private @Nullable BookmarkId mMobileFolderId;
     private @Nullable BookmarkId mOtherFolderId;
     private @Nullable BookmarkId mDesktopFolderId;
-    private @Nullable BookmarkId mReadingListFolderId;
+    private @Nullable BookmarkId mLocalOrSyncableReadingListFolderId;
 
     /**
      * Handler to fetch the bookmarks, titles, urls and folder hierarchy.
@@ -232,18 +232,32 @@ class BookmarkBridge {
         return result;
     }
 
-    /** Returns the synthetic reading list folder. */
-    // TODO(crbug.com/1501998): Add split account/local functions.
+    /** Returns the local/syncable synthetic reading list folder. */
     public BookmarkId getLocalOrSyncableReadingListFolder() {
         ThreadUtils.assertOnUiThread();
         if (mNativeBookmarkBridge == 0) return null;
         assert mIsNativeBookmarkModelLoaded;
-        if (mReadingListFolderId == null) {
-            mReadingListFolderId =
+        if (mLocalOrSyncableReadingListFolderId == null) {
+            mLocalOrSyncableReadingListFolderId =
                     BookmarkBridgeJni.get()
                             .getLocalOrSyncableReadingListFolder(mNativeBookmarkBridge);
         }
-        return mReadingListFolderId;
+        return mLocalOrSyncableReadingListFolderId;
+    }
+
+    /**
+     * Returns the account synthetic reading list folder. Function will return null if the required
+     * conditions to use account-bound data aren't satisfied: - The user is signed-in and not
+     * syncing. - The user has the kReadingList sync data type enabled.
+     */
+    public BookmarkId getAccountReadingListFolder() {
+        ThreadUtils.assertOnUiThread();
+        if (mNativeBookmarkBridge == 0) return null;
+        assert mIsNativeBookmarkModelLoaded;
+
+        // Note: The account reading list folder isn't cached because the availability can change
+        // during runtime.
+        return BookmarkBridgeJni.get().getAccountReadingListFolder(mNativeBookmarkBridge);
     }
 
     public BookmarkId getDefaultReadingListFolder() {
@@ -825,6 +839,13 @@ class BookmarkBridge {
         return BookmarkBridgeJni.get().getUnreadCount(mNativeBookmarkBridge, readingListParentId);
     }
 
+    /** Returns whether the given {@link BookmarkId} belongs to the account. */
+    public boolean isAccountBookmark(BookmarkId id) {
+        ThreadUtils.assertOnUiThread();
+        if (mNativeBookmarkBridge == 0) return false;
+        return BookmarkBridgeJni.get().isAccountBookmark(mNativeBookmarkBridge, id);
+    }
+
     /**
      * Checks whether supplied URL has already been bookmarked.
      *
@@ -1005,6 +1026,8 @@ class BookmarkBridge {
 
         BookmarkId getLocalOrSyncableReadingListFolder(long nativeBookmarkBridge);
 
+        BookmarkId getAccountReadingListFolder(long nativeBookmarkBridge);
+
         BookmarkId getDefaultReadingListFolder(long nativeBookmarkBridge);
 
         void getAllFoldersWithDepths(
@@ -1070,6 +1093,8 @@ class BookmarkBridge {
         void setReadStatus(long nativeBookmarkBridge, BookmarkId id, boolean read);
 
         int getUnreadCount(long nativeBookmarkBridge, BookmarkId id);
+
+        boolean isAccountBookmark(long nativeBookmarkBridge, BookmarkId id);
 
         void undo(long nativeBookmarkBridge);
 
