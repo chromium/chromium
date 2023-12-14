@@ -14,7 +14,7 @@ TEST(FieldTypesTest, TypeStringConversion) {
   EXPECT_EQ(TypeNameToFieldType(FieldTypeToStringView(NO_SERVER_DATA)),
             NO_SERVER_DATA);
   for (int i = 0; i < MAX_VALID_FIELD_TYPE; ++i) {
-    if (ServerFieldType raw_value = static_cast<ServerFieldType>(i);
+    if (FieldType raw_value = static_cast<FieldType>(i);
         ToSafeServerFieldType(raw_value, NO_SERVER_DATA) != NO_SERVER_DATA) {
       EXPECT_EQ(TypeNameToFieldType(FieldTypeToStringView(raw_value)),
                 raw_value);
@@ -22,8 +22,8 @@ TEST(FieldTypesTest, TypeStringConversion) {
   }
 }
 
-TEST(FieldTypesTest, IsValidServerFieldType) {
-  const std::set<ServerFieldType> kValidFieldTypes{
+TEST(FieldTypesTest, IsValidFieldType) {
+  const std::set<FieldType> kValidFieldTypes{
       NO_SERVER_DATA,
       UNKNOWN_TYPE,
       EMPTY_TYPE,
@@ -118,24 +118,24 @@ TEST(FieldTypesTest, IsValidServerFieldType) {
       ADDRESS_HOME_OVERFLOW_AND_LANDMARK,
       SINGLE_USERNAME_FORGOT_PASSWORD,
       SINGLE_USERNAME_WITH_INTERMEDIATE_VALUES};
-  ServerFieldType kInvalidValue = static_cast<ServerFieldType>(123456);
+  FieldType kInvalidValue = static_cast<FieldType>(123456);
   ASSERT_FALSE(kValidFieldTypes.count(kInvalidValue));
   for (int i = -10; i < MAX_VALID_FIELD_TYPE + 10; ++i) {
-    ServerFieldType raw_value = static_cast<ServerFieldType>(i);
+    FieldType raw_value = static_cast<FieldType>(i);
     EXPECT_EQ(ToSafeServerFieldType(raw_value, kInvalidValue),
               kValidFieldTypes.count(raw_value) ? raw_value : kInvalidValue);
   }
 }
 
 TEST(FieldTypesTest, TestWith2DigitExpirationYear) {
-  ServerFieldType assumed_field_type =
+  FieldType assumed_field_type =
       ToSafeServerFieldType(CREDIT_CARD_EXP_2_DIGIT_YEAR, NO_SERVER_DATA);
   size_t result = DetermineExpirationYearLength(assumed_field_type);
   EXPECT_EQ(result, static_cast<size_t>(2));
 }
 
 TEST(FieldTypesTest, TestWith4DigitExpirationYear) {
-  ServerFieldType assumed_field_type =
+  FieldType assumed_field_type =
       ToSafeServerFieldType(CREDIT_CARD_EXP_4_DIGIT_YEAR, NO_SERVER_DATA);
   size_t result = DetermineExpirationYearLength(assumed_field_type);
   EXPECT_EQ(result, static_cast<size_t>(4));

@@ -54,7 +54,7 @@ import org.chromium.chrome.test.ChromeJUnit4RunnerDelegate;
 import org.chromium.chrome.test.util.browser.Features;
 import org.chromium.chrome.test.util.browser.Features.EnableFeatures;
 import org.chromium.components.autofill.AutofillProfile;
-import org.chromium.components.autofill.ServerFieldType;
+import org.chromium.components.autofill.FieldType;
 import org.chromium.components.autofill.Source;
 import org.chromium.components.signin.base.CoreAccountInfo;
 import org.chromium.components.signin.identitymanager.IdentityManager;
@@ -83,20 +83,14 @@ public class AddressEditorRenderTest extends BlankUiTestActivityTestCase {
     private static final String USER_EMAIL = "example@gmail.com";
     private static final List<AutofillAddressUiComponent> SUPPORTED_ADDRESS_FIELDS =
             List.of(
-                    new AutofillAddressUiComponent(ServerFieldType.NAME_FULL, "Name", true, true),
+                    new AutofillAddressUiComponent(FieldType.NAME_FULL, "Name", true, true),
+                    new AutofillAddressUiComponent(FieldType.COMPANY_NAME, "Company", false, true),
                     new AutofillAddressUiComponent(
-                            ServerFieldType.COMPANY_NAME, "Company", false, true),
+                            FieldType.ADDRESS_HOME_STREET_ADDRESS, "Street address", true, true),
+                    new AutofillAddressUiComponent(FieldType.ADDRESS_HOME_CITY, "City", true, true),
                     new AutofillAddressUiComponent(
-                            ServerFieldType.ADDRESS_HOME_STREET_ADDRESS,
-                            "Street address",
-                            true,
-                            true),
-                    new AutofillAddressUiComponent(
-                            ServerFieldType.ADDRESS_HOME_CITY, "City", true, true),
-                    new AutofillAddressUiComponent(
-                            ServerFieldType.ADDRESS_HOME_STATE, "State", true, false),
-                    new AutofillAddressUiComponent(
-                            ServerFieldType.ADDRESS_HOME_ZIP, "ZIP", true, false));
+                            FieldType.ADDRESS_HOME_STATE, "State", true, false),
+                    new AutofillAddressUiComponent(FieldType.ADDRESS_HOME_ZIP, "ZIP", true, false));
 
     private static final AutofillProfile sLocalProfile =
             AutofillProfile.builder()
@@ -173,10 +167,10 @@ public class AddressEditorRenderTest extends BlankUiTestActivityTestCase {
                                     (List<Integer>) invocation.getArguments()[1];
                             requiredFields.addAll(
                                     List.of(
-                                            ServerFieldType.NAME_FULL,
-                                            ServerFieldType.ADDRESS_HOME_CITY,
-                                            ServerFieldType.ADDRESS_HOME_DEPENDENT_LOCALITY,
-                                            ServerFieldType.ADDRESS_HOME_ZIP));
+                                            FieldType.NAME_FULL,
+                                            FieldType.ADDRESS_HOME_CITY,
+                                            FieldType.ADDRESS_HOME_DEPENDENT_LOCALITY,
+                                            FieldType.ADDRESS_HOME_ZIP));
                             return null;
                         })
                 .when(mAutofillProfileBridgeJni)

@@ -20,7 +20,7 @@ namespace autofill {
 // server, which is itself backward-compatible. The list must be kept up to
 // date with the Autofill server list.
 //
-// NOTE: When deprecating field types, also update IsValidServerFieldType().
+// NOTE: When deprecating field types, also update IsValidFieldType().
 //
 // This enum represents the list of all field types natively understood by the
 // Autofill server. A subset of these types is used to store Autofill data in
@@ -127,7 +127,7 @@ namespace autofill {
 //
 // LINT.IfChange
 // This enum set must be kept in sync with IDL enum used by JS code.
-enum ServerFieldType {
+enum FieldType {
   // Server indication that it has no data for the requested field.
   NO_SERVER_DATA = 0,
   // Client indication that the text entered did not match anything in the
@@ -469,55 +469,55 @@ enum class FieldTypeGroup {
 };
 
 template <>
-struct DenseSetTraits<ServerFieldType> {
-  static constexpr ServerFieldType kMinValue = NO_SERVER_DATA;
-  static constexpr ServerFieldType kMaxValue = MAX_VALID_FIELD_TYPE;
+struct DenseSetTraits<FieldType> {
+  static constexpr FieldType kMinValue = NO_SERVER_DATA;
+  static constexpr FieldType kMaxValue = MAX_VALID_FIELD_TYPE;
   static constexpr bool kPacked = false;
 };
 
-using ServerFieldTypeSet = DenseSet<ServerFieldType>;
+using FieldTypeSet = DenseSet<FieldType>;
 
 using HtmlFieldTypeSet = DenseSet<HtmlFieldType>;
 
-std::ostream& operator<<(std::ostream& o, ServerFieldTypeSet field_type_set);
+std::ostream& operator<<(std::ostream& o, FieldTypeSet field_type_set);
 
 // Returns whether the field can be filled with data.
-bool IsFillableFieldType(ServerFieldType field_type);
+bool IsFillableFieldType(FieldType field_type);
 
 // Returns a string view describing `type`.
-std::string_view FieldTypeToStringView(ServerFieldType type);
+std::string_view FieldTypeToStringView(FieldType type);
 
 // Returns a string describing `type`.
-std::string FieldTypeToString(ServerFieldType type);
+std::string FieldTypeToString(FieldType type);
 
-// Inverse FieldTypeToStringView(). Checks that only valid ServerFieldType
-// string representations are being passed.
-ServerFieldType TypeNameToFieldType(std::string_view type_name);
+// Inverse FieldTypeToStringView(). Checks that only valid FieldType string
+// representations are being passed.
+FieldType TypeNameToFieldType(std::string_view type_name);
 
 // Returns a string view describing `type`. The devtools UI uses this string to
 // give developers feedback about autofill's filling decision. Note that
 // different field types can map to the same string representation for
 // simplicity of the feedback. Returns an empty string if the type is not
 // supported.
-std::string_view FieldTypeToDeveloperRepresentationString(ServerFieldType type);
+std::string_view FieldTypeToDeveloperRepresentationString(FieldType type);
 
 // There's a one-to-many relationship between FieldTypeGroup and
-// ServerFieldType as well as HtmlFieldType.
-ServerFieldTypeSet GetServerFieldTypesOfGroup(FieldTypeGroup group);
-FieldTypeGroup GroupTypeOfServerFieldType(ServerFieldType field_type);
+// FieldType as well as HtmlFieldType.
+FieldTypeSet GetServerFieldTypesOfGroup(FieldTypeGroup group);
+FieldTypeGroup GroupTypeOfServerFieldType(FieldType field_type);
 FieldTypeGroup GroupTypeOfHtmlFieldType(HtmlFieldType field_type);
 
-// Not all HtmlFieldTypes have a corresponding ServerFieldType.
-ServerFieldType HtmlFieldTypeToBestCorrespondingServerFieldType(
+// Not all HtmlFieldTypes have a corresponding FieldType.
+FieldType HtmlFieldTypeToBestCorrespondingServerFieldType(
     HtmlFieldType field_type);
 
 // Returns |raw_value| if it corresponds to a non-deprecated enumeration
 // constant of ServerFieldType other than MAX_VALID_FIELD_TYPE. Otherwise,
 // returns |fallback_value|.
-constexpr ServerFieldType ToSafeServerFieldType(
-    std::underlying_type_t<ServerFieldType> raw_value,
-    ServerFieldType fallback_value) {
-  auto IsValid = [](std::underlying_type_t<ServerFieldType> t) {
+constexpr FieldType ToSafeServerFieldType(
+    std::underlying_type_t<FieldType> raw_value,
+    FieldType fallback_value) {
+  auto IsValid = [](std::underlying_type_t<FieldType> t) {
     return NO_SERVER_DATA <= t && t < MAX_VALID_FIELD_TYPE &&
            // Work phone numbers (values [15,19]) are deprecated.
            !(15 <= t && t <= 19) &&
@@ -542,7 +542,7 @@ constexpr ServerFieldType ToSafeServerFieldType(
            t != 134 && !(137 <= t && t <= 139) && !(145 <= t && t <= 150) &&
            t != 153 && t != 155 && t != 158 && t != 159;
   };
-  return IsValid(raw_value) ? static_cast<ServerFieldType>(raw_value)
+  return IsValid(raw_value) ? static_cast<FieldType>(raw_value)
                             : fallback_value;
 }
 
@@ -560,11 +560,10 @@ constexpr HtmlFieldType ToSafeHtmlFieldType(
                             : fallback_value;
 }
 
-constexpr ServerFieldTypeSet kAllServerFieldTypes = [] {
-  ServerFieldTypeSet fields;
-  for (std::underlying_type_t<ServerFieldType> i = 0; i < MAX_VALID_FIELD_TYPE;
-       ++i) {
-    if (ServerFieldType field_type = ToSafeServerFieldType(i, NO_SERVER_DATA);
+constexpr inline FieldTypeSet kAllServerFieldTypes = [] {
+  FieldTypeSet fields;
+  for (std::underlying_type_t<FieldType> i = 0; i < MAX_VALID_FIELD_TYPE; ++i) {
+    if (FieldType field_type = ToSafeServerFieldType(i, NO_SERVER_DATA);
         field_type != NO_SERVER_DATA) {
       fields.insert(field_type);
     }
@@ -585,6 +584,10 @@ constexpr HtmlFieldTypeSet kAllHtmlFieldTypes = [] {
   }
   return fields;
 }();
+
+// TODO(crbug.com/1511368): Remove aliases.
+using ServerFieldType = FieldType;
+using ServerFieldTypeSet = FieldTypeSet;
 
 }  // namespace autofill
 

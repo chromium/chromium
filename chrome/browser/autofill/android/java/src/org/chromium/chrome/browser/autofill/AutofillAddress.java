@@ -15,7 +15,7 @@ import androidx.annotation.Nullable;
 import org.chromium.base.StrictModeContext;
 import org.chromium.components.autofill.AutofillProfile;
 import org.chromium.components.autofill.EditableOption;
-import org.chromium.components.autofill.ServerFieldType;
+import org.chromium.components.autofill.FieldType;
 import org.chromium.payments.mojom.PaymentAddress;
 
 import java.lang.annotation.Retention;
@@ -245,8 +245,7 @@ public class AutofillAddress extends EditableOption {
                 AutofillProfileBridge.getRequiredAddressFields(
                         AutofillAddress.getCountryCode(profile));
         for (int fieldId : requiredFields) {
-            if (fieldId == ServerFieldType.NAME_FULL
-                    || fieldId == ServerFieldType.ADDRESS_HOME_COUNTRY) {
+            if (fieldId == FieldType.NAME_FULL || fieldId == FieldType.ADDRESS_HOME_COUNTRY) {
                 continue;
             }
             if (!TextUtils.isEmpty(profile.getInfo(fieldId))) continue;
@@ -265,7 +264,7 @@ public class AutofillAddress extends EditableOption {
         if (profile == null) {
             return PersonalDataManager.getInstance().getDefaultCountryCodeForNewAddress();
         }
-        final String countryCode = profile.getInfo(ServerFieldType.ADDRESS_HOME_COUNTRY);
+        final String countryCode = profile.getInfo(FieldType.ADDRESS_HOME_COUNTRY);
         return TextUtils.isEmpty(countryCode) || !sRegionCodePattern.matcher(countryCode).matches()
                 ? PersonalDataManager.getInstance().getDefaultCountryCodeForNewAddress()
                 : countryCode;

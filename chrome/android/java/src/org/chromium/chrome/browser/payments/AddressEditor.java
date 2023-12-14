@@ -50,7 +50,7 @@ import org.chromium.chrome.browser.autofill.editors.EditorFieldValidator;
 import org.chromium.chrome.browser.autofill.editors.EditorProperties.FieldItem;
 import org.chromium.chrome.browser.autofill.editors.EditorProperties.ItemType;
 import org.chromium.components.autofill.AutofillProfile;
-import org.chromium.components.autofill.ServerFieldType;
+import org.chromium.components.autofill.FieldType;
 import org.chromium.components.autofill.SubKeyRequester;
 import org.chromium.components.autofill.SubKeyRequester.GetSubKeysRequestDelegate;
 import org.chromium.payments.mojom.AddressErrors;
@@ -97,7 +97,7 @@ public class AddressEditor extends EditorBase<AutofillAddress>
     private ProgressDialog mProgressDialog;
     @Nullable private AddressErrors mAddressErrors;
 
-    private PropertyModel getFieldForFieldType(@ServerFieldType int fieldType) {
+    private PropertyModel getFieldForFieldType(@FieldType int fieldType) {
         if (!mAddressFields.containsKey(fieldType)) {
             mAddressFields.put(
                     fieldType,
@@ -143,23 +143,23 @@ public class AddressEditor extends EditorBase<AutofillAddress>
         if (mAddressErrors == null) return null;
 
         switch (field) {
-            case ServerFieldType.ADDRESS_HOME_COUNTRY:
+            case FieldType.ADDRESS_HOME_COUNTRY:
                 return mAddressErrors.country;
-            case ServerFieldType.ADDRESS_HOME_STATE:
+            case FieldType.ADDRESS_HOME_STATE:
                 return mAddressErrors.region;
-            case ServerFieldType.ADDRESS_HOME_CITY:
+            case FieldType.ADDRESS_HOME_CITY:
                 return mAddressErrors.city;
-            case ServerFieldType.ADDRESS_HOME_DEPENDENT_LOCALITY:
+            case FieldType.ADDRESS_HOME_DEPENDENT_LOCALITY:
                 return mAddressErrors.dependentLocality;
-            case ServerFieldType.ADDRESS_HOME_SORTING_CODE:
+            case FieldType.ADDRESS_HOME_SORTING_CODE:
                 return mAddressErrors.sortingCode;
-            case ServerFieldType.ADDRESS_HOME_ZIP:
+            case FieldType.ADDRESS_HOME_ZIP:
                 return mAddressErrors.postalCode;
-            case ServerFieldType.ADDRESS_HOME_STREET_ADDRESS:
+            case FieldType.ADDRESS_HOME_STREET_ADDRESS:
                 return mAddressErrors.addressLine;
-            case ServerFieldType.COMPANY_NAME:
+            case FieldType.COMPANY_NAME:
                 return mAddressErrors.organization;
-            case ServerFieldType.NAME_FULL:
+            case FieldType.NAME_FULL:
                 return mAddressErrors.recipient;
             default:
                 assert false : "Unrecognized server field type: " + field;
@@ -256,7 +256,7 @@ public class AddressEditor extends EditorBase<AutofillAddress>
         if (mPhoneField == null) {
             mPhoneField =
                     new PropertyModel.Builder(TEXT_ALL_KEYS)
-                            .with(TEXT_FIELD_TYPE, ServerFieldType.PHONE_HOME_WHOLE_NUMBER)
+                            .with(TEXT_FIELD_TYPE, FieldType.PHONE_HOME_WHOLE_NUMBER)
                             .with(
                                     LABEL,
                                     mContext.getString(
@@ -269,7 +269,7 @@ public class AddressEditor extends EditorBase<AutofillAddress>
 
         // Phone number field is cached, so its value needs to be updated for every new profile
         // that's being edited.
-        mPhoneField.set(VALUE, mProfile.getInfo(ServerFieldType.PHONE_HOME_WHOLE_NUMBER));
+        mPhoneField.set(VALUE, mProfile.getInfo(FieldType.PHONE_HOME_WHOLE_NUMBER));
 
         mEditorModel =
                 new PropertyModel.Builder(ALL_KEYS)
@@ -342,8 +342,8 @@ public class AddressEditor extends EditorBase<AutofillAddress>
     private void commitChanges(AutofillProfile profile) {
         // Country code and phone number are always required and are always collected from the
         // editor model.
-        profile.setInfo(ServerFieldType.ADDRESS_HOME_COUNTRY, mCountryField.get(VALUE));
-        profile.setInfo(ServerFieldType.PHONE_HOME_WHOLE_NUMBER, mPhoneField.get(VALUE));
+        profile.setInfo(FieldType.ADDRESS_HOME_COUNTRY, mCountryField.get(VALUE));
+        profile.setInfo(FieldType.PHONE_HOME_WHOLE_NUMBER, mPhoneField.get(VALUE));
 
         // Autofill profile bridge normalizes the language code for the autofill profile.
         profile.setLanguageCode(mAutofillProfileBridge.getCurrentBestLanguageCode());
@@ -351,10 +351,10 @@ public class AddressEditor extends EditorBase<AutofillAddress>
         // Collect data from all visible fields and store it in the autofill profile.
         for (AutofillAddressUiComponent component : mAddressUiComponents) {
             PropertyModel fieldModel =
-                    component.id == ServerFieldType.ADDRESS_HOME_STATE
+                    component.id == FieldType.ADDRESS_HOME_STATE
                             ? mAdminAreaField
                             : mAddressFields.get(component.id);
-            if (component.id != ServerFieldType.ADDRESS_HOME_COUNTRY) {
+            if (component.id != FieldType.ADDRESS_HOME_COUNTRY) {
                 profile.setInfo(component.id, fieldModel.get(VALUE));
             }
         }
@@ -379,7 +379,7 @@ public class AddressEditor extends EditorBase<AutofillAddress>
         for (Map.Entry<Integer, PropertyModel> entry : mAddressFields.entrySet()) {
             entry.getValue().set(VALUE, mProfile.getInfo(entry.getKey()));
         }
-        mAdminAreaField.set(VALUE, mProfile.getInfo(ServerFieldType.ADDRESS_HOME_STATE));
+        mAdminAreaField.set(VALUE, mProfile.getInfo(FieldType.ADDRESS_HOME_STATE));
     }
 
     @Override
@@ -424,7 +424,7 @@ public class AddressEditor extends EditorBase<AutofillAddress>
                 || adminAreaCodes.length != adminAreaNames.length) {
             mAdminAreaField =
                     new PropertyModel.Builder(TEXT_ALL_KEYS)
-                            .with(TEXT_FIELD_TYPE, ServerFieldType.ADDRESS_HOME_STATE)
+                            .with(TEXT_FIELD_TYPE, FieldType.ADDRESS_HOME_STATE)
                             .build();
             mAdminAreaFieldType = TEXT_INPUT;
             return;
@@ -473,7 +473,7 @@ public class AddressEditor extends EditorBase<AutofillAddress>
         for (AutofillAddressUiComponent component : mAddressUiComponents) {
             final PropertyModel field;
             final @ItemType int fieldType;
-            if (component.id == ServerFieldType.ADDRESS_HOME_STATE) {
+            if (component.id == FieldType.ADDRESS_HOME_STATE) {
                 field = mAdminAreaField;
                 fieldType = mAdminAreaFieldType;
             } else {
@@ -492,7 +492,7 @@ public class AddressEditor extends EditorBase<AutofillAddress>
                             .build());
             // Libaddressinput formats do not always require the full name (RECIPIENT), but
             // PaymentRequest does.
-            if (component.isRequired || component.id == ServerFieldType.NAME_FULL) {
+            if (component.isRequired || component.id == FieldType.NAME_FULL) {
                 field.set(IS_REQUIRED, true);
                 field.get(VALIDATOR)
                         .setRequiredErrorMessage(
@@ -505,8 +505,8 @@ public class AddressEditor extends EditorBase<AutofillAddress>
 
             boolean isFullLine =
                     component.isFullLine
-                            || component.id == ServerFieldType.ADDRESS_HOME_CITY
-                            || component.id == ServerFieldType.ADDRESS_HOME_DEPENDENT_LOCALITY;
+                            || component.id == FieldType.ADDRESS_HOME_CITY
+                            || component.id == FieldType.ADDRESS_HOME_DEPENDENT_LOCALITY;
             editorFields.add(new FieldItem(fieldType, field, isFullLine));
         }
         // Phone number (and email if applicable) are the last fields of the address.

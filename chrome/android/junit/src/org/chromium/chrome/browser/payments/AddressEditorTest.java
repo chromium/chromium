@@ -73,7 +73,7 @@ import org.chromium.chrome.browser.autofill.editors.EditorProperties.DropdownKey
 import org.chromium.chrome.browser.autofill.editors.EditorProperties.FieldItem;
 import org.chromium.chrome.test.util.browser.Features;
 import org.chromium.components.autofill.AutofillProfile;
-import org.chromium.components.autofill.ServerFieldType;
+import org.chromium.components.autofill.FieldType;
 import org.chromium.components.autofill.SubKeyRequester;
 import org.chromium.ui.base.TestActivity;
 import org.chromium.ui.modelutil.ListModel;
@@ -95,42 +95,42 @@ public class AddressEditorTest {
     private static final List<AutofillAddressUiComponent> SUPPORTED_ADDRESS_FIELDS =
             List.of(
                     new AutofillAddressUiComponent(
-                            ServerFieldType.NAME_FULL,
+                            FieldType.NAME_FULL,
                             /* label= */ "full name label",
                             /* isRequired= */ false,
                             /* isFullLine= */ true),
                     new AutofillAddressUiComponent(
-                            ServerFieldType.ADDRESS_HOME_STATE,
+                            FieldType.ADDRESS_HOME_STATE,
                             /* label= */ "admin area label",
                             /* isRequired= */ true,
                             /* isFullLine= */ true),
                     new AutofillAddressUiComponent(
-                            ServerFieldType.ADDRESS_HOME_CITY,
+                            FieldType.ADDRESS_HOME_CITY,
                             /* label= */ "locality label",
                             /* isRequired= */ true,
                             /* isFullLine= */ false),
                     new AutofillAddressUiComponent(
-                            ServerFieldType.ADDRESS_HOME_DEPENDENT_LOCALITY,
+                            FieldType.ADDRESS_HOME_DEPENDENT_LOCALITY,
                             /* label= */ "dependent locality label",
                             /* isRequired= */ true,
                             /* isFullLine= */ false),
                     new AutofillAddressUiComponent(
-                            ServerFieldType.COMPANY_NAME,
+                            FieldType.COMPANY_NAME,
                             /* label= */ "organization label",
                             /* isRequired= */ false,
                             /* isFullLine= */ true),
                     new AutofillAddressUiComponent(
-                            ServerFieldType.ADDRESS_HOME_SORTING_CODE,
+                            FieldType.ADDRESS_HOME_SORTING_CODE,
                             /* label= */ "sorting code label",
                             /* isRequired= */ false,
                             /* isFullLine= */ false),
                     new AutofillAddressUiComponent(
-                            ServerFieldType.ADDRESS_HOME_ZIP,
+                            FieldType.ADDRESS_HOME_ZIP,
                             /* label= */ "postal code label",
                             /* isRequired= */ true,
                             /* isFullLine= */ false),
                     new AutofillAddressUiComponent(
-                            ServerFieldType.ADDRESS_HOME_STREET_ADDRESS,
+                            FieldType.ADDRESS_HOME_STREET_ADDRESS,
                             /* label= */ "street address label",
                             /* isRequired= */ true,
                             /* isFullLine= */ true));
@@ -188,10 +188,10 @@ public class AddressEditorTest {
                                     (List<Integer>) invocation.getArguments()[1];
                             requiredFields.addAll(
                                     List.of(
-                                            ServerFieldType.NAME_FULL,
-                                            ServerFieldType.ADDRESS_HOME_CITY,
-                                            ServerFieldType.ADDRESS_HOME_DEPENDENT_LOCALITY,
-                                            ServerFieldType.ADDRESS_HOME_ZIP));
+                                            FieldType.NAME_FULL,
+                                            FieldType.ADDRESS_HOME_CITY,
+                                            FieldType.ADDRESS_HOME_DEPENDENT_LOCALITY,
+                                            FieldType.ADDRESS_HOME_ZIP));
                             return null;
                         })
                 .when(mAutofillProfileBridgeJni)
@@ -299,14 +299,14 @@ public class AddressEditorTest {
         validateTextField(
                 editorFields.get(1),
                 profile.getFullName(),
-                ServerFieldType.NAME_FULL,
+                FieldType.NAME_FULL,
                 /* label= */ "full name label",
                 /* isRequired= */ true,
                 /* isFullLine= */ true);
         validateTextField(
                 editorFields.get(2),
                 profile.getRegion(),
-                ServerFieldType.ADDRESS_HOME_STATE,
+                FieldType.ADDRESS_HOME_STATE,
                 /* label= */ "admin area label",
                 /* isRequired= */ true,
                 /* isFullLine= */ true);
@@ -314,7 +314,7 @@ public class AddressEditorTest {
         validateTextField(
                 editorFields.get(3),
                 profile.getLocality(),
-                ServerFieldType.ADDRESS_HOME_CITY,
+                FieldType.ADDRESS_HOME_CITY,
                 /* label= */ "locality label",
                 /* isRequired= */ true,
                 /* isFullLine= */ true);
@@ -326,7 +326,7 @@ public class AddressEditorTest {
         validateTextField(
                 editorFields.get(4),
                 profile.getDependentLocality(),
-                ServerFieldType.ADDRESS_HOME_DEPENDENT_LOCALITY,
+                FieldType.ADDRESS_HOME_DEPENDENT_LOCALITY,
                 /* label= */ "dependent locality label",
                 /* isRequired= */ true,
                 /* isFullLine= */ true);
@@ -334,7 +334,7 @@ public class AddressEditorTest {
         validateTextField(
                 editorFields.get(5),
                 profile.getCompanyName(),
-                ServerFieldType.COMPANY_NAME,
+                FieldType.COMPANY_NAME,
                 /* label= */ "organization label",
                 /* isRequired= */ false,
                 /* isFullLine= */ true);
@@ -342,28 +342,28 @@ public class AddressEditorTest {
         validateTextField(
                 editorFields.get(6),
                 profile.getSortingCode(),
-                ServerFieldType.ADDRESS_HOME_SORTING_CODE,
+                FieldType.ADDRESS_HOME_SORTING_CODE,
                 /* label= */ "sorting code label",
                 /* isRequired= */ false,
                 /* isFullLine= */ false);
         validateTextField(
                 editorFields.get(7),
                 profile.getPostalCode(),
-                ServerFieldType.ADDRESS_HOME_ZIP,
+                FieldType.ADDRESS_HOME_ZIP,
                 /* label= */ "postal code label",
                 /* isRequired= */ true,
                 /* isFullLine= */ false);
         validateTextField(
                 editorFields.get(8),
                 profile.getStreetAddress(),
-                ServerFieldType.ADDRESS_HOME_STREET_ADDRESS,
+                FieldType.ADDRESS_HOME_STREET_ADDRESS,
                 /* label= */ "street address label",
                 /* isRequired= */ true,
                 /* isFullLine= */ true);
         validateTextField(
                 editorFields.get(9),
                 profile.getPhoneNumber(),
-                ServerFieldType.PHONE_HOME_WHOLE_NUMBER,
+                FieldType.PHONE_HOME_WHOLE_NUMBER,
                 mActivity.getString(R.string.autofill_profile_editor_phone_number),
                 /* isRequired= */ true,
                 /* isFullLine= */ true);
@@ -453,7 +453,7 @@ public class AddressEditorTest {
         validateTextField(
                 editorFields.get(1),
                 sProfile.getPhoneNumber(),
-                ServerFieldType.PHONE_HOME_WHOLE_NUMBER,
+                FieldType.PHONE_HOME_WHOLE_NUMBER,
                 mActivity.getString(R.string.autofill_profile_editor_phone_number),
                 /* isRequired= */ true,
                 /* isFullLine= */ true);
@@ -466,7 +466,7 @@ public class AddressEditorTest {
         setUpAddressUiComponents(
                 List.of(
                         new AutofillAddressUiComponent(
-                                ServerFieldType.ADDRESS_HOME_STATE,
+                                FieldType.ADDRESS_HOME_STATE,
                                 "admin area label",
                                 /* isRequired= */ true,
                                 /* isFullLine= */ true)),
@@ -556,7 +556,7 @@ public class AddressEditorTest {
         setUpAddressUiComponents(
                 List.of(
                         new AutofillAddressUiComponent(
-                                ServerFieldType.ADDRESS_HOME_SORTING_CODE,
+                                FieldType.ADDRESS_HOME_SORTING_CODE,
                                 "sorting code label",
                                 /* isRequired= */ false,
                                 /* isFullLine= */ true)),
@@ -564,7 +564,7 @@ public class AddressEditorTest {
         setUpAddressUiComponents(
                 List.of(
                         new AutofillAddressUiComponent(
-                                ServerFieldType.ADDRESS_HOME_STREET_ADDRESS,
+                                FieldType.ADDRESS_HOME_STREET_ADDRESS,
                                 "street address label",
                                 /* isRequired= */ true,
                                 /* isFullLine= */ true)),
@@ -600,8 +600,7 @@ public class AddressEditorTest {
                                 })
                         .collect(Collectors.toList()),
                 containsInAnyOrder(
-                        ServerFieldType.ADDRESS_HOME_SORTING_CODE,
-                        ServerFieldType.PHONE_HOME_WHOLE_NUMBER));
+                        FieldType.ADDRESS_HOME_SORTING_CODE, FieldType.PHONE_HOME_WHOLE_NUMBER));
         PropertyModel countryDropdown = editorFields.get(0).model;
 
         setDropdownKey(countryDropdown, "DE");
@@ -623,8 +622,7 @@ public class AddressEditorTest {
                                 })
                         .collect(Collectors.toList()),
                 containsInAnyOrder(
-                        ServerFieldType.ADDRESS_HOME_STREET_ADDRESS,
-                        ServerFieldType.PHONE_HOME_WHOLE_NUMBER));
+                        FieldType.ADDRESS_HOME_STREET_ADDRESS, FieldType.PHONE_HOME_WHOLE_NUMBER));
     }
 
     @Test
@@ -792,11 +790,11 @@ public class AddressEditorTest {
     @SmallTest
     public void edit_AccountAddressProfile_FieldsAreImmediatelyValidated() {
         AutofillProfile profile = new AutofillProfile(sProfile);
-        profile.setInfo(ServerFieldType.ADDRESS_HOME_STATE, "");
-        profile.setInfo(ServerFieldType.ADDRESS_HOME_CITY, "");
-        profile.setInfo(ServerFieldType.ADDRESS_HOME_DEPENDENT_LOCALITY, "");
-        profile.setInfo(ServerFieldType.ADDRESS_HOME_ZIP, "");
-        profile.setInfo(ServerFieldType.ADDRESS_HOME_STREET_ADDRESS, "");
+        profile.setInfo(FieldType.ADDRESS_HOME_STATE, "");
+        profile.setInfo(FieldType.ADDRESS_HOME_CITY, "");
+        profile.setInfo(FieldType.ADDRESS_HOME_DEPENDENT_LOCALITY, "");
+        profile.setInfo(FieldType.ADDRESS_HOME_ZIP, "");
+        profile.setInfo(FieldType.ADDRESS_HOME_STREET_ADDRESS, "");
 
         setUpAddressUiComponents(SUPPORTED_ADDRESS_FIELDS, /* countryCode= */ "US");
         doAnswer(
@@ -818,11 +816,11 @@ public class AddressEditorTest {
     @SmallTest
     public void edit_AccountAddressProfile_FieldsAreValidatedAfterSave() {
         AutofillProfile profile = new AutofillProfile(sProfile);
-        profile.setInfo(ServerFieldType.ADDRESS_HOME_STATE, "");
-        profile.setInfo(ServerFieldType.ADDRESS_HOME_CITY, "");
-        profile.setInfo(ServerFieldType.ADDRESS_HOME_DEPENDENT_LOCALITY, "");
-        profile.setInfo(ServerFieldType.ADDRESS_HOME_ZIP, "");
-        profile.setInfo(ServerFieldType.ADDRESS_HOME_STREET_ADDRESS, "");
+        profile.setInfo(FieldType.ADDRESS_HOME_STATE, "");
+        profile.setInfo(FieldType.ADDRESS_HOME_CITY, "");
+        profile.setInfo(FieldType.ADDRESS_HOME_DEPENDENT_LOCALITY, "");
+        profile.setInfo(FieldType.ADDRESS_HOME_ZIP, "");
+        profile.setInfo(FieldType.ADDRESS_HOME_STREET_ADDRESS, "");
 
         setUpAddressUiComponents(SUPPORTED_ADDRESS_FIELDS, /* countryCode= */ "US");
         doAnswer(
