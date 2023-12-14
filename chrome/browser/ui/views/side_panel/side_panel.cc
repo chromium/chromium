@@ -106,11 +106,11 @@ class SidePanelBorder : public views::Border {
     canvas->sk_canvas()->clipRRect(rect, SkClipOp::kDifference,
                                    /*do_anti_alias=*/true);
 
-    const SkScalar radii[8] = {
-        border_radii_.upper_left(),  border_radii_.upper_left(),
-        border_radii_.upper_right(), border_radii_.upper_right(),
-        border_radii_.lower_right(), border_radii_.lower_right(),
-        border_radii_.lower_left(),  border_radii_.lower_left()};
+    const SkScalar scaled_border_radii[8] = {
+        border_radii_.upper_left() * dsf,  border_radii_.upper_left() * dsf,
+        border_radii_.upper_right() * dsf, border_radii_.upper_right() * dsf,
+        border_radii_.lower_right() * dsf, border_radii_.lower_right() * dsf,
+        border_radii_.lower_left() * dsf,  border_radii_.lower_left() * dsf};
 
     // Use ToEnclosedRect to make sure that `rounded_border_path` never end up
     // larger than the view bounds.
@@ -118,7 +118,7 @@ class SidePanelBorder : public views::Border {
 
     SkPath rounded_border_path;
     rounded_border_path.addRoundRect(gfx::RectToSkRect(scaled_view_bounds),
-                                     radii, SkPathDirection::kCW);
+                                     scaled_border_radii, SkPathDirection::kCW);
 
     // Add another clip to the canvas that rounds the outer corners of the
     // border.
