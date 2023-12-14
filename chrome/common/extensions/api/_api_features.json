@@ -374,6 +374,9 @@
   "documentScan.cancelScan": {
     "channel": "dev"
   },
+  "documentScan.readScanData": {
+    "channel": "dev"
+  },
   "dom": {
     "channel": "stable",
     "contexts": ["blessed_extension", "content_script"]

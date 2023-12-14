@@ -154,6 +154,70 @@ chrome.test.runTests([
     chrome.test.assertEq(jobHandle, cancelResponse.job);
     chrome.test.assertEq(OperationResult.SUCCESS, cancelResponse.result);
     chrome.test.succeed();
-  }
+  },
 
+  async function readScanDataBeforeStartFails() {
+    const response = await readScanData('invalid-job');
+    chrome.test.assertEq('invalid-job', response.job);
+    chrome.test.assertEq(OperationResult.INVALID, response.result);
+    chrome.test.assertEq(null, response.data);
+    chrome.test.assertEq(null, response.estimatedCompletion);
+    chrome.test.succeed();
+  },
+
+  async function readScanDataOnOpenHandleSucceeds() {
+    const scannerHandle = await getScannerHandle();
+    chrome.test.assertNe(null, scannerHandle);
+
+    const startResponse = await startScan(scannerHandle);
+    chrome.test.assertNe(null, startResponse.job);
+    const jobHandle = startResponse.job;
+
+    // Read succeeds because the job is active and owned by this extension.
+    const readResponse1 = await readScanData(jobHandle);
+    chrome.test.assertEq(jobHandle, readResponse1.job);
+    chrome.test.assertEq(OperationResult.SUCCESS, readResponse1.result);
+    chrome.test.assertNe(null, readResponse1.data);
+    chrome.test.assertNe(null, readResponse1.estimatedCompletion);
+
+    // Second read succeeds because the job is still active.
+    const readResponse2 = await readScanData(jobHandle);
+    chrome.test.assertEq(jobHandle, readResponse2.job);
+    chrome.test.assertEq(OperationResult.SUCCESS, readResponse2.result);
+    chrome.test.assertNe(null, readResponse2.data);
+    chrome.test.assertNe(null, readResponse2.estimatedCompletion);
+
+    chrome.test.succeed();
+  },
+
+  async function readScanDataOnCancelledHandleFails() {
+    const scannerHandle = await getScannerHandle();
+    chrome.test.assertNe(null, scannerHandle);
+
+    const startResponse = await startScan(scannerHandle);
+    chrome.test.assertNe(null, startResponse.job);
+    const jobHandle = startResponse.job;
+
+    // Read succeeds because the job is active and owned by this extension.
+    const readResponse1 = await readScanData(jobHandle);
+    chrome.test.assertEq(jobHandle, readResponse1.job);
+    chrome.test.assertEq(OperationResult.SUCCESS, readResponse1.result);
+    chrome.test.assertNe(null, readResponse1.data);
+    chrome.test.assertNe(null, readResponse1.estimatedCompletion);
+
+    // Cancelling the job invalidates the handle.
+    const cancelResponse = await cancelScan(jobHandle);
+    chrome.test.assertEq(jobHandle, readResponse1.job);
+    chrome.test.assertEq(OperationResult.SUCCESS, readResponse1.result);
+
+    // Second read reports cancelled because the job handle is valid but no
+    // longer active.
+    const readResponse2 = await readScanData(jobHandle);
+    chrome.test.assertEq(jobHandle, readResponse2.job);
+    chrome.test.assertEq(OperationResult.CANCELLED, readResponse2.result);
+    chrome.test.assertEq(null, readResponse2.data);
+    chrome.test.assertEq(null, readResponse2.estimatedCompletion);
+
+    chrome.test.succeed();
+  }
 ]);

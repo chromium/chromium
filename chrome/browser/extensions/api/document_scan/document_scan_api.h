@@ -129,6 +129,26 @@ class DocumentScanCancelScanFunction : public ExtensionFunction {
   DECLARE_EXTENSION_FUNCTION("documentScan.cancelScan", DOCUMENTSCAN_CANCELSCAN)
 };
 
+class DocumentScanReadScanDataFunction : public ExtensionFunction {
+ public:
+  DocumentScanReadScanDataFunction();
+  DocumentScanReadScanDataFunction(const DocumentScanReadScanDataFunction&) =
+      delete;
+  DocumentScanReadScanDataFunction& operator=(
+      const DocumentScanReadScanDataFunction&) = delete;
+
+ protected:
+  ~DocumentScanReadScanDataFunction() override;
+
+  // ExtensionFunction:
+  ResponseAction Run() override;
+
+ private:
+  void OnResponseReceived(api::document_scan::ReadScanDataResponse response);
+  DECLARE_EXTENSION_FUNCTION("documentScan.readScanData",
+                             DOCUMENTSCAN_READSCANDATA)
+};
+
 }  // namespace extensions
 
 #endif  // CHROME_BROWSER_EXTENSIONS_API_DOCUMENT_SCAN_DOCUMENT_SCAN_API_H_

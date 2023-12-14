@@ -61,3 +61,9 @@ async function cancelScan(jobHandle) {
     chrome.documentScan.cancelScan(jobHandle, resolve);
   });
 }
+
+async function readScanData(jobHandle) {
+  return new Promise(resolve => {
+    chrome.documentScan.readScanData(jobHandle, resolve);
+  });
+}

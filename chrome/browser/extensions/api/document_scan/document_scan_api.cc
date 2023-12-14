@@ -187,4 +187,26 @@ void DocumentScanCancelScanFunction::OnResponseReceived(
       ArgumentList(api::document_scan::CancelScan::Results::Create(response)));
 }
 
+DocumentScanReadScanDataFunction::DocumentScanReadScanDataFunction() = default;
+DocumentScanReadScanDataFunction::~DocumentScanReadScanDataFunction() = default;
+
+ExtensionFunction::ResponseAction DocumentScanReadScanDataFunction::Run() {
+  auto params = api::document_scan::ReadScanData::Params::Create(args());
+  EXTENSION_FUNCTION_VALIDATE(params);
+
+  DocumentScanAPIHandler::Get(browser_context())
+      ->ReadScanData(
+          extension_, std::move(params->job),
+          base::BindOnce(&DocumentScanReadScanDataFunction::OnResponseReceived,
+                         this));
+
+  return did_respond() ? AlreadyResponded() : RespondLater();
+}
+
+void DocumentScanReadScanDataFunction::OnResponseReceived(
+    api::document_scan::ReadScanDataResponse response) {
+  Respond(ArgumentList(
+      api::document_scan::ReadScanData::Results::Create(response)));
+}
+
 }  // namespace extensions
