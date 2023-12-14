@@ -117,6 +117,14 @@ constexpr char kInvalidPageCountForMetafileReadyForPrinting[] =
 
 PrintPreviewUI::TestDelegate* g_test_delegate = nullptr;
 
+// Returns true only for the first time it is called.
+bool IsFirstInstanceSinceStartup() {
+  static bool first_instance = true;
+  bool first = first_instance;
+  first_instance = false;
+  return first;
+}
+
 void StopWorker(int document_cookie) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   if (document_cookie <= 0)
@@ -421,6 +429,7 @@ PrintPreviewUI::PrintPreviewUI(content::WebUI* web_ui,
                                std::unique_ptr<PrintPreviewHandler> handler)
     : ConstrainedWebDialogUI(web_ui),
       initial_preview_start_time_(base::TimeTicks::Now()),
+      first_print_usage_since_startup_(IsFirstInstanceSinceStartup()),
       handler_(handler.get()) {
   web_ui->AddMessageHandler(std::move(handler));
 
@@ -432,6 +441,7 @@ PrintPreviewUI::PrintPreviewUI(content::WebUI* web_ui,
 PrintPreviewUI::PrintPreviewUI(content::WebUI* web_ui)
     : ConstrainedWebDialogUI(web_ui),
       initial_preview_start_time_(base::TimeTicks::Now()),
+      first_print_usage_since_startup_(IsFirstInstanceSinceStartup()),
       handler_(CreatePrintPreviewHandlers(web_ui)) {
   // Allow requests to URLs like chrome-untrusted://print/.
   web_ui->AddRequestableScheme(content::kChromeUIUntrustedScheme);
@@ -542,9 +552,13 @@ void PrintPreviewUI::NotifyUIPreviewDocumentReady(
     return;
 
   if (!initial_preview_start_time_.is_null()) {
-    base::UmaHistogramTimes(
-        "PrintPreview.InitialDisplayTime",
-        base::TimeTicks::Now() - initial_preview_start_time_);
+    base::TimeDelta display_time =
+        base::TimeTicks::Now() - initial_preview_start_time_;
+    base::UmaHistogramTimes("PrintPreview.InitialDisplayTime", display_time);
+    if (first_print_usage_since_startup_) {
+      base::UmaHistogramTimes("PrintPreview.InitialDisplayTimeFirstPrint",
+                              display_time);
+    }
     initial_preview_start_time_ = base::TimeTicks();
   }
 

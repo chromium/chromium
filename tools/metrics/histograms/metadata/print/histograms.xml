@@ -47,6 +47,19 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="PrintPreview.InitialDisplayTimeFirstPrint" units="ms"
+    expires_after="2024-03-14">
+  <owner>thestig@chromium.org</owner>
+  <owner>awscreen@chromium.org</owner>
+  <summary>
+    Time from when print preview is initiated until the initial preview is sent
+    to the preview tab for rendering. Only captured for the very first print
+    preview request since the browser started. This metric will not be captured
+    if the user cancels out of the first print preview before the result is
+    ready for rendering.
+  </summary>
+</histogram>
+
 <histogram name="PrintPreview.InitializationTime" units="ms"
     expires_after="never">
 <!-- expires-never: Monitors printing system health. -->
