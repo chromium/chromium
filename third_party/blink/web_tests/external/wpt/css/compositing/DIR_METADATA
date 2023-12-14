@@ -1,0 +1,7 @@
+monorail {
+  component: "Blink>Paint"
+}
+wpt {
+  notify: YES
+}
+

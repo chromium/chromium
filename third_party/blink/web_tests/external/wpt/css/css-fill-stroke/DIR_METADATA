@@ -1,0 +1,7 @@
+monorail {
+  component: "Blink>SVG"
+}
+wpt {
+  notify: YES
+}
+
