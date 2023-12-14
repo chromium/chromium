@@ -67,6 +67,7 @@ DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(FindBarView, kElementId);
 DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(FindBarView, kTextField);
 DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(FindBarView, kPreviousButtonElementId);
 DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(FindBarView, kNextButtonElementId);
+DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(FindBarView, kCloseButtonElementId);
 
 class FindBarMatchCountLabel : public views::Label {
  public:
@@ -246,6 +247,7 @@ FindBarView::FindBarView(FindBarHost* host) {
           views::Builder<views::ImageButton>()
               .CopyAddressTo(&close_button_)
               .SetID(VIEW_ID_FIND_IN_PAGE_CLOSE_BUTTON)
+              .SetProperty(views::kElementIdentifierKey, kCloseButtonElementId)
               .SetTooltipText(
                   l10n_util::GetStringUTF16(IDS_FIND_IN_PAGE_CLOSE_TOOLTIP))
               .SetAnimationDuration(base::TimeDelta())

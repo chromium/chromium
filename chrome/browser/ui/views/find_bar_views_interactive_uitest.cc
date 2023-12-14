@@ -319,7 +319,7 @@ IN_PROC_BROWSER_TEST_F(LegacyFindInPageTest, ButtonsDoNotAlterFocus) {
   EXPECT_TRUE(IsViewFocused(browser(), VIEW_ID_FIND_IN_PAGE_PREVIOUS_BUTTON));
 }
 
-IN_PROC_BROWSER_TEST_F(LegacyFindInPageTest, ButtonsDisabledWithoutText) {
+IN_PROC_BROWSER_TEST_F(FindInPageTest, ButtonsDisabledWithoutText) {
   if (browser()
           ->GetFindBarController()
           ->find_bar()
@@ -329,22 +329,17 @@ IN_PROC_BROWSER_TEST_F(LegacyFindInPageTest, ButtonsDisabledWithoutText) {
     return;
   }
 
-  ASSERT_TRUE(embedded_test_server()->Start());
-  // Make sure Chrome is in the foreground, otherwise sending input
-  // won't do anything and the test will hang.
-  ASSERT_TRUE(ui_test_utils::BringBrowserWindowToFront(browser()));
-  // First we navigate to any page.
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(
-      browser(), embedded_test_server()->GetURL(kSimplePage)));
-  // Show the Find bar.
-  browser()->GetFindBarController()->Show();
-  EXPECT_TRUE(IsViewFocused(browser(), VIEW_ID_FIND_IN_PAGE_TEXT_FIELD));
+  const GURL page_a = embedded_test_server()->GetURL("/a.html");
 
-  // The buttons should be disabled as there is no text entered in the find bar
-  // and no search has been issued yet.
-  ASSERT_TRUE(ui_test_utils::SendKeyPressSync(browser(), ui::VKEY_TAB, false,
-                                              false, false, false));
-  EXPECT_TRUE(IsViewFocused(browser(), VIEW_ID_FIND_IN_PAGE_CLOSE_BUTTON));
+  RunTestSequence(InstrumentTab(kTabId), NavigateWebContents(kTabId, page_a),
+                  ShowFindBar(),
+                  CheckViewProperty(FindBarView::kPreviousButtonElementId,
+                                    &views::View::GetEnabled, false),
+                  CheckViewProperty(FindBarView::kNextButtonElementId,
+                                    &views::View::GetEnabled, false),
+                  SendKeyPress(ui::VKEY_TAB, false, false),
+                  CheckViewProperty(FindBarView::kCloseButtonElementId,
+                                    &views::View::HasFocus, true));
 }
 
 IN_PROC_BROWSER_TEST_F(LegacyFindInPageTest, FocusRestore) {
