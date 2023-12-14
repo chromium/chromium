@@ -190,13 +190,6 @@ class ASH_EXPORT AccessibilityController : public SessionObserver,
                       AccessibilityController* controller);
     ~FeatureWithDialog() override;
 
-    // Tries to set the feature enabled, if its dialog is mandatory, shows the
-    // dailog for the first time feature is enabled.
-    void SetEnabled(bool enabled) override;
-    // If the dialog have not been accepted, we show it. When it is accepted, we
-    // call SetEnabled() and invoke |completion_callback|.
-    void SetEnabledWithDialog(bool enabled,
-                              base::OnceClosure completion_callback);
     void SetDialogAccepted();
     bool WasDialogAccepted() const;
 
@@ -648,6 +641,8 @@ class ASH_EXPORT AccessibilityController : public SessionObserver,
   void AddShowConfirmationDialogCallbackForTesting(
       base::RepeatingCallback<void()> callback);
 
+  bool VerifyFeaturesDataForTesting();
+
  private:
   // Populate |features_| with the feature of the correct type.
   void CreateAccessibilityFeatures();
@@ -674,7 +669,7 @@ class ASH_EXPORT AccessibilityController : public SessionObserver,
   void UpdateFloatingMenuPositionFromPref();
   void UpdateLargeCursorFromPref();
   void UpdateLiveCaptionFromPref();
-  void UpdateCursorColorFromPrefs();
+  void UpdateCursorColorFromPrefs(bool notify);
   void UpdateFaceGazeFromPrefs();
   void UpdateColorCorrectionFromPrefs();
   void UpdateSwitchAccessKeyCodesFromPref(SwitchAccessCommand command);

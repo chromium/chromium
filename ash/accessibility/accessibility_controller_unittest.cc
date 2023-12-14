@@ -289,6 +289,26 @@ TEST_F(AccessibilityControllerTest, SetCursorHighlightEnabled) {
   controller->RemoveObserver(&observer);
 }
 
+TEST_F(AccessibilityControllerTest, SetCursorColorEnabled) {
+  AccessibilityController* controller =
+      Shell::Get()->accessibility_controller();
+  EXPECT_FALSE(controller->cursor_color().enabled());
+
+  TestAccessibilityObserver observer;
+  controller->AddObserver(&observer);
+  EXPECT_EQ(0, observer.status_changed_count_);
+
+  controller->cursor_color().SetEnabled(true);
+  EXPECT_TRUE(controller->cursor_color().enabled());
+  EXPECT_EQ(1, observer.status_changed_count_);
+
+  controller->cursor_color().SetEnabled(false);
+  EXPECT_FALSE(controller->cursor_color().enabled());
+  EXPECT_EQ(2, observer.status_changed_count_);
+
+  controller->RemoveObserver(&observer);
+}
+
 TEST_F(AccessibilityControllerTest, SetFaceGazeEnabled) {
   AccessibilityController* controller =
       Shell::Get()->accessibility_controller();
@@ -1439,6 +1459,11 @@ TEST_F(AccessibilityControllerTest, AllAccessibilityFeaturesHaveValidNames) {
         l10n_util::GetStringUTF16(feature.name_resource_id());
     EXPECT_GT(feature_name.length(), 0u);
   }
+}
+
+TEST_F(AccessibilityControllerTest, VerifyFeatureData) {
+  auto* accessibility_controller = Shell::Get()->accessibility_controller();
+  EXPECT_TRUE(accessibility_controller->VerifyFeaturesDataForTesting());
 }
 
 // Verifies the behavior of EnableOrToggleDictation without the keyboard

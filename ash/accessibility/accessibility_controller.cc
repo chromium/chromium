@@ -111,7 +111,6 @@ struct FeatureDialogData {
   const char* pref;
   int title;
   int body;
-  bool mandatory;
 };
 
 // A static array describing each feature.
@@ -177,13 +176,13 @@ const FeatureData kFeatures[] = {
 const FeatureDialogData kFeatureDialogs[] = {
     {FeatureType::kFullscreenMagnifier,
      prefs::kScreenMagnifierAcceleratorDialogHasBeenAccepted,
-     IDS_ASH_SCREEN_MAGNIFIER_TITLE, IDS_ASH_SCREEN_MAGNIFIER_BODY, false},
+     IDS_ASH_SCREEN_MAGNIFIER_TITLE, IDS_ASH_SCREEN_MAGNIFIER_BODY},
     {FeatureType::kDockedMagnifier,
      prefs::kDockedMagnifierAcceleratorDialogHasBeenAccepted,
-     IDS_ASH_DOCKED_MAGNIFIER_TITLE, IDS_ASH_DOCKED_MAGNIFIER_BODY, false},
+     IDS_ASH_DOCKED_MAGNIFIER_TITLE, IDS_ASH_DOCKED_MAGNIFIER_BODY},
     {FeatureType::kHighContrast,
      prefs::kHighContrastAcceleratorDialogHasBeenAccepted,
-     IDS_ASH_HIGH_CONTRAST_TITLE, IDS_ASH_HIGH_CONTRAST_BODY, false}};
+     IDS_ASH_HIGH_CONTRAST_TITLE, IDS_ASH_HIGH_CONTRAST_BODY}};
 
 constexpr char kNotificationId[] = "chrome://settings/accessibility";
 constexpr char kNotifierAccessibility[] = "ash.accessibility";
@@ -931,49 +930,6 @@ bool AccessibilityController::FeatureWithDialog::WasDialogAccepted() const {
   return prefs->GetBoolean(dialog_.pref_name);
 }
 
-void AccessibilityController::FeatureWithDialog::SetEnabledWithDialog(
-    bool enabled,
-    base::OnceClosure completion_callback) {
-  PrefService* prefs = owner_->active_user_prefs_;
-  if (!prefs)
-    return;
-  // We should not show the dialog when the feature is already enabled.
-  if (enabled && !this->enabled() && !WasDialogAccepted()) {
-    Shell::Get()->accessibility_controller()->ShowConfirmationDialog(
-        l10n_util::GetStringUTF16(dialog_.title_resource_id),
-        l10n_util::GetStringUTF16(dialog_.body_resource_id),
-        l10n_util::GetStringUTF16(IDS_APP_CANCEL),
-        // Callback for if the user accepts the dialog
-        base::BindOnce(
-            [](base::WeakPtr<AccessibilityController> owner, FeatureType type,
-               base::OnceClosure completion_callback) {
-              if (!owner)
-                return;
-
-              static_cast<FeatureWithDialog&>(owner->GetFeature(type))
-                  .SetDialogAccepted();
-              // If they accept, try again to set value to true
-              owner->GetFeature(type).SetEnabled(true);
-              std::move(completion_callback).Run();
-            },
-            owner_->weak_ptr_factory_.GetWeakPtr(), type_,
-            std::move(completion_callback)),
-        /*on_cancel_callback=*/base::DoNothing(),
-        /*on_close_callback=*/base::DoNothing());
-
-    return;
-  }
-  Feature::SetEnabled(enabled);
-  std::move(completion_callback).Run();
-}
-
-void AccessibilityController::FeatureWithDialog::SetEnabled(bool enabled) {
-  if (dialog_.mandatory)
-    SetEnabledWithDialog(enabled, base::DoNothing());
-  else
-    Feature::SetEnabled(enabled);
-}
-
 // static
 AccessibilityController* AccessibilityController::Get() {
   return g_instance;
@@ -1001,12 +957,11 @@ AccessibilityController::~AccessibilityController() {
 }
 
 void AccessibilityController::CreateAccessibilityFeatures() {
-  DCHECK(VerifyFeaturesData());
   // First, build all features with dialog.
   std::map<FeatureType, Dialog> dialogs;
   for (auto dialog_data : kFeatureDialogs) {
     dialogs[dialog_data.type] = {dialog_data.pref, dialog_data.title,
-                                 dialog_data.body, dialog_data.mandatory};
+                                 dialog_data.body};
   }
   for (auto feature_data : kFeatures) {
     size_t feature_index = static_cast<size_t>(feature_data.type);
@@ -1458,21 +1413,6 @@ bool AccessibilityController::IsAutoclickSettingVisibleInTray() {
 
 bool AccessibilityController::IsEnterpriseIconVisibleForAutoclick() {
   return autoclick().IsEnterpriseIconVisible();
-}
-
-bool AccessibilityController::IsPrimarySettingsViewVisibleInTray() {
-  return (IsSpokenFeedbackSettingVisibleInTray() ||
-          IsSelectToSpeakSettingVisibleInTray() ||
-          IsDictationSettingVisibleInTray() ||
-          IsFaceGazeSettingVisibleInTray() ||
-          IsColorCorrectionSettingVisibleInTray() ||
-          IsHighContrastSettingVisibleInTray() ||
-          IsFullScreenMagnifierSettingVisibleInTray() ||
-          IsDockedMagnifierSettingVisibleInTray() ||
-          IsAutoclickSettingVisibleInTray() ||
-          IsVirtualKeyboardSettingVisibleInTray() ||
-          IsSwitchAccessSettingVisibleInTray() ||
-          IsLiveCaptionSettingVisibleInTray());
 }
 
 bool AccessibilityController::IsCaretHighlightSettingVisibleInTray() {
@@ -2220,7 +2160,7 @@ void AccessibilityController::ObservePrefs(PrefService* prefs) {
   pref_change_registrar_->Add(
       prefs::kAccessibilityCursorColor,
       base::BindRepeating(&AccessibilityController::UpdateCursorColorFromPrefs,
-                          base::Unretained(this)));
+                          base::Unretained(this), /*notify*/ true));
   pref_change_registrar_->Add(
       prefs::kAccessibilityColorVisionCorrectionAmount,
       base::BindRepeating(
@@ -2245,7 +2185,7 @@ void AccessibilityController::ObservePrefs(PrefService* prefs) {
   UpdateAutoclickMenuPositionFromPref();
   UpdateFloatingMenuPositionFromPref();
   UpdateLargeCursorFromPref();
-  UpdateCursorColorFromPrefs();
+  UpdateCursorColorFromPrefs(/*notify=*/true);
   UpdateShortcutsEnabledFromPref();
   UpdateTabletModeShelfNavigationButtonsFromPref();
   UpdateColorCorrectionFromPrefs();
@@ -2411,7 +2351,7 @@ void AccessibilityController::UpdateLargeCursorFromPref() {
   shell->UpdateCursorCompositingEnabled();
 }
 
-void AccessibilityController::UpdateCursorColorFromPrefs() {
+void AccessibilityController::UpdateCursorColorFromPrefs(bool notify) {
   DCHECK(active_user_prefs_);
 
   const bool enabled =
@@ -2420,7 +2360,9 @@ void AccessibilityController::UpdateCursorColorFromPrefs() {
   shell->SetCursorColor(
       enabled ? active_user_prefs_->GetInteger(prefs::kAccessibilityCursorColor)
               : kDefaultCursorColor);
-  NotifyAccessibilityStatusChanged();
+  if (notify) {
+    NotifyAccessibilityStatusChanged();
+  }
   shell->UpdateCursorCompositingEnabled();
 }
 
@@ -2902,7 +2844,9 @@ void AccessibilityController::UpdateFeatureFromPref(FeatureType feature) {
       keyboard::SetAccessibilityKeyboardEnabled(enabled);
       break;
     case FeatureType::kCursorColor:
-      UpdateCursorColorFromPrefs();
+      // The notification will already come via UpdateFeatureFromPref
+      // so we don't need to run it twice.
+      UpdateCursorColorFromPrefs(/*notify=*/false);
       break;
     case FeatureType::kColorCorrection:
       if (enabled && !active_user_prefs_->GetBoolean(
@@ -2960,6 +2904,10 @@ void AccessibilityController::AddShowToastCallbackForTesting(
 void AccessibilityController::AddShowConfirmationDialogCallbackForTesting(
     base::RepeatingCallback<void()> callback) {
   show_confirmation_dialog_callback_for_testing_ = std::move(callback);
+}
+
+bool AccessibilityController::VerifyFeaturesDataForTesting() {
+  return VerifyFeaturesData();
 }
 
 }  // namespace ash
