@@ -8,11 +8,13 @@ import 'chrome://resources/cr_elements/cr_input/cr_input.js';
 import 'chrome://resources/cr_elements/cr_shared_vars.css.js';
 import 'chrome://resources/cr_elements/mwb_shared_style.css.js';
 import 'chrome://resources/polymer/v3_0/iron-selector/iron-selector.js';
+import './strings.m.js';
 import './tab_organization_shared_style.css.js';
 import './tab_search_item.js';
 
 import {CrFeedbackOption} from 'chrome://resources/cr_elements/cr_feedback_buttons/cr_feedback_buttons.js';
 import {CrInputElement} from 'chrome://resources/cr_elements/cr_input/cr_input.js';
+import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {IronSelectorElement} from 'chrome://resources/polymer/v3_0/iron-selector/iron-selector.js';
 import {DomRepeatEvent, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
@@ -51,9 +53,17 @@ export class TabOrganizationResultsElement extends PolymerElement {
         observer: 'onAvailableHeightChange_',
       },
 
+      isLastOrganization: Boolean,
+
       lastFocusedIndex_: {
         type: Number,
         value: 0,
+      },
+
+      showRefresh_: {
+        type: Boolean,
+        value: () =>
+            loadTimeData.getBoolean('tabOrganizationRefreshButtonEnabled'),
       },
 
       tabDatas_: {
@@ -67,8 +77,10 @@ export class TabOrganizationResultsElement extends PolymerElement {
   tabs: Tab[];
   name: string;
   availableHeight: number;
+  isLastOrganization: boolean;
 
   private lastFocusedIndex_: number;
+  private showRefresh_: boolean;
   private tabDatas_: TabData[];
 
   static get template() {
@@ -85,6 +97,13 @@ export class TabOrganizationResultsElement extends PolymerElement {
     if (this.lastFocusedIndex_ > this.tabs.length - 1) {
       this.lastFocusedIndex_ = 0;
     }
+  }
+
+  private getRefreshButtonText_(): string {
+    if (this.isLastOrganization) {
+      return loadTimeData.getString('rejectFinalSuggestion');
+    }
+    return loadTimeData.getString('rejectSuggestion');
   }
 
   private getTabIndex_(index: number): number {
@@ -154,6 +173,13 @@ export class TabOrganizationResultsElement extends PolymerElement {
     // Ensure that when a TabSearchItem receives focus, it becomes the selected
     // item in the list.
     this.$.selector.selected = event.model.index;
+  }
+
+  private onRefreshClick_() {
+    this.dispatchEvent(new CustomEvent('refresh-click', {
+      bubbles: true,
+      composed: true,
+    }));
   }
 
   private onCreateGroupClick_() {

@@ -46,6 +46,7 @@ export class TabOrganizationPageElement extends PolymerElement {
       tabs_: Array,
       error_: Object,
       availableHeight_: Number,
+      isLastOrganization_: Boolean,
 
       tabOrganizationStateEnum_: {
         type: Object,
@@ -54,7 +55,7 @@ export class TabOrganizationPageElement extends PolymerElement {
 
       showFRE_: {
         type: Boolean,
-        value: loadTimeData.getBoolean('showTabOrganizationFRE'),
+        value: () => loadTimeData.getBoolean('showTabOrganizationFRE'),
       },
     };
   }
@@ -68,6 +69,7 @@ export class TabOrganizationPageElement extends PolymerElement {
   private availableHeight_: number = 0;
   private sessionId_: number = -1;
   private organizationId_: number = -1;
+  private isLastOrganization_: boolean = false;
   private showFRE_: boolean;
   private documentVisibilityChangedListener_: () => void;
 
@@ -182,6 +184,7 @@ export class TabOrganizationPageElement extends PolymerElement {
       this.name_ = mojoString16ToString(organization.name);
       this.tabs_ = organization.tabs;
       this.organizationId_ = organization.organizationId;
+      this.isLastOrganization_ = session.organizations.length === 1;
     } else {
       this.organizationId_ = -1;
     }
@@ -222,6 +225,10 @@ export class TabOrganizationPageElement extends PolymerElement {
 
   private onOrganizeTabsClick_() {
     this.apiProxy_.requestTabOrganization();
+  }
+
+  private onRefreshClick_() {
+    this.apiProxy_.rejectTabOrganization(this.sessionId_, this.organizationId_);
   }
 
   private onCreateGroupClick_(event: CustomEvent<{name: string, tabs: Tab[]}>) {

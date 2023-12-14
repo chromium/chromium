@@ -149,6 +149,8 @@ extern const base::FeatureParam<double> kTabOrganizationTriggerThreshold;
 extern const base::FeatureParam<double>
     kTabOrganizationTriggerSensitivityThreshold;
 
+BASE_DECLARE_FEATURE(kTabOrganizationRefreshButton);
+
 BASE_DECLARE_FEATURE(kTabSearchChevronIcon);
 
 BASE_DECLARE_FEATURE(kTabSearchFeedback);

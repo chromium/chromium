@@ -10715,6 +10715,12 @@ Check your passwords anytime in <ph name="GOOGLE_PASSWORD_MANAGER">$1<ex>Google 
       <message name="IDS_TAB_ORGANIZATION_LEARN_MORE" desc="The actionable text in the tab organization UI results state for getting more information" translateable="false">
         Learn more about using AI tools
       </message>
+      <message name="IDS_TAB_ORGANIZATION_REJECT_SUGGESTION" desc="The button text in the tab organization UI results state for rejecting the current suggestion" translateable="false">
+        Refresh
+      </message>
+      <message name="IDS_TAB_ORGANIZATION_REJECT_FINAL_SUGGESTION" desc="The button text in the tab organization UI results state for rejecting the current (and final) suggestion" translateable="false">
+        Clear
+      </message>
 
       <!-- Strings for Window Titles in Menus -->
       <if expr="not use_titlecase">

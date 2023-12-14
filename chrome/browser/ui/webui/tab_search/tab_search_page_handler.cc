@@ -1053,7 +1053,8 @@ TabSearchPageHandler::GetMojoForTabOrganizationSession(
       if (session->tab_organizations().size() > 0) {
         for (const std::unique_ptr<TabOrganization>& organization :
              session->tab_organizations()) {
-          if (!organization->IsValidForOrganizing()) {
+          if (!organization->IsValidForOrganizing() ||
+              organization->choice().has_value()) {
             continue;
           }
           organizations.emplace_back(
