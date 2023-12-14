@@ -199,7 +199,6 @@ public abstract class ChromeFeatureList {
     public static final String CHROME_SURVEY_NEXT_ANDROID = "ChromeSurveyNextAndroid";
     public static final String CLEAR_OMNIBOX_FOCUS_AFTER_NAVIGATION =
             "ClearOmniboxFocusAfterNavigation";
-    public static final String CLOSE_TAB_SAVE_TAB_LIST = "CloseTabSaveTabList";
     public static final String COLLECT_ANDROID_FRAME_TIMELINE_METRICS =
             "CollectAndroidFrameTimelineMetrics";
     public static final String COMMAND_LINE_ON_NON_ROOTED = "CommandLineOnNonRooted";
@@ -521,8 +520,6 @@ public abstract class ChromeFeatureList {
     public static final CachedFlag sCctResizableSideSheetForThirdParties =
             new CachedFlag(CCT_RESIZABLE_SIDE_SHEET_FOR_THIRD_PARTIES, true);
     public static final CachedFlag sCctTabModalDialog = new CachedFlag(CCT_TAB_MODAL_DIALOG, true);
-    public static final CachedFlag sCloseTabSaveTabList =
-            new CachedFlag(CLOSE_TAB_SAVE_TAB_LIST, true);
     public static final CachedFlag sCollectAndroidFrameTimelineMetrics =
             new CachedFlag(COLLECT_ANDROID_FRAME_TIMELINE_METRICS, false);
     public static final CachedFlag sCommandLineOnNonRooted =
@@ -644,7 +641,6 @@ public abstract class ChromeFeatureList {
                     sCctResizableSideSheet,
                     sCctResizableSideSheetForThirdParties,
                     sCctTabModalDialog,
-                    sCloseTabSaveTabList,
                     sCollectAndroidFrameTimelineMetrics,
                     sCommandLineOnNonRooted,
                     sDeferTabSwitcherLayoutCreation,

@@ -183,7 +183,6 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &kCacheActivityTaskID,
     &kCastDeviceFilter,
     &kClearOmniboxFocusAfterNavigation,
-    &kCloseTabSaveTabList,
     &kCreateNewTabInitializeRenderer,
     &kCCTBrandTransparency,
     &kCCTBrandTransparencyMemoryImprovement,
@@ -513,10 +512,6 @@ BASE_FEATURE(kCastDeviceFilter,
 
 BASE_FEATURE(kClearOmniboxFocusAfterNavigation,
              "ClearOmniboxFocusAfterNavigation",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
-BASE_FEATURE(kCloseTabSaveTabList,
-             "CloseTabSaveTabList",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kCreateNewTabInitializeRenderer,
