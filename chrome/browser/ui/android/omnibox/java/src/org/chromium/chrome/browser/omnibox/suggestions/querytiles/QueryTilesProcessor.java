@@ -10,6 +10,7 @@ import android.graphics.drawable.BitmapDrawable;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
+import org.chromium.chrome.browser.omnibox.OmniboxFeatures;
 import org.chromium.chrome.browser.omnibox.R;
 import org.chromium.chrome.browser.omnibox.styles.OmniboxImageSupplier;
 import org.chromium.chrome.browser.omnibox.suggestions.SuggestionHost;
@@ -54,7 +55,11 @@ public class QueryTilesProcessor extends BaseCarouselSuggestionProcessor {
 
     @Override
     public boolean doesProcessSuggestion(AutocompleteMatch match, int matchIndex) {
-        return match.getType() == OmniboxSuggestionType.TILE_SUGGESTION;
+        // This component only processes QueryTiles represented as a Carousel.
+        // QueryTiles that are meant to show as a list are processed by the default processor: the
+        // BasicSuggestionProcessor.
+        return match.getType() == OmniboxSuggestionType.TILE_SUGGESTION
+                && OmniboxFeatures.QUERY_TILES_SHOW_AS_CAROUSEL.getValue();
     }
 
     @Override

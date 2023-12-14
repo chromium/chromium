@@ -368,6 +368,7 @@ public abstract class ChromeFeatureList {
     public static final String PWA_RESTORE_UI = "PwaRestoreUi";
     public static final String QUERY_TILES = "QueryTiles";
     public static final String QUERY_TILES_IN_NTP = "QueryTilesInNTP";
+    public static final String QUERY_TILES_IN_ZPS_ON_NTP = "OmniboxQueryTilesInZPSOnNTP";
     public static final String QUERY_TILES_ON_START = "QueryTilesOnStart";
     public static final String QUERY_TILES_SEGMENTATION = "QueryTilesSegmentation";
     public static final String QUICK_DELETE_FOR_ANDROID = "QuickDeleteForAndroid";
@@ -567,6 +568,8 @@ public abstract class ChromeFeatureList {
             new CachedFlag(PRIVACY_GUIDE_PRELOAD_ANDROID, false);
     public static final CachedFlag sPrivacyGuidePostMVP =
             new CachedFlag(PRIVACY_GUIDE_POST_MVP, false);
+    public static final CachedFlag sQueryTilesInZPSOnNTP =
+            new CachedFlag(QUERY_TILES_IN_ZPS_ON_NTP, false);
     public static final CachedFlag sOmniboxMatchToolbarAndStatusBarColor =
             new CachedFlag(OMNIBOX_MATCH_TOOLBAR_AND_STATUS_BAR_COLOR, false);
     public static final CachedFlag sOmniboxModernizeVisualUpdate =
@@ -668,6 +671,7 @@ public abstract class ChromeFeatureList {
                     sPrivacyGuideAndroid3,
                     sPrivacyGuidePreloadAndroid,
                     sPrivacyGuidePostMVP,
+                    sQueryTilesInZPSOnNTP,
                     sOmniboxMatchToolbarAndStatusBarColor,
                     sOmniboxModernizeVisualUpdate,
                     sOptimizationGuidePushNotifications,

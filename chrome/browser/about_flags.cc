@@ -1601,16 +1601,30 @@ constexpr FeatureEntry::FeatureVariation kOmniboxActionsInSuggestVariants[] = {
      std::size(kOmniboxActionsInSuggestTreatment8), "t3366528"},
 };
 
-constexpr FeatureEntry::FeatureParam kOmniboxQueryTilesShowAboveTrends[] = {
-    {OmniboxFieldTrial::kQueryTilesShowAboveTrends.name, "true"}};
-constexpr FeatureEntry::FeatureParam kOmniboxQueryTilesShowBelowTrends[] = {
-    {OmniboxFieldTrial::kQueryTilesShowAboveTrends.name, "false"}};
+constexpr FeatureEntry::FeatureParam kOmniboxQueryTilesShowListAboveTrends[] = {
+    {OmniboxFieldTrial::kQueryTilesShowAboveTrends.name, "true"},
+    {OmniboxFieldTrial::kQueryTilesShowAsCarousel.name, "false"}};
+constexpr FeatureEntry::FeatureParam kOmniboxQueryTilesShowListBelowTrends[] = {
+    {OmniboxFieldTrial::kQueryTilesShowAboveTrends.name, "false"},
+    {OmniboxFieldTrial::kQueryTilesShowAsCarousel.name, "false"}};
+constexpr FeatureEntry::FeatureParam
+    kOmniboxQueryTilesShowCarouselAboveTrends[] = {
+        {OmniboxFieldTrial::kQueryTilesShowAboveTrends.name, "true"},
+        {OmniboxFieldTrial::kQueryTilesShowAsCarousel.name, "true"}};
+constexpr FeatureEntry::FeatureParam
+    kOmniboxQueryTilesShowCarouselBelowTrends[] = {
+        {OmniboxFieldTrial::kQueryTilesShowAboveTrends.name, "false"},
+        {OmniboxFieldTrial::kQueryTilesShowAsCarousel.name, "true"}};
 
 constexpr FeatureEntry::FeatureVariation kOmniboxQueryTilesVariations[] = {
-    {"Above Trends", kOmniboxQueryTilesShowAboveTrends,
-     std::size(kOmniboxQueryTilesShowAboveTrends), nullptr},
-    {"Below Trends", kOmniboxQueryTilesShowBelowTrends,
-     std::size(kOmniboxQueryTilesShowBelowTrends), nullptr},
+    {"List Above Trends", kOmniboxQueryTilesShowListAboveTrends,
+     std::size(kOmniboxQueryTilesShowListAboveTrends), nullptr},
+    {"List Below Trends", kOmniboxQueryTilesShowListBelowTrends,
+     std::size(kOmniboxQueryTilesShowListBelowTrends), nullptr},
+    {"Carousel Above Trends", kOmniboxQueryTilesShowCarouselAboveTrends,
+     std::size(kOmniboxQueryTilesShowCarouselAboveTrends), nullptr},
+    {"Carousel Below Trends", kOmniboxQueryTilesShowCarouselBelowTrends,
+     std::size(kOmniboxQueryTilesShowCarouselBelowTrends), nullptr},
 };
 #endif  // BUILDFLAG(IS_ANDROID)
 

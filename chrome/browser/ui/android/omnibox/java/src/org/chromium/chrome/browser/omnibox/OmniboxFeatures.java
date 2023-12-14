@@ -46,6 +46,10 @@ public class OmniboxFeatures {
                     "modernize_visual_update_smallest_margins",
                     true);
 
+    public static final BooleanCachedFieldTrialParameter QUERY_TILES_SHOW_AS_CAROUSEL =
+            new BooleanCachedFieldTrialParameter(
+                    ChromeFeatureList.QUERY_TILES_IN_ZPS_ON_NTP, "QueryTilesShowAsCarousel", false);
+
     public static final int DEFAULT_MAX_PREFETCHES_PER_OMNIBOX_SESSION = 5;
 
     /**

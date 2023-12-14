@@ -113,10 +113,16 @@ AndroidNTPZpsSection::AndroidNTPZpsSection(
           {
               {1, omnibox::GROUP_MOBILE_CLIPBOARD},
               {15, omnibox::GROUP_PERSONALIZED_ZERO_SUGGEST},
-              {OmniboxFieldTrial::kQueryTilesShowAboveTrends.Get() ? 10u : 0u,
+              {OmniboxFieldTrial::kQueryTilesShowAboveTrends.Get()
+                   ? (OmniboxFieldTrial::kQueryTilesShowAsCarousel.Get() ? 10u
+                                                                         : 5u)
+                   : 0u,
                omnibox::GROUP_MOBILE_QUERY_TILES},
               {5, omnibox::GROUP_TRENDS},
-              {OmniboxFieldTrial::kQueryTilesShowAboveTrends.Get() ? 0u : 10u,
+              {OmniboxFieldTrial::kQueryTilesShowAboveTrends.Get()
+                   ? 0u
+                   : (OmniboxFieldTrial::kQueryTilesShowAsCarousel.Get() ? 10u
+                                                                         : 5u),
                omnibox::GROUP_MOBILE_QUERY_TILES},
           },
           group_configs) {}

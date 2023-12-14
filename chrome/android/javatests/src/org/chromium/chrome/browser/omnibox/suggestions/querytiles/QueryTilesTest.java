@@ -29,6 +29,7 @@ import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
+import org.chromium.chrome.browser.omnibox.OmniboxFeatures;
 import org.chromium.chrome.browser.omnibox.suggestions.AutocompleteController;
 import org.chromium.chrome.browser.omnibox.suggestions.AutocompleteControllerProvider;
 import org.chromium.chrome.browser.omnibox.suggestions.carousel.BaseCarouselSuggestionView;
@@ -76,6 +77,7 @@ public class QueryTilesTest {
         sActivityTestRule.waitForActivityNativeInitializationComplete();
 
         sActivity = sActivityTestRule.getActivity();
+        OmniboxFeatures.QUERY_TILES_SHOW_AS_CAROUSEL.setForTesting(true);
     }
 
     @Before

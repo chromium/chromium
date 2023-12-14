@@ -6,6 +6,7 @@
 
 #include "base/feature_list.h"
 #include "base/lazy_instance.h"
+#include "components/omnibox/browser/omnibox_field_trial.h"
 #include "components/omnibox/common/omnibox_features.h"
 #include "third_party/omnibox_proto/groups.pb.h"
 
@@ -40,7 +41,9 @@ const GroupConfigMap& BuildDefaultGroups() {
 
         {GROUP_MOBILE_QUERY_TILES,
           CreateGroup(SECTION_MOBILE_QUERY_TILES,
-              GroupConfig_RenderType_HORIZONTAL)},
+              OmniboxFieldTrial::kQueryTilesShowAsCarousel.Get()
+              ? GroupConfig_RenderType_HORIZONTAL
+              : GroupConfig_RenderType_DEFAULT_VERTICAL)},
         // clang-format on
     };
   }
