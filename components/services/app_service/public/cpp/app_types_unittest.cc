@@ -400,4 +400,27 @@ TEST_F(AppTypesTest, VerifyAppsIsEqualForDataSizeInBytes) {
   VerifyOptionalValue(&App::data_size_in_bytes);
 }
 
+TEST_F(AppTypesTest, VerifyAppsIsEqualForSupportedLocales) {
+  // Verify the app is equal with the same `supported_locales`.
+  {
+    AppPtr app1 = std::make_unique<App>(kAppType, kAppId);
+    app1->supported_locales = {"C"};
+    AppPtr app2 = app1->Clone();
+    EXPECT_TRUE(IsEqual(std::move(app1), std::move(app2)));
+  }
+
+  // Verify the app is not equal with different `supported_locales`.
+  {
+    AppPtr app1 = std::make_unique<App>(kAppType, kAppId);
+    AppPtr app2 = app1->Clone();
+    app1->supported_locales = {"C"};
+    app2->supported_locales = {"B"};
+    EXPECT_FALSE(IsEqual(std::move(app1), std::move(app2)));
+  }
+}
+
+TEST_F(AppTypesTest, VerifyAppsIsEqualForSelectedLocale) {
+  VerifyOptionalValue(&App::selected_locale);
+}
+
 }  // namespace apps
