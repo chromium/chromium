@@ -4,6 +4,7 @@
 
 #include "services/on_device_model/ml/utils.h"
 
+#include "base/compiler_specific.h"
 #include "base/metrics/field_trial_params.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/strcat.h"
@@ -45,6 +46,7 @@ const base::FeatureParam<int> kVeryHighThreshold{
 
 }  // namespace
 
+DISABLE_CFI_DLSYM
 on_device_model::mojom::PerformanceClass GetEstimatedPerformanceClass(
     const ChromeML& chrome_ml) {
   ChromeMLPerformanceInfo info;

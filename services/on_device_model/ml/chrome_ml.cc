@@ -8,6 +8,7 @@
 
 #include "base/base_paths.h"
 #include "base/check.h"
+#include "base/compiler_specific.h"
 #include "base/files/file_path.h"
 #include "base/logging.h"
 #include "base/memory/ref_counted.h"
@@ -55,6 +56,7 @@ ChromeML* ChromeML::Get() {
 }
 
 // static
+DISABLE_CFI_DLSYM
 std::unique_ptr<ChromeML> ChromeML::Create() {
   // Log GPU info for crash reports.
   gpu::GPUInfo gpu_info;
@@ -100,6 +102,7 @@ std::unique_ptr<ChromeML> ChromeML::Create() {
                                     std::move(scoped_library), api);
 }
 
+DISABLE_CFI_DLSYM
 bool ChromeML::IsGpuBlocked() const {
   GpuConfig gpu_config;
   if (!api().GetGpuConfig(gpu_config)) {
