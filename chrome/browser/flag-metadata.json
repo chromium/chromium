@@ -1426,7 +1426,7 @@
   {
     "name": "cros-labs-window-cycle-shortcut",
     "owners": [ "andp@chromium.org", "benbecker@chromium.org", "nupurjain@chromium.org" ],
-    "expiry_milestone": 120
+    "expiry_milestone": 135
   },
   {
     "name": "cros-labs-window-splitting",
