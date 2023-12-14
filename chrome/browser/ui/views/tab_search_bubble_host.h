@@ -36,6 +36,7 @@ class TabSearchBubbleHost : public views::WidgetObserver,
   void OnWidgetDestroying(views::Widget* widget) override;
 
   // views::TabOrganizationObserver:
+  void OnOrganizationAccepted(const Browser* browser) override;
   void OnUserInvokedFeature(const Browser* browser) override;
 
   // When this is called the bubble may already be showing or be loading in.

@@ -144,6 +144,10 @@ void TabOrganizationService::AcceptTabOrganization(
   if (session->IsComplete()) {
     browser_session_map_.erase(browser);
   }
+
+  for (TabOrganizationObserver& observer : observers_) {
+    observer.OnOrganizationAccepted(browser);
+  }
 }
 
 void TabOrganizationService::OnActionUIAccepted(const Browser* browser) {
