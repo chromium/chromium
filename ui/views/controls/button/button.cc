@@ -30,7 +30,6 @@
 #include "ui/views/animation/ink_drop.h"
 #include "ui/views/animation/ink_drop_highlight.h"
 #include "ui/views/animation/ink_drop_impl.h"
-#include "ui/views/animation/ink_drop_state.h"
 #include "ui/views/controls/button/button_controller.h"
 #include "ui/views/controls/button/button_controller_delegate.h"
 #include "ui/views/controls/button/checkbox.h"
@@ -232,12 +231,6 @@ Button::ButtonState Button::GetState() const {
 
 void Button::SetState(ButtonState state) {
   if (state == state_) {
-    if (anchor_count_ > 0) {
-      // Update the highlight for the |anchor_count_| even if the state hasn't
-      // changed. This catches cases where button visibility might have changed
-      // but the state hasn't.
-      SetHighlighted(true);
-    }
     return;
   }
 
@@ -402,15 +395,10 @@ void Button::SetFocusPainter(std::unique_ptr<Painter> focus_painter) {
 }
 
 void Button::SetHighlighted(bool highlighted) {
-  // Do nothing if the ink drop's target state matches what we are trying to set
-  // since same state transitions may restart animations.
-  InkDropState state = highlighted ? views::InkDropState::ACTIVATED
-                                   : views::InkDropState::DEACTIVATED;
-  if (InkDrop::Get(ink_drop_view_)->GetInkDrop()->GetTargetInkDropState() ==
-      state) {
-    return;
-  }
-  InkDrop::Get(ink_drop_view_)->AnimateToState(state, nullptr);
+  InkDrop::Get(ink_drop_view_)
+      ->AnimateToState(highlighted ? views::InkDropState::ACTIVATED
+                                   : views::InkDropState::DEACTIVATED,
+                       nullptr);
 }
 
 Button::ScopedAnchorHighlight Button::AddAnchorHighlight() {
@@ -597,12 +585,8 @@ void Button::OnDragDone() {
   if (state_ != STATE_DISABLED) {
     SetState(STATE_NORMAL);
   }
-  if (anchor_count_ > 0) {
-    SetHighlighted(true);
-  } else {
-    InkDrop::Get(ink_drop_view_)
-        ->AnimateToState(InkDropState::HIDDEN, nullptr /* event */);
-  }
+  InkDrop::Get(ink_drop_view_)
+      ->AnimateToState(InkDropState::HIDDEN, nullptr /* event */);
 }
 
 void Button::OnPaint(gfx::Canvas* canvas) {
