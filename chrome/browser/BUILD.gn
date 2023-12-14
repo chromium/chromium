@@ -8550,6 +8550,12 @@ static_library("test_support") {
     ]
     deps += [ "//components/spellcheck/common" ]
   }
+  if (enable_bound_session_credentials) {
+    sources += [
+      "../browser/signin/bound_session_credentials/bound_session_test_cookie_manager.cc",
+      "../browser/signin/bound_session_credentials/bound_session_test_cookie_manager.h",
+    ]
+  }
 }
 
 if (!is_android) {

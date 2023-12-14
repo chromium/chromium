@@ -7362,12 +7362,6 @@ test("unit_tests") {
       "../browser/signin/bound_session_credentials/bound_session_registration_fetcher_impl_unittest.cc",
       "../browser/signin/bound_session_credentials/bound_session_registration_fetcher_param_unittest.cc",
       "../browser/signin/bound_session_credentials/bound_session_request_throttled_handler_browser_impl_unittest.cc",
-      "../browser/signin/bound_session_credentials/bound_session_test_cookie_manager.cc",
-      "../browser/signin/bound_session_credentials/bound_session_test_cookie_manager.h",
-      "../browser/signin/bound_session_credentials/fake_bound_session_cookie_refresh_service.cc",
-      "../browser/signin/bound_session_credentials/fake_bound_session_cookie_refresh_service.h",
-      "../browser/signin/bound_session_credentials/fake_bound_session_refresh_cookie_fetcher.cc",
-      "../browser/signin/bound_session_credentials/fake_bound_session_refresh_cookie_fetcher.h",
       "../browser/signin/bound_session_credentials/registration_token_helper_unittest.cc",
       "../browser/signin/bound_session_credentials/session_binding_helper_unittest.cc",
       "../browser/signin/bound_session_credentials/throttled_gaia_auth_fetcher_unittest.cc",
@@ -10288,6 +10282,15 @@ static_library("test_support_unit") {
 
   if (is_chromeos_lacros) {
     deps += [ "//chromeos/lacros:test_support" ]
+  }
+
+  if (enable_bound_session_credentials) {
+    sources += [
+      "../browser/signin/bound_session_credentials/fake_bound_session_cookie_refresh_service.cc",
+      "../browser/signin/bound_session_credentials/fake_bound_session_cookie_refresh_service.h",
+      "../browser/signin/bound_session_credentials/fake_bound_session_refresh_cookie_fetcher.cc",
+      "../browser/signin/bound_session_credentials/fake_bound_session_refresh_cookie_fetcher.h",
+    ]
   }
 }
 
