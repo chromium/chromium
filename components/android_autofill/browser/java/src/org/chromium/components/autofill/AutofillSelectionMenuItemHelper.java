@@ -9,7 +9,6 @@ import android.os.Build;
 import android.view.Menu;
 import android.view.MenuItem;
 
-import org.chromium.content_public.browser.AdditionalSelectionMenuItemProvider;
 import org.chromium.content_public.browser.SelectionMenuItem;
 
 import java.util.ArrayList;
@@ -19,13 +18,13 @@ import java.util.List;
  * The class to provide autofill selection context menu items. To match the Android native view
  * behavior, the autofill context menu only appears when there is no text selected.
  */
-public class AutofillSelectionMenuItemProvider implements AdditionalSelectionMenuItemProvider {
+public class AutofillSelectionMenuItemHelper {
     private final AutofillProvider mAutofillProvider;
     private final int mAutofillMenuItemTitle;
 
     // using getIdentifier to work around not-exposed framework resource ID
     @SuppressWarnings("DiscouragedApi")
-    public AutofillSelectionMenuItemProvider(Context context, AutofillProvider autofillProvider) {
+    public AutofillSelectionMenuItemHelper(Context context, AutofillProvider autofillProvider) {
         mAutofillProvider = autofillProvider;
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O_MR1) {
             mAutofillMenuItemTitle = android.R.string.autofill;
@@ -36,8 +35,7 @@ public class AutofillSelectionMenuItemProvider implements AdditionalSelectionMen
         }
     }
 
-    @Override
-    public List<SelectionMenuItem> getItems() {
+    public List<SelectionMenuItem> getAdditionalItems() {
         List<SelectionMenuItem> autofillItems = new ArrayList<>();
         if (mAutofillMenuItemTitle == 0 || !mAutofillProvider.shouldQueryAutofillSuggestion()) {
             return autofillItems;
@@ -51,10 +49,5 @@ public class AutofillSelectionMenuItemProvider implements AdditionalSelectionMen
                         .setClickListener(v -> mAutofillProvider.queryAutofillSuggestion())
                         .build());
         return autofillItems;
-    }
-
-    @Override
-    public void onMenuDestroyed() {
-        // no-op
     }
 }
