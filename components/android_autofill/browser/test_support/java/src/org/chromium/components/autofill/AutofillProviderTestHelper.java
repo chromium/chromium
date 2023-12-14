@@ -36,11 +36,6 @@ public class AutofillProviderTestHelper {
                         webContents, fieldIds, fieldTypes);
     }
 
-    public static void simulateMainFrameAutofillQueryFailedForTesting(WebContents webContents) {
-        AutofillProviderTestHelperJni.get()
-                .simulateMainFrameAutofillQueryFailedForTesting(webContents);
-    }
-
     @NativeMethods
     interface Natives {
         void disableCrowdsourcingForTesting();
@@ -50,7 +45,5 @@ public class AutofillProviderTestHelper {
 
         boolean simulateMainFramePredictionsAutofillServerResponseForTesting(
                 WebContents webContents, String[] fieldIds, int[][] fieldTypes);
-
-        void simulateMainFrameAutofillQueryFailedForTesting(WebContents webContents);
     }
 }

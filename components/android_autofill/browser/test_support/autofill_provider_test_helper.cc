@@ -2,7 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "base/ranges/algorithm.h"
 #include "components/android_autofill/browser/test_support/jni_headers/AutofillProviderTestHelper_jni.h"
 
 #include <iterator>
@@ -10,6 +9,7 @@
 
 #include "base/android/jni_array.h"
 #include "base/base64.h"
+#include "base/ranges/algorithm.h"
 #include "components/android_autofill/browser/autofill_provider.h"
 #include "components/autofill/content/browser/content_autofill_driver.h"
 #include "components/autofill/content/browser/content_autofill_driver_factory.h"
@@ -165,21 +165,6 @@ JNI_AutofillProviderTestHelper_SimulateMainFramePredictionsAutofillServerRespons
   test_api(*autofill_manager)
       .OnLoadedServerPredictions(encoded_response_string, signatures);
   return true;
-}
-
-static void
-JNI_AutofillProviderTestHelper_SimulateMainFrameAutofillQueryFailedForTesting(
-    JNIEnv* env,
-    const base::android::JavaParamRef<jobject>& jweb_contents) {
-  AutofillManager* autofill_manager = ToMainFrameAutofillManager(jweb_contents);
-  const std::map<FormGlobalId, std::unique_ptr<FormStructure>>&
-      form_structures = autofill_manager->form_structures();
-  CHECK(!form_structures.empty());
-  const FormStructure& arbitary_form = *form_structures.begin()->second;
-  AutofillCrowdsourcingManager::Observer* observer = autofill_manager;
-  observer->OnServerRequestError(
-      arbitary_form.form_signature(),
-      AutofillCrowdsourcingManager::RequestType::REQUEST_QUERY, 400);
 }
 
 }  // namespace autofill
