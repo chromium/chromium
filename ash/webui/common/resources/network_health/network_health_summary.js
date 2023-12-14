@@ -1,13 +1,13 @@
-// Copyright 2020 The Chromium Authors
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 import 'chrome://resources/cr_elements/cr_shared_style.css.js';
 import 'chrome://resources/ash/common/network/network_shared.css.js';
 
-import {Polymer} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {mixinBehaviors, PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {assertNotReached} from 'chrome://resources/ash/common/assert.js';
-import {I18nBehavior} from 'chrome://resources/ash/common/i18n_behavior.js';
+import {I18nBehavior, I18nBehaviorInterface} from 'chrome://resources/ash/common/i18n_behavior.js';
 import {OncMojo} from 'chrome://resources/ash/common/network/onc_mojo.js';
 import {NetworkType, PortalState} from 'chrome://resources/mojo/chromeos/services/network_config/public/mojom/network_types.mojom-webui.js';
 import {NetworkHealthService, NetworkHealthServiceRemote} from 'chrome://resources/mojo/chromeos/services/network_health/public/mojom/network_health.mojom-webui.js';
@@ -25,49 +25,76 @@ const TechnologyIcons = {
 /**
  * @fileoverview Polymer element for displaying NetworkHealth properties.
  */
-Polymer({
-  _template: getTemplate(),
-  is: 'network-health-summary',
 
-  behaviors: [
-    I18nBehavior,
-  ],
+/**
+ * @constructor
+ * @extends {PolymerElement}
+ * @implements {I18nBehaviorInterface}
+ */
+const NetworkHealthSummaryElementBase =
+    mixinBehaviors([I18nBehavior], PolymerElement);
 
-  /**
-   * Network Health State object.
-   * @private
-   * @type {NetworkHealthState}
-   */
-  networkHealthState_: null,
+/** @polymer */
+class NetworkHealthSummaryElement extends NetworkHealthSummaryElementBase {
+  static get is() {
+    return 'network-health-summary';
+  }
 
-  /**
-   * Network Health mojo remote.
-   * @private
-   * @type {?NetworkHealthServiceRemote}
-   */
-  networkHealth_: null,
+  static get template() {
+    return getTemplate();
+  }
 
-  /**
-   * Expanded state per network type.
-   * @private
-   * @type {!Array<boolean>}
-   */
-  typeExpanded_: [],
+  static get properties() {
+    return {
+      /**
+       * Network Health State object.
+       * @private
+       * @type {NetworkHealthState}
+       */
+      networkHealthState_: {
+        type: Object,
+      },
+
+      /**
+       * Network Health mojo remote.
+       * @private
+       * @type {?NetworkHealthServiceRemote}
+       */
+      networkHealth_: {
+        type: Object,
+        value: null,
+      },
+
+      /**
+       * Expanded state per network type.
+       * @private
+       * @type {!Array<boolean>}
+       */
+      typeExpanded_: {
+        type: Array,
+        value: () => [],
+      },
+    };
+  }
 
   /** @override */
-  created() {
+  constructor() {
+    super();
+
     this.networkHealth_ = NetworkHealthService.getRemote();
-  },
+  }
 
   /** @override */
-  attached() {
+  connectedCallback() {
+    super.connectedCallback();
+
     this.requestNetworkHealth_();
 
     // Automatically refresh Network Health every second.
     window.setInterval(() => {
       this.requestNetworkHealth_();
     }, 1000);
-  },
+  }
 
   /**
    * Requests the NetworkHealthState and updates the page.
@@ -77,7 +104,7 @@ Polymer({
     this.networkHealth_.getHealthSnapshot().then(result => {
       this.networkHealthState_ = result.state;
     });
-  },
+  }
 
   /**
    * Returns a string for the given NetworkState.
@@ -107,7 +134,7 @@ Polymer({
 
     assertNotReached('Unexpected enum value');
     return '';
-  },
+  }
 
   /**
    * Returns a boolean flag to show the PortalState attribute. The information
@@ -134,7 +161,7 @@ Polymer({
     }
 
     return true;
-  },
+  }
 
   /**
    * Returns a string for the given PortalState.
@@ -144,7 +171,7 @@ Polymer({
    */
   getPortalStateString_(state) {
     return this.i18n('OncPortalState' + OncMojo.getPortalStateString(state));
-  },
+  }
 
   /**
    * Returns a string for the given NetworkType.
@@ -154,7 +181,7 @@ Polymer({
    */
   getNetworkTypeString_(type) {
     return this.i18n('OncType' + OncMojo.getNetworkTypeString(type));
-  },
+  }
 
   /**
    * Returns a icon for the given NetworkType.
@@ -177,7 +204,7 @@ Polymer({
       default:
         return '';
     }
-  },
+  }
 
   /**
    * Returns a string for the given signal strength.
@@ -187,7 +214,7 @@ Polymer({
    */
   getSignalStrengthString_(signalStrength) {
     return signalStrength ? signalStrength.value.toString() : '';
-  },
+  }
 
   /**
    * Returns a boolean flag if the open to settings link should be shown.
@@ -203,7 +230,7 @@ Polymer({
       NetworkState.kOnline,
     ];
     return validStates.includes(network.state);
-  },
+  }
 
   /**
    * Returns a URL for the network's settings page.
@@ -213,7 +240,7 @@ Polymer({
    */
   getNetworkUrl_(network) {
     return 'chrome://os-settings/networkDetail?guid=' + network.guid;
-  },
+  }
 
   /**
    * Returns a concatenated list of strings.
@@ -223,7 +250,7 @@ Polymer({
    */
   joinAddresses_(addresses) {
     return addresses.join(', ');
-  },
+  }
 
   /**
    * Returns a boolean flag if the routine type should be expanded.
@@ -237,7 +264,7 @@ Polymer({
     }
 
     return this.typeExpanded_[type];
-  },
+  }
 
   /**
    * Helper function to toggle the expanded properties when the network
@@ -248,5 +275,8 @@ Polymer({
   onToggleExpanded_(event) {
     const type = event.model.network.type;
     this.set('typeExpanded_.' + type, !this.typeExpanded_[type]);
-  },
-});
+  }
+}
+
+customElements.define(
+    NetworkHealthSummaryElement.is, NetworkHealthSummaryElement);

@@ -429,7 +429,6 @@ generate_definitions_js_files = [
   "network/cr_policy_network_behavior_mojo.js",
   "network_health/mojo_interface_provider.js",
   "network_health/network_diagnostics.html.js",
-  "network_health/network_diagnostics.js",
   "network_health/network_diagnostics_types.js",
   "network_health/network_health_container.html.js",
   "network_health/network_health_container.js",
@@ -511,6 +510,7 @@ checked_in_dts_files = [
   "smb_shares/smb_browser_proxy.d.ts",
   "traffic_counters/traffic_counters.d.ts",
 
+  "network/apn_detail_dialog.d.ts",
   "network/apn_list.d.ts",
   "network/apn_list_item.d.ts",
   "network/cr_policy_network_indicator_mojo.d.ts",
@@ -530,7 +530,8 @@ checked_in_dts_files = [
   "network/network_proxy.d.ts",
   "network/network_siminfo.d.ts",
   "network/sim_lock_dialogs.d.ts",
-  "network/apn_detail_dialog.d.ts",
+  "network_health/network_diagnostics.d.ts",
+  "network_health/network_health_summary.d.ts",
 
   "post_message_api/post_message_api_client.d.ts",
   "post_message_api/post_message_api_request_handler.d.ts",

@@ -759,7 +759,7 @@
     "META": {"sizes": {"includes": [5]}},
     "includes": [5620],
   },
-  "<(SHARED_INTERMEDIATE_DIR)/ash/webui/connectivity_diagnostics/resources/connectivity_diagnostics_resources.grd": {
+  "<(SHARED_INTERMEDIATE_DIR)/ash/webui/connectivity_diagnostics/resources/resources.grd": {
     "META": {"sizes": {"includes": [50],}},
     "includes": [5640],
   },
