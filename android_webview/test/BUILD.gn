@@ -442,14 +442,6 @@ base_webview_instrumentation_test_apk("webview_instrumentation_test_apk") {
     data_deps +=
         [ "//clank/build/bot/filters:webview_instrumentation_test_apk_filters" ]
   }
-
-  # We only want to bother including these on bots set up for VR testing
-  if (include_vr_data) {
-    data += [
-      "//chrome/android/shared_preference_files/test/",
-      "//third_party/gvr-android-sdk/test-apks/vr_services/vr_services_current.apk",
-    ]
-  }
 }
 
 android_library("webview_instrumentation_test_mock_services_java") {

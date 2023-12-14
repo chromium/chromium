@@ -37,7 +37,4 @@ declare_args() {
       enable_gvr_services || enable_openxr || enable_cardboard ||
       enable_arcore ||
       (is_linux && !is_castos && (current_cpu == "x64" || current_cpu == "x86"))
-
-  # Whether to include VR extras like test APKs in non-VR-specific targets
-  include_vr_data = false
 }

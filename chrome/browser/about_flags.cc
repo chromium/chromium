@@ -497,10 +497,6 @@ const FeatureEntry::Choice kWebXrForceRuntimeChoices[] = {
     {flag_descriptions::kWebXrRuntimeChoiceCardboard,
      switches::kWebXrForceRuntime, switches::kWebXrRuntimeCardboard},
 #endif
-#if BUILDFLAG(ENABLE_GVR_SERVICES)
-    {flag_descriptions::kWebXrRuntimeChoiceGVR, switches::kWebXrForceRuntime,
-     switches::kWebXrRuntimeGVR},
-#endif
 #if BUILDFLAG(ENABLE_OPENXR)
     {flag_descriptions::kWebXrRuntimeChoiceOpenXR, switches::kWebXrForceRuntime,
      switches::kWebXrRuntimeOpenXr},

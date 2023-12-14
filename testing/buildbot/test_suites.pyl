@@ -35,47 +35,6 @@
       'vr_android_unittests': {},
     },
 
-    'android_ddready_vr_gtests': {
-      'chrome_public_test_vr_apk-ddready-cardboard': {
-        'test': 'chrome_public_test_vr_apk',
-        'mixins': [
-          'vr_instrumentation_test',
-        ],
-        'args': [
-          '--shared-prefs-file=//chrome/android/shared_preference_files/test/vr_cardboard_skipdon_setupcomplete.json',
-        ],
-        'swarming': {
-          'shards': 2,
-        },
-      },
-      'chrome_public_test_vr_apk-ddready-ddview': {
-        'test': 'chrome_public_test_vr_apk',
-        'mixins': [
-          'skia_gold_test',
-          'vr_instrumentation_test',
-        ],
-        'args': [
-          '--shared-prefs-file=//chrome/android/shared_preference_files/test/vr_ddview_skipdon_setupcomplete.json',
-          '--additional-apk=//third_party/gvr-android-sdk/test-apks/vr_keyboard/vr_keyboard_current.apk',
-        ],
-        'swarming': {
-          'shards': 4,
-        },
-      },
-      'chrome_public_test_vr_apk-ddready-don-enabled': {
-        'test': 'chrome_public_test_vr_apk',
-        'mixins': [
-          'vr_instrumentation_test',
-        ],
-        'args': [
-          '--shared-prefs-file=//chrome/android/shared_preference_files/test/vr_ddview_don_setupcomplete.json',
-          '--additional-apk=//third_party/gvr-android-sdk/test-apks/vr_keyboard/vr_keyboard_current.apk',
-          '--annotation=Restriction=VR_DON_Enabled',
-          '--vr-don-enabled',
-        ],
-      },
-    },
-
     'android_emulator_specific_chrome_public_tests': {
       'chrome_public_test_apk': {
         'mixins': [
@@ -5320,10 +5279,6 @@
 
     'vr_android_specific_chromium_tests': {
       'chrome_public_test_vr_apk': {
-        'args': [
-          '--shared-prefs-file=//chrome/android/shared_preference_files/test/vr_cardboard_skipdon_setupcomplete.json',
-          '--additional-apk=//third_party/gvr-android-sdk/test-apks/vr_services/vr_services_current.apk',
-        ],
         'swarming': {
           'shards': 2,
         },
@@ -5814,8 +5769,8 @@
 
     'android_10_rel_gtests': [
       'android_ar_gtests',
-      'android_ddready_vr_gtests',
       'android_trichrome_smoke_tests',
+      'vr_android_specific_chromium_tests',
     ],
 
     'android_12_dbg_emulator_gtests': [
@@ -5849,10 +5804,10 @@
 
     'android_oreo_gtests': [
       'android_ar_gtests',
-      'android_ddready_vr_gtests',
       'android_monochrome_smoke_tests',
       'android_oreo_standard_gtests',
       'android_smoke_tests',
+      'vr_android_specific_chromium_tests',
     ],
 
     'android_pie_coverage_instrumentation_tests': [
@@ -5865,10 +5820,10 @@
 
     'android_pie_gtests': [
       'android_ar_gtests',
-      'android_ddready_vr_gtests',
       'android_monochrome_smoke_tests',
       'android_smoke_tests',
       'chromium_tracing_gtests',
+      'vr_android_specific_chromium_tests',
     ],
 
     'android_pie_rel_emulator_gtests': [

@@ -39,23 +39,6 @@ targets.legacy_basic_suite(
 )
 
 targets.legacy_basic_suite(
-    name = "android_ddready_vr_gtests",
-    tests = {
-        "chrome_public_test_vr_apk-ddready-cardboard": targets.legacy_test_config(
-            swarming = targets.swarming(
-                shards = 2,
-            ),
-        ),
-        "chrome_public_test_vr_apk-ddready-ddview": targets.legacy_test_config(
-            swarming = targets.swarming(
-                shards = 4,
-            ),
-        ),
-        "chrome_public_test_vr_apk-ddready-don-enabled": targets.legacy_test_config(),
-    },
-)
-
-targets.legacy_basic_suite(
     name = "android_emulator_specific_chrome_public_tests",
     tests = {
         "chrome_public_test_apk": targets.legacy_test_config(
@@ -4914,10 +4897,6 @@ targets.legacy_basic_suite(
     name = "vr_android_specific_chromium_tests",
     tests = {
         "chrome_public_test_vr_apk": targets.legacy_test_config(
-            args = [
-                "--shared-prefs-file=//chrome/android/shared_preference_files/test/vr_cardboard_skipdon_setupcomplete.json",
-                "--additional-apk=//third_party/gvr-android-sdk/test-apks/vr_services/vr_services_current.apk",
-            ],
             swarming = targets.swarming(
                 shards = 2,
             ),

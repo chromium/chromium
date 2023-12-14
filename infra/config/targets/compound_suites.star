@@ -16,7 +16,7 @@ targets.legacy_compound_suite(
     basic_suites = [
         "android_trichrome_smoke_tests",
         "android_ar_gtests",
-        "android_ddready_vr_gtests",
+        "vr_android_specific_chromium_tests",
     ],
 )
 
@@ -62,7 +62,7 @@ targets.legacy_compound_suite(
     name = "android_oreo_gtests",
     basic_suites = [
         "android_ar_gtests",
-        "android_ddready_vr_gtests",
+        "vr_android_specific_chromium_tests",
         "android_monochrome_smoke_tests",
         "android_oreo_standard_gtests",
         "android_smoke_tests",
@@ -84,7 +84,7 @@ targets.legacy_compound_suite(
     name = "android_pie_gtests",
     basic_suites = [
         "android_ar_gtests",
-        "android_ddready_vr_gtests",
+        "vr_android_specific_chromium_tests",
         "android_monochrome_smoke_tests",
         "android_smoke_tests",
         "chromium_tracing_gtests",

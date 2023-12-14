@@ -1440,14 +1440,6 @@ targets.mixin(
     ),
 )
 
-targets.mixin(
-    name = "vr_instrumentation_test",
-    args = [
-        "--remove-system-package=com.google.vr.vrcore",
-        "--additional-apk=//third_party/gvr-android-sdk/test-apks/vr_services/vr_services_current.apk",
-    ],
-)
-
 # Pixel 2
 targets.mixin(
     name = "walleye",
