@@ -44,10 +44,8 @@ void EnrollmentRequisitionManager::Initialize() {
         provider->GetMachineStatistic(ash::system::kOemDeviceRequisitionKey);
 
     if (requisition && !requisition->empty()) {
-      // TODO(b/259661300): Remove copy of `requisition` once
-      // `PrefService::SetString()` uses StringPiece as an argument.
       local_state->SetString(prefs::kDeviceEnrollmentRequisition,
-                             std::string(requisition.value()));
+                             requisition.value());
       if (requisition == kRemoraRequisition ||
           requisition == kSharkRequisition ||
           requisition == kRialtoRequisition) {
