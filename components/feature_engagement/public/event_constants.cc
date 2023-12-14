@@ -109,6 +109,7 @@ const char kShareToolbarItemUsed[] = "share_toolbar_item_used";
 const char kDefaultBrowserVideoPromoConditionsMet[] =
     "default_browser_video_promo_conditions_met";
 const char kLensButtonKeyboardUsed[] = "lens_keyboard_used";
+const char kOmniboxPositionPromoShown[] = "omnibox_position_promo_shown";
 const char kParcelTrackingTriggered[] = "parcel_tracking_triggered";
 const char kParcelTracked[] = "parcel_tracked";
 const char kIOSMultiGestureRefreshUsed[] = "multi_gesture_refresh_used";

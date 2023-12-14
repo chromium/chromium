@@ -52,7 +52,7 @@
                       @"needs and browsing habits**";
   if (_isFirstRun) {
     self.primaryActionString = @"**Finish**";
-    self.secondaryActionString = nil;
+    self.secondaryActionString = @"**Skip**";
   } else {
     self.primaryActionString = @"**Confirm**";
     self.secondaryActionString = @"**No, thanks**";

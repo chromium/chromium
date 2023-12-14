@@ -4,6 +4,9 @@
 
 #import "ios/chrome/browser/ui/first_run/omnibox_position/omnibox_position_choice_coordinator.h"
 
+#import "components/feature_engagement/public/event_constants.h"
+#import "components/feature_engagement/public/tracker.h"
+#import "ios/chrome/browser/feature_engagement/model/tracker_factory.h"
 #import "ios/chrome/browser/first_run/model/first_run_metrics.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
@@ -59,7 +62,8 @@
   CHECK(IsBottomOmniboxPromoFlagEnabled(BottomOmniboxPromoType::kAny));
   [super start];
 
-  _mediator = [[OmniboxPositionChoiceMediator alloc] init];
+  _mediator =
+      [[OmniboxPositionChoiceMediator alloc] initWithFirstRun:_firstRun];
   _mediator.originalPrefService = self.browser->GetBrowserState()
                                       ->GetOriginalChromeBrowserState()
                                       ->GetPrefs();
@@ -83,6 +87,12 @@
                                         completion:nil];
     // TODO(crbug.com/1503638): Record metric here.
   }
+
+  feature_engagement::Tracker* tracker =
+      feature_engagement::TrackerFactory::GetForBrowserState(
+          self.browser->GetBrowserState());
+
+  tracker->NotifyEvent(feature_engagement::events::kOmniboxPositionPromoShown);
 }
 
 - (void)stop {
@@ -107,7 +117,11 @@
 }
 
 - (void)didTapSecondaryActionButton {
-  [_mediator discardSelectedPosition];
+  if (_firstRun) {
+    [_mediator skipSelection];
+  } else {
+    [_mediator discardSelectedPosition];
+  }
   [self dismissScreen];
 }
 

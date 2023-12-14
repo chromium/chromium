@@ -16,12 +16,16 @@
 
 @end
 
-@implementation OmniboxPositionChoiceMediator
+@implementation OmniboxPositionChoiceMediator {
+  /// Whether the screen is being shown in the FRE.
+  BOOL _isFirstRun;
+}
 
-- (instancetype)init {
+- (instancetype)initWithFirstRun:(BOOL)isFirstRun {
   self = [super init];
   if (self) {
     _selectedPosition = DefaultSelectedOmniboxPosition();
+    _isFirstRun = isFirstRun;
   }
   return self;
 }
@@ -37,6 +41,19 @@
 
 - (void)discardSelectedPosition {
   // TODO(crbug.com/1503638): Record selected position histogram.
+}
+
+- (void)skipSelection {
+  CHECK(_isFirstRun);
+  if (self.originalPrefService) {
+    const BOOL defaultPositionIsBottom =
+        DefaultSelectedOmniboxPosition() == ToolbarType::kSecondary;
+    self.originalPrefService->SetBoolean(prefs::kBottomOmniboxByDefault,
+                                         defaultPositionIsBottom);
+    self.originalPrefService->SetDefaultPrefValue(
+        prefs::kBottomOmnibox, base::Value(defaultPositionIsBottom));
+  }
+  // TODO(crbug.com/1503638): Record histogram.
 }
 
 #pragma mark - Setters

@@ -415,7 +415,8 @@ BOOL ShouldSwitchOmniboxToBottom(
   }
 
   BOOL bottomOmniboxEnabledByDefault = NO;
-  if (base::FeatureList::IsEnabled(kBottomOmniboxDefaultSetting)) {
+  if (self.originalPrefService->GetUserPrefValue(
+          prefs::kBottomOmniboxByDefault)) {
     bottomOmniboxEnabledByDefault =
         self.originalPrefService->GetBoolean(prefs::kBottomOmniboxByDefault);
   }

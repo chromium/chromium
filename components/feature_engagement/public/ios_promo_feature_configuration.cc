@@ -8,6 +8,7 @@
 #include "base/strings/string_util.h"
 #include "build/build_config.h"
 #include "components/feature_engagement/public/configuration.h"
+#include "components/feature_engagement/public/event_constants.h"
 #include "components/feature_engagement/public/feature_constants.h"
 #include "components/feature_engagement/public/group_constants.h"
 
@@ -117,6 +118,13 @@ absl::optional<FeatureConfig> GetStandardPromoConfig(
         EventConfig("omnibox_position_promo_trigger", Comparator(EQUAL, 0),
                     feature_engagement::kMaxStoragePeriod,
                     feature_engagement::kMaxStoragePeriod);
+
+    // Blocks the app launch promo if it has been shown in another context (the
+    // promo can also be shown in FRE).
+    config->event_configs.insert(
+        EventConfig(events::kOmniboxPositionPromoShown, Comparator(EQUAL, 0),
+                    feature_engagement::kMaxStoragePeriod,
+                    feature_engagement::kMaxStoragePeriod));
   }
 
   // All standard promos can only be shown once per month.

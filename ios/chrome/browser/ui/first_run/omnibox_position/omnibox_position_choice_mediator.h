@@ -22,10 +22,19 @@ class PrefService;
 /// position.
 @property(nonatomic, assign) PrefService* originalPrefService;
 
+/// Initializes the mediator.
+/// `isFirstRun`: The screen is shown during first run.
+- (instancetype)initWithFirstRun:(BOOL)isFirstRun NS_DESIGNATED_INITIALIZER;
+- (instancetype)init NS_UNAVAILABLE;
+
 /// Saves the selected omnibox position.
 - (void)saveSelectedPosition;
 /// Discards the selected omnibox position.
 - (void)discardSelectedPosition;
+/// Skip omnibox position selection. Sets the default omnibox position to the
+/// position checked by default in the screen (the leading option). Only
+/// available in FRE.
+- (void)skipSelection;
 
 @end
 
