@@ -1298,7 +1298,7 @@ BASE_FEATURE(kTreatUnsafeDownloadsAsActive,
 // Show warnings on downloads not delivered over HTTPS.
 BASE_FEATURE(kInsecureDownloadWarnings,
              "InsecureDownloadWarnings",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // TrackingProtectionSentimentSurvey
 #if !BUILDFLAG(IS_ANDROID)
