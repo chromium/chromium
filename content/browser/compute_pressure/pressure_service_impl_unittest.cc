@@ -8,14 +8,18 @@
 #include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ref.h"
 #include "base/run_loop.h"
+#include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
 #include "base/time/time.h"
+#include "content/browser/compute_pressure/pressure_client_impl.h"
+#include "content/browser/compute_pressure/pressure_service_impl.h"
 #include "content/browser/renderer_host/render_frame_host_impl.h"
 #include "content/public/test/navigation_simulator.h"
 #include "content/test/test_render_frame_host.h"
 #include "content/test/test_render_view_host.h"
 #include "content/test/test_web_contents.h"
+#include "mojo/public/cpp/test_support/test_utils.h"
 #include "services/device/public/cpp/test/scoped_pressure_manager_overrider.h"
 #include "services/device/public/mojom/pressure_manager.mojom.h"
 #include "services/device/public/mojom/pressure_update.mojom.h"
@@ -132,19 +136,19 @@ class FakePressureClient : public device::mojom::PressureClient {
 
 }  // namespace
 
-class ComputePressureTest : public RenderViewHostImplTestHarness {
+class PressureServiceImplTest : public RenderViewHostImplTestHarness {
  public:
-  ComputePressureTest() = default;
-  ~ComputePressureTest() override = default;
+  PressureServiceImplTest() = default;
+  ~PressureServiceImplTest() override = default;
 
-  ComputePressureTest(const ComputePressureTest&) = delete;
-  ComputePressureTest& operator=(const ComputePressureTest&) = delete;
+  PressureServiceImplTest(const PressureServiceImplTest&) = delete;
+  PressureServiceImplTest& operator=(const PressureServiceImplTest&) = delete;
 
   void SetUp() override {
     RenderViewHostImplTestHarness::SetUp();
     NavigateAndCommit(kTestUrl);
 
-    SetComputePressureTest();
+    SetPressureServiceImpl();
   }
 
   void TearDown() override {
@@ -155,7 +159,7 @@ class ComputePressureTest : public RenderViewHostImplTestHarness {
     RenderViewHostImplTestHarness::TearDown();
   }
 
-  void SetComputePressureTest() {
+  void SetPressureServiceImpl() {
     pressure_manager_overrider_ =
         std::make_unique<device::ScopedPressureManagerOverrider>();
     pressure_manager_.reset();
@@ -180,7 +184,7 @@ class ComputePressureTest : public RenderViewHostImplTestHarness {
       pressure_manager_overrider_;
 };
 
-TEST_F(ComputePressureTest, AddClient) {
+TEST_F(PressureServiceImplTest, AddClient) {
   FakePressureClient client;
   ASSERT_EQ(pressure_manager_sync_->AddClient(client.BindNewPipeAndPassRemote(),
                                               PressureSource::kCpu),
@@ -194,23 +198,69 @@ TEST_F(ComputePressureTest, AddClient) {
   EXPECT_EQ(client.updates()[0], update);
 }
 
-TEST_F(ComputePressureTest, AddClientNotSupported) {
+TEST_F(PressureServiceImplTest, AddClientNotSupported) {
   pressure_manager_overrider_->set_is_supported(false);
 
   FakePressureClient client;
   EXPECT_EQ(pressure_manager_sync_->AddClient(client.BindNewPipeAndPassRemote(),
                                               PressureSource::kCpu),
             PressureStatus::kNotSupported);
+
+  const auto& pressure_client =
+      PressureServiceImpl::GetOrCreateForCurrentDocument(
+          contents()->GetPrimaryMainFrame())
+          ->GetPressureClientForTesting(PressureSource::kCpu);
+  EXPECT_FALSE(pressure_client.IsClientReceiverBoundForTesting());
 }
 
-TEST_F(ComputePressureTest, InsecureOrigin) {
+TEST_F(PressureServiceImplTest, AddClientTwice) {
+  FakePressureClient client1;
+  ASSERT_EQ(pressure_manager_sync_->AddClient(
+                client1.BindNewPipeAndPassRemote(), PressureSource::kCpu),
+            PressureStatus::kOk);
+
+  // Simulate the renderer calling AddClient twice for the same PressureSource
+  // and wait for the PressureServiceImpl to finish the call.
+  FakePressureClient client2;
+  mojo::test::BadMessageObserver bad_message_observer;
+  pressure_manager_->AddClient(client2.BindNewPipeAndPassRemote(),
+                               PressureSource::kCpu, base::DoNothing());
+  EXPECT_EQ(bad_message_observer.WaitForBadMessage(),
+            "PressureClientImpl is already connected.");
+
+  auto* pressure_service = PressureServiceImpl::GetOrCreateForCurrentDocument(
+      contents()->GetPrimaryMainFrame());
+  EXPECT_FALSE(pressure_service->IsManagerReceiverBoundForTesting());
+}
+
+TEST_F(PressureServiceImplTest, DisconnectFromBlink) {
+  FakePressureClient client;
+  ASSERT_EQ(pressure_manager_sync_->AddClient(client.BindNewPipeAndPassRemote(),
+                                              PressureSource::kCpu),
+            PressureStatus::kOk);
+
+  // Simulate the renderer disconnecting and wait for the PressureServiceImpl
+  // to observe the pipe close.
+  pressure_manager_.reset();
+  task_environment()->RunUntilIdle();
+
+  auto* pressure_service = PressureServiceImpl::GetOrCreateForCurrentDocument(
+      contents()->GetPrimaryMainFrame());
+  const auto& pressure_client =
+      pressure_service->GetPressureClientForTesting(PressureSource::kCpu);
+  EXPECT_FALSE(pressure_service->IsManagerReceiverBoundForTesting());
+  EXPECT_TRUE(pressure_client.IsClientRemoteBoundForTesting());
+  EXPECT_TRUE(pressure_client.IsClientReceiverBoundForTesting());
+}
+
+TEST_F(PressureServiceImplTest, InsecureOrigin) {
   NavigateAndCommit(kInsecureUrl);
 
-  SetComputePressureTest();
+  SetPressureServiceImpl();
   EXPECT_EQ(1, process()->bad_msg_count());
 }
 
-TEST_F(ComputePressureTest, PermissionsPolicyBlock) {
+TEST_F(PressureServiceImplTest, PermissionsPolicyBlock) {
   // Make compute pressure blocked by permissions policy and it can only be
   // made once on page load, so we refresh the page to simulate that.
   RenderFrameHost* rfh =
@@ -223,17 +273,64 @@ TEST_F(ComputePressureTest, PermissionsPolicyBlock) {
   navigation_simulator->SetPermissionsPolicyHeader(permissions_policy);
   navigation_simulator->Commit();
 
-  SetComputePressureTest();
+  SetPressureServiceImpl();
   EXPECT_EQ(1, process()->bad_msg_count());
 }
 
-class ComputePressureFencedFrameTest : public ComputePressureTest {
+// Allows callers to run a custom callback before running
+// FakePressureManager::AddClient().
+class InterceptingFakePressureManager : public device::FakePressureManager {
  public:
-  ComputePressureFencedFrameTest() {
+  explicit InterceptingFakePressureManager(
+      base::OnceClosure interception_callback)
+      : interception_callback_(std::move(interception_callback)) {}
+
+  void AddClient(mojo::PendingRemote<device::mojom::PressureClient> client,
+                 device::mojom::PressureSource source,
+                 AddClientCallback callback) override {
+    std::move(interception_callback_).Run();
+    device::FakePressureManager::AddClient(std::move(client), source,
+                                           std::move(callback));
+  }
+
+ private:
+  base::OnceClosure interception_callback_;
+};
+
+// Test for https://crbug.com/1355662: destroying PressureServiceImplTest
+// between calling PressureServiceImpl::AddClient() and its |manager_remote_|
+// invoking the callback it receives does not crash.
+TEST_F(PressureServiceImplTest, DestructionOrderWithOngoingCallback) {
+  auto intercepting_fake_pressure_manager =
+      std::make_unique<InterceptingFakePressureManager>(
+          base::BindLambdaForTesting([&]() {
+            // Delete the current WebContents and consequently trigger
+            // PressureServiceImpl's destruction between calling
+            // PressureServiceImpl::AddClient() and its |manager_remote_|
+            // invoking the callback it receives.
+            DeleteContents();
+          }));
+  pressure_manager_overrider_->set_fake_pressure_manager(
+      std::move(intercepting_fake_pressure_manager));
+
+  base::RunLoop run_loop;
+  pressure_manager_.set_disconnect_handler(run_loop.QuitClosure());
+  FakePressureClient client;
+  pressure_manager_->AddClient(
+      client.BindNewPipeAndPassRemote(), PressureSource::kCpu,
+      base::BindOnce([](device::mojom::PressureStatus) {
+        ADD_FAILURE() << "Reached AddClient callback unexpectedly";
+      }));
+  run_loop.Run();
+}
+
+class PressureServiceImplFencedFrameTest : public PressureServiceImplTest {
+ public:
+  PressureServiceImplFencedFrameTest() {
     scoped_feature_list_.InitAndEnableFeatureWithParameters(
         blink::features::kFencedFrames, {{"implementation_type", "mparch"}});
   }
-  ~ComputePressureFencedFrameTest() override = default;
+  ~PressureServiceImplFencedFrameTest() override = default;
 
  protected:
   RenderFrameHost* CreateFencedFrame(RenderFrameHost* parent) {
@@ -246,7 +343,7 @@ class ComputePressureFencedFrameTest : public ComputePressureTest {
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
-TEST_F(ComputePressureFencedFrameTest, AccessFromFencedFrame) {
+TEST_F(PressureServiceImplFencedFrameTest, AccessFromFencedFrame) {
   auto* fenced_frame_rfh = CreateFencedFrame(contents()->GetPrimaryMainFrame());
   // Secure origin check will fail if the RenderFrameHost* passed to it has
   // not navigated to a secure origin, so we need to create a navigation here.

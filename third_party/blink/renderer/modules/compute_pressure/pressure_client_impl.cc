@@ -5,6 +5,8 @@
 #include "third_party/blink/renderer/modules/compute_pressure/pressure_client_impl.h"
 
 #include "base/task/single_thread_task_runner.h"
+#include "services/device/public/mojom/pressure_manager.mojom-blink.h"
+#include "services/device/public/mojom/pressure_update.mojom-blink.h"
 #include "third_party/blink/renderer/core/dom/dom_high_res_time_stamp.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/core/page/focus_controller.h"

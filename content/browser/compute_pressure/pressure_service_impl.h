@@ -1,0 +1,85 @@
+// Copyright 2021 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#ifndef CONTENT_BROWSER_COMPUTE_PRESSURE_PRESSURE_SERVICE_IMPL_H_
+#define CONTENT_BROWSER_COMPUTE_PRESSURE_PRESSURE_SERVICE_IMPL_H_
+
+#include <array>
+
+#include "base/functional/callback.h"
+#include "base/sequence_checker.h"
+#include "base/thread_annotations.h"
+#include "content/browser/compute_pressure/pressure_client_impl.h"
+#include "content/common/content_export.h"
+#include "content/public/browser/document_user_data.h"
+#include "mojo/public/cpp/bindings/receiver.h"
+#include "mojo/public/cpp/bindings/remote.h"
+#include "services/device/public/mojom/pressure_manager.mojom.h"
+
+namespace content {
+
+class RenderFrameHost;
+
+// Serves all the Compute Pressure API mojo requests for a document.
+//
+// This class is not thread-safe, so each instance must be used on one sequence.
+class CONTENT_EXPORT PressureServiceImpl
+    : public device::mojom::PressureManager,
+      public DocumentUserData<PressureServiceImpl> {
+ public:
+  ~PressureServiceImpl() override;
+
+  PressureServiceImpl(const PressureServiceImpl&) = delete;
+  PressureServiceImpl& operator=(const PressureServiceImpl&) = delete;
+
+  void BindReceiver(
+      mojo::PendingReceiver<device::mojom::PressureManager> receiver);
+
+  // device::mojom::PressureManager implementation.
+  void AddClient(mojo::PendingRemote<device::mojom::PressureClient> client,
+                 device::mojom::PressureSource source,
+                 AddClientCallback callback) override;
+
+  bool IsManagerReceiverBoundForTesting() const {
+    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+    return manager_receiver_.is_bound();
+  }
+
+  const PressureClientImpl& GetPressureClientForTesting(
+      device::mojom::PressureSource source) const {
+    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+    return source_to_client_[static_cast<size_t>(source)];
+  }
+
+ private:
+  explicit PressureServiceImpl(RenderFrameHost* render_frame_host);
+
+  void OnPressureManagerDisconnected();
+
+  SEQUENCE_CHECKER(sequence_checker_);
+
+  // Services side.
+  // Callback from |manager_receiver_| is passed to |manager_remote_| and the
+  // Receiver should be destroyed first so that the callback is invalidated
+  // before being discarded.
+  mojo::Remote<device::mojom::PressureManager> manager_remote_
+      GUARDED_BY_CONTEXT(sequence_checker_);
+
+  // Blink side.
+  mojo::Receiver<device::mojom::PressureManager> GUARDED_BY_CONTEXT(
+      sequence_checker_) manager_receiver_{this};
+
+  std::array<PressureClientImpl,
+             static_cast<size_t>(device::mojom::PressureSource::kMaxValue) + 1>
+      source_to_client_ GUARDED_BY_CONTEXT(sequence_checker_);
+
+  friend DocumentUserData;
+  DOCUMENT_USER_DATA_KEY_DECL();
+};
+
+}  // namespace content
+
+#endif  // CONTENT_BROWSER_COMPUTE_PRESSURE_PRESSURE_SERVICE_IMPL_H_
