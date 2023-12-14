@@ -87,8 +87,8 @@ class ViewsAXTreeManagerTest : public ViewsTestBase,
                         ui::AXNodeID node_id);
 
   UniqueWidgetPtr widget_;
-  raw_ptr<Button, DanglingUntriaged> button_ = nullptr;
-  raw_ptr<Label, DanglingUntriaged> label_ = nullptr;
+  raw_ptr<Button> button_ = nullptr;
+  raw_ptr<Label> label_ = nullptr;
   absl::variant<TestOwnedManager, WidgetOwnedManager> manager_;
   ui::AXEventGenerator::Event event_to_wait_for_;
   std::unique_ptr<base::RunLoop> loop_runner_;
@@ -144,6 +144,9 @@ void ViewsAXTreeManagerTest::TearDown() {
 }
 
 void ViewsAXTreeManagerTest::CloseWidget() {
+  button_ = nullptr;
+  label_ = nullptr;
+
   if (!widget_->IsClosed())
     widget_->CloseNow();
 
