@@ -26,6 +26,7 @@ DeepScanningFailureModalDialogTest.*
 *DiceWebSigninInterceptionBubbleV1SyncPromoPixelTest.InvokeUi_*
 *DiceWebSigninInterceptionBubbleV2PixelTest.InvokeUi_*
 DeleteAddressProfileDialogControllerImplTest.InvokeUi_*
+DocumentPictureInPicturePixelTest.*
 EditAddressProfileDialogControllerImplTest.InvokeUi_*
 ManagedUserNoticeUIDialogPixelTest.*
 ManagedUserNoticeUIWindowPixelTest.*
