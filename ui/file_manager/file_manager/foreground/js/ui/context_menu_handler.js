@@ -5,7 +5,6 @@
 import {assertInstanceof} from 'chrome://resources/ash/common/assert.js';
 import {dispatchPropertyChange} from 'chrome://resources/ash/common/cr_deprecated.js';
 import {NativeEventTarget as EventTarget} from 'chrome://resources/ash/common/event_target.js';
-import {EventTracker} from 'chrome://resources/ash/common/event_tracker.js';
 
 import {crInjectTypeAndInit} from '../../../common/js/cr_ui.js';
 
@@ -23,8 +22,8 @@ import {positionPopupAtPoint} from './position_util.js';
 class ContextMenuHandler extends EventTarget {
   constructor() {
     super();
-    /** @private @type {!EventTracker} */
-    this.showingEvents_ = new EventTracker();
+    /** @private @type {AbortController|null} */
+    this.abortController_ = null;
 
     /**
      * The menu that we are currently showing.
@@ -111,7 +110,6 @@ class ContextMenuHandler extends EventTarget {
     // @ts-ignore: error TS2339: Property 'ownerDocument' does not exist on type
     // 'Menu'.
     const doc = menu.ownerDocument;
-    const win = /** @type {!Window} */ (doc.defaultView);
     if (this.resizeObserver_) {
       this.resizeObserver_.disconnect();
     }
@@ -125,33 +123,26 @@ class ContextMenuHandler extends EventTarget {
     // @ts-ignore: error TS2345: Argument of type 'Menu' is not assignable to
     // parameter of type 'Element'.
     this.resizeObserver_.observe(menu);
-    // @ts-ignore: error TS2345: Argument of type 'this' is not assignable to
-    // parameter of type 'Function | EventListener'.
-    this.showingEvents_.add(doc, 'keydown', this, true);
-    // @ts-ignore: error TS2345: Argument of type 'this' is not assignable to
-    // parameter of type 'Function | EventListener'.
-    this.showingEvents_.add(doc, 'mousedown', this, true);
-    // @ts-ignore: error TS2345: Argument of type 'this' is not assignable to
-    // parameter of type 'Function | EventListener'.
-    this.showingEvents_.add(doc, 'touchstart', this, true);
-    // @ts-ignore: error TS2345: Argument of type 'this' is not assignable to
-    // parameter of type 'Function | EventListener'.
-    this.showingEvents_.add(doc, 'focus', this);
-    // @ts-ignore: error TS2345: Argument of type 'this' is not assignable to
-    // parameter of type 'Function | EventListener'.
-    this.showingEvents_.add(win, 'popstate', this);
-    // @ts-ignore: error TS2345: Argument of type 'this' is not assignable to
-    // parameter of type 'Function | EventListener'.
-    this.showingEvents_.add(win, 'resize', this);
-    // @ts-ignore: error TS2345: Argument of type 'this' is not assignable to
-    // parameter of type 'Function | EventListener'.
-    this.showingEvents_.add(win, 'blur', this);
-    // @ts-ignore: error TS2345: Argument of type 'Menu' is not assignable to
-    // parameter of type 'EventTarget'.
-    this.showingEvents_.add(menu, 'contextmenu', this);
-    // @ts-ignore: error TS2345: Argument of type 'Menu' is not assignable to
-    // parameter of type 'EventTarget'.
-    this.showingEvents_.add(menu, 'activate', this);
+    this.abortController_ = new AbortController();
+    doc.addEventListener(
+        'keydown', this, {signal: this.abortController_.signal, capture: true});
+    doc.addEventListener(
+        'mousedown', this,
+        {signal: this.abortController_.signal, capture: true});
+    doc.addEventListener(
+        'touchstart', this,
+        {signal: this.abortController_.signal, capture: true});
+    doc.addEventListener('focus', this, {signal: this.abortController_.signal});
+    doc.defaultView?.addEventListener(
+        'popstate', this, {signal: this.abortController_.signal});
+    doc.defaultView?.addEventListener(
+        'resize', this, {signal: this.abortController_.signal});
+    doc.defaultView?.addEventListener(
+        'blur', this, {signal: this.abortController_.signal});
+    menu.addEventListener(
+        'contextmenu', this, {signal: this.abortController_.signal});
+    menu.addEventListener(
+        'activate', this, {signal: this.abortController_.signal});
 
     const ev =
         new CustomEvent('show', {detail: {element: menu.contextElement, menu}});
@@ -186,7 +177,7 @@ class ContextMenuHandler extends EventTarget {
     // @ts-ignore: error TS2339: Property 'contextElement' does not exist on
     // type 'Menu'.
     menu.contextElement = null;
-    this.showingEvents_.removeAll();
+    this.abortController_?.abort();
     if (this.resizeObserver_) {
       // @ts-ignore: error TS2345: Argument of type 'Menu' is not assignable to
       // parameter of type 'Element'.
