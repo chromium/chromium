@@ -32242,6 +32242,8 @@ from previous Chrome versions.
   <int value="-783999903" label="FilesTrashDrive:disabled"/>
   <int value="-783890018" label="LacrosProfileMigrationForAnyUser:disabled"/>
   <int value="-783093620" label="WebViewHitTestInBlinkOnTouchStart:enabled"/>
+  <int value="-782689039"
+      label="FencedFramesCrossOriginAutomaticBeacons:enabled"/>
   <int value="-782193212"
       label="AutofillEnablePaymentsMandatoryReauth:enabled"/>
   <int value="-781625651"
@@ -35318,6 +35320,8 @@ from previous Chrome versions.
   <int value="684112629" label="BluetoothCoredump:disabled"/>
   <int value="684806628" label="TranslateLanguageByULP:disabled"/>
   <int value="685406951" label="UseNotificationCompatBuilder:disabled"/>
+  <int value="685571935"
+      label="FencedFramesCrossOriginAutomaticBeacons:disabled"/>
   <int value="685916283" label="enable-zip-archiver-on-file-manager"/>
   <int value="686929809" label="BorealisWebUIInstaller:enabled"/>
   <int value="687838135" label="ThirdPartyDoodles:disabled"/>

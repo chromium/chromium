@@ -777,6 +777,9 @@ extern const char kEnableTailoredSecurityUpdatedMessagesDescription[];
 extern const char kEnableFencedFramesName[];
 extern const char kEnableFencedFramesDescription[];
 
+extern const char kEnableFencedFramesCrossOriginAutomaticBeaconsName[];
+extern const char kEnableFencedFramesCrossOriginAutomaticBeaconsDescription[];
+
 extern const char kEnableFencedFramesDeveloperModeName[];
 extern const char kEnableFencedFramesDeveloperModeDescription[];
 

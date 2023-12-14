@@ -1169,6 +1169,14 @@ const char kEnableFencedFramesDescription[] =
     "#privacy-sandbox-ads-apis to also be enabled. See "
     "https://github.com/shivanigithub/fenced-frame";
 
+const char kEnableFencedFramesCrossOriginAutomaticBeaconsName[] =
+    "Enable automatic beacons from cross-origin subframes.";
+const char kEnableFencedFramesCrossOriginAutomaticBeaconsDescription[] =
+    "Allows documents that are cross-origin to an ad frame root to send "
+    "automatic beacons, if the document and the data are both opted in to "
+    "being used in cross-origin beacons. The data must still be set in a "
+    "document that is same-origin to the ad frame root.";
+
 const char kEnableFencedFramesDeveloperModeName[] =
     "Enable the `FencedFrameConfig` constructor.";
 const char kEnableFencedFramesDeveloperModeDescription[] =
