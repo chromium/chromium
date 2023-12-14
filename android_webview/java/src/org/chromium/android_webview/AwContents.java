@@ -15,7 +15,6 @@ import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Picture;
-import android.graphics.Point;
 import android.graphics.Rect;
 import android.net.Uri;
 import android.net.http.SslCertificate;
@@ -888,7 +887,7 @@ public class AwContents implements SmartClipProvider {
         }
 
         @Override
-        public void onScrollUpdateGestureConsumed(Point rootScrollOffset) {
+        public void onScrollUpdateGestureConsumed() {
             mScrollAccessibilityHelper.postViewScrolledAccessibilityEventCallback();
             mZoomControls.invokeZoomPicker();
         }

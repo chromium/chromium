@@ -178,8 +178,7 @@ class MockWidgetInputHandler : public blink::mojom::WidgetInputHandler {
                       const ui::LatencyInfo& latency_info,
                       blink::mojom::InputEventResultState state,
                       blink::mojom::DidOverscrollParamsPtr overscroll,
-                      blink::mojom::TouchActionOptionalPtr touch_action,
-                      blink::mojom::ScrollResultDataPtr scroll_result_data);
+                      blink::mojom::TouchActionOptionalPtr touch_action);
 
     // Return if the callback is set.
     bool HasCallback() const;

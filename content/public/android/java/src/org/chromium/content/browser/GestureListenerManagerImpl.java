@@ -6,11 +6,9 @@ package org.chromium.content.browser;
 
 import static org.chromium.cc.mojom.RootScrollOffsetUpdateFrequency.NONE;
 
-import android.graphics.Point;
 import android.view.HapticFeedbackConstants;
 import android.view.View;
 
-import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
 import org.jni_zero.CalledByNative;
@@ -64,7 +62,6 @@ public class GestureListenerManagerImpl
     private SelectionPopupControllerImpl mSelectionPopupController;
     private ViewAndroidDelegate mViewDelegate;
     private InternalAccessDelegate mScrollDelegate;
-    private final Point mRootScrollOffsetStruct = new Point();
 
     private long mNativeGestureListenerManager;
 
@@ -291,7 +288,7 @@ public class GestureListenerManagerImpl
 
     @CalledByNative
     @VisibleForTesting
-    void onEventAck(int event, boolean consumed, float scrollOffsetX, float scrollOffsetY) {
+    void onEventAck(int event, boolean consumed) {
         switch (event) {
             case EventType.GESTURE_FLING_START:
                 // If we're here, then |consumed| is false as otherwise #onFlingStart() would have
@@ -307,10 +304,7 @@ public class GestureListenerManagerImpl
                 if (!consumed) break;
                 destroyPastePopup();
                 for (mIterator.rewind(); mIterator.hasNext(); ) {
-                    // TODO(sinansahin): Can we update the RenderCoordinates using these values
-                    // and make them available through other scroll events?
-                    Point scrollOffset = getRootScrollOffsetStruct(scrollOffsetX, scrollOffsetY);
-                    mIterator.next().onScrollUpdateGestureConsumed(scrollOffset);
+                    mIterator.next().onScrollUpdateGestureConsumed();
                 }
                 break;
             case EventType.GESTURE_SCROLL_END:
@@ -338,20 +332,6 @@ public class GestureListenerManagerImpl
             default:
                 break;
         }
-    }
-
-    /**
-     * Returns a {@link Point} with the given x and y scroll offset values. Returns null if the
-     * values are invalid, i.e. negative.
-     *
-     * @param scrollOffsetX Horizontal scroll offset in pixels.
-     * @param scrollOffsetY Vertical scroll offset in pixels.
-     */
-    private @Nullable Point getRootScrollOffsetStruct(float scrollOffsetX, float scrollOffsetY) {
-        if (scrollOffsetX < 0 || scrollOffsetY < 0) return null;
-
-        mRootScrollOffsetStruct.set((int) scrollOffsetX, (int) scrollOffsetY);
-        return mRootScrollOffsetStruct;
     }
 
     /** Called when a gesture event ack happens for |EventType.GESTURE_SCROLL_BEGIN|. */

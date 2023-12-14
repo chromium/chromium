@@ -15,7 +15,6 @@
 #include "cc/paint/element_id.h"
 #include "third_party/blink/public/common/input/web_coalesced_input_event.h"
 #include "third_party/blink/public/common/input/web_gesture_event.h"
-#include "third_party/blink/public/mojom/input/input_handler.mojom-blink.h"
 #include "third_party/blink/public/platform/web_common.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
 
@@ -152,8 +151,7 @@ class PLATFORM_EXPORT InputHandlerProxy : public cc::InputHandlerClient,
       std::unique_ptr<blink::WebCoalescedInputEvent> event,
       std::unique_ptr<DidOverscrollParams>,
       const blink::WebInputEventAttribution&,
-      std::unique_ptr<cc::EventMetrics> metrics,
-      mojom::blink::ScrollResultDataPtr)>;
+      std::unique_ptr<cc::EventMetrics> metrics)>;
   void HandleInputEventWithLatencyInfo(
       std::unique_ptr<blink::WebCoalescedInputEvent> event,
       std::unique_ptr<cc::EventMetrics> metrics,
@@ -370,11 +368,6 @@ class PLATFORM_EXPORT InputHandlerProxy : public cc::InputHandlerClient,
   // dispatched.  If the event causes overscroll, the overscroll metadata is
   // bundled in the event ack, saving an IPC.
   std::unique_ptr<DidOverscrollParams> current_overscroll_params_;
-
-  // Used to cache the scroll result data - e.g. root scroll offset - when a
-  // scroll gesture is handled. This data is then passed back using
-  // |EventDispositionCallback|.
-  mojom::blink::ScrollResultDataPtr current_scroll_result_data_;
 
   std::unique_ptr<CompositorThreadEventQueue> compositor_event_queue_;
 

@@ -21,9 +21,7 @@
 #include "third_party/blink/public/common/input/synthetic_web_input_event_builders.h"
 #include "third_party/blink/public/common/input/web_input_event.h"
 #include "third_party/blink/public/mojom/input/input_event_result.mojom-shared.h"
-#include "third_party/blink/public/mojom/input/input_handler.mojom.h"
 #include "ui/events/blink/blink_features.h"
-#include "ui/gfx/geometry/point_f.h"
 
 #if BUILDFLAG(IS_CHROMEOS)
 #include "ui/display/test/test_screen.h"
@@ -79,18 +77,16 @@ class GestureEventQueueTest : public testing::Test,
     if (sync_ack_result_) {
       std::unique_ptr<blink::mojom::InputEventResultState> ack_result =
           std::move(sync_ack_result_);
-      SendInputEventACK(event.event.GetType(), *ack_result, nullptr);
+      SendInputEventACK(event.event.GetType(), *ack_result);
     }
   }
 
   void OnGestureEventAck(
       const GestureEventWithLatencyInfo& event,
       blink::mojom::InputEventResultSource ack_source,
-      blink::mojom::InputEventResultState ack_result,
-      blink::mojom::ScrollResultDataPtr scroll_result_data) override {
+      blink::mojom::InputEventResultState ack_result) override {
     ++acked_gesture_event_count_;
     last_acked_event_ = event.event;
-    last_acked_event_scroll_result_data_ = std::move(scroll_result_data);
     if (sync_followup_event_) {
       auto sync_followup_event = std::move(sync_followup_event_);
       SimulateGestureEvent(*sync_followup_event);
@@ -167,11 +163,10 @@ class GestureEventQueueTest : public testing::Test,
   }
 
   void SendInputEventACK(WebInputEvent::Type type,
-                         blink::mojom::InputEventResultState ack,
-                         blink::mojom::ScrollResultDataPtr scroll_result_data) {
+                         blink::mojom::InputEventResultState ack) {
     queue()->ProcessGestureAck(
         blink::mojom::InputEventResultSource::kCompositorThread, ack, type,
-        ui::LatencyInfo(), std::move(scroll_result_data));
+        ui::LatencyInfo());
   }
 
   void RunUntilIdle() { task_environment_.RunUntilIdle(); }
@@ -232,10 +227,6 @@ class GestureEventQueueTest : public testing::Test,
 
   GestureEventQueue* queue() const { return queue_.get(); }
 
-  blink::mojom::ScrollResultDataPtr last_acked_event_scroll_result_data() {
-    return std::move(last_acked_event_scroll_result_data_);
-  }
-
  private:
   base::test::SingleThreadTaskEnvironment task_environment_;
   std::unique_ptr<GestureEventQueue> queue_;
@@ -245,7 +236,6 @@ class GestureEventQueueTest : public testing::Test,
   std::unique_ptr<blink::mojom::InputEventResultState> sync_ack_result_;
   std::unique_ptr<WebGestureEvent> sync_followup_event_;
   base::test::ScopedFeatureList feature_list_;
-  blink::mojom::ScrollResultDataPtr last_acked_event_scroll_result_data_;
 #if BUILDFLAG(IS_CHROMEOS)
   // This is necessary on ChromeOS to access tablet mode info.
   display::test::TestScreen test_screen_{/*create_dispay=*/true,
@@ -280,7 +270,7 @@ TEST_F(GestureEventQueueTest, SyncAckQueuesEvent) {
   EXPECT_EQ(1U, GetAndResetAckedGestureEventCount());
 
   SendInputEventACK(WebInputEvent::Type::kGestureShowPress,
-                    blink::mojom::InputEventResultState::kConsumed, nullptr);
+                    blink::mojom::InputEventResultState::kConsumed);
   EXPECT_EQ(0U, GetAndResetSentGestureEventCount());
   EXPECT_EQ(0U, GestureEventQueueSize());
   EXPECT_EQ(1U, GetAndResetAckedGestureEventCount());
@@ -529,14 +519,14 @@ TEST_F(GestureEventQueueWithCompositorEventQueueTest,
 
   // Simulate GSB ACK.
   SendInputEventACK(WebInputEvent::Type::kGestureScrollBegin,
-                    blink::mojom::InputEventResultState::kConsumed, nullptr);
+                    blink::mojom::InputEventResultState::kConsumed);
   EXPECT_EQ(WebInputEvent::Type::kGestureScrollBegin,
             last_acked_event().GetType());
   EXPECT_EQ(2U, GestureEventQueueSize());
 
   // Simulate GSE ACK first since it's usually dispatched non-blocking.
   SendInputEventACK(WebInputEvent::Type::kGestureScrollEnd,
-                    blink::mojom::InputEventResultState::kConsumed, nullptr);
+                    blink::mojom::InputEventResultState::kConsumed);
   // GSE ACK will be cached in GestureEventQueue since we haven't ACKed GSU yet.
   EXPECT_EQ(WebInputEvent::Type::kGestureScrollBegin,
             last_acked_event().GetType());
@@ -544,7 +534,7 @@ TEST_F(GestureEventQueueWithCompositorEventQueueTest,
 
   // Simulate GSU ACK.
   SendInputEventACK(WebInputEvent::Type::kGestureScrollUpdate,
-                    blink::mojom::InputEventResultState::kConsumed, nullptr);
+                    blink::mojom::InputEventResultState::kConsumed);
   // Both ACKs should be released in order.
   EXPECT_EQ(WebInputEvent::Type::kGestureScrollEnd,
             last_acked_event().GetType());
@@ -578,31 +568,25 @@ TEST_F(GestureEventQueueWithCompositorEventQueueTest,
             GestureEventLastQueueEvent().GetType());
 
   SendInputEventACK(WebInputEvent::Type::kGestureScrollBegin,
-                    blink::mojom::InputEventResultState::kConsumed, nullptr);
+                    blink::mojom::InputEventResultState::kConsumed);
   EXPECT_EQ(4U, GestureEventQueueSize());
 
-  auto scroll_result_data =
-      blink::mojom::ScrollResultData::New(gfx::PointF(0.f, 4.f));
   SendInputEventACK(WebInputEvent::Type::kGesturePinchBegin,
-                    blink::mojom::InputEventResultState::kConsumed, nullptr);
+                    blink::mojom::InputEventResultState::kConsumed);
   SendInputEventACK(WebInputEvent::Type::kGestureScrollUpdate,
-                    blink::mojom::InputEventResultState::kConsumed,
-                    std::move(scroll_result_data));
+                    blink::mojom::InputEventResultState::kConsumed);
 
   // Both GestureScrollUpdate and GesturePinchUpdate should have been sent.
   EXPECT_EQ(WebInputEvent::Type::kGestureScrollUpdate,
             last_acked_event().GetType());
-  // scroll_result_data should be preserved.
-  EXPECT_EQ(4.f,
-            last_acked_event_scroll_result_data()->root_scroll_offset->y());
   EXPECT_EQ(2U, GestureEventQueueSize());
   EXPECT_EQ(0U, GetAndResetSentGestureEventCount());
 
   // Ack the last 2 GesturePinchUpdate events.
   SendInputEventACK(WebInputEvent::Type::kGesturePinchUpdate,
-                    blink::mojom::InputEventResultState::kConsumed, nullptr);
+                    blink::mojom::InputEventResultState::kConsumed);
   SendInputEventACK(WebInputEvent::Type::kGesturePinchUpdate,
-                    blink::mojom::InputEventResultState::kConsumed, nullptr);
+                    blink::mojom::InputEventResultState::kConsumed);
   EXPECT_EQ(WebInputEvent::Type::kGesturePinchUpdate,
             last_acked_event().GetType());
   EXPECT_EQ(0U, GestureEventQueueSize());

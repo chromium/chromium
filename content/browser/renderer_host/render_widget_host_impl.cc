@@ -120,7 +120,6 @@
 #include "third_party/blink/public/common/widget/visual_properties.h"
 #include "third_party/blink/public/mojom/drag/drag.mojom.h"
 #include "third_party/blink/public/mojom/frame/intrinsic_sizing_info.mojom.h"
-#include "third_party/blink/public/mojom/input/input_handler.mojom-forward.h"
 #include "third_party/blink/public/mojom/input/touch_event.mojom.h"
 #include "ui/base/clipboard/clipboard_constants.h"
 #include "ui/base/cursor/cursor.h"
@@ -3424,8 +3423,7 @@ void RenderWidgetHostImpl::OnWheelEventAck(
 void RenderWidgetHostImpl::OnGestureEventAck(
     const GestureEventWithLatencyInfo& event,
     blink::mojom::InputEventResultSource ack_source,
-    blink::mojom::InputEventResultState ack_result,
-    blink::mojom::ScrollResultDataPtr scroll_result_data) {
+    blink::mojom::InputEventResultState ack_result) {
   latency_tracker_.OnInputEventAck(event.event, &event.latency, ack_result);
   for (auto& input_event_observer : input_event_observers_) {
     input_event_observer.OnInputEventAck(ack_source, ack_result, event.event);
@@ -3438,8 +3436,7 @@ void RenderWidgetHostImpl::OnGestureEventAck(
   }
 
   if (view_) {
-    view_->GestureEventAck(event.event, ack_result,
-                           std::move(scroll_result_data));
+    view_->GestureEventAck(event.event, ack_result);
   }
 }
 

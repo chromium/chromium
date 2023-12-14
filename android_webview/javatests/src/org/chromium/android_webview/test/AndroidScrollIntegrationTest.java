@@ -8,7 +8,6 @@ import static org.chromium.android_webview.test.AwActivityTestRule.WAIT_TIMEOUT_
 
 import android.annotation.SuppressLint;
 import android.content.Context;
-import android.graphics.Point;
 
 import androidx.test.InstrumentationRegistry;
 import androidx.test.filters.SmallTest;
@@ -831,7 +830,7 @@ public class AndroidScrollIntegrationTest extends AwParameterizedTest {
                 int scrollOffsetY, int scrollExtentY, boolean isDirectionUp) {}
 
         @Override
-        public void onScrollUpdateGestureConsumed(Point rootScrollOffset) {
+        public void onScrollUpdateGestureConsumed() {
             mOnScrollUpdateGestureConsumedHelper.notifyCalled();
         }
     }

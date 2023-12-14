@@ -51,8 +51,7 @@ CompositorThreadEventQueue::~CompositorThreadEventQueue() {
     event_with_callback->RunCallbacks(
         InputHandlerProxy::DROP_EVENT, event_with_callback->latency_info(),
         /*did_overscroll_params=*/nullptr,
-        /*attribution=*/WebInputEventAttribution(),
-        /*scroll_result_data=*/nullptr);
+        /*attribution=*/WebInputEventAttribution());
   }
 }
 

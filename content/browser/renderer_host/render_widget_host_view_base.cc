@@ -400,13 +400,11 @@ void RenderWidgetHostViewBase::WheelEventAck(
 
 void RenderWidgetHostViewBase::GestureEventAck(
     const blink::WebGestureEvent& event,
-    blink::mojom::InputEventResultState ack_result,
-    blink::mojom::ScrollResultDataPtr scroll_result_data) {}
+    blink::mojom::InputEventResultState ack_result) {}
 
 void RenderWidgetHostViewBase::ChildDidAckGestureEvent(
     const blink::WebGestureEvent& event,
-    blink::mojom::InputEventResultState ack_result,
-    blink::mojom::ScrollResultDataPtr scroll_result_data) {}
+    blink::mojom::InputEventResultState ack_result) {}
 
 void RenderWidgetHostViewBase::ForwardTouchpadZoomEventIfNecessary(
     const blink::WebGestureEvent& event,

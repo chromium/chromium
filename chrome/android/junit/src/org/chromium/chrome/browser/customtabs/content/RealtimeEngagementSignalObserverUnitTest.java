@@ -24,7 +24,6 @@ import static org.chromium.cc.mojom.RootScrollOffsetUpdateFrequency.ON_SCROLL_EN
 import static org.chromium.chrome.browser.customtabs.content.RealtimeEngagementSignalObserver.DEFAULT_AFTER_SCROLL_END_THRESHOLD_MS;
 import static org.chromium.chrome.browser.customtabs.content.RealtimeEngagementSignalObserver.REAL_VALUES;
 
-import android.graphics.Point;
 import android.os.Bundle;
 import android.os.SystemClock;
 
@@ -269,9 +268,7 @@ public class RealtimeEngagementSignalObserverUnitTest {
         // Scroll down to 55%.
         when(mRenderCoordinatesImpl.getScrollYPixInt()).thenReturn(55);
         listener.onScrollOffsetOrExtentChanged(55, SCROLL_EXTENT);
-        listener.onScrollUpdateGestureConsumed(new Point(0, 55));
         // Scroll up to 30%.
-        listener.onScrollUpdateGestureConsumed(new Point(0, 30));
         when(mRenderCoordinatesImpl.getScrollYPixInt()).thenReturn(30);
         listener.onScrollOffsetOrExtentChanged(30, SCROLL_EXTENT);
 
@@ -294,7 +291,6 @@ public class RealtimeEngagementSignalObserverUnitTest {
         // Start by scrolling down.
         listener.onScrollStarted(0, SCROLL_EXTENT, false);
         // Scroll down to 3%.
-        listener.onScrollUpdateGestureConsumed(new Point(0, 3));
         when(mRenderCoordinatesImpl.getScrollYPixInt()).thenReturn(3);
         listener.onScrollOffsetOrExtentChanged(3, SCROLL_EXTENT);
         // End scrolling.
@@ -306,7 +302,6 @@ public class RealtimeEngagementSignalObserverUnitTest {
         // Start scrolling down again.
         listener.onScrollStarted(3, SCROLL_EXTENT, false);
         // Scroll down to 8%.
-        listener.onScrollUpdateGestureConsumed(new Point(0, 8));
         when(mRenderCoordinatesImpl.getScrollYPixInt()).thenReturn(8);
         listener.onScrollOffsetOrExtentChanged(8, SCROLL_EXTENT);
         // End scrolling.
@@ -318,7 +313,6 @@ public class RealtimeEngagementSignalObserverUnitTest {
         // Start scrolling down again.
         listener.onScrollStarted(8, SCROLL_EXTENT, false);
         // Scroll down to 94%.
-        listener.onScrollUpdateGestureConsumed(new Point(0, 94));
         when(mRenderCoordinatesImpl.getScrollYPixInt()).thenReturn(94);
         listener.onScrollOffsetOrExtentChanged(94, SCROLL_EXTENT);
         // End scrolling.
@@ -336,7 +330,6 @@ public class RealtimeEngagementSignalObserverUnitTest {
         // Start by scrolling down.
         listener.onScrollStarted(0, SCROLL_EXTENT, false);
         // Scroll down to 63%.
-        listener.onScrollUpdateGestureConsumed(new Point(0, 63));
         when(mRenderCoordinatesImpl.getScrollYPixInt()).thenReturn(63);
         listener.onScrollOffsetOrExtentChanged(63, SCROLL_EXTENT);
         // End scrolling.
@@ -349,7 +342,6 @@ public class RealtimeEngagementSignalObserverUnitTest {
         // Now scroll back up.
         listener.onScrollStarted(63, SCROLL_EXTENT, true);
         // Scroll up to 30%.
-        listener.onScrollUpdateGestureConsumed(new Point(0, 30));
         when(mRenderCoordinatesImpl.getScrollYPixInt()).thenReturn(30);
         listener.onScrollOffsetOrExtentChanged(30, SCROLL_EXTENT);
         // End scrolling.
@@ -368,7 +360,6 @@ public class RealtimeEngagementSignalObserverUnitTest {
         // Start by scrolling down.
         listener.onScrollStarted(0, SCROLL_EXTENT, false);
         // Scroll down to 50%.
-        listener.onScrollUpdateGestureConsumed(new Point(0, 50));
         when(mRenderCoordinatesImpl.getScrollYPixInt()).thenReturn(50);
         listener.onScrollOffsetOrExtentChanged(50, SCROLL_EXTENT);
         // End scrolling.
@@ -377,11 +368,9 @@ public class RealtimeEngagementSignalObserverUnitTest {
         // Now scroll up, then back down to 50%.
         listener.onScrollStarted(50, SCROLL_EXTENT, true);
         // Scroll up to 30%.
-        listener.onScrollUpdateGestureConsumed(new Point(0, 30));
         when(mRenderCoordinatesImpl.getScrollYPixInt()).thenReturn(30);
         listener.onScrollOffsetOrExtentChanged(30, SCROLL_EXTENT);
         // Back down to 50%.
-        listener.onScrollUpdateGestureConsumed(new Point(0, 50));
         when(mRenderCoordinatesImpl.getScrollYPixInt()).thenReturn(50);
         listener.onScrollOffsetOrExtentChanged(50, SCROLL_EXTENT);
         // End scrolling.
@@ -400,7 +389,6 @@ public class RealtimeEngagementSignalObserverUnitTest {
 
         // Scroll down to 50%.
         gestureStateListener.onScrollStarted(0, SCROLL_EXTENT, false);
-        gestureStateListener.onScrollUpdateGestureConsumed(new Point(0, 50));
         when(mRenderCoordinatesImpl.getScrollYPixInt()).thenReturn(50);
         gestureStateListener.onScrollOffsetOrExtentChanged(50, SCROLL_EXTENT);
         gestureStateListener.onScrollEnded(50, SCROLL_EXTENT);
@@ -422,7 +410,6 @@ public class RealtimeEngagementSignalObserverUnitTest {
 
         // Scroll down to 10%.
         gestureStateListener.onScrollStarted(0, SCROLL_EXTENT, false);
-        gestureStateListener.onScrollUpdateGestureConsumed(new Point(0, 10));
         when(mRenderCoordinatesImpl.getScrollYPixInt()).thenReturn(10);
         gestureStateListener.onScrollOffsetOrExtentChanged(10, SCROLL_EXTENT);
         gestureStateListener.onScrollEnded(10, SCROLL_EXTENT);
@@ -440,7 +427,6 @@ public class RealtimeEngagementSignalObserverUnitTest {
 
         // Scroll down to 30%.
         gestureStateListener.onScrollStarted(0, SCROLL_EXTENT, false);
-        gestureStateListener.onScrollUpdateGestureConsumed(new Point(0, 30));
         when(mRenderCoordinatesImpl.getScrollYPixInt()).thenReturn(30);
         gestureStateListener.onScrollOffsetOrExtentChanged(30, SCROLL_EXTENT);
         gestureStateListener.onScrollEnded(30, SCROLL_EXTENT);
@@ -462,7 +448,6 @@ public class RealtimeEngagementSignalObserverUnitTest {
 
         // Scroll down to 10%.
         gestureStateListener.onScrollStarted(0, SCROLL_EXTENT, false);
-        gestureStateListener.onScrollUpdateGestureConsumed(new Point(0, 10));
         when(mRenderCoordinatesImpl.getScrollYPixInt()).thenReturn(10);
         gestureStateListener.onScrollOffsetOrExtentChanged(10, SCROLL_EXTENT);
         gestureStateListener.onScrollEnded(10, SCROLL_EXTENT);
@@ -480,7 +465,6 @@ public class RealtimeEngagementSignalObserverUnitTest {
 
         // Scroll down to 90%.
         gestureStateListener.onScrollStarted(0, SCROLL_EXTENT, false);
-        gestureStateListener.onScrollUpdateGestureConsumed(new Point(0, 90));
         when(mRenderCoordinatesImpl.getScrollYPixInt()).thenReturn(90);
         gestureStateListener.onScrollOffsetOrExtentChanged(90, SCROLL_EXTENT);
         gestureStateListener.onScrollEnded(90, SCROLL_EXTENT);
@@ -502,7 +486,6 @@ public class RealtimeEngagementSignalObserverUnitTest {
 
         // Scroll down to 50%.
         gestureStateListener.onScrollStarted(0, SCROLL_EXTENT, false);
-        gestureStateListener.onScrollUpdateGestureConsumed(new Point(0, 50));
         when(mRenderCoordinatesImpl.getScrollYPixInt()).thenReturn(50);
         gestureStateListener.onScrollOffsetOrExtentChanged(50, SCROLL_EXTENT);
         gestureStateListener.onScrollEnded(50, SCROLL_EXTENT);
@@ -519,7 +502,6 @@ public class RealtimeEngagementSignalObserverUnitTest {
 
         // Scroll down to 50%.
         gestureStateListener.onScrollStarted(0, SCROLL_EXTENT, false);
-        gestureStateListener.onScrollUpdateGestureConsumed(new Point(0, 50));
         when(mRenderCoordinatesImpl.getScrollYPixInt()).thenReturn(50);
         gestureStateListener.onScrollOffsetOrExtentChanged(50, SCROLL_EXTENT);
         gestureStateListener.onScrollEnded(50, SCROLL_EXTENT);
@@ -534,7 +516,6 @@ public class RealtimeEngagementSignalObserverUnitTest {
 
         // Scroll down to 10%.
         gestureStateListener.onScrollStarted(0, SCROLL_EXTENT, false);
-        gestureStateListener.onScrollUpdateGestureConsumed(new Point(0, 10));
         when(mRenderCoordinatesImpl.getScrollYPixInt()).thenReturn(10);
         gestureStateListener.onScrollOffsetOrExtentChanged(10, SCROLL_EXTENT);
         gestureStateListener.onScrollEnded(10, SCROLL_EXTENT);
@@ -577,7 +558,6 @@ public class RealtimeEngagementSignalObserverUnitTest {
         // Start by scrolling down.
         listener.onScrollStarted(0, SCROLL_EXTENT, false);
         // Scroll down to 3%.
-        listener.onScrollUpdateGestureConsumed(new Point(0, 3));
         when(mRenderCoordinatesImpl.getScrollYPixInt()).thenReturn(3);
         listener.onScrollOffsetOrExtentChanged(3, SCROLL_EXTENT);
         // End scrolling.
@@ -589,7 +569,6 @@ public class RealtimeEngagementSignalObserverUnitTest {
         // Start scrolling down again.
         listener.onScrollStarted(3, SCROLL_EXTENT, false);
         // Scroll down to 8%.
-        listener.onScrollUpdateGestureConsumed(new Point(0, 8));
         when(mRenderCoordinatesImpl.getScrollYPixInt()).thenReturn(8);
         listener.onScrollOffsetOrExtentChanged(8, SCROLL_EXTENT);
         // End scrolling.
@@ -601,7 +580,6 @@ public class RealtimeEngagementSignalObserverUnitTest {
         // Start scrolling down again.
         listener.onScrollStarted(8, SCROLL_EXTENT, false);
         // Scroll down to 94%.
-        listener.onScrollUpdateGestureConsumed(new Point(0, 94));
         when(mRenderCoordinatesImpl.getScrollYPixInt()).thenReturn(94);
         listener.onScrollOffsetOrExtentChanged(94, SCROLL_EXTENT);
         // End scrolling.
@@ -970,7 +948,6 @@ public class RealtimeEngagementSignalObserverUnitTest {
 
     private void verifyNoMemoryLeakForGestureStateListener(GestureStateListener listener) {
         listener.onScrollStarted(0, 1, false);
-        listener.onScrollUpdateGestureConsumed(new Point(1, 1));
         listener.onVerticalScrollDirectionChanged(false, 0.1f);
         listener.onScrollEnded(1, 0);
     }
