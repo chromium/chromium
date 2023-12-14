@@ -189,4 +189,28 @@ gfx::Transform GetViewTransitionTransform(
   return view_transition_transform;
 }
 
+bool QuadRoundedCornersBoundsIntersects(const DrawQuad* quad,
+                                        const gfx::RectF& target_quad) {
+  const SharedQuadState* sqs = quad->shared_quad_state;
+  const gfx::MaskFilterInfo& mask_filter_info = sqs->mask_filter_info;
+
+  // There is no rounded corner set.
+  if (!mask_filter_info.HasRoundedCorners()) {
+    return false;
+  }
+
+  const gfx::RRectF& rounded_corner_bounds =
+      mask_filter_info.rounded_corner_bounds();
+
+  const gfx::RRectF::Corner corners[] = {
+      gfx::RRectF::Corner::kUpperLeft, gfx::RRectF::Corner::kUpperRight,
+      gfx::RRectF::Corner::kLowerRight, gfx::RRectF::Corner::kLowerLeft};
+  for (auto c : corners) {
+    if (rounded_corner_bounds.CornerBoundingRect(c).Intersects(target_quad)) {
+      return true;
+    }
+  }
+  return false;
+}
+
 }  // namespace viz
