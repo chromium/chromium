@@ -10,6 +10,7 @@
 #include "ash/public/cpp/shell_window_ids.h"
 #include "ash/shell.h"
 #include "ash/system/palette/palette_utils.h"
+#include "base/check.h"
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
 #include "ui/display/screen.h"
@@ -70,6 +71,31 @@ void LaserPointerController::RemoveObserver(LaserPointerObserver* observer) {
   observers_.RemoveObserver(observer);
 }
 
+void LaserPointerController::OnWindowBoundsChanged(
+    aura::Window* window,
+    const gfx::Rect& old_bounds,
+    const gfx::Rect& new_bounds,
+    ui::PropertyChangeReason reason) {
+  DCHECK_EQ(window, root_window_observation_.GetSource());
+
+  // If the display is rotated or the device scale factor is changed during a
+  // gesture, the last point segment will be in a different position on the
+  // display. Since the root window bounds are synced with the display, the
+  // controller will be notified if the display's rotation or device scale
+  // factor changes.
+  // Resetting the state of the buffer associated with the
+  // `laser_pointer_view_widget_` is non-trivial, so the view is destroyed
+  // instead to start with a fresh state. Since it is very rare to have an
+  // ongoing gesture with display changes, we can safely assume that there is no
+  // performance penalty.
+  DestroyPointerView();
+}
+
+void LaserPointerController::OnWindowDestroyed(aura::Window* window) {
+  DCHECK_EQ(window, root_window_observation_.GetSource());
+  root_window_observation_.Reset();
+}
+
 void LaserPointerController::SetEnabled(bool enabled) {
   if (enabled == is_enabled())
     return;
@@ -96,6 +122,9 @@ void LaserPointerController::CreatePointerView(
       base::Milliseconds(kPointLifeDurationMs), presentation_delay,
       base::Milliseconds(kAddStationaryPointsDelayMs),
       Shell::GetContainer(root_window, kShellWindowId_OverlayContainer));
+
+  DCHECK(!root_window_observation_.IsObserving());
+  root_window_observation_.Observe(root_window);
 }
 
 void LaserPointerController::UpdatePointerView(ui::TouchEvent* event) {
@@ -152,6 +181,7 @@ void LaserPointerController::UpdatePointerView(ui::MouseEvent* event) {
 }
 
 void LaserPointerController::DestroyPointerView() {
+  root_window_observation_.Reset();
   laser_pointer_view_widget_.reset();
 }
 
