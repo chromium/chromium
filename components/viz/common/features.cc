@@ -325,6 +325,12 @@ BASE_FEATURE(kDrawImmediatelyWhenInteractive,
 #endif
 );
 
+// When enabled, SDR maximum luminance nits of then current display will be used
+// as the HDR metadata NDWL nits.
+BASE_FEATURE(kUseDisplaySDRMaxLuminanceNits,
+             "UseDisplaySDRMaxLuminanceNits",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Invalidate the `viz::LocalSurfaceId` on the browser side when the page is
 // navigated away. This flag serves as the kill-switch for the uncaught edge
 // cases in production.

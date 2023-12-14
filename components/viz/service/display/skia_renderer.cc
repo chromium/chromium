@@ -94,6 +94,7 @@
 #include "ui/gfx/geometry/transform.h"
 #include "ui/gfx/geometry/transform_util.h"
 #include "ui/gfx/gpu_fence_handle.h"
+#include "ui/gfx/hdr_metadata.h"
 
 #if BUILDFLAG(IS_ANDROID)
 #include "components/viz/service/display/overlay_processor_surface_control.h"
@@ -2674,7 +2675,8 @@ void SkiaRenderer::DrawTextureQuad(const TextureDrawQuad* quad,
     DCHECK(SkColorSpace::Equals(image->colorSpace(),
                                 CurrentRenderPassSkColorSpace().get()));
     sk_sp<SkColorFilter> color_filter = GetColorSpaceConversionFilter(
-        src_color_space, absl::nullopt, quad->hdr_metadata, dst_color_space);
+        src_color_space, absl::nullopt, quad->hdr_metadata, dst_color_space,
+        quad->is_video_frame);
     paint.setColorFilter(color_filter->makeComposed(paint.refColorFilter()));
   }
 
@@ -2824,7 +2826,8 @@ void SkiaRenderer::DrawYUVVideoQuad(const YUVVideoDrawQuad* quad,
 
   sk_sp<SkColorFilter> color_filter = GetColorSpaceConversionFilter(
       src_color_space, quad->bits_per_channel, quad->hdr_metadata,
-      dst_color_space, quad->resource_offset, quad->resource_multiplier);
+      dst_color_space, /*is_video_frame=*/true, quad->resource_offset,
+      quad->resource_multiplier);
 
   auto content_color_filter = GetContentColorFilter();
   if (content_color_filter)
@@ -2932,11 +2935,24 @@ sk_sp<SkColorFilter> SkiaRenderer::GetColorSpaceConversionFilter(
     absl::optional<uint32_t> src_bit_depth,
     absl::optional<gfx::HDRMetadata> src_hdr_metadata,
     const gfx::ColorSpace& dst,
+    bool is_video_frame,
     float resource_offset,
     float resource_multiplier) {
+  // Use the current SDR slider white level for HDR videos on
+  // Windows, so that they look similar when rendered by the
+  // compositor and when rendered as an overlay (HDR10 MPO).
+  // https://crbug.com/1492817
+  auto hdr_metadata = src_hdr_metadata;
+  if (is_video_frame && src.IsToneMappedByDefault() &&
+      base::FeatureList::IsEnabled(features::kUseDisplaySDRMaxLuminanceNits)) {
+    hdr_metadata =
+        gfx::HDRMetadata::PopulateUnspecifiedWithDefaults(src_hdr_metadata);
+    hdr_metadata->ndwl = gfx::HdrMetadataNdwl(
+        current_frame()->display_color_spaces.GetSDRMaxLuminanceNits());
+  }
   return color_filter_cache_.Get(
       src, dst, resource_offset, resource_multiplier, src_bit_depth,
-      src_hdr_metadata,
+      hdr_metadata,
       current_frame()->display_color_spaces.GetSDRMaxLuminanceNits(),
       current_frame()->display_color_spaces.GetHDRMaxLuminanceRelative());
 }

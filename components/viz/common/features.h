@@ -82,6 +82,7 @@ VIZ_COMMON_EXPORT extern const base::FeatureParam<double>
     kADPFMidFrameBoostDurationMultiplier;
 VIZ_COMMON_EXPORT BASE_DECLARE_FEATURE(kEnableADPFRendererMain);
 VIZ_COMMON_EXPORT BASE_DECLARE_FEATURE(kEnableADPFAsyncThreadsVerification);
+VIZ_COMMON_EXPORT BASE_DECLARE_FEATURE(kUseDisplaySDRMaxLuminanceNits);
 VIZ_COMMON_EXPORT BASE_DECLARE_FEATURE(kInvalidateLocalSurfaceIdPreCommit);
 VIZ_COMMON_EXPORT BASE_DECLARE_FEATURE(kHideDelegatedFrameHostMac);
 VIZ_COMMON_EXPORT BASE_DECLARE_FEATURE(kEvictionUnlocksResources);
