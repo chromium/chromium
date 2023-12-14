@@ -5,6 +5,7 @@
 #include "chrome/browser/extensions/api/document_scan/document_scan_type_converters.h"
 
 #include "base/containers/contains.h"
+#include "chrome/browser/extensions/api/document_scan/document_scan_test_utils.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -500,6 +501,171 @@ TEST(DocumentScanTypeConvertersTest, CloseScannerResponse_NonEmpty) {
   auto output = input.To<document_scan::CloseScannerResponse>();
   EXPECT_EQ(output.scanner_handle, "scanner_handle");
   EXPECT_EQ(output.result, document_scan::OperationResult::kSuccess);
+}
+
+TEST(DocumentScanTypeConvertersTest, OptionSetting_Empty) {
+  document_scan::OptionSetting input;
+  auto output = mojom::OptionSetting::From(input);
+  EXPECT_EQ(output->name, "");
+  EXPECT_EQ(output->type, mojom::OptionType::kUnknown);
+  EXPECT_TRUE(output->value.is_null());
+}
+
+TEST(DocumentScanTypeConvertersTest, OptionSetting_BoolValue) {
+  document_scan::OptionSetting input;
+  input.name = "name";
+  input.type = document_scan::OptionType::kBool;
+  input.value.emplace();
+  input.value->as_boolean = true;
+
+  auto output = mojom::OptionSetting::From(input);
+  EXPECT_EQ(output->name, "name");
+  EXPECT_EQ(output->type, mojom::OptionType::kBool);
+  ASSERT_FALSE(output->value.is_null());
+  ASSERT_TRUE(output->value->is_bool_value());
+  EXPECT_EQ(output->value->get_bool_value(), true);
+}
+
+TEST(DocumentScanTypeConvertersTest, OptionSetting_IntValue) {
+  document_scan::OptionSetting input;
+  input.name = "name";
+  input.type = document_scan::OptionType::kInt;
+  input.value.emplace();
+  input.value->as_integer = 42;
+
+  auto output = mojom::OptionSetting::From(input);
+  EXPECT_EQ(output->name, "name");
+  EXPECT_EQ(output->type, mojom::OptionType::kInt);
+  ASSERT_FALSE(output->value.is_null());
+  ASSERT_TRUE(output->value->is_int_value());
+  EXPECT_EQ(output->value->get_int_value(), 42);
+}
+
+TEST(DocumentScanTypeConvertersTest, OptionSetting_IntList) {
+  document_scan::OptionSetting input;
+  input.name = "name";
+  input.type = document_scan::OptionType::kInt;
+  input.value.emplace();
+  input.value->as_integers = {42, 10};
+
+  auto output = mojom::OptionSetting::From(input);
+  EXPECT_EQ(output->name, "name");
+  EXPECT_EQ(output->type, mojom::OptionType::kInt);
+  ASSERT_FALSE(output->value.is_null());
+  ASSERT_TRUE(output->value->is_int_list());
+  EXPECT_THAT(output->value->get_int_list(), ElementsAre(42, 10));
+}
+
+TEST(DocumentScanTypeConvertersTest, OptionSetting_FixedValue) {
+  document_scan::OptionSetting input;
+  input.name = "name";
+  input.type = document_scan::OptionType::kFixed;
+  input.value.emplace();
+  input.value->as_number = 42.25;
+
+  auto output = mojom::OptionSetting::From(input);
+  EXPECT_EQ(output->name, "name");
+  EXPECT_EQ(output->type, mojom::OptionType::kFixed);
+  ASSERT_FALSE(output->value.is_null());
+  ASSERT_TRUE(output->value->is_fixed_value());
+  EXPECT_EQ(output->value->get_fixed_value(), 42.25);
+}
+
+TEST(DocumentScanTypeConvertersTest, OptionSetting_FixedList) {
+  document_scan::OptionSetting input;
+  input.name = "name";
+  input.type = document_scan::OptionType::kFixed;
+  input.value.emplace();
+  input.value->as_numbers = {42.5, 10.75};
+
+  auto output = mojom::OptionSetting::From(input);
+  EXPECT_EQ(output->name, "name");
+  EXPECT_EQ(output->type, mojom::OptionType::kFixed);
+  ASSERT_FALSE(output->value.is_null());
+  ASSERT_TRUE(output->value->is_fixed_list());
+  EXPECT_THAT(output->value->get_fixed_list(), ElementsAre(42.5, 10.75));
+}
+
+TEST(DocumentScanTypeConvertersTest, OptionSetting_StringValue) {
+  document_scan::OptionSetting input;
+  input.name = "name";
+  input.type = document_scan::OptionType::kString;
+  input.value.emplace();
+  input.value->as_string = "hello";
+
+  auto output = mojom::OptionSetting::From(input);
+  EXPECT_EQ(output->name, "name");
+  EXPECT_EQ(output->type, mojom::OptionType::kString);
+  ASSERT_FALSE(output->value.is_null());
+  ASSERT_TRUE(output->value->is_string_value());
+  EXPECT_EQ(output->value->get_string_value(), "hello");
+}
+
+TEST(DocumentScanTypeConvertersTest, OptionSetting_Group) {
+  document_scan::OptionSetting input;
+  input.name = "name";
+  input.type = document_scan::OptionType::kGroup;
+
+  auto output = mojom::OptionSetting::From(input);
+  EXPECT_EQ(output->name, "name");
+  EXPECT_EQ(output->type, mojom::OptionType::kGroup);
+  EXPECT_TRUE(output->value.is_null());
+}
+
+TEST(DocumentScanTypeConvertersTest, OptionSetting_Button) {
+  document_scan::OptionSetting input;
+  input.name = "name";
+  input.type = document_scan::OptionType::kButton;
+
+  auto output = mojom::OptionSetting::From(input);
+  EXPECT_EQ(output->name, "name");
+  EXPECT_EQ(output->type, mojom::OptionType::kButton);
+  EXPECT_TRUE(output->value.is_null());
+}
+
+TEST(DocumentScanTypeConvertersTest, OptionSetting_None) {
+  document_scan::OptionSetting input;
+  input.name = "name";
+  input.type = document_scan::OptionType::kNone;
+
+  auto output = mojom::OptionSetting::From(input);
+  EXPECT_EQ(output->name, "name");
+  EXPECT_EQ(output->type, mojom::OptionType::kUnknown);
+  EXPECT_TRUE(output->value.is_null());
+}
+
+TEST(DocumentScanTypeConvertersTest, SetOptionsResponse_Empty) {
+  auto input = mojom::SetOptionsResponse::New();
+  auto output = input.To<document_scan::SetOptionsResponse>();
+  EXPECT_EQ(output.scanner_handle, "");
+  EXPECT_TRUE(output.results.empty());
+  EXPECT_FALSE(output.options.has_value());
+}
+
+TEST(DocumentScanTypeConvertersTest, SetOptionsResponse_NonEmpty) {
+  auto input = mojom::SetOptionsResponse::New();
+  input->scanner_handle = "scanner-handle";
+  input->results.emplace_back(mojom::SetOptionResult::New(
+      "name1", mojom::ScannerOperationResult::kWrongType));
+  input->results.emplace_back(mojom::SetOptionResult::New(
+      "name2", mojom::ScannerOperationResult::kSuccess));
+  input->options.emplace();
+  input->options->try_emplace(
+      "option1", extensions::CreateTestScannerOption("option1", 5));
+  input->options->try_emplace(
+      "option2", extensions::CreateTestScannerOption("option2", 10));
+
+  auto output = input.To<document_scan::SetOptionsResponse>();
+  EXPECT_EQ(output.scanner_handle, "scanner-handle");
+  ASSERT_EQ(output.results.size(), 2U);
+  EXPECT_EQ(output.results[0].name, "name1");
+  EXPECT_EQ(output.results[0].result,
+            document_scan::OperationResult::kWrongType);
+  EXPECT_EQ(output.results[1].name, "name2");
+  EXPECT_EQ(output.results[1].result, document_scan::OperationResult::kSuccess);
+  ASSERT_TRUE(output.options.has_value());
+  EXPECT_TRUE(base::Contains(output.options->additional_properties, "option1"));
+  EXPECT_TRUE(base::Contains(output.options->additional_properties, "option2"));
 }
 
 TEST(DocumentScanTypeConvertersTest, StartScanOptions_Empty) {

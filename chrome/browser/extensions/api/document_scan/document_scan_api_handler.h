@@ -49,6 +49,8 @@ class DocumentScanAPIHandler : public BrowserContextKeyedAPI {
       base::OnceCallback<void(api::document_scan::OpenScannerResponse)>;
   using CloseScannerCallback =
       base::OnceCallback<void(api::document_scan::CloseScannerResponse)>;
+  using SetOptionsCallback =
+      base::OnceCallback<void(api::document_scan::SetOptionsResponse)>;
   using StartScanCallback =
       base::OnceCallback<void(api::document_scan::StartScanResponse)>;
   using CancelScanCallback =
@@ -107,6 +109,16 @@ class DocumentScanAPIHandler : public BrowserContextKeyedAPI {
   void CloseScanner(scoped_refptr<const Extension> extension,
                     const std::string& scanner_handle,
                     CloseScannerCallback callback);
+
+  // Given `scanner_handle` previously returned from `OpenScanner`, sends the
+  // list of new option values in `options` to the backend.  The backend will
+  // attempt to set each option in order, then will respond with a result for
+  // each operation and a new final set of device options.  The full response
+  // will be passed to `callback`.
+  void SetOptions(scoped_refptr<const Extension> extension,
+                  const std::string& scanner_handle,
+                  const std::vector<api::document_scan::OptionSetting>& options,
+                  SetOptionsCallback callback);
 
   // If the user approves, starts a scan using scanner options previously
   // configured via `SetOptions`.  Additionally, `options` are used to specify
@@ -202,6 +214,8 @@ class DocumentScanAPIHandler : public BrowserContextKeyedAPI {
                              crosapi::mojom::OpenScannerResponsePtr response);
   void OnCloseScannerResponse(CloseScannerCallback callback,
                               crosapi::mojom::CloseScannerResponsePtr response);
+  void OnSetOptionsResponse(SetOptionsCallback callback,
+                            crosapi::mojom::SetOptionsResponsePtr response);
   void OnStartScanResponse(
       std::unique_ptr<StartScanRunner> runner,
       StartScanCallback callback,

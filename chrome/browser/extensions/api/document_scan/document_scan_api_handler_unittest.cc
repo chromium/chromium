@@ -12,6 +12,7 @@
 #include "base/auto_reset.h"
 #include "base/functional/bind.h"
 #include "base/memory/ref_counted.h"
+#include "base/strings/stringprintf.h"
 #include "base/test/test_future.h"
 #include "base/values.h"
 #include "chrome/browser/extensions/api/document_scan/document_scan_api.h"
@@ -48,6 +49,8 @@ using OpenScannerFuture =
     base::test::TestFuture<api::document_scan::OpenScannerResponse>;
 using CloseScannerFuture =
     base::test::TestFuture<api::document_scan::CloseScannerResponse>;
+using SetOptionsFuture =
+    base::test::TestFuture<api::document_scan::SetOptionsResponse>;
 using StartScanFuture =
     base::test::TestFuture<api::document_scan::StartScanResponse>;
 using CancelScanFuture =
@@ -572,6 +575,315 @@ TEST_F(DocumentScanAPIHandlerTest, CloseScanner_DoubleCloseHandleFails) {
   EXPECT_EQ(close_response2.scanner_handle, handle);
   EXPECT_EQ(close_response2.result,
             api::document_scan::OperationResult::kInvalid);
+}
+
+TEST_F(DocumentScanAPIHandlerTest, SetOptions_SetBeforeOpenFails) {
+  SetOptionsFuture future;
+  document_scan_api_handler_->SetOptions(
+      extension_, "badscanner",
+      CreateTestOptionSettingList(2, api::document_scan::OptionType::kInt),
+      future.GetCallback());
+  const api::document_scan::SetOptionsResponse& response = future.Get();
+
+  EXPECT_EQ(response.scanner_handle, "badscanner");
+  ASSERT_EQ(response.results.size(), 2U);
+  for (const auto& result : response.results) {
+    EXPECT_EQ(result.result, api::document_scan::OperationResult::kInvalid);
+  }
+  EXPECT_FALSE(response.options.has_value());
+}
+
+// Tests the special mappings for TYPE_FIXED options.  Also indirectly tests
+// getting back multiple results and an updated set of options.
+TEST_F(DocumentScanAPIHandlerTest, SetOptions_FixedTypeMappings) {
+  std::string scanner_id = CreateScannerIdForExtension(extension_);
+  ASSERT_FALSE(scanner_id.empty());
+
+  OpenScannerFuture open_future;
+  document_scan_api_handler_->OpenScanner(extension_, scanner_id,
+                                          open_future.GetCallback());
+  const api::document_scan::OpenScannerResponse& open_response =
+      open_future.Get();
+  ASSERT_TRUE(open_response.scanner_handle.has_value());
+  const std::string& handle = open_response.scanner_handle.value();
+
+  // FIXED containing no value: OK.
+  // FIXED containing one int: Mapped.
+  // FIXED containing int list: Mapped.
+  // FIXED containing string: Wrong type.
+  // FIXED containing one fixed: OK.
+  // FIXED containing fixed list with decimals: OK.
+  // FIXED containing fixed list without decimals: OK.
+  auto settings =
+      CreateTestOptionSettingList(7, api::document_scan::OptionType::kFixed);
+  // settings[0] has no value.
+  settings[1].value.emplace();
+  settings[1].value->as_integer = 3;
+  settings[2].value.emplace();
+  settings[2].value->as_integers = {3, 5};
+  settings[3].value.emplace();
+  settings[3].value->as_string = "oops";
+  settings[4].value.emplace();
+  settings[4].value->as_number = 2.5;
+  settings[5].value.emplace();
+  settings[5].value->as_numbers = {2.5, -1.25};
+  settings[6].value.emplace();
+  settings[6].value->as_numbers = {2.0, -1.0};
+
+  SetOptionsFuture future;
+  document_scan_api_handler_->SetOptions(
+      extension_, handle, std::move(settings), future.GetCallback());
+  const api::document_scan::SetOptionsResponse& response = future.Get();
+  EXPECT_EQ(response.scanner_handle, handle);
+  ASSERT_EQ(response.results.size(), 7U);
+  EXPECT_EQ(response.results[0].result,
+            api::document_scan::OperationResult::kSuccess);
+  EXPECT_EQ(response.results[1].result,
+            api::document_scan::OperationResult::kSuccess);
+  EXPECT_EQ(response.results[2].result,
+            api::document_scan::OperationResult::kSuccess);
+  EXPECT_EQ(response.results[3].result,
+            api::document_scan::OperationResult::kWrongType);
+  EXPECT_EQ(response.results[4].result,
+            api::document_scan::OperationResult::kSuccess);
+  EXPECT_EQ(response.results[5].result,
+            api::document_scan::OperationResult::kSuccess);
+  EXPECT_EQ(response.results[6].result,
+            api::document_scan::OperationResult::kSuccess);
+
+  // Verify that all supplied options are present, but assume the option value
+  // conversions have already been tested by the TypeConverter unit tests.
+  ASSERT_TRUE(response.options.has_value());
+  for (size_t i = 1; i <= 7; i++) {
+    EXPECT_TRUE(response.options->additional_properties.contains(
+        base::StringPrintf("option%zu", i)));
+  }
+}
+
+// Tests the special mappings for TYPE_INT options.
+TEST_F(DocumentScanAPIHandlerTest, SetOptions_IntTypeMappings) {
+  std::string scanner_id = CreateScannerIdForExtension(extension_);
+  ASSERT_FALSE(scanner_id.empty());
+
+  OpenScannerFuture open_future;
+  document_scan_api_handler_->OpenScanner(extension_, scanner_id,
+                                          open_future.GetCallback());
+  const api::document_scan::OpenScannerResponse& open_response =
+      open_future.Get();
+  ASSERT_TRUE(open_response.scanner_handle.has_value());
+  const std::string& handle = open_response.scanner_handle.value();
+
+  // INT containing no value: OK.
+  // INT containing one int: OK.
+  // INT containing int list: OK.
+  // INT containing string: Wrong type.
+  // INT containing one fixed with no fractional part: Mapped.
+  // INT containing one too-large fixed with no fractional part: Wrong type.
+  // INT containing one too-small fixed with no fractional part: Wrong type.
+  // INT containing one fixed with non-zero fractional part: Wrong type.
+  // INT containing fixed list with no fractional part: Mapped.
+  // INT containing fixed list with non-zero fractional part: Wrong type.
+  // INT containing fixed list with mixed fractional part: Wrong type.
+  // INT containing fixed list with mixed too-small part: Wrong type.
+  // INT containing fixed list with mixed too-large part: Wrong type.
+  auto settings =
+      CreateTestOptionSettingList(13, api::document_scan::OptionType::kInt);
+  // settings[0] has no value.
+  settings[1].value.emplace();
+  settings[1].value->as_integer = 3;
+  settings[2].value.emplace();
+  settings[2].value->as_integers = {3, 5};
+  settings[3].value.emplace();
+  settings[3].value->as_string = "oops";
+  settings[4].value.emplace();
+  settings[4].value->as_number = 2.0;
+  settings[5].value.emplace();
+  settings[5].value->as_number = 1e300;
+  settings[6].value.emplace();
+  settings[6].value->as_number = -1e300;
+  settings[7].value.emplace();
+  settings[7].value->as_number = 2.5;
+  settings[8].value.emplace();
+  settings[8].value->as_numbers = {2.0, -1.0};
+  settings[9].value.emplace();
+  settings[9].value->as_numbers = {2.5, -1.25};
+  settings[10].value.emplace();
+  settings[10].value->as_numbers = {4.0, -1.25};
+  settings[11].value.emplace();
+  settings[11].value->as_numbers = {4.0, -1e300};
+  settings[12].value.emplace();
+  settings[12].value->as_numbers = {4.0, 1e300};
+
+  SetOptionsFuture future;
+  document_scan_api_handler_->SetOptions(
+      extension_, handle, std::move(settings), future.GetCallback());
+  const api::document_scan::SetOptionsResponse& response = future.Get();
+  EXPECT_EQ(response.scanner_handle, handle);
+  ASSERT_EQ(response.results.size(), 13U);
+  EXPECT_EQ(response.results[0].result,
+            api::document_scan::OperationResult::kSuccess);
+  EXPECT_EQ(response.results[1].result,
+            api::document_scan::OperationResult::kSuccess);
+  EXPECT_EQ(response.results[2].result,
+            api::document_scan::OperationResult::kSuccess);
+  EXPECT_EQ(response.results[3].result,
+            api::document_scan::OperationResult::kWrongType);
+  EXPECT_EQ(response.results[4].result,
+            api::document_scan::OperationResult::kSuccess);
+  EXPECT_EQ(response.results[5].result,
+            api::document_scan::OperationResult::kWrongType);
+  EXPECT_EQ(response.results[6].result,
+            api::document_scan::OperationResult::kWrongType);
+  EXPECT_EQ(response.results[7].result,
+            api::document_scan::OperationResult::kWrongType);
+  EXPECT_EQ(response.results[8].result,
+            api::document_scan::OperationResult::kSuccess);
+  EXPECT_EQ(response.results[9].result,
+            api::document_scan::OperationResult::kWrongType);
+  EXPECT_EQ(response.results[10].result,
+            api::document_scan::OperationResult::kWrongType);
+  EXPECT_EQ(response.results[11].result,
+            api::document_scan::OperationResult::kWrongType);
+  EXPECT_EQ(response.results[12].result,
+            api::document_scan::OperationResult::kWrongType);
+
+  // Verify that all supplied options are present, but assume the option value
+  // conversions have already been tested by the TypeConverter unit tests.
+  ASSERT_TRUE(response.options.has_value());
+  for (size_t i = 1; i <= 13; i++) {
+    EXPECT_TRUE(response.options->additional_properties.contains(
+        base::StringPrintf("option%zu", i)));
+  }
+}
+
+TEST_F(DocumentScanAPIHandlerTest, SetOptions_BoolTypeMappings) {
+  std::string scanner_id = CreateScannerIdForExtension(extension_);
+  ASSERT_FALSE(scanner_id.empty());
+
+  OpenScannerFuture open_future;
+  document_scan_api_handler_->OpenScanner(extension_, scanner_id,
+                                          open_future.GetCallback());
+  const api::document_scan::OpenScannerResponse& open_response =
+      open_future.Get();
+  ASSERT_TRUE(open_response.scanner_handle.has_value());
+  const std::string& handle = open_response.scanner_handle.value();
+
+  // BOOL containing no value: OK.
+  // BOOL containing boolean: OK.
+  // BOOL containing string: Wrong type.
+  // BOOL containing int: Wrong type.
+  // BOOL containing fixed: Wrong type.
+  // BOOL containing int list: Wrong type.
+  // BOOL containing fixed list: Wrong type.
+  auto settings =
+      CreateTestOptionSettingList(7, api::document_scan::OptionType::kBool);
+  // settings[0] has no value.
+  settings[1].value.emplace();
+  settings[1].value->as_boolean = false;
+  settings[2].value.emplace();
+  settings[2].value->as_string = "oops";
+  settings[3].value.emplace();
+  settings[3].value->as_integer = 1;
+  settings[4].value.emplace();
+  settings[4].value->as_number = 1.5;
+  settings[5].value.emplace();
+  settings[5].value->as_integers = {1, 2};
+  settings[6].value.emplace();
+  settings[6].value->as_numbers = {1.5, 2.5};
+
+  SetOptionsFuture future;
+  document_scan_api_handler_->SetOptions(
+      extension_, handle, std::move(settings), future.GetCallback());
+  const api::document_scan::SetOptionsResponse& response = future.Get();
+  EXPECT_EQ(response.scanner_handle, handle);
+  ASSERT_EQ(response.results.size(), 7U);
+  EXPECT_EQ(response.results[0].result,
+            api::document_scan::OperationResult::kSuccess);
+  EXPECT_EQ(response.results[1].result,
+            api::document_scan::OperationResult::kSuccess);
+  EXPECT_EQ(response.results[2].result,
+            api::document_scan::OperationResult::kWrongType);
+  EXPECT_EQ(response.results[3].result,
+            api::document_scan::OperationResult::kWrongType);
+  EXPECT_EQ(response.results[4].result,
+            api::document_scan::OperationResult::kWrongType);
+  EXPECT_EQ(response.results[5].result,
+            api::document_scan::OperationResult::kWrongType);
+  EXPECT_EQ(response.results[6].result,
+            api::document_scan::OperationResult::kWrongType);
+
+  // Verify that all supplied options are present, but assume the option value
+  // conversions have already been tested by the TypeConverter unit tests.
+  ASSERT_TRUE(response.options.has_value());
+  for (size_t i = 1; i <= 7; i++) {
+    EXPECT_TRUE(response.options->additional_properties.contains(
+        base::StringPrintf("option%zu", i)));
+  }
+}
+
+TEST_F(DocumentScanAPIHandlerTest, SetOptions_StringTypeMappings) {
+  std::string scanner_id = CreateScannerIdForExtension(extension_);
+  ASSERT_FALSE(scanner_id.empty());
+
+  OpenScannerFuture open_future;
+  document_scan_api_handler_->OpenScanner(extension_, scanner_id,
+                                          open_future.GetCallback());
+  const api::document_scan::OpenScannerResponse& open_response =
+      open_future.Get();
+  ASSERT_TRUE(open_response.scanner_handle.has_value());
+  const std::string& handle = open_response.scanner_handle.value();
+
+  // STRING containing no value: OK.
+  // STRING containing string: OK.
+  // STRING containing boolean: Wrong type.
+  // STRING containing int: Wrong type.
+  // STRING containing fixed: Wrong type.
+  // STRING containing int list: Wrong type.
+  // STRING containing fixed list: Wrong type.
+  auto settings =
+      CreateTestOptionSettingList(7, api::document_scan::OptionType::kString);
+  // settings[0] has no value.
+  settings[1].value.emplace();
+  settings[1].value->as_string = "string";
+  settings[2].value.emplace();
+  settings[2].value->as_boolean = true;
+  settings[3].value.emplace();
+  settings[3].value->as_integer = 1;
+  settings[4].value.emplace();
+  settings[4].value->as_number = 1.5;
+  settings[5].value.emplace();
+  settings[5].value->as_integers = {1, 2};
+  settings[6].value.emplace();
+  settings[6].value->as_numbers = {1.5, 2.5};
+
+  SetOptionsFuture future;
+  document_scan_api_handler_->SetOptions(
+      extension_, handle, std::move(settings), future.GetCallback());
+  const api::document_scan::SetOptionsResponse& response = future.Get();
+  EXPECT_EQ(response.scanner_handle, handle);
+  ASSERT_EQ(response.results.size(), 7U);
+  EXPECT_EQ(response.results[0].result,
+            api::document_scan::OperationResult::kSuccess);
+  EXPECT_EQ(response.results[1].result,
+            api::document_scan::OperationResult::kSuccess);
+  EXPECT_EQ(response.results[2].result,
+            api::document_scan::OperationResult::kWrongType);
+  EXPECT_EQ(response.results[3].result,
+            api::document_scan::OperationResult::kWrongType);
+  EXPECT_EQ(response.results[4].result,
+            api::document_scan::OperationResult::kWrongType);
+  EXPECT_EQ(response.results[5].result,
+            api::document_scan::OperationResult::kWrongType);
+  EXPECT_EQ(response.results[6].result,
+            api::document_scan::OperationResult::kWrongType);
+
+  // Verify that all supplied options are present, but assume the option value
+  // conversions have already been tested by the TypeConverter unit tests.
+  ASSERT_TRUE(response.options.has_value());
+  for (size_t i = 1; i <= 7; i++) {
+    EXPECT_TRUE(response.options->additional_properties.contains(
+        base::StringPrintf("option%zu", i)));
+  }
 }
 
 TEST_F(DocumentScanAPIHandlerTest, StartScan_PermissionDenied) {

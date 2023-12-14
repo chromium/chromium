@@ -47,6 +47,20 @@ struct TypeConverter<extensions::api::document_scan::CloseScannerResponse,
 };
 
 template <>
+struct TypeConverter<crosapi::mojom::OptionSettingPtr,
+                     extensions::api::document_scan::OptionSetting> {
+  static crosapi::mojom::OptionSettingPtr Convert(
+      const extensions::api::document_scan::OptionSetting& input);
+};
+
+template <>
+struct TypeConverter<extensions::api::document_scan::SetOptionsResponse,
+                     crosapi::mojom::SetOptionsResponsePtr> {
+  static extensions::api::document_scan::SetOptionsResponse Convert(
+      const crosapi::mojom::SetOptionsResponsePtr& input);
+};
+
+template <>
 struct TypeConverter<crosapi::mojom::StartScanOptionsPtr,
                      extensions::api::document_scan::StartScanOptions> {
   static crosapi::mojom::StartScanOptionsPtr Convert(

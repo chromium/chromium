@@ -153,8 +153,126 @@ void FakeDocumentScanAsh::SetOptions(
     const std::string& scanner_handle,
     std::vector<crosapi::mojom::OptionSettingPtr> options,
     SetOptionsCallback callback) {
-  // TODO(b/299489633): Implement this when adding the extension handler.
-  NOTIMPLEMENTED();
+  auto response = crosapi::mojom::SetOptionsResponse::New();
+  response->scanner_handle = scanner_handle;
+  response->results.reserve(options.size());
+
+  if (!base::Contains(open_scanners_, scanner_handle)) {
+    for (const auto& setting : options) {
+      response->results.emplace_back(crosapi::mojom::SetOptionResult::New(
+          setting->name,
+          crosapi::mojom::ScannerOperationResult::kDeviceMissing));
+    }
+    std::move(callback).Run(std::move(response));
+    return;
+  }
+
+  // Fake setting options by copying and overriding the original config that
+  // would have been returned for this scanner.
+  const auto& open_response =
+      open_responses_[open_scanners_[scanner_handle].connection_string];
+  if (!open_response->options.has_value()) {
+    for (const auto& setting : options) {
+      response->results.emplace_back(crosapi::mojom::SetOptionResult::New(
+          setting->name,
+          crosapi::mojom::ScannerOperationResult::kInternalError));
+    }
+    std::move(callback).Run(std::move(response));
+    return;
+  }
+  response->options.emplace();
+  response->options->reserve(open_response->options->size());
+  for (const auto& [name, option] : open_response->options.value()) {
+    response->options->try_emplace(name, option.Clone());
+  }
+
+  for (const auto& setting : options) {
+    auto result = crosapi::mojom::SetOptionResult::New();
+    result->name = setting->name;
+
+    // Ensure the returned options contains the requested option so that callers
+    // can look up the value.  The real backend doesn't behave this way, but
+    // this avoids a ton of boilerplate in tests without changing the handler
+    // code coverage that can be achieved with the fake.
+    if (!base::Contains(response->options.value(), setting->name)) {
+      auto option = crosapi::mojom::ScannerOption::New();
+      option->name = setting->name;
+      option->type = setting->type;
+      response->options->try_emplace(setting->name, std::move(option));
+    }
+
+    if (setting->value.is_null()) {
+      result->result = crosapi::mojom::ScannerOperationResult::kSuccess;
+    } else {
+      // If there's a value, make sure the value type matches the option type.
+      // The real backend does a lot more validation, but other cases are
+      // handled as pass-through, so there's no need to implement everything in
+      // this fake.
+      switch (setting->type) {
+        case crosapi::mojom::OptionType::kBool:
+          if (setting->value->is_bool_value()) {
+            result->result = crosapi::mojom::ScannerOperationResult::kSuccess;
+            response->options->at(setting->name)->value =
+                crosapi::mojom::OptionValue::NewBoolValue(
+                    setting->value->get_bool_value());
+          } else {
+            result->result = crosapi::mojom::ScannerOperationResult::kWrongType;
+          }
+          break;
+        case crosapi::mojom::OptionType::kInt:
+          if (setting->value->is_int_value()) {
+            result->result = crosapi::mojom::ScannerOperationResult::kSuccess;
+            response->options->at(setting->name)->value =
+                crosapi::mojom::OptionValue::NewIntValue(
+                    setting->value->get_int_value());
+          } else if (setting->value->is_int_list()) {
+            result->result = crosapi::mojom::ScannerOperationResult::kSuccess;
+            response->options->at(setting->name)->value =
+                crosapi::mojom::OptionValue::NewIntList(
+                    {setting->value->get_int_list().begin(),
+                     setting->value->get_int_list().end()});
+          } else {
+            result->result = crosapi::mojom::ScannerOperationResult::kWrongType;
+          }
+          break;
+        case crosapi::mojom::OptionType::kFixed:
+          if (setting->value->is_fixed_value()) {
+            result->result = crosapi::mojom::ScannerOperationResult::kSuccess;
+            response->options->at(setting->name)->value =
+                crosapi::mojom::OptionValue::NewFixedValue(
+                    setting->value->get_fixed_value());
+          } else if (setting->value->is_fixed_list()) {
+            result->result = crosapi::mojom::ScannerOperationResult::kSuccess;
+            response->options->at(setting->name)->value =
+                crosapi::mojom::OptionValue::NewFixedList(
+                    {setting->value->get_fixed_list().begin(),
+                     setting->value->get_fixed_list().end()});
+          } else {
+            result->result = crosapi::mojom::ScannerOperationResult::kWrongType;
+          }
+          break;
+        case crosapi::mojom::OptionType::kString:
+          if (setting->value->is_string_value()) {
+            result->result = crosapi::mojom::ScannerOperationResult::kSuccess;
+            response->options->at(setting->name)->value =
+                crosapi::mojom::OptionValue::NewStringValue(
+                    setting->value->get_string_value());
+          } else {
+            result->result = crosapi::mojom::ScannerOperationResult::kWrongType;
+          }
+          break;
+        default:
+          // Claim it succeeded, but don't update the returned option value.
+          // This is a valid outcome for a real scanner, so the frontend has to
+          // account for it, anyway.
+          result->result = crosapi::mojom::ScannerOperationResult::kSuccess;
+          break;
+      }
+    }
+    response->results.emplace_back(std::move(result));
+  }
+
+  std::move(callback).Run(std::move(response));
 }
 
 void FakeDocumentScanAsh::GetOptionGroups(const std::string& scanner_handle,

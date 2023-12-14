@@ -212,7 +212,7 @@ namespace documentScan {
       (long or double)? min;
       (long or double)? max;
       (long or double)? quant;
-      (long[] or double[] or DOMString[])? list;
+      (double[] or long[] or DOMString[])? list;
   };
 
   // How an option can be changed.
@@ -248,7 +248,7 @@ namespace documentScan {
 
     // Current value of the option if relevant. Note the type passed here must
     // match the type specified in <code>type</code>.
-    (boolean or long or long[] or double or double[] or DOMString)? value;
+    (boolean or double or double[] or long or long[] or DOMString)? value;
 
     // Constraint on possible values.
     OptionConstraint? constraint;
@@ -326,6 +326,52 @@ namespace documentScan {
     OperationResult result;
   };
 
+  // A subset of <code>ScannerOption</code> that contains enough information to
+  // set an option to a new value.
+  [nodoc] dictionary OptionSetting {
+    // Name of the option to set.
+    DOMString name;
+
+    // Type of the option.  The requested type must match the real type of the
+    // underlying option.
+    OptionType type;
+
+    // Value to set.  Leave unset to request automatic setting for options that
+    // have <code>autoSettable</code> enabled.  The type supplied for
+    // <code>value</code> must match <code>type</code>.
+    (boolean or double or double[] or long or long[] or DOMString)? value;
+  };
+
+  // The result of setting an individual option.  Each individual option
+  // supplied to <code>setOptions()</code> produces a separate result on the
+  // backend due to things like rounding and constraints.
+  [nodoc] dictionary SetOptionResult {
+    // Name of the option that was set.
+    DOMString name;
+
+    // Backend result of setting the option.
+    OperationResult result;
+  };
+
+  // The response from a call to <code>setOptions()</code>.
+  [nodoc] dictionary SetOptionsResponse {
+    // The same scanner handle passed to <code>setOptions()</code>.
+    DOMString scannerHandle;
+
+    // One result per passed-in <code>OptionSetting</code>.
+    SetOptionResult[] results;
+
+    // Updated key-value mapping from option names to
+    // <code>ScannerOption</code> containing the new configuration after
+    // attempting to set all supplied options.  This has the same structure as
+    // the <code>options</code> field in <code>OpenScannerResponse</code>.
+    //
+    // This field will be set even if some options were not set successfully,
+    // but will be unset if retrieving the updated configuration fails (e.g.,
+    // if the scanner is disconnected in the middle).
+    object? options;
+  };
+
   // Used to specify options for <code>startScan()</code>.
   [nodoc] dictionary StartScanOptions {
     // MIME type to return scanned data in.
@@ -395,6 +441,11 @@ namespace documentScan {
   // |response| The response from closing the scanner, if the call was valid.
   // Otherwise will return null and set runtime.lastError.
   [nodoc] callback CloseScannerCallback = void (CloseScannerResponse response);
+
+  // Callback from the <code>setOptions</code> method.
+  // |response| The response from setting the options, if the call was valid.
+  // Otherwise will return null and set runtime.lastError.
+  [nodoc] callback SetOptionsCallback = void (SetOptionsResponse response);
 
   // Callback from the <code>startScan</code> method.
   // |response| The response from starting the scan, if the call was valid.
