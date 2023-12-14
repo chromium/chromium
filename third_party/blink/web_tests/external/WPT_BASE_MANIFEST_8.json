@@ -2229,6 +2229,13 @@
      }
     },
     "css-images": {
+     "cross-fade-legacy-crash.html": [
+      "25445765036f44bef3d714dae0fb0e80a738f1b7",
+      [
+       null,
+       {}
+      ]
+     ],
      "empty-radial-gradient-crash.html": [
       "be1fb120cc86527b4f1c65f09499d01dcbed9eca",
       [
@@ -126919,6 +126926,19 @@
        {}
       ]
      ],
+     "nested-flex-image-loading-invalidates-intrinsic-sizes.html": [
+      "246740960c0b9891b8f22bd76f9edd8b6cbf3c62",
+      [
+       null,
+       [
+        [
+         "/css/reference/ref-filled-green-100px-square-only.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
      "nested-orthogonal-flexbox-relayout.html": [
       "ef158c6a4884b8ee2840bafe27e605e618aa8be5",
       [
@@ -142476,6 +142496,122 @@
         ]
        ],
        {}
+      ]
+     ],
+     "cross-fade-basic.html": [
+      "be396e52785a91e8b1c678d5596f9cae061e4184",
+      [
+       null,
+       [
+        [
+         "/css/css-images/cross-fade-basic-ref.html",
+         "=="
+        ]
+       ],
+       {
+        "fuzzy": [
+         [
+          null,
+          [
+           [
+            0,
+            1
+           ],
+           [
+            0,
+            10000
+           ]
+          ]
+         ]
+        ]
+       }
+      ]
+     ],
+     "cross-fade-natural-size.html": [
+      "9a62c61aa6d5eca37dbedad2cdd4ad3b12d91006",
+      [
+       null,
+       [
+        [
+         "/css/css-images/cross-fade-natural-size-ref.html",
+         "=="
+        ]
+       ],
+       {
+        "fuzzy": [
+         [
+          null,
+          [
+           [
+            0,
+            1
+           ],
+           [
+            0,
+            300000
+           ]
+          ]
+         ]
+        ]
+       }
+      ]
+     ],
+     "cross-fade-premultiplied-alpha.html": [
+      "23d78428118b0550ec95a1f3d9573eb2d95032ba",
+      [
+       null,
+       [
+        [
+         "/css/css-images/cross-fade-premultiplied-alpha-ref.html",
+         "=="
+        ]
+       ],
+       {
+        "fuzzy": [
+         [
+          null,
+          [
+           [
+            1,
+            1
+           ],
+           [
+            40000,
+            40000
+           ]
+          ]
+         ]
+        ]
+       }
+      ]
+     ],
+     "cross-fade-target-alpha.html": [
+      "a10a2bfe8dff5d4cd0fbd9e834ec27e2cc366870",
+      [
+       null,
+       [
+        [
+         "/css/css-images/cross-fade-target-alpha-ref.html",
+         "=="
+        ]
+       ],
+       {
+        "fuzzy": [
+         [
+          null,
+          [
+           [
+            0,
+            8
+           ],
+           [
+            0,
+            300000
+           ]
+          ]
+         ]
+        ]
+       }
       ]
      ],
      "css-image-fallbacks-and-annotations.html": [
@@ -284408,6 +284544,19 @@
        {}
       ]
      ],
+     "rect-rx-set-by-css.svg": [
+      "375147a7d2045d0c7fcb1cfd3a7b069a3c645d79",
+      [
+       null,
+       [
+        [
+         "/svg/shapes/rect-rx-set-by-css-ref.svg",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
      "reftests": {
       "disabled-shapes-01.svg": [
        "49572fe71e7f92f6c52a18aec3115a5bc4a63593",
@@ -303387,11 +303536,11 @@
        []
       ],
       "background-image-interpolation-expected.txt": [
-       "b58e0b9e04f2524c7f020456707572f1517c47c1",
+       "5dd90e5e0fef44772f9dc46bb74abb3b7c06312d",
        []
       ],
       "border-image-source-interpolation-expected.txt": [
-       "a179c279acab9a3bbedf11e99180b50bdf9438f6",
+       "9c7181fd2a0f57460579391055ed7c409d678768",
        []
       ],
       "invalidation": {
@@ -304314,10 +304463,6 @@
      "parsing": {
       "background-image-computed.sub-expected.txt": [
        "2d9d7cc3b899a3d782cfb5871d2dd39400644d66",
-       []
-      ],
-      "background-image-valid-expected.txt": [
-       "bbfaacb424a2ad6e0807423be5ef323f5796dc52",
        []
       ],
       "background-position-computed-expected.txt": [
@@ -321071,6 +321216,22 @@
       "6af682601ef4c3923c738103d94603530d2f230a",
       []
      ],
+     "cross-fade-basic-ref.html": [
+      "2d7db8a867aa853606d79dfd82d0ab53c3a47e80",
+      []
+     ],
+     "cross-fade-natural-size-ref.html": [
+      "ad9752b7eb4d618cf3a5e476269609b49239daa6",
+      []
+     ],
+     "cross-fade-premultiplied-alpha-ref.html": [
+      "d9a708436788c5e3de351c82169d46159bffc7fd",
+      []
+     ],
+     "cross-fade-target-alpha-ref.html": [
+      "e66cfb0ae5be1192aff2eaf013f389bcd0c3057e",
+      []
+     ],
      "css-image-fallbacks-and-annotations-ref.html": [
       "f3193036766e428bf946e81b7df72bfc7f4901db",
       []
@@ -322567,7 +322728,7 @@
      ],
      "animations": {
       "list-style-image-interpolation-expected.txt": [
-       "869967c86c3731abc327f9581d735e3be6a56b37",
+       "8ddea90ca1f90998522814426681fbd1d68e30b4",
        []
       ]
      },
@@ -328330,10 +328491,6 @@
      "parsing": {
       "shape-outside-computed-expected.txt": [
        "a5d199689a2bb79849f1f2d63fe2818318b63b7e",
-       []
-      ],
-      "shape-outside-valid-expected.txt": [
-       "964d02dd39a5a64e179ca5c6449bc973924f961b",
        []
       ],
       "shape-outside-valid-position-expected.txt": [
@@ -389657,6 +389814,14 @@
       "1d62e8e2af82f8da03937be22d4c3f695111edb8",
       []
      ],
+     "rect-rx-set-by-css-expected.svg": [
+      "2b53158c0aceb1684737cb2b6002a8a6cd029a2d",
+      []
+     ],
+     "rect-rx-set-by-css-ref.svg": [
+      "2b53158c0aceb1684737cb2b6002a8a6cd029a2d",
+      []
+     ],
      "reftests": {
       "pathlength-001-ref.svg": [
        "0ec9e0353ae4bcdf12acbdfe0e3aa85c22565054",
@@ -392019,11 +392184,11 @@
        []
       ],
       "interpolation-per-property-001-expected.txt": [
-       "e45fe19714b7aa334e1a27f109c65ff46a0e5559",
+       "08675f6a7efa8fad0fe4243bc314ee2ae54dd482",
        []
       ],
       "interpolation-per-property-002-expected.txt": [
-       "402e875d8d866f9eecea65c30214d401b5d6d7ca",
+       "8379d71d05e0cbe218f137b5f1a10b52003abdce",
        []
       ],
       "property-list.js": [
@@ -439343,14 +439508,14 @@
        ]
       ],
       "background-image-invalid.html": [
-       "c971811441edb30fce3f62d9f80f2ec326970cc5",
+       "8a48d5efe80e9836c6e6e939a03a6fa165831db7",
        [
         null,
         {}
        ]
       ],
       "background-image-valid.html": [
-       "7632a6b7c6def0e123b9bcfb01a705fd741ebdf9",
+       "da08a638853471a40001219b6daaf913ddc4230d",
        [
         null,
         {}
@@ -450630,6 +450795,13 @@
        ]
       ]
      },
+     "cross-fade-computed-value.html": [
+      "efb3b58d611bbd60ce4483ea4ef56901e4a98685",
+      [
+       null,
+       {}
+      ]
+     ],
      "empty-background-image.html": [
       "5192ff254c8a020638e1545baef07c20c07200ed",
       [
