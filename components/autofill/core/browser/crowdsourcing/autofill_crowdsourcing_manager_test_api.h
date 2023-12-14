@@ -14,6 +14,8 @@
 
 namespace autofill {
 
+// Friend class to AutofillCrowdsourcingManager to allow tests to interact with
+// and query the internal components of the class.
 class AutofillCrowdsourcingManagerTestApi {
  public:
   static std::unique_ptr<AutofillCrowdsourcingManager> CreateManagerForApiKey(

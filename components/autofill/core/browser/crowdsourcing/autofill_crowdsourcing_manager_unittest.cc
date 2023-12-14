@@ -4,8 +4,6 @@
 
 #include "components/autofill/core/browser/crowdsourcing/autofill_crowdsourcing_manager.h"
 
-#include <stddef.h>
-
 #include <list>
 #include <memory>
 #include <string_view>
@@ -344,18 +342,28 @@ TEST_F(AutofillCrowdsourcingManagerTest, QueryAndUploadTest) {
   EXPECT_EQ(api_key_header_value, "dummykey");
 
   // Request with id 1.
+  std::vector<AutofillUploadContents> upload_contents_1 =
+      form_structures[0]->EncodeUploadRequest(ServerFieldTypeSet(), true,
+                                              std::string(), true);
   EXPECT_TRUE(crowdsourcing_manager->StartUploadRequest(
-      *(form_structures[0]), true, ServerFieldTypeSet(), std::string(), true,
-      &pref_service(), GetWeakPtr()));
+      std::move(upload_contents_1), form_structures[0]->submission_source(),
+      form_structures[0]->active_field_count(), &pref_service(), GetWeakPtr()));
+
   // Request with id 2.
+  std::vector<AutofillUploadContents> upload_contents_2 =
+      form_structures[1]->EncodeUploadRequest(ServerFieldTypeSet(), false,
+                                              std::string(), true);
   EXPECT_TRUE(crowdsourcing_manager->StartUploadRequest(
-      *(form_structures[1]), false, ServerFieldTypeSet(), std::string(), true,
-      &pref_service(), GetWeakPtr()));
+      std::move(upload_contents_2), form_structures[1]->submission_source(),
+      form_structures[1]->active_field_count(), &pref_service(), GetWeakPtr()));
   // Request with id 3. Upload request with a non-empty additional password form
   // signature.
+  std::vector<AutofillUploadContents> upload_contents_3 =
+      form_structures[2]->EncodeUploadRequest(ServerFieldTypeSet(), false, "42",
+                                              true);
   EXPECT_TRUE(crowdsourcing_manager->StartUploadRequest(
-      *(form_structures[2]), false, ServerFieldTypeSet(), "42", true,
-      &pref_service(), GetWeakPtr()));
+      std::move(upload_contents_3), form_structures[1]->submission_source(),
+      form_structures[1]->active_field_count(), &pref_service(), GetWeakPtr()));
 
   // Server responseses - returned  out of sequence.
   const char* response_contents[] = {
@@ -679,9 +687,13 @@ TEST_F(AutofillCrowdsourcingManagerTest, UploadToAPITest) {
   auto crowdsourcing_manager =
       AutofillCrowdsourcingManagerTestApi::CreateManagerForApiKey(&client(),
                                                                   "dummykey");
+
+  std::vector<AutofillUploadContents> upload_contents =
+      form_structure.EncodeUploadRequest(ServerFieldTypeSet(), true,
+                                         std::string(), true);
   EXPECT_TRUE(crowdsourcing_manager->StartUploadRequest(
-      form_structure, true, ServerFieldTypeSet(), "", true, pref_service.get(),
-      GetWeakPtr()));
+      std::move(upload_contents), form_structure.submission_source(),
+      form_structure.active_field_count(), pref_service.get(), GetWeakPtr()));
 
   // Inspect the request that the test URL loader sent.
   network::TestURLLoaderFactory::PendingRequest* request =
@@ -780,9 +792,12 @@ TEST_F(AutofillCrowdsourcingManagerTest, BackoffLogic_Upload) {
   SetCorrectFieldHostFormSignatures(form_structure);
 
   // Request with id 0.
+  std::vector<AutofillUploadContents> upload_contents =
+      form_structure.EncodeUploadRequest(ServerFieldTypeSet(), true,
+                                         std::string(), true);
   EXPECT_TRUE(crowdsourcing_manager().StartUploadRequest(
-      form_structure, true, ServerFieldTypeSet(), std::string(), true,
-      &pref_service(), GetWeakPtr()));
+      std::move(upload_contents), form_structure.submission_source(),
+      form_structure.active_field_count(), &pref_service(), GetWeakPtr()));
 
   auto* request = url_loader_factory().GetPendingRequest(0);
 
@@ -822,9 +837,13 @@ TEST_F(AutofillCrowdsourcingManagerTest, BackoffLogic_Upload) {
   // Validate no retry on sending a bad request.
   form_structure.set_submission_source(SubmissionSource::XHR_SUCCEEDED);
   base::HistogramTester histogram;
+  std::vector<AutofillUploadContents> upload_contents_2 =
+      form_structure.EncodeUploadRequest(ServerFieldTypeSet(), true,
+                                         std::string(), true);
   EXPECT_TRUE(crowdsourcing_manager().StartUploadRequest(
-      form_structure, true, ServerFieldTypeSet(), std::string(), true,
-      &pref_service(), GetWeakPtr()));
+      std::move(upload_contents_2), form_structure.submission_source(),
+      form_structure.active_field_count(), &pref_service(), GetWeakPtr()));
+
   request = url_loader_factory().GetPendingRequest(2);
   url_loader_factory().SimulateResponseWithoutRemovingFromPendingList(
       request,
@@ -888,6 +907,7 @@ TEST_F(AutofillCrowdsourcingManagerTest, RetryLimit_Query) {
 }
 
 TEST_F(AutofillCrowdsourcingManagerTest, RetryLimit_Upload) {
+  base::HistogramTester histogram;
   FormStructure form_structure(
       test::GetFormData({.fields = {{.role = ADDRESS_HOME_LINE1},
                                     {.role = ADDRESS_HOME_LINE2},
@@ -896,10 +916,12 @@ TEST_F(AutofillCrowdsourcingManagerTest, RetryLimit_Upload) {
   SetCorrectFieldHostFormSignatures(form_structure);
 
   // Request with id 0.
-  base::HistogramTester histogram;
+  std::vector<AutofillUploadContents> upload_contents =
+      form_structure.EncodeUploadRequest(ServerFieldTypeSet(), true,
+                                         std::string(), true);
   EXPECT_TRUE(crowdsourcing_manager().StartUploadRequest(
-      form_structure, true, ServerFieldTypeSet(), std::string(), true,
-      &pref_service(), GetWeakPtr()));
+      std::move(upload_contents), form_structure.submission_source(),
+      form_structure.active_field_count(), &pref_service(), GetWeakPtr()));
 
   constexpr auto kTimeDeltaMargin = base::Milliseconds(100);
   const int max_attempts = crowdsourcing_manager().GetMaxServerAttempts();
@@ -1268,9 +1290,14 @@ class AutofillServerCommunicationTest
     ScopedActiveAutofillExperiments scoped_active_autofill_experiments;
     AutofillCrowdsourcingManager crowdsourcing_manager(
         &client(), version_info::Channel::UNKNOWN, nullptr);
+
+    std::vector<AutofillUploadContents> upload_contents =
+        form.EncodeUploadRequest(available_field_types, form_was_autofilled,
+                                 login_form_signature, observed_submission);
     bool succeeded = crowdsourcing_manager.StartUploadRequest(
-        form, form_was_autofilled, available_field_types, login_form_signature,
-        observed_submission, &pref_service(), weak_ptr_factory_.GetWeakPtr());
+        std::move(upload_contents), form.submission_source(),
+        form.active_field_count(), &pref_service(),
+        weak_ptr_factory_.GetWeakPtr());
     if (succeeded)
       run_loop_->Run();
     run_loop_.reset();
