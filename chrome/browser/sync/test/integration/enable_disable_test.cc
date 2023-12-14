@@ -351,14 +351,18 @@ IN_PROC_BROWSER_TEST_F(EnableDisableSingleClientTest, RedownloadsAfterSignout) {
 
   // Create a bookmark on the server, then turn on Sync on the client.
   InjectSyncedBookmark();
-  // Disable any LowPriorityUserTypes() (in practice, history): This test
+  // Disable any LowPriorityUserTypes() (in practice, history, and incoming
+  // password sharing invitations controlled by Passwords data type): This test
   // inspects the last-sync-cycle state. If low-prio types are active, they
   // cause another (uninteresting) cycle and mess up the stats we're interested
   // in.
+  // TODO(crbug.com/1298608): Rewrite this test to avoid disabling low priotiy
+  // types.
   ASSERT_TRUE(GetClient(0)->SetupSync(
       base::BindOnce([](syncer::SyncUserSettings* settings) {
         UserSelectableTypeSet types = settings->GetRegisteredSelectableTypes();
         types.Remove(syncer::UserSelectableType::kHistory);
+        types.Remove(syncer::UserSelectableType::kPasswords);
         settings->SetSelectedTypes(/*sync_everything=*/false, types);
       })));
   ASSERT_TRUE(GetSyncService(0)->IsSyncFeatureActive());
@@ -393,14 +397,18 @@ IN_PROC_BROWSER_TEST_F(EnableDisableSingleClientTest,
 
   // Create a bookmark on the server, then turn on Sync on the client.
   InjectSyncedBookmark();
-  // Disable any LowPriorityUserTypes() (in practice, history): This test
+  // Disable any LowPriorityUserTypes() (in practice, history, and incoming
+  // password sharing invitations controlled by Passwords data type): This test
   // inspects the last-sync-cycle state. If low-prio types are active, they
   // cause another (uninteresting) cycle and mess up the stats we're interested
   // in.
+  // TODO(crbug.com/1298608): Rewrite this test to avoid disabling low priotiy
+  // types.
   ASSERT_TRUE(GetClient(0)->SetupSync(
       base::BindOnce([](syncer::SyncUserSettings* settings) {
         UserSelectableTypeSet types = settings->GetRegisteredSelectableTypes();
         types.Remove(syncer::UserSelectableType::kHistory);
+        types.Remove(syncer::UserSelectableType::kPasswords);
         settings->SetSelectedTypes(/*sync_everything=*/false, types);
       })));
   ASSERT_TRUE(GetSyncService(0)->IsSyncFeatureActive());

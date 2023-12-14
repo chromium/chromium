@@ -13133,6 +13133,30 @@
             ]
         }
     ],
+    "PasswordSharing": [
+        {
+            "platforms": [
+                "android",
+                "chromeos",
+                "chromeos_lacros",
+                "ios",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "PasswordManagerEnableReceiverService",
+                        "PasswordManagerEnableSenderService",
+                        "SendPasswords",
+                        "SharedPasswordNotificationUI"
+                    ]
+                }
+            ]
+        }
+    ],
     "PasswordSuggestionBottomSheetV2": [
         {
             "platforms": [
