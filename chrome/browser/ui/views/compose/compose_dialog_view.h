@@ -25,8 +25,7 @@ class ComposeDialogView : public WebUIBubbleDialogView {
   ~ComposeDialogView() override;
 
   // WebUIBubbleDialogView:
-  void ResizeDueToAutoResize(content::WebContents* source,
-                             const gfx::Size& new_size) override;
+  gfx::Rect GetBubbleBounds() override;
 
   BubbleContentsWrapperT<ComposeUI>* bubble_wrapper() {
     return bubble_wrapper_.get();
