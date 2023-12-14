@@ -5749,6 +5749,8 @@ data/color-scheme-dark.html
 data/color-scheme.html
 data/compute_pressure/deliver_update_test.html
 data/compute_pressure/no_token.html
+data/compute_pressure/observer-in-dedicated-worker.js
+data/compute_pressure/observer-in-shared-worker.js
 data/compute_pressure/valid_token.html
 data/content-disposition-attachment.html
 data/content-disposition-attachment.html.mock-http-headers

@@ -167,6 +167,9 @@ class CONTENT_EXPORT SharedWorkerHost : public blink::mojom::SharedWorkerHost,
   // Returns true if this worker is connected to at least one client.
   bool HasClients() const;
 
+  // Returns the frame ids of this worker's clients.
+  std::vector<GlobalRenderFrameHostId> GetRenderFrameIDsForWorker();
+
   SiteInstanceImpl* site_instance() { return site_instance_.get(); }
 
   bool started() const { return started_; }
@@ -269,9 +272,6 @@ class CONTENT_EXPORT SharedWorkerHost : public blink::mojom::SharedWorkerHost,
 
   // RenderProcessHostObserver methods:
   void RenderProcessHostDestroyed(RenderProcessHost* host) override;
-
-  // Returns the frame ids of this worker's clients.
-  std::vector<GlobalRenderFrameHostId> GetRenderFrameIDsForWorker();
 
   void AllowFileSystemResponse(base::OnceCallback<void(bool)> callback,
                                bool allowed);
