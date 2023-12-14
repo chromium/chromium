@@ -281,7 +281,7 @@ source_set("web_internal") {
     "//ios/chrome/browser/open_from_clipboard/model",
     "//ios/chrome/browser/optimization_guide/model",
     "//ios/chrome/browser/passwords/model",
-    "//ios/chrome/browser/policy",
+    "//ios/chrome/browser/policy/model",
     "//ios/chrome/browser/prerender/model",
     "//ios/chrome/browser/promos_manager",
     "//ios/chrome/browser/reading_list/model",

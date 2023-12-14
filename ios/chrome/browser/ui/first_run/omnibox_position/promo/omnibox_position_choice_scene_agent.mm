@@ -7,7 +7,7 @@
 #import <memory>
 
 #import "base/check.h"
-#import "ios/chrome/browser/policy/browser_state_policy_connector.h"
+#import "ios/chrome/browser/policy/model/browser_state_policy_connector.h"
 #import "ios/chrome/browser/promos_manager/promos_manager.h"
 #import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_backed_boolean.h"

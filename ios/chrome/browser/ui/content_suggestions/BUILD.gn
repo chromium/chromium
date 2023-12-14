@@ -90,7 +90,7 @@ source_set("content_suggestions") {
     "//ios/chrome/browser/parcel_tracking:tracking_source",
     "//ios/chrome/browser/parcel_tracking:util",
     "//ios/chrome/browser/passwords/model:password_checkup_utils",
-    "//ios/chrome/browser/policy:policy_util",
+    "//ios/chrome/browser/policy/model:policy_util",
     "//ios/chrome/browser/promos_manager:factory",
     "//ios/chrome/browser/reading_list/model",
     "//ios/chrome/browser/safety_check/model",

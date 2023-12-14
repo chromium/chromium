@@ -83,7 +83,7 @@ source_set("test_support") {
     "//ios/chrome/browser/browser_state/model",
     "//ios/chrome/browser/browser_state/model:constants",
     "//ios/chrome/browser/net",
-    "//ios/chrome/browser/policy:policy",
+    "//ios/chrome/browser/policy/model:model",
     "//ios/chrome/browser/prefs/model",
     "//ios/chrome/browser/shared/model/prefs:browser_prefs",
     "//ios/chrome/browser/supervised_user/model:sync_settings_factory",

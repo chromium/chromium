@@ -122,7 +122,7 @@ source_set("unit_tests") {
     "//ios/chrome/browser/default_browser/model:utils",
     "//ios/chrome/browser/favicon:favicon",
     "//ios/chrome/browser/ntp/model",
-    "//ios/chrome/browser/policy:policy_util",
+    "//ios/chrome/browser/policy/model:policy_util",
     "//ios/chrome/browser/search_engines/model",
     "//ios/chrome/browser/shared/model/application_context",
     "//ios/chrome/browser/shared/model/browser_state:test_support",

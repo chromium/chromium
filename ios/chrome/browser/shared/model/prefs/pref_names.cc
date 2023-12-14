@@ -445,7 +445,7 @@ const char kIncognitoAuthenticationSetting[] =
 const char kLastSigninTimestamp[] = "signin.last_signin_timestamp";
 
 // Integer that represents the value of BrowserSigninPolicy. Values are defined
-// in ios/chrome/browser/policy/policy_util.h.
+// in ios/chrome/browser/policy/model/policy_util.h.
 const char kBrowserSigninPolicy[] = "signin.browser_signin_policy";
 
 // Bool that represents whether iCloud backups are allowed by policy.

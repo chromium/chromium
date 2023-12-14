@@ -23,7 +23,7 @@ source_set("policy") {
     "//components/version_info",
     "//components/version_ui",
     "//ios/chrome/app/strings",
-    "//ios/chrome/browser/policy",
+    "//ios/chrome/browser/policy/model",
     "//ios/chrome/browser/shared/model/application_context",
     "//ios/chrome/browser/shared/model/browser_state",
     "//ios/chrome/browser/shared/model/url:constants",

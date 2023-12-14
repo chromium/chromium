@@ -22,7 +22,7 @@
 #import "components/strings/grit/components_strings.h"
 #import "components/version_info/version_info.h"
 #import "components/version_ui/version_handler_helper.h"
-#import "ios/chrome/browser/policy/browser_state_policy_connector.h"
+#import "ios/chrome/browser/policy/model/browser_state_policy_connector.h"
 #import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/shared/model/url/chrome_url_constants.h"
 #import "ios/chrome/browser/ui/webui/policy/policy_ui_handler.h"

@@ -105,7 +105,7 @@ source_set("model") {
     "//ios/chrome/browser/passwords/model",
     "//ios/chrome/browser/photos/model:photos_service_factory",
     "//ios/chrome/browser/plus_addresses/model",
-    "//ios/chrome/browser/policy",
+    "//ios/chrome/browser/policy/model",
     "//ios/chrome/browser/policy_url_blocking/model",
     "//ios/chrome/browser/power_bookmarks/model",
     "//ios/chrome/browser/prefs/model",

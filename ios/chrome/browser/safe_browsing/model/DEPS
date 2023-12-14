@@ -5,6 +5,6 @@ include_rules = [
   "+ios/chrome/browser/sync/model",
   "+ios/chrome/browser/passwords/model",
   "+ios/chrome/browser/prerender/model",
-  "+ios/chrome/browser/policy",
+  "+ios/chrome/browser/policy/model",
   "+ios/chrome/browser/content_settings/model",
 ]
