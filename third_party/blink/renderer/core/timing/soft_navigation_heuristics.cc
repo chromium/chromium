@@ -171,12 +171,11 @@ void SoftNavigationHeuristics::InteractionCallbackCalled(
                       "SoftNavigationHeuristics::UserInitiatedInteraction");
 }
 
-void SoftNavigationHeuristics::UserInitiatedInteraction(
-    ScriptState* script_state) {
+void SoftNavigationHeuristics::UserInitiatedInteraction() {
   // Ensure that paints would be reset, so that paint recording would continue
   // despite the user interaction.
   did_reset_paints_ = false;
-  ResetPaintsIfNeeded(script_state);
+  ResetPaintsIfNeeded();
 }
 
 absl::optional<scheduler::TaskAttributionId>
@@ -421,14 +420,13 @@ void SoftNavigationHeuristics::ReportSoftNavigationToMetrics(
   }
 }
 
-void SoftNavigationHeuristics::ResetPaintsIfNeeded(ScriptState* script_state) {
-  ScriptState::Scope scope(script_state);
-  LocalFrame* frame = ToLocalFrameIfNotDetached(script_state->GetContext());
+void SoftNavigationHeuristics::ResetPaintsIfNeeded() {
+  LocalDOMWindow* window = GetSupplementable();
+  LocalFrame* frame =
+      window->IsCurrentlyDisplayedInFrame() ? window->GetFrame() : nullptr;
   if (!frame || !frame->IsOutermostMainFrame()) {
     return;
   }
-  LocalDOMWindow* window = frame->DomWindow();
-  DCHECK(window);
   if (!did_reset_paints_) {
     LocalFrameView* local_frame_view = frame->View();
 
@@ -534,10 +532,9 @@ ExecutionContext* SoftNavigationHeuristics::GetExecutionContext() {
 // ///////////////////////////////////////////
 SoftNavigationEventScope::SoftNavigationEventScope(
     SoftNavigationHeuristics* heuristics,
-    ScriptState* script_state,
     SoftNavigationHeuristics::EventScopeType type,
     bool is_new_interaction)
-    : heuristics_(heuristics), script_state_(script_state) {
+    : heuristics_(heuristics) {
   ThreadScheduler* scheduler = ThreadScheduler::Current();
   DCHECK(scheduler);
   auto* tracker = scheduler->GetTaskAttributionTracker();
@@ -552,9 +549,8 @@ SoftNavigationEventScope::SoftNavigationEventScope(
   // that created tasks know they were initiated by the correct event type.
   heuristics_->SetEventParametersAndQueueNestedOnes(type, is_new_interaction,
                                                     nested);
-
   if (!nested) {
-    heuristics_->UserInitiatedInteraction(script_state);
+    heuristics_->UserInitiatedInteraction();
   }
 }
 

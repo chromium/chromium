@@ -64,7 +64,7 @@ class SoftNavigationHeuristics
   void InteractionCallbackCalled(ScriptState*,
                                  EventScopeType,
                                  bool is_new_interaction);
-  void UserInitiatedInteraction(ScriptState*);
+  void UserInitiatedInteraction();
   void SameDocumentNavigationStarted(ScriptState*);
   void SameDocumentNavigationCommitted(ScriptState*, const String& url);
   bool ModifiedDOM(ScriptState*);
@@ -114,7 +114,7 @@ class SoftNavigationHeuristics
       ScriptState*,
       FlagType);
   void ResetHeuristic();
-  void ResetPaintsIfNeeded(ScriptState*);
+  void ResetPaintsIfNeeded();
   void CommitPreviousPaints(LocalFrame*);
   void EmitSoftNavigationEntry(LocalFrame*);
 
@@ -163,14 +163,12 @@ class SoftNavigationHeuristics
 class SoftNavigationEventScope {
  public:
   SoftNavigationEventScope(SoftNavigationHeuristics* heuristics,
-                           ScriptState* script_state,
                            SoftNavigationHeuristics::EventScopeType type,
                            bool is_new_interaction);
   ~SoftNavigationEventScope();
 
  private:
   Persistent<SoftNavigationHeuristics> heuristics_;
-  Persistent<ScriptState> script_state_;
 };
 
 }  // namespace blink

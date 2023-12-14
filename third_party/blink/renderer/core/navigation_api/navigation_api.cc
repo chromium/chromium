@@ -838,7 +838,7 @@ NavigationApi::DispatchResult NavigationApi::DispatchNavigateEvent(
     // consider this a "user initiated click", and the dispatched event handlers
     // as potential soft navigation tasks.
     soft_navigation_scope = std::make_unique<SoftNavigationEventScope>(
-        soft_navigation_heuristics, script_state,
+        soft_navigation_heuristics,
         SoftNavigationHeuristics::EventScopeType::Navigate,
         /*is_new_interaction=*/true);
   }
