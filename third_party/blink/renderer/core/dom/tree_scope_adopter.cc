@@ -66,7 +66,7 @@ void TreeScopeAdopter::MoveTreeToNewScope(Node& root) const {
     UpdateTreeScope(node);
 
     if (will_move_to_new_document) {
-      MoveNodeToNewDocument(node, old_document, new_document);
+      MoveNodeToNewDocument(node, old_document);
     } else if (node.HasRareData()) {
       NodeRareData* rare_data = node.RareData();
       if (rare_data->NodeLists())
@@ -120,7 +120,7 @@ void TreeScopeAdopter::MoveTreeToNewDocument(Node& root,
                                              Document& new_document) const {
   DCHECK_NE(old_document, new_document);
   for (Node& node : NodeTraversal::InclusiveDescendantsOf(root)) {
-    MoveNodeToNewDocument(node, old_document, new_document);
+    MoveNodeToNewDocument(node, old_document);
 
     auto* element = DynamicTo<Element>(node);
     if (!element)
@@ -145,9 +145,7 @@ void TreeScopeAdopter::WillMoveTreeToNewDocument(Node& root) const {
 
   for (Node& node : NodeTraversal::InclusiveDescendantsOf(root)) {
     DCHECK_EQ(old_document, node.GetDocument());
-    // TODO(crbug.com/1371962): `node` is still in `old_document`, so only
-    // send in `new_document` here.
-    node.WillMoveToNewDocument(old_document, new_document);
+    node.WillMoveToNewDocument(new_document);
 
     if (auto* element = DynamicTo<Element>(node)) {
       if (ShadowRoot* shadow_root = element->GetShadowRoot())
@@ -183,11 +181,11 @@ inline void TreeScopeAdopter::UpdateTreeScope(Node& node) const {
 
 inline void TreeScopeAdopter::MoveNodeToNewDocument(
     Node& node,
-    Document& old_document,
-    Document& new_document) const {
+    Document& old_document) const {
+  Document& new_document = node.GetDocument();
   DCHECK_NE(old_document, new_document);
-  // TODO(crbug.com/1371962) `new_document` should no longer be needed.
-  DCHECK_EQ(node.GetDocument(), new_document);
+  DCHECK_EQ(old_document, OldScope().GetDocument());
+  DCHECK_EQ(new_document, NewScope().GetDocument());
 
   if (node.HasRareData()) {
     NodeRareData* rare_data = node.RareData();

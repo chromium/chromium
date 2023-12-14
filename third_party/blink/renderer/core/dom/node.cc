@@ -2588,9 +2588,9 @@ ExecutionContext* Node::GetExecutionContext() const {
   return GetDocument().GetExecutionContext();
 }
 
-void Node::WillMoveToNewDocument(Document& old_document,
-                                 Document& new_document) {
-  DCHECK_NE(&GetDocument(), &new_document);
+void Node::WillMoveToNewDocument(Document& new_document) {
+  Document& old_document = GetDocument();
+  DCHECK_NE(&old_document, &new_document);
 
   // In rare situations, this node may be the focused element of the old
   // document. In this case, we need to clear the focused element of the old
