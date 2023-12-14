@@ -6897,3 +6897,7 @@ fast/events/simulated-click-by-alt-enter.html [ Failure Pass ]
 # Failing on WebKit Linux MSAN
 crbug.com/1510005 [ Linux ] external/wpt/css/filter-effects/backdrop-filter-svg.html [ Crash Failure Pass Timeout ]
 crbug.com/1510005 [ Linux ] virtual/scalefactor200/external/wpt/css/filter-effects/backdrop-filter-svg.html [ Crash Failure Pass Timeout ]
+
+# TODO(crbug.com/1511492): Re-enable these tests.
+crbug.com/1511492 [ Linux ] external/wpt/event-timing/first-input-interactionid-tap.html [ Crash Failure Timeout ]
+crbug.com/1511492 [ Linux ] external/wpt/event-timing/external/wpt/event-timing/interactionid-tap.html [ Crash Failure Timeout ]
