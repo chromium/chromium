@@ -1353,6 +1353,16 @@
     'ios_ntp': {
       'filepath': 'ios/chrome/browser/ui/ntp/',
     },
+    'ios_transactions': {
+      'filepath': 'components/autofill/ios|'\
+                  'components/password_manager/ios|'\
+                  'ios/chrome/browser/autofill|'\
+                  'ios/chrome/browser/passwords|'\
+                  'ios/chrome/browser/ui/autofill|'\
+                  'ios/chrome/browser/ui/passwords|'\
+                  'ios/chrome/browser/ui/settings/autofill|'\
+                  'ios/chrome/browser/ui/settings/password|',
+    },
     'ios_web': {
       'filepath': 'ios/web(_view)?/',
     },
@@ -2932,6 +2942,8 @@
     'ios_credential_provider': ['rkgibson+watch@chromium.org'],
     'ios_flags': ['noyau+watch@chromium.org'],
     'ios_ntp': ['thegreenfrog+watch@chromium.org'],
+    'ios_transactions': ['sebsg+transactions-watch@chromium.org',
+                         'tmartino+transactions-watch@chromium.org'],
     'ios_web': ['ios-reviews+web@chromium.org'],
     'ios_widget_kit': ['rkgibson+watch@chromium.org'],
     'ip_protection': ['djmitche@chromium.org',
