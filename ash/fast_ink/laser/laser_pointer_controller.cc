@@ -14,6 +14,7 @@
 #include "base/memory/raw_ptr.h"
 #include "ui/display/screen.h"
 #include "ui/events/base_event_utils.h"
+#include "ui/events/types/event_type.h"
 #include "ui/views/widget/widget.h"
 #include "ui/wm/core/coordinate_conversion.h"
 
@@ -107,12 +108,19 @@ void LaserPointerController::UpdatePointerView(ui::TouchEvent* event) {
     return;
   }
 
-  // Unlock mouse cursor when switch to touch event.
-  scoped_locked_hidden_cursor_.reset();
+  if (event->type() != ui::ET_TOUCH_CANCELLED) {
+    // Unlock mouse cursor when switch to touch event.
+    scoped_locked_hidden_cursor_.reset();
 
-  laser_pointer_view->AddNewPoint(event->root_location_f(),
-                                  event->time_stamp());
-  if (event->type() == ui::ET_TOUCH_RELEASED) {
+    laser_pointer_view->AddNewPoint(event->root_location_f(),
+                                    event->time_stamp());
+  }
+
+  // Upon disabling the touch display, a canceled touch event is received. The
+  // `laser_pointer_view` should be destroyed to avoid visual artifacts. See
+  // b/303924797 for more information.
+  if (event->type() == ui::ET_TOUCH_RELEASED ||
+      event->type() == ui::ET_TOUCH_CANCELLED) {
     laser_pointer_view->FadeOut(base::BindOnce(
         &LaserPointerController::DestroyPointerView, base::Unretained(this)));
   }
