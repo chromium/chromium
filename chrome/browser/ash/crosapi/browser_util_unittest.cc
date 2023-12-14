@@ -294,7 +294,7 @@ TEST_F(BrowserUtilTest, AshWebBrowserEnabled) {
     EXPECT_FALSE(browser_util::IsLacrosAllowedToBeEnabled());
     EXPECT_FALSE(browser_util::IsLacrosEnabled());
     EXPECT_TRUE(browser_util::IsAshWebBrowserEnabled());
-    EXPECT_TRUE(browser_util::IsAshWebBrowserEnabledForMigration(
+    EXPECT_FALSE(browser_util::IsLacrosEnabledForMigration(
         user, browser_util::PolicyInitState::kAfterInit));
   }
 
@@ -305,7 +305,7 @@ TEST_F(BrowserUtilTest, AshWebBrowserEnabled) {
     EXPECT_TRUE(browser_util::IsLacrosAllowedToBeEnabled());
     EXPECT_FALSE(browser_util::IsLacrosEnabled());
     EXPECT_TRUE(browser_util::IsAshWebBrowserEnabled());
-    EXPECT_TRUE(browser_util::IsAshWebBrowserEnabledForMigration(
+    EXPECT_FALSE(browser_util::IsLacrosEnabledForMigration(
         user, browser_util::PolicyInitState::kAfterInit));
   }
 
@@ -319,7 +319,7 @@ TEST_F(BrowserUtilTest, AshWebBrowserEnabled) {
     EXPECT_TRUE(browser_util::IsLacrosAllowedToBeEnabled());
     EXPECT_TRUE(browser_util::IsLacrosEnabled());
     EXPECT_FALSE(browser_util::IsAshWebBrowserEnabled());
-    EXPECT_FALSE(browser_util::IsAshWebBrowserEnabledForMigration(
+    EXPECT_TRUE(browser_util::IsLacrosEnabledForMigration(
         user, browser_util::PolicyInitState::kAfterInit));
   }
 
@@ -330,7 +330,7 @@ TEST_F(BrowserUtilTest, AshWebBrowserEnabled) {
     EXPECT_TRUE(browser_util::IsLacrosAllowedToBeEnabled());
     EXPECT_TRUE(browser_util::IsLacrosEnabled());
     EXPECT_FALSE(browser_util::IsAshWebBrowserEnabled());
-    EXPECT_FALSE(browser_util::IsAshWebBrowserEnabledForMigration(
+    EXPECT_TRUE(browser_util::IsLacrosEnabledForMigration(
         user, browser_util::PolicyInitState::kAfterInit));
   }
 }
@@ -339,7 +339,7 @@ TEST_F(BrowserUtilTest, IsAshWebBrowserEnabledForMigration) {
   const user_manager::User* const user = AddRegularUser("user@test.com");
 
   // Ash browser is enabled if Lacros is not enabled.
-  EXPECT_TRUE(browser_util::IsAshWebBrowserEnabledForMigration(
+  EXPECT_FALSE(browser_util::IsLacrosEnabledForMigration(
       user, browser_util::PolicyInitState::kBeforeInit));
 
   // Sets command line flag to emulate the situation where the Chrome
@@ -350,7 +350,7 @@ TEST_F(BrowserUtilTest, IsAshWebBrowserEnabledForMigration) {
       ash::standalone_browser::kLacrosAvailabilityPolicyLacrosOnly);
 
   // Ash browser is disabled if LacrosOnly is enabled.
-  EXPECT_FALSE(browser_util::IsAshWebBrowserEnabledForMigration(
+  EXPECT_TRUE(browser_util::IsLacrosEnabledForMigration(
       user, browser_util::PolicyInitState::kBeforeInit));
 }
 
@@ -366,7 +366,7 @@ TEST_F(BrowserUtilTest, IsAshWebBrowserDisabled) {
 
   EXPECT_TRUE(browser_util::IsLacrosEnabled());
   EXPECT_FALSE(browser_util::IsAshWebBrowserEnabled());
-  EXPECT_FALSE(browser_util::IsAshWebBrowserEnabledForMigration(
+  EXPECT_TRUE(browser_util::IsLacrosEnabledForMigration(
       user, browser_util::PolicyInitState::kAfterInit));
 }
 
@@ -382,7 +382,7 @@ TEST_F(BrowserUtilTest, IsAshWebBrowserDisabledByFlags) {
   feature_list.InitAndEnableFeature(
       ash::standalone_browser::features::kLacrosOnly);
   EXPECT_FALSE(browser_util::IsAshWebBrowserEnabled());
-  EXPECT_FALSE(browser_util::IsAshWebBrowserEnabledForMigration(
+  EXPECT_TRUE(browser_util::IsLacrosEnabledForMigration(
       user, browser_util::PolicyInitState::kAfterInit));
 }
 
@@ -881,7 +881,7 @@ TEST_F(BrowserUtilTest, LacrosGoogleRolloutOnly) {
   EXPECT_TRUE(browser_util::IsLacrosAllowedToBeEnabled());
   EXPECT_TRUE(browser_util::IsLacrosEnabled());
   EXPECT_FALSE(browser_util::IsAshWebBrowserEnabled());
-  EXPECT_FALSE(browser_util::IsAshWebBrowserEnabledForMigration(
+  EXPECT_TRUE(browser_util::IsLacrosEnabledForMigration(
       user, browser_util::PolicyInitState::kAfterInit));
 }
 
