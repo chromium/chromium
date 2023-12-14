@@ -85,13 +85,9 @@ class PrivacySandboxDialogViewBrowserTest : public DialogBrowserTest {
   raw_ptr<MockPrivacySandboxService, DanglingUntriaged> mock_service_;
 };
 
-#if BUILDFLAG(IS_WIN)
-#define MAYBE_InvokeUi_Consent DISABLED_InvokeUi_Consent
-#else
-#define MAYBE_InvokeUi_Consent InvokeUi_Consent
-#endif
+// TODO(crbug.com/1511488): Re-enable once the flakiness is fixed.
 IN_PROC_BROWSER_TEST_F(PrivacySandboxDialogViewBrowserTest,
-                       MAYBE_InvokeUi_Consent) {
+                       DISABLED_InvokeUi_Consent) {
   EXPECT_CALL(
       *mock_service(),
       PromptActionOccurred(PrivacySandboxService::PromptAction::kConsentShown));
