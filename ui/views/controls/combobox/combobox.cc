@@ -543,6 +543,7 @@ void Combobox::OnComboboxModelChanged(ui::ComboboxModel* model) {
   }
 
   OnContentSizeMaybeChanged();
+  SchedulePaint();
 }
 
 void Combobox::OnComboboxModelDestroying(ui::ComboboxModel* model) {
