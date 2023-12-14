@@ -20,6 +20,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/bind.h"
+#include "base/test/run_until.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_mock_time_task_runner.h"
 #include "base/test/test_timeouts.h"
@@ -44,7 +45,6 @@
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_dialogs.h"
 #include "chrome/browser/ui/login/login_handler.h"
-#include "chrome/browser/ui/login/login_handler_test_utils.h"
 #include "chrome/browser/usb/usb_browser_test_utils.h"
 #include "chrome/browser/usb/usb_chooser_context.h"
 #include "chrome/browser/usb/usb_chooser_context_factory.h"
@@ -4018,10 +4018,6 @@ IN_PROC_BROWSER_TEST_F(WebViewTest, HttpAuth) {
   LoadAppWithGuest("web_view/simple");
 
   const GURL auth_url = embedded_test_server()->GetURL("/auth-basic");
-  content::NavigationController* guest_controller =
-      &GetGuestView()->GetController();
-  WindowedAuthNeededObserver auth_needed(guest_controller);
-  WindowedAuthSuppliedObserver auth_supplied(guest_controller);
   // There are two navigations occurring here. The first fails due to the need
   // for auth. After it's supplied, a second navigation will succeed.
   content::TestNavigationObserver nav_observer(GetGuestWebContents(), 2);
@@ -4031,12 +4027,12 @@ IN_PROC_BROWSER_TEST_F(WebViewTest, HttpAuth) {
   EXPECT_TRUE(
       content::ExecJs(GetGuestRenderFrameHost(),
                       content::JsReplace("location.href = $1;", auth_url)));
-  auth_needed.Wait();
+  ASSERT_TRUE(base::test::RunUntil(
+      []() { return LoginHandler::GetAllLoginHandlersForTest().size() == 1; }));
 
   LoginHandler* login_handler =
       LoginHandler::GetAllLoginHandlersForTest().front();
   login_handler->SetAuth(u"basicuser", u"secret");
-  auth_supplied.Wait();
   nav_observer.WaitForNavigationFinished();
 }
 
@@ -4045,13 +4041,8 @@ IN_PROC_BROWSER_TEST_F(WebViewTest, HttpAuthIdentical) {
   LoadAppWithGuest("web_view/simple");
 
   const GURL auth_url = embedded_test_server()->GetURL("/auth-basic");
-  content::NavigationController* guest_controller =
-      &GetGuestView()->GetController();
   content::NavigationController* tab_controller =
       &browser()->tab_strip_model()->GetActiveWebContents()->GetController();
-  WindowedAuthNeededObserver guest_auth_needed(guest_controller);
-  WindowedAuthNeededObserver tab_auth_needed(tab_controller);
-  WindowedAuthSuppliedObserver guest_auth_supplied(guest_controller);
   // There are two navigations occurring here. The first fails due to the need
   // for auth. After it's supplied, a second navigation will succeed.
   content::TestNavigationObserver guest_nav_observer(GetGuestWebContents(), 2);
@@ -4061,13 +4052,15 @@ IN_PROC_BROWSER_TEST_F(WebViewTest, HttpAuthIdentical) {
   EXPECT_TRUE(
       content::ExecJs(GetGuestRenderFrameHost(),
                       content::JsReplace("location.href = $1;", auth_url)));
-  guest_auth_needed.Wait();
+  ASSERT_TRUE(base::test::RunUntil(
+      []() { return LoginHandler::GetAllLoginHandlersForTest().size() == 1; }));
 
   // While the login UI is showing for the app, navigate a tab to the same URL
   // requiring auth.
   tab_controller->LoadURL(auth_url, content::Referrer(),
                           ui::PAGE_TRANSITION_TYPED, std::string());
-  tab_auth_needed.Wait();
+  ASSERT_TRUE(base::test::RunUntil(
+      []() { return LoginHandler::GetAllLoginHandlersForTest().size() == 2; }));
 
   // Both the guest and the tab should be prompting for credentials and the auth
   // challenge should be the same. Normally, the login code de-duplicates
@@ -4085,7 +4078,6 @@ IN_PROC_BROWSER_TEST_F(WebViewTest, HttpAuthIdentical) {
       tab_login_handler->auth_info()));
 
   guest_login_handler->SetAuth(u"basicuser", u"secret");
-  guest_auth_supplied.Wait();
   guest_nav_observer.WaitForNavigationFinished();
 
   // The tab should still be prompting for credentials.

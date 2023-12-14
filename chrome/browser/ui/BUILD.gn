@@ -6802,8 +6802,6 @@ static_library("test_support") {
     "content_settings/fake_owner.cc",
     "content_settings/fake_owner.h",
     "find_bar/find_bar_host_unittest_util.h",
-    "login/login_handler_test_utils.cc",
-    "login/login_handler_test_utils.h",
   ]
   public_deps = [ ":ui" ]
   deps = [

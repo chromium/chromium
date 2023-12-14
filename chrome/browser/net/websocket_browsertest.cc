@@ -18,6 +18,7 @@
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/bind.h"
+#include "base/test/run_until.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
 #include "build/build_config.h"
@@ -26,7 +27,6 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/login/login_handler.h"
-#include "chrome/browser/ui/login/login_handler_test_utils.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
@@ -420,11 +420,9 @@ IN_PROC_BROWSER_TEST_F(WebSocketBrowserTest,
       &browser()->tab_strip_model()->GetActiveWebContents()->GetController();
   AutoLogin auto_login("test", "test", navigation_controller);
 
-  WindowedAuthNeededObserver auth_needed_waiter(navigation_controller);
   NavigateToHTTP("connect_check.html");
-  auth_needed_waiter.Wait();
 
-  EXPECT_TRUE(auto_login.logged_in());
+  ASSERT_TRUE(base::test::RunUntil([&]() { return auto_login.logged_in(); }));
   EXPECT_EQ("PASS", WaitAndGetTitle());
 }
 

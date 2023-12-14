@@ -22,6 +22,7 @@
 #include "base/test/bind.h"
 #include "base/test/gmock_callback_support.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/run_until.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
 #include "base/values.h"
@@ -58,7 +59,6 @@
 #include "chrome/browser/profiles/profile_key.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/login/login_handler.h"
-#include "chrome/browser/ui/login/login_handler_test_utils.h"
 #include "chrome/browser/ui/webui/ash/login/gaia_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/saml_challenge_key_handler.h"
 #include "chrome/browser/ui/webui/ash/login/saml_confirm_password_handler.h"
@@ -511,16 +511,9 @@ IN_PROC_BROWSER_TEST_P(SamlTestWithFeatures, IdpRequiresHttpAuth) {
   extensions::WebViewGuest* gaia_guest = signin::GetAuthWebViewGuest(
       GetLoginUI()->GetWebContents(), gaia_frame_parent_);
   ASSERT_TRUE(gaia_guest);
-  content::NavigationController* gaia_frame_navigation_controller =
-      &gaia_guest->GetController();
 
   // Start observing before initiating SAML sign-in.
   content::DOMMessageQueue message_queue(GetLoginUI()->GetWebContents());
-  LoginPromptBrowserTestObserver login_prompt_observer;
-  login_prompt_observer.Register(content::Source<content::NavigationController>(
-      gaia_frame_navigation_controller));
-  WindowedAuthNeededObserver auth_needed_waiter(
-      gaia_frame_navigation_controller);
 
   SetupAuthFlowChangeListener();
   LoginDisplayHost::default_host()
@@ -529,9 +522,9 @@ IN_PROC_BROWSER_TEST_P(SamlTestWithFeatures, IdpRequiresHttpAuth) {
       ->ShowSigninScreenForTest(saml_test_users::kFirstUserCorpExampleComEmail,
                                 "", "[]");
 
-  auth_needed_waiter.Wait();
-  ASSERT_FALSE(login_prompt_observer.handlers().empty());
-  LoginHandler* handler = *login_prompt_observer.handlers().begin();
+  ASSERT_TRUE(base::test::RunUntil(
+      []() { return LoginHandler::GetAllLoginHandlersForTest().size() == 1; }));
+  LoginHandler* handler = LoginHandler::GetAllLoginHandlersForTest().front();
   // Note that the actual credentials don't matter because `fake_saml_idp()`
   // doesn't check those (only that something has been provided).
   handler->SetAuth(u"user", u"pwd");
