@@ -21,6 +21,7 @@
 #include "net/dns/mock_host_resolver.h"
 #include "net/traffic_annotation/network_traffic_annotation_test_helper.h"
 #include "third_party/blink/public/common/switches.h"
+#include "ui/views/views_switches.h"
 
 using content::DownloadManager;
 using content::WebContents;
@@ -90,6 +91,11 @@ void DownloadTestBase::SetUpCommandLine(base::CommandLine* command_line) {
   // Slower builders (linux-chromeos-rel, debug, and maybe others) are flaky
   // due to slower loading interacting with deferred commits.
   command_line->AppendSwitch(blink::switches::kAllowPreCommitInput);
+
+  // Clicks from tests should always be allowed, even on dialogs that have
+  // protection against accidental double-clicking/etc.
+  command_line->AppendSwitch(
+      views::switches::kDisableInputEventActivationProtectionForTesting);
 }
 
 void DownloadTestBase::TearDownOnMainThread() {
