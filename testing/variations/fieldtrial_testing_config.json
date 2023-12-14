@@ -4018,7 +4018,6 @@
                         "use_root_bookmark_as_default": "true"
                     },
                     "enable_features": [
-                        "BookmarksImprovedSaveFlow",
                         "CommercePriceTracking",
                         "OptimizationGuidePushNotifications",
                         "ReadLater",
@@ -4052,7 +4051,6 @@
                         "use_root_bookmark_as_default": "true"
                     },
                     "enable_features": [
-                        "BookmarksImprovedSaveFlow",
                         "ReadLater"
                     ]
                 },
@@ -4094,7 +4092,6 @@
                         "use_root_bookmark_as_default": "true"
                     },
                     "enable_features": [
-                        "BookmarksImprovedSaveFlow",
                         "CommercePriceTracking",
                         "ReadLater"
                     ]
@@ -4111,7 +4108,6 @@
                         "use_root_bookmark_as_default": "true"
                     },
                     "enable_features": [
-                        "BookmarksImprovedSaveFlow",
                         "CommercePriceTracking",
                         "OptimizationGuidePushNotifications",
                         "ReadLater",
@@ -4127,7 +4123,6 @@
                         "use_root_bookmark_as_default": "true"
                     },
                     "enable_features": [
-                        "BookmarksImprovedSaveFlow",
                         "ReadLater"
                     ]
                 },
@@ -4144,7 +4139,6 @@
                         "use_root_bookmark_as_default": "true"
                     },
                     "enable_features": [
-                        "BookmarksImprovedSaveFlow",
                         "CommercePriceTracking",
                         "OptimizationGuidePushNotifications",
                         "ReadLater",
@@ -4165,7 +4159,6 @@
                         "use_root_bookmark_as_default": "true"
                     },
                     "enable_features": [
-                        "BookmarksImprovedSaveFlow",
                         "CommercePriceTracking",
                         "OptimizationGuidePushNotifications",
                         "ReadLater",

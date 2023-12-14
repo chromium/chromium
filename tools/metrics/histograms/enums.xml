@@ -33249,7 +33249,6 @@ from previous Chrome versions.
   <int value="54258707" label="NewTabstripAnimation:enabled"/>
   <int value="54571864" label="EnableDisplayZoomSetting:enabled"/>
   <int value="56072855" label="VaapiWebPImageDecodeAcceleration:disabled"/>
-  <int value="56605515" label="BookmarksImprovedSaveFlow:enabled"/>
   <int value="56723110" label="enable-webfonts-intervention"/>
   <int value="56900498" label="OmniboxOneClickUnelide:enabled"/>
   <int value="57255632" label="site-isolation-for-password-sites:disabled"/>
@@ -36745,7 +36744,6 @@ from previous Chrome versions.
   <int value="1713509078" label="NewBaseUrlInheritanceBehavior:enabled"/>
   <int value="1714016217" label="EnableHeuristicPalmDetectionFilter:enabled"/>
   <int value="1714520147" label="MBIMode:disabled"/>
-  <int value="1714746366" label="BookmarksImprovedSaveFlow:disabled"/>
   <int value="1714751652" label="CaptivePortalErrorPage:disabled"/>
   <int value="1714922056" label="GlobalMediaControls:disabled"/>
   <int value="1715173626" label="SyncWebauthnCredentials:disabled"/>

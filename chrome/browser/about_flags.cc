@@ -9309,13 +9309,6 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kSkiaGraphiteDescription, kOsAll,
      FEATURE_VALUE_TYPE(features::kSkiaGraphite)},
 
-#if BUILDFLAG(IS_ANDROID)
-    {"bookmarks-improved-save-flow",
-     flag_descriptions::kBookmarksImprovedSaveFlowName,
-     flag_descriptions::kBookmarksImprovedSaveFlowDescription, kOsAndroid,
-     FEATURE_VALUE_TYPE(chrome::android::kBookmarksImprovedSaveFlow)},
-#endif
-
     {"enable-tab-audio-muting", flag_descriptions::kTabAudioMutingName,
      flag_descriptions::kTabAudioMutingDescription, kOsDesktop,
      FEATURE_VALUE_TYPE(media::kEnableTabMuting)},

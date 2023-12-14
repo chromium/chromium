@@ -2849,10 +2849,6 @@ const char kPowerBookmarkBackendName[] = "Power bookmark backend";
 const char kPowerBookmarkBackendDescription[] =
     "Enables storing additional metadata to support power bookmark features.";
 
-const char kBookmarksImprovedSaveFlowName[] = "Improved bookmarks save flow";
-const char kBookmarksImprovedSaveFlowDescription[] =
-    "Enabled an improved save flow for bookmarks.";
-
 const char kSpeculationRulesPrerenderingTargetHintName[] =
     "Speculation Rules API target hint";
 const char kSpeculationRulesPrerenderingTargetHintDescription[] =
