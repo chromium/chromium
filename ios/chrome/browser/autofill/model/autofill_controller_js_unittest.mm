@@ -1789,6 +1789,7 @@ TEST_F(AutofillControllerJsTest, ExtractForms) {
         @"should_autocomplete" : @true,
         @"is_checkable" : @false,
         @"is_focusable" : @true,
+        @"is_user_edited" : @true,
         @"value" : @"John",
         @"label" : @"* First name:"
       },
@@ -1805,6 +1806,7 @@ TEST_F(AutofillControllerJsTest, ExtractForms) {
         @"should_autocomplete" : @true,
         @"is_checkable" : @true,
         @"is_focusable" : @true,
+        @"is_user_edited" : @true,
         @"value" : @"Bike",
         @"label" : @"Bicycle"
       },
@@ -1821,6 +1823,7 @@ TEST_F(AutofillControllerJsTest, ExtractForms) {
         @"should_autocomplete" : @true,
         @"is_checkable" : @true,
         @"is_focusable" : @true,
+        @"is_user_edited" : @true,
         @"value" : @"Car",
         @"label" : @"Automobile"
       },
@@ -1837,6 +1840,7 @@ TEST_F(AutofillControllerJsTest, ExtractForms) {
         @"should_autocomplete" : @true,
         @"is_checkable" : @true,
         @"is_focusable" : @true,
+        @"is_user_edited" : @true,
         @"value" : @"Rocket",
         @"label" : @"Missile"
       },
@@ -1854,6 +1858,7 @@ TEST_F(AutofillControllerJsTest, ExtractForms) {
         @"should_autocomplete" : @true,
         @"is_checkable" : @false,
         @"is_focusable" : @true,
+        @"is_user_edited" : @true,
         @"value" : @"John",
         @"label" : @"* First name:"
       },
@@ -1871,6 +1876,7 @@ TEST_F(AutofillControllerJsTest, ExtractForms) {
         @"should_autocomplete" : @true,
         @"is_checkable" : @false,
         @"is_focusable" : @true,
+        @"is_user_edited" : @true,
         @"value" : @"john@example.com",
         @"label" : @"Email:"
       },
@@ -1889,6 +1895,7 @@ TEST_F(AutofillControllerJsTest, ExtractForms) {
         @"should_autocomplete" : @false,
         @"is_checkable" : @false,
         @"is_focusable" : @true,
+        @"is_user_edited" : @true,
         @"value" : @"",
         @"label" : @"* Password:"
       },
@@ -1903,6 +1910,7 @@ TEST_F(AutofillControllerJsTest, ExtractForms) {
         @"form_control_type" : @"select-one",
         @"placeholder_attribute" : @"",
         @"is_focusable" : @1,
+        @"is_user_edited" : @true,
         @"option_values" : @[ @"CA", @"TX" ],
         @"option_contents" : @[ @"California", @"Texas" ],
         @"should_autocomplete" : @1,

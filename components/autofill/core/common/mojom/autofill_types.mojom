@@ -363,6 +363,7 @@ struct FormFieldData {
   int32 form_control_ax_id;
 
   uint64 max_length;
+  bool is_user_edited;
   bool is_autofilled;
   Section section;
   CheckStatus check_status;

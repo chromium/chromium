@@ -267,6 +267,10 @@ struct StructTraits<autofill::mojom::FormFieldDataDataView,
     return r.max_length;
   }
 
+  static bool is_user_edited(const autofill::FormFieldData& r) {
+    return r.is_user_edited;
+  }
+
   static bool is_autofilled(const autofill::FormFieldData& r) {
     return r.is_autofilled;
   }

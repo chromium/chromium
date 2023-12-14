@@ -189,6 +189,7 @@ struct FormFieldData {
   // - FormFieldData::form_control_ax_id,
   // - FormFieldData::section,
   // - FormFieldData::is_autofilled,
+  // - FormFieldData::is_user_edited,
   // - FormFieldData::properties_mask,
   // - FormFieldData::is_enabled,
   // - FormFieldData::is_readonly,
@@ -351,6 +352,28 @@ struct FormFieldData {
   uint64_t max_length = std::numeric_limits<uint32_t>::max();
 
   bool is_autofilled = false;
+
+  // Whether the user has edited this field since page load or resetting the
+  // field.
+  //
+  // Examples that count as edits:
+  // - Typing into a text control.
+  // - Pasting into a text control.
+  // - Clicking and selecting an option of a <select> counts.
+  // - Unfocusing a <select> using TAB (because of the keydown event).
+  //
+  // Examples that do not count as edits:
+  // - Autofill.
+  // - Typing into a contenteditable.
+  // - Setting the field's value directly in JavaScript.
+  // - Untrusted events (see JavaScript's Event.isTrusted).
+  //
+  // The property is sticky: a user-edited field becomes non-user-edited only
+  // when the form is reset (JavaScript's HTMLFormElement.reset()).
+  // TODO(crbug.com/1501627): On iOS, also non-trusted events reset the
+  // property.
+  bool is_user_edited = false;
+
   CheckStatus check_status = CheckStatus::kNotCheckable;
   bool is_focusable = true;
   bool is_visible = true;
@@ -435,6 +458,7 @@ std::ostream& operator<<(std::ostream& os, const FormFieldData& field);
     EXPECT_EQ(expected.max_length, actual.max_length);                         \
     EXPECT_EQ(expected.css_classes, actual.css_classes);                       \
     EXPECT_EQ(expected.is_autofilled, actual.is_autofilled);                   \
+    EXPECT_EQ(expected.is_user_edited, actual.is_user_edited);                 \
     EXPECT_EQ(expected.section, actual.section);                               \
     EXPECT_EQ(expected.check_status, actual.check_status);                     \
     EXPECT_EQ(expected.properties_mask, actual.properties_mask);               \

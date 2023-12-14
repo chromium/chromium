@@ -277,6 +277,8 @@ bool ExtractFormFieldData(const base::Value::Dict& field,
   }
   field_data->is_autofilled =
       field.FindBool("is_autofilled").value_or(field_data->is_autofilled);
+  field_data->is_user_edited =
+      field.FindBool("is_user_edited").value_or(field_data->is_user_edited);
 
   if (const std::string* autocomplete_attribute =
           field.FindString("autocomplete_attribute")) {

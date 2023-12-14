@@ -24,6 +24,7 @@ import * as inferenceUtil from '//components/autofill/ios/form_util/resources/fi
  *   autocomplete_attributes: string,
  *   max_length: number,
  *   is_autofilled: boolean,
+ *   is_user_edited: boolean,
  *   is_checkable: boolean,
  *   is_focusable: boolean,
  *   should_autocomplete: boolean,
@@ -513,6 +514,7 @@ __gCrWeb.fill.webFormControlElementToFormField = function(
       inferenceUtil.isTextAreaElement(element) ||
       __gCrWeb.fill.isSelectElement(element)) {
     field['is_autofilled'] = element['isAutofilled'];
+    field['is_user_edited'] = __gCrWeb.form.fieldWasEditedByUser(element);
     field['should_autocomplete'] = __gCrWeb.fill.shouldAutocomplete(element);
     field['is_focusable'] = !element.disabled && !element.readOnly &&
         element.tabIndex >= 0 && __gCrWeb.fill.isVisibleNode(element);

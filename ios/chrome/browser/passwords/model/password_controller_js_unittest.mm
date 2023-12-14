@@ -60,6 +60,7 @@ base::Value::Dict ParsedField(std::string renderer_id,
                                 .Set("aria_description", "")
                                 .Set("should_autocomplete", true)
                                 .Set("is_focusable", true)
+                                .Set("is_user_edited", true)
                                 .Set("max_length", 524288)
                                 .Set("is_checkable", false)
                                 .Set("value", value)

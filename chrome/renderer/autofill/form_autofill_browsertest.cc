@@ -1295,6 +1295,20 @@ class FormAutofillTest : public ChromeRenderViewTest {
     EXPECT_EQ(5u, input_element.SelectionEnd());
   }
 
+  // Tests that loading, dynamically editing, and then autofilling the form in
+  // `html` yields a specific result.
+  //
+  // The form is expected to have a very specific structure. In particular, its
+  // fields are supposed to be first name, last name, phone, credit card number,
+  // city, and state, whose placeholder attributes are supposed to match the
+  // `placeholder_*` arguments.
+  //
+  // Each field's value is modified dynamically. The second one is explicitly
+  // marked as user-edited; the other ones are not. The third and fourth field's
+  // values are typical placeholder values are expected to be ignored.
+  //
+  // TODO(crbug.com/1511185): Remove implicit assumptions about `html` from
+  // this function.
   void TestFillFormAndModifyValues(const char* html,
                                    const char* placeholder_firstname,
                                    const char* placeholder_lastname,
@@ -1400,6 +1414,7 @@ class FormAutofillTest : public ChromeRenderViewTest {
       expected.placeholder.clear();
     }
     expected.is_autofilled = true;
+    expected.is_user_edited = false;
     EXPECT_FORM_FIELD_DATA_EQUALS(expected, fields2[0]);
 
     // The last name field is not filled, because there is a value in it.
@@ -1414,6 +1429,7 @@ class FormAutofillTest : public ChromeRenderViewTest {
       expected.placeholder.clear();
     }
     expected.is_autofilled = false;
+    expected.is_user_edited = true;
     EXPECT_FORM_FIELD_DATA_EQUALS(expected, fields2[1]);
 
     expected.id_attribute = u"phone";
@@ -1427,6 +1443,7 @@ class FormAutofillTest : public ChromeRenderViewTest {
       expected.placeholder.clear();
     }
     expected.is_autofilled = true;
+    expected.is_user_edited = false;
     EXPECT_FORM_FIELD_DATA_EQUALS(expected, fields2[2]);
 
     expected.id_attribute = u"cc";
@@ -1440,6 +1457,7 @@ class FormAutofillTest : public ChromeRenderViewTest {
       expected.placeholder.clear();
     }
     expected.is_autofilled = true;
+    expected.is_user_edited = false;
     EXPECT_FORM_FIELD_DATA_EQUALS(expected, fields2[3]);
 
     expected.id_attribute = u"city";
@@ -1453,6 +1471,7 @@ class FormAutofillTest : public ChromeRenderViewTest {
       expected.placeholder.clear();
     }
     expected.is_autofilled = true;
+    expected.is_user_edited = false;
     EXPECT_FORM_FIELD_DATA_EQUALS(expected, fields2[4]);
 
     expected.form_control_type = FormControlType::kSelectOne;
@@ -1468,6 +1487,7 @@ class FormAutofillTest : public ChromeRenderViewTest {
       expected.placeholder.clear();
     }
     expected.is_autofilled = true;
+    expected.is_user_edited = false;
     expected.max_length = 0;
     EXPECT_FORM_FIELD_DATA_EQUALS(expected, fields2[5]);
 
@@ -1476,6 +1496,9 @@ class FormAutofillTest : public ChromeRenderViewTest {
     EXPECT_EQ(5u, input_element.SelectionEnd());
   }
 
+  // Similar to TestFillFormAndModifyValues().
+  // TODO(crbug.com/1511185): Remove implicit assumptions about `html` from
+  // this function.
   void TestFillFormWithPlaceholderValues(const char* html,
                                          const char* placeholder_firstname,
                                          const char* placeholder_lastname,
@@ -1593,6 +1616,9 @@ class FormAutofillTest : public ChromeRenderViewTest {
     EXPECT_EQ(5u, input_element.SelectionEnd());
   }
 
+  // Similar to TestFillFormAndModifyValues().
+  // TODO(crbug.com/1511185): Remove implicit assumptions about `html` from
+  // this function.
   void TestFillFormAndModifyInitiatingValue(const char* html,
                                             const char* placeholder_creditcard,
                                             const char* placeholder_expiration,
@@ -1702,6 +1728,7 @@ class FormAutofillTest : public ChromeRenderViewTest {
       expected.placeholder.clear();
     }
     expected.is_autofilled = false;
+    expected.is_user_edited = true;
     EXPECT_FORM_FIELD_DATA_EQUALS(expected, fields2[2]);
 
     // Verify that the cursor position has been updated.
@@ -1709,6 +1736,9 @@ class FormAutofillTest : public ChromeRenderViewTest {
     EXPECT_EQ(19u, input_element.SelectionEnd());
   }
 
+  // Similar to TestFillFormAndModifyValues().
+  // TODO(crbug.com/1511185): Remove implicit assumptions about `html` from
+  // this function.
   void TestFillFormJSModifiesUserInputValue(const char* html,
                                             const char* placeholder_creditcard,
                                             const char* placeholder_expiration,
@@ -1822,6 +1852,7 @@ class FormAutofillTest : public ChromeRenderViewTest {
       expected.placeholder.clear();
     }
     expected.is_autofilled = false;
+    expected.is_user_edited = true;
     EXPECT_FORM_FIELD_DATA_EQUALS(expected, fields2[2]);
 
     // Verify that the cursor position has been updated.
