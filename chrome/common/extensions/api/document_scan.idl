@@ -497,6 +497,20 @@ namespace documentScan {
     [nodoc, supportsPromises] static void closeScanner(
         DOMString scannerHandle, CloseScannerCallback callback);
 
+    // Sends the list of new option values in <code>options</code> as a bundle
+    // to be set on <code>scannerHandle</code>.  Each option will be set by the
+    // backend the order specified.  Returns a backend response indicating the
+    // result of each option setting and a new set of final option values after
+    // all options have been updated.
+    // |scannerHandle| : Open scanner handle previously returned from
+    // <code>openScanner</code>.
+    // |options| : A list of <code>OptionSetting</code>s that will be applied to
+    // <code>scannerHandle</code>.
+    // |callback| : Called with the result.
+    [nodoc, supportsPromises] static void setOptions(
+        DOMString scannerHandle, OptionSetting[] options,
+        SetOptionsCallback callback);
+
     // Starts a scan using a previously opened scanner handle.  A response
     // indicating the outcome will be sent to the callback.  If successful, the
     // response will include a job handle that can be used in subsequent calls

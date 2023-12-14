@@ -219,5 +219,182 @@ chrome.test.runTests([
     chrome.test.assertEq(null, readResponse2.estimatedCompletion);
 
     chrome.test.succeed();
+  },
+
+  async function setOptionsBeforeOpenFails() {
+    const response = await setOptions('invalid-handle', [
+        {name: 'option', type: OptionType.INT}]);
+    chrome.test.assertEq('invalid-handle', response.scannerHandle);
+    chrome.test.assertEq(1, response.results.length);
+    chrome.test.assertEq(OperationResult.INVALID, response.results[0].result);
+    chrome.test.assertEq('option', response.results[0].name);
+    chrome.test.assertEq(null, response.options);
+    chrome.test.succeed();
+  },
+
+  async function setOptionsRequiresMatchingTypes_Fixed() {
+    // Fixed options can be set from int or double because JS doesn't have a
+    // clear distinction between these.
+    const options = [
+      {name: 'fixed1', type: OptionType.FIXED, value: 42},        // OK, mapped.
+      {name: 'fixed2', type: OptionType.FIXED, value: 42.0},      // OK, mapped.
+      {name: 'fixed3', type: OptionType.FIXED, value: 42.5},      // OK.
+      {name: 'fixed4', type: OptionType.FIXED, value: '1.0'},     // Wrong type.
+      {name: 'fixed5', type: OptionType.FIXED, value: [42, 43]},  // OK, mapped.
+      {name: 'fixed6', type: OptionType.FIXED,
+          value: [42.0, 43.0]},                                   // OK, mapped.
+      {name: 'fixed7', type: OptionType.FIXED, value: [42.5, 43.5]}  // OK.
+    ];
+
+    const scannerHandle = await getScannerHandle();
+    chrome.test.assertNe(null, scannerHandle);
+
+    const response = await setOptions(scannerHandle, options);
+    chrome.test.assertEq(scannerHandle, response.scannerHandle);
+    chrome.test.assertEq(options.length, response.results.length);
+    // Match each result individually instead of one big array to make it easier
+    // to tell where any failures occur.
+    chrome.test.assertEq(
+      {name: 'fixed1', result: OperationResult.SUCCESS}, response.results[0]);
+    chrome.test.assertEq(
+      {name: 'fixed2', result: OperationResult.SUCCESS}, response.results[1]);
+    chrome.test.assertEq(
+      {name: 'fixed3', result: OperationResult.SUCCESS}, response.results[2]);
+    chrome.test.assertEq(
+      {name: 'fixed4', result: OperationResult.WRONG_TYPE},
+      response.results[3]);
+    chrome.test.assertEq(
+      {name: 'fixed5', result: OperationResult.SUCCESS}, response.results[4]);
+    chrome.test.assertEq(
+      {name: 'fixed6', result: OperationResult.SUCCESS}, response.results[5]);
+    chrome.test.assertEq(
+      {name: 'fixed7', result: OperationResult.SUCCESS}, response.results[6]);
+
+    chrome.test.assertNe(null, response.options);
+    chrome.test.succeed();
+  },
+
+  async function setOptionsRequiresMatchingTypes_Int() {
+    // Int options can be set from int values or from double values with a zero
+    // fractional part because JS doesn't have a clear distinction between
+    // these.
+    const options = [
+      {name: 'int1', type: OptionType.INT, value: 42},            // OK.
+      {name: 'int2', type: OptionType.INT, value: 42.0},          // OK, mapped.
+      {name: 'int3', type: OptionType.INT, value: 42.5},          // Wrong type.
+      {name: 'int4', type: OptionType.INT, value: '1.0'},         // Wrong type.
+      {name: 'int5', type: OptionType.INT, value: [42, 42]},      // OK.
+      {name: 'int6', type: OptionType.INT, value: [42.0, 42.0]},  // OK, mapped.
+      {name: 'int7', type: OptionType.INT, value: [42.5]},        // Wrong type.
+      {name: 'int8', type: OptionType.INT, value: 1e300},         // Wrong type.
+      {name: 'int9', type: OptionType.INT, value: -1e300},        // Wrong type.
+      {name: 'int10', type: OptionType.INT, value: [1e300]},      // Wrong type.
+      {name: 'int11', type: OptionType.INT, value: [-1e300]}      // Wrong type.
+    ];
+
+    const scannerHandle = await getScannerHandle();
+    chrome.test.assertNe(null, scannerHandle);
+
+    const response = await setOptions(scannerHandle, options);
+    chrome.test.assertEq(scannerHandle, response.scannerHandle);
+    chrome.test.assertEq(options.length, response.results.length);
+    // Match each result individually instead of one big array to make it easier
+    // to tell where any failures occur.
+    chrome.test.assertEq(
+      {name: 'int1', result: OperationResult.SUCCESS}, response.results[0]);
+    chrome.test.assertEq(
+      {name: 'int2', result: OperationResult.SUCCESS}, response.results[1]);
+    chrome.test.assertEq(
+      {name: 'int3', result: OperationResult.WRONG_TYPE}, response.results[2]);
+    chrome.test.assertEq(
+      {name: 'int4', result: OperationResult.WRONG_TYPE}, response.results[3]);
+    chrome.test.assertEq(
+      {name: 'int5', result: OperationResult.SUCCESS}, response.results[4]);
+    chrome.test.assertEq(
+      {name: 'int6', result: OperationResult.SUCCESS}, response.results[5]);
+    chrome.test.assertEq(
+      {name: 'int7', result: OperationResult.WRONG_TYPE}, response.results[6]);
+    chrome.test.assertEq(
+      {name: 'int8', result: OperationResult.WRONG_TYPE}, response.results[7]);
+    chrome.test.assertEq(
+      {name: 'int9', result: OperationResult.WRONG_TYPE}, response.results[8]);
+    chrome.test.assertEq(
+      {name: 'int10', result: OperationResult.WRONG_TYPE},
+      response.results[9]);
+    chrome.test.assertEq(
+      {name: 'int11', result: OperationResult.WRONG_TYPE},
+      response.results[10]);
+
+    chrome.test.assertNe(null, response.options);
+    chrome.test.succeed();
+  },
+
+  async function setOptionsRequiresMatchingTypes_Bool() {
+    // Bool options can only be set from a bool.
+    const options = [
+      {name: 'bool1', type: OptionType.BOOL, value: true},    // OK.
+      {name: 'bool2', type: OptionType.BOOL, value: 1},       // Wrong type.
+      {name: 'bool3', type: OptionType.BOOL, value: 'true'},  // Wrong type.
+      {name: 'bool4', type: OptionType.BOOL, value: [1]}      // Wrong type.
+    ];
+
+    const scannerHandle = await getScannerHandle();
+    chrome.test.assertNe(null, scannerHandle);
+
+    const response = await setOptions(scannerHandle, options);
+    chrome.test.assertEq(scannerHandle, response.scannerHandle);
+    chrome.test.assertEq(options.length, response.results.length);
+    // Match each result individually instead of one big array to make it easier
+    // to tell where any failures occur.
+    chrome.test.assertEq(
+      {name: 'bool1', result: OperationResult.SUCCESS}, response.results[0]);
+    chrome.test.assertEq(
+      {name: 'bool2', result: OperationResult.WRONG_TYPE},
+      response.results[1]);
+    chrome.test.assertEq(
+      {name: 'bool3', result: OperationResult.WRONG_TYPE},
+      response.results[2]);
+    chrome.test.assertEq(
+      {name: 'bool4', result: OperationResult.WRONG_TYPE},
+      response.results[3]);
+
+    chrome.test.assertNe(null, response.options);
+    chrome.test.succeed();
+  },
+
+  async function setOptionsRequiresMatchingTypes_String() {
+    // String options can only be set from a string.
+    const options = [
+      {name: 'string1', type: OptionType.STRING, value: 's'},   // OK.
+      {name: 'string2', type: OptionType.STRING, value: ''},    // OK.
+      {name: 'string3', type: OptionType.STRING, value: 1},     // Wrong type.
+      {name: 'string4', type: OptionType.STRING, value: [1]},   // Wrong type.
+      {name: 'string5', type: OptionType.STRING, value: true},  // Wrong type.
+    ];
+
+    const scannerHandle = await getScannerHandle();
+    chrome.test.assertNe(null, scannerHandle);
+
+    const response = await setOptions(scannerHandle, options);
+    chrome.test.assertEq(scannerHandle, response.scannerHandle);
+    chrome.test.assertEq(options.length, response.results.length);
+    // Match each result individually instead of one big array to make it easier
+    // to tell where any failures occur.
+    chrome.test.assertEq(
+      {name: 'string1', result: OperationResult.SUCCESS}, response.results[0]);
+    chrome.test.assertEq(
+      {name: 'string2', result: OperationResult.SUCCESS}, response.results[1]);
+    chrome.test.assertEq(
+      {name: 'string3', result: OperationResult.WRONG_TYPE},
+      response.results[2]);
+    chrome.test.assertEq(
+      {name: 'string4', result: OperationResult.WRONG_TYPE},
+      response.results[3]);
+    chrome.test.assertEq(
+      {name: 'string5', result: OperationResult.WRONG_TYPE},
+      response.results[4]);
+
+    chrome.test.assertNe(null, response.options);
+    chrome.test.succeed();
   }
 ]);

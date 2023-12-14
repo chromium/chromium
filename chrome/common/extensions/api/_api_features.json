@@ -368,6 +368,9 @@
   "documentScan.closeScanner": {
     "channel": "dev"
   },
+  "documentScan.setOptions": {
+    "channel": "dev"
+  },
   "documentScan.startScan": {
     "channel": "dev"
   },

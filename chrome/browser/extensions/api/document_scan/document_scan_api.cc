@@ -141,6 +141,29 @@ void DocumentScanCloseScannerFunction::OnResponseReceived(
       api::document_scan::CloseScanner::Results::Create(response)));
 }
 
+DocumentScanSetOptionsFunction::DocumentScanSetOptionsFunction() = default;
+DocumentScanSetOptionsFunction::~DocumentScanSetOptionsFunction() = default;
+
+ExtensionFunction::ResponseAction DocumentScanSetOptionsFunction::Run() {
+  auto params = api::document_scan::SetOptions::Params::Create(args());
+  EXTENSION_FUNCTION_VALIDATE(params);
+
+  DocumentScanAPIHandler::Get(browser_context())
+      ->SetOptions(
+          extension_, std::move(params->scanner_handle),
+          std::move(params->options),
+          base::BindOnce(&DocumentScanSetOptionsFunction::OnResponseReceived,
+                         this));
+
+  return did_respond() ? AlreadyResponded() : RespondLater();
+}
+
+void DocumentScanSetOptionsFunction::OnResponseReceived(
+    api::document_scan::SetOptionsResponse response) {
+  Respond(
+      ArgumentList(api::document_scan::SetOptions::Results::Create(response)));
+}
+
 DocumentScanStartScanFunction::DocumentScanStartScanFunction() = default;
 DocumentScanStartScanFunction::~DocumentScanStartScanFunction() = default;
 

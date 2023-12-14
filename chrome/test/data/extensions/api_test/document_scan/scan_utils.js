@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 OperationResult = chrome.documentScan.OperationResult;
+OptionType = chrome.documentScan.OptionType;
 
 async function getScannerList(filter) {
   return new Promise(resolve => {
@@ -65,5 +66,11 @@ async function cancelScan(jobHandle) {
 async function readScanData(jobHandle) {
   return new Promise(resolve => {
     chrome.documentScan.readScanData(jobHandle, resolve);
+  });
+}
+
+async function setOptions(scannerHandle, options) {
+  return new Promise(resolve => {
+    chrome.documentScan.setOptions(scannerHandle, options, resolve);
   });
 }

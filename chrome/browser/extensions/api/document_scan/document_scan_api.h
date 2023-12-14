@@ -92,6 +92,25 @@ class DocumentScanCloseScannerFunction : public ExtensionFunction {
                              DOCUMENTSCAN_CLOSESCANNER)
 };
 
+class DocumentScanSetOptionsFunction : public ExtensionFunction {
+ public:
+  DocumentScanSetOptionsFunction();
+  DocumentScanSetOptionsFunction(const DocumentScanSetOptionsFunction&) =
+      delete;
+  DocumentScanSetOptionsFunction& operator=(
+      const DocumentScanSetOptionsFunction&) = delete;
+
+ protected:
+  ~DocumentScanSetOptionsFunction() override;
+
+  // ExtensionFunction:
+  ResponseAction Run() override;
+
+ private:
+  void OnResponseReceived(api::document_scan::SetOptionsResponse response);
+  DECLARE_EXTENSION_FUNCTION("documentScan.setOptions", DOCUMENTSCAN_SETOPTIONS)
+};
+
 class DocumentScanStartScanFunction : public ExtensionFunction {
  public:
   DocumentScanStartScanFunction();
