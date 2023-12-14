@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_ASH_OWNERSHIP_OWNER_KEY_LOADER_H_
 #define CHROME_BROWSER_ASH_OWNERSHIP_OWNER_KEY_LOADER_H_
 
+#include "base/feature_list.h"
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
@@ -20,6 +21,9 @@ class PolicyData;
 namespace ash {
 
 class DeviceSettingsService;
+
+BASE_DECLARE_FEATURE(kStoreOwnerKeyInPrivateSlot);
+BASE_DECLARE_FEATURE(kMigrateOwnerKeyToPrivateSlot);
 
 // A helper single-use class to load the owner key.
 // Determines whether the current user is the owner or not.

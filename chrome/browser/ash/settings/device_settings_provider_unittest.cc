@@ -14,6 +14,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/test/scoped_path_override.h"
 #include "base/values.h"
+#include "chrome/browser/ash/ownership/owner_key_loader.h"
 #include "chrome/browser/ash/policy/core/device_local_account.h"
 #include "chrome/browser/ash/settings/device_settings_test_helper.h"
 #include "chrome/common/chrome_paths.h"
@@ -64,8 +65,8 @@ class DeviceSettingsProviderTest : public DeviceSettingsTestBase {
 
     // Disable owner key migration.
     feature_list_.InitWithFeatures(
-        /*enabled_features=*/{features::kStoreOwnerKeyInPrivateSlot},
-        /*disabled_features=*/{features::kMigrateOwnerKeyToPrivateSlot});
+        /*enabled_features=*/{kStoreOwnerKeyInPrivateSlot},
+        /*disabled_features=*/{kMigrateOwnerKeyToPrivateSlot});
 
     EXPECT_CALL(*this, SettingChanged(_)).Times(AnyNumber());
     provider_ = std::make_unique<DeviceSettingsProvider>(

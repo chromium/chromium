@@ -7,7 +7,6 @@
 #include <memory>
 #include <utility>
 
-#include "ash/constants/ash_features.h"
 #include "base/containers/contains.h"
 #include "base/containers/queue.h"
 #include "base/functional/bind.h"
@@ -18,6 +17,7 @@
 #include "base/test/scoped_path_override.h"
 #include "base/test/test_future.h"
 #include "base/values.h"
+#include "chrome/browser/ash/ownership/owner_key_loader.h"
 #include "chrome/browser/ash/ownership/owner_settings_service_ash_factory.h"
 #include "chrome/browser/ash/ownership/ownership_histograms.h"
 #include "chrome/browser/ash/settings/device_settings_provider.h"
@@ -114,8 +114,8 @@ class OwnerSettingsServiceAshTest : public DeviceSettingsTestBase {
     // By default disable the migration, so the imported key doesn't get
     // replaced.
     feature_list_.InitWithFeatures(
-        /*enabled_features=*/{features::kStoreOwnerKeyInPrivateSlot},
-        /*disabled_features=*/{features::kMigrateOwnerKeyToPrivateSlot});
+        /*enabled_features=*/{kStoreOwnerKeyInPrivateSlot},
+        /*disabled_features=*/{kMigrateOwnerKeyToPrivateSlot});
 
     provider_ = std::make_unique<DeviceSettingsProvider>(
         base::BindRepeating(&OnPrefChanged), device_settings_service_.get(),
@@ -344,8 +344,8 @@ class OwnerSettingsServiceAshNoOwnerTest : public OwnerSettingsServiceAshTest {
     // By default disable the migration, so the imported key doesn't get
     // replaced.
     feature_list_.InitWithFeatures(
-        /*enabled_features=*/{features::kStoreOwnerKeyInPrivateSlot},
-        /*disabled_features=*/{features::kMigrateOwnerKeyToPrivateSlot});
+        /*enabled_features=*/{kStoreOwnerKeyInPrivateSlot},
+        /*disabled_features=*/{kMigrateOwnerKeyToPrivateSlot});
 
     provider_ = std::make_unique<DeviceSettingsProvider>(
         base::BindRepeating(&OnPrefChanged), device_settings_service_.get(),
@@ -438,8 +438,8 @@ TEST_F(OwnerSettingsServiceAshNoOwnerTest, CleanUpOldOwnerKey) {
   base::HistogramTester histogram_tester;
   base::test::ScopedFeatureList feature_list;
   feature_list.InitWithFeatures(
-      /*enabled_features=*/{features::kStoreOwnerKeyInPrivateSlot,
-                            features::kMigrateOwnerKeyToPrivateSlot},
+      /*enabled_features=*/{kStoreOwnerKeyInPrivateSlot,
+                            kMigrateOwnerKeyToPrivateSlot},
       /*disabled_features=*/{});
 
   FakeNssService* nss_service = FakeNssService::InitializeForBrowserContext(

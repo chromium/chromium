@@ -1767,13 +1767,6 @@ BASE_FEATURE(kMicMuteNotifications,
              "MicMuteNotifications",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-// Enable migration of the owner key from the public to the private slot. This
-// experiment represents the second stage of `kStoreOwnerKeyInPrivateSlot` and
-// is only respected if kStoreOwnerKeyInPrivateSlot is enabled.
-BASE_FEATURE(kMigrateOwnerKeyToPrivateSlot,
-             "MigrateOwnerKeyToPrivateSlot",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 // Controls whether to enable the requirement of a minimum chrome version on the
 // device through the policy DeviceMinimumVersion. If the requirement is
 // not met and the warning time in the policy has expired, the user is
@@ -2604,11 +2597,6 @@ BASE_FEATURE(kSmdsSupportEuiccUpload,
 
 // Controls whether the snap group feature is enabled or not.
 BASE_FEATURE(kSnapGroup, "SnapGroup", base::FEATURE_DISABLED_BY_DEFAULT);
-
-// Enable storing a newly created owner key in the private slot.
-BASE_FEATURE(kStoreOwnerKeyInPrivateSlot,
-             "StoreOwnerKeyInPrivateSlot",
-             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Enables battery indicator for styluses in the palette tray
 BASE_FEATURE(kStylusBatteryStatus,
@@ -3629,10 +3617,6 @@ bool IsStartAssistantAudioDecoderOnDemandEnabled() {
   return base::FeatureList::IsEnabled(kStartAssistantAudioDecoderOnDemand);
 }
 
-bool IsStoreOwnerKeyInPrivateSlotEnabled() {
-  return base::FeatureList::IsEnabled(kStoreOwnerKeyInPrivateSlot);
-}
-
 bool IsImeTrayHideVoiceButtonEnabled() {
   return base::FeatureList::IsEnabled(kImeTrayHideVoiceButton);
 }
@@ -3786,11 +3770,6 @@ bool IsMicMuteNotificationsEnabled() {
 
 bool IsMinimumChromeVersionEnabled() {
   return base::FeatureList::IsEnabled(kMinimumChromeVersion);
-}
-
-bool ShouldMigrateOwnerKeyToPrivateSlot() {
-  return base::FeatureList::IsEnabled(kStoreOwnerKeyInPrivateSlot) &&
-         base::FeatureList::IsEnabled(kMigrateOwnerKeyToPrivateSlot);
 }
 
 bool IsMultiZoneRgbKeyboardEnabled() {
