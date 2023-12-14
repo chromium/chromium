@@ -1916,6 +1916,8 @@ enum HistogramValue {
   ACCESSIBILITY_PRIVATE_GETDISPLAYBOUNDS = 1854,
   AUTOFILLPRIVATE_SERVERIBANLINKCLICKED = 1855,
   AUTOTESTPRIVATE_CLEARALLOWEDPREF = 1856,
+  DOCUMENTSCAN_STARTSCAN = 1857,
+  DOCUMENTSCAN_CANCELSCAN = 1858,
   // Last entry: Add new entries above, then run:
   // tools/metrics/histograms/update_extension_histograms.py
   ENUM_BOUNDARY

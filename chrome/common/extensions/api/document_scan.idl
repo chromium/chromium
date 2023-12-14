@@ -417,5 +417,27 @@ namespace documentScan {
     // |callback| : Called with the result.
     [nodoc, supportsPromises] static void closeScanner(
         DOMString scannerHandle, CloseScannerCallback callback);
+
+    // Starts a scan using a previously opened scanner handle.  A response
+    // indicating the outcome will be sent to the callback.  If successful, the
+    // response will include a job handle that can be used in subsequent calls
+    // to read scan data or cancel a scan.
+    // |scannerHandle| : Open scanner handle previously returned from
+    // <code>openScanner</code>.
+    // |options| : <code>StartScanOptions</code> indicating what options are to
+    // be used for the scan.  <code>StartScanOptions.format</code> must match
+    // one of the entries returned in the scanner's <code>ScannerInfo</code>.
+    // |callback| : Called with the result.
+    [nodoc, supportsPromises] static void startScan(
+        DOMString scannerHandle, StartScanOptions options,
+        StartScanCallback callback);
+
+    // Cancels a scan that was previously started using <code>startScan</code>.
+    // The response is sent to the callback.
+    // |job| : An active scan job previously returned from
+    // <code>startScan</code>.
+    // |callback| : Called with the result.
+    [nodoc, supportsPromises] static void cancelScan(
+        DOMString job, CancelScanCallback callback);
   };
 };
