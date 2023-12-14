@@ -10518,6 +10518,14 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kSiteInstanceGroupsForDataUrlsDescription, kOsAll,
      FEATURE_VALUE_TYPE(features::kSiteInstanceGroupsForDataUrls)},
 
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || \
+    BUILDFLAG(IS_CHROMEOS_ASH)
+    {"site-search-settings-policy",
+     flag_descriptions::kSiteSearchSettingsPolicyName,
+     flag_descriptions::kSiteSearchSettingsPolicyDescription, kOsAll,
+     FEATURE_VALUE_TYPE(omnibox::kSiteSearchSettingsPolicy)},
+#endif
+
     {"early-document-swap-for-back-forward-transitions",
      flag_descriptions::kEarlyDocumentSwapForBackForwardTransitionsName,
      flag_descriptions::kEarlyDocumentSwapForBackForwardTransitionsDescription,

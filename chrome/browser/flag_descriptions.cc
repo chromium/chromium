@@ -3199,6 +3199,13 @@ const char kSiteInstanceGroupsForDataUrlsDescription[] =
     "Put data: URL subframes in a separate SiteInstance from the initiator, "
     "but in the same SiteInstanceGroup, and thus the same process.";
 
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || \
+    BUILDFLAG(IS_CHROMEOS_ASH)
+const char kSiteSearchSettingsPolicyName[] = "Enable SiteSearchSettings policy";
+const char kSiteSearchSettingsPolicyDescription[] =
+    "Allow site search engines to be defined by the SiteSearchSettings policy.";
+#endif
+
 const char kIsolateOriginsName[] = "Isolate additional origins";
 const char kIsolateOriginsDescription[] =
     "Requires dedicated processes for an additional set of origins, "

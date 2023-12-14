@@ -31071,6 +31071,7 @@ from previous Chrome versions.
   <int value="-979057409" label="enable-seccomp-filter-sandbox"/>
   <int value="-979034258" label="disable-ntp-other-sessions-menu"/>
   <int value="-978700508" label="disable-simplified-fullscreen-ui"/>
+  <int value="-978514039" label="SiteSearchSettingsPolicy:disabled"/>
   <int value="-977770313" label="AndroidSurfaceControl:enabled"/>
   <int value="-977476498" label="disable-eol-notification"/>
   <int value="-975787829" label="AutofillProfileServerValidation:enabled"/>
@@ -34158,6 +34159,7 @@ from previous Chrome versions.
   <int value="494733611" label="disable-drop-sync-credential"/>
   <int value="494939785" label="InsecureFormSubmissionInterstitial:disabled"/>
   <int value="495435958" label="PageInfoAboutThisSiteMoreInfo:enabled"/>
+  <int value="496491728" label="SiteSearchSettingsPolicy:enabled"/>
   <int value="496667708" label="ArcInputOverlay:disabled"/>
   <int value="497039057" label="AdaptiveChargingForTesting:disabled"/>
   <int value="497137719" label="OmniboxVoiceSearchAlwaysVisible:disabled"/>
