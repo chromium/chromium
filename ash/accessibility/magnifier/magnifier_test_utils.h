@@ -7,6 +7,7 @@
 
 #include "base/memory/raw_ptr.h"
 #include "base/memory/raw_ptr_exclusion.h"
+#include "ui/base/ime/input_method.h"
 #include "ui/gfx/geometry/size.h"
 
 namespace aura {
@@ -14,17 +15,11 @@ class Window;
 }  // namespace aura
 
 namespace gfx {
-class Point;
 class Rect;
 }  // namespace gfx
 
-namespace ui {
-class InputMethod;
-}  // namespace ui
-
 namespace ash {
 
-class TestFocusView;
 class TestTextInputView;
 
 // Defines a test helper for magnifiers unit tests that wants to verify their
@@ -38,22 +33,6 @@ class MagnifierFocusTestHelper {
 
   static constexpr int kButtonHeight = 20;
   static constexpr gfx::Size kTestFocusViewSize{300, 200};
-
-  // Creates a view at |location| in the primary root window with size =
-  // |kTestFocusViewSize|. The view has two buttons, the first is positioned at
-  // the top of the view and the second at the bottom of the view. Both bottons
-  // have width = the width of |kTestFocusViewSize|, and height =
-  // |kButtonHeight|.
-  void CreateAndShowFocusTestView(const gfx::Point& location);
-
-  void FocusFirstButton();
-  void FocusSecondButton();
-
-  gfx::Rect GetFirstButtonBoundsInRoot() const;
-  gfx::Rect GetSecondButtonBoundsInRoot() const;
-
- private:
-  raw_ptr<TestFocusView, ExperimentalAsh> focus_test_view_ = nullptr;
 };
 
 // Defines a test helper for magnifiers unit tests that wants to verify their
@@ -81,7 +60,6 @@ class MagnifierTextInputTestHelper {
   gfx::Rect GetCaretBounds();
 
   void FocusOnTextInputView();
-
   // Maximizes the widget of |text_input_view_|.
   void MaximizeWidget();
 
