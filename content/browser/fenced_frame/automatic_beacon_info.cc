@@ -6,6 +6,8 @@
 
 namespace content {
 
+AutomaticBeaconInfo::AutomaticBeaconInfo() = default;
+
 AutomaticBeaconInfo::AutomaticBeaconInfo(
     const std::string& data,
     const std::vector<blink::FencedFrame::ReportingDestination>& destinations,
