@@ -989,8 +989,7 @@ void ChromeAutofillClient::ScanCreditCard(CreditCardScanCallback callback) {
 
 bool ChromeAutofillClient::IsTouchToFillCreditCardSupported() {
 #if BUILDFLAG(IS_ANDROID)
-  return base::FeatureList::IsEnabled(
-      features::kAutofillTouchToFillForCreditCardsAndroid);
+  return true;
 #else
   // Touch To Fill is not supported on Desktop.
   return false;

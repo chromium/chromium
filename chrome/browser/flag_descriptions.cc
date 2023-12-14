@@ -651,12 +651,6 @@ const char kAutofillSuggestServerCardInsteadOfLocalCardDescription[] =
     "version of the same card will attempt to fill the server card upon "
     "selection instead of the local card.";
 
-const char kAutofillTouchToFillForCreditCardsAndroidName[] =
-    "Enable Touch To Fill bottomsheet for Autofill credit card suggestions";
-const char kAutofillTouchToFillForCreditCardsAndroidDescription[] =
-    "When enabled, Autofill credit card suggestions are shown on the "
-    "Touch To Fill bottomsheet";
-
 const char kAutofillUpdateChromeSettingsLinkToGPayWebName[] =
     "Update Chrome Settings Link to GPay Web";
 const char kAutofillUpdateChromeSettingsLinkToGPayWebDescription[] =

@@ -203,41 +203,35 @@ std::u16string CardUnmaskPromptControllerImpl::GetWindowTitle() const {
   // For VCN unmask flow, display unique CVC title.
   if (IsChallengeOptionPresent()) {
 #if BUILDFLAG(IS_ANDROID)
-    if (base::FeatureList::IsEnabled(
-            features::kAutofillTouchToFillForCreditCardsAndroid)) {
-      return l10n_util::GetStringUTF16(
-          IDS_AUTOFILL_CARD_UNMASK_PROMPT_TITLE_VIRTUAL_CARD);
-    }
-#endif
+    return l10n_util::GetStringUTF16(
+        IDS_AUTOFILL_CARD_UNMASK_PROMPT_TITLE_VIRTUAL_CARD);
+#else
     return l10n_util::GetStringFUTF16(
         IDS_AUTOFILL_CARD_UNMASK_PROMPT_TITLE_SECURITY_CODE,
         card_.CardNameAndLastFourDigits());
+#endif
   }
 
   // Title for expired cards.
   if (ShouldRequestExpirationDate()) {
 #if BUILDFLAG(IS_ANDROID)
-    if (base::FeatureList::IsEnabled(
-            features::kAutofillTouchToFillForCreditCardsAndroid)) {
-      return l10n_util::GetStringUTF16(
-          IDS_AUTOFILL_CARD_UNMASK_PROMPT_TITLE_EXPIRED_CARD);
-    }
-#endif
+    return l10n_util::GetStringUTF16(
+        IDS_AUTOFILL_CARD_UNMASK_PROMPT_TITLE_EXPIRED_CARD);
+#else
     return l10n_util::GetStringFUTF16(
         IDS_AUTOFILL_CARD_UNMASK_PROMPT_EXPIRED_TITLE,
         card_.CardNameAndLastFourDigits());
+#endif
   }
 
   // Default title.
 #if BUILDFLAG(IS_ANDROID)
-  if (base::FeatureList::IsEnabled(
-          features::kAutofillTouchToFillForCreditCardsAndroid)) {
-    return l10n_util::GetStringUTF16(
-        IDS_AUTOFILL_CARD_UNMASK_PROMPT_TITLE_DEFAULT);
-  }
-#endif
+  return l10n_util::GetStringUTF16(
+      IDS_AUTOFILL_CARD_UNMASK_PROMPT_TITLE_DEFAULT);
+#else
   return l10n_util::GetStringFUTF16(IDS_AUTOFILL_CARD_UNMASK_PROMPT_TITLE,
                                     card_.CardNameAndLastFourDigits());
+#endif
 #endif  // BUILDFLAG(IS_IOS)
 }
 

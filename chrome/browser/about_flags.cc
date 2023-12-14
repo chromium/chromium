@@ -5756,12 +5756,6 @@ const FeatureEntry kFeatureEntries[] = {
          autofill::features::kAutofillVirtualCardsOnTouchToFillAndroid)},
 
 #if BUILDFLAG(IS_ANDROID)
-    {"enable-autofill-touch-to-fill-for-credit-cards",
-     flag_descriptions::kAutofillTouchToFillForCreditCardsAndroidName,
-     flag_descriptions::kAutofillTouchToFillForCreditCardsAndroidDescription,
-     kOsAndroid,
-     FEATURE_VALUE_TYPE(
-         autofill::features::kAutofillTouchToFillForCreditCardsAndroid)},
     {"enable-autofill-virtual-view-structure",
      flag_descriptions::kAutofillVirtualViewStructureAndroidName,
      flag_descriptions::kAutofillVirtualViewStructureAndroidDescription,

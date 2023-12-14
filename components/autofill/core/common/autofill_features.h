@@ -250,8 +250,6 @@ BASE_DECLARE_FEATURE(kAutofillAndroidDisableSuggestionsOnJSFocus);
 
 #if BUILDFLAG(IS_ANDROID)
 COMPONENT_EXPORT(AUTOFILL)
-BASE_DECLARE_FEATURE(kAutofillTouchToFillForCreditCardsAndroid);
-COMPONENT_EXPORT(AUTOFILL)
 BASE_DECLARE_FEATURE(kAutofillVirtualViewStructureAndroid);
 #endif  // BUILDFLAG(IS_ANDROID)
 
