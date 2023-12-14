@@ -23,16 +23,16 @@
         <message name="IDS_SUPPORT_TOOL_EMAIL" desc="Email address of the user.">
             Email Address
         </message>
-        <message name="IDS_SUPPORT_TOOL_DESCRIBE_ISSUE_TEXT" desc="Title that promts the user the describe their issue.">
+        <message name="IDS_SUPPORT_TOOL_DESCRIBE_ISSUE_TEXT" desc="Title that prompts the user the describe their issue.">
             Describe the issue
         </message>
         <message name="IDS_SUPPORT_TOOL_ISSUE_DESCRIPTION_PLACEHOLDER" desc="The placeholder text of the text field that the user should describe the issue they're having. It tells user to describe the issue and tell the ways to reproduce their issue.">
-            Provide a clear desciption of the issue and steps to reproduce the issue (if possible)
+            Provide a clear description of the issue and steps to reproduce the issue (if possible)
         </message>
         <message name="IDS_SUPPORT_TOOL_PII_WARNING_TEXT" desc="The warning text for the user that the data collection has completed and the collected data may contain personal information of the user.">
             Diagnostic data collection is complete. Some of your personal information is included in this data.
         </message>
-        <message name="IDS_SUPPORT_TOOL_INCLUDE_ALL_PII_RADIO_BUTTON" desc="The option for user to include all personail information in the collected data.">
+        <message name="IDS_SUPPORT_TOOL_INCLUDE_ALL_PII_RADIO_BUTTON" desc="The option for user to include all personal information in the collected data.">
             Include all personal information
         </message>
         <message name="IDS_SUPPORT_TOOL_REMOVE_PII_RADIO_BUTTON" desc="The option for the user to automatically remove most of their personal information from logs.">
