@@ -2453,6 +2453,7 @@
     'apps_intent_helper': ['dominickn+watch-intent_helper@chromium.org',
                            'mxcai+watch-intent-helper@chromium.org'],
     'arc': ['hidehiko+watch@chromium.org',
+            'yhanada+watcharc@chromium.org',
             'arc-reviews+chromium@google.com'],
     'arc_auth': ['khmel+watch@chromium.org'],
     'arc_compat_mode': ['toshikikikuchi+watch-compat@chromium.org'],
