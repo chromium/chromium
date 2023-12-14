@@ -31,7 +31,6 @@ static_js_files = [
   # Files app Foreground:
   "file_manager/foreground/js/app_state_controller.js",
   "file_manager/foreground/js/constants.js",
-  "file_manager/foreground/js/elements_importer.js",
   "file_manager/foreground/js/fake_file_selection_handler.js",
   "file_manager/foreground/js/file_manager.js",
   "file_manager/foreground/js/gear_menu_controller.js",
@@ -277,6 +276,7 @@ ts_files = [
   "file_manager/foreground/js/directory_contents.ts",
   "file_manager/foreground/js/directory_model.ts",
   "file_manager/foreground/js/directory_tree_naming_controller.ts",
+  "file_manager/foreground/js/elements_importer.ts",
   "file_manager/foreground/js/empty_folder_controller.ts",
   "file_manager/foreground/js/fake_android_app_list_model.ts",
   "file_manager/foreground/js/file_list_model.ts",
