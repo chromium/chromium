@@ -254,6 +254,7 @@ void DeriveCommandLine(const GURL& start_url,
 void DeriveFeatures(base::CommandLine* out_command_line) {
   auto kForwardFeatures = {
     &features::kAutoNightLight,
+    &ash::features::kSeamlessRefreshRateSwitching,
     &ash::standalone_browser::features::kLacrosOnly,
     &::features::kPluginVm,
 #if BUILDFLAG(ENABLE_PLATFORM_HEVC)
