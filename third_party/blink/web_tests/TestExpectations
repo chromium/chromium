@@ -6901,3 +6901,7 @@ crbug.com/1510005 [ Linux ] virtual/scalefactor200/external/wpt/css/filter-effec
 # TODO(crbug.com/1511492): Re-enable these tests.
 crbug.com/1511492 [ Linux ] external/wpt/event-timing/first-input-interactionid-tap.html [ Crash Failure Timeout ]
 crbug.com/1511492 [ Linux ] external/wpt/event-timing/external/wpt/event-timing/interactionid-tap.html [ Crash Failure Timeout ]
+
+# TODO(crbug.com/1496375): Re-enable these tests.
+crbug.com/1496375 [ Linux ] http/tests/loading/image-picture-download-after-shrink.html [ Failure Pass ]
+crbug.com/1496375 [ Mac ] http/tests/loading/image-picture-download-after-shrink.html [ Failure Pass ]
