@@ -1,0 +1,77 @@
+{
+  "AdminAPNList": [
+    {
+      "Id": "apn11f760-272b-6939-4c2beffe428697ac",
+      "AccessPointName": "test-apn",
+      "Username": "test-username",
+      "Password": "test-password",
+      "Authentication": "CHAP",
+      "IpType": "IPv4orIPv6"
+    },
+    {
+      "Id": "apn22f760-272b-6939-4c2beffe428697ac",
+      "AccessPointName": "test-apn2",
+      "Username": "test-username2",
+      "Password": "test-password2",
+      "Authentication": "PAP",
+      "IpType": "IPv4"
+    }
+  ],
+  "GlobalNetworkConfiguration":{
+    "AllowAPNModification": true,
+    "PSIMAdminAssignedAPNIds": [
+        "apn11f760-272b-6939-4c2beffe428697ac",
+    ],
+    "PSIMAdminAssignedAPNs": [
+      {
+        "Id": "apn11f760-272b-6939-4c2beffe428697ac",
+        "AccessPointName": "test-apn",
+        "Username": "test-username",
+        "Password": "test-password",
+        "Authentication": "CHAP",
+        "IpType": "IPv4orIPv6"
+      }
+    ],
+  },
+  "NetworkConfigurations":[
+    {
+      "Type": "Cellular",
+      "Name": "Test Network",
+      "GUID":"guid",
+      "Cellular": {
+        "AllowRoaming": true,
+        "APN":           {
+            "Id": "apn22f760-272b-6939-4c2beffe428697ac",
+            "AccessPointName": "test-apn2",
+            "Username": "test-username2",
+            "Password": "test-password2",
+            "Authentication": "PAP",
+            "IpType": "IPv4"
+        },
+        "AdminAssignedAPNIds": [
+          "apn11f760-272b-6939-4c2beffe428697ac",
+          "apn22f760-272b-6939-4c2beffe428697ac"
+        ],
+        "CustomAPNList": [
+          {
+            "Id": "apn11f760-272b-6939-4c2beffe428697ac",
+            "AccessPointName": "test-apn",
+            "Username": "test-username",
+            "Password": "test-password",
+            "Authentication": "CHAP",
+            "IpType": "IPv4orIPv6"
+          },
+          {
+            "Id": "apn22f760-272b-6939-4c2beffe428697ac",
+            "AccessPointName": "test-apn2",
+            "Username": "test-username2",
+            "Password": "test-password2",
+            "Authentication": "PAP",
+            "IpType": "IPv4"
+          },
+        ],
+        "AutoConnect": true
+      }
+    },
+  ]
+}

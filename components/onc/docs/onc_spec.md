@@ -202,6 +202,16 @@ warns admins of the implications of mis-using this policy for Chrome OS.
       enabled and a network scan shows a new policy managed network, the device
       will automatically switch to the managed network.
 
+* **AllowAPNModification**
+    * (optional, defaults to true) - **boolean**
+    * Only relevant when the admin does not specify APNs for a SIM. Note that
+      users cannot modify any admin assigned APNs. When this field is present
+      and set to false, users won't have the capabilities to add, modify, and
+      use their own custom APNs for cellular networks that do not have an APN
+      specified by the admin. When this field is unset or set to true, users
+      will have the aforementioned capabilities for an eSIM with no
+      AdminAssignedAPNIds, and for any pSIM if there are no PSIMAssignedAPNIds.
+
 * **AllowTextMessages**
     * (optional, defaults to Unset) - **string**
     * When this field is present and set to Allow text message notifications
@@ -239,6 +249,20 @@ warns admins of the implications of mis-using this policy for Chrome OS.
     * Adding *VPN* to the list will disable all VPN types. Android VPN
       connections may still be established successfully but will be
       closed shortly after that by the Chrome OS connection manager.
+
+* **PSIMAdminAssignedAPNs**
+    * (optional) - [array of APN](#APN-type)
+    * Setting this field directly will have no effect, as it will be
+      automatically constructed from the provided *PSIMAdminAssignedAPNIds*,
+      each mapping to a unique APN in the the top-level *AdminAPNList*.
+      For all pSIMs, *CustomAPNList* will set to *PSIMAdminAssignedAPNs*.
+
+* **PSIMAdminAssignedAPNIds**
+    * (optional) - **array of string**
+    * List of custom APN configuration IDs added by the admin that map to APNs
+      that will be applied to all available pSIMs. *PSIMAdminAssignedAPNs* will
+      be automatically constructed from the provided *PSIMAdminAssignedAPNIds*,
+      each mapping to a unique APN in the the top-level *AdminAPNList*.
 
 * **RecommendedValuesAreEphemeral**
     * (optional, defaults to false) - **boolean**
@@ -1568,6 +1592,14 @@ ONC configuration of of **Cellular** networks is not yet supported.
     * (optional) - **string**
     * Activation type.
 
+* **AdminAssignedAPNIds**
+    * (optional) - **array of string**
+    * List of custom APN configuration IDs added by the admin that map to APNs
+      that will be applied to the eSIM this cellular network configuration maps
+      to. *CustomAPNList* will be automatically constructed from the provided
+      *AdminAssignedAPNIds*, each mapping to a unique APN in the the top-level
+      *AdminAPNList*.
+
 * **AllowRoaming**
     * (optional) - **boolean**
     * Whether cellular data connections are allowed when the device is roaming.
@@ -1589,8 +1621,10 @@ ONC configuration of of **Cellular** networks is not yet supported.
 
 * **CustomAPNList**
     * (optional) - [array of APN](#APN-type)
-    * List of custom APN configurations, added by either the user or enterprise
-      admin.
+    * List of custom APN configurations, added by either the user, or set
+      automatically with a list of APNs in the top-level *AdminAPNList*
+      that either map to a non-empty *AdminAssignedAPNIds* for an eSIM, or
+      to a non-empty *PSIMAdminAssignedAPNIds* for all pSIMs.
 
 * **EID**
     * (optional, read-only, provided only for eSIM networks) - **string**
@@ -1760,36 +1794,6 @@ ONC configuration of of **Cellular** networks is not yet supported.
     * (optional, read-only) - **boolean**
     * True if the cellular network supports scanning.
 
-### APN type
-
-* **AccessPointName**
-    * (required) - **string**
-    * The access point name used when making connections.
-
-* **Name**
-    * (optional) - **string**
-    * Description of the APN.
-
-* **LocalizedName**
-    * (optional) - **string**
-    * Localized description of the APN.
-
-* **Username**
-    * (optional) - **string**
-    * Username for making connections if required.
-
-* **Password**
-    * (optional) - **string**
-    * Password for making connections if required.
-
-* **Authentication**
-    * (optional) - **string**
-    * Type of authentication protocol for sending username and password.
-
-* **Language**
-    * (optional, rquired if **LocalizedName** is provided) - **string**
-      Two letter language code for Localizedname if provided.
-
 ### FoundNetwork type
 
 * **Status**
@@ -1903,6 +1907,67 @@ a phone.
 This format will eventually also cover configuration of Bluetooth and WiFi
 Direct network technologies, however they are currently not supported.
 
+## APNs
+
+Each of the following is an array of [APN](#APN-type) type objects:
+  * Top-level field **AdminAPNList**
+  * **PSIMAdminAssignedAPNs** field of **GlobalNetworkConfiguration**
+  * **APNList** field of [Cellular Networks](#Cellular-networks)
+  * **CustomAPNList** field of [Cellular Networks](#Cellular-networks)
+
+The **APN**,**LastConnectedAttachApnProperty**, **LastConnectedDefaultApnProperty**,
+and **LastGoodAPN** fields of [Cellular](#Cellular-networks) are [APN](#Apn-type)
+types.
+
+Note that each APN contained in the top-level field **AdminAPNList** may be
+referenced by its **Id**. For example, **PSIMAdminAssignedAPNIds**
+and **AdminAssignedAPNIds** are each an array of [APN](#Apn-type) **Id**s
+that reference APNs contained in **AdminAPNList**.
+
+### APN type
+
+* **AccessPointName**
+    * (required) - **string**
+    * The access point name used when making connections.
+
+* **Name**
+    * (optional) - **string**
+    * Description of the APN.
+
+* **LocalizedName**
+    * (optional) - **string**
+    * Localized description of the APN.
+
+* **Username**
+    * (optional) - **string**
+    * Username for making connections if required.
+
+* **Password**
+    * (optional) - **string**
+    * Password for making connections if required.
+
+* **Authentication**
+    * (optional) - **string**
+    * Type of authentication protocol for sending username and password.
+
+* **Language**
+    * (optional, required if **LocalizedName** is provided) - **string**
+    * Two letter language code for Localizedname if provided.
+
+* **Id**
+    * (optional) - **string**
+    * A unique identifier for this APN. Must be a non-empty string.
+
+* **IpType**
+    * (optional) - **string**
+    * The IP type of the APN. Possible values are "", "IPv4", "IPv6", or
+      "IPv4orIPv6". If none is provided or the provided string is empty,
+      the IP type is automatic.
+
+* **ApnTypes**
+    * (optional) - **array of string**
+    * The type(s) of the APN. Possible values are "Default"
+      and or "Attach".
 
 ## Certificates
 

@@ -322,6 +322,7 @@ const OncFieldSignature cellular_fields[] = {
     {::onc::cellular::kAllowRoaming, &kBoolSignature},
     {::onc::cellular::kAPN, &kCellularApnSignature},
     {::onc::cellular::kAPNList, &kCellularApnListSignature},
+    {::onc::cellular::kAdminAssignedAPNIds, &kStringListSignature},
     {::onc::cellular::kAutoConnect, &kBoolSignature},
     {::onc::cellular::kCustomAPNList, &kCellularApnListSignature},
     {::onc::cellular::kICCID, &kStringSignature},
@@ -419,6 +420,12 @@ const OncFieldSignature global_network_configuration_fields[] = {
     {::onc::global_network_config::
          kUserCreatedNetworkConfigurationsAreEphemeral,
      &kBoolSignature},
+    {::onc::global_network_config::kAllowAPNModification, &kBoolSignature,
+     []() { return base::Value(true); }},
+    {::onc::global_network_config::kPSIMAdminAssignedAPNIds,
+     &kStringListSignature},
+    {::onc::global_network_config::kPSIMAdminAssignedAPNs,
+     &kCellularApnListSignature},
     {nullptr}};
 
 const OncFieldSignature certificate_fields[] = {
@@ -442,6 +449,7 @@ const OncFieldSignature toplevel_configuration_fields[] = {
      &kNetworkConfigurationListSignature},
     {::onc::toplevel_config::kGlobalNetworkConfiguration,
      &kGlobalNetworkConfigurationSignature},
+    {::onc::toplevel_config::kAdminAPNList, &kCellularApnListSignature},
     {::onc::toplevel_config::kType, &kStringSignature},
     {::onc::encrypted::kCipher, &kStringSignature},
     {::onc::encrypted::kCiphertext, &kStringSignature},

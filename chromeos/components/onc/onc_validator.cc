@@ -1087,6 +1087,7 @@ bool Validator::ValidateGlobalNetworkConfiguration(base::Value::Dict* result) {
       ::onc::global_network_config::kAllowTextMessages,
       ::onc::global_network_config::kAllowCellularSimLock,
       ::onc::global_network_config::kAllowCellularHotspot,
+      ::onc::global_network_config::kAllowAPNModification,
       ::onc::global_network_config::kDisableNetworkTypes,
       ::onc::global_network_config::kAllowOnlyPolicyCellularNetworks,
       ::onc::global_network_config::kAllowOnlyPolicyWiFiToConnect,

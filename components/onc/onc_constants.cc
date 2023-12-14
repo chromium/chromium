@@ -24,6 +24,7 @@ const char kRemove[] = "Remove";
 
 // Top Level Configuration
 namespace toplevel_config {
+const char kAdminAPNList[] = "AdminAPNList";
 const char kCertificates[] = "Certificates";
 const char kEncryptedConfiguration[] = "EncryptedConfiguration";
 const char kNetworkConfigurations[] = "NetworkConfigurations";
@@ -104,6 +105,7 @@ const char kAutoConnect[] = "AutoConnect";
 const char kNotActivated[] = "NotActivated";
 const char kPartiallyActivated[] = "PartiallyActivated";
 const char kActivationType[] = "ActivationType";
+const char kAdminAssignedAPNIds[] = "AdminAssignedAPNIds";
 const char kAllowRoaming[] = "AllowRoaming";
 const char kAPN[] = "APN";
 const char kAPNList[] = "APNList";
@@ -532,6 +534,7 @@ const char kPasswordPlaceholderVerbatim[] = "${PASSWORD}";
 }  // namespace substitutes
 
 namespace global_network_config {
+const char kAllowAPNModification[] = "AllowAPNModification";
 const char kAllowCellularSimLock[] = "AllowCellularSimLock";
 const char kAllowCellularHotspot[] = "AllowCellularHotspot";
 const char kAllowOnlyPolicyCellularNetworks[] =
@@ -555,6 +558,8 @@ const char* const kAllowTextMessages = "AllowTextMessages";
 const char kBlacklistedHexSSIDs[] = "BlacklistedHexSSIDs";  // Deprecated
 const char kBlockedHexSSIDs[] = "BlockedHexSSIDs";
 const char kDisableNetworkTypes[] = "DisableNetworkTypes";
+const char kPSIMAdminAssignedAPNIds[] = "PSIMAdminAssignedAPNIds";
+const char kPSIMAdminAssignedAPNs[] = "PSIMAdminAssignedAPNs";
 const char kRecommendedValuesAreEphemeral[] = "RecommendedValuesAreEphemeral";
 const char kUserCreatedNetworkConfigurationsAreEphemeral[] =
     "UserCreatedNetworkConfigurationsAreEphemeral";
