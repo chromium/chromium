@@ -106,6 +106,20 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="WebCore.Fullscreen.LockStateAtEntryVia{EntryMethod}"
+    enum="FullscreenLockState" expires_after="2024-06-07">
+  <owner>takumif@chromium.org</owner>
+  <owner>openscreen-eng@google.com</owner>
+  <summary>
+    This metric records whether keyboard/pointer locks are engaged each time a
+    web page enters fullscreen via {EntryMethod}.
+  </summary>
+  <token key="EntryMethod">
+    <variant name="Api" summary="the Fullscreen API"/>
+    <variant name="BrowserUi" summary="the browser UI"/>
+  </token>
+</histogram>
+
 <histogram name="WebCore.HTMLDocumentParser.PreloadScannerAppCacheDelayTime"
     units="microseconds" expires_after="2019-09-30">
   <owner>yoavweiss@chromium.org</owner>

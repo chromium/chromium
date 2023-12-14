@@ -366,6 +366,11 @@ void FullscreenController::WindowFullscreenStateChanged() {
           ExclusiveAccessBubbleHideCallback(),
           /*force_update=*/true);
     }
+    if (IsFullscreenCausedByTab()) {
+      exclusive_access_manager()->RecordLockStateOnEnteringApiFullscreen();
+    } else {
+      exclusive_access_manager()->RecordLockStateOnEnteringBrowserFullscreen();
+    }
   }
 }
 
