@@ -78,8 +78,14 @@
     flex-grow: 1;
     flex-shrink: 0;
     padding-bottom: 0;
-    padding-inline-end: 8px;
+    padding-inline-end: 0px;
+    padding-inline-start: 0px;
     padding-top: 0;
+  }
+
+  :host([has-action]) .actions.inlined {
+    padding-inline-end: 8px;
+    padding-inline-start: 4px;
   }
 
   #contents,
@@ -133,6 +139,10 @@
     padding-inline-end: 8px;
     padding-inline-start: 8px;
     white-space: nowrap;
+  }
+
+  :host([has-action]) #text-container {
+    padding-inline-end: 4px;
   }
 
   #text-container.simplified {
