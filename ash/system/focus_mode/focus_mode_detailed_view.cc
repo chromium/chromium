@@ -412,6 +412,8 @@ void FocusModeDetailedView::CreateToggleView() {
   toggle_view_ = toggle_container->AddChildView(
       std::make_unique<HoverHighlightView>(/*listener=*/this));
   toggle_view_->SetPreferredSize(gfx::Size(0, kToggleViewHeight));
+  views::InkDrop::Get(toggle_view_)
+      ->SetMode(views::InkDropHost::InkDropMode::OFF);
 
   FocusModeController* focus_mode_controller = FocusModeController::Get();
   const bool in_focus_session = focus_mode_controller->in_focus_session();
@@ -652,6 +654,8 @@ void FocusModeDetailedView::CreateDoNotDisturbContainer() {
       std::make_unique<HoverHighlightView>(/*listener=*/this));
   toggle_row->SetFocusBehavior(View::FocusBehavior::NEVER);
   toggle_row->SetPreferredSize(gfx::Size(0, kToggleViewHeight));
+  views::InkDrop::Get(toggle_row)
+      ->SetMode(views::InkDropHost::InkDropMode::OFF);
 
   // Create the do not disturb icon and its label.
   auto icon = std::make_unique<views::ImageView>();
