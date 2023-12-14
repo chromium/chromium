@@ -1180,7 +1180,7 @@ IN_PROC_BROWSER_TEST_F(LcpBreakdownTimingsTest, MAYBE_PreloadedImage) {
   Validate();
 }
 
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
+#if BUILDFLAG(IS_CHROMEOS_LACROS) || BUILDFLAG(IS_LINUX)
 #define MAYBE_PreloadedCacheableImage DISABLED_PreloadedCacheableImage
 #else
 #define MAYBE_PreloadedCacheableImage PreloadedCacheableImage
@@ -1440,14 +1440,9 @@ IN_PROC_BROWSER_TEST_F(MetricIntegrationTest,
       web_exposed_lcp2, epsilon);
 }
 
-// TODO(1495363): Flaky on ChromeOS LSAN/ASAN and Linux builders
-#if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_LINUX)
-#define MAYBE_LCPBreakdownTimings_DetachedWindow DISABLED_LCPBreakdownTimings_DetachedWindow
-#else
-#define MAYBE_LCPBreakdownTimings_DetachedWindow LCPBreakdownTimings_DetachedWindow
-#endif
+// TODO(1495363, 1495698): Test is flaky on all platforms.
 IN_PROC_BROWSER_TEST_F(MetricIntegrationTest,
-                       MAYBE_LCPBreakdownTimings_DetachedWindow) {
+                       DISABLED_LCPBreakdownTimings_DetachedWindow) {
   Start();
 
   Load("/lcp_detached_window.html");
