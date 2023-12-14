@@ -38,7 +38,7 @@ source_set("privacy_ui") {
     "//ios/chrome/app/strings",
     "//ios/chrome/browser/browsing_data/model:feature_flags",
     "//ios/chrome/browser/feature_engagement/model",
-    "//ios/chrome/browser/net:crurl",
+    "//ios/chrome/browser/net/model:crurl",
     "//ios/chrome/browser/policy/model:policy_util",
     "//ios/chrome/browser/settings/model/sync/utils",
     "//ios/chrome/browser/shared/coordinator/alert",

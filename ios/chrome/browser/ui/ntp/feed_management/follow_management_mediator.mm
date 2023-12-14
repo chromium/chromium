@@ -10,7 +10,7 @@
 #import "ios/chrome/browser/follow/model/follow_browser_agent.h"
 #import "ios/chrome/browser/follow/model/follow_browser_agent_observer_bridge.h"
 #import "ios/chrome/browser/follow/model/follow_browser_agent_observing.h"
-#import "ios/chrome/browser/net/crurl.h"
+#import "ios/chrome/browser/net/model/crurl.h"
 #import "ios/chrome/browser/ui/follow/followed_web_channel.h"
 #import "ios/chrome/browser/ui/ntp/feed_management/follow_management_follow_delegate.h"
 #import "ios/chrome/browser/ui/ntp/feed_management/follow_management_ui_updater.h"

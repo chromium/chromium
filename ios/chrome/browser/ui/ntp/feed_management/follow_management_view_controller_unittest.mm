@@ -6,7 +6,7 @@
 
 #import "base/apple/foundation_util.h"
 #import "base/test/scoped_feature_list.h"
-#import "ios/chrome/browser/net/crurl.h"
+#import "ios/chrome/browser/net/model/crurl.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_url_item.h"
 #import "ios/chrome/browser/ui/follow/followed_web_channel.h"

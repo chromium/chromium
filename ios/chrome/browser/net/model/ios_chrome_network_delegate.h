@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef IOS_CHROME_BROWSER_NET_IOS_CHROME_NETWORK_DELEGATE_H_
-#define IOS_CHROME_BROWSER_NET_IOS_CHROME_NETWORK_DELEGATE_H_
+#ifndef IOS_CHROME_BROWSER_NET_MODEL_IOS_CHROME_NETWORK_DELEGATE_H_
+#define IOS_CHROME_BROWSER_NET_MODEL_IOS_CHROME_NETWORK_DELEGATE_H_
 
 #include <stdint.h>
 
@@ -78,4 +78,4 @@ class IOSChromeNetworkDelegate : public net::NetworkDelegateImpl {
   BooleanPrefMember* enable_do_not_track_;
 };
 
-#endif  // IOS_CHROME_BROWSER_NET_IOS_CHROME_NETWORK_DELEGATE_H_
+#endif  // IOS_CHROME_BROWSER_NET_MODEL_IOS_CHROME_NETWORK_DELEGATE_H_

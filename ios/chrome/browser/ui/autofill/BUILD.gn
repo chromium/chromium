@@ -83,7 +83,7 @@ source_set("bridges") {
     "//base",
     "//components/autofill/core/browser",
     "//components/strings",
-    "//ios/chrome/browser/net:crurl",
+    "//ios/chrome/browser/net/model:crurl",
     "//ios/chrome/browser/shared/ui/list_model",
     "//ios/chrome/browser/shared/ui/table_view:utils",
     "//ios/chrome/browser/shared/ui/table_view/cells",

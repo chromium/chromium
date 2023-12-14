@@ -17,7 +17,7 @@
 #include "components/content_settings/core/common/content_settings_types.h"
 #include "components/prefs/pref_member.h"
 #include "ios/chrome/browser/browser_state/model/ios_chrome_io_thread.h"
-#include "ios/chrome/browser/net/net_types.h"
+#include "ios/chrome/browser/net/model/net_types.h"
 #include "net/cookies/cookie_monster.h"
 #include "net/http/http_cache.h"
 #include "net/http/http_network_session.h"

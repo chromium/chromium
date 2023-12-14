@@ -25,7 +25,7 @@ source_set("home") {
     "//ios/chrome/browser/favicon",
     "//ios/chrome/browser/intents:intents_donation_helper",
     "//ios/chrome/browser/metrics/model:metrics_internal",
-    "//ios/chrome/browser/net:crurl",
+    "//ios/chrome/browser/net/model:crurl",
     "//ios/chrome/browser/policy/model:policy_util",
     "//ios/chrome/browser/shared/coordinator/alert",
     "//ios/chrome/browser/shared/coordinator/scene:scene_state_header",

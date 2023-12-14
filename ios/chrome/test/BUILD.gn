@@ -235,7 +235,7 @@ test("ios_chrome_unittests") {
     "//ios/chrome/browser/main/model:unit_tests",
     "//ios/chrome/browser/metrics/model:unit_tests",
     "//ios/chrome/browser/metrics/model:unit_tests_internal",
-    "//ios/chrome/browser/net:unit_tests",
+    "//ios/chrome/browser/net/model:unit_tests",
     "//ios/chrome/browser/ntp/model:unit_tests",
     "//ios/chrome/browser/omaha/model:unit_tests",
     "//ios/chrome/browser/optimization_guide/model:unit_tests",

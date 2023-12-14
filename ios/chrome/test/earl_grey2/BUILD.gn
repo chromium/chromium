@@ -86,7 +86,7 @@ chrome_ios_eg2_test("ios_chrome_integration_eg2tests_module") {
     "//ios/chrome/browser/find_in_page/model:eg2_tests",
     "//ios/chrome/browser/https_upgrades/model:eg2_tests",
     "//ios/chrome/browser/metrics/model:eg2_tests",
-    "//ios/chrome/browser/net:eg2_tests",
+    "//ios/chrome/browser/net/model:eg2_tests",
     "//ios/chrome/browser/ntp_tiles/model:eg2_tests",
     "//ios/chrome/browser/optimization_guide/model:eg2_tests",
     "//ios/chrome/browser/passwords/model:eg2_tests",

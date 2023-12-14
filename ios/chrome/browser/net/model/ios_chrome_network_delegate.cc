@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ios/chrome/browser/net/ios_chrome_network_delegate.h"
+#include "ios/chrome/browser/net/model/ios_chrome_network_delegate.h"
 
 #include <stdlib.h>
 #include <iterator>

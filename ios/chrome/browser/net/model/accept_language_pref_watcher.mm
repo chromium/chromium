@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/net/accept_language_pref_watcher.h"
+#import "ios/chrome/browser/net/model/accept_language_pref_watcher.h"
 
 #import "base/check.h"
 #import "components/language/core/browser/pref_names.h"

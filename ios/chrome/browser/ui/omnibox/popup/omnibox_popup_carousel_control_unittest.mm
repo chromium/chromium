@@ -4,7 +4,7 @@
 
 #import "ios/chrome/browser/ui/omnibox/popup/omnibox_popup_carousel_control.h"
 
-#import "ios/chrome/browser/net/crurl.h"
+#import "ios/chrome/browser/net/model/crurl.h"
 #import "ios/chrome/browser/ui/omnibox/popup/carousel_item.h"
 #import "ios/chrome/browser/ui/omnibox/popup/carousel_item_menu_provider.h"
 #import "ios/chrome/browser/ui/omnibox/popup/omnibox_popup_carousel_control_unittest_util.h"

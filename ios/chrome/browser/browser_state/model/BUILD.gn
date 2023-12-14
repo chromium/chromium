@@ -12,7 +12,7 @@ source_set("ios_thread") {
 
   deps = [
     "//components/variations/net",
-    "//ios/chrome/browser/net",
+    "//ios/chrome/browser/net/model",
     "//ios/chrome/common",
     "//ios/components/io_thread",
     "//ios/web/public/init",
@@ -100,7 +100,7 @@ source_set("model") {
     "//ios/chrome/browser/mailto_handler/model:mailto_handler_factory",
     "//ios/chrome/browser/metrics/model",
     "//ios/chrome/browser/metrics/model:google_groups_updater",
-    "//ios/chrome/browser/net",
+    "//ios/chrome/browser/net/model",
     "//ios/chrome/browser/optimization_guide/model",
     "//ios/chrome/browser/passwords/model",
     "//ios/chrome/browser/photos/model:photos_service_factory",
@@ -167,7 +167,7 @@ source_set("model") {
   }
   allow_circular_includes_from = [
     "//ios/chrome/browser/browser_state_metrics/model",
-    "//ios/chrome/browser/net",
+    "//ios/chrome/browser/net/model",
     "//ios/chrome/browser/shared/model/prefs:browser_prefs",
     "//ios/chrome/browser/signin/model",
     "//ios/chrome/browser/sync/model",

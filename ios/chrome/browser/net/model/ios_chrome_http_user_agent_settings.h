@@ -2,13 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef IOS_CHROME_BROWSER_NET_IOS_CHROME_HTTP_USER_AGENT_SETTINGS_H_
-#define IOS_CHROME_BROWSER_NET_IOS_CHROME_HTTP_USER_AGENT_SETTINGS_H_
+#ifndef IOS_CHROME_BROWSER_NET_MODEL_IOS_CHROME_HTTP_USER_AGENT_SETTINGS_H_
+#define IOS_CHROME_BROWSER_NET_MODEL_IOS_CHROME_HTTP_USER_AGENT_SETTINGS_H_
 
 #include <string>
 
 #include "base/memory/ref_counted.h"
-#include "ios/chrome/browser/net/accept_language_pref_watcher.h"
+#include "ios/chrome/browser/net/model/accept_language_pref_watcher.h"
 #include "net/base/http_user_agent_settings.h"
 
 // An implementation of `HttpUserAgentSettings` that provides HTTP header
@@ -35,4 +35,4 @@ class IOSChromeHttpUserAgentSettings : public net::HttpUserAgentSettings {
   scoped_refptr<AcceptLanguagePrefWatcher::Handle> accept_language_handle_;
 };
 
-#endif  // IOS_CHROME_BROWSER_NET_IOS_CHROME_HTTP_USER_AGENT_SETTINGS_H_
+#endif  // IOS_CHROME_BROWSER_NET_MODEL_IOS_CHROME_HTTP_USER_AGENT_SETTINGS_H_

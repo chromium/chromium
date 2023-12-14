@@ -88,7 +88,7 @@ source_set("browser_prefs") {
     "//ios/chrome/browser/memory/model",
     "//ios/chrome/browser/metrics/model",
     "//ios/chrome/browser/metrics/model:constants",
-    "//ios/chrome/browser/net",
+    "//ios/chrome/browser/net/model",
     "//ios/chrome/browser/ntp/model:set_up_list_prefs",
     "//ios/chrome/browser/ntp_tiles/model/tab_resumption:tab_resumption_prefs",
     "//ios/chrome/browser/parcel_tracking:prefs",

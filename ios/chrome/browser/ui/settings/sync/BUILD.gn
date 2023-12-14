@@ -22,7 +22,7 @@ source_set("sync") {
     "//components/sync",
     "//components/unified_consent",
     "//ios/chrome/app/strings",
-    "//ios/chrome/browser/net:crurl",
+    "//ios/chrome/browser/net/model:crurl",
     "//ios/chrome/browser/settings/model/sync/utils",
     "//ios/chrome/browser/shared/coordinator/scene:scene_state_header",
     "//ios/chrome/browser/shared/model/application_context",

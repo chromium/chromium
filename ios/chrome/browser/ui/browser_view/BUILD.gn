@@ -77,7 +77,7 @@ source_set("browser_view") {
     "//ios/chrome/browser/main/model",
     "//ios/chrome/browser/metrics/model:metrics_browser_agent",
     "//ios/chrome/browser/metrics/model:metrics_internal",
-    "//ios/chrome/browser/net",
+    "//ios/chrome/browser/net/model",
     "//ios/chrome/browser/ntp/model",
     "//ios/chrome/browser/ntp/model:util",
     "//ios/chrome/browser/overlays/model",

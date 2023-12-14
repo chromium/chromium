@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/net/ios_chrome_http_user_agent_settings.h"
+#import "ios/chrome/browser/net/model/ios_chrome_http_user_agent_settings.h"
 
 #import "base/check.h"
 #import "ios/web/public/thread/web_task_traits.h"

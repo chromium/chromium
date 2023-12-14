@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/net/retryable_url_fetcher.h"
+#import "ios/chrome/browser/net/model/retryable_url_fetcher.h"
 
 #import <memory>
 

@@ -2,13 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef IOS_CHROME_BROWSER_NET_IOS_CHROME_URL_REQUEST_CONTEXT_GETTER_H_
-#define IOS_CHROME_BROWSER_NET_IOS_CHROME_URL_REQUEST_CONTEXT_GETTER_H_
+#ifndef IOS_CHROME_BROWSER_NET_MODEL_IOS_CHROME_URL_REQUEST_CONTEXT_GETTER_H_
+#define IOS_CHROME_BROWSER_NET_MODEL_IOS_CHROME_URL_REQUEST_CONTEXT_GETTER_H_
 
 #include <memory>
 
 #include "base/task/single_thread_task_runner.h"
-#include "ios/chrome/browser/net/net_types.h"
+#include "ios/chrome/browser/net/model/net_types.h"
 #include "net/url_request/url_request_context.h"
 #include "net/url_request/url_request_context_getter.h"
 
@@ -66,4 +66,4 @@ class IOSChromeURLRequestContextGetter : public net::URLRequestContextGetter {
   net::URLRequestContext* url_request_context_;
 };
 
-#endif  // IOS_CHROME_BROWSER_NET_IOS_CHROME_URL_REQUEST_CONTEXT_GETTER_H_
+#endif  // IOS_CHROME_BROWSER_NET_MODEL_IOS_CHROME_URL_REQUEST_CONTEXT_GETTER_H_
