@@ -497,7 +497,7 @@
     "bases": ["external/wpt/longtask-timing/shared-renderer"],
     "args": ["--renderer-process-limit=1",
              "--disable-threaded-compositing", "--disable-threaded-animation"],
-    "expires": "Jul 1, 2023"
+    "expires": "Jul 1, 2024"
   },
   {
     "prefix": "percent-based-scrolling",
@@ -1288,7 +1288,7 @@
     "exclusive_tests": "ALL",
     "args": ["--enable-threaded-compositing",
              "--disable-auto-wpt-origin-isolation"],
-    "expires": "Jul 1, 2023"
+    "expires": "Jul 1, 2024"
   },
 
   {
@@ -1643,7 +1643,7 @@
       "--enable-features=LCPMultipleUpdatesPerElement",
       "--disable-threaded-compositing", "--disable-threaded-animation"
     ],
-    "expires": "Jul 1, 2023"
+    "expires": "Jul 1, 2024"
   },
   {
     "prefix": "lcp-mouseover-heuristics",
@@ -1656,7 +1656,7 @@
       "--enable-features=LCPMouseoverHeuristics",
       "--disable-threaded-compositing", "--disable-threaded-animation"
     ],
-    "expires": "Jul 1, 2023"
+    "expires": "Jul 1, 2024"
   },
   {
     "prefix": "low-priority-async-script-execution",
@@ -2282,7 +2282,7 @@
     "bases": ["external/wpt/longtask-timing"],
     "args": ["--enable-blink-features=LongTaskFromLongAnimationFrame",
              "--disable-threaded-compositing", "--disable-threaded-animation"],
-    "expires": "Aug 1, 2023"
+    "expires": "Aug 1, 2024"
   },
   {
     "prefix": "netinfo-constant-type",
