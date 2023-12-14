@@ -42,7 +42,6 @@
 #include "base/ranges/algorithm.h"
 #include "base/strings/strcat.h"
 #include "base/time/time.h"
-#include "components/vector_icons/vector_icons.h"
 #include "ui/base/dragdrop/os_exchange_data.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
@@ -173,6 +172,10 @@ constexpr int kSmallImageBackgroundThreshold = 6;
 
 // The horizontal spacing between control button icons.
 constexpr int kControlButtonsHorizontalSpacing = 6;
+
+// The size of an icon within a control button. Note that this is not the size
+// of a control button itself.
+constexpr int kControlButtonsIconSize = 14;
 
 // Helpers ---------------------------------------------------------------------
 
@@ -548,11 +551,11 @@ AshNotificationView::AshNotificationView(
                                           .SetBetweenButtonSpacing(
                                               kControlButtonsHorizontalSpacing)
                                           .SetCloseButtonIcon(
-                                              vector_icons::
-                                                  kCloseChromeRefreshIcon)
+                                              kNotificationCloseControlButtonIcon)
                                           .SetSettingsButtonIcon(
-                                              vector_icons::
-                                                  kSettingsOutlineIcon)
+                                              kNotificationSettingsControlButtonIcon)
+                                          .SetButtonIconSize(
+                                              kControlButtonsIconSize)
                                           .SetButtonIconColors(
                                               AshColorProvider::Get()
                                                   ->GetContentLayerColor(

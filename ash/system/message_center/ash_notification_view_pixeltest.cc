@@ -124,7 +124,7 @@ TEST_F(AshNotificationViewPixelTest, CloseButtonFocused) {
   EXPECT_TRUE(close_button->HasFocus());
   EXPECT_EQ(control_buttons_layer->opacity(), 1);
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
-      "close_button_focused", /*revision_number=*/3, notification_view));
+      "close_button_focused", /*revision_number=*/4, notification_view));
 }
 
 // Regression test for http://b/267195370. Tests that a notification with no
@@ -188,7 +188,7 @@ TEST_F(AshNotificationViewPixelTest, CloseControlButton) {
   // Verify with a pixel test that the close control button is visible and has
   // the proper placement.
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
-      "close_control_button", /*revision_number=*/2, notification_view));
+      "close_control_button", /*revision_number=*/3, notification_view));
 }
 
 // Tests the control buttons UI for the case of a notification with both the
@@ -210,7 +210,7 @@ TEST_F(AshNotificationViewPixelTest, SettingsAndCloseControlButtons) {
   // Verify with a pixel test that the control buttons are visible and have
   // proper spacing between them.
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
-      "settings_and_close_control_buttons", /*revision_number=*/2,
+      "settings_and_close_control_buttons", /*revision_number=*/3,
       notification_view));
 }
 
@@ -306,7 +306,7 @@ TEST_P(AshNotificationViewCollapsedLongTextPixelTest, ElidedTextSpacing) {
 
   // Verify the spacing with a pixel test.
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
-      "elided_text_spacing", /*revision_number=*/1, notification_view));
+      "elided_text_spacing", /*revision_number=*/2, notification_view));
 }
 
 class ScreenCaptureNotificationPixelTest
