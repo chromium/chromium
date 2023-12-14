@@ -28,8 +28,7 @@ class WebAuthnCredManDelegate;
 
 class TouchToFillControllerDelegate;
 
-class TouchToFillController
-    : public base::SupportsWeakPtr<TouchToFillController> {
+class TouchToFillController final {
  public:
   // Convenience enum for selecting the correct UI that this controller can
   // display.
@@ -137,6 +136,8 @@ class TouchToFillController
 
   base::WeakPtr<password_manager::KeyboardReplacingSurfaceVisibilityController>
       visibility_controller_;
+
+  base::WeakPtrFactory<TouchToFillController> weak_ptr_factory_{this};
 };
 
 #endif  // CHROME_BROWSER_TOUCH_TO_FILL_PASSWORD_MANAGER_TOUCH_TO_FILL_CONTROLLER_H_

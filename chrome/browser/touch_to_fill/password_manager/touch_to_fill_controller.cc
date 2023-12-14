@@ -80,13 +80,15 @@ bool TouchToFillController::Show(
       }
       no_passkeys_bridge_->Show(
           GetNativeView()->GetWindowAndroid(), url::Origin::Create(url).host(),
-          base::BindOnce(&TouchToFillController::OnDismiss, AsWeakPtr()),
+          base::BindOnce(&TouchToFillController::OnDismiss,
+                         weak_ptr_factory_.GetWeakPtr()),
           base::BindOnce(&TouchToFillController::OnHybridSignInSelected,
-                         AsWeakPtr()));
+                         weak_ptr_factory_.GetWeakPtr()));
       return true;
     case DisplayTarget::kDeferToCredMan:
-      cred_man_delegate->SetRequestCompletionCallback(base::BindRepeating(
-          &TouchToFillController::OnCredManUiClosed, this->AsWeakPtr()));
+      cred_man_delegate->SetRequestCompletionCallback(
+          base::BindRepeating(&TouchToFillController::OnCredManUiClosed,
+                              weak_ptr_factory_.GetWeakPtr()));
       OnShowCredManSelected();
       return true;
     case DisplayTarget::kShowTouchToFill:
@@ -108,8 +110,9 @@ bool TouchToFillController::Show(
       if (cred_man_delegate &&
           cred_man_delegate->HasPasskeys() ==
               WebAuthnCredManDelegate::State::kHasPasskeys) {
-        cred_man_delegate->SetRequestCompletionCallback(base::BindRepeating(
-            &TouchToFillController::OnCredManUiClosed, this->AsWeakPtr()));
+        cred_man_delegate->SetRequestCompletionCallback(
+            base::BindRepeating(&TouchToFillController::OnCredManUiClosed,
+                                weak_ptr_factory_.GetWeakPtr()));
         flags |= TouchToFillView::kShouldShowCredManEntry;
       }
 
