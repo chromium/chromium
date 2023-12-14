@@ -24,6 +24,12 @@ ConvertLcppDataToLCPCriticalPathPredictorNavigationTimeHint(
 // vector.
 std::vector<GURL> PredictFetchedFontUrls(const LcppData& data);
 
+// Returns possible subresource URLs from past loads for a given `data`.
+// The returned URLs are ordered by descending frequency (the most
+// frequent one comes first). If there is no data, it returns an empty
+// vector.
+std::vector<GURL> PredictFetchedSubresourceUrls(const LcppData& data);
+
 // An input to update LcppData.
 struct LcppDataInputs {
   LcppDataInputs();

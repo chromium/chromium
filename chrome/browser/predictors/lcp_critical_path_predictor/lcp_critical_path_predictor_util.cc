@@ -554,6 +554,19 @@ std::vector<GURL> PredictFetchedFontUrls(const LcppData& data) {
   return font_urls;
 }
 
+std::vector<GURL> PredictFetchedSubresourceUrls(const LcppData& data) {
+  std::vector<GURL> subresource_urls;
+  for (const auto& [frequency, subresource_url] : ConvertToFrequencyStringPair(
+           data.lcpp_stat().fetched_subresource_url_stat())) {
+    GURL parsed_url(subresource_url);
+    if (!parsed_url.is_valid() || !parsed_url.SchemeIsHTTPOrHTTPS()) {
+      continue;
+    }
+    subresource_urls.push_back(std::move(parsed_url));
+  }
+  return subresource_urls;
+}
+
 LcppDataInputs::LcppDataInputs() = default;
 LcppDataInputs::~LcppDataInputs() = default;
 
