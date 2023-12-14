@@ -170,6 +170,14 @@ class ResourcePrefetchPredictorTest : public testing::Test {
     predictor_->LearnLcpp(host, inputs);
   }
 
+  void LearnSubresourceUrls(
+      const std::string& host,
+      const std::map<GURL, base::TimeDelta>& subresource_urls) {
+    LcppDataInputs inputs;
+    inputs.subresource_urls = subresource_urls;
+    predictor_->LearnLcpp(host, inputs);
+  }
+
   content::BrowserTaskEnvironment task_environment_;
   std::unique_ptr<TestingProfile> profile_;
   scoped_refptr<base::TestSimpleTaskRunner> db_task_runner_;
@@ -1250,6 +1258,49 @@ TEST_F(ResourcePrefetchPredictorTest, LearnFontUrls) {
     InitializeFontUrlsBucket(data, {GURL("https://example.org/test.otf")}, 0.8);
     InitializeFontUrlsBucket(data, {GURL("https://example.net/test.svg")}, 1);
     InitializeFontUrlsOtherBucket(data, 3.2);
+    EXPECT_EQ(data, mock_tables_->lcpp_table_.data_["example.com"]);
+    EXPECT_DOUBLE_EQ(5, SumOfFontUrlFrequency(data));
+  }
+}
+
+TEST_F(ResourcePrefetchPredictorTest, LearnSubresourceUrls) {
+  ResetPredictor();
+  InitializePredictor();
+  EXPECT_EQ(5U, predictor_->config_.lcpp_histogram_sliding_window_size);
+  EXPECT_EQ(2U, predictor_->config_.max_lcpp_histogram_buckets);
+  EXPECT_TRUE(mock_tables_->lcpp_table_.data_.empty());
+
+  auto SumOfFontUrlFrequency = [this](const LcppData& data) {
+    return SumOfLcppStringFrequencyStatData(
+        data.lcpp_stat().fetched_subresource_url_stat());
+  };
+  for (int i = 0; i < 2; ++i) {
+    LearnSubresourceUrls("example.com",
+                         {
+                             {GURL("https://a.com/a.jpeg"), base::Seconds(1)},
+                             {GURL("https://b.com/b.jpeg"), base::Seconds(2)},
+                         });
+  }
+  {
+    LcppData data = CreateLcppData("example.com", 10);
+    InitializeSubresourceUrlsBucket(
+        data, {GURL("https://a.com/a.jpeg"), GURL("https://b.com/b.jpeg")}, 2);
+    InitializeSubresourceUrlsOtherBucket(data, 0);
+    EXPECT_EQ(data, mock_tables_->lcpp_table_.data_["example.com"]);
+    EXPECT_DOUBLE_EQ(4, SumOfFontUrlFrequency(data));
+  }
+  for (int i = 0; i < 3; ++i) {
+    LearnSubresourceUrls("example.com",
+                         {
+                             {GURL("https://c.com/a.jpeg"), base::Seconds(1)},
+                             {GURL("https://d.com/b.jpeg"), base::Seconds(2)},
+                         });
+  }
+  {
+    LcppData data = CreateLcppData("example.com", 10);
+    InitializeSubresourceUrlsBucket(data, {GURL("https://c.com/a.jpeg")}, 1);
+    InitializeSubresourceUrlsBucket(data, {GURL("https://d.com/b.jpeg")}, 0.8);
+    InitializeSubresourceUrlsOtherBucket(data, 3.2);
     EXPECT_EQ(data, mock_tables_->lcpp_table_.data_["example.com"]);
     EXPECT_DOUBLE_EQ(5, SumOfFontUrlFrequency(data));
   }

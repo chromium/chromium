@@ -93,6 +93,7 @@ message LcppStat {
   optional LcpElementLocatorStat lcp_element_locator_stat = 1;
   optional LcppStringFrequencyStatData lcp_script_url_stat = 2;
   optional LcppStringFrequencyStatData fetched_font_url_stat = 3;
+  optional LcppStringFrequencyStatData fetched_subresource_url_stat = 4;
 }
 
 // [LCP Critical Path Predictor (LCPP)]

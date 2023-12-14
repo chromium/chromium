@@ -439,6 +439,38 @@ bool RecordFetchedFontUrlsHistogram(const LoadingPredictorConfig& config,
   return updater->has_updated();
 }
 
+bool RecordFetchedSubresourceUrlsHistogram(
+    const LoadingPredictorConfig& config,
+    const std::map<GURL, base::TimeDelta>& fetched_subresource_urls,
+    LcppData& data) {
+  // `time_and_urls` keeps URLs (and its fetch timings) in a reversed
+  // event order. The URL count that can be stored in the database is
+  // limited. By processing recently fetched URLs first, we can keep the
+  // URLs that were fetched in the beginning of navigation.
+  std::vector<std::pair<base::TimeDelta, std::string>> time_and_urls;
+  time_and_urls.reserve(fetched_subresource_urls.size());
+  for (const auto& [subresource_url, resource_load_start] :
+       fetched_subresource_urls) {
+    time_and_urls.emplace_back(resource_load_start, subresource_url.spec());
+  }
+  // Reverse sort `time_and_urls`. That is why `rbegin` and `rend`
+  // instead of `begin` and `end`.
+  std::sort(time_and_urls.rbegin(), time_and_urls.rend());
+
+  std::unique_ptr<LcppFrequencyStatDataUpdater> updater =
+      LcppFrequencyStatDataUpdater::FromLcppStringFrequencyStatData(
+          config, data.mutable_lcpp_stat()->fetched_subresource_url_stat());
+  for (const auto& [resource_load_start, subresource_url] : time_and_urls) {
+    if (!IsValidUrlInLcppStringFrequencyStatData(subresource_url)) {
+      continue;
+    }
+    updater->Update(subresource_url);
+  }
+  *data.mutable_lcpp_stat()->mutable_fetched_subresource_url_stat() =
+      updater->ToLcppStringFrequencyStatData();
+  return updater->has_updated();
+}
+
 bool IsValidLcpElementLocatorHistogram(
     const LcpElementLocatorStat& lcp_element_locator_stat) {
   if (lcp_element_locator_stat.other_bucket_frequency() < 0.0) {
@@ -535,6 +567,8 @@ bool UpdateLcppDataWithLcppDataInputs(const LoadingPredictorConfig& config,
       config, inputs.lcp_influencer_scripts, data);
   data_updated |=
       RecordFetchedFontUrlsHistogram(config, inputs.font_urls, data);
+  data_updated |= RecordFetchedSubresourceUrlsHistogram(
+      config, inputs.subresource_urls, data);
   base::UmaHistogramCounts10000("Blink.LCPP.ReportedFontCount",
                                 base::checked_cast<int>(inputs.font_url_count));
   return data_updated;
@@ -552,6 +586,10 @@ bool IsValidLcppStat(const LcppStat& lcpp_stat) {
   }
   if (lcpp_stat.has_fetched_font_url_stat() &&
       !IsValidLcpUrlsHistogram(lcpp_stat.fetched_font_url_stat())) {
+    return false;
+  }
+  if (lcpp_stat.has_fetched_subresource_url_stat() &&
+      !IsValidLcpUrlsHistogram(lcpp_stat.fetched_subresource_url_stat())) {
     return false;
   }
   return true;

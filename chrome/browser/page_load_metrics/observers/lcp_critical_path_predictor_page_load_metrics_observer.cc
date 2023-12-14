@@ -4,6 +4,7 @@
 
 #include "chrome/browser/page_load_metrics/observers/lcp_critical_path_predictor_page_load_metrics_observer.h"
 
+#include "base/containers/cxx20_erase_map.h"
 #include "base/trace_event/base_tracing.h"
 #include "chrome/browser/predictors/loading_predictor.h"
 #include "chrome/browser/predictors/loading_predictor_factory.h"
@@ -36,6 +37,16 @@ size_t GetLCPPFontURLPredictorMaxUrlCountPerOrigin() {
   static size_t max_allowed_url_count = base::checked_cast<size_t>(
       blink::features::kLCPPFontURLPredictorMaxUrlCountPerOrigin.Get());
   return max_allowed_url_count;
+}
+
+void RemoveFetchedSubresourceUrlsAfterLCP(
+    std::map<GURL, base::TimeDelta>& fetched_subresource_urls,
+    const base::TimeDelta& lcp) {
+  // Remove subresource that came after LCP because such subresource
+  // wouldn't affect LCP.
+  std::erase_if(fetched_subresource_urls, [&](const auto& url_and_time) {
+    return url_and_time.second > lcp;
+  });
 }
 
 }  // namespace
@@ -151,6 +162,9 @@ void LcpCriticalPathPredictorPageLoadMetricsObserver::FinalizeLCP() {
       // Don't learn LCPP when prerender to avoid data skew. Activation LCP
       // should be much shorter than regular LCP.
       && !is_prerender_ && predictor) {
+    RemoveFetchedSubresourceUrlsAfterLCP(
+        lcpp_data_inputs_->subresource_urls,
+        largest_contentful_paint.Time().value());
     predictor->LearnLcpp(commit_url_->host(), *lcpp_data_inputs_);
   }
 
@@ -230,8 +244,6 @@ void LcpCriticalPathPredictorPageLoadMetricsObserver::
     lcpp_data_inputs_->subresource_urls.emplace(subresource_url,
                                                 subresource_load_start);
   }
-  // TODO(https://crbug.com/1501673): Save subresource_urls into the LCPP
-  // database.
 }
 
 void LcpCriticalPathPredictorPageLoadMetricsObserver::
