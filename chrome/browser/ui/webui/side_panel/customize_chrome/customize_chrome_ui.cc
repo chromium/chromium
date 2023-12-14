@@ -179,8 +179,8 @@ CustomizeChromeUI::CustomizeChromeUI(content::WebUI* web_ui)
       {"learnMore", IDS_LEARN_MORE},
       {"learnMoreAboutFeatureA11yLabel",
        IDS_LEARN_MORE_ABOUT_FEATURE_A11Y_LABEL},
-      {"thumbsDown", IDS_THUMBS_DOWN},
-      {"thumbsUp", IDS_THUMBS_UP},
+      {"thumbsDown", IDS_THUMBS_DOWN_OPENS_FEEDBACK_FORM_A11Y_LABEL},
+      {"thumbsUp", IDS_THUMBS_UP_RESULTS_A11Y_LABEL},
       {"wallpaperSearchPageHeader", IDS_NTP_WALLPAPER_SEARCH_PAGE_HEADER},
       {"wallpaperSearchTileLabel", IDS_NTP_WALLPAPER_SEARCH_TILE_LABEL},
   };

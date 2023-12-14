@@ -7965,6 +7965,12 @@ Keep your key file in a safe place. You will need it to create new versions of y
       <message name="IDS_LEARN_MORE_ABOUT_FEATURE_A11Y_LABEL" desc="Accessibility label for a link labeled 'Learn more' that links to a help article about creating themes with AI.">
         Learn more about creating themes with AI.
       </message>
+      <message name="IDS_THUMBS_DOWN_OPENS_FEEDBACK_FORM_A11Y_LABEL" desc="Accessibility label for thumbs down button that opens a feedback form when pressed.">
+        Thumbs down opens a form for submitting detailed feedback on why you dislike these results.
+      </message>
+      <message name="IDS_THUMBS_UP_RESULTS_A11Y_LABEL" desc="Accessibility label for thumbs up button that submits feedback for results.">
+        Thumbs up submits feedback that you like these results.
+      </message>
 
       <!-- NTP Modules -->
       <message name="IDS_NTP_MODULES_INFO_BUTTON_TITLE" desc="Text shown in tooltip of info button of an NTP module.">
@@ -16645,11 +16651,11 @@ Please help our engineers fix this problem. Tell us what happened right before y
     </message>
 
     <!-- Common WebUI elements. -->
-    <message name="IDS_THUMBS_DOWN" desc="Accessibility label for a thumbs down icon that a user can click to provide negative feedback about a feature." translateable="false">
-      Thumbs down
+    <message name="IDS_THUMBS_DOWN" desc="Accessibility label for a thumbs down icon that a user can click to provide negative feedback about a feature.">
+      Thumbs down submits feedback that you dislike this.
     </message>
-    <message name="IDS_THUMBS_UP" desc="Accessibility label for a thumbs up icon that a user can click to provide positive feedback about a feature." translateable="false">
-      Thumbs up
+    <message name="IDS_THUMBS_UP" desc="Accessibility label for a thumbs up icon that a user can click to provide positive feedback about a feature.">
+      Thumbs up submits feedback that you like this.
     </message>
     <message name="IDS_EXPERIMENTAL_FEATURE_DISCLAIMER" desc="Text used for experimental features.">
       This is an experimental AI feature.
