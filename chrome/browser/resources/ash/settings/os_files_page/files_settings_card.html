@@ -25,8 +25,10 @@
         start-icon="[[rowIcons_.googleDrive]]"
         on-click="onClickGoogleDrive_"
         label="$i18n{googleDriveLabel}"
-        sub-label="[[computeGoogleDriveSublabel_(driveDisabled_, bulkPinningPrefEnabled_)]]"
         role-description="$i18n{subpageArrowRoleDescription}">
+        <div id="googleDriveSubLabel" slot="sub-label"
+            inner-h-t-m-l="[[getGoogleDriveSubLabelInnerHtml_(driveDisabled_, bulkPinningPrefEnabled_)]]">
+        </div>
     </cr-link-row>
   </template>
 

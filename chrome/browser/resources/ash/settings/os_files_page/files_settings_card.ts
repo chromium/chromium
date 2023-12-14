@@ -229,20 +229,18 @@ export class FilesSettingsCardElement extends FilesSettingsCardElementBase {
     this.bulkPinningPrefEnabled_ = enabled;
   }
 
-  private computeGoogleDriveSublabel_(): string {
+  private getGoogleDriveSubLabelInnerHtml_(): TrustedHTML {
     if (this.driveDisabled_) {
-      return this.i18n('googleDriveNotSignedInSublabel');
+      return this.i18nAdvanced('googleDriveNotSignedInSublabel');
     }
 
     if (this.isBulkPinningEnabled_ && this.bulkPinningPrefEnabled_) {
-      return this.i18n('googleDriveFileSyncOnSublabel');
+      return this.i18nAdvanced('googleDriveFileSyncOnSublabel');
     }
 
-    const tempEl = document.createElement('div');
-    tempEl.innerHTML =
+    return (this.isBulkPinningEnabled_ && this.bulkPinningPrefEnabled_) ?
+        this.i18nAdvanced('googleDriveFileSyncOnSublabel') :
         this.i18nAdvanced('googleDriveSignedInAs', {attrs: ['id']});
-
-    return tempEl.innerText;
   }
 
   private computeOneDriveSignedInLabel_(): string {

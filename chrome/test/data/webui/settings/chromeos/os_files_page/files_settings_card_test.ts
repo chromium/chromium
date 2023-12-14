@@ -81,12 +81,11 @@ suite('<files-settings-card>', () => {
     await flushTasks();
   }
 
-  function getGoogleDriveRow(): CrLinkRowElement {
-    const googleDriveRow =
-        filesSettingsCard.shadowRoot!.querySelector<CrLinkRowElement>(
-            '#googleDriveRow')!;
-    assert(googleDriveRow);
-    return googleDriveRow;
+  function getGoogleDriveRowSubLabel(): HTMLElement {
+    const subLabel =
+        filesSettingsCard.shadowRoot!.getElementById('googleDriveSubLabel');
+    assert(subLabel);
+    return subLabel;
   }
 
   async function assertSubpageTriggerFocused(
@@ -336,9 +335,7 @@ suite('<files-settings-card>', () => {
           await createFilesSettingsCard();
           filesSettingsCard.setPrefValue('gdata.disabled', true);
           flush();
-
-          const googleDriveRow = getGoogleDriveRow();
-          assertEquals('Not signed in', googleDriveRow.subLabel);
+          assertEquals('Not signed in', getGoogleDriveRowSubLabel().innerText);
         });
 
     test(
@@ -348,8 +345,8 @@ suite('<files-settings-card>', () => {
           filesSettingsCard.setPrefValue('drivefs.bulk_pinning_enabled', false);
           flush();
 
-          const googleDriveRow = getGoogleDriveRow();
-          assertTrue(googleDriveRow.subLabel.startsWith('Signed in as'));
+          assertTrue(
+              getGoogleDriveRowSubLabel().innerText.startsWith('Signed in as'));
         });
 
     test(
@@ -358,8 +355,7 @@ suite('<files-settings-card>', () => {
           filesSettingsCard.setPrefValue('drivefs.bulk_pinning_enabled', true);
           flush();
 
-          const googleDriveRow = getGoogleDriveRow();
-          assertEquals('File sync on', googleDriveRow.subLabel);
+          assertEquals('File sync on', getGoogleDriveRowSubLabel().innerText);
         });
 
     test('cycling through the prefs updates the sublabel texts', async () => {
@@ -368,16 +364,16 @@ suite('<files-settings-card>', () => {
       filesSettingsCard.setPrefValue('drivefs.bulk_pinning_enabled', false);
       flush();
 
-      const googleDriveRow = getGoogleDriveRow();
-      assertEquals('Not signed in', googleDriveRow.subLabel);
+      const googleDriveRowSubLabel = getGoogleDriveRowSubLabel();
+      assertEquals('Not signed in', googleDriveRowSubLabel.innerText);
 
       filesSettingsCard.setPrefValue('gdata.disabled', false);
       flush();
-      assertTrue(googleDriveRow.subLabel.startsWith('Signed in as'));
+      assertTrue(googleDriveRowSubLabel.innerText.startsWith('Signed in as'));
 
       filesSettingsCard.setPrefValue('drivefs.bulk_pinning_enabled', true);
       flush();
-      assertEquals('File sync on', googleDriveRow.subLabel);
+      assertEquals('File sync on', googleDriveRowSubLabel.innerText);
     });
   });
 
@@ -398,12 +394,12 @@ suite('<files-settings-card>', () => {
       filesSettingsCard.setPrefValue('gdata.disabled', true);
       flush();
 
-      const googleDriveRow = getGoogleDriveRow();
-      assertEquals('Not signed in', googleDriveRow.subLabel);
+      const googleDriveRowSubLabel = getGoogleDriveRowSubLabel();
+      assertEquals('Not signed in', googleDriveRowSubLabel.innerText);
 
       filesSettingsCard.setPrefValue('gdata.disabled', false);
       flush();
-      assertTrue(googleDriveRow.subLabel.startsWith('Signed in as'));
+      assertTrue(googleDriveRowSubLabel.innerText.startsWith('Signed in as'));
     });
 
     test(
