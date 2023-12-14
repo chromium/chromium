@@ -77,17 +77,6 @@ const std::vector<std::string>& MimeTypesHandler::GetMIMETypeAllowlist() {
   return *allowlist_vector;
 }
 
-// static
-void MimeTypesHandler::ReportUsedHandler(const std::string& extension_id) {
-  auto* const* it =
-      base::ranges::find(kMIMETypeHandlersAllowlist, extension_id);
-  if (it != std::end(kMIMETypeHandlersAllowlist)) {
-    MimeHandlerType type = static_cast<MimeHandlerType>(
-        it - std::begin(kMIMETypeHandlersAllowlist));
-    base::UmaHistogramEnumeration("Extensions.UsedMimeTypeHandler", type);
-  }
-}
-
 MimeTypesHandler::MimeTypesHandler() = default;
 MimeTypesHandler::~MimeTypesHandler() = default;
 

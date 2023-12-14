@@ -4329,17 +4329,6 @@ chromium-metrics-reviews@google.com.
   <summary>Uninstalls grouped by Extension::HistogramType.</summary>
 </histogram>
 
-<histogram name="Extensions.UsedMimeTypeHandler" enum="UsedMimeTypeHandler"
-    expires_after="2021-11-14">
-  <owner>apotapchuk@chromium.org</owner>
-  <owner>anqing@chromium.org</owner>
-  <summary>
-    Tracks the usage of different MIME type handlers used to view files. It is
-    recorded when the browser intercepts navigation with one of the type
-    handlers.
-  </summary>
-</histogram>
-
 <histogram
     name="Extensions.WebRequest.BeforeRequestDeclarativeNetRequestEvaluationTime"
     units="ms" expires_after="2024-04-28">
