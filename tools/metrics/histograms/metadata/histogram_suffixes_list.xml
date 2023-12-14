@@ -4501,8 +4501,6 @@ chromium-metrics-reviews@google.com.
              2020, metrics expected to bump."/>
   <suffix name="WarmStartup" label="Startup was warm (almost no hard faults)."/>
   <affected-histogram
-      name="LibraryLoader.PercentageOfResidentCodeBeforePrefetch"/>
-  <affected-histogram
       name="ProfilePicker.StartupTime.FirstPaint.FromApplicationStart"/>
   <affected-histogram name="Startup.BrowserMessageLoopFirstIdle"/>
   <affected-histogram name="Startup.BrowserMessageLoopStart.To.NonEmptyPaint2"/>
