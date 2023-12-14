@@ -32,7 +32,7 @@ void MemorySaverBubbleDelegate::OnAddSiteToExceptionsListClicked() {
   CHECK(web_contents);
   const std::string host = web_contents->GetURL().host();
   PrefService* const pref_service = browser_->profile()->GetPrefs();
-  high_efficiency::AddSiteToExceptionsList(pref_service, host);
+  memory_saver::AddSiteToExceptionsList(pref_service, host);
   close_action_ = MemorySaverBubbleActionType::kAddException;
 }
 

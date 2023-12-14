@@ -16,7 +16,7 @@
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/bubble/bubble_dialog_model_host.h"
 
-// Represents the high efficiency page action chip that appears on previously
+// Represents the memory saver page action chip that appears on previously
 // discarded tabs.
 class MemorySaverChipView : public PageActionIconView,
                             public MemorySaverBubbleObserver,
@@ -48,7 +48,7 @@ class MemorySaverChipView : public PageActionIconView,
 
  private:
   // performance_manager::user_tuning::UserPerformanceTuningManager::Observer:
-  // Checks whether high efficiency mode is currently enabled.
+  // Checks whether memory saver mode is currently enabled.
   void OnMemorySaverModeChanged() override;
 
   const raw_ptr<Browser> browser_;
@@ -59,7 +59,7 @@ class MemorySaverChipView : public PageActionIconView,
       performance_manager::user_tuning::UserPerformanceTuningManager,
       performance_manager::user_tuning::UserPerformanceTuningManager::Observer>
       user_performance_tuning_manager_observation_{this};
-  bool is_high_efficiency_mode_enabled_ = false;
+  bool is_memory_saver_mode_enabled_ = false;
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_PERFORMANCE_CONTROLS_MEMORY_SAVER_CHIP_VIEW_H_

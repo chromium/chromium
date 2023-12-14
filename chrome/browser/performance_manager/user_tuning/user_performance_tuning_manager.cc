@@ -56,15 +56,15 @@ class MemorySaverModeDelegateImpl
               CHECK(memory_saver_mode_policy);
               switch (state) {
                 case MemorySaverModeState::kDisabled:
-                  memory_saver_mode_policy->OnHighEfficiencyModeChanged(false);
+                  memory_saver_mode_policy->OnMemorySaverModeChanged(false);
                   return;
                 case MemorySaverModeState::kEnabled:
                   // TODO(crbug.com/1492508): This setting should enable the
                   // non-timer Memory Saver policy.
-                  memory_saver_mode_policy->OnHighEfficiencyModeChanged(false);
+                  memory_saver_mode_policy->OnMemorySaverModeChanged(false);
                   return;
                 case MemorySaverModeState::kEnabledOnTimer:
-                  memory_saver_mode_policy->OnHighEfficiencyModeChanged(true);
+                  memory_saver_mode_policy->OnMemorySaverModeChanged(true);
                   return;
               }
               NOTREACHED_NORETURN();
@@ -242,7 +242,7 @@ UserPerformanceTuningManager::UserPerformanceTuningManager(
                                                          std::move(notifier));
   }
 
-  performance_manager::user_tuning::prefs::MigrateHighEfficiencyModePref(
+  performance_manager::user_tuning::prefs::MigrateMemorySaverModePref(
       local_state);
 
   pref_change_registrar_.Init(local_state);
@@ -251,7 +251,7 @@ UserPerformanceTuningManager::UserPerformanceTuningManager(
 void UserPerformanceTuningManager::Start() {
   pref_change_registrar_.Add(
       performance_manager::user_tuning::prefs::
-          kHighEfficiencyModeTimeBeforeDiscardInMinutes,
+          kMemorySaverModeTimeBeforeDiscardInMinutes,
       base::BindRepeating(&UserPerformanceTuningManager::
                               OnMemorySaverModeTimeBeforeDiscardChanged,
                           base::Unretained(this)));
@@ -275,7 +275,7 @@ void UserPerformanceTuningManager::UpdateMemorySaverModeState() {
       prefs::GetCurrentMemorySaverModeState(pref_change_registrar_.prefs());
   if (!base::FeatureList::IsEnabled(features::kMemorySaverMultistateMode)) {
     if (state != MemorySaverModeState::kDisabled) {
-      // The user has enabled high efficiency mode, but without the multistate
+      // The user has enabled memory saver mode, but without the multistate
       // UI they didn't choose a policy. The feature controls which policy to
       // use.
       state = MemorySaverModeState::kEnabledOnTimer;
@@ -293,7 +293,7 @@ void UserPerformanceTuningManager::OnMemorySaverModePrefChanged() {
 
 void UserPerformanceTuningManager::OnMemorySaverModeTimeBeforeDiscardChanged() {
   base::TimeDelta time_before_discard = performance_manager::user_tuning::
-      prefs::GetCurrentHighEfficiencyModeTimeBeforeDiscard(
+      prefs::GetCurrentMemorySaverModeTimeBeforeDiscard(
           pref_change_registrar_.prefs());
   memory_saver_mode_delegate_->SetTimeBeforeDiscard(time_before_discard);
 }

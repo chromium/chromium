@@ -1114,22 +1114,22 @@
   <message name="IDS_SETTINGS_SPEED_PAGE_TITLE" desc="Title of the speed section on the performance settings page.">
     Speed
   </message>
-  <message name="IDS_SETTINGS_PERFORMANCE_HIGH_EFFICIENCY_MODE_SETTING" desc="Memory saver mode setting label. This mode allows the browser to save memory from background tabs">
+  <message name="IDS_SETTINGS_PERFORMANCE_MEMORY_SAVER_MODE_SETTING" desc="Memory saver mode setting label. This mode allows the browser to save memory from background tabs">
     Memory Saver
   </message>
-  <message name="IDS_SETTINGS_PERFORMANCE_HIGH_EFFICIENCY_MODE_HEURISTICS_LABEL" desc="Label for the memory saver mode to discard tabs based on a set of heuristics">
+  <message name="IDS_SETTINGS_PERFORMANCE_MEMORY_SAVER_MODE_HEURISTICS_LABEL" desc="Label for the memory saver mode to discard tabs based on a set of heuristics">
     Free up memory based on usage
   </message>
-  <message name="IDS_SETTINGS_PERFORMANCE_HIGH_EFFICIENCY_MODE_RECOMMENDED_BADGE" desc="Label for the recommended badge for the heuristics based memory saver option">
+  <message name="IDS_SETTINGS_PERFORMANCE_MEMORY_SAVER_MODE_RECOMMENDED_BADGE" desc="Label for the recommended badge for the heuristics based memory saver option">
     Recommended
   </message>
-  <message name="IDS_SETTINGS_PERFORMANCE_HIGH_EFFICIENCY_MODE_ON_TIMER_LABEL" desc="Label for the memory saver mode to discard tabs on a timer">
+  <message name="IDS_SETTINGS_PERFORMANCE_MEMORY_SAVER_MODE_ON_TIMER_LABEL" desc="Label for the memory saver mode to discard tabs on a timer">
     Free up memory based on tab inactivity
   </message>
-  <message name="IDS_SETTINGS_PERFORMANCE_HIGH_EFFICIENCY_MODE_RADIO_GROUP_ARIA_LABEL" desc="Accessibility label which will be read by screen readers when focus enters the memory saver mode radio group. When memory saver mode is enabled, this radio group will be expanded and allow the user to choose between different tab discarding policies.">
+  <message name="IDS_SETTINGS_PERFORMANCE_MEMORY_SAVER_MODE_RADIO_GROUP_ARIA_LABEL" desc="Accessibility label which will be read by screen readers when focus enters the memory saver mode radio group. When memory saver mode is enabled, this radio group will be expanded and allow the user to choose between different tab discarding policies.">
     Memory saver options
   </message>
-  <message name="IDS_SETTINGS_PERFORMANCE_HIGH_EFFICIENCY_MODE_CHOOSE_DISCARD_TIME_ARIA_LABEL" desc="Accessibility label which will be read by screen readers when focus enters the dropdown menu in the second option of the memory saver radio group. The dropdown allows the user to select the time before a tab is discarded by memory saver.">
+  <message name="IDS_SETTINGS_PERFORMANCE_MEMORY_SAVER_MODE_CHOOSE_DISCARD_TIME_ARIA_LABEL" desc="Accessibility label which will be read by screen readers when focus enters the dropdown menu in the second option of the memory saver radio group. The dropdown allows the user to select the time before a tab is discarded by memory saver.">
     Choose time range
   </message>
   <message name="IDS_SETTINGS_PERFORMANCE_TAB_DISCARDING_EXCEPTIONS_ADD_BUTTON_ARIA_LABEL" desc="Accessibility label which will be read by screen readers when focusing the tab discarding exceptions list add button. Sites added to the list will not be discarded by memory saver.">

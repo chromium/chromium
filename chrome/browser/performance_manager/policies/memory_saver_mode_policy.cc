@@ -64,7 +64,7 @@ void MemorySaverModePolicy::OnTabAdded(
     // Some mechanisms (like "session restore" and "open all bookmarks") can
     // create pages that are non-visible. If that happens, start a discard timer
     // so that the pages are discarded if they don't ever become visible.
-    // TODO(crbug.com/1510539): High Efficiency Mode should make it so
+    // TODO(crbug.com/1510539): Memory Saver Mode should make it so
     // non-visible pages are simply not loaded until they become visible.
     StartDiscardTimerIfEnabled(tab_handle,
                                GetTimeBeforeDiscardForCurrentMode());
@@ -100,7 +100,7 @@ void MemorySaverModePolicy::OnTakenFromGraph(Graph* graph) {
   graph_ = nullptr;
 }
 
-void MemorySaverModePolicy::OnHighEfficiencyModeChanged(bool enabled) {
+void MemorySaverModePolicy::OnMemorySaverModeChanged(bool enabled) {
   high_efficiency_mode_enabled_ = enabled;
 
   if (high_efficiency_mode_enabled_) {
@@ -159,7 +159,7 @@ void MemorySaverModePolicy::StartDiscardTimerIfEnabled(
       return;
     }
 
-    // High Efficiency mode is enabled, so the tab should be discarded after the
+    // Memory Saver mode is enabled, so the tab should be discarded after the
     // amount of time specified by finch is elapsed.
     CHECK_NE(time_before_discard, base::TimeDelta::Max());
     active_discard_timers_[tab_handle].Start(
@@ -186,8 +186,8 @@ void MemorySaverModePolicy::DiscardPageTimerCallback(
   // timer destroyed.
   RemoveActiveTimer(tab_handle);
 
-  // Turning off High Efficiency Mode would delete the timer, so it's not
-  // possible to get here and for High Efficiency Mode to be off.
+  // Turning off Memory Saver Mode would delete the timer, so it's not
+  // possible to get here and for Memory Saver Mode to be off.
   DCHECK(IsHighEfficiencyDiscardingEnabled());
 
   // If the time elapsed according to `LiveTicks` is shorter than

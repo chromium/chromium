@@ -32,7 +32,7 @@ class MemorySaverOptInIPHController
   base::ScopedObservation<
       performance_manager::user_tuning::UserPerformanceTuningManager,
       performance_manager::user_tuning::UserPerformanceTuningManager::Observer>
-      high_efficiency_observer_{this};
+      memory_saver_observer_{this};
 
   const raw_ptr<Browser> browser_;
 };

@@ -12,7 +12,7 @@
 #include "content/public/browser/web_contents_observer.h"
 #include "content/public/browser/web_contents_user_data.h"
 
-namespace high_efficiency {
+namespace memory_saver {
 enum class ChipState {
   // Chip is not shown for this tab.
   HIDDEN,
@@ -25,13 +25,13 @@ enum class ChipState {
   // Previously expanded chip is collapsed due to tab switching.
   COLLAPSED_FROM_EXPANDED,
 };
-}  // namespace high_efficiency
+}  // namespace memory_saver
 
-// When a page in the background has been discarded due to high efficiency mode,
+// When a page in the background has been discarded due to memory saver mode,
 // and the user returns to that tab, a page action chip should be shown to the
 // user which conveys information about the discarded tab to the user.
 // The MemorySaverChipTabHelper is a per-tab class which manages the state of
-// the high efficiency chip.
+// the memory saver chip.
 class MemorySaverChipTabHelper
     : public content::WebContentsObserver,
       public content::WebContentsUserData<MemorySaverChipTabHelper> {
@@ -43,7 +43,7 @@ class MemorySaverChipTabHelper
 
   static constexpr int kChipAnimationCount = 3;
 
-  high_efficiency::ChipState chip_state() const { return chip_state_; }
+  memory_saver::ChipState chip_state() const { return chip_state_; }
 
   // content::WebContentsObserver
   void DidStartNavigation(
@@ -70,7 +70,7 @@ class MemorySaverChipTabHelper
   // recent navigation.
   void ComputeChipState(content::NavigationHandle* navigation_handle);
 
-  high_efficiency::ChipState chip_state_ = high_efficiency::ChipState::HIDDEN;
+  memory_saver::ChipState chip_state_ = memory_saver::ChipState::HIDDEN;
   // Represents whether the current chip state has been properly rendered. This
   // gets reset when a tab gets hidden so the chip can be redrawn.
   bool was_rendered_ = false;

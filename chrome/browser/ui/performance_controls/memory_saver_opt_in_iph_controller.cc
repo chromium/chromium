@@ -17,7 +17,7 @@ MemorySaverOptInIPHController::MemorySaverOptInIPHController(Browser* browser)
     : browser_(browser) {
   auto* manager = performance_manager::user_tuning::
       UserPerformanceTuningManager::GetInstance();
-  high_efficiency_observer_.Observe(manager);
+  memory_saver_observer_.Observe(manager);
 }
 
 MemorySaverOptInIPHController::~MemorySaverOptInIPHController() = default;

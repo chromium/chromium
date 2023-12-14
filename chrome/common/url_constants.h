@@ -282,13 +282,13 @@ inline constexpr char kGooglePasswordManagerURL[] =
 // URL of the Google Photos.
 inline constexpr char kGooglePhotosURL[] = "https://photos.google.com";
 
-// The URL for the "Learn more" link for the High Efficiency Mode.
-inline constexpr char kHighEfficiencyModeLearnMoreUrl[] =
+// The URL for the "Learn more" link for the Memory Saver Mode.
+inline constexpr char kMemorySaverModeLearnMoreUrl[] =
     "https://support.google.com/chrome?p=chrome_memory_saver";
 
-// The URL in the help text for the High Efficiency Mode tab discarding
+// The URL in the help text for the Memory Saver Mode tab discarding
 // exceptions add dialog.
-inline constexpr char16_t kHighEfficiencyModeTabDiscardingHelpUrl[] =
+inline constexpr char16_t kMemorySaverModeTabDiscardingHelpUrl[] =
     u"https://support.google.com/chrome?p=performance_site_exclusion";
 
 // The URL to the help center article of Incognito mode.

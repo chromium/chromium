@@ -739,7 +739,7 @@ IN_PROC_BROWSER_TEST_P(TabHoverCardFadeFooterInteractiveUiTest,
                       content::WebContents* const web_contents =
                           browser->tab_strip_model()->GetWebContentsAt(0);
                       const uint64_t memory_estimate =
-                          high_efficiency::GetDiscardedMemorySavingsInBytes(
+                          memory_saver::GetDiscardedMemorySavingsInBytes(
                               web_contents);
                       return label->GetText() ==
                              l10n_util::GetStringFUTF16(

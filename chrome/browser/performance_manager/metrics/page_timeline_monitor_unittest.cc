@@ -516,7 +516,7 @@ TEST_F(PageTimelineMonitorUnitTest, TestHighEfficiencyMode) {
   performance_manager::policies::MemorySaverModePolicy* policy =
       performance_manager::policies::MemorySaverModePolicy::GetInstance();
   policy->SetTimeBeforeDiscard(base::Hours(2));
-  policy->OnHighEfficiencyModeChanged(true);
+  policy->OnMemorySaverModeChanged(true);
 
   TriggerCollectSlice();
   entries = test_ukm_recorder()->GetEntriesByName(

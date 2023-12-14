@@ -318,7 +318,7 @@ IN_PROC_BROWSER_TEST_F(MemorySaverDiscardPolicyInteractiveTest,
       TryDiscardTab(0), CheckTabIsNotDiscarded(0));
 }
 
-// Tests the functionality of the High Efficiency page action chip
+// Tests the functionality of the Memory Saver page action chip
 class MemorySaverChipInteractiveTest : public MemorySaverInteractiveTest {
  public:
   MemorySaverChipInteractiveTest() = default;
@@ -358,7 +358,7 @@ class MemorySaverChipInteractiveTest : public MemorySaverInteractiveTest {
   }
 
   // Discard and reload the tab at discard_tab_index the number of times the
-  // high efficiency page action chip can expand so subsequent discards
+  // memory saver page action chip can expand so subsequent discards
   // will result in the chip staying in its collapsed state
   auto DiscardTabUntilChipStopsExpanding(
       size_t discard_tab_index,
@@ -450,7 +450,7 @@ IN_PROC_BROWSER_TEST_F(MemorySaverChipInteractiveTest,
       EnsureNotPresent(kMemorySaverChipElementId));
 }
 
-// High Efficiency Dialog bubble should close after clicking the "OK" button
+// Memory Saver Dialog bubble should close after clicking the "OK" button
 IN_PROC_BROWSER_TEST_F(MemorySaverChipInteractiveTest,
                        CloseBubbleOnOkButtonClick) {
   RunTestSequence(
@@ -464,7 +464,7 @@ IN_PROC_BROWSER_TEST_F(MemorySaverChipInteractiveTest,
       WaitForHide(MemorySaverBubbleView::kMemorySaverDialogBodyElementId));
 }
 
-// High Efficiency dialog bubble should close after clicking on the "X"
+// Memory Saver dialog bubble should close after clicking on the "X"
 // close button
 IN_PROC_BROWSER_TEST_F(MemorySaverChipInteractiveTest,
                        CloseBubbleOnCloseButtonClick) {
@@ -487,7 +487,7 @@ IN_PROC_BROWSER_TEST_F(MemorySaverChipInteractiveTest,
       EnsureNotPresent(MemorySaverBubbleView::kMemorySaverDialogBodyElementId));
 }
 
-// High Efficiency Dialog bubble should close after clicking on
+// Memory Saver Dialog bubble should close after clicking on
 // the page action chip again
 IN_PROC_BROWSER_TEST_F(MemorySaverChipInteractiveTest, CloseBubbleOnChipClick) {
   RunTestSequence(
@@ -501,7 +501,7 @@ IN_PROC_BROWSER_TEST_F(MemorySaverChipInteractiveTest, CloseBubbleOnChipClick) {
       EnsureNotPresent(MemorySaverBubbleView::kMemorySaverDialogBodyElementId));
 }
 
-// High Efficiency dialog bubble should close when clicking to navigate to
+// Memory Saver dialog bubble should close when clicking to navigate to
 // another tab
 IN_PROC_BROWSER_TEST_F(MemorySaverChipInteractiveTest, CloseBubbleOnTabSwitch) {
   constexpr char kSecondTab[] = "second_tab";
@@ -554,7 +554,7 @@ IN_PROC_BROWSER_TEST_F(MemorySaverChipInteractiveTest,
               browser())));
 }
 
-// High Efficiency Dialog bubble should add the site it is currently on
+// Memory Saver Dialog bubble should add the site it is currently on
 // to the exceptions list if the cancel button of the dialog bubble is clicked.
 // Opening the dialog button again will cause the cancel button to give users
 // the option to go to settings instead.
@@ -607,7 +607,7 @@ IN_PROC_BROWSER_TEST_F(MemorySaverChipInteractiveTest,
                               GURL(chrome::kChromeUIPerformanceSettingsURL)));
 }
 
-// High Efficiency Dialog bubble's cancel button's state should be preserved
+// Memory Saver Dialog bubble's cancel button's state should be preserved
 // for that tab even when navigating to another tab.
 IN_PROC_BROWSER_TEST_F(MemorySaverChipInteractiveTest,
                        CancelButtonStatePreseveredWhenSwitchingTabs) {
@@ -720,7 +720,7 @@ INSTANTIATE_TEST_SUITE_P(All,
                          MemorySaverFaviconTreatmentTest,
                          testing::ValuesIn(MemorySaverTestConfig()));
 
-// Tests the new memory savings reporting improvements on the high efficiency
+// Tests the new memory savings reporting improvements on the memory saver
 // dialog.
 class MemorySaverMemorySavingsReportingImprovementsTest
     : public MemorySaverInteractiveTest {
@@ -739,7 +739,7 @@ class MemorySaverMemorySavingsReportingImprovementsTest
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
-// The high efficiency chip dialog renders a gauge style visualization that
+// The memory saver chip dialog renders a gauge style visualization that
 // must be rendered correctly.
 IN_PROC_BROWSER_TEST_F(MemorySaverMemorySavingsReportingImprovementsTest,
                        RenderVisualizationInDialog) {

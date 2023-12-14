@@ -58,17 +58,16 @@ void PerformanceControlsHatsService::OpenedNewTabPage() {
   const bool battery_saver_mode =
       performance_manager::user_tuning::BatterySaverModeManager::GetInstance()
           ->IsBatterySaverModeEnabled();
-  const bool high_efficiency_mode =
-      performance_manager::user_tuning::UserPerformanceTuningManager::
-          GetInstance()
-              ->IsMemorySaverModeActive();
+  const bool memory_saver_mode = performance_manager::user_tuning::
+                                     UserPerformanceTuningManager::GetInstance()
+                                         ->IsMemorySaverModeActive();
 
   // A general performance survey for all users.
   if (base::FeatureList::IsEnabled(performance_manager::features::
                                        kPerformanceControlsPerformanceSurvey)) {
     hats_service->LaunchSurvey(kHatsSurveyTriggerPerformanceControlsPerformance,
                                base::DoNothing(), base::DoNothing(),
-                               {{"high_efficiency_mode", high_efficiency_mode},
+                               {{"high_efficiency_mode", memory_saver_mode},
                                 {"battery_saver_mode", battery_saver_mode}},
                                {});
   }
@@ -87,7 +86,7 @@ void PerformanceControlsHatsService::OpenedNewTabPage() {
     hats_service->LaunchSurvey(
         kHatsSurveyTriggerPerformanceControlsBatteryPerformance,
         base::DoNothing(), base::DoNothing(),
-        {{"high_efficiency_mode", high_efficiency_mode},
+        {{"high_efficiency_mode", memory_saver_mode},
          {"battery_saver_mode", battery_saver_mode}},
         {});
   }
@@ -117,7 +116,7 @@ void PerformanceControlsHatsService::OnMemorySaverModeChanged() {
 
   auto* manager = performance_manager::user_tuning::
       UserPerformanceTuningManager::GetInstance();
-  // A survey for users who have turned off high efficiency mode.
+  // A survey for users who have turned off memory saver mode.
   if (!manager->IsMemorySaverModeActive() &&
       !manager->IsMemorySaverModeManaged() &&
       !manager->IsMemorySaverModeDefault()) {

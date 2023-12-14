@@ -117,7 +117,7 @@ TEST_F(MemorySaverModeTest, NoDiscardIfHighEfficiencyOff) {
 TEST_F(MemorySaverModeTest, DiscardAfterBackgrounded) {
   page_node()->SetType(PageType::kTab);
   page_node()->SetIsVisible(true);
-  policy()->OnHighEfficiencyModeChanged(true);
+  policy()->OnMemorySaverModeChanged(true);
 
   EXPECT_CALL(*discarder(), DiscardPageNodeImpl(page_node()))
       .WillOnce(::testing::Return(true));
@@ -131,7 +131,7 @@ TEST_F(MemorySaverModeTest, DontDiscardAfterBackgroundedIfSuspended) {
   policy()->SetTimeBeforeDiscard(base::Hours(2));
   page_node()->SetType(PageType::kTab);
   page_node()->SetIsVisible(true);
-  policy()->OnHighEfficiencyModeChanged(true);
+  policy()->OnMemorySaverModeChanged(true);
   page_node()->SetIsVisible(false);
 
   EXPECT_EQ(policy()->GetTimeBeforeDiscardForTesting(), base::Hours(2));
@@ -160,7 +160,7 @@ TEST_F(MemorySaverModeTest, DontDiscardAfterBackgroundedIfSuspended) {
 
 TEST_F(MemorySaverModeTest, DontDiscardIfPageIsNotATab) {
   page_node()->SetType(PageType::kUnknown);
-  policy()->OnHighEfficiencyModeChanged(true);
+  policy()->OnMemorySaverModeChanged(true);
   page_node()->SetIsVisible(true);
   page_node()->SetIsVisible(false);
 
@@ -174,7 +174,7 @@ TEST_F(MemorySaverModeTest, DontDiscardIfPageIsNotATab) {
 TEST_F(MemorySaverModeTest, DontDiscardIfPlayingAudio) {
   page_node()->SetType(PageType::kTab);
   page_node()->SetIsVisible(true);
-  policy()->OnHighEfficiencyModeChanged(true);
+  policy()->OnMemorySaverModeChanged(true);
 
   page_node()->SetIsAudible(true);
 
@@ -193,7 +193,7 @@ TEST_F(MemorySaverModeTest, TimeBeforeDiscardChangedBeforeTimerStarted) {
   page_node()->SetType(PageType::kTab);
   page_node()->SetIsVisible(true);
   page_node()->SetIsVisible(false);
-  policy()->OnHighEfficiencyModeChanged(true);
+  policy()->OnMemorySaverModeChanged(true);
 
   task_env().FastForwardBy(original_time_before_discard);
   ::testing::Mock::VerifyAndClearExpectations(discarder());
@@ -216,7 +216,7 @@ TEST_F(MemorySaverModeTest, TimeBeforeDiscardReduced) {
   page_node()->SetType(PageType::kTab);
   page_node()->SetIsVisible(true);
   page_node()->SetIsVisible(false);
-  policy()->OnHighEfficiencyModeChanged(true);
+  policy()->OnMemorySaverModeChanged(true);
 
   task_env().FastForwardBy(kInitialBackgroundTime);
   ::testing::Mock::VerifyAndClearExpectations(discarder());
@@ -248,7 +248,7 @@ TEST_F(MemorySaverModeTest, TimeBeforeDiscardReducedBelowBackgroundedTime) {
   page_node()->SetType(PageType::kTab);
   page_node()->SetIsVisible(true);
   page_node()->SetIsVisible(false);
-  policy()->OnHighEfficiencyModeChanged(true);
+  policy()->OnMemorySaverModeChanged(true);
 
   task_env().FastForwardBy(kInitialBackgroundTime);
   ::testing::Mock::VerifyAndClearExpectations(discarder());
@@ -278,7 +278,7 @@ TEST_F(MemorySaverModeTest, TimeBeforeDiscardIncreased) {
   page_node()->SetType(PageType::kTab);
   page_node()->SetIsVisible(true);
   page_node()->SetIsVisible(false);
-  policy()->OnHighEfficiencyModeChanged(true);
+  policy()->OnMemorySaverModeChanged(true);
 
   task_env().FastForwardBy(kInitialBackgroundTime);
   ::testing::Mock::VerifyAndClearExpectations(discarder());
@@ -323,7 +323,7 @@ TEST_F(MemorySaverModeTest, DontDiscardIfAlreadyNotVisibleWhenModeEnabled) {
                            base::Seconds(10));
   ::testing::Mock::VerifyAndClearExpectations(discarder());
 
-  policy()->OnHighEfficiencyModeChanged(true);
+  policy()->OnMemorySaverModeChanged(true);
 
   // The page should not be discarded 10 seconds after the mode is changed.
   task_env().FastForwardBy(base::Seconds(10));
@@ -341,7 +341,7 @@ TEST_F(MemorySaverModeTest, NoDiscardIfPageNodeRemoved) {
   // This case will be using a different page node, so make the default one
   // visible so it's not discarded.
   page_node()->SetIsVisible(true);
-  policy()->OnHighEfficiencyModeChanged(true);
+  policy()->OnMemorySaverModeChanged(true);
 
   PageNodeImpl* page_node = CreateOtherPageNode();
   EXPECT_EQ(PageType::kUnknown, page_node->GetType());
@@ -359,7 +359,7 @@ TEST_F(MemorySaverModeTest, UnknownPageNodeNeverAddedToMap) {
   // This case will be using a different page node, so make the default one
   // visible so it's not discarded.
   page_node()->SetIsVisible(true);
-  policy()->OnHighEfficiencyModeChanged(true);
+  policy()->OnMemorySaverModeChanged(true);
 
   PageNodeImpl* page_node = CreateOtherPageNode();
   EXPECT_EQ(PageType::kUnknown, page_node->GetType());
@@ -375,7 +375,7 @@ TEST_F(MemorySaverModeTest, PageNodeDiscardedIfTypeChanges) {
   // This case will be using a different page node, so make the default one
   // visible so it's not discarded.
   page_node()->SetIsVisible(true);
-  policy()->OnHighEfficiencyModeChanged(true);
+  policy()->OnMemorySaverModeChanged(true);
 
   PageNodeImpl* page_node = CreateOtherPageNode();
   EXPECT_EQ(PageType::kUnknown, page_node->GetType());
@@ -394,7 +394,7 @@ TEST_F(MemorySaverModeTest,
        DiscardAfterTimeForCurrentModeIfNumRevisitsUnderMax) {
   page_node()->SetType(PageType::kTab);
   page_node()->SetIsVisible(true);
-  policy()->OnHighEfficiencyModeChanged(true);
+  policy()->OnMemorySaverModeChanged(true);
 
   base::test::ScopedFeatureList feature_list;
   // 1 is "conservative, so 6 hours and max_num_revisits == 5"
@@ -418,7 +418,7 @@ TEST_F(MemorySaverModeTest,
 TEST_F(MemorySaverModeTest, DontDiscardIfAboveMaxNumRevisits) {
   page_node()->SetType(PageType::kTab);
   page_node()->SetIsVisible(true);
-  policy()->OnHighEfficiencyModeChanged(true);
+  policy()->OnMemorySaverModeChanged(true);
 
   base::test::ScopedFeatureList feature_list;
   // 1 is "conservative, so 6 hours and max_num_revisits == 5"

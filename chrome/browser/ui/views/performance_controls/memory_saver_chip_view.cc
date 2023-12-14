@@ -93,23 +93,23 @@ void MemorySaverChipView::UpdateImpl() {
       MemorySaverChipTabHelper::FromWebContents(web_contents);
   auto chip_state = tab_helper->chip_state();
 
-  if (chip_state != high_efficiency::ChipState::HIDDEN &&
-      is_high_efficiency_mode_enabled_) {
+  if (chip_state != memory_saver::ChipState::HIDDEN &&
+      is_memory_saver_mode_enabled_) {
     if (!tab_helper->ShouldChipAnimate()) {
       return;
     }
 
     switch (chip_state) {
-      case high_efficiency::ChipState::EXPANDED_EDUCATION: {
+      case memory_saver::ChipState::EXPANDED_EDUCATION: {
         SetVisible(true);
         AnimateIn(IDS_MEMORY_SAVER_CHIP_LABEL);
         RecordMemorySaverChipState(MemorySaverChipState::kExpandedEducation);
         break;
       }
-      case high_efficiency::ChipState::EXPANDED_WITH_SAVINGS: {
+      case memory_saver::ChipState::EXPANDED_WITH_SAVINGS: {
         SetVisible(true);
         int const memory_savings =
-            high_efficiency::GetDiscardedMemorySavingsInBytes(web_contents);
+            memory_saver::GetDiscardedMemorySavingsInBytes(web_contents);
         std::u16string memory_savings_string = ui::FormatBytes(memory_savings);
         SetLabel(l10n_util::GetStringFUTF16(IDS_MEMORY_SAVER_CHIP_SAVINGS_LABEL,
                                             {memory_savings_string}),
@@ -120,14 +120,14 @@ void MemorySaverChipView::UpdateImpl() {
         RecordMemorySaverChipState(MemorySaverChipState::kExpandedWithSavings);
         break;
       }
-      case high_efficiency::ChipState::COLLAPSED_FROM_EXPANDED: {
+      case memory_saver::ChipState::COLLAPSED_FROM_EXPANDED: {
         SetVisible(true);
         UnpauseAnimation();
         AnimateOut();
         ResetSlideAnimation(false);
         break;
       }
-      case high_efficiency::ChipState::COLLAPSED: {
+      case memory_saver::ChipState::COLLAPSED: {
         SetVisible(true);
         SetAccessibleName(chip_accessible_label_);
         RecordMemorySaverChipState(MemorySaverChipState::kCollapsed);
@@ -186,7 +186,7 @@ views::BubbleDialogDelegate* MemorySaverChipView::GetBubble() const {
 void MemorySaverChipView::OnMemorySaverModeChanged() {
   auto* manager = performance_manager::user_tuning::
       UserPerformanceTuningManager::GetInstance();
-  is_high_efficiency_mode_enabled_ = manager->IsMemorySaverModeActive();
+  is_memory_saver_mode_enabled_ = manager->IsMemorySaverModeActive();
 }
 
 BEGIN_METADATA(MemorySaverChipView, PageActionIconView)

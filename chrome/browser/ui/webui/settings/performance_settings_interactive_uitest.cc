@@ -163,13 +163,13 @@ IN_PROC_BROWSER_TEST_F(PerformanceSettingsInteractiveTest,
       CheckJsResultAt(kPerformanceSettingsPage, kMemorySaverToggleQuery,
                       kCheckJsElementIsChecked),
 
-      // Turn Off High Efficiency Mode
+      // Turn Off Memory Saver Mode
       ClickElement(kPerformanceSettingsPage, kMemorySaverToggleQuery),
       WaitForButtonStateChange(kPerformanceSettingsPage,
                                kMemorySaverToggleQuery, false),
       CheckMemorySaverModePrefState(MemorySaverModeState::kDisabled),
 
-      // Turn High Efficiency Mode back on
+      // Turn Memory Saver Mode back on
       ClickElement(kPerformanceSettingsPage, kMemorySaverToggleQuery),
       WaitForButtonStateChange(kPerformanceSettingsPage,
                                kMemorySaverToggleQuery, true),
@@ -179,22 +179,22 @@ IN_PROC_BROWSER_TEST_F(PerformanceSettingsInteractiveTest,
 IN_PROC_BROWSER_TEST_F(PerformanceSettingsInteractiveTest,
                        MemorySaverLearnMoreLinkNavigates) {
   DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kLearnMorePage);
-  const DeepQuery high_efficiency_learn_more = {"settings-ui",
-                                                "settings-main",
-                                                "settings-basic-page",
-                                                "settings-performance-page",
-                                                "settings-toggle-button",
-                                                "a#learn-more"};
+  const DeepQuery memory_saver_learn_more = {"settings-ui",
+                                             "settings-main",
+                                             "settings-basic-page",
+                                             "settings-performance-page",
+                                             "settings-toggle-button",
+                                             "a#learn-more"};
 
   RunTestSequence(
       InstrumentTab(kPerformanceSettingsPage),
       NavigateWebContents(kPerformanceSettingsPage,
                           GURL(chrome::kChromeUIPerformanceSettingsURL)),
       InstrumentNextTab(kLearnMorePage),
-      ClickElement(kPerformanceSettingsPage, high_efficiency_learn_more),
+      ClickElement(kPerformanceSettingsPage, memory_saver_learn_more),
       WaitForShow(kLearnMorePage), CheckTabCount(2),
       WaitForWebContentsReady(kLearnMorePage,
-                              GURL(chrome::kHighEfficiencyModeLearnMoreUrl)));
+                              GURL(chrome::kMemorySaverModeLearnMoreUrl)));
 }
 
 IN_PROC_BROWSER_TEST_F(PerformanceSettingsInteractiveTest,
@@ -209,14 +209,14 @@ IN_PROC_BROWSER_TEST_F(PerformanceSettingsInteractiveTest,
       CheckJsResultAt(kPerformanceSettingsPage, kMemorySaverToggleQuery,
                       kCheckJsElementIsChecked),
 
-      // Turn Off High Efficiency Mode
+      // Turn Off Memory Saver Mode
       ClickElement(kPerformanceSettingsPage, kMemorySaverToggleQuery),
       WaitForButtonStateChange(kPerformanceSettingsPage,
                                kMemorySaverToggleQuery, false),
       CheckMemorySaverModeLogged(MemorySaverModeState::kDisabled, 1,
                                  histogram_tester),
 
-      // Turn High Efficiency Mode back on
+      // Turn Memory Saver Mode back on
       ClickElement(kPerformanceSettingsPage, kMemorySaverToggleQuery),
       WaitForButtonStateChange(kPerformanceSettingsPage,
                                kMemorySaverToggleQuery, true),
@@ -228,7 +228,7 @@ IN_PROC_BROWSER_TEST_F(PerformanceSettingsInteractiveTest,
 // TODO(http://b/281528238): reenable the test.
 IN_PROC_BROWSER_TEST_F(PerformanceSettingsInteractiveTest,
                        DISABLED_MemorySaverSendFeedbackDialogOpens) {
-  const DeepQuery high_efficiency_feedback = {
+  const DeepQuery memory_saver_feedback = {
       "settings-ui", "settings-main", "settings-basic-page",
       "settings-section#performanceSettingsSection", "cr-icon-button#feedback"};
 
@@ -236,7 +236,7 @@ IN_PROC_BROWSER_TEST_F(PerformanceSettingsInteractiveTest,
       InstrumentTab(kPerformanceSettingsPage),
       NavigateWebContents(kPerformanceSettingsPage,
                           GURL(chrome::kChromeUIPerformanceSettingsURL)),
-      ClickElement(kPerformanceSettingsPage, high_efficiency_feedback),
+      ClickElement(kPerformanceSettingsPage, memory_saver_feedback),
       InAnyContext(WaitForShow(FeedbackDialog::kFeedbackDialogForTesting)));
 }
 #endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
@@ -279,19 +279,19 @@ IN_PROC_BROWSER_TEST_F(PerformanceSettingsMultiStateModeInteractiveTest,
       CheckJsResultAt(kPerformanceSettingsPage, kMemorySaverToggleQuery,
                       kCheckJsElementIsChecked),
 
-      // Enable high efficiency mode to discard tabs based on a timer
+      // Enable memory saver mode to discard tabs based on a timer
       ClickElement(kPerformanceSettingsPage, kDiscardOnTimerQuery),
       WaitForButtonStateChange(kPerformanceSettingsPage, kDiscardOnTimerQuery,
                                true),
       CheckMemorySaverModePrefState(MemorySaverModeState::kEnabledOnTimer),
 
-      // Turn off high efficiency mode
+      // Turn off memory saver mode
       ClickElement(kPerformanceSettingsPage, kMemorySaverToggleQuery),
       WaitForButtonStateChange(kPerformanceSettingsPage,
                                kMemorySaverToggleQuery, false),
       CheckMemorySaverModePrefState(MemorySaverModeState::kDisabled),
 
-      // Turn high efficiency mode back on
+      // Turn memory saver mode back on
       ClickElement(kPerformanceSettingsPage, kMemorySaverToggleQuery),
       WaitForButtonStateChange(kPerformanceSettingsPage,
                                kMemorySaverToggleQuery, true),
@@ -314,14 +314,14 @@ IN_PROC_BROWSER_TEST_F(PerformanceSettingsMultiStateModeInteractiveTest,
       CheckJsResultAt(kPerformanceSettingsPage, kMemorySaverToggleQuery,
                       kCheckJsElementIsChecked),
 
-      // Turn Off High Efficiency Mode
+      // Turn Off Memory Saver Mode
       ClickElement(kPerformanceSettingsPage, kMemorySaverToggleQuery),
       WaitForButtonStateChange(kPerformanceSettingsPage,
                                kMemorySaverToggleQuery, false),
       CheckMemorySaverModeLogged(MemorySaverModeState::kDisabled, 1,
                                  histogram_tester),
 
-      // Turn High Efficiency Mode back on
+      // Turn Memory Saver Mode back on
       ClickElement(kPerformanceSettingsPage, kMemorySaverToggleQuery),
       WaitForButtonStateChange(kPerformanceSettingsPage,
                                kMemorySaverToggleQuery, true),
@@ -333,14 +333,14 @@ IN_PROC_BROWSER_TEST_F(PerformanceSettingsMultiStateModeInteractiveTest,
       WaitForIronListCollapseStateChange(kPerformanceSettingsPage,
                                          iron_collapse),
 
-      // Change high efficiency setting to discard tabs based on timer
+      // Change memory saver setting to discard tabs based on timer
       ClickElement(kPerformanceSettingsPage, kDiscardOnTimerQuery),
       WaitForButtonStateChange(kPerformanceSettingsPage, kDiscardOnTimerQuery,
                                true),
       CheckMemorySaverModeLogged(MemorySaverModeState::kEnabledOnTimer, 1,
                                  histogram_tester),
 
-      // Change high efficiency setting to discard tabs based on usage
+      // Change memory saver setting to discard tabs based on usage
       ClickElement(kPerformanceSettingsPage, kDiscardOnUsageQuery),
       WaitForButtonStateChange(kPerformanceSettingsPage, kDiscardOnUsageQuery,
                                true),
@@ -392,11 +392,11 @@ IN_PROC_BROWSER_TEST_F(PerformanceSettingsMultiStateModeInteractiveTest,
           base::ReplaceStringPlaceholders("(el) => { el.value = $1}",
                                           {discard_timer_value}, nullptr)),
 
-      // Turn off high efficiency mode
+      // Turn off memory saver mode
       ClickElement(kPerformanceSettingsPage, kMemorySaverToggleQuery),
       WaitForButtonStateChange(kPerformanceSettingsPage,
                                kMemorySaverToggleQuery, false),
-      // Turn high efficiency mode back on
+      // Turn memory saver mode back on
       ClickElement(kPerformanceSettingsPage, kMemorySaverToggleQuery),
       WaitForIronListCollapseStateChange(kPerformanceSettingsPage,
                                          iron_collapse),

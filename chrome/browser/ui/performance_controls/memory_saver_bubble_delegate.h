@@ -11,7 +11,7 @@
 #include "chrome/browser/ui/performance_controls/performance_controls_metrics.h"
 #include "ui/base/models/dialog_model.h"
 
-// This class is the delegate for the high efficiency bubble dialog that handles
+// This class is the delegate for the memory saver bubble dialog that handles
 // the events raised from the dialog.
 class MemorySaverBubbleDelegate : public ui::DialogModelDelegate {
  public:

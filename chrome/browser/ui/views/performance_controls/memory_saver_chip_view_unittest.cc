@@ -112,12 +112,12 @@ class MemorySaverChipViewTest : public TestWithBrowserView {
 
   void SetChipExpandedCount(int count) {
     browser_view()->browser()->profile()->GetPrefs()->SetInteger(
-        prefs::kHighEfficiencyChipExpandedCount, count);
+        prefs::kMemorySaverChipExpandedCount, count);
   }
 
   void SetChipExpandedTimeToNow() {
     browser_view()->browser()->profile()->GetPrefs()->SetTime(
-        prefs::kLastHighEfficiencyChipExpandedTimestamp, base::Time::Now());
+        prefs::kLastMemorySaverChipExpandedTimestamp, base::Time::Now());
   }
 
   PageActionIconView* GetPageActionIconView() {
@@ -155,7 +155,7 @@ TEST_F(MemorySaverChipViewTest,
   EXPECT_FALSE(GetPageActionIconView()->GetVisible());
 }
 
-// If a discard is triggered when the user doesn't have high efficiency mode
+// If a discard is triggered when the user doesn't have memory saver mode
 // enabled, we don't show the chip.
 TEST_F(MemorySaverChipViewTest, ShouldNotShowWhenPrefIsFalse) {
   SetHighEfficiencyModeEnabled(false);
@@ -382,10 +382,10 @@ TEST_F(MemorySaverChipViewWithPerformanceSidePanelTest, OpensSidePanel) {
 
   ASSERT_FALSE(browser_view()->unified_side_panel()->GetVisible());
 
-  PageActionIconView* high_efficiency_chip = GetPageActionIconView();
+  PageActionIconView* memory_saver_chip = GetPageActionIconView();
   ui::MouseEvent e(ui::ET_MOUSE_PRESSED, gfx::Point(), gfx::Point(),
                    ui::EventTimeForNow(), 0, 0);
-  views::test::ButtonTestApi test_api(high_efficiency_chip);
+  views::test::ButtonTestApi test_api(memory_saver_chip);
   test_api.NotifyClick(e);
 
   ASSERT_TRUE(browser_view()->unified_side_panel()->GetVisible());

@@ -5,12 +5,12 @@
 #ifndef CHROME_BROWSER_UI_PERFORMANCE_CONTROLS_MEMORY_SAVER_BUBBLE_OBSERVER_H_
 #define CHROME_BROWSER_UI_PERFORMANCE_CONTROLS_MEMORY_SAVER_BUBBLE_OBSERVER_H_
 
-// This observer interface for the high efficiency bubble dialog.
+// This observer interface for the memory saver bubble dialog.
 class MemorySaverBubbleObserver {
  public:
-  // Called when the high efficiency dialog is opened.
+  // Called when the memory saver dialog is opened.
   virtual void OnBubbleShown() = 0;
-  // Called when the high efficiency dialog is closed.
+  // Called when the memory saver dialog is closed.
   virtual void OnBubbleHidden() = 0;
 
  protected:

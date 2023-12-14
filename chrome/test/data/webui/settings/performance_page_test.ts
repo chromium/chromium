@@ -16,7 +16,7 @@ import {eventToPromise} from 'chrome://webui-test/test_util.js';
 import {TestPerformanceBrowserProxy} from './test_performance_browser_proxy.js';
 import {TestPerformanceMetricsProxy} from './test_performance_metrics_proxy.js';
 
-const highEfficiencyModeDummyPrefs = {
+const memorySaverModeMockPrefs = {
   high_efficiency_mode: {
     state: {
       type: chrome.settingsPrivate.PrefType.NUMBER,
@@ -30,10 +30,10 @@ const highEfficiencyModeDummyPrefs = {
 };
 
 /**
- * Constructs dummy prefs for tab discarding. Needs to be a function so that
+ * Constructs mock prefs for tab discarding. Needs to be a function so that
  * list pref values are recreated and not shared between test suites.
  */
-function tabDiscardingDummyPrefs(): Record<
+function tabDiscardingMockPrefs(): Record<
     string, Record<string, Omit<chrome.settingsPrivate.PrefObject, 'key'>>> {
   return {
     tab_discarding: {
@@ -63,8 +63,8 @@ suite('PerformancePage', function() {
     performancePage = document.createElement('settings-performance-page');
     performancePage.set('prefs', {
       performance_tuning: {
-        ...highEfficiencyModeDummyPrefs,
-        ...tabDiscardingDummyPrefs(),
+        ...memorySaverModeMockPrefs,
+        ...tabDiscardingMockPrefs(),
       },
     });
     document.body.appendChild(performancePage);
@@ -139,8 +139,8 @@ suite('PerformancePageMultistate', function() {
     performancePage = document.createElement('settings-performance-page');
     performancePage.set('prefs', {
       performance_tuning: {
-        ...highEfficiencyModeDummyPrefs,
-        ...tabDiscardingDummyPrefs(),
+        ...memorySaverModeMockPrefs,
+        ...tabDiscardingMockPrefs(),
       },
     });
     document.body.appendChild(performancePage);
@@ -257,7 +257,7 @@ suite('TabDiscardExceptionList', function() {
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
     performancePage = document.createElement('settings-performance-page');
     performancePage.set('prefs', {
-      performance_tuning: tabDiscardingDummyPrefs(),
+      performance_tuning: tabDiscardingMockPrefs(),
     });
     document.body.appendChild(performancePage);
     flush();

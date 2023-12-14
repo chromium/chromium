@@ -100,20 +100,20 @@ TabRendererData TabRendererData::FromTabInModel(const TabStripModel* model,
       entry && favicon::ShouldThemifyFaviconForEntry(entry);
 
   std::optional<mojom::LifecycleUnitDiscardReason> discard_reason =
-      high_efficiency::GetDiscardReason(contents);
+      memory_saver::GetDiscardReason(contents);
 
   // Only show discard status for tabs that were proactively discarded to
   // prevent confusion to users on why a tab was discarded. Also, the favicon
   // discard animation may use resources so the animation should be limited
   // to proactive discards to prevent performance issues.
   data.should_show_discard_status =
-      high_efficiency::IsURLSupported(contents->GetURL()) &&
+      memory_saver::IsURLSupported(contents->GetURL()) &&
       contents->WasDiscarded() && discard_reason.has_value() &&
       discard_reason.value() == mojom::LifecycleUnitDiscardReason::PROACTIVE;
 
   if (contents->WasDiscarded()) {
     data.discarded_memory_savings_in_bytes =
-        high_efficiency::GetDiscardedMemorySavingsInBytes(contents);
+        memory_saver::GetDiscardedMemorySavingsInBytes(contents);
   }
 
   const auto* const resource_tab_helper =

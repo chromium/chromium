@@ -152,7 +152,7 @@ void MetricsProviderDesktop::Initialize() {
 void MetricsProviderDesktop::ProvideCurrentSessionData(
     metrics::ChromeUserMetricsExtension* uma_proto) {
   // It's valid for this to be called when `initialized_` is false if the finch
-  // features controlling battery saver and high efficiency are disabled.
+  // features controlling battery saver and memory saver are disabled.
   // TODO(crbug.com/1348590): CHECK(initialized_) when the features are enabled
   // and removed.
   base::UmaHistogramEnumeration("PerformanceManager.UserTuning.EfficiencyMode",

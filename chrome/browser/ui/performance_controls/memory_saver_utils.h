@@ -10,7 +10,7 @@
 #include "content/public/browser/web_contents.h"
 #include "url/gurl.h"
 
-namespace high_efficiency {
+namespace memory_saver {
 
 // Returns whether |url| supports showing discard indicators
 bool IsURLSupported(GURL url);
@@ -29,6 +29,6 @@ void AddSiteToExceptionsList(PrefService* pref_service,
 // Returns how much memory was saved through discarding `contents`
 uint64_t GetDiscardedMemorySavingsInBytes(content::WebContents* contents);
 
-}  // namespace high_efficiency
+}  // namespace memory_saver
 
 #endif  // CHROME_BROWSER_UI_PERFORMANCE_CONTROLS_MEMORY_SAVER_UTILS_H_

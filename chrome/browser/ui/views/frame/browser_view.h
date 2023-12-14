@@ -1270,7 +1270,7 @@ class BrowserView : public BrowserWindow,
   OnLinkOpeningFromGestureCallbackList link_opened_from_gesture_callbacks_;
 
   std::unique_ptr<MemorySaverOptInIPHController>
-      high_efficiency_opt_in_iph_controller_;
+      memory_saver_opt_in_iph_controller_;
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   // |loading_animation_tracker_| is used to measure animation smoothness for

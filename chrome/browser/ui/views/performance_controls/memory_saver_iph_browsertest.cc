@@ -76,7 +76,7 @@ class MemorySaverHelpPromoTest : public InProcessBrowserTest {
   feature_engagement::test::ScopedIphFeatureList iph_features_;
 };
 
-// Check that the high efficiency mode in-product help promo is shown when
+// Check that the memory saver mode in-product help promo is shown when
 // a tab threshold is reached and dismisses correctly when the app menu
 // button is pushed
 IN_PROC_BROWSER_TEST_F(MemorySaverHelpPromoTest, ShowPromoOnTabThreshold) {
@@ -93,8 +93,8 @@ IN_PROC_BROWSER_TEST_F(MemorySaverHelpPromoTest, ShowPromoOnTabThreshold) {
   EXPECT_FALSE(promo_active);
 }
 
-// Confirm that High Efficiency mode is enabled when the custom action
-// button for high efficiency mode is clicked
+// Confirm that Memory Saver mode is enabled when the custom action
+// button for memory saver mode is clicked
 IN_PROC_BROWSER_TEST_F(MemorySaverHelpPromoTest, PromoCustomActionClicked) {
   EXPECT_TRUE(performance_manager::user_tuning::UserPerformanceTuningManager::
                   GetInstance()
@@ -120,7 +120,7 @@ IN_PROC_BROWSER_TEST_F(MemorySaverHelpPromoTest, PromoCustomActionClicked) {
                       ->IsMemorySaverModeActive());
 }
 
-// Check that the performance menu item is alerted when the high efficiency
+// Check that the performance menu item is alerted when the memory saver
 // promo is shown and the app menu button is clicked
 IN_PROC_BROWSER_TEST_F(MemorySaverHelpPromoTest, AlertMenuItemWhenPromoShown) {
   TriggerMemorySaverPromo();

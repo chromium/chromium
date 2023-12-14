@@ -28,7 +28,7 @@ class MetricsProviderDesktop : public ::metrics::MetricsProvider,
   enum class EfficiencyMode {
     // No efficiency mode for the entire upload window
     kNormal = 0,
-    // In high efficiency mode for the entire upload window
+    // In memory saver mode for the entire upload window
     kHighEfficiency = 1,
     // In battery saver mode for the entire upload window
     kBatterySaver = 2,

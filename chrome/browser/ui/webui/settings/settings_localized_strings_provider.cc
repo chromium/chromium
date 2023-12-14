@@ -713,19 +713,19 @@ void AddPerformanceStrings(content::WebUIDataSource* html_source) {
       {"memoryPageTitle", IDS_SETTINGS_MEMORY_PAGE_TITLE},
       {"speedPageTitle", IDS_SETTINGS_SPEED_PAGE_TITLE},
       {"memorySaverModeLabel",
-       IDS_SETTINGS_PERFORMANCE_HIGH_EFFICIENCY_MODE_SETTING},
+       IDS_SETTINGS_PERFORMANCE_MEMORY_SAVER_MODE_SETTING},
       {"memorySaverModeDescription",
-       IDS_SETTINGS_PERFORMANCE_HIGH_EFFICIENCY_MODE_SETTING_DESCRIPTION},
+       IDS_SETTINGS_PERFORMANCE_MEMORY_SAVER_MODE_SETTING_DESCRIPTION},
       {"memorySaverModeHeuristicsLabel",
-       IDS_SETTINGS_PERFORMANCE_HIGH_EFFICIENCY_MODE_HEURISTICS_LABEL},
+       IDS_SETTINGS_PERFORMANCE_MEMORY_SAVER_MODE_HEURISTICS_LABEL},
       {"memorySaverModeRecommendedBadge",
-       IDS_SETTINGS_PERFORMANCE_HIGH_EFFICIENCY_MODE_RECOMMENDED_BADGE},
+       IDS_SETTINGS_PERFORMANCE_MEMORY_SAVER_MODE_RECOMMENDED_BADGE},
       {"memorySaverModeOnTimerLabel",
-       IDS_SETTINGS_PERFORMANCE_HIGH_EFFICIENCY_MODE_ON_TIMER_LABEL},
+       IDS_SETTINGS_PERFORMANCE_MEMORY_SAVER_MODE_ON_TIMER_LABEL},
       {"memorySaverModeRadioGroupAriaLabel",
-       IDS_SETTINGS_PERFORMANCE_HIGH_EFFICIENCY_MODE_RADIO_GROUP_ARIA_LABEL},
+       IDS_SETTINGS_PERFORMANCE_MEMORY_SAVER_MODE_RADIO_GROUP_ARIA_LABEL},
       {"memorySaverChooseDiscardTimeAriaLabel",
-       IDS_SETTINGS_PERFORMANCE_HIGH_EFFICIENCY_MODE_CHOOSE_DISCARD_TIME_ARIA_LABEL},
+       IDS_SETTINGS_PERFORMANCE_MEMORY_SAVER_MODE_CHOOSE_DISCARD_TIME_ARIA_LABEL},
       {"batteryPageTitle", IDS_SETTINGS_BATTERY_PAGE_TITLE},
       {"batterySaverModeLabel",
        IDS_SETTINGS_PERFORMANCE_BATTERY_SAVER_MODE_SETTING},
@@ -812,10 +812,10 @@ void AddPerformanceStrings(content::WebUIDataSource* html_source) {
       "tabDiscardingExceptionsAddDialogHelp",
       l10n_util::GetStringFUTF16(
           IDS_SETTINGS_PERFORMANCE_TAB_DISCARDING_EXCEPTIONS_ADD_DIALOG_HELP,
-          chrome::kHighEfficiencyModeTabDiscardingHelpUrl));
+          chrome::kMemorySaverModeTabDiscardingHelpUrl));
 
   html_source->AddString("memorySaverLearnMoreUrl",
-                         chrome::kHighEfficiencyModeLearnMoreUrl);
+                         chrome::kMemorySaverModeLearnMoreUrl);
   html_source->AddString("batterySaverLearnMoreUrl",
                          chrome::kBatterySaverModeLearnMoreUrl);
   html_source->AddString("preloadingLearnMoreUrl",

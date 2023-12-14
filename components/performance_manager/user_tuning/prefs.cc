@@ -12,10 +12,10 @@
 namespace performance_manager::user_tuning::prefs {
 
 void RegisterLocalStatePrefs(PrefRegistrySimple* registry) {
-  registry->RegisterBooleanPref(kHighEfficiencyModeEnabled, false);
+  registry->RegisterBooleanPref(kMemorySaverModeEnabled, false);
   registry->RegisterIntegerPref(
-      kHighEfficiencyModeTimeBeforeDiscardInMinutes,
-      kDefaultHighEfficiencyModeTimeBeforeDiscardInMinutes);
+      kMemorySaverModeTimeBeforeDiscardInMinutes,
+      kDefaultMemorySaverModeTimeBeforeDiscardInMinutes);
   registry->RegisterIntegerPref(
       kMemorySaverModeState, static_cast<int>(MemorySaverModeState::kDisabled));
   registry->RegisterIntegerPref(
@@ -42,14 +42,14 @@ MemorySaverModeState GetCurrentMemorySaverModeState(PrefService* pref_service) {
   return static_cast<MemorySaverModeState>(state);
 }
 
-base::TimeDelta GetCurrentHighEfficiencyModeTimeBeforeDiscard(
+base::TimeDelta GetCurrentMemorySaverModeTimeBeforeDiscard(
     PrefService* pref_service) {
   int time_before_discard_in_minutes =
-      pref_service->GetInteger(kHighEfficiencyModeTimeBeforeDiscardInMinutes);
+      pref_service->GetInteger(kMemorySaverModeTimeBeforeDiscardInMinutes);
   if (time_before_discard_in_minutes < 0) {
-    pref_service->ClearPref(kHighEfficiencyModeTimeBeforeDiscardInMinutes);
+    pref_service->ClearPref(kMemorySaverModeTimeBeforeDiscardInMinutes);
     time_before_discard_in_minutes =
-        pref_service->GetInteger(kHighEfficiencyModeTimeBeforeDiscardInMinutes);
+        pref_service->GetInteger(kMemorySaverModeTimeBeforeDiscardInMinutes);
   }
 
   return base::Minutes(time_before_discard_in_minutes);
@@ -68,18 +68,18 @@ BatterySaverModeState GetCurrentBatterySaverModeState(
   return static_cast<BatterySaverModeState>(state);
 }
 
-void MigrateHighEfficiencyModePref(PrefService* pref_service) {
+void MigrateMemorySaverModePref(PrefService* pref_service) {
   const PrefService::Preference* state_pref =
       pref_service->FindPreference(kMemorySaverModeState);
   if (!state_pref->IsDefaultValue()) {
     // The user has changed the new pref, no migration needed. Clear the old
     // pref because it won't be used anymore.
-    pref_service->ClearPref(kHighEfficiencyModeEnabled);
+    pref_service->ClearPref(kMemorySaverModeEnabled);
     return;
   }
 
   const PrefService::Preference* bool_pref =
-      pref_service->FindPreference(kHighEfficiencyModeEnabled);
+      pref_service->FindPreference(kMemorySaverModeEnabled);
 
   bool enabled = bool_pref->GetValue()->GetBool();
   int equivalent_int_pref =
@@ -91,7 +91,7 @@ void MigrateHighEfficiencyModePref(PrefService* pref_service) {
     // the new pref.
     pref_service->SetInteger(kMemorySaverModeState, equivalent_int_pref);
     // Clear the old pref because it won't be used anymore.
-    pref_service->ClearPref(kHighEfficiencyModeEnabled);
+    pref_service->ClearPref(kMemorySaverModeEnabled);
   }
 }
 

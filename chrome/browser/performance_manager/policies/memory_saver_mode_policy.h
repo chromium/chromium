@@ -16,7 +16,7 @@
 namespace performance_manager::policies {
 
 // This policy is responsible for discarding tabs after they have been
-// backgrounded for a certain amount of time, when High Efficiency Mode is
+// backgrounded for a certain amount of time, when Memory Saver Mode is
 // enabled by the user.
 class MemorySaverModePolicy : public GraphOwned,
                                  public PageNode::ObserverDefaultImpl,
@@ -46,11 +46,11 @@ class MemorySaverModePolicy : public GraphOwned,
   void OnPassedToGraph(Graph* graph) override;
   void OnTakenFromGraph(Graph* graph) override;
 
-  void OnHighEfficiencyModeChanged(bool enabled);
+  void OnMemorySaverModeChanged(bool enabled);
   base::TimeDelta GetTimeBeforeDiscardForTesting() const;
   void SetTimeBeforeDiscard(base::TimeDelta time_before_discard);
 
-  // Returns true if High Efficiency mode is enabled, false otherwise. Useful to
+  // Returns true if Memory Saver mode is enabled, false otherwise. Useful to
   // get the state of the mode from the Performance Manager sequence.
   bool IsHighEfficiencyDiscardingEnabled() const;
 

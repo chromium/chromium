@@ -3869,14 +3869,16 @@ inline constexpr char kConsumerAutoUpdateToggle[] =
 #endif
 
 #if !BUILDFLAG(IS_ANDROID)
-// An integer count of how many times the user has seen the high efficiency mode
-// page action chip in the expanded size.
-inline constexpr char kHighEfficiencyChipExpandedCount[] =
+// An integer count of how many times the user has seen the memory saver mode
+// page action chip in the expanded size. While the feature was renamed to
+// "Memory Saver" the pref cannot be changed without migration.
+inline constexpr char kMemorySaverChipExpandedCount[] =
     "high_efficiency.chip_expanded_count";
 
-// Stores the timestamp of the last time the high efficiency chip was shown
-// expanded to highlight memory savings.
-inline constexpr char kLastHighEfficiencyChipExpandedTimestamp[] =
+// Stores the timestamp of the last time the memory saver chip was shown
+// expanded to highlight memory savings. While the feature was renamed to
+// "Memory Saver" the pref cannot be changed without migration.
+inline constexpr char kLastMemorySaverChipExpandedTimestamp[] =
     "high_efficiency.last_chip_expanded_timestamp";
 
 // A boolean indicating whether the price track first user experience bubble

@@ -41,9 +41,9 @@ void MemorySaverChipTabHelper::OnVisibilityChanged(
     content::Visibility visibility) {
   if (visibility == content::Visibility::HIDDEN) {
     was_rendered_ = false;
-    if (chip_state_ == high_efficiency::ChipState::EXPANDED_WITH_SAVINGS ||
-        chip_state_ == high_efficiency::ChipState::EXPANDED_EDUCATION) {
-      chip_state_ = high_efficiency::ChipState::COLLAPSED_FROM_EXPANDED;
+    if (chip_state_ == memory_saver::ChipState::EXPANDED_WITH_SAVINGS ||
+        chip_state_ == memory_saver::ChipState::EXPANDED_EDUCATION) {
+      chip_state_ = memory_saver::ChipState::COLLAPSED_FROM_EXPANDED;
     }
   }
 }
@@ -69,13 +69,13 @@ bool MemorySaverChipTabHelper::ComputeShouldHighlightMemorySavings() {
   }
 
   bool const savings_over_threshold =
-      static_cast<int>(high_efficiency::GetDiscardedMemorySavingsInBytes(
-          &GetWebContents())) >
+      static_cast<int>(
+          memory_saver::GetDiscardedMemorySavingsInBytes(&GetWebContents())) >
       performance_manager::features::kExpandedMemorySaverChipThresholdBytes
           .Get();
 
   base::Time const last_expanded_timestamp =
-      pref_service_->GetTime(prefs::kLastHighEfficiencyChipExpandedTimestamp);
+      pref_service_->GetTime(prefs::kLastMemorySaverChipExpandedTimestamp);
   bool const expanded_chip_not_shown_recently =
       (base::Time::Now() - last_expanded_timestamp) >
       performance_manager::features::kExpandedMemorySaverChipFrequency.Get();
@@ -92,7 +92,7 @@ bool MemorySaverChipTabHelper::ComputeShouldHighlightMemorySavings() {
 
   if (savings_over_threshold && expanded_chip_not_shown_recently &&
       tab_discard_time_over_threshold) {
-    pref_service_->SetTime(prefs::kLastHighEfficiencyChipExpandedTimestamp,
+    pref_service_->SetTime(prefs::kLastMemorySaverChipExpandedTimestamp,
                            base::Time::Now());
     return true;
   }
@@ -101,9 +101,9 @@ bool MemorySaverChipTabHelper::ComputeShouldHighlightMemorySavings() {
 
 bool MemorySaverChipTabHelper::ComputeShouldEducateAboutMemorySavings() {
   int times_rendered =
-      pref_service_->GetInteger(prefs::kHighEfficiencyChipExpandedCount);
+      pref_service_->GetInteger(prefs::kMemorySaverChipExpandedCount);
   if (times_rendered < kChipAnimationCount) {
-    pref_service_->SetInteger(prefs::kHighEfficiencyChipExpandedCount,
+    pref_service_->SetInteger(prefs::kMemorySaverChipExpandedCount,
                               times_rendered + 1);
     return true;
   }
@@ -112,24 +112,24 @@ bool MemorySaverChipTabHelper::ComputeShouldEducateAboutMemorySavings() {
 
 void MemorySaverChipTabHelper::ComputeChipState(
     content::NavigationHandle* navigation_handle) {
-  // This high efficiency chip only appears for eligible sites that have been
+  // This memory saver chip only appears for eligible sites that have been
   // proactively discarded.
   bool const was_discarded = navigation_handle->ExistingDocumentWasDiscarded();
   std::optional<mojom::LifecycleUnitDiscardReason> const discard_reason =
-      high_efficiency::GetDiscardReason(navigation_handle->GetWebContents());
+      memory_saver::GetDiscardReason(navigation_handle->GetWebContents());
   bool const is_site_supported =
-      high_efficiency::IsURLSupported(navigation_handle->GetURL());
+      memory_saver::IsURLSupported(navigation_handle->GetURL());
 
   if (!(was_discarded &&
         discard_reason == mojom::LifecycleUnitDiscardReason::PROACTIVE &&
         is_site_supported)) {
-    chip_state_ = high_efficiency::ChipState::HIDDEN;
+    chip_state_ = memory_saver::ChipState::HIDDEN;
   } else if (ComputeShouldEducateAboutMemorySavings()) {
-    chip_state_ = high_efficiency::ChipState::EXPANDED_EDUCATION;
+    chip_state_ = memory_saver::ChipState::EXPANDED_EDUCATION;
   } else if (ComputeShouldHighlightMemorySavings()) {
-    chip_state_ = high_efficiency::ChipState::EXPANDED_WITH_SAVINGS;
+    chip_state_ = memory_saver::ChipState::EXPANDED_WITH_SAVINGS;
   } else {
-    chip_state_ = high_efficiency::ChipState::COLLAPSED;
+    chip_state_ = memory_saver::ChipState::COLLAPSED;
   }
 }
 

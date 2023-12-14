@@ -1018,8 +1018,8 @@ BrowserView::BrowserView(std::unique_ptr<Browser> browser)
   }
 #endif
 
-  // High Efficiency mode is default off but is available to turn on
-  high_efficiency_opt_in_iph_controller_ =
+  // Memory Saver mode is default off but is available to turn on
+  memory_saver_opt_in_iph_controller_ =
       std::make_unique<MemorySaverOptInIPHController>(browser_.get());
 
   registrar_.Init(GetProfile()->GetPrefs());

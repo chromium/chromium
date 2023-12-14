@@ -17,7 +17,7 @@ class PrefRegistrySyncable;
 namespace performance_manager::user_tuning::prefs {
 
 // DEPRECATED: being replaced by kMemorySaverModeState
-inline constexpr char kHighEfficiencyModeEnabled[] =
+inline constexpr char kMemorySaverModeEnabled[] =
     "performance_tuning.high_efficiency_mode.enabled";
 
 enum class MemorySaverModeState {
@@ -29,10 +29,10 @@ enum class MemorySaverModeState {
 inline constexpr char kMemorySaverModeState[] =
     "performance_tuning.high_efficiency_mode.state";
 
-inline constexpr char kHighEfficiencyModeTimeBeforeDiscardInMinutes[] =
+inline constexpr char kMemorySaverModeTimeBeforeDiscardInMinutes[] =
     "performance_tuning.high_efficiency_mode.time_before_discard_in_minutes";
 
-constexpr int kDefaultHighEfficiencyModeTimeBeforeDiscardInMinutes = 120;
+constexpr int kDefaultMemorySaverModeTimeBeforeDiscardInMinutes = 120;
 
 enum class BatterySaverModeState {
   kDisabled = 0,
@@ -65,16 +65,16 @@ void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry);
 
 MemorySaverModeState GetCurrentMemorySaverModeState(PrefService* pref_service);
 
-base::TimeDelta GetCurrentHighEfficiencyModeTimeBeforeDiscard(
+base::TimeDelta GetCurrentMemorySaverModeTimeBeforeDiscard(
     PrefService* pref_service);
 
 BatterySaverModeState GetCurrentBatterySaverModeState(
     PrefService* pref_service);
 
-// This function migrates the old, boolean High Efficiency (Memory Saver)
-// preference to the new, integer one that represents a value of the
-// `MemorySaverModeState` enum. This is done once at startup.
-void MigrateHighEfficiencyModePref(PrefService* pref_service);
+// This function migrates the old, boolean Memory Saver preference to the new,
+// integer one that represents a value of the `MemorySaverModeState` enum. This
+// is done once at startup.
+void MigrateMemorySaverModePref(PrefService* pref_service);
 
 }  // namespace performance_manager::user_tuning::prefs
 

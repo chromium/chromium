@@ -114,7 +114,7 @@ views::BubbleDialogModelHost* MemorySaverBubbleView::ShowBubble(
   content::WebContents* web_contents =
       browser->tab_strip_model()->GetActiveWebContents();
   const uint64_t memory_savings =
-      high_efficiency::GetDiscardedMemorySavingsInBytes(web_contents);
+      memory_saver::GetDiscardedMemorySavingsInBytes(web_contents);
 
   ui::DialogModelLabel::TextReplacement memory_savings_text =
       ui::DialogModelLabel::CreatePlainText(ui::FormatBytes(memory_savings));
@@ -167,7 +167,7 @@ views::BubbleDialogModelHost* MemorySaverBubbleView::ShowBubble(
   if (base::FeatureList::IsEnabled(
           performance_manager::features::kDiscardExceptionsImprovements) &&
       !is_guest && !profile->IsIncognitoProfile()) {
-    const bool is_site_excluded = high_efficiency::IsSiteInExceptionsList(
+    const bool is_site_excluded = memory_saver::IsSiteInExceptionsList(
         profile->GetPrefs(), web_contents->GetURL().host());
     AddCancelButton(&dialog_model_builder, bubble_delegate, is_site_excluded);
   }

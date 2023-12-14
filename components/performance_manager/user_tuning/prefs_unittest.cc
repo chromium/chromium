@@ -20,18 +20,18 @@ class HighEfficiencyModePrefMigrationTest : public ::testing::Test {
 TEST_F(HighEfficiencyModePrefMigrationTest, NoChangeToUserSetNewPref) {
   // The old pref is set by the user, but so is the new pref so no migration
   // should happen.
-  pref_service_.SetBoolean(kHighEfficiencyModeEnabled, true);
+  pref_service_.SetBoolean(kMemorySaverModeEnabled, true);
   pref_service_.SetInteger(kMemorySaverModeState,
                            static_cast<int>(MemorySaverModeState::kDisabled));
 
-  MigrateHighEfficiencyModePref(&pref_service_);
+  MigrateMemorySaverModePref(&pref_service_);
 
   EXPECT_EQ(pref_service_.GetInteger(kMemorySaverModeState),
             static_cast<int>(MemorySaverModeState::kDisabled));
   // The old pref should be reset.
-  EXPECT_TRUE(pref_service_.FindPreference(kHighEfficiencyModeEnabled)
-                  ->IsDefaultValue());
-  EXPECT_FALSE(pref_service_.GetBoolean(kHighEfficiencyModeEnabled));
+  EXPECT_TRUE(
+      pref_service_.FindPreference(kMemorySaverModeEnabled)->IsDefaultValue());
+  EXPECT_FALSE(pref_service_.GetBoolean(kMemorySaverModeEnabled));
 }
 
 TEST_F(HighEfficiencyModePrefMigrationTest, BothPrefsDefaultNoMigration) {
@@ -43,7 +43,7 @@ TEST_F(HighEfficiencyModePrefMigrationTest, BothPrefsDefaultNoMigration) {
   EXPECT_TRUE(
       pref_service_.FindPreference(kMemorySaverModeState)->IsDefaultValue());
 
-  MigrateHighEfficiencyModePref(&pref_service_);
+  MigrateMemorySaverModePref(&pref_service_);
 
   // Both prefs were in the default state, no migration happens
   EXPECT_TRUE(
@@ -55,14 +55,14 @@ TEST_F(HighEfficiencyModePrefMigrationTest, BothPrefsDefaultNoMigration) {
 TEST_F(HighEfficiencyModePrefMigrationTest,
        MigrateDefaultNewPrefUserSetOldPrefEnabled) {
   // Set the old pref as-if set by the user.
-  pref_service_.SetBoolean(kHighEfficiencyModeEnabled, true);
+  pref_service_.SetBoolean(kMemorySaverModeEnabled, true);
 
   EXPECT_EQ(pref_service_.GetInteger(kMemorySaverModeState),
             static_cast<int>(MemorySaverModeState::kDisabled));
   EXPECT_TRUE(
       pref_service_.FindPreference(kMemorySaverModeState)->IsDefaultValue());
 
-  MigrateHighEfficiencyModePref(&pref_service_);
+  MigrateMemorySaverModePref(&pref_service_);
 
   EXPECT_FALSE(
       pref_service_.FindPreference(kMemorySaverModeState)->IsDefaultValue());
@@ -71,22 +71,22 @@ TEST_F(HighEfficiencyModePrefMigrationTest,
             static_cast<int>(MemorySaverModeState::kEnabledOnTimer));
 
   // The old pref should be reset.
-  EXPECT_TRUE(pref_service_.FindPreference(kHighEfficiencyModeEnabled)
-                  ->IsDefaultValue());
-  EXPECT_FALSE(pref_service_.GetBoolean(kHighEfficiencyModeEnabled));
+  EXPECT_TRUE(
+      pref_service_.FindPreference(kMemorySaverModeEnabled)->IsDefaultValue());
+  EXPECT_FALSE(pref_service_.GetBoolean(kMemorySaverModeEnabled));
 }
 
 TEST_F(HighEfficiencyModePrefMigrationTest,
        MigrateDefaultNewPrefUserSetOldPrefDisabled) {
   // Set the old pref as-if set by the user.
-  pref_service_.SetBoolean(kHighEfficiencyModeEnabled, false);
+  pref_service_.SetBoolean(kMemorySaverModeEnabled, false);
 
   EXPECT_EQ(pref_service_.GetInteger(kMemorySaverModeState),
             static_cast<int>(MemorySaverModeState::kDisabled));
   EXPECT_TRUE(
       pref_service_.FindPreference(kMemorySaverModeState)->IsDefaultValue());
 
-  MigrateHighEfficiencyModePref(&pref_service_);
+  MigrateMemorySaverModePref(&pref_service_);
 
   EXPECT_FALSE(
       pref_service_.FindPreference(kMemorySaverModeState)->IsDefaultValue());
@@ -95,9 +95,9 @@ TEST_F(HighEfficiencyModePrefMigrationTest,
             static_cast<int>(MemorySaverModeState::kDisabled));
 
   // The old pref should be reset.
-  EXPECT_TRUE(pref_service_.FindPreference(kHighEfficiencyModeEnabled)
-                  ->IsDefaultValue());
-  EXPECT_FALSE(pref_service_.GetBoolean(kHighEfficiencyModeEnabled));
+  EXPECT_TRUE(
+      pref_service_.FindPreference(kMemorySaverModeEnabled)->IsDefaultValue());
+  EXPECT_FALSE(pref_service_.GetBoolean(kMemorySaverModeEnabled));
 }
 
 }  // namespace performance_manager::user_tuning::prefs

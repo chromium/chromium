@@ -9,7 +9,7 @@
 #include "components/performance_manager/public/user_tuning/prefs.h"
 #include "content/public/common/url_constants.h"
 
-namespace high_efficiency {
+namespace memory_saver {
 
 bool IsURLSupported(GURL url) {
   return !url.SchemeIs(content::kChromeUIScheme);
@@ -58,4 +58,4 @@ uint64_t GetDiscardedMemorySavingsInBytes(content::WebContents* contents) {
                    1024;
 }
 
-}  //  namespace high_efficiency
+}  // namespace memory_saver
