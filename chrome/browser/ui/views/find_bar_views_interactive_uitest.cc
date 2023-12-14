@@ -177,40 +177,28 @@ class FindInPageTest : public InteractiveBrowserTest {
   }
 };
 
-// Flaky because the test server fails to start? See: http://crbug.com/96594.
-IN_PROC_BROWSER_TEST_F(LegacyFindInPageTest, CrashEscHandlers) {
-  ASSERT_TRUE(embedded_test_server()->Start());
+IN_PROC_BROWSER_TEST_F(FindInPageTest, CrashEscHandlers) {
+  const GURL page_a = embedded_test_server()->GetURL("/a.html");
+  const GURL page_b = embedded_test_server()->GetURL("/b.html");
 
-  // First we navigate to our test page (tab A).
-  GURL url = embedded_test_server()->GetURL(kSimplePage);
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
-
-  chrome::Find(browser());
-
-  // Open another tab (tab B).
-  chrome::AddSelectedTabWithURL(browser(), url, ui::PAGE_TRANSITION_TYPED);
-
-  chrome::Find(browser());
-  EXPECT_TRUE(IsViewFocused(browser(), VIEW_ID_FIND_IN_PAGE_TEXT_FIELD));
-
-  // Select tab A.
-  browser()->tab_strip_model()->ActivateTabAt(
-      0, TabStripUserGestureDetails(
-             TabStripUserGestureDetails::GestureType::kOther));
-
-  // Close tab B.
-  browser()->tab_strip_model()->CloseWebContentsAt(1,
-                                                   TabCloseTypes::CLOSE_NONE);
-
-  // Click on the location bar so that Find box loses focus.
-  ASSERT_NO_FATAL_FAILURE(ui_test_utils::ClickOnView(browser(),
-                                                     VIEW_ID_OMNIBOX));
-  // Check the location bar is focused.
-  EXPECT_TRUE(IsViewFocused(browser(), VIEW_ID_OMNIBOX));
-
-  // This used to crash until bug 1303709 was fixed.
-  ASSERT_TRUE(ui_test_utils::SendKeyPressSync(
-      browser(), ui::VKEY_ESCAPE, false, false, false, false));
+  RunTestSequence(
+      // Open tab A and show the Find bar.
+      InstrumentTab(kTabId), NavigateWebContents(kTabId, page_a), ShowFindBar(),
+      // Open tab B and show the Find bar.
+      AddInstrumentedTab(kTabBId, page_b), ShowFindBar(),
+      // Select tab A.
+      SelectTab(kTabStripElementId, 0), FlushEvents(),
+      // Close tab B.
+      Do([this]() {
+        browser()->tab_strip_model()->CloseWebContentsAt(
+            1, TabCloseTypes::CLOSE_NONE);
+      }),
+      // Set focus to the omnibox.
+      WithView(kOmniboxElementId,
+               [](views::View* view) { view->RequestFocus(); }),
+      CheckViewProperty(kOmniboxElementId, &views::View::HasFocus, true),
+      // This used to crash until bug 1303709 was fixed.
+      SendKeyPress(ui::VKEY_ESCAPE, false, false));
 }
 
 IN_PROC_BROWSER_TEST_F(LegacyFindInPageTest, NavigationByKeyEvent) {
@@ -462,7 +450,7 @@ IN_PROC_BROWSER_TEST_F(FindInPageTest, FocusRestoreOnTabSwitchDismiss) {
       InstrumentTab(kTabId), NavigateWebContents(kTabId, page_a), ShowFindBar(),
       EnsurePresent(FindBarView::kElementId),
       CheckViewProperty(FindBarView::kTextField, &views::View::HasFocus, true),
-      // // Open tab B.
+      // Open tab B.
       AddInstrumentedTab(kTabBId, page_b),
       EnsureNotPresent(FindBarView::kElementId),
       // Switch to tab A, the Find bar should get focus.
