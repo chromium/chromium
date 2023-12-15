@@ -1543,14 +1543,24 @@ AutofillSuggestionGenerator::GetSuggestionsForVirtualCardStandaloneCvc(
     suggestion.feature_for_iph =
         feature_engagement::kIPHAutofillVirtualCardCVCSuggestionFeature.name;
     SetCardArtURL(suggestion, credit_card, /*virtual_card_option=*/true);
-    suggestion.main_text.value =
+    // TODO(crbug.com/1511277): Create translation string for standalone CVC
+    // suggestion which includes spacing.
+    const std::u16string main_text =
         l10n_util::GetStringUTF16(
             IDS_AUTOFILL_VIRTUAL_CARD_STANDALONE_CVC_SUGGESTION_TITLE) +
         u" " +
-        CreditCard::GetObfuscatedStringForCardDigits(/*obfuscation_length=*/4,
+        CreditCard::GetObfuscatedStringForCardDigits(GetObfuscationLength(),
                                                      virtual_card_last_four);
-    suggestion.labels = {
-        {Suggestion::Text(credit_card.CardNameForAutofillDisplay())}};
+    if (IsKeyboardAccessoryEnabled()) {
+      // For keyboard accessory, we concatenate all the content to the
+      // `main_text` to prevent the suggestion descriptor from being cut off.
+      suggestion.main_text.value = base::StrCat(
+          {main_text, u"  ", credit_card.CardNameForAutofillDisplay()});
+    } else {
+      suggestion.main_text.value = main_text;
+      suggestion.labels = {
+          {Suggestion::Text(credit_card.CardNameForAutofillDisplay())}};
+    }
     suggestions.push_back(suggestion);
   }
   return suggestions;
