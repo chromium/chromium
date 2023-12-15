@@ -1700,6 +1700,7 @@
       name: "FetchLaterAPI",
       status: "experimental",
       origin_trial_feature_name: "FetchLaterAPI",
+      origin_trial_allows_third_party: true,
       base_feature: "FetchLaterAPI",
       // base_feature is meant as kill-switch. This runtime-enabled feature
       // should follow the Origin Trial unless explicitly overriden by Finch or
