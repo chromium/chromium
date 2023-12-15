@@ -31,8 +31,6 @@ WorkerDevToolsAgentHost* WorkerDevToolsAgentHost::GetFor(
 
 WorkerDevToolsAgentHost::WorkerDevToolsAgentHost(
     int process_id,
-    mojo::PendingRemote<blink::mojom::DevToolsAgent> agent_remote,
-    mojo::PendingReceiver<blink::mojom::DevToolsAgentHost> host_receiver,
     const GURL& url,
     const std::string& name,
     const base::UnguessableToken& devtools_worker_token,
@@ -54,9 +52,6 @@ WorkerDevToolsAgentHost::WorkerDevToolsAgentHost(
   // instead.
   AddRef();  // Self keep-alive while the worker agent is alive.
   NotifyCreated();
-
-  if (!base::FeatureList::IsEnabled(blink::features::kPlzDedicatedWorker))
-    SetRenderer(process_id, std::move(agent_remote), std::move(host_receiver));
 }
 
 WorkerDevToolsAgentHost::~WorkerDevToolsAgentHost() = default;
