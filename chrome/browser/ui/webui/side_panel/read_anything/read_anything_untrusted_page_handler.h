@@ -10,10 +10,12 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/safe_ref.h"
 #include "base/memory/weak_ptr.h"
+#include "chrome/browser/ui/side_panel/read_anything/read_anything_tab_helper.h"
 #include "chrome/browser/ui/tabs/tab_strip_model_observer.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/side_panel/read_anything/read_anything_coordinator.h"
 #include "chrome/browser/ui/views/side_panel/read_anything/read_anything_model.h"
+#include "chrome/browser/ui/views/side_panel/read_anything/read_anything_side_panel_controller.h"
 #include "chrome/common/accessibility/read_anything.mojom.h"
 #include "components/services/screen_ai/buildflags/buildflags.h"
 #include "content/public/browser/ax_event_notification_details.h"
@@ -69,6 +71,7 @@ class ReadAnythingUntrustedPageHandler
       public read_anything::mojom::UntrustedPageHandler,
       public ReadAnythingModel::Observer,
       public ReadAnythingCoordinator::Observer,
+      public ReadAnythingSidePanelController::Observer,
 #if BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
       public screen_ai::ScreenAIInstallState::Observer,
 #endif
@@ -134,6 +137,8 @@ class ReadAnythingUntrustedPageHandler
   void Activate(bool active) override;
   void OnCoordinatorDestroyed() override;
   void SetDefaultLanguageCode(const std::string& code) override;
+  // ReadAnythingSidePanelController::Observer:
+  void OnSidePanelControllerDestroyed() override;
 
   // TabStripModelObserver:
   void OnTabStripModelChanged(
@@ -158,7 +163,13 @@ class ReadAnythingUntrustedPageHandler
   // Logs the current visual settings values.
   void LogTextStyle();
 
+  // Adds this as an observer of the ReadAnythingSidePanelController tied to a
+  // WebContents.
+  void ObserveWebContentsSidePanelController(
+      content::WebContents* web_contents);
+
   raw_ptr<ReadAnythingCoordinator> coordinator_;
+  raw_ptr<ReadAnythingTabHelper> tab_helper_;
   const base::WeakPtr<Browser> browser_;
   const raw_ptr<content::WebUI> web_ui_;
   const std::map<std::string, ReadAnythingFont> font_map_ = {

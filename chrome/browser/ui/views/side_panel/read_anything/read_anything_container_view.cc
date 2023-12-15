@@ -9,16 +9,37 @@
 
 #include "chrome/browser/ui/views/side_panel/read_anything/read_anything_side_panel_web_view.h"
 #include "chrome/browser/ui/views/side_panel/read_anything/read_anything_toolbar_view.h"
+#include "ui/accessibility/accessibility_features.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/views/background.h"
 #include "ui/views/controls/separator.h"
 #include "ui/views/layout/flex_layout.h"
 
+// TODO(crbug.com/1439905): Remove unused constructor when the
+// ReadAnythingLocalSidePanel flag is removed.
 ReadAnythingContainerView::ReadAnythingContainerView(
     ReadAnythingCoordinator* coordinator,
     std::unique_ptr<ReadAnythingToolbarView> toolbar,
     std::unique_ptr<ReadAnythingSidePanelWebView> content)
     : coordinator_(std::move(coordinator)) {
+  Init(std::move(toolbar), std::move(content));
+  coordinator_->AddObserver(this);
+  coordinator_->AddModelObserver(this);
+}
+
+ReadAnythingContainerView::ReadAnythingContainerView(
+    ReadAnythingSidePanelController* controller,
+    std::unique_ptr<ReadAnythingToolbarView> toolbar,
+    std::unique_ptr<ReadAnythingSidePanelWebView> content)
+    : controller_(std::move(controller)) {
+  Init(std::move(toolbar), std::move(content));
+  controller_->AddObserver(this);
+  controller_->AddModelObserver(this);
+}
+
+void ReadAnythingContainerView::Init(
+    std::unique_ptr<ReadAnythingToolbarView> toolbar,
+    std::unique_ptr<ReadAnythingSidePanelWebView> content) {
   // Create and set a FlexLayout LayoutManager for this view, set background.
   auto layout = std::make_unique<views::FlexLayout>();
   layout->SetOrientation(views::LayoutOrientation::kVertical)
@@ -52,9 +73,6 @@ ReadAnythingContainerView::ReadAnythingContainerView(
   AddChildView(std::move(toolbar));
   separator_ = AddChildView(std::move(separator));
   AddChildView(std::move(content));
-
-  coordinator_->AddObserver(this);
-  coordinator_->AddModelObserver(this);
 }
 
 void ReadAnythingContainerView::OnReadAnythingThemeChanged(
@@ -76,14 +94,23 @@ void ReadAnythingContainerView::OnCoordinatorDestroyed() {
   coordinator_ = nullptr;
 }
 
-BEGIN_METADATA(ReadAnythingContainerView, views::View)
-END_METADATA
+void ReadAnythingContainerView::OnSidePanelControllerDestroyed() {
+  // When the side panel controller that created |this| is destroyed, clean up
+  // pointers.
+  controller_ = nullptr;
+}
 
 ReadAnythingContainerView::~ReadAnythingContainerView() {
-  // If |this| is being destroyed before the associated coordinator, then
-  // remove |this| as an observer.
-  if (coordinator_) {
+  // If |this| is being destroyed before the associated coordinator or side
+  // panel controller, then remove |this| as an observer.
+  if (features::IsReadAnythingLocalSidePanelEnabled() && controller_) {
+    controller_->RemoveObserver(this);
+    controller_->RemoveModelObserver(this);
+  } else if (coordinator_) {
     coordinator_->RemoveObserver(this);
     coordinator_->RemoveModelObserver(this);
   }
 }
+
+BEGIN_METADATA(ReadAnythingContainerView, views::View)
+END_METADATA

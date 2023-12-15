@@ -79,10 +79,16 @@ ReadAnythingUntrustedPageHandler::ReadAnythingUntrustedPageHandler(
   ax_action_handler_observer_.Observe(
       ui::AXActionHandlerRegistry::GetInstance());
 
-  coordinator_ = ReadAnythingCoordinator::FromBrowser(browser_.get());
-  if (coordinator_) {
-    coordinator_->AddObserver(this);
-    coordinator_->AddModelObserver(this);
+  if (features::IsReadAnythingLocalSidePanelEnabled()) {
+    auto* active_web_contents =
+        browser_->tab_strip_model()->GetActiveWebContents();
+    ObserveWebContentsSidePanelController(active_web_contents);
+  } else {
+    coordinator_ = ReadAnythingCoordinator::FromBrowser(browser_.get());
+    if (coordinator_) {
+      coordinator_->AddObserver(this);
+      coordinator_->AddModelObserver(this);
+    }
   }
 
   if (features::IsReadAnythingWebUIToolbarEnabled()) {
@@ -135,15 +141,18 @@ ReadAnythingUntrustedPageHandler::~ReadAnythingUntrustedPageHandler() {
   pdf_observer_.reset();
   LogTextStyle();
 
-  if (!coordinator_) {
-    return;
+  if (features::IsReadAnythingLocalSidePanelEnabled() && tab_helper_) {
+    // If |this| is destroyed before the |ReadAnythingSidePanelController|, then
+    // remove |this| from the observer lists. In the cases where the coordinator
+    // is destroyed first, these will have been destroyed before this call.
+    tab_helper_->RemovePageHandlerAsObserver(weak_factory_.GetWeakPtr());
+  } else if (coordinator_) {
+    // If |this| is destroyed before the |ReadAnythingCoordinator|, then remove
+    // |this| from the observer lists. In the cases where the coordinator is
+    // destroyed first, these will have been destroyed before this call.
+    coordinator_->RemoveObserver(this);
+    coordinator_->RemoveModelObserver(this);
   }
-
-  // If |this| is destroyed before the |ReadAnythingCoordinator|, then remove
-  // |this| from the observer lists. In the cases where the coordinator is
-  // destroyed first, these will have been destroyed before this call.
-  coordinator_->RemoveObserver(this);
-  coordinator_->RemoveModelObserver(this);
 }
 
 void ReadAnythingUntrustedPageHandler::PrimaryPageChanged() {
@@ -327,6 +336,10 @@ void ReadAnythingUntrustedPageHandler::OnCoordinatorDestroyed() {
   coordinator_ = nullptr;
 }
 
+void ReadAnythingUntrustedPageHandler::OnSidePanelControllerDestroyed() {
+  tab_helper_ = nullptr;
+}
+
 ///////////////////////////////////////////////////////////////////////////////
 // screen_ai::ScreenAIInstallState::Observer:
 ///////////////////////////////////////////////////////////////////////////////
@@ -367,7 +380,6 @@ void ReadAnythingUntrustedPageHandler::OnTabStripModelDestroyed(
     TabStripModel* tab_strip_model) {
   // If the TabStripModel is destroyed before |this|, remove |this| as an
   // observer.
-  DCHECK(browser_);
   tab_strip_model->RemoveObserver(this);
 }
 
@@ -385,6 +397,12 @@ void ReadAnythingUntrustedPageHandler::OnActiveWebContentsChanged() {
   content::WebContents* web_contents = nullptr;
   if (active_ && browser_) {
     web_contents = browser_->tab_strip_model()->GetActiveWebContents();
+  }
+
+  if (features::IsReadAnythingLocalSidePanelEnabled()) {
+    if (!tab_helper_ && web_contents) {
+      ObserveWebContentsSidePanelController(web_contents);
+    }
   }
 
   main_observer_ = std::make_unique<ReadAnythingWebContentsObserver>(
@@ -488,4 +506,12 @@ void ReadAnythingUntrustedPageHandler::EnablePDFContentAccessibility(
 
   // Trigger distillation.
   OnActiveAXTreeIDChanged(true);
+}
+
+void ReadAnythingUntrustedPageHandler::ObserveWebContentsSidePanelController(
+    content::WebContents* web_contents) {
+  tab_helper_ = ReadAnythingTabHelper::FromWebContents(web_contents);
+  if (tab_helper_) {
+    tab_helper_->AddPageHandlerAsObserver(weak_factory_.GetWeakPtr());
+  }
 }

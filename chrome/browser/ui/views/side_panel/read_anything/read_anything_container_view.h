@@ -9,6 +9,7 @@
 
 #include "chrome/browser/ui/views/side_panel/read_anything/read_anything_coordinator.h"
 #include "chrome/browser/ui/views/side_panel/read_anything/read_anything_model.h"
+#include "chrome/browser/ui/views/side_panel/read_anything/read_anything_side_panel_controller.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/controls/separator.h"
 #include "ui/views/view.h"
@@ -21,16 +22,24 @@ class ReadAnythingSidePanelWebView;
 //
 //  A class that holds all of the Read Anything UI. This includes a toolbar,
 //  which is a View, and the Read Anything contents pane, which is a WebUI.
-//  This class is created by the ReadAnythingCoordinator and owned by the Side
-//  Panel View. It has the same lifetime as the Side Panel view.
+//  This class is either created by the ReadAnythingCoordinator (when the side
+//  panel is global) or the ReadAnythingSidePanelController (when the side panel
+//  is local) and owned by the Side Panel View. It has the same lifetime as the
+//  Side Panel view.
 //
-class ReadAnythingContainerView : public views::View,
-                                  public ReadAnythingModel::Observer,
-                                  public ReadAnythingCoordinator::Observer {
+class ReadAnythingContainerView
+    : public views::View,
+      public ReadAnythingModel::Observer,
+      public ReadAnythingCoordinator::Observer,
+      public ReadAnythingSidePanelController::Observer {
  public:
   METADATA_HEADER(ReadAnythingContainerView);
   ReadAnythingContainerView(
       ReadAnythingCoordinator* coordinator,
+      std::unique_ptr<ReadAnythingToolbarView> toolbar,
+      std::unique_ptr<ReadAnythingSidePanelWebView> content);
+  ReadAnythingContainerView(
+      ReadAnythingSidePanelController* controller,
       std::unique_ptr<ReadAnythingToolbarView> toolbar,
       std::unique_ptr<ReadAnythingSidePanelWebView> content);
   ReadAnythingContainerView(const ReadAnythingContainerView&) = delete;
@@ -53,9 +62,15 @@ class ReadAnythingContainerView : public views::View,
 
   // ReadAnythingCoordinator::Observer:
   void OnCoordinatorDestroyed() override;
+  // ReadAnythingSidePanelController::Observer:
+  void OnSidePanelControllerDestroyed() override;
 
  private:
+  void Init(std::unique_ptr<ReadAnythingToolbarView> toolbar,
+            std::unique_ptr<ReadAnythingSidePanelWebView> content);
+
   raw_ptr<ReadAnythingCoordinator> coordinator_;
+  raw_ptr<ReadAnythingSidePanelController> controller_;
   raw_ptr<views::Separator> separator_;
 };
 #endif  // CHROME_BROWSER_UI_VIEWS_SIDE_PANEL_READ_ANYTHING_READ_ANYTHING_CONTAINER_VIEW_H_

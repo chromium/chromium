@@ -43,7 +43,7 @@ class ReadAnythingFontCombobox : public views::Combobox {
   // views::View:
   void GetAccessibleNodeData(ui::AXNodeData* node_data) override;
 
-  raw_ptr<ReadAnythingFontCombobox::Delegate> delegate_;
+  raw_ptr<ReadAnythingFontCombobox::Delegate, DanglingUntriaged> delegate_;
 
   base::WeakPtrFactory<ReadAnythingFontCombobox> weak_pointer_factory_{this};
 };

@@ -11,6 +11,8 @@ namespace content {
 class WebContents;
 }  // namespace content
 
+class ReadAnythingUntrustedPageHandler;
+
 // An observer of WebContents that facilitates the logic for the Read Anything
 // side panel. This per-tab class also owns the ReadAnythingSidePanelController.
 class ReadAnythingTabHelper
@@ -22,6 +24,10 @@ class ReadAnythingTabHelper
    public:
     virtual void CreateAndRegisterEntry() = 0;
     virtual void DeregisterEntry() = 0;
+    virtual void AddPageHandlerAsObserver(
+        base::WeakPtr<ReadAnythingUntrustedPageHandler> page_handler) = 0;
+    virtual void RemovePageHandlerAsObserver(
+        base::WeakPtr<ReadAnythingUntrustedPageHandler> page_handler) = 0;
     virtual ~Delegate() = default;
   };
 
@@ -35,6 +41,11 @@ class ReadAnythingTabHelper
 
   // Deregisters the Read Anything side panel entry.
   void DeregisterEntry();
+
+  void AddPageHandlerAsObserver(
+      base::WeakPtr<ReadAnythingUntrustedPageHandler> page_handler);
+  void RemovePageHandlerAsObserver(
+      base::WeakPtr<ReadAnythingUntrustedPageHandler> page_handler);
 
  private:
   friend class content::WebContentsUserData<ReadAnythingTabHelper>;
