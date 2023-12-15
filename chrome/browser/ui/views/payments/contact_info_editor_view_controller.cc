@@ -80,7 +80,7 @@ ContactInfoEditorViewController::GetFieldDefinitions() {
 }
 
 std::u16string ContactInfoEditorViewController::GetInitialValueForType(
-    autofill::ServerFieldType type) {
+    autofill::FieldType type) {
   if (!profile_to_edit_)
     return std::u16string();
   return GetValueForType(*profile_to_edit_, type);
@@ -123,7 +123,7 @@ ContactInfoEditorViewController::CreateValidationDelegate(
 
 std::unique_ptr<ui::ComboboxModel>
 ContactInfoEditorViewController::GetComboboxModelForType(
-    const autofill::ServerFieldType& type) {
+    const autofill::FieldType& type) {
   NOTREACHED_NORETURN();
 }
 
@@ -158,7 +158,7 @@ bool ContactInfoEditorViewController::GetSheetId(DialogViewID* sheet_id) {
 
 std::u16string ContactInfoEditorViewController::GetValueForType(
     const autofill::AutofillProfile& profile,
-    autofill::ServerFieldType type) {
+    autofill::FieldType type) {
   if (type == autofill::PHONE_HOME_WHOLE_NUMBER) {
     return autofill::i18n::GetFormattedPhoneNumberForDisplay(
         profile, state()->GetApplicationLocale());

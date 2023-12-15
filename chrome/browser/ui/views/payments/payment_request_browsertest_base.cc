@@ -711,7 +711,7 @@ bool PaymentRequestBrowserTestBase::IsViewVisible(
 }
 
 std::u16string PaymentRequestBrowserTestBase::GetEditorTextfieldValue(
-    autofill::ServerFieldType type) {
+    autofill::FieldType type) {
   ValidatingTextfield* textfield =
       static_cast<ValidatingTextfield*>(delegate_->dialog_view()->GetViewByID(
           EditorViewController::GetInputFieldViewId(type)));
@@ -721,7 +721,7 @@ std::u16string PaymentRequestBrowserTestBase::GetEditorTextfieldValue(
 
 void PaymentRequestBrowserTestBase::SetEditorTextfieldValue(
     const std::u16string& value,
-    autofill::ServerFieldType type) {
+    autofill::FieldType type) {
   ValidatingTextfield* textfield =
       static_cast<ValidatingTextfield*>(delegate_->dialog_view()->GetViewByID(
           EditorViewController::GetInputFieldViewId(type)));
@@ -734,7 +734,7 @@ void PaymentRequestBrowserTestBase::SetEditorTextfieldValue(
 }
 
 std::u16string PaymentRequestBrowserTestBase::GetComboboxValue(
-    autofill::ServerFieldType type) {
+    autofill::FieldType type) {
   ValidatingCombobox* combobox =
       static_cast<ValidatingCombobox*>(delegate_->dialog_view()->GetViewByID(
           EditorViewController::GetInputFieldViewId(type)));
@@ -744,7 +744,7 @@ std::u16string PaymentRequestBrowserTestBase::GetComboboxValue(
 
 void PaymentRequestBrowserTestBase::SetComboboxValue(
     const std::u16string& value,
-    autofill::ServerFieldType type) {
+    autofill::FieldType type) {
   ValidatingCombobox* combobox =
       static_cast<ValidatingCombobox*>(delegate_->dialog_view()->GetViewByID(
           EditorViewController::GetInputFieldViewId(type)));
@@ -768,7 +768,7 @@ void PaymentRequestBrowserTestBase::SelectBillingAddress(
 }
 
 bool PaymentRequestBrowserTestBase::IsEditorTextfieldInvalid(
-    autofill::ServerFieldType type) {
+    autofill::FieldType type) {
   ValidatingTextfield* textfield =
       static_cast<ValidatingTextfield*>(delegate_->dialog_view()->GetViewByID(
           EditorViewController::GetInputFieldViewId(type)));
@@ -777,7 +777,7 @@ bool PaymentRequestBrowserTestBase::IsEditorTextfieldInvalid(
 }
 
 bool PaymentRequestBrowserTestBase::IsEditorComboboxInvalid(
-    autofill::ServerFieldType type) {
+    autofill::FieldType type) {
   ValidatingCombobox* combobox =
       static_cast<ValidatingCombobox*>(delegate_->dialog_view()->GetViewByID(
           EditorViewController::GetInputFieldViewId(type)));
@@ -853,7 +853,7 @@ const std::u16string& PaymentRequestBrowserTestBase::GetStyledLabelText(
 }
 
 const std::u16string& PaymentRequestBrowserTestBase::GetErrorLabelForType(
-    autofill::ServerFieldType type) {
+    autofill::FieldType type) {
   views::View* view = dialog_view()->GetViewByID(
       static_cast<int>(DialogViewID::ERROR_LABEL_OFFSET) + type);
   DCHECK(view);

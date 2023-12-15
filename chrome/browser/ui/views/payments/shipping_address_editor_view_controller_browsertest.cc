@@ -61,7 +61,7 @@ class DISABLED_PaymentRequestShippingAddressEditorTest
  protected:
   DISABLED_PaymentRequestShippingAddressEditorTest() = default;
 
-  void SetFieldTestValue(autofill::ServerFieldType type) {
+  void SetFieldTestValue(autofill::FieldType type) {
     std::u16string textfield_text;
     switch (type) {
       case (autofill::NAME_FULL): {
@@ -104,7 +104,7 @@ class DISABLED_PaymentRequestShippingAddressEditorTest
 
   // First check if the requested field of |type| exists, if so, set its value
   // in |textfield_text| if it's not null, and return true.
-  bool GetEditorTextfieldValueIfExists(autofill::ServerFieldType type,
+  bool GetEditorTextfieldValueIfExists(autofill::FieldType type,
                                        std::u16string* textfield_text) {
     ValidatingTextfield* textfield =
         static_cast<ValidatingTextfield*>(dialog_view()->GetViewByID(
@@ -120,9 +120,8 @@ class DISABLED_PaymentRequestShippingAddressEditorTest
   // get their type added to it, so that the caller can tell which types are not
   // set for a given country. |accept_empty_phone_number| can be set to true to
   // accept a phone type field set to empty, and mark it as unset.
-  void ExpectExistingRequiredFields(
-      std::set<autofill::ServerFieldType>* unset_types,
-      bool accept_empty_phone_number) {
+  void ExpectExistingRequiredFields(std::set<autofill::FieldType>* unset_types,
+                                    bool accept_empty_phone_number) {
     std::u16string textfield_text;
     if (GetEditorTextfieldValueIfExists(autofill::NAME_FULL, &textfield_text)) {
       EXPECT_EQ(kNameFull, textfield_text);
@@ -377,7 +376,7 @@ IN_PROC_BROWSER_TEST_F(DISABLED_PaymentRequestShippingAddressEditorTest,
   std::vector<std::pair<std::string, std::string>> regions2;
   regions2.push_back(std::make_pair("2a", "region2a"));
   regions2.push_back(std::make_pair("2b", "region2b"));
-  std::set<autofill::ServerFieldType> unset_types;
+  std::set<autofill::FieldType> unset_types;
   for (size_t country_index = 10; country_index < num_countries;
        country_index += num_countries / 10) {
     // The editor updates asynchronously when the country changes.
@@ -415,7 +414,7 @@ IN_PROC_BROWSER_TEST_F(DISABLED_PaymentRequestShippingAddressEditorTest,
 
     // Some types could have been lost in previous countries and may now
     // available in this country.
-    std::set<autofill::ServerFieldType> set_types;
+    std::set<autofill::FieldType> set_types;
     for (auto type : unset_types) {
       ValidatingTextfield* textfield =
           static_cast<ValidatingTextfield*>(dialog_view()->GetViewByID(
