@@ -94,33 +94,30 @@ void WaylandSeat::HandleCapabilities(void* data,
   DCHECK(connection_->event_source());
 
   if (capabilities & WL_SEAT_CAPABILITY_KEYBOARD) {
-    if (!keyboard_ && !RefreshKeyboard())
+    if (!RefreshKeyboard()) {
       LOG(ERROR) << "Failed to get wl_keyboard from seat";
+    }
   } else {
     keyboard_.reset();
   }
 
   if (capabilities & WL_SEAT_CAPABILITY_POINTER) {
-    if (!pointer_) {
-      if (wl_pointer* pointer = wl_seat_get_pointer(seat)) {
-        pointer_ = std::make_unique<WaylandPointer>(
-            pointer, connection_, connection_->event_source());
-      } else {
-        LOG(ERROR) << "Failed to get wl_pointer from seat";
-      }
+    if (wl_pointer* pointer = wl_seat_get_pointer(seat)) {
+      pointer_ = std::make_unique<WaylandPointer>(pointer, connection_,
+                                                  connection_->event_source());
+    } else {
+      LOG(ERROR) << "Failed to get wl_pointer from seat";
     }
   } else {
     pointer_.reset();
   }
 
   if (capabilities & WL_SEAT_CAPABILITY_TOUCH) {
-    if (!touch_) {
-      if (wl_touch* touch = wl_seat_get_touch(seat)) {
-        touch_ = std::make_unique<WaylandTouch>(touch, connection_,
-                                                connection_->event_source());
-      } else {
-        LOG(ERROR) << "Failed to get wl_touch from seat";
-      }
+    if (wl_touch* touch = wl_seat_get_touch(seat)) {
+      touch_ = std::make_unique<WaylandTouch>(touch, connection_,
+                                              connection_->event_source());
+    } else {
+      LOG(ERROR) << "Failed to get wl_touch from seat";
     }
   } else {
     touch_.reset();
