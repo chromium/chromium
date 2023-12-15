@@ -293,7 +293,35 @@ const TestParam kTestParams[] = {
         .disabled_features =
             {ash::features::kDriveFsBulkPinning,
              ash::features::kFeatureManagementDriveFsBulkPinning},
-    }};
+    },
+
+    // OsSettingsRevampWayfinding feature test variations
+    {
+        .test_suffix = "BulkPinningAndGoogleDrivePage_Revamp",
+        .enabled_features =
+            {ash::features::kOsSettingsRevampWayfinding,
+             ash::features::kDriveFsBulkPinning,
+             ash::features::kFeatureManagementDriveFsBulkPinning,
+             ash::features::kFilesGoogleDriveSettingsPage},
+        .disabled_features = {},
+    },
+    {
+        .test_suffix = "OnlyBulkPinning_Revamp",
+        .enabled_features =
+            {ash::features::kOsSettingsRevampWayfinding,
+             ash::features::kDriveFsBulkPinning,
+             ash::features::kFeatureManagementDriveFsBulkPinning},
+        .disabled_features = {ash::features::kFilesGoogleDriveSettingsPage},
+    },
+    {
+        .test_suffix = "OnlyGoogleDrivePage_Revamp",
+        .enabled_features = {ash::features::kOsSettingsRevampWayfinding,
+                             ash::features::kFilesGoogleDriveSettingsPage},
+        .disabled_features =
+            {ash::features::kDriveFsBulkPinning,
+             ash::features::kFeatureManagementDriveFsBulkPinning},
+    },
+};
 
 INSTANTIATE_TEST_SUITE_P(,
                          GoogleDriveHandlerTest,

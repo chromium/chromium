@@ -7,6 +7,7 @@ import 'chrome://os-settings/lazy_load.js';
 
 import {SettingsRadioGroupElement} from 'chrome://os-settings/lazy_load.js';
 import {CrButtonElement, SettingsGoogleDriveSubpageElement, SettingsToggleButtonElement} from 'chrome://os-settings/os_settings.js';
+import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {assertTrue} from 'chrome://webui-test/chai_assert.js';
 
 import {PasswordSettingsApi} from './os_people_page/password_settings_api.js';
@@ -454,13 +455,26 @@ class OsSettingsDriver implements OSSettingsDriverInterface {
   }
 
   private googleDriveSubpage(): SettingsGoogleDriveSubpageElement {
-    const googleDriveSubpage = querySelectorShadow(document.body, [
-      'os-settings-ui',
-      'os-settings-main',
-      'main-page-container',
-      'os-settings-files-page',
-      'settings-google-drive-subpage',
-    ]);
+    const isRevampWayfindingEnabled =
+        loadTimeData.getBoolean('isRevampWayfindingEnabled');
+
+    const elementPath = isRevampWayfindingEnabled ?
+        [
+          'os-settings-ui',
+          'os-settings-main',
+          'main-page-container',
+          'settings-system-preferences-page',
+          'settings-google-drive-subpage',
+        ] :
+        [
+          'os-settings-ui',
+          'os-settings-main',
+          'main-page-container',
+          'os-settings-files-page',
+          'settings-google-drive-subpage',
+        ];
+
+    const googleDriveSubpage = querySelectorShadow(document.body, elementPath);
     assertTrue(googleDriveSubpage instanceof HTMLElement);
     return googleDriveSubpage as SettingsGoogleDriveSubpageElement;
   }
