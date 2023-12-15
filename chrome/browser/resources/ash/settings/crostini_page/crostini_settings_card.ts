@@ -75,7 +75,9 @@ export class CrostiniSettingsCardElement extends
 
       showBruschetta_: {
         type: Boolean,
-        value: loadTimeData.getBoolean('showBruschetta'),
+        value() {
+          return loadTimeData.getBoolean('showBruschetta');
+        },
       },
 
       isRevampWayfindingEnabled_: {
@@ -91,7 +93,8 @@ export class CrostiniSettingsCardElement extends
   private disableCrostiniInstall_: boolean;
   private isCrostiniAllowed_: boolean;
   private isCrostiniSupported_: boolean;
-  private isRevampWayfindingEnabled_: boolean;
+  private readonly isRevampWayfindingEnabled_: boolean;
+  private readonly showBruschetta_: boolean;
 
   constructor() {
     super();

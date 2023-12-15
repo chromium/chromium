@@ -273,6 +273,23 @@ TEST_F('OSSettingsCrostiniPageCrostiniSettingsCardTest', 'AllJsTests', () => {
   mocha.run();
 });
 
+var OSSettingsAboutPageCrostiniSettingsCardRevampTest =
+    class extends OSSettingsCrostiniPageCrostiniSettingsCardTest {
+  /** @override */
+  get featureList() {
+    return {
+      enabled: super.featureList.enabled.concat([
+        'ash::features::kOsSettingsRevampWayfinding',
+      ]),
+    };
+  }
+};
+
+TEST_F(
+    'OSSettingsAboutPageCrostiniSettingsCardRevampTest', 'AllJsTests', () => {
+      mocha.run();
+    });
+
 var OSSettingsCrostiniPageCrostiniSharedUsbDevicesTest =
     class extends OSSettingsBrowserTest {
   /** @override */
