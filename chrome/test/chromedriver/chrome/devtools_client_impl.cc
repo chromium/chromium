@@ -243,17 +243,22 @@ Status DevToolsClientImpl::SetTunnelSessionId(std::string session_id) {
   return Status{kOk};
 }
 
-Status DevToolsClientImpl::StartBidiServer(std::string bidi_mapper_script) {
+Status DevToolsClientImpl::StartBidiServer(
+    std::string bidi_mapper_script,
+    const base::Value::Dict& mapper_options) {
   // Give BiDiMapper generous amount of time to start.
   // If the wait times out then we likely have a bug in BiDiMapper.
   // There is no need to make this timeout user configurable.
   // We use the default page load timeout (the biggest in the standard).
   Timeout timeout = Timeout(base::Seconds(300));
-  return StartBidiServer(std::move(bidi_mapper_script), timeout);
+  return StartBidiServer(std::move(bidi_mapper_script), mapper_options,
+                         timeout);
 }
 
-Status DevToolsClientImpl::StartBidiServer(std::string bidi_mapper_script,
-                                           const Timeout& timeout) {
+Status DevToolsClientImpl::StartBidiServer(
+    std::string bidi_mapper_script,
+    const base::Value::Dict& mapper_options,
+    const Timeout& timeout) {
   if (!is_main_page_) {
     // Later we might want to start the BiDiMapper an another type of targets
     // however for the moment being we support pages only.
@@ -319,7 +324,17 @@ Status DevToolsClientImpl::StartBidiServer(std::string bidi_mapper_script,
     if (status.IsError()) {
       return status;
     }
-    params.Set("expression", "window.runMapperInstance(" + window_id + ")");
+
+    std::string mapper_options_str;
+    status = SerializeAsJson(mapper_options, &mapper_options_str);
+    if (status.IsError()) {
+      return status;
+    }
+
+    params.Set(
+        "expression",
+        base::StringPrintf("window.runMapperInstance(%s, %s)",
+                           window_id.c_str(), mapper_options_str.c_str()));
     status = SendCommandAndGetResultWithTimeout(
         "Runtime.evaluate", std::move(params), &timeout, &result);
     if (result.contains("exceptionDetails")) {

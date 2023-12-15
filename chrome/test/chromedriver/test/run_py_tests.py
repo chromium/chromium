@@ -6886,6 +6886,11 @@ class BidiTest(ChromeDriverBaseTestWithWebServer):
       command['id'] = id
     return conn.PostCommand(command)
 
+  @staticmethod
+  def GetHttpsUrlForFile(file_path, host=None):
+    return ChromeDriverSecureContextTest._https_server.GetUrl(
+        host) + file_path
+
   def testCreateContext(self):
     conn = self.createWebSocketConnection()
     old_handles = self._driver.GetWindowHandles()
@@ -7143,18 +7148,24 @@ class BidiTest(ChromeDriverBaseTestWithWebServer):
       command['channel'] = channel
     return conn.SendCommand(command, channel=channel)
 
-  def navigateSomewhere(self, conn, context_id=None, channel=None):
+  def navigateTo(self, conn, url, context_id=None, channel=None):
     if context_id is None:
       context_id = self.getContextId(conn, 0)
     command = {
         'method': 'browsingContext.navigate',
         'params': {
-            'url': 'data:text/html,navigated',
+            'url': url,
             'wait': 'complete',
             'context': context_id}}
     if channel is not None:
       command['channel'] = channel
     return conn.SendCommand(command, channel=channel)
+
+  def navigateSomewhere(self, conn, context_id=None, channel=None):
+    return self.navigateTo(conn,
+                           'data:text/html,navigated',
+                           context_id=context_id,
+                           channel=channel)
 
   def testEvent(self):
     conn = self.createWebSocketConnection()
@@ -7368,6 +7379,32 @@ class BidiTest(ChromeDriverBaseTestWithWebServer):
       titles.append(self._driver.GetTitle())
     expected_titles = [''] + ['iframes' for _ in range(0, 10)]
     self.assertListEqual(expected_titles, sorted(titles))
+
+  def testInsecureSertificatesNotAllowed(self):
+    driver = self.CreateDriver(
+        web_socket_url=True,
+        accept_insecure_certs=False)
+    conn = self.createWebSocketConnection(driver)
+    page_name = self.id()
+    self._https_server.SetDataForPath('/%s.html' % page_name,
+       bytes('<head><<title>%s</title></head>' % page_name,
+             'utf-8'))
+    with self.assertRaisesRegex(chromedriver.ChromeDriverException,
+                                'net::ERR_CERT_AUTHORITY_INVALID'):
+      self.navigateTo(conn, self.GetHttpsUrlForFile('/%s.html' % page_name))
+
+  def testInsecureSertificatesAllowed(self):
+    driver = self.CreateDriver(
+        web_socket_url=True,
+        accept_insecure_certs=True)
+    conn = self.createWebSocketConnection(driver)
+    page_name = self.id()
+    self._https_server.SetDataForPath('/%s.html' % page_name,
+       bytes('<head><<title>%s</title></head>' % page_name,
+             'utf-8'))
+    self.navigateTo(conn, self.GetHttpsUrlForFile('/%s.html' % page_name))
+    title = driver.GetTitle()
+    self.assertEqual(title, page_name)
 
 
 class CustomBidiMapperTest(ChromeDriverBaseTest):

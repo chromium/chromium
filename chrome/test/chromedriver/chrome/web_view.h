@@ -19,14 +19,14 @@ class TimeDelta;
 
 class FedCmTracker;
 class FrameTracker;
-struct Geoposition;
 class JavaScriptDialogManager;
-struct KeyEvent;
 class MobileEmulationOverrideManager;
-struct MouseEvent;
-struct NetworkConditions;
 class Status;
 class Timeout;
+struct Geoposition;
+struct KeyEvent;
+struct MouseEvent;
+struct NetworkConditions;
 struct TouchEvent;
 
 class WebView {
@@ -70,7 +70,8 @@ class WebView {
   // Resume the current page.
   virtual Status Resume(const Timeout* timeout) = 0;
 
-  virtual Status StartBidiServer(std::string bidi_mapper_string) = 0;
+  virtual Status StartBidiServer(std::string bidi_mapper_string,
+                                 const base::Value::Dict& mapper_options) = 0;
 
   // Send the BiDi command to the BiDiMapper
   virtual Status PostBidiCommand(base::Value::Dict command) = 0;

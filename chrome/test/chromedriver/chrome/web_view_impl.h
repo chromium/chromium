@@ -62,7 +62,8 @@ class WebViewImpl : public WebView {
   Status Reload(const Timeout* timeout) override;
   Status Freeze(const Timeout* timeout) override;
   Status Resume(const Timeout* timeout) override;
-  Status StartBidiServer(std::string bidi_mapper_script) override;
+  Status StartBidiServer(std::string bidi_mapper_script,
+                         const base::Value::Dict& mapper_options) override;
   Status PostBidiCommand(base::Value::Dict command) override;
   Status SendCommand(const std::string& cmd,
                      const base::Value::Dict& params) override;
