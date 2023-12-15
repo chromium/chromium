@@ -34,6 +34,18 @@ class CircularBuffer {
     this.instances[this.numFrames % this.maxSize] = frame;
     this.numFrames++;
   }
+
+  oldestIndex() {
+    if (this.numFrames <= this.maxSize) {
+      return 0;
+    } else {
+      return this.numFrames - this.maxSize;
+    }
+  }
+
+  newestIndex() {
+    return this.numFrames -  1;
+  }
 }
 
 // Represents a single frame, and contains all associated data.
@@ -108,30 +120,6 @@ class DrawFrame {
     this.json_ = json;
 
     DrawFrame.frameBuffer.push(this);
-
-    // Update scrubber as new frames come in
-    const scrubberFrame = document.querySelector('#scrubberframe');
-
-    scrubberFrame.max = DrawFrame.frameBuffer.numFrames - 1;
-
-    // Handle scrubber when # of frames reached cap of circular buffer.
-    if (DrawFrame.frameBuffer.numFrames > DrawFrame.frameBuffer.maxSize) {
-      const oldestFrameId = DrawFrame.frameBuffer.numFrames
-                            - DrawFrame.frameBuffer.maxSize;
-
-      scrubberFrame.min = oldestFrameId;
-      // Once the scrubber reaches the left very (oldest frame),
-      // update scrubber value to match scrubber min value and
-      // update drawing on canvas to match correspondingly.
-      if (scrubberFrame.value <= scrubberFrame.min) {
-        scrubberFrame.value = oldestFrameId;
-        Player.instance.forward();
-      }
-    }
-    // Handle scrubber when # of frames haven't yet reached buffer cap.
-    else {
-      scrubberFrame.min = 0;
-    }
   }
 
   submissionCount() {
@@ -405,30 +393,6 @@ class Viewer {
     this.updateLogs_();
   }
 
-  drawNextFrame() {
-    // When we switch to a different frame, we need to unfreeze the current
-    // frame (to make sure the frame draws completely the next time it is drawn
-    // in the player).
-    this.unfreeze();
-    if (DrawFrame.get(this.currentFrameIndex_ + 1)) {
-      ++this.currentFrameIndex_;
-      this.updateCurrentFrame();
-      return true;
-    }
-  }
-
-
-  drawPreviousFrame() {
-    // When we switch to a different frame, we need to unfreeze the current
-    // frame (to make sure the frame draws completely the next time it is drawn
-    // in the player).
-    this.unfreeze();
-    if (DrawFrame.get(this.currentFrameIndex_ - 1)) {
-      --this.currentFrameIndex_;
-      this.updateCurrentFrame();
-    }
-  }
-
   redrawCurrentFrame_() {
     const frame = this.getCurrentFrame();
     if (!frame) return;
@@ -463,18 +427,11 @@ class Viewer {
     this.viewOrientation = orientationAsInt;
   }
 
-  freezeFrame(frameIndex, minIndex, maxIndex) {
+  setFrame(frameIndex, minIndex = -1, maxIndex = -1) {
     if (DrawFrame.get(frameIndex)) {
       this.currentFrameIndex_ = frameIndex;
       this.getCurrentFrame().filter(minIndex, maxIndex);
       this.updateCurrentFrame();
-    }
-  }
-
-  unfreeze() {
-    const frame = this.getCurrentFrame();
-    if (frame) {
-      frame.resetFilter();
     }
   }
 
@@ -499,12 +456,12 @@ class Viewer {
 class Player {
   static instances = [];
 
-  constructor(viewer, draw_cb) {
+  constructor(viewer, updateUi) {
     this.viewer_ = viewer;
     this.paused_ = false;
     this.nextFrameScheduled_ = false;
     this.live_ = true;
-    this.drawCb_ = draw_cb;
+    this.updateUi_ = updateUi;
 
     Player.instances[0] = this;
   }
@@ -513,13 +470,17 @@ class Player {
     this.paused_ = false;
     if (this.nextFrameScheduled_) return;
 
-    const drawn = this.viewer_.drawNextFrame();
-    if(this.live_){
-      while(this.viewer_.drawNextFrame());
+    if (this.viewer_.currentFrameIndex == DrawFrame.frameBuffer.newestIndex()) {
+      return;
+    }
+
+    if (this.live_) {
+      this.drawNewestFrame_();
+    } else {
+      this.drawNextFrame_();
     }
 
     this.didDrawNewFrame_();
-    if (!drawn) return;
 
     this.nextFrameScheduled_ = true;
     requestAnimationFrame(() => {
@@ -529,8 +490,7 @@ class Player {
     });
   }
 
-  live()
-  {
+  live() {
     this.live_ = true;
     this.play();
   }
@@ -542,13 +502,13 @@ class Player {
 
   rewind() {
     this.pause();
-    this.viewer_.drawPreviousFrame();
+    this.drawPreviousFrame_();
     this.didDrawNewFrame_();
   }
 
   forward() {
     this.pause();
-    this.viewer_.drawNextFrame();
+    this.drawNextFrame_();
     this.didDrawNewFrame_();
   }
 
@@ -557,7 +517,7 @@ class Player {
   // Draws all calls if |minIndex| and |maxIndex| are not set.
   freezeFrame(frameIndex, minIndex = -1, maxIndex = -1) {
     this.pause();
-    this.viewer_.freezeFrame(frameIndex, minIndex, maxIndex);
+    this.viewer_.setFrame(frameIndex, minIndex, maxIndex);
     this.didDrawNewFrame_();
   }
 
@@ -582,16 +542,37 @@ class Player {
     this.viewer_.updateCurrentFrame();
   }
 
+  drawNewestFrame_() {
+    let newest = DrawFrame.frameBuffer.newestIndex();
+    this.viewer_.setFrame(newest);
+  }
+
+  drawNextFrame_() {
+    this.viewer_.setFrame(this.viewer_.currentFrameIndex + 1);
+  }
+
+  drawPreviousFrame_() {
+    this.viewer_.setFrame(this.viewer_.currentFrameIndex - 1);
+  }
+
   didDrawNewFrame_() {
-    this.drawCb_(this.viewer_.getCurrentFrame());
+    this.updateUi_(this.viewer_.getCurrentFrame());
   }
 
   get currentFrameIndex() { return this.viewer_.currentFrameIndex; }
 
   onNewFrame() {
+    let oldest = DrawFrame.frameBuffer.oldestIndex();
+    if (this.currentFrameIndex < oldest) {
+      this.viewer_.setFrame(oldest, -1, -1);
+    }
+    this.didDrawNewFrame_();
+
     // If the player is not paused, and a new frame is received, then make sure
     // the next frame is drawn.
-    if (!this.paused_) this.play();
+    if (!this.paused_) {
+      this.play();
+    }
   }
 
   static get instance() { return Player.instances[0]; }
