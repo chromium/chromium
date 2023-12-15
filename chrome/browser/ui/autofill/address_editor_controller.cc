@@ -103,7 +103,7 @@ void AddressEditorController::UpdateEditorFields(
       EditorField::ControlType::TEXTFIELD);
 }
 
-void AddressEditorController::SetProfileInfo(ServerFieldType type,
+void AddressEditorController::SetProfileInfo(FieldType type,
                                              const std::u16string& value) {
   // Since the countries combobox contains the country names, not the country
   // codes, and hence we should use `SetInfo()` to make sure they get converted
@@ -121,7 +121,7 @@ void AddressEditorController::SetProfileInfo(ServerFieldType type,
       type, value, VerificationStatus::kUserVerified);
 }
 
-std::u16string AddressEditorController::GetProfileInfo(ServerFieldType type) {
+std::u16string AddressEditorController::GetProfileInfo(FieldType type) {
   // TDOD(mamir): Update the implementation to format strings properly.
   return profile_to_edit_.GetInfo(type, locale_);
 }
