@@ -105,11 +105,20 @@ void SetUpPolicyServer(policy::EmbeddedPolicyTestServer* policy_server) {
   policy_storage->set_policy_invalidation_topic("test_policy_topic");
 }
 
+// Waits on user policy data to be accessible from the browser state.
+void WaitOnUserPolicy(base::TimeDelta timeout) {
+  // Wait for user policy fetch.
+  ConditionBlock condition = ^{
+    return [PolicyAppInterface hasUserPolicyDataInCurrentBrowserState];
+  };
+  GREYAssert(base::test::ios::WaitUntilConditionOrTimeout(timeout, condition),
+             @"No user policy data found");
+}
+
 // Verifies from the UI and the policy store that the user policies are set.
 void VerifyThatPoliciesAreSet() {
-  // Verify that there is policy data in the store.
-  GREYAssertTrue([PolicyAppInterface hasUserPolicyDataInCurrentBrowserState],
-                 @"No user policy data found");
+  WaitOnUserPolicy(kWaitOnScheduledUserPolicyFetchInterval);
+
   // Verify that the policy is set.
   GREYAssertTrue(
       [PolicyAppInterface
@@ -136,15 +145,6 @@ void ClearUserPolicyPrefs() {
       clearUserPrefWithName:base::SysUTF8ToNSString(
                                 policy::policy_prefs::kLastPolicyCheckTime)];
   [ChromeEarlGreyAppInterface commitPendingUserPrefsWrite];
-}
-
-void WaitOnUserPolicy(base::TimeDelta timeout) {
-  // Wait for user policy fetch.
-  ConditionBlock condition = ^{
-    return [PolicyAppInterface hasUserPolicyDataInCurrentBrowserState];
-  };
-  GREYAssert(base::test::ios::WaitUntilConditionOrTimeout(timeout, condition),
-             @"Didn't fetch user policies");
 }
 
 void VerifyTheNotificationUI() {
