@@ -12,6 +12,7 @@
  */
 import {runTestInGuest} from './driver.js';
 
+const HOST_ORIGIN = 'chrome://help-app';
 const GUEST_ORIGIN = 'chrome-untrusted://help-app';
 
 /** @struct */
@@ -24,8 +25,8 @@ const HelpAppUIBrowserTest = {
   runTestInGuest,
 };
 
-// Expose an old-style export for js2gtest.
-window['HelpAppUIBrowserTest_for_js2gtest'] = HelpAppUIBrowserTest;
+// Expose an export for tests run through `isolatedTestRunner`.
+window['HelpAppUiBrowserTest'] = HelpAppUIBrowserTest;
 
 // Tests that chrome://help-app goes somewhere instead of 404ing or crashing.
 HelpAppUIBrowserTest.HasChromeSchemeURL = () => {

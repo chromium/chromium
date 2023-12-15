@@ -3375,7 +3375,6 @@ if (!is_android && !is_fuchsia) {
       deps += [
         "//ash/webui/color_internals:browser_tests_js",
         "//ash/webui/eche_app_ui:browser_tests_js",
-        "//ash/webui/help_app_ui:browser_tests_js",
         "//ash/webui/system_apps:browser_tests",
         "//ash/webui/system_extensions_internals_ui:browser_tests_js",
         "//chrome/test/data/webui/chromeos:browser_tests_js_mojo_lite_webui",
@@ -4976,6 +4975,7 @@ if (!is_android && !is_fuchsia) {
         "//ash/webui/file_manager/resources:file_manager_swa_resources_grit",
         "//ash/webui/firmware_update_ui",
         "//ash/webui/help_app_ui",
+        "//ash/webui/help_app_ui:browser_test_support",
         "//ash/webui/help_app_ui:buildflags",
         "//ash/webui/help_app_ui/search:mojo_bindings",
         "//ash/webui/media_app_ui",
