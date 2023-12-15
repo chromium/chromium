@@ -50,32 +50,6 @@ std::string SubstituteMappedStrings(
 
 namespace {
 
-std::vector<std::pair<GURL, FencedFrameConfig>>
-GenerateURNConfigVectorForConfigs(
-    const std::vector<FencedFrameConfig>& nested_configs) {
-  std::vector<std::pair<GURL, FencedFrameConfig>> nested_urn_config_pairs;
-  DCHECK_LE(nested_configs.size(), blink::kMaxAdAuctionAdComponents);
-  for (const FencedFrameConfig& config : nested_configs) {
-    // Give each config its own urn:uuid. This ensures that if the same config
-    // is loaded into multiple fenced frames, they will not share the same
-    // urn:uuid across processes.
-    GURL urn_uuid = GenerateUrnUuid();
-    auto config_with_urn = config;
-    config_with_urn.urn_uuid_ = urn_uuid;
-    nested_urn_config_pairs.emplace_back(urn_uuid, config_with_urn);
-  }
-
-  // Pad `component_ads_` to contain exactly kMaxAdAuctionAdComponents ads, to
-  // avoid leaking any data to the fenced frame the component ads array is
-  // exposed to.
-  while (nested_urn_config_pairs.size() < blink::kMaxAdAuctionAdComponents) {
-    GURL urn_uuid = GenerateUrnUuid();
-    nested_urn_config_pairs.emplace_back(
-        urn_uuid, FencedFrameConfig(urn_uuid, GURL(url::kAboutBlankURL)));
-  }
-  return nested_urn_config_pairs;
-}
-
 template <typename Property>
 void RedactProperty(
     const absl::optional<FencedFrameProperty<Property>>& property,
@@ -205,7 +179,7 @@ blink::FencedFrame::RedactedFencedFrameConfig FencedFrameConfig::RedactFor(
   redacted_config.mode_ = mode_;
 
   redacted_config.effective_enabled_permissions_ =
-      effective_enabled_permissions;
+      effective_enabled_permissions_;
 
   return redacted_config;
 }
@@ -238,7 +212,7 @@ FencedFrameProperties::FencedFrameProperties(const FencedFrameConfig& config)
                        VisibilityToContent::kOpaque),
       mode_(config.mode_),
       is_ad_component_(config.is_ad_component_),
-      effective_enabled_permissions_(config.effective_enabled_permissions) {
+      effective_enabled_permissions_(config.effective_enabled_permissions_) {
   if (config.shared_storage_budget_metadata_) {
     shared_storage_budget_metadata_.emplace(
         &config.shared_storage_budget_metadata_->GetValueIgnoringVisibility(),
@@ -360,6 +334,32 @@ FencedFrameProperties::GetAutomaticBeaconInfo(
     return absl::nullopt;
   }
   return it->second;
+}
+
+std::vector<std::pair<GURL, FencedFrameConfig>>
+FencedFrameProperties::GenerateURNConfigVectorForConfigs(
+    const std::vector<FencedFrameConfig>& nested_configs) {
+  std::vector<std::pair<GURL, FencedFrameConfig>> nested_urn_config_pairs;
+  DCHECK_LE(nested_configs.size(), blink::kMaxAdAuctionAdComponents);
+  for (const FencedFrameConfig& config : nested_configs) {
+    // Give each config its own urn:uuid. This ensures that if the same config
+    // is loaded into multiple fenced frames, they will not share the same
+    // urn:uuid across processes.
+    GURL urn_uuid = GenerateUrnUuid();
+    FencedFrameConfig config_with_urn = config;
+    config_with_urn.urn_uuid_ = urn_uuid;
+    nested_urn_config_pairs.emplace_back(urn_uuid, config_with_urn);
+  }
+
+  // Pad `component_ads_` to contain exactly kMaxAdAuctionAdComponents ads, to
+  // avoid leaking any data to the fenced frame the component ads array is
+  // exposed to.
+  while (nested_urn_config_pairs.size() < blink::kMaxAdAuctionAdComponents) {
+    GURL urn_uuid = GenerateUrnUuid();
+    nested_urn_config_pairs.emplace_back(
+        urn_uuid, FencedFrameConfig(urn_uuid, GURL(url::kAboutBlankURL)));
+  }
+  return nested_urn_config_pairs;
 }
 
 }  // namespace content

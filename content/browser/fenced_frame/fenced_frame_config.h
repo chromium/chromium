@@ -196,7 +196,7 @@ class CONTENT_EXPORT FencedFrameProperty {
 
  private:
   friend class content::FencedFrameURLMapping;
-  friend struct FencedFrameConfig;
+  friend class FencedFrameConfig;
   friend class FencedFrameProperties;
 
   T value_;
@@ -213,9 +213,10 @@ class CONTENT_EXPORT FencedFrameProperty {
 //
 // Config-generating APIs like FLEDGE's runAdAuction and sharedStorage's
 // selectURL return urns as handles to `FencedFrameConfig`s.
-// TODO(crbug.com/1417871): Turn this into a class, make its fields private,
-// and have a single constructor that requires all fields to be specified.
-struct CONTENT_EXPORT FencedFrameConfig {
+// TODO(crbug.com/1417871): Use a single constructor that requires values to be
+// specified for all fields, to ensure none are accidentally omitted.
+class CONTENT_EXPORT FencedFrameConfig {
+ public:
   FencedFrameConfig();
   explicit FencedFrameConfig(const GURL& mapped_url);
   explicit FencedFrameConfig(
@@ -241,6 +242,33 @@ struct CONTENT_EXPORT FencedFrameConfig {
 
   blink::FencedFrame::RedactedFencedFrameConfig RedactFor(
       FencedFrameEntity entity) const;
+
+  const scoped_refptr<FencedFrameReporter>& fenced_frame_reporter() const {
+    return fenced_frame_reporter_;
+  }
+
+  const absl::optional<GURL>& urn_uuid() const { return urn_uuid_; }
+
+  const absl::optional<FencedFrameProperty<GURL>>& mapped_url() const {
+    return mapped_url_;
+  }
+
+  // Add a permission to the FencedFrameConfig.
+  // TODO(crbug.com/1347953): Refactor and expand use of test utils so there is
+  // a consistent way to do this properly everywhere.
+  void AddEffectiveEnabledPermissionForTesting(
+      blink::mojom::PermissionsPolicyFeature feature) {
+    effective_enabled_permissions_.push_back(feature);
+  }
+
+ private:
+  friend class FencedFrameURLMapping;
+  friend class FencedFrameProperties;
+  friend class FencedFrameConfigMojomTraitsTest;
+  FRIEND_TEST_ALL_PREFIXES(FencedFrameConfigMojomTraitsTest,
+                           ConfigMojomTraitsTest);
+  FRIEND_TEST_ALL_PREFIXES(FencedFrameConfigMojomTraitsTest,
+                           ConfigMojomTraitsModeTest);
 
   absl::optional<GURL> urn_uuid_;
 
@@ -314,7 +342,7 @@ struct CONTENT_EXPORT FencedFrameConfig {
   // See entry in spec:
   // https://wicg.github.io/fenced-frame/#fenced-frame-config-effective-enabled-permissions
   std::vector<blink::mojom::PermissionsPolicyFeature>
-      effective_enabled_permissions;
+      effective_enabled_permissions_;
 };
 
 // Contains a set of fenced frame properties. These are generated at
@@ -441,8 +469,6 @@ class CONTENT_EXPORT FencedFrameProperties {
   }
 
   // Set the current FencedFrameProperties to have "opaque ads mode".
-  // This should only be used during tests, when the proper embedder-initiated
-  // fenced frame root urn/config navigation flow isn't available.
   // TODO(crbug.com/1347953): Refactor and expand use of test utils so there is
   // a consistent way to do this properly everywhere. Consider removing
   // arbitrary restrictions in "default mode" so that using opaque ads mode is
@@ -456,6 +482,10 @@ class CONTENT_EXPORT FencedFrameProperties {
                            ConfigMojomTraitsTest);
   FRIEND_TEST_ALL_PREFIXES(FencedFrameConfigMojomTraitsTest,
                            PropertiesHasFencedFrameReportingTest);
+
+  std::vector<std::pair<GURL, FencedFrameConfig>>
+  GenerateURNConfigVectorForConfigs(
+      const std::vector<FencedFrameConfig>& nested_configs);
 
   absl::optional<FencedFrameProperty<GURL>> mapped_url_;
 

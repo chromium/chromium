@@ -2454,7 +2454,7 @@ IN_PROC_BROWSER_TEST_P(
   const absl::optional<FencedFrameConfig>& fenced_frame_config =
       config_observer.GetConfig();
   EXPECT_TRUE(fenced_frame_config.has_value());
-  EXPECT_EQ(fenced_frame_config->urn_uuid_, observed_urn_uuid.value());
+  EXPECT_EQ(fenced_frame_config->urn_uuid(), observed_urn_uuid.value());
 
   SharedStorageBudgetMetadata* metadata =
       GetSharedStorageBudgetMetadata(observed_urn_uuid.value());
@@ -2564,7 +2564,7 @@ IN_PROC_BROWSER_TEST_P(
   const absl::optional<FencedFrameConfig>& fenced_frame_config =
       config_observer.GetConfig();
   EXPECT_TRUE(fenced_frame_config.has_value());
-  EXPECT_EQ(fenced_frame_config->urn_uuid_, observed_urn_uuid.value());
+  EXPECT_EQ(fenced_frame_config->urn_uuid(), observed_urn_uuid.value());
 
   SharedStorageBudgetMetadata* metadata =
       GetSharedStorageBudgetMetadata(observed_urn_uuid.value());
@@ -2678,7 +2678,7 @@ IN_PROC_BROWSER_TEST_P(SharedStorageBrowserTest,
   const absl::optional<FencedFrameConfig>& fenced_frame_config =
       config_observer.GetConfig();
   EXPECT_TRUE(fenced_frame_config.has_value());
-  EXPECT_EQ(fenced_frame_config->urn_uuid_, observed_urn_uuid.value());
+  EXPECT_EQ(fenced_frame_config->urn_uuid(), observed_urn_uuid.value());
 
   SharedStorageBudgetMetadata* metadata =
       GetSharedStorageBudgetMetadata(observed_urn_uuid.value());
@@ -2785,7 +2785,7 @@ IN_PROC_BROWSER_TEST_P(
   const absl::optional<FencedFrameConfig>& fenced_frame_config1 =
       config_observer1.GetConfig();
   EXPECT_TRUE(fenced_frame_config1.has_value());
-  EXPECT_EQ(fenced_frame_config1->urn_uuid_, observed_urn_uuid1.value());
+  EXPECT_EQ(fenced_frame_config1->urn_uuid(), observed_urn_uuid1.value());
 
   EXPECT_EQ("Finish executing 'test-url-selection-operation'",
             base::UTF16ToUTF8(console_observer.messages().back().message));
@@ -2838,7 +2838,7 @@ IN_PROC_BROWSER_TEST_P(
   const absl::optional<FencedFrameConfig>& fenced_frame_config2 =
       config_observer2.GetConfig();
   EXPECT_TRUE(fenced_frame_config2.has_value());
-  EXPECT_EQ(fenced_frame_config2->urn_uuid_, observed_urn_uuid2.value());
+  EXPECT_EQ(fenced_frame_config2->urn_uuid(), observed_urn_uuid2.value());
 
   EXPECT_EQ("Finish executing 'test-url-selection-operation'",
             base::UTF16ToUTF8(console_observer.messages().back().message));
@@ -2932,7 +2932,7 @@ IN_PROC_BROWSER_TEST_P(
   const absl::optional<FencedFrameConfig>& fenced_frame_config1 =
       config_observer1.GetConfig();
   EXPECT_TRUE(fenced_frame_config1.has_value());
-  EXPECT_EQ(fenced_frame_config1->urn_uuid_, observed_urn_uuid1.value());
+  EXPECT_EQ(fenced_frame_config1->urn_uuid(), observed_urn_uuid1.value());
 
   EXPECT_EQ("Finish executing 'test-url-selection-operation'",
             base::UTF16ToUTF8(console_observer.messages().back().message));
@@ -3050,7 +3050,7 @@ IN_PROC_BROWSER_TEST_P(
   const absl::optional<FencedFrameConfig>& fenced_frame_config1 =
       config_observer1.GetConfig();
   EXPECT_TRUE(fenced_frame_config1.has_value());
-  EXPECT_EQ(fenced_frame_config1->urn_uuid_, observed_urn_uuid1.value());
+  EXPECT_EQ(fenced_frame_config1->urn_uuid(), observed_urn_uuid1.value());
 
   EXPECT_EQ("Finish executing 'test-url-selection-operation'",
             base::UTF16ToUTF8(console_observer.messages().back().message));
@@ -3258,7 +3258,7 @@ IN_PROC_BROWSER_TEST_P(SharedStorageBrowserTest,
   const absl::optional<FencedFrameConfig>& fenced_frame_config =
       config_observer.GetConfig();
   EXPECT_TRUE(fenced_frame_config.has_value());
-  EXPECT_EQ(fenced_frame_config->urn_uuid_, observed_urn_uuid.value());
+  EXPECT_EQ(fenced_frame_config->urn_uuid(), observed_urn_uuid.value());
 
   EXPECT_EQ("Finish executing 'test-url-selection-operation'",
             base::UTF16ToUTF8(console_observer.messages().back().message));
@@ -3443,7 +3443,7 @@ IN_PROC_BROWSER_TEST_P(SharedStorageBrowserTest,
   const absl::optional<FencedFrameConfig>& fenced_frame_config =
       config_observer.GetConfig();
   EXPECT_TRUE(fenced_frame_config.has_value());
-  EXPECT_EQ(fenced_frame_config->urn_uuid_, observed_urn_uuid.value());
+  EXPECT_EQ(fenced_frame_config->urn_uuid(), observed_urn_uuid.value());
 
   EXPECT_EQ("Finish executing 'test-url-selection-operation'",
             base::UTF16ToUTF8(console_observer.messages().back().message));
@@ -3564,7 +3564,7 @@ IN_PROC_BROWSER_TEST_P(SharedStorageBrowserTest,
   const absl::optional<FencedFrameConfig>& fenced_frame_config =
       config_observer.GetConfig();
   EXPECT_TRUE(fenced_frame_config.has_value());
-  EXPECT_EQ(fenced_frame_config->urn_uuid_, observed_urn_uuid.value());
+  EXPECT_EQ(fenced_frame_config->urn_uuid(), observed_urn_uuid.value());
 
   EXPECT_EQ("Finish executing 'test-url-selection-operation'",
             base::UTF16ToUTF8(console_observer.messages().back().message));
@@ -3669,7 +3669,7 @@ IN_PROC_BROWSER_TEST_P(SharedStorageBrowserTest,
   const absl::optional<FencedFrameConfig>& fenced_frame_config =
       config_observer.GetConfig();
   EXPECT_TRUE(fenced_frame_config.has_value());
-  EXPECT_EQ(fenced_frame_config->urn_uuid_, observed_urn_uuid.value());
+  EXPECT_EQ(fenced_frame_config->urn_uuid(), observed_urn_uuid.value());
 
   EXPECT_EQ("Finish executing 'test-url-selection-operation'",
             base::UTF16ToUTF8(console_observer.messages().back().message));
@@ -3767,7 +3767,7 @@ IN_PROC_BROWSER_TEST_P(SharedStorageBrowserTest,
   const absl::optional<FencedFrameConfig>& fenced_frame_config =
       config_observer.GetConfig();
   EXPECT_TRUE(fenced_frame_config.has_value());
-  EXPECT_EQ(fenced_frame_config->urn_uuid_, observed_urn_uuid.value());
+  EXPECT_EQ(fenced_frame_config->urn_uuid(), observed_urn_uuid.value());
 
   SharedStorageBudgetMetadata* metadata =
       GetSharedStorageBudgetMetadata(observed_urn_uuid.value());
@@ -4679,7 +4679,7 @@ IN_PROC_BROWSER_TEST_F(SharedStorageFencedFrameInteractionBrowserTest,
   const absl::optional<FencedFrameConfig>& fenced_frame_config =
       config_observer.GetConfig();
   EXPECT_TRUE(fenced_frame_config.has_value());
-  EXPECT_EQ(fenced_frame_config->urn_uuid_, observed_urn_uuid.value());
+  EXPECT_EQ(fenced_frame_config->urn_uuid(), observed_urn_uuid.value());
 
   SharedStorageBudgetMetadata* metadata =
       GetSharedStorageBudgetMetadata(observed_urn_uuid.value());
@@ -4852,7 +4852,7 @@ IN_PROC_BROWSER_TEST_F(SharedStorageFencedFrameInteractionBrowserTest,
   const absl::optional<FencedFrameConfig>& fenced_frame_config =
       config_observer.GetConfig();
   EXPECT_TRUE(fenced_frame_config.has_value());
-  EXPECT_EQ(fenced_frame_config->urn_uuid_, observed_urn_uuid.value());
+  EXPECT_EQ(fenced_frame_config->urn_uuid(), observed_urn_uuid.value());
 
   SharedStorageBudgetMetadata* metadata =
       GetSharedStorageBudgetMetadata(observed_urn_uuid.value());
@@ -5077,7 +5077,7 @@ IN_PROC_BROWSER_TEST_F(SharedStorageFencedFrameInteractionBrowserTest,
   // populated in the destructor of `SharedStorageWorkletHost`.
   ASSERT_TRUE(config_observer.ConfigObserved());
   EXPECT_TRUE(fenced_frame_config.has_value());
-  EXPECT_EQ(fenced_frame_config->urn_uuid_, observed_urn_uuid.value());
+  EXPECT_EQ(fenced_frame_config->urn_uuid(), observed_urn_uuid.value());
 }
 
 IN_PROC_BROWSER_TEST_F(SharedStorageFencedFrameInteractionBrowserTest,
@@ -5149,7 +5149,7 @@ IN_PROC_BROWSER_TEST_F(SharedStorageFencedFrameInteractionBrowserTest,
   const absl::optional<FencedFrameConfig>& fenced_frame_config =
       config_observer.GetConfig();
   EXPECT_TRUE(fenced_frame_config.has_value());
-  EXPECT_EQ(fenced_frame_config->urn_uuid_, observed_urn_uuid->spec());
+  EXPECT_EQ(fenced_frame_config->urn_uuid(), observed_urn_uuid->spec());
 
   EXPECT_EQ(
       "Promise resolved to a number outside the length of the input urls.",
@@ -5260,7 +5260,7 @@ IN_PROC_BROWSER_TEST_F(SharedStorageFencedFrameInteractionBrowserTest,
   const absl::optional<FencedFrameConfig>& fenced_frame_config =
       config_observer.GetConfig();
   EXPECT_TRUE(fenced_frame_config.has_value());
-  EXPECT_EQ(fenced_frame_config->urn_uuid_, observed_urn_uuid.value());
+  EXPECT_EQ(fenced_frame_config->urn_uuid(), observed_urn_uuid.value());
 
   EXPECT_EQ("Finish executing 'test-url-selection-operation'",
             base::UTF16ToUTF8(console_observer.messages().back().message));
@@ -5827,13 +5827,13 @@ IN_PROC_BROWSER_TEST_F(
   const absl::optional<FencedFrameConfig>& fenced_frame_config_1 =
       config_observer_1.GetConfig();
   EXPECT_TRUE(fenced_frame_config_1.has_value());
-  EXPECT_EQ(fenced_frame_config_1->urn_uuid_, observed_urn_uuid_1.value());
+  EXPECT_EQ(fenced_frame_config_1->urn_uuid(), observed_urn_uuid_1.value());
 
   ASSERT_TRUE(config_observer_2.ConfigObserved());
   const absl::optional<FencedFrameConfig>& fenced_frame_config_2 =
       config_observer_2.GetConfig();
   EXPECT_TRUE(fenced_frame_config_2.has_value());
-  EXPECT_EQ(fenced_frame_config_2->urn_uuid_, observed_urn_uuid_2.value());
+  EXPECT_EQ(fenced_frame_config_2->urn_uuid(), observed_urn_uuid_2.value());
 
   FrameTreeNode* fenced_frame_root_node_1 = CreateFencedFrame(
       ResolveSelectURLToConfig()
@@ -6011,13 +6011,13 @@ IN_PROC_BROWSER_TEST_F(SharedStorageFencedFrameInteractionBrowserTest,
   const absl::optional<FencedFrameConfig>& fenced_frame_config_1 =
       config_observer_1.GetConfig();
   EXPECT_TRUE(fenced_frame_config_1.has_value());
-  EXPECT_EQ(fenced_frame_config_1->urn_uuid_, observed_urn_uuid_1.value());
+  EXPECT_EQ(fenced_frame_config_1->urn_uuid(), observed_urn_uuid_1.value());
 
   ASSERT_TRUE(config_observer_2.ConfigObserved());
   const absl::optional<FencedFrameConfig>& fenced_frame_config_2 =
       config_observer_2.GetConfig();
   EXPECT_TRUE(fenced_frame_config_2.has_value());
-  EXPECT_EQ(fenced_frame_config_2->urn_uuid_, observed_urn_uuid_2.value());
+  EXPECT_EQ(fenced_frame_config_2->urn_uuid(), observed_urn_uuid_2.value());
 
   EXPECT_EQ("Insufficient budget for selectURL().",
             base::UTF16ToUTF8(console_observer.messages().back().message));
@@ -7081,7 +7081,7 @@ class SharedStorageSelectURLLimitBrowserTest
     if (!config.has_value()) {
       return absl::nullopt;
     }
-    EXPECT_TRUE(config->mapped_url_.has_value());
+    EXPECT_TRUE(config->mapped_url().has_value());
 
     SharedStorageBudgetMetadata* metadata =
         GetSharedStorageBudgetMetadata(observed_urn_uuid.value());
@@ -7091,7 +7091,7 @@ class SharedStorageSelectURLLimitBrowserTest
     EXPECT_EQ(metadata->site,
               net::SchemefulSite(https_server()->GetOrigin(host_str)));
 
-    return std::make_pair(config->mapped_url_->GetValueIgnoringVisibility(),
+    return std::make_pair(config->mapped_url()->GetValueIgnoringVisibility(),
                           metadata->budget_to_charge);
   }
 
@@ -7663,7 +7663,7 @@ class SharedStorageContextBrowserTest
     const absl::optional<FencedFrameConfig>& fenced_frame_config =
         config_observer.GetConfig();
     EXPECT_TRUE(fenced_frame_config.has_value());
-    EXPECT_EQ(fenced_frame_config->urn_uuid_, observed_urn_uuid.value());
+    EXPECT_EQ(fenced_frame_config->urn_uuid(), observed_urn_uuid.value());
   }
 
  private:

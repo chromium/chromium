@@ -19,7 +19,7 @@
 
 namespace content {
 
-struct FencedFrameConfig;
+class FencedFrameConfig;
 class SharedStorageDocumentServiceImpl;
 class SharedStorageWorkletHost;
 
