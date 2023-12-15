@@ -6,8 +6,7 @@
 
 namespace wl {
 
-const struct wl_pointer_interface kTestKeyboardImpl = {
-    nullptr,           // set_cursor
+const struct wl_keyboard_interface kTestKeyboardImpl = {
     &DestroyResource,  // release
 };
 
