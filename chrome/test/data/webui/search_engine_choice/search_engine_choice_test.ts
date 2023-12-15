@@ -15,7 +15,19 @@ suite('SearchEngineChoiceTest', function() {
   let testElement: SearchEngineChoiceAppElement;
   let handler: TestMock<PageHandlerRemote>&PageHandlerRemote;
 
-  setup(async function() {
+  /**
+   * Async spin until predicate() returns true.
+   */
+  function waitFor(predicate: () => boolean): Promise<void> {
+    if (predicate()) {
+      return Promise.resolve();
+    }
+    return new Promise(resolve => setTimeout(() => {
+                         resolve(waitFor(predicate));
+                       }, 0));
+  }
+
+  setup(function() {
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
     handler = TestMock.fromClass(PageHandlerRemote);
     SearchEngineChoiceBrowserProxy.setInstance(
@@ -23,8 +35,7 @@ suite('SearchEngineChoiceTest', function() {
 
     testElement = document.createElement('search-engine-choice-app');
     document.body.appendChild(testElement);
-    await waitBeforeNextRender(testElement);
-    testElement.setInstantScrollBehaviorForTest();
+    return waitBeforeNextRender(testElement);
   });
 
   teardown(function() {
@@ -54,9 +65,9 @@ suite('SearchEngineChoiceTest', function() {
     // The action button text should become "Set as default" after being clicked
     // but still be disabled because we haven't yet made a choice.
     actionButton.click();
-    await waitBeforeNextRender(actionButton);
-    assertEquals(
-        actionButton.textContent!.trim(), testElement.i18n('submitButtonText'));
+    await waitFor(
+        () => actionButton.textContent!.trim() ===
+            testElement.i18n('submitButtonText'));
     assertTrue(actionButton.disabled);
 
     // The action button should be enabled after making a choice.
