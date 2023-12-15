@@ -363,4 +363,6 @@ enum CustomizationRestriction {
   kDisallowCustomizations = 1,
   // Disable key event rewrites.
   kDisableKeyEventRewrites = 2,
+  // Allow Alphabet key event rewrites.
+  kAllowAlphabetKeyEventRewrites = 3,
 };

@@ -833,6 +833,36 @@ TEST_F(PeripheralCustomizationEventRewriterTest,
       /*expected_count=*/1u);
 }
 
+TEST_F(MouseButtonObserverTest, RewriteAlphabetKeyEvent) {
+  TestEventRewriterContinuation continuation;
+
+  rewriter_->StartObservingMouse(
+      kMouseDeviceId,
+      /*customization_restriction=*/mojom::CustomizationRestriction::
+          kAllowAlphabetKeyEventRewrites);
+
+  ui::KeyEvent key_event = CreateKeyButtonEvent(
+      ui::ET_KEY_PRESSED, ui::VKEY_LEFT, ui::EF_COMMAND_DOWN);
+  rewriter_->RewriteEvent(key_event,
+                          continuation.weak_ptr_factory_.GetWeakPtr());
+  // Key event shouldn't be discarded if the key
+  // code is not alphabet letter.
+  ASSERT_TRUE(continuation.passthrough_event);
+  ASSERT_TRUE(continuation.passthrough_event->IsKeyEvent());
+  EXPECT_EQ(ConvertToString(key_event),
+            ConvertToString(*continuation.passthrough_event));
+
+  ui::KeyEvent new_key_event =
+      CreateKeyButtonEvent(ui::ET_KEY_PRESSED, ui::VKEY_A, ui::EF_COMMAND_DOWN);
+  continuation.reset();
+  rewriter_->RewriteEvent(new_key_event,
+                          continuation.weak_ptr_factory_.GetWeakPtr());
+  // New key event should be discarded if the key
+  // code is alphabet letter.
+  ASSERT_TRUE(continuation.discarded());
+  EXPECT_EQ(nullptr, continuation.passthrough_event);
+}
+
 class GraphicsTabletButtonObserverTest
     : public PeripheralCustomizationEventRewriterTest,
       public testing::WithParamInterface<EventRewriterTestData> {};

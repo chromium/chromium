@@ -388,6 +388,11 @@ bool operator<(
   return left.button->is_vkey();
 }
 
+// Verify if the keyboard code is an alphabet letter.
+bool IsAlphaKeyboardCode(ui::KeyboardCode key_code) {
+  return key_code >= ui::VKEY_A && key_code <= ui::VKEY_Z;
+}
+
 PeripheralCustomizationEventRewriter::DeviceIdButton::DeviceIdButton(
     int device_id,
     mojom::ButtonPtr button)
@@ -498,17 +503,35 @@ bool PeripheralCustomizationEventRewriter::NotifyMouseEventObserving(
   return true;
 }
 
+bool PeripheralCustomizationEventRewriter::IsButtonCustomizable(
+    const ui::KeyEvent& key_event) {
+  const auto iter = mice_to_observe_.find(key_event.source_device_id());
+  if (iter == mice_to_observe().end()) {
+    return false;
+  }
+  const auto customization_restriction = iter->second;
+  // There are several cases for the customization restriction:
+  // 1. If restriction is kAllowCustomizations, mice are allowed to observe
+  // key events.
+  // 2. If restriction is kAllowAlphabetKeyEventRewrites, mice are allowed to
+  // observe only alphabet letters key event.
+  // 3. Mice are not allowed to observe key event in other cases.
+  switch (customization_restriction) {
+    case mojom::CustomizationRestriction::kAllowCustomizations:
+      return true;
+    case mojom::CustomizationRestriction::kAllowAlphabetKeyEventRewrites:
+      return IsAlphaKeyboardCode(key_event.key_code());
+    case mojom::CustomizationRestriction::kDisallowCustomizations:
+    case mojom::CustomizationRestriction::kDisableKeyEventRewrites:
+      return false;
+  }
+}
+
 bool PeripheralCustomizationEventRewriter::NotifyKeyEventObserving(
     const ui::KeyEvent& key_event,
     DeviceType device_type) {
-  // Only mice that have kAllowCustomizations restriction should be allowed
-  // to observe key events.
-  if (device_type == DeviceType::kMouse) {
-    const auto iter = mice_to_observe_.find(key_event.source_device_id());
-    if (iter == mice_to_observe().end() ||
-        iter->second != mojom::CustomizationRestriction::kAllowCustomizations) {
-      return false;
-    }
+  if (device_type == DeviceType::kMouse && !IsButtonCustomizable(key_event)) {
+    return false;
   }
 
   // Observers should only be notified on key presses.
