@@ -13,8 +13,11 @@
 #import "components/bookmarks/browser/bookmark_node.h"
 #import "components/commerce/core/price_tracking_utils.h"
 #import "components/commerce/core/proto/price_tracking.pb.h"
+#import "components/optimization_guide/core/hints_manager.h"
 #import "components/optimization_guide/proto/push_notification.pb.h"
 #import "ios/chrome/browser/bookmarks/model/local_or_syncable_bookmark_model_factory.h"
+#import "ios/chrome/browser/optimization_guide/model/optimization_guide_service.h"
+#import "ios/chrome/browser/optimization_guide/model/optimization_guide_service_factory.h"
 #import "ios/chrome/browser/push_notification/model/push_notification_client_id.h"
 #import "ios/chrome/browser/shared/coordinator/scene/scene_state.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
@@ -89,6 +92,19 @@ CommercePushNotificationClient::HandleNotificationReception(
     NSDictionary<NSString*, id>* notification) {
   base::RecordAction(base::UserMetricsAction(
       "Commerce.PriceTracking.PushNotification.Received"));
+  OptimizationGuideService* optimization_guide_service =
+      OptimizationGuideServiceFactory::GetForBrowserState(
+          GetLastUsedBrowserState());
+  std::unique_ptr<optimization_guide::proto::HintNotificationPayload>
+      hint_notification_payload = ParseHintNotificationPayload(
+          [notification objectForKey:kSerializedPayloadKey]);
+  if (hint_notification_payload) {
+    optimization_guide::PushNotificationManager* push_notification_manager =
+        optimization_guide_service->GetHintsManager()
+            ->push_notification_manager();
+    push_notification_manager->OnNewPushNotification(
+        *hint_notification_payload);
+  }
   return UIBackgroundFetchResultNoData;
 }
 
