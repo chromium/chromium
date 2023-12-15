@@ -61,7 +61,7 @@ AXObject* AXImageMapLink::GetAXObjectForImageMap(AXObjectCacheImpl& cache,
   if (!map)
     return nullptr;
 
-  return cache.GetOrCreate(static_cast<Node*>(map->ImageElement()));
+  return cache.Get(static_cast<Node*>(map->ImageElement()));
 }
 
 ax::mojom::blink::Role AXImageMapLink::NativeRoleIgnoringAria() const {
@@ -118,7 +118,7 @@ void AXImageMapLink::GetRelativeBounds(AXObject** out_container,
     return;
 
   out_bounds_in_container = area->GetPath(layout_object).BoundingRect();
-  *out_container = AXObjectCache().GetOrCreate(layout_object);
+  *out_container = AXObjectCache().Get(layout_object);
 }
 
 bool AXImageMapLink::IsImageMapLink() const {

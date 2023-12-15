@@ -1194,9 +1194,19 @@ AXObject* AXObject::ComputeNonARIAParent(AXObjectCacheImpl& cache,
 
   Node* parent_node = GetParentNodeForComputeParent(cache, current_node);
 
+  // If the tree is not currently mutable, then new AXObjects cannot be created.
+  // Return the AXObject for the parent only if it is already part of the tree.
+  if (!cache.IsProcessingDeferredEvents()) {
+    return cache.Get(parent_node);
+  }
+
+  // Get the existing AXObject for the parent or create one if necessary.
   // Will not create an object if no valid parent node is found. This occurs
   // when a DOM child isn't visited by LayoutTreeBuilderTraversal, such as an
   // element child of a <textarea>, which only supports plain text.
+  // TODO(acessibility) Covert to NOTREACHED(), and eventually try to remove
+  // parent repairs and this method entirely, as AXObjects will only be created
+  // by building from the top down.
   return cache.GetOrCreate(parent_node);
 }
 
@@ -2420,7 +2430,7 @@ AXObject* AXObject::GetTargetPopoverForInvoker() const {
     // The next element is already the popover.
     return nullptr;
   }
-  return AXObjectCache().GetOrCreate(target_popover);
+  return AXObjectCache().Get(target_popover);
 }
 
 // Try to get an aria-controls for an <input role="combobox">, because it
@@ -2448,7 +2458,7 @@ AXObject* AXObject::GetControlsListboxForTextfieldCombobox() {
                             html_names::kAriaOwnsAttr) &&
       owned_elements.size() > 0) {
     DCHECK(owned_elements[0]);
-    listbox_candidate = AXObjectCache().GetOrCreate(owned_elements[0]);
+    listbox_candidate = AXObjectCache().Get(owned_elements[0]);
   }
 
   // Combobox grouping <div role="combobox"><input><div role="listbox"></div>.
@@ -3314,15 +3324,14 @@ bool AXObject::ComputeIsInertViaStyle(const ComputedStyle* style,
         // dialog or a fullscreen element (see AdjustStyleForInert).
         Document& document = GetNode()->GetDocument();
         if (HTMLDialogElement* dialog = document.ActiveModalDialog()) {
-          if (AXObject* dialog_object = AXObjectCache().GetOrCreate(dialog)) {
+          if (AXObject* dialog_object = AXObjectCache().Get(dialog)) {
             ignored_reasons->push_back(
                 IgnoredReason(kAXActiveModalDialog, dialog_object));
             return true;
           }
         } else if (Element* fullscreen =
                        Fullscreen::FullscreenElementFrom(document)) {
-          if (AXObject* fullscreen_object =
-                  AXObjectCache().GetOrCreate(fullscreen)) {
+          if (AXObject* fullscreen_object = AXObjectCache().Get(fullscreen)) {
             ignored_reasons->push_back(
                 IgnoredReason(kAXActiveFullscreenElement, fullscreen_object));
             return true;
@@ -3492,9 +3501,8 @@ bool AXObject::IsBlockedByAriaModalDialog(
   }
 
   if (ignored_reasons) {
-    ignored_reasons->push_back(
-        IgnoredReason(kAXAriaModalDialog,
-                      AXObjectCache().GetOrCreate(active_aria_modal_dialog)));
+    ignored_reasons->push_back(IgnoredReason(
+        kAXAriaModalDialog, AXObjectCache().Get(active_aria_modal_dialog)));
   }
   return true;
 }
@@ -3529,7 +3537,7 @@ const AXObject* AXObject::InertRoot() const {
 
   while (element) {
     if (element->IsInertRoot())
-      return AXObjectCache().GetOrCreate(element);
+      return AXObjectCache().Get(element);
     element = FlatTreeTraversal::ParentElement(*element);
   }
 
@@ -3976,7 +3984,7 @@ const AXObject* AXObject::DatetimeAncestor() const {
       type != FormControlType::kInputWeek) {
     return nullptr;
   }
-  return AXObjectCache().GetOrCreate(input);
+  return AXObjectCache().Get(input);
 }
 
 bool AXObject::LastKnownIsIgnoredValue() const {
@@ -4593,7 +4601,7 @@ String AXObject::TextFromElements(
   AXRelatedObjectVector local_related_objects;
 
   for (const auto& element : elements) {
-    AXObject* ax_element = AXObjectCache().GetOrCreate(element);
+    AXObject* ax_element = AXObjectCache().Get(element);
     if (ax_element) {
       found_valid_element = true;
       AXObject* aria_labelled_by_node = nullptr;
@@ -5993,7 +6001,7 @@ AXObject* AXObject::RootScroller() const {
   if (global_root_scroller->GetDocument() != GetDocument())
     return nullptr;
 
-  return AXObjectCache().GetOrCreate(global_root_scroller);
+  return AXObjectCache().Get(global_root_scroller);
 }
 
 LocalFrameView* AXObject::DocumentFrameView() const {
@@ -6450,7 +6458,7 @@ void AXObject::GetRelativeBounds(AXObject** out_container,
   if (layout_object->IsFixedPositioned()) {
     // If it's a fixed position element, the container should simply be the
     // root web area.
-    container = AXObjectCache().GetOrCreate(GetDocument());
+    container = AXObjectCache().Get(GetDocument());
   } else {
     while (container) {
       container_layout_object = container->GetLayoutObject();
@@ -6566,7 +6574,7 @@ bool AXObject::PerformAction(const ui::AXActionData& action_data) {
   // Updating style and layout for the node can cause it to gain layout,
   // detaching an AXNodeObject to make room for an AXLayoutObject.
   if (IsDetached()) {
-    AXObject* new_object = cache.GetOrCreate(node);
+    AXObject* new_object = cache.Get(node);
     return new_object ? new_object->PerformAction(action_data) : false;
   }
 
@@ -6770,7 +6778,7 @@ bool AXObject::RequestScrollToMakeVisibleWithSubFocusAction(
   // Updating style and layout for the node can cause it to gain layout,
   // detaching an AXNodeObject to make room for an AXLayoutObject.
   if (IsDetached()) {
-    AXObject* new_object = cache.GetOrCreate(node);
+    AXObject* new_object = cache.Get(node);
     return new_object
                ? new_object->OnNativeScrollToMakeVisibleWithSubFocusAction(
                      subfocus, horizontal_scroll_alignment,
@@ -6901,9 +6909,8 @@ bool AXObject::OnNativeScrollToMakeVisibleAction() const {
           ScrollAlignment::CenterIfNeeded(), ScrollAlignment::CenterIfNeeded(),
           mojom::blink::ScrollType::kProgrammatic, false,
           mojom::blink::ScrollBehavior::kAuto));
-  AXObjectCache().PostNotification(
-      AXObjectCache().GetOrCreate(GetDocument()->GetLayoutView()),
-      ax::mojom::blink::Event::kLocationChanged);
+  AXObjectCache().PostNotification(GetDocument(),
+                                   ax::mojom::blink::Event::kLocationChanged);
   return true;
 }
 
@@ -6924,9 +6931,8 @@ bool AXObject::OnNativeScrollToMakeVisibleWithSubFocusAction(
           mojom::blink::ScrollType::kProgrammatic,
           false /* make_visible_in_visual_viewport */,
           mojom::blink::ScrollBehavior::kAuto));
-  AXObjectCache().PostNotification(
-      AXObjectCache().GetOrCreate(GetDocument()->GetLayoutView()),
-      ax::mojom::blink::Event::kLocationChanged);
+  AXObjectCache().PostNotification(GetDocument(),
+                                   ax::mojom::blink::Event::kLocationChanged);
   return true;
 }
 
@@ -6944,9 +6950,8 @@ bool AXObject::OnNativeScrollToGlobalPointAction(
           ScrollAlignment::LeftAlways(), ScrollAlignment::TopAlways(),
           mojom::blink::ScrollType::kProgrammatic, false,
           mojom::blink::ScrollBehavior::kAuto));
-  AXObjectCache().PostNotification(
-      AXObjectCache().GetOrCreate(GetDocument()->GetLayoutView()),
-      ax::mojom::blink::Event::kLocationChanged);
+  AXObjectCache().PostNotification(GetDocument(),
+                                   ax::mojom::blink::Event::kLocationChanged);
   return true;
 }
 

@@ -61,7 +61,7 @@ void SetObjectAttribute(ax::mojom::blink::IntAttribute attribute,
   if (!target)
     return;
 
-  AXObject* ax_target = object->AXObjectCache().GetOrCreate(target);
+  AXObject* ax_target = object->AXObjectCache().Get(target);
   if (!ax_target)
     return;
   if (attribute == ax::mojom::blink::IntAttribute::kActivedescendantId &&
@@ -91,8 +91,7 @@ void SetIntListAttribute(ax::mojom::blink::IntListAttribute attribute,
   std::vector<int32_t> ax_ids;
 
   for (const auto& associated_element : *attr_associated_elements) {
-    AXObject* ax_element =
-        object->AXObjectCache().GetOrCreate(associated_element);
+    AXObject* ax_element = object->AXObjectCache().Get(associated_element);
     if (!ax_element)
       continue;
     if (!ax_element->AccessibilityIsIgnored())
@@ -248,7 +247,7 @@ void AXNodeDataAOMPropertyClient::AddRelationProperty(
   }
 
   Element* target = value.element();
-  AXObject* ax_target = ax_object_cache_->GetOrCreate(target);
+  AXObject* ax_target = ax_object_cache_->Get(target);
   if (!ax_target)
     return;
 
@@ -281,7 +280,7 @@ void AXNodeDataAOMPropertyClient::AddRelationListProperty(
     AccessibleNode* accessible_node = relations.item(i);
     if (accessible_node) {
       Element* element = accessible_node->element();
-      AXObject* ax_element = ax_object_cache_->GetOrCreate(element);
+      AXObject* ax_element = ax_object_cache_->Get(element);
       if (ax_element && !ax_element->AccessibilityIsIgnored())
         ax_ids.push_back(ax_element->AXObjectID());
     }

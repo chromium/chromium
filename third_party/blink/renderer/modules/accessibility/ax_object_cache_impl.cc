@@ -903,16 +903,7 @@ AXObject* AXObjectCacheImpl::FocusedObject() {
   Node* focused_node = FocusedNode();
   CHECK(focused_node);
 
-  AXObject* obj = nullptr;
-  if (IsProcessingDeferredEvents()) {
-    obj = GetOrCreate(focused_node);
-  } else {
-    // The focus is on a node that has been pruned from the a11y tree, such as
-    // on an area in an image map that is not being used. Handle this rare
-    // edge case without crashing (do not try to create an accessible while
-    // being frozen).
-    obj = Get(focused_node);
-  }
+  AXObject* obj = Get(focused_node);
   if (!obj) {
     // In rare cases it's possible for the focus to not exist in the tree.
     // An example would be a focused element inside of an image map that
@@ -1366,6 +1357,9 @@ AXObject* AXObjectCacheImpl::GetOrCreate(const Node* node,
 
 AXObject* AXObjectCacheImpl::GetOrCreate(Node* node,
                                          AXObject* parent_if_known) {
+  CHECK(IsProcessingDeferredEvents())
+      << "Only create AXObjects while processing AX events and tree: " << node;
+
   if (!node)
     return nullptr;
 
@@ -1491,9 +1485,9 @@ AXObject* AXObjectCacheImpl::CreateAndInit(Node* node,
   // New AXObjects cannot be created when the tree is frozen.
   // In this state, the tree should already be complete because
   // of UpdateTreeIfNeeded().
-  if (IsFrozen()) {
-    return nullptr;
-  }
+  CHECK(IsProcessingDeferredEvents())
+      << "Only create AXObjects while processing AX events and tree: " << node
+      << " " << layout_object;
 
 #if DCHECK_IS_ON()
   DCHECK(node || layout_object);
@@ -1573,10 +1567,6 @@ AXObject* AXObjectCacheImpl::CreateAndInit(Node* node,
     return nullptr;
   }
 
-  CHECK(IsProcessingDeferredEvents())
-      << "Only create AXObjects while processing AX events and tree: " << node
-      << " " << layout_object;
-
   AXID axid = GenerateAXID();
   DCHECK(!base::Contains(objects_, axid));
 
@@ -1628,6 +1618,10 @@ AXObject* AXObjectCacheImpl::GetOrCreate(LayoutObject* layout_object) {
 
 AXObject* AXObjectCacheImpl::GetOrCreate(LayoutObject* layout_object,
                                          AXObject* parent_if_known) {
+  CHECK(IsProcessingDeferredEvents())
+      << "Only create AXObjects while processing AX events and tree: "
+      << layout_object;
+
   if (!layout_object)
     return nullptr;
 
@@ -1641,6 +1635,9 @@ AXObject* AXObjectCacheImpl::GetOrCreate(LayoutObject* layout_object,
 
 AXObject* AXObjectCacheImpl::GetOrCreate(AbstractInlineTextBox* inline_text_box,
                                          AXObject* parent) {
+  CHECK(IsProcessingDeferredEvents())
+      << "Only create AXObjects while processing AX events and tree";
+
   if (!inline_text_box)
     return nullptr;
 
@@ -2380,13 +2377,13 @@ void AXObjectCacheImpl::TextChangedWithCleanLayout(Node* node) {
     return;
 
   DCHECK(!node->GetDocument().NeedsLayoutTreeUpdateForNode(*node));
-  TextChangedWithCleanLayout(node, GetOrCreate(node));
+  TextChangedWithCleanLayout(node, Get(node));
 }
 
 void AXObjectCacheImpl::FocusableChangedWithCleanLayout(Node* node) {
   Element* element = To<Element>(node);
   DCHECK(!element->GetDocument().NeedsLayoutTreeUpdateForNode(*element));
-  AXObject* obj = GetOrCreate(element);
+  AXObject* obj = Get(element);
   if (!obj)
     return;
 
@@ -2462,7 +2459,7 @@ void AXObjectCacheImpl::UpdateAriaOwnsWithCleanLayout(Node* node) {
   // Force computation of aria-owns, so that original parents that already
   // computed their children get the aria-owned children removed.
   if (AXObject::HasARIAOwns(To<Element>(node))) {
-    if (AXObject* obj = GetOrCreate(node)) {
+    if (AXObject* obj = Get(node)) {
       CHECK(relation_cache_);
       relation_cache_->UpdateAriaOwnsWithCleanLayout(obj);
     }
@@ -2760,9 +2757,12 @@ void AXObjectCacheImpl::ChildrenChanged(AccessibleNode* accessible_node) {
 }
 
 void AXObjectCacheImpl::ChildrenChangedWithCleanLayout(Node* node) {
-  ChildrenChangedWithCleanLayout(node, Get(node));
+  if (AXObject* obj = Get(node)) {
+    ChildrenChangedWithCleanLayout(node, obj);
+  }
 }
 
+// TODO can node be non-optional?
 void AXObjectCacheImpl::ChildrenChangedWithCleanLayout(Node* optional_node,
                                                        AXObject* obj) {
   CHECK(obj);
@@ -3248,6 +3248,8 @@ void AXObjectCacheImpl::ProcessCleanLayoutCallbacks(Document& document) {
 
   UpdateNumTreeUpdatesQueuedBeforeLayoutHistogram();
 
+  CHECK(!IsFrozen());
+
   TreeUpdateCallbackQueue old_tree_update_callback_queue;
   GetTreeUpdateCallbackQueue(document).swap(old_tree_update_callback_queue);
   nodes_with_pending_children_changed_.clear();
@@ -3298,14 +3300,6 @@ void AXObjectCacheImpl::PostNotification(Node* node,
   if (!node)
     return;
   PostNotification(Get(node), notification);
-}
-
-void AXObjectCacheImpl::EnsurePostNotification(
-    Node* node,
-    ax::mojom::blink::Event notification) {
-  if (!node)
-    return;
-  PostNotification(GetOrCreate(node), notification);
 }
 
 void AXObjectCacheImpl::PostNotification(AXObject* object,
@@ -3508,7 +3502,7 @@ void AXObjectCacheImpl::FireTreeUpdatedEventImmediately(
     case TreeUpdateReason::kMarkDirtyFromHandleLayout:
     case TreeUpdateReason::kMarkDirtyFromHandleScroll:
     case TreeUpdateReason::kMarkDirtyFromRemove:
-      EnsureMarkDirtyWithCleanLayout(node);
+      MarkAXObjectDirtyWithCleanLayout(Get(node));
       break;
     case TreeUpdateReason::kNodeGainedFocus:
       HandleNodeGainedFocusWithCleanLayout(node);
@@ -3519,7 +3513,7 @@ void AXObjectCacheImpl::FireTreeUpdatedEventImmediately(
     case TreeUpdateReason::kPostNotificationFromHandleLoadComplete:
     case TreeUpdateReason::kPostNotificationFromHandleLoadStart:
     case TreeUpdateReason::kPostNotificationFromHandleScrolledToAnchor:
-      EnsurePostNotification(node, tree_update->event);
+      PostNotification(node, tree_update->event);
       break;
     case TreeUpdateReason::kRemoveValidationMessageObjectFromFocusedUIElement:
       RemoveValidationMessageObjectWithCleanLayout(node);
@@ -3720,8 +3714,9 @@ void AXObjectCacheImpl::HandleAriaExpandedChangeWithCleanLayout(Node* node) {
   SCOPED_DISALLOW_LIFECYCLE_TRANSITION();
 
   DCHECK(!node->GetDocument().NeedsLayoutTreeUpdateForNode(*node));
-  if (AXObject* obj = GetOrCreate(node))
+  if (AXObject* obj = Get(node)) {
     obj->HandleAriaExpandedChanged();
+  }
 }
 
 void AXObjectCacheImpl::HandleAriaPressedChangedWithCleanLayout(Node* node) {
@@ -3846,8 +3841,9 @@ void AXObjectCacheImpl::HandleActiveDescendantChangedWithCleanLayout(
   DCHECK(node);
   DCHECK(!node->GetDocument().NeedsLayoutTreeUpdateForNode(*node));
 
-  if (AXObject* obj = GetOrCreate(node))
+  if (AXObject* obj = Get(node)) {
     obj->HandleActiveDescendantChanged();
+  }
 }
 
 // A <section> or role=region uses the region role if and only if it has a name.
@@ -4301,7 +4297,7 @@ void AXObjectCacheImpl::IdChangedWithCleanLayout(Node* node) {
 
 void AXObjectCacheImpl::AriaOwnsChangedWithCleanLayout(Node* node) {
   CHECK(relation_cache_);
-  if (AXObject* obj = GetOrCreate(node)) {
+  if (AXObject* obj = Get(node)) {
     relation_cache_->UpdateAriaOwnsWithCleanLayout(obj);
   }
 }
@@ -4341,7 +4337,7 @@ bool AXObjectCacheImpl::NodeIsTextControl(const Node* node) {
   if (!node)
     return false;
 
-  const AXObject* ax_object = GetOrCreate(const_cast<Node*>(node));
+  const AXObject* ax_object = Get(const_cast<Node*>(node));
   return ax_object && ax_object->IsTextField();
 }
 
@@ -4565,10 +4561,6 @@ void AXObjectCacheImpl::PostPlatformNotification(
       client->PostAccessibilityEvent(event);
     }
   }
-}
-
-void AXObjectCacheImpl::EnsureMarkDirtyWithCleanLayout(Node* node) {
-  MarkAXObjectDirtyWithCleanLayout(GetOrCreate(node));
 }
 
 void AXObjectCacheImpl::MarkAXObjectDirtyWithCleanLayoutHelper(
@@ -5257,7 +5249,7 @@ void AXObjectCacheImpl::HandleDeletionOrInsertionInTextField(
 
 void AXObjectCacheImpl::HandleEditableTextContentChangedWithCleanLayout(
     Node* node) {
-  AXObject* obj = GetOrCreate(node);
+  AXObject* obj = Get(node);
   if (obj) {
     obj = obj->GetTextFieldAncestor();
   }
@@ -5352,8 +5344,9 @@ void AXObjectCacheImpl::HandleUpdateActiveMenuOption(Node* menu_list) {
 
 void AXObjectCacheImpl::HandleUpdateActiveMenuOptionWithCleanLayout(
     Node* menu_list) {
-  if (AXMenuList* ax_menu_list = DynamicTo<AXMenuList>(GetOrCreate(menu_list)))
+  if (AXMenuList* ax_menu_list = DynamicTo<AXMenuList>(Get(menu_list))) {
     ax_menu_list->DidUpdateActiveOption();
+  }
 }
 
 void AXObjectCacheImpl::DidShowMenuListPopup(LayoutObject* menu_list) {
@@ -5523,11 +5516,11 @@ void AXObjectCacheImpl::SetCanvasObjectBounds(HTMLCanvasElement* canvas,
                                               const PhysicalRect& rect) {
   SCOPED_DISALLOW_LIFECYCLE_TRANSITION();
 
-  AXObject* obj = GetOrCreate(element);
+  AXObject* obj = Get(element);
   if (!obj)
     return;
 
-  AXObject* ax_canvas = GetOrCreate(canvas);
+  AXObject* ax_canvas = Get(canvas);
   if (!ax_canvas)
     return;
 

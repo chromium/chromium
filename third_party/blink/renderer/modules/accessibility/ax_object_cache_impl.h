@@ -442,11 +442,6 @@ class MODULES_EXPORT AXObjectCacheImpl
                            const AriaNotificationOptions*) override;
 
   void PostNotification(const LayoutObject*, ax::mojom::blink::Event);
-  // Creates object if necessary.
-  void EnsurePostNotification(Node*, ax::mojom::blink::Event);
-  void EnsureMarkDirtyWithCleanLayout(Node*);
-  // Does not create object.
-  // TODO(accessibility) Find out if we can merge with EnsurePostNotification().
   void PostNotification(Node*, ax::mojom::blink::Event);
   void PostNotification(AXObject*, ax::mojom::blink::Event);
 

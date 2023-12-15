@@ -1186,7 +1186,7 @@ TEST_F(AccessibilityTest, CheckNoDuplicateChildren) {
 
   AXObject* ax_select = GetAXObjectByElementId("sel");
   ax_select->SetNeedsToUpdateChildren();
-  ax_select->UpdateChildrenIfNecessary();
+  GetAXObjectCache().UpdateAXForAllDocuments();
 
   ASSERT_EQ(
       ax_select->FirstChildIncludingIgnored()->ChildCountIncludingIgnored(), 1);
@@ -1346,7 +1346,7 @@ TEST_F(AccessibilityTest, ComputeIsInertReason) {
   Node* p2_text = p2->firstChild();
 
   auto AssertInertReasons = [&](Node* node, AXIgnoredReason expectation) {
-    AXObject* object = GetAXObjectCache().GetOrCreate(node);
+    AXObject* object = GetAXObjectCache().Get(node);
     ASSERT_NE(object, nullptr);
     AXObject::IgnoredReasons reasons;
     ASSERT_TRUE(object->ComputeIsInert(&reasons));
@@ -1354,7 +1354,7 @@ TEST_F(AccessibilityTest, ComputeIsInertReason) {
     ASSERT_EQ(reasons[0].reason, expectation);
   };
   auto AssertNotInert = [&](Node* node) {
-    AXObject* object = GetAXObjectCache().GetOrCreate(node);
+    AXObject* object = GetAXObjectCache().Get(node);
     ASSERT_NE(object, nullptr);
     AXObject::IgnoredReasons reasons;
     ASSERT_FALSE(object->ComputeIsInert(&reasons));
@@ -1503,13 +1503,13 @@ TEST_F(AccessibilityTest, ComputeIsInertWithNonHTMLElements) {
   Element* element = document.QuerySelector(AtomicString("main"));
   while (element) {
     Node* node = element->firstChild();
-    AXObject* ax_node = GetAXObjectCache().GetOrCreate(node);
+    AXObject* ax_node = GetAXObjectCache().Get(node);
 
     // The text indicates the expected inert root, which is the nearest HTML
     // element ancestor with the 'inert' attribute.
     AtomicString selector(node->textContent().Impl());
     Element* inert_root = document.QuerySelector(selector);
-    AXObject* ax_inert_root = GetAXObjectCache().GetOrCreate(inert_root);
+    AXObject* ax_inert_root = GetAXObjectCache().Get(inert_root);
 
     AXObject::IgnoredReasons reasons;
     ASSERT_TRUE(ax_node->ComputeIsInert(&reasons));

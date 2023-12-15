@@ -61,15 +61,22 @@ AXObject* AXMenuListOption::ComputeParentAXMenuPopupFor(
   }
 
   // If there is a <select> ancestor, return the popup for it, if rendered.
-  if (AXObject* select_ax_object = cache.GetOrCreate(select)) {
-    if (auto* menu_list = DynamicTo<AXMenuList>(select_ax_object))
-      return menu_list->GetOrCreateMockPopupChild();
+  AXObject* select_ax_object = cache.Get(select);
+  if (!select_ax_object) {
+    return nullptr;
   }
 
-  // Otherwise, just return an AXObject for the parent node.
-  // This could be the <select> if it was not rendered.
-  // Or, any parent node if the <option> was not inside an AXMenuList.
-  return cache.GetOrCreate(select);
+  if (auto* menu_list = DynamicTo<AXMenuList>(select_ax_object)) {
+    // Return the popup.
+    return menu_list->GetOrCreateMockPopupChild();
+  }
+
+  DUMP_WILL_BE_NOTREACHED_NORETURN();
+
+  // Otherwise, just return the AXObject for the parent <select>.
+  // We should not reach here, because if an AXObject existed for the
+  // select element, then it must be an AXMenuList.
+  return select_ax_object;
 }
 
 bool AXMenuListOption::IsVisible() const {
@@ -180,7 +187,7 @@ void AXMenuListOption::GetRelativeBounds(
   // need to expose the bounds of options on those platforms.
 
   auto* select = To<HTMLOptionElement>(GetNode())->OwnerSelectElement();
-  AXObject* ax_menu_list = AXObjectCache().GetOrCreate(select);
+  AXObject* ax_menu_list = AXObjectCache().Get(select);
   if (!ax_menu_list)
     return;
   DCHECK(ax_menu_list->IsMenuList());
