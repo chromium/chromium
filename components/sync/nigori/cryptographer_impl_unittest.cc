@@ -306,7 +306,7 @@ TEST(CryptographerImplTest, ShouldEncryptAndDecryptForCrossUserSharing) {
   absl::optional<std::vector<uint8_t>> encrypted_message =
       cryptographer_sender->AuthEncryptForCrossUserSharing(
           base::as_bytes(base::make_span(plaintext)),
-          cryptographer_recipient->GetCrossUserSharingKeyPairForTesting(0)
+          cryptographer_recipient->GetCrossUserSharingKeyPair(0)
               .GetRawPublicKey());
 
   EXPECT_TRUE(encrypted_message.has_value());
@@ -314,8 +314,7 @@ TEST(CryptographerImplTest, ShouldEncryptAndDecryptForCrossUserSharing) {
   absl::optional<std::vector<uint8_t>> decrypted_message =
       cryptographer_recipient->AuthDecryptForCrossUserSharing(
           encrypted_message.value(),
-          cryptographer_sender->GetCrossUserSharingKeyPairForTesting(0)
-              .GetRawPublicKey(),
+          cryptographer_sender->GetCrossUserSharingKeyPair(0).GetRawPublicKey(),
           0);
 
   EXPECT_TRUE(decrypted_message.has_value());

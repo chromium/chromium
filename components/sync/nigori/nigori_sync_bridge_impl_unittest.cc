@@ -420,7 +420,8 @@ TEST_F(
                   kKeyVersion,
                   std::string(raw_public_key.begin(), raw_public_key.end())));
   const CrossUserSharingPublicPrivateKeyPair& key_pair_in_cryptographer =
-      cryptographer()->GetCrossUserSharingKeyPairForTesting(kKeyVersion);
+      bridge()->GetCryptographerImplForTesting().GetCrossUserSharingKeyPair(
+          kKeyVersion);
   EXPECT_THAT(key_pair_in_cryptographer.GetRawPrivateKey(),
               testing::ElementsAreArray(raw_private_key));
   EXPECT_THAT(key_pair_in_cryptographer.GetRawPublicKey(),

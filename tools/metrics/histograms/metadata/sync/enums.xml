@@ -60,6 +60,13 @@ chromium-metrics-reviews@google.com.
   <int value="3" label="Failed to parse decrypted invitation"/>
 </enum>
 
+<enum name="CrossUserSharingKeyPairState">
+  <int value="0" label="Key pair valid"/>
+  <int value="1" label="Public key not initialized"/>
+  <int value="2" label="Public key version invalid"/>
+  <int value="3" label="Corrupted public-private key pair"/>
+</enum>
+
 <enum name="FaviconAvailabilityStatus">
   <int value="0" label="Favicon available locally"/>
   <int value="1" label="Favicon available via sync"/>

@@ -39,6 +39,9 @@ class FakeCryptographer : public Cryptographer {
   void SelectDefaultEncryptionKey(const std::string& key_name);
   void ClearDefaultEncryptionKey();
 
+  const CrossUserSharingPublicPrivateKeyPair& GetCrossUserSharingKeyPair(
+      uint32_t version) const;
+
   // Cryptographer implementation.
   bool CanEncrypt() const override;
   bool CanDecrypt(const sync_pb::EncryptedData& encrypted) const override;
@@ -47,8 +50,6 @@ class FakeCryptographer : public Cryptographer {
                      sync_pb::EncryptedData* encrypted) const override;
   bool DecryptToString(const sync_pb::EncryptedData& encrypted,
                        std::string* decrypted) const override;
-  const CrossUserSharingPublicPrivateKeyPair&
-  GetCrossUserSharingKeyPairForTesting(uint32_t version) const override;
   absl::optional<std::vector<uint8_t>> AuthEncryptForCrossUserSharing(
       base::span<const uint8_t> plaintext,
       base::span<const uint8_t> recipient_public_key) const override;

@@ -96,6 +96,11 @@ class CryptographerImpl : public Cryptographer {
   // key-pair.
   bool HasKeyPair(const uint32_t key_pair_version) const;
 
+  // Returns a key pair for a given `version`. The key pair with the given
+  // `version` must exist.
+  const CrossUserSharingPublicPrivateKeyPair& GetCrossUserSharingKeyPair(
+      uint32_t version) const;
+
   // Sets or changes the version of the default cross user sharing key.
   void SelectDefaultCrossUserSharingKey(const uint32_t version);
 
@@ -107,22 +112,6 @@ class CryptographerImpl : public Cryptographer {
 
   size_t KeyBagSizeForTesting() const;
 
-  // Encrypts |plaintext| using Auth HPKE using |recipient_public_key|
-  // authentication is added with the current sender's authentication key.
-  // Empty optional is returned upon failure.
-  absl::optional<std::vector<uint8_t>> AuthEncryptForCrossUserSharing(
-      base::span<const uint8_t> plaintext,
-      base::span<const uint8_t> recipient_public_key) const override;
-
-  // Decrypts |encrypted_data| using Auth HPKE using the keys corresponding
-  // to |recipient_key_version| and authenticates that the sender actually used
-  // |sender_public_key| upon auth encryption.
-  //  Empty optional is returned upon failure.
-  absl::optional<std::vector<uint8_t>> AuthDecryptForCrossUserSharing(
-      base::span<const uint8_t> encrypted_data,
-      base::span<const uint8_t> sender_public_key,
-      const uint32_t recipient_key_version) const override;
-
   // Cryptographer overrides.
   bool CanEncrypt() const override;
   bool CanDecrypt(const sync_pb::EncryptedData& encrypted) const override;
@@ -131,8 +120,13 @@ class CryptographerImpl : public Cryptographer {
                      sync_pb::EncryptedData* encrypted) const override;
   bool DecryptToString(const sync_pb::EncryptedData& encrypted,
                        std::string* decrypted) const override;
-  const CrossUserSharingPublicPrivateKeyPair&
-  GetCrossUserSharingKeyPairForTesting(uint32_t version) const override;
+  absl::optional<std::vector<uint8_t>> AuthEncryptForCrossUserSharing(
+      base::span<const uint8_t> plaintext,
+      base::span<const uint8_t> recipient_public_key) const override;
+  absl::optional<std::vector<uint8_t>> AuthDecryptForCrossUserSharing(
+      base::span<const uint8_t> encrypted_data,
+      base::span<const uint8_t> sender_public_key,
+      const uint32_t recipient_key_version) const override;
 
  private:
   CryptographerImpl(NigoriKeyBag key_bag,

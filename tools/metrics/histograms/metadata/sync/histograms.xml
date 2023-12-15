@@ -368,14 +368,14 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Sync.CrossUserSharingPublicPrivateKeyInitializedOnStartup"
-    enum="Boolean" expires_after="2024-05-19">
+<histogram name="Sync.CrossUserSharingKeyPairState"
+    enum="CrossUserSharingKeyPairState" expires_after="2024-11-12">
   <owner>rushans@google.com</owner>
   <owner>mmoskvitin@google.com</owner>
   <component>Services&gt;Sync</component>
   <summary>
-    Records whether Nigori contains cross user sharing key pair. Recorded on
-    browser startup if there is valid local data.
+    Records the state of cross user sharing key pair on browser startup (or
+    profile load) when Nigori local data is valid.
   </summary>
 </histogram>
 
