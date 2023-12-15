@@ -53,7 +53,6 @@ class FindBarView : public views::BoxLayoutView,
   DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kTextField);
   DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kPreviousButtonElementId);
   DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kNextButtonElementId);
-  DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kCloseButtonElementId);
 
   explicit FindBarView(FindBarHost* host = nullptr);
 
