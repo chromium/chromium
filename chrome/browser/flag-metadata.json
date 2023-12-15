@@ -2616,7 +2616,7 @@
   },
   {
     "name": "enable-experimental-web-platform-features",
-    "owners": [ "//third_party/blink/renderer/core/OWNERS" ],
+    "owners": [ "//third_party/blink/renderer/OWNERS" ],
     // Used by developers to activate experimental features in blink.
     // See //third_party/blink/renderer/platform/runtime_enabled_features.json5.
     "expiry_milestone": -1

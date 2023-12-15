@@ -24,8 +24,3 @@ per-file websocket*.h=file://third_party/blink/renderer/platform/loader/OWNERS
 
 # Worker
 per-file web_worker_fetch_context.h=file://third_party/blink/renderer/core/workers/OWNERS
-
-# Any core owner can also approve changes to runtime-enabled features.
-# Please make sure to get a review from someone with expertise on the feature
-# you are changing.
-per-file web_runtime_features*=file://third_party/blink/renderer/core/OWNERS

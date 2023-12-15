@@ -1,7 +1,2 @@
 per-file notification_data_conversions*=peter@chromium.org
 per-file web_rtc_*=hbos@chromium.org
-
-# Any core owner can also approve changes to runtime-enabled features.
-# Please make sure to get a review from someone with expertise on the feature
-# you are changing.
-per-file web_runtime_features*=file://third_party/blink/renderer/core/OWNERS
