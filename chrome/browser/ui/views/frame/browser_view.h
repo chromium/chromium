@@ -127,17 +127,6 @@ class BrowserView : public BrowserWindow,
  public:
   METADATA_HEADER(BrowserView);
 
-  // Enumerates where the devtools are docked relative to the browser's main
-  // web contents.
-  enum class DevToolsDockedPlacement {
-    kLeft,
-    kRight,
-    kBottom,
-    // Devtools are not docked.
-    kNone,
-    kUnknown
-  };
-
   explicit BrowserView(std::unique_ptr<Browser> browser);
   BrowserView(const BrowserView&) = delete;
   BrowserView& operator=(const BrowserView&) = delete;
@@ -269,10 +258,6 @@ class BrowserView : public BrowserWindow,
   // Accessor for the contents and devtools WebViews.
   ContentsWebView* contents_web_view() { return contents_web_view_; }
   views::WebView* devtools_web_view() { return devtools_web_view_; }
-
-  DevToolsDockedPlacement devtools_docked_placement() const {
-    return current_devtools_docked_placement_;
-  }
 
   base::WeakPtr<BrowserView> GetAsWeakPtr() {
     return weak_ptr_factory_.GetWeakPtr();
@@ -832,6 +817,29 @@ class BrowserView : public BrowserWindow,
   // NonClientFrameView to get the correct offset. See
   // TopContainerBackground::PaintThemeCustomImage for details.
   gfx::Point GetThemeOffsetFromBrowserView() const;
+
+ protected:
+  // Enumerates where the devtools are docked relative to the browser's main
+  // web contents.
+  enum class DevToolsDockedPlacement {
+    kLeft,
+    kRight,
+    kBottom,
+    // Devtools are not docked.
+    kNone,
+    kUnknown
+  };
+
+  DevToolsDockedPlacement devtools_docked_placement() const {
+    return current_devtools_docked_placement_;
+  }
+
+  // Return the DevTools docked placement. It infers the docked placement from
+  // the bounds of contents_webview relative to the local bounds of the
+  // container that holds both contents_webview and devtools_webview.
+  static DevToolsDockedPlacement GetDevToolsDockedPlacement(
+      const gfx::Rect& contents_webview_bounds,
+      const gfx::Rect& local_webview_container_bounds);
 
  private:
   // Do not friend BrowserViewLayout. Use the BrowserViewLayoutDelegate

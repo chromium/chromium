@@ -432,35 +432,6 @@ bool WidgetHasChildModalDialog(views::Widget* parent_widget) {
   return false;
 }
 
-// Return the DevTools docked placement. It infers the docked placement from
-// the bounds of contents_webview relative to the local bounds of the container
-// that holds both contents_webview and devtools_webview.
-BrowserView::DevToolsDockedPlacement GetDevToolsDockedPlacement(
-    const gfx::Rect& contents_webview_bounds,
-    const gfx::Rect& local_webview_container_bounds) {
-  // If contents_webview has the same bounds as webview_container, it either
-  // means that devtools are not open or devtools are open in a separate
-  // window (not docked).
-  if (contents_webview_bounds == local_webview_container_bounds) {
-    return BrowserView::DevToolsDockedPlacement::kNone;
-  }
-
-  if (contents_webview_bounds.x() > 0 && contents_webview_bounds.y() == 0 &&
-      contents_webview_bounds.x() + contents_webview_bounds.width() ==
-          local_webview_container_bounds.width()) {
-    return BrowserView::DevToolsDockedPlacement::kLeft;
-  } else if (contents_webview_bounds.origin().IsOrigin() &&
-             contents_webview_bounds.height() ==
-                 local_webview_container_bounds.height()) {
-    return BrowserView::DevToolsDockedPlacement::kRight;
-  } else if (contents_webview_bounds.width() ==
-             local_webview_container_bounds.width()) {
-    return BrowserView::DevToolsDockedPlacement::kBottom;
-  }
-
-  return BrowserView::DevToolsDockedPlacement::kUnknown;
-}
-
 bool IsManagedGuestSession() {
 #if BUILDFLAG(IS_CHROMEOS)
   return chromeos::IsManagedGuestSession();
@@ -1592,6 +1563,33 @@ gfx::Point BrowserView::GetThemeOffsetFromBrowserView() const {
   return gfx::Point(
       -browser_view_origin.x(),
       ThemeProperties::kFrameHeightAboveTabs - browser_view_origin.y());
+}
+
+// static:
+BrowserView::DevToolsDockedPlacement BrowserView::GetDevToolsDockedPlacement(
+    const gfx::Rect& contents_webview_bounds,
+    const gfx::Rect& local_webview_container_bounds) {
+  // If contents_webview has the same bounds as webview_container, it either
+  // means that devtools are not open or devtools are open in a separate
+  // window (not docked).
+  if (contents_webview_bounds == local_webview_container_bounds) {
+    return BrowserView::DevToolsDockedPlacement::kNone;
+  }
+
+  if (contents_webview_bounds.x() > 0 && contents_webview_bounds.y() == 0 &&
+      contents_webview_bounds.x() + contents_webview_bounds.width() ==
+          local_webview_container_bounds.width()) {
+    return BrowserView::DevToolsDockedPlacement::kLeft;
+  } else if (contents_webview_bounds.origin().IsOrigin() &&
+             contents_webview_bounds.height() ==
+                 local_webview_container_bounds.height()) {
+    return BrowserView::DevToolsDockedPlacement::kRight;
+  } else if (contents_webview_bounds.width() ==
+             local_webview_container_bounds.width()) {
+    return BrowserView::DevToolsDockedPlacement::kBottom;
+  }
+
+  return BrowserView::DevToolsDockedPlacement::kUnknown;
 }
 
 bool BrowserView::IsLoadingAnimationRunningForTesting() const {
@@ -4194,18 +4192,6 @@ void BrowserView::Layout() {
   toolbar_->location_bar()->omnibox_view()->SetFocusBehavior(
       IsToolbarVisible() ? FocusBehavior::ALWAYS : FocusBehavior::NEVER);
   frame()->GetFrameView()->UpdateMinimumSize();
-
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  // In chromeOS ash we round the bottom two corners of the browser frame by
-  // rounding the respective corners of visible client contents i.e main web
-  // contents, devtools web contents and side panel. When ever there is change
-  // in the layout or visibility of these contents (devtools opened, devtools
-  // docked placement change, side panel open etc), we might need to update
-  // which corners are currently rounded. See
-  // `BrowserNonClientFrameViewChromeOS::UpdateWindowRoundedCorners()` for more
-  // details.
-  frame()->GetFrameView()->UpdateWindowRoundedCorners();
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
   // Some of the situations when the BrowserView is laid out are:
   // - Enter/exit immersive fullscreen mode.

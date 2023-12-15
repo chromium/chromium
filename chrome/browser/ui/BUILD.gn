@@ -2923,6 +2923,8 @@ static_library("ui") {
       "views/crostini/crostini_update_filesystem_view.h",
       "views/frame/browser_frame_ash.cc",
       "views/frame/browser_frame_ash.h",
+      "views/frame/browser_view_ash.cc",
+      "views/frame/browser_view_ash.h",
       "views/frame/custom_tab_browser_frame.cc",
       "views/frame/custom_tab_browser_frame.h",
       "views/frame/native_browser_frame_factory_chromeos.cc",
