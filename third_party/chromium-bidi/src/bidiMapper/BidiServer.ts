@@ -38,7 +38,12 @@ type BidiServerEvent = {
   message: ChromiumBidi.Command;
 };
 
-export type MapperOptions = {acceptInsecureCerts: boolean};
+export type MapperOptions = {
+  acceptInsecureCerts: boolean;
+  // TODO: Remove this after ChromeDriver version sending flag `true` reaches stable.
+  //   http://go/chromedriver:weak-map
+  sharedIdWithFrame?: boolean;
+};
 
 export class BidiServer extends EventEmitter<BidiServerEvent> {
   #messageQueue: ProcessingQueue<OutgoingMessage>;
@@ -90,6 +95,7 @@ export class BidiServer extends EventEmitter<BidiServerEvent> {
       this.#browsingContextStorage,
       new RealmStorage(),
       options?.acceptInsecureCerts ?? false,
+      options?.sharedIdWithFrame ?? false,
       parser,
       this.#logger
     );

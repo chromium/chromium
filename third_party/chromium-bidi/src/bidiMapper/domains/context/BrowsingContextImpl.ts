@@ -75,6 +75,7 @@ export class BrowsingContextImpl {
   #loaderId?: Protocol.Network.LoaderId;
   #cdpTarget: CdpTarget;
   #maybeDefaultRealm?: Realm;
+  readonly #sharedIdWithFrame: boolean;
   readonly #logger?: LoggerFn;
 
   private constructor(
@@ -84,6 +85,7 @@ export class BrowsingContextImpl {
     parentId: BrowsingContext.BrowsingContext | null,
     eventManager: EventManager,
     browsingContextStorage: BrowsingContextStorage,
+    sharedIdWithFrame: boolean,
     logger?: LoggerFn
   ) {
     this.#cdpTarget = cdpTarget;
@@ -92,6 +94,7 @@ export class BrowsingContextImpl {
     this.#parentId = parentId;
     this.#eventManager = eventManager;
     this.#browsingContextStorage = browsingContextStorage;
+    this.#sharedIdWithFrame = sharedIdWithFrame;
     this.#logger = logger;
   }
 
@@ -102,6 +105,7 @@ export class BrowsingContextImpl {
     parentId: BrowsingContext.BrowsingContext | null,
     eventManager: EventManager,
     browsingContextStorage: BrowsingContextStorage,
+    sharedIdWithFrame: boolean,
     logger?: LoggerFn
   ): BrowsingContextImpl {
     const context = new BrowsingContextImpl(
@@ -111,6 +115,7 @@ export class BrowsingContextImpl {
       parentId,
       eventManager,
       browsingContextStorage,
+      sharedIdWithFrame,
       logger
     );
 
@@ -481,6 +486,7 @@ export class BrowsingContextImpl {
           sandbox,
           this.#cdpTarget.cdpClient,
           this.#eventManager,
+          this.#sharedIdWithFrame,
           this.#logger
         );
 

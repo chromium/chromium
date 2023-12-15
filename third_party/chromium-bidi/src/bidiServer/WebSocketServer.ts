@@ -394,7 +394,9 @@ export class WebSocketServer {
   static #getMapperOptions(capabilities: any): MapperOptions {
     const acceptInsecureCerts =
       capabilities?.alwaysMatch?.acceptInsecureCerts ?? false;
-    return {acceptInsecureCerts};
+    const sharedIdWithFrame =
+      capabilities?.alwaysMatch?.sharedIdWithFrame ?? false;
+    return {acceptInsecureCerts, sharedIdWithFrame};
   }
 
   static #getChromeOptions(

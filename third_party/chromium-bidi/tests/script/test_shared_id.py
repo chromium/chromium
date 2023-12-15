@@ -16,12 +16,13 @@
 import re
 
 import pytest
-from test_helpers import execute_command, goto_url, set_html_content
+from test_helpers import (ANY_LEGACY_SHARED_ID, ANY_NEW_SHARED_ID,
+                          execute_command, goto_url, set_html_content)
 
 
 @pytest.mark.asyncio
-async def test_sharedId_in_same_realm_same_navigable(websocket, context_id,
-                                                     html):
+async def test_shared_id_in_same_realm_same_navigable(websocket, context_id,
+                                                      html):
     await goto_url(websocket, context_id, html("<div>some text</div>"))
 
     result = await execute_command(
@@ -62,7 +63,7 @@ async def test_sharedId_in_same_realm_same_navigable(websocket, context_id,
 
 
 @pytest.mark.asyncio
-async def test_sharedId_without_navigation(websocket, context_id):
+async def test_shared_id_without_navigation(websocket, context_id):
     await set_html_content(websocket, context_id, "<div>some text</div>")
 
     result = await execute_command(
@@ -103,7 +104,7 @@ async def test_sharedId_without_navigation(websocket, context_id):
 
 
 @pytest.mark.asyncio
-async def test_sharedId_in_different_realm_same_navigable(
+async def test_shared_id_in_different_realm_same_navigable(
         websocket, context_id, html):
     await goto_url(websocket, context_id, html("<div>some text</div>"))
 
@@ -148,7 +149,7 @@ async def test_sharedId_in_different_realm_same_navigable(
 
 
 @pytest.mark.asyncio
-async def test_sharedId_in_different_navigable(websocket, context_id, html):
+async def test_shared_id_in_different_navigable(websocket, context_id, html):
     await goto_url(websocket, context_id, html("<div>some text</div>"))
 
     result = await execute_command(
@@ -194,7 +195,7 @@ async def test_sharedId_in_different_navigable(websocket, context_id, html):
 
 
 @pytest.mark.asyncio
-async def test_sharedId_not_found(websocket, context_id, html):
+async def test_shared_id_not_found(websocket, context_id, html):
     await goto_url(websocket, context_id, html("<div>some text</div>"))
 
     result = await execute_command(
@@ -234,3 +235,93 @@ async def test_sharedId_not_found(websocket, context_id, html):
                     }
                 }
             })
+
+
+@pytest.mark.asyncio
+async def test_shared_id_default_format(websocket, context_id, html):
+    await goto_url(
+        websocket, context_id,
+        html(
+            "<div some_attr_name='some_attr_value'>some text<h2>some another text</h2></div>"
+        ))
+
+    result = await execute_command(
+        websocket, {
+            "method": "script.evaluate",
+            "params": {
+                "expression": "document.querySelector('body > div');",
+                "target": {
+                    "context": context_id
+                },
+                "awaitPromise": True,
+                "serializationOptions": {
+                    "maxDomDepth": 0
+                }
+            }
+        })
+    shared_id = result["result"]["sharedId"]
+    assert shared_id == ANY_LEGACY_SHARED_ID
+
+
+@pytest.mark.parametrize('websocket', [{
+    'capabilities': {
+        'sharedIdWithFrame': True
+    }
+}],
+                         indirect=['websocket'])
+@pytest.mark.asyncio
+async def test_shared_id_new_format(websocket, context_id, html):
+    await goto_url(
+        websocket, context_id,
+        html(
+            "<div some_attr_name='some_attr_value'>some text<h2>some another text</h2></div>"
+        ))
+
+    result = await execute_command(
+        websocket, {
+            "method": "script.evaluate",
+            "params": {
+                "expression": "document.querySelector('body > div');",
+                "target": {
+                    "context": context_id
+                },
+                "awaitPromise": True,
+                "serializationOptions": {
+                    "maxDomDepth": 0
+                }
+            }
+        })
+    shared_id = result["result"]["sharedId"]
+    assert shared_id == ANY_NEW_SHARED_ID
+
+
+@pytest.mark.parametrize('websocket', [{
+    'capabilities': {
+        'sharedIdWithFrame': False
+    }
+}],
+                         indirect=['websocket'])
+@pytest.mark.asyncio
+async def test_shared_id_old_format(websocket, context_id, html):
+    await goto_url(
+        websocket, context_id,
+        html(
+            "<div some_attr_name='some_attr_value'>some text<h2>some another text</h2></div>"
+        ))
+
+    result = await execute_command(
+        websocket, {
+            "method": "script.evaluate",
+            "params": {
+                "expression": "document.querySelector('body > div');",
+                "target": {
+                    "context": context_id
+                },
+                "awaitPromise": True,
+                "serializationOptions": {
+                    "maxDomDepth": 0
+                }
+            }
+        })
+    shared_id = result["result"]["sharedId"]
+    assert shared_id == ANY_LEGACY_SHARED_ID

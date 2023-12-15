@@ -44,6 +44,7 @@ export class BrowsingContextProcessor {
   readonly #browsingContextStorage: BrowsingContextStorage;
   readonly #networkStorage: NetworkStorage;
   readonly #acceptInsecureCerts: boolean;
+  readonly #sharedIdWithFrame: boolean;
   readonly #preloadScriptStorage: PreloadScriptStorage;
   readonly #realmStorage: RealmStorage;
 
@@ -59,6 +60,7 @@ export class BrowsingContextProcessor {
     networkStorage: NetworkStorage,
     preloadScriptStorage: PreloadScriptStorage,
     acceptInsecureCerts: boolean,
+    sharedIdWithFrame: boolean,
     logger?: LoggerFn
   ) {
     this.#acceptInsecureCerts = acceptInsecureCerts;
@@ -70,6 +72,7 @@ export class BrowsingContextProcessor {
     this.#preloadScriptStorage = preloadScriptStorage;
     this.#networkStorage = networkStorage;
     this.#realmStorage = realmStorage;
+    this.#sharedIdWithFrame = sharedIdWithFrame;
     this.#logger = logger;
 
     this.#setEventListeners(browserCdpClient);
@@ -318,6 +321,7 @@ export class BrowsingContextProcessor {
         params.parentFrameId,
         this.#eventManager,
         this.#browsingContextStorage,
+        this.#sharedIdWithFrame,
         this.#logger
       );
     }
@@ -380,6 +384,7 @@ export class BrowsingContextProcessor {
             null,
             this.#eventManager,
             this.#browsingContextStorage,
+            this.#sharedIdWithFrame,
             this.#logger
           );
         }
@@ -440,6 +445,7 @@ export class BrowsingContextProcessor {
         undefined,
         cdpTarget.cdpClient,
         this.#eventManager,
+        this.#sharedIdWithFrame,
         this.#logger
       );
       this.#workers.set(cdpTarget.cdpSessionId, realm);
