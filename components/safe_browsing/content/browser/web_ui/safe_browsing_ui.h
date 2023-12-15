@@ -329,7 +329,7 @@ class SafeBrowsingUI : public content::WebUIController {
   ~SafeBrowsingUI() override;
 };
 
-class WebUIInfoSingleton : public UrlRealTimeMechanism::WebUIDelegate,
+class WebUIInfoSingleton : public RealTimeUrlLookupServiceBase::WebUIDelegate,
                            public PingManager::WebUIDelegate,
                            public HashRealTimeService::WebUIDelegate {
  public:

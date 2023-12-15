@@ -116,7 +116,8 @@ class MockRealTimeUrlLookupService : public RealTimeUrlLookupServiceBase {
               return ChromeUserPopulation();
             }),
             /*referrer_chain_provider=*/nullptr,
-            /*pref_service=*/nullptr) {}
+            /*pref_service=*/nullptr,
+            /*webui_delegate=*/nullptr) {}
 
   // RealTimeUrlLookupServiceBase:
   bool CanPerformFullURLLookup() const override { return true; }
@@ -131,14 +132,12 @@ class MockRealTimeUrlLookupService : public RealTimeUrlLookupServiceBase {
       const GURL& url,
       const GURL& last_committed_url,
       bool is_mainframe,
-      RTLookupRequestCallback request_callback,
       RTLookupResponseCallback response_callback,
       scoped_refptr<base::SequencedTaskRunner> callback_task_runner) override {}
   void SendSampledRequest(
       const GURL& url,
       const GURL& last_committed_url,
       bool is_mainframe,
-      RTLookupRequestCallback request_callback,
       scoped_refptr<base::SequencedTaskRunner> callback_task_runner) override {}
 
  private:
@@ -153,7 +152,6 @@ class MockRealTimeUrlLookupService : public RealTimeUrlLookupServiceBase {
       const GURL& url,
       const GURL& last_committed_url,
       bool is_mainframe,
-      RTLookupRequestCallback request_callback,
       RTLookupResponseCallback response_callback,
       scoped_refptr<base::SequencedTaskRunner> callback_task_runner) override {}
   absl::optional<std::string> GetDMTokenString() const override {
@@ -195,7 +193,6 @@ class MockSafeBrowsingUrlChecker : public SafeBrowsingUrlCheckerImpl {
       GURL last_committed_url,
       scoped_refptr<base::SequencedTaskRunner> ui_task_runner,
       base::WeakPtr<RealTimeUrlLookupServiceBase> url_lookup_service_on_ui,
-      UrlRealTimeMechanism::WebUIDelegate* webui_delegate,
       base::WeakPtr<HashRealTimeService> hash_realtime_service_on_ui,
       scoped_refptr<SafeBrowsingLookupMechanismExperimenter>
           mechanism_experimenter,
@@ -219,7 +216,6 @@ class MockSafeBrowsingUrlChecker : public SafeBrowsingUrlCheckerImpl {
                                    last_committed_url,
                                    ui_task_runner,
                                    url_lookup_service_on_ui,
-                                   webui_delegate,
                                    hash_realtime_service_on_ui,
                                    mechanism_experimenter,
                                    is_mechanism_experiment_allowed,
@@ -343,7 +339,6 @@ class SBBrowserUrlLoaderThrottleTestBase : public ::testing::Test {
             /*last_committed_url=*/GURL(),
             /*ui_task_runner=*/base::SequencedTaskRunner::GetCurrentDefault(),
             /*url_lookup_service_on_ui=*/nullptr,
-            /*webui_delegate_=*/nullptr,
             /*hash_realtime_service_on_ui=*/nullptr,
             /*mechanism_experimenter=*/nullptr,
             /*is_mechanism_experiment_allowed=*/false,
@@ -368,7 +363,6 @@ class SBBrowserUrlLoaderThrottleTestBase : public ::testing::Test {
               /*last_committed_url=*/GURL(),
               /*ui_task_runner=*/base::SequencedTaskRunner::GetCurrentDefault(),
               /*url_lookup_service_on_ui=*/nullptr,
-              /*webui_delegate_=*/nullptr,
               /*hash_realtime_service_on_ui=*/nullptr,
               /*mechanism_experimenter=*/nullptr,
               /*is_mechanism_experiment_allowed=*/false,

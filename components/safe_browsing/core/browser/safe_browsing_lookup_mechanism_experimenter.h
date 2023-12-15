@@ -64,7 +64,6 @@ class SafeBrowsingLookupMechanismExperimenter
       std::string url_lookup_service_metric_suffix,
       const GURL& last_committed_url,
       base::WeakPtr<RealTimeUrlLookupServiceBase> url_lookup_service_on_ui,
-      UrlRealTimeMechanism::WebUIDelegate* webui_delegate,
       base::WeakPtr<HashRealTimeService> hash_real_time_service_on_ui,
       scoped_refptr<UrlCheckerDelegate> url_checker_delegate,
       const base::RepeatingCallback<content::WebContents*()>&

@@ -66,7 +66,8 @@ class RealTimeUrlLookupService : public RealTimeUrlLookupServiceBase {
           client_token_config_callback,
       bool is_off_the_record,
       variations::VariationsService* variations_service,
-      ReferrerChainProvider* referrer_chain_provider);
+      ReferrerChainProvider* referrer_chain_provider,
+      WebUIDelegate* delegate);
 
   RealTimeUrlLookupService(const RealTimeUrlLookupService&) = delete;
   RealTimeUrlLookupService& operator=(const RealTimeUrlLookupService&) = delete;
@@ -101,7 +102,6 @@ class RealTimeUrlLookupService : public RealTimeUrlLookupServiceBase {
       const GURL& url,
       const GURL& last_committed_url,
       bool is_mainframe,
-      RTLookupRequestCallback request_callback,
       RTLookupResponseCallback response_callback,
       scoped_refptr<base::SequencedTaskRunner> callback_task_runner) override;
   absl::optional<std::string> GetDMTokenString() const override;
@@ -122,7 +122,6 @@ class RealTimeUrlLookupService : public RealTimeUrlLookupServiceBase {
       const GURL& url,
       const GURL& last_committed_url,
       bool is_mainframe,
-      RTLookupRequestCallback request_callback,
       RTLookupResponseCallback response_callback,
       scoped_refptr<base::SequencedTaskRunner> callback_task_runner,
       base::TimeTicks get_token_start_time,

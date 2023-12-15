@@ -182,7 +182,6 @@ SafeBrowsingServiceImpl::CreateUrlChecker(
       /*last_committed_url=*/web_state->GetLastCommittedURL(),
       web::GetUIThreadTaskRunner({}),
       url_lookup_service ? url_lookup_service->GetWeakPtr() : nullptr,
-      /*webui_delegate=*/nullptr,
       hash_real_time_service ? hash_real_time_service->GetWeakPtr() : nullptr,
       /*mechanism_experimenter=*/nullptr,
       /*is_mechanism_experiment_allowed=*/false, hash_real_time_selection);

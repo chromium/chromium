@@ -52,12 +52,14 @@ RealTimeUrlLookupService::RealTimeUrlLookupService(
     const ClientConfiguredForTokenFetchesCallback& client_token_config_callback,
     bool is_off_the_record,
     variations::VariationsService* variations_service,
-    ReferrerChainProvider* referrer_chain_provider)
+    ReferrerChainProvider* referrer_chain_provider,
+    WebUIDelegate* delegate)
     : RealTimeUrlLookupServiceBase(url_loader_factory,
                                    cache_manager,
                                    get_user_population_callback,
                                    referrer_chain_provider,
-                                   pref_service),
+                                   pref_service,
+                                   delegate),
       pref_service_(pref_service),
       token_fetcher_(std::move(token_fetcher)),
       client_token_config_callback_(client_token_config_callback),
@@ -78,14 +80,12 @@ void RealTimeUrlLookupService::GetAccessToken(
     const GURL& url,
     const GURL& last_committed_url,
     bool is_mainframe,
-    RTLookupRequestCallback request_callback,
     RTLookupResponseCallback response_callback,
     scoped_refptr<base::SequencedTaskRunner> callback_task_runner) {
   token_fetcher_->Start(base::BindOnce(
       &RealTimeUrlLookupService::OnGetAccessToken, weak_factory_.GetWeakPtr(),
-      url, last_committed_url, is_mainframe, std::move(request_callback),
-      std::move(response_callback), std::move(callback_task_runner),
-      base::TimeTicks::Now()));
+      url, last_committed_url, is_mainframe, std::move(response_callback),
+      std::move(callback_task_runner), base::TimeTicks::Now()));
 }
 
 void RealTimeUrlLookupService::OnPrefChanged() {
@@ -98,7 +98,6 @@ void RealTimeUrlLookupService::OnGetAccessToken(
     const GURL& url,
     const GURL& last_committed_url,
     bool is_mainframe,
-    RTLookupRequestCallback request_callback,
     RTLookupResponseCallback response_callback,
     scoped_refptr<base::SequencedTaskRunner> callback_task_runner,
     base::TimeTicks get_token_start_time,
@@ -111,8 +110,8 @@ void RealTimeUrlLookupService::OnGetAccessToken(
   base::UmaHistogramBoolean("SafeBrowsing.RT.HasTokenFromFetcher",
                             !access_token.empty());
   SendRequest(url, last_committed_url, is_mainframe, access_token,
-              std::move(request_callback), std::move(response_callback),
-              std::move(callback_task_runner), /* is_sampled_report */ false);
+              std::move(response_callback), std::move(callback_task_runner),
+              /* is_sampled_report */ false);
 }
 
 void RealTimeUrlLookupService::OnResponseUnauthorized(

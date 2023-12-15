@@ -5,6 +5,7 @@
 #include "chrome/browser/safe_browsing/chrome_enterprise_url_lookup_service.h"
 
 #include "base/functional/bind.h"
+#include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/mock_callback.h"
 #include "chrome/browser/enterprise/connectors/connectors_service.h"
@@ -66,6 +67,26 @@ class MockReferrerChainProvider : public ReferrerChainProvider {
                                  int user_gesture_count_limit,
                                  ReferrerChain* out_referrer_chain));
 };
+
+bool GetRequestProto(const network::ResourceRequest& request,
+                     RTLookupRequest* request_proto) {
+  if (!request.request_body || !request.request_body->elements()) {
+    return false;
+  }
+
+  // Supporting one DataElementBytes is sufficient here. If request
+  // protos grow to need data pipes, we would need further test code
+  // to read the contents of the pipe.
+  const std::vector<network::DataElement>* elements =
+      request.request_body->elements();
+  if (elements->size() != 1 ||
+      elements->at(0).type() !=
+          network::mojom::DataElementDataView::Tag::kBytes) {
+    return false;
+  }
+  return request_proto->ParseFromString(std::string(
+      elements->at(0).As<network::DataElementBytes>().AsStringPiece()));
+}
 
 }  // namespace
 
@@ -217,14 +238,15 @@ TEST_F(ChromeEnterpriseRealTimeUrlLookupServiceTest,
                                RTLookupResponse::ThreatInfo::COVERING_MATCH);
   task_environment_.RunUntilIdle();
 
-  base::MockCallback<RTLookupRequestCallback> request_callback;
+  base::MockCallback<network::TestURLLoaderFactory::Interceptor>
+      request_callback;
   base::MockCallback<RTLookupResponseCallback> response_callback;
-  enterprise_rt_service()->StartLookup(
-      url, last_committed_url_, is_mainframe_, request_callback.Get(),
-      response_callback.Get(), content::GetIOThreadTaskRunner({}));
+  enterprise_rt_service()->StartLookup(url, last_committed_url_, is_mainframe_,
+                                       response_callback.Get(),
+                                       content::GetIOThreadTaskRunner({}));
 
-  // |request_callback| should not be called if the verdict is already cached.
-  EXPECT_CALL(request_callback, Run(_, _)).Times(0);
+  test_url_loader_factory_.SetInterceptor(request_callback.Get());
+  EXPECT_CALL(request_callback, Run(_)).Times(0);
   EXPECT_CALL(response_callback, Run(/* is_rt_lookup_successful */ true,
                                      /* is_cached_response */ true, _));
 
@@ -246,29 +268,42 @@ TEST_F(ChromeEnterpriseRealTimeUrlLookupServiceTest,
                       Return(ReferrerChainProvider::SUCCESS)));
 
   base::MockCallback<RTLookupResponseCallback> response_callback;
-  enterprise_rt_service()->StartLookup(
-      url, last_committed_url_, is_mainframe_,
-      base::BindOnce(
-          [](std::unique_ptr<RTLookupRequest> request, std::string token) {
-            EXPECT_EQ("http://example.test/", request->url());
-            EXPECT_EQ("dm_token", request->dm_token());
-            EXPECT_EQ(ChromeUserPopulation::SAFE_BROWSING,
-                      request->population().user_population());
-            EXPECT_TRUE(request->population().is_history_sync_enabled());
-            EXPECT_EQ(ChromeUserPopulation::NOT_MANAGED,
-                      request->population().profile_management_status());
-            EXPECT_TRUE(request->population().is_under_advanced_protection());
-            EXPECT_EQ("access_token_string", token);
-          }),
-      response_callback.Get(), content::GetIOThreadTaskRunner({}));
+  enterprise_rt_service()->StartLookup(url, last_committed_url_, is_mainframe_,
+                                       response_callback.Get(),
+                                       content::GetIOThreadTaskRunner({}));
 
   EXPECT_CALL(response_callback, Run(/* is_rt_lookup_successful */ true,
                                      /* is_cached_response */ false, _));
+
+  bool request_validated;
+  test_url_loader_factory_.SetInterceptor(
+      base::BindLambdaForTesting([&](const network::ResourceRequest& request) {
+        RTLookupRequest request_proto;
+        ASSERT_TRUE(GetRequestProto(request, &request_proto));
+        EXPECT_EQ("http://example.test/", request_proto.url());
+        EXPECT_EQ("dm_token", request_proto.dm_token());
+        EXPECT_EQ(ChromeUserPopulation::SAFE_BROWSING,
+                  request_proto.population().user_population());
+        EXPECT_TRUE(request_proto.population().is_history_sync_enabled());
+        EXPECT_EQ(ChromeUserPopulation::NOT_MANAGED,
+                  request_proto.population().profile_management_status());
+        EXPECT_TRUE(request_proto.population().is_under_advanced_protection());
+
+        std::string header_value;
+        bool found_header = request.headers.GetHeader(
+            net::HttpRequestHeaders::kAuthorization, &header_value);
+        EXPECT_TRUE(found_header);
+        EXPECT_EQ(header_value, "Bearer access_token_string");
+
+        request_validated = true;
+      }));
 
   EXPECT_TRUE(raw_token_fetcher()->WasStartCalled());
   FulfillAccessTokenRequest("access_token_string");
 
   task_environment_.RunUntilIdle();
+
+  EXPECT_TRUE(request_validated);
 
   // Check the response is cached.
   EXPECT_NE(nullptr, GetCachedRealTimeUrlVerdict(url));

@@ -128,8 +128,7 @@ void UrlCheckerOnSB::Start(const StartParams& params) {
         can_urt_check_subresource_url_, can_check_db_,
         can_check_high_confidence_allowlist_, url_lookup_service_metric_suffix_,
         last_committed_url_, content::GetUIThreadTaskRunner({}),
-        url_lookup_service_, WebUIInfoSingleton::GetInstance(),
-        hash_realtime_service_, mechanism_experimenter_,
+        url_lookup_service_, hash_realtime_service_, mechanism_experimenter_,
         is_mechanism_experiment_allowed_, hash_realtime_selection_);
   }
 

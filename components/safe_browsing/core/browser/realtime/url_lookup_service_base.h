@@ -41,9 +41,6 @@ namespace safe_browsing {
 // Suffix for metrics when there is no URL lookup service.
 constexpr char kNoRealTimeURLLookupService[] = ".None";
 
-using RTLookupRequestCallback =
-    base::OnceCallback<void(std::unique_ptr<RTLookupRequest>, std::string)>;
-
 using RTLookupResponseCallback =
     base::OnceCallback<void(bool, bool, std::unique_ptr<RTLookupResponse>)>;
 
@@ -57,13 +54,31 @@ class ReferrerChainProvider;
 // lookup feature.
 class RealTimeUrlLookupServiceBase : public KeyedService {
  public:
+  // Interface via which a client of this class can surface relevant events in
+  // WebUI. All methods must be called on the UI thread.
+  class WebUIDelegate {
+   public:
+    virtual ~WebUIDelegate() = default;
+
+    // Adds the new ping to the set of URT lookup pings. Returns a token that
+    // can be used in |AddToURTLookupResponses| to correlate a ping and
+    // response.
+    virtual int AddToURTLookupPings(const RTLookupRequest request,
+                                    const std::string oauth_token) = 0;
+
+    // Adds the new response to the set of URT lookup pings.
+    virtual void AddToURTLookupResponses(int webui_token,
+                                         const RTLookupResponse response) = 0;
+  };
+
   explicit RealTimeUrlLookupServiceBase(
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
       VerdictCacheManager* cache_manager,
       base::RepeatingCallback<ChromeUserPopulation()>
           get_user_population_callback,
       ReferrerChainProvider* referrer_chain_provider,
-      PrefService* pref_service);
+      PrefService* pref_service,
+      WebUIDelegate* webui_delegate);
 
   RealTimeUrlLookupServiceBase(const RealTimeUrlLookupServiceBase&) = delete;
   RealTimeUrlLookupServiceBase& operator=(const RealTimeUrlLookupServiceBase&) =
@@ -86,19 +101,15 @@ class RealTimeUrlLookupServiceBase : public KeyedService {
   // local hash-based method.
   bool IsInBackoffMode() const;
 
-  // Start the full URL lookup for |url|, call |request_callback| on
-  // |callback_task_runner| when request is sent, call |response_callback| on
-  // |callback_task_runner| when response is received.
-  // Note that |request_callback| is not called if there's a valid entry in the
-  // cache for |url|.
-  // |last_committed_url| and |is_mainframe| are for obtaining page load token
-  // for the request.
+  // Start the full URL lookup for |url| and call |response_callback|
+  // on |callback_task_runner| when response is received.
+  // |last_committed_url| and |is_mainframe| are for obtaining page
+  // load token for the request.
   // This function is overridden in unit tests.
   virtual void StartLookup(
       const GURL& url,
       const GURL& last_committed_url,
       bool is_mainframe,
-      RTLookupRequestCallback request_callback,
       RTLookupResponseCallback response_callback,
       scoped_refptr<base::SequencedTaskRunner> callback_task_runner);
 
@@ -108,7 +119,6 @@ class RealTimeUrlLookupServiceBase : public KeyedService {
       const GURL& url,
       const GURL& last_committed_url,
       bool is_mainframe,
-      RTLookupRequestCallback request_callback,
       scoped_refptr<base::SequencedTaskRunner> callback_task_runner);
 
   // Helper function to return a weak pointer.
@@ -154,7 +164,6 @@ class RealTimeUrlLookupServiceBase : public KeyedService {
       const GURL& last_committed_url,
       bool is_mainframe,
       const std::string& access_token_string,
-      RTLookupRequestCallback request_callback,
       RTLookupResponseCallback response_callback,
       scoped_refptr<base::SequencedTaskRunner> callback_task_runner,
       bool is_sampled_report);
@@ -192,7 +201,6 @@ class RealTimeUrlLookupServiceBase : public KeyedService {
       const GURL& url,
       const GURL& last_committed_url,
       bool is_mainframe,
-      RTLookupRequestCallback request_callback,
       RTLookupResponseCallback response_callback,
       scoped_refptr<base::SequencedTaskRunner> callback_task_runner) = 0;
 
@@ -245,7 +253,8 @@ class RealTimeUrlLookupServiceBase : public KeyedService {
       RTLookupResponseCallback response_callback,
       scoped_refptr<base::SequencedTaskRunner> callback_task_runner,
       ChromeUserPopulation::UserPopulation user_population,
-      bool is_sampled_report);
+      bool is_sampled_report,
+      absl::optional<int> webui_token);
 
   // Called when the response from the real-time lookup remote endpoint is
   // received. |url_loader| is the unowned loader that was used to send the
@@ -260,6 +269,7 @@ class RealTimeUrlLookupServiceBase : public KeyedService {
       base::TimeTicks request_start_time,
       bool is_sampled_report,
       scoped_refptr<base::SequencedTaskRunner> response_callback_task_runner,
+      absl::optional<int> webui_token,
       std::unique_ptr<std::string> response_body);
 
   // Fills in fields in |RTLookupRequest|.
@@ -268,6 +278,17 @@ class RealTimeUrlLookupServiceBase : public KeyedService {
       const GURL& last_committed_url,
       bool is_mainframe,
       bool is_sampled_report);
+
+  // Logs |request| and |oauth_token| on any open
+  // chrome://safe-browsing pages. Returns a token that can be passed
+  // to `LogLookupResponseForToken` to associate a request and
+  // response.
+  absl::optional<int> LogLookupRequest(const RTLookupRequest& request,
+                                       const std::string& oauth_token);
+
+  // Logs |response| on any open chrome://safe-browsing pages.
+  void LogLookupResponseForToken(absl::optional<int> token,
+                                 const RTLookupResponse& response);
 
   SEQUENCE_CHECKER(sequence_checker_);
 
@@ -295,6 +316,11 @@ class RealTimeUrlLookupServiceBase : public KeyedService {
   // Tracks the start time of the first request after service instantiation, for
   // metrics.
   std::optional<base::TimeTicks> first_request_start_time_ = std::nullopt;
+
+  // May be null on certain platforms that don't support chrome://safe-browsing
+  // and in unit tests. If non-null, guaranteed to outlive this object by
+  // contract.
+  raw_ptr<WebUIDelegate> webui_delegate_ = nullptr;
 
   friend class RealTimeUrlLookupServiceTest;
   friend class ChromeEnterpriseRealTimeUrlLookupServiceTest;

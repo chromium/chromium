@@ -290,14 +290,14 @@ class MockRealTimeUrlLookupService : public RealTimeUrlLookupServiceBase {
               return ChromeUserPopulation();
             }),
             /*referrer_chain_provider=*/nullptr,
-            /*pref_service=*/nullptr) {}
+            /*pref_service=*/nullptr,
+            /*webui_delegate=*/nullptr) {}
   // Returns the threat type previously set by |SetThreatTypeForUrl|. It crashes
   // if the threat type for the |gurl| is not set in advance.
   void StartLookup(
       const GURL& gurl,
       const GURL& last_committed_url,
       bool is_mainframe,
-      RTLookupRequestCallback request_callback,
       RTLookupResponseCallback response_callback,
       scoped_refptr<base::SequencedTaskRunner> callback_task_runner) override {
     std::string url = gurl.spec();
@@ -346,7 +346,6 @@ class MockRealTimeUrlLookupService : public RealTimeUrlLookupServiceBase {
       const GURL& gurl,
       const GURL& last_committed_url,
       bool is_mainframe,
-      RTLookupRequestCallback request_callback,
       scoped_refptr<base::SequencedTaskRunner> callback_task_runner) override {}
 
   // |should_complete_lookup| should generally be true, unless you specifically
@@ -390,7 +389,6 @@ class MockRealTimeUrlLookupService : public RealTimeUrlLookupServiceBase {
       const GURL& url,
       const GURL& last_committed_url,
       bool is_mainframe,
-      RTLookupRequestCallback request_callback,
       RTLookupResponseCallback response_callback,
       scoped_refptr<base::SequencedTaskRunner> callback_task_runner) override {}
   absl::optional<std::string> GetDMTokenString() const override {
@@ -514,7 +512,6 @@ class SafeBrowsingUrlCheckerTest : public PlatformTest {
         base::SequencedTaskRunner::GetCurrentDefault(),
         url_real_time_lookup_enabled ? url_lookup_service_->GetWeakPtr()
                                      : nullptr,
-        /*webui_delegate_=*/nullptr,
         /*hash_realtime_service=*/hash_realtime_service_->GetWeakPtr(),
         /*mechanism_experimenter=*/mechanism_experimenter,
         optional_args.is_lookup_mechanism_experiment_enabled,

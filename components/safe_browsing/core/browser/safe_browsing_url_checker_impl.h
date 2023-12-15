@@ -127,7 +127,6 @@ class SafeBrowsingUrlCheckerImpl : public mojom::SafeBrowsingUrlChecker {
       GURL last_committed_url,
       scoped_refptr<base::SequencedTaskRunner> ui_task_runner,
       base::WeakPtr<RealTimeUrlLookupServiceBase> url_lookup_service_on_ui,
-      UrlRealTimeMechanism::WebUIDelegate* webui_delegate,
       base::WeakPtr<HashRealTimeService> hash_realtime_service_on_ui,
       scoped_refptr<SafeBrowsingLookupMechanismExperimenter>
           mechanism_experimenter,
@@ -338,11 +337,6 @@ class SafeBrowsingUrlCheckerImpl : public mojom::SafeBrowsingUrlChecker {
   // This object is used to perform real time url check. Can only be accessed in
   // UI thread.
   base::WeakPtr<RealTimeUrlLookupServiceBase> url_lookup_service_on_ui_;
-
-  // May be null on certain platforms that don't support chrome://safe-browsing
-  // and in unit tests. If non-null, guaranteed to outlive this object by
-  // contract.
-  raw_ptr<UrlRealTimeMechanism::WebUIDelegate> webui_delegate_ = nullptr;
 
   // This object is used to perform the hash-prefix real-time lookup. It can
   // only be accessed on the UI thread.

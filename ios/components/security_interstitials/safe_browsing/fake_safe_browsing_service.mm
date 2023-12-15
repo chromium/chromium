@@ -43,7 +43,6 @@ class FakeSafeBrowsingUrlCheckerImpl
             /*last_committed_url=*/GURL::EmptyGURL(),
             web::GetUIThreadTaskRunner({}),
             /*url_lookup_service_on_ui=*/nullptr,
-            /*webui_delegate=*/nullptr,
             /*hash_realtime_service_on_ui=*/nullptr,
             /*mechanism_experimenter=*/nullptr,
             /*is_mechanism_experiment_allowed=*/false,

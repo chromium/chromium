@@ -73,5 +73,6 @@ RealTimeUrlLookupServiceFactory::BuildServiceInstanceFor(
       // Referrer chain provider is currently not available on iOS. Once it
       // is implemented, inject it to enable referrer chain in real time
       // requests.
-      /*referrer_chain_provider=*/nullptr);
+      /*referrer_chain_provider=*/nullptr,
+      /*webui_delegate=*/nullptr);
 }

@@ -42,14 +42,14 @@ class MockRealTimeUrlLookupService : public RealTimeUrlLookupServiceBase {
               return ChromeUserPopulation();
             }),
             /*referrer_chain_provider=*/nullptr,
-            /*pref_service=*/nullptr) {}
+            /*pref_service=*/nullptr,
+            /*webui_delegate=*/nullptr) {}
   // Returns the threat type previously set by |SetThreatTypeForUrl|. It crashes
   // if the threat type for the |gurl| is not set in advance.
   void StartLookup(
       const GURL& gurl,
       const GURL& last_committed_url,
       bool is_mainframe,
-      RTLookupRequestCallback request_callback,
       RTLookupResponseCallback response_callback,
       scoped_refptr<base::SequencedTaskRunner> callback_task_runner) override {
     std::string url = gurl.spec();
@@ -107,7 +107,6 @@ class MockRealTimeUrlLookupService : public RealTimeUrlLookupServiceBase {
       const GURL& gurl,
       const GURL& last_committed_url,
       bool is_mainframe,
-      RTLookupRequestCallback request_callback,
       scoped_refptr<base::SequencedTaskRunner> callback_task_runner) override {}
 
   // |should_complete_lookup| should generally be true, unless you specifically
@@ -154,7 +153,6 @@ class MockRealTimeUrlLookupService : public RealTimeUrlLookupServiceBase {
       const GURL& url,
       const GURL& last_committed_url,
       bool is_mainframe,
-      RTLookupRequestCallback request_callback,
       RTLookupResponseCallback response_callback,
       scoped_refptr<base::SequencedTaskRunner> callback_task_runner) override {}
   absl::optional<std::string> GetDMTokenString() const override {
@@ -372,7 +370,6 @@ class UrlRealTimeMechanismTest : public PlatformTest {
         /*last_committed_url=*/GURL(),
         base::SequencedTaskRunner::GetCurrentDefault(),
         url_lookup_service_->GetWeakPtr(),
-        /*webui_delegate_=*/nullptr,
         MechanismExperimentHashDatabaseCache::kNoExperiment,
         url_checker_delegate_, mock_web_contents_getter.Get());
   }
