@@ -846,6 +846,10 @@ enum class PresentedState {
   DCHECK_EQ(_manageSyncSettingsCoordinator, coordinator);
   [_manageSyncSettingsCoordinator stop];
   _manageSyncSettingsCoordinator = nil;
+  BookmarksHomeViewController* bookmarksHomeViewController =
+      base::apple::ObjCCastStrict<BookmarksHomeViewController>(
+          self.baseViewController);
+  [bookmarksHomeViewController updateReviewSettingsPromo];
 }
 
 - (NSString*)manageSyncSettingsCoordinatorTitle {
