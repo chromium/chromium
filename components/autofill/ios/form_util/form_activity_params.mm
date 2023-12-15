@@ -61,14 +61,8 @@ bool BaseFormActivityParams::FromMessage(const web::ScriptMessage& message,
   return true;
 }
 
-bool BaseFormActivityParams::operator==(
-    const BaseFormActivityParams& params) const {
-  return (form_name == params.form_name) &&
-         (unique_form_id == params.unique_form_id) &&
-         (frame_id == params.frame_id) &&
-         (input_missing == params.input_missing) &&
-         (is_main_frame == params.is_main_frame);
-}
+bool BaseFormActivityParams::operator==(const BaseFormActivityParams&) const =
+    default;
 
 bool FormActivityParams::FromMessage(const web::ScriptMessage& message,
                                      FormActivityParams* params) {

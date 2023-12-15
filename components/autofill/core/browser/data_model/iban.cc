@@ -315,10 +315,6 @@ bool Iban::operator==(const Iban& iban) const {
   return Compare(iban) == 0;
 }
 
-bool Iban::operator!=(const Iban& iban) const {
-  return !operator==(iban);
-}
-
 void Iban::set_identifier(const absl::variant<Guid, InstrumentId>& identifier) {
   if (absl::holds_alternative<Guid>(identifier_)) {
     CHECK_NE(record_type_, kServerIban);

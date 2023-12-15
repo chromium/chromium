@@ -3,17 +3,12 @@
 // found in the LICENSE file.
 
 #include "components/autofill/core/browser/data_model/bank_account.h"
+
 #include "components/autofill/core/browser/webdata/autofill_table.h"
 
 namespace autofill {
 
-bool operator==(const BankAccount& a, const BankAccount& b) {
-  return (static_cast<const PaymentInstrument&>(a) ==
-          static_cast<const PaymentInstrument&>(b)) &&
-         a.bank_name() == b.bank_name() &&
-         a.account_number_suffix() == b.account_number_suffix() &&
-         a.account_type() == b.account_type();
-}
+bool operator==(const BankAccount&, const BankAccount&) = default;
 
 BankAccount::BankAccount(const BankAccount& other) = default;
 BankAccount& BankAccount::operator=(const BankAccount& other) = default;

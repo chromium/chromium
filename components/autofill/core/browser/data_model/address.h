@@ -25,7 +25,6 @@ class Address : public FormGroup {
   Address(const Address& address);
   Address& operator=(const Address& address);
   bool operator==(const Address& other) const;
-  bool operator!=(const Address& other) const { return !operator==(other); }
 
   // FormGroup:
   std::u16string GetRawInfo(ServerFieldType type) const override;

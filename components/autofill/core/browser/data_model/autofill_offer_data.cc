@@ -71,11 +71,6 @@ bool AutofillOfferData::operator==(
   return Compare(other_offer_data) == 0;
 }
 
-bool AutofillOfferData::operator!=(
-    const AutofillOfferData& other_offer_data) const {
-  return Compare(other_offer_data) != 0;
-}
-
 int AutofillOfferData::Compare(
     const AutofillOfferData& other_offer_data) const {
   int comparison = offer_id_ - other_offer_data.offer_id_;

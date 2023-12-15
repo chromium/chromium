@@ -274,7 +274,6 @@ class CreditCard : public AutofillDataModel {
   // Equality operators compare GUIDs, origins, and the contents.
   // Usage metadata (use count, use date, modification date) are NOT compared.
   bool operator==(const CreditCard& credit_card) const;
-  bool operator!=(const CreditCard& credit_card) const;
 
   // Returns true if the data in this model was entered directly by the user,
   // rather than automatically aggregated.

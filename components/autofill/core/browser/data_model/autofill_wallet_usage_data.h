@@ -41,8 +41,6 @@ class VirtualCardUsageData {
 
   friend bool operator==(const VirtualCardUsageData& a,
                          const VirtualCardUsageData& b);
-  friend bool operator!=(const VirtualCardUsageData& a,
-                         const VirtualCardUsageData& b);
 
   InstrumentId instrument_id() const { return instrument_id_; }
 

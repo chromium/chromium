@@ -30,9 +30,7 @@ class AutocompleteChange {
   Type type() const { return type_; }
   const AutocompleteKey& key() const { return key_; }
 
-  bool operator==(const AutocompleteChange& change) const {
-    return type() == change.type() && key() == change.key();
-  }
+  bool operator==(const AutocompleteChange&) const = default;
 
  private:
   Type type_;

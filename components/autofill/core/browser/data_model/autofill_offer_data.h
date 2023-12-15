@@ -80,7 +80,6 @@ class AutofillOfferData {
   AutofillOfferData(const AutofillOfferData&);
   AutofillOfferData& operator=(const AutofillOfferData&);
   bool operator==(const AutofillOfferData& other_offer_data) const;
-  bool operator!=(const AutofillOfferData& other_offer_data) const;
 
   // Compares two AutofillOfferData based on their member fields. Returns 0 if
   // the two offer data are exactly same. Otherwise returns the comparison

@@ -53,16 +53,7 @@ using FieldPrediction = ::autofill::AutofillQueryResponse::FormSuggestion::
 namespace autofill {
 
 bool operator==(const FormFieldDataPredictions& a,
-                const FormFieldDataPredictions& b) {
-  auto members = [](const FormFieldDataPredictions& p) {
-    return std::tie(p.host_form_signature, p.signature, p.heuristic_type,
-                    p.server_type, p.html_type, p.overall_type,
-                    p.parseable_name, p.section, p.rank,
-                    p.rank_in_signature_group, p.rank_in_host_form,
-                    p.rank_in_host_form_signature_group);
-  };
-  return members(a) == members(b);
-}
+                const FormFieldDataPredictions& b) = default;
 
 bool operator==(const FormDataPredictions& a, const FormDataPredictions& b) {
   return test::WithoutUnserializedData(a.data).SameFormAs(

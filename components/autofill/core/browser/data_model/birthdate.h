@@ -19,9 +19,6 @@ class Birthdate : public FormGroup {
   Birthdate& operator=(const Birthdate& other) = default;
 
   friend bool operator==(const Birthdate& a, const Birthdate& b);
-  friend bool operator!=(const Birthdate& a, const Birthdate& b) {
-    return !(a == b);
-  }
 
   // Convenience accessor to the day, month and 4 digit year components.
   static ServerFieldTypeSet GetRawComponents() {

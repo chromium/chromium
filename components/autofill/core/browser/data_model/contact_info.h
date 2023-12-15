@@ -24,7 +24,6 @@ class NameInfo : public FormGroup {
 
   NameInfo& operator=(const NameInfo& info);
   bool operator==(const NameInfo& other) const;
-  bool operator!=(const NameInfo& other) const { return !operator==(other); }
 
   // FormGroup:
   std::u16string GetRawInfo(ServerFieldType type) const override;

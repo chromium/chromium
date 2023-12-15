@@ -169,21 +169,15 @@ bool ShouldIgnoreAutocompleteValue(std::string_view value) {
 
 }  // namespace
 
-bool operator==(const AutocompleteParsingResult& a,
-                const AutocompleteParsingResult& b) {
-  return std::tie(a.section, a.mode, a.field_type) ==
-         std::tie(b.section, b.mode, b.field_type);
-}
-bool operator!=(const AutocompleteParsingResult& a,
-                const AutocompleteParsingResult& b) {
-  return !(a == b);
-}
-
 std::string AutocompleteParsingResult::ToString() const {
   return base::StrCat({"section='", section, "' ", "mode='",
                        HtmlFieldModeToStringView(mode), "' ", "field_type='",
-                       FieldTypeToStringView(field_type), "'"});
+                       FieldTypeToStringView(field_type), "' ", "webauthn='",
+                       webauthn ? "true" : "false", "'"});
 }
+
+bool AutocompleteParsingResult::operator==(
+    const AutocompleteParsingResult&) const = default;
 
 HtmlFieldType FieldTypeFromAutocompleteAttributeValue(std::string value) {
   if (value.empty())

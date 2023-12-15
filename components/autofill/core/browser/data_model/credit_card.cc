@@ -976,10 +976,6 @@ bool CreditCard::operator==(const CreditCard& credit_card) const {
          Compare(credit_card) == 0;
 }
 
-bool CreditCard::operator!=(const CreditCard& credit_card) const {
-  return !operator==(credit_card);
-}
-
 bool CreditCard::IsVerified() const {
   return !origin_.empty() && !GURL(origin_).is_valid();
 }

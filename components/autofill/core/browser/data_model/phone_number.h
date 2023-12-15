@@ -26,7 +26,6 @@ class PhoneNumber : public FormGroup {
 
   PhoneNumber& operator=(const PhoneNumber& number);
   bool operator==(const PhoneNumber& other) const;
-  bool operator!=(const PhoneNumber& other) const { return !operator==(other); }
 
   void set_profile(const AutofillProfile* profile) { profile_ = profile; }
 

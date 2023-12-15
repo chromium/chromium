@@ -16,8 +16,6 @@ namespace autofill {
 class AutofillTable;
 class PaymentInstrument;
 
-bool operator==(const PaymentInstrument& a, const PaymentInstrument& b);
-
 // Base class for all payment instruments. A payment instrument is considered to
 // be any form of payment stored in the GPay backend that can be used to
 // facilitate a payment on a webpage. Examples of derived class: BankAccount,
@@ -40,6 +38,9 @@ class PaymentInstrument {
   PaymentInstrument(const PaymentInstrument& other);
   PaymentInstrument& operator=(const PaymentInstrument& other);
   virtual ~PaymentInstrument();
+
+  friend bool operator==(const PaymentInstrument&, const PaymentInstrument&);
+
   // Return the type of PaymentInstrument.
   virtual InstrumentType GetInstrumentType() const = 0;
 

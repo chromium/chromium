@@ -18,8 +18,6 @@ namespace autofill {
 
 class BankAccount;
 
-bool operator==(const BankAccount& a, const BankAccount& b);
-
 // Details for a user's bank account. This data is synced from Google payments.
 class BankAccount : public PaymentInstrument {
  public:
@@ -43,6 +41,8 @@ class BankAccount : public PaymentInstrument {
               std::u16string_view account_number_suffix,
               AccountType account_type);
   ~BankAccount() override;
+
+  friend bool operator==(const BankAccount&, const BankAccount&);
 
   // PaymentInstrument
   PaymentInstrument::InstrumentType GetInstrumentType() const override;

@@ -6,12 +6,8 @@
 
 namespace autofill {
 
-bool operator==(const PaymentInstrument& a, const PaymentInstrument& b) {
-  return a.instrument_id() == b.instrument_id() &&
-         a.nickname() == b.nickname() &&
-         a.display_icon_url() == b.display_icon_url() &&
-         a.supported_rails() == b.supported_rails();
-}
+bool operator==(const PaymentInstrument& a,
+                const PaymentInstrument& b) = default;
 
 PaymentInstrument::PaymentInstrument(int64_t instrument_id,
                                      std::u16string_view nickname,

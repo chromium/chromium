@@ -102,7 +102,6 @@ class ProfileTokenQuality {
   ~ProfileTokenQuality();
 
   bool operator==(const ProfileTokenQuality& other) const;
-  bool operator!=(const ProfileTokenQuality& other) const;
 
   // Derives an observation from every field of the `form_structure` that was
   // autofilled with the `profile_`. Only fields with no existing observation

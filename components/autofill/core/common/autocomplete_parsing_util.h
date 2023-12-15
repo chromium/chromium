@@ -27,6 +27,8 @@ namespace autofill {
 struct AutocompleteParsingResult {
   std::string ToString() const;
 
+  bool operator==(const AutocompleteParsingResult&) const;
+
   // `section` corresponds to the string after "section-".
   std::string section;
   HtmlFieldMode mode = HtmlFieldMode::kNone;
@@ -35,11 +37,6 @@ struct AutocompleteParsingResult {
   // Whether the field has a `webauthn` token.
   bool webauthn = false;
 };
-
-bool operator==(const AutocompleteParsingResult& a,
-                const AutocompleteParsingResult& b);
-bool operator!=(const AutocompleteParsingResult& a,
-                const AutocompleteParsingResult& b);
 
 absl::optional<AutocompleteParsingResult> ParseAutocompleteAttribute(
     std::string_view autocomplete_attribute);

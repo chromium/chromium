@@ -93,7 +93,6 @@ class Iban : public AutofillDataModel {
 
   // Equality operators compare GUIDs, origins, |value_| and |nickname_|.
   bool operator==(const Iban& iban) const;
-  bool operator!=(const Iban& iban) const;
 
   void set_identifier(const absl::variant<Guid, InstrumentId>& identifier);
 

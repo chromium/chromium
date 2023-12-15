@@ -122,10 +122,6 @@ bool ProfileTokenQuality::operator==(const ProfileTokenQuality& other) const {
                              });
 }
 
-bool ProfileTokenQuality::operator!=(const ProfileTokenQuality& other) const {
-  return !operator==(other);
-}
-
 bool ProfileTokenQuality::AddObservationsForFilledForm(
     const FormStructure& form_structure,
     const FormData& form_data,
