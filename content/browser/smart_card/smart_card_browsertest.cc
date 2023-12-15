@@ -189,7 +189,7 @@ class SmartCardTestContentBrowserClient
 class SmartCardTest : public ContentBrowserTest {
  public:
   GURL GetIsolatedContextUrl() {
-    return https_server_.GetURL(
+    return embedded_https_test_server().GetURL(
         "a.com",
         "/set-header?Cross-Origin-Opener-Policy: same-origin&"
         "Cross-Origin-Embedder-Policy: require-corp&"
@@ -250,7 +250,6 @@ class SmartCardTest : public ContentBrowserTest {
  private:
   void SetUpCommandLine(base::CommandLine* command_line) override {
     ContentBrowserTest::SetUpCommandLine(command_line);
-    mock_cert_verifier_.SetUpCommandLine(command_line);
   }
 
   void SetUpOnMainThread() override {
@@ -260,39 +259,29 @@ class SmartCardTest : public ContentBrowserTest {
     test_client_->SetSmartCardDelegate(
         std::make_unique<FakeSmartCardDelegate>());
 
-    mock_cert_verifier_.mock_cert_verifier()->set_default_result(net::OK);
-
     // Serve a.com (and any other domain).
     host_resolver()->AddRule("*", "127.0.0.1");
 
     // Add a handler for the "/set-header" page (among others)
-    https_server_.AddDefaultHandlers(GetTestDataFilePath());
+    embedded_https_test_server().AddDefaultHandlers(GetTestDataFilePath());
 
-    ASSERT_TRUE(https_server_.Start());
+    ASSERT_TRUE(embedded_https_test_server().Start());
   }
 
   void SetUpInProcessBrowserTestFixture() override {
     ContentBrowserTest::SetUpInProcessBrowserTestFixture();
-    mock_cert_verifier_.SetUpInProcessBrowserTestFixture();
   }
 
   void TearDownInProcessBrowserTestFixture() override {
     ContentBrowserTest::TearDownInProcessBrowserTestFixture();
-    mock_cert_verifier_.TearDownInProcessBrowserTestFixture();
   }
 
   void TearDown() override {
-    ASSERT_TRUE(https_server_.ShutdownAndWaitUntilComplete());
+    ASSERT_TRUE(embedded_https_test_server().ShutdownAndWaitUntilComplete());
     ContentBrowserTest::TearDown();
   }
 
   std::unique_ptr<SmartCardTestContentBrowserClient> test_client_;
-
-  // Need a mock CertVerifier for HTTPS connections to succeed with the test
-  // server.
-  ContentMockCertVerifier mock_cert_verifier_;
-
-  net::EmbeddedTestServer https_server_{net::EmbeddedTestServer::TYPE_HTTPS};
 
   base::test::ScopedFeatureList scoped_feature_list_{
       blink::features::kSmartCard};
