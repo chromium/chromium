@@ -111,6 +111,7 @@ constexpr char kHatsSurveyTriggerTrustSafetyV2PrivacySandbox4NoticeSettings[] =
     "ts-v2-ps4-notice-settings";
 constexpr char kHatsSurveyTriggerTrustSafetyV2SafeBrowsingInterstitial[] =
     "ts-v2-safe-browsing-interstitial";
+constexpr char kHatsSurveyTriggerWallpaperSearch[] = "wallpaper-search";
 #else   // BUILDFLAG(IS_ANDROID)
 constexpr char kHatsSurveyTriggerAndroidStartupSurvey[] = "startup_survey";
 #endif  // #if !BUILDFLAG(IS_ANDROID)
@@ -456,6 +457,11 @@ std::vector<hats::SurveyConfig> GetAllSurveyConfigs() {
                               kHatsSurveyTriggerAutofillCard);
   survey_configs.emplace_back(&features::kAutofillPasswordSurvey,
                               kHatsSurveyTriggerAutofillPassword);
+
+  // Wallpaper Search survey.
+  survey_configs.emplace_back(
+      &features::kHappinessTrackingSurveysForWallpaperSearch,
+      kHatsSurveyTriggerWallpaperSearch);
 
   // What's New survey.
   survey_configs.emplace_back(

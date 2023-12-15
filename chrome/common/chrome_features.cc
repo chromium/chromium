@@ -612,6 +612,11 @@ BASE_FEATURE(kHappinessTrackingSurveysForNtpPhotosOptOut,
              "HappinessTrackingSurveysForrNtpPhotosOptOut",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Enables or disables the Happiness Tracking System for Wallpaper Search.
+BASE_FEATURE(kHappinessTrackingSurveysForWallpaperSearch,
+             "HappinessTrackingSurveysForWallpaperSearch",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Enables or disables the Happiness Tracking System for Chrome What's New.
 BASE_FEATURE(kHappinessTrackingSurveysForDesktopWhatsNew,
              "HappinessTrackingSurveysForDesktopWhatsNew",
