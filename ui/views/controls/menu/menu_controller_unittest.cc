@@ -1040,7 +1040,7 @@ TEST_F(MenuControllerTest, TouchIdsReleasedCorrectly) {
 
   GetRootWindow(owner())->RemovePreTargetHandler(&test_event_handler);
 }
-#endif  // defined(USE_OZONE_PLATFORM_X11)
+#endif  // BUILDFLAG(IS_OZONE_X11)
 
 // Tests that initial selected menu items are correct when items are enabled or
 // disabled.

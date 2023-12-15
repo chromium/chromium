@@ -9,15 +9,9 @@
 #include <vector>
 
 #include "build/build_config.h"
+#include "ui/base/ozone_buildflags.h"
 #include "ui/gfx/buffer_types.h"
 #include "ui/gfx/gfx_export.h"
-
-#if BUILDFLAG(IS_OZONE)
-#include "ui/ozone/buildflags.h"
-#if BUILDFLAG(OZONE_PLATFORM_X11)
-#define USE_OZONE_PLATFORM_X11
-#endif
-#endif
 
 namespace gfx {
 
@@ -62,9 +56,9 @@ struct GFX_EXPORT GpuExtraInfo {
   // applicable.
   ANGLEFeatures angle_features;
 
-#if defined(USE_OZONE_PLATFORM_X11)
+#if BUILDFLAG(IS_OZONE_X11)
   std::vector<gfx::BufferUsageAndFormat> gpu_memory_buffer_support_x11;
-#endif
+#endif  // BUILDFLAG(IS_OZONE_X11)
 };
 
 }  // namespace gfx

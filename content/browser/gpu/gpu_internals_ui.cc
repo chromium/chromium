@@ -50,6 +50,7 @@
 #include "skia/ext/skia_commit_hash.h"
 #include "third_party/angle/src/common/angle_version_info.h"
 #include "third_party/skia/include/core/SkMilestone.h"
+#include "ui/base/ozone_buildflags.h"
 #include "ui/display/display.h"
 #include "ui/display/screen.h"
 #include "ui/display/util/gpu_info_util.h"
@@ -348,7 +349,7 @@ base::Value::List GpuMemoryBufferInfo(const gfx::GpuExtraInfo& gpu_extra_info) {
   base::Value::List gpu_memory_buffer_info;
 
   gpu::GpuMemoryBufferConfigurationSet native_config;
-#if defined(USE_OZONE_PLATFORM_X11)
+#if BUILDFLAG(IS_OZONE_X11)
   if (ui::OzonePlatform::GetInstance()
           ->GetPlatformProperties()
           .fetch_buffer_formats_for_gmb_on_gpu) {
@@ -356,7 +357,7 @@ base::Value::List GpuMemoryBufferInfo(const gfx::GpuExtraInfo& gpu_extra_info) {
       native_config.emplace(config);
     }
   }
-#endif
+#endif  // BUILDFLAG(IS_OZONE_X11)
   if (native_config.empty()) {
     native_config =
         gpu::GpuMemoryBufferSupport::GetNativeGpuMemoryBufferConfigurations();

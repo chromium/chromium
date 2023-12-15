@@ -330,6 +330,7 @@ component("gfx") {
     "//mojo/public/cpp/bindings:struct_traits",
     "//skia",
     "//third_party/zlib",
+    "//ui/base:ozone_buildflags",
     "//ui/base:ui_data_pack",
   ]
 
@@ -444,10 +445,6 @@ component("gfx") {
       "nine_image_painter.cc",
       "nine_image_painter.h",
     ]
-  }
-
-  if (use_ozone) {
-    deps += [ "//ui/ozone:buildflags" ]
   }
 }
 
