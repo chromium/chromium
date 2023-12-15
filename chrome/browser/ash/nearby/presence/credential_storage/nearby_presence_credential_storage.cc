@@ -41,9 +41,10 @@ NearbyPresenceCredentialStorage::NearbyPresenceCredentialStorage(
     mojo::PendingReceiver<mojom::NearbyPresenceCredentialStorage>
         pending_receiver,
     leveldb_proto::ProtoDatabaseProvider* db_provider,
-    const base::FilePath& profile_filepath) {
+    const base::FilePath& profile_filepath)
+    : pending_receiver_(std::move(pending_receiver)) {
   CHECK(db_provider);
-  CHECK(pending_receiver);
+  CHECK(pending_receiver_);
 
   base::FilePath private_database_path =
       profile_filepath.Append(kPrivateCredentialDatabaseName);
@@ -56,22 +57,17 @@ NearbyPresenceCredentialStorage::NearbyPresenceCredentialStorage(
       base::ThreadPool::CreateSequencedTaskRunner(
           {base::MayBlock(), base::TaskPriority::BEST_EFFORT});
 
-  auto private_db = db_provider->GetDB<::nearby::internal::LocalCredential>(
+  private_db_ = db_provider->GetDB<::nearby::internal::LocalCredential>(
       leveldb_proto::ProtoDbType::NEARBY_PRESENCE_PRIVATE_CREDENTIAL_DATABASE,
       private_database_path, database_task_runner);
-  auto local_public_db =
-      db_provider->GetDB<::nearby::internal::SharedCredential>(
-          leveldb_proto::ProtoDbType::
-              NEARBY_PRESENCE_LOCAL_PUBLIC_CREDENTIAL_DATABASE,
-          local_public_database_path, database_task_runner);
-  auto remote_public_db =
-      db_provider->GetDB<::nearby::internal::SharedCredential>(
-          leveldb_proto::ProtoDbType::
-              NEARBY_PRESENCE_REMOTE_PUBLIC_CREDENTIAL_DATABASE,
-          remote_public_database_path, database_task_runner);
-  NearbyPresenceCredentialStorage(
-      std::move(pending_receiver), std::move(private_db),
-      std::move(local_public_db), std::move(remote_public_db));
+  local_public_db_ = db_provider->GetDB<::nearby::internal::SharedCredential>(
+      leveldb_proto::ProtoDbType::
+          NEARBY_PRESENCE_LOCAL_PUBLIC_CREDENTIAL_DATABASE,
+      local_public_database_path, database_task_runner);
+  remote_public_db_ = db_provider->GetDB<::nearby::internal::SharedCredential>(
+      leveldb_proto::ProtoDbType::
+          NEARBY_PRESENCE_REMOTE_PUBLIC_CREDENTIAL_DATABASE,
+      remote_public_database_path, database_task_runner);
 }
 
 NearbyPresenceCredentialStorage::NearbyPresenceCredentialStorage(

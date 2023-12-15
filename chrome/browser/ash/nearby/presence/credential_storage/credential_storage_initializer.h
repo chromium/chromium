@@ -33,7 +33,8 @@ class CredentialStorageInitializer {
   void Initialize();
 
  protected:
-  CredentialStorageInitializer(
+  // Test only constructor used to inject a NearbyPresenceCredentialStorageBase.
+  explicit CredentialStorageInitializer(
       std::unique_ptr<NearbyPresenceCredentialStorageBase>
           nearby_presence_credential_storage);
 

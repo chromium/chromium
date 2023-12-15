@@ -21,11 +21,9 @@ CredentialStorageInitializer::CredentialStorageInitializer(
                                 ->GetProtoDatabaseProvider();
   base::FilePath profile_path = profile->GetOriginalProfile()->GetPath();
 
-  auto nearby_presence_credential_storage =
+  nearby_presence_credential_storage_ =
       std::make_unique<NearbyPresenceCredentialStorage>(
           std::move(pending_receiver), proto_db_provider, profile_path);
-
-  CredentialStorageInitializer(std::move(nearby_presence_credential_storage));
 }
 
 CredentialStorageInitializer::CredentialStorageInitializer(
