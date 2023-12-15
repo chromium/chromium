@@ -40,21 +40,29 @@ struct TabInfo {
 
 // Information about a session.
 struct SessionInfo {
-  const size_t active_index = 0;
-  const size_t pinned_tab_count = 0;
+  const int active_index = -1;
+  const int pinned_tab_count = 0;
   const base::span<const TabInfo> tabs;
 };
 
-// Name of the session used by the tests (random string obtained by
+// Name of the sessions used by the tests (random string obtained by
 // running `uuidgen` on the command-line, no meaning to it).
-const char kSessionName[] = "CB5AC1AF-8E93-407B-AE48-65ECE7C241C0";
+const char kSessionName1[] = "CB5AC1AF-8E93-407B-AE48-65ECE7C241C0";
+const char kSessionName2[] = "B829AD40-FD11-4874-B5BF-B56C13DC2496";
+
+// Name of the sub-directory of the off-the-record BrowserState data.
+const base::FilePath::CharType kOTRDirectory[] = FILE_PATH_LITERAL("OTR");
 
 // Constants used to populate navigation items.
 const char kPageURL[] = "https://www.example.com";
 const char kPageTitle[] = "Example Domain";
 
+// Name of unrelated files.
+const base::FilePath::CharType kUnrelatedFilename[] =
+    FILE_PATH_LITERAL("Tabs_13346873882166178");
+
 // Constants representing the default session used for tests.
-constexpr TabInfo kTabs[] = {
+constexpr TabInfo kTabs1[] = {
     TabInfo{},
     TabInfo{},
     TabInfo{.create_web_session = false},
@@ -62,10 +70,21 @@ constexpr TabInfo kTabs[] = {
     TabInfo{.opener_index = 2, .opener_navigation_index = 0},
 };
 
-constexpr SessionInfo kSessionInfo = {
+constexpr SessionInfo kSessionInfo1 = {
     .active_index = 1,
     .pinned_tab_count = 2,
-    .tabs = base::make_span(kTabs),
+    .tabs = base::make_span(kTabs1),
+};
+
+constexpr TabInfo kTabs2[] = {
+    TabInfo{},
+    TabInfo{},
+};
+
+constexpr SessionInfo kSessionInfo2 = {
+    .active_index = 0,
+    .pinned_tab_count = 0,
+    .tabs = base::make_span(kTabs2),
 };
 
 // Returns the path to the directory containing the optimized session
@@ -99,6 +118,12 @@ base::FilePath GetOptimizedWebStateDir(const base::FilePath& session_dir,
       base::StringPrintf("%08x", identifier.identifier()));
 }
 
+// Converts an active index into a selected index.
+NSUInteger SelectedIndexFromActiveIndex(int active_index) {
+  return active_index < 0 ? static_cast<NSUInteger>(NSNotFound)
+                          : static_cast<NSUInteger>(active_index);
+}
+
 // Creates a CRWNavigationItemStorage.
 CRWNavigationItemStorage* CreateNavigationItemStorage() {
   CRWNavigationItemStorage* item = [[CRWNavigationItemStorage alloc] init];
@@ -125,6 +150,7 @@ CRWSessionStorage* CreateSessionStorage(TabInfo tab_info, bool is_pinned) {
   session.uniqueIdentifier = web::WebStateID::NewUnique();
   session.itemStorages = @[ CreateNavigationItemStorage() ];
   session.creationTime = base::Time::Now();
+  session.lastActiveTime = base::Time::Now();
   session.userData = user_data;
   return session;
 }
@@ -142,7 +168,8 @@ bool GenerateLegacySession(const base::FilePath& root,
   NSMutableArray<CRWSessionStorage*>* sessions = [[NSMutableArray alloc] init];
   for (size_t index = 0; index < session_info.tabs.size(); ++index) {
     // Create a fake tab with a single navigation item.
-    const bool is_pinned = index < session_info.pinned_tab_count;
+    const bool is_pinned =
+        static_cast<int>(index) < session_info.pinned_tab_count;
     CRWSessionStorage* session =
         CreateSessionStorage(session_info.tabs[index], is_pinned);
 
@@ -162,9 +189,12 @@ bool GenerateLegacySession(const base::FilePath& root,
     [sessions addObject:session];
   }
 
+  const NSUInteger selected_index =
+      SelectedIndexFromActiveIndex(session_info.active_index);
+
   SessionWindowIOS* session =
       [[SessionWindowIOS alloc] initWithSessions:sessions
-                                   selectedIndex:session_info.active_index];
+                                   selectedIndex:selected_index];
 
   // Write the session file.
   const base::FilePath filename =
@@ -175,10 +205,13 @@ bool GenerateLegacySession(const base::FilePath& root,
 // Creates a WebStateMetadataStorage.
 web::proto::WebStateMetadataStorage CreateWebStateMetadataStorage() {
   web::proto::WebStateMetadataStorage storage;
+  storage.set_navigation_item_count(1);
   storage.mutable_active_page()->set_page_title(kPageTitle);
   storage.mutable_active_page()->set_page_url(kPageURL);
   web::SerializeTimeToProto(base::Time::Now(),
                             *storage.mutable_creation_time());
+  web::SerializeTimeToProto(base::Time::Now(),
+                            *storage.mutable_last_active_time());
   return storage;
 }
 
@@ -310,6 +343,140 @@ bool GenerateOptimizedSessionPreM122(const base::FilePath& root,
   return ios::sessions::WriteProto(filename, storage);
 }
 
+// Checks whether the optimized session in `root` named `name` corresponds
+// to the session described by `session_info`.
+void CheckOptimizedSession(const base::FilePath& root,
+                           const std::string& name,
+                           SessionInfo session_info) {
+  const base::FilePath session_dir = GetOptimizedSessionDir(root, name);
+
+  // Load the optimized session from disk.
+  ios::proto::WebStateListStorage storage;
+  ASSERT_TRUE(ios::sessions::ParseProto(
+      session_dir.Append(kSessionMetadataFilename), storage));
+
+  // Check that the session metadata are correct.
+  EXPECT_EQ(storage.active_index(), session_info.active_index);
+  EXPECT_EQ(storage.pinned_item_count(), session_info.pinned_tab_count);
+
+  // Check that each tab metadata and data are correct.
+  ASSERT_EQ(storage.items_size(), static_cast<int>(session_info.tabs.size()));
+  for (size_t index = 0; index < session_info.tabs.size(); ++index) {
+    const ios::proto::WebStateListItemStorage& item_info = storage.items(index);
+    const TabInfo& tab_info = session_info.tabs[index];
+
+    // Check the opener-opener relationship for correctness.
+    if (tab_info.opener_index != -1 && tab_info.opener_navigation_index != -1) {
+      EXPECT_TRUE(item_info.has_opener());
+      const ios::proto::OpenerStorage& opener = item_info.opener();
+      EXPECT_EQ(opener.index(), tab_info.opener_index);
+      EXPECT_EQ(opener.navigation_index(), tab_info.opener_navigation_index);
+    } else {
+      EXPECT_FALSE(item_info.has_opener());
+    }
+
+    // Check the tab metadata for correctness.
+    ASSERT_TRUE(item_info.has_metadata());
+    const web::proto::WebStateMetadataStorage& metadata = item_info.metadata();
+
+    EXPECT_EQ(metadata.navigation_item_count(), 1);
+    EXPECT_NE(web::TimeFromProto(metadata.creation_time()), base::Time());
+    EXPECT_NE(web::TimeFromProto(metadata.last_active_time()), base::Time());
+    EXPECT_TRUE(metadata.has_active_page());
+    EXPECT_EQ(metadata.active_page().page_title(), kPageTitle);
+    EXPECT_EQ(GURL(metadata.active_page().page_url()), GURL(kPageURL));
+
+    ASSERT_TRUE(web::WebStateID::IsValidValue(item_info.identifier()));
+    const base::FilePath item_dir = GetOptimizedWebStateDir(
+        session_dir,
+        web::WebStateID::FromSerializedValue(item_info.identifier()));
+
+    // Check the tab data for correctness.
+    web::proto::WebStateStorage item_storage;
+    ASSERT_TRUE(ios::sessions::ParseProto(
+        item_dir.Append(kWebStateStorageFilename), item_storage));
+
+    EXPECT_FALSE(item_storage.has_metadata());
+    EXPECT_EQ(item_storage.navigation().last_committed_item_index(), 0);
+    ASSERT_EQ(item_storage.navigation().items_size(), 1);
+
+    const web::proto::NavigationItemStorage& navigation_item =
+        item_storage.navigation().items(0);
+    EXPECT_EQ(navigation_item.title(), kPageTitle);
+    EXPECT_EQ(GURL(navigation_item.virtual_url()), GURL(kPageURL));
+
+    // Check that the native session file exists if created.
+    EXPECT_EQ(
+        ios::sessions::FileExists(item_dir.Append(kWebStateSessionFilename)),
+        tab_info.create_web_session);
+  }
+}
+
+// Checks whether the legacy session in `root` named `name` corresponds
+// to the session described by `session_info`.
+void CheckLegacySession(const base::FilePath& root,
+                        const std::string& name,
+                        SessionInfo session_info) {
+  const base::FilePath session_dir = GetLegacySessionDir(root, name);
+  const base::FilePath web_sessions = root.Append(kLegacyWebSessionsDirname);
+
+  // Load the legacy session from disk.
+  SessionWindowIOS* session_window = ios::sessions::ReadSessionWindow(
+      session_dir.Append(kLegacySessionFilename));
+  ASSERT_TRUE(session_window);
+
+  EXPECT_EQ(session_window.selectedIndex,
+            SelectedIndexFromActiveIndex(session_info.active_index));
+
+  // Check that the information for each tab is correct.
+  ASSERT_EQ(session_window.sessions.count, session_info.tabs.size());
+  for (size_t index = 0; index < session_info.tabs.size(); ++index) {
+    CRWSessionStorage* session = session_window.sessions[index];
+    const TabInfo& tab_info = session_info.tabs[index];
+
+    // Check the opener-opener relationship for correctness.
+    CRWSessionUserData* user_data = session.userData;
+    if (tab_info.opener_index != -1 && tab_info.opener_navigation_index != -1) {
+      EXPECT_NSEQ(base::apple::ObjCCast<NSNumber>([user_data
+                      objectForKey:kLegacyWebStateListOpenerIndexKey]),
+                  @(tab_info.opener_index));
+      EXPECT_NSEQ(
+          base::apple::ObjCCast<NSNumber>([user_data
+              objectForKey:kLegacyWebStateListOpenerNavigationIndexKey]),
+          @(tab_info.opener_navigation_index));
+    }
+
+    // Check the pinned status for correctness.
+    if (static_cast<int>(index) < session_info.pinned_tab_count) {
+      EXPECT_NSEQ(base::apple::ObjCCast<NSNumber>([user_data
+                      objectForKey:kLegacyWebStateListPinnedStateKey]),
+                  @YES);
+    } else {
+      EXPECT_NSEQ(base::apple::ObjCCast<NSNumber>([user_data
+                      objectForKey:kLegacyWebStateListPinnedStateKey]),
+                  nil);
+    }
+
+    // Check that a stable identifier was generated (randomized).
+    EXPECT_TRUE(session.stableIdentifier);
+    EXPECT_NE(session.uniqueIdentifier, web::WebStateID());
+
+    // Check the tab data for correctness.
+    EXPECT_EQ(session.lastCommittedItemIndex, 0);
+    EXPECT_NE(session.creationTime, base::Time());
+    EXPECT_NE(session.lastActiveTime, base::Time());
+    ASSERT_EQ(session.itemStorages.count, 1u);
+
+    CRWNavigationItemStorage* navigation_item = session.itemStorages[0];
+    EXPECT_EQ(base::UTF16ToUTF8(navigation_item.title), kPageTitle);
+    EXPECT_EQ(navigation_item.virtualURL, GURL(kPageURL));
+
+    // Check that the native session file exists if created.
+    EXPECT_EQ(ios::sessions::FileExists(GetLegacyWebSessionsFile(
+                  web_sessions, session.uniqueIdentifier)),
+              tab_info.create_web_session);
+  }
+}
 }  // namespace
 
 // Tests migrating a session from legacy to optimized works correctly.
@@ -319,11 +486,11 @@ TEST_F(SessionMigrationTest, ToOptimized) {
   const base::FilePath root = scoped_temp_dir.GetPath();
 
   // Generate a legacy session.
-  EXPECT_TRUE(GenerateLegacySession(root, kSessionName, kSessionInfo));
+  EXPECT_TRUE(GenerateLegacySession(root, kSessionName1, kSessionInfo1));
 
   // Ask to migrate the legacy session.
   FakeTabRestoreService restore_service;
-  ios::sessions::MigrateNamedSessionToOptimized(root, kSessionName,
+  ios::sessions::MigrateNamedSessionToOptimized(root, kSessionName1,
                                                 &restore_service);
 
   // Check that the tabs have not been recorded.
@@ -331,7 +498,7 @@ TEST_F(SessionMigrationTest, ToOptimized) {
 
   // Check that the legacy session directory was deleted and its parent too
   // since it was empty.
-  const base::FilePath from_dir = GetLegacySessionDir(root, kSessionName);
+  const base::FilePath from_dir = GetLegacySessionDir(root, kSessionName1);
   EXPECT_FALSE(ios::sessions::DirectoryExists(from_dir));
   EXPECT_FALSE(ios::sessions::DirectoryExists(from_dir.DirName()));
 
@@ -341,63 +508,11 @@ TEST_F(SessionMigrationTest, ToOptimized) {
   EXPECT_FALSE(ios::sessions::DirectoryExists(web_sessions));
 
   // Check that an optimized session was created.
-  const base::FilePath dest_dir = GetOptimizedSessionDir(root, kSessionName);
+  const base::FilePath dest_dir = GetOptimizedSessionDir(root, kSessionName1);
   EXPECT_TRUE(ios::sessions::DirectoryExists(dest_dir));
 
-  // Load the session metadata and check that it agrees with `kSessionInfo`.
-  ios::proto::WebStateListStorage storage;
-  EXPECT_TRUE(ios::sessions::ParseProto(
-      dest_dir.Append(kSessionMetadataFilename), storage));
-
-  EXPECT_EQ(storage.active_index(),
-            static_cast<int>(kSessionInfo.active_index));
-  EXPECT_EQ(storage.pinned_item_count(),
-            static_cast<int>(kSessionInfo.pinned_tab_count));
-
-  // Check that the information for each tab is correct.
-  ASSERT_EQ(storage.items_size(), static_cast<int>(kSessionInfo.tabs.size()));
-  for (size_t index = 0; index < kSessionInfo.tabs.size(); ++index) {
-    const ios::proto::WebStateListItemStorage& item_info = storage.items(index);
-    const TabInfo& tab_info = kSessionInfo.tabs[index];
-
-    if (tab_info.opener_index != -1 && tab_info.opener_navigation_index != -1) {
-      EXPECT_TRUE(item_info.has_opener());
-      EXPECT_EQ(item_info.opener().index(), tab_info.opener_index);
-      EXPECT_EQ(item_info.opener().navigation_index(),
-                tab_info.opener_navigation_index);
-    }
-
-    ASSERT_TRUE(web::WebStateID::IsValidValue(item_info.identifier()));
-    const base::FilePath item_dir = GetOptimizedWebStateDir(
-        dest_dir, web::WebStateID::FromSerializedValue(item_info.identifier()));
-
-    // Check the tab metadata for correctness.
-    ASSERT_TRUE(item_info.has_metadata());
-    const web::proto::WebStateMetadataStorage& metadata = item_info.metadata();
-
-    EXPECT_TRUE(metadata.has_active_page());
-    EXPECT_EQ(metadata.navigation_item_count(), 1);
-    EXPECT_EQ(metadata.active_page().page_title(), kPageTitle);
-    EXPECT_EQ(GURL(metadata.active_page().page_url()), GURL(kPageURL));
-
-    // Load the tab data and check for correctnesss.
-    web::proto::WebStateStorage item_storage;
-    EXPECT_TRUE(ios::sessions::ParseProto(
-        item_dir.Append(kWebStateStorageFilename), item_storage));
-
-    EXPECT_FALSE(item_storage.has_metadata());
-    EXPECT_EQ(item_storage.navigation().last_committed_item_index(), 0);
-    ASSERT_EQ(item_storage.navigation().items_size(), 1);
-
-    const auto& navigation_item = item_storage.navigation().items(0);
-    EXPECT_EQ(navigation_item.title(), kPageTitle);
-    EXPECT_EQ(GURL(navigation_item.virtual_url()), GURL(kPageURL));
-
-    // Check that the web session file exists (if created).
-    EXPECT_EQ(
-        ios::sessions::FileExists(item_dir.Append(kWebStateSessionFilename)),
-        tab_info.create_web_session);
-  }
+  // Check the migrated session is correct.
+  CheckOptimizedSession(root, kSessionName1, kSessionInfo1);
 }
 
 // Tests migrating a session from legacy to optimized when there is no session.
@@ -407,10 +522,10 @@ TEST_F(SessionMigrationTest, ToOptimized_NoSession) {
   const base::FilePath root = scoped_temp_dir.GetPath();
 
   // Ask to migrate the non-existent legacy session.
-  ios::sessions::MigrateNamedSessionToOptimized(root, kSessionName, nullptr);
+  ios::sessions::MigrateNamedSessionToOptimized(root, kSessionName1, nullptr);
 
   // Check that no optimized session was created.
-  const base::FilePath dest_dir = GetOptimizedSessionDir(root, kSessionName);
+  const base::FilePath dest_dir = GetOptimizedSessionDir(root, kSessionName1);
   EXPECT_FALSE(ios::sessions::DirectoryExists(dest_dir));
 }
 
@@ -422,16 +537,16 @@ TEST_F(SessionMigrationTest, ToOptimized_NoSessionEmptyDirs) {
   const base::FilePath root = scoped_temp_dir.GetPath();
 
   // Create empty directories.
-  const base::FilePath from_dir = GetLegacySessionDir(root, kSessionName);
+  const base::FilePath from_dir = GetLegacySessionDir(root, kSessionName1);
   const base::FilePath web_sessions = root.Append(kLegacyWebSessionsDirname);
   EXPECT_TRUE(ios::sessions::CreateDirectory(from_dir));
   EXPECT_TRUE(ios::sessions::CreateDirectory(web_sessions));
 
   // Ask to migrate the non-existent legacy session.
-  ios::sessions::MigrateNamedSessionToOptimized(root, kSessionName, nullptr);
+  ios::sessions::MigrateNamedSessionToOptimized(root, kSessionName1, nullptr);
 
   // Check that no optimized session was created.
-  const base::FilePath dest_dir = GetOptimizedSessionDir(root, kSessionName);
+  const base::FilePath dest_dir = GetOptimizedSessionDir(root, kSessionName1);
   EXPECT_FALSE(ios::sessions::DirectoryExists(dest_dir));
 
   // Check that the empty directories have been deleted.
@@ -447,7 +562,7 @@ TEST_F(SessionMigrationTest, ToOptimized_FailureInvalidSessions) {
   const base::FilePath root = scoped_temp_dir.GetPath();
 
   // Write incorrect data to the session file.
-  const base::FilePath from_dir = GetLegacySessionDir(root, kSessionName);
+  const base::FilePath from_dir = GetLegacySessionDir(root, kSessionName1);
   NSData* data = [@"data" dataUsingEncoding:NSUTF8StringEncoding];
   EXPECT_TRUE(
       ios::sessions::WriteFile(from_dir.Append(kLegacySessionFilename), data));
@@ -462,10 +577,10 @@ TEST_F(SessionMigrationTest, ToOptimized_FailureInvalidSessions) {
       data));
 
   // Ask to migrate the invalid legacy session.
-  ios::sessions::MigrateNamedSessionToOptimized(root, kSessionName, nullptr);
+  ios::sessions::MigrateNamedSessionToOptimized(root, kSessionName1, nullptr);
 
   // Check that no optimized session was created.
-  const base::FilePath dest_dir = GetOptimizedSessionDir(root, kSessionName);
+  const base::FilePath dest_dir = GetOptimizedSessionDir(root, kSessionName1);
   EXPECT_FALSE(ios::sessions::DirectoryExists(dest_dir));
 
   // Check that the session directory has been deleted.
@@ -484,22 +599,22 @@ TEST_F(SessionMigrationTest, ToOptimized_FailureMigration) {
   const base::FilePath root = scoped_temp_dir.GetPath();
 
   // Generate a legacy session.
-  EXPECT_TRUE(GenerateLegacySession(root, kSessionName, kSessionInfo));
+  EXPECT_TRUE(GenerateLegacySession(root, kSessionName1, kSessionInfo1));
 
   // Create a file with the same name as the optimized session directory
   // which should prevent migrating the session.
   NSData* data = [@"data" dataUsingEncoding:NSUTF8StringEncoding];
-  const base::FilePath dest_dir = GetOptimizedSessionDir(root, kSessionName);
+  const base::FilePath dest_dir = GetOptimizedSessionDir(root, kSessionName1);
   EXPECT_TRUE(ios::sessions::WriteFile(dest_dir, data));
 
   // Ask to migrate the legacy session.
-  ios::sessions::MigrateNamedSessionToOptimized(root, kSessionName, nullptr);
+  ios::sessions::MigrateNamedSessionToOptimized(root, kSessionName1, nullptr);
 
   // Check that no optimized session was created.
   EXPECT_FALSE(ios::sessions::DirectoryExists(dest_dir));
 
   // Check that the session directory has been deleted.
-  const base::FilePath from_dir = GetLegacySessionDir(root, kSessionName);
+  const base::FilePath from_dir = GetLegacySessionDir(root, kSessionName1);
   EXPECT_FALSE(ios::sessions::DirectoryExists(from_dir));
 
   // Check that the web sessions directory has been deleted.
@@ -516,24 +631,24 @@ TEST_F(SessionMigrationTest, ToOptimized_FailureMigrationRecordTabs) {
   const base::FilePath root = scoped_temp_dir.GetPath();
 
   // Generate a legacy session.
-  EXPECT_TRUE(GenerateLegacySession(root, kSessionName, kSessionInfo));
+  EXPECT_TRUE(GenerateLegacySession(root, kSessionName1, kSessionInfo1));
 
   // Create a file with the same name as the optimized session directory
   // which should prevent migrating the session.
   NSData* data = [@"data" dataUsingEncoding:NSUTF8StringEncoding];
-  const base::FilePath dest_dir = GetOptimizedSessionDir(root, kSessionName);
+  const base::FilePath dest_dir = GetOptimizedSessionDir(root, kSessionName1);
   EXPECT_TRUE(ios::sessions::WriteFile(dest_dir, data));
 
   // Ask to migrate the legacy session.
   FakeTabRestoreService restore_service;
-  ios::sessions::MigrateNamedSessionToOptimized(root, kSessionName,
+  ios::sessions::MigrateNamedSessionToOptimized(root, kSessionName1,
                                                 &restore_service);
 
   // Check that no optimized session was created.
   EXPECT_FALSE(ios::sessions::DirectoryExists(dest_dir));
 
   // Check that the tabs have been recorded.
-  EXPECT_EQ(restore_service.entries().size(), kSessionInfo.tabs.size());
+  EXPECT_EQ(restore_service.entries().size(), kSessionInfo1.tabs.size());
 }
 
 // Tests migrating a session from optimize to legacy works correctly.
@@ -543,11 +658,11 @@ TEST_F(SessionMigrationTest, ToLegacy) {
   const base::FilePath root = scoped_temp_dir.GetPath();
 
   // Generate an optimized session.
-  EXPECT_TRUE(GenerateOptimizedSession(root, kSessionName, kSessionInfo));
+  EXPECT_TRUE(GenerateOptimizedSession(root, kSessionName1, kSessionInfo1));
 
   // Ask to migrate the session.
   FakeTabRestoreService restore_service;
-  ios::sessions::MigrateNamedSessionToLegacy(root, kSessionName,
+  ios::sessions::MigrateNamedSessionToLegacy(root, kSessionName1,
                                              &restore_service);
 
   // Check that the tabs have not been recorded.
@@ -555,12 +670,12 @@ TEST_F(SessionMigrationTest, ToLegacy) {
 
   // Check that the optimized session directory was deleted and its parent too
   // since it was empty.
-  const base::FilePath from_dir = GetOptimizedSessionDir(root, kSessionName);
+  const base::FilePath from_dir = GetOptimizedSessionDir(root, kSessionName1);
   EXPECT_FALSE(ios::sessions::DirectoryExists(from_dir));
   EXPECT_FALSE(ios::sessions::DirectoryExists(from_dir.DirName()));
 
   // Check that an optimized session was created.
-  const base::FilePath dest_dir = GetLegacySessionDir(root, kSessionName);
+  const base::FilePath dest_dir = GetLegacySessionDir(root, kSessionName1);
   EXPECT_TRUE(ios::sessions::DirectoryExists(dest_dir));
 
   // Check that the directory containing the web sessions was also created
@@ -569,53 +684,8 @@ TEST_F(SessionMigrationTest, ToLegacy) {
   EXPECT_TRUE(ios::sessions::DirectoryExists(web_sessions));
   EXPECT_FALSE(ios::sessions::DirectoryEmpty(web_sessions));
 
-  // Load the session and check that it agress with `kSessionInfo`.
-  SessionWindowIOS* session_window =
-      ios::sessions::ReadSessionWindow(dest_dir.Append(kLegacySessionFilename));
-  ASSERT_TRUE(session_window);
-
-  EXPECT_EQ(session_window.selectedIndex, kSessionInfo.active_index);
-
-  // Check that the information for each tab is correct.
-  ASSERT_EQ(session_window.sessions.count, kSessionInfo.tabs.size());
-  for (size_t index = 0; index < kSessionInfo.tabs.size(); ++index) {
-    CRWSessionStorage* session = session_window.sessions[index];
-    const TabInfo& tab_info = kSessionInfo.tabs[index];
-
-    CRWSessionUserData* user_data = session.userData;
-    if (tab_info.opener_index != -1 && tab_info.opener_navigation_index != -1) {
-      EXPECT_NSEQ(base::apple::ObjCCast<NSNumber>([user_data
-                      objectForKey:kLegacyWebStateListOpenerIndexKey]),
-                  @(tab_info.opener_index));
-      EXPECT_NSEQ(
-          base::apple::ObjCCast<NSNumber>([user_data
-              objectForKey:kLegacyWebStateListOpenerNavigationIndexKey]),
-          @(tab_info.opener_navigation_index));
-    }
-
-    if (index < kSessionInfo.pinned_tab_count) {
-      EXPECT_NSEQ(base::apple::ObjCCast<NSNumber>([user_data
-                      objectForKey:kLegacyWebStateListPinnedStateKey]),
-                  @YES);
-    }
-
-    // Check that a stable identifier was generated (randomized).
-    EXPECT_TRUE(session.stableIdentifier);
-
-    // Check the data for correctness.
-    EXPECT_EQ(session.lastCommittedItemIndex, 0);
-    EXPECT_NE(session.creationTime, base::Time());
-    ASSERT_EQ(session.itemStorages.count, 1u);
-
-    CRWNavigationItemStorage* navigation_item = session.itemStorages[0];
-    EXPECT_EQ(base::UTF16ToUTF8(navigation_item.title), kPageTitle);
-    EXPECT_EQ(navigation_item.virtualURL, GURL(kPageURL));
-
-    // Check that the web session file exists (if created).
-    EXPECT_EQ(ios::sessions::FileExists(GetLegacyWebSessionsFile(
-                  web_sessions, session.uniqueIdentifier)),
-              tab_info.create_web_session);
-  }
+  // Check the migrated session is correct.
+  CheckLegacySession(root, kSessionName1, kSessionInfo1);
 }
 
 // Tests migrating a session from optimize (pre M-122) to legacy works
@@ -627,11 +697,11 @@ TEST_F(SessionMigrationTest, ToLegacyPreM122) {
 
   // Generate an optimized session.
   EXPECT_TRUE(
-      GenerateOptimizedSessionPreM122(root, kSessionName, kSessionInfo));
+      GenerateOptimizedSessionPreM122(root, kSessionName1, kSessionInfo1));
 
   // Ask to migrate the session.
   FakeTabRestoreService restore_service;
-  ios::sessions::MigrateNamedSessionToLegacy(root, kSessionName,
+  ios::sessions::MigrateNamedSessionToLegacy(root, kSessionName1,
                                              &restore_service);
 
   // Check that the tabs have not been recorded.
@@ -639,12 +709,12 @@ TEST_F(SessionMigrationTest, ToLegacyPreM122) {
 
   // Check that the optimized session directory was deleted and its parent too
   // since it was empty.
-  const base::FilePath from_dir = GetOptimizedSessionDir(root, kSessionName);
+  const base::FilePath from_dir = GetOptimizedSessionDir(root, kSessionName1);
   EXPECT_FALSE(ios::sessions::DirectoryExists(from_dir));
   EXPECT_FALSE(ios::sessions::DirectoryExists(from_dir.DirName()));
 
   // Check that an optimized session was created.
-  const base::FilePath dest_dir = GetLegacySessionDir(root, kSessionName);
+  const base::FilePath dest_dir = GetLegacySessionDir(root, kSessionName1);
   EXPECT_TRUE(ios::sessions::DirectoryExists(dest_dir));
 
   // Check that the directory containing the web sessions was also created
@@ -653,53 +723,8 @@ TEST_F(SessionMigrationTest, ToLegacyPreM122) {
   EXPECT_TRUE(ios::sessions::DirectoryExists(web_sessions));
   EXPECT_FALSE(ios::sessions::DirectoryEmpty(web_sessions));
 
-  // Load the session and check that it agress with `kSessionInfo`.
-  SessionWindowIOS* session_window =
-      ios::sessions::ReadSessionWindow(dest_dir.Append(kLegacySessionFilename));
-  ASSERT_TRUE(session_window);
-
-  EXPECT_EQ(session_window.selectedIndex, kSessionInfo.active_index);
-
-  // Check that the information for each tab is correct.
-  ASSERT_EQ(session_window.sessions.count, kSessionInfo.tabs.size());
-  for (size_t index = 0; index < kSessionInfo.tabs.size(); ++index) {
-    CRWSessionStorage* session = session_window.sessions[index];
-    const TabInfo& tab_info = kSessionInfo.tabs[index];
-
-    CRWSessionUserData* user_data = session.userData;
-    if (tab_info.opener_index != -1 && tab_info.opener_navigation_index != -1) {
-      EXPECT_NSEQ(base::apple::ObjCCast<NSNumber>([user_data
-                      objectForKey:kLegacyWebStateListOpenerIndexKey]),
-                  @(tab_info.opener_index));
-      EXPECT_NSEQ(
-          base::apple::ObjCCast<NSNumber>([user_data
-              objectForKey:kLegacyWebStateListOpenerNavigationIndexKey]),
-          @(tab_info.opener_navigation_index));
-    }
-
-    if (index < kSessionInfo.pinned_tab_count) {
-      EXPECT_NSEQ(base::apple::ObjCCast<NSNumber>([user_data
-                      objectForKey:kLegacyWebStateListPinnedStateKey]),
-                  @YES);
-    }
-
-    // Check that a stable identifier was generated (randomized).
-    EXPECT_TRUE(session.stableIdentifier);
-
-    // Check the data for correctness.
-    EXPECT_EQ(session.lastCommittedItemIndex, 0);
-    EXPECT_NE(session.creationTime, base::Time());
-    ASSERT_EQ(session.itemStorages.count, 1u);
-
-    CRWNavigationItemStorage* navigation_item = session.itemStorages[0];
-    EXPECT_EQ(base::UTF16ToUTF8(navigation_item.title), kPageTitle);
-    EXPECT_EQ(navigation_item.virtualURL, GURL(kPageURL));
-
-    // Check that the web session file exists (if created).
-    EXPECT_EQ(ios::sessions::FileExists(GetLegacyWebSessionsFile(
-                  web_sessions, session.uniqueIdentifier)),
-              tab_info.create_web_session);
-  }
+  // Check the migrated session is correct.
+  CheckLegacySession(root, kSessionName1, kSessionInfo1);
 }
 
 // Tests migrating a session from optimized to legacy when there is no session.
@@ -709,10 +734,10 @@ TEST_F(SessionMigrationTest, ToLegacy_NoSession) {
   const base::FilePath root = scoped_temp_dir.GetPath();
 
   // Ask to migrate the non-existent optimized session.
-  ios::sessions::MigrateNamedSessionToLegacy(root, kSessionName, nullptr);
+  ios::sessions::MigrateNamedSessionToLegacy(root, kSessionName1, nullptr);
 
   // Check that no legacy session was created.
-  const base::FilePath dest_dir = GetLegacySessionDir(root, kSessionName);
+  const base::FilePath dest_dir = GetLegacySessionDir(root, kSessionName1);
   EXPECT_FALSE(ios::sessions::DirectoryExists(dest_dir));
 
   // Check that the web sessions directory was not created.
@@ -728,14 +753,14 @@ TEST_F(SessionMigrationTest, ToLegacy_NoSessionEmptyDirs) {
   const base::FilePath root = scoped_temp_dir.GetPath();
 
   // Create empty directory.
-  const base::FilePath from_dir = GetOptimizedSessionDir(root, kSessionName);
+  const base::FilePath from_dir = GetOptimizedSessionDir(root, kSessionName1);
   EXPECT_TRUE(ios::sessions::CreateDirectory(from_dir));
 
   // Ask to migrate the optimized session.
-  ios::sessions::MigrateNamedSessionToLegacy(root, kSessionName, nullptr);
+  ios::sessions::MigrateNamedSessionToLegacy(root, kSessionName1, nullptr);
 
   // Check that no optimized session was created.
-  const base::FilePath dest_dir = GetLegacySessionDir(root, kSessionName);
+  const base::FilePath dest_dir = GetLegacySessionDir(root, kSessionName1);
   EXPECT_FALSE(ios::sessions::DirectoryExists(dest_dir));
 
   // Check that the web sessions directory was not created.
@@ -754,16 +779,16 @@ TEST_F(SessionMigrationTest, ToLegacy_FailureInvalidSessions) {
   const base::FilePath root = scoped_temp_dir.GetPath();
 
   // Write incorrect data to the session file.
-  const base::FilePath from_dir = GetOptimizedSessionDir(root, kSessionName);
+  const base::FilePath from_dir = GetOptimizedSessionDir(root, kSessionName1);
   NSData* data = [@"data" dataUsingEncoding:NSUTF8StringEncoding];
   EXPECT_TRUE(ios::sessions::WriteFile(
       from_dir.Append(kSessionMetadataFilename), data));
 
   // Ask to migrate the invalid optimized session.
-  ios::sessions::MigrateNamedSessionToLegacy(root, kSessionName, nullptr);
+  ios::sessions::MigrateNamedSessionToLegacy(root, kSessionName1, nullptr);
 
   // Check that no legacy session was created.
-  const base::FilePath dest_dir = GetLegacySessionDir(root, kSessionName);
+  const base::FilePath dest_dir = GetLegacySessionDir(root, kSessionName1);
   EXPECT_FALSE(ios::sessions::DirectoryExists(dest_dir));
 
   // Check that the session directory has been deleted.
@@ -778,22 +803,22 @@ TEST_F(SessionMigrationTest, ToLegacy_FailureMigration) {
   const base::FilePath root = scoped_temp_dir.GetPath();
 
   // Generate an optimized session.
-  EXPECT_TRUE(GenerateOptimizedSession(root, kSessionName, kSessionInfo));
+  EXPECT_TRUE(GenerateOptimizedSession(root, kSessionName1, kSessionInfo1));
 
   // Create a file with the same name as the legacy session directory
   // which should prevent migrating the session.
   NSData* data = [@"data" dataUsingEncoding:NSUTF8StringEncoding];
-  const base::FilePath dest_dir = GetLegacySessionDir(root, kSessionName);
+  const base::FilePath dest_dir = GetLegacySessionDir(root, kSessionName1);
   EXPECT_TRUE(ios::sessions::WriteFile(dest_dir, data));
 
   // Ask to migrate the session.
-  ios::sessions::MigrateNamedSessionToLegacy(root, kSessionName, nullptr);
+  ios::sessions::MigrateNamedSessionToLegacy(root, kSessionName1, nullptr);
 
   // Check that no legacy session was created.
   EXPECT_FALSE(ios::sessions::DirectoryExists(dest_dir));
 
   // Check that the session directory has been deleted.
-  const base::FilePath from_dir = GetOptimizedSessionDir(root, kSessionName);
+  const base::FilePath from_dir = GetOptimizedSessionDir(root, kSessionName1);
   EXPECT_FALSE(ios::sessions::DirectoryExists(from_dir));
 
   // Check that the web sessions directory has not been created.
@@ -810,22 +835,554 @@ TEST_F(SessionMigrationTest, ToLegacy_FailureMigrationRecordTabs) {
   const base::FilePath root = scoped_temp_dir.GetPath();
 
   // Generate an optimized session.
-  EXPECT_TRUE(GenerateOptimizedSession(root, kSessionName, kSessionInfo));
+  EXPECT_TRUE(GenerateOptimizedSession(root, kSessionName1, kSessionInfo1));
 
   // Create a file with the same name as the legacy session directory
   // which should prevent migrating the session.
   NSData* data = [@"data" dataUsingEncoding:NSUTF8StringEncoding];
-  const base::FilePath dest_dir = GetLegacySessionDir(root, kSessionName);
+  const base::FilePath dest_dir = GetLegacySessionDir(root, kSessionName1);
   EXPECT_TRUE(ios::sessions::WriteFile(dest_dir, data));
 
   // Ask to migrate the session.
   FakeTabRestoreService restore_service;
-  ios::sessions::MigrateNamedSessionToLegacy(root, kSessionName,
+  ios::sessions::MigrateNamedSessionToLegacy(root, kSessionName1,
                                              &restore_service);
 
   // Check that no legacy session was created.
   EXPECT_FALSE(ios::sessions::DirectoryExists(dest_dir));
 
   // Check that the tabs have been recorded.
-  EXPECT_EQ(restore_service.entries().size(), kSessionInfo.tabs.size());
+  EXPECT_EQ(restore_service.entries().size(), kSessionInfo1.tabs.size());
+}
+
+// Tests batch migrating sessions from legacy to optimized works correctly.
+TEST_F(SessionMigrationTest, BatchToOptimized) {
+  base::ScopedTempDir scoped_temp_dir;
+  ASSERT_TRUE(scoped_temp_dir.CreateUniqueTempDir());
+  const base::FilePath root = scoped_temp_dir.GetPath();
+  const base::FilePath otr = root.Append(kOTRDirectory);
+  const std::vector<base::FilePath> paths{root, otr};
+
+  // Generate a few legacy sessions for the main and OTR BrowserStates.
+  EXPECT_TRUE(GenerateLegacySession(root, kSessionName1, kSessionInfo1));
+  EXPECT_TRUE(GenerateLegacySession(root, kSessionName2, kSessionInfo2));
+  EXPECT_TRUE(GenerateLegacySession(otr, kSessionName1, SessionInfo()));
+
+  // Check that the migration is a success.
+  ASSERT_EQ(ios::sessions::MigrateSessionsInPathsToOptimized(paths),
+            ios::sessions::MigrationStatus::kSuccess);
+
+  // Check that the directories containing legacy sessions and WKWebView
+  // native session data have been deleted in all paths.
+  for (const base::FilePath& path : paths) {
+    const base::FilePath legacy_dir = path.Append(kLegacySessionsDirname);
+    EXPECT_FALSE(ios::sessions::DirectoryExists(legacy_dir));
+
+    const base::FilePath native_dir = path.Append(kLegacyWebSessionsDirname);
+    EXPECT_FALSE(ios::sessions::DirectoryExists(native_dir));
+  }
+
+  // Check that the sessions have been correctly converted.
+  CheckOptimizedSession(root, kSessionName1, kSessionInfo1);
+  CheckOptimizedSession(root, kSessionName2, kSessionInfo2);
+  CheckOptimizedSession(otr, kSessionName1, SessionInfo());
+}
+
+// Tests batch migrating sessions from legacy to optimized works correctly
+// when there are no sessions.
+TEST_F(SessionMigrationTest, BatchToOptimized_NoSession) {
+  base::ScopedTempDir scoped_temp_dir;
+  ASSERT_TRUE(scoped_temp_dir.CreateUniqueTempDir());
+  const base::FilePath root = scoped_temp_dir.GetPath();
+  const base::FilePath otr = root.Append(kOTRDirectory);
+  const std::vector<base::FilePath> paths{root, otr};
+
+  // Check that the migration is a success.
+  ASSERT_EQ(ios::sessions::MigrateSessionsInPathsToOptimized(paths),
+            ios::sessions::MigrationStatus::kSuccess);
+
+  // Check that the optimized session directories have not been created.
+  for (const base::FilePath& path : paths) {
+    const base::FilePath optimized_dir =
+        path.Append(kSessionRestorationDirname);
+    EXPECT_FALSE(ios::sessions::DirectoryExists(optimized_dir));
+  }
+}
+
+// Tests batch migrating sessions from legacy to optimized works correctly
+// when there are no sessions but empty directory laying around.
+TEST_F(SessionMigrationTest, BatchToOptimized_NoSessionEmptyDirs) {
+  base::ScopedTempDir scoped_temp_dir;
+  ASSERT_TRUE(scoped_temp_dir.CreateUniqueTempDir());
+  const base::FilePath root = scoped_temp_dir.GetPath();
+  const base::FilePath otr = root.Append(kOTRDirectory);
+  const std::vector<base::FilePath> paths{root, otr};
+
+  // Create empty directories.
+  for (const base::FilePath& path : paths) {
+    using ios::sessions::CreateDirectory;
+    ASSERT_TRUE(CreateDirectory(GetLegacySessionDir(path, kSessionName1)));
+    ASSERT_TRUE(CreateDirectory(GetLegacySessionDir(path, kSessionName2)));
+    ASSERT_TRUE(CreateDirectory(path.Append(kLegacyWebSessionsDirname)));
+  }
+
+  // Check that the migration is a success.
+  ASSERT_EQ(ios::sessions::MigrateSessionsInPathsToOptimized(paths),
+            ios::sessions::MigrationStatus::kSuccess);
+
+  // Check that the directories containing legacy sessions and WKWebView
+  // native session data have been deleted in all paths.
+  for (const base::FilePath& path : paths) {
+    const base::FilePath legacy_dir = path.Append(kLegacySessionsDirname);
+    EXPECT_FALSE(ios::sessions::DirectoryExists(legacy_dir));
+
+    const base::FilePath native_dir = path.Append(kLegacyWebSessionsDirname);
+    EXPECT_FALSE(ios::sessions::DirectoryExists(native_dir));
+  }
+
+  // Check that the optimized session directories have not been created.
+  for (const base::FilePath& path : paths) {
+    const base::FilePath optimized_dir =
+        path.Append(kSessionRestorationDirname);
+    EXPECT_FALSE(ios::sessions::DirectoryExists(optimized_dir));
+  }
+}
+
+// Tests batch migrating sessions from legacy to optimized works correctly
+// and does nothing if the sessions are already in the optimized format.
+TEST_F(SessionMigrationTest, BatchToOptimized_SessionAreOptimized) {
+  base::ScopedTempDir scoped_temp_dir;
+  ASSERT_TRUE(scoped_temp_dir.CreateUniqueTempDir());
+  const base::FilePath root = scoped_temp_dir.GetPath();
+  const base::FilePath otr = root.Append(kOTRDirectory);
+  const std::vector<base::FilePath> paths{root, otr};
+
+  // Generate a few optimized sessions for the main and OTR BrowserStates.
+  EXPECT_TRUE(GenerateOptimizedSession(root, kSessionName1, kSessionInfo1));
+  EXPECT_TRUE(GenerateOptimizedSession(root, kSessionName2, kSessionInfo2));
+  EXPECT_TRUE(GenerateOptimizedSession(otr, kSessionName1, SessionInfo()));
+
+  // Check that the migration is a success.
+  ASSERT_EQ(ios::sessions::MigrateSessionsInPathsToOptimized(paths),
+            ios::sessions::MigrationStatus::kSuccess);
+
+  // Check that the sessions have been left untouched.
+  CheckOptimizedSession(root, kSessionName1, kSessionInfo1);
+  CheckOptimizedSession(root, kSessionName2, kSessionInfo2);
+  CheckOptimizedSession(otr, kSessionName1, SessionInfo());
+}
+
+// Tests batch migrating sessions from legacy to optimized works correctly
+// and leave unrelated files in the legacy session directories untouched.
+TEST_F(SessionMigrationTest, BatchToOptimized_UnrelatedFilesUnaffected) {
+  base::ScopedTempDir scoped_temp_dir;
+  ASSERT_TRUE(scoped_temp_dir.CreateUniqueTempDir());
+  const base::FilePath root = scoped_temp_dir.GetPath();
+  const base::FilePath otr = root.Append(kOTRDirectory);
+  const std::vector<base::FilePath> paths{root, otr};
+
+  // Generate a few legacy sessions for the main and OTR BrowserStates.
+  EXPECT_TRUE(GenerateLegacySession(root, kSessionName1, kSessionInfo1));
+  EXPECT_TRUE(GenerateLegacySession(root, kSessionName2, kSessionInfo2));
+  EXPECT_TRUE(GenerateLegacySession(otr, kSessionName1, SessionInfo()));
+
+  // Create a few unrelated files in the legacy session directories (they
+  // corresponds to files saved by //components/sessions).
+  NSData* data = [@"data" dataUsingEncoding:NSUTF8StringEncoding];
+  for (const base::FilePath& path : paths) {
+    const base::FilePath legacy_dir = path.Append(kLegacySessionsDirname);
+    const base::FilePath filename = legacy_dir.Append(kUnrelatedFilename);
+    EXPECT_TRUE(ios::sessions::WriteFile(filename, data));
+  }
+
+  // Check that the migration is a success.
+  ASSERT_EQ(ios::sessions::MigrateSessionsInPathsToOptimized(paths),
+            ios::sessions::MigrationStatus::kSuccess);
+
+  // Check that the directories containing legacy sessions and WKWebView
+  // native session data have been deleted in all paths.
+  for (const base::FilePath& path : paths) {
+    const base::FilePath legacy_dir = path.Append(kLegacySessionsDirname);
+    const base::FilePath filename = legacy_dir.Append(kUnrelatedFilename);
+    EXPECT_TRUE(ios::sessions::DirectoryExists(legacy_dir));
+    EXPECT_NSEQ(ios::sessions::ReadFile(filename), data);
+
+    const base::FilePath native_dir = path.Append(kLegacyWebSessionsDirname);
+    EXPECT_FALSE(ios::sessions::DirectoryExists(native_dir));
+  }
+
+  // Check that the sessions have been correctly converted.
+  CheckOptimizedSession(root, kSessionName1, kSessionInfo1);
+  CheckOptimizedSession(root, kSessionName2, kSessionInfo2);
+  CheckOptimizedSession(otr, kSessionName1, SessionInfo());
+}
+
+// Tests batch migrating sessions from legacy to optimized when one session
+// is invalid and cannot be loaded.
+TEST_F(SessionMigrationTest, BatchToOptimized_FailureInvalidSessions) {
+  base::ScopedTempDir scoped_temp_dir;
+  ASSERT_TRUE(scoped_temp_dir.CreateUniqueTempDir());
+  const base::FilePath root = scoped_temp_dir.GetPath();
+  const base::FilePath otr = root.Append(kOTRDirectory);
+  const std::vector<base::FilePath> paths{root, otr};
+
+  // Generate a few legacy sessions for the main and OTR BrowserStates.
+  EXPECT_TRUE(GenerateLegacySession(root, kSessionName1, kSessionInfo1));
+  EXPECT_TRUE(GenerateLegacySession(otr, kSessionName1, SessionInfo()));
+
+  // Write invalid data in one sessions.
+  const base::FilePath session_path =
+      GetLegacySessionDir(root, kSessionName2).Append(kLegacySessionFilename);
+  NSData* data = [@"data" dataUsingEncoding:NSUTF8StringEncoding];
+  EXPECT_TRUE(ios::sessions::WriteFile(session_path, data));
+
+  // Check that the migration is a failure.
+  ASSERT_EQ(ios::sessions::MigrateSessionsInPathsToOptimized(paths),
+            ios::sessions::MigrationStatus::kFailure);
+
+  // Check that the legacy sessions have been left untouched, including the
+  // invalid session.
+  CheckLegacySession(root, kSessionName1, kSessionInfo1);
+  CheckLegacySession(otr, kSessionName1, SessionInfo());
+  EXPECT_NSEQ(ios::sessions::ReadFile(session_path), data);
+
+  // Check that the optimized session directory was not created.
+  for (const base::FilePath& path : paths) {
+    const base::FilePath optimized_dir =
+        path.Append(kSessionRestorationDirname);
+    EXPECT_FALSE(ios::sessions::DirectoryExists(optimized_dir));
+  }
+}
+
+// Tests batch migrating sessions from legacy to optimized when one session
+// cannot be migrated.
+TEST_F(SessionMigrationTest, BatchToOptimized_FailureMigration) {
+  base::ScopedTempDir scoped_temp_dir;
+  ASSERT_TRUE(scoped_temp_dir.CreateUniqueTempDir());
+  const base::FilePath root = scoped_temp_dir.GetPath();
+  const base::FilePath otr = root.Append(kOTRDirectory);
+  const std::vector<base::FilePath> paths{root, otr};
+
+  // Generate a few legacy sessions for the main and OTR BrowserStates.
+  EXPECT_TRUE(GenerateLegacySession(root, kSessionName1, kSessionInfo1));
+  EXPECT_TRUE(GenerateLegacySession(root, kSessionName2, kSessionInfo2));
+  EXPECT_TRUE(GenerateLegacySession(otr, kSessionName1, SessionInfo()));
+
+  // Create a file with the same name as one of the optimized session
+  // directory which should prevent migrating the sessions.
+  NSData* data = [@"data" dataUsingEncoding:NSUTF8StringEncoding];
+  const base::FilePath dest_dir = GetOptimizedSessionDir(root, kSessionName2);
+  EXPECT_TRUE(ios::sessions::WriteFile(dest_dir, data));
+
+  // Check that the migration is a failure.
+  ASSERT_EQ(ios::sessions::MigrateSessionsInPathsToOptimized(paths),
+            ios::sessions::MigrationStatus::kFailure);
+
+  // Check that the legacy sessions have been left untouched.
+  CheckLegacySession(root, kSessionName1, kSessionInfo1);
+  CheckLegacySession(root, kSessionName2, kSessionInfo2);
+  CheckLegacySession(otr, kSessionName1, SessionInfo());
+
+  // Check that the optimized session directory was not created, and
+  // that any pre-existing data was deleted.
+  for (const base::FilePath& path : paths) {
+    const base::FilePath optimized_dir =
+        path.Append(kSessionRestorationDirname);
+    EXPECT_FALSE(ios::sessions::DirectoryExists(optimized_dir));
+  }
+}
+
+// Tests batch migrating sessions from optimized to legacy works correctly.
+TEST_F(SessionMigrationTest, BatchToLegacy) {
+  base::ScopedTempDir scoped_temp_dir;
+  ASSERT_TRUE(scoped_temp_dir.CreateUniqueTempDir());
+  const base::FilePath root = scoped_temp_dir.GetPath();
+  const base::FilePath otr = root.Append(kOTRDirectory);
+  const std::vector<base::FilePath> paths{root, otr};
+
+  // Generate a few optimized sessions for the main and OTR BrowserStates.
+  EXPECT_TRUE(GenerateOptimizedSession(root, kSessionName1, kSessionInfo1));
+  EXPECT_TRUE(GenerateOptimizedSession(root, kSessionName2, kSessionInfo2));
+  EXPECT_TRUE(GenerateOptimizedSession(otr, kSessionName1, SessionInfo()));
+
+  // Check that the migration is a success.
+  ASSERT_EQ(ios::sessions::MigrateSessionsInPathsToLegacy(paths),
+            ios::sessions::MigrationStatus::kSuccess);
+
+  // Check that the directories containing optimized sessions have been
+  // deleted in all paths.
+  for (const base::FilePath& path : paths) {
+    const base::FilePath optimized_dir =
+        path.Append(kSessionRestorationDirname);
+    EXPECT_FALSE(ios::sessions::DirectoryExists(optimized_dir));
+  }
+
+  // Check that the sessions have been correctly converted.
+  CheckLegacySession(root, kSessionName1, kSessionInfo1);
+  CheckLegacySession(root, kSessionName2, kSessionInfo2);
+  CheckLegacySession(otr, kSessionName1, SessionInfo());
+}
+
+// Tests batch migrating sessions from optimized (pre M-122) to legacy works
+// correctly.
+TEST_F(SessionMigrationTest, BatchToLegacyPreM122) {
+  base::ScopedTempDir scoped_temp_dir;
+  ASSERT_TRUE(scoped_temp_dir.CreateUniqueTempDir());
+  const base::FilePath root = scoped_temp_dir.GetPath();
+  const base::FilePath otr = root.Append(kOTRDirectory);
+  const std::vector<base::FilePath> paths{root, otr};
+
+  // Generate a few optimized (pre M-122) sessions for the main and OTR
+  // BrowserStates.
+  EXPECT_TRUE(
+      GenerateOptimizedSessionPreM122(root, kSessionName1, kSessionInfo1));
+  EXPECT_TRUE(
+      GenerateOptimizedSessionPreM122(root, kSessionName2, kSessionInfo2));
+  EXPECT_TRUE(
+      GenerateOptimizedSessionPreM122(otr, kSessionName1, SessionInfo()));
+
+  // Check that the migration is a success.
+  ASSERT_EQ(ios::sessions::MigrateSessionsInPathsToLegacy(paths),
+            ios::sessions::MigrationStatus::kSuccess);
+
+  // Check that the directories containing optimized sessions have been
+  // deleted in all paths.
+  for (const base::FilePath& path : paths) {
+    const base::FilePath optimized_dir =
+        path.Append(kSessionRestorationDirname);
+    EXPECT_FALSE(ios::sessions::DirectoryExists(optimized_dir));
+  }
+
+  // Check that the sessions have been correctly converted.
+  CheckLegacySession(root, kSessionName1, kSessionInfo1);
+  CheckLegacySession(root, kSessionName2, kSessionInfo2);
+  CheckLegacySession(otr, kSessionName1, SessionInfo());
+}
+
+// Tests batch migrating sessions from optimized to legacy works correctly
+// when there are no sessions.
+TEST_F(SessionMigrationTest, BatchToLegacy_NoSession) {
+  base::ScopedTempDir scoped_temp_dir;
+  ASSERT_TRUE(scoped_temp_dir.CreateUniqueTempDir());
+  const base::FilePath root = scoped_temp_dir.GetPath();
+  const base::FilePath otr = root.Append(kOTRDirectory);
+  const std::vector<base::FilePath> paths{root, otr};
+
+  // Check that the migration is a success.
+  ASSERT_EQ(ios::sessions::MigrateSessionsInPathsToLegacy(paths),
+            ios::sessions::MigrationStatus::kSuccess);
+
+  // Check that the legacy session and WKWebView native session data
+  // directories have not been created.
+  for (const base::FilePath& path : paths) {
+    const base::FilePath legacy_dir = path.Append(kLegacySessionsDirname);
+    EXPECT_FALSE(ios::sessions::DirectoryExists(legacy_dir));
+
+    const base::FilePath native_dir = path.Append(kLegacyWebSessionsDirname);
+    EXPECT_FALSE(ios::sessions::DirectoryExists(native_dir));
+  }
+}
+
+// Tests batch migrating sessions from optimized to legacy works correctly
+// when there are no sessions but empty directory laying around.
+TEST_F(SessionMigrationTest, BatchToLegacy_NoSessionEmptyDirs) {
+  base::ScopedTempDir scoped_temp_dir;
+  ASSERT_TRUE(scoped_temp_dir.CreateUniqueTempDir());
+  const base::FilePath root = scoped_temp_dir.GetPath();
+  const base::FilePath otr = root.Append(kOTRDirectory);
+  const std::vector<base::FilePath> paths{root, otr};
+
+  // Create empty directories.
+  for (const base::FilePath& path : paths) {
+    using ios::sessions::CreateDirectory;
+    ASSERT_TRUE(CreateDirectory(GetOptimizedSessionDir(path, kSessionName1)));
+    ASSERT_TRUE(CreateDirectory(GetOptimizedSessionDir(path, kSessionName2)));
+  }
+
+  // Check that the migration is a success.
+  ASSERT_EQ(ios::sessions::MigrateSessionsInPathsToLegacy(paths),
+            ios::sessions::MigrationStatus::kSuccess);
+
+  // Check that the directories containing optimized sessions have been
+  // deleted in all paths.
+  for (const base::FilePath& path : paths) {
+    const base::FilePath optimized_dir =
+        path.Append(kSessionRestorationDirname);
+    EXPECT_FALSE(ios::sessions::DirectoryExists(optimized_dir));
+  }
+
+  // Check that the legacy session and WKWebView native session data
+  // directories have not been created.
+  for (const base::FilePath& path : paths) {
+    const base::FilePath legacy_dir = path.Append(kLegacySessionsDirname);
+    EXPECT_FALSE(ios::sessions::DirectoryExists(legacy_dir));
+
+    const base::FilePath native_dir = path.Append(kLegacyWebSessionsDirname);
+    EXPECT_FALSE(ios::sessions::DirectoryExists(native_dir));
+  }
+}
+
+// Tests batch migrating sessions from optimized to legacy works correctly
+// and does nothing if the sessions are already in the legacy format.
+TEST_F(SessionMigrationTest, BatchToLegacy_SessionAreLegacy) {
+  base::ScopedTempDir scoped_temp_dir;
+  ASSERT_TRUE(scoped_temp_dir.CreateUniqueTempDir());
+  const base::FilePath root = scoped_temp_dir.GetPath();
+  const base::FilePath otr = root.Append(kOTRDirectory);
+  const std::vector<base::FilePath> paths{root, otr};
+
+  // Generate a few legacy sessions for the main and OTR BrowserStates.
+  EXPECT_TRUE(GenerateLegacySession(root, kSessionName1, kSessionInfo1));
+  EXPECT_TRUE(GenerateLegacySession(root, kSessionName2, kSessionInfo2));
+  EXPECT_TRUE(GenerateLegacySession(otr, kSessionName1, SessionInfo()));
+
+  // Check that the migration is a success.
+  ASSERT_EQ(ios::sessions::MigrateSessionsInPathsToLegacy(paths),
+            ios::sessions::MigrationStatus::kSuccess);
+
+  // Check that the sessions have been left untouched.
+  CheckLegacySession(root, kSessionName1, kSessionInfo1);
+  CheckLegacySession(root, kSessionName2, kSessionInfo2);
+  CheckLegacySession(otr, kSessionName1, SessionInfo());
+}
+
+// Tests batch migrating sessions from optimized to legacy when one session
+// is invalid and cannot be loaded.
+TEST_F(SessionMigrationTest, BatchToLegacy_FailureInvalidSessions) {
+  base::ScopedTempDir scoped_temp_dir;
+  ASSERT_TRUE(scoped_temp_dir.CreateUniqueTempDir());
+  const base::FilePath root = scoped_temp_dir.GetPath();
+  const base::FilePath otr = root.Append(kOTRDirectory);
+  const std::vector<base::FilePath> paths{root, otr};
+
+  // Generate a few optimized sessions for the main and OTR BrowserStates.
+  EXPECT_TRUE(GenerateOptimizedSession(root, kSessionName1, kSessionInfo1));
+  EXPECT_TRUE(GenerateOptimizedSession(otr, kSessionName1, SessionInfo()));
+
+  // Write invalid data in one sessions.
+  const base::FilePath session_path =
+      GetOptimizedSessionDir(root, kSessionName2)
+          .Append(kSessionMetadataFilename);
+  NSData* data = [@"data" dataUsingEncoding:NSUTF8StringEncoding];
+  EXPECT_TRUE(ios::sessions::WriteFile(session_path, data));
+
+  // Check that the migration is a failure.
+  ASSERT_EQ(ios::sessions::MigrateSessionsInPathsToLegacy(paths),
+            ios::sessions::MigrationStatus::kFailure);
+
+  // Check that the optimized sessions have been left untouched, including the
+  // invalid session.
+  CheckOptimizedSession(root, kSessionName1, kSessionInfo1);
+  CheckOptimizedSession(otr, kSessionName1, SessionInfo());
+  EXPECT_NSEQ(ios::sessions::ReadFile(session_path), data);
+
+  // Check that the legacy session and WKWebView native session data
+  // directories have not been created.
+  for (const base::FilePath& path : paths) {
+    const base::FilePath legacy_dir = path.Append(kLegacySessionsDirname);
+    EXPECT_FALSE(ios::sessions::DirectoryExists(legacy_dir));
+
+    const base::FilePath native_dir = path.Append(kLegacyWebSessionsDirname);
+    EXPECT_FALSE(ios::sessions::DirectoryExists(native_dir));
+  }
+}
+
+// Tests batch migrating sessions from optimized to legacy when one session
+// cannot be migrated.
+TEST_F(SessionMigrationTest, BatchToLegacy_FailureMigration) {
+  base::ScopedTempDir scoped_temp_dir;
+  ASSERT_TRUE(scoped_temp_dir.CreateUniqueTempDir());
+  const base::FilePath root = scoped_temp_dir.GetPath();
+  const base::FilePath otr = root.Append(kOTRDirectory);
+  const std::vector<base::FilePath> paths{root, otr};
+
+  // Generate a few optimized sessions for the main and OTR BrowserStates.
+  EXPECT_TRUE(GenerateOptimizedSession(root, kSessionName1, kSessionInfo1));
+  EXPECT_TRUE(GenerateOptimizedSession(root, kSessionName2, kSessionInfo2));
+  EXPECT_TRUE(GenerateOptimizedSession(otr, kSessionName1, SessionInfo()));
+
+  // Create a file with the same name as one of the legacy session
+  // directory which should prevent migrating the sessions.
+  NSData* data = [@"data" dataUsingEncoding:NSUTF8StringEncoding];
+  const base::FilePath dest_dir = GetLegacySessionDir(otr, kSessionName1);
+  EXPECT_TRUE(ios::sessions::WriteFile(dest_dir, data));
+
+  // Check that the migration is a failure.
+  ASSERT_EQ(ios::sessions::MigrateSessionsInPathsToLegacy(paths),
+            ios::sessions::MigrationStatus::kFailure);
+
+  // Check that the optimized sessions have been left untouched.
+  CheckOptimizedSession(root, kSessionName1, kSessionInfo1);
+  CheckOptimizedSession(root, kSessionName2, kSessionInfo2);
+  CheckOptimizedSession(otr, kSessionName1, SessionInfo());
+
+  // Check that the legacy session and WKWebView native session data
+  // directories have not been created and that any pre-existing data
+  // was deleted.
+  for (const base::FilePath& path : paths) {
+    if (path != otr) {
+      const base::FilePath legacy_dir = path.Append(kLegacySessionsDirname);
+      EXPECT_FALSE(ios::sessions::DirectoryExists(legacy_dir));
+    }
+
+    const base::FilePath native_dir = path.Append(kLegacyWebSessionsDirname);
+    EXPECT_FALSE(ios::sessions::DirectoryExists(native_dir));
+  }
+
+  // Check that the pre-existing invalid file is still present.
+  EXPECT_NSEQ(ios::sessions::ReadFile(dest_dir), data);
+}
+
+// Tests batch migrating sessions from optimized to legacy when one session
+// cannot be migrated, with unrelated files in the legacy session directory
+// which should be unaffected.
+TEST_F(SessionMigrationTest, BatchToLegacy_FailureUnrelatedFilesUnaffected) {
+  base::ScopedTempDir scoped_temp_dir;
+  ASSERT_TRUE(scoped_temp_dir.CreateUniqueTempDir());
+  const base::FilePath root = scoped_temp_dir.GetPath();
+  const base::FilePath otr = root.Append(kOTRDirectory);
+  const std::vector<base::FilePath> paths{root, otr};
+
+  // Generate a few optimized sessions for the main and OTR BrowserStates.
+  EXPECT_TRUE(GenerateOptimizedSession(root, kSessionName1, kSessionInfo1));
+  EXPECT_TRUE(GenerateOptimizedSession(root, kSessionName2, kSessionInfo2));
+  EXPECT_TRUE(GenerateOptimizedSession(otr, kSessionName1, SessionInfo()));
+
+  // Create a few unrelated files in the legacy session directories (they
+  // corresponds to files saved by //components/sessions).
+  NSData* data = [@"data" dataUsingEncoding:NSUTF8StringEncoding];
+  for (const base::FilePath& path : paths) {
+    const base::FilePath legacy_dir = path.Append(kLegacySessionsDirname);
+    const base::FilePath filename = legacy_dir.Append(kUnrelatedFilename);
+    EXPECT_TRUE(ios::sessions::WriteFile(filename, data));
+  }
+
+  // Write invalid data in one sessions.
+  const base::FilePath session_path = GetOptimizedSessionDir(otr, kSessionName2)
+                                          .Append(kSessionMetadataFilename);
+  EXPECT_TRUE(ios::sessions::WriteFile(session_path, data));
+
+  // Check that the migration is a failure.
+  ASSERT_EQ(ios::sessions::MigrateSessionsInPathsToLegacy(paths),
+            ios::sessions::MigrationStatus::kFailure);
+
+  // Check that the optimized sessions have been left untouched, including
+  // the invalid session.
+  CheckOptimizedSession(root, kSessionName1, kSessionInfo1);
+  CheckOptimizedSession(root, kSessionName2, kSessionInfo2);
+  CheckOptimizedSession(otr, kSessionName1, SessionInfo());
+  EXPECT_NSEQ(ios::sessions::ReadFile(session_path), data);
+
+  // Check that the legacy session and WKWebView native session data
+  // directories have not been created and that any pre-existing data
+  // was deleted.
+  for (const base::FilePath& path : paths) {
+    const base::FilePath legacy_dir = path.Append(kLegacySessionsDirname);
+    const base::FilePath filename = legacy_dir.Append(kUnrelatedFilename);
+    EXPECT_TRUE(ios::sessions::DirectoryExists(legacy_dir));
+    EXPECT_NSEQ(ios::sessions::ReadFile(filename), data);
+
+    const base::FilePath native_dir = path.Append(kLegacyWebSessionsDirname);
+    EXPECT_FALSE(ios::sessions::DirectoryExists(native_dir));
+  }
 }

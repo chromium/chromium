@@ -557,6 +557,94 @@ void MigrateSessionToLegacyWithCleanup(
   }
 }
 
+// Helper for MigrateSessionsInPathsToOptimized(...) that migrate the data
+// but performs no cleanup. It stops at the first failure.
+MigrationStatus MigrateSessionsInPathsToOptimizedNoCleanup(
+    const std::vector<base::FilePath>& paths) {
+  for (const base::FilePath& path : paths) {
+    const base::FilePath from_dir = path.Append(kLegacySessionsDirname);
+    const base::FilePath dest_dir = path.Append(kSessionRestorationDirname);
+    const base::FilePath sessions = path.Append(kLegacyWebSessionsDirname);
+
+    const int file_types = base::FileEnumerator::DIRECTORIES;
+    base::FileEnumerator iter(from_dir, false, file_types);
+    for (base::FilePath name = iter.Next(); !name.empty(); name = iter.Next()) {
+      const base::FilePath basename = name.BaseName();
+      const MigrationResult result = MigrateSessionToOptimizedInternal(
+          from_dir.Append(basename), dest_dir.Append(basename), sessions);
+
+      switch (result.status) {
+        case MigrationResult::Status::kSkipped:
+        case MigrationResult::Status::kSuccess:
+          break;
+
+        case MigrationResult::Status::kFailure:
+          return MigrationStatus::kFailure;
+      }
+    }
+  }
+
+  return MigrationStatus::kSuccess;
+}
+
+// Helper for MigrateSessionsInPathsToLegacy(...) that migrate the data
+// but performs no cleanup. It stops at the first failure.
+MigrationStatus MigrateSessionsInPathsToLegacyNoCleanup(
+    const std::vector<base::FilePath>& paths) {
+  for (const base::FilePath& path : paths) {
+    const base::FilePath from_dir = path.Append(kSessionRestorationDirname);
+    const base::FilePath dest_dir = path.Append(kLegacySessionsDirname);
+    const base::FilePath sessions = path.Append(kLegacyWebSessionsDirname);
+
+    const int file_types = base::FileEnumerator::DIRECTORIES;
+    base::FileEnumerator iter(from_dir, false, file_types);
+    for (base::FilePath name = iter.Next(); !name.empty(); name = iter.Next()) {
+      const base::FilePath basename = name.BaseName();
+      const MigrationResult result = MigrateSessionToLegacyInternal(
+          from_dir.Append(basename), dest_dir.Append(basename), sessions);
+
+      switch (result.status) {
+        case MigrationResult::Status::kSkipped:
+        case MigrationResult::Status::kSuccess:
+          break;
+
+        case MigrationResult::Status::kFailure:
+          return MigrationStatus::kFailure;
+      }
+    }
+  }
+
+  return MigrationStatus::kSuccess;
+}
+
+// Deletes optimized session directories in `paths`.
+void DeleteOptimizedSessions(const std::vector<base::FilePath>& paths) {
+  for (const base::FilePath& path : paths) {
+    const base::FilePath optimized = path.Append(kSessionRestorationDirname);
+    std::ignore = DeleteRecursively(optimized);
+  }
+}
+
+// Deletes legacy session directories in `paths` taking care of leaving
+// any unrelated content unaffected.
+void DeleteLegacySessions(const std::vector<base::FilePath>& paths) {
+  for (const base::FilePath& path : paths) {
+    const base::FilePath legacy = path.Append(kLegacySessionsDirname);
+
+    const int file_types = base::FileEnumerator::DIRECTORIES;
+    base::FileEnumerator iter(legacy, false, file_types);
+    for (base::FilePath name = iter.Next(); !name.empty(); name = iter.Next()) {
+      std::ignore = DeleteRecursively(name);
+    }
+    if (ios::sessions::DirectoryEmpty(legacy)) {
+      std::ignore = DeleteRecursively(legacy);
+    }
+
+    const base::FilePath sessions = path.Append(kLegacyWebSessionsDirname);
+    std::ignore = DeleteRecursively(sessions);
+  }
+}
+
 }  // namespace
 
 void MigrateNamedSessionToOptimized(
@@ -577,6 +665,57 @@ void MigrateNamedSessionToLegacy(
       path.Append(kSessionRestorationDirname).Append(name),
       path.Append(kLegacySessionsDirname).Append(name),
       path.Append(kLegacyWebSessionsDirname), restore_service);
+}
+
+MigrationStatus MigrateSessionsInPathsToOptimized(
+    const std::vector<base::FilePath>& paths) {
+  // Try to perform the migration, stopping at the first failure.
+  const MigrationStatus status =
+      MigrateSessionsInPathsToOptimizedNoCleanup(paths);
+
+  // Cleanup after the migration by deleting either the partially migrated
+  // data (in case of failure) or original data (in case of success).
+  switch (status) {
+    case MigrationStatus::kSuccess:
+      // The data has been successfully migrated to optimized storage,
+      // delete the legacy storage (including the cache of WKWebView
+      // native session data).
+      DeleteLegacySessions(paths);
+      break;
+
+    case MigrationStatus::kFailure:
+      // The migration to optimized format failed, delete any data that
+      // may have been written in the optimised storage directory.
+      DeleteOptimizedSessions(paths);
+      break;
+  }
+
+  return status;
+}
+
+MigrationStatus MigrateSessionsInPathsToLegacy(
+    const std::vector<base::FilePath>& paths) {
+  // Try to perform the migration, stopping at the first failure.
+  const MigrationStatus status = MigrateSessionsInPathsToLegacyNoCleanup(paths);
+
+  // Cleanup after the migration by deleting either the partially migrated
+  // data (in case of failure) or original data (in case of success).
+  switch (status) {
+    case MigrationStatus::kSuccess:
+      // The data has been successfully migrated to legacy storage,
+      // delete the optimized storage.
+      DeleteOptimizedSessions(paths);
+      break;
+
+    case MigrationStatus::kFailure:
+      // The migration to legacy format failed, delete any data that
+      // may have been written in the legacy storage directory. Also
+      // delete the cache of WKWebView native session data.
+      DeleteLegacySessions(paths);
+      break;
+  }
+
+  return status;
 }
 
 }  // namespace ios::sessions
