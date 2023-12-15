@@ -1146,17 +1146,19 @@ LayoutUnit GridLayoutAlgorithm::ContributionSizeForGridItem(
                        : SizingConstraint::kMaxContent);
   };
 
+  auto MinMaxSizesFunc = [&](MinMaxSizesType type) -> MinMaxSizesResult {
+    if (grid_item->IsSubgrid()) {
+      return ComputeMinMaxSizesForSubgrid(
+          sizing_subtree.SubgridSizingSubtree(*grid_item), *grid_item, space);
+    }
+    return node.ComputeMinMaxSizes(item_style.GetWritingMode(), type, space);
+  };
+
   auto MinOrMaxContentSize = [&](bool is_min_content) -> LayoutUnit {
     const auto result =
         grid_item->IsSubgrid()
-            ? ComputeMinAndMaxContentContributionForSelf(
-                  node, space,
-                  [&](MinMaxSizesType) -> MinMaxSizesResult {
-                    const auto& subgrid_sizing_subtree =
-                        sizing_subtree.SubgridSizingSubtree(*grid_item);
-                    return ComputeMinMaxSizesForSubgrid(subgrid_sizing_subtree,
-                                                        *grid_item, space);
-                  })
+            ? ComputeMinAndMaxContentContributionForSelf(node, space,
+                                                         MinMaxSizesFunc)
             : ComputeMinAndMaxContentContributionForSelf(node, space);
 
     // The min/max contribution may depend on the block-size of the grid-area:
@@ -1300,19 +1302,12 @@ LayoutUnit GridLayoutAlgorithm::ContributionSizeForGridItem(
             // and apply the transferred min/max sizes when appropriate. We do
             // this sometimes elsewhere so should unify and simplify this code.
             if (is_parallel_with_track_direction) {
-              auto MinMaxSizesFunc =
-                  [&](MinMaxSizesType type) -> MinMaxSizesResult {
-                return node.ComputeMinMaxSizes(item_style.GetWritingMode(),
-                                               type, space);
-              };
-
-              contribution = ResolveMinInlineLength(
-                  space, item_style, border_padding, MinMaxSizesFunc,
-                  item_style.LogicalMinWidth());
-            } else {
               contribution =
-                  ResolveMinBlockLength(space, item_style, border_padding,
-                                        item_style.LogicalMinHeight());
+                  ResolveMinInlineLength(space, item_style, border_padding,
+                                         MinMaxSizesFunc, min_length);
+            } else {
+              contribution = ResolveMinBlockLength(space, item_style,
+                                                   border_padding, min_length);
             }
             break;
           }
