@@ -1,17 +1,14 @@
 <!--
-@WAIT-FOR:done
+@EXECUTE-AND-WAIT-FOR:moveLastChild()
 -->
 <img id="a1" alt="a1">
 <img id="a2" alt="a2">
 <span role="group"><img id="a0" alt="a0"></span>
-
 <script>
-  document.addEventListener('DOMContentLoaded', () => {
-    setTimeout(() => {
-      // Move the last child so that it becomes the first child.
+  function moveLastChild() {
       document.body.insertBefore(document.querySelector('#a0'),
                                  document.querySelector('#a1'));
       document.title = 'done';
-    }, 100);
-  });
+      return 'done';
+  }
 </script>
