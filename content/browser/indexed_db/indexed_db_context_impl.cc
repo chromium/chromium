@@ -425,98 +425,22 @@ void IndexedDBContextImpl::OnBucketInfoReady(
     if (!is_incognito()) {
       info->paths = GetStoragePaths(bucket_locator);
     }
-    info->connection_count = GetConnectionCountSync(bucket_info.id);
-
-    // This ends up being O(NlogN), where N = number of open databases. We
-    // iterate over all open databases to extract just those in the
-    // bucket_locator, and we're iterating over all bucket_locators in the outer
-    // loop.
-
-    if (!indexeddb_factory_.get()) {
-      bucket_map[bucket_info.storage_key.origin()][bucket_info.storage_key]
-          .push_back(std::move(info));
-      continue;
-    }
-    std::vector<IndexedDBDatabase*> databases =
-        indexeddb_factory_->GetOpenDatabasesForBucket(bucket_locator);
-    // TODO(jsbell): Sort by name?
-    std::vector<storage::mojom::IdbDatabaseMetadataPtr> database_list;
-
-    for (IndexedDBDatabase* db : databases) {
-      storage::mojom::IdbDatabaseMetadataPtr db_info =
-          storage::mojom::IdbDatabaseMetadata::New();
-
-      db_info->name = db->name();
-      db_info->connection_count = db->ConnectionCount();
-      db_info->active_open_delete = db->ActiveOpenDeleteCount();
-      db_info->pending_open_delete = db->PendingOpenDeleteCount();
-
-      std::vector<storage::mojom::IdbTransactionMetadataPtr> transaction_list;
-
-      for (IndexedDBConnection* connection : db->connections()) {
-        for (const auto& transaction_id_pair : connection->transactions()) {
-          const content::IndexedDBTransaction* transaction =
-              transaction_id_pair.second.get();
-          storage::mojom::IdbTransactionMetadataPtr transaction_info =
-              storage::mojom::IdbTransactionMetadata::New();
-
-          transaction_info->mode =
-              static_cast<storage::mojom::IdbTransactionMode>(
-                  transaction->mode());
-
-          switch (transaction->state()) {
-            case IndexedDBTransaction::CREATED:
-              transaction_info->status =
-                  storage::mojom::IdbTransactionState::kBlocked;
-              break;
-            case IndexedDBTransaction::STARTED:
-              if (transaction->diagnostics().tasks_scheduled > 0) {
-                transaction_info->status =
-                    storage::mojom::IdbTransactionState::kRunning;
-              } else {
-                transaction_info->status =
-                    storage::mojom::IdbTransactionState::kStarted;
-              }
-              break;
-            case IndexedDBTransaction::COMMITTING:
-              transaction_info->status =
-                  storage::mojom::IdbTransactionState::kCommitting;
-              break;
-            case IndexedDBTransaction::FINISHED:
-              transaction_info->status =
-                  storage::mojom::IdbTransactionState::kFinished;
-              break;
-          }
-
-          transaction_info->tid = transaction->id();
-          transaction_info->age =
-              (base::Time::Now() - transaction->diagnostics().creation_time)
-                  .InMillisecondsF();
-          transaction_info->runtime =
-              (base::Time::Now() - transaction->diagnostics().start_time)
-                  .InMillisecondsF();
-          transaction_info->tasks_scheduled =
-              transaction->diagnostics().tasks_scheduled;
-          transaction_info->tasks_completed =
-              transaction->diagnostics().tasks_completed;
-
-          for (const int64_t& id : transaction->scope()) {
-            auto stores_it = db->metadata().object_stores.find(id);
-            if (stores_it != db->metadata().object_stores.end()) {
-              transaction_info->scope.emplace_back(stores_it->second.name);
-            }
-          }
-
-          transaction_list.push_back(std::move(transaction_info));
-        }
-      }
-      db_info->transactions = std::move(transaction_list);
-
-      database_list.push_back(std::move(db_info));
-    }
-    info->databases = std::move(database_list);
-    bucket_map[bucket_info.storage_key.origin()][bucket_info.storage_key]
-        .push_back(std::move(info));
+    // TODO(crbug.com/1474996): This executes synchronously for now, but will
+    // need to handle delayed responses.
+    indexeddb_factory_->FillInBucketMetadata(
+        std::move(info),
+        base::BindOnce(
+            [](std::map<
+                   url::Origin,
+                   std::map<blink::StorageKey,
+                            std::vector<storage::mojom::IdbBucketMetadataPtr>>>&
+                   bucket_map,
+               storage::mojom::IdbBucketMetadataPtr info) {
+              blink::StorageKey storage_key = info->bucket_locator.storage_key;
+              bucket_map[storage_key.origin()][storage_key].push_back(
+                  std::move(info));
+            },
+            std::ref(bucket_map)));
   }
 
   std::vector<storage::mojom::IdbOriginMetadataPtr> origins;
@@ -735,18 +659,7 @@ void IndexedDBContextImpl::GetPathForBlobForTesting(
 void IndexedDBContextImpl::CompactBackingStoreForTesting(
     const storage::BucketLocator& bucket_locator,
     base::OnceClosure callback) {
-  IndexedDBFactory* factory = GetIDBFactory();
-
-  std::vector<IndexedDBDatabase*> databases =
-      factory->GetOpenDatabasesForBucket(bucket_locator);
-
-  if (!databases.empty()) {
-    // Compact the first db's backing store since all the db's are in the same
-    // backing store.
-    IndexedDBDatabase* db = databases[0];
-    IndexedDBBackingStore* backing_store = db->backing_store();
-    backing_store->Compact();
-  }
+  GetIDBFactory()->CompactBackingStoreForTesting(bucket_locator);  // IN-TEST
   std::move(callback).Run();
 }
 

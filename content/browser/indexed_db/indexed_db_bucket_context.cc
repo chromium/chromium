@@ -531,6 +531,101 @@ void IndexedDBBucketContext::RunTasks() {
   }
 }
 
+void IndexedDBBucketContext::FillInMetadata(
+    storage::mojom::IdbBucketMetadataPtr info,
+    base::OnceCallback<void(storage::mojom::IdbBucketMetadataPtr)> result) {
+  // TODO(jsbell): Sort by name?
+  std::vector<storage::mojom::IdbDatabaseMetadataPtr> database_list;
+
+  for (const auto& [name, db] : databases_) {
+    storage::mojom::IdbDatabaseMetadataPtr db_info =
+        storage::mojom::IdbDatabaseMetadata::New();
+
+    db_info->name = db->name();
+    db_info->connection_count = db->ConnectionCount();
+    info->connection_count += db->ConnectionCount();
+    db_info->active_open_delete = db->ActiveOpenDeleteCount();
+    db_info->pending_open_delete = db->PendingOpenDeleteCount();
+
+    std::vector<storage::mojom::IdbTransactionMetadataPtr> transaction_list;
+
+    for (IndexedDBConnection* connection : db->connections()) {
+      for (const auto& transaction_id_pair : connection->transactions()) {
+        const content::IndexedDBTransaction* transaction =
+            transaction_id_pair.second.get();
+        storage::mojom::IdbTransactionMetadataPtr transaction_info =
+            storage::mojom::IdbTransactionMetadata::New();
+
+        transaction_info->mode =
+            static_cast<storage::mojom::IdbTransactionMode>(
+                transaction->mode());
+
+        switch (transaction->state()) {
+          case IndexedDBTransaction::CREATED:
+            transaction_info->status =
+                storage::mojom::IdbTransactionState::kBlocked;
+            break;
+          case IndexedDBTransaction::STARTED:
+            if (transaction->diagnostics().tasks_scheduled > 0) {
+              transaction_info->status =
+                  storage::mojom::IdbTransactionState::kRunning;
+            } else {
+              transaction_info->status =
+                  storage::mojom::IdbTransactionState::kStarted;
+            }
+            break;
+          case IndexedDBTransaction::COMMITTING:
+            transaction_info->status =
+                storage::mojom::IdbTransactionState::kCommitting;
+            break;
+          case IndexedDBTransaction::FINISHED:
+            transaction_info->status =
+                storage::mojom::IdbTransactionState::kFinished;
+            break;
+        }
+
+        transaction_info->tid = transaction->id();
+        transaction_info->age =
+            (base::Time::Now() - transaction->diagnostics().creation_time)
+                .InMillisecondsF();
+        transaction_info->runtime =
+            (base::Time::Now() - transaction->diagnostics().start_time)
+                .InMillisecondsF();
+        transaction_info->tasks_scheduled =
+            transaction->diagnostics().tasks_scheduled;
+        transaction_info->tasks_completed =
+            transaction->diagnostics().tasks_completed;
+
+        for (const int64_t& id : transaction->scope()) {
+          auto stores_it = db->metadata().object_stores.find(id);
+          if (stores_it != db->metadata().object_stores.end()) {
+            transaction_info->scope.emplace_back(stores_it->second.name);
+          }
+        }
+
+        transaction_list.push_back(std::move(transaction_info));
+      }
+    }
+    db_info->transactions = std::move(transaction_list);
+
+    database_list.push_back(std::move(db_info));
+  }
+  info->databases = std::move(database_list);
+}
+
+void IndexedDBBucketContext::CompactBackingStoreForTesting() {
+  // Compact the first db's backing store since all the db's are in the same
+  // backing store.
+  for (const auto& [name, db] : databases_) {
+    // The check should always be true, but is necessary to suppress a clang
+    // warning about unreachable loop increment.
+    if (db->backing_store()) {
+      db->backing_store()->Compact();
+      break;
+    }
+  }
+}
+
 // static
 void IndexedDBBucketContext::SetInternalState(
     base::Time earliest_global_sweep_time,

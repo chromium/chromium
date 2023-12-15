@@ -22,6 +22,7 @@
 #include "base/sequence_checker.h"
 #include "base/time/time.h"
 #include "base/trace_event/memory_dump_provider.h"
+#include "components/services/storage/privileged/mojom/indexed_db_bucket_types.mojom.h"
 #include "components/services/storage/privileged/mojom/indexed_db_client_state_checker.mojom.h"
 #include "components/services/storage/public/cpp/buckets/bucket_id.h"
 #include "components/services/storage/public/cpp/buckets/bucket_info.h"
@@ -49,7 +50,6 @@ namespace content {
 class IndexedDBBucketContextHandle;
 class IndexedDBClientStateCheckerWrapper;
 class IndexedDBContextImpl;
-class IndexedDBDatabase;
 class TransactionalLevelDBDatabase;
 
 // This class has a 1:1 relationship with `IndexedDBContextImpl`.
@@ -91,9 +91,6 @@ class CONTENT_EXPORT IndexedDBFactory
   bool OnMemoryDump(const base::trace_event::MemoryDumpArgs& args,
                     base::trace_event::ProcessMemoryDump* pmd) override;
 
-  std::vector<IndexedDBDatabase*> GetOpenDatabasesForBucket(
-      const storage::BucketLocator& bucket_locator) const;
-
   // Close all connections to all databases within the bucket. If
   // `will_be_deleted` is true, references to in-memory databases will be
   // dropped thereby allowing their deletion (otherwise they are retained for
@@ -129,6 +126,16 @@ class CONTENT_EXPORT IndexedDBFactory
   GetOrCreateBucketContext(const storage::BucketInfo& bucket,
                            const base::FilePath& data_directory,
                            bool create_if_missing);
+
+  // Finishes filling in `info` with data relevant to idb-internals and passes
+  // the result back via `result`. The bucket is described by
+  // `info->bucket_locator`.
+  void FillInBucketMetadata(
+      storage::mojom::IdbBucketMetadataPtr info,
+      base::OnceCallback<void(storage::mojom::IdbBucketMetadataPtr)> result);
+
+  void CompactBackingStoreForTesting(
+      const storage::BucketLocator& bucket_locator);
 
  protected:
   // Used by unittests to allow subclassing of IndexedDBBackingStore.

@@ -19,6 +19,7 @@
 #include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "components/services/storage/indexed_db/locks/partitioned_lock_manager.h"
+#include "components/services/storage/privileged/mojom/indexed_db_bucket_types.mojom.h"
 #include "components/services/storage/public/cpp/buckets/bucket_info.h"
 #include "components/services/storage/public/cpp/quota_error_or.h"
 #include "components/services/storage/public/mojom/blob_storage_context.mojom.h"
@@ -262,6 +263,14 @@ class CONTENT_EXPORT IndexedDBBucketContext {
   storage::mojom::FileSystemAccessContext* file_system_access_context() {
     return file_system_access_context_.get();
   }
+
+  // Finishes filling in `info` with data relevant to idb-internals and passes
+  // the result back via `result`.
+  void FillInMetadata(
+      storage::mojom::IdbBucketMetadataPtr info,
+      base::OnceCallback<void(storage::mojom::IdbBucketMetadataPtr)> result);
+
+  void CompactBackingStoreForTesting();
 
  private:
   friend IndexedDBFactory;

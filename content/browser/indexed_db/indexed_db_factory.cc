@@ -477,21 +477,6 @@ void IndexedDBFactory::HandleBackingStoreCorruption(
   DLOG_IF(ERROR, !s.ok()) << "Unable to delete backing store: " << s.ToString();
 }
 
-std::vector<IndexedDBDatabase*> IndexedDBFactory::GetOpenDatabasesForBucket(
-    const storage::BucketLocator& bucket_locator) const {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  auto it = bucket_contexts_.find(bucket_locator.id);
-  if (it == bucket_contexts_.end()) {
-    return std::vector<IndexedDBDatabase*>();
-  }
-  IndexedDBBucketContext* factory = it->second.get();
-  std::vector<IndexedDBDatabase*> out;
-  out.reserve(factory->databases().size());
-  base::ranges::transform(factory->databases(), std::back_inserter(out),
-                          [](const auto& p) { return p.second.get(); });
-  return out;
-}
-
 void IndexedDBFactory::ForceClose(storage::BucketId bucket_id,
                                   bool will_be_deleted) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -625,6 +610,25 @@ IndexedDBBucketContext* IndexedDBFactory::GetBucketContextForTesting(
     return it->second.get();
   }
   return nullptr;
+}
+
+void IndexedDBFactory::FillInBucketMetadata(
+    storage::mojom::IdbBucketMetadataPtr info,
+    base::OnceCallback<void(storage::mojom::IdbBucketMetadataPtr)> result) {
+  auto it = bucket_contexts_.find(info->bucket_locator.id);
+  if (it == bucket_contexts_.end()) {
+    std::move(result).Run(std::move(info));
+  } else {
+    it->second->FillInMetadata(std::move(info), std::move(result));
+  }
+}
+
+void IndexedDBFactory::CompactBackingStoreForTesting(
+    const storage::BucketLocator& bucket_locator) {
+  auto it = bucket_contexts_.find(bucket_locator.id);
+  if (it != bucket_contexts_.end()) {
+    it->second->CompactBackingStoreForTesting();  // IN-TEST
+  }
 }
 
 std::tuple<IndexedDBBucketContextHandle,
