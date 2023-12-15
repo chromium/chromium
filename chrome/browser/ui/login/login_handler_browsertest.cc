@@ -334,7 +334,7 @@ class LoginPromptBrowserTest
       // Cancel, which triggers a reload to get the error page content from the
       // server.
       LoginHandler* handler =
-          *LoginHandler::GetAllLoginHandlersForTest().begin();
+          LoginHandler::GetAllLoginHandlersForTest().front();
       content::TestNavigationObserver reload_observer(contents);
       handler->CancelAuth();
       reload_observer.Wait();
@@ -516,7 +516,7 @@ IN_PROC_BROWSER_TEST_P(LoginPromptBrowserTest, TestBasicAuth) {
       auto auth_needed_waiter = CreateAuthNeededObserver();
       auto auth_supplied_waiter = CreateAuthSuppliedObserver();
       LoginHandler* handler =
-          *LoginHandler::GetAllLoginHandlersForTest().begin();
+          LoginHandler::GetAllLoginHandlersForTest().front();
 
       ASSERT_TRUE(handler);
       handler->SetAuth(base::UTF8ToUTF16(bad_username_),
@@ -530,7 +530,7 @@ IN_PROC_BROWSER_TEST_P(LoginPromptBrowserTest, TestBasicAuth) {
     }
 
     ASSERT_EQ(1u, LoginHandler::GetAllLoginHandlersForTest().size());
-    SetAuthForAndWait(*LoginHandler::GetAllLoginHandlersForTest().begin());
+    SetAuthForAndWait(LoginHandler::GetAllLoginHandlersForTest().front());
     ExpectSuccessfulBasicAuthTitle(contents);
   }
 }
@@ -577,7 +577,7 @@ IN_PROC_BROWSER_TEST_P(LoginPromptBrowserTest,
   }
 
   // Complete the authentication.
-  SetAuthForAndWait(*LoginHandler::GetAllLoginHandlersForTest().begin());
+  SetAuthForAndWait(LoginHandler::GetAllLoginHandlersForTest().front());
   ExpectSuccessfulBasicAuthTitle(contents);
 
   // Navigate away and go back again.
@@ -634,7 +634,7 @@ IN_PROC_BROWSER_TEST_P(LoginPromptBrowserTest,
   }
 
   // Complete the authentication.
-  SetAuthForAndWait(*LoginHandler::GetAllLoginHandlersForTest().begin());
+  SetAuthForAndWait(LoginHandler::GetAllLoginHandlersForTest().front());
   content::WaitForLoadStop(contents);
   ASSERT_EQ(ExpectedTitleFromAuth(u"basicuser", u"secret"),
             content::EvalJs(contents, "subframe.contentDocument.title"));
@@ -669,7 +669,7 @@ IN_PROC_BROWSER_TEST_P(LoginPromptBrowserTest, TestDigestAuth) {
   {
     auto auth_needed_waiter = CreateAuthNeededObserver();
     auto auth_supplied_waiter = CreateAuthSuppliedObserver();
-    LoginHandler* handler = *LoginHandler::GetAllLoginHandlersForTest().begin();
+    LoginHandler* handler = LoginHandler::GetAllLoginHandlersForTest().front();
 
     ASSERT_TRUE(handler);
     handler->SetAuth(base::UTF8ToUTF16(bad_username_),
@@ -684,7 +684,7 @@ IN_PROC_BROWSER_TEST_P(LoginPromptBrowserTest, TestDigestAuth) {
 
   ASSERT_EQ(1u, LoginHandler::GetAllLoginHandlersForTest().size());
   auto auth_supplied_waiter = CreateAuthSuppliedObserver();
-  LoginHandler* handler = *LoginHandler::GetAllLoginHandlersForTest().begin();
+  LoginHandler* handler = LoginHandler::GetAllLoginHandlersForTest().front();
 
   std::u16string username(base::UTF8ToUTF16(username_digest_));
   std::u16string password(base::UTF8ToUTF16(password_));
@@ -729,7 +729,7 @@ IN_PROC_BROWSER_TEST_P(LoginPromptBrowserTest, TestTwoAuths) {
 
   ASSERT_EQ(2u, LoginHandler::GetAllLoginHandlersForTest().size());
 
-  LoginHandler* handler1 = *LoginHandler::GetAllLoginHandlersForTest().begin();
+  LoginHandler* handler1 = LoginHandler::GetAllLoginHandlersForTest().front();
   LoginHandler* handler2 =
       *(++(LoginHandler::GetAllLoginHandlersForTest().begin()));
 
@@ -760,7 +760,7 @@ IN_PROC_BROWSER_TEST_P(LoginPromptBrowserTest, TestCancelAuth_Manual) {
                                    ui::PAGE_TRANSITION_TYPED, false));
   auth_needed_waiter.Wait();
   auto auth_cancelled_waiter = CreateAuthCancelledObserver();
-  LoginHandler* handler = *LoginHandler::GetAllLoginHandlersForTest().begin();
+  LoginHandler* handler = LoginHandler::GetAllLoginHandlersForTest().front();
   ASSERT_TRUE(handler);
   content::TestNavigationObserver reload_observer(
       browser()->tab_strip_model()->GetActiveWebContents());
@@ -948,7 +948,7 @@ IN_PROC_BROWSER_TEST_P(LoginPromptBrowserTest, NoLoginPromptForFavicon) {
     while (!LoginHandler::GetAllLoginHandlersForTest().empty()) {
       auto auth_cancelled_waiter = CreateAuthCancelledObserver();
       LoginHandler* handler =
-          *LoginHandler::GetAllLoginHandlersForTest().begin();
+          LoginHandler::GetAllLoginHandlersForTest().front();
 
       ASSERT_TRUE(handler);
       handler->CancelAuth();
@@ -1007,7 +1007,7 @@ IN_PROC_BROWSER_TEST_P(LoginPromptBrowserTest,
     while (!LoginHandler::GetAllLoginHandlersForTest().empty()) {
       auto auth_cancelled_waiter = CreateAuthCancelledObserver();
       LoginHandler* handler =
-          *LoginHandler::GetAllLoginHandlersForTest().begin();
+          LoginHandler::GetAllLoginHandlersForTest().front();
 
       ASSERT_TRUE(handler);
       handler->CancelAuth();
@@ -1056,7 +1056,7 @@ IN_PROC_BROWSER_TEST_P(LoginPromptBrowserTest,
     while (!LoginHandler::GetAllLoginHandlersForTest().empty()) {
       auto auth_cancelled_waiter = CreateAuthCancelledObserver();
       LoginHandler* handler =
-          *LoginHandler::GetAllLoginHandlersForTest().begin();
+          LoginHandler::GetAllLoginHandlersForTest().front();
 
       ASSERT_TRUE(handler);
       handler->CancelAuth();
@@ -1123,7 +1123,7 @@ IN_PROC_BROWSER_TEST_P(LoginPromptBrowserTestThirdPartyCookiesUnblocked,
     while (!LoginHandler::GetAllLoginHandlersForTest().empty()) {
       auto auth_cancelled_waiter = CreateAuthCancelledObserver();
       LoginHandler* handler =
-          *LoginHandler::GetAllLoginHandlersForTest().begin();
+          LoginHandler::GetAllLoginHandlersForTest().front();
 
       ASSERT_TRUE(handler);
       // When a cross origin iframe displays a login prompt, the blank
@@ -1179,7 +1179,7 @@ IN_PROC_BROWSER_TEST_P(LoginPromptBrowserTest, SupplyRedundantAuths) {
   ASSERT_EQ(2U, LoginHandler::GetAllLoginHandlersForTest().size());
 
   // Supply auth in one of the tabs.
-  SetAuthForAndWait(*LoginHandler::GetAllLoginHandlersForTest().begin());
+  SetAuthForAndWait(LoginHandler::GetAllLoginHandlersForTest().front());
 
   // Both tabs should be authenticated.
   EXPECT_EQ(2, browser_client_->auth_needed_count);
@@ -1224,7 +1224,7 @@ IN_PROC_BROWSER_TEST_P(LoginPromptBrowserTest, CancelRedundantAuths) {
   ASSERT_EQ(2U, LoginHandler::GetAllLoginHandlersForTest().size());
 
   // Cancel auth in one of the tabs.
-  LoginHandler* handler_1 = *LoginHandler::GetAllLoginHandlersForTest().begin();
+  LoginHandler* handler_1 = LoginHandler::GetAllLoginHandlersForTest().front();
   handler_1->CancelAuth();
 
   // Both tabs should cancel auth.
@@ -1268,7 +1268,7 @@ IN_PROC_BROWSER_TEST_P(LoginPromptBrowserTest,
   ASSERT_EQ(2U, LoginHandler::GetAllLoginHandlersForTest().size());
 
   // Supply auth in regular tab, it should be authenticated.
-  SetAuthForAndWait(*LoginHandler::GetAllLoginHandlersForTest().begin());
+  SetAuthForAndWait(LoginHandler::GetAllLoginHandlersForTest().front());
 
   EXPECT_EQ(2, browser_client_->auth_needed_count);
   EXPECT_EQ(1, browser_client_->auth_supplied_count);
@@ -1353,7 +1353,7 @@ IN_PROC_BROWSER_TEST_P(LoginPromptBrowserTest,
   {
     auto auth_needed_waiter = CreateAuthNeededObserver();
     auto auth_supplied_waiter = CreateAuthSuppliedObserver();
-    LoginHandler* handler = *LoginHandler::GetAllLoginHandlersForTest().begin();
+    LoginHandler* handler = LoginHandler::GetAllLoginHandlersForTest().front();
 
     ASSERT_TRUE(handler);
     handler->SetAuth(base::UTF8ToUTF16(bad_username_),
@@ -1368,7 +1368,7 @@ IN_PROC_BROWSER_TEST_P(LoginPromptBrowserTest,
 
   ASSERT_EQ(1u, LoginHandler::GetAllLoginHandlersForTest().size());
   auto auth_supplied_waiter = CreateAuthSuppliedObserver();
-  LoginHandler* handler = *LoginHandler::GetAllLoginHandlersForTest().begin();
+  LoginHandler* handler = LoginHandler::GetAllLoginHandlersForTest().front();
 
   std::u16string username(base::UTF8ToUTF16(username_digest_));
   std::u16string password(base::UTF8ToUTF16(password_));
@@ -1410,7 +1410,7 @@ IN_PROC_BROWSER_TEST_P(LoginPromptBrowserTest,
 
   ASSERT_EQ(1u, LoginHandler::GetAllLoginHandlersForTest().size());
   auto auth_cancelled_waiter = CreateAuthCancelledObserver();
-  LoginHandler* handler = *LoginHandler::GetAllLoginHandlersForTest().begin();
+  LoginHandler* handler = LoginHandler::GetAllLoginHandlersForTest().front();
 
   handler->CancelAuth();
   auth_cancelled_waiter.Wait();
@@ -1445,7 +1445,7 @@ IN_PROC_BROWSER_TEST_P(LoginPromptBrowserTestThirdPartyCookiesUnblocked,
   }
 
   ASSERT_EQ(1u, LoginHandler::GetAllLoginHandlersForTest().size());
-  SetAuthForAndWait(*LoginHandler::GetAllLoginHandlersForTest().begin());
+  SetAuthForAndWait(LoginHandler::GetAllLoginHandlersForTest().front());
   ExpectSuccessfulBasicAuthTitle(contents);
   EXPECT_EQ(1, browser_client_->auth_needed_count);
 
@@ -1478,7 +1478,7 @@ IN_PROC_BROWSER_TEST_P(LoginPromptBrowserTestThirdPartyCookiesUnblocked,
                                      ui::PAGE_TRANSITION_TYPED, false));
     auth_needed_waiter.Wait();
     ASSERT_EQ(1u, LoginHandler::GetAllLoginHandlersForTest().size());
-    SetAuthForAndWait(*LoginHandler::GetAllLoginHandlersForTest().begin());
+    SetAuthForAndWait(LoginHandler::GetAllLoginHandlersForTest().front());
     navigation_observer.Wait();
     EXPECT_EQ(2, browser_client_->auth_needed_count);
   }
@@ -1522,7 +1522,7 @@ IN_PROC_BROWSER_TEST_P(LoginPromptBrowserTestThirdPartyCookiesUnblocked,
   auth_needed_waiter.Wait();
 
   ASSERT_EQ(1u, LoginHandler::GetAllLoginHandlersForTest().size());
-  SetAuthForAndWait(*LoginHandler::GetAllLoginHandlersForTest().begin());
+  SetAuthForAndWait(LoginHandler::GetAllLoginHandlersForTest().front());
   ExpectSuccessfulBasicAuthTitle(contents);
 
   EXPECT_EQ(1, browser_client_->auth_needed_count);
@@ -1654,7 +1654,7 @@ IN_PROC_BROWSER_TEST_P(LoginPromptBrowserTest,
   EXPECT_EQ("www.b.com", contents->GetVisibleURL().host());
 
   // Cancel auth dialog for www.b.com.
-  LoginHandler* handler = *LoginHandler::GetAllLoginHandlersForTest().begin();
+  LoginHandler* handler = LoginHandler::GetAllLoginHandlersForTest().front();
   handler->CancelAuth();
   EXPECT_EQ("www.b.com", contents->GetVisibleURL().host());
 }
@@ -1698,7 +1698,7 @@ IN_PROC_BROWSER_TEST_P(LoginPromptBrowserTest,
     auth_needed_waiter.Wait();
     ASSERT_EQ(1u, LoginHandler::GetAllLoginHandlersForTest().size());
     // Cancel the auth prompt, which triggers a reload.
-    LoginHandler* handler = *LoginHandler::GetAllLoginHandlersForTest().begin();
+    LoginHandler* handler = LoginHandler::GetAllLoginHandlersForTest().front();
     content::TestNavigationObserver reload_observer(contents);
     handler->CancelAuth();
     reload_observer.Wait();
@@ -1864,7 +1864,7 @@ IN_PROC_BROWSER_TEST_P(LoginPromptBrowserTest,
   ASSERT_EQ(1u, LoginHandler::GetAllLoginHandlersForTest().size());
 
   // Test that credentials are handled correctly.
-  SetAuthForAndWait(*LoginHandler::GetAllLoginHandlersForTest().begin());
+  SetAuthForAndWait(LoginHandler::GetAllLoginHandlersForTest().front());
   ExpectSuccessfulBasicAuthTitle(contents);
 }
 
@@ -1889,7 +1889,7 @@ IN_PROC_BROWSER_TEST_P(LoginPromptBrowserTest, NoRepostDialogAfterCredentials) {
 
   // Enter credentials and test that the page loads. If the repost dialog is
   // shown, the test will hang while waiting for input.
-  SetAuthForAndWait(*LoginHandler::GetAllLoginHandlersForTest().begin());
+  SetAuthForAndWait(LoginHandler::GetAllLoginHandlersForTest().front());
   ExpectSuccessfulBasicAuthTitle(contents);
 }
 
@@ -1926,7 +1926,7 @@ IN_PROC_BROWSER_TEST_P(LoginPromptBrowserTest, PromptWithOnlyInitialEntry) {
   ASSERT_EQ(1u, LoginHandler::GetAllLoginHandlersForTest().size());
 
   // Test that credentials are handled correctly.
-  SetAuthForAndWait(*LoginHandler::GetAllLoginHandlersForTest().begin());
+  SetAuthForAndWait(LoginHandler::GetAllLoginHandlersForTest().front());
   ExpectSuccessfulBasicAuthTitle(opened_contents);
 }
 
@@ -2002,7 +2002,7 @@ IN_PROC_BROWSER_TEST_P(LoginPromptBrowserTest,
   auto auth_needed_waiter = CreateAuthNeededObserver();
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), test_page));
   auth_needed_waiter.Wait();
-  SetAuthForAndWait(*LoginHandler::GetAllLoginHandlersForTest().begin());
+  SetAuthForAndWait(LoginHandler::GetAllLoginHandlersForTest().front());
   ExpectSuccessfulBasicAuthTitle(web_contents);
 
   // Now navigate to a page handled by HandleUnauthorized(), for which the
@@ -2279,7 +2279,7 @@ IN_PROC_BROWSER_TEST_P(LoginPromptBrowserTest, BasicAuthWithServiceWorker) {
 
     // Cancel the auth prompt and check that the 401 response is displayed after
     // a reload.
-    LoginHandler* handler = *LoginHandler::GetAllLoginHandlersForTest().begin();
+    LoginHandler* handler = LoginHandler::GetAllLoginHandlersForTest().front();
     content::TestNavigationObserver reload_observer(web_contents);
     handler->CancelAuth();
     reload_observer.Wait();
@@ -2295,7 +2295,7 @@ IN_PROC_BROWSER_TEST_P(LoginPromptBrowserTest, BasicAuthWithServiceWorker) {
         browser(), https_server.GetURL(kAuthBasicPage)));
     auth_needed_waiter.Wait();
     EXPECT_FALSE(LoginHandler::GetAllLoginHandlersForTest().empty());
-    SetAuthForAndWait(*LoginHandler::GetAllLoginHandlersForTest().begin());
+    SetAuthForAndWait(LoginHandler::GetAllLoginHandlersForTest().front());
     ExpectSuccessfulBasicAuthTitle(web_contents);
   }
 }
@@ -2633,7 +2633,7 @@ IN_PROC_BROWSER_TEST_P(LoginPromptBackForwardCacheNoStoreBrowserTest,
                                        ui::PAGE_TRANSITION_TYPED, false));
   auth_needed_waiter.Wait();
   // Complete the HTTP authentication.
-  SetAuthForAndWait(*LoginHandler::GetAllLoginHandlersForTest().begin());
+  SetAuthForAndWait(LoginHandler::GetAllLoginHandlersForTest().front());
 
   // The page without CCNS header should be restored from BFCache.
   ASSERT_TRUE(content::HistoryGoBack(contents_without_ccns));
@@ -2689,7 +2689,7 @@ IN_PROC_BROWSER_TEST_P(
                                        ui::PAGE_TRANSITION_TYPED, false));
   auth_needed_waiter.Wait();
   // Complete the HTTP authentication.
-  SetAuthForAndWait(*LoginHandler::GetAllLoginHandlersForTest().begin());
+  SetAuthForAndWait(LoginHandler::GetAllLoginHandlersForTest().front());
 
   // The page with CCNS header should be evicted.
   ASSERT_TRUE(rfh_with_ccns.WaitUntilRenderFrameDeleted());
@@ -2745,7 +2745,7 @@ IN_PROC_BROWSER_TEST_P(
                                        ui::PAGE_TRANSITION_TYPED, false));
   auth_needed_waiter.Wait();
   // Complete the HTTP authentication.
-  SetAuthForAndWait(*LoginHandler::GetAllLoginHandlersForTest().begin());
+  SetAuthForAndWait(LoginHandler::GetAllLoginHandlersForTest().front());
 
   // The page with CCNS header but with a different origin should be restored
   // from the BFCache.
