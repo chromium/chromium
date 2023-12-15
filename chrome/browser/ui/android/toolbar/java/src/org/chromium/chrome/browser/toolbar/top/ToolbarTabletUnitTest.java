@@ -36,6 +36,7 @@ import org.mockito.MockitoAnnotations;
 import org.robolectric.Robolectric;
 import org.robolectric.Shadows;
 import org.robolectric.annotation.LooperMode;
+import org.robolectric.shadows.ShadowLooper;
 import org.robolectric.shadows.ShadowToast;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
@@ -494,6 +495,11 @@ public final class ToolbarTabletUnitTest {
         Assert.assertEquals(
                 TopToolbarBlockCaptureReason.TABLET_BUTTON_ANIMATION_IN_PROGRESS,
                 result.blockReason);
+
+        ShadowLooper.runUiThreadTasksIncludingDelayedTasks();
+        result = mToolbarTablet.isReadyForTextureCapture();
+        Assert.assertTrue(result.isReady);
+        Assert.assertEquals(TopToolbarAllowCaptureReason.SNAPSHOT_DIFFERENCE, result.allowReason);
     }
 
     @Test
@@ -514,6 +520,11 @@ public final class ToolbarTabletUnitTest {
         Assert.assertEquals(
                 TopToolbarBlockCaptureReason.TABLET_BUTTON_ANIMATION_IN_PROGRESS,
                 result.blockReason);
+
+        ShadowLooper.runUiThreadTasksIncludingDelayedTasks();
+        result = mToolbarTablet.isReadyForTextureCapture();
+        Assert.assertTrue(result.isReady);
+        Assert.assertEquals(TopToolbarAllowCaptureReason.SNAPSHOT_DIFFERENCE, result.allowReason);
     }
 
     @Test
