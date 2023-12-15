@@ -9,7 +9,6 @@
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/functional/callback_helpers.h"
-#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
 #include "base/version.h"
@@ -45,57 +44,15 @@ class FirstPartySetsComponentInstallerTest : public ::testing::Test {
     FirstPartySetsComponentInstallerPolicy::ResetForTesting();
   }
 
-  // Subclasses are expected to call this in their constructors.
-  virtual void InitializeFeatureList() = 0;
-
  protected:
   base::test::TaskEnvironment env_;
 
   base::ScopedTempDir component_install_dir_;
-  base::test::ScopedFeatureList scoped_feature_list_;
   first_party_sets::ScopedMockFirstPartySetsHandler
       mock_first_party_sets_handler_;
 };
 
-class FirstPartySetsComponentInstallerFeatureEnabledTest
-    : public FirstPartySetsComponentInstallerTest {
- public:
-  FirstPartySetsComponentInstallerFeatureEnabledTest() {
-    InitializeFeatureList();
-  }
-
-  void InitializeFeatureList() override {
-    scoped_feature_list_.InitAndEnableFeature(features::kFirstPartySets);
-  }
-};
-
-class FirstPartySetsComponentInstallerFeatureDisabledTest
-    : public FirstPartySetsComponentInstallerTest {
- public:
-  FirstPartySetsComponentInstallerFeatureDisabledTest() {
-    InitializeFeatureList();
-  }
-
-  void InitializeFeatureList() override {
-    scoped_feature_list_.InitAndDisableFeature(features::kFirstPartySets);
-  }
-};
-
-TEST_F(FirstPartySetsComponentInstallerFeatureDisabledTest, FeatureDisabled) {
-  auto service =
-      std::make_unique<component_updater::MockComponentUpdateService>();
-
-  // We still install the component and subscribe to updates even when the
-  // feature is disabled, so that if the feature eventually gets enabled, we
-  // will already have the requisite data.
-  EXPECT_CALL(*service, RegisterComponent(_)).Times(1);
-  RegisterFirstPartySetsComponent(service.get());
-
-  env_.RunUntilIdle();
-}
-
-TEST_F(FirstPartySetsComponentInstallerFeatureEnabledTest,
-       NonexistentFile_OnComponentReady) {
+TEST_F(FirstPartySetsComponentInstallerTest, NonexistentFile_OnComponentReady) {
   ASSERT_TRUE(
       base::DeleteFile(FirstPartySetsComponentInstallerPolicy::GetInstalledPath(
           component_install_dir_.GetPath())));
@@ -110,7 +67,7 @@ TEST_F(FirstPartySetsComponentInstallerFeatureEnabledTest,
   EXPECT_FALSE(std::get<1>(got).IsValid());
 }
 
-TEST_F(FirstPartySetsComponentInstallerFeatureEnabledTest,
+TEST_F(FirstPartySetsComponentInstallerTest,
        NonexistentFile_OnRegistrationComplete) {
   ASSERT_TRUE(
       base::DeleteFile(FirstPartySetsComponentInstallerPolicy::GetInstalledPath(
@@ -129,8 +86,7 @@ TEST_F(FirstPartySetsComponentInstallerFeatureEnabledTest,
   env_.RunUntilIdle();
 }
 
-TEST_F(FirstPartySetsComponentInstallerFeatureEnabledTest,
-       LoadsSets_OnComponentReady) {
+TEST_F(FirstPartySetsComponentInstallerTest, LoadsSets_OnComponentReady) {
   const base::Version version = base::Version("0.0.1");
   const std::string expectation = "some first party sets";
   base::test::TestFuture<base::Version, base::File> future;
@@ -155,8 +111,7 @@ TEST_F(FirstPartySetsComponentInstallerFeatureEnabledTest,
 // Test that when the first version of the component is installed,
 // ComponentReady is a no-op, because OnRegistrationComplete already executed
 // the OnceCallback.
-TEST_F(FirstPartySetsComponentInstallerFeatureEnabledTest,
-       IgnoreNewSets_NoInitialComponent) {
+TEST_F(FirstPartySetsComponentInstallerTest, IgnoreNewSets_NoInitialComponent) {
   base::test::TestFuture<base::Version, base::File> future;
   FirstPartySetsComponentInstallerPolicy policy(future.GetCallback());
 
@@ -181,8 +136,7 @@ TEST_F(FirstPartySetsComponentInstallerFeatureEnabledTest,
 
 // Test if a component has been installed, ComponentReady will be no-op when
 // newer versions are installed.
-TEST_F(FirstPartySetsComponentInstallerFeatureEnabledTest,
-       IgnoreNewSets_OnComponentReady) {
+TEST_F(FirstPartySetsComponentInstallerTest, IgnoreNewSets_OnComponentReady) {
   base::test::TestFuture<base::Version, base::File> future;
   FirstPartySetsComponentInstallerPolicy policy(future.GetCallback());
 
@@ -219,15 +173,7 @@ TEST_F(FirstPartySetsComponentInstallerFeatureEnabledTest,
   env_.RunUntilIdle();
 }
 
-TEST_F(FirstPartySetsComponentInstallerFeatureDisabledTest,
-       GetInstallerAttributes) {
-  FirstPartySetsComponentInstallerPolicy policy(base::DoNothing());
-
-  EXPECT_THAT(policy.GetInstallerAttributes(), IsEmpty());
-}
-
-TEST_F(FirstPartySetsComponentInstallerFeatureEnabledTest,
-       GetInstallerAttributes) {
+TEST_F(FirstPartySetsComponentInstallerTest, GetInstallerAttributes) {
   FirstPartySetsComponentInstallerPolicy policy(base::DoNothing());
 
   EXPECT_THAT(policy.GetInstallerAttributes(), IsEmpty());

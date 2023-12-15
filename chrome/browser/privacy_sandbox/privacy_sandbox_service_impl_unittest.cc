@@ -1025,12 +1025,9 @@ TEST_F(PrivacySandboxServiceTest,
 
   // Simulate 3PC are allowed while:
   // - FPS pref is enabled
-  // - FPS backend Feature is enabled
   // - FPS UI Feature is enabled
   feature_list()->InitWithFeatures(
-      {privacy_sandbox::kPrivacySandboxFirstPartySetsUI,
-       features::kFirstPartySets},
-      {});
+      {privacy_sandbox::kPrivacySandboxFirstPartySetsUI}, {});
   CreateService();
   ClearFpsUserPrefs(prefs());
   prefs()->SetUserPref(prefs::kCookieControlsMode,
@@ -1065,12 +1062,9 @@ TEST_F(PrivacySandboxServiceTest,
 
   // Simulate all cookies are blocked while:
   // - FPS pref is enabled
-  // - FPS backend Feature is enabled
   // - FPS UI Feature is enabled
   feature_list()->InitWithFeatures(
-      {privacy_sandbox::kPrivacySandboxFirstPartySetsUI,
-       features::kFirstPartySets},
-      {});
+      {privacy_sandbox::kPrivacySandboxFirstPartySetsUI}, {});
   prefs()->SetUserPref(
       prefs::kCookieControlsMode,
       std::make_unique<base::Value>(static_cast<int>(
@@ -1107,11 +1101,9 @@ TEST_F(PrivacySandboxServiceTest,
 
   // Simulate FPS UI feature disabled while:
   // - FPS pref is enabled
-  // - FPS backend Feature is enabled
   // - 3PC are being blocked
   feature_list()->InitWithFeatures(
-      {features::kFirstPartySets},
-      {privacy_sandbox::kPrivacySandboxFirstPartySetsUI});
+      {}, {privacy_sandbox::kPrivacySandboxFirstPartySetsUI});
   privacy_sandbox_test_util::SetupTestState(
       prefs(), host_content_settings_map(),
       /*privacy_sandbox_enabled=*/true,
@@ -1127,50 +1119,6 @@ TEST_F(PrivacySandboxServiceTest,
 
   mock_first_party_sets_handler().SetGlobalSets(global_sets.Clone());
 
-  first_party_sets_policy_service()->InitForTesting();
-
-  // We shouldn't get associate1's owner since FPS is disabled.
-  EXPECT_EQ(privacy_sandbox_service()->GetFirstPartySetOwner(associate1_gurl),
-            absl::nullopt);
-}
-
-TEST_F(PrivacySandboxServiceTest,
-       GetFirstPartySetOwner_SimulatedFpsData_DisabledByFpsFeature) {
-  GURL associate1_gurl("https://associate1.test");
-  net::SchemefulSite primary_site(GURL("https://primary.test"));
-  net::SchemefulSite associate1_site(associate1_gurl);
-
-  // Create Global First-Party Sets with the following set:
-  // { primary: "https://primary.test",
-  // associatedSites: ["https://associate1.test"}
-  net::GlobalFirstPartySets global_sets(
-      kFirstPartySetsVersion,
-      {{associate1_site,
-        {net::FirstPartySetEntry(primary_site, net::SiteType::kAssociated,
-                                 0)}}},
-      {});
-
-  // Simulate FPS backend feature disabled while:
-  // - FPS pref is enabled
-  // - FPS UI Feature is enabled
-  // - 3PC are being blocked
-  feature_list()->InitWithFeatures(
-      {privacy_sandbox::kPrivacySandboxFirstPartySetsUI},
-      {features::kFirstPartySets});
-  privacy_sandbox_test_util::SetupTestState(
-      prefs(), host_content_settings_map(),
-      /*privacy_sandbox_enabled=*/true,
-      /*block_third_party_cookies=*/true,
-      /*default_cookie_setting=*/ContentSetting::CONTENT_SETTING_ALLOW,
-      /*user_cookie_exceptions=*/{},
-      /*managed_cookie_setting=*/privacy_sandbox_test_util::kNoSetting,
-      /*managed_cookie_exceptions=*/{});
-  CreateService();
-  ClearFpsUserPrefs(prefs());
-  prefs()->SetUserPref(prefs::kPrivacySandboxRelatedWebsiteSetsEnabled,
-                       std::make_unique<base::Value>(true));
-
-  mock_first_party_sets_handler().SetGlobalSets(global_sets.Clone());
   first_party_sets_policy_service()->InitForTesting();
 
   // We shouldn't get associate1's owner since FPS is disabled.
@@ -1196,12 +1144,9 @@ TEST_F(PrivacySandboxServiceTest,
 
   // Simulate FPS pref disabled while:
   // - FPS UI Feature is enabled
-  // - FPS backend Feature is enabled
   // - 3PC are being blocked
   feature_list()->InitWithFeatures(
-      {features::kFirstPartySets,
-       privacy_sandbox::kPrivacySandboxFirstPartySetsUI},
-      {});
+      {privacy_sandbox::kPrivacySandboxFirstPartySetsUI}, {});
   privacy_sandbox_test_util::SetupTestState(
       prefs(), host_content_settings_map(),
       /*privacy_sandbox_enabled=*/true,
@@ -1234,11 +1179,9 @@ TEST_F(PrivacySandboxServiceTest,
   net::SchemefulSite associate2_site(associate2_gurl);
 
   // Set up state that fully enables the First-Party Sets for UI; blocking 3PC,
-  // and enabling the FPS UI and backend features and the FPS enabled pref.
+  // and enabling the FPS UI feature and the FPS enabled pref.
   feature_list()->InitWithFeatures(
-      {features::kFirstPartySets,
-       privacy_sandbox::kPrivacySandboxFirstPartySetsUI},
-      {});
+      {privacy_sandbox::kPrivacySandboxFirstPartySetsUI}, {});
   privacy_sandbox_test_util::SetupTestState(
       prefs(), host_content_settings_map(),
       /*privacy_sandbox_enabled=*/true,
@@ -1270,11 +1213,9 @@ TEST_F(PrivacySandboxServiceTest,
   net::SchemefulSite associate2_site(associate2_gurl);
 
   // Set up state that fully enables the First-Party Sets for UI; blocking 3PC,
-  // and enabling the FPS UI and backend features and the FPS enabled pref.
+  // and enabling the FPS UI feature and the FPS enabled pref.
   feature_list()->InitWithFeatures(
-      {features::kFirstPartySets,
-       privacy_sandbox::kPrivacySandboxFirstPartySetsUI},
-      {});
+      {privacy_sandbox::kPrivacySandboxFirstPartySetsUI}, {});
   privacy_sandbox_test_util::SetupTestState(
       prefs(), host_content_settings_map(),
       /*privacy_sandbox_enabled=*/true,
@@ -1390,12 +1331,11 @@ TEST_F(PrivacySandboxServiceTest, UsesFpsSampleSetsWhenProvided) {
   // First-Party Sets queries instead of the actual sets.
 
   // Set up state that fully enables the First-Party Sets for UI; blocking
-  // 3PC, and enabling the FPS UI and backend features and the FPS enabled pref.
+  // 3PC, and enabling the FPS UI feature and the FPS enabled pref.
   //
   // Note: this indicates that the sample sets should be used.
   feature_list()->InitWithFeaturesAndParameters(
-      /*enabled_features=*/{{features::kFirstPartySets, {}},
-                            {privacy_sandbox::kPrivacySandboxFirstPartySetsUI,
+      /*enabled_features=*/{{privacy_sandbox::kPrivacySandboxFirstPartySetsUI,
                              {{"use-sample-sets", "true"}}}},
       /*disabled_features=*/{});
   privacy_sandbox_test_util::SetupTestState(
@@ -1450,9 +1390,7 @@ TEST_F(PrivacySandboxServiceTest, UsesFpsSampleSetsWhenProvided) {
 
   feature_list()->Reset();
   feature_list()->InitWithFeatures(
-      {features::kFirstPartySets,
-       privacy_sandbox::kPrivacySandboxFirstPartySetsUI},
-      {});
+      {privacy_sandbox::kPrivacySandboxFirstPartySetsUI}, {});
   privacy_sandbox_test_util::SetupTestState(
       prefs(), host_content_settings_map(),
       /*privacy_sandbox_enabled=*/true,

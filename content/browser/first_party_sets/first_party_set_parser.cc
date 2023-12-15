@@ -54,6 +54,8 @@ constexpr char kCCTLDsField[] = "ccTLDs";
 constexpr char kFirstPartySetPolicyReplacementsField[] = "replacements";
 constexpr char kFirstPartySetPolicyAdditionsField[] = "additions";
 
+constexpr int kFirstPartySetsMaxAssociatedSites = 5;
+
 enum class PolicySetType { kReplacement, kAddition };
 
 const char* SetTypeToString(PolicySetType set_type) {
@@ -248,12 +250,10 @@ class ParseContext {
              SubsetDescriptor{
                  .field_name = kFirstPartySetAssociatedSitesField,
                  .site_type = net::SiteType::kAssociated,
-                 .size_limit =
-                     exempt_from_limits_
-                         ? absl::nullopt
-                         : absl::make_optional(
-                               features::kFirstPartySetsMaxAssociatedSites
-                                   .Get()),
+                 .size_limit = exempt_from_limits_
+                                   ? absl::nullopt
+                                   : absl::make_optional(
+                                         kFirstPartySetsMaxAssociatedSites),
              },
              {
                  .field_name = kFirstPartySetServiceSitesField,

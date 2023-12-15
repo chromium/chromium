@@ -92,10 +92,10 @@ class FirstPartySetsPolicyService : public KeyedService {
   // Exposes `Init` for use in tests.
   void InitForTesting();
 
-  // Returns true iff the preference and feature are both enabled.
+  // Returns true iff the preference is enabled.
   bool is_enabled() const {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-    return feature_enabled_ && pref_enabled_;
+    return pref_enabled_;
   }
 
   // Returns true when this instance has received the config thus has been fully
@@ -187,13 +187,6 @@ class FirstPartySetsPolicyService : public KeyedService {
   // `Shutdown()`.
   raw_ptr<content::BrowserContext> browser_context_
       GUARDED_BY_CONTEXT(sequence_checker_);
-
-  // Whether FPS is enabled globally.
-  //
-  // Initialized to true for the sake of tests, so that queries received before
-  // service initialization can be accumulated and answered after test setup,
-  // rather than answered immediately in the negative.
-  bool feature_enabled_ GUARDED_BY_CONTEXT(sequence_checker_) = true;
 
   // Whether FPS is enabled in this context. Note that this may be true even if
   // FPS is globally disabled.

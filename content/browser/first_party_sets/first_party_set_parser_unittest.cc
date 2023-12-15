@@ -8,7 +8,6 @@
 
 #include "base/json/json_reader.h"
 #include "base/test/metrics/histogram_tester.h"
-#include "base/test/scoped_feature_list.h"
 #include "base/version.h"
 #include "content/public/browser/first_party_sets_handler.h"
 #include "content/public/common/content_features.h"
@@ -1552,27 +1551,20 @@ TEST(FirstPartySetParser_ParseSetsFromEnterprisePolicyTest,
           {kReplacementsField, 0, kCctldsField, "https://not_in_set.test"})});
 }
 
-class FirstPartySetParserTest : public ::testing::Test {
- public:
-  FirstPartySetParserTest() {
-    features_.InitWithFeaturesAndParameters(
-        {{features::kFirstPartySets,
-          {{features::kFirstPartySetsMaxAssociatedSites.name, "1"}}}},
-        {});
-  }
-
- private:
-  base::test::ScopedFeatureList features_;
-};
-
-TEST_F(FirstPartySetParserTest, RespectsAssociatedSiteLimit) {
+TEST(FirstPartySetParser, RespectsAssociatedSiteLimit) {
   net::SchemefulSite example(GURL("https://example.test"));
   net::SchemefulSite a(GURL("https://a.test"));
+  net::SchemefulSite b(GURL("https://b.test"));
+  net::SchemefulSite c(GURL("https://c.test"));
+  net::SchemefulSite d(GURL("https://d.test"));
+  net::SchemefulSite e(GURL("https://e.test"));
 
   EXPECT_EQ(
-      ParseSets(R"({"primary": "https://example.test",)"
-                R"("associatedSites": ["https://a.test", "https://b.test"],)"
-                R"(})"),
+      ParseSets(
+          R"({"primary": "https://example.test",)"
+          R"("associatedSites": ["https://a.test", "https://b.test",)"
+          R"("https://c.test", "https://d.test", "https://e.test", "https://f.test"],)"
+          R"(})"),
       net::GlobalFirstPartySets(
           kVersion,
           {
@@ -1580,11 +1572,19 @@ TEST_F(FirstPartySetParserTest, RespectsAssociatedSiteLimit) {
                             example, net::SiteType::kPrimary, absl::nullopt)},
               {a,
                net::FirstPartySetEntry(example, net::SiteType::kAssociated, 0)},
+              {b,
+               net::FirstPartySetEntry(example, net::SiteType::kAssociated, 1)},
+              {c,
+               net::FirstPartySetEntry(example, net::SiteType::kAssociated, 2)},
+              {d,
+               net::FirstPartySetEntry(example, net::SiteType::kAssociated, 3)},
+              {e,
+               net::FirstPartySetEntry(example, net::SiteType::kAssociated, 4)},
           },
           {}));
 }
 
-TEST_F(FirstPartySetParserTest, DetectsErrorsPastAssociatedSiteLimit) {
+TEST(FirstPartySetParser, DetectsErrorsPastAssociatedSiteLimit) {
   EXPECT_EQ(
       ParseSets(R"({"primary": "https://example.test",)"
                 R"("associatedSites": ["https://a.test", "not a domain"],)"
@@ -1592,17 +1592,21 @@ TEST_F(FirstPartySetParserTest, DetectsErrorsPastAssociatedSiteLimit) {
       kEmptySets);
 }
 
-TEST_F(FirstPartySetParserTest,
-       ServiceSitesAreNotCountedAgainstAssociatedSiteLimit) {
+TEST(FirstPartySetParser, ServiceSitesAreNotCountedAgainstAssociatedSiteLimit) {
   net::SchemefulSite example(GURL("https://example.test"));
   net::SchemefulSite a(GURL("https://a.test"));
   net::SchemefulSite b(GURL("https://b.test"));
   net::SchemefulSite c(GURL("https://c.test"));
+  net::SchemefulSite d(GURL("https://d.test"));
+  net::SchemefulSite e(GURL("https://e.test"));
+  net::SchemefulSite f(GURL("https://f.test"));
+  net::SchemefulSite g(GURL("https://g.test"));
 
   EXPECT_EQ(
       ParseSets(R"({)"
                 R"("primary": "https://example.test",)"
-                R"("associatedSites": ["https://a.test"],)"
+                R"("associatedSites": ["https://a.test", "https://d.test",)"
+                R"("https://e.test", "https://f.test", "https://g.test"],)"
                 R"("serviceSites": ["https://b.test", "https://c.test"],)"
                 R"(})"),
       net::GlobalFirstPartySets(
@@ -1612,6 +1616,14 @@ TEST_F(FirstPartySetParserTest,
                             example, net::SiteType::kPrimary, absl::nullopt)},
               {a,
                net::FirstPartySetEntry(example, net::SiteType::kAssociated, 0)},
+              {d,
+               net::FirstPartySetEntry(example, net::SiteType::kAssociated, 1)},
+              {e,
+               net::FirstPartySetEntry(example, net::SiteType::kAssociated, 2)},
+              {f,
+               net::FirstPartySetEntry(example, net::SiteType::kAssociated, 3)},
+              {g,
+               net::FirstPartySetEntry(example, net::SiteType::kAssociated, 4)},
               {b, net::FirstPartySetEntry(example, net::SiteType::kService,
                                           absl::nullopt)},
               {c, net::FirstPartySetEntry(example, net::SiteType::kService,
@@ -1620,10 +1632,13 @@ TEST_F(FirstPartySetParserTest,
           {}));
 }
 
-TEST_F(FirstPartySetParserTest,
-       AliasesAreNotCountedAgainstAssociatedSiteLimit) {
+TEST(FirstPartySetParser, AliasesAreNotCountedAgainstAssociatedSiteLimit) {
   net::SchemefulSite example(GURL("https://example.test"));
   net::SchemefulSite a(GURL("https://a.test"));
+  net::SchemefulSite b(GURL("https://b.test"));
+  net::SchemefulSite c(GURL("https://c.test"));
+  net::SchemefulSite d(GURL("https://d.test"));
+  net::SchemefulSite e(GURL("https://e.test"));
   net::SchemefulSite a_cctld1(GURL("https://a.cctld1"));
   net::SchemefulSite a_cctld2(GURL("https://a.cctld2"));
 
@@ -1631,7 +1646,8 @@ TEST_F(FirstPartySetParserTest,
       ParseSets(
           R"({)"
           R"("primary": "https://example.test",)"
-          R"("associatedSites": ["https://a.test", "https://b.test"],)"
+          R"("associatedSites": ["https://a.test", "https://b.test",)"
+          R"("https://c.test", "https://d.test", "https://e.test"],)"
           R"("ccTLDs": {)"
           R"(  "https://a.test": ["https://a.cctld1", "https://a.cctld2"])"
           R"(})"
@@ -1643,22 +1659,40 @@ TEST_F(FirstPartySetParserTest,
                             example, net::SiteType::kPrimary, absl::nullopt)},
               {a,
                net::FirstPartySetEntry(example, net::SiteType::kAssociated, 0)},
+              {b,
+               net::FirstPartySetEntry(example, net::SiteType::kAssociated, 1)},
+              {c,
+               net::FirstPartySetEntry(example, net::SiteType::kAssociated, 2)},
+              {d,
+               net::FirstPartySetEntry(example, net::SiteType::kAssociated, 3)},
+              {e,
+               net::FirstPartySetEntry(example, net::SiteType::kAssociated, 4)},
           },
           {{a_cctld1, a}, {a_cctld2, a}}));
 }
 
-TEST_F(FirstPartySetParserTest,
-       EnterprisePolicies_ExemptFromAssociatedSiteLimit) {
+TEST(FirstPartySetParser, EnterprisePolicies_ExemptFromAssociatedSiteLimit) {
   net::SchemefulSite primary1(GURL("https://primary1.test"));
   net::SchemefulSite associated1(GURL("https://associated1.test"));
   net::SchemefulSite associated2(GURL("https://associated2.test"));
+  net::SchemefulSite associated3(GURL("https://associated3.test"));
+  net::SchemefulSite associated4(GURL("https://associated4.test"));
+  net::SchemefulSite associated5(GURL("https://associated5.test"));
+  net::SchemefulSite associated6(GURL("https://associated6.test"));
 
   base::Value policy_value = base::JSONReader::Read(R"(
              {
                 "replacements": [
                   {
                     "primary": "https://primary1.test",
-                    "associatedSites": ["https://associated1.test", "https://associated2.test"]
+                    "associatedSites": [
+                      "https://associated1.test",
+                      "https://associated2.test",
+                      "https://associated3.test",
+                      "https://associated4.test",
+                      "https://associated5.test",
+                      "https://associated6.test"
+                    ]
                   }
                 ]
               }
@@ -1675,6 +1709,18 @@ TEST_F(FirstPartySetParserTest,
                net::FirstPartySetEntry(primary1, net::SiteType::kAssociated,
                                        absl::nullopt)},
               {associated2,
+               net::FirstPartySetEntry(primary1, net::SiteType::kAssociated,
+                                       absl::nullopt)},
+              {associated3,
+               net::FirstPartySetEntry(primary1, net::SiteType::kAssociated,
+                                       absl::nullopt)},
+              {associated4,
+               net::FirstPartySetEntry(primary1, net::SiteType::kAssociated,
+                                       absl::nullopt)},
+              {associated5,
+               net::FirstPartySetEntry(primary1, net::SiteType::kAssociated,
+                                       absl::nullopt)},
+              {associated6,
                net::FirstPartySetEntry(primary1, net::SiteType::kAssociated,
                                        absl::nullopt)},
           }},

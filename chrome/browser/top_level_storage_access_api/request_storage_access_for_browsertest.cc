@@ -780,54 +780,6 @@ IN_PROC_BROWSER_TEST_F(
             "");
 }
 
-// Tests to validate `requestStorageAccessFor` behavior with FPS disabled.
-// For now, that entails auto-denial of requests.
-class RequestStorageAccessForWithFirstPartySetsDisabledBrowserTest
-    : public RequestStorageAccessForBaseBrowserTest {
- public:
- protected:
-  std::vector<base::test::FeatureRefAndParams> GetEnabledFeatures() override {
-    return {{blink::features::kStorageAccessAPIForOriginExtension, {}},
-            {blink::features::kStorageAccessAPI, {}}};
-  }
-  std::vector<base::test::FeatureRef> GetDisabledFeatures() override {
-    return {features::kFirstPartySets};
-  }
-};
-
-IN_PROC_BROWSER_TEST_F(
-    RequestStorageAccessForWithFirstPartySetsDisabledBrowserTest,
-    PermissionAutodenied) {
-  SetBlockThirdPartyCookies(true);
-  base::HistogramTester histogram_tester;
-
-  // Set cross-site cookies on all hosts.
-  SetCrossSiteCookieOnHost(kHostA);
-  SetCrossSiteCookieOnHost(kHostD);
-
-  NavigateToPageWithFrame(kHostA);
-
-  NavigateFrameTo(kHostD, "/echoheader?cookie");
-  EXPECT_EQ(GetFrameContent(), "None");
-  EXPECT_EQ(ReadCookiesViaJS(GetFrame()), "");
-  // `kHostD` cannot be granted access via `RequestStorageAccessFor` in
-  // this configuration, because the requesting site (`kHostA`) is not in the
-  // same First-Party Set as the requested site (`kHostD`).
-  EXPECT_FALSE(storage::test::RequestStorageAccessForOrigin(
-      GetPrimaryMainFrame(), GetURL(kHostD).spec()));
-
-  // Navigate iframe to a cross-site, cookie-reading endpoint, and verify that
-  // the cookie is not sent.
-  NavigateFrameTo(kHostD, "/echoheader?cookie");
-  EXPECT_EQ(GetFrameContent(), "None");
-  EXPECT_EQ(ReadCookiesViaJS(GetFrame()), "");
-
-  EXPECT_THAT(histogram_tester.GetBucketCount(
-                  kRequestOutcomeHistogram,
-                  TopLevelStorageAccessRequestOutcome::kDeniedByPrerequisites),
-              Gt(0));
-}
-
 // Tests to validate that, when the `requestStorageAccessFor` extension is
 // explicitly disabled, or if the larger Storage Access API is disabled, it does
 // not leak onto the document object.

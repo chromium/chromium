@@ -287,6 +287,11 @@ NET_EXPORT BASE_DECLARE_FEATURE(kCookieSameSiteConsidersRedirectChain);
 // cookies.
 NET_EXPORT BASE_DECLARE_FEATURE(kWaitForFirstPartySetsInit);
 
+// Controls the maximum time duration an outermost frame navigation should be
+// deferred by RWS initialization.
+NET_EXPORT extern const base::FeatureParam<base::TimeDelta>
+    kWaitForFirstPartySetsInitNavigationThrottleTimeout;
+
 // When enabled, sites can opt-in to having their cookies partitioned by
 // top-level site with the Partitioned attribute. Partitioned cookies will only
 // be sent when the browser is on the same top-level site that it was on when

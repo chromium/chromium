@@ -42,8 +42,7 @@ class CONTENT_EXPORT FirstPartySetParser {
   // received by Component Updater.
   //
   // Returns an empty GlobalFirstPartySets instance if parsing or validation of
-  // any set failed. Must not be called before field trial state has been
-  // initialized.
+  // any set failed.
   static net::GlobalFirstPartySets ParseSetsFromStream(std::istream& input,
                                                        base::Version version,
                                                        bool emit_errors,

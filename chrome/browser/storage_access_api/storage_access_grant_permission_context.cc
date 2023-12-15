@@ -31,7 +31,6 @@
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/storage_partition.h"
-#include "content/public/common/content_features.h"
 #include "net/base/schemeful_site.h"
 #include "net/cookies/cookie_setting_override.h"
 #include "net/cookies/site_for_cookies.h"
@@ -64,9 +63,8 @@ bool ShouldAutoDenyOutsideFPS() {
 }
 
 bool NeedsFirstPartySetMetadata() {
-  return base::FeatureList::IsEnabled(features::kFirstPartySets) &&
-         (blink::features::kStorageAccessAPIAutoGrantInFPS.Get() ||
-          ShouldAutoDenyOutsideFPS());
+  return blink::features::kStorageAccessAPIAutoGrantInFPS.Get() ||
+         ShouldAutoDenyOutsideFPS();
 }
 
 // Returns true if the request wasn't answered by the user explicitly.

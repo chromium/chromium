@@ -478,9 +478,8 @@ class SystemNetworkContextManagerWithFirstPartySetComponentBrowserTest
     SystemNetworkContextManagerBrowsertest::SetUpInProcessBrowserTestFixture();
     // Since we set kWaitForFirstPartySetsInit, all cookie-carrying network
     // requests are blocked until FPS is initialized.
-    feature_list_.InitWithFeatures(
-        {features::kFirstPartySets, net::features::kWaitForFirstPartySetsInit},
-        {});
+    feature_list_.InitWithFeatures({net::features::kWaitForFirstPartySetsInit},
+                                   {});
     CHECK(component_dir_.CreateUniqueTempDir());
     base::ScopedAllowBlockingForTesting allow_blocking;
 

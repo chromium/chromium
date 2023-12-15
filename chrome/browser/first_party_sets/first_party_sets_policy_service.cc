@@ -22,7 +22,6 @@
 #include "components/privacy_sandbox/tracking_protection_settings.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/first_party_sets_handler.h"
-#include "content/public/common/content_features.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "net/base/features.h"
 #include "net/base/schemeful_site.h"
@@ -94,14 +93,6 @@ void FirstPartySetsPolicyService::InitForTesting() {
 
 void FirstPartySetsPolicyService::Init() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  feature_enabled_ = base::FeatureList::IsEnabled(features::kFirstPartySets);
-
-  if (!feature_enabled_) {
-    pref_enabled_ = false;
-    OnReadyToNotifyDelegates(net::FirstPartySetsContextConfig(),
-                             net::FirstPartySetsCacheFilter());
-    return;
-  }
 
   Profile* profile = Profile::FromBrowserContext(browser_context_);
   // profile is guaranteed to be non-null since we create this service with a
@@ -370,7 +361,6 @@ void FirstPartySetsPolicyService::OnReadyToNotifyDelegates(
 
 void FirstPartySetsPolicyService::ResetForTesting() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  feature_enabled_ = true;
   pref_enabled_ = true;
   access_delegates_.Clear();
   on_ready_callbacks_.clear();

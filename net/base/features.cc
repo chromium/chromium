@@ -234,6 +234,14 @@ BASE_FEATURE(kWaitForFirstPartySetsInit,
              "WaitForFirstPartySetsInit",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Controls the maximum time duration an outermost frame navigation should be
+// deferred by RWS initialization.
+extern const base::FeatureParam<base::TimeDelta>
+    kWaitForFirstPartySetsInitNavigationThrottleTimeout{
+        &kWaitForFirstPartySetsInit,
+        "kWaitForFirstPartySetsInitNavigationThrottleTimeout",
+        base::Seconds(0)};
+
 BASE_FEATURE(kPartitionedCookies,
              "PartitionedCookies",
              base::FEATURE_ENABLED_BY_DEFAULT);

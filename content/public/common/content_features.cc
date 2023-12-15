@@ -441,29 +441,6 @@ BASE_FEATURE(kWebIdentityDigitalCredentials,
              "WebIdentityDigitalCredentials",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// Enables usage of First Party Sets to determine cookie availability.
-BASE_FEATURE(kFirstPartySets,
-             "FirstPartySets",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
-// Controls whether to clear sites data on FPS transitions.
-const base::FeatureParam<bool> kFirstPartySetsClearSiteDataOnChangedSets{
-    &kFirstPartySets, "FirstPartySetsClearSiteDataOnChangedSets", true};
-
-// Controls how many sites are allowed to be in the Associated subset (ignoring
-// ccTLD aliases).
-const base::FeatureParam<int> kFirstPartySetsMaxAssociatedSites{
-    &kFirstPartySets, "FirstPartySetsMaxAssociatedSites", 5};
-
-// Controls the maximum time duration an outermost frame navigation should be
-// deferred by FPS initialization.
-// Using 2s as the starting default timeout. This is based on the UMA metric
-// `History.ClearBrowsingData.Duration.OriginDeletion`.
-const base::FeatureParam<base::TimeDelta>
-    kFirstPartySetsNavigationThrottleTimeout{
-        &kFirstPartySets, "FirstPartySetsNavigationThrottleTimeout",
-        base::Seconds(0)};
-
 // Enables scrollers inside Blink to store scroll offsets in fractional
 // floating-point numbers rather than truncating to integers.
 BASE_FEATURE(kFractionalScrollOffsets,

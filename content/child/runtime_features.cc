@@ -408,7 +408,6 @@ void SetRuntimeFeaturesFromChromiumFeatures() {
           {"PartitionedCookies", raw_ref(net::features::kPartitionedCookies)},
           {"ReduceAcceptLanguage",
            raw_ref(network::features::kReduceAcceptLanguage)},
-          {"StorageAccessAPI", raw_ref(features::kFirstPartySets)},
           {"TopicsAPI", raw_ref(features::kPrivacySandboxAdsAPIsOverride),
            kSetOnlyIfOverridden},
           {"TopicsAPI", raw_ref(features::kPrivacySandboxAdsAPIsM1Override),

@@ -190,7 +190,6 @@ class TopLevelStorageAccessPermissionContextAPIWithFirstPartySetsTest
     features_.InitWithFeatures(
         /*enabled_features=*/
         {
-            features::kFirstPartySets,
             blink::features::kStorageAccessAPIForOriginExtension,
         },
         /*disabled_features=*/{});
@@ -380,54 +379,4 @@ TEST_F(TopLevelStorageAccessPermissionContextAPIWithFirstPartySetsTest,
                 .GetPermissionStatus(/*render_frame_host=*/nullptr,
                                      GetRequesterURL(), GetDummyEmbeddingUrl())
                 .status);
-}
-
-class TopLevelStorageAccessPermissionContextAPIFirstPartySetsDisabledTest
-    : public TopLevelStorageAccessPermissionContextTestAPIEnabledTest {
- public:
-  TopLevelStorageAccessPermissionContextAPIFirstPartySetsDisabledTest() {
-    features_.InitWithFeatures(
-        /*enabled_features=*/
-        {blink::features::kStorageAccessAPIForOriginExtension},
-        /*disabled_features=*/{features::kFirstPartySets});
-  }
-
- private:
-  base::test::ScopedFeatureList features_;
-};
-
-TEST_F(TopLevelStorageAccessPermissionContextAPIFirstPartySetsDisabledTest,
-       PermissionDeniedWithFPSDisabled) {
-  TopLevelStorageAccessPermissionContext permission_context(profile());
-  permissions::PermissionRequestID fake_id = CreateFakeID();
-
-  HostContentSettingsMap* settings_map =
-      HostContentSettingsMapFactory::GetForProfile(profile());
-  CHECK(settings_map);
-
-  // Check no `SessionModel::NonRestorableUserSession` setting exists yet.
-  ContentSettingsForOneType non_restorable_grants =
-      settings_map->GetSettingsForOneType(
-          ContentSettingsType::TOP_LEVEL_STORAGE_ACCESS,
-          content_settings::SessionModel::NonRestorableUserSession);
-  EXPECT_EQ(0u, non_restorable_grants.size());
-
-  base::test::TestFuture<ContentSetting> future;
-  permission_context.DecidePermissionForTesting(
-      permissions::PermissionRequestData(&permission_context, fake_id,
-                                         /*user_gesture=*/true,
-                                         GetRequesterURL(), GetTopLevelURL()),
-      future.GetCallback());
-
-  EXPECT_EQ(CONTENT_SETTING_BLOCK, future.Get());
-  EXPECT_EQ(histogram_tester().GetBucketCount(
-                kRequestOutcomeHistogram,
-                TopLevelStorageAccessRequestOutcome::kDeniedByPrerequisites),
-            1);
-
-  // Check the `SessionModel::NonRestorableUserSession` settings granted by FPS.
-  non_restorable_grants = settings_map->GetSettingsForOneType(
-      ContentSettingsType::TOP_LEVEL_STORAGE_ACCESS,
-      content_settings::SessionModel::NonRestorableUserSession);
-  EXPECT_EQ(0u, non_restorable_grants.size());
 }

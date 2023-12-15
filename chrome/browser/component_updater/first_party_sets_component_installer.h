@@ -55,21 +55,19 @@ class FirstPartySetsComponentInstallerPolicy : public ComponentInstallerPolicy {
                                        base::StringPiece contents);
 
  private:
-  FRIEND_TEST_ALL_PREFIXES(FirstPartySetsComponentInstallerFeatureEnabledTest,
+  FRIEND_TEST_ALL_PREFIXES(FirstPartySetsComponentInstallerTest,
                            NonexistentFile_OnComponentReady);
-  FRIEND_TEST_ALL_PREFIXES(FirstPartySetsComponentInstallerFeatureEnabledTest,
+  FRIEND_TEST_ALL_PREFIXES(FirstPartySetsComponentInstallerTest,
                            NonexistentFile_OnRegistrationComplete);
-  FRIEND_TEST_ALL_PREFIXES(FirstPartySetsComponentInstallerFeatureEnabledTest,
+  FRIEND_TEST_ALL_PREFIXES(FirstPartySetsComponentInstallerTest,
                            LoadsSets_OnComponentReady);
-  FRIEND_TEST_ALL_PREFIXES(FirstPartySetsComponentInstallerFeatureEnabledTest,
+  FRIEND_TEST_ALL_PREFIXES(FirstPartySetsComponentInstallerTest,
                            IgnoreNewSets_NoInitialComponent);
-  FRIEND_TEST_ALL_PREFIXES(FirstPartySetsComponentInstallerFeatureEnabledTest,
+  FRIEND_TEST_ALL_PREFIXES(FirstPartySetsComponentInstallerTest,
                            IgnoreNewSets_OnComponentReady);
-  FRIEND_TEST_ALL_PREFIXES(FirstPartySetsComponentInstallerFeatureEnabledTest,
+  FRIEND_TEST_ALL_PREFIXES(FirstPartySetsComponentInstallerTest,
                            IgnoreNewSets_OnNetworkRestart);
-  FRIEND_TEST_ALL_PREFIXES(FirstPartySetsComponentInstallerFeatureDisabledTest,
-                           GetInstallerAttributes);
-  FRIEND_TEST_ALL_PREFIXES(FirstPartySetsComponentInstallerFeatureEnabledTest,
+  FRIEND_TEST_ALL_PREFIXES(FirstPartySetsComponentInstallerTest,
                            GetInstallerAttributes);
 
   // The following methods override ComponentInstallerPolicy.

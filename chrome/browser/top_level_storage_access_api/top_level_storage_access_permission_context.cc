@@ -23,7 +23,6 @@
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/storage_partition.h"
-#include "content/public/common/content_features.h"
 #include "net/base/schemeful_site.h"
 #include "net/first_party_sets/first_party_set_entry.h"
 #include "net/first_party_sets/first_party_set_metadata.h"
@@ -74,14 +73,6 @@ void TopLevelStorageAccessPermissionContext::DecidePermission(
           blink::mojom::ConsoleMessageLevel::kError,
           "requestStorageAccessFor: Must be handling a user gesture to use.");
     }
-    RecordOutcomeSample(
-        TopLevelStorageAccessRequestOutcome::kDeniedByPrerequisites);
-    std::move(callback).Run(CONTENT_SETTING_BLOCK);
-    return;
-  }
-
-  if (!base::FeatureList::IsEnabled(features::kFirstPartySets)) {
-    // First-Party Sets is disabled, so reject the request.
     RecordOutcomeSample(
         TopLevelStorageAccessRequestOutcome::kDeniedByPrerequisites);
     std::move(callback).Run(CONTENT_SETTING_BLOCK);

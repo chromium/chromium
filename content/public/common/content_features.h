@@ -107,13 +107,6 @@ CONTENT_EXPORT BASE_DECLARE_FEATURE(kFedCmSelectiveDisclosure);
 CONTENT_EXPORT BASE_DECLARE_FEATURE(kFedCmWithoutWellKnownEnforcement);
 CONTENT_EXPORT BASE_DECLARE_FEATURE(kFencedFramesEnforceFocus);
 CONTENT_EXPORT BASE_DECLARE_FEATURE(kWebIdentityDigitalCredentials);
-CONTENT_EXPORT BASE_DECLARE_FEATURE(kFirstPartySets);
-CONTENT_EXPORT extern const base::FeatureParam<bool>
-    kFirstPartySetsClearSiteDataOnChangedSets;
-CONTENT_EXPORT extern const base::FeatureParam<int>
-    kFirstPartySetsMaxAssociatedSites;
-CONTENT_EXPORT extern const base::FeatureParam<base::TimeDelta>
-    kFirstPartySetsNavigationThrottleTimeout;
 CONTENT_EXPORT BASE_DECLARE_FEATURE(kFractionalScrollOffsets);
 CONTENT_EXPORT BASE_DECLARE_FEATURE(kGreaseUACH);
 CONTENT_EXPORT BASE_DECLARE_FEATURE(kInstalledApp);

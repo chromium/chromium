@@ -5256,8 +5256,7 @@ ChromeContentBrowserClient::CreateThrottlesForNavigation(
   auto* privacy_sandbox_settings =
       PrivacySandboxSettingsFactory::GetForProfile(profile);
   if (privacy_sandbox_settings &&
-      privacy_sandbox_settings->AreRelatedWebsiteSetsEnabled() &&
-      base::FeatureList::IsEnabled(features::kFirstPartySets)) {
+      privacy_sandbox_settings->AreRelatedWebsiteSetsEnabled()) {
     MaybeAddThrottle(first_party_sets::FirstPartySetsNavigationThrottle::
                          MaybeCreateNavigationThrottle(handle),
                      &throttles);
@@ -7848,8 +7847,7 @@ bool ChromeContentBrowserClient::WillProvidePublicFirstPartySets() {
 #if BUILDFLAG(ENABLE_COMPONENT_UPDATER)
   return !is_minimal_mode_ &&
          !base::CommandLine::ForCurrentProcess()->HasSwitch(
-             switches::kDisableComponentUpdate) &&
-         base::FeatureList::IsEnabled(features::kFirstPartySets);
+             switches::kDisableComponentUpdate);
 #else
   return false;
 #endif  // BUILDFLAG(ENABLE_COMPONENT_UPDATER)

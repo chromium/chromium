@@ -543,8 +543,7 @@ class StorageAccessGrantPermissionContextAPIWithImplicitGrantsTest
   StorageAccessGrantPermissionContextAPIWithImplicitGrantsTest() {
     features_.InitWithFeaturesAndParameters(
         /*enabled_features=*/
-        {{features::kFirstPartySets, {}},
-         {blink::features::kStorageAccessAPI,
+        {{blink::features::kStorageAccessAPI,
           {
               {
                   blink::features::kStorageAccessAPIAutoGrantInFPS.name,
@@ -782,8 +781,7 @@ class StorageAccessGrantPermissionContextAPIWithFirstPartySetsTest
   StorageAccessGrantPermissionContextAPIWithFirstPartySetsTest() {
     features_.InitWithFeaturesAndParameters(
         /*enabled_features=*/
-        {{features::kFirstPartySets, {}},
-         {blink::features::kStorageAccessAPI,
+        {{blink::features::kStorageAccessAPI,
           {
               {
                   blink::features::kStorageAccessAPIAutoGrantInFPS.name,

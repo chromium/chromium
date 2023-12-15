@@ -26,7 +26,6 @@
 #include "content/public/browser/content_browser_client.h"
 #include "content/public/browser/first_party_sets_handler.h"
 #include "content/public/common/content_client.h"
-#include "content/public/common/content_features.h"
 #include "net/base/features.h"
 #include "net/first_party_sets/first_party_set_metadata.h"
 #include "net/first_party_sets/first_party_sets_context_config.h"
@@ -325,8 +324,7 @@ FirstPartySetsHandlerImplInstance::FindEntry(
     const net::SchemefulSite& site,
     const net::FirstPartySetsContextConfig& config) const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  if (!base::FeatureList::IsEnabled(features::kFirstPartySets) ||
-      !global_sets_.has_value()) {
+  if (!global_sets_.has_value()) {
     return absl::nullopt;
   }
   return global_sets_->FindEntry(site, config);
@@ -347,7 +345,7 @@ void FirstPartySetsHandlerImplInstance::ClearSiteDataOnChangedSetsForContext(
                             net::FirstPartySetsCacheFilter)> callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  if (!enabled_ || !features::kFirstPartySetsClearSiteDataOnChangedSets.Get()) {
+  if (!enabled_) {
     std::move(callback).Run(std::move(context_config),
                             net::FirstPartySetsCacheFilter());
     return;
@@ -378,7 +376,7 @@ void FirstPartySetsHandlerImplInstance::
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   CHECK(global_sets_.has_value());
   CHECK(!browser_context_id.empty());
-  CHECK(enabled_ && features::kFirstPartySetsClearSiteDataOnChangedSets.Get());
+  CHECK(enabled_);
 
   if (db_helper_.is_null()) {
     VLOG(1) << "Invalid First-Party Sets database. Failed to clear site data "

@@ -138,15 +138,6 @@ GetSwitchDependentFeatureOverrides(const base::CommandLine& command_line) {
      std::cref(network::features::kCrossOriginOpenerPolicyByDefault),
      base::FeatureList::OVERRIDE_ENABLE_FEATURE},
 
-    // Overrides for First-Party Sets, which is enabled when either switch is
-    // present. When both switches are present, `kUseRelatedWebsiteSet` takes
-    // precedence.
-    {network::switches::kUseRelatedWebsiteSet,
-     std::cref(features::kFirstPartySets),
-     base::FeatureList::OVERRIDE_ENABLE_FEATURE},
-    {network::switches::kUseFirstPartySet, std::cref(features::kFirstPartySets),
-     base::FeatureList::OVERRIDE_ENABLE_FEATURE},
-
     {blink::switches::kWebSQLAccess, std::cref(blink::features::kWebSQLAccess),
      base::FeatureList::OVERRIDE_ENABLE_FEATURE},
 
