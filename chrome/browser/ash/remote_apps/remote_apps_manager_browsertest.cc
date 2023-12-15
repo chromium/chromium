@@ -334,7 +334,8 @@ class RemoteAppsManagerBrowsertest
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
-IN_PROC_BROWSER_TEST_F(RemoteAppsManagerBrowsertest, AddApp) {
+// TODO: b/316517034 - Enable the test when flakiness issue is resolved.
+IN_PROC_BROWSER_TEST_F(RemoteAppsManagerBrowsertest, DISABLED_AddApp) {
   AddScreenplayTag();
 
   // Show launcher UI so that app icons are loaded.
