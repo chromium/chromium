@@ -767,7 +767,13 @@ function Graphics_getDevicePixelRatio() {
 ///////////////////////////////////////////////////////////////////////////////
 
 function isPrototype(x) {
-  return x === x?.constructor?.prototype;
+  // Note: This can invoke getters or proxy hooks on page objects,
+  // so we watch for exceptions being thrown.
+  try {
+    return x === x?.constructor?.prototype;
+  } catch (e) {
+    return false;
+  }
 }
 
 /**
