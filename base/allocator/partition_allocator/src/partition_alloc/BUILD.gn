@@ -83,7 +83,6 @@ config("dependants_extra_warnings") {
       # Those are compiler extension banned by -pedantic.
       "-Wno-import-preprocessor-directive-pedantic",
       "-Wno-embedded-directive",
-      "-Wno-gnu-statement-expression-from-macro-expansion",
       "-Wno-language-extension-token",
       "-Wno-zero-length-array",
     ]

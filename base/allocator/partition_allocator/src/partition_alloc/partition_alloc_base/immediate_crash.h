@@ -145,11 +145,12 @@
 
 // __builtin_unreachable() hints to the compiler that this is noreturn and can
 // be packed in the function epilogue.
-#define PA_IMMEDIATE_CRASH()     \
-  ({                             \
-    PA_WRAPPED_TRAP_SEQUENCE_(); \
-    __builtin_unreachable();     \
-  })
+#define PA_IMMEDIATE_CRASH() \
+  [] {                       \
+    PA_TRAP_SEQUENCE1_();    \
+    PA_TRAP_SEQUENCE2_();    \
+  }(),                       \
+      __builtin_unreachable()
 
 #else
 

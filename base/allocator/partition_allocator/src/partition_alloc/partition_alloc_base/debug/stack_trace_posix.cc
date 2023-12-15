@@ -26,6 +26,16 @@ namespace {
 
 #if !BUILDFLAG(IS_APPLE)
 
+// On Android the 'open' function has two versions:
+// int open(const char *pathname, int flags);
+// int open(const char *pathname, int flags, mode_t mode);
+//
+// This doesn't play well with WrapEINTR template. This alias helps the compiler
+// to make a decision.
+int OpenFile(const char* pathname, int flags) {
+  return open(pathname, flags);
+}
+
 constexpr size_t kBufferSize = 4096u;
 
 enum {
@@ -202,8 +212,8 @@ ssize_t ReadFromOffset(const int fd,
   size_t num_bytes = 0;
   while (num_bytes < count) {
     ssize_t len;
-    len = PA_HANDLE_EINTR(pread(fd, buf0 + num_bytes, count - num_bytes,
-                                static_cast<off_t>(offset + num_bytes)));
+    len = WrapEINTR(pread)(fd, buf0 + num_bytes, count - num_bytes,
+                           static_cast<off_t>(offset + num_bytes));
     if (len < 0) {  // There was an error other than EINTR.
       return -1;
     }
@@ -224,7 +234,7 @@ void UpdateBaseAddress(unsigned permissions,
     return;
   }
 
-  int mem_fd = PA_HANDLE_EINTR(open("/proc/self/mem", O_RDONLY));
+  int mem_fd = WrapEINTR(OpenFile)("/proc/self/mem", O_RDONLY);
   if (mem_fd == -1) {
     PA_RAW_LOG(ERROR, "Failed to open /proc/self/mem\n");
     return;
@@ -274,7 +284,7 @@ void UpdateBaseAddress(unsigned permissions,
 #endif  // !BUILDFLAG(IS_ANDROID)
 
 void PrintStackTraceInternal(const void** trace, size_t count) {
-  int fd = PA_HANDLE_EINTR(open("/proc/self/maps", O_RDONLY));
+  int fd = WrapEINTR(OpenFile)("/proc/self/maps", O_RDONLY);
   if (fd == -1) {
     PA_RAW_LOG(ERROR, "Failed to open /proc/self/maps\n");
     return;
@@ -288,7 +298,7 @@ void PrintStackTraceInternal(const void** trace, size_t count) {
 #endif
 
   while (dest < buffer_end) {
-    ssize_t bytes_read = PA_HANDLE_EINTR(read(fd, dest, buffer_end - dest));
+    ssize_t bytes_read = WrapEINTR(read)(fd, dest, buffer_end - dest);
     if (bytes_read == 0) {
       break;
     }
