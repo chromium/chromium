@@ -10,7 +10,7 @@ template("manifest") {
   output_file = invoker.output_file
   key = invoker.key
   action(target_name) {
-    script = "//chrome/browser/resources/chromeos/accessibility/chromevox/tools/generate_manifest.py"
+    script = "//chrome/browser/resources/accessibility/tools/generate_manifest.py"
     inputs = [
       version_file,
       version_script,
