@@ -73,11 +73,6 @@ class InputEvent final : public UIEvent {
     kNumberOfInputTypes,
   };
 
-  enum EventCancelable : bool {
-    kNotCancelable = false,
-    kIsCancelable = true,
-  };
-
   enum EventIsComposing : bool {
     kNotComposing = false,
     kIsComposing = true,
@@ -85,12 +80,10 @@ class InputEvent final : public UIEvent {
 
   static InputEvent* CreateBeforeInput(InputType,
                                        const String& data,
-                                       EventCancelable,
                                        EventIsComposing,
                                        const StaticRangeVector*);
   static InputEvent* CreateBeforeInput(InputType,
                                        DataTransfer*,
-                                       EventCancelable,
                                        EventIsComposing,
                                        const StaticRangeVector*);
   static InputEvent* CreateInput(InputType,

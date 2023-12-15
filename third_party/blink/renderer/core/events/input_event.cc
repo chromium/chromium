@@ -84,6 +84,10 @@ InputEvent::InputType ConvertStringToInputType(const String& string_name) {
   return InputEvent::InputType::kNone;
 }
 
+bool InputTypeIsCancelable(InputEvent::InputType input_type) {
+  return input_type != InputEvent::InputType::kInsertCompositionText;
+}
+
 }  // anonymous namespace
 
 InputEvent::InputEvent(const AtomicString& type,
@@ -109,13 +113,12 @@ InputEvent::InputEvent(const AtomicString& type,
 /* static */
 InputEvent* InputEvent::CreateBeforeInput(InputType input_type,
                                           const String& data,
-                                          EventCancelable cancelable,
                                           EventIsComposing is_composing,
                                           const StaticRangeVector* ranges) {
   InputEventInit* input_event_init = InputEventInit::Create();
 
   input_event_init->setBubbles(true);
-  input_event_init->setCancelable(cancelable == kIsCancelable);
+  input_event_init->setCancelable(InputTypeIsCancelable(input_type));
   // TODO(ojan): We should find a way to prevent conversion like
   // String->enum->String just in order to use initializer.
   // See InputEvent::InputEvent() for the second conversion.
@@ -131,13 +134,12 @@ InputEvent* InputEvent::CreateBeforeInput(InputType input_type,
 /* static */
 InputEvent* InputEvent::CreateBeforeInput(InputType input_type,
                                           DataTransfer* data_transfer,
-                                          EventCancelable cancelable,
                                           EventIsComposing is_composing,
                                           const StaticRangeVector* ranges) {
   InputEventInit* input_event_init = InputEventInit::Create();
 
   input_event_init->setBubbles(true);
-  input_event_init->setCancelable(cancelable == kIsCancelable);
+  input_event_init->setCancelable(InputTypeIsCancelable(input_type));
   input_event_init->setInputType(ConvertInputTypeToString(input_type));
   input_event_init->setDataTransfer(data_transfer);
   input_event_init->setIsComposing(is_composing == kIsComposing);
