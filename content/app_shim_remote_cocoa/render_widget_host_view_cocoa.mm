@@ -2227,6 +2227,16 @@ extern NSString* NSTextInputReplacementRangeAttributeName;
     }
 
     if (fixLiveConversion) {
+      CHECK_LE(_markedRange.location + newSelRange.location,
+               std::numeric_limits<uint32_t>::max())
+          << "`start` is too large; _markedRange.location="
+          << _markedRange.location
+          << "; newSelRange.location=" << newSelRange.location;
+      CHECK_LE(_markedRange.location + NSMaxRange(newSelRange),
+               std::numeric_limits<uint32_t>::max())
+          << "`end` is too large; _markedRange.location="
+          << _markedRange.location
+          << "; NSMaxRange(newSelRange)=" << NSMaxRange(newSelRange);
       _textSelectionRange =
           gfx::Range(_markedRange.location + newSelRange.location,
                      _markedRange.location + NSMaxRange(newSelRange));
@@ -2235,6 +2245,8 @@ extern NSString* NSTextInputReplacementRangeAttributeName;
     // An empty text means the composition is about to be cancelled,
     // collapse the selection to the beginning of the current marked range.
     if (fixLiveConversion && _hasMarkedText) {
+      CHECK_LE(_markedRange.location, std::numeric_limits<uint32_t>::max())
+          << "_markedRange.location is too large.";
       _textSelectionRange =
           gfx::Range(_markedRange.location, _markedRange.location);
     }
