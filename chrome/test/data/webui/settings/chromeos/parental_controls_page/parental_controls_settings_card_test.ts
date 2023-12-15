@@ -4,11 +4,12 @@
 
 import 'chrome://os-settings/os_settings.js';
 
-import {CrButtonElement, CrLinkRowElement, ParentalControlsBrowserProxyImpl, ParentalControlsSettingsCardElement} from 'chrome://os-settings/os_settings.js';
+import {CrButtonElement, CrLinkRowElement, ParentalControlsBrowserProxyImpl, ParentalControlsSettingsCardElement, Router, routes, settingMojom} from 'chrome://os-settings/os_settings.js';
 import {assert} from 'chrome://resources/js/assert.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
+import {waitAfterNextRender} from 'chrome://webui-test/polymer_test_util.js';
 
 import {TestParentalControlsBrowserProxy} from './test_parental_controls_browser_proxy.js';
 
@@ -20,6 +21,7 @@ suite('<parental-controls-settings-card>', () => {
     loadTimeData.overrideValues({
       // Simulate parental controls.
       showParentalControls: true,
+      isChild: false,
     });
   });
 
@@ -87,6 +89,23 @@ suite('<parental-controls-settings-card>', () => {
     window.dispatchEvent(new CustomEvent('online'));
     // Setup button is shown and re-enabled.
     assertFalse(setupButton.disabled);
+  });
+
+  test('Deep link to parental controls setup button', async () => {
+    const params = new URLSearchParams();
+    const settingId = settingMojom.Setting.kSetUpParentalControls.toString();
+    params.append('settingId', settingId);
+    Router.getInstance().navigateTo(routes.OS_PEOPLE, params);
+    flush();
+
+    const deepLinkElement =
+        parentalControlsSettingsCard.shadowRoot!.querySelector<HTMLElement>(
+            '#setupButton');
+    assertTrue(!!deepLinkElement);
+    await waitAfterNextRender(deepLinkElement);
+    assertEquals(
+        deepLinkElement, parentalControlsSettingsCard.shadowRoot!.activeElement,
+        `Setup button should be focused for settingId=${settingId}.`);
   });
 
   suite('Chrome OS parental controls page child account tests', () => {

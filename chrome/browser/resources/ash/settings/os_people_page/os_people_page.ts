@@ -272,6 +272,8 @@ export class OsSettingsPeoplePageElement extends
     });
   }
 
+  // TODO(b/302374851) The manual deep linking below can be removed once the
+  // Revamp feature is fully launched.
   override beforeDeepLinkAttempt(settingId: Setting): boolean {
     switch (settingId) {
       // Manually show the deep links for settings nested within elements.

@@ -982,7 +982,16 @@ TEST_F(
    'os_page_availability_test.js',
    {enabled: ['ash::features::kOsSettingsRevampWayfinding']},
  ],
- ['OsPeoplePage', 'os_people_page/os_people_page_test.js'],
+ [
+   'OsPeoplePage',
+   'os_people_page/os_people_page_test.js',
+   {disabled: ['ash::features::kOsSettingsRevampWayfinding']},
+ ],
+ [
+   'OsPeoplePageRevamp',
+   'os_people_page/os_people_page_test.js',
+   {enabled: ['ash::features::kOsSettingsRevampWayfinding']},
+ ],
  ['OsPeoplePageAddUserDialog', 'os_people_page/add_user_dialog_test.js'],
  [
    'OsPeoplePageFingerprintListSubpage',
