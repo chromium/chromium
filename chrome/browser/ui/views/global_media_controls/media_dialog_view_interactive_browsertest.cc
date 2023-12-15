@@ -920,7 +920,13 @@ IN_PROC_BROWSER_TEST_F(MediaDialogViewBrowserTest,
   EXPECT_TRUE(IsPlayingSessionDisplayedFirst());
 }
 
-IN_PROC_BROWSER_TEST_F(MediaDialogViewBrowserTest, LiveCaption) {
+// TODO(crbug.com/1425041): Live captioning not supported on Arm64 Windows.
+#if BUILDFLAG(IS_WIN) && defined(ARCH_CPU_ARM64)
+#define MAYBE_LiveCaption DISABLED_LiveCaption
+#else
+#define MAYBE_LiveCaption LiveCaption
+#endif
+IN_PROC_BROWSER_TEST_F(MediaDialogViewBrowserTest, MAYBE_LiveCaption) {
   // Open a tab and play media.
   OpenTestURL();
   StartPlayback();
