@@ -1635,9 +1635,6 @@
         'additional_compile_targets': [
           'chrome',
         ],
-        'mixins': [
-            'ci_only',
-        ],
         'test_suites': {
           'skylab_tests': 'lacros_skylab_tests_amd64_generic_rel',
         },
