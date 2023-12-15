@@ -262,10 +262,7 @@ source_set("ozone_switches") {
 component("ozone") {
   visibility = []
   visibility = [ "*" ]
-  public_deps = [
-    ":buildflags",
-    ":platform",
-  ]
+  public_deps = [ ":platform" ]
 }
 
 source_set("drm_modifiers_filter") {
@@ -481,17 +478,6 @@ test("ozone_integration_tests") {
   ]
 
   deps += ozone_platform_integration_test_deps
-}
-
-# This is deprecated. Use //ui/base:ozone_buildflags instead.
-# TODO(crbug.com/1500494): Remove this.
-buildflag_header("buildflags") {
-  header = "buildflags.h"
-  flags = [
-    "OZONE_PLATFORM_WAYLAND=$ozone_platform_wayland",
-    "OZONE_PLATFORM_X11=$ozone_platform_x11",
-  ]
-  visibility += [ "*" ]
 }
 
 group("unittests") {

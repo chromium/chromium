@@ -216,6 +216,7 @@
 #include "third_party/blink/public/common/switches.h"
 #include "ui/accessibility/accessibility_features.h"
 #include "ui/accessibility/accessibility_switches.h"
+#include "ui/base/ozone_buildflags.h"
 #include "ui/base/ui_base_features.h"
 #include "ui/base/ui_base_switches.h"
 #include "ui/compositor/compositor_switches.h"
@@ -325,7 +326,6 @@
 #endif
 
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_ASH)
-#include "ui/ozone/buildflags.h"
 #include "ui/ozone/public/ozone_switches.h"
 #endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_ASH)
 
@@ -477,11 +477,11 @@ const FeatureEntry::Choice kOzonePlatformHintRuntimeChoices[] = {
     {flag_descriptions::kOzonePlatformHintChoiceDefault, "", ""},
     {flag_descriptions::kOzonePlatformHintChoiceAuto,
      switches::kOzonePlatformHint, "auto"},
-#if BUILDFLAG(OZONE_PLATFORM_X11)
+#if BUILDFLAG(IS_OZONE_X11)
     {flag_descriptions::kOzonePlatformHintChoiceX11,
      switches::kOzonePlatformHint, "x11"},
 #endif
-#if BUILDFLAG(OZONE_PLATFORM_WAYLAND)
+#if BUILDFLAG(IS_OZONE_WAYLAND)
     {flag_descriptions::kOzonePlatformHintChoiceWayland,
      switches::kOzonePlatformHint, "wayland"},
 #endif

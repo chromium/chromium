@@ -11,7 +11,6 @@ specific_include_rules = {
   ],
   "desktop_capture_device_unittest.cc": [
     # Some test cases are not yet supported depending on platform.
-    "+ui/ozone/buildflags.h",
     "+ui/ozone/public/ozone_platform.h",
   ],
   "desktop_capturer_ash\.cc": [

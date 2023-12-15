@@ -58,6 +58,7 @@
 #include "third_party/abseil-cpp/absl/cleanup/cleanup.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/base/ozone_buildflags.h"
 #include "ui/base/test/ui_controls.h"
 #include "ui/display/display_switches.h"
 #include "ui/events/keycodes/keyboard_codes.h"
@@ -81,21 +82,9 @@
 #include "ui/aura/window.h"
 #endif
 
-#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_ASH)
-#include "ui/ozone/buildflags.h"
-#endif
-
 #if BUILDFLAG(IS_WIN)
 #include "ui/aura/window_tree_host.h"
 #endif
-
-// The build flag OZONE_PLATFORM_WAYLAND is only available on Linux or ChromeOS,
-// so this simplifies the later ifdefs.
-#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_ASH)
-#if BUILDFLAG(OZONE_PLATFORM_WAYLAND)
-#define OZONE_PLATFORM_WAYLAND
-#endif  // BUILDFLAG(OZONE_PLATFORM_WAYLAND)
-#endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_ASH)
 
 using base::ASCIIToUTF16;
 using bookmarks::BookmarkModel;
@@ -1102,7 +1091,7 @@ class BookmarkBarViewTest9 : public BookmarkBarViewEventTestBase {
 // Something about coordinate transforms is wrong on Wayland -- attempting to
 // hover the scroll buttons sends the mouse to the wrong location, so it never
 // winds up over the button, so the test times out.
-#if defined(OZONE_PLATFORM_WAYLAND)
+#if BUILDFLAG(IS_OZONE_WAYLAND)
 #define MAYBE_ScrollButtonScrolls DISABLED_ScrollButtonScrolls
 #else
 #define MAYBE_ScrollButtonScrolls ScrollButtonScrolls
