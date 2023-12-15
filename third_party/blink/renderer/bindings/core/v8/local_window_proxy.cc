@@ -298,7 +298,6 @@ void LocalWindowProxy::SetupWindowPrototypeChain() {
                               window);
   // Mark the handle to be traced by Oilpan, since the global proxy has a
   // reference to the DOMWindow.
-  // global_proxy_.SetWrapperClassId(wrapper_type_info->wrapper_class_id);
   CHECK(global_proxy_ == window->AssociateWithWrapper(GetIsolate(), world_,
                                                       wrapper_type_info,
                                                       global_proxy));
