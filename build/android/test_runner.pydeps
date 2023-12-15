@@ -64,7 +64,6 @@
 ../../third_party/catapult/devil/devil/android/sdk/bundletool.py
 ../../third_party/catapult/devil/devil/android/sdk/intent.py
 ../../third_party/catapult/devil/devil/android/sdk/keyevent.py
-../../third_party/catapult/devil/devil/android/sdk/shared_prefs.py
 ../../third_party/catapult/devil/devil/android/sdk/split_select.py
 ../../third_party/catapult/devil/devil/android/sdk/version_codes.py
 ../../third_party/catapult/devil/devil/android/tools/__init__.py
@@ -224,7 +223,6 @@ pylib/utils/local_utils.py
 pylib/utils/logdog_helper.py
 pylib/utils/logging_utils.py
 pylib/utils/repo_utils.py
-pylib/utils/shared_preference_utils.py
 pylib/utils/test_filter.py
 pylib/utils/time_profile.py
 pylib/valgrind_tools.py

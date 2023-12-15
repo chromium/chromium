@@ -613,22 +613,6 @@ def AddInstrumentationTestOptions(parser):
       dest='screenshot_dir', type=os.path.realpath,
       help='Capture screenshots of test failures')
   parser.add_argument(
-      '--shared-prefs-file',
-      dest='shared_prefs_file', type=_RealPath,
-      help='The relative path to a file containing JSON list of shared '
-           'preference files to edit and how to do so. Example list: '
-           '[{'
-           '  "package": "com.package.example",'
-           '  "filename": "ExampleSettings.xml",'
-           '  "set": {'
-           '    "boolean_key_in_xml": true,'
-           '    "string_key_in_xml": "string_value"'
-           '  },'
-           '  "remove": ['
-           '    "key_in_xml_to_remove"'
-           '  ]'
-           '}]')
-  parser.add_argument(
       '--store-tombstones',
       action='store_true', dest='store_tombstones',
       help='Add tombstones in results if crash.')

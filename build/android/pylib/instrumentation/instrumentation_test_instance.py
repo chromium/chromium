@@ -21,7 +21,6 @@ from pylib.symbols import deobfuscator
 from pylib.symbols import stack_symbolizer
 from pylib.utils import dexdump
 from pylib.utils import gold_utils
-from pylib.utils import shared_preference_utils
 from pylib.utils import test_filter
 
 
@@ -641,9 +640,6 @@ class InstrumentationTestInstance(test_instance.TestInstance):
     self._deobfuscator = None
     self._initializeLogAttributes(args)
 
-    self._edit_shared_prefs = []
-    self._initializeEditPrefsAttributes(args)
-
     self._replace_system_package = None
     self._initializeReplaceSystemPackageAttributes(args)
 
@@ -865,15 +861,6 @@ class InstrumentationTestInstance(test_instance.TestInstance):
     self._symbolizer = stack_symbolizer.Symbolizer(
         self.apk_under_test.path if self.apk_under_test else None)
 
-  def _initializeEditPrefsAttributes(self, args):
-    if not hasattr(args, 'shared_prefs_file') or not args.shared_prefs_file:
-      return
-    if not isinstance(args.shared_prefs_file, str):
-      logging.warning("Given non-string for a filepath")
-      return
-    self._edit_shared_prefs = shared_preference_utils.ExtractSettingsFromJson(
-        args.shared_prefs_file)
-
   def _initializeReplaceSystemPackageAttributes(self, args):
     if (not hasattr(args, 'replace_system_package')
         or not args.replace_system_package):
@@ -961,10 +948,6 @@ class InstrumentationTestInstance(test_instance.TestInstance):
   @property
   def coverage_directory(self):
     return self._coverage_directory
-
-  @property
-  def edit_shared_prefs(self):
-    return self._edit_shared_prefs
 
   @property
   def enable_breakpad_dump(self):
