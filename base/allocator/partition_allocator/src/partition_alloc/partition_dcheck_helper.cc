@@ -22,10 +22,8 @@ void DCheckIsValidSlotSpan(internal::SlotSpanMetadata* slot_span) {
 void DCheckIsValidShiftFromSlotStart(internal::SlotSpanMetadata* slot_span,
                                      uintptr_t shift_from_slot_start) {
   PartitionRoot* root = PartitionRoot::FromSlotSpan(slot_span);
-  PA_DCHECK(shift_from_slot_start >= root->settings.extras_offset);
   // Use <= to allow an address immediately past the object.
-  PA_DCHECK(shift_from_slot_start <=
-            root->settings.extras_offset + root->GetSlotUsableSize(slot_span));
+  PA_DCHECK(shift_from_slot_start <= root->GetSlotUsableSize(slot_span));
 }
 
 void DCheckIsWithInSuperPagePayload(uintptr_t address) {
@@ -39,9 +37,8 @@ void DCheckIsWithInSuperPagePayload(uintptr_t address) {
 void DCheckIsValidObjectAddress(internal::SlotSpanMetadata* slot_span,
                                 uintptr_t object_addr) {
   uintptr_t slot_span_start = SlotSpanMetadata::ToSlotSpanStart(slot_span);
-  auto* root = PartitionRoot::FromSlotSpan(slot_span);
   PA_DCHECK((object_addr - slot_span_start) % slot_span->bucket->slot_size ==
-            root->settings.extras_offset);
+            0);
 }
 
 void DCheckNumberOfPartitionPagesInSuperPagePayload(

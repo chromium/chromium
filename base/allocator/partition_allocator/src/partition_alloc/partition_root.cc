@@ -1034,7 +1034,6 @@ void PartitionRoot::Init(PartitionOptions opts) {
 
 #if PA_CONFIG(EXTRAS_REQUIRED)
     settings.extras_size = 0;
-    settings.extras_offset = 0;
 
     if (settings.use_cookie) {
       settings.extras_size += internal::kPartitionCookieSizeAdjustment;
@@ -1058,13 +1057,8 @@ void PartitionRoot::Init(PartitionOptions opts) {
 #endif  // PA_CONFIG(INCREASE_REF_COUNT_SIZE_FOR_MTE)
       PA_CHECK(internal::kPartitionRefCountSizeAdjustment <= ref_count_size);
       settings.extras_size += ref_count_size;
-      settings.extras_offset += internal::kPartitionRefCountOffsetAdjustment;
     }
 #endif  // PA_CONFIG(EXTRAS_REQUIRED)
-
-    // Make sure there are no pre-allocation extras as they'd interfere with
-    // AlignedAlloc. Post-allocation extras are ok.
-    PA_CHECK(!settings.extras_offset);
 
     settings.quarantine_mode =
 #if BUILDFLAG(USE_STARSCAN)

@@ -52,8 +52,7 @@ void DCheckIsValidShiftFromSlotStart(internal::SlotSpanMetadata* slot_span,
                                      size_t shift_from_slot_start)
     PA_EMPTY_BODY_IF_DCHECK_IS_OFF();
 
-// Checks that the object is exactly |extras_offset| away from a multiple of
-// slot size (i.e. from a slot start).
+// Checks that the object is a multiple of slot size (i.e. at a slot start).
 PA_EXPORT_IF_DCHECK_IS_ON()
 void DCheckIsValidObjectAddress(internal::SlotSpanMetadata* slot_span,
                                 uintptr_t object_addr)

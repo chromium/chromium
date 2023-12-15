@@ -288,13 +288,10 @@ struct PA_ALIGNAS(64) PA_COMPONENT_EXPORT(PARTITION_ALLOC) PartitionRoot {
 
 #if PA_CONFIG(EXTRAS_REQUIRED)
     uint32_t extras_size = 0;
-    // TODO(bartekn): Remove, as we no longer support non-zero offsets.
-    uint32_t extras_offset = 0;
 #else
     // Teach the compiler that code can be optimized in builds that use no
     // extras.
     static inline constexpr uint32_t extras_size = 0;
-    static inline constexpr uint32_t extras_offset = 0;
 #endif  // PA_CONFIG(EXTRAS_REQUIRED)
   };
 
@@ -817,7 +814,7 @@ struct PA_ALIGNAS(64) PA_COMPONENT_EXPORT(PARTITION_ALLOC) PartitionRoot {
 
   PA_ALWAYS_INLINE uintptr_t SlotStartToObjectAddr(uintptr_t slot_start) const {
     // TODO(bartekn): Check that |slot_start| is indeed a slot start.
-    return slot_start + settings.extras_offset;
+    return slot_start;
   }
 
   PA_ALWAYS_INLINE void* SlotStartToObject(uintptr_t slot_start) const {
@@ -833,12 +830,12 @@ struct PA_ALIGNAS(64) PA_COMPONENT_EXPORT(PARTITION_ALLOC) PartitionRoot {
   }
 
   PA_ALWAYS_INLINE uintptr_t ObjectToSlotStart(void* object) const {
-    return UntagPtr(object) - settings.extras_offset;
+    return UntagPtr(object);
     // TODO(bartekn): Check that the result is indeed a slot start.
   }
 
   PA_ALWAYS_INLINE uintptr_t ObjectToTaggedSlotStart(void* object) const {
-    return reinterpret_cast<uintptr_t>(object) - settings.extras_offset;
+    return reinterpret_cast<uintptr_t>(object);
     // TODO(bartekn): Check that the result is indeed a slot start.
   }
 
@@ -2305,11 +2302,12 @@ PA_ALWAYS_INLINE void* PartitionRoot::AlignedAllocInline(
   // particularly if these allocations are back to back.
   // TODO(bartekn): We should check that this is not causing issues in practice.
   //
-  // Extras before the allocation are forbidden as they shift the returned
-  // allocation from the beginning of the slot, thus messing up alignment.
-  // Extras after the allocation are acceptable, but they have to be taken into
-  // account in the request size calculation to avoid crbug.com/1185484.
-  PA_DCHECK(!settings.extras_offset);
+  // This relies on the fact that there are no extras before the allocation, as
+  // they'd shift the returned allocation from the beginning of the slot, thus
+  // messing up alignment. Extras after the allocation are acceptable, but they
+  // have to be taken into account in the request size calculation to avoid
+  // crbug.com/1185484.
+
   // This is mandated by |posix_memalign()|, so should never fire.
   PA_CHECK(std::has_single_bit(alignment));
   // Catch unsupported alignment requests early.

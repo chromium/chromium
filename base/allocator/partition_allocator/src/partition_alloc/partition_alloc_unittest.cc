@@ -231,12 +231,11 @@ using SlotSpan = SlotSpanMetadata;
 
 const size_t kTestAllocSize = 16;
 
+constexpr size_t kPointerOffset = 0;
 #if !BUILDFLAG(PA_DCHECK_IS_ON)
-const size_t kPointerOffset = kPartitionRefCountOffsetAdjustment;
-const size_t kExtraAllocSizeWithoutRefCount = 0ull;
+constexpr size_t kExtraAllocSizeWithoutRefCount = 0ull;
 #else
-const size_t kPointerOffset = kPartitionRefCountOffsetAdjustment;
-const size_t kExtraAllocSizeWithoutRefCount = kCookieSize;
+constexpr size_t kExtraAllocSizeWithoutRefCount = kCookieSize;
 #endif
 
 const char* type_name = nullptr;
