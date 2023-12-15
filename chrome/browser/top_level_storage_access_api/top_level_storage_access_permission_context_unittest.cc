@@ -39,7 +39,7 @@ GURL GetTopLevelURL() {
 }
 
 GURL GetRequesterURL() {
-  return GURL("https://requester.example.com");
+  return GURL("https://requester.com");
 }
 
 GURL GetDummyEmbeddingUrl() {
@@ -198,14 +198,16 @@ class TopLevelStorageAccessPermissionContextAPIWithFirstPartySetsTest
   void SetUp() override {
     TopLevelStorageAccessPermissionContextTestAPIEnabledTest::SetUp();
 
-    // Create a FPS with https://requester.example.com as the member and
-    // https://embedder.example.com as the primary.
+    const net::SchemefulSite top_level(GetTopLevelURL());
     first_party_sets_handler_.SetGlobalSets(net::GlobalFirstPartySets(
         base::Version("1.2.3"),
         /*entries=*/
-        {{net::SchemefulSite(GetRequesterURL()),
-          {net::FirstPartySetEntry(net::SchemefulSite(GetTopLevelURL()),
-                                   net::SiteType::kAssociated, 0)}}},
+        {
+            {net::SchemefulSite(GetRequesterURL()),
+             net::FirstPartySetEntry(top_level, net::SiteType::kAssociated, 0)},
+            {top_level, net::FirstPartySetEntry(
+                            top_level, net::SiteType::kPrimary, absl::nullopt)},
+        },
         /*aliases=*/{}));
   }
 

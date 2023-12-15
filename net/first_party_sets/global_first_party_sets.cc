@@ -4,6 +4,7 @@
 
 #include "net/first_party_sets/global_first_party_sets.h"
 
+#include <set>
 #include <tuple>
 
 #include "base/containers/contains.h"
@@ -89,14 +90,15 @@ GlobalFirstPartySets::GlobalFirstPartySets(
       aliases_(std::move(aliases)),
       manual_config_(std::move(manual_config)),
       manual_aliases_(std::move(manual_aliases)) {
-  if (public_sets_version_.IsValid()) {
-    CHECK(base::ranges::all_of(aliases_, [&](const auto& pair) {
-      return entries_.contains(pair.second);
-    }));
-  } else {
+  if (!public_sets_version_.IsValid()) {
     CHECK(entries_.empty());
     CHECK(aliases_.empty());
   }
+
+  CHECK(base::ranges::all_of(aliases_, [&](const auto& pair) {
+    return entries_.contains(pair.second);
+  }));
+  CHECK(!ContainsSingleton());
 }
 
 GlobalFirstPartySets::GlobalFirstPartySets(GlobalFirstPartySets&&) = default;
@@ -205,6 +207,8 @@ void GlobalFirstPartySets::ApplyManuallySpecifiedSet(
       /*replacement_sets=*/{manual_entries},
       /*addition_sets=*/{}));
   manual_aliases_ = std::move(manual_aliases);
+
+  CHECK(!ContainsSingleton());
 }
 
 void GlobalFirstPartySets::UnsafeSetManualConfig(
@@ -474,6 +478,28 @@ void GlobalFirstPartySets::ForEachAlias(
     }
     f(alias, site);
   }
+}
+
+bool GlobalFirstPartySets::ContainsSingleton() const {
+  std::set<SchemefulSite> possible_singletons;
+  std::set<SchemefulSite> not_singletons;
+
+  ForEachEffectiveSetEntry(
+      nullptr,
+      [&](const SchemefulSite& site, const FirstPartySetEntry& entry) -> bool {
+        if (!not_singletons.contains(entry.primary())) {
+          if (site == entry.primary()) {
+            possible_singletons.insert(entry.primary());
+          } else {
+            not_singletons.insert(entry.primary());
+            possible_singletons.erase(entry.primary());
+          }
+        }
+
+        return true;
+      });
+
+  return !possible_singletons.empty();
 }
 
 std::ostream& operator<<(std::ostream& os, const GlobalFirstPartySets& sets) {
