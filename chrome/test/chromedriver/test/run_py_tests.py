@@ -79,6 +79,7 @@ if util.IsLinux():
   import devil_chromium
   from pylib import constants
 
+_ELEMENT_REF_REGEX = r'f\.[a-zA-Z0-9]+\.d\.[a-zA-Z0-9]+\.e\.\d+'
 
 _NEGATIVE_FILTER = [
     # This test is too flaky on the bots, but seems to run perfectly fine
@@ -1131,19 +1132,13 @@ class ChromeDriverTest(ChromeDriverBaseTestWithWebServer):
     with self.assertRaises(chromedriver.StaleElementReference):
       self._driver.ExecuteScript("return true;", div1)
 
-  def testExecuteScriptNoSuchBackendNodeId(self):
+  def testExecuteScriptMalformedReference(self):
     # Test the standard compliance of error handling
-    div = self._driver.ExecuteScript(
-        'document.body.innerHTML = "<div>old</div>";'
-        'return document.getElementsByTagName("div")[0];')
-    components = div._id.split('_')
-    self.assertEqual(3, len(components))
-    components[2] = "1000000001" # very large backend_id
-    div._id = '_'.join(components)
+    foo = webelement.WebElement(self._driver, "foo")
     with self.assertRaises(chromedriver.NoSuchElement):
-      self._driver.ExecuteScript("return arguments[0];", div)
+      self._driver.ExecuteScript("return arguments[0];", foo)
     with self.assertRaises(chromedriver.NoSuchElement):
-      self._driver.ExecuteScript("return true;", div)
+      self._driver.ExecuteScript("return true;", foo)
 
   def testExecuteScriptDetachedShadowRoot(self):
     # Test the standard compliance of error handling
@@ -3130,21 +3125,21 @@ class ChromeDriverTest(ChromeDriverBaseTestWithWebServer):
   def testElementReference(self):
     self._driver.Load(self.GetHttpUrlForFile('/chromedriver/element_ref.html'))
     element = self._driver.FindElement('css selector', '#link')
-    self.assertRegex(element._id, '\\w+_element_\\w+',
+    self.assertRegex(element._id, _ELEMENT_REF_REGEX,
                      msg='Element id format is incorrect')
 
   def testElementReferenceViaScript(self):
     self._driver.Load(self.GetHttpUrlForFile('/chromedriver/element_ref.html'))
     element = self._driver.ExecuteScript(
         'return document.getElementById("link")')
-    self.assertRegex(element._id, '\\w+_element_\\w+',
+    self.assertRegex(element._id, _ELEMENT_REF_REGEX,
                      msg='Element id format is incorrect')
 
   def testElementReferenceNoNavigation(self):
     div = self._driver.ExecuteScript(
         'document.body.innerHTML = "<div>old</div>";'
         'return document.getElementsByTagName("div")[0];')
-    self.assertRegex(div._id, '\\w+_element_\\w',
+    self.assertRegex(div._id, _ELEMENT_REF_REGEX,
                      msg='Element id format is incorrect')
 
   def testElementReferenceInNewWindow(self):
@@ -3157,7 +3152,7 @@ class ChromeDriverTest(ChromeDriverBaseTestWithWebServer):
     div = self._driver.ExecuteScript(
         'document.body.innerHTML = "<div>old</div>";'
         'return document.getElementsByTagName("div")[0];')
-    self.assertRegex(div._id, '\\w+_element_\\w',
+    self.assertRegex(div._id, _ELEMENT_REF_REGEX,
                      msg='Element id format is incorrect')
 
   def testFindElementWhenElementIsOverridden(self):
@@ -7244,14 +7239,14 @@ class BidiTest(ChromeDriverBaseTestWithWebServer):
     self._driver.Load(self.GetHttpUrlForFile('/chromedriver/element_ref.html'))
     element = self._driver.FindElement('css selector', '#link')
     self._driver.FindElements('tag name', 'br')
-    self.assertRegex(element._id, '\\w+_element_\\w+',
+    self.assertRegex(element._id, _ELEMENT_REF_REGEX,
                      msg='Element id format is incorrect')
 
   def testElementReferenceNoNavigation(self):
     div = self._driver.ExecuteScript(
         'document.body.innerHTML = "<div>old</div>";'
         'return document.getElementsByTagName("div")[0];')
-    self.assertRegex(div._id, '\\w+_element_\\w',
+    self.assertRegex(div._id, _ELEMENT_REF_REGEX,
                      msg='Element id format is incorrect')
 
   def testCompareClassicAndBidiIds(self):
@@ -7260,12 +7255,9 @@ class BidiTest(ChromeDriverBaseTestWithWebServer):
     div = self._driver.ExecuteScript(
         'document.body.innerHTML = "<div>old</div>";'
         'return document.getElementsByTagName("div")[0];')
-    node_id = div._id
-    self.assertRegex(node_id, '\\w+_element_\\w',
+    classic_id = div._id
+    self.assertRegex(classic_id, _ELEMENT_REF_REGEX,
                      msg='Element id format is incorrect')
-    pos = node_id.rfind('_')
-    self.assertGreaterEqual(pos, 0, "Element Id format is incorrect")
-    classic_backend_node_id = node_id[pos+1:]
 
     resp = conn.SendCommand({
       'method': 'script.evaluate',
@@ -7278,13 +7270,10 @@ class BidiTest(ChromeDriverBaseTestWithWebServer):
           'resultOwnership': 'root',
       }
     })
-    shared_id = resp['result']['sharedId']
-    self.assertRegex(shared_id, '\\w+_element_\\w',
+    bidi_id = resp['result']['sharedId']
+    self.assertRegex(bidi_id, _ELEMENT_REF_REGEX,
                      msg='Shared id format is incorrect')
-    pos = shared_id.rfind('_')
-    bidi_backend_node_id = shared_id[pos+1:]
-
-    self.assertEqual(classic_backend_node_id, bidi_backend_node_id,
+    self.assertEqual(classic_id, bidi_id,
                      "Classic and BiDi id mismatch")
 
   def testClassicIdInBidi(self):

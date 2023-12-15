@@ -7,6 +7,7 @@
 
 #include <memory>
 #include <string>
+#include <vector>
 
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
@@ -31,12 +32,18 @@ class CastTracker;
 
 class WebViewImpl : public WebView {
  public:
-  WebViewImpl(const std::string& id,
-              const bool w3c_compliant,
-              const WebViewImpl* parent,
-              const BrowserInfo* browser_info,
-              std::unique_ptr<DevToolsClient> client);
-
+  static std::unique_ptr<WebViewImpl> CreateServiceWorkerWebView(
+      const std::string& id,
+      const bool w3c_compliant,
+      const BrowserInfo* browser_info,
+      std::unique_ptr<DevToolsClient> client);
+  static std::unique_ptr<WebViewImpl> CreateTopLevelWebView(
+      const std::string& id,
+      const bool w3c_compliant,
+      const BrowserInfo* browser_info,
+      std::unique_ptr<DevToolsClient> client,
+      absl::optional<MobileDevice> mobile_device,
+      std::string page_load_strategy);
   WebViewImpl(const std::string& id,
               const bool w3c_compliant,
               const WebViewImpl* parent,
@@ -45,8 +52,8 @@ class WebViewImpl : public WebView {
               absl::optional<MobileDevice> mobile_device,
               std::string page_load_strategy);
   ~WebViewImpl() override;
-  WebViewImpl* CreateChild(const std::string& session_id,
-                           const std::string& target_id) const;
+  std::unique_ptr<WebViewImpl> CreateChild(const std::string& session_id,
+                                           const std::string& target_id) const;
 
   // Overridden from WebView:
   bool IsServiceWorker() const override;
@@ -176,11 +183,18 @@ class WebViewImpl : public WebView {
   void SetDetached();
   bool IsDetached() const;
 
+ protected:
+  WebViewImpl(const std::string& id,
+              const bool w3c_compliant,
+              const WebViewImpl* parent,
+              const BrowserInfo* browser_info,
+              std::unique_ptr<DevToolsClient> client);
+
  private:
   WebViewImpl* GetTargetForFrame(const std::string& frame);
   Status GetLoaderId(const std::string& frame_id,
-                     std::string* loader_id,
-                     Timeout* timeout);
+                     const Timeout& timeout,
+                     std::string& loader_id);
   Status CallFunctionWithTimeoutInternal(std::string frame,
                                          std::string function,
                                          base::Value::List args,
@@ -194,27 +208,34 @@ class WebViewImpl : public WebView {
   Status IsNotPendingNavigation(const std::string& frame_id,
                                 const Timeout* timeout,
                                 bool* is_not_pending);
-  Status ResolveElementReferences(base::Value* arg,
-                                  base::Value::List* nodes,
-                                  const std::string& context_id,
-                                  const std::string& object_group_name,
-                                  const std::string& expected_loader_id,
-                                  bool w3c_compliant);
-  Status ResolveElementReferences(base::Value::Dict* arg_dict,
-                                  base::Value::List* nodes,
-                                  const std::string& context_id,
-                                  const std::string& object_group_name,
-                                  const std::string& expected_loader_id,
-                                  bool w3c_compliant);
-  Status ResolveElementReferences(base::Value::List* arg_list,
-                                  base::Value::List* nodes,
-                                  const std::string& context_id,
-                                  const std::string& object_group_name,
-                                  const std::string& expected_loader_id,
-                                  bool w3c_compliant);
-  Status CreateElementReferences(base::Value* res,
+  Status ResolveElementReferencesInPlace(const std::string& expected_frame_id,
+                                         const std::string& context_id,
+                                         const std::string& object_group_name,
+                                         const std::string& expected_loader_id,
+                                         bool w3c_compliant,
+                                         const Timeout& timeout,
+                                         base::Value& arg,
+                                         base::Value::List& nodes);
+  Status ResolveElementReferencesInPlace(const std::string& expected_frame_id,
+                                         const std::string& context_id,
+                                         const std::string& object_group_name,
+                                         const std::string& expected_loader_id,
+                                         bool w3c_compliant,
+                                         const Timeout& timeout,
+                                         base::Value::Dict& arg_dict,
+                                         base::Value::List& nodes);
+  Status ResolveElementReferencesInPlace(const std::string& expected_frame_id,
+                                         const std::string& context_id,
+                                         const std::string& object_group_name,
+                                         const std::string& expected_loader_id,
+                                         bool w3c_compliant,
+                                         const Timeout& timeout,
+                                         base::Value::List& arg_list,
+                                         base::Value::List& nodes);
+  Status CreateElementReferences(const std::string& frame_id,
+                                 const std::string& loader_id,
                                  const base::Value::List& nodes,
-                                 const std::string& loader_id);
+                                 base::Value& res);
 
   Status InitProfileInternal();
   Status StopProfileInternal();

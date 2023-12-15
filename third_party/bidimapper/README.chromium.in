@@ -1,7 +1,7 @@
 Name: Implementation of WebDriver BiDi standard
 Short Name: chromium-bidi
 URL: https://github.com/GoogleChromeLabs/chromium-bidi/archive/${REVISION}.zip
-Version: 0
+Version: N/A
 Date: ${DATE}
 Revision: ${REVISION}
 SHA-512: ${TAR-SHA512}

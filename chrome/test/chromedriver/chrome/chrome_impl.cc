@@ -133,13 +133,12 @@ Status ChromeImpl::UpdateWebViews(const WebViewsInfo& views_info,
         // OnConnected will fire when DevToolsClient connects later.
         CHECK(!page_load_strategy_.empty());
         if (view.type == WebViewInfo::kServiceWorker) {
-          web_views_.push_back(
-              std::make_unique<WebViewImpl>(view.id, w3c_compliant, nullptr,
-                                            &browser_info_, std::move(client)));
+          web_views_.push_back(WebViewImpl::CreateServiceWorkerWebView(
+              view.id, w3c_compliant, &browser_info_, std::move(client)));
         } else {
-          web_views_.push_back(std::make_unique<WebViewImpl>(
-              view.id, w3c_compliant, nullptr, &browser_info_,
-              std::move(client), mobile_device_, page_load_strategy_));
+          web_views_.push_back(WebViewImpl::CreateTopLevelWebView(
+              view.id, w3c_compliant, &browser_info_, std::move(client),
+              mobile_device_, page_load_strategy_));
         }
         DevToolsClientImpl* parent =
             static_cast<DevToolsClientImpl*>(devtools_websocket_client_.get());
