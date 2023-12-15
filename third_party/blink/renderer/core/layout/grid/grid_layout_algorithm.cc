@@ -421,15 +421,22 @@ MinMaxSizesResult GridLayoutAlgorithm::ComputeMinMaxSizes(
                      depends_on_block_constraints};
 }
 
-MinMaxSizesResult GridLayoutAlgorithm::ComputeMinMaxSizes(
-    const GridSizingSubtree& sizing_subtree) {
+MinMaxSizesResult GridLayoutAlgorithm::ComputeSubgridMinMaxSizes(
+    const GridSizingSubtree& sizing_subtree) const {
   DCHECK(sizing_subtree);
 
-  return {{ComputeSubgridContributionSize(sizing_subtree, kForColumns,
-                                          SizingConstraint::kMinContent),
-           ComputeSubgridContributionSize(sizing_subtree, kForColumns,
-                                          SizingConstraint::kMaxContent)},
+  return {{ComputeSubgridIntrinsicSize(sizing_subtree, kForColumns,
+                                       SizingConstraint::kMinContent),
+           ComputeSubgridIntrinsicSize(sizing_subtree, kForColumns,
+                                       SizingConstraint::kMaxContent)},
           /* depends_on_block_constraints */ false};
+}
+
+LayoutUnit GridLayoutAlgorithm::ComputeSubgridIntrinsicBlockSize(
+    const GridSizingSubtree& sizing_subtree) const {
+  DCHECK(sizing_subtree);
+  return ComputeSubgridIntrinsicSize(sizing_subtree, kForRows,
+                                     SizingConstraint::kMaxContent);
 }
 
 namespace {
@@ -468,7 +475,34 @@ MinMaxSizesResult ComputeMinMaxSizesForSubgrid(
                                        /* is_intrinsic */ true);
 
   return GridLayoutAlgorithm({subgrid_data.node, fragment_geometry, space})
-      .ComputeMinMaxSizes(sizing_subtree);
+      .ComputeSubgridMinMaxSizes(sizing_subtree);
+}
+
+LayoutUnit ComputeBlockSizeForSubgrid(const GridSizingSubtree& sizing_subtree,
+                                      const GridItemData& subgrid_data,
+                                      const ConstraintSpace& space) {
+  DCHECK(sizing_subtree);
+  DCHECK(subgrid_data.IsSubgrid());
+
+  const auto& node = subgrid_data.node;
+  const auto& style = node.Style();
+
+  const auto border_padding =
+      ComputeBorders(space, node) + ComputePadding(space, style);
+  const auto fragment_geometry =
+      CalculateInitialFragmentGeometry(space, node,
+                                       /* break_token */ nullptr,
+                                       /* is_intrinsic */ true);
+
+  const absl::optional<LayoutUnit> available_inline_size =
+      space.AvailableSize().inline_size;
+
+  return ComputeBlockSizeForFragment(
+      space, style, border_padding,
+      GridLayoutAlgorithm({node, fragment_geometry, space})
+          .ComputeSubgridIntrinsicBlockSize(sizing_subtree),
+      (*available_inline_size == kIndefiniteSize) ? absl::nullopt
+                                                  : available_inline_size);
 }
 
 FragmentGeometry CalculateInitialFragmentGeometryForSubgrid(
@@ -1129,23 +1163,6 @@ LayoutUnit GridLayoutAlgorithm::ContributionSizeForGridItem(
     baseline_shim = track_baseline - baseline - extra_margin;
   };
 
-  auto SubgridContributionSize = [&](bool is_min_content) -> LayoutUnit {
-    DCHECK(grid_item->IsSubgrid());
-
-    const auto fragment_geometry = CalculateInitialFragmentGeometry(
-        space, grid_item->node, /* break_token */ nullptr,
-        /* is_intrinsic */ true);
-
-    const GridLayoutAlgorithm subgrid_algorithm(
-        {node, fragment_geometry, space});
-
-    return subgrid_algorithm.ComputeSubgridContributionSize(
-        sizing_subtree.SubgridSizingSubtree(*grid_item),
-        RelativeDirectionInSubgrid(track_direction, *grid_item),
-        is_min_content ? SizingConstraint::kMinContent
-                       : SizingConstraint::kMaxContent);
-  };
-
   auto MinMaxSizesFunc = [&](MinMaxSizesType type) -> MinMaxSizesResult {
     if (grid_item->IsSubgrid()) {
       return ComputeMinMaxSizesForSubgrid(
@@ -1203,7 +1220,8 @@ LayoutUnit GridLayoutAlgorithm::ContributionSizeForGridItem(
     DCHECK(!is_parallel_with_track_direction);
 
     if (grid_item->IsSubgrid()) {
-      return SubgridContributionSize(/* is_min_content */ false);
+      return ComputeBlockSizeForSubgrid(
+          sizing_subtree.SubgridSizingSubtree(*grid_item), *grid_item, space);
     }
 
     // TODO(ikilpatrick): This check is potentially too broad, i.e. a fixed
@@ -2093,7 +2111,7 @@ void GridLayoutAlgorithm::ForEachSubgrid(
   }
 }
 
-LayoutUnit GridLayoutAlgorithm::ComputeSubgridContributionSize(
+LayoutUnit GridLayoutAlgorithm::ComputeSubgridIntrinsicSize(
     const GridSizingSubtree& sizing_subtree,
     GridTrackSizingDirection track_direction,
     SizingConstraint sizing_constraint) const {
