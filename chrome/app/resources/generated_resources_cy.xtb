@@ -3226,7 +3226,6 @@ Mae <ph name="DOMAIN" /> yn gofyn i chi gadw'ch cerdyn smart wedi'i fewnosod.</t
 <translation id="3473479545200714844">Chwyddwydr sgrîn</translation>
 <translation id="3474218480460386727">Defnyddiwch 99 llythyren neu lai ar gyfer geiriau newydd</translation>
 <translation id="3474624961160222204">Parhau fel <ph name="NAME" /></translation>
-<translation id="3475843873335999118">Mae'n ddrwg gennym, nid yw'ch ôl bys yn cael ei adnabod o hyd. Rhowch eich cyfrinair.</translation>
 <translation id="3476303763173086583">Anfon data defnydd a diagnostig. Helpwch i wella profiad Android eich plentyn drwy anfon data diagnostig, dyfais ac ap yn awtomatig at Google. Ni ddefnyddir hwn i adnabod eich plentyn a bydd yn helpu sefydlogrwydd system ac ap a gwelliannau eraill. Bydd rhywfaint o ddata cyfanredol hefyd yn helpu apiau a phartneriaid Google, megis datblygwyr Android. Gorfodir y <ph name="BEGIN_LINK1" />gosodiad<ph name="END_LINK1" /> hwn gan y perchennog. Mae'n bosib y bydd y perchennog yn dewis anfon data diagnostig a defnydd ar gyfer y ddyfais hon at Google. Os yw'r gosodiad Gweithgarwch ar y We ac Apiau ychwanegol wedi'i droi ymlaen ar gyfer eich plentyn, gellir cadw'r data hyn i'w gyfrif Google. <ph name="BEGIN_LINK2" />Dysgu rhagor<ph name="END_LINK2" /></translation>
 <translation id="347670947055184738">Wps!  Gwnaeth y system fethu â nôl polisi ar gyfer eich dyfais.</translation>
 <translation id="347785443197175480">Parhau i ganiatáu i <ph name="HOST" /> gael mynediad at eich camera a'ch meicroffon</translation>
@@ -3593,7 +3592,6 @@ Mae <ph name="DOMAIN" /> yn gofyn i chi gadw'ch cerdyn smart wedi'i fewnosod.</t
 <translation id="3759933321830434300">Rhwystro rhannau o dudalennau gwe</translation>
 <translation id="3760460896538743390">Archwilio'r &amp;Dudalen Gefndir</translation>
 <translation id="37613671848467444">Agor mewn &amp;Ffenestr Anhysbys</translation>
-<translation id="3761390540041101668">Rhowch ddisgrifiad clir o’r broblem a chamau i atgynhyrchu’r broblem (os yn bosib)</translation>
 <translation id="3761556954875533505">Caniatáu i'r wefan olygu ffeiliau?</translation>
 <translation id="3763433740586298940">Gallwch rwystro gwefannau nad ydych eu heisiau. Mae Chrome hefyd yn dileu gwefannau yn awtomatig o'r rhestr sy'n hŷn na 30 diwrnod.</translation>
 <translation id="3763549179847864476">Botwm yn ôl y Canllaw Preifatrwydd</translation>
@@ -5906,7 +5904,6 @@ Mae'n bosib y bydd caniatadau rydych eisoes wedi'u rhoi i wefannau ac apiau yn b
 <translation id="5608580678041221894">Tapiwch y bysellau canlynol i addasu neu symud yr ardal docio</translation>
 <translation id="5609231933459083978">Mae'n ymddangos bod y cais yn annilys.</translation>
 <translation id="561236229031062396"><ph name="SHORTCUT_NAME" />, <ph name="APP_FULL_NAME" /></translation>
-<translation id="5612734644261457353">Mae'n ddrwg gennym, ni ellid dilysu'ch cyfrinair o hyd. Sylwer: Os gwnaethoch newid eich cyfrinair yn ddiweddar, bydd eich cyfrinair newydd yn cael ei ddefnyddio ar ôl i chi allgofnodi, defnyddiwch yr hen gyfrinair yma.</translation>
 <translation id="5614190747811328134">Hysbysiad i'r Defnyddiwr</translation>
 <translation id="5614553682702429503">Cadw'r cyfrinair?</translation>
 <translation id="5614947000616625327">iCloud Keychain</translation>

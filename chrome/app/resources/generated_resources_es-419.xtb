@@ -3205,7 +3205,6 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="3473479545200714844">Lupa</translation>
 <translation id="3474218480460386727">Las palabras nuevas pueden tener un máximo de 99 letras.</translation>
 <translation id="3474624961160222204">Continuar como <ph name="NAME" /></translation>
-<translation id="3475843873335999118">No se puede reconocer tu huella dactilar. Ingresa tu contraseña.</translation>
 <translation id="3476303763173086583">Envía datos de uso y diagnóstico. Para ayudar a mejorar la experiencia de Android de tu hijo, envía a Google datos de diagnóstico y uso de dispositivos y apps de forma automática. Esta información no se usará para identificar a tu hijo y ayudará a lograr la estabilidad de las apps y el sistema, entre otras mejoras. Algunos datos agregados también ayudarán a las apps y los socios de Google, como los desarrolladores de Android. El propietario controla esta <ph name="BEGIN_LINK1" />configuración<ph name="END_LINK1" />. Es posible que el propietario decida enviar a Google datos de uso y diagnóstico de este dispositivo. Si habilitaste la "Actividad de web y de aplicaciones adicional" en la Cuenta de Google de tu hijo, es posible que se almacenen estos datos en esa cuenta. <ph name="BEGIN_LINK2" />Más información<ph name="END_LINK2" /></translation>
 <translation id="347670947055184738">El sistema no pudo recuperar la política para tu dispositivo.</translation>
 <translation id="347785443197175480">Continuar permitiendo que <ph name="HOST" /> acceda a la cámara y al micrófono</translation>
@@ -3572,7 +3571,6 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="3759933321830434300">Bloquear partes de páginas web</translation>
 <translation id="3760460896538743390">Inspeccionar página &amp;de fondo</translation>
 <translation id="37613671848467444">Abrir en una ventana de &amp;incógnito</translation>
-<translation id="3761390540041101668">Brinda una descripción clara del problema y los pasos para reproducirlo (si es posible)</translation>
 <translation id="3761556954875533505">¿Quieres permitir que el sitio edite archivos?</translation>
 <translation id="3763433740586298940">Puedes bloquear los sitios que no quieres. Chrome también borra los sitios de la lista que tienen más de 30 días de forma automática.</translation>
 <translation id="3763549179847864476">Botón Atrás de la Guía de privacidad</translation>
@@ -5884,7 +5882,6 @@ Es posible que se apliquen a esta cuenta los permisos que otorgaste a sitios web
 <translation id="5608580678041221894">Presionar las siguientes teclas para ajustar o mover el área recortada</translation>
 <translation id="5609231933459083978">Parece que la aplicación no es válida.</translation>
 <translation id="561236229031062396"><ph name="SHORTCUT_NAME" />, <ph name="APP_FULL_NAME" /></translation>
-<translation id="5612734644261457353">Aún no se pudo verificar tu contraseña. Ten en cuenta que si cambiaste tu contraseña recientemente, podrás usar tu nueva contraseña cuando salgas. Usa la contraseña antigua aquí.</translation>
 <translation id="5614190747811328134">Aviso de usuario</translation>
 <translation id="5614553682702429503">¿Quieres guardar la contraseña?</translation>
 <translation id="5614947000616625327">Llavero de iCloud</translation>

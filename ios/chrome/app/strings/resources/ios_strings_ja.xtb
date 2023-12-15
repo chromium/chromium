@@ -60,6 +60,7 @@
 <translation id="1285320974508926690">このサイトは翻訳しない</translation>
 <translation id="1291506870746876680"><ph name="BEGIN_BOLD" />「<ph name="SITE_NAME" />」<ph name="END_BOLD" />権限は、このサイトから離れるとオフにリセットされます。</translation>
 <translation id="1295289763199166823">メニューをカスタマイズ</translation>
+<translation id="1296581780163690620">ファイルをダウンロードしますか（<ph name="FILE_SIZE" />）？</translation>
 <translation id="1305822519689023679">Google アカウントのパスワードを常に使用できるようにするには、本人確認を行ってください。</translation>
 <translation id="1312721752506309252">保護強化機能がオンになっています</translation>
 <translation id="1321993286294231467">画像の保存中にエラーが発生しました。</translation>
@@ -200,6 +201,7 @@
 <translation id="2055515971416882518">[設定] を開きます。</translation>
 <translation id="2059166748188874810">市区町村</translation>
 <translation id="2062410130322589403">プライバシー設定のガイド</translation>
+<translation id="20638360198452347">単位タイプセレクタ</translation>
 <translation id="2073572773299281212">最終同期: <ph name="DAYS" /> 日前</translation>
 <translation id="2074131957428911366">同期する項目はいつでも [<ph name="BEGIN_LINK" />設定<ph name="END_LINK" />] で選択できます。</translation>
 <translation id="2079545284768500474">元に戻す</translation>
@@ -244,6 +246,7 @@
 <translation id="2310154074101836012">カルーセルの編集</translation>
 <translation id="2316709634732130529">推奨されたパスワードを使用</translation>
 <translation id="2320166752086256636">キーボードを非表示</translation>
+<translation id="2326302612031521902">単位セレクタ</translation>
 <translation id="2348630484974447747">荷物</translation>
 <translation id="2351097562818989364">翻訳設定をリセットしました。</translation>
 <translation id="235789365079050412">Google プライバシー ポリシー</translation>
@@ -267,6 +270,7 @@
 <translation id="2459155039684421202">アドレスバーに「履歴の消去」や「パスワードの編集」などのタスクを入力します。</translation>
 <translation id="2461070143328828326">パスワードの設定</translation>
 <translation id="2462736546165239215">こちらですべての閲覧履歴を確認できます。</translation>
+<translation id="2468132863574325555">ドライブ</translation>
 <translation id="2469960372084740698">セーフ ブラウジングをオフにしますか？</translation>
 <translation id="2473876017985765807"><ph name="WEBSITE" /> のパスワードは保存済みです</translation>
 <translation id="2476359652512522418">選択されていません</translation>
@@ -939,6 +943,7 @@
 <translation id="6149061208933997199">パスワードを使用</translation>
 <translation id="6152406514676263192">同期すると、興味や関心と最も関連性の高いコンテンツが表示されます。</translation>
 <translation id="6159839020698489198">任意</translation>
+<translation id="6160780110287872296">ファイルをダウンロードしますか？</translation>
 <translation id="6170450281939467187">翻訳できませんでした</translation>
 <translation id="6173499589275053515">Google アカウント（<ph name="EMAIL" />）に保存されたパスワード</translation>
 <translation id="6184086493125982861">タブを表示</translation>
@@ -1006,6 +1011,7 @@
 <translation id="6447842834002726250">Cookie</translation>
 <translation id="6453018583485750254">一度も確認されていません。</translation>
 <translation id="6459307836338400162">プライバシー、セキュリティ、データ収集に関連するその他の設定については、<ph name="BEGIN_LINK" />同期<ph name="END_LINK" />と <ph name="BEGIN_LINK" />Google サービス<ph name="END_LINK" />をご覧ください。</translation>
+<translation id="646394917185284261">ファイル</translation>
 <translation id="6464071786529933911">新しいシークレット タブで開く</translation>
 <translation id="6464397691496239022">サイトは、Cookie を使用してブラウジングの利便性を改善することができます。たとえばログイン状態の維持や、ショッピング カートの中身の保存が可能になります。
 

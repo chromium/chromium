@@ -1515,6 +1515,7 @@ Als je dit beleid instelt, moet je het beleid <ph name="PRIVACY_SANDBOX_PROMPT_E
       Als je het beleid instelt op True of niet instelt, wordt de netwerkstatus van het apparaat gerapporteerd.</translation>
 <translation id="2223393221350938149">Niet toestaan dat sites JavaScript JIT uitvoeren</translation>
 <translation id="2223598546285729819">Standaardinstelling voor meldingen</translation>
+<translation id="2224706708550115831">Toestaan dat de browser van de gebruiker toegang krijgt tot een lijst met URL's terwijl het Always-on VPN actief is in de strikte modus, lockdown aanstaat en het VPN niet is verbonden</translation>
 <translation id="222673035924187991">ClientHallo met TLS-versleuteling aanzetten</translation>
 <translation id="2231817271680715693">Browsegeschiedenis importeren uit standaardbrowser bij eerste uitvoering</translation>
 <translation id="2231962946025538735">Dit beleid is beëindigd. Gebruik het beleid <ph name="DEFAULT_PLUGINS_SETTING_POLICY_NAME" /> om de beschikbaarheid van de Flash-plug-in te beheren en het beleid <ph name="ALWAYS_OPEN_PDF_EXTERNALLY_POLICY_NAME" /> om aan te geven of de geïntegreerde pdf-viewer moet worden gebruikt om pdf-bestanden te openen.
@@ -1653,6 +1654,8 @@ De functie is niet beschikbaar als synchronisatie van wachtwoorden uitstaat (via
 
       Dit beleid heeft alleen effect op USB-apparaten via de WebUSB API. Zie het beleid <ph name="SERIAL_ALLOW_USB_DEVICES_FOR_URLS_POLICY_NAME" /> als je USB-apparaten toegang wilt geven via de Web Serial API.</translation>
 <translation id="2318583605563438459">Toestaan dat ouders accounts toevoegen die onder toezicht staan</translation>
+<translation id="2319139030891093109">Een lijst met TLS-certificaten die <ph name="PRODUCT_NAME" /> moet vertrouwen.
+Certificaten moeten base64-gecodeerd zijn.</translation>
 <translation id="2326031114717677574">Snelheid waarmee audiogegevens worden bemonsterd en verzameld. Het toegestane minimum is 1 minuut.
 
       Als je dit beleid niet instelt, is de standaardsnelheid van 15 minuten van toepassing.</translation>
@@ -2878,6 +2881,15 @@ Als je dit beleid niet toepast, is de functie voor voorspellend schrijven op het
 <translation id="3398051852031115795">Standaard systeemgedrag (afhankelijk van schermgrootte)</translation>
 <translation id="3399859571630358395">Snel koppelen (snelle bluetooth-koppeling) geforceerd uitzetten.</translation>
 <translation id="3404681701763345449"><ph name="GOOGLE_CALENDAR_NAME" />-integratie aanzetten.</translation>
+<translation id="3405361833556012520">Dit beleid is alleen van toepassing op browserverkeer: de Play Store, webnavigatie in Android-apps en ander gebruikersverkeer (zoals Linux VM-verkeer of afdruktaken) voldoen nog steeds aan de beperkingen die worden opgelegd door het Always-on VPN. Dit beleid wordt alleen afgedwongen als het VPN niet is verbonden en alleen voor browserverkeer van gebruikers. Als dit beleid wordt afgedwongen, kan systeemverkeer het Always-on VPN ook overslaan om taken uit te voeren zoals beleid ophalen en de systeemklok synchroniseren.
+
+Gebruik dit beleid om uitzonderingen voor bepaalde schema's, subdomeinen van andere domeinen, poorten of specifieke paden te openen met de indeling die wordt gespecificeerd op https://support.google.com/chrome/a?p=url_blocklist_filter_format. Het meest specifieke filter bepaalt of een URL wordt geblokkeerd of toegestaan.
+
+Als het <ph name="ALWAYSON_VPN_PRE_CONNECT_URL_ALLOWLIST_POLICY_NAME" /> is ingesteld, is er een Always-on VPN ingesteld en is het Always-on VPN niet verbonden. Navigatie naar alle hosts wordt geblokkeerd, behalve naar hosts die zijn toegestaan door het beleid <ph name="ALWAYSON_VPN_PRE_CONNECT_URL_ALLOWLIST_POLICY_NAME" />. In deze apparaatstatus worden de beleidsregels <ph name="URL_BLOCKLIST_POLICY_NAME" /> en <ph name="URL_ALLOWLIST_POLICY_NAME" /> genegeerd. Als een Always-on VPN verbinding maakt, worden de beleidsregels <ph name="URL_BLOCKLIST_POLICY_NAME" /> en <ph name="URL_ALLOWLIST_POLICY_NAME" /> toegepast en wordt het beleid <ph name="ALWAYSON_VPN_PRE_CONNECT_URL_ALLOWLIST_POLICY_NAME" /> genegeerd.
+
+Dit beleid is beperkt tot 1000 items.
+
+Als je het beleid niet instelt, wordt browsernavigatie voorkomen als het Always-on VPN met strikte modus actief is en het VPN geen verbinding heeft.</translation>
 <translation id="3405997282295704902">Niet toestaan dat gebruikers <ph name="PRODUCT_NAME" /> gebruiken</translation>
 <translation id="3406122462682235653">De gebruiker niet vragen (downloads beginnen meteen)</translation>
 <translation id="3408078762098350617">Hiermee beheer je de gebruikerservaring voor uitgezette functies die worden vermeld in <ph name="SYSTEM_FEATURES_DISABLE_LIST_POLICY_NAME" />.
@@ -3183,7 +3195,6 @@ Als je dit beleid instelt op False, worden er geen versiegegevens verzameld.
 
 Dit beleid is alleen van kracht als de machine is ingeschreven met <ph name="CLOUD_MANAGEMENT_ENROLLMENT_TOKEN" /> voor <ph name="PRODUCT_NAME" />.
 Dit beleid is altijd van kracht voor <ph name="PRODUCT_OS_NAME" />.</translation>
-<translation id="3642557248926713561">Safe Browsing-extensiebeveiliging uitzetten</translation>
 <translation id="3644735978203799620">Zet automatisch selecteren aan voor opnamen van meerdere schermen</translation>
 <translation id="3646859102161347133">Het type vergrootglas instellen</translation>
 <translation id="3647212518036289905">Als je het beleid instelt, geef je aan welke GSSAPI-bibliotheek moet worden gebruikt voor HTTP-verificatie. Stel het beleid in op een bibliotheeknaam of een volledig pad.
@@ -4542,6 +4553,7 @@ Dit beleid is tijdelijk en wordt verwijderd zodra de opheffing van systeemaudio-
 <translation id="4802905909524200151">Updategedrag voor <ph name="TPM_FIRMWARE_UPDATE_TPM" />-firmware configureren</translation>
 <translation id="4804828344300125154">Altijd opnieuw opstarten na uitloggen gebruiker.</translation>
 <translation id="4807950475297505572">De gebruikers die het langst geleden gebruikt zijn, worden verwijderd totdat er voldoende vrije ruimte is</translation>
+<translation id="4808396444416188826">TLS-servercertificaten die <ph name="PRODUCT_NAME" /> moet vertrouwen</translation>
 <translation id="4812270373673968774">Als je het beleid instelt op 'Always', wordt de <ph name="PRODUCT_OS_NAME" />-plank automatisch verborgen. Als je het beleid instelt op 'Never', wordt de plank nooit automatisch verborgen.
 
       Als je het beleid instelt, kunnen gebruikers het niet wijzigen. Als je het beleid niet instelt, kunnen gebruikers zelf aangeven of de plank automatisch moet worden verborgen.</translation>
@@ -5615,8 +5627,6 @@ Als je dit beleid niet toepast of niet instelt, staat Glanceables niet aan in <p
       Als dit beleid is ingesteld op False of niet is ingesteld, worden de functies van Web Components v0 standaard uitgezet, vanaf M80.
 
       Dit beleid wordt na Chrome 84 verwijderd.</translation>
-<translation id="5755149423476170868">Als je dit beleid toepast of niet instelt, wordt de <ph name="SAFE_BROWSING_NAME" />-extensiebeveiliging voor <ph name="PRODUCT_NAME" /> beheerd door <ph name="SAFE_BROWSING_PROTECTION_LEVEL_POLICY_NAME" />. Als <ph name="SAFE_BROWSING_PROTECTION_LEVEL_POLICY_NAME" /> is ingesteld op <ph name="SAFE_BROWSING_PROTECTION_LEVEL_VALUE_STANDARD" /> of <ph name="SAFE_BROWSING_PROTECTION_LEVEL_VALUE_ENHANCED" />, worden schadelijke extensies sneller uitgezet in <ph name="PRODUCT_NAME" />. <ph name="PRODUCT_NAME" /> stuurt een verzoek naar de Google Safe Browsing-server om te checken of een extensie is verwijderd uit de Chrome Web Store vanwege problemen (dat wil zeggen, schadelijke, kwetsbare of ongewenste software) of vanwege een schending van het Chrome Web Store-beleid (CWS). Als een extensie is verwijderd, voorkomt <ph name="PRODUCT_NAME" /> dat gebruikers de extensie installeren en wordt de extensie uitgezet als deze al is geïnstalleerd.
-Als je dit beleid niet toepast, wordt <ph name="SAFE_BROWSING_NAME" />-extensiebeveiliging uitgezet en worden schadelijke extensies minder regelmatig gecheckt en verwijderd via <ph name="GOOGLE_UPDATE_NAME" />. Er worden geen gegevens naar Google <ph name="SAFE_BROWSING_NAME" /> gestuurd voor beoordelingen.</translation>
 <translation id="575647238840663288">Documenten kunnen standaard in origin-keyed agentclusters worden geplaatst. document.domain is niet instelbaar voor dergelijke documenten.</translation>
 <translation id="5756680608782814094">Rapporteer de VPD-gegevens van een apparaat.
 
@@ -5733,7 +5743,6 @@ Als je dit beleid niet toepast, wordt <ph name="SAFE_BROWSING_NAME" />-extensieb
 <translation id="5883754873839596178">Als je het beleid instelt, kun je het maximale aantal gelijktijdige verbindingen met de proxyserver opgeven. Bepaalde proxyservers kunnen niet een groot aantal gelijktijdige verbindingen per client verwerken. Dit kan worden opgelost door dit beleid op een lagere waarde in te stellen. De waarde moet lager dan 100 en hoger dan 6 zijn. Het is bekend dat sommige web-apps veel verbindingen gebruiken voor openstaande GET-verzoeken. Als je een waarde lager dan 32 instelt, lopen netwerkprocessen van de browser daarom mogelijk vast als er te veel web-apps met openstaande verbindingen zijn geopend. Het tot onder de standaardwaarde verlagen van deze waarde is daarom op eigen risico.
 
       Als je het beleid niet instelt, wordt de standaardwaarde 32 gebruikt.</translation>
-<translation id="5885770645815872943">Safe Browsing-extensiebeveiliging toestaan</translation>
 <translation id="5887414688706570295">Hiermee configureer je het voorvoegsel voor het TalkGadget dat wordt gebruikt door hosts voor externe toegang en voorkom je dat gebruikers dit wijzigen.
 
           Als dit voorvoegsel is opgegeven, wordt het toegevoegd aan het begin van de basisnaam voor het TalkGadget om een volledige domeinnaam voor het TalkGadget te maken. De basisdomeinnaam voor het TalkGadget is '.talkgadget.google.com'.
@@ -6370,7 +6379,6 @@ Zie ook het beleid <ph name="HTTPS_ONLY_MODE_POLICY_NAME" />.</translation>
           Als je dit beleid niet toepast, kan het <ph name="PRODUCT_OS_NAME" />-apparaat <ph name="GOOGLE_CALENDAR_NAME" />-afspraken niet ophalen om de <ph name="PRODUCT_OS_NAME" />-agendawidget in de systeemstatusbalk in te vullen voor de ingelogde gebruiker.
 
           Als je dit beleid niet instelt, staat de <ph name="GOOGLE_CALENDAR_NAME" />-functie standaard aan voor zakelijke gebruikers.</translation>
-<translation id="6450607392928079050">Safe Browsing-extensiebeveiliging wordt beheerd door het beleid <ph name="SAFE_BROWSING_PROTECTION_LEVEL_POLICY_NAME" /></translation>
 <translation id="6452882999388592166">Als je dit beleid toepast, wordt de ingebouwde componentextensie CryptoToken geladen bij het opstarten. Als je het beleid niet toepast of niet instelt, wordt CryptoToken niet geladen als de browser opstart. Dit beleid is bedoeld als tijdelijke oplossing voor sites die problemen hebben doordat 'chrome.runtime' niet gedefinieerd is als gevolg van de verwijdering van CryptoToken in M106. Websites mogen niet afhankelijk zijn van een zonder voorwaarden gedefinieerde 'chrome.runtime'.</translation>
 <translation id="6453641799812499182"><ph name="CORS" />-controlebeperkingen voor de nieuwe <ph name="CORS" />-implementatie aanzetten</translation>
 <translation id="645425387487868471">Inloggen voor <ph name="PRODUCT_NAME" /> verplichten</translation>

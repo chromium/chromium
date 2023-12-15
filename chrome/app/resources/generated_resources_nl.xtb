@@ -1645,6 +1645,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="2249111429176737533">Openen als venster met tabbladen</translation>
 <translation id="2249605167705922988">bijv. 1-5, 8, 11-13</translation>
 <translation id="2249635629516220541">Pas de informatie aan die sites gebruiken om advertenties te laten zien</translation>
+<translation id="2250624716625396929">Dit tabblad gebruikt je camera of microfoon</translation>
 <translation id="2251218783371366160">Openen met systeemviewer</translation>
 <translation id="225163402930830576">Netwerken vernieuwen</translation>
 <translation id="2251809247798634662">Nieuw incognitovenster</translation>
@@ -3208,7 +3209,6 @@ Je kunt instellingen beheren via het kaartmenu of meer opties bekijken in het ge
 <translation id="3473479545200714844">Vergrootglas</translation>
 <translation id="3474218480460386727">Gebruik 99 letters of minder voor nieuwe woorden</translation>
 <translation id="3474624961160222204">Doorgaan als <ph name="NAME" /></translation>
-<translation id="3475843873335999118">Je vingerafdruk wordt nog steeds niet herkend. Geef je wachtwoord op.</translation>
 <translation id="3476303763173086583">Stuur gebruiks- en diagnostische gegevens. Verbeter de Android-functionaliteit voor je kind door automatisch diagnostische, apparaat- en app-gebruiksgegevens naar Google te sturen. Deze gegevens worden niet gebruikt om je kind te identificeren en kunnen helpen om de systeem- en app-stabiliteit te verbeteren en andere optimalisaties mogelijk te maken. Daarnaast zijn bepaalde verzamelde gegevens nuttig voor Google-apps en -partners, zoals Android-ontwikkelaars. Deze <ph name="BEGIN_LINK1" />instelling<ph name="END_LINK1" /> wordt verplicht door de eigenaar. De eigenaar kan ervoor kiezen diagnostische en gebruiksgegevens voor dit apparaat naar Google te sturen. Als je de instelling voor aanvullende Web- en app-activiteit hebt aangezet voor je kind, kunnen deze gegevens worden opgeslagen in het Google-account van je kind. <ph name="BEGIN_LINK2" />Meer informatie<ph name="END_LINK2" /></translation>
 <translation id="347670947055184738">Het systeem kan het beleid voor je apparaat niet ophalen.</translation>
 <translation id="347785443197175480"><ph name="HOST" /> toegang blijven geven tot je camera en microfoon</translation>
@@ -3575,7 +3575,6 @@ Je kunt instellingen beheren via het kaartmenu of meer opties bekijken in het ge
 <translation id="3759933321830434300">Delen van webpagina's blokkeren</translation>
 <translation id="3760460896538743390">&amp;Achtergrondpagina controleren</translation>
 <translation id="37613671848467444">Openen in &amp;incognitovenster</translation>
-<translation id="3761390540041101668">Geef een duidelijke beschrijving van het probleem en de stappen om het probleem te reproduceren (indien mogelijk)</translation>
 <translation id="3761556954875533505">Toestaan dat site bestanden bewerkt?</translation>
 <translation id="3763433740586298940">Je kunt ongewenste sites blokkeren. Chrome verwijdert sites die ouder zijn dan 30 dagen ook automatisch uit de lijst.</translation>
 <translation id="3763549179847864476">Terugknop voor Privacygids</translation>
@@ -5885,7 +5884,6 @@ Rechten die je al hebt gegeven aan websites en apps, kunnen van toepassing zijn 
 <translation id="5608580678041221894">Tik op de volgende toetsen om het bijsnijdgebied aan te passen of te verplaatsen</translation>
 <translation id="5609231933459083978">De app blijkt ongeldig te zijn.</translation>
 <translation id="561236229031062396"><ph name="SHORTCUT_NAME" />, <ph name="APP_FULL_NAME" /></translation>
-<translation id="5612734644261457353">Je wachtwoord kan nog steeds niet worden geverifieerd. Opmerking: als je je wachtwoord onlangs hebt gewijzigd, wordt je nieuwe wachtwoord doorgevoerd zodra je uitlogt. Gebruik hier het oude wachtwoord.</translation>
 <translation id="5614190747811328134">Gebruikerskennisgeving</translation>
 <translation id="5614553682702429503">Wachtwoord opslaan?</translation>
 <translation id="5614947000616625327">iCloud Sleutelhanger</translation>
@@ -6615,6 +6613,7 @@ Zichtbaar als <ph name="QUICK_START_DEVICE_DISPLAY_NAME" />...</translation>
 <translation id="6202304368170870640">Je kunt je pincode gebruiken om in te loggen of je apparaat te ontgrendelen.</translation>
 <translation id="6203247599828309566">Je hebt een notitie voor een wachtwoord op deze site opgeslagen. Klik op het sleutelicoon om de notitie te bekijken.</translation>
 <translation id="6205314730813004066">Advertentieprivacy</translation>
+<translation id="6205993460077903908"><ph name="WINDOW_TITLE" />: microfoonopname</translation>
 <translation id="6206199626856438589">Je wordt uitgelogd van de getoonde sites, waaronder in geopende tabbladen</translation>
 <translation id="6206311232642889873">A&amp;fbeelding kopiëren</translation>
 <translation id="6207200176136643843">Standaardzoomniveau resetten</translation>
@@ -7166,6 +7165,7 @@ Je hebt nog # gehackte wachtwoorden. Google Wachtwoordmanager raadt je aan deze 
 <translation id="6657585470893396449">Wachtwoord</translation>
 <translation id="6659213950629089752">Deze pagina is ingezoomd met de extensie '<ph name="NAME" />'</translation>
 <translation id="6659594942844771486">Browsertabblad</translation>
+<translation id="6660099350750552197"><ph name="WINDOW_TITLE" />: camera-opname</translation>
 <translation id="6660819301598582123">Pa's wijze lynx bezag vroom het fikse aquaduct.</translation>
 <translation id="666099631117081440">Afdrukservers</translation>
 <translation id="6662931079349804328">Bedrijfsbeleid gewijzigd. Knop voor experimenten verwijderd uit werkbalk.</translation>
@@ -8975,6 +8975,7 @@ Bewaar je sleutelbestand op een veilige plaats. Je hebt het bestand nodig om nie
 <translation id="8059417245945632445">Apparaten &amp;inspecteren</translation>
 <translation id="8059456211585183827">Er kunnen geen printers worden opgeslagen.</translation>
 <translation id="8061091456562007989">Wijziging ongedaan maken</translation>
+<translation id="8061244502316511332">Dit tabblad gebruikt je microfoon</translation>
 <translation id="8061970399284390013">Spelling- en grammaticacontrole</translation>
 <translation id="8061991877177392872">Zoe te zien heb je Voice Match al ingesteld voor de Assistent op een ander apparaat. De eerdere opnamen daarvan zijn gebruikt om een spraakmodel op dit apparaat te maken.</translation>
 <translation id="8062844841289846053">{COUNT,plural, =1{1 vel papier}other{{COUNT} vellen papier}}</translation>
@@ -9456,6 +9457,7 @@ Bewaar je sleutelbestand op een veilige plaats. Je hebt het bestand nodig om nie
 <translation id="844063558976952706">Altijd op deze site</translation>
 <translation id="8441313165929432954">Tethering aan-/uitzetten</translation>
 <translation id="8443986842926457191">De URL is langer dan 2048 tekens</translation>
+<translation id="8445281870900174108">Dit tabblad gebruikt je camera</translation>
 <translation id="8446884382197647889">Meer informatie</translation>
 <translation id="8447409163267621480">Neem Ctrl of Alt op</translation>
 <translation id="844850004779619592">Geen opdrachten gevonden</translation>
@@ -10531,6 +10533,7 @@ Op <ph name="BEGIN_LINK2" />policies.google.com<ph name="END_LINK2" /> vind je m
 <translation id="981121421437150478">Offline</translation>
 <translation id="983192555821071799">Alle tabbladen sluiten</translation>
 <translation id="983511809958454316">Deze functie wordt niet ondersteund in VR</translation>
+<translation id="983531994960412650"><ph name="WINDOW_TITLE" />: camera- en microfoonopname</translation>
 <translation id="984275831282074731">Betaalmethoden</translation>
 <translation id="984705303330760860">Talen voor spellingcontrole toevoegen</translation>
 <translation id="98515147261107953">Liggend</translation>

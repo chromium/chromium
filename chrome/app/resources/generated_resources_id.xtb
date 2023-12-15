@@ -1657,6 +1657,7 @@ Anda dapat mengelola setelan akun ini dengan menginstal aplikasi Family Link di 
 <translation id="2249111429176737533">Buka sebagai jendela multi-tab</translation>
 <translation id="2249605167705922988">misal: 1-5, 8, 11-13</translation>
 <translation id="2249635629516220541">Sesuaikan info yang digunakan situs untuk menampilkan iklan</translation>
+<translation id="2250624716625396929">Tab ini menggunakan kamera dan mikrofon Anda</translation>
 <translation id="2251218783371366160">Buka menggunakan penampil sistem</translation>
 <translation id="225163402930830576">Segarkan Jaringan</translation>
 <translation id="2251809247798634662">Jendela Samaran baru</translation>
@@ -3223,7 +3224,6 @@ Anda dapat mengelola setelan akun ini dengan menginstal aplikasi Family Link di 
 <translation id="3473479545200714844">Kaca pembesar layar</translation>
 <translation id="3474218480460386727">Gunakan maksimal 99 huruf untuk kata baru</translation>
 <translation id="3474624961160222204">Lanjutkan sebagai <ph name="NAME" /></translation>
-<translation id="3475843873335999118">Maaf, sidik jari Anda masih tidak dapat dikenali. Masukkan sandi Anda.</translation>
 <translation id="3476303763173086583">Kirim data penggunaan dan diagnostik. Bantu sempurnakan pengalaman Android Anak Anda dengan otomatis mengirim data diagnostik, perangkat, dan penggunaan aplikasi ke Google. Data ini tidak akan digunakan untuk mengidentifikasi anak Anda serta akan membantu sistem dan stabilitas aplikasi serta penyempurnaan lainnya. Beberapa data gabungan juga akan membantu aplikasi dan partner Google, seperti developer Android. <ph name="BEGIN_LINK1" />Setelan<ph name="END_LINK1" /> ini diterapkan oleh pemilik. Pemilik dapat memilih untuk mengirim data diagnostik dan penggunaan untuk perangkat ini ke Google. Jika setelan Aktivitas Web &amp; Aplikasi tambahan diaktifkan untuk anak Anda, data ini mungkin akan disimpan ke akun Google miliknya. <ph name="BEGIN_LINK2" />Pelajari Lebih Lanjut<ph name="END_LINK2" /></translation>
 <translation id="347670947055184738">Maaf!  Sistem gagal mengambil kebijakan untuk perangkat Anda.</translation>
 <translation id="347785443197175480">Terus izinkan <ph name="HOST" /> untuk mengakses kamera dan mikrofon Anda</translation>
@@ -3590,7 +3590,6 @@ Anda dapat mengelola setelan akun ini dengan menginstal aplikasi Family Link di 
 <translation id="3759933321830434300">Blokir bagian halaman web</translation>
 <translation id="3760460896538743390">Periksa Halaman Latar &amp;Belakang</translation>
 <translation id="37613671848467444">Buka di &amp;Jendela Samaran</translation>
-<translation id="3761390540041101668">Berikan deskripsi masalah yang jelas dan langkah-langkah untuk mereproduksi masalah (jika memungkinkan)</translation>
 <translation id="3761556954875533505">Izinkan situs mengedit file?</translation>
 <translation id="3763433740586298940">Anda dapat memblokir situs yang tidak diinginkan. Chrome juga otomatis menghapus situs dari daftar yang tersimpan lebih dari 30 hari.</translation>
 <translation id="3763549179847864476">Tombol kembali Panduan Privasi</translation>
@@ -4971,7 +4970,7 @@ Gunakan Ctrl + Alt + Kurangi kecerahan untuk memperkecil.</translation>
 <translation id="4849517651082200438">Jangan Dipasang</translation>
 <translation id="485053257961878904">Tidak dapat menyiapkan sinkronisasi notifikasi</translation>
 <translation id="4850548109381269495">Di kedua perangkat, periksa koneksi internet Anda dan aktifkan Bluetooth. Lalu, coba lagi.</translation>
-<translation id="4850669014075537160">Gulir</translation>
+<translation id="4850669014075537160">Scroll</translation>
 <translation id="4850886885716139402">Lihat</translation>
 <translation id="485088796993065002">Situs mungkin dapat memutar suara guna memberikan audio untuk musik, video, dan media lainnya</translation>
 <translation id="4852383141291180386">Kelola notifikasi aplikasi</translation>
@@ -5903,7 +5902,6 @@ Izin yang telah Anda berikan ke situs dan aplikasi dapat berlaku untuk akun ini.
 <translation id="5608580678041221894">Ketuk tombol berikut untuk menyesuaikan atau memindahkan area pemangkasan</translation>
 <translation id="5609231933459083978">Tampaknya aplikasi ini tidak valid.</translation>
 <translation id="561236229031062396"><ph name="SHORTCUT_NAME" />, <ph name="APP_FULL_NAME" /></translation>
-<translation id="5612734644261457353">Maaf, sandi Anda masih belum dapat diverifikasi. Catatan: jika Anda baru saja mengubah sandi Anda, sandi yang baru akan diterapkan saat Anda keluar, gunakan sandi lama di sini.</translation>
 <translation id="5614190747811328134">Notifikasi Pengguna</translation>
 <translation id="5614553682702429503">Simpan sandi?</translation>
 <translation id="5614947000616625327">Rantai Kunci iCloud</translation>
@@ -6637,6 +6635,7 @@ Izin yang telah Anda berikan ke situs dan aplikasi dapat berlaku untuk akun ini.
 <translation id="6202304368170870640">Anda dapat menggunakan PIN untuk login atau membuka kunci perangkat.</translation>
 <translation id="6203247599828309566">Anda menyimpan catatan untuk sandi di situs ini. Untuk melihatnya, klik ikon kunci.</translation>
 <translation id="6205314730813004066">Privasi iklan</translation>
+<translation id="6205993460077903908"><ph name="WINDOW_TITLE" /> - Perekaman mikrofon</translation>
 <translation id="6206199626856438589">Anda akan logout dari situs yang ditampilkan, termasuk di tab yang terbuka</translation>
 <translation id="6206311232642889873">Sali&amp;n Gambar</translation>
 <translation id="6207200176136643843">Reset ke tingkat zoom default</translation>
@@ -7188,6 +7187,7 @@ Anda memiliki # sandi lainnya yang telah dibobol. Pengelola Sandi Google merekom
 <translation id="6657585470893396449">Sandi</translation>
 <translation id="6659213950629089752">Halaman ini diperbesar/diperkecil oleh ekstensi "<ph name="NAME" />"</translation>
 <translation id="6659594942844771486">Tab</translation>
+<translation id="6660099350750552197"><ph name="WINDOW_TITLE" /> - Perekaman kamera</translation>
 <translation id="6660819301598582123">Budayawan dan xilograf pencetak tujuh mozaik Istiqlal diberitakan di televisi.</translation>
 <translation id="666099631117081440">Server pencetakan</translation>
 <translation id="6662931079349804328">Kebijakan perusahaan diubah. Tombol eksperimen dihapus dari toolbar.</translation>
@@ -9000,6 +9000,7 @@ Simpan file kunci Anda di tempat yang aman. Anda akan membutuhkannya untuk membu
 <translation id="8059417245945632445">&amp;Periksa perangkat</translation>
 <translation id="8059456211585183827">Tidak ada printer yang tersedia untuk disimpan.</translation>
 <translation id="8061091456562007989">Kembalikan</translation>
+<translation id="8061244502316511332">Tab ini menggunakan mikrofon Anda</translation>
 <translation id="8061970399284390013">Pemeriksaan ejaan dan tata bahasa</translation>
 <translation id="8061991877177392872">Sepertinya Anda sudah menyiapkan Voice Match dengan Asisten Anda di perangkat lain. Rekaman sebelumnya tersebut digunakan untuk membuat model suara di perangkat ini.</translation>
 <translation id="8062844841289846053">{COUNT,plural, =1{1 lembar kertas}other{{COUNT} lembar kertas}}</translation>
@@ -9481,6 +9482,7 @@ Simpan file kunci Anda di tempat yang aman. Anda akan membutuhkannya untuk membu
 <translation id="844063558976952706">Selalu di halaman ini</translation>
 <translation id="8441313165929432954">Aktifkan/Nonaktifkan Tethering</translation>
 <translation id="8443986842926457191">URL berisi lebih dari 2048 karakter</translation>
+<translation id="8445281870900174108">Tab ini menggunakan kamera Anda</translation>
 <translation id="8446884382197647889">Pelajari Lebih Lanjut</translation>
 <translation id="8447409163267621480">Sertakan Ctrl atau Alt</translation>
 <translation id="844850004779619592">Perintah tidak ditemukan</translation>
@@ -10555,6 +10557,7 @@ Izin yang telah Anda berikan ke situs dan aplikasi dapat berlaku untuk akun ini.
 <translation id="981121421437150478">Offline</translation>
 <translation id="983192555821071799">Tutup semua tab</translation>
 <translation id="983511809958454316">Fitur ini tidak didukung di VR</translation>
+<translation id="983531994960412650"><ph name="WINDOW_TITLE" /> - Perekaman kamera dan mikrofon</translation>
 <translation id="984275831282074731">Metode pembayaran</translation>
 <translation id="984705303330760860">Tambahkan bahasa periksa ejaan</translation>
 <translation id="98515147261107953">Lanskap</translation>

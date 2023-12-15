@@ -60,6 +60,7 @@
 <translation id="1285320974508926690">Този сайт да не се превежда никога</translation>
 <translation id="1291506870746876680">Разрешенията за сайта <ph name="BEGIN_BOLD" /><ph name="SITE_NAME" /><ph name="END_BOLD" /> ще бъдат изключени, когато го напуснете.</translation>
 <translation id="1295289763199166823">Персонализиране на менюто</translation>
+<translation id="1296581780163690620">Да се изтегли ли файлът? (<ph name="FILE_SIZE" />)</translation>
 <translation id="1305822519689023679">Потвърдете, че това сте вие, така че винаги да можете да използвате паролите в профила си в Google.</translation>
 <translation id="1312721752506309252">Режимът за подобрена защита е включен</translation>
 <translation id="1321993286294231467">При запазване на изображението възникна грешка.</translation>
@@ -200,6 +201,7 @@
 <translation id="2055515971416882518">Отворете настройките.</translation>
 <translation id="2059166748188874810">Община</translation>
 <translation id="2062410130322589403">Ръководство за настройките ви за поверителност</translation>
+<translation id="20638360198452347">Инструмент за избор на тип мерна единица</translation>
 <translation id="2073572773299281212">Активно преди <ph name="DAYS" /> дни</translation>
 <translation id="2074131957428911366">Винаги можете да изберете какво да се синхронизира от <ph name="BEGIN_LINK" />настройките<ph name="END_LINK" />.</translation>
 <translation id="2079545284768500474">Отмяна</translation>
@@ -244,6 +246,7 @@
 <translation id="2310154074101836012">Редактиране на въртележката</translation>
 <translation id="2316709634732130529">Ползване на предложената парола</translation>
 <translation id="2320166752086256636">Скриване на клавиатурата</translation>
+<translation id="2326302612031521902">Инструмент за избор на мерна единица</translation>
 <translation id="2348630484974447747">Пратка</translation>
 <translation id="2351097562818989364">Настройките ви за превод са нулирани.</translation>
 <translation id="235789365079050412">Декларация за поверителност на Google</translation>
@@ -267,6 +270,7 @@
 <translation id="2459155039684421202">В адресната лента въведете задача, като например „Изчистване на историята ми“ или „Редактиране на паролите“.</translation>
 <translation id="2461070143328828326">Настройки за паролите</translation>
 <translation id="2462736546165239215">Тук можете да намерите цялата си история на сърфиране.</translation>
+<translation id="2468132863574325555">Диск</translation>
 <translation id="2469960372084740698">Да се изключи ли „Безопасно сърфиране“?</translation>
 <translation id="2473876017985765807">Вече запазихте парола за <ph name="WEBSITE" /></translation>
 <translation id="2476359652512522418">Не е избрано</translation>
@@ -939,6 +943,7 @@
 <translation id="6149061208933997199">Ползване на паролата</translation>
 <translation id="6152406514676263192">Включете синхронизирането, за да виждате най-подходящото съдържание въз основа на интересите си.</translation>
 <translation id="6159839020698489198">незадължително</translation>
+<translation id="6160780110287872296">Да се изтегли ли файлът?</translation>
 <translation id="6170450281939467187">Преводът не бе успешен</translation>
 <translation id="6173499589275053515">Паролата е запазена в профила ви в Google <ph name="EMAIL" /></translation>
 <translation id="6184086493125982861">Показване на разделите</translation>
@@ -1006,6 +1011,7 @@
 <translation id="6447842834002726250">„Бисквитки“</translation>
 <translation id="6453018583485750254">Проверката не се е изпълнявала.</translation>
 <translation id="6459307836338400162">За още настройки за поверителността, сигурността и събирането на данни вижте <ph name="BEGIN_LINK" />Синхронизиране<ph name="END_LINK" /> и <ph name="BEGIN_LINK" />Услуги на Google<ph name="END_LINK" />.</translation>
+<translation id="646394917185284261">Files</translation>
 <translation id="6464071786529933911">Отв. в нов раздел „инкогнито“</translation>
 <translation id="6464397691496239022">Сайтовете могат да използват „бисквитки“ с цел по-добро сърфиране, например за да оставате в профила си или за да запомнят артикулите в пазарската ви кошница.
 

@@ -60,6 +60,7 @@
 <translation id="1285320974508926690">Ära kunagi seda saiti tõlgi</translation>
 <translation id="1291506870746876680">Saidi <ph name="BEGIN_BOLD" />„<ph name="SITE_NAME" />“<ph name="END_BOLD" /> load lähtestatakse väljalülitatud olekusse, kui saidilt lahkute.</translation>
 <translation id="1295289763199166823">Menüü kohandamine</translation>
+<translation id="1296581780163690620">Kas laadida fail alla? (<ph name="FILE_SIZE" />)</translation>
 <translation id="1305822519689023679">Selleks, et saaksite oma Google'i kontol alati kasutada paroole, kinnitage oma isik.</translation>
 <translation id="1312721752506309252">Täiustatud kaitse on sisse lülitatud</translation>
 <translation id="1321993286294231467">Viga pildi salvestamisel.</translation>
@@ -200,6 +201,7 @@
 <translation id="2055515971416882518">Avage valik Seaded.</translation>
 <translation id="2059166748188874810">Vald</translation>
 <translation id="2062410130322589403">Teie privaatsusvalikute juhend</translation>
+<translation id="20638360198452347">Ühikutüübi valija</translation>
 <translation id="2073572773299281212">Aktiivne <ph name="DAYS" /> päeva tagasi</translation>
 <translation id="2074131957428911366">Jaotises <ph name="BEGIN_LINK" />Seaded<ph name="END_LINK" /> saate igal ajal valida, mida sünkroonida.</translation>
 <translation id="2079545284768500474">Võta tagasi</translation>
@@ -244,6 +246,7 @@
 <translation id="2310154074101836012">Karusselli muutmine</translation>
 <translation id="2316709634732130529">Kasuta soovitatud parooli</translation>
 <translation id="2320166752086256636">Peida klaviatuur</translation>
+<translation id="2326302612031521902">Ühikuvalija</translation>
 <translation id="2348630484974447747">Saadetis</translation>
 <translation id="2351097562818989364">Teie tõlkeseaded on lähtestatud.</translation>
 <translation id="235789365079050412">Google'i privaatsuseeskirjad</translation>
@@ -267,6 +270,7 @@ Saidid ei saa küpsisefailide abil eri saitidel teie sirvimistegevust jälgida (
 <translation id="2459155039684421202">Sisestage aadressiribale soovitud ülesanne, näiteks „ajaloo kustutamine“ või „paroolide muutmine“.</translation>
 <translation id="2461070143328828326">Parooli seaded</translation>
 <translation id="2462736546165239215">Kogu oma sirvimisajaloo leiate siit.</translation>
+<translation id="2468132863574325555">Drive</translation>
 <translation id="2469960372084740698">Kas lülitada Google'i ohutu sirvimine välja?</translation>
 <translation id="2473876017985765807">Salvestasite saidi <ph name="WEBSITE" /> jaoks juba parooli</translation>
 <translation id="2476359652512522418">Ei ole valitud</translation>
@@ -939,6 +943,7 @@ Handoff peab olema lubatud seadete jaotises General ja seadmed peavad kasutama s
 <translation id="6149061208933997199">Kasuta parooli</translation>
 <translation id="6152406514676263192">Lubage sünkroonimine, et näha kõige asjakohasemat sisu, mis põhineb teie huvidel.</translation>
 <translation id="6159839020698489198">valikuline</translation>
+<translation id="6160780110287872296">Kas laadida fail alla?</translation>
 <translation id="6170450281939467187">Tõlkimine ebaõnnestus</translation>
 <translation id="6173499589275053515">Parool salvestati teie Google'i kontole <ph name="EMAIL" /></translation>
 <translation id="6184086493125982861">Kuva vahelehed</translation>
@@ -1006,6 +1011,7 @@ Handoff peab olema lubatud seadete jaotises General ja seadmed peavad kasutama s
 <translation id="6447842834002726250">Küpsised</translation>
 <translation id="6453018583485750254">Pole kunagi kontrollitud.</translation>
 <translation id="6459307836338400162">Privaatsuse, turvalisuse ning andmete kogumisega seotud lisaseadete nägemiseks vaadake jaotisi <ph name="BEGIN_LINK" />Sünkroonimine<ph name="END_LINK" /> ja <ph name="BEGIN_LINK" />Google'i teenused<ph name="END_LINK" />.</translation>
+<translation id="646394917185284261">Files</translation>
 <translation id="6464071786529933911">Ava uuel inkognito lehel</translation>
 <translation id="6464397691496239022">Saidid võivad kasutada küpsisefaile teie sirvimiskogemuse täiustamiseks, näiteks selleks, et hoida teid sisselogituna või jätta meelde teie ostukorvis olevad esemed.
 

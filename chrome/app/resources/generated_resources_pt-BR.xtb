@@ -3224,7 +3224,6 @@ Para gerenciar as configurações dessa conta, instale o app Family Link no seu 
 <translation id="3473479545200714844">Lupa</translation>
 <translation id="3474218480460386727">Use 99 letras ou menos para palavras novas</translation>
 <translation id="3474624961160222204">Continuar como <ph name="NAME" /></translation>
-<translation id="3475843873335999118">Sua impressão digital ainda não foi reconhecida. Digite sua senha.</translation>
 <translation id="3476303763173086583">Envie dados de uso e diagnóstico. Ajude a melhorar a experiência do seu filho com o Android enviando automaticamente ao Google dados de diagnóstico, de uso de apps e do dispositivo. Eles não serão usados para identificar seu filho e ajudarão a melhorar o sistema, a estabilidade de apps e muito mais. Alguns dados agregados também ajudarão os apps do Google e os nossos parceiros, como os desenvolvedores Android. Essa <ph name="BEGIN_LINK1" />configuração<ph name="END_LINK1" /> é aplicada pelo proprietário, que pode optar por enviar dados de uso e diagnóstico deste dispositivo para o Google. Se a configuração "Atividade na Web e de apps adicional" estiver ativada para seu filho, esses dados poderão ser salvos na Conta do Google dele. <ph name="BEGIN_LINK2" />Saiba mais<ph name="END_LINK2" /></translation>
 <translation id="347670947055184738">Falha do sistema ao buscar a política do seu dispositivo.</translation>
 <translation id="347785443197175480">Continuar permitindo que <ph name="HOST" /> acesse sua câmera e seu microfone</translation>
@@ -3591,7 +3590,6 @@ Para gerenciar as configurações dessa conta, instale o app Family Link no seu 
 <translation id="3759933321830434300">Bloquear partes das páginas da Web</translation>
 <translation id="3760460896538743390">Inspecionar página de &amp;fundo</translation>
 <translation id="37613671848467444">Abrir em &amp;janela anônima</translation>
-<translation id="3761390540041101668">Forneça uma descrição clara do problema e as etapas necessárias para reproduzi-lo (se possível)</translation>
 <translation id="3761556954875533505">Permitir que o site edite arquivos?</translation>
 <translation id="3763433740586298940">Você pode bloquear sites indesejados. O Chrome também exclui automaticamente sites que estão na lista há mais de 30 dias.</translation>
 <translation id="3763549179847864476">Botão "Voltar" do Guia de privacidade</translation>
@@ -5904,7 +5902,6 @@ As permissões que você já concedeu a sites e apps podem ser aplicadas a essa 
 <translation id="5608580678041221894">Toque nas teclas a seguir para ajustar ou mover a área de corte</translation>
 <translation id="5609231933459083978">Este aplicativo parece ser inválido.</translation>
 <translation id="561236229031062396"><ph name="SHORTCUT_NAME" />, <ph name="APP_FULL_NAME" /></translation>
-<translation id="5612734644261457353">Não foi possível confirmar sua senha. Nota: se você alterou sua senha recentemente, a nova senha será aplicada depois que você sair. Use a senha antiga aqui.</translation>
 <translation id="5614190747811328134">Aviso para o usuário</translation>
 <translation id="5614553682702429503">Salvar senha?</translation>
 <translation id="5614947000616625327">Chaves do iCloud</translation>

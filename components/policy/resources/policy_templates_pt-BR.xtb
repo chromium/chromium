@@ -3271,7 +3271,6 @@ Quando ela for definida como falsa, as informações da versão não serão cole
 
 Esta política só é eficaz quando a máquina está registrada na <ph name="CLOUD_MANAGEMENT_ENROLLMENT_TOKEN" /> do <ph name="PRODUCT_NAME" />.
 Para o <ph name="PRODUCT_OS_NAME" />, ela sempre é eficaz.</translation>
-<translation id="3642557248926713561">Desativar a proteção de extensões pelo recurso Navegação segura</translation>
 <translation id="3644735978203799620">Permite a seleção automática de várias capturas de tela</translation>
 <translation id="3646859102161347133">Definir tipo de lupa</translation>
 <translation id="3647212518036289905">Definir a política especifica qual biblioteca GSSAPI será usada para a autenticação HTTP. Defina a política como um nome de biblioteca ou um caminho completo.
@@ -5803,8 +5802,6 @@ Quando ela está desativada ou é deixada sem definição, os Glanceables não s
       Se esta política for definida como falsa ou não for definida, os recursos da Web Components v0 ficarão desativados por padrão, a partir do M80.
 
       Esta política será removida após o Chrome 84.</translation>
-<translation id="5755149423476170868">Quando esta política for ativada ou deixada sem definição, a proteção de extensões pelo recurso <ph name="SAFE_BROWSING_NAME" /> será controlada pela <ph name="SAFE_BROWSING_PROTECTION_LEVEL_POLICY_NAME" /> para o <ph name="PRODUCT_NAME" />. Se a <ph name="SAFE_BROWSING_PROTECTION_LEVEL_POLICY_NAME" /> for definida como <ph name="SAFE_BROWSING_PROTECTION_LEVEL_VALUE_STANDARD" /> ou <ph name="SAFE_BROWSING_PROTECTION_LEVEL_VALUE_ENHANCED" />, as extensões maliciosas serão desativadas mais rapidamente no <ph name="PRODUCT_NAME" />. O <ph name="PRODUCT_NAME" /> envia uma solicitação ao servidor da Navegação segura do Google para verificar se uma extensão foi removida da Chrome Web Store (CWS) por ser considerada problemática, ou seja, um software malicioso, vulnerável, indesejado ou que viola as políticas da CWS. Se uma extensão for removida, o <ph name="PRODUCT_NAME" /> vai impedir que os usuários a instalem. Caso já tenha sido instalada, ela será desativada.
-Se a política for desativada, a proteção de extensões pelo recurso <ph name="SAFE_BROWSING_NAME" /> será desativada e as extensões maliciosas serão verificadas e removidas com menos frequência pelo <ph name="GOOGLE_UPDATE_NAME" />. Nenhum dado é enviado ao recurso <ph name="SAFE_BROWSING_NAME" /> do Google para vereditos.</translation>
 <translation id="575647238840663288">Por padrão, os documentos podem ser colocados em clusters de agente com origin-key. Nesses casos, o document.domain não é definível.</translation>
 <translation id="5756680608782814094">Envia informações sobre os dados vitais do produto (VPD, na sigla em inglês) de um dispositivo.
 
@@ -5922,7 +5919,6 @@ Se a política for desativada, a proteção de extensões pelo recurso <ph name=
 <translation id="5883754873839596178">Se a política for definida, o número máximo de conexões simultâneas ao servidor proxy será especificado. Alguns servidores proxy não podem administrar um grande número de conexões simultâneas por cliente, o que pode ser resolvido com a definição de um número menor para esta política. Defina um valor inferior a 100 e superior a 6. Alguns apps da Web são conhecidos por consumir muitas conexões com GETs irresponsivos, então definir um valor inferior a 32 pode gerar deslocamentos na rede do navegador caso haja muitos apps da Web com conexões deslocadas abertas. A definição de valores inferiores ao padrão fica por sua conta e risco.
 
       Se a política não for definida, o valor padrão de 32 será usado.</translation>
-<translation id="5885770645815872943">Permitir a proteção de extensões pelo recurso Navegação segura</translation>
 <translation id="5887414688706570295">Configura o prefixo TalkGadget que será usado pelos hosts de acesso remoto e impede os usuários de alterá-lo.
 
           Se for especificado, esse prefixo é anexado ao nome básico do TalkGadget para criar um nome de domínio completo para o TalkGadget. O nome de domínio básico do TalkGadget é ".talkgadget.google.com".
@@ -6614,7 +6610,6 @@ Consulte também a política <ph name="HTTPS_ONLY_MODE_POLICY_NAME" />.</transla
           Se a política for desativada, o dispositivo <ph name="PRODUCT_OS_NAME" /> não vai poder buscar eventos do <ph name="GOOGLE_CALENDAR_NAME" /> para preencher o widget da agenda do <ph name="PRODUCT_OS_NAME" /> na barra de status do sistema para o usuário conectado.
 
           Se a política não for definida, o <ph name="GOOGLE_CALENDAR_NAME" /> vai ser ativado por padrão para os usuários corporativos.</translation>
-<translation id="6450607392928079050">A proteção de extensões pelo recurso Navegação segura é controlada pela política <ph name="SAFE_BROWSING_PROTECTION_LEVEL_POLICY_NAME" /></translation>
 <translation id="6452882999388592166">Quando a política está ativada, a extensão do componente do CryptoToken integrada é carregada na inicialização. Se ela for desativada ou deixada sem definição, o CryptoToken não vai ser carregado na inicialização do navegador. Esta política é apenas uma solução temporária para sites corrompidos por chrome.runtime indefinido como um efeito colateral da remoção de CryptoToken no M106. Os sites não podem depender da definição incondicional de chrome.runtime.</translation>
 <translation id="6453641799812499182">Ativar as mitigações de verificação de <ph name="CORS" /> na nova implementação de <ph name="CORS" /></translation>
 <translation id="645425387487868471">Ativar login forçado no <ph name="PRODUCT_NAME" /></translation>

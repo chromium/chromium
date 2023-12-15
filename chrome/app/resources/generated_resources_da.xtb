@@ -3224,7 +3224,6 @@ Du kan administrere indstillingerne for denne konto ved at installere Family Lin
 <translation id="3473479545200714844">Skærmforstørrer</translation>
 <translation id="3474218480460386727">Nye ord må højst være på 99 bogstaver</translation>
 <translation id="3474624961160222204">Fortsæt som <ph name="NAME" /></translation>
-<translation id="3475843873335999118">Dit fingeraftryk genkendes stadig ikke. Angiv din adgangskode.</translation>
 <translation id="3476303763173086583">Send brugs- og diagnosticeringsdata. Hjælp med at forbedre dit barns Android-oplevelse ved automatisk at sende diagnosticerings- og enhedsdata samt data om brug af apps til Google. Disse data bruges ikke til at identificere dit barn. De bruges kun til forbedring af bl.a. systemets og appens stabilitet. Visse samlede data hjælper også Google-apps og -partnere, f.eks. Android-udviklere. Denne <ph name="BEGIN_LINK1" />indstilling<ph name="END_LINK1" /> håndhæves af ejeren. Ejeren kan vælge at sende diagnosticerings- og brugsdata for denne enhed til Google. Hvis indstillingen til yderligere web- og appaktivitet er aktiveret for dit barn, gemmes disse data muligvis på barnets Google-konto. <ph name="BEGIN_LINK2" />Få flere oplysninger<ph name="END_LINK2" /></translation>
 <translation id="347670947055184738">Ups! Systemet kunne ikke hente politikken til din enhed.</translation>
 <translation id="347785443197175480">Tillad fortsat, at <ph name="HOST" /> har adgang til dit kamera og din mikrofon</translation>
@@ -3591,7 +3590,6 @@ Du kan administrere indstillingerne for denne konto ved at installere Family Lin
 <translation id="3759933321830434300">Blokere dele af websiderne</translation>
 <translation id="3760460896538743390">Undersøg &amp;baggrundsside</translation>
 <translation id="37613671848467444">Åbn i &amp;inkognitovindue</translation>
-<translation id="3761390540041101668">Giv en grundig beskrivelse af problemet, og hvad du kan gøre for at genskabe problemet (hvis det er muligt)</translation>
 <translation id="3761556954875533505">Skal websitet kunne redigere filer?</translation>
 <translation id="3763433740586298940">Du kan blokere websites, du ikke er interesseret i. Chrome sletter også automatisk websites fra listen, som er mere end 30 dage gamle.</translation>
 <translation id="3763549179847864476">Knappen Tilbage i Privatlivsguide</translation>
@@ -5904,7 +5902,6 @@ De tilladelser, du har givet til websites og apps, gælder muligvis for denne ko
 <translation id="5608580678041221894">Tryk på følgende taster for at tilpasse eller flytte beskæringsområdet</translation>
 <translation id="5609231933459083978">Applikationen ser ud til at være ugyldig.</translation>
 <translation id="561236229031062396"><ph name="SHORTCUT_NAME" />, <ph name="APP_FULL_NAME" /></translation>
-<translation id="5612734644261457353">Din adgangskode kunne desværre stadig ikke verificeres. Bemærk! Hvis du har ændret din adgangskode for nylig, anvendes din nye adgangskode først, når du har logget ud. Du skal bruge den gamle adgangskode her.</translation>
 <translation id="5614190747811328134">Brugerbesked</translation>
 <translation id="5614553682702429503">Vil du gemme adgangskoden?</translation>
 <translation id="5614947000616625327">iCloud-nøglering</translation>
@@ -7959,7 +7956,7 @@ Du har # andre kompromitterede adgangskoder. Google Adgangskodeadministrator anb
 <translation id="7272674038937250585">Der er ingen beskrivelse</translation>
 <translation id="7273110280511444812">senest tilknyttet den <ph name="DATE" /></translation>
 <translation id="727441411541283857"><ph name="PERCENTAGE" /> % – fuldt opladet om <ph name="TIME" /></translation>
-<translation id="727595954130325265">Køb nu</translation>
+<translation id="727595954130325265">Shop nu</translation>
 <translation id="7276100255011548441">Chrome sletter automatisk emner, der er mere end 4 uger gamle. Når du browser videre, kan et emne dukke op på listen igen. Du kan også blokere de emner, som du ikke vil have, at Chrome skal dele med websites. Få flere oplysninger om <ph name="BEGIN_LINK" />administration af privatliv ved annoncering i Chrome<ph name="END_LINK" />.</translation>
 <translation id="727952162645687754">Downloadfejl</translation>
 <translation id="7280649757394340890">Taleindstillinger for oplæsning</translation>

@@ -3206,7 +3206,6 @@ Për ndihmë lidhur me zgjidhjen e problemeve të transmetimit, drejtohu te <ph 
 <translation id="3473479545200714844">Zmadhuesi i ekranit</translation>
 <translation id="3474218480460386727">Përdor 99 shkronja ose më pak për fjalët e reja</translation>
 <translation id="3474624961160222204">Vazhdo si <ph name="NAME" /></translation>
-<translation id="3475843873335999118">Na vjen keq, por gjurma e gishtit nuk njihet ende. Fut fjalëkalimin tënd.</translation>
 <translation id="3476303763173086583">Dërgo të dhënat e përdorimit dhe të diagnostikimit. Ndihmo në përmirësimin e përvojës së fëmijës tënd me Android duke dërguar automatikisht te Google të dhënat e diagnostikimit dhe të përdorimit të pajisjes dhe aplikacioneve. Këto nuk do të përdoren për të identifikuar fëmijën tënd dhe do të ndihmojnë për qëndrueshmërinë e sistemit dhe të aplikacioneve dhe për përmirësime të tjera. Disa të dhëna të përmbledhura do të ndihmojnë po ashtu aplikacionet dhe partnerët e Google, si p.sh. zhvilluesit e Android. Ky <ph name="BEGIN_LINK1" />cilësim<ph name="END_LINK1" /> zbatohet nga zotëruesi. Zotëruesi mund të zgjedhë të dërgojë te Google të dhënat e diagnostikimit dhe të përdorimit për këtë pajisje. Nëse cilësimi i "Aktivitetit shtesë të uebit dhe të aplikacioneve" është i aktivizuar për fëmijën tënd, këto të dhëna mund të ruhen në "Llogarinë e Google" të fëmijës. <ph name="BEGIN_LINK2" />Mëso më shumë<ph name="END_LINK2" /></translation>
 <translation id="347670947055184738">Mos! Sistemi nuk arriti të marrë politikën për pajisjen tënde.</translation>
 <translation id="347785443197175480">Vazhdo të lejosh <ph name="HOST" /> që të qaset te kamera dhe mikrofoni</translation>
@@ -3573,7 +3572,6 @@ Për ndihmë lidhur me zgjidhjen e problemeve të transmetimit, drejtohu te <ph 
 <translation id="3759933321830434300">Blloko pjesët e faqeve të uebit</translation>
 <translation id="3760460896538743390">Inspekto &amp;faqen e sfondit</translation>
 <translation id="37613671848467444">Hape në &amp;dritare "të fshehtë"</translation>
-<translation id="3761390540041101668">Jep një përshkrim të qartë të problemit dhe hapat për ta rikrijuar atë (nëse është e mundur)</translation>
 <translation id="3761556954875533505">Do ta lejosh sajtin të modifikojë skedarët?</translation>
 <translation id="3763433740586298940">Mund t'i bllokosh sajtet që nuk i dëshiron. Gjithashtu, Chrome i fshin automatikisht nga lista sajtet që janë më të vjetra se 30 ditë.</translation>
 <translation id="3763549179847864476">Butoni "Prapa" i "Udhëzuesit të privatësisë"</translation>
@@ -5885,7 +5883,6 @@ Lejet që u ke dhënë sajteve të uebit dhe aplikacioneve mund të zbatohen pë
 <translation id="5608580678041221894">Trokit te tastet e mëposhtme për të rregulluar ose zhvendosur zonën e prerjes</translation>
 <translation id="5609231933459083978">Aplikacioni duket se është i pavlefshëm.</translation>
 <translation id="561236229031062396"><ph name="SHORTCUT_NAME" />, <ph name="APP_FULL_NAME" /></translation>
-<translation id="5612734644261457353">Na vjen keq, por fjalëkalimi sërish nuk mund të verifikohet. Shënim. Nëse ke ndryshuar fjalëkalimin së fundi, fjalëkalimi i ri do të zbatohet pasi të dalësh nga llogaria, prandaj përdor këtu fjalëkalimin e vjetër.</translation>
 <translation id="5614190747811328134">Njoftimi i përdoruesit</translation>
 <translation id="5614553682702429503">Të ruhet fjalëkalimi?</translation>
 <translation id="5614947000616625327">iCloud Keychain</translation>

@@ -3193,7 +3193,6 @@ Se il criterio viene impostato su False, le informazioni sulla versione non veng
 
 Questo criterio viene applicato soltanto se la macchina viene registrata con <ph name="CLOUD_MANAGEMENT_ENROLLMENT_TOKEN" /> per <ph name="PRODUCT_NAME" />.
 Questo criterio viene sempre applicato per <ph name="PRODUCT_OS_NAME" />.</translation>
-<translation id="3642557248926713561">Disattiva la protezione delle estensioni di Navigazione sicura</translation>
 <translation id="3644735978203799620">Consente di attivare la selezione automatica per le acquisizioni multischermo</translation>
 <translation id="3646859102161347133">Impostazione tipo di ingrandimento dello schermo</translation>
 <translation id="3647212518036289905">La configurazione del criterio consente di specificare quale libreria GSSAPI utilizzare per l'autenticazione HTTP. Imposta il criterio sul nome di una libreria o su un percorso completo.
@@ -5652,8 +5651,6 @@ Se questo criterio viene disattivato o se non viene configurato, i Glanceables n
       Se questo criterio viene impostato su False o non viene impostato, le funzionalità Web Components v0 verranno disattivate per impostazione predefinita a partire dalla versione M80.
 
       Questo criterio verrà rimosso nelle versioni successive alla versione 84 di Chrome.</translation>
-<translation id="5755149423476170868">Se questo criterio viene attivato o se non viene configurato, la protezione delle estensioni di <ph name="SAFE_BROWSING_NAME" /> verrà controllata da <ph name="SAFE_BROWSING_PROTECTION_LEVEL_POLICY_NAME" /> per<ph name="PRODUCT_NAME" />. Se <ph name="SAFE_BROWSING_PROTECTION_LEVEL_POLICY_NAME" /> viene impostato su <ph name="SAFE_BROWSING_PROTECTION_LEVEL_VALUE_STANDARD" /> o <ph name="SAFE_BROWSING_PROTECTION_LEVEL_VALUE_ENHANCED" />, le estensioni dannose verranno disattivate più velocemente in <ph name="PRODUCT_NAME" />. <ph name="PRODUCT_NAME" /> invia una richiesta al server di Google Navigazione sicura per verificare se un'estensione è stata rimossa dal Chrome Web Store per essere considerata software problematico, ovvero dannoso, vulnerabile o indesiderato o per violazione dei criteri del Chrome Web Store (CWS). Se un'estensione è stata rimossa, <ph name="PRODUCT_NAME" /> impedirà agli utenti di installarla e, se è già installata, la disattiverà.
-Se questo criterio viene disattivato, la protezione delle estensioni di <ph name="SAFE_BROWSING_NAME" /> verrà disattivata e le estensioni dannose verranno controllate e rimosse meno regolarmente tramite <ph name="GOOGLE_UPDATE_NAME" />. Nessun dato viene inviato a Google<ph name="SAFE_BROWSING_NAME" /> per gli esiti.</translation>
 <translation id="575647238840663288">Per impostazione predefinita, i documenti potrebbero essere inseriti in cluster di agenti in base all'origine. La funzione di accesso document.domain non è configurabile per questi documenti.</translation>
 <translation id="5756680608782814094">Segnala informazioni sui VPD di un dispositivo.
 
@@ -5770,7 +5767,6 @@ Se questo criterio viene disattivato, la protezione delle estensioni di <ph name
 <translation id="5883754873839596178">La configurazione del criterio consente di specificare il numero massimo di connessioni simultanee al server proxy. Alcuni server proxy non riescono a gestire un numero elevato di connessioni contemporanee per client, ma è sufficiente impostare il criterio su un numero inferiore per risolvere questo problema. Il valore deve essere inferiore a 100 e superiore a 6. Alcune app web sono note per richiedere molte connessioni con Hanging-GET, pertanto impostare un valore inferiore a 32 potrebbe causare interruzioni di rete del browser se sono aperte troppe app web di questo tipo. È sconsigliato utilizzare un valore inferiore a quello predefinito.
 
       Se il criterio non viene configurato, viene utilizzato il valore predefinito 32.</translation>
-<translation id="5885770645815872943">Consenti la protezione delle estensioni di Navigazione sicura</translation>
 <translation id="5887414688706570295">Consente di configurare il prefisso TalkGadget che verrà utilizzato dagli host di accesso remoto e impedisce agli utenti di modificarlo.
 
           Se specificato, questo prefisso viene anteposto al nome TalkGadget di base per creare un nome di dominio completo per TalkGadget. Il nome TalkGadget di base del dominio è "Talkgadget.google.com".
@@ -6431,7 +6427,6 @@ Vedi anche il criterio <ph name="HTTPS_ONLY_MODE_POLICY_NAME" />.</translation>
           Se questo criterio viene disattivato, il dispositivo <ph name="PRODUCT_OS_NAME" /> non può recuperare eventi <ph name="GOOGLE_CALENDAR_NAME" /> per completare il widget calendario di <ph name="PRODUCT_OS_NAME" /> nella barra di stato del sistema per l'utente che ha eseguito l'accesso.
 
           Se questo criterio non viene configurato, la funzionalità <ph name="GOOGLE_CALENDAR_NAME" /> è attiva per impostazione predefinita per gli utenti aziendali.</translation>
-<translation id="6450607392928079050">La protezione delle estensioni di Navigazione sicura viene controllata dal criterio <ph name="SAFE_BROWSING_PROTECTION_LEVEL_POLICY_NAME" /></translation>
 <translation id="6452882999388592166">Se impostato su Attivato, l'estensione del componente CryptoToken integrata viene caricata all'avvio. Se impostato su Disattivato o se non viene configurato, CryptoToken non viene caricato all'avvio del browser. Questo criterio è inteso come soluzione alternativa temporanea per i siti non funzionanti perché "chrome.runtime" non è definito come effetto collaterale della rimozione di CryptoToken nella versione M106. I siti web non devono dipendere dalla definizione senza condizioni di "chrome.runtime".</translation>
 <translation id="6453641799812499182">Attiva le mitigazioni dei controlli <ph name="CORS" /> nella nuova implementazione <ph name="CORS" /></translation>
 <translation id="645425387487868471">Attiva l'accesso forzato per <ph name="PRODUCT_NAME" /></translation>

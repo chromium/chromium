@@ -3223,7 +3223,6 @@ Du kan hantera inställningarna för det här kontot genom att installera Family
 <translation id="3473479545200714844">Skärmförstorare</translation>
 <translation id="3474218480460386727">Nya ord får inte vara längre än 99 tecken</translation>
 <translation id="3474624961160222204">Fortsätt som <ph name="NAME" /></translation>
-<translation id="3475843873335999118">Fingeravtrycket känns fortfarande inte igen. Ange ditt lösenord.</translation>
 <translation id="3476303763173086583">Skicka diagnostik- och användningsdata. Hjälp till att göra Android bättre för ditt barn genom att skicka diagnostikdata, enhetsdata och data om appanvändning till Google automatiskt. Denna data används till att förbättra systemets och apparnas stabilitet med mera och inte till att identifiera ditt barn. Viss samlad data används även till att förbättra appar från Google och partner, till exempel Android-utvecklare. Ägaren har gjort denna <ph name="BEGIN_LINK1" />inställning<ph name="END_LINK1" /> obligatorisk. Ägaren kan ange att diagnostik- och användningsdata om den här enheten ska skickas till Google. Om ytterligare webb- och appaktivitet har aktiverats för ditt barn kan denna data sparas i Google-kontot. <ph name="BEGIN_LINK2" />Läs mer<ph name="END_LINK2" /></translation>
 <translation id="347670947055184738">Hoppsan! Det gick inte att hämta enhetsprincipen.</translation>
 <translation id="347785443197175480">Fortsätt tillåta att <ph name="HOST" /> använder kameran och mikrofonen</translation>
@@ -3590,7 +3589,6 @@ Du kan hantera inställningarna för det här kontot genom att installera Family
 <translation id="3759933321830434300">Blockera delar av webbsidor</translation>
 <translation id="3760460896538743390">Kontrollera &amp;bakgrundssida</translation>
 <translation id="37613671848467444">Öppna i &amp;inkognitofönster</translation>
-<translation id="3761390540041101668">Ange en tydlig beskrivning av problemet och åtgärder för att återskapa det (om möjligt)</translation>
 <translation id="3761556954875533505">Vill du låta webbplatsen redigera filer?</translation>
 <translation id="3763433740586298940">Du kan blockera webbplatser som du inte vill ha. Chrome raderar även webbplatser som är äldre än 30 dagar automatiskt.</translation>
 <translation id="3763549179847864476">Bakåtknapp i Integritetsguide</translation>
@@ -5903,7 +5901,6 @@ Behörigheter som du redan har gett webbplatser och appar kan gälla för det h�
 <translation id="5608580678041221894">Tryck på följande knappar för att justera eller flytta beskärningsområdet</translation>
 <translation id="5609231933459083978">Appen ser ut att vara ogiltig.</translation>
 <translation id="561236229031062396"><ph name="SHORTCUT_NAME" />, <ph name="APP_FULL_NAME" /></translation>
-<translation id="5612734644261457353">Det gick inte att verifiera lösenordet nu heller. Obs! Om du nyligen har bytt lösenord börjar det nya lösenordet gälla när du loggar ut. Använd det gamla lösenordet här.</translation>
 <translation id="5614190747811328134">Meddelande till användaren</translation>
 <translation id="5614553682702429503">Vill du spara lösenordet?</translation>
 <translation id="5614947000616625327">iCloud-nyckelring</translation>

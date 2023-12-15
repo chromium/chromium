@@ -3207,7 +3207,6 @@ Cihazda Family Link tətbiqini quraşdırmaqla bu hesabın ayarlarını idarə e
 <translation id="3473479545200714844">Ekran böyüdücü</translation>
 <translation id="3474218480460386727">Yeni sözlər üçün 99 və ya daha az hərfdən istifadə edin</translation>
 <translation id="3474624961160222204"><ph name="NAME" /> olaraq davam edin</translation>
-<translation id="3475843873335999118">Barmaq iziniz hələ də tanınmır. Parol daxil edin.</translation>
 <translation id="3476303763173086583">İstifadə və diaqnostika datasını göndərin. Google'a diaqnostika, cihaz və tətbiq istifadə datasını avtomatik göndərməklə övladınızın Android təcrübəsini təkmilləşdirin. Bu, övladınızı müəyyən etmək üçün istifadə edilməyəcək, eyni zamanda, sistem və tətbiq sabitliyi və digər təkmilləşdirmələrə kömək edəcək. Ümumi data, həmçinin, Google tətbiqləri və Android developerləri kimi partnyorlara kömək edəcək. Bu <ph name="BEGIN_LINK1" />ayar<ph name="END_LINK1" /> sahibi tərəfindən tətbiq edilir. Sahibi bu cihaz üçün diaqnostika və istifadə datasını Google'a göndərməyi seçə bilər. Övladınız üçün əlavə Veb və Tətbiq Fəaliyyəti ayarı aktiv edilərsə, həmin data Google hesabında yadda saxlana bilər. <ph name="BEGIN_LINK2" />Ətraflı Məlumat<ph name="END_LINK2" /></translation>
 <translation id="347670947055184738">Ups! Sistem cihaz siyasətini əldə edə bilmədi.</translation>
 <translation id="347785443197175480"><ph name="HOST" /> hostuna kameranıza və mikrofonunuza giriş verirsiniz</translation>
@@ -3574,7 +3573,6 @@ Cihazda Family Link tətbiqini quraşdırmaqla bu hesabın ayarlarını idarə e
 <translation id="3759933321830434300">Veb səhifələrin hissələrini bloklayın</translation>
 <translation id="3760460896538743390">Arxa fonu ispeksiya edin</translation>
 <translation id="37613671848467444">Gizli Pəncərədə Açın</translation>
-<translation id="3761390540041101668">Problemin aydın təsvirini və reproduksiya yollarını təqdim edin (mümkündürsə)</translation>
 <translation id="3761556954875533505">Sayta faylları redaktə etmək üçün icazə verilsin?</translation>
 <translation id="3763433740586298940">İstəmədiyiniz saytları bloklaya bilərsiniz. Chrome 30 gündən əvvələ aid saytları siyahıdan avtomatik silir.</translation>
 <translation id="3763549179847864476">Məxfilik Bələdçisi geri düyməsi</translation>
@@ -5884,7 +5882,6 @@ Artıq veb-sayt və tətbiqlərə verdiyiniz icazələr bu hesaba tətbiq oluna 
 <translation id="5608580678041221894">Kəsilmiş hissəni tənzimləmək və ya köçürmək üçün aşağıdakı düymələrə toxunun</translation>
 <translation id="5609231933459083978">Görünür tətbiq yanlışdır.</translation>
 <translation id="561236229031062396"><ph name="SHORTCUT_NAME" />, <ph name="APP_FULL_NAME" /></translation>
-<translation id="5612734644261457353">Üzr istəyirik, parolunuz hələ də doğrulana bilməyib. Qeyd: əgər parolunuzu son vaxtlar dəyimisinizsə, hesabdan çıxan kimi yeni parolunuz tətbiq olunacaq, lütfən, köhnə parolu burada işlədin.</translation>
 <translation id="5614190747811328134">İstifadəçi bildirişi</translation>
 <translation id="5614553682702429503">Parol yadda saxlanılsın?</translation>
 <translation id="5614947000616625327">iCloud Keychain</translation>

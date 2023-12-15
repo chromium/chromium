@@ -1657,6 +1657,7 @@
 <translation id="2249111429176737533">在分頁視窗中開啟</translation>
 <translation id="2249605167705922988">例如：1-5、8、11-13</translation>
 <translation id="2249635629516220541">自訂網站可用來顯示廣告的資料</translation>
+<translation id="2250624716625396929">這個分頁正在使用攝影機和麥克風</translation>
 <translation id="2251218783371366160">使用系統檢視器開啟</translation>
 <translation id="225163402930830576">重新整理網絡</translation>
 <translation id="2251809247798634662">新無痕式視窗</translation>
@@ -3223,7 +3224,6 @@
 <translation id="3473479545200714844">放大鏡</translation>
 <translation id="3474218480460386727">新字詞請保持在 99 個字母內</translation>
 <translation id="3474624961160222204">以「<ph name="NAME" />」的身分繼續</translation>
-<translation id="3475843873335999118">很抱歉，系統仍然無法識別您的指紋，請輸入您的密碼。</translation>
 <translation id="3476303763173086583">傳送使用情況和診斷資料。自動將診斷、裝置及應用程式的使用情況資料傳送至 Google，協助改善您子女的 Android 使用體驗。這些資料不會用來識別您子女的身分，而是用於改善系統和應用程式的穩定性和其他效能。部分彙整資料也會用於協助 Google 應用程式與合作夥伴 (例如 Android 開發人員)。擁有者可強制執行此<ph name="BEGIN_LINK1" />設定<ph name="END_LINK1" />。擁有者可選擇是否將此裝置的診斷和使用情況資料傳送給 Google。如果已為子女開啟其他「網絡及應用程式活動記錄」設定，系統可能會將此資料儲存至其 Google 帳戶。<ph name="BEGIN_LINK2" />瞭解詳情<ph name="END_LINK2" /></translation>
 <translation id="347670947055184738">抱歉！系統無法擷取裝置政策。</translation>
 <translation id="347785443197175480">繼續允許 <ph name="HOST" /> 存取您的相機和麥克風</translation>
@@ -3590,7 +3590,6 @@
 <translation id="3759933321830434300">封鎖網頁部分內容</translation>
 <translation id="3760460896538743390">檢查背景頁面(&amp;B)</translation>
 <translation id="37613671848467444">在無痕式視窗中開啟(&amp;I)</translation>
-<translation id="3761390540041101668">請清楚描述問題，並盡量提供重現問題的步驟</translation>
 <translation id="3761556954875533505">要允許網站編輯檔案嗎？</translation>
 <translation id="3763433740586298940">您可封鎖不想要的網站。Chrome 亦會從清單自動刪除超過 30 日的網站。</translation>
 <translation id="3763549179847864476">私隱權指南返回掣</translation>
@@ -5899,7 +5898,6 @@
 <translation id="5608580678041221894">輕按以下按鍵即可調整或移動裁剪區域</translation>
 <translation id="5609231933459083978">這似乎是無效的應用程式。</translation>
 <translation id="561236229031062396"><ph name="SHORTCUT_NAME" />，<ph name="APP_FULL_NAME" /></translation>
-<translation id="5612734644261457353">很抱歉，系統仍然無法驗證您的密碼。注意：如果您最近修改了密碼，新密碼會在您登出後立即生效，目前請在這裡使用舊密碼。</translation>
 <translation id="5614190747811328134">使用者通知</translation>
 <translation id="5614553682702429503">要儲存密碼嗎？</translation>
 <translation id="5614947000616625327">iCloud 鑰匙圈</translation>
@@ -6631,6 +6629,7 @@
 <translation id="6202304368170870640">您可使用 PIN 登入或解鎖裝置。</translation>
 <translation id="6203247599828309566">你儲存咗呢個網站某個密碼嘅備註。如要查看該備註，請按一下鎖匙圖示。</translation>
 <translation id="6205314730813004066">廣告私隱權</translation>
+<translation id="6205993460077903908"><ph name="WINDOW_TITLE" /> - 麥克風正在錄音</translation>
 <translation id="6206199626856438589">您將會從已顯示的網站 (包括已開啟的分頁) 中登出</translation>
 <translation id="6206311232642889873">複製圖片(&amp;Y)</translation>
 <translation id="6207200176136643843">重設為預設縮放等級</translation>
@@ -7182,6 +7181,7 @@
 <translation id="6657585470893396449">密碼</translation>
 <translation id="6659213950629089752">「<ph name="NAME" />」擴充功能已調整這個專頁的大小</translation>
 <translation id="6659594942844771486">分頁</translation>
+<translation id="6660099350750552197"><ph name="WINDOW_TITLE" /> - 攝影機正在錄影</translation>
 <translation id="6660819301598582123">狐狗大鬥法。</translation>
 <translation id="666099631117081440">列印伺服器</translation>
 <translation id="6662931079349804328">企業政策改咗，已經喺工具列度移除咗實驗掣。</translation>
@@ -8994,6 +8994,7 @@
 <translation id="8059417245945632445">檢查裝置 (&amp;I)</translation>
 <translation id="8059456211585183827">冇可以儲存嘅打印機。</translation>
 <translation id="8061091456562007989">還原設定</translation>
+<translation id="8061244502316511332">這個分頁正在使用麥克風</translation>
 <translation id="8061970399284390013">拼字和文法檢查</translation>
 <translation id="8061991877177392872">您似乎已在另一部裝置上透過「Google 助理」設定了 Voice Match 功能。系統已使用先前的錄音在此裝置上建立語音模型。</translation>
 <translation id="8062844841289846053">{COUNT,plural, =1{1 張紙}other{{COUNT} 張紙}}</translation>
@@ -9475,6 +9476,7 @@
 <translation id="844063558976952706">一律在此網站上允許</translation>
 <translation id="8441313165929432954">啟用/停用網絡共享</translation>
 <translation id="8443986842926457191">網址超過 2048 個字元</translation>
+<translation id="8445281870900174108">這個分頁正在使用攝影機</translation>
 <translation id="8446884382197647889">瞭解詳情</translation>
 <translation id="8447409163267621480">必須以 Ctrl 或 Alt 鍵開頭</translation>
 <translation id="844850004779619592">找不到指令</translation>
@@ -10549,6 +10551,7 @@
 <translation id="981121421437150478">離線</translation>
 <translation id="983192555821071799">關閉所有分頁</translation>
 <translation id="983511809958454316">無法在 VR 狀態下使用此功能</translation>
+<translation id="983531994960412650"><ph name="WINDOW_TITLE" /> - 攝影機和麥克風正在錄影和錄音</translation>
 <translation id="984275831282074731">付款方法</translation>
 <translation id="984705303330760860">新增拼字檢查語言</translation>
 <translation id="98515147261107953">橫向</translation>

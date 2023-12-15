@@ -54,6 +54,7 @@
 <translation id="1078033282564106222">گزینه شماره ساختمان انتخاب شد</translation>
 <translation id="1080116354587839789">متناسب با پهنا</translation>
 <translation id="1081061862829655580">سینی ۱۹</translation>
+<translation id="1082026381988252344">پیمایش و بزرگ‌نمایی محتوای برگه هم‌رسانی‌شده</translation>
 <translation id="1089439967362294234">تغییر گذرواژه</translation>
 <translation id="1090629319939036170">‏منو VR</translation>
 <translation id="1094777233105318927">اطلاعات مربوط به مرورگر، سیستم‌عامل، دستگاه، نرم‌افزار نصب‌شده، و فایل‌های شما</translation>
@@ -2528,6 +2529,7 @@
 <translation id="6051221802930200923">درحال‌حاضر نمی‌توانید از <ph name="SITE" /> دیدن کنید، زیرا وب‌سایت از سنجاق کردن گواهینامه استفاده می‌کند. خطاهای شبکه و حمله‌ها موقتی هستند، بنابراین احتمالاً این صفحه بعداً کار خواهد کرد.</translation>
 <translation id="6051898664905071243">تعداد صفحه:</translation>
 <translation id="6052284303005792909">•</translation>
+<translation id="605237284704429106">‏درحال تکمیل IBAN</translation>
 <translation id="6053584886670442526">‏می‌توانید از نشانی‌های ذخیره‌شده در محصولات Google استفاده کنید. این نشانی در «حساب Google» شما (<ph name="ACCOUNT" />) ذخیره شده است.</translation>
 <translation id="6053735090575989697">‏در «خط‌مشی رازداری» ما، اطلاعات بیشتری درباره اینکه Google چگونه از داده‌هایتان محافظت می‌کند کسب کنید.</translation>
 <translation id="6055888660316801977">برگ «اطلاعات کاربری مطابقت ندارد» در روند وارد کردن اطلاعات کاربری پرداخت امن</translation>
@@ -2802,6 +2804,7 @@
 <translation id="6612010098632894193">ویدیو  آنلاین</translation>
 <translation id="6613866251791999074">‏درباره موتور جستجویتان در Chrome بیشتر بدانید</translation>
 <translation id="6615297766614333076">پشته‌ساز ۲</translation>
+<translation id="6619496928666593220">‏IBAN تکمیل نشده است</translation>
 <translation id="6624427990725312378">اطلاعات تماس</translation>
 <translation id="6628463337424475685">جستجوی <ph name="ENGINE" /></translation>
 <translation id="6629652037942826935">سفر تجملی</translation>

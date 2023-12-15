@@ -3225,7 +3225,6 @@
 <translation id="3473479545200714844">화면 돋보기</translation>
 <translation id="3474218480460386727">새 단어는 99자 이하(영문 기준)여야 합니다.</translation>
 <translation id="3474624961160222204"><ph name="NAME" />(으)로 계속</translation>
-<translation id="3475843873335999118">죄송합니다. 지문이 인식되지 않았습니다. 비밀번호를 입력하세요.</translation>
 <translation id="3476303763173086583">사용 및 진단 데이터를 보냅니다. 진단, 기기, 앱 사용 데이터를 Google에 자동으로 보내 자녀의 Android 사용 환경 개선에 참여합니다. 이 데이터는 자녀를 식별하는 용도로 사용되지 않으며, 시스템 및 앱 안정성 등을 개선하는 데 활용됩니다. 일부 수집 데이터는 Google 앱과 파트너(Android 개발자 등)에게도 도움을 줍니다. 이 <ph name="BEGIN_LINK1" />설정<ph name="END_LINK1" />은 소유자가 지정합니다. 소유자가 이 기기의 진단 및 사용 데이터를 Google에 전송할지 선택할 수 있습니다. 자녀의 추가 웹 및 앱 활동이 사용 설정되어 있다면 이 데이터가 자녀의 Google 계정에 저장될 수 있습니다. <ph name="BEGIN_LINK2" />자세히 알아보기<ph name="END_LINK2" /></translation>
 <translation id="347670947055184738">시스템에서 기기 정책을 가져오지 못했습니다.</translation>
 <translation id="347785443197175480"><ph name="HOST" />에서 카메라와 마이크에 액세스하도록 계속 허용</translation>
@@ -3592,7 +3591,6 @@
 <translation id="3759933321830434300">웹페이지의 일부 차단</translation>
 <translation id="3760460896538743390">백그라운드 페이지 검사(&amp;B)</translation>
 <translation id="37613671848467444">시크릿 창에서 열기(&amp;I)</translation>
-<translation id="3761390540041101668">문제를 명확하게 설명하고 문제를 재현하기 위한 단계를 제공합니다(가능한 경우).</translation>
 <translation id="3761556954875533505">사이트에서 파일을 수정하도록 허용하시겠습니까?</translation>
 <translation id="3763433740586298940">원치 않는 사이트를 차단할 수 있습니다. 또한 Chrome에서는 30일이 지난 사이트도 목록에서 자동 삭제합니다.</translation>
 <translation id="3763549179847864476">개인 정보 보호 가이드 뒤로 버튼</translation>
@@ -5903,7 +5901,6 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="5608580678041221894">다음 키를 탭하여 자르기 영역을 조정하거나 이동하세요.</translation>
 <translation id="5609231933459083978">애플리케이션이 잘못된 것 같습니다.</translation>
 <translation id="561236229031062396"><ph name="SHORTCUT_NAME" />, <ph name="APP_FULL_NAME" /></translation>
-<translation id="5612734644261457353">비밀번호를 여전히 확인할 수 없습니다. 참고: 최근에 비밀번호를 변경한 경우 로그아웃해야 새로운 비밀번호가 적용됩니다. 이전 비밀번호를 사용해 보세요.</translation>
 <translation id="5614190747811328134">사용자 알림</translation>
 <translation id="5614553682702429503">비밀번호를 저장하시겠습니까?</translation>
 <translation id="5614947000616625327">iCloud 키체인</translation>

@@ -3223,7 +3223,6 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="3473479545200714844">Screen magnifier</translation>
 <translation id="3474218480460386727">Use 99 letters or fewer for new words</translation>
 <translation id="3474624961160222204">Continue as <ph name="NAME" /></translation>
-<translation id="3475843873335999118">Sorry, your fingerprint is still not recognised. Please enter your password.</translation>
 <translation id="3476303763173086583">Send usage and diagnostic data. Help improve your child's Android experience by automatically sending diagnostic, device and app usage data to Google. This won't be used to identify your child, and will help system and app stability and other improvements. Some aggregate data will also help Google apps and partners, such as Android developers. This <ph name="BEGIN_LINK1" />setting<ph name="END_LINK1" /> is enforced by the owner. The owner may choose to send diagnostic and usage data for this device to Google. If additional Web &amp; App Activity setting is turned on for your child, this data may be saved to their Google Account. <ph name="BEGIN_LINK2" />Find out more<ph name="END_LINK2" /></translation>
 <translation id="347670947055184738">Oops!  The system failed to fetch policy for your device.</translation>
 <translation id="347785443197175480">Continue allowing <ph name="HOST" /> to access your camera and microphone</translation>
@@ -3590,7 +3589,6 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="3759933321830434300">Block parts of web pages</translation>
 <translation id="3760460896538743390">Inspect &amp;Background Page</translation>
 <translation id="37613671848467444">Open in &amp;Incognito Window</translation>
-<translation id="3761390540041101668">Provide a clear description of the issue and steps to reproduce the issue (if possible)</translation>
 <translation id="3761556954875533505">Let site edit files?</translation>
 <translation id="3763433740586298940">You can block sites that you don't want. Chrome also auto-deletes sites that are older than 30 days from the list.</translation>
 <translation id="3763549179847864476">Privacy Guide back button</translation>
@@ -5903,7 +5901,6 @@ Permissions that you've already given to websites and apps may apply to this acc
 <translation id="5608580678041221894">Tap the following keys to adjust or move the cropping area</translation>
 <translation id="5609231933459083978">The application appears to be invalid.</translation>
 <translation id="561236229031062396"><ph name="SHORTCUT_NAME" />, <ph name="APP_FULL_NAME" /></translation>
-<translation id="5612734644261457353">Sorry, your password still could not be verified. Note: if you changed your password recently, your new password will be applied once you sign out, please use the old password here.</translation>
 <translation id="5614190747811328134">User Notice</translation>
 <translation id="5614553682702429503">Save password?</translation>
 <translation id="5614947000616625327">iCloud Keychain</translation>

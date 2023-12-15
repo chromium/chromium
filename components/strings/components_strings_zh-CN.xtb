@@ -54,6 +54,7 @@
 <translation id="1078033282564106222">已选择“门牌号”选项</translation>
 <translation id="1080116354587839789">适合窗口宽度</translation>
 <translation id="1081061862829655580">纸匣 19</translation>
+<translation id="1082026381988252344">滚动和缩放已分享的标签页中的内容</translation>
 <translation id="1089439967362294234">更改密码</translation>
 <translation id="1090629319939036170">VR 菜单</translation>
 <translation id="1094777233105318927">您的浏览器、操作系统、设备、已安装的软件以及文件的相关信息</translation>
@@ -2524,6 +2525,7 @@
 <translation id="6051221802930200923">您目前无法访问 <ph name="SITE" />，因为此网站使用了证书锁定。网络错误和攻击通常是暂时的，因此，此网页稍后可能会恢复正常。</translation>
 <translation id="6051898664905071243">页数：</translation>
 <translation id="6052284303005792909">•</translation>
+<translation id="605237284704429106">正在填充 IBAN</translation>
 <translation id="6053584886670442526">您可在各种 Google 产品中使用已保存的地址。此地址已保存到您的 Google 账号 (<ph name="ACCOUNT" />) 中。</translation>
 <translation id="6053735090575989697">如需详细了解 Google 如何保护您的数据，请参阅我们的隐私权政策。</translation>
 <translation id="6055888660316801977">“无匹配的安全付款凭据”表单</translation>
@@ -2797,6 +2799,7 @@
 <translation id="6612010098632894193">在线视频</translation>
 <translation id="6613866251791999074">详细了解 Chrome 中的搜索引擎</translation>
 <translation id="6615297766614333076">堆叠出纸器 2</translation>
+<translation id="6619496928666593220">IBAN 未填充</translation>
 <translation id="6624427990725312378">联系信息</translation>
 <translation id="6628463337424475685"><ph name="ENGINE" /> 搜索</translation>
 <translation id="6629652037942826935">豪华旅游</translation>

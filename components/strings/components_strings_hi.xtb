@@ -54,6 +54,7 @@
 <translation id="1078033282564106222">'बिल्डिंग नंबर' विकल्प चुना गया</translation>
 <translation id="1080116354587839789">चौड़ाई में फ़िट करें</translation>
 <translation id="1081061862829655580">ट्रे 19</translation>
+<translation id="1082026381988252344">शेयर किए गए आपके टैब के कॉन्टेंट को स्क्रोल और ज़ूम करें</translation>
 <translation id="1089439967362294234">पासवर्ड बदलें</translation>
 <translation id="1090629319939036170">वीआर मेन्यू</translation>
 <translation id="1094777233105318927">आपके ब्राउज़र, ओएस, डिवाइस, इंस्टॉल किए गए सॉफ़्टवेयर, और फ़ाइलों की जानकारी</translation>
@@ -1429,7 +1430,7 @@
 <translation id="3807366285948165054">इमेज X शिफ़्ट</translation>
 <translation id="3807873520724684969">खतरनाक सामग्री ब्लॉक की गई.</translation>
 <translation id="3810770279996899697">Password Manager को MacOS Keychain का ऐक्सेस चाहिए</translation>
-<translation id="3810973564298564668">प्रबंधित करें</translation>
+<translation id="3810973564298564668">मैनेज करें</translation>
 <translation id="3812398568375898177">यह एक ज़रूरी अपडेट है, जिससे ChromeOS पर Android ऐप्लिकेशन की परफ़ॉर्मेंस बेहतर होती है.</translation>
 <translation id="3815434930383843058">8 x 12 इंच</translation>
 <translation id="3816482573645936981">मान (इस मान की जगह लागू किया गया)</translation>
@@ -2358,7 +2359,7 @@
 <translation id="5699628521141772782">डेयरी प्रॉडक्ट और अंडे</translation>
 <translation id="5700761515355162635">तीसरे पक्ष की कुकी को अनुमति है</translation>
 <translation id="5701381305118179107">मध्य</translation>
-<translation id="570530837424789914">प्रबंधित करें...</translation>
+<translation id="570530837424789914">मैनेज करें...</translation>
 <translation id="5707154300732650394">'Chrome इतिहास' में, अपनी गतिविधियां फिर से शुरू करें</translation>
 <translation id="57094364128775171">मज़बूत पासवर्ड सुझाएं…</translation>
 <translation id="571403275720188526">(arm64)</translation>
@@ -2528,6 +2529,7 @@
 <translation id="6051221802930200923">आप इस समय <ph name="SITE" /> पर नहीं जा सकते क्योंकि वेबसाइट, प्रमाणपत्र पिनिंग का उपयोग करती है. नेटवर्क की गड़बड़ियां और हमले आमतौर पर कुछ समय के लिए होते हैं इसलिए यह पेज शायद बाद में ठीक से काम करेगा.</translation>
 <translation id="6051898664905071243">पेजों की संख्या:</translation>
 <translation id="6052284303005792909">•</translation>
+<translation id="605237284704429106">IBAN की जानकारी दी जा रही है</translation>
 <translation id="6053584886670442526">सेव किए गए पतों का इस्तेमाल, Google के सभी प्रॉडक्ट के लिए किया जा सकता है. यह पता आपके Google खाते <ph name="ACCOUNT" /> में सेव किया गया है.</translation>
 <translation id="6053735090575989697">हमारी निजता नीति को पढ़कर जानें कि Google आपके डेटा की सुरक्षा कैसे करता है.</translation>
 <translation id="6055888660316801977">मेल नहीं खाने वाले पेमेंट क्रेडेंशियल की शीट</translation>
@@ -2802,6 +2804,7 @@
 <translation id="6612010098632894193">ऑनलाइन वीडियो</translation>
 <translation id="6613866251791999074">Chrome में अपने सर्च इंजन के बारे में ज़्यादा जानें</translation>
 <translation id="6615297766614333076">स्टैकर 2</translation>
+<translation id="6619496928666593220">IBAN की जानकारी नहीं दी गई है</translation>
 <translation id="6624427990725312378">संपर्क जानकारी</translation>
 <translation id="6628463337424475685"><ph name="ENGINE" /> सर्च</translation>
 <translation id="6629652037942826935">लग्ज़री ट्रैवल</translation>

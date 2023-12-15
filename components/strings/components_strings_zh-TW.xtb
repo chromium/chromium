@@ -54,6 +54,7 @@
 <translation id="1078033282564106222">已選取「門牌號碼」選項</translation>
 <translation id="1080116354587839789">符合視窗寬度</translation>
 <translation id="1081061862829655580">紙匣 19</translation>
+<translation id="1082026381988252344">捲動及縮放已分享分頁的內容</translation>
 <translation id="1089439967362294234">變更密碼</translation>
 <translation id="1090629319939036170">VR 選單</translation>
 <translation id="1094777233105318927">瀏覽器、作業系統、裝置、已安裝軟體和檔案的相關資訊</translation>
@@ -2527,6 +2528,7 @@
 <translation id="6051221802930200923">目前無法造訪 <ph name="SITE" />，因為這個網站使用憑證鎖定功能。網路錯誤和攻擊行為通常是暫時性的，因此這個網頁可能稍後就會恢復正常狀態。</translation>
 <translation id="6051898664905071243">頁數：</translation>
 <translation id="6052284303005792909">•</translation>
+<translation id="605237284704429106">正在填入 IBAN</translation>
 <translation id="6053584886670442526">你可以在各項 Google 產品中使用已儲存的地址。系統會將這個地址儲存到 Google 帳戶 (<ph name="ACCOUNT" />) 中。</translation>
 <translation id="6053735090575989697">如要進一步瞭解 Google 如何保護你的資料，請參閱我們的《隱私權政策》。</translation>
 <translation id="6055888660316801977">無相符安全付款憑證表</translation>
@@ -2801,6 +2803,7 @@
 <translation id="6612010098632894193">線上影片</translation>
 <translation id="6613866251791999074">進一步瞭解你在 Chrome 中的搜尋引擎</translation>
 <translation id="6615297766614333076">堆疊出紙器 2</translation>
+<translation id="6619496928666593220">未填入 IBAN</translation>
 <translation id="6624427990725312378">聯絡資訊</translation>
 <translation id="6628463337424475685"><ph name="ENGINE" /> 搜尋</translation>
 <translation id="6629652037942826935">奢華假期</translation>

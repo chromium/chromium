@@ -1660,6 +1660,7 @@ Nastavitve tega računa je mogoče upravljati z namestitvijo aplikacije Family L
 <translation id="2249111429176737533">Odprta kot okno na zavihku</translation>
 <translation id="2249605167705922988">npr. 1–5, 8, 11–13</translation>
 <translation id="2249635629516220541">Prilagajanje podatkov, ki jih spletna mesta uporabljajo za prikazovanje oglasov.</translation>
+<translation id="2250624716625396929">Zavihek uporablja kamero in mikrofon</translation>
 <translation id="2251218783371366160">Odpri s sistemskim pregledovalnikom</translation>
 <translation id="225163402930830576">Osveži omrežja</translation>
 <translation id="2251809247798634662">Novo okno brez beleženja zgodovine</translation>
@@ -3226,7 +3227,6 @@ Domena <ph name="DOMAIN" /> zahteva, da je pametna kartica vstavljena.</translat
 <translation id="3473479545200714844">Lupa</translation>
 <translation id="3474218480460386727">Za nove besede uporabite 99 črk ali manj</translation>
 <translation id="3474624961160222204">Nadaljuj kot <ph name="NAME" /></translation>
-<translation id="3475843873335999118">Prstni odtis še vedno ni prepoznan. Vnesite geslo.</translation>
 <translation id="3476303763173086583">Pošiljanje podatkov o uporabi in diagnostičnih podatkov. Pomagajte izboljšati otrokovo izkušnjo z Androidom s samodejnim pošiljanjem diagnostičnih podatkov ter podatkov o uporabi naprave in aplikacij Googlu. Teh podatkov ne bomo uporabljali, da bi prepoznali vašega otroka, temveč za izboljšanje stabilnosti sistema in izvajanja aplikacij ter drugega. Nekateri združeni podatki bodo pomagali tudi Googlovim aplikacijam in partnerjem, na primer razvijalcem za Android. To <ph name="BEGIN_LINK1" />nastavitev<ph name="END_LINK1" /> je uveljavil lastnik naprave. Lastnik bo morda izbral, da se za to napravo pošiljajo diagnostični podatki in podatki o uporabi Googlu. Če ste za otroka vklopili dodatno beleženje dejavnosti v spletu in aplikacijah, bodo ti podatki morda shranjeni v njegovem računu za Google. <ph name="BEGIN_LINK2" />Več o tem<ph name="END_LINK2" /></translation>
 <translation id="347670947055184738">Ojoj. Sistemu ni uspelo prenesti pravilnika za napravo.</translation>
 <translation id="347785443197175480">Še naprej omogočaj gostitelju <ph name="HOST" /> dostop do kamere in mikrofona</translation>
@@ -3593,7 +3593,6 @@ Domena <ph name="DOMAIN" /> zahteva, da je pametna kartica vstavljena.</translat
 <translation id="3759933321830434300">Blokiraj dele spletnih strani</translation>
 <translation id="3760460896538743390">Preglej stran v ozadju</translation>
 <translation id="37613671848467444">Odpri v oknu &amp;brez beleženja zgodovine</translation>
-<translation id="3761390540041101668">Jasno opišite težavo in korake za njeno poustvaritev (če je mogoče)</translation>
 <translation id="3761556954875533505">Želite spletnemu mestu omogočiti, da ureja datoteke?</translation>
 <translation id="3763433740586298940">Spletna mesta, ki jih ne želite, lahko blokirate. Chrome prav tako s seznama samodejno izbriše spletna mesta, starejša od 30 dni.</translation>
 <translation id="3763549179847864476">Gumb za nazaj v vodniku po zasebnosti</translation>
@@ -5907,7 +5906,6 @@ Dovoljenja, ki ste jih že odobrili spletnim mestom in aplikacijam, morda veljaj
 <translation id="5608580678041221894">Dotaknite se teh tipk, če želite prilagoditi ali premakniti območje za obrezovanje</translation>
 <translation id="5609231933459083978">Videti je, da je aplikacija neveljavna.</translation>
 <translation id="561236229031062396"><ph name="SHORTCUT_NAME" />, <ph name="APP_FULL_NAME" /></translation>
-<translation id="5612734644261457353">Vašega gesla še ni bilo mogoče preveriti. Opomba: Če ste v zadnjem času spremenili geslo, bo novo geslo začelo veljati, ko se odjavite. Tu uporabite starega.</translation>
 <translation id="5614190747811328134">Uporabniško obvestilo</translation>
 <translation id="5614553682702429503">Želite shraniti geslo?</translation>
 <translation id="5614947000616625327">iCloud Keychain</translation>
@@ -6642,6 +6640,7 @@ Poskrbite, da ne boste razkrili morebitnih občutljivih podatkov.</translation>
 <translation id="6202304368170870640">Kodo PIN lahko uporabite za prijavo ali odklepanje naprave.</translation>
 <translation id="6203247599828309566">Shranili ste opombo za geslo na tem spletnem mestu. Če si ga želite ogledati, kliknite ikono ključa.</translation>
 <translation id="6205314730813004066">Zasebnost pri oglaševanju</translation>
+<translation id="6205993460077903908"><ph name="WINDOW_TITLE" /> – snemanje z mikrofonom</translation>
 <translation id="6206199626856438589">Odjavljeni boste s prikazanih spletnih mest, vključno s tistimi na odprtih zavihkih.</translation>
 <translation id="6206311232642889873">Kop&amp;iraj sliko</translation>
 <translation id="6207200176136643843">Ponastavitev na privzeto stopnjo povečave/pomanjšave</translation>
@@ -7199,6 +7198,7 @@ Imate še # ogroženih gesel. Googlov upravitelj gesel priporoča, da takoj prev
 <translation id="6657585470893396449">Geslo</translation>
 <translation id="6659213950629089752">To stran je povečala razširitev »<ph name="NAME" />«</translation>
 <translation id="6659594942844771486">Zavihek</translation>
+<translation id="6660099350750552197"><ph name="WINDOW_TITLE" /> – snemanje s kamero</translation>
 <translation id="6660819301598582123">Hitra rjava lisica je preskočila lenega psa.</translation>
 <translation id="666099631117081440">Strežniki za tiskanje</translation>
 <translation id="6662931079349804328">Pravilnik podjetja se je spremenil. Gumb za preizkuse je bil odstranjen iz orodne vrstice.</translation>
@@ -9012,6 +9012,7 @@ Datoteko s ključem shranite na varnem. Potrebovali jo boste za izdelavo novih r
 <translation id="8059417245945632445">&amp;Pregled naprav</translation>
 <translation id="8059456211585183827">Ni tiskalnikov za shranjevanje.</translation>
 <translation id="8061091456562007989">Razveljavi spremembo</translation>
+<translation id="8061244502316511332">Zavihek uporablja mikrofon</translation>
 <translation id="8061970399284390013">Preverjanje črkovanja in slovnice</translation>
 <translation id="8061991877177392872">Videti je, da ste Voice Match s Pomočnikom že nastavili v drugi napravi. Te prejšnje posnetke je mogoče uporabiti za ustvarjanje glasovnega modela v tej napravi.</translation>
 <translation id="8062844841289846053">{COUNT,plural, =1{1 list papirja}one{{COUNT} list papirja}two{{COUNT} lista papirja}few{{COUNT} listi papirja}other{{COUNT} listov papirja}}</translation>
@@ -9311,7 +9312,7 @@ Datoteko s ključem shranite na varnem. Potrebovali jo boste za izdelavo novih r
 <translation id="8295450130892483256">Namestitev Microsofta 365</translation>
 <translation id="8297292446125062288">Nastavitve vnosne naprave</translation>
 <translation id="8298429963694909221">Zdaj lahko obvestila iz telefona prejemate v napravi <ph name="DEVICE_TYPE" />. Če obvestila opustite v napravi <ph name="DEVICE_TYPE" />, jih opustite tudi v telefonu. Preverite, ali imate telefon v bližini ter ima vklopljeno povezavo Bluetooth in omrežje Wi-Fi.</translation>
-<translation id="829923460755755423">Dodajanje bližnjice Googlovemu upravitelju gesel</translation>
+<translation id="829923460755755423">Dodajanje bližnjice do Googlovega upravitelja gesel</translation>
 <translation id="8299319456683969623">Trenutno ste brez povezave.</translation>
 <translation id="8299951061833867575">Wi-Fi, prenos podatkov v mobilnem omrežju</translation>
 <translation id="8300011035382349091">Urejanje zaznamka za ta zavihek</translation>
@@ -9493,6 +9494,7 @@ Datoteko s ključem shranite na varnem. Potrebovali jo boste za izdelavo novih r
 <translation id="844063558976952706">Vedno na tem mestu</translation>
 <translation id="8441313165929432954">Omogočanje/onemogočanje povezave računalnika z internetom prek mobilnega telefona</translation>
 <translation id="8443986842926457191">URL vsebuje več kot 2048 znakov</translation>
+<translation id="8445281870900174108">Zavihek uporablja kamero</translation>
 <translation id="8446884382197647889">Več o tem</translation>
 <translation id="8447409163267621480">Vključevati morajo ali Ctrl ali Alt</translation>
 <translation id="844850004779619592">Najden ni bil noben ukaz</translation>
@@ -10570,6 +10572,7 @@ Dovoljenja, ki ste jih že odobrili spletnim mestom in aplikacijam, morda veljaj
 <translation id="981121421437150478">Brez povezave</translation>
 <translation id="983192555821071799">Zapri vse zavihke</translation>
 <translation id="983511809958454316">Ta funkcija ni podprta v navidezni resničnosti</translation>
+<translation id="983531994960412650"><ph name="WINDOW_TITLE" /> – snemanje s kamero in mikrofonom</translation>
 <translation id="984275831282074731">Plačilna sredstva</translation>
 <translation id="984705303330760860">Dodajanje jezikov preverjanja črkovanja</translation>
 <translation id="98515147261107953">Ležeče</translation>

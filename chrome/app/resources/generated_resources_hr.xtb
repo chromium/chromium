@@ -3212,7 +3212,6 @@ Postavkama računa možete upravljati tako da instalirate aplikaciju Family Link
 <translation id="3473479545200714844">Povećalo</translation>
 <translation id="3474218480460386727">Za nove riječi koristite najviše 99 slova</translation>
 <translation id="3474624961160222204">Nastavi kao <ph name="NAME" /></translation>
-<translation id="3475843873335999118">Žao nam je, uređaj i dalje ne prepoznaje vaš otisak prsta. Unesite zaporku.</translation>
 <translation id="3476303763173086583">Slanje podataka o upotrebi i dijagnostici. Pomognite poboljšati djetetov doživljaj Androida automatskim slanjem dijagnostičkih podataka i podataka o upotrebi uređaja i aplikacija Googleu. Ti se podaci neće upotrebljavati za identifikaciju vašeg djeteta, a pomoći će poboljšati sustav, stabilnost aplikacija i drugo. Neki skupni podaci pomoći će i Googleovim aplikacijama i partnerima, na primjer razvojnim programerima za Android. Ovu <ph name="BEGIN_LINK1" />postavku<ph name="END_LINK1" /> zadao je vlasnik. Vlasnik može Googleu slati dijagnostiku i podatke o upotrebi za ovaj uređaj. Ako je za vaše dijete uključena dodatna postavka Aktivnost na webu i u aplikacijama, ti se podaci mogu spremati na djetetov Google račun. <ph name="BEGIN_LINK2" />Saznajte više<ph name="END_LINK2" /></translation>
 <translation id="347670947055184738">Ups! Sustav nije uspio dohvatiti pravila za vaš uređaj.</translation>
 <translation id="347785443197175480">Nastavi dopuštati hostu <ph name="HOST" /> pristup kameri i mikrofonu</translation>
@@ -3579,7 +3578,6 @@ Postavkama računa možete upravljati tako da instalirate aplikaciju Family Link
 <translation id="3759933321830434300">blokirati dijelove web-stranica</translation>
 <translation id="3760460896538743390">Provjeri &amp;pozadinsku stranicu</translation>
 <translation id="37613671848467444">Otvori u &amp;anonimnom prozoru</translation>
-<translation id="3761390540041101668">Jasno objasnite problem i korake za njegovo reproduciranje (ako je moguće)</translation>
 <translation id="3761556954875533505">Dopustiti web-lokaciji da uredi datoteke?</translation>
 <translation id="3763433740586298940">Možete blokirati web-lokacije koje ne želite. Chrome također automatski briše web-lokacije koje su na popisu više od 30 dana.</translation>
 <translation id="3763549179847864476">Gumb za natrag u vodiču za privatnost</translation>
@@ -5891,7 +5889,6 @@ Dopuštenja koja ste već dali web-lokacijama i aplikacijama mogu se primijeniti
 <translation id="5608580678041221894">Dodirnite sljedeće tipke da biste prilagodili ili pomaknuli područje za izrezivanje</translation>
 <translation id="5609231933459083978">Čini se da je ova aplikacija nevažeća.</translation>
 <translation id="561236229031062396"><ph name="SHORTCUT_NAME" />, <ph name="APP_FULL_NAME" /></translation>
-<translation id="5612734644261457353">Nažalost, vaša zaporka i dalje nije mogla biti potvrđena. Napomena: ako ste nedavno promijenili zaporku, vaša nova zaporka primjenjivat će se nakon što se odjavite. Ovdje upotrijebite staru zaporku.</translation>
 <translation id="5614190747811328134">Korisnička obavijest</translation>
 <translation id="5614553682702429503">Želite li spremiti zaporku?</translation>
 <translation id="5614947000616625327">iCloud privjesak ključeva</translation>

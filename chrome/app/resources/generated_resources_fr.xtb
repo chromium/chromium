@@ -3209,7 +3209,6 @@ Vous pouvez gérer les paramètres de ce compte en installant l'application Fami
 <translation id="3473479545200714844">Loupe</translation>
 <translation id="3474218480460386727">Les nouveaux termes ne doivent pas contenir plus de 99 lettres</translation>
 <translation id="3474624961160222204">Continuer en tant que <ph name="NAME" /></translation>
-<translation id="3475843873335999118">Désolé, votre empreinte digitale n'est toujours pas reconnue. Veuillez saisir votre mot de passe.</translation>
 <translation id="3476303763173086583">Envoyer des données d'utilisation et de diagnostic. Contribuez à l'amélioration de l'expérience de votre enfant sur Android en envoyant automatiquement à Google des données relatives aux diagnostics et à l'utilisation de l'appareil et des applications. Ces informations ne seront pas utilisées pour identifier votre enfant, mais elles nous aideront à améliorer, entre autres, la stabilité du système et des applications. Certaines données globales seront également utiles aux développeurs des applications Google et à nos partenaires, tels que les développeurs Android. Ce <ph name="BEGIN_LINK1" />paramètre<ph name="END_LINK1" /> est appliqué par le propriétaire. Le propriétaire de cet appareil peut choisir d'envoyer à Google des données de diagnostic et d'utilisation. Si vous activez le paramètre relatif à l'activité supplémentaire sur le Web et les applications pour votre enfant, ces données peuvent être enregistrées dans son compte Google. <ph name="BEGIN_LINK2" />En savoir plus<ph name="END_LINK2" /></translation>
 <translation id="347670947055184738">Petit problème… Le système n'a pas réussi à récupérer les règles pour votre appareil.</translation>
 <translation id="347785443197175480">Continuer à autoriser <ph name="HOST" /> à accéder à votre caméra et à votre micro</translation>
@@ -3576,7 +3575,6 @@ Vous pouvez gérer les paramètres de ce compte en installant l'application Fami
 <translation id="3759933321830434300">Bloquer des parties de pages Web</translation>
 <translation id="3760460896538743390">Inspecter la page d'&amp;arrière-plan</translation>
 <translation id="37613671848467444">Ouvrir dans une fenêtre de &amp;navigation privée</translation>
-<translation id="3761390540041101668">Décrivez clairement le problème et les étapes permettant de le reproduire (si possible).</translation>
 <translation id="3761556954875533505">Autoriser le site à modifier les fichiers ?</translation>
 <translation id="3763433740586298940">Vous pouvez bloquer les sites qui ne vous intéressent pas. De plus, Chrome supprime automatiquement de la liste les sites de plus de 30 jours.</translation>
 <translation id="3763549179847864476">Bouton "Retour" du Guide sur la confidentialité</translation>
@@ -5888,7 +5886,6 @@ Les autorisations que vous avez déjà accordées aux sites Web et aux applis pe
 <translation id="5608580678041221894">Appuyez sur les touches suivantes pour ajuster ou déplacer la zone de recadrage</translation>
 <translation id="5609231933459083978">L'application ne semble pas valide.</translation>
 <translation id="561236229031062396"><ph name="SHORTCUT_NAME" />, <ph name="APP_FULL_NAME" /></translation>
-<translation id="5612734644261457353">Désolé, nous ne pouvons toujours pas valider votre mot de passe. Remarque : si vous l'avez modifié dernièrement, votre nouveau mot de passe ne sera appliqué qu'une fois que vous vous serez déconnecté. Veuillez donc utiliser votre ancien mot de passe.</translation>
 <translation id="5614190747811328134">Avertissement utilisateur</translation>
 <translation id="5614553682702429503">Enregistrer le mot de passe ?</translation>
 <translation id="5614947000616625327">Trousseau iCloud</translation>

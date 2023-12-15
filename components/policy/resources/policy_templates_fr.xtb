@@ -3189,7 +3189,6 @@ Si cette règle est définie sur "False", aucune information de version n'est co
 
 Cette règle n'est appliquée que si l'ordinateur est enregistré avec la règle <ph name="CLOUD_MANAGEMENT_ENROLLMENT_TOKEN" /> pour <ph name="PRODUCT_NAME" />.
 Elle est toujours appliquée pour <ph name="PRODUCT_OS_NAME" />.</translation>
-<translation id="3642557248926713561">Désactiver la protection des extensions de la navigation sécurisée</translation>
 <translation id="3644735978203799620">Activer la sélection automatique de captures d'écran multiples</translation>
 <translation id="3646859102161347133">Définir le type de loupe</translation>
 <translation id="3647212518036289905">Permet de spécifier la bibliothèque GSSAPI à utiliser pour l'authentification HTTP. Vous pouvez indiquer le nom de la bibliothèque ou son chemin d'accès complet.
@@ -5646,8 +5645,6 @@ Si elle est désactivée ou n'est pas configurée, les Glanceables ne sont pas a
       Si elle est définie sur "False" ou si elle n'est pas définie, les fonctionnalités de Web Components v0 seront désactivées par défaut à compter de la version M80.
 
       Cette règle sera supprimée après Chrome 84.</translation>
-<translation id="5755149423476170868">Si cette règle est activée ou n'est pas configurée, la protection des extensions de la <ph name="SAFE_BROWSING_NAME" /> est contrôlée par <ph name="SAFE_BROWSING_PROTECTION_LEVEL_POLICY_NAME" /> pour <ph name="PRODUCT_NAME" />. Si <ph name="SAFE_BROWSING_PROTECTION_LEVEL_POLICY_NAME" /> est défini sur <ph name="SAFE_BROWSING_PROTECTION_LEVEL_VALUE_STANDARD" /> ou <ph name="SAFE_BROWSING_PROTECTION_LEVEL_VALUE_ENHANCED" />, les extensions malveillantes sont désactivées plus rapidement dans <ph name="PRODUCT_NAME" />. <ph name="PRODUCT_NAME" /> envoie une demande au serveur de navigation sécurisée Google pour vérifier si une extension a été retirée du Chrome Web Store car considérée comme un logiciel malveillant ou comme une extension problématique, malveillante ou vulnérable, ou ne respectant pas les règles du Chrome Web Store. Si une extension a été retirée, <ph name="PRODUCT_NAME" /> empêche les utilisateurs de l'installer et la désactive si elle est déjà installée.
-Si cette règle est désactivée, la protection des extensions de la <ph name="SAFE_BROWSING_NAME" /> est désactivée, et les extensions malveillantes sont vérifiées et supprimées moins régulièrement via <ph name="GOOGLE_UPDATE_NAME" />. Aucune donnée n'est envoyée à la <ph name="SAFE_BROWSING_NAME" /> Google pour les verdicts.</translation>
 <translation id="575647238840663288">Par défaut, les documents peuvent être placés dans des clusters d'agents selon l'origine. L'accesseur document.domain n'est pas configurable pour ces documents.</translation>
 <translation id="5756680608782814094">Transmet des informations sur les données VPD de l'appareil.
 
@@ -5764,7 +5761,6 @@ Si cette règle est désactivée, la protection des extensions de la <ph name="S
 <translation id="5883754873839596178">Cette règle permet de spécifier le nombre maximal de connexions simultanées au serveur proxy. Toutefois, certains serveurs proxy ne peuvent pas gérer de nombreuses connexions simultanées par client. Pour résoudre ce problème, il suffit de diminuer la valeur de cette règle, laquelle doit être supérieure à 6 et inférieure à 100. Certaines applications Web sont connues pour utiliser de nombreuses connexions avec des requêtes GET en attente. Par conséquent, si vous définissez une valeur inférieure à 32, le réseau du navigateur risque de se bloquer si trop d'applications Web avec des connexions de ce type sont ouvertes. Toute diminution de la valeur par défaut est effectuée à vos propres risques.
 
       Si cette règle n'est pas configurée, la valeur par défaut (32) est utilisée.</translation>
-<translation id="5885770645815872943">Autoriser la protection des extensions de la navigation sécurisée</translation>
 <translation id="5887414688706570295">Configure le préfixe TalkGadget utilisé par les hôtes d'accès à distance et empêche les utilisateurs de le modifier.
 
           S'il est défini, ce préfixe est ajouté au nom TalkGadget de base afin de créer un nom de domaine TalkGadget complet. Le nom de domaine TalkGadget de base est ".talkgadget.google.com".
@@ -6402,7 +6398,6 @@ Voir également la règle <ph name="HTTPS_ONLY_MODE_POLICY_NAME" />.</translatio
           Si elle est désactivée, l'appareil <ph name="PRODUCT_OS_NAME" /> ne peut pas récupérer les événements <ph name="GOOGLE_CALENDAR_NAME" /> pour remplir le widget d'agenda <ph name="PRODUCT_OS_NAME" /> dans la barre d'état système pour l'utilisateur connecté.
 
           Si elle n'est pas configurée, la fonctionnalité <ph name="GOOGLE_CALENDAR_NAME" /> est activée par défaut pour les utilisateurs de la version Enterprise.</translation>
-<translation id="6450607392928079050">La protection des extensions de la navigation sécurisée est contrôlée par la règle <ph name="SAFE_BROWSING_PROTECTION_LEVEL_POLICY_NAME" /></translation>
 <translation id="6452882999388592166">Si cette règle est activée, l'extension de composant CryptoToken intégrée sera chargée au démarrage. Si elle est désactivée ou n'est pas configurée, CryptoToken ne sera pas chargée au démarrage du navigateur. Cette règle est une solution temporaire pour les sites qui ne fonctionnent pas lorsque `chrome.runtime` n'est pas défini à la suite de la suppression de CryptoToken dans M106. Les sites Web ne doivent pas compter sur le fait que `chrome.runtime` soit défini sans conditions.</translation>
 <translation id="6453641799812499182">Atténuer les vérifications <ph name="CORS" /> dans la nouvelle mise en œuvre de <ph name="CORS" /></translation>
 <translation id="645425387487868471">Activer la connexion forcée pour <ph name="PRODUCT_NAME" /></translation>

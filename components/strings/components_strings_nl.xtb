@@ -54,6 +54,7 @@
 <translation id="1078033282564106222">De optie Gebouwnummer is geselecteerd</translation>
 <translation id="1080116354587839789">Aanpassen aan breedte</translation>
 <translation id="1081061862829655580">Lade 19</translation>
+<translation id="1082026381988252344">Scroll en zoom de content van je gedeelde tabblad</translation>
 <translation id="1089439967362294234">Wachtwoord wijzigen</translation>
 <translation id="1090629319939036170">VR-menu</translation>
 <translation id="1094777233105318927">Informatie over je browser, OS, apparaat, geïnstalleerde software en bestanden</translation>
@@ -2523,6 +2524,7 @@ Het kan langer dan normaal duren voordat je app wordt gestart.</translation>
 <translation id="6051221802930200923">Je kunt <ph name="SITE" /> momenteel niet bezoeken, omdat de website gebruikmaakt van certificaatpinning. Netwerkfouten en aanvallen zijn doorgaans tijdelijk, dus deze pagina werkt later waarschijnlijk correct.</translation>
 <translation id="6051898664905071243">Aantal pagina's:</translation>
 <translation id="6052284303005792909">•</translation>
+<translation id="605237284704429106">IBAN invullen</translation>
 <translation id="6053584886670442526">Je kunt opgeslagen adressen gebruiken in meerdere Google-producten. Dit adres is opgeslagen in je Google-account (<ph name="ACCOUNT" />).</translation>
 <translation id="6053735090575989697">In ons Privacybeleid vind je meer informatie over hoe Google je gegevens beschermt.</translation>
 <translation id="6055888660316801977">Pagina waarop staat dat er geen overeenkomende inloggegevens zijn voor beveiligde betaling</translation>
@@ -2796,6 +2798,7 @@ Het kan langer dan normaal duren voordat je app wordt gestart.</translation>
 <translation id="6612010098632894193">Online video</translation>
 <translation id="6613866251791999074">Meer informatie over je zoekmachine in Chrome</translation>
 <translation id="6615297766614333076">Stapeleenheid 2</translation>
+<translation id="6619496928666593220">IBAN niet ingevuld</translation>
 <translation id="6624427990725312378">Contactgegevens</translation>
 <translation id="6628463337424475685">Zoeken via <ph name="ENGINE" /></translation>
 <translation id="6629652037942826935">Luxereizen</translation>

@@ -60,6 +60,7 @@
 <translation id="1285320974508926690">Nikoli ne prevedi tega spletnega mesta</translation>
 <translation id="1291506870746876680">Dovoljenja za spletno mesto <ph name="BEGIN_BOLD" />»<ph name="SITE_NAME" />«<ph name="END_BOLD" /> bodo ponastavljena na izklopljena, ko zapustite to spletno mesto.</translation>
 <translation id="1295289763199166823">Prilagodi meni</translation>
+<translation id="1296581780163690620">Želite prenesti datoteko? (<ph name="FILE_SIZE" />)</translation>
 <translation id="1305822519689023679">Če želite zagotoviti, da boste lahko v računu Google vedno uporabljali gesla, potrdite, da ste to vi.</translation>
 <translation id="1312721752506309252">Izboljšana zaščita je vklopljena.</translation>
 <translation id="1321993286294231467">Napaka pri shranjevanju slike.</translation>
@@ -200,6 +201,7 @@
 <translation id="2055515971416882518">Odprite nastavitve.</translation>
 <translation id="2059166748188874810">Občina</translation>
 <translation id="2062410130322589403">Vodnik po vaših izbirah zasebnosti</translation>
+<translation id="20638360198452347">Izbirnik vrste enote</translation>
 <translation id="2073572773299281212">Aktivna pred toliko dnevi: <ph name="DAYS" /></translation>
 <translation id="2074131957428911366">V <ph name="BEGIN_LINK" />nastavitvah<ph name="END_LINK" /> lahko kadar koli izberete, kaj želite sinhronizirati.</translation>
 <translation id="2079545284768500474">Razveljavi</translation>
@@ -244,6 +246,7 @@
 <translation id="2310154074101836012">Urejanje vrtiljaka</translation>
 <translation id="2316709634732130529">Uporabi predlagano geslo</translation>
 <translation id="2320166752086256636">Skrij tipkovnico</translation>
+<translation id="2326302612031521902">Izbirnik enot</translation>
 <translation id="2348630484974447747">Paket</translation>
 <translation id="2351097562818989364">Nastavitve za prevajanje so ponastavljene.</translation>
 <translation id="235789365079050412">Googlov pravilnik o zasebnosti</translation>
@@ -267,6 +270,7 @@ Spletna mesta ne smejo uporabljati piškotkov za ogled dejavnosti brskanja na ra
 <translation id="2459155039684421202">V naslovni vrstici vnesite opravilo, kot je »clear my history« (počisti mojo zgodovino) ali »edit passwords« (uredi gesla).</translation>
 <translation id="2461070143328828326">Nastavitve gesel</translation>
 <translation id="2462736546165239215">Tukaj je na voljo celotna zgodovina brskanja.</translation>
+<translation id="2468132863574325555">Google Drive</translation>
 <translation id="2469960372084740698">Želite izklopiti varno brskanje?</translation>
 <translation id="2473876017985765807">Geslo za <ph name="WEBSITE" /> ste že shranili.</translation>
 <translation id="2476359652512522418">Ni izbrano</translation>
@@ -939,6 +943,7 @@ Handoff must also be enabled in the General section of Settings, and your device
 <translation id="6149061208933997199">Use Password</translation>
 <translation id="6152406514676263192">Sinhronizirajte za najpomembnejšo vsebino glede na vaša zanimanja.</translation>
 <translation id="6159839020698489198">izbirno</translation>
+<translation id="6160780110287872296">Želite prenesti datoteko?</translation>
 <translation id="6170450281939467187">Prevajanje ni uspelo</translation>
 <translation id="6173499589275053515">Geslo je shranjeno v računu Google, <ph name="EMAIL" /></translation>
 <translation id="6184086493125982861">Pokaži zavihke</translation>
@@ -1006,6 +1011,7 @@ Handoff must also be enabled in the General section of Settings, and your device
 <translation id="6447842834002726250">Piškotki</translation>
 <translation id="6453018583485750254">Preverjanje še ni bilo izvedeno.</translation>
 <translation id="6459307836338400162">Če vas zanima več nastavitev, povezanih z zasebnostjo, varnostjo in zbiranjem podatkov, si oglejte razdelka <ph name="BEGIN_LINK" />Sinhronizacija<ph name="END_LINK" /> in <ph name="BEGIN_LINK" />Googlove storitve<ph name="END_LINK" />.</translation>
+<translation id="646394917185284261">Files</translation>
 <translation id="6464071786529933911">Open in New Incognito Tab</translation>
 <translation id="6464397691496239022">Spletna mesta lahko uporabljajo piškotke za izboljšanje izkušnje brskanja, na primer tako, da poskrbijo, da ostanete prijavljeni, ali si zapomnijo izdelke v nakupovalnem vozičku.
 

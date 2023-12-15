@@ -3207,7 +3207,6 @@ Podes xestionar a configuración desde o menú da tarxeta ou ver máis opcións 
 <translation id="3473479545200714844">Lupa</translation>
 <translation id="3474218480460386727">As palabras novas non deben ter máis de 99 letras</translation>
 <translation id="3474624961160222204">Continuar como <ph name="NAME" /></translation>
-<translation id="3475843873335999118">Aínda non se recoñece a túa impresión dixital. Introduce o teu contrasinal.</translation>
 <translation id="3476303763173086583">Enviar datos de uso e de diagnóstico. Envía automaticamente datos de diagnóstico e de uso do dispositivo e das aplicacións a Google para axudar a mellorar a experiencia do teu fillo en Android. Esta información non se utilizará para identificar o teu fillo, senón co obxectivo de aumentar a estabilidade do sistema e das aplicacións, e de realizar outras melloras. Algúns datos agregados tamén serán útiles para as aplicacións e os socios de Google, como os programadores de Android. Esta <ph name="BEGIN_LINK1" />opción de configuración<ph name="END_LINK1" /> contrólaa o propietario. O cal pode optar por enviar datos de diagnóstico e uso deste dispositivo a Google. Se está activada a opción de configuración Actividade web e das aplicacións adicional para o teu fillo, estes datos pódense gardar na súa conta de Google <ph name="BEGIN_LINK2" />Máis información<ph name="END_LINK2" /></translation>
 <translation id="347670947055184738">O sistema non puido obter a política do teu dispositivo.</translation>
 <translation id="347785443197175480">Continuar permitindo a <ph name="HOST" /> acceder á túa cámara e micrófono</translation>
@@ -3577,7 +3576,6 @@ https://allthings.how/content/images/wordpress/2023/02/allthings.how-how-to-make
 <translation id="3759933321830434300">Bloquear partes das páxinas web</translation>
 <translation id="3760460896538743390">Inspeccionar &amp;páxina en segundo plano</translation>
 <translation id="37613671848467444">Abrir nunha ventá de &amp;incógnito</translation>
-<translation id="3761390540041101668">Describe claramente o problema e os pasos para reproducilo (se é posible)</translation>
 <translation id="3761556954875533505">Queres permitir que o sitio edite os ficheiros?</translation>
 <translation id="3763433740586298940">Podes bloquear os sitios que non che interesen. Chrome tamén elimina automaticamente da lista os sitios que teñan máis de 30 días de antigüidade.</translation>
 <translation id="3763549179847864476">Botón Atrás da Guía de privacidade</translation>
@@ -5889,7 +5887,6 @@ Pódense aplicar a esta conta os permisos que xa lles concedeses aos sitios web 
 <translation id="5608580678041221894">Toca as seguintes teclas para axustar ou mover a zona que se recortará</translation>
 <translation id="5609231933459083978">Parece que a aplicación non é válida.</translation>
 <translation id="561236229031062396"><ph name="SHORTCUT_NAME" />, <ph name="APP_FULL_NAME" /></translation>
-<translation id="5612734644261457353">Aínda non se pode verificar o teu contrasinal. Nota: Se cambiaches o teu contrasinal recentemente, o contrasinal novo aplicarase en canto peches sesión. Utiliza o contrasinal antigo aquí.</translation>
 <translation id="5614190747811328134">Aviso do usuario</translation>
 <translation id="5614553682702429503">Queres gardar o contrasinal?</translation>
 <translation id="5614947000616625327">Chaveiro de iCloud</translation>

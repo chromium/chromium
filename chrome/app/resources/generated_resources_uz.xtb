@@ -3210,7 +3210,6 @@ Oʻz qurilmangizda Family Link ilovasini oʻrnatib, bu hisob sozlamalarini boshq
 <translation id="3473479545200714844">Ekran lupasi</translation>
 <translation id="3474218480460386727">Yangi soʻzlar kamida 99 harfdan iborat boʻlsin</translation>
 <translation id="3474624961160222204"><ph name="NAME" /> sifatida davom etish</translation>
-<translation id="3475843873335999118">Barmoq izi aniqlanmadi. Parolingizni kiriting.</translation>
 <translation id="3476303763173086583">Foydalanish va diagnostika axborotini yuborish. Diagnostika hamda qurilma va ilovadan foydalanish statistikasini Google kompaniyasiga avtomatik yuborish orqali Androidni yaxshilashga yordam bering. Ushbu axborotdan farzandingiz shaxsini aniqlash uchun foydalanilmaydi. Ular tizim va ilovalar barqarorligi kabilarni yaxshilash uchun ishlatiladi. Ayrim toʻplangan maʼlumotlar Android dasturchilar kabi hamkorlarimizga ham oʻz ilovalari va mahsulotlarini yanada yaxshilashga yordam beradi. Bu <ph name="BEGIN_LINK1" />parametr<ph name="END_LINK1" /> qurilma egasi tomonidan oʻrnatilgan. Qurilma egasi undagi foydalanish haqidagi va diagnostika axborotini Google serverlariga avtomatik yuborilishini tayinlashi mumkin. Agar farzandingiz uchun Kengaytirilgan veb-qidiruv va ilovalar tarixi yoqilgan boʻlsa, bu maʼlumotlar uning Google hisobiga saqlanadi. <ph name="BEGIN_LINK2" />Batafsil<ph name="END_LINK2" /></translation>
 <translation id="347670947055184738">Tizim qurilmangiz uchun qoidalarni aniqlay olmadi.</translation>
 <translation id="347785443197175480"><ph name="HOST" /> saytiga kamera va mikrofondan foydalanishga ruxsat berish</translation>
@@ -3577,7 +3576,6 @@ Oʻz qurilmangizda Family Link ilovasini oʻrnatib, bu hisob sozlamalarini boshq
 <translation id="3759933321830434300">Veb-sahifalar elementlarini bloklash</translation>
 <translation id="3760460896538743390">&amp;Orqa fon sahifasini ko‘rib chiqish</translation>
 <translation id="37613671848467444">&amp;Inkognito rejimida ochish</translation>
-<translation id="3761390540041101668">Muammoni hal qilish uchun uning aniq tavsifini va bosqichlarini taqdim eting (imkon boʻlsa)</translation>
 <translation id="3761556954875533505">Saytga fayllarni tahrirlashga ruxsat berilsinmi?</translation>
 <translation id="3763433740586298940">Istalgan saytni bloklash mumkin. Shuningdek, Chrome roʻyxatdagi 30 kundan eskirgan saytlarni avtomatik oʻchiradi.</translation>
 <translation id="3763549179847864476">Maxfiylik qoʻllanmasi sahifasida Orqaga tugmasi</translation>
@@ -5890,7 +5888,6 @@ Sayt va ilovalarga berilgan ruxsatlar bu hisobga tatbiq etilishi mumkin. Google 
 <translation id="5608580678041221894">Qirqilayotgan maydonni surish yoki moslash uchun quyidagi tugmalar ustiga bosing</translation>
 <translation id="5609231933459083978">Ilova nomi noto‘g‘ri kiritilganga o‘xshaydi.</translation>
 <translation id="561236229031062396"><ph name="SHORTCUT_NAME" />, <ph name="APP_FULL_NAME" /></translation>
-<translation id="5612734644261457353">Parol noto‘g‘ri kiritildi. Unutmangki: bu parol yaqinda o‘zgartirilgan, lekin tizimdan chiqilmagan, yangi parol qo‘llanishi uchun eski parolingizni kiriting.</translation>
 <translation id="5614190747811328134">Foydalanuvchiga eslatma</translation>
 <translation id="5614553682702429503">Parol saqlansinmi?</translation>
 <translation id="5614947000616625327">iCloud Keychain</translation>

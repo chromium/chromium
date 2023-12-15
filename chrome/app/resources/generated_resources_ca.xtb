@@ -3208,7 +3208,6 @@ Pots gestionar la configuració d'aquest compte instal·lant l'aplicació Family
 <translation id="3473479545200714844">Lupa</translation>
 <translation id="3474218480460386727">Utilitza 99 lletres o menys per a les paraules noves</translation>
 <translation id="3474624961160222204">Continua com a <ph name="NAME" /></translation>
-<translation id="3475843873335999118">No es reconeix la teva empremta digital. Escriu la contrasenya.</translation>
 <translation id="3476303763173086583">Envia dades d'ús i de diagnòstic. Ajuda a millorar l'experiència a Android del teu fill enviant automàticament a Google dades de diagnòstic, del dispositiu i d'ús d'aplicacions. Aquestes dades no es faran servir per identificar el teu fill i ajudaran a millorar l'estabilitat del sistema i de les aplicacions, entre altres característiques. Una part de les dades agregades també serà útil per a les aplicacions i per als partners de Google, com ara els desenvolupadors d'Android. El propietari ha aplicat aquesta <ph name="BEGIN_LINK1" />opció de configuració<ph name="END_LINK1" />. És possible que el propietari decideixi enviar a Google dades de diagnòstic i d'ús sobre aquest dispositiu. Si l'opció Activitat al web i en aplicacions addicional està activada per al teu fill, és possible que aquestes dades es desin al seu Compte de Google. <ph name="BEGIN_LINK2" />Més informació<ph name="END_LINK2" /></translation>
 <translation id="347670947055184738">El sistema no ha pogut obtenir la política per al dispositiu.</translation>
 <translation id="347785443197175480">Continua permetent que <ph name="HOST" /> accedeixi a la càmera i al micròfon</translation>
@@ -3575,7 +3574,6 @@ Pots gestionar la configuració d'aquest compte instal·lant l'aplicació Family
 <translation id="3759933321830434300">Bloquejar elements de pàgines web</translation>
 <translation id="3760460896538743390">Inspecciona la &amp;pàgina de fons</translation>
 <translation id="37613671848467444">Obre en una &amp;finestra d'incògnit</translation>
-<translation id="3761390540041101668">Proporciona una descripció clara del problema i els passos per reproduir-lo (si és possible)</translation>
 <translation id="3761556954875533505">Vols permetre que el lloc web editi els fitxers?</translation>
 <translation id="3763433740586298940">Pots bloquejar els llocs web que no t'interessen. Chrome també suprimeix automàticament els llocs web de la llista que tenen més de 30 dies.</translation>
 <translation id="3763549179847864476">Botó Enrere de la Guia de privadesa</translation>
@@ -5887,7 +5885,6 @@ Pots assignar diferents interruptors a aquesta acció.</translation>
 <translation id="5608580678041221894">Toca aquestes tecles per ajustar o moure l'àrea per retallar</translation>
 <translation id="5609231933459083978">Sembla que l'aplicació no és vàlida.</translation>
 <translation id="561236229031062396"><ph name="SHORTCUT_NAME" />, <ph name="APP_FULL_NAME" /></translation>
-<translation id="5612734644261457353">Encara no s'ha pogut verificar la contrasenya. Nota: Si l'has canviat fa poc, la contrasenya nova s'aplicarà un cop hagis tancat la sessió. Fes servir la contrasenya anterior aquí.</translation>
 <translation id="5614190747811328134">Avís per a l'usuari </translation>
 <translation id="5614553682702429503">Vols desar la contrasenya?</translation>
 <translation id="5614947000616625327">iCloud Keychain</translation>

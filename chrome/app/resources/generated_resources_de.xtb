@@ -1642,6 +1642,7 @@ Wenn du die Family Link App auf deinem Gerät installierst, kannst du die Einste
 <translation id="2249111429176737533">Als Tab-Fenster öffnen</translation>
 <translation id="2249605167705922988">z. B. 1-5, 8, 11-13</translation>
 <translation id="2249635629516220541">Du kannst die Informationen anpassen, die von Websites verwendet werden, um dir Werbung zu präsentieren</translation>
+<translation id="2250624716625396929">Dieser Tab verwendet deine Kamera und dein Mikrofon</translation>
 <translation id="2251218783371366160">Mit System Viewer öffnen</translation>
 <translation id="225163402930830576">Netzwerke aktualisieren</translation>
 <translation id="2251809247798634662">Neues Inkognitofenster</translation>
@@ -3205,7 +3206,6 @@ Servernachricht: <ph name="SERVER_MSG" /></translation>
 <translation id="3473479545200714844">Lupe</translation>
 <translation id="3474218480460386727">Neue Wörter dürfen maximal 99 Buchstaben lang sein</translation>
 <translation id="3474624961160222204">Als "<ph name="NAME" />" fortfahren</translation>
-<translation id="3475843873335999118">Dein Fingerabdruck wurde immer noch nicht erkannt. Bitte gib dein Passwort ein.</translation>
 <translation id="3476303763173086583">Du hast die Möglichkeit, Nutzungsdaten &amp; Fehlerberichte zu senden. So kannst du uns helfen, Android für dein Kind zu verbessern, indem du zulässt, dass Diagnose- sowie Geräte- und App-Nutzungsdaten automatisch an Google gesendet werden. Dein Kind wird mithilfe dieser Daten nicht identifiziert, sie helfen jedoch beispielsweise dabei, die Stabilität des Systems und der Apps zu verbessern. Einige aggregierte Daten sind auch für Apps und Partner von Google, beispielsweise Android-Entwickler, nützlich. Diese <ph name="BEGIN_LINK1" />Einstellung<ph name="END_LINK1" /> wird vom Inhaber erzwungen. Der Inhaber kann festlegen, ob Diagnose- und Nutzungsdaten von diesem Gerät an Google gesendet werden. Wenn zusätzlich die Einstellung "Web- &amp; App-Aktivitäten" für dein Kind aktiviert ist, werden diese Daten in seinem Google-Konto gespeichert. <ph name="BEGIN_LINK2" />Weitere Informationen<ph name="END_LINK2" /></translation>
 <translation id="347670947055184738">Hoppla! Das System konnte die Richtlinie für dein Gerät nicht abrufen.</translation>
 <translation id="347785443197175480"><ph name="HOST" /> weiterhin Zugriff auf Kamera und Mikrofon gestatten</translation>
@@ -3572,7 +3572,6 @@ Servernachricht: <ph name="SERVER_MSG" /></translation>
 <translation id="3759933321830434300">Teile von Webseiten blockieren</translation>
 <translation id="3760460896538743390">&amp;Hintergrundseite prüfen</translation>
 <translation id="37613671848467444">In &amp;Inkognito-Fenster öffnen</translation>
-<translation id="3761390540041101668">Beschreibe so gut wie möglich das Problem und die Schritte, mit denen es reproduziert werden kann</translation>
 <translation id="3761556954875533505">Website erlauben, Dateien zu bearbeiten?</translation>
 <translation id="3763433740586298940">Du kannst unerwünschte Websites blockieren. Außerdem werden Websites, die länger als 30 Tage gelistet sind, von Chrome automatisch aus der Liste gelöscht.</translation>
 <translation id="3763549179847864476">Schaltfläche „Zurück“ im Datenschutz-Leitfaden</translation>
@@ -5884,7 +5883,6 @@ Berechtigungen, die du Websites und Apps bereits gewährt hast, gelten mögliche
 <translation id="5608580678041221894">Tippe auf die folgenden Tasten, um den Overscan-Bereich anzupassen oder zu verschieben</translation>
 <translation id="5609231933459083978">Die Anwendung ist anscheinend ungültig.</translation>
 <translation id="561236229031062396"><ph name="SHORTCUT_NAME" />, <ph name="APP_FULL_NAME" /></translation>
-<translation id="5612734644261457353">Dein Passwort konnte leider immer noch nicht bestätigt werden. Hinweis: Falls du dein Passwort kürzlich geändert hast, wird dein neues Passwort übernommen, sobald du dich abmeldest. Verwende hier das alte Passwort.</translation>
 <translation id="5614190747811328134">Nutzerhinweis</translation>
 <translation id="5614553682702429503">Passwort speichern?</translation>
 <translation id="5614947000616625327">iCloud-Schlüsselbund</translation>
@@ -6615,6 +6613,7 @@ Berechtigungen, die du Websites und Apps bereits gewährt hast, gelten mögliche
 <translation id="6202304368170870640">Mit deiner PIN kannst du dich auf deinem Gerät anmelden oder es entsperren.</translation>
 <translation id="6203247599828309566">Du hast eine Notiz für ein Passwort auf dieser Website gespeichert. Wenn du die Notiz aufrufen möchtest, klicke auf das Schlüsselsymbol.</translation>
 <translation id="6205314730813004066">Datenschutz bei Anzeigen</translation>
+<translation id="6205993460077903908"><ph name="WINDOW_TITLE" /> – Mikrofon zeichnet auf</translation>
 <translation id="6206199626856438589">Du wirst von angezeigten Websites abgemeldet, auch in geöffneten Tabs</translation>
 <translation id="6206311232642889873">Bild kop&amp;ieren</translation>
 <translation id="6207200176136643843">Auf Standard-Zoomstufe zurücksetzen</translation>
@@ -7166,6 +7165,7 @@ Du hast # weitere gehackte Passwörter. Der Google Passwortmanager empfiehlt, d
 <translation id="6657585470893396449">Passwort</translation>
 <translation id="6659213950629089752">Diese Seite wurde mit der Erweiterung "<ph name="NAME" />" gezoomt.</translation>
 <translation id="6659594942844771486">Tab</translation>
+<translation id="6660099350750552197"><ph name="WINDOW_TITLE" /> – Kamera zeichnet auf</translation>
 <translation id="6660819301598582123">Zwölf Boxkämpfer jagen Viktor quer über den großen Sylter Deich.</translation>
 <translation id="666099631117081440">Druckserver</translation>
 <translation id="6662931079349804328">Die Unternehmensrichtlinie hat sich geändert. Die Schaltfläche für Tests wurde aus der Symbolleiste entfernt.</translation>
@@ -8979,6 +8979,7 @@ Speichere deine Schlüsseldatei an einem sicheren Ort. Du benötigst die Datei, 
 <translation id="8059417245945632445">&amp;Geräte untersuchen</translation>
 <translation id="8059456211585183827">Es sind keine Drucker verfügbar, die gespeichert werden können.</translation>
 <translation id="8061091456562007989">Änderung rückgängig machen</translation>
+<translation id="8061244502316511332">Dieser Tab verwendet dein Mikrofon</translation>
 <translation id="8061970399284390013">Rechtschreib- und Grammatikprüfung</translation>
 <translation id="8061991877177392872">Du hast Voice Match schon auf einem anderen Gerät mit Assistant eingerichtet. Diese vorherigen Aufnahmen wurden verwendet, um ein Sprachmodell auf diesem Gerät zu erstellen.</translation>
 <translation id="8062844841289846053">{COUNT,plural, =1{1 Blatt Papier}other{{COUNT} Blätter Papier}}</translation>
@@ -9460,6 +9461,7 @@ Speichere deine Schlüsseldatei an einem sicheren Ort. Du benötigst die Datei, 
 <translation id="844063558976952706">Immer auf dieser Website</translation>
 <translation id="8441313165929432954">Tethering aktivieren/deaktivieren</translation>
 <translation id="8443986842926457191">Die URL ist länger als 2048 Zeichen.</translation>
+<translation id="8445281870900174108">Dieser Tab verwendet deine Kamera</translation>
 <translation id="8446884382197647889">Weitere Informationen</translation>
 <translation id="8447409163267621480">Entweder Strg oder Alt integrieren</translation>
 <translation id="844850004779619592">Keine Befehle gefunden</translation>
@@ -10534,6 +10536,7 @@ Informationen dazu, welche Daten von Google erhoben werden und warum, findest du
 <translation id="981121421437150478">Offline</translation>
 <translation id="983192555821071799">Alle Tabs schließen</translation>
 <translation id="983511809958454316">Diese Funktion wird im VR-Modus nicht unterstützt</translation>
+<translation id="983531994960412650"><ph name="WINDOW_TITLE" /> – Kamera und Mikrofon zeichnen auf</translation>
 <translation id="984275831282074731">Zahlungsmethoden</translation>
 <translation id="984705303330760860">Sprachen für die Rechtschreibprüfung hinzufügen</translation>
 <translation id="98515147261107953">Querformat</translation>

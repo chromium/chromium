@@ -3210,7 +3210,6 @@ Zpráva serveru: <ph name="SERVER_MSG" /></translation>
 <translation id="3473479545200714844">Lupa obrazovky</translation>
 <translation id="3474218480460386727">Nová slova smí mít maximálně 99 písmen</translation>
 <translation id="3474624961160222204">Pokračovat jako <ph name="NAME" /></translation>
-<translation id="3475843873335999118">Otisk prstu stále nebyl rozpoznán. Zadejte prosím heslo.</translation>
 <translation id="3476303763173086583">Odesílat údaje o využití a diagnostice. Pomozte prostředí Android svého dítěte zlepšit tím, že necháte do Googlu automaticky odesílat diagnostické údaje a údaje o využití zařízení a aplikací. Tyto údaje nebudou používány ke zjištění totožnosti dítěte a pomohou nám se zvyšováním stability systému a aplikací a dalšími vylepšeními. Některá souhrnná data budou moci využít také naši partneři, např. vývojáři aplikací pro Android. Toto nastavení je <ph name="BEGIN_LINK1" />vyžadováno<ph name="END_LINK1" /> vlastníkem. Vlastník může zvolit, že se diagnostické údaje a údaje o využití z tohoto zařízení mají odesílat do Googlu. Pokud má dítě zapnuté dodatečné nastavení Aktivita na webu a v aplikacích, mohou se tato data ukládat do jeho účtu Google. <ph name="BEGIN_LINK2" />Další informace<ph name="END_LINK2" /></translation>
 <translation id="347670947055184738">Jejda! Systému se nepodařilo načíst zásady pro vaše zařízení.</translation>
 <translation id="347785443197175480">Povolit webu <ph name="HOST" /> přístup k webové kameře a mikrofonu i nadále</translation>
@@ -3577,7 +3576,6 @@ Zpráva serveru: <ph name="SERVER_MSG" /></translation>
 <translation id="3759933321830434300">Blokování částí webových stránek</translation>
 <translation id="3760460896538743390">Prozkoumat stránku na &amp;pozadí</translation>
 <translation id="37613671848467444">Otevřít v &amp;anonymním okně</translation>
-<translation id="3761390540041101668">Poskytněte jasný popis problému a kroky k jeho reprodukci (pokud je to možné)</translation>
 <translation id="3761556954875533505">Povolit webu upravovat soubory?</translation>
 <translation id="3763433740586298940">Nežádoucí weby můžete zablokovat. Chrome z tohoto seznamu také automaticky odstraňuje weby, které jsou starší než 30 dní.</translation>
 <translation id="3763549179847864476">Průvodce ochranou soukromí, tlačítko Zpět</translation>
@@ -5888,7 +5886,6 @@ Na tento účet se mohou vztahovat oprávnění, která jste již udělili webů
 <translation id="5608580678041221894">Oblast oříznutí můžete upravit nebo přesunout klepnutím na následující klávesy</translation>
 <translation id="5609231933459083978">Aplikace je pravděpodobně neplatná.</translation>
 <translation id="561236229031062396"><ph name="SHORTCUT_NAME" />, <ph name="APP_FULL_NAME" /></translation>
-<translation id="5612734644261457353">Je nám líto, vaše heslo se stále nedaří ověřit. Poznámka: Pokud jste heslo nedávno změnili, vaše nové heslo bude použitelné až po odhlášení. Použijte své staré heslo.</translation>
 <translation id="5614190747811328134">Sdělení pro uživatele</translation>
 <translation id="5614553682702429503">Uložit heslo?</translation>
 <translation id="5614947000616625327">Klíčenka na iCloudu</translation>

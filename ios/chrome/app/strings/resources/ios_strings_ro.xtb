@@ -60,6 +60,7 @@
 <translation id="1285320974508926690">Nu traduce niciodată acest site</translation>
 <translation id="1291506870746876680">Permisiunile pentru <ph name="BEGIN_BOLD" /><ph name="SITE_NAME" /><ph name="END_BOLD" /> vor fi resetate la starea dezactivat când părăsești site-ul.</translation>
 <translation id="1295289763199166823">Personalizează meniul</translation>
+<translation id="1296581780163690620">Descarci fișierul? (<ph name="FILE_SIZE" />)</translation>
 <translation id="1305822519689023679">Pentru a te asigura că poți folosi oricând parolele din Contul Google, confirmă-ți identitatea.</translation>
 <translation id="1312721752506309252">Protecția îmbunătățită este activată</translation>
 <translation id="1321993286294231467">Eroare la salvarea imaginii.</translation>
@@ -200,6 +201,7 @@
 <translation id="2055515971416882518">Deschide Setări.</translation>
 <translation id="2059166748188874810">Municipiu</translation>
 <translation id="2062410130322589403">Un ghid pentru opțiunile de confidențialitate</translation>
+<translation id="20638360198452347">Selector pentru tipul de unitate</translation>
 <translation id="2073572773299281212">Activ acum <ph name="DAYS" /> zile</translation>
 <translation id="2074131957428911366">Poți să alegi oricând ce să sincronizezi în <ph name="BEGIN_LINK" />setări<ph name="END_LINK" />.</translation>
 <translation id="2079545284768500474">Anulează</translation>
@@ -244,6 +246,7 @@
 <translation id="2310154074101836012">Editează caruselul</translation>
 <translation id="2316709634732130529">Folosește parola sugerată</translation>
 <translation id="2320166752086256636">Ascunde tastatura</translation>
+<translation id="2326302612031521902">Selector de unități</translation>
 <translation id="2348630484974447747">Colet</translation>
 <translation id="2351097562818989364">Setările de traducere au fost resetate.</translation>
 <translation id="235789365079050412">Politica de confidențialitate Google</translation>
@@ -267,6 +270,7 @@ Site-urile nu pot folosi cookie-uri pentru a-ți vedea activitatea de navigare d
 <translation id="2459155039684421202">În bara de adrese, introdu o activitate, cum ar fi „șterge istoricul” sau „editează parolele”.</translation>
 <translation id="2461070143328828326">Setări parolă</translation>
 <translation id="2462736546165239215">Aici găsești întregul istoric de navigare.</translation>
+<translation id="2468132863574325555">Drive</translation>
 <translation id="2469960372084740698">Dezactivezi Navigarea sigură?</translation>
 <translation id="2473876017985765807">Ai salvat deja o parolă pentru <ph name="WEBSITE" /></translation>
 <translation id="2476359652512522418">Neselectat</translation>
@@ -939,6 +943,7 @@ Trebuie să activezi Handoff în secțiunea General din Setări, iar dispozitive
 <translation id="6149061208933997199">Folosește parola</translation>
 <translation id="6152406514676263192">Sincronizează pentru conținutul cel mai relevant în funcție de interesele tale.</translation>
 <translation id="6159839020698489198">opțional</translation>
+<translation id="6160780110287872296">Descarci fișierul?</translation>
 <translation id="6170450281939467187">Traducere nereușită</translation>
 <translation id="6173499589275053515">Parola s-a salvat în Contul Google, <ph name="EMAIL" /></translation>
 <translation id="6184086493125982861">Afișează butonul File</translation>
@@ -1006,6 +1011,7 @@ Trebuie să activezi Handoff în secțiunea General din Setări, iar dispozitive
 <translation id="6447842834002726250">Cookie-uri</translation>
 <translation id="6453018583485750254">Nu s-a făcut niciodată verificarea.</translation>
 <translation id="6459307836338400162">Pentru mai multe setări privind confidențialitatea, securitatea și colectarea datelor, consultă <ph name="BEGIN_LINK" />Sincronizarea<ph name="END_LINK" /> și <ph name="BEGIN_LINK" />Serviciile Google<ph name="END_LINK" />.</translation>
+<translation id="646394917185284261">Fișiere</translation>
 <translation id="6464071786529933911">Deschide în Filă incognito nouă</translation>
 <translation id="6464397691496239022">Site-urile pot folosi cookie-uri pentru a-ți îmbunătăți experiența de navigare, de exemplu, pentru a te menține conectat(ă) sau pentru a reține articolele din coșul de cumpărături.
 

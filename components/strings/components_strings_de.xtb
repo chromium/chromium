@@ -54,6 +54,7 @@
 <translation id="1078033282564106222">Die Option „Hausnummer“ wurde ausgewählt</translation>
 <translation id="1080116354587839789">An Breite anpassen</translation>
 <translation id="1081061862829655580">Fach 19</translation>
+<translation id="1082026381988252344">Inhalte im geteilten Tab scrollen und zoomen</translation>
 <translation id="1089439967362294234">Passwort ändern</translation>
 <translation id="1090629319939036170">VR-Menü</translation>
 <translation id="1094777233105318927">Informationen zu deinem Browser, Betriebssystem, Gerät, der installierten Software und den Dateien</translation>
@@ -2526,6 +2527,7 @@ Du wirst sonst gemäß deinen Datenschutzeinstellungen blockiert. Wenn Cookies u
 <translation id="6051221802930200923">Du kannst <ph name="SITE" /> zurzeit nicht aufrufen, weil die Website das Zertifikats-Pinning nutzt. Netzwerkfehler und Angriffe sind in der Regel nur vorübergehend, sodass die Seite wahrscheinlich später wieder funktioniert.</translation>
 <translation id="6051898664905071243">Seitenzahl:</translation>
 <translation id="6052284303005792909">•</translation>
+<translation id="605237284704429106">IBAN wird ausgefüllt</translation>
 <translation id="6053584886670442526">Du kannst gespeicherte Adressen in allen Google-Produkten verwenden. Diese Adresse ist in deinem Google-Konto <ph name="ACCOUNT" /> gespeichert.</translation>
 <translation id="6053735090575989697">Weitere Informationen dazu, wie Google zum Schutz deiner Daten beiträgt, findest du in unserer Datenschutzerklärung.</translation>
 <translation id="6055888660316801977">Sichere Anmeldedaten für Zahlungen – Tabellenblatt für nicht übereinstimmende sichere Anmeldedaten</translation>
@@ -2800,6 +2802,7 @@ Du wirst sonst gemäß deinen Datenschutzeinstellungen blockiert. Wenn Cookies u
 <translation id="6612010098632894193">Onlinevideos</translation>
 <translation id="6613866251791999074">Weitere Informationen zu deiner Suchmaschine in Chrome</translation>
 <translation id="6615297766614333076">Stapelfach 2</translation>
+<translation id="6619496928666593220">IBAN nicht ausgefüllt</translation>
 <translation id="6624427990725312378">Kontaktdaten</translation>
 <translation id="6628463337424475685"><ph name="ENGINE" />-Suche</translation>
 <translation id="6629652037942826935">Luxusreisen</translation>

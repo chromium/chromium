@@ -60,6 +60,7 @@
 <translation id="1285320974508926690">Oversett aldri dette nettstedet</translation>
 <translation id="1291506870746876680">Tillatelsene for <ph name="BEGIN_BOLD" />«<ph name="SITE_NAME" />»<ph name="END_BOLD" /> blir tilbakestilt til å være avslått når du forlater dette nettstedet.</translation>
 <translation id="1295289763199166823">Tilpass menyen</translation>
+<translation id="1296581780163690620">Vil du laste ned filen? (<ph name="FILE_SIZE" />)</translation>
 <translation id="1305822519689023679">For å sikre at du alltid kan bruke passordene i Google-kontoen din, må du bekrefte at det er deg.</translation>
 <translation id="1312721752506309252">Økt beskyttelse er på</translation>
 <translation id="1321993286294231467">Feil ved lagring av bilde.</translation>
@@ -200,6 +201,7 @@
 <translation id="2055515971416882518">Åpne «Innstillinger».</translation>
 <translation id="2059166748188874810">Kommune</translation>
 <translation id="2062410130322589403">En veiledning til personvernvalgene dine</translation>
+<translation id="20638360198452347">Enhetstypevelger</translation>
 <translation id="2073572773299281212">Aktiv for <ph name="DAYS" /> dager siden</translation>
 <translation id="2074131957428911366">Du kan når som helst velge hva du vil synkronisere, i <ph name="BEGIN_LINK" />innstillingene<ph name="END_LINK" />.</translation>
 <translation id="2079545284768500474">Angre</translation>
@@ -244,6 +246,7 @@
 <translation id="2310154074101836012">Rediger karusell</translation>
 <translation id="2316709634732130529">Bruk foreslått passord</translation>
 <translation id="2320166752086256636">Skjul tastaturet</translation>
+<translation id="2326302612031521902">Enhetsvelger</translation>
 <translation id="2348630484974447747">Pakke</translation>
 <translation id="2351097562818989364">Oversettelsesinnstillingene dine er tilbakestilt.</translation>
 <translation id="235789365079050412">Googles personvernregler</translation>
@@ -267,6 +270,7 @@ Nettsteder kan ikke bruke informasjonskapsler til å se nettleseraktiviteten din
 <translation id="2459155039684421202">Skriv inn en oppgave i adressefeltet, for eksempel «tøm loggen» eller «rediger passord».</translation>
 <translation id="2461070143328828326">Passordinnstillinger</translation>
 <translation id="2462736546165239215">Du finner hele nettleserloggen din her.</translation>
+<translation id="2468132863574325555">Disk</translation>
 <translation id="2469960372084740698">Vil du slå av Safe Browsing?</translation>
 <translation id="2473876017985765807">Du har allerede lagret et passord for <ph name="WEBSITE" /></translation>
 <translation id="2476359652512522418">Ikke valgt</translation>
@@ -939,6 +943,7 @@ Handoff må også være aktivert i Generelt-delen av Innstillinger, og enhetene 
 <translation id="6149061208933997199">Bruk passord</translation>
 <translation id="6152406514676263192">Synkroniser for å få det mest relevante innholdet basert på interessene dine.</translation>
 <translation id="6159839020698489198">valgfritt</translation>
+<translation id="6160780110287872296">Vil du laste ned filen?</translation>
 <translation id="6170450281939467187">Kunne ikke oversette</translation>
 <translation id="6173499589275053515">Passordet er lagret i Google-kontoen din, <ph name="EMAIL" /></translation>
 <translation id="6184086493125982861">Vis faner</translation>
@@ -1006,6 +1011,7 @@ Handoff må også være aktivert i Generelt-delen av Innstillinger, og enhetene 
 <translation id="6447842834002726250">Informasjonskapsler</translation>
 <translation id="6453018583485750254">Sjekken har aldri vært kjørt.</translation>
 <translation id="6459307836338400162">For flere innstillinger knyttet til personvern, sikkerhet og datainnsamling, se både <ph name="BEGIN_LINK" />Synkronisering<ph name="END_LINK" /> og <ph name="BEGIN_LINK" />Google-tjenester<ph name="END_LINK" /> .</translation>
+<translation id="646394917185284261">Filer</translation>
 <translation id="6464071786529933911">Åpne i en ny inkognitofane</translation>
 <translation id="6464397691496239022">Nettsteder kan bruke informasjonskapsler for å gi deg en bedre surfeopplevelse, for eksempel for å holde deg pålogget eller huske varene i handlekurven din.
 

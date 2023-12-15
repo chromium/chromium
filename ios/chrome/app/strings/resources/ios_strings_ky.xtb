@@ -60,6 +60,7 @@
 <translation id="1285320974508926690">Бул сайт эч качан которулбасын</translation>
 <translation id="1291506870746876680"><ph name="BEGIN_BOLD" />"<ph name="SITE_NAME" />"<ph name="END_BOLD" /> сайтынан чыкканыңызда ага берилген уруксаттар өчүрүлөт.</translation>
 <translation id="1295289763199166823">Менюну тууралоо</translation>
+<translation id="1296581780163690620">Файлды жүктөп аласызбы? (<ph name="FILE_SIZE" />)</translation>
 <translation id="1305822519689023679">Google аккаунтуңуздагы сырсөздөрдү каалаган убакта колдонуу үчүн бул өзүңүз экениңизди ырастаңыз.</translation>
 <translation id="1312721752506309252">Өркүндөтүлгөн коргоо күйүк</translation>
 <translation id="1321993286294231467">Сүрөттү сактоодо ката кетти.</translation>
@@ -200,6 +201,7 @@
 <translation id="2055515971416882518">"Параметрлерди" ачыңыз.</translation>
 <translation id="2059166748188874810">Муниципалитет</translation>
 <translation id="2062410130322589403">Купуялык параметрлери боюнча жетектеме</translation>
+<translation id="20638360198452347">Бирдик түрүн тандагыч</translation>
 <translation id="2073572773299281212"><ph name="DAYS" /> күн мурун жигердүү болгон</translation>
 <translation id="2074131957428911366">Эмнени шайкештирүү керек экенин <ph name="BEGIN_LINK" />жөндөөлөрдөн<ph name="END_LINK" /> ар дайым тандай аласыз.</translation>
 <translation id="2079545284768500474">Кайтаруу</translation>
@@ -244,6 +246,7 @@
 <translation id="2310154074101836012">Айлампаны түзөтүү</translation>
 <translation id="2316709634732130529">Сунушталган сырсөздү колдонуу</translation>
 <translation id="2320166752086256636">Баскычтопту жашыруу</translation>
+<translation id="2326302612031521902">Бирдик тандагыч</translation>
 <translation id="2348630484974447747">Таңгак</translation>
 <translation id="2351097562818989364">Которуу параметрлериңиз баштапкы абалга келтирилди.</translation>
 <translation id="235789365079050412">Google Купуялык эрежелери</translation>
@@ -267,6 +270,7 @@
 <translation id="2459155039684421202">"Таржымалды өчүрүү" же "сырсөздөрдү өзгөртүү" сыяктуу жасалчу ишти дарек тилкесине жазыңыз.</translation>
 <translation id="2461070143328828326">Сырсөздүн параметрлери</translation>
 <translation id="2462736546165239215">Көргөн вебсайттарыңыздын баарын бул жерден таба аласыз.</translation>
+<translation id="2468132863574325555">Drive</translation>
 <translation id="2469960372084740698">Коопсуз серептөө өчүрүлсүнбү?</translation>
 <translation id="2473876017985765807"><ph name="WEBSITE" /> үчүн сырсөздү сактап койгонсуз</translation>
 <translation id="2476359652512522418">Тандалган жок</translation>
@@ -939,6 +943,7 @@ Handoff Параметрлердин жалпы бөлүмүндө да иште
 <translation id="6149061208933997199">Сырсөз колдонуу</translation>
 <translation id="6152406514676263192">Контентти кызыккан нерселериңиздин негизинде шайкештириңиз.</translation>
 <translation id="6159839020698489198">кошумча</translation>
+<translation id="6160780110287872296">Файлды жүктөп аласызбы?</translation>
 <translation id="6170450281939467187">Которулбай калды</translation>
 <translation id="6173499589275053515">Сырсөз Google аккаунтуңузга сакталды, <ph name="EMAIL" /></translation>
 <translation id="6184086493125982861">Өтмөктөрдү көрсөтүү</translation>
@@ -1006,6 +1011,7 @@ Handoff Параметрлердин жалпы бөлүмүндө да иште
 <translation id="6447842834002726250">Кукилер</translation>
 <translation id="6453018583485750254">Эч качан текшерилбейт.</translation>
 <translation id="6459307836338400162">Купуялыкка, коопсуздукка жана дайындарды чогултууга байланыштуу дагы башка параметрлерди көрүү үчүн <ph name="BEGIN_LINK" />Шайкештирүү<ph name="END_LINK" /> жана <ph name="BEGIN_LINK" />Google кызматтары<ph name="END_LINK" /> бөлүмүнө өтүңүз.</translation>
+<translation id="646394917185284261">Файлдар</translation>
 <translation id="6464071786529933911">Жаңы жашруун өтмктө ачуу</translation>
 <translation id="6464397691496239022">Серептөөнү ыңгайлаштыруу, мисалы, аккаунттан чыгарбоо же арабадагы сатып алган нерселериңизди эстеп калуу үчүн сайттар cookie файлдарын колдоно алышат.
 

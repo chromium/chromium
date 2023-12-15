@@ -54,6 +54,7 @@
 <translation id="1078033282564106222">Tehti valik Majanumber</translation>
 <translation id="1080116354587839789">Sobita laiusesse</translation>
 <translation id="1081061862829655580">Salv 19</translation>
+<translation id="1082026381988252344">Teie jagatud vahelehe sisu kerimine ja suumimine</translation>
 <translation id="1089439967362294234">Parooli muutmine</translation>
 <translation id="1090629319939036170">VR-menüü</translation>
 <translation id="1094777233105318927">Teave teie brauseri, OS-i, seadme, installitud tarkvara ja failide kohta</translation>
@@ -2528,6 +2529,7 @@ Vastasel korral blokeeritakse see teie privaatsusseadetes. See võimaldab teie k
 <translation id="6051221802930200923">Te ei saa saiti <ph name="SITE" /> praegu külastada, sest veebisait kasutab sertifikaadi kinnitamist. Võrguvead ja -rünnakud on tavaliselt ajutised, nii et leht tõenäoliselt hiljem töötab.</translation>
 <translation id="6051898664905071243">Lehtede arv:</translation>
 <translation id="6052284303005792909">•</translation>
+<translation id="605237284704429106">IBAN-i sisestamine</translation>
 <translation id="6053584886670442526">Salvestatud aadresse saate kasutada kõigis Google'i teenustes. See aadress salvestatakse teie Google'i kontole <ph name="ACCOUNT" />.</translation>
 <translation id="6053735090575989697">Vaadake meie privaatsuseeskirjadest lisateavet selle kohta, kuidas Google teie andmeid kaitseb.</translation>
 <translation id="6055888660316801977">Turvalise maksemandaadi leht selle kohta, et pole ühtegi sobivat mandaati</translation>
@@ -2802,6 +2804,7 @@ Vastasel korral blokeeritakse see teie privaatsusseadetes. See võimaldab teie k
 <translation id="6612010098632894193">Veebipõhised videod</translation>
 <translation id="6613866251791999074">Lisateave otsingumootori kohta Chrome'is</translation>
 <translation id="6615297766614333076">Virnastaja 2</translation>
+<translation id="6619496928666593220">IBAN on sisestamata</translation>
 <translation id="6624427990725312378">Kontaktteave</translation>
 <translation id="6628463337424475685"><ph name="ENGINE" />'i otsing</translation>
 <translation id="6629652037942826935">Luksusreisid</translation>

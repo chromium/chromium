@@ -3223,7 +3223,6 @@ Domena <ph name="DOMAIN" /> zahtijeva da pametna kartica ostane umetnuta.</trans
 <translation id="3473479545200714844">Povećalo ekrana</translation>
 <translation id="3474218480460386727">Za nove riječi koristite 99 slova ili manje</translation>
 <translation id="3474624961160222204">Nastavi kao <ph name="NAME" /></translation>
-<translation id="3475843873335999118">Još uvijek ne možemo prepoznati vaše otiske prsta. Unesite lozinku.</translation>
 <translation id="3476303763173086583">Šaljite podatke o korištenju i dijagnostici. Poboljšajte iskustvo korištenja Androida svog djeteta automatskim slanjem podataka o dijagnostici, uređaju i korištenju aplikacija Googleu. Ovo se neće koristiti za identifikaciju vašeg djeteta, a pomoći će stabilnosti sistema i aplikacija, kao i drugim poboljšanjima. Neki zbirni podaci će također pomoći Googleovim aplikacijama i partnerima, kao što su Androidovi programeri. Ovu <ph name="BEGIN_LINK1" />postavku<ph name="END_LINK1" /> je nametnuo vlasnik. Vlasnik može odlučiti da šalje podatke o dijagnostici i korištenju ovog uređaja u Google. Ako je za vaše dijete uključena postavka dodatna Aktivnost na webu i u aplikacijama, ti podaci mogu biti sačuvani na njegovom Google računu. <ph name="BEGIN_LINK2" />Saznajte više<ph name="END_LINK2" /></translation>
 <translation id="347670947055184738">Ups!  Sistem nije uspio preuzeti pravila za vaš uređaj.</translation>
 <translation id="347785443197175480">I dalje dozvoljavaj host računaru <ph name="HOST" /> da pristupa kameri i mikrofonu</translation>
@@ -3590,7 +3589,6 @@ Domena <ph name="DOMAIN" /> zahtijeva da pametna kartica ostane umetnuta.</trans
 <translation id="3759933321830434300">Blokiranje dijelova web stranica</translation>
 <translation id="3760460896538743390">Pregledaj &amp;stranicu u pozadini</translation>
 <translation id="37613671848467444">Otvori u &amp;anonimnom prozoru</translation>
-<translation id="3761390540041101668">Navedite jasan opis problema i korake za njegovu reprodukciju (ako je moguće)</translation>
 <translation id="3761556954875533505">Dozvoliti web lokaciji da uredi fajlove?</translation>
 <translation id="3763433740586298940">Možete blokirati web lokacije koje ne želite. Chrome također automatski briše web lokacije s liste koje su starije od 30 dana.</translation>
 <translation id="3763549179847864476">Dugme "Nazad" Vodiča za privatnost</translation>
@@ -5903,7 +5901,6 @@ Odobrenja koja ste već dali web lokacijama i aplikacijama se mogu primjenjivati
 <translation id="5608580678041221894">Dodirnite sljedeće tipke da podesite ili pomjerite područje za rezanje</translation>
 <translation id="5609231933459083978">Čini se da je aplikacija nevažeća.</translation>
 <translation id="561236229031062396"><ph name="SHORTCUT_NAME" />, <ph name="APP_FULL_NAME" /></translation>
-<translation id="5612734644261457353">Žao nam je, vaša lozinka još nije potvrđena. Napomena: ako ste nedavno promijenili lozinku, vaša nova lozinka će se primijeniti nakon što se odjavite. Ovdje koristite staru lozinku.</translation>
 <translation id="5614190747811328134">Korisničko obavještenja</translation>
 <translation id="5614553682702429503">Sačuvati lozinku?</translation>
 <translation id="5614947000616625327">iCloud Keychain</translation>

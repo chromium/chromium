@@ -3210,7 +3210,6 @@ Quer pará-lo?</translation>
 <translation id="3473479545200714844">Lupa</translation>
 <translation id="3474218480460386727">Utilize 99 letras ou menos para novas palavras.</translation>
 <translation id="3474624961160222204">Continuar como <ph name="NAME" /></translation>
-<translation id="3475843873335999118">Lamentamos, mas a sua impressão digital ainda não foi reconhecida. Introduza a palavra-passe.</translation>
 <translation id="3476303763173086583">Envie dados de utilização e diagnóstico. Ajude a melhorar a experiência Android da criança ao enviar automaticamente dados de diagnóstico, de utilização de aplicações e do dispositivo para a Google. Estes dados não serão utilizados para identificar a criança e ajudarão a melhorar a estabilidade das aplicações e do sistema, entre outras melhorias. Alguns dados agregados também ajudarão as aplicações e os parceiros Google, como os programadores Android. Esta <ph name="BEGIN_LINK1" />definição<ph name="END_LINK1" /> é aplicada pelo proprietário. O proprietário pode optar por enviar dados de diagnóstico e de utilização deste dispositivo para a Google. Se a definição Atividade da Web e de apps adicional estiver ativada para a criança, estes dados podem ser guardados na respetiva Conta Google. <ph name="BEGIN_LINK2" />Saiba mais<ph name="END_LINK2" /></translation>
 <translation id="347670947055184738">Ups! O sistema não conseguiu obter a política para o seu dispositivo.</translation>
 <translation id="347785443197175480">Continuar a permitir que <ph name="HOST" /> aceda à sua câmara e microfone</translation>
@@ -3577,7 +3576,6 @@ Quer pará-lo?</translation>
 <translation id="3759933321830434300">Bloquear partes de páginas Web</translation>
 <translation id="3760460896538743390">Inspecionar Página de Fundo</translation>
 <translation id="37613671848467444">Abrir na Janela de &amp;Navegação Anónima</translation>
-<translation id="3761390540041101668">Descreva claramente o problema e os passos para recriá-lo (se possível)</translation>
 <translation id="3761556954875533505">Permitir que o site edite ficheiros?</translation>
 <translation id="3763433740586298940">Pode bloquear sites que não quer. O Chrome também elimina automaticamente os sites da lista com mais de 30 dias.</translation>
 <translation id="3763549179847864476">Botão anterior do Guia de privacidade</translation>
@@ -5889,7 +5887,6 @@ As autorizações que já concedeu aos Websites e apps podem aplicar-se a esta c
 <translation id="5608580678041221894">Toque nas teclas seguintes para ajustar ou mover a área de recorte</translation>
 <translation id="5609231933459083978">A aplicação parece ser inválida.</translation>
 <translation id="561236229031062396"><ph name="SHORTCUT_NAME" />, <ph name="APP_FULL_NAME" /></translation>
-<translation id="5612734644261457353">Lamentamos, mas não foi possível confirmar a sua palavra-passe. Nota: se alterou a palavra-passe recentemente, a nova palavra-passe será aplicada quando terminar sessão. Utilize a palavra-passe antiga aqui.</translation>
 <translation id="5614190747811328134">Aviso ao utilizador</translation>
 <translation id="5614553682702429503">Guardar a palavra-passe?</translation>
 <translation id="5614947000616625327">Porta-chaves iCloud</translation>

@@ -60,6 +60,7 @@
 <translation id="1285320974508926690">اس سائٹ کا ترجمہ کبھی نہ کریں</translation>
 <translation id="1291506870746876680">جب آپ اس سائٹ کو چھوڑ دیتے ہیں تو <ph name="BEGIN_BOLD" />"<ph name="SITE_NAME" />"<ph name="END_BOLD" /> اجازتیں ری سیٹ ہو جائیں گی۔</translation>
 <translation id="1295289763199166823">مینیو کو حسب ضرورت بنائیں</translation>
+<translation id="1296581780163690620">فائل ڈاؤن لوڈ کریں؟ (<ph name="FILE_SIZE" />)</translation>
 <translation id="1305822519689023679">‏یہ یقینی بنانے کیلئے کہ آپ ہمیشہ اپنے Google اکاؤنٹ میں پاس ورڈز استعمال کر سکتے ہیں، تصدیق کریں کہ یہ آپ ہی ہیں۔</translation>
 <translation id="1312721752506309252">بہتر کردہ تحفظ آن ہے</translation>
 <translation id="1321993286294231467">تصویر محفوظ کرنے میں خرابی۔</translation>
@@ -200,6 +201,7 @@
 <translation id="2055515971416882518">"ترتیبات" کھولیں۔</translation>
 <translation id="2059166748188874810">میونسپلٹی</translation>
 <translation id="2062410130322589403">آپ کی رازداری کے انتخابات کی گائیڈ</translation>
+<translation id="20638360198452347">یونٹ کی قسم کا منتخب کنندہ</translation>
 <translation id="2073572773299281212"><ph name="DAYS" /> دن پہلے فعال تھا</translation>
 <translation id="2074131957428911366">آپ <ph name="BEGIN_LINK" />ترتیبات<ph name="END_LINK" /> میں کسی بھی وقت اس بات کا انتخاب کر سکتے ہیں کہ کس چیز کی مطابقت پذیری کرنی ہے۔</translation>
 <translation id="2079545284768500474">کالعدم کریں</translation>
@@ -244,6 +246,7 @@
 <translation id="2310154074101836012">کیراسیل میں ترمیم کریں</translation>
 <translation id="2316709634732130529">تجویز کردہ پاس ورڈ استعمال کریں</translation>
 <translation id="2320166752086256636">کی بورڈ چھپائیں</translation>
+<translation id="2326302612031521902">یونٹ کا منتخب کنندہ</translation>
 <translation id="2348630484974447747">پیکیج</translation>
 <translation id="2351097562818989364">ترجمہ کی آپ کی ترتیبات دوبارہ ترتیب دی گئیں ہیں۔</translation>
 <translation id="235789365079050412">‏Google کی رازداری کی پالیسی</translation>
@@ -267,6 +270,7 @@
 <translation id="2459155039684421202">ایڈریس بار میں، "میری سرگزشت صاف کریں" یا "پاس ورڈز میں ترمیم کریں" جیسا کام درج کریں۔</translation>
 <translation id="2461070143328828326">پاس ورڈ کی ترتیبات</translation>
 <translation id="2462736546165239215">آپ یہاں اپنی تمام براؤزنگ کی سرگزشت تلاش کر سکتے ہیں۔</translation>
+<translation id="2468132863574325555">Drive</translation>
 <translation id="2469960372084740698">محفوظ براؤزنگ آف کریں؟</translation>
 <translation id="2473876017985765807">آپ نے پہلے ہی <ph name="WEBSITE" /> کے لیے ایک پاس ورڈ محفوظ کیا ہے</translation>
 <translation id="2476359652512522418">انتخاب نہیں کیا گیا</translation>
@@ -939,6 +943,7 @@ Handoff ترتیبات کے عام سیکشن میں بھی فعال ہونی ض
 <translation id="6149061208933997199">پاس ورڈ استعمال کریں</translation>
 <translation id="6152406514676263192">اپنی دلچسپیوں کی بنیاد پر انتہائی متعلقہ مواد کے لیے مطابقت پذیری کریں۔</translation>
 <translation id="6159839020698489198">اختیاری</translation>
+<translation id="6160780110287872296">فائل ڈاؤن لوڈ کریں؟</translation>
 <translation id="6170450281939467187">ترجمہ نہیں ہو سکا</translation>
 <translation id="6173499589275053515">‏آپ کے Google اکاؤنٹ <ph name="EMAIL" /> میں پاس ورڈ محفوظ کیا گیا ہے</translation>
 <translation id="6184086493125982861">ٹیبز دکھائیں</translation>
@@ -1006,6 +1011,7 @@ Handoff ترتیبات کے عام سیکشن میں بھی فعال ہونی ض
 <translation id="6447842834002726250">کوکیز</translation>
 <translation id="6453018583485750254">چیک کبھی نہیں چلتا ہے۔</translation>
 <translation id="6459307836338400162">‏رازداری، سیکیورٹی اور ڈیٹا جمع کرنے سے متعلق مزید ترتیبات کے لیے، <ph name="BEGIN_LINK" />مطابقت پذیری<ph name="END_LINK" /> اور <ph name="BEGIN_LINK" />Google سروسز<ph name="END_LINK" /> دونوں دیکھیں۔</translation>
+<translation id="646394917185284261">Files</translation>
 <translation id="6464071786529933911">نئے پوشیدگی ٹیب میں کھولیں</translation>
 <translation id="6464397691496239022">سائٹس آپ کے براؤزنگ کے تجربہ کو بہتر بنانے کے لیے کوکیز کا استعمال کر سکتی ہیں، مثال کے طور پر آپ کو سائن ان رکھنا یا آپ کی شاپنگ کارٹ میں آئٹمز کو یاد رکھنا۔
 

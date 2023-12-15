@@ -1652,6 +1652,7 @@ Du kan administrere innstillingene for denne kontoen ved å installere Family Li
 <translation id="2249111429176737533">Åpne som vindu med faner</translation>
 <translation id="2249605167705922988">f.eks. 1–5, 8, 11–13</translation>
 <translation id="2249635629516220541">Tilpass informasjonen som brukes av nettsteder for å vise deg annonser</translation>
+<translation id="2250624716625396929">Denne fanen bruker kameraet og mikrofonen</translation>
 <translation id="2251218783371366160">Åpne med visningsprogrammet for systemet</translation>
 <translation id="225163402930830576">Oppdater nettverk</translation>
 <translation id="2251809247798634662">Nytt inkognitovindu</translation>
@@ -3218,7 +3219,6 @@ Du kan administrere innstillingene for denne kontoen ved å installere Family Li
 <translation id="3473479545200714844">Skjermforstørrer</translation>
 <translation id="3474218480460386727">Bruk 99 eller færre bokstaver for nye ord</translation>
 <translation id="3474624961160222204">Fortsett som <ph name="NAME" /></translation>
-<translation id="3475843873335999118">Fingeravtrykket ditt ble fortsatt ikke gjenkjent. Skriv inn passordet ditt.</translation>
 <translation id="3476303763173086583">Send bruks- og diagnostikkdata. Hjelp til med å gjøre Android-opplevelsen bedre for barnet ditt ved å sende diagnostikk-, enhets- og appbruksdata til Google automatisk. Disse dataene brukes ikke til å identifisere barnet ditt, men bidrar til å gjøre systemet og appene bedre og mer stabile. Noen aggregerte data hjelper også Google-apper og -partnere, for eksempel Android-utviklere. Denne <ph name="BEGIN_LINK1" />innstillingen<ph name="END_LINK1" /> håndheves av eieren. Eieren kan velge å sende diagnostikk- og bruksdata for denne enheten til Google. Hvis du har slått på innstillingen for annen nett- og appaktivitet for barnet ditt, kan disse dataene bli lagret i barnets Google-konto. <ph name="BEGIN_LINK2" />Finn ut mer<ph name="END_LINK2" /></translation>
 <translation id="347670947055184738">Beklager. Systemet kunne ikke hente reglene for enheten din.</translation>
 <translation id="347785443197175480">Fortsett å gi <ph name="HOST" /> tillatelse til å bruke kameraet og mikrofonen</translation>
@@ -3585,7 +3585,6 @@ Du kan administrere innstillingene for denne kontoen ved å installere Family Li
 <translation id="3759933321830434300">blokkere deler av nettsider</translation>
 <translation id="3760460896538743390">Inspeksjons- og bakgrunnsside</translation>
 <translation id="37613671848467444">Åpne i &amp;inkognitovindu</translation>
-<translation id="3761390540041101668">Gi en tydelig beskrivelse av problemet og fremgangsmåten for å gjenskape problemet (hvis det er mulig)</translation>
 <translation id="3761556954875533505">Vil du la nettstedet redigere filer?</translation>
 <translation id="3763433740586298940">Du kan blokkere nettsteder du ikke vil ha. Dessuten sletter Chrome automatisk nettsteder som er eldre enn 30 dager, fra listen.</translation>
 <translation id="3763549179847864476">Tilbakeknapp for personvernveiledningen</translation>
@@ -5894,7 +5893,6 @@ Tillatelser du allerede har gitt nettsteder og apper, kan gjelde for denne konto
 <translation id="5608580678041221894">Trykk på de følgende tastene for å justere eller flytte beskjæringsområdet</translation>
 <translation id="5609231933459083978">Appen ser ut til å være ugyldig.</translation>
 <translation id="561236229031062396"><ph name="SHORTCUT_NAME" /> – <ph name="APP_FULL_NAME" /></translation>
-<translation id="5612734644261457353">Passordet ditt kunne fortsatt ikke bekreftes. Merk: Hvis du endret passordet ditt nylig, blir det nye passordet ditt tatt i bruk når du logger deg av. Du må bruke det gamle passordet her.</translation>
 <translation id="5614190747811328134">Brukerinformasjon</translation>
 <translation id="5614553682702429503">Vil du lagre passordet?</translation>
 <translation id="5614947000616625327">iCloud-nøkkelring</translation>
@@ -6628,6 +6626,7 @@ Tillatelser du allerede har gitt nettsteder og apper, kan gjelde for denne konto
 <translation id="6202304368170870640">Du kan bruke PIN-koden til å logge på eller låse opp enheten.</translation>
 <translation id="6203247599828309566">Du har lagret en merknad for et passord på dette nettstedet. For å se den, klikk på nøkkelikonet.</translation>
 <translation id="6205314730813004066">Annonsepersonvern</translation>
+<translation id="6205993460077903908"><ph name="WINDOW_TITLE" /> – mikrofonopptak</translation>
 <translation id="6206199626856438589">Du blir logget av nettstedene som vises, også på faner som er åpne</translation>
 <translation id="6206311232642889873">&amp;Kopier bilde</translation>
 <translation id="6207200176136643843">Tilbakestill til standard zoomnivå</translation>
@@ -7179,6 +7178,7 @@ Du har # passord til som er utsatt for sikkerhetsbrudd. Google Passordlagring an
 <translation id="6657585470893396449">Passord</translation>
 <translation id="6659213950629089752">Denne siden ble zoomet inn av utvidelsen «<ph name="NAME" />»</translation>
 <translation id="6659594942844771486">Fane</translation>
+<translation id="6660099350750552197"><ph name="WINDOW_TITLE" /> – kameraopptak</translation>
 <translation id="6660819301598582123">Høvdingens kjære squaw får litt pizza i Mexico by.</translation>
 <translation id="666099631117081440">Utskriftstjenere</translation>
 <translation id="6662931079349804328">En Enterprise-regel er endret. Eksperimenter-knappen er fjernet fra verktøyraden.</translation>
@@ -8992,6 +8992,7 @@ Oppbevar nøkkelfilen på et trygt sted. Du får bruk for den når du skal oppre
 <translation id="8059417245945632445">&amp;Inspiser enheter</translation>
 <translation id="8059456211585183827">Det er ingen skrivere tilgjengelig for lagring.</translation>
 <translation id="8061091456562007989">Endre tilbake</translation>
+<translation id="8061244502316511332">Denne fanen bruker mikrofonen din</translation>
 <translation id="8061970399284390013">Stave- og grammatikkontroll</translation>
 <translation id="8061991877177392872">Det ser ut til at du allerede har konfigurert Voice Match med assistenten din på en annen enhet. Disse tidligere opptakene ble brukt til å lage en stemmemodell på denne enheten.</translation>
 <translation id="8062844841289846053">{COUNT,plural, =1{1 ark}other{{COUNT} ark}}</translation>
@@ -9473,6 +9474,7 @@ Oppbevar nøkkelfilen på et trygt sted. Du får bruk for den når du skal oppre
 <translation id="844063558976952706">Alltid på dette nettstedet</translation>
 <translation id="8441313165929432954">Slå internettdeling av/på</translation>
 <translation id="8443986842926457191">Nettadressen er lengre enn 2048 tegn</translation>
+<translation id="8445281870900174108">Denne fanen bruker kameraet ditt</translation>
 <translation id="8446884382197647889">Les mer</translation>
 <translation id="8447409163267621480">Inkluder enten Ctrl eller Alt</translation>
 <translation id="844850004779619592">Fant ingen kommandoer</translation>
@@ -10547,6 +10549,7 @@ Tillatelser du allerede har gitt nettsteder og apper, kan gjelde for denne konto
 <translation id="981121421437150478">Uten nett</translation>
 <translation id="983192555821071799">Lukk alle faner</translation>
 <translation id="983511809958454316">Denne funksjonen støttes ikke i VR</translation>
+<translation id="983531994960412650"><ph name="WINDOW_TITLE" /> – kamera- og mikrofonopptak</translation>
 <translation id="984275831282074731">Betalingsmåter</translation>
 <translation id="984705303330760860">Legg til språk for stavekontroll</translation>
 <translation id="98515147261107953">Liggende</translation>

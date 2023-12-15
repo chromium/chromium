@@ -54,6 +54,7 @@
 <translation id="1078033282564106222">Izbrana je bila možnost številke stavbe</translation>
 <translation id="1080116354587839789">Prilagoditev prikaza širini</translation>
 <translation id="1081061862829655580">Pladenj 19</translation>
+<translation id="1082026381988252344">Pomikanje in povečava/pomanjšava vsebine deljenega zavihka</translation>
 <translation id="1089439967362294234">Spremeni geslo</translation>
 <translation id="1090629319939036170">Meni VR</translation>
 <translation id="1094777233105318927">Podatki o brskalniku, operacijskem sistemu, napravi, nameščeni programski opremi in datotekah</translation>
@@ -2528,6 +2529,7 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="6051221802930200923">Spletnega mesta <ph name="SITE" /> trenutno ni mogoče obiskati, ker uporablja pripenjanje potrdil. Napake omrežja in napadi na omrežje so običajno začasni, zato bo ta stran verjetno delovala pozneje.</translation>
 <translation id="6051898664905071243">Število strani:</translation>
 <translation id="6052284303005792909">•</translation>
+<translation id="605237284704429106">Izpolnjevanje številke IBAN</translation>
 <translation id="6053584886670442526">Shranjene naslove lahko uporabite v Googlovih izdelkih. Ta naslov je shranjen v računu Google, <ph name="ACCOUNT" />.</translation>
 <translation id="6053735090575989697">Več informacij o tem, kako Google varuje vaše podatke, najdete v našem pravilniku o zasebnosti.</translation>
 <translation id="6055888660316801977">Preglednica za neujemanje poverilnic poverilnice za varno plačilo</translation>
@@ -2802,6 +2804,7 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="6612010098632894193">Spletni videoposnetki</translation>
 <translation id="6613866251791999074">Preberite več o iskalniku v Chromu</translation>
 <translation id="6615297766614333076">Zlagalnik 2</translation>
+<translation id="6619496928666593220">Številka IBAN ni izpolnjena</translation>
 <translation id="6624427990725312378">Podatki o stiku</translation>
 <translation id="6628463337424475685">Iskanje <ph name="ENGINE" /></translation>
 <translation id="6629652037942826935">Luksuzna potovanja</translation>

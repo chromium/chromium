@@ -60,6 +60,7 @@
 <translation id="1285320974508926690">Ne jamais traduire ce site</translation>
 <translation id="1291506870746876680">Les autorisations de <ph name="BEGIN_BOLD" />« <ph name="SITE_NAME" /> »<ph name="END_BOLD" />» seront désactivées lorsque vous quitterez ce site.</translation>
 <translation id="1295289763199166823">Personnaliser le menu</translation>
+<translation id="1296581780163690620">Télécharger le fichier? (<ph name="FILE_SIZE" />)</translation>
 <translation id="1305822519689023679">Pour vous assurer de toujours pouvoir utiliser les mots de passe dans votre compte Google, vérifiez qu'il s'agit bien de vous.</translation>
 <translation id="1312721752506309252">La protection renforcée est activée</translation>
 <translation id="1321993286294231467">Une erreur s'est produite lors de l'enregistrement de l'image.</translation>
@@ -200,6 +201,7 @@
 <translation id="2055515971416882518">Ouvrez « Paramètres ».</translation>
 <translation id="2059166748188874810">Municipalité</translation>
 <translation id="2062410130322589403">Un guide de vos choix en matière de confidentialité</translation>
+<translation id="20638360198452347">Sélecteur de type d'unité</translation>
 <translation id="2073572773299281212">Actif il y a <ph name="DAYS" /> jours</translation>
 <translation id="2074131957428911366">Vous pouvez toujours choisir les éléments à synchroniser dans les <ph name="BEGIN_LINK" />paramètres<ph name="END_LINK" />.</translation>
 <translation id="2079545284768500474">Annuler</translation>
@@ -244,6 +246,7 @@
 <translation id="2310154074101836012">Modifier le carrousel</translation>
 <translation id="2316709634732130529">Utiliser le mot de passe suggéré</translation>
 <translation id="2320166752086256636">Masquer le clavier</translation>
+<translation id="2326302612031521902">Sélecteur d'unité</translation>
 <translation id="2348630484974447747">Colis</translation>
 <translation id="2351097562818989364">Les paramètres de traduction ont été réinitialisés.</translation>
 <translation id="235789365079050412">Politique de confidentialité de Google</translation>
@@ -267,6 +270,7 @@ Les sites ne peuvent pas utiliser de témoins pour voir votre activité de navig
 <translation id="2459155039684421202">Dans la barre d'adresse, entrez une tâche comme « effacer mon historique » ou « modifier les mots de passe ».</translation>
 <translation id="2461070143328828326">Paramètres des mots de passe</translation>
 <translation id="2462736546165239215">Vous pouvez retrouver tout votre historique de navigation ici.</translation>
+<translation id="2468132863574325555">Disque</translation>
 <translation id="2469960372084740698">Désactiver la navigation sécurisée?</translation>
 <translation id="2473876017985765807">Vous avez déjà enregistré un mot de passe pour le site <ph name="WEBSITE" /></translation>
 <translation id="2476359652512522418">Non sélectionné</translation>
@@ -939,6 +943,7 @@ La fonction de transfert doit également être activée dans la section Généra
 <translation id="6149061208933997199">Utilis. mot de passe</translation>
 <translation id="6152406514676263192">Activez la synchronisation pour voir le contenu le plus pertinent en fonction de vos centres d'intérêt.</translation>
 <translation id="6159839020698489198">facultatif</translation>
+<translation id="6160780110287872296">Télécharger le fichier?</translation>
 <translation id="6170450281939467187">Échec de la traduction</translation>
 <translation id="6173499589275053515">Mot de passe enregistré dans votre compte Google, <ph name="EMAIL" /></translation>
 <translation id="6184086493125982861">Afficher les onglets</translation>
@@ -1006,6 +1011,7 @@ La fonction de transfert doit également être activée dans la section Généra
 <translation id="6447842834002726250">Témoins</translation>
 <translation id="6453018583485750254">La vérification n'a jamais été effectuée.</translation>
 <translation id="6459307836338400162">Pour voir plus de paramètres relatifs à la confidentialité, à la sécurité et à la collecte de données, reportez-vous aux rubriques <ph name="BEGIN_LINK" />Synchronisation<ph name="END_LINK" /> et <ph name="BEGIN_LINK" />Services Google<ph name="END_LINK" />.</translation>
+<translation id="646394917185284261">Fichiers</translation>
 <translation id="6464071786529933911">Ouvrir ds nv ong nav priv</translation>
 <translation id="6464397691496239022">Les sites peuvent utiliser des témoins afin d'améliorer votre expérience de navigation, par exemple en vous permettant de rester connecté ou en mémorisant des articles de votre panier d'achats.
 

@@ -3208,7 +3208,6 @@ Txartel adimenduna sartuta edukitzea eskatzen du <ph name="DOMAIN" /> domeinuak.
 <translation id="3473479545200714844">Lupa</translation>
 <translation id="3474218480460386727">Erabili 99 letra edo gutxiago beste hitz bat gehitzeko</translation>
 <translation id="3474624961160222204">Erabili <ph name="NAME" /></translation>
-<translation id="3475843873335999118">Ez dugu ezagutu hatz-marka. Idatzi pasahitza.</translation>
 <translation id="3476303763173086583">Bidali erabilera- eta diagnostiko-datuak. Bidali diagnostikoak eta gailu zein aplikazioen erabilerari buruzko datuak Google-ri automatikoki haurrak darabiltzan Android zerbitzuak hobetzen laguntzeko. Informazio hori ez da erabiliko haurra identifikatzeko eta, hari esker, sistemaren eta aplikazioen egonkortasuna hobetuko da, besteak beste. Gainera, multzokatutako datu batzuk oso baliagarriak izango dira Google-ren aplikazioak hobetzeko eta bazkideei laguntzeko (adibidez, Android-en garatzaileei). Jabeak konfiguratu du <ph name="BEGIN_LINK1" />ezarpen<ph name="END_LINK1" /> hori. Gailu honen diagnostiko- eta erabilera-datuak Google-ri bidaltzea aukera dezake jabeak. Haurraren kontuko Sareko eta aplikazioetako jarduera gehigarriak ezarpena aktibatuta badago, baliteke datu horiek haren Google-ko kontuan gordetzea. <ph name="BEGIN_LINK2" />Lortu informazio gehiago<ph name="END_LINK2" /></translation>
 <translation id="347670947055184738">Sistemak ezin izan ditu eskuratu gailuaren gidalerroak.</translation>
 <translation id="347785443197175480">Jarraitu <ph name="HOST" /> webguneari kamera eta mikrofonoa atzitzea baimentzen</translation>
@@ -3575,7 +3574,6 @@ Txartel adimenduna sartuta edukitzea eskatzen du <ph name="DOMAIN" /> domeinuak.
 <translation id="3759933321830434300">Blokeatu web-orrietako zatiak</translation>
 <translation id="3760460896538743390">Ikuskatu &amp;atzeko planoko orria</translation>
 <translation id="37613671848467444">Ireki &amp;ezkutuko nabigazio-leihoan</translation>
-<translation id="3761390540041101668">Azaldu garbi arazoa eta zer urrats egin dituzun hura gertatu aurretik (ahal baduzu)</translation>
 <translation id="3761556954875533505">Fitxategiak editatzeko baimena eman nahi diozu webguneari?</translation>
 <translation id="3763433740586298940">Nahi ez dituzun webguneak blokea ditzakezu. Gainera, Chrome-k automatikoki ezabatzen ditu zerrendatik 30 egun baino gehiago dituzten webguneak.</translation>
 <translation id="3763549179847864476">Pribatutasun-gidan atzera egiteko botoia</translation>
@@ -5887,7 +5885,6 @@ Baliteke webguneei eta aplikazioei emandako baimenak kontu honi aplikatzea. Goog
 <translation id="5608580678041221894">Sakatu tekla hauek ebaki beharreko eremua doitzeko edo mugitzeko</translation>
 <translation id="5609231933459083978">Dirudienez, aplikazioak ez du balio.</translation>
 <translation id="561236229031062396"><ph name="SHORTCUT_NAME" />, <ph name="APP_FULL_NAME" /></translation>
-<translation id="5612734644261457353">Orain ere, ezin izan da egiaztatu pasahitza. Oharra: pasahitza duela gutxi aldatu baduzu, saioa amaitu eta gero aplikatuko da pasahitz berria, beraz, erabili pasahitz zaharra hemen.</translation>
 <translation id="5614190747811328134">Erabiltzaileentzako oharra</translation>
 <translation id="5614553682702429503">Pasahitza gorde nahi duzu?</translation>
 <translation id="5614947000616625327">iCloud Keychain</translation>

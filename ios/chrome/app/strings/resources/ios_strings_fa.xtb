@@ -60,6 +60,7 @@
 <translation id="1285320974508926690">این سایت هرگز ترجمه نشود</translation>
 <translation id="1291506870746876680">هرگاه این سایت را ترک کنید، اجازه‌های <ph name="BEGIN_BOLD" />«<ph name="SITE_NAME" />»<ph name="END_BOLD" /> به حالت خاموش برمی‌گردد.</translation>
 <translation id="1295289763199166823">سفارشی‌سازی منو</translation>
+<translation id="1296581780163690620">فایل بارگیری شود؟ (<ph name="FILE_SIZE" />)</translation>
 <translation id="1305822519689023679">‏برای اطمینان از اینکه همیشه می‌توانید از گذرواژه‌های ذخیره‌شده در «حساب Google» خود استفاده کنید، هویتتان را به‌تأیید برسانید.</translation>
 <translation id="1312721752506309252">محافظت بهبودیافته روشن است</translation>
 <translation id="1321993286294231467">خطایی هنگام ذخیره کردن تصویر روی داد.</translation>
@@ -200,6 +201,7 @@
 <translation id="2055515971416882518">«تنظیمات» را باز کنید.</translation>
 <translation id="2059166748188874810">شهرداری</translation>
 <translation id="2062410130322589403">راهنمای گزینه‌های حریم خصوصی</translation>
+<translation id="20638360198452347">گزینشگر نوع واحد</translation>
 <translation id="2073572773299281212">آخرین فعالیت: <ph name="DAYS" /> روز قبل</translation>
 <translation id="2074131957428911366">هرزمان خواستید می‌توانید مواردی را که می‌خواهید همگام‌سازی شود در <ph name="BEGIN_LINK" />تنظیمات<ph name="END_LINK" /> انتخاب کنید.</translation>
 <translation id="2079545284768500474">لغو</translation>
@@ -244,6 +246,7 @@
 <translation id="2310154074101836012">ویرایش گردونه</translation>
 <translation id="2316709634732130529">استفاده از گذرواژه پیشنهادی</translation>
 <translation id="2320166752086256636">پنهان کردن صفحه‌کلید</translation>
+<translation id="2326302612031521902">گزینشگر واحد</translation>
 <translation id="2348630484974447747">بسته</translation>
 <translation id="2351097562818989364">تنظیمات ترجمه شما بازنشانی شده است.</translation>
 <translation id="235789365079050412">‏خط‌مشی رازداری Google</translation>
@@ -267,6 +270,7 @@
 <translation id="2459155039684421202">در نوار نشانی، کاری مثل «پاک کردن سابقه من» یا «ویرایش گذرواژه‌ها» را وارد کنید.</translation>
 <translation id="2461070143328828326">تنظیمات رمز عبور</translation>
 <translation id="2462736546165239215">می‌توانید همه سابقه مرورتان را در اینجا ببینید.</translation>
+<translation id="2468132863574325555">Drive</translation>
 <translation id="2469960372084740698">«مرور ایمن» خاموش شود؟</translation>
 <translation id="2473876017985765807">قبلاً گذرواژه‌ای برای <ph name="WEBSITE" /> ذخیره کرده‌اید</translation>
 <translation id="2476359652512522418">انتخاب نشده</translation>
@@ -939,6 +943,7 @@ Handoff باید در بخش عمومی تنظیمات نیز فعال شود و
 <translation id="6149061208933997199">استفاده از گذرواژه</translation>
 <translation id="6152406514676263192">برای دریافت مرتبط‌ترین محتوا براساس علایقتان، همگام‌سازی کنید.</translation>
 <translation id="6159839020698489198">اختیاری</translation>
+<translation id="6160780110287872296">فایل بارگیری شود؟</translation>
 <translation id="6170450281939467187">ترجمه نشد</translation>
 <translation id="6173499589275053515">‏گذرواژه در «حساب Google» شما ذخیره شد، <ph name="EMAIL" /></translation>
 <translation id="6184086493125982861">نمایش برگه‌ها</translation>
@@ -1006,6 +1011,7 @@ Handoff باید در بخش عمومی تنظیمات نیز فعال شود و
 <translation id="6447842834002726250">کوکی‌ها</translation>
 <translation id="6453018583485750254">بررسی هرگز انجام نشده است.</translation>
 <translation id="6459307836338400162">‏برای تنظیمات بیشتر مربوط به حریم خصوصی، امنیت، و جمع‌آوری داده، <ph name="BEGIN_LINK" />همگام‌سازی<ph name="END_LINK" /> و <ph name="BEGIN_LINK" />سرویس‌های Google<ph name="END_LINK" /> را ببینید.</translation>
+<translation id="646394917185284261">Files</translation>
 <translation id="6464071786529933911">در برگه ناشناس جدید</translation>
 <translation id="6464397691496239022">سایت‌ها می‌توانند از کوکی‌ها برای بهبود تجربه مرورتان استفاده کنند، مثلاً برای اینکه شما را درحالت واردشده به سیستم نگه دارند یا موارد موجود در سبد خریدتان را به‌خاطر بسپارند.
 

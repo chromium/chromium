@@ -60,6 +60,7 @@
 <translation id="1285320974508926690">一律不翻译此网站</translation>
 <translation id="1291506870746876680">您离开<ph name="BEGIN_BOLD" />“<ph name="SITE_NAME" />”<ph name="END_BOLD" />后，这个网站的权限将重置为停用。</translation>
 <translation id="1295289763199166823">自定义菜单</translation>
+<translation id="1296581780163690620">下载文件？(<ph name="FILE_SIZE" />)</translation>
 <translation id="1305822519689023679">为了确保您可以一直使用 Google 账号的密码，请验证是您本人在操作。</translation>
 <translation id="1312721752506309252">增强型保护已开启</translation>
 <translation id="1321993286294231467">保存图片时出错。</translation>
@@ -200,6 +201,7 @@
 <translation id="2055515971416882518">打开“设置”。</translation>
 <translation id="2059166748188874810">自治市</translation>
 <translation id="2062410130322589403">隐私控制选项指南</translation>
+<translation id="20638360198452347">单位类型选择器</translation>
 <translation id="2073572773299281212"><ph name="DAYS" /> 天前曾有活动</translation>
 <translation id="2074131957428911366">您始终可在<ph name="BEGIN_LINK" />设置<ph name="END_LINK" />中选择要同步的内容。</translation>
 <translation id="2079545284768500474">撤消</translation>
@@ -244,6 +246,7 @@
 <translation id="2310154074101836012">编辑轮播界面</translation>
 <translation id="2316709634732130529">使用建议的密码</translation>
 <translation id="2320166752086256636">隐藏键盘</translation>
+<translation id="2326302612031521902">单位选择器</translation>
 <translation id="2348630484974447747">包裹</translation>
 <translation id="2351097562818989364">您的翻译设置已重置。</translation>
 <translation id="235789365079050412">Google 隐私权政策</translation>
@@ -267,6 +270,7 @@
 <translation id="2459155039684421202">在地址栏中输入任务，例如“清除我的历史记录”或“修改密码”。</translation>
 <translation id="2461070143328828326">密码设置</translation>
 <translation id="2462736546165239215">您可在此处找到您的所有浏览记录。</translation>
+<translation id="2468132863574325555">云端硬盘</translation>
 <translation id="2469960372084740698">关闭“安全浏览”功能？</translation>
 <translation id="2473876017985765807">您已经保存了在 <ph name="WEBSITE" /> 上使用的密码</translation>
 <translation id="2476359652512522418">未选中</translation>
@@ -939,6 +943,7 @@
 <translation id="6149061208933997199">使用密码</translation>
 <translation id="6152406514676263192">开启同步功能后，您便会看到系统根据您的兴趣推荐的最相关的内容。</translation>
 <translation id="6159839020698489198">可选</translation>
+<translation id="6160780110287872296">下载文件？</translation>
 <translation id="6170450281939467187">翻译失败</translation>
 <translation id="6173499589275053515">密码已保存到您的 Google 账号 <ph name="EMAIL" /> 中</translation>
 <translation id="6184086493125982861">显示标签页</translation>
@@ -1006,6 +1011,7 @@
 <translation id="6447842834002726250">Cookie</translation>
 <translation id="6453018583485750254">从未检查过。</translation>
 <translation id="6459307836338400162">如需了解更多与隐私、安全和数据收集相关的设置，请前往<ph name="BEGIN_LINK" />同步<ph name="END_LINK" />和 <ph name="BEGIN_LINK" />Google 服务<ph name="END_LINK" />这两个部分。</translation>
+<translation id="646394917185284261">Google 文件极客</translation>
 <translation id="6464071786529933911">在新的无痕式标签页中打开</translation>
 <translation id="6464397691496239022">网站可以使用 Cookie 来提升您的浏览体验，例如让您保持登录状态或记住您购物车中的商品。
 

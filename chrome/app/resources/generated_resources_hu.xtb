@@ -3223,7 +3223,6 @@ A(z) <ph name="DOMAIN" /> megköveteli, hogy ne távolítsa el az intelligens k�
 <translation id="3473479545200714844">Képernyőnagyító</translation>
 <translation id="3474218480460386727">Új szavak megadásához legfeljebb 99 betűt használhat</translation>
 <translation id="3474624961160222204">Folytatás mint <ph name="NAME" /></translation>
-<translation id="3475843873335999118">Sajnos az ujjlenyomatát továbbra sem sikerült felismerni. Adja meg jelszavát.</translation>
 <translation id="3476303763173086583">Használati és diagnosztikai adatok küldése. Segítsen gyermeke Android-élményének továbbfejlesztésében azzal, hogy automatikusan diagnosztikai, valamint eszköz- és alkalmazáshasználati adatokat küld a Google-nak. Az adatok a rendszer- és alkalmazásstabilitás javításában, valamint más fejlesztésekben segítenek, nem használjuk fel őket az Ön gyermekének azonosítására. Bizonyos összesített adatok a Google-alkalmazásoknak és -partnereknek, például az Android-fejlesztőknek is segítenek. Ezt a <ph name="BEGIN_LINK1" />beállítást<ph name="END_LINK1" /> kötelezővé tette az eszköz tulajdonosa. A tulajdonos dönthet úgy, hogy elküldi az eszközzel kapcsolatos diagnosztikai és használati adatokat a Google-nak. Ha az Internetes és alkalmazástevékenységek beállítás is be van kapcsolva a gyermekénél, akkor a rendszer ezeket az adatokat mentheti a gyermek Google-fiókjába. <ph name="BEGIN_LINK2" />További információ.<ph name="END_LINK2" /></translation>
 <translation id="347670947055184738">Hoppá! A rendszer nem tudta lehívni az eszköz házirendjét.</translation>
 <translation id="347785443197175480">A(z) <ph name="HOST" /> továbbra is hozzáférhet az Ön kamerájához és mikrofonjához</translation>
@@ -3590,7 +3589,6 @@ A(z) <ph name="DOMAIN" /> megköveteli, hogy ne távolítsa el az intelligens k�
 <translation id="3759933321830434300">Weboldalak adott részeinek letiltása</translation>
 <translation id="3760460896538743390">&amp;Háttéroldal vizsgálata</translation>
 <translation id="37613671848467444">Megnyitás &amp;inkognitóablakban</translation>
-<translation id="3761390540041101668">Adja meg a probléma egyértelmű leírását és a probléma reprodukálásának lépéseit (ha lehetséges).</translation>
 <translation id="3761556954875533505">Engedélyezi a webhelynek a fájlok szerkesztését?</translation>
 <translation id="3763433740586298940">Önnek lehetősége van a nem kívánt webhelyek letiltására. A Chrome emellett automatikusan törli a listáról a 30 napnál régebbi webhelyeket.</translation>
 <translation id="3763549179847864476">Adatvédelmi útmutató vissza gombja</translation>
@@ -5902,7 +5900,6 @@ A webhelyek és alkalmazások számára már megadott engedélyek erre a fiókra
 <translation id="5608580678041221894">Az alábbi kulcsokra koppintva módosítható vagy mozgatható a körbevágás területe</translation>
 <translation id="5609231933459083978">Úgy tűnik, hogy az alkalmazás érvénytelen.</translation>
 <translation id="561236229031062396"><ph name="SHORTCUT_NAME" />, <ph name="APP_FULL_NAME" /></translation>
-<translation id="5612734644261457353">Sajnos a jelszó ellenőrzése még mindig nem sikerült. Megjegyzés: ha a közelmúltban módosította jelszavát, az új jelszó kijelentkezés után kerül beállításra, ezért kérjük, itt a régi jelszót használja.</translation>
 <translation id="5614190747811328134">Felhasználói értesítés</translation>
 <translation id="5614553682702429503">Szeretné elmenteni a jelszót?</translation>
 <translation id="5614947000616625327">iCloud-kulcskarika</translation>

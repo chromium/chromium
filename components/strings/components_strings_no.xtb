@@ -54,6 +54,7 @@
 <translation id="1078033282564106222">Alternativet for bygningsnummer er valgt</translation>
 <translation id="1080116354587839789">Tilpass til vindusbredden</translation>
 <translation id="1081061862829655580">Skuff 19</translation>
+<translation id="1082026381988252344">Rull gjennom og zoom inn på innholdet på den delte fanen</translation>
 <translation id="1089439967362294234">Endre passord</translation>
 <translation id="1090629319939036170">VR-meny</translation>
 <translation id="1094777233105318927">Informasjon om nettleser, OS, enhet, installert programvare og filer.</translation>
@@ -2528,6 +2529,7 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="6051221802930200923">Du kan ikke gå til <ph name="SITE" /> akkurat nå, siden nettstedet bruker sertifikatfesting. Nettverksfeil og -angrep er vanligvis midlertidige, så denne siden fungerer sannsynligvis senere.</translation>
 <translation id="6051898664905071243">Antall sider:</translation>
 <translation id="6052284303005792909">•</translation>
+<translation id="605237284704429106">Fyller ut IBAN</translation>
 <translation id="6053584886670442526">Du kan bruke lagrede adresser i flere Google-produkter. Denne adressen er lagret i Google-kontoen din <ph name="ACCOUNT" />.</translation>
 <translation id="6053735090575989697">Finn ut mer om hvordan Google beskytter dataene dine, i personvernreglene våre.</translation>
 <translation id="6055888660316801977">Ark for sikker betalingslegitimasjon uten samsvarende legitimasjon</translation>
@@ -2802,6 +2804,7 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="6612010098632894193">Nettvideo</translation>
 <translation id="6613866251791999074">Finn ut mer om søkemotoren din i Chrome</translation>
 <translation id="6615297766614333076">Hylle 2</translation>
+<translation id="6619496928666593220">IBAN er ikke fylt ut</translation>
 <translation id="6624427990725312378">Kontaktinformasjon</translation>
 <translation id="6628463337424475685"><ph name="ENGINE" /> Søk</translation>
 <translation id="6629652037942826935">Luksusreiser</translation>

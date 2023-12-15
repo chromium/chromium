@@ -1510,6 +1510,7 @@ Wenn du diese Richtlinie konfigurieren möchtest, muss die Richtlinie <ph name="
       Ist sie auf „true“ festgelegt oder nicht konfiguriert, wird der Netzwerkstatus des Geräts ausgegeben.</translation>
 <translation id="2223393221350938149">Ausführung von JavaScript JIT für keine Website zulassen</translation>
 <translation id="2223598546285729819">Standardeinstellung für Benachrichtigungen</translation>
+<translation id="2224706708550115831">Nutzer-Browserzugriff auf eine Liste von URLs zulassen, während sich das durchgehend aktive VPN im strikten Modus mit aktivierter Sperrfunktion befindet und nicht verbunden ist</translation>
 <translation id="222673035924187991">TLS Encrypted ClientHello aktivieren</translation>
 <translation id="2231817271680715693">Browserverlauf bei erster Ausführung aus Standardbrowser importieren</translation>
 <translation id="2231962946025538735">Diese Richtlinie ist veraltet. Du kannst mit <ph name="DEFAULT_PLUGINS_SETTING_POLICY_NAME" /> die Verfügbarkeit des Flash-Plug-ins definieren und über <ph name="ALWAYS_OPEN_PDF_EXTERNALLY_POLICY_NAME" /> festlegen, ob der integrierte PDF-Viewer zum Öffnen von PDF-Dateien verwendet werden soll.
@@ -1648,6 +1649,8 @@ Die Funktion ist nicht verfügbar, wenn die Synchronisierung von Passwörtern de
 
       Sie wirkt sich nur auf den Zugriff auf USB-Geräte über die WebUSB API aus. Für die Gewährung des Zugriffs auf USB-Geräte über die Web Serial API siehe Richtlinie <ph name="SERIAL_ALLOW_USB_DEVICES_FOR_URLS_POLICY_NAME" />.</translation>
 <translation id="2318583605563438459">Eltern dürfen gemeinsam verwaltete Konten hinzufügen</translation>
+<translation id="2319139030891093109">Eine Liste der TLS-Zertifikate, die von <ph name="PRODUCT_NAME" /> als vertrauenswürdig eingestuft werden sollen.
+Zertifikate müssen mit Base64 codiert sein.</translation>
 <translation id="2326031114717677574">Häufigkeit, mit der Audiodaten analysiert und erhoben werden. Die geringste zulässige Häufigkeit beträgt 1 Minute.
 
       Wenn die Richtlinie nicht konfiguriert ist, beträgt die Häufigkeit standardmäßig 15 Minuten.</translation>
@@ -2877,6 +2880,15 @@ Ist die Richtlinie deaktiviert, sind keine Wortvorschläge bei Nutzung der physi
 <translation id="3398051852031115795">Standardmäßiges Systemverhalten (abhängig von der Bildschirmgröße)</translation>
 <translation id="3399859571630358395">Deaktivierung von schnellem Pairing (schnellem Bluetooth-Koppeln) erzwingen.</translation>
 <translation id="3404681701763345449">Dadurch wird die <ph name="GOOGLE_CALENDAR_NAME" />-Integration aktiviert.</translation>
+<translation id="3405361833556012520">Diese Richtlinie gilt nur für Webtraffic. Für den Play Store, die Webnavigation von Android-Apps und anderen Nutzertraffic wie Linux-VM-Traffic oder Druckaufträge gelten weiterhin die Einschränkungen, die vom durchgehend aktiven VPN auferlegt werden. Die Richtlinie wird nur erzwungen, solange das VPN nicht verbunden ist, und gilt nur für den Webtraffic von Nutzern. Während die Richtlinie erzwungen wird, kann der Systemtraffic das durchgehend aktive VPN umgehen, um bestimmte Aufgaben wie das Abrufen von Richtlinien oder das Synchronisieren der Systemzeit auszuführen.
+
+Mit dieser Richtlinie lassen sich bei Verwendung des unter https://support.google.com/chrome/a?p=url_blocklist_filter_format angegebenen Formats Ausnahmen für bestimmte Schemas, Subdomains anderer Domains, Ports oder bestimmte Pfade festlegen. Mit dem spezifischsten Filter wird festgelegt, ob eine URL blockiert oder zulässig ist.
+
+Wenn „<ph name="ALWAYSON_VPN_PRE_CONNECT_URL_ALLOWLIST_POLICY_NAME" />“ festgelegt, ein durchgehend aktives VPN konfiguriert und dieses VPN nicht verbunden ist, wird die Navigation zu allen Hosts blockiert. Eine Ausnahme bilden solche Hosts, die gemäß der Richtlinie „<ph name="ALWAYSON_VPN_PRE_CONNECT_URL_ALLOWLIST_POLICY_NAME" />“ zulässig sind. Bei diesem Gerätestatus werden „<ph name="URL_BLOCKLIST_POLICY_NAME" />“ und „<ph name="URL_ALLOWLIST_POLICY_NAME" />“ ignoriert. Wenn eine Verbindung zum durchgehend aktiven VPN hergestellt wird, werden die Richtlinien „<ph name="URL_BLOCKLIST_POLICY_NAME" />“ und „<ph name="URL_ALLOWLIST_POLICY_NAME" />“ angewendet und die Richtlinie „<ph name="ALWAYSON_VPN_PRE_CONNECT_URL_ALLOWLIST_POLICY_NAME" />“ wird ignoriert.
+
+Diese Richtlinie ist auf 1.000 Einträge beschränkt.
+
+Wenn die Richtlinie nicht konfiguriert ist, wird die Browsernavigation verhindert, wenn für das durchgehend aktive VPN der strikte Modus aktiviert und das VPN nicht verbunden ist.</translation>
 <translation id="3405997282295704902">Nutzern nicht erlauben, <ph name="PRODUCT_NAME" /> zu verwenden</translation>
 <translation id="3406122462682235653">Nutzer nicht fragen (Downloads werden sofort gestartet)</translation>
 <translation id="3408078762098350617">Diese Richtlinie steuert die Nutzereinstellungen für die in <ph name="SYSTEM_FEATURES_DISABLE_LIST_POLICY_NAME" /> aufgelisteten deaktivierten Funktionen.
@@ -3185,7 +3197,6 @@ Wenn diese Richtlinie auf „False“ gesetzt ist, werden keine Versionsinformat
 
 Diese Richtlinie wird nur angewendet, wenn das Gerät für <ph name="PRODUCT_NAME" /> mit <ph name="CLOUD_MANAGEMENT_ENROLLMENT_TOKEN" /> registriert ist.
 Für <ph name="PRODUCT_OS_NAME" /> wird diese Richtlinie immer angewendet.</translation>
-<translation id="3642557248926713561">Safe Browsing-Erweiterungsschutz deaktivieren</translation>
 <translation id="3644735978203799620">Aktiviert die automatische Auswahl für Aufnahmen auf mehreren Bildschirmen</translation>
 <translation id="3646859102161347133">Lupentyp festlegen</translation>
 <translation id="3647212518036289905">Wenn diese Richtlinie konfiguriert ist, wird festgelegt, welche GSSAPI-Bibliothek für die HTTP-Authentifizierung verwendet werden soll. Gib entweder nur den Namen einer Bibliothek oder einen vollständigen Pfad an.
@@ -4545,6 +4556,7 @@ Diese Richtlinie ist vorübergehend verfügbar und wird nach Einführung der Sys
 <translation id="4802905909524200151">Updateverhalten von <ph name="TPM_FIRMWARE_UPDATE_TPM" />-Firmware konfigurieren</translation>
 <translation id="4804828344300125154">Nach Nutzerabmeldung immer neu starten.</translation>
 <translation id="4807950475297505572">Die am längsten nicht verwendeten Nutzer werden entfernt, bis genügend freier Speicherplatz vorhanden ist.</translation>
+<translation id="4808396444416188826">TLS-Serverzertifikate, die von <ph name="PRODUCT_NAME" /> als vertrauenswürdig eingestuft werden sollen</translation>
 <translation id="4812270373673968774">Wenn die Richtlinie auf "Always" gesetzt ist, wird die Ablage von <ph name="PRODUCT_OS_NAME" /> automatisch ausgeblendet. Ist sie auf "Never" gesetzt, wird die Ablage nie automatisch ausgeblendet.
 
       Wenn du diese Richtlinie konfigurierst, kann sie von Nutzern nicht geändert werden. Falls die Richtlinie nicht konfiguriert ist, können Nutzer selbst entscheiden, ob die Ablage automatisch ausgeblendet werden soll.</translation>
@@ -5618,8 +5630,6 @@ Wenn diese Richtlinie deaktiviert oder nicht konfiguriert ist, sind Glanceables 
       Ist sie auf "False" gesetzt oder nicht konfiguriert, sind die Funktionen von Web Components v0 ab M80 standardmäßig deaktiviert.
 
       Diese Richtlinie wird nach Chrome 84 entfernt.</translation>
-<translation id="5755149423476170868">Wenn diese Richtlinie aktiviert oder nicht konfiguriert ist, wird der <ph name="SAFE_BROWSING_NAME" />-Erweiterungsschutz für <ph name="PRODUCT_NAME" /> durch <ph name="SAFE_BROWSING_PROTECTION_LEVEL_POLICY_NAME" /> gesteuert. Wenn <ph name="SAFE_BROWSING_PROTECTION_LEVEL_POLICY_NAME" /> auf <ph name="SAFE_BROWSING_PROTECTION_LEVEL_VALUE_STANDARD" /> oder <ph name="SAFE_BROWSING_PROTECTION_LEVEL_VALUE_ENHANCED" /> gesetzt ist, werden schädliche Erweiterungen in <ph name="PRODUCT_NAME" /> schneller deaktiviert. <ph name="PRODUCT_NAME" /> sendet eine Anfrage an den Google Safe Browsing-Server, um zu prüfen, ob eine Erweiterung aus dem Chrome Web Store entfernt wurde, weil sie als problematisch, d. h. schädlich, angreifbar, unerwünscht oder gegen die Chrome Web Store-Richtlinien (CWS) verstoßend eingestuft wird. Wenn eine Erweiterung aus dem Store entfernt wurde, hindert <ph name="PRODUCT_NAME" /> die Nutzer daran, sie zu installieren. Wurde sie bereits installiert, wird sie deaktiviert.
-Wenn die Richtlinie deaktiviert ist, ist auch der <ph name="SAFE_BROWSING_NAME" />-Erweiterungsschutz deaktiviert und schädliche Erweiterungen werden über das <ph name="GOOGLE_UPDATE_NAME" /> unregelmäßiger überprüft und entfernt. Es werden keine Daten zur Überprüfung an Google <ph name="SAFE_BROWSING_NAME" /> gesendet.</translation>
 <translation id="575647238840663288">Standardmäßig werden Dokumente zu an Ursprüngen gebundene Agent-Cluster hinzugefügt – die Funktion „document.domain“ kann für solche Dokumente nicht konfiguriert werden.</translation>
 <translation id="5756680608782814094">VPD-Informationen zu einem Gerät melden.
 
@@ -5736,7 +5746,6 @@ Wenn der Wert für <ph name="CHROMEOS_VERSION_PROPERTY_NAME" /> bei keinem Eintr
 <translation id="5883754873839596178">Wenn diese Richtlinie konfiguriert ist, legt sie die maximale Anzahl gleichzeitiger Verbindungen zum Proxyserver fest. Einige Proxyserver können eine hohe Anzahl gleichzeitiger Verbindungen pro Client nicht verarbeiten. Dieses Problem kann umgangen werden, indem für diese Richtlinie ein niedrigerer Wert festgelegt wird. Der Wert sollte kleiner als 100 und größer als 6 sein. Einige Web-Apps nutzen viele Verbindungen mit hängenden GETs. Daher kann ein Wert unter 32 dazu führen, dass der Browser hängt, wenn zu viele solcher Web-Apps geöffnet sind. Wenn du einen Wert unter dem Standardwert festlegst, geschieht dies auf eigenes Risiko.
 
       Ist diese Richtlinie nicht konfiguriert, so kommt der Standardwert von 32 zum Einsatz.</translation>
-<translation id="5885770645815872943">Safe Browsing-Erweiterungsschutz zulassen</translation>
 <translation id="5887414688706570295">Konfiguriert das TalkGadget-Präfix, das von Remotezugriff-Hosts verwendet wird, und verhindert, dass dieses von Nutzern geändert werden kann.
 
           Wenn dieses Präfix angegeben wird, wird es dem TalkGadget-Basisnamen vorangestellt, um einen vollständigen Domainnamen für das TalkGadget zu erstellen. Der Basisname der TalkGadget-Domain lautet ".talkgadget.google.com".
@@ -6375,7 +6384,6 @@ Weitere Informationen findest du in der Richtlinie <ph name="HTTPS_ONLY_MODE_POL
           Wenn diese Richtlinie deaktiviert ist, kann das <ph name="PRODUCT_OS_NAME" />-Gerät keine <ph name="GOOGLE_CALENDAR_NAME" />-Termine abrufen und im <ph name="PRODUCT_OS_NAME" />-Kalenderwidget in der Systemstatusleiste des angemeldeten Nutzers anzeigen.
 
           Ist die Richtlinie nicht konfiguriert, ist die <ph name="GOOGLE_CALENDAR_NAME" />-Funktion für Unternehmensnutzer standardmäßig aktiviert.</translation>
-<translation id="6450607392928079050">Der Safe Browsing-Erweiterungsschutz wird durch die <ph name="SAFE_BROWSING_PROTECTION_LEVEL_POLICY_NAME" />-Richtlinie gesteuert</translation>
 <translation id="6452882999388592166">Wenn diese Richtlinie aktiviert ist, wird die integrierte Komponentenerweiterung „CryptoToken“ beim Start geladen. Ist sie deaktiviert oder nicht konfiguriert, wird „CryptoToken“ beim Browserstart nicht geladen. Diese Richtlinie ist als vorübergehende Behelfslösung für Websites gedacht, die nicht funktionieren, weil „chrome.runtime“ als Nebeneffekt der Entfernung von „CryptoToken“ in Version M106 nicht definiert wird. Websites dürfen nicht davon abhängen, ob „chrome.runtime“ uneingeschränkt definiert ist.</translation>
 <translation id="6453641799812499182">Einschränkungen bei <ph name="CORS" />-Prüfungen in der neuen <ph name="CORS" />-Implementierung aktivieren</translation>
 <translation id="645425387487868471">Erzwungene Anmeldung für <ph name="PRODUCT_NAME" /> aktivieren</translation>

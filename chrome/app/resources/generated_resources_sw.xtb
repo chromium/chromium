@@ -3220,7 +3220,6 @@ Unaweza kudhibiti mipangilio ya akaunti hii kwa kusakinisha programu ya Family L
 <translation id="3473479545200714844">Kikuza skrini</translation>
 <translation id="3474218480460386727">Tumia herufi 99 au chache kwa maneno mapya</translation>
 <translation id="3474624961160222204">Endelea ukitumia <ph name="NAME" /></translation>
-<translation id="3475843873335999118">Samahani, alama yako ya kidole bado haijatambuliwa. Tafadhali weka nenosiri lako.</translation>
 <translation id="3476303763173086583">Tuma data ya matumizi na uchunguzi. Tusaidie kuboresha jinsi mtoto wako anavyotumia Android kwa kutuma kiotomatiki data ya uchunguzi na matumizi ya kifaa na programu kwa Google. Hatutatumia data hii kumtambulisha mtoto wako na itatusaidia kuboresha uthabiti wa programu na mfumo na maboresho mengine. Baadhi ya maelezo yaliyojumlishwa pia yatasaidia programu za Google na washirika kama vile wasanidi programu za Android. <ph name="BEGIN_LINK1" />Mipangilio<ph name="END_LINK1" /> hii inatekelezwa na mmiliki. Mmiliki anaweza kuamua kutuma data ya uchunguzi na matumizi ya kifaa hiki kwa Google. Ikiwa umewasha mipangilio ya historia ya Shughuli za ziada kwenye Wavuti na Programu kwa ajili ya mtoto wako, data hii inaweza kuhifadhiwa kwenye akaunti yake ya Google. <ph name="BEGIN_LINK2" />Pata maelezo zaidi<ph name="END_LINK2" /></translation>
 <translation id="347670947055184738">Lo!  Mfumo umeshindwa kuleta sera ya kifaa chako.</translation>
 <translation id="347785443197175480">Endelea kuruhusu <ph name="HOST" /> kufikia kamera na maikrofoni yako</translation>
@@ -3587,7 +3586,6 @@ Unaweza kudhibiti mipangilio ya akaunti hii kwa kusakinisha programu ya Family L
 <translation id="3759933321830434300">Zuia sehemu za kurasa za mtandao</translation>
 <translation id="3760460896538743390">Kagua Ukurasa wa Mandharinyuma</translation>
 <translation id="37613671848467444">Fungua katika &amp;Dirisha Chini kwa chini</translation>
-<translation id="3761390540041101668">Toa maelezo wazi kuhusu hitilafu na hatua za kuzalisha tena hitilafu (ikiwezekana)</translation>
 <translation id="3761556954875533505">Ungependa kuruhusu tovuti ibadilishe faili?</translation>
 <translation id="3763433740586298940">Unaweza kuzuia tovuti ambazo huzitaki. Chrome pia hufuta kiotomatiki tovuti zilizohifadhiwa kwenye orodha kwa zaidi ya siku 30.</translation>
 <translation id="3763549179847864476">Kitufe cha kurudi nyuma cha Mwongozo wa Faragha</translation>
@@ -5898,7 +5896,6 @@ Huenda ruhusa ambazo tayari umezipa tovuti na programu zikatumika kwenye akaunti
 <translation id="5608580678041221894">Gusa vitufe vinavyofuata ili urekebishe au usogeze eneo la kupunguzia</translation>
 <translation id="5609231933459083978">Programu inaonekana kuwa batili.</translation>
 <translation id="561236229031062396"><ph name="SHORTCUT_NAME" />, <ph name="APP_FULL_NAME" /></translation>
-<translation id="5612734644261457353">Samahani, bado nenosiri lako halikuweza kuthibitishwa. Kumbuka: ikiwa ulibadilisha nenosiri lako hivi karibuni, nenosiri lako jipya litaanza kutumika pindi tu utakapoondoka, tafadhali tumia nenosiri jipya hapa.</translation>
 <translation id="5614190747811328134">Arifa ya Mtumiaji</translation>
 <translation id="5614553682702429503">Ungependa kuhifadhi nenosiri?</translation>
 <translation id="5614947000616625327">iCloud Keychain</translation>

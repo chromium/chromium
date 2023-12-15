@@ -3206,7 +3206,6 @@ Sunucunun mesajı: <ph name="SERVER_MSG" /></translation>
 <translation id="3473479545200714844">Ekran büyüteci</translation>
 <translation id="3474218480460386727">Yeni kelimeler için 99 veya daha az harf kullanın</translation>
 <translation id="3474624961160222204"><ph name="NAME" /> olarak devam et</translation>
-<translation id="3475843873335999118">Maalesef parmak iziniz hâlâ tanınamadı. Lütfen şifrenizi girin.</translation>
 <translation id="3476303763173086583">Kullanım ve teşhis verilerini gönder. Teşhis, cihaz ve uygulama kullanımı verilerini otomatik olarak Google'a göndererek çocuğunuzun Android deneyiminin iyileştirilmesine yardımcı olun. Bu veriler, çocuğunuzun kimliğini tespit etmek için kullanılmaz; sistem ve uygulama kararlılığı ile diğer özellikleri iyileştirmeye yardımcı olur. Bazı birleştirilmiş veriler, Google uygulamalarına ve iş ortaklarına da (ör. Android geliştiricileri) yardımcı olur. Bu <ph name="BEGIN_LINK1" />ayar<ph name="END_LINK1" />, cihazın sahibi tarafından zorunlu kılınmıştır. Cihazın sahibi bu cihazın teşhis ve kullanım verilerini Google'a göndermeyi seçebilir. Çocuğunuz için ek Web ve Uygulama Etkinliği açıksa bu veriler çocuğunuzun Google hesabına kaydedilebilir. <ph name="BEGIN_LINK2" />Daha Fazla Bilgi<ph name="END_LINK2" /></translation>
 <translation id="347670947055184738">Hay aksi! Sistem, cihazınıza ait politikayı getiremedi.</translation>
 <translation id="347785443197175480"><ph name="HOST" /> sitesinin kamerama ve mikrofonuma erişmesine izin vermeye devam et</translation>
@@ -3573,7 +3572,6 @@ Sunucunun mesajı: <ph name="SERVER_MSG" /></translation>
 <translation id="3759933321830434300">Web sayfalarının parçalarını engelleme</translation>
 <translation id="3760460896538743390">&amp;Arka Plan Sayfasını İncele</translation>
 <translation id="37613671848467444">&amp;Gizli Pencerede Aç</translation>
-<translation id="3761390540041101668">Sorunu ve sorunun yeniden üretilmesi için uygulanacak adımları (mümkünse) net bir şekilde açıklayın</translation>
 <translation id="3761556954875533505">Siteye dosyaları düzenleme izni verilsin mi?</translation>
 <translation id="3763433740586298940">İstemediğiniz siteleri engelleyebilirsiniz. Chrome 30 günden daha uzun süre önce ziyaret edilmiş siteleri de otomatik olarak siler.</translation>
 <translation id="3763549179847864476">Gizlilik Rehberi geri düğmesi</translation>
@@ -5885,7 +5883,6 @@ Web sitelerine ve uygulamalara verdiğiniz izinler, bu hesap için geçerli olab
 <translation id="5608580678041221894">Kırpma alanını ayarlamak veya taşımak için aşağıdaki tuşlara dokunun</translation>
 <translation id="5609231933459083978">Uygulamanın geçersiz olduğu görülüyor.</translation>
 <translation id="561236229031062396"><ph name="SHORTCUT_NAME" />, <ph name="APP_FULL_NAME" /></translation>
-<translation id="5612734644261457353">Maalesef şifreniz hâlâ doğrulanamadı. Not: Şifrenizi yakın zamanda değiştirdiyseniz, yeni şifreniz çıkış yapmanızdan sonra geçerli olacaktır. Lütfen burada eski şifrenizi kullanın.</translation>
 <translation id="5614190747811328134">Kullanıcı Bildirimi</translation>
 <translation id="5614553682702429503">Şifre kaydedilsin mi?</translation>
 <translation id="5614947000616625327">iCloud Anahtar Zinciri</translation>

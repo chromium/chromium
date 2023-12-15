@@ -1540,6 +1540,7 @@ Jika kebijakan ini disetel, kebijakan <ph name="PRIVACY_SANDBOX_PROMPT_ENABLED_P
       Jika kebijakan disetel ke benar (true) atau tidak disetel, status jaringan perangkat akan dilaporkan.</translation>
 <translation id="2223393221350938149">Jangan izinkan situs apa pun menjalankan JIT JavaScript</translation>
 <translation id="2223598546285729819">Setelan pemberitahuan default</translation>
+<translation id="2224706708550115831">Mengizinkan browser pengguna mengakses daftar URL saat VPN Selalu Aktif diaktifkan dalam mode ketat dengan mengaktifkan kunci total dan saat VPN tidak terhubung</translation>
 <translation id="222673035924187991">Mengaktifkan Encrypted ClientHello TLS</translation>
 <translation id="2231817271680715693">Impor histori browseran dari browser default saat pertama kali dijalankan</translation>
 <translation id="2231962946025538735">Kebijakan ini tidak digunakan lagi. Gunakan kebijakan <ph name="DEFAULT_PLUGINS_SETTING_POLICY_NAME" /> untuk mengontrol ketersediaan plugin Flash dan <ph name="ALWAYS_OPEN_PDF_EXTERNALLY_POLICY_NAME" /> untuk mengontrol apakah penampil PDF yang terintegrasi akan digunakan untuk membuka file PDF atau tidak.
@@ -1678,6 +1679,8 @@ Fitur ini tidak tersedia jika sinkronisasi Sandi dinonaktifkan (baik melalui set
 
       Kebijakan ini hanya memengaruhi akses ke perangkat USB melalui WebUSB API. Untuk memberikan akses ke perangkat USB melalui Web Serial API, lihat kebijakan <ph name="SERIAL_ALLOW_USB_DEVICES_FOR_URLS_POLICY_NAME" />.</translation>
 <translation id="2318583605563438459">Izinkan orang tua menambahkan akun yang diawasi</translation>
+<translation id="2319139030891093109">Daftar sertifikat TLS yang harus dipercaya oleh <ph name="PRODUCT_NAME" />.
+Sertifikat harus dienkode dengan base64.</translation>
 <translation id="2326031114717677574">Interval pada saat data audio diambil sampelnya dan dikumpulkan. Batas minimum yang diizinkan adalah 1 menit.
 
       Jika tidak disetel, interval default 15 menit akan berlaku.</translation>
@@ -2954,6 +2957,15 @@ Jika disetel ke Nonaktif, fitur penulisan prediktif tidak akan diizinkan di keyb
 <translation id="3398051852031115795">Perilaku sistem default (bergantung pada ukuran layar)</translation>
 <translation id="3399859571630358395">Paksa penonaktifan Sambungan Cepat (penyambungan Bluetooth cepat).</translation>
 <translation id="3404681701763345449">Aktifkan Integrasi <ph name="GOOGLE_CALENDAR_NAME" />.</translation>
+<translation id="3405361833556012520">Kebijakan ini hanya berlaku untuk traffic browser. Play Store, navigasi web aplikasi Android, dan traffic pengguna lainnya seperti traffic VM Linux atau tugas pencetakan masih mematuhi batasan yang diberlakukan oleh VPN Selalu Aktif. Kebijakan ini hanya diterapkan saat VPN tidak terhubung dan hanya untuk traffic browser pengguna. Meskipun kebijakan ini diterapkan, traffic sistem juga dapat tidak menggunakan VPN Selalu Aktif untuk melakukan tugas seperti pengambilan kebijakan dan sinkronisasi jam sistem.
+
+Gunakan kebijakan ini untuk membuka pengecualian untuk skema tertentu, subdomain dari domain lain, port, atau jalur khusus, menggunakan format yang ditentukan di https://support.google.com/chrome/a?p=url_blocklist_filter_format. Filter yang paling spesifik akan menentukan apakah URL diblokir atau diizinkan.
+
+Jika <ph name="ALWAYSON_VPN_PRE_CONNECT_URL_ALLOWLIST_POLICY_NAME" /> disetel, VPN Selalu Aktif dikonfigurasi, dan VPN Selalu Aktif tidak terhubung, navigasi ke semua host akan diblokir, kecuali yang diizinkan oleh kebijakan <ph name="ALWAYSON_VPN_PRE_CONNECT_URL_ALLOWLIST_POLICY_NAME" />. Dalam status perangkat ini, <ph name="URL_BLOCKLIST_POLICY_NAME" /> dan <ph name="URL_ALLOWLIST_POLICY_NAME" /> diabaikan. Jika VPN Selalu Aktif terhubung, kebijakan <ph name="URL_BLOCKLIST_POLICY_NAME" /> dan <ph name="URL_ALLOWLIST_POLICY_NAME" /> diterapkan dan kebijakan <ph name="ALWAYSON_VPN_PRE_CONNECT_URL_ALLOWLIST_POLICY_NAME" /> diabaikan.
+
+Kebijakan ini terbatas untuk 1.000 entri.
+
+Jika kebijakan tidak disetel, navigasi browser apa pun akan dicegah saat VPN Selalu Aktif dengan mode ketat diaktifkan dan VPN tidak terhubung.</translation>
 <translation id="3405997282295704902">Jangan izinkan pengguna menggunakan <ph name="PRODUCT_NAME" /></translation>
 <translation id="3406122462682235653">Jangan tanya pengguna (download langsung dimulai)</translation>
 <translation id="3408078762098350617">Mengontrol pengalaman pengguna fitur yang dinonaktifkan yang tercantum di <ph name="SYSTEM_FEATURES_DISABLE_LIST_POLICY_NAME" />.
@@ -3282,7 +3294,6 @@ Jika kebijakan ini disetel ke Salah (False), informasi versi tidak akan dikumpul
 
 Kebijakan ini hanya berlaku saat perangkat didaftarkan dengan <ph name="CLOUD_MANAGEMENT_ENROLLMENT_TOKEN" /> untuk <ph name="PRODUCT_NAME" />.
 Kebijakan ini selalu berlaku untuk <ph name="PRODUCT_OS_NAME" />.</translation>
-<translation id="3642557248926713561">Nonaktifkan Perlindungan Ekstensi Safe Browsing</translation>
 <translation id="3644735978203799620">Mengaktifkan pemilihan otomatis untuk multi-screenshot</translation>
 <translation id="3646859102161347133">Menyetel jenis lup</translation>
 <translation id="3647212518036289905">Menyetel kebijakan akan menentukan library GSSAPI mana yang akan digunakan untuk autentikasi HTTP. Setel kebijakan ke nama library atau jalur lengkap.
@@ -4716,6 +4727,7 @@ Kebijakan ini bersifat sementara dan akan dihapus segera setelah pengurangan gem
 <translation id="4802905909524200151">Mengonfigurasi perilaku update firmware <ph name="TPM_FIRMWARE_UPDATE_TPM" /></translation>
 <translation id="4804828344300125154">Selalu reboot saat pengguna logout.</translation>
 <translation id="4807950475297505572">Pengguna yang paling jarang digunakan dihapus sampai terdapat cukup ruang kosong</translation>
+<translation id="4808396444416188826">Sertifikat server TLS yang harus dipercaya oleh <ph name="PRODUCT_NAME" /></translation>
 <translation id="4812270373673968774">Jika kebijakan ditetapkan ke Selalu (Always), rak <ph name="PRODUCT_OS_NAME" /> akan disembunyikan secara otomatis. Jika kebijakan ditetapkan ke Tidak Pernah (Never), rak tidak akan pernah disembunyikan secara otomatis.
 
       Jika Anda menetapkan kebijakan, pengguna tidak dapat mengubahnya. Jika tidak ditetapkan, pengguna akan menentukan untuk menyembunyikan rak secara otomatis atau tidak.</translation>
@@ -5819,8 +5831,6 @@ Jika kebijakan ini disetel ke nonaktif atau tidak disetel, widget Sekilas Info t
       Jika kebijakan ini ditetapkan ke False atau tidak ditetapkan, fitur Web Components v0 akan dinonaktifkan secara default, mulai dari M80.
 
       Kebijakan ini akan dihapus setelah Chrome 84.</translation>
-<translation id="5755149423476170868">Jika kebijakan ini disetel ke aktif atau tidak disetel, perlindungan ekstensi <ph name="SAFE_BROWSING_NAME" /> untuk <ph name="PRODUCT_NAME" /> akan dikontrol oleh <ph name="SAFE_BROWSING_PROTECTION_LEVEL_POLICY_NAME" />. Jika <ph name="SAFE_BROWSING_PROTECTION_LEVEL_POLICY_NAME" /> disetel ke <ph name="SAFE_BROWSING_PROTECTION_LEVEL_VALUE_STANDARD" /> atau <ph name="SAFE_BROWSING_PROTECTION_LEVEL_VALUE_ENHANCED" />, ekstensi berbahaya akan dinonaktifkan lebih cepat di <ph name="PRODUCT_NAME" />. <ph name="PRODUCT_NAME" /> mengirim permintaan ke server Google Safe Browsing untuk memeriksa apakah ekstensi telah dihapus dari Chrome Web Store karena dianggap bermasalah, yaitu software berbahaya, rentan, tidak diinginkan, atau melanggar kebijakan Chrome Web Store (CWS). Jika ekstensi dihapus, <ph name="PRODUCT_NAME" /> akan memblokir pengguna agar tidak menginstal ekstensi dan akan menonaktifkan ekstensi tersebut jika sudah diinstal.
-Jika kebijakan ini dinonaktifkan, perlindungan ekstensi <ph name="SAFE_BROWSING_NAME" /> akan dinonaktifkan dan ekstensi berbahaya akan diperiksa dan dihapus lebih jarang melalui <ph name="GOOGLE_UPDATE_NAME" />. Tidak ada data yang dikirim ke Google <ph name="SAFE_BROWSING_NAME" /> untuk meminta keputusan.</translation>
 <translation id="575647238840663288">Secara default, dokumen dapat ditempatkan di cluster agen dengan kunci asal. document.domain tidak dapat disetel untuk dokumen semacam ini.</translation>
 <translation id="5756680608782814094">Melaporkan informasi VPD perangkat.
 
@@ -5938,7 +5948,6 @@ Jika kebijakan ini dinonaktifkan, perlindungan ekstensi <ph name="SAFE_BROWSING_
 <translation id="5883754873839596178">Menyetel kebijakan akan menentukan jumlah maksimal koneksi simultan ke server proxy. Beberapa server proxy tidak dapat menangani koneksi serentak tiap klien dalam jumlah besar, yang dapat diselesaikan dengan menyetel kebijakan ini ke nilai yang lebih rendah. Nilai harus lebih rendah dari 100 dan lebih tinggi dari 6. Beberapa aplikasi web diketahui menggunakan banyak koneksi dengan GET yang macet, jadi dengan menyetel nilai lebih rendah dari 32 dapat menyebabkan jaringan browser menjadi macet jika terlalu banyak aplikasi web dengan jaringan macet terbuka. Turunkan di bawah nilai default dengan menanggung sendiri risikonya.
 
       Tidak menyetel kebijakan berarti nilai default 32 akan digunakan.</translation>
-<translation id="5885770645815872943">Izinkan Perlindungan Ekstensi Safe Browsing</translation>
 <translation id="5887414688706570295">Mengonfigurasi awalan TalkGadget yang akan digunakan oleh hosting akses jarak jauh dan mencegah pengguna mengubahnya.
 
           Jika ditentukan, awalan ini ditambahkan di depan nama TalkGadget dasar untuk membuat nama domain TalkGadget lengkap. Nama domain TalkGadget dasar adalah '.talkgadget.google.com'.
@@ -6634,7 +6643,6 @@ Lihat juga kebijakan <ph name="HTTPS_ONLY_MODE_POLICY_NAME" />.</translation>
           Jika kebijakan ini disetel ke nonaktif, perangkat <ph name="PRODUCT_OS_NAME" /> tidak dapat mengambil acara <ph name="GOOGLE_CALENDAR_NAME" /> untuk mengisi widget kalender <ph name="PRODUCT_OS_NAME" /> di status bar sistem bagi pengguna yang login.
 
           Jika kebijakan ini tidak disetel, fitur <ph name="GOOGLE_CALENDAR_NAME" /> akan dinonaktifkan secara default bagi pengguna versi bisnis.</translation>
-<translation id="6450607392928079050">Perlindungan Ekstensi Safe Browsing dikontrol oleh kebijakan <ph name="SAFE_BROWSING_PROTECTION_LEVEL_POLICY_NAME" /></translation>
 <translation id="6452882999388592166">Jika disetel ke Aktif, ekstensi komponen CryptoToken bawaan akan dimuat saat browser dimulai. Jika disetel ke Nonaktif atau tidak disetel, CryptoToken tidak akan dimuat saat browser dimulai. Kebijakan ini dimaksudkan sebagai solusi sementara untuk situs yang rusak karena `chrome.runtime` tidak ditentukan sebagai efek samping penghapusan CryptoToken di M106. Situs tidak boleh bergantung pada `chrome.runtime` yang ditentukan tanpa syarat.</translation>
 <translation id="6453641799812499182">Mengaktifkan mitigasi pemeriksaan <ph name="CORS" /> dalam implementasi <ph name="CORS" /> yang baru</translation>
 <translation id="645425387487868471">Aktifkan login paksa untuk <ph name="PRODUCT_NAME" /></translation>
