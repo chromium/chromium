@@ -864,15 +864,20 @@ void PersistOriginTrialsFromHeaders(
                                                   tokens, base::Time::Now());
 }
 
+struct TopicsHeaderValueResult {
+  bool topics_eligible = false;
+  std::optional<std::string> header_value;
+};
+
 // Returns the topics header for a navigation request. Returns absl::nullopt if
 // the request isn't eligible for topics. This should align with the handling in
 // `GetTopicsHeaderValueForSubresourceRequest()`.
-absl::optional<std::string> GetTopicsHeaderValueForNavigationRequest(
+TopicsHeaderValueResult GetTopicsHeaderValueForNavigationRequest(
     FrameTreeNode* frame_tree_node,
     const GURL& url) {
   // Skip if the <iframe> does not have the "browsingtopics" opt-in attribute.
   if (!frame_tree_node->browsing_topics()) {
-    return absl::nullopt;
+    return TopicsHeaderValueResult{};
   }
 
   RenderFrameHostImpl* rfh = frame_tree_node->current_frame_host();
@@ -882,33 +887,33 @@ absl::optional<std::string> GetTopicsHeaderValueForNavigationRequest(
   // RenderFrameHostImpl::DidChangeIframeAttributes, and should be a DCHECK
   // here.
   if (rfh->is_main_frame()) {
-    return absl::nullopt;
+    return {};
   }
 
   // Skip fenced frames.
   if (rfh->IsNestedWithinFencedFrame()) {
-    return absl::nullopt;
+    return {};
   }
 
   // Skip inactive pages (e.g. prerendered pages).
   if (!rfh->GetPage().IsPrimary()) {
-    return absl::nullopt;
+    return {};
   }
 
   // TODO(crbug.com/1244137): IsPrimary() doesn't actually detect portals yet.
   // Remove this when it does.
   if (!static_cast<RenderFrameHostImpl*>(rfh->GetMainFrame())
            ->IsOutermostMainFrame()) {
-    return absl::nullopt;
+    return {};
   }
 
   url::Origin origin = url::Origin::Create(url);
   if (origin.opaque()) {
-    return absl::nullopt;
+    return {};
   }
 
   if (!network::IsOriginPotentiallyTrustworthy(origin)) {
-    return absl::nullopt;
+    return {};
   }
 
   const blink::PermissionsPolicy* parent_policy =
@@ -922,7 +927,7 @@ absl::optional<std::string> GetTopicsHeaderValueForNavigationRequest(
           blink::mojom::PermissionsPolicyFeature::
               kBrowsingTopicsBackwardCompatible,
           origin)) {
-    return absl::nullopt;
+    return {};
   }
 
   std::vector<blink::mojom::EpochTopicPtr> topics;
@@ -932,15 +937,15 @@ absl::optional<std::string> GetTopicsHeaderValueForNavigationRequest(
       /*get_topics=*/true,
       /*observe=*/false, topics);
 
-  if (!topics_eligible) {
-    return absl::nullopt;
-  }
-
   int num_versions_in_epochs =
-      GetContentClient()->browser()->NumVersionsInTopicsEpochs(
-          rfh->GetMainFrame());
+      topics_eligible
+          ? GetContentClient()->browser()->NumVersionsInTopicsEpochs(
+                rfh->GetMainFrame())
+          : 0;
 
-  return DeriveTopicsHeaderValue(topics, num_versions_in_epochs);
+  return {
+      .topics_eligible = topics_eligible,
+      .header_value = DeriveTopicsHeaderValue(topics, num_versions_in_epochs)};
 }
 
 ukm::SourceId GetPageUkmSourceId(FrameTreeNode* frame_tree_node) {
@@ -1872,14 +1877,15 @@ NavigationRequest::NavigationRequest(
                         &commit_params_->post_content_type);
     }
 
-    absl::optional<std::string> topics_header_value =
+    TopicsHeaderValueResult topics_header_value_result =
         GetTopicsHeaderValueForNavigationRequest(frame_tree_node,
                                                  common_params_->url);
 
-    topics_eligible_ = topics_header_value.has_value();
+    topics_eligible_ = topics_header_value_result.topics_eligible;
 
-    if (topics_eligible_) {
-      headers.SetHeader(kBrowsingTopicsRequestHeaderKey, *topics_header_value);
+    if (topics_header_value_result.header_value) {
+      headers.SetHeader(kBrowsingTopicsRequestHeaderKey,
+                        *topics_header_value_result.header_value);
     }
 
     if (has_ad_auction_headers_attribute_ &&
@@ -5202,10 +5208,6 @@ void NavigationRequest::OnRedirectChecksComplete(
   if (topics_eligible_) {
     topics_eligible_ = false;
 
-    // Removes the topics header from the request that was passed on from the
-    // previous one.
-    removed_headers.push_back(kBrowsingTopicsRequestHeaderKey);
-
     // At this point we may not have a valid `GetRenderFrameHost()` if the
     // navigation is during a cross-site redirect. Thus, pass in the current/old
     // RenderFrameHost here. This is fine, because it should still give us the
@@ -5218,15 +5220,19 @@ void NavigationRequest::OnRedirectChecksComplete(
         browsing_topics::ApiCallerSource::kIframeAttribute);
   }
 
-  absl::optional<std::string> topics_header_value =
+  // Removes the topics header. This will effectively be a no-op if the topics
+  // header wasn't sent for the previous request.
+  removed_headers.push_back(kBrowsingTopicsRequestHeaderKey);
+
+  TopicsHeaderValueResult topics_header_value_result =
       GetTopicsHeaderValueForNavigationRequest(frame_tree_node_,
                                                common_params_->url);
 
-  topics_eligible_ = topics_header_value.has_value();
+  topics_eligible_ = topics_header_value_result.topics_eligible;
 
-  if (topics_eligible_) {
+  if (topics_header_value_result.header_value) {
     modified_headers.SetHeader(kBrowsingTopicsRequestHeaderKey,
-                               *topics_header_value);
+                               *topics_header_value_result.header_value);
   }
 
   if (ad_auction_headers_eligible_) {
