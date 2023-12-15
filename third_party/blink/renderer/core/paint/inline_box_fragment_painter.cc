@@ -9,7 +9,7 @@
 #include "third_party/blink/renderer/core/layout/inline/inline_cursor.h"
 #include "third_party/blink/renderer/core/layout/layout_object.h"
 #include "third_party/blink/renderer/core/layout/logical_fragment.h"
-#include "third_party/blink/renderer/core/paint/background_image_geometry.h"
+#include "third_party/blink/renderer/core/paint/box_background_paint_context.h"
 #include "third_party/blink/renderer/core/paint/nine_piece_image_painter.h"
 #include "third_party/blink/renderer/core/paint/object_painter.h"
 #include "third_party/blink/renderer/core/paint/paint_info.h"
@@ -110,10 +110,10 @@ void InlineBoxFragmentPainter::PaintMask(const PaintInfo& paint_info,
   BoxFragmentPainter box_painter(*inline_box_cursor_, inline_box_item_,
                                  BoxFragment(), inline_context_);
 
-  BackgroundImageGeometry geometry(
+  BoxBackgroundPaintContext bg_paint_context(
       static_cast<const LayoutBoxModelObject&>(layout_object));
   PaintFillLayers(box_painter, paint_info, Color::kTransparent,
-                  style_.MaskLayers(), adjusted_frame_rect, geometry,
+                  style_.MaskLayers(), adjusted_frame_rect, bg_paint_context,
                   object_may_have_multiple_boxes);
 
   gfx::Rect adjusted_clip_rect;
@@ -175,17 +175,18 @@ void InlineBoxFragmentPainterBase::PaintBackgroundBorderShadow(
   bool object_may_have_multiple_boxes =
       MayHaveMultipleFragmentItems(inline_box_item_, layout_object);
 
-  // TODO(eae): Switch to LayoutNG version of BackgroundImageGeometry.
-  BackgroundImageGeometry geometry(*static_cast<const LayoutBoxModelObject*>(
-      inline_box_fragment_.GetLayoutObject()));
   DCHECK(inline_box_cursor_);
   DCHECK(inline_context_);
   BoxFragmentPainter box_painter(*inline_box_cursor_, inline_box_item_,
                                  To<PhysicalBoxFragment>(inline_box_fragment_),
                                  inline_context_);
+  // TODO(eae): Switch to LayoutNG version of BoxBackgroundPaintContext.
+  BoxBackgroundPaintContext bg_paint_context(
+      *static_cast<const LayoutBoxModelObject*>(
+          inline_box_fragment_.GetLayoutObject()));
   PaintBoxDecorationBackground(
-      box_painter, paint_info, paint_offset, adjusted_frame_rect, geometry,
-      object_may_have_multiple_boxes, SidesToInclude());
+      box_painter, paint_info, paint_offset, adjusted_frame_rect,
+      bg_paint_context, object_may_have_multiple_boxes, SidesToInclude());
 }
 
 gfx::Rect InlineBoxFragmentPainterBase::VisualRect(
@@ -241,10 +242,10 @@ void LineBoxFragmentPainter::PaintBackgroundBorderShadow(
 
   const LayoutBlockFlow& layout_block_flow =
       *To<LayoutBlockFlow>(block_fragment_.GetLayoutObject());
-  BackgroundImageGeometry geometry(layout_block_flow);
   BoxFragmentPainter box_painter(block_fragment_);
+  BoxBackgroundPaintContext bg_paint_context(layout_block_flow);
   PaintBoxDecorationBackground(
-      box_painter, paint_info, paint_offset, rect, geometry,
+      box_painter, paint_info, paint_offset, rect, bg_paint_context,
       /*object_has_multiple_boxes*/ false, PhysicalBoxSides());
 }
 
@@ -392,7 +393,7 @@ void InlineBoxFragmentPainterBase::PaintBoxDecorationBackground(
     const PaintInfo& paint_info,
     const PhysicalOffset& paint_offset,
     const PhysicalRect& adjusted_frame_rect,
-    BackgroundImageGeometry geometry,
+    const BoxBackgroundPaintContext& bg_paint_context,
     bool object_has_multiple_boxes,
     PhysicalBoxSides sides_to_include) {
   // Shadow comes first and is behind the background and border.
@@ -401,8 +402,8 @@ void InlineBoxFragmentPainterBase::PaintBoxDecorationBackground(
   Color background_color =
       line_style_.VisitedDependentColor(GetCSSPropertyBackgroundColor());
   PaintFillLayers(box_painter, paint_info, background_color,
-                  line_style_.BackgroundLayers(), adjusted_frame_rect, geometry,
-                  object_has_multiple_boxes);
+                  line_style_.BackgroundLayers(), adjusted_frame_rect,
+                  bg_paint_context, object_has_multiple_boxes);
 
   PaintInsetBoxShadow(paint_info, line_style_, adjusted_frame_rect);
 
@@ -438,15 +439,15 @@ void InlineBoxFragmentPainterBase::PaintFillLayers(
     const Color& c,
     const FillLayer& layer,
     const PhysicalRect& rect,
-    BackgroundImageGeometry& geometry,
+    const BoxBackgroundPaintContext& bg_paint_context,
     bool object_has_multiple_boxes) {
   // FIXME: This should be a for loop or similar. It's a little non-trivial to
   // do so, however, since the layers need to be painted in reverse order.
   if (layer.Next()) {
-    PaintFillLayers(box_painter, info, c, *layer.Next(), rect, geometry,
+    PaintFillLayers(box_painter, info, c, *layer.Next(), rect, bg_paint_context,
                     object_has_multiple_boxes);
   }
-  PaintFillLayer(box_painter, info, c, layer, rect, geometry,
+  PaintFillLayer(box_painter, info, c, layer, rect, bg_paint_context,
                  object_has_multiple_boxes);
 }
 
@@ -456,7 +457,7 @@ void InlineBoxFragmentPainterBase::PaintFillLayer(
     const Color& c,
     const FillLayer& fill_layer,
     const PhysicalRect& paint_rect,
-    BackgroundImageGeometry& geometry,
+    const BoxBackgroundPaintContext& bg_paint_context,
     bool object_has_multiple_boxes) {
   StyleImage* img = fill_layer.GetImage();
   bool has_fill_image = img && img->CanRender();
@@ -464,7 +465,7 @@ void InlineBoxFragmentPainterBase::PaintFillLayer(
   if (!object_has_multiple_boxes ||
       (!has_fill_image && !style_.HasBorderRadius())) {
     box_painter.PaintFillLayer(paint_info, c, fill_layer, paint_rect,
-                               kBackgroundBleedNone, geometry, false);
+                               kBackgroundBleedNone, bg_paint_context, false);
     return;
   }
 
@@ -477,7 +478,7 @@ void InlineBoxFragmentPainterBase::PaintFillLayer(
   GraphicsContextStateSaver state_saver(paint_info.context);
   paint_info.context.Clip(ToPixelSnappedRect(paint_rect));
   box_painter.PaintFillLayer(paint_info, c, fill_layer, rect,
-                             kBackgroundBleedNone, geometry, multi_line,
+                             kBackgroundBleedNone, bg_paint_context, multi_line,
                              paint_rect.size);
 }
 

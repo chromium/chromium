@@ -7,10 +7,10 @@
 #include "third_party/blink/renderer/core/layout/layout_box.h"
 #include "third_party/blink/renderer/core/layout/physical_box_fragment.h"
 #include "third_party/blink/renderer/core/layout/relative_utils.h"
-#include "third_party/blink/renderer/core/paint/background_image_geometry.h"
+#include "third_party/blink/renderer/core/paint/box_background_paint_context.h"
 #include "third_party/blink/renderer/core/paint/box_decoration_data.h"
-#include "third_party/blink/renderer/core/paint/fieldset_paint_info.h"
 #include "third_party/blink/renderer/core/paint/box_fragment_painter.h"
+#include "third_party/blink/renderer/core/paint/fieldset_paint_info.h"
 #include "third_party/blink/renderer/core/paint/object_painter.h"
 #include "third_party/blink/renderer/core/paint/paint_info.h"
 #include "third_party/blink/renderer/core/paint/rounded_border_geometry.h"
@@ -103,12 +103,12 @@ void FieldsetPainter::PaintBoxDecorationBackground(
   }
 
   if (box_decoration_data.ShouldPaintBackground()) {
-    // TODO(eae): Switch to LayoutNG version of BackgroundImageGeometry.
-    BackgroundImageGeometry geometry(
+    // TODO(eae): Switch to LayoutNG version of BoxBackgroundPaintContext.
+    BoxBackgroundPaintContext bg_paint_context(
         *static_cast<const LayoutBoxModelObject*>(fieldset_.GetLayoutObject()));
     fragment_painter.PaintFillLayers(
         paint_info, box_decoration_data.BackgroundColor(),
-        style.BackgroundLayers(), contracted_rect, geometry);
+        style.BackgroundLayers(), contracted_rect, bg_paint_context);
   }
   if (box_decoration_data.ShouldPaintShadow()) {
     fragment_painter.PaintInsetBoxShadowWithBorderRect(
@@ -136,18 +136,17 @@ void FieldsetPainter::PaintBoxDecorationBackground(
 
 void FieldsetPainter::PaintMask(const PaintInfo& paint_info,
                                 const PhysicalOffset& paint_offset) {
-  // TODO(eae): Switch to LayoutNG version of BackgroundImageGeometry.
   const LayoutObject& layout_object = *fieldset_.GetLayoutObject();
-  BackgroundImageGeometry geometry(
-      static_cast<const LayoutBoxModelObject&>(layout_object));
-
   BoxFragmentPainter ng_box_painter(fieldset_);
   DrawingRecorder recorder(paint_info.context, layout_object, paint_info.phase,
                            ng_box_painter.VisualRect(paint_offset));
   PhysicalRect paint_rect(paint_offset, fieldset_.Size());
   paint_rect.Contract(CreateFieldsetPaintInfo().border_outsets);
+  // TODO(eae): Switch to LayoutNG version of BoxBackgroundPaintContext.
+  BoxBackgroundPaintContext bg_paint_context(
+      static_cast<const LayoutBoxModelObject&>(layout_object));
   ng_box_painter.PaintMaskImages(paint_info, paint_rect, layout_object,
-                                 geometry, fieldset_.SidesToInclude());
+                                 bg_paint_context, fieldset_.SidesToInclude());
 }
 
 }  // namespace blink

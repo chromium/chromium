@@ -13,12 +13,12 @@
 #include "third_party/blink/renderer/core/layout/table/layout_table_cell.h"
 #include "third_party/blink/renderer/core/layout/table/layout_table_column.h"
 #include "third_party/blink/renderer/core/layout/table/table_borders.h"
-#include "third_party/blink/renderer/core/paint/background_image_geometry.h"
+#include "third_party/blink/renderer/core/paint/box_background_paint_context.h"
 #include "third_party/blink/renderer/core/paint/box_border_painter.h"
 #include "third_party/blink/renderer/core/paint/box_decoration_data.h"
+#include "third_party/blink/renderer/core/paint/box_fragment_painter.h"
 #include "third_party/blink/renderer/core/paint/box_model_object_painter.h"
 #include "third_party/blink/renderer/core/paint/box_painter.h"
-#include "third_party/blink/renderer/core/paint/box_fragment_painter.h"
 #include "third_party/blink/renderer/core/paint/paint_auto_dark_mode.h"
 #include "third_party/blink/renderer/core/paint/paint_info.h"
 #include "third_party/blink/renderer/core/paint/paint_layer.h"
@@ -893,15 +893,16 @@ void TableCellPainter::PaintBackgroundForTablePart(
       GetCSSPropertyBackgroundColor());
   const FillLayer& background_layers = table_part.StyleRef().BackgroundLayers();
   if (background_layers.AnyLayerHasImage() || !color.IsFullyTransparent()) {
-    BackgroundImageGeometry geometry(
-        layout_table_cell,
-        table_cell_paint_offset - table_part_paint_rect.offset, table_part,
-        table_part_paint_rect.size);
     PhysicalRect cell_paint_rect(table_cell_paint_offset, fragment_.Size());
     TableCellBackgroundClipper clipper(paint_info.context, layout_table_cell,
                                        cell_paint_rect);
+    BoxBackgroundPaintContext bg_paint_context(
+        layout_table_cell,
+        table_cell_paint_offset - table_part_paint_rect.offset, table_part,
+        table_part_paint_rect.size);
     BoxFragmentPainter(fragment_).PaintFillLayers(
-        paint_info, color, background_layers, cell_paint_rect, geometry);
+        paint_info, color, background_layers, cell_paint_rect,
+        bg_paint_context);
   }
 }
 

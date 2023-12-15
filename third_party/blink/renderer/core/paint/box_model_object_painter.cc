@@ -53,14 +53,6 @@ PhysicalRect BoxModelObjectPainter::AdjustRectForScrolledContent(
   return scrolled_paint_rect;
 }
 
-PhysicalBoxStrut BoxModelObjectPainter::ComputeBorders() const {
-  return box_model_.BorderOutsets();
-}
-
-PhysicalBoxStrut BoxModelObjectPainter::ComputePadding() const {
-  return box_model_.PaddingOutsets();
-}
-
 BoxPainterBase::FillLayerInfo BoxModelObjectPainter::GetFillLayerInfo(
     const Color& color,
     const FillLayer& bg_layer,

@@ -14,6 +14,7 @@
 #include "third_party/blink/renderer/core/inspector/inspector_trace_events.h"
 #include "third_party/blink/renderer/core/layout/layout_progress.h"
 #include "third_party/blink/renderer/core/paint/background_image_geometry.h"
+#include "third_party/blink/renderer/core/paint/box_background_paint_context.h"
 #include "third_party/blink/renderer/core/paint/box_border_painter.h"
 #include "third_party/blink/renderer/core/paint/nine_piece_image_painter.h"
 #include "third_party/blink/renderer/core/paint/paint_auto_dark_mode.h"
@@ -43,12 +44,13 @@ namespace blink {
 
 using CompositedPaintStatus = ElementAnimations::CompositedPaintStatus;
 
-void BoxPainterBase::PaintFillLayers(const PaintInfo& paint_info,
-                                     const Color& c,
-                                     const FillLayer& fill_layer,
-                                     const PhysicalRect& rect,
-                                     BackgroundImageGeometry& geometry,
-                                     BackgroundBleedAvoidance bleed) {
+void BoxPainterBase::PaintFillLayers(
+    const PaintInfo& paint_info,
+    const Color& c,
+    const FillLayer& fill_layer,
+    const PhysicalRect& rect,
+    const BoxBackgroundPaintContext& bg_paint_context,
+    BackgroundBleedAvoidance bleed) {
   FillLayerOcclusionOutputList reversed_paint_list;
   bool should_draw_background_in_separate_buffer =
       CalculateFillLayerOcclusionCulling(reversed_paint_list, fill_layer);
@@ -61,7 +63,7 @@ void BoxPainterBase::PaintFillLayers(const PaintInfo& paint_info,
     context.BeginLayer();
 
   for (auto* const paint : base::Reversed(reversed_paint_list)) {
-    PaintFillLayer(paint_info, c, *paint, rect, bleed, geometry);
+    PaintFillLayer(paint_info, c, *paint, rect, bleed, bg_paint_context);
   }
 
   if (should_draw_background_in_separate_buffer)
@@ -805,15 +807,16 @@ ImagePaintTimingInfo ComputeImagePaintTimingInfo(Node* node,
   return ImagePaintTimingInfo(image_may_be_lcp_candidate, report_paint_timing);
 }
 
-inline bool CanUseBottomLayerFastPath(const BoxPainterBase::FillLayerInfo& info,
-                                      const BackgroundImageGeometry& geometry,
-                                      BackgroundBleedAvoidance bleed_avoidance,
-                                      bool did_adjust_paint_rect) {
+inline bool CanUseBottomLayerFastPath(
+    const BoxPainterBase::FillLayerInfo& info,
+    const BoxBackgroundPaintContext& bg_paint_context,
+    BackgroundBleedAvoidance bleed_avoidance,
+    bool did_adjust_paint_rect) {
   // This should have been checked by the caller already.
   DCHECK(info.should_paint_color || info.should_paint_image);
 
   // Painting a background image from an ancestor onto a cell is a complex case.
-  if (geometry.GetContext().CellUsingContainerBackground()) {
+  if (bg_paint_context.CellUsingContainerBackground()) {
     return false;
   }
   // Complex cases not handled on the fast path.
@@ -848,7 +851,7 @@ inline bool PaintFastBottomLayer(const Document& document,
                                  const BoxPainterBase::FillLayerInfo& info,
                                  const PhysicalRect& rect,
                                  const FloatRoundedRect& border_rect,
-                                 BackgroundImageGeometry& geometry,
+                                 const BackgroundImageGeometry& geometry,
                                  Image* image,
                                  SkBlendMode composite_op) {
   // Compute the destination rect for painting the color here because we may
@@ -1123,23 +1126,25 @@ class ScopedMaskLuminanceLayer {
   GraphicsContext& context_;
 };
 
-}  // anonymous namespace
-
-PhysicalBoxStrut BoxPainterBase::ComputeSnappedBorders() const {
-  const PhysicalBoxStrut border_widths = ComputeBorders();
+PhysicalBoxStrut ComputeSnappedBorders(
+    const BoxBackgroundPaintContext& bg_paint_context) {
+  const PhysicalBoxStrut border_widths = bg_paint_context.BorderOutsets();
   return PhysicalBoxStrut(
       border_widths.top.ToInt(), border_widths.right.ToInt(),
       border_widths.bottom.ToInt(), border_widths.left.ToInt());
 }
 
-void BoxPainterBase::PaintFillLayer(const PaintInfo& paint_info,
-                                    const Color& color,
-                                    const FillLayer& bg_layer,
-                                    const PhysicalRect& rect,
-                                    BackgroundBleedAvoidance bleed_avoidance,
-                                    BackgroundImageGeometry& geometry,
-                                    bool object_has_multiple_boxes,
-                                    const PhysicalSize& flow_box_size) {
+}  // anonymous namespace
+
+void BoxPainterBase::PaintFillLayer(
+    const PaintInfo& paint_info,
+    const Color& color,
+    const FillLayer& bg_layer,
+    const PhysicalRect& rect,
+    BackgroundBleedAvoidance bleed_avoidance,
+    const BoxBackgroundPaintContext& bg_paint_context,
+    bool object_has_multiple_boxes,
+    const PhysicalSize& flow_box_size) {
   if (rect.IsEmpty())
     return;
 
@@ -1157,7 +1162,7 @@ void BoxPainterBase::PaintFillLayer(const PaintInfo& paint_info,
   auto scrolled_paint_rect = rect;
   if (fill_layer_info.is_clipped_with_local_scrolling &&
       !paint_info.IsPaintingBackgroundInContentsSpace()) {
-    PhysicalBoxStrut snapped_borders = ComputeSnappedBorders();
+    PhysicalBoxStrut snapped_borders = ComputeSnappedBorders(bg_paint_context);
     snapped_borders.TruncateSides(fill_layer_info.sides_to_include);
     scrolled_paint_rect =
         AdjustRectForScrolledContent(paint_info.context, snapped_borders, rect);
@@ -1165,6 +1170,7 @@ void BoxPainterBase::PaintFillLayer(const PaintInfo& paint_info,
   const auto did_adjust_paint_rect = scrolled_paint_rect != rect;
 
   scoped_refptr<Image> image;
+  BackgroundImageGeometry geometry;
   SkBlendMode composite_op = SkBlendMode::kSrcOver;
   absl::optional<ScopedImageRenderingSettings> image_rendering_settings_context;
   absl::optional<ScopedMaskLuminanceLayer> mask_luminance_scope;
@@ -1183,7 +1189,7 @@ void BoxPainterBase::PaintFillLayer(const PaintInfo& paint_info,
       composite_op = SkBlendMode::kSrcOver;
     }
 
-    const ComputedStyle& image_style = geometry.GetContext().ImageStyle(style_);
+    const ComputedStyle& image_style = bg_paint_context.ImageStyle(style_);
 
     // If the "image" referenced by the FillLayer is an SVG <mask> reference
     // (and this is a layer for a mask), then repeat, position, clip, origin and
@@ -1192,8 +1198,8 @@ void BoxPainterBase::PaintFillLayer(const PaintInfo& paint_info,
       if (const auto* mask_source =
               ToMaskSourceIfSVGMask(*fill_layer_info.image)) {
         const PhysicalRect positioning_area =
-            geometry.GetContext().ComputePositioningArea(paint_info, bg_layer,
-                                                         scrolled_paint_rect);
+            bg_paint_context.ComputePositioningArea(paint_info, bg_layer,
+                                                    scrolled_paint_rect);
         const gfx::RectF reference_box(gfx::SizeF(positioning_area.size));
         const float zoom = image_style.EffectiveZoom();
 
@@ -1202,7 +1208,7 @@ void BoxPainterBase::PaintFillLayer(const PaintInfo& paint_info,
         context.Translate(positioning_area.X().ToFloat(),
                           positioning_area.Y().ToFloat());
         SVGMaskPainter::PaintSVGMaskLayer(
-            context, *mask_source, geometry.GetContext().ImageClient(),
+            context, *mask_source, bg_paint_context.ImageClient(),
             reference_box, zoom, composite_op,
             bg_layer.MaskMode() == EFillMaskMode::kMatchSource);
         return;
@@ -1210,9 +1216,10 @@ void BoxPainterBase::PaintFillLayer(const PaintInfo& paint_info,
     }
     DCHECK_GE(document_.Lifecycle().GetState(),
               DocumentLifecycle::kPrePaintClean);
-    geometry.Calculate(paint_info, bg_layer, scrolled_paint_rect);
+    geometry.Calculate(bg_layer, bg_paint_context, scrolled_paint_rect,
+                       paint_info);
 
-    image = fill_layer_info.image->GetImage(geometry.GetContext().ImageClient(),
+    image = fill_layer_info.image->GetImage(bg_paint_context.ImageClient(),
                                             document_, image_style,
                                             gfx::SizeF(geometry.TileSize()));
 
@@ -1221,16 +1228,16 @@ void BoxPainterBase::PaintFillLayer(const PaintInfo& paint_info,
                                              style_.GetDynamicRangeLimit());
   }
 
-  PhysicalBoxStrut border = ComputeSnappedBorders();
-  PhysicalBoxStrut padding = ComputePadding();
-  PhysicalBoxStrut border_padding_insets = -(border + padding);
+  const PhysicalBoxStrut border = ComputeSnappedBorders(bg_paint_context);
+  const PhysicalBoxStrut padding = bg_paint_context.PaddingOutsets();
+  const PhysicalBoxStrut border_padding_insets = -(border + padding);
   FloatRoundedRect border_rect = RoundedBorderRectForClip(
       style_, fill_layer_info, bg_layer, rect, object_has_multiple_boxes,
       flow_box_size, bleed_avoidance, border_padding_insets);
 
   // Fast path for drawing simple color/image backgrounds.
-  if (CanUseBottomLayerFastPath(fill_layer_info, geometry, bleed_avoidance,
-                                did_adjust_paint_rect) &&
+  if (CanUseBottomLayerFastPath(fill_layer_info, bg_paint_context,
+                                bleed_avoidance, did_adjust_paint_rect) &&
       PaintFastBottomLayer(document_, node_, style_, context, fill_layer_info,
                            rect, border_rect, geometry, image.get(),
                            composite_op)) {
@@ -1239,12 +1246,12 @@ void BoxPainterBase::PaintFillLayer(const PaintInfo& paint_info,
 
   absl::optional<RoundedInnerRectClipper> clip_to_border;
   if (fill_layer_info.is_rounded_fill) {
-    DCHECK(!geometry.GetContext().CanCompositeBackgroundAttachmentFixed());
+    DCHECK(!bg_paint_context.CanCompositeBackgroundAttachmentFixed());
     clip_to_border.emplace(context, rect, border_rect);
   }
 
   if (bg_layer.Clip() == EFillBox::kText) {
-    DCHECK(!geometry.GetContext().CanCompositeBackgroundAttachmentFixed());
+    DCHECK(!bg_paint_context.CanCompositeBackgroundAttachmentFixed());
     PaintFillLayerTextFillBox(paint_info, fill_layer_info, image.get(),
                               composite_op, geometry, rect, scrolled_paint_rect,
                               object_has_multiple_boxes);
@@ -1253,7 +1260,7 @@ void BoxPainterBase::PaintFillLayer(const PaintInfo& paint_info,
 
   // We use BackgroundClip paint property when CanFastScrollFixedAttachment().
   absl::optional<GraphicsContextStateSaver> background_clip_state_saver;
-  if (!geometry.GetContext().CanCompositeBackgroundAttachmentFixed()) {
+  if (!bg_paint_context.CanCompositeBackgroundAttachmentFixed()) {
     switch (bg_layer.Clip()) {
       case EFillBox::kFillBox:
       // Spec: For elements with associated CSS layout box, the used values for
@@ -1356,16 +1363,17 @@ void BoxPainterBase::PaintBorder(const ImageResourceObserver& obj,
                                 sides_to_include);
 }
 
-void BoxPainterBase::PaintMaskImages(const PaintInfo& paint_info,
-                                     const PhysicalRect& paint_rect,
-                                     const ImageResourceObserver& obj,
-                                     BackgroundImageGeometry& geometry,
-                                     PhysicalBoxSides sides_to_include) {
+void BoxPainterBase::PaintMaskImages(
+    const PaintInfo& paint_info,
+    const PhysicalRect& paint_rect,
+    const ImageResourceObserver& obj,
+    const BoxBackgroundPaintContext& bg_paint_context,
+    PhysicalBoxSides sides_to_include) {
   if (!style_.HasMask() || style_.Visibility() != EVisibility::kVisible)
     return;
 
   PaintFillLayers(paint_info, Color::kTransparent, style_.MaskLayers(),
-                  paint_rect, geometry);
+                  paint_rect, bg_paint_context);
   NinePieceImagePainter::Paint(paint_info.context, obj, document_, node_,
                                paint_rect, style_, style_.MaskBoxImage(),
                                sides_to_include);

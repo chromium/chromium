@@ -28,7 +28,7 @@
 #include "third_party/blink/renderer/core/layout/table/layout_table.h"
 #include "third_party/blink/renderer/core/layout/table/layout_table_cell.h"
 #include "third_party/blink/renderer/core/page/page.h"
-#include "third_party/blink/renderer/core/paint/background_image_geometry.h"
+#include "third_party/blink/renderer/core/paint/box_background_paint_context.h"
 #include "third_party/blink/renderer/core/paint/box_border_painter.h"
 #include "third_party/blink/renderer/core/paint/box_decoration_data.h"
 #include "third_party/blink/renderer/core/paint/box_painter.h"
@@ -37,9 +37,6 @@
 #include "third_party/blink/renderer/core/paint/frame_set_painter.h"
 #include "third_party/blink/renderer/core/paint/inline_box_fragment_painter.h"
 #include "third_party/blink/renderer/core/paint/mathml_painter.h"
-#include "third_party/blink/renderer/core/paint/table_painters.h"
-#include "third_party/blink/renderer/core/paint/text_combine_painter.h"
-#include "third_party/blink/renderer/core/paint/text_fragment_painter.h"
 #include "third_party/blink/renderer/core/paint/object_painter.h"
 #include "third_party/blink/renderer/core/paint/paint_auto_dark_mode.h"
 #include "third_party/blink/renderer/core/paint/paint_info.h"
@@ -50,6 +47,9 @@
 #include "third_party/blink/renderer/core/paint/scoped_paint_state.h"
 #include "third_party/blink/renderer/core/paint/scoped_svg_paint_state.h"
 #include "third_party/blink/renderer/core/paint/scrollable_area_painter.h"
+#include "third_party/blink/renderer/core/paint/table_painters.h"
+#include "third_party/blink/renderer/core/paint/text_combine_painter.h"
+#include "third_party/blink/renderer/core/paint/text_fragment_painter.h"
 #include "third_party/blink/renderer/core/paint/theme_painter.h"
 #include "third_party/blink/renderer/core/paint/timing/paint_timing.h"
 #include "third_party/blink/renderer/core/paint/timing/paint_timing_detector.h"
@@ -994,15 +994,15 @@ void BoxFragmentPainter::PaintMask(const PaintInfo& paint_info,
     return;
   }
 
-  // TODO(eae): Switch to LayoutNG version of BackgroundImageGeometry.
-  BackgroundImageGeometry geometry(*static_cast<const LayoutBoxModelObject*>(
-      box_fragment_.GetLayoutObject()));
-
   DrawingRecorder recorder(paint_info.context, GetDisplayItemClient(),
                            paint_info.phase, VisualRect(paint_offset));
   PhysicalRect paint_rect(paint_offset, box_fragment_.Size());
+  // TODO(eae): Switch to LayoutNG version of BoxBackgroundPaintContext.
+  BoxBackgroundPaintContext bg_paint_context(
+      *static_cast<const LayoutBoxModelObject*>(
+          box_fragment_.GetLayoutObject()));
   PaintMaskImages(paint_info, paint_rect, *box_fragment_.GetLayoutObject(),
-                  geometry, box_fragment_.SidesToInclude());
+                  bg_paint_context, box_fragment_.SidesToInclude());
 }
 
 // TODO(kojii): This logic is kept in sync with BoxPainter. Not much efforts to
@@ -1472,10 +1472,10 @@ void BoxFragmentPainter::PaintBackground(
   if (layout_box.BackgroundIsKnownToBeObscured())
     return;
 
-  BackgroundImageGeometry geometry(box_fragment_);
+  BoxBackgroundPaintContext bg_paint_context(box_fragment_);
   PaintFillLayers(paint_info, background_color,
                   box_fragment_.Style().BackgroundLayers(), paint_rect,
-                  geometry, bleed_avoidance);
+                  bg_paint_context, bleed_avoidance);
 }
 
 void BoxFragmentPainter::PaintAllPhasesAtomically(const PaintInfo& paint_info) {
@@ -1851,14 +1851,6 @@ PhysicalRect BoxFragmentPainter::AdjustRectForScrolledContent(
       physical.ScrollSize() +
       PhysicalSize(borders.HorizontalSum(), borders.VerticalSum());
   return scrolled_paint_rect;
-}
-
-PhysicalBoxStrut BoxFragmentPainter::ComputeBorders() const {
-  return GetPhysicalFragment().Borders();
-}
-
-PhysicalBoxStrut BoxFragmentPainter::ComputePadding() const {
-  return GetPhysicalFragment().Padding();
 }
 
 BoxPainterBase::FillLayerInfo BoxFragmentPainter::GetFillLayerInfo(

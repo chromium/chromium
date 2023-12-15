@@ -12,41 +12,19 @@
 namespace blink {
 
 class FillLayer;
-class LayoutBox;
-class LayoutBoxModelObject;
-class LayoutTableCell;
-class LayoutView;
-class PhysicalBoxFragment;
 struct PaintInfo;
 
 class BackgroundImageGeometry {
   STACK_ALLOCATED();
 
  public:
-  // Constructor for LayoutView where the coordinate space is different.
-  BackgroundImageGeometry(
-      const LayoutView&,
-      const PhysicalOffset& element_positioning_area_offset);
-
-  // Generic constructor for all other elements.
-  explicit BackgroundImageGeometry(const LayoutBoxModelObject&);
-
-  // Constructor for TablesNG table parts.
-  BackgroundImageGeometry(const LayoutTableCell& cell,
-                          PhysicalOffset cell_offset,
-                          const LayoutBox& table_part,
-                          PhysicalSize table_part_size);
-
-  explicit BackgroundImageGeometry(const PhysicalBoxFragment&);
-
   // Calculates data members. This must be called before any of the following
   // getters is called. The document lifecycle phase must be at least
   // PrePaintClean.
-  void Calculate(const PaintInfo& paint_info,
-                 const FillLayer&,
-                 const PhysicalRect& paint_rect);
-
-  const BoxBackgroundPaintContext& GetContext() const { return paint_context_; }
+  void Calculate(const FillLayer&,
+                 const BoxBackgroundPaintContext&,
+                 const PhysicalRect& paint_rect,
+                 const PaintInfo& paint_info);
 
   // Destination rects define the area into which the image will paint.
   // For cases where no explicit background size is requested, the destination
@@ -107,6 +85,7 @@ class BackgroundImageGeometry {
   // account for the background-clip property.
   SnappedAndUnsnappedOutsets ComputeDestRectAdjustments(
       const FillLayer&,
+      const BoxBackgroundPaintContext&,
       const PhysicalRect& unsnapped_positioning_area,
       bool disallow_border_derived_adjustment) const;
 
@@ -115,17 +94,20 @@ class BackgroundImageGeometry {
   // background-origin property.
   SnappedAndUnsnappedOutsets ComputePositioningAreaAdjustments(
       const FillLayer&,
+      const BoxBackgroundPaintContext&,
       const PhysicalRect& unsnapped_positioning_area,
       bool disallow_border_derived_adjustment) const;
 
-  void AdjustPositioningArea(const PaintInfo&,
-                             const FillLayer&,
+  void AdjustPositioningArea(const FillLayer&,
+                             const BoxBackgroundPaintContext&,
                              const PhysicalRect&,
+                             const PaintInfo&,
                              PhysicalRect&,
                              PhysicalRect&,
                              PhysicalOffset&,
                              PhysicalOffset&);
   void CalculateFillTileSize(const FillLayer&,
+                             const ComputedStyle&,
                              const PhysicalSize&,
                              const PhysicalSize&);
   void CalculateRepeatAndPosition(
@@ -135,8 +117,6 @@ class BackgroundImageGeometry {
       const PhysicalSize& snapped_positioning_area_size,
       const PhysicalOffset& unsnapped_box_offset,
       const PhysicalOffset& snapped_box_offset);
-
-  const BoxBackgroundPaintContext paint_context_;
 
   PhysicalRect unsnapped_dest_rect_;
   PhysicalRect snapped_dest_rect_;

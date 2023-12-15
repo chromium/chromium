@@ -74,8 +74,6 @@ class CORE_EXPORT BoxFragmentPainter : public BoxPainterBase {
   gfx::Rect VisualRect(const PhysicalOffset& paint_offset);
 
  protected:
-  PhysicalBoxStrut ComputeBorders() const override;
-  PhysicalBoxStrut ComputePadding() const override;
   BoxPainterBase::FillLayerInfo GetFillLayerInfo(
       const Color&,
       const FillLayer&,

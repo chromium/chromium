@@ -114,7 +114,7 @@ class InlineBoxFragmentPainterBase {
                                     const PaintInfo&,
                                     const PhysicalOffset& paint_offset,
                                     const PhysicalRect& adjusted_frame_rect,
-                                    BackgroundImageGeometry,
+                                    const BoxBackgroundPaintContext&,
                                     bool object_has_multiple_boxes,
                                     PhysicalBoxSides sides_to_include);
 
@@ -123,14 +123,14 @@ class InlineBoxFragmentPainterBase {
                        const Color&,
                        const FillLayer&,
                        const PhysicalRect&,
-                       BackgroundImageGeometry& geometry,
+                       const BoxBackgroundPaintContext&,
                        bool object_has_multiple_boxes);
   void PaintFillLayer(BoxPainterBase&,
                       const PaintInfo&,
                       const Color&,
                       const FillLayer&,
                       const PhysicalRect&,
-                      BackgroundImageGeometry& geometry,
+                      const BoxBackgroundPaintContext&,
                       bool object_has_multiple_boxes);
 
   gfx::Rect VisualRect(const PhysicalOffset& paint_offset);
