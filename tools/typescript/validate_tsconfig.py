@@ -146,6 +146,9 @@ def validateJavaScriptAllowed(source_dir, out_dir, is_ios):
       'chrome/test/data/webui',
       'chrome/test/data/webui/chromeos',
       'chrome/test/data/webui/chromeos/ash_common',
+      # TODO(b/310963279): Migrate os_feedback_ui to TypeScript and remove
+      # exception.
+      'chrome/test/data/webui/chromeos/os_feedback_ui',
       'chrome/test/data/webui/cr_components/chromeos',
       'chrome/test/data/webui/nearby_share',
       'chrome/test/data/webui/settings/chromeos',
