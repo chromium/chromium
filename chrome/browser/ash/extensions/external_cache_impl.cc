@@ -32,6 +32,7 @@
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "extensions/browser/updater/extension_downloader.h"
+#include "extensions/browser/updater/extension_downloader_delegate.h"
 #include "extensions/browser/updater/extension_downloader_types.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/extension_urls.h"
@@ -370,6 +371,23 @@ bool ExternalCacheImpl::GetExtensionExistingVersion(
     return false;
   *version = *val;
   return true;
+}
+
+ExternalCacheImpl::RequestRollbackResult ExternalCacheImpl::RequestRollback(
+    const extensions::ExtensionId& id) {
+  bool is_rollback_allowed = delegate_ && delegate_->IsRollbackAllowed();
+  if (!is_rollback_allowed) {
+    return RequestRollbackResult::kDisallowed;
+  }
+
+  if (delegate_->CanRollbackNow()) {
+    RemoveCachedExtension(id);
+    UpdateExtensionLoader();
+    return RequestRollbackResult::kAllowed;
+  }
+
+  local_cache_.RemoveOnNextInit(id);
+  return RequestRollbackResult::kScheduledForNextRun;
 }
 
 void ExternalCacheImpl::UpdateExtensionLoader() {

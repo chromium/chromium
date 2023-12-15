@@ -22,4 +22,12 @@ void ExternalCacheDelegate::OnExtensionDownloadFailed(
 void ExternalCacheDelegate::OnCachedExtensionFileDeleted(
     const extensions::ExtensionId& id) {}
 
+bool ExternalCacheDelegate::IsRollbackAllowed() const {
+  return false;
+}
+
+bool ExternalCacheDelegate::CanRollbackNow() const {
+  return false;
+}
+
 }  // namespace chromeos

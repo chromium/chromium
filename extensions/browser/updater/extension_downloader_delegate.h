@@ -143,6 +143,17 @@ class ExtensionDownloaderDelegate {
     kMaxValue = CACHE_HIT_ON_MANIFEST_FETCH_FAILURE,
   };
 
+  // Enum that holds possible result values of RequestRollback().
+  enum class RequestRollbackResult {
+    // Rollback is not allowed.
+    kDisallowed,
+    // Can not rollback immediately, but cache invalidation is scheduled for the
+    // next run and rollback will be possible after cache invalidation.
+    kScheduledForNextRun,
+    // Cache was successfully invalidated and rollback is allowed now.
+    kAllowed,
+  };
+
   // Passed as an argument to the completion callbacks to signal whether
   // the extension update sent a ping.
   struct PingResult {
@@ -287,6 +298,12 @@ class ExtensionDownloaderDelegate {
   // that extension is not installed.
   virtual bool GetExtensionExistingVersion(const ExtensionId& id,
                                            std::string* version) = 0;
+
+  // Invoked if update manifest specifies a lower version than existing.
+  // Returns RequestRollbackResult value that indicates whether higher version
+  // cache was successfully invalidated and rollback is allowed. Default
+  // implementation always disallows rollback.
+  virtual RequestRollbackResult RequestRollback(const ExtensionId& id);
 };
 
 }  // namespace extensions

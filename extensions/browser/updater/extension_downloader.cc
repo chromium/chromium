@@ -32,6 +32,7 @@
 #include "extensions/browser/extension_file_task_runner.h"
 #include "extensions/browser/extensions_browser_client.h"
 #include "extensions/browser/updater/extension_cache.h"
+#include "extensions/browser/updater/extension_downloader_delegate.h"
 #include "extensions/browser/updater/extension_downloader_test_delegate.h"
 #include "extensions/browser/updater/request_queue_impl.h"
 #include "extensions/common/extension_updater_uma.h"
@@ -906,8 +907,14 @@ ExtensionDownloader::GetUpdateAvailability(
       if (update_version.CompareTo(existing_version) <= 0) {
         VLOG(2) << extension_id << " version is not older than '"
                 << update_version_str << "'";
-        has_noupdate = true;
-        continue;
+        bool can_rollback =
+            update_version.CompareTo(existing_version) < 0 &&
+            (delegate_->RequestRollback(extension_id) ==
+             ExtensionDownloaderDelegate::RequestRollbackResult::kAllowed);
+        if (!can_rollback) {
+          has_noupdate = true;
+          continue;
+        }
       }
     }
 

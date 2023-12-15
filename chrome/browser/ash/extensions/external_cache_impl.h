@@ -105,6 +105,8 @@ class ExternalCacheImpl : public ExternalCache,
   bool IsExtensionPending(const extensions::ExtensionId& id) override;
   bool GetExtensionExistingVersion(const extensions::ExtensionId& id,
                                    std::string* version) override;
+  RequestRollbackResult RequestRollback(
+      const extensions::ExtensionId& id) override;
 
   void set_flush_on_put(bool flush_on_put) { flush_on_put_ = flush_on_put; }
 
