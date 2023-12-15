@@ -21,6 +21,11 @@ void BrowserParamsProxy::WaitForLogin() {
   BrowserPostLoginParams::WaitForLogin();
 }
 
+// static
+bool BrowserParamsProxy::IsLoggedIn() {
+  return BrowserPostLoginParams::IsLoggedIn();
+}
+
 bool BrowserParamsProxy::IsCrosapiDisabledForTesting() const {
   return BrowserInitParams::is_crosapi_disabled_for_testing();
 }

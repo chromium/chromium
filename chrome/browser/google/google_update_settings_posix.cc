@@ -55,13 +55,12 @@ GoogleUpdateSettings::CollectStatsConsentTaskRunner() {
 }
 
 // static
-bool GoogleUpdateSettings::GetCollectStatsConsent() {
-  base::FilePath consent_file;
-  base::PathService::Get(chrome::DIR_USER_DATA, &consent_file);
-  consent_file = consent_file.Append(kConsentToSendStats);
-
-  if (!base::DirectoryExists(consent_file.DirName()))
+bool GoogleUpdateSettings::GetCollectStatsConsentFromDir(
+    const base::FilePath& consent_dir) {
+  if (!base::DirectoryExists(consent_dir)) {
     return false;
+  }
+  base::FilePath consent_file = consent_dir.Append(kConsentToSendStats);
 
   std::string tmp_guid;
   bool consented = base::ReadFileToString(consent_file, &tmp_guid);
@@ -72,6 +71,13 @@ bool GoogleUpdateSettings::GetCollectStatsConsent() {
     g_posix_client_id.Get().assign(tmp_guid);
   }
   return consented;
+}
+
+// static
+bool GoogleUpdateSettings::GetCollectStatsConsent() {
+  base::FilePath consent_dir;
+  base::PathService::Get(chrome::DIR_USER_DATA, &consent_dir);
+  return GetCollectStatsConsentFromDir(consent_dir);
 }
 
 // static

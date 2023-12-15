@@ -55,6 +55,14 @@ void BrowserPostLoginParams::WaitForLogin() {
     // SetPostLoginParamsForTests.
     CHECK_IS_TEST();
   }
+
+  // Signal that the user has logged in.
+  instance->logged_in_ = true;
+}
+
+// static
+bool BrowserPostLoginParams::IsLoggedIn() {
+  return GetInstanceInternal()->logged_in_;
 }
 
 // static
