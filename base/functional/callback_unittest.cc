@@ -28,22 +28,12 @@ void NopInvokeFunc() {}
 // a type we declared in the anonymous namespace above to remove any chance of
 // colliding with another instantiation and breaking the one-definition-rule.
 struct FakeBindState : internal::BindStateBase {
-  FakeBindState() : BindStateBase(&NopInvokeFunc, &Destroy, &IsCancelled) {}
+  FakeBindState() : BindStateBase(&NopInvokeFunc, &Destroy) {}
 
  private:
   ~FakeBindState() = default;
   static void Destroy(const internal::BindStateBase* self) {
     delete static_cast<const FakeBindState*>(self);
-  }
-  static bool IsCancelled(const internal::BindStateBase*,
-                          internal::BindStateBase::CancellationQueryMode mode) {
-    switch (mode) {
-      case internal::BindStateBase::IS_CANCELLED:
-        return false;
-      case internal::BindStateBase::MAYBE_VALID:
-        return true;
-    }
-    NOTREACHED();
   }
 };
 

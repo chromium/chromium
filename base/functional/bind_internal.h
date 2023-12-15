@@ -984,37 +984,6 @@ constexpr bool IsNull(const Functor&) {
   return false;
 }
 
-// Used by QueryCancellationTraits below.
-template <typename Functor, typename BoundArgsTuple, size_t... indices>
-bool QueryCancellationTraitsImpl(BindStateBase::CancellationQueryMode mode,
-                                 const Functor& functor,
-                                 const BoundArgsTuple& bound_args,
-                                 std::index_sequence<indices...>) {
-  switch (mode) {
-    case BindStateBase::IS_CANCELLED:
-      return CallbackCancellationTraits<Functor, BoundArgsTuple>::IsCancelled(
-          functor, std::get<indices>(bound_args)...);
-    case BindStateBase::MAYBE_VALID:
-      return CallbackCancellationTraits<Functor, BoundArgsTuple>::MaybeValid(
-          functor, std::get<indices>(bound_args)...);
-  }
-  NOTREACHED();
-  return false;
-}
-
-// Relays |base| to corresponding CallbackCancellationTraits<>::Run(). Returns
-// true if the callback |base| represents is canceled.
-template <typename BindStateType>
-bool QueryCancellationTraits(const BindStateBase* base,
-                             BindStateBase::CancellationQueryMode mode) {
-  const BindStateType* storage = static_cast<const BindStateType*>(base);
-  static constexpr size_t num_bound_args =
-      std::tuple_size_v<decltype(storage->bound_args_)>;
-  return QueryCancellationTraitsImpl(
-      mode, storage->functor_, storage->bound_args_,
-      std::make_index_sequence<num_bound_args>());
-}
-
 // The base case of BanUnconstructedRefCountedReceiver that checks nothing.
 template <typename Functor, typename... Unused>
 void BanUnconstructedRefCountedReceiver(Unused&&...) {}
@@ -1063,9 +1032,11 @@ void BanUnconstructedRefCountedReceiver(Receiver&& receiver, Unused&&...) {
 // This stores all the state passed into Bind().
 template <typename Functor, typename... BoundArgs>
 struct BindState final : BindStateBase {
-  using IsCancellable = std::bool_constant<
-      CallbackCancellationTraits<Functor,
-                                 std::tuple<BoundArgs...>>::is_cancellable>;
+ private:
+  using BoundArgsTuple = std::tuple<BoundArgs...>;
+  using Traits = CallbackCancellationTraits<Functor, BoundArgsTuple>;
+
+ public:
   template <typename ForwardFunctor, typename... ForwardBoundArgs>
   static BindState* Create(BindStateBase::InvokeFuncStorage invoke_func,
                            ForwardFunctor&& functor,
@@ -1074,16 +1045,13 @@ struct BindState final : BindStateBase {
     // a common pattern of racy situation.
     BanUnconstructedRefCountedReceiver<ForwardFunctor>(bound_args...);
 
-    // IsCancellable is std::false_type if
-    // CallbackCancellationTraits<>::IsCancelled returns always false.
-    // Otherwise, it's std::true_type.
-    return new BindState(IsCancellable{}, invoke_func,
-                         std::forward<ForwardFunctor>(functor),
+    return new BindState(std::bool_constant<Traits::is_cancellable>(),
+                         invoke_func, std::forward<ForwardFunctor>(functor),
                          std::forward<ForwardBoundArgs>(bound_args)...);
   }
 
   Functor functor_;
-  std::tuple<BoundArgs...> bound_args_;
+  BoundArgsTuple bound_args_;
 
  private:
   static constexpr bool kIsNestedCallback =
@@ -1094,9 +1062,7 @@ struct BindState final : BindStateBase {
                      BindStateBase::InvokeFuncStorage invoke_func,
                      ForwardFunctor&& functor,
                      ForwardBoundArgs&&... bound_args)
-      : BindStateBase(invoke_func,
-                      &Destroy,
-                      &QueryCancellationTraits<BindState>),
+      : BindStateBase(invoke_func, &Destroy, &QueryCancellationTraits),
         functor_(std::forward<ForwardFunctor>(functor)),
         bound_args_(std::forward<ForwardBoundArgs>(bound_args)...) {
     // We check the validity of nested callbacks (e.g., Bind(callback, ...)) in
@@ -1128,8 +1094,29 @@ struct BindState final : BindStateBase {
 
   ~BindState() = default;
 
+  static bool QueryCancellationTraits(
+      const BindStateBase* base,
+      BindStateBase::CancellationQueryMode mode) {
+    auto* const storage = static_cast<const BindState*>(base);
+    static constexpr std::make_index_sequence<sizeof...(BoundArgs)> kIndices;
+    return (mode == BindStateBase::CancellationQueryMode::kIsCancelled)
+               ? storage->IsCancelled(kIndices)
+               : storage->MaybeValid(kIndices);
+  }
+
   static void Destroy(const BindStateBase* self) {
     delete static_cast<const BindState*>(self);
+  }
+
+  // Helpers to do arg tuple expansion.
+  template <size_t... indices>
+  bool IsCancelled(std::index_sequence<indices...>) const {
+    return Traits::IsCancelled(functor_, std::get<indices>(bound_args_)...);
+  }
+
+  template <size_t... indices>
+  bool MaybeValid(std::index_sequence<indices...>) const {
+    return Traits::MaybeValid(functor_, std::get<indices>(bound_args_)...);
   }
 };
 
