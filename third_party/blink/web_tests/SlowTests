@@ -1385,3 +1385,9 @@ crbug.com/1496281 external/wpt/html/semantics/embedded-content/bfcache/embedded-
 
 # Waits for media to be sent over loopback PeerConnections, which can take time to set up.
 crbug.com/1502781 fast/peerconnection/RTCPeerconnection-insertable-streams.html [ Slow ]
+
+# These tests wait to ensure that an animation frame timing was *not* reported, which requires long timeouts and retries.
+crbug.com/1507152 external/wpt/long-animation-frame/tentative/loaf-source-location-redirect.html [ Slow ]
+crbug.com/1507152 virtual/threaded/external/wpt/long-animation-frame/tentative/loaf-source-location-redirect.html [ Slow ]
+crbug.com/1462683 external/wpt/long-animation-frame/tentative/loaf-iframe-self.html [ Slow ]
+crbug.com/1462683 virtual/threaded/external/wpt/long-animation-frame/tentative/loaf-iframe-self.html [ Slow ]
