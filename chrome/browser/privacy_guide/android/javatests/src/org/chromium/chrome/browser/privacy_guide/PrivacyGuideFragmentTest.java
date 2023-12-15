@@ -483,7 +483,6 @@ public class PrivacyGuideFragmentTest {
     @Test
     @LargeTest
     @Feature({"PrivacyGuide"})
-    @EnableFeatures(ChromeFeatureList.PRIVACY_GUIDE_POST_MVP)
     public void testForwardNavAllActions() {
         setMSBBState(false);
         setHistorySyncState(false);
@@ -521,7 +520,6 @@ public class PrivacyGuideFragmentTest {
     @LargeTest
     @Feature({"PrivacyGuide"})
     @EnableFeatures({
-        ChromeFeatureList.PRIVACY_GUIDE_POST_MVP,
         ChromeFeatureList.PRIVACY_GUIDE_ANDROID_3,
         ChromeFeatureList.PRIVACY_GUIDE_PRELOAD_ANDROID
     })
@@ -573,7 +571,6 @@ public class PrivacyGuideFragmentTest {
     @Test
     @LargeTest
     @Feature({"PrivacyGuide"})
-    @EnableFeatures(ChromeFeatureList.PRIVACY_GUIDE_POST_MVP)
     public void testBackwardNavAllActions() {
         setMSBBState(false);
         setHistorySyncState(false);
@@ -613,7 +610,6 @@ public class PrivacyGuideFragmentTest {
     @LargeTest
     @Feature({"PrivacyGuide"})
     @EnableFeatures({
-        ChromeFeatureList.PRIVACY_GUIDE_POST_MVP,
         ChromeFeatureList.PRIVACY_GUIDE_ANDROID_3,
         ChromeFeatureList.PRIVACY_GUIDE_PRELOAD_ANDROID
     })
@@ -1277,7 +1273,6 @@ public class PrivacyGuideFragmentTest {
     @LargeTest
     @Feature({"PrivacyGuide"})
     @DisableFeatures(ChromeFeatureList.FRIENDLIER_SAFE_BROWSING_SETTINGS_ENHANCED_PROTECTION)
-    @EnableFeatures(ChromeFeatureList.PRIVACY_GUIDE_POST_MVP)
     public void testSafeBrowsingCard_enhancedBottomSheetBackButtonBehaviour() {
         launchPrivacyGuide();
         goToCard(FragmentType.SAFE_BROWSING);
@@ -1294,7 +1289,6 @@ public class PrivacyGuideFragmentTest {
     @LargeTest
     @Feature({"PrivacyGuide"})
     @EnableFeatures({
-        ChromeFeatureList.PRIVACY_GUIDE_POST_MVP,
         ChromeFeatureList.FRIENDLIER_SAFE_BROWSING_SETTINGS_ENHANCED_PROTECTION
     })
     public void testSafeBrowsingCard_enhancedFriendlierBottomSheetBackButtonBehaviour() {
@@ -1312,7 +1306,6 @@ public class PrivacyGuideFragmentTest {
     @Test
     @LargeTest
     @Feature({"PrivacyGuide"})
-    @EnableFeatures(ChromeFeatureList.PRIVACY_GUIDE_POST_MVP)
     public void testSafeBrowsingCard_standardBottomSheetBackButtonBehaviour() {
         launchPrivacyGuide();
         goToCard(FragmentType.SAFE_BROWSING);
@@ -1724,7 +1717,6 @@ public class PrivacyGuideFragmentTest {
     @LargeTest
     @Feature({"PrivacyGuide"})
     @EnableFeatures({
-        ChromeFeatureList.PRIVACY_GUIDE_POST_MVP,
         ChromeFeatureList.PRIVACY_GUIDE_ANDROID_3,
         ChromeFeatureList.PRIVACY_GUIDE_PRELOAD_ANDROID
     })
@@ -1763,76 +1755,5 @@ public class PrivacyGuideFragmentTest {
         mPrivacyGuideTestRule.recreateActivity();
         clickOnArrowNextToRadioButtonWithText(R.string.privacy_guide_safe_browsing_enhanced_title);
         onViewWaiting(withId(R.id.sb_enhanced_sheet_updated)).check(matches(isDisplayed()));
-    }
-
-    @Test
-    @LargeTest
-    @DisableFeatures(ChromeFeatureList.PRIVACY_GUIDE_POST_MVP)
-    public void testExitOnBackInWelcomeCard() {
-        launchPrivacySettingsAndOpenPrivacyGuide();
-
-        // Exit the guide when pressing back.
-        pressBack();
-        onView(withText(R.string.privacy_guide_pref_summary)).check(matches(isDisplayed()));
-    }
-
-    @Test
-    @LargeTest
-    @DisableFeatures(ChromeFeatureList.PRIVACY_GUIDE_POST_MVP)
-    public void testExitOnBackInMSBBCard() {
-        launchPrivacySettingsAndOpenPrivacyGuide();
-        goToCard(FragmentType.MSBB);
-
-        // Exit the guide when pressing back.
-        pressBack();
-        onView(withText(R.string.privacy_guide_pref_summary)).check(matches(isDisplayed()));
-    }
-
-    @Test
-    @LargeTest
-    @DisableFeatures(ChromeFeatureList.PRIVACY_GUIDE_POST_MVP)
-    public void testExitOnBackInHistorySyncCard() {
-        launchPrivacySettingsAndOpenPrivacyGuide();
-        goToCard(FragmentType.HISTORY_SYNC);
-
-        // Exit the guide when pressing back.
-        pressBack();
-        onView(withText(R.string.privacy_guide_pref_summary)).check(matches(isDisplayed()));
-    }
-
-    @Test
-    @LargeTest
-    @DisableFeatures(ChromeFeatureList.PRIVACY_GUIDE_POST_MVP)
-    public void testExitOnBackInSBCard() {
-        launchPrivacySettingsAndOpenPrivacyGuide();
-        goToCard(FragmentType.SAFE_BROWSING);
-
-        // Exit the guide when pressing back.
-        pressBack();
-        onView(withText(R.string.privacy_guide_pref_summary)).check(matches(isDisplayed()));
-    }
-
-    @Test
-    @LargeTest
-    @DisableFeatures(ChromeFeatureList.PRIVACY_GUIDE_POST_MVP)
-    public void testExitOnBackInCookiesCard() {
-        launchPrivacySettingsAndOpenPrivacyGuide();
-        goToCard(FragmentType.COOKIES);
-
-        // Exit the guide when pressing back.
-        pressBack();
-        onView(withText(R.string.privacy_guide_pref_summary)).check(matches(isDisplayed()));
-    }
-
-    @Test
-    @LargeTest
-    @DisableFeatures(ChromeFeatureList.PRIVACY_GUIDE_POST_MVP)
-    public void testExitOnBackInCompletionCard() {
-        launchPrivacySettingsAndOpenPrivacyGuide();
-        goToCard(FragmentType.DONE);
-
-        // Exit the guide when pressing back.
-        pressBack();
-        onView(withText(R.string.privacy_guide_pref_summary)).check(matches(isDisplayed()));
     }
 }

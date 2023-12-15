@@ -1104,12 +1104,6 @@ BASE_FEATURE(kLocalPrinterObserving,
              base::FEATURE_ENABLED_BY_DEFAULT);
 #endif
 
-#if BUILDFLAG(IS_ANDROID)
-BASE_FEATURE(kPrivacyGuideAndroidPostMVP,
-             "PrivacyGuideAndroidPostMVP",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-#endif
-
 // Enables or disables push subscriptions keeping Chrome running in the
 // background when closed.
 BASE_FEATURE(kPushMessagingBackgroundMode,

@@ -112,7 +112,6 @@ public class PrivacyGuideFragment extends Fragment
     private ButtonCompat mDoneButton;
     private PrivacyGuideMetricsDelegate mPrivacyGuideMetricsDelegate;
     private NavbarVisibilityDelegate mNavbarVisibilityDelegate;
-    private boolean mEnablePostMVPFixes;
     private Profile mProfile;
 
     @Override
@@ -124,7 +123,6 @@ public class PrivacyGuideFragment extends Fragment
             mPrivacyGuideMetricsDelegate.restoreState(savedInstanceState);
         }
         mHandleBackPressChangedSupplier = new ObservableSupplierImpl<>();
-        mEnablePostMVPFixes = ChromeFeatureList.sPrivacyGuidePostMVP.isEnabled();
     }
 
     @Nullable
@@ -146,9 +144,7 @@ public class PrivacyGuideFragment extends Fragment
                                 : ALL_FRAGMENT_TYPE_ORDER);
         mNavbarVisibilityDelegate = new NavbarVisibilityDelegate(mPagerAdapter.getItemCount());
         mViewPager.setAdapter(mPagerAdapter);
-        if (ChromeFeatureList.sPrivacyGuidePostMVP.isEnabled()) {
-            mViewPager.setPageTransformer(new PrivacyGuidePageTransformer());
-        }
+        mViewPager.setPageTransformer(new PrivacyGuidePageTransformer());
         mViewPager.setUserInputEnabled(false);
 
         mTabLayout = mView.findViewById(R.id.tab_layout);
@@ -326,7 +322,7 @@ public class PrivacyGuideFragment extends Fragment
     }
 
     private boolean shouldHandleBackPress() {
-        return mEnablePostMVPFixes && mViewPager.getCurrentItem() > 0;
+        return mViewPager.getCurrentItem() > 0;
     }
 
     public void setBottomSheetControllerSupplier(

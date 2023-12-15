@@ -347,7 +347,6 @@ public abstract class ChromeFeatureList {
     public static final String PRICE_CHANGE_MODULE = "PriceChangeModule";
     public static final String PRIVACY_GUIDE_ANDROID_3 = "PrivacyGuideAndroid3";
     public static final String PRIVACY_GUIDE_PRELOAD_ANDROID = "PrivacyGuidePreloadAndroid";
-    public static final String PRIVACY_GUIDE_POST_MVP = "PrivacyGuideAndroidPostMVP";
     public static final String PRIVACY_SANDBOX_ADS_NOTICE_CCT = "PrivacySandboxAdsNoticeCCT";
     public static final String PRIVACY_SANDBOX_FPS_UI = "PrivacySandboxFirstPartySetsUI";
     public static final String PRIVACY_SANDBOX_SETTINGS_4 = "PrivacySandboxSettings4";
@@ -554,8 +553,6 @@ public abstract class ChromeFeatureList {
             new CachedFlag(PRIVACY_GUIDE_ANDROID_3, false);
     public static final CachedFlag sPrivacyGuidePreloadAndroid =
             new CachedFlag(PRIVACY_GUIDE_PRELOAD_ANDROID, false);
-    public static final CachedFlag sPrivacyGuidePostMVP =
-            new CachedFlag(PRIVACY_GUIDE_POST_MVP, false);
     public static final CachedFlag sQueryTilesInZPSOnNTP =
             new CachedFlag(QUERY_TILES_IN_ZPS_ON_NTP, false);
     public static final CachedFlag sOmniboxMatchToolbarAndStatusBarColor =
@@ -656,7 +653,6 @@ public abstract class ChromeFeatureList {
                     sPriceChangeModule,
                     sPrivacyGuideAndroid3,
                     sPrivacyGuidePreloadAndroid,
-                    sPrivacyGuidePostMVP,
                     sQueryTilesInZPSOnNTP,
                     sOmniboxMatchToolbarAndStatusBarColor,
                     sOmniboxModernizeVisualUpdate,

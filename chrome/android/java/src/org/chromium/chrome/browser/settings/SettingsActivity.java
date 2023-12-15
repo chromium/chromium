@@ -48,7 +48,6 @@ import org.chromium.chrome.browser.back_press.SecondaryActivityBackPressUma.Seco
 import org.chromium.chrome.browser.browsing_data.ClearBrowsingDataFragmentBasic;
 import org.chromium.chrome.browser.feedback.FragmentHelpAndFeedbackLauncher;
 import org.chromium.chrome.browser.feedback.HelpAndFeedbackLauncherImpl;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.image_descriptions.ImageDescriptionsController;
 import org.chromium.chrome.browser.image_descriptions.ImageDescriptionsSettings;
 import org.chromium.chrome.browser.init.ChromeBrowserInitializer;
@@ -464,9 +463,7 @@ public class SettingsActivity extends ChromeBaseAppCompatActivity
     private void initBackPressHandler() {
         // Handlers registered last will be called first.
         registerMainFragmentBackPressHandler();
-        if (ChromeFeatureList.sPrivacyGuidePostMVP.isEnabled()) {
-            registerBottomSheetBackPressHandler();
-        }
+        registerBottomSheetBackPressHandler();
     }
 
     private void registerMainFragmentBackPressHandler() {
