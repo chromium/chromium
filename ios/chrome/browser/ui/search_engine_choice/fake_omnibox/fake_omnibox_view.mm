@@ -34,7 +34,7 @@ constexpr CGFloat kMagnifyingGlassTopInset = 12.;
 constexpr CGFloat kFontSize = 13.;
 
 // Creates the fake omnibox border or shadow.
-CAShapeLayer* CreateOmniboxEdgeLayer(BOOL isBorder) {
+CALayer* CreateOmniboxEdgeLayer(BOOL isBorder) {
   CAShapeLayer* edgeLayer = [CAShapeLayer layer];
   if (isBorder) {
     // Create the dashed border line.
@@ -66,7 +66,7 @@ CAShapeLayer* CreateOmniboxEdgeLayer(BOOL isBorder) {
 }
 
 // Creates the fake omnibox field.
-CAShapeLayer* CreateOmniboxFieldLayer(BOOL isEmpty) {
+CALayer* CreateOmniboxFieldLayer(BOOL isEmpty) {
   CAShapeLayer* field = [CAShapeLayer layer];
   if (isEmpty) {
     // Add the empty grey field inside.
@@ -105,6 +105,10 @@ CAShapeLayer* CreateOmniboxFieldLayer(BOOL isEmpty) {
 }  // namespace
 
 @implementation FakeOmniboxView {
+  // Omnibox edge layer with shadow and/or border line.
+  CALayer* _omniboxEdgeLayer;
+  // Inner layer.
+  CALayer* _fieldLayer;
   // The image view for the favicon or the magnifying glass.
   UIImageView* _imageView;
   // Whether the fake omnibox should be empty.
@@ -123,12 +127,12 @@ CAShapeLayer* CreateOmniboxFieldLayer(BOOL isEmpty) {
     self.bounds = CGRectMake(0, 0, kFakeOmniboxWidth, kFakeOmniboxHeight);
 
     // Add the shadow around the omnibox.
-    CAShapeLayer* omniboxEdge = CreateOmniboxEdgeLayer(_isEmptyFakeOmnibox);
-    [self.layer addSublayer:omniboxEdge];
+    _omniboxEdgeLayer = CreateOmniboxEdgeLayer(_isEmptyFakeOmnibox);
+    [self.layer addSublayer:_omniboxEdgeLayer];
 
     // Create the pill-shaped field.
-    CAShapeLayer* field = CreateOmniboxFieldLayer(_isEmptyFakeOmnibox);
-    [self.layer addSublayer:field];
+    _fieldLayer = CreateOmniboxFieldLayer(_isEmptyFakeOmnibox);
+    [self.layer addSublayer:_fieldLayer];
 
     if (!_isEmptyFakeOmnibox) {
       // Add the search engine Label.
@@ -177,6 +181,23 @@ CAShapeLayer* CreateOmniboxFieldLayer(BOOL isEmpty) {
     }
   }
   return self;
+}
+
+#pragma mark - UITraitEnvironment
+
+- (void)traitCollectionDidChange:(UITraitCollection*)previousTraitCollection {
+  [super traitCollectionDidChange:previousTraitCollection];
+  if (previousTraitCollection.userInterfaceStyle !=
+      self.traitCollection.userInterfaceStyle) {
+    // Creates new layers, to have the correct colors (according to dark mode or
+    // light mode).
+    CALayer* newOmniboxEdgeLayer = CreateOmniboxEdgeLayer(_isEmptyFakeOmnibox);
+    [self.layer replaceSublayer:_omniboxEdgeLayer with:newOmniboxEdgeLayer];
+    _omniboxEdgeLayer = newOmniboxEdgeLayer;
+    CALayer* newFieldLayer = CreateOmniboxFieldLayer(_isEmptyFakeOmnibox);
+    [self.layer replaceSublayer:_fieldLayer with:newFieldLayer];
+    _fieldLayer = newFieldLayer;
+  }
 }
 
 #pragma mark - Properties
