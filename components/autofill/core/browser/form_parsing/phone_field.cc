@@ -188,11 +188,10 @@ bool PhoneField::LikelyAugmentedPhoneCountryCode(
 }
 
 // static
-bool PhoneField::ParseGrammar(const PhoneGrammar& grammar,
+bool PhoneField::ParseGrammar(ParsingContext& context,
+                              const PhoneGrammar& grammar,
                               ParsedPhoneFields& parsed_fields,
                               AutofillScanner* scanner,
-                              const LanguageCode& page_language,
-                              PatternSource pattern_source,
                               LogManager* log_manager) {
   for (const auto& rule : grammar) {
     const bool is_country_code_field = rule.phone_part == FIELD_COUNTRY_CODE;
@@ -217,13 +216,12 @@ bool PhoneField::ParseGrammar(const PhoneGrammar& grammar,
     // regex of this rule.
     bool parsed =
         is_empty_label
-            ? ParseEmptyLabel(scanner, &parsed_fields[rule.phone_part])
-            : ParsePhoneField(scanner, GetRegExp(rule.regex),
+            ? ParseEmptyLabel(context, scanner, &parsed_fields[rule.phone_part])
+            : ParsePhoneField(context, scanner, GetRegExp(rule.regex),
                               &parsed_fields[rule.phone_part],
                               {log_manager, GetRegExpName(rule.regex)},
                               is_country_code_field,
-                              GetJSONFieldType(rule.regex), page_language,
-                              pattern_source);
+                              GetJSONFieldType(rule.regex));
     if (!parsed)
       return false;
 
@@ -237,12 +235,9 @@ bool PhoneField::ParseGrammar(const PhoneGrammar& grammar,
 }
 
 // static
-std::unique_ptr<FormField> PhoneField::Parse(
-    AutofillScanner* scanner,
-    const GeoIpCountryCode& client_country,
-    const LanguageCode& page_language,
-    PatternSource pattern_source,
-    LogManager* log_manager) {
+std::unique_ptr<FormField> PhoneField::Parse(ParsingContext& context,
+                                             AutofillScanner* scanner,
+                                             LogManager* log_manager) {
   if (scanner->IsEnd())
     return nullptr;
 
@@ -254,8 +249,7 @@ std::unique_ptr<FormField> PhoneField::Parse(
   int grammar_id = 0;
   for (const PhoneGrammar& grammar : GetPhoneGrammars()) {
     std::fill(parsed_fields.begin(), parsed_fields.end(), nullptr);
-    if (ParseGrammar(grammar, parsed_fields, scanner, page_language,
-                     pattern_source, log_manager)) {
+    if (ParseGrammar(context, grammar, parsed_fields, scanner, log_manager)) {
       found_matching_grammar = true;
       break;
     }
@@ -272,15 +266,15 @@ std::unique_ptr<FormField> PhoneField::Parse(
   bool suffix_matched = false;
   if (!parsed_fields[FIELD_SUFFIX]) {
     suffix_matched =
-        ParsePhoneField(scanner, kPhoneSuffixRe, &parsed_fields[FIELD_SUFFIX],
+        ParsePhoneField(context, scanner, kPhoneSuffixRe,
+                        &parsed_fields[FIELD_SUFFIX],
                         {log_manager, "kPhoneSuffixRe"},
-                        /*is_country_code_field=*/false, "PHONE_SUFFIX",
-                        page_language, pattern_source) ||
-        ParsePhoneField(
-            scanner, kPhoneSuffixSeparatorRe, &parsed_fields[FIELD_SUFFIX],
-            {log_manager, "kPhoneSuffixSeparatorRe"},
-            /*is_country_code_field=*/false, "PHONE_SUFFIX_SEPARATOR",
-            page_language, pattern_source);
+                        /*is_country_code_field=*/false, "PHONE_SUFFIX") ||
+        ParsePhoneField(context, scanner, kPhoneSuffixSeparatorRe,
+                        &parsed_fields[FIELD_SUFFIX],
+                        {log_manager, "kPhoneSuffixSeparatorRe"},
+                        /*is_country_code_field=*/false,
+                        "PHONE_SUFFIX_SEPARATOR");
   }
   AutofillMetrics::LogPhoneNumberGrammarMatched(grammar_id, suffix_matched,
                                                 GetPhoneGrammars().size());
@@ -288,10 +282,10 @@ std::unique_ptr<FormField> PhoneField::Parse(
   // Now look for an extension.
   // The extension is unused, but it is parsed to prevent other parsers from
   // misclassifying it as something else.
-  ParsePhoneField(scanner, kPhoneExtensionRe, &parsed_fields[FIELD_EXTENSION],
+  ParsePhoneField(context, scanner, kPhoneExtensionRe,
+                  &parsed_fields[FIELD_EXTENSION],
                   {log_manager, "kPhoneExtensionRe"},
-                  /*is_country_code_field=*/false, "PHONE_EXTENSION",
-                  page_language, pattern_source);
+                  /*is_country_code_field=*/false, "PHONE_EXTENSION");
 
   return base::WrapUnique(new PhoneField(std::move(parsed_fields)));
 }
@@ -453,14 +447,13 @@ std::string PhoneField::GetJSONFieldType(RegexType phonetype_id) {
 }
 
 // static
-bool PhoneField::ParsePhoneField(AutofillScanner* scanner,
+bool PhoneField::ParsePhoneField(ParsingContext& context,
+                                 AutofillScanner* scanner,
                                  base::StringPiece16 regex,
                                  raw_ptr<AutofillField>* field,
                                  const RegExLogging& logging,
                                  const bool is_country_code_field,
-                                 const std::string& json_field_type,
-                                 const LanguageCode& page_language,
-                                 PatternSource pattern_source) {
+                                 const std::string& json_field_type) {
   MatchParams match_type = kDefaultMatchParamsWith<MatchFieldType::kTelephone,
                                                    MatchFieldType::kNumber>;
   // Include the selection boxes too for the matching of the phone country code.
@@ -470,11 +463,11 @@ bool PhoneField::ParsePhoneField(AutofillScanner* scanner,
                                          MatchFieldType::kSelect>;
   }
 
-  base::span<const MatchPatternRef> patterns =
-      GetMatchPatterns(json_field_type, page_language, pattern_source);
+  base::span<const MatchPatternRef> patterns = GetMatchPatterns(
+      json_field_type, context.page_language, context.pattern_source);
 
-  return ParseFieldSpecifics(scanner, regex, match_type, patterns, field,
-                             logging);
+  return ParseFieldSpecifics(context, scanner, regex, match_type, patterns,
+                             field, logging);
 }
 
 }  // namespace autofill

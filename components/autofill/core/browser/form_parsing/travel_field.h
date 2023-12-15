@@ -21,12 +21,9 @@ class TravelField : public FormField {
  public:
   ~TravelField() override;
 
-  static std::unique_ptr<FormField> Parse(
-      AutofillScanner* scanner,
-      const GeoIpCountryCode& client_country,
-      const LanguageCode& page_language,
-      PatternSource pattern_source,
-      LogManager* log_manager);
+  static std::unique_ptr<FormField> Parse(ParsingContext& context,
+                                          AutofillScanner* scanner,
+                                          LogManager* log_manager);
 
  protected:
   void AddClassifications(FieldCandidatesMap& field_candidates) const override;

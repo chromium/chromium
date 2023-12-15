@@ -19,13 +19,9 @@ class StandaloneCvcFieldTest
   StandaloneCvcFieldTest& operator=(const StandaloneCvcFieldTest&) = delete;
 
  protected:
-  std::unique_ptr<FormField> Parse(
-      AutofillScanner* scanner,
-      const GeoIpCountryCode& client_country,
-      const LanguageCode& page_language = LanguageCode("en")) override {
-    return StandaloneCvcField::Parse(scanner, client_country, page_language,
-                                     *GetActivePatternSource(),
-                                     /*log_manager=*/nullptr);
+  std::unique_ptr<FormField> Parse(ParsingContext& context,
+                                   AutofillScanner* scanner) override {
+    return StandaloneCvcField::Parse(context, scanner, nullptr);
   }
 
   base::test::ScopedFeatureList scoped_feature_list_;

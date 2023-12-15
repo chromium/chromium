@@ -93,10 +93,8 @@ class FormFieldTestBase {
   void TestClassificationExpectations();
 
   // Apply the parsing with a specific parser.
-  virtual std::unique_ptr<FormField> Parse(
-      AutofillScanner* scanner,
-      const GeoIpCountryCode& client_country,
-      const LanguageCode& page_language) = 0;
+  virtual std::unique_ptr<FormField> Parse(ParsingContext& context,
+                                           AutofillScanner* scanner) = 0;
 
   FieldRendererId MakeFieldRendererId();
 

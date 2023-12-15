@@ -25,6 +25,7 @@
 namespace autofill {
 
 class AutofillField;
+class AutofillRegexCache;
 class AutofillScanner;
 class LogManager;
 
@@ -42,6 +43,24 @@ struct RegExLogging {
   const char* regex_name = "";
 };
 
+// This is a helper class that is instantiated before form parsing. It contains
+// a) environmental information that is needed in many places and b) caches to
+// prevent repetitive work.
+struct ParsingContext {
+  ParsingContext(GeoIpCountryCode client_country,
+                 LanguageCode page_language,
+                 PatternSource pattern_source);
+  ParsingContext(const ParsingContext&) = delete;
+  ParsingContext& operator=(const ParsingContext&) = delete;
+  ~ParsingContext();
+
+  const GeoIpCountryCode client_country;
+  const LanguageCode page_language;
+  const PatternSource pattern_source;
+
+  base::raw_ref<AutofillRegexCache> regex_cache;
+};
+
 // Represents a logical form field in a web form. Classes that implement this
 // interface can identify themselves as a particular type of form field, e.g.
 // name, phone number, or address field.
@@ -56,11 +75,9 @@ class FormField {
   // Each field has a derived unique name that is used as the key into
   // |field_candidates|.
   static void ParseFormFields(
+      ParsingContext& context,
       const std::vector<std::unique_ptr<AutofillField>>& fields,
-      const GeoIpCountryCode& client_country,
-      const LanguageCode& page_language,
       bool is_form_tag,
-      PatternSource pattern_source,
       FieldCandidatesMap& field_candidates,
       LogManager* log_manager = nullptr);
 
@@ -68,11 +85,9 @@ class FormField {
   // promo codes) inside |fields|. Each field has a derived unique name that is
   // used as the key into |field_candidates|.
   static void ParseSingleFieldForms(
+      ParsingContext& context,
       const std::vector<std::unique_ptr<AutofillField>>& fields,
-      const GeoIpCountryCode& client_country,
-      const LanguageCode& page_language,
       bool is_form_tag,
-      PatternSource pattern_source,
       FieldCandidatesMap& field_candidates,
       LogManager* log_manager = nullptr);
 
@@ -83,10 +98,8 @@ class FormField {
   // prerequisites in that there shouldn't be other credit card or email fields
   // in the form, which is why its parsing logic is extracted to its own method.
   static void ParseStandaloneCVCFields(
+      ParsingContext& context,
       const std::vector<std::unique_ptr<AutofillField>>& fields,
-      const GeoIpCountryCode& client_country,
-      const LanguageCode& page_language,
-      PatternSource pattern_source,
       FieldCandidatesMap& field_candidates,
       LogManager* log_manager = nullptr);
 
@@ -95,25 +108,25 @@ class FormField {
   // sites. Currently called only when `kAutofillEnableEmailOnlyAddressForms` is
   // enabled.
   static void ParseStandaloneEmailFields(
+      ParsingContext& context,
       const std::vector<std::unique_ptr<AutofillField>>& fields,
-      const GeoIpCountryCode& client_country,
-      const LanguageCode& page_language,
-      PatternSource pattern_source,
       FieldCandidatesMap& field_candidates,
       LogManager* log_manager = nullptr);
 
   // Returns true if `field` matches one of the the passed `patterns`.
   static bool FieldMatchesMatchPatternRef(
+      ParsingContext& context,
       base::span<const MatchPatternRef> patterns,
       const AutofillField& field,
       const RegExLogging& logging = {});
 
 #if defined(UNIT_TEST)
-  static bool MatchForTesting(const AutofillField* field,
+  static bool MatchForTesting(ParsingContext& context,
+                              const AutofillField* field,
                               base::StringPiece16 pattern,
                               MatchParams match_type,
                               const RegExLogging& logging = {}) {
-    return FormField::Match(field, pattern, match_type, logging);
+    return FormField::Match(context, field, pattern, match_type, logging);
   }
 
   static bool ParseInAnyOrderForTesting(
@@ -157,6 +170,7 @@ class FormField {
   // Should not be called from the UI thread as it may be blocked on a worker
   // thread.
   static bool MatchesRegexWithCache(
+      ParsingContext& context,
       base::StringPiece16 input,
       base::StringPiece16 pattern,
       std::vector<std::u16string>* groups = nullptr);
@@ -166,7 +180,8 @@ class FormField {
   // When `kNoLegacyPattern` is passed as the `pattern`, the functions always
   // default to `patterns`, regardless of the status of
   // `features::kAutofillParsingPatternProvider`.
-  static bool ParseField(AutofillScanner* scanner,
+  static bool ParseField(ParsingContext& context,
+                         AutofillScanner* scanner,
                          base::StringPiece16 pattern,
                          base::span<const MatchPatternRef> patterns,
                          raw_ptr<AutofillField>* match,
@@ -177,6 +192,7 @@ class FormField {
   // default to `patterns`, regardless of the status of
   // `features::kAutofillParsingPatternProvider`.
   static bool ParseFieldSpecifics(
+      ParsingContext& context,
       AutofillScanner* scanner,
       base::StringPiece16 pattern,
       const MatchParams& match_type,
@@ -187,7 +203,8 @@ class FormField {
 
   // Attempts to parse a field with an empty label. Returns true
   // on success and fills |match| with a pointer to the field.
-  static bool ParseEmptyLabel(AutofillScanner* scanner,
+  static bool ParseEmptyLabel(ParsingContext& context,
+                              AutofillScanner* scanner,
                               raw_ptr<AutofillField>* match);
 
   // Attempts to parse several fields using the specified parsing functions in
@@ -229,12 +246,9 @@ class FormField {
  private:
   // Function pointer type for the parsing function that should be passed to the
   // ParseFormFieldsPass() helper function.
-  typedef std::unique_ptr<FormField> ParseFunction(
-      AutofillScanner* scanner,
-      const GeoIpCountryCode& client_country,
-      const LanguageCode& page_language,
-      PatternSource pattern_source,
-      LogManager* log_manager);
+  typedef std::unique_ptr<FormField> ParseFunction(ParsingContext& context,
+                                                   AutofillScanner* scanner,
+                                                   LogManager* log_manager);
 
   // Removes entries from `field_candidates` in case
   // - not enough fields were classified by local heuristics.
@@ -242,13 +256,14 @@ class FormField {
   //   contexts that don't contain enough fields (e.g. forms with only an
   //   email address).
   static void ClearCandidatesIfHeuristicsDidNotFindEnoughFields(
+      ParsingContext& context,
       const std::vector<std::unique_ptr<AutofillField>>& fields,
       FieldCandidatesMap& field_candidates,
       bool is_form_tag,
-      const GeoIpCountryCode& client_country,
       LogManager* log_manager);
 
   static bool ParseFieldSpecificsWithNewPatterns(
+      ParsingContext& context,
       AutofillScanner* scanner,
       base::span<const MatchPatternRef> patterns,
       raw_ptr<AutofillField>* match,
@@ -261,6 +276,7 @@ class FormField {
   // advance by one step. A |true| result is returned in the case of a
   // successful match, false otherwise.
   static bool ParseFieldSpecificsWithLegacyPattern(
+      ParsingContext& context,
       AutofillScanner* scanner,
       base::StringPiece16 pattern,
       MatchParams match_type,
@@ -276,7 +292,8 @@ class FormField {
   // |scanner|.
   // Returns |true| if a match is found according to |match_type|, and |false|
   // otherwise.
-  static bool MatchAndAdvance(AutofillScanner* scanner,
+  static bool MatchAndAdvance(ParsingContext& context,
+                              AutofillScanner* scanner,
                               base::StringPiece16 pattern,
                               MatchParams match_type,
                               raw_ptr<AutofillField>* match,
@@ -284,7 +301,8 @@ class FormField {
 
   // Matches the regular expression |pattern| against the components of
   // |field| as specified in |match_type|.
-  static bool Match(const AutofillField* field,
+  static bool Match(ParsingContext& context,
+                    const AutofillField* field,
                     base::StringPiece16 pattern,
                     MatchParams match_type,
                     const RegExLogging& logging = {});
@@ -296,11 +314,9 @@ class FormField {
   // Classification results of the processed fields are stored in
   // |field_candidates|.
   static void ParseFormFieldsPass(ParseFunction parse,
+                                  ParsingContext& context,
                                   const std::vector<AutofillField*>& fields,
                                   FieldCandidatesMap& field_candidates,
-                                  const GeoIpCountryCode& client_country,
-                                  const LanguageCode& page_language,
-                                  PatternSource pattern_source,
                                   LogManager* log_manager);
 
   // Interpret the fields' `parsable_name()` (id or name attribute) as an

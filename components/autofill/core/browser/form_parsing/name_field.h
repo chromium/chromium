@@ -22,12 +22,9 @@ class LogManager;
 // A form field that can parse either a FullNameField or a FirstLastNameField.
 class NameField : public FormField {
  public:
-  static std::unique_ptr<FormField> Parse(
-      AutofillScanner* scanner,
-      const GeoIpCountryCode& client_country,
-      const LanguageCode& page_language,
-      PatternSource pattern_source,
-      LogManager* log_manager);
+  static std::unique_ptr<FormField> Parse(ParsingContext& context,
+                                          AutofillScanner* scanner,
+                                          LogManager* log_manager);
 
   NameField(const NameField&) = delete;
   NameField& operator=(const NameField&) = delete;

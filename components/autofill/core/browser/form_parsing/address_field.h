@@ -26,12 +26,9 @@ class LogManager;
 
 class AddressField : public FormField {
  public:
-  static std::unique_ptr<FormField> Parse(
-      AutofillScanner* scanner,
-      const GeoIpCountryCode& client_country,
-      const LanguageCode& page_language,
-      PatternSource pattern_source,
-      LogManager* log_manager);
+  static std::unique_ptr<FormField> Parse(ParsingContext& context,
+                                          AutofillScanner* scanner,
+                                          LogManager* log_manager);
 
   // Returns whether a stand-alone zip field is supported for `client_country`.
   // In some countries that's a prevalent UI (the user is first asked to enter
@@ -40,12 +37,9 @@ class AddressField : public FormField {
   // classifications. We may reevaluate that decision in the future.
   static bool IsStandaloneZipSupported(const GeoIpCountryCode& client_country);
 
-  static std::unique_ptr<FormField> ParseStandaloneZip(
-      AutofillScanner* scanner,
-      const GeoIpCountryCode& client_country,
-      const LanguageCode& page_language,
-      PatternSource pattern_source,
-      LogManager* log_manager);
+  static std::unique_ptr<FormField> ParseStandaloneZip(ParsingContext& context,
+                                                       AutofillScanner* scanner,
+                                                       LogManager* log_manager);
 
   AddressField(const AddressField&) = delete;
   AddressField& operator=(const AddressField&) = delete;
@@ -64,44 +58,26 @@ class AddressField : public FormField {
 
   explicit AddressField(LogManager* log_manager);
 
-  bool ParseCompany(AutofillScanner* scanner,
-                    const LanguageCode& page_language,
-                    PatternSource pattern_source);
+  bool ParseCompany(ParsingContext& context, AutofillScanner* scanner);
 
-  bool ParseAddress(AutofillScanner* scanner,
-                    const GeoIpCountryCode& client_country,
-                    const LanguageCode& page_language,
-                    PatternSource pattern_source);
+  bool ParseAddress(ParsingContext& context, AutofillScanner* scanner);
 
-  bool ParseAddressFieldSequence(AutofillScanner* scanner,
-                                 const GeoIpCountryCode& client_country,
-                                 const LanguageCode& page_language,
-                                 PatternSource pattern_source);
+  bool ParseAddressFieldSequence(ParsingContext& context,
+                                 AutofillScanner* scanner);
 
-  bool ParseAddressLines(AutofillScanner* scanner,
-                         const LanguageCode& page_language,
-                         PatternSource pattern_source);
+  bool ParseAddressLines(ParsingContext& context, AutofillScanner* scanner);
 
-  bool ParseZipCode(AutofillScanner* scanner,
-                    const LanguageCode& page_language,
-                    PatternSource pattern_source);
+  bool ParseZipCode(ParsingContext& context, AutofillScanner* scanner);
 
-  bool ParseCity(AutofillScanner* scanner,
-                 const LanguageCode& page_language,
-                 PatternSource pattern_source);
+  bool ParseCity(ParsingContext& context, AutofillScanner* scanner);
 
-  bool ParseState(AutofillScanner* scanner,
-                  const LanguageCode& page_language,
-                  PatternSource pattern_source);
+  bool ParseState(ParsingContext& context, AutofillScanner* scanner);
 
   // Parses the current field pointed to by |scanner|, if it exists, and tries
   // to determine if the field's type corresponds to one of the following:
   // dependent locality, city, state, country, zip, landmark, between streets,
   // admin level 2 or none of those.
-  bool ParseAddressField(AutofillScanner* scanner,
-                         const GeoIpCountryCode& client_country,
-                         const LanguageCode& page_language,
-                         PatternSource pattern_source);
+  bool ParseAddressField(ParsingContext& context, AutofillScanner* scanner);
 
   // Like ParseFieldSpecifics(), but applies |pattern| against the name and
   // label of the current field separately. If the return value is
@@ -109,6 +85,7 @@ class AddressField : public FormField {
   // it is non-NULL. Otherwise |scanner| does not advance and |match| does not
   // change.
   static ParseNameLabelResult ParseNameAndLabelSeparately(
+      ParsingContext& context,
       AutofillScanner* scanner,
       const std::u16string& pattern,
       MatchParams match_type,
@@ -119,75 +96,50 @@ class AddressField : public FormField {
   // Run matches on the name and label separately. If the return result is
   // RESULT_MATCH_NAME_LABEL, then |scanner| advances and the field is set.
   // Otherwise |scanner| rewinds and the field is cleared.
-  ParseNameLabelResult ParseNameAndLabelForZipCode(
-      AutofillScanner* scanner,
-      const LanguageCode& page_language,
-      PatternSource pattern_source);
+  ParseNameLabelResult ParseNameAndLabelForZipCode(ParsingContext& context,
+                                                   AutofillScanner* scanner);
 
   ParseNameLabelResult ParseNameAndLabelForDependentLocality(
-      AutofillScanner* scanner,
-      const LanguageCode& page_language,
-      PatternSource pattern_source);
+      ParsingContext& context,
+      AutofillScanner* scanner);
 
-  ParseNameLabelResult ParseNameAndLabelForCity(
-      AutofillScanner* scanner,
-      const LanguageCode& page_language,
-      PatternSource pattern_source);
+  ParseNameLabelResult ParseNameAndLabelForCity(ParsingContext& context,
+                                                AutofillScanner* scanner);
 
-  ParseNameLabelResult ParseNameAndLabelForCountry(
-      AutofillScanner* scanner,
-      const LanguageCode& page_language,
-      PatternSource pattern_source);
+  ParseNameLabelResult ParseNameAndLabelForCountry(ParsingContext& context,
+                                                   AutofillScanner* scanner);
 
-  ParseNameLabelResult ParseNameAndLabelForLandmark(
-      AutofillScanner* scanner,
-      const GeoIpCountryCode& client_country,
-      const LanguageCode& page_language,
-      PatternSource pattern_source);
+  ParseNameLabelResult ParseNameAndLabelForLandmark(ParsingContext& context,
+                                                    AutofillScanner* scanner);
 
   ParseNameLabelResult ParseNameAndLabelForBetweenStreets(
-      AutofillScanner* scanner,
-      const GeoIpCountryCode& client_country,
-      const LanguageCode& page_language,
-      PatternSource pattern_source);
+      ParsingContext& context,
+      AutofillScanner* scanner);
 
   // Run matches on the name and label for a field and sets
   // `between_streets_line_1_` and `between_streets_line_2_` respectively if a
   // match is found.
   ParseNameLabelResult ParseNameAndLabelForBetweenStreetsLines12(
-      AutofillScanner* scanner,
-      const GeoIpCountryCode& client_country,
-      const LanguageCode& page_language,
-      PatternSource pattern_source);
+      ParsingContext& context,
+      AutofillScanner* scanner);
 
   ParseNameLabelResult ParseNameAndLabelForAdminLevel2(
-      AutofillScanner* scanner,
-      const GeoIpCountryCode& client_country,
-      const LanguageCode& page_language,
-      PatternSource pattern_source);
+      ParsingContext& context,
+      AutofillScanner* scanner);
 
   ParseNameLabelResult ParseNameAndLabelForBetweenStreetsOrLandmark(
-      AutofillScanner* scanner,
-      const GeoIpCountryCode& client_country,
-      const LanguageCode& page_language,
-      PatternSource pattern_source);
+      ParsingContext& context,
+      AutofillScanner* scanner);
 
   ParseNameLabelResult ParseNameAndLabelForOverflowAndLandmark(
-      AutofillScanner* scanner,
-      const GeoIpCountryCode& client_country,
-      const LanguageCode& page_language,
-      PatternSource pattern_source);
+      ParsingContext& context,
+      AutofillScanner* scanner);
 
-  ParseNameLabelResult ParseNameAndLabelForOverflow(
-      AutofillScanner* scanner,
-      const GeoIpCountryCode& client_country,
-      const LanguageCode& page_language,
-      PatternSource pattern_source);
+  ParseNameLabelResult ParseNameAndLabelForOverflow(ParsingContext& context,
+                                                    AutofillScanner* scanner);
 
-  ParseNameLabelResult ParseNameAndLabelForState(
-      AutofillScanner* scanner,
-      const LanguageCode& page_language,
-      PatternSource pattern_source);
+  ParseNameLabelResult ParseNameAndLabelForState(ParsingContext& context,
+                                                 AutofillScanner* scanner);
 
   // Return true if the form being parsed shows an indication of being a
   // structured address form.

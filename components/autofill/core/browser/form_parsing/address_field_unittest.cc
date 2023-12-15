@@ -24,11 +24,9 @@ class AddressFieldTest
   AddressFieldTest& operator=(const AddressFieldTest&) = delete;
 
  protected:
-  std::unique_ptr<FormField> Parse(AutofillScanner* scanner,
-                                   const GeoIpCountryCode& client_country,
-                                   const LanguageCode& page_language) override {
-    return AddressField::Parse(scanner, client_country, page_language,
-                               *GetActivePatternSource(),
+  std::unique_ptr<FormField> Parse(ParsingContext& context,
+                                   AutofillScanner* scanner) override {
+    return AddressField::Parse(context, scanner,
                                /*log_manager=*/nullptr);
   }
 };

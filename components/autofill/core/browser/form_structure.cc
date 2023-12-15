@@ -1302,8 +1302,9 @@ void FormStructure::SetFieldTypesFromAutocompleteAttribute() {
   has_author_specified_upi_vpa_hint_ = false;
   std::map<FieldSignature, size_t> field_rank_map;
   for (const std::unique_ptr<AutofillField>& field : fields_) {
-    if (!field->parsed_autocomplete)
+    if (!field->parsed_autocomplete) {
       continue;
+    }
 
     // A parsable autocomplete value was specified. Even an invalid field_type
     // is considered a type hint. This allows a website's author to specify an
@@ -1350,24 +1351,21 @@ bool FormStructure::SetSectionsFromAutocompleteOrReset() {
   return has_autocomplete;
 }
 
-void FormStructure::ParseFieldTypesWithPatterns(
-    PatternSource pattern_source,
-    LogManager* log_manager) {
+void FormStructure::ParseFieldTypesWithPatterns(PatternSource pattern_source,
+                                                LogManager* log_manager) {
   FieldCandidatesMap field_type_map;
   const LanguageCode& page_language =
       base::FeatureList::IsEnabled(features::kAutofillPageLanguageDetection)
           ? current_page_language_
           : LanguageCode();
+  ParsingContext context(client_country_, page_language, pattern_source);
   if (ShouldRunHeuristics()) {
-    FormField::ParseFormFields(fields_, client_country_, page_language,
-                               is_form_tag_, pattern_source, field_type_map,
+    FormField::ParseFormFields(context, fields_, is_form_tag_, field_type_map,
                                log_manager);
   } else if (ShouldRunHeuristicsForSingleFieldForms()) {
-    FormField::ParseSingleFieldForms(fields_, client_country_, page_language,
-                                     is_form_tag_, pattern_source,
+    FormField::ParseSingleFieldForms(context, fields_, is_form_tag_,
                                      field_type_map, log_manager);
-    FormField::ParseStandaloneCVCFields(fields_, client_country_, page_language,
-                                        pattern_source, field_type_map,
+    FormField::ParseStandaloneCVCFields(context, fields_, field_type_map,
                                         log_manager);
 
     // For standalone email fields inside a form tag, allow heuristics even
@@ -1376,13 +1374,13 @@ void FormStructure::ParseFieldTypesWithPatterns(
     if (is_form_tag_ &&
         base::FeatureList::IsEnabled(
             features::kAutofillEnableEmailHeuristicOnlyAddressForms)) {
-      FormField::ParseStandaloneEmailFields(fields_, client_country_,
-                                            page_language, pattern_source,
-                                            field_type_map, log_manager);
+      FormField::ParseStandaloneEmailFields(context, fields_, field_type_map,
+                                            log_manager);
     }
   }
-  if (field_type_map.empty())
+  if (field_type_map.empty()) {
     return;
+  }
 
   // Fields can share the same field signature. This map records for each
   // signature how many fields with the same signature have been observed.
@@ -1391,6 +1389,7 @@ void FormStructure::ParseFieldTypesWithPatterns(
     auto iter = field_type_map.find(field->global_id());
     if (iter == field_type_map.end())
       continue;
+
     const FieldCandidates& candidates = iter->second;
     field->set_heuristic_type(PatternSourceToHeuristicSource(pattern_source),
                               candidates.BestHeuristicType());
@@ -1591,16 +1590,18 @@ void FormStructure::EncodeFormFieldsForUpload(
 }
 
 bool FormStructure::IsMalformed() const {
-  if (!field_count())  // Nothing to add.
+  if (!field_count()) {  // Nothing to add.
     return true;
+  }
 
   // Some badly formatted web sites repeat fields - limit number of fields to
   // 250, which is far larger than any valid form and proto still fits into 10K.
   // Do not send requests for forms with more than this many fields, as they are
   // near certainly not valid/auto-fillable.
   const size_t kMaxFieldsOnTheForm = 250;
-  if (field_count() > kMaxFieldsOnTheForm)
+  if (field_count() > kMaxFieldsOnTheForm) {
     return true;
+  }
   return false;
 }
 

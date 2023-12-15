@@ -21,13 +21,9 @@ class MerchantPromoCodeFieldTest
       delete;
 
  protected:
-  std::unique_ptr<FormField> Parse(
-      AutofillScanner* scanner,
-      const GeoIpCountryCode& client_country,
-      const LanguageCode& page_language = LanguageCode("en")) override {
-    return MerchantPromoCodeField::Parse(scanner, client_country, page_language,
-                                         *GetActivePatternSource(),
-                                         /*log_manager=*/nullptr);
+  std::unique_ptr<FormField> Parse(ParsingContext& context,
+                                   AutofillScanner* scanner) override {
+    return MerchantPromoCodeField::Parse(context, scanner, nullptr);
   }
 };
 

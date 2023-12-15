@@ -1023,8 +1023,10 @@ void FormStructureRationalizer::RationalizeByRationalizationEngine(
     pattern_source = PatternSource::kLegacy;
   }
 
-  rationalization::ApplyRationalizationEngineRules(
-      client_country, language_code, *pattern_source, *fields_, log_manager);
+  ParsingContext context(client_country, language_code, *pattern_source);
+
+  rationalization::ApplyRationalizationEngineRules(context, *fields_,
+                                                   log_manager);
 }
 
 }  // namespace autofill

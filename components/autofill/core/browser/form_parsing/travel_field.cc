@@ -12,37 +12,42 @@
 
 namespace autofill {
 
+namespace {
+base::span<const MatchPatternRef> GetMatchPatterns(base::StringPiece name,
+                                                   ParsingContext& context) {
+  return GetMatchPatterns(name, context.page_language, context.pattern_source);
+}
+}  // namespace
+
 TravelField::~TravelField() = default;
 
 // static
-std::unique_ptr<FormField> TravelField::Parse(
-    AutofillScanner* scanner,
-    const GeoIpCountryCode& client_country,
-    const LanguageCode& page_language,
-    PatternSource pattern_source,
-    LogManager* log_manager) {
-  if (!scanner || scanner->IsEnd())
+std::unique_ptr<FormField> TravelField::Parse(ParsingContext& context,
+                                              AutofillScanner* scanner,
+                                              LogManager* log_manager) {
+  if (!scanner || scanner->IsEnd()) {
     return nullptr;
+  }
 
   base::span<const MatchPatternRef> passport_patterns =
-      GetMatchPatterns("PASSPORT", page_language, pattern_source);
+      GetMatchPatterns("PASSPORT", context);
   base::span<const MatchPatternRef> travel_origin_patterns =
-      GetMatchPatterns("TRAVEL_ORIGIN", page_language, pattern_source);
+      GetMatchPatterns("TRAVEL_ORIGIN", context);
   base::span<const MatchPatternRef> travel_destination_patterns =
-      GetMatchPatterns("TRAVEL_DESTINATION", page_language, pattern_source);
+      GetMatchPatterns("TRAVEL_DESTINATION", context);
   base::span<const MatchPatternRef> flight_patterns =
-      GetMatchPatterns("FLIGHT", page_language, pattern_source);
+      GetMatchPatterns("FLIGHT", context);
 
   auto travel_field = std::make_unique<TravelField>();
-  if (ParseField(scanner, kPassportRe, passport_patterns,
+  if (ParseField(context, scanner, kPassportRe, passport_patterns,
                  &travel_field->passport_, {log_manager, "kPassportRe"}) ||
-      ParseField(scanner, kTravelOriginRe, travel_origin_patterns,
+      ParseField(context, scanner, kTravelOriginRe, travel_origin_patterns,
                  &travel_field->origin_, {log_manager, "kTravelOriginRe"}) ||
-      ParseField(scanner, kTravelDestinationRe, travel_destination_patterns,
-                 &travel_field->destination_,
+      ParseField(context, scanner, kTravelDestinationRe,
+                 travel_destination_patterns, &travel_field->destination_,
                  {log_manager, "kTravelDestinationRe"}) ||
-      ParseField(scanner, kFlightRe, flight_patterns, &travel_field->flight_,
-                 {log_manager, "kFlightRe"})) {
+      ParseField(context, scanner, kFlightRe, flight_patterns,
+                 &travel_field->flight_, {log_manager, "kFlightRe"})) {
     // If any regex matches, then we found a travel field.
     return std::move(travel_field);
   }

@@ -18,12 +18,9 @@ namespace autofill {
 // reduce the number of false positive credit card expiration dates.
 class BirthdateField : public FormField {
  public:
-  static std::unique_ptr<FormField> Parse(
-      AutofillScanner* scanner,
-      const GeoIpCountryCode& client_country,
-      const LanguageCode& page_language,
-      PatternSource pattern_source,
-      LogManager* log_manager);
+  static std::unique_ptr<FormField> Parse(ParsingContext& context,
+                                          AutofillScanner* scanner,
+                                          LogManager* log_manager);
 
   BirthdateField(const BirthdateField&) = delete;
   BirthdateField& operator=(const BirthdateField&) = delete;

@@ -88,22 +88,21 @@ class CreditCardFieldTestBase : public FormFieldTestBase {
   CreditCardFieldTestBase& operator=(const CreditCardFieldTestBase&) = delete;
 
  protected:
-  std::unique_ptr<FormField> Parse(
-      AutofillScanner* scanner,
-      const GeoIpCountryCode& client_country,
-      const LanguageCode& page_language = LanguageCode("us")) override {
-    return CreditCardField::Parse(scanner, client_country, page_language,
-                                  *GetActivePatternSource(), nullptr);
+  std::unique_ptr<FormField> Parse(ParsingContext& context,
+                                   AutofillScanner* scanner) override {
+    return CreditCardField::Parse(context, scanner, nullptr);
   }
 
   // Runs multiple parsing attempts until the end of the form is reached.
   void ClassifyAndVerifyWithMultipleParses(
       const LanguageCode& page_language = LanguageCode("")) {
+    ParsingContext context(GeoIpCountryCode(""), page_language,
+                           *GetActivePatternSource());
     AutofillScanner scanner(list_);
     while (!scanner.IsEnd()) {
       // An empty page_language means the language is unknown and patterns of
       // all languages are used.
-      field_ = Parse(&scanner, GeoIpCountryCode(""), page_language);
+      field_ = Parse(context, &scanner);
       if (field_ == nullptr) {
         scanner.Advance();
       } else {

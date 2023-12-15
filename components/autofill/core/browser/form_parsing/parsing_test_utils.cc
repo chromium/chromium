@@ -88,7 +88,9 @@ void FormFieldTestBase::ClassifyAndVerify(
     const GeoIpCountryCode& client_country,
     const LanguageCode& page_language) {
   AutofillScanner scanner(list_);
-  field_ = Parse(&scanner, client_country, page_language);
+  ParsingContext context(client_country, page_language,
+                         *GetActivePatternSource());
+  field_ = Parse(context, &scanner);
 
   if (parse_result == ParseResult::NOT_PARSED) {
     ASSERT_EQ(nullptr, field_.get());

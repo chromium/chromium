@@ -48,12 +48,9 @@ class BirthdateFieldTest
   BirthdateFieldTest& operator=(const BirthdateFieldTest&) = delete;
 
  protected:
-  std::unique_ptr<FormField> Parse(
-      AutofillScanner* scanner,
-      const GeoIpCountryCode& client_country,
-      const LanguageCode& page_language = LanguageCode("en")) override {
-    return BirthdateField::Parse(scanner, client_country, page_language,
-                                 *GetActivePatternSource(),
+  std::unique_ptr<FormField> Parse(ParsingContext& context,
+                                   AutofillScanner* scanner) override {
+    return BirthdateField::Parse(context, scanner,
                                  /*log_manager=*/nullptr);
   }
 };

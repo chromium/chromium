@@ -21,12 +21,9 @@ class LogManager;
 // A form field that accepts a standalone cvc.
 class StandaloneCvcField : public FormField {
  public:
-  static std::unique_ptr<FormField> Parse(
-      AutofillScanner* scanner,
-      const GeoIpCountryCode& client_country,
-      const LanguageCode& page_language,
-      PatternSource pattern_source,
-      LogManager* log_manager);
+  static std::unique_ptr<FormField> Parse(ParsingContext& context,
+                                          AutofillScanner* scanner,
+                                          LogManager* log_manager);
 
   explicit StandaloneCvcField(const AutofillField* field);
 
@@ -42,10 +39,9 @@ class StandaloneCvcField : public FormField {
   raw_ptr<const AutofillField> field_;
 
   // static
-  static bool MatchGiftCard(AutofillScanner* scanner,
-                            LogManager* log_manager,
-                            const LanguageCode& page_language,
-                            PatternSource pattern_source);
+  static bool MatchGiftCard(ParsingContext& context,
+                            AutofillScanner* scanner,
+                            LogManager* log_manager);
 };
 
 }  // namespace autofill

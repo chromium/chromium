@@ -21,12 +21,9 @@ class LogManager;
 // Numeric quantities that are not eligible to be filled by Autofill.
 class NumericQuantityField : public FormField {
  public:
-  static std::unique_ptr<FormField> Parse(
-      AutofillScanner* scanner,
-      const GeoIpCountryCode& client_country,
-      const LanguageCode& page_language,
-      PatternSource pattern_source,
-      LogManager* log_manager);
+  static std::unique_ptr<FormField> Parse(ParsingContext& context,
+                                          AutofillScanner* scanner,
+                                          LogManager* log_manager);
 
   NumericQuantityField(const NumericQuantityField&) = delete;
   NumericQuantityField& operator=(const NumericQuantityField&) = delete;

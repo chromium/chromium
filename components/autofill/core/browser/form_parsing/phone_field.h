@@ -34,12 +34,9 @@ class PhoneField : public FormField {
   PhoneField(const PhoneField&) = delete;
   PhoneField& operator=(const PhoneField&) = delete;
 
-  static std::unique_ptr<FormField> Parse(
-      AutofillScanner* scanner,
-      const GeoIpCountryCode& client_country,
-      const LanguageCode& page_language,
-      PatternSource pattern_source,
-      LogManager* log_manager);
+  static std::unique_ptr<FormField> Parse(ParsingContext& context,
+                                          AutofillScanner* scanner,
+                                          LogManager* log_manager);
 
 #if defined(UNIT_TEST)
   // Assign types to the fields for the testing purposes.
@@ -105,22 +102,20 @@ class PhoneField : public FormField {
   static std::string GetJSONFieldType(RegexType phonetype_id);
 
   // Convenient wrapper for ParseFieldSpecifics().
-  static bool ParsePhoneField(AutofillScanner* scanner,
+  static bool ParsePhoneField(ParsingContext& context,
+                              AutofillScanner* scanner,
                               base::StringPiece16 regex,
                               raw_ptr<AutofillField>* field,
                               const RegExLogging& logging,
                               const bool is_country_code_field,
-                              const std::string& json_field_type,
-                              const LanguageCode& page_language,
-                              PatternSource pattern_source);
+                              const std::string& json_field_type);
 
   // Tries parsing the given `grammar` into `parsed_fields` and returns true
   // if it succeeded.
-  static bool ParseGrammar(const PhoneGrammar& grammar,
+  static bool ParseGrammar(ParsingContext& context,
+                           const PhoneGrammar& grammar,
                            ParsedPhoneFields& parsed_fields,
                            AutofillScanner* scanner,
-                           const LanguageCode& page_language,
-                           PatternSource pattern_source,
                            LogManager* log_manager);
 
   // Returns true if |scanner| points to a <select> field that appears to be the

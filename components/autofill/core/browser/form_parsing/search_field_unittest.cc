@@ -20,13 +20,9 @@ class SearchFieldTest
   SearchFieldTest& operator=(const SearchFieldTest&) = delete;
 
  protected:
-  std::unique_ptr<FormField> Parse(
-      AutofillScanner* scanner,
-      const GeoIpCountryCode& client_country,
-      const LanguageCode& page_language = LanguageCode("en")) override {
-    return SearchField::Parse(scanner, client_country, page_language,
-                              *GetActivePatternSource(),
-                              /*log_manager=*/nullptr);
+  std::unique_ptr<FormField> Parse(ParsingContext& context,
+                                   AutofillScanner* scanner) override {
+    return SearchField::Parse(context, scanner, nullptr);
   }
 };
 

@@ -5,6 +5,7 @@
 #include "components/autofill/core/browser/form_structure_rationalization_engine.h"
 
 #include "base/test/scoped_feature_list.h"
+#include "components/autofill/core/browser/form_parsing/form_field.h"
 #include "components/autofill/core/common/autofill_test_utils.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -122,21 +123,26 @@ TEST(FormStructureRationalizationEngine,
   GeoIpCountryCode kMX = GeoIpCountryCode("MX");
   GeoIpCountryCode kBR = GeoIpCountryCode("BR");
   GeoIpCountryCode kUS = GeoIpCountryCode("US");
+  ParsingContext kMXContext(kMX, LanguageCode("es"), PatternSource::kLegacy);
+  ParsingContext kBRContext(kBR, LanguageCode("pt"), PatternSource::kLegacy);
+  ParsingContext kUSContext(kUS, LanguageCode("en"), PatternSource::kLegacy);
 
   EnvironmentCondition no_country_required =
       EnvironmentConditionBuilder().Build();
-  EXPECT_TRUE(IsEnvironmentConditionFulfilled(no_country_required, kMX));
+  EXPECT_TRUE(IsEnvironmentConditionFulfilled(kMXContext, no_country_required));
 
   EnvironmentCondition specific_country_required =
       EnvironmentConditionBuilder().SetCountryList({kMX}).Build();
-  EXPECT_TRUE(IsEnvironmentConditionFulfilled(specific_country_required, kMX));
-  EXPECT_FALSE(IsEnvironmentConditionFulfilled(specific_country_required, kBR));
+  EXPECT_TRUE(
+      IsEnvironmentConditionFulfilled(kMXContext, specific_country_required));
+  EXPECT_FALSE(
+      IsEnvironmentConditionFulfilled(kBRContext, specific_country_required));
 
   EnvironmentCondition one_of_many =
       EnvironmentConditionBuilder().SetCountryList({kBR, kMX}).Build();
-  EXPECT_TRUE(IsEnvironmentConditionFulfilled(one_of_many, kBR));
-  EXPECT_TRUE(IsEnvironmentConditionFulfilled(one_of_many, kMX));
-  EXPECT_FALSE(IsEnvironmentConditionFulfilled(one_of_many, kUS));
+  EXPECT_TRUE(IsEnvironmentConditionFulfilled(kBRContext, one_of_many));
+  EXPECT_TRUE(IsEnvironmentConditionFulfilled(kMXContext, one_of_many));
+  EXPECT_FALSE(IsEnvironmentConditionFulfilled(kUSContext, one_of_many));
 }
 
 // Verifies that the experiment state is checked.
@@ -144,6 +150,7 @@ TEST(FormStructureRationalizationEngine,
      IsEnvironmentConditionFulfilled_CheckExperiment) {
   using internal::IsEnvironmentConditionFulfilled;
   GeoIpCountryCode kMX = GeoIpCountryCode("MX");
+  ParsingContext kMXContext(kMX, LanguageCode("es"), PatternSource::kLegacy);
 
   EnvironmentCondition no_experiment_required =
       EnvironmentConditionBuilder().Build();
@@ -155,15 +162,19 @@ TEST(FormStructureRationalizationEngine,
   {
     base::test::ScopedFeatureList enable_feature(
         kTestFeatureForFormStructureRationalizationEngine);
-    EXPECT_TRUE(IsEnvironmentConditionFulfilled(no_experiment_required, kMX));
-    EXPECT_TRUE(IsEnvironmentConditionFulfilled(experiment_required, kMX));
+    EXPECT_TRUE(
+        IsEnvironmentConditionFulfilled(kMXContext, no_experiment_required));
+    EXPECT_TRUE(
+        IsEnvironmentConditionFulfilled(kMXContext, experiment_required));
   }
   {
     base::test::ScopedFeatureList disable_feature;
     disable_feature.InitAndDisableFeature(
         kTestFeatureForFormStructureRationalizationEngine);
-    EXPECT_TRUE(IsEnvironmentConditionFulfilled(no_experiment_required, kMX));
-    EXPECT_FALSE(IsEnvironmentConditionFulfilled(experiment_required, kMX));
+    EXPECT_TRUE(
+        IsEnvironmentConditionFulfilled(kMXContext, no_experiment_required));
+    EXPECT_FALSE(
+        IsEnvironmentConditionFulfilled(kMXContext, experiment_required));
   }
 }
 
@@ -173,39 +184,37 @@ TEST(FormStructureRationalizationEngine,
      IsFieldConditionFulfilledIgnoringLocation_CheckPossibleTypes) {
   using internal::IsFieldConditionFulfilledIgnoringLocation;
   GeoIpCountryCode kMX = GeoIpCountryCode("MX");
+  ParsingContext kMXContext(kMX, LanguageCode("es"), PatternSource::kLegacy);
 
   FieldCondition no_possible_types_required = {};
   FieldCondition requires_address_line1_type = {
       .possible_overall_types = FieldTypeSet{ADDRESS_HOME_LINE1},
   };
 
-  LanguageCode page_language = LanguageCode("es");
-  PatternSource pattern_source = PatternSource::kLegacy;
-
   AutofillField field;
 
   // Unknown type.
   ASSERT_EQ(field.Type().GetStorableType(), UNKNOWN_TYPE);
   EXPECT_TRUE(IsFieldConditionFulfilledIgnoringLocation(
-      no_possible_types_required, page_language, pattern_source, field));
+      kMXContext, no_possible_types_required, field));
   EXPECT_FALSE(IsFieldConditionFulfilledIgnoringLocation(
-      requires_address_line1_type, page_language, pattern_source, field));
+      kMXContext, requires_address_line1_type, field));
 
   // Non-matching type.
   field.set_heuristic_type(HeuristicSource::kLegacy, NAME_FIRST);
   ASSERT_EQ(field.Type().GetStorableType(), NAME_FIRST);
   EXPECT_TRUE(IsFieldConditionFulfilledIgnoringLocation(
-      no_possible_types_required, page_language, pattern_source, field));
+      kMXContext, no_possible_types_required, field));
   EXPECT_FALSE(IsFieldConditionFulfilledIgnoringLocation(
-      requires_address_line1_type, page_language, pattern_source, field));
+      kMXContext, requires_address_line1_type, field));
 
   // Matching type.
   field.set_heuristic_type(HeuristicSource::kLegacy, ADDRESS_HOME_LINE1);
   ASSERT_EQ(field.Type().GetStorableType(), ADDRESS_HOME_LINE1);
   EXPECT_TRUE(IsFieldConditionFulfilledIgnoringLocation(
-      no_possible_types_required, page_language, pattern_source, field));
+      kMXContext, no_possible_types_required, field));
   EXPECT_TRUE(IsFieldConditionFulfilledIgnoringLocation(
-      requires_address_line1_type, page_language, pattern_source, field));
+      kMXContext, requires_address_line1_type, field));
 }
 
 // Verifies that the required match for regexes works as expected in
@@ -214,45 +223,43 @@ TEST(FormStructureRationalizationEngine,
      IsFieldConditionFulfilledIgnoringLocation_CheckRegex) {
   using internal::IsFieldConditionFulfilledIgnoringLocation;
   GeoIpCountryCode kMX = GeoIpCountryCode("MX");
+  ParsingContext kMXContext(kMX, LanguageCode("es"), PatternSource::kLegacy);
 
   FieldCondition no_regex_match_required = {};
   FieldCondition requires_dependent_locality_match = {
       .regex_reference_match = "ADDRESS_HOME_DEPENDENT_LOCALITY",
   };
 
-  LanguageCode page_language = LanguageCode("es");
-  PatternSource pattern_source = PatternSource::kLegacy;
-
   AutofillField field;
   field.label = u"";
 
   // Empty label.
   EXPECT_TRUE(IsFieldConditionFulfilledIgnoringLocation(
-      no_regex_match_required, page_language, pattern_source, field));
+      kMXContext, no_regex_match_required, field));
   EXPECT_FALSE(IsFieldConditionFulfilledIgnoringLocation(
-      requires_dependent_locality_match, page_language, pattern_source, field));
+      kMXContext, requires_dependent_locality_match, field));
 
   // Non-matching label.
   field.label = u"foobar";
   EXPECT_TRUE(IsFieldConditionFulfilledIgnoringLocation(
-      no_regex_match_required, page_language, pattern_source, field));
+      kMXContext, no_regex_match_required, field));
   EXPECT_FALSE(IsFieldConditionFulfilledIgnoringLocation(
-      requires_dependent_locality_match, page_language, pattern_source, field));
+      kMXContext, requires_dependent_locality_match, field));
 
   // Matching label.
   field.label = u"colonia";
   EXPECT_TRUE(IsFieldConditionFulfilledIgnoringLocation(
-      no_regex_match_required, page_language, pattern_source, field));
+      kMXContext, no_regex_match_required, field));
   EXPECT_TRUE(IsFieldConditionFulfilledIgnoringLocation(
-      requires_dependent_locality_match, page_language, pattern_source, field));
+      kMXContext, requires_dependent_locality_match, field));
 
   // Matching label but incorrect type.
   field.label = u"colonia";
   field.form_control_type = FormControlType::kInputMonth;
   EXPECT_TRUE(IsFieldConditionFulfilledIgnoringLocation(
-      no_regex_match_required, page_language, pattern_source, field));
+      kMXContext, no_regex_match_required, field));
   EXPECT_FALSE(IsFieldConditionFulfilledIgnoringLocation(
-      requires_dependent_locality_match, page_language, pattern_source, field));
+      kMXContext, requires_dependent_locality_match, field));
 
   FieldCondition regex_with_negative_pattern = {
       .regex_reference_match = "ADDRESS_NAME_IGNORED",
@@ -262,7 +269,7 @@ TEST(FormStructureRationalizationEngine,
   // be considered fulfilled.
   field.label = u"nombre de usuario/dirección de correo electrónico";
   EXPECT_FALSE(IsFieldConditionFulfilledIgnoringLocation(
-      regex_with_negative_pattern, page_language, pattern_source, field));
+      kMXContext, regex_with_negative_pattern, field));
 }
 
 // Test that the actions are applied if all conditions are met.
@@ -281,9 +288,9 @@ TEST(FormStructureRationalizationEngine, TestRulesAreApplied) {
       {u"Estado", u"state", ADDRESS_HOME_STATE},
   });
 
-  internal::ApplyRuleIfApplicable(CreateTestRule(), GeoIpCountryCode("MX"),
-                                  LanguageCode("es"), PatternSource::kLegacy,
-                                  fields);
+  GeoIpCountryCode kMX = GeoIpCountryCode("MX");
+  ParsingContext kMXContext(kMX, LanguageCode("es"), PatternSource::kLegacy);
+  internal::ApplyRuleIfApplicable(kMXContext, CreateTestRule(), fields);
 
   EXPECT_THAT(
       GetTypes(fields),
@@ -310,9 +317,9 @@ TEST(FormStructureRationalizationEngine,
       {u"Estado", u"state", ADDRESS_HOME_STATE},
   });
 
-  internal::ApplyRuleIfApplicable(CreateTestRule(), GeoIpCountryCode("MX"),
-                                  LanguageCode("es"), PatternSource::kLegacy,
-                                  fields);
+  GeoIpCountryCode kMX = GeoIpCountryCode("MX");
+  ParsingContext kMXContext(kMX, LanguageCode("es"), PatternSource::kLegacy);
+  internal::ApplyRuleIfApplicable(kMXContext, CreateTestRule(), fields);
 
   EXPECT_THAT(
       GetTypes(fields),
@@ -339,9 +346,9 @@ TEST(FormStructureRationalizationEngine,
       {u"Estado", u"state", ADDRESS_HOME_STATE},
   });
 
-  internal::ApplyRuleIfApplicable(CreateTestRule(), GeoIpCountryCode("MX"),
-                                  LanguageCode("es"), PatternSource::kLegacy,
-                                  fields);
+  GeoIpCountryCode kMX = GeoIpCountryCode("MX");
+  ParsingContext kMXContext(kMX, LanguageCode("es"), PatternSource::kLegacy);
+  internal::ApplyRuleIfApplicable(kMXContext, CreateTestRule(), fields);
 
   EXPECT_THAT(
       GetTypes(fields),
@@ -371,9 +378,9 @@ TEST(FormStructureRationalizationEngine,
       {u"Estado", u"state", ADDRESS_HOME_STATE},
   });
 
-  internal::ApplyRuleIfApplicable(CreateTestRule(), GeoIpCountryCode("MX"),
-                                  LanguageCode("es"), PatternSource::kLegacy,
-                                  fields);
+  GeoIpCountryCode kMX = GeoIpCountryCode("MX");
+  ParsingContext kMXContext(kMX, LanguageCode("es"), PatternSource::kLegacy);
+  internal::ApplyRuleIfApplicable(kMXContext, CreateTestRule(), fields);
 
   EXPECT_THAT(GetTypes(fields),
               ElementsAre(NAME_FIRST, NAME_LAST, ADDRESS_HOME_LINE1,
@@ -401,9 +408,9 @@ TEST(FormStructureRationalizationEngine,
       {u"Estado", u"state", ADDRESS_HOME_STATE},
   });
 
-  internal::ApplyRuleIfApplicable(CreateTestRule(), GeoIpCountryCode("MX"),
-                                  LanguageCode("es"), PatternSource::kLegacy,
-                                  fields);
+  GeoIpCountryCode kMX = GeoIpCountryCode("MX");
+  ParsingContext kMXContext(kMX, LanguageCode("es"), PatternSource::kLegacy);
+  internal::ApplyRuleIfApplicable(kMXContext, CreateTestRule(), fields);
 
   EXPECT_THAT(
       GetTypes(fields),

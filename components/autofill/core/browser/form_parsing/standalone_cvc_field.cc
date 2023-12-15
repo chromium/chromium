@@ -13,12 +13,9 @@
 namespace autofill {
 
 // static
-std::unique_ptr<FormField> StandaloneCvcField::Parse(
-    AutofillScanner* scanner,
-    const GeoIpCountryCode& client_country,
-    const LanguageCode& page_language,
-    PatternSource pattern_source,
-    LogManager* log_manager) {
+std::unique_ptr<FormField> StandaloneCvcField::Parse(ParsingContext& context,
+                                                     AutofillScanner* scanner,
+                                                     LogManager* log_manager) {
   if (!base::FeatureList::IsEnabled(
           features::kAutofillParseVcnCardOnFileStandaloneCvcFields)) {
     return nullptr;
@@ -27,21 +24,23 @@ std::unique_ptr<FormField> StandaloneCvcField::Parse(
   // Ignore gift card fields as both |kGiftCardRe| and |kCardCvcRe| matches
   // "gift card pin" and "gift card code" but it should only match
   // |kGiftCardRe|.
-  if (MatchGiftCard(scanner, log_manager, page_language, pattern_source)) {
+  if (MatchGiftCard(context, scanner, log_manager)) {
     return nullptr;
   }
 
   raw_ptr<AutofillField> field;
-  base::span<const MatchPatternRef> cvc_patterns = GetMatchPatterns(
-      CREDIT_CARD_VERIFICATION_CODE, page_language, pattern_source);
+  base::span<const MatchPatternRef> cvc_patterns =
+      GetMatchPatterns(CREDIT_CARD_VERIFICATION_CODE, context.page_language,
+                       context.pattern_source);
 
   // CVC fields can occur in many different field types so we check for each
   const auto kMatchNumTelAndPwd =
       kDefaultMatchParamsWith<MatchFieldType::kNumber,
                               MatchFieldType::kTelephone,
                               MatchFieldType::kPassword>;
-  if (ParseFieldSpecifics(scanner, kCardCvcRe, kMatchNumTelAndPwd, cvc_patterns,
-                          &field, {log_manager, "kCardCvcRe(standalone)"})) {
+  if (ParseFieldSpecifics(context, scanner, kCardCvcRe, kMatchNumTelAndPwd,
+                          cvc_patterns, &field,
+                          {log_manager, "kCardCvcRe(standalone)"})) {
     return std::make_unique<StandaloneCvcField>(field);
   }
 
@@ -51,23 +50,23 @@ std::unique_ptr<FormField> StandaloneCvcField::Parse(
 StandaloneCvcField::~StandaloneCvcField() = default;
 
 // static
-bool StandaloneCvcField::MatchGiftCard(AutofillScanner* scanner,
-                                       LogManager* log_manager,
-                                       const LanguageCode& page_language,
-                                       PatternSource pattern_source) {
-  if (scanner->IsEnd())
+bool StandaloneCvcField::MatchGiftCard(ParsingContext& context,
+                                       AutofillScanner* scanner,
+                                       LogManager* log_manager) {
+  if (scanner->IsEnd()) {
     return false;
+  }
 
   const auto kMatchFieldType = kDefaultMatchParamsWith<
       MatchFieldType::kNumber, MatchFieldType::kTelephone,
       MatchFieldType::kSearch, MatchFieldType::kPassword>;
-  base::span<const MatchPatternRef> gift_card_patterns =
-      GetMatchPatterns("GIFT_CARD", page_language, pattern_source);
+  base::span<const MatchPatternRef> gift_card_patterns = GetMatchPatterns(
+      "GIFT_CARD", context.page_language, context.pattern_source);
 
   size_t saved_cursor = scanner->SaveCursor();
   const bool gift_card_match = ParseFieldSpecifics(
-      scanner, kGiftCardRe, kMatchFieldType, gift_card_patterns, nullptr,
-      {log_manager, "kGiftCardRe"});
+      context, scanner, kGiftCardRe, kMatchFieldType, gift_card_patterns,
+      nullptr, {log_manager, "kGiftCardRe"});
   // MatchGiftCard only wants to test the presence of a gift card but not
   // consume the field.
   scanner->RewindTo(saved_cursor);

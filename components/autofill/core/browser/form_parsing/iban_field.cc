@@ -12,17 +12,14 @@
 namespace autofill {
 
 // static
-std::unique_ptr<FormField> IbanField::Parse(
-    AutofillScanner* scanner,
-    const GeoIpCountryCode& client_country,
-    const LanguageCode& page_language,
-    PatternSource pattern_source,
-    LogManager* log_manager) {
+std::unique_ptr<FormField> IbanField::Parse(ParsingContext& context,
+                                            AutofillScanner* scanner,
+                                            LogManager* log_manager) {
   raw_ptr<AutofillField> field;
-  base::span<const MatchPatternRef> iban_patterns =
-      GetMatchPatterns(IBAN_VALUE, page_language, pattern_source);
+  base::span<const MatchPatternRef> iban_patterns = GetMatchPatterns(
+      IBAN_VALUE, context.page_language, context.pattern_source);
 
-  if (ParseFieldSpecifics(scanner, kIbanRe,
+  if (ParseFieldSpecifics(context, scanner, kIbanRe,
                           kDefaultMatchParamsWith<MatchFieldType::kNumber,
                                                   MatchFieldType::kTextArea>,
                           iban_patterns, &field, {log_manager, "kIbanRe"})) {

@@ -35,12 +35,9 @@ BirthdateField::BirthdateField(const AutofillField* day,
     : day_(day), month_(month), year_(year) {}
 
 // static
-std::unique_ptr<FormField> BirthdateField::Parse(
-    AutofillScanner* scanner,
-    const GeoIpCountryCode& client_country,
-    const LanguageCode& page_language,
-    PatternSource pattern_source,
-    LogManager* log_manager) {
+std::unique_ptr<FormField> BirthdateField::Parse(ParsingContext& context,
+                                                 AutofillScanner* scanner,
+                                                 LogManager* log_manager) {
   // Currently only <select> elements are considered.
   raw_ptr<AutofillField> day = nullptr;
   raw_ptr<AutofillField> month = nullptr;

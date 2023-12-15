@@ -128,10 +128,10 @@ RationalizationRule RationalizationRuleBuilder::Build() && {
 }
 
 namespace internal {
-bool IsEnvironmentConditionFulfilled(const EnvironmentCondition& env,
-                                     const GeoIpCountryCode& client_country) {
+bool IsEnvironmentConditionFulfilled(ParsingContext& context,
+                                     const EnvironmentCondition& env) {
   if (!env.country_list.empty() &&
-      !base::Contains(env.country_list, client_country)) {
+      !base::Contains(env.country_list, context.client_country)) {
     return false;
   }
 
@@ -142,11 +142,9 @@ bool IsEnvironmentConditionFulfilled(const EnvironmentCondition& env,
   return true;
 }
 
-bool IsFieldConditionFulfilledIgnoringLocation(
-    const FieldCondition& condition,
-    const LanguageCode& page_language,
-    PatternSource pattern_source,
-    const AutofillField& field) {
+bool IsFieldConditionFulfilledIgnoringLocation(ParsingContext& context,
+                                               const FieldCondition& condition,
+                                               const AutofillField& field) {
   if (condition.possible_overall_types.has_value() &&
       !condition.possible_overall_types->contains(
           field.Type().GetStorableType())) {
@@ -154,9 +152,10 @@ bool IsFieldConditionFulfilledIgnoringLocation(
   }
 
   if (condition.regex_reference_match.has_value()) {
-    base::span<const MatchPatternRef> patterns = GetMatchPatterns(
-        condition.regex_reference_match.value(), page_language, pattern_source);
-    if (!FormField::FieldMatchesMatchPatternRef(patterns, field)) {
+    base::span<const MatchPatternRef> patterns =
+        GetMatchPatterns(condition.regex_reference_match.value(),
+                         context.page_language, context.pattern_source);
+    if (!FormField::FieldMatchesMatchPatternRef(context, patterns, field)) {
       return false;
     }
   }
@@ -165,12 +164,10 @@ bool IsFieldConditionFulfilledIgnoringLocation(
 }
 
 std::optional<size_t> FindFieldMeetingCondition(
+    ParsingContext& context,
     const std::vector<std::unique_ptr<AutofillField>>& fields,
     size_t start_index,
-    const FieldCondition& condition,
-    const GeoIpCountryCode& client_country,
-    const LanguageCode& page_language,
-    PatternSource pattern_source) {
+    const FieldCondition& condition) {
   int direction = [&condition]() {
     switch (condition.location) {
       case FieldLocation::kPredecessor:
@@ -187,8 +184,8 @@ std::optional<size_t> FindFieldMeetingCondition(
   for (int i = start_index + direction;
        i >= 0 && i < static_cast<int>(fields.size()); i += direction) {
     const AutofillField& candidate_field = *fields[i];
-    if (IsFieldConditionFulfilledIgnoringLocation(
-            condition, page_language, pattern_source, candidate_field)) {
+    if (IsFieldConditionFulfilledIgnoringLocation(context, condition,
+                                                  candidate_field)) {
       return static_cast<size_t>(i);
     }
 
@@ -205,15 +202,13 @@ std::optional<size_t> FindFieldMeetingCondition(
 }
 
 void ApplyRuleIfApplicable(
+    ParsingContext& context,
     const RationalizationRule& rule,
-    const GeoIpCountryCode& client_country,
-    const LanguageCode& page_language,
-    PatternSource pattern_source,
     const std::vector<std::unique_ptr<AutofillField>>& fields,
     LogManager* log_manager) {
   if (rule.environment_condition.has_value() &&
-      !IsEnvironmentConditionFulfilled(rule.environment_condition.value(),
-                                       client_country)) {
+      !IsEnvironmentConditionFulfilled(context,
+                                       rule.environment_condition.value())) {
     return;
   }
 
@@ -221,9 +216,8 @@ void ApplyRuleIfApplicable(
     const std::unique_ptr<AutofillField>& trigger_field = fields[i];
 
     // Check whether we have found a trigger field at index i.
-    if (!IsFieldConditionFulfilledIgnoringLocation(
-            rule.trigger_field, page_language, pattern_source,
-            *trigger_field)) {
+    if (!IsFieldConditionFulfilledIgnoringLocation(context, rule.trigger_field,
+                                                   *trigger_field)) {
       continue;
     }
 
@@ -233,9 +227,8 @@ void ApplyRuleIfApplicable(
     for (const FieldCondition& other_field_condition :
          rule.other_field_conditions) {
       CHECK_NE(other_field_condition.location, FieldLocation::kTriggerField);
-      std::optional<size_t> match_index = FindFieldMeetingCondition(
-          fields, i, other_field_condition, client_country, page_language,
-          pattern_source);
+      std::optional<size_t> match_index =
+          FindFieldMeetingCondition(context, fields, i, other_field_condition);
       if (!match_index.has_value()) {
         break;
       }
@@ -269,9 +262,7 @@ void ApplyRuleIfApplicable(
 }  // namespace internal
 
 void ApplyRationalizationEngineRules(
-    const GeoIpCountryCode& client_country,
-    const LanguageCode& page_language,
-    PatternSource pattern_source,
+    ParsingContext& context,
     const std::vector<std::unique_ptr<AutofillField>>& fields,
     LogManager* log_manager) {
   auto create_rules = [] {
@@ -326,8 +317,7 @@ void ApplyRationalizationEngineRules(
       kRationalizationRules(create_rules());
 
   for (const RationalizationRule& rule : *kRationalizationRules) {
-    internal::ApplyRuleIfApplicable(rule, client_country, page_language,
-                                    pattern_source, fields, log_manager);
+    internal::ApplyRuleIfApplicable(context, rule, fields, log_manager);
   }
 }
 

@@ -30,12 +30,9 @@ class CreditCardField : public FormField {
   CreditCardField& operator=(const CreditCardField&) = delete;
 
   ~CreditCardField() override;
-  static std::unique_ptr<FormField> Parse(
-      AutofillScanner* scanner,
-      const GeoIpCountryCode& client_country,
-      const LanguageCode& page_language,
-      PatternSource pattern_source,
-      LogManager* log_manager);
+  static std::unique_ptr<FormField> Parse(ParsingContext& context,
+                                          AutofillScanner* scanner,
+                                          LogManager* log_manager);
 
   // Instructions for how to format an expiration date for a text field.
   struct ExpirationDateFormat {
@@ -94,10 +91,9 @@ class CreditCardField : public FormField {
   // <select> for a credit card. i.e. it contains the current year and
   // the next few years. |log_manager| is used to log any parsing details
   // to chrome://autofill-internals
-  static bool LikelyCardYearSelectField(AutofillScanner* scanner,
-                                        LogManager* log_manager,
-                                        const LanguageCode& page_language,
-                                        PatternSource pattern_source);
+  static bool LikelyCardYearSelectField(ParsingContext* context,
+                                        AutofillScanner* scanner,
+                                        LogManager* log_manager);
 
   // Returns true if |scanner| points to a <select> field that contains credit
   // card type options.
@@ -107,17 +103,15 @@ class CreditCardField : public FormField {
   // |scanner| advances if this returns true.
   // Prepaid debit cards do not count as gift cards, since they can be used like
   // a credit card.
-  static bool IsGiftCardField(AutofillScanner* scanner,
-                              LogManager* log_manager,
-                              const LanguageCode& page_language,
-                              PatternSource pattern_source);
+  static bool IsGiftCardField(ParsingContext& context,
+                              AutofillScanner* scanner,
+                              LogManager* log_manager);
 
   // Parses the expiration month/year/date fields. Returns true if it finds
   // something new.
-  bool ParseExpirationDate(AutofillScanner* scanner,
-                           LogManager* log_manager,
-                           const LanguageCode& page_language,
-                           PatternSource pattern_source);
+  bool ParseExpirationDate(ParsingContext& context,
+                           AutofillScanner* scanner,
+                           LogManager* log_manager);
 
   // For the combined expiration field we return |exp_year_type_|; otherwise if
   // |expiration_year_| is having year with |max_length| of 2-digits we return
