@@ -8,8 +8,8 @@ import("//build/rust/rust_static_library.gni")
 import("//testing/test.gni")
 
 # Meta target to build everything
-group("rust") {
-  deps = [ ":mojo_rust" ]
+group("mojo_rust") {
+  deps = [ ":mojo" ]
 }
 
 # These tests require real mojo and can't be mixed with test-only mojo. Mojo can
@@ -45,9 +45,8 @@ rust_bindgen("mojo_c_system_binding") {
   visibility = [ ":*" ]
 }
 
-rust_static_library("mojo_rust_system") {
+rust_static_library("mojo_system") {
   crate_root = "system/lib.rs"
-  crate_name = "mojo_system"
   allow_unsafe = true
 
   sources = [
@@ -78,10 +77,9 @@ rust_static_library("mojo_rust_system") {
               rebase_path(bindgen_output[0], get_path_info(crate_root, "dir")) ]
 }
 
-rust_static_library("mojo_rust_system_test_support") {
+rust_static_library("mojo_system_test_support") {
   testonly = true
   crate_root = "system/test_support/lib.rs"
-  crate_name = "mojo_system_test_support"
 
   # Calls Mojo FFI functions.
   allow_unsafe = true
@@ -89,14 +87,13 @@ rust_static_library("mojo_rust_system_test_support") {
   sources = [ "system/test_support/lib.rs" ]
 
   deps = [
-    ":mojo_rust_system",
+    ":mojo_system",
     "//mojo/public/c/system",
   ]
 }
 
-rust_static_library("mojo_rust_bindings") {
+rust_static_library("mojo_bindings") {
   crate_root = "bindings/lib.rs"
-  crate_name = "mojo_bindings"
   allow_unsafe = true
 
   sources = [
@@ -108,18 +105,17 @@ rust_static_library("mojo_rust_bindings") {
     "bindings/mojom.rs",
   ]
 
-  deps = [ ":mojo_rust_system" ]
+  deps = [ ":mojo_system" ]
 }
 
 # Convenience target to link both Mojo Rust components and reexport them under a
 # single `mojo` name.
-rust_static_library("mojo_rust") {
+rust_static_library("mojo") {
   crate_root = "lib.rs"
-  crate_name = "mojo"
 
   sources = [ "lib.rs" ]
   deps = [
-    ":mojo_rust_bindings",
-    ":mojo_rust_system",
+    ":mojo_bindings",
+    ":mojo_system",
   ]
 }

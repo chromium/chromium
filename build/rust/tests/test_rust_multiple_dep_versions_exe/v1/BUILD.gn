@@ -5,6 +5,8 @@
 import("//build/rust/cargo_crate.gni")
 
 cargo_crate("test_lib") {
+  crate_name = "test_lib"
+
   # This crate has the same name as v2/test_lib, but a different epoch. The GN
   # target for the unit tests should not collide.
   epoch = "1"

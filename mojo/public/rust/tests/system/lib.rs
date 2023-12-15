@@ -11,6 +11,11 @@
 #![feature(assert_matches)]
 #![feature(maybe_uninit_write_slice)]
 
+chromium::import! {
+    "//mojo/public/rust:mojo";
+    "//mojo/public/rust/tests:test_util";
+}
+
 mod run_loop;
 
 use mojo::system::shared_buffer::{self, SharedBuffer};

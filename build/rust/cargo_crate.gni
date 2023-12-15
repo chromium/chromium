@@ -195,6 +195,19 @@ template("cargo_crate") {
     }
   }
 
+  if (defined(invoker.output_name)) {
+    _output_name = invoker.output_name
+  } else if (_crate_type != "bin") {
+    # Note that file names of libraries must start with the crate name in
+    # order for the compiler to find transitive dependencies in the
+    # directory search paths (since they are not all explicitly specified).
+    #
+    # For bin targets, we expect the target name to be unique, and the name
+    # of the exe should not add magic stuff to it. And bin crates can not be
+    # transitive dependencies.
+    _output_name = "${_crate_name}_${_orig_target_name}"
+  }
+
   _testonly = false
   if (defined(invoker.testonly)) {
     _testonly = invoker.testonly
@@ -227,6 +240,11 @@ template("cargo_crate") {
     if (defined(crate_type) && crate_type == "cdylib") {
       # See comments above about cdylib.
       crate_type = "rlib"
+    }
+    crate_name = _crate_name
+
+    if (defined(_output_name)) {
+      output_name = _output_name
     }
 
     # Don't import the `chromium` crate into third-party code.
@@ -405,6 +423,7 @@ template("cargo_crate") {
       # the rust_macro_toolchain for it to unblock building them while the
       # Chromium stdlib is still being compiled.
       rust_executable(_build_script_name) {
+        crate_name = _build_script_name
         sources = invoker.build_sources
         crate_root = invoker.build_root
         testonly = _testonly

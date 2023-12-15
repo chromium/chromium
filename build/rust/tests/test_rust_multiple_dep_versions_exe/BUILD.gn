@@ -5,7 +5,7 @@
 import("//build/rust/rust_executable.gni")
 import("//build/rust/rust_static_library.gni")
 
-# The exe depends on lib v1.But it also transitively depends on lib v2.
+# The exe depends on lib v1. But it also transitively depends on lib v2.
 # The code in the exe should use v1, and the code in the transitive lib should
 # use v2.
 rust_executable("test_rust_multiple_dep_versions_exe") {

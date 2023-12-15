@@ -33,9 +33,14 @@ if (build_with_chromium) {
 
 template("rust_target") {
   _target_name = target_name
-  _crate_name = target_name
+
   if (defined(invoker.crate_name)) {
     _crate_name = invoker.crate_name
+  } else {
+    # Build a unique mangled crate name from the full GN path that the
+    # chromium::import! macro can find.
+    _dir = rebase_path(target_out_dir, root_out_dir + "/obj")
+    _crate_name = string_join("_", string_split(_dir, "/")) + "_" + target_name
   }
   _generate_crate_root =
       defined(invoker.generate_crate_root) && invoker.generate_crate_root
@@ -43,11 +48,6 @@ template("rust_target") {
   # Only one of `crate_root` or `generate_crate_root` can be specified, or
   # neither.
   assert(!defined(invoker.crate_root) || !_generate_crate_root)
-
-  if (defined(invoker.output_dir) && invoker.output_dir != "") {
-    # This is where the build target (.exe, .rlib, etc) goes.
-    _output_dir = invoker.output_dir
-  }
 
   # This is where the OUT_DIR environment variable points to when running a
   # build script and when compiling the build target, for consuming generated
@@ -223,12 +223,6 @@ template("rust_target") {
       _rustc_metadata = invoker.rustc_metadata
     }
 
-    # Add a metadata-influenced suffix to the output name for libraries only.
-    _output_suffix = ""
-    if (invoker.target_type == "rust_library" && _rustc_metadata != "") {
-      _output_suffix = "-${_rustc_metadata}"
-    }
-
     group(_target_name) {
       testonly = _testonly
       if (defined(_visibility)) {
@@ -301,6 +295,7 @@ template("rust_target") {
 
       rust_unit_test(_unit_test_target) {
         testonly = true
+        crate_name = _unit_test_target
         crate_root = _crate_root
         sources = invoker.sources + [ crate_root ]
         rustflags = _rustflags
@@ -378,14 +373,24 @@ template("rust_target") {
         sources += [ _crate_root ]
       }
 
-      # The Rust tool() declarations, like C++ ones, use the output_name and
-      # output_dir, so that GN targets can override these if needed. Here we
-      # give them their default values, or allow them to be overridden.
-      if (defined(_output_dir)) {
-        output_dir = _output_dir
-      }
-      if (!defined(output_name) || output_name == "") {
-        output_name = "${crate_name}${_output_suffix}"
+      if (!defined(output_name)) {
+        # Note that file names of libraries must start with the crate name in
+        # order for the compiler to find transitive dependencies in the
+        # directory search paths (since they are not all explicitly specified).
+        #
+        # For bin targets, we expect the target name to be unique, and the name
+        # of the exe should not add magic stuff to it. And bin crates can not be
+        # transitive dependencies.
+        if (invoker.target_type == "executable") {
+          output_name = _target_name
+        } else {
+          # TODO(danakj): Since the crate name includes the whole path for 1p
+          # libraries, we could move the output_dir to `root_out_dir` here for
+          # them, which would make for shorter file paths. But we need to not
+          # do the same for 3p crates or those with a `crate_name` set
+          # explicitly.
+          output_name = _crate_name
+        }
       }
 
       if (!_allow_unsafe) {

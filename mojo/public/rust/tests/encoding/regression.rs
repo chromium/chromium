@@ -8,6 +8,10 @@
 //! and the result being caught in the test! macro. If a test function
 //! returns without panicking, it is assumed to pass.
 
+chromium::import! {
+    "//mojo/public/rust:mojo";
+}
+
 use mojo::bindings::decoding::{Decoder, ValidationError};
 use mojo::bindings::encoding::{self, Context, DataHeaderValue, Encoder, EncodingState};
 use mojo::bindings::impl_encodable_for_pointer;

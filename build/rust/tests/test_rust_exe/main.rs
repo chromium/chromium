@@ -2,6 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+chromium::import! {
+    "//build/rust/tests/test_rust_static_library";
+    "//build/rust/tests/test_rust_static_library_non_standard_arrangement:lib" as
+        test_rust_static_library_non_standard_arrangement;
+}
+
+// To mimic third-party, test_rlib_crate has a short crate_name which we do not
+// need to import!.
 use test_rlib_crate::say_hello_from_crate;
 
 fn main() {

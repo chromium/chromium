@@ -4,6 +4,11 @@
 
 //! Tests for system + encoding that use a real Mojo implementation.
 
+chromium::import! {
+    "//mojo/public/rust:mojo";
+    "//mojo/public/rust/tests:test_util";
+}
+
 use mojo::bindings::mojom::{MojomInterface, MojomInterfaceRecv, MojomInterfaceSend};
 use mojo::system::message_pipe;
 use mojo::system::{Handle, HandleSignals};

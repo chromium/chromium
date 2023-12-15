@@ -60,6 +60,14 @@ template("rust_executable") {
     executable_configs = invoker.configs
     target_type = "executable"
     assert(!defined(cxx_bindings))
+
+    # Executable targets should be unique names as they all get placed in the
+    # root output dir. We want their exe file name to be the same as the GN
+    # target, not a mangled name including the full GN path, and the exe file
+    # name comes from the crate name.
+    if (!defined(invoker.crate_name)) {
+      crate_name = target_name
+    }
   }
 }
 

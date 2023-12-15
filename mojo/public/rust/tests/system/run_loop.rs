@@ -8,6 +8,11 @@
 //! and the result being caught in the test! macro. If a test function
 //! returns without panicking, it is assumed to pass.
 
+chromium::import! {
+    "//mojo/public/rust:mojo";
+    "//mojo/public/rust/tests:test_util";
+}
+
 use mojo::bindings::run_loop::{self, Handler, RunLoop, Token, WaitError};
 use mojo::system::{message_pipe, HandleSignals, MOJO_INDEFINITE};
 use rust_gtest_interop::prelude::*;

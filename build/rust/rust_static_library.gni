@@ -169,9 +169,13 @@ template("rust_static_library") {
       # files to the linker, but Rust does not have a parallel to this. Instead,
       # force the linker to always include the whole archive.
       #
-      # The library name is hardcoded here, since `get_target_outputs()` can't
-      # be used with a target that doesn't exist yet!
-      _rlib_path = "${_output_dir}/lib${_target_name}.rlib"
+      # The crate name mangling is copied from the rust_target template, and
+      # the library name is hardcoded here since `get_target_outputs()` can't be
+      # used with a target that doesn't exist yet!
+      _dir = rebase_path(target_out_dir, root_out_dir + "/obj")
+      _crate_name =
+          string_join("_", string_split(_dir, "/")) + "_" + target_name
+      _rlib_path = "${_output_dir}/lib${_crate_name}.rlib"
       if (current_os == "aix") {
         # The AIX linker does not implement an option for this.
       } else if (is_win) {

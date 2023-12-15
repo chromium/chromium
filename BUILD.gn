@@ -851,7 +851,7 @@ group("all_rust") {
 
   if (enable_rust_mojo) {
     deps += [
-      "//mojo/public/rust",
+      "//mojo/public/rust:mojo_rust",
       "//mojo/public/rust:mojo_rust_integration_unittests",
       "//mojo/public/rust:mojo_rust_unittests",
     ]
