@@ -85,7 +85,7 @@ JNI_AutofillProviderTestHelper_SimulateMainFrameAutofillServerResponseForTesting
         if (form_field_data.id_attribute == field_ids[i]) {
           autofill::test::AddFieldPredictionToForm(
               form_field_data,
-              static_cast<autofill::ServerFieldType>(raw_field_types[i]),
+              static_cast<autofill::FieldType>(raw_field_types[i]),
               form_suggestion);
           found_fields_count++;
           break;
@@ -138,13 +138,11 @@ JNI_AutofillProviderTestHelper_SimulateMainFramePredictionsAutofillServerRespons
     for (size_t i = 0; i < field_ids.size(); ++i) {
       for (auto form_field_data : formData.fields) {
         if (form_field_data.id_attribute == field_ids[i]) {
-          std::vector<ServerFieldType> field_types;
+          std::vector<FieldType> field_types;
           field_types.reserve(raw_field_types[i].size());
-          base::ranges::transform(raw_field_types[i],
-                                  std::back_inserter(field_types),
-                                  [](int type) -> ServerFieldType {
-                                    return ServerFieldType(type);
-                                  });
+          base::ranges::transform(
+              raw_field_types[i], std::back_inserter(field_types),
+              [](int type) -> FieldType { return FieldType(type); });
           autofill::test::AddFieldPredictionsToForm(
               form_field_data, field_types, form_suggestion);
           found_fields_count++;
