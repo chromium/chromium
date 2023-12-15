@@ -161,7 +161,7 @@ class RetroactivePairingDetectorImpl final
   void CreateGattConnection(device::BluetoothDevice* device);
 
   // Internal method called when creating a FastPairGattServiceClient.
-  void OnGattClientInitializedCallback(device::BluetoothDevice* device,
+  void OnGattClientInitializedCallback(const std::string& address,
                                        std::optional<PairFailure> failure);
 
   // Internal method called to retrieve the model ID of a device.

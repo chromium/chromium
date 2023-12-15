@@ -284,11 +284,11 @@ void RetroactivePairingDetectorImpl::CreateGattConnection(
       adapter_, device,
       base::BindOnce(
           &RetroactivePairingDetectorImpl::OnGattClientInitializedCallback,
-          weak_ptr_factory_.GetWeakPtr(), device));
+          weak_ptr_factory_.GetWeakPtr(), device->GetAddress()));
 }
 
 void RetroactivePairingDetectorImpl::OnGattClientInitializedCallback(
-    device::BluetoothDevice* device,
+    const std::string& address,
     std::optional<PairFailure> failure) {
   if (failure) {
     CD_LOG(WARNING, Feature::FP)
@@ -298,8 +298,13 @@ void RetroactivePairingDetectorImpl::OnGattClientInitializedCallback(
     return;
   }
 
-  // If |OnGattClientInitializedCallback| is called without a failure,
-  // |device*| is expected to exist and be valid.
+  device::BluetoothDevice* device = adapter_->GetDevice(address);
+  if (!device) {
+    CD_LOG(WARNING, Feature::FP)
+        << __func__ << ": Lost device to potentially retroactively pair to.";
+    return;
+  }
+
   auto* fast_pair_gatt_service_client =
       FastPairGattServiceClientLookup::GetInstance()->Get(device);
 
