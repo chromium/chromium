@@ -140,6 +140,7 @@ std::unique_ptr<CertVerifyImpl> CreateCertVerifyImplFromName(
         net::CreateCertVerifyProcBuiltin(
             std::move(cert_net_fetcher), net::CRLSet::BuiltinCRLSet(),
             std::make_unique<net::DoNothingCTVerifier>(),
+            base::MakeRefCounted<net::DefaultCTPolicyEnforcer>(),
             net::CreateSslSystemTrustStoreChromeRoot(
                 std::make_unique<net::TrustStoreChrome>()),
             {}));

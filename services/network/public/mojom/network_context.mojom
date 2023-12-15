@@ -1634,10 +1634,6 @@ interface NetworkContext {
   // minimum delay has not yet passed.
   ForceDomainReliabilityUploadsForTesting() => ();
 
-  // If called, the CT log list will be considered always timely.
-  [EnableIf=is_ct_supported]
-  SetCTLogListAlwaysTimelyForTesting();
-
   // Set the SCT auditing mode for this NetworkContext.
   [EnableIf=is_ct_supported]
   SetSCTAuditingMode(SCTAuditingMode mode);

@@ -9,6 +9,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
+#include "base/time/time.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"
@@ -62,6 +63,7 @@ class CertVerifierServiceFactoryImpl
                         callback) override;
 #if BUILDFLAG(IS_CT_SUPPORTED)
   void UpdateCtLogList(std::vector<network::mojom::CTLogInfoPtr> log_list,
+                       base::Time update_time,
                        UpdateCtLogListCallback callback) override;
 #endif
 #if BUILDFLAG(CHROME_ROOT_STORE_SUPPORTED)

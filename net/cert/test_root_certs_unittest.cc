@@ -41,6 +41,7 @@ scoped_refptr<CertVerifyProc> CreateCertVerifyProc() {
     return CertVerifyProc::CreateBuiltinWithChromeRootStore(
         /*cert_net_fetcher=*/nullptr, CRLSet::BuiltinCRLSet().get(),
         std::make_unique<DoNothingCTVerifier>(),
+        base::MakeRefCounted<DefaultCTPolicyEnforcer>(),
         /*root_store_data=*/nullptr, /*instance_params=*/{});
   }
 #endif
@@ -48,11 +49,13 @@ scoped_refptr<CertVerifyProc> CreateCertVerifyProc() {
   return CertVerifyProc::CreateBuiltinWithChromeRootStore(
       /*cert_net_fetcher=*/nullptr, CRLSet::BuiltinCRLSet().get(),
       std::make_unique<DoNothingCTVerifier>(),
+      base::MakeRefCounted<DefaultCTPolicyEnforcer>(),
       /*root_store_data=*/nullptr, /*instance_params=*/{});
 #elif BUILDFLAG(IS_FUCHSIA)
   return CertVerifyProc::CreateBuiltinVerifyProc(
       /*cert_net_fetcher=*/nullptr, CRLSet::BuiltinCRLSet().get(),
       std::make_unique<DoNothingCTVerifier>(),
+      base::MakeRefCounted<DefaultCTPolicyEnforcer>(),
       /*instance_params=*/{});
 #else
   return CertVerifyProc::CreateSystemVerifyProc(/*cert_net_fetcher=*/nullptr,

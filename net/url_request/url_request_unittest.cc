@@ -73,8 +73,6 @@
 #include "net/cert/cert_verifier.h"
 #include "net/cert/coalescing_cert_verifier.h"
 #include "net/cert/crl_set.h"
-#include "net/cert/ct_policy_enforcer.h"
-#include "net/cert/ct_policy_status.h"
 #include "net/cert/do_nothing_ct_verifier.h"
 #include "net/cert/ev_root_ca_metadata.h"
 #include "net/cert/mock_cert_verifier.h"

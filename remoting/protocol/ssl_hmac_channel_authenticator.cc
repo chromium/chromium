@@ -20,8 +20,6 @@
 #include "net/cert/cert_status_flags.h"
 #include "net/cert/cert_verifier.h"
 #include "net/cert/cert_verify_result.h"
-#include "net/cert/ct_policy_enforcer.h"
-#include "net/cert/ct_policy_status.h"
 #include "net/cert/signed_certificate_timestamp_and_status.h"
 #include "net/cert/x509_certificate.h"
 #include "net/http/transport_security_state.h"
@@ -265,12 +263,9 @@ void SslHmacChannelAuthenticator::SecureAndAuthenticate(
     socket_context_.transport_security_state =
         std::make_unique<net::TransportSecurityState>();
     socket_context_.cert_verifier = std::make_unique<FailingCertVerifier>();
-    socket_context_.ct_policy_enforcer =
-        std::make_unique<net::DefaultCTPolicyEnforcer>();
     socket_context_.client_context = std::make_unique<net::SSLClientContext>(
         nullptr /* default config */, socket_context_.cert_verifier.get(),
         socket_context_.transport_security_state.get(),
-        socket_context_.ct_policy_enforcer.get(),
         nullptr /* no session caching */, nullptr /* no sct auditing */);
 
     net::SSLConfig ssl_config;

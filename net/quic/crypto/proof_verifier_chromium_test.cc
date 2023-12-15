@@ -67,15 +67,6 @@ class FailsTestCertVerifier : public CertVerifier {
   void RemoveObserver(Observer* observer) override {}
 };
 
-// A mock CTPolicyEnforcer that returns a custom verification result.
-class MockCTPolicyEnforcer : public CTPolicyEnforcer {
- public:
-  MOCK_CONST_METHOD3(CheckCompliance,
-                     ct::CTPolicyCompliance(X509Certificate* cert,
-                                            const ct::SCTList&,
-                                            const NetLogWithSource&));
-};
-
 class MockRequireCTDelegate : public TransportSecurityState::RequireCTDelegate {
  public:
   MOCK_METHOD3(IsCTRequiredForHost,
@@ -175,10 +166,6 @@ class ProofVerifierChromiumTest : public ::testing::Test {
             NetLogWithSource())) {}
 
   void SetUp() override {
-    EXPECT_CALL(ct_policy_enforcer_, CheckCompliance(_, _, _))
-        .WillRepeatedly(
-            Return(ct::CTPolicyCompliance::CT_POLICY_NOT_ENOUGH_SCTS));
-
     static const char kTestCert[] = "quic-chain.pem";
     test_cert_ = ImportCertFromFile(GetTestCertsDirectory(), kTestCert);
     ASSERT_TRUE(test_cert_);
@@ -188,6 +175,8 @@ class ProofVerifierChromiumTest : public ::testing::Test {
 
     dummy_result_.verified_cert = test_cert_;
     dummy_result_.is_issued_by_known_root = true;
+    dummy_result_.policy_compliance =
+        ct::CTPolicyCompliance::CT_POLICY_NOT_ENOUGH_SCTS;
   }
 
   std::string GetTestSignature() {
@@ -205,7 +194,6 @@ class ProofVerifierChromiumTest : public ::testing::Test {
 
  protected:
   TransportSecurityState transport_security_state_;
-  MockCTPolicyEnforcer ct_policy_enforcer_;
 
   std::unique_ptr<quic::ProofVerifyContext> verify_context_;
   std::unique_ptr<quic::ProofVerifyDetails> details_;
@@ -220,7 +208,7 @@ TEST_F(ProofVerifierChromiumTest, VerifyProof) {
   MockCertVerifier dummy_verifier;
   dummy_verifier.AddResultForCert(test_cert_.get(), dummy_result_, OK);
 
-  ProofVerifierChromium proof_verifier(&dummy_verifier, &ct_policy_enforcer_,
+  ProofVerifierChromium proof_verifier(&dummy_verifier,
                                        &transport_security_state_, nullptr, {},
                                        NetworkAnonymizationKey());
 
@@ -254,7 +242,7 @@ TEST_F(ProofVerifierChromiumTest, VerifyProof) {
 // verification fails.
 TEST_F(ProofVerifierChromiumTest, FailsIfCertFails) {
   MockCertVerifier dummy_verifier;
-  ProofVerifierChromium proof_verifier(&dummy_verifier, &ct_policy_enforcer_,
+  ProofVerifierChromium proof_verifier(&dummy_verifier,
                                        &transport_security_state_, nullptr, {},
                                        NetworkAnonymizationKey());
 
@@ -283,7 +271,7 @@ TEST_F(ProofVerifierChromiumTest, PassesCertVerifierRequestParams) {
   ParamRecordingMockCertVerifier dummy_verifier;
   dummy_verifier.AddResultForCert(test_cert_.get(), dummy_result, OK);
 
-  ProofVerifierChromium proof_verifier(&dummy_verifier, &ct_policy_enforcer_,
+  ProofVerifierChromium proof_verifier(&dummy_verifier,
                                        &transport_security_state_, nullptr, {},
                                        NetworkAnonymizationKey());
 
@@ -308,7 +296,7 @@ TEST_F(ProofVerifierChromiumTest, PassesCertVerifierRequestParams) {
 // signature fails.
 TEST_F(ProofVerifierChromiumTest, FailsIfSignatureFails) {
   FailsTestCertVerifier cert_verifier;
-  ProofVerifierChromium proof_verifier(&cert_verifier, &ct_policy_enforcer_,
+  ProofVerifierChromium proof_verifier(&cert_verifier,
                                        &transport_security_state_, nullptr, {},
                                        NetworkAnonymizationKey());
 
@@ -318,49 +306,6 @@ TEST_F(ProofVerifierChromiumTest, FailsIfSignatureFails) {
       kTestChloHash, certs_, kTestEmptySCT, kTestEmptySignature,
       verify_context_.get(), &error_details_, &details_, std::move(callback));
   ASSERT_EQ(quic::QUIC_FAILURE, status);
-}
-
-// Tests that the certificate policy enforcer is consulted for EV
-// and the certificate is allowed to be EV.
-TEST_F(ProofVerifierChromiumTest, PreservesEVIfAllowed) {
-  dummy_result_.cert_status = CERT_STATUS_IS_EV;
-
-  MockCertVerifier dummy_verifier;
-  dummy_verifier.AddResultForCert(test_cert_.get(), dummy_result_, OK);
-
-  EXPECT_CALL(ct_policy_enforcer_, CheckCompliance(_, _, _))
-      .WillRepeatedly(
-          Return(ct::CTPolicyCompliance::CT_POLICY_COMPLIES_VIA_SCTS));
-
-  ProofVerifierChromium proof_verifier(&dummy_verifier, &ct_policy_enforcer_,
-                                       &transport_security_state_, nullptr, {},
-                                       NetworkAnonymizationKey());
-
-  auto callback = std::make_unique<DummyProofVerifierCallback>();
-  quic::QuicAsyncStatus status = proof_verifier.VerifyProof(
-      kTestHostname, kTestPort, kTestConfig, kTestTransportVersion,
-      kTestChloHash, certs_, kTestEmptySCT, GetTestSignature(),
-      verify_context_.get(), &error_details_, &details_, std::move(callback));
-  ASSERT_EQ(quic::QUIC_SUCCESS, status);
-
-  ASSERT_TRUE(details_.get());
-  ProofVerifyDetailsChromium* verify_details =
-      static_cast<ProofVerifyDetailsChromium*>(details_.get());
-  EXPECT_EQ(dummy_result_.cert_status,
-            verify_details->cert_verify_result.cert_status);
-
-  // Repeat the test with VerifyCertChain.
-  callback = std::make_unique<DummyProofVerifierCallback>();
-  status = proof_verifier.VerifyCertChain(
-      kTestHostname, kTestPort, certs_, kTestEmptyOCSPResponse, kTestEmptySCT,
-      verify_context_.get(), &error_details_, &details_, &tls_alert_,
-      std::move(callback));
-  ASSERT_EQ(quic::QUIC_SUCCESS, status);
-
-  ASSERT_TRUE(details_.get());
-  verify_details = static_cast<ProofVerifyDetailsChromium*>(details_.get());
-  EXPECT_EQ(dummy_result_.cert_status,
-            verify_details->cert_verify_result.cert_status);
 }
 
 HashValueVector MakeHashValueVector(uint8_t tag) {
@@ -378,7 +323,7 @@ TEST_F(ProofVerifierChromiumTest, IsFatalErrorNotSetForNonFatalError) {
   dummy_verifier.AddResultForCert(test_cert_.get(), dummy_result_,
                                   ERR_CERT_DATE_INVALID);
 
-  ProofVerifierChromium proof_verifier(&dummy_verifier, &ct_policy_enforcer_,
+  ProofVerifierChromium proof_verifier(&dummy_verifier,
                                        &transport_security_state_, nullptr, {},
                                        NetworkAnonymizationKey());
 
@@ -414,7 +359,7 @@ TEST_F(ProofVerifierChromiumTest, IsFatalErrorSetForFatalError) {
   const base::Time expiry = base::Time::Now() + base::Seconds(1000);
   transport_security_state_.AddHSTS(kTestHostname, expiry, true);
 
-  ProofVerifierChromium proof_verifier(&dummy_verifier, &ct_policy_enforcer_,
+  ProofVerifierChromium proof_verifier(&dummy_verifier,
                                        &transport_security_state_, nullptr, {},
                                        NetworkAnonymizationKey());
 
@@ -453,7 +398,7 @@ TEST_F(ProofVerifierChromiumTest, PKPEnforced) {
   transport_security_state_.SetPinningListAlwaysTimelyForTesting(true);
   ScopedTransportSecurityStateSource scoped_security_state_source;
 
-  ProofVerifierChromium proof_verifier(&dummy_verifier, &ct_policy_enforcer_,
+  ProofVerifierChromium proof_verifier(&dummy_verifier,
                                        &transport_security_state_, nullptr, {},
                                        NetworkAnonymizationKey());
 
@@ -504,8 +449,8 @@ TEST_F(ProofVerifierChromiumTest, PKPBypassFlagSet) {
   ScopedTransportSecurityStateSource scoped_security_state_source;
 
   ProofVerifierChromium proof_verifier(
-      &dummy_verifier, &ct_policy_enforcer_, &transport_security_state_,
-      nullptr, {kCTAndPKPHost}, NetworkAnonymizationKey());
+      &dummy_verifier, &transport_security_state_, nullptr, {kCTAndPKPHost},
+      NetworkAnonymizationKey());
 
   auto callback = std::make_unique<DummyProofVerifierCallback>();
   quic::QuicAsyncStatus status = proof_verifier.VerifyProof(
@@ -556,7 +501,7 @@ TEST_F(ProofVerifierChromiumTest, PKPReport) {
   MockCertVerifier dummy_verifier;
   dummy_verifier.AddResultForCert(test_cert_.get(), dummy_result_, OK);
 
-  ProofVerifierChromium proof_verifier(&dummy_verifier, &ct_policy_enforcer_,
+  ProofVerifierChromium proof_verifier(&dummy_verifier,
                                        &transport_security_state_, nullptr, {},
                                        network_anonymization_key);
 
@@ -601,6 +546,8 @@ TEST_F(ProofVerifierChromiumTest, PKPReport) {
 TEST_F(ProofVerifierChromiumTest, CTIsRequired) {
   dummy_result_.is_issued_by_known_root = true;
   dummy_result_.public_key_hashes = MakeHashValueVector(0x01);
+  dummy_result_.policy_compliance =
+      ct::CTPolicyCompliance::CT_POLICY_NOT_ENOUGH_SCTS;
 
   MockCertVerifier dummy_verifier;
   dummy_verifier.AddResultForCert(test_cert_.get(), dummy_result_, OK);
@@ -614,11 +561,8 @@ TEST_F(ProofVerifierChromiumTest, CTIsRequired) {
   EXPECT_CALL(require_ct_delegate, IsCTRequiredForHost(kTestHostname, _, _))
       .WillRepeatedly(Return(TransportSecurityState::RequireCTDelegate::
                                  CTRequirementLevel::REQUIRED));
-  EXPECT_CALL(ct_policy_enforcer_, CheckCompliance(_, _, _))
-      .WillRepeatedly(
-          Return(ct::CTPolicyCompliance::CT_POLICY_NOT_ENOUGH_SCTS));
 
-  ProofVerifierChromium proof_verifier(&dummy_verifier, &ct_policy_enforcer_,
+  ProofVerifierChromium proof_verifier(&dummy_verifier,
                                        &transport_security_state_, nullptr, {},
                                        NetworkAnonymizationKey());
 
@@ -657,6 +601,8 @@ TEST_F(ProofVerifierChromiumTest, PKPAndCTBothTested) {
       net::features::kStaticKeyPinningEnforcement);
   dummy_result_.is_issued_by_known_root = true;
   dummy_result_.public_key_hashes = MakeHashValueVector(0x01);
+  dummy_result_.policy_compliance =
+      ct::CTPolicyCompliance::CT_POLICY_NOT_ENOUGH_SCTS;
 
   MockCertVerifier dummy_verifier;
   dummy_verifier.AddResultForCert(test_cert_.get(), dummy_result_, OK);
@@ -675,11 +621,8 @@ TEST_F(ProofVerifierChromiumTest, PKPAndCTBothTested) {
   EXPECT_CALL(require_ct_delegate, IsCTRequiredForHost(kCTAndPKPHost, _, _))
       .WillRepeatedly(Return(TransportSecurityState::RequireCTDelegate::
                                  CTRequirementLevel::REQUIRED));
-  EXPECT_CALL(ct_policy_enforcer_, CheckCompliance(_, _, _))
-      .WillRepeatedly(
-          Return(ct::CTPolicyCompliance::CT_POLICY_NOT_ENOUGH_SCTS));
 
-  ProofVerifierChromium proof_verifier(&dummy_verifier, &ct_policy_enforcer_,
+  ProofVerifierChromium proof_verifier(&dummy_verifier,
                                        &transport_security_state_, nullptr, {},
                                        NetworkAnonymizationKey());
 
@@ -721,7 +664,7 @@ TEST_F(ProofVerifierChromiumTest, UnknownRootRejected) {
   MockCertVerifier dummy_verifier;
   dummy_verifier.AddResultForCert(test_cert_.get(), dummy_result_, OK);
 
-  ProofVerifierChromium proof_verifier(&dummy_verifier, &ct_policy_enforcer_,
+  ProofVerifierChromium proof_verifier(&dummy_verifier,
                                        &transport_security_state_, nullptr, {},
                                        NetworkAnonymizationKey());
 
@@ -753,8 +696,8 @@ TEST_F(ProofVerifierChromiumTest, UnknownRootAcceptedWithOverride) {
   dummy_verifier.AddResultForCert(test_cert_.get(), dummy_result_, OK);
 
   ProofVerifierChromium proof_verifier(
-      &dummy_verifier, &ct_policy_enforcer_, &transport_security_state_,
-      nullptr, {kTestHostname}, NetworkAnonymizationKey());
+      &dummy_verifier, &transport_security_state_, nullptr, {kTestHostname},
+      NetworkAnonymizationKey());
 
   auto callback = std::make_unique<DummyProofVerifierCallback>();
   quic::QuicAsyncStatus status = proof_verifier.VerifyProof(
@@ -788,7 +731,7 @@ TEST_F(ProofVerifierChromiumTest, UnknownRootAcceptedWithWildcardOverride) {
   MockCertVerifier dummy_verifier;
   dummy_verifier.AddResultForCert(test_cert_.get(), dummy_result_, OK);
 
-  ProofVerifierChromium proof_verifier(&dummy_verifier, &ct_policy_enforcer_,
+  ProofVerifierChromium proof_verifier(&dummy_verifier,
                                        &transport_security_state_, nullptr,
                                        {""}, NetworkAnonymizationKey());
 
@@ -821,12 +764,10 @@ TEST_F(ProofVerifierChromiumTest, UnknownRootAcceptedWithWildcardOverride) {
 // Tests that the SCTAuditingDelegate is called to enqueue SCT reports when
 // verifying a good proof and cert.
 TEST_F(ProofVerifierChromiumTest, SCTAuditingReportCollected) {
+  dummy_result_.policy_compliance =
+      ct::CTPolicyCompliance::CT_POLICY_COMPLIES_VIA_SCTS;
   MockCertVerifier cert_verifier;
   cert_verifier.AddResultForCert(test_cert_.get(), dummy_result_, OK);
-
-  EXPECT_CALL(ct_policy_enforcer_, CheckCompliance(_, _, _))
-      .WillRepeatedly(
-          Return(ct::CTPolicyCompliance::CT_POLICY_COMPLIES_VIA_SCTS));
 
   MockSCTAuditingDelegate sct_auditing_delegate;
   EXPECT_CALL(sct_auditing_delegate, IsSCTAuditingEnabled())
@@ -838,8 +779,8 @@ TEST_F(ProofVerifierChromiumTest, SCTAuditingReportCollected) {
       .Times(2);
 
   ProofVerifierChromium proof_verifier(
-      &cert_verifier, &ct_policy_enforcer_, &transport_security_state_,
-      &sct_auditing_delegate, {}, NetworkAnonymizationKey());
+      &cert_verifier, &transport_security_state_, &sct_auditing_delegate, {},
+      NetworkAnonymizationKey());
 
   auto callback = std::make_unique<DummyProofVerifierCallback>();
   quic::QuicAsyncStatus status = proof_verifier.VerifyProof(

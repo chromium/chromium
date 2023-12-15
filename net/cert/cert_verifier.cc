@@ -36,6 +36,7 @@ class DefaultCertVerifyProcFactory : public net::CertVerifyProcFactory {
       return CertVerifyProc::CreateBuiltinWithChromeRootStore(
           std::move(cert_net_fetcher), impl_params.crl_set,
           std::make_unique<net::DoNothingCTVerifier>(),
+          base::MakeRefCounted<DefaultCTPolicyEnforcer>(),
           base::OptionalToPtr(impl_params.root_store_data), instance_params);
     }
 #endif
@@ -43,11 +44,13 @@ class DefaultCertVerifyProcFactory : public net::CertVerifyProcFactory {
     return CertVerifyProc::CreateBuiltinWithChromeRootStore(
         std::move(cert_net_fetcher), impl_params.crl_set,
         std::make_unique<net::DoNothingCTVerifier>(),
+        base::MakeRefCounted<DefaultCTPolicyEnforcer>(),
         base::OptionalToPtr(impl_params.root_store_data), instance_params);
 #elif BUILDFLAG(IS_FUCHSIA)
     return CertVerifyProc::CreateBuiltinVerifyProc(
         std::move(cert_net_fetcher), impl_params.crl_set,
-        std::make_unique<net::DoNothingCTVerifier>(), instance_params);
+        std::make_unique<net::DoNothingCTVerifier>(),
+        base::MakeRefCounted<DefaultCTPolicyEnforcer>(), instance_params);
 #else
     return CertVerifyProc::CreateSystemVerifyProc(std::move(cert_net_fetcher),
                                                   impl_params.crl_set);

@@ -23,7 +23,6 @@
 #include "net/base/network_delegate_impl.h"
 #include "net/cert/cert_verifier.h"
 #include "net/cert/ct_log_verifier.h"
-#include "net/cert/ct_policy_enforcer.h"
 #include "net/cert/ct_verifier.h"
 #include "net/cert/multi_log_ct_verifier.h"
 #include "net/cert/sct_auditing_delegate.h"
@@ -86,7 +85,6 @@ void URLRequestContextBuilder::SetHttpNetworkSessionComponents(
   session_context->cert_verifier = request_context->cert_verifier();
   session_context->transport_security_state =
       request_context->transport_security_state();
-  session_context->ct_policy_enforcer = request_context->ct_policy_enforcer();
   session_context->sct_auditing_delegate =
       request_context->sct_auditing_delegate();
   session_context->proxy_resolution_service =
@@ -145,11 +143,6 @@ void URLRequestContextBuilder::SetSpdyAndQuicEnabled(bool spdy_enabled,
                                                      bool quic_enabled) {
   http_network_session_params_.enable_http2 = spdy_enabled;
   http_network_session_params_.enable_quic = quic_enabled;
-}
-
-void URLRequestContextBuilder::set_ct_policy_enforcer(
-    std::unique_ptr<CTPolicyEnforcer> ct_policy_enforcer) {
-  ct_policy_enforcer_ = std::move(ct_policy_enforcer);
 }
 
 void URLRequestContextBuilder::set_sct_auditing_delegate(
@@ -421,13 +414,6 @@ std::unique_ptr<URLRequestContext> URLRequestContextBuilder::Build() {
     // TODO(mattm): Should URLRequestContextBuilder create a CertNetFetcher?
     context->set_cert_verifier(
         CertVerifier::CreateDefault(/*cert_net_fetcher=*/nullptr));
-  }
-
-  if (ct_policy_enforcer_) {
-    context->set_ct_policy_enforcer(std::move(ct_policy_enforcer_));
-  } else {
-    context->set_ct_policy_enforcer(
-        std::make_unique<DefaultCTPolicyEnforcer>());
   }
 
   if (sct_auditing_delegate_) {

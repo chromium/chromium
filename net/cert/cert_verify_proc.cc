@@ -416,10 +416,12 @@ scoped_refptr<CertVerifyProc> CertVerifyProc::CreateBuiltinVerifyProc(
     scoped_refptr<CertNetFetcher> cert_net_fetcher,
     scoped_refptr<CRLSet> crl_set,
     std::unique_ptr<CTVerifier> ct_verifier,
+    scoped_refptr<CTPolicyEnforcer> ct_policy_enforcer,
     const InstanceParams instance_params) {
   return CreateCertVerifyProcBuiltin(
       std::move(cert_net_fetcher), std::move(crl_set), std::move(ct_verifier),
-      CreateSslSystemTrustStore(), instance_params);
+      std::move(ct_policy_enforcer), CreateSslSystemTrustStore(),
+      instance_params);
 }
 #endif
 
@@ -429,6 +431,7 @@ scoped_refptr<CertVerifyProc> CertVerifyProc::CreateBuiltinWithChromeRootStore(
     scoped_refptr<CertNetFetcher> cert_net_fetcher,
     scoped_refptr<CRLSet> crl_set,
     std::unique_ptr<CTVerifier> ct_verifier,
+    scoped_refptr<CTPolicyEnforcer> ct_policy_enforcer,
     const ChromeRootStoreData* root_store_data,
     const InstanceParams instance_params) {
   std::unique_ptr<TrustStoreChrome> chrome_root =
@@ -436,6 +439,7 @@ scoped_refptr<CertVerifyProc> CertVerifyProc::CreateBuiltinWithChromeRootStore(
                       : std::make_unique<TrustStoreChrome>();
   return CreateCertVerifyProcBuiltin(
       std::move(cert_net_fetcher), std::move(crl_set), std::move(ct_verifier),
+      std::move(ct_policy_enforcer),
       CreateSslSystemTrustStoreChromeRoot(std::move(chrome_root)),
       instance_params);
 }

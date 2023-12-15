@@ -17,7 +17,6 @@
 #include "net/base/ip_address.h"
 #include "net/base/ip_endpoint.h"
 #include "net/base/net_errors.h"
-#include "net/cert/ct_policy_enforcer.h"
 #include "net/cert/mock_cert_verifier.h"
 #include "net/dns/mock_host_resolver.h"
 #include "net/dns/public/secure_dns_policy.h"
@@ -98,11 +97,9 @@ class TransportConnectJobTest : public WithTaskEnvironment,
   TestSSLConfigService ssl_config_service_{SSLContextConfig{}};
   MockCertVerifier cert_verifier_;
   TransportSecurityState transport_security_state_;
-  DefaultCTPolicyEnforcer ct_policy_enforcer_;
   SSLClientContext ssl_client_context_{&ssl_config_service_,
                                        &cert_verifier_,
                                        &transport_security_state_,
-                                       &ct_policy_enforcer_,
                                        /*ssl_client_session_cache=*/nullptr,
                                        /*sct_auditing_delegate=*/nullptr};
   const CommonConnectJobParams common_connect_job_params_;

@@ -28,7 +28,6 @@
 #include "net/base/request_priority.h"
 #include "net/base/transport_info.h"
 #include "net/cert/cert_verifier.h"
-#include "net/cert/ct_policy_enforcer.h"
 #include "net/cookies/cookie_inclusion_status.h"
 #include "net/cookies/cookie_monster.h"
 #include "net/cookies/cookie_setting_override.h"

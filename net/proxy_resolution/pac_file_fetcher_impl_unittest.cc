@@ -23,7 +23,6 @@
 #include "net/base/load_flags.h"
 #include "net/base/network_delegate_impl.h"
 #include "net/base/test_completion_callback.h"
-#include "net/cert/ct_policy_enforcer.h"
 #include "net/cert/mock_cert_verifier.h"
 #include "net/cert/multi_log_ct_verifier.h"
 #include "net/disk_cache/disk_cache.h"

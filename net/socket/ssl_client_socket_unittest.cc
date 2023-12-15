@@ -44,7 +44,6 @@
 #include "net/base/test_completion_callback.h"
 #include "net/cert/asn1_util.h"
 #include "net/cert/cert_database.h"
-#include "net/cert/ct_policy_enforcer.h"
 #include "net/cert/ct_policy_status.h"
 #include "net/cert/mock_cert_verifier.h"
 #include "net/cert/mock_client_cert_verifier.h"
@@ -582,15 +581,6 @@ class DeleteSocketCallback : public TestCompletionCallbackBase {
   raw_ptr<StreamSocket, DanglingUntriaged> socket_;
 };
 
-// A mock CTPolicyEnforcer that returns a custom verification result.
-class MockCTPolicyEnforcer : public CTPolicyEnforcer {
- public:
-  MOCK_CONST_METHOD3(CheckCompliance,
-                     ct::CTPolicyCompliance(X509Certificate* cert,
-                                            const ct::SCTList&,
-                                            const NetLogWithSource&));
-};
-
 class MockRequireCTDelegate : public TransportSecurityState::RequireCTDelegate {
  public:
   MOCK_METHOD3(IsCTRequiredForHost,
@@ -667,22 +657,16 @@ class SSLClientSocketTest : public PlatformTest, public WithTaskEnvironment {
             std::make_unique<TestSSLConfigService>(SSLContextConfig())),
         cert_verifier_(std::make_unique<ParamRecordingMockCertVerifier>()),
         transport_security_state_(std::make_unique<TransportSecurityState>()),
-        ct_policy_enforcer_(std::make_unique<MockCTPolicyEnforcer>()),
         ssl_client_session_cache_(std::make_unique<SSLClientSessionCache>(
             SSLClientSessionCache::Config())),
         context_(
             std::make_unique<SSLClientContext>(ssl_config_service_.get(),
                                                cert_verifier_.get(),
                                                transport_security_state_.get(),
-                                               ct_policy_enforcer_.get(),
                                                ssl_client_session_cache_.get(),
                                                nullptr)) {
     cert_verifier_->set_default_result(OK);
     cert_verifier_->set_async(true);
-
-    EXPECT_CALL(*ct_policy_enforcer_, CheckCompliance(_, _, _))
-        .WillRepeatedly(
-            Return(ct::CTPolicyCompliance::CT_POLICY_COMPLIES_VIA_SCTS));
   }
 
  protected:
@@ -788,19 +772,6 @@ class SSLClientSocketTest : public PlatformTest, public WithTaskEnvironment {
                                                    result);
   }
 
-  // Adds the server certificate with provided cert status.
-  // Must be called after StartEmbeddedTestServer has been called.
-  void AddServerCertStatusToSSLConfig(CertStatus status,
-                                      SSLConfig* ssl_config) {
-    ASSERT_TRUE(embedded_test_server());
-    scoped_refptr<X509Certificate> server_cert =
-        embedded_test_server()->GetCertificate();
-    CertVerifyResult verify_result;
-    verify_result.cert_status = status;
-    verify_result.verified_cert = server_cert;
-    cert_verifier_->AddResultForCert(server_cert.get(), verify_result, OK);
-  }
-
   absl::optional<SSLInfo> LastSSLInfoFromServer() {
     // EmbeddedTestServer callbacks run on another thread, so protect this
     // with a lock.
@@ -815,7 +786,6 @@ class SSLClientSocketTest : public PlatformTest, public WithTaskEnvironment {
   std::unique_ptr<TestSSLConfigService> ssl_config_service_;
   std::unique_ptr<ParamRecordingMockCertVerifier> cert_verifier_;
   std::unique_ptr<TransportSecurityState> transport_security_state_;
-  std::unique_ptr<MockCTPolicyEnforcer> ct_policy_enforcer_;
   std::unique_ptr<SSLClientSessionCache> ssl_client_session_cache_;
   std::unique_ptr<SSLClientContext> context_;
   std::unique_ptr<SSLClientSocket> sock_;
@@ -1465,7 +1435,7 @@ TEST_P(SSLClientSocketVersionTest, SocketDestroyedDuringVerify) {
   HangingCertVerifier verifier;
   context_ = std::make_unique<SSLClientContext>(
       ssl_config_service_.get(), &verifier, transport_security_state_.get(),
-      ct_policy_enforcer_.get(), ssl_client_session_cache_.get(), nullptr);
+      ssl_client_session_cache_.get(), nullptr);
 
   TestCompletionCallback callback;
   auto transport = std::make_unique<TCPClientSocket>(
@@ -2750,31 +2720,6 @@ TEST_P(SSLClientSocketVersionTest, ConnectSignedCertTimestampsTLSExtension) {
 
   sock_ = nullptr;
   context_ = nullptr;
-}
-
-// Test that when a CT verifier and a CTPolicyEnforcer are defined, and
-// the EV certificate used conforms to the CT/EV policy, its EV status
-// is maintained.
-TEST_P(SSLClientSocketVersionTest, EVCertStatusMaintainedForCompliantCert) {
-  ASSERT_TRUE(
-      StartEmbeddedTestServer(EmbeddedTestServer::CERT_OK, GetServerConfig()));
-
-  SSLConfig ssl_config;
-  AddServerCertStatusToSSLConfig(CERT_STATUS_IS_EV, &ssl_config);
-
-  // Emulate compliance of the certificate to the policy.
-  EXPECT_CALL(*ct_policy_enforcer_, CheckCompliance(_, _, _))
-      .WillRepeatedly(
-          Return(ct::CTPolicyCompliance::CT_POLICY_COMPLIES_VIA_SCTS));
-
-  int rv;
-  ASSERT_TRUE(CreateAndConnectSSLClientSocket(ssl_config, &rv));
-  EXPECT_THAT(rv, IsOk());
-
-  SSLInfo result;
-  ASSERT_TRUE(sock_->GetSSLInfo(&result));
-
-  EXPECT_TRUE(result.cert_status & CERT_STATUS_IS_EV);
 }
 
 // Tests that OCSP stapling is requested, as per Certificate Transparency (RFC
@@ -4273,6 +4218,8 @@ TEST_P(SSLClientSocketVersionTest, CTIsRequired) {
   verify_result.verified_cert = server_cert;
   verify_result.public_key_hashes =
       MakeHashValueVector(kGoodHashValueVectorInput);
+  verify_result.policy_compliance =
+      ct::CTPolicyCompliance::CT_POLICY_NOT_ENOUGH_SCTS;
   cert_verifier_->AddResultForCert(server_cert.get(), verify_result, OK);
 
   // Set up CT
@@ -4285,9 +4232,6 @@ TEST_P(SSLClientSocketVersionTest, CTIsRequired) {
               IsCTRequiredForHost(host_port_pair().host(), _, _))
       .WillRepeatedly(Return(TransportSecurityState::RequireCTDelegate::
                                  CTRequirementLevel::REQUIRED));
-  EXPECT_CALL(*ct_policy_enforcer_, CheckCompliance(server_cert.get(), _, _))
-      .WillRepeatedly(
-          Return(ct::CTPolicyCompliance::CT_POLICY_NOT_ENOUGH_SCTS));
 
   SSLConfig ssl_config;
   int rv;
@@ -4315,6 +4259,8 @@ TEST_P(SSLClientSocketVersionTest, IgnoreCertificateErrorsBypassesRequiredCT) {
   verify_result.verified_cert = server_cert;
   verify_result.public_key_hashes =
       MakeHashValueVector(kGoodHashValueVectorInput);
+  verify_result.policy_compliance =
+      ct::CTPolicyCompliance::CT_POLICY_NOT_ENOUGH_SCTS;
   cert_verifier_->AddResultForCert(server_cert.get(), verify_result, OK);
 
   // Set up CT
@@ -4327,9 +4273,6 @@ TEST_P(SSLClientSocketVersionTest, IgnoreCertificateErrorsBypassesRequiredCT) {
               IsCTRequiredForHost(host_port_pair().host(), _, _))
       .WillRepeatedly(Return(TransportSecurityState::RequireCTDelegate::
                                  CTRequirementLevel::REQUIRED));
-  EXPECT_CALL(*ct_policy_enforcer_, CheckCompliance(server_cert.get(), _, _))
-      .WillRepeatedly(
-          Return(ct::CTPolicyCompliance::CT_POLICY_NOT_ENOUGH_SCTS));
 
   SSLConfig ssl_config;
   ssl_config.ignore_certificate_errors = true;
@@ -4362,6 +4305,8 @@ TEST_P(SSLClientSocketVersionTest, PKPMoreImportantThanCT) {
   verify_result.verified_cert = server_cert;
   verify_result.public_key_hashes =
       MakeHashValueVector(kBadHashValueVectorInput);
+  verify_result.policy_compliance =
+      ct::CTPolicyCompliance::CT_POLICY_NOT_ENOUGH_SCTS;
   cert_verifier_->AddResultForCert(server_cert.get(), verify_result, OK);
 
   transport_security_state_->EnableStaticPinsForTesting();
@@ -4379,9 +4324,6 @@ TEST_P(SSLClientSocketVersionTest, PKPMoreImportantThanCT) {
   EXPECT_CALL(require_ct_delegate, IsCTRequiredForHost(kCTHost, _, _))
       .WillRepeatedly(Return(TransportSecurityState::RequireCTDelegate::
                                  CTRequirementLevel::REQUIRED));
-  EXPECT_CALL(*ct_policy_enforcer_, CheckCompliance(server_cert.get(), _, _))
-      .WillRepeatedly(
-          Return(ct::CTPolicyCompliance::CT_POLICY_NOT_ENOUGH_SCTS));
 
   SSLConfig ssl_config;
   int rv;
@@ -4411,6 +4353,8 @@ TEST_P(SSLClientSocketVersionTest, SCTAuditingReportCollected) {
   verify_result.verified_cert = server_cert;
   verify_result.public_key_hashes =
       MakeHashValueVector(kGoodHashValueVectorInput);
+  verify_result.policy_compliance =
+      ct::CTPolicyCompliance::CT_POLICY_COMPLIES_VIA_SCTS;
   cert_verifier_->AddResultForCert(server_cert.get(), verify_result, OK);
 
   // Set up CT and auditing delegate.
@@ -4419,15 +4363,12 @@ TEST_P(SSLClientSocketVersionTest, SCTAuditingReportCollected) {
   EXPECT_CALL(require_ct_delegate, IsCTRequiredForHost(_, _, _))
       .WillRepeatedly(Return(TransportSecurityState::RequireCTDelegate::
                                  CTRequirementLevel::REQUIRED));
-  EXPECT_CALL(*ct_policy_enforcer_, CheckCompliance(server_cert.get(), _, _))
-      .WillRepeatedly(
-          Return(ct::CTPolicyCompliance::CT_POLICY_COMPLIES_VIA_SCTS));
 
   MockSCTAuditingDelegate sct_auditing_delegate;
   context_ = std::make_unique<SSLClientContext>(
       ssl_config_service_.get(), cert_verifier_.get(),
-      transport_security_state_.get(), ct_policy_enforcer_.get(),
-      ssl_client_session_cache_.get(), &sct_auditing_delegate);
+      transport_security_state_.get(), ssl_client_session_cache_.get(),
+      &sct_auditing_delegate);
 
   EXPECT_CALL(sct_auditing_delegate, IsSCTAuditingEnabled())
       .WillRepeatedly(Return(true));

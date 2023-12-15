@@ -20,7 +20,6 @@
 #include "components/policy/policy_constants.h"
 #include "components/prefs/testing_pref_service.h"
 #include "content/public/browser/network_service_instance.h"
-#include "content/public/browser/storage_partition.h"
 #include "content/public/test/browser_test.h"
 #include "crypto/sha2.h"
 #include "net/base/hash_value.h"
@@ -135,9 +134,7 @@ class CertificateTransparencyBrowserTest : public CertVerifierBrowserTest {
 // Chrome CT Policy should be being enforced.
 IN_PROC_BROWSER_TEST_F(CertificateTransparencyBrowserTest,
                        EnforcedAfterApril2018) {
-  content::StoragePartition* partition =
-      browser()->profile()->GetDefaultStoragePartition();
-  partition->GetNetworkContext()->SetCTLogListAlwaysTimelyForTesting();
+  SystemNetworkContextManager::GetInstance()->SetCTLogListTimelyForTesting();
 
   ASSERT_TRUE(https_server()->Start());
 

@@ -33,7 +33,6 @@
 #include "net/base/net_errors.h"
 #include "net/base/network_anonymization_key.h"
 #include "net/base/schemeful_site.h"
-#include "net/cert/ct_policy_enforcer.h"
 #include "net/cert/mock_cert_verifier.h"
 #include "net/dns/mock_host_resolver.h"
 #include "net/dns/public/dns_query_type.h"
@@ -215,7 +214,6 @@ class MockQuicStreamFactory : public QuicStreamFactory {
       ClientSocketFactory* client_socket_factory,
       HttpServerProperties* http_server_properties,
       CertVerifier* cert_verifier,
-      CTPolicyEnforcer* ct_policy_enforcer,
       TransportSecurityState* transport_security_state,
       SCTAuditingDelegate* sct_auditing_delegate,
       SocketPerformanceWatcherFactory* socket_performance_watcher_factory,
@@ -227,7 +225,6 @@ class MockQuicStreamFactory : public QuicStreamFactory {
                           client_socket_factory,
                           http_server_properties,
                           cert_verifier,
-                          ct_policy_enforcer,
                           transport_security_state,
                           sct_auditing_delegate,
                           socket_performance_watcher_factory,
@@ -296,7 +293,7 @@ class QuicStreamFactoryTestBase : public WithTaskEnvironment {
     factory_ = std::make_unique<QuicStreamFactory>(
         net_log_.net_log(), host_resolver_.get(), &ssl_config_service_,
         socket_factory_.get(), http_server_properties_.get(),
-        cert_verifier_.get(), &ct_policy_enforcer_, &transport_security_state_,
+        cert_verifier_.get(), &transport_security_state_,
         /*sct_auditing_delegate=*/nullptr,
         /*SocketPerformanceWatcherFactory*/ nullptr,
         &crypto_client_stream_factory_, &context_);
@@ -955,7 +952,6 @@ class QuicStreamFactoryTestBase : public WithTaskEnvironment {
   std::unique_ptr<HttpServerProperties> http_server_properties_;
   std::unique_ptr<MockCertVerifier> cert_verifier_;
   TransportSecurityState transport_security_state_;
-  DefaultCTPolicyEnforcer ct_policy_enforcer_;
   std::unique_ptr<ScopedMockNetworkChangeNotifier>
       scoped_mock_network_change_notifier_;
   std::unique_ptr<QuicStreamFactory> factory_;
@@ -2863,7 +2859,7 @@ TEST_P(QuicStreamFactoryTest, CloseSessionDuringCreation) {
   auto factory = MockQuicStreamFactory(
       net_log_.net_log(), host_resolver_.get(), &ssl_config_service_,
       socket_factory_.get(), http_server_properties_.get(),
-      cert_verifier_.get(), &ct_policy_enforcer_, &transport_security_state_,
+      cert_verifier_.get(), &transport_security_state_,
       /*sct_auditing_delegate=*/nullptr,
       /*SocketPerformanceWatcherFactory*/ nullptr,
       &crypto_client_stream_factory_, &context_);

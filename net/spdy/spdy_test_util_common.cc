@@ -20,7 +20,6 @@
 #include "net/base/features.h"
 #include "net/base/host_port_pair.h"
 #include "net/base/http_user_agent_settings.h"
-#include "net/cert/ct_policy_enforcer.h"
 #include "net/cert/ct_policy_status.h"
 #include "net/cert/mock_cert_verifier.h"
 #include "net/cert/signed_certificate_timestamp_and_status.h"
@@ -302,7 +301,6 @@ SpdySessionDependencies::SpdySessionDependencies(
           MockHostResolverBase::RuleResolver::GetLocalhostResult())),
       cert_verifier(std::make_unique<MockCertVerifier>()),
       transport_security_state(std::make_unique<TransportSecurityState>()),
-      ct_policy_enforcer(std::make_unique<DefaultCTPolicyEnforcer>()),
       proxy_resolution_service(std::move(proxy_resolution_service)),
       ssl_config_service(std::make_unique<SSLConfigServiceDefaults>()),
       socket_factory(std::make_unique<MockClientSocketFactory>()),
@@ -385,7 +383,6 @@ HttpNetworkSessionContext SpdySessionDependencies::CreateSessionContext(
   context.cert_verifier = session_deps->cert_verifier.get();
   context.transport_security_state =
       session_deps->transport_security_state.get();
-  context.ct_policy_enforcer = session_deps->ct_policy_enforcer.get();
   context.proxy_resolution_service =
       session_deps->proxy_resolution_service.get();
   context.http_user_agent_settings =

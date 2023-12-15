@@ -9,6 +9,7 @@
 #include <utility>
 
 #include "base/build_time.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/simple_test_clock.h"
@@ -60,10 +61,10 @@ class ChromeCTPolicyEnforcerTest : public ::testing::Test {
     clock_.SetNow(test_now_);
   }
 
-  std::unique_ptr<ChromeCTPolicyEnforcer> MakeChromeCTPolicyEnforcer(
+  scoped_refptr<ChromeCTPolicyEnforcer> MakeChromeCTPolicyEnforcer(
       std::vector<std::pair<std::string, base::Time>> disqualified_logs,
       std::map<std::string, OperatorHistoryEntry> log_operator_history) {
-    return std::make_unique<ChromeCTPolicyEnforcer>(
+    return base::MakeRefCounted<ChromeCTPolicyEnforcer>(
         test_now_, std::move(disqualified_logs),
         std::move(log_operator_history), &clock_);
   }
@@ -173,7 +174,7 @@ TEST_F(ChromeCTPolicyEnforcerTest, DoesNotConformToCTPolicyNotEnoughFreshSCTs) {
   AddDisqualifiedLogSCT(SignedCertificateTimestamp::SCT_FROM_TLS_EXTENSION,
                         false, &disqualified_log, &scts);
   FillOperatorHistoryWithDiverseOperators(scts, &operator_history);
-  std::unique_ptr<ChromeCTPolicyEnforcer> policy_enforcer =
+  scoped_refptr<ChromeCTPolicyEnforcer> policy_enforcer =
       MakeChromeCTPolicyEnforcer({disqualified_log}, operator_history);
   EXPECT_EQ(
       CTPolicyCompliance::CT_POLICY_NOT_DIVERSE_SCTS,
@@ -237,7 +238,7 @@ TEST_F(ChromeCTPolicyEnforcerTest,
   AddDisqualifiedLogSCT(SignedCertificateTimestamp::SCT_EMBEDDED, false,
                         &disqualified_log, &scts);
   FillOperatorHistoryWithDiverseOperators(scts, &operator_history);
-  std::unique_ptr<ChromeCTPolicyEnforcer> policy_enforcer =
+  scoped_refptr<ChromeCTPolicyEnforcer> policy_enforcer =
       MakeChromeCTPolicyEnforcer({disqualified_log}, operator_history);
   EXPECT_EQ(
       CTPolicyCompliance::CT_POLICY_COMPLIES_VIA_SCTS,
@@ -268,7 +269,7 @@ TEST_F(ChromeCTPolicyEnforcerTest, ConformsToCTPolicyWithNonEmbeddedSCTs) {
   std::map<std::string, OperatorHistoryEntry> operator_history;
   FillOperatorHistoryWithDiverseOperators(scts, &operator_history);
 
-  std::unique_ptr<ChromeCTPolicyEnforcer> policy_enforcer =
+  scoped_refptr<ChromeCTPolicyEnforcer> policy_enforcer =
       MakeChromeCTPolicyEnforcer(GetDisqualifiedLogs(), operator_history);
 
   EXPECT_EQ(
@@ -284,7 +285,7 @@ TEST_F(ChromeCTPolicyEnforcerTest, EnforcementDisabledByBinaryAge) {
   std::map<std::string, OperatorHistoryEntry> operator_history;
   FillOperatorHistoryWithDiverseOperators(scts, &operator_history);
 
-  std::unique_ptr<ChromeCTPolicyEnforcer> policy_enforcer =
+  scoped_refptr<ChromeCTPolicyEnforcer> policy_enforcer =
       MakeChromeCTPolicyEnforcer(GetDisqualifiedLogs(), operator_history);
 
   EXPECT_EQ(
@@ -306,7 +307,7 @@ TEST_F(ChromeCTPolicyEnforcerTest, ConformsToCTPolicyWithEmbeddedSCTs) {
   std::map<std::string, OperatorHistoryEntry> operator_history;
   FillOperatorHistoryWithDiverseOperators(scts, &operator_history);
 
-  std::unique_ptr<ChromeCTPolicyEnforcer> policy_enforcer =
+  scoped_refptr<ChromeCTPolicyEnforcer> policy_enforcer =
       MakeChromeCTPolicyEnforcer(GetDisqualifiedLogs(), operator_history);
 
   EXPECT_EQ(
@@ -334,7 +335,7 @@ TEST_F(ChromeCTPolicyEnforcerTest,
   std::map<std::string, OperatorHistoryEntry> operator_history;
   FillOperatorHistoryWithDiverseOperators(scts, &operator_history);
 
-  std::unique_ptr<ChromeCTPolicyEnforcer> policy_enforcer =
+  scoped_refptr<ChromeCTPolicyEnforcer> policy_enforcer =
       MakeChromeCTPolicyEnforcer(GetDisqualifiedLogs(), operator_history);
 
   EXPECT_EQ(
@@ -361,7 +362,7 @@ TEST_F(ChromeCTPolicyEnforcerTest, ConformsToCTPolicyWithPooledEmbeddedSCTs) {
   std::map<std::string, OperatorHistoryEntry> operator_history;
   FillOperatorHistoryWithDiverseOperators(scts, &operator_history);
 
-  std::unique_ptr<ChromeCTPolicyEnforcer> policy_enforcer =
+  scoped_refptr<ChromeCTPolicyEnforcer> policy_enforcer =
       MakeChromeCTPolicyEnforcer(GetDisqualifiedLogs(), operator_history);
 
   EXPECT_EQ(
@@ -377,7 +378,7 @@ TEST_F(ChromeCTPolicyEnforcerTest, DoesNotConformToCTPolicyNotEnoughSCTs) {
   std::map<std::string, OperatorHistoryEntry> operator_history;
   FillOperatorHistoryWithDiverseOperators(scts, &operator_history);
 
-  std::unique_ptr<ChromeCTPolicyEnforcer> policy_enforcer =
+  scoped_refptr<ChromeCTPolicyEnforcer> policy_enforcer =
       MakeChromeCTPolicyEnforcer(GetDisqualifiedLogs(), operator_history);
 
   EXPECT_EQ(
@@ -402,7 +403,7 @@ TEST_F(ChromeCTPolicyEnforcerTest,
   std::map<std::string, OperatorHistoryEntry> operator_history;
   FillOperatorHistoryWithDiverseOperators(scts, &operator_history);
 
-  std::unique_ptr<ChromeCTPolicyEnforcer> policy_enforcer =
+  scoped_refptr<ChromeCTPolicyEnforcer> policy_enforcer =
       MakeChromeCTPolicyEnforcer({disqualified_log}, operator_history);
 
   // |chain_| is valid for 10 years - over 180 days - so requires 3 SCTs.
@@ -424,7 +425,7 @@ TEST_F(ChromeCTPolicyEnforcerTest,
   std::map<std::string, OperatorHistoryEntry> operator_history;
   FillOperatorHistoryWithDiverseOperators(scts, &operator_history);
 
-  std::unique_ptr<ChromeCTPolicyEnforcer> policy_enforcer =
+  scoped_refptr<ChromeCTPolicyEnforcer> policy_enforcer =
       MakeChromeCTPolicyEnforcer({disqualified_log}, operator_history);
 
   // |chain_| is valid for 10 years - over 180 days - so requires 3 SCTs.
@@ -449,81 +450,12 @@ TEST_F(ChromeCTPolicyEnforcerTest,
   std::map<std::string, OperatorHistoryEntry> operator_history;
   FillOperatorHistoryWithDiverseOperators(scts, &operator_history);
 
-  std::unique_ptr<ChromeCTPolicyEnforcer> policy_enforcer =
+  scoped_refptr<ChromeCTPolicyEnforcer> policy_enforcer =
       MakeChromeCTPolicyEnforcer({disqualified_log}, operator_history);
 
   // |chain_| is valid for 10 years - over 180 days - so requires 3 SCTs.
   EXPECT_EQ(
       CTPolicyCompliance::CT_POLICY_NOT_ENOUGH_SCTS,
-      policy_enforcer->CheckCompliance(chain_.get(), scts, NetLogWithSource()));
-}
-
-TEST_F(ChromeCTPolicyEnforcerTest, UpdateCTLogList) {
-  std::unique_ptr<ChromeCTPolicyEnforcer> policy_enforcer =
-      MakeChromeCTPolicyEnforcer(GetDisqualifiedLogs(),
-                                 std::map<std::string, OperatorHistoryEntry>());
-
-  SCTList scts;
-  FillListWithSCTsOfOrigin(SignedCertificateTimestamp::SCT_FROM_TLS_EXTENSION,
-                           2, &scts);
-
-  std::vector<std::pair<std::string, base::Time>> disqualified_logs;
-  std::map<std::string, OperatorHistoryEntry> operator_history;
-  for (auto sct : scts) {
-    OperatorHistoryEntry entry;
-    entry.current_operator_ = "Operator";
-    operator_history[sct->log_id] = entry;
-  }
-
-  policy_enforcer->UpdateCTLogList(base::Time::Now(), disqualified_logs,
-                                   operator_history);
-
-  // The check should fail since the logs all have the same operator.
-  EXPECT_EQ(
-      CTPolicyCompliance::CT_POLICY_NOT_DIVERSE_SCTS,
-      policy_enforcer->CheckCompliance(chain_.get(), scts, NetLogWithSource()));
-
-  // Update the list again, this time including diverse operators.
-  FillOperatorHistoryWithDiverseOperators(scts, &operator_history);
-  policy_enforcer->UpdateCTLogList(base::Time::Now(), disqualified_logs,
-                                   operator_history);
-
-  // The check should now succeed.
-  EXPECT_EQ(
-      CTPolicyCompliance::CT_POLICY_COMPLIES_VIA_SCTS,
-      policy_enforcer->CheckCompliance(chain_.get(), scts, NetLogWithSource()));
-}
-
-TEST_F(ChromeCTPolicyEnforcerTest, TimestampUpdates) {
-  std::unique_ptr<ChromeCTPolicyEnforcer> policy_enforcer =
-      MakeChromeCTPolicyEnforcer(GetDisqualifiedLogs(),
-                                 std::map<std::string, OperatorHistoryEntry>());
-
-  SCTList scts;
-  FillListWithSCTsOfOrigin(SignedCertificateTimestamp::SCT_FROM_TLS_EXTENSION,
-                           1, &scts);
-
-  // Clear the log list and set the last updated time to more than 10 weeks ago.
-  std::vector<std::pair<std::string, base::Time>> disqualified_logs;
-  std::map<std::string, OperatorHistoryEntry> log_operator_history;
-  FillOperatorHistoryWithDiverseOperators(scts, &log_operator_history);
-
-  policy_enforcer->UpdateCTLogList(base::Time::Now() - base::Days(71),
-                                   disqualified_logs, log_operator_history);
-
-  // The check should return build not timely even though there are not enough
-  // SCTs.
-  EXPECT_EQ(
-      CTPolicyCompliance::CT_POLICY_BUILD_NOT_TIMELY,
-      policy_enforcer->CheckCompliance(chain_.get(), scts, NetLogWithSource()));
-
-  // Update the last update time value again, this time with a recent time.
-  policy_enforcer->UpdateCTLogList(base::Time::Now(), disqualified_logs,
-                                   log_operator_history);
-
-  // The check should now fail
-  EXPECT_EQ(
-      CTPolicyCompliance::CT_POLICY_NOT_DIVERSE_SCTS,
       policy_enforcer->CheckCompliance(chain_.get(), scts, NetLogWithSource()));
 }
 
@@ -540,7 +472,7 @@ TEST_F(ChromeCTPolicyEnforcerTest, IsLogDisqualifiedTimestamp) {
   disqualified_logs.emplace_back(kModifiedTestLogID, future_disqualification);
   disqualified_logs.emplace_back(kTestLogID, past_disqualification);
 
-  std::unique_ptr<ChromeCTPolicyEnforcer> policy_enforcer =
+  scoped_refptr<ChromeCTPolicyEnforcer> policy_enforcer =
       MakeChromeCTPolicyEnforcer(disqualified_logs, log_operator_history);
 
   base::Time disqualification_time;
@@ -563,7 +495,7 @@ TEST_F(ChromeCTPolicyEnforcerTest, IsLogDisqualifiedReturnsFalseOnUnknownLog) {
   disqualified_logs.emplace_back(kModifiedTestLogID,
                                  base::Time::Now() - base::Days(1));
 
-  std::unique_ptr<ChromeCTPolicyEnforcer> policy_enforcer =
+  scoped_refptr<ChromeCTPolicyEnforcer> policy_enforcer =
       MakeChromeCTPolicyEnforcer(disqualified_logs, log_operator_history);
 
   base::Time unused;
@@ -593,7 +525,7 @@ TEST_F(ChromeCTPolicyEnforcerTest,
   }
   std::sort(std::begin(disqualified_logs), std::end(disqualified_logs));
 
-  std::unique_ptr<ChromeCTPolicyEnforcer> policy_enforcer =
+  scoped_refptr<ChromeCTPolicyEnforcer> policy_enforcer =
       MakeChromeCTPolicyEnforcer(disqualified_logs, log_operator_history);
 
   // SCTs should comply since retirement date is in the future.
@@ -624,7 +556,7 @@ TEST_F(ChromeCTPolicyEnforcerTest,
 
   FillOperatorHistoryWithDiverseOperators(scts, &log_operator_history);
 
-  std::unique_ptr<ChromeCTPolicyEnforcer> policy_enforcer =
+  scoped_refptr<ChromeCTPolicyEnforcer> policy_enforcer =
       MakeChromeCTPolicyEnforcer(disqualified_logs, log_operator_history);
 
   // SCTs should not comply since retirement date is in the past.
@@ -693,7 +625,7 @@ TEST_F(ChromeCTPolicyEnforcerTest, UpdatedSCTRequirements) {
       // diversity.
       FillOperatorHistoryWithDiverseOperators(scts, &operator_history);
 
-      std::unique_ptr<ChromeCTPolicyEnforcer> policy_enforcer =
+      scoped_refptr<ChromeCTPolicyEnforcer> policy_enforcer =
           MakeChromeCTPolicyEnforcer(GetDisqualifiedLogs(), operator_history);
 
       CTPolicyCompliance expected;
@@ -728,7 +660,7 @@ TEST_F(ChromeCTPolicyEnforcerTest,
     operator_history[sct->log_id] = entry;
   }
 
-  std::unique_ptr<ChromeCTPolicyEnforcer> policy_enforcer =
+  scoped_refptr<ChromeCTPolicyEnforcer> policy_enforcer =
       MakeChromeCTPolicyEnforcer(GetDisqualifiedLogs(), operator_history);
 
   EXPECT_EQ(
@@ -743,7 +675,7 @@ TEST_F(ChromeCTPolicyEnforcerTest, ConformsToCTPolicyDifferentOperators) {
   std::map<std::string, OperatorHistoryEntry> operator_history;
   FillOperatorHistoryWithDiverseOperators(scts, &operator_history);
 
-  std::unique_ptr<ChromeCTPolicyEnforcer> policy_enforcer =
+  scoped_refptr<ChromeCTPolicyEnforcer> policy_enforcer =
       MakeChromeCTPolicyEnforcer(GetDisqualifiedLogs(), operator_history);
 
   EXPECT_EQ(
@@ -767,7 +699,7 @@ TEST_F(ChromeCTPolicyEnforcerTest, ConformsToPolicyDueToOperatorSwitch) {
   operator_history[scts[1]->log_id].previous_operators_.emplace_back(
       "Different Operator", scts[1]->timestamp + base::Seconds(1));
 
-  std::unique_ptr<ChromeCTPolicyEnforcer> policy_enforcer =
+  scoped_refptr<ChromeCTPolicyEnforcer> policy_enforcer =
       MakeChromeCTPolicyEnforcer(GetDisqualifiedLogs(), operator_history);
 
   EXPECT_EQ(
@@ -788,7 +720,7 @@ TEST_F(ChromeCTPolicyEnforcerTest, DoesNotConformToPolicyDueToOperatorSwitch) {
   operator_history[scts[1]->log_id].previous_operators_.emplace_back(
       "Operator 0", scts[1]->timestamp + base::Seconds(1));
 
-  std::unique_ptr<ChromeCTPolicyEnforcer> policy_enforcer =
+  scoped_refptr<ChromeCTPolicyEnforcer> policy_enforcer =
       MakeChromeCTPolicyEnforcer(GetDisqualifiedLogs(), operator_history);
 
   EXPECT_EQ(
@@ -810,7 +742,7 @@ TEST_F(ChromeCTPolicyEnforcerTest, MultipleOperatorSwitches) {
   operator_history[scts[1]->log_id].previous_operators_.emplace_back(
       "Operator 0", scts[1]->timestamp + base::Seconds(1));
 
-  std::unique_ptr<ChromeCTPolicyEnforcer> policy_enforcer =
+  scoped_refptr<ChromeCTPolicyEnforcer> policy_enforcer =
       MakeChromeCTPolicyEnforcer(GetDisqualifiedLogs(), operator_history);
 
   EXPECT_EQ(
@@ -836,7 +768,7 @@ TEST_F(ChromeCTPolicyEnforcerTest, MultipleOperatorSwitchesBeforeSCTTimestamp) {
   operator_history[scts[1]->log_id].previous_operators_.emplace_back(
       "Yet Another Different Operator", scts[1]->timestamp - base::Seconds(1));
 
-  std::unique_ptr<ChromeCTPolicyEnforcer> policy_enforcer =
+  scoped_refptr<ChromeCTPolicyEnforcer> policy_enforcer =
       MakeChromeCTPolicyEnforcer(GetDisqualifiedLogs(), operator_history);
 
   EXPECT_EQ(

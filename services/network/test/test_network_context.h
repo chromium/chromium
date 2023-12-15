@@ -149,7 +149,6 @@ class TestNetworkContext : public mojom::NetworkContext {
   void SetEnableReferrers(bool enable_referrers) override {}
 #if BUILDFLAG(IS_CT_SUPPORTED)
   void SetCTPolicy(mojom::CTPolicyPtr ct_policy) override {}
-  void SetCTLogListAlwaysTimelyForTesting() override {}
   void SetSCTAuditingMode(mojom::SCTAuditingMode mode) override {}
 #endif  // BUILDFLAG(IS_CT_SUPPORTED)
   void CreateUDPSocket(

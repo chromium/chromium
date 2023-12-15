@@ -11,12 +11,12 @@
 #include "base/time/time.h"
 #include "net/base/net_export.h"
 #include "net/cert/cert_verify_proc.h"
-#include "net/cert/ct_verifier.h"
 
 namespace net {
 
 class CertNetFetcher;
 class CRLSet;
+class CTPolicyEnforcer;
 class CTVerifier;
 class SystemTrustStore;
 
@@ -27,6 +27,7 @@ NET_EXPORT scoped_refptr<CertVerifyProc> CreateCertVerifyProcBuiltin(
     scoped_refptr<CertNetFetcher> net_fetcher,
     scoped_refptr<CRLSet> crl_set,
     std::unique_ptr<CTVerifier> ct_verifier,
+    scoped_refptr<CTPolicyEnforcer> ct_policy_enforcer,
     std::unique_ptr<SystemTrustStore> system_trust_store,
     const CertVerifyProc::InstanceParams& instance_params);
 

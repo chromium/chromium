@@ -48,7 +48,6 @@
 #include "components/prefs/pref_service_factory.h"
 #include "components/url_matcher/url_matcher.h"
 #include "components/url_matcher/url_util.h"
-#include "crypto/sha2.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "net/base/features.h"
 #include "net/base/isolation_info.h"
@@ -148,9 +147,10 @@
 #include "url/gurl.h"
 
 #if BUILDFLAG(IS_CT_SUPPORTED)
-#include "components/certificate_transparency/chrome_ct_policy_enforcer.h"
-#include "components/certificate_transparency/chrome_require_ct_delegate.h"
-#include "components/certificate_transparency/ct_known_logs.h"
+// gn check does not account for BUILDFLAG(). So, for iOS builds, it will
+// complain about a missing dependency on the target exposing this header. Add a
+// nogncheck to stop it from yelling.
+#include "components/certificate_transparency/chrome_require_ct_delegate.h"  // nogncheck
 #include "services/network/sct_auditing/sct_auditing_cache.h"
 #include "services/network/sct_auditing/sct_auditing_handler.h"
 #endif  // BUILDFLAG(IS_CT_SUPPORTED)
@@ -397,31 +397,6 @@ void SCTAuditingDelegate::MaybeEnqueueReport(
     return;
   context_->MaybeEnqueueSCTReport(host_port_pair, validated_certificate_chain,
                                   signed_certificate_timestamps);
-}
-
-// Filters `log_list` for disqualified logs, returning them as sorted vectors
-// in `disqualified_logs`, and stores the operator history of all logs in
-// `operator_history`, suitable for use with a `CTPolicyEnforcer`.
-void GetCTPolicyConfigForCTLogInfo(
-    const std::vector<mojom::CTLogInfoPtr>& log_list,
-    std::vector<std::pair<std::string, base::Time>>* disqualified_logs,
-    std::map<std::string, certificate_transparency::OperatorHistoryEntry>*
-        operator_history) {
-  for (const auto& log : log_list) {
-    std::string log_id = crypto::SHA256HashString(log->public_key);
-    if (log->disqualified_at) {
-      disqualified_logs->emplace_back(log_id, log->disqualified_at.value());
-    }
-    certificate_transparency::OperatorHistoryEntry entry;
-    entry.current_operator_ = log->current_operator;
-    for (const auto& previous_operator : log->previous_operators) {
-      entry.previous_operators_.emplace_back(previous_operator->name,
-                                             previous_operator->end_time);
-    }
-    (*operator_history)[log_id] = entry;
-  }
-
-  std::sort(std::begin(*disqualified_logs), std::end(*disqualified_logs));
 }
 #endif  // BUILDFLAG(IS_CT_SUPPORTED)
 
@@ -1477,23 +1452,11 @@ void NetworkContext::SetCTPolicy(mojom::CTPolicyPtr ct_policy) {
                                          ct_policy->excluded_legacy_spkis);
 }
 
-int NetworkContext::CheckCTComplianceForSignedExchange(
+int NetworkContext::CheckCTRequirementsForSignedExchange(
     net::CertVerifyResult& cert_verify_result,
     const net::X509Certificate& certificate,
     const net::HostPortPair& host_port_pair) {
   net::X509Certificate* verified_cert = cert_verify_result.verified_cert.get();
-
-  net::ct::SCTList verified_scts;
-  for (const auto& sct_and_status : cert_verify_result.scts) {
-    if (sct_and_status.status == net::ct::SCT_STATUS_OK)
-      verified_scts.push_back(sct_and_status.sct);
-  }
-  cert_verify_result.policy_compliance =
-      url_request_context_->ct_policy_enforcer()->CheckCompliance(
-          verified_cert, verified_scts,
-          net::NetLogWithSource::Make(
-              url_request_context_->net_log(),
-              net::NetLogSourceType::CERT_VERIFIER_JOB));
 
   net::TransportSecurityState::CTRequirementsStatus ct_requirement_status =
       url_request_context_->transport_security_state()->CheckCTRequirements(
@@ -1544,29 +1507,8 @@ void NetworkContext::MaybeEnqueueSCTReport(
                                              signed_certificate_timestamps);
 }
 
-void NetworkContext::SetCTLogListAlwaysTimelyForTesting() {
-  if (!ct_policy_enforcer_)
-    return;
-  ct_policy_enforcer_->SetCTLogListAlwaysTimelyForTesting(true);
-}
-
 void NetworkContext::SetSCTAuditingMode(mojom::SCTAuditingMode mode) {
   sct_auditing_handler()->SetMode(mode);
-}
-
-void NetworkContext::OnCTLogListUpdated(
-    const std::vector<network::mojom::CTLogInfoPtr>& log_list,
-    base::Time update_time) {
-  if (!ct_policy_enforcer_)
-    return;
-  std::vector<std::pair<std::string, base::Time>> disqualified_logs;
-  std::map<std::string, certificate_transparency::OperatorHistoryEntry>
-      log_operator_history;
-  GetCTPolicyConfigForCTLogInfo(log_list, &disqualified_logs,
-                                &log_operator_history);
-  ct_policy_enforcer_->UpdateCTLogList(update_time,
-                                       std::move(disqualified_logs),
-                                       std::move(log_operator_history));
 }
 
 void NetworkContext::CanSendSCTAuditingReport(
@@ -2420,20 +2362,6 @@ URLRequestContextOwner NetworkContext::MakeURLRequestContext(
       *command_line, nullptr, std::move(cert_verifier)));
 
 #if BUILDFLAG(IS_CT_SUPPORTED)
-  if (params_->enforce_chrome_ct_policy) {
-    std::vector<std::pair<std::string, base::Time>> disqualified_logs;
-    std::map<std::string, certificate_transparency::OperatorHistoryEntry>
-        log_operator_history;
-    GetCTPolicyConfigForCTLogInfo(network_service_->log_list(),
-                                  &disqualified_logs, &log_operator_history);
-    auto ct_policy_enforcer =
-        std::make_unique<certificate_transparency::ChromeCTPolicyEnforcer>(
-            network_service_->ct_log_list_update_time(),
-            std::move(disqualified_logs), std::move(log_operator_history));
-    ct_policy_enforcer_ = ct_policy_enforcer.get();
-    builder.set_ct_policy_enforcer(std::move(ct_policy_enforcer));
-  }
-
   builder.set_sct_auditing_delegate(
       std::make_unique<SCTAuditingDelegate>(weak_factory_.GetWeakPtr()));
 #endif  // BUILDFLAG(IS_CT_SUPPORTED)
@@ -2967,7 +2895,7 @@ void NetworkContext::OnVerifyCertForSignedExchangeComplete(
   std::string pinning_failure_log;
   if (result == net::OK) {
 #if BUILDFLAG(IS_CT_SUPPORTED)
-    int ct_result = CheckCTComplianceForSignedExchange(
+    int ct_result = CheckCTRequirementsForSignedExchange(
         *pending_cert_verify->result, *pending_cert_verify->certificate,
         net::HostPortPair::FromURL(pending_cert_verify->url));
 #endif  // BUILDFLAG(IS_CT_SUPPORTED)

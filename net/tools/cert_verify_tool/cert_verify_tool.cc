@@ -267,6 +267,7 @@ std::unique_ptr<CertVerifyImpl> CreateCertVerifyImplFromName(
             std::move(cert_net_fetcher), std::move(crl_set),
             // TODO(https://crbug.com/848277): support CT.
             std::make_unique<net::DoNothingCTVerifier>(),
+            base::MakeRefCounted<net::DefaultCTPolicyEnforcer>(),
             CreateSystemTrustStore(impl_name, root_store_type), {}));
   }
 

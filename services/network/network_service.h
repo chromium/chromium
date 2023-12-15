@@ -201,7 +201,6 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) NetworkService
   void ConfigureSCTAuditing(
       mojom::SCTAuditingConfigurationPtr configuration) override;
   void UpdateCtLogList(std::vector<mojom::CTLogInfoPtr> log_list,
-                       base::Time update_time,
                        UpdateCtLogListCallback callback) override;
   void UpdateCtKnownPopularSCTs(
       const std::vector<std::vector<uint8_t>>& sct_hashes,
@@ -314,10 +313,6 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) NetworkService
   SCTAuditingCache* sct_auditing_cache() { return sct_auditing_cache_.get(); }
 
   const std::vector<mojom::CTLogInfoPtr>& log_list() const { return log_list_; }
-
-  base::Time ct_log_list_update_time() const {
-    return ct_log_list_update_time_;
-  }
 
   bool is_ct_enforcement_enabled_for_testing() const {
     return ct_enforcement_enabled_;
@@ -477,8 +472,6 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) NetworkService
   std::unique_ptr<SCTAuditingCache> sct_auditing_cache_;
 
   std::vector<mojom::CTLogInfoPtr> log_list_;
-
-  base::Time ct_log_list_update_time_;
 
   bool ct_enforcement_enabled_ = true;
 #endif  // BUILDFLAG(IS_CT_SUPPORTED)

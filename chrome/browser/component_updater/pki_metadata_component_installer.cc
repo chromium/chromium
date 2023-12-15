@@ -323,10 +323,9 @@ void PKIMetadataComponentInstallerService::UpdateNetworkServiceCTListOnUI(
       base::Seconds(proto->log_list().timestamp().seconds()) +
       base::Nanoseconds(proto->log_list().timestamp().nanos());
   content::GetCertVerifierServiceFactory()->UpdateCtLogList(
-      std::move(log_list_mojo), done_callback);
+      std::move(log_list_mojo), update_time, done_callback);
   network_service->UpdateCtLogList(
-      std::move(log_list_mojo_clone_network_service), update_time,
-      done_callback);
+      std::move(log_list_mojo_clone_network_service), done_callback);
 
   // Send the updated popular SCTs list to the network service, if available.
   std::vector<std::vector<uint8_t>> popular_scts =

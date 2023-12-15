@@ -172,6 +172,17 @@ class MockCTVerifier : public CTVerifier {
                           const NetLogWithSource&));
 };
 
+class MockCTPolicyEnforcer : public CTPolicyEnforcer {
+ public:
+  MOCK_CONST_METHOD3(CheckCompliance,
+                     ct::CTPolicyCompliance(X509Certificate* cert,
+                                            const ct::SCTList&,
+                                            const NetLogWithSource&));
+
+ protected:
+  ~MockCTPolicyEnforcer() override = default;
+};
+
 }  // namespace
 
 class CertVerifyProcBuiltinTest : public ::testing::Test {
@@ -195,10 +206,11 @@ class CertVerifyProcBuiltinTest : public ::testing::Test {
     instance_params.additional_trust_anchors = additional_trust_anchors;
     auto mock_ct_verifier = std::make_unique<MockCTVerifier>();
     mock_ct_verifier_ = mock_ct_verifier.get();
+    mock_ct_policy_enforcer_ = base::MakeRefCounted<MockCTPolicyEnforcer>();
     verify_proc_ = CreateCertVerifyProcBuiltin(
         cert_net_fetcher_, CRLSet::EmptyCRLSetForTesting(),
-        std::move(mock_ct_verifier), std::move(mock_system_trust_store),
-        instance_params);
+        std::move(mock_ct_verifier), mock_ct_policy_enforcer_,
+        std::move(mock_system_trust_store), instance_params);
   }
 
   void Verify(scoped_refptr<X509Certificate> cert,
@@ -265,6 +277,9 @@ class CertVerifyProcBuiltinTest : public ::testing::Test {
   net::URLRequestContext* context() { return context_.get(); }
 
   MockCTVerifier* mock_ct_verifier() { return mock_ct_verifier_; }
+  MockCTPolicyEnforcer* mock_ct_policy_enforcer() {
+    return mock_ct_policy_enforcer_.get();
+  }
 
  private:
   base::test::TaskEnvironment task_environment_{
@@ -279,6 +294,7 @@ class CertVerifyProcBuiltinTest : public ::testing::Test {
   scoped_refptr<CertVerifyProc> verify_proc_;
 
   raw_ptr<MockCTVerifier> mock_ct_verifier_ = nullptr;
+  scoped_refptr<MockCTPolicyEnforcer> mock_ct_policy_enforcer_;
   raw_ptr<MockSystemTrustStore> mock_system_trust_store_ = nullptr;
   scoped_refptr<CertNetFetcherURLRequest> cert_net_fetcher_;
 };
@@ -360,6 +376,9 @@ TEST_F(CertVerifyProcBuiltinTest, CallsCtVerifierAndReturnsSctStatus) {
   sct_and_status_list.push_back(sct_and_status);
   EXPECT_CALL(*mock_ct_verifier(), Verify(_, kOcspResponse, kSctList, _, _))
       .WillOnce(testing::SetArgPointee<3>(sct_and_status_list));
+  EXPECT_CALL(*mock_ct_policy_enforcer(), CheckCompliance(_, _, _))
+      .WillRepeatedly(
+          testing::Return(ct::CTPolicyCompliance::CT_POLICY_NOT_DIVERSE_SCTS));
 
   scoped_refptr<X509Certificate> chain = leaf->GetX509CertificateChain();
   ASSERT_TRUE(chain.get());
@@ -376,13 +395,52 @@ TEST_F(CertVerifyProcBuiltinTest, CallsCtVerifierAndReturnsSctStatus) {
   ASSERT_EQ(verify_result.scts.size(), 1u);
   EXPECT_EQ(verify_result.scts.front().status, kSctVerifyStatus);
   EXPECT_EQ(verify_result.scts.front().sct->log_id, kLogId);
+  EXPECT_EQ(verify_result.policy_compliance,
+            ct::CTPolicyCompliance::CT_POLICY_NOT_DIVERSE_SCTS);
 }
+
+#if defined(PLATFORM_USES_CHROMIUM_EV_METADATA)
+TEST_F(CertVerifyProcBuiltinTest, EVCertStatusMaintainedForCompliantCert) {
+  auto [leaf, root] = CertBuilder::CreateSimpleChain2();
+
+  static const char kEVTestCertPolicy[] = "1.2.3.4";
+  leaf->SetCertificatePolicies({kEVTestCertPolicy});
+  ScopedTestEVPolicy scoped_test_ev_policy(
+      EVRootCAMetadata::GetInstance(),
+      X509Certificate::CalculateFingerprint256(root->GetCertBuffer()),
+      kEVTestCertPolicy);
+  InitializeVerifyProc(
+      /*additional_trust_anchors=*/{root->GetX509Certificate()});
+
+  EXPECT_CALL(*mock_ct_verifier(), Verify(_, _, _, _, _));
+  EXPECT_CALL(*mock_ct_policy_enforcer(), CheckCompliance(_, _, _))
+      .WillRepeatedly(
+          testing::Return(ct::CTPolicyCompliance::CT_POLICY_COMPLIES_VIA_SCTS));
+
+  scoped_refptr<X509Certificate> chain = leaf->GetX509CertificateChain();
+  ASSERT_TRUE(chain.get());
+
+  base::HistogramTester histogram_tester;
+  CertVerifyResult verify_result;
+  NetLogSource verify_net_log_source;
+  TestCompletionCallback callback;
+  Verify(chain.get(), "www.example.com", /*flags=*/0, &verify_result,
+         &verify_net_log_source, callback.callback());
+
+  int error = callback.WaitForResult();
+  EXPECT_THAT(error, IsOk());
+  EXPECT_EQ(verify_result.policy_compliance,
+            ct::CTPolicyCompliance::CT_POLICY_COMPLIES_VIA_SCTS);
+  EXPECT_TRUE(verify_result.cert_status & CERT_STATUS_IS_EV);
+}
+#endif
 
 TEST_F(CertVerifyProcBuiltinTest, DoesNotCallsCtVerifierOnFailedPaths) {
   // Chain where the root is not trusted.
   auto [leaf, intermediate, root] = CertBuilder::CreateSimpleChain3();
 
   EXPECT_CALL(*mock_ct_verifier(), Verify(_, _, _, _, _)).Times(0);
+  EXPECT_CALL(*mock_ct_policy_enforcer(), CheckCompliance(_, _, _)).Times(0);
 
   scoped_refptr<X509Certificate> chain = leaf->GetX509CertificateChain();
   ASSERT_TRUE(chain.get());

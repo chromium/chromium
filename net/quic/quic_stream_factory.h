@@ -66,7 +66,6 @@ class QuicRandom;
 
 namespace net {
 
-class CTPolicyEnforcer;
 class CertVerifier;
 class ClientSocketFactory;
 class HostResolver;
@@ -291,7 +290,6 @@ class NET_EXPORT_PRIVATE QuicStreamFactory
       ClientSocketFactory* client_socket_factory,
       HttpServerProperties* http_server_properties,
       CertVerifier* cert_verifier,
-      CTPolicyEnforcer* ct_policy_enforcer,
       TransportSecurityState* transport_security_state,
       SCTAuditingDelegate* sct_auditing_delegate,
       SocketPerformanceWatcherFactory* socket_performance_watcher_factory,
@@ -631,7 +629,6 @@ class NET_EXPORT_PRIVATE QuicStreamFactory
   raw_ptr<ClientSocketFactory> client_socket_factory_;
   raw_ptr<HttpServerProperties> http_server_properties_;
   const raw_ptr<CertVerifier> cert_verifier_;
-  const raw_ptr<CTPolicyEnforcer> ct_policy_enforcer_;
   const raw_ptr<TransportSecurityState> transport_security_state_;
   const raw_ptr<SCTAuditingDelegate> sct_auditing_delegate_;
   raw_ptr<QuicCryptoClientStreamFactory> quic_crypto_client_stream_factory_;

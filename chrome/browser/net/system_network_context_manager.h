@@ -166,6 +166,10 @@ class SystemNetworkContextManager {
   static void SetEnableCertificateTransparencyForTesting(
       absl::optional<bool> enabled);
 
+  // Reloads the static CT log lists but overriding the log list update time
+  // with the current time. For test use only.
+  void SetCTLogListTimelyForTesting();
+
   static bool IsCertificateTransparencyEnabled();
 
   static void set_stub_resolver_config_reader_for_testing(

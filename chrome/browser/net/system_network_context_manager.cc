@@ -292,6 +292,41 @@ NetworkSandboxState IsNetworkSandboxEnabledInternal() {
              : NetworkSandboxState::kDisabledByPlatform;
 }
 
+std::vector<network::mojom::CTLogInfoPtr> GetStaticCtLogListMojo() {
+  std::vector<std::pair<std::string, base::Time>> disqualified_logs =
+      certificate_transparency::GetDisqualifiedLogs();
+  std::vector<network::mojom::CTLogInfoPtr> log_list_mojo;
+  for (const auto& ct_log : certificate_transparency::GetKnownLogs()) {
+    network::mojom::CTLogInfoPtr log_info = network::mojom::CTLogInfo::New();
+    log_info->public_key = std::string(ct_log.log_key, ct_log.log_key_length);
+    log_info->id = crypto::SHA256HashString(log_info->public_key);
+    log_info->name = ct_log.log_name;
+    log_info->current_operator = ct_log.current_operator;
+
+    auto it = std::lower_bound(
+        std::begin(disqualified_logs), std::end(disqualified_logs),
+        log_info->id,
+        [](const auto& disqualified_log, const std::string& log_id) {
+          return disqualified_log.first < log_id;
+        });
+    if (it != std::end(disqualified_logs) && it->first == log_info->id) {
+      log_info->disqualified_at = it->second;
+    }
+
+    for (size_t i = 0; i < ct_log.previous_operators_length; i++) {
+      const auto& op = ct_log.previous_operators[i];
+      network::mojom::PreviousOperatorEntryPtr previous_operator =
+          network::mojom::PreviousOperatorEntry::New();
+      previous_operator->name = op.name;
+      previous_operator->end_time = op.end_time;
+      log_info->previous_operators.push_back(std::move(previous_operator));
+    }
+
+    log_list_mojo.push_back(std::move(log_info));
+  }
+  return log_list_mojo;
+}
+
 }  // namespace
 
 class SystemNetworkContextManager::NetworkProcessLaunchWatcher
@@ -723,45 +758,11 @@ void SystemNetworkContextManager::OnNetworkServiceCreated(
   // before the PKIMetadataComponentInstallerService
   // ReconfigureAfterNetworkRestart call below.
   if (IsCertificateTransparencyEnabled()) {
-    std::vector<std::pair<std::string, base::Time>> disqualified_logs =
-        certificate_transparency::GetDisqualifiedLogs();
-    std::vector<network::mojom::CTLogInfoPtr> log_list_mojo;
-    std::vector<network::mojom::CTLogInfoPtr>
-        log_list_mojo_clone_network_service;
-    for (const auto& ct_log : certificate_transparency::GetKnownLogs()) {
-      network::mojom::CTLogInfoPtr log_info = network::mojom::CTLogInfo::New();
-      log_info->public_key = std::string(ct_log.log_key, ct_log.log_key_length);
-      log_info->id = crypto::SHA256HashString(log_info->public_key);
-      log_info->name = ct_log.log_name;
-      log_info->current_operator = ct_log.current_operator;
-
-      auto it = std::lower_bound(
-          std::begin(disqualified_logs), std::end(disqualified_logs),
-          log_info->id,
-          [](const auto& disqualified_log, const std::string& log_id) {
-            return disqualified_log.first < log_id;
-          });
-      if (it != std::end(disqualified_logs) && it->first == log_info->id) {
-        log_info->disqualified_at = it->second;
-      }
-
-      for (size_t i = 0; i < ct_log.previous_operators_length; i++) {
-        const auto& op = ct_log.previous_operators[i];
-        network::mojom::PreviousOperatorEntryPtr previous_operator =
-            network::mojom::PreviousOperatorEntry::New();
-        previous_operator->name = op.name;
-        previous_operator->end_time = op.end_time;
-        log_info->previous_operators.push_back(std::move(previous_operator));
-      }
-
-      log_list_mojo_clone_network_service.push_back(log_info.Clone());
-      log_list_mojo.push_back(std::move(log_info));
-    }
     content::GetCertVerifierServiceFactory()->UpdateCtLogList(
-        std::move(log_list_mojo), base::DoNothing());
-    network_service->UpdateCtLogList(
-        std::move(log_list_mojo_clone_network_service),
+        GetStaticCtLogListMojo(),
         certificate_transparency::GetLogListTimestamp(), base::DoNothing());
+    network_service->UpdateCtLogList(GetStaticCtLogListMojo(),
+                                     base::DoNothing());
   }
 
   int max_connections_per_proxy =
@@ -968,6 +969,11 @@ SystemNetworkContextManager::GetHttpAuthDynamicParamsForTesting() {
 void SystemNetworkContextManager::SetEnableCertificateTransparencyForTesting(
     absl::optional<bool> enabled) {
   certificate_transparency_enabled_for_testing_ = enabled;
+}
+
+void SystemNetworkContextManager::SetCTLogListTimelyForTesting() {
+  content::GetCertVerifierServiceFactory()->UpdateCtLogList(
+      GetStaticCtLogListMojo(), base::Time::Now(), base::DoNothing());
 }
 
 bool SystemNetworkContextManager::IsCertificateTransparencyEnabled() {

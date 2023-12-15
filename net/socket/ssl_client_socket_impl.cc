@@ -42,8 +42,6 @@
 #include "net/base/tracing.h"
 #include "net/base/url_util.h"
 #include "net/cert/cert_verifier.h"
-#include "net/cert/ct_policy_enforcer.h"
-#include "net/cert/ct_policy_status.h"
 #include "net/cert/ct_verifier.h"
 #include "net/cert/sct_auditing_delegate.h"
 #include "net/cert/sct_status_flags.h"
@@ -1249,7 +1247,7 @@ ssl_verify_result_t SSLClientSocketImpl::HandleVerifyResult() {
   // If the connection was good, check HPKP and CT status simultaneously,
   // but prefer to treat the HPKP error as more serious, if there was one.
   if (result == OK) {
-    int ct_result = CheckCTCompliance();
+    int ct_result = CheckCTRequirements();
     TransportSecurityState::PKPStatus pin_validity =
         context_->transport_security_state()->CheckPublicKeyPins(
             host_and_port_, server_cert_verify_result_.is_issued_by_known_root,
@@ -1300,17 +1298,7 @@ ssl_verify_result_t SSLClientSocketImpl::HandleVerifyResult() {
   return ssl_verify_invalid;
 }
 
-int SSLClientSocketImpl::CheckCTCompliance() {
-  ct::SCTList verified_scts;
-  for (const auto& sct_and_status : server_cert_verify_result_.scts) {
-    if (sct_and_status.status == ct::SCT_STATUS_OK)
-      verified_scts.push_back(sct_and_status.sct);
-  }
-  server_cert_verify_result_.policy_compliance =
-      context_->ct_policy_enforcer()->CheckCompliance(
-          server_cert_verify_result_.verified_cert.get(), verified_scts,
-          net_log_);
-
+int SSLClientSocketImpl::CheckCTRequirements() {
   TransportSecurityState::CTRequirementsStatus ct_requirement_status =
       context_->transport_security_state()->CheckCTRequirements(
           host_and_port_, server_cert_verify_result_.is_issued_by_known_root,

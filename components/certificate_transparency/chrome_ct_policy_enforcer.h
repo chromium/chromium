@@ -60,19 +60,10 @@ class COMPONENT_EXPORT(CERTIFICATE_TRANSPARENCY) ChromeCTPolicyEnforcer
       std::map<std::string, OperatorHistoryEntry> log_operator_history,
       const base::Clock* clock);
 
-  ~ChromeCTPolicyEnforcer() override;
-
   net::ct::CTPolicyCompliance CheckCompliance(
       net::X509Certificate* cert,
       const net::ct::SCTList& verified_scts,
       const net::NetLogWithSource& net_log) const override;
-
-  // Updates the list of logs used for compliance checks. |disqualified_logs|
-  // is a map of log ID to disqualification date.
-  void UpdateCTLogList(
-      base::Time update_time,
-      std::vector<std::pair<std::string, base::Time>> disqualified_logs,
-      std::map<std::string, OperatorHistoryEntry> log_operator_history);
 
   // TODO(https://crbug.com/999240): These are exposed to allow end-to-end
   // testing by higher layers (i.e. that the ChromeCTPolicyEnforcer is
@@ -89,9 +80,8 @@ class COMPONENT_EXPORT(CERTIFICATE_TRANSPARENCY) ChromeCTPolicyEnforcer
     return log_operator_history_;
   }
 
-  void SetCTLogListAlwaysTimelyForTesting(bool always_timely) {
-    ct_log_list_always_timely_for_testing_ = always_timely;
-  }
+ protected:
+  ~ChromeCTPolicyEnforcer() override;
 
  private:
   FRIEND_TEST_ALL_PREFIXES(ChromeCTPolicyEnforcerTest,
@@ -117,19 +107,15 @@ class COMPONENT_EXPORT(CERTIFICATE_TRANSPARENCY) ChromeCTPolicyEnforcer
   std::string GetOperatorForLog(std::string log_id, base::Time timestamp) const;
 
   // Map of SHA-256(SPKI) to log disqualification date.
-  std::vector<std::pair<std::string, base::Time>> disqualified_logs_;
+  const std::vector<std::pair<std::string, base::Time>> disqualified_logs_;
 
-  std::map<std::string, OperatorHistoryEntry> log_operator_history_;
+  const std::map<std::string, OperatorHistoryEntry> log_operator_history_;
 
   const raw_ptr<const base::Clock> clock_;
 
   // The time at which |disqualified_logs_| and |log_operator_history_| were
   // generated.
-  base::Time log_list_date_;
-
-  // If set, the CT log list will be considered timely regardless of its last
-  // update time.
-  bool ct_log_list_always_timely_for_testing_ = false;
+  const base::Time log_list_date_;
 };
 
 }  // namespace certificate_transparency

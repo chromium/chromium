@@ -958,14 +958,9 @@ void NetworkService::ConfigureSCTAuditing(
 }
 
 void NetworkService::UpdateCtLogList(std::vector<mojom::CTLogInfoPtr> log_list,
-                                     base::Time update_time,
                                      UpdateCtLogListCallback callback) {
   log_list_ = std::move(log_list);
-  ct_log_list_update_time_ = update_time;
 
-  for (auto* context : network_contexts_) {
-    context->OnCTLogListUpdated(log_list_, update_time);
-  }
   std::move(callback).Run();
 }
 

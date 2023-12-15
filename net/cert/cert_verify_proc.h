@@ -16,6 +16,7 @@
 #include "net/base/hash_value.h"
 #include "net/base/net_export.h"
 #include "net/cert/ct_log_verifier.h"
+#include "net/cert/ct_policy_enforcer.h"
 #include "net/cert/ct_verifier.h"
 #include "net/net_buildflags.h"
 
@@ -88,6 +89,7 @@ class NET_EXPORT CertVerifyProc
 
     scoped_refptr<CRLSet> crl_set;
     std::vector<scoped_refptr<const net::CTLogVerifier>> ct_logs;
+    scoped_refptr<net::CTPolicyEnforcer> ct_policy_enforcer;
 #if BUILDFLAG(CHROME_ROOT_STORE_SUPPORTED)
     absl::optional<net::ChromeRootStoreData> root_store_data;
 #endif
@@ -148,6 +150,7 @@ class NET_EXPORT CertVerifyProc
       scoped_refptr<CertNetFetcher> cert_net_fetcher,
       scoped_refptr<CRLSet> crl_set,
       std::unique_ptr<CTVerifier> ct_verifier,
+      scoped_refptr<CTPolicyEnforcer> ct_policy_enforcer,
       const InstanceParams instance_params);
 #endif
 
@@ -159,6 +162,7 @@ class NET_EXPORT CertVerifyProc
       scoped_refptr<CertNetFetcher> cert_net_fetcher,
       scoped_refptr<CRLSet> crl_set,
       std::unique_ptr<CTVerifier> ct_verifier,
+      scoped_refptr<CTPolicyEnforcer> ct_policy_enforcer,
       const ChromeRootStoreData* root_store_data,
       const InstanceParams instance_params);
 #endif

@@ -22,7 +22,6 @@
 
 namespace net {
 
-class CTPolicyEnforcer;
 class CertVerifier;
 class SCTAuditingDelegate;
 class TransportSecurityState;
@@ -72,7 +71,6 @@ class NET_EXPORT_PRIVATE ProofVerifierChromium : public quic::ProofVerifier {
  public:
   ProofVerifierChromium(
       CertVerifier* cert_verifier,
-      CTPolicyEnforcer* ct_policy_enforcer,
       TransportSecurityState* transport_security_state,
       SCTAuditingDelegate* sct_auditing_delegate,
       std::set<std::string> hostnames_to_allow_unknown_roots,
@@ -120,7 +118,6 @@ class NET_EXPORT_PRIVATE ProofVerifierChromium : public quic::ProofVerifier {
 
   // Underlying verifier used to verify certificates.
   const raw_ptr<CertVerifier> cert_verifier_;
-  const raw_ptr<CTPolicyEnforcer> ct_policy_enforcer_;
 
   const raw_ptr<TransportSecurityState> transport_security_state_;
 

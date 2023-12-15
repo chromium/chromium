@@ -24,8 +24,6 @@
 #include "net/cert/caching_cert_verifier.h"
 #include "net/cert/cert_verifier.h"
 #include "net/cert/cert_verify_proc.h"
-#include "net/cert/ct_policy_enforcer.h"
-#include "net/cert/ct_policy_status.h"
 #include "net/cert/multi_threaded_cert_verifier.h"
 #include "net/dns/context_host_resolver.h"
 #include "net/dns/host_resolver.h"
@@ -827,10 +825,6 @@ void URLRequestContextConfig::ConfigureURLRequestContextBuilder(
 
   if (mock_cert_verifier)
     context_builder->SetCertVerifier(std::move(mock_cert_verifier));
-  // Certificate Transparency is intentionally ignored in Cronet.
-  // See //net/docs/certificate-transparency.md for more details.
-  context_builder->set_ct_policy_enforcer(
-      std::make_unique<net::DefaultCTPolicyEnforcer>());
   // TODO(mef): Use |config| to set cookies.
 }
 

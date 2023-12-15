@@ -37,6 +37,8 @@ namespace certificate_transparency {
 
 namespace {
 
+// TODO(https://crbug.com/848277): move this under net/, and use it from
+// CertVerifyResult::NetLogParams too.
 const char* CTPolicyComplianceToString(CTPolicyCompliance status) {
   switch (status) {
     case CTPolicyCompliance::CT_POLICY_COMPLIES_VIA_SCTS:
@@ -64,6 +66,9 @@ base::Value::Dict NetLogCertComplianceCheckResultParams(
   base::Value::Dict dict;
   // TODO(mattm): This double-wrapping of the certificate list is weird. Remove
   // this (probably requires updates to netlog-viewer).
+  // TODO(https://crbug.com/848277): or just remove the certificate list, this
+  // event is logged during CertVerifyProc now which already logs the
+  // certificates so it's a bit redundant.
   base::Value::Dict certificate_dict;
   certificate_dict.Set("certificates", net::NetLogX509CertificateList(cert));
   dict.Set("certificate", std::move(certificate_dict));
@@ -125,15 +130,6 @@ CTPolicyCompliance ChromeCTPolicyEnforcer::CheckCompliance(
   return compliance;
 }
 
-void ChromeCTPolicyEnforcer::UpdateCTLogList(
-    base::Time update_time,
-    std::vector<std::pair<std::string, base::Time>> disqualified_logs,
-    std::map<std::string, OperatorHistoryEntry> log_operator_history) {
-  log_list_date_ = update_time;
-  disqualified_logs_ = std::move(disqualified_logs);
-  log_operator_history_ = std::move(log_operator_history);
-}
-
 bool ChromeCTPolicyEnforcer::IsLogDisqualified(
     std::string_view log_id,
     base::Time* disqualification_date) const {
@@ -153,8 +149,6 @@ bool ChromeCTPolicyEnforcer::IsLogDisqualified(
 }
 
 bool ChromeCTPolicyEnforcer::IsLogDataTimely() const {
-  if (ct_log_list_always_timely_for_testing_)
-    return true;
   // We consider built-in information to be timely for 10 weeks.
   return (clock_->Now() - log_list_date_).InDays() < 70 /* 10 weeks */;
 }

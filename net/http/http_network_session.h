@@ -45,7 +45,6 @@ class Value;
 
 namespace net {
 
-class CTPolicyEnforcer;
 class CertVerifier;
 class ClientSocketFactory;
 class ClientSocketPool;
@@ -190,7 +189,6 @@ struct NET_EXPORT HttpNetworkSessionContext {
   raw_ptr<HostResolver> host_resolver;
   raw_ptr<CertVerifier> cert_verifier;
   raw_ptr<TransportSecurityState> transport_security_state;
-  raw_ptr<CTPolicyEnforcer> ct_policy_enforcer;
   raw_ptr<SCTAuditingDelegate> sct_auditing_delegate;
   raw_ptr<ProxyResolutionService, DanglingUntriaged> proxy_resolution_service;
   raw_ptr<ProxyDelegate> proxy_delegate;
