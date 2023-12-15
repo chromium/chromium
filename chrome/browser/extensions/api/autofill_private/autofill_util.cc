@@ -42,7 +42,7 @@ namespace {
 
 // Gets the string corresponding to |type| from |profile|.
 std::string GetStringFromProfile(const autofill::AutofillProfile& profile,
-                                 const autofill::ServerFieldType& type) {
+                                 const autofill::FieldType& type) {
   return base::UTF16ToUTF8(profile.GetRawInfo(type));
 }
 
