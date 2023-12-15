@@ -6,7 +6,6 @@
  * @fileoverview Start point for Files app.
  */
 
-
 import '../../background/js/metrics_start.js';
 import '../../common/js/error_counter.js';
 import './metrics_start.js';
@@ -25,8 +24,6 @@ window.fileManager = fileManager;
 
 async function run() {
   try {
-    // @ts-ignore: error TS2339: Property 'appID' does not exist on type 'Window
-    // & typeof globalThis'.
     window.appID = String(loadTimeData.getInteger('WINDOW_NUMBER'));
   } catch (e) {
     reportGlitch(GlitchType.CAUGHT_EXCEPTION);

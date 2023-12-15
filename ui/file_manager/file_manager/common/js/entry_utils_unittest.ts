@@ -103,9 +103,7 @@ export function testIsDescendantEntry() {
   const downloadsVolumeInfo = volumeManager.volumeInfoList.item(1);
   const mockFs = downloadsVolumeInfo.fileSystem as MockFileSystem;
   mockFs.populate(['/folder1/']);
-  // @ts-ignore: error TS2339: Property 'entries' does not exist on type
-  // 'FileSystem'.
-  const folder1 = downloadsVolumeInfo.fileSystem.entries['/folder1'];
+  const folder1 = mockFs.entries['/folder1']!;
 
   const volumeEntry = new VolumeEntry(downloadsVolumeInfo);
   volumeEntry.addEntry(fakeEntry);
