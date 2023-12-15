@@ -1144,11 +1144,6 @@ public class ContextualSearchManager
             } else {
                 // Could be just prefetching, check if that failed.
                 onContextualSearchRequestNavigation(isFailure);
-
-                // Record metrics for when the prefetched results became viewable.
-                if (mSearchRequest != null && mSearchRequest.wasPrefetch()) {
-                    boolean didResolve = mPolicy.shouldPreviousGestureResolve();
-                }
             }
         }
 
@@ -1828,7 +1823,6 @@ public class ContextualSearchManager
                 assert !TextUtils.isEmpty(selection);
 
                 WebContents baseWebContents = getBaseWebContents();
-                boolean isExactResolve = mSelectionController.isAdjustedSelection();
                 if (baseWebContents != null && mContext != null && mContext.canResolve()) {
                     issueResolveRequest();
                 } else {
