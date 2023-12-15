@@ -261,7 +261,6 @@ source_set("content_suggestions_ui") {
     "//ios/chrome/browser/ui/content_suggestions/set_up_list:utils",
     "//ios/chrome/browser/ui/content_suggestions/tab_resumption",
     "//ios/chrome/browser/ui/ntp:constants",
-    "//ios/chrome/browser/ui/ntp:ntp_ui_util",
     "//ios/chrome/browser/ui/start_surface:feature_flags",
     "//ios/chrome/browser/ui/toolbar/public",
     "//ios/chrome/browser/url_loading/model",

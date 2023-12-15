@@ -44,6 +44,8 @@ const CGFloat kShiftTilesDownAnimationDuration = 0.2;
 const CGFloat kShiftTilesUpAnimationDuration = 0.1;
 // The minimum height of the feed container.
 const CGFloat kFeedContainerMinimumHeight = 1000;
+// The width of NTP modules, as a multiplier of the view width.
+const CGFloat kModuleWidth = 0.92;
 }  // namespace
 
 @interface NewTabPageViewController () <UICollectionViewDelegate,
@@ -158,6 +160,10 @@ const CGFloat kFeedContainerMinimumHeight = 1000;
   // YES if the view is in the process of appearing, but viewDidAppear hasn't
   // finished yet.
   BOOL _appearing;
+  // Layout Guide for NTP modules.
+  UILayoutGuide* _moduleLayoutGuide;
+  // Constraint controlling the width of modules on the NTP.
+  NSLayoutConstraint* _moduleWidth;
 }
 
 - (instancetype)init {
@@ -326,6 +332,7 @@ const CGFloat kFeedContainerMinimumHeight = 1000;
 
   void (^alongsideBlock)(id<UIViewControllerTransitionCoordinatorContext>) = ^(
       id<UIViewControllerTransitionCoordinatorContext> context) {
+    [self updateModuleWidth];
     [weakSelf handleStickyElementsForScrollPosition:[weakSelf scrollPosition]
                                               force:YES];
 
@@ -693,6 +700,23 @@ const CGFloat kFeedContainerMinimumHeight = 1000;
   [[NSNotificationCenter defaultCenter] removeObserver:self];
 }
 
+- (UILayoutGuide*)moduleLayoutGuide {
+  if (!_moduleLayoutGuide) {
+    _moduleLayoutGuide = [[UILayoutGuide alloc] init];
+    UIView* view = self.view;
+    [view addLayoutGuide:_moduleLayoutGuide];
+    [self updateModuleWidth];
+    [NSLayoutConstraint activateConstraints:@[
+      [_moduleLayoutGuide.centerXAnchor
+          constraintEqualToAnchor:view.centerXAnchor],
+      [_moduleLayoutGuide.topAnchor constraintEqualToAnchor:view.topAnchor],
+      [_moduleLayoutGuide.bottomAnchor
+          constraintEqualToAnchor:view.bottomAnchor],
+    ]];
+  }
+  return _moduleLayoutGuide;
+}
+
 #pragma mark - NewTabPageConsumer
 
 - (void)restoreScrollPosition:(CGFloat)scrollPosition {
@@ -999,19 +1023,6 @@ const CGFloat kFeedContainerMinimumHeight = 1000;
   self.animator.interruptible = YES;
   self.isAnimatingOmniboxFocus = YES;
   [self.animator startAnimation];
-}
-
-#pragma mark - NewTabPageViewDelegate
-
-- (CGFloat)homeModulePadding {
-  if (!IsFeedContainmentEnabled()) {
-    return 0;
-  }
-  int screenWidth = self.view.frame.size.width;
-  int minPadding = HomeModuleMinimumPadding();
-  return minPadding - std::clamp(static_cast<int>(screenWidth -
-                                                  kDiscoverFeedContentMaxWidth),
-                                 0, minPadding);
 }
 
 #pragma mark - Private
@@ -1439,37 +1450,27 @@ const CGFloat kFeedContainerMinimumHeight = 1000;
   if (self.feedHeaderViewController) {
     [self cleanUpCollectionViewConstraints];
 
-    // Apply parent collection view constraints.
-    [NSLayoutConstraint activateConstraints:@[
-      [self.collectionView.centerXAnchor
-          constraintEqualToAnchor:[self containerView].centerXAnchor],
-      [self.collectionView.widthAnchor
-          constraintLessThanOrEqualToConstant:kDiscoverFeedContentMaxWidth],
-    ]];
-
-    // Apply feed header constraints.
     if (IsFeedContainmentEnabled()) {
-      [NSLayoutConstraint activateConstraints:@[
-        [self.feedHeaderViewController.view.centerXAnchor
-            constraintEqualToAnchor:self.collectionView.centerXAnchor],
-        [self.feedHeaderViewController.view.widthAnchor
-            constraintEqualToAnchor:self.collectionView.widthAnchor
-                           constant:-[self homeModulePadding]],
-      ]];
+      [self.collectionView.widthAnchor
+          constraintEqualToAnchor:self.moduleLayoutGuide.widthAnchor]
+          .active = YES;
     } else {
-      NSLayoutConstraint* headerWidthConstraint =
-          [self.feedHeaderViewController.view.widthAnchor
-              constraintEqualToAnchor:self.collectionView.widthAnchor];
-      headerWidthConstraint.priority = UILayoutPriorityDefaultHigh;
-
-      [NSLayoutConstraint activateConstraints:@[
-        [self.feedHeaderViewController.view.centerXAnchor
-            constraintEqualToAnchor:self.collectionView.centerXAnchor],
-        [self.feedHeaderViewController.view.widthAnchor
-            constraintLessThanOrEqualToConstant:kDiscoverFeedContentMaxWidth],
-        headerWidthConstraint,
-      ]];
+      [self.collectionView.widthAnchor
+          constraintLessThanOrEqualToConstant:kDiscoverFeedContentMaxWidth]
+          .active = YES;
     }
+
+    [NSLayoutConstraint activateConstraints:@[
+      // Apply parent collection view constraints.
+      [self.collectionView.centerXAnchor
+          constraintEqualToAnchor:self.moduleLayoutGuide.centerXAnchor],
+
+      // Apply feed header constraints.
+      [self.feedHeaderViewController.view.centerXAnchor
+          constraintEqualToAnchor:self.collectionView.centerXAnchor],
+      [self.feedHeaderViewController.view.widthAnchor
+          constraintEqualToAnchor:self.collectionView.widthAnchor],
+    ]];
 
     [self setInitialFeedHeaderConstraints];
     if (self.feedTopSectionViewController) {
@@ -1477,8 +1478,7 @@ const CGFloat kFeedContainerMinimumHeight = 1000;
         [self.feedTopSectionViewController.view.centerXAnchor
             constraintEqualToAnchor:self.collectionView.centerXAnchor],
         [self.feedTopSectionViewController.view.widthAnchor
-            constraintEqualToAnchor:self.collectionView.widthAnchor
-                           constant:-[self homeModulePadding]],
+            constraintEqualToAnchor:self.collectionView.widthAnchor],
         [self.feedTopSectionViewController.view.topAnchor
             constraintEqualToAnchor:self.feedHeaderViewController.view
                                         .bottomAnchor],
@@ -1498,10 +1498,9 @@ const CGFloat kFeedContainerMinimumHeight = 1000;
     CHECK(IsFeedContainmentEnabled());
     [NSLayoutConstraint activateConstraints:@[
       [_feedContainer.widthAnchor
-          constraintEqualToAnchor:self.collectionView.widthAnchor
-                         constant:-[self homeModulePadding]],
+          constraintEqualToAnchor:self.moduleLayoutGuide.widthAnchor],
       [_feedContainer.centerXAnchor
-          constraintEqualToAnchor:self.collectionView.centerXAnchor],
+          constraintEqualToAnchor:self.moduleLayoutGuide.centerXAnchor],
       [_feedContainer.topAnchor
           constraintEqualToAnchor:self.feedHeaderViewController.view.topAnchor],
     ]];
@@ -1513,27 +1512,12 @@ const CGFloat kFeedContainerMinimumHeight = 1000;
         constraintEqualToAnchor:self.headerViewController.view.leadingAnchor],
     [[self containerView].safeAreaLayoutGuide.trailingAnchor
         constraintEqualToAnchor:self.headerViewController.view.trailingAnchor],
+    [contentSuggestionsView.leadingAnchor
+        constraintEqualToAnchor:self.moduleLayoutGuide.leadingAnchor],
+    [contentSuggestionsView.trailingAnchor
+        constraintEqualToAnchor:self.moduleLayoutGuide.trailingAnchor],
   ]];
   [self setInitialFakeOmniboxConstraints];
-
-  if (IsFeedContainmentEnabled()) {
-    // This should be an objective improvement since it prevents the width of
-    // the Content Suggestions from surpassing their parent, but the flag will
-    // guard the change for now to be safe.
-    [NSLayoutConstraint activateConstraints:@[
-      [contentSuggestionsView.safeAreaLayoutGuide.leadingAnchor
-          constraintEqualToAnchor:self.collectionView.leadingAnchor],
-      [contentSuggestionsView.safeAreaLayoutGuide.trailingAnchor
-          constraintEqualToAnchor:self.collectionView.trailingAnchor],
-    ]];
-  } else {
-    [NSLayoutConstraint activateConstraints:@[
-      [[self containerView].safeAreaLayoutGuide.leadingAnchor
-          constraintEqualToAnchor:contentSuggestionsView.leadingAnchor],
-      [[self containerView].safeAreaLayoutGuide.trailingAnchor
-          constraintEqualToAnchor:contentSuggestionsView.trailingAnchor],
-    ]];
-  }
 }
 
 // Sets minimum height for the NTP collection view, allowing it to scroll enough
@@ -1641,6 +1625,27 @@ const CGFloat kFeedContainerMinimumHeight = 1000;
   self.feedContainerHeightConstraint =
       [_feedContainer.heightAnchor constraintEqualToConstant:containerHeight];
   self.feedContainerHeightConstraint.active = YES;
+}
+
+// Updates the width constraint of `moduleLayoutGuide`.
+- (void)updateModuleWidth {
+  BOOL existingConstraintActive = _moduleWidth.active;
+  _moduleWidth.active = NO;
+  CGFloat width;
+  if (IsFeedContainmentEnabled()) {
+    width = MIN(self.view.frame.size.width * kModuleWidth,
+                kDiscoverFeedContentMaxWidth);
+  } else {
+    width = content_suggestions::SearchFieldWidth(self.view.frame.size.width,
+                                                  self.traitCollection);
+  }
+  _moduleWidth =
+      [self.moduleLayoutGuide.widthAnchor constraintEqualToConstant:width];
+  _moduleWidth.active = YES;
+  if (existingConstraintActive) {
+    [self.view layoutIfNeeded];
+    [self.contentSuggestionsViewController moduleWidthDidUpdate];
+  }
 }
 
 #pragma mark - Helpers

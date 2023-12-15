@@ -699,7 +699,6 @@
   self.contentSuggestionsCoordinator.NTPDelegate = self;
   self.contentSuggestionsCoordinator.delegate = self;
   self.contentSuggestionsCoordinator.NTPMetricsDelegate = self;
-  self.contentSuggestionsCoordinator.NTPViewDelegate = self.NTPViewController;
   [self.contentSuggestionsCoordinator start];
 }
 

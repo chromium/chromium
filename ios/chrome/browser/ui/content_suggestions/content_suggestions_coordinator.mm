@@ -274,7 +274,6 @@
   self.contentSuggestionsViewController.parcelTrackingCommandHandler =
       HandlerForProtocol(self.browser->GetCommandDispatcher(),
                          ParcelTrackingOptInCommands);
-  self.contentSuggestionsViewController.NTPViewDelegate = self.NTPViewDelegate;
 
   self.contentSuggestionsMediator.consumer =
       self.contentSuggestionsViewController;

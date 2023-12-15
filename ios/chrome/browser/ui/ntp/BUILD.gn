@@ -195,7 +195,6 @@ source_set("ntp_internal") {
     ":feature_flags",
     ":logo",
     ":ntp",
-    ":ntp_ui_util",
     "resources:fake_omnibox_background_color",
     "resources:fake_omnibox_bottom_gradient_color",
     "resources:fake_omnibox_solid_background_color",
@@ -290,11 +289,6 @@ source_set("feed_menu") {
     "//ios/chrome/browser/signin/model",
     "//ui/strings",
   ]
-}
-
-source_set("ntp_ui_util") {
-  sources = [ "new_tab_page_view_delegate.h" ]
-  deps = []
 }
 
 source_set("unit_tests") {

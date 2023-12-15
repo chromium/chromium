@@ -22,10 +22,6 @@ enum class ContentSuggestionsModuleType;
 - (instancetype)initWithFrame:(CGRect)frame NS_UNAVAILABLE;
 - (instancetype)initWithCoder:(NSCoder*)aDecoder NS_UNAVAILABLE;
 
-// Returns the module width depending on the horizontal `traitCollection`.
-+ (CGFloat)moduleWidthForHorizontalTraitCollection:
-    (UITraitCollection*)traitCollection;
-
 // Returns the title string for the module `type`.
 + (NSString*)titleStringForModule:(ContentSuggestionsModuleType)type;
 

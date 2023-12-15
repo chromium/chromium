@@ -38,19 +38,10 @@ const CGFloat kContentVerticalSpacing = 16.0f;
 // The corner radius of this container.
 const float kCornerRadius = 24;
 
-// The width of the modules.
-const int kModuleWidthCompact = 343;
-const int kModuleWidthRegular = 382;
 // The max height of the modules.
 const int kModuleMaxHeight = 150;
 
 const CGFloat kSeparatorHeight = 0.5;
-
-// The horizontal trailing spacing between the top horizontal StackView
-// (containing the title and any subtitle/See More buttons) and the module's
-// overall vertical container StackView when there is none between the overall
-// vertical StackView and this container .
-const CGFloat kTitleStackViewTrailingMargin = 16.0f;
 
 }  // namespace
 
@@ -62,7 +53,6 @@ const CGFloat kTitleStackViewTrailingMargin = 16.0f;
 @end
 
 @implementation MagicStackModuleContainer {
-  NSLayoutConstraint* _contentViewWidthAnchor;
   id<MagicStackModuleContainerDelegate> _delegate;
   UILabel* _title;
   UILabel* _subtitle;
@@ -199,25 +189,13 @@ const CGFloat kTitleStackViewTrailingMargin = 16.0f;
 
     UIStackView* stackView = [[UIStackView alloc] init];
     stackView.translatesAutoresizingMaskIntoConstraints = NO;
-    stackView.alignment = UIStackViewAlignmentLeading;
+    stackView.alignment = UIStackViewAlignmentFill;
     stackView.axis = UILayoutConstraintAxisVertical;
     stackView.spacing = kContentVerticalSpacing;
     stackView.distribution = UIStackViewDistributionFill;
     [stackView addSubview:contentView];
     if ([_title.text length] > 0) {
       [stackView addArrangedSubview:titleStackView];
-      // Ensure that there is horizontal trailing spacing between the title
-      // stackview content and the module. The overall StackView has no trailing
-      // spacing for kCompactedSetUpList.
-      CGFloat trailingSpacing =
-          _type == ContentSuggestionsModuleType::kCompactedSetUpList
-              ? -kTitleStackViewTrailingMargin
-              : 0;
-      [NSLayoutConstraint activateConstraints:@[
-        [titleStackView.trailingAnchor
-            constraintEqualToAnchor:stackView.trailingAnchor
-                           constant:trailingSpacing],
-      ]];
     }
     if ([self shouldShowSeparator]) {
       UIView* separator = [[UIView alloc] init];
@@ -247,9 +225,6 @@ const CGFloat kTitleStackViewTrailingMargin = 16.0f;
     }
     self.accessibilityElements = accessibilityElements;
 
-    _contentViewWidthAnchor = [contentView.widthAnchor
-        constraintEqualToConstant:[self contentViewWidth]];
-    [NSLayoutConstraint activateConstraints:@[ _contentViewWidthAnchor ]];
     // Configures `contentView` to be the view willing to expand if needed to
     // fill extra vertical space in the container.
     [contentView
@@ -274,14 +249,6 @@ const CGFloat kTitleStackViewTrailingMargin = 16.0f;
     AddSameConstraintsWithInsets(stackView, self, [self contentMargins]);
   }
   return self;
-}
-
-// Returns the module width (CGFloat) given `traitCollection`.
-+ (CGFloat)moduleWidthForHorizontalTraitCollection:
-    (UITraitCollection*)traitCollection {
-  return traitCollection.horizontalSizeClass == UIUserInterfaceSizeClassRegular
-             ? kModuleWidthRegular
-             : kModuleWidthCompact;
 }
 
 // Returns the module's title, if any, given the Magic Stack module `type`.
@@ -348,9 +315,6 @@ const CGFloat kTitleStackViewTrailingMargin = 16.0f;
       NSDirectionalEdgeInsetsMake(kContentTopInset, kContentHorizontalInset,
                                   kContentBottomInset, kContentHorizontalInset);
   switch (_type) {
-    case ContentSuggestionsModuleType::kCompactedSetUpList:
-      contentMargins.trailing = 0;
-      break;
     case ContentSuggestionsModuleType::kMostVisited:
     case ContentSuggestionsModuleType::kShortcuts:
     case ContentSuggestionsModuleType::kSafetyCheckMultiRow:
@@ -363,29 +327,6 @@ const CGFloat kTitleStackViewTrailingMargin = 16.0f;
   return contentMargins;
 }
 
-// Returns the intrinsic content size.
-- (CGSize)intrinsicContentSize {
-  // When the Most Visited Tiles module is not in the Magic Stack or if a module
-  // is the only module in the Magic Stack in a wider screen, the module should
-  // be wider to match the wider Magic Stack ScrollView.
-  BOOL MVTModuleShouldUseWideWidth =
-      (!_isPlaceholder && _type == ContentSuggestionsModuleType::kMostVisited &&
-       !ShouldPutMostVisitedSitesInMagicStack() &&
-       content_suggestions::ShouldShowWiderMagicStackLayer(self.traitCollection,
-                                                           self.window));
-  BOOL moduleShouldUseWideWidth =
-      content_suggestions::ShouldShowWiderMagicStackLayer(self.traitCollection,
-                                                          self.window) &&
-      [_delegate doesMagicStackShowOnlyOneModule:_type];
-  if (MVTModuleShouldUseWideWidth || moduleShouldUseWideWidth) {
-    return CGSizeMake(kMagicStackWideWidth, UIViewNoIntrinsicMetric);
-  }
-  return CGSizeMake(
-      [MagicStackModuleContainer
-          moduleWidthForHorizontalTraitCollection:self.traitCollection],
-      UIViewNoIntrinsicMetric);
-}
-
 #pragma mark - UITraitEnvironment
 
 - (void)traitCollectionDidChange:(UITraitCollection*)previousTraitCollection {
@@ -394,11 +335,6 @@ const CGFloat kTitleStackViewTrailingMargin = 16.0f;
       self.traitCollection.preferredContentSizeCategory) {
     _title.font = [MagicStackModuleContainer fontForTitle];
   }
-  _contentViewWidthAnchor.constant = [self contentViewWidth];
-  // Trigger relayout so intrinsic contentsize is recalculated.
-  [self invalidateIntrinsicContentSize];
-  [self sizeToFit];
-  [self layoutIfNeeded];
 }
 
 #pragma mark - UIContextMenuInteractionDelegate
@@ -545,12 +481,6 @@ const CGFloat kTitleStackViewTrailingMargin = 16.0f;
     default:
       NOTREACHED_NORETURN();
   }
-}
-
-// Returns the expected width of the contentView subview.
-- (CGFloat)contentViewWidth {
-  NSDirectionalEdgeInsets insets = [self contentMargins];
-  return [self intrinsicContentSize].width - insets.leading - insets.trailing;
 }
 
 @end
