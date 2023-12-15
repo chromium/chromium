@@ -155,7 +155,7 @@ void IndexedDBInternalsUI::DownloadBucketData(
 
   storage::mojom::IndexedDBControl* control = GetBucketControl(bucket_id);
   if (!control) {
-    std::move(callback).Run("IndexedDb control not found", {});
+    std::move(callback).Run("IndexedDb control not found");
     return;
   }
 
@@ -166,27 +166,14 @@ void IndexedDBInternalsUI::DownloadBucketData(
              storage::BucketId bucket_id,
              storage::mojom::IndexedDBControl* control,
              DownloadBucketDataCallback callback) {
-            // Is the connection count always zero after closing,
-            // such that this can be simplified?
-            control->GetConnectionCount(
-                bucket_id,
-                base::BindOnce(
-                    [](base::WeakPtr<IndexedDBInternalsUI> handler,
-                       storage::BucketId bucket_id,
-                       storage::mojom::IndexedDBControl* control,
-                       DownloadBucketDataCallback callback,
-                       uint64_t connection_count) {
-                      if (!handler) {
-                        return;
-                      }
+            if (!handler) {
+              return;
+            }
 
-                      control->DownloadBucketData(
-                          bucket_id,
-                          base::BindOnce(
-                              &IndexedDBInternalsUI::OnDownloadDataReady,
-                              handler, std::move(callback), connection_count));
-                    },
-                    handler, bucket_id, control, std::move(callback)));
+            control->DownloadBucketData(
+                bucket_id,
+                base::BindOnce(&IndexedDBInternalsUI::OnDownloadDataReady,
+                               handler, std::move(callback)));
           },
           weak_factory_.GetWeakPtr(), bucket_id, control, std::move(callback)));
 }
@@ -197,36 +184,27 @@ void IndexedDBInternalsUI::ForceClose(storage::BucketId bucket_id,
 
   storage::mojom::IndexedDBControl* control = GetBucketControl(bucket_id);
   if (!control) {
-    std::move(callback).Run("IndexedDb control not found", {});
+    std::move(callback).Run("IndexedDb control not found");
     return;
   }
 
   control->ForceClose(
       bucket_id, storage::mojom::ForceCloseReason::FORCE_CLOSE_INTERNALS_PAGE,
       base::BindOnce(
-          [](storage::BucketId bucket_id,
-             storage::mojom::IndexedDBControl* control,
-             ForceCloseCallback callback) {
-            control->GetConnectionCount(
-                bucket_id,
-                base::BindOnce(
-                    [](ForceCloseCallback callback, uint64_t connection_count) {
-                      std::move(callback).Run(absl::nullopt, connection_count);
-                    },
-                    std::move(callback)));
+          [](ForceCloseCallback callback) {
+            std::move(callback).Run(absl::nullopt);
           },
-          bucket_id, control, std::move(callback)));
+          std::move(callback)));
 }
 
 void IndexedDBInternalsUI::OnDownloadDataReady(
     DownloadBucketDataCallback callback,
-    uint64_t connection_count,
     bool success,
     const base::FilePath& temp_path,
     const base::FilePath& zip_path) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   if (!success) {
-    std::move(callback).Run("Error downloading database", {});
+    std::move(callback).Run("Error downloading database");
     return;
   }
 
@@ -267,7 +245,7 @@ void IndexedDBInternalsUI::OnDownloadDataReady(
   // state change to the finished state.
   dl_params->set_callback(base::BindOnce(
       &IndexedDBInternalsUI::OnDownloadStarted, weak_factory_.GetWeakPtr(),
-      temp_path, std::move(callback), connection_count));
+      temp_path, std::move(callback)));
 
   BrowserContext* context = web_contents->GetBrowserContext();
   context->GetDownloadManager()->DownloadUrl(std::move(dl_params));
@@ -320,18 +298,17 @@ FileDeleter::~FileDeleter() {
 void IndexedDBInternalsUI::OnDownloadStarted(
     const base::FilePath& temp_path,
     DownloadBucketDataCallback callback,
-    size_t connection_count,
     download::DownloadItem* item,
     download::DownloadInterruptReason interrupt_reason) {
   if (interrupt_reason != download::DOWNLOAD_INTERRUPT_REASON_NONE) {
     LOG(ERROR) << "Error downloading database dump: "
                << DownloadInterruptReasonToString(interrupt_reason);
-    std::move(callback).Run("Error downloading database", {});
+    std::move(callback).Run("Error downloading database");
     return;
   }
 
   item->AddObserver(new FileDeleter(temp_path));
-  std::move(callback).Run(absl::nullopt, connection_count);
+  std::move(callback).Run(absl::nullopt);
 }
 
 }  // namespace content

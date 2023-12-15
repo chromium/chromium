@@ -551,20 +551,6 @@ void IndexedDBFactory::BlobFilesCleaned(
   context_->BlobFilesCleaned(bucket_locator);
 }
 
-size_t IndexedDBFactory::GetConnectionCount(storage::BucketId bucket_id) const {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  auto it = bucket_contexts_.find(bucket_id);
-  if (it == bucket_contexts_.end()) {
-    return 0;
-  }
-  size_t count = 0;
-  for (const auto& name_database_pair : it->second->databases()) {
-    count += name_database_pair.second->ConnectionCount();
-  }
-
-  return count;
-}
-
 void IndexedDBFactory::ForEachBucketContext(
     IndexedDBBucketContext::InstanceClosure callback) {
   for_each_bucket_context_ = callback;

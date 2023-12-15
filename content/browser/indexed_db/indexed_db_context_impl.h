@@ -90,8 +90,6 @@ class CONTENT_EXPORT IndexedDBContextImpl
   void ForceClose(storage::BucketId bucket_id,
                   storage::mojom::ForceCloseReason reason,
                   base::OnceClosure callback) override;
-  void GetConnectionCount(storage::BucketId bucket_id,
-                          GetConnectionCountCallback callback) override;
   void DownloadBucketData(storage::BucketId bucket_id,
                           DownloadBucketDataCallback callback) override;
   void GetAllBucketsDetails(GetAllBucketsDetailsCallback callback) override;
@@ -191,7 +189,6 @@ class CONTENT_EXPORT IndexedDBContextImpl
   const base::FilePath GetFirstPartyDataPathForTesting() const;
 
   bool IsInMemoryContext() const { return base_data_path_.empty(); }
-  size_t GetConnectionCountSync(storage::BucketId bucket_id);
   int GetBucketBlobFileCount(const storage::BucketLocator& bucket_locator);
 
   bool is_incognito() const { return base_data_path_.empty(); }
@@ -242,8 +239,6 @@ class CONTENT_EXPORT IndexedDBContextImpl
       const storage::mojom::ForceCloseReason reason,
       base::OnceClosure closure,
       const absl::optional<storage::BucketLocator>& bucket_locator);
-  void GetConnectionCountImpl(GetConnectionCountCallback callback,
-                              storage::BucketId bucket_id);
 
   void OnGotBucketsForDeletion(
       base::OnceCallback<void(bool)> callback,

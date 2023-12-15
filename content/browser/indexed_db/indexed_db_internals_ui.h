@@ -61,13 +61,11 @@ class IndexedDBInternalsUI : public WebUIController,
 
  private:
   void OnDownloadDataReady(DownloadBucketDataCallback callback,
-                           uint64_t connection_count,
                            bool success,
                            const base::FilePath& temp_path,
                            const base::FilePath& zip_path);
   void OnDownloadStarted(const base::FilePath& temp_path,
                          DownloadBucketDataCallback callback,
-                         size_t connection_count,
                          download::DownloadItem* item,
                          download::DownloadInterruptReason interrupt_reason);
 

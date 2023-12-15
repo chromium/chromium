@@ -76,14 +76,6 @@ void IndexedDBControlWrapper::ForceClose(
   indexed_db_control_->ForceClose(bucket_id, reason, std::move(callback));
 }
 
-void IndexedDBControlWrapper::GetConnectionCount(
-    storage::BucketId bucket_id,
-    GetConnectionCountCallback callback) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  BindRemoteIfNeeded();
-  indexed_db_control_->GetConnectionCount(bucket_id, std::move(callback));
-}
-
 void IndexedDBControlWrapper::DownloadBucketData(
     storage::BucketId bucket_id,
     DownloadBucketDataCallback callback) {

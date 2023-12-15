@@ -309,29 +309,7 @@ void IndexedDBContextImpl::ForceClose(storage::BucketId bucket_id,
       bucket_id,
       /*will_be_deleted=*/reason ==
           storage::mojom::ForceCloseReason::FORCE_CLOSE_DELETE_ORIGIN);
-  DCHECK_EQ(0UL, GetConnectionCountSync(bucket_id));
   std::move(closure).Run();
-}
-
-void IndexedDBContextImpl::GetConnectionCount(
-    storage::BucketId bucket_id,
-    GetConnectionCountCallback callback) {
-  GetConnectionCountImpl(std::move(callback), bucket_id);
-}
-
-void IndexedDBContextImpl::GetConnectionCountImpl(
-    GetConnectionCountCallback callback,
-    storage::BucketId bucket_id) {
-  std::move(callback).Run(GetConnectionCountSync(bucket_id));
-}
-
-size_t IndexedDBContextImpl::GetConnectionCountSync(
-    storage::BucketId bucket_id) {
-  size_t count = 0;
-  if (LookUpBucket(bucket_id) && indexeddb_factory_.get()) {
-    count = indexeddb_factory_->GetConnectionCount(bucket_id);
-  }
-  return count;
 }
 
 void IndexedDBContextImpl::DownloadBucketData(
@@ -821,8 +799,6 @@ void IndexedDBContextImpl::FactoryOpened(
 void IndexedDBContextImpl::WritingTransactionComplete(
     const storage::BucketLocator& bucket_locator,
     bool flushed) {
-  DCHECK(!indexeddb_factory_.get() ||
-         indexeddb_factory_->GetConnectionCount(bucket_locator.id) > 0);
   NotifyOfBucketModification(bucket_locator);
   if (!flushed) {
     // A negative value indicates "not cached, and LevelDB file write is

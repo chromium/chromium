@@ -107,9 +107,6 @@ class CONTENT_EXPORT IndexedDBFactory
   // Called by the IndexedDBContext destructor so the factory can do cleanup.
   void ContextDestroyed();
 
-  // Used for chrome://indexeddb-internals.
-  size_t GetConnectionCount(storage::BucketId bucket_id) const;
-
   // For usage reporting.
   int64_t GetInMemoryDBSize(const storage::BucketLocator& bucket_locator) const;
 
