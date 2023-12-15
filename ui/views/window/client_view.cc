@@ -25,15 +25,17 @@ ClientView::ClientView(Widget* widget, View* contents_view)
   SetLayoutManager(std::make_unique<views::FillLayout>());
 }
 
-int ClientView::NonClientHitTest(const gfx::Point& point) {
-  return bounds().Contains(point) ? HTCLIENT : HTNOWHERE;
-}
-
 CloseRequestResult ClientView::OnWindowCloseRequested() {
   return CloseRequestResult::kCanClose;
 }
 
 void ClientView::WidgetClosing() {}
+
+int ClientView::NonClientHitTest(const gfx::Point& point) {
+  return bounds().Contains(point) ? HTCLIENT : HTNOWHERE;
+}
+
+void ClientView::UpdateWindowRoundedCorners() {}
 
 ///////////////////////////////////////////////////////////////////////////////
 // ClientView, View overrides:
