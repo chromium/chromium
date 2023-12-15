@@ -166,7 +166,6 @@ void ProcessPriorityAggregator::OnProcessNodeAdded(
     const ProcessNode* process_node) {
   auto* process_node_impl = ProcessNodeImpl::FromNode(process_node);
   DCHECK(!DataImpl::Get(process_node_impl));
-  DCHECK_EQ(base::TaskPriority::HIGHEST, process_node_impl->GetPriority());
 }
 
 void ProcessPriorityAggregator::OnBeforeProcessNodeRemoved(

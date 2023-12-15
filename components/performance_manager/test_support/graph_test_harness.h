@@ -142,7 +142,8 @@ struct TestNodeWrapper<ProcessNodeImpl>::Factory {
       proxy = RenderProcessHostProxy::CreateForTesting(
           NextTestRenderProcessHostId());
     }
-    return std::make_unique<ProcessNodeImpl>(std::move(proxy));
+    return std::make_unique<ProcessNodeImpl>(std::move(proxy),
+                                             base::TaskPriority::HIGHEST);
   }
 
   // Creates a ProcessNode for a non-renderer child process.

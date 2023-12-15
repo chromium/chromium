@@ -307,6 +307,7 @@ class CONTENT_EXPORT RenderProcessHostImpl
   void SetIsUsed() override;
 
   bool HostHasNotBeenUsed() override;
+  bool IsSpare() const override;
   void SetProcessLock(const IsolationContext& isolation_context,
                       const ProcessLock& process_lock) override;
   ProcessLock GetProcessLock() const override;
@@ -594,13 +595,6 @@ class CONTENT_EXPORT RenderProcessHostImpl
 
   // Iterate over all renderers and clear their in-memory resource cache.
   static void ClearAllResourceCaches();
-
-  // Helper method that allows crash reporting logic to determine if a
-  // specific RenderProcessHost is the current spare process.
-  // Returns true if |render_process_host| is the current spare
-  // RenderProcessHost.
-  static bool IsSpareProcessForCrashReporting(
-      RenderProcessHost* render_process_host);
 
   PermissionServiceContext& permission_service_context() {
     return *permission_service_context_;

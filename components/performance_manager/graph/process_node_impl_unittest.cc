@@ -152,7 +152,7 @@ TEST_F(ProcessNodeImplTest, ObserverWorks) {
   process_node->SetMainThreadTaskLoadIsLow(true);
   EXPECT_EQ(raw_process_node, obs.TakeNotifiedProcessNode());
 
-  // This call does nothing as the priority is always initialized at HIGHEST.
+  // This call does nothing as the priority is initialized at HIGHEST.
   EXPECT_EQ(base::TaskPriority::HIGHEST, process_node->GetPriority());
   process_node->set_priority(base::TaskPriority::HIGHEST);
 

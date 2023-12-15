@@ -61,7 +61,7 @@ class ProcessNodeImpl
   explicit ProcessNodeImpl(BrowserProcessNodeTag tag);
 
   // Constructor for a renderer process.
-  explicit ProcessNodeImpl(RenderProcessHostProxy proxy);
+  ProcessNodeImpl(RenderProcessHostProxy proxy, base::TaskPriority priority);
 
   // Constructor for a non-renderer child process.
   ProcessNodeImpl(content::ProcessType process_type,
@@ -168,7 +168,8 @@ class ProcessNodeImpl
 
   // Shared constructor for all process types.
   ProcessNodeImpl(content::ProcessType process_type,
-                  AnyChildProcessHostProxy proxy);
+                  AnyChildProcessHostProxy proxy,
+                  base::TaskPriority priority);
 
   // Rest of ProcessNode implementation. These are private so that users of the
   // impl use the private getters rather than the public interface.
@@ -223,8 +224,7 @@ class ProcessNodeImpl
       base::TaskPriority,
       base::TaskPriority,
       &ProcessNodeObserver::OnPriorityChanged>
-      priority_ GUARDED_BY_CONTEXT(sequence_checker_){
-          base::TaskPriority::HIGHEST};
+      priority_ GUARDED_BY_CONTEXT(sequence_checker_);
 
   // A bit field that indicates which type of content this process has hosted,
   // either currently or in the past.

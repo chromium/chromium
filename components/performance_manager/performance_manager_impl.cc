@@ -169,10 +169,11 @@ std::unique_ptr<ProcessNodeImpl> PerformanceManagerImpl::CreateProcessNode(
 
 // static
 std::unique_ptr<ProcessNodeImpl> PerformanceManagerImpl::CreateProcessNode(
-    RenderProcessHostProxy render_process_host_proxy) {
+    RenderProcessHostProxy render_process_host_proxy,
+    base::TaskPriority priority) {
   return CreateNodeImpl<ProcessNodeImpl>(
       base::OnceCallback<void(ProcessNodeImpl*)>(),
-      std::move(render_process_host_proxy));
+      std::move(render_process_host_proxy), priority);
 }
 
 // static

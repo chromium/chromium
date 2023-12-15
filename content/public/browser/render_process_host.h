@@ -577,6 +577,9 @@ class CONTENT_EXPORT RenderProcessHost : public IPC::Sender,
   // crbug.com/738634.
   virtual bool HostHasNotBeenUsed() = 0;
 
+  // Returns true if this is a spare RenderProcessHost.
+  virtual bool IsSpare() const = 0;
+
   // Locks this RenderProcessHost to documents compatible with |process_lock|.
   // This method is public so that it can be called from within //content, and
   // used by MockRenderProcessHost. It isn't meant to be called outside of

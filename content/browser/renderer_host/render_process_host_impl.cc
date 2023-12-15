@@ -2222,8 +2222,9 @@ RenderProcessHostImpl::GetInfoForBrowserContextDestructionCrashReporting() {
   if (HostHasNotBeenUsed())
     ret += " hnbu";
 
-  if (IsSpareProcessForCrashReporting(this))
+  if (IsSpare()) {
     ret += " spr";
+  }
 
   if (delayed_cleanup_needed_)
     ret += " dcn";
@@ -3163,13 +3164,6 @@ bool RenderProcessHostImpl::IsSpareProcessKeptAtAllTimes() {
 }
 
 // static
-bool RenderProcessHostImpl::IsSpareProcessForCrashReporting(
-    RenderProcessHost* render_process_host) {
-  return render_process_host == SpareRenderProcessHostManager::GetInstance()
-                                    .spare_render_process_host();
-}
-
-// static
 void RenderProcessHostImpl::ClearAllResourceCaches() {
   for (iterator iter(AllHostsIterator()); !iter.IsAtEnd(); iter.Advance()) {
     mojom::Renderer* renderer_interface =
@@ -3181,6 +3175,11 @@ void RenderProcessHostImpl::ClearAllResourceCaches() {
 bool RenderProcessHostImpl::HostHasNotBeenUsed() {
   return IsUnused() && listeners_.IsEmpty() && AreAllRefCountsZero() &&
          pending_views_ == 0;
+}
+
+bool RenderProcessHostImpl::IsSpare() const {
+  return this == SpareRenderProcessHostManager::GetInstance()
+                     .spare_render_process_host();
 }
 
 void RenderProcessHostImpl::SetProcessLock(

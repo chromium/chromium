@@ -546,6 +546,10 @@ bool MockRenderProcessHost::HostHasNotBeenUsed() {
   return IsUnused() && listeners_.IsEmpty() && GetKeepAliveRefCount() == 0;
 }
 
+bool MockRenderProcessHost::IsSpare() const {
+  return this == RenderProcessHostImpl::GetSpareRenderProcessHostForTesting();
+}
+
 void MockRenderProcessHost::SetProcessLock(
     const IsolationContext& isolation_context,
     const ProcessLock& process_lock) {

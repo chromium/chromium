@@ -43,20 +43,27 @@ void FireBackgroundTracingTriggerOnUI(const std::string& trigger_name) {
 
 ProcessNodeImpl::ProcessNodeImpl(BrowserProcessNodeTag tag)
     : ProcessNodeImpl(content::PROCESS_TYPE_BROWSER,
-                      AnyChildProcessHostProxy{}) {}
+                      AnyChildProcessHostProxy{},
+                      base::TaskPriority::HIGHEST) {}
 
-ProcessNodeImpl::ProcessNodeImpl(RenderProcessHostProxy proxy)
+ProcessNodeImpl::ProcessNodeImpl(RenderProcessHostProxy proxy,
+                                 base::TaskPriority priority)
     : ProcessNodeImpl(content::PROCESS_TYPE_RENDERER,
-                      AnyChildProcessHostProxy(std::move(proxy))) {}
+                      AnyChildProcessHostProxy(std::move(proxy)),
+                      priority) {}
 
 ProcessNodeImpl::ProcessNodeImpl(content::ProcessType process_type,
                                  BrowserChildProcessHostProxy proxy)
     : ProcessNodeImpl(ValidateBrowserChildProcessType(process_type),
-                      AnyChildProcessHostProxy(std::move(proxy))) {}
+                      AnyChildProcessHostProxy(std::move(proxy)),
+                      base::TaskPriority::HIGHEST) {}
 
 ProcessNodeImpl::ProcessNodeImpl(content::ProcessType process_type,
-                                 AnyChildProcessHostProxy proxy)
-    : process_type_(process_type), child_process_host_proxy_(std::move(proxy)) {
+                                 AnyChildProcessHostProxy proxy,
+                                 base::TaskPriority priority)
+    : process_type_(process_type),
+      child_process_host_proxy_(std::move(proxy)),
+      priority_(priority) {
   // Nodes are created on the UI thread, then accessed on the PM sequence.
   // `weak_this_` can be returned from GetWeakPtrOnUIThread() and dereferenced
   // on the PM sequence.

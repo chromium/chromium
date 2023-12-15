@@ -542,7 +542,8 @@ int TestProcessNodeSource::CreateProcessNode() {
 
   // Create the process node and insert it into the map.
   auto process_node = PerformanceManagerImpl::CreateProcessNode(
-      RenderProcessHostProxy::CreateForTesting(render_process_id));
+      RenderProcessHostProxy::CreateForTesting(render_process_id),
+      base::TaskPriority::HIGHEST);
   bool inserted =
       process_node_map_
           .insert({render_process_id.value(), std::move(process_node)})
