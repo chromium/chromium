@@ -581,11 +581,6 @@ crbug.com/898394 virtual/android/url-bar/bottom-and-top-fixed-sticks-to-top.html
 
 crbug.com/1046784 http/tests/devtools/elements/styles-3/styles-disable-then-delete.js [ Crash Failure Pass Timeout ]
 
-# Temporarily disabled to unblock https://crrev.com/c/4417276
-crbug.com/1427397 http/tests/devtools/elements/styles-4/style-update-during-selector-edit.js [ Failure Pass ]
-# Temporarily disabled to unblock https://crrev.com/c/5033671
-crbug.com/1473339 http/tests/devtools/elements/styles-4/styles-source-lines.js [ Failure Pass ]
-
 # Subpixel rounding differences that are incorrect.
 crbug.com/997202 compositing/overflow/scaled-overflow.html [ Failure ]
 # Flaky subpixel AA difference (not necessarily incorrect, but flaky)
@@ -4268,10 +4263,6 @@ crbug.com/576815 virtual/dir-pseudo-disabled/external/wpt/html/dom/elements/glob
 # SwANGLE issues
 crbug.com/1204234 css3/blending/background-blend-mode-single-accelerated-element.html [ Failure ]
 
-# Temporarily disabled to land changes in DevTools, multiple dependent CLs
-# [1] https://chromium-review.googlesource.com/c/devtools/devtools-frontend/+/2049183
-# [2] https://chromium-review.googlesource.com/c/devtools/devtools-frontend/+/2119670
-
 # "in-multicol-child.html" is laid out in legacy layout due by "multicol" but
 # reference is laid out by LayoutNG.
 
@@ -4386,9 +4377,6 @@ crbug.com/1059262 [ Mac ] webexposed/global-interface-listing-platform-specific.
 # Sheriff 2020-04-01
 crbug.com/1066732 fast/events/platform-wheelevent-paging-x-in-scrolling-div.html [ Failure Pass ]
 crbug.com/1066732 fast/events/platform-wheelevent-paging-y-in-scrolling-div.html [ Failure Pass ]
-
-# Temporarily disabled for landing changes to DevTools frontend
-crbug.com/1066579 http/tests/devtools/har-importer.js [ Failure Pass ]
 
 # COOP top navigation:
 crbug.com/1153648 external/wpt/html/cross-origin-opener-policy/navigate-top-to-aboutblank.https.html [ Failure ]
