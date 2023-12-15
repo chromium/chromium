@@ -24,6 +24,7 @@
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/search/background/wallpaper_search/wallpaper_search_background_manager.h"
+#include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_navigator.h"
 #include "chrome/browser/ui/browser_navigator_params.h"
@@ -364,7 +365,18 @@ void WallpaperSearchHandler::ShowFeedbackPage() {
     return;
   }
 #endif  // BUILDFLAG(IS_CHROMEOS)
-
+  Browser* browser = chrome::FindLastActive();
+  if (!browser) {
+    return;
+  }
+  OptimizationGuideKeyedService* opt_guide_keyed_service =
+      OptimizationGuideKeyedServiceFactory::GetForProfile(browser->profile());
+  if (!opt_guide_keyed_service ||
+      !opt_guide_keyed_service->ShouldFeatureBeCurrentlyAllowedForLogging(
+          optimization_guide::proto::
+              MODEL_EXECUTION_FEATURE_WALLPAPER_SEARCH)) {
+    return;
+  }
   base::Value::Dict feedback_metadata;
   if (!log_entries_.empty()) {
     feedback_metadata.Set("log_id", log_entries_.back()
@@ -372,7 +384,6 @@ void WallpaperSearchHandler::ShowFeedbackPage() {
                                         ->mutable_model_execution_info()
                                         ->server_execution_id());
   }
-  Browser* browser = chrome::FindLastActive();
   chrome::ShowFeedbackPage(
       browser, chrome::kFeedbackSourceAI,
       /*description_template=*/std::string(),

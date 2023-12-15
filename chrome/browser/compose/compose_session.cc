@@ -490,6 +490,15 @@ void ComposeSession::SetUserFeedback(compose::mojom::UserFeedback feedback) {
     // feedback to.
     return;
   }
+  OptimizationGuideKeyedService* opt_guide_keyed_service =
+      OptimizationGuideKeyedServiceFactory::GetForProfile(
+          Profile::FromBrowserContext(web_contents_->GetBrowserContext()));
+  if (!opt_guide_keyed_service ||
+      !opt_guide_keyed_service->ShouldFeatureBeCurrentlyAllowedForLogging(
+          optimization_guide::proto::MODEL_EXECUTION_FEATURE_COMPOSE)) {
+    return;
+  }
+
   // Add to most_recent_ok_state_ in case of undos.
   most_recent_ok_state_->mojo_state()->feedback = feedback;
 

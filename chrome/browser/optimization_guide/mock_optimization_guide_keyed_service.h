@@ -60,6 +60,10 @@ class MockOptimizationGuideKeyedService : public OptimizationGuideKeyedService {
               ShouldFeatureBeCurrentlyEnabledForUser,
               (optimization_guide::proto::ModelExecutionFeature),
               (const));
+  MOCK_METHOD(bool,
+              ShouldFeatureBeCurrentlyAllowedForLogging,
+              (optimization_guide::proto::ModelExecutionFeature feature),
+              (const));
   MOCK_METHOD(void,
               UploadModelQualityLogs,
               (std::unique_ptr<optimization_guide::ModelQualityLogEntry>));
