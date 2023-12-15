@@ -6,11 +6,12 @@
 #define COMPONENTS_OPTIMIZATION_GUIDE_CORE_MODEL_INFO_H_
 
 #include <memory>
+#include <optional>
 
+#include "base/containers/flat_map.h"
 #include "base/containers/flat_set.h"
 #include "base/files/file_path.h"
 #include "components/optimization_guide/proto/models.pb.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace optimization_guide {
 
@@ -38,19 +39,25 @@ class ModelInfo {
   // packaged along with the model.
   base::flat_set<base::FilePath> GetAdditionalFiles() const;
 
+  // Returns the absolute file path of any additional files that were packaged
+  // along with the model based on `base_name`.
+  std::optional<base::FilePath> GetAdditionalFileWithBaseName(
+      const base::FilePath::StringType& base_name) const;
+
   // Returns the metadata that the server provided specific to this model, if
   // applicable.
-  absl::optional<proto::Any> GetModelMetadata() const;
+  std::optional<proto::Any> GetModelMetadata() const;
 
  private:
   ModelInfo(const base::FilePath& model_file_path,
-            const base::flat_set<base::FilePath>& additional_files,
+            const base::flat_map<base::FilePath::StringType, base::FilePath>&
+                additional_files,
             const int64_t version,
-            const absl::optional<proto::Any>& model_metadata);
+            const std::optional<proto::Any>& model_metadata);
   base::FilePath model_file_path_;
-  base::flat_set<base::FilePath> additional_files_;
+  base::flat_map<base::FilePath::StringType, base::FilePath> additional_files_;
   int64_t version_;
-  absl::optional<proto::Any> model_metadata_;
+  std::optional<proto::Any> model_metadata_;
 };
 
 }  // namespace optimization_guide
