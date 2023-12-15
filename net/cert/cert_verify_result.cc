@@ -63,6 +63,8 @@ base::Value::Dict CertVerifyResult::NetLogParams(int net_error) const {
   dict.Set("public_key_hashes", std::move(hashes));
 
   dict.Set("scts", net::NetLogSignedCertificateTimestampParams(&scts));
+  dict.Set("ct_compliance_status",
+           CTPolicyComplianceToString(policy_compliance));
 
   return dict;
 }

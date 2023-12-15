@@ -317,6 +317,7 @@ component("net") {
     "cert/ct_objects_extractor.h",
     "cert/ct_policy_enforcer.cc",
     "cert/ct_policy_enforcer.h",
+    "cert/ct_policy_status.cc",
     "cert/ct_policy_status.h",
     "cert/ct_sct_to_string.cc",
     "cert/ct_sct_to_string.h",
