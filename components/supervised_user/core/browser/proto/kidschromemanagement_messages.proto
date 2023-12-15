@@ -81,3 +81,56 @@ message PermissionRequest {
   // The current state of the request.
   optional PermissionRequestState state = 5;
 }
+
+// An enum indicating how a website exception applies on top of the filter
+// level.
+enum ExceptionType {
+  EXCEPTION_TYPE_UNSPECIFIED = 0;
+  // A website of this type is always allowed, regardless of the filter level.
+  ALLOW = 1;
+  // A website of this type is always blocked, regardless of the filter level.
+  BLOCK = 2;
+}
+// A website exception, applied on top of the filter level.
+message WebsiteException {
+  // A pattern to match websites against.
+  // It should be either a domain, like "www.google.com" or a keyword surrounded
+  // by periods and *s, like "*.google.*".
+  optional string pattern = 1;
+  // The type of the exception.
+  optional ExceptionType exception_type = 2;
+  // Icon for the URL pattern, may be present on RPC responses.
+  optional string icon_url = 3;
+}
+
+// An enum indicating which level of filter to apply.
+// Exceptions always bypass the filter level.
+enum FilterLevel {
+  FILTER_LEVEL_UNSPECIFIED = 0;
+  // All websites are allowed by default.
+  ALLOW_BY_DEFAULT = 1;
+  // Websites approved by Safe Sites are allowed by default.
+  SAFE_SITES = 2;
+  // No websites are allowed by default.
+  BLOCK_BY_DEFAULT = 3;
+}
+
+message DefineChromeTestStateRequest {
+  // Identifies subject of this request.
+  optional string child_id = 1;
+
+  // Empty message has "do not change" semantics. Use
+  // ResetChromeDefaultTestStateRequest to reset to defaults.
+  optional UrlFilteringSettings url_filtering_settings = 2;
+
+  message UrlFilteringSettings {
+    // Filter level to apply. If absent, the permission won't change.
+    optional FilterLevel filter_level = 1;
+
+    // Website exceptions to be added in the exception list on top of the filter
+    // level
+    repeated WebsiteException exceptions = 2;
+  }
+}
+
+message DefineChromeTestStateResponse {}
