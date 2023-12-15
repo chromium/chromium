@@ -330,9 +330,8 @@ ui::Cursor EditFinishView::GetCursor(const ui::MouseEvent& event) {
 }
 
 void EditFinishView::SetCursor(ui::mojom::CursorType cursor_type) {
-  auto* widget = GetWidget();
   // widget is null for test.
-  if (widget) {
+  if (auto* widget = GetWidget()) {
     widget->SetCursor(cursor_type);
   }
 }

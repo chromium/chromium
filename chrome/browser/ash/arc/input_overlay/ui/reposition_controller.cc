@@ -87,9 +87,8 @@ bool RepositionController::OnGestureEvent(ui::GestureEvent* event) {
 }
 
 bool RepositionController::OnKeyPressed(const ui::KeyEvent& event) {
-  auto target_position = host_view_->origin();
-
-  if (OffsetPositionByArrowKey(event.key_code(), target_position)) {
+  if (auto target_position = host_view_->origin();
+      OffsetPositionByArrowKey(event.key_code(), target_position)) {
     ClampPosition(target_position, host_view_->size(),
                   host_view_->parent()->size(), parent_padding_);
     host_view_->SetPosition(target_position);

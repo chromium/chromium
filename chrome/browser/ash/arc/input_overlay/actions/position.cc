@@ -35,8 +35,8 @@ std::optional<gfx::PointF> ParseTwoElementsArray(const base::Value::Dict& value,
                << list->size() << " elements.";
     return std::nullopt;
   }
-  double x = list->front().GetDouble();
-  double y = list->back().GetDouble();
+  const double x = list->front().GetDouble();
+  const double y = list->back().GetDouble();
   if (std::abs(x) > 1 || std::abs(y) > 1) {
     LOG(ERROR) << "Require normalized values for " << key << ". But got x{" << x
                << "}, y{" << y << "}";
@@ -47,8 +47,7 @@ std::optional<gfx::PointF> ParseTwoElementsArray(const base::Value::Dict& value,
 
 std::optional<int> ParseIntValue(const base::Value::Dict& value,
                                  std::string key) {
-  std::optional<int> val = value.FindInt(key);
-  if (val) {
+  if (std::optional<int> val = value.FindInt(key)) {
     if (*val <= 0) {
       LOG(ERROR) << "Value for {" << key << "} should be positive, but got {"
                  << *val << "}.";
@@ -66,7 +65,7 @@ float CalculateDependent(const gfx::PointF& anchor,
                          const gfx::RectF& content_bounds) {
   float res;
   if (height_dependent) {
-    float anchor_to_target_y =
+    const float anchor_to_target_y =
         std::abs(anchor_to_target.y()) * content_bounds.height();
     res = anchor.x() * content_bounds.width() +
           (anchor_to_target.x() < 0 ? -1 : 1) * anchor_to_target_y * dependent;
@@ -74,7 +73,7 @@ float CalculateDependent(const gfx::PointF& anchor,
       res = content_bounds.width() - 1;
     }
   } else {
-    float anchor_to_target_x =
+    const float anchor_to_target_x =
         std::abs(anchor_to_target.x()) * content_bounds.width();
     res = anchor.y() * content_bounds.height() +
           (std::signbit(anchor_to_target.y()) ? -1 : 1) * anchor_to_target_x *
@@ -143,12 +142,11 @@ gfx::PointF Position::CalculatePosition(
 
 bool Position::ParseDefaultFromJson(const base::Value::Dict& value) {
   // Parse anchor point if existing, or the anchor point is (0, 0).
-  auto anchor = ParseTwoElementsArray(value, kAnchor, false);
-  if (!anchor) {
-    LOG(WARNING) << "Anchor is assigned to default (0, 0).";
-  } else {
+  if (auto anchor = ParseTwoElementsArray(value, kAnchor, false)) {
     anchor_.set_x(anchor.value().x());
     anchor_.set_y(anchor.value().y());
+  } else {
+    LOG(WARNING) << "Anchor is assigned to default (0, 0).";
   }
   // Parse the vector which starts from anchor point to the target position.
   auto anchor_to_target = ParseTwoElementsArray(value, kAnchorToTarget, true);
@@ -158,8 +156,8 @@ bool Position::ParseDefaultFromJson(const base::Value::Dict& value) {
   anchor_to_target_.set_x(anchor_to_target.value().x());
   anchor_to_target_.set_y(anchor_to_target.value().y());
 
-  auto target = anchor_ + anchor_to_target_;
-  if (!gfx::RectF(1.0, 1.0).Contains(target)) {
+  if (const auto target = anchor_ + anchor_to_target_;
+      !gfx::RectF(1.0, 1.0).Contains(target)) {
     LOG(ERROR)
         << "The target position is located at outside of the window. The value "
            "should be within [0, 1]. But got target {"
@@ -225,15 +223,15 @@ gfx::PointF Position::CalculateDefaultPosition(
 gfx::PointF Position::CalculateDependentPosition(
     const gfx::RectF& content_bounds) const {
   auto res = Position::CalculateDefaultPosition(content_bounds);
-  float cur_aspect_ratio =
-      1. * content_bounds.width() / content_bounds.height();
+  const float cur_aspect_ratio =
+      1.0f * content_bounds.width() / content_bounds.height();
   if (cur_aspect_ratio >= *aspect_ratio_) {
-    float x = CalculateDependent(anchor_, anchor_to_target_, true, *x_on_y_,
-                                 content_bounds);
+    const float x = CalculateDependent(anchor_, anchor_to_target_, true,
+                                       *x_on_y_, content_bounds);
     res.set_x(x);
   } else {
-    float y = CalculateDependent(anchor_, anchor_to_target_, false, *y_on_x_,
-                                 content_bounds);
+    const float y = CalculateDependent(anchor_, anchor_to_target_, false,
+                                       *y_on_x_, content_bounds);
     res.set_y(y);
   }
   return res;

@@ -408,7 +408,7 @@ gfx::Point EditingList::GetWidgetMagneticPositionLocal() {
   auto* widget = GetWidget();
   DCHECK(widget);
 
-  const auto width = GetPreferredSize().width();
+  const int width = GetPreferredSize().width();
   const auto anchor_bounds = controller_->touch_injector()->content_bounds();
   const auto available_bounds = CalculateAvailableBounds(
       controller_->touch_injector()->window()->GetRootWindow());

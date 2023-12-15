@@ -61,7 +61,8 @@ class EditingListTest : public OverlayViewTestBase {
     }
 
     auto* event_generator = GetEventGenerator();
-    auto view_bounds = scroll_content->children()[index]->GetBoundsInScreen();
+    const auto view_bounds =
+        scroll_content->children()[index]->GetBoundsInScreen();
     // `ButtonOptionsMenu` may cover `EditingList`, so left-click on the left
     // side of the list item to avoid UI overlapping.
     event_generator->MoveMouseTo(view_bounds.x() + view_bounds.width() / 4,
@@ -83,7 +84,7 @@ class EditingListTest : public OverlayViewTestBase {
   // button.
   void MouseDraggingActionViewBy(Action* action, int x, int y) {
     auto* event_generator = GetEventGenerator();
-    auto* touch_point = action->action_view()->touch_point();
+    const auto* touch_point = action->action_view()->touch_point();
     if (!touch_point) {
       LOG(WARNING) << "Mouse dragging has no valid touch point.";
       return;
@@ -110,7 +111,7 @@ class EditingListTest : public OverlayViewTestBase {
     }
     views::View* scroll_content = editing_list_->scroll_content_;
     DCHECK(scroll_content);
-    int scroll_height = scroll_content->GetPreferredSize().height();
+    const int scroll_height = scroll_content->GetPreferredSize().height();
     editing_list_->scroll_view_->ScrollByOffset(
         gfx::PointF(0, top ? -scroll_height : scroll_height));
   }
@@ -137,7 +138,7 @@ class EditingListTest : public OverlayViewTestBase {
   }
 
   bool IsButtonOptionsMenuVisible() {
-    auto* menu_widget = controller_->button_options_widget_.get();
+    const auto* menu_widget = controller_->button_options_widget_.get();
     return menu_widget && menu_widget->IsVisible();
   }
 

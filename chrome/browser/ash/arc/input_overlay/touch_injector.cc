@@ -61,7 +61,7 @@ void RemoveActionsWithSameID(std::vector<std::unique_ptr<Action>>& actions) {
   auto it = actions.begin();
   while (it != actions.end()) {
     int id = it->get()->id();
-    if (ids.find(id) == ids.end()) {
+    if (!ids.contains(id)) {
       ids.insert(id);
       it++;
     } else {
@@ -79,8 +79,7 @@ std::vector<std::unique_ptr<Action>> ParseJsonToActions(
   std::vector<std::unique_ptr<Action>> actions;
 
   // Parse tap actions if they exist.
-  const base::Value::List* tap_act_list = root.FindList(kTapAction);
-  if (tap_act_list) {
+  if (const auto* tap_act_list = root.FindList(kTapAction)) {
     for (const auto& val : *tap_act_list) {
       auto* val_dict = val.GetIfDict();
       if (!val_dict) {
@@ -97,8 +96,7 @@ std::vector<std::unique_ptr<Action>> ParseJsonToActions(
   }
 
   // Parse move actions if they exist.
-  const base::Value::List* move_act_list = root.FindList(kMoveAction);
-  if (move_act_list) {
+  if (const auto* move_act_list = root.FindList(kMoveAction)) {
     for (const auto& val : *move_act_list) {
       auto* val_dict = val.GetIfDict();
       if (!val_dict) {
@@ -194,19 +192,15 @@ int FindNewCustomActionID(const std::vector<int>& id_list) {
 // Create Action by `action_type` without any input bindings.
 std::unique_ptr<Action> CreateRawAction(ActionType type,
                                         TouchInjector* injector) {
-  std::unique_ptr<Action> action;
   switch (type) {
     case ActionType::TAP:
-      action = std::make_unique<ActionTap>(injector);
-      break;
+      return std::make_unique<ActionTap>(injector);
     case ActionType::MOVE:
-      action = std::make_unique<ActionMove>(injector);
-      break;
+      return std::make_unique<ActionMove>(injector);
     default:
       NOTREACHED();
       return nullptr;
   }
-  return action;
 }
 
 }  // namespace
@@ -219,7 +213,7 @@ gfx::RectF CalculateWindowContentBounds(aura::Window* window) {
   DCHECK(widget->non_client_view());
   auto* frame_view = widget->non_client_view()->frame_view();
   DCHECK(frame_view);
-  int height = frame_view->GetBoundsForClientView().y();
+  const int height = frame_view->GetBoundsForClientView().y();
   auto bounds = gfx::RectF(window->bounds());
   bounds.Inset(gfx::InsetsF::TLBR(height, 0, 0, 0));
   return bounds;
@@ -238,8 +232,8 @@ class TouchInjector::KeyCommand {
     if (!event.IsKeyEvent()) {
       return false;
     }
-    auto* key_event = event.AsKeyEvent();
-    if (key_ == key_event->code() &&
+    if (auto* key_event = event.AsKeyEvent();
+        key_ == key_event->code() &&
         modifiers_ == (key_event->flags() & kInterestingFlagsMask)) {
       if (key_event->type() == ui::ET_KEY_PRESSED) {
         callback_.Run();
@@ -273,8 +267,8 @@ void TouchInjector::ParseActions(const base::Value::Dict& root) {
     ParseMouseLock(root);
   }
 
-  auto parsed_actions = ParseJsonToActions(this, root);
-  if (!parsed_actions.empty()) {
+  if (auto parsed_actions = ParseJsonToActions(this, root);
+      !parsed_actions.empty()) {
     std::move(parsed_actions.begin(), parsed_actions.end(),
               std::back_inserter(actions_));
   }
@@ -317,8 +311,9 @@ void TouchInjector::UnRegisterEventRewriter() {
   DispatchTouchReleaseEvent();
   observation_.Reset();
   // Need reset pending input bind if it is unregistered in edit mode.
-  for (auto& action : actions_)
+  for (auto& action : actions_) {
     action->ResetPendingBind();
+  }
   OnSaveProtoFile();
 }
 
@@ -352,8 +347,9 @@ void TouchInjector::OnInputBindingChange(
 }
 
 void TouchInjector::OnApplyPendingBinding() {
-  for (auto& action : actions_)
+  for (auto& action : actions_) {
     action->BindPending();
+  }
 }
 
 void TouchInjector::OnBindingSave() {
@@ -377,8 +373,9 @@ void TouchInjector::OnBindingCancel() {
 }
 
 void TouchInjector::OnBindingRestore() {
-  for (auto& action : actions_)
+  for (auto& action : actions_) {
     action->RestoreToDefault();
+  }
 }
 
 void TouchInjector::OnProtoDataAvailable(AppDataProto& proto) {
@@ -427,8 +424,8 @@ void TouchInjector::NotifyFirstTimeLaunch() {
 
 void TouchInjector::SaveMenuEntryLocation(
     gfx::Point menu_entry_location_point) {
-  float width = content_bounds_f_.width();
-  float height = content_bounds_f_.height();
+  const float width = content_bounds_f_.width();
+  const float height = content_bounds_f_.height();
   DCHECK_GT(width, 1);
   DCHECK_GT(height, 1);
   menu_entry_location_ = std::make_optional<gfx::Vector2dF>(
@@ -441,9 +438,10 @@ void TouchInjector::UpdatePositionsForRegister() {
     rotation_transform_.reset();
   }
 
-  auto display = display::Screen::GetScreen()->GetDisplayNearestWindow(window_);
   // No need to transform if there is no rotation.
-  if (display.panel_rotation() != display::Display::ROTATE_0) {
+  if (auto display =
+          display::Screen::GetScreen()->GetDisplayNearestWindow(window_);
+      display.panel_rotation() != display::Display::ROTATE_0) {
     rotation_transform_ =
         std::make_unique<gfx::Transform>(ash::CreateRotationTransform(
             display::Display::ROTATE_0, display.panel_rotation(),
@@ -454,8 +452,9 @@ void TouchInjector::UpdatePositionsForRegister() {
 
 void TouchInjector::UpdateForOverlayBoundsChanged(
     const gfx::RectF& new_bounds) {
-  bool should_update_view = content_bounds_f_.width() != new_bounds.width() ||
-                            content_bounds_f_.height() != new_bounds.height();
+  const bool should_update_view =
+      content_bounds_f_.width() != new_bounds.width() ||
+      content_bounds_f_.height() != new_bounds.height();
 
   content_bounds_f_ = new_bounds;
   for (auto& action : actions_) {
@@ -512,9 +511,9 @@ void TouchInjector::DispatchTouchReleaseEvent() {
 
   // Release active touch-to-touch events.
   for (auto& touch_info : rewritten_touch_infos_) {
-    auto touch_point_info = touch_info.second;
-    auto managed_touch_id = touch_point_info.rewritten_touch_id;
-    auto root_location = touch_point_info.touch_root_location;
+    const auto touch_point_info = touch_info.second;
+    const auto managed_touch_id = touch_point_info.rewritten_touch_id;
+    const auto root_location = touch_point_info.touch_root_location;
 
     auto touch_to_release = std::make_unique<ui::TouchEvent>(ui::TouchEvent(
         ui::EventType::ET_TOUCH_RELEASED, root_location, root_location,
@@ -575,7 +574,7 @@ bool TouchInjector::LocatedEventOnMenuEntry(const ui::Event& event,
     return false;
   }
 
-  auto menu_anchor_bounds =
+  const auto menu_anchor_bounds =
       display_overlay_controller_->GetOverlayMenuEntryBounds();
   if (!menu_anchor_bounds) {
     if (!IsBeta()) {
@@ -595,22 +594,14 @@ bool TouchInjector::LocatedEventOnMenuEntry(const ui::Event& event,
     return menu_anchor_bounds->Contains(event_location);
   }
 
-  if (!event.IsMouseEvent() && !event.IsTouchEvent()) {
-    return false;
-  }
-
-  if (event.IsMouseEvent()) {
-    auto* mouse = event.AsMouseEvent();
-    if (mouse->type() == ui::ET_MOUSE_PRESSED &&
-        menu_anchor_bounds->Contains(event_location)) {
-      return true;
-    }
-  } else {
-    auto* touch = event.AsTouchEvent();
-    if (touch->type() == ui::ET_TOUCH_PRESSED &&
-        menu_anchor_bounds->Contains(event_location)) {
-      return true;
-    }
+  if (event.IsMouseEvent() &&
+      event.AsMouseEvent()->type() == ui::ET_MOUSE_PRESSED &&
+      menu_anchor_bounds->Contains(event_location)) {
+    return true;
+  } else if (event.IsTouchEvent() &&
+             event.AsTouchEvent()->type() == ui::ET_TOUCH_PRESSED &&
+             menu_anchor_bounds->Contains(event_location)) {
+    return true;
   }
   return false;
 }
@@ -838,11 +829,9 @@ Action* TouchInjector::GetActionById(int id) {
 std::unique_ptr<AppDataProto> TouchInjector::ConvertToProto() {
   auto app_data_proto = std::make_unique<AppDataProto>();
   for (auto& action : actions_) {
-    auto customized_proto = action->ConvertToProtoIfCustomized();
-    if (customized_proto) {
+    if (auto customized_proto = action->ConvertToProtoIfCustomized()) {
       *app_data_proto->add_actions() = *customized_proto;
     }
-    customized_proto.reset();
   }
   AddMenuStateToProto(*app_data_proto);
   AddMenuEntryToProtoIfCustomized(*app_data_proto);
@@ -918,7 +907,7 @@ int TouchInjector::GetNextNewActionID() {
 
   std::vector<int> ids;
   for (const auto& action : actions_) {
-    int id = action->id();
+    const int id = action->id();
     if (id > kMaxDefaultActionID) {
       ids.emplace_back(id);
     }

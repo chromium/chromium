@@ -45,7 +45,7 @@ class ButtonOptionsMenuTest : public OverlayViewTestBase {
     views::View* scroll_content = editing_list_->scroll_content_;
     DCHECK(scroll_content);
     for (size_t i = 0; i < scroll_content->children().size(); i++) {
-      auto* list_item =
+      const auto* list_item =
           static_cast<ActionViewListItem*>(scroll_content->children()[i]);
       if (list_item->action() == action) {
         return i;

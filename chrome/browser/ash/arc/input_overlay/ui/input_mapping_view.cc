@@ -14,6 +14,7 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/views/background.h"
+#include "ui/views/view_utils.h"
 
 namespace arc::input_overlay {
 namespace {
@@ -23,8 +24,8 @@ constexpr SkColor kEditModeBgColor = SkColorSetA(SK_ColorBLACK, 0x66 /*40%*/);
 // Return true if `v1` is on top than `v2`, or `v1` is on the left side of `v2`
 // when `v1` has the same y position as `v2`.
 bool CompareActionViewPosition(const ActionView* v1, const ActionView* v2) {
-  auto center1 = v1->GetTouchCenterInWindow();
-  auto center2 = v2->GetTouchCenterInWindow();
+  const auto center1 = v1->GetTouchCenterInWindow();
+  const auto center2 = v2->GetTouchCenterInWindow();
 
   if (center1.y() != center2.y()) {
     return center1.y() < center2.y();
@@ -42,8 +43,7 @@ InputMappingView::InputMappingView(
     if (action->IsDeleted()) {
       continue;
     }
-    auto view = action->CreateView(controller_);
-    if (view) {
+    if (auto view = action->CreateView(controller_)) {
       AddChildView(std::move(view));
     }
   }
@@ -89,8 +89,8 @@ void InputMappingView::ProcessPressedEvent(const ui::LocatedEvent& event) {
       if (!action_label->HasFocus()) {
         continue;
       }
-      auto bounds = action_label->GetBoundsInScreen();
-      if (!bounds.Contains(event_location)) {
+      if (auto bounds = action_label->GetBoundsInScreen();
+          !bounds.Contains(event_location)) {
         action_label->ClearFocus();
         controller_->AddEditMessage(
             l10n_util::GetStringUTF8(IDS_INPUT_OVERLAY_EDIT_INSTRUCTIONS),
@@ -103,7 +103,7 @@ void InputMappingView::ProcessPressedEvent(const ui::LocatedEvent& event) {
 
 void InputMappingView::SortChildren() {
   std::vector<ActionView*> left, right;
-  float aspect_ratio = (float)width() / height();
+  const float aspect_ratio = (float)width() / height();
   for (auto* child : children()) {
     auto* action_view = static_cast<ActionView*>(child);
     if (aspect_ratio > 1 &&
@@ -129,8 +129,7 @@ void InputMappingView::OnActionAddedInternal(Action& action) {
   // No add function for pre-beta version.
   DCHECK(IsBeta());
 
-  auto view = action.CreateView(controller_);
-  if (view) {
+  if (auto view = action.CreateView(controller_)) {
     AddChildView(std::move(view))->SetDisplayMode(current_display_mode_);
   }
 }
@@ -163,8 +162,8 @@ void InputMappingView::OnActionRemoved(const Action& action) {
   DCHECK(IsBeta());
 
   for (auto* const child : children()) {
-    auto* action_view = static_cast<ActionView*>(child);
-    if (action_view->action() == &action) {
+    if (auto* action_view = views::AsViewClass<ActionView>(child);
+        action_view->action() == &action) {
       RemoveChildViewT(action_view);
       break;
     }
@@ -173,8 +172,8 @@ void InputMappingView::OnActionRemoved(const Action& action) {
 
 void InputMappingView::OnActionNewStateRemoved(const Action& action) {
   for (auto* const child : children()) {
-    auto* action_view = static_cast<ActionView*>(child);
-    if (action_view->action() == &action) {
+    if (auto* action_view = views::AsViewClass<ActionView>(child);
+        action_view->action() == &action) {
       action_view->RemoveNewState();
       break;
     }
@@ -195,8 +194,8 @@ void InputMappingView::OnActionInputBindingUpdated(const Action& action) {
   }
 
   for (auto* const child : children()) {
-    auto* action_view = static_cast<ActionView*>(child);
-    if (action_view->action() == &action) {
+    if (auto* action_view = views::AsViewClass<ActionView>(child);
+        action_view->action() == &action) {
       action_view->OnActionInputBindingUpdated();
       break;
     }

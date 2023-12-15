@@ -83,8 +83,7 @@ void EditLabels::FocusLabel() {
   // Clicking the edit labels with an already focused edit label causes the next
   // label to gain focus.
   for (size_t i = 0; i < labels_.size(); i++) {
-    auto* label = labels_[i];
-    if (label->HasFocus()) {
+    if (auto* label = labels_[i]; label->HasFocus()) {
       labels_[(i + 1) % labels_.size()]->RequestFocus();
       return;
     }

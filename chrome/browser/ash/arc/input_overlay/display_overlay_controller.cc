@@ -154,9 +154,9 @@ void DisplayOverlayController::RemoveOverlayIfAny() {
   if (display_mode_ == DisplayMode::kEdit) {
     OnCustomizeCancel();
   }
-  auto* shell_surface_base =
-      exo::GetShellSurfaceBaseForWindow(touch_injector_->window());
-  if (shell_surface_base && shell_surface_base->HasOverlay()) {
+  if (auto* shell_surface_base =
+          exo::GetShellSurfaceBaseForWindow(touch_injector_->window());
+      shell_surface_base && shell_surface_base->HasOverlay()) {
     // Call `RemoveInputMenuView` explicitly to make sure UMA stats is updated.
     RemoveInputMenuView();
 
@@ -380,16 +380,14 @@ void DisplayOverlayController::OnEducationalViewDismissed() {
 }
 
 views::Widget* DisplayOverlayController::GetOverlayWidget() {
-  auto* shell_surface_base =
-      exo::GetShellSurfaceBaseForWindow(touch_injector_->window());
-  // Shell surface is null for test.
-  if (!shell_surface_base) {
-    return nullptr;
+  if (auto* shell_surface_base =
+          exo::GetShellSurfaceBaseForWindow(touch_injector_->window())) {
+    return static_cast<views::Widget*>(
+        shell_surface_base->GetFocusTraversable());
   }
 
-  return shell_surface_base ? static_cast<views::Widget*>(
-                                  shell_surface_base->GetFocusTraversable())
-                            : nullptr;
+  // Shell surface is null for test.
+  return nullptr;
 }
 
 views::View* DisplayOverlayController::GetOverlayWidgetContentsView() {
@@ -737,7 +735,7 @@ void DisplayOverlayController::SetButtonOptionsMenuWidgetVisibility(
   }
 
   if (is_visible) {
-    if (auto* menu = GetButtonOptionsMenu()) {
+    if (GetButtonOptionsMenu()) {
       UpdateButtonOptionsMenuWidgetBounds();
     }
     button_options_widget_->ShowInactive();
@@ -1015,18 +1013,13 @@ void DisplayOverlayController::ProcessPressedEvent(
                       .origin();
     root_location.Offset(origin.x(), origin.y());
 
-    if (message_) {
-      auto bounds = message_->GetBoundsInScreen();
-      if (!bounds.Contains(root_location)) {
-        RemoveEditMessage();
-      }
+    if (message_ && !message_->GetBoundsInScreen().Contains(root_location)) {
+      RemoveEditMessage();
     }
 
-    if (input_menu_view_) {
-      auto bounds = input_menu_view_->GetBoundsInScreen();
-      if (!bounds.Contains(root_location)) {
-        SetDisplayModeAlpha(DisplayMode::kView);
-      }
+    if (input_menu_view_ &&
+        !input_menu_view_->GetBoundsInScreen().Contains(root_location)) {
+      SetDisplayModeAlpha(DisplayMode::kView);
     }
 
     // Dismiss the nudge, regardless where the click was.
@@ -1054,8 +1047,7 @@ void DisplayOverlayController::EnsureTaskWindowToFrontForViewMode(
   DCHECK(shell_surface_base);
   auto* host_window = shell_surface_base->host_window();
   DCHECK(host_window);
-  const auto& children = host_window->children();
-  if (children.size() > 0u) {
+  if (const auto& children = host_window->children(); children.size() > 0u) {
     // First child is the root ExoSurface window. Focus on the root surface
     // window can bring the task window to the front of the task stack.
     if (!children[0]->HasFocus()) {

@@ -106,9 +106,9 @@ aura::Window* GetGameBubbleDialogAnchorWindow(aura::Window* window) {
     return nullptr;
   }
 
-  auto* contents_view = bubble_delegate->GetContentsView();
   views::Widget* anchor_widget = nullptr;
-  if (views::AsViewClass<ash::GameDashboardMainMenuView>(contents_view)) {
+  if (const auto* contents_view = bubble_delegate->GetContentsView();
+      views::AsViewClass<ash::GameDashboardMainMenuView>(contents_view)) {
     // `window` has `ash::GameDashboardMainMenuView` as contents view.
     anchor_widget = widget->parent();
     DCHECK(anchor_widget);
@@ -166,11 +166,9 @@ ArcInputOverlayManager::ArcInputOverlayManager(
   if (aura::Env::HasInstance()) {
     env_observation_.Observe(aura::Env::GetInstance());
   }
-  if (ash::Shell::HasInstance()) {
-    if (ash::Shell::GetPrimaryRootWindow()) {
-      aura::client::GetFocusClient(ash::Shell::GetPrimaryRootWindow())
-          ->AddObserver(this);
-    }
+  if (ash::Shell::HasInstance() && ash::Shell::GetPrimaryRootWindow()) {
+    aura::client::GetFocusClient(ash::Shell::GetPrimaryRootWindow())
+        ->AddObserver(this);
   }
   task_runner_ = base::ThreadPool::CreateSequencedTaskRunner(
       {base::MayBlock(), base::TaskPriority::USER_VISIBLE,
@@ -228,7 +226,8 @@ void ArcInputOverlayManager::OnWindowPropertyChanged(aura::Window* window,
       IsGhostWindowLoading(window) || loading_data_windows_.contains(window)) {
     return;
   }
-  std::string* package_name = window->GetProperty(ash::kArcPackageNameKey);
+  const std::string* package_name =
+      window->GetProperty(ash::kArcPackageNameKey);
   if (!package_name || package_name->empty()) {
     return;
   }
@@ -282,11 +281,9 @@ void ArcInputOverlayManager::OnWindowParentChanged(aura::Window* window,
 void ArcInputOverlayManager::Shutdown() {
   UnRegisterWindow(registered_top_level_window_);
   window_observations_.RemoveAllObservations();
-  if (ash::Shell::HasInstance()) {
-    if (ash::Shell::GetPrimaryRootWindow()) {
-      aura::client::GetFocusClient(ash::Shell::GetPrimaryRootWindow())
-          ->RemoveObserver(this);
-    }
+  if (ash::Shell::HasInstance() && ash::Shell::GetPrimaryRootWindow()) {
+    aura::client::GetFocusClient(ash::Shell::GetPrimaryRootWindow())
+        ->RemoveObserver(this);
   }
   if (aura::Env::HasInstance()) {
     env_observation_.Reset();
@@ -328,12 +325,11 @@ void ArcInputOverlayManager::OnDisplayMetricsChanged(
     return;
   }
 
-  auto it = input_overlay_enabled_windows_.find(registered_top_level_window_);
-  if (it == input_overlay_enabled_windows_.end()) {
-    return;
+  if (auto it =
+          input_overlay_enabled_windows_.find(registered_top_level_window_);
+      it != input_overlay_enabled_windows_.end()) {
+    it->second->UpdatePositionsForRegister();
   }
-
-  it->second->UpdatePositionsForRegister();
 }
 
 void ArcInputOverlayManager::OnDisplayTabletStateChanged(
@@ -371,18 +367,19 @@ std::unique_ptr<TouchInjector> ArcInputOverlayManager::ReadDefaultData(
   DCHECK(touch_injector);
 
   const std::string& package_name = touch_injector->package_name();
-  auto resource_id = GetInputOverlayResourceId(package_name);
+  const auto resource_id = GetInputOverlayResourceId(package_name);
   if (!resource_id) {
     return touch_injector;
   }
 
-  auto json_file = ui::ResourceBundle::GetSharedInstance().GetRawDataResource(
-      resource_id.value());
+  const auto json_file =
+      ui::ResourceBundle::GetSharedInstance().GetRawDataResource(
+          resource_id.value());
   if (json_file.empty()) {
     LOG(WARNING) << "No content for: " << package_name;
     return touch_injector;
   }
-  auto result = base::JSONReader::ReadAndReturnValueWithError(json_file);
+  const auto result = base::JSONReader::ReadAndReturnValueWithError(json_file);
   DCHECK(result.has_value())
       << "Could not load input overlay data file: " << result.error().message;
   if (!result.has_value() || !result->is_dict()) {
@@ -553,7 +550,7 @@ void ArcInputOverlayManager::CheckO4C(
     return;
   }
 
-  std::string package_name = touch_injector->package_name();
+  const std::string package_name = touch_injector->package_name();
   VLOG(2) << "Check if pkg: " << package_name << " is an O4C app.";
 
   instance->IsOptimizedForCrosApp(
@@ -585,8 +582,9 @@ void ArcInputOverlayManager::OnDidCheckO4C(
 }
 
 void ArcInputOverlayManager::NotifyTextInputState() {
-  auto it = input_overlay_enabled_windows_.find(registered_top_level_window_);
-  if (it != input_overlay_enabled_windows_.end()) {
+  if (const auto it =
+          input_overlay_enabled_windows_.find(registered_top_level_window_);
+      it != input_overlay_enabled_windows_.end()) {
     it->second->NotifyTextInputState(is_text_input_active_);
   }
 }
@@ -627,7 +625,7 @@ void ArcInputOverlayManager::RegisterWindow(aura::Window* window) {
               window);
   }
 
-  auto it = input_overlay_enabled_windows_.find(window);
+  const auto it = input_overlay_enabled_windows_.find(window);
   if (it == input_overlay_enabled_windows_.end()) {
     return;
   }
@@ -649,7 +647,8 @@ void ArcInputOverlayManager::UnRegisterWindow(aura::Window* window) {
   if (!registered_top_level_window_ || registered_top_level_window_ != window) {
     return;
   }
-  auto it = input_overlay_enabled_windows_.find(registered_top_level_window_);
+  const auto it =
+      input_overlay_enabled_windows_.find(registered_top_level_window_);
   DCHECK(it != input_overlay_enabled_windows_.end());
   if (it == input_overlay_enabled_windows_.end()) {
     return;
@@ -665,13 +664,11 @@ void ArcInputOverlayManager::UnRegisterWindow(aura::Window* window) {
 }
 
 void ArcInputOverlayManager::RegisterFocusedWindow() {
-  auto* focused_window = ash::window_util::GetFocusedWindow();
-  // Don't register window if it is in tablet mode.
-  if (display::Screen::GetScreen()->InTabletMode() || !focused_window) {
-    return;
+  // Register window if it is not in tablet mode.
+  if (auto* focused_window = ash::window_util::GetFocusedWindow();
+      focused_window && !display::Screen::GetScreen()->InTabletMode()) {
+    RegisterWindow(GetAnchorWindow(focused_window->GetToplevelWindow()));
   }
-
-  RegisterWindow(GetAnchorWindow(focused_window->GetToplevelWindow()));
 }
 
 void ArcInputOverlayManager::AddDisplayOverlayController(

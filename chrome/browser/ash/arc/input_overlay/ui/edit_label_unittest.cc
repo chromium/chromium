@@ -145,8 +145,8 @@ class EditLabelTest : public OverlayViewTestBase {
       return nullptr;
     }
     for (auto* child : scroll_content->children()) {
-      auto* list_item = static_cast<ActionViewListItem*>(child);
-      if (list_item->action() == action) {
+      if (auto* list_item = static_cast<ActionViewListItem*>(child);
+          list_item->action() == action) {
         return list_item;
       }
     }

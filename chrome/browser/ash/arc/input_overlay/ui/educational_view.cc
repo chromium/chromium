@@ -154,7 +154,7 @@ void EducationalView::Init(const gfx::Size& parent_size) {
   SetBackground(views::CreateThemedRoundedRectBackground(
       ash::kColorAshDialogBackgroundColor, kDialogCornerRadius));
 
-  bool is_dark = ash::DarkLightModeController::Get()->IsDarkModeEnabled();
+  const bool is_dark = ash::DarkLightModeController::Get()->IsDarkModeEnabled();
   const int parent_width = parent_size.width();
   {
     // UI's banner.
@@ -163,10 +163,10 @@ void EducationalView::Init(const gfx::Size& parent_size) {
 
     if (portrait_mode_) {
       // Resize the banner image size proportionally.
-      auto size = banner->CalculatePreferredSize();
-      int width =
+      const auto size = banner->CalculatePreferredSize();
+      const int width =
           GetDialogWidth(parent_width) - GetBorderSides(portrait_mode_) * 2;
-      float ratio = 1.0 * width / size.width();
+      const float ratio = 1.0 * width / size.width();
       banner->SetImageSize(gfx::Size(width, size.height() * ratio));
     }
     banner_ = AddChildView(std::move(banner));
