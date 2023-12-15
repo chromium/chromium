@@ -2302,11 +2302,6 @@ void TemplateURLService::ApplyEnterpriseSiteSearchChanges(
   // TODO(b/314162426): Check interaction with DSP not set by policy.
   // TODO(b/309456406): Override existing SE if keywords starts with "@" and
   //                    this is a featured site search entry.
-  // TODO(b/314359989): Only override user-defined search engines with
-  //                    `safe_for_autoreplace` == false.
-  // TODO(b/314368463): Do not delete search engines with
-  //                    `safe_for_autoreplace` == true when overridden by
-  //                    policy (both DSP and site search).
 }
 
 void TemplateURLService::EnterpriseSiteSearchChanged(
@@ -2704,6 +2699,14 @@ TemplateURL* TemplateURLService::FindMatchingDefaultExtensionTemplateURL(
 bool TemplateURLService::RemoveDuplicateReplaceableEnginesOf(
     TemplateURL* candidate) {
   DCHECK(candidate);
+
+  // Do not replace existing search engines if `candidate` was created by the
+  // `SiteSearchSettings` policy.
+  if (candidate->created_by_policy() ==
+      TemplateURLData::CreatedByPolicy::kSiteSearch) {
+    return false;
+  }
+
   const std::u16string& keyword = candidate->keyword();
 
   // If there's not at least one conflicting TemplateURL, there's nothing to do.
