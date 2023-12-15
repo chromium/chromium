@@ -39,11 +39,17 @@ constexpr uint64_t kProjectOneHash = UINT64_C(16881314472396226433);
 // The name hash of "TestProjectFive".
 constexpr uint64_t kProjectFiveHash = UINT64_C(3960582687892677139);
 
+// The name hash of "TestProjectSeven".
+constexpr uint64_t kProjectSevenHash = UINT64_C(10319251808101486833);
+
 // The name hash of "chrome::TestProjectOne::TestEventOne".
 constexpr uint64_t kEventOneHash = UINT64_C(13593049295042080097);
 
 // The name hash of "chrome::TestProjectFive::TestEventSix".
 constexpr uint64_t kEventSixHash = UINT64_C(2873337042686447043);
+
+// The name hash of "chrome::TestProjectSeven::TestEventEight".
+constexpr uint64_t kEventEightHash = UINT64_C(16290206418240617738);
 
 structured::StructuredMetricsService* GetSMService() {
   return g_browser_process->GetMetricsServicesManager()
@@ -304,6 +310,28 @@ IN_PROC_BROWSER_TEST_F(TestStructuredMetricsServiceDisabled,
   EXPECT_THAT(sm_service->recorder(), testing::NotNull());
   EXPECT_THAT(sm_service->reporting_service_.get(), testing::IsNull());
   EXPECT_THAT(sm_service->scheduler_.get(), testing::IsNull());
+}
+
+IN_PROC_BROWSER_TEST_F(TestStructuredMetricsService, PurgeForceRecordedEvents) {
+  // This feature is intended only for events that are recorded before user
+  // consent.
+  auto* sm_service = GetSMService();
+  // Simulates an initial state of disabled metrics.
+  structured_metrics_mixin_.UpdateRecordingState(false);
+  WaitForConsentChanges();
+
+  structured::events::v2::test_project_seven::TestEventEight().Record();
+
+  structured_metrics_mixin_.WaitUntilEventRecorded(kProjectSevenHash,
+                                                   kEventEightHash);
+
+  // Confirms the disabled metrics when consent is not given.
+  structured_metrics_mixin_.UpdateRecordingState(false);
+  WaitForConsentChanges();
+
+  EXPECT_FALSE(HasUnsentLogs());
+  EXPECT_FALSE(HasStagedLog());
+  EXPECT_EQ(sm_service->recorder()->event_storage()->RecordedEventsCount(), 0);
 }
 
 }  // namespace metrics

@@ -255,10 +255,6 @@ class StructuredMetricsRecorderTest : public testing::Test {
 
   void OnRecordingDisabled() { recorder_->DisableRecording(); }
 
-  void OnReportingStateChanged(bool enabled) {
-    recorder_->OnReportingStateChanged(enabled);
-  }
-
   void OnProfileAdded(const base::FilePath& path) {
     recorder_->OnProfileAdded(path);
   }
@@ -333,40 +329,6 @@ TEST_F(StructuredMetricsRecorderTest, EventsNotReportedWhenFeatureDisabled) {
   events::v2::test_project_three::TestEventFour().SetTestMetricFour(1).Record();
   EXPECT_EQ(GetUMAEventMetrics().events_size(), 0);
   EXPECT_EQ(GetEventMetrics().events_size(), 0);
-  ExpectNoErrors();
-}
-
-// Ensure that keys and unsent logs are deleted when reporting is disabled, and
-// that reporting resumes when re-enabled.
-TEST_F(StructuredMetricsRecorderTest, ReportingStateChangesHandledCorrectly) {
-  Init();
-
-  // Record an event and read the keys, there should be one.
-  events::v2::test_project_one::TestEventOne().Record();
-  EXPECT_EQ(GetEventMetrics().events_size(), 1);
-
-  const KeyDataProto enabled_proto = ReadKeys(ProfileKeyFilePath());
-  EXPECT_EQ(enabled_proto.keys_size(), 1);
-
-  // Record an event, disable reporting, then record another event. Both of
-  // these events should have been ignored.
-  events::v2::test_project_one::TestEventOne().Record();
-  OnReportingStateChanged(false);
-  events::v2::test_project_one::TestEventOne().Record();
-  EXPECT_EQ(GetEventMetrics().events_size(), 0);
-
-  // Read the keys again, it should be empty.
-  const KeyDataProto disabled_proto = ReadKeys(ProfileKeyFilePath());
-  EXPECT_EQ(disabled_proto.keys_size(), 0);
-
-  // Enable reporting again, and record an event.
-  OnReportingStateChanged(true);
-  OnRecordingEnabled();
-  events::v2::test_project_one::TestEventOne().Record();
-  EXPECT_EQ(GetEventMetrics().events_size(), 1);
-  const KeyDataProto reenabled_proto = ReadKeys(ProfileKeyFilePath());
-  EXPECT_EQ(reenabled_proto.keys_size(), 1);
-
   ExpectNoErrors();
 }
 
@@ -826,22 +788,6 @@ TEST_F(StructuredMetricsRecorderTest, ForceRecordedEvents) {
 
   ASSERT_EQ(data.events_size(), 1);
   ASSERT_EQ(data.events(0).event_name_hash(), kEventEightHash);
-}
-
-TEST_F(StructuredMetricsRecorderTest, PurgeForceRecordedEvents) {
-  // Init and disable recorder.
-  Init();
-  OnRecordingDisabled();
-
-  events::v2::test_project_seven::TestEventEight().Record();
-
-  OnReportingStateChanged(false);
-
-  OnRecordingEnabled();
-
-  const auto data = GetEventMetrics();
-
-  ASSERT_EQ(data.events_size(), 0);
 }
 
 TEST_F(StructuredMetricsRecorderTest, EventMetadataLookupCorrectly) {

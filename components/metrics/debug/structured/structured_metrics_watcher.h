@@ -29,7 +29,6 @@ class StructuredMetricsWatcher : public Recorder::RecorderImpl {
   // Recorder::RecorderImpl:
   void OnEventRecord(const Event& event) override;
   void OnProfileAdded(const base::FilePath& profile_path) override;
-  void OnReportingStateChanged(bool enabled) override;
 
   const std::vector<Event>& events() const { return events_; }
 

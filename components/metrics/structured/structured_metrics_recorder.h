@@ -116,9 +116,6 @@ class StructuredMetricsRecorder : public Recorder::RecorderImpl,
   friend class TestStructuredMetricsProvider;
   friend class StructuredMetricsServiceTest;
 
-  // Recorder::RecorderImpl:
-  void OnReportingStateChanged(bool enabled) override;
-
   // Records events before IsInitialized().
   void RecordEventBeforeInitialization(const Event& event);
 
@@ -226,11 +223,6 @@ class StructuredMetricsRecorder : public Recorder::RecorderImpl,
   // OnRecordingEnabled is called, which sets it true if structured metrics'
   // feature flag is enabled.
   bool recording_enabled_ = false;
-
-  // Set by OnReportingStateChanged if all keys and events should be deleted,
-  // but the files backing that state haven't been initialized yet. If set,
-  // state will be purged upon initialization.
-  bool purge_state_on_init_ = false;
 
   // Store for events that were recorded before keys are loaded.
   std::deque<Event> unhashed_events_;
