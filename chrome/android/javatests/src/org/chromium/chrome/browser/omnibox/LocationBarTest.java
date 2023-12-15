@@ -619,7 +619,6 @@ public class LocationBarTest {
     @Test
     @MediumTest
     @CommandLineFlags.Add({
-        "enable-features=" + ChromeFeatureList.VOICE_BUTTON_IN_TOP_TOOLBAR,
         "disable-features="
                 + ChromeFeatureList.ADAPTIVE_BUTTON_IN_TOP_TOOLBAR
                 + ","

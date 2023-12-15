@@ -112,7 +112,6 @@ import java.util.List;
         })
 @EnableFeatures({ChromeFeatureList.ADVANCED_PERIPHERALS_SUPPORT})
 @DisableFeatures({
-    ChromeFeatureList.VOICE_BUTTON_IN_TOP_TOOLBAR,
     ChromeFeatureList.ADAPTIVE_BUTTON_IN_TOP_TOOLBAR_CUSTOMIZATION_V2
 })
 public class LocationBarMediatorTest {
