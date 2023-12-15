@@ -2,7 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import './animations.css.js';
 import './icons.html.js';
 import './strings.m.js';
 import './textarea.js';
@@ -24,6 +23,7 @@ import {EventTracker} from '//resources/js/event_tracker.js';
 import {loadTimeData} from '//resources/js/load_time_data.js';
 import {Debouncer, microTask, PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
+import {ComposeAppAnimator} from './animations/app_animator.js';
 import {getTemplate} from './app.html.js';
 import {CloseReason, ComposeDialogCallbackRouter, ComposeResponse, ComposeStatus, ConfigurableParams, ConsentState, Length, StyleModifiers, Tone, UserFeedback} from './compose.mojom-webui.js';
 import {ComposeApiProxy, ComposeApiProxyImpl} from './compose_api_proxy.js';
@@ -193,6 +193,7 @@ export class ComposeAppElement extends ComposeAppElementBase {
     ];
   }
 
+  private animator_: ComposeAppAnimator;
   private apiProxy_: ComposeApiProxy = ComposeApiProxyImpl.getInstance();
   enableAnimations: boolean;
   private eventTracker_: EventTracker = new EventTracker();
@@ -219,6 +220,8 @@ export class ComposeAppElement extends ComposeAppElementBase {
   constructor() {
     super();
     ColorChangeUpdater.forDocument().start();
+    this.animator_ = new ComposeAppAnimator(
+        this, loadTimeData.getBoolean('enableAnimations'));
     this.getInitialState_();
     this.router_.responseReceived.addListener((response: ComposeResponse) => {
       this.composeResponseReceived_(response);
@@ -256,6 +259,10 @@ export class ComposeAppElement extends ComposeAppElementBase {
       // state.
       this.showMainAppDialog_ =
           initialState.consentState === ConsentState.kConsented;
+      if (!this.showMainAppDialog_) {
+        this.animator_.transitionToConsent();
+      }
+
       this.showDisclaimerFooter_ =
           initialState.consentState === ConsentState.kExternalConsented;
 
@@ -303,6 +310,7 @@ export class ComposeAppElement extends ComposeAppElementBase {
   private onConsentYesButtonClick_() {
     this.apiProxy_.approveConsent();
     this.showMainAppDialog_ = true;
+    this.animator_.transitionToInput();
   }
 
   private onDisclaimerLetsGoButtonClick_() {

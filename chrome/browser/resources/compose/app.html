@@ -1,4 +1,4 @@
-<style include="cr-hidden-style md-select animations">
+<style include="cr-hidden-style md-select">
   :host {
     --gap-between-sections_: 16px;
     --padding_: 20px;
@@ -37,6 +37,7 @@
     display: flex;
     justify-content: center;
     align-items: center;
+    transform-origin: top left;
   }
 
   @media (prefers-color-scheme: dark) {
@@ -69,23 +70,6 @@
     gap: 7px;
     overflow: auto;
     padding: 0 20px;
-  }
-
-  :host([enable-animations]) #consentHeading h1,
-  :host([enable-animations]) #consentContainer {
-    --compose-slide-in-distance: -8px;
-    animation: slide-in 250ms var(--compose-standard-easing) both,
-        fade-in 100ms linear 50ms both;
-  }
-
-  :host([enable-animations]) #closeButtonConsent,
-  :host([enable-animations]) #consentFooter {
-    animation: fade-in 100ms linear 100ms both;
-  }
-
-  :host([enable-animations]) #consentIconContainer {
-    animation: scale-in 250ms var(--compose-standard-easing) both;
-    transform-origin: top left;
   }
 
   #heading {
@@ -126,14 +110,6 @@
     flex-direction: column;
     gap: var(--gap-between-sections_);
     position: relative;
-  }
-
-  :host([enable-animations]) #heading h1,
-  :host([enable-animations]) #body,
-  :host([enable-animations]) #submitFooter .footer-text {
-    --compose-slide-in-distance: -8px;
-    animation: fade-in 100ms linear 100ms both,
-        slide-in 200ms var(--compose-standard-easing) both;
   }
 
   #body {
@@ -314,12 +290,6 @@
   :host-context([chrome-refresh-2023], [is-editing-submitted-input_])
       #bodyAndFooter {
     min-height: 141px;
-  }
-
-  :host([enable-animations]) #submitButton {
-    --compose-slide-in-distance: 48px;
-    animation: slide-in 200ms var(--compose-standard-easing) both,
-        fade-in 100ms linear 100ms both;
   }
 
   #editContainer {

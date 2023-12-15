@@ -23,3 +23,7 @@ IN_PROC_BROWSER_TEST_F(ComposeTest, App) {
 IN_PROC_BROWSER_TEST_F(ComposeTest, Textarea) {
   RunTest("compose/compose_textarea_test.js", "mocha.run()");
 }
+
+IN_PROC_BROWSER_TEST_F(ComposeTest, Animator) {
+  RunTest("compose/compose_animator_test.js", "mocha.run()");
+}
