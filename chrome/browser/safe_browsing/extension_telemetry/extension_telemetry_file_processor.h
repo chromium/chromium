@@ -45,6 +45,8 @@ class ExtensionTelemetryFileProcessor {
   // file is unhashed.
   base::Value::Dict ProcessExtension(const base::FilePath& root_dir);
 
+  void SetMaxFilesToProcessForTest(int64_t max_files_to_process);
+  void SetMaxFileSizeBytesForTest(int64_t max_file_size);
   void SetMaxFilesToReadForTest(int64_t max_files_to_read);
 
  protected:

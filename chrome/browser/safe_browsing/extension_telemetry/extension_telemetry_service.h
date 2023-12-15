@@ -112,6 +112,9 @@ class ExtensionTelemetryService : public KeyedService {
   // KeyedService:
   void Shutdown() override;
 
+  base::TimeDelta GetOffstoreFileDataCollectionStartupDelaySeconds();
+  base::TimeDelta GetOffstoreFileDataCollectionIntervalSeconds();
+
  private:
   // Called when prefs that affect extension telemetry service are changed.
   void OnPrefChanged();
@@ -314,9 +317,9 @@ class ExtensionTelemetryService : public KeyedService {
   base::flat_set<OffstoreExtensionFileDataContext>
       offstore_extension_file_data_contexts_;
   // Used to start the initial offstore extension file data collection based on
-  // |kExtensionTelemetryFileDataStartupDelaySeconds| - default: 5 mins.
+  // |kOffstoreFileDataCollectionStartupDelaySeconds| - default: 5 mins.
   // Then repeat the collection based on
-  // |kExtensionTelemetryFileDataProcessIntervalSeconds| - default: 2 hours.
+  // |kOffstoreFileDataCollectionIntervalSeconds| - default: 2 hours.
   base::OneShotTimer offstore_file_data_collection_timer_;
   base::TimeTicks offstore_file_data_collection_start_time_;
   base::TimeDelta offstore_file_data_collection_duration_limit_;

@@ -113,6 +113,16 @@ base::TimeDelta kUploadIntervalSeconds = base::Seconds(3600);
 // Delay before the Telemetry Service checks its last upload time.
 base::TimeDelta kStartupUploadCheckDelaySeconds = base::Seconds(15);
 
+// Interval for extension telemetry to start another off-store extension
+// file data collection process.
+base::TimeDelta kOffstoreFileDataCollectionIntervalSeconds =
+    base::Seconds(7200);
+
+// Initial delay for extension telemetry to start collecting
+// off-store extension file data.
+base::TimeDelta kOffstoreFileDataCollectionStartupDelaySeconds =
+    base::Seconds(300);
+
 // Limit the off-store file data collection duration.
 base::TimeDelta kOffstoreFileDataCollectionDurationLimitSeconds =
     base::Seconds(60);
@@ -399,15 +409,13 @@ void ExtensionTelemetryService::SetEnabled(bool enable) {
       config_manager_->LoadConfig();
     }
 
-    if (base::FeatureList::IsEnabled(kExtensionTelemetryFileData)) {
       file_processor_ = base::SequenceBound<ExtensionTelemetryFileProcessor>(
           base::ThreadPool::CreateSequencedTaskRunner(
               {base::MayBlock(), base::TaskPriority::BEST_EFFORT,
                base::TaskShutdownBehavior::CONTINUE_ON_SHUTDOWN}));
       offstore_file_data_collection_timer_.Start(
-          FROM_HERE,
-          base::Seconds(kExtensionTelemetryFileDataStartupDelaySeconds.Get()),
-          this, &ExtensionTelemetryService::StartOffstoreFileDataCollection);
+          FROM_HERE, kOffstoreFileDataCollectionStartupDelaySeconds, this,
+          &ExtensionTelemetryService::StartOffstoreFileDataCollection);
       if (base::FeatureList::IsEnabled(
               kExtensionTelemetryFileDataForCommandLineExtensions)) {
         base::ThreadPool::PostTaskAndReplyWithResult(
@@ -417,7 +425,6 @@ void ExtensionTelemetryService::SetEnabled(bool enable) {
                                OnCommandLineExtensionsInfoCollected,
                            weak_factory_.GetWeakPtr()));
       }
-    }
 
     if (current_reporting_interval_.is_positive()) {
       int max_files_supported =
@@ -1030,7 +1037,6 @@ ExtensionTelemetryService::GetExtensionInfoForReport(
   extension_info->set_disable_reasons(
       extension_prefs_->GetDisableReasons(extension.id()));
 
-  if (base::FeatureList::IsEnabled(kExtensionTelemetryFileData)) {
     absl::optional<OffstoreExtensionFileData> offstore_file_data =
         RetrieveOffstoreFileDataForReport(extension.id());
 
@@ -1041,7 +1047,6 @@ ExtensionTelemetryService::GetExtensionInfoForReport(
         extension_info->mutable_file_infos()->Add(std::move(file_info));
       }
     }
-  }
 
   return extension_info;
 }
@@ -1168,10 +1173,8 @@ void ExtensionTelemetryService::CollectOffstoreFileData() {
       (base::TimeTicks::Now() - offstore_file_data_collection_start_time_) >=
           offstore_file_data_collection_duration_limit_) {
     offstore_file_data_collection_timer_.Start(
-        FROM_HERE,
-        base::Seconds(
-            kExtensionTelemetryFileDataCollectionIntervalSeconds.Get()),
-        this, &ExtensionTelemetryService::StartOffstoreFileDataCollection);
+        FROM_HERE, kOffstoreFileDataCollectionIntervalSeconds, this,
+        &ExtensionTelemetryService::StartOffstoreFileDataCollection);
 
     // Record only if there are off-store extensions installed.
     if (!offstore_extension_dirs_.empty()) {
@@ -1250,6 +1253,16 @@ void ExtensionTelemetryService::ProcessOffstoreExtensionVerdicts(
   }
   extension_service->PerformActionBasedOnExtensionTelemetryServiceVerdicts(
       blocklist_states);
+}
+
+base::TimeDelta
+ExtensionTelemetryService::GetOffstoreFileDataCollectionStartupDelaySeconds() {
+  return kOffstoreFileDataCollectionStartupDelaySeconds;
+}
+
+base::TimeDelta
+ExtensionTelemetryService::GetOffstoreFileDataCollectionIntervalSeconds() {
+  return kOffstoreFileDataCollectionIntervalSeconds;
 }
 
 }  // namespace safe_browsing

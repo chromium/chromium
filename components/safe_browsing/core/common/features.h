@@ -79,30 +79,6 @@ extern const base::FeatureParam<int>
 // sent by the server.
 BASE_DECLARE_FEATURE(kExtensionTelemetryConfiguration);
 
-// Allows the Extension Telemetry Service to process installed extension files
-// and attach file data to reports.
-BASE_DECLARE_FEATURE(kExtensionTelemetryFileData);
-
-// Specifies the max number of files to process per extension in Extension
-// Telemetry's File Processor.
-extern const base::FeatureParam<int>
-    kExtensionTelemetryFileDataMaxFilesToProcess;
-
-// Specifies the max file size to process in Extension Telemetry's File
-// Processor.
-extern const base::FeatureParam<int>
-    kExtensionTelemetryFileDataMaxFileSizeBytes;
-
-// Specifies the interval for extension telemetry to collect offstore extension
-// file data.
-extern const base::FeatureParam<int>
-    kExtensionTelemetryFileDataCollectionIntervalSeconds;
-
-// Specifies the initial delay for extension telemetry to start collecting
-// offstore extension file data.
-extern const base::FeatureParam<int>
-    kExtensionTelemetryFileDataStartupDelaySeconds;
-
 // Allows the Extension Telemetry Service to include file data of extensions
 // specified in the --load-extension commandline switch in telemetry reports.
 BASE_DECLARE_FEATURE(kExtensionTelemetryFileDataForCommandLineExtensions);

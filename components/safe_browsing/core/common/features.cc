@@ -88,27 +88,6 @@ BASE_FEATURE(kExtensionTelemetryConfiguration,
              "SafeBrowsingExtensionTelemetryConfiguration",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-BASE_FEATURE(kExtensionTelemetryFileData,
-             "SafeBrowsingExtensionTelemetryFileData",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
-const base::FeatureParam<int> kExtensionTelemetryFileDataMaxFilesToProcess{
-    &kExtensionTelemetryFileData, "MaxFilesToProcess",
-    /*default_value=*/50};
-
-const base::FeatureParam<int> kExtensionTelemetryFileDataMaxFileSizeBytes{
-    &kExtensionTelemetryFileData, "MaxFileSizeBytes",
-    /*default_value=100KB*/ 100 * 1024};
-
-const base::FeatureParam<int>
-    kExtensionTelemetryFileDataCollectionIntervalSeconds{
-        &kExtensionTelemetryFileData, "CollectionIntervalSeconds",
-        /*default_value=*/7200};
-
-const base::FeatureParam<int> kExtensionTelemetryFileDataStartupDelaySeconds{
-    &kExtensionTelemetryFileData, "StartupDelaySeconds",
-    /*default_value=*/300};
-
 BASE_FEATURE(kExtensionTelemetryFileDataForCommandLineExtensions,
              "SafeBrowsingExtensionTelemetryFileDataForCommandLineExtensions",
              base::FEATURE_ENABLED_BY_DEFAULT);
@@ -357,7 +336,6 @@ constexpr struct {
     {&kDownloadTailoredWarnings, true},
     {&kEvaluateProtectedPasswordLengthMinimum, false},
     {&kExtensionTelemetryDisableOffstoreExtensions, true},
-    {&kExtensionTelemetryFileData, true},
     {&kExtensionTelemetryInterceptRemoteHostsContactedInRenderer, true},
     {&kExtensionTelemetryPotentialPasswordTheft, true},
     {&kExtensionTelemetryReportContactedHosts, true},
