@@ -199,7 +199,7 @@ class ASH_EXPORT CalendarView : public CalendarModel::Observer,
 
   // Creates the calendar view title that includes a label,
   // `reset_to_today_button_`, and a `settings_button_`.
-  void CreateCalendarTitleRow(int string_id);
+  void CreateCalendarTitleRow();
 
   // Creates the `CalendarHeaderView`s container that contains `header_` and
   // `temp_header_`.

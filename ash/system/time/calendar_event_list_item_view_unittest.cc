@@ -33,8 +33,8 @@ std::unique_ptr<google_apis::calendar::CalendarEvent> CreateEvent(
 class CalendarViewEventListItemViewTest : public AshTestBase {
  public:
   CalendarViewEventListItemViewTest() = default;
-  CalendarViewEventListItemViewTest(
-      const CalendarViewEventListItemViewTest&) = delete;
+  CalendarViewEventListItemViewTest(const CalendarViewEventListItemViewTest&) =
+      delete;
   CalendarViewEventListItemViewTest& operator=(
       const CalendarViewEventListItemViewTest&) = delete;
   ~CalendarViewEventListItemViewTest() override = default;
@@ -56,13 +56,12 @@ class CalendarViewEventListItemViewTest : public AshTestBase {
     event_list_item_view_.reset();
     controller_->UpdateMonth(date);
     controller_->selected_date_ = date;
-    event_list_item_view_ =
-        std::make_unique<CalendarEventListItemView>(
-            controller_.get(),
-            SelectedDateParams{controller_->selected_date().value(),
-                               controller_->selected_date_midnight(),
-                               controller_->selected_date_midnight_utc()},
-            *event, ui_params, EventListItemIndex{1, 1});
+    event_list_item_view_ = std::make_unique<CalendarEventListItemView>(
+        controller_.get(),
+        SelectedDateParams{controller_->selected_date().value(),
+                           controller_->selected_date_midnight(),
+                           controller_->selected_date_midnight_utc()},
+        *event, ui_params, EventListItemIndex{1, 1});
   }
 
   void SetSelectedDateInController(base::Time date) {
@@ -92,6 +91,9 @@ class CalendarViewEventListItemViewTest : public AshTestBase {
         event_list_item_view_->GetViewByID(kJoinButtonID));
   }
 
+  static base::Time FakeTimeNow() { return fake_time_; }
+  static void SetFakeNow(base::Time fake_now) { fake_time_ = fake_now; }
+
   CalendarViewController* controller() { return controller_.get(); }
 
   CalendarEventListItemView* event_list_item_view() {
@@ -101,7 +103,10 @@ class CalendarViewEventListItemViewTest : public AshTestBase {
  private:
   std::unique_ptr<CalendarEventListItemView> event_list_item_view_;
   std::unique_ptr<CalendarViewController> controller_;
+  static base::Time fake_time_;
 };
+
+base::Time CalendarViewEventListItemViewTest::fake_time_;
 
 TEST_F(CalendarViewEventListItemViewTest,
        ShouldShowCorrectLabels_GivenAOneHourEvent) {
@@ -132,8 +137,7 @@ TEST_F(CalendarViewEventListItemViewTest,
       event_list_item_view()->GetAccessibleName());
 }
 
-TEST_F(CalendarViewEventListItemViewTest,
-       EventListViewItemTopRoundedCorners) {
+TEST_F(CalendarViewEventListItemViewTest, EventListViewItemTopRoundedCorners) {
   base::Time date;
   ASSERT_TRUE(base::Time::FromString("22 Nov 2021 00:00 UTC", &date));
   SetSelectedDateInController(date);
@@ -169,8 +173,7 @@ TEST_F(CalendarViewEventListItemViewTest,
             background_layer->rounded_corner_radii());
 }
 
-TEST_F(CalendarViewEventListItemViewTest,
-       EventListViewItemAllRoundedCorners) {
+TEST_F(CalendarViewEventListItemViewTest, EventListViewItemAllRoundedCorners) {
   base::Time date;
   ASSERT_TRUE(base::Time::FromString("22 Nov 2021 00:00 UTC", &date));
   SetSelectedDateInController(date);
@@ -234,8 +237,7 @@ TEST_F(CalendarViewEventListItemViewTest, FixedLabelWidth) {
   EXPECT_EQ(fixed_width, GetSummaryLabel()->width());
 }
 
-TEST_F(CalendarViewEventListItemViewTest,
-       ShouldShowAndHideEventListItemDot) {
+TEST_F(CalendarViewEventListItemViewTest, ShouldShowAndHideEventListItemDot) {
   base::Time date;
   ASSERT_TRUE(base::Time::FromString("22 Nov 2021 00:00 UTC", &date));
   SetSelectedDateInController(date);
@@ -266,17 +268,55 @@ TEST_F(CalendarViewEventListItemViewTest,
 
 TEST_F(CalendarViewEventListItemViewTest,
        ShouldShowJoinMeetingButton_WhenConferenceDataUrlExists) {
+  // Sets the timezone to "GMT".
+  ash::system::ScopedTimezoneSettings timezone_settings(u"GMT");
+
   base::Time date;
-  ASSERT_TRUE(base::Time::FromString("22 Nov 2021 00:00 UTC", &date));
+  ASSERT_TRUE(base::Time::FromString("22 Nov 2021 00:00 GMT", &date));
   SetSelectedDateInController(date);
   const char* start_time_string = "22 Nov 2021 09:00 GMT";
   const char* end_time_string = "22 Nov 2021 10:00 GMT";
   const auto event = CreateEvent(start_time_string, end_time_string, false,
                                  GURL("https://meet.google.com/my-meeting"));
 
+  // Sets the current time to be a time that the event has started but hasn't
+  // ended.
+  base::Time current_time;
+  ASSERT_TRUE(base::Time::FromString("22 Nov 2021 09:30 GMT", &current_time));
+  SetFakeNow(current_time);
+  base::subtle::ScopedTimeClockOverrides time_override(
+      &CalendarViewEventListItemViewTest::FakeTimeNow,
+      /*time_ticks_override=*/nullptr, /*thread_ticks_override=*/nullptr);
+
   CreateEventListItemView(date, event.get());
 
   EXPECT_TRUE(GetJoinButton());
+}
+
+TEST_F(CalendarViewEventListItemViewTest,
+       ShouldNotShowJoinMeetingButton_WhenTheEventHasEnded) {
+  // Sets the timezone to "GMT".
+  ash::system::ScopedTimezoneSettings timezone_settings(u"GMT");
+
+  base::Time date;
+  ASSERT_TRUE(base::Time::FromString("22 Nov 2021 00:00 GMT", &date));
+  SetSelectedDateInController(date);
+  const char* start_time_string = "22 Nov 2021 09:00 GMT";
+  const char* end_time_string = "22 Nov 2021 10:00 GMT";
+  const auto event = CreateEvent(start_time_string, end_time_string, false,
+                                 GURL("https://meet.google.com/my-meeting"));
+
+  // Sets the current time to be a time that the event has ended.
+  base::Time current_time;
+  ASSERT_TRUE(base::Time::FromString("22 Nov 2021 10:30 GMT", &current_time));
+  SetFakeNow(current_time);
+  base::subtle::ScopedTimeClockOverrides time_override(
+      &CalendarViewEventListItemViewTest::FakeTimeNow,
+      /*time_ticks_override=*/nullptr, /*thread_ticks_override=*/nullptr);
+
+  CreateEventListItemView(date, event.get());
+
+  EXPECT_FALSE(GetJoinButton());
 }
 
 TEST_F(CalendarViewEventListItemViewTest,

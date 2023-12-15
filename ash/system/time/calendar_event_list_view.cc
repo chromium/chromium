@@ -283,7 +283,7 @@ std::unique_ptr<views::View> CalendarEventListView::CreateChildEventListView(
     // The `current_or_next_event_view_` is the first event that is not an
     // all-day or multi-day event, and is the ongoing or the following event.
     if (!current_or_next_event_view_ &&
-        event_list_item_view->is_current_or_next_event()) {
+        event_list_item_view->is_current_or_next_single_day_event()) {
       current_or_next_event_view_ = event_list_item_view;
       current_or_next_event_index_ = event_index - 1;
     }
