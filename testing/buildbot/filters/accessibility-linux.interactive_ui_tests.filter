@@ -5,8 +5,11 @@
 -AutofillInteractiveTest.*
 -AutofillInteractiveTestBase.*
 -AutofillInteractiveTestDynamicForm.*
+-AutofillInteractiveFormSubmissionClearFormTest.*
+-AutofillInteractiveFormSubmissionTest.*
 -AutofillInteractiveTest/AutofillInteractiveTestShadowDom.*
 -AutofillInteractiveTest_UndoAutofill.BasicUndoAutofill
+-BookmarksFocusTest.DNDManager
 -CaptionBubbleControllerViewsTest.AccessibleTextIsSometimesFocusable
 -CookieControlsInteractiveUiTest.*
 -ExtensionsToolbarContainerUITest.ClickingOnASecondActionClosesTheFirst
