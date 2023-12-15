@@ -975,8 +975,6 @@ class LocalPasswordSetupScreenTester extends ScreenElementApi {
     this.firstInput = new TextFieldApi(this.passwordInput, '#firstInput');
     this.confirmInput = new TextFieldApi(this.passwordInput, '#confirmInput');
     this.nextButton = new PolymerElementApi(this, '#nextButton');
-    this.doneDialog = new PolymerElementApi(this, '#doneDialog');
-    this.doneButton = new PolymerElementApi(this, '#doneButton');
   }
 
   /** @return {boolean} */
@@ -994,14 +992,29 @@ class LocalPasswordSetupScreenTester extends ScreenElementApi {
       });
     });
   }
+}
+
+class PasswordFactorSuccessScreenTester extends ScreenElementApi {
+  constructor() {
+    super('factor-setup-success');
+    this.doneButton = new PolymerElementApi(this, '#doneButton');
+    this.nextButton = new PolymerElementApi(this, '#nextButton');
+  }
 
   /** @return {boolean} */
   isDone() {
-    return this.doneDialog.isVisible();
+    return this.isVisible() &&
+        (this.doneButton.isVisible() || this.nextButton.isVisible());
   }
 
   clickDone() {
-    this.doneButton.click();
+    if (this.doneButton.isVisible()) {
+      this.doneButton.click();
+      return;
+    }
+    if (this.nextButton.isVisible()) {
+      this.nextButton.click();
+    }
   }
 }
 
@@ -1198,6 +1211,7 @@ export class OobeApiProvider {
       SmartPrivacyProtectionScreen: new SmartPrivacyProtectionScreenTester(),
       CryptohomeRecoverySetupScreen: new CryptohomeRecoverySetupScreenTester(),
       LocalPasswordSetupScreen: new LocalPasswordSetupScreenTester(),
+      PasswordFactorSuccessScreen: new PasswordFactorSuccessScreenTester(),
       GaiaInfoScreen: new GaiaInfoScreenTester(),
       ConsumerUpdateScreen: new ConsumerUpdateScreenTester(),
       ChoobeScreen: new ChoobeScreenTester(),
