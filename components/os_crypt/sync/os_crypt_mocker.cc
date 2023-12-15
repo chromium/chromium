@@ -22,6 +22,11 @@ void OSCryptMocker::SetUp() {
 #endif
 }
 
+// static
+std::string OSCryptMocker::GetRawEncryptionKey() {
+  return OSCrypt::GetRawEncryptionKey();
+}
+
 #if BUILDFLAG(IS_APPLE)
 // static
 void OSCryptMocker::SetBackendLocked(bool locked) {
