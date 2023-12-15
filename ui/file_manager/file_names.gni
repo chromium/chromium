@@ -27,7 +27,6 @@ static_js_files = [
   "file_manager/externs/ts/store.js",
 
   # Files app Foreground:
-  "file_manager/foreground/js/app_state_controller.js",
   "file_manager/foreground/js/metrics_start.js",
   "file_manager/foreground/js/mock_navigation_list_model.js",
   "file_manager/foreground/js/navigation_list_model.js",
@@ -257,6 +256,7 @@ ts_files = [
   "file_manager/foreground/js/actions_controller.ts",
   "file_manager/foreground/js/actions_model.ts",
   "file_manager/foreground/js/android_app_list_model.ts",
+  "file_manager/foreground/js/app_state_controller.ts",
   "file_manager/foreground/js/banner_controller.ts",
   "file_manager/foreground/js/command_handler.ts",
   "file_manager/foreground/js/constants.ts",

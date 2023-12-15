@@ -30,6 +30,7 @@ interface FileManager {
 interface AppState {
   currentDirectoryURL?: string;
   selectionURL?: string;
+  viewOptions?: any;
 }
 
 /**
