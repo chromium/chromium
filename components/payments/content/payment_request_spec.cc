@@ -126,7 +126,7 @@ void PaymentRequestSpec::Retry(
 }
 
 std::u16string PaymentRequestSpec::GetShippingAddressError(
-    autofill::ServerFieldType type) {
+    autofill::FieldType type) {
   if (!details_->shipping_address_errors)
     return std::u16string();
 
@@ -164,8 +164,7 @@ std::u16string PaymentRequestSpec::GetShippingAddressError(
   return std::u16string();
 }
 
-std::u16string PaymentRequestSpec::GetPayerError(
-    autofill::ServerFieldType type) {
+std::u16string PaymentRequestSpec::GetPayerError(autofill::FieldType type) {
   if (!payer_errors_)
     return std::u16string();
 
