@@ -88,9 +88,6 @@ public class ShareSheetLinkToggleCoordinator {
     }
 
     boolean shouldEnableToggleByDefault() {
-        int detailedContentType = mChromeShareExtras.getDetailedContentType();
-        return detailedContentType == DetailedContentType.HIGHLIGHTED_TEXT
-                || detailedContentType == DetailedContentType.WEB_NOTES
-                || detailedContentType == DetailedContentType.LIGHTWEIGHT_REACTION;
+        return DetailedContentType.HIGHLIGHTED_TEXT == mChromeShareExtras.getDetailedContentType();
     }
 }

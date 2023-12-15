@@ -5324,10 +5324,6 @@ To change this setting, <ph name="BEGIN_LINK">&lt;resetlink&gt;</ph>reset sync<p
         Include link
       </message>
 
-      <message name="IDS_LINK_TOGGLE_SHARE_WEBNOTE_ONLY" desc="Toast displayed when the toggle is clicked for a Webnote share and a link is excluded.">
-        Share card only
-      </message>
-
       <message name="IDS_LINK_TOGGLE_SHARE_SCREENSHOT_ONLY" desc="Toast displayed when the toggle is clicked for a screenshot share and a link is excluded.">
         Share screenshot only
       </message>
@@ -5338,10 +5334,6 @@ To change this setting, <ph name="BEGIN_LINK">&lt;resetlink&gt;</ph>reset sync<p
 
       <message name="IDS_LINK_TOGGLE_SHARE_GIF_ONLY" desc="Toast displayed when the toggle is clicked for a GIF share and a link is excluded.">
         Share GIF only
-      </message>
-
-      <message name="IDS_LINK_TOGGLE_SHARE_REACTION_ONLY" desc="Toast displayed when the toggle is clicked for a lightweight reaction share and a link is excluded.">
-        Share reaction only
       </message>
 
       <message name="IDS_LINK_TOGGLE_SHARE_CONTENT_ONLY" desc="Fallback toast displayed when the toggle is clicked for a generic share and a link is excluded.">

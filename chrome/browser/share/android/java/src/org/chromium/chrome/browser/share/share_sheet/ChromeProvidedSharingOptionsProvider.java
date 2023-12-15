@@ -162,7 +162,6 @@ public class ChromeProvidedSharingOptionsProvider extends ChromeProvidedSharingO
                         ContentType.TEXT,
                         ContentType.HIGHLIGHTED_TEXT,
                         ContentType.IMAGE)
-                .setDetailedContentTypesToDisableFor(DetailedContentType.WEB_NOTES)
                 .setIcon(R.drawable.long_screenshot, R.string.sharing_long_screenshot)
                 .setFeatureNameForMetrics(USER_ACTION_LONG_SCREENSHOT_SELECTED)
                 .setDisableForMultiWindow(true)

@@ -246,24 +246,6 @@ public class ChromeProvidedSharingOptionsProviderTest {
     }
 
     @Test
-    public void getPropertyModels_webnotes_filtersByDetailedContentType() {
-        setUpChromeProvidedSharingOptionsProviderTest(
-                /* isIncognito= */ false, /* printingEnabled= */ true, LinkGeneration.MAX);
-        List<PropertyModel> propertyModels =
-                mChromeProvidedSharingOptionsProvider.getPropertyModels(
-                        ImmutableSet.of(ContentType.IMAGE),
-                        DetailedContentType.WEB_NOTES,
-                        /* isMultiWindow= */ false);
-
-        List<String> expectedModels =
-                ImmutableList.<String>builder()
-                        .add(mActivity.getResources().getString(R.string.sharing_copy_image))
-                        .build();
-
-        assertCorrectModelsAreInTheRightOrder(propertyModels, expectedModels);
-    }
-
-    @Test
     public void getPropertyModels_onClick_callsOnTargetChosen() {
         setUpChromeProvidedSharingOptionsProviderTest(
                 /* isIncognito= */ false, /* printingEnabled= */ false, LinkGeneration.LINK);

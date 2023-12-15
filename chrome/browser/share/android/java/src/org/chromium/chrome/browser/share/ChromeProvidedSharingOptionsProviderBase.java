@@ -367,8 +367,7 @@ public abstract class ChromeProvidedSharingOptionsProviderBase {
                         ContentType.LINK_PAGE_VISIBLE,
                         ContentType.LINK_PAGE_NOT_VISIBLE,
                         ContentType.IMAGE)
-                .setDetailedContentTypesToDisableFor(
-                        DetailedContentType.WEB_NOTES, DetailedContentType.SCREENSHOT)
+                .setDetailedContentTypesToDisableFor(DetailedContentType.SCREENSHOT)
                 .setIcon(R.drawable.send_tab, R.string.sharing_send_tab_to_self)
                 .setFeatureNameForMetrics(USER_ACTION_SEND_TAB_TO_SELF_SELECTED)
                 .setOnClickCallback(
@@ -392,8 +391,7 @@ public abstract class ChromeProvidedSharingOptionsProviderBase {
                         ContentType.LINK_PAGE_VISIBLE,
                         ContentType.LINK_PAGE_NOT_VISIBLE,
                         ContentType.IMAGE)
-                .setDetailedContentTypesToDisableFor(
-                        DetailedContentType.WEB_NOTES, DetailedContentType.SCREENSHOT)
+                .setDetailedContentTypesToDisableFor(DetailedContentType.SCREENSHOT)
                 .setIcon(R.drawable.qr_code, R.string.qr_code_share_icon_label)
                 .setFeatureNameForMetrics(USER_ACTION_QR_CODE_SELECTED)
                 .setOnClickCallback(

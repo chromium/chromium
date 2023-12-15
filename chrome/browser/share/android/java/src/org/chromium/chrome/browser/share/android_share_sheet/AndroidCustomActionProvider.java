@@ -149,7 +149,6 @@ class AndroidCustomActionProvider extends ChromeProvidedSharingOptionsProviderBa
     @Override
     protected FirstPartyOption createLongScreenshotsFirstPartyOption() {
         return new FirstPartyOptionBuilder(ContentType.LINK_PAGE_VISIBLE)
-                .setDetailedContentTypesToDisableFor(DetailedContentType.WEB_NOTES)
                 .setIcon(R.drawable.long_screenshot, R.string.sharing_long_screenshot)
                 .setFeatureNameForMetrics(USER_ACTION_LONG_SCREENSHOT_NO_EDITOR_SELECTED)
                 .setDisableForMultiWindow(true)
