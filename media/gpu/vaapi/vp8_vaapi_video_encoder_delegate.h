@@ -70,7 +70,7 @@ class VP8VaapiVideoEncoderDelegate : public VaapiVideoEncoderDelegate {
       std::array<bool, kNumVp8ReferenceBuffers>& ref_frames_used);
   void UpdateReferenceFrames(scoped_refptr<VP8Picture> picture);
 
-  bool PrepareEncodeJob(EncodeJob& encode_job) override;
+  PrepareEncodeJobResult PrepareEncodeJob(EncodeJob& encode_job) override;
   BitstreamBufferMetadata GetMetadata(const EncodeJob& encode_job,
                                       size_t payload_size) override;
   void BitrateControlUpdate(const BitstreamBufferMetadata& metadata) override;

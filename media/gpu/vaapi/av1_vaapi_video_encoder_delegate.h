@@ -71,7 +71,7 @@ class AV1VaapiVideoEncoderDelegate : public VaapiVideoEncoderDelegate {
  private:
   BitstreamBufferMetadata GetMetadata(const EncodeJob& encode_job,
                                       size_t payload_size) override;
-  bool PrepareEncodeJob(EncodeJob& encode_job) override;
+  PrepareEncodeJobResult PrepareEncodeJob(EncodeJob& encode_job) override;
   void BitrateControlUpdate(const BitstreamBufferMetadata& metadata) override;
 
   bool SubmitTemporalDelimiter(PicParamOffsets& offsets);

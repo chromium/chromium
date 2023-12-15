@@ -429,7 +429,8 @@ void VP9VaapiVideoEncoderDelegateTest::
                   sizeof(VAEncPictureParameterBufferVP9))))
       .WillOnce(Return(true));
 
-  EXPECT_TRUE(encoder_->PrepareEncodeJob(*encode_job.get()));
+  EXPECT_EQ(encoder_->PrepareEncodeJob(*encode_job.get()),
+            VaapiVideoEncoderDelegate::PrepareEncodeJobResult::kSuccess);
 
   // TODO(hiroh): Test for encoder_->reference_frames_.
 

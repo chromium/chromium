@@ -39,10 +39,6 @@ class VaapiWrapper;
 // clients, and associated with the EncodeJob object.
 class VaapiVideoEncoderDelegate {
  public:
-  VaapiVideoEncoderDelegate(scoped_refptr<VaapiWrapper> vaapi_wrapper,
-                            base::RepeatingClosure error_cb);
-  virtual ~VaapiVideoEncoderDelegate();
-
   struct Config {
     // Maximum number of reference frames.
     // For H.264 encoding, the value represents the maximum number of reference
@@ -117,7 +113,6 @@ class VaapiVideoEncoderDelegate {
     VABufferID coded_buffer_id() const;
     VASurfaceID input_surface_id() const;
     const scoped_refptr<CodecPicture>& picture() const;
-
    private:
     // True if this job is to produce a keyframe.
     bool keyframe_;
@@ -131,6 +126,10 @@ class VaapiVideoEncoderDelegate {
     // Buffer that will contain the output bitstream data for this frame.
     std::unique_ptr<ScopedVABuffer> coded_buffer_;
   };
+
+  VaapiVideoEncoderDelegate(scoped_refptr<VaapiWrapper> vaapi_wrapper,
+                            base::RepeatingClosure error_cb);
+  virtual ~VaapiVideoEncoderDelegate();
 
   // Initializes the encoder with requested parameter set |config| and
   // |ave_config|. Returns false if the requested set of parameters is not
@@ -173,6 +172,16 @@ class VaapiVideoEncoderDelegate {
   virtual std::vector<gfx::Size> GetSVCLayerResolutions() = 0;
 
  protected:
+  // Friend in order o access PrepareEncodeJobResult declaration.
+  friend class H264VaapiVideoEncoderDelegateTest;
+  friend class VP9VaapiVideoEncoderDelegateTest;
+  friend class VaapiVideoEncodeAcceleratorTest;
+
+  enum class PrepareEncodeJobResult {
+    kSuccess,
+    kFail,
+  };
+
   virtual BitstreamBufferMetadata GetMetadata(const EncodeJob& encode_job,
                                               size_t payload_size);
 
@@ -183,10 +192,9 @@ class VaapiVideoEncoderDelegate {
   SEQUENCE_CHECKER(sequence_checker_);
 
  private:
-  // Prepares a new |encode_job| to be executed in Accelerator and returns true
-  // on success. The caller may then call ExecuteSetupCallbacks() on the job to
-  // run them.
-  virtual bool PrepareEncodeJob(EncodeJob& encode_job) = 0;
+  // Prepares a new |encode_job| to be executed in Accelerator. Returns
+  // kSuccess on success, and kFail on failure.
+  virtual PrepareEncodeJobResult PrepareEncodeJob(EncodeJob& encode_job) = 0;
 
   // Notifies the encoded chunk size in bytes with layers info through
   // BitstreamBufferMetadata to update a bitrate controller in

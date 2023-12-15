@@ -361,7 +361,8 @@ std::vector<gfx::Size> VP8VaapiVideoEncoderDelegate::GetSVCLayerResolutions() {
   return {visible_size_};
 }
 
-bool VP8VaapiVideoEncoderDelegate::PrepareEncodeJob(EncodeJob& encode_job) {
+VaapiVideoEncoderDelegate::PrepareEncodeJobResult
+VP8VaapiVideoEncoderDelegate::PrepareEncodeJob(EncodeJob& encode_job) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   if (encode_job.IsKeyframeRequested())
@@ -385,14 +386,14 @@ bool VP8VaapiVideoEncoderDelegate::PrepareEncodeJob(EncodeJob& encode_job) {
   if (!SubmitFrameParameters(encode_job, current_params_, picture,
                              reference_frames_, ref_frames_used)) {
     LOG(ERROR) << "Failed submitting frame parameters";
-    return false;
+    return PrepareEncodeJobResult::kFail;
   }
 
   UpdateReferenceFrames(picture);
 
   frame_num_ = (frame_num_ + 1) % current_params_.kf_period_frames;
 
-  return true;
+  return PrepareEncodeJobResult::kSuccess;
 }
 
 BitstreamBufferMetadata VP8VaapiVideoEncoderDelegate::GetMetadata(

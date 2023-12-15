@@ -393,7 +393,8 @@ size_t VP9VaapiVideoEncoderDelegate::GetMaxNumOfRefFrames() const {
   return kVp9NumRefFrames;
 }
 
-bool VP9VaapiVideoEncoderDelegate::PrepareEncodeJob(EncodeJob& encode_job) {
+VaapiVideoEncoderDelegate::PrepareEncodeJobResult
+VP9VaapiVideoEncoderDelegate::PrepareEncodeJob(EncodeJob& encode_job) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (svc_layers_) {
     // If keyframe is requested, then reset |svc_layers_|.
@@ -429,11 +430,11 @@ bool VP9VaapiVideoEncoderDelegate::PrepareEncodeJob(EncodeJob& encode_job) {
   if (!SubmitFrameParameters(encode_job, current_params_, picture,
                              reference_frames_, ref_frames_used)) {
     LOG(ERROR) << "Failed submitting frame parameters";
-    return false;
+    return PrepareEncodeJobResult::kFail;
   }
 
   UpdateReferenceFrames(picture);
-  return true;
+  return PrepareEncodeJobResult::kSuccess;
 }
 
 BitstreamBufferMetadata VP9VaapiVideoEncoderDelegate::GetMetadata(

@@ -119,7 +119,8 @@ BitstreamBufferMetadata VaapiVideoEncoderDelegate::GetMetadata(
 
 bool VaapiVideoEncoderDelegate::Encode(EncodeJob& encode_job) {
   TRACE_EVENT0("media,gpu", "VAVEDelegate::Encode");
-  if (!PrepareEncodeJob(encode_job)) {
+  PrepareEncodeJobResult result = PrepareEncodeJob(encode_job);
+  if (result == PrepareEncodeJobResult::kFail) {
     VLOGF(1) << "Failed preparing an encode job";
     return false;
   }

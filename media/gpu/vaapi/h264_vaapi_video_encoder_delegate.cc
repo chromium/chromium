@@ -353,7 +353,8 @@ BitstreamBufferMetadata H264VaapiVideoEncoderDelegate::GetMetadata(
   return metadata;
 }
 
-bool H264VaapiVideoEncoderDelegate::PrepareEncodeJob(EncodeJob& encode_job) {
+VaapiVideoEncoderDelegate::PrepareEncodeJobResult
+H264VaapiVideoEncoderDelegate::PrepareEncodeJob(EncodeJob& encode_job) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   scoped_refptr<H264Picture> pic = GetH264Picture(encode_job);
@@ -399,7 +400,7 @@ bool H264VaapiVideoEncoderDelegate::PrepareEncodeJob(EncodeJob& encode_job) {
                              current_pps_, pic, ref_pic_list0_,
                              ref_frame_index)) {
     DVLOGF(1) << "Failed submitting frame parameters";
-    return false;
+    return PrepareEncodeJobResult::kFail;
   }
 
   if (pic->type == H264SliceHeader::kISlice && submit_packed_headers_) {
@@ -407,7 +408,7 @@ bool H264VaapiVideoEncoderDelegate::PrepareEncodeJob(EncodeJob& encode_job) {
     // operation on the generated stream.
     if (!SubmitPackedHeaders(*packed_sps_, *packed_pps_)) {
       DVLOGF(1) << "Failed submitting keyframe headers";
-      return false;
+      return PrepareEncodeJobResult::kFail;
     }
   }
 
@@ -421,7 +422,7 @@ bool H264VaapiVideoEncoderDelegate::PrepareEncodeJob(EncodeJob& encode_job) {
 
   num_encoded_frames_++;
   num_encoded_frames_ %= kIDRPeriod;
-  return true;
+  return PrepareEncodeJobResult::kSuccess;
 }
 
 bool H264VaapiVideoEncoderDelegate::UpdateRates(
