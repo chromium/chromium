@@ -31,8 +31,18 @@ ComposeDialogView::ComposeDialogView(
                             anchor_bounds,
                             anchor_position),
       anchor_bounds_(anchor_bounds),
-      bubble_wrapper_(std::move(bubble_wrapper)) {
-  set_has_parent(false);
+      bubble_wrapper_(std::move(bubble_wrapper)) {}
+
+void ComposeDialogView::OnBeforeBubbleWidgetInit(
+    views::Widget::InitParams* params,
+    views::Widget* widget) const {
+  WebUIBubbleDialogView::OnBeforeBubbleWidgetInit(params, widget);
+#if BUILDFLAG(IS_LINUX)
+  // In linux, windows may be clipped to their anchors' bounds,
+  // resulting in visual errors, unless they use accelerated rendering. See
+  // crbug.com/1445770 for details.
+  params->requires_accelerated_widget = true;
+#endif
 }
 
 gfx::Rect ComposeDialogView::GetBubbleBounds() {
