@@ -821,6 +821,16 @@ TEST_F(
    'os_a11y_page/tts_voice_subpage_test.js',
  ],
  [
+   'OsAppsPage',
+   'os_apps_page/os_apps_page_test.js',
+   {disabled: ['ash::features::kOsSettingsRevampWayfinding']},
+ ],
+ [
+   'OsAppsPageRevamp',
+   'os_apps_page/os_apps_page_test.js',
+   {enabled: ['ash::features::kOsSettingsRevampWayfinding']},
+ ],
+ [
    'OsAppsPageAppManagementPageAppDetailsItem',
    'os_apps_page/app_management_page/app_details_item_test.js',
    {enabled: ['features::kAppManagementAppDetails']},
@@ -895,7 +905,6 @@ TEST_F(
    'os_apps_page/app_notifications_page/app_notifications_subpage_test.js',
    {disabled: ['ash::features::kOsSettingsRevampWayfinding']},
  ],
- ['OsAppsPage', 'os_apps_page/os_apps_page_test.js'],
  [
    'OsAppsPageAppNotificationsPageAppNotificationsManagerSubpage',
    'os_apps_page/app_notifications_page/app_notifications_manager_subpage_test.js',

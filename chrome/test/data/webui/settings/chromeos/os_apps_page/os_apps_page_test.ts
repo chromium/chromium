@@ -24,6 +24,8 @@ const {Readiness} = appNotificationHandlerMojom;
 type App = appNotificationHandlerMojom.App;
 type ReadinessType = appNotificationHandlerMojom.Readiness;
 
+const isRevampWayfindingEnabled =
+    loadTimeData.getBoolean('isRevampWayfindingEnabled');
 let appsPage: OsSettingsAppsPageElement;
 let androidAppsBrowserProxy: TestAndroidAppsBrowserProxy;
 
@@ -36,7 +38,7 @@ function getFakePrefs() {
   return {
     arc: {
       enabled: {
-        key: 'arc.enabledd',
+        key: 'arc.enabled',
         type: chrome.settingsPrivate.PrefType.BOOLEAN,
         value: false,
       },
@@ -55,7 +57,7 @@ function setPrefs(restoreOption: number) {
   return {
     arc: {
       enabled: {
-        key: 'arc.enabledd',
+        key: 'arc.enabled',
         type: chrome.settingsPrivate.PrefType.BOOLEAN,
         value: false,
       },
@@ -145,18 +147,30 @@ suite('<os-apps-page> available settings rows', () => {
     assertNull(queryAppsOnStartupRow());
   });
 
-  test('Android Apps, On Startup, and App Management are shown', () => {
-    loadTimeData.overrideValues({
-      shouldShowStartup: true,
-      androidAppsVisible: true,
-    });
-    initPage();
+  if (isRevampWayfindingEnabled) {
+    test('On startup row does not exist in this page', () => {
+      loadTimeData.overrideValues({
+        shouldShowStartup: true,
+        androidAppsVisible: true,
+      });
+      initPage();
 
-    assertTrue(!!queryAppManagementRow());
-    assertTrue(!!queryAndroidAppsRow());
-    assertTrue(!!queryAppsOnStartupRow());
-    assertEquals(3, appsPage.get('onStartupOptions_').length);
-  });
+      assertFalse(isVisible(queryAppsOnStartupRow()));
+    });
+  } else {
+    test('Android Apps, On Startup, and App Management are shown', () => {
+      loadTimeData.overrideValues({
+        shouldShowStartup: true,
+        androidAppsVisible: true,
+      });
+      initPage();
+
+      assertTrue(!!queryAppManagementRow());
+      assertTrue(!!queryAndroidAppsRow());
+      assertTrue(!!queryAppsOnStartupRow());
+      assertEquals(3, appsPage.get('onStartupOptions_').length);
+    });
+  }
 });
 
 suite('<os-apps-page> Subpage trigger focusing', () => {
@@ -278,35 +292,46 @@ suite('AppsPageTests', () => {
       flush();
     });
 
-    test('App notification row', async () => {
-      const rowLink = appsPage.shadowRoot!.querySelector<CrLinkRowElement>(
-          '#appNotificationsRow');
-      assertTrue(!!rowLink);
-      // Test default is to have 0 apps.
-      assertEquals('0 apps', rowLink.subLabel);
+    if (isRevampWayfindingEnabled) {
+      test('App notification row displays helpful description', async () => {
+        const rowLink = appsPage.shadowRoot!.querySelector<CrLinkRowElement>(
+            '#appNotificationsRow');
+        assertTrue(!!rowLink);
+        assertEquals(
+            'Manage app notifications, Do not disturb, and app badging',
+            rowLink.subLabel);
+      });
+    } else {
+      test('App notification row displays number of apps', async () => {
+        const rowLink = appsPage.shadowRoot!.querySelector<CrLinkRowElement>(
+            '#appNotificationsRow');
+        assertTrue(!!rowLink);
+        // Test default is to have 0 apps.
+        assertEquals('0 apps', rowLink.subLabel);
 
-      const permission1 = createBoolPermission(
-          /**id=*/ 1,
-          /**value=*/ false, /**is_managed=*/ false);
-      const permission2 = createBoolPermission(
-          /**id=*/ 2,
-          /**value=*/ true, /**is_managed=*/ false);
-      const app1 = createApp('1', 'App1', permission1);
-      const app2 = createApp('2', 'App2', permission2);
+        const permission1 = createBoolPermission(
+            /**id=*/ 1,
+            /**value=*/ false, /**is_managed=*/ false);
+        const permission2 = createBoolPermission(
+            /**id=*/ 2,
+            /**value=*/ true, /**is_managed=*/ false);
+        const app1 = createApp('1', 'App1', permission1);
+        const app2 = createApp('2', 'App2', permission2);
 
-      simulateNotificationAppChanged(app1);
-      simulateNotificationAppChanged(app2);
-      await flushTasks();
+        simulateNotificationAppChanged(app1);
+        simulateNotificationAppChanged(app2);
+        await flushTasks();
 
-      assertEquals('2 apps', rowLink.subLabel);
+        assertEquals('2 apps', rowLink.subLabel);
 
-      // Simulate an uninstalled app.
-      const app3 =
-          createApp('2', 'App2', permission2, Readiness.kUninstalledByUser);
-      simulateNotificationAppChanged(app3);
-      await flushTasks();
-      assertEquals('1 apps', rowLink.subLabel);
-    });
+        // Simulate an uninstalled app.
+        const app3 =
+            createApp('2', 'App2', permission2, Readiness.kUninstalledByUser);
+        simulateNotificationAppChanged(app3);
+        await flushTasks();
+        assertEquals('1 apps', rowLink.subLabel);
+      });
+    }
 
     test('Manage isolated web apps row', () => {
       const rowLink =
@@ -332,48 +357,52 @@ suite('AppsPageTests', () => {
       assertTrue(!!appsPage.shadowRoot!.querySelector('.subpage-arrow'));
     });
 
-    test('On startup dropdown menu', () => {
-      const getPref = () => {
+    // On startup row does not exist in the apps page under the revamp.
+    if (!isRevampWayfindingEnabled) {
+      test('On startup dropdown menu', () => {
+        const getPref = () => {
+          const element =
+              appsPage.shadowRoot!.querySelector<SettingsDropdownMenuElement>(
+                  '#onStartupDropdown');
+          assertTrue(!!element);
+          const pref = element.pref;
+          assertTrue(!!pref);
+          return pref;
+        };
+
+        appsPage.prefs = setPrefs(1);
+        flush();
+        assertEquals(1, getPref().value);
+
+        appsPage.prefs = setPrefs(2);
+        flush();
+        assertEquals(2, getPref().value);
+
+        appsPage.prefs = setPrefs(3);
+        flush();
+        assertEquals(3, getPref().value);
+      });
+
+      test('Deep link to On startup dropdown menu', async () => {
+        const SETTING_ID_703 =
+            settingMojom.Setting.kRestoreAppsAndPages.toString();
+        const params = new URLSearchParams();
+        params.append('settingId', SETTING_ID_703);
+        Router.getInstance().navigateTo(routes.APPS, params);
+
         const element =
-            appsPage.shadowRoot!.querySelector<SettingsDropdownMenuElement>(
-                '#onStartupDropdown');
+            appsPage.shadowRoot!.querySelector('#onStartupDropdown');
         assertTrue(!!element);
-        const pref = element.pref;
-        assertTrue(!!pref);
-        return pref;
-      };
-
-      appsPage.prefs = setPrefs(1);
-      flush();
-      assertEquals(1, getPref().value);
-
-      appsPage.prefs = setPrefs(2);
-      flush();
-      assertEquals(2, getPref().value);
-
-      appsPage.prefs = setPrefs(3);
-      flush();
-      assertEquals(3, getPref().value);
-    });
-
-    test('Deep link to On startup dropdown menu', async () => {
-      const SETTING_ID_703 =
-          settingMojom.Setting.kRestoreAppsAndPages.toString();
-      const params = new URLSearchParams();
-      params.append('settingId', SETTING_ID_703);
-      Router.getInstance().navigateTo(routes.APPS, params);
-
-      const element = appsPage.shadowRoot!.querySelector('#onStartupDropdown');
-      assertTrue(!!element);
-      const deepLinkElement =
-          element.shadowRoot!.querySelector<HTMLElement>('#dropdownMenu');
-      assertTrue(!!deepLinkElement);
-      await waitAfterNextRender(deepLinkElement);
-      assertEquals(
-          deepLinkElement, getDeepActiveElement(),
-          `On startup dropdown menu should be focused for settingId=${
-              SETTING_ID_703}.`);
-    });
+        const deepLinkElement =
+            element.shadowRoot!.querySelector<HTMLElement>('#dropdownMenu');
+        assertTrue(!!deepLinkElement);
+        await waitAfterNextRender(deepLinkElement);
+        assertEquals(
+            deepLinkElement, getDeepActiveElement(),
+            `On startup dropdown menu should be focused for settingId=${
+                SETTING_ID_703}.`);
+      });
+    }
 
     test('Deep link to manage android prefs', async () => {
       // Simulate showing manage apps link
@@ -595,67 +624,25 @@ suite('AppsPageTests', () => {
       assertTrue(
           !!subpage.shadowRoot!.querySelector('#manageArcvmShareUsbDevices'));
     });
-  });
 
-  suite('with OsSettingsRevampWayfinding feature enabled', () => {
-    let subpage: SettingsAndroidAppsSubpageElement;
+    if (isRevampWayfindingEnabled) {
+      test(
+          'Open Google Play link row appears and once clicked, ' +
+              'opens the play store app',
+          async () => {
+            const row = subpage.shadowRoot!.querySelector<HTMLButtonElement>(
+                '#openGooglePlayRow');
+            assertTrue(!!row);
 
-    setup(() => {
-      const loadTimeDataOverrides = {
-        isRevampWayfindingEnabled: true,
-      };
-
-      preliminarySetupForAndroidAppsSubpage(loadTimeDataOverrides);
-
-      subpage = document.createElement('settings-android-apps-subpage');
-      document.body.appendChild(subpage);
-
-      flush();
-    });
-
-    teardown(() => {
-      document.body.innerHTML = window.trustedTypes!.emptyHTML;
-      subpage.remove();
-    });
-
-    test(
-        'Open Google Play link row appears and once clicked, ' +
-            'opens the play store app',
-        async () => {
-          const row = subpage.shadowRoot!.querySelector<HTMLButtonElement>(
-              '#openGooglePlayRow');
-          assertTrue(!!row);
-
-          row.click();
-          flush();
-          await androidAppsBrowserProxy.whenCalled('showPlayStoreApps');
-        });
-  });
-
-  suite('with OsSettingsRevampWayfinding feature disabled', () => {
-    let subpage: SettingsAndroidAppsSubpageElement;
-
-    setup(() => {
-      const loadTimeDataOverrides = {
-        isRevampWayfindingEnabled: false,
-      };
-
-      preliminarySetupForAndroidAppsSubpage(loadTimeDataOverrides);
-
-      subpage = document.createElement('settings-android-apps-subpage');
-      document.body.appendChild(subpage);
-
-      flush();
-    });
-
-    teardown(() => {
-      document.body.innerHTML = window.trustedTypes!.emptyHTML;
-      subpage.remove();
-    });
-
-    test('Open Google Play link row does not appear.', () => {
-      const row = subpage.shadowRoot!.querySelector('#openGooglePlayRow');
-      assertFalse(isVisible(row));
-    });
+            row.click();
+            flush();
+            await androidAppsBrowserProxy.whenCalled('showPlayStoreApps');
+          });
+    } else {
+      test('Open Google Play link row does not appear.', () => {
+        const row = subpage.shadowRoot!.querySelector('#openGooglePlayRow');
+        assertFalse(isVisible(row));
+      });
+    }
   });
 });
