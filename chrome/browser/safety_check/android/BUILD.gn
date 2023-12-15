@@ -120,6 +120,7 @@ robolectric_library("junit") {
     "//components/user_prefs/android:java",
 
     # Robolectric needs the full PasswordCheckFactory implementation.
+    "//chrome/browser/loading_modal/android:java",
     "//chrome/browser/password_check/android/internal:internal_factory_java",
     "//chrome/browser/password_manager/android:java",
     "//chrome/browser/password_manager/android:settings_interface_java",
@@ -131,9 +132,11 @@ robolectric_library("junit") {
     "//chrome/test/android:chrome_java_unit_test_support",
     "//components/browser_ui/settings/android:java",
     "//components/commerce/core:proto_java",
+    "//components/password_manager/core/browser:password_manager_java_enums",
     "//components/sync/android:sync_java",
     "//content/public/android:content_full_java",
     "//third_party/android_deps:guava_android_java",
+    "//third_party/androidx:androidx_preference_preference_java",
     "//third_party/androidx:androidx_test_core_java",
     "//third_party/jni_zero:jni_zero_java",
     "//third_party/junit:junit",

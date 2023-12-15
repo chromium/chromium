@@ -25,11 +25,12 @@ void PasswordCheckupLauncherHelperImpl::LaunchCheckupOnDevice(
   if (!windowAndroid) {
     return;
   }
-  // TODO(b/306669939): Pass the |account_email| to Java and launch the
-  // appropriate checkup: for the account or local.
   Java_PasswordCheckupLauncher_launchCheckupOnDevice(
       env, windowAndroid->GetJavaObject(),
-      static_cast<int>(passwordCheckReferrer));
+      static_cast<int>(passwordCheckReferrer),
+      account_email.empty()
+          ? nullptr
+          : base::android::ConvertUTF8ToJavaString(env, account_email));
 }
 
 void PasswordCheckupLauncherHelperImpl::LaunchCheckupOnlineWithActivity(

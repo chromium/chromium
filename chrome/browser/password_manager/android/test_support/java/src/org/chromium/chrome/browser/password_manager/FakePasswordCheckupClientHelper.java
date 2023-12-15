@@ -14,7 +14,7 @@ import java.util.Optional;
 public class FakePasswordCheckupClientHelper implements PasswordCheckupClientHelper {
     private PendingIntent mPendingIntentForLocalCheckup;
     private PendingIntent mPendingIntentForAccountCheckup;
-    private Integer mBreachedCredentialsCount;
+    private Integer mBreachedCredentialsCount = 0;
     private Exception mError;
 
     public void setIntentForLocalCheckup(PendingIntent pendingIntent) {

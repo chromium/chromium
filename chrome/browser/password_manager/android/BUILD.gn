@@ -212,6 +212,7 @@ robolectric_binary("password_manager_junit_tests") {
     "junit/src/org/chromium/chrome/browser/password_manager/FakePasswordStoreAndroidBackendTest.java",
     "junit/src/org/chromium/chrome/browser/password_manager/OutdatedGmsCoreDialogTest.java",
     "junit/src/org/chromium/chrome/browser/password_manager/PasswordCheckupClientMetricsRecorderTest.java",
+    "junit/src/org/chromium/chrome/browser/password_manager/PasswordCheckupLauncherTest.java",
     "junit/src/org/chromium/chrome/browser/password_manager/PasswordManagerAndroidBackendUtilTest.java",
     "junit/src/org/chromium/chrome/browser/password_manager/PasswordManagerErrorMessageHelperBridgeTest.java",
     "junit/src/org/chromium/chrome/browser/password_manager/PasswordManagerHelperTest.java",

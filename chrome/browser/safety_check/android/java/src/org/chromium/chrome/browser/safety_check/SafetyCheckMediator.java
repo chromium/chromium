@@ -209,9 +209,11 @@ class SafetyCheckMediator
             SyncConsentActivityLauncher signinLauncher,
             SyncService syncService,
             PasswordStoreBridge bridge,
-            Handler handler) {
+            Handler handler,
+            ObservableSupplier<ModalDialogManager> modalDialogManagerSupplier) {
         this(model, client, settingsLauncher, signinLauncher, syncService, handler);
         mPasswordStoreBridge = bridge;
+        mModalDialogManagerSupplier = modalDialogManagerSupplier;
     }
 
     SafetyCheckMediator(
@@ -620,11 +622,17 @@ class SafetyCheckMediator
                             PasswordCheckFactory.getOrCreate(mSettingsLauncher)
                                     .showUi(p.getContext(), PasswordCheckReferrer.SAFETY_CHECK);
                         } else {
+                            String account =
+                                    PasswordManagerHelper.hasChosenToSyncPasswords(mSyncService)
+                                            ? CoreAccountInfo.getEmailFrom(
+                                                    mSyncService.getAccountInfo())
+                                            : null;
                             PasswordManagerHelper.showPasswordCheckup(
                                     p.getContext(),
                                     PasswordCheckReferrer.SAFETY_CHECK,
                                     mSyncService,
-                                    mModalDialogManagerSupplier);
+                                    mModalDialogManagerSupplier,
+                                    account);
                         }
                         return true;
                     };

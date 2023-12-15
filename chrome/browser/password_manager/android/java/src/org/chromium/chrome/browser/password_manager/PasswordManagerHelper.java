@@ -17,6 +17,7 @@ import android.os.Looper;
 import android.os.SystemClock;
 
 import androidx.annotation.IntDef;
+import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
 import com.google.android.gms.common.GoogleApiAvailability;
@@ -260,19 +261,25 @@ public class PasswordManagerHelper {
      * @param referrer the place that requested to show the UI.
      * @param syncService the service to query about the sync status.
      * @param modalDialogManagerSupplier The supplier of the ModalDialogManager to be used by
-     *         loading dialog.
+     *     loading dialog.
+     * @param accountEmail is the email of the account syncing passwords. If it's empty, the checkup
+     *     for local will show. The purpose of this is to enable showing the checkup for local
+     *     storage if the password checkup is launched from the leak detection dialog and the leaked
+     *     credential is only saved in the local password storage.
      */
     public static void showPasswordCheckup(
             Context context,
             @PasswordCheckReferrer int referrer,
             SyncService syncService,
-            Supplier<ModalDialogManager> modalDialogManagerSupplier) {
+            Supplier<ModalDialogManager> modalDialogManagerSupplier,
+            @Nullable String accountEmail) {
+        assert accountEmail == null || !accountEmail.isEmpty();
         assert canUseUpm();
 
+        // TODO(crbug.com/1504551): Change PasswordCheckupClientHelper.getPasswordCheckupIntent to
+        // take the accountEmail as String.
         Optional<String> account =
-                hasChosenToSyncPasswords(syncService)
-                        ? Optional.of(CoreAccountInfo.getEmailFrom(syncService.getAccountInfo()))
-                        : Optional.empty();
+                accountEmail == null ? Optional.empty() : Optional.of(accountEmail);
 
         LoadingModalDialogCoordinator loadingDialogCoordinator =
                 LoadingModalDialogCoordinator.create(modalDialogManagerSupplier, context);
@@ -516,6 +523,8 @@ public class PasswordManagerHelper {
         PasswordCheckupClientMetricsRecorder passwordCheckupMetricsRecorder =
                 new PasswordCheckupClientMetricsRecorder(
                         (PasswordCheckOperation.GET_PASSWORD_CHECKUP_INTENT));
+        // TODO(crbug.com/1504551): Change PasswordCheckupClientHelper.getPasswordCheckupIntent to
+        // take the accountEmail as String.
         checkupClient.getPasswordCheckupIntent(
                 referrer,
                 account,
