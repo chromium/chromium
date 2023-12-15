@@ -57,11 +57,6 @@ BASE_DECLARE_FEATURE(kAutofillUseTwoDotsForLastFourDigits);
 BASE_DECLARE_FEATURE(kAutofillEnableVirtualCards);
 #endif
 
-#if BUILDFLAG(IS_ANDROID)
-BASE_DECLARE_FEATURE(kEnablePixDetection);
-BASE_DECLARE_FEATURE(kEnablePixPayments);
-#endif
-
 // Return whether a [No thanks] button and new messaging is shown in the save
 // card bubbles. This will be called only on desktop platforms.
 bool ShouldShowImprovedUserConsentForCreditCardSave();

@@ -140,6 +140,7 @@ include_rules = [
   "+components/error_page/content/browser",
   "+components/exo",
   "+components/external_intents",
+  "+components/facilitated_payments/core/features",
   "+components/favicon_base",
   "+components/favicon/android",
   "+components/favicon/content",

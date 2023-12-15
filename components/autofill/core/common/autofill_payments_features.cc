@@ -272,18 +272,6 @@ BASE_FEATURE(kAutofillEnableVirtualCards,
              base::FEATURE_DISABLED_BY_DEFAULT);
 #endif
 
-#if BUILDFLAG(IS_ANDROID)
-// When enabled, Chrome will detect PIX codes on allow-listed merchant websites.
-BASE_FEATURE(kEnablePixDetection,
-             "EnablePixDetection",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
-// When enabled, Chrome will offer to pay with accounts supporting Pix.
-BASE_FEATURE(kEnablePixPayments,
-             "EnablePixPayments",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-#endif
-
 bool ShouldShowImprovedUserConsentForCreditCardSave() {
 // TODO(crbug.com/1052397): Revisit the macro expression once build flag switch
 // of lacros-chrome is complete.

@@ -248,6 +248,7 @@
 #include "chrome/browser/push_messaging/push_messaging_features.h"
 #include "components/browser_ui/photo_picker/android/features.h"
 #include "components/external_intents/android/external_intents_features.h"
+#include "components/facilitated_payments/core/features/features.h"
 #include "components/messages/android/messages_feature.h"
 #include "components/translate/content/android/translate_message.h"
 #include "ui/android/ui_android_features.h"
@@ -5769,7 +5770,7 @@ const FeatureEntry kFeatureEntries[] = {
          autofill::features::kAutofillVirtualViewStructureAndroid)},
     {"enable-pix-detection", flag_descriptions::kEnablePixDetectionName,
      flag_descriptions::kEnablePixDetectionDescription, kOsAndroid,
-     FEATURE_VALUE_TYPE(autofill::features::kEnablePixDetection)},
+     FEATURE_VALUE_TYPE(payments::facilitated::kEnablePixDetection)},
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)

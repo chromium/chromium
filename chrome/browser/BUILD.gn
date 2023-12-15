@@ -2181,6 +2181,7 @@ static_library("browser") {
     "//components/enterprise/content",
     "//components/error_page/common",
     "//components/error_page/content/browser",
+    "//components/facilitated_payments/core/features",
     "//components/favicon/content",
     "//components/favicon/core",
     "//components/favicon/core:history_implementation",
