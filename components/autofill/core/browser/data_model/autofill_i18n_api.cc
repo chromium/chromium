@@ -13,6 +13,7 @@
 #include "components/autofill/core/browser/data_model/autofill_i18n_formatting_expressions.h"
 #include "components/autofill/core/browser/data_model/autofill_i18n_hierarchies.h"
 #include "components/autofill/core/browser/data_model/autofill_i18n_parsing_expressions.h"
+#include "components/autofill/core/browser/data_model/autofill_i18n_stopwords.h"
 #include "components/autofill/core/browser/data_model/autofill_structured_address.h"
 #include "components/autofill/core/browser/data_model/autofill_structured_address_format_provider.h"
 #include "components/autofill/core/browser/data_model/autofill_structured_address_name.h"
@@ -25,6 +26,7 @@ namespace autofill::i18n_model_definition {
 namespace {
 using i18n_model_definition::kAutofillFormattingRulesMap;
 using i18n_model_definition::kAutofillModelRules;
+using i18n_model_definition::kAutofillModelStopwords;
 using i18n_model_definition::kAutofillParsingRulesMap;
 
 // Adjacency mapping, stores for each field type X the list of field types
@@ -274,6 +276,16 @@ i18n_model_definition::ValueParsingResults ParseValueByI18nRegularExpression(
       {country_code_for_parsing.value(), field_type});
   return it != kAutofillParsingRulesMap.end() ? it->second->Parse(value)
                                               : absl::nullopt;
+}
+
+std::optional<std::u16string_view> GetStopwordsExpression(
+    ServerFieldType field_type,
+    AddressCountryCode country_code) {
+  auto* it = kAutofillModelStopwords.find({country_code.value(), field_type});
+  if (it == kAutofillModelStopwords.end()) {
+    return std::nullopt;
+  }
+  return it->second;
 }
 
 bool IsTypeEnabledForCountry(ServerFieldType field_type,
