@@ -112,6 +112,9 @@ public class ChromeBackupAgentTest {
             CoreAccountInfo.createFromEmailAndGaiaId("user1", "gaia_id_user1");
 
     private static final String PREFERENCE_KEY_NOT_BACKED_UP = "not_backed_up";
+    private static int sBackupValuesCount = 8;
+    private static final String sAccountSettingsPrefKey = "account_settings_pref_key";
+    private static final String sAccountSettingsPrefValue = "account_settings_pref_value";
 
     private void setUpTestPrefs(SharedPreferences prefs) {
         SharedPreferences.Editor editor = prefs.edit();
@@ -151,6 +154,10 @@ public class ChromeBackupAgentTest {
                 .thenReturn(new String[] {"pref1"});
         when(mChromeBackupAgentJniMock.getBoolBackupValues(mAgent))
                 .thenReturn(new boolean[] {true});
+        when(mChromeBackupAgentJniMock.getAccountSettingsBackupName(mAgent))
+                .thenReturn(sAccountSettingsPrefKey);
+        when(mChromeBackupAgentJniMock.getAccountSettingsBackupValue(mAgent))
+                .thenReturn(sAccountSettingsPrefValue);
 
         IdentityServicesProvider identityServicesProvider = mock(IdentityServicesProvider.class);
         IdentityServicesProvider.setInstanceForTests(identityServicesProvider);
@@ -188,6 +195,12 @@ public class ChromeBackupAgentTest {
 
         // Check that the right things were written to the backup
         verify(backupData).writeEntityHeader("native.pref1", 1);
+        byte[] accountSettingsPrefBytes =
+                ApiCompatibilityUtils.getBytesUtf8(sAccountSettingsPrefValue);
+        verify(backupData)
+                .writeEntityHeader(
+                        "NativeJsonDict." + sAccountSettingsPrefKey,
+                        accountSettingsPrefBytes.length);
         verify(backupData)
                 .writeEntityHeader(
                         "AndroidDefault." + ChromePreferenceKeys.FIRST_RUN_FLOW_COMPLETE, 1);
@@ -226,8 +239,9 @@ public class ChromeBackupAgentTest {
         try (ObjectInputStream newStateStream =
                 new ObjectInputStream(new FileInputStream(stateFile))) {
             ArrayList<String> names = (ArrayList<String>) newStateStream.readObject();
-            assertThat(names.size(), equalTo(7));
+            assertThat(names.size(), equalTo(sBackupValuesCount));
             assertThat(names, hasItem("native.pref1"));
+            assertThat(names, hasItem("NativeJsonDict." + sAccountSettingsPrefKey));
             assertThat(
                     names,
                     hasItem("AndroidDefault." + ChromePreferenceKeys.FIRST_RUN_FLOW_COMPLETE));
@@ -253,9 +267,10 @@ public class ChromeBackupAgentTest {
                     names,
                     hasItem("AndroidDefault." + ChromeBackupAgentImpl.SIGNED_IN_ACCOUNT_ID_KEY));
             ArrayList<byte[]> values = (ArrayList<byte[]>) newStateStream.readObject();
-            assertThat(values.size(), equalTo(7));
+            assertThat(values.size(), equalTo(sBackupValuesCount));
             assertThat(values, hasItem(unameBytes));
             assertThat(values, hasItem(uidBytes));
+            assertThat(values, hasItem(accountSettingsPrefBytes));
             assertThat(values, hasItem(new byte[] {0}));
             assertThat(values, hasItem(new byte[] {1}));
 
@@ -288,6 +303,12 @@ public class ChromeBackupAgentTest {
 
         // Check that the right things were written to the backup
         verify(backupData).writeEntityHeader("native.pref1", 1);
+        byte[] accountSettingsPrefBytes =
+                ApiCompatibilityUtils.getBytesUtf8(sAccountSettingsPrefValue);
+        verify(backupData)
+                .writeEntityHeader(
+                        "NativeJsonDict." + sAccountSettingsPrefKey,
+                        accountSettingsPrefBytes.length);
         verify(backupData)
                 .writeEntityHeader(
                         "AndroidDefault." + ChromePreferenceKeys.FIRST_RUN_FLOW_COMPLETE, 1);
@@ -325,8 +346,9 @@ public class ChromeBackupAgentTest {
         try (ObjectInputStream newStateStream =
                 new ObjectInputStream(new FileInputStream(stateFile))) {
             ArrayList<String> names = (ArrayList<String>) newStateStream.readObject();
-            assertThat(names.size(), equalTo(7));
+            assertThat(names.size(), equalTo(sBackupValuesCount));
             assertThat(names, hasItem("native.pref1"));
+            assertThat(names, hasItem("NativeJsonDict." + sAccountSettingsPrefKey));
             assertThat(
                     names,
                     hasItem("AndroidDefault." + ChromePreferenceKeys.FIRST_RUN_FLOW_COMPLETE));
@@ -352,9 +374,10 @@ public class ChromeBackupAgentTest {
                     names,
                     hasItem("AndroidDefault." + ChromeBackupAgentImpl.SIGNED_IN_ACCOUNT_ID_KEY));
             ArrayList<byte[]> values = (ArrayList<byte[]>) newStateStream.readObject();
-            assertThat(values.size(), equalTo(7));
+            assertThat(values.size(), equalTo(sBackupValuesCount));
             assertThat(values, not(hasItem(unameBytes)));
             assertThat(values, hasItem(uidBytes));
+            assertThat(values, hasItem(accountSettingsPrefBytes));
             assertThat(values, hasItem(new byte[] {0}));
             assertThat(values, hasItem(new byte[] {1}));
 
@@ -383,8 +406,8 @@ public class ChromeBackupAgentTest {
         }
 
         // Minimal check on first backup, this isn't the test here.
-        verify(backupData, times(7)).writeEntityHeader(anyString(), anyInt());
-        verify(backupData, times(7)).writeEntityData(any(byte[].class), anyInt());
+        verify(backupData, times(sBackupValuesCount)).writeEntityHeader(anyString(), anyInt());
+        verify(backupData, times(sBackupValuesCount)).writeEntityData(any(byte[].class), anyInt());
 
         File stateFile2 = mTempDir.newFile();
         try (ParcelFileDescriptor oldState =
@@ -433,8 +456,8 @@ public class ChromeBackupAgentTest {
             mAgent.onBackup(null, backupData, newState);
         }
         // Minimal check on first backup, this isn't the test here.
-        verify(backupData, times(7)).writeEntityHeader(anyString(), anyInt());
-        verify(backupData, times(7)).writeEntityData(any(byte[].class), anyInt());
+        verify(backupData, times(sBackupValuesCount)).writeEntityHeader(anyString(), anyInt());
+        verify(backupData, times(sBackupValuesCount)).writeEntityData(any(byte[].class), anyInt());
 
         // Change some data.
         SharedPreferences.Editor editor = prefs.edit();
@@ -454,8 +477,8 @@ public class ChromeBackupAgentTest {
         }
 
         // Check that the second backup wrote something.
-        verify(backupData, times(7)).writeEntityHeader(anyString(), anyInt());
-        verify(backupData, times(7)).writeEntityData(any(byte[].class), anyInt());
+        verify(backupData, times(sBackupValuesCount)).writeEntityHeader(anyString(), anyInt());
+        verify(backupData, times(sBackupValuesCount)).writeEntityData(any(byte[].class), anyInt());
 
         // the two state files should contain different data (although the names are unchanged).
         try (ObjectInputStream oldStateStream =
@@ -515,14 +538,19 @@ public class ChromeBackupAgentTest {
         final String[] keys = {
             "native.pref1",
             "native.pref2",
+            "NativeJsonDict." + sAccountSettingsPrefKey,
             "AndroidDefault." + ChromePreferenceKeys.FIRST_RUN_FLOW_COMPLETE,
             "AndroidDefault.junk",
             "AndroidDefault." + ChromeBackupAgentImpl.SYNCING_ACCOUNT_KEY,
             "AndroidDefault." + ChromeBackupAgentImpl.SIGNED_IN_ACCOUNT_ID_KEY,
         };
+        byte[] accountSettingsPrefBytes =
+                ApiCompatibilityUtils.getBytesUtf8(sAccountSettingsPrefValue);
         byte[] unameBytes = ApiCompatibilityUtils.getBytesUtf8(mAccountInfo.getEmail());
         byte[] uidBytes = ApiCompatibilityUtils.getBytesUtf8(mAccountInfo.getGaiaId());
-        final byte[][] values = {{0}, {1}, {1}, {23, 42}, unameBytes, uidBytes};
+        final byte[][] values = {
+            {0}, {1}, accountSettingsPrefBytes, {1}, {23, 42}, unameBytes, uidBytes
+        };
         when(backupData.getKey())
                 .thenAnswer(
                         new Answer<String>() {
@@ -567,7 +595,7 @@ public class ChromeBackupAgentTest {
 
                             @Override
                             public Boolean answer(InvocationOnMock invocation) {
-                                return mPos++ < 6;
+                                return mPos++ < sBackupValuesCount - 1;
                             }
                         });
         return backupData;
@@ -593,6 +621,7 @@ public class ChromeBackupAgentTest {
         assertTrue(prefs.getBoolean(ChromePreferenceKeys.FIRST_RUN_FLOW_COMPLETE, false));
         assertFalse(prefs.contains("junk"));
         assertFalse(prefs.contains(ChromeBackupAgentImpl.SIGNED_IN_ACCOUNT_ID_KEY));
+        assertFalse(prefs.contains(sAccountSettingsPrefKey));
         verify(mChromeBackupAgentJniMock)
                 .setBoolBackupPrefs(
                         mAgent, new String[] {"pref1", "pref2"}, new boolean[] {false, true});

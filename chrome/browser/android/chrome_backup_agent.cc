@@ -9,6 +9,8 @@
 #include <vector>
 
 #include "base/android/jni_array.h"
+#include "base/android/jni_string.h"
+#include "base/json/json_string_value_serializer.h"
 #include "chrome/android/chrome_jni_headers/ChromeBackupAgentImpl_jni.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "components/prefs/pref_service.h"
@@ -19,7 +21,7 @@ namespace {
 
 static_assert(47 == syncer::GetNumModelTypes(),
               "If the new type has a corresponding pref, add it here");
-const char* backed_up_preferences_[] = {
+const char* backed_up_bool_preferences_[] = {
     syncer::prefs::internal::kSyncKeepEverythingSynced,
     syncer::prefs::internal::kSyncAutofill,
     syncer::prefs::internal::kSyncBookmarks,
@@ -32,6 +34,9 @@ const char* backed_up_preferences_[] = {
     syncer::prefs::internal::kSyncTabs,
 };
 
+const char* backed_up_account_settings_preference_ =
+    syncer::prefs::internal::kSelectedTypesPerAccount;
+
 }  // namespace
 
 static base::android::ScopedJavaLocalRef<jobjectArray>
@@ -39,7 +44,7 @@ JNI_ChromeBackupAgentImpl_GetBoolBackupNames(
     JNIEnv* env,
     const base::android::JavaParamRef<jobject>& jcaller) {
   return base::android::ToJavaArrayOfStrings(env,
-                                             android::GetBackupPrefNames());
+                                             android::GetBackupBoolPrefNames());
 }
 
 static base::android::ScopedJavaLocalRef<jbooleanArray>
@@ -47,11 +52,11 @@ JNI_ChromeBackupAgentImpl_GetBoolBackupValues(
     JNIEnv* env,
     const base::android::JavaParamRef<jobject>& jcaller) {
   PrefService* prefs = ProfileManager::GetLastUsedProfile()->GetPrefs();
-  constexpr int pref_count = std::size(backed_up_preferences_);
+  constexpr int pref_count = std::size(backed_up_bool_preferences_);
   jboolean values[pref_count];
 
   for (int i = 0; i < pref_count; i++) {
-    values[i] = prefs->GetBoolean(backed_up_preferences_[i]);
+    values[i] = prefs->GetBoolean(backed_up_bool_preferences_[i]);
   }
   jbooleanArray array = env->NewBooleanArray(pref_count);
   env->SetBooleanArrayRegion(array, 0, pref_count, values);
@@ -68,7 +73,8 @@ static void JNI_ChromeBackupAgentImpl_SetBoolBackupPrefs(
   std::vector<bool> pref_values;
   base::android::JavaBooleanArrayToBoolVector(env, values, &pref_values);
   std::unordered_set<std::string> valid_prefs(
-      std::begin(backed_up_preferences_), std::end(backed_up_preferences_));
+      std::begin(backed_up_bool_preferences_),
+      std::end(backed_up_bool_preferences_));
 
   PrefService* prefs = ProfileManager::GetLastUsedProfile()->GetPrefs();
   for (unsigned int i = 0; i < pref_names.size(); i++) {
@@ -79,11 +85,38 @@ static void JNI_ChromeBackupAgentImpl_SetBoolBackupPrefs(
   prefs->CommitPendingWrite();
 }
 
+static base::android::ScopedJavaLocalRef<jstring>
+JNI_ChromeBackupAgentImpl_GetAccountSettingsBackupName(
+    JNIEnv* env,
+    const base::android::JavaParamRef<jobject>& jcaller) {
+  return base::android::ConvertUTF8ToJavaString(
+      env, backed_up_account_settings_preference_);
+}
+
+static base::android::ScopedJavaLocalRef<jstring>
+JNI_ChromeBackupAgentImpl_GetAccountSettingsBackupValue(
+    JNIEnv* env,
+    const base::android::JavaParamRef<jobject>& jcaller) {
+  PrefService* prefs = ProfileManager::GetLastUsedProfile()->GetPrefs();
+  const base::Value::Dict& account_settings =
+      prefs->GetDict(backed_up_account_settings_preference_);
+
+  std::string serialized_dict;
+  JSONStringValueSerializer serializer(&serialized_dict);
+  const bool serializer_result = serializer.Serialize(account_settings);
+  CHECK(serializer_result);
+  return base::android::ConvertUTF8ToJavaString(env, serialized_dict);
+}
+
 namespace android {
 
-std::vector<std::string> GetBackupPrefNames() {
-  return std::vector<std::string>(std::begin(backed_up_preferences_),
-                                  std::end(backed_up_preferences_));
+std::vector<std::string> GetBackupBoolPrefNames() {
+  return std::vector<std::string>(std::begin(backed_up_bool_preferences_),
+                                  std::end(backed_up_bool_preferences_));
+}
+
+std::string GetBackupAccountSettingsPrefName() {
+  return backed_up_account_settings_preference_;
 }
 
 base::android::ScopedJavaLocalRef<jobjectArray> GetBoolBackupNamesForTesting(
@@ -104,6 +137,20 @@ void SetBoolBackupPrefsForTesting(
     const base::android::JavaParamRef<jobjectArray>& names,
     const base::android::JavaParamRef<jbooleanArray>& values) {
   JNI_ChromeBackupAgentImpl_SetBoolBackupPrefs(env, jcaller, names, values);
+}
+
+base::android::ScopedJavaLocalRef<jstring>
+GetAccountSettingsBackupNameForTesting(
+    JNIEnv* env,
+    const base::android::JavaParamRef<jobject>& jcaller) {
+  return JNI_ChromeBackupAgentImpl_GetAccountSettingsBackupName(env, jcaller);
+}
+
+base::android::ScopedJavaLocalRef<jstring>
+GetAccountSettingsBackupValueForTesting(
+    JNIEnv* env,
+    const base::android::JavaParamRef<jobject>& jcaller) {
+  return JNI_ChromeBackupAgentImpl_GetAccountSettingsBackupValue(env, jcaller);
 }
 
 }  //  namespace android
