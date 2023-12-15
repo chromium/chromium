@@ -1525,15 +1525,6 @@ crbug.com/1045672 fast/forms/select/listbox-tap.html [ Failure ]
 
 crbug.com/1488371 virtual/deprecate-unload/http/tests/history/history-replace-updates-current-item.html [ Failure Skip Timeout ]
 crbug.com/1488371 virtual/deprecate-unload/http/tests/navigation/image-load-in-unload-handler.html [ Failure Skip Timeout ]
-crbug.com/1488371 virtual/deprecate-unload/external/wpt/html/browsers/browsing-the-web/back-forward-cache/events.html [ Failure Skip Timeout ]
-crbug.com/1488371 virtual/deprecate-unload/external/wpt/html/browsers/history/the-history-interface/traverse_the_history_unload_1.html [ Timeout ]
-crbug.com/1488371 virtual/deprecate-unload/external/wpt/html/webappapis/scripting/events/event-handler-attributes-body-window.html [ Failure Skip Timeout ]
-crbug.com/1488371 virtual/deprecate-unload/external/wpt/html/webappapis/scripting/events/event-handler-attributes-frameset-window.html [ Failure Skip Timeout ]
-crbug.com/1488371 virtual/deprecate-unload/external/wpt/html/webappapis/scripting/events/event-handler-attributes-windowless-body.html [ Failure Skip Timeout ]
-crbug.com/1488371 virtual/deprecate-unload/external/wpt/navigation-api/navigate-event/replaceState-in-unload-then-remove-iframe.html [ Timeout ]
-crbug.com/1488371 virtual/deprecate-unload/external/wpt/permissions-policy/experimental-features/unload-allowed-by-default.tentative.window.html [ Failure Skip Timeout ]
-crbug.com/1488371 virtual/deprecate-unload/external/wpt/permissions-policy/experimental-features/unload-disallowed-subframe.tentative.window.html [ Failure Skip Timeout ]
-crbug.com/1488371 virtual/deprecate-unload/external/wpt/screen-details/getScreenDetails.tentative.https.window.html [ Timeout ]
 
 # ========== End of Unload deprecation pending
 
@@ -1546,8 +1537,11 @@ crbug.com/1488371 virtual/deprecate-unload/external/wpt/fetch/api/redirect/redir
 crbug.com/1488371 virtual/deprecate-unload/external/wpt/fetch/metadata/unload.https.sub.html [ Timeout ]
 crbug.com/1488371 virtual/deprecate-unload/external/wpt/html/browsers/the-window-object/open-close/close_unload.html [ Timeout ]
 crbug.com/1488371 virtual/deprecate-unload/external/wpt/html/browsers/browsing-the-web/unloading-documents/unload/009.html [ Timeout ]
+crbug.com/1488371 virtual/deprecate-unload/external/wpt/html/browsers/history/the-history-interface/traverse_the_history_unload_1.html [ Timeout ]
+crbug.com/1488371 virtual/deprecate-unload/external/wpt/navigation-api/navigate-event/replaceState-in-unload-then-remove-iframe.html [ Timeout ]
 # Also tests timing, so cannot be moved to pagehide.
 crbug.com/1488371 virtual/deprecate-unload/external/wpt/navigation-timing/nested-unload-timing.html [ Failure ]
+crbug.com/1488371 virtual/deprecate-unload/external/wpt/screen-details/getScreenDetails.tentative.https.window.html [ Timeout ]
 crbug.com/1488371 virtual/deprecate-unload/http/tests/navigation/targeted-navigation-in-unload-handler.html [ Timeout ]
 crbug.com/1488371 virtual/deprecate-unload/http/tests/devtools/sources/debugger/skip-pause-during-navigation.js [ Skip Timeout ]
 crbug.com/1488371 virtual/deprecate-unload/external/wpt/html/webappapis/dynamic-markup-insertion/opening-the-input-stream/bailout-exception-vs-return-origin.sub.window.html [ Timeout ]
