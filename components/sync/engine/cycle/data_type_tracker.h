@@ -147,7 +147,7 @@ class DataTypeTracker {
   void UpdateLocalChangeNudgeDelay(base::TimeDelta delay);
 
   // Returns the current local change nudge delay for this type.
-  base::TimeDelta GetLocalChangeNudgeDelay() const;
+  base::TimeDelta GetLocalChangeNudgeDelay(bool is_single_client) const;
 
   // Returns the current nudge delay for receiving remote invalitation for this
   // type;

@@ -148,7 +148,7 @@ class SyncerTest : public testing::Test,
     ResetCycle();
 
     // Pretend we've seen a local change, to make the nudge_tracker look normal.
-    nudge_tracker_.RecordLocalChange(BOOKMARKS);
+    nudge_tracker_.RecordLocalChange(BOOKMARKS, false);
 
     return syncer_->NormalSyncShare(context_->GetConnectedTypes(),
                                     &nudge_tracker_, cycle_.get());

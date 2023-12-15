@@ -370,13 +370,19 @@ void DataTypeTracker::UpdateLocalChangeNudgeDelay(base::TimeDelta delay) {
   }
 }
 
-base::TimeDelta DataTypeTracker::GetLocalChangeNudgeDelay() const {
+base::TimeDelta DataTypeTracker::GetLocalChangeNudgeDelay(
+    bool is_single_client) const {
   if (quota_ && !quota_->HasTokensAvailable()) {
     base::UmaHistogramEnumeration("Sync.ModelTypeCommitWithDepletedQuota",
                                   ModelTypeHistogramValue(type_));
     return depleted_quota_nudge_delay_;
   }
-  return local_change_nudge_delay_;
+  base::TimeDelta result = local_change_nudge_delay_;
+  if (is_single_client &&
+      base::FeatureList::IsEnabled(kSyncIncreaseNudgeDelayForSingleClient)) {
+    result *= kSyncIncreaseNudgeDelayForSingleClientFactor.Get();
+  }
+  return result;
 }
 
 base::TimeDelta DataTypeTracker::GetRemoteInvalidationDelay() const {

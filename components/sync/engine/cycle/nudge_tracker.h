@@ -64,7 +64,7 @@ class NudgeTracker {
 
   // Takes note of a local change.
   // Returns the current nudge delay for local changes to |type|.
-  base::TimeDelta RecordLocalChange(ModelType type);
+  base::TimeDelta RecordLocalChange(ModelType type, bool is_single_client);
 
   // Takes note of a locally issued request to refresh a data type.
   // Returns the nudge delay for a local refresh.
