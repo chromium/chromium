@@ -14,6 +14,7 @@
 #include "third_party/blink/renderer/core/execution_context/security_context.h"
 #include "third_party/blink/renderer/core/testing/dummy_page_holder.h"
 #include "third_party/blink/renderer/platform/graphics/gradient.h"
+#include "third_party/blink/renderer/platform/testing/task_environment.h"
 
 namespace blink {
 
@@ -45,6 +46,7 @@ bool IsUsingContainerRelativeUnits(const char* text) {
 }
 
 TEST(CSSGradientValueTest, RadialGradient_Equals) {
+  test::TaskEnvironment task_environment;
   // Trivially identical.
   EXPECT_TRUE(CompareGradients(
       "radial-gradient(circle closest-corner at 100px 60px, blue, red)",
@@ -83,6 +85,7 @@ TEST(CSSGradientValueTest, RadialGradient_Equals) {
 }
 
 TEST(CSSGradientValueTest, RepeatingRadialGradientNan) {
+  test::TaskEnvironment task_environment;
   std::unique_ptr<DummyPageHolder> dummy_page_holder =
       std::make_unique<DummyPageHolder>();
   Document& document = dummy_page_holder->GetDocument();
@@ -108,6 +111,7 @@ TEST(CSSGradientValueTest, RepeatingRadialGradientNan) {
 }
 
 TEST(CSSGradientValueTest, IsUsingContainerRelativeUnits) {
+  test::TaskEnvironment task_environment;
   EXPECT_TRUE(
       IsUsingContainerRelativeUnits("linear-gradient(green 5cqw, blue 10cqh)"));
   EXPECT_TRUE(

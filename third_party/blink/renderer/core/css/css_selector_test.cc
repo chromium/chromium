@@ -2,16 +2,16 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <iostream>
+
+#include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/renderer/core/css/css_test_helpers.h"
 #include "third_party/blink/renderer/core/css/parser/css_parser.h"
 #include "third_party/blink/renderer/core/css/parser/css_parser_context.h"
 #include "third_party/blink/renderer/core/css/rule_set.h"
 #include "third_party/blink/renderer/core/html_names.h"
 #include "third_party/blink/renderer/platform/testing/runtime_enabled_features_test_helpers.h"
-
-#include "testing/gtest/include/gtest/gtest.h"
-
-#include <iostream>
+#include "third_party/blink/renderer/platform/testing/task_environment.h"
 
 namespace blink {
 
@@ -32,6 +32,7 @@ bool HasLinkOrVisited(const String& selector_text) {
 }  // namespace
 
 TEST(CSSSelector, Representations) {
+  test::TaskEnvironment task_environment;
   css_test_helpers::TestStyleSheet sheet;
 
   const char* css_rules =
@@ -77,6 +78,7 @@ TEST(CSSSelector, Representations) {
 }
 
 TEST(CSSSelector, OverflowRareDataMatchNth) {
+  test::TaskEnvironment task_environment;
   int max_int = std::numeric_limits<int>::max();
   int min_int = std::numeric_limits<int>::min();
   CSSSelector selector;
@@ -99,6 +101,7 @@ TEST(CSSSelector, OverflowRareDataMatchNth) {
 }
 
 TEST(CSSSelector, Specificity_Is) {
+  test::TaskEnvironment task_environment;
   EXPECT_EQ(Specificity(".a :is(.b, div.c)"), Specificity(".a div.c"));
   EXPECT_EQ(Specificity(".a :is(.c#d, .e)"), Specificity(".a .c#d"));
   EXPECT_EQ(Specificity(":is(.e+.f, .g>.b, .h)"), Specificity(".e+.f"));
@@ -112,6 +115,7 @@ TEST(CSSSelector, Specificity_Is) {
 }
 
 TEST(CSSSelector, Specificity_Where) {
+  test::TaskEnvironment task_environment;
   EXPECT_EQ(Specificity(".a :where(.b, div.c)"), Specificity(".a"));
   EXPECT_EQ(Specificity(".a :where(.c#d, .e)"), Specificity(".a"));
   EXPECT_EQ(Specificity(":where(.e+.f, .g>.b, .h)"), Specificity("*"));
@@ -126,23 +130,27 @@ TEST(CSSSelector, Specificity_Where) {
 }
 
 TEST(CSSSelector, Specificity_Slotted) {
+  test::TaskEnvironment task_environment;
   EXPECT_EQ(Specificity("::slotted(.a)"), Specificity(".a::first-line"));
   EXPECT_EQ(Specificity("::slotted(*)"), Specificity("::first-line"));
 }
 
 TEST(CSSSelector, Specificity_Host) {
+  test::TaskEnvironment task_environment;
   EXPECT_EQ(Specificity(":host"), Specificity(".host"));
   EXPECT_EQ(Specificity(":host(.a)"), Specificity(".host .a"));
   EXPECT_EQ(Specificity(":host(div#a.b)"), Specificity(".host div#a.b"));
 }
 
 TEST(CSSSelector, Specificity_HostContext) {
+  test::TaskEnvironment task_environment;
   EXPECT_EQ(Specificity(":host-context(.a)"), Specificity(".host-context .a"));
   EXPECT_EQ(Specificity(":host-context(div#a.b)"),
             Specificity(".host-context div#a.b"));
 }
 
 TEST(CSSSelector, Specificity_Not) {
+  test::TaskEnvironment task_environment;
   EXPECT_EQ(Specificity(":not(div)"), Specificity(":is(div)"));
   EXPECT_EQ(Specificity(":not(.a)"), Specificity(":is(.a)"));
   EXPECT_EQ(Specificity(":not(div.a)"), Specificity(":is(div.a)"));
@@ -156,6 +164,7 @@ TEST(CSSSelector, Specificity_Not) {
 }
 
 TEST(CSSSelector, Specificity_Has) {
+  test::TaskEnvironment task_environment;
   EXPECT_EQ(Specificity(":has(div)"), Specificity("div"));
   EXPECT_EQ(Specificity(":has(div)"), Specificity("* div"));
   EXPECT_EQ(Specificity(":has(~ div)"), Specificity("* ~ div"));
@@ -172,6 +181,7 @@ TEST(CSSSelector, Specificity_Has) {
 }
 
 TEST(CSSSelector, HasLinkOrVisited) {
+  test::TaskEnvironment task_environment;
   EXPECT_FALSE(HasLinkOrVisited("tag"));
   EXPECT_FALSE(HasLinkOrVisited("visited"));
   EXPECT_FALSE(HasLinkOrVisited("link"));
@@ -197,6 +207,7 @@ TEST(CSSSelector, HasLinkOrVisited) {
 }
 
 TEST(CSSSelector, CueDefaultNamespace) {
+  test::TaskEnvironment task_environment;
   css_test_helpers::TestStyleSheet sheet;
 
   sheet.AddCSSRules(R"HTML(
@@ -218,24 +229,28 @@ TEST(CSSSelector, CueDefaultNamespace) {
 }
 
 TEST(CSSSelector, CopyInvalidList) {
+  test::TaskEnvironment task_environment;
   CSSSelectorList* list = CSSSelectorList::Empty();
   EXPECT_FALSE(list->IsValid());
   EXPECT_FALSE(list->Copy()->IsValid());
 }
 
 TEST(CSSSelector, CopyValidList) {
+  test::TaskEnvironment task_environment;
   CSSSelectorList* list = css_test_helpers::ParseSelectorList(".a");
   EXPECT_TRUE(list->IsValid());
   EXPECT_TRUE(list->Copy()->IsValid());
 }
 
 TEST(CSSSelector, FirstInInvalidList) {
+  test::TaskEnvironment task_environment;
   CSSSelectorList* list = CSSSelectorList::Empty();
   EXPECT_FALSE(list->IsValid());
   EXPECT_FALSE(list->First());
 }
 
 TEST(CSSSelector, ImplicitPseudoDescendant) {
+  test::TaskEnvironment task_environment;
   CSSSelector selector[2] = {
       CSSSelector(html_names::kDivTag,
                   /* is_implicit */ false),
@@ -246,6 +261,7 @@ TEST(CSSSelector, ImplicitPseudoDescendant) {
 }
 
 TEST(CSSSelector, ImplicitPseudoChild) {
+  test::TaskEnvironment task_environment;
   CSSSelector selector[2] = {
       CSSSelector(html_names::kDivTag,
                   /* is_implicit */ false),
@@ -256,6 +272,7 @@ TEST(CSSSelector, ImplicitPseudoChild) {
 }
 
 TEST(CSSSelector, NonImplicitPseudoChild) {
+  test::TaskEnvironment task_environment;
   CSSSelector selector[2] = {
       CSSSelector(html_names::kDivTag,
                   /* is_implicit */ false),
@@ -266,6 +283,7 @@ TEST(CSSSelector, NonImplicitPseudoChild) {
 }
 
 TEST(CSSSelector, PseudoTrueBefore) {
+  test::TaskEnvironment task_environment;
   CSSSelector selector[2] = {
       CSSSelector(),
       CSSSelector(AtomicString("hover"), /* is_implicit */ false)};
@@ -276,6 +294,7 @@ TEST(CSSSelector, PseudoTrueBefore) {
 }
 
 TEST(CSSSelector, PseudoTrueAfter) {
+  test::TaskEnvironment task_environment;
   CSSSelector selector[2] = {
       CSSSelector(AtomicString("hover"), /* is_implicit */ false),
       CSSSelector()};
@@ -286,6 +305,7 @@ TEST(CSSSelector, PseudoTrueAfter) {
 }
 
 TEST(CSSSelector, PseudoTrueChild) {
+  test::TaskEnvironment task_environment;
   CSSSelector selector[2] = {CSSSelector(html_names::kDivTag,
                                          /* is_implicit */ false),
                              CSSSelector()};
@@ -296,6 +316,7 @@ TEST(CSSSelector, PseudoTrueChild) {
 }
 
 TEST(CSSSelector, PseudoTrueSpecificity) {
+  test::TaskEnvironment task_environment;
   CSSSelector selector;
   selector.SetTrue();
   selector.SetLastInComplexSelector(true);
@@ -303,6 +324,7 @@ TEST(CSSSelector, PseudoTrueSpecificity) {
 }
 
 TEST(CSSSelector, ImplicitScopeSpecificity) {
+  test::TaskEnvironment task_environment;
   CSSSelector selector[2] = {
       CSSSelector(html_names::kDivTag,
                   /* is_implicit */ false),
@@ -314,6 +336,7 @@ TEST(CSSSelector, ImplicitScopeSpecificity) {
 }
 
 TEST(CSSSelector, ExplicitScopeSpecificity) {
+  test::TaskEnvironment task_environment;
   CSSSelector selector[2] = {
       CSSSelector(html_names::kDivTag,
                   /* is_implicit */ false),

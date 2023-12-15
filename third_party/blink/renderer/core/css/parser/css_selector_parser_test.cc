@@ -15,6 +15,7 @@
 #include "third_party/blink/renderer/core/testing/dummy_page_holder.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
+#include "third_party/blink/renderer/platform/testing/task_environment.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
 
 namespace blink {
@@ -48,6 +49,7 @@ TEST_P(SelectorParseTest, Parse) {
 }
 
 TEST(CSSSelectorParserTest, ValidANPlusB) {
+  test::TaskEnvironment task_environment;
   ANPlusBTestCase test_cases[] = {
       {"odd", 2, 1},
       {"OdD", 2, 1},
@@ -121,6 +123,7 @@ TEST(CSSSelectorParserTest, ValidANPlusB) {
 }
 
 TEST(CSSSelectorParserTest, InvalidANPlusB) {
+  test::TaskEnvironment task_environment;
   // Some of these have token range prefixes which are valid <an+b> and could
   // in theory be valid in consumeANPlusB, but this behaviour isn't needed
   // anywhere and not implemented.
@@ -142,6 +145,7 @@ TEST(CSSSelectorParserTest, InvalidANPlusB) {
 }
 
 TEST(CSSSelectorParserTest, PseudoElementsInCompoundLists) {
+  test::TaskEnvironment task_environment;
   const char* test_cases[] = {":not(::before)",
                               ":not(::content)",
                               ":host(::before)",
@@ -167,6 +171,7 @@ TEST(CSSSelectorParserTest, PseudoElementsInCompoundLists) {
 }
 
 TEST(CSSSelectorParserTest, ValidSimpleAfterPseudoElementInCompound) {
+  test::TaskEnvironment task_environment;
   const char* test_cases[] = {"::-webkit-volume-slider:hover",
                               "::selection:window-inactive",
                               "::-webkit-scrollbar:disabled",
@@ -191,6 +196,7 @@ TEST(CSSSelectorParserTest, ValidSimpleAfterPseudoElementInCompound) {
 }
 
 TEST(CSSSelectorParserTest, InvalidSimpleAfterPseudoElementInCompound) {
+  test::TaskEnvironment task_environment;
   const char* test_cases[] = {
       "::before#id",
       "::after:hover",
@@ -227,6 +233,7 @@ TEST(CSSSelectorParserTest, InvalidSimpleAfterPseudoElementInCompound) {
 }
 
 TEST(CSSSelectorParserTest, TransitionPseudoStyles) {
+  test::TaskEnvironment task_environment;
   struct TestCase {
     const char* selector;
     bool valid;
@@ -286,6 +293,7 @@ TEST(CSSSelectorParserTest, TransitionPseudoStyles) {
 }
 
 TEST(CSSSelectorParserTest, WorkaroundForInvalidCustomPseudoInUAStyle) {
+  test::TaskEnvironment task_environment;
   // See crbug.com/578131
   const char* test_cases[] = {
       "video::-webkit-media-text-track-region-container.scrolling",
@@ -307,6 +315,7 @@ TEST(CSSSelectorParserTest, WorkaroundForInvalidCustomPseudoInUAStyle) {
 }
 
 TEST(CSSSelectorParserTest, InvalidPseudoElementInNonRightmostCompound) {
+  test::TaskEnvironment task_environment;
   const char* test_cases[] = {"::-webkit-volume-slider *", "::before *",
                               "::-webkit-scrollbar *", "::cue *",
                               "::selection *"};
@@ -327,6 +336,7 @@ TEST(CSSSelectorParserTest, InvalidPseudoElementInNonRightmostCompound) {
 }
 
 TEST(CSSSelectorParserTest, UnresolvedNamespacePrefix) {
+  test::TaskEnvironment task_environment;
   const char* test_cases[] = {"ns|div", "div ns|div", "div ns|div "};
 
   auto* context = MakeGarbageCollected<CSSParserContext>(
@@ -347,6 +357,7 @@ TEST(CSSSelectorParserTest, UnresolvedNamespacePrefix) {
 }
 
 TEST(CSSSelectorParserTest, UnexpectedPipe) {
+  test::TaskEnvironment task_environment;
   const char* test_cases[] = {"div | .c", "| div", " | div"};
 
   auto* context = MakeGarbageCollected<CSSParserContext>(
@@ -367,6 +378,7 @@ TEST(CSSSelectorParserTest, UnexpectedPipe) {
 }
 
 TEST(CSSSelectorParserTest, SerializedUniversal) {
+  test::TaskEnvironment task_environment;
   const char* test_cases[][2] = {
       {"*::-webkit-volume-slider", "::-webkit-volume-slider"},
       {"*::cue(i)", "::cue(i)"},
@@ -401,6 +413,7 @@ TEST(CSSSelectorParserTest, SerializedUniversal) {
 }
 
 TEST(CSSSelectorParserTest, AttributeSelectorUniversalInvalid) {
+  test::TaskEnvironment task_environment;
   const char* test_cases[] = {"[*]", "[*|*]"};
 
   auto* context = MakeGarbageCollected<CSSParserContext>(
@@ -422,6 +435,7 @@ TEST(CSSSelectorParserTest, AttributeSelectorUniversalInvalid) {
 }
 
 TEST(CSSSelectorParserTest, InternalPseudo) {
+  test::TaskEnvironment task_environment;
   const char* test_cases[] = {"::-internal-whatever",
                               "::-internal-media-controls-text-track-list",
                               ":-internal-is-html",
@@ -626,6 +640,7 @@ struct ASCIILowerTestCase {
 }  // namespace
 
 TEST(CSSSelectorParserTest, ASCIILowerHTMLStrict) {
+  test::TaskEnvironment task_environment;
   const ASCIILowerTestCase test_cases[] = {
       {"\\212a bd", u"\u212abd", TagLocalName},
       {"[\\212alass]", u"\u212alass", AttributeLocalName},
@@ -656,6 +671,7 @@ TEST(CSSSelectorParserTest, ASCIILowerHTMLStrict) {
 }
 
 TEST(CSSSelectorParserTest, ASCIILowerHTMLQuirks) {
+  test::TaskEnvironment task_environment;
   const ASCIILowerTestCase test_cases[] = {
       {"\\212a bd", u"\u212abd", TagLocalName},
       {"[\\212alass]", u"\u212alass", AttributeLocalName},
@@ -686,6 +702,7 @@ TEST(CSSSelectorParserTest, ASCIILowerHTMLQuirks) {
 }
 
 TEST(CSSSelectorParserTest, ShadowPartPseudoElementValid) {
+  test::TaskEnvironment task_environment;
   const char* test_cases[] = {"::part(ident)", "host::part(ident)",
                               "host::part(ident):hover"};
 
@@ -707,6 +724,7 @@ TEST(CSSSelectorParserTest, ShadowPartPseudoElementValid) {
 }
 
 TEST(CSSSelectorParserTest, ShadowPartAndBeforeAfterPseudoElementValid) {
+  test::TaskEnvironment task_environment;
   const char* test_cases[] = {
       "::part(ident)::before",       "::part(ident)::after",
       "::part(ident)::placeholder",  "::part(ident)::first-line",
@@ -756,6 +774,7 @@ static bool IsCounted(const char* selector,
 }
 
 TEST(CSSSelectorParserTest, UseCountShadowPseudo) {
+  test::TaskEnvironment task_environment;
   auto ExpectCount = [](const char* selector, WebFeature feature) {
     SCOPED_TRACE(selector);
     EXPECT_TRUE(IsCounted(selector, kHTMLStandardMode, feature));
@@ -875,6 +894,7 @@ TEST(CSSSelectorParserTest, UseCountShadowPseudo) {
 }
 
 TEST(CSSSelectorParserTest, IsWhereUseCount) {
+  test::TaskEnvironment task_environment;
   const auto is_feature = WebFeature::kCSSSelectorPseudoIs;
   EXPECT_FALSE(IsCounted(".a", kHTMLStandardMode, is_feature));
   EXPECT_FALSE(IsCounted(":not(.a)", kHTMLStandardMode, is_feature));
@@ -899,6 +919,7 @@ TEST(CSSSelectorParserTest, IsWhereUseCount) {
 }
 
 TEST(CSSSelectorParserTest, ImplicitShadowCrossingCombinators) {
+  test::TaskEnvironment task_environment;
   struct ShadowCombinatorTest {
     const char* input;
     Vector<std::pair<AtomicString, CSSSelector::RelationType>> expectation;
@@ -974,6 +995,7 @@ TEST(CSSSelectorParserTest, ImplicitShadowCrossingCombinators) {
 }
 
 TEST(CSSSelectorParserTest, WebKitScrollbarPseudoParsing) {
+  test::TaskEnvironment task_environment;
   const char* test_cases[] = {"::-webkit-resizer",
                               "::-webkit-scrollbar",
                               "::-webkit-scrollbar-button",
@@ -1137,6 +1159,7 @@ static absl::optional<CSSSelector::PseudoType> GetImplicitlyAddedPseudo(
 }
 
 TEST(CSSSelectorParserTest, NestingTypeImpliedDescendant) {
+  test::TaskEnvironment task_environment;
   // Nesting selector (&)
   EXPECT_EQ(CSSSelector::kPseudoParent,
             GetImplicitlyAddedPseudo(".foo", CSSNestingType::kNesting));
@@ -1282,6 +1305,7 @@ INSTANTIATE_TEST_SUITE_P(CSSSelectorParserTest,
                          testing::ValuesIn(scope_activation_data));
 
 TEST_P(ScopeActivationTest, All) {
+  test::TaskEnvironment task_environment;
   ScopeActivationData param = GetParam();
   SCOPED_TRACE(param.inner_rule);
 
@@ -1355,6 +1379,7 @@ static absl::optional<wtf_size_t> CountPseudoTrueWithScopeActivation(
 }
 
 TEST(CSSSelectorParserTest, CountMatchesSelfTest) {
+  test::TaskEnvironment task_environment;
   auto is_focus = [](const CSSSelector& selector) {
     return selector.GetPseudoType() == CSSSelector::kPseudoFocus;
   };
@@ -1416,7 +1441,10 @@ ScopeActivationCountData scope_activation_count_data[] = {
 };
 
 class ScopeActivationCountTest
-    : public ::testing::TestWithParam<ScopeActivationCountData> {};
+    : public ::testing::TestWithParam<ScopeActivationCountData> {
+ private:
+  test::TaskEnvironment task_environment_;
+};
 
 INSTANTIATE_TEST_SUITE_P(CSSSelectorParserTest,
                          ScopeActivationCountTest,

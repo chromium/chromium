@@ -1485,6 +1485,7 @@ source_set("unit_tests_v2") {
   sources += rebase_path(blink_core_tests_clipboard, "", "clipboard")
   sources +=
       rebase_path(blink_core_tests_content_capture, "", "content_capture")
+  sources += rebase_path(blink_core_tests_css, "", "css")
   sources += rebase_path(blink_core_tests_display_lock, "", "display_lock")
   sources += rebase_path(blink_core_tests_dom, "", "dom")
   sources += rebase_path(blink_core_tests_events, "", "events")

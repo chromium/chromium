@@ -21,6 +21,7 @@
 #include "third_party/blink/renderer/core/testing/dummy_page_holder.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/testing/runtime_enabled_features_test_helpers.h"
+#include "third_party/blink/renderer/platform/testing/task_environment.h"
 
 namespace blink {
 
@@ -313,6 +314,7 @@ TEST(CSSPropertyParserTest, IncompleteColor) {
 }
 
 TEST(CSSPropertyParserTest, ClipPathEllipse) {
+  test::TaskEnvironment task_environment;
   auto dummy_holder = std::make_unique<DummyPageHolder>(gfx::Size(500, 500));
   Document* doc = &dummy_holder->GetDocument();
   Page::InsertOrdinaryPageForTesting(&dummy_holder->GetPage());
@@ -333,6 +335,7 @@ TEST(CSSPropertyParserTest, ClipPathEllipse) {
 }
 
 TEST(CSSPropertyParserTest, GradientUseCount) {
+  test::TaskEnvironment task_environment;
   auto dummy_page_holder =
       std::make_unique<DummyPageHolder>(gfx::Size(800, 600));
   Document& document = dummy_page_holder->GetDocument();
@@ -345,6 +348,7 @@ TEST(CSSPropertyParserTest, GradientUseCount) {
 }
 
 TEST(CSSPropertyParserTest, PaintUseCount) {
+  test::TaskEnvironment task_environment;
   auto dummy_page_holder =
       std::make_unique<DummyPageHolder>(gfx::Size(800, 600));
   dummy_page_holder->GetFrame().Loader().CommitNavigation(
@@ -361,6 +365,7 @@ TEST(CSSPropertyParserTest, PaintUseCount) {
 }
 
 TEST(CSSPropertyParserTest, CrossFadeUseCount) {
+  test::TaskEnvironment task_environment;
   auto dummy_page_holder =
       std::make_unique<DummyPageHolder>(gfx::Size(800, 600));
   Document& document = dummy_page_holder->GetDocument();
@@ -374,6 +379,7 @@ TEST(CSSPropertyParserTest, CrossFadeUseCount) {
 }
 
 TEST(CSSPropertyParserTest, TwoValueOverflowOverlayCount) {
+  test::TaskEnvironment task_environment;
   auto dummy_page_holder =
       std::make_unique<DummyPageHolder>(gfx::Size(800, 600));
   Document& document = dummy_page_holder->GetDocument();
@@ -390,6 +396,7 @@ TEST(CSSPropertyParserTest, TwoValueOverflowOverlayCount) {
 }
 
 TEST(CSSPropertyParserTest, OneValueOverflowOverlayCount) {
+  test::TaskEnvironment task_environment;
   auto dummy_page_holder =
       std::make_unique<DummyPageHolder>(gfx::Size(800, 600));
   Document& document = dummy_page_holder->GetDocument();
@@ -406,6 +413,7 @@ TEST(CSSPropertyParserTest, OneValueOverflowOverlayCount) {
 }
 
 TEST(CSSPropertyParserTest, OverflowXOverlayCount) {
+  test::TaskEnvironment task_environment;
   auto dummy_page_holder =
       std::make_unique<DummyPageHolder>(gfx::Size(800, 600));
   Document& document = dummy_page_holder->GetDocument();
@@ -422,6 +430,7 @@ TEST(CSSPropertyParserTest, OverflowXOverlayCount) {
 }
 
 TEST(CSSPropertyParserTest, OverflowYOverlayCount) {
+  test::TaskEnvironment task_environment;
   auto dummy_page_holder =
       std::make_unique<DummyPageHolder>(gfx::Size(800, 600));
   Document& document = dummy_page_holder->GetDocument();
@@ -438,6 +447,7 @@ TEST(CSSPropertyParserTest, OverflowYOverlayCount) {
 }
 
 TEST(CSSPropertyParserTest, OverflowFirstValueOverlayCount) {
+  test::TaskEnvironment task_environment;
   auto dummy_page_holder =
       std::make_unique<DummyPageHolder>(gfx::Size(800, 600));
   Document& document = dummy_page_holder->GetDocument();
@@ -454,6 +464,7 @@ TEST(CSSPropertyParserTest, OverflowFirstValueOverlayCount) {
 }
 
 TEST(CSSPropertyParserTest, OverflowSecondValueOverlayCount) {
+  test::TaskEnvironment task_environment;
   auto dummy_page_holder =
       std::make_unique<DummyPageHolder>(gfx::Size(800, 600));
   Document& document = dummy_page_holder->GetDocument();
@@ -470,6 +481,7 @@ TEST(CSSPropertyParserTest, OverflowSecondValueOverlayCount) {
 }
 
 TEST(CSSPropertyParserTest, DropFontfaceDescriptor) {
+  test::TaskEnvironment task_environment;
   EXPECT_FALSE(
       IsValidPropertyValueForStyleRule(CSSPropertyID::kSrc, "url(blah)"));
   EXPECT_FALSE(
@@ -502,6 +514,7 @@ class CSSPropertyUseCounterTest : public ::testing::Test {
   Document& GetDocument() { return dummy_page_holder_->GetDocument(); }
 
  private:
+  test::TaskEnvironment task_environment_;
   std::unique_ptr<DummyPageHolder> dummy_page_holder_;
 };
 
