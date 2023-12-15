@@ -3743,6 +3743,7 @@ static_library("ui") {
       "//chromeos/ash/components/disks",
       "//chromeos/ash/components/drivefs",
       "//chromeos/ash/components/drivefs/mojom:mojom",
+      "//chromeos/ash/components/emoji:resources",
       "//chromeos/ash/components/fwupd",
       "//chromeos/ash/components/heatmap",
       "//chromeos/ash/components/human_presence",

@@ -1,0 +1,132 @@
+# Copyright 2023 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/chromeos/ui_mode.gni")
+import("//mojo/public/tools/bindings/mojom.gni")
+import("//tools/grit/grit_rule.gni")
+
+assert(is_chromeos_ash, "Non-Chrome-OS builds must not depend on //ash")
+
+action_foreach("emoji_data") {
+  script = "tools/emoji_data.py"
+
+  metadata_json = [
+    "//third_party/emoji-metadata/src/emoji_15_0_ordering.json",
+    "./emoji_test_ordering.json",
+  ]
+  keyword_xmls = [
+    # later keywords will override earlier keywords for a particular emoji.
+    "//third_party/cldr/src/common/annotations/en.xml",
+    "//third_party/cldr/src/common/annotations/en_001.xml",
+    "//third_party/cldr/src/common/annotationsDerived/en.xml",
+    "//third_party/cldr/src/common/annotationsDerived/en_001.xml",
+  ]
+  merged_json = "$target_gen_dir/{{source_name_part}}_start.json"
+
+  sources = metadata_json
+  inputs = keyword_xmls
+  outputs = [ merged_json ]
+  args = [
+           "--firstgroup",
+           "True",
+           "--metadata",
+           "{{source}}",
+           "--output",
+           rebase_path(merged_json, root_build_dir),
+           "--keywords",
+         ] + rebase_path(keyword_xmls, root_build_dir)
+}
+
+action_foreach("emoji_data_remaining") {
+  script = "tools/emoji_data.py"
+
+  metadata_json = [
+    "//third_party/emoji-metadata/src/emoji_15_0_ordering.json",
+    "./emoji_test_ordering.json",
+  ]
+  keyword_xmls = [
+    # later keywords will override earlier keywords for a particular emoji.
+    "//third_party/cldr/src/common/annotations/en.xml",
+    "//third_party/cldr/src/common/annotations/en_001.xml",
+    "//third_party/cldr/src/common/annotationsDerived/en.xml",
+    "//third_party/cldr/src/common/annotationsDerived/en_001.xml",
+  ]
+  merged_json = "$target_gen_dir/{{source_name_part}}_remaining.json"
+
+  sources = metadata_json
+  inputs = keyword_xmls
+  outputs = [ merged_json ]
+  args = [
+           "--firstgroup",
+           "False",
+           "--metadata",
+           "{{source}}",
+           "--output",
+           rebase_path(merged_json, root_build_dir),
+           "--keywords",
+         ] + rebase_path(keyword_xmls, root_build_dir)
+}
+
+action_foreach("emoticon_data") {
+  script = "tools/emoticon_data.py"
+  merged_json = "$target_gen_dir/{{source_name_part}}.json"
+
+  sources = [
+    "./emoticon_test_ordering.json",
+    "//third_party/emoji-metadata/src/emoticon_ordering.json",
+  ]
+
+  outputs = [ merged_json ]
+  args = [
+    "--metadata",
+    "{{source}}",
+    "--output",
+    rebase_path(merged_json, root_build_dir),
+  ]
+}
+
+action("symbol_data") {
+  script = "tools/symbol_data.py"
+
+  outputs = [ "$target_gen_dir/symbol_ordering.json" ]
+
+  deps = [
+    ":emoji_data",
+    ":emoji_data_remaining",
+  ]
+
+  args = [
+    "--output",
+    rebase_path(outputs[0], root_build_dir),
+  ]
+  args +=
+      [ "--filter-data-paths" ] +
+      rebase_path(get_target_outputs(":emoji_data"), root_build_dir) +
+      rebase_path(get_target_outputs(":emoji_data_remaining"), root_build_dir)
+}
+
+copy("symbol_test_data") {
+  sources = [ "./symbol_test_ordering.json" ]
+  outputs = [ "$target_gen_dir/symbol_test_ordering.json" ]
+}
+
+# Resources used by chrome://picker.
+grit("resources") {
+  source = "emoji.grd"
+
+  deps = [
+    ":emoji_data",
+    ":emoji_data_remaining",
+    ":emoticon_data",
+    ":symbol_data",
+    ":symbol_test_data",
+  ]
+
+  outputs = [
+    "grit/emoji.h",
+    "grit/emoji_map.cc",
+    "grit/emoji_map.h",
+    "emoji.pak",
+  ]
+}

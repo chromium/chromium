@@ -9,7 +9,7 @@ import sys
 
 _SCRIPT_DIR = os.path.realpath(os.path.dirname(__file__))
 _CHROME_SOURCE = os.path.realpath(
-    os.path.join(_SCRIPT_DIR, *[os.path.pardir] * 6))
+    os.path.join(_SCRIPT_DIR, *[os.path.pardir] * 5))
 sys.path.append(os.path.join(_CHROME_SOURCE, 'build'))
 
 import action_helpers

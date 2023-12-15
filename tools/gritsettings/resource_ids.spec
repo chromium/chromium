@@ -741,6 +741,10 @@
     "META": {"sizes": {"includes": [100],}},
     "includes": [5520],
   },
+  "chromeos/ash/components/emoji/emoji.grd" : {
+    "META": {"sizes": {"includes": [15],}},
+    "includes" : [5530],
+  },
   "chromeos/ash/resources/ash_resources.grd": {
     "includes": [5540],
   },
