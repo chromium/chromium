@@ -536,6 +536,7 @@ ts_test_files = [
   "file_manager/foreground/js/ui/command_unittest.ts",
   "file_manager/foreground/js/ui/file_grid_unittest.ts",
   "file_manager/foreground/js/ui/file_list_selection_model_unittest.ts",
+  "file_manager/foreground/js/ui/file_manager_dialog_base_unittest.ts",
   "file_manager/foreground/js/ui/file_table_list_unittest.ts",
   "file_manager/foreground/js/ui/file_table_unittest.ts",
   "file_manager/foreground/js/ui/grid_unittest.ts",
@@ -625,7 +626,6 @@ generated_js_files = [
 # Test files:
 unittest_files = [
   # Foreground:
-  "file_manager/foreground/js/ui/file_manager_dialog_base_unittest.js",
   "file_manager/foreground/js/ui/actions_submenu_unittest.js",
   "file_manager/foreground/js/ui/context_menu_handler_unittest.js",
   "file_manager/foreground/js/ui/file_tap_handler_unittest.js",

@@ -8,17 +8,15 @@ import {waitUntil} from '../../../common/js/test_error_reporting.js';
 
 import {FileManagerDialogBase} from './file_manager_dialog_base.js';
 
-// @ts-ignore: error TS7006: Parameter 'done' implicitly has an 'any' type.
-export async function testShowDialogAfterHide(done) {
+export async function testShowDialogAfterHide() {
   const dialogElement = document.createElement('dialog');
   document.body.append(dialogElement);
   const dialog = new FileManagerDialogBase(dialogElement);
 
-  /** @return {boolean} True if cr.ui.dialog container has .shown class */
-  function isShown() {
+  /** Returns true if cr.ui.dialog container has .shown class */
+  function isShown(): boolean {
     const element = document.querySelector('.cr-dialog-container');
-    // @ts-ignore: error TS18047: 'element' is possibly 'null'.
-    return element.classList.contains('shown');
+    return !!element?.classList.contains('shown');
   }
 
   // Show the dialog and wait until .shown is set on .cr-dialog-container.
@@ -35,6 +33,4 @@ export async function testShowDialogAfterHide(done) {
   // the dialog showing again at all if it was called too soon.
   dialog.showBlankDialog();
   await waitUntil(isShown);
-
-  done();
 }
