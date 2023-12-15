@@ -30,7 +30,7 @@ namespace autofill {
 
 namespace {
 // Returns the View ID that can be used to lookup the input field for |type|.
-int GetInputFieldViewId(autofill::ServerFieldType type) {
+int GetInputFieldViewId(autofill::FieldType type) {
   return static_cast<int>(type);
 }
 
@@ -64,7 +64,7 @@ void AddressEditorView::SelectCountryForTesting(const std::u16string& country) {
 }
 
 void AddressEditorView::SetTextInputFieldValueForTesting(
-    autofill::ServerFieldType type,
+    autofill::FieldType type,
     const std::u16string& value) {
   views::Textfield* text_field =
       static_cast<views::Textfield*>(GetViewByID(GetInputFieldViewId(type)));

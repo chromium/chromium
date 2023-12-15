@@ -42,7 +42,7 @@ class AddressEditorView : public views::View {
   const autofill::AutofillProfile& GetAddressProfile();
 
   void SelectCountryForTesting(const std::u16string& code);
-  void SetTextInputFieldValueForTesting(autofill::ServerFieldType type,
+  void SetTextInputFieldValueForTesting(autofill::FieldType type,
                                         const std::u16string& value);
   std::u16string GetValidationErrorForTesting() const;
 
