@@ -853,6 +853,21 @@ LayoutImageResource* ImageLoader::GetLayoutImageResource() const {
   return nullptr;
 }
 
+void ImageLoader::OnAttachLayoutTree() {
+  LayoutImageResource* image_resource = GetLayoutImageResource();
+  if (!image_resource) {
+    return;
+  }
+  // If the LayoutImageResource already has an image, it either means that it
+  // hasn't been freshly created or that it is generated content ("content:
+  // url(...)") - in which case we don't need to do anything or shouldn't do
+  // anything respectively.
+  if (image_resource->HasImage()) {
+    return;
+  }
+  image_resource->SetImageResource(image_content_);
+}
+
 void ImageLoader::UpdateLayoutObject() {
   LayoutImageResource* image_resource = GetLayoutImageResource();
 

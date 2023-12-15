@@ -251,10 +251,8 @@ void HTMLPlugInElement::AttachLayoutTree(AttachContext& context) {
     GetDocument().IncrementLoadEventDelayCount();
     GetDocument().LoadPluginsSoon();
   }
-  if (image_loader_ && layout_object->IsLayoutImage()) {
-    LayoutImageResource* image_resource =
-        To<LayoutImage>(layout_object)->ImageResource();
-    image_resource->SetImageResource(image_loader_->GetContent());
+  if (image_loader_ && IsA<LayoutImage>(*layout_object)) {
+    image_loader_->OnAttachLayoutTree();
   }
   if (layout_object->AffectsWhitespaceSiblings())
     context.previous_in_flow = layout_object;

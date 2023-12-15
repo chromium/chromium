@@ -150,9 +150,7 @@ void HTMLVideoElement::AttachLayoutTree(AttachContext& context) {
     UpdatePosterImage();
   }
   if (image_loader_ && GetLayoutObject()) {
-    LayoutImageResource* layout_image_resource =
-        To<LayoutImage>(*GetLayoutObject()).ImageResource();
-    layout_image_resource->SetImageResource(image_loader_->GetContent());
+    image_loader_->OnAttachLayoutTree();
   }
 }
 

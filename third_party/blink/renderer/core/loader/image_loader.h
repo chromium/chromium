@@ -82,6 +82,7 @@ class CORE_EXPORT ImageLoader : public GarbageCollected<ImageLoader>,
                          bool force_blocking = false);
 
   void ElementDidMoveToNewDocument();
+  void OnAttachLayoutTree();
 
   Element* GetElement() const { return element_.Get(); }
   bool ImageComplete() const { return image_complete_; }

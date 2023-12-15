@@ -210,12 +210,8 @@ bool SVGImageElement::HaveLoadedRequiredResources() {
 
 void SVGImageElement::AttachLayoutTree(AttachContext& context) {
   SVGGraphicsElement::AttachLayoutTree(context);
-
-  if (auto* image_obj = To<LayoutSVGImage>(GetLayoutObject())) {
-    LayoutImageResource* layout_image_resource = image_obj->ImageResource();
-    if (layout_image_resource->HasImage())
-      return;
-    layout_image_resource->SetImageResource(GetImageLoader().GetContent());
+  if (GetLayoutObject()) {
+    GetImageLoader().OnAttachLayoutTree();
   }
 }
 
