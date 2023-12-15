@@ -4121,16 +4121,6 @@ chromium-metrics-reviews@google.com.
   <token key="Technology" variants="PhysicalTechnology"/>
 </histogram>
 
-<histogram name="Network.VisibilityAwareResourceScheduler.Deprioritized"
-    units="Boolean" expires_after="2024-01-22">
-  <owner>bashi@chromium.org</owner>
-  <owner>blink-network-stack@google.com</owner>
-  <summary>
-    Whether a resource request is deprioritized because the resource is coming
-    from a background tab. Recorded when a resource request is scheduled.
-  </summary>
-</histogram>
-
 <histogram name="Network.Wifi.Channel" enum="NetworkChannelType"
     expires_after="M85">
   <owner>Please list the metric's owners. Add more owner tags as needed.</owner>

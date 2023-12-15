@@ -284,8 +284,6 @@ class ResourceScheduler::ScheduledResourceRequestImpl
       priority_.priority = net::RequestPriority::IDLE;
       request_->SetPriority(priority_.priority);
     }
-    base::UmaHistogramBoolean(
-        "Network.VisibilityAwareResourceScheduler.Deprioritized", deprioritize);
     TRACE_EVENT_BEGIN("network.scheduler", "ScheduledResourceRequest",
                       trace_track_, "url", request->url(), "priority",
                       priority_.priority);
