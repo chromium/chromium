@@ -481,9 +481,6 @@ targets.mixin(
         # Reduces size of stdout of a batch crbug.com/1456415
         "--test-launcher-batch-limit=512",
     ],
-    android_swarming = targets.swarming(
-        shards = 2,
-    ),
 )
 
 targets.mixin(

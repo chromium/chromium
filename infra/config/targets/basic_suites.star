@@ -2306,21 +2306,33 @@ targets.legacy_basic_suite(
                 "--no-xvfb",
             ],
             ci_only = True,  # https://crbug.com/dawn/1749
+            android_swarming = targets.swarming(
+                shards = 2,
+            ),
         ),
         "dawn_end2end_skip_validation_tests": targets.legacy_test_config(
             linux_args = [
                 "--no-xvfb",
             ],
+            android_swarming = targets.swarming(
+                shards = 2,
+            ),
         ),
         "dawn_end2end_tests": targets.legacy_test_config(
             linux_args = [
                 "--no-xvfb",
             ],
+            android_swarming = targets.swarming(
+                shards = 2,
+            ),
         ),
         "dawn_end2end_wire_tests": targets.legacy_test_config(
             linux_args = [
                 "--no-xvfb",
             ],
+            android_swarming = targets.swarming(
+                shards = 2,
+            ),
         ),
     },
 )

@@ -389,9 +389,6 @@
       '--test-launcher-retry-limit=0',
       '--test-launcher-batch-limit=512',
     ],
-    'android_swarming': {
-      'shards': 2,
-    },
   },
   'disable_field_trial_config_for_earl_grey': {
     'args': [
