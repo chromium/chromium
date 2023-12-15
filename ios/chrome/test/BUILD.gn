@@ -228,7 +228,6 @@ test("ios_chrome_unittests") {
     "//ios/chrome/browser/infobars/model/overlays/browser_agent/interaction_handlers/confirm:unit_tests",
     "//ios/chrome/browser/intents:unit_tests",
     "//ios/chrome/browser/itunes_urls/model:unit_tests",
-    "//ios/chrome/browser/json_parser:unit_tests",
     "//ios/chrome/browser/language/model:unit_tests",
     "//ios/chrome/browser/lens/model:unit_tests",
     "//ios/chrome/browser/link_to_text/model:unit_tests",

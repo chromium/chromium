@@ -20,7 +20,6 @@ source_set("model") {
     "//components/ntp_tiles",
     "//ios/chrome/browser/favicon",
     "//ios/chrome/browser/history/model",
-    "//ios/chrome/browser/json_parser",
     "//ios/chrome/browser/search_engines/model",
     "//ios/chrome/browser/shared/model/application_context",
     "//ios/chrome/browser/shared/model/browser_state",
