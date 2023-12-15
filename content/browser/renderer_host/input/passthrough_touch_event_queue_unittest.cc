@@ -58,7 +58,8 @@ class PassthroughTouchEventQueueTest : public testing::Test,
 
   // testing::Test
   void SetUp() override {
-    ResetQueueWithConfig(PassthroughTouchEventQueue::Config());
+    PassthroughTouchEventQueue::Config config;
+    ResetQueueWithConfig(&config);
     sent_events_ids_.clear();
   }
 
@@ -106,7 +107,7 @@ class PassthroughTouchEventQueueTest : public testing::Test,
     config.desktop_touch_ack_timeout_delay = desktop_timeout_delay;
     config.mobile_touch_ack_timeout_delay = mobile_timeout_delay;
     config.touch_ack_timeout_supported = true;
-    ResetQueueWithConfig(config);
+    ResetQueueWithConfig(&config);
   }
 
   void SetUpForTimeoutTesting() {
@@ -120,7 +121,8 @@ class PassthroughTouchEventQueueTest : public testing::Test,
         blink::features::kSkipTouchEventFilter,
         {{blink::features::kSkipTouchEventFilterTypeParamName,
           events_to_always_forward}});
-    ResetQueueWithConfig(PassthroughTouchEventQueue::Config());
+    PassthroughTouchEventQueue::Config config;
+    ResetQueueWithConfig(&config);
   }
 
   void SendTouchEvent(WebTouchEvent event) {
@@ -326,8 +328,10 @@ class PassthroughTouchEventQueueTest : public testing::Test,
     touch_event_.ResetPoints();
   }
 
-  void ResetQueueWithConfig(const PassthroughTouchEventQueue::Config& config) {
-    queue_ = std::make_unique<PassthroughTouchEventQueue>(this, config);
+  void ResetQueueWithConfig(PassthroughTouchEventQueue::Config* config) {
+    config->task_runner = base::SequencedTaskRunner::GetCurrentDefault();
+
+    queue_ = std::make_unique<PassthroughTouchEventQueue>(this, *config);
     queue_->OnHasTouchEventHandlers(true);
   }
 

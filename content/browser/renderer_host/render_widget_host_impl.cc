@@ -374,6 +374,20 @@ std::u16string GetWrappedTooltipText(
   return wrapped_tooltip_text;
 }
 
+BrowserUIThreadScheduler::ScrollState GetScrollStateUpdateFromGestureEvent(
+    blink::WebInputEvent::Type gesture_event) {
+  switch (gesture_event) {
+    case blink::WebInputEvent::Type::kGestureScrollBegin:
+      return BrowserUIThreadScheduler::ScrollState::kGestureScrollActive;
+    case blink::WebInputEvent::Type::kGestureScrollEnd:
+      return BrowserUIThreadScheduler::ScrollState::kNone;
+    case blink::WebInputEvent::Type::kGestureFlingStart:
+      return BrowserUIThreadScheduler::ScrollState::kFlingActive;
+    default:
+      return BrowserUIThreadScheduler::ScrollState::kNone;
+  }
+}
+
 base::LazyInstance<UnboundWidgetInputHandler>::Leaky g_unbound_input_handler =
     LAZY_INSTANCE_INITIALIZER;
 
@@ -493,7 +507,8 @@ RenderWidgetHostImpl::RenderWidgetHostImpl(
   if (!command_line->HasSwitch(switches::kDisableNewContentRenderingTimeout)) {
     new_content_rendering_timeout_ = std::make_unique<TimeoutMonitor>(
         base::BindRepeating(&RenderWidgetHostImpl::ClearDisplayedGraphics,
-                            weak_factory_.GetWeakPtr()));
+                            weak_factory_.GetWeakPtr()),
+        content::GetUIThreadTaskRunner({BrowserTaskType::kUserInput}));
   }
   input_event_ack_timeout_.SetTaskRunner(
       GetUIThreadTaskRunner({BrowserTaskType::kUserInput}));
@@ -1640,8 +1655,6 @@ void RenderWidgetHostImpl::ForwardGestureEventWithLatencyInfo(
         !is_in_gesture_scroll_[static_cast<int>(gesture_event.SourceDevice())]);
     is_in_gesture_scroll_[static_cast<int>(gesture_event.SourceDevice())] =
         true;
-    NotifyUISchedulerOfScrollStateUpdate(
-        BrowserUIThreadScheduler::ScrollState::kGestureScrollActive);
     scroll_peak_gpu_mem_tracker_ =
         PeakGpuMemoryTracker::Create(PeakGpuMemoryTracker::Usage::SCROLL);
   } else if (gesture_event.GetType() ==
@@ -1650,8 +1663,6 @@ void RenderWidgetHostImpl::ForwardGestureEventWithLatencyInfo(
         is_in_gesture_scroll_[static_cast<int>(gesture_event.SourceDevice())]);
     is_in_gesture_scroll_[static_cast<int>(gesture_event.SourceDevice())] =
         false;
-    NotifyUISchedulerOfScrollStateUpdate(
-        BrowserUIThreadScheduler::ScrollState::kNone);
     is_in_touchpad_gesture_fling_ = false;
     if (view_) {
       if (scroll_peak_gpu_mem_tracker_ &&
@@ -1669,8 +1680,6 @@ void RenderWidgetHostImpl::ForwardGestureEventWithLatencyInfo(
     scroll_peak_gpu_mem_tracker_ = nullptr;
   } else if (gesture_event.GetType() ==
              WebInputEvent::Type::kGestureFlingStart) {
-    NotifyUISchedulerOfScrollStateUpdate(
-        BrowserUIThreadScheduler::ScrollState::kFlingActive);
     if (gesture_event.SourceDevice() == blink::WebGestureDevice::kTouchpad) {
       // a GSB event is generated from the first wheel event in a sequence after
       // the event is acked as not consumed by the renderer. Sometimes when the
@@ -1693,6 +1702,7 @@ void RenderWidgetHostImpl::ForwardGestureEventWithLatencyInfo(
       // shows the end of a scroll sequence and resets is_in_gesture_scroll_.
     }
   }
+  NotifyUISchedulerOfGestureEventUpdate(gesture_event.GetType());
 
   // Delegate must be non-null, due to |IsIgnoringInputEvents()| test.
   if (delegate_->PreHandleGestureEvent(gesture_event)) {
@@ -3247,11 +3257,13 @@ void RenderWidgetHostImpl::IncrementInFlightEventCount() {
   }
 }
 
-void RenderWidgetHostImpl::NotifyUISchedulerOfScrollStateUpdate(
-    BrowserUIThreadScheduler::ScrollState scroll_state) {
+void RenderWidgetHostImpl::NotifyUISchedulerOfGestureEventUpdate(
+    blink::WebInputEvent::Type gesture_event) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  BrowserUIThreadScheduler::Get()->OnScrollStateUpdate(scroll_state);
+  BrowserUIThreadScheduler::Get()->OnScrollStateUpdate(
+      GetScrollStateUpdateFromGestureEvent(gesture_event));
 }
+
 void RenderWidgetHostImpl::DecrementInFlightEventCount(
     blink::mojom::InputEventResultSource ack_source) {
   --in_flight_event_count_;
@@ -3759,7 +3771,9 @@ void RenderWidgetHostImpl::SetupInputRouter() {
   StopInputEventAckTimeout();
 
   input_router_ = std::make_unique<InputRouterImpl>(
-      this, this, fling_scheduler_.get(), GetInputRouterConfigForPlatform());
+      this, this, fling_scheduler_.get(),
+      GetInputRouterConfigForPlatform(
+          content::GetUIThreadTaskRunner({BrowserTaskType::kUserInput})));
 
   // input_router_ recreated, need to update the force_enable_zoom_ state.
   input_router_->SetForceEnableZoom(force_enable_zoom_);

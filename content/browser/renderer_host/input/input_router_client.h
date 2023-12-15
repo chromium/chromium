@@ -6,7 +6,6 @@
 #define CONTENT_BROWSER_RENDERER_HOST_INPUT_INPUT_ROUTER_CLIENT_H_
 
 #include "cc/input/touch_action.h"
-#include "content/browser/scheduler/browser_ui_thread_scheduler.h"
 #include "content/common/input/event_with_latency_info.h"
 #include "content/public/common/input/native_web_keyboard_event.h"
 #include "third_party/blink/public/common/input/web_input_event.h"
@@ -41,10 +40,10 @@ class InputRouterClient {
   virtual void DecrementInFlightEventCount(
       blink::mojom::InputEventResultSource ack_source) = 0;
 
-  // Called each time the browser UI scheduler should be notified of a scroll
-  // state update.
-  virtual void NotifyUISchedulerOfScrollStateUpdate(
-      BrowserUIThreadScheduler::ScrollState scroll_state) = 0;
+  // Called each time the browser UI scheduler should be notified of a gesture
+  // event which is a scroll state update.
+  virtual void NotifyUISchedulerOfGestureEventUpdate(
+      blink::WebInputEvent::Type gesture_event) = 0;
 
   // Called when the router has received an overscroll notification from the
   // renderer.

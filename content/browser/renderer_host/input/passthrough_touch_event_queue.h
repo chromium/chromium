@@ -60,6 +60,10 @@ class CONTENT_EXPORT PassthroughTouchEventQueueClient {
 class CONTENT_EXPORT PassthroughTouchEventQueue {
  public:
   struct CONTENT_EXPORT Config {
+    Config();
+    ~Config();
+    Config(const Config& other);
+
     // Touch ack timeout delay for desktop sites. If zero, timeout behavior
     // is disabled for such sites. Defaults to 200ms.
     base::TimeDelta desktop_touch_ack_timeout_delay = base::Milliseconds(200);
@@ -78,6 +82,8 @@ class CONTENT_EXPORT PassthroughTouchEventQueue {
 
     // What events types are allowed to bypass the filter.
     std::string events_to_always_forward = kSkipTouchEventFilterType.Get();
+
+    scoped_refptr<base::SequencedTaskRunner> task_runner;
   };
 
   PassthroughTouchEventQueue(PassthroughTouchEventQueueClient* client,

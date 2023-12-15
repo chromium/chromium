@@ -177,10 +177,8 @@ class MockInputRouterImplClient : public InputRouterImplClient {
     input_router_client_.IncrementInFlightEventCount();
   }
 
-  void NotifyUISchedulerOfScrollStateUpdate(
-      BrowserUIThreadScheduler::ScrollState scroll_state) override {
-    input_router_client_.NotifyUISchedulerOfScrollStateUpdate(scroll_state);
-  }
+  void NotifyUISchedulerOfGestureEventUpdate(
+      blink::WebInputEvent::Type gesture_event) override {}
 
   void DecrementInFlightEventCount(
       blink::mojom::InputEventResultSource ack_source) override {
@@ -330,6 +328,8 @@ class InputRouterImplTestBase : public testing::Test {
     config_.touch_config.mobile_touch_ack_timeout_delay =
         base::Milliseconds(mobile_timeout_ms);
     config_.touch_config.touch_ack_timeout_supported = true;
+    config_.touch_config.task_runner =
+        base::SequencedTaskRunner::GetCurrentDefault();
     TearDown();
     SetUp();
     input_router()->NotifySiteIsMobileOptimized(false);

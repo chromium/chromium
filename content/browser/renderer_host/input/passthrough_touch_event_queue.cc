@@ -42,6 +42,11 @@ bool HasPointChanged(const WebTouchPoint& point_1,
 
 }  // namespace
 
+PassthroughTouchEventQueue::Config::Config() = default;
+PassthroughTouchEventQueue::Config::~Config() = default;
+PassthroughTouchEventQueue::Config::Config(
+    const PassthroughTouchEventQueue::Config& other) = default;
+
 // static
 const base::FeatureParam<std::string>
     PassthroughTouchEventQueue::kSkipTouchEventFilterType{
@@ -68,7 +73,7 @@ PassthroughTouchEventQueue::PassthroughTouchEventQueue(
   if (config.touch_ack_timeout_supported) {
     timeout_handler_ = std::make_unique<TouchTimeoutHandler>(
         this, config.desktop_touch_ack_timeout_delay,
-        config.mobile_touch_ack_timeout_delay);
+        config.mobile_touch_ack_timeout_delay, config.task_runner);
   }
 }
 

@@ -11,7 +11,8 @@ namespace content {
 
 // Return an InputRouter configuration with parameters tailored to the current
 // platform.
-InputRouter::Config GetInputRouterConfigForPlatform();
+InputRouter::Config GetInputRouterConfigForPlatform(
+    scoped_refptr<base::SingleThreadTaskRunner> task_runner);
 
 }  // namespace content
 

@@ -13,6 +13,7 @@
 #include "content/browser/web_contents/web_contents_impl.h"
 #include "content/public/android/content_jni_headers/SuggestionInfo_jni.h"
 #include "content/public/android/content_jni_headers/TextSuggestionHost_jni.h"
+#include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/render_frame_host.h"
 #include "services/service_manager/public/cpp/interface_provider.h"
@@ -44,9 +45,11 @@ TextSuggestionHostAndroid::TextSuggestionHostAndroid(JNIEnv* env,
                                                      WebContents* web_contents)
     : RenderWidgetHostConnector(web_contents),
       rwhva_(nullptr),
-      suggestion_menu_timeout_(base::BindRepeating(
-          &TextSuggestionHostAndroid::OnSuggestionMenuTimeout,
-          base::Unretained(this))) {}
+      suggestion_menu_timeout_(
+          base::BindRepeating(
+              &TextSuggestionHostAndroid::OnSuggestionMenuTimeout,
+              base::Unretained(this)),
+          content::GetUIThreadTaskRunner({BrowserTaskType::kUserInput})) {}
 
 TextSuggestionHostAndroid::~TextSuggestionHostAndroid() {
   JNIEnv* env = AttachCurrentThread();

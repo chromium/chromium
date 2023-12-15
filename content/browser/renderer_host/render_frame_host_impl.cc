@@ -1664,12 +1664,18 @@ RenderFrameHostImpl::RenderFrameHostImpl(
 
   InitializePrivateNetworkRequestPolicy();
 
+  auto task_runner =
+      content::GetUIThreadTaskRunner({BrowserTaskType::kUserInput});
+  // TODO(crbug.com/1510787): Stop using BrowserTaskType::kUserInput task runner
+  // for non-input related tasks.
   unload_event_monitor_timeout_ = std::make_unique<TimeoutMonitor>(
       base::BindRepeating(&RenderFrameHostImpl::OnNavigationUnloadTimeout,
-                          weak_ptr_factory_.GetWeakPtr()));
+                          weak_ptr_factory_.GetWeakPtr()),
+      task_runner);
   beforeunload_timeout_ = std::make_unique<TimeoutMonitor>(
       base::BindRepeating(&RenderFrameHostImpl::BeforeUnloadTimeout,
-                          weak_ptr_factory_.GetWeakPtr()));
+                          weak_ptr_factory_.GetWeakPtr()),
+      task_runner);
 
   // Local roots are:
   // - main frames; or
@@ -6017,7 +6023,8 @@ void RenderFrameHostImpl::ClosePage(ClosePageSource source) {
   if (IsRenderFrameLive() && !IsPageReadyToBeClosed()) {
     close_timeout_ = std::make_unique<TimeoutMonitor>(
         base::BindRepeating(&RenderFrameHostImpl::ClosePageTimeout,
-                            weak_ptr_factory_.GetWeakPtr(), source));
+                            weak_ptr_factory_.GetWeakPtr(), source),
+        content::GetUIThreadTaskRunner({BrowserTaskType::kUserInput}));
     close_timeout_->Start(kUnloadTimeout);
 
     GetAssociatedLocalMainFrame()->ClosePage(
