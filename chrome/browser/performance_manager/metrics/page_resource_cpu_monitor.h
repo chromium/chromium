@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_PERFORMANCE_MANAGER_METRICS_PAGE_TIMELINE_CPU_MONITOR_H_
-#define CHROME_BROWSER_PERFORMANCE_MANAGER_METRICS_PAGE_TIMELINE_CPU_MONITOR_H_
+#ifndef CHROME_BROWSER_PERFORMANCE_MANAGER_METRICS_PAGE_RESOURCE_CPU_MONITOR_H_
+#define CHROME_BROWSER_PERFORMANCE_MANAGER_METRICS_PAGE_RESOURCE_CPU_MONITOR_H_
 
 #include <map>
 #include <memory>
@@ -27,8 +27,8 @@ class PageNode;
 namespace metrics {
 
 // Periodically collect CPU usage from process nodes, for the UKM logged in
-// PageTimelineCPUMonitor.
-class PageTimelineCPUMonitor : public ProcessNode::ObserverDefaultImpl {
+// PageResourceMonitor.
+class PageResourceCPUMonitor : public ProcessNode::ObserverDefaultImpl {
  public:
   // A shim to request CPU measurements for a process. A new
   // CPUMeasurementDelegate object will be created for each ProcessNode to be
@@ -49,11 +49,11 @@ class PageTimelineCPUMonitor : public ProcessNode::ObserverDefaultImpl {
   // available.
   using CPUUsageMap = std::map<resource_attribution::ResourceContext, double>;
 
-  PageTimelineCPUMonitor();
-  ~PageTimelineCPUMonitor() override;
+  PageResourceCPUMonitor();
+  ~PageResourceCPUMonitor() override;
 
-  PageTimelineCPUMonitor(const PageTimelineCPUMonitor& other) = delete;
-  PageTimelineCPUMonitor& operator=(const PageTimelineCPUMonitor&) = delete;
+  PageResourceCPUMonitor(const PageResourceCPUMonitor& other) = delete;
+  PageResourceCPUMonitor& operator=(const PageResourceCPUMonitor&) = delete;
 
   // The given `factory` will be used to create a CPUMeasurementDelegate for
   // each ProcessNode in `graph` to be measured.
@@ -85,7 +85,7 @@ class PageTimelineCPUMonitor : public ProcessNode::ObserverDefaultImpl {
   void OnBeforeProcessNodeRemoved(const ProcessNode* process_node) override;
 
  private:
-  friend class PageTimelineCPUMonitorTest;
+  friend class PageResourceCPUMonitorTest;
 
   // Holds a CPUMeasurementDelegate object to measure CPU usage and metadata
   // about the measurements. One CPUMeasurement will be created for each
@@ -150,7 +150,7 @@ class PageTimelineCPUMonitor : public ProcessNode::ObserverDefaultImpl {
       GUARDED_BY_CONTEXT(sequence_checker_);
 
   // If the kUseResourceAttributionCPUMonitor feature parameter is enabled,
-  // PageTimelineCPUMonitor will get CPU measurements from this, otherwise it
+  // PageResourceCPUMonitor will get CPU measurements from this, otherwise it
   // will perform its own measurements.
   std::unique_ptr<resource_attribution::ScopedCPUQuery> cpu_query_
       GUARDED_BY_CONTEXT(sequence_checker_);
@@ -161,10 +161,10 @@ class PageTimelineCPUMonitor : public ProcessNode::ObserverDefaultImpl {
   resource_attribution::QueryResultMap cached_cpu_measurements_
       GUARDED_BY_CONTEXT(sequence_checker_);
 
-  base::WeakPtrFactory<PageTimelineCPUMonitor> weak_factory_{this};
+  base::WeakPtrFactory<PageResourceCPUMonitor> weak_factory_{this};
 };
 
 }  // namespace metrics
 }  // namespace performance_manager
 
-#endif  // CHROME_BROWSER_PERFORMANCE_MANAGER_METRICS_PAGE_TIMELINE_CPU_MONITOR_H_
+#endif  // CHROME_BROWSER_PERFORMANCE_MANAGER_METRICS_PAGE_RESOURCE_CPU_MONITOR_H_

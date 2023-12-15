@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/performance_manager/metrics/page_timeline_monitor.h"
+#include "chrome/browser/performance_manager/metrics/page_resource_monitor.h"
 
 #include <stdint.h>
 #include <algorithm>
@@ -46,7 +46,7 @@ namespace performance_manager::metrics {
 namespace {
 
 using PageMeasurementBackgroundState =
-    PageTimelineMonitor::PageMeasurementBackgroundState;
+    PageResourceMonitor::PageMeasurementBackgroundState;
 
 // CPU usage metrics are provided as a double in the [0.0, number of cores *
 // 100.0] range. The CPU usage is usually below 1%, so the UKM is
@@ -82,7 +82,7 @@ PageMeasurementBackgroundState GetBackgroundStateForMeasurementPeriod(
 
 }  // namespace
 
-PageTimelineMonitor::PageTimelineMonitor(bool enable_system_cpu_probe)
+PageResourceMonitor::PageResourceMonitor(bool enable_system_cpu_probe)
     // These counters are initialized to a random value due to privacy concerns,
     // so that we cannot tie either the startup time of a specific tab or the
     // recording time of a specific slice to the browser startup time.
@@ -92,22 +92,22 @@ PageTimelineMonitor::PageTimelineMonitor(bool enable_system_cpu_probe)
   collect_slice_timer_.Start(
       FROM_HERE,
       performance_manager::features::kPageTimelineStateIntervalTime.Get(), this,
-      &PageTimelineMonitor::CollectSlice);
+      &PageResourceMonitor::CollectSlice);
 
   // PageResourceUsage is collected on a different schedule from PageTimeline.
   collect_page_resource_usage_timer_.Start(
       FROM_HERE, base::Minutes(2),
-      base::BindRepeating(&PageTimelineMonitor::CollectPageResourceUsage,
+      base::BindRepeating(&PageResourceMonitor::CollectPageResourceUsage,
                           weak_factory_.GetWeakPtr(), base::DoNothing()));
   if (system_cpu_probe_) {
     system_cpu_probe_->StartSampling();
   }
 }
 
-PageTimelineMonitor::~PageTimelineMonitor() = default;
+PageResourceMonitor::~PageResourceMonitor() = default;
 
-PageTimelineMonitor::PageState
-PageTimelineMonitor::PageNodeInfo::GetPageState() {
+PageResourceMonitor::PageState
+PageResourceMonitor::PageNodeInfo::GetPageState() {
   switch (current_lifecycle) {
     case PageNode::LifecycleState::kRunning: {
       if (currently_visible) {
@@ -125,17 +125,17 @@ PageTimelineMonitor::PageNodeInfo::GetPageState() {
   }
 }
 
-void PageTimelineMonitor::CollectPageResourceUsage(
+void PageResourceMonitor::CollectPageResourceUsage(
     base::OnceClosure done_closure) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   CalculatePageCPUUsage(
       /*use_delayed_system_cpu_probe=*/false,
-      base::BindOnce(&PageTimelineMonitor::OnPageResourceUsageResult,
+      base::BindOnce(&PageResourceMonitor::OnPageResourceUsageResult,
                      weak_factory_.GetWeakPtr())
           .Then(std::move(done_closure)));
 }
 
-void PageTimelineMonitor::OnPageResourceUsageResult(
+void PageResourceMonitor::OnPageResourceUsageResult(
     const PageCPUUsageVector& page_cpu_usage,
     absl::optional<PressureSample> system_cpu) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -194,7 +194,7 @@ void PageTimelineMonitor::OnPageResourceUsageResult(
           log_cpu_on_delay_timer_.Start(
               FROM_HERE,
               performance_manager::features::kDelayBeforeLogging.Get(), this,
-              &PageTimelineMonitor::CheckDelayedCPUInterventionMetrics);
+              &PageResourceMonitor::CheckDelayedCPUInterventionMetrics);
         }
       }
     } else if (!is_cpu_over_threshold) {
@@ -211,7 +211,7 @@ void PageTimelineMonitor::OnPageResourceUsageResult(
 #endif
 }
 
-void PageTimelineMonitor::CollectSlice() {
+void PageResourceMonitor::CollectSlice() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   // We only collect a slice randomly every ~20 times this gets called for
   // privacy purposes. Always fall through when we're in a test.
@@ -309,7 +309,7 @@ void PageTimelineMonitor::CollectSlice() {
   }
 }
 
-bool PageTimelineMonitor::ShouldCollectSlice() const {
+bool PageResourceMonitor::ShouldCollectSlice() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (should_collect_slice_callback_) {
     return should_collect_slice_callback_.Run();
@@ -319,17 +319,17 @@ bool PageTimelineMonitor::ShouldCollectSlice() const {
   return base::RandInt(0, 19) == 1;
 }
 
-void PageTimelineMonitor::CheckDelayedCPUInterventionMetrics() {
+void PageResourceMonitor::CheckDelayedCPUInterventionMetrics() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   CHECK(performance_manager::features::kUseResourceAttributionCPUMonitor.Get());
   CalculatePageCPUUsage(
       /*use_delayed_system_cpu_probe=*/true,
       base::BindOnce(
-          &PageTimelineMonitor::OnDelayedCPUInterventionMetricsResult,
+          &PageResourceMonitor::OnDelayedCPUInterventionMetricsResult,
           weak_factory_.GetWeakPtr()));
 }
 
-void PageTimelineMonitor::OnDelayedCPUInterventionMetricsResult(
+void PageResourceMonitor::OnDelayedCPUInterventionMetricsResult(
     const PageCPUUsageVector& page_cpu_usage,
     absl::optional<PressureSample> system_cpu) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -351,7 +351,7 @@ void PageTimelineMonitor::OnDelayedCPUInterventionMetricsResult(
   }
 }
 
-void PageTimelineMonitor::LogCPUInterventionMetrics(
+void PageResourceMonitor::LogCPUInterventionMetrics(
     const PageCPUUsageVector& page_cpu_usage,
     const absl::optional<PressureSample>& system_cpu,
     const base::TimeTicks now,
@@ -520,21 +520,21 @@ void PageTimelineMonitor::LogCPUInterventionMetrics(
   }
 }
 
-void PageTimelineMonitor::CalculatePageCPUUsage(
+void PageResourceMonitor::CalculatePageCPUUsage(
     bool use_delayed_system_cpu_probe,
     base::OnceCallback<void(const PageCPUUsageVector&,
                             absl::optional<PressureSample>)> callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   cpu_monitor_.UpdateCPUMeasurements(base::BindOnce(
-      &PageTimelineMonitor::OnPageCPUUsageResult, weak_factory_.GetWeakPtr(),
+      &PageResourceMonitor::OnPageCPUUsageResult, weak_factory_.GetWeakPtr(),
       use_delayed_system_cpu_probe, std::move(callback)));
 }
 
-void PageTimelineMonitor::OnPageCPUUsageResult(
+void PageResourceMonitor::OnPageCPUUsageResult(
     bool use_delayed_system_cpu_probe,
     base::OnceCallback<void(const PageCPUUsageVector&,
                             absl::optional<PressureSample>)> callback,
-    const PageTimelineCPUMonitor::CPUUsageMap& cpu_usage_map) {
+    const PageResourceCPUMonitor::CPUUsageMap& cpu_usage_map) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   // Calculate the overall CPU usage.
@@ -544,7 +544,7 @@ void PageTimelineMonitor::OnPageCPUUsageResult(
     const PageNode* page_node = tab_handle->page_node();
     CheckPageState(page_node, *info_ptr);
     double cpu_usage =
-        PageTimelineCPUMonitor::EstimatePageCPUUsage(page_node, cpu_usage_map);
+        PageResourceCPUMonitor::EstimatePageCPUUsage(page_node, cpu_usage_map);
     page_cpu_usage.emplace_back(page_node->GetResourceContext(), cpu_usage);
   }
 
@@ -560,22 +560,22 @@ void PageTimelineMonitor::OnPageCPUUsageResult(
   }
 }
 
-void PageTimelineMonitor::SetTriggerCollectionManuallyForTesting() {
+void PageResourceMonitor::SetTriggerCollectionManuallyForTesting() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   collect_slice_timer_.Stop();
   collect_page_resource_usage_timer_.Stop();
   log_cpu_on_delay_timer_.Stop();
 }
 
-void PageTimelineMonitor::SetShouldCollectSliceCallbackForTesting(
+void PageResourceMonitor::SetShouldCollectSliceCallbackForTesting(
     base::RepeatingCallback<bool()> should_collect_slice_callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   should_collect_slice_callback_ = should_collect_slice_callback;
 }
 
-void PageTimelineMonitor::SetCPUMeasurementDelegateFactoryForTesting(
+void PageResourceMonitor::SetCPUMeasurementDelegateFactoryForTesting(
     Graph* graph,
-    PageTimelineCPUMonitor::CPUMeasurementDelegate::Factory* factory) {
+    PageResourceCPUMonitor::CPUMeasurementDelegate::Factory* factory) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   // Callback should be installed before `cpu_monitor_` starts
   // measuring the graph.
@@ -585,13 +585,13 @@ void PageTimelineMonitor::SetCPUMeasurementDelegateFactoryForTesting(
       graph, factory);
 }
 
-PageTimelineMonitor::PageNodeInfoMap&
-PageTimelineMonitor::GetPageNodeInfoForTesting() {
+PageResourceMonitor::PageNodeInfoMap&
+PageResourceMonitor::GetPageNodeInfoForTesting() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return page_node_info_map_;
 }
 
-void PageTimelineMonitor::OnPassedToGraph(Graph* graph) {
+void PageResourceMonitor::OnPassedToGraph(Graph* graph) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   graph_ = graph;
   graph_->AddPageNodeObserver(this);
@@ -600,7 +600,7 @@ void PageTimelineMonitor::OnPassedToGraph(Graph* graph) {
   cpu_monitor_.StartMonitoring(graph_);
 }
 
-void PageTimelineMonitor::OnTakenFromGraph(Graph* graph) {
+void PageResourceMonitor::OnTakenFromGraph(Graph* graph) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   cpu_monitor_.StopMonitoring(graph_);
 
@@ -617,13 +617,13 @@ void PageTimelineMonitor::OnTakenFromGraph(Graph* graph) {
   graph_ = nullptr;
 }
 
-void PageTimelineMonitor::OnTabAdded(TabPageDecorator::TabHandle* tab_handle) {
+void PageResourceMonitor::OnTabAdded(TabPageDecorator::TabHandle* tab_handle) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   page_node_info_map_[tab_handle] = std::make_unique<PageNodeInfo>(
       base::TimeTicks::Now(), tab_handle->page_node(), slice_id_counter_++);
 }
 
-void PageTimelineMonitor::OnTabAboutToBeDiscarded(
+void PageResourceMonitor::OnTabAboutToBeDiscarded(
     const PageNode* old_page_node,
     TabPageDecorator::TabHandle* tab_handle) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -634,13 +634,13 @@ void PageTimelineMonitor::OnTabAboutToBeDiscarded(
   CheckPageState(tab_handle->page_node(), *it->second);
 }
 
-void PageTimelineMonitor::OnBeforeTabRemoved(
+void PageResourceMonitor::OnBeforeTabRemoved(
     TabPageDecorator::TabHandle* tab_handle) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   page_node_info_map_.erase(tab_handle);
 }
 
-void PageTimelineMonitor::OnIsVisibleChanged(const PageNode* page_node) {
+void PageResourceMonitor::OnIsVisibleChanged(const PageNode* page_node) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (page_node->GetType() != performance_manager::PageType::kTab) {
     return;
@@ -655,7 +655,7 @@ void PageTimelineMonitor::OnIsVisibleChanged(const PageNode* page_node) {
   // 3. Tab is detached from the tabstrip, causing its web contents to become
   // "occluded", which triggers a visibility change notification
   // 4. The old web contents (and page node) are deleted
-  // In the case of PageTimelineMonitor, the page_node is removed from the map
+  // In the case of PageResourceMonitor, the page_node is removed from the map
   // on step 2, so the notification from step 3 has to be ignored.
   if (!tab_handle) {
     return;
@@ -683,7 +683,7 @@ void PageTimelineMonitor::OnIsVisibleChanged(const PageNode* page_node) {
   info->time_of_most_recent_state_change = now;
 }
 
-void PageTimelineMonitor::OnPageLifecycleStateChanged(
+void PageResourceMonitor::OnPageLifecycleStateChanged(
     const PageNode* page_node) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (page_node->GetType() != performance_manager::PageType::kTab) {
@@ -708,12 +708,12 @@ void PageTimelineMonitor::OnPageLifecycleStateChanged(
   it->second->time_of_most_recent_state_change = base::TimeTicks::Now();
 }
 
-void PageTimelineMonitor::SetBatterySaverEnabled(bool enabled) {
+void PageResourceMonitor::SetBatterySaverEnabled(bool enabled) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   battery_saver_enabled_ = enabled;
 }
 
-void PageTimelineMonitor::CheckPageState(const PageNode* page_node,
+void PageResourceMonitor::CheckPageState(const PageNode* page_node,
                                          const PageNodeInfo& info) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   // There's a window after OnAboutToBeDiscarded() where a discarded placeholder

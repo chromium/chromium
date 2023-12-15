@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/performance_manager/metrics/page_timeline_cpu_monitor.h"
+#include "chrome/browser/performance_manager/metrics/page_resource_cpu_monitor.h"
 
 #include <map>
 #include <memory>
@@ -32,13 +32,13 @@ namespace performance_manager::metrics {
 using resource_attribution::PageContext;
 using resource_attribution::ResourceContext;
 
-PageTimelineCPUMonitor::PageTimelineCPUMonitor()
+PageResourceCPUMonitor::PageResourceCPUMonitor()
     : cpu_measurement_delegate_factory_(
           CPUMeasurementDelegate::GetDefaultFactory()) {}
 
-PageTimelineCPUMonitor::~PageTimelineCPUMonitor() = default;
+PageResourceCPUMonitor::~PageResourceCPUMonitor() = default;
 
-void PageTimelineCPUMonitor::SetCPUMeasurementDelegateFactoryForTesting(
+void PageResourceCPUMonitor::SetCPUMeasurementDelegateFactoryForTesting(
     Graph* graph,
     CPUMeasurementDelegate::Factory* factory) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -53,7 +53,7 @@ void PageTimelineCPUMonitor::SetCPUMeasurementDelegateFactoryForTesting(
   cpu_measurement_delegate_factory_ = factory;
 }
 
-void PageTimelineCPUMonitor::StartMonitoring(Graph* graph) {
+void PageResourceCPUMonitor::StartMonitoring(Graph* graph) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   CHECK(last_measurement_time_.is_null());
@@ -76,7 +76,7 @@ void PageTimelineCPUMonitor::StartMonitoring(Graph* graph) {
   }
 }
 
-void PageTimelineCPUMonitor::StopMonitoring(Graph* graph) {
+void PageResourceCPUMonitor::StopMonitoring(Graph* graph) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   CHECK(!last_measurement_time_.is_null());
   last_measurement_time_ = base::TimeTicks();
@@ -90,7 +90,7 @@ void PageTimelineCPUMonitor::StopMonitoring(Graph* graph) {
   }
 }
 
-void PageTimelineCPUMonitor::UpdateCPUMeasurements(
+void PageResourceCPUMonitor::UpdateCPUMeasurements(
     base::OnceCallback<void(const CPUUsageMap&)> callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   // Update CPU metrics, attributing the cumulative CPU of each process to its
@@ -99,7 +99,7 @@ void PageTimelineCPUMonitor::UpdateCPUMeasurements(
   const base::TimeTicks now = base::TimeTicks::Now();
   if (features::kUseResourceAttributionCPUMonitor.Get()) {
     cpu_query_->QueryOnce(base::BindOnce(
-        &PageTimelineCPUMonitor::UpdateResourceAttributionCPUMeasurements,
+        &PageResourceCPUMonitor::UpdateResourceAttributionCPUMeasurements,
         weak_factory_.GetWeakPtr(), std::move(callback),
         now - last_measurement_time_));
   } else {
@@ -116,7 +116,7 @@ void PageTimelineCPUMonitor::UpdateCPUMeasurements(
 }
 
 // static
-double PageTimelineCPUMonitor::EstimatePageCPUUsage(
+double PageResourceCPUMonitor::EstimatePageCPUUsage(
     const PageNode* page_node,
     const CPUUsageMap& cpu_usage_map) {
   if (features::kUseResourceAttributionCPUMonitor.Get()) {
@@ -149,7 +149,7 @@ double PageTimelineCPUMonitor::EstimatePageCPUUsage(
   return page_cpu_usage;
 }
 
-void PageTimelineCPUMonitor::OnProcessLifetimeChange(
+void PageResourceCPUMonitor::OnProcessLifetimeChange(
     const ProcessNode* process_node) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   CHECK(!features::kUseResourceAttributionCPUMonitor.Get());
@@ -168,14 +168,14 @@ void PageTimelineCPUMonitor::OnProcessLifetimeChange(
   }
 }
 
-void PageTimelineCPUMonitor::OnBeforeProcessNodeRemoved(
+void PageResourceCPUMonitor::OnBeforeProcessNodeRemoved(
     const ProcessNode* process_node) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   CHECK(!features::kUseResourceAttributionCPUMonitor.Get());
   cpu_measurement_map_.erase(process_node);
 }
 
-void PageTimelineCPUMonitor::MonitorCPUUsage(const ProcessNode* process_node) {
+void PageResourceCPUMonitor::MonitorCPUUsage(const ProcessNode* process_node) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   CHECK(!features::kUseResourceAttributionCPUMonitor.Get());
   // Only measure renderers.
@@ -190,7 +190,7 @@ void PageTimelineCPUMonitor::MonitorCPUUsage(const ProcessNode* process_node) {
   CHECK(was_inserted);
 }
 
-void PageTimelineCPUMonitor::UpdateResourceAttributionCPUMeasurements(
+void PageResourceCPUMonitor::UpdateResourceAttributionCPUMeasurements(
     base::OnceCallback<void(const CPUUsageMap&)> callback,
     base::TimeDelta measurement_interval,
     const resource_attribution::QueryResultMap& results) {
@@ -296,7 +296,7 @@ void PageTimelineCPUMonitor::UpdateResourceAttributionCPUMeasurements(
   std::move(callback).Run(std::move(cpu_usage_map));
 }
 
-PageTimelineCPUMonitor::CPUMeasurement::CPUMeasurement(
+PageResourceCPUMonitor::CPUMeasurement::CPUMeasurement(
     std::unique_ptr<CPUMeasurementDelegate> delegate)
     : delegate_(std::move(delegate)),
       // Record the CPU usage immediately on starting to measure a process, so
@@ -304,16 +304,16 @@ PageTimelineCPUMonitor::CPUMeasurement::CPUMeasurement(
       // time between the measurement starting and the snapshot.
       most_recent_measurement_(delegate_->GetCumulativeCPUUsage()) {}
 
-PageTimelineCPUMonitor::CPUMeasurement::~CPUMeasurement() = default;
+PageResourceCPUMonitor::CPUMeasurement::~CPUMeasurement() = default;
 
-PageTimelineCPUMonitor::CPUMeasurement::CPUMeasurement(
-    PageTimelineCPUMonitor::CPUMeasurement&& other) = default;
+PageResourceCPUMonitor::CPUMeasurement::CPUMeasurement(
+    PageResourceCPUMonitor::CPUMeasurement&& other) = default;
 
-PageTimelineCPUMonitor::CPUMeasurement&
-PageTimelineCPUMonitor::CPUMeasurement::operator=(
-    PageTimelineCPUMonitor::CPUMeasurement&& other) = default;
+PageResourceCPUMonitor::CPUMeasurement&
+PageResourceCPUMonitor::CPUMeasurement::operator=(
+    PageResourceCPUMonitor::CPUMeasurement&& other) = default;
 
-void PageTimelineCPUMonitor::CPUMeasurement::MeasureAndDistributeCPUUsage(
+void PageResourceCPUMonitor::CPUMeasurement::MeasureAndDistributeCPUUsage(
     const ProcessNode* process_node,
     base::TimeTicks measurement_interval_start,
     base::TimeTicks measurement_interval_end,

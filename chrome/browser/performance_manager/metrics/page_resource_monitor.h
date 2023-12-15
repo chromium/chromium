@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_PERFORMANCE_MANAGER_METRICS_PAGE_TIMELINE_MONITOR_H_
-#define CHROME_BROWSER_PERFORMANCE_MANAGER_METRICS_PAGE_TIMELINE_MONITOR_H_
+#ifndef CHROME_BROWSER_PERFORMANCE_MANAGER_METRICS_PAGE_RESOURCE_MONITOR_H_
+#define CHROME_BROWSER_PERFORMANCE_MANAGER_METRICS_PAGE_RESOURCE_MONITOR_H_
 
 #include <map>
 #include <memory>
@@ -18,7 +18,7 @@
 #include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "chrome/browser/performance_manager/metrics/cpu_probe/pressure_sample.h"
-#include "chrome/browser/performance_manager/metrics/page_timeline_cpu_monitor.h"
+#include "chrome/browser/performance_manager/metrics/page_resource_cpu_monitor.h"
 #include "components/performance_manager/public/decorators/tab_page_decorator.h"
 #include "components/performance_manager/public/graph/graph.h"
 #include "components/performance_manager/public/graph/graph_registered.h"
@@ -29,13 +29,13 @@
 namespace performance_manager::metrics {
 
 class CpuProbe;
-class PageTimelineMonitorUnitTest;
+class PageResourceMonitorUnitTest;
 
 // Periodically reports tab state via UKM, to enable analysis of usage patterns
 // over time.
-class PageTimelineMonitor : public PageNode::ObserverDefaultImpl,
+class PageResourceMonitor : public PageNode::ObserverDefaultImpl,
                             public GraphOwned,
-                            public GraphRegisteredImpl<PageTimelineMonitor>,
+                            public GraphRegisteredImpl<PageResourceMonitor>,
                             public TabPageObserver {
  public:
   // These values are logged to UKM. Entries should not be renumbered and
@@ -65,11 +65,11 @@ class PageTimelineMonitor : public PageNode::ObserverDefaultImpl,
 
   // If `enable_system_cpu_probe` is false, `system_cpu_probe_` will be left
   // null. This is mainly intended for tests.
-  explicit PageTimelineMonitor(bool enable_system_cpu_probe = true);
+  explicit PageResourceMonitor(bool enable_system_cpu_probe = true);
 
-  ~PageTimelineMonitor() override;
-  PageTimelineMonitor(const PageTimelineMonitor& other) = delete;
-  PageTimelineMonitor& operator=(const PageTimelineMonitor&) = delete;
+  ~PageResourceMonitor() override;
+  PageResourceMonitor(const PageResourceMonitor& other) = delete;
+  PageResourceMonitor& operator=(const PageResourceMonitor&) = delete;
 
   // GraphOwned:
   void OnPassedToGraph(Graph* graph) override;
@@ -89,18 +89,18 @@ class PageTimelineMonitor : public PageNode::ObserverDefaultImpl,
   void SetBatterySaverEnabled(bool enabled);
 
  private:
-  friend class PageTimelineMonitorBrowserTest;
-  friend PageTimelineMonitorUnitTest;
+  friend class PageResourceMonitorBrowserTest;
+  friend PageResourceMonitorUnitTest;
   FRIEND_TEST_ALL_PREFIXES(
-      PageTimelineMonitorUnitTest,
+      PageResourceMonitorUnitTest,
       TestPageTimelineDoesntRecordIfShouldCollectSliceReturnsFalse);
-  FRIEND_TEST_ALL_PREFIXES(PageTimelineMonitorUnitTest,
+  FRIEND_TEST_ALL_PREFIXES(PageResourceMonitorUnitTest,
                            TestUpdateFaviconInBackground);
-  FRIEND_TEST_ALL_PREFIXES(PageTimelineMonitorUnitTest,
+  FRIEND_TEST_ALL_PREFIXES(PageResourceMonitorUnitTest,
                            TestUpdateTitleInBackground);
-  FRIEND_TEST_ALL_PREFIXES(PageTimelineMonitorUnitTest,
+  FRIEND_TEST_ALL_PREFIXES(PageResourceMonitorUnitTest,
                            TestUpdateLifecycleState);
-  FRIEND_TEST_ALL_PREFIXES(PageTimelineMonitorUnitTest,
+  FRIEND_TEST_ALL_PREFIXES(PageResourceMonitorUnitTest,
                            TestUpdatePageNodeBeforeTypeChange);
 
   struct PageNodeInfo {
@@ -112,7 +112,7 @@ class PageTimelineMonitor : public PageNode::ObserverDefaultImpl,
     int total_foreground_milliseconds{0};
     int tab_id;
 
-    PageTimelineMonitor::PageState GetPageState();
+    PageResourceMonitor::PageState GetPageState();
 
     explicit PageNodeInfo(base::TimeTicks time_of_creation,
                           const PageNode* page_node,
@@ -194,7 +194,7 @@ class PageTimelineMonitor : public PageNode::ObserverDefaultImpl,
       bool use_delayed_system_cpu_probe,
       base::OnceCallback<void(const PageCPUUsageVector&,
                               absl::optional<PressureSample>)> callback,
-      const PageTimelineCPUMonitor::CPUUsageMap& cpu_usage_map);
+      const PageResourceCPUMonitor::CPUUsageMap& cpu_usage_map);
 
   // If this is called, CollectSlice() and CollectPageResourceUsage() will not
   // be called on a timer. Tests can call them manually.
@@ -204,10 +204,10 @@ class PageTimelineMonitor : public PageNode::ObserverDefaultImpl,
   // ShouldCollectSlice().
   void SetShouldCollectSliceCallbackForTesting(base::RepeatingCallback<bool()>);
 
-  // Passes the given `factory` to PageTimelineCPUMonitor.
+  // Passes the given `factory` to PageResourceCPUMonitor.
   void SetCPUMeasurementDelegateFactoryForTesting(
       Graph* graph,
-      PageTimelineCPUMonitor::CPUMeasurementDelegate::Factory* factory);
+      PageResourceCPUMonitor::CPUMeasurementDelegate::Factory* factory);
 
   // Lets tests examine the contents of `page_node_info_map_`.
   PageNodeInfoMap& GetPageNodeInfoForTesting();
@@ -260,7 +260,7 @@ class PageTimelineMonitor : public PageNode::ObserverDefaultImpl,
   bool battery_saver_enabled_ GUARDED_BY_CONTEXT(sequence_checker_) = false;
 
   // Helper to take CPU measurements for the UKM.
-  PageTimelineCPUMonitor cpu_monitor_ GUARDED_BY_CONTEXT(sequence_checker_);
+  PageResourceCPUMonitor cpu_monitor_ GUARDED_BY_CONTEXT(sequence_checker_);
 
   // Helpers to take system CPU measurements for UMA.
   std::unique_ptr<CpuProbe> system_cpu_probe_
@@ -269,9 +269,9 @@ class PageTimelineMonitor : public PageNode::ObserverDefaultImpl,
       GUARDED_BY_CONTEXT(sequence_checker_);
 
   // WeakPtrFactory for the RepeatingTimer to call a method on this object.
-  base::WeakPtrFactory<PageTimelineMonitor> weak_factory_{this};
+  base::WeakPtrFactory<PageResourceMonitor> weak_factory_{this};
 };
 
 }  // namespace performance_manager::metrics
 
-#endif  // CHROME_BROWSER_PERFORMANCE_MANAGER_METRICS_PAGE_TIMELINE_MONITOR_H_
+#endif  // CHROME_BROWSER_PERFORMANCE_MANAGER_METRICS_PAGE_RESOURCE_MONITOR_H_

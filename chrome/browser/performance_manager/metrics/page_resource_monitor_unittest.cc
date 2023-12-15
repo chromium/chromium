@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/performance_manager/metrics/page_timeline_monitor.h"
+#include "chrome/browser/performance_manager/metrics/page_resource_monitor.h"
 
 #include <map>
 #include <memory>
@@ -25,7 +25,7 @@
 #include "base/test/test_timeouts.h"
 #include "base/threading/platform_thread.h"
 #include "build/build_config.h"
-#include "chrome/browser/performance_manager/metrics/page_timeline_cpu_monitor.h"
+#include "chrome/browser/performance_manager/metrics/page_resource_cpu_monitor.h"
 #include "components/performance_manager/embedder/graph_features.h"
 #include "components/performance_manager/public/decorators/page_live_state_decorator.h"
 #include "components/performance_manager/public/decorators/tab_page_decorator.h"
@@ -51,7 +51,7 @@ namespace performance_manager::metrics {
 namespace {
 
 using PageMeasurementBackgroundState =
-    PageTimelineMonitor::PageMeasurementBackgroundState;
+    PageResourceMonitor::PageMeasurementBackgroundState;
 
 // Helper class to repeatedly test a HistogramTester for histograms with a
 // common naming pattern. The default pattern is
@@ -172,13 +172,13 @@ class PatternedHistogramTester {
 
 }  // namespace
 
-class PageTimelineMonitorUnitTest : public GraphTestHarness {
+class PageResourceMonitorUnitTest : public GraphTestHarness {
  public:
-  PageTimelineMonitorUnitTest() = default;
-  ~PageTimelineMonitorUnitTest() override = default;
-  PageTimelineMonitorUnitTest(const PageTimelineMonitorUnitTest& other) =
+  PageResourceMonitorUnitTest() = default;
+  ~PageResourceMonitorUnitTest() override = default;
+  PageResourceMonitorUnitTest(const PageResourceMonitorUnitTest& other) =
       delete;
-  PageTimelineMonitorUnitTest& operator=(const PageTimelineMonitorUnitTest&) =
+  PageResourceMonitorUnitTest& operator=(const PageResourceMonitorUnitTest&) =
       delete;
 
   void SetUp() override {
@@ -190,8 +190,8 @@ class PageTimelineMonitorUnitTest : public GraphTestHarness {
     // Return 50% CPU used by default.
     cpu_delegate_factory_.SetDefaultCPUUsage(0.5);
 
-    std::unique_ptr<PageTimelineMonitor> monitor =
-        std::make_unique<PageTimelineMonitor>(enable_system_cpu_probe_);
+    std::unique_ptr<PageResourceMonitor> monitor =
+        std::make_unique<PageResourceMonitor>(enable_system_cpu_probe_);
     monitor_ = monitor.get();
     monitor_->SetTriggerCollectionManuallyForTesting();
     monitor_->SetShouldCollectSliceCallbackForTesting(
@@ -208,7 +208,7 @@ class PageTimelineMonitorUnitTest : public GraphTestHarness {
   }
 
   // To allow tests to call its methods and view its state.
-  raw_ptr<PageTimelineMonitor> monitor_;
+  raw_ptr<PageResourceMonitor> monitor_;
 
   // Factory to return CPUMeasurementDelegates. This must be deleted after
   // `monitor_` to ensure that it outlives all delegates it creates.
@@ -217,7 +217,7 @@ class PageTimelineMonitorUnitTest : public GraphTestHarness {
 
  protected:
   ukm::TestUkmRecorder* test_ukm_recorder() { return test_ukm_recorder_.get(); }
-  PageTimelineMonitor* monitor() { return monitor_; }
+  PageResourceMonitor* monitor() { return monitor_; }
 
   void TriggerCollectSlice() { monitor_->CollectSlice(); }
 
@@ -248,7 +248,7 @@ class PageTimelineMonitorUnitTest : public GraphTestHarness {
       std::map<ukm::SourceId, PageMeasurementBackgroundState> expected_states);
 
   // Subclasses can override this before calling
-  // PageTimelineMonitorUnitTest::SetUp() to simulate an environment where
+  // PageResourceMonitorUnitTest::SetUp() to simulate an environment where
   // CPUProbe::Create() returns nullptr.
   bool enable_system_cpu_probe_ = true;
 
@@ -256,7 +256,7 @@ class PageTimelineMonitorUnitTest : public GraphTestHarness {
   std::unique_ptr<ukm::TestUkmRecorder> test_ukm_recorder_;
 };
 
-void PageTimelineMonitorUnitTest::TestBackgroundStates(
+void PageResourceMonitorUnitTest::TestBackgroundStates(
     std::map<ukm::SourceId, PageMeasurementBackgroundState> expected_states) {
   TriggerCollectPageResourceUsage();
   auto entries = test_ukm_recorder()->GetEntriesByName(
@@ -273,11 +273,11 @@ void PageTimelineMonitorUnitTest::TestBackgroundStates(
 
 // A test that runs with various values of the kUseResourceAttributionCPUMonitor
 // feature flag.
-class PageTimelineMonitorWithFeatureTest
-    : public PageTimelineMonitorUnitTest,
+class PageResourceMonitorWithFeatureTest
+    : public PageResourceMonitorUnitTest,
       public ::testing::WithParamInterface<bool> {
  public:
-  PageTimelineMonitorWithFeatureTest() {
+  PageResourceMonitorWithFeatureTest() {
     scoped_feature_list_.InitWithFeaturesAndParameters(
         {
             {features::kPageTimelineMonitor,
@@ -293,14 +293,14 @@ class PageTimelineMonitorWithFeatureTest
     if (features::kUseResourceAttributionCPUMonitor.Get()) {
       GetGraphFeatures().EnableResourceAttributionScheduler();
     }
-    PageTimelineMonitorUnitTest::SetUp();
+    PageResourceMonitorUnitTest::SetUp();
   }
 
   void TearDown() override {
     // Destroy `monitor_` before `scoped_feature_list_` so that the feature flag
     // doesn't change during its destructor.
     graph()->TakeFromGraph(monitor_.ExtractAsDangling());
-    PageTimelineMonitorUnitTest::TearDown();
+    PageResourceMonitorUnitTest::TearDown();
   }
 
  private:
@@ -308,13 +308,13 @@ class PageTimelineMonitorWithFeatureTest
 };
 
 INSTANTIATE_TEST_SUITE_P(All,
-                         PageTimelineMonitorWithFeatureTest,
+                         PageResourceMonitorWithFeatureTest,
                          ::testing::Bool());
 
 // A test of CPU intervention logging when the system CPUProbe is not available.
-class PageTimelineMonitorNoCPUProbeTest : public PageTimelineMonitorUnitTest {
+class PageResourceMonitorNoCPUProbeTest : public PageResourceMonitorUnitTest {
  public:
-  PageTimelineMonitorNoCPUProbeTest() {
+  PageResourceMonitorNoCPUProbeTest() {
     scoped_feature_list_.InitWithFeaturesAndParameters(
         {
             {performance_manager::features::kCPUInterventionEvaluationLogging,
@@ -328,7 +328,7 @@ class PageTimelineMonitorNoCPUProbeTest : public PageTimelineMonitorUnitTest {
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
-TEST_F(PageTimelineMonitorUnitTest, TestPageTimeline) {
+TEST_F(PageResourceMonitorUnitTest, TestPageTimeline) {
   MockSinglePageInSingleProcessGraph mock_graph(graph());
   ukm::SourceId mock_source_id = ukm::NoURLSourceId();
   mock_graph.page->SetType(performance_manager::PageType::kTab);
@@ -349,7 +349,7 @@ TEST_F(PageTimelineMonitorUnitTest, TestPageTimeline) {
   EXPECT_TRUE(entries2.empty());
 }
 
-TEST_F(PageTimelineMonitorUnitTest, TestPageResourceUsage) {
+TEST_F(PageResourceMonitorUnitTest, TestPageResourceUsage) {
   MockSinglePageInSingleProcessGraph mock_graph(graph());
   ukm::SourceId mock_source_id = ukm::NoURLSourceId();
   mock_graph.page->SetType(performance_manager::PageType::kTab);
@@ -370,7 +370,7 @@ TEST_F(PageTimelineMonitorUnitTest, TestPageResourceUsage) {
   EXPECT_TRUE(entries2.empty());
 }
 
-TEST_F(PageTimelineMonitorUnitTest,
+TEST_F(PageResourceMonitorUnitTest,
        TestPageTimelineDoesntRecordIfShouldCollectSliceReturnsFalse) {
   MockSinglePageInSingleProcessGraph mock_graph(graph());
   ukm::SourceId mock_source_id = ukm::NoURLSourceId();
@@ -388,7 +388,7 @@ TEST_F(PageTimelineMonitorUnitTest,
   EXPECT_EQ(entries.size(), 0UL);
 }
 
-TEST_F(PageTimelineMonitorUnitTest, TestPageTimelineNavigation) {
+TEST_F(PageResourceMonitorUnitTest, TestPageTimelineNavigation) {
   MockSinglePageInSingleProcessGraph mock_graph(graph());
   ukm::SourceId mock_source_id =
       ukm::AssignNewSourceId();  // ukm::NoURLSourceId();
@@ -429,7 +429,7 @@ TEST_F(PageTimelineMonitorUnitTest, TestPageTimelineNavigation) {
   EXPECT_NE(ids[0], ids[1]);
 }
 
-TEST_F(PageTimelineMonitorUnitTest, TestOnlyRecordTabs) {
+TEST_F(PageResourceMonitorUnitTest, TestOnlyRecordTabs) {
   MockSinglePageInSingleProcessGraph mock_graph(graph());
   ukm::SourceId mock_source_id = ukm::NoURLSourceId();
   mock_graph.page->SetUkmSourceId(mock_source_id);
@@ -447,7 +447,7 @@ TEST_F(PageTimelineMonitorUnitTest, TestOnlyRecordTabs) {
   EXPECT_EQ(entries2.size(), 0UL);
 }
 
-TEST_F(PageTimelineMonitorUnitTest, TestUpdateTitleOrFaviconInBackground) {
+TEST_F(PageResourceMonitorUnitTest, TestUpdateTitleOrFaviconInBackground) {
   MockSinglePageInSingleProcessGraph mock_graph(graph());
   ukm::SourceId mock_source_id = ukm::NoURLSourceId();
   mock_graph.page->SetType(performance_manager::PageType::kTab);
@@ -473,7 +473,7 @@ TEST_F(PageTimelineMonitorUnitTest, TestUpdateTitleOrFaviconInBackground) {
       entries[1], "ChangedFaviconOrTitleInBackground", true);
 }
 
-TEST_F(PageTimelineMonitorUnitTest, TestUpdateLifecycleState) {
+TEST_F(PageResourceMonitorUnitTest, TestUpdateLifecycleState) {
   MockSinglePageInSingleProcessGraph mock_graph(graph());
   ukm::SourceId mock_source_id = ukm::NoURLSourceId();
   mock_graph.page->SetUkmSourceId(mock_source_id);
@@ -489,7 +489,7 @@ TEST_F(PageTimelineMonitorUnitTest, TestUpdateLifecycleState) {
 }
 
 #if !BUILDFLAG(IS_ANDROID)
-TEST_F(PageTimelineMonitorUnitTest, TestHighEfficiencyMode) {
+TEST_F(PageResourceMonitorUnitTest, TestHighEfficiencyMode) {
   MockSinglePageInSingleProcessGraph mock_graph(graph());
   ukm::SourceId mock_source_id = ukm::NoURLSourceId();
   mock_graph.page->SetType(performance_manager::PageType::kTab);
@@ -526,7 +526,7 @@ TEST_F(PageTimelineMonitorUnitTest, TestHighEfficiencyMode) {
   test_ukm_recorder()->ExpectEntryMetric(entries[2], "HighEfficiencyMode", 1);
 }
 
-TEST_F(PageTimelineMonitorUnitTest, TestBatterySaverMode) {
+TEST_F(PageResourceMonitorUnitTest, TestBatterySaverMode) {
   MockSinglePageInSingleProcessGraph mock_graph(graph());
   ukm::SourceId mock_source_id = ukm::NoURLSourceId();
   mock_graph.page->SetType(performance_manager::PageType::kTab);
@@ -551,7 +551,7 @@ TEST_F(PageTimelineMonitorUnitTest, TestBatterySaverMode) {
 }
 #endif  // !BUILDFLAG(IS_ANDROID)
 
-TEST_F(PageTimelineMonitorUnitTest, TestHasNotificationsPermission) {
+TEST_F(PageResourceMonitorUnitTest, TestHasNotificationsPermission) {
   MockSinglePageInSingleProcessGraph mock_graph(graph());
   ukm::SourceId mock_source_id = ukm::NoURLSourceId();
   mock_graph.page->SetType(performance_manager::PageType::kTab);
@@ -584,7 +584,7 @@ TEST_F(PageTimelineMonitorUnitTest, TestHasNotificationsPermission) {
                                          "HasNotificationPermission", 0);
 }
 
-TEST_F(PageTimelineMonitorUnitTest, TestCapturingMedia) {
+TEST_F(PageResourceMonitorUnitTest, TestCapturingMedia) {
   MockSinglePageInSingleProcessGraph mock_graph(graph());
   ukm::SourceId mock_source_id = ukm::NoURLSourceId();
   mock_graph.page->SetType(performance_manager::PageType::kTab);
@@ -611,7 +611,7 @@ TEST_F(PageTimelineMonitorUnitTest, TestCapturingMedia) {
   test_ukm_recorder()->ExpectEntryMetric(entries[1], "IsCapturingMedia", 1);
 }
 
-TEST_F(PageTimelineMonitorUnitTest, TestConnectedToDevice) {
+TEST_F(PageResourceMonitorUnitTest, TestConnectedToDevice) {
   MockSinglePageInSingleProcessGraph mock_graph(graph());
   ukm::SourceId mock_source_id = ukm::NoURLSourceId();
   mock_graph.page->SetType(performance_manager::PageType::kTab);
@@ -638,7 +638,7 @@ TEST_F(PageTimelineMonitorUnitTest, TestConnectedToDevice) {
   test_ukm_recorder()->ExpectEntryMetric(entries[1], "IsConnectedToDevice", 1);
 }
 
-TEST_F(PageTimelineMonitorUnitTest, TestAudible) {
+TEST_F(PageResourceMonitorUnitTest, TestAudible) {
   MockSinglePageInSingleProcessGraph mock_graph(graph());
   ukm::SourceId mock_source_id = ukm::NoURLSourceId();
   mock_graph.page->SetType(performance_manager::PageType::kTab);
@@ -661,7 +661,7 @@ TEST_F(PageTimelineMonitorUnitTest, TestAudible) {
   test_ukm_recorder()->ExpectEntryMetric(entries[1], "IsPlayingAudio", 1);
 }
 
-TEST_F(PageTimelineMonitorUnitTest, TestIsActiveTab) {
+TEST_F(PageResourceMonitorUnitTest, TestIsActiveTab) {
   MockSinglePageInSingleProcessGraph mock_graph(graph());
   ukm::SourceId mock_source_id = ukm::NoURLSourceId();
   mock_graph.page->SetType(performance_manager::PageType::kTab);
@@ -688,7 +688,7 @@ TEST_F(PageTimelineMonitorUnitTest, TestIsActiveTab) {
   test_ukm_recorder()->ExpectEntryMetric(entries[1], "IsActiveTab", 1);
 }
 
-TEST_F(PageTimelineMonitorUnitTest, TestMemory) {
+TEST_F(PageResourceMonitorUnitTest, TestMemory) {
   MockSinglePageInSingleProcessGraph mock_graph(graph());
   ukm::SourceId mock_source_id = ukm::NoURLSourceId();
   mock_graph.page->SetType(performance_manager::PageType::kTab);
@@ -706,7 +706,7 @@ TEST_F(PageTimelineMonitorUnitTest, TestMemory) {
   test_ukm_recorder()->ExpectEntryMetric(entries[0], "PrivateFootprint", 456);
 }
 
-TEST_F(PageTimelineMonitorUnitTest, TestUpdatePageNodeBeforeTypeChange) {
+TEST_F(PageResourceMonitorUnitTest, TestUpdatePageNodeBeforeTypeChange) {
   MockSinglePageInSingleProcessGraph mock_graph(graph());
   ukm::SourceId mock_source_id = ukm::NoURLSourceId();
   mock_graph.page->SetIsVisible(false);
@@ -728,7 +728,7 @@ TEST_F(PageTimelineMonitorUnitTest, TestUpdatePageNodeBeforeTypeChange) {
   TriggerCollectSlice();
 }
 
-TEST_P(PageTimelineMonitorWithFeatureTest, TestResourceUsage) {
+TEST_P(PageResourceMonitorWithFeatureTest, TestResourceUsage) {
   MockMultiplePagesWithMultipleProcessesGraph mock_graph(graph());
   const ukm::SourceId mock_source_id = ukm::AssignNewSourceId();
   mock_graph.page->SetType(performance_manager::PageType::kTab);
@@ -788,7 +788,7 @@ TEST_P(PageTimelineMonitorWithFeatureTest, TestResourceUsage) {
   }
 }
 
-TEST_F(PageTimelineMonitorUnitTest, TestResourceUsageBackgroundState) {
+TEST_F(PageResourceMonitorUnitTest, TestResourceUsageBackgroundState) {
   MockMultiplePagesWithMultipleProcessesGraph mock_graph(graph());
   const ukm::SourceId mock_source_id = ukm::AssignNewSourceId();
   mock_graph.page->SetType(performance_manager::PageType::kTab);
@@ -838,7 +838,7 @@ TEST_F(PageTimelineMonitorUnitTest, TestResourceUsageBackgroundState) {
 }
 
 #if !BUILDFLAG(IS_ANDROID)
-TEST_P(PageTimelineMonitorWithFeatureTest, TestCPUInterventionMetrics) {
+TEST_P(PageResourceMonitorWithFeatureTest, TestCPUInterventionMetrics) {
   MockMultiplePagesWithMultipleProcessesGraph mock_graph(graph());
 
   // Foreground page.
@@ -1080,7 +1080,7 @@ TEST_P(PageTimelineMonitorWithFeatureTest, TestCPUInterventionMetrics) {
   }
 }
 
-TEST_P(PageTimelineMonitorWithFeatureTest,
+TEST_P(PageResourceMonitorWithFeatureTest,
        CPUInterventionMetricsNoForegroundTabs) {
   MockSinglePageInSingleProcessGraph mock_graph(graph());
   mock_graph.page->SetType(performance_manager::PageType::kTab);
@@ -1116,7 +1116,7 @@ TEST_P(PageTimelineMonitorWithFeatureTest,
   immediate.ExpectUniqueSample("TopNBackgroundCPU.2", 100);
 }
 
-TEST_P(PageTimelineMonitorWithFeatureTest,
+TEST_P(PageResourceMonitorWithFeatureTest,
        CPUInterventionMetricsNoBackgroundTabs) {
   MockSinglePageInSingleProcessGraph mock_graph(graph());
   mock_graph.page->SetType(performance_manager::PageType::kTab);
@@ -1154,7 +1154,7 @@ TEST_P(PageTimelineMonitorWithFeatureTest,
   immediate.ExpectUniqueSample("TopNBackgroundCPU.2", 0);
 }
 
-TEST_F(PageTimelineMonitorNoCPUProbeTest,
+TEST_F(PageResourceMonitorNoCPUProbeTest,
        CPUInterventionMetricsWithoutSystemCPU) {
   MockSinglePageInSingleProcessGraph mock_graph(graph());
   mock_graph.page->SetType(performance_manager::PageType::kTab);

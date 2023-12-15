@@ -6,7 +6,7 @@
 #include "base/task/sequenced_task_runner.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/performance_manager/mechanisms/page_discarder.h"
-#include "chrome/browser/performance_manager/metrics/page_timeline_monitor.h"
+#include "chrome/browser/performance_manager/metrics/page_resource_monitor.h"
 #include "chrome/browser/resource_coordinator/lifecycle_unit_state.mojom.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/test/base/in_process_browser_test.h"
@@ -23,9 +23,9 @@
 
 namespace performance_manager::metrics {
 
-class PageTimelineMonitorBrowserTest : public InProcessBrowserTest {
+class PageResourceMonitorBrowserTest : public InProcessBrowserTest {
  public:
-  PageTimelineMonitorBrowserTest() {
+  PageResourceMonitorBrowserTest() {
     feature_list_.InitAndEnableFeature(features::kPageTimelineMonitor);
   }
 
@@ -34,7 +34,7 @@ class PageTimelineMonitorBrowserTest : public InProcessBrowserTest {
   void SetUpOnPMSequence() {
     PerformanceManager::CallOnGraph(
         FROM_HERE, base::BindOnce([](Graph* graph) {
-          auto* monitor = graph->GetRegisteredObjectAs<PageTimelineMonitor>();
+          auto* monitor = graph->GetRegisteredObjectAs<PageResourceMonitor>();
           monitor->SetTriggerCollectionManuallyForTesting();
           monitor->SetShouldCollectSliceCallbackForTesting(
               base::BindRepeating([]() { return true; }));
@@ -58,7 +58,7 @@ class PageTimelineMonitorBrowserTest : public InProcessBrowserTest {
               ukm::TestAutoSetUkmRecorder ukm_recorder;
 
               auto* monitor =
-                  graph->GetRegisteredObjectAs<PageTimelineMonitor>();
+                  graph->GetRegisteredObjectAs<PageResourceMonitor>();
               monitor->CollectSlice();
 
               auto entries = ukm_recorder.GetEntriesByName(
@@ -91,7 +91,7 @@ class PageTimelineMonitorBrowserTest : public InProcessBrowserTest {
   base::test::ScopedFeatureList feature_list_;
 };
 
-IN_PROC_BROWSER_TEST_F(PageTimelineMonitorBrowserTest,
+IN_PROC_BROWSER_TEST_F(PageResourceMonitorBrowserTest,
                        TestDiscardedTabsRecordedInCorrectState) {
   ASSERT_TRUE(embedded_test_server()->Start());
 
@@ -141,7 +141,7 @@ IN_PROC_BROWSER_TEST_F(PageTimelineMonitorBrowserTest,
   EXPECT_EQ(tab_id, CollectSliceOnPMSequence(2UL, /*discarded*/ 5));
 }
 
-IN_PROC_BROWSER_TEST_F(PageTimelineMonitorBrowserTest,
+IN_PROC_BROWSER_TEST_F(PageResourceMonitorBrowserTest,
                        TestFrozenToDiscardedTab) {
   ASSERT_TRUE(embedded_test_server()->Start());
 

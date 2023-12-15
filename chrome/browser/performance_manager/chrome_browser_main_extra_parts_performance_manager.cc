@@ -21,7 +21,7 @@
 #include "chrome/browser/performance_manager/decorators/page_live_state_decorator_delegate_impl.h"
 #include "chrome/browser/performance_manager/metrics/memory_pressure_metrics.h"
 #include "chrome/browser/performance_manager/metrics/metrics_provider_desktop.h"
-#include "chrome/browser/performance_manager/metrics/page_timeline_monitor.h"
+#include "chrome/browser/performance_manager/metrics/page_resource_monitor.h"
 #include "chrome/browser/performance_manager/observers/page_load_metrics_observer.h"
 #include "chrome/browser/performance_manager/policies/background_tab_loading_policy.h"
 #include "chrome/browser/performance_manager/policies/policy_features.h"
@@ -216,7 +216,7 @@ void ChromeBrowserMainExtraPartsPerformanceManager::CreatePoliciesAndDecorators(
   if (base::FeatureList::IsEnabled(
           performance_manager::features::kPageTimelineMonitor)) {
     graph->PassToGraph(
-        std::make_unique<performance_manager::metrics::PageTimelineMonitor>());
+        std::make_unique<performance_manager::metrics::PageResourceMonitor>());
   }
 
   if (base::FeatureList::IsEnabled(

@@ -14,7 +14,7 @@
 #include "base/notreached.h"
 #include "base/run_loop.h"
 #include "base/values.h"
-#include "chrome/browser/performance_manager/metrics/page_timeline_monitor.h"
+#include "chrome/browser/performance_manager/metrics/page_resource_monitor.h"
 #include "chrome/browser/performance_manager/policies/memory_saver_mode_policy.h"
 #include "chrome/browser/performance_manager/policies/page_discarding_helper.h"
 #include "chrome/browser/performance_manager/user_tuning/user_performance_tuning_notifier.h"

@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/performance_manager/metrics/page_timeline_cpu_monitor.h"
+#include "chrome/browser/performance_manager/metrics/page_resource_cpu_monitor.h"
 
 #include <memory>
 #include <utility>
@@ -75,7 +75,7 @@ struct SinglePageRendererNodes {
 // Helpers to lookup measurement results from TestNodeWrapper's.
 
 absl::optional<double> GetMeasurementResult(
-    const PageTimelineCPUMonitor::CPUUsageMap& cpu_usage_map,
+    const PageResourceCPUMonitor::CPUUsageMap& cpu_usage_map,
     const ResourceContext& context) {
   const auto it = cpu_usage_map.find(context);
   if (it == cpu_usage_map.end()) {
@@ -85,14 +85,14 @@ absl::optional<double> GetMeasurementResult(
 }
 
 absl::optional<double> GetMeasurementResult(
-    const PageTimelineCPUMonitor::CPUUsageMap& cpu_usage_map,
+    const PageResourceCPUMonitor::CPUUsageMap& cpu_usage_map,
     const TestNodeWrapper<FrameNodeImpl>& frame_wrapper) {
   return GetMeasurementResult(cpu_usage_map,
                               frame_wrapper->GetResourceContext());
 }
 
 absl::optional<double> GetMeasurementResult(
-    const PageTimelineCPUMonitor::CPUUsageMap& cpu_usage_map,
+    const PageResourceCPUMonitor::CPUUsageMap& cpu_usage_map,
     const TestNodeWrapper<WorkerNodeImpl>& worker_wrapper) {
   return GetMeasurementResult(cpu_usage_map,
                               worker_wrapper->GetResourceContext());
@@ -115,12 +115,12 @@ auto ExpectedErrorResult() {
 
 }  // namespace
 
-class PageTimelineCPUMonitorTest : public GraphTestHarness,
+class PageResourceCPUMonitorTest : public GraphTestHarness,
                                    public ::testing::WithParamInterface<bool> {
  protected:
   using Super = GraphTestHarness;
 
-  PageTimelineCPUMonitorTest() {
+  PageResourceCPUMonitorTest() {
     scoped_feature_list_.InitAndEnableFeatureWithParameters(
         features::kPageTimelineMonitor,
         {{"use_resource_attribution_cpu_monitor",
@@ -196,12 +196,12 @@ class PageTimelineCPUMonitorTest : public GraphTestHarness,
     delegate_factory_.GetDelegate(process_node).SetError(usage_error);
   }
 
-  PageTimelineCPUMonitor::CPUUsageMap WaitForCPUMeasurements() {
-    PageTimelineCPUMonitor::CPUUsageMap cpu_usage_map;
+  PageResourceCPUMonitor::CPUUsageMap WaitForCPUMeasurements() {
+    PageResourceCPUMonitor::CPUUsageMap cpu_usage_map;
     base::RunLoop run_loop;
     cpu_monitor_.UpdateCPUMeasurements(
         base::BindLambdaForTesting(
-            [&](const PageTimelineCPUMonitor::CPUUsageMap& results) {
+            [&](const PageResourceCPUMonitor::CPUUsageMap& results) {
               cpu_usage_map = results;
             })
             .Then(run_loop.QuitClosure()));
@@ -218,7 +218,7 @@ class PageTimelineCPUMonitorTest : public GraphTestHarness,
       delegate_factory_;
 
   // The object under test.
-  PageTimelineCPUMonitor cpu_monitor_;
+  PageResourceCPUMonitor cpu_monitor_;
 
   TestNodeWrapper<ProcessNodeImpl> mock_utility_process_;
 
@@ -226,9 +226,9 @@ class PageTimelineCPUMonitorTest : public GraphTestHarness,
       mock_graph_;
 };
 
-INSTANTIATE_TEST_SUITE_P(All, PageTimelineCPUMonitorTest, ::testing::Bool());
+INSTANTIATE_TEST_SUITE_P(All, PageResourceCPUMonitorTest, ::testing::Bool());
 
-TEST_P(PageTimelineCPUMonitorTest, CPUMeasurement) {
+TEST_P(PageResourceCPUMonitorTest, CPUMeasurement) {
   // Create several renderer processes to measure. Put one page and one frame in
   // each renderer, so CPU measurements for the renderer are all assigned to
   // that frame for easy validation.
@@ -382,7 +382,7 @@ TEST_P(PageTimelineCPUMonitorTest, CPUMeasurement) {
   SetProcessExited(renderer4.process_node.get());
 }
 
-TEST_P(PageTimelineCPUMonitorTest, CPUDistribution) {
+TEST_P(PageResourceCPUMonitorTest, CPUDistribution) {
   // Track CPU usage of the mock utility process to make sure that measuring it
   // doesn't crash. Currently only measurements of renderer processes are
   // stored anywhere, so there are no other expectations to verify.
@@ -432,10 +432,10 @@ TEST_P(PageTimelineCPUMonitorTest, CPUDistribution) {
     // `other_page` gets the sum of `other_frame`, `child_frame` and
     // `other_worker`. See the chart in
     // MockMultiplePagesAndWorkersWithMultipleProcessesGraph.
-    EXPECT_THAT(PageTimelineCPUMonitor::EstimatePageCPUUsage(
+    EXPECT_THAT(PageResourceCPUMonitor::EstimatePageCPUUsage(
                     mock_graph_->page.get(), measurements),
                 DoubleEq(0.4));
-    EXPECT_THAT(PageTimelineCPUMonitor::EstimatePageCPUUsage(
+    EXPECT_THAT(PageResourceCPUMonitor::EstimatePageCPUUsage(
                     mock_graph_->other_page.get(), measurements),
                 DoubleEq(0.7));
   }
@@ -468,10 +468,10 @@ TEST_P(PageTimelineCPUMonitorTest, CPUDistribution) {
     // `page` gets its CPU usage from the sum of `frame` and `worker`.
     // `other_page` gets the sum of `other_frame`, `child_frame` and
     // `other_worker`.
-    EXPECT_THAT(PageTimelineCPUMonitor::EstimatePageCPUUsage(
+    EXPECT_THAT(PageResourceCPUMonitor::EstimatePageCPUUsage(
                     mock_graph_->page.get(), measurements),
                 DoubleEq(0.2));
-    EXPECT_THAT(PageTimelineCPUMonitor::EstimatePageCPUUsage(
+    EXPECT_THAT(PageResourceCPUMonitor::EstimatePageCPUUsage(
                     mock_graph_->other_page.get(), measurements),
                 DoubleEq(0.9));
   }
@@ -504,10 +504,10 @@ TEST_P(PageTimelineCPUMonitorTest, CPUDistribution) {
     // `page` gets its CPU usage from the sum of `frame` and `worker`.
     // `other_page` gets the sum of `other_frame`, `child_frame` and
     // `other_worker`.
-    EXPECT_THAT(PageTimelineCPUMonitor::EstimatePageCPUUsage(
+    EXPECT_THAT(PageResourceCPUMonitor::EstimatePageCPUUsage(
                     mock_graph_->page.get(), measurements),
                 DoubleEq(0.2));
-    EXPECT_THAT(PageTimelineCPUMonitor::EstimatePageCPUUsage(
+    EXPECT_THAT(PageResourceCPUMonitor::EstimatePageCPUUsage(
                     mock_graph_->other_page.get(), measurements),
                 DoubleEq(0.1));
   }
@@ -515,7 +515,7 @@ TEST_P(PageTimelineCPUMonitorTest, CPUDistribution) {
   cpu_monitor_.StopMonitoring(graph());
 }
 
-TEST_P(PageTimelineCPUMonitorTest, CPUMeasurementError) {
+TEST_P(PageResourceCPUMonitorTest, CPUMeasurementError) {
   const SinglePageRendererNodes renderer1 = CreateSimpleCPUTrackingRenderer();
   SetProcessId(renderer1.process_node.get());
   const SinglePageRendererNodes renderer2 = CreateSimpleCPUTrackingRenderer();
@@ -561,13 +561,13 @@ TEST_P(PageTimelineCPUMonitorTest, CPUMeasurementError) {
   cpu_monitor_.StopMonitoring(graph());
 }
 
-class PageTimelineCPUMonitorTimingTest
+class PageResourceCPUMonitorTimingTest
     : public ChromeRenderViewHostTestHarness,
       public ::testing::WithParamInterface<bool> {
  protected:
   using Super = ChromeRenderViewHostTestHarness;
 
-  PageTimelineCPUMonitorTimingTest() {
+  PageResourceCPUMonitorTimingTest() {
     scoped_feature_list_.InitAndEnableFeatureWithParameters(
         features::kPageTimelineMonitor,
         {{"use_resource_attribution_cpu_monitor",
@@ -581,7 +581,7 @@ class PageTimelineCPUMonitorTimingTest
     }
     pm_helper_.SetUp();
     RunInGraph([&](Graph* graph) {
-      cpu_monitor_ = std::make_unique<PageTimelineCPUMonitor>();
+      cpu_monitor_ = std::make_unique<PageResourceCPUMonitor>();
       cpu_monitor_->StartMonitoring(graph);
     });
   }
@@ -606,7 +606,7 @@ class PageTimelineCPUMonitorTimingTest
   static void TestPageMeasurement(
       base::WeakPtr<FrameNode> frame_node,
       base::FunctionRef<void(absl::optional<double>)> matcher_callback,
-      const PageTimelineCPUMonitor::CPUUsageMap& measurements) {
+      const PageResourceCPUMonitor::CPUUsageMap& measurements) {
     absl::optional<double> measurement_result;
     if (features::kUseResourceAttributionCPUMonitor.Get()) {
       // Resource Attribution stores page estimates directly in
@@ -624,14 +624,14 @@ class PageTimelineCPUMonitorTimingTest
 
   base::test::ScopedFeatureList scoped_feature_list_;
   PerformanceManagerTestHarnessHelper pm_helper_;
-  std::unique_ptr<PageTimelineCPUMonitor> cpu_monitor_;
+  std::unique_ptr<PageResourceCPUMonitor> cpu_monitor_;
 };
 
 INSTANTIATE_TEST_SUITE_P(All,
-                         PageTimelineCPUMonitorTimingTest,
+                         PageResourceCPUMonitorTimingTest,
                          ::testing::Bool());
 
-TEST_P(PageTimelineCPUMonitorTimingTest, ProcessLifetime) {
+TEST_P(PageResourceCPUMonitorTimingTest, ProcessLifetime) {
   SetContents(CreateTestWebContents());
   content::NavigationSimulator::NavigateAndCommitFromBrowser(
       web_contents(), GURL("https://www.example.com/"));
