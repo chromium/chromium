@@ -926,6 +926,29 @@ TEST_F(AccessibilityTest, NextOnLine) {
   EXPECT_EQ("b", next->GetNode()->textContent());
 }
 
+TEST_F(AccessibilityTest, NextAndPreviousOnLineInert) {
+  // Spans need to be in the same line: see https://crbug.com/1511390.
+  SetBodyInnerHTML(R"HTML(
+    <div>
+    <div>first line</div>
+    <span id="span1">go </span><span inert>inert1</span><span inert>inert2</span><span>blue</span>
+    <div>last line</div>
+    </div>
+  )HTML");
+  const AXObject* span1 = GetAXObjectByElementId("span1");
+  ASSERT_NE(nullptr, span1);
+  EXPECT_EQ("go ", span1->GetNode()->textContent());
+
+  const AXObject* next = span1->NextOnLine();
+  ASSERT_NE(nullptr, next);
+  EXPECT_EQ("blue", next->GetNode()->textContent());
+
+  // Now we go backwards.
+
+  const AXObject* previous = next->PreviousOnLine();
+  EXPECT_EQ("go ", previous->GetNode()->textContent());
+}
+
 TEST_F(AccessibilityTest, TableRowAndCellIsLineBreakingObject) {
   SetBodyInnerHTML(R"HTML(
       <table id="table">

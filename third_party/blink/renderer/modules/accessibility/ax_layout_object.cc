@@ -757,13 +757,24 @@ AXObject* AXLayoutObject::NextOnLine() const {
   // Found cursor: use it to find next inline leaf.
   if (cursor) {
     cursor.MoveToNextInlineLeafOnLine();
-    if (cursor) {
+    while (cursor) {
       LayoutObject* runner_layout_object = cursor.CurrentMutableLayoutObject();
       DCHECK(runner_layout_object);
       AXObject* result = AXObjectCache().GetOrCreate(runner_layout_object);
+
+      bool is_inert = result ? result->IsInert() : false;
+
       result = GetDeepestAXChildInLayoutTree(result, true);
-      if (result)
+      if (result) {
         return result;
+      }
+
+      // We want to continue searching for the next inline leaf if the
+      // current one is inert.
+      if (!is_inert) {
+        break;
+      }
+      cursor.MoveToNextInlineLeafOnLine();
     }
   }
 
@@ -841,13 +852,24 @@ AXObject* AXLayoutObject::PreviousOnLine() const {
   // Found cursor: use it to find previous inline leaf.
   if (cursor) {
     cursor.MoveToPreviousInlineLeafOnLine();
-    if (cursor) {
+    while (cursor) {
       LayoutObject* runner_layout_object = cursor.CurrentMutableLayoutObject();
       DCHECK(runner_layout_object);
       AXObject* result = AXObjectCache().GetOrCreate(runner_layout_object);
+
+      bool is_inert = result ? result->IsInert() : false;
+
       result = GetDeepestAXChildInLayoutTree(result, false);
-      if (result)
+      if (result) {
         return result;
+      }
+
+      // We want to continue searching for the previous inline leaf if the
+      // current one is inert.
+      if (!is_inert) {
+        break;
+      }
+      cursor.MoveToPreviousInlineLeafOnLine();
     }
   }
 
