@@ -41,6 +41,7 @@
 #include "base/task/single_thread_task_runner.h"
 #include "base/unguessable_token.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
+#include "net/base/load_flags.h"
 #include "services/metrics/public/cpp/metrics_utils.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
 #include "services/network/public/cpp/cross_origin_embedder_policy.h"
@@ -161,22 +162,6 @@ void LogMixedAutoupgradeMetrics(blink::MixedContentAutoupgradeStatus status,
   builder.Record(recorder);
 }
 
-bool CanHandleDataURLRequestLocally(const ResourceRequestHead& request) {
-  if (!request.Url().ProtocolIsData()) {
-    return false;
-  }
-
-  // The fast paths for data URL, Start() and HandleDataURL(), don't support
-  // the DownloadToBlob option.
-  if (request.DownloadToBlob()) {
-    return false;
-  }
-
-  // Main resources are handled in the browser, so we can handle data url
-  // subresources locally.
-  return true;
-}
-
 bool RequestContextObserveResponse(mojom::blink::RequestContextType type) {
   switch (type) {
     case mojom::blink::RequestContextType::PING:
@@ -217,6 +202,50 @@ absl::optional<mojom::WebFeature> PreflightResultToWebFeature(
   }
 }
 
+bool ShouldActivateCacheAwareLoading(const ResourceFetcher* fetcher,
+                                     const Resource* resource) {
+  if (resource->Options().cache_aware_loading_enabled !=
+      kIsCacheAwareLoadingEnabled) {
+    return false;
+  }
+
+  // Synchronous requests are not supported.
+  if (resource->Options().synchronous_policy == kRequestSynchronously) {
+    return false;
+  }
+
+  // Don't activate on Resource revalidation.
+  if (resource->IsCacheValidator()) {
+    return false;
+  }
+
+  // Don't activate if cache policy is explicitly set.
+  if (resource->GetResourceRequest().GetCacheMode() !=
+      mojom::blink::FetchCacheMode::kDefault) {
+    return false;
+  }
+
+  // Don't activate if the page is controlled by service worker.
+  if (fetcher->IsControlledByServiceWorker() !=
+      mojom::blink::ControllerServiceWorkerMode::kNoController) {
+    return false;
+  }
+  return true;
+}
+
+std::unique_ptr<network::ResourceRequest> CreateNetworkRequest(
+    const ResourceRequestHead& request_head,
+    ResourceRequestBody& request_body) {
+  auto network_resource_request = std::make_unique<network::ResourceRequest>();
+  scoped_refptr<EncodedFormData> form_body = request_body.FormBody();
+  PopulateResourceRequest(request_head, std::move(request_body),
+                          network_resource_request.get());
+  if (form_body) {
+    request_body = ResourceRequestBody(std::move(form_body));
+  }
+  return network_resource_request;
+}
+
 }  // namespace
 
 ResourceLoader::ResourceLoader(ResourceFetcher* fetcher,
@@ -231,7 +260,8 @@ ResourceLoader::ResourceLoader(ResourceFetcher* fetcher,
       resource_(resource),
       request_body_(std::move(request_body)),
       inflight_keepalive_bytes_(inflight_keepalive_bytes),
-      is_cache_aware_loading_activated_(false),
+      is_cache_aware_loading_activated_(
+          ShouldActivateCacheAwareLoading(fetcher, resource)),
       progress_receiver_(this, context),
       cancel_timer_(fetcher_->GetTaskRunner(),
                     this,
@@ -283,9 +313,23 @@ void ResourceLoader::Trace(Visitor* visitor) const {
 
 void ResourceLoader::Start() {
   const ResourceRequestHead& request = resource_->GetResourceRequest();
-  ActivateCacheAwareLoadingIfNeeded(request);
-  loader_ = fetcher_->CreateURLLoader(request, resource_->Options());
-  task_runner_for_body_loader_ = loader_->GetTaskRunnerForBodyLoader();
+
+  if (!resource_->Url().ProtocolIsData()) {
+    network_resource_request_ = CreateNetworkRequest(request, request_body_);
+    if (is_cache_aware_loading_activated_) {
+      // Override cache policy for cache-aware loading. If this request fails, a
+      // reload with original request will be triggered in DidFail().
+      network_resource_request_->load_flags |= net::LOAD_ONLY_FROM_CACHE;
+    }
+    loader_ = fetcher_->CreateURLLoader(request, resource_->Options());
+    task_runner_for_body_loader_ = loader_->GetTaskRunnerForBodyLoader();
+  } else {
+    // ResourceLoader doesn't support DownloadToBlob option for data URL. This
+    // logic is implemented inside XMLHttpRequest.
+    CHECK(!resource_->GetResourceRequest().DownloadToBlob());
+    task_runner_for_body_loader_ = fetcher_->GetTaskRunner();
+  }
+
   DCHECK_EQ(ResourceLoadScheduler::kInvalidClientId, scheduler_client_id_);
   auto throttle_option = ResourceLoadScheduler::ThrottleOption::kThrottleable;
 
@@ -342,7 +386,7 @@ void ResourceLoader::DidStartLoadingResponseBodyInternal(
 void ResourceLoader::Run() {
   // TODO(crbug.com/1169032): Manage cookies' capability control here for the
   // Prerender2.
-  StartWith(resource_->GetResourceRequest());
+  StartFetch();
 }
 
 void ResourceLoader::DidReceiveData(base::span<const char> data) {
@@ -375,10 +419,8 @@ void ResourceLoader::DidCancelLoadingBody() {
   Cancel();
 }
 
-void ResourceLoader::StartWith(const ResourceRequestHead& request) {
+void ResourceLoader::StartFetch() {
   DCHECK_NE(ResourceLoadScheduler::kInvalidClientId, scheduler_client_id_);
-  DCHECK(loader_);
-
   if (resource_->Options().synchronous_policy == kRequestSynchronously &&
       fetcher_->GetProperties().FreezeMode() != LoaderFreezeMode::kNone) {
     // TODO(yuzus): Evict bfcache if necessary.
@@ -386,24 +428,12 @@ void ResourceLoader::StartWith(const ResourceRequestHead& request) {
     return;
   }
 
-  is_downloading_to_blob_ = request.DownloadToBlob();
-
   SetDefersLoading(fetcher_->GetProperties().FreezeMode());
 
-  if (is_cache_aware_loading_activated_) {
-    // Override cache policy for cache-aware loading. If this request fails, a
-    // reload with original request will be triggered in DidFail().
-    ResourceRequestHead cache_aware_request(request);
-    cache_aware_request.SetCacheMode(
-        mojom::FetchCacheMode::kUnspecifiedOnlyIfCachedStrict);
-    RequestAsynchronously(cache_aware_request);
-    return;
-  }
-
   if (resource_->Options().synchronous_policy == kRequestSynchronously) {
-    RequestSynchronously(request);
+    RequestSynchronously();
   } else {
-    RequestAsynchronously(request);
+    RequestAsynchronously();
   }
 }
 
@@ -417,15 +447,18 @@ void ResourceLoader::Release(
   feature_handle_for_scheduler_.reset();
 }
 
-void ResourceLoader::Restart(const ResourceRequestHead& request) {
+void ResourceLoader::Restart() {
+  const ResourceRequestHead& request = resource_->GetResourceRequest();
   CHECK_EQ(resource_->Options().synchronous_policy, kRequestAsynchronously);
+  CHECK(!network_resource_request_);
+  CHECK(!resource_->Url().ProtocolIsData());
+  network_resource_request_ = CreateNetworkRequest(request, request_body_);
   loader_ = fetcher_->CreateURLLoader(request, resource_->Options());
   task_runner_for_body_loader_ = loader_->GetTaskRunnerForBodyLoader();
-  StartWith(request);
+  StartFetch();
 }
 
 void ResourceLoader::SetDefersLoading(LoaderFreezeMode mode) {
-  DCHECK(loader_);
   freeze_mode_ = mode;
 
   if (response_body_loader_) {
@@ -452,7 +485,9 @@ void ResourceLoader::SetDefersLoading(LoaderFreezeMode mode) {
     }
   }
 
-  loader_->Freeze(mode);
+  if (loader_) {
+    loader_->Freeze(mode);
+  }
   if (mode != LoaderFreezeMode::kNone) {
     resource_->VirtualTimePauser().UnpauseVirtualTime();
   } else {
@@ -463,11 +498,12 @@ void ResourceLoader::SetDefersLoading(LoaderFreezeMode mode) {
 void ResourceLoader::DidChangePriority(ResourceLoadPriority load_priority,
                                        int intra_priority_value) {
   if (scheduler_->IsRunning(scheduler_client_id_)) {
-    DCHECK(loader_);
     DCHECK_NE(ResourceLoadScheduler::kInvalidClientId, scheduler_client_id_);
-    loader_->DidChangePriority(
-        static_cast<WebURLRequest::Priority>(load_priority),
-        intra_priority_value);
+    if (loader_) {
+      loader_->DidChangePriority(
+          static_cast<WebURLRequest::Priority>(load_priority),
+          intra_priority_value);
+    }
   } else {
     scheduler_->SetPriority(scheduler_client_id_, load_priority,
                             intra_priority_value);
@@ -481,7 +517,7 @@ void ResourceLoader::ScheduleCancel() {
 }
 
 void ResourceLoader::CancelTimerFired(TimerBase*) {
-  if (loader_ && !resource_->HasClientsOrObservers()) {
+  if (IsLoading() && !resource_->HasClientsOrObservers()) {
     Cancel();
   }
 }
@@ -492,7 +528,7 @@ void ResourceLoader::Cancel() {
 }
 
 bool ResourceLoader::IsLoading() const {
-  return !!loader_;
+  return !finished_;
 }
 
 void ResourceLoader::CancelForRedirectAccessCheckError(
@@ -500,7 +536,7 @@ void ResourceLoader::CancelForRedirectAccessCheckError(
     ResourceRequestBlockedReason blocked_reason) {
   resource_->WillNotFollowRedirect();
 
-  if (loader_) {
+  if (IsLoading()) {
     HandleError(
         ResourceError::CancelledDueToAccessCheckError(new_url, blocked_reason));
   }
@@ -726,7 +762,7 @@ void ResourceLoader::DidReceiveResponse(
     return;
   }
 
-  if (is_downloading_to_blob_) {
+  if (resource_->GetResourceRequest().DownloadToBlob()) {
     DCHECK(!blob_response_started_);
     blob_response_started_ = true;
 
@@ -1010,7 +1046,8 @@ void ResourceLoader::DidFinishLoading(base::TimeTicks response_end_time,
 
   if ((response_body_loader_ && !has_seen_end_of_body_ &&
        !response_body_loader_->IsAborted()) ||
-      (is_downloading_to_blob_ && !blob_finished_ && blob_response_started_)) {
+      (resource_->GetResourceRequest().DownloadToBlob() && !blob_finished_ &&
+       blob_response_started_)) {
     // If the body is still being loaded, we defer the completion until all the
     // body is received.
     deferred_finish_loading_info_ =
@@ -1029,6 +1066,7 @@ void ResourceLoader::DidFinishLoading(base::TimeTicks response_end_time,
   response_body_loader_ = nullptr;
   has_seen_end_of_body_ = false;
   deferred_finish_loading_info_ = absl::nullopt;
+  finished_ = true;
 
   TRACE_EVENT_NESTABLE_ASYNC_END1(
       TRACE_DISABLED_BY_DEFAULT("network"), "ResourceLoad",
@@ -1088,7 +1126,7 @@ void ResourceLoader::HandleError(const ResourceError& error) {
       !fetcher_->GetProperties().ShouldBlockLoadingSubResource()) {
     resource_->WillReloadAfterDiskCacheMiss();
     is_cache_aware_loading_activated_ = false;
-    Restart(resource_->GetResourceRequest());
+    Restart();
     return;
   }
   if (error.CorsErrorStatus() &&
@@ -1110,6 +1148,7 @@ void ResourceLoader::HandleError(const ResourceError& error) {
   response_body_loader_ = nullptr;
   has_seen_end_of_body_ = false;
   deferred_finish_loading_info_ = absl::nullopt;
+  finished_ = true;
 
   TRACE_EVENT_NESTABLE_ASYNC_END1(
       TRACE_DISABLED_BY_DEFAULT("network"), "ResourceLoad",
@@ -1128,25 +1167,22 @@ void ResourceLoader::HandleError(const ResourceError& error) {
                               inflight_keepalive_bytes_);
 }
 
-void ResourceLoader::RequestSynchronously(const ResourceRequestHead& request) {
-  DCHECK(loader_);
-  DCHECK_EQ(request.Priority(), ResourceLoadPriority::kHighest);
+void ResourceLoader::RequestSynchronously() {
+  DCHECK(IsLoading());
+  DCHECK_EQ(resource_->GetResourceRequest().Priority(),
+            ResourceLoadPriority::kHighest);
 
-  auto network_resource_request = std::make_unique<network::ResourceRequest>();
-  scoped_refptr<EncodedFormData> form_body = request_body_.FormBody();
-  PopulateResourceRequest(request, std::move(request_body_),
-                          network_resource_request.get());
-  if (form_body) {
-    request_body_ = ResourceRequestBody(std::move(form_body));
-  }
   WebURLResponse response_out;
   absl::optional<WebURLError> error_out;
   scoped_refptr<SharedBuffer> data_out;
   int64_t encoded_data_length = URLLoaderClient::kUnknownEncodedDataLength;
   uint64_t encoded_body_length = 0;
   scoped_refptr<BlobDataHandle> downloaded_blob;
+  const ResourceRequestHead& request = resource_->GetResourceRequest();
 
-  if (CanHandleDataURLRequestLocally(request)) {
+  if (resource_->Url().ProtocolIsData()) {
+    CHECK(!network_resource_request_);
+    CHECK(!loader_);
     // We don't have to verify mime type again since it's allowed to handle
     // the data url with invalid mime type in some cases.
     // CanHandleDataURLRequestLocally() has already checked if the data url can
@@ -1160,11 +1196,13 @@ void ResourceLoader::RequestSynchronously(const ResourceRequestHead& request) {
       data_out = std::move(data);
     }
   } else {
+    CHECK(network_resource_request_);
+    CHECK(loader_);
     // Don't do mime sniffing for fetch (crbug.com/2016)
     bool no_mime_sniffing = request.GetRequestContext() ==
                             blink::mojom::blink::RequestContextType::FETCH;
     loader_->LoadSynchronously(
-        std::move(network_resource_request), Context().GetTopFrameOrigin(),
+        std::move(network_resource_request_), Context().GetTopFrameOrigin(),
         request.DownloadToBlob(), no_mime_sniffing, request.TimeoutInterval(),
         this, response_out, error_out, data_out, encoded_data_length,
         encoded_body_length, downloaded_blob,
@@ -1209,33 +1247,29 @@ void ResourceLoader::RequestSynchronously(const ResourceRequestHead& request) {
                    encoded_body_length, decoded_body_length);
 }
 
-void ResourceLoader::RequestAsynchronously(const ResourceRequestHead& request) {
-  DCHECK(loader_);
-  if (CanHandleDataURLRequestLocally(request)) {
+void ResourceLoader::RequestAsynchronously() {
+  if (resource_->Url().ProtocolIsData()) {
+    CHECK(!network_resource_request_);
+    CHECK(!loader_);
     // Handle DataURL in another task instead of using |loader_|.
     GetLoadingTaskRunner()->PostTask(
         FROM_HERE, WTF::BindOnce(&ResourceLoader::HandleDataUrl,
                                  WrapWeakPersistent(this)));
     return;
   }
+  CHECK(loader_);
+  CHECK(network_resource_request_);
 
-  auto network_resource_request = std::make_unique<network::ResourceRequest>();
   // Don't do mime sniffing for fetch (crbug.com/2016)
-  bool no_mime_sniffing = request.GetRequestContext() ==
+  bool no_mime_sniffing = resource_->GetResourceRequest().GetRequestContext() ==
                           blink::mojom::blink::RequestContextType::FETCH;
-  scoped_refptr<EncodedFormData> form_body = request_body_.FormBody();
-  PopulateResourceRequest(request, std::move(request_body_),
-                          network_resource_request.get());
-  if (form_body) {
-    request_body_ = ResourceRequestBody(std::move(form_body));
-  }
 
   // Don't pass a CodeCacheHost when DownloadToBlob is true. The detailed
   // decision logic for whether or not to fetch code cache from the isolated
   // code cache is implemented in ResourceRequestSender::CodeCacheFetcher. We
   // only check the DownloadToBlob flag here, which ResourceRequestSender cannot
   // know.
-  loader_->LoadAsynchronously(std::move(network_resource_request),
+  loader_->LoadAsynchronously(std::move(network_resource_request_),
                               Context().GetTopFrameOrigin(), no_mime_sniffing,
                               Context().CreateResourceLoadInfoNotifierWrapper(),
                               !resource_->GetResourceRequest().DownloadToBlob()
@@ -1256,39 +1290,6 @@ void ResourceLoader::Dispose() {
     Release(ResourceLoadScheduler::ReleaseOption::kReleaseOnly,
             ResourceLoadScheduler::TrafficReportHints::InvalidInstance());
   }
-}
-
-void ResourceLoader::ActivateCacheAwareLoadingIfNeeded(
-    const ResourceRequestHead& request) {
-  DCHECK(!is_cache_aware_loading_activated_);
-
-  if (resource_->Options().cache_aware_loading_enabled !=
-      kIsCacheAwareLoadingEnabled) {
-    return;
-  }
-
-  // Synchronous requests are not supported.
-  if (resource_->Options().synchronous_policy == kRequestSynchronously) {
-    return;
-  }
-
-  // Don't activate on Resource revalidation.
-  if (resource_->IsCacheValidator()) {
-    return;
-  }
-
-  // Don't activate if cache policy is explicitly set.
-  if (request.GetCacheMode() != mojom::FetchCacheMode::kDefault) {
-    return;
-  }
-
-  // Don't activate if the page is controlled by service worker.
-  if (fetcher_->IsControlledByServiceWorker() !=
-      blink::mojom::ControllerServiceWorkerMode::kNoController) {
-    return;
-  }
-
-  is_cache_aware_loading_activated_ = true;
 }
 
 bool ResourceLoader::ShouldBeKeptAliveWhenDetached() const {

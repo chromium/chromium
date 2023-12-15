@@ -109,10 +109,6 @@ class PLATFORM_EXPORT ResourceLoader final
 
   void DidChangePriority(ResourceLoadPriority, int intra_priority_value);
 
-  // Called before start() to activate cache-aware loading if enabled in
-  // |m_resource->options()| and applicable.
-  void ActivateCacheAwareLoadingIfNeeded(const ResourceRequestHead&);
-
   bool IsCacheAwareLoadingActivated() const {
     return is_cache_aware_loading_activated_;
   }
@@ -189,15 +185,14 @@ class PLATFORM_EXPORT ResourceLoader final
   void DidCancelLoadingBody() override;
 
   bool ShouldFetchCodeCache();
-  void StartWith(const ResourceRequestHead&);
+  void StartFetch();
 
   void Release(ResourceLoadScheduler::ReleaseOption,
                const ResourceLoadScheduler::TrafficReportHints&);
 
-  // This method is currently only used for service worker fallback request and
-  // cache-aware loading, other users should be careful not to break
-  // ResourceLoader state.
-  void Restart(const ResourceRequestHead&);
+  // This method is currently only used for cache-aware loading, other users
+  // should be careful not to break ResourceLoader state.
+  void Restart();
 
   FetchContext& Context() const;
 
@@ -207,8 +202,8 @@ class PLATFORM_EXPORT ResourceLoader final
 
   void CancelForRedirectAccessCheckError(const KURL&,
                                          ResourceRequestBlockedReason);
-  void RequestSynchronously(const ResourceRequestHead&);
-  void RequestAsynchronously(const ResourceRequestHead&);
+  void RequestSynchronously();
+  void RequestAsynchronously();
   void Dispose();
 
   void DidReceiveResponseInternal(
@@ -245,7 +240,13 @@ class PLATFORM_EXPORT ResourceLoader final
   void CountPrivateNetworkAccessPreflightResult(
       network::mojom::PrivateNetworkAccessPreflightResult result);
 
+  // The request object which will be passed to URLLoader. This is not used when
+  // the request URL is a data URL.
+  std::unique_ptr<network::ResourceRequest> network_resource_request_;
+
+  // Used only for non-data URL request.
   std::unique_ptr<URLLoader> loader_;
+
   ResourceLoadScheduler::ClientId scheduler_client_id_;
   Member<ResourceFetcher> fetcher_;
   Member<ResourceLoadScheduler> scheduler_;
@@ -261,7 +262,6 @@ class PLATFORM_EXPORT ResourceLoader final
   uint32_t inflight_keepalive_bytes_;
   bool is_cache_aware_loading_activated_;
 
-  bool is_downloading_to_blob_ = false;
   blink::HeapMojoAssociatedReceiver<mojom::blink::ProgressClient,
                                     blink::ResourceLoader>
       progress_receiver_;
@@ -292,6 +292,7 @@ class PLATFORM_EXPORT ResourceLoader final
 
   int64_t received_body_length_from_service_worker_ = 0;
   CnameAliasInfoForTesting cname_alias_info_for_testing_;
+  bool finished_ = false;
 };
 
 }  // namespace blink
