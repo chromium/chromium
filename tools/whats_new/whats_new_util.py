@@ -306,6 +306,29 @@ def UploadScreenshots(feature_dict: dict[str, str],
         os.remove(os.path.join(screenshot_dir, title + '.png'))
 
 
+def UpdateWhatsNewFETEvent(milestone: str) -> None:
+    """Updates ios_promo_feature_configuration.cc and event_constants.cc
+       with the new what's new fet event name.
+
+  Args:
+      milestone: What's New milestone.
+  """
+    whats_new_fet_event_regex = r'"viewed_whats_new_(.*?)"'
+    new_event_str = '"viewed_whats_new_' + milestone + '"'
+    event_constants_file = os.path.join(
+        BASE_DIR, '../components/feature_engagement/public/event_constants.cc')
+    with open(event_constants_file, 'r+', encoding='utf-8',
+              newline='') as file:
+        file_content = file.read()
+        match_whats_new_fet_event = re.search(whats_new_fet_event_regex,
+                                              file_content, re.DOTALL)
+        assert match_whats_new_fet_event
+        new_file_content = file_content.replace(
+            match_whats_new_fet_event.group(0), new_event_str)
+        file.seek(0)
+        file.write(new_file_content)
+
+
 def RemoveStringsForMilestone(milestone: str) -> None:
     """Removes the strings for a specific milestone.
 

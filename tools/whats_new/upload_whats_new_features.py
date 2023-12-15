@@ -142,6 +142,9 @@ def main():
         _AddFeature(index, feature_row, milestone_folder_absolute_path)
         features_name.append(feature_row['Feature name'])
 
+    # Update FET event
+    whats_new_util.UpdateWhatsNewFETEvent(milestone.lower())
+
     # Prepare and upload changes
     _FormatChanges()
     _AddChangesToBranch()
