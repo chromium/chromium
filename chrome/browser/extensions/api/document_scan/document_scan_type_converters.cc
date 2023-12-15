@@ -425,6 +425,28 @@ TypeConverter<extensions::api::document_scan::OpenScannerResponse,
   return output;
 }
 
+extensions::api::document_scan::GetOptionGroupsResponse
+TypeConverter<extensions::api::document_scan::GetOptionGroupsResponse,
+              crosapi::mojom::GetOptionGroupsResponsePtr>::
+    Convert(const crosapi::mojom::GetOptionGroupsResponsePtr& input) {
+  document_scan::GetOptionGroupsResponse output;
+  output.scanner_handle = input->scanner_handle;
+  output.result = ConvertTo<document_scan::OperationResult>(input->result);
+  if (!input->groups.has_value()) {
+    return output;
+  }
+
+  output.groups.emplace();
+  output.groups->reserve(input->groups.value().size());
+  for (const mojom::OptionGroupPtr& group_in : input->groups.value()) {
+    document_scan::OptionGroup& group_out = output.groups->emplace_back();
+    group_out.title = group_in->title;
+    group_out.members = std::vector<std::string>(group_in->members.begin(),
+                                                 group_in->members.end());
+  }
+  return output;
+}
+
 extensions::api::document_scan::CloseScannerResponse
 TypeConverter<extensions::api::document_scan::CloseScannerResponse,
               crosapi::mojom::CloseScannerResponsePtr>::

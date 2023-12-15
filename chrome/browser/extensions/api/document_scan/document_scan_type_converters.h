@@ -40,6 +40,13 @@ struct TypeConverter<extensions::api::document_scan::OpenScannerResponse,
 };
 
 template <>
+struct TypeConverter<extensions::api::document_scan::GetOptionGroupsResponse,
+                     crosapi::mojom::GetOptionGroupsResponsePtr> {
+  static extensions::api::document_scan::GetOptionGroupsResponse Convert(
+      const crosapi::mojom::GetOptionGroupsResponsePtr& input);
+};
+
+template <>
 struct TypeConverter<extensions::api::document_scan::CloseScannerResponse,
                      crosapi::mojom::CloseScannerResponsePtr> {
   static extensions::api::document_scan::CloseScannerResponse Convert(

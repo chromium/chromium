@@ -461,7 +461,7 @@ struct GetOptionGroupsResponse {
   ScannerOperationResult result@1;
 
   // If result is kSuccess, a list of the option groups.
-  array<OptionGroup>? options@2;
+  array<OptionGroup>? groups@2;
 };
 
 // The response from calling `CancelScan`.

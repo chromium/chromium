@@ -287,6 +287,19 @@ namespace documentScan {
     boolean? secure;
   };
 
+  // OptionGroup is a group containing a list of option names.  The groups and
+  // their contents are determined by the backend and do not have any defined
+  // semantics or consistent membership.  This structure is primarily intended
+  // for UI layout assistance; it does not affect the individual option
+  // behaviors.
+  [nodoc] dictionary OptionGroup {
+    // Printable title, e.g. "Geometry options".
+    DOMString title;
+
+    // Names of contained options, in backend-provided order.
+    DOMString[] members;
+  };
+
   // The response from <code>getScannerList()</code>.
   [nodoc] dictionary GetScannerListResponse {
     // The backend's enumeration result.  Note that partial results could be
@@ -313,6 +326,19 @@ namespace documentScan {
     // If <code>result</code> is <code>OperationResult.SUCCESS</code>, a
     // key-value mapping from option names to <code>ScannerOption</code>.
     object? options;
+  };
+
+  // The response from <code>getOptionGroups()</code>.
+  [nodoc] dictionary GetOptionGroupsResponse {
+    // Same scanner handle passed to <code>getOptionGroups()</code>.
+    DOMString scannerHandle;
+
+    // The backend's result of getting the option groups.
+    OperationResult result;
+
+    // If <code>result</code> is <code>OperationResult.SUCCESS</code>, a list of
+    // option groups in the order supplied by the backend.
+    OptionGroup[]? groups;
   };
 
   // The response from <code>closeScanner()</code>.
@@ -436,6 +462,12 @@ namespace documentScan {
   // |response| The response from opening the scanner, if the call was valid.
   // Otherwise will return null and set runtime.lastError.
   [nodoc] callback OpenScannerCallback = void (OpenScannerResponse response);
+
+  // Callback from the <code>getOptionGroups</code> method.
+  // |response| The response from getting the option groups, if the call was
+  // valid.  Otherwise will return null and set runtime.lastError.
+  [nodoc] callback GetOptionGroupsCallback =
+      void (GetOptionGroupsResponse response);
 
   // Callback from the <code>closeScanner</code> method.
   // |response| The response from closing the scanner, if the call was valid.

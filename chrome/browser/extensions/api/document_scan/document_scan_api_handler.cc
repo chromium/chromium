@@ -322,6 +322,33 @@ void DocumentScanAPIHandler::OnOpenScannerResponse(
   std::move(callback).Run(std::move(response_out));
 }
 
+void DocumentScanAPIHandler::GetOptionGroups(
+    scoped_refptr<const Extension> extension,
+    const std::string& scanner_handle,
+    GetOptionGroupsCallback callback) {
+  // Ensure this scanner is allocated to this extension.
+  ExtensionState& state = extension_state_[extension->id()];
+  if (!base::Contains(state.scanner_handles, scanner_handle)) {
+    auto response = crosapi::mojom::GetOptionGroupsResponse::New();
+    response->scanner_handle = scanner_handle;
+    response->result = crosapi::mojom::ScannerOperationResult::kInvalid;
+    OnGetOptionGroupsResponse(std::move(callback), std::move(response));
+    return;
+  }
+
+  document_scan_->GetOptionGroups(
+      scanner_handle,
+      base::BindOnce(&DocumentScanAPIHandler::OnGetOptionGroupsResponse,
+                     weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
+}
+
+void DocumentScanAPIHandler::OnGetOptionGroupsResponse(
+    GetOptionGroupsCallback callback,
+    crosapi::mojom::GetOptionGroupsResponsePtr response) {
+  std::move(callback).Run(
+      response.To<api::document_scan::GetOptionGroupsResponse>());
+}
+
 void DocumentScanAPIHandler::CloseScanner(
     scoped_refptr<const Extension> extension,
     const std::string& scanner_handle,

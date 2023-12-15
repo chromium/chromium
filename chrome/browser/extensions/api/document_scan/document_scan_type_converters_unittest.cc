@@ -486,6 +486,34 @@ TEST(DocumentScanTypeConvertersTest, OpenScannerResponse_NonEmpty) {
   EXPECT_TRUE(base::Contains(output.options->additional_properties, "name2"));
 }
 
+TEST(DocumentScanTypeConvertersTest, GetOptionGroupsResponse_Empty) {
+  auto input = mojom::GetOptionGroupsResponse::New();
+  auto output = input.To<document_scan::GetOptionGroupsResponse>();
+  EXPECT_EQ(output.scanner_handle, "");
+  EXPECT_EQ(output.result, document_scan::OperationResult::kUnknown);
+  EXPECT_FALSE(output.groups.has_value());
+}
+
+TEST(DocumentScanTypeConvertersTest, GetOptionGroupsResponse_NonEmpty) {
+  auto input = mojom::GetOptionGroupsResponse::New();
+  input->scanner_handle = "scanner_handle";
+  input->result = mojom::ScannerOperationResult::kSuccess;
+  input->groups.emplace();
+  auto input_group = mojom::OptionGroup::New();
+  input_group->title = "title";
+  input_group->members.emplace_back("item1");
+  input_group->members.emplace_back("item2");
+  input->groups->emplace_back(std::move(input_group));
+
+  auto output = input.To<document_scan::GetOptionGroupsResponse>();
+  EXPECT_EQ(output.scanner_handle, "scanner_handle");
+  EXPECT_EQ(output.result, document_scan::OperationResult::kSuccess);
+  ASSERT_TRUE(output.groups.has_value());
+  ASSERT_EQ(output.groups->size(), 1U);
+  EXPECT_EQ(output.groups.value()[0].title, "title");
+  EXPECT_THAT(output.groups.value()[0].members, ElementsAre("item1", "item2"));
+}
+
 TEST(DocumentScanTypeConvertersTest, CloseScannerResponse_Empty) {
   auto input = mojom::CloseScannerResponse::New();
   auto output = input.To<document_scan::CloseScannerResponse>();

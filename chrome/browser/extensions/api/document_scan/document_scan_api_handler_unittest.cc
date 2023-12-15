@@ -47,6 +47,8 @@ using GetScannerListFuture =
     base::test::TestFuture<api::document_scan::GetScannerListResponse>;
 using OpenScannerFuture =
     base::test::TestFuture<api::document_scan::OpenScannerResponse>;
+using GetOptionGroupsFuture =
+    base::test::TestFuture<api::document_scan::GetOptionGroupsResponse>;
 using CloseScannerFuture =
     base::test::TestFuture<api::document_scan::CloseScannerResponse>;
 using SetOptionsFuture =
@@ -493,6 +495,31 @@ TEST_F(DocumentScanAPIHandlerTest, OpenScanner_SecondExtensionOpenFails) {
             api::document_scan::OperationResult::kDeviceBusy);
   EXPECT_FALSE(open_response2.scanner_handle.has_value());
   EXPECT_FALSE(open_response2.options.has_value());
+}
+
+TEST_F(DocumentScanAPIHandlerTest, GetOptionGroups_NoScanner) {
+  GetOptionGroupsFuture future;
+  document_scan_api_handler_->GetOptionGroups(extension_, "badscanner",
+                                              future.GetCallback());
+  const api::document_scan::GetOptionGroupsResponse& response = future.Get();
+
+  EXPECT_EQ(response.scanner_handle, "badscanner");
+  EXPECT_EQ(response.result, api::document_scan::OperationResult::kInvalid);
+  EXPECT_FALSE(response.groups.has_value());
+}
+
+TEST_F(DocumentScanAPIHandlerTest, GetOptionGroups_ValidScanner) {
+  std::string scanner_handle = OpenScannerForExtension(extension_);
+  EXPECT_FALSE(scanner_handle.empty());
+
+  GetOptionGroupsFuture future;
+  document_scan_api_handler_->GetOptionGroups(extension_, scanner_handle,
+                                              future.GetCallback());
+  const api::document_scan::GetOptionGroupsResponse& response = future.Get();
+
+  EXPECT_EQ(response.scanner_handle, scanner_handle);
+  EXPECT_EQ(response.result, api::document_scan::OperationResult::kSuccess);
+  ASSERT_TRUE(response.groups.has_value());
 }
 
 TEST_F(DocumentScanAPIHandlerTest, CloseScanner_CloseBeforeOpenFails) {

@@ -47,6 +47,8 @@ class DocumentScanAPIHandler : public BrowserContextKeyedAPI {
       base::OnceCallback<void(api::document_scan::GetScannerListResponse)>;
   using OpenScannerCallback =
       base::OnceCallback<void(api::document_scan::OpenScannerResponse)>;
+  using GetOptionGroupsCallback =
+      base::OnceCallback<void(api::document_scan::GetOptionGroupsResponse)>;
   using CloseScannerCallback =
       base::OnceCallback<void(api::document_scan::CloseScannerResponse)>;
   using SetOptionsCallback =
@@ -101,6 +103,13 @@ class DocumentScanAPIHandler : public BrowserContextKeyedAPI {
   void OpenScanner(scoped_refptr<const Extension> extension,
                    const std::string& scanner_id,
                    OpenScannerCallback callback);
+
+  // Given `scanner_handle` previously returned from `OpenScanner`, gets the
+  // group names and member options for that scanner.  The result will be passed
+  // to `callback`.
+  void GetOptionGroups(scoped_refptr<const Extension> extension,
+                       const std::string& scanner_handle,
+                       GetOptionGroupsCallback callback);
 
   // Given `scanner_handle` previously returned from `OpenScanner`, closes the
   // handle.  No further operations on this handle can be performed even if the
@@ -212,6 +221,9 @@ class DocumentScanAPIHandler : public BrowserContextKeyedAPI {
                              const std::string& scanner_id,
                              OpenScannerCallback callback,
                              crosapi::mojom::OpenScannerResponsePtr response);
+  void OnGetOptionGroupsResponse(
+      GetOptionGroupsCallback callback,
+      crosapi::mojom::GetOptionGroupsResponsePtr response);
   void OnCloseScannerResponse(CloseScannerCallback callback,
                               crosapi::mojom::CloseScannerResponsePtr response);
   void OnSetOptionsResponse(SetOptionsCallback callback,
