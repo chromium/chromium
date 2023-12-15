@@ -76,8 +76,9 @@ struct GpuMemoryBufferResources {
   // The GpuMemoryBuffer backing the camera frame.
   std::unique_ptr<gfx::GpuMemoryBuffer> gpu_memory_buffer;
   // The SharedImage created from |gpu_memory_buffer|.
-  gpu::Mailbox mailboxes[media::VideoFrame::kMaxPlanes];
-  // The release sync token for |mailboxes|.
+  scoped_refptr<gpu::ClientSharedImage>
+      shared_images[media::VideoFrame::kMaxPlanes];
+  // The release sync token for |shared_images|.
   gpu::SyncToken release_sync_token;
 };
 
@@ -176,13 +177,13 @@ struct VideoCaptureImpl::BufferContext
 
   static void DestroyTextureOnMediaThread(
       media::GpuVideoAcceleratorFactories* gpu_factories,
-      gpu::Mailbox mailbox,
+      scoped_refptr<gpu::ClientSharedImage> shared_image,
       gpu::SyncToken release_sync_token) {
-    if (!mailbox.IsZero()) {
+    if (shared_image) {
       auto* sii = gpu_factories->SharedImageInterface();
       if (!sii)
         return;
-      sii->DestroySharedImage(release_sync_token, mailbox);
+      sii->DestroySharedImage(release_sync_token, std::move(shared_image));
     }
   }
 
@@ -225,12 +226,14 @@ struct VideoCaptureImpl::BufferContext
     if (!gmb_resources_)
       return;
     for (size_t plane = 0; plane < media::VideoFrame::kMaxPlanes; ++plane) {
-      if (!gmb_resources_->mailboxes[plane].IsSharedImage())
+      if (!gmb_resources_->shared_images[plane]) {
         continue;
+      }
       media_task_runner_->PostTask(
           FROM_HERE,
           base::BindOnce(&BufferContext::DestroyTextureOnMediaThread,
-                         gpu_factories_, gmb_resources_->mailboxes[plane],
+                         gpu_factories_,
+                         std::move(gmb_resources_->shared_images[plane]),
                          gmb_resources_->release_sync_token));
     }
   }
@@ -600,7 +603,7 @@ bool VideoCaptureImpl::VideoFrameBufferPreparer::BindVideoFrameOnMediaThread(
 
   for (size_t plane = 0; plane < planes.size(); ++plane) {
     if (should_recreate_shared_image ||
-        buffer_context_->gmb_resources()->mailboxes[plane].IsZero()) {
+        !buffer_context_->gmb_resources()->shared_images[plane]) {
       auto multiplanar_si_format = viz::MultiPlaneFormat::kNV12;
 #if BUILDFLAG(IS_OZONE)
       if (!use_per_plane_sampling) {
@@ -625,12 +628,12 @@ bool VideoCaptureImpl::VideoFrameBufferPreparer::BindVideoFrameOnMediaThread(
             kPremul_SkAlphaType, usage, "VideoCaptureFrameBuffer");
       }
       CHECK(client_shared_image);
-      buffer_context_->gmb_resources()->mailboxes[plane] =
-          client_shared_image->mailbox();
+      buffer_context_->gmb_resources()->shared_images[plane] =
+          std::move(client_shared_image);
     } else {
       sii->UpdateSharedImage(
           buffer_context_->gmb_resources()->release_sync_token,
-          buffer_context_->gmb_resources()->mailboxes[plane]);
+          buffer_context_->gmb_resources()->shared_images[plane]->mailbox());
     }
   }
 
@@ -650,11 +653,10 @@ bool VideoCaptureImpl::VideoFrameBufferPreparer::BindVideoFrameOnMediaThread(
 
   gpu::MailboxHolder mailbox_holder_array[media::VideoFrame::kMaxPlanes];
   for (size_t plane = 0; plane < planes.size(); ++plane) {
-    DCHECK(!buffer_context_->gmb_resources()->mailboxes[plane].IsZero());
-    DCHECK(buffer_context_->gmb_resources()->mailboxes[plane].IsSharedImage());
-    mailbox_holder_array[plane] =
-        gpu::MailboxHolder(buffer_context_->gmb_resources()->mailboxes[plane],
-                           sync_token, texture_target);
+    DCHECK(buffer_context_->gmb_resources()->shared_images[plane]);
+    mailbox_holder_array[plane] = gpu::MailboxHolder(
+        buffer_context_->gmb_resources()->shared_images[plane]->mailbox(),
+        sync_token, texture_target);
   }
 
   const auto gmb_size = gpu_memory_buffer_->GetSize();
