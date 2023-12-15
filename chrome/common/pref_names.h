@@ -74,11 +74,6 @@ inline constexpr char kDownloadBubblePartialViewImpressions[] =
 inline constexpr char kDownloadBubbleIphSuppression[] =
     "suppress_download_bubble_iph";
 
-// Whether the user wants to be prompted upon downloading a duplicate file. Only
-// used when the new download bubble UI is enabled.
-inline constexpr char kDownloadDuplicateFilePromptEnabled[] =
-    "download_duplicate_file_prompt_enabled";
-
 // If set to true profiles are created in ephemeral mode and do not store their
 // data in the profile folder on disk but only in memory.
 inline constexpr char kForceEphemeralProfiles[] = "profile.ephemeral_mode";

@@ -59,10 +59,6 @@
 #include "chrome/browser/ui/pdf/adobe_reader_info_win.h"
 #endif
 
-#if !BUILDFLAG(IS_ANDROID)
-#include "chrome/browser/download/bubble/download_bubble_prefs.h"
-#endif
-
 using content::BrowserContext;
 using content::BrowserThread;
 using content::DownloadManager;
@@ -217,8 +213,6 @@ DownloadPrefs::DownloadPrefs(Profile* profile) : profile_(profile) {
   safebrowsing_for_trusted_sources_enabled_.Init(
       prefs::kSafeBrowsingForTrustedSourcesEnabled, prefs);
   download_restriction_.Init(prefs::kDownloadRestrictions, prefs);
-  prompt_for_duplicate_file_.Init(prefs::kDownloadDuplicateFilePromptEnabled,
-                                  prefs);
 
   pref_change_registrar_.Add(
       prefs::kDownloadExtensionsToOpenByPolicy,
@@ -297,8 +291,6 @@ void DownloadPrefs::RegisterProfilePrefs(
   registry->RegisterBooleanPref(
       prefs::kDownloadBubbleIphSuppression, false,
       user_prefs::PrefRegistrySyncable::SYNCABLE_PREF);
-  registry->RegisterBooleanPref(prefs::kDownloadDuplicateFilePromptEnabled,
-                                true);
   registry->RegisterBooleanPref(prefs::kSafeBrowsingForTrustedSourcesEnabled,
                                 true);
 
@@ -700,16 +692,6 @@ void DownloadPrefs::UpdateAllowedURLsForOpenByPolicy() {
   }
 
   auto_open_allowed_by_urls_.swap(allowed_urls);
-}
-
-// TODO(chlily): Clean this up as this feature is no longer being pursued.
-bool DownloadPrefs::PromptForDuplicateFile() const {
-#if BUILDFLAG(IS_ANDROID)
-  return false;
-#else
-  return download::IsDownloadBubbleEnabled() &&
-         prompt_for_duplicate_file_.GetValue();
-#endif
 }
 
 bool DownloadPrefs::AutoOpenCompareFunctor::operator()(

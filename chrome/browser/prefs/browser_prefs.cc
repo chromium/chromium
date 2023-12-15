@@ -958,6 +958,10 @@ const char kDesktopSitePeripheralSettingEnabled[] =
 const char kDesktopSiteDisplaySettingEnabled[] = "desktop_site.display_setting";
 #endif
 
+// Deprecated 12/2023.
+constexpr char kDownloadDuplicateFilePromptEnabled[] =
+    "download_duplicate_file_prompt_enabled";
+
 // Register local state used only for migration (clearing or moving to a new
 // key).
 void RegisterLocalStatePrefsForMigration(PrefRegistrySimple* registry) {
@@ -1347,6 +1351,9 @@ void RegisterProfilePrefsForMigration(
   registry->RegisterBooleanPref(kDesktopSitePeripheralSettingEnabled, false);
   registry->RegisterBooleanPref(kDesktopSiteDisplaySettingEnabled, false);
 #endif
+
+  // Deprecated 12/2023.
+  registry->RegisterBooleanPref(kDownloadDuplicateFilePromptEnabled, true);
 }
 
 void ClearSyncRequestedPrefAndMaybeMigrate(PrefService* profile_prefs) {
@@ -2565,6 +2572,9 @@ void MigrateObsoleteProfilePrefs(PrefService* profile_prefs,
   profile_prefs->ClearPref(kDesktopSitePeripheralSettingEnabled);
   profile_prefs->ClearPref(kDesktopSiteDisplaySettingEnabled);
 #endif
+
+  // Deprecated 12/2023.
+  profile_prefs->ClearPref(kDownloadDuplicateFilePromptEnabled);
 
   // Please don't delete the following line. It is used by PRESUBMIT.py.
   // END_MIGRATE_OBSOLETE_PROFILE_PREFS
