@@ -139,7 +139,7 @@ typedef NS_ENUM(NSInteger, ItemType) {
 }
 
 - (BOOL)fieldValueEmptyOnProfileLoadForType:
-    (autofill::ServerFieldType)serverFieldType {
+    (autofill::FieldType)serverFieldType {
   return _autofillProfile
       ->GetInfo(serverFieldType,
                 GetApplicationContext()->GetApplicationLocale())
@@ -148,7 +148,7 @@ typedef NS_ENUM(NSInteger, ItemType) {
 
 - (void)updateProfileMetadataWithValue:(NSString*)value
                      forAutofillUIType:(AutofillUIType)autofillUIType {
-  autofill::ServerFieldType serverFieldType =
+  autofill::FieldType serverFieldType =
       AutofillTypeFromAutofillUIType(autofillUIType);
 
   // Since the country field is a text field, we should use SetInfo() to

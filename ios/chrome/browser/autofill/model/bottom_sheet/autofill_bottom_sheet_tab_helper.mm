@@ -31,7 +31,7 @@ namespace {
 
 // Whether the provided field type is one which can trigger the Payments Bottom
 // Sheet.
-bool IsPaymentsBottomSheetTriggeringField(autofill::ServerFieldType type) {
+bool IsPaymentsBottomSheetTriggeringField(autofill::FieldType type) {
   switch (type) {
     case autofill::CREDIT_CARD_NAME_FULL:
     case autofill::CREDIT_CARD_NUMBER:

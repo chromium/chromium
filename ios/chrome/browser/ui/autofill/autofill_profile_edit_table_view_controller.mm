@@ -392,8 +392,8 @@ const CGFloat kLineSpacingBetweenErrorAndFooter = 12.0f;
 
 #pragma mark - Conversion Helper Methods
 
-// Returns `autofill::ServerFieldType` corresponding to the `itemType`.
-- (autofill::ServerFieldType)serverFieldTypeCorrespondingToRequiredItemType:
+// Returns `autofill::FieldType` corresponding to the `itemType`.
+- (autofill::FieldType)serverFieldTypeCorrespondingToRequiredItemType:
     (AutofillProfileDetailsItemType)itemType {
   switch (itemType) {
     case AutofillProfileDetailsItemTypeFullName:

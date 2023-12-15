@@ -7,7 +7,7 @@
 #import "base/notreached.h"
 #import "components/autofill/core/common/autofill_features.h"
 
-AutofillUIType AutofillUITypeFromAutofillType(autofill::ServerFieldType type) {
+AutofillUIType AutofillUITypeFromAutofillType(autofill::FieldType type) {
   switch (type) {
     case autofill::UNKNOWN_TYPE:
       return AutofillUITypeUnknown;
@@ -59,7 +59,7 @@ AutofillUIType AutofillUITypeFromAutofillType(autofill::ServerFieldType type) {
   }
 }
 
-autofill::ServerFieldType AutofillTypeFromAutofillUIType(AutofillUIType type) {
+autofill::FieldType AutofillTypeFromAutofillUIType(AutofillUIType type) {
   switch (type) {
     case AutofillUITypeUnknown:
       return autofill::UNKNOWN_TYPE;
@@ -114,15 +114,15 @@ autofill::ServerFieldType AutofillTypeFromAutofillUIType(AutofillUIType type) {
   }
 }
 
-std::vector<autofill::ServerFieldType> GetAutofillTypeForProfileEdit() {
-  std::vector<autofill::ServerFieldType> all_visible_types;
+std::vector<autofill::FieldType> GetAutofillTypeForProfileEdit() {
+  std::vector<autofill::FieldType> all_visible_types;
   for (const AutofillProfileFieldDisplayInfo& row : kProfileFieldsToDisplay)
     all_visible_types.push_back(row.autofillType);
 
   return all_visible_types;
 }
 
-bool FieldIsUsedInAddress(autofill::ServerFieldType autofillType,
+bool FieldIsUsedInAddress(autofill::FieldType autofillType,
                           NSString* countryCode) {
   // TODO(crbug.com/1482269): Replace all this with libaddressinput.
 

@@ -24,11 +24,11 @@ using autofill::PersonalDataManagerFactory;
 
 namespace {
 
-// Converts a string (from the test recipe) to the autofill ServerFieldType it
+// Converts a string (from the test recipe) to the autofill FieldType it
 // represents.
-autofill::ServerFieldType ServerFieldTypeFromString(const std::string& str,
-                                                    NSError** error) {
-  static std::map<const std::string, autofill::ServerFieldType>
+autofill::FieldType ServerFieldTypeFromString(const std::string& str,
+                                              NSError** error) {
+  static std::map<const std::string, autofill::FieldType>
       string_to_field_type_map;
 
   // Only init the string to autofill field type map on the first call.
@@ -38,8 +38,7 @@ autofill::ServerFieldType ServerFieldTypeFromString(const std::string& str,
   if (string_to_field_type_map.empty()) {
     for (size_t i = autofill::NO_SERVER_DATA;
          i < autofill::MAX_VALID_FIELD_TYPE; ++i) {
-      autofill::AutofillType autofill_type(
-          static_cast<autofill::ServerFieldType>(i));
+      autofill::AutofillType autofill_type(static_cast<autofill::FieldType>(i));
       string_to_field_type_map[autofill_type.ToString()] =
           autofill_type.GetStorableType();
     }
@@ -106,8 +105,7 @@ NSError* PrepareAutofillProfileWithValues(
 
     const std::string field_type = type_container->GetString();
     NSError* error = nil;
-    autofill::ServerFieldType type =
-        ServerFieldTypeFromString(field_type, &error);
+    autofill::FieldType type = ServerFieldTypeFromString(field_type, &error);
     if (error) {
       return error;
     }
