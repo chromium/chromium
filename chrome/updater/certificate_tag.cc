@@ -529,8 +529,35 @@ std::vector<uint8_t> MSIBinary::ReadStream(const std::string& name,
                                            uint64_t stream_size,
                                            bool force_fat,
                                            bool free_data) {
-  // TODO(crbug.com/1422360): handle the mini fat format.
-  CHECK(force_fat || stream_size >= kMiniStreamCutoffSize);
+  uint64_t sector_size = sector_format_.size;
+  std::optional<std::vector<uint32_t>> mini_fat_entries;
+  std::optional<std::vector<uint8_t>> mini_contents;
+
+  // Code that manages mini fat will probably not run in prod.
+  if (!force_fat && stream_size < kMiniStreamCutoffSize) {
+    // Load the mini fat.
+    std::vector<uint8_t> stream = ReadStream(
+        "mini fat", header_.first_mini_fat_sector,
+        header_.num_mini_fat_sectors * sector_format_.size, true, false);
+    mini_fat_entries = std::vector<uint32_t>();
+    for (size_t offset = 0; offset < stream.size(); offset += 4) {
+      mini_fat_entries->push_back(
+          *reinterpret_cast<uint32_t*>(&stream[offset]));
+    }
+
+    // Load the mini stream, the root directory's stream. root must be dir entry
+    // zero.
+    MSIDirEntry root;
+    const uint64_t offset = header_.first_dir_sector * sector_format_.size;
+    std::memcpy(&root, &contents_[offset], sizeof(MSIDirEntry));
+    mini_contents = ReadStream("mini stream", root.stream_first_sector,
+                               root.stream_size, true, false);
+    sector_size = kMiniStreamSectorSize;
+  }
+
+  std::vector<uint32_t>* fat_entries =
+      mini_fat_entries ? &*mini_fat_entries : &fat_entries_;
+  std::vector<uint8_t>* contents = mini_contents ? &*mini_contents : &contents_;
 
   uint32_t sector = start;
   uint64_t size = stream_size;
@@ -541,12 +568,12 @@ std::vector<uint8_t> MSIBinary::ReadStream(const std::string& name,
       return {};
     }
     uint64_t n = size;
-    if (n > sector_format_.size) {
-      n = sector_format_.size;
+    if (n > sector_size) {
+      n = sector_size;
     }
-    const uint64_t offset = sector_format_.size * sector;
-    stream.insert(stream.end(), contents_.begin() + offset,
-                  contents_.begin() + offset + n);
+    const uint64_t offset = sector_size * sector;
+    stream.insert(stream.end(), contents->begin() + offset,
+                  contents->begin() + offset + n);
     size -= n;
 
     // Zero out the existing stream bytes, if requested.
@@ -556,15 +583,15 @@ std::vector<uint8_t> MSIBinary::ReadStream(const std::string& name,
     // file are typically zeroed. Set the data in the sector to zero.
     if (free_data) {
       for (uint64_t i = 0; i < n; ++i) {
-        contents_[offset + i] = 0;
+        (*contents)[offset + i] = 0;
       }
     }
 
     // Find the next sector, then free the fat entry of the current sector.
     uint32_t old = sector;
-    sector = fat_entries_[sector];
+    sector = (*fat_entries)[sector];
     if (free_data) {
-      fat_entries_[old] = kFatFreeSector;
+      (*fat_entries)[old] = kFatFreeSector;
     }
   }
   return stream;
@@ -598,9 +625,25 @@ void MSIBinary::PopulateDifatEntries() {
         &header_bytes_[kNumHeaderContentBytes + i * 4]);
   }
 
-  // TODO(crbug.com/1422360): handle additional difat sectors.
-  CHECK(!header_.num_difat_sectors);
+  // Code here that manages additional difat sectors will probably not run in
+  // prod, but is implemented to avoid a scaling limit. (109 difat sector
+  // entries) x (1024 fat sector entries/difat sector) x (4096
+  // bytes/ fat sector)
+  // => files greater than ~457 MB in size require additional difat sectors.
+  std::vector<uint32_t> difat_sectors;
+  for (uint32_t i = 0; i < header_.num_difat_sectors; ++i) {
+    uint32_t sector = 0;
+    sector = i == 0 ? header_.first_difat_sector
+                    : difat_entries[difat_entries.size() - 1];
+    difat_sectors.push_back(sector);
+    uint64_t start = sector * sector_format_.size;
+    for (int j = 0; j < sector_format_.ints; ++j) {
+      difat_entries.push_back(
+          *reinterpret_cast<uint32_t*>(&contents_[start + j * 4]));
+    }
+  }
   difat_entries_ = difat_entries;
+  difat_sectors_ = difat_sectors;
 }
 
 SignedDataDir MSIBinary::SignedDataDirFromSector(uint64_t dir_sector) {
@@ -844,8 +887,16 @@ std::vector<uint8_t> MSIBinary::BuildBinary(
   std::memcpy(&new_contents[sig_dir_offset_], &new_sig_dir_entry,
               sizeof(MSIDirEntry));
 
-  // TODO(crbug.com/1422360): handle additional difat sectors.
-  CHECK(!difat_sectors_.size());
+  // ...difat entries,
+  // In case difat sectors were added for huge files.
+  for (size_t i = 0; i < difat_sectors_.size(); ++i) {
+    const int index = kNumDifatHeaderEntries + i * sector_format_.ints;
+    uint64_t offset = difat_sectors_[i] * sector_format_.size;
+    for (int j = 0; j < sector_format_.ints; ++j) {
+      std::memcpy(&new_contents[offset + j * 4], &difat_entries_[index + j],
+                  sizeof(uint32_t));
+    }
+  }
 
   // ...fat entries from local modified copy,
   int index = 0;
