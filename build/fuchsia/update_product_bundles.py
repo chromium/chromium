@@ -17,17 +17,29 @@ sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__),
 
 import common
 import update_sdk
+from compatible_utils import running_unattended
 
 
 # TODO(crbug/1361089): Remove when the old scripts have been deprecated.
 _IMAGE_TO_PRODUCT_BUNDLE = {
-    'core.x64-dfv2-release': 'core.x64-dfv2',
-    'qemu.arm64': 'terminal.qemu-arm64',
-    'qemu.x64': 'terminal.x64',
+    'core.x64-dfv2-release':
+    'core.x64-dfv2',
+    'qemu.arm64':
+    'terminal.qemu-arm64',
+    'qemu.x64':
+    'terminal.x64',
     'workstation_eng.chromebook-x64-dfv2-release':
     'workstation_eng.chromebook-x64-dfv2',
-    'workstation_eng.chromebook-x64-release': 'workstation_eng.chromebook-x64',
-    'workstation_eng.qemu-x64-release': 'workstation_eng.qemu-x64',
+    'workstation_eng.chromebook-x64-release':
+    'workstation_eng.chromebook-x64',
+    'workstation_eng.qemu-x64-release':
+    'workstation_eng.qemu-x64',
+    'smart_display_eng_arrested.astro-release':
+    'smart_display_eng_arrested.astro',
+    'smart_display_max_eng_arrested.sherlock-release':
+    'smart_display_max_eng_arrested.sherlock',
+    'smart_display_m3_latest_eng_paused.nelson-release':
+    'smart_display_m3_latest_eng_paused.nelson',
 }
 
 
@@ -109,6 +121,14 @@ def get_current_signature(image_dir):
   return None
 
 
+# VisibleForTesting
+def internal_hash():
+  hash_filename = os.path.join(os.path.dirname(__file__),
+                               'linux_internal.sdk.sha1')
+  return (open(hash_filename, 'r').read().strip()
+          if os.path.exists(hash_filename) else '')
+
+
 def main():
   parser = argparse.ArgumentParser()
   parser.add_argument('--verbose',
@@ -120,9 +140,11 @@ def main():
       type=str,
       help='List of product bundles to download, represented as a comma '
       'separated list.')
-  parser.add_argument('--auth',
-                      action='store_true',
-                      help='Enable additional authorization for ffx product')
+  parser.add_argument(
+      '--internal',
+      action='store_true',
+      help='Whether the images are coming from internal, it impacts version '
+      'file, bucket and download location.')
   args = parser.parse_args()
 
   logging.basicConfig(level=logging.DEBUG if args.verbose else logging.INFO)
@@ -134,20 +156,36 @@ def main():
   logging.info('Searching for the following products: %s', str(new_products))
 
   logging.debug('Getting new SDK hash')
-  new_sdk_hash = common.get_hash_from_sdk()
+  if args.internal:
+    new_hash = internal_hash()
+  else:
+    new_hash = common.get_hash_from_sdk()
 
   auth_args = [
       '--auth',
       os.path.join(os.path.dirname(__file__), 'get_auth_token.py')
-  ] if args.auth else []
-
+  ] if args.internal and running_unattended() else []
+  if args.internal and not running_unattended():
+    print('*** product bundle v2 requires authentication with your account and '
+          'it should already open a browser window to do it if you have not '
+          'granted the permission yet.')
   for product in new_products:
     prod, board = product.split('.', 1)
-    image_dir = os.path.join(common.IMAGES_ROOT, prod, board)
-
+    if prod.startswith('smart_display'):
+      # This is a hacky way of keeping the files into the folders matching
+      # the original image name, since the definition is unfortunately in
+      # src-internal. Likely we can download two copies for a smooth
+      # transition, but it would be easier to keep it as-is during the ffx
+      # product v2 migration.
+      # TODO(crbug.com/1496426): Migrate the image download folder away from the
+      # following hack.
+      prod, board = board + '-release', prod
+    image_dir = os.path.join(
+        common.INTERNAL_IMAGES_ROOT if args.internal else common.IMAGES_ROOT,
+        prod, board)
     curr_signature = get_current_signature(image_dir)
 
-    if curr_signature != new_sdk_hash:
+    if curr_signature != new_hash:
       common.make_clean_directory(image_dir)
       logging.debug('Checking for override file')
       override_file = os.path.join(os.path.dirname(__file__),
@@ -155,12 +193,13 @@ def main():
       if os.path.isfile(override_file):
         base_url = update_sdk.GetSDKOverrideGCSPath().replace('/sdk', '')
       else:
-        base_url = f'gs://fuchsia/development/{new_sdk_hash}'
-      download_url = common.run_ffx_command(cmd=[
-          'product', 'lookup', product, new_sdk_hash, '--base-url', base_url
-      ] + auth_args,
-                                            check=True,
-                                            capture_output=True).stdout.strip()
+        bucket = 'fuchsia-sdk' if args.internal else 'fuchsia'
+        base_url = f'gs://{bucket}/development/{new_hash}'
+      download_url = common.run_ffx_command(
+          cmd=['product', 'lookup', product, new_hash, '--base-url', base_url] +
+          auth_args,
+          check=True,
+          capture_output=True).stdout.strip()
       logging.info(f'Downloading {product} from {base_url}.')
       common.run_ffx_command(
           cmd=['product', 'download', download_url, image_dir] + auth_args,

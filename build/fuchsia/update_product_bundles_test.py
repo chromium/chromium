@@ -97,10 +97,10 @@ class TestUpdateProductBundles(unittest.TestCase):
                     check=True)
       ])
 
-  @mock.patch('common.get_hash_from_sdk', return_value='abc')
+  @mock.patch('update_product_bundles.running_unattended', return_value=True)
   # Disallow reading sdk_override.
   @mock.patch('os.path.isfile', return_value=False)
-  def testLookupAndDownloadWithAuth(self, get_hash_mock, isfile_mock):
+  def testLookupAndDownloadWithAuth(self, *_):
     try:
       common.get_host_os()
     except:
@@ -110,20 +110,22 @@ class TestUpdateProductBundles(unittest.TestCase):
     auth_file = os.path.abspath(
         os.path.join(os.path.dirname(__file__), 'get_auth_token.py'))
     self._ffx_mock.return_value.stdout = 'http://download-url'
-    with mock.patch('sys.argv',
-                    ['update_product_bundles.py', 'terminal.x64', '--auth']):
+    with mock.patch(
+        'sys.argv',
+        ['update_product_bundles.py', 'terminal.x64', '--internal']):
       update_product_bundles.main()
+    new_hash = update_product_bundles.internal_hash()
     self._ffx_mock.assert_has_calls([
         mock.call(cmd=[
-            'product', 'lookup', 'terminal.x64', 'abc', '--base-url',
-            'gs://fuchsia/development/abc', '--auth', auth_file
+            'product', 'lookup', 'terminal.x64', new_hash, '--base-url',
+            f'gs://fuchsia-sdk/development/{new_hash}', '--auth', auth_file
         ],
-                  capture_output=True,
-                  check=True),
+                  check=True,
+                  capture_output=True),
         mock.call(cmd=[
             'product', 'download', 'http://download-url',
-            os.path.join(common.IMAGES_ROOT, 'terminal', 'x64'), '--auth',
-            auth_file
+            os.path.join(common.INTERNAL_IMAGES_ROOT, 'terminal', 'x64'),
+            '--auth', auth_file
         ],
                   check=True)
     ])

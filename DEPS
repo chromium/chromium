@@ -5112,12 +5112,9 @@ hooks = [
     'pattern': '.',
     'condition': 'checkout_fuchsia_internal and checkout_src_internal',
     'action': ['python3',
-               'src/build/fuchsia/update_images.py',
-               '--default-bucket', 'fuchsia-sdk',
-               '--image-root-dir',
-               'src/third_party/fuchsia-sdk/images-internal',
-               '--boot-images', '{checkout_fuchsia_internal_images}'
-    ],
+               'src/build/fuchsia/update_product_bundles.py',
+               '{checkout_fuchsia_internal_images}',
+               '--internal'],
   },
 
   {

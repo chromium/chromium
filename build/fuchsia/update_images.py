@@ -4,7 +4,11 @@
 # found in the LICENSE file.
 """Updates the Fuchsia images to the given revision. Should be used in a
 'hooks_os' entry so that it only runs when .gclient's target_os includes
-'fuchsia'."""
+'fuchsia'. Note, for a smooth transition, this file automatically adds
+'-release' at the end of the image gcs file name to eliminate the difference
+between product bundle v2 and gce files."""
+
+# TODO(crbug.com/1496426): Remove this file.
 
 import argparse
 import itertools
@@ -224,6 +228,13 @@ def main():
   # If no boot images need to be downloaded, exit.
   if not args.boot_images:
     return 0
+
+  for index, item in enumerate(args.boot_images):
+    # The gclient configuration is in the src-internal and cannot be changed
+    # atomically with the test script in src. So the update_images.py needs to
+    # support both scenarios before being fully deprecated for older milestones.
+    if not item.endswith('-release'):
+      args.boot_images[index] = item + '-release'
 
   # Check whether there's Fuchsia support for this platform.
   get_host_os()

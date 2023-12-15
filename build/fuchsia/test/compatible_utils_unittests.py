@@ -5,6 +5,7 @@
 """File for testing compatible_utils.py."""
 
 import io
+import json
 import os
 import stat
 import tempfile
@@ -85,57 +86,34 @@ class CompatibleUtilsTest(unittest.TestCase):
             compatible_utils.map_filter_file_to_package_file(
                 'foo/testing/buildbot/filters/some.filter'))
 
-    def test_get_sdk_hash_fallsback_to_args_file_if_buildargs_dne(self
-                                                                  ) -> None:
-        """Test |get_sdk_hash| checks if buildargs.gn exists.
+    def test_get_sdk_hash_success(self) -> None:
+        """Test |get_sdk_hash| reads product_bundle.json."""
+        with mock.patch('builtins.open',
+                        return_value=io.StringIO(
+                            json.dumps({'product_version': '12345'}))):
+            self.assertEqual(
+                compatible_utils.get_sdk_hash(
+                    'third_party/fuchsia-sdk/images-internal/sherlock-release/'
+                    'smart_display_max_eng_arrested/'),
+                ('smart_display_max_eng_arrested', '12345'))
 
-        If it does not, fallsback to args.gn. This should raise an exception
-        as it does not exist.
+    def test_get_sdk_hash_normalize_path(self) -> None:
+        """Test |get_sdk_hash| uses path as product."""
+        with mock.patch('builtins.open',
+                        return_value=io.StringIO(
+                            json.dumps({'product_version': '23456'}))):
+            self.assertEqual(
+                compatible_utils.get_sdk_hash(
+                    'third_party/fuchsia-sdk/images-internal/sherlock-release/'
+                    'smart_display_max_eng_arrested'),
+                ('smart_display_max_eng_arrested', '23456'))
+
+    def test_get_sdk_hash_not_found(self) -> None:
+        """Test |get_sdk_hash| fails if the product_bundle.json does not exist.
         """
-        with mock.patch('os.path.exists', return_value=False) as mock_exists, \
-                self.assertRaises(compatible_utils.VersionNotFoundError):
-            compatible_utils.get_sdk_hash('some/image/dir')
-        mock_exists.assert_has_calls([
-            mock.call('some/image/dir/buildargs.gn'),
-            mock.call('some/image/dir/args.gn')
-        ])
-
-    def test_get_sdk_hash_parse_contents_of_args_file(self) -> None:
-        """Test |get_sdk_hash| parses buildargs contents correctly."""
-        build_args_test_contents = """
-build_info_board = "chromebook-x64"
-build_info_product = "workstation_eng"
-build_info_version = "10.20221114.2.1"
-universe_package_labels += []
-"""
-        with mock.patch('os.path.exists', return_value=True), \
-                mock.patch('builtins.open',
-                           return_value=io.StringIO(build_args_test_contents)):
-            self.assertEqual(compatible_utils.get_sdk_hash('some/dir'),
-                             ('workstation_eng', '10.20221114.2.1'))
-
-    def test_get_sdk_hash_raises_error_if_keys_missing(self) -> None:
-        """Test |get_sdk_hash| raises VersionNotFoundError if missing keys"""
-        build_args_test_contents = """
-import("//boards/chromebook-x64.gni")
-import("//products/workstation_eng.gni")
-cxx_rbe_enable = true
-host_labels += [ "//bundles/infra/build" ]
-universe_package_labels += []
-"""
-        with mock.patch('os.path.exists', return_value=True), \
-                mock.patch(
-                    'builtins.open',
-                    return_value=io.StringIO(build_args_test_contents)), \
-                self.assertRaises(compatible_utils.VersionNotFoundError):
-            compatible_utils.get_sdk_hash('some/dir')
-
-    def test_get_sdk_hash_raises_error_if_contents_empty(self) -> None:
-        """Test |get_sdk_hash| raises VersionNotFoundError if no contents."""
-        with mock.patch('os.path.exists', return_value=True), \
-                mock.patch('builtins.open', return_value=io.StringIO("")), \
-                self.assertRaises(compatible_utils.VersionNotFoundError):
-            compatible_utils.get_sdk_hash('some/dir')
+        with mock.patch('builtins.open', side_effect=IOError()):
+            self.assertRaises(IOError, compatible_utils.get_sdk_hash,
+                              'some/image/dir')
 
     def test_install_symbols(self):
         """Test |install_symbols|."""

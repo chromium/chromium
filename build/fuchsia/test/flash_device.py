@@ -80,7 +80,7 @@ def update_required(
 def _run_flash_command(system_image_dir: str, target_id: Optional[str]):
     """Helper function for running `ffx target flash`."""
     logging.info('Flashing %s to %s', system_image_dir, target_id)
-    manifest = os.path.join(system_image_dir, 'flash-manifest.manifest')
+    product_bundle = os.path.join(system_image_dir, 'product_bundle.json')
     configs = [
         'fastboot.usb.disabled=true',
         'ffx.fastboot.inline_target=true',
@@ -99,7 +99,8 @@ def _run_flash_command(system_image_dir: str, target_id: Optional[str]):
     with lock(_FF_LOCK, timeout=_FF_LOCK_ACQ_TIMEOUT):
         logging.info(
             'Flash result %s',
-            common.run_ffx_command(cmd=('target', 'flash', manifest,
+            common.run_ffx_command(cmd=('target', 'flash', '-b',
+                                        product_bundle,
                                         '--no-bootloader-reboot'),
                                    target_id=target_id,
                                    capture_output=True,

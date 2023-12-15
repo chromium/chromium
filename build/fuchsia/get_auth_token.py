@@ -19,7 +19,11 @@ import find_depot_tools
 
 def main():
   luci_auth = os.path.join(find_depot_tools.DEPOT_TOOLS_PATH, 'luci-auth')
-  proc = subprocess.run([luci_auth, 'token'], encoding='utf-8')
+  proc = subprocess.run([
+      luci_auth, 'token', '-scopes',
+      'https://www.googleapis.com/auth/devstorage.read_only'
+  ],
+                        encoding='utf-8')
   return proc.returncode
 
 
