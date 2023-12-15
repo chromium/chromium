@@ -26,7 +26,6 @@
 #include "net/cert/ct_policy_status.h"
 #include "net/cert/signed_certificate_timestamp.h"
 #include "net/cert/x509_certificate.h"
-#include "net/cert/x509_certificate_net_log_param.h"
 #include "net/log/net_log_capture_mode.h"
 #include "net/log/net_log_event_type.h"
 #include "net/log/net_log_with_source.h"
@@ -42,14 +41,6 @@ base::Value::Dict NetLogCertComplianceCheckResultParams(
     bool build_timely,
     CTPolicyCompliance compliance) {
   base::Value::Dict dict;
-  // TODO(mattm): This double-wrapping of the certificate list is weird. Remove
-  // this (probably requires updates to netlog-viewer).
-  // TODO(https://crbug.com/848277): or just remove the certificate list, this
-  // event is logged during CertVerifyProc now which already logs the
-  // certificates so it's a bit redundant.
-  base::Value::Dict certificate_dict;
-  certificate_dict.Set("certificates", net::NetLogX509CertificateList(cert));
-  dict.Set("certificate", std::move(certificate_dict));
   dict.Set("build_timely", build_timely);
   dict.Set("ct_compliance_status", CTPolicyComplianceToString(compliance));
   return dict;
