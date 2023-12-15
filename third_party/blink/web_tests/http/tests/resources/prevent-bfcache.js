@@ -3,11 +3,11 @@
 // found in the LICENSE file.
 
 
-// When the returned promised resolve, BFCache will not be used for the current
-// page.
-function preventBFCache() {
-  return new Promise(resolve => {
-    let webSocket = new WebSocket('ws://127.0.0.1:8880/echo');
-    webSocket.onopen = () => { resolve(42); };
-  });
+// When the returned promised resolves, BFCache will not be used for the current
+// page. The function should be async even if it doesn't seem necessary, so that
+// if we need to change how it blocks in the future to something async, we will
+// not need to update all callers.
+let bc;
+async function preventBFCache() {
+  bc = new BroadcastChannel("blocker");
 }

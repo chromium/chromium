@@ -1,4 +1,5 @@
 <?php
+ignore_user_abort(true);
 require_once '../../resources/portabilityLayer.php';
 
 $pingFile = fopen(sys_get_temp_dir() . "/ping.txt.tmp", 'w');
