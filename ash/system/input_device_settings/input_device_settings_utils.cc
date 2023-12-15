@@ -48,11 +48,6 @@ bool ExistingSettingsHasValue(base::StringPiece setting_key,
 
 }  // namespace
 
-constexpr bool VendorProductId::operator<(const VendorProductId& other) const {
-  return vendor_id == other.vendor_id ? product_id < other.product_id
-                                      : vendor_id < other.vendor_id;
-}
-
 bool VendorProductId::operator==(const VendorProductId& other) const {
   return vendor_id == other.vendor_id && product_id == other.product_id;
 }
