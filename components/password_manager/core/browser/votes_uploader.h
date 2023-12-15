@@ -31,8 +31,7 @@ namespace password_manager {
 class PasswordManagerClient;
 
 // Map from a field's renderer id to a field type.
-using FieldTypeMap =
-    std::map<autofill::FieldRendererId, autofill::ServerFieldType>;
+using FieldTypeMap = std::map<autofill::FieldRendererId, autofill::FieldType>;
 // A map from field's renderer id to a vote type (e.g. CREDENTIALS_REUSED).
 using VoteTypeMap = std::map<autofill::FieldRendererId,
                              autofill::AutofillUploadContents::Field::VoteType>;
@@ -143,7 +142,7 @@ class VotesUploader {
   // a |FormStructure| and upload it to the server. Returns true on success.
   bool UploadPasswordVote(const PasswordForm& form_to_upload,
                           const PasswordForm& submitted_form,
-                          const autofill::ServerFieldType password_type,
+                          const autofill::FieldType password_type,
                           const std::string& login_form_signature);
 
   // Sends USERNAME and PASSWORD votes, when a credential is used to login for

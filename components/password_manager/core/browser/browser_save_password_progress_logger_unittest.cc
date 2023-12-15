@@ -20,7 +20,7 @@
 
 using autofill::AutofillType;
 using autofill::FieldGlobalId;
-using autofill::ServerFieldType;
+using autofill::FieldType;
 using autofill::StubLogManager;
 using autofill::test::CreateFieldPrediction;
 using base::UTF8ToUTF16;
@@ -108,7 +108,7 @@ TEST_F(BrowserSavePasswordProgressLoggerTest,
   TestLogger logger(&log_manager);
   AutofillType::ServerPrediction password_prediction;
   password_prediction.server_predictions = {
-      CreateFieldPrediction(ServerFieldType::NEW_PASSWORD)};
+      CreateFieldPrediction(FieldType::NEW_PASSWORD)};
   base::flat_map<FieldGlobalId, AutofillType::ServerPrediction> predictions = {
       {form_.fields[0].global_id(), std::move(password_prediction)}};
   logger.LogFormDataWithServerPredictions(Logger::STRING_SERVER_PREDICTIONS,

@@ -180,7 +180,7 @@ bool IsUppercaseLetter(char16_t c);
 bool IsSpecialSymbol(char16_t c);
 
 // Returns true if 'type' is a username in a password-less form.
-bool IsSingleUsernameType(autofill::ServerFieldType type);
+bool IsSingleUsernameType(autofill::FieldType type);
 
 }  // namespace password_manager_util
 

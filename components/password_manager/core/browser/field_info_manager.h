@@ -43,7 +43,7 @@ struct FieldInfo {
   bool is_likely_otp;
 
   // The type of the field predicted by the server.
-  autofill::ServerFieldType type = autofill::ServerFieldType::UNKNOWN_TYPE;
+  autofill::FieldType type = autofill::FieldType::UNKNOWN_TYPE;
 
   // Predictions for the form containing the field.
   std::optional<FormPredictions> stored_predictions;

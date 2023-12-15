@@ -30,11 +30,11 @@ namespace password_manager {
 namespace {
 
 using ::autofill::AutofillUploadContents;
+using ::autofill::FieldType;
 using ::autofill::FormData;
 using ::autofill::FormFieldData;
 using ::autofill::FormStructure;
 using ::autofill::PasswordFormFillData;
-using ::autofill::ServerFieldType;
 using ::autofill::mojom::SubmissionIndicatorEvent;
 using ::autofill::upload_contents_matchers::FieldAutofillTypeIs;
 using ::autofill::upload_contents_matchers::FieldsContain;
@@ -71,7 +71,7 @@ MATCHER_P2(MatchesUsernameAndPassword, username, password, "") {
 // Creates a matcher for an `autofill::AutofillUploadContents::Field` that
 // checks that the field's signature matches that of `field` and its predicted
 // type is `type`.
-auto UploadFieldIs(const FormFieldData& field, ServerFieldType type) {
+auto UploadFieldIs(const FormFieldData& field, FieldType type) {
   return AllOf(
       FieldSignatureIs(autofill::CalculateFieldSignatureForField(field)),
       FieldAutofillTypeIs({type}));
@@ -991,7 +991,7 @@ TEST_P(PasswordSaveManagerImplTest, UpdatePasswordValueMultiplePasswordFields) {
   // Check that a vote is sent for the field with the value which is chosen by
   // the user.
   auto upload_contents_matcher = IsPasswordUpload(FieldsContain(
-      UploadFieldIs(submitted_form.fields[0], ServerFieldType::PASSWORD)));
+      UploadFieldIs(submitted_form.fields[0], FieldType::PASSWORD)));
   EXPECT_CALL(*mock_autofill_crowdsourcing_manager(),
               StartUploadRequest(upload_contents_matcher, _, _, _, _));
 
@@ -1337,14 +1337,14 @@ TEST_P(PasswordSaveManagerImplTest, UsernameCorrectionVote) {
 
   // Check that a vote is sent for the password field.
   auto upload_contents_matcher = IsPasswordUpload(FieldsContain(UploadFieldIs(
-      submitted_form_.fields[kPasswordFieldIndex], ServerFieldType::PASSWORD)));
+      submitted_form_.fields[kPasswordFieldIndex], FieldType::PASSWORD)));
   EXPECT_CALL(*mock_autofill_crowdsourcing_manager(),
               StartUploadRequest(upload_contents_matcher, _, _, _, _));
 
   // Check that a correction vote is sent for the earlier saved form.
   upload_contents_matcher = IsPasswordUpload(FieldsContain(
-      UploadFieldIs(field1, ServerFieldType::USERNAME),
-      UploadFieldIs(field3, ServerFieldType::ACCOUNT_CREATION_PASSWORD)));
+      UploadFieldIs(field1, FieldType::USERNAME),
+      UploadFieldIs(field3, FieldType::ACCOUNT_CREATION_PASSWORD)));
   EXPECT_CALL(*mock_autofill_crowdsourcing_manager(),
               StartUploadRequest(upload_contents_matcher, _, _, _, _));
 

@@ -81,6 +81,7 @@ using ::autofill::CalculateFieldSignatureForField;
 using ::autofill::FieldPropertiesFlags;
 using ::autofill::FieldRendererId;
 using ::autofill::FieldSignature;
+using ::autofill::FieldType;
 using ::autofill::FieldTypeSet;
 using ::autofill::FormData;
 using ::autofill::FormFieldData;
@@ -91,7 +92,6 @@ using ::autofill::IsMostRecentSingleUsernameCandidate;
 using ::autofill::NOT_USERNAME;
 using ::autofill::PasswordFormFillData;
 using ::autofill::PasswordFormGenerationData;
-using ::autofill::ServerFieldType;
 using ::autofill::SINGLE_USERNAME;
 using ::autofill::SINGLE_USERNAME_FORGOT_PASSWORD;
 using ::autofill::UNKNOWN_TYPE;
@@ -141,7 +141,7 @@ constexpr autofill::FieldRendererId kSingleUsernameFieldRendererId(101);
 // checks that the field's signature matches that of `field` and its predicted
 // type is `type`.
 auto UploadFieldIs(const FormFieldData& field,
-                   ServerFieldType type,
+                   FieldType type,
                    auto... matchers) {
   return AllOf(FieldSignatureIs(CalculateFieldSignatureForField(field)),
                FieldAutofillTypeIs({type}), matchers...);
@@ -153,9 +153,8 @@ auto UploadFieldIs(const FormFieldData& field,
 auto IsSingleUsernameUpload() {
   return IsPasswordUpload(
       FormSignatureIs(kSingleUsernameFormSignature),
-      FieldsContain(
-          AllOf(FieldSignatureIs(kSingleUsernameFieldSignature),
-                FieldAutofillTypeIs({ServerFieldType::SINGLE_USERNAME}))));
+      FieldsContain(AllOf(FieldSignatureIs(kSingleUsernameFieldSignature),
+                          FieldAutofillTypeIs({FieldType::SINGLE_USERNAME}))));
 }
 
 MATCHER_P(FormHasUniqueKey, key, "") {
@@ -287,12 +286,12 @@ void CheckPasswordGenerationUKM(const ukm::TestAutoSetUkmRecorder& recorder,
 // Create predictions for |form| using field predictions |field_predictions|.
 std::map<FormSignature, FormPredictions> CreatePredictions(
     const FormData& form,
-    std::vector<std::pair<int, ServerFieldType>> field_predictions) {
+    std::vector<std::pair<int, FieldType>> field_predictions) {
   FormPredictions predictions;
   for (const auto& index_prediction : field_predictions) {
     autofill::FieldRendererId renderer_id =
         form.fields[index_prediction.first].unique_renderer_id;
-    ServerFieldType server_type = index_prediction.second;
+    FieldType server_type = index_prediction.second;
     predictions.fields.emplace_back();
 
     predictions.fields.back().renderer_id = renderer_id;
@@ -550,7 +549,7 @@ class PasswordFormManagerTest : public testing::Test,
                     FormSignature form_signature,
                     FieldSignature field_signature,
                     bool is_likely_otp,
-                    ServerFieldType predicted_type) {
+                    FieldType predicted_type) {
     FieldInfo info(driver_id, field_id, GetSignonRealm(url), field_value,
                    is_likely_otp);
     FormPredictions predictions;
@@ -566,7 +565,7 @@ class PasswordFormManagerTest : public testing::Test,
   void ExpectIsSingleUsernameUpload(
       FormSignature form_signature,
       Field::SingleUsernameVoteType vote_type,
-      ServerFieldType field_type,
+      FieldType field_type,
       IsMostRecentSingleUsernameCandidate
           is_most_recent_single_username_candidate =
               IsMostRecentSingleUsernameCandidate::
@@ -1269,7 +1268,7 @@ TEST_P(PasswordFormManagerTest, VotesUploadingOnPasswordUpdate) {
 
     testing::InSequence in_sequence;
     auto upload_contents_matcher = IsPasswordUpload(FieldsContain(
-        UploadFieldIs(submitted_form.fields[0], ServerFieldType::PASSWORD),
+        UploadFieldIs(submitted_form.fields[0], FieldType::PASSWORD),
         UploadFieldIs(submitted_form.fields[1], expected_vote)));
     EXPECT_CALL(crowdsourcing_manager(),
                 StartUploadRequest(upload_contents_matcher, _, _, _, _));
@@ -1356,10 +1355,9 @@ TEST_P(PasswordFormManagerTest, UsernameCorrectionVote) {
       FieldsContain(
           UploadFieldIs(
               saved_match_.form_data.fields[alternative_username_field_index],
-              ServerFieldType::USERNAME,
+              FieldType::USERNAME,
               FieldVoteTypeIs(Field::USERNAME_OVERWRITTEN)),
-          UploadFieldIs(password_field,
-                        ServerFieldType::ACCOUNT_CREATION_PASSWORD)));
+          UploadFieldIs(password_field, FieldType::ACCOUNT_CREATION_PASSWORD)));
   EXPECT_CALL(crowdsourcing_manager(),
               StartUploadRequest(upload_contents_matcher, _, _, _, _));
 
@@ -1466,10 +1464,10 @@ TEST_P(PasswordFormManagerTest, UpdateUsernameToAnotherFieldValue) {
             form_manager_->GetPendingCredentials().username_value);
 
   auto upload_contents_matcher = IsPasswordUpload(FieldsContain(
-      UploadFieldIs(submitted_form_.fields[0], ServerFieldType::USERNAME,
+      UploadFieldIs(submitted_form_.fields[0], FieldType::USERNAME,
                     FieldVoteTypeIs(Field::USERNAME_EDITED)),
       UploadFieldIs(submitted_form_.fields[kPasswordFieldIndex],
-                    ServerFieldType::PASSWORD,
+                    FieldType::PASSWORD,
                     FieldGenerationTypeIs(Field::NO_GENERATION))));
   EXPECT_CALL(crowdsourcing_manager(),
               StartUploadRequest(upload_contents_matcher, _, _, _, _));
@@ -1552,7 +1550,7 @@ TEST_P(PasswordFormManagerTest, UpdatePasswordValueToUnknownValueFromPrompt) {
   // generation attributes are not uploaded.
   auto upload_contents_matcher = IsPasswordUpload(
       FieldsContain(UploadFieldIs(submitted_form_.fields[kUsernameFieldIndex],
-                                  ServerFieldType::USERNAME),
+                                  FieldType::USERNAME),
                     AllOf(FieldSignatureIs(CalculateFieldSignatureForField(
                               submitted_form_.fields[kPasswordFieldIndex])),
                           FieldGenerationTypeIs(Field::NO_GENERATION))));
@@ -1589,7 +1587,7 @@ TEST_P(PasswordFormManagerTest, UpdatePasswordValueMultiplePasswordFields) {
   // Check that a vote is sent for the field with the value which is chosen by
   // the user.
   auto upload_contents_matcher = IsPasswordUpload(FieldsContain(UploadFieldIs(
-      submitted_form_.fields[kPasswordFieldIndex], ServerFieldType::PASSWORD)));
+      submitted_form_.fields[kPasswordFieldIndex], FieldType::PASSWORD)));
   EXPECT_CALL(crowdsourcing_manager(),
               StartUploadRequest(upload_contents_matcher, _, _, _, _));
 
@@ -2718,7 +2716,7 @@ TEST_P(PasswordFormManagerTest, UsernameFirstFlowUsernameInThePasswordForm) {
   field_prediction.renderer_id = kUsernameFieldRendererId;
   field_prediction.signature =
       CalculateFieldSignatureForField(observed_form_.fields[1]);
-  field_prediction.type = ServerFieldType::UNKNOWN_TYPE;
+  field_prediction.type = FieldType::UNKNOWN_TYPE;
   predictions.fields.push_back(field_prediction);
   possible_username_data.form_predictions = predictions;
   base::LRUCache<PossibleUsernameFieldIdentifier, PossibleUsernameData>
@@ -2735,9 +2733,8 @@ TEST_P(PasswordFormManagerTest, UsernameFirstFlowUsernameInThePasswordForm) {
   auto upload_contents_matcher = IsPasswordUpload(
       FormSignatureIs(CalculateFormSignature(submitted_form)),
       FieldsContain(
-          UploadFieldIs(submitted_form.fields[1],
-                        ServerFieldType::UNKNOWN_TYPE),
-          UploadFieldIs(submitted_form.fields[2], ServerFieldType::PASSWORD)));
+          UploadFieldIs(submitted_form.fields[1], FieldType::UNKNOWN_TYPE),
+          UploadFieldIs(submitted_form.fields[2], FieldType::PASSWORD)));
   EXPECT_CALL(crowdsourcing_manager(),
               StartUploadRequest(upload_contents_matcher, _, _, _, _));
   form_manager_->Save();
@@ -2949,7 +2946,7 @@ TEST_P(PasswordFormManagerTest, UsernameFirstFlowInFormOverruleVotes) {
   // Expect a negative `IN_FORM_OVERRULE` vote on the username form.
   ExpectIsSingleUsernameUpload(
       kSingleUsernameFormSignature, Field::IN_FORM_OVERRULE,
-      ServerFieldType::NOT_USERNAME,
+      FieldType::NOT_USERNAME,
       IsMostRecentSingleUsernameCandidate::kMostRecentCandidate);
 #endif
 
@@ -3009,7 +3006,7 @@ TEST_P(PasswordFormManagerTest, UsernameFirstFlowPositiveInFormOverruleVote) {
   // Expect a positive `IN_FORM_OVERRULE` vote on the username form.
   ExpectIsSingleUsernameUpload(
       kSingleUsernameFormSignature, Field::IN_FORM_OVERRULE,
-      ServerFieldType::SINGLE_USERNAME,
+      FieldType::SINGLE_USERNAME,
       IsMostRecentSingleUsernameCandidate::kMostRecentCandidate);
 #endif
 
@@ -3235,13 +3232,12 @@ TEST_P(PasswordFormManagerTest, UsernameFirstFlowSendVotesOnRecentFields) {
 #if !BUILDFLAG(IS_ANDROID)
   // Expect a strong positive vote on the single username form.
   ExpectIsSingleUsernameUpload(
-      kSingleUsernameFormSignature, Field::STRONG,
-      ServerFieldType::SINGLE_USERNAME,
+      kSingleUsernameFormSignature, Field::STRONG, FieldType::SINGLE_USERNAME,
       IsMostRecentSingleUsernameCandidate::kMostRecentCandidate);
 
   // Expect a strong negative vote on another single text field form.
   ExpectIsSingleUsernameUpload(
-      kOtherFormSignature, Field::STRONG, ServerFieldType::NOT_USERNAME,
+      kOtherFormSignature, Field::STRONG, FieldType::NOT_USERNAME,
       IsMostRecentSingleUsernameCandidate::kHasIntermediateValuesInBetween);
 #endif
 
@@ -3370,9 +3366,8 @@ TEST_P(PasswordFormManagerTest, NegativeUsernameFirstFlowVotes) {
   if constexpr (!BUILDFLAG(IS_ANDROID)) {
     auto upload_contents_matcher = IsPasswordUpload(
         FormSignatureIs(kUsernameFormSignature),
-        FieldsContain(
-            AllOf(FieldSignatureIs(kUsernameFieldSignature),
-                  FieldAutofillTypeIs({ServerFieldType::NOT_USERNAME}))));
+        FieldsContain(AllOf(FieldSignatureIs(kUsernameFieldSignature),
+                            FieldAutofillTypeIs({FieldType::NOT_USERNAME}))));
     EXPECT_CALL(crowdsourcing_manager(),
                 StartUploadRequest(upload_contents_matcher, _, _, _, _));
   } else {
@@ -3473,7 +3468,7 @@ TEST_P(PasswordFormManagerTest, PossibleUsernameServerPredictions) {
   FormData submitted_form = observed_form_only_password_fields_;
   submitted_form.fields[0].value = u"strongpassword";
 
-  for (ServerFieldType prediction : {SINGLE_USERNAME, NOT_USERNAME}) {
+  for (FieldType prediction : {SINGLE_USERNAME, NOT_USERNAME}) {
     SCOPED_TRACE(testing::Message("prediction=") << prediction);
 
     FormPredictions form_predictions;
@@ -3860,15 +3855,15 @@ TEST_P(PasswordFormManagerTest, StrongForgotPasswordFormVotes) {
   form_manager_->OnUpdateUsernameFromPrompt(kPossibleUsername);
 
   // Expect a strong positive vote on the username form.
-  ExpectIsSingleUsernameUpload(
-      kSingleUsernameFormSignature, Field::STRONG_FORGOT_PASSWORD,
-      ServerFieldType::SINGLE_USERNAME_FORGOT_PASSWORD);
+  ExpectIsSingleUsernameUpload(kSingleUsernameFormSignature,
+                               Field::STRONG_FORGOT_PASSWORD,
+                               FieldType::SINGLE_USERNAME_FORGOT_PASSWORD);
 
   // Expect a strong negative vote on another single text field form, unrelated
   // to FPF.
   ExpectIsSingleUsernameUpload(kOtherFormSignature,
                                Field::STRONG_FORGOT_PASSWORD,
-                               ServerFieldType::NOT_USERNAME);
+                               FieldType::NOT_USERNAME);
 
   // Expect upload for the password form. This upload is unrelated to FPF: it
   // is a result of saving a new password on the password form.
@@ -3913,14 +3908,14 @@ TEST_P(PasswordFormManagerTest, WeakForgotPasswordFormVotes) {
   form_manager_->SaveSuggestedUsernameValueToVotesUploader();
 
   // Expect a weak positive vote on the username form.
-  ExpectIsSingleUsernameUpload(
-      kSingleUsernameFormSignature, Field::WEAK_FORGOT_PASSWORD,
-      ServerFieldType::SINGLE_USERNAME_FORGOT_PASSWORD);
+  ExpectIsSingleUsernameUpload(kSingleUsernameFormSignature,
+                               Field::WEAK_FORGOT_PASSWORD,
+                               FieldType::SINGLE_USERNAME_FORGOT_PASSWORD);
 
   // Expect a weak negative vote on another single text field form, unrelated to
   // FPF.
   ExpectIsSingleUsernameUpload(kOtherFormSignature, Field::WEAK_FORGOT_PASSWORD,
-                               ServerFieldType::NOT_USERNAME);
+                               FieldType::NOT_USERNAME);
 
   // Expect upload for the password form. This upload is unrelated to FPF: it
   // is a result of saving a new password on the password form.
@@ -4026,9 +4021,9 @@ TEST_P(PasswordFormManagerTest, ForgotPasswordFormVotesOnLikelyOTPField) {
   // single username prediction.
   form_manager_->SaveSuggestedUsernameValueToVotesUploader();
 
-  ExpectIsSingleUsernameUpload(
-      kSingleUsernameFormSignature, Field::WEAK_FORGOT_PASSWORD,
-      ServerFieldType::SINGLE_USERNAME_FORGOT_PASSWORD);
+  ExpectIsSingleUsernameUpload(kSingleUsernameFormSignature,
+                               Field::WEAK_FORGOT_PASSWORD,
+                               FieldType::SINGLE_USERNAME_FORGOT_PASSWORD);
 
   // Expect no vote on another single text field form, unrelated to FPF.
   EXPECT_CALL(

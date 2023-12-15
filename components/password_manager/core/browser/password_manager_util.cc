@@ -431,7 +431,7 @@ bool IsSpecialSymbol(char16_t c) {
   return base::Contains(kSpecialSymbols, c);
 }
 
-bool IsSingleUsernameType(autofill::ServerFieldType type) {
+bool IsSingleUsernameType(autofill::FieldType type) {
   return type == autofill::SINGLE_USERNAME ||
          (type == autofill::SINGLE_USERNAME_FORGOT_PASSWORD &&
           base::FeatureList::IsEnabled(

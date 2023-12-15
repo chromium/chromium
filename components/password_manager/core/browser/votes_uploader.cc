@@ -38,6 +38,7 @@ using autofill::AutofillField;
 using autofill::AutofillUploadContents;
 using autofill::FieldRendererId;
 using autofill::FieldSignature;
+using autofill::FieldType;
 using autofill::FieldTypeSet;
 using autofill::FormData;
 using autofill::FormFieldData;
@@ -45,7 +46,6 @@ using autofill::FormSignature;
 using autofill::FormStructure;
 using autofill::IsMostRecentSingleUsernameCandidate;
 using autofill::RandomizedEncoder;
-using autofill::ServerFieldType;
 using password_manager_util::FindFormByUsername;
 
 using Logger = autofill::SavePasswordProgressLogger;
@@ -63,7 +63,7 @@ constexpr uint32_t kNumberOfLowEntropyHashValues = 64;
 // field name collision and report that in a metric. Once the bug is fixed, the
 // metric becomes obsolete and the function can be inlined.
 void SetFieldType(const FieldRendererId& field_renderer_id,
-                  const ServerFieldType type,
+                  const FieldType type,
                   FieldTypeMap& field_types,
                   bool& field_name_collision) {
   if (field_renderer_id.is_null()) {
@@ -71,7 +71,7 @@ void SetFieldType(const FieldRendererId& field_renderer_id,
   }
 
   std::pair<FieldTypeMap::iterator, bool> it = field_types.insert(
-      std::pair<FieldRendererId, ServerFieldType>(field_renderer_id, type));
+      std::pair<FieldRendererId, FieldType>(field_renderer_id, type));
   if (!it.second) {
     field_name_collision = true;
     // To preserve the old behavior, overwrite the type.
@@ -84,7 +84,7 @@ void SetFieldType(const FieldRendererId& field_renderer_id,
 // NEW_PASSWORD, PROBABLY_NEW_PASSWORD or NOT_NEW_PASSWORD. These values
 // correspond to cases when the user confirmed password update, did nothing or
 // declined to update password respectively.
-void SetFieldLabelsOnUpdate(const ServerFieldType password_type,
+void SetFieldLabelsOnUpdate(const FieldType password_type,
                             const PasswordForm& submitted_form,
                             FieldTypeMap& field_types,
                             bool& field_name_collision) {
@@ -106,7 +106,7 @@ void SetFieldLabelsOnUpdate(const ServerFieldType password_type,
 
 // Sets the autofill type of the password field stored in |submitted_form| to
 // |password_type| in |field_types| map.
-void SetFieldLabelsOnSave(const ServerFieldType password_type,
+void SetFieldLabelsOnSave(const FieldType password_type,
                           const PasswordForm& form,
                           FieldTypeMap& field_types,
                           bool& field_name_collision) {
@@ -138,7 +138,7 @@ void LabelFields(const FieldTypeMap& field_types,
   for (size_t i = 0; i < form_structure->field_count(); ++i) {
     AutofillField* field = form_structure->field(i);
 
-    ServerFieldType type = autofill::UNKNOWN_TYPE;
+    FieldType type = autofill::UNKNOWN_TYPE;
     if (auto iter = field_types.find(field->unique_renderer_id);
         iter != field_types.end()) {
       type = iter->second;
@@ -428,7 +428,7 @@ void VotesUploader::SendVoteOnCredentialsReuse(
 bool VotesUploader::UploadPasswordVote(
     const PasswordForm& form_to_upload,
     const PasswordForm& submitted_form,
-    const ServerFieldType autofill_type,
+    const FieldType autofill_type,
     const std::string& login_form_signature) {
   // Check if there is any vote to be sent.
   bool has_autofill_vote = autofill_type != autofill::UNKNOWN_TYPE;
@@ -916,7 +916,7 @@ bool VotesUploader::SetSingleUsernameVoteOnUsernameForm(
     IsMostRecentSingleUsernameCandidate
         is_most_recent_single_username_candidate,
     bool is_forgot_password_vote) {
-  ServerFieldType type = autofill::UNKNOWN_TYPE;
+  FieldType type = autofill::UNKNOWN_TYPE;
   autofill::AutofillUploadContents_Field_SingleUsernameVoteType vote_type =
       AutofillUploadContents::Field::DEFAULT;
 

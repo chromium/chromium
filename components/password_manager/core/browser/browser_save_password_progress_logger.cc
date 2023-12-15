@@ -31,12 +31,12 @@ using autofill::AutofillType;
 using autofill::AutofillUploadContents;
 using autofill::FieldGlobalId;
 using autofill::FieldPropertiesFlags;
+using autofill::FieldType;
 using autofill::FieldTypeToStringView;
 using autofill::FormData;
 using autofill::FormFieldData;
 using autofill::FormStructure;
 using autofill::PasswordAttribute;
-using autofill::ServerFieldType;
 using base::NumberToString;
 
 namespace password_manager {
@@ -168,7 +168,7 @@ std::string GetFormDataFieldsAndPredictionsLogString(
       std::vector<std::string> all_predictions;
       for (const auto& p : prediction.server_predictions) {
         all_predictions.emplace_back(
-            FieldTypeToStringView(static_cast<ServerFieldType>(p.type())));
+            FieldTypeToStringView(static_cast<FieldType>(p.type())));
       }
 
       base::StrAppend(&field_info,
@@ -305,7 +305,7 @@ std::string BrowserSavePasswordProgressLogger::FormStructureToFieldsLogString(
       std::vector<std::string> all_predictions;
       for (const auto& p : field->server_predictions()) {
         all_predictions.emplace_back(
-            FieldTypeToStringView(static_cast<ServerFieldType>(p.type())));
+            FieldTypeToStringView(static_cast<FieldType>(p.type())));
       }
 
       base::StrAppend(&field_info,
@@ -313,8 +313,9 @@ std::string BrowserSavePasswordProgressLogger::FormStructureToFieldsLogString(
                        base::JoinString(all_predictions, ", "), "]"});
     }
 
-    for (ServerFieldType type : field->possible_types())
+    for (FieldType type : field->possible_types()) {
       base::StrAppend(&field_info, {", VOTE: ", FieldTypeToStringView(type)});
+    }
 
     if (field->vote_type())
       field_info += ", vote_type=" + VoteTypeToString(field->vote_type());
